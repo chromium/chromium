@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,45 +19,47 @@
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/base/breakpad.h"
 #include "remoting/base/host_settings.h"
+#include "remoting/base/logging.h"
+#include "remoting/host/base/host_exit_codes.h"
+#include "remoting/host/base/switches.h"
 #include "remoting/host/chromoting_host_context.h"
-#include "remoting/host/host_exit_codes.h"
 #include "remoting/host/it2me/it2me_native_messaging_host.h"
-#include "remoting/host/logging.h"
 #include "remoting/host/native_messaging/native_messaging_pipe.h"
 #include "remoting/host/native_messaging/pipe_messaging_channel.h"
 #include "remoting/host/policy_watcher.h"
 #include "remoting/host/resources.h"
-#include "remoting/host/switches.h"
 #include "remoting/host/usage_stats_consent.h"
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if defined(REMOTING_USE_X11) || defined(REMOTING_USE_WAYLAND)
 #include <gtk/gtk.h>
-
 #include "base/linux_util.h"
+#endif  // defined(REMOTING_USE_X11) || defined(REMOTING_USE_WAYLAND)
+
+#if defined(REMOTING_USE_X11)
 #include "ui/events/platform/x11/x11_event_source.h"
 #include "ui/gfx/x/xlib_support.h"
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // defined(REMOTING_USE_X11)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) &&
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_nsautorelease_pool.h"
 #include "remoting/host/desktop_capturer_checker.h"
 #include "remoting/host/mac/permission_utils.h"
-#endif  // defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
 #include <commctrl.h>
-
-#include "remoting/host/switches.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace remoting {
 
 namespace {
 
-#if defined(OS_WIN) && defined(OFFICIAL_BUILD)
+#if BUILDFLAG(IS_WIN) && defined(OFFICIAL_BUILD)
 bool CurrentProcessHasUiAccess() {
   HANDLE process_token;
   OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &process_token);
@@ -71,18 +73,19 @@ bool CurrentProcessHasUiAccess() {
   CloseHandle(process_token);
   return uiaccess_value != 0;
 }
-#endif  // defined(OS_WIN) && defined(OFFICIAL_BUILD)
+#endif  // BUILDFLAG(IS_WIN) && defined(OFFICIAL_BUILD)
 
 }  // namespace
 
 // Creates a It2MeNativeMessagingHost instance, attaches it to stdin/stdout and
 // runs the task executor until It2MeNativeMessagingHost signals shutdown.
 int It2MeNativeMessagingHostMain(int argc, char** argv) {
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(REMOTING_USE_X11)
   // Initialize Xlib for multi-threaded use, allowing non-Chromium code to
   // use X11 safely (such as the WebRTC capturer, GTK ...)
   x11::InitXlib();
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) &&
+        // defined(REMOTING_USE_X11)
 
   // This object instance is required by Chrome code (such as
   // SingleThreadTaskExecutor).
@@ -92,10 +95,10 @@ int It2MeNativeMessagingHostMain(int argc, char** argv) {
   remoting::InitHostLogging();
   remoting::HostSettings::Initialize();
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   // Needed so we don't leak objects when threads are created.
   base::mac::ScopedNSAutoreleasePool pool;
-#endif  // defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE)
 
 #if defined(REMOTING_ENABLE_BREAKPAD)
   // Initialize Breakpad as early as possible. On Mac the command-line needs to
@@ -106,13 +109,13 @@ int It2MeNativeMessagingHostMain(int argc, char** argv) {
   }
 #endif  // defined(REMOTING_ENABLE_BREAKPAD)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Register and initialize common controls.
   INITCOMMONCONTROLSEX info;
   info.dwSize = sizeof(info);
   info.dwICC = ICC_STANDARD_CLASSES;
   InitCommonControlsEx(&info);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   // Required to find the ICU data file, used by some file_util routines.
   base::i18n::InitializeICU();
@@ -123,7 +126,8 @@ int It2MeNativeMessagingHostMain(int argc, char** argv) {
 
   remoting::LoadResources("");
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \
+    (defined(REMOTING_USE_X11) || defined(REMOTING_USE_WAYLAND))
   // Required for any calls into GTK functions, such as the Disconnect and
   // Continue windows. Calling with nullptr arguments because we don't have
   // any command line arguments for gtk to consume.
@@ -136,13 +140,14 @@ int It2MeNativeMessagingHostMain(int argc, char** argv) {
   // Need to prime the host OS version value for linux to prevent IO on the
   // network thread. base::GetLinuxDistro() caches the result.
   base::GetLinuxDistro();
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) &&
+        // defined(REMOTING_USE_X11) || defined(REMOTING_USE_WAYLAND)
 
   base::File read_file;
   base::File write_file;
   bool is_process_elevated_ = false;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();
@@ -204,7 +209,7 @@ int It2MeNativeMessagingHostMain(int argc, char** argv) {
     SetStdHandle(STD_INPUT_HANDLE, nullptr);
     SetStdHandle(STD_OUTPUT_HANDLE, nullptr);
   }
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
   // The files are automatically closed.
   read_file = base::File(STDIN_FILENO);
   write_file = base::File(STDOUT_FILENO);
@@ -215,7 +220,7 @@ int It2MeNativeMessagingHostMain(int argc, char** argv) {
   base::SingleThreadTaskExecutor main_task_executor(base::MessagePumpType::UI);
   base::RunLoop run_loop;
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   auto* cmd_line = base::CommandLine::ForCurrentProcess();
   if (cmd_line->HasSwitch(kCheckAccessibilityPermissionSwitchName)) {
     return mac::CanInjectInput() ? EXIT_SUCCESS : EXIT_FAILURE;
@@ -230,7 +235,7 @@ int It2MeNativeMessagingHostMain(int argc, char** argv) {
     }
     return mac::CanRecordScreen() ? EXIT_SUCCESS : EXIT_FAILURE;
   }
-#endif  // defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE)
 
   // NetworkChangeNotifier must be initialized after SingleThreadTaskExecutor.
   std::unique_ptr<net::NetworkChangeNotifier> network_change_notifier(
@@ -245,9 +250,9 @@ int It2MeNativeMessagingHostMain(int argc, char** argv) {
   std::unique_ptr<extensions::NativeMessagingChannel> channel(
       new PipeMessagingChannel(std::move(read_file), std::move(write_file)));
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   PipeMessagingChannel::ReopenStdinStdout();
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 
   std::unique_ptr<ChromotingHostContext> context =
       ChromotingHostContext::Create(new remoting::AutoThreadTaskRunner(
@@ -256,7 +261,7 @@ int It2MeNativeMessagingHostMain(int argc, char** argv) {
       PolicyWatcher::CreateWithTaskRunner(context->file_task_runner(),
                                           context->management_service());
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(REMOTING_USE_X11)
   // Create an X11EventSource on all UI threads, so the global X11 connection
   // (x11::Connection::Get()) can dispatch X events.
   auto event_source =
@@ -265,7 +270,8 @@ int It2MeNativeMessagingHostMain(int argc, char** argv) {
   input_task_runner->PostTask(FROM_HERE, base::BindOnce([]() {
                                 new ui::X11EventSource(x11::Connection::Get());
                               }));
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) &&
+        // defined(REMOTING_USE_X11)
 
   std::unique_ptr<extensions::NativeMessageHost> host(
       new It2MeNativeMessagingHost(is_process_elevated_,
@@ -278,11 +284,12 @@ int It2MeNativeMessagingHostMain(int argc, char** argv) {
   // Run the loop until channel is alive.
   run_loop.Run();
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(REMOTING_USE_X11)
   input_task_runner->PostTask(FROM_HERE, base::BindOnce([]() {
                                 delete ui::X11EventSource::GetInstance();
                               }));
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) &&
+        // defined(REMOTING_USE_X11)
 
   // Block until tasks blocking shutdown have completed their execution.
   base::ThreadPoolInstance::Get()->Shutdown();

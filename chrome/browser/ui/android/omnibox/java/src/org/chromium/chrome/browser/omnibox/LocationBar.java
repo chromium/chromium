@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,6 +31,12 @@ public interface LocationBar {
      * @param showTitle Whether the title should be shown.
      */
     void setShowTitle(boolean showTitle);
+
+    /**
+     * Sends an accessibility event to the URL bar to request accessibility focus on it (e.g. for
+     * TalkBack).
+     */
+    default void requestUrlBarAccessibilityFocus() {}
 
     /**
      * Triggers the cursor to be visible in the UrlBar without triggering any of the focus animation

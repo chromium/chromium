@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_SAFE_BROWSING_CHROME_CLEANER_CHROME_CLEANER_FETCHER_WIN_H_
 
 #include "base/callback.h"
+
+class PrefService;
 
 namespace base {
 class FilePath;
@@ -40,7 +42,8 @@ using ChromeCleanerFetchedCallback =
 // Fetches the Chrome Cleaner binary. This function can be called from any
 // sequence and |fetched_callback| will be called back on that same sequence.
 void FetchChromeCleaner(ChromeCleanerFetchedCallback fetched_callback,
-                        network::mojom::URLLoaderFactory* url_loader_factory);
+                        network::mojom::URLLoaderFactory* url_loader_factory,
+                        PrefService* prefs);
 
 }  // namespace safe_browsing
 

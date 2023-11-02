@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,14 +14,14 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "components/cast_streaming/public/remoting_proto_enum_utils.h"
+#include "components/cast_streaming/public/remoting_proto_utils.h"
 #include "media/base/media_util.h"
 #include "media/base/pipeline_status.h"
 #include "media/base/renderer_client.h"
 #include "media/base/test_helpers.h"
 #include "media/remoting/fake_media_resource.h"
 #include "media/remoting/fake_remoter.h"
-#include "media/remoting/proto_enum_utils.h"
-#include "media/remoting/proto_utils.h"
 #include "media/remoting/renderer_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -94,6 +94,7 @@ class RendererClientImpl final : public RendererClient {
 
   // RendererClient implementation.
   void OnError(PipelineStatus status) override {}
+  void OnFallback(PipelineStatus status) override {}
   void OnEnded() override {}
   MOCK_METHOD1(OnStatisticsUpdate, void(const PipelineStatistics& stats));
   MOCK_METHOD2(OnBufferingStateChange,
@@ -449,7 +450,7 @@ class CourierRendererTest : public testing::Test {
   void IssuesBufferingStateRpc(BufferingState state) {
     absl::optional<
         openscreen::cast::RendererClientOnBufferingStateChange::State>
-        pb_state = ToProtoMediaBufferingState(state);
+        pb_state = cast_streaming::remoting::ToProtoMediaBufferingState(state);
     if (!pb_state.has_value())
       return;
     std::unique_ptr<openscreen::cast::RpcMessage> rpc(
@@ -665,7 +666,8 @@ TEST_F(CourierRendererTest, OnAudioConfigChange) {
       rpc->mutable_rendererclient_onaudioconfigchange_rpc();
   openscreen::cast::AudioDecoderConfig* proto_audio_config =
       audio_config_change_message->mutable_audio_decoder_config();
-  ConvertAudioDecoderConfigToProto(kNewAudioConfig, proto_audio_config);
+  cast_streaming::remoting::ConvertAudioDecoderConfigToProto(
+      kNewAudioConfig, proto_audio_config);
   OnReceivedRpc(std::move(rpc));
   RunPendingTasks();
   ASSERT_TRUE(render_client_->audio_decoder_config().Matches(kNewAudioConfig));
@@ -689,7 +691,8 @@ TEST_F(CourierRendererTest, OnVideoConfigChange) {
       rpc->mutable_rendererclient_onvideoconfigchange_rpc();
   openscreen::cast::VideoDecoderConfig* proto_video_config =
       video_config_change_message->mutable_video_decoder_config();
-  ConvertVideoDecoderConfigToProto(kNewVideoConfig, proto_video_config);
+  cast_streaming::remoting::ConvertVideoDecoderConfigToProto(
+      kNewVideoConfig, proto_video_config);
   OnReceivedRpc(std::move(rpc));
   RunPendingTasks();
   ASSERT_TRUE(render_client_->video_decoder_config().Matches(kNewVideoConfig));

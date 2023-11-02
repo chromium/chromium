@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -47,9 +47,6 @@ class TestUkmRecorder : public UkmRecorderImpl {
 
   ~TestUkmRecorder() override;
 
-  bool ShouldRestrictToWhitelistedSourceIds() const override;
-  bool ShouldRestrictToWhitelistedEntries() const override;
-
   void AddEntry(mojom::UkmEntryPtr entry) override;
 
   size_t sources_count() const { return sources().size(); }
@@ -74,7 +71,7 @@ class TestUkmRecorder : public UkmRecorderImpl {
 
   // Sets a callback that will be called when recording an entry for entry name.
   void SetOnAddEntryCallback(base::StringPiece entry_name,
-                             base::OnceClosure on_add_entry);
+                             base::RepeatingClosure on_add_entry);
 
   // Gets all of the entries recorded for entry name.
   std::vector<const mojom::UkmEntry*> GetEntriesByName(
@@ -124,7 +121,7 @@ class TestUkmRecorder : public UkmRecorderImpl {
 
  private:
   uint64_t entry_hash_to_wait_for_ = 0;
-  base::OnceClosure on_add_entry_;
+  base::RepeatingClosure on_add_entry_;
 };
 
 // Similar to a TestUkmRecorder, but also sets itself as the global UkmRecorder

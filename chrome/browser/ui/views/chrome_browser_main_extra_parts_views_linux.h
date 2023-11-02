@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,13 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/chrome_browser_main_extra_parts_views.h"
 #include "ui/display/display_observer.h"
+
+namespace ui {
+class LinuxUiGetter;
+}
 
 // Extra parts, which are used by both Ozone/X11/Wayland and inherited by the
 // non-ozone X11 extra parts.
@@ -36,6 +39,8 @@ class ChromeBrowserMainExtraPartsViewsLinux
   void OnCurrentWorkspaceChanged(const std::string& new_workspace) override;
 
   absl::optional<display::ScopedDisplayObserver> display_observer_;
+
+  std::unique_ptr<ui::LinuxUiGetter> linux_ui_getter_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_CHROME_BROWSER_MAIN_EXTRA_PARTS_VIEWS_LINUX_H_

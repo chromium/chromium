@@ -1,16 +1,20 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef ASH_QUICK_PAIR_COMMON_QUICK_PAIR_BROWSER_DELEGATE_H_
 #define ASH_QUICK_PAIR_COMMON_QUICK_PAIR_BROWSER_DELEGATE_H_
 
-#include "ash/services/quick_pair/public/mojom/quick_pair_service.mojom-forward.h"
 #include "base/component_export.h"
 #include "base/memory/scoped_refptr.h"
+#include "chromeos/ash/services/quick_pair/public/mojom/quick_pair_service.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
 class PrefService;
+
+namespace image_fetcher {
+class ImageFetcher;
+}  // namespace image_fetcher
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -41,6 +45,8 @@ class COMPONENT_EXPORT(QUICK_PAIR_COMMON) QuickPairBrowserDelegate {
 
   // Returns a pointer to the IdentityManager for the active user.
   virtual signin::IdentityManager* GetIdentityManager() = 0;
+
+  virtual std::unique_ptr<image_fetcher::ImageFetcher> GetImageFetcher() = 0;
 
   // For accessing prefs of the active user.
   virtual PrefService* GetActivePrefService() = 0;

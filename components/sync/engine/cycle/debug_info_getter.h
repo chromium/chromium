@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,14 +15,14 @@ namespace syncer {
 // to communicate the debug info data to the syncer.
 class DebugInfoGetter {
  public:
+  virtual ~DebugInfoGetter() = default;
+
   // Gets the client debug info. Be sure to clear the info to ensure the data
   // isn't sent multiple times.
   virtual sync_pb::DebugInfo GetDebugInfo() const = 0;
 
   // Clears the debug info.
   virtual void ClearDebugInfo() = 0;
-
-  virtual ~DebugInfoGetter() {}
 };
 
 }  // namespace syncer

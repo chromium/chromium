@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "build/build_config.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
@@ -17,7 +18,7 @@
 #include "chrome/browser/ash/scoped_test_system_nss_key_slot_mixin.h"
 #include "chrome/browser/net/nss_service.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/login/auth/user_context.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/account_id/account_id.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/user_manager/user.h"
@@ -247,7 +248,7 @@ IN_PROC_BROWSER_TEST_F(NSSContextChromeOSBrowserTest,
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
 
   LoginUser(affiliated_account_id_1_);
-  Profile* profile1 = chromeos::ProfileHelper::Get()->GetProfileByUserUnsafe(
+  Profile* profile1 = ash::ProfileHelper::Get()->GetProfileByUser(
       user_manager->FindUser(affiliated_account_id_1_));
   ASSERT_TRUE(profile1);
 
@@ -264,7 +265,7 @@ IN_PROC_BROWSER_TEST_F(NSSContextChromeOSBrowserTest,
   const AccountId account_id1(
       login_mixin_.users()[kUnaffiliatedUserIdx1].account_id);
   LoginUser(account_id1);
-  Profile* profile1 = chromeos::ProfileHelper::Get()->GetProfileByUserUnsafe(
+  Profile* profile1 = ash::ProfileHelper::Get()->GetProfileByUser(
       user_manager->FindUser(account_id1));
   ASSERT_TRUE(profile1);
 
@@ -275,12 +276,12 @@ IN_PROC_BROWSER_TEST_F(NSSContextChromeOSBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(NSSContextChromeOSBrowserTest,
-                       TwoAffiliatedUsersHaveSystemSlots) {
+                       DISABLED_TwoAffiliatedUsersHaveSystemSlots) {
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
 
   // Log in first user and get their DB.
   LoginUser(affiliated_account_id_1_);
-  Profile* profile1 = chromeos::ProfileHelper::Get()->GetProfileByUserUnsafe(
+  Profile* profile1 = ash::ProfileHelper::Get()->GetProfileByUser(
       user_manager->FindUser(affiliated_account_id_1_));
   ASSERT_TRUE(profile1);
 
@@ -295,7 +296,7 @@ IN_PROC_BROWSER_TEST_F(NSSContextChromeOSBrowserTest,
   AddUser(affiliated_account_id_2_);
   observer.WaitUntilUserAddingFinishedOrCancelled();
 
-  Profile* profile2 = chromeos::ProfileHelper::Get()->GetProfileByUserUnsafe(
+  Profile* profile2 = ash::ProfileHelper::Get()->GetProfileByUser(
       user_manager->FindUser(affiliated_account_id_2_));
   ASSERT_TRUE(profile2);
 
@@ -318,7 +319,7 @@ IN_PROC_BROWSER_TEST_F(NSSContextChromeOSBrowserTest,
   const AccountId account_id1(
       login_mixin_.users()[kUnaffiliatedUserIdx1].account_id);
   LoginUser(account_id1);
-  Profile* profile1 = chromeos::ProfileHelper::Get()->GetProfileByUserUnsafe(
+  Profile* profile1 = ash::ProfileHelper::Get()->GetProfileByUser(
       user_manager->FindUser(account_id1));
   ASSERT_TRUE(profile1);
 
@@ -335,7 +336,7 @@ IN_PROC_BROWSER_TEST_F(NSSContextChromeOSBrowserTest,
   AddUser(account_id2);
   observer.WaitUntilUserAddingFinishedOrCancelled();
 
-  Profile* profile2 = chromeos::ProfileHelper::Get()->GetProfileByUserUnsafe(
+  Profile* profile2 = ash::ProfileHelper::Get()->GetProfileByUser(
       user_manager->FindUser(account_id2));
   ASSERT_TRUE(profile2);
 
@@ -356,7 +357,7 @@ IN_PROC_BROWSER_TEST_F(NSSContextChromeOSBrowserTest,
 
   // Log in first user and get their DB.
   LoginUser(affiliated_account_id_1_);
-  Profile* profile1 = chromeos::ProfileHelper::Get()->GetProfileByUserUnsafe(
+  Profile* profile1 = ash::ProfileHelper::Get()->GetProfileByUser(
       user_manager->FindUser(affiliated_account_id_1_));
   ASSERT_TRUE(profile1);
 
@@ -373,7 +374,7 @@ IN_PROC_BROWSER_TEST_F(NSSContextChromeOSBrowserTest,
   AddUser(account_id2);
   observer.WaitUntilUserAddingFinishedOrCancelled();
 
-  Profile* profile2 = chromeos::ProfileHelper::Get()->GetProfileByUserUnsafe(
+  Profile* profile2 = ash::ProfileHelper::Get()->GetProfileByUser(
       user_manager->FindUser(account_id2));
   ASSERT_TRUE(profile2);
 

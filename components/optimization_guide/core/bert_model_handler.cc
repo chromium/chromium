@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,7 @@ BertModelHandler::BertModelHandler(
           model_provider,
           background_task_runner,
           std::make_unique<BertModelExecutor>(optimization_target),
+          /*model_inference_timeout=*/absl::nullopt,
           optimization_target,
           model_metadata) {}
 

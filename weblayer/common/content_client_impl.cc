@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,14 +6,13 @@
 
 #include "build/build_config.h"
 #include "components/embedder_support/origin_trials/origin_trial_policy_impl.h"
-#include "content/app/resources/grit/content_resources.h"
 #include "gpu/config/gpu_info.h"
 #include "gpu/config/gpu_util.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "content/public/common/url_constants.h"
 #endif
 
@@ -46,6 +45,11 @@ base::RefCountedMemory* ContentClientImpl::GetDataResourceBytes(
       resource_id);
 }
 
+std::string ContentClientImpl::GetDataResourceString(int resource_id) {
+  return ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+      resource_id);
+}
+
 void ContentClientImpl::SetGpuInfo(const gpu::GPUInfo& gpu_info) {
   gpu::SetKeysForCrashLogging(gpu_info);
 }
@@ -67,7 +71,7 @@ blink::OriginTrialPolicy* ContentClientImpl::GetOriginTrialPolicy() {
 }
 
 void ContentClientImpl::AddAdditionalSchemes(Schemes* schemes) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   schemes->standard_schemes.push_back(content::kAndroidAppScheme);
   schemes->referrer_schemes.push_back(content::kAndroidAppScheme);
 #endif

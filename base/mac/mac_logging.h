@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,9 @@
 
 #include "base/base_export.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 #include <MacTypes.h>
 #else
 #include <libkern/OSTypes.h>
@@ -52,10 +51,10 @@ class BASE_EXPORT OSStatusLogMessage : public logging::LogMessage {
 
 }  // namespace logging
 
-#if defined(NDEBUG)
-#define MAC_DVLOG_IS_ON(verbose_level) 0
-#else
+#if DCHECK_IS_ON()
 #define MAC_DVLOG_IS_ON(verbose_level) VLOG_IS_ON(verbose_level)
+#else
+#define MAC_DVLOG_IS_ON(verbose_level) 0
 #endif
 
 #define OSSTATUS_LOG_STREAM(severity, status) \

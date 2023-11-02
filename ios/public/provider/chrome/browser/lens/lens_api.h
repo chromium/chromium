@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,12 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/web/public/navigation/navigation_manager.h"
+
 @class LensConfiguration;
 @class UIViewController;
+class GURL;
+enum class LensEntrypoint;
 
 // A delegate that can receive Lens events forwarded by a ChromeLensController.
 @protocol ChromeLensControllerDelegate <NSObject>
@@ -16,8 +20,13 @@
 // Called when the Lens view controller's dimiss button has been tapped.
 - (void)lensControllerDidTapDismissButton;
 
-// Called when a URL in the Lens view controller has been selected.
+// Called when the user selects a URL in Lens.
 - (void)lensControllerDidSelectURL:(NSURL*)url;
+
+// Called when the user selects an image and the Lens controller has prepared
+// `params` for loading a Lens web page.
+- (void)lensControllerDidGenerateLoadParams:
+    (const web::NavigationManager::WebLoadParams&)params;
 
 @end
 
@@ -28,8 +37,10 @@
 // A delegate that can receive Lens events forwarded by the controller.
 @property(nonatomic, weak) id<ChromeLensControllerDelegate> delegate;
 
-// Returns a Lens post-capture view controller for the given query image.
-- (UIViewController*)postCaptureViewControllerForImage:(UIImage*)image;
+// Returns an input selection UIViewController with the provided
+// web content frame.
+- (UIViewController*)inputSelectionViewControllerWithWebContentFrame:
+    (CGRect)webContentFrame;
 
 @end
 
@@ -42,6 +53,16 @@ id<ChromeLensController> NewChromeLensController(LensConfiguration* config);
 
 // Returns whether Lens is supported for the current build.
 bool IsLensSupported();
+
+// Returns whether or not the url represents a Lens Web results page.
+bool IsLensWebResultsURL(const GURL& url);
+
+// Generates web load params for a Lens image search for the given
+// 'image' and 'entry_point'.
+web::NavigationManager::WebLoadParams GenerateLensLoadParamsForImage(
+    UIImage* image,
+    LensEntrypoint entry_point,
+    bool is_incognito);
 
 }  // namespace provider
 }  // namespace ios

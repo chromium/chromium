@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,8 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
+#include "base/strings/sys_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -45,7 +47,7 @@ using ::testing::WithArgs;
 
 class MockDelegate : public AppShimManager::Delegate {
  public:
-  virtual ~MockDelegate() {}
+  ~MockDelegate() override {}
 
   MOCK_METHOD2(ShowAppWindows, bool(Profile*, const std::string&));
   MOCK_METHOD2(CloseAppWindows, void(Profile*, const std::string&));
@@ -98,8 +100,8 @@ class MockDelegate : public AppShimManager::Delegate {
   }
 
  private:
-  ShimLaunchedCallback* launch_shim_callback_capture_ = nullptr;
-  ShimTerminatedCallback* terminated_shim_callback_capture_ = nullptr;
+  raw_ptr<ShimLaunchedCallback> launch_shim_callback_capture_ = nullptr;
+  raw_ptr<ShimTerminatedCallback> terminated_shim_callback_capture_ = nullptr;
   bool allow_shim_to_connect_ = true;
 };
 
@@ -109,7 +111,7 @@ class TestingAppShimManager : public AppShimManager {
       : AppShimManager(std::move(delegate)) {}
   TestingAppShimManager(const TestingAppShimManager&) = delete;
   TestingAppShimManager& operator=(const TestingAppShimManager&) = delete;
-  virtual ~TestingAppShimManager() { DCHECK(load_profile_callbacks_.empty()); }
+  ~TestingAppShimManager() override { DCHECK(load_profile_callbacks_.empty()); }
 
   MOCK_METHOD1(OnShimFocus, void(AppShimHost* host));
 
@@ -233,7 +235,7 @@ class TestingAppShimHostBootstrap : public AppShimHostBootstrap {
   const bool is_from_bookmark_;
   // Note that |launch_result_| is optional so that we can track whether or not
   // the callback to set it has arrived.
-  absl::optional<chrome::mojom::AppShimLaunchResult>* launch_result_;
+  raw_ptr<absl::optional<chrome::mojom::AppShimLaunchResult>> launch_result_;
   base::WeakPtrFactory<TestingAppShimHostBootstrap> weak_factory_;
 };
 
@@ -511,7 +513,7 @@ class AppShimManagerTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
-  MockDelegate* delegate_;
+  raw_ptr<MockDelegate> delegate_;
   std::unique_ptr<TestingAppShimManager> manager_;
   base::FilePath profile_path_a_;
   base::FilePath profile_path_b_;
@@ -1266,6 +1268,86 @@ TEST_F(AppShimManagerTest, MultiProfileSelectMenu) {
   host_aa_->ProfileSelectedFromMenu(profile_path_b_);
 }
 
+namespace {
+// A helper that records when Show is called on a BrowserWindow to verify
+// activation of existing browser windows.
+class TestBrowserWindowShow : public TestBrowserWindow {
+ public:
+  void Show() override { did_show = true; }
+
+  bool did_show = false;
+};
+}  // namespace
+
+TEST_F(AppShimManagerTest, MultiProfileSelectMenu_ShowsBrowser) {
+  EXPECT_CALL(*delegate_, ShowAppWindows(_, _)).WillRepeatedly(Return(false));
+  manager_->SetHostForCreate(std::move(host_aa_unique_));
+  ShimLaunchedCallback launched_callback;
+  delegate_->SetCaptureShimLaunchedCallback(&launched_callback);
+  ShimTerminatedCallback terminated_callback;
+  delegate_->SetCaptureShimTerminatedCallback(&terminated_callback);
+
+  // Launch the app for profile A. This should trigger a shim launch request.
+  EXPECT_CALL(*delegate_, DoLaunchShim(&profile_a_, kTestAppIdA,
+                                       false /* recreate_shim */));
+  EXPECT_EQ(nullptr, manager_->FindHost(&profile_a_, kTestAppIdA));
+  manager_->OnAppActivated(&profile_a_, kTestAppIdA);
+  EXPECT_EQ(host_aa_.get(), manager_->FindHost(&profile_a_, kTestAppIdA));
+  EXPECT_FALSE(host_aa_->did_connect_to_host());
+
+  // Indicate the profile A that its launch succeeded.
+  EXPECT_TRUE(launched_callback);
+  EXPECT_TRUE(terminated_callback);
+  std::move(launched_callback).Run(base::Process(5));
+  EXPECT_FALSE(launched_callback);
+  EXPECT_TRUE(terminated_callback);
+
+  // Notify manager that a new browser has been associated with the app.
+  auto browser_window_a = std::make_unique<TestBrowserWindowShow>();
+  std::string app_name = web_app::GenerateApplicationNameFromAppId(kTestAppIdA);
+  Browser::CreateParams params_a = Browser::CreateParams::CreateForApp(
+      app_name, true, browser_window_a->GetBounds(), &profile_a_, true);
+  params_a.window = browser_window_a.get();
+  auto browser_a = std::unique_ptr<Browser>(Browser::Create(params_a));
+  manager_->OnBrowserAdded(browser_a.get());
+
+  // Select profile B from the menu. This should request that the app be
+  // launched.
+  EXPECT_CALL(*delegate_,
+              LaunchApp(&profile_b_, kTestAppIdA, _, _, _,
+                        chrome::mojom::AppShimLoginItemRestoreState::kNone));
+  host_aa_->ProfileSelectedFromMenu(profile_path_b_);
+  EXPECT_CALL(*delegate_, DoLaunchShim(_, _, _)).Times(0);
+  manager_->OnAppActivated(&profile_b_, kTestAppIdA);
+
+  // Notify manager that a new browser has been associated with the app.
+  auto browser_window_b = std::make_unique<TestBrowserWindowShow>();
+  Browser::CreateParams params_b = Browser::CreateParams::CreateForApp(
+      app_name, true, browser_window_b->GetBounds(), &profile_b_, true);
+  params_b.window = browser_window_b.get();
+  auto browser_b = std::unique_ptr<Browser>(Browser::Create(params_b));
+  manager_->OnBrowserAdded(browser_b.get());
+
+  EXPECT_FALSE(browser_window_a->did_show);
+  EXPECT_FALSE(browser_window_b->did_show);
+
+  // Select profile A and B from the menu -- this should not request a launch,
+  // because the profiles are already enabled.
+  EXPECT_CALL(*delegate_, ShowAppWindows(_, _)).WillRepeatedly(Return(false));
+  EXPECT_CALL(*delegate_,
+              LaunchApp(_, _, _, _, _,
+                        chrome::mojom::AppShimLoginItemRestoreState::kNone))
+      .Times(0);
+  host_aa_->ProfileSelectedFromMenu(profile_path_a_);
+  EXPECT_TRUE(browser_window_a->did_show);
+  EXPECT_FALSE(browser_window_b->did_show);
+  browser_window_a->did_show = false;
+
+  host_aa_->ProfileSelectedFromMenu(profile_path_b_);
+  EXPECT_FALSE(browser_window_a->did_show);
+  EXPECT_TRUE(browser_window_b->did_show);
+}
+
 TEST_F(AppShimManagerTest, ProfileMenuOneProfile) {
   {
     auto item_a = chrome::mojom::ProfileMenuItem::New();
@@ -1400,13 +1482,13 @@ TEST_F(AppShimManagerTest, UpdateApplicationDockMenu) {
       {u"dock_menu_item_a_2", GURL("/settings")},
       {u"dock_menu_item_a_3", GURL("https://anothersite.com")},
   };
-  const size_t kNumMenuItemsForProfileA = base::size(menu_items_profile_a);
+  const size_t kNumMenuItemsForProfileA = std::size(menu_items_profile_a);
 
   DockMenuItems menu_items_profile_b[] = {
       {u"dock_menu_item_b_1", GURL("/about")},
       {u"dock_menu_item_b_2", GURL("/another-link")},
   };
-  const size_t kNumMenuItemsForProfileB = base::size(menu_items_profile_b);
+  const size_t kNumMenuItemsForProfileB = std::size(menu_items_profile_b);
 
   // Lambda to help with creation of application dock menu items.
   auto MakeDockMenuItems = [](DockMenuItems* menu_items,
@@ -1484,6 +1566,65 @@ TEST_F(AppShimManagerTest, UpdateApplicationDockMenu) {
 
   manager_->OnBrowserSetLastActive(browser_profile_b.get());
   ValidateDockMenuItems(menu_items_profile_b, kNumMenuItemsForProfileB);
+}
+
+TEST_F(AppShimManagerTest,
+       BuildAppShimRequirementStringFromFrameworkRequirementStringTest) {
+  EXPECT_TRUE(manager_->BuildAppShimRequirementFromFrameworkRequirementString(
+      CFSTR("identifier \"com.google.Chrome.framework\" and certificate "
+            "leaf = H\"c9a99324ca3fcb23dbcc36bd5fd4f9753305130a\"")));
+  EXPECT_TRUE(manager_->BuildAppShimRequirementFromFrameworkRequirementString(
+      CFSTR("identifier \"com.google.Chrome.framework\" and certificate "
+            "leaf[subject.OU] = \"42HXZ8M8AV\"")));
+
+  EXPECT_FALSE(manager_->BuildAppShimRequirementFromFrameworkRequirementString(
+      CFSTR("cdhash H\"daa66a31aeb85125bd2459bebf548b2dff5ee83b\" or cdhash "
+            "H\"a8e5300bf9223510fc5b107b23de0d12f419acac\"")));
+  EXPECT_FALSE(manager_->BuildAppShimRequirementFromFrameworkRequirementString(
+      CFSTR("identifier \"com.google.Chrome.framework\"")));
+  EXPECT_FALSE(manager_->BuildAppShimRequirementFromFrameworkRequirementString(
+      CFSTR("identifier")));
+  EXPECT_FALSE(manager_->BuildAppShimRequirementFromFrameworkRequirementString(
+      CFSTR("malformed")));
+  EXPECT_FALSE(manager_->BuildAppShimRequirementFromFrameworkRequirementString(
+      CFSTR("")));
+  EXPECT_FALSE(manager_->BuildAppShimRequirementFromFrameworkRequirementString(
+      CFSTR("\"\"\"")));
+  EXPECT_FALSE(manager_->BuildAppShimRequirementFromFrameworkRequirementString(
+      CFSTR("\"\"")));
+  EXPECT_FALSE(manager_->BuildAppShimRequirementFromFrameworkRequirementString(
+      CFSTR("\"")));
+
+  // Crafted to pass all our requirement checks but fail
+  // SecRequirementCreateWithString().
+  EXPECT_FALSE(manager_->BuildAppShimRequirementFromFrameworkRequirementString(
+      CFSTR("identifier \"com.google.Chrome.framework\" and fail here")));
+  // Missing quote in the post "identifier" portion which is caught by
+  // SecRequirementCreateWithString().
+  EXPECT_FALSE(manager_->BuildAppShimRequirementFromFrameworkRequirementString(
+      CFSTR("identifier \"com.google.Chrome.framework\" and certificate "
+            "leaf = Hc9a99324ca3fcb23dbcc36bd5fd4f9753305130a\"")));
+
+  CFStringRef framework_req_string = CFSTR(
+      "identifier \"com.google.Chrome.framework\" and anchor "
+      "apple generic and certificate 1[field.1.2.840.113635.100.6.2.6] /* "
+      "exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] "
+      "/* exists */ and certificate leaf[subject.OU] = EQHXZ8M8AV");
+  base::ScopedCFTypeRef<SecRequirementRef> got_req(
+      manager_->BuildAppShimRequirementFromFrameworkRequirementString(
+          framework_req_string));
+  ASSERT_TRUE(got_req);
+  base::ScopedCFTypeRef<CFStringRef> got_req_string;
+  ASSERT_EQ(SecRequirementCopyString(got_req, kSecCSDefaultFlags,
+                                     got_req_string.InitializeInto()),
+            errSecSuccess);
+  CFStringRef want_req_string = CFSTR(
+      "identifier \"app_mode_loader\" and anchor "
+      "apple generic and certificate 1[field.1.2.840.113635.100.6.2.6] /* "
+      "exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] "
+      "/* exists */ and certificate leaf[subject.OU] = EQHXZ8M8AV");
+  EXPECT_EQ(base::SysCFStringRefToUTF8(got_req_string),
+            base::SysCFStringRefToUTF8(want_req_string));
 }
 
 }  // namespace apps

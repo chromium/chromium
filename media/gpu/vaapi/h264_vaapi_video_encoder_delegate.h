@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define MEDIA_GPU_VAAPI_H264_VAAPI_VIDEO_ENCODER_DELEGATE_H_
 
 #include <stddef.h>
-#include <list>
 
 #include "base/containers/circular_deque.h"
 #include "media/filters/h264_bitstream_buffer.h"
@@ -99,16 +98,8 @@ class H264VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
   // current profile and level.
   bool CheckConfigValidity(uint32_t bitrate, uint32_t framerate);
 
-  // Submits a H264BitstreamBuffer |buffer| to the driver.
-  bool SubmitH264BitstreamBuffer(const H264BitstreamBuffer& buffer);
-  // Submits a VAEncMiscParameterBuffer |data| whose size and type are |size|
-  // and |type| to the driver.
-  bool SubmitVAEncMiscParamBuffer(VAEncMiscParameterType type,
-                                  const void* data,
-                                  size_t size);
-
-  bool SubmitPackedHeaders(scoped_refptr<H264BitstreamBuffer> packed_sps,
-                           scoped_refptr<H264BitstreamBuffer> packed_pps);
+  bool SubmitPackedHeaders(const H264BitstreamBuffer& packed_sps,
+                           const H264BitstreamBuffer& packed_pps);
 
   bool SubmitFrameParameters(
       EncodeJob& job,
@@ -160,10 +151,6 @@ class H264VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
   // Currently active reference frames.
   // RefPicList0 per spec (spec section 8.2.4.2).
   base::circular_deque<scoped_refptr<H264Picture>> ref_pic_list0_;
-
-  // Sets true if and only if testing.
-  // TODO(b/199487660): Remove once all drivers support temporal layers.
-  bool supports_temporal_layer_for_testing_ = false;
 
   uint8_t num_temporal_layers_ = 1;
 };

@@ -1,5 +1,8 @@
 include_rules = [
     "+base/bind.h",
+    "+base/strings/string_util.h",
+    "+base/test",
+    "+base/task/task_traits.h",
     "+base/threading/sequenced_task_runner_handle.h",
     "+base/threading/thread_task_runner_handle.h",
 
@@ -15,6 +18,8 @@ include_rules = [
     "+media/base",
     "+media/filters",
     "+media/formats/mp4/box_definitions.h",
+    "+media/formats/mp4/hevc.h",
+    "+media/fuchsia/video",
     "+media/media_buildflags.h",
     "+media/mojo",
     "+media/renderers",
@@ -39,6 +44,10 @@ specific_include_rules = {
   "audio_decoder_broker_test\.cc": [
     "+base/run_loop.h",
     "+base/files/file_util.h",
+  ],
+  "audio_encoder_fuzzer\.cc": [
+    "+base/win/scoped_com_initializer.h",
+    "+media/gpu/windows/mf_audio_encoder.h",
   ],
   "video_frame_test\.cc": [
     "+components/viz/test/test_context_provider.h",

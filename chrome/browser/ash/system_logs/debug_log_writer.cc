@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,8 +19,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "chrome/common/logging_chrome.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
+#include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -52,9 +51,12 @@ void WriteDebugLogToFileCompleted(const base::FilePath& file_path,
                                   bool succeeded) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!succeeded) {
-    bool posted = g_sequenced_task_runner.Get()->PostTaskAndReply(
-        FROM_HERE, base::BindOnce(base::GetDeleteFileCallback(), file_path),
-        base::BindOnce(std::move(callback), absl::nullopt));
+    bool posted = g_sequenced_task_runner.Get()->PostTask(
+        FROM_HERE,
+        base::GetDeleteFileCallback(
+            file_path,
+            base::OnceCallback<void(bool)>(base::DoNothing())
+                .Then(base::BindOnce(std::move(callback), absl::nullopt))));
     DCHECK(posted);
     return;
   }
@@ -74,7 +76,7 @@ void WriteDebugLogToFile(std::unique_ptr<base::File> file,
                << ", error: " << file->error_details();
     return;
   }
-  chromeos::DBusThreadManager::Get()->GetDebugDaemonClient()->DumpDebugLogs(
+  ash::DebugDaemonClient::Get()->DumpDebugLogs(
       should_compress, file->GetPlatformFile(),
       base::BindOnce(&WriteDebugLogToFileCompleted, file_path,
                      std::move(callback)));

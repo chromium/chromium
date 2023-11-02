@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_SHARESHEET_SHARESHEET_TEST_UTIL_H_
 
 #include "base/files/file_path.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
+#include "components/services/app_service/public/cpp/intent.h"
 #include "storage/browser/file_system/file_system_url.h"
 
 class Profile;
@@ -21,15 +21,18 @@ const char kTestPdfFile[] = "path/to/file.pdf";
 const char kMimeTypeText[] = "text/plain";
 const char kMimeTypePdf[] = "application/pdf";
 
-apps::mojom::IntentPtr CreateValidTextIntent();
+apps::IntentPtr CreateValidTextIntent();
 
-apps::mojom::IntentPtr CreateValidUrlIntent();
+apps::IntentPtr CreateValidUrlIntent();
 
-apps::mojom::IntentPtr CreateInvalidIntent();
+apps::IntentPtr CreateInvalidIntent();
 
-apps::mojom::IntentPtr CreateDriveIntent();
+apps::IntentPtr CreateDriveIntent();
 
 storage::FileSystemURL FileInDownloads(Profile* profile, base::FilePath file);
+
+storage::FileSystemURL FileInNonNativeFileSystemType(Profile* profile,
+                                                     base::FilePath file);
 
 }  // namespace sharesheet
 

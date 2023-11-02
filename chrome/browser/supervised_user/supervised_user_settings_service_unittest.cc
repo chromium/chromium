@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,9 +17,9 @@
 #include "components/sync/model/sync_change.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/managed_user_setting_specifics.pb.h"
-#include "components/sync/test/model/fake_sync_change_processor.h"
-#include "components/sync/test/model/sync_change_processor_wrapper_for_test.h"
-#include "components/sync/test/model/sync_error_factory_mock.h"
+#include "components/sync/test/fake_sync_change_processor.h"
+#include "components/sync/test/sync_change_processor_wrapper_for_test.h"
+#include "components/sync/test/sync_error_factory_mock.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -84,15 +84,15 @@ class SupervisedUserSettingsServiceTest : public ::testing::Test {
 
   void UploadSplitItem(const std::string& key, const std::string& value) {
     split_items_.SetKey(key, base::Value(value));
-    settings_service_.UploadItem(
+    settings_service_.SaveItem(
         SupervisedUserSettingsService::MakeSplitSettingKey(kSplitItemName, key),
         std::make_unique<base::Value>(value));
   }
 
   void UploadAtomicItem(const std::string& value) {
     atomic_setting_value_ = std::make_unique<base::Value>(value);
-    settings_service_.UploadItem(kAtomicItemName,
-                                 std::make_unique<base::Value>(value));
+    settings_service_.SaveItem(kAtomicItemName,
+                               std::make_unique<base::Value>(value));
   }
 
   void VerifySyncDataItem(syncer::SyncData sync_data) {
@@ -111,16 +111,50 @@ class SupervisedUserSettingsServiceTest : public ::testing::Test {
       EXPECT_TRUE(expected_value);
     }
 
-    std::unique_ptr<base::Value> value =
-        base::JSONReader::ReadDeprecated(supervised_user_setting.value());
-    EXPECT_TRUE(expected_value->Equals(value.get()));
+    EXPECT_EQ(*expected_value,
+              base::JSONReader::Read(supervised_user_setting.value()));
   }
 
   void OnNewSettingsAvailable(const base::DictionaryValue* settings) {
-    if (!settings)
+    if (!settings) {
       settings_.reset();
-    else
-      settings_.reset(settings->DeepCopy());
+    } else {
+      settings_ = base::DictionaryValue::From(
+          base::Value::ToUniquePtrValue(settings->Clone()));
+    }
+  }
+
+  // Check that a single website approval has been added correctly.
+  void CheckWebsiteApproval(
+      syncer::SyncChange::SyncChangeType expected_sync_change_type,
+      const std::string& expected_key) {
+    // Check that we are uploading sync data.
+    ASSERT_EQ(1u, sync_processor_->changes().size());
+    syncer::SyncChange sync_change = sync_processor_->changes()[0];
+    EXPECT_EQ(expected_sync_change_type, sync_change.change_type());
+    EXPECT_EQ(
+        sync_change.sync_data().GetSpecifics().managed_user_setting().name(),
+        expected_key);
+    EXPECT_EQ(absl::optional<base::Value>(true),
+              base::JSONReader::Read(sync_change.sync_data()
+                                         .GetSpecifics()
+                                         .managed_user_setting()
+                                         .value()));
+
+    // It should also show up in local Sync data.
+    syncer::SyncDataList sync_data = settings_service_.GetAllSyncDataForTesting(
+        syncer::SUPERVISED_USER_SETTINGS);
+    for (const syncer::SyncData& sync_data_item : sync_data) {
+      if (sync_data_item.GetSpecifics().managed_user_setting().name().compare(
+              expected_key) == 0) {
+        EXPECT_EQ(
+            absl::optional<base::Value>(true),
+            base::JSONReader::Read(
+                sync_data_item.GetSpecifics().managed_user_setting().value()));
+        return;
+      }
+    }
+    FAIL() << "Expected key not found in local sync data";
   }
 
   // testing::Test overrides:
@@ -170,7 +204,9 @@ TEST_F(SupervisedUserSettingsServiceTest, ProcessAtomicSetting) {
   value = settings_->FindKey(kSettingsName);
   ASSERT_TRUE(value);
   std::string string_value;
-  EXPECT_TRUE(value->GetAsString(&string_value));
+  EXPECT_TRUE(value->is_string());
+  if (value->is_string())
+    string_value = value->GetString();
   EXPECT_EQ(kSettingsValue, string_value);
 }
 
@@ -182,18 +218,18 @@ TEST_F(SupervisedUserSettingsServiceTest, ProcessSplitSetting) {
   EXPECT_FALSE(value);
 
   base::DictionaryValue dict;
-  dict.SetString("foo", "bar");
-  dict.SetBoolean("awesomesauce", true);
-  dict.SetInteger("eaudecologne", 4711);
+  dict.SetStringKey("foo", "bar");
+  dict.SetBoolKey("awesomesauce", true);
+  dict.SetIntKey("eaudecologne", 4711);
 
   settings_.reset();
   syncer::SyncChangeList change_list;
-  for (base::DictionaryValue::Iterator it(dict); !it.IsAtEnd(); it.Advance()) {
+  for (const auto item : dict.GetDict()) {
     syncer::SyncData data =
         SupervisedUserSettingsService::CreateSyncDataForSetting(
             SupervisedUserSettingsService::MakeSplitSettingKey(kSettingsName,
-                                                               it.key()),
-            it.value());
+                                                               item.first),
+            item.second);
     change_list.push_back(
         syncer::SyncChange(FROM_HERE, syncer::SyncChange::ACTION_ADD, data));
   }
@@ -203,9 +239,7 @@ TEST_F(SupervisedUserSettingsServiceTest, ProcessSplitSetting) {
   ASSERT_TRUE(settings_);
   value = settings_->FindKey(kSettingsName);
   ASSERT_TRUE(value);
-  const base::DictionaryValue* dict_value = nullptr;
-  ASSERT_TRUE(value->GetAsDictionary(&dict_value));
-  EXPECT_TRUE(dict_value->Equals(&dict));
+  EXPECT_EQ(value->GetDict(), dict);
 }
 
 TEST_F(SupervisedUserSettingsServiceTest, NotifyForWebsiteApprovals) {
@@ -270,15 +304,14 @@ TEST_F(SupervisedUserSettingsServiceTest, Merge) {
         kSettingsName, base::Value(kSettingsValue)));
     // Adding 2 SplitSettings from dictionary.
     base::DictionaryValue dict;
-    dict.SetString("foo", "bar");
-    dict.SetInteger("eaudecologne", 4711);
-    for (base::DictionaryValue::Iterator it(dict); !it.IsAtEnd();
-         it.Advance()) {
+    dict.SetStringKey("foo", "bar");
+    dict.SetIntKey("eaudecologne", 4711);
+    for (const auto item : dict.GetDict()) {
       sync_data.push_back(
           SupervisedUserSettingsService::CreateSyncDataForSetting(
               SupervisedUserSettingsService::MakeSplitSettingKey(kSplitItemName,
-                                                                 it.key()),
-              it.value()));
+                                                                 item.first),
+              item.second));
     }
     StartSyncing(sync_data);
     EXPECT_EQ(3u,
@@ -298,16 +331,15 @@ TEST_F(SupervisedUserSettingsServiceTest, Merge) {
     UploadSplitItem("item", "second");
 
     base::DictionaryValue dict;
-    dict.SetString("foo", "burp");
-    dict.SetString("item", "first");
+    dict.SetStringKey("foo", "burp");
+    dict.SetStringKey("item", "first");
     // Adding 2 SplitSettings from dictionary.
-    for (base::DictionaryValue::Iterator it(dict); !it.IsAtEnd();
-         it.Advance()) {
+    for (const auto item : dict.GetDict()) {
       sync_data.push_back(
           SupervisedUserSettingsService::CreateSyncDataForSetting(
               SupervisedUserSettingsService::MakeSplitSettingKey(kSplitItemName,
-                                                                 it.key()),
-              it.value()));
+                                                                 item.first),
+              item.second));
     }
     StartSyncing(sync_data);
     EXPECT_EQ(4u,
@@ -329,7 +361,9 @@ TEST_F(SupervisedUserSettingsServiceTest, SetLocalSetting) {
   value = settings_->FindKey(kSettingsName);
   ASSERT_TRUE(value);
   std::string string_value;
-  EXPECT_TRUE(value->GetAsString(&string_value));
+  EXPECT_TRUE(value->is_string());
+  if (value->is_string())
+    string_value = value->GetString();
   EXPECT_EQ(kSettingsValue, string_value);
 }
 
@@ -342,7 +376,6 @@ TEST_F(SupervisedUserSettingsServiceTest, UploadItem) {
   StartSyncing(syncer::SyncDataList());
   ASSERT_EQ(3u, sync_processor_->changes().size());
   for (const syncer::SyncChange& sync_change : sync_processor_->changes()) {
-    ASSERT_TRUE(sync_change.IsValid());
     EXPECT_EQ(syncer::SyncChange::ACTION_ADD, sync_change.change_type());
     VerifySyncDataItem(sync_change.sync_data());
   }
@@ -359,7 +392,6 @@ TEST_F(SupervisedUserSettingsServiceTest, UploadItem) {
   UploadSplitItem("froodle", "narf");
   ASSERT_EQ(1u, sync_processor_->changes().size());
   syncer::SyncChange change = sync_processor_->changes()[0];
-  ASSERT_TRUE(change.IsValid());
   EXPECT_EQ(syncer::SyncChange::ACTION_ADD, change.change_type());
   VerifySyncDataItem(change.sync_data());
 
@@ -375,7 +407,6 @@ TEST_F(SupervisedUserSettingsServiceTest, UploadItem) {
   UploadSplitItem("blurp", "snarl");
   ASSERT_EQ(1u, sync_processor_->changes().size());
   change = sync_processor_->changes()[0];
-  ASSERT_TRUE(change.IsValid());
   EXPECT_EQ(syncer::SyncChange::ACTION_UPDATE, change.change_type());
   VerifySyncDataItem(change.sync_data());
 
@@ -389,7 +420,6 @@ TEST_F(SupervisedUserSettingsServiceTest, UploadItem) {
   UploadAtomicItem("fjord");
   ASSERT_EQ(1u, sync_processor_->changes().size());
   change = sync_processor_->changes()[0];
-  ASSERT_TRUE(change.IsValid());
   EXPECT_EQ(syncer::SyncChange::ACTION_UPDATE, change.change_type());
   VerifySyncDataItem(change.sync_data());
 
@@ -407,4 +437,27 @@ TEST_F(SupervisedUserSettingsServiceTest, UploadItem) {
   settings_service_.StopSyncing(syncer::SUPERVISED_USER_SETTINGS);
   StartSyncing(sync_data);
   ASSERT_EQ(0u, sync_processor_->changes().size());
+}
+
+TEST_F(SupervisedUserSettingsServiceTest, RecordLocalWebsiteApproval) {
+  // Record a website approval before sync is enabled.
+  settings_service_.RecordLocalWebsiteApproval("youtube.com");
+
+  // Uploading should produce changes when we start syncing.
+  StartSyncing(syncer::SyncDataList());
+  CheckWebsiteApproval(syncer::SyncChange::ACTION_ADD,
+                       "ContentPackManualBehaviorHosts:youtube.com");
+
+  // Uploading after we have started syncing should work too.
+  sync_processor_->changes().clear();
+  settings_service_.RecordLocalWebsiteApproval("photos.google.com");
+  CheckWebsiteApproval(syncer::SyncChange::ACTION_ADD,
+                       "ContentPackManualBehaviorHosts:photos.google.com");
+
+  // Uploading an item with a previously seen key should create an UPDATE
+  // action.
+  sync_processor_->changes().clear();
+  settings_service_.RecordLocalWebsiteApproval("youtube.com");
+  CheckWebsiteApproval(syncer::SyncChange::ACTION_UPDATE,
+                       "ContentPackManualBehaviorHosts:youtube.com");
 }

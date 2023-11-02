@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,10 @@
 #include "base/bind.h"
 #include "base/callback_forward.h"
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
@@ -23,11 +25,12 @@
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
+#include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_fcm_service.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
+#include "chrome/browser/safe_browsing/cloud_content_scanning/cloud_binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
@@ -75,7 +78,8 @@ constexpr char kScanForDlpAndMalware[] = R"(
       "url_list": ["*"],
       "tags": ["dlp", "malware"]
     }
-  ]
+  ],
+  "block_until_verdict": 1
 })";
 
 constexpr char kScanForMalware[] = R"(
@@ -86,7 +90,8 @@ constexpr char kScanForMalware[] = R"(
       "url_list": ["*"],
       "tags": ["malware"]
     }
-  ]
+  ],
+  "block_until_verdict": 1
 })";
 
 constexpr char kScanForDlp[] = R"(
@@ -97,7 +102,8 @@ constexpr char kScanForDlp[] = R"(
       "url_list": ["*"],
       "tags": ["dlp"]
     }
-  ]
+  ],
+  "block_until_verdict": 1
 })";
 
 constexpr char kNoScan[] = R"({"service_provider": "google"})";
@@ -120,11 +126,6 @@ constexpr char kScanId[] = "scan_id";
 
 class FakeBinaryUploadService : public BinaryUploadService {
  public:
-  FakeBinaryUploadService()
-      : BinaryUploadService(/*url_loader_factory=*/nullptr,
-                            /*profile=*/nullptr,
-                            /*binary_fcm_service=*/nullptr) {}
-
   void MaybeUploadForDeepScanning(std::unique_ptr<Request> request) override {
     last_request_ = request->content_analysis_request();
     const std::string& filename = request->filename();
@@ -137,11 +138,18 @@ class FakeBinaryUploadService : public BinaryUploadService {
     }
   }
 
+  void MaybeAcknowledge(std::unique_ptr<Ack> ack) override {
+    EXPECT_EQ(final_action_, ack->ack().final_action());
+    ++num_acks_;
+    ASSERT_TRUE(base::Contains(requests_tokens_, ack->ack().request_token()));
+  }
+
   void SetResponse(const base::FilePath& path,
                    BinaryUploadService::Result result,
                    enterprise_connectors::ContentAnalysisResponse response) {
     saved_results_[path.AsUTF8Unsafe()] = result;
     saved_responses_[path.AsUTF8Unsafe()] = response;
+    requests_tokens_.push_back(response.request_token());
   }
 
   const enterprise_connectors::ContentAnalysisRequest& last_request() {
@@ -152,12 +160,21 @@ class FakeBinaryUploadService : public BinaryUploadService {
     quit_on_last_request_ = std::move(closure);
   }
 
+  void SetExpectedFinalAction(
+      enterprise_connectors::ContentAnalysisAcknowledgement::FinalAction
+          final_action) {
+    final_action_ = final_action;
+  }
+
   size_t num_finished_requests() { return num_finished_requests_; }
+  size_t num_acks() { return num_acks_; }
 
   void Reset() {
     saved_results_.clear();
     saved_responses_.clear();
+    requests_tokens_.clear();
     num_finished_requests_ = 0;
+    num_acks_ = 0;
   }
 
  private:
@@ -166,9 +183,14 @@ class FakeBinaryUploadService : public BinaryUploadService {
   base::flat_map<std::string, enterprise_connectors::ContentAnalysisResponse>
       saved_responses_;
   enterprise_connectors::ContentAnalysisRequest last_request_;
+  std::vector<std::string> requests_tokens_;
+  enterprise_connectors::ContentAnalysisAcknowledgement::FinalAction
+      final_action_ = enterprise_connectors::ContentAnalysisAcknowledgement::
+          ACTION_UNSPECIFIED;
 
   base::RepeatingClosure quit_on_last_request_;
   size_t num_finished_requests_ = 0;
+  size_t num_acks_ = 0;
 };
 
 class FakeDownloadProtectionService : public DownloadProtectionService {
@@ -177,7 +199,9 @@ class FakeDownloadProtectionService : public DownloadProtectionService {
 
   void RequestFinished(DeepScanningRequest* request) override {}
 
-  BinaryUploadService* GetBinaryUploadService(Profile* profile) override {
+  BinaryUploadService* GetBinaryUploadService(
+      Profile* profile,
+      const enterprise_connectors::AnalysisSettings&) override {
     return &binary_upload_service_;
   }
 
@@ -241,7 +265,7 @@ class DeepScanningRequestTest : public testing::Test {
         .WillRepeatedly(Return(download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS));
     EXPECT_CALL(item_, GetReceivedBytes()).WillRepeatedly(Return(0));
     EXPECT_CALL(item_, HasUserGesture()).WillRepeatedly(Return(false));
-    content::DownloadItemUtils::AttachInfo(&item_, profile_, nullptr);
+    content::DownloadItemUtils::AttachInfoForTesting(&item_, profile_, nullptr);
 
     SetDMTokenForTesting(
         policy::DMToken::CreateValidTokenForTesting("dm_token"));
@@ -256,26 +280,23 @@ class DeepScanningRequestTest : public testing::Test {
   }
 
   void AddUrlToProfilePrefList(const char* pref_name, const GURL& url) {
-    ListPrefUpdate(profile_->GetPrefs(), pref_name)->Append(url.host());
+    ScopedListPrefUpdate(profile_->GetPrefs(), pref_name)->Append(url.host());
   }
 
-  void SetFeatures(const std::vector<base::Feature>& enabled,
-                   const std::vector<base::Feature>& disabled) {
+  void SetFeatures(const std::vector<base::test::FeatureRef>& enabled,
+                   const std::vector<base::test::FeatureRef>& disabled) {
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitWithFeatures(enabled, disabled);
   }
 
   void EnableAllFeatures() {
     SetFeatures({enterprise_connectors::kEnterpriseConnectorsEnabled},
-                {extensions::SafeBrowsingPrivateEventRouter::
-                     kRealtimeReportingFeature});
+                {enterprise_connectors::kSafeBrowsingRealtimeReporting});
   }
 
   void DisableAllFeatures() {
-    SetFeatures(
-        {},
-        {extensions::SafeBrowsingPrivateEventRouter::kRealtimeReportingFeature,
-         enterprise_connectors::kEnterpriseConnectorsEnabled});
+    SetFeatures({}, {enterprise_connectors::kSafeBrowsingRealtimeReporting,
+                     enterprise_connectors::kEnterpriseConnectorsEnabled});
   }
 
   void ValidateDefaultSettings(
@@ -283,11 +304,24 @@ class DeepScanningRequestTest : public testing::Test {
     ASSERT_TRUE(settings.has_value());
 
     enterprise_connectors::AnalysisSettings default_settings;
-    default_settings.tags = {"malware"};
-    default_settings.analysis_url =
+    default_settings.tags = {{"malware", enterprise_connectors::TagSettings()}};
+    enterprise_connectors::CloudAnalysisSettings cloud_settings;
+    cloud_settings.analysis_url =
         GURL("https://safebrowsing.google.com/safebrowsing/uploads/scan");
+    default_settings.cloud_or_local_settings =
+        enterprise_connectors::CloudOrLocalAnalysisSettings(
+            std::move(cloud_settings));
+    default_settings.block_until_verdict =
+        enterprise_connectors::BlockUntilVerdict::kBlock;
 
-    ASSERT_EQ(settings.value().tags, default_settings.tags);
+    for (const auto& tag : settings.value().tags) {
+      ASSERT_EQ(tag.second.requires_justification,
+                default_settings.tags[tag.first].requires_justification);
+      ASSERT_EQ(tag.second.custom_message.message,
+                default_settings.tags[tag.first].custom_message.message);
+      ASSERT_EQ(tag.second.custom_message.learn_more_url,
+                default_settings.tags[tag.first].custom_message.learn_more_url);
+    }
     ASSERT_EQ(settings.value().block_large_files,
               default_settings.block_large_files);
     ASSERT_EQ(settings.value().block_password_protected_files,
@@ -296,7 +330,8 @@ class DeepScanningRequestTest : public testing::Test {
               default_settings.block_unsupported_file_types);
     ASSERT_EQ(settings.value().block_until_verdict,
               default_settings.block_until_verdict);
-    ASSERT_EQ(settings.value().analysis_url, default_settings.analysis_url);
+    ASSERT_EQ(settings.value().cloud_or_local_settings.analysis_url(),
+              default_settings.cloud_or_local_settings.analysis_url());
   }
 
   void SetLastResult(DownloadCheckResult result) { last_result_ = result; }
@@ -311,7 +346,7 @@ class DeepScanningRequestTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  TestingProfile* profile_;
+  raw_ptr<TestingProfile> profile_;
 
   FakeDownloadProtectionService download_protection_service_;
   download::MockDownloadItem item_;
@@ -353,7 +388,10 @@ TEST_P(DeepScanningRequestFeaturesEnabledTest, ChecksFeatureFlags) {
   // should be sent to show features work correctly.
   auto dlp_and_malware_settings = []() {
     enterprise_connectors::AnalysisSettings settings;
-    settings.tags = {"dlp", "malware"};
+    settings.tags = {{"dlp", enterprise_connectors::TagSettings()},
+                     {"malware", enterprise_connectors::TagSettings()}};
+    settings.block_until_verdict =
+        enterprise_connectors::BlockUntilVerdict::kBlock;
     return settings;
   };
 
@@ -395,9 +433,7 @@ TEST_P(DeepScanningRequestFeaturesEnabledTest, ChecksFeatureFlags) {
 class DeepScanningRequestAllFeaturesEnabledTest
     : public DeepScanningRequestTest {
  public:
-  DeepScanningRequestAllFeaturesEnabledTest() {
-    EnableAllFeatures();
-  }
+  DeepScanningRequestAllFeaturesEnabledTest() { EnableAllFeatures(); }
 };
 
 TEST_F(DeepScanningRequestAllFeaturesEnabledTest,
@@ -499,6 +535,9 @@ TEST_F(DeepScanningRequestAllFeaturesEnabledTest,
     SetAnalysisConnector(profile_->GetPrefs(),
                          enterprise_connectors::FILE_DOWNLOADED, kNoScan);
     EXPECT_FALSE(settings().has_value());
+    enterprise_connectors::AnalysisSettings analysis_settings;
+    analysis_settings.block_until_verdict =
+        enterprise_connectors::BlockUntilVerdict::kBlock;
     DeepScanningRequest request(
         &item_, DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
         DownloadCheckResult::SAFE,
@@ -509,8 +548,7 @@ TEST_F(DeepScanningRequestAllFeaturesEnabledTest,
               }
             },
             run_loop.QuitClosure()),
-        &download_protection_service_,
-        enterprise_connectors::AnalysisSettings());
+        &download_protection_service_, std::move(analysis_settings));
     request.Start();
     run_loop.Run();
     EXPECT_TRUE(download_protection_service_.GetFakeBinaryUploadService()
@@ -535,7 +573,7 @@ INSTANTIATE_TEST_SUITE_P(, DeepScanningAPPRequestTest, testing::Bool());
 
 TEST_P(DeepScanningAPPRequestTest, GeneratesCorrectRequestForAPP) {
   enterprise_connectors::AnalysisSettings settings;
-  settings.tags = {"malware"};
+  settings.tags = {{"malware", enterprise_connectors::TagSettings()}};
   DeepScanningRequest request(
       &item_, DeepScanningRequest::DeepScanTrigger::TRIGGER_APP_PROMPT,
       DownloadCheckResult::SAFE, base::DoNothing(),
@@ -557,9 +595,7 @@ TEST_P(DeepScanningAPPRequestTest, GeneratesCorrectRequestForAPP) {
 
 class DeepScanningReportingTest : public DeepScanningRequestTest {
  public:
-  DeepScanningReportingTest() {
-    EnableAllFeatures();
-  }
+  DeepScanningReportingTest() { EnableAllFeatures(); }
 
   void SetUp() override {
     DeepScanningRequestTest::SetUp();
@@ -570,15 +606,18 @@ class DeepScanningReportingTest : public DeepScanningRequestTest {
         ->SetTestingFactory(
             profile_,
             base::BindRepeating(&BuildSafeBrowsingPrivateEventRouter));
-    extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
+    enterprise_connectors::RealtimeReportingClientFactory::GetInstance()
+        ->SetTestingFactory(profile_,
+                            base::BindRepeating(&BuildRealtimeReportingClient));
+
+    enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(
+        profile_)
         ->SetBrowserCloudPolicyClientForTesting(client_.get());
     identity_test_environment_.MakePrimaryAccountAvailable(
         kUserName, signin::ConsentLevel::kSync);
     extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
         ->SetIdentityManagerForTesting(
             identity_test_environment_.identity_manager());
-    download_protection_service_.GetFakeBinaryUploadService()
-        ->SetAuthForTesting("dm_token", true);
 
     SetOnSecurityEventReporting(profile_->GetPrefs(), true);
 
@@ -593,7 +632,8 @@ class DeepScanningReportingTest : public DeepScanningRequestTest {
   }
 
   void TearDown() override {
-    extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
+    enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(
+        profile_)
         ->SetBrowserCloudPolicyClientForTesting(nullptr);
     DeepScanningRequestTest::TearDown();
   }
@@ -646,11 +686,14 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
 
     download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
         download_path_, BinaryUploadService::Result::SUCCESS, response);
+    download_protection_service_.GetFakeBinaryUploadService()
+        ->SetExpectedFinalAction(
+            enterprise_connectors::ContentAnalysisAcknowledgement::WARN);
 
     EventReportValidator validator(client_.get());
     validator.ExpectDangerousDeepScanningResultAndSensitiveDataEvent(
         /*url*/ "https://example.com/download.exe",
-        /*filename*/ download_path_.AsUTF8Unsafe(),
+        /*filename*/ "download.exe",
         // printf "download contents" | sha256sum |  tr '[:lower:]'
         // '[:upper:]'
         /*sha256*/
@@ -711,11 +754,14 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
 
     download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
         download_path_, BinaryUploadService::Result::SUCCESS, response);
+    download_protection_service_.GetFakeBinaryUploadService()
+        ->SetExpectedFinalAction(
+            enterprise_connectors::ContentAnalysisAcknowledgement::WARN);
 
     EventReportValidator validator(client_.get());
     validator.ExpectDangerousDeepScanningResultAndSensitiveDataEvent(
         /*url*/ "https://example.com/download.exe",
-        /*filename*/ download_path_.AsUTF8Unsafe(),
+        /*filename*/ "download.exe",
         // printf "download contents" | sha256sum |  tr '[:lower:]'
         // '[:upper:]'
         /*sha256*/
@@ -768,11 +814,16 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
 
     download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
         download_path_, BinaryUploadService::Result::SUCCESS, response);
+    download_protection_service_.GetFakeBinaryUploadService()
+        ->SetExpectedFinalAction(
+            enterprise_connectors::ContentAnalysisAcknowledgement::BLOCK);
 
     EventReportValidator validator(client_.get());
     validator.ExpectSensitiveDataEvent(
         /*url*/ "https://example.com/download.exe",
-        /*filename*/ download_path_.AsUTF8Unsafe(),
+        /*source*/ absl::nullopt,
+        /*destination*/ absl::nullopt,
+        /*filename*/ "download.exe",
         // printf "download contents" | sha256sum |  tr '[:lower:]' '[:upper:]'
         /*sha256*/
         "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C",
@@ -823,11 +874,16 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
 
     download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
         download_path_, BinaryUploadService::Result::SUCCESS, response);
+    download_protection_service_.GetFakeBinaryUploadService()
+        ->SetExpectedFinalAction(
+            enterprise_connectors::ContentAnalysisAcknowledgement::WARN);
 
     EventReportValidator validator(client_.get());
     validator.ExpectSensitiveDataEvent(
         /*url*/ "https://example.com/download.exe",
-        /*filename*/ download_path_.AsUTF8Unsafe(),
+        /*source*/ absl::nullopt,
+        /*destination*/ absl::nullopt,
+        /*filename*/ "download.exe",
         // printf "download contents" | sha256sum |  tr '[:lower:]' '[:upper:]'
         /*sha256*/
         "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C",
@@ -882,11 +938,16 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
 
     download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
         download_path_, BinaryUploadService::Result::SUCCESS, response);
+    download_protection_service_.GetFakeBinaryUploadService()
+        ->SetExpectedFinalAction(
+            enterprise_connectors::ContentAnalysisAcknowledgement::BLOCK);
 
     EventReportValidator validator(client_.get());
     validator.ExpectSensitiveDataEvent(
         /*url*/ "https://example.com/download.exe",
-        /*filename*/ download_path_.AsUTF8Unsafe(),
+        /*source*/ absl::nullopt,
+        /*destination*/ absl::nullopt,
+        /*filename*/ "download.exe",
         // printf "download contents" | sha256sum |  tr '[:lower:]' '[:upper:]'
         /*sha256*/
         "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C",
@@ -931,11 +992,16 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
 
     download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
         download_path_, BinaryUploadService::Result::SUCCESS, response);
+    download_protection_service_.GetFakeBinaryUploadService()
+        ->SetExpectedFinalAction(
+            enterprise_connectors::ContentAnalysisAcknowledgement::ALLOW);
 
     EventReportValidator validator(client_.get());
     validator.ExpectUnscannedFileEvent(
         /*url*/ "https://example.com/download.exe",
-        /*filename*/ download_path_.AsUTF8Unsafe(),
+        /*source*/ absl::nullopt,
+        /*destination*/ absl::nullopt,
+        /*filename*/ "download.exe",
         // printf "download contents" | sha256sum |  tr '[:lower:]' '[:upper:]'
         /*sha256*/
         "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C",
@@ -981,11 +1047,16 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
 
     download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
         download_path_, BinaryUploadService::Result::SUCCESS, response);
+    download_protection_service_.GetFakeBinaryUploadService()
+        ->SetExpectedFinalAction(
+            enterprise_connectors::ContentAnalysisAcknowledgement::ALLOW);
 
     EventReportValidator validator(client_.get());
     validator.ExpectUnscannedFileEvent(
         /*url*/ "https://example.com/download.exe",
-        /*filename*/ download_path_.AsUTF8Unsafe(),
+        /*source*/ absl::nullopt,
+        /*destination*/ absl::nullopt,
+        /*filename*/ "download.exe",
         // printf "download contents" | sha256sum |  tr '[:lower:]' '[:upper:]'
         /*sha256*/
         "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C",
@@ -1036,11 +1107,16 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
 
     download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
         download_path_, BinaryUploadService::Result::SUCCESS, response);
+    download_protection_service_.GetFakeBinaryUploadService()
+        ->SetExpectedFinalAction(
+            enterprise_connectors::ContentAnalysisAcknowledgement::WARN);
 
     EventReportValidator validator(client_.get());
     validator.ExpectUnscannedFileEvent(
         /*url*/ "https://example.com/download.exe",
-        /*filename*/ download_path_.AsUTF8Unsafe(),
+        /*source*/ absl::nullopt,
+        /*destination*/ absl::nullopt,
+        /*filename*/ "download.exe",
         // printf "download contents" | sha256sum |  tr '[:lower:]' '[:upper:]'
         /*sha256*/
         "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C",
@@ -1081,6 +1157,9 @@ TEST_F(DeepScanningReportingTest, MultipleFiles) {
     download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
         item_.GetTargetFilePath(), BinaryUploadService::Result::SUCCESS,
         response);
+    download_protection_service_.GetFakeBinaryUploadService()
+        ->SetExpectedFinalAction(
+            enterprise_connectors::ContentAnalysisAcknowledgement::ALLOW);
     for (size_t i = 0; i < secondary_files_.size(); ++i) {
       current_paths_to_final_paths[secondary_files_[i]] =
           secondary_files_targets_[i];
@@ -1104,6 +1183,9 @@ TEST_F(DeepScanningReportingTest, MultipleFiles) {
     base::RunLoop run_loop;
     download_protection_service_.GetFakeBinaryUploadService()
         ->SetQuitOnLastRequest(run_loop.QuitClosure());
+    download_protection_service_.GetFakeBinaryUploadService()
+        ->SetExpectedFinalAction(
+            enterprise_connectors::ContentAnalysisAcknowledgement::ALLOW);
 
     EventReportValidator validator(client_.get());
     validator.ExpectNoReport();
@@ -1114,6 +1196,9 @@ TEST_F(DeepScanningReportingTest, MultipleFiles) {
     EXPECT_EQ(DownloadCheckResult::DEEP_SCANNED_SAFE, last_result_);
     EXPECT_EQ(4u, download_protection_service_.GetFakeBinaryUploadService()
                       ->num_finished_requests());
+    EXPECT_EQ(
+        4u,
+        download_protection_service_.GetFakeBinaryUploadService()->num_acks());
     download_protection_service_.GetFakeBinaryUploadService()->Reset();
   }
 
@@ -1136,6 +1221,9 @@ TEST_F(DeepScanningReportingTest, MultipleFiles) {
     download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
         item_.GetTargetFilePath(), BinaryUploadService::Result::SUCCESS,
         response);
+    download_protection_service_.GetFakeBinaryUploadService()
+        ->SetExpectedFinalAction(
+            enterprise_connectors::ContentAnalysisAcknowledgement::ALLOW);
     for (size_t i = 0; i < secondary_files_.size(); ++i) {
       current_paths_to_final_paths[secondary_files_[i]] =
           secondary_files_targets_[i];
@@ -1164,11 +1252,16 @@ TEST_F(DeepScanningReportingTest, MultipleFiles) {
     base::RunLoop run_loop;
     download_protection_service_.GetFakeBinaryUploadService()
         ->SetQuitOnLastRequest(run_loop.QuitClosure());
+    download_protection_service_.GetFakeBinaryUploadService()
+        ->SetExpectedFinalAction(
+            enterprise_connectors::ContentAnalysisAcknowledgement::ALLOW);
 
     EventReportValidator validator(client_.get());
     validator.ExpectUnscannedFileEvent(
         /*url*/ "https://example.com/download.exe",
-        /*filename*/ secondary_files_targets_[0].AsUTF8Unsafe(),
+        /*source*/ absl::nullopt,
+        /*destination*/ absl::nullopt,
+        /*filename*/ secondary_files_targets_[0].BaseName().AsUTF8Unsafe(),
         // printf "foo.txt" | sha256sum |  tr '[:lower:]' '[:upper:]'
         /*sha256*/
         "DDAB29FF2C393EE52855D21A240EB05F775DF88E3CE347DF759F0C4B80356C35",
@@ -1186,6 +1279,9 @@ TEST_F(DeepScanningReportingTest, MultipleFiles) {
     EXPECT_EQ(DownloadCheckResult::SAFE, last_result_);
     EXPECT_EQ(4u, download_protection_service_.GetFakeBinaryUploadService()
                       ->num_finished_requests());
+    EXPECT_EQ(
+        4u,
+        download_protection_service_.GetFakeBinaryUploadService()->num_acks());
     download_protection_service_.GetFakeBinaryUploadService()->Reset();
   }
 
@@ -1249,13 +1345,18 @@ TEST_F(DeepScanningReportingTest, MultipleFiles) {
     base::RunLoop run_loop;
     download_protection_service_.GetFakeBinaryUploadService()
         ->SetQuitOnLastRequest(run_loop.QuitClosure());
+    download_protection_service_.GetFakeBinaryUploadService()
+        ->SetExpectedFinalAction(
+            enterprise_connectors::ContentAnalysisAcknowledgement::BLOCK);
 
     EventReportValidator validator(client_.get());
     validator.ExpectSensitiveDataEvents(
         /*url*/ "https://example.com/download.exe",
+        /*source*/ absl::nullopt,
+        /*destination*/ absl::nullopt,
         {
-            secondary_files_targets_[0].AsUTF8Unsafe(),
-            secondary_files_targets_[1].AsUTF8Unsafe(),
+            secondary_files_targets_[0].BaseName().AsUTF8Unsafe(),
+            secondary_files_targets_[1].BaseName().AsUTF8Unsafe(),
         },
         // printf "foo.txt" | sha256sum |  tr '[:lower:]' '[:upper:]'
         // printf "bar.txt" | sha256sum |  tr '[:lower:]' '[:upper:]'
@@ -1286,6 +1387,9 @@ TEST_F(DeepScanningReportingTest, MultipleFiles) {
     EXPECT_EQ(DownloadCheckResult::SENSITIVE_CONTENT_BLOCK, last_result_);
     EXPECT_EQ(4u, download_protection_service_.GetFakeBinaryUploadService()
                       ->num_finished_requests());
+    EXPECT_EQ(
+        4u,
+        download_protection_service_.GetFakeBinaryUploadService()->num_acks());
     download_protection_service_.GetFakeBinaryUploadService()->Reset();
   }
 }
@@ -1313,7 +1417,9 @@ TEST_F(DeepScanningReportingTest, Timeout) {
   EventReportValidator validator(client_.get());
   validator.ExpectUnscannedFileEvent(
       /*url*/ "https://example.com/download.exe",
-      /*filename*/ download_path_.AsUTF8Unsafe(),
+      /*source*/ absl::nullopt,
+      /*destination*/ absl::nullopt,
+      /*filename*/ "download.exe",
       // printf "download contents" | sha256sum |  tr '[:lower:]' '[:upper:]'
       /*sha256*/
       "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C",
@@ -1370,6 +1476,19 @@ class DeepScanningDownloadRestrictionsTest
         return EventResult::BLOCKED;
     }
   }
+
+  enterprise_connectors::ContentAnalysisAcknowledgement::FinalAction
+  expected_final_action() const {
+    switch (download_restriction()) {
+      case DownloadPrefs::DownloadRestriction::NONE:
+        return enterprise_connectors::ContentAnalysisAcknowledgement::WARN;
+      case DownloadPrefs::DownloadRestriction::DANGEROUS_FILES:
+      case DownloadPrefs::DownloadRestriction::MALICIOUS_FILES:
+      case DownloadPrefs::DownloadRestriction::POTENTIALLY_DANGEROUS_FILES:
+      case DownloadPrefs::DownloadRestriction::ALL_FILES:
+        return enterprise_connectors::ContentAnalysisAcknowledgement::BLOCK;
+    }
+  }
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1416,11 +1535,13 @@ TEST_P(DeepScanningDownloadRestrictionsTest, GeneratesCorrectReport) {
 
     download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
         download_path_, BinaryUploadService::Result::SUCCESS, response);
+    download_protection_service_.GetFakeBinaryUploadService()
+        ->SetExpectedFinalAction(expected_final_action());
 
     EventReportValidator validator(client_.get());
     validator.ExpectDangerousDownloadEvent(
         /*url*/ "https://example.com/download.exe",
-        /*filename*/ download_path_.AsUTF8Unsafe(),
+        /*filename*/ "download.exe",
         // printf "download contents" | sha256sum |  tr '[:lower:]'
         // '[:upper:]'
         /*sha256*/
@@ -1470,11 +1591,14 @@ TEST_P(DeepScanningDownloadRestrictionsTest, GeneratesCorrectReport) {
 
     download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
         download_path_, BinaryUploadService::Result::SUCCESS, response);
+    download_protection_service_.GetFakeBinaryUploadService()
+        ->SetExpectedFinalAction(
+            enterprise_connectors::ContentAnalysisAcknowledgement::WARN);
 
     EventReportValidator validator(client_.get());
     validator.ExpectDangerousDownloadEvent(
         /*url*/ "https://example.com/download.exe",
-        /*filename*/ download_path_.AsUTF8Unsafe(),
+        /*filename*/ "download.exe",
         // printf "download contents" | sha256sum |  tr '[:lower:]'
         // '[:upper:]'
         /*sha256*/
@@ -1516,11 +1640,16 @@ TEST_P(DeepScanningDownloadRestrictionsTest, GeneratesCorrectReport) {
 
     download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
         download_path_, BinaryUploadService::Result::FILE_TOO_LARGE, response);
+    download_protection_service_.GetFakeBinaryUploadService()
+        ->SetExpectedFinalAction(
+            enterprise_connectors::ContentAnalysisAcknowledgement::BLOCK);
 
     EventReportValidator validator(client_.get());
     validator.ExpectUnscannedFileEvent(
         /*url*/ "https://example.com/download.exe",
-        /*filename*/ download_path_.AsUTF8Unsafe(),
+        /*source*/ absl::nullopt,
+        /*destination*/ absl::nullopt,
+        /*filename*/ "download.exe",
         // printf "download contents" | sha256sum |  tr '[:lower:]' '[:upper:]'
         /*sha256*/
         "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C",
@@ -1568,11 +1697,16 @@ TEST_P(DeepScanningDownloadRestrictionsTest, GeneratesCorrectReport) {
 
     download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
         download_path_, BinaryUploadService::Result::FILE_TOO_LARGE, response);
+    download_protection_service_.GetFakeBinaryUploadService()
+        ->SetExpectedFinalAction(
+            enterprise_connectors::ContentAnalysisAcknowledgement::BLOCK);
 
     EventReportValidator validator(client_.get());
     validator.ExpectUnscannedFileEvent(
         /*url*/ "https://example.com/download.exe",
-        /*filename*/ download_path_.AsUTF8Unsafe(),
+        /*source*/ absl::nullopt,
+        /*destination*/ absl::nullopt,
+        /*filename*/ "download.exe",
         // printf "download contents" | sha256sum |  tr '[:lower:]' '[:upper:]'
         /*sha256*/
         "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C",
@@ -1607,7 +1741,7 @@ TEST_F(DeepScanningRequestConnectorsFeatureTest,
   SetAnalysisConnector(profile_->GetPrefs(),
                        enterprise_connectors::FILE_DOWNLOADED, kScanForMalware);
 
-  content::DownloadItemUtils::AttachInfo(&item_, profile_, nullptr);
+  content::DownloadItemUtils::AttachInfoForTesting(&item_, profile_, nullptr);
   EXPECT_CALL(item_, GetURL()).WillRepeatedly(ReturnRef(download_url_));
 
   // Without the malware policy list set, the item should be uploaded.
@@ -1630,7 +1764,8 @@ TEST_F(DeepScanningRequestConnectorsFeatureTest,
                             ],
                             "disable": [
                               {"url_list": ["%s"], "tags": ["malware"]}
-                            ]
+                            ],
+                            "block_until_verdict": 1
                           })",
                            download_url_.host().c_str()));
   EXPECT_FALSE(settings().has_value());
@@ -1641,7 +1776,7 @@ TEST_F(DeepScanningRequestConnectorsFeatureTest, ShouldUploadBinary_FileURLs) {
                        enterprise_connectors::FILE_DOWNLOADED,
                        kScanForDlpAndMalware);
 
-  content::DownloadItemUtils::AttachInfo(&item_, profile_, nullptr);
+  content::DownloadItemUtils::AttachInfoForTesting(&item_, profile_, nullptr);
 
   // Even if the policy indicates scanning should occur, file:/// URLs should
   // never return settings.

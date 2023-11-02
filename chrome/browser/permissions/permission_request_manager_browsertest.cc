@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,15 +10,16 @@
 #include "base/command_line.h"
 #include "base/metrics/field_trial.h"
 #include "base/run_loop.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
-#include "chrome/browser/custom_handlers/register_protocol_handler_permission_request.h"
 #include "chrome/browser/download/download_permission_request.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/permissions/attestation_permission_request.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
@@ -28,6 +29,7 @@
 #include "chrome/test/permissions/permission_request_manager_test_api.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/custom_handlers/register_protocol_handler_permission_request.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_context_base.h"
 #include "components/permissions/permission_request.h"
@@ -37,6 +39,7 @@
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/permissions/test/mock_permission_request.h"
 #include "components/variations/variations_associated_data.h"
+#include "content/public/browser/permission_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -44,12 +47,15 @@
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/device/public/cpp/test/scoped_geolocation_overrider.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom-shared.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -210,7 +216,10 @@ class PermissionRequestManagerBrowserTest : public InProcessBrowserTest {
   }
 
   content::RenderFrameHost* GetActiveMainFrame() {
-    return browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
+    return browser()
+        ->tab_strip_model()
+        ->GetActiveWebContents()
+        ->GetPrimaryMainFrame();
   }
 
  private:
@@ -392,7 +401,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
 
   // Request geolocation in foreground tab, prompt should be shown.
   ExecuteScriptAndGetValue(
-      tab_strip_model->GetWebContentsAt(1)->GetMainFrame(),
+      tab_strip_model->GetWebContentsAt(1)->GetPrimaryMainFrame(),
       "navigator.geolocation.getCurrentPosition(function(){});");
   EXPECT_EQ(1, bubble_factory_1->show_count());
   EXPECT_FALSE(bubble_factory_0->is_visible());
@@ -409,8 +418,9 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
 
   // Request notification in background tab. No prompt is shown until the tab
   // itself is activated.
-  ExecuteScriptAndGetValue(tab_strip_model->GetWebContentsAt(0)->GetMainFrame(),
-                           "Notification.requestPermission()");
+  ExecuteScriptAndGetValue(
+      tab_strip_model->GetWebContentsAt(0)->GetPrimaryMainFrame(),
+      "Notification.requestPermission()");
   EXPECT_FALSE(bubble_factory_0->is_visible());
   EXPECT_EQ(2, bubble_factory_1->show_count());
 
@@ -431,7 +441,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
 
   // Request camera, prompt should be shown.
   ExecuteScriptAndGetValue(
-      browser()->tab_strip_model()->GetWebContentsAt(0)->GetMainFrame(),
+      browser()->tab_strip_model()->GetWebContentsAt(0)->GetPrimaryMainFrame(),
       "navigator.getUserMedia({video: true}, ()=>{}, ()=>{})");
   bubble_factory()->WaitForPermissionBubble();
   EXPECT_TRUE(bubble_factory()->is_visible());
@@ -446,7 +456,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
 
   // Navigate background tab, prompt should be removed.
   ExecuteScriptAndGetValue(
-      browser()->tab_strip_model()->GetWebContentsAt(0)->GetMainFrame(),
+      browser()->tab_strip_model()->GetWebContentsAt(0)->GetPrimaryMainFrame(),
       "window.location = 'simple.html'");
   content::TestNavigationObserver observer(
       browser()->tab_strip_model()->GetWebContentsAt(0));
@@ -709,7 +719,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
   permissions::MockPermissionRequest request_quiet(
       permissions::RequestType::kNotifications);
-  GetPermissionRequestManager()->AddRequest(web_contents->GetMainFrame(),
+  GetPermissionRequestManager()->AddRequest(web_contents->GetPrimaryMainFrame(),
                                             &request_quiet);
 
   bubble_factory()->WaitForPermissionBubble();
@@ -735,7 +745,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
   permissions::MockPermissionRequest request_quiet(
       permissions::RequestType::kNotifications);
-  GetPermissionRequestManager()->AddRequest(web_contents->GetMainFrame(),
+  GetPermissionRequestManager()->AddRequest(web_contents->GetPrimaryMainFrame(),
                                             &request_quiet);
 
   bubble_factory()->WaitForPermissionBubble();
@@ -795,15 +805,15 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
 
     permissions::MockPermissionRequest request_quiet(
         permissions::RequestType::kNotifications);
-    GetPermissionRequestManager()->AddRequest(web_contents->GetMainFrame(),
-                                              &request_quiet);
+    GetPermissionRequestManager()->AddRequest(
+        web_contents->GetPrimaryMainFrame(), &request_quiet);
 
     bubble_factory()->WaitForPermissionBubble();
     GetPermissionRequestManager()->Dismiss();
     base::RunLoop().RunUntilIdle();
 
     if (!test.expected_message) {
-      web_contents->GetMainFrame()->AddMessageToConsole(
+      web_contents->GetPrimaryMainFrame()->AddMessageToConsole(
           blink::mojom::ConsoleMessageLevel::kInfo,
           kCounterVerificationPattern);
     }
@@ -1011,8 +1021,8 @@ IN_PROC_BROWSER_TEST_F(
 
   // Close the first two tabs.
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
-  tab_strip_model->CloseWebContentsAt(0, TabStripModel::CLOSE_USER_GESTURE);
-  tab_strip_model->CloseWebContentsAt(0, TabStripModel::CLOSE_USER_GESTURE);
+  tab_strip_model->CloseWebContentsAt(0, TabCloseTypes::CLOSE_USER_GESTURE);
+  tab_strip_model->CloseWebContentsAt(0, TabCloseTypes::CLOSE_USER_GESTURE);
 
   ASSERT_EQ(1, tab_strip_model->count());
 
@@ -1127,6 +1137,117 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerWithPrerenderingTest,
   // Primary main frame navigation should cancel pending permission requests.
   EXPECT_TRUE(request_1.cancelled());
   EXPECT_TRUE(request_2.cancelled());
+}
+
+class PermissionRequestManagerWithFencedFrameTest
+    : public PermissionRequestManagerBrowserTest {
+ public:
+  PermissionRequestManagerWithFencedFrameTest() = default;
+  ~PermissionRequestManagerWithFencedFrameTest() override = default;
+
+  PermissionRequestManagerWithFencedFrameTest(
+      const PermissionRequestManagerWithFencedFrameTest&) = delete;
+  PermissionRequestManagerWithFencedFrameTest& operator=(
+      const PermissionRequestManagerWithFencedFrameTest&) = delete;
+
+ protected:
+  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return fenced_frame_helper_;
+  }
+
+ private:
+  content::test::FencedFrameTestHelper fenced_frame_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(PermissionRequestManagerWithFencedFrameTest,
+                       GetCurrentPosition) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title1.html")));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Load a fenced frame.
+  GURL fenced_frame_url =
+      embedded_test_server()->GetURL("/fenced_frames/title1.html");
+  content::RenderFrameHost* fenced_frame_host =
+      fenced_frame_test_helper().CreateFencedFrame(
+          web_contents->GetPrimaryMainFrame(), fenced_frame_url);
+  ASSERT_TRUE(fenced_frame_host);
+
+  const char kQueryPermission[] = R"(
+      (async () => {
+        const status = await navigator.permissions.query({name: 'geolocation'});
+        return status.state;
+      })();
+    )";
+
+  // The result of query 'geolocation' permission in the fenced frame should be
+  // 'denied'.
+  EXPECT_EQ("denied", content::EvalJs(fenced_frame_host, kQueryPermission));
+
+  const char kQueryCurrentPosition[] = R"(
+      (async () => {
+        return await new Promise(resolve => {
+          navigator.geolocation.getCurrentPosition(
+              () => resolve('granted'), () => resolve('denied'));
+        });
+      })();
+    )";
+
+  bubble_factory()->set_response_type(
+      permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ONCE);
+
+  // The getCurrentPosition() call in the fenced frame should be denied.
+  EXPECT_EQ("denied",
+            content::EvalJs(fenced_frame_host, kQueryCurrentPosition));
+  // The permission prompt should not be shown.
+  EXPECT_EQ(0, bubble_factory()->TotalRequestCount());
+}
+
+// Tests that the permission request for a fenced frame is blocked
+// when the permission is requested thru PermissionControllerDelegate.
+IN_PROC_BROWSER_TEST_F(PermissionRequestManagerWithFencedFrameTest,
+                       RequestPermissionThruDelegate) {
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.AddDefaultHandlers(GetChromeTestDataDir());
+  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
+  ASSERT_TRUE(https_server.Start());
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+
+  GURL initial_url = https_server.GetURL("/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
+
+  // Load a fenced frame.
+  GURL fenced_frame_url = https_server.GetURL("/fenced_frames/title1.html");
+  content::RenderFrameHost* fenced_frame_host =
+      fenced_frame_test_helper().CreateFencedFrame(
+          web_contents->GetPrimaryMainFrame(), fenced_frame_url);
+  ASSERT_TRUE(fenced_frame_host);
+
+  // The permission request is denied because it's from the fenced frame.
+  const char kExpectedConsolePattern[] =
+      "*blocked because it was requested inside a fenced frame*";
+  content::WebContentsConsoleObserver console_observer(web_contents);
+  console_observer.SetFilter(base::BindRepeating(
+      [](content::RenderFrameHost* render_frame_host,
+         const content::WebContentsConsoleObserver::Message& message) {
+        return message.source_frame == render_frame_host;
+      },
+      fenced_frame_host->GetOutermostMainFrame()));
+  console_observer.SetPattern(kExpectedConsolePattern);
+
+  base::MockOnceCallback<void(blink::mojom::PermissionStatus)> callback;
+  EXPECT_CALL(callback, Run(blink::mojom::PermissionStatus::DENIED));
+
+  content::PermissionController* permission_controller =
+      browser()->profile()->GetPermissionController();
+  permission_controller->RequestPermissionFromCurrentDocument(
+      blink::PermissionType::SENSORS, fenced_frame_host,
+      /* user_gesture = */ true, callback.Get());
+  console_observer.Wait();
+  ASSERT_EQ(1u, console_observer.messages().size());
 }
 
 }  // anonymous namespace

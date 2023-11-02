@@ -1,13 +1,13 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/voice/speech_input_locale_config_impl.h"
 
-#include "base/strings/utf_string_conversions.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/gtest_mac.h"
-#include "testing/platform_test.h"
+#import "base/strings/utf_string_conversions.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -79,7 +79,7 @@ class SpeechInputLocaleConfigImplTest : public PlatformTest {
 
   const voice::SpeechInputLocaleConfig* config() const { return &config_; }
 
-  // Returns the code for the SpeechInputLocale matching |locale_code|.
+  // Returns the code for the SpeechInputLocale matching `locale_code`.
   std::string GetMatchingLocaleForCode(const std::string& locale_code) {
     return config_.GetMatchingLocale(locale_code).code;
   }

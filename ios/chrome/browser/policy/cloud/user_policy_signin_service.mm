@@ -1,0 +1,132 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#import "ios/chrome/browser/policy/cloud/user_policy_signin_service.h"
+
+#import "base/logging.h"
+#import "base/time/time.h"
+#import "components/policy/core/browser/cloud/user_policy_signin_service_util.h"
+#import "components/policy/core/common/cloud/cloud_policy_client_registration_helper.h"
+#import "components/policy/core/common/policy_pref_names.h"
+#import "components/prefs/pref_service.h"
+#import "components/signin/public/base/consent_level.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
+#import "components/signin/public/identity_manager/primary_account_change_event.h"
+#import "google_apis/gaia/core_account_id.h"
+#import "google_apis/gaia/gaia_auth_util.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/policy/cloud/user_policy_switch.h"
+#import "services/network/public/cpp/shared_url_loader_factory.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
+namespace {
+
+// TODO(crbug.com/1312552): Move
+// chrome/browser/signin/account_id_from_account_info.h to components/ to be
+// able to reuse the helper here.
+//
+// Gets the AccountId from the provided `account_info`.
+AccountId AccountIdFromAccountInfo(const CoreAccountInfo& account_info) {
+  if (account_info.email.empty() || account_info.gaia.empty())
+    return EmptyAccountId();
+
+  return AccountId::FromUserEmailGaiaId(
+      gaia::CanonicalizeEmail(account_info.email), account_info.gaia);
+}
+
+}  // namespace
+
+namespace policy {
+
+UserPolicySigninService::UserPolicySigninService(
+    PrefService* browser_state_prefs,
+    PrefService* local_state,
+    DeviceManagementService* device_management_service,
+    UserCloudPolicyManager* policy_manager,
+    signin::IdentityManager* identity_manager,
+    scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory)
+    : UserPolicySigninServiceBase(local_state,
+                                  device_management_service,
+                                  policy_manager,
+                                  identity_manager,
+                                  system_url_loader_factory),
+      browser_state_prefs_(browser_state_prefs) {
+  if (identity_manager) {
+    scoped_identity_manager_observation_.Observe(identity_manager);
+  }
+
+  TryInitialize();
+}
+
+UserPolicySigninService::~UserPolicySigninService() {}
+
+void UserPolicySigninService::Shutdown() {
+  scoped_identity_manager_observation_.Reset();
+  CancelPendingRegistration();
+  UserPolicySigninServiceBase::Shutdown();
+}
+
+void UserPolicySigninService::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event) {
+  if (IsTurnOffSyncEvent(event)) {
+    ShutdownUserCloudPolicyManager();
+  }
+}
+
+void UserPolicySigninService::TryInitialize() {
+  // If using a TestingProfile with no IdentityManager or
+  // UserCloudPolicyManager, skip initialization.
+  if (!policy_manager() || !identity_manager()) {
+    DVLOG(1) << "Skipping initialization for tests due to missing components.";
+    return;
+  }
+
+  if (!IsUserPolicyEnabled() ||
+      !CanApplyPolicies(/*check_for_refresh_token=*/false)) {
+    // Clear existing user policies if the feature is disabled or if policies
+    // can no longer be applied.
+    ShutdownUserCloudPolicyManager();
+    return;
+  }
+  AccountId account_id =
+      AccountIdFromAccountInfo(identity_manager()->GetPrimaryAccountInfo(
+          GetConsentLevelForRegistration()));
+  InitializeForSignedInUser(account_id, system_url_loader_factory());
+}
+
+bool UserPolicySigninService::CanApplyPolicies(bool check_for_refresh_token) {
+  if (!browser_state_prefs_->GetBoolean(
+          policy::policy_prefs::kUserPolicyNotificationWasShown)) {
+    // Return false if the user hasn't yet seen the notification about User
+    // Policy.
+    return false;
+  }
+
+  return CanApplyPoliciesForSignedInUser(check_for_refresh_token,
+                                         GetConsentLevelForRegistration(),
+                                         identity_manager());
+}
+
+base::TimeDelta UserPolicySigninService::GetTryRegistrationDelay() {
+  return GetTryRegistrationDelayFromPrefs(browser_state_prefs_);
+}
+
+void UserPolicySigninService::ProhibitSignoutIfNeeded() {}
+
+void UserPolicySigninService::UpdateLastPolicyCheckTime() {
+  UpdateLastPolicyCheckTimeInPrefs(browser_state_prefs_);
+}
+
+signin::ConsentLevel UserPolicySigninService::GetConsentLevelForRegistration() {
+  return signin::ConsentLevel::kSync;
+}
+
+void UserPolicySigninService::OnUserPolicyNotificationSeen() {
+  TryInitialize();
+}
+
+}  // namespace policy

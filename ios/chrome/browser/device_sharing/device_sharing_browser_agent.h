@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,9 +33,10 @@ class DeviceSharingBrowserAgent
   void UpdateForActiveBrowser();
 
  private:
-  explicit DeviceSharingBrowserAgent(Browser* browser);
   friend class BrowserUserData<DeviceSharingBrowserAgent>;
   BROWSER_USER_DATA_KEY_DECL();
+
+  explicit DeviceSharingBrowserAgent(Browser* browser);
 
   // Update the active URL for the current web state of the browser.
   void UpdateForActiveWebState();
@@ -59,9 +60,9 @@ class DeviceSharingBrowserAgent
 
   // The Browser this agent is associated with.
   Browser* browser_;
-  // Whether the browser state assoicated with |browser_| is inocgnito or not.
+  // Whether the browser state assoicated with `browser_` is inocgnito or not.
   const bool is_incognito_ = true;
-  // Observer for the active web state in |browser_|'s browser list.
+  // Observer for the active web state in `browser_`'s browser list.
   std::unique_ptr<ActiveWebStateObservationForwarder>
       active_web_state_observer_;
 };

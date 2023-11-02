@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,10 +12,11 @@
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/renderer/platform/bindings/scoped_persistent.h"
 #include "third_party/blink/renderer/platform/bindings/v8_cross_origin_callback_info.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/self_keep_alive.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -150,21 +151,21 @@ class PLATFORM_EXPORT ScriptState final : public GarbageCollected<ScriptState> {
 
   static ScriptState* ForRelevantRealm(
       const v8::FunctionCallbackInfo<v8::Value>& info) {
-    return From(info.Holder()->CreationContext());
+    return From(info.Holder()->GetCreationContextChecked());
   }
 
   static ScriptState* ForRelevantRealm(const V8CrossOriginCallbackInfo& info) {
-    return From(info.Holder()->CreationContext());
+    return From(info.Holder()->GetCreationContextChecked());
   }
 
   static ScriptState* ForRelevantRealm(
       const v8::PropertyCallbackInfo<v8::Value>& info) {
-    return From(info.Holder()->CreationContext());
+    return From(info.Holder()->GetCreationContextChecked());
   }
 
   static ScriptState* ForRelevantRealm(
       const v8::PropertyCallbackInfo<void>& info) {
-    return From(info.Holder()->CreationContext());
+    return From(info.Holder()->GetCreationContextChecked());
   }
 
   static ScriptState* From(v8::Local<v8::Context> context) {

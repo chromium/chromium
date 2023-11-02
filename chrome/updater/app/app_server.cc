@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/process/launch.h"
@@ -59,7 +58,10 @@ base::OnceClosure AppServer::ModeCheck() {
   }
 
   const base::Version this_version(kUpdaterVersion);
-  const base::Version active_version(global_prefs->GetActiveVersion());
+  base::Version active_version(global_prefs->GetActiveVersion());
+  if (!active_version.IsValid()) {
+    active_version = base::Version(std::vector<uint32_t>{0});
+  }
 
   VLOG(2) << "This version: " << this_version.GetString()
           << ", active version: " << active_version.GetString();
@@ -80,12 +82,11 @@ base::OnceClosure AppServer::ModeCheck() {
     if (!local_prefs->GetQualified()) {
       global_prefs = nullptr;
       prefs_ = local_prefs;
+      config_ = base::MakeRefCounted<Configurator>(prefs_, external_constants_);
       return IsInternalService()
                  ? base::BindOnce(&AppServer::ActiveDutyInternal, this,
                                   MakeQualifyingUpdateServiceInternal(
-                                      base::MakeRefCounted<Configurator>(
-                                          prefs_, external_constants_),
-                                      local_prefs))
+                                      config_, local_prefs))
                  : base::BindOnce(&AppServer::ActiveDuty, this,
                                   MakeInactiveUpdateService());
     }
@@ -104,10 +105,9 @@ base::OnceClosure AppServer::ModeCheck() {
 
   server_starts_ = global_prefs->CountServerStarts();
   prefs_ = global_prefs;
-  return base::BindOnce(
-      &AppServer::ActiveDuty, this,
-      base::MakeRefCounted<UpdateServiceImpl>(
-          base::MakeRefCounted<Configurator>(prefs_, external_constants_)));
+  config_ = base::MakeRefCounted<Configurator>(prefs_, external_constants_);
+  return base::BindOnce(&AppServer::ActiveDuty, this,
+                        base::MakeRefCounted<UpdateServiceImpl>(config_));
 }
 
 void AppServer::Uninitialize() {
@@ -125,10 +125,10 @@ void AppServer::MaybeUninstall() {
   if (!prefs_)
     return;
 
-  if (ShouldUninstall(
-          base::MakeRefCounted<PersistedData>(prefs_->GetPrefService())
-              ->GetAppIds(),
-          server_starts_)) {
+  auto persisted_data =
+      base::MakeRefCounted<PersistedData>(prefs_->GetPrefService());
+  if (ShouldUninstall(persisted_data->GetAppIds(), server_starts_,
+                      persisted_data->GetHadApps())) {
     base::CommandLine command_line(
         base::CommandLine::ForCurrentProcess()->GetProgram());
     command_line.AppendSwitch(kUninstallIfUnusedSwitch);
@@ -155,12 +155,16 @@ void AppServer::FirstTaskRun() {
 bool AppServer::SwapVersions(GlobalPrefs* global_prefs) {
   global_prefs->SetSwapping(true);
   PrefsCommitPendingWrites(global_prefs->GetPrefService());
-  if (!SwapRPCInterfaces())
+  if (!SwapInNewVersion())
     return false;
-  if (!ConvertLegacyUpdaters(base::BindRepeating(
-          &PersistedData::RegisterApp, base::MakeRefCounted<PersistedData>(
-                                           global_prefs->GetPrefService())))) {
-    return false;
+  if (!global_prefs->GetMigratedLegacyUpdaters()) {
+    if (!MigrateLegacyUpdaters(
+            base::BindRepeating(&PersistedData::RegisterApp,
+                                base::MakeRefCounted<PersistedData>(
+                                    global_prefs->GetPrefService())))) {
+      return false;
+    }
+    global_prefs->SetMigratedLegacyUpdaters();
   }
   global_prefs->SetActiveVersion(kUpdaterVersion);
   global_prefs->SetSwapping(false);

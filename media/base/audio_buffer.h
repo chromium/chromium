@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -125,7 +125,7 @@ class MEDIA_EXPORT AudioBuffer
   static std::unique_ptr<AudioBus> WrapOrCopyToAudioBus(
       scoped_refptr<AudioBuffer> audio_buffer);
 
-  // Create a AudioBuffer indicating we've reached end of stream.
+  // Create an AudioBuffer indicating we've reached end of stream.
   // Calling any method other than end_of_stream() on the resulting buffer
   // is disallowed.
   static scoped_refptr<AudioBuffer> CreateEOSBuffer();

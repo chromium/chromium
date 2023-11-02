@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -191,10 +191,6 @@ struct EnumerateCredentialsResponse {
 
   PublicKeyCredentialUserEntity user;
   PublicKeyCredentialDescriptor credential_id;
-  // For convenience, also return the serialized |credential_id| so that the UI
-  // doesn't have to do CBOR serialization. (It only cares about the opaque byte
-  // string.)
-  std::vector<uint8_t> credential_id_cbor_bytes;
   size_t credential_count;
 
  private:

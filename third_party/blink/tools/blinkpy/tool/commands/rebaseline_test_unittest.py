@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -9,6 +9,7 @@ from blinkpy.common.system.executive_mock import MockExecutive
 from blinkpy.common.system.output_capture import OutputCapture
 from blinkpy.tool.commands.rebaseline_test import RebaselineTest
 from blinkpy.tool.commands.rebaseline_unittest import BaseTestCase
+from blinkpy.web_tests.port.test import MOCK_WEB_TESTS
 
 
 class TestRebaselineTest(BaseTestCase):
@@ -27,6 +28,7 @@ class TestRebaselineTest(BaseTestCase):
                     'build_number': None,
                     'step_name': None,
                     'flag_specific': None,
+                    'resultDB': None,
                 }, **kwargs))
 
     def test_rebaseline_test_internal_with_port_that_lacks_buildbot(self):
@@ -55,6 +57,7 @@ class TestRebaselineTest(BaseTestCase):
                 'build_number': None,
                 'step_name': None,
                 'flag_specific': None,
+                'resultDB': None,
             })
             oc.capture_output()
             self.command.execute(options, [], self.tool)
@@ -77,16 +80,16 @@ class TestRebaselineTest(BaseTestCase):
     def test_baseline_directory(self):
         self.assertMultiLineEqual(
             self.command.baseline_directory('MOCK Mac10.11'),
-            '/test.checkout/wtests/platform/test-mac-mac10.11')
+            MOCK_WEB_TESTS + 'platform/test-mac-mac10.11')
         self.assertMultiLineEqual(
             self.command.baseline_directory('MOCK Mac10.10'),
-            '/test.checkout/wtests/platform/test-mac-mac10.10')
+            MOCK_WEB_TESTS + 'platform/test-mac-mac10.10')
         self.assertMultiLineEqual(
             self.command.baseline_directory('MOCK Trusty'),
-            '/test.checkout/wtests/platform/test-linux-trusty')
+            MOCK_WEB_TESTS + 'platform/test-linux-trusty')
         self.assertMultiLineEqual(
             self.command.baseline_directory('MOCK Precise'),
-            '/test.checkout/wtests/platform/test-linux-precise')
+            MOCK_WEB_TESTS + 'platform/test-linux-precise')
 
     def test_rebaseline_updates_expectations_file_noop(self):
         # pylint: disable=protected-access

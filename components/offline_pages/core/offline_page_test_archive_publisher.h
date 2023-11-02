@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,10 @@
 
 #include <cstdint>
 
-#include "base/callback.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "components/offline_pages/core/offline_page_archive_publisher.h"
 #include "components/offline_pages/core/offline_page_item.h"
-#include "components/offline_pages/core/offline_page_types.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -34,6 +34,8 @@ class OfflinePageTestArchivePublisher : public OfflinePageArchivePublisher {
   void UnpublishArchives(
       const std::vector<PublishedArchiveId>& archive_ids) const override;
 
+  base::WeakPtr<OfflinePageArchivePublisher> GetWeakPtr() override;
+
   void set_archive_attempt_failure(bool fail) {
     archive_attempt_failure_ = fail;
   }
@@ -54,7 +56,8 @@ class OfflinePageTestArchivePublisher : public OfflinePageArchivePublisher {
   int64_t download_id_;
   mutable PublishedArchiveId last_removed_id_;
 
-  ArchiveManager* archive_manager_;
+  raw_ptr<ArchiveManager> archive_manager_;
+  base::WeakPtrFactory<OfflinePageArchivePublisher> weak_ptr_factory_{this};
 };
 
 }  // namespace offline_pages

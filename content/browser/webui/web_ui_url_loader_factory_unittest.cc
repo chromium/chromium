@@ -1,4 +1,4 @@
-// Copyright (c) 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,9 @@
 #include "content/public/test/test_renderer_host.h"
 #include "mojo/public/c/system/data_pipe.h"
 #include "mojo/public/c/system/types.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/test/test_url_loader_client.h"
@@ -56,9 +58,7 @@ class TestWebUIDataSource final : public URLDataSource {
     std::move(callback).Run(std::move(resource));
   }
 
-  std::string GetMimeType(const std::string& path) override {
-    return "video/webm";
-  }
+  std::string GetMimeType(const GURL& url) override { return "video/webm"; }
 
  private:
   const size_t resource_size_;
@@ -81,9 +81,7 @@ class OversizedWebUIDataSource final : public URLDataSource {
     std::move(callback).Run(std::move(resource));
   }
 
-  std::string GetMimeType(const std::string& path) override {
-    return "video/webm";
-  }
+  std::string GetMimeType(const GURL& url) override { return "video/webm"; }
 
  private:
   // An implementation of RefCountedMemory representing a very large "virtual"

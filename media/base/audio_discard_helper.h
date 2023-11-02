@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -72,6 +72,8 @@ class MEDIA_EXPORT AudioDiscardHelper {
   bool initialized() const {
     return timestamp_helper_.base_timestamp() != kNoTimestamp;
   }
+
+  size_t decoder_delay() const { return decoder_delay_; }
 
  private:
   // The sample rate of the decoded audio samples.  Used by TimeDeltaToFrames()

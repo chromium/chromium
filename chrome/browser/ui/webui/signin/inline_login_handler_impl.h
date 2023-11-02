@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
@@ -61,16 +62,8 @@ class InlineLoginHandlerImpl : public InlineLoginHandler {
 
  private:
   // InlineLoginHandler overrides:
-  void SetExtraInitParams(base::DictionaryValue& params) override;
-  void CompleteLogin(const std::string& email,
-                     const std::string& password,
-                     const std::string& gaia_id,
-                     const std::string& auth_code,
-                     bool skip_for_now,
-                     bool trusted,
-                     bool trusted_found,
-                     bool choose_what_to_sync,
-                     base::Value edu_login_params) override;
+  void SetExtraInitParams(base::Value::Dict& params) override;
+  void CompleteLogin(const CompleteLoginParams& params) override;
 
   // This struct exists to pass parameters to the FinishCompleteLogin() method,
   // since the base::BindRepeating() call does not support this many template
@@ -92,9 +85,9 @@ class InlineLoginHandlerImpl : public InlineLoginHandler {
     ~FinishCompleteLoginParams();
 
     // Pointer to WebUI handler.  May be nullptr.
-    InlineLoginHandlerImpl* handler;
+    raw_ptr<InlineLoginHandlerImpl> handler;
     // The isolate storage partition containing sign in cookies.
-    content::StoragePartition* partition;
+    raw_ptr<content::StoragePartition> partition;
     // URL of sign in containing parameters such as email, source, etc.
     GURL url;
     // Path to profile being signed in. Non empty only when unlocking a profile
@@ -121,8 +114,7 @@ class InlineLoginHandlerImpl : public InlineLoginHandler {
   };
 
   static void FinishCompleteLogin(const FinishCompleteLoginParams& params,
-                                  Profile* profile,
-                                  Profile::CreateStatus status);
+                                  Profile* profile);
 
   // True if the user has navigated to untrusted domains during the signin
   // process.
@@ -142,7 +134,6 @@ class InlineSigninHelper : public GaiaAuthConsumer {
       base::WeakPtr<InlineLoginHandlerImpl> handler,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       Profile* profile,
-      Profile::CreateStatus create_status,
       const GURL& current_url,
       const std::string& email,
       const std::string& gaia_id,
@@ -167,8 +158,7 @@ class InlineSigninHelper : public GaiaAuthConsumer {
       override;
 
   void OnClientOAuthSuccessAndBrowserOpened(const ClientOAuthResult& result,
-                                            Profile* profile,
-                                            Profile::CreateStatus status);
+                                            Profile* profile);
 
   // Callback invoked once the user has responded to the signin confirmation UI.
   // If confirmed is false, the signin is aborted.
@@ -181,15 +171,14 @@ class InlineSigninHelper : public GaiaAuthConsumer {
 
   GaiaAuthFetcher gaia_auth_fetcher_;
   base::WeakPtr<InlineLoginHandlerImpl> handler_;
-  Profile* profile_;
-  Profile::CreateStatus create_status_;
-  GURL current_url_;
-  std::string email_;
-  std::string gaia_id_;
-  std::string password_;
-  std::string auth_code_;
-  bool confirm_untrusted_signin_;
-  bool is_force_sign_in_with_usermanager_;
+  raw_ptr<Profile> profile_;
+  const GURL current_url_;
+  const std::string email_;
+  const std::string gaia_id_;
+  const std::string password_;
+  const std::string auth_code_;
+  const bool confirm_untrusted_signin_;
+  const bool is_force_sign_in_with_usermanager_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_INLINE_LOGIN_HANDLER_IMPL_H_

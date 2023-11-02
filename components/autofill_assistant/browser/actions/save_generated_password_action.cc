@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,9 @@
 
 #include "components/autofill_assistant/browser/actions/action_delegate.h"
 #include "components/autofill_assistant/browser/client_status.h"
+#include "components/password_manager/core/browser/password_change_success_tracker.h"
+
+using password_manager::PasswordChangeSuccessTracker;
 
 namespace autofill_assistant {
 
@@ -47,13 +50,20 @@ void SaveGeneratedPasswordAction::InternalProcessAction(
     return;
   }
 
-  if (!delegate_->GetWebsiteLoginManager()->ReadyToCommitGeneratedPassword()) {
+  if (!delegate_->GetWebsiteLoginManager()->ReadyToSaveGeneratedPassword()) {
     VLOG(1) << "SaveGeneratedPasswordAction: no generated password to save.";
     EndAction(ClientStatus(PRECONDITION_FAILED));
     return;
   }
 
-  delegate_->GetWebsiteLoginManager()->CommitGeneratedPassword();
+  delegate_->GetWebsiteLoginManager()->SaveGeneratedPassword();
+
+  delegate_->GetPasswordChangeSuccessTracker()->OnChangePasswordFlowCompleted(
+      delegate_->GetUserData()->selected_login_->origin,
+      delegate_->GetUserData()->selected_login_->username,
+      PasswordChangeSuccessTracker::EndEvent::
+          kAutomatedFlowGeneratedPasswordChosen,
+      /* phished= */ false);
 
   EndAction(ClientStatus(ACTION_APPLIED));
 }

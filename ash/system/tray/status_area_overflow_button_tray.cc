@@ -1,9 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/system/tray/status_area_overflow_button_tray.h"
 
+#include "ash/constants/tray_background_view_catalog.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shelf/shelf.h"
@@ -44,7 +45,7 @@ StatusAreaOverflowButtonTray::IconView::IconView()
   const int vertical_padding = (kTrayHeight - image.height()) / 2;
   const int horizontal_padding = (kTrayWidth - image.width()) / 2;
   SetBorder(views::CreateEmptyBorder(
-      gfx::Insets(vertical_padding, horizontal_padding)));
+      gfx::Insets::VH(vertical_padding, horizontal_padding)));
 
   UpdateRotation();
 }
@@ -91,7 +92,10 @@ void StatusAreaOverflowButtonTray::IconView::UpdateRotation() {
 }
 
 StatusAreaOverflowButtonTray::StatusAreaOverflowButtonTray(Shelf* shelf)
-    : TrayBackgroundView(shelf), icon_(new IconView()) {
+    : TrayBackgroundView(
+          shelf,
+          TrayBackgroundViewCatalogName::kStatusAreaOverflowButton),
+      icon_(new IconView()) {
   tray_container()->AddChildView(icon_);
   set_use_bounce_in_animation(false);
 }

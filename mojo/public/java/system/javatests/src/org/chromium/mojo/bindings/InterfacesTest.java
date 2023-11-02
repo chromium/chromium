@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -141,13 +141,13 @@ public class InterfacesTest {
 
         @Override
         public void requestImportedInterface(InterfaceRequest<ImportedInterface> obj,
-                RequestImportedInterfaceResponse callback) {
+                RequestImportedInterface_Response callback) {
             throw new UnsupportedOperationException("Not implemented.");
         }
 
         @Override
         public void takeImportedInterface(
-                ImportedInterface obj, TakeImportedInterfaceResponse callback) {
+                ImportedInterface obj, TakeImportedInterface_Response callback) {
             throw new UnsupportedOperationException("Not implemented.");
         }
     }

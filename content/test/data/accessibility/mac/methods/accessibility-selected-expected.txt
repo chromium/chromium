@@ -1,0 +1,2 @@
+selected_option.accessibilitySelected=1
+div.accessibilitySelected=0

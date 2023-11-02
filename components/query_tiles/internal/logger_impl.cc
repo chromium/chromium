@@ -1,9 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/query_tiles/internal/logger_impl.h"
 
+#include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 
@@ -61,27 +62,26 @@ void LoggerImpl::RemoveObserver(Observer* observer) {
 }
 
 base::Value LoggerImpl::GetServiceStatus() {
-  base::DictionaryValue result;
+  base::Value::Dict result;
   if (!log_source_)
-    return std::move(result);
+    return base::Value(std::move(result));
 
-  result.SetString("fetcherStatus",
-                   FetcherStatusToString(log_source_->GetFetcherStatus()));
-  result.SetString("groupStatus",
-                   GroupStatusToString(log_source_->GetGroupStatus()));
-  return std::move(result);
+  result.Set("fetcherStatus",
+             FetcherStatusToString(log_source_->GetFetcherStatus()));
+  result.Set("groupStatus", GroupStatusToString(log_source_->GetGroupStatus()));
+  return base::Value(std::move(result));
 }
 
 base::Value LoggerImpl::GetTileData() {
-  base::DictionaryValue result;
+  base::Value::Dict result;
   if (!log_source_)
-    return std::move(result);
+    return base::Value(std::move(result));
   auto* tile_group = log_source_->GetTileGroup();
   // (crbug.com/1101557): Make the format pretty with every field in TileGroup
   // explicitly appears in the DictValue.
   if (tile_group)
-    result.SetString("groupInfo", tile_group->DebugString());
-  return std::move(result);
+    result.Set("groupInfo", tile_group->DebugString());
+  return base::Value(std::move(result));
 }
 
 void LoggerImpl::OnServiceStatusChanged() {

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,7 +41,6 @@ class MockMultizoneAudioDecoderProxy : public MultizoneAudioDecoderProxy {
   MOCK_METHOD0(GetRenderingDelay, RenderingDelay());
   MOCK_METHOD1(GetStatistics, void(Statistics*));
   MOCK_METHOD0(RequiresDecryption, bool());
-  MOCK_METHOD1(SetObserver, void(Observer*));
 
  private:
   // Used only for the ctor parameter.

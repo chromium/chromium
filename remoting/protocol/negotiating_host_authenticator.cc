@@ -1,10 +1,9 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "remoting/protocol/negotiating_host_authenticator.h"
 
-#include <algorithm>
 #include <memory>
 #include <sstream>
 #include <utility>
@@ -12,6 +11,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/notreached.h"
 #include "base/strings/string_split.h"
 #include "remoting/base/rsa_key_pair.h"
@@ -23,8 +23,7 @@
 #include "remoting/protocol/v2_authenticator.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 NegotiatingHostAuthenticator::NegotiatingHostAuthenticator(
     const std::string& local_id,
@@ -96,7 +95,7 @@ void NegotiatingHostAuthenticator::ProcessMessage(
   // If the host has already chosen a method, it can't be changed by the client.
   if (current_method_ != Method::INVALID && method != current_method_) {
     state_ = REJECTED;
-    rejection_reason_ = PROTOCOL_ERROR;
+    rejection_reason_ = RejectionReason::PROTOCOL_ERROR;
     std::move(resume_callback).Run();
     return;
   }
@@ -104,8 +103,7 @@ void NegotiatingHostAuthenticator::ProcessMessage(
   // If the client did not specify a preferred auth method, or specified an
   // unknown or unsupported method, then select the first known method from
   // the supported-methods attribute.
-  if (method == Method::INVALID ||
-      std::find(methods_.begin(), methods_.end(), method) == methods_.end()) {
+  if (method == Method::INVALID || !base::Contains(methods_, method)) {
     method = Method::INVALID;
 
     std::string supported_methods_attr =
@@ -113,7 +111,7 @@ void NegotiatingHostAuthenticator::ProcessMessage(
     if (supported_methods_attr.empty()) {
       // Message contains neither method nor supported-methods attributes.
       state_ = REJECTED;
-      rejection_reason_ = PROTOCOL_ERROR;
+      rejection_reason_ = RejectionReason::PROTOCOL_ERROR;
       std::move(resume_callback).Run();
       return;
     }
@@ -126,8 +124,7 @@ void NegotiatingHostAuthenticator::ProcessMessage(
                            base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
       Method list_value = ParseMethodString(method_str);
       if (list_value != Method::INVALID &&
-          std::find(methods_.begin(), methods_.end(), list_value) !=
-              methods_.end()) {
+          base::Contains(methods_, list_value)) {
         // Found common method.
         method = list_value;
         break;
@@ -137,7 +134,7 @@ void NegotiatingHostAuthenticator::ProcessMessage(
     if (method == Method::INVALID) {
       // Failed to find a common auth method.
       state_ = REJECTED;
-      rejection_reason_ = PROTOCOL_ERROR;
+      rejection_reason_ = RejectionReason::PROTOCOL_ERROR;
       std::move(resume_callback).Run();
       return;
     }
@@ -246,5 +243,4 @@ void NegotiatingHostAuthenticator::CreateAuthenticator(
   }
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

@@ -1,4 +1,4 @@
-// Copyright (c) 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,8 @@
 #include "base/memory/ptr_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
-#include "net/cert/internal/cert_errors.h"
-#include "net/cert/internal/parsed_certificate.h"
+#include "net/cert/pki/cert_errors.h"
+#include "net/cert/pki/parsed_certificate.h"
 #include "net/cert/x509_util.h"
 #include "net/third_party/mozilla_win/cert/win_util.h"
 
@@ -43,7 +43,7 @@ namespace {
 bool IsCertTrustedForServerAuth(PCCERT_CONTEXT cert) {
   DWORD usage_size = 0;
 
-  if (!CertGetEnhancedKeyUsage(cert, 0, NULL, &usage_size)) {
+  if (!CertGetEnhancedKeyUsage(cert, 0, nullptr, &usage_size)) {
     return false;
   }
 
@@ -68,8 +68,9 @@ bool IsCertTrustedForServerAuth(PCCERT_CONTEXT cert) {
     }
   }
   for (DWORD i = 0; i < usage->cUsageIdentifier; i++) {
-    if (base::StringPiece(usage->rgpszUsageIdentifier[i]) ==
-        szOID_PKIX_KP_SERVER_AUTH) {
+    base::StringPiece eku = base::StringPiece(usage->rgpszUsageIdentifier[i]);
+    if ((eku == szOID_PKIX_KP_SERVER_AUTH) ||
+        (eku == szOID_ANY_ENHANCED_KEY_USAGE)) {
       return true;
     }
   }
@@ -154,6 +155,18 @@ std::unique_ptr<TrustStoreWin> TrustStoreWin::Create() {
                                    CERT_SYSTEM_STORE_CURRENT_USER_GROUP_POLICY,
                                    L"Disallowed");
 
+  // Auto-sync all of the cert stores to get updates to the cert store.
+  // Auto-syncing on all_certs_store seems to work to resync the nested stores,
+  // although the docs at
+  // https://docs.microsoft.com/en-us/windows/win32/api/wincrypt/nf-wincrypt-certcontrolstore
+  // are somewhat unclear. If and when root store changes are linked to clearing
+  // various caches, this should be replaced with CERT_STORE_CTRL_NOTIFY_CHANGE
+  // and CERT_STORE_CTRL_RESYNC.
+  if (!CertControlStore(all_certs_store.get(), 0, CERT_STORE_CTRL_AUTO_RESYNC,
+                        0)) {
+    PLOG(ERROR) << "Error enabling CERT_STORE_CTRL_AUTO_RESYNC";
+  }
+
   return base::WrapUnique(new TrustStoreWin(
       std::move(root_cert_store), std::move(intermediate_cert_store),
       std::move(disallowed_cert_store), std::move(all_certs_store)));
@@ -213,8 +226,9 @@ void TrustStoreWin::SyncGetIssuersOf(const ParsedCertificate* cert,
   while ((cert_from_store = CertFindCertificateInStore(
               all_certs_store_.get(), X509_ASN_ENCODING, 0,
               CERT_FIND_SUBJECT_NAME, &cert_issuer_blob, cert_from_store))) {
-    bssl::UniquePtr<CRYPTO_BUFFER> der_crypto = x509_util::CreateCryptoBuffer(
-        cert_from_store->pbCertEncoded, cert_from_store->cbCertEncoded);
+    bssl::UniquePtr<CRYPTO_BUFFER> der_crypto =
+        x509_util::CreateCryptoBuffer(base::make_span(
+            cert_from_store->pbCertEncoded, cert_from_store->cbCertEncoded));
     CertErrors errors;
     ParsedCertificate::CreateAndAddToVector(
         std::move(der_crypto), x509_util::DefaultParseCertificateOptions(),
@@ -232,34 +246,26 @@ void TrustStoreWin::SyncGetIssuersOf(const ParsedCertificate* cert,
 // whether to continue path building, but doesn't treat the certificate
 // as affirmatively revoked/distrusted.
 //
-// Rather than have these EKUs expressed during ParsedCertificate, which
-// would require threading platform-specific knowledge throughout the
-// CertVerifier, this is implemented via CertificateTrust: if the
-// certificate has a given EKU disabled (i.e. TLS server auth), it's
-// treated as if it's distrusted. This has the effect of causing path
-// building to try the next path.
+// This behaviour is replicated here by returning Unspecified trust if
+// we find instances of the cert that do not have the correct EKUs set
+// for TLS Server Auth. This allows path building to continue and allows
+// us to later trust the cert if it is present in Chrome Root Store.
 //
-// Put differently:
-//   - If a certificate is in the Disallowed store and usable for EKU, then
-//     it's affirmatively distrusted/revoked. This is checked first and
-//     overrides everything else.
-//   - If a certificate is in the ROOT store, and usable for an EKU,
+// Windows does have some idiosyncrasies here, which result in the
+// following treatment:
+//
+//   - If a certificate is in the Disallowed store, it is distrusted for
+//     all purposes regardless of any EKUs that are set.
+//   - If a certificate is in the ROOT store, and usable for TLS Server Auth,
 //     then it's trusted.
-//   - If a certificate is in the root store, and lacks the EKU, but in
-//     the intermediate store, and has the EKU, then continue path
-//     building, but don't treat it as trusted (aka Unspecified)
-//   - If a certificate is both/either in the root store and the
-//     intermediate store, and neither have the EKU, then treat this
-//     path as terminal for path building ("Distrusted", which is
-//     imprecise but good enough).
+//   - If a certificate is in the root store, and lacks the EKU, then continue
+//     path building, but don't treat it as trusted (aka Unspecified).
 //   - If we can't find the cert anywhere, then continue path
 //     building, but don't treat it as trusted (aka Unspecified).
 //
 // If a certificate is found multiple times in the ROOT store, it is trusted
-// for TLS server auth if and only if every instance of the certificate found
-// is usable for TLS server auth. Similar logic applies for certificates in
-// the intermediate store (only return unspecified if and only if all instances
-// of the certificate found are usable for TLS server auth).
+// for TLS server auth if any instance of the certificate found
+// is usable for TLS server auth.
 CertificateTrust TrustStoreWin::GetTrust(
     const ParsedCertificate* cert,
     base::SupportsUserData* debug_data) const {
@@ -277,14 +283,13 @@ CertificateTrust TrustStoreWin::GetTrust(
               CERT_FIND_SHA1_HASH, &cert_hash_blob, cert_from_store))) {
     base::span<const uint8_t> cert_from_store_span = base::make_span(
         cert_from_store->pbCertEncoded, cert_from_store->cbCertEncoded);
-    if (base::ranges::equal(cert_span, cert_from_store_span) &&
-        IsCertTrustedForServerAuth(cert_from_store)) {
+    // If a cert is in the windows distruted store, it is considered
+    // distrusted for all purporses. EKU isn't checked. See crbug.com/1355961.
+    if (base::ranges::equal(cert_span, cert_from_store_span)) {
       return CertificateTrust::ForDistrusted();
     }
   }
 
-  bool root_found = false;
-  bool root_is_trusted = true;
   // TODO(https://crbug.com/1239270): figure out if this is thread-safe or if we
   // need locking here
   while ((cert_from_store = CertFindCertificateInStore(
@@ -293,51 +298,26 @@ CertificateTrust TrustStoreWin::GetTrust(
     base::span<const uint8_t> cert_from_store_span = base::make_span(
         cert_from_store->pbCertEncoded, cert_from_store->cbCertEncoded);
     if (base::ranges::equal(cert_span, cert_from_store_span)) {
-      root_found = true;
-      root_is_trusted &= IsCertTrustedForServerAuth(cert_from_store);
+      // If we find at least one version of the cert that is trusted for TLS
+      // Server Auth, we will trust the cert.
+      if (IsCertTrustedForServerAuth(cert_from_store)) {
+        return CertificateTrust::ForTrustAnchorEnforcingExpiration();
+      }
     }
-  }
-
-  // Found at least one instance of the cert in the root store, and all
-  // instances found are trusted for TLS server auth.
-  if (root_found && root_is_trusted) {
-    return CertificateTrust::ForTrustAnchor();
-  }
-
-  cert_from_store = nullptr;
-  bool intermediate_found = false;
-  bool intermediate_is_trusted = true;
-  while ((cert_from_store = CertFindCertificateInStore(
-              intermediate_cert_store_.get(), X509_ASN_ENCODING, 0,
-              CERT_FIND_SHA1_HASH, &cert_hash_blob, cert_from_store))) {
-    base::span<const uint8_t> cert_from_store_span = base::make_span(
-        cert_from_store->pbCertEncoded, cert_from_store->cbCertEncoded);
-
-    if (base::ranges::equal(cert_span, cert_from_store_span)) {
-      // Found cert, yay!
-      intermediate_found = true;
-      intermediate_is_trusted &= IsCertTrustedForServerAuth(cert_from_store);
-    }
-  }
-
-  // Found at least one instance of the cert in the intermediate store, and all
-  // instances found are trusted for TLS server auth.
-  if (intermediate_found && intermediate_is_trusted) {
-    return CertificateTrust::ForUnspecified();
   }
 
   // If we fall through here, we've either
   //
-  // (a) found the cert in root or intermediates (or both) but neither is
-  //     usable for server auth (in which case treat as distrusted for path
-  //     building)
+  // (a) found the cert but it is not usable for server auth. Treat this as
+  //     Unspecified trust. Originally this was treated as Distrusted, but this
+  //     is inconsistent with how the Windows verifier works, which is to union
+  //     all of the EKU usages for all instances of the cert, whereas sending
+  //     back Distrusted would not do that.
   //
   // or
   //
   // (b) Haven't found the cert. Tell everyone Unspecified.
-  return (root_found || intermediate_found)
-             ? CertificateTrust::ForDistrusted()
-             : CertificateTrust::ForUnspecified();
+  return CertificateTrust::ForUnspecified();
 }
 
 }  // namespace net

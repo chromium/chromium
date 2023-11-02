@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,8 +29,6 @@ class MultiUserWindowManagerStub : public ash::MultiUserWindowManager {
   std::set<AccountId> GetOwnersOfVisibleWindows() const override;
   const AccountId& GetUserPresentingWindow(
       const aura::Window* window) const override;
-  void AddObserver(ash::MultiUserWindowManagerObserver* observer) override;
-  void RemoveObserver(ash::MultiUserWindowManagerObserver* observer) override;
   const AccountId& CurrentAccountId() const override;
 };
 

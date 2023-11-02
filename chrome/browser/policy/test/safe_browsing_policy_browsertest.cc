@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #include <string>
@@ -7,12 +7,12 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/policy/policy_test_utils.h"
+#include "chrome/browser/policy/safe_browsing_policy_test.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
@@ -27,7 +27,8 @@ using testing::Return;
 
 namespace policy {
 
-int PolicyTest::IsEnhancedProtectionMessageVisibleOnInterstitial() {
+int IsEnhancedProtectionMessageVisibleOnInterstitial(
+    SafeBrowsingPolicyTest* browser_test) {
   const std::string command = base::StringPrintf(
       "var node = document.getElementById('enhanced-protection-message');"
       "if (node) {"
@@ -43,19 +44,23 @@ int PolicyTest::IsEnhancedProtectionMessageVisibleOnInterstitial() {
       security_interstitials::CMD_ERROR);
 
   content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  WaitForInterstitial(tab);
+      chrome_test_utils::GetActiveWebContents(browser_test);
+  if (!browser_test->IsShowingInterstitial(tab)) {
+    ADD_FAILURE() << "Expected interstitial when checking for enhanced "
+                     "protection message.";
+  }
   int result = 0;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractInt(tab->GetMainFrame(), command,
-                                                  &result));
+  EXPECT_TRUE(content::ExecuteScriptAndExtractInt(tab->GetPrimaryMainFrame(),
+                                                  command, &result));
   return result;
 }
 
 // Test extended reporting is managed by policy.
-IN_PROC_BROWSER_TEST_F(PolicyTest, SafeBrowsingExtendedReportingPolicyManaged) {
+IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
+                       SafeBrowsingExtendedReportingPolicyManaged) {
   // Set the extended reporting pref to True and ensure the enterprise policy
   // can overwrite it.
-  PrefService* prefs = browser()->profile()->GetPrefs();
+  PrefService* prefs = chrome_test_utils::GetProfile(this)->GetPrefs();
   prefs->SetBoolean(prefs::kSafeBrowsingScoutReportingEnabled, true);
 
   // Set the enterprise policy to disable extended reporting.
@@ -81,9 +86,10 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, SafeBrowsingExtendedReportingPolicyManaged) {
   EXPECT_TRUE(safe_browsing::IsExtendedReportingOptInAllowed(*prefs));
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 // Test that when Safe Browsing state is managed by policy, the enhanced
 // protection message does not appear on SSL blocking pages.
-IN_PROC_BROWSER_TEST_F(PolicyTest, SafeBrowsingStatePolicyManaged) {
+IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest, SafeBrowsingStatePolicyManaged) {
   net::EmbeddedTestServer https_server_expired(
       net::EmbeddedTestServer::TYPE_HTTPS);
   https_server_expired.SetSSLConfig(net::EmbeddedTestServer::CERT_EXPIRED);
@@ -91,16 +97,15 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, SafeBrowsingStatePolicyManaged) {
   ASSERT_TRUE(https_server_expired.Start());
 
   // Set the Safe Browsing state to standard protection.
-  PrefService* prefs = browser()->profile()->GetPrefs();
+  PrefService* prefs = chrome_test_utils::GetProfile(this)->GetPrefs();
   safe_browsing::SetSafeBrowsingState(
       prefs, safe_browsing::SafeBrowsingState::STANDARD_PROTECTION);
 
   // First, navigate to an SSL error page and make sure the enhanced protection
   // message appears by default.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           https_server_expired.GetURL("/")));
+  ASSERT_TRUE(NavigateToUrl(https_server_expired.GetURL("/"), this));
   EXPECT_EQ(security_interstitials::CMD_TEXT_FOUND,
-            IsEnhancedProtectionMessageVisibleOnInterstitial());
+            IsEnhancedProtectionMessageVisibleOnInterstitial(this));
 
   // Set the enterprise policy to force standard protection.
   PolicyMap policies;
@@ -117,18 +122,18 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, SafeBrowsingStatePolicyManaged) {
 
   // Navigate to an SSL error page, the enhanced protection message should not
   // appear.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           https_server_expired.GetURL("/")));
+  ASSERT_TRUE(NavigateToUrl(https_server_expired.GetURL("/"), this));
   EXPECT_EQ(security_interstitials::CMD_TEXT_NOT_FOUND,
-            IsEnhancedProtectionMessageVisibleOnInterstitial());
+            IsEnhancedProtectionMessageVisibleOnInterstitial(this));
 }
 
 // Test that when safe browsing allowlist domains are set by policy, safe
 // browsing service gets the correct value.
-IN_PROC_BROWSER_TEST_F(PolicyTest, SafeBrowsingAllowlistDomains) {
+IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest, SafeBrowsingAllowlistDomains) {
   // Without setting up the enterprise policy,
   // |GetSafeBrowsingDomainsPref(..) should return empty list.
-  const PrefService* const prefs = browser()->profile()->GetPrefs();
+  const PrefService* const prefs =
+      chrome_test_utils::GetProfile(this)->GetPrefs();
   EXPECT_FALSE(
       prefs->FindPreference(prefs::kSafeBrowsingAllowlistDomains)->IsManaged());
   std::vector<std::string> canonicalized_domains;
@@ -170,10 +175,11 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, SafeBrowsingAllowlistDomains) {
 
 // Test that when password protection login URLs are set by policy, password
 // protection service gets the correct value.
-IN_PROC_BROWSER_TEST_F(PolicyTest, PasswordProtectionLoginURLs) {
+IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest, PasswordProtectionLoginURLs) {
   // Without setting up the enterprise policy,
   // |GetPasswordProtectionLoginURLsPref(..) should return empty list.
-  const PrefService* const prefs = browser()->profile()->GetPrefs();
+  const PrefService* const prefs =
+      chrome_test_utils::GetProfile(this)->GetPrefs();
   EXPECT_FALSE(
       prefs->FindPreference(prefs::kPasswordProtectionLoginURLs)->IsManaged());
   std::vector<GURL> login_urls;
@@ -213,14 +219,16 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, PasswordProtectionLoginURLs) {
 
 // Test that when password protection change password URL is set by policy,
 // password protection service gets the correct value.
-IN_PROC_BROWSER_TEST_F(PolicyTest, PasswordProtectionChangePasswordURL) {
+IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
+                       PasswordProtectionChangePasswordURL) {
   // Without setting up the enterprise policy,
   // |GetEnterpriseChangePasswordURL(..) should return default GAIA change
   // password URL.
-  const PrefService* const prefs = browser()->profile()->GetPrefs();
+  const PrefService* const prefs =
+      chrome_test_utils::GetProfile(this)->GetPrefs();
   const safe_browsing::ChromePasswordProtectionService* const service =
       safe_browsing::ChromePasswordProtectionService::
-          GetPasswordProtectionService(browser()->profile());
+          GetPasswordProtectionService(chrome_test_utils::GetProfile(this));
   EXPECT_FALSE(
       prefs->FindPreference(prefs::kPasswordProtectionChangePasswordURL)
           ->IsManaged());
@@ -270,14 +278,16 @@ class MockPasswordProtectionService
 // Test that when password protection warning trigger is set for users who are
 // not signed-into Chrome, Chrome password protection service gets the correct
 // value.
-IN_PROC_BROWSER_TEST_F(PolicyTest,
+IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
                        PasswordProtectionWarningTriggerNotLoggedIn) {
   MockPasswordProtectionService mock_service(
-      g_browser_process->safe_browsing_service(), browser()->profile());
+      g_browser_process->safe_browsing_service(),
+      chrome_test_utils::GetProfile(this));
 
   // If user is not signed-in, |GetPasswordProtectionWarningTriggerPref(...)|
   // should return |PHISHING_REUSE| unless specified by policy.
-  const PrefService* const prefs = browser()->profile()->GetPrefs();
+  const PrefService* const prefs =
+      chrome_test_utils::GetProfile(this)->GetPrefs();
   EXPECT_FALSE(prefs->FindPreference(prefs::kPasswordProtectionWarningTrigger)
                    ->IsManaged());
   EXPECT_EQ(safe_browsing::PHISHING_REUSE,
@@ -305,15 +315,18 @@ IN_PROC_BROWSER_TEST_F(PolicyTest,
 // Test that when password protection warning trigger is set for Gmail users,
 // Chrome password protection service gets the correct
 // value.
-IN_PROC_BROWSER_TEST_F(PolicyTest, PasswordProtectionWarningTriggerGmail) {
+IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
+                       PasswordProtectionWarningTriggerGmail) {
   MockPasswordProtectionService mock_service(
-      g_browser_process->safe_browsing_service(), browser()->profile());
+      g_browser_process->safe_browsing_service(),
+      chrome_test_utils::GetProfile(this));
 
   // If user is a Gmail user, |GetPasswordProtectionWarningTriggerPref(...)|
   // should return |PHISHING_REUSE| unless specified by policy.
   EXPECT_CALL(mock_service, IsPrimaryAccountGmail())
       .WillRepeatedly(Return(true));
-  const PrefService* const prefs = browser()->profile()->GetPrefs();
+  const PrefService* const prefs =
+      chrome_test_utils::GetProfile(this)->GetPrefs();
   EXPECT_FALSE(prefs->FindPreference(prefs::kPasswordProtectionWarningTrigger)
                    ->IsManaged());
   ReusedPasswordAccountType account_type;
@@ -342,10 +355,13 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, PasswordProtectionWarningTriggerGmail) {
 
 // Test that when password protection warning trigger is set for GSuite users,
 // Chrome password protection service gets the correct value.
-IN_PROC_BROWSER_TEST_F(PolicyTest, PasswordProtectionWarningTriggerGSuite) {
+IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
+                       PasswordProtectionWarningTriggerGSuite) {
   MockPasswordProtectionService mock_service(
-      g_browser_process->safe_browsing_service(), browser()->profile());
-  const PrefService* const prefs = browser()->profile()->GetPrefs();
+      g_browser_process->safe_browsing_service(),
+      chrome_test_utils::GetProfile(this));
+  const PrefService* const prefs =
+      chrome_test_utils::GetProfile(this)->GetPrefs();
   PolicyMap policies;
 
   // If user is a GSuite user, |GetPasswordProtectionWarningTriggerPref(...)|
@@ -372,5 +388,6 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, PasswordProtectionWarningTriggerGSuite) {
             mock_service.GetPasswordProtectionWarningTriggerPref(
                 ReusedPasswordAccountType()));
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace policy

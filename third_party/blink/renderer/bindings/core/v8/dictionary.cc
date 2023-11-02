@@ -80,7 +80,7 @@ bool Dictionary::Get(const StringView& key, Dictionary& value) const {
 
   if (v8_value->IsObject()) {
     DCHECK(isolate_);
-    DCHECK_EQ(isolate_, v8::Isolate::GetCurrent());
+    DCHECK(isolate_->IsCurrent());
     // TODO(bashi,yukishiino): Should rethrow the exception.
     // http://crbug.com/666661
     DummyExceptionStateForTesting exception_state;
@@ -134,7 +134,7 @@ bool Dictionary::GetInternal(const v8::Local<v8::Value>& key,
   return true;
 }
 
-WARN_UNUSED_RESULT static v8::MaybeLocal<v8::String> GetStringValueInArray(
+[[nodiscard]] static v8::MaybeLocal<v8::String> GetStringValueInArray(
     v8::Local<v8::Context> context,
     v8::Local<v8::Array> array,
     uint32_t index) {
@@ -177,7 +177,7 @@ HashMap<String, String> Dictionary::GetOwnPropertiesAsStringHashMap(
     if (!string_value.Prepare(GetIsolate(), exception_state))
       return HashMap<String, String>();
 
-    if (!static_cast<const String&>(string_key).IsEmpty())
+    if (!static_cast<const String&>(string_key).empty())
       own_properties.Set(string_key, string_value);
   }
 

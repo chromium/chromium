@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,19 +13,22 @@
 #include "chrome/browser/ui/passwords/manage_passwords_test.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/passwords/password_auto_sign_in_view.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "content/public/test/browser_test.h"
 #include "ui/views/test/ax_event_counter.h"
 
 using base::StartsWith;
 
+// Test params:
+//  - bool : when true, the test is setup for users that sync their passwords.
 class PasswordBubbleBrowserTest
-    : public SupportsTestDialog<ManagePasswordsTest> {
+    : public SupportsTestDialog<ManagePasswordsTest>,
+      public testing::WithParamInterface<bool> {
  public:
   PasswordBubbleBrowserTest() = default;
   ~PasswordBubbleBrowserTest() override = default;
 
   void ShowUi(const std::string& name) override {
+    ConfigurePasswordSync(GetParam());
     if (StartsWith(name, "PendingPasswordBubble",
                    base::CompareCase::SENSITIVE)) {
       SetupPendingPassword();
@@ -65,39 +68,42 @@ class PasswordBubbleBrowserTest
   }
 };
 
-IN_PROC_BROWSER_TEST_F(PasswordBubbleBrowserTest,
+IN_PROC_BROWSER_TEST_P(PasswordBubbleBrowserTest,
                        InvokeUi_PendingPasswordBubble) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordBubbleBrowserTest,
+IN_PROC_BROWSER_TEST_P(PasswordBubbleBrowserTest,
                        InvokeUi_AutomaticPasswordBubble) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordBubbleBrowserTest,
+IN_PROC_BROWSER_TEST_P(PasswordBubbleBrowserTest,
                        InvokeUi_ManagePasswordBubble) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordBubbleBrowserTest, InvokeUi_AutoSignin) {
+IN_PROC_BROWSER_TEST_P(PasswordBubbleBrowserTest, InvokeUi_AutoSignin) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordBubbleBrowserTest, InvokeUi_SafeState) {
+IN_PROC_BROWSER_TEST_P(PasswordBubbleBrowserTest, InvokeUi_SafeState) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordBubbleBrowserTest, InvokeUi_MoreToFixState) {
+IN_PROC_BROWSER_TEST_P(PasswordBubbleBrowserTest, InvokeUi_MoreToFixState) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordBubbleBrowserTest,
+IN_PROC_BROWSER_TEST_P(PasswordBubbleBrowserTest,
                        InvokeUi_MoveToAccountStoreBubble) {
+  // This test isn't relevant for sync'ing users.
+  if (GetParam())
+    return;
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordBubbleBrowserTest, AlertAccessibleEvent) {
+IN_PROC_BROWSER_TEST_P(PasswordBubbleBrowserTest, AlertAccessibleEvent) {
   views::test::AXEventCounter counter(views::AXEventManager::Get());
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kAlert));
   // This needs to show a password bubble that does not trigger as a user
@@ -106,3 +112,5 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleBrowserTest, AlertAccessibleEvent) {
   ShowUi("AutomaticPasswordBubble");
   EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kAlert));
 }
+
+INSTANTIATE_TEST_SUITE_P(All, PasswordBubbleBrowserTest, testing::Bool());

@@ -1,11 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import '../../mojo_webui_test_support.js';
 
 import {ParentAccessController} from 'chrome://parent-access/parent_access_controller.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert.js';
 
 
 const TARGET_URL = 'chrome://test/chromeos/parent_access/test_content.html';
@@ -15,7 +15,7 @@ parent_access_controller_tests.suiteName = 'ParentAccessControllerTest';
 
 /** @enum {string} */
 parent_access_controller_tests.TestNames = {
-  ParentAccessResultFnCalled:
+  ParentAccessCallbackReceivedFnCalled:
       'tests that parent access result was passed through',
 };
 
@@ -34,17 +34,18 @@ suite(parent_access_controller_tests.suiteName, function() {
   });
 
   test(
-      parent_access_controller_tests.TestNames.ParentAccessResultFnCalled,
+      parent_access_controller_tests.TestNames
+          .ParentAccessCallbackReceivedFnCalled,
       async function() {
         parentAccessController = new ParentAccessController(
             element, 'chrome://test', 'chrome://test');
 
-        let parentAccessResult = await Promise.race([
-          parentAccessController.whenParentAccessResult(),
-          parentAccessController.whenInitializationError()
+        const parentAccessResult = await Promise.race([
+          parentAccessController.whenParentAccessCallbackReceived(),
+          parentAccessController.whenInitializationError(),
         ]);
 
         // Verify that the result received is the one set in test_content.html
-        assertEquals('1234567890', parentAccessResult);
+        assertEquals(0, parentAccessResult.message.type);
       });
 });

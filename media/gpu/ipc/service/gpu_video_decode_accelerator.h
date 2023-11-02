@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "gpu/config/gpu_info.h"
@@ -59,7 +60,7 @@ class GpuVideoDecodeAccelerator
       const gpu::GpuDriverBugWorkarounds& workarounds);
 
   // VideoDecodeAccelerator::Client implementation.
-  void NotifyInitializationComplete(Status status) override;
+  void NotifyInitializationComplete(DecoderStatus status) override;
   void ProvidePictureBuffers(uint32_t requested_num_of_buffers,
                              VideoPixelFormat format,
                              uint32_t textures_per_buffer,
@@ -111,9 +112,9 @@ class GpuVideoDecodeAccelerator
   GpuVideoDecodeGLClient gl_client_;
 
   // Unowned pointer to the underlying gpu::CommandBufferStub.  |this| is
-  // registered as a DestuctionObserver of |stub_| and will self-delete when
+  // registered as a DestructionObserver of |stub_| and will self-delete when
   // |stub_| is destroyed.
-  gpu::CommandBufferStub* const stub_;
+  const raw_ptr<gpu::CommandBufferStub> stub_;
 
   // The underlying VideoDecodeAccelerator.
   std::unique_ptr<VideoDecodeAccelerator> video_decode_accelerator_;

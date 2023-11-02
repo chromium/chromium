@@ -21,7 +21,7 @@
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_linear_gradient.h"
 
 #include "third_party/blink/renderer/core/svg/svg_linear_gradient_element.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -46,7 +46,7 @@ void LayoutSVGResourceLinearGradient::CollectGradientAttributes() {
       ->CollectGradientAttributes(MutableAttributes());
 }
 
-FloatPoint LayoutSVGResourceLinearGradient::StartPoint(
+gfx::PointF LayoutSVGResourceLinearGradient::StartPoint(
     const LinearGradientAttributes& attributes) const {
   NOT_DESTROYED();
   return SVGLengthContext::ResolvePoint(GetElement(),
@@ -54,7 +54,7 @@ FloatPoint LayoutSVGResourceLinearGradient::StartPoint(
                                         *attributes.X1(), *attributes.Y1());
 }
 
-FloatPoint LayoutSVGResourceLinearGradient::EndPoint(
+gfx::PointF LayoutSVGResourceLinearGradient::EndPoint(
     const LinearGradientAttributes& attributes) const {
   NOT_DESTROYED();
   return SVGLengthContext::ResolvePoint(GetElement(),

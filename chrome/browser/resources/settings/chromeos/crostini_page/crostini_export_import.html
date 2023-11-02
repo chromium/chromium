@@ -1,7 +1,32 @@
-<style include="settings-shared"></style>
-<div id="export" class="settings-box first">
+<style include="settings-shared">
+  .container-select {
+    padding: 0 8px;
+  }
+
+  .two-line-settings-box {
+    min-height: 80px;
+  }
+
+  #secondaryText {
+    padding: 3px 0;
+  }
+</style>
+<div id="export"
+  class$="settings-box first [[getSettingsBoxClass_(allContainers_)]]">
   <div id="exportCrostiniLabel" class="start">
     $i18n{crostiniExportLabel}
+    <template is="dom-if" if="[[showContainerSelect_]]" restamp>
+      <div class="secondary" id="secondaryText">
+        Container to backup
+        <settings-guest-os-container-select
+          class="container-select"
+          id="exportContainerSelect"
+          containers="[[allContainers_]]"
+          selected-container-id="{{exportContainerId_}}"
+          default-vm-name="[[defaultVmName_]]">
+        </settings-guest-os-container-select>
+      </div>
+    </template>
   </div>
   <cr-button on-click="onExportClick_" disabled="[[!enableButtons_]]"
     aria-labelledby="exportCrostiniLabel"
@@ -9,9 +34,21 @@
     $i18n{crostiniExport}
   </cr-button>
 </div>
-<div id="import" class="settings-box hr">
+<div id="import" class$="settings-box [[getSettingsBoxClass_(allContainers_)]]">
   <div id="importCrostiniLabel" class="start">
     $i18n{crostiniImportLabel}
+    <template is="dom-if" if="[[showContainerSelect_]]" restamp>
+      <div class="secondary" id="secondaryText">
+        Container to restore
+        <settings-guest-os-container-select
+          class="container-select"
+          id="importContainerSelect"
+          containers="[[allContainers_]]"
+          selected-container-id="{{importContainerId_}}"
+          default-vm-name="[[defaultVmName_]]">
+        </settings-guest-os-container-select>
+      </div>
+    </template>
   </div>
   <cr-button on-click="onImportClick_" disabled="[[!enableButtons_]]"
     aria-labelledby="importCrostiniLabel"
@@ -21,6 +58,7 @@
 </div>
 <template is="dom-if" if="[[showImportConfirmationDialog_]]" restamp>
   <settings-crostini-import-confirmation-dialog
-      on-close="onImportConfirmationDialogClose_">
+      on-close="onImportConfirmationDialogClose_"
+      import-container-id="{{importContainerId_}}">
   </settings-crostini-import-confirmation-dialog>
 </template>

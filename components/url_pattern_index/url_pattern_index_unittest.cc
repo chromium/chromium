@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -403,11 +403,9 @@ TEST_F(UrlPatternIndexTest, OneRuleWithThirdParty) {
 }
 
 TEST_F(UrlPatternIndexTest, OneRuleWithDomainList) {
-  constexpr const char* kUrl = "http://example.com";
-
   const struct {
     std::vector<std::string> domains;
-    const char* document_origin;
+    base::StringPiece url_or_origin;
     bool expect_match;
   } kTestCases[] = {
       {std::vector<std::string>(), "", true},
@@ -497,18 +495,116 @@ TEST_F(UrlPatternIndexTest, OneRuleWithDomainList) {
        true},
   };
 
+  // Test initiator domain conditions.
+  constexpr const char* kUrl = "http://example.com";
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(::testing::Message()
-                 << "Domains: " << ::testing::PrintToString(test_case.domains)
-                 << "; DocumentOrigin: " << test_case.document_origin);
+                 << "Initiator Domains: "
+                 << ::testing::PrintToString(test_case.domains)
+                 << "; DocumentOrigin: " << test_case.url_or_origin);
 
     auto rule = MakeUrlRule(UrlPattern(kUrl, kSubstring));
-    testing::AddDomains(test_case.domains, &rule);
+    testing::AddInitiatorDomains(test_case.domains, &rule);
     ASSERT_TRUE(AddUrlRule(rule));
     Finish();
 
     EXPECT_EQ(test_case.expect_match,
-              !!FindMatch(kUrl, test_case.document_origin));
+              !!FindMatch(kUrl, test_case.url_or_origin));
+    Reset();
+  }
+
+  // Test request domain conditions.
+  for (const auto& test_case : kTestCases) {
+    if (test_case.url_or_origin.empty())
+      continue;
+
+    SCOPED_TRACE(::testing::Message()
+                 << "Request Domains: "
+                 << ::testing::PrintToString(test_case.domains)
+                 << "; Request URL: " << test_case.url_or_origin);
+
+    auto rule = MakeUrlRule(UrlPattern(test_case.url_or_origin, kSubstring));
+    testing::AddRequestDomains(test_case.domains, &rule);
+    ASSERT_TRUE(AddUrlRule(rule));
+    Finish();
+
+    EXPECT_EQ(test_case.expect_match, !!FindMatch(test_case.url_or_origin));
+    Reset();
+  }
+}
+
+TEST_F(UrlPatternIndexTest, OneRuleWithInitiatorAndRequestDomainLists) {
+  const struct {
+    std::vector<std::string> initiator_domains;
+    std::vector<std::string> request_domains;
+    const char* request_url;
+    const char* document_origin;
+    bool expect_match;
+  } kTestCases[] = {
+      {{"initiator.com"},
+       {"request.com"},
+       "http://request.com/path",
+       "http://initiator.com",
+       true},
+      {{"initiator.com"},
+       {"other-request.com"},
+       "http://request.com/path",
+       "http://initiator.com",
+       false},
+      {{"other-initiator.com"},
+       {"request.com"},
+       "http://request.com/path",
+       "http://initiator.com",
+       false},
+      {{"~initiator.com"},
+       {"request.com"},
+       "http://request.com/path",
+       "http://initiator.com",
+       false},
+      {{"initiator.com"},
+       {"~request.com"},
+       "http://request.com/path",
+       "http://initiator.com",
+       false},
+      {{"~initiator.com"},
+       {"~request.com"},
+       "http://request.com/path",
+       "http://initiator.com",
+       false},
+      {{"~other-initiator.com"},
+       {"request.com"},
+       "http://request.com/path",
+       "http://initiator.com",
+       true},
+      {{"initiator.com"},
+       {"~other-request.com"},
+       "http://request.com/path",
+       "http://initiator.com",
+       true},
+      {{"~other-initiator.com"},
+       {"~other-request.com"},
+       "http://request.com/path",
+       "http://initiator.com",
+       true},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(::testing::Message()
+                 << "Initiator Domains: "
+                 << ::testing::PrintToString(test_case.initiator_domains)
+                 << "; Request Domains: "
+                 << ::testing::PrintToString(test_case.request_domains)
+                 << "; Request URL: " << test_case.request_url
+                 << "; Request Origin: " << test_case.document_origin);
+
+    auto rule = MakeUrlRule(UrlPattern(test_case.request_url, kSubstring));
+    testing::AddInitiatorDomains(test_case.initiator_domains, &rule);
+    testing::AddRequestDomains(test_case.request_domains, &rule);
+    ASSERT_TRUE(AddUrlRule(rule));
+    Finish();
+
+    EXPECT_EQ(test_case.expect_match,
+              !!FindMatch(test_case.request_url, test_case.document_origin));
     Reset();
   }
 }
@@ -533,7 +629,7 @@ TEST_F(UrlPatternIndexTest, OneRuleWithLongDomainList) {
   }
 
   auto rule = MakeUrlRule(UrlPattern(kUrl, kSubstring));
-  testing::AddDomains(domains, &rule);
+  testing::AddInitiatorDomains(domains, &rule);
   ASSERT_TRUE(AddUrlRule(rule));
   Finish();
 
@@ -735,7 +831,7 @@ TEST_F(UrlPatternIndexTest, MultipleRuleMatches) {
 TEST_F(UrlPatternIndexTest, MatchWithDisableGenericRules) {
   const struct {
     const char* url_pattern;
-    std::vector<std::string> domains;
+    std::vector<std::string> initiator_domains;
   } kRules[] = {
       // Generic rules.
       {"some_text", std::vector<std::string>()},
@@ -749,10 +845,10 @@ TEST_F(UrlPatternIndexTest, MatchWithDisableGenericRules) {
 
   for (const auto& rule_data : kRules) {
     auto rule = MakeUrlRule(UrlPattern(rule_data.url_pattern, kSubstring));
-    testing::AddDomains(rule_data.domains, &rule);
+    testing::AddInitiatorDomains(rule_data.initiator_domains, &rule);
     ASSERT_TRUE(AddUrlRule(rule))
-        << "UrlPattern: " << rule_data.url_pattern
-        << "; Domains: " << ::testing::PrintToString(rule_data.domains);
+        << "UrlPattern: " << rule_data.url_pattern << "; Initiator Domains: "
+        << ::testing::PrintToString(rule_data.initiator_domains);
   }
 
   // Note: Some of the rules have common domains (e.g., example1.com), which are
@@ -987,7 +1083,7 @@ TEST_F(UrlPatternIndexTest, RequestMethod) {
 
   Finish();
 
-  for (size_t i = 0; i < base::size(request_methods); i++) {
+  for (size_t i = 0; i < std::size(request_methods); i++) {
     SCOPED_TRACE(::testing::Message()
                  << "RequestMethod: " << request_methods[i].name);
     std::string url = origin + "/" + request_methods[i].name;
@@ -995,7 +1091,7 @@ TEST_F(UrlPatternIndexTest, RequestMethod) {
                           flat::RequestMethod_ANY, false));
     EXPECT_TRUE(FindMatch(url, origin, other_element, no_activation,
                           flat::RequestMethod_NONE, false));
-    for (size_t j = 0; j < base::size(request_methods); j++) {
+    for (size_t j = 0; j < std::size(request_methods); j++) {
       EXPECT_EQ(i == j, !!FindMatch(url, origin, other_element, no_activation,
                                     request_methods[j].request_method, false));
     }
@@ -1044,7 +1140,7 @@ TEST_F(UrlPatternIndexTest, EmbedderConditions) {
                {url_2, match_first_element_three, false},
                {"http://abc.com", match_first_element_one, false}};
 
-  for (size_t i = 0; i < base::size(cases); ++i) {
+  for (size_t i = 0; i < std::size(cases); ++i) {
     SCOPED_TRACE(::testing::Message() << "Testing case " << i);
     bool disable_generic_rules = false;
     const flat::UrlRule* rule = FindMatch(

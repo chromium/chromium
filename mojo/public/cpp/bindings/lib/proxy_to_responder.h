@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,14 @@
 #define MOJO_PUBLIC_CPP_BINDINGS_LIB_PROXY_TO_RESPONDER_H_
 
 #include <memory>
+
 #include "base/component_export.h"
-#include "mojo/public/cpp/bindings/message.h"
 
 namespace mojo {
+
+class Message;
+class MessageReceiverWithStatus;
+
 namespace internal {
 
 class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) ProxyToResponder {

@@ -1,18 +1,18 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/signin/device_accounts_provider_impl.h"
+#import "ios/chrome/browser/signin/device_accounts_provider_impl.h"
 
-#include "base/check.h"
-#include "base/strings/sys_string_conversions.h"
-#include "components/signin/public/identity_manager/account_info.h"
+#import "base/check.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/signin/public/identity_manager/account_info.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
-#include "ios/chrome/browser/signin/constants.h"
-#include "ios/chrome/browser/signin/signin_util.h"
+#import "ios/chrome/browser/signin/constants.h"
+#import "ios/chrome/browser/signin/signin_util.h"
 #import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
-#include "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
+#import "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
 #import "ios/public/provider/chrome/browser/signin/signin_error_api.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -20,9 +20,9 @@
 #endif
 
 namespace {
-// Returns the account info for |identity| (which must not be nil).
+// Returns the account info for `identity` (which must not be nil).
 DeviceAccountsProvider::AccountInfo GetAccountInfo(
-    ChromeIdentity* identity,
+    id<SystemIdentity> identity,
     ios::ChromeIdentityService* identity_service) {
   DCHECK(identity);
   DeviceAccountsProvider::AccountInfo account_info;
@@ -79,7 +79,7 @@ DeviceAccountsProviderImpl::GetAllAccounts() const {
   ios::ChromeIdentityService* identity_service =
       ios::GetChromeBrowserProvider().GetChromeIdentityService();
   NSArray* identities = account_manager_service_->GetAllIdentities();
-  for (ChromeIdentity* identity in identities) {
+  for (id<SystemIdentity> identity in identities) {
     accounts.push_back(GetAccountInfo(identity, identity_service));
   }
   return accounts;

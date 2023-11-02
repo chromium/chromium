@@ -1,11 +1,11 @@
 #!/usr/bin/env python
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 """api_static_checks.py - Enforce Cronet API requirements."""
 
-from __future__ import print_function
+
 
 import argparse
 import os
@@ -79,6 +79,16 @@ ALLOWED_EXCEPTIONS = [
     'org/chromium/net/NetworkException/getMessage:()Ljava/lang/String;',
 ]
 
+# Filename of file containing the interface API version number.
+INTERFACE_API_VERSION_FILENAME = os.path.abspath(os.path.join(
+    os.path.dirname(__file__), '..', 'android', 'interface_api_version.txt'))
+# Filename of file containing the implementation API version number.
+IMPLEMENTATION_API_VERSION_FILENAME = os.path.abspath(os.path.join(
+    os.path.dirname(__file__), '..', 'android',
+    'implementation_api_version.txt'))
+JAR_PATH = os.path.join(build_utils.JAVA_HOME, 'bin', 'jar')
+JAVAP_PATH = os.path.join(build_utils.JAVA_HOME, 'bin', 'javap')
+
 
 def find_api_calls(dump, api_classes, bad_calls):
   # Given a dump of an implementation class, find calls through API classes.
@@ -87,32 +97,36 @@ def find_api_calls(dump, api_classes, bad_calls):
   # |bad_calls| is the list of calls through API classes.  This list is built up
   #             by this function.
 
-  for line in dump:
-    if CLASS_RE.match(line):
-      caller_class = CLASS_RE.match(line).group(1)
-    if METHOD_RE.match(line):
-      caller_method = METHOD_RE.match(line).group(1)
-    if line[8:16] == ': invoke':
-      callee = line.split(' // ')[1].split('Method ')[1].split('\n')[0]
-      callee_class = callee.split('.')[0]
-      assert callee_class
-      if callee_class in api_classes:
-        callee_method = callee.split('.')[1]
-        assert callee_method
-        # Ignore constructor calls for now as every implementation class
-        # that extends an API class will call them.
-        # TODO(pauljensen): Look into enforcing restricting constructor calls.
-        # https://crbug.com/674975
-        if callee_method.startswith('"<init>"'):
-          continue
-        # Ignore VersionSafe calls
-        if 'VersionSafeCallbacks' in caller_class:
-          continue
-        bad_call = '%s/%s -> %s/%s' % (caller_class, caller_method,
-                                       callee_class, callee_method)
-        if bad_call in ALLOWED_EXCEPTIONS:
-          continue
-        bad_calls += [bad_call]
+  for i, line in enumerate(dump):
+    try:
+      if CLASS_RE.match(line):
+        caller_class = CLASS_RE.match(line).group(1)
+      if METHOD_RE.match(line):
+        caller_method = METHOD_RE.match(line).group(1)
+      if line.startswith(': invoke', 8) and not line.startswith('dynamic', 16):
+        callee = line.split(' // ')[1].split('Method ')[1].split('\n')[0]
+        callee_class = callee.split('.')[0]
+        assert callee_class
+        if callee_class in api_classes:
+          callee_method = callee.split('.')[1]
+          assert callee_method
+          # Ignore constructor calls for now as every implementation class
+          # that extends an API class will call them.
+          # TODO(pauljensen): Look into enforcing restricting constructor calls.
+          # https://crbug.com/674975
+          if callee_method.startswith('"<init>"'):
+            continue
+          # Ignore VersionSafe calls
+          if 'VersionSafeCallbacks' in caller_class:
+            continue
+          bad_call = '%s/%s -> %s/%s' % (caller_class, caller_method,
+                                         callee_class, callee_method)
+          if bad_call in ALLOWED_EXCEPTIONS:
+            continue
+          bad_calls += [bad_call]
+    except Exception:
+      sys.stderr.write(f'Failed on line {i+1}: {line}')
+      raise
 
 
 def check_api_calls(opts):
@@ -121,7 +135,8 @@ def check_api_calls(opts):
   temp_dir = tempfile.mkdtemp()
 
   # Extract API class files from jar
-  jar_cmd = ['jar', 'xf', os.path.abspath(opts.api_jar)]
+  jar_cmd = [os.path.relpath(JAR_PATH, temp_dir), 'xf',
+             os.path.abspath(opts.api_jar)]
   build_utils.CheckOutput(jar_cmd, cwd=temp_dir)
   shutil.rmtree(os.path.join(temp_dir, 'META-INF'), ignore_errors=True)
 
@@ -141,7 +156,8 @@ def check_api_calls(opts):
 
   # Extract impl class files from jars
   for impl_jar in opts.impl_jar:
-    jar_cmd = ['jar', 'xf', os.path.abspath(impl_jar)]
+    jar_cmd = [os.path.relpath(JAR_PATH, temp_dir), 'xf',
+               os.path.abspath(impl_jar)]
     build_utils.CheckOutput(jar_cmd, cwd=temp_dir)
   shutil.rmtree(os.path.join(temp_dir, 'META-INF'), ignore_errors=True)
 
@@ -152,10 +168,12 @@ def check_api_calls(opts):
       continue
     # Dump classes
     dump_file = os.path.join(temp_dir, 'dump.txt')
-    if os.system('javap -c %s > %s' % (
-        ' '.join(os.path.join(dirpath, f) for f in filenames).replace(
-            '$', '\\$'),
-        dump_file)):
+    javap_cmd = '%s -c %s > %s' % (
+        JAVAP_PATH,
+        ' '.join(os.path.join(dirpath, f) for f in filenames).replace('$',
+                                                                      '\\$'),
+        dump_file)
+    if os.system(javap_cmd):
       print('ERROR: javap failed on ' + ' '.join(filenames))
       return False
     # Process class dump
@@ -175,12 +193,30 @@ def check_api_calls(opts):
 
 
 def check_api_version(opts):
-  if update_api.check_up_to_date(opts.api_jar):
-    return True
-  print('ERROR: API file out of date.  Please run this command:')
-  print('       components/cronet/tools/update_api.py --api_jar %s' % (
-      os.path.abspath(opts.api_jar)))
-  return False
+  if not update_api.check_up_to_date(opts.api_jar):
+    print('ERROR: API file out of date.  Please run this command:')
+    print('       components/cronet/tools/update_api.py --api_jar %s' % (
+        os.path.abspath(opts.api_jar)))
+    return False
+  interface_api_version = None
+  implementation_api_version = None
+  with open(INTERFACE_API_VERSION_FILENAME, 'r') \
+       as interface_api_version_file:
+    interface_api_version = int(interface_api_version_file.read())
+  with open(IMPLEMENTATION_API_VERSION_FILENAME, 'r') \
+       as implementation_api_version_file:
+    implementation_api_version = int(implementation_api_version_file.read())
+  if interface_api_version > implementation_api_version:
+    print('ERROR: Interface API version cannot be higher than the current '
+          'implementation API version.')
+    return False
+  if implementation_api_version not in \
+      (interface_api_version + 1, interface_api_version):
+    print('ERROR: Implementation API version can be preemptively bumped up '
+          'at most once. Land the interface part of the API which is already '
+          'being released before adding a new one.')
+    return False
+  return True
 
 
 def main(args):

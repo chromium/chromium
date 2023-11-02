@@ -9,6 +9,7 @@
 <translation id="1591070050619849194">Deaktiver alle billedanimationer.</translation>
 <translation id="1703735871906654364">Tastenavigation</translation>
 <translation id="1791496371305830581">Tillad alle animerede billeder.</translation>
+<translation id="1974060860693918893">Avanceret</translation>
 <translation id="1996252509865389616">Vil du aktivere?</translation>
 <translation id="2079545284768500474">Fortryd</translation>
 <translation id="2179565792157161713">Åbn lang beskrivelse på en ny fane</translation>
@@ -51,6 +52,7 @@
 <translation id="6170146920149900756">Farveforbedring</translation>
 <translation id="633394792577263429">Hold &lt;span class='key'&gt;Ctrl&lt;/span&gt; nede for at flytte efter ord.</translation>
 <translation id="6550675742724504774">Valgmuligheder</translation>
+<translation id="6699630355767768222">Trin 3: Tilsidesæt farveaksen for rettelsen.</translation>
 <translation id="6838518108677880446">Konfiguration:</translation>
 <translation id="690628312087070417">Når tekstmarkøren springer med stor afstand:</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -65,5 +67,6 @@
 <translation id="8321034316479930120">Animationspolitik</translation>
 <translation id="8480209185614411573">Høj kontrast</translation>
 <translation id="8609925175482059018">Tryk på &lt;span class='key'&gt;F7&lt;/span&gt; for at aktivere tastenavigation. Tryk igen for at deaktivere.</translation>
+<translation id="8798099450830957504">Standard</translation>
 <translation id="894241283505723656">Lange beskrivelser i genvejsmenuen</translation>
 </translationbundle>

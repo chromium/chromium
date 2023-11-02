@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,8 @@
 
 namespace blink {
 
-PaintFilterEffect::PaintFilterEffect(Filter* filter, const PaintFlags& flags)
+PaintFilterEffect::PaintFilterEffect(Filter* filter,
+                                     const cc::PaintFlags& flags)
     : FilterEffect(filter), flags_(flags) {
   SetOperatingInterpolationSpace(kInterpolationSpaceSRGB);
 }
@@ -30,7 +31,7 @@ sk_sp<PaintFilter> PaintFilterEffect::CreateImageFilter() {
   } else {
     // ShaderPaintFilter requires shader to be non-null
     return sk_make_sp<ShaderPaintFilter>(
-        cc::PaintShader::MakeColor(flags_.getColor()), 255,
+        cc::PaintShader::MakeColor(flags_.getColor4f()), 255,
         flags_.getFilterQuality(), dither);
   }
 }

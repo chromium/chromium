@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "content/public/app/content_main_delegate.h"
 #include "content/shell/common/shell_content_client.h"
 
@@ -25,16 +26,16 @@ class ViewsContentMainDelegate : public content::ContentMainDelegate {
   ~ViewsContentMainDelegate() override;
 
   // content::ContentMainDelegate implementation
-  bool BasicStartupComplete(int* exit_code) override;
+  absl::optional<int> BasicStartupComplete() override;
   void PreSandboxStartup() override;
-  void PreBrowserMain() override;
+  absl::optional<int> PreBrowserMain() override;
   content::ContentClient* CreateContentClient() override;
   content::ContentBrowserClient* CreateContentBrowserClient() override;
 
  private:
   std::unique_ptr<ViewsContentBrowserClient> browser_client_;
   content::ShellContentClient content_client_;
-  ViewsContentClient* views_content_client_;
+  raw_ptr<ViewsContentClient> views_content_client_;
 };
 
 }  // namespace ui

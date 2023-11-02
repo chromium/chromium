@@ -12,8 +12,8 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
-#ifndef THIRD_PARTY_TENSORFLOW_LITE_SUPPORT_CC_TASK_VISION_PROTO_SEGMENTATIONS_PROTO_INC_H_
-#define THIRD_PARTY_TENSORFLOW_LITE_SUPPORT_CC_TASK_VISION_PROTO_SEGMENTATIONS_PROTO_INC_H_
+#ifndef TENSORFLOW_LITE_SUPPORT_CC_TASK_VISION_PROTO_SEGMENTATIONS_PROTO_INC_H_
+#define TENSORFLOW_LITE_SUPPORT_CC_TASK_VISION_PROTO_SEGMENTATIONS_PROTO_INC_H_
 
 #include "tensorflow_lite_support/cc/task/vision/proto/segmentations.pb.h"
-#endif  // THIRD_PARTY_TENSORFLOW_LITE_SUPPORT_CC_TASK_VISION_PROTO_SEGMENTATIONS_PROTO_INC_H_
+#endif  // TENSORFLOW_LITE_SUPPORT_CC_TASK_VISION_PROTO_SEGMENTATIONS_PROTO_INC_H_

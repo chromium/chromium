@@ -1,0 +1,7 @@
+Tests Service Worker (module) Initial Registration emits Network Events for disllowed redirect
+==== INITIAL service worker request ====
+Registration Result: FAILURE: SecurityError: Failed to register a ServiceWorker for scope ('http://127.0.0.1:8000/inspector-protocol/fetch/resources/service-workers/') with script ('http://127.0.0.1:8000/inspector-protocol/fetch/resources/service-workers/worker.php?redirect_to=%2Ffoo'): The script resource is behind a redirect, which is disallowed.
+requestWillBeSent url: http://127.0.0.1:8000/inspector-protocol/fetch/resources/service-workers/worker.php?redirect_to=%2Ffoo
+responseReceived status: 302
+requestIds match: true
+

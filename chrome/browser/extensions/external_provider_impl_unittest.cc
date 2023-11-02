@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,6 +36,7 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/browser/updater/extension_cache_fake.h"
+#include "extensions/browser/updater/extension_downloader_test_helper.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -50,7 +51,7 @@
 #include "components/user_manager/scoped_user_manager.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
 #endif
@@ -84,7 +85,7 @@ constexpr const TestServerExtension kTestServerExtensions[] = {
 const char kExternalAppId[] = "kekdneafjmhmndejhmbcadfiiofngffo";
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const char kExternalAppCrxPath[] =
     "external\\kekdneafjmhmndejhmbcadfiiofngffo.crx";
 const wchar_t kExternalAppRegistryKey[] =
@@ -136,7 +137,7 @@ class ExternalProviderImplTest : public ExtensionServiceTestBase {
     // Windows doesn't use the provider that installs the |kExternalAppId|
     // extension implicitly, so to test that the blocking policy works on
     // Windows it is installed through a Windows-specific registry provider.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     EXPECT_NO_FATAL_FAILURE(
         registry_override_manager_.OverrideRegistry(HKEY_CURRENT_USER));
     EXPECT_EQ(ERROR_SUCCESS,
@@ -207,17 +208,11 @@ class ExternalProviderImplTest : public ExtensionServiceTestBase {
       if (url.path() == test_extension.update_path) {
         auto response = std::make_unique<net::test_server::BasicHttpResponse>();
         response->set_code(net::HTTP_OK);
-        response->set_content(base::StringPrintf(
-            "<?xml version='1.0' encoding='UTF-8'?>\n"
-            "<gupdate xmlns='http://www.google.com/update2/response' "
-            "protocol='2.0'>\n"
-            "  <app appid='%s'>\n"
-            "    <updatecheck codebase='%s' version='%s' />\n"
-            "  </app>\n"
-            "</gupdate>",
-            test_extension.app_id,
-            test_server_->GetURL(test_extension.app_path).spec().c_str(),
-            test_extension.version));
+        response->set_content(CreateUpdateManifest(
+            {UpdateManifestItem(test_extension.app_id)
+                 .version(test_extension.version)
+                 .codebase(
+                     test_server_->GetURL(test_extension.app_path).spec())}));
         response->set_content_type("text/xml");
         return std::move(response);
       }
@@ -246,7 +241,7 @@ class ExternalProviderImplTest : public ExtensionServiceTestBase {
   chromeos::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Registry key pointing to the external extension for Windows.
   base::win::RegKey external_extension_key_;
   registry_util::RegistryOverrideManager registry_override_manager_;

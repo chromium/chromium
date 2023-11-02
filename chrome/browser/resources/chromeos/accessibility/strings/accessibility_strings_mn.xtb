@@ -30,7 +30,9 @@
 <translation id="1189258430971676908">Дадлагын хэсэг: Эвхмэл жагсаалт</translation>
 <translation id="1195238899008218998">Төгсгөлийн үг</translation>
 <translation id="1197088940767939838">Улбар шар</translation>
+<translation id="1198865190323699001">Хүрэх зангаа</translation>
 <translation id="1201402288615127009">Дараагийнх</translation>
+<translation id="1202112913213080585">цуцал</translation>
 <translation id="1206619573307042055">marquee</translation>
 <translation id="1207086294218137981">Дараагийн 4-р түвшний гарчиг алга байна</translation>
 <translation id="1212770441379271564">Дараагийн хэдэн товчлол нь ChromeVox-н тушаал биш боловч Chrome-г бүрэн ашиглахад ихээхэн тустай.
@@ -42,6 +44,7 @@
     Chrome хөтчийн цэсийг нээхийн тулд Alt+F-г дарна уу.</translation>
 <translation id="1213216066620407844">ChromeVox - Chrome-д дуу оруулах</translation>
 <translation id="1225969361094801578">Гүн хөх саарал</translation>
+<translation id="122928249241119550">өмнөх өгүүлбэр лүү оч</translation>
 <translation id="1230503547248836149">Сонголтын эхлэл</translation>
 <translation id="1236794971743289975">Нэмэлт тэмдэглэл</translation>
 <translation id="1237797094773582699">Үүний адилаар дөрвөн хуруугаараа баруунаас зүүн тийш шудрахыг өмнөх хэсэг рүү очиход ашиглах боломжтой. Одоо туршиж үзээрэй!</translation>
@@ -135,9 +138,9 @@
 <translation id="1812527064848182527">газрын гадаргуу</translation>
 <translation id="1829244130665387512">Хуудаснаас хайх</translation>
 <translation id="1834891354138622109">Багана</translation>
-<translation id="1845944666972354496">Идэвхжүүлэхийн тулд хоёр товшино уу</translation>
 <translation id="1846771122725914429">Bluetooth Брайл дэлгэц</translation>
 <translation id="1852018405765032699">Дэлгэцийг дөрвөн хуруугаараа товшсoноор ChromeVox-н цэсүүдийг нээж мөн хаана. Эдгээр цэс нь тушаал болон товчлолын талаарх хэрэгтэй мэдээллийг агуулдаг. Цэсүүдийг нээсний дараа та зүйлс хооронд шилжихийн тулд нэг хуруугаараа шудрах болон зүйлсийг идэвхжүүлэхийн тулд хоёр товших боломжтой. Үргэлжлүүлэхийн тулд дэлгэцийг дөрвөн хуруугаараа товшино уу.</translation>
+<translation id="1864430479908918647">Search+Space дээр дарна уу</translation>
 <translation id="1865601187525349519">Бичвэрийн төгсгөл</translation>
 <translation id="1876229593313240038">doc</translation>
 <translation id="1902396333223336119">Эс</translation>
@@ -212,6 +215,7 @@
 <translation id="2435422727584637732">Цайвар цэнхэр</translation>
 <translation id="2438712309510062123">Санал болгох</translation>
 <translation id="2450814015951372393">Олон сонголттой талбар</translation>
+<translation id="2450992626945324272">дараагийн өгүүлбэр лүү оч</translation>
 <translation id="2461822463642141190">Одоогийн</translation>
 <translation id="2462626033734746142">Радио товчийн бүлэг</translation>
 <translation id="2467741090055146971">сонголтыг болиулах</translation>
@@ -234,6 +238,7 @@
 <translation id="2619344480613750862">Та мөн дэлгэцийн хэсэг хооронд шилжих боломжтой. Жишээлбэл та эхлүүлэгч, тавиур болон өөрийн Chrome-н табууд хооронд шилжих боломжтой. Дараагийн хэсэг рүү очихын тулд дөрвөн хуруугаараа зүүнээс баруун тийш шударна уу. Үргэлжлүүлэхийн тулд үүнийг одоо туршиж үзнэ үү.</translation>
 <translation id="2624431853467395961">Сурах горимыг нээх</translation>
 <translation id="2626530649491650971">дарж болохоор</translation>
+<translation id="263637551280112393">Search+Shift+Space дээр дарна уу</translation>
 <translation id="2637227747952042642">Математик</translation>
 <translation id="2638785836053527382"><ph name="FILE_NAME" />-н таталтыг үргэлжлүүллээ</translation>
 <translation id="2639750663247012216">ChromeVox хувиргагч түлхүүр</translation>
@@ -389,7 +394,9 @@
 <translation id="3492609944033322585">{COUNT,plural, =1{ баруун талын хашилт}other{ # баруун талын хашилтууд}}</translation>
 <translation id="3494946239022273294">mnuitm</translation>
 <translation id="3497063866483065785">{COUNT,plural, =1{асуултын тэмдэг}other{# асуултын тэмдгүүд}}</translation>
+<translation id="3505359110822747654">ChromeVox цэсийг хаах</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{^ тэмдэг}other{# ^ тэмдгүүд}}</translation>
+<translation id="3518600448524470129">{COUNT,plural, =1{цагаан тэмдэг}other{# цагаан тэмдэг}}</translation>
 <translation id="352577523970648069">Засах боломжтой текст талбар</translation>
 <translation id="3538907380453898475">dscrplst</translation>
 <translation id="3549141990712742152"><ph name="TEXT" />-г таслах.</translation>
@@ -486,6 +493,7 @@
 <translation id="42164919740161077">Бага зэргийн номин ногоон туяатай бүдэг хөх</translation>
 <translation id="4217571870635786043">Заавар</translation>
 <translation id="4218529045364428769">{COUNT,plural, =1{зураас}other{# зурааснууд}}</translation>
+<translation id="4220024144662591089"><ph name="START_PHRASE" />-с <ph name="END_PHRASE" /> хүртэл сонго</translation>
 <translation id="4221012616705981690">Өмнөх жагсаалт алга байна</translation>
 <translation id="4225355998815256469">Маягтын хяналт</translation>
 <translation id="4230834257931120629">Цайвар хөх саарал</translation>
@@ -504,6 +512,7 @@
 <translation id="4300318234632215983">Холбоосын ард байгаа URL-ийг зарла</translation>
 <translation id="4322625298640984693">Гүн улаан хүрэн (оохор)</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{цэг}=3{... цэгүүд}other{# цэгүүд}}</translation>
+<translation id="4352022650330571548"><ph name="PHRASE" /> гэж бич</translation>
 <translation id="4372435075475052704">мин: <ph name="X" /></translation>
 <translation id="4372705107434148843">Яриаг зогсоох</translation>
 <translation id="4376316291247992553">Графикийг брайль дэлгэцээр харах</translation>
@@ -521,6 +530,7 @@
 <translation id="4479068155583208887">Гал улаан</translation>
 <translation id="4482330759234983253">Өмнөх хүснэгт</translation>
 <translation id="4491109536499578614">Зураг</translation>
+<translation id="4507332368061453500">Одоогийн зүйл дээр удаан товшино уу</translation>
 <translation id="4511186779140817916">Бага зэргийн саарал туяатай цайвар ягаан</translation>
 <translation id="451510441928265982">Өмнөх 2-р түвшний гарчиг алга байна</translation>
 <translation id="4515799157838123044">Арын контентыг сүүдэрлэх</translation>
@@ -533,6 +543,7 @@
 <translation id="4601367666219428522">хүснэгт <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">Дараагийн түлхүүрийг дарахыг орхигдуулж байна</translation>
 <translation id="4623097797855662355">Колофон</translation>
+<translation id="4624970070706497034">TalkBack нь Chromebooks-д зориулсан тохируулга хийхээ больсон. Та үүнийг ашиглаж болно гэхдээ TalkBack-н өгөгдмөл товчлуурын шууд холбоосыг ашиглана уу. Search+A гэж дарсны дараа K дээр дарж боломжтой товчлолуудыг харна уу. Хэрэв та TalkBack-г ашигламаар байвал тушаалыг дахин дарна уу.</translation>
 <translation id="463135993322337640">Шинээр гарсан зүйлсийг олохын тулд ChromeVox o, n-г дарна уу</translation>
 <translation id="4649220074413114917">Дэлгэцийг хоёр хуруугаараа товшихыг мөн одоогийн аливаа яриаг зогсооход ашиглах боломжтой. Та ChromeVox-г ямар нэг зүйл уншихыг хүсэхгүй байх үед энэ нь хэрэг болно. Үргэлжлүүлэхийн тулд дэлгэцийг хоёр хуруугаараа товшино уу.</translation>
 <translation id="4660783501463101648">Классикийг устгасан. ChromeVox Классикт буцааж сольдог гарын асаах/унтраах товчлуурыг устгасан.</translation>
@@ -588,7 +599,6 @@
 <translation id="4993152509206108683">Хувь хэмжээ <ph name="PERCENT" /> хувь</translation>
 <translation id="4994420463726586413">Батарейн одоогийн статусыг зарлах</translation>
 <translation id="4997282455736854877"><ph name="NAME" /> ганц сонголттой талбарыг сонгосон</translation>
-<translation id="5011664330025416377">Идэвхжүүлэхийн тулд Search+Space товчлууруудыг дарна уу</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, цэсийн зүйл болох радио товчлуурыг сонгосон</translation>
 <translation id="5020651427400641814">Ярианы бүртгэлийг идэвхжүүлэх</translation>
 <translation id="5041394372352067729">Брайлийн дэлгэцийг хуудасны дээд хэсэгт шилжүүлэх</translation>
@@ -615,7 +625,6 @@
 <translation id="5170206230005240598">Брайл хадмалыг идэвхжүүллээ</translation>
 <translation id="5183440668879371625">Брайлийн өмнөх шугам</translation>
 <translation id="5189244881767082992">Шулуун шугам</translation>
-<translation id="5234747236692380506"><ph name="TEXT" /> гэж бич</translation>
 <translation id="5263034204789987535">Бага зэргийн ягаан туяатай цагаан</translation>
 <translation id="5263344797180442561">h2</translation>
 <translation id="528468243742722775">Төгсгөл</translation>
@@ -642,6 +651,7 @@
 <translation id="5355014376930441909">Дараагийн хэсэг алга байна</translation>
 <translation id="5368000168321181111">Алдаа гарахад дуугарах хөгжмийг унтраах</translation>
 <translation id="5368505757342402527"><ph name="FILE_NAME" />-г <ph name="PROGRESS" />% татлаа. Ойролцоогоор <ph name="TIME" /> <ph name="UNITS" /> үлдсэн байна.</translation>
+<translation id="5381388086899614489">удаан дарах</translation>
 <translation id="5400836586163650660">Саарал</translation>
 <translation id="5402367795255837559">Брайль</translation>
 <translation id="5402791055281059602">Баймж сануулга</translation>
@@ -663,6 +673,7 @@
 <translation id="5522423213731659107">Шуурхай чиглэл дууслаа!</translation>
 <translation id="5534303576632885660">hdr</translation>
 <translation id="5539820223028224601">Бага зэргийн хөх туяатай цайвар саарал</translation>
+<translation id="554893713779400387">Диктафоныг асаах/унтраах</translation>
 <translation id="5549179427201066174">Дуут санал хүсэлтийг (earcon чимээ) асаах эсвэл унтраах</translation>
 <translation id="556042886152191864">Товч</translation>
 <translation id="5561345396546889625">Дараагийн жагсаалт</translation>
@@ -673,6 +684,7 @@
 <translation id="5597170376237141345">Дараагийн сонгох талбар</translation>
 <translation id="5598905979683743333"><ph name="NAME" />, ганц сонголтот талбарыг сонгоогүй байна</translation>
 <translation id="5601172225407283979">Анхдагч үйлдлийг гүйцэтгэх</translation>
+<translation id="5604302400025591178">{COUNT,plural, =1{дөрвөлжин тэмдэг}other{# дөрвөлжин тэмдэг}}</translation>
 <translation id="5608798115546226984">Autocompletion мөр</translation>
 <translation id="5616029807486814372">Дараагийн хичээл</translation>
 <translation id="561939826962581046">цаг</translation>
@@ -680,6 +692,8 @@
 <translation id="5623842676595125836">Нэвтрэх</translation>
 <translation id="5628125749885014029">h4</translation>
 <translation id="5632083598315326067">График тэмдэг</translation>
+<translation id="5648939288050772726">Баяр хүргэе! Та ChromeVox-г ашиглахад шаардлагатай зүйлсийг амжилттай сурлаа. Та Search+Period дээр дарснаар ChromeVox-н тушаалын цэсийг хүссэн үедээ нээх боломжтой болохыг санана уу. ChromeVox болон ChromeOS-н талаар нэмэлт мэдээлэл авах бол дараах нийтлэлийг уншина уу.
+    Хэрэв та практик хичээлийг дуусгасан бол Хаах товчлуурт шилжиж, түүнийг дарахын тулд ChromeVox-г ашиглана уу.</translation>
 <translation id="5653397561111110475">Chromebook-н мэдрэгчтэй дэлгэцийн хандалтын онцлогийг ашиглах</translation>
 <translation id="5655682562155942719">Комманд руу оч</translation>
 <translation id="56637627897541303">Бичих талбар</translation>
@@ -750,8 +764,10 @@
 <translation id="6100239002225743044">Нэг мөрөөр дээшээ зөөвөрлөх</translation>
 <translation id="6118126368611144850">Chrome-н Андройд апп. Хэрэв таны төхөөрөмжид Play Store байвал Андройд аппаар ChromeVox-г туршиж үзээрэй. Play Store-с Google Chrome Canary-г татаж туршилтын дэмжлэгийг ашиглаж үзнэ үү.</translation>
 <translation id="611827076493383239">vtd</translation>
+<translation id="6119846243427417423">идэвхжүүлэх</translation>
 <translation id="6122013438240733403">btn</translation>
 <translation id="6132506484792346370">Жагсаалтын хайрцаг, эсвэл комбо хайрцаг</translation>
+<translation id="613344593214611552">өмнөх өгүүлбэрийг устга</translation>
 <translation id="6142308968191113180">Гарчиг 4</translation>
 <translation id="6150023170003443621">Шар ногоон</translation>
 <translation id="6158882249329863701">мөр <ph name="TABLECELLROWINDEX" /> багана <ph name="TABLECELLCOLUMNINDEX" /></translation>
@@ -761,9 +777,11 @@
 <translation id="6186305613600865047">Хуудасны доод тал руу очих</translation>
 <translation id="6187190722927752226">Номин ногоон</translation>
 <translation id="6197361807490522975">Хар хөх</translation>
+<translation id="6218813441317556731"><ph name="DELETE_PHRASE" />-г <ph name="INSERT_PHRASE" />-р соль</translation>
 <translation id="6236061028292614533">Дараах толгой хэсэг</translation>
 <translation id="6254901459154107917">Дараагийн засварлаж болох текстийн талбар</translation>
 <translation id="6259464875943891919"><ph name="TYPE" />-ийг гаргасан</translation>
+<translation id="6280088282605782512">Хоёр товшино уу</translation>
 <translation id="6282062888058716985">nav</translation>
 <translation id="6295699829709583154">Үндсэн товчнууд: Хайлт</translation>
 <translation id="6305702903308659374">ChromeVox-г ярьж байх үед энгийн төвшинд тоглуулна уу</translation>
@@ -934,6 +952,7 @@
 <translation id="7533226154149229506">Бага зэргийн алтан шаргал туяатай цайвар саарал</translation>
 <translation id="7543255924852002459">Шошгыг болих</translation>
 <translation id="7552432549459840808">Chrome-н хэрэгтэй товчлол</translation>
+<translation id="7553679324939294712"><ph name="BEFORE_PHRASE" />-н өмнө <ph name="INSERT_PHRASE" />-г оруул</translation>
 <translation id="7569983096843329377">Хар</translation>
 <translation id="7579911500627256166">цэг <ph name="DOT" /></translation>
 <translation id="7592060599656252486">Зарим</translation>
@@ -957,16 +976,16 @@
 <translation id="7684431668231950609">Бичвэр засварлах, холбоос оруулах</translation>
 <translation id="7685589220304187312">tlbar</translation>
 <translation id="7693840228159394336">Өмнөх ганц сонголтот талбар</translation>
+<translation id="7696631298608145306">дараагийн үг рүү оч</translation>
 <translation id="7701040980221191251">Тодорхойгүй</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7713139339518499741">Төрөлхийн дуу хоолой</translation>
 <translation id="7714340021005120797">Дараагийн комбо нүд алга байна</translation>
-<translation id="772146615414628379">Баяр хүргэе! Та ChromeVox-г ашиглахад шаардлагатай зүйлсийг амжилттай сурлаа. Та Search+Period дээр дарснаар ChromeVox-н тушаалын цэсийг хүссэн үедээ нээх боломжтой болохыг санана уу. ChromeVox болон Chrome үйлдлийн системийн талаар нэмэлт мэдээлэл авах бол дараах нийтлэлийг уншина уу.
-    Хэрэв та практик хичээлийг дуусгасан бол Хаах товчлуурт шилжиж, түүнийг дарахын тулд ChromeVox-г ашиглана уу.</translation>
 <translation id="7724603315864178912">Хайчлах</translation>
 <translation id="7731785449856576010">Дараагийн медиа жижиг хэрэгсэл алга байна</translation>
 <translation id="7735498529470878067">Хүрэлтээр сонсох нь танд дэлгэц дээр юу байгаа талаар шуурхай олж мэдэхэд туслах боломжтой.</translation>
 <translation id="773906353055481349">Нүд хооронд шилжихийн тулд Search+Ctrl+Alt-г сумтай дарна уу</translation>
+<translation id="7746976083433980639"><ph name="ACTION" />-с <ph name="LABEL" /> хүртэл</translation>
 <translation id="7763537600611320912"><ph name="FILE_NAME" />-г татаж эхэллээ</translation>
 <translation id="7768784765476638775">Ярихаар-сонгох</translation>
 <translation id="7776293189010177726">ChromeVox цэсийг нээх</translation>
@@ -1066,6 +1085,7 @@
 <translation id="8455868257606149352">Макс <ph name="X" /></translation>
 <translation id="84575901236241018">нэвтрэх түлхүүртэй, <ph name="KEY" /></translation>
 <translation id="8463645336674919227">Дүрмийн алдаанаас гарч байна</translation>
+<translation id="8465573210279050749">өмнөх үгийг устга</translation>
 <translation id="847040613207937740">Дараагийн тэмдэглэх нүд алга байна</translation>
 <translation id="8473540203671727883">Хулганын доорх текстийг хэлнэ үү</translation>
 <translation id="8476408756881832830">ChromeVox-г ярьж байх үед дахин тоглуулахыг түр зогсооно уу</translation>
@@ -1096,11 +1116,13 @@
 <translation id="8659501358298941449">Эвхмэл жагсаалт</translation>
 <translation id="8666733765751421568"><ph name="TYPE" />-н төгсөл</translation>
 <translation id="867187640362843212">Гарчиг 5</translation>
+<translation id="8690400660839620419">{COUNT,plural, =1{}other{байрлуулсан түвшин #}}</translation>
 <translation id="8693391540059827073">Миний дуртай улирал</translation>
 <translation id="8696284982970258155">Бага зэргийн цайвар цэнхэр</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{ хоолой}other{ # босоо хоолой}}</translation>
 <translation id="8741370088760768424">Заавар: Одоогийн зүйлийг идэвхжүүлэхийн тулд Хайлт + Зай авах товчийг дарна уу.</translation>
 <translation id="8743786158317878347">Хүснэгт гэх мэт бүтэцжүүлсэн мэдээллийг оруулах</translation>
+<translation id="8746846427395705317">өмнөх үг рүү оч</translation>
 <translation id="8747966237988593539">Захиалсан жагсаалт</translation>
 <translation id="8749988712346667988">Мөнгөлөг</translation>
 <translation id="875769700429317857"><ph name="FILE_NAME" />-г татаж дууслаа</translation>
@@ -1128,6 +1150,7 @@
 <translation id="8970172509886453271">Өмнөх хэсэг алга байна</translation>
 <translation id="89720367119469899">Гарах</translation>
 <translation id="8978496506222343566">tltip</translation>
+<translation id="898089897833732740"><ph name="PHRASE" />-г устга</translation>
 <translation id="8986362086234534611">Мартах</translation>
 <translation id="8989104346085848538">ChromeVox-н одоогийн аливаа яриаг зогсоохын тулд Control товчийг дарна уу.</translation>
 <translation id="8993737615451556423">Унших дуу хоолойг хурдасгах, удаашруулах болон түр зогсоох удирдлагаар хангана</translation>
@@ -1163,6 +1186,7 @@
 <translation id="9223032053830369045">Гүн улаан</translation>
 <translation id="923331726185079994">ChromeVox-г шинэчилсэн</translation>
 <translation id="93384979447910801">Тэнгисийн гүн ногоон</translation>
+<translation id="937605981140327129">TalkBack-г одоогоор суулгаагүй байна. Android AccessibilitySuite-г Play Store-с суулгаад, дахин оролдоно уу.</translation>
 <translation id="948171205378458592">Ярианы хувь хэмжээг бууруулах</translation>
 <translation id="957570623732056069">Энэ хичээлийг шилжүүлэхийн тулд нэг хуруугаараа зүүн эсвэл баруун тийш шударна уу</translation>
 <translation id="958854023026327378">Нэг хурууг доош шудрах</translation>

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/version.h"
 #include "build/build_config.h"
 #include "content/browser/accessibility/accessibility_browsertest.h"
 #include "content/browser/accessibility/browser_accessibility.h"
@@ -219,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
                                          ui::kAXModeComplete,
                                          ax::mojom::Event::kLoadComplete);
   EXPECT_TRUE(NavigateToURL(shell(), GURL("data:text/html,")));
-  waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
 
   // Get the BrowserAccessibilityManager.
   WebContentsImpl* web_contents =
@@ -262,7 +263,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
 
   const std::u16string embedded_character(
       1, ui::AXPlatformNodeAuraLinux::kEmbeddedCharacter);
-  const std::vector<const std::string> expected_hypertext = {
+  const std::vector<std::string> expected_hypertext = {
       "B", "e", "f", "o", "r", "e", base::UTF16ToUTF8(embedded_character),
       "a", "f", "t", "e", "r", "."};
 
@@ -310,7 +311,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
       input.value =
           'é👩\u200D❤\uFE0F\u200D👩🐶';
       )SCRIPT");
-  waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
 
   int character_count = atk_text_get_character_count(atk_text);
   // "character_count" is the number of actual characters, not the number of
@@ -396,7 +397,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
       const textarea = document.querySelector('textarea');
       textarea.value += '\n';
       )SCRIPT");
-  waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
 
   // The second last line should have an additional trailing newline. Also,
   // Blink represents the blank line with a newline character, so in total there
@@ -460,7 +461,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
-                       TestParagraphTextAtOffsetWithBoundarySentence) {
+                       DISABLED_TestParagraphTextAtOffsetWithBoundarySentence) {
   LoadInitialAccessibilityTreeFromHtml(std::string(
       R"HTML(<!DOCTYPE html>
           <html>
@@ -514,54 +515,61 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
   int x = -1, y = -1;
   int width = -1, height = -1;
 
+  // When given invalid arguments, atk_text_get_character_extents returns 0
+  // before 2.35.1 and -1 after:
+  // https://gitlab.gnome.org/GNOME/atk/-/merge_requests/44#9f621eb5fd3bcb2fa5c7bd228c9b1ad42edc46c8_32_33
+  // https://gnome.pages.gitlab.gnome.org/at-spi2-core/atk/AtkText.html#atk-text-get-character-extents
+  base::Version atk_version(atk_get_version());
+  int expect = atk_version.CompareTo(base::Version("2.35.1")) >= 0 ? -1 : 0;
+
   atk_text_get_character_extents(atk_text, invalid_offset, &x, &y, &width,
                                  &height, ATK_XY_SCREEN);
-  EXPECT_EQ(0, x);
-  EXPECT_EQ(0, y);
-  EXPECT_EQ(0, width);
-  EXPECT_EQ(0, height);
+  EXPECT_EQ(expect, x);
+  EXPECT_EQ(expect, y);
+  EXPECT_EQ(expect, width);
+  EXPECT_EQ(expect, height);
 
 #ifdef ATK_230
   atk_text_get_character_extents(atk_text, invalid_offset, &x, &y, &width,
                                  &height, ATK_XY_PARENT);
-  EXPECT_EQ(0, x);
-  EXPECT_EQ(0, y);
-  EXPECT_EQ(0, width);
-  EXPECT_EQ(0, height);
+  EXPECT_EQ(expect, x);
+  EXPECT_EQ(expect, y);
+  EXPECT_EQ(expect, width);
+  EXPECT_EQ(expect, height);
 #endif  // ATK_230
 
   atk_text_get_character_extents(atk_text, invalid_offset, &x, &y, &width,
                                  &height, ATK_XY_WINDOW);
-  EXPECT_EQ(0, x);
-  EXPECT_EQ(0, y);
-  EXPECT_EQ(0, width);
-  EXPECT_EQ(0, height);
+  EXPECT_EQ(expect, x);
+  EXPECT_EQ(expect, y);
+  EXPECT_EQ(expect, width);
+  EXPECT_EQ(expect, height);
 
   int n_characters = atk_text_get_character_count(atk_text);
   ASSERT_LT(0, n_characters);
 
   atk_text_get_character_extents(atk_text, invalid_offset, &x, &y, &width,
                                  &height, ATK_XY_SCREEN);
-  EXPECT_EQ(0, x);
-  EXPECT_EQ(0, y);
-  EXPECT_EQ(0, width);
-  EXPECT_EQ(0, height);
+  EXPECT_EQ(expect, x);
+  EXPECT_EQ(expect, y);
+  EXPECT_EQ(expect, width);
+  EXPECT_EQ(expect, height);
 
 #ifdef ATK_230
   atk_text_get_character_extents(atk_text, invalid_offset, &x, &y, &width,
                                  &height, ATK_XY_PARENT);
-  EXPECT_EQ(0, x);
-  EXPECT_EQ(0, y);
-  EXPECT_EQ(0, width);
-  EXPECT_EQ(0, height);
+  EXPECT_EQ(expect, x);
+  EXPECT_EQ(expect, y);
+  EXPECT_EQ(expect, width);
+  EXPECT_EQ(expect, height);
 #endif  // ATK_230
 
   atk_text_get_character_extents(atk_text, invalid_offset, &x, &y, &width,
                                  &height, ATK_XY_WINDOW);
-  EXPECT_EQ(0, x);
-  EXPECT_EQ(0, y);
-  EXPECT_EQ(0, width);
-  EXPECT_EQ(0, height);
+  EXPECT_EQ(expect, x);
+  EXPECT_EQ(expect, y);
+  EXPECT_EQ(expect, width);
+  EXPECT_EQ(expect, height);
 
   g_object_unref(atk_text);
 }
@@ -758,7 +766,9 @@ typedef bool (*ScrollToPointFunc)(AtkComponent* component,
                                   gint y);
 typedef bool (*ScrollToFunc)(AtkComponent* component, AtkScrollType type);
 
-IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest, TestScrollToPoint) {
+// TODO(https://crbug.com/1366113): Enable this test.
+IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
+                       DISABLED_TestScrollToPoint) {
   // There's a chance we may be compiled with a newer version of ATK and then
   // run with an older one, so we need to do a runtime check for this method
   // that is available in ATK 2.30 instead of linking directly.
@@ -784,7 +794,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest, TestScrollToPoint) {
       shell()->web_contents(), ui::kAXModeComplete,
       ax::mojom::Event::kLocationChanged);
   scroll_to_point(atk_component, ATK_XY_PARENT, 0, 0);
-  location_changed_waiter.WaitForNotification();
+  ASSERT_TRUE(location_changed_waiter.WaitForNotification());
 
   atk_component_get_extents(atk_component, &x, &y, nullptr, nullptr,
                             ATK_XY_SCREEN);
@@ -793,20 +803,20 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest, TestScrollToPoint) {
 
   constexpr int kScrollToY = 0;
   scroll_to_point(atk_component, ATK_XY_SCREEN, 0, kScrollToY);
-  location_changed_waiter.WaitForNotification();
+  ASSERT_TRUE(location_changed_waiter.WaitForNotification());
   atk_component_get_extents(atk_component, &x, &y, nullptr, nullptr,
                             ATK_XY_SCREEN);
   EXPECT_EQ(kScrollToY, y);
 
   constexpr int kScrollToY_2 = 243;
   scroll_to_point(atk_component, ATK_XY_SCREEN, 0, kScrollToY_2);
-  location_changed_waiter.WaitForNotification();
+  ASSERT_TRUE(location_changed_waiter.WaitForNotification());
   atk_component_get_extents(atk_component, nullptr, &y, nullptr, nullptr,
                             ATK_XY_SCREEN);
   EXPECT_EQ(kScrollToY_2, y);
 
   scroll_to_point(atk_component, ATK_XY_SCREEN, 0, 129);
-  location_changed_waiter.WaitForNotification();
+  ASSERT_TRUE(location_changed_waiter.WaitForNotification());
   atk_component_get_extents(atk_component, nullptr, &y, nullptr, nullptr,
                             ATK_XY_SCREEN);
 
@@ -819,7 +829,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest, TestScrollToPoint) {
   g_object_unref(atk_text);
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest, TestScrollTo) {
+// TODO(https://crbug.com/1366113): Enable this test.
+IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
+                       DISABLED_TestScrollTo) {
   // There's a chance we may be compiled with a newer version of ATK and then
   // run with an older one, so we need to do a runtime check for this method
   // that is available in ATK 2.30 instead of linking directly.
@@ -873,7 +885,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest, TestScrollTo) {
       shell()->web_contents(), ui::kAXModeComplete,
       ax::mojom::Event::kScrollPositionChanged);
   ASSERT_TRUE(scroll_to(ATK_COMPONENT(target), ATK_SCROLL_TOP_EDGE));
-  waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
   int x, y;
   atk_component_get_extents(ATK_COMPONENT(target), &x, &y, nullptr, nullptr,
                             ATK_XY_SCREEN);
@@ -881,35 +893,35 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest, TestScrollTo) {
   EXPECT_NE(x, doc_x);
 
   ASSERT_TRUE(scroll_to(ATK_COMPONENT(target), ATK_SCROLL_TOP_LEFT));
-  waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
   atk_component_get_extents(ATK_COMPONENT(target), &x, &y, nullptr, nullptr,
                             ATK_XY_SCREEN);
   EXPECT_EQ(y, doc_y);
   EXPECT_EQ(x, doc_x);
 
   ASSERT_TRUE(scroll_to(ATK_COMPONENT(target), ATK_SCROLL_BOTTOM_EDGE));
-  waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
   atk_component_get_extents(ATK_COMPONENT(target), &x, &y, nullptr, nullptr,
                             ATK_XY_SCREEN);
   EXPECT_NE(y, doc_y);
   EXPECT_EQ(x, doc_x);
 
   ASSERT_TRUE(scroll_to(ATK_COMPONENT(target), ATK_SCROLL_RIGHT_EDGE));
-  waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
   atk_component_get_extents(ATK_COMPONENT(target), &x, &y, nullptr, nullptr,
                             ATK_XY_SCREEN);
   EXPECT_NE(y, doc_y);
   EXPECT_NE(x, doc_x);
 
   ASSERT_TRUE(scroll_to(ATK_COMPONENT(target2), ATK_SCROLL_LEFT_EDGE));
-  waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
   atk_component_get_extents(ATK_COMPONENT(target2), &x, &y, nullptr, nullptr,
                             ATK_XY_SCREEN);
   EXPECT_NE(y, doc_y);
   EXPECT_EQ(x, doc_x);
 
   ASSERT_TRUE(scroll_to(ATK_COMPONENT(target2), ATK_SCROLL_TOP_LEFT));
-  waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
   atk_component_get_extents(ATK_COMPONENT(target2), &x, &y, nullptr, nullptr,
                             ATK_XY_SCREEN);
   EXPECT_EQ(y, doc_y);
@@ -922,7 +934,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest, TestScrollTo) {
       shell()->web_contents(), ui::kAXModeComplete,
       ax::mojom::Event::kScrollPositionChanged);
   atk_text_set_caret_offset(ATK_TEXT(target3), 0);
-  waiter3.WaitForNotification();
+  ASSERT_TRUE(waiter3.WaitForNotification());
 
   // The text area should be scrolled to somewhere near the bottom of the
   // screen. We check that it is in the bottom quarter of the screen here,
@@ -958,8 +970,9 @@ gboolean ScrollSubstringTo(AtkText* text,
   return g_scroll_substring_to(text, start_offset, end_offset, type);
 }
 
+// TODO(https://crbug.com/1366113): Enable this test.
 IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
-                       TestScrollSubstringTo) {
+                       DISABLED_TestScrollSubstringTo) {
   // There's a chance we may be compiled with a newer version of ATK and then
   // run with an older one, so we need to do a runtime check for this method
   // that is available in ATK 2.32 instead of linking directly.
@@ -1006,7 +1019,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
       shell()->web_contents(), ui::kAXModeComplete,
       ax::mojom::Event::kScrollPositionChanged);
   ASSERT_TRUE(ScrollSubstringTo(ATK_TEXT(target1), 1, 2, ATK_SCROLL_TOP_EDGE));
-  waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
   int x, y;
   atk_text_get_character_extents(ATK_TEXT(target1), 1, &x, &y, nullptr, nullptr,
                                  ATK_XY_SCREEN);
@@ -1014,7 +1027,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
   EXPECT_NE(x, doc_x);
 
   ASSERT_TRUE(ScrollSubstringTo(ATK_TEXT(target1), 1, 2, ATK_SCROLL_TOP_LEFT));
-  waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
   atk_text_get_character_extents(ATK_TEXT(target1), 1, &x, &y, nullptr, nullptr,
                                  ATK_XY_SCREEN);
   EXPECT_EQ(y, doc_y);
@@ -1022,7 +1035,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
 
   ASSERT_TRUE(
       ScrollSubstringTo(ATK_TEXT(target1), 1, 2, ATK_SCROLL_BOTTOM_EDGE));
-  waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
   atk_text_get_character_extents(ATK_TEXT(target1), 1, &x, &y, nullptr, nullptr,
                                  ATK_XY_SCREEN);
   EXPECT_NE(y, doc_y);
@@ -1030,21 +1043,21 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
 
   ASSERT_TRUE(
       ScrollSubstringTo(ATK_TEXT(target1), 1, 2, ATK_SCROLL_RIGHT_EDGE));
-  waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
   atk_text_get_character_extents(ATK_TEXT(target1), 1, &x, &y, nullptr, nullptr,
                                  ATK_XY_SCREEN);
   EXPECT_NE(y, doc_y);
   EXPECT_NE(x, doc_x);
 
   ASSERT_TRUE(ScrollSubstringTo(ATK_TEXT(target1), 1, 2, ATK_SCROLL_LEFT_EDGE));
-  waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
   atk_text_get_character_extents(ATK_TEXT(target1), 1, &x, &y, nullptr, nullptr,
                                  ATK_XY_SCREEN);
   EXPECT_NE(y, doc_y);
   EXPECT_EQ(x, doc_x);
 
   ASSERT_TRUE(ScrollSubstringTo(ATK_TEXT(target1), 1, 2, ATK_SCROLL_TOP_LEFT));
-  waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
   atk_text_get_character_extents(ATK_TEXT(target1), 1, &x, &y, nullptr, nullptr,
                                  ATK_XY_SCREEN);
   EXPECT_EQ(y, doc_y);
@@ -1073,8 +1086,9 @@ gboolean ScrollSubstringToPoint(AtkText* text,
                                      x, y);
 }
 
+// TODO(https://crbug.com/1366113): Enable this test.
 IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
-                       TestScrollSubstringToPoint) {
+                       DISABLED_TestScrollSubstringToPoint) {
   // There's a chance we may be compiled with a newer version of ATK and then
   // run with an older one, so we need to do a runtime check for this method
   // that is available in ATK 2.30 instead of linking directly.
@@ -1101,7 +1115,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
       shell()->web_contents(), ui::kAXModeComplete,
       ax::mojom::Event::kLocationChanged);
   ScrollSubstringToPoint(atk_text, 1, 2, ATK_XY_PARENT, 0, 0);
-  location_changed_waiter.WaitForNotification();
+  ASSERT_TRUE(location_changed_waiter.WaitForNotification());
 
   atk_text_get_character_extents(atk_text, 1, &x, &y, nullptr, nullptr,
                                  ATK_XY_SCREEN);
@@ -1110,20 +1124,20 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
 
   constexpr int kScrollToY = 0;
   ScrollSubstringToPoint(atk_text, 1, 2, ATK_XY_SCREEN, 0, kScrollToY);
-  location_changed_waiter.WaitForNotification();
+  ASSERT_TRUE(location_changed_waiter.WaitForNotification());
   atk_text_get_character_extents(atk_text, 1, &x, &y, nullptr, nullptr,
                                  ATK_XY_SCREEN);
   EXPECT_EQ(kScrollToY, y);
 
   constexpr int kScrollToY_2 = 243;
   ScrollSubstringToPoint(atk_text, 1, 2, ATK_XY_SCREEN, 0, kScrollToY_2);
-  location_changed_waiter.WaitForNotification();
+  ASSERT_TRUE(location_changed_waiter.WaitForNotification());
   atk_text_get_character_extents(atk_text, 1, &x, &y, nullptr, nullptr,
                                  ATK_XY_SCREEN);
   EXPECT_EQ(kScrollToY_2, y);
 
   ScrollSubstringToPoint(atk_text, 1, 2, ATK_XY_SCREEN, 0, 129);
-  location_changed_waiter.WaitForNotification();
+  ASSERT_TRUE(location_changed_waiter.WaitForNotification());
   atk_text_get_character_extents(atk_text, 1, &x, &y, nullptr, nullptr,
                                  ATK_XY_SCREEN);
 
@@ -1140,7 +1154,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
 }
 #endif  //  defined(ATK_CHECK_VERSION) && ATK_CHECK_VERSION(2, 32, 0)
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // Flaky on crbug.com/1026149
 #define MAYBE_TestSetSelection DISABLED_TestSetSelection
 #else
@@ -1159,13 +1173,13 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
 
   AccessibilityNotificationWaiter waiter(
       shell()->web_contents(), ui::kAXModeComplete,
-      ax::mojom::Event::kTextSelectionChanged);
+      ui::AXEventGenerator::Event::TEXT_SELECTION_CHANGED);
   int contents_string_length = static_cast<int>(InputContentsString().size());
   start_offset = 0;
   end_offset = contents_string_length;
 
   EXPECT_TRUE(atk_text_set_selection(atk_text, 0, start_offset, end_offset));
-  waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
   selected_text =
       atk_text_get_selection(atk_text, 0, &start_offset, &end_offset);
   EXPECT_NE(nullptr, selected_text);
@@ -1176,7 +1190,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
   start_offset = contents_string_length;
   end_offset = 1;
   EXPECT_TRUE(atk_text_set_selection(atk_text, 0, start_offset, end_offset));
-  waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
   selected_text =
       atk_text_get_selection(atk_text, 0, &start_offset, &end_offset);
   EXPECT_NE(nullptr, selected_text);
@@ -1226,7 +1240,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
 
   EXPECT_TRUE(
       atk_text_set_selection(atk_list_item, 0, start_offset, end_offset));
-  waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
 
   selected_text =
       atk_text_get_selection(atk_list_item, 0, &start_offset, &end_offset);
@@ -1243,7 +1257,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
   end_offset = 2;
   EXPECT_TRUE(
       atk_text_set_selection(atk_list_item, 0, start_offset, end_offset));
-  waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
 
   selected_text =
       atk_text_get_selection(atk_list_item, 0, &start_offset, &end_offset);
@@ -1260,7 +1274,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
   end_offset = 8;
   EXPECT_TRUE(
       atk_text_set_selection(atk_list_item, 0, start_offset, end_offset));
-  waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
 
   selected_text =
       atk_text_get_selection(atk_list_item, 0, &start_offset, &end_offset);
@@ -1275,7 +1289,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
   end_offset = 8;
   EXPECT_TRUE(
       atk_text_set_selection(atk_list_item, 0, start_offset, end_offset));
-  waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
 
   selected_text =
       atk_text_get_selection(atk_list_item, 0, &start_offset, &end_offset);
@@ -1293,7 +1307,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
   end_offset = n_characters;
   EXPECT_TRUE(
       atk_text_set_selection(atk_list_item, 0, start_offset, end_offset));
-  waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
 
   selected_text =
       atk_text_get_selection(atk_list_item, 0, &start_offset, &end_offset);
@@ -1377,27 +1391,27 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
 
   auto waiter = std::make_unique<AccessibilityNotificationWaiter>(
       shell()->web_contents(), ui::kAXModeComplete,
-      ax::mojom::Event::kTextSelectionChanged);
+      ax::mojom::Event::kDocumentSelectionChanged);
   atk_text_set_caret_offset(ATK_TEXT(div), 0);
-  waiter->WaitForNotification();
+  ASSERT_TRUE(waiter->WaitForNotification());
   ASSERT_EQ(selection_changed_signals, 0);
   ASSERT_EQ(caret_moved_signals, 1);
 
   caret_moved_signals = selection_changed_signals = 0;
   atk_text_set_selection(ATK_TEXT(div), 0, 0, 3);
-  waiter->WaitForNotification();
+  ASSERT_TRUE(waiter->WaitForNotification());
   ASSERT_EQ(selection_changed_signals, 1);
   ASSERT_EQ(caret_moved_signals, 1);
 
   caret_moved_signals = selection_changed_signals = 0;
   atk_text_set_caret_offset(ATK_TEXT(div), 3);
-  waiter->WaitForNotification();
+  ASSERT_TRUE(waiter->WaitForNotification());
   ASSERT_EQ(selection_changed_signals, 1);
   ASSERT_EQ(caret_moved_signals, 0);
 
   caret_moved_signals = selection_changed_signals = 0;
   atk_text_set_caret_offset(ATK_TEXT(div), 2);
-  waiter->WaitForNotification();
+  ASSERT_TRUE(waiter->WaitForNotification());
   ASSERT_EQ(selection_changed_signals, 0);
   ASSERT_EQ(caret_moved_signals, 1);
 
@@ -1442,7 +1456,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
 
   AccessibilityNotificationWaiter selection_waiter(
       shell()->web_contents(), ui::kAXModeComplete,
-      ax::mojom::Event::kTextSelectionChanged);
+      ax::mojom::Event::kDocumentSelectionChanged);
   ExecuteScript(
       u"let parent = document.getElementById('parent');"
       u"let child1 = document.getElementById('child1');"
@@ -1453,7 +1467,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
       u"parent.focus();"
       u"document.getSelection().removeAllRanges();"
       u"document.getSelection().addRange(range);");
-  selection_waiter.WaitForNotification();
+  ASSERT_TRUE(selection_waiter.WaitForNotification());
 
   EXPECT_FALSE(saw_selection_change_in_parent);
   EXPECT_TRUE(saw_selection_change_in_child1);
@@ -1464,7 +1478,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
   saw_selection_change_in_child2 = false;
 
   EXPECT_TRUE(atk_text_remove_selection(parent, 0));
-  selection_waiter.WaitForNotification();
+  ASSERT_TRUE(selection_waiter.WaitForNotification());
 
   EXPECT_FALSE(saw_selection_change_in_parent);
   EXPECT_TRUE(saw_selection_change_in_child1);
@@ -1481,7 +1495,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
       u"parent.focus();"
       u"document.getSelection().removeAllRanges();"
       u"document.getSelection().addRange(range2);");
-  selection_waiter.WaitForNotification();
+  ASSERT_TRUE(selection_waiter.WaitForNotification());
 
   EXPECT_TRUE(saw_selection_change_in_parent);
   EXPECT_FALSE(saw_selection_change_in_child1);
@@ -1493,7 +1507,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
   LoadInitialAccessibilityTreeFromHtml(
       R"HTML(<!DOCTYPE html>
       <html>
-      <body>
+      <body contenteditable>
       <style>h1.generated::before{content:"   [   ";}</style>
       <style>h1.generated::after{content:"   ]   ";}</style>
       <h1 class="generated">Foo</h1>
@@ -1501,7 +1515,14 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
       </html>)HTML");
 
   AtkObject* document = GetRendererAccessible();
-  AtkObject* heading = atk_object_ref_accessible_child(document, 0);
+
+  AtkObject* contenteditable = atk_object_ref_accessible_child(document, 0);
+  ASSERT_NE(nullptr, contenteditable);
+  ASSERT_EQ(ATK_ROLE_SECTION, atk_object_get_role(contenteditable));
+  ASSERT_TRUE(ATK_IS_TEXT(contenteditable));
+
+  AtkObject* heading = atk_object_ref_accessible_child(contenteditable, 0);
+  ASSERT_NE(nullptr, heading);
   ASSERT_EQ(atk_object_get_role(heading), ATK_ROLE_HEADING);
 
   // The accessible text for the heading should match the rendered text and
@@ -1512,7 +1533,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
 
   AccessibilityNotificationWaiter waiter(
       shell()->web_contents(), ui::kAXModeComplete,
-      ax::mojom::Event::kTextSelectionChanged);
+      ax::mojom::Event::kDocumentSelectionChanged);
 
   // Caret can't be set inside generated content, it will go to the closest
   // allowed place. Ordered the targets so that the caret will always actually
@@ -1521,11 +1542,12 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
   std::vector<int> expect_offset = {2, 3, 2, 4, 2, 4, 2, 4, 2};
   for (size_t i = 0; i < target_offset.size(); i++) {
     atk_text_set_caret_offset(ATK_TEXT(heading), target_offset[i]);
-    waiter.WaitForNotification();
+    ASSERT_TRUE(waiter.WaitForNotification());
     ASSERT_EQ(expect_offset[i], atk_text_get_caret_offset(ATK_TEXT(heading)));
   }
 
   g_object_unref(heading);
+  g_object_unref(contenteditable);
 }
 
 // TODO(crbug.com/981913): This flakes on linux.
@@ -1574,11 +1596,11 @@ IN_PROC_BROWSER_TEST_F(
   // necessary when running interactively.
   SimulateKeyPress(shell()->web_contents(), ui::DomKey::TAB, ui::DomCode::TAB,
                    ui::VKEY_TAB, false, false, false, false);
-  waiter->WaitForNotification();
+  ASSERT_TRUE(waiter->WaitForNotification());
 
   SimulateKeyPress(shell()->web_contents(), ui::DomKey::TAB, ui::DomCode::TAB,
                    ui::VKEY_TAB, false, false, false, false);
-  waiter->WaitForNotification();
+  ASSERT_TRUE(waiter->WaitForNotification());
   ASSERT_TRUE(IsAtkObjectFocused(child_3));
 
   // Now we repeat a similar test, but this time setting the caret offset on
@@ -1587,11 +1609,11 @@ IN_PROC_BROWSER_TEST_F(
   atk_text_set_caret_offset(ATK_TEXT(document), 13);
   SimulateKeyPress(shell()->web_contents(), ui::DomKey::TAB, ui::DomCode::TAB,
                    ui::VKEY_TAB, false, false, false, false);
-  waiter->WaitForNotification();
+  ASSERT_TRUE(waiter->WaitForNotification());
 
   SimulateKeyPress(shell()->web_contents(), ui::DomKey::TAB, ui::DomCode::TAB,
                    ui::VKEY_TAB, false, false, false, false);
-  waiter->WaitForNotification();
+  ASSERT_TRUE(waiter->WaitForNotification());
 
   ASSERT_TRUE(IsAtkObjectFocused(child_7));
 
@@ -1600,7 +1622,7 @@ IN_PROC_BROWSER_TEST_F(
   atk_text_set_caret_offset(ATK_TEXT(child_3), 0);
   SimulateKeyPress(shell()->web_contents(), ui::DomKey::TAB, ui::DomCode::TAB,
                    ui::VKEY_TAB, false, false, false, false);
-  waiter->WaitForNotification();
+  ASSERT_TRUE(waiter->WaitForNotification());
   ASSERT_TRUE(IsAtkObjectFocused(child_3));
 
   AtkObject* link_section = atk_object_ref_accessible_child(child_7, 0);
@@ -1608,7 +1630,7 @@ IN_PROC_BROWSER_TEST_F(
   AtkObject* link_text = atk_object_ref_accessible_child(link_section, 0);
   EXPECT_NE(link_text, nullptr);
   atk_text_set_caret_offset(ATK_TEXT(link_text), 0);
-  waiter->WaitForNotification();
+  ASSERT_TRUE(waiter->WaitForNotification());
   ASSERT_TRUE(IsAtkObjectFocused(child_7));
 
   g_object_unref(link_section);
@@ -1644,10 +1666,10 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
 
   AccessibilityNotificationWaiter waiter(
       shell()->web_contents(), ui::kAXModeComplete,
-      ax::mojom::Event::kTextSelectionChanged);
+      ax::mojom::Event::kDocumentSelectionChanged);
 
   EXPECT_TRUE(atk_text_set_selection(ATK_TEXT(paragraph), 0, 0, 5));
-  waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
 
   gchar* selected =
       atk_text_get_selection(ATK_TEXT(paragraph), 0, nullptr, nullptr);
@@ -1687,7 +1709,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
 
   EXPECT_TRUE(atk_text_set_selection(ATK_TEXT(paragraph), 0, 0, 11));
   atk_component_grab_focus(ATK_COMPONENT(button));
-  waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
 
   gchar* selected =
       atk_text_get_selection(ATK_TEXT(paragraph), 0, nullptr, nullptr);
@@ -1727,7 +1749,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
 
   EXPECT_TRUE(atk_text_set_selection(ATK_TEXT(paragraph), 0, 0, 11));
   atk_component_grab_focus(ATK_COMPONENT(button));
-  waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
 
   gchar* selected =
       atk_text_get_selection(ATK_TEXT(paragraph), 0, nullptr, nullptr);
@@ -1765,10 +1787,10 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
 
   AccessibilityNotificationWaiter waiter(
       shell()->web_contents(), ui::kAXModeComplete,
-      ax::mojom::Event::kTextSelectionChanged);
+      ax::mojom::Event::kDocumentSelectionChanged);
 
   EXPECT_TRUE(atk_text_set_selection(ATK_TEXT(edit), 0, 1, 2));
-  waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
 
   // When the unfocused contenteditable span has its selection set, focus will
   // be set. That will trigger the script in the source to move that span to
@@ -1825,16 +1847,16 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
   auto waiter = std::make_unique<AccessibilityNotificationWaiter>(
       shell()->web_contents(), ui::kAXModeComplete, ax::mojom::Event::kFocus);
   atk_component_grab_focus(ATK_COMPONENT(field_1));
-  waiter->WaitForNotification();
+  ASSERT_TRUE(waiter->WaitForNotification());
 
   waiter = std::make_unique<AccessibilityNotificationWaiter>(
       shell()->web_contents(), ui::kAXModeComplete,
-      ax::mojom::Event::kTextSelectionChanged);
+      ui::AXEventGenerator::Event::TEXT_SELECTION_CHANGED);
   EXPECT_TRUE(atk_text_set_selection(ATK_TEXT(field_1), 0, 0, 5));
-  waiter->WaitForNotification();
+  ASSERT_TRUE(waiter->WaitForNotification());
 
   EXPECT_TRUE(atk_text_set_selection(ATK_TEXT(field_2), 0, 0, -1));
-  waiter->WaitForNotification();
+  ASSERT_TRUE(waiter->WaitForNotification());
 
   // Only the field that is currently focused should return a selection.
   ASSERT_FALSE(IsAtkObjectFocused(field_1));
@@ -1847,7 +1869,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
   waiter = std::make_unique<AccessibilityNotificationWaiter>(
       shell()->web_contents(), ui::kAXModeComplete, ax::mojom::Event::kFocus);
   atk_component_grab_focus(ATK_COMPONENT(field_1));
-  waiter->WaitForNotification();
+  ASSERT_TRUE(waiter->WaitForNotification());
 
   // Now that the focus has returned to the first field, it should return the
   // original selection that we set on it.
@@ -1905,7 +1927,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
 
   AccessibilityNotificationWaiter selection_waiter(
       shell()->web_contents(), ui::kAXModeComplete,
-      ax::mojom::Event::kTextSelectionChanged);
+      ui::AXEventGenerator::Event::TEXT_SELECTION_CHANGED);
   ExecuteScript(
       u"let selection = document.getSelection();"
       u"let editable = document.querySelector('div[contenteditable=\"true\"]');"
@@ -1915,7 +1937,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
       u"range.setEnd(editable.lastChild, 4);"
       u"selection.removeAllRanges();"
       u"selection.addRange(range);");
-  selection_waiter.WaitForNotification();
+  ASSERT_TRUE(selection_waiter.WaitForNotification());
 
   // We should see the event happen in div and not the static text element.
   EXPECT_TRUE(saw_caret_move_in_div);
@@ -1925,8 +1947,11 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
 
   saw_caret_move_in_div = false;
 
+  AccessibilityNotificationWaiter document_selection_waiter(
+      shell()->web_contents(), ui::kAXModeComplete,
+      ax::mojom::Event::kDocumentSelectionChanged);
   atk_text_set_caret_offset(anonymous_block, 3);
-  selection_waiter.WaitForNotification();
+  ASSERT_TRUE(document_selection_waiter.WaitForNotification());
 
   EXPECT_FALSE(saw_caret_move_in_div);
   EXPECT_FALSE(saw_caret_move_in_text);
@@ -2008,9 +2033,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
 
   AccessibilityNotificationWaiter waiter(
       shell()->web_contents(), ui::kAXModeComplete,
-      ax::mojom::Event::kTextSelectionChanged);
+      ui::AXEventGenerator::Event::TEXT_SELECTION_CHANGED);
   atk_text_set_caret_offset(ATK_TEXT(div1), 4);
-  waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
 
   ASSERT_EQ(atk_text_get_caret_offset(ATK_TEXT(div1)), 4);
   ASSERT_EQ(caret_position_from_event, 4);
@@ -2055,11 +2080,13 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
   AtkObject* document = GetRendererAccessible();
   ASSERT_TRUE(ATK_IS_COMPONENT(document));
 
-  auto* node = static_cast<ui::AXPlatformNodeAuraLinux*>(
-      ui::AXPlatformNode::FromNativeViewAccessible(document));
-  std::pair<int, int> offsets = node->GetSelectionOffsetsForAtk();
-  EXPECT_EQ(0, offsets.first);
-  EXPECT_EQ(3, offsets.second);
+  {
+    auto* node = static_cast<ui::AXPlatformNodeAuraLinux*>(
+        ui::AXPlatformNode::FromNativeViewAccessible(document));
+    std::pair<int, int> offsets = node->GetSelectionOffsetsForAtk();
+    EXPECT_EQ(0, offsets.first);
+    EXPECT_EQ(3, offsets.second);
+  }
 
   std::vector<int> expected = {12, 18, 14};  // text length of each child
   int number_of_children = atk_object_get_n_accessible_children(document);
@@ -2111,7 +2138,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
 
   // Find a node to hit test. Note that this is a really simple page,
   // so synchronous hit testing will work fine.
-  BrowserAccessibility* node = manager->GetRoot();
+  BrowserAccessibility* node = manager->GetBrowserAccessibilityRoot();
   while (node && node->GetRole() != ax::mojom::Role::kButton)
     node = manager->NextInTreeOrder(node);
   DCHECK(node);
@@ -2124,7 +2151,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
   ui::AXPlatformNodeAuraLinux* root_platform_node =
       static_cast<ui::AXPlatformNodeAuraLinux*>(
           ui::AXPlatformNode::FromNativeViewAccessible(
-              manager->GetRoot()->GetNativeViewAccessible()));
+              manager->GetBrowserAccessibilityRoot()
+                  ->GetNativeViewAccessible()));
 
   // First test that calling accHitTest on the root node returns the button.
   {
@@ -2184,7 +2212,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
       )HTML");
   AccessibilityNotificationWaiter waiter(
       shell()->web_contents(), ui::kAXModeComplete,
-      ax::mojom::Event::kTextSelectionChanged);
+      ui::AXEventGenerator::Event::TEXT_SELECTION_CHANGED);
   auto caret_callback =
       G_CALLBACK(+[](AtkText*, int new_position, int* out_caret_position) {
         *out_caret_position = new_position;
@@ -2195,17 +2223,17 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
                    &out_caret_position);
 
   atk_text_set_caret_offset(input_text, 0);
-  waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
   EXPECT_EQ(atk_text_get_caret_offset(input_text), 0);
   EXPECT_EQ(out_caret_position, 0);
 
   atk_text_set_caret_offset(input_text, 1);
-  waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
   EXPECT_EQ(atk_text_get_caret_offset(input_text), 1);
   EXPECT_EQ(out_caret_position, 1);
 
   atk_text_set_caret_offset(input_text, 2);
-  waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
   EXPECT_EQ(atk_text_get_caret_offset(input_text), 2);
   EXPECT_EQ(out_caret_position, 2);
 

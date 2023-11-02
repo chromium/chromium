@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,7 +19,13 @@ namespace media {
 // a decoder cross-process where it is written.
 class SharedMemoryBufferTracker final : public VideoCaptureBufferTracker {
  public:
-  SharedMemoryBufferTracker();
+  // If |strict_pixel_format| is false, a tracker of a sufficient size
+  // may be reused for any requested pixel format.
+  // Otherwise, the tracker may be reused only for the same pixel format
+  // as was used for the initialization.
+  // It may be useful if the capturer is using different pixel format for
+  // ShMem and GpuMemory buffers.
+  explicit SharedMemoryBufferTracker(bool strict_pixel_format = false);
 
   SharedMemoryBufferTracker(const SharedMemoryBufferTracker&) = delete;
   SharedMemoryBufferTracker& operator=(const SharedMemoryBufferTracker&) =
@@ -44,6 +50,11 @@ class SharedMemoryBufferTracker final : public VideoCaptureBufferTracker {
  private:
   base::UnsafeSharedMemoryRegion region_;
   base::WritableSharedMemoryMapping mapping_;
+  // Pixel format for the underlying buffer.
+  VideoPixelFormat format_;
+  // Is the tracker reusable only for the same pixel format as used for
+  // initialization of the tracker.
+  const bool strict_pixel_format_;
 };
 
 }  // namespace media

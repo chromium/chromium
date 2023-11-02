@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,14 +18,13 @@
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/app_list/search/cros_action_history/cros_action.pb.h"
-#include "components/metrics/structured/structured_mojo_events.h"
+#include "components/metrics/structured/structured_events.h"
 
 namespace app_list {
 namespace {
@@ -47,8 +46,9 @@ constexpr char kTabReactivatedPrefix[] = "TabReactivated-";
 constexpr char kTabOpenedPrefix[] = "TabOpened-";
 
 // Enables Hashed Logging for CrOSAction.
-const base::Feature kCrOSActionStructuredMetrics{
-    "CrOSActionStructuredMetrics", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kCrOSActionStructuredMetrics,
+             "CrOSActionStructuredMetrics",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Represents the events of the CrOSActionRecorder.
 // This enum is used for a histogram and should not be renumbered and the old

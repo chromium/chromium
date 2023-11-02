@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "base/containers/contains.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
@@ -38,7 +39,6 @@
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/variations/net/variations_http_headers.h"
 #include "components/variations/proto/study.pb.h"
 #include "components/variations/variations.mojom.h"
 #include "components/variations/variations_associated_data.h"
@@ -51,7 +51,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/network_connection_change_simulator.h"
 #include "content/public/test/simple_url_loader_test_helper.h"
-#include "net/base/escape.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -284,13 +283,13 @@ class VariationsHttpHeadersBrowserTest : public InProcessBrowserTest {
     GURL absolute_import = GetExampleUrlWithPath("/workers/empty.js");
     const std::string worker_path = base::StrCat(
         {worker, "?import=",
-         net::EscapeQueryParamValue(absolute_import.spec(), false)});
+         base::EscapeQueryParamValue(absolute_import.spec(), false)});
     GURL worker_url = GetGoogleUrlWithPath(worker_path);
 
     // Build the page URL that tells the page to create the worker.
-    const std::string page_path = base::StrCat(
-        {page,
-         "?worker_url=", net::EscapeQueryParamValue(worker_url.spec(), false)});
+    const std::string page_path =
+        base::StrCat({page, "?worker_url=",
+                      base::EscapeQueryParamValue(worker_url.spec(), false)});
     GURL page_url = GetGoogleUrlWithPath(page_path);
 
     // Navigate and test.
@@ -368,8 +367,8 @@ VariationsHttpHeadersBrowserTest::RequestHandler(
   // Recover the original URL of the request by replacing the host name in
   // request.GetURL() (which is 127.0.0.1) with the host name from the request
   // headers.
-  url::Replacements<char> replacements;
-  replacements.SetHost(host.c_str(), url::Component(0, host.length()));
+  GURL::Replacements replacements;
+  replacements.SetHostStr(host);
   GURL original_url = request.GetURL().ReplaceComponents(replacements);
 
   // Memorize the request headers for this URL for later verification.
@@ -623,9 +622,8 @@ IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest,
                        CheckLowEntropySourceValue) {
-  std::unique_ptr<const base::FieldTrial::EntropyProvider>
-      low_entropy_provider = g_browser_process->GetMetricsServicesManager()
-                                 ->CreateEntropyProviderForTesting();
+  auto entropy_providers = g_browser_process->GetMetricsServicesManager()
+                               ->CreateEntropyProvidersForTesting();
 
   // Create a trial with 100 groups and variation ids to validate that the group
   // reported in the variations header is actually based on the low entropy
@@ -635,9 +633,8 @@ IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest,
   // either uses a different API or tighten the current API to set up a field
   // trial that can only be made with the low entropy provider.
   scoped_refptr<base::FieldTrial> trial =
-      base::FieldTrialList::FactoryGetFieldTrialWithRandomizationSeed(
-          "t1", 100, "default", base::FieldTrial::ONE_TIME_RANDOMIZED, 0,
-          /*default_group_number=*/nullptr, low_entropy_provider.get());
+      base::FieldTrialList::FactoryGetFieldTrial(
+          "t1", 100, "default", entropy_providers->low_entropy());
   for (int i = 1; i < 101; ++i) {
     const std::string group_name = base::StringPrintf("%d", i);
     variations::AssociateGoogleVariationID(
@@ -647,7 +644,7 @@ IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest,
   }
   // Activate the trial. This corresponds to ACTIVATE_ON_STARTUP for server-side
   // studies.
-  trial->group();
+  trial->Activate();
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetGoogleUrl()));
   absl::optional<std::string> header =
@@ -807,7 +804,7 @@ IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest, ServiceWorkerScript) {
   GURL absolute_import = GetExampleUrlWithPath("/service_worker/empty.js");
   const std::string worker_path =
       "/service_worker/import_scripts_worker.js?import=" +
-      net::EscapeQueryParamValue(absolute_import.spec(), false);
+      base::EscapeQueryParamValue(absolute_import.spec(), false);
   RegisterServiceWorker(worker_path);
 
   // Test that the header is present on the main script request.
@@ -865,7 +862,7 @@ class VariationsHttpHeadersBrowserTestWithOptimizationGuide
         {features::kLoadingPredictorUseOptimizationGuide,
          {{"use_predictions_for_preconnect", "true"}}},
         {optimization_guide::features::kOptimizationHints, {}}};
-    std::vector<base::Feature> disabled = {
+    std::vector<base::test::FeatureRef> disabled = {
         features::kLoadingPredictorUseLocalPredictions};
     feature_list_.InitWithFeaturesAndParameters(enabled, disabled);
   }

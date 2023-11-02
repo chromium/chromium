@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,7 +32,7 @@ class ResourceSchedulerBrowserTest : public ContentBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(ResourceSchedulerBrowserTest,
-                       ResourceLoadingExperimentIncognito) {
+                       DISABLED_ResourceLoadingExperimentIncognito) {
   GURL url(embedded_test_server()->GetURL(
       "/resource_loading/resource_loading_non_mobile.html"));
 
@@ -43,7 +43,7 @@ IN_PROC_BROWSER_TEST_F(ResourceSchedulerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ResourceSchedulerBrowserTest,
-                       ResourceLoadingExperimentNormal) {
+                       DISABLED_ResourceLoadingExperimentNormal) {
   GURL url(embedded_test_server()->GetURL(
       "/resource_loading/resource_loading_non_mobile.html"));
   Shell* browser = shell();

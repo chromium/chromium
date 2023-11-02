@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -62,8 +62,7 @@ public class WebSigninAccountPickerDelegate implements AccountPickerDelegate {
             // if user retries the sign-in from the error screen, we need to sign out the user
             // first before signing in again.
             destroyWebSigninBridge();
-            // TODO(https://crbug.com/1133752): Revise sign-out reason
-            mSigninManager.signOut(SignoutReason.ABORT_SIGNIN);
+            mSigninManager.signOut(SignoutReason.SIGNIN_RETRIGGERD_FROM_WEB_SIGNIN);
         }
         AccountInfoServiceProvider.get().getAccountInfoByEmail(accountEmail).then(accountInfo -> {
             mWebSigninBridge =
@@ -105,6 +104,11 @@ public class WebSigninAccountPickerDelegate implements AccountPickerDelegate {
             @Override
             public void onSigninSucceeded() {
                 ThreadUtils.assertOnUiThread();
+                if (tab.isDestroyed()) {
+                    // This code path may be called asynchronously, assume that if the tab has been
+                    // destroyed there is no point in continuing.
+                    return;
+                }
                 tab.loadUrl(new LoadUrlParams(continueUrl));
             }
         };

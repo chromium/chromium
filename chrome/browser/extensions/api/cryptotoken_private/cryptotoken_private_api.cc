@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,10 +35,10 @@
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 #include "url/origin.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "device/fido/features.h"
 #include "device/fido/win/webauthn_api.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -57,13 +57,13 @@ constexpr const char* kGoogleGstaticAppIds[] = {
 
 // ContainsAppIdByHash returns true iff the SHA-256 hash of one of the
 // elements of |list| equals |hash|.
-bool ContainsAppIdByHash(const base::ListValue& list,
+bool ContainsAppIdByHash(const base::Value::List& list,
                          const std::vector<uint8_t>& hash) {
   if (hash.size() != crypto::kSHA256Length) {
     return false;
   }
 
-  for (const auto& i : list.GetList()) {
+  for (const auto& i : list) {
     const std::string& s = i.GetString();
     if (s.find('/') == std::string::npos) {
       // No slashes mean that this is a webauthn RP ID, not a U2F AppID.
@@ -122,7 +122,7 @@ CryptotokenPrivateCanOriginAssertAppIdFunction::Run() {
   }
 
   if (origin_url == app_id_url) {
-    return RespondNow(OneArgument(base::Value(true)));
+    return RespondNow(WithArguments(true));
   }
 
   // Fetch the eTLD+1 of both.
@@ -143,7 +143,7 @@ CryptotokenPrivateCanOriginAssertAppIdFunction::Run() {
         "Could not find an eTLD for appId *", params->app_id_url)));
   }
   if (origin_etldp1 == app_id_etldp1) {
-    return RespondNow(OneArgument(base::Value(true)));
+    return RespondNow(WithArguments(true));
   }
   // For legacy purposes, allow google.com origins to assert certain
   // gstatic.com appIds.
@@ -151,10 +151,10 @@ CryptotokenPrivateCanOriginAssertAppIdFunction::Run() {
   if (origin_etldp1 == kGoogleDotCom) {
     for (const char* id : kGoogleGstaticAppIds) {
       if (params->app_id_url == id)
-        return RespondNow(OneArgument(base::Value(true)));
+        return RespondNow(WithArguments(true));
     }
   }
-  return RespondNow(OneArgument(base::Value(false)));
+  return RespondNow(WithArguments(false));
 }
 
 CryptotokenPrivateIsAppIdHashInEnterpriseContextFunction::
@@ -170,12 +170,12 @@ CryptotokenPrivateIsAppIdHashInEnterpriseContextFunction::Run() {
 
   Profile* const profile = Profile::FromBrowserContext(browser_context());
   const PrefService* const prefs = profile->GetPrefs();
-  const base::ListValue* const permit_attestation =
+  const base::Value::List& permit_attestation =
       prefs->GetList(prefs::kSecurityKeyPermitAttestation);
 
   return RespondNow(ArgumentList(
       cryptotoken_private::IsAppIdHashInEnterpriseContext::Results::Create(
-          ContainsAppIdByHash(*permit_attestation, params->app_id_hash))));
+          ContainsAppIdByHash(permit_attestation, params->app_id_hash))));
 }
 
 CryptotokenPrivateCanAppIdGetAttestationFunction::
@@ -200,12 +200,12 @@ CryptotokenPrivateCanAppIdGetAttestationFunction::Run() {
   // prompt is shown.
   Profile* const profile = Profile::FromBrowserContext(browser_context());
   const PrefService* const prefs = profile->GetPrefs();
-  const base::ListValue* const permit_attestation =
+  const base::Value::List& permit_attestation =
       prefs->GetList(prefs::kSecurityKeyPermitAttestation);
 
-  for (const auto& entry : permit_attestation->GetList()) {
+  for (const auto& entry : permit_attestation) {
     if (entry.GetString() == app_id)
-      return RespondNow(OneArgument(base::Value(true)));
+      return RespondNow(WithArguments(true));
   }
 
   // If the origin is blocked, reject attestation.
@@ -213,17 +213,17 @@ CryptotokenPrivateCanAppIdGetAttestationFunction::Run() {
           device::fido_filter::Operation::MAKE_CREDENTIAL, origin.Serialize(),
           /*device=*/absl::nullopt, /*id=*/absl::nullopt) ==
       device::fido_filter::Action::NO_ATTESTATION) {
-    return RespondNow(OneArgument(base::Value(false)));
+    return RespondNow(WithArguments(false));
   }
 
   // If prompting is disabled, allow attestation because that is the historical
   // behavior.
   if (!base::FeatureList::IsEnabled(
           ::features::kSecurityKeyAttestationPrompt)) {
-    return RespondNow(OneArgument(base::Value(true)));
+    return RespondNow(WithArguments(true));
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // If the request was handled by the Windows WebAuthn API on a version of
   // Windows that shows an attestation permission prompt, don't show another
   // one.
@@ -236,9 +236,9 @@ CryptotokenPrivateCanAppIdGetAttestationFunction::Run() {
       device::WinWebAuthnApi::GetDefault()->IsAvailable() &&
       device::WinWebAuthnApi::GetDefault()->Version() >=
           WEBAUTHN_API_VERSION_2) {
-    return RespondNow(OneArgument(base::Value(true)));
+    return RespondNow(WithArguments(true));
   }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   // Otherwise, show a permission prompt and pass the user's decision back.
   const GURL app_id_url(app_id);
@@ -259,9 +259,10 @@ CryptotokenPrivateCanAppIdGetAttestationFunction::Run() {
 
   // The created AttestationPermissionRequest deletes itself once complete.
   permission_request_manager->AddRequest(
-      web_contents->GetMainFrame(),  // Extension API targets a particular tab,
-                                     // so select the current main frame to
-                                     // handle the request.
+      web_contents
+          ->GetPrimaryMainFrame(),  // Extension API targets a particular tab,
+                                    // so select the current main frame to
+                                    // handle the request.
       NewAttestationPermissionRequest(
           origin,
           base::BindOnce(
@@ -271,7 +272,7 @@ CryptotokenPrivateCanAppIdGetAttestationFunction::Run() {
 }
 
 void CryptotokenPrivateCanAppIdGetAttestationFunction::Complete(bool result) {
-  Respond(OneArgument(base::Value(result)));
+  Respond(WithArguments(result));
 }
 
 CryptotokenPrivateCanMakeU2fApiRequestFunction::
@@ -293,7 +294,7 @@ CryptotokenPrivateCanMakeU2fApiRequestFunction::Run() {
   if (!ash::ProfileHelper::IsRegularProfile(
           Profile::FromBrowserContext(browser_context()))) {
     DCHECK_EQ(params->options.tab_id, api::tabs::TAB_ID_NONE);
-    return RespondNow(OneArgument(base::Value(true)));
+    return RespondNow(WithArguments(true));
   }
 #endif
 
@@ -321,26 +322,21 @@ CryptotokenPrivateCanMakeU2fApiRequestFunction::Run() {
                                frame->GetLastCommittedURL(), response_headers,
                                extension_misc::kCryptotokenDeprecationTrialName,
                                base::Time::Now()));
-  const bool u2f_api_enterprise_policy_enabled =
-      Profile::FromBrowserContext(browser_context())
-          ->GetPrefs()
-          ->GetBoolean(extensions::pref_names::kU2fSecurityKeyApiEnabled);
 
   DCHECK(
       base::FeatureList::IsEnabled(extensions_features::kU2FSecurityKeyAPI) ||
-      u2f_api_enterprise_policy_enabled || u2f_api_origin_trial_enabled);
+      u2f_api_origin_trial_enabled);
 
   // Don't show a permission prompt if its feature flag is disabled, or if the
   // site enrolled in the deprecation trial (since they're obviously aware of
-  // the deprecation), or if the enterprise policy to override U2F
-  // deprecation-related changes has been enabled.
+  // the deprecation).
   //
   // Also don't show the prompt in "non-regular" ChromeOS profiles, which
   // includes CrOS SAML sign-in context that doesn't support permission prompts
   // (crbug.com/1257293).
   if (!base::FeatureList::IsEnabled(device::kU2fPermissionPrompt) ||
-      u2f_api_enterprise_policy_enabled || u2f_api_origin_trial_enabled) {
-    return RespondNow(OneArgument(base::Value(true)));
+      u2f_api_origin_trial_enabled) {
+    return RespondNow(WithArguments(true));
   }
 
   permissions::PermissionRequestManager* permission_request_manager =
@@ -365,7 +361,7 @@ CryptotokenPrivateCanMakeU2fApiRequestFunction::Run() {
 }
 
 void CryptotokenPrivateCanMakeU2fApiRequestFunction::Complete(bool result) {
-  Respond(OneArgument(base::Value(result)));
+  Respond(WithArguments(result));
 }
 
 ExtensionFunction::ResponseAction
@@ -382,7 +378,7 @@ CryptotokenPrivateRecordRegisterRequestFunction::Run() {
 
   page_load_metrics::MetricsWebContentsObserver::RecordFeatureUsage(
       frame, blink::mojom::WebFeature::kU2FCryptotokenRegister);
-  return RespondNow(NoArguments());
+  return RespondNow(WithArguments());
 }
 
 ExtensionFunction::ResponseAction
@@ -398,7 +394,7 @@ CryptotokenPrivateRecordSignRequestFunction::Run() {
 
   page_load_metrics::MetricsWebContentsObserver::RecordFeatureUsage(
       frame, blink::mojom::WebFeature::kU2FCryptotokenSign);
-  return RespondNow(NoArguments());
+  return RespondNow(WithArguments());
 }
 
 }  // namespace api

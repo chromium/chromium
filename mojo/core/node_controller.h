@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,6 @@
 #include "base/callback.h"
 #include "base/containers/queue.h"
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/writable_shared_memory_region.h"
 #include "base/process/process.h"
@@ -37,6 +36,26 @@ namespace core {
 
 class Broker;
 class Core;
+
+// A set of NodeNames that is bounded by a maximum size.
+// If the max size is reached, it will delete the older half of stored names.
+class BoundedPeerSet {
+ public:
+  BoundedPeerSet();
+  BoundedPeerSet(const BoundedPeerSet&) = delete;
+  BoundedPeerSet& operator=(const BoundedPeerSet&) = delete;
+
+  ~BoundedPeerSet();
+
+  void Insert(const ports::NodeName& name);
+  bool Contains(const ports::NodeName& name);
+
+ private:
+  static constexpr int kHalfSize = 50000;
+
+  std::unordered_set<ports::NodeName> old_set_;
+  std::unordered_set<ports::NodeName> new_set_;
+};
 
 // The owner of ports::Node which facilitates core EDK implementation. All
 // public interface methods are safe to call from any thread.
@@ -184,7 +203,8 @@ class MOJO_SYSTEM_IMPL_EXPORT NodeController : public ports::NodeDelegate,
 
   void AddPeer(const ports::NodeName& name,
                scoped_refptr<NodeChannel> channel,
-               bool start_channel);
+               bool start_channel,
+               bool allow_name_reuse = false);
   void DropPeer(const ports::NodeName& name, NodeChannel* channel);
   void SendPeerEvent(const ports::NodeName& name, ports::ScopedEvent event);
   void DropAllPeers();
@@ -225,7 +245,7 @@ class MOJO_SYSTEM_IMPL_EXPORT NodeController : public ports::NodeDelegate,
                    const uint64_t remote_capailities) override;
   void OnBroadcast(const ports::NodeName& from_node,
                    Channel::MessagePtr message) override;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void OnRelayEventMessage(const ports::NodeName& from_node,
                            base::ProcessHandle from_process,
                            const ports::NodeName& destination,
@@ -259,6 +279,10 @@ class MOJO_SYSTEM_IMPL_EXPORT NodeController : public ports::NodeDelegate,
   // See |ForceDisconnectProcessForTesting()|.
   void ForceDisconnectProcessForTestingOnIOThread(base::ProcessId process_id);
 
+  // Mark a port that it is about to be merged. This allows us to do a security
+  // check on the incoming port merge that this port was intended to be merged.
+  void RecordPendingPortMerge(const ports::PortRef& port);
+
   // These are safe to access from any thread as long as the Node is alive.
   const ports::NodeName name_;
   const std::unique_ptr<ports::Node> node_;
@@ -269,6 +293,7 @@ class MOJO_SYSTEM_IMPL_EXPORT NodeController : public ports::NodeDelegate,
 
   // Channels to known peers, including inviter and invitees, if any.
   NodeMap peers_;
+  BoundedPeerSet dropped_peers_;
 
   // Outgoing message queues for peers we've heard of but can't yet talk to.
   std::unordered_map<ports::NodeName, OutgoingMessageQueue>
@@ -336,7 +361,7 @@ class MOJO_SYSTEM_IMPL_EXPORT NodeController : public ports::NodeDelegate,
   // Must only be accessed from the IO thread.
   bool destroy_on_io_thread_shutdown_ = false;
 
-#if !defined(OS_APPLE) && !defined(OS_NACL_SFI) && !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_FUCHSIA)
   // Broker for sync shared buffer creation on behalf of broker clients.
   std::unique_ptr<Broker> broker_;
 #endif

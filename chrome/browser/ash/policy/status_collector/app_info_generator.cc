@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/session_manager/core/session_manager.h"
 #include "url/gurl.h"
@@ -22,8 +23,8 @@ namespace {
 
 bool IsPrimaryAndAffiliated(Profile* profile) {
   user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
-  bool is_primary = chromeos::ProfileHelper::Get()->IsPrimaryProfile(profile);
+      ash::ProfileHelper::Get()->GetUserByProfile(profile);
+  bool is_primary = ash::ProfileHelper::Get()->IsPrimaryProfile(profile);
   bool is_affiliated = user && user->IsAffiliated();
   if (!is_primary || !is_affiliated) {
     VLOG(1) << "The profile for the primary user is not associated with an "
@@ -32,46 +33,48 @@ bool IsPrimaryAndAffiliated(Profile* profile) {
   return is_primary && is_affiliated;
 }
 
-em::AppInfo::Status ExtractStatus(const apps::mojom::Readiness readiness) {
+em::AppInfo::Status ExtractStatus(const apps::Readiness readiness) {
   switch (readiness) {
-    case apps::mojom::Readiness::kReady:
+    case apps::Readiness::kReady:
       return em::AppInfo::Status::AppInfo_Status_STATUS_INSTALLED;
-    case apps::mojom::Readiness::kRemoved:
-    case apps::mojom::Readiness::kUninstalledByUser:
-    case apps::mojom::Readiness::kUninstalledByMigration:
+    case apps::Readiness::kRemoved:
+    case apps::Readiness::kUninstalledByUser:
+    case apps::Readiness::kUninstalledByMigration:
       return em::AppInfo::Status::AppInfo_Status_STATUS_UNINSTALLED;
-    case apps::mojom::Readiness::kDisabledByBlocklist:
-    case apps::mojom::Readiness::kDisabledByPolicy:
-    case apps::mojom::Readiness::kDisabledByUser:
-    case apps::mojom::Readiness::kTerminated:
+    case apps::Readiness::kDisabledByBlocklist:
+    case apps::Readiness::kDisabledByPolicy:
+    case apps::Readiness::kDisabledByUser:
+    case apps::Readiness::kTerminated:
       return em::AppInfo::Status::AppInfo_Status_STATUS_DISABLED;
-    case apps::mojom::Readiness::kUnknown:
+    case apps::Readiness::kUnknown:
       return em::AppInfo::Status::AppInfo_Status_STATUS_UNKNOWN;
   }
 }
 
-em::AppInfo::AppType ExtractAppType(const apps::mojom::AppType app_type) {
+em::AppInfo::AppType ExtractAppType(const apps::AppType app_type) {
   switch (app_type) {
-    case apps::mojom::AppType::kArc:
+    case apps::AppType::kArc:
       return em::AppInfo::AppType::AppInfo_AppType_TYPE_ARC;
-    case apps::mojom::AppType::kBuiltIn:
+    case apps::AppType::kBuiltIn:
       return em::AppInfo::AppType::AppInfo_AppType_TYPE_BUILTIN;
-    case apps::mojom::AppType::kCrostini:
+    case apps::AppType::kCrostini:
       return em::AppInfo::AppType::AppInfo_AppType_TYPE_CROSTINI;
-    case apps::mojom::AppType::kPluginVm:
+    case apps::AppType::kPluginVm:
       return em::AppInfo::AppType::AppInfo_AppType_TYPE_PLUGINVM;
-    case apps::mojom::AppType::kExtension:
-    case apps::mojom::AppType::kStandaloneBrowserExtension:
+    case apps::AppType::kChromeApp:
+    case apps::AppType::kStandaloneBrowserChromeApp:
       return em::AppInfo::AppType::AppInfo_AppType_TYPE_EXTENSION;
-    case apps::mojom::AppType::kWeb:
-    case apps::mojom::AppType::kSystemWeb:
+    case apps::AppType::kWeb:
+    case apps::AppType::kSystemWeb:
       return em::AppInfo::AppType::AppInfo_AppType_TYPE_WEB;
-    case apps::mojom::AppType::kBorealis:
+    case apps::AppType::kBorealis:
       return em::AppInfo::AppType::AppInfo_AppType_TYPE_BOREALIS;
-    case apps::mojom::AppType::kMacOs:
-    case apps::mojom::AppType::kStandaloneBrowser:
-    case apps::mojom::AppType::kRemote:
-    case apps::mojom::AppType::kUnknown:
+    case apps::AppType::kMacOs:
+    case apps::AppType::kStandaloneBrowser:
+    case apps::AppType::kExtension:
+    case apps::AppType::kStandaloneBrowserExtension:
+    case apps::AppType::kRemote:
+    case apps::AppType::kUnknown:
       return em::AppInfo::AppType::AppInfo_AppType_TYPE_UNKNOWN;
   }
 }
@@ -163,7 +166,7 @@ void AppInfoGenerator::OnReportedSuccessfully(const base::Time report_time) {
 }
 
 void AppInfoGenerator::OnWillReport() {
-  if (!provider_) {
+  if (!provider_ || device_locked_) {
     return;
   }
   SetOpenDurationsToClosed(clock_.Now());
@@ -203,14 +206,20 @@ void AppInfoGenerator::OnLogout(Profile* profile) {
 }
 
 void AppInfoGenerator::OnLocked() {
+  device_locked_ = true;
   SetOpenDurationsToClosed(clock_.Now());
 }
 
 void AppInfoGenerator::OnUnlocked() {
+  device_locked_ = false;
   SetIdleDurationsToOpen();
 }
 
 void AppInfoGenerator::OnResumeActive(base::Time suspend_time) {
+  if (device_locked_) {
+    return;
+  }
+
   SetOpenDurationsToClosed(suspend_time);
   SetIdleDurationsToOpen();
 }
@@ -219,8 +228,8 @@ const em::AppInfo AppInfoGenerator::ConvertToAppInfo(
     const apps::AppUpdate& update,
     const std::vector<em::TimePeriod>& app_activity) const {
   em::AppInfo info;
-  bool is_web_app = (update.AppType() == apps::mojom::AppType::kWeb) ||
-                    (update.AppType() == apps::mojom::AppType::kSystemWeb);
+  bool is_web_app = (update.AppType() == apps::AppType::kWeb) ||
+                    (update.AppType() == apps::AppType::kSystemWeb);
   if (!is_web_app) {
     info.set_app_id(update.AppId());
     info.set_app_name(update.Name());
@@ -263,7 +272,7 @@ void AppInfoGenerator::SetIdleDurationsToOpen() {
   provider_->app_service_proxy.InstanceRegistry().ForEachInstance(
       [this, start_time](const apps::InstanceUpdate& update) {
         if (update.State() & apps::InstanceState::kStarted) {
-          OpenUsageInterval(update.AppId(), update.InstanceKey(), start_time);
+          OpenUsageInterval(update.AppId(), update.InstanceId(), start_time);
         }
       });
   provider_->app_service_proxy.InstanceRegistry().AddObserver(this);
@@ -271,21 +280,21 @@ void AppInfoGenerator::SetIdleDurationsToOpen() {
 
 void AppInfoGenerator::OpenUsageInterval(
     const std::string& app_id,
-    const apps::Instance::InstanceKey& instance_key,
+    const base::UnguessableToken& instance_id,
     const base::Time start_time) {
   if (app_instances_by_id_.count(app_id) == 0) {
     app_instances_by_id_[app_id] = std::make_unique<AppInstances>(start_time);
   }
-  app_instances_by_id_[app_id]->running_instances.insert(instance_key);
+  app_instances_by_id_[app_id]->running_instances.insert(instance_id);
 }
 
 void AppInfoGenerator::CloseUsageInterval(
     const std::string& app_id,
-    const apps::Instance::InstanceKey& instance_key,
+    const base::UnguessableToken& instance_id,
     const base::Time end_time) {
   if (app_instances_by_id_.count(app_id)) {
     auto& app_instances = app_instances_by_id_[app_id];
-    app_instances->running_instances.erase(instance_key);
+    app_instances->running_instances.erase(instance_id);
     if (app_instances->running_instances.empty()) {
       base::Time start_time = app_instances->start_time;
       provider_->activity_storage.AddActivityPeriod(start_time, end_time,
@@ -301,11 +310,11 @@ void AppInfoGenerator::OnInstanceUpdate(const apps::InstanceUpdate& update) {
   }
   apps::InstanceState state = update.State();
   const std::string& app_id = update.AppId();
-  auto instance_key = update.InstanceKey();
+  auto instance_id = update.InstanceId();
   if (state & apps::InstanceState::kStarted) {
-    OpenUsageInterval(app_id, instance_key, update.LastUpdatedTime());
+    OpenUsageInterval(app_id, instance_id, update.LastUpdatedTime());
   } else if (state & apps::InstanceState::kDestroyed) {
-    CloseUsageInterval(app_id, instance_key, update.LastUpdatedTime());
+    CloseUsageInterval(app_id, instance_id, update.LastUpdatedTime());
   }
 }
 

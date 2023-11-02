@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,15 +9,13 @@
 #include "base/memory/singleton.h"
 #include "base/time/default_tick_clock.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/user_education/reopen_tab_in_product_help.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 ReopenTabInProductHelpFactory::ReopenTabInProductHelpFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "ReopenTabInProductHelp",
-          BrowserContextDependencyManager::GetInstance()) {
+          ProfileSelections::BuildRedirectedInIncognito()) {
   DependsOn(feature_engagement::TrackerFactory::GetInstance());
 }
 
@@ -39,9 +37,4 @@ KeyedService* ReopenTabInProductHelpFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   return new ReopenTabInProductHelp(Profile::FromBrowserContext(context),
                                     base::DefaultTickClock::GetInstance());
-}
-
-content::BrowserContext* ReopenTabInProductHelpFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextRedirectedInIncognito(context);
 }

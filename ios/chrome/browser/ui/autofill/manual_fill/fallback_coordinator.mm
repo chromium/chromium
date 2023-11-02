@@ -1,22 +1,22 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/autofill/manual_fill/fallback_coordinator.h"
 
-#include "base/memory/ref_counted.h"
-#include "base/metrics/user_metrics.h"
-#include "base/strings/sys_string_conversions.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/ios/browser/autofill_driver_ios.h"
-#include "components/keyed_service/core/service_access_type.h"
-#include "ios/chrome/browser/autofill/personal_data_manager_factory.h"
+#import "base/memory/ref_counted.h"
+#import "base/metrics/user_metrics.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/autofill/core/browser/personal_data_manager.h"
+#import "components/autofill/ios/browser/autofill_driver_ios.h"
+#import "components/keyed_service/core/service_access_type.h"
+#import "ios/chrome/browser/autofill/personal_data_manager_factory.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/fallback_view_controller.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_injection_handler.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller.h"
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
-#include "ui/base/device_form_factor.h"
+#import "ui/base/device_form_factor.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -49,6 +49,9 @@
   } else {
     if (completion) {
       completion();
+      if ((ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET)) {
+        [self.delegate fallbackCoordinatorDidDismissPopover:self];
+      }
     }
     return NO;
   }
@@ -57,7 +60,7 @@
 - (void)presentFromButton:(UIButton*)button {
   self.viewController.modalPresentationStyle = UIModalPresentationPopover;
 
-  // |topFrontWindow| is used in order to present above the keyboard. This way
+  // `topFrontWindow` is used in order to present above the keyboard. This way
   // the popover will be dismissed on keyboard interaction and it won't be
   // covered when the keyboard is near the top of the screen.
   UIWindow* topFrontWindow =

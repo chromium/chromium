@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,10 +33,6 @@ class AssistantOptInUI : public ui::WebDialogUI {
   void OnDialogClosed();
 
  private:
-  // Called when the webui has been initialized.
-  void Initialize();
-
-  JSCallsContainer js_calls_container_;
   AssistantOptInFlowScreenHandler* assistant_handler_ptr_;
   base::WeakPtrFactory<AssistantOptInUI> weak_factory_{this};
 };

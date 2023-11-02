@@ -1,26 +1,30 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.toolbar.top;
 
-import android.graphics.Bitmap;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.view.ViewStub;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.BooleanSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.device.DeviceClassManager;
+import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ButtonData;
+import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.TabCountProvider;
 import org.chromium.chrome.browser.toolbar.TabSwitcherButtonCoordinator;
@@ -29,6 +33,7 @@ import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -41,6 +46,9 @@ public class StartSurfaceToolbarCoordinator {
     private final StartSurfaceToolbarMediator mToolbarMediator;
     private final ViewStub mStub;
     private final PropertyModel mPropertyModel;
+    private final TopToolbarInteractabilityManager mTopToolbarInteractabilityManager;
+    private final boolean mShouldCreateLogoInToolbar;
+
     private PropertyModelChangeProcessor mPropertyModelChangeProcessor;
     private StartSurfaceToolbarView mView;
     private TabModelSelector mTabModelSelector;
@@ -52,17 +60,16 @@ public class StartSurfaceToolbarCoordinator {
     private OnLongClickListener mTabSwitcherLongClickListener;
     private MenuButtonCoordinator mMenuButtonCoordinator;
     private CallbackController mCallbackController = new CallbackController();
+    private boolean mIsNativeInitialized;
 
     StartSurfaceToolbarCoordinator(ViewStub startSurfaceToolbarStub,
-            UserEducationHelper userEducationHelper,
-            ObservableSupplier<Boolean> identityDiscStateSupplier, ThemeColorProvider provider,
-            MenuButtonCoordinator menuButtonCoordinator,
+            UserEducationHelper userEducationHelper, ButtonDataProvider identityDiscController,
+            ThemeColorProvider provider, MenuButtonCoordinator menuButtonCoordinator,
             Supplier<ButtonData> identityDiscButtonSupplier, boolean isGridTabSwitcherEnabled,
-            ObservableSupplier<Boolean> homepageEnabledSupplier,
-            ObservableSupplier<Boolean> startSurfaceAsHomepageSupplier,
-            ObservableSupplier<Boolean> homepageManagedByPolicySupplier,
-            OnClickListener homeButtonOnClickHandler, boolean isTabGroupsAndroidContinuationEnabled,
-            BooleanSupplier isIncognitoModeEnabledSupplier) {
+            boolean isTabToGtsAnimationEnabled, boolean isTabGroupsAndroidContinuationEnabled,
+            BooleanSupplier isIncognitoModeEnabledSupplier,
+            Callback<LoadUrlParams> logoClickedCallback, boolean isRefactorEnabled,
+            boolean shouldCreateLogoInToolbar) {
         mStub = startSurfaceToolbarStub;
 
         mPropertyModel =
@@ -74,9 +81,11 @@ public class StartSurfaceToolbarCoordinator {
                         .with(StartSurfaceToolbarProperties.IS_VISIBLE, true)
                         .with(StartSurfaceToolbarProperties.GRID_TAB_SWITCHER_ENABLED,
                                 isGridTabSwitcherEnabled)
-                        .with(StartSurfaceToolbarProperties.LOGO_IMAGE, null)
                         .build();
 
+        mShouldCreateLogoInToolbar = shouldCreateLogoInToolbar;
+        boolean isTabToGtsFadeAnimationEnabled = isTabToGtsAnimationEnabled
+                && !DeviceClassManager.enableAccessibilityLayout(mStub.getContext());
         mToolbarMediator = new StartSurfaceToolbarMediator(mPropertyModel,
                 (iphCommandBuilder)
                         -> {
@@ -87,18 +96,17 @@ public class StartSurfaceToolbarCoordinator {
                             iphCommandBuilder.setAnchorView(mView.getIdentityDiscView()).build());
                 },
                 StartSurfaceConfiguration.START_SURFACE_HIDE_INCOGNITO_SWITCH_NO_TAB.getValue(),
-                StartSurfaceConfiguration.HOME_BUTTON_ON_GRID_TAB_SWITCHER.getValue(),
-                menuButtonCoordinator, identityDiscStateSupplier, identityDiscButtonSupplier,
-                homepageEnabledSupplier, startSurfaceAsHomepageSupplier,
-                homepageManagedByPolicySupplier, homeButtonOnClickHandler,
+                menuButtonCoordinator, identityDiscController, identityDiscButtonSupplier,
                 StartSurfaceConfiguration.TAB_COUNT_BUTTON_ON_START_SURFACE.getValue(),
-                isTabGroupsAndroidContinuationEnabled, userEducationHelper,
-                isIncognitoModeEnabledSupplier,
-                StartSurfaceConfiguration.shouldShowAnimationsForFinale()
-                        && !DeviceClassManager.enableAccessibilityLayout(mStub.getContext()));
+                isTabToGtsFadeAnimationEnabled, isTabGroupsAndroidContinuationEnabled,
+                isIncognitoModeEnabledSupplier, logoClickedCallback, isRefactorEnabled,
+                StartSurfaceConfiguration.IS_DOODLE_SUPPORTED.getValue(),
+                shouldCreateLogoInToolbar);
 
         mThemeColorProvider = provider;
         mMenuButtonCoordinator = menuButtonCoordinator;
+        mTopToolbarInteractabilityManager = new TopToolbarInteractabilityManager(
+                enabled -> mToolbarMediator.setNewTabEnabled(enabled));
     }
 
     /**
@@ -191,13 +199,23 @@ public class StartSurfaceToolbarCoordinator {
 
     /**
      * Called when start surface state is changed.
-     * @param newState The new {@link StartSurfaceState}.
+     * @param newState The new {@link StartSurfaceState}. Should be removed after refactor is
+     *         enabled.
      * @param shouldShowStartSurfaceToolbar Whether or not should show start surface toolbar.
+     * @param newLayoutType The new {@link LayoutType}. Only used when refactor is enabled.
      */
-    void onStartSurfaceStateChanged(
-            @StartSurfaceState int newState, boolean shouldShowStartSurfaceToolbar) {
+    void onStartSurfaceStateChanged(@Nullable @StartSurfaceState Integer newState,
+            boolean shouldShowStartSurfaceToolbar, @Nullable @LayoutType Integer newLayoutType) {
         if (shouldShowStartSurfaceToolbar && !isInflated()) inflate();
-        mToolbarMediator.onStartSurfaceStateChanged(newState, shouldShowStartSurfaceToolbar);
+        mToolbarMediator.onStartSurfaceStateChanged(
+                newState == null ? StartSurfaceState.NOT_SHOWN : newState,
+                shouldShowStartSurfaceToolbar,
+                newLayoutType == null ? LayoutType.NONE : newLayoutType);
+    }
+
+    void initLogoWithNative() {
+        mIsNativeInitialized = true;
+        mToolbarMediator.initLogoWithNative();
     }
 
     /**
@@ -209,21 +227,19 @@ public class StartSurfaceToolbarCoordinator {
     }
 
     /**
-     * This method should be called when there is a possibility that logo image became available or
-     * was changed.
-     * @param logoImage The logo image.
-     * @param contentDescription The accessibility text describing the logo.
-     */
-    void onLogoImageAvailable(Bitmap logoImage, String contentDescription) {
-        mToolbarMediator.onLogoImageAvailable(logoImage, contentDescription);
-    }
-
-    /**
-     * @param toolbarHeight The height of start surface toolbar.
      * @return Whether or not toolbar phone layout view should be shown.
      */
-    boolean shouldShowRealSearchBox(int toolbarHeight) {
-        return mToolbarMediator.shouldShowRealSearchBox(toolbarHeight);
+    boolean shouldShowRealSearchBox() {
+        boolean isBigLogoShownInContent = !mShouldCreateLogoInToolbar && mIsNativeInitialized
+                && TemplateUrlServiceFactory.get().doesDefaultSearchEngineHaveLogo();
+        // This value should be equal to
+        // |fakeSearchBoxToRealSearchBoxTop + realVerticalMargin| in
+        // StartSurfaceCoordinator#initializeOffsetChangedListener
+        int fakeSearchBoxMarginToScreenTop = getDimenPixel(R.dimen.toolbar_height_no_shadow)
+                + (isBigLogoShownInContent
+                                ? getDimenPixel(R.dimen.start_surface_content_logo_height)
+                                : getDimenPixel(R.dimen.start_surface_fake_search_box_top_margin));
+        return mToolbarMediator.shouldShowRealSearchBox(fakeSearchBoxMarginToScreenTop);
     }
 
     /** Returns whether it's on the start surface homepage.*/
@@ -238,6 +254,11 @@ public class StartSurfaceToolbarCoordinator {
         mToolbarMediator.setNewTabButtonHighlight(highlight);
     }
 
+    @NonNull
+    TopToolbarInteractabilityManager getTopToolbarInteractabilityManager() {
+        return mTopToolbarInteractabilityManager;
+    }
+
     private void inflate() {
         mStub.setLayoutResource(R.layout.start_top_toolbar);
         mView = (StartSurfaceToolbarView) mStub.inflate();
@@ -247,7 +268,7 @@ public class StartSurfaceToolbarCoordinator {
         mPropertyModelChangeProcessor = PropertyModelChangeProcessor.create(
                 mPropertyModel, mView, StartSurfaceToolbarViewBinder::bind);
 
-        mToolbarMediator.setHomeButtonView(mView.findViewById(R.id.home_button_on_tab_switcher));
+        mToolbarMediator.onLogoViewReady(mView.findViewById(R.id.logo));
 
         if (StartSurfaceConfiguration.TAB_COUNT_BUTTON_ON_START_SURFACE.getValue()) {
             mTabSwitcherButtonView = mView.findViewById(R.id.start_tab_switcher_button);
@@ -271,6 +292,10 @@ public class StartSurfaceToolbarCoordinator {
 
     private boolean isInflated() {
         return mView != null;
+    }
+
+    private int getDimenPixel(int id) {
+        return mStub.getResources().getDimensionPixelOffset(id);
     }
 
     @VisibleForTesting

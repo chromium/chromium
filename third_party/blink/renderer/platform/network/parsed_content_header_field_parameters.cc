@@ -1,9 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/network/parsed_content_header_field_parameters.h"
 
+#include "base/containers/adapters.h"
 #include "base/logging.h"
 #include "third_party/blink/renderer/platform/network/header_field_tokenizer.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
@@ -71,9 +72,9 @@ String ParsedContentHeaderFieldParameters::ParameterValueForName(
     return String();
   String lower_name = name.LowerASCII();
 
-  for (auto i = rbegin(); i != rend(); ++i) {
-    if (i->name.LowerASCII() == lower_name)
-      return i->value;
+  for (const NameValue& param : base::Reversed(*this)) {
+    if (param.name.LowerASCII() == lower_name)
+      return param.value;
   }
   return String();
 }

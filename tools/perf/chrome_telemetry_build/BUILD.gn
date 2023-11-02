@@ -1,4 +1,4 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -37,7 +37,7 @@ group("telemetry_chrome_test") {
   ]
   data = []
 
-  if (!is_fuchsia && !is_android) {
+  if (!is_fuchsia && !is_android && !is_castos) {
     data_deps += [ "//chrome" ]
   }
 
@@ -120,16 +120,6 @@ if (is_android) {
     ]
   }
 
-  group("telemetry_chrome_test_android_weblayer") {
-    testonly = true
-
-    data_deps = [
-      ":telemetry_chrome_test",
-      ":telemetry_weblayer_apks",
-      "//chrome/android:monochrome_public_apk",
-    ]
-  }
-
   group("telemetry_chrome_test_android_webview") {
     testonly = true
 
@@ -177,22 +167,6 @@ if (is_android) {
         data_deps += [ ":telemetry_chrome_test${_target_suffix}" ]
       }
     }
-  }
-}
-
-group("telemetry_weblayer_apks") {
-  testonly = true
-
-  data_deps = []
-  if (is_android) {
-    data_deps += [
-      "//weblayer/shell/android:weblayer_shell_system_webview_apk",
-
-      # TODO(crbug.com/1022823): Remove the following two deps once our tooling
-      # is configured to use weblayer_shell_system_webview_apk.
-      "//weblayer/shell/android:weblayer_shell_apk",
-      "//weblayer/shell/android:weblayer_support_apk",
-    ]
   }
 }
 

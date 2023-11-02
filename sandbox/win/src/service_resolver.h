@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
 #include "sandbox/win/src/nt_internals.h"
 #include "sandbox/win/src/resolver.h"
 
@@ -15,7 +14,8 @@ namespace sandbox {
 
 // This is the concrete resolver used to perform service-call type functions
 // inside ntdll.dll.
-class ServiceResolverThunk : public ResolverThunk {
+class [[clang::lto_visibility_public]] ServiceResolverThunk
+    : public ResolverThunk {
  public:
   // The service resolver needs a child process to write to.
   ServiceResolverThunk(HANDLE process, bool relaxed)

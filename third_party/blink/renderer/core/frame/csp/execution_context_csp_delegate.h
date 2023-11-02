@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,6 +42,7 @@ class ExecutionContextCSPDelegate final
   void AddConsoleMessage(ConsoleMessage*) override;
   void AddInspectorIssue(AuditsIssue) override;
   void DisableEval(const String& error_message) override;
+  void SetWasmEvalErrorMessage(const String& error_message) override;
   void ReportBlockedScriptExecutionToInspector(
       const String& directive_text) override;
   void DidAddContentSecurityPolicies(

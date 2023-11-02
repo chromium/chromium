@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,7 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/macros.h"
-#include "base/no_destructor.h"
+#include "base/mac/scoped_nsobject.h"
 #include "content/app_shim_remote_cocoa/render_widget_host_ns_view_bridge.h"
 #include "content/app_shim_remote_cocoa/render_widget_host_ns_view_host_helper.h"
 #include "content/app_shim_remote_cocoa/web_contents_ns_view_bridge.h"
@@ -17,6 +16,7 @@
 #include "content/common/render_widget_host_ns_view.mojom.h"
 #include "content/common/web_contents_ns_view_bridge.mojom.h"
 #include "content/public/browser/native_web_keyboard_event.h"
+#include "content/public/browser/render_widget_host_view_mac_delegate.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -35,16 +35,28 @@ class RenderWidgetHostNSViewBridgeOwner
     : public RenderWidgetHostNSViewHostHelper {
  public:
   explicit RenderWidgetHostNSViewBridgeOwner(
+      uint64_t view_id,
       mojo::PendingAssociatedRemote<mojom::RenderWidgetHostNSViewHost> client,
       mojo::PendingAssociatedReceiver<mojom::RenderWidgetHostNSView>
-          bridge_receiver)
-      : host_(std::move(client)) {
+          bridge_receiver,
+      remote_cocoa::RenderWidgetHostViewMacDelegateCallback
+          responder_delegate_creation_callback)
+      : host_(std::move(client),
+              ui::WindowResizeHelperMac::Get()->task_runner()) {
     bridge_ = std::make_unique<remote_cocoa::RenderWidgetHostNSViewBridge>(
-        host_.get(), this);
+        host_.get(), this, view_id,
+        base::BindOnce(&RenderWidgetHostNSViewBridgeOwner::OnMojoDisconnect,
+                       base::Unretained(this)));
     bridge_->BindReceiver(std::move(bridge_receiver));
     host_.set_disconnect_handler(
         base::BindOnce(&RenderWidgetHostNSViewBridgeOwner::OnMojoDisconnect,
                        base::Unretained(this)));
+
+    if (responder_delegate_creation_callback) {
+      base::scoped_nsobject<NSObject<RenderWidgetHostViewMacDelegate>>
+          rw_delegate(std::move(responder_delegate_creation_callback).Run());
+      [bridge_->GetNSView() setResponderDelegate:rw_delegate.get()];
+    }
   }
 
   RenderWidgetHostNSViewBridgeOwner(const RenderWidgetHostNSViewBridgeOwner&) =
@@ -64,6 +76,19 @@ class RenderWidgetHostNSViewBridgeOwner
   }
 
   // RenderWidgetHostNSViewHostHelper implementation.
+  id GetAccessibilityElement() override {
+    if (!remote_accessibility_element_) {
+      base::ProcessId browser_pid = base::kNullProcessId;
+      std::vector<uint8_t> element_token;
+      host_->GetRenderWidgetAccessibilityToken(&browser_pid, &element_token);
+      [NSAccessibilityRemoteUIElement
+          registerRemoteUIProcessIdentifier:browser_pid];
+      remote_accessibility_element_ =
+          ui::RemoteAccessibility::GetRemoteElementFromToken(element_token);
+    }
+    return remote_accessibility_element_.get();
+  }
+
   id GetRootBrowserAccessibilityElement() override {
     // The RenderWidgetHostViewCocoa in the app shim process does not
     // participate in the accessibility tree. Only the instance in the browser
@@ -144,8 +169,11 @@ class RenderWidgetHostNSViewBridgeOwner
 }
 
 void CreateRenderWidgetHostNSView(
+    uint64_t view_id,
     mojo::ScopedInterfaceEndpointHandle host_handle,
-    mojo::ScopedInterfaceEndpointHandle view_receiver_handle) {
+    mojo::ScopedInterfaceEndpointHandle view_receiver_handle,
+    RenderWidgetHostViewMacDelegateCallback
+        responder_delegate_creation_callback) {
   // Cast from the stub interface to the mojom::RenderWidgetHostNSViewHost
   // and mojom::RenderWidgetHostNSView private interfaces.
   // TODO(ccameron): Remove the need for this cast.
@@ -155,10 +183,11 @@ void CreateRenderWidgetHostNSView(
 
   // Create a RenderWidgetHostNSViewBridgeOwner. The resulting object will be
   // destroyed when its underlying pipe is closed.
-  ignore_result(new RenderWidgetHostNSViewBridgeOwner(
-      std::move(host),
+  std::ignore = new RenderWidgetHostNSViewBridgeOwner(
+      view_id, std::move(host),
       mojo::PendingAssociatedReceiver<mojom::RenderWidgetHostNSView>(
-          std::move(view_receiver_handle))));
+          std::move(view_receiver_handle)),
+      std::move(responder_delegate_creation_callback));
 }
 
 void CreateWebContentsNSView(
@@ -171,10 +200,9 @@ void CreateWebContentsNSView(
       std::move(view_request_handle));
   // Note that the resulting object will be destroyed when its underlying pipe
   // is closed.
-  mojo::MakeSelfOwnedAssociatedReceiver(
-      std::make_unique<WebContentsNSViewBridge>(view_id, std::move(host)),
-      std::move(ns_view_receiver),
-      ui::WindowResizeHelperMac::Get()->task_runner());
+  (new WebContentsNSViewBridge(view_id, std::move(host)))
+      ->Bind(std::move(ns_view_receiver),
+             ui::WindowResizeHelperMac::Get()->task_runner());
 }
 
 }  // namespace remote_cocoa

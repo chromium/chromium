@@ -1,4 +1,4 @@
-// Copyright (c) 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
@@ -65,11 +66,10 @@ class QueryTileProvider : public AutocompleteProvider {
                        const std::string& tile_query_text,
                        std::vector<query_tiles::Tile> tiles);
 
-  AutocompleteProviderClient* const client_;
-  AutocompleteProviderListener* const listener_;
+  const raw_ptr<AutocompleteProviderClient> client_;
 
   // The backend providing query tiles.
-  query_tiles::TileService* const tile_service_;
+  const raw_ptr<query_tiles::TileService> tile_service_;
 
   base::WeakPtrFactory<QueryTileProvider> weak_ptr_factory_{this};
 };

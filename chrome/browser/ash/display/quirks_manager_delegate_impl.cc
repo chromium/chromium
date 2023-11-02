@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,7 +28,7 @@ std::string QuirksManagerDelegateImpl::GetApiKey() const {
 base::FilePath QuirksManagerDelegateImpl::GetDisplayProfileDirectory() const {
   base::FilePath directory;
   if (base::SysInfo::IsRunningOnChromeOS()) {
-    base::PathService::Get(chromeos::DIR_DEVICE_DISPLAY_PROFILES, &directory);
+    base::PathService::Get(ash::DIR_DEVICE_DISPLAY_PROFILES, &directory);
   } else {
     base::PathService::Get(chrome::DIR_USER_DATA, &directory);
     directory = directory.Append(kUserDataDisplayProfilesDirectory);

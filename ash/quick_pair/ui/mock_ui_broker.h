@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,7 +27,12 @@ class MockUIBroker : public UIBroker {
   MOCK_METHOD(void, ShowPairingFailed, (scoped_refptr<Device>), (override));
   MOCK_METHOD(void, ShowAssociateAccount, (scoped_refptr<Device>), (override));
   MOCK_METHOD(void, ShowCompanionApp, (scoped_refptr<Device>), (override));
-  MOCK_METHOD(void, RemoveNotifications, (scoped_refptr<Device>), (override));
+  MOCK_METHOD(void, RemoveNotifications, (bool), (override));
+  MOCK_METHOD(void,
+              RemoveDeviceFromAlreadyShownDiscoveryNotificationCache,
+              (scoped_refptr<Device>),
+              (override));
+  MOCK_METHOD(void, StartDeviceLostTimer, (scoped_refptr<Device>), (override));
 
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;

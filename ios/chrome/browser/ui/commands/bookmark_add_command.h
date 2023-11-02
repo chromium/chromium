@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,13 +9,16 @@
 
 class GURL;
 @class URLWithTitle;
+namespace web {
+class WebState;
+}
 
 // An object of this class will contain the data needed to execute any bookmark
 // command for one or more pages.
 @interface BookmarkAddCommand : NSObject
 
-// Initializes a command object with the page's |URL| and |title|.
-// If |presentFolderChooser| is true, the user will be prompted to choose
+// Initializes a command object with the page's `URL` and `title`.
+// If `presentFolderChooser` is true, the user will be prompted to choose
 // a destination for the bookmarks first. If false, the item will be bookmarked
 // immediately and the displayed snackbar message will allow editing to change
 // the location if desired.
@@ -24,8 +27,16 @@ class GURL;
        presentFolderChooser:(BOOL)presentFolderChooser
     NS_DESIGNATED_INITIALIZER;
 
-// Initializes a command object with multiple pages |UrlWithTitle|.
-// This implies |presentFolderChooser| is |true| and the user will need
+// Initializes a command object with the `webState`'s URL and title.
+// If `presentFolderChooser` is true, the user will be prompted to choose
+// a destination for the bookmarks first. If false, the item will be bookmarked
+// immediately and the displayed snackbar message will allow editing to change
+// the location if desired.
+- (instancetype)initWithWebState:(web::WebState*)webState
+            presentFolderChooser:(BOOL)presentFolderChooser;
+
+// Initializes a command object with multiple pages `UrlWithTitle`.
+// This implies `presentFolderChooser` is `true` and the user will need
 // to select a destination folder before the bookmarks are saved.
 - (instancetype)initWithURLs:(NSArray<URLWithTitle*>*)URLs
     NS_DESIGNATED_INITIALIZER;

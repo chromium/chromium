@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "chromeos/components/sensors/mojom/sensor.mojom.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/generic_sensor/platform_sensor.h"
 
@@ -102,11 +103,6 @@ class PlatformSensorChromeOS
   std::vector<std::string> iio_channel_ids_;
   // Channel indices of |required_channel_ids_| to enable.
   std::vector<int32_t> channel_indices_;
-
-  // Stores previously read values that are used to
-  // determine whether the recent values are changed
-  // and IPC can be notified that updates are available.
-  SensorReading old_values_;
 
   // Number of failed reads. Triggers an error if it reaches
   // kNumFailedReadsBeforeGivingUp.

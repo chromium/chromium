@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,13 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "media/base/media_export.h"
+#include "media/base/media_player_logging_id.h"
 #include "media/base/renderer_factory.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "media/base/speech_recognition_client.h"
 #endif
 
@@ -39,15 +41,17 @@ class MEDIA_EXPORT DefaultRendererFactory final : public RendererFactory {
   using GetGpuFactoriesCB =
       base::RepeatingCallback<GpuVideoAcceleratorFactories*()>;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   DefaultRendererFactory(MediaLog* media_log,
                          DecoderFactory* decoder_factory,
-                         const GetGpuFactoriesCB& get_gpu_factories_cb);
+                         const GetGpuFactoriesCB& get_gpu_factories_cb,
+                         MediaPlayerLoggingID media_player_id);
 #else
   DefaultRendererFactory(
       MediaLog* media_log,
       DecoderFactory* decoder_factory,
       const GetGpuFactoriesCB& get_gpu_factories_cb,
+      MediaPlayerLoggingID media_player_id,
       std::unique_ptr<SpeechRecognitionClient> speech_recognition_client);
 #endif
 
@@ -73,16 +77,19 @@ class MEDIA_EXPORT DefaultRendererFactory final : public RendererFactory {
       const gfx::ColorSpace& target_color_space,
       GpuVideoAcceleratorFactories* gpu_factories);
 
-  MediaLog* media_log_;
+  raw_ptr<MediaLog> media_log_;
 
   // Factory to create extra audio and video decoders.
   // Could be nullptr if not extra decoders are available.
-  DecoderFactory* decoder_factory_;
+  raw_ptr<DecoderFactory> decoder_factory_;
 
   // Creates factories for supporting video accelerators. May be null.
   GetGpuFactoriesCB get_gpu_factories_cb_;
 
-#if !defined(OS_ANDROID)
+  // WebMediaPlayerImpl id.
+  MediaPlayerLoggingID media_player_id_;
+
+#if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<SpeechRecognitionClient> speech_recognition_client_;
 #endif
 };

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,8 @@
 namespace test_switches {
 
 // Switch used to record an identity at startup to avoid automatic sign out.
+// Only uses the identities from the `ios::kAddFakeIdentitiesArg` switch if the
+// switch is set, otherwise fakeIdentity1 is used by default.
 extern const char kSignInAtStartup[];
 
 }  // namespace test_switches

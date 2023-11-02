@@ -1,0 +1,60 @@
+// Copyright 2016 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Next MinVersion: 4
+
+module arc.mojom;
+
+// |ClipData| contains one or more |ClipRepresentation| objects. Each
+// |ClipRepresentation| has a |mime_type| and a |ClipValue|. |ClipValue| is
+// either a |blob| or a |text|.
+
+// Value for |ClipRepresentation|.
+// Next ID: 2
+union ClipValue {
+  // For images and other opaque structures.
+  array<uint8> blob@0;
+  // For html, text and other text-based representations.
+  string text@1;
+};
+
+// One possible representation of the |ClipData|: |mime_type| + its |value|.
+// Next ID: 2
+struct ClipRepresentation {
+  // The mime type.
+  string mime_type@0;
+  // And its value.
+  ClipValue value@1;
+};
+
+// The |ClipData| to transfer.
+// Next ID: 1
+struct ClipData {
+  // A |ClipData| could have multiple representations.
+  // Example: an image could be represented by an image/png and a text/html
+  array<ClipRepresentation> representations@0;
+};
+
+// Next method ID: 5
+// Deprecated method IDs: 0, 1, 3
+interface ClipboardHost {
+  // Tells the host to update its clipboard content, usually when the user
+  // initiates a 'copy' action.
+  [MinVersion=1] SetClipContent@2(ClipData data);
+
+  // Tells the host to return its clipboard content, usually when the user
+  // initiates a 'paste' action or when the instance needs to re-sync its
+  // clipboard content with the host.
+  [MinVersion=3] GetClipContent@4() => (ClipData data);
+};
+
+// Next method ID: 4
+// Deprecated method IDs: 0, 1
+interface ClipboardInstance {
+  // Establishes full-duplex communication with the host.
+  [MinVersion=2] Init@3(pending_remote<ClipboardHost> host_remote) => ();
+
+  // Tells that the Host clipboard has been updated.
+  [MinVersion=1] OnHostClipboardUpdated@2();
+};

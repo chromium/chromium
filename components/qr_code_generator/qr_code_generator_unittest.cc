@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -63,7 +63,7 @@ TEST(QRCodeGenerator, ManySizes) {
   std::string input = "!";
   std::map<int, size_t> max_input_length_for_qr_size;
 
-  for (size_t i = input.size();; i++) {
+  for (;;) {
     absl::optional<QRCodeGenerator::GeneratedCode> code =
         qr.Generate(base::span<const uint8_t>(
             reinterpret_cast<const uint8_t*>(input.data()), input.size()));

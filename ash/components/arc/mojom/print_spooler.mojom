@@ -1,0 +1,56 @@
+// Copyright 2019 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+//
+// Next MinVersion: 5
+
+module arc.mojom;
+
+import "ash/components/arc/mojom/print_common.mojom";
+
+// Represents the Chrome side of a print session. Used by ARC to send
+// print-related messages to Chrome and interact with the ARC Custom Tab used
+// for printing.
+// Closing the interface will close the ARC Custom Tab.
+// Next method ID: 0
+interface PrintSessionHost {
+};
+
+// Represents the ARC side of a print session. Used by Chrome to send
+// print-related messages to ARC and request rendered print documents.
+// Next method ID: 2
+interface PrintSessionInstance {
+  // Called when Chrome print preview is closed.
+  [MinVersion=2] OnPrintPreviewClosed@0();
+
+  // Creates a |preview_document| for print preview using the provided
+  // |request|.
+  // The returned |preview_document| will be null if errors occurred while
+  // rendering it.
+  [MinVersion=3] CreatePreviewDocument@1(PrintDocumentRequest request)
+      => (handle? preview_document, int64 data_size);
+};
+
+// Used by ARC to create a new print session. A print session is used to print a
+// document from ARC using Chrome print preview.
+// Deprecated method ID: 0
+// Next method ID: 2
+interface PrintSpoolerHost {
+  // Opens the file owned by |scoped_handle| in Chrome print preview in an ARC
+  // Custom Tab.
+  // The |task_id| specifies the Android task on which the ARC Custom Tab should
+  // be shown.
+  // The returned |host| will be null if errors occur while saving the print
+  // document or locating the Android surface.
+  [MinVersion=4] StartPrintInCustomTab@1(
+      handle scoped_handle,
+      int32 task_id,
+      pending_remote<PrintSessionInstance> instance)
+      => (pending_remote<PrintSessionHost>? host);
+};
+
+// Next method ID: 1
+interface PrintSpoolerInstance {
+  // Establishes full-duplex communication with the host.
+  [MinVersion=0] Init@0(pending_remote<PrintSpoolerHost> host_remote) => ();
+};

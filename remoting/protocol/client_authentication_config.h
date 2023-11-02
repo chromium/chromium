@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,7 @@
 #include "base/callback.h"
 #include "remoting/protocol/token_validator.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 typedef base::RepeatingCallback<void(const std::string& secret)>
     SecretFetchedCallback;
@@ -61,7 +60,6 @@ struct ClientAuthenticationConfig {
   FetchThirdPartyTokenCallback fetch_third_party_token_callback;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_CLIENT_AUTHENTICATION_CONFIG_H_

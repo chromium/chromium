@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,16 +6,17 @@
 
 #include "base/command_line.h"
 #import "base/mac/foundation_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #import "chrome/browser/app_controller_mac.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/apps/platform_apps/app_window_registry_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_browser_application_mac.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
+#include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -23,7 +24,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/common/extension.h"
@@ -42,14 +42,14 @@ class QuitWithAppsControllerInteractiveTest
       const QuitWithAppsControllerInteractiveTest&) = delete;
 
  protected:
-  QuitWithAppsControllerInteractiveTest() : app_(NULL) {}
+  QuitWithAppsControllerInteractiveTest() : app_(nullptr) {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     PlatformAppBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(switches::kAppsKeepChromeAliveInTests);
   }
 
-  const extensions::Extension* app_;
+  raw_ptr<const extensions::Extension> app_;
 };
 
 }  // namespace
@@ -72,7 +72,7 @@ IN_PROC_BROWSER_TEST_F(QuitWithAppsControllerInteractiveTest, QuitBehavior) {
       QuitWithAppsController::kQuitWithAppsNotificationID));
 
   // Open an app window.
-  ExtensionTestMessageListener listener("Launched", false);
+  ExtensionTestMessageListener listener("Launched");
   app_ = InstallAndLaunchPlatformApp("minimal_id");
   ASSERT_TRUE(listener.WaitUntilSatisfied());
 
@@ -130,9 +130,9 @@ IN_PROC_BROWSER_TEST_F(QuitWithAppsControllerInteractiveTest, QuitBehavior) {
 
   // Clicking "Quit All Apps." button closes all app windows. With no browsers
   // open, this should also quit Chrome.
-  content::WindowedNotificationObserver quit_observer(
-      chrome::NOTIFICATION_APP_TERMINATING,
-      content::NotificationService::AllSources());
+  base::RunLoop quit_observer;
+  auto subscription =
+      browser_shutdown::AddAppTerminatingCallback(quit_observer.QuitClosure());
 
   // Since closing app windows may be an async operation, use a watcher.
   content::WebContentsDestroyedWatcher destroyed_watcher(
@@ -143,7 +143,7 @@ IN_PROC_BROWSER_TEST_F(QuitWithAppsControllerInteractiveTest, QuitBehavior) {
       0 /* kQuitAllAppsButtonIndex */, absl::nullopt);
   destroyed_watcher.Wait();
   EXPECT_FALSE(AppWindowRegistryUtil::IsAppWindowVisibleInAnyProfile(0));
-  quit_observer.Wait();
+  quit_observer.Run();
 }
 
 // Test that, when powering off, Chrome will quit even if there are apps open.

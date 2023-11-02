@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/task/post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -15,7 +14,6 @@
 #include "ios/web_view/internal/cwv_web_view_internal.h"
 #include "net/base/mac/url_conversions.h"
 #include "net/base/net_errors.h"
-#include "net/url_request/url_fetcher_response_writer.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -60,7 +58,8 @@ class DownloadTaskObserverBridge : public web::DownloadTaskObserver {
 @synthesize delegate = _delegate;
 
 - (NSString*)suggestedFileName {
-  return base::SysUTF16ToNSString(_internalTask->GetSuggestedFilename());
+  return base::SysUTF8ToNSString(
+      _internalTask->GenerateFileName().AsUTF8Unsafe());
 }
 
 - (NSString*)MIMEType {
@@ -101,8 +100,7 @@ class DownloadTaskObserverBridge : public web::DownloadTaskObserver {
 }
 
 - (void)startDownloadToLocalFileAtPath:(NSString*)path {
-  _internalTask->Start(base::FilePath(base::SysNSStringToUTF8(path)),
-                       web::DownloadTask::Destination::kToDisk);
+  _internalTask->Start(base::FilePath(base::SysNSStringToUTF8(path)));
 }
 
 - (void)cancel {
@@ -120,7 +118,9 @@ class DownloadTaskObserverBridge : public web::DownloadTaskObserver {
       }
       break;
     }
-    case web::DownloadTask::State::kComplete: {
+    case web::DownloadTask::State::kComplete:
+    case web::DownloadTask::State::kFailed:
+    case web::DownloadTask::State::kFailedNotResumable: {
       int errorCode = _internalTask->GetErrorCode();
       [self notifyFinishWithErrorCode:errorCode];
       break;

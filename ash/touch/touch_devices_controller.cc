@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,7 +44,7 @@ void TouchDevicesController::RegisterProfilePrefs(PrefRegistrySimple* registry,
     registry->RegisterBooleanPref(
         prefs::kNaturalScroll,
         base::CommandLine::ForCurrentProcess()->HasSwitch(
-            chromeos::switches::kNaturalScrollDefault),
+            switches::kNaturalScrollDefault),
         user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PRIORITY_PREF);
   }
 }

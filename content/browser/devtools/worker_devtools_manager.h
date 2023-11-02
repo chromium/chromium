@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,7 +21,7 @@ class DedicatedWorkerHost;
 
 // Manages WorkerDevToolsAgentHost's for Dedicated Workers. This class lives on
 // UI thread. This is only used for PlzDedicatedWorker.
-class CONTENT_EXPORT WorkerDevToolsManager {
+class WorkerDevToolsManager {
  public:
   // Returns the WorkerDevToolsManager singleton.
   static WorkerDevToolsManager& GetInstance();

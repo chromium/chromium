@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,6 +19,7 @@ namespace blink {
 class Element;
 class LayoutNGBlockFlow;
 class NGBlockNode;
+class NGBreakToken;
 class NGPhysicalBoxFragment;
 
 // Base class for all LayoutNG Algorithms unit test classes.
@@ -33,21 +34,20 @@ class NGBaseLayoutAlgorithmTest
   // RunBlockLayoutAlgorithmForElement.
   void AdvanceToLayoutPhase();
 
-  scoped_refptr<const NGPhysicalBoxFragment> RunBlockLayoutAlgorithm(
+  const NGPhysicalBoxFragment* RunBlockLayoutAlgorithm(
       NGBlockNode node,
       const NGConstraintSpace& space,
       const NGBreakToken* break_token = nullptr);
 
-  std::pair<scoped_refptr<const NGPhysicalBoxFragment>, NGConstraintSpace>
+  std::pair<const NGPhysicalBoxFragment*, NGConstraintSpace>
   RunBlockLayoutAlgorithmForElement(Element* element);
 
-  scoped_refptr<const NGPhysicalBoxFragment> RunFieldsetLayoutAlgorithm(
+  const NGPhysicalBoxFragment* RunFieldsetLayoutAlgorithm(
       NGBlockNode node,
       const NGConstraintSpace& space,
       const NGBreakToken* break_token = nullptr);
 
-  scoped_refptr<const NGPhysicalBoxFragment> GetBoxFragmentByElementId(
-      const char*);
+  const NGPhysicalBoxFragment* GetBoxFragmentByElementId(const char*);
 
   static const NGPhysicalBoxFragment* CurrentFragmentFor(
       const LayoutNGBlockFlow*);

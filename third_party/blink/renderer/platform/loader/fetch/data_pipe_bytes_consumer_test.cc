@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -76,7 +76,7 @@ TEST_F(DataPipeBytesConsumerTest, TwoPhaseRead_SignalError) {
   auto result = MakeGarbageCollected<BytesConsumerTestReader>(consumer)->Run(
       task_runner_.get());
   EXPECT_EQ(Result::kError, result.first);
-  EXPECT_TRUE(result.second.IsEmpty());
+  EXPECT_TRUE(result.second.empty());
 }
 
 // Verify that both the DataPipe must close and SignalComplete()

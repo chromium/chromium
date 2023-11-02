@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -49,5 +49,15 @@ imageset("download_drivium") {
     "download_drivium.imageset/download_drivium.png",
     "download_drivium.imageset/download_drivium@2x.png",
     "download_drivium.imageset/download_drivium@3x.png",
+  ]
+}
+
+imageset("password_suggestion_key") {
+  sources = [
+    "password_suggestion_key.imageset/Contents.json",
+    "password_suggestion_key.imageset/password_suggestion_key@2x.png",
+    "password_suggestion_key.imageset/password_suggestion_key@3x.png",
+    "password_suggestion_key.imageset/password_suggestion_key_dark@2x.png",
+    "password_suggestion_key.imageset/password_suggestion_key_dark@3x.png",
   ]
 }

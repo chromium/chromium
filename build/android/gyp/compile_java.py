@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# Copyright 2013 The Chromium Authors. All rights reserved.
+# Copyright 2013 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -187,6 +187,8 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     # The only time we trigger this is when it is better to be explicit in a
     # list of unicode characters, e.g. FindAddress.java
     'UnicodeEscape',
+    # Nice to have.
+    'AlreadyChecked',
 ]
 
 # Full list of checks: https://errorprone.info/bugpatterns
@@ -273,7 +275,7 @@ def _ProcessJavaFileForInfo(java_file):
   return java_file, package_name, class_names
 
 
-class _InfoFileContext(object):
+class _InfoFileContext:
   """Manages the creation of the class->source file .info file."""
 
   def __init__(self, chromium_code, excluded_globs):
@@ -338,10 +340,9 @@ class _InfoFileContext(object):
                                                       class_names, source):
           if self._ShouldIncludeInJarInfo(fully_qualified_name):
             ret[fully_qualified_name] = java_file
-    self._pool.terminate()
     return ret
 
-  def __del__(self):
+  def Close(self):
     # Work around for Python 2.x bug with multiprocessing and daemon threads:
     # https://bugs.python.org/issue4106
     if self._pool is not None:
@@ -470,8 +471,9 @@ def _RunCompiler(changes,
 
   # Use jar_path's directory to ensure paths are relative (needed for goma).
   temp_dir = jar_path + '.staging'
-  shutil.rmtree(temp_dir, True)
+  build_utils.DeleteDirectory(temp_dir)
   os.makedirs(temp_dir)
+  info_file_context = None
   try:
     classes_dir = os.path.join(temp_dir, 'classes')
     service_provider_configuration = os.path.join(
@@ -482,7 +484,7 @@ def _RunCompiler(changes,
 
       if enable_partial_javac:
         all_changed_paths_are_java = all(
-            [p.endswith(".java") for p in changes.IterChangedPaths()])
+            p.endswith(".java") for p in changes.IterChangedPaths())
         if (all_changed_paths_are_java and not changes.HasStringChanges()
             and os.path.exists(jar_path)
             and (jar_info_path is None or os.path.exists(jar_info_path))):
@@ -500,7 +502,7 @@ def _RunCompiler(changes,
           # Reuse old .info file.
           save_info_file = False
 
-          build_utils.ExtractAll(jar_path, classes_dir)
+          build_utils.ExtractAll(jar_path, classes_dir, pattern='*.class')
 
     if save_info_file:
       info_file_context = _InfoFileContext(options.chromium_code,
@@ -573,6 +575,8 @@ def _RunCompiler(changes,
 
     logging.info('Completed all steps in _RunCompiler')
   finally:
+    if info_file_context:
+      info_file_context.Close()
     shutil.rmtree(temp_dir)
 
 
@@ -584,6 +588,9 @@ def _ParseOptions(argv):
   parser.add_option('--skip-build-server',
                     action='store_true',
                     help='Avoid using the build server.')
+  parser.add_option('--use-build-server',
+                    action='store_true',
+                    help='Always use the build server.')
   parser.add_option(
       '--java-srcjars',
       action='append',
@@ -593,15 +600,6 @@ def _ParseOptions(argv):
       '--generated-dir',
       help='Subdirectory within target_gen_dir to place extracted srcjars and '
       'annotation processor output for codesearch to find.')
-  parser.add_option(
-      '--bootclasspath',
-      action='append',
-      default=[],
-      help='Boot classpath for javac. If this is specified multiple times, '
-      'they will all be appended to construct the classpath.')
-  parser.add_option(
-      '--java-version',
-      help='Java language version to use in -source and -target args to javac.')
   parser.add_option('--classpath', action='append', help='Classpath to use.')
   parser.add_option(
       '--processorpath',
@@ -659,7 +657,6 @@ def _ParseOptions(argv):
   options, args = parser.parse_args(argv)
   build_utils.CheckOptions(options, parser, required=('jar_path', ))
 
-  options.bootclasspath = build_utils.ParseGnList(options.bootclasspath)
   options.classpath = build_utils.ParseGnList(options.classpath)
   options.processorpath = build_utils.ParseGnList(options.processorpath)
   options.java_srcjars = build_utils.ParseGnList(options.java_srcjars)
@@ -692,7 +689,8 @@ def main(argv):
   if (options.enable_errorprone and not options.skip_build_server
       and server_utils.MaybeRunCommand(name=options.target_name,
                                        argv=sys.argv,
-                                       stamp_file=options.jar_path)):
+                                       stamp_file=options.jar_path,
+                                       force=options.use_build_server)):
     return
 
   javac_cmd = []
@@ -702,6 +700,9 @@ def main(argv):
 
   javac_args = [
       '-g',
+      # We currently target JDK 11 everywhere.
+      '--release',
+      '11',
       # Chromium only allows UTF8 source files.  Being explicit avoids
       # javac pulling a default encoding from the user's environment.
       '-encoding',
@@ -710,6 +711,9 @@ def main(argv):
       # See: http://blog.ltgt.net/most-build-tools-misuse-javac/
       '-sourcepath',
       ':',
+      # protobuf-generated files fail this check (javadoc has @deprecated,
+      # but method missing @Deprecated annotation).
+      '-Xlint:-dep-ann',
   ]
 
   if options.enable_errorprone:
@@ -739,25 +743,11 @@ def main(argv):
     if not ERRORPRONE_CHECKS_TO_APPLY:
       javac_args += ['-XDshould-stop.ifNoError=FLOW']
 
-  if options.java_version:
-    javac_args.extend([
-        '-source',
-        options.java_version,
-        '-target',
-        options.java_version,
-    ])
-  if options.java_version == '1.8':
-    # Android's boot jar doesn't contain all java 8 classes.
-    options.bootclasspath.append(build_utils.RT_JAR_PATH)
-
   # This effectively disables all annotation processors, even including
   # annotation processors in service provider configuration files named
   # META-INF/. See the following link for reference:
   #     https://docs.oracle.com/en/java/javase/11/tools/javac.html
   javac_args.extend(['-proc:none'])
-
-  if options.bootclasspath:
-    javac_args.extend(['-bootclasspath', ':'.join(options.bootclasspath)])
 
   if options.processorpath:
     javac_args.extend(['-processorpath', ':'.join(options.processorpath)])
@@ -767,8 +757,7 @@ def main(argv):
 
   javac_args.extend(options.javac_arg)
 
-  classpath_inputs = (
-      options.bootclasspath + options.classpath + options.processorpath)
+  classpath_inputs = options.classpath + options.processorpath
 
   depfile_deps = classpath_inputs
   # Files that are already inputs in GN should go in input_paths.

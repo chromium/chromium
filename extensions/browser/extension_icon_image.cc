@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,9 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "extensions/browser/image_loader.h"
 #include "extensions/common/extension.h"
@@ -19,6 +20,7 @@
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia_operations.h"
+#include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/image/image_skia_source.h"
 
 // The ImageSkia provided by extensions::IconImage contains ImageSkiaReps that
@@ -93,7 +95,7 @@ class IconImage::Source : public gfx::ImageSkiaSource {
 
   // Used to load images, possibly asynchronously. nullptr'ed out when the
   // IconImage is destroyed.
-  IconImage* host_;
+  raw_ptr<IconImage> host_;
 
   // Image whose representations will be used until |host_| loads the real
   // representations for the image.
@@ -143,7 +145,7 @@ IconImage::IconImage(content::BrowserContext* context,
     AddObserver(observer);
   gfx::Size resource_size(resource_size_in_dip, resource_size_in_dip);
   source_ = new Source(this, resource_size);
-  image_skia_ = gfx::ImageSkia(base::WrapUnique(source_), resource_size);
+  image_skia_ = gfx::ImageSkia(base::WrapUnique(source_.get()), resource_size);
   image_ = gfx::Image(image_skia_);
 
   registry_observation_.Observe(ExtensionRegistry::Get(context));

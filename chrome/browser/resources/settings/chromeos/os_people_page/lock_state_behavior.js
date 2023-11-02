@@ -1,9 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
-// #import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
+import {AuthFactorConfig, AuthFactorConfigInterface, RecoveryFactorEditor, RecoveryFactorEditorInterface} from 'chrome://resources/mojo/chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-webui.js';
 
 /**
  * @fileoverview
@@ -12,10 +13,10 @@
  */
 
 /** @enum {string} */
-/* #export */ const LockScreenUnlockType = {
+export const LockScreenUnlockType = {
   VALUE_PENDING: 'value_pending',
   PASSWORD: 'password',
-  PIN_PASSWORD: 'pin+password'
+  PIN_PASSWORD: 'pin+password',
 };
 
 /**
@@ -32,7 +33,7 @@
 let cachedHasPinLogin = undefined;
 
 /** @polymerBehavior */
-/* #export */ const LockStateBehaviorImpl = {
+export const LockStateBehaviorImpl = {
   properties: {
     /**
      * The currently selected unlock type.
@@ -62,6 +63,21 @@ let cachedHasPinLogin = undefined;
      * @type {QuickUnlockPrivate}
      */
     quickUnlockPrivate: {type: Object, value: chrome.quickUnlockPrivate},
+
+    /**
+     * Interface for calls to the ash AuthFactorConfig service. May be
+     * overridden by tests.
+     * @type {AuthFactorConfigInterface}
+     */
+    authFactorConfig: {type: Object, value: AuthFactorConfig.getRemote()},
+
+    /**
+     * Interface for calls to the ash RecoveryFactorEditor service.  May be
+     * overridden by tests.
+     * @type {RecoveryFactorEditorInterface}
+     */
+    recoveryFactorEditor:
+        {type: Object, value: RecoveryFactorEditor.getRemote()},
   },
 
   /** @override */
@@ -131,10 +147,21 @@ let cachedHasPinLogin = undefined;
    * @param {string} authToken The token returned by
    *                           QuickUnlockPrivate.getAuthToken
    * @param {boolean} enabled
+   * @param {function(boolean): void} onComplete
    * @see quickUnlockPrivate.setLockScreenEnabled
    */
-  setLockScreenEnabled(authToken, enabled) {
-    this.quickUnlockPrivate.setLockScreenEnabled(authToken, enabled);
+  setLockScreenEnabled(authToken, enabled, onComplete) {
+    this.quickUnlockPrivate.setLockScreenEnabled(authToken, enabled, () => {
+      let success = true;
+      if (chrome.runtime.lastError) {
+        console.warn(
+            'setLockScreenEnabled failed: ' + chrome.runtime.lastError.message);
+        success = false;
+      }
+      if (onComplete) {
+        onComplete(success);
+      }
+    });
   },
 
   /**
@@ -147,6 +174,77 @@ let cachedHasPinLogin = undefined;
   },
 };
 
+/**
+ * @interface
+ * @extends {I18nBehaviorInterface}
+ * @extends {WebUIListenerBehaviorInterface}
+ */
+export class LockStateBehaviorInterface {
+  constructor() {
+    /**
+     * The currently selected unlock type.
+     * @type {!LockScreenUnlockType}
+     */
+    this.selectedUnlockType;
+
+    /**
+     * True/false if there is a PIN set; undefined if the computation is still
+     * pending. This is a separate value from selectedUnlockType because the UI
+     * can change the selectedUnlockType before setting up a PIN.
+     * @type {boolean|undefined}
+     */
+    this.hasPin;
+
+    /**
+     * True if the PIN backend supports signin. undefined iff the value is still
+     * resolving.
+     * @type {boolean|undefined}
+     */
+    this.hasPinLogin;
+
+    /**
+     * Interface for chrome.quickUnlockPrivate calls. May be overridden by
+     * tests.
+     * @type {QuickUnlockPrivate}
+     */
+    this.quickUnlockPrivate;
+
+    /**
+     * Interface for calls to the ash AuthFactorConfig service. May be
+     * overridden by tests.
+     * @type {AuthFactorConfigInterface}
+     */
+    this.authFactorConfig;
+
+    /**
+     * Interface for calls to the ash RecoveryFactorEditor service.  May be
+     * overridden by tests.
+     * @type {RecoveryFactorEditorInterface}
+     */
+    this.recoveryFactorEditor;
+  }
+
+  /**
+   * Updates the selected unlock type radio group. This function will get called
+   * after preferences are initialized, after the quick unlock mode has been
+   * changed, and after the lockscreen preference has changed.
+   *
+   * @param {boolean} activeModesChanged If the function is called because
+   *     active modes have changed.
+   */
+  updateUnlockType(activeModesChanged) {}
+
+  /**
+   * Sets the lock screen enabled state.
+   * @param {string} authToken The token returned by
+   *                           QuickUnlockPrivate.getAuthToken
+   * @param {boolean} enabled
+   * @param {function(boolean): void} onComplete
+   * @see quickUnlockPrivate.setLockScreenEnabled
+   */
+  setLockScreenEnabled(authToken, enabled, onComplete) {}
+}
+
 /** @polymerBehavior */
-/* #export */ const LockStateBehavior =
+export const LockStateBehavior =
     [I18nBehavior, WebUIListenerBehavior, LockStateBehaviorImpl];

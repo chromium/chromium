@@ -1,0 +1,31 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/browser/buildflags.gni")
+
+# On Lacros, these browser tests require Ash to be running.
+source_set("app_service_browser_tests") {
+  testonly = true
+
+  sources = [ "web_app_icon_health_checks_browsertest.cc" ]
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  deps = [
+    "//chrome/app:command_ids",
+    "//chrome/browser/web_applications",
+    "//chrome/browser/web_applications:web_applications_test_support",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//components/services/app_service/public/cpp:intents",
+  ]
+
+  if (is_chromeos_lacros) {
+    deps += [
+      "//chrome/test:lacros_test_support_ui",
+      "//chromeos/lacros",
+      "//chromeos/lacros:test_support",
+    ]
+  }
+}

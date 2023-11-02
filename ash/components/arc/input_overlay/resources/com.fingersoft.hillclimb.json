@@ -1,0 +1,82 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+{
+  "tap": [
+    {
+      "id": 0,
+      "input_sources": [
+        "keyboard"
+      ],
+      "name": "brake",
+      "key": "KeyA",
+      "location": [
+        {
+          "type": "position",
+          "anchor": [
+            0,
+            1
+          ],
+          "anchor_to_target": [
+            0.11278979,
+            -0.17971283
+          ]
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "input_sources": [
+        "keyboard"
+      ],
+      "name": "gas",
+      "key": "KeyD",
+      "location": [
+        {
+          "type": "position",
+          "anchor": [
+            1,
+            1
+          ],
+          "anchor_to_target": [
+            -0.11383173,
+            -0.17971283
+          ]
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "input_sources": [
+        "keyboard"
+      ],
+      "name": "Pause",
+      "key": "Backspace",
+      "location": [
+        {
+          "type": "position",
+          "anchor": [
+            1,
+            0
+          ],
+          "anchor_to_target": [
+            -0.041417036,
+            0.07318203
+          ]
+        },
+        {
+          "type": "position",
+          "anchor": [
+            0,
+            0
+          ],
+          "anchor_to_target": [
+            0.49804637,
+            0.31218156
+          ]
+        }
+      ]
+    }
+  ]
+}

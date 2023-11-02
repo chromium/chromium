@@ -1,15 +1,15 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "net/websockets/websocket_http2_handshake_stream.h"
 
 #include <cstddef>
+#include <set>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/check_op.h"
-#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -45,18 +45,12 @@ WebSocketHttp2HandshakeStream::WebSocketHttp2HandshakeStream(
     std::vector<std::string> requested_sub_protocols,
     std::vector<std::string> requested_extensions,
     WebSocketStreamRequestAPI* request,
-    std::vector<std::string> dns_aliases)
-    : result_(HandshakeResult::HTTP2_INCOMPLETE),
-      session_(session),
+    std::set<std::string> dns_aliases)
+    : session_(session),
       connect_delegate_(connect_delegate),
-      http_response_info_(nullptr),
       requested_sub_protocols_(requested_sub_protocols),
       requested_extensions_(requested_extensions),
       stream_request_(request),
-      request_info_(nullptr),
-      stream_closed_(false),
-      stream_error_(OK),
-      response_headers_complete_(false),
       dns_aliases_(std::move(dns_aliases)) {
   DCHECK(connect_delegate);
   DCHECK(request);
@@ -67,14 +61,18 @@ WebSocketHttp2HandshakeStream::~WebSocketHttp2HandshakeStream() {
   RecordHandshakeResult(result_);
 }
 
+void WebSocketHttp2HandshakeStream::RegisterRequest(
+    const HttpRequestInfo* request_info) {
+  DCHECK(request_info);
+  DCHECK(request_info->traffic_annotation.is_valid());
+  request_info_ = request_info;
+}
+
 int WebSocketHttp2HandshakeStream::InitializeStream(
-    const HttpRequestInfo* request_info,
     bool can_send_early,
     RequestPriority priority,
     const NetLogWithSource& net_log,
     CompletionOnceCallback callback) {
-  DCHECK(request_info->traffic_annotation.is_valid());
-  request_info_ = request_info;
   priority_ = priority;
   net_log_ = net_log;
   return OK;
@@ -168,17 +166,7 @@ void WebSocketHttp2HandshakeStream::Close(bool not_reusable) {
     stream_closed_ = true;
     stream_error_ = ERR_CONNECTION_CLOSED;
   }
-
-  // The method needs to be idempotent as it may be called multiple times.
-  if (!stream_adapter_)
-    return;
-
   stream_adapter_.reset();
-
-  // TODO(ricea): Remove these two lines once https://crbug.com/1215989 is
-  // resolved.
-  CHECK(!stream_adapter_reset_by_close_);
-  stream_adapter_reset_by_close_ = true;
 }
 
 bool WebSocketHttp2HandshakeStream::IsResponseBodyComplete() const {
@@ -225,8 +213,11 @@ void WebSocketHttp2HandshakeStream::GetSSLCertRequestInfo(
   NOTREACHED();
 }
 
-bool WebSocketHttp2HandshakeStream::GetRemoteEndpoint(IPEndPoint* endpoint) {
-  return session_ && session_->GetRemoteEndpoint(endpoint);
+int WebSocketHttp2HandshakeStream::GetRemoteEndpoint(IPEndPoint* endpoint) {
+  if (!session_)
+    return ERR_SOCKET_NOT_CONNECTED;
+
+  return session_->GetRemoteEndpoint(endpoint);
 }
 
 void WebSocketHttp2HandshakeStream::PopulateNetErrorDetails(
@@ -244,12 +235,13 @@ void WebSocketHttp2HandshakeStream::SetPriority(RequestPriority priority) {
     stream_->SetPriority(priority_);
 }
 
-HttpStream* WebSocketHttp2HandshakeStream::RenewStreamForAuth() {
+std::unique_ptr<HttpStream>
+WebSocketHttp2HandshakeStream::RenewStreamForAuth() {
   // Renewing the stream is not supported.
   return nullptr;
 }
 
-const std::vector<std::string>& WebSocketHttp2HandshakeStream::GetDnsAliases()
+const std::set<std::string>& WebSocketHttp2HandshakeStream::GetDnsAliases()
     const {
   return dns_aliases_;
 }
@@ -261,25 +253,11 @@ base::StringPiece WebSocketHttp2HandshakeStream::GetAcceptChViaAlps() const {
 std::unique_ptr<WebSocketStream> WebSocketHttp2HandshakeStream::Upgrade() {
   DCHECK(extension_params_.get());
 
-  // These checks are here to find the cause of https://crbug.com/1215989.
-  // TODO(ricea): Remove them once the cause has been determined.
-  CHECK(!stream_adapter_reset_by_onclose_);
-
-  // The above blank line exists because stack traces often have annoying
-  // off-by-one errors in the line numbers.
-  CHECK(!stream_adapter_reset_by_close_);
-
-  // Above blank line is also intentional.
-  CHECK(!stream_adapter_moved_by_upgrade_);
-
-  // This should definitely be true if we get this far.
-  CHECK(stream_adapter_);
-
   stream_adapter_->DetachDelegate();
   std::unique_ptr<WebSocketStream> basic_stream =
-      std::make_unique<WebSocketBasicStream>(
-          std::move(stream_adapter_), nullptr, sub_protocol_, extensions_);
-  stream_adapter_moved_by_upgrade_ = true;
+      std::make_unique<WebSocketBasicStream>(std::move(stream_adapter_),
+                                             nullptr, sub_protocol_,
+                                             extensions_, net_log_);
 
   if (!extension_params_->deflate_enabled)
     return basic_stream;
@@ -305,9 +283,9 @@ void WebSocketHttp2HandshakeStream::OnHeadersReceived(
 
   response_headers_complete_ = true;
 
-  const bool headers_valid =
+  const int rv =
       SpdyHeadersToHttpResponse(response_headers, http_response_info_);
-  DCHECK(headers_valid);
+  DCHECK_NE(rv, ERR_INCOMPLETE_HTTP2_HEADERS);
 
   http_response_info_->response_time = stream_->response_time();
   // Do not store SSLInfo in the response here, HttpNetworkTransaction will take
@@ -319,17 +297,13 @@ void WebSocketHttp2HandshakeStream::OnHeadersReceived(
   http_response_info_->alpn_negotiated_protocol =
       HttpResponseInfo::ConnectionInfoToString(
           http_response_info_->connection_info);
-  http_response_info_->vary_data.Init(*request_info_,
-                                      *http_response_info_->headers.get());
 
   if (callback_)
     std::move(callback_).Run(ValidateResponse());
 }
 
 void WebSocketHttp2HandshakeStream::OnClose(int status) {
-  // TODO(ricea): Change this CHECK back to a DCHECK when
-  // https://crbug.com/1215989 is fixed.
-  CHECK(stream_adapter_);
+  DCHECK(stream_adapter_);
   DCHECK_GT(ERR_IO_PENDING, status);
 
   stream_closed_ = true;
@@ -337,11 +311,6 @@ void WebSocketHttp2HandshakeStream::OnClose(int status) {
   stream_ = nullptr;
 
   stream_adapter_.reset();
-
-  // TODO(ricea): Remove these two lines once https://crbug.com/1215989 is
-  // resolved.
-  CHECK(!stream_adapter_reset_by_close_);
-  stream_adapter_reset_by_close_ = true;
 
   // If response headers have already been received,
   // then ValidateResponse() sets |result_|.

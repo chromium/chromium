@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,6 +24,7 @@ class MockScannerBroker : public ScannerBroker {
 
   MOCK_METHOD(void, StartScanning, (Protocol), (override));
   MOCK_METHOD(void, StopScanning, (Protocol), (override));
+  MOCK_METHOD(void, OnDevicePaired, (scoped_refptr<Device>), (override));
 
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;

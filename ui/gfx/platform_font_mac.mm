@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -57,7 +57,7 @@ Weight GetFontWeightFromNSFont(NSFont* font) {
     CGFloat weight_upper;
     Weight gfx_weight;
   } weight_map[] = {
-      // NSFontWeight constants introduced in 10.11:
+      // NSFontWeight constants:
       //   NSFontWeightUltraLight: -0.80
       //   NSFontWeightThin: -0.60
       //   NSFontWeightLight: -0.40
@@ -69,27 +69,15 @@ Weight GetFontWeightFromNSFont(NSFont* font) {
       //   NSFontWeightBlack: 0.62
       //
       // Actual system font weights:
-      //   10.10:
-      //     .HelveticaNeueDeskInterface-UltraLightP2: -0.80
-      //     .HelveticaNeueDeskInterface-Thin: -0.50
-      //     .HelveticaNeueDeskInterface-Light: -0.425
-      //     .HelveticaNeueDeskInterface-Regular: 0.0
-      //     .HelveticaNeueDeskInterface-MediumP4: 0.23
-      //     .HelveticaNeueDeskInterface-Bold (if requested as semibold): 0.24
-      //     .HelveticaNeueDeskInterface-Bold (if requested as bold): 0.4
-      //     .HelveticaNeueDeskInterface-Heavy (if requested as heavy): 0.576
-      //     .HelveticaNeueDeskInterface-Heavy (if requested as black): 0.662
-      //   10.11-:
-      //     .AppleSystemUIFontUltraLight: -0.80
-      //     .AppleSystemUIFontThin: -0.60
-      //     .AppleSystemUIFontLight: -0.40
-      //     .AppleSystemUIFont: 0.0
-      //     .AppleSystemUIFontMedium: 0.23
-      //     .AppleSystemUIFontDemi: 0.30
-      //     .AppleSystemUIFontBold (10.11): 0.40
-      //     .AppleSystemUIFontEmphasized (10.12-): 0.40
-      //     .AppleSystemUIFontHeavy: 0.56
-      //     .AppleSystemUIFontBlack: 0.62
+      //   .AppleSystemUIFontUltraLight: -0.80
+      //   .AppleSystemUIFontThin: -0.60
+      //   .AppleSystemUIFontLight: -0.40
+      //   .AppleSystemUIFont: 0.0
+      //   .AppleSystemUIFontMedium: 0.23
+      //   .AppleSystemUIFontDemi: 0.30
+      //   .AppleSystemUIFontEmphasized: 0.40
+      //   .AppleSystemUIFontHeavy: 0.56
+      //   .AppleSystemUIFontBlack: 0.62
       {-1.0, -0.70, Weight::THIN},          // NSFontWeightUltraLight
       {-0.70, -0.45, Weight::EXTRA_LIGHT},  // NSFontWeightThin
       {-0.45, -0.10, Weight::LIGHT},        // NSFontWeightLight
@@ -109,6 +97,14 @@ Weight GetFontWeightFromNSFont(NSFont* font) {
   // A missing weight attribute just means 0 -> NORMAL.
   if (!cf_weight)
     return Weight::NORMAL;
+
+  // macOS 13 bug: For non-system fonts with 0-valued traits, `kCFBooleanFalse`
+  // is used instead of a `CFNumberRef` of 0. See https://crbug.com/1372420.
+  // Filed as FB11673021. In this code path, the
+  // `base::mac::GetValueFromDictionary` call above will DLOG for this case and
+  // return a null `CFNumberRef`, which will cause this function to return
+  // `Weight::NORMAL`, which happens to be the correct thing to do for a trait
+  // with value 0.
 
   // The value of kCTFontWeightTrait empirically is a kCFNumberFloat64Type
   // (double) on all tested versions of macOS. However, that doesn't really

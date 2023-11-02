@@ -7,6 +7,7 @@
 <script>
   var t_css = async_test(
     "SRI with CSS with successful revalidation shouldn't crash");
+  window.onload = () => t_css.step_timeout(revalidate_css, 0);
   function revalidate_css() {
     var link = document.createElement('link');
     link.setAttribute('rel', 'stylesheet');
@@ -22,7 +23,6 @@
   href="../../cache/resources/etag.php?type=css&empty-after-revalidate-css"
   rel="stylesheet"
   integrity="sha256-tbudgBSg+bHWHiHnlteNzN8TUvI80ygS9IULh4rklEw="
-  onload="t_css.step_timeout(revalidate_css, 0)"
   onerror="t_css.unreached_func('First request should pass')()"
 >
 </html>

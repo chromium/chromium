@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
-#include "base/task/post_task.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/permissions/quiet_notification_permission_ui_config.h"
@@ -99,6 +98,14 @@ absl::optional<Decision> GetDecisionBasedOnSiteReputation(
       return Decision(QuietUiReason::kTriggeredDueToAbusiveContent,
                       Decision::ShowNoWarning());
     }
+    case CrowdDenyPreloadData::SiteReputation::DISRUPTIVE_BEHAVIOR: {
+      DCHECK(!site_reputation->warning_only());
+
+      if (!Config::IsDisruptiveBehaviorRequestBlockingEnabled())
+        return absl::nullopt;
+      return Decision(QuietUiReason::kTriggeredDueToDisruptiveBehavior,
+                      Decision::ShowNoWarning());
+    }
     case CrowdDenyPreloadData::SiteReputation::UNKNOWN: {
       return absl::nullopt;
     }
@@ -144,9 +151,10 @@ void ContextualNotificationPermissionUiSelector::SelectUiToUse(
     return;
   }
 
-  // Even if the quiet UI is enabled on all sites, the crowd deny and abuse
-  // trigger conditions must be evaluated first, so that the corresponding,
-  // less prominent UI and the strings are shown on blocklisted origins.
+  // Even if the quiet UI is enabled on all sites, the crowd deny, abuse and
+  // disruption trigger conditions must be evaluated first, so that the
+  // corresponding, less prominent UI and the strings are shown on blocklisted
+  // origins.
   EvaluatePerSiteTriggers(url::Origin::Create(request->requesting_origin()));
 }
 

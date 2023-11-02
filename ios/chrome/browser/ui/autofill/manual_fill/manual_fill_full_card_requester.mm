@@ -1,18 +1,18 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_full_card_requester.h"
 
-#include <vector>
+#import <vector>
 
-#include "components/autofill/core/browser/data_model/credit_card.h"
-#include "components/autofill/ios/browser/autofill_driver_ios.h"
-#include "components/autofill/core/browser/browser_autofill_manager.h"
+#import "components/autofill/core/browser/browser_autofill_manager.h"
+#import "components/autofill/core/browser/data_model/credit_card.h"
+#import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/full_card_request_result_delegate_bridge.h"
-#include "ios/chrome/browser/ui/autofill/manual_fill/full_card_requester.h"
+#import "ios/chrome/browser/ui/autofill/manual_fill/full_card_requester.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
-#include "ios/web/public/js_messaging/web_frame.h"
+#import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
 

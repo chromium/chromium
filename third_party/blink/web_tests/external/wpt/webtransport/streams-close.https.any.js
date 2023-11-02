@@ -161,12 +161,15 @@ promise_test(async t => {
   const e = new WebTransportError({streamErrorCode: WT_CODE});
   // Write a chunk, close the stream, and then abort the stream immediately to
   // abort the closing operation.
+  // TODO: Check that the abort promise is correctly rejected/resolved based on
+  // the spec discussion at https://github.com/whatwg/streams/issues/1203.
   await writer.write(chunk);
   const close_promise = writer.close();
-  await writer.abort(e);
+  const abort_promise = writer.abort(e);
 
   await promise_rejects_exactly(t, e, close_promise, 'close_promise');
   await promise_rejects_exactly(t, e, writer.closed, '.closed');
+  await promise_rejects_exactly(t, e, abort_promise, 'abort_promise');
   writer.releaseLock();
 
   await wait(10);

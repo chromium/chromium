@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,13 +33,13 @@ void TestCreditCardFIDOAuthenticator::Authenticate(
 }
 
 void TestCreditCardFIDOAuthenticator::GetAssertion(
-    PublicKeyCredentialRequestOptionsPtr request_options) {
+    blink::mojom::PublicKeyCredentialRequestOptionsPtr request_options) {
   request_options_ = request_options->Clone();
   CreditCardFIDOAuthenticator::GetAssertion(std::move(request_options));
 }
 
 void TestCreditCardFIDOAuthenticator::MakeCredential(
-    PublicKeyCredentialCreationOptionsPtr creation_options) {
+    blink::mojom::PublicKeyCredentialCreationOptionsPtr creation_options) {
   creation_options_ = creation_options->Clone();
   CreditCardFIDOAuthenticator::MakeCredential(std::move(creation_options));
 }
@@ -54,14 +54,16 @@ void TestCreditCardFIDOAuthenticator::GetAssertion(
     CreditCardFIDOAuthenticator* fido_authenticator,
     bool did_succeed) {
   if (did_succeed) {
-    GetAssertionAuthenticatorResponsePtr response =
-        GetAssertionAuthenticatorResponse::New();
+    blink::mojom::GetAssertionAuthenticatorResponsePtr response =
+        blink::mojom::GetAssertionAuthenticatorResponse::New();
     response->info = blink::mojom::CommonCredentialInfo::New();
-    fido_authenticator->OnDidGetAssertion(AuthenticatorStatus::SUCCESS,
-                                          std::move(response));
+    fido_authenticator->OnDidGetAssertion(
+        blink::mojom::AuthenticatorStatus::SUCCESS, std::move(response),
+        /*dom_exception_details=*/nullptr);
   } else {
     fido_authenticator->OnDidGetAssertion(
-        AuthenticatorStatus::NOT_ALLOWED_ERROR, nullptr);
+        blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR, nullptr,
+        /*dom_exception_details=*/nullptr);
   }
 }
 
@@ -70,20 +72,22 @@ void TestCreditCardFIDOAuthenticator::MakeCredential(
     CreditCardFIDOAuthenticator* fido_authenticator,
     bool did_succeed) {
   if (did_succeed) {
-    MakeCredentialAuthenticatorResponsePtr response =
-        MakeCredentialAuthenticatorResponse::New();
+    blink::mojom::MakeCredentialAuthenticatorResponsePtr response =
+        blink::mojom::MakeCredentialAuthenticatorResponse::New();
     response->info = blink::mojom::CommonCredentialInfo::New();
-    fido_authenticator->OnDidMakeCredential(AuthenticatorStatus::SUCCESS,
-                                            std::move(response));
+    fido_authenticator->OnDidMakeCredential(
+        blink::mojom::AuthenticatorStatus::SUCCESS, std::move(response),
+        /*dom_exception_details=*/nullptr);
   } else {
     fido_authenticator->OnDidMakeCredential(
-        AuthenticatorStatus::NOT_ALLOWED_ERROR, nullptr);
+        blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR, nullptr,
+        /*dom_exception_details=*/nullptr);
   }
 }
 
 std::vector<uint8_t> TestCreditCardFIDOAuthenticator::GetCredentialId() {
   DCHECK(!request_options_->allow_credentials.empty());
-  return request_options_->allow_credentials.front().id();
+  return request_options_->allow_credentials.front().id;
 }
 
 std::vector<uint8_t> TestCreditCardFIDOAuthenticator::GetChallenge() {

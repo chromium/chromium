@@ -1,11 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 // Interface exposing additional per-screen information.
-// https://github.com/webscreens/window-placement
+// https://w3c.github.io/window-placement/
 [
-  Exposed=Screens,
+  Exposed=Window,
   SecureContext,
   RuntimeEnabled=WindowPlacement
 ] interface ScreenDetailed : Screen {
@@ -30,4 +30,23 @@
 
   // A user-friendly label for the screen, determined by the user agent and OS.
   [HighEntropy=Direct, Measure] readonly attribute DOMString label;
+
+  // The maximum luminance that the screen is capable of displaying across
+  // the full area of the screen, as a multiple of the luminance of SDR white.
+  // This will have a value of 1.0 for screens that are not HDR capable.
+  // https://github.com/w3c/ColorWeb-CG/blob/master/hdr_html_canvas_element.md
+  [RuntimeEnabled=CanvasHDR] readonly attribute float highDynamicRangeHeadroom;
+
+  // The color primaries and white point of the screen, in CIE 1931 xy
+  // coordinates. These define the color gamut that the screen is capable of
+  // displaying.
+  // https://github.com/w3c/ColorWeb-CG/blob/master/hdr_html_canvas_element.md
+  [RuntimeEnabled=CanvasHDR] readonly attribute float redPrimaryX;
+  [RuntimeEnabled=CanvasHDR] readonly attribute float redPrimaryY;
+  [RuntimeEnabled=CanvasHDR] readonly attribute float greenPrimaryX;
+  [RuntimeEnabled=CanvasHDR] readonly attribute float greenPrimaryY;
+  [RuntimeEnabled=CanvasHDR] readonly attribute float bluePrimaryX;
+  [RuntimeEnabled=CanvasHDR] readonly attribute float bluePrimaryY;
+  [RuntimeEnabled=CanvasHDR] readonly attribute float whitePointX;
+  [RuntimeEnabled=CanvasHDR] readonly attribute float whitePointY;
 };

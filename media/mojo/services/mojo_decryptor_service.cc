@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,6 @@
 #include "media/base/video_frame.h"
 #include "media/mojo/common/media_type_converters.h"
 #include "media/mojo/common/mojo_decoder_buffer_converter.h"
-#include "media/mojo/common/mojo_shared_buffer_video_frame.h"
 #include "media/mojo/mojom/demuxer_stream.mojom.h"
 #include "media/mojo/services/mojo_cdm_service_context.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -37,7 +36,7 @@ class FrameResourceReleaserImpl final : public mojom::FrameResourceReleaser {
   explicit FrameResourceReleaserImpl(scoped_refptr<VideoFrame> frame)
       : frame_(std::move(frame)) {
     DVLOG(3) << __func__;
-    DCHECK_EQ(VideoFrame::STORAGE_MOJO_SHARED_BUFFER, frame_->storage_type());
+    DCHECK_EQ(VideoFrame::STORAGE_SHMEM, frame_->storage_type());
   }
 
   FrameResourceReleaserImpl(const FrameResourceReleaserImpl&) = delete;
@@ -292,7 +291,7 @@ void MojoDecryptorService::OnVideoDecoded(
   // If |frame| has shared memory that will be passed back, keep the reference
   // to it until the other side is done with the memory.
   mojo::PendingRemote<mojom::FrameResourceReleaser> releaser;
-  if (frame->storage_type() == VideoFrame::STORAGE_MOJO_SHARED_BUFFER) {
+  if (frame->storage_type() == VideoFrame::STORAGE_SHMEM) {
     mojo::MakeSelfOwnedReceiver(
         std::make_unique<FrameResourceReleaserImpl>(frame),
         releaser.InitWithNewPipeAndPassReceiver());

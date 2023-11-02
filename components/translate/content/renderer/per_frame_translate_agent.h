@@ -1,4 +1,4 @@
-// Copyright (c) 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -136,11 +136,7 @@ class PerFrameTranslateAgent : public content::RenderFrameObserver,
 
   // Sends a message to the browser to notify it that the translation failed
   // with |error|.
-  void NotifyBrowserTranslationFailed(TranslateErrors::Type error);
-
-  // Convenience method to access the main frame.  Can return nullptr, typically
-  // if the page is being closed.
-  blink::WebLocalFrame* GetMainFrame();
+  void NotifyBrowserTranslationFailed(TranslateErrors error);
 
   // The states associated with the current translation.
   TranslateFrameCallback translate_callback_pending_;

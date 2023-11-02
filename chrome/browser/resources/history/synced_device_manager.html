@@ -31,18 +31,18 @@
         text-align: center;
       }
 
-      #sign-in-promo {
+      #turn-on-sync-promo {
         font-size: 215%;
         margin-top: 40px;
       }
 
-      #sign-in-promo-desc {
+      #turn-on-sync-promo-desc {
         color: var(--cr-secondary-text-color);
         font-size: 123%;
         margin-top: 10px;
       }
 
-      #sign-in-button {
+      #turn-on-sync-button {
         margin: 24px 0;
       }
 
@@ -77,11 +77,11 @@
         hidden="[[!showSignInGuide(signInState, guestSession_,
                                    signInAllowed_)]]">
       <div id="illustration"></div>
-      <div id="sign-in-promo">$i18n{signInPromo}</div>
-      <div id="sign-in-promo-desc">$i18n{signInPromoDesc}</div>
-      <cr-button id="sign-in-button" class="action-button"
-          on-click="onSignInTap_">
-        $i18n{signInButton}
+      <div id="turn-on-sync-promo">$i18n{turnOnSyncPromo}</div>
+      <div id="turn-on-sync-promo-desc">$i18n{turnOnSyncPromoDesc}</div>
+      <cr-button id="turn-on-sync-button" class="action-button"
+          on-click="onTurnOnSyncTap_">
+        $i18n{turnOnSyncButton}
       </cr-button>
     </div>
 

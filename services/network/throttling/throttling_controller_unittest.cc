@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -98,7 +97,7 @@ class ThrottlingControllerTestHelper {
     if (with_upload) {
       upload_data_stream_ =
           std::make_unique<net::ChunkedUploadDataStream>(kUploadIdentifier);
-      upload_data_stream_->AppendData(kUploadData, base::size(kUploadData),
+      upload_data_stream_->AppendData(kUploadData, std::size(kUploadData),
                                       true);
       request_->upload_data_stream = upload_data_stream_.get();
     }
@@ -291,7 +290,7 @@ TEST(ThrottlingControllerTest, UploadDoesNotFail) {
   int rv = helper.Start(true);
   EXPECT_EQ(rv, net::ERR_INTERNET_DISCONNECTED);
   rv = helper.ReadUploadData();
-  EXPECT_EQ(rv, static_cast<int>(base::size(kUploadData)));
+  EXPECT_EQ(rv, static_cast<int>(std::size(kUploadData)));
 }
 
 TEST(ThrottlingControllerTest, DownloadOnly) {
@@ -335,7 +334,27 @@ TEST(ThrottlingControllerTest, UploadOnly) {
   EXPECT_EQ(callback->run_count(), 1);
   helper.FastForwardUntilNoTasksRemain();
   EXPECT_EQ(callback->run_count(), 2);
-  EXPECT_EQ(callback->value(), static_cast<int>(base::size(kUploadData)));
+  EXPECT_EQ(callback->value(), static_cast<int>(std::size(kUploadData)));
+}
+
+TEST(ThrottlingControllerTest, DownloadBufferSizeIsNotModifiedIfNotThrottled) {
+  MockTransaction mock_transaction = kSimpleGET_Transaction;
+  const int kLargeDataSize = 1024 * 1024;
+  std::string large_data(kLargeDataSize, 'x');
+  mock_transaction.data = large_data.c_str();
+  ThrottlingControllerTestHelper helper(mock_transaction);
+  TestCallback* callback = helper.callback();
+
+  helper.SetNetworkState(false, 0, 0);
+  int rv = helper.Start(false);
+  EXPECT_EQ(rv, net::OK);
+
+  auto large_data_buffer = base::MakeRefCounted<net::IOBuffer>(kLargeDataSize);
+  rv = helper.Read(large_data_buffer.get(), kLargeDataSize);
+  EXPECT_EQ(rv, net::ERR_IO_PENDING);
+  helper.FastForwardUntilNoTasksRemain();
+  EXPECT_EQ(callback->run_count(), 1);
+  EXPECT_EQ(callback->value(), kLargeDataSize);
 }
 
 TEST(ThrottlingControllerTest, DownloadIsStreamed) {

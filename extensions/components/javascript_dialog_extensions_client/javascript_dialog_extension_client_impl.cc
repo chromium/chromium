@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -74,7 +74,7 @@ class JavaScriptDialogExtensionsClientImpl
     const Extension* extension = GetExtensionForWebContents(web_contents);
     if (extension &&
         alerting_frame_origin.IsSameOriginWith(
-            web_contents->GetMainFrame()->GetLastCommittedOrigin())) {
+            web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin())) {
       *name_out = extension->name();
       return true;
     }

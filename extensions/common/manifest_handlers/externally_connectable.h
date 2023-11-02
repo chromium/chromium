@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/install_warning.h"
 #include "extensions/common/manifest_handler.h"
@@ -27,8 +26,6 @@ extern const char kErrorInvalid[];
 extern const char kErrorInvalidMatchPattern[];
 extern const char kErrorInvalidId[];
 extern const char kErrorNothingSpecified[];
-extern const char kErrorTopLevelDomainsNotAllowed[];
-extern const char kErrorWildcardHostsNotAllowed[];
 }  // namespace externally_connectable_errors
 
 // Parses the externally_connectable manifest entry.
@@ -59,7 +56,6 @@ struct ExternallyConnectableInfo : public Extension::ManifestData {
   // the manifest. Sets |error| and returns an empty scoped_ptr on failure.
   static std::unique_ptr<ExternallyConnectableInfo> FromValue(
       const base::Value& value,
-      bool allow_all_urls,
       std::vector<InstallWarning>* install_warnings,
       std::u16string* error);
 

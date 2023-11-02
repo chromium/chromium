@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -83,9 +83,7 @@ const char kPDFPath[] = "/complex_document.pdf";
   [ChromeEarlGreyUI openNewTab];
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kPDFPath)];
 
-  // Enter the tab grid.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
-      performAction:grey_tap()];
+  [ChromeEarlGreyUI openTabGrid];
 
   // Leave the tab grid.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
@@ -112,9 +110,7 @@ const char kPDFPath[] = "/complex_document.pdf";
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo")];
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kPDFPath)];
 
-  // Enter the tab grid.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
-      performAction:grey_tap()];
+  [ChromeEarlGreyUI openTabGrid];
 
   base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(5));
 

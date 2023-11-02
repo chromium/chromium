@@ -1,9 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-module chromeos.ime.mojom;
+module ash.ime.mojom;
 
+import "ash/services/ime/public/mojom/connection_factory.mojom";
 import "ash/services/ime/public/mojom/input_engine.mojom";
 import "ash/services/ime/public/mojom/input_method.mojom";
 import "ash/services/ime/public/mojom/input_method_host.mojom";
@@ -18,6 +19,14 @@ import "sandbox/policy/mojom/sandbox.mojom";
 // - The IME framework running in the Chrome browser process, that brokers
 //   between the IME extension and the IME service. It also provides additional
 //   functionality to the IME service (for downloading IME data as needed).
+// TODO(b/214153032): Paraphrase and modernise this documentation block. There
+// are currently quite some vague and/or oudated bits.
+
+// Specifies where a ConnectionFactory should initialize connections.
+enum ConnectionTarget {
+  kDecoder = 0,
+  kImeService = 1,
+};
 
 // Manages access to a set of IMEs, implemented by the IME service
 // itself. The IME framework in the browser process is responsible for brokering
@@ -33,6 +42,8 @@ interface InputEngineManager {
   // |extra| is an optional serialized data for setting up the IME engine. It is
   // serialized as binary because the engine is a shared library and |extra|
   // needs to be passed to it via a C interface.
+  // TODO(b/214153032): Rename to ConnectToProtoModeSharedLibInputMethod(), to
+  // better reflect what this does. Also, paraphrase documentation above.
   ConnectToImeEngine(string ime_spec,
                      pending_receiver<InputChannel> to_engine_request,
                      pending_remote<InputChannel> from_engine,
@@ -45,10 +56,23 @@ interface InputEngineManager {
   // On success, return |success| as true, and |input_method| can be used to
   // interact with the input method.
   // On failure (e.g. |ime_spec| is not valid), |success| is false.
+  // TODO(b/214153032): Split this into ConnectToMojoModeSharedLibInputMethod()
+  // and ConnectToRuleBasedInputMethod(), to better manage two distinct kinds of
+  // connections this does. Also, paraphrase documentation accordingly.
   ConnectToInputMethod(string ime_spec,
                        pending_receiver<InputMethod> input_method,
                        pending_remote<InputMethodHost> input_method_host)
                        => (bool success);
+
+  // Initializes the mojo pipe used for messaging between the shared library
+  // and Chromium. Any messaging interfaces used will need to be associated
+  // to this pipe (see AssociatedInterfaces documentation for more details).
+  // TODO(b/214153032): Rename to InitializeMojoModeSharedLibConnectionFactory()
+  // to better reflect what this does. Also, paraphrase documentation above.
+  InitializeConnectionFactory(
+    pending_receiver<ConnectionFactory> connection_factory,
+    ConnectionTarget connection_target)
+    => (bool success);
 };
 
 // Implemented in the browser process, used to perform network requests or

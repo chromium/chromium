@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -47,8 +47,9 @@ void ForceInstalledTestBase::SetUp() {
       TestingBrowserProcess::GetGlobal());
   ASSERT_TRUE(profile_manager_->SetUp());
   profile_ = profile_manager_->CreateTestingProfile(
-      "p1", nullptr, u"p1", 0, "", TestingProfile::TestingFactories(),
-      absl::nullopt, std::move(policy_service));
+      "p1", nullptr, u"p1", 0, TestingProfile::TestingFactories(),
+      /*is_supervised_profile=*/false, absl::nullopt,
+      std::move(policy_service));
 
   prefs_ = profile_->GetTestingPrefService();
   registry_ = ExtensionRegistry::Get(profile_);

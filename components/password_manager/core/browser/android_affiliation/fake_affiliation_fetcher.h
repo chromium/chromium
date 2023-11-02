@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/containers/queue.h"
+#include "base/memory/raw_ptr.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_fetcher_delegate.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_fetcher_interface.h"
 #include "components/password_manager/core/browser/site_affiliation/affiliation_fetcher_factory.h"
@@ -38,7 +39,7 @@ class FakeAffiliationFetcher : public AffiliationFetcherInterface {
   const std::vector<FacetURI>& GetRequestedFacetURIs() const override;
 
  private:
-  AffiliationFetcherDelegate* const delegate_;
+  const raw_ptr<AffiliationFetcherDelegate> delegate_;
 
   std::vector<FacetURI> facets_;
 };

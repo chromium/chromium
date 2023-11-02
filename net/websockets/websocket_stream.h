@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,13 +10,13 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/isolation_info.h"
 #include "net/base/net_export.h"
 #include "net/cookies/site_for_cookies.h"
+#include "net/log/net_log_with_source.h"
 #include "net/websockets/websocket_event_interface.h"
 #include "net/websockets/websocket_handshake_request_info.h"
 #include "net/websockets/websocket_handshake_response_info.h"
@@ -270,6 +270,8 @@ class NET_EXPORT_PRIVATE WebSocketStream {
   // RFC6455 section 9.1 for the exact format specification. If no
   // extensions were negotiated, the empty string is returned.
   virtual std::string GetExtensions() const = 0;
+
+  virtual const NetLogWithSource& GetNetLogWithSource() const = 0;
 
  protected:
   WebSocketStream();

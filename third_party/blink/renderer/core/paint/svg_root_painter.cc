@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,15 +15,15 @@
 
 namespace blink {
 
-IntRect SVGRootPainter::PixelSnappedSize(
+gfx::Rect SVGRootPainter::PixelSnappedSize(
     const PhysicalOffset& paint_offset) const {
-  return PixelSnappedIntRect(
+  return ToPixelSnappedRect(
       PhysicalRect(paint_offset, layout_svg_root_.Size()));
 }
 
 AffineTransform SVGRootPainter::TransformToPixelSnappedBorderBox(
     const PhysicalOffset& paint_offset) const {
-  const IntRect snapped_size = PixelSnappedSize(paint_offset);
+  const gfx::Rect snapped_size = PixelSnappedSize(paint_offset);
   AffineTransform paint_offset_to_border_box =
       AffineTransform::Translation(snapped_size.x(), snapped_size.y());
   LayoutSize size = layout_svg_root_.Size();
@@ -32,7 +32,7 @@ AffineTransform SVGRootPainter::TransformToPixelSnappedBorderBox(
         snapped_size.width() / size.Width().ToFloat(),
         snapped_size.height() / size.Height().ToFloat());
   }
-  paint_offset_to_border_box.Multiply(
+  paint_offset_to_border_box.PreConcat(
       layout_svg_root_.LocalToBorderBoxTransform());
   return paint_offset_to_border_box;
 }

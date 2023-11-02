@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "components/bookmarks/browser/bookmark_model_observer.h"
 #include "ui/base/models/combobox_model.h"
@@ -34,12 +34,10 @@ class RecentlyUsedFoldersComboModel : public ui::ComboboxModel,
   ~RecentlyUsedFoldersComboModel() override;
 
   // Overridden from ui::ComboboxModel:
-  int GetItemCount() const override;
-  std::u16string GetItemAt(int index) const override;
-  bool IsItemSeparatorAt(int index) const override;
-  int GetDefaultIndex() const override;
-  void AddObserver(ui::ComboboxModelObserver* observer) override;
-  void RemoveObserver(ui::ComboboxModelObserver* observer) override;
+  size_t GetItemCount() const override;
+  std::u16string GetItemAt(size_t index) const override;
+  bool IsItemSeparatorAt(size_t index) const override;
+  absl::optional<size_t> GetDefaultIndex() const override;
 
   // Overriden from bookmarks::BookmarkModelObserver:
   void BookmarkModelLoaded(bookmarks::BookmarkModel* model,
@@ -52,7 +50,8 @@ class RecentlyUsedFoldersComboModel : public ui::ComboboxModel,
                          size_t new_index) override;
   void BookmarkNodeAdded(bookmarks::BookmarkModel* model,
                          const bookmarks::BookmarkNode* parent,
-                         size_t index) override;
+                         size_t index,
+                         bool added_by_user) override;
   void OnWillRemoveBookmarks(bookmarks::BookmarkModel* model,
                              const bookmarks::BookmarkNode* parent,
                              size_t old_index,
@@ -75,11 +74,11 @@ class RecentlyUsedFoldersComboModel : public ui::ComboboxModel,
   // If necessary this function moves |node| into the corresponding folder for
   // the given |selected_index|.
   void MaybeChangeParent(const bookmarks::BookmarkNode* node,
-                         int selected_index);
+                         size_t selected_index);
 
  private:
   // Returns the node at the specified |index|.
-  const bookmarks::BookmarkNode* GetNodeAt(int index);
+  const bookmarks::BookmarkNode* GetNodeAt(size_t index);
 
   // Removes |node| from |items_|. Does nothing if |node| is not in |items_|.
   void RemoveNode(const bookmarks::BookmarkNode* node);
@@ -87,11 +86,9 @@ class RecentlyUsedFoldersComboModel : public ui::ComboboxModel,
   struct Item;
   std::vector<Item> items_;
 
-  bookmarks::BookmarkModel* const bookmark_model_;
+  const raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
 
-  const bookmarks::BookmarkNode* const parent_node_;
-
-  base::ObserverList<ui::ComboboxModelObserver> observers_;
+  const raw_ptr<const bookmarks::BookmarkNode> parent_node_;
 };
 
 #endif  // CHROME_BROWSER_UI_BOOKMARKS_RECENTLY_USED_FOLDERS_COMBO_MODEL_H_

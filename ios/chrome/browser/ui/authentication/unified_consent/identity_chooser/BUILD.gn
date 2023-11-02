@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -55,7 +55,6 @@ source_set("identity_chooser_ui") {
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/authentication/cells",
     "//ios/chrome/browser/ui/authentication/views",
-    "//ios/chrome/browser/ui/colors",
     "//ios/chrome/browser/ui/image_util",
     "//ios/chrome/browser/ui/list_model",
     "//ios/chrome/browser/ui/resources:menu_shadow",

@@ -1,9 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/layout/layout_theme_android.h"
 
+#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "ui/base/ui_base_features.h"
 
 namespace blink {
@@ -22,7 +23,7 @@ LayoutThemeAndroid::~LayoutThemeAndroid() {}
 Color LayoutThemeAndroid::PlatformActiveSelectionBackgroundColor(
     mojom::blink::ColorScheme color_scheme) const {
   return color_scheme == mojom::blink::ColorScheme::kDark
-             ? 0xFF99C8FF
+             ? Color::FromRGBA32(0xFF99C8FF)
              : LayoutThemeMobile::PlatformActiveSelectionBackgroundColor(
                    color_scheme);
 }
@@ -30,7 +31,7 @@ Color LayoutThemeAndroid::PlatformActiveSelectionBackgroundColor(
 Color LayoutThemeAndroid::PlatformActiveSelectionForegroundColor(
     mojom::blink::ColorScheme color_scheme) const {
   return color_scheme == mojom::blink::ColorScheme::kDark
-             ? 0xFF3B3B3B
+             ? Color::FromRGBA32(0xFF3B3B3B)
              : LayoutThemeMobile::PlatformActiveSelectionForegroundColor(
                    color_scheme);
 }

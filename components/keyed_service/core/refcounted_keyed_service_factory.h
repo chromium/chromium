@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,6 +29,10 @@ class KEYED_SERVICE_EXPORT RefcountedKeyedServiceFactory
   RefcountedKeyedServiceFactory(const RefcountedKeyedServiceFactory&) = delete;
   RefcountedKeyedServiceFactory& operator=(
       const RefcountedKeyedServiceFactory&) = delete;
+
+  // Returns the number of RefCountedKeyedServices that are currently active for
+  // a given context.
+  static int GetServicesCount(void* context);
 
  protected:
   RefcountedKeyedServiceFactory(const char* name,
@@ -87,6 +91,7 @@ class KEYED_SERVICE_EXPORT RefcountedKeyedServiceFactory
   void SetEmptyTestingFactory(void* context) override;
   bool HasTestingFactory(void* context) override;
   void CreateServiceNow(void* context) override;
+  bool IsServiceCreated(void* context) const override;
 
  private:
   // The mapping between a context and its refcounted service.

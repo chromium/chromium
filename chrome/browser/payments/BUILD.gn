@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -27,12 +27,17 @@ source_set("browser_tests") {
     "payment_handler_just_in_time_installation_browsertest.cc",
     "payment_handler_ui_browsertest.cc",
     "payment_handler_uninstall_browsertest.cc",
+    "payment_method_redirect_browsertest.cc",
     "payment_request_app_store_billing_browsertest.cc",
     "payment_request_can_make_payment_browsertest.cc",
     "payment_request_can_make_payment_event_browsertest.cc",
+    "payment_request_fail_complete_browsertest.cc",
+    "payment_request_id_browsertest.cc",
     "payment_request_security_policy_browsertest.cc",
     "sec_fetch_site_browsertest.cc",
     "secure_payment_confirmation_browsertest.cc",
+    "secure_payment_confirmation_browsertest.h",
+    "secure_payment_confirmation_opt_out_browsertest.cc",
     "two_payment_requests_browsertest.cc",
   ]
 
@@ -61,6 +66,7 @@ source_set("browser_tests") {
     sources += [
       "manifest_verifier_browsertest.cc",
       "payment_manifest_parser_browsertest.cc",
+      "secure_payment_confirmation_creation_browsertest.cc",
       "service_worker_payment_app_finder_browsertest.cc",
       "site_per_process_payments_browsertest.cc",
     ]

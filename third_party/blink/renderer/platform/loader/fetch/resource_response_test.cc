@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,8 @@
 
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
@@ -30,36 +29,7 @@ ResourceResponse CreateTestResponse() {
   return response;
 }
 
-void RunHeaderRelatedTest(const ResourceResponse& response) {
-  EXPECT_EQ(base::TimeDelta(), response.Age());
-  EXPECT_NE(absl::nullopt, response.Date());
-  EXPECT_NE(absl::nullopt, response.Expires());
-  EXPECT_NE(absl::nullopt, response.LastModified());
-  EXPECT_EQ(true, response.CacheControlContainsNoCache());
-}
-
-void RunInThread() {
-  ResourceResponse response(CreateTestResponse());
-  RunHeaderRelatedTest(response);
-}
-
 }  // namespace
-
-// This test checks that AtomicStrings in ResourceResponse doesn't cause the
-// failure of ThreadRestrictionVerifier check.
-TEST(ResourceResponseTest, CrossThreadAtomicStrings) {
-  ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
-      platform;
-
-  ResourceResponse response(CreateTestResponse());
-  RunHeaderRelatedTest(response);
-  std::unique_ptr<Thread> thread = Platform::Current()->CreateThread(
-      ThreadCreationParams(ThreadType::kTestThread)
-          .SetThreadNameForTest("WorkerThread"));
-  PostCrossThreadTask(*thread->GetTaskRunner(), FROM_HERE,
-                      CrossThreadBindOnce(&RunInThread));
-  thread.reset();
-}
 
 TEST(ResourceResponseTest, AddHttpHeaderFieldWithMultipleValues) {
   ResourceResponse response(CreateTestResponse());
@@ -82,7 +52,7 @@ TEST(ResourceResponseTest, AddHttpHeaderFieldWithMultipleValues) {
 TEST(ResourceResponseTest, DnsAliasesCanBeSetAndAccessed) {
   ResourceResponse response(CreateTestResponse());
 
-  EXPECT_TRUE(response.DnsAliases().IsEmpty());
+  EXPECT_TRUE(response.DnsAliases().empty());
 
   Vector<String> aliases({"alias1", "alias2"});
   response.SetDnsAliases(aliases);

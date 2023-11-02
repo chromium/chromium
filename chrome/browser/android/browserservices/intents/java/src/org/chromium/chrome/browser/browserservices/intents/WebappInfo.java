@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,7 +37,7 @@ public class WebappInfo {
         return (provider == null) ? null : new WebappInfo(provider);
     }
 
-    private WebappInfo(@NonNull BrowserServicesIntentDataProvider provider) {
+    protected WebappInfo(@NonNull BrowserServicesIntentDataProvider provider) {
         mProvider = provider;
     }
 
@@ -203,6 +203,14 @@ public class WebappInfo {
         return getWebApkExtras().manifestStartUrl;
     }
 
+    public String manifestId() {
+        return getWebApkExtras().manifestId;
+    }
+
+    public String appKey() {
+        return getWebApkExtras().appKey;
+    }
+
     public @WebApkDistributor int distributor() {
         return getWebApkExtras().distributor;
     }
@@ -233,13 +241,13 @@ public class WebappInfo {
                 && source != ShortcutSource.WEBAPK_SHARE_TARGET_FILE;
     }
 
-    private WebappExtras getWebappExtras() {
+    protected WebappExtras getWebappExtras() {
         WebappExtras extras = mProvider.getWebappExtras();
         assert extras != null;
         return extras;
     }
 
-    private @NonNull WebApkExtras getWebApkExtras() {
+    protected @NonNull WebApkExtras getWebApkExtras() {
         if (mWebApkExtras != null) return mWebApkExtras;
 
         mWebApkExtras = mProvider.getWebApkExtras();

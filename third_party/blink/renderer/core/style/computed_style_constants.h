@@ -30,7 +30,9 @@
 
 #include <cstddef>
 #include <cstdint>
+#include "base/check_op.h"
 #include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -55,6 +57,10 @@ enum PseudoId : uint8_t {
   // The order must be NOP ID, public IDs, and then internal IDs.
   // If you add or remove a public ID, you must update the field_size of
   // "PseudoBits" in computed_style_extra_fields.json5.
+  //
+  // The above is necessary because presence of a public pseudo element style
+  // for an element is tracked on the element's ComputedStyle. This is done for
+  // all public IDs until kLastTrackedPublicPseudoId.
   kPseudoIdNone,
   kPseudoIdFirstLine,
   kPseudoIdFirstLetter,
@@ -68,6 +74,12 @@ enum PseudoId : uint8_t {
   kPseudoIdHighlight,
   kPseudoIdSpellingError,
   kPseudoIdGrammarError,
+  // The following IDs are public but not tracked.
+  kPseudoIdPageTransition,
+  kPseudoIdPageTransitionContainer,
+  kPseudoIdPageTransitionImageWrapper,
+  kPseudoIdPageTransitionOutgoingImage,
+  kPseudoIdPageTransitionIncomingImage,
   // Internal IDs follow:
   kPseudoIdFirstLineInherited,
   kPseudoIdScrollbarThumb,
@@ -80,6 +92,7 @@ enum PseudoId : uint8_t {
   // Special values follow:
   kAfterLastInternalPseudoId,
   kFirstPublicPseudoId = kPseudoIdFirstLine,
+  kLastTrackedPublicPseudoId = kPseudoIdGrammarError,
   kFirstInternalPseudoId = kPseudoIdFirstLineInherited,
 };
 
@@ -96,9 +109,37 @@ inline bool IsHighlightPseudoElement(PseudoId pseudo_id) {
   }
 }
 
+inline bool UsesHighlightPseudoInheritance(PseudoId pseudo_id) {
+  // ::highlight() pseudos, ::spelling-error, and ::grammar-error use highlight
+  // inheritance rather than originating inheritance, regardless of whether the
+  // highlight inheritance feature is enabled.
+  return ((IsHighlightPseudoElement(pseudo_id) &&
+           RuntimeEnabledFeatures::HighlightInheritanceEnabled()) ||
+          pseudo_id == PseudoId::kPseudoIdHighlight ||
+          pseudo_id == PseudoId::kPseudoIdSpellingError ||
+          pseudo_id == PseudoId::kPseudoIdGrammarError);
+}
+
+inline bool IsTransitionPseudoElement(PseudoId pseudo_id) {
+  switch (pseudo_id) {
+    case kPseudoIdPageTransition:
+    case kPseudoIdPageTransitionContainer:
+    case kPseudoIdPageTransitionImageWrapper:
+    case kPseudoIdPageTransitionOutgoingImage:
+    case kPseudoIdPageTransitionIncomingImage:
+      return true;
+    default:
+      return false;
+  }
+}
+
 inline bool PseudoElementHasArguments(PseudoId pseudo_id) {
   switch (pseudo_id) {
     case kPseudoIdHighlight:
+    case kPseudoIdPageTransitionContainer:
+    case kPseudoIdPageTransitionImageWrapper:
+    case kPseudoIdPageTransitionIncomingImage:
+    case kPseudoIdPageTransitionOutgoingImage:
       return true;
     default:
       return false;
@@ -127,13 +168,15 @@ enum class EFillAttachment : unsigned { kScroll, kLocal, kFixed };
 enum class EFillBox : unsigned { kBorder, kPadding, kContent, kText };
 
 inline EFillBox EnclosingFillBox(EFillBox box_a, EFillBox box_b) {
-  if (box_a == EFillBox::kBorder || box_b == EFillBox::kBorder)
+  // background-clip:text is clipped to the border box.
+  if (box_a == EFillBox::kBorder || box_a == EFillBox::kText ||
+      box_b == EFillBox::kBorder || box_b == EFillBox::kText)
     return EFillBox::kBorder;
   if (box_a == EFillBox::kPadding || box_b == EFillBox::kPadding)
     return EFillBox::kPadding;
-  if (box_a == EFillBox::kContent || box_b == EFillBox::kContent)
-    return EFillBox::kContent;
-  return EFillBox::kText;
+  DCHECK_EQ(box_a, EFillBox::kContent);
+  DCHECK_EQ(box_b, EFillBox::kContent);
+  return EFillBox::kContent;
 }
 
 enum class EFillRepeat : unsigned {
@@ -207,7 +250,7 @@ inline Containment& operator|=(Containment& a, Containment b) {
 
 static const size_t kContainerTypeBits = 2;
 enum EContainerType {
-  kContainerTypeNone = 0x0,
+  kContainerTypeNormal = 0x0,
   kContainerTypeInlineSize = 0x1,
   kContainerTypeBlockSize = 0x2,
   kContainerTypeSize = kContainerTypeInlineSize | kContainerTypeBlockSize,
@@ -298,6 +341,20 @@ enum class TextEmphasisPosition : unsigned {
   kUnderLeft,
 };
 
+inline bool IsOver(TextEmphasisPosition position) {
+  return position == TextEmphasisPosition::kOverRight ||
+         position == TextEmphasisPosition::kOverLeft;
+}
+
+inline bool IsRight(TextEmphasisPosition position) {
+  return position == TextEmphasisPosition::kOverRight ||
+         position == TextEmphasisPosition::kUnderRight;
+}
+
+inline bool IsLeft(TextEmphasisPosition position) {
+  return !IsRight(position);
+}
+
 enum class LineLogicalSide {
   kOver,
   kUnder,
@@ -334,6 +391,17 @@ enum EPaintOrder {
   kPaintOrderMarkersFillStroke,
   kPaintOrderMarkersStrokeFill
 };
+
+constexpr size_t kViewportUnitFlagBits = 2;
+enum class ViewportUnitFlag {
+  // v*, sv*, lv*
+  kStatic = 0x1,
+  // dv*
+  kDynamic = 0x2,
+};
+
+enum class TimelineAxis { kBlock, kInline, kVertical, kHorizontal };
+enum class TimelineScroller { kNearest, kRoot };
 
 }  // namespace blink
 

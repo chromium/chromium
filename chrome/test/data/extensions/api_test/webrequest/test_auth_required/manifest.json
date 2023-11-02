@@ -1,0 +1,13 @@
+{
+  "name": "webRequest",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "Tests the webRequest API.",
+  "permissions": ["webRequest", "webRequestBlocking", "declarativeWebRequest",
+                  "tabs", "<all_urls>"],
+  "incognito": "split",
+  "background": {
+    "scripts": ["test_auth_required.js"],
+    "persistent": true
+  }
+}

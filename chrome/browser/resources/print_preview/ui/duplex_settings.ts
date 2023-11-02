@@ -1,23 +1,24 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/hidden_style_css.m.js';
-import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
-import 'chrome://resources/cr_elements/md_select_css.m.js';
+import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
+import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
+import 'chrome://resources/cr_elements/md_select.css.js';
 import 'chrome://resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 import 'chrome://resources/polymer/v3_0/iron-meta/iron-meta.js';
-import './icons.js';
-import './print_preview_shared_css.js';
+import './icons.html.js';
+import './print_preview_shared.css.js';
 import './settings_section.js';
 
-import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
+import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import {IronMeta} from 'chrome://resources/polymer/v3_0/iron-meta/iron-meta.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DuplexMode} from '../data/model.js';
 import {getSelectDropdownBackground} from '../print_preview_utils.js';
 
+import {getTemplate} from './duplex_settings.html.js';
 import {SelectMixin} from './select_mixin.js';
 import {SettingsMixin} from './settings_mixin.js';
 
@@ -37,7 +38,7 @@ export class PrintPreviewDuplexSettingsElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -87,7 +88,7 @@ export class PrintPreviewDuplexSettingsElement extends
     this.setSetting('duplex', this.$.duplex.checked);
   }
 
-  onProcessSelectChange(value: string) {
+  override onProcessSelectChange(value: string) {
     this.setSetting(
         'duplexShortEdge', value === DuplexMode.SHORT_EDGE.toString());
   }
@@ -118,6 +119,12 @@ export class PrintPreviewDuplexSettingsElement extends
         this.getSettingValue('duplexShortEdge') ? 'short-edge' : 'long-edge';
     const iconset = this.meta_.byKey('print-preview');
     return getSelectDropdownBackground(iconset, icon, this);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'print-preview-duplex-settings': PrintPreviewDuplexSettingsElement;
   }
 }
 

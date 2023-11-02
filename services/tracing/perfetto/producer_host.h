@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,8 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/tracing/public/mojom/perfetto_service.mojom.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/producer.h"
@@ -62,7 +63,7 @@ class ProducerHost : public tracing::mojom::ProducerHost,
       mojo::PendingRemote<mojom::ProducerClient> producer_client,
       perfetto::TracingService* service,
       const std::string& name,
-      mojo::ScopedSharedBufferHandle shared_memory,
+      base::UnsafeSharedMemoryRegion shared_memory,
       uint64_t shared_memory_buffer_page_size_bytes);
 
   // perfetto::Producer implementation.
@@ -110,7 +111,7 @@ class ProducerHost : public tracing::mojom::ProducerHost,
 
  private:
   mojo::Remote<mojom::ProducerClient> producer_client_;
-  base::tracing::PerfettoTaskRunner* task_runner_;
+  raw_ptr<base::tracing::PerfettoTaskRunner> task_runner_;
 
  protected:
   // Perfetto guarantees that no OnXX callbacks are invoked on |this|

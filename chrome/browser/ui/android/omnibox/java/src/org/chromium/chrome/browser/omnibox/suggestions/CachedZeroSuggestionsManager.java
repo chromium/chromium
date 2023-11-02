@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,6 @@ import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.KEY_Z
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.KEY_ZERO_SUGGEST_DESCRIPTION_PREFIX;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.KEY_ZERO_SUGGEST_DISPLAY_TEXT_PREFIX;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.KEY_ZERO_SUGGEST_GROUP_ID_PREFIX;
-import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.KEY_ZERO_SUGGEST_HEADER_GROUP_COLLAPSED_BY_DEFAULT_PREFIX;
-import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.KEY_ZERO_SUGGEST_HEADER_GROUP_ID_PREFIX;
-import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.KEY_ZERO_SUGGEST_HEADER_GROUP_TITLE_PREFIX;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.KEY_ZERO_SUGGEST_IS_DELETABLE_PREFIX;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.KEY_ZERO_SUGGEST_IS_SEARCH_TYPE_PREFIX;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.KEY_ZERO_SUGGEST_NATIVE_SUBTYPES_PREFIX;
@@ -21,11 +18,12 @@ import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.KEY_Z
 
 import android.text.TextUtils;
 import android.util.Base64;
-import android.util.SparseArray;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.collection.ArraySet;
+
+import com.google.protobuf.InvalidProtocolBufferException;
 
 import org.chromium.base.Function;
 import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
@@ -34,12 +32,14 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteResult;
-import org.chromium.components.omnibox.AutocompleteResult.GroupDetails;
+import org.chromium.components.omnibox.GroupsProto.GroupConfig;
+import org.chromium.components.omnibox.GroupsProto.GroupsInfo;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -52,7 +52,7 @@ public class CachedZeroSuggestionsManager {
     public static void saveToCache(AutocompleteResult resultToCache) {
         final SharedPreferencesManager manager = SharedPreferencesManager.getInstance();
         cacheSuggestionList(manager, resultToCache.getSuggestionsList());
-        cacheGroupsDetails(manager, resultToCache.getGroupsDetails());
+        cacheGroupsDetails(manager, resultToCache.getGroupsInfo());
     }
 
     /**
@@ -63,9 +63,8 @@ public class CachedZeroSuggestionsManager {
         final SharedPreferencesManager manager = SharedPreferencesManager.getInstance();
         List<AutocompleteMatch> suggestions =
                 CachedZeroSuggestionsManager.readCachedSuggestionList(manager);
-        SparseArray<GroupDetails> groupsDetails =
-                CachedZeroSuggestionsManager.readCachedGroupsDetails(manager);
-        removeInvalidSuggestionsAndGroupsDetails(suggestions, groupsDetails);
+        GroupsInfo groupsDetails = CachedZeroSuggestionsManager.readCachedGroupsDetails(manager);
+        removeInvalidSuggestionsAndGroupsDetails(suggestions, groupsDetails.getGroupConfigsMap());
         return AutocompleteResult.fromCache(suggestions, groupsDetails);
     }
 
@@ -182,7 +181,7 @@ public class CachedZeroSuggestionsManager {
             AutocompleteMatch suggestion = new AutocompleteMatch(nativeType, subtypes, isSearchType,
                     0, 0, displayText, classifications, description, classifications, null, null,
                     url, GURL.emptyGURL(), null, isDeletable, postContentType, postData, groupId,
-                    null, null, false, null);
+                    null, null, false, null, null);
             suggestions.add(suggestion);
         }
 
@@ -193,75 +192,57 @@ public class CachedZeroSuggestionsManager {
      * Cache suggestion group details in shared preferences.
      *
      * @param prefs Shared preferences manager.
-     * @param groupsDetails Map of Group ID to GroupDetails.
+     * @param groupsDetails Map of Group ID to GroupConfig.
      */
     private static void cacheGroupsDetails(
-            SharedPreferencesManager prefs, SparseArray<GroupDetails> groupsDetails) {
-        final int size = groupsDetails.size();
-        prefs.writeInt(ChromePreferenceKeys.KEY_ZERO_SUGGEST_HEADER_LIST_SIZE, size);
-        for (int i = 0; i < size; i++) {
-            final GroupDetails details = groupsDetails.valueAt(i);
-            String title = details.title;
-            boolean collapsedByDefault = details.collapsedByDefault;
-
-            prefs.writeInt(
-                    KEY_ZERO_SUGGEST_HEADER_GROUP_ID_PREFIX.createKey(i), groupsDetails.keyAt(i));
-            prefs.writeString(KEY_ZERO_SUGGEST_HEADER_GROUP_TITLE_PREFIX.createKey(i), title);
-            prefs.writeBoolean(
-                    KEY_ZERO_SUGGEST_HEADER_GROUP_COLLAPSED_BY_DEFAULT_PREFIX.createKey(i),
-                    collapsedByDefault);
-        }
+            SharedPreferencesManager prefs, GroupsInfo groupsDetails) {
+        prefs.writeString(ChromePreferenceKeys.OMNIBOX_CACHED_ZERO_SUGGEST_GROUPS_INFO,
+                Base64.encodeToString(groupsDetails.toByteArray(), Base64.DEFAULT));
     }
 
     /**
      * Restore group details from shared preferences.
      *
      * @param prefs Shared preferences manager.
-     * @return Map of group ID to GroupDetails previously cached in shared preferences.
+     * @return Map of group ID to GroupConfig previously cached in shared preferences.
      */
     @NonNull
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    static SparseArray<GroupDetails> readCachedGroupsDetails(SharedPreferencesManager prefs) {
-        final int size = prefs.readInt(ChromePreferenceKeys.KEY_ZERO_SUGGEST_HEADER_LIST_SIZE, 0);
-        final SparseArray<GroupDetails> groupsDetails = new SparseArray<>(size);
+    static GroupsInfo readCachedGroupsDetails(SharedPreferencesManager prefs) {
+        var encoded = prefs.readString(
+                ChromePreferenceKeys.OMNIBOX_CACHED_ZERO_SUGGEST_GROUPS_INFO, null);
 
-        for (int i = 0; i < size; i++) {
-            int groupId = prefs.readInt(KEY_ZERO_SUGGEST_HEADER_GROUP_ID_PREFIX.createKey(i),
-                    AutocompleteMatch.INVALID_GROUP);
-            String groupTitle =
-                    prefs.readString(KEY_ZERO_SUGGEST_HEADER_GROUP_TITLE_PREFIX.createKey(i), null);
-            boolean collapsedByDefault = prefs.readBoolean(
-                    KEY_ZERO_SUGGEST_HEADER_GROUP_COLLAPSED_BY_DEFAULT_PREFIX.createKey(i), false);
-
-            groupsDetails.put(groupId, new GroupDetails(groupTitle, collapsedByDefault));
+        if (encoded != null) {
+            try {
+                var serialized = Base64.decode(encoded, Base64.DEFAULT);
+                return GroupsInfo.parseFrom(serialized);
+            } catch (IllegalArgumentException e) {
+                // Bad Base64 encoding.
+            } catch (InvalidProtocolBufferException e) {
+                // Bad protobuf.
+            }
+            prefs.removeKey(ChromePreferenceKeys.OMNIBOX_CACHED_ZERO_SUGGEST_GROUPS_INFO);
         }
-        return groupsDetails;
+        // Failed to decode or no cached groups info.
+        return GroupsInfo.newBuilder().build();
     }
 
     /**
      * Remove all invalid entries for group details map and omnibox suggestions list.
      *
      * @param suggestions List of suggestions to scan for invalid entries.
-     * @param groupsDetails Map of GroupDetails to scan for invalid entries.
+     * @param groupsDetails Map of GroupConfig to scan for invalid entries.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     static void removeInvalidSuggestionsAndGroupsDetails(
-            List<AutocompleteMatch> suggestions, SparseArray<GroupDetails> groupsDetails) {
-        // Remove all group details that have invalid index or title.
-        for (int index = groupsDetails.size() - 1; index >= 0; index--) {
-            if (groupsDetails.keyAt(index) == AutocompleteMatch.INVALID_GROUP
-                    || TextUtils.isEmpty(groupsDetails.valueAt(index).title)) {
-                groupsDetails.removeAt(index);
-            }
-        }
-
+            List<AutocompleteMatch> suggestions, Map<Integer, GroupConfig> groupsDetails) {
         // Remove all suggestions with no valid URL or pointing to nonexistent groups.
         for (int index = suggestions.size() - 1; index >= 0; index--) {
             final AutocompleteMatch suggestion = suggestions.get(index);
             final int groupId = suggestion.getGroupId();
             if (!suggestion.getUrl().isValid() || suggestion.getUrl().isEmpty()
                     || (groupId != AutocompleteMatch.INVALID_GROUP
-                            && groupsDetails.indexOfKey(groupId) < 0)) {
+                            && !groupsDetails.containsKey(groupId))) {
                 suggestions.remove(index);
             }
         }

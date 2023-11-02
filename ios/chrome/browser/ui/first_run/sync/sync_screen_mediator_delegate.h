@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 // Delegate for the Sync mediator.
 @protocol SyncScreenMediatorDelegate
 
-// Notifies the delegate that |mediator| has finished sign in with success.
+// Notifies the delegate that `mediator` has finished sign in with success.
 - (void)syncScreenMediatorDidSuccessfulyFinishSignin:
     (SyncScreenMediator*)mediator;
 

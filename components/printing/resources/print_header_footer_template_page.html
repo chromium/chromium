@@ -116,7 +116,9 @@ function setupHeaderFooterTemplate(options) {
     }
   }
   for (const element of document.querySelectorAll(`.text`)) {
-    if (options.isRtl) {
+    if (options.isRtl &&
+        !element.classList.contains('url') &&
+        !element.classList.contains('title')) {
       element.dir = 'rtl';
     }
     if (elementIntersects(element, topMargin, bottomMargin, leftMargin,

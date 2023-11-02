@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,6 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/features.h"
-#include "content/public/renderer/render_view.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_element.h"
@@ -109,11 +108,7 @@ PhishingDOMFeatureExtractor::PhishingDOMFeatureExtractor()
 }
 
 PhishingDOMFeatureExtractor::~PhishingDOMFeatureExtractor() {
-  // The RenderView should have called CancelPendingExtraction() before
-  // we are destroyed.
-  DCHECK(done_callback_.is_null());
-  DCHECK(!cur_frame_data_.get());
-  DCHECK(cur_document_.IsNull());
+  CancelPendingExtraction();
 }
 
 void PhishingDOMFeatureExtractor::ExtractFeatures(blink::WebDocument document,

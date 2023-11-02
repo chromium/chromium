@@ -1,82 +1,20 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/browser/resources/tools/build_webui.gni")
 import("//chrome/common/features.gni")
-import("//tools/grit/grit_rule.gni")
-import("//tools/grit/preprocess_if_expr.gni")
-import("//tools/polymer/html_to_js.gni")
-import("//tools/typescript/ts_library.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
 
 assert(!is_android, "!is_android check failed")
 
-preprocess_folder = "preprocessed"
-
-grit("resources") {
-  defines = chrome_grit_defines
-
-  # These arguments are needed since the grd is generated at build time.
-  enable_input_discovery_for_gn_analyze = false
-  source = "$target_gen_dir/resources.grd"
-  deps = [ ":build_grd" ]
-
-  outputs = [
-    "grit/management_resources.h",
-    "grit/management_resources_map.cc",
-    "grit/management_resources_map.h",
-    "management_resources.pak",
-  ]
-  output_dir = "$root_gen_dir/chrome"
-}
-
-generate_grd("build_grd") {
+build_webui("build") {
   grd_prefix = "management"
-  out_grd = "$target_gen_dir/resources.grd"
-  input_files = [ "management.html" ]
-  input_files_base_dir = rebase_path(".", "//")
-  deps = [ ":build_ts" ]
-  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
-}
-
-preprocess_if_expr("preprocess") {
-  in_folder = "./"
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = [ "management_browser_proxy.ts" ]
-}
-
-preprocess_if_expr("preprocess_generated") {
-  deps = [ ":web_components" ]
-  in_folder = target_gen_dir
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = [
-    "icons.ts",
-    "management_ui.ts",
-  ]
-}
-
-html_to_js("web_components") {
-  js_files = [
-    "icons.ts",
-    "management_ui.ts",
-  ]
-}
-
-ts_library("build_ts") {
-  root_dir = "$target_gen_dir/$preprocess_folder"
-  out_dir = "$target_gen_dir/tsc"
-  tsconfig_base = "tsconfig_base.json"
-  in_files = [
-    "icons.ts",
-    "management_browser_proxy.ts",
-    "management_ui.ts",
-  ]
-  deps = [
+  static_files = [ "management.html" ]
+  web_component_files = [ "management_ui.ts" ]
+  non_web_component_files = [ "management_browser_proxy.ts" ]
+  icons_html_files = [ "icons.html" ]
+  ts_deps = [
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources:library",
-  ]
-  extra_deps = [
-    ":preprocess",
-    ":preprocess_generated",
   ]
 }

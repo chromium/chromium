@@ -1,12 +1,13 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <map>
 #include <string>
+#include <utility>
 #include <vector>
 
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "printing/backend/mojom/print_backend.mojom.h"
 #include "printing/backend/print_backend.h"
@@ -30,7 +31,7 @@ const PrinterSemanticCapsAndDefaults::Paper kPaperLedger{
     /*display_name=*/"Ledger", /*vendor_id=*/"89",
     /*size_um=*/gfx::Size(6600, 10200)};
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 const AdvancedCapability kAdvancedCapability1(
     /*name=*/"advanced_cap_bool",
     /*display_name=*/"Advanced Capability #1 (bool)",
@@ -56,7 +57,25 @@ const AdvancedCapability kAdvancedCapability2(
     });
 const AdvancedCapabilities kAdvancedCapabilities{kAdvancedCapability1,
                                                  kAdvancedCapability2};
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_WIN)
+const PageOutputQualityAttribute kPageOutputQualityAttribute1(
+    /*display_name=*/"Normal",
+    /*name=*/"ns000:Normal");
+const PageOutputQualityAttribute kPageOutputQualityAttribute2(
+    /*display_name=*/"Draft",
+    /*name=*/"ns000:Draft");
+const PageOutputQualityAttribute kPageOutputQualityAttribute3(
+    /*display_name=*/"Advance",
+    /*name=*/"ns000:Advance");
+const PageOutputQualityAttributes kPageOutputQualityAttributes{
+    kPageOutputQualityAttribute1, kPageOutputQualityAttribute2,
+    kPageOutputQualityAttribute3};
+const PageOutputQuality kPageOutputQuality(kPageOutputQualityAttributes,
+                                           /*default_quality=*/absl::nullopt);
+constexpr char kDefaultQuality[] = "ns000:Draft";
+#endif  // BUILDFLAG(IS_WIN)
 
 constexpr bool kCollateCapable = true;
 constexpr bool kCollateDefault = true;
@@ -78,7 +97,7 @@ constexpr gfx::Size kDpi1200(1200, 1200);
 constexpr gfx::Size kDpi1200x600(1200, 600);
 const std::vector<gfx::Size> kDpis{kDpi600, kDpi1200, kDpi1200x600};
 constexpr gfx::Size kDefaultDpi = kDpi600;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 constexpr bool kPinSupported = true;
 #endif
 
@@ -99,10 +118,10 @@ PrinterSemanticCapsAndDefaults GenerateSamplePrinterSemanticCapsAndDefaults() {
   caps.default_paper = kPaperLetter;
   caps.dpis = kDpis;
   caps.default_dpi = kDefaultDpi;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   caps.pin_supported = kPinSupported;
   caps.advanced_capabilities = kAdvancedCapabilities;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   return caps;
 }
@@ -180,7 +199,7 @@ TEST(PrintBackendMojomTraitsTest, TestSerializeAndDeserializePaper) {
   }
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST(PrintBackendMojomTraitsTest,
      TestSerializeAndDeserializeAdvancedCapability) {
   for (const auto& advanced_capability : kAdvancedCapabilities) {
@@ -191,7 +210,7 @@ TEST(PrintBackendMojomTraitsTest,
     EXPECT_EQ(advanced_capability, output);
   }
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST(PrintBackendMojomTraitsTest,
      TestSerializeAndDeserializePrinterSemanticCapsAndDefaults) {
@@ -216,10 +235,10 @@ TEST(PrintBackendMojomTraitsTest,
   EXPECT_TRUE(kDefaultPaper == output.default_paper);
   EXPECT_EQ(kDpis, output.dpis);
   EXPECT_EQ(kDefaultDpi, output.default_dpi);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(kPinSupported, output.pin_supported);
   EXPECT_EQ(kAdvancedCapabilities, output.advanced_capabilities);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 TEST(PrintBackendMojomTraitsTest,
@@ -247,14 +266,14 @@ TEST(
   const std::vector<mojom::DuplexMode> kEmptyDuplexModes;
   const PrinterSemanticCapsAndDefaults::Papers kEmptyUserDefinedPapers;
   const std::vector<gfx::Size> kEmptyDpis;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   const AdvancedCapabilities kEmptyAdvancedCapabilities;
 #endif
 
   input.duplex_modes = kEmptyDuplexModes;
   input.user_defined_papers = kEmptyUserDefinedPapers;
   input.dpis = kEmptyDpis;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   input.advanced_capabilities = kEmptyAdvancedCapabilities;
 #endif
 
@@ -264,7 +283,7 @@ TEST(
   EXPECT_EQ(kEmptyDuplexModes, output.duplex_modes);
   EXPECT_EQ(kEmptyUserDefinedPapers, output.user_defined_papers);
   EXPECT_EQ(kEmptyDpis, output.dpis);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(kEmptyAdvancedCapabilities, output.advanced_capabilities);
 #endif
 }
@@ -307,7 +326,7 @@ TEST(
   EXPECT_FALSE(mojo::test::SerializeAndDeserialize<
                mojom::PrinterSemanticCapsAndDefaults>(input, output));
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   // Use an advanced capability with same name but different other fields.
   AdvancedCapability advanced_capability1_prime = kAdvancedCapability1;
   advanced_capability1_prime.type = AdvancedCapability::Type::kInteger;
@@ -353,5 +372,110 @@ TEST(
 
   EXPECT_EQ(kDuplicatePapers, output.papers);
 }
+
+#if BUILDFLAG(IS_WIN)
+TEST(PrintBackendMojomTraitsTest,
+     TestSerializeAndDeserializePageOutputQualityAttribute) {
+  PageOutputQualityAttribute input = kPageOutputQualityAttribute1;
+  PageOutputQualityAttribute output;
+  EXPECT_TRUE(
+      mojo::test::SerializeAndDeserialize<mojom::PageOutputQualityAttribute>(
+          input, output));
+  EXPECT_EQ(kPageOutputQualityAttribute1.display_name, output.display_name);
+  EXPECT_EQ(kPageOutputQualityAttribute1.name, output.name);
+}
+
+TEST(PrintBackendMojomTraitsTest,
+     TestSerializeAndDeserializePageOutputQuality) {
+  PageOutputQuality input = kPageOutputQuality;
+  PageOutputQuality output;
+  EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::PageOutputQuality>(
+      input, output));
+  EXPECT_EQ(kPageOutputQuality.qualities, output.qualities);
+  EXPECT_EQ(kPageOutputQuality.default_quality, output.default_quality);
+}
+
+TEST(PrintBackendMojomTraitsTest,
+     TestSerializeAndDeserializePrinterSemanticCapsAndDefaultsXpsCapabilities) {
+  PrinterSemanticCapsAndDefaults input =
+      GenerateSamplePrinterSemanticCapsAndDefaults();
+  input.page_output_quality = kPageOutputQuality;
+  PrinterSemanticCapsAndDefaults output;
+  EXPECT_TRUE(mojo::test::SerializeAndDeserialize<
+              mojom::PrinterSemanticCapsAndDefaults>(input, output));
+  ASSERT_TRUE(output.page_output_quality);
+  EXPECT_EQ(kPageOutputQuality.qualities,
+            output.page_output_quality->qualities);
+  EXPECT_EQ(kPageOutputQuality.default_quality,
+            output.page_output_quality->default_quality);
+}
+
+TEST(
+    PrintBackendMojomTraitsTest,
+    TestSerializeAndDeserializePrinterSemanticCapsAndDefaultsAllowableEmptyArraysXpsCapabilities) {
+  PrinterSemanticCapsAndDefaults input =
+      GenerateSamplePrinterSemanticCapsAndDefaults();
+  const PageOutputQualityAttributes kEmptyQualities;
+  PageOutputQuality quality(kEmptyQualities, /*default_quality=*/absl::nullopt);
+  input.page_output_quality = std::move(quality);
+  PrinterSemanticCapsAndDefaults output;
+  EXPECT_TRUE(mojo::test::SerializeAndDeserialize<
+              mojom::PrinterSemanticCapsAndDefaults>(input, output));
+  ASSERT_TRUE(output.page_output_quality);
+  EXPECT_EQ(kEmptyQualities, output.page_output_quality->qualities);
+}
+
+TEST(
+    PrintBackendMojomTraitsTest,
+    TestSerializeAndDeserializePrinterSemanticCapsAndDefaultsDefaultQualityInArraysXpsCapabilities) {
+  PrinterSemanticCapsAndDefaults input =
+      GenerateSamplePrinterSemanticCapsAndDefaults();
+  input.page_output_quality = kPageOutputQuality;
+  input.page_output_quality->default_quality = kDefaultQuality;
+  PrinterSemanticCapsAndDefaults output;
+  EXPECT_TRUE(mojo::test::SerializeAndDeserialize<
+              mojom::PrinterSemanticCapsAndDefaults>(input, output));
+  ASSERT_TRUE(output.page_output_quality);
+  EXPECT_EQ(kPageOutputQuality.qualities,
+            output.page_output_quality->qualities);
+  EXPECT_EQ(kDefaultQuality, output.page_output_quality->default_quality);
+}
+
+TEST(
+    PrintBackendMojomTraitsTest,
+    TestSerializeAndDeserializePrinterSemanticCapsAndDefaultsMissingDefaultQualityInArraysXpsCapabilities) {
+  PrinterSemanticCapsAndDefaults input =
+      GenerateSamplePrinterSemanticCapsAndDefaults();
+
+  // Default quality is non-null, but there is no quality with same name as
+  // default quality, which is not allowed.
+  input.page_output_quality = kPageOutputQuality;
+  input.page_output_quality->default_quality = "ns000:MissingDefault";
+  PrinterSemanticCapsAndDefaults output;
+  EXPECT_FALSE(mojo::test::SerializeAndDeserialize<
+               mojom::PrinterSemanticCapsAndDefaults>(input, output));
+}
+
+TEST(
+    PrintBackendMojomTraitsTest,
+    TestSerializeAndDeserializePrinterSemanticCapsAndDefaultsNoDuplicatesInArraysXpsCapabilities) {
+  PrinterSemanticCapsAndDefaults input =
+      GenerateSamplePrinterSemanticCapsAndDefaults();
+
+  // `kPageOutputQualityAttributePrime` has same display_name and name with
+  // `kPageOutputQualityAttribute1`, which is not allowed.
+  const PageOutputQualityAttribute kPageOutputQualityAttributePrime(
+      /*display_name=*/"Normal",
+      /*name=*/"ns000:Normal");
+  PageOutputQuality page_output_quality(
+      {kPageOutputQualityAttribute1, kPageOutputQualityAttributePrime,
+       kPageOutputQualityAttribute2},
+      /*default_quality=*/absl::nullopt);
+  input.page_output_quality = std::move(page_output_quality);
+  PrinterSemanticCapsAndDefaults output;
+  EXPECT_FALSE(mojo::test::SerializeAndDeserialize<
+               mojom::PrinterSemanticCapsAndDefaults>(input, output));
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace printing

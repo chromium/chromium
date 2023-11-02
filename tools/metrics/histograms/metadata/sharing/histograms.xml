@@ -1,5 +1,5 @@
 <!--
-Copyright 2020 The Chromium Authors. All rights reserved.
+Copyright 2020 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
@@ -23,38 +23,32 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="Sharing.AnyShareStarted" enum="ShareSourceAndroid"
-    expires_after="2022-05-04">
+    expires_after="never">
   <owner>ellyjones@chromium.org</owner>
   <owner>sophey@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
     The UI surface that started any share attempt. Android only.
+
+    This is a vital metric for the sharing team; please do not remove it or
+    change its behavior without consulting the metric owners.
   </summary>
 </histogram>
 
 <histogram name="Sharing.AnyShareStartedDesktop" enum="ShareSourceDesktop"
-    expires_after="2022-05-04">
+    expires_after="never">
   <owner>kristipark@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
     The UI surface that started any share attempt. Desktop only.
-  </summary>
-</histogram>
 
-<histogram name="Sharing.ClickToCallAppsToShow" units="apps"
-    expires_after="2022-05-01">
-<!-- Name completed by histogram_suffixes name="SharingClickToCallUi" -->
-
-  <owner>mvanouwerkerk@chromium.org</owner>
-  <owner>peter@chromium.org</owner>
-  <summary>
-    The number of available apps that are about to be shown in a UI for picking
-    an app to start a phone call with. Desktop only.
+    This is a vital metric for the sharing team; please do not remove it or
+    change its behavior without consulting the metric owners.
   </summary>
 </histogram>
 
 <histogram name="Sharing.ClickToCallDevicesToShow" units="devices"
-    expires_after="2022-04-17">
+    expires_after="2022-10-23">
 <!-- Name completed by histogram_suffixes name="SharingClickToCallUi" -->
 
   <owner>mvanouwerkerk@chromium.org</owner>
@@ -66,7 +60,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.ClickToCallDialerPresent" enum="BooleanPresent"
-    expires_after="2022-04-24">
+    expires_after="2023-02-12">
   <owner>mvanouwerkerk@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <summary>
@@ -86,20 +80,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sharing.ClickToCallPhoneNumberPrecompileTime" units="ms"
-    expires_after="M87">
-  <obsolete>
-    Removed in M87.
-  </obsolete>
-  <owner>knollr@chromium.org</owner>
-  <owner>mvanouwerkerk@chromium.org</owner>
-  <summary>
-    Duration of the phone number regex precompilation task. This is recorded
-    once after startup. Desktop only.
-  </summary>
-</histogram>
-
-<histogram name="Sharing.ClickToCallPhoneNumberValid" units="BooleanValid"
+<histogram name="Sharing.ClickToCallPhoneNumberValid" enum="BooleanValid"
     expires_after="M98">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
@@ -111,7 +92,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.ClickToCallSelectedAppIndex" units="index"
-    expires_after="2022-04-24">
+    expires_after="2023-03-05">
 <!-- Name completed by histogram_suffixes name="SharingClickToCallUi" -->
 
   <owner>mvanouwerkerk@chromium.org</owner>
@@ -123,7 +104,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.ClickToCallSelectedDeviceIndex" units="index"
-    expires_after="2022-04-24">
+    expires_after="2023-03-05">
 <!-- Name completed by histogram_suffixes name="SharingClickToCallUi" -->
 
   <owner>mvanouwerkerk@chromium.org</owner>
@@ -135,7 +116,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.DefaultSharesheetAndroid.Opened" enum="ShareOrigin"
-    expires_after="2022-04-17">
+    expires_after="2023-02-26">
   <owner>sophey@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
@@ -144,48 +125,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sharing.DeviceInfoAvailable" enum="BooleanAvailable"
-    expires_after="M87">
-  <obsolete>
-    Removed in M89.
-  </obsolete>
-  <owner>knollr@chromium.org</owner>
-  <owner>mvanouwerkerk@chromium.org</owner>
+<histogram name="Sharing.DesktopScreenshot.Action"
+    enum="SharingDesktopScreenshotAction" expires_after="2023-02-26">
+  <owner>jeffreycohen@chromium.org</owner>
+  <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
-    Whether a device identified by its guid is available in the local
-    DeviceInfoTracker. Logged before sending a message to that guid.
-  </summary>
-</histogram>
-
-<histogram name="Sharing.DeviceLastUpdatedAge" units="hours"
-    expires_after="M87">
-  <obsolete>
-    Removed in M89.
-  </obsolete>
-<!-- Name completed by histogram_suffixes name="SharingMessage" -->
-
-  <owner>mvanouwerkerk@chromium.org</owner>
-  <owner>knollr@chromium.org</owner>
-  <summary>
-    The number of hours since the target device timestamp was last updated.
-    Logged when a message is sent to the device. Not logged for sending ack
-    messages. All platforms.
-  </summary>
-</histogram>
-
-<histogram name="Sharing.DeviceLastUpdatedAgeWithResult" units="hours"
-    expires_after="M87">
-  <obsolete>
-    Removed in M89.
-  </obsolete>
-<!-- Name completed by histogram_suffixes name="SharingSendMessageResult" -->
-
-  <owner>mvanouwerkerk@chromium.org</owner>
-  <owner>knollr@chromium.org</owner>
-  <summary>
-    The number of hours since the target device timestamp was last updated.
-    Logged when a message is sent to the device and the result is known. Not
-    logged for sending ack messages. All platforms.
+    Logged when actions are taken in the sharing desktop screenshot image
+    editing feature.
   </summary>
 </histogram>
 
@@ -210,7 +156,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.LongScreenshots.BitmapGenerationStatus"
-    enum="SharingLongScreenshotsEvent" expires_after="M105">
+    enum="SharingLongScreenshotsEvent" expires_after="M110">
   <owner>skare@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
@@ -221,7 +167,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.LongScreenshots.BitmapSelectedHeight" units="pixels"
-    expires_after="M105">
+    expires_after="M110">
   <owner>skare@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
@@ -231,7 +177,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.LongScreenshots.Event"
-    enum="SharingLongScreenshotsEvent" expires_after="M105">
+    enum="SharingLongScreenshotsEvent" expires_after="M110">
   <owner>skare@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
@@ -241,22 +187,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sharing.MajorVersionComparison"
-    enum="SharingMajorVersionComparison" expires_after="M87">
-  <obsolete>
-    Removed in M89.
-  </obsolete>
-<!-- Name completed by histogram_suffixes name="SharingMessage" -->
-
-  <owner>mvanouwerkerk@chromium.org</owner>
-  <owner>knollr@chromium.org</owner>
-  <summary>
-    The comparison of the major version of Chrome on this (the sender) device
-    and the receiver device. Logged when a message is sent. All platforms.
-  </summary>
-</histogram>
-
-<histogram name="Sharing.MessageAckTime" units="ms" expires_after="2022-04-24">
+<histogram name="Sharing.MessageAckTime" units="ms" expires_after="2022-06-26">
 <!-- Name completed by histogram_suffixes name="SharingChannelType",
      name="SharingDevicePlatform" and name="SharingMessage" -->
 
@@ -281,7 +212,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.MessageReceivedType" enum="SharingMessageType"
-    expires_after="2022-05-01">
+    expires_after="2023-03-19">
   <owner>mvanouwerkerk@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -357,16 +288,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sharing.RemoteCopyResizeImageTime" units="ms"
-    expires_after="M90">
-  <obsolete>
-    Removed in M92.
-  </obsolete>
-  <owner>mvanouwerkerk@chromium.org</owner>
-  <owner>knollr@chromium.org</owner>
-  <summary>The time to resize an image for Remote Copy. Desktop only.</summary>
-</histogram>
-
 <histogram name="Sharing.RemoteCopyWriteImageDetectionTime" units="ms"
     expires_after="M97">
   <owner>mvanouwerkerk@chromium.org</owner>
@@ -408,7 +329,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.Screenshot.Action" enum="SharingScreenshotAction"
-    expires_after="M105">
+    expires_after="2023-02-12">
   <owner>jeffreycohen@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
@@ -418,7 +339,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.ScreenshotFallback.Action"
-    enum="SharingScreenshotFallbackAction" expires_after="M105">
+    enum="SharingScreenshotFallbackAction" expires_after="2022-12-25">
   <owner>jeffreycohen@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
@@ -427,7 +348,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.ScreenshotsAndroid.IsEditorDismissedOnStart"
-    enum="Boolean" expires_after="2022-05-01">
+    enum="Boolean" expires_after="2022-09-11">
   <owner>jeffreycohen@chromium.org</owner>
   <owner>kristipark@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
@@ -436,8 +357,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Sharing.ScrollCapture.BitmapGeneratorStatus"
     enum="SharingScrollCaptureBitmapGenerationStatus"
-    expires_after="2022-05-01">
-  <owner>yashard@chromium.org</owner>
+    expires_after="2023-02-26">
   <owner>ckitagawa@chromium.org</owner>
   <owner>src/components/paint_preview/OWNERS</owner>
   <summary>
@@ -449,8 +369,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.ScrollCapture.SuccessfulCaptureDuration" units="ms"
-    expires_after="2022-05-01">
-  <owner>yashard@chromium.org</owner>
+    expires_after="2023-02-26">
   <owner>ckitagawa@chromium.org</owner>
   <owner>src/components/paint_preview/OWNERS</owner>
   <summary>
@@ -461,7 +380,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.SendAckMessageResult" enum="SharingSendMessageResult"
-    expires_after="2022-04-03">
+    expires_after="2022-10-09">
 <!-- Name completed by histogram_suffixes name="SharingChannelType",
      name="SharingDevicePlatform" and name="SharingMessage" -->
 
@@ -474,7 +393,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.SendMessageResult" enum="SharingSendMessageResult"
-    expires_after="2022-04-03">
+    expires_after="2023-02-12">
 <!-- Name completed by histogram_suffixes SharingChannelType,
     SharingDevicePlatform, SharingMessage, and SharingPulseInterval. -->
 
@@ -488,7 +407,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.SendTabToSelf.NotificationStatus"
-    enum="SendTabToSelfNotificationStatus" expires_after="2022-04-17">
+    enum="SendTabToSelfNotificationStatus" expires_after="2023-02-26">
   <owner>ellyjones@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
@@ -519,22 +438,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sharing.SharedClipboardRetries" units="retries"
-    expires_after="M87">
-  <obsolete>
-    Removed in M89.
-  </obsolete>
-<!-- Name completed by histogram_suffixes name="SharingSendMessageResult" -->
-
-  <owner>mvanouwerkerk@chromium.org</owner>
-  <owner>knollr@chromium.org</owner>
-  <summary>
-    The retry count for sending a shared clipboard message. The zero value is
-    for the first attempt to send the message, which is not a retry. Logged when
-    the result of sending the message is known.
-  </summary>
-</histogram>
-
 <histogram name="Sharing.SharedClipboardSelectedDeviceIndex" units="index"
     expires_after="M88">
   <owner>mvanouwerkerk@chromium.org</owner>
@@ -557,7 +460,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.ShareTargetUpdate.DynamicUpdateResult"
-    enum="ShareTargetUpdateResult" expires_after="M102">
+    enum="ShareTargetUpdateResult" expires_after="2022-09-11">
   <owner>jeffreycohen@chromium.org</owner>
   <owner>kristipark@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
@@ -572,7 +475,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.ShareTargetUpdate.ResourceBundleResult"
-    enum="ShareTargetUpdateResult" expires_after="2022-05-01">
+    enum="ShareTargetUpdateResult" expires_after="2022-09-11">
   <owner>jeffreycohen@chromium.org</owner>
   <owner>kristipark@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
@@ -586,7 +489,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.SharingHubAndroid.CloseReason"
-    enum="BottomSheet.StateChangeReason" expires_after="2022-05-01">
+    enum="BottomSheet.StateChangeReason" expires_after="2023-01-15">
   <owner>ellyjones@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
@@ -596,7 +499,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.SharingHubAndroid.Opened" enum="ShareOrigin"
-    expires_after="2022-04-17">
+    expires_after="2023-02-26">
   <owner>sophey@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
@@ -605,23 +508,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Sharing.SharingHubAndroid.SharedHighlights.TimeToGetLinkToText"
-    units="ms" expires_after="2021-07-11">
-  <obsolete>
-    Removed in M94.
-  </obsolete>
-  <owner>gayane@chromium.org</owner>
-  <owner>chrome-shared-highlighting@google.com</owner>
-  <summary>
-    Records time it takes to fulfill a link-to-text request. Recorded even if
-    request fails. Corresponds to how long is Sharing Hub delayed because of
-    link-to-text.
-  </summary>
-</histogram>
-
 <histogram name="Sharing.SharingHubAndroid.ThirdPartyAppUsage"
-    enum="SharingHubBottomRowIndex" expires_after="2022-04-17">
+    enum="SharingHubBottomRowIndex" expires_after="2022-11-27">
   <owner>sophey@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
@@ -632,7 +520,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Sharing.SharingHubAndroid.TimeToSaveScreenshotImageBeforeShare"
-    units="ms" expires_after="M98">
+    units="ms" expires_after="M110">
   <owner>skare@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
@@ -643,7 +531,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.SharingHubAndroid.TimeToShare" units="ms"
-    expires_after="2022-04-17">
+    expires_after="2023-02-26">
   <owner>sophey@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
@@ -653,7 +541,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.SharingHubAndroid.TimeToShowShareSheet" units="ms"
-    expires_after="2022-04-17">
+    expires_after="2022-12-25">
   <owner>sophey@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
@@ -663,7 +551,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.SharingHubAndroid.{DetailedContentType}.{ShareStatus}"
-    enum="LinkToggleState" expires_after="M101">
+    enum="LinkToggleState" expires_after="M110">
   <owner>sophey@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
@@ -674,6 +562,7 @@ chromium-metrics-reviews@google.com.
     <variant name="Gif"/>
     <variant name="HighlightedText"/>
     <variant name="Image"/>
+    <variant name="LightweightReaction"/>
     <variant name="NotSpecified"/>
     <variant name="Screenshot"/>
     <variant name="Webnotes"/>
@@ -685,7 +574,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.SharingHubDesktop.CrOSSharesheetResult"
-    enum="SharingHubSharesheetResult" expires_after="2022-04-03">
+    enum="SharingHubSharesheetResult" expires_after="2023-02-12">
   <owner>kristipark@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
@@ -694,10 +583,47 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sharing.SharingHubDesktop.TimeToFetchFaviconPreviewImage"
+    units="ms" expires_after="2023-01-12">
+  <owner>ellyjones@chromium.org</owner>
+  <owner>src/chrome/browser/share/OWNERS</owner>
+  <summary>
+    Records the elapsed time (in milliseconds) between the sharing hub becoming
+    visible on screen and the favicon image (if there is one) replacing the
+    default image. Only logged for cases where the favicon is both present and
+    is delivered to the sharing hub asynchronously, so this metric tracks how
+    slow async favicon fetching is.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.SharingHubDesktop.TimeToFetchHQPreviewImage"
+    units="ms" expires_after="2023-01-12">
+  <owner>ellyjones@chromium.org</owner>
+  <owner>src/chrome/browser/share/OWNERS</owner>
+  <summary>
+    Records the elapsed time (in milliseconds) between the sharing hub becoming
+    visible on screen and the high-quality image (if there is one) replacing the
+    default image. Only logged for cases where such a replacement eventually
+    happens - pages with no high-quality image do not produce an entry. This
+    metric essentially tracks how slow asynchronous HQ image fetching is.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.SharingHubDesktop.TimeToShow" units="ms"
+    expires_after="2023-02-26">
+  <owner>ellyjones@chromium.org</owner>
+  <owner>src/chrome/browser/share/OWNERS</owner>
+  <summary>
+    Records the elapsed time (in milliseconds) between the user gesture that
+    should summon the sharing hub and the sharing hub actually becoming visible
+    on screen.
+  </summary>
+</histogram>
+
 <histogram name="Sharing.SmsFetcherAvailableDeviceCount" units="devices"
-    expires_after="2022-04-17">
+    expires_after="2023-02-26">
   <owner>yigu@chromium.org</owner>
-  <owner>web-identity@google.com</owner>
+  <owner>src/content/browser/sms/OWNERS</owner>
   <summary>
     The number of available devices when making a request on desktop which is
     triggered by calling the WebOTP API. This is logged once per API call.
@@ -706,9 +632,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.SmsFetcherClientNameIsEmpty" enum="BooleanEmpty"
-    expires_after="M100">
+    expires_after="2022-12-25">
   <owner>yigu@chromium.org</owner>
-  <owner>web-identity@google.com</owner>
+  <owner>src/content/browser/sms/OWNERS</owner>
   <summary>
     Records whether the remote client name is empty. This could happen on early
     version of Chrome. This is logged once per notification when asking for user
@@ -717,9 +643,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.SmsFetcherScreenOnAndUnlocked" enum="Boolean"
-    expires_after="2022-05-01">
+    expires_after="2023-02-26">
   <owner>yigu@chromium.org</owner>
-  <owner>web-identity@google.com</owner>
+  <owner>src/content/browser/sms/OWNERS</owner>
   <summary>
     Records whether the phone is on and unlocked when we show the notification
     to users. False if either the phone is locked or the phone does not have a
@@ -728,9 +654,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.SmsFetcherTapWithChromeDestroyed" enum="Boolean"
-    expires_after="2022-05-01">
+    expires_after="2023-02-26">
   <owner>yigu@chromium.org</owner>
-  <owner>web-identity@google.com</owner>
+  <owner>src/content/browser/sms/OWNERS</owner>
   <summary>
     Records whether a user taps/dismisses the notification after Chrome is
     destroyed. This could happen if the user manually swipes away Chrome from

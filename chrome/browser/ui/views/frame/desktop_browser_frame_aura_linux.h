@@ -1,10 +1,11 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_DESKTOP_BROWSER_FRAME_AURA_LINUX_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_DESKTOP_BROWSER_FRAME_AURA_LINUX_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/frame/desktop_browser_frame_aura.h"
 
 #include "base/gtest_prod_util.h"
@@ -43,7 +44,7 @@ class DesktopBrowserFrameAuraLinux : public DesktopBrowserFrameAura {
   // Whether the custom Chrome frame preference is set.
   BooleanPrefMember use_custom_frame_pref_;
 
-  BrowserDesktopWindowTreeHostLinux* host_ = nullptr;
+  raw_ptr<BrowserDesktopWindowTreeHostLinux> host_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_DESKTOP_BROWSER_FRAME_AURA_LINUX_H_

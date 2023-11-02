@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -47,18 +47,16 @@ class MediaStreamComponent;
 //
 //   class MyAudioSource : public MediaStreamAudioSource { ... };
 //
-//   MediaStreamSource* media_stream_source = ...;
+//   MediaStreamSource* media_stream_source =
+//       MakeGarbageCollected<MediaStreamSource>(
+//           ..., std::make_unique<MyAudioSource>());
 //   MediaStreamComponent* media_stream_track = ...;
-//   source->setExtraData(new MyAudioSource());  // Takes ownership.
 //   if (MediaStreamAudioSource::From(media_stream_source)
-//           ->ConnectToTrack(media_stream_track)) {
+//           ->ConnectToInitializedTrack(media_stream_track)) {
 //     LOG(INFO) << "Success!";
 //   } else {
 //     LOG(ERROR) << "Failed!";
 //   }
-//   // Regardless of whether ConnectToTrack() succeeds, there will always be a
-//   // MediaStreamAudioTrack instance created.
-//   CHECK(MediaStreamAudioTrack::From(media_stream_track));
 class PLATFORM_EXPORT MediaStreamAudioSource
     : public WebPlatformMediaStreamSource {
  public:
@@ -88,11 +86,10 @@ class PLATFORM_EXPORT MediaStreamAudioSource
   // streamed-in from outside the application.
   bool is_local_source() const { return is_local_source_; }
 
-  // Connects this source to the given |track|, creating the appropriate
-  // implementation of the content::MediaStreamAudioTrack interface, which
-  // becomes associated with and owned by |track|. Returns true if the source
-  // was successfully started.
-  bool ConnectToTrack(MediaStreamComponent* component);
+  // Connects this source to the given |component|, which already has an
+  // associated MediaStreamAudioTrack. Returns true if the source was
+  // successfully started.
+  bool ConnectToInitializedTrack(MediaStreamComponent* component);
 
   // Returns the current format of the audio passing through this source to the
   // sinks. This can return invalid parameters if the source has not yet been
@@ -102,9 +99,6 @@ class PLATFORM_EXPORT MediaStreamAudioSource
   // These accessors return properties that are controlled via constraints.
   bool disable_local_echo() const { return disable_local_echo_; }
   bool RenderToAssociatedSinkEnabled() const;
-
-  // Checks all tracks acting as consumers and returns true if all are disabled.
-  bool AllTracksAreDisabled();
 
   // Returns a unique class identifier. Some subclasses override and use this
   // method to provide safe down-casting to their type.
@@ -134,12 +128,12 @@ class PLATFORM_EXPORT MediaStreamAudioSource
     return error_code_;
   }
 
- protected:
   // Returns a new MediaStreamAudioTrack. |id| is the blink track's ID in UTF-8.
   // Subclasses may override this to provide an extended implementation.
   virtual std::unique_ptr<MediaStreamAudioTrack> CreateMediaStreamAudioTrack(
       const std::string& id);
 
+ protected:
   // Returns true if the source has already been started and has not yet been
   // stopped. Otherwise, attempts to start the source and returns true if
   // successful. While the source is running, it may provide audio on any thread

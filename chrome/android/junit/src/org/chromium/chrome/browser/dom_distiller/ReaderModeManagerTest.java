@@ -1,12 +1,15 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.dom_distiller;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -54,7 +57,7 @@ import java.util.concurrent.TimeoutException;
 public class ReaderModeManagerTest {
     private static final GURL MOCK_DISTILLER_URL =
             JUnitTestGURLs.getGURL(JUnitTestGURLs.DOM_DISILLER_URL);
-    private static final GURL MOCK_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
+    private static final GURL MOCK_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.GOOGLE_URL_CAT);
 
     @Rule
     public JniMocker jniMocker = new JniMocker();
@@ -144,6 +147,7 @@ public class ReaderModeManagerTest {
         // An observer should have also been added to the web contents.
         verify(mWebContents).addObserver(mWebContentsObserverCaptor.capture());
         mWebContentsObserver = mWebContentsObserverCaptor.getValue();
+        mManager.clearSavedSitesForTesting();
     }
 
     @Test
@@ -206,6 +210,44 @@ public class ReaderModeManagerTest {
 
     @Test
     @Feature("ReaderMode")
+    @Features.EnableFeatures({ChromeFeatureList.MESSAGES_FOR_ANDROID_READER_MODE})
+    public void testUI_notTriggered_muted() {
+        mManager.muteSiteForTesting(mTab.getUrl());
+        mDistillabilityObserver.onIsPageDistillableResult(mTab, true, true, false);
+        assertEquals("Distillation should be possible.", DistillationStatus.POSSIBLE,
+                mManager.getDistillationStatus());
+        verify(mMessageDispatcher, never()).enqueueMessage(any(), any(), anyInt(), anyBoolean());
+        verifyNoMoreInteractions(mReaderModeInfobarJniMock);
+    }
+
+    @Test
+    @Feature("ReaderMode")
+    @Features.EnableFeatures({ChromeFeatureList.MESSAGES_FOR_ANDROID_READER_MODE})
+    public void testUI_notTriggered_mutedByDomain() {
+        mManager.muteSiteForTesting(JUnitTestGURLs.getGURL(JUnitTestGURLs.GOOGLE_URL_DOG));
+        mDistillabilityObserver.onIsPageDistillableResult(mTab, true, true, false);
+        assertEquals("Distillation should be possible.", DistillationStatus.POSSIBLE,
+                mManager.getDistillationStatus());
+        verify(mMessageDispatcher,
+                never().description("Reader mode should be muted in this domain"))
+                .enqueueMessage(any(), any(), anyInt(), anyBoolean());
+        verifyNoMoreInteractions(mReaderModeInfobarJniMock);
+    }
+
+    @Test
+    @Feature("ReaderMode")
+    @Features.EnableFeatures({ChromeFeatureList.MESSAGES_FOR_ANDROID_READER_MODE})
+    public void testUI_notTriggered_notMutedByDomain() {
+        mManager.muteSiteForTesting(JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL));
+        mDistillabilityObserver.onIsPageDistillableResult(mTab, true, true, false);
+        assertEquals("Distillation should be possible.", DistillationStatus.POSSIBLE,
+                mManager.getDistillationStatus());
+        verify(mMessageDispatcher).enqueueMessage(any(), any(), anyInt(), anyBoolean());
+        verifyNoMoreInteractions(mReaderModeInfobarJniMock);
+    }
+
+    @Test
+    @Feature("ReaderMode")
     public void testWebContentsObserver_distillerNavigationRemoved() {
         when(mNavController.getEntryAtIndex(0))
                 .thenReturn(createNavigationEntry(0, MOCK_DISTILLER_URL));
@@ -213,13 +255,12 @@ public class ReaderModeManagerTest {
 
         // Simulate a navigation from a distilled page.
         when(mNavController.getLastCommittedEntryIndex()).thenReturn(0);
-        when(mNavigationHandle.isInPrimaryMainFrame()).thenReturn(true);
         when(mNavigationHandle.isSameDocument()).thenReturn(false);
         when(mNavigationHandle.hasCommitted()).thenReturn(true);
         when(mNavigationHandle.getUrl()).thenReturn(MOCK_URL);
 
-        mWebContentsObserver.didStartNavigation(mNavigationHandle);
-        mWebContentsObserver.didFinishNavigation(mNavigationHandle);
+        mWebContentsObserver.didStartNavigationInPrimaryMainFrame(mNavigationHandle);
+        mWebContentsObserver.didFinishNavigationInPrimaryMainFrame(mNavigationHandle);
 
         // Distiller entry should have been removed.
         verify(mNavController).removeEntryAtIndex(0);
@@ -233,12 +274,11 @@ public class ReaderModeManagerTest {
 
         // Simulate a navigation to a distilled page.
         when(mNavController.getLastCommittedEntryIndex()).thenReturn(0);
-        when(mNavigationHandle.isInPrimaryMainFrame()).thenReturn(true);
         when(mNavigationHandle.isSameDocument()).thenReturn(false);
         when(mNavigationHandle.getUrl()).thenReturn(MOCK_DISTILLER_URL);
 
-        mWebContentsObserver.didStartNavigation(mNavigationHandle);
-        mWebContentsObserver.didFinishNavigation(mNavigationHandle);
+        mWebContentsObserver.didStartNavigationInPrimaryMainFrame(mNavigationHandle);
+        mWebContentsObserver.didFinishNavigationInPrimaryMainFrame(mNavigationHandle);
 
         assertEquals("Distillation should have started.", DistillationStatus.STARTED,
                 mManager.getDistillationStatus());
@@ -251,12 +291,11 @@ public class ReaderModeManagerTest {
 
         // Simulate an same-document navigation.
         when(mNavController.getLastCommittedEntryIndex()).thenReturn(0);
-        when(mNavigationHandle.isInPrimaryMainFrame()).thenReturn(true);
         when(mNavigationHandle.isSameDocument()).thenReturn(true);
         when(mNavigationHandle.getUrl()).thenReturn(MOCK_URL);
 
-        mWebContentsObserver.didStartNavigation(mNavigationHandle);
-        mWebContentsObserver.didFinishNavigation(mNavigationHandle);
+        mWebContentsObserver.didStartNavigationInPrimaryMainFrame(mNavigationHandle);
+        mWebContentsObserver.didFinishNavigationInPrimaryMainFrame(mNavigationHandle);
 
         assertEquals("Distillation should not be possible.", DistillationStatus.NOT_POSSIBLE,
                 mManager.getDistillationStatus());
@@ -268,6 +307,7 @@ public class ReaderModeManagerTest {
      * @return A new {@link NavigationEntry}.
      */
     private NavigationEntry createNavigationEntry(int index, GURL url) {
-        return new NavigationEntry(index, url, url, url, url, "", null, 0, 0);
+        return new NavigationEntry(
+                index, url, url, url, url, "", null, 0, 0, /* isInitialEntry=*/false);
     }
 }

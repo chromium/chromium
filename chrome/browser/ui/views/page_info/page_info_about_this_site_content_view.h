@@ -1,12 +1,13 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_ABOUT_THIS_SITE_CONTENT_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_ABOUT_THIS_SITE_CONTENT_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
+#include "components/page_info/core/proto/about_this_site_metadata.pb.h"
 #include "components/page_info/page_info_ui.h"
-#include "components/page_info/proto/about_this_site_metadata.pb.h"
 #include "ui/views/view.h"
 
 class ChromePageInfoUiDelegate;
@@ -23,12 +24,14 @@ class PageInfoAboutThisSiteContentView : public views::View, public PageInfoUI {
   ~PageInfoAboutThisSiteContentView() override;
 
  private:
-  std::unique_ptr<views::View> CreateSourceLabel(
-      const page_info::proto::SiteInfo& info) WARN_UNUSED_RESULT;
+  [[nodiscard]] std::unique_ptr<views::View> CreateDescriptionLabel(
+      const page_info::proto::SiteInfo& info);
+  [[nodiscard]] std::unique_ptr<views::View> CreateSourceLabel(
+      const page_info::proto::SiteInfo& info);
   void SourceLinkClicked(const ui::Event& event);
 
-  PageInfo* presenter_;
-  ChromePageInfoUiDelegate* ui_delegate_;
+  raw_ptr<PageInfo> presenter_;
+  raw_ptr<ChromePageInfoUiDelegate> ui_delegate_;
   page_info::proto::SiteInfo info_;
 };
 

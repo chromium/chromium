@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,16 +25,14 @@ class AppTimeLimitsAllowlistPolicyBuilder {
       const AppTimeLimitsAllowlistPolicyBuilder&) = delete;
 
   void SetUp();
-  void Clear();
-  void AppendToAllowlistUrlList(const std::string& scheme);
   void AppendToAllowlistAppList(const AppId& app_id);
 
-  const base::Value& value() const { return value_; }
+  const base::Value::Dict& dict() const { return dict_; }
 
  private:
-  void AppendToList(const std::string& key, base::Value value);
+  void AppendToList(const std::string& key, base::Value::Dict dict);
 
-  base::Value value_;
+  base::Value::Dict dict_;
 };
 
 }  // namespace app_time

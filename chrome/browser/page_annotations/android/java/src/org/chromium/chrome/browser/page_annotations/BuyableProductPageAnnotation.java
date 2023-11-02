@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,13 +8,17 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import org.chromium.base.Log;
-import org.chromium.chrome.browser.page_annotations.PageAnnotation.PageAnnotationType;
+import org.chromium.build.annotations.DoNotClassMerge;
 
 import java.util.Locale;
 
 /**
  * {@link PageAnnotation} for products in a page.
+ *
+ * This class should not be merged because it is being used as a key in a Map
+ * in PageAnnotationUtils.java.
  */
+@DoNotClassMerge
 public class BuyableProductPageAnnotation extends PageAnnotation {
     private static final String TAG = "BPPA";
     private static final String BUYABLE_PRODUCT_KEY = "buyableProduct";

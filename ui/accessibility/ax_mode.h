@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,9 @@ namespace ui {
 
 class AX_BASE_EXPORT AXMode {
  public:
+  // No modes set (default).
+  static constexpr uint32_t kNone = 0;
+
   static constexpr uint32_t kFirstModeFlag = 1 << 0;
 
   // Native accessibility APIs, specific to each platform, are enabled.
@@ -71,10 +74,11 @@ class AX_BASE_EXPORT AXMode {
 
   // Update this to include the last supported mode flag. If you add
   // another, be sure to update the stream insertion operator for
-  // logging and debugging.
+  // logging and debugging, as well as AccessibilityModeFlagEnum (and
+  // related metrics callsites, see: |ModeFlagHistogramValue|).
   static constexpr uint32_t kLastModeFlag = 1 << 7;
 
-  constexpr AXMode() : flags_(0) {}
+  constexpr AXMode() : flags_(kNone) {}
   constexpr AXMode(uint32_t flags) : flags_(flags) {}
 
   bool has_mode(uint32_t flag) const { return (flags_ & flag) == flag; }
@@ -97,6 +101,24 @@ class AX_BASE_EXPORT AXMode {
   }
 
   std::string ToString() const;
+
+  // IMPORTANT!
+  // These values are written to logs.  Do not renumber or delete
+  // existing items; add new entries to the end of the list.
+  enum class ModeFlagHistogramValue {
+    UMA_AX_MODE_NATIVE_APIS = 0,
+    UMA_AX_MODE_WEB_CONTENTS = 1,
+    UMA_AX_MODE_INLINE_TEXT_BOXES = 2,
+    UMA_AX_MODE_SCREEN_READER = 3,
+    UMA_AX_MODE_HTML = 4,
+    UMA_AX_MODE_HTML_METADATA = 5,
+    UMA_AX_MODE_LABEL_IMAGES = 6,
+    UMA_AX_MODE_PDF = 7,
+
+    // This must always be the last enum. It's okay for its value to
+    // increase, but none of the other enum values may change.
+    UMA_AX_MODE_MAX
+  };
 
  private:
   uint32_t flags_;

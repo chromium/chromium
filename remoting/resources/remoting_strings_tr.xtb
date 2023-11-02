@@ -26,7 +26,6 @@ Bu izni vermek için aşağıdaki "<ph name="BUTTON_NAME" />" düğmesini tıkla
 <translation id="225614027745146050">Hoş Geldiniz</translation>
 <translation id="2320166752086256636">Klavyeyi gizle</translation>
 <translation id="2329392777730037872"><ph name="URL" /> adresi istemcide açılamadı.</translation>
-<translation id="2333212046079545895">Telif hakkı 2021 Google LLC. Tüm Hakları Saklıdır.</translation>
 <translation id="2359808026110333948">Devam et</translation>
 <translation id="2366718077645204424">Ana bilgisayara erişilemiyor. Bu sorun, kullandığınız ağın yapılandırmasından kaynaklanıyor olabilir.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" /> Çevrimiçi olarak son görüldüğü zaman: <ph name="RELATIVE_TIMESTAMP" />.</translation>
@@ -37,6 +36,7 @@ Bu izni vermek için aşağıdaki "<ph name="BUTTON_NAME" />" düğmesini tıkla
 <translation id="2599300881200251572">Bu hizmet Chrome Uzaktan Masaüstü istemcilerinden gelen bağlantıları etkinleştirir.</translation>
 <translation id="2647232381348739934">Chromoting Hizmeti</translation>
 <translation id="2676780859508944670">Çalışıyor...</translation>
+<translation id="2692522824157224199">Telif hakkı 2022 Google LLC. Tüm Hakları Saklıdır.</translation>
 <translation id="2699970397166997657">Chromoting</translation>
 <translation id="2758123043070977469">Kimlik doğrulanırken bir sorun oluştu, lütfen tekrar giriş yapın.</translation>
 <translation id="2803375539583399270">PIN girin</translation>
@@ -73,10 +73,10 @@ Bu izni vermek için aşağıdaki "<ph name="BUTTON_NAME" />" düğmesini tıkla
 <translation id="4257751272692708833"><ph name="PRODUCT_NAME" /> URL Yönlendirici</translation>
 <translation id="4277736576214464567">Erişim kodu geçersiz. Lütfen tekrar deneyin.</translation>
 <translation id="4281844954008187215">Hizmet Şartları</translation>
+<translation id="4372650392690220936">Telif hakkı 2022 The Chromium Authors. Tüm Hakları Saklıdır.</translation>
 <translation id="4405930547258349619">Çekirdek Kitaplığı</translation>
 <translation id="443560535555262820">Erişilebilirlik Tercihlerini Aç</translation>
 <translation id="4450893287417543264">Bir daha gösterme</translation>
-<translation id="4512952200932940229">Telif hakkı 2021 The Chromium Authors. Tüm Hakları Saklıdır.</translation>
 <translation id="4513946894732546136">Geri Bildirim</translation>
 <translation id="4563926062592110512">İstemcinin bağlantısı kesildi: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> doğru yapılandırılmamış. Lütfen farklı bir varsayılan web tarayıcısı seçip URL yönlendirmeyi tekrar etkinleştirin.</translation>

@@ -1,10 +1,11 @@
-// Copyright (c) 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/component_updater/recovery_improved_component_installer.h"
 
 #include "build/branding_buildflags.h"
+#include "build/build_config.h"
 
 // The recovery component is built and used by Google Chrome only.
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -27,7 +28,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "build/build_config.h"
 #include "chrome/browser/component_updater/component_updater_utils.h"
 #include "components/services/unzip/content/unzip_service.h"
 #include "components/update_client/patcher.h"
@@ -97,7 +97,7 @@ void RecoveryComponentActionHandler::RunCommand(
     const base::CommandLine& cmdline) {
   VLOG(1) << "run command: " << cmdline.GetCommandLineString();
   base::LaunchOptions options;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   options.start_hidden = true;
 #endif
   base::Process process = base::LaunchProcess(cmdline, options);
@@ -182,8 +182,7 @@ RecoveryImprovedInstallerPolicy::GetInstallerAttributes() const {
 
 void RegisterRecoveryImprovedComponent(ComponentUpdateService* cus,
                                        PrefService* prefs) {
-// TODO(sorin): enable recovery component for macOS. crbug/687231.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   DVLOG(1) << "Registering RecoveryImproved component.";
 
   // |cus| keeps a reference to the |installer| in the CrxComponent instance.

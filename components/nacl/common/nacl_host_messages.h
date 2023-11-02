@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,7 +36,6 @@ IPC_STRUCT_TRAITS_BEGIN(nacl::NaClLaunchParams)
   IPC_STRUCT_TRAITS_MEMBER(resource_prefetch_request_list)
   IPC_STRUCT_TRAITS_MEMBER(render_frame_id)
   IPC_STRUCT_TRAITS_MEMBER(permission_bits)
-  IPC_STRUCT_TRAITS_MEMBER(uses_nonsfi_mode)
   IPC_STRUCT_TRAITS_MEMBER(process_type)
 IPC_STRUCT_TRAITS_END()
 
@@ -106,15 +105,13 @@ IPC_MESSAGE_CONTROL2(NaClHostMsg_ReportTranslationFinished,
 
 // A renderer sends this to the browser process to report when the client
 // architecture is not listed in the manifest.
-IPC_MESSAGE_CONTROL1(NaClHostMsg_MissingArchError,
-                     int /* render_view_id */)
+IPC_MESSAGE_CONTROL1(NaClHostMsg_MissingArchError, int /* render_frame_id */)
 
 // A renderer sends this to the browser process when it wants to
 // open a NaCl executable file from an installed application directory.
-IPC_SYNC_MESSAGE_CONTROL3_3(NaClHostMsg_OpenNaClExecutable,
+IPC_SYNC_MESSAGE_CONTROL2_3(NaClHostMsg_OpenNaClExecutable,
                             int /* render_frame_id */,
                             GURL /* URL of NaCl executable file */,
-                            bool /* enable_validation_caching */,
                             IPC::PlatformFileForTransit /* output file */,
                             uint64_t /* file_token_lo */,
                             uint64_t /* file_token_hi */)

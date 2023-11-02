@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
@@ -28,19 +27,21 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/cryptohome/cryptohome_parameters.h"
-#include "chromeos/cryptohome/cryptohome_util.h"
-#include "chromeos/cryptohome/system_salt_getter.h"
-#include "chromeos/dbus/cros_disks/cros_disks_client.h"
-#include "chromeos/dbus/cryptohome/account_identifier_operators.h"
-#include "chromeos/dbus/cryptohome/rpc.pb.h"
-#include "chromeos/dbus/userdataauth/fake_cryptohome_misc_client.h"
-#include "chromeos/dbus/userdataauth/fake_userdataauth_client.h"
-#include "chromeos/login/auth/cryptohome_key_constants.h"
-#include "chromeos/login/auth/key.h"
-#include "chromeos/login/auth/mock_auth_status_consumer.h"
-#include "chromeos/login/auth/test_attempt_state.h"
-#include "chromeos/login/auth/user_context.h"
+#include "chromeos/ash/components/cryptohome/common_types.h"
+#include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
+#include "chromeos/ash/components/cryptohome/cryptohome_util.h"
+#include "chromeos/ash/components/cryptohome/system_salt_getter.h"
+#include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
+#include "chromeos/ash/components/dbus/cryptohome/account_identifier_operators.h"
+#include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
+#include "chromeos/ash/components/dbus/userdataauth/fake_cryptohome_misc_client.h"
+#include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
+#include "chromeos/ash/components/login/auth/mock_auth_status_consumer.h"
+#include "chromeos/ash/components/login/auth/public/auth_failure.h"
+#include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
+#include "chromeos/ash/components/login/auth/public/key.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "chromeos/ash/components/login/auth/test_attempt_state.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "components/ownership/mock_owner_key_util.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -56,18 +57,15 @@
 #include "url/gurl.h"
 
 namespace ash {
+
 namespace {
 
-using ::testing::Invoke;
-using ::testing::Return;
-using ::testing::WithArg;
+using ::cryptohome::KeyLabel;
 using ::testing::_;
+using ::testing::Invoke;
 
 // A fake sanitized username used for testing.
 constexpr char kFakeSanitizedUsername[] = "01234567890ABC";
-
-// Salt used by pre-hashed key.
-const char kSalt[] = "SALT $$";
 
 // An owner key in PKCS#8 PrivateKeyInfo for testing owner checks.
 const uint8_t kOwnerPrivateKey[] = {
@@ -114,18 +112,18 @@ const uint8_t kOwnerPublicKey[] = {
 
 std::vector<uint8_t> GetOwnerPublicKey() {
   return std::vector<uint8_t>(kOwnerPublicKey,
-                              kOwnerPublicKey + base::size(kOwnerPublicKey));
+                              kOwnerPublicKey + std::size(kOwnerPublicKey));
 }
 
 bool CreateOwnerKeyInSlot(PK11SlotInfo* slot) {
   const std::vector<uint8_t> key(
-      kOwnerPrivateKey, kOwnerPrivateKey + base::size(kOwnerPrivateKey));
+      kOwnerPrivateKey, kOwnerPrivateKey + std::size(kOwnerPrivateKey));
   return crypto::ImportNSSKeyFromPrivateKeyInfo(
              slot, key, true /* permanent */) != nullptr;
 }
 
 // Fake UserDataAuthClient implementation for this test.
-class TestUserDataAuthClient : public ::chromeos::FakeUserDataAuthClient {
+class TestUserDataAuthClient : public FakeUserDataAuthClient {
  public:
   TestUserDataAuthClient() = default;
 
@@ -299,7 +297,8 @@ class CryptohomeAuthenticatorTest : public testing::Test {
     SystemSaltGetter::Initialize();
 
     auth_ = new ChromeCryptohomeAuthenticator(&consumer_);
-    state_ = std::make_unique<TestAttemptState>(user_context_);
+    state_ = std::make_unique<TestAttemptState>(
+        std::make_unique<UserContext>(user_context_));
   }
 
   // Tears down the test fixture.
@@ -375,7 +374,7 @@ class CryptohomeAuthenticatorTest : public testing::Test {
   void ExpectGetKeyDataExCall(std::unique_ptr<int64_t> key_type,
                               std::unique_ptr<std::string> salt) {
     auto key_definition = cryptohome::KeyDefinition::CreateForPassword(
-        std::string() /* secret */, kCryptohomeGaiaKeyLabel,
+        std::string() /* secret */, KeyLabel(kCryptohomeGaiaKeyLabel),
         cryptohome::PRIV_DEFAULT);
     key_definition.revision = 1;
     if (key_type) {
@@ -580,7 +579,8 @@ TEST_F(CryptohomeAuthenticatorTest, ResolveOwnerNeededFailedMount) {
   // verification.
   content::RunAllTasksUntilIdle();
 
-  state_ = std::make_unique<TestAttemptState>(user_context_);
+  state_ = std::make_unique<TestAttemptState>(
+      std::make_unique<UserContext>(user_context_));
   state_->PresetCryptohomeStatus(cryptohome::MOUNT_ERROR_NONE);
 
   // The owner key util should not have found the owner key, so login should
@@ -630,7 +630,8 @@ TEST_F(CryptohomeAuthenticatorTest, ResolveOwnerNeededSuccess) {
   // verification.
   content::RunAllTasksUntilIdle();
 
-  state_ = std::make_unique<TestAttemptState>(user_context_);
+  state_ = std::make_unique<TestAttemptState>(
+      std::make_unique<UserContext>(user_context_));
   state_->PresetCryptohomeStatus(cryptohome::MOUNT_ERROR_NONE);
 
   // The owner key util should find the owner key, so login should succeed.
@@ -690,7 +691,7 @@ TEST_F(CryptohomeAuthenticatorTest, DriveDataResync) {
   state_->PresetOnlineLoginComplete();
   SetAttemptState(auth_.get(), state_.release());
 
-  auth_->ResyncEncryptedData();
+  auth_->ResyncEncryptedData(std::make_unique<UserContext>(user_context_));
   run_loop_.Run();
 }
 
@@ -703,7 +704,7 @@ TEST_F(CryptohomeAuthenticatorTest, DriveResyncFail) {
 
   SetAttemptState(auth_.get(), state_.release());
 
-  auth_->ResyncEncryptedData();
+  auth_->ResyncEncryptedData(std::make_unique<UserContext>(user_context_));
   run_loop_.Run();
 }
 
@@ -734,7 +735,8 @@ TEST_F(CryptohomeAuthenticatorTest, DriveDataRecover) {
   state_->PresetOnlineLoginComplete();
   SetAttemptState(auth_.get(), state_.release());
 
-  auth_->RecoverEncryptedData(std::string());
+  auth_->RecoverEncryptedData(std::make_unique<UserContext>(user_context_),
+                              std::string());
   run_loop_.Run();
 }
 
@@ -745,7 +747,8 @@ TEST_F(CryptohomeAuthenticatorTest, DriveDataRecoverButFail) {
 
   SetAttemptState(auth_.get(), state_.release());
 
-  auth_->RecoverEncryptedData(std::string());
+  auth_->RecoverEncryptedData(std::make_unique<UserContext>(user_context_),
+                              std::string());
   run_loop_.Run();
 }
 
@@ -831,42 +834,6 @@ TEST_F(CryptohomeAuthenticatorTest, DriveOnlineLogin) {
   SetAttemptState(auth_.get(), state_.release());
 
   RunResolve(auth_.get());
-}
-
-TEST_F(CryptohomeAuthenticatorTest, DriveLoginWithPreHashedPassword) {
-  CreateTransformedKey(Key::KEY_TYPE_SALTED_SHA256, kSalt);
-
-  UserContext expected_user_context(user_context_with_transformed_key_);
-  expected_user_context.SetUserIDHash(kFakeSanitizedUsername);
-  ExpectLoginSuccess(expected_user_context);
-  FailOnLoginFailure();
-
-  // Set up mock homedir methods to respond with key metadata indicating that a
-  // pre-hashed key was used to create the cryptohome and allow a successful
-  // mount when this pre-hashed key is used.
-
-  ExpectGetKeyDataExCall(std::make_unique<int64_t>(Key::KEY_TYPE_SALTED_SHA256),
-                         std::make_unique<std::string>(kSalt));
-  ExpectMountExCall(false /* expect_create_attempt */);
-
-  auth_->AuthenticateToLogin(user_context_);
-  run_loop_.Run();
-}
-
-TEST_F(CryptohomeAuthenticatorTest, FailLoginWithMissingSalt) {
-  CreateTransformedKey(Key::KEY_TYPE_SALTED_SHA256, kSalt);
-
-  FailOnLoginSuccess();
-  ExpectLoginFailure(AuthFailure(AuthFailure::COULD_NOT_MOUNT_CRYPTOHOME));
-
-  // Set up mock homedir methods to respond with key metadata indicating that a
-  // pre-hashed key was used to create the cryptohome but without the required
-  // salt.
-  ExpectGetKeyDataExCall(std::make_unique<int64_t>(Key::KEY_TYPE_SALTED_SHA256),
-                         std::unique_ptr<std::string>());
-
-  auth_->AuthenticateToLogin(user_context_);
-  run_loop_.Run();
 }
 
 }  // namespace ash

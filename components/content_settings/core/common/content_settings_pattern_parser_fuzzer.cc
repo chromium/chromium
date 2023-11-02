@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,7 +43,10 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   CHECK_EQ(recanonicalized_pattern.ToString(), canonical_pattern_spec)
       << "\n  (originally '" << pattern_spec << "')";
   CHECK_EQ(recanonicalized_pattern.Compare(canonical_pattern),
-           ContentSettingsPattern::Relation::IDENTITY);
+           ContentSettingsPattern::Relation::IDENTITY)
+      << "Canonical pattern\n"
+      << canonical_pattern.ToString() << "\nand recanonicalized pattern\n"
+      << recanonicalized_pattern.ToString() << "\nwere not identical";
   return 0;
 }
 

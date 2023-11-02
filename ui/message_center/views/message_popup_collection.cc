@@ -1,14 +1,17 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/message_center/views/message_popup_collection.h"
 
 #include "base/bind.h"
+#include "base/containers/adapters.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/ranges/algorithm.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/timer/timer.h"
 #include "build/chromeos_buildflags.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/message_center/message_center_types.h"
@@ -17,6 +20,7 @@
 #include "ui/message_center/views/message_popup_view.h"
 #include "ui/message_center/views/message_view.h"
 #include "ui/message_center/views/notification_view.h"
+#include "ui/views/animation/animation_builder.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
@@ -127,13 +131,31 @@ void MessagePopupCollection::NotifyPopupClosed(MessagePopupView* popup) {
   }
 }
 
+void MessagePopupCollection::AnimateResize() {
+  CalculateBounds();
+
+  views::AnimationBuilder animation_builder;
+  for (auto popup : popup_items_) {
+    auto target_bounds = gfx::Rect(
+        popup.popup->GetWidget()->GetLayer()->bounds().x(), popup.bounds.y(),
+        popup.bounds.width(), popup.bounds.height());
+    animation_builder.Once()
+        .SetDuration(base::Milliseconds(kNotificationResizeAnimationDurationMs))
+        .SetBounds(popup.popup->GetWidget()->GetLayer(), target_bounds,
+                   gfx::Tween::EASE_OUT);
+  }
+}
+
 MessageView* MessagePopupCollection::GetMessageViewForNotificationId(
     const std::string& notification_id) {
-  auto it = std::find_if(
-      popup_items_.begin(), popup_items_.end(), [&](const auto& child) {
-        return child.popup->message_view()->notification_id() ==
-               notification_id;
-      });
+  auto it = base::ranges::find_if(popup_items_, [&](const auto& child) {
+    auto* widget = child.popup->GetWidget();
+    // Do not return popups that are in the process of closing, but have not
+    // yet been removed from `popup_items_`.
+    if (!widget || widget->IsClosed())
+      return false;
+    return child.popup->message_view()->notification_id() == notification_id;
+  });
 
   if (it == popup_items_.end())
     return nullptr;
@@ -144,9 +166,8 @@ MessageView* MessagePopupCollection::GetMessageViewForNotificationId(
 void MessagePopupCollection::ConvertNotificationViewToGroupedNotificationView(
     const std::string& ungrouped_notification_id,
     const std::string& new_grouped_notification_id) {
-  auto it = std::find_if(
-      popup_items_.begin(), popup_items_.end(),
-      [&](const auto& popup) { return popup.id == ungrouped_notification_id; });
+  auto it = base::ranges::find(popup_items_, ungrouped_notification_id,
+                               &PopupItem::id);
   if (it == popup_items_.end())
     return;
 
@@ -157,9 +178,8 @@ void MessagePopupCollection::ConvertNotificationViewToGroupedNotificationView(
 void MessagePopupCollection::ConvertGroupedNotificationViewToNotificationView(
     const std::string& grouped_notification_id,
     const std::string& new_single_notification_id) {
-  auto it = std::find_if(
-      popup_items_.begin(), popup_items_.end(),
-      [&](const auto& popup) { return popup.id == grouped_notification_id; });
+  auto it =
+      base::ranges::find(popup_items_, grouped_notification_id, &PopupItem::id);
   if (it == popup_items_.end())
     return;
 
@@ -503,9 +523,9 @@ bool MessagePopupCollection::AddPopup() {
   auto notifications = GetPopupNotifications();
   Notification* new_notification = nullptr;
   // Reverse iterating because notifications are in reverse chronological order.
-  for (auto it = notifications.rbegin(); it != notifications.rend(); ++it) {
-    if (!existing_ids.count((*it)->id())) {
-      new_notification = *it;
+  for (Notification* notification : base::Reversed(notifications)) {
+    if (!existing_ids.count(notification->id())) {
+      new_notification = notification;
       break;
     }
   }
@@ -705,8 +725,7 @@ bool MessagePopupCollection::HasAddedPopup() const {
       // notification has an existing popup.
       if (notification->group_child()) {
         auto* parent_notification =
-            MessageCenter::Get()->FindParentNotificationForOriginUrl(
-                notification->origin_url());
+            MessageCenter::Get()->FindParentNotification(notification);
 
         return !existing_ids.count(parent_notification->id());
       }

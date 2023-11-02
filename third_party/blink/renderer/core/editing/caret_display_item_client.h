@@ -33,7 +33,8 @@
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_client.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
 
@@ -59,8 +60,7 @@ class CORE_EXPORT CaretDisplayItemClient final
   // caret for paint invalidation and painting.
   void UpdateStyleAndLayoutIfNeeded(const PositionWithAffinity& caret_position);
 
-  bool IsVisibleIfActive() const { return is_visible_if_active_; }
-  void SetVisibleIfActive(bool visible);
+  void SetActive(bool active);
 
   // Called during LayoutBlock paint invalidation.
   void InvalidatePaint(const LayoutBlock&, const PaintInvalidatorContext&);
@@ -101,7 +101,7 @@ class CORE_EXPORT CaretDisplayItemClient final
   void InvalidatePaintInCurrentLayoutBlock(const PaintInvalidatorContext&);
   void InvalidatePaintInPreviousLayoutBlock(const PaintInvalidatorContext&);
 
-  // These are updated by updateStyleAndLayoutIfNeeded().
+  // These are updated by UpdateStyleAndLayoutIfNeeded().
   Color color_;
   PhysicalRect local_rect_;
   Member<LayoutBlock> layout_block_;
@@ -112,10 +112,10 @@ class CORE_EXPORT CaretDisplayItemClient final
   // in the previous layout block.
   Member<const LayoutBlock> previous_layout_block_;
 
-  const NGPhysicalBoxFragment* box_fragment_ = nullptr;
+  WeakMember<const NGPhysicalBoxFragment> box_fragment_;
 
+  bool is_active_ = false;
   bool needs_paint_invalidation_ = false;
-  bool is_visible_if_active_ = true;
 };
 
 }  // namespace blink

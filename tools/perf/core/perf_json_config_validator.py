@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -26,15 +26,20 @@ _VALID_PERF_POOLS = {
     'android-builder-perf': {'chrome.tests'},
     'android_arm64-builder-perf': {'chrome.tests'},
     'android-pixel4a_power-perf': {'chrome.tests.pinpoint'},
+    'android-pixel4a_power-perf-pgo': {'chrome.tests.pinpoint'},
     'chromecast-linux-builder-perf': {'chrome.tests'},
     'chromeos-kevin-perf-fyi': {'chrome.tests'},
     'chromeos-amd64-generic-lacros-builder-perf': {'chrome.tests'},
+    'chromeos-arm-generic-lacros-builder-perf': {'chrome.tests'},
+    'chromeos-arm64-generic-lacros-builder-perf': {'chrome.tests'},
     'fuchsia-perf-fyi': {'chrome.tests'},
+    'fuchsia-perf-atlas-fyi': {'chrome.tests'},
     'fuchsia-perf-sherlock-fyi': {'chrome.tests'},
+    'fuchsia-perf-ast': {'chrome.tests'},
+    'fuchsia-perf-shk': {'chrome.tests'},
     'linux-builder-perf': {'chrome.tests'},
     'mac-arm-builder-perf': {'chrome.tests'},
     'mac-builder-perf': {'chrome.tests'},
-    'win32-builder-perf': {'chrome.tests'},
     'win64-builder-perf': {'chrome.tests'},
 }
 _VALID_WEBVIEW_BROWSERS = {
@@ -46,6 +51,7 @@ _VALID_WEBVIEW_BROWSERS = {
 _PERFORMANCE_TEST_SUITES = {
     'performance_test_suite',
     'performance_test_suite_eve',
+    'performance_test_suite_octopus',
     'performance_webview_test_suite',
 }
 for suffix in android_browser_types.TELEMETRY_ANDROID_BROWSER_TARGET_SUFFIXES:
@@ -105,7 +111,7 @@ def _ValidateShardingData(builder_name, test_config):
 
   shard_map_data.pop('extra_infos', None)
   shard_keys = set(shard_map_data.keys())
-  expected_shard_keys = set([str(i) for i in range(num_shards)])
+  expected_shard_keys = {str(i) for i in range(num_shards)}
   if shard_keys != expected_shard_keys:
     raise ValueError(
         'The shard configuration of %s does not match the expected expected '
@@ -122,6 +128,7 @@ def _ValidateBrowserType(builder_name, test_config):
   elif 'Android' in builder_name or 'android' in builder_name:
     android_browsers = ('android-chromium', 'android-chrome',
                         'android-chrome-bundle', 'android-chrome-64-bundle',
+                        'android-trichrome-chrome-google-64-32-bundle',
                         'android-trichrome-bundle', 'exact')
     if browser_options.browser not in android_browsers:
       raise ValueError( 'The browser type for %s must be one of %s' % (
@@ -134,10 +141,12 @@ def _ValidateBrowserType(builder_name, test_config):
     if browser_options.browser != 'lacros-chrome':
       raise ValueError("%s must use 'lacros-chrome' browser type" %
                        builder_name)
-  elif builder_name in ('win-10-perf', 'Win 7 Nvidia GPU Perf',
+  elif builder_name in ('win-10-perf', 'win-10-perf-pgo',
+                        'Win 7 Nvidia GPU Perf',
                         'win-10_laptop_low_end-perf_HP-Candidate',
-                        'win-10_laptop_low_end-perf', 'win-10_amd-perf',
-                        'win-10_amd_laptop-perf'):
+                        'win-10_laptop_low_end-perf',
+                        'win-10_laptop_low_end-perf-pgo',
+                        'win-10_amd_laptop-perf', 'win-10_amd_laptop-perf-pgo'):
     if browser_options.browser != 'release_x64':
       raise ValueError("%s must use 'release_x64' browser type" %
                        builder_name)

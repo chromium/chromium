@@ -1,4 +1,4 @@
-// Copyright (c) 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -232,14 +232,23 @@ void HttpServer::OnWebSocketRequest(int connection_id,
 }
 
 void HttpServer::OnWebSocketMessage(int connection_id, std::string data) {
-  // TODO: Make use of WebSocket data
-  VLOG(0) << "HttpServer::OnWebSocketMessage received: " << data;
+  cmd_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&HttpHandler::OnWebSocketMessage, handler_,
+                                this, connection_id, data));
 }
 
 void HttpServer::OnClose(int connection_id) {
   cmd_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&HttpHandler::OnClose, handler_, this, connection_id));
+}
+
+void HttpServer::Close(int connection_id) {
+  server_->Close(connection_id);
+}
+
+void HttpServer::SendOverWebSocket(int connection_id, const std::string& data) {
+  server_->SendOverWebSocket(connection_id, data, TRAFFIC_ANNOTATION_FOR_TESTS);
 }
 
 void HttpServer::AcceptWebSocket(int connection_id,

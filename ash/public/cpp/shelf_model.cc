@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -288,6 +288,12 @@ void ShelfModel::OnItemRippedOff() {
 void ShelfModel::OnItemReturnedFromRipOff(int index) {
   for (auto& observer : observers_)
     observer.ShelfItemReturnedFromRipOff(index);
+}
+
+void ShelfModel::ToggleShelfParty() {
+  in_shelf_party_ = !in_shelf_party_;
+  for (auto& observer : observers_)
+    observer.ShelfPartyToggled(in_shelf_party_);
 }
 
 int ShelfModel::ItemIndexByID(const ShelfID& shelf_id) const {

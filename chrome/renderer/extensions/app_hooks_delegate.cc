@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,7 +35,7 @@ void AppHooksDelegate::IsInstalledGetterCallback(
     v8::Local<v8::String> property,
     const v8::PropertyCallbackInfo<v8::Value>& info) {
   v8::HandleScope handle_scope(info.GetIsolate());
-  v8::Local<v8::Context> context = info.Holder()->CreationContext();
+  v8::Local<v8::Context> context = info.Holder()->GetCreationContextChecked();
   ScriptContext* script_context =
       ScriptContextSet::GetContextByV8Context(context);
 
@@ -109,7 +109,8 @@ APIBindingHooks::RequestResult AppHooksDelegate::HandleRequest(
     APIRequestHandler::RequestDetails request_details =
         request_handler_->AddPendingRequest(
             context, binding::AsyncResponseType::kCallback,
-            (*parse_result.arguments)[0].As<v8::Function>());
+            (*parse_result.arguments)[0].As<v8::Function>(),
+            binding::ResultModifierFunction());
     GetInstallState(script_context, request_details.request_id);
   } else {
     NOTREACHED();
@@ -150,11 +151,11 @@ v8::Local<v8::Value> AppHooksDelegate::GetDetails(
   if (!extension)
     return v8::Null(isolate);
 
-  std::unique_ptr<base::DictionaryValue> manifest_copy =
-      extension->manifest()->value()->CreateDeepCopy();
-  manifest_copy->SetString("id", extension->id());
+  auto manifest_copy = base::DictionaryValue::From(
+      base::Value::ToUniquePtrValue(extension->manifest()->value()->Clone()));
+  manifest_copy->SetStringKey("id", extension->id());
   return content::V8ValueConverter::Create()->ToV8Value(
-      manifest_copy.get(), script_context->v8_context());
+      *manifest_copy, script_context->v8_context());
 }
 
 void AppHooksDelegate::GetInstallState(ScriptContext* script_context,
@@ -172,6 +173,11 @@ void AppHooksDelegate::GetInstallState(ScriptContext* script_context,
 
 const char* AppHooksDelegate::GetRunningState(
     ScriptContext* script_context) const {
+  // If we are in a fenced frame tree then the top security origin
+  // does not make sense to look at.
+  if (script_context->web_frame()->IsInFencedFrameTree())
+    return extension_misc::kAppStateCannotRun;
+
   // To distinguish between ready_to_run and cannot_run states, we need the app
   // from the top frame.
   const RendererExtensionRegistry* extensions =
@@ -209,7 +215,7 @@ void AppHooksDelegate::OnAppInstallStateResponse(int request_id,
   // Note: it's kind of lame that we serialize the install state to a
   // base::Value here when we're just going to later convert it to v8, but it's
   // not worth the specialization on APIRequestHandler for this oddball API.
-  base::ListValue response;
+  base::Value::List response;
   response.Append(state);
   request_handler_->CompleteRequest(request_id, response, std::string());
 }

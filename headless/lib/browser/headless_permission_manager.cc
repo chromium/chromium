@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,10 @@
 #include "base/callback.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/permission_controller.h"
-#include "content/public/browser/permission_type.h"
+#include "content/public/browser/permission_result.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace headless {
 
@@ -18,7 +21,7 @@ HeadlessPermissionManager::HeadlessPermissionManager(
 HeadlessPermissionManager::~HeadlessPermissionManager() = default;
 
 void HeadlessPermissionManager::RequestPermission(
-    content::PermissionType permission,
+    blink::PermissionType permission,
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     bool user_gesture,
@@ -27,7 +30,7 @@ void HeadlessPermissionManager::RequestPermission(
   // without accepting or denying. Notifications are the exception to this,
   // which are explicitly disabled in Incognito mode.
   if (browser_context_->IsOffTheRecord() &&
-      permission == content::PermissionType::NOTIFICATIONS) {
+      permission == blink::PermissionType::NOTIFICATIONS) {
     std::move(callback).Run(blink::mojom::PermissionStatus::DENIED);
     return;
   }
@@ -36,7 +39,7 @@ void HeadlessPermissionManager::RequestPermission(
 }
 
 void HeadlessPermissionManager::RequestPermissions(
-    const std::vector<content::PermissionType>& permissions,
+    const std::vector<blink::PermissionType>& permissions,
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     bool user_gesture,
@@ -50,28 +53,60 @@ void HeadlessPermissionManager::RequestPermissions(
 }
 
 void HeadlessPermissionManager::ResetPermission(
-    content::PermissionType permission,
+    blink::PermissionType permission,
     const GURL& requesting_origin,
     const GURL& embedding_origin) {}
 
+void HeadlessPermissionManager::RequestPermissionsFromCurrentDocument(
+    const std::vector<blink::PermissionType>& permissions,
+    content::RenderFrameHost* render_frame_host,
+    bool user_gesture,
+    base::OnceCallback<void(const std::vector<blink::mojom::PermissionStatus>&)>
+        callback) {
+  // In headless mode we just pretent the user "closes" any permission prompt,
+  // without accepting or denying.
+  std::vector<blink::mojom::PermissionStatus> result(
+      permissions.size(), blink::mojom::PermissionStatus::ASK);
+  std::move(callback).Run(result);
+}
+
 blink::mojom::PermissionStatus HeadlessPermissionManager::GetPermissionStatus(
-    content::PermissionType permission,
+    blink::PermissionType permission,
     const GURL& requesting_origin,
     const GURL& embedding_origin) {
   return blink::mojom::PermissionStatus::ASK;
 }
 
+content::PermissionResult
+HeadlessPermissionManager::GetPermissionResultForOriginWithoutContext(
+    blink::PermissionType permission,
+    const url::Origin& origin) {
+  blink::mojom::PermissionStatus status =
+      GetPermissionStatus(permission, origin.GetURL(), origin.GetURL());
+
+  return content::PermissionResult(
+      status, content::PermissionStatusSource::UNSPECIFIED);
+}
+
 blink::mojom::PermissionStatus
-HeadlessPermissionManager::GetPermissionStatusForFrame(
-    content::PermissionType permission,
-    content::RenderFrameHost* render_frame_host,
-    const GURL& requesting_origin) {
+HeadlessPermissionManager::GetPermissionStatusForCurrentDocument(
+    blink::PermissionType permission,
+    content::RenderFrameHost* render_frame_host) {
+  return blink::mojom::PermissionStatus::ASK;
+}
+
+blink::mojom::PermissionStatus
+HeadlessPermissionManager::GetPermissionStatusForWorker(
+    blink::PermissionType permission,
+    content::RenderProcessHost* render_process_host,
+    const GURL& worker_origin) {
   return blink::mojom::PermissionStatus::ASK;
 }
 
 HeadlessPermissionManager::SubscriptionId
 HeadlessPermissionManager::SubscribePermissionStatusChange(
-    content::PermissionType permission,
+    blink::PermissionType permission,
+    content::RenderProcessHost* render_process_host,
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     base::RepeatingCallback<void(blink::mojom::PermissionStatus)> callback) {

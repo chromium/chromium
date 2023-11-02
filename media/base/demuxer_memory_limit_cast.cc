@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,6 +19,9 @@ size_t GetDemuxerStreamAudioMemoryLimit(
   switch (audio_config->codec()) {
     case AudioCodec::kEAC3:
     case AudioCodec::kAC3:
+    case AudioCodec::kDTS:
+    case AudioCodec::kDTSXP2:
+    case AudioCodec::kMpegHAudio:
       return internal::kDemuxerStreamAudioMemoryLimitMedium;
     case AudioCodec::kAAC:
       if (ChannelLayoutToChannelCount(audio_config->channel_layout()) >= 5) {

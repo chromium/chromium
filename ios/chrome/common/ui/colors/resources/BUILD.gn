@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -7,11 +7,16 @@ import("//build/config/ios/asset_catalog.gni")
 group("resources") {
   deps = [
     ":background_color",
+    ":blue_500_color",
+    ":blue_600_color",
+    ":blue_700_color",
     ":blue_color",
     ":blue_halo_color",
     ":close_button_color",
+    ":darker_scrim_background_color",
     ":disabled_tint_color",
     ":favicon_background_color",
+    ":green_500_color",
     ":green_50_color",
     ":green_700_color",
     ":green_color",
@@ -29,13 +34,20 @@ group("resources") {
     ":grouped_secondary_background_color",
     ":mdc_ink_color",
     ":mdc_secondary_ink_color",
+    ":orange_500_color",
+    ":pink_400_color",
+    ":pink_500_color",
     ":placeholder_image_tint_color",
     ":primary_background_color",
-    ":red_color",
+    ":purple_500_color",
+    ":purple_600_color",
+    ":red_500_color",
+    ":red_600_color",
     ":scrim_background_color",
     ":secondary_background_color",
     ":separator_color",
     ":solid_button_text_color",
+    ":solid_primary_color",
     ":table_view_row_highlight_color",
     ":tertiary_background_color",
     ":text_primary_color",
@@ -43,9 +55,13 @@ group("resources") {
     ":text_secondary_color",
     ":text_tertiary_color",
     ":textfield_background_color",
+    ":textfield_focused_background_color",
+    ":textfield_highlight_background_color",
     ":textfield_placeholder_color",
     ":toolbar_button_color",
     ":toolbar_shadow_color",
+    ":updated_tertiary_background_color",
+    ":yellow_500_color",
   ]
 }
 
@@ -59,6 +75,18 @@ colorset("blue_color") {
 
 colorset("blue_halo_color") {
   sources = [ "blue_halo_color.colorset/Contents.json" ]
+}
+
+colorset("blue_500_color") {
+  sources = [ "blue_500_color.colorset/Contents.json" ]
+}
+
+colorset("blue_600_color") {
+  sources = [ "blue_600_color.colorset/Contents.json" ]
+}
+
+colorset("blue_700_color") {
+  sources = [ "blue_700_color.colorset/Contents.json" ]
 }
 
 colorset("close_button_color") {
@@ -79,6 +107,10 @@ colorset("green_color") {
 
 colorset("green_50_color") {
   sources = [ "green_50_color.colorset/Contents.json" ]
+}
+
+colorset("green_500_color") {
+  sources = [ "green_500_color.colorset/Contents.json" ]
 }
 
 colorset("green_700_color") {
@@ -125,8 +157,28 @@ colorset("grey_900_color") {
   sources = [ "grey_900_color.colorset/Contents.json" ]
 }
 
-colorset("red_color") {
-  sources = [ "red_color.colorset/Contents.json" ]
+colorset("red_500_color") {
+  sources = [ "red_500_color.colorset/Contents.json" ]
+}
+
+colorset("red_600_color") {
+  sources = [ "red_600_color.colorset/Contents.json" ]
+}
+
+colorset("purple_500_color") {
+  sources = [ "purple_500_color.colorset/Contents.json" ]
+}
+
+colorset("purple_600_color") {
+  sources = [ "purple_600_color.colorset/Contents.json" ]
+}
+
+colorset("yellow_500_color") {
+  sources = [ "yellow_500_color.colorset/Contents.json" ]
+}
+
+colorset("orange_500_color") {
+  sources = [ "orange_500_color.colorset/Contents.json" ]
 }
 
 colorset("mdc_ink_color") {
@@ -145,6 +197,10 @@ colorset("scrim_background_color") {
   sources = [ "scrim_background_color.colorset/Contents.json" ]
 }
 
+colorset("darker_scrim_background_color") {
+  sources = [ "darker_scrim_background_color.colorset/Contents.json" ]
+}
+
 colorset("separator_color") {
   sources = [ "separator_color.colorset/Contents.json" ]
 }
@@ -153,12 +209,28 @@ colorset("solid_button_text_color") {
   sources = [ "solid_button_text_color.colorset/Contents.json" ]
 }
 
+colorset("solid_primary_color") {
+  sources = [ "solid_primary_color.colorset/Contents.json" ]
+}
+
 colorset("table_view_row_highlight_color") {
   sources = [ "table_view_row_highlight_color.colorset/Contents.json" ]
 }
 
+colorset("pink_400_color") {
+  sources = [ "pink_400_color.colorset/Contents.json" ]
+}
+
+colorset("pink_500_color") {
+  sources = [ "pink_500_color.colorset/Contents.json" ]
+}
+
 colorset("tertiary_background_color") {
   sources = [ "tertiary_background_color.colorset/Contents.json" ]
+}
+
+colorset("updated_tertiary_background_color") {
+  sources = [ "updated_tertiary_background_color.colorset/Contents.json" ]
 }
 
 colorset("text_tertiary_color") {
@@ -181,8 +253,16 @@ colorset("textfield_placeholder_color") {
   sources = [ "textfield_placeholder_color.colorset/Contents.json" ]
 }
 
+colorset("textfield_highlight_background_color") {
+  sources = [ "textfield_highlight_background_color.colorset/Contents.json" ]
+}
+
 colorset("textfield_background_color") {
   sources = [ "textfield_background_color.colorset/Contents.json" ]
+}
+
+colorset("textfield_focused_background_color") {
+  sources = [ "textfield_focused_background_color.colorset/Contents.json" ]
 }
 
 colorset("toolbar_button_color") {

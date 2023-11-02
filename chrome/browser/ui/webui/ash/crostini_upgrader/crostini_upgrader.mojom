@@ -1,0 +1,92 @@
+// Copyright 2019 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.crostini_upgrader.mojom;
+
+enum UpgradePrecheckStatus {
+  // Good to continue
+  OK,
+  // No network connectivity
+  NETWORK_FAILURE,
+  // Battery is low and not charging
+  LOW_POWER,
+};
+
+
+// Lives in the browser process. A renderer uses this to create a page handler
+// for controlling Crostini upgrade.
+interface PageHandlerFactory {
+  // Create a page handler to control Crostini upgrade.
+  CreatePageHandler(pending_remote<Page> page,
+                    pending_receiver<PageHandler> handler);
+};
+
+// Lives in the browser process. A renderer uses this to control Crostini
+// upgrade.
+interface PageHandler {
+  // Backup the existing container. If |show_file_chooser| is true, the
+  // user will be shown a dialog to decide where to store the backup.
+  Backup(bool show_file_chooser);
+  // Start running upgrade prechecks. Result is asynchronously
+  // returned via Page::PrecheckStatus.
+  StartPrechecks();
+  // Start upgrade
+  Upgrade();
+  // Cancel an on-going upgrade
+  Cancel();
+  // If a user cancels the upgrade without starting it at all, this should
+  // be called so that metrics can be recorded.
+  CancelBeforeStart();
+  // If an upgrade fails, the user may choose to restore a container backup.
+  Restore();
+  // This is called when the web page is "closed", and the dialog (or whatever)
+  // hosting it should also be closed. This can happen as a result of
+  // Page::RequestClose() being called, or it can happen spontaneously (e.g.
+  // user clicking cancel on the page or installation finished).
+  //
+  // Note that the web page should not use something like
+  // chrome.send('dialogClose'), which could kill the page handler before
+  // previous mojom calls have been run.
+  OnPageClosed();
+  // Close the dialog and launch the Terminal or other app after a successful
+  // upgrade.
+  Launch();
+};
+
+// Lives in the renderer process. The browser uses this to send upgrade
+// updates to the web page in the renderer.
+interface Page {
+  // Callback to receive the container backup progress once the export has
+  // started.
+  OnBackupProgress(int32 percent);
+  // This is called when the backup succeeded. If the user cancels the backup,
+  // we treat this as a success and proceed with upgrading (though the backup
+  // will not be used if the upgrade fails).
+  OnBackupSucceeded(bool was_cancelled);
+  // This is called when the backup failed.
+  OnBackupFailed();
+  // Handle the result of the prechecks.
+  PrecheckStatus(UpgradePrecheckStatus status);
+  // Callback to receive the upgrade progress once the upgrade has started.
+  OnUpgradeProgress(array<string> progress_messages);
+  // This is called when the upgrade succeeded.
+  OnUpgradeSucceeded();
+  // This is called when the upgrade failed.
+  OnUpgradeFailed();
+  // Callback to receive the container restore progress once the import has
+  // started.
+  OnRestoreProgress(int32 percent);
+  // This is called when the restore succeeded.
+  OnRestoreSucceeded();
+  // This is called when the restore failed.
+  OnRestoreFailed();
+  // After user cancels the upgrade, this is called when the cancellation
+  // finishes.
+  OnCanceled();
+  // Informs the page that it should be closed. The page should respond with
+  // PageHandler::OnPageClosed() to indicate it is ready to be closed.
+  RequestClose();
+  // Tell the page where the log messages are being stored.
+  OnLogFileCreated(string path);
+};

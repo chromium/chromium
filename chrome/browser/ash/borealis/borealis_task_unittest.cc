@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,14 +11,14 @@
 #include "chrome/browser/ash/borealis/borealis_disk_manager.h"
 #include "chrome/browser/ash/borealis/borealis_metrics.h"
 #include "chrome/browser/ash/borealis/testing/callback_factory.h"
-#include "chrome/browser/ash/borealis/testing/dbus.h"
+#include "chrome/browser/ash/guest_os/dbus_test_helper.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/dbus/cicerone/fake_cicerone_client.h"
-#include "chromeos/dbus/concierge/fake_concierge_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/dlcservice/fake_dlcservice_client.h"
-#include "chromeos/dbus/seneschal/seneschal_client.h"
+#include "chromeos/ash/components/dbus/cicerone/fake_cicerone_client.h"
+#include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
+#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/dbus/dlcservice/fake_dlcservice_client.h"
+#include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -62,7 +62,8 @@ class DiskManagerMock : public BorealisDiskManager {
 using CallbackFactory =
     NiceCallbackFactory<void(BorealisStartupResult, std::string)>;
 
-class BorealisTasksTest : public testing::Test, protected FakeVmServicesHelper {
+class BorealisTasksTest : public testing::Test,
+                          protected guest_os::FakeVmServicesHelper {
  public:
   BorealisTasksTest() = default;
   ~BorealisTasksTest() override = default;
@@ -157,7 +158,7 @@ TEST_F(BorealisTasksTest, StartBorealisVmSucceedsAndCallbackRanWithResults) {
   task.Run(context_.get(), callback_factory.BindOnce());
   task_environment_.RunUntilIdle();
 
-  EXPECT_GE(FakeConciergeClient()->start_termina_vm_call_count(), 1);
+  EXPECT_GE(FakeConciergeClient()->start_vm_call_count(), 1);
 }
 
 TEST_F(BorealisTasksTest,
@@ -173,14 +174,14 @@ TEST_F(BorealisTasksTest,
   task.Run(context_.get(), callback_factory.BindOnce());
   task_environment_.RunUntilIdle();
 
-  EXPECT_GE(FakeConciergeClient()->start_termina_vm_call_count(), 1);
+  EXPECT_GE(FakeConciergeClient()->start_vm_call_count(), 1);
 }
 
 TEST_F(BorealisTasksTest,
        AwaitBorealisStartupSucceedsAndCallbackRanWithResults) {
   vm_tools::cicerone::ContainerStartedSignal signal;
   signal.set_owner_id(
-      chromeos::ProfileHelper::GetUserIdHashFromProfile(context_->profile()));
+      ash::ProfileHelper::GetUserIdHashFromProfile(context_->profile()));
   signal.set_vm_name(context_->vm_name());
   signal.set_container_name("penguin");
 
@@ -198,7 +199,7 @@ TEST_F(BorealisTasksTest,
        AwaitBorealisStartupContainerAlreadyStartedAndCallbackRanWithResults) {
   vm_tools::cicerone::ContainerStartedSignal signal;
   signal.set_owner_id(
-      chromeos::ProfileHelper::GetUserIdHashFromProfile(context_->profile()));
+      ash::ProfileHelper::GetUserIdHashFromProfile(context_->profile()));
   signal.set_vm_name(context_->vm_name());
   signal.set_container_name("penguin");
 
@@ -224,7 +225,7 @@ TEST_F(BorealisTasksTest,
   task_environment_.RunUntilIdle();
 }
 
-TEST_F(BorealisTasksTest, SyncBorealisDiskFails) {
+TEST_F(BorealisTasksTest, SyncBorealisDiskFailureIgnored) {
   auto disk_mock = std::make_unique<DiskManagerMock>();
   EXPECT_CALL(*disk_mock, SyncDiskSize(_))
       .WillOnce(testing::Invoke(
@@ -240,8 +241,7 @@ TEST_F(BorealisTasksTest, SyncBorealisDiskFails) {
           }));
 
   CallbackFactory callback_factory;
-  EXPECT_CALL(callback_factory, Call(BorealisStartupResult::kSyncDiskFailed,
-                                     "Failed to sync disk: error message"));
+  EXPECT_CALL(callback_factory, Call(BorealisStartupResult::kSuccess, ""));
   context_->SetDiskManagerForTesting(std::move(disk_mock));
   SyncBorealisDisk task;
   task.Run(context_.get(), callback_factory.BindOnce());
@@ -343,7 +343,7 @@ TEST_P(BorealisTasksTestsStartBorealisVm,
   task.Run(context_.get(), callback_factory.BindOnce());
   task_environment_.RunUntilIdle();
 
-  EXPECT_GE(FakeConciergeClient()->start_termina_vm_call_count(), 1);
+  EXPECT_GE(FakeConciergeClient()->start_vm_call_count(), 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(

@@ -40,7 +40,6 @@
 #include "third_party/blink/renderer/modules/indexeddb/idb_open_db_request.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -55,6 +54,9 @@ class MODULES_EXPORT IDBFactory final : public ScriptWrappable {
  public:
   IDBFactory();
   ~IDBFactory() override;
+
+  void SetFactory(mojo::PendingRemote<mojom::blink::IDBFactory>,
+                  ExecutionContext*);
 
   // Implement the IDBFactory IDL
   IDBOpenDBRequest* open(ScriptState*, const String& name, ExceptionState&);

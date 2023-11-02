@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,6 +23,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
+#include "components/optimization_guide/core/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_test_util.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
@@ -304,8 +305,16 @@ IN_PROC_BROWSER_TEST_F(TranslateModelServiceBrowserTest,
       "TranslateModelService.LanguageDetectionModel.WasLoaded", false, 1);
 }
 
+// TODO(crbug.com/1320359): Re-enable this test
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_LanguageDetectionModelAvailableForDetection \
+  DISABLED_LanguageDetectionModelAvailableForDetection
+#else
+#define MAYBE_LanguageDetectionModelAvailableForDetection \
+  LanguageDetectionModelAvailableForDetection
+#endif
 IN_PROC_BROWSER_TEST_F(TranslateModelServiceBrowserTest,
-                       LanguageDetectionModelAvailableForDetection) {
+                       MAYBE_LanguageDetectionModelAvailableForDetection) {
   base::HistogramTester histogram_tester;
   OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
       ->OverrideTargetModelForTesting(
@@ -330,8 +339,11 @@ IN_PROC_BROWSER_TEST_F(TranslateModelServiceBrowserTest,
       "LanguageDetection.TFLiteModel.WasModelAvailableForDetection", true, 1);
 }
 
-// Disabled on macOS+ASAN due to high failure rate: crbug.com/1199854.
-#if (defined(OS_MAC) && defined(ADDRESS_SANITIZER)) || defined(OS_WIN)
+// Disabled on linux+ASAN, macOS+ASAN, chromeOS+ASAN and windows due to high
+// failure rate: crbug.com/1199854 crbug.com/1297485.
+#if ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)) && \
+     defined(ADDRESS_SANITIZER)) ||                                          \
+    BUILDFLAG(IS_WIN)
 #define MAYBE_LanguageDetectionWithBackgroundTab \
   DISABLED_LanguageDetectionWithBackgroundTab
 #else

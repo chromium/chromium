@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_platform_data.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/font_format_check.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/font_settings.h"
+#include "third_party/blink/renderer/platform/fonts/opentype/open_type_cpal_lookup.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/variable_axes_names.h"
 #include "third_party/blink/renderer/platform/fonts/web_font_decoder.h"
 #include "third_party/blink/renderer/platform/fonts/web_font_typeface_factory.h"
@@ -82,17 +83,18 @@ FontCustomPlatformData::FontCustomPlatformData(sk_sp<SkTypeface> typeface,
 
 FontCustomPlatformData::~FontCustomPlatformData() = default;
 
-// TODO(crbug.com/1205794): Optical sizing should use specified size, instead of
-// zoomed size.
 FontPlatformData FontCustomPlatformData::GetFontPlatformData(
     float size,
+    float adjusted_specified_size,
     bool bold,
     bool italic,
     const FontSelectionRequest& selection_request,
     const FontSelectionCapabilities& selection_capabilities,
     const OpticalSizing& optical_sizing,
+    TextRenderingMode text_rendering,
     FontOrientation orientation,
-    const FontVariationSettings* variation_settings) {
+    const FontVariationSettings* variation_settings,
+    const FontPalette* palette) {
   DCHECK(base_typeface_);
 
   sk_sp<SkTypeface> return_typeface = base_typeface_;
@@ -173,7 +175,7 @@ FontPlatformData FontCustomPlatformData::GetFontPlatformData(
 
     bool explicit_opsz_configured = false;
     if (variation_settings && variation_settings->size() < UINT16_MAX) {
-      variation.ReserveCapacity(variation_settings->size() + variation.size());
+      variation.reserve(variation_settings->size() + variation.size());
       for (const auto& setting : *variation_settings) {
         if (setting.Tag() == kOpszTag)
           explicit_opsz_configured = true;
@@ -186,7 +188,7 @@ FontPlatformData FontCustomPlatformData::GetFontPlatformData(
     if (!explicit_opsz_configured) {
       if (optical_sizing == kAutoOpticalSizing) {
         SkFontArguments::VariationPosition::Coordinate opsz_coordinate = {
-            kOpszTag, SkFloatToScalar(size)};
+            kOpszTag, SkFloatToScalar(adjusted_specified_size)};
         variation.push_back(opsz_coordinate);
       } else if (optical_sizing == kNoneOpticalSizing) {
         // Explicitly set default value to avoid automatic application of
@@ -218,10 +220,77 @@ FontPlatformData FontCustomPlatformData::GetFontPlatformData(
     }
   }
 
+  if (palette && !palette->IsNormalPalette()) {
+    // TODO: Check applicability of font-palette-values according to matching
+    // font family name, or should that be done at the CSS family level?
+
+    SkFontArguments font_args;
+    SkFontArguments::Palette sk_palette{0, nullptr, 0};
+
+    absl::optional<uint16_t> palette_index = absl::nullopt;
+
+    if (palette->GetPaletteNameKind() == FontPalette::kLightPalette ||
+        palette->GetPaletteNameKind() == FontPalette::kDarkPalette) {
+      OpenTypeCpalLookup::PaletteUse palette_use =
+          palette->GetPaletteNameKind() == FontPalette::kLightPalette
+              ? OpenTypeCpalLookup::kUsableWithLightBackground
+              : OpenTypeCpalLookup::kUsableWithDarkBackground;
+      palette_index =
+          OpenTypeCpalLookup::FirstThemedPalette(base_typeface_, palette_use);
+    } else if (palette->IsCustomPalette()) {
+      FontPalette::BasePaletteValue base_palette_index =
+          palette->GetBasePalette();
+
+      switch (base_palette_index.type) {
+        case FontPalette::kNoBasePalette: {
+          palette_index = 0;
+          break;
+        }
+        case FontPalette::kDarkBasePalette: {
+          OpenTypeCpalLookup::PaletteUse palette_use =
+              OpenTypeCpalLookup::kUsableWithDarkBackground;
+          palette_index = OpenTypeCpalLookup::FirstThemedPalette(base_typeface_,
+                                                                 palette_use);
+          break;
+        }
+        case FontPalette::kLightBasePalette: {
+          OpenTypeCpalLookup::PaletteUse palette_use =
+              OpenTypeCpalLookup::kUsableWithLightBackground;
+          palette_index = OpenTypeCpalLookup::FirstThemedPalette(base_typeface_,
+                                                                 palette_use);
+          break;
+        }
+        case FontPalette::kIndexBasePalette: {
+          palette_index = base_palette_index.index;
+          break;
+        }
+      }
+    }
+
+    if (palette_index.has_value()) {
+      sk_palette.index = *palette_index;
+
+      auto* color_overrides = palette->GetColorOverrides();
+      if (color_overrides && color_overrides->size()) {
+        sk_palette.overrides =
+            reinterpret_cast<const SkFontArguments::Palette::Override*>(
+                color_overrides->data());
+        sk_palette.overrideCount = color_overrides->size();
+      }
+
+      font_args.setPalette(sk_palette);
+    }
+
+    sk_sp<SkTypeface> palette_typeface(return_typeface->makeClone(font_args));
+    if (palette_typeface) {
+      return_typeface = palette_typeface;
+    }
+  }
+
   return FontPlatformData(std::move(return_typeface), std::string(), size,
                           synthetic_bold && !base_typeface_->isBold(),
                           synthetic_italic && !base_typeface_->isItalic(),
-                          orientation);
+                          text_rendering, orientation);
 }
 
 Vector<VariationAxis> FontCustomPlatformData::GetVariationAxes() const {
@@ -257,19 +326,6 @@ scoped_refptr<FontCustomPlatformData> FontCustomPlatformData::Create(
   }
   return base::AdoptRef(
       new FontCustomPlatformData(std::move(typeface), decoder.DecodedSize()));
-}
-
-bool FontCustomPlatformData::SupportsFormat(const String& format) {
-  // Support relevant format specifiers from
-  // https://drafts.csswg.org/css-fonts-4/#src-desc
-  return EqualIgnoringASCIICase(format, "woff") ||
-         EqualIgnoringASCIICase(format, "truetype") ||
-         EqualIgnoringASCIICase(format, "opentype") ||
-         EqualIgnoringASCIICase(format, "woff2") ||
-         EqualIgnoringASCIICase(format, "woff-variations") ||
-         EqualIgnoringASCIICase(format, "truetype-variations") ||
-         EqualIgnoringASCIICase(format, "opentype-variations") ||
-         EqualIgnoringASCIICase(format, "woff2-variations");
 }
 
 bool FontCustomPlatformData::MayBeIconFont() const {

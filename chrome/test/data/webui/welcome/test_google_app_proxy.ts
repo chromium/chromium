@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@ import {BookmarkListItem} from 'chrome://welcome/shared/nux_types.js';
 export class TestGoogleAppProxy extends TestBrowserProxy implements
     GoogleAppProxy {
   providerSelectedCount: number = 0;
-  private appList_: Array<BookmarkListItem> = [];
+  private appList_: BookmarkListItem[] = [];
 
   constructor() {
     super([
@@ -34,7 +34,7 @@ export class TestGoogleAppProxy extends TestBrowserProxy implements
     this.providerSelectedCount++;
   }
 
-  setAppList(appList: Array<BookmarkListItem>) {
+  setAppList(appList: BookmarkListItem[]) {
     this.appList_ = appList;
   }
 }

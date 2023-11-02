@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,7 @@ namespace {
 const char kPageUrlInvalidTypeOfParameter[] =
     "Attribute '%s' has an invalid type";
 
-static url_matcher::URLMatcherConditionSet::ID g_next_id = 0;
+static base::MatcherStringPattern::ID g_next_id = 0;
 
 }  // namespace
 
@@ -39,8 +39,8 @@ DeclarativeContentPageUrlPredicate::Create(
     const base::Value& value,
     std::string* error) {
   scoped_refptr<url_matcher::URLMatcherConditionSet> url_matcher_condition_set;
-  const base::DictionaryValue* dict = nullptr;
-  if (!value.GetAsDictionary(&dict)) {
+  const base::Value::Dict* dict = value.GetIfDict();
+  if (!dict) {
     *error = base::StringPrintf(kPageUrlInvalidTypeOfParameter,
                                 declarative_content_constants::kPageUrl);
     return nullptr;
@@ -48,7 +48,7 @@ DeclarativeContentPageUrlPredicate::Create(
 
   url_matcher_condition_set =
       url_matcher::URLMatcherFactory::CreateFromURLFilterDictionary(
-          url_matcher_condition_factory, dict, ++g_next_id, error);
+          url_matcher_condition_factory, *dict, ++g_next_id, error);
   if (!url_matcher_condition_set)
     return nullptr;
   return base::WrapUnique(new DeclarativeContentPageUrlPredicate(
@@ -88,7 +88,7 @@ DeclarativeContentPageUrlConditionTracker::PerWebContentsTracker::
 
 void DeclarativeContentPageUrlConditionTracker::PerWebContentsTracker::
 UpdateMatchesForCurrentUrl(bool request_evaluation_if_unchanged) {
-  std::set<url_matcher::URLMatcherConditionSet::ID> new_matches =
+  std::set<base::MatcherStringPattern::ID> new_matches =
       url_matcher_->MatchURL(web_contents()->GetVisibleURL());
   matches_.swap(new_matches);
   if (matches_ != new_matches || request_evaluation_if_unchanged)
@@ -155,8 +155,7 @@ void DeclarativeContentPageUrlConditionTracker::TrackPredicates(
 void DeclarativeContentPageUrlConditionTracker::StopTrackingPredicates(
     const std::vector<const void*>& predicate_groups) {
   // Condition set ids to be removed from |url_matcher_|.
-  std::vector<url_matcher::URLMatcherConditionSet::ID>
-      condition_set_ids_to_remove;
+  std::vector<base::MatcherStringPattern::ID> condition_set_ids_to_remove;
   for (const void* group : predicate_groups) {
     auto loc = tracked_predicates_.find(group);
     if (loc == tracked_predicates_.end())
@@ -205,8 +204,8 @@ bool DeclarativeContentPageUrlConditionTracker::EvaluatePredicate(
       static_cast<const DeclarativeContentPageUrlPredicate*>(predicate);
   auto loc = per_web_contents_tracker_.find(tab);
   DCHECK(loc != per_web_contents_tracker_.end());
-  const std::set<url_matcher::URLMatcherConditionSet::ID>&
-      web_contents_id_matches = loc->second->matches();
+  const std::set<base::MatcherStringPattern::ID>& web_contents_id_matches =
+      loc->second->matches();
   return base::Contains(web_contents_id_matches,
                         typed_predicate->url_matcher_condition_set()->id());
 }

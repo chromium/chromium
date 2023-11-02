@@ -1,9 +1,9 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 // clang-format off
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {beforeNextRender, dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin} from '../base_mixin.js';
@@ -33,7 +33,7 @@ export enum RouteState {
 }
 
 let guestTopLevelRoute = routes.SEARCH;
-// <if expr="chromeos">
+// <if expr="chromeos_ash">
 guestTopLevelRoute = routes.PRIVACY;
 // </if>
 
@@ -70,22 +70,6 @@ export const MainPageMixin = dedupingMixin(
       const superClassBase = BaseMixin(superClass);
 
       class MainPageMixin extends superClassBase {
-        static get properties() {
-          return {
-            /**
-             * Whether a search operation is in progress or previous search
-             * results are being displayed.
-             */
-            inSearchMode: {
-              type: Boolean,
-              value: false,
-              observer: 'inSearchModeChanged_',
-              reflectToAttribute: true,
-            },
-          };
-        }
-
-        inSearchMode: boolean;
         scroller: HTMLElement|null = null;
         private validTransitions_: Map<RouteState, Set<RouteState>>;
         private lastScrollTop_: number = 0;
@@ -110,11 +94,12 @@ export const MainPageMixin = dedupingMixin(
             return new Map([
               [RouteState.INITIAL, allStates],
               [
-                RouteState.DIALOG, new Set([
+                RouteState.DIALOG,
+                new Set([
                   RouteState.SECTION,
                   RouteState.SUBPAGE,
                   RouteState.TOP_LEVEL,
-                ])
+                ]),
               ],
               [RouteState.SECTION, allStates],
               [RouteState.SUBPAGE, allStates],
@@ -123,7 +108,7 @@ export const MainPageMixin = dedupingMixin(
           })();
         }
 
-        connectedCallback() {
+        override connectedCallback() {
           this.scroller =
               this.domHost ? this.domHost.parentElement : document.body;
 
@@ -137,31 +122,6 @@ export const MainPageMixin = dedupingMixin(
          */
         containsRoute(_route: Route|null): boolean {
           return false;
-        }
-
-        private inSearchModeChanged_(_current: boolean, previous: boolean) {
-          if (loadTimeData.getBoolean('enableLandingPageRedesign')) {
-            // No need to deal with overscroll, as only one section is shown at
-            // any given time.
-            return;
-          }
-
-          // Ignore 1st occurrence which happens while the element is being
-          // initialized.
-          if (previous === undefined) {
-            return;
-          }
-
-          if (!this.inSearchMode) {
-            const route = Router.getInstance().getCurrentRoute();
-            if (this.containsRoute(route) &&
-                classifyRoute(route) === RouteState.SECTION) {
-              // Re-fire the showing-section event to trigger settings-main
-              // recalculation of the overscroll, now that sections are not
-              // hidden-by-search.
-              this.fire('showing-section', this.getSection(route.section));
-            }
-          }
         }
 
         private shouldExpandAdvanced_(route: Route): boolean {
@@ -210,8 +170,7 @@ export const MainPageMixin = dedupingMixin(
          * event is fired (necessary to avoid flashing). Callers are responsible
          * for firing a 'show-container' event.
          */
-        private ensureSectionsForRoute_(route: Route):
-            Promise<Array<HTMLElement>> {
+        private ensureSectionsForRoute_(route: Route): Promise<HTMLElement[]> {
           const sections = this.querySettingsSections_(route.section);
           if (sections.length > 0) {
             return Promise.resolve(sections);
@@ -268,15 +227,6 @@ export const MainPageMixin = dedupingMixin(
               this.fire('showing-main-page');
               res();
             });
-          });
-        }
-
-        private scrollToSection_(route: Route) {
-          this.ensureSectionForRoute_(route).then(section => {
-            if (!this.inSearchMode) {
-              this.fire('showing-section', section);
-            }
-            this.fire('show-container');
           });
         }
 
@@ -338,6 +288,8 @@ export const MainPageMixin = dedupingMixin(
           return [classifyRoute(oldRoute), classifyRoute(newRoute)];
         }
 
+        // TODO(dpapad): Figure out why adding the |override| keyword here
+        // throws an error.
         currentRouteChanged(newRoute: Route, oldRoute: Route|null) {
           const transition = this.getStateTransition_(newRoute, oldRoute);
           if (transition === null) {
@@ -348,33 +300,33 @@ export const MainPageMixin = dedupingMixin(
           const newState = transition[1];
           assert(this.validTransitions_.get(oldState)!.has(newState));
 
-          loadTimeData.getBoolean('enableLandingPageRedesign') ?
-              this.processTransitionRedesign_(
-                  oldRoute, newRoute, oldState, newState) :
-              this.processTransition_(oldRoute, newRoute, oldState, newState);
-        }
-
-        private processTransition_(
-            oldRoute: Route|null, newRoute: Route, oldState: RouteState,
-            newState: RouteState) {
           if (oldState === RouteState.TOP_LEVEL) {
             if (newState === RouteState.SECTION) {
-              this.scrollToSection_(newRoute);
+              this.switchToSections_(newRoute);
             } else if (newState === RouteState.SUBPAGE) {
+              this.switchToSections_(newRoute);
               this.enterSubpage_(newRoute);
+            } else if (newState === RouteState.TOP_LEVEL) {
+              // Case when navigating from '/?search=foo' to '/' (clearing
+              // search results).
+              this.switchToSections_(TOP_LEVEL_EQUIVALENT_ROUTE);
+            } else if (newState === RouteState.DIALOG) {
+              // Case when user clicks "Reset all settings" from within the
+              // settings-reset-profile-banner to navigate to
+              // /resetProfileSettings.
+              this.switchToSections_(newRoute);
             }
-            // Nothing to do here for the case of RouteState.DIALOG or
-            // TOP_LEVEL. The latter happens when navigating from '/?search=foo'
-            // to '/' (clearing search results).
             return;
           }
 
           if (oldState === RouteState.SECTION) {
             if (newState === RouteState.SECTION) {
-              this.scrollToSection_(newRoute);
+              this.switchToSections_(newRoute);
             } else if (newState === RouteState.SUBPAGE) {
+              this.switchToSections_(newRoute);
               this.enterSubpage_(newRoute);
             } else if (newState === RouteState.TOP_LEVEL) {
+              this.switchToSections_(TOP_LEVEL_EQUIVALENT_ROUTE);
               this.scroller!.scrollTop = 0;
             }
             // Nothing to do here for the case of RouteState.DIALOG.
@@ -384,12 +336,7 @@ export const MainPageMixin = dedupingMixin(
           if (oldState === RouteState.SUBPAGE) {
             if (newState === RouteState.SECTION) {
               this.enterMainPage_(oldRoute!);
-
-              // Scroll to the corresponding section, only if the user
-              // explicitly navigated to a section (via the menu).
-              if (!Router.getInstance().lastRouteChangeWasPopstate()) {
-                this.scrollToSection_(newRoute);
-              }
+              this.switchToSections_(newRoute);
             } else if (newState === RouteState.SUBPAGE) {
               // Handle case where the two subpages belong to
               // different sections, but are linked to each other. For example
@@ -413,94 +360,11 @@ export const MainPageMixin = dedupingMixin(
             } else if (newState === RouteState.TOP_LEVEL) {
               this.enterMainPage_(oldRoute!);
             } else if (newState === RouteState.DIALOG) {
-              // The only known case currently for such a transition is from
-              // /syncSetup to /signOut.
-              this.enterMainPage_(oldRoute!);
-            }
-            return;
-          }
-
-          if (oldState === RouteState.INITIAL) {
-            if (newState === RouteState.SECTION) {
-              this.scrollToSection_(newRoute);
-            } else if (newState === RouteState.SUBPAGE) {
-              this.enterSubpage_(newRoute);
-            }
-            // Nothing to do here for the case of RouteState.DIALOG and
-            // TOP_LEVEL.
-            return;
-          }
-
-          if (oldState === RouteState.DIALOG) {
-            if (newState === RouteState.SUBPAGE) {
-              // The only known case currently for such a transition is from
-              // /signOut to /syncSetup.
-              this.enterSubpage_(newRoute);
-            }
-            // Nothing to do for all other cases.
-          }
-
-          // Nothing to do for when oldState === RouteState.DIALOG.
-        }
-
-        private processTransitionRedesign_(
-            oldRoute: Route|null, newRoute: Route, oldState: RouteState,
-            newState: RouteState) {
-          if (oldState === RouteState.TOP_LEVEL) {
-            if (newState === RouteState.SECTION) {
-              this.switchToSections_(newRoute);
-            } else if (newState === RouteState.SUBPAGE) {
-              this.switchToSections_(newRoute);
-              this.enterSubpage_(newRoute);
-            } else if (newState === RouteState.TOP_LEVEL) {
-              // Case when navigating from '/?search=foo' to '/' (clearing
-              // search results).
-              this.switchToSections_(TOP_LEVEL_EQUIVALENT_ROUTE);
-            }
-            // Nothing to do here for the case of RouteState.DIALOG.
-            return;
-          }
-
-          if (oldState === RouteState.SECTION) {
-            if (newState === RouteState.SECTION) {
-              this.switchToSections_(newRoute);
-            } else if (newState === RouteState.SUBPAGE) {
-              this.switchToSections_(newRoute);
-              this.enterSubpage_(newRoute);
-            } else if (newState === RouteState.TOP_LEVEL) {
-              this.switchToSections_(TOP_LEVEL_EQUIVALENT_ROUTE);
-              this.scroller!.scrollTop = 0;
-            }
-            // Nothing to do here for the case of RouteState.DIALOG.
-            return;
-          }
-
-          if (oldState === RouteState.SUBPAGE) {
-            if (newState === RouteState.SECTION) {
+              // The only known cases currently for such a transition are from
+              // 1) /synceSetup to /signOut
+              // 2) /synceSetup to /clearBrowserData using the "back" arrow
               this.enterMainPage_(oldRoute!);
               this.switchToSections_(newRoute);
-            } else if (newState === RouteState.SUBPAGE) {
-              // Handle case where the two subpages belong to
-              // different sections, but are linked to each other. For example
-              // /storage and /accounts (in ChromeOS).
-              if (!oldRoute!.contains(newRoute) &&
-                  !newRoute.contains(oldRoute!)) {
-                this.enterMainPage_(oldRoute!).then(() => {
-                  this.enterSubpage_(newRoute);
-                });
-                return;
-              }
-
-              // Handle case of subpage to sub-subpage navigation.
-              if (oldRoute!.contains(newRoute)) {
-                this.scroller!.scrollTop = 0;
-                return;
-              }
-              // When going from a sub-subpage to its parent subpage, scroll
-              // position is automatically restored, because we focus the
-              // sub-subpage entry point.
-            } else if (newState === RouteState.TOP_LEVEL) {
-              this.enterMainPage_(oldRoute!);
             }
             return;
           }
@@ -517,7 +381,16 @@ export const MainPageMixin = dedupingMixin(
             return;
           }
 
-          // Nothing to do for when oldState === RouteState.DIALOG.
+          if (oldState === RouteState.DIALOG) {
+            if (newState === RouteState.SUBPAGE) {
+              // The only known cases currently for such a transition are from
+              // 1) /signOut to /syncSetup
+              // 2) /clearBrowserData to /syncSetup
+              this.switchToSections_(newRoute);
+              this.enterSubpage_(newRoute);
+            }
+            // Nothing to do for all other cases.
+          }
         }
 
         /**
@@ -536,8 +409,7 @@ export const MainPageMixin = dedupingMixin(
         /*
          * @param sectionName Section name of the element to get.
          */
-        private querySettingsSections_(sectionName: string):
-            Array<HTMLElement> {
+        private querySettingsSections_(sectionName: string): HTMLElement[] {
           const result = [];
           const section = this.getSection(sectionName);
 
@@ -558,5 +430,6 @@ export const MainPageMixin = dedupingMixin(
     });
 
 export interface MainPageMixinInterface {
+  scroller: HTMLElement|null;
   containsRoute(route: Route|null): boolean;
 }

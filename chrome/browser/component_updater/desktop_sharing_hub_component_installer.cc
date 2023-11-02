@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,17 +10,18 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
+#include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "base/version.h"
 #include "chrome/browser/share/core/share_targets.h"
 #include "components/component_updater/component_updater_paths.h"
+#include "content/public/browser/browser_thread.h"
 
 using component_updater::ComponentUpdateService;
 
@@ -38,9 +39,10 @@ const uint8_t kDesktopSharingHubPublicKeySHA256[32] = {
 
 const char kDesktopSharingHubManifestName[] = "Desktop Sharing Hub";
 
-void LoadShareTargetsFromDisk(const base::FilePath& pb_path) {
+absl::optional<std::string> LoadShareTargetsFromDisk(
+    const base::FilePath& pb_path) {
   if (pb_path.empty())
-    return;
+    return absl::nullopt;
 
   VLOG(1) << "Reading Download File Types from file: " << pb_path.value();
   std::string binary_pb;
@@ -48,9 +50,16 @@ void LoadShareTargetsFromDisk(const base::FilePath& pb_path) {
     // ComponentReady will only be called when there is some installation of the
     // component ready, so it would be correct to consider this an error.
     LOG(ERROR) << "Failed reading from " << pb_path.value();
-    return;
+    return absl::nullopt;
   }
-  sharing::ShareTargets::GetInstance()->PopulateFromDynamicUpdate(binary_pb);
+
+  return binary_pb;
+}
+
+void OnLoadShareTargetsFromDiskDone(absl::optional<std::string> binary_pb) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (binary_pb)
+    sharing::ShareTargets::GetInstance()->PopulateFromDynamicUpdate(*binary_pb);
 }
 
 }  // namespace
@@ -85,12 +94,18 @@ void DesktopSharingHubComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
     base::Value manifest) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
   VLOG(1) << "Component ready, version " << version.GetString() << " in "
           << install_dir.value();
 
-  base::ThreadPool::PostTask(
+  // The actual disk read is done on a worker thread, but as soon as the read is
+  // done the binary protobuf should be posted back to the main thread to
+  // maintain the invariant that ShareTargets is only used from the main thread.
+  base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&LoadShareTargetsFromDisk, GetInstalledPath(install_dir)));
+      base::BindOnce(&LoadShareTargetsFromDisk, GetInstalledPath(install_dir)),
+      base::BindOnce(&OnLoadShareTargetsFromDiskDone));
 }
 
 // Called during startup and installation before ComponentReady().
@@ -111,7 +126,7 @@ void DesktopSharingHubComponentInstallerPolicy::GetHash(
     std::vector<uint8_t>* hash) const {
   hash->assign(kDesktopSharingHubPublicKeySHA256,
                kDesktopSharingHubPublicKeySHA256 +
-                   base::size(kDesktopSharingHubPublicKeySHA256));
+                   std::size(kDesktopSharingHubPublicKeySHA256));
 }
 
 std::string DesktopSharingHubComponentInstallerPolicy::GetName() const {

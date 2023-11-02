@@ -1,4 +1,4 @@
-// Copyright (c) 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -168,8 +168,7 @@ void ArcIconOnceLoader::SizeSpecificLoader::OnIconFailed(ArcAppIcon* icon) {
   OnIconUpdated(icon);
 }
 
-ArcIconOnceLoader::ArcIconOnceLoader(Profile* profile)
-    : profile_(profile), stop_observing_called_(false) {
+ArcIconOnceLoader::ArcIconOnceLoader(Profile* profile) : profile_(profile) {
   ArcAppListPrefs::Get(profile)->AddObserver(this);
   arc_app_icon_factory_ = std::make_unique<arc::ArcAppIconFactory>();
 }

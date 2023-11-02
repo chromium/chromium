@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -80,10 +80,6 @@ bool AndroidPaymentApp::IsCompleteForPayment() const {
   return true;
 }
 
-uint32_t AndroidPaymentApp::GetCompletenessScore() const {
-  return 0;
-}
-
 bool AndroidPaymentApp::CanPreselect() const {
   return true;
 }
@@ -121,10 +117,7 @@ const SkBitmap* AndroidPaymentApp::icon_bitmap() const {
   return nullptr;
 }
 
-bool AndroidPaymentApp::IsValidForModifier(
-    const std::string& method,
-    bool supported_networks_specified,
-    const std::set<std::string>& supported_networks) const {
+bool AndroidPaymentApp::IsValidForModifier(const std::string& method) const {
   bool is_valid = false;
   IsValidForPaymentMethodIdentifier(method, &is_valid);
   return is_valid;

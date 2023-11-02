@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -364,7 +364,7 @@ TEST_F(AutofillProfileSyncDifferenceTrackerTest,
   AutofillProfile local = AutofillProfile(kSmallerGuid, kSettingsOrigin);
   AddAutofillProfilesToTable({local});
 
-  tracker()->IncorporateRemoteDelete(kSmallerGuid);
+  EXPECT_EQ(absl::nullopt, tracker()->IncorporateRemoteDelete(kSmallerGuid));
 
   MockCallback<base::OnceClosure> autofill_changes_callback;
   EXPECT_CALL(autofill_changes_callback, Run()).Times(1);
@@ -421,8 +421,9 @@ class AutofillProfileInitialSyncDifferenceTrackerTest
 
   ~AutofillProfileInitialSyncDifferenceTrackerTest() override {}
 
-  void MergeSimilarEntriesForInitialSync() {
-    initial_tracker_.MergeSimilarEntriesForInitialSync(kLocaleString);
+  [[nodiscard]] absl::optional<syncer::ModelError>
+  MergeSimilarEntriesForInitialSync() {
+    return initial_tracker_.MergeSimilarEntriesForInitialSync(kLocaleString);
   }
 
   AutofillProfileSyncDifferenceTracker* tracker() override {
@@ -455,7 +456,7 @@ TEST_F(AutofillProfileInitialSyncDifferenceTrackerTest,
   merged.set_use_count(27);
 
   IncorporateRemoteProfile(remote);
-  MergeSimilarEntriesForInitialSync();
+  EXPECT_EQ(absl::nullopt, MergeSimilarEntriesForInitialSync());
 
   // The merged profile needs to get uploaded back to sync and stored locally.
   UpdatesToSync updates = FlushToSync();
@@ -480,7 +481,7 @@ TEST_F(AutofillProfileInitialSyncDifferenceTrackerTest,
   remote.set_use_count(27);
   remote.FinalizeAfterImport();
   IncorporateRemoteProfile(remote);
-  MergeSimilarEntriesForInitialSync();
+  EXPECT_EQ(absl::nullopt, MergeSimilarEntriesForInitialSync());
 
   // Nothing gets uploaded to sync and the remote profile wins.
   UpdatesToSync updates = FlushToSync();
@@ -503,7 +504,7 @@ TEST_F(AutofillProfileInitialSyncDifferenceTrackerTest,
   remote.SetRawInfo(COMPANY_NAME, u"Frobbers, Inc.");
   remote.FinalizeAfterImport();
   IncorporateRemoteProfile(remote);
-  MergeSimilarEntriesForInitialSync();
+  EXPECT_EQ(absl::nullopt, MergeSimilarEntriesForInitialSync());
 
   // The local profile gets uploaded (due to initial sync) and the remote
   // profile gets stored locally.
@@ -527,7 +528,7 @@ TEST_F(AutofillProfileInitialSyncDifferenceTrackerTest,
   remote.SetRawInfo(COMPANY_NAME, u"Frobbers, Inc.");
   remote.FinalizeAfterImport();
   IncorporateRemoteProfile(remote);
-  MergeSimilarEntriesForInitialSync();
+  EXPECT_EQ(absl::nullopt, MergeSimilarEntriesForInitialSync());
 
   // The local profile gets uploaded (due to initial sync) and the remote
   // profile gets stored locally.
@@ -551,7 +552,7 @@ TEST_F(AutofillProfileInitialSyncDifferenceTrackerTest,
   remote.SetRawInfo(COMPANY_NAME, u"Frobbers, Inc.");
   remote.FinalizeAfterImport();
   IncorporateRemoteProfile(remote);
-  MergeSimilarEntriesForInitialSync();
+  EXPECT_EQ(absl::nullopt, MergeSimilarEntriesForInitialSync());
 
   // The local profile gets uploaded (due to initial sync) and the remote
   // profile gets stored locally.

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,8 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
@@ -23,7 +23,9 @@ class ContentIndexProvider;
 class ClientHintsControllerDelegate;
 class DownloadManagerDelegate;
 class PermissionControllerDelegate;
+class ReduceAcceptLanguageControllerDelegate;
 class ShellDownloadManagerDelegate;
+class ShellFederatedPermissionContext;
 class ZoomLevelDelegate;
 
 class ShellBrowserContext : public BrowserContext {
@@ -62,6 +64,14 @@ class ShellBrowserContext : public BrowserContext {
   BrowsingDataRemoverDelegate* GetBrowsingDataRemoverDelegate() override;
   ContentIndexProvider* GetContentIndexProvider() override;
   ClientHintsControllerDelegate* GetClientHintsControllerDelegate() override;
+  FederatedIdentityApiPermissionContextDelegate*
+  GetFederatedIdentityApiPermissionContext() override;
+  FederatedIdentitySharingPermissionContextDelegate*
+  GetFederatedIdentitySharingPermissionContext() override;
+  FederatedIdentityActiveSessionPermissionContextDelegate*
+  GetFederatedIdentityActiveSessionPermissionContext() override;
+  ReduceAcceptLanguageControllerDelegate*
+  GetReduceAcceptLanguageControllerDelegate() override;
 
  protected:
   // Contains URLRequestContextGetter required for resource loading.
@@ -82,6 +92,10 @@ class ShellBrowserContext : public BrowserContext {
   std::unique_ptr<PermissionControllerDelegate> permission_manager_;
   std::unique_ptr<BackgroundSyncController> background_sync_controller_;
   std::unique_ptr<ContentIndexProvider> content_index_provider_;
+  std::unique_ptr<ShellFederatedPermissionContext>
+      federated_permission_context_;
+  std::unique_ptr<ReduceAcceptLanguageControllerDelegate>
+      reduce_accept_lang_controller_delegate_;
 
  private:
   // Performs initialization of the ShellBrowserContext while IO is still
@@ -93,7 +107,8 @@ class ShellBrowserContext : public BrowserContext {
   bool ignore_certificate_errors_ = false;
   base::FilePath path_;
   std::unique_ptr<SimpleFactoryKey> key_;
-  ClientHintsControllerDelegate* client_hints_controller_delegate_ = nullptr;
+  raw_ptr<ClientHintsControllerDelegate> client_hints_controller_delegate_ =
+      nullptr;
 };
 
 }  // namespace content

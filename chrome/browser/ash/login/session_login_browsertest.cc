@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,8 +13,8 @@
 #include "chrome/browser/ash/login/session/user_session_manager_test_api.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
+#include "chrome/browser/ash/login/test/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
-#include "chrome/browser/ash/login/test/local_policy_test_server_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_screen_exit_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
@@ -79,16 +79,16 @@ IN_PROC_BROWSER_TEST_F(BrowserLoginTest, BrowserActive) {
 
   Browser* browser =
       chrome::FindAnyBrowser(ProfileManager::GetActiveUserProfile(), false);
-  EXPECT_TRUE(browser != NULL);
+  EXPECT_TRUE(browser != nullptr);
   EXPECT_TRUE(browser->window()->IsActive());
 
   gfx::NativeWindow window = browser->window()->GetNativeWindow();
   views::Widget* widget = views::Widget::GetWidgetForNativeWindow(window);
   views::FocusManager* focus_manager = widget->GetFocusManager();
-  EXPECT_TRUE(focus_manager != NULL);
+  EXPECT_TRUE(focus_manager != nullptr);
 
   const views::View* focused_view = focus_manager->GetFocusedView();
-  EXPECT_TRUE(focused_view != NULL);
+  EXPECT_TRUE(focused_view != nullptr);
   EXPECT_EQ(VIEW_ID_OMNIBOX, focused_view->GetID());
 }
 
@@ -139,7 +139,7 @@ class OnboardingTest : public LoginManagerTest {
   AccountId regular_user_{
       AccountId::FromUserEmailGaiaId(test::kTestEmail, test::kTestGaiaId)};
 
-  LocalPolicyTestServerMixin policy_server_mixin_{&mixin_host_};
+  EmbeddedPolicyTestServerMixin policy_server_mixin_{&mixin_host_};
 
   UserPolicyMixin user_policy_mixin_{&mixin_host_, regular_user_,
                                      &policy_server_mixin_};
@@ -153,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(OnboardingTest, PRE_OnboardingUserActivityRegularUser) {
 
   test::UserSessionManagerTestApi test_api(UserSessionManager::GetInstance());
   ASSERT_TRUE(test_api.get_onboarding_user_activity_counter());
-  WizardController::SkipPostLoginScreensForTesting();
+  login_mixin_.SkipPostLoginScreens();
 }
 
 IN_PROC_BROWSER_TEST_F(OnboardingTest, OnboardingUserActivityRegularUser) {
@@ -180,7 +180,7 @@ IN_PROC_BROWSER_TEST_F(OnboardingTest, OnboardingCompletedVersion) {
   OobeScreenExitWaiter user_creation_exit_waiter(UserCreationView::kScreenId);
   login_mixin_.LoginAsNewRegularUser();
   user_creation_exit_waiter.Wait();
-  WizardController::SkipPostLoginScreensForTesting();
+  login_mixin_.SkipPostLoginScreens();
   login_mixin_.WaitForActiveSession();
 
   AccountId account_id =
@@ -197,7 +197,7 @@ IN_PROC_BROWSER_TEST_F(OnboardingTest, PRE_OnboardingCompletedVersionBackfill) {
   OobeScreenExitWaiter user_creation_exit_waiter(UserCreationView::kScreenId);
   login_mixin_.LoginWithDefaultContext(test_user);
   user_creation_exit_waiter.Wait();
-  WizardController::SkipPostLoginScreensForTesting();
+  login_mixin_.SkipPostLoginScreens();
   login_mixin_.WaitForActiveSession();
 
   AccountId account_id =
@@ -227,7 +227,7 @@ class LockOnSuspendUsageTest : public LoginManagerTest {
 // user login.
 IN_PROC_BROWSER_TEST_F(LockOnSuspendUsageTest, RegularUser) {
   OobeScreenWaiter(UserCreationView::kScreenId).Wait();
-  WizardController::SkipPostLoginScreensForTesting();
+  login_mixin_.SkipPostLoginScreens();
   login_mixin_.LoginAsNewRegularUser();
   login_mixin_.WaitForActiveSession();
 

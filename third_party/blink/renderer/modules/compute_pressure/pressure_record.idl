@@ -1,0 +1,25 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://wicg.github.io/compute-pressure/#dom-pressurefactor
+enum PressureFactor { "thermal", "power-supply" };
+
+// https://wicg.github.io/compute-pressure/#dom-pressurestate
+enum PressureState {
+  "nominal",
+  "fair",
+  "serious",
+  "critical"
+};
+
+// https://wicg.github.io/compute-pressure/#dom-pressurerecord
+[
+    Exposed=Window,
+    SecureContext
+] dictionary PressureRecord {
+  PressureSource source;
+  PressureState state;
+  sequence<PressureFactor> factors;
+  DOMHighResTimeStamp time;
+};

@@ -1,4 +1,4 @@
-/* Copyright 2017 The Chromium Authors. All rights reserved.
+/* Copyright 2017 The Chromium Authors
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
@@ -15,9 +15,6 @@ body {
 /** Typography -------------------------------------------------------------- */
 
 .content {
-  /* This is identical to the default background color. It's necessary to set it
-     for the case when a theme with a background image is installed. */
-  background-color: rgb(53, 54, 58);
   color: rgb(232, 234, 237);  /* --google-grey-200 */
   font-size: calc(100% - 2px);
   line-height: calc(100% + 6px);
@@ -37,7 +34,6 @@ em {
 
 .learn-more-button {
   color: rgb(138, 180, 248);
-  text-decoration: none;
 }
 
 /* Small font on small screens. */
@@ -130,6 +126,7 @@ em {
 }
 
 #cookie-controls-tooltip-icon {
+  --cr-tooltip-icon-fill-color: currentColor;
   margin-inline-end: 24px; /* var(--cr-controlled-by-spacing) */
 }
 

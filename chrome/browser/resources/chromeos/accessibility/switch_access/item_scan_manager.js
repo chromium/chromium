@@ -1,6 +1,13 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+import {AutomationUtil} from '../common/automation_util.js';
+import {EventGenerator} from '../common/event_generator.js';
+import {EventHandler} from '../common/event_handler.js';
+import {RectUtil} from '../common/rect_util.js';
+import {RepeatedEventHandler} from '../common/repeated_event_handler.js';
+import {RepeatedTreeChangeHandler} from '../common/repeated_tree_change_handler.js';
 
 import {ActionManager} from './action_manager.js';
 import {AutoScanManager} from './auto_scan_manager.js';
@@ -102,7 +109,7 @@ export class ItemScanManager extends ItemNavigatorInterface {
   /** @override */
   exitKeyboard() {
     this.ignoreFocusInKeyboard_ = false;
-    const isKeyboard = (data) => data.group instanceof KeyboardRootNode;
+    const isKeyboard = data => data.group instanceof KeyboardRootNode;
     // If we are not in the keyboard, do nothing.
     if (!(this.group_ instanceof KeyboardRootNode) &&
         !this.history_.containsDataMatchingPredicate(isKeyboard)) {
@@ -163,7 +170,7 @@ export class ItemScanManager extends ItemNavigatorInterface {
   /** @override */
   moveBackward() {
     if (this.node_.isValidAndVisible()) {
-      this.tryMoving(this.node_.previous, (node) => node.previous, this.node_);
+      this.tryMoving(this.node_.previous, node => node.previous, this.node_);
     } else {
       this.moveToValidNode();
     }
@@ -172,7 +179,7 @@ export class ItemScanManager extends ItemNavigatorInterface {
   /** @override */
   moveForward() {
     if (this.node_.isValidAndVisible()) {
-      this.tryMoving(this.node_.next, (node) => node.next, this.node_);
+      this.tryMoving(this.node_.next, node => node.next, this.node_);
     } else {
       this.moveToValidNode();
     }
@@ -207,7 +214,7 @@ export class ItemScanManager extends ItemNavigatorInterface {
     // Check if the top center is visible as a proxy for occlusion. It's
     // possible that other parts of the window are occluded, but in Chrome we
     // can't drag windows off the top of the screen.
-    this.desktop_.hitTestWithReply(center.x, location.top, (hitNode) => {
+    this.desktop_.hitTestWithReply(center.x, location.top, hitNode => {
       if (AutomationUtil.isDescendantOf(hitNode, node.automationNode)) {
         this.setNode_(node);
       } else if (node.isValidAndVisible()) {
@@ -252,7 +259,7 @@ export class ItemScanManager extends ItemNavigatorInterface {
   restart() {
     const point = Navigator.byPoint.currentPoint;
     SwitchAccess.mode = SAConstants.Mode.ITEM_SCAN;
-    this.desktop_.hitTestWithReply(point.x, point.y, (node) => {
+    this.desktop_.hitTestWithReply(point.x, point.y, node => {
       this.moveTo_(node);
     });
   }
@@ -415,9 +422,9 @@ export class ItemScanManager extends ItemNavigatorInterface {
     new RepeatedTreeChangeHandler(
         chrome.automation.TreeChangeObserverFilter.ALL_TREE_CHANGES,
         treeChange => this.onTreeChange_(treeChange), {
-          predicate: (treeChange) =>
+          predicate: treeChange =>
               this.group_.findChild(treeChange.target) != null ||
-              this.group_.isEquivalentTo(treeChange.target)
+              this.group_.isEquivalentTo(treeChange.target),
         });
 
     // The status tray fires a SHOW event when it opens.
@@ -425,7 +432,7 @@ export class ItemScanManager extends ItemNavigatorInterface {
         this.desktop_,
         [
           chrome.automation.EventType.MENU_START,
-          chrome.automation.EventType.SHOW
+          chrome.automation.EventType.SHOW,
         ],
         event => this.onModalDialog_(event))
         .start();

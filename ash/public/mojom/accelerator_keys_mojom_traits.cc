@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 
 namespace mojo {
 
-using mojom_vkey = ash::accelerator_keys::mojom::VKey;
+using mojom_vkey = ash::mojom::VKey;
 
 mojom_vkey EnumTraits<mojom_vkey, ui::KeyboardCode>::ToMojom(
     ui::KeyboardCode vkey) {
@@ -402,7 +402,7 @@ mojom_vkey EnumTraits<mojom_vkey, ui::KeyboardCode>::ToMojom(
 }
 
 bool EnumTraits<mojom_vkey, ui::KeyboardCode>::FromMojom(
-    ash::accelerator_keys::mojom::VKey input,
+    ash::mojom::VKey input,
     ui::KeyboardCode* out) {
   switch (input) {
     case mojom_vkey::kCancel:

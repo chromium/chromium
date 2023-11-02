@@ -1,0 +1,9 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# This file will be used to check out PartitionAlloc and to build it as
+# standalone library. In this case, PartitionAlloc needs to define
+# build_with_chromium. If building PartitionAlloc as a part of chromium,
+# chromium will provide build_with_chromium=true.
+build_with_chromium = false

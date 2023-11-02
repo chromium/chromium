@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROMEOS_UI_BASE_CHROMEOS_UI_CONSTANTS_H_
 #define CHROMEOS_UI_BASE_CHROMEOS_UI_CONSTANTS_H_
 
+#include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "third_party/skia/include/core/SkColor.h"
 
@@ -12,6 +13,9 @@ namespace chromeos {
 
 // Radius of the header's top corners when the window is restored.
 constexpr int kTopCornerRadiusWhenRestored = 2;
+
+// Rounded corner radius for Pip window.
+constexpr int kPipRoundedCornerRadius = 8;
 
 // In the window corners, the resize areas don't actually expand bigger, but the
 // 16 px at the end of each edge triggers diagonal resizing.
@@ -28,6 +32,10 @@ constexpr int kResizeInsideBoundsSize = 1;
 
 // The default frame color.
 constexpr SkColor kDefaultFrameColor = SkColorSetRGB(0xFD, 0xFE, 0xFF);
+
+// The default duration for animating frame color changes.
+constexpr base::TimeDelta kDefaultFrameColorChangeAnimationDuration =
+    base::Milliseconds(240);
 
 }  // namespace chromeos
 

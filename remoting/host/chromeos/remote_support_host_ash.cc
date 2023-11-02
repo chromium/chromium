@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,8 +45,8 @@ void RemoteSupportHostAsh::StartSession(
           RemotingService::Get().CreatePolicyWatcher());
 
   mojom::StartSupportSessionResponsePtr response =
-      mojom::StartSupportSessionResponse::New();
-  response->set_observer(std::move(pending_receiver));
+      mojom::StartSupportSessionResponse::NewObserver(
+          std::move(pending_receiver));
 
   it2me_native_message_host_ash_->Connect(
       std::move(params), enterprise_params,

@@ -1,8 +1,10 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "device/bluetooth/bluetooth_socket_mac.h"
+
+#include "base/memory/raw_ptr.h"
 
 #import <IOBluetooth/IOBluetooth.h>
 #include <stdint.h>
@@ -76,6 +78,15 @@ using device::BluetoothSocket;
   return self;
 }
 
+- (void)dealloc {
+  if (_error_callback) {
+    // The delegate's sdpQueryComplete was not called. This may happen if no
+    // target is specified.
+    std::move(_error_callback).Run("No target");
+  }
+  [super dealloc];
+}
+
 - (void)sdpQueryComplete:(IOBluetoothDevice*)device status:(IOReturn)status {
   DCHECK_EQ(device, _device);
   _socket->OnSDPQueryComplete(status, device, std::move(_success_callback),
@@ -89,7 +100,7 @@ using device::BluetoothSocket;
 @interface BluetoothRfcommConnectionListener : NSObject {
  @private
   // The socket that owns |self|.
-  device::BluetoothSocketMac* _socket;  // weak
+  raw_ptr<device::BluetoothSocketMac> _socket;  // weak
 
   // The OS mechanism used to subscribe to and unsubscribe from RFCOMM channel
   // creation notifications.
@@ -151,7 +162,7 @@ using device::BluetoothSocket;
 @interface BluetoothL2capConnectionListener : NSObject {
  @private
   // The socket that owns |self|.
-  device::BluetoothSocketMac* _socket;  // weak
+  raw_ptr<device::BluetoothSocketMac> _socket;  // weak
 
   // The OS mechanism used to subscribe to and unsubscribe from L2CAP channel
   // creation notifications.

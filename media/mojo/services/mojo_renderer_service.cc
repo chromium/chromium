@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -154,9 +154,11 @@ void MojoRendererService::SetCdm(
 void MojoRendererService::OnError(PipelineStatus error) {
   DVLOG(1) << __func__ << "(" << error << ")";
   state_ = STATE_ERROR;
-  StatusCode status_code = PipelineStatusToStatusCode(error);
-  auto status = Status(status_code, PipelineStatusToString(error));
-  client_->OnError(status);
+  client_->OnError(std::move(error));
+}
+
+void MojoRendererService::OnFallback(PipelineStatus error) {
+  NOTREACHED();
 }
 
 void MojoRendererService::OnEnded() {

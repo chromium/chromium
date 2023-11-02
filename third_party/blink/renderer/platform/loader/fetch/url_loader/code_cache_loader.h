@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "third_party/blink/public/platform/web_code_cache_loader.h"
+#include "third_party/blink/public/platform/web_common.h"
 
 namespace blink {
 
@@ -19,10 +20,7 @@ class CodeCacheHost;
 class BLINK_PLATFORM_EXPORT CodeCacheLoader : public WebCodeCacheLoader {
  public:
   // |code_cache_host| is the per-frame mojo interface that should be used when
-  // fetching code cache. If this value is nullptr it uses per-process
-  // interface.
-  // TODO(mythria): Remove the per-process interface and only expect non nullptr
-  // for |code_cache_host|.
+  // fetching code cache.
   explicit CodeCacheLoader(CodeCacheHost* code_cache_host);
 
   ~CodeCacheLoader() override;
@@ -35,9 +33,7 @@ class BLINK_PLATFORM_EXPORT CodeCacheLoader : public WebCodeCacheLoader {
                            const WebURL& url) override;
 
  private:
-  bool ShouldUsePerProcessInterface() const;
-
-  base::WeakPtr<CodeCacheHost> const code_cache_host_;
+  base::WeakPtr<CodeCacheHost> code_cache_host_;
 };
 
 }  // namespace blink

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,8 +19,9 @@ namespace ash {
 class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantCardElement
     : public AssistantUiElement {
  public:
-  explicit AssistantCardElement(const std::string& html,
-                                const std::string& fallback);
+  AssistantCardElement(const std::string& html,
+                       const std::string& fallback,
+                       int viewport_width);
 
   AssistantCardElement(const AssistantCardElement&) = delete;
   AssistantCardElement& operator=(const AssistantCardElement&) = delete;
@@ -30,8 +31,10 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantCardElement
   // AssistantUiElement:
   void Process(ProcessingCallback callback) override;
 
+  bool has_contents_view() const;
   const std::string& html() const { return html_; }
   const std::string& fallback() const { return fallback_; }
+  int viewport_width() const { return viewport_width_; }
   std::unique_ptr<AshWebView> MoveContentsView() {
     return std::move(contents_view_);
   }
@@ -45,6 +48,7 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantCardElement
 
   const std::string html_;
   const std::string fallback_;
+  const int viewport_width_;
   std::unique_ptr<AshWebView> contents_view_;
 
   std::unique_ptr<Processor> processor_;

@@ -1,6 +1,0 @@
-include_rules = [
-  "+ash/quick_pair",
-  "+crypto/openssl_util.h",
-  "+mojo/core/embedder",
-  "+third_party/boringssl/src/include",
-]

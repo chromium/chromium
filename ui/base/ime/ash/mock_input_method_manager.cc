@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,7 +19,7 @@ scoped_refptr<InputMethodManager::State> MockInputMethodManager::State::Clone()
 void MockInputMethodManager::State::AddInputMethodExtension(
     const std::string& extension_id,
     const InputMethodDescriptors& descriptors,
-    ui::IMEEngineHandlerInterface* instance) {}
+    ui::TextInputMethod* instance) {}
 
 void MockInputMethodManager::State::RemoveInputMethodExtension(
     const std::string& extension_id) {}
@@ -43,7 +43,7 @@ void MockInputMethodManager::State::EnableLoginLayouts(
     const std::string& language_code,
     const std::vector<std::string>& initial_layout) {}
 
-void MockInputMethodManager::State::EnableLockScreenLayouts() {}
+void MockInputMethodManager::State::DisableNonLockScreenLayouts() {}
 
 void MockInputMethodManager::State::GetInputMethodExtensions(
     InputMethodDescriptors* result) {}
@@ -98,8 +98,7 @@ bool MockInputMethodManager::State::ReplaceEnabledInputMethods(
 }
 
 bool MockInputMethodManager::State::SetAllowedInputMethods(
-    const std::vector<std::string>& new_allowed_input_method_ids,
-    bool enable_allowed_input_methods) {
+    const std::vector<std::string>& new_allowed_input_method_ids) {
   allowed_input_method_ids_ = new_allowed_input_method_ids;
   return true;
 }
@@ -107,6 +106,11 @@ bool MockInputMethodManager::State::SetAllowedInputMethods(
 const std::vector<std::string>&
 MockInputMethodManager::State::GetAllowedInputMethodIds() const {
   return allowed_input_method_ids_;
+}
+
+std::string MockInputMethodManager::State::GetAllowedFallBackKeyboardLayout()
+    const {
+  return "input_method_id";
 }
 
 void MockInputMethodManager::State::EnableInputView() {}
@@ -156,7 +160,7 @@ void MockInputMethodManager::ActivateInputMethodMenuItem(
     const std::string& key) {}
 
 void MockInputMethodManager::ConnectInputEngineManager(
-    mojo::PendingReceiver<chromeos::ime::mojom::InputEngineManager> receiver) {}
+    mojo::PendingReceiver<ime::mojom::InputEngineManager> receiver) {}
 
 bool MockInputMethodManager::IsISOLevel5ShiftUsedByCurrentInputMethod() const {
   return false;
@@ -232,7 +236,7 @@ void MockInputMethodManager::NotifyObserversImeExtraInputStateChange() {}
 
 ui::VirtualKeyboardController*
 MockInputMethodManager::GetVirtualKeyboardController() {
-  return this;
+  return virtual_keyboard_enabled_ ? this : nullptr;
 }
 
 void MockInputMethodManager::NotifyInputMethodExtensionAdded(
@@ -245,13 +249,20 @@ bool MockInputMethodManager::DisplayVirtualKeyboard() {
   return false;
 }
 
-void MockInputMethodManager::DismissVirtualKeyboard() {}
+void MockInputMethodManager::DismissVirtualKeyboard() {
+  for (auto& observer : observer_list_)
+    observer.OnKeyboardHidden();
+}
 
 void MockInputMethodManager::AddObserver(
-    ui::VirtualKeyboardControllerObserver* observer) {}
+    ui::VirtualKeyboardControllerObserver* observer) {
+  observer_list_.AddObserver(observer);
+}
 
 void MockInputMethodManager::RemoveObserver(
-    ui::VirtualKeyboardControllerObserver* observer) {}
+    ui::VirtualKeyboardControllerObserver* observer) {
+  observer_list_.RemoveObserver(observer);
+}
 
 bool MockInputMethodManager::IsKeyboardVisible() {
   return false;

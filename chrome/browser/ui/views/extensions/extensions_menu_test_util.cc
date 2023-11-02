@@ -1,8 +1,9 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/extensions/extensions_menu_test_util.h"
+#include "base/memory/raw_ptr.h"
 
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
@@ -41,7 +42,7 @@ class ExtensionsMenuTestUtil::MenuViewObserver : public views::ViewObserver {
     *menu_view_ptr_ = nullptr;
   }
 
-  ExtensionsMenuView** const menu_view_ptr_;
+  const raw_ptr<ExtensionsMenuView*> menu_view_ptr_;
 };
 
 // A view wrapper class that owns the ExtensionsToolbarContainer.
@@ -53,7 +54,7 @@ class ExtensionsMenuTestUtil::Wrapper {
       : extensions_container_(new ExtensionsToolbarContainer(browser)) {
     container_parent_.SetSize(gfx::Size(1000, 1000));
     container_parent_.Layout();
-    container_parent_.AddChildView(extensions_container_);
+    container_parent_.AddChildView(extensions_container_.get());
   }
   ~Wrapper() = default;
 
@@ -66,7 +67,7 @@ class ExtensionsMenuTestUtil::Wrapper {
 
  private:
   views::View container_parent_;
-  ExtensionsToolbarContainer* extensions_container_ = nullptr;
+  raw_ptr<ExtensionsToolbarContainer> extensions_container_ = nullptr;
 };
 
 ExtensionsMenuTestUtil::ExtensionsMenuTestUtil(Browser* browser,
@@ -120,14 +121,14 @@ bool ExtensionsMenuTestUtil::HasAction(const extensions::ExtensionId& id) {
 }
 
 void ExtensionsMenuTestUtil::InspectPopup(const extensions::ExtensionId& id) {
-  ExtensionsMenuItemView* view = GetMenuItemViewForId(id);
+  InstalledExtensionMenuItemView* view = GetMenuItemViewForId(id);
   DCHECK(view);
   static_cast<ExtensionActionViewController*>(view->view_controller())
       ->InspectPopup();
 }
 
 bool ExtensionsMenuTestUtil::HasIcon(const extensions::ExtensionId& id) {
-  ExtensionsMenuItemView* view = GetMenuItemViewForId(id);
+  InstalledExtensionMenuItemView* view = GetMenuItemViewForId(id);
   DCHECK(view);
   return !view->primary_action_button_for_testing()
               ->GetImage(views::Button::STATE_NORMAL)
@@ -135,14 +136,14 @@ bool ExtensionsMenuTestUtil::HasIcon(const extensions::ExtensionId& id) {
 }
 
 gfx::Image ExtensionsMenuTestUtil::GetIcon(const extensions::ExtensionId& id) {
-  ExtensionsMenuItemView* view = GetMenuItemViewForId(id);
+  InstalledExtensionMenuItemView* view = GetMenuItemViewForId(id);
   DCHECK(view);
   return gfx::Image(view->primary_action_button_for_testing()->GetImage(
       views::Button::STATE_NORMAL));
 }
 
 void ExtensionsMenuTestUtil::Press(const extensions::ExtensionId& id) {
-  ExtensionsMenuItemView* view = GetMenuItemViewForId(id);
+  InstalledExtensionMenuItemView* view = GetMenuItemViewForId(id);
   DCHECK(view);
   ExtensionsMenuButton* primary_button =
       view->primary_action_button_for_testing();
@@ -154,7 +155,7 @@ void ExtensionsMenuTestUtil::Press(const extensions::ExtensionId& id) {
 
 std::string ExtensionsMenuTestUtil::GetTooltip(
     const extensions::ExtensionId& id) {
-  ExtensionsMenuItemView* view = GetMenuItemViewForId(id);
+  InstalledExtensionMenuItemView* view = GetMenuItemViewForId(id);
   DCHECK(view);
   ExtensionsMenuButton* primary_button =
       view->primary_action_button_for_testing();
@@ -229,14 +230,13 @@ gfx::Size ExtensionsMenuTestUtil::GetMaxAvailableSizeToFitBubbleOnScreen(
       views::BubbleFrameView::PreferredArrowAdjustment::kMirror);
 }
 
-ExtensionsMenuItemView* ExtensionsMenuTestUtil::GetMenuItemViewForId(
+InstalledExtensionMenuItemView* ExtensionsMenuTestUtil::GetMenuItemViewForId(
     const extensions::ExtensionId& id) {
-  base::flat_set<ExtensionsMenuItemView*> menu_items =
-      menu_view_->extensions_menu_items_for_testing();
-  auto iter =
-      base::ranges::find_if(menu_items, [id](ExtensionsMenuItemView* view) {
-        return view->view_controller()->GetId() == id;
-      });
+  auto menu_items = menu_view_->extensions_menu_items_for_testing();
+  auto iter = base::ranges::find(menu_items, id,
+                                 [](InstalledExtensionMenuItemView* view) {
+                                   return view->view_controller()->GetId();
+                                 });
   if (iter == menu_items.end())
     return nullptr;
   return *iter;

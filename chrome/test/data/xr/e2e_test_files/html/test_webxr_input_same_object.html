@@ -13,14 +13,15 @@ sources for the same object tests.
     <script src="../resources/webxr_e2e.js"></script>
     <script src="../resources/webxr_boilerplate.js"></script>
     <script>
-      setup({single_test: true});
-
       let inputChangeEvents = 0;
       function onInputSourcesChange() {
         inputChangeEvents++;
+        console.log(
+            'Received input source change event number ' + inputChangeEvents);
       }
 
       onSessionStartedCallback = function(session) {
+        console.log('Session started with mode: ' + session.mode);
         if (session.mode === "immersive-vr") {
           session.addEventListener('inputsourceschange', onInputSourcesChange, false);
         }

@@ -1,9 +1,11 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <tuple>
 #include <utility>
 
+#include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
@@ -19,11 +21,6 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/theme_installed_infobar_delegate.h"
 #include "chrome/browser/infobars/infobar_observer.h"
-#include "chrome/browser/plugins/hung_plugin_infobar_delegate.h"
-#include "chrome/browser/plugins/plugin_infobar_delegates.h"
-#include "chrome/browser/plugins/plugin_metadata.h"
-#include "chrome/browser/plugins/plugin_observer.h"
-#include "chrome/browser/plugins/reload_plugin_infobar_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -53,15 +50,22 @@
 #include "extensions/browser/sandboxed_unpacker.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "ppapi/buildflags/buildflags.h"
 #include "sandbox/policy/switches.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
+
+#if BUILDFLAG(ENABLE_PLUGINS)
+#include "chrome/browser/plugins/hung_plugin_infobar_delegate.h"
+#include "chrome/browser/plugins/plugin_observer.h"
+#include "chrome/browser/plugins/reload_plugin_infobar_delegate.h"
+#endif
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ui/startup/default_browser_infobar_delegate.h"
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/browser/ui/cocoa/keystone_infobar_delegate.h"
 #endif
 
@@ -179,28 +183,30 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
   }
 
   const base::flat_map<std::string, IBD::InfoBarIdentifier> kIdentifiers = {
-      {"hung_plugin", IBD::HUNG_PLUGIN_INFOBAR_DELEGATE},
-      {"dev_tools", IBD::DEV_TOOLS_INFOBAR_DELEGATE},
-      {"extension_dev_tools", IBD::EXTENSION_DEV_TOOLS_INFOBAR_DELEGATE},
-      {"incognito_connectability",
-       IBD::INCOGNITO_CONNECTABILITY_INFOBAR_DELEGATE},
-      {"theme_installed", IBD::THEME_INSTALLED_INFOBAR_DELEGATE},
-      {"nacl", IBD::NACL_INFOBAR_DELEGATE},
-      {"outdated_plugin", IBD::OUTDATED_PLUGIN_INFOBAR_DELEGATE},
-      {"reload_plugin", IBD::RELOAD_PLUGIN_INFOBAR_DELEGATE},
-      {"plugin_observer", IBD::PLUGIN_OBSERVER_INFOBAR_DELEGATE},
-      {"file_access_disabled", IBD::FILE_ACCESS_DISABLED_INFOBAR_DELEGATE},
-      {"keystone_promotion", IBD::KEYSTONE_PROMOTION_INFOBAR_DELEGATE_MAC},
-      {"collected_cookies", IBD::COLLECTED_COOKIES_INFOBAR_DELEGATE},
-      {"installation_error", IBD::INSTALLATION_ERROR_INFOBAR_DELEGATE},
-      {"bad_flags", IBD::BAD_FLAGS_INFOBAR_DELEGATE},
-      {"default_browser", IBD::DEFAULT_BROWSER_INFOBAR_DELEGATE},
-      {"google_api_keys", IBD::GOOGLE_API_KEYS_INFOBAR_DELEGATE},
-      {"obsolete_system", IBD::OBSOLETE_SYSTEM_INFOBAR_DELEGATE},
-      {"page_info", IBD::PAGE_INFO_INFOBAR_DELEGATE},
-      {"translate", IBD::TRANSLATE_INFOBAR_DELEGATE_NON_AURA},
-      {"automation", IBD::AUTOMATION_INFOBAR_DELEGATE},
-      {"tab_sharing", IBD::TAB_SHARING_INFOBAR_DELEGATE},
+    {"dev_tools", IBD::DEV_TOOLS_INFOBAR_DELEGATE},
+    {"extension_dev_tools", IBD::EXTENSION_DEV_TOOLS_INFOBAR_DELEGATE},
+    {"incognito_connectability",
+     IBD::INCOGNITO_CONNECTABILITY_INFOBAR_DELEGATE},
+    {"theme_installed", IBD::THEME_INSTALLED_INFOBAR_DELEGATE},
+    {"nacl", IBD::NACL_INFOBAR_DELEGATE},
+    {"file_access_disabled", IBD::FILE_ACCESS_DISABLED_INFOBAR_DELEGATE},
+    {"keystone_promotion", IBD::KEYSTONE_PROMOTION_INFOBAR_DELEGATE_MAC},
+    {"collected_cookies", IBD::COLLECTED_COOKIES_INFOBAR_DELEGATE},
+    {"installation_error", IBD::INSTALLATION_ERROR_INFOBAR_DELEGATE},
+    {"bad_flags", IBD::BAD_FLAGS_INFOBAR_DELEGATE},
+    {"default_browser", IBD::DEFAULT_BROWSER_INFOBAR_DELEGATE},
+    {"google_api_keys", IBD::GOOGLE_API_KEYS_INFOBAR_DELEGATE},
+    {"obsolete_system", IBD::OBSOLETE_SYSTEM_INFOBAR_DELEGATE},
+    {"page_info", IBD::PAGE_INFO_INFOBAR_DELEGATE},
+    {"translate", IBD::TRANSLATE_INFOBAR_DELEGATE_NON_AURA},
+    {"automation", IBD::AUTOMATION_INFOBAR_DELEGATE},
+    {"tab_sharing", IBD::TAB_SHARING_INFOBAR_DELEGATE},
+
+#if BUILDFLAG(ENABLE_PLUGINS)
+    {"hung_plugin", IBD::HUNG_PLUGIN_INFOBAR_DELEGATE},
+    {"reload_plugin", IBD::RELOAD_PLUGIN_INFOBAR_DELEGATE},
+    {"plugin_observer", IBD::PLUGIN_OBSERVER_INFOBAR_DELEGATE},
+#endif  // BUILDFLAG(ENABLE_PLUGINS)
   };
   auto id_entry = kIdentifiers.find(name);
   if (id_entry == kIdentifiers.end()) {
@@ -210,11 +216,6 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
   auto infobar_identifier = id_entry->second;
   AddExpectedInfoBar(infobar_identifier);
   switch (infobar_identifier) {
-    case IBD::HUNG_PLUGIN_INFOBAR_DELEGATE:
-      HungPluginInfoBarDelegate::Create(GetInfoBarManager(), nullptr, 0,
-                                        u"Test Plugin");
-      break;
-
     case IBD::DEV_TOOLS_INFOBAR_DELEGATE:
       DevToolsInfoBarDelegate::Create(
           l10n_util::GetStringFUTF16(
@@ -223,8 +224,8 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
       break;
 
     case IBD::EXTENSION_DEV_TOOLS_INFOBAR_DELEGATE:
-      extensions::ExtensionDevToolsInfoBarDelegate::Create("id", "Extension",
-                                                           base::DoNothing());
+      std::ignore = extensions::ExtensionDevToolsInfoBarDelegate::Create(
+          "id", "Extension", base::DoNothing());
       break;
 
     case IBD::INCOGNITO_CONNECTABILITY_INFOBAR_DELEGATE: {
@@ -254,12 +255,10 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
 #endif
       break;
 
-    case IBD::OUTDATED_PLUGIN_INFOBAR_DELEGATE:
-      OutdatedPluginInfoBarDelegate::Create(
-          GetInfoBarManager(), nullptr,
-          std::make_unique<PluginMetadata>("test-plugin", u"Test Plugin", true,
-                                           GURL(), GURL(), u"Test",
-                                           std::string(), false));
+#if BUILDFLAG(ENABLE_PLUGINS)
+    case IBD::HUNG_PLUGIN_INFOBAR_DELEGATE:
+      HungPluginInfoBarDelegate::Create(GetInfoBarManager(), nullptr, 0,
+                                        u"Test Plugin");
       break;
 
     case IBD::RELOAD_PLUGIN_INFOBAR_DELEGATE:
@@ -273,13 +272,14 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
       PluginObserver::CreatePluginObserverInfoBar(GetInfoBarManager(),
                                                   u"Test Plugin");
       break;
+#endif  // BUILDFLAG(ENABLE_PLUGINS)
 
     case IBD::FILE_ACCESS_DISABLED_INFOBAR_DELEGATE:
       ChromeSelectFilePolicy(GetWebContents()).SelectFileDenied();
       break;
 
     case IBD::KEYSTONE_PROMOTION_INFOBAR_DELEGATE_MAC:
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       KeystonePromotionInfoBarDelegate::Create(GetWebContents());
 #else
       ADD_FAILURE() << "This infobar is not supported on this OS.";
@@ -334,7 +334,7 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
       break;
 
     case IBD::TRANSLATE_INFOBAR_DELEGATE_NON_AURA: {
-#if defined(USE_AURA) || defined(OS_MAC)
+#if defined(USE_AURA) || BUILDFLAG(IS_MAC)
       ADD_FAILURE() << "This infobar is not supported on this toolkit.";
 #else
       // The translate infobar is only used on Android and iOS, neither of
@@ -344,9 +344,8 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
           ChromeTranslateClient::FromWebContents(GetWebContents());
       translate::TranslateInfoBarDelegate::Create(
           false, translate_client->GetTranslateManager()->GetWeakPtr(),
-          GetInfoBarManager(), false,
-          translate::TRANSLATE_STEP_BEFORE_TRANSLATE, "ja", "en",
-          translate::TranslateErrors::NONE, false);
+          GetInfoBarManager(), translate::TRANSLATE_STEP_BEFORE_TRANSLATE, "ja",
+          "en", translate::TranslateErrors::NONE, false);
 #endif
       break;
     }
@@ -356,18 +355,19 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
       break;
 
     case IBD::TAB_SHARING_INFOBAR_DELEGATE:
-      TabSharingInfoBarDelegate::Create(GetInfoBarManager(), u"example.com",
-                                        u"application.com", false, true,
-                                        absl::nullopt, nullptr);
+      TabSharingInfoBarDelegate::Create(
+          /*infobar_manager=*/GetInfoBarManager(),
+          /*shared_tab_name=*/u"example.com", /*app_name=*/u"application.com",
+          /*shared_tab=*/false,
+          /*share_this_tab_instead_button_state=*/
+          TabSharingInfoBarDelegate::ButtonState::ENABLED,
+          /*focus_target=*/absl::nullopt, /*ui=*/nullptr);
       break;
 
     default:
+      ADD_FAILURE() << "Unhandled infobar " << name;
       break;
   }
-}
-
-IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_hung_plugin) {
-  ShowAndVerifyUi();
 }
 
 IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_dev_tools) {
@@ -392,7 +392,8 @@ IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_nacl) {
 }
 #endif
 
-IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_outdated_plugin) {
+#if BUILDFLAG(ENABLE_PLUGINS)
+IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_hung_plugin) {
   ShowAndVerifyUi();
 }
 
@@ -403,12 +404,13 @@ IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_reload_plugin) {
 IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_plugin_observer) {
   ShowAndVerifyUi();
 }
+#endif  // BUILDFLAG(ENABLE_PLUGINS)
 
 IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_file_access_disabled) {
   ShowAndVerifyUi();
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_keystone_promotion) {
   ShowAndVerifyUi();
 }
@@ -444,7 +446,7 @@ IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_page_info) {
   ShowAndVerifyUi();
 }
 
-#if !defined(USE_AURA) && !defined(OS_MAC)
+#if !defined(USE_AURA) && !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_translate) {
   ShowAndVerifyUi();
 }

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,10 @@
 
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "components/safe_browsing/core/browser/db/allowlist_checker_client.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/password_protection/password_protection_service_base.h"
@@ -17,7 +19,6 @@
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"
 #include "components/safe_browsing/core/common/utils.h"
 #include "components/url_formatter/url_formatter.h"
-#include "net/base/escape.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
@@ -54,7 +55,7 @@ std::vector<std::string> GetMatchingDomains(
             url_formatter::kFormatUrlOmitHTTPS |
             url_formatter::kFormatUrlOmitTrivialSubdomains |
             url_formatter::kFormatUrlTrimAfterHost,
-        net::UnescapeRule::SPACES, nullptr, nullptr, nullptr));
+        base::UnescapeRule::SPACES, nullptr, nullptr, nullptr));
     matching_domains.push_back(std::move(domain));
   }
   return base::flat_set<std::string>(std::move(matching_domains)).extract();
@@ -110,17 +111,6 @@ PasswordProtectionRequest::~PasswordProtectionRequest() = default;
 
 void PasswordProtectionRequest::Start() {
   DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
-  if (trigger_type_ == LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE) {
-    base::UmaHistogramExactLinear(
-        "PasswordProtection.OnFocus.UserPopulationStart",
-        password_protection_service_->GetUserPopulationPref(),
-        ChromeUserPopulation::UserPopulation_MAX + 1);
-  } else {
-    base::UmaHistogramExactLinear(
-        "PasswordProtection.PasswordEntry.UserPopulationStart",
-        password_protection_service_->GetUserPopulationPref(),
-        ChromeUserPopulation::UserPopulation_MAX + 1);
-  }
   CheckAllowlist();
 }
 
@@ -248,9 +238,9 @@ void PasswordProtectionRequest::FillRequestProto(bool is_sampled_ping) {
   }
 #endif  // BUILDFLAG(FULL_SAFE_BROWSING)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   SetReferringAppInfo();
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   switch (trigger_type_) {
     case LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE: {
@@ -274,7 +264,6 @@ void PasswordProtectionRequest::FillRequestProto(bool is_sampled_ping) {
           request_proto_->mutable_password_reuse_event();
       bool matches_signin_password =
           password_type_ == PasswordType::PRIMARY_ACCOUNT_PASSWORD;
-      reuse_event->set_is_chrome_signin_password(matches_signin_password);
       reuse_event->set_reused_password_type(
           password_protection_service_->GetPasswordProtectionReusedPasswordType(
               password_type_));
@@ -293,15 +282,12 @@ void PasswordProtectionRequest::FillRequestProto(bool is_sampled_ping) {
             break;
         }
       }
-      if (base::FeatureList::IsEnabled(
-              safe_browsing::kPasswordProtectionForSignedInUsers)) {
-        ReusedPasswordAccountType password_account_type_to_add =
-            password_protection_service_
-                ->GetPasswordProtectionReusedPasswordAccountType(password_type_,
-                                                                 username_);
-        *reuse_event->mutable_reused_password_account_type() =
-            password_account_type_to_add;
-      }
+      ReusedPasswordAccountType password_account_type_to_add =
+          password_protection_service_
+              ->GetPasswordProtectionReusedPasswordAccountType(password_type_,
+                                                               username_);
+      *reuse_event->mutable_reused_password_account_type() =
+          password_account_type_to_add;
       break;
     }
     default:
@@ -333,19 +319,6 @@ bool PasswordProtectionRequest::IsVisualFeaturesEnabled() {
 
 void PasswordProtectionRequest::SendRequest() {
   DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
-
-  if (trigger_type_ == LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE) {
-    base::UmaHistogramExactLinear(
-        "PasswordProtection.OnFocus.UserPopulationOnPing",
-        password_protection_service_->GetUserPopulationPref(),
-        ChromeUserPopulation::UserPopulation_MAX + 1);
-  } else {
-    base::UmaHistogramExactLinear(
-        "PasswordProtection.PasswordEntry.UserPopulationOnPing",
-        password_protection_service_->GetUserPopulationPref(),
-        ChromeUserPopulation::UserPopulation_MAX + 1);
-  }
-
   if (password_protection_service_->CanGetAccessToken() &&
       password_protection_service_->token_fetcher()) {
     password_protection_service_->token_fetcher()->Start(
@@ -444,8 +417,7 @@ void PasswordProtectionRequest::OnURLLoaderComplete(
   const bool is_success = url_loader_->NetError() == net::OK;
 
   LogPasswordProtectionNetworkResponseAndDuration(
-      is_success ? response_code : url_loader_->NetError(),
-      request_start_time_);
+      response_code, url_loader_->NetError(), request_start_time_);
 
   if (!is_success || net::HTTP_OK != response_code) {
     Finish(RequestOutcome::FETCH_FAILED, nullptr);

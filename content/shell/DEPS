@@ -31,6 +31,7 @@ include_rules = [
   #   1) it's an example browser
   #   2) it's not linked into the content library
   "+components/embedder_support",
+  "+components/custom_handlers",
   "+components/crash",
   "+components/download",
   "+components/keyed_service/core",

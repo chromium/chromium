@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,7 @@ class SessionRestoreJavaScriptFeature : public base::SupportsUserData::Data,
                                         public JavaScriptFeature {
  public:
   // Returns the SessionRestoreJavaScriptFeature associated with
-  // |browser_state|, creating one if necessary. |browser_state| must not be
+  // `browser_state`, creating one if necessary. `browser_state` must not be
   // null.
   static SessionRestoreJavaScriptFeature* FromBrowserState(
       BrowserState* browser_state);

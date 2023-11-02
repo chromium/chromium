@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,10 @@
 namespace ash {
 namespace ambient {
 namespace prefs {
+
+// Integer pref corresponding to the ambient mode theme that the user has
+// selected (see AmbientAnimationTheme enum).
+ASH_PUBLIC_EXPORT extern const char kAmbientAnimationTheme[];
 
 // A GUID for backdrop client.
 ASH_PUBLIC_EXPORT extern const char kAmbientBackdropClientId[];
@@ -31,6 +35,10 @@ ASH_PUBLIC_EXPORT extern const char
 // settings.
 ASH_PUBLIC_EXPORT extern const char
     kAmbientModeLockScreenBackgroundTimeoutSeconds[];
+
+// Float pref for the playback speed of the animation in ambient mode. Currently
+// does not apply to slideshow mode. Not displayed to the user in settings.
+ASH_PUBLIC_EXPORT extern const char kAmbientModeAnimationPlaybackSpeed[];
 
 // Integer pref for the interval in seconds to refresh photos. Not displayed to
 // the user in settings.

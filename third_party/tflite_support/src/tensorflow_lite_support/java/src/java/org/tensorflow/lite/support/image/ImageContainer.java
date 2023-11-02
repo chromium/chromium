@@ -16,6 +16,7 @@ limitations under the License.
 package org.tensorflow.lite.support.image;
 
 import android.graphics.Bitmap;
+import android.media.Image;
 
 import org.tensorflow.lite.DataType;
 import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
@@ -49,6 +50,9 @@ interface ImageContainer {
      * underlying image format.
      */
     TensorBuffer getTensorBuffer(DataType dataType);
+
+    /** Gets the {@link Image} representation of the underlying image format. */
+    Image getMediaImage();
 
     /** Returns the color space type of the image. */
     ColorSpaceType getColorSpaceType();

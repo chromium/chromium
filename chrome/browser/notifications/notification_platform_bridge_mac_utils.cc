@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,8 @@
 #include "chrome/browser/notifications/notification_platform_bridge.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/notifications/notification_constants.h"
 #include "chrome/common/notifications/notification_operation.h"
@@ -212,5 +214,6 @@ mac_notifications::mojom::NotificationPtr CreateMacNotification(
                                    requires_attribution),
       std::move(body), notification.renotify(),
       notification.should_show_settings_button(), std::move(buttons),
-      notification.icon().AsImageSkia());
+      notification.icon().Rasterize(
+          ThemeServiceFactory::GetForProfile(profile)->GetColorProvider()));
 }

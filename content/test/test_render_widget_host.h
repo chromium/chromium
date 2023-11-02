@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,7 +19,7 @@ class TestRenderWidgetHost : public RenderWidgetHostImpl {
   static std::unique_ptr<RenderWidgetHostImpl> Create(
       FrameTree* frame_tree,
       RenderWidgetHostDelegate* delegate,
-      AgentSchedulingGroupHost& agent_scheduling_group,
+      base::SafeRef<SiteInstanceGroup> site_instance_group,
       int32_t routing_id,
       bool hidden);
   ~TestRenderWidgetHost() override;
@@ -37,7 +37,7 @@ class TestRenderWidgetHost : public RenderWidgetHostImpl {
  private:
   TestRenderWidgetHost(FrameTree* frame_tree,
                        RenderWidgetHostDelegate* delegate,
-                       AgentSchedulingGroupHost& agent_scheduling_group,
+                       base::SafeRef<SiteInstanceGroup> site_instance_group,
                        int32_t routing_id,
                        bool hidden);
   MockWidgetInputHandler input_handler_;

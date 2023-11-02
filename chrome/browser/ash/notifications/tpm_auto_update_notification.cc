@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/bind.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
@@ -27,6 +28,7 @@ void ShowAutoUpdateNotification(
   std::u16string title, text;
   std::string notification_id;
   bool pinned = false;
+  auto catalog_name = NotificationCatalogName::kNone;
 
   switch (notification_type) {
     case TpmAutoUpdateUserNotification::kNone:
@@ -38,6 +40,7 @@ void ShowAutoUpdateNotification(
       text = l10n_util::GetStringUTF16(
           IDS_TPM_AUTO_UPDATE_PLANNED_NOTIFICATION_MESSAGE);
       notification_id = kTPMPlannedAutoUpdateNotificationId;
+      catalog_name = NotificationCatalogName::kTPMAutoUpdatePlanned;
       break;
     case TpmAutoUpdateUserNotification::kOnNextReboot:
       title = l10n_util::GetStringUTF16(
@@ -46,6 +49,7 @@ void ShowAutoUpdateNotification(
           IDS_TPM_AUTO_UPDATE_REBOOT_NOTIFICATION_MESSAGE);
       notification_id = kTPMAutoUpdateOnRebootNotificationId;
       pinned = true;
+      catalog_name = NotificationCatalogName::kTPMAutoUpdateOnReboot;
       break;
   }
 
@@ -54,7 +58,8 @@ void ShowAutoUpdateNotification(
           message_center::NOTIFICATION_TYPE_SIMPLE, notification_id, title,
           text, std::u16string() /*display_source*/, GURL(),
           message_center::NotifierId(
-              message_center::NotifierType::SYSTEM_COMPONENT, notification_id),
+              message_center::NotifierType::SYSTEM_COMPONENT, notification_id,
+              catalog_name),
           message_center::RichNotificationData(),
           new message_center::NotificationDelegate(),
           vector_icons::kBusinessIcon,

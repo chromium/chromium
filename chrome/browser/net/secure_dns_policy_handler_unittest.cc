@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -101,7 +101,7 @@ TEST_F(SecureDnsPolicyHandlerTest, EmptyModePolicyValue) {
   auto expected_error =
       l10n_util::GetStringUTF16(IDS_POLICY_NOT_SPECIFIED_ERROR);
   ASSERT_EQ(errors().size(), 1U);
-  EXPECT_EQ(errors().begin()->second, expected_error);
+  EXPECT_EQ(errors().begin()->second.message, expected_error);
 
   // Pref should not be set.
   const base::Value* pref_value;
@@ -117,7 +117,7 @@ TEST_F(SecureDnsPolicyHandlerTest, InvalidModePolicyValue) {
   auto expected_error =
       l10n_util::GetStringUTF16(IDS_POLICY_INVALID_SECURE_DNS_MODE_ERROR);
   EXPECT_EQ(errors().size(), 1U);
-  EXPECT_EQ(errors().begin()->second, expected_error);
+  EXPECT_EQ(errors().begin()->second.message, expected_error);
 
   // Pref should not be set.
   const base::Value* pref_value;
@@ -135,7 +135,7 @@ TEST_F(SecureDnsPolicyHandlerTest, InvalidModePolicyType) {
       IDS_POLICY_TYPE_ERROR,
       base::ASCIIToUTF16(base::Value::GetTypeName(base::Value::Type::STRING)));
   ASSERT_EQ(errors().size(), 1U);
-  EXPECT_EQ(errors().begin()->second, expected_error);
+  EXPECT_EQ(errors().begin()->second.message, expected_error);
 
   // Pref should not be set.
   const base::Value* pref_value;
@@ -208,7 +208,7 @@ TEST_F(SecureDnsPolicyHandlerTest, InvalidTemplatesPolicyValue) {
   auto expected_error =
       l10n_util::GetStringUTF16(IDS_POLICY_SECURE_DNS_TEMPLATES_INVALID_ERROR);
   EXPECT_EQ(errors().size(), 1U);
-  EXPECT_EQ(errors().begin()->second, expected_error);
+  EXPECT_EQ(errors().begin()->second.message, expected_error);
 
   // Pref should be set.
   std::string templates;
@@ -233,7 +233,7 @@ TEST_F(SecureDnsPolicyHandlerTest, InvalidTemplatesPolicyType) {
       IDS_POLICY_TYPE_ERROR,
       base::ASCIIToUTF16(base::Value::GetTypeName(base::Value::Type::STRING)));
   ASSERT_EQ(errors().size(), 1U);
-  EXPECT_EQ(errors().begin()->second, expected_error);
+  EXPECT_EQ(errors().begin()->second.message, expected_error);
 
   // Pref should not be set.
   const base::Value* pref_value;
@@ -254,7 +254,7 @@ TEST_F(SecureDnsPolicyHandlerTest, IrrelevantTemplatesPolicyWithModeOff) {
   auto expected_error = l10n_util::GetStringUTF16(
       IDS_POLICY_SECURE_DNS_TEMPLATES_IRRELEVANT_MODE_ERROR);
   ASSERT_EQ(errors().size(), 1U);
-  EXPECT_EQ(errors().begin()->second, expected_error);
+  EXPECT_EQ(errors().begin()->second.message, expected_error);
 
   // Pref should be set.
   std::string templates;
@@ -276,7 +276,7 @@ TEST_F(SecureDnsPolicyHandlerTest, TemplatesWithModeNotSet) {
   auto expected_error = l10n_util::GetStringUTF16(
       IDS_POLICY_SECURE_DNS_TEMPLATES_UNSET_MODE_ERROR);
   ASSERT_EQ(errors().size(), 1U);
-  EXPECT_EQ(errors().begin()->second, expected_error);
+  EXPECT_EQ(errors().begin()->second.message, expected_error);
 
   // Pref should be set.
   std::string templates;
@@ -302,8 +302,8 @@ TEST_F(SecureDnsPolicyHandlerTest, TemplatesWithModeInvalid) {
       IDS_POLICY_SECURE_DNS_TEMPLATES_INVALID_MODE_ERROR);
   ASSERT_EQ(errors().size(), 2U);
   auto it = errors().begin();
-  EXPECT_EQ(it++->second, expected_error1);
-  EXPECT_EQ(it->second, expected_error2);
+  EXPECT_EQ(it++->second.message, expected_error1);
+  EXPECT_EQ(it->second.message, expected_error2);
 
   // Pref should be set.
   std::string templates;
@@ -324,7 +324,7 @@ TEST_F(SecureDnsPolicyHandlerTest, TemplatesNotSetWithModeSecure) {
       IDS_POLICY_SECURE_DNS_TEMPLATES_NOT_SPECIFIED_ERROR);
   ASSERT_EQ(errors().size(), 1U);
   auto it = errors().begin();
-  EXPECT_EQ(it->second, expected_error);
+  EXPECT_EQ(it->second.message, expected_error);
 
   // Pref should be set.
   std::string templates;
@@ -346,7 +346,7 @@ TEST_F(SecureDnsPolicyHandlerTest, TemplatesNotStringWithModeSecure) {
       IDS_POLICY_SECURE_DNS_TEMPLATES_NOT_SPECIFIED_ERROR);
   ASSERT_EQ(errors().size(), 1U);
   auto it = errors().begin();
-  EXPECT_EQ(it->second, expected_error);
+  EXPECT_EQ(it->second.message, expected_error);
 
   // Pref should be set.
   std::string templates;
@@ -368,7 +368,7 @@ TEST_F(SecureDnsPolicyHandlerTest, TemplatesEmptyWithModeSecure) {
       IDS_POLICY_SECURE_DNS_TEMPLATES_NOT_SPECIFIED_ERROR);
   ASSERT_EQ(errors().size(), 1U);
   auto it = errors().begin();
-  EXPECT_EQ(it->second, expected_error);
+  EXPECT_EQ(it->second.message, expected_error);
 
   // Pref should be set.
   std::string templates;

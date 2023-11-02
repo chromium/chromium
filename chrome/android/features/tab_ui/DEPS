@@ -18,4 +18,5 @@ include_rules = [
  "+components/search_engines/android/java/src/org/chromium/components/search_engines",
  "+components/module_installer",
  "+content/public/android/java/src/org/chromium/content_public/browser",
+ "+content/public/android/java/src/org/chromium/content_public/common",
 ]

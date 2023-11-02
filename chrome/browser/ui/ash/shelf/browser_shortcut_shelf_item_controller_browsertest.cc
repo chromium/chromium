@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -70,6 +70,21 @@ IN_PROC_BROWSER_TEST_F(BrowserShortcutShelfItemControllerTest, AppMenu) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser1, GURL("data:text/html,<title>2</title>")));
   EXPECT_EQ(1, browser1->tab_strip_model()->active_index());
+  items = GetAppMenuItems(controller, ui::EF_NONE);
+  ASSERT_EQ(2U, items.size());
+  EXPECT_EQ(u"0", items[0].title);
+  EXPECT_EQ(u"2", items[1].title);
+
+  // Setting the window title will update the app menu item.
+  browser1->SetWindowUserTitle("foobar");
+  items = GetAppMenuItems(controller, ui::EF_NONE);
+  ASSERT_EQ(2U, items.size());
+  EXPECT_EQ(u"0", items[0].title);
+  EXPECT_EQ(u"foobar", items[1].title);
+
+  // If the window title is cleared, the active content title will be set again
+  // as the menu item title.
+  browser1->SetWindowUserTitle("");
   items = GetAppMenuItems(controller, ui::EF_NONE);
   ASSERT_EQ(2U, items.size());
   EXPECT_EQ(u"0", items[0].title);

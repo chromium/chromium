@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,6 +41,7 @@ const int kBoundaryCharSearchLimit = 200;
 enum class ShouldOfferResult {
   kSuccess = 0,
   kBlockListed = 2,
+  kUnableToInvokeJavaScript = 3,
   kSelectionEmpty = 6,
   kUserEditing = 7,
   kTextInputNotFound = 8,
@@ -48,7 +49,6 @@ enum class ShouldOfferResult {
 
   // Deprecated. Do not reuse, change, or remove these values.
   kRejectedInJavaScript = 1,
-  kUnableToInvokeJavaScript = 3,
   kWebLayerTaskTimeout = 4,
   kDispatchedTimeout = 5,
 
@@ -83,15 +83,6 @@ LinkToTextTabHelper::LinkToTextTabHelper(web::WebState* web_state)
 }
 
 LinkToTextTabHelper::~LinkToTextTabHelper() {}
-
-// static
-void LinkToTextTabHelper::CreateForWebState(web::WebState* web_state) {
-  DCHECK(web_state);
-  if (!FromWebState(web_state)) {
-    web_state->SetUserData(
-        UserDataKey(), base::WrapUnique(new LinkToTextTabHelper(web_state)));
-  }
-}
 
 bool LinkToTextTabHelper::ShouldOffer() {
   if (!shared_highlighting::ShouldOfferLinkToText(
@@ -142,9 +133,7 @@ bool LinkToTextTabHelper::ShouldOffer() {
 
 void LinkToTextTabHelper::GetLinkToText(
     base::OnceCallback<void(LinkToTextResponse*)> callback) {
-  GetJSFeature()->GetLinkToText(
-      web_state_, web_state_->GetWebFramesManager()->GetMainWebFrame(),
-      std::move(callback));
+  GetJSFeature()->GetLinkToText(web_state_, std::move(callback));
 }
 
 void LinkToTextTabHelper::SetJSFeatureForTesting(

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -183,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(PageImplTest, RenderFrameHostDeleted) {
   // Test needs rfh_a to be deleted after navigating but it doesn't happen with
   // BackForwardCache as it is stored in cache.
   DisableBackForwardCacheForTesting(web_contents(),
-                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   // 3) Navigate to B, deleting rfh_a.
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
@@ -316,8 +316,8 @@ IN_PROC_BROWSER_TEST_F(PageImplTest, PageObjectBeforeAndAfterCommit) {
   RenderFrameHostImpl* pending_rfh =
       root->render_manager()->speculative_frame_host();
   NavigationRequest* navigation_request = root->navigation_request();
-  EXPECT_EQ(navigation_request->associated_site_instance_type(),
-            NavigationRequest::AssociatedSiteInstanceType::SPECULATIVE);
+  EXPECT_EQ(navigation_request->associated_rfh_type(),
+            NavigationRequest::AssociatedRenderFrameHostType::SPECULATIVE);
   EXPECT_TRUE(pending_rfh);
 
   // 3) While there is a speculative RenderFrameHost in the root FrameTreeNode,
@@ -333,7 +333,8 @@ IN_PROC_BROWSER_TEST_F(PageImplTest, PageObjectBeforeAndAfterCommit) {
 
   // 4) Let the navigation finish and make sure it has succeeded.
   manager.WaitForNavigationFinished();
-  EXPECT_EQ(url_b, web_contents()->GetMainFrame()->GetLastCommittedURL());
+  EXPECT_EQ(url_b,
+            web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
 
   RenderFrameHostImpl* rfh_b = primary_main_frame_host();
   EXPECT_EQ(pending_rfh, rfh_b);
@@ -356,6 +357,7 @@ IN_PROC_BROWSER_TEST_F(PageImplTest, PrimaryPageChangedOnCrossSiteNavigation) {
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
   Page* invoked_page;
   GURL last_committed_url;
+  int http_status_code;
 
   // 2) Invoke MockWebContentsObserver to check the values inside
   // PrimaryPageChanged(Page&) match the ones inside
@@ -366,23 +368,31 @@ IN_PROC_BROWSER_TEST_F(PageImplTest, PrimaryPageChangedOnCrossSiteNavigation) {
 
   {
     // 3) Stores the values of page invoked on PrimaryPageChanged and
-    // LastCommittedUrl to match with ones inside DidFinishNavigation and page
-    // after navigation.
+    // LastCommittedUrl, HttpStatusCode to match with ones inside
+    // DidFinishNavigation and page after navigation.
     EXPECT_CALL(web_contents_observer, PrimaryPageChanged(testing::_))
-        .WillOnce(testing::Invoke(
-            [&invoked_page, &last_committed_url, url_b, this](Page& page) {
-              invoked_page = &page;
-              last_committed_url = page.GetMainDocument().GetLastCommittedURL();
-              EXPECT_EQ(last_committed_url, url_b);
-              EXPECT_TRUE(page.IsPrimary());
-              EXPECT_EQ(&web_contents()->GetPrimaryPage(), &page);
-            }));
+        .WillOnce(testing::Invoke([&invoked_page, &last_committed_url,
+                                   &http_status_code, url_b, this](Page& page) {
+          invoked_page = &page;
+          last_committed_url = page.GetMainDocument().GetLastCommittedURL();
+          http_status_code = web_contents()
+                                 ->GetController()
+                                 .GetVisibleEntry()
+                                 ->GetHttpStatusCode();
+          EXPECT_EQ(last_committed_url, url_b);
+          EXPECT_TRUE(page.IsPrimary());
+          EXPECT_EQ(&web_contents()->GetPrimaryPage(), &page);
+        }));
 
     EXPECT_CALL(web_contents_observer, DidFinishNavigation(testing::_))
-        .WillOnce(testing::Invoke(
-            [&last_committed_url](NavigationHandle* navigation_handle) {
-              EXPECT_EQ(navigation_handle->GetURL(), last_committed_url);
-            }));
+        .WillOnce(testing::Invoke([&last_committed_url, &http_status_code](
+                                      NavigationHandle* navigation_handle) {
+          EXPECT_EQ(navigation_handle->GetURL(), last_committed_url);
+          EXPECT_EQ(http_status_code, navigation_handle->GetWebContents()
+                                          ->GetController()
+                                          .GetVisibleEntry()
+                                          ->GetHttpStatusCode());
+        }));
   }
 
   // 4) Navigate to B. PrimaryPageChanged and DidFinishNavigation should be
@@ -416,8 +426,8 @@ IN_PROC_BROWSER_TEST_F(PageImplTest, SameSiteSameRenderFrameHostNavigation) {
             main_rfh_a1.get() != main_rfh_a2.get());
   PageImpl& page_a2 = main_rfh_a2.get()->GetPage();
 
-  if (IsSameSiteBackForwardCacheEnabled()) {
-    // 3a) With same-site bfcache enabled, both Page objects should be in
+  if (IsBackForwardCacheEnabled()) {
+    // 3a) With back/forward cache enabled, both Page objects should be in
     // existence at the same time.
     EXPECT_TRUE(page_a1);
     EXPECT_NE(page_a1.get(), &page_a2);
@@ -496,7 +506,7 @@ IN_PROC_BROWSER_TEST_F(PageImplTest, SameSiteNavigationAfterFrameCrash) {
       renderer_process, RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
   renderer_process->Shutdown(0);
   crash_observer.Wait();
-  EXPECT_TRUE(&(web_contents()->GetMainFrame()->GetPage()));
+  EXPECT_TRUE(&(web_contents()->GetPrimaryMainFrame()->GetPage()));
   EXPECT_TRUE(data);
 
   // 3) Navigate same-site to A2. This will result in invoking

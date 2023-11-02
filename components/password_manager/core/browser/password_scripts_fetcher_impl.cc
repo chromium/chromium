@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -49,14 +49,15 @@ base::flat_set<ParsingResult> ParseDomainSpecificParamaters(
   if (!script_config.is_dict())
     return {ParsingResult::kInvalidJson};
 
-  const base::Value* supported_domains_list =
-      script_config.FindListKey("domains");
-  if (!supported_domains_list || !supported_domains_list->is_list())
+  const base::Value::List* supported_domains_list =
+      script_config.GetDict().FindList("domains");
+  if (!supported_domains_list)
     return {ParsingResult::kInvalidJson};
 
   base::flat_set<ParsingResult> warnings;
 
-  const std::string* min_version = script_config.FindStringKey("min_version");
+  const std::string* min_version =
+      script_config.GetDict().FindString("min_version");
   base::Version version;
   if (!min_version) {
     return {ParsingResult::kInvalidJson};
@@ -67,7 +68,7 @@ base::flat_set<ParsingResult> ParseDomainSpecificParamaters(
     }
   }
 
-  for (const base::Value& domain : supported_domains_list->GetList()) {
+  for (const base::Value& domain : *supported_domains_list) {
     if (!domain.is_string()) {
       warnings.insert(ParsingResult::kInvalidJson);
       continue;
@@ -78,6 +79,12 @@ base::flat_set<ParsingResult> ParseDomainSpecificParamaters(
       warnings.insert(ParsingResult::kInvalidUrl);
       continue;
     }
+
+    if (url.SchemeIs(url::kHttpScheme)) {
+      // Http schemes are not supported.
+      continue;
+    }
+
     supported_domains.insert(std::make_pair(url::Origin::Create(url), version));
   }
 
@@ -96,17 +103,21 @@ constexpr base::FeatureParam<std::string> kScriptsListUrlParam{
     kDefaultChangePasswordScriptsListUrl};
 
 PasswordScriptsFetcherImpl::PasswordScriptsFetcherImpl(
+    bool is_supervised_user,
     const base::Version& version,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : PasswordScriptsFetcherImpl(version,
+    : PasswordScriptsFetcherImpl(is_supervised_user,
+                                 version,
                                  std::move(url_loader_factory),
                                  kScriptsListUrlParam.Get()) {}
 
 PasswordScriptsFetcherImpl::PasswordScriptsFetcherImpl(
+    bool is_supervised_user,
     const base::Version& version,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::string scripts_list_url)
-    : version_(version),
+    : is_supervised_user_(is_supervised_user),
+      version_(version),
       scripts_list_url_(std::move(scripts_list_url)),
       url_loader_factory_(std::move(url_loader_factory)) {}
 
@@ -160,6 +171,10 @@ void PasswordScriptsFetcherImpl::FetchScriptAvailability(
 
 bool PasswordScriptsFetcherImpl::IsScriptAvailable(
     const url::Origin& origin) const {
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kForceEnablePasswordDomainCapabilities)) {
+    return true;
+  }
   const auto& it = password_change_domains_.find(origin);
   if (it == password_change_domains_.end()) {
     return false;
@@ -247,18 +262,17 @@ base::flat_set<ParsingResult> PasswordScriptsFetcherImpl::ParseResponse(
   if (!response_body)
     return {ParsingResult::kNoResponse};
 
-  base::JSONReader::ValueWithError data =
-      base::JSONReader::ReadAndReturnValueWithError(*response_body);
+  auto data = base::JSONReader::ReadAndReturnValueWithError(*response_body);
 
-  if (data.value == absl::nullopt) {
-    DVLOG(1) << "Parse error: " << data.error_message;
+  if (!data.has_value()) {
+    DVLOG(1) << "Parse error: " << data.error().message;
     return {ParsingResult::kInvalidJson};
   }
-  if (!data.value->is_dict())
+  if (!data->is_dict())
     return {ParsingResult::kInvalidJson};
 
   base::flat_set<ParsingResult> warnings;
-  for (const auto script_it : data.value->DictItems()) {
+  for (const auto script_it : data->DictItems()) {
     // |script_it.first| is an identifier (normally, a domain name, e.g.
     // example.com) that we don't care about.
     // |script_it.second| provides domain-specific parameters.
@@ -271,6 +285,12 @@ base::flat_set<ParsingResult> PasswordScriptsFetcherImpl::ParseResponse(
 }
 
 bool PasswordScriptsFetcherImpl::IsCacheStale() const {
+  // For supervised users, we always simulate a fresh cache to avoid fetching
+  // scripts.
+  if (is_supervised_user_) {
+    return false;
+  }
+
   static const base::TimeDelta kCacheTimeout(
       base::Minutes(kCacheTimeoutInMinutes));
   return last_fetch_timestamp_.is_null() ||
@@ -283,6 +303,26 @@ void PasswordScriptsFetcherImpl::RunResponseCallback(
   DCHECK(!url_loader_);     // Fetching is not running.
   DCHECK(!IsCacheStale());  // Cache is ready.
   std::move(callback).Run(IsScriptAvailable(origin));
+}
+
+base::Value::Dict PasswordScriptsFetcherImpl::GetDebugInformationForInternals()
+    const {
+  base::Value::Dict result;
+  result.Set("engine", "gstatic lookup");
+  result.Set("script_list_url", scripts_list_url_);
+  return result;
+}
+
+base::Value::List PasswordScriptsFetcherImpl::GetCacheEntries() const {
+  base::Value::List cache_entries;
+
+  for (const auto& [origin, version] : password_change_domains_) {
+    base::Value::Dict entry;
+    entry.Set("url", origin.Serialize());
+    cache_entries.Append(std::move(entry));
+  }
+
+  return cache_entries;
 }
 
 }  // namespace password_manager

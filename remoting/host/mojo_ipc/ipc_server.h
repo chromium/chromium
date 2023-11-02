@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define REMOTING_HOST_MOJO_IPC_IPC_SERVER_H_
 
 #include "base/callback.h"
+#include "base/process/process_handle.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
 namespace remoting {
@@ -35,6 +36,9 @@ class IpcServer {
   // Call this method to learn which receiver has received the incoming IPC or
   // which receiver is being disconnected.
   virtual mojo::ReceiverId current_receiver() const = 0;
+
+  // Call this method to learn the peer process' PID.
+  virtual base::ProcessId current_peer_pid() const = 0;
 };
 
 }  // namespace remoting

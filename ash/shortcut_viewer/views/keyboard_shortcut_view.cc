@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,23 +17,25 @@
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/public/cpp/shelf_item.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/search_box/search_box_view_base.h"
 #include "ash/shell.h"
 #include "ash/shortcut_viewer/keyboard_shortcut_viewer_metadata.h"
 #include "ash/shortcut_viewer/strings/grit/shortcut_viewer_strings.h"
-#include "ash/shortcut_viewer/vector_icons/vector_icons.h"
 #include "ash/shortcut_viewer/views/keyboard_shortcut_item_list_view.h"
 #include "ash/shortcut_viewer/views/keyboard_shortcut_item_view.h"
 #include "ash/shortcut_viewer/views/ksv_search_box_view.h"
+#include "ash/style/ash_color_provider.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/bind.h"
 #include "base/i18n/string_search.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "chromeos/ui/base/window_properties.h"
+#include "chromeos/ui/wm/features.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -41,11 +43,10 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/events/keyboard_layout_util.h"
-#include "ui/compositor/compositor.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/gfx/presentation_feedback.h"
 #include "ui/views/accessibility/accessibility_paint_checks.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
@@ -58,6 +59,7 @@
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/style/typography.h"
 #include "ui/views/widget/widget.h"
 
 namespace keyboard_shortcut_viewer {
@@ -68,28 +70,78 @@ KeyboardShortcutView* g_ksv_view = nullptr;
 
 constexpr absl::nullopt_t kAllCategories = absl::nullopt;
 
+// Light mode colors:
+constexpr SkColor kSearchIllustrationIconColorLight =
+    SkColorSetARGB(0xFF, 0xDA, 0xDC, 0xE0);
+constexpr SkColor kSearchIllustrationTextColorLight =
+    SkColorSetARGB(0xFF, 0x20, 0x21, 0x24);
+
+constexpr SkColor kSearchIllustrationIconColorDark =
+    SkColorSetARGB(0xFF, 0x3C, 0x40, 0x43);
+
+// Custom No Results image view to handle color theme changes.
+class KSVNoResultsImageView : public views::ImageView {
+ public:
+  KSVNoResultsImageView()
+      : dark_light_mode_controller_(ash::DarkLightModeControllerImpl::Get()) {}
+
+  KSVNoResultsImageView(const KSVNoResultsImageView&) = delete;
+  KSVNoResultsImageView operator=(const KSVNoResultsImageView&) = delete;
+
+  ~KSVNoResultsImageView() override = default;
+
+ protected:
+  void OnThemeChanged() override {
+    ImageView::OnThemeChanged();
+
+    if (ash::features::IsDarkLightModeEnabled() &&
+        dark_light_mode_controller_->IsDarkModeEnabled()) {
+      SetImage(gfx::CreateVectorIcon(ash::kKsvSearchNoResultDarkIcon,
+                                     kSearchIllustrationIconColorDark));
+    } else {
+      SetImage(gfx::CreateVectorIcon(ash::kKsvSearchNoResultLightIcon,
+                                     kSearchIllustrationIconColorLight));
+    }
+  }
+
+ private:
+  ash::DarkLightModeControllerImpl* const dark_light_mode_controller_;
+};
+
 // Creates the no search result view.
 std::unique_ptr<views::View> CreateNoSearchResultView() {
   constexpr int kSearchIllustrationIconSize = 150;
-  constexpr SkColor kSearchIllustrationIconColor =
-      SkColorSetARGB(0xFF, 0xDA, 0xDC, 0xE0);
+  auto* color_provider = ash::ColorProvider::Get();
+
+  // TODO(ashleydp): Clean up check when flag removed.
+  SkColor kSearchIllustrationIconColor = kSearchIllustrationIconColorLight;
+  if (ash::features::IsDarkLightModeEnabled()) {
+    kSearchIllustrationIconColor = color_provider->GetContentLayerColor(
+        ash::ColorProvider::ContentLayerType::kIconColorPrimary);
+  }
 
   auto illustration_view = std::make_unique<views::View>();
   constexpr int kTopPadding = 98;
   views::BoxLayout* layout =
       illustration_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kVertical,
-          gfx::Insets(kTopPadding, 0, 0, 0)));
+          gfx::Insets::TLBR(kTopPadding, 0, 0, 0)));
   layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kStart);
-  auto image_view = std::make_unique<views::ImageView>();
-  image_view->SetImage(gfx::CreateVectorIcon(kKsvSearchNoResultIcon,
+  auto image_view = std::make_unique<KSVNoResultsImageView>();
+  image_view->SetImage(gfx::CreateVectorIcon(ash::kKsvSearchNoResultLightIcon,
                                              kSearchIllustrationIconColor));
   image_view->SetImageSize(
       gfx::Size(kSearchIllustrationIconSize, kSearchIllustrationIconSize));
   illustration_view->AddChildView(std::move(image_view));
 
-  constexpr SkColor kSearchIllustrationTextColor =
-      SkColorSetARGB(0xFF, 0x20, 0x21, 0x24);
+  SkColor kSearchIllustrationTextColor = kSearchIllustrationTextColorLight;
+
+  // TODO(ashleydp): Clean up check when flag removed.
+  if (ash::features::IsDarkLightModeEnabled()) {
+    kSearchIllustrationTextColor = color_provider->GetContentLayerColor(
+        ash::ColorProvider::ContentLayerType::kTextColorPrimary);
+  }
+
   auto text = std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(IDS_KSV_SEARCH_NO_RESULT));
   text->SetEnabledColor(kSearchIllustrationTextColor);
@@ -115,6 +167,14 @@ class ShortcutsListScrollView : public views::ScrollView {
   void OnFocus() override {
     SetHasFocusIndicator(true);
     views::ScrollView::OnFocus();
+  }
+
+  void OnThemeChanged() override {
+    views::ScrollView::OnThemeChanged();
+
+    SetBackgroundColor(ash::features::IsDarkLightModeEnabled()
+                           ? GetColorProvider()->GetColor(cros_tokens::kBgColor)
+                           : SK_ColorWHITE);
   }
 
   void OnBlur() override { SetHasFocusIndicator(false); }
@@ -154,7 +214,7 @@ bool ShouldExcludeItem(const ash::KeyboardShortcutItem& item) {
     case IDS_KSV_DESCRIPTION_PRIVACY_SCREEN_TOGGLE:
       return !ash::Shell::Get()->privacy_screen_controller()->IsSupported();
     case IDS_KSV_DESCRIPTION_FLOAT:
-      return !ash::features::IsWindowControlMenuEnabled();
+      return !chromeos::wm::features::IsFloatWindowEnabled();
   }
 
   return false;
@@ -175,7 +235,6 @@ views::Widget* KeyboardShortcutView::Toggle(aura::Window* context) {
     else
       g_ksv_view->GetWidget()->Activate();
   } else {
-    const base::TimeTicks start_time = base::TimeTicks::Now();
     TRACE_EVENT0("shortcut_viewer", "CreateWidget");
     base::RecordAction(
         base::UserMetricsAction("KeyboardShortcutViewer.CreateWindow"));
@@ -193,8 +252,7 @@ views::Widget* KeyboardShortcutView::Toggle(aura::Window* context) {
 
     // Set frame view Active and Inactive colors, both are SK_ColorWHITE.
     aura::Window* window = g_ksv_view->GetWidget()->GetNativeWindow();
-    window->SetProperty(chromeos::kFrameActiveColorKey, SK_ColorWHITE);
-    window->SetProperty(chromeos::kFrameInactiveColorKey, SK_ColorWHITE);
+    g_ksv_view->UpdateActiveAndInactiveFrameColor();
 
     // Set shelf icon.
     const ash::ShelfID shelf_id(ash::kInternalAppIdKeyboardShortcutViewer);
@@ -228,14 +286,6 @@ views::Widget* KeyboardShortcutView::Toggle(aura::Window* context) {
     g_ksv_view->did_first_paint_ = false;
     g_ksv_view->GetWidget()->Show();
     g_ksv_view->search_box_view_->search_box()->RequestFocus();
-
-    widget->GetCompositor()->RequestPresentationTimeForNextFrame(base::BindOnce(
-        [](base::TimeTicks start_time,
-           const gfx::PresentationFeedback& feedback) {
-          UMA_HISTOGRAM_TIMES("Keyboard.ShortcutViewer.StartupTime",
-                              feedback.timestamp - start_time);
-        },
-        start_time));
   }
   return g_ksv_view->GetWidget();
 }
@@ -318,11 +368,21 @@ void KeyboardShortcutView::OnPaint(gfx::Canvas* canvas) {
                                 weak_factory_.GetWeakPtr(), kAllCategories));
 }
 
-void KeyboardShortcutView::QueryChanged(ash::SearchBoxViewBase* sender) {
-  const bool query_empty = sender->IsSearchBoxTrimmedQueryEmpty();
+void KeyboardShortcutView::OnThemeChanged() {
+  views::WidgetDelegateView::OnThemeChanged();
+
+  UpdateBackgroundColor();
+  UpdateActiveAndInactiveFrameColor();
+}
+
+void KeyboardShortcutView::QueryChanged(const std::u16string& query) {
+  std::u16string trimmed_query;
+  base::TrimWhitespace(query, base::TRIM_ALL, &trimmed_query);
+
+  const bool query_empty = trimmed_query.empty();
   if (is_search_box_empty_ != query_empty) {
     is_search_box_empty_ = query_empty;
-    UpdateViewsLayout(/*is_search_box_active=*/true);
+    UpdateViewsLayout();
   }
 
   debounce_timer_.Stop();
@@ -333,35 +393,9 @@ void KeyboardShortcutView::QueryChanged(ash::SearchBoxViewBase* sender) {
   // TODO(wutao): This timeout value is chosen based on subjective search
   // latency tests on Minnie. Objective method or UMA is desired.
   constexpr base::TimeDelta kTimeOut(base::Milliseconds(250));
-  debounce_timer_.Start(
-      FROM_HERE, kTimeOut,
-      base::BindOnce(&KeyboardShortcutView::ShowSearchResults,
-                     base::Unretained(this), sender->search_box()->GetText()));
-}
-
-void KeyboardShortcutView::BackButtonPressed() {
-  search_box_view_->ClearSearch();
-  search_box_view_->SetSearchBoxActive(false, ui::ET_UNKNOWN);
-}
-
-void KeyboardShortcutView::CloseButtonPressed() {
-  // After clicking search box close button focus the search box text field.
-  search_box_view_->search_box()->RequestFocus();
-  search_box_view_->ClearSearch();
-}
-
-void KeyboardShortcutView::ActiveChanged(ash::SearchBoxViewBase* sender) {
-  const bool is_search_box_active = sender->is_search_box_active();
-  is_search_box_empty_ = sender->IsSearchBoxTrimmedQueryEmpty();
-  if (is_search_box_active) {
-    base::RecordAction(
-        base::UserMetricsAction("KeyboardShortcutViewer.Search"));
-  }
-  UpdateViewsLayout(is_search_box_active);
-}
-
-bool KeyboardShortcutView::CanSelectSearchResults() {
-  return true;
+  debounce_timer_.Start(FROM_HERE, kTimeOut,
+                        base::BindOnce(&KeyboardShortcutView::ShowSearchResults,
+                                       base::Unretained(this), query));
 }
 
 KeyboardShortcutView::KeyboardShortcutView() {
@@ -371,19 +405,15 @@ KeyboardShortcutView::KeyboardShortcutView() {
   SetCanMinimize(true);
   SetShowTitle(false);
 
-  // Default background is transparent.
-  SetBackground(views::CreateSolidBackground(SK_ColorWHITE));
   InitViews();
 }
 
 void KeyboardShortcutView::InitViews() {
   TRACE_EVENT0("shortcut_viewer", "InitViews");
   // Init search box view.
-  auto search_box_view = std::make_unique<KSVSearchBoxView>(this);
-  ash::SearchBoxViewBase::InitParams params;
-  params.show_close_button_when_active = false;
-  params.create_background = true;
-  search_box_view->Init(params);
+  auto search_box_view = std::make_unique<KSVSearchBoxView>(base::BindRepeating(
+      &KeyboardShortcutView::QueryChanged, base::Unretained(this)));
+  search_box_view->Initialize();
   search_box_view_ = AddChildView(std::move(search_box_view));
 
   // Init no search result illustration view.
@@ -504,15 +534,11 @@ void KeyboardShortcutView::InitCategoriesTabbedPane(
   tab_contents->InvalidateLayout();
 }
 
-void KeyboardShortcutView::UpdateViewsLayout(bool is_search_box_active) {
-  // 1. Search box is not active: show |categories_tabbed_pane_| and focus on
+void KeyboardShortcutView::UpdateViewsLayout() {
+  // 1. Search box is empty: show |categories_tabbed_pane_| and focus on
   //    active tab.
-  // 2. Search box is active and empty: show |categories_tabbed_pane_| but focus
-  //    on search box.
-  // 3. Search box is not empty, show |search_results_container_|. Focus is on
-  //    search box.
-  const bool should_show_search_results =
-      is_search_box_active && !is_search_box_empty_;
+  // 2. Search box is not empty, show |search_results_container_|.
+  const bool should_show_search_results = !is_search_box_empty_;
   if (!should_show_search_results) {
     // Remove all child views, including horizontal separator lines, to prepare
     // for showing search results next time.
@@ -571,7 +597,7 @@ void KeyboardShortcutView::ShowSearchResults(
             item_view->description_label_view();
         // Clear previous styles.
         description_label_view->ClearStyleRanges();
-        style.text_style = ash::AshTextStyle::STYLE_EMPHASIZED;
+        style.text_style = views::style::STYLE_EMPHASIZED;
         description_label_view->AddStyleRange(
             gfx::Range(match_index, match_index + match_length), style);
         // Apply new styles to highlight matched search query.
@@ -594,8 +620,8 @@ void KeyboardShortcutView::ShowSearchResults(
     // the top of the |search_results_container_|.
     constexpr int kTopPadding = -16;
     constexpr int kHorizontalPadding = 128;
-    found_items_list_view->SetBorder(views::CreateEmptyBorder(
-        gfx::Insets(kTopPadding, kHorizontalPadding, 0, kHorizontalPadding)));
+    found_items_list_view->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
+        kTopPadding, kHorizontalPadding, 0, kHorizontalPadding)));
     search_container_content_view =
         CreateScrollView(std::move(found_items_list_view)).release();
   }
@@ -634,6 +660,26 @@ KSVSearchBoxView* KeyboardShortcutView::GetSearchBoxViewForTesting() {
 const std::vector<KeyboardShortcutItemView*>&
 KeyboardShortcutView::GetFoundShortcutItemsForTesting() const {
   return found_shortcut_items_;
+}
+
+void KeyboardShortcutView::UpdateBackgroundColor() {
+  const SkColor background_color =
+      ash::features::IsDarkLightModeEnabled()
+          ? GetColorProvider()->GetColor(cros_tokens::kBgColor)
+          : SK_ColorWHITE;
+  SetBackground(views::CreateSolidBackground(background_color));
+}
+
+void KeyboardShortcutView::UpdateActiveAndInactiveFrameColor() {
+  aura::Window* window = g_ksv_view->GetWidget()->GetNativeWindow();
+  window->SetProperty(chromeos::kTrackDefaultFrameColors,
+                      /*value=*/false);
+  const SkColor background_color =
+      ash::features::IsDarkLightModeEnabled()
+          ? GetColorProvider()->GetColor(cros_tokens::kBgColor)
+          : SK_ColorWHITE;
+  window->SetProperty(chromeos::kFrameActiveColorKey, background_color);
+  window->SetProperty(chromeos::kFrameInactiveColorKey, background_color);
 }
 
 }  // namespace keyboard_shortcut_viewer

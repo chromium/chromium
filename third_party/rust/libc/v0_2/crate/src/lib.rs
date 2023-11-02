@@ -13,7 +13,9 @@
     improper_ctypes,
     // This lint is renamed but we run CI for old stable rustc so should be here.
     redundant_semicolon,
-    redundant_semicolons
+    redundant_semicolons,
+    unused_macros,
+    unused_macro_rules,
 )]
 #![cfg_attr(libc_deny_warnings, deny(warnings))]
 // Attributes needed when building as part of the standard library
@@ -24,11 +26,7 @@
 #![deny(missing_copy_implementations, safe_packed_borrows)]
 #![cfg_attr(not(feature = "rustc-dep-of-std"), no_std)]
 #![cfg_attr(feature = "rustc-dep-of-std", no_core)]
-#![cfg_attr(
-    any(feature = "rustc-dep-of-std", target_os = "redox"),
-    feature(static_nobundle)
-)]
-#![cfg_attr(libc_const_extern_fn, feature(const_extern_fn))]
+#![cfg_attr(libc_const_extern_fn_unstable, feature(const_extern_fn))]
 
 #[macro_use]
 mod macros;
@@ -63,7 +61,7 @@ cfg_if! {
         use core::clone::Clone;
         #[doc(hidden)]
         #[allow(unused_imports)]
-        use core::marker::Copy;
+        use core::marker::{Copy, Send, Sync};
         #[doc(hidden)]
         #[allow(unused_imports)]
         use core::option::Option;
@@ -85,7 +83,7 @@ cfg_if! {
         pub use core::clone::Clone;
         #[doc(hidden)]
         #[allow(unused_imports)]
-        pub use core::marker::Copy;
+        pub use core::marker::{Copy, Send, Sync};
         #[doc(hidden)]
         #[allow(unused_imports)]
         pub use core::option::Option;

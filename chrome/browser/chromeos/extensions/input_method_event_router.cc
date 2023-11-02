@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,13 +44,13 @@ void ExtensionInputMethodEventRouter::InputMethodChanged(
   if (!router->HasEventListener(OnChanged::kEventName))
     return;
 
-  std::unique_ptr<base::ListValue> args(new base::ListValue());
-  args->Append(manager->GetActiveIMEState()->GetCurrentInputMethod().id());
+  base::Value::List args;
+  args.Append(manager->GetActiveIMEState()->GetCurrentInputMethod().id());
 
   // The router will only send the event to extensions that are listening.
   auto event = std::make_unique<extensions::Event>(
       extensions::events::INPUT_METHOD_PRIVATE_ON_CHANGED,
-      OnChanged::kEventName, std::move(*args).TakeList(), context_);
+      OnChanged::kEventName, std::move(args), context_);
   router->BroadcastEvent(std::move(event));
 }
 

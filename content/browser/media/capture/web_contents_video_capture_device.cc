@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,18 +18,21 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "media/capture/video_capture_types.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "ui/base/layout.h"
 
 namespace content {
 
 WebContentsVideoCaptureDevice::WebContentsVideoCaptureDevice(
-    const GlobalRenderFrameHostId& id)
-    : tracker_(new WebContentsFrameTracker(AsWeakPtr(), cursor_controller())) {
-  GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &WebContentsFrameTracker::SetWebContentsAndContextFromRoutingId,
-          tracker_->AsWeakPtr(), id));
+    const GlobalRenderFrameHostId& id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  tracker_ = base::SequenceBound<WebContentsFrameTracker>(
+      GetUIThreadTaskRunner({}), base::ThreadTaskRunnerHandle::Get(),
+      weak_ptr_factory_.GetWeakPtr(), cursor_controller());
+  tracker_
+      .AsyncCall(
+          &WebContentsFrameTracker::SetWebContentsAndContextFromRoutingId)
+      .WithArgs(id);
 }
 
 WebContentsVideoCaptureDevice::~WebContentsVideoCaptureDevice() = default;
@@ -49,40 +52,58 @@ WebContentsVideoCaptureDevice::Create(const std::string& device_id) {
 
 void WebContentsVideoCaptureDevice::Crop(
     const base::Token& crop_id,
+    uint32_t crop_version,
     base::OnceCallback<void(media::mojom::CropRequestResult)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(callback);
 
-  GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](const base::Token& crop_id,
-             base::OnceCallback<void(media::mojom::CropRequestResult)> callback,
-             base::WeakPtr<WebContentsFrameTracker> tracker) {
-            if (!tracker) {
-              std::move(callback).Run(
-                  media::mojom::CropRequestResult::kErrorGeneric);
-              return;
-            }
-            tracker->Crop(crop_id, std::move(callback));
-          },
-          crop_id, std::move(callback), tracker_->AsWeakPtr()));
+  tracker_.AsyncCall(&WebContentsFrameTracker::Crop)
+      .WithArgs(crop_id, crop_version,
+                mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+                    std::move(callback),
+                    media::mojom::CropRequestResult::kErrorGeneric));
+}
+
+void WebContentsVideoCaptureDevice::OnFrameCaptured(
+    media::mojom::VideoBufferHandlePtr data,
+    media::mojom::VideoFrameInfoPtr info,
+    const gfx::Rect& content_rect,
+    mojo::PendingRemote<viz::mojom::FrameSinkVideoConsumerFrameCallbacks>
+        callbacks) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (info->metadata.source_size.has_value()) {
+    const gfx::Size new_size = *info->metadata.source_size;
+    // Only update the captured content size when the size changes. See also
+    // the comment in WebContentsFrameTracker::SetCapturedContentSize which
+    // expects that behavior.
+    if (new_size != content_size_) {
+      tracker_.AsyncCall(&WebContentsFrameTracker::SetCapturedContentSize)
+          .WithArgs(new_size);
+      content_size_ = new_size;
+    }
+  }
+
+  FrameSinkVideoCaptureDevice::OnFrameCaptured(
+      std::move(data), std::move(info), content_rect, std::move(callbacks));
 }
 
 WebContentsVideoCaptureDevice::WebContentsVideoCaptureDevice() = default;
 
 void WebContentsVideoCaptureDevice::WillStart() {
-  GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&WebContentsFrameTracker::WillStartCapturingWebContents,
-                     tracker_->AsWeakPtr(),
-                     capture_params().SuggestConstraints().max_frame_size));
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  tracker_.AsyncCall(&WebContentsFrameTracker::WillStartCapturingWebContents)
+      .WithArgs(capture_params().SuggestConstraints().max_frame_size);
 }
 
 void WebContentsVideoCaptureDevice::DidStop() {
-  GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&WebContentsFrameTracker::DidStopCapturingWebContents,
-                     tracker_->AsWeakPtr()));
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  tracker_.AsyncCall(&WebContentsFrameTracker::DidStopCapturingWebContents);
+
+  // Currently, the video capture device is effectively a single-use object, so
+  // resetting capture_size_ isn't strictly necessary, but it helps ensure that
+  // SetCapturedContentSize works consistently in case the objects get reused in
+  // the future.
+  content_size_.SetSize(0, 0);
 }
 
 }  // namespace content

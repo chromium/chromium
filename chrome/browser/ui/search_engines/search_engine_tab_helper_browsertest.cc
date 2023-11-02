@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,13 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -53,7 +55,7 @@ class TemplateURLServiceObserver {
 
  private:
   void StopLoop() { runner_->Quit(); }
-  base::RunLoop* runner_;
+  raw_ptr<base::RunLoop> runner_;
   base::CallbackListSubscription template_url_subscription_;
 };
 
@@ -200,7 +202,7 @@ class SearchEngineTabHelperPrerenderingBrowserTest
         std::move(owned_web_contents), true);
     if (preexisting_tab) {
       browser()->tab_strip_model()->CloseWebContentsAt(
-          0, TabStripModel::CLOSE_NONE);
+          0, TabCloseTypes::CLOSE_NONE);
     }
   }
 
@@ -242,10 +244,13 @@ IN_PROC_BROWSER_TEST_F(SearchEngineTabHelperPrerenderingBrowserTest,
   EXPECT_FALSE(host_observer.was_activated());
   // Submits a search query.
   content::TestNavigationObserver observer(GetWebContents());
-  EXPECT_EQ(nullptr, content::EvalJs(GetWebContents()->GetMainFrame(),
+  EXPECT_EQ(nullptr, content::EvalJs(GetWebContents()->GetPrimaryMainFrame(),
                                      "submit_form();"));
   observer.Wait();
 
   // A new template url is added on the primary page.
   EXPECT_NE(template_urls, url_service->GetTemplateURLs());
 }
+
+// TODO(http://crbug.com/1270519): Add a test for prerendering scenarios there
+// the OpenSearchDescriptionDocumentHandler mojo calls are deferred.

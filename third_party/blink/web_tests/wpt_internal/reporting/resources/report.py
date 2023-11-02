@@ -52,6 +52,18 @@ def main(request, response):
             (b"Access-Control-Allow-Headers", b"Content-Type"),
         ], u"CORS allowed"
 
+    # Delete reports as requested
+    if request.method == u'POST':
+        body = json.loads(request.body)
+        if (isinstance(body, dict) and "op" in body):
+            if body["op"] == "DELETE" and "reportIDs" in body:
+                with request.server.stash.lock:
+                    for key in body["reportIDs"]:
+                        request.server.stash.take(key=key)
+                return "reports cleared"
+            response.status = 400
+            return "op parameter value not recognized"
+
     if b"reportID" in request.GET:
         key = request.GET.first(b"reportID")
     elif b"endpoint" in request.GET:
@@ -90,10 +102,9 @@ def main(request, response):
                                             u"\"None\"")) + u"}"
 
         if op == b"retrieve_count":
-            return [(b"Content-Type", b"application/json")], json.dumps({
-                u'report_count':
-                str(retrieve_from_stash(request, count_key, timeout, 0))
-            })
+            return [(b"Content-Type", b"application/json")
+                    ], u"{ \"report_count\": %s }" % retrieve_from_stash(
+                        request, count_key, timeout, 0)
 
         response.status = 400
         return "op parameter value not recognized."

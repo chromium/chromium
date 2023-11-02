@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
@@ -19,10 +18,10 @@
 #include "chrome/common/chrome_switches.h"
 #include "ui/base/ui_base_paths.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include <stdio.h>
 #include <unistd.h>
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -57,7 +56,7 @@ class SimpleConsole {
   static SimpleConsole* Create();
 };
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 namespace {
 
 // Wrapper for the windows console operating in high-level IO mode.
@@ -91,7 +90,7 @@ class WinConsole : public SimpleConsole {
     SetColor(SimpleConsole::DEFAULT);
     Write(u"Press [enter] to continue\n");
     wchar_t buf[256];
-    DWORD read = base::size(buf);
+    DWORD read = std::size(buf);
     ::ReadConsoleW(std_in_, buf, read, &read, NULL);
   }
 
@@ -132,7 +131,7 @@ class WinConsole : public SimpleConsole {
 
 SimpleConsole* SimpleConsole::Create() { return new WinConsole(); }
 
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
 namespace {
 
 class PosixConsole : public SimpleConsole {
@@ -189,7 +188,7 @@ class PosixConsole : public SimpleConsole {
 
 SimpleConsole* SimpleConsole::Create() { return new PosixConsole(); }
 
-#else  // !defined(OS_WIN) && !defined(OS_POSIX)
+#else  // !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_POSIX)
 SimpleConsole* SimpleConsole::Create() { return NULL; }
 #endif
 

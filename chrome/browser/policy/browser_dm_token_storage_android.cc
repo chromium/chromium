@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,6 +27,11 @@ bool StoreDmTokenInSharedPreferences(const std::string& dm_token) {
   return true;
 }
 
+bool DeleteDmTokenFromSharedPreferences() {
+  android::DeleteDmTokenFromSharedPreferences();
+  return true;
+}
+
 }  // namespace
 
 BrowserDMTokenStorageAndroid::BrowserDMTokenStorageAndroid()
@@ -52,8 +57,9 @@ std::string BrowserDMTokenStorageAndroid::InitEnrollmentToken() {
       g_browser_process->browser_policy_connector()
           ->GetPolicyService()
           ->GetPolicies(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
-          .GetValue(key::kCloudManagementEnrollmentToken);
-  return value && value->is_string() ? value->GetString() : std::string();
+          .GetValue(key::kCloudManagementEnrollmentToken,
+                    base::Value::Type::STRING);
+  return value ? value->GetString() : std::string();
 }
 
 std::string BrowserDMTokenStorageAndroid::InitDMToken() {
@@ -68,6 +74,11 @@ BrowserDMTokenStorage::StoreTask BrowserDMTokenStorageAndroid::SaveDMTokenTask(
     const std::string& token,
     const std::string& client_id) {
   return base::BindOnce(&StoreDmTokenInSharedPreferences, token);
+}
+
+BrowserDMTokenStorage::StoreTask
+BrowserDMTokenStorageAndroid::DeleteDMTokenTask(const std::string& client_id) {
+  return base::BindOnce(&DeleteDmTokenFromSharedPreferences);
 }
 
 scoped_refptr<base::TaskRunner>

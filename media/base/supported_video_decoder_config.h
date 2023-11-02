@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,6 +36,18 @@ struct MEDIA_EXPORT SupportedVideoDecoderConfig {
 
   // Returns true if and only if |config| is a supported config.
   bool Matches(const VideoDecoderConfig& config) const;
+
+  bool operator==(const SupportedVideoDecoderConfig& other) const {
+    return profile_min == other.profile_min &&
+           profile_max == other.profile_max &&
+           coded_size_min == other.coded_size_min &&
+           coded_size_max == other.coded_size_max &&
+           allow_encrypted == other.allow_encrypted &&
+           require_encrypted == other.require_encrypted;
+  }
+  bool operator!=(const SupportedVideoDecoderConfig& other) const {
+    return !(*this == other);
+  }
 
   // Range of VideoCodecProfiles to match, inclusive.
   VideoCodecProfile profile_min = VIDEO_CODEC_PROFILE_UNKNOWN;

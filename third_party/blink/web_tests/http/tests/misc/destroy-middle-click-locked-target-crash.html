@@ -52,12 +52,12 @@
          return (iframeLoadCount === 2);
        });
 
-      // Peform mouse event on root frame. If the bug repros, renderer will
+      // Perform mouse event on root frame. If the bug repros, renderer will
       // crash.
       await mouseMoveTo(10, 10);
       t.done();
     });
-  });
+  }, "This test passes if it doesn't crash.");
 
   window.addEventListener("message", handleMessage);
 

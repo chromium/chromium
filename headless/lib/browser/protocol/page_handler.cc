@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -49,7 +49,6 @@ void PageHandler::PrintToPDF(Maybe<bool> landscape,
                              Maybe<double> margin_left,
                              Maybe<double> margin_right,
                              Maybe<String> page_ranges,
-                             Maybe<bool> ignore_invalid_page_ranges,
                              Maybe<String> header_template,
                              Maybe<String> footer_template,
                              Maybe<bool> prefer_css_page_size,
@@ -65,7 +64,7 @@ void PageHandler::PrintToPDF(Maybe<bool> landscape,
 
   absl::variant<printing::mojom::PrintPagesParamsPtr, std::string>
       print_pages_params = print_to_pdf::GetPrintPagesParams(
-          web_contents_->GetMainFrame()->GetLastCommittedURL(),
+          web_contents_->GetPrimaryMainFrame()->GetLastCommittedURL(),
           OptionalFromMaybe<bool>(landscape),
           OptionalFromMaybe<bool>(display_header_footer),
           OptionalFromMaybe<bool>(print_background),
@@ -90,10 +89,9 @@ void PageHandler::PrintToPDF(Maybe<bool> landscape,
 
   bool return_as_stream = transfer_mode.fromMaybe("") ==
                           Page::PrintToPDF::TransferModeEnum::ReturnAsStream;
-  print_to_pdf::PdfPrintManager::FromWebContents(web_contents_.get())
+  HeadlessPrintManager::FromWebContents(web_contents_.get())
       ->PrintToPdf(
-          web_contents_->GetMainFrame(), page_ranges.fromMaybe(""),
-          ignore_invalid_page_ranges.fromMaybe(false),
+          web_contents_->GetPrimaryMainFrame(), page_ranges.fromMaybe(""),
           std::move(absl::get<printing::mojom::PrintPagesParamsPtr>(
               print_pages_params)),
           base::BindOnce(&PageHandler::PDFCreated, weak_factory_.GetWeakPtr(),
@@ -105,15 +103,14 @@ void PageHandler::PrintToPDF(Maybe<bool> landscape,
 }
 
 #if BUILDFLAG(ENABLE_PRINTING)
-void PageHandler::PDFCreated(
-    bool return_as_stream,
-    std::unique_ptr<PrintToPDFCallback> callback,
-    print_to_pdf::PdfPrintManager::PrintResult print_result,
-    scoped_refptr<base::RefCountedMemory> data) {
+void PageHandler::PDFCreated(bool return_as_stream,
+                             std::unique_ptr<PrintToPDFCallback> callback,
+                             print_to_pdf::PdfPrintResult print_result,
+                             scoped_refptr<base::RefCountedMemory> data) {
   std::unique_ptr<base::DictionaryValue> response;
-  if (print_result != print_to_pdf::PdfPrintManager::PRINT_SUCCESS) {
+  if (print_result != print_to_pdf::PdfPrintResult::kPrintSuccess) {
     callback->sendFailure(Response::ServerError(
-        print_to_pdf::PdfPrintManager::PrintResultToString(print_result)));
+        print_to_pdf::PdfPrintResultToString(print_result)));
     return;
   }
 

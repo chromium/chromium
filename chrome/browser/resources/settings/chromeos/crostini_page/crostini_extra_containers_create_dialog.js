@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,16 +7,18 @@
  * enabling a user to create a new container.
  */
 
-import '//resources/cr_elements/cr_button/cr_button.m.js';
-import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
-import '//resources/cr_elements/cr_input/cr_input.m.js';
-import '//resources/cr_elements/md_select_css.m.js';
-import '../../settings_shared_css.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import 'chrome://resources/cr_elements/md_select.css.js';
+import '../../settings_shared.css.js';
 
-import {assert} from '//resources/js/assert.m.js';
-import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ContainerId, CrostiniBrowserProxy, CrostiniBrowserProxyImpl, DEFAULT_CROSTINI_CONTAINER, DEFAULT_CROSTINI_VM} from './crostini_browser_proxy.js';
+import {ContainerInfo} from '../guest_os/guest_os_browser_proxy.js';
+
+import {CrostiniBrowserProxy, CrostiniBrowserProxyImpl, DEFAULT_CROSTINI_CONTAINER, DEFAULT_CROSTINI_VM} from './crostini_browser_proxy.js';
 
 /** @polymer */
 class ExtraContainersCreateDialog extends PolymerElement {
@@ -30,6 +32,23 @@ class ExtraContainersCreateDialog extends PolymerElement {
 
   static get properties() {
     return {
+      /**
+       * List of container properties that are already stored in settings.
+       * @type {!Array<!ContainerInfo>}
+       */
+      allContainers: {
+        type: Array,
+        value: [],
+      },
+
+      /**
+       * @private {string}
+       */
+      containerFile_: {
+        type: String,
+        value: '',
+      },
+
       /**
        * @private {string}
        */
@@ -69,14 +88,43 @@ class ExtraContainersCreateDialog extends PolymerElement {
         type: Boolean,
         value: false,
       },
+
+      /**
+       * @private {boolean}
+       */
+      disableCreateButton_: {
+        type: Boolean,
+        value: true,
+      },
+
+      /**
+       * @private {boolean}
+       */
+      validContainerName_: {
+        type: Boolean,
+        value: true,
+      },
+
+      /**
+       * @private {string}
+       */
+      containerNameError_: {
+        type: String,
+        value: '',
+      },
     };
+  }
+
+  constructor() {
+    super();
+
+    /** @private {!CrostiniBrowserProxy} */
+    this.browserProxy_ = CrostiniBrowserProxyImpl.getInstance();
   }
 
   /** @override */
   connectedCallback() {
     super.connectedCallback();
-    assert(this.isValidVmName(this.inputVmName_));
-    assert(this.isValidContainerName(this.inputContainerName_));
     this.$.dialog.showModal();
     this.$.vmNameInput.value = this.inputVmName_;
     this.$.containerNameInput.value = this.inputContainerName_;
@@ -94,12 +142,29 @@ class ExtraContainersCreateDialog extends PolymerElement {
     return true;
   }
 
-  /**
-   * @param {string} input The container name to verify.
-   * @return {?boolean} if the input string is a valid vm name.
-   */
-  isValidContainerName(input) {
-    return input !== DEFAULT_CROSTINI_CONTAINER;
+  /** @private */
+  validateNames_() {
+    this.inputVmName_ = this.$.vmNameInput.value.length === 0 ?
+        DEFAULT_CROSTINI_VM :
+        this.$.vmNameInput.value;
+    this.inputContainerName_ = this.$.containerNameInput.value;
+
+    this.containerNameError_ = '';
+    if (this.inputContainerName_.length === 0) {
+      this.containerNameError_ = loadTimeData.getString(
+          'crostiniExtraContainersCreateDialogEmptyContainerNameError');
+    } else if (
+        this.inputContainerName_ === DEFAULT_CROSTINI_CONTAINER ||
+        this.allContainers.find(
+            e => e.id.vm_name === this.inputVmName_ &&
+                e.id.container_name === this.inputContainerName_)) {
+      this.containerNameError_ = loadTimeData.getString(
+          'crostiniExtraContainersCreateDialogContainerExistsError');
+    }
+
+    this.validContainerName_ = this.containerNameError_.length === 0;
+    this.disableCreateButton_ =
+        !this.validContainerName_ || !this.isValidVmName(this.inputVmName_);
   }
 
   /** @private */
@@ -109,22 +174,24 @@ class ExtraContainersCreateDialog extends PolymerElement {
 
   /** @private */
   onCreateTap_() {
-    if (this.isValidVmName(this.$.vmNameInput.value)) {
-      this.inputVmName_ = this.$.vmNameInput.value;
-    }
-    if (this.isValidContainerName(this.$.containerNameInput.value)) {
-      this.inputContainerName_ = this.$.containerNameInput.value;
-    }
     if (this.advancedToggleExpanded_) {
       // These elements are part of a dom-if on |advancedToggleExpanded_|
       this.inputImageServer_ = this.$.imageServerInput.value;
       this.inputImageAlias_ = this.$.imageAliasInput.value;
+      this.containerFile_ = this.$.containerFileInput.value;
     }
 
-    CrostiniBrowserProxyImpl.getInstance().createContainer(
+    this.browserProxy_.createContainer(
         {vm_name: this.inputVmName_, container_name: this.inputContainerName_},
-        this.inputImageServer_, this.inputImageAlias_);
+        this.inputImageServer_, this.inputImageAlias_, this.containerFile_);
+
     this.$.dialog.close();
+  }
+
+  /** @private */
+  async onSelectContainerFileClick_() {
+    this.$.containerFileInput.value =
+        await this.browserProxy_.openContainerFileSelector();
   }
 
   /** @private */

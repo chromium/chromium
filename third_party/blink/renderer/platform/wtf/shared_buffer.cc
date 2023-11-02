@@ -191,8 +191,9 @@ SharedBuffer::Iterator SharedBuffer::GetIteratorAtInternal(
     return Iterator(position, this);
 
   return Iterator(
-      SafeCast<uint32_t>(SegmentIndex(position - buffer_.size())),
-      SafeCast<uint32_t>(OffsetInSegment(position - buffer_.size())), this);
+      base::checked_cast<uint32_t>(SegmentIndex(position - buffer_.size())),
+      base::checked_cast<uint32_t>(OffsetInSegment(position - buffer_.size())),
+      this);
 }
 
 bool SharedBuffer::GetBytesInternal(void* dest, size_t dest_size) const {
@@ -229,7 +230,8 @@ SharedBuffer::DeprecatedFlatData::DeprecatedFlatData(
   }
 
   // Merge all segments.
-  flat_buffer_.ReserveInitialCapacity(SafeCast<wtf_size_t>(buffer_->size()));
+  flat_buffer_.ReserveInitialCapacity(
+      base::checked_cast<wtf_size_t>(buffer_->size()));
   for (const auto& span : *buffer_)
     flat_buffer_.Append(span.data(), static_cast<wtf_size_t>(span.size()));
 

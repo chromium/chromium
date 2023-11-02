@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -70,14 +70,24 @@
           "url": {"type": "string", "optional": true, "description": "The URL of the page or frame that opened the connection. If the sender is in an iframe, it will be iframe's URL not the URL of the page which hosts it."},
           "nativeApplication": {"type": "string", "optional": true, "description": "The name of the native application that opened the connection, if any."},
           "tlsChannelId": {"type": "string", "optional": true, "description": "The TLS channel ID of the page or frame that opened the connection, if requested by the extension or app, and if available."},
-        "origin": {"type": "string", "optional": true, "description": "The origin of the page or frame that opened the connection. It can vary from the url property (e.g., about:blank) or can be opaque (e.g., sandboxed iframes). This is useful for identifying if the origin can be trusted if we can't immediately tell from the URL."}
-    }
+          "origin": {"type": "string", "optional": true, "description": "The origin of the page or frame that opened the connection. It can vary from the url property (e.g., about:blank) or can be opaque (e.g., sandboxed iframes). This is useful for identifying if the origin can be trusted if we can't immediately tell from the URL."},
+          "documentId": {"type": "string", "optional": true, "description": "A UUID of the document that opened the connection."},
+          "documentLifecycle": {"type": "string", "optional": true, "description": "The lifecycle the document that opened the connection is in at the time the port was created. Note that the lifecycle state of the document may have changed since port creation."}
+        }
       },
       {
         "id": "PlatformOs",
         "type": "string",
         "description": "The operating system Chrome is running on.",
-        "enum": ["mac", "win", "android", "cros", "linux", "openbsd"]
+        "enum": [
+          "mac",
+          "win",
+          "android",
+          "cros",
+          "linux",
+          "openbsd",
+          "fuchsia"
+        ]
       },
       {
         "id": "PlatformArch",
@@ -152,35 +162,33 @@
         "name": "getBackgroundPage",
         "type": "function",
         "description": "Retrieves the JavaScript 'window' object for the background page running inside the current extension/app. If the background page is an event page, the system will ensure it is loaded before calling the callback. If there is no background page, an error is set.",
-        "parameters": [
-          {
-            "type": "function",
-            "name": "callback",
-            "parameters": [
-              {
-                "name": "backgroundPage",
-                // Note: Only optional because we don't support validation
-                // for custom callbacks.
-                "optional": true,
-                "type": "object",
-                "isInstanceOf": "Window",
-                "additionalProperties": { "type": "any" },
-                "description": "The JavaScript 'window' object for the background page."
-              }
-            ]
-          }
-        ]
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "name": "backgroundPage",
+              // Note: Only optional because we don't support validation
+              // for custom callbacks.
+              "optional": true,
+              "type": "object",
+              "isInstanceOf": "Window",
+              "additionalProperties": { "type": "any" },
+              "description": "The JavaScript 'window' object for the background page."
+            }
+          ]
+        }
       },
       {
         "name": "openOptionsPage",
         "type": "function",
         "description": "<p>Open your Extension's options page, if possible.</p><p>The precise behavior may depend on your manifest's <code><a href=\"optionsV2\">options_ui</a></code> or <code><a href=\"options\">options_page</a></code> key, or what Chrome happens to support at the time. For example, the page may be opened in a new tab, within chrome://extensions, within an App, or it may just focus an open options page. It will never cause the caller page to reload.</p><p>If your Extension does not declare an options page, or Chrome failed to create one for some other reason, the callback will set $(ref:lastError).</p>",
-        "parameters": [{
-          "type": "function",
+        "parameters": [],
+        "returns_async": {
           "name": "callback",
           "parameters": [],
           "optional": true
-        }]
+        }
       },
       {
         "name": "getManifest",
@@ -222,15 +230,14 @@
             "name": "url",
             "maxLength": 255,
             "description": "URL to be opened after the extension is uninstalled. This URL must have an http: or https: scheme. Set an empty string to not open a new tab upon uninstallation."
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "optional": true,
-            "description": "Called when the uninstall URL is set. If the given URL is invalid, $(ref:runtime.lastError) will be set.",
-            "parameters": []
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "description": "Called when the uninstall URL is set. If the given URL is invalid, $(ref:runtime.lastError) will be set.",
+          "parameters": []
+        }
       },
       {
         "name": "reload",
@@ -283,14 +290,14 @@
             "type": "integer",
             "name": "seconds",
             "description": "Time to wait in seconds before rebooting the device, or -1 to cancel a scheduled reboot."
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "description": "A callback to be invoked when a restart request was successfully rescheduled.",
-            "optional": true
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "description": "A callback to be invoked when a restart request was successfully rescheduled.",
+          "parameters": [],
+          "optional": true
+        }
       },
       {
         "name": "connect",
@@ -311,7 +318,6 @@
         ],
         "returns": {
           "$ref": "Port",
-          // TODO(robwu): This description should appear in the documentation, but the docserver does not render it.
           "description": "Port through which messages can be sent and received. The port's $(ref:Port onDisconnect) event is fired if the extension/app does not exist. "
         }
       },
@@ -348,20 +354,19 @@
               "includeTlsChannelId": { "type": "boolean", "optional": true, "description": "Whether the TLS channel ID will be passed into onMessageExternal for processes that are listening for the connection event." }
             },
             "optional": true
-          },
-          {
-            "type": "function",
-            "name": "responseCallback",
-            "optional": true,
-            "parameters": [
-              {
-                "name": "response",
-                "type": "any",
-                "description": "The JSON response object sent by the handler of the message. If an error occurs while connecting to the extension, the callback will be called with no arguments and $(ref:runtime.lastError) will be set to the error message."
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": [
+            {
+              "name": "response",
+              "type": "any",
+              "description": "The JSON response object sent by the handler of the message. If an error occurs while connecting to the extension, the callback will be called with no arguments and $(ref:runtime.lastError) will be set to the error message."
+            }
+          ]
+        }
       },
       {
         "name": "sendNativeMessage",
@@ -381,41 +386,38 @@
             "additionalProperties": {
               "type": "any"
             }
-          },
-          {
-            "type": "function",
-            "name": "responseCallback",
-            "optional": true,
-            "parameters": [
-              {
-                "name": "response",
-                "type": "any",
-                "description": "The response message sent by the native messaging host. If an error occurs while connecting to the native messaging host, the callback will be called with no arguments and $(ref:runtime.lastError) will be set to the error message.",
-                "additionalProperties": {
-                  "type": "any"
-                }
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": [
+            {
+              "name": "response",
+              "type": "any",
+              "description": "The response message sent by the native messaging host. If an error occurs while connecting to the native messaging host, the callback will be called with no arguments and $(ref:runtime.lastError) will be set to the error message.",
+              "additionalProperties": {
+                "type": "any"
+              }
+            }
+          ]
+        }
       },
       {
         "name": "getPlatformInfo",
         "type": "function",
         "description": "Returns information about the current platform.",
-        "parameters": [
-          {
-            "type": "function",
-            "name": "callback",
-            "description": "Called with results",
-            "parameters": [
-              {
-                "name": "platformInfo",
-                "$ref": "PlatformInfo"
-              }
-            ]
-          }
-        ]
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "description": "Called with results",
+          "parameters": [
+            {
+              "name": "platformInfo",
+              "$ref": "PlatformInfo"
+            }
+          ]
+        }
       },
       {
         "name": "getPackageDirectoryEntry",

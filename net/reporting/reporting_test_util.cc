@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,7 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "base/timer/mock_timer.h"
 #include "net/base/isolation_info.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/reporting/reporting_cache.h"
 #include "net/reporting/reporting_context.h"
 #include "net/reporting/reporting_delegate.h"
@@ -28,6 +28,7 @@
 #include "net/reporting/reporting_policy.h"
 #include "net/reporting/reporting_uploader.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -56,8 +57,8 @@ class PendingUploadImpl : public TestReportingUploader::PendingUpload {
   const url::Origin& report_origin() const override { return report_origin_; }
   const GURL& url() const override { return url_; }
   const std::string& json() const override { return json_; }
-  std::unique_ptr<base::Value> GetValue() const override {
-    return base::JSONReader::ReadDeprecated(json_);
+  absl::optional<base::Value> GetValue() const override {
+    return base::JSONReader::Read(json_);
   }
 
   void Complete(ReportingUploader::Outcome outcome) override {
@@ -177,12 +178,13 @@ TestReportingContext::TestReportingContext(
                        TestReportingRandIntCallback(),
                        std::make_unique<TestReportingUploader>(),
                        std::make_unique<TestReportingDelegate>(),
-                       store),
-      delivery_timer_(new base::MockOneShotTimer()),
-      garbage_collection_timer_(new base::MockOneShotTimer()) {
-  garbage_collector()->SetTimerForTesting(
-      base::WrapUnique(garbage_collection_timer_));
-  delivery_agent()->SetTimerForTesting(base::WrapUnique(delivery_timer_));
+                       store) {
+  auto delivery_timer = std::make_unique<base::MockOneShotTimer>();
+  delivery_timer_ = delivery_timer.get();
+  auto garbage_collection_timer = std::make_unique<base::MockOneShotTimer>();
+  garbage_collection_timer_ = garbage_collection_timer.get();
+  garbage_collector()->SetTimerForTesting(std::move(garbage_collection_timer));
+  delivery_agent()->SetTimerForTesting(std::move(delivery_timer));
 }
 
 TestReportingContext::~TestReportingContext() {
@@ -190,7 +192,7 @@ TestReportingContext::~TestReportingContext() {
   garbage_collection_timer_ = nullptr;
 }
 
-ReportingTestBase::ReportingTestBase() : store_(nullptr) {
+ReportingTestBase::ReportingTestBase() {
   // For tests, disable jitter.
   ReportingPolicy policy;
   policy.endpoint_backoff_policy.jitter_factor = 0.0;
@@ -311,14 +313,14 @@ TestReportingService::Report::Report(Report&& other) = default;
 
 TestReportingService::Report::Report(
     const GURL& url,
-    const NetworkIsolationKey& network_isolation_key,
+    const NetworkAnonymizationKey& network_anonymization_key,
     const std::string& user_agent,
     const std::string& group,
     const std::string& type,
     std::unique_ptr<const base::Value> body,
     int depth)
     : url(url),
-      network_isolation_key(network_isolation_key),
+      network_anonymization_key(network_anonymization_key),
       user_agent(user_agent),
       group(group),
       type(type),
@@ -334,26 +336,27 @@ TestReportingService::~TestReportingService() = default;
 void TestReportingService::QueueReport(
     const GURL& url,
     const absl::optional<base::UnguessableToken>& reporting_source,
-    const NetworkIsolationKey& network_isolation_key,
+    const NetworkAnonymizationKey& network_anonymization_key,
     const std::string& user_agent,
     const std::string& group,
     const std::string& type,
-    std::unique_ptr<const base::Value> body,
+    base::Value::Dict body,
     int depth) {
-  reports_.emplace_back(Report(url, network_isolation_key, user_agent, group,
-                               type, std::move(body), depth));
+  reports_.emplace_back(
+      Report(url, network_anonymization_key, user_agent, group, type,
+             std::make_unique<base::Value>(std::move(body)), depth));
 }
 
 void TestReportingService::ProcessReportToHeader(
     const url::Origin& origin,
-    const NetworkIsolationKey& network_isolation_key,
+    const NetworkAnonymizationKey& network_anonymization_key,
     const std::string& header_value) {
   NOTREACHED();
 }
 
 void TestReportingService::RemoveBrowsingData(
     uint64_t data_type_mask,
-    const base::RepeatingCallback<bool(const GURL&)>& origin_filter) {
+    const base::RepeatingCallback<bool(const url::Origin&)>& origin_filter) {
   NOTREACHED();
 }
 
@@ -376,6 +379,12 @@ ReportingContext* TestReportingService::GetContextForTesting() const {
 std::vector<const ReportingReport*> TestReportingService::GetReports() const {
   NOTREACHED();
   return std::vector<const ReportingReport*>();
+}
+
+base::flat_map<url::Origin, std::vector<ReportingEndpoint>>
+TestReportingService::GetV1ReportingEndpointsByOrigin() const {
+  NOTREACHED();
+  return base::flat_map<url::Origin, std::vector<ReportingEndpoint>>();
 }
 
 void TestReportingService::AddReportingCacheObserver(

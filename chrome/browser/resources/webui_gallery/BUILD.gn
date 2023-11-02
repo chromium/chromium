@@ -1,0 +1,92 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//tools/grit/grit_rule.gni")
+import("//tools/polymer/html_to_wrapper.gni")
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+import("webui_gallery.gni")
+
+assert(!is_android)
+
+grit("resources") {
+  # These arguments are needed since the grd is generated at build time.
+  enable_input_discovery_for_gn_analyze = false
+  source = "$target_gen_dir/resources.grd"
+  deps = [ ":build_grd" ]
+
+  outputs = [
+    "grit/webui_gallery_resources.h",
+    "grit/webui_gallery_resources_map.cc",
+    "grit/webui_gallery_resources_map.h",
+    "webui_gallery_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chrome"
+}
+
+html_to_wrapper("html_wrapper_files") {
+  in_files = html_files
+}
+
+html_to_wrapper("html_wrapper_files_native") {
+  in_files = html_files_native
+  template = "native"
+}
+
+copy("copy_ts_files") {
+  sources = ts_files
+  outputs = [ "$target_gen_dir/{{source_target_relative}}" ]
+}
+
+ts_library("build_ts") {
+  root_dir = target_gen_dir
+  out_dir = "$target_gen_dir/tsc"
+  tsconfig_base = "tsconfig_base.json"
+  in_files = ts_files + html_wrapper_files + html_wrapper_files_native
+  deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
+  ]
+  extra_deps = [
+    ":copy_ts_files",
+    ":html_wrapper_files",
+    ":html_wrapper_files_native",
+  ]
+}
+
+generate_grd("build_grd") {
+  grd_prefix = "webui_gallery"
+  out_grd = "$target_gen_dir/resources.grd"
+
+  input_files = [
+    "demos/buttons_demo.html",
+    "demos/card/index.html",
+    "demos/cr_a11y_announcer/index.html",
+    "demos/cr_action_menu/index.html",
+    "demos/cr_checkbox_demo.html",
+    "demos/cr_dialog/index.html",
+    "demos/cr_icons/index.html",
+    "demos/cr_input/index.html",
+    "demos/cr_radio_demo.html",
+    "demos/cr_slider/index.html",
+    "demos/cr_tab_box/index.html",
+    "demos/cr_tabs/index.html",
+    "demos/cr_toast/index.html",
+    "demos/cr_toggle_demo.html",
+    "demos/cr_toolbar/index.html",
+    "demos/cr_tree/index.html",
+    "demos/demo.css",
+    "demos/md_select/index.html",
+    "demos/nav_menu/index.html",
+    "demos/progress_indicator_nonpolymer_demo.html",
+    "demos/progress_indicator_polymer_demo.html",
+    "demos/scroll_view/index.html",
+    "webui_gallery.html",
+  ]
+
+  input_files_base_dir = rebase_path(".", "//")
+  deps = [ ":build_ts" ]
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+}

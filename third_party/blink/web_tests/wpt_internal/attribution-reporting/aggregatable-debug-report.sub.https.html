@@ -1,0 +1,66 @@
+<!doctype html>
+<meta charset=utf-8>
+<meta name=timeout content=long>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/helpers.js"></script>
+<script>
+attribution_reporting_promise_test(async t => {
+  const cookie = 'ar_debug=1;Secure;HttpOnly;SameSite=None;Path=/';
+  const source_debug_key = '246';
+  const trigger_debug_key = '357';
+  await registerAttributionSrc(t, {
+    source: {
+      destination: `https://{{host}}`,
+      aggregation_keys: {
+        campaignCounts: "0x159",
+        geoValue: "0x5",
+      },
+      debug_key: source_debug_key,
+    },
+    cookie,
+  });
+  await registerAttributionSrc(t, {
+    trigger: {
+      debug_key: trigger_debug_key,
+      aggregatable_trigger_data: [
+        {
+          key_piece: '0x400',
+          source_keys: ['campaignCounts'],
+        },
+        {
+          key_piece: '0xA80',
+          source_keys: ['geoValue', 'nonMatchingKey'],
+        }
+      ],
+      aggregatable_values: {
+        campaignCounts: 32768,
+        geoValue: 1664,
+      },
+    },
+    cookie,
+  });
+
+  const payload = await pollAggregatableReports();
+  assert_equals(payload.reports.length, 1);
+  const report = JSON.parse(payload.reports[0].body);
+  assert_equals(report.source_debug_key, source_debug_key);
+  assert_equals(report.trigger_debug_key, trigger_debug_key);
+  const shared_info = JSON.parse(report.shared_info);
+  assert_own_property(shared_info, 'debug_mode');
+  assert_equals(shared_info.debug_mode, 'enabled');
+  const aggregation_service_payload = report.aggregation_service_payloads[0];
+  assert_own_property(aggregation_service_payload, 'debug_cleartext_payload');
+
+  const debugPayload = await pollAggregatableDebugReports();
+  assert_equals(debugPayload.reports.length, 1);
+  const debugReport = JSON.parse(debugPayload.reports[0].body);
+  assert_equals(debugReport.source_debug_key, source_debug_key);
+  assert_equals(debugReport.trigger_debug_key, trigger_debug_key);
+  const debug_shared_info = JSON.parse(debugReport.shared_info);
+  assert_own_property(debug_shared_info, 'debug_mode');
+  assert_equals(debug_shared_info.debug_mode, 'enabled');
+  const debug_aggregation_service_payload = debugReport.aggregation_service_payloads[0];
+  assert_own_property(debug_aggregation_service_payload, 'debug_cleartext_payload');
+}, 'Debug report is received if source and trigger debug keys are set.');
+</script>

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,8 +18,8 @@ namespace ui {
 class COMPONENT_EXPORT(EVDEV) OneDeviceTrainNeuralStylusPalmDetectionFilterModel
     : public NeuralStylusPalmDetectionFilterModel {
  public:
-  OneDeviceTrainNeuralStylusPalmDetectionFilterModel();
   explicit OneDeviceTrainNeuralStylusPalmDetectionFilterModel(
+      const std::string& model_version,
       const std::vector<float>& radius_poly);
 
   OneDeviceTrainNeuralStylusPalmDetectionFilterModel(
@@ -31,8 +31,12 @@ class COMPONENT_EXPORT(EVDEV) OneDeviceTrainNeuralStylusPalmDetectionFilterModel
 
   const NeuralStylusPalmDetectionFilterModelConfig& config() const override;
 
- private:
+ protected:
   NeuralStylusPalmDetectionFilterModelConfig config_;
+
+ private:
+  void Initialize();
+  size_t expected_feature_size_;
 };
 
 }  // namespace ui

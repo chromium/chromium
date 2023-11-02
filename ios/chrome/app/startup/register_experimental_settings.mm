@@ -1,15 +1,15 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/app/startup/register_experimental_settings.h"
+#import "ios/chrome/app/startup/register_experimental_settings.h"
 
-#include <ostream>
+#import <ostream>
 
-#include "base/check.h"
-#include "base/mac/bundle_locations.h"
-#include "base/notreached.h"
-#include "base/strings/sys_string_conversions.h"
+#import "base/check.h"
+#import "base/mac/bundle_locations.h"
+#import "base/notreached.h"
+#import "base/strings/sys_string_conversions.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

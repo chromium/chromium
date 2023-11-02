@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,10 +30,10 @@ ChromeWebViewInternalContextMenusCreateFunction::Run() {
       Profile::FromBrowserContext(browser_context())->IsOffTheRecord(),
       MenuItem::ExtensionKey(
           extension_id(),
-          GetSenderWebContents()->GetMainFrame()->GetProcess()->GetID(),
+          GetSenderWebContents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
           params->instance_id));
 
-  if (params->create_properties.id.get()) {
+  if (params->create_properties.id) {
     id.string_uid = *params->create_properties.id;
   } else {
     // The Generated Id is added by web_view_internal_custom_bindings.js.
@@ -64,7 +64,7 @@ ChromeWebViewInternalContextMenusUpdateFunction::Run() {
       profile->IsOffTheRecord(),
       MenuItem::ExtensionKey(
           extension_id(),
-          GetSenderWebContents()->GetMainFrame()->GetProcess()->GetID(),
+          GetSenderWebContents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
           params->instance_id));
 
   if (params->id.as_string)
@@ -94,7 +94,7 @@ ChromeWebViewInternalContextMenusRemoveFunction::Run() {
       Profile::FromBrowserContext(browser_context())->IsOffTheRecord(),
       MenuItem::ExtensionKey(
           extension_id(),
-          GetSenderWebContents()->GetMainFrame()->GetProcess()->GetID(),
+          GetSenderWebContents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
           params->instance_id));
 
   if (params->menu_item_id.as_string) {
@@ -128,7 +128,7 @@ ChromeWebViewInternalContextMenusRemoveAllFunction::Run() {
       MenuManager::Get(Profile::FromBrowserContext(browser_context()));
   menu_manager->RemoveAllContextItems(MenuItem::ExtensionKey(
       extension_id(),
-      GetSenderWebContents()->GetMainFrame()->GetProcess()->GetID(),
+      GetSenderWebContents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
       params->instance_id));
 
   return RespondNow(NoArguments());

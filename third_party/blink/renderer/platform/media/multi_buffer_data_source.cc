@@ -1,22 +1,25 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/public/platform/media/multi_buffer_data_source.h"
+#include "third_party/blink/renderer/platform/media/multi_buffer_data_source.h"
 
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/containers/adapters.h"
 #include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "media/base/media_log.h"
 #include "net/base/net_errors.h"
-#include "third_party/blink/public/platform/media/buffered_data_source_host_impl.h"
+#include "third_party/blink/renderer/platform/media/buffered_data_source_host_impl.h"
 #include "third_party/blink/renderer/platform/media/multi_buffer_reader.h"
 #include "url/gurl.h"
+
+#include "base/record_replay.h"
 
 namespace blink {
 namespace {
@@ -123,6 +126,7 @@ MultiBufferDataSource::MultiBufferDataSource(
       failed_(false),
       render_task_runner_(task_runner),
       url_data_(std::move(url_data_arg)),
+      lock_("MultibufferDataSource.lock_"),
       stop_signal_received_(false),
       media_has_played_(false),
       single_origin_(true),
@@ -133,6 +137,9 @@ MultiBufferDataSource::MultiBufferDataSource(
       media_log_(media_log),
       host_(host),
       downloading_cb_(std::move(downloading_cb)) {
+  // https://linear.app/replay/issue/RUN-468
+  recordreplay::RegisterPointer("MultibufferDataSource", this);
+
   weak_ptr_ = weak_factory_.GetWeakPtr();
   DCHECK(host_);
   DCHECK(downloading_cb_);
@@ -144,6 +151,9 @@ MultiBufferDataSource::MultiBufferDataSource(
 }
 
 MultiBufferDataSource::~MultiBufferDataSource() {
+  // https://linear.app/replay/issue/RUN-468
+  recordreplay::UnregisterPointer(this);
+
   DCHECK(render_task_runner_->BelongsToCurrentThread());
 }
 
@@ -198,6 +208,10 @@ void MultiBufferDataSource::Initialize(InitializeCB init_cb) {
 
   // We're not allowed to call Wait() if data is already available.
   if (reader_->Available()) {
+    // https://linear.app/replay/issue/RUN-468
+    recordreplay::Assert("MultibufferDataSource::Initialize #1 %lu",
+                         recordreplay::PointerId(this));
+
     render_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&MultiBufferDataSource::StartCallback, weak_ptr_));
@@ -210,6 +224,10 @@ void MultiBufferDataSource::Initialize(InitializeCB init_cb) {
         FROM_HERE, base::BindOnce(&MultiBufferDataSource::UpdateProgress,
                                   weak_factory_.GetWeakPtr()));
   } else {
+    // https://linear.app/replay/issue/RUN-468
+    recordreplay::Assert("MultibufferDataSource::Initialize #2 %lu",
+                         recordreplay::PointerId(this));
+
     reader_->Wait(
         1, base::BindOnce(&MultiBufferDataSource::StartCallback, weak_ptr_));
   }
@@ -221,6 +239,10 @@ void MultiBufferDataSource::OnRedirected(
     // A failure occurred.
     failed_ = true;
     if (init_cb_) {
+      // https://linear.app/replay/issue/RUN-468
+      recordreplay::Assert("MultibufferDataSource::OnRedirected #1 %lu",
+                           recordreplay::PointerId(this));
+
       render_task_runner_->PostTask(
           FROM_HERE,
           base::BindOnce(&MultiBufferDataSource::StartCallback, weak_ptr_));
@@ -244,10 +266,18 @@ void MultiBufferDataSource::OnRedirected(
   if (init_cb_) {
     CreateResourceLoader(0, kPositionNotSpecified);
     if (reader_->Available()) {
+      // https://linear.app/replay/issue/RUN-468
+      recordreplay::Assert("MultibufferDataSource::OnRedirected #2 %lu",
+                           recordreplay::PointerId(this));
+
       render_task_runner_->PostTask(
           FROM_HERE,
           base::BindOnce(&MultiBufferDataSource::StartCallback, weak_ptr_));
     } else {
+      // https://linear.app/replay/issue/RUN-468
+      recordreplay::Assert("MultibufferDataSource::OnRedirected #3 %lu",
+                           recordreplay::PointerId(this));
+
       reader_->Wait(
           1, base::BindOnce(&MultiBufferDataSource::StartCallback, weak_ptr_));
     }
@@ -291,6 +321,10 @@ void MultiBufferDataSource::OnRedirect(RedirectCB callback) {
 
 bool MultiBufferDataSource::HasAccessControl() const {
   return url_data_->has_access_control();
+}
+
+bool MultiBufferDataSource::PassedTimingAllowOriginCheck() {
+  return url_data_->passed_timing_allow_origin_check();
 }
 
 UrlData::CorsMode MultiBufferDataSource::cors_mode() const {
@@ -412,7 +446,7 @@ void MultiBufferDataSource::Read(int64_t position,
     // muxing as soon as possible. This works because TryReadAt is
     // thread-safe.
     if (reader_) {
-      int bytes_read = reader_->TryReadAt(position, data, size);
+      int64_t bytes_read = reader_->TryReadAt(position, data, size);
       if (bytes_read > 0) {
         bytes_read_ += bytes_read;
         seek_positions_.push_back(position + bytes_read);
@@ -424,7 +458,7 @@ void MultiBufferDataSource::Read(int64_t position,
               kSeekDelay);
         }
 
-        std::move(read_cb).Run(bytes_read);
+        std::move(read_cb).Run(static_cast<int>(bytes_read));
         return;
       }
     }
@@ -457,7 +491,6 @@ void MultiBufferDataSource::ReadTask() {
   DCHECK(render_task_runner_->BelongsToCurrentThread());
 
   base::AutoLock auto_lock(lock_);
-  int bytes_read = 0;
   if (stop_signal_received_ || !read_op_)
     return;
   DCHECK(read_op_->size());
@@ -472,8 +505,7 @@ void MultiBufferDataSource::ReadTask() {
     return;
   }
   if (available) {
-    bytes_read =
-        static_cast<int>(std::min<int64_t>(available, read_op_->size()));
+    int64_t bytes_read = std::min<int64_t>(available, read_op_->size());
     bytes_read =
         reader_->TryReadAt(read_op_->position(), read_op_->data(), bytes_read);
 
@@ -489,7 +521,7 @@ void MultiBufferDataSource::ReadTask() {
         host_->SetTotalBytes(total_bytes_);
     }
 
-    ReadOperation::Run(std::move(read_op_), bytes_read);
+    ReadOperation::Run(std::move(read_op_), static_cast<int>(bytes_read));
 
     SeekTask_Locked();
   } else {
@@ -533,8 +565,7 @@ void MultiBufferDataSource::SeekTask_Locked() {
     // Iterate backwards, because if two positions have the same
     // amount of buffered data, we probably want to prefer the latest
     // one in the array.
-    for (auto i = seek_positions_.rbegin(); i != seek_positions_.rend(); ++i) {
-      int64_t new_pos = *i;
+    for (const auto& new_pos : base::Reversed(seek_positions_)) {
       int64_t available_at_new_pos = reader_->AvailableAt(new_pos);
 
       if (total_bytes_ != kPositionNotSpecified) {
@@ -586,6 +617,10 @@ void MultiBufferDataSource::SetBitrateTask(int bitrate) {
 // BufferedResourceLoader callback methods.
 void MultiBufferDataSource::StartCallback() {
   DCHECK(render_task_runner_->BelongsToCurrentThread());
+
+  // https://linear.app/replay/issue/RUN-468
+  recordreplay::Assert("MultibufferDataSource::StartCallback %lu",
+                       recordreplay::PointerId(this));
 
   if (!init_cb_) {
     SetReader(nullptr);

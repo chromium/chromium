@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,18 +9,22 @@
 
 #include "base/component_export.h"
 #include "base/metrics/field_trial.h"
+#include "components/variations/entropy_provider.h"
 #include "components/variations/proto/variations_seed.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace variations {
 
-// Parses out the Variations Layers data from the provided seed and
-// chooses which member within each layer should be the active one.
+// A view over the layers defined within a variations seed.
+//
+// A layer defines a collection of mutually exclusive members. For each client,
+// at most one member will be assigned as its active member. Studies may be
+// conditioned on a particular member being active, in order to avoid overlap
+// with studies that require a different member to be active.
 class COMPONENT_EXPORT(VARIATIONS) VariationsLayers {
  public:
-  VariationsLayers(
-      const VariationsSeed& seed,
-      const base::FieldTrial::EntropyProvider* low_entropy_provider);
+  VariationsLayers(const VariationsSeed& seed,
+                   const EntropyProviders& entropy_providers);
 
   VariationsLayers();
   ~VariationsLayers();
@@ -28,26 +32,23 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsLayers {
   VariationsLayers(const VariationsLayers&) = delete;
   VariationsLayers& operator=(const VariationsLayers&) = delete;
 
-  // Return whether the given layer has the given member active.
+  // Returns whether the given layer has the given member active.
   bool IsLayerMemberActive(uint32_t layer_id, uint32_t member_id) const;
 
-  // Return whether the layer should use the default entropy source
-  // (usually the high entropy source).
-  bool IsLayerUsingDefaultEntropy(uint32_t layer_id) const;
+  // Returns true if the layer has an active member and is configured to use
+  // DEFAULT entropy, which means that any study conditioned on it would leak
+  // information about the client's high entropy source (including whether or
+  // not the client _has_ a high entropy source).
+  bool ActiveLayerMemberDependsOnHighEntropy(uint32_t layer_id) const;
 
  private:
-  void ConstructLayer(
-      const base::FieldTrial::EntropyProvider& low_entropy_provider,
-      const Layer& layer_proto);
+  void ConstructLayer(const EntropyProviders& entropy_providers,
+                      const Layer& layer_proto);
 
   struct LayerInfo {
-    LayerInfo(absl::optional<uint32_t> active_member_id,
-              Layer::EntropyMode entropy_mode);
-    ~LayerInfo();
-    LayerInfo(const LayerInfo& other);  // = delete;
-    LayerInfo& operator=(const LayerInfo&) = delete;
-
-    absl::optional<uint32_t> active_member_id;
+    // Which layer member is active in the layer.
+    uint32_t active_member_id;
+    // The type of entropy the layer was configured to use.
     Layer::EntropyMode entropy_mode;
   };
   std::map<uint32_t, LayerInfo> active_member_for_layer_;

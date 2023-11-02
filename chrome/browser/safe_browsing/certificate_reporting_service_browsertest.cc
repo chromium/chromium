@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
-#include "base/task/post_task.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
@@ -47,12 +46,6 @@ using certificate_reporting_test_utils::EventHistogramTester;
 using certificate_reporting_test_utils::ReportExpectation;
 using certificate_reporting_test_utils::RetryStatus;
 
-namespace {
-
-const char* kFailedReportHistogram = "SSL.CertificateErrorReportFailure";
-
-}  // namespace
-
 namespace safe_browsing {
 
 // These tests check the whole mechanism to send and queue invalid certificate
@@ -68,6 +61,11 @@ class CertificateReportingServiceBrowserTest : public InProcessBrowserTest {
   CertificateReportingServiceBrowserTest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
     CertReportHelper::SetFakeOfficialBuildForTesting();
+
+    // Setting the sending threshold to 1.0 ensures reporting is enabled.
+    variations::testing::VariationParamsManager::SetVariationParams(
+        "ReportCertificateErrors", "ShowAndPossiblySend",
+        {{"sendingThreshold", "1.0"}});
   }
 
   CertificateReportingServiceBrowserTest(
@@ -105,24 +103,7 @@ class CertificateReportingServiceBrowserTest : public InProcessBrowserTest {
     test_helper()->ExpectNoRequests(service());
     EXPECT_GE(num_expected_failed_report_, 0)
         << "Don't forget to set expected failed report count.";
-    // Check the histogram as the last thing. This makes sure no in-flight
-    // report is missed.
-    if (num_expected_failed_report_ != 0) {
-      histogram_tester_.ExpectUniqueSample(kFailedReportHistogram,
-                                           -net::ERR_SSL_PROTOCOL_ERROR,
-                                           num_expected_failed_report_);
-    } else {
-      histogram_tester_.ExpectTotalCount(kFailedReportHistogram, 0);
-    }
-
     event_histogram_tester_.reset();
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    // Setting the sending threshold to 1.0 ensures reporting is enabled.
-    variations::testing::VariationParamsManager::AppendVariationParams(
-        "ReportCertificateErrors", "ShowAndPossiblySend",
-        {{"sendingThreshold", "1.0"}}, command_line);
   }
 
   CertificateReportingServiceTestHelper* test_helper() {

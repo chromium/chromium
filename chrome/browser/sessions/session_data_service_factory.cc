@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_data_deleter.h"
 #include "chrome/browser/sessions/session_data_service.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 // static
 SessionDataService* SessionDataServiceFactory::GetForProfile(Profile* profile) {
@@ -24,9 +23,7 @@ SessionDataServiceFactory* SessionDataServiceFactory::GetInstance() {
 }
 
 SessionDataServiceFactory::SessionDataServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "SessionDataService",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("SessionDataService") {
   DependsOn(HostContentSettingsMapFactory::GetInstance());
   DependsOn(CookieSettingsFactory::GetInstance());
 }

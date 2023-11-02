@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -85,8 +85,8 @@ TEST_F(InstallTrackerTest, AddAndRemoveActiveInstalls) {
   ASSERT_FALSE(retrieved_data3);
   VerifyInstallData(install_data1, *retrieved_data1);
   VerifyInstallData(install_data2, *retrieved_data2);
-  retrieved_data1 = NULL;
-  retrieved_data2 = NULL;
+  retrieved_data1 = nullptr;
+  retrieved_data2 = nullptr;
 
   tracker_->RemoveActiveInstall(kExtensionId1);
   EXPECT_FALSE(tracker_->GetActiveInstall(kExtensionId1));
@@ -107,7 +107,7 @@ TEST_F(InstallTrackerTest, ScopedActiveInstallDeregister) {
       tracker_->GetActiveInstall(kExtensionId1);
   ASSERT_TRUE(retrieved_data);
   VerifyInstallData(install_data, *retrieved_data);
-  retrieved_data = NULL;
+  retrieved_data = nullptr;
 
   scoped_active_install.reset();
   EXPECT_FALSE(tracker_->GetActiveInstall(kExtensionId1));
@@ -135,7 +135,7 @@ TEST_F(InstallTrackerTest, ScopedActiveInstallCancelled) {
       tracker_->GetActiveInstall(kExtensionId1);
   ASSERT_TRUE(retrieved_data);
   VerifyInstallData(install_data, *retrieved_data);
-  retrieved_data = NULL;
+  retrieved_data = nullptr;
 
   scoped_active_install->CancelDeregister();
   scoped_active_install.reset();
@@ -175,7 +175,7 @@ TEST_F(InstallTrackerTest, ExtensionInstallFailure) {
   ASSERT_TRUE(retrieved_data);
   EXPECT_EQ(0, retrieved_data->percent_downloaded);
   EXPECT_EQ(install_params.extension_id, retrieved_data->extension_id);
-  retrieved_data = NULL;
+  retrieved_data = nullptr;
 
   tracker_->OnInstallFailure(kExtensionId1);
   EXPECT_FALSE(tracker_->GetActiveInstall(kExtensionId1));
@@ -192,7 +192,7 @@ TEST_F(InstallTrackerTest, ExtensionInstalledEvent) {
   ASSERT_TRUE(retrieved_data);
   EXPECT_EQ(0, retrieved_data->percent_downloaded);
   EXPECT_EQ(install_params.extension_id, retrieved_data->extension_id);
-  retrieved_data = NULL;
+  retrieved_data = nullptr;
 
   // Simulate an extension install.
   scoped_refptr<const Extension> extension =

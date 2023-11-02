@@ -21,6 +21,7 @@ WTF::HashTableAddResult::container_
 WTF::HashTableAddResult::stored_value
 cast_channel::CastTransportTest::logger_
 content::IndexedDBDispatcherHost::indexed_db_context_
+ServiceProcessState::state_
 
 # Populated manually - conflicting types in an initializer list
 WebUITabStripContainerView::tab_counter_
@@ -43,6 +44,36 @@ WTF::ICUConverterWrapper::converter
 # Populated manually - always holds a pointer to an OilPan-allocated memory.
 blink::PersistentBase::raw_
 blink::SVGFilterBuilder::last_effect_
+
+# Populated manually - global-scope exclusions that are missing because the
+# global variable is in a build configuration specific code
+base::android::ReachedAddressesBitset::reached_
+
+# Populated manually - missing |.get()| in not-rewritten platform specific code
+viz::OverlayCandidate::rpdq
+viz::CALayerOverlay::rpdq
+viz::DrawQuad::shared_quad_state
+content::RenderWidgetHostInputEventRouter::wheel_target_
+NavigateParams::navigated_or_inserted_contents
+web_app::WebAppTabStripBrowserTest::App::web_contents
+policy::ChromePolicyConversionsClient::profile_
+
+# Populated manually - reference to raw_ptr in not-rewritten platform specific code
+viz::DirectRenderer::DrawingFrame::current_render_pass
+TabGroupViews::header_
+TabGroupViews::underline_
+TabGroupViews::highlight_
+views::LayoutManager::view_setting_visibility_on_
+FullscreenController::deactivated_contents_
+content::RenderWidgetHostInputEventRouter::touch_target_
+content::RenderWidgetHostInputEventRouter::touchpad_gesture_target_
+base::MessagePumpLibevent::run_state_
+
+# Populated manually - incompatibilities with tracing in not-rewritten platform specific code
+TabStripModelChange::RemovedTab::contents
+
+# Populated manually - extra .get() added in not-rewritten platform specific code
+SECItem::data
 
 # Populated manually - the rewriter has trouble appending |.get()| inside macros
 # that work with |XDisplay*|.
@@ -72,7 +103,7 @@ x11::Connection::display_
 # Populated manually - static_cast not related by inheritance.
 gtk::GtkKeyBindingsHandler::fake_window_
 gtk::GtkKeyBindingsHandler::handler_
-gtk::SelectFileDialogImplGTK::preview_
+gtk::SelectFileDialogLinuxGtk::preview_
 remoting::(anonymous namespace)::DisconnectWindowGtk::disconnect_window_
 remoting::(anonymous namespace)::DisconnectWindowGtk::message_
 remoting::(anonymous namespace)::GtkFileChooserOnUiThread::file_dialog_
@@ -162,11 +193,13 @@ device::AttestedCredentialData::ConsumeFromCtapResponse(base::span<const uint8_t
 device::AttestedCredentialData::ConsumeFromCtapResponse(base::span<const uint8_t>)::COSEKey::kty
 device::cablev2::authenticator::(anonymous namespace)::MakeCredRequest::client_data_hash
 device::cablev2::authenticator::(anonymous namespace)::MakeCredRequest::rp_id
+device::cablev2::authenticator::(anonymous namespace)::MakeCredRequest::rp_name
 device::cablev2::authenticator::(anonymous namespace)::MakeCredRequest::user_id
+device::cablev2::authenticator::(anonymous namespace)::MakeCredRequest::user_name
+device::cablev2::authenticator::(anonymous namespace)::MakeCredRequest::user_display_name
 device::cablev2::authenticator::(anonymous namespace)::MakeCredRequest::cred_params
 device::cablev2::authenticator::(anonymous namespace)::MakeCredRequest::excluded_credentials
-device::cablev2::authenticator::(anonymous namespace)::MakeCredRequest::origin
-device::cablev2::authenticator::(anonymous namespace)::MakeCredRequest::challenge
+device::cablev2::authenticator::(anonymous namespace)::MakeCredRequest::resident_key
 device::cablev2::authenticator::(anonymous namespace)::AttestationObject::fmt
 device::cablev2::authenticator::(anonymous namespace)::AttestationObject::auth_data
 device::cablev2::authenticator::(anonymous namespace)::AttestationObject::statement
@@ -185,6 +218,54 @@ device::P256PublicKey::ExtractFromCOSEKey(int32_t, base::span<const uint8_t>, co
 device::RSAPublicKey::ExtractFromCOSEKey(int32_t, base::span<const uint8_t>, const cbor::Value::MapValue &)::COSEKey::kty
 device::RSAPublicKey::ExtractFromCOSEKey(int32_t, base::span<const uint8_t>, const cbor::Value::MapValue &)::COSEKey::n
 device::RSAPublicKey::ExtractFromCOSEKey(int32_t, base::span<const uint8_t>, const cbor::Value::MapValue &)::COSEKey::e
+device::(anonymous namespace)::MakeCredRequest::client_data_hash
+device::(anonymous namespace)::MakeCredRequest::rp_id
+device::(anonymous namespace)::MakeCredRequest::user_id
+device::(anonymous namespace)::MakeCredRequest::cred_params
+device::(anonymous namespace)::MakeCredRequest::excluded_credentials
+device::(anonymous namespace)::MakeCredRequest::resident_key
+device::(anonymous namespace)::MakeCredRequest::user_verification
+device::(anonymous namespace)::MakeCredRequest::large_test
+device::(anonymous namespace)::MakeCredRequest::negative_test
+device::(anonymous namespace)::MakeCredRequest::skipped_1
+device::(anonymous namespace)::MakeCredRequest::skipped_2
+device::(anonymous namespace)::CBORExtract_MissingRequired_Test::TestBody()::Dummy::value
+device::(anonymous namespace)::CBORExtract_WrongType_Test::TestBody()::Dummy::value
+device::(anonymous namespace)::CBORExtract_RequiredInOptionalMap_Test::TestBody()::Dummy::value
+
+# Populated manually - pointer to Objective-C object
+gfx::ScopedNSGraphicsContextSaveGState::context_
+base::mac::ScopedNSAutoreleasePool::autorelease_pool_
+content::ThemeHelperMac::theme_observer_
+content::PopupMenuHelper::menu_runner_
+content::ShellJavaScriptDialog::helper_
+ui::ClipboardFormatType::data_
+ui::WeakPtrNSObjectFactory::handle_
+content::NativeEventProcessorObserver::event_
+image_editor::EventCaptureMac::web_contents_view_
+image_editor::EventCaptureMac::window_
+content::ScopedNotifyNativeEventProcessorObserver::event_
+device::fido::mac::TouchIdCredentialStore::authentication_context_
+
+# Populated manually - struct is part of separate binary and must be a POD
+# https://source.chromium.org/chromium/chromium/src/+/main:chrome/common/mac/app_mode_common.mm;l=64
+app_mode::ChromeAppModeInfo::argv
+
+# Populated manually - requires @property rewrite
+# In Objective-C the instance variable type and property type must be the same.
+# Currently, the rewriter can only rewrite the instance variable declaration.
+# So the types do not match, and causes a compiler error.
+# These fields can be rewritten once the rewriter can rewrite @property declarations.
+ObjCPropertyTestBase::_basePointer
+ObjCPropertyTestDerived::_derivedPointer
+ObjCPropertyTestDerived::_protoPointer
+NativeWidgetMacNSWindow::_bridge
+AlertBridgeHelper::_alertBridge
+BridgedContentView::_bridge
+WindowControlsOverlayNSView::_bridge
+AXPlatformNodeCocoa::_node
+ShellNativeAppWindowController::_appWindow
+WatchedLifetimeMenuController::_deallocCalled
 
 #######
 # BackupRefPtr-specific sections
@@ -217,6 +298,10 @@ gpu::gles2::PassthroughProgramCache::ProgramCacheValue::program_cache_
 #######
 # Performance-related exclusions
 #######
+
+# Populated manually - to avoid out-of-line destructor
+base::LockFreeAddressHashSet::Node::next
+gpu::gles2::TextureManager::DoTexSubImageArguments::pixels
 
 # Populated manually - on-stack pointer + a large number of non-PA pointees
 base::AutoReset::scoped_variable_
@@ -254,6 +339,11 @@ cc::(anonymous namespace)::BitmapRasterBufferImpl::pixels_
 disk_cache::MappedFile::buffer_
 network::MojoToNetPendingBuffer::buffer_
 network::NetToMojoPendingBuffer::buffer_
+
+# Populated manually - Field initialized with non-nullptr value in constexpr.
+enterprise_connectors::ServiceProvider::analysis
+enterprise_connectors::ServiceProvider::reporting
+enterprise_connectors::ServiceProvider::file_system
 
 # Populated manually - based on sampling profiler data and tab_search:top100:2020 profiler data
 (anonymous namespace)::TlsVectorEntry::data
@@ -308,6 +398,31 @@ mojo::internal::MultiplexRouter::MessageWrapper::router_
 tracing::(anonymous namespace)::LazyLegacyEventInitializer::legacy_event_
 tracing::(anonymous namespace)::LazyLegacyEventInitializer::track_event_
 url::StdStringCanonOutput::str_
+base::Pickle::header_
+base::internal::TimerBase::task_destruction_detector_
+cc::TilingSetRasterQueueAll::tiling_set_
+site_engagement::SiteEngagementScore::clock_
+site_engagement::SiteEngagementScore::settings_map_
+extensions::LazyContextTaskQueue::ContextInfo::render_process_host
+extensions::LazyContextTaskQueue::ContextInfo::browser_context
+extensions::LazyContextTaskQueue::ContextInfo::web_contents
+mojo::core::MessagePipeDispatcher::node_controller_
+mojo::internal::ArrayDataViewImpl::data_
+mojo::internal::ArrayDataViewImpl::message_
+mojo::Connector::incoming_receiver_
+mojo::Connector::nesting_observer_
+mojo::InterfaceEndpointClient::controller_
+mojo::InterfaceEndpointClient::incoming_receiver_
+mojo::internal::MayAutoLock::lock_
+mojo::internal::MayAutoUnlock::lock_
+mojo::internal::MultiplexRouter::header_validator_
+url::CanonOutputT::buffer_
+prefs::ScopedDictionaryPrefUpdate::service_
+prefs::DictionaryValueUpdate::value_
+
+# Populated manually - type is unsupported by raw_ptr to avoid being used in
+# performance sensitive base::Unretained
+content::responsiveness::Watcher::calculator_io_
 
 #######
 # End of performance-related exclusions

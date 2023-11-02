@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,8 @@
 #include <map>
 #include <memory>
 #include <utility>
+
+#include "base/memory/raw_ptr.h"
 
 namespace content {
 
@@ -58,7 +60,7 @@ class PepperPlaybackObserver {
   PlayersPlayedSoundMap players_played_sound_map_;
 
   // Weak reference to WebContents.
-  WebContents* contents_;
+  raw_ptr<WebContents> contents_;
 };
 
 }  // namespace content

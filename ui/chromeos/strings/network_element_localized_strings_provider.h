@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@ namespace ui {
 namespace network_element {
 
 // This file contains functions to add localized strings used by
-// components in ui/webui/resources/cr_components/chromeos/network/.
+// components in ash/webui/common/resources/network/.
 
 // Adds the strings needed for network elements to |html_source|.
 void AddLocalizedStrings(content::WebUIDataSource* html_source);

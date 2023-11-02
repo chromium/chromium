@@ -1,9 +1,9 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {FileType} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/common/js/file_type.js';
-import {assert, assertInstanceof} from 'chrome://resources/js/assert.m.js';
+import {FileType} from 'chrome://file-manager/common/js/file_type.js';
+import {assert, assertInstanceof} from 'chrome://resources/js/assert.js';
 
 import {ImageCache} from './cache.js';
 import {ImageLoaderUtil} from './image_loader_util.js';
@@ -131,7 +131,7 @@ ImageRequestTask.MAX_MILLISECONDS_TO_LOAD_VIDEO = 3000;
 /**
  * The default size (width and height) of a square thumbnail. The value is set
  * to match the behavior of drivefs thumbnail generation.
- * See ash/components/drivefs/mojom/drivefs.mojom
+ * See chromeos/ash/components/drivefs/mojom/drivefs.mojom
  * @const
  * @type {number}
  */
@@ -140,7 +140,7 @@ ImageRequestTask.DEFAULT_THUMBNAIL_SQUARE_SIZE = 360;
 /**
  * The default width of a non-square thumbnail. The value is set to match the
  * behavior of drivefs thumbnail generation.
- * See ash/components/drivefs/mojom/drivefs.mojom
+ * See chromeos/ash/components/drivefs/mojom/drivefs.mojom
  * @const
  * @type {number}
  */
@@ -149,7 +149,7 @@ ImageRequestTask.DEFAULT_THUMBNAIL_WIDTH = 500;
 /**
  * The default height of a non-square thumbnail. The value is set to match the
  * behavior of drivefs thumbnail generation.
- * See ash/components/drivefs/mojom/drivefs.mojom
+ * See chromeos/ash/components/drivefs/mojom/drivefs.mojom
  * @const
  * @type {number}
  */
@@ -165,7 +165,7 @@ ImageRequestTask.ExtensionContentTypeMap = {
   svg: 'image/svg',
   bmp: 'image/bmp',
   jpg: 'image/jpeg',
-  jpeg: 'image/jpeg'
+  jpeg: 'image/jpeg',
 };
 
 /**
@@ -347,14 +347,14 @@ ImageRequestTask.prototype.downloadThumbnail_ = function(onSuccess, onFailure) {
 
   const resolveLocalFileSystemUrl = (url, onResolveSuccess) => {
     window.webkitResolveLocalFileSystemURL(url, onResolveSuccess, error => {
-      console.error(error);
+      console.warn(error);
       onFailure();
     });
   };
 
   const onExternalThumbnail = (dataUrl) => {
     if (chrome.runtime.lastError) {
-      console.error(chrome.runtime.lastError.message);
+      console.warn(chrome.runtime.lastError.message);
       onFailure();
     } else if (dataUrl) {
       this.image_.src = dataUrl;
@@ -413,7 +413,7 @@ ImageRequestTask.prototype.downloadThumbnail_ = function(onSuccess, onFailure) {
               this.image_.src = URL.createObjectURL(blob);
             }.bind(this),
             function() {
-              // PiexLoader calls console.error on errors.
+              // PiexLoader calls console.warn on errors.
               onFailure();
             });
     return;
@@ -426,7 +426,7 @@ ImageRequestTask.prototype.downloadThumbnail_ = function(onSuccess, onFailure) {
           this.image_.src = url;
         }.bind(this))
         .catch(function(error) {
-          console.error('Video thumbnail error: ', error);
+          console.warn('Video thumbnail error: ', error);
           onFailure();
         });
     return;
@@ -472,7 +472,7 @@ ImageRequestTask.prototype.createVideoThumbnailUrl_ = function(url) {
           video.src =
               '';  // Make sure to stop loading remaining part of the video.
           throw new Error('Seeking video failed.');
-        })
+        }),
       ])
       .then(() => {
         const canvas = assertInstanceof(

@@ -19,7 +19,7 @@ https://chromium.slack.com#animations)
 *   [CSS Animations Level 2](https://drafts.csswg.org/css-animations-2/)
 *   [CSS Transitions Level 1](https://drafts.csswg.org/css-transitions-1/)
 *   [CSS Transitions Level 2](https://drafts.csswg.org/css-transitions-2/)
-*   [Web Animations Level 1](https://drafts.csswg.org/web-animations-1/)
+*   [Web Animations Level 1](https://w3.org/TR/web-animations-1/)
 *   [Web Animations Level 2](https://drafts.csswg.org/web-animations-2/)
 *   [Scroll Animations Level 1](https://drafts.csswg.org/scroll-animations-1/)
 *   [CSS Properties and Values API Level 1 - Animation Behavior of Custom Properties](
@@ -275,7 +275,7 @@ The web animation model can be further broken down into two sub-models:
 
 2. An 'animation model' which converts the progress to property values.
 
-![](https://drafts.csswg.org/web-animations/img/timing-and-animation-models.svg)
+![](https://w3.org/TR/web-animations-1/img/timing-and-animation-models.svg)
 
 The division of responsibilities can best be illustrated through an example.
 Consider the following:
@@ -390,7 +390,7 @@ for composite ordering are quite involved and presently span three
 specifications:
 
 * [web animations -- the effect stack](
-https://drafts.csswg.org/web-animations/#the-effect-stack
+https://w3.org/TR/web-animations-1/#the-effect-stack
 )
 * [css animations -- animation composite order](
 https://drafts.csswg.org/css-animations-2/#animation-composite-order
@@ -406,7 +406,7 @@ effect stack depending on the composite mode (refer to discussion of composite
 modes in the KeyframeEffect section). Additional rules apply for sorting CSS
 transitions and CSS animations.
 
-[Animatable]: https://drafts.csswg.org/web-animations/#the-animatable-interface-mixin
+[Animatable]: https://w3.org/TR/web-animations-1/#the-animatable-interface-mixin
 
 ### Animation
 
@@ -440,7 +440,7 @@ to facilitate bookkeeping or debugging.
 * **[effect attribute][]**: gets or sets the [AnimationEffect][] for the
 animation. The algorithm for setting the effect of an animation is outlined in
 [web-animations -- Setting the associated effect of an animation](
-https://drafts.csswg.org/web-animations/#setting-the-associated-effect). A few
+https://w3.org/TR/web-animations-1/#setting-the-associated-effect). A few
 extra steps are required for CSS animations and transitions, which have an
 [AnimationEffect::EventDelegate][] that need to be reattached after the effect
 is updated. Special handling is also required if the new effect is null to
@@ -477,7 +477,7 @@ since the state change may be temporary. The setStartTime method is overridden
 for CSSAnimations since calling it may update the animation-play-state property
 by unpausing a CSS animation. Refer to
 [Web-animations -- Setting the start time of an animation](
-https://drafts.csswg.org/web-animations/#setting-the-start-time-of-an-animation)
+https://w3.org/TR/web-animations-1/#setting-the-start-time-of-an-animation)
 for more detail.
 
    ```javascript
@@ -519,9 +519,9 @@ from the client. Similar to setting the start time, updating the current time
 will not resolve a finished promise or queue an onfinished event until the next
 [microtask checkpoint][] since the state change may be temporary. Refer to
 [Web-animations -- The current time of an animation](
-https://drafts.csswg.org/web-animations/#the-current-time-of-an-animation) and
+https://w3.org/TR/web-animations-1/#the-current-time-of-an-animation) and
 [Web-animations -- Setting the current time of an animation](
-https://drafts.csswg.org/web-animations/#setting-the-current-time-of-an-animation)
+https://w3.org/TR/web-animations-1/#setting-the-current-time-of-an-animation)
 for more detail.
 
    ```javascript
@@ -549,7 +549,7 @@ active playback rate and not the pending playback rate. These values may differ
 for a brief time interval if using updatePlaybackRate to asynchronously change
 the playback rate. The algorithm for setting the playback rate is covered under
 [web animations -- setting the playback rate on an animation](
-https://drafts.csswg.org/web-animations/#setting-the-playback-rate-of-an-animation)
+https://w3.org/TR/web-animations-1/#setting-the-playback-rate-of-an-animation)
 in the spec. An additional step in required in Blink to ensure that a composited
 animation is kept in sync with a change to the playback rate and to prevent a
 discontinuity (jump) in the animation. Typically, using updatePlaybackRate is
@@ -572,7 +572,7 @@ pending-pause animation will report paused. The pending attribute can be checked
 to disambiguate whether the reported play state reflects the current or the
 scheduled state. The algorithm for determining the play state is outlined in
 [web animations -- play states](
-https://drafts.csswg.org/web-animations/#play-states).
+https://w3.org/TR/web-animations-1/#play-states).
 
    ```javascript
    const animation = element.animate(...);
@@ -592,7 +592,7 @@ marked for removal due to being replaceable. A persisted animation is an
 animation that has been explicitly marked for exclusion for the automated
 removal process via the persist method. The procedure for marking and removing
 animations is covered in [web animations - replacing animations](
-https://drafts.csswg.org/web-animations/#replacing-animations). In the Blink
+https://w3.org/TR/web-animations-1/#replacing-animations). In the Blink
 implementation, identifying which animations are replaceable is done in
 [Animation::IsReplaceable][]. Removal of replaced animations is done in
 [AnimationTimeline::RemoveReplacedAnimations][], which calls
@@ -677,7 +677,7 @@ example, setting the current time to the end time and reversing the direction of
 the animation should not resolve the finished promise. API calls that affect
 current time or play state must update the finished state of the animation. The
 algorithm is outlined in [web animation -- updating the finished state](
-https://drafts.csswg.org/web-animations/#updating-the-finished-state). In
+https://w3.org/TR/web-animations-1/#updating-the-finished-state). In
 Blink, updating the finished state and scheduling the microtask is performed in
 [Animation::UpdateFinishedState][]. The microtask is handled in
 [Animation::AsyncFinishMicrotask][]. The finished promise is convenient for
@@ -812,7 +812,7 @@ animation. The change does not take effect until acked by the client agent.
 [Animation::NotifyReady][] calls [Animation::CommitPendingPlay][] or
  [Animation::CommitPendingPause][] depending on the play state. The algorithm
  is specced in [web animations -- seamlessly updating the playback rate...](
- https://drafts.csswg.org/web-animations/#seamlessly-updating-the-playback-rate-of-an-animation).
+ https://w3.org/TR/web-animations-1/#seamlessly-updating-the-playback-rate-of-an-animation).
 
    ```javascript
    const animation = element.animate(...);
@@ -897,11 +897,11 @@ the current value of the effect stack up to an including the animation.
    });
    ```
 
-[Animation interface]: https://drafts.csswg.org/web-animations/#the-animation-interface
+[Animation interface]: https://w3.org/TR/web-animations-1/#the-animation-interface
 [Animation object]: https://cs.chromium.org/search/?q=class:blink::Animation$
-[timeline]: https://drafts.csswg.org/web-animations/#timelines
-[Timelines]: https://drafts.csswg.org/web-animations/#timelines
-[default document timeline]: https://drafts.csswg.org/web-animations/#the-documents-default-timeline
+[timeline]: https://w3.org/TR/web-animations-1/#timelines
+[Timelines]: https://w3.org/TR/web-animations-1/#timelines
+[default document timeline]: https://w3.org/TR/web-animations-1/#the-documents-default-timeline
 [AnimationEffect::EventDelegate]: https://cs.chromium.org/search?lang=cc&q=class:AnimationEffect::EventDelegate$
 [Animation constructor]:  https://cs.chromium.org/search/?q=function:blink::Animation::Animation$
 [id attribute]: https://cs.chromium.org/search/?q=function:blink::Animation::(setI|i)d$
@@ -1053,7 +1053,7 @@ of the web-animation API takes precedence over CSS.
 [updateTiming method]: https://cs.chromium.org/search/?q=function:blink::AnimationEffect::updateTiming$
 [EffectTiming]: https://cs.chromium.org/search/?q=class:blink::EffectTiming$
 [ComputedEffectTiming]: https://cs.chromium.org/search/?q=class:blink::ComputedEffectTiming$
-[transformed progress]: https://drafts.csswg.org/web-animations/#calculating-the-transformed-progress
+[transformed progress]: https://w3.org/TR/web-animations-1/#calculating-the-transformed-progress
 
 
 ### KeyframeEffect
@@ -1130,7 +1130,7 @@ the current progress even if no longer transitioning the property.
 [composite attribute]: https://cs.chromium.org/search/?q=function:blink::KeyframeEffect::(setC|c)omposite$
 [getKeyframes method]: https://cs.chromium.org/search/?q=function:blink::KeyframeEffect::getKeyframes$
 [setKeyframes method]: https://cs.chromium.org/search/?q=function:blink::KeyframeEffect::setKeyframes$
-[KeyframeEffectOptions]: https://drafts.csswg.org/web-animations/#the-keyframeeffectoptions-dictionary
+[KeyframeEffectOptions]: https://w3.org/TR/web-animations-1/#the-keyframeeffectoptions-dictionary
 [TransitionKeyframes]: https://cs.chromium.org/search/?q=class:blink::TransitionKeyframe$
 [StringKeyframes]: https://cs.chromium.org/search/?q=class:blink::StringKeyframe$
 [KeyframeEffectModel]: https://cs.chromium.org/search/?q=class:blink::KeyframeEffectModel$
@@ -1180,7 +1180,7 @@ target  effect of an animation that is associated with the timeline when the
 effect’s iteration duration is auto. The value is computed such that the effect
 fills the available time.
 
-[AnimationTimeline interface]: https://drafts.csswg.org/web-animations/#the-animationtimeline-interface
+[AnimationTimeline interface]: https://w3.org/TR/web-animations-1/#the-animationtimeline-interface
 [AnimationTimeline class]: https://cs.chromium.org/search/?q=class:blink::AnimationTimeline$
 
 #### DocumentTimeline
@@ -1190,7 +1190,7 @@ to add an originTime option for its constructor. The originTime is the time
 offset in milliseconds relative to the time origin (zero time) and may be used
 to synchronize animations across multiple document timelines.
 
-[DocumentTimeline interface]: https://drafts.csswg.org/web-animations/#the-documenttimeline-interface
+[DocumentTimeline interface]: https://w3.org/TR/web-animations-1/#the-documenttimeline-interface
 
 #### ScrollTimeline
 
@@ -1554,7 +1554,7 @@ The Blink animation engine interacts with Blink/Chrome in the following ways:
 
     [EffectInput](https://cs.chromium.org/chromium/src/third_party/blink/renderer/core/animation/effect_input.cc)
     contains the helper functions that are used to
-    [process a keyframe argument](https://drafts.csswg.org/web-animations/#processing-a-keyframes-argument)
+    [process a keyframe argument](https://w3.org/TR/web-animations-1/#processing-a-keyframes-argument)
     which can take an argument of either object or array form.
 
 *   ### DevTools

@@ -25,6 +25,5 @@ include_rules = [
   "+third_party/hamcrest",
   "+third_party/junit",
   "+third_party/mockito",
-  "+ui/android",
 ]
 

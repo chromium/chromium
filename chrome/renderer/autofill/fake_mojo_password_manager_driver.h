@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,15 +31,25 @@ class FakeMojoPasswordManagerDriver
 
   // mojom::PasswordManagerDriver:
   // TODO(crbug.com/948062): Migrate the other methods to GMock as well.
-  MOCK_METHOD1(PasswordFormCleared, void(const autofill::FormData&));
+  MOCK_METHOD(void,
+              PasswordFormCleared,
+              (const autofill::FormData&),
+              (override));
 
-  MOCK_METHOD0(ShowTouchToFill, void());
+#if BUILDFLAG(IS_ANDROID)
+  MOCK_METHOD(void,
+              ShowTouchToFill,
+              (autofill::mojom::SubmissionReadinessState),
+              (override));
+#endif
 
-  MOCK_METHOD4(ShowPasswordSuggestions,
-               void(base::i18n::TextDirection,
-                    const std::u16string&,
-                    int,
-                    const gfx::RectF&));
+  MOCK_METHOD(void,
+              ShowPasswordSuggestions,
+              (base::i18n::TextDirection,
+               const std::u16string&,
+               int,
+               const gfx::RectF&),
+              (override));
 
   bool called_show_not_secure_warning() const {
     return called_show_not_secure_warning_;
@@ -84,6 +94,9 @@ class FakeMojoPasswordManagerDriver
     form_data_parsed_ = absl::nullopt;
     called_password_forms_rendered_ = false;
     form_data_rendered_ = absl::nullopt;
+    called_password_form_submitted_ = false;
+    form_data_submitted_ = absl::nullopt;
+    called_inform_about_user_input_count_ = false;
   }
 
   bool called_record_save_progress() const {
@@ -129,8 +142,7 @@ class FakeMojoPasswordManagerDriver
       const std::vector<autofill::FormData>& forms_data) override;
 
   void PasswordFormsRendered(
-      const std::vector<autofill::FormData>& visible_forms_data,
-      bool did_stop_loading) override;
+      const std::vector<autofill::FormData>& visible_forms_data) override;
 
   void PasswordFormSubmitted(const autofill::FormData& form_data) override;
 

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,16 +14,8 @@
 using ShowFeedbackPageTest = BrowserWithTestWindowTest;
 
 // TODO(crbug.com/1128855): Fix the test for Lacros build.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_UserFeedbackDisallowed DISABLED_UserFeedbackDisallowed
-#else
-#define MAYBE_UserFeedbackDisallowed UserFeedbackDisallowed
-#endif
-TEST_F(ShowFeedbackPageTest, MAYBE_UserFeedbackDisallowed) {
-  // TODO(crbug.com/1167223): Fix the test for WebUIFeedback
-  if (base::FeatureList::IsEnabled(features::kWebUIFeedback))
-    GTEST_SKIP() << "Skipped due to crash with webui feedback.";
-
+// TODO(crbug.com/1167223): Fix the test for WebUIFeedback.
+TEST_F(ShowFeedbackPageTest, DISABLED_UserFeedbackDisallowed) {
   base::HistogramTester histogram_tester;
   std::string unused;
   chrome::ShowFeedbackPage(browser(), chrome::kFeedbackSourceBrowserCommand,

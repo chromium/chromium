@@ -43,6 +43,14 @@
 #pragma once
 #endif
 
+#ifndef DECLSPEC_XFGVIRT
+#if _CONTROL_FLOW_GUARD_XFG
+#define DECLSPEC_XFGVIRT(base, func) __declspec(xfg_virtual(base, func))
+#else
+#define DECLSPEC_XFGVIRT(base, func)
+#endif
+#endif
+
 /* Forward Declarations */ 
 
 #ifndef __IRdpDesktopSessionEventHandler_FWD_DEFINED__
@@ -108,21 +116,26 @@ EXTERN_C const IID IID_IRdpDesktopSessionEventHandler;
     {
         BEGIN_INTERFACE
         
+        DECLSPEC_XFGVIRT(IUnknown, QueryInterface)
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IRdpDesktopSessionEventHandler * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
             _COM_Outptr_  void **ppvObject);
         
+        DECLSPEC_XFGVIRT(IUnknown, AddRef)
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IRdpDesktopSessionEventHandler * This);
         
+        DECLSPEC_XFGVIRT(IUnknown, Release)
         ULONG ( STDMETHODCALLTYPE *Release )( 
             IRdpDesktopSessionEventHandler * This);
         
+        DECLSPEC_XFGVIRT(IRdpDesktopSessionEventHandler, OnRdpConnected)
         /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE *OnRdpConnected )( 
             IRdpDesktopSessionEventHandler * This);
         
+        DECLSPEC_XFGVIRT(IRdpDesktopSessionEventHandler, OnRdpClosed)
         /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE *OnRdpClosed )( 
             IRdpDesktopSessionEventHandler * This);
         
@@ -209,18 +222,22 @@ EXTERN_C const IID IID_IRdpDesktopSession;
     {
         BEGIN_INTERFACE
         
+        DECLSPEC_XFGVIRT(IUnknown, QueryInterface)
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IRdpDesktopSession * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
             _COM_Outptr_  void **ppvObject);
         
+        DECLSPEC_XFGVIRT(IUnknown, AddRef)
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IRdpDesktopSession * This);
         
+        DECLSPEC_XFGVIRT(IUnknown, Release)
         ULONG ( STDMETHODCALLTYPE *Release )( 
             IRdpDesktopSession * This);
         
+        DECLSPEC_XFGVIRT(IRdpDesktopSession, Connect)
         /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE *Connect )( 
             IRdpDesktopSession * This,
             /* [in] */ long width,
@@ -231,9 +248,11 @@ EXTERN_C const IID IID_IRdpDesktopSession;
             /* [in] */ DWORD port_number,
             /* [in] */ IRdpDesktopSessionEventHandler *event_handler);
         
+        DECLSPEC_XFGVIRT(IRdpDesktopSession, Disconnect)
         /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE *Disconnect )( 
             IRdpDesktopSession * This);
         
+        DECLSPEC_XFGVIRT(IRdpDesktopSession, ChangeResolution)
         /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE *ChangeResolution )( 
             IRdpDesktopSession * This,
             /* [in] */ long width,
@@ -241,6 +260,7 @@ EXTERN_C const IID IID_IRdpDesktopSession;
             /* [in] */ long dpi_x,
             /* [in] */ long dpi_y);
         
+        DECLSPEC_XFGVIRT(IRdpDesktopSession, InjectSas)
         /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE *InjectSas )( 
             IRdpDesktopSession * This);
         

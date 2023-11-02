@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/logging.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
@@ -87,12 +88,12 @@ std::unique_ptr<DisplayState> BrailleControllerImpl::GetDisplayState() {
     } else if (rows * columns > 0) {
       // rows * columns == 0 means no display present.
       display_state->available = true;
-      display_state->text_column_count = std::make_unique<int>(columns);
-      display_state->text_row_count = std::make_unique<int>(rows);
+      display_state->text_column_count = columns;
+      display_state->text_row_count = rows;
 
       unsigned int cell_size = 0;
       connection_->GetCellSize(&cell_size);
-      display_state->cell_size = std::make_unique<int>(cell_size);
+      display_state->cell_size = cell_size;
     }
   }
   return display_state;
@@ -316,7 +317,7 @@ void BrailleControllerImpl::DispatchKeyEvent(std::unique_ptr<KeyEvent> event) {
                                   base::Unretained(this), std::move(event)));
     return;
   }
-  VLOG(1) << "Dispatching key event: " << *event->ToValue();
+  VLOG(1) << "Dispatching key event: " << event->ToValue();
   for (auto& observer : observers_)
     observer.OnBrailleKeyEvent(*event);
 }

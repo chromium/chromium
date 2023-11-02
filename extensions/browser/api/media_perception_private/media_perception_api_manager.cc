@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,8 +13,8 @@
 #include "base/lazy_instance.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/upstart/upstart_client.h"
+#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/dbus/upstart/upstart_client.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/api/media_perception_private/conversion_utils.h"
 #include "extensions/browser/api/media_perception_private/media_perception_api_delegate.h"
@@ -73,10 +73,8 @@ GetFailedToInstallComponentState() {
 // Pulls out the version number from a mount_point location for the media
 // perception component. Mount points look like
 // /run/imageloader/rtanalytics-light/1.0, where 1.0 is the version string.
-std::unique_ptr<std::string> ExtractVersionFromMountPoint(
-    const std::string& mount_point) {
-  return std::make_unique<std::string>(
-      base::FilePath(mount_point).BaseName().value());
+std::string ExtractVersionFromMountPoint(const std::string& mount_point) {
+  return base::FilePath(mount_point).BaseName().value();
 }
 
 }  // namespace
@@ -140,12 +138,12 @@ MediaPerceptionAPIManager::MediaPerceptionAPIManager(
     content::BrowserContext* context)
     : browser_context_(context),
       analytics_process_state_(AnalyticsProcessState::IDLE) {
-  scoped_observation_.Observe(chromeos::MediaAnalyticsClient::Get());
+  scoped_observation_.Observe(ash::MediaAnalyticsClient::Get());
 }
 
 MediaPerceptionAPIManager::~MediaPerceptionAPIManager() {
   // Stop the separate media analytics process.
-  chromeos::UpstartClient::Get()->StopMediaAnalytics();
+  ash::UpstartClient::Get()->StopMediaAnalytics();
 }
 
 void MediaPerceptionAPIManager::ActivateMediaPerception(
@@ -161,7 +159,7 @@ void MediaPerceptionAPIManager::SetMountPointNonEmptyForTesting() {
 
 void MediaPerceptionAPIManager::GetState(APIStateCallback callback) {
   if (analytics_process_state_ == AnalyticsProcessState::RUNNING) {
-    chromeos::MediaAnalyticsClient::Get()->GetState(
+    ash::MediaAnalyticsClient::Get()->GetState(
         base::BindOnce(&MediaPerceptionAPIManager::StateCallback,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
     return;
@@ -247,8 +245,7 @@ void MediaPerceptionAPIManager::SetComponentProcessState(
     base::OnceCallback<void(bool)> stop_callback =
         base::BindOnce(&MediaPerceptionAPIManager::UpstartStopProcessCallback,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback));
-    chromeos::UpstartClient::Get()->StopMediaAnalytics(
-        std::move(stop_callback));
+    ash::UpstartClient::Get()->StopMediaAnalytics(std::move(stop_callback));
     return;
   }
 
@@ -267,7 +264,7 @@ void MediaPerceptionAPIManager::SetComponentProcessState(
     std::vector<std::string> upstart_env;
     upstart_env.push_back(std::string("mount_point=") + mount_point_);
 
-    chromeos::UpstartClient::Get()->StartMediaAnalytics(
+    ash::UpstartClient::Get()->StartMediaAnalytics(
         upstart_env,
         base::BindOnce(&MediaPerceptionAPIManager::UpstartStartProcessCallback,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
@@ -303,7 +300,7 @@ void MediaPerceptionAPIManager::SetState(
   // upstart stop command if requested.
   if (state_proto.status() == mri::State::STOPPED) {
     analytics_process_state_ = AnalyticsProcessState::CHANGING_PROCESS_STATE;
-    chromeos::UpstartClient::Get()->StopMediaAnalytics(
+    ash::UpstartClient::Get()->StopMediaAnalytics(
         base::BindOnce(&MediaPerceptionAPIManager::UpstartStopCallback,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
     return;
@@ -313,7 +310,7 @@ void MediaPerceptionAPIManager::SetState(
   // then send restart upstart command.
   if (state_proto.status() == mri::State::RESTARTING) {
     analytics_process_state_ = AnalyticsProcessState::CHANGING_PROCESS_STATE;
-    chromeos::UpstartClient::Get()->RestartMediaAnalytics(
+    ash::UpstartClient::Get()->RestartMediaAnalytics(
         base::BindOnce(&MediaPerceptionAPIManager::UpstartRestartCallback,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
     return;
@@ -339,7 +336,7 @@ void MediaPerceptionAPIManager::SetState(
     if (!mount_point_.empty())
       upstart_env.push_back(std::string("mount_point=") + mount_point_);
 
-    chromeos::UpstartClient::Get()->StartMediaAnalytics(
+    ash::UpstartClient::Get()->StartMediaAnalytics(
         upstart_env,
         base::BindOnce(&MediaPerceptionAPIManager::UpstartStartCallback,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback),
@@ -354,7 +351,7 @@ void MediaPerceptionAPIManager::SetState(
 
 void MediaPerceptionAPIManager::SetStateInternal(APIStateCallback callback,
                                                  const mri::State& state) {
-  chromeos::MediaAnalyticsClient::Get()->SetState(
+  ash::MediaAnalyticsClient::Get()->SetState(
       state,
       base::BindOnce(&MediaPerceptionAPIManager::StateCallback,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
@@ -362,7 +359,7 @@ void MediaPerceptionAPIManager::SetStateInternal(APIStateCallback callback,
 
 void MediaPerceptionAPIManager::GetDiagnostics(
     APIGetDiagnosticsCallback callback) {
-  chromeos::MediaAnalyticsClient::Get()->GetDiagnostics(
+  ash::MediaAnalyticsClient::Get()->GetDiagnostics(
       base::BindOnce(&MediaPerceptionAPIManager::GetDiagnosticsCallback,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -424,7 +421,7 @@ void MediaPerceptionAPIManager::SendMojoInvitation(
 
   base::ScopedFD fd =
       channel.TakeRemoteEndpoint().TakePlatformHandle().TakeFD();
-  chromeos::MediaAnalyticsClient::Get()->BootstrapMojoConnection(
+  ash::MediaAnalyticsClient::Get()->BootstrapMojoConnection(
       std::move(fd),
       base::BindOnce(&MediaPerceptionAPIManager::OnBootstrapMojoConnection,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));

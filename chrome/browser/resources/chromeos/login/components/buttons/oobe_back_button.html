@@ -1,17 +1,22 @@
-<!-- Copyright 2021 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 
 <link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/html/assert.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_icons_css.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_icons.css.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_shared_style.css.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 
 <link rel="import" href="../common_styles/common_styles.html">
 <link rel="import" href="../oobe_vars/oobe_custom_vars_css.html">
 <link rel="import" href="../behaviors/oobe_i18n_behavior.html">
 <link rel="import" href="../oobe_icons.html">
+<link rel="import" href="./oobe_base_button.html">
 
 <!--
   Material design square "<- Back" button.
@@ -47,7 +52,7 @@
   <template>
     <style include="cr-icons cr-shared-style oobe-common-styles">
       cr-button {
-        --border-color: var(--oobe-button-border-color);
+        --border-color: var(--oobe-bg-color);
         --cr-button-height: var(--oobe-button-height);
         border-radius: var(--oobe-button-radius);
         margin: 0 4px;
@@ -75,7 +80,9 @@
       <div class="flex horizontal layout center-justified center">
         <iron-icon icon="oobe-20:button-arrow-forward"></iron-icon>
         <slot name="text">
-          <div class="fallback">[[i18nDynamic(locale, textKey)]]</div>
+          <template is="dom-if" if="[[textKey]]">
+            <div class="fallback">[[i18nDynamic(locale, textKey)]]</div>
+          </template>
         </slot>
       </div>
     </cr-button>

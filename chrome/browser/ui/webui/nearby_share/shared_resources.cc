@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -85,6 +85,10 @@ void RegisterNearbySharedStrings(content::WebUIDataSource* data_source) {
        IDS_NEARBY_ONBOARDING_PAGE_DEVICE_NAME},
       {"nearbyShareOnboardingPageDeviceNameHelp",
        IDS_NEARBY_ONBOARDING_PAGE_DEVICE_NAME_HELP},
+      {"nearbyShareOnboardingPageDeviceVisibility",
+       IDS_NEARBY_ONBOARDING_PAGE_DEVICE_VISIBILITY},
+      {"nearbyShareOnboardingPageDeviceVisibilityHelpAllContacts",
+       IDS_NEARBY_ONBOARDING_PAGE_DEVICE_VISIBILITY_HELP_ALL_CONTACTS},
       {"nearbyShareOnboardingPageSubtitle",
        IDS_NEARBY_ONBOARDING_PAGE_SUBTITLE},
       {"nearbyShareOnboardingPageTitle", IDS_NEARBY_ONBOARDING_PAGE_TITLE},

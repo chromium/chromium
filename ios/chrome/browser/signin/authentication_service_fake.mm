@@ -1,20 +1,21 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/signin/authentication_service_fake.h"
 
-#include <memory>
+#import <memory>
 
+#import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/signin/authentication_service_delegate_fake.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
-#include "ios/chrome/browser/signin/identity_manager_factory.h"
-#include "ios/chrome/browser/sync/sync_service_factory.h"
-#include "ios/chrome/browser/sync/sync_setup_service.h"
-#include "ios/chrome/browser/sync/sync_setup_service_factory.h"
+#import "ios/chrome/browser/signin/identity_manager_factory.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
+#import "ios/chrome/browser/sync/sync_setup_service.h"
+#import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service_constants.h"
 
@@ -36,7 +37,7 @@ AuthenticationServiceFake::AuthenticationServiceFake(
 
 AuthenticationServiceFake::~AuthenticationServiceFake() {}
 
-void AuthenticationServiceFake::SignIn(ChromeIdentity* identity) {
+void AuthenticationServiceFake::SignIn(id<SystemIdentity> identity) {
   // Needs to call PrepareForFirstSyncSetup to behave like
   // AuthenticationService.
   DCHECK(identity);
@@ -45,7 +46,7 @@ void AuthenticationServiceFake::SignIn(ChromeIdentity* identity) {
   consent_level_ = signin::ConsentLevel::kSignin;
 }
 
-void AuthenticationServiceFake::GrantSyncConsent(ChromeIdentity* identity) {
+void AuthenticationServiceFake::GrantSyncConsent(id<SystemIdentity> identity) {
   consent_level_ = signin::ConsentLevel::kSync;
 }
 
@@ -74,7 +75,7 @@ ChromeIdentity* AuthenticationServiceFake::GetPrimaryIdentity(
     signin::ConsentLevel consent_level) const {
   switch (consent_level) {
     case signin::ConsentLevel::kSignin:
-      return primary_identity_;
+      return base::mac::ObjCCastStrict<ChromeIdentity>(primary_identity_);
     case signin::ConsentLevel::kSync:
       return (consent_level_ == signin::ConsentLevel::kSync) ? primary_identity_
                                                              : nil;
@@ -87,8 +88,11 @@ bool AuthenticationServiceFake::HasPrimaryIdentityManaged(
   if (!GetPrimaryIdentity(consent_level)) {
     return false;
   }
-  return
-      [primary_identity_.userEmail hasSuffix:ios::kManagedIdentityEmailSuffix];
+  return [ios::GetManagedEmailSuffixes()
+             indexOfObjectPassingTest:^BOOL(NSString* suffix, NSUInteger idx,
+                                            BOOL* stop) {
+               return [primary_identity_.userEmail hasSuffix:suffix];
+             }] != NSNotFound;
 }
 
 std::unique_ptr<KeyedService>

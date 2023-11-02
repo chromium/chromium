@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_SERVICES_SPEECH_SODA_SODA_CLIENT_H_
 #define CHROME_SERVICES_SPEECH_SODA_SODA_CLIENT_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_native_library.h"
 #include "chrome/services/speech/soda/soda_async_impl.h"
 
@@ -36,6 +37,9 @@ class SodaClient {
   // Feeds raw audio to SODA in the form of a contiguous stream of characters.
   void AddAudio(const char* audio_buffer, int audio_buffer_size);
 
+  // Notifies the client to finish transcribing.
+  void MarkDone();
+
   // Checks whether the sample rate or channel count differs from the values
   // used to initialize the SODA instance.
   bool DidAudioPropertyChange(int sample_rate, int channel_count);
@@ -64,11 +68,14 @@ class SodaClient {
   typedef void (*AddAudioFunction)(void*, const char*, int);
   AddAudioFunction add_audio_func_;
 
+  typedef void (*MarkDoneFunction)(void*);
+  MarkDoneFunction mark_done_func_;
+
   typedef void (*SodaStartFunction)(void*);
   SodaStartFunction soda_start_func_;
 
   // An opaque handle to the SODA async instance.
-  void* soda_async_handle_;
+  raw_ptr<void> soda_async_handle_;
 
   LoadSodaResultValue load_soda_result_ = LoadSodaResultValue::kUnknown;
   bool is_initialized_;

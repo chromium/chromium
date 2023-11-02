@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <stdint.h>
 
 #include "base/component_export.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/io_buffer.h"
 
@@ -56,7 +56,11 @@ class COMPONENT_EXPORT(NETWORK_CPP) NetToMojoPendingBuffer
                          void* buffer);
   ~NetToMojoPendingBuffer();
   mojo::ScopedDataPipeProducerHandle handle_;
-  void* buffer_;
+
+  // `buffer_` is not a raw_ptr<...> for performance reasons: pointee is never
+  // protected by BackupRefPtr, because the pointer comes either from using
+  // `mmap`, MapViewOfFile or base::AllocPages directly.
+  RAW_PTR_EXCLUSION void* buffer_;
 };
 
 // Net side of a Net -> Mojo copy. The data will be read from the network and
@@ -118,7 +122,11 @@ class COMPONENT_EXPORT(NETWORK_CPP) MojoToNetPendingBuffer
   ~MojoToNetPendingBuffer();
 
   mojo::ScopedDataPipeConsumerHandle handle_;
-  const void* buffer_;
+
+  // `buffer_` is not a raw_ptr<...> for performance reasons: pointee is never
+  // protected by BackupRefPtr, because the pointer comes either from using
+  // `mmap`, MapViewOfFile or base::AllocPages directly.
+  RAW_PTR_EXCLUSION const void* buffer_;
 };
 
 // Net side of a Mojo -> Net copy. The data will already be in the

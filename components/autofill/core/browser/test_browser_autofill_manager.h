@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,30 +10,60 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/time/time.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-using base::TimeTicks;
-
 namespace autofill {
 
-class AutofillClient;
-class AutofillDriver;
+class TestAutofillClient;
+class TestAutofillDriver;
 class FormStructure;
 class TestPersonalDataManager;
 
 class TestBrowserAutofillManager : public BrowserAutofillManager {
  public:
-  TestBrowserAutofillManager(AutofillDriver* driver,
-                             AutofillClient* client,
-                             TestPersonalDataManager* personal_data);
+  TestBrowserAutofillManager(TestAutofillDriver* driver,
+                             TestAutofillClient* client);
 
   TestBrowserAutofillManager(const TestBrowserAutofillManager&) = delete;
   TestBrowserAutofillManager& operator=(const TestBrowserAutofillManager&) =
       delete;
 
   ~TestBrowserAutofillManager() override;
+
+  TestAutofillClient* client() { return client_; }
+  TestAutofillDriver* driver() { return driver_; }
+
+  // AutofillManager overrides.
+  // The overrides ensure that the thread is blocked until the form has been
+  // parsed (perhaps asynchronously, depending on AutofillParseAsync).
+  void OnLanguageDetermined(
+      const translate::LanguageDetectionDetails& details) override;
+  void OnFormsSeen(const std::vector<FormData>& updated_forms,
+                   const std::vector<FormGlobalId>& removed_forms) override;
+  void OnTextFieldDidChange(const FormData& form,
+                            const FormFieldData& field,
+                            const gfx::RectF& bounding_box,
+                            const base::TimeTicks timestamp) override;
+  void OnDidFillAutofillFormData(const FormData& form,
+                                 const base::TimeTicks timestamp) override;
+  void OnAskForValuesToFill(
+      const FormData& form,
+      const FormFieldData& field,
+      const gfx::RectF& bounding_box,
+      int query_id,
+      bool autoselect_first_suggestion,
+      FormElementWasClicked form_element_was_clicked) override;
+  void OnJavaScriptChangedAutofilledValue(
+      const FormData& form,
+      const FormFieldData& field,
+      const std::u16string& old_value) override;
+  void OnFormSubmitted(const FormData& form,
+                       const bool known_success,
+                       const mojom::SubmissionSource source) override;
 
   // BrowserAutofillManager overrides.
   bool IsAutofillProfileEnabled() const override;
@@ -47,20 +77,47 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
                                    const base::TimeTicks& interaction_time,
                                    const base::TimeTicks& submission_time,
                                    bool observed_submission) override;
+  // Immediately triggers the refill.
+  void ScheduleRefill(const FormData& form) override;
 
   // Unique to TestBrowserAutofillManager:
 
   int GetPackedCreditCardID(int credit_card_id);
 
   void AddSeenForm(const FormData& form,
+                   const std::vector<ServerFieldType>& field_types,
+                   bool preserve_values_in_form_structure = false) {
+    AddSeenForm(form, /*heuristic_types=*/field_types,
+                /*server_types=*/field_types,
+                preserve_values_in_form_structure);
+  }
+
+  void AddSeenForm(const FormData& form,
                    const std::vector<ServerFieldType>& heuristic_types,
-                   const std::vector<ServerFieldType>& server_types);
+                   const std::vector<ServerFieldType>& server_types,
+                   bool preserve_values_in_form_structure = false);
+
+  void AddSeenForm(
+      const FormData& form,
+      const std::vector<std::vector<std::pair<PatternSource, ServerFieldType>>>&
+          heuristic_types,
+      const std::vector<ServerFieldType>& server_types,
+      bool preserve_values_in_form_structure = false);
 
   void AddSeenFormStructure(std::unique_ptr<FormStructure> form_structure);
 
   void ClearFormStructures();
 
   const std::string GetSubmittedFormSignature();
+
+  // Helper to skip irrelevant params.
+  void OnAskForValuesToFillTest(const FormData& form,
+                                const FormFieldData& field,
+                                int query_id = 0,
+                                const gfx::RectF& bounding_box = {},
+                                bool autoselect_first_suggestion = false,
+                                FormElementWasClicked form_element_was_clicked =
+                                    FormElementWasClicked(false));
 
   void SetAutofillProfileEnabled(bool profile_enabled);
 
@@ -76,7 +133,9 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
   using BrowserAutofillManager::pending_form_data;
 
  private:
-  TestPersonalDataManager* personal_data_;  // Weak reference.
+  raw_ptr<TestAutofillClient> client_;
+  raw_ptr<TestAutofillDriver> driver_;
+
   bool autofill_profile_enabled_ = true;
   bool autofill_credit_card_enabled_ = true;
   bool call_parent_upload_form_data_ = false;

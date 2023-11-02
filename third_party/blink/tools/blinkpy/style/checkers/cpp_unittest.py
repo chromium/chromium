@@ -35,7 +35,6 @@
 # FIXME: Add a good test that tests UpdateIncludeState.
 
 import os
-import random
 import re
 import unittest
 
@@ -1654,45 +1653,6 @@ class CleansedLinesTest(unittest.TestCase):
                          collapse('StringReplace(body, "\\\\", "\\\\\\\\");'))
         self.assertEqual('\'\' ""', collapse('\'"\' "foo"'))
         self.assertEqual('""', collapse('"a" "b" "c"'))
-
-
-class OrderOfIncludesTest(CppStyleTestBase):
-    def setUp(self):
-        self.include_state = cpp_style._IncludeState()
-
-        # Cheat os.path.abspath called in FileInfo class.
-        self.os_path_abspath_orig = os.path.abspath
-        os.path.abspath = lambda value: value
-
-    def tearDown(self):
-        os.path.abspath = self.os_path_abspath_orig
-
-    def test_try_drop_common_suffixes(self):
-        self.assertEqual('foo/foo',
-                         cpp_style._drop_common_suffixes('foo/foo-inl.h'))
-        self.assertEqual('foo/bar/foo',
-                         cpp_style._drop_common_suffixes('foo/bar/foo_inl.h'))
-        self.assertEqual('foo/foo',
-                         cpp_style._drop_common_suffixes('foo/foo.cpp'))
-        self.assertEqual(
-            'foo/foo_unusualinternal',
-            cpp_style._drop_common_suffixes('foo/foo_unusualinternal.h'))
-        self.assertEqual('', cpp_style._drop_common_suffixes('_test.cpp'))
-        self.assertEqual('test', cpp_style._drop_common_suffixes('test.cpp'))
-
-
-class OrderOfIncludesTest(CppStyleTestBase):
-    def setUp(self):
-        self.include_state = cpp_style._IncludeState()
-
-        # Cheat os.path.abspath called in FileInfo class.
-        self.os_path_abspath_orig = os.path.abspath
-        self.os_path_isfile_orig = os.path.isfile
-        os.path.abspath = lambda value: value
-
-    def tearDown(self):
-        os.path.abspath = self.os_path_abspath_orig
-        os.path.isfile = self.os_path_isfile_orig
 
 
 class CheckForFunctionLengthsTest(CppStyleTestBase):

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/compiler_specific.h"
-#include "base/cxx17_backports.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/class_property.h"
 #include "ui/base/metadata/base_type_conversion.h"
@@ -47,7 +46,11 @@ class PropertySetterBase {
   virtual void SetProperty(View* obj) = 0;
 };
 
-template <typename TClass, typename TValue, typename TSig, TSig Set>
+template <typename TClass,
+          typename TValue,
+          typename TSig,
+          TSig Set,
+          typename FType = typename std::remove_reference<TValue>::type>
 class PropertySetter : public PropertySetterBase {
  public:
   explicit PropertySetter(ui::metadata::ArgType<TValue> value)
@@ -61,7 +64,7 @@ class PropertySetter : public PropertySetterBase {
   }
 
  private:
-  TValue value_;
+  FType value_;
 };
 
 template <typename TClass, typename TValue>
@@ -97,11 +100,11 @@ class ClassPropertyMoveSetter : public PropertySetterBase {
   ~ClassPropertyMoveSetter() override = default;
 
   void SetProperty(View* obj) override {
-    static_cast<TClass*>(obj)->SetProperty(property_, std::move(value_));
+    static_cast<TClass*>(obj)->SetProperty(property_.get(), std::move(value_));
   }
 
  private:
-  const ui::ClassProperty<TValue*>* property_;
+  raw_ptr<const ui::ClassProperty<TValue*>> property_;
   TValue value_;
 };
 
@@ -121,7 +124,7 @@ class ClassPropertyUniquePtrSetter : public PropertySetterBase {
   }
 
  private:
-  const ui::ClassProperty<TValue*>* property_;
+  raw_ptr<const ui::ClassProperty<TValue*>> property_;
   std::unique_ptr<TValue> value_;
 };
 
@@ -135,12 +138,12 @@ class ClassMethodCaller : public PropertySetterBase {
   ~ClassMethodCaller() override = default;
 
   void SetProperty(View* obj) override {
-    base::apply(
+    std::apply(
         Set, std::tuple_cat(std::make_tuple(static_cast<TClass*>(obj)), args_));
   }
 
  private:
-  using Parameters = std::tuple<Args...>;
+  using Parameters = std::tuple<typename std::remove_reference<Args>::type...>;
   Parameters args_;
 };
 
@@ -151,8 +154,8 @@ class VIEWS_EXPORT ViewBuilderCore {
   ViewBuilderCore& operator=(ViewBuilderCore&&);
   virtual ~ViewBuilderCore();
 
-  std::unique_ptr<View> Build() && WARN_UNUSED_RESULT;
-  virtual std::unique_ptr<ViewBuilderCore> Release() WARN_UNUSED_RESULT = 0;
+  [[nodiscard]] std::unique_ptr<View> Build() &&;
+  [[nodiscard]] virtual std::unique_ptr<ViewBuilderCore> Release() = 0;
 
  protected:
   // Vector of child view builders. If the optional index is included it will be

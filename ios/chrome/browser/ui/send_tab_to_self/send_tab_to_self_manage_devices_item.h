@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,6 +20,8 @@
 @property(nonatomic, strong) UIImage* accountAvatar;
 // Email of the account sharing a tab.
 @property(nonatomic, strong) NSString* accountEmail;
+// Whether to display a link to the list of known devices for this account.
+@property(nonatomic, assign) BOOL showManageDevicesLink;
 // Delegate to open the link upon click.
 @property(nonatomic, weak) id<SendTabToSelfModalDelegate> delegate;
 

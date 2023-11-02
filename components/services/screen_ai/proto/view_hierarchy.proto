@@ -1,0 +1,126 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This proto is copied from the following protos, do not change.
+// google3/knowledge/cerebra/sense/im2query/screenai/proto/dimensions.proto
+// google3/knowledge/cerebra/sense/im2query/screenai/proto/view_hierarchy.proto
+syntax = "proto2";
+
+package screenai;
+
+option optimize_for = LITE_RUNTIME;
+
+// Normalized coordinates [0.0, 1.0] specifying a region of the screen.
+// The coordinate [0.0, 0.0] corresponds to the top left pixel on the screen.
+message BoundingBox {
+  optional float top = 1;
+  optional float left = 2;
+  optional float bottom = 3;
+  optional float right = 4;
+}
+
+// Bounding box specifying a region of the screen in pixel coordinates.
+// The coordinate [0, 0] corresponds to the top left pixel on the screen.
+message BoundingBoxPixels {
+  optional int32 top = 1;
+  optional int32 left = 2;
+  optional int32 bottom = 3;
+  optional int32 right = 4;
+}
+
+// Represents a hierarchical data (e.g. tree structure) in general, in which
+// UiElement represents a node.
+// Next ID: 3.
+message ViewHierarchy {
+  reserved 1;
+  repeated UiElement ui_elements = 2;
+}
+
+// A single UI element. An element is relatively general and includes containers
+// (e.g. LinearLayout) or individual visible elements (e.g. button, text label).
+// Next ID: 10.
+message UiElement {
+  // Unique positive number in the entire view hierarchy.
+  optional int32 id = 1 [default = -1];
+
+  optional UiElementType type = 2;
+
+  optional int32 parent_id = 3 [default = -1];
+
+  // All child elements of this element.
+  // The order of child ids is preserved from original view hierarchy tree.
+  repeated int32 child_ids = 4 [packed = true];
+
+  // Bounding box in screenshot, normalized by the image dimensions. This
+  // dimension is generally the captured screenshot dimension or the dimension
+  // of the root element if it covers the whole visible area.
+  // For example: The viewport of the screen is: 1440x1080. We capture a long
+  // screen that contains scrolled content, which has size 1440x8500.
+  // Then a container with coordinates:
+  //   left: 50, right 1390, top 1300, bottom 2000
+  // would be normalized to:
+  //   left: 50 / 1440, right 1390 / 1440, top 1300 / 8500, bottom 2000 / 8500.
+  optional BoundingBox bounding_box = 6;
+
+  // Bounding box in screenshot. Bounding box in pixels (non-normalized).
+  optional BoundingBoxPixels bounding_box_pixels = 8;
+
+  // A list of attributes for this element. Includes common attributes such as
+  // 'enabled', 'text'.
+  repeated UiElementAttribute attributes = 7;
+
+  // Define the application-specific information below.
+
+  // Information about data extracted from a Chrome-based application.
+  optional ChromeInfo chrome_info = 9;
+}
+
+enum UiElementType {
+  UNKNOWN = 0;
+  ROOT = 1;
+  WINDOW = 2;
+  VIEW = 3;
+}
+
+// An UiElement attribute.
+// Next ID: 9.
+message UiElementAttribute {
+  // The name of the attribute, for example 'text', 'focusable',
+  // 'contentDescription'.
+  optional string name = 1;
+
+  // The value of the attribute.
+  // This format only supports simple types. Some types for example dimension
+  // '123 px' should be stored as string and the application should handle
+  // parsing it. For other types for example reference a custom attribute
+  // message should be defined.
+  oneof value {
+    bool bool_value = 2;
+    int32 int_value = 3;
+    string string_value = 4;
+    float float_value = 5;
+    IntList int_list_value = 6;
+    StringList string_list_value = 7;
+    FloatList float_list_value = 8;
+  }
+}
+
+message IntList {
+  repeated int32 value = 1 [packed = true];
+}
+
+message StringList {
+  repeated string value = 1;
+}
+
+message FloatList {
+  repeated float value = 1;
+}
+
+// Chrome specific information.
+message ChromeInfo {
+  // Backend DOM Node ID from which the UiElement is extracted.
+  // Sample usage: to trace back the original DOM Node of an UiElement.
+  optional int32 dom_node_id = 1 [default = -1];
+}

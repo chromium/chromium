@@ -1,0 +1,30 @@
+caption: Enables the concept of policy atomic groups
+desc: |-
+  Setting the policy to Enabled means policies coming from an atomic group that don't share the source with the highest priority from that group get ignored.
+
+        Setting the policy to Disabled means no policy is ignored because of its source. Policies are ignored only if there's a conflict, and the policy doesn't have the highest priority.
+
+        If this policy is set from a cloud source, it can't target a specific user.
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- fuchsia
+items:
+- caption: Enable policy atomic groups
+  value: true
+- caption: Disable policy atomic groups
+  value: false
+owners:
+- ydago@chromium.org
+- pastarmovj@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome.*:78-
+- chrome_os:78-
+- android:105-
+- ios:105-
+tags: []
+type: main

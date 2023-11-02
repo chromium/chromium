@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,9 @@
 #include <memory>
 #include <vector>
 
+#include "base/record_replay.h"
 #include "components/viz/common/resources/resource_format_utils.h"
+#include "components/viz/service/display/record_replay_render.h"
 #include "components/viz/service/display/shared_bitmap_manager.h"
 
 namespace viz {
@@ -34,8 +36,8 @@ DisplayResourceProviderSoftware::LockForRead(ResourceId id) {
         resource->transferable.mailbox_holder.mailbox;
     std::unique_ptr<SharedBitmap> bitmap =
         shared_bitmap_manager_->GetSharedBitmapFromId(
-            resource->transferable.size, resource->transferable.format,
-            shared_bitmap_id);
+            resource->transferable.size,
+            resource->transferable.format.resource_format(), shared_bitmap_id);
     if (bitmap) {
       resource->shared_bitmap = std::move(bitmap);
       resource->shared_bitmap_tracing_guid =
@@ -107,7 +109,7 @@ void DisplayResourceProviderSoftware::PopulateSkBitmapWithResource(
     SkBitmap* sk_bitmap,
     const ChildResource* resource,
     SkAlphaType alpha_type) {
-  DCHECK(IsBitmapFormatSupported(resource->transferable.format));
+  DCHECK(resource->transferable.format.IsBitmapFormatSupported());
   SkImageInfo info =
       SkImageInfo::MakeN32(resource->transferable.size.width(),
                            resource->transferable.size.height(), alpha_type);
@@ -121,6 +123,17 @@ DisplayResourceProviderSoftware::ScopedReadLockSkImage::ScopedReadLockSkImage(
     ResourceId resource_id,
     SkAlphaType alpha_type)
     : resource_provider_(resource_provider), resource_id_(resource_id) {
+  // When recording/replaying we don't have a resource provider, and need to get
+  // the bitmap directly from the record/replay renderer.
+  if (recordreplay::IsRecordingOrReplaying("notify-paints")) {
+    SkBitmap sk_bitmap;
+    if (recordreplay::PopulateSkBitmapWithResource(&sk_bitmap, resource_id)) {
+      sk_bitmap.setImmutable();
+      sk_image_ = SkImage::MakeFromBitmap(sk_bitmap);
+    }
+    return;
+  }
+
   const ChildResource* resource = resource_provider->LockForRead(resource_id);
   DCHECK(resource);
   DCHECK(!resource->is_gpu_resource_type());
@@ -154,6 +167,9 @@ DisplayResourceProviderSoftware::ScopedReadLockSkImage::ScopedReadLockSkImage(
 
 DisplayResourceProviderSoftware::ScopedReadLockSkImage::
     ~ScopedReadLockSkImage() {
+  if (recordreplay::IsRecordingOrReplaying("notify-paints")) {
+    return;
+  }
   resource_provider_->UnlockForRead(resource_id_);
 }
 

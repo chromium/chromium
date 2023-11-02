@@ -143,7 +143,7 @@ String TextDecoder::decode(const char* start,
     return String();
   }
 
-  if (!ignore_bom_ && !bom_seen_ && !s.IsEmpty()) {
+  if (!ignore_bom_ && !bom_seen_ && !s.empty()) {
     bom_seen_ = true;
     String name(encoding_.GetName());
     if ((name == "UTF-8" || name == "UTF-16LE" || name == "UTF-16BE") &&

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -52,7 +52,7 @@ BreadcrumbManagerTabHelper::BreadcrumbManagerTabHelper(
   unique_id_ = next_unique_id++;
 
   infobar_manager_ = infobar_manager;
-  infobar_observation_.Observe(infobar_manager_);
+  infobar_observation_.Observe(infobar_manager_.get());
 }
 
 BreadcrumbManagerTabHelper::~BreadcrumbManagerTabHelper() = default;

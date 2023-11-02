@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -339,7 +339,7 @@ public class TabbedPaintPreviewTest {
                 parcel.setDataPosition(0);
                 UnguessableToken token = UnguessableToken.CREATOR.createFromParcel(parcel);
                 compositorListener.onCompositorReady(token, new UnguessableToken[] {token},
-                        new int[] {500, 500}, new int[] {0, 0}, new int[] {0}, null, null, 0);
+                        new int[] {500, 500}, new int[] {0, 0}, new int[] {0}, null, null, 0f, 0);
             }, 250);
         }
 

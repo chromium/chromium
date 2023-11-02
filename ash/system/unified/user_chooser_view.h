@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,7 +45,7 @@ class UserItemButton : public views::Button {
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
  private:
-  const ax::mojom::Role role_;
+  const int user_index_;
   views::ImageView* const capture_icon_;
   views::Label* const name_;
   views::Label* const email_;

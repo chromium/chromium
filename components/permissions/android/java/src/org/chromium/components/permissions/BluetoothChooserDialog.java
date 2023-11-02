@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,8 +33,8 @@ import org.chromium.components.location.LocationUtils;
 import org.chromium.components.omnibox.AutocompleteSchemeClassifier;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer;
 import org.chromium.content_public.browser.bluetooth.BluetoothChooserEvent;
-import org.chromium.ui.base.PermissionCallback;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.permissions.PermissionCallback;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
@@ -112,18 +112,26 @@ public class BluetoothChooserDialog
     // The status message to show when the bluetooth adapter is turned off.
     private final SpannableString mAdapterOffStatus;
 
+    // Should the "adapter off" message be shown once Bluetooth permission is granted?
+    private boolean mAdapterOff;
+
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public final BroadcastReceiver mLocationModeBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (!LocationManager.MODE_CHANGED_ACTION.equals(intent.getAction())) {
+            if (!LocationManager.MODE_CHANGED_ACTION.equals(intent.getAction())) return;
+
+            if (!checkLocationServicesAndPermission()) return;
+
+            mItemChooserDialog.clear();
+
+            if (mAdapterOff) {
+                notifyAdapterTurnedOff();
                 return;
             }
-            if (checkLocationServicesAndPermission()) {
-                mItemChooserDialog.clear();
-                Natives jni = BluetoothChooserDialogJni.get();
-                jni.restartSearch(mNativeBluetoothChooserDialogPtr);
-            }
+
+            Natives jni = BluetoothChooserDialogJni.get();
+            jni.restartSearch(mNativeBluetoothChooserDialogPtr);
         }
     };
 
@@ -199,8 +207,8 @@ public class BluetoothChooserDialog
         AutocompleteSchemeClassifier autocompleteSchemeClassifier =
                 mDelegate.createAutocompleteSchemeClassifier();
 
-        OmniboxUrlEmphasizer.emphasizeUrl(origin, mContext.getResources(),
-                autocompleteSchemeClassifier, mSecurityLevel, false, useDarkColors, true);
+        OmniboxUrlEmphasizer.emphasizeUrl(origin, mContext, autocompleteSchemeClassifier,
+                mSecurityLevel, useDarkColors, true);
         autocompleteSchemeClassifier.destroy();
         // Construct a full string and replace the origin text with emphasized version.
         SpannableString title =
@@ -262,11 +270,17 @@ public class BluetoothChooserDialog
         // The chooser might have been closed during the request.
         if (mNativeBluetoothChooserDialogPtr == 0) return;
 
-        if (checkLocationServicesAndPermission()) {
-            mItemChooserDialog.clear();
-            Natives jni = BluetoothChooserDialogJni.get();
-            jni.restartSearch(mNativeBluetoothChooserDialogPtr);
+        if (!checkLocationServicesAndPermission()) return;
+
+        mItemChooserDialog.clear();
+
+        if (mAdapterOff) {
+            notifyAdapterTurnedOff();
+            return;
         }
+
+        Natives jni = BluetoothChooserDialogJni.get();
+        jni.restartSearch(mNativeBluetoothChooserDialogPtr);
     }
 
     // Returns true if Location Services is on and Chrome has permission to see the user's location.
@@ -333,7 +347,7 @@ public class BluetoothChooserDialog
 
     private NoUnderlineClickableSpan createLinkSpan(@LinkType int linkType) {
         return new NoUnderlineClickableSpan(
-                mContext.getResources(), (view) -> onBluetoothLinkClick(view, linkType));
+                mContext, (view) -> onBluetoothLinkClick(view, linkType));
     }
 
     private void onBluetoothLinkClick(View view, @LinkType int linkType) {
@@ -454,15 +468,21 @@ public class BluetoothChooserDialog
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     @CalledByNative
     public void notifyAdapterTurnedOff() {
-        SpannableString adapterOffMessage =
-                SpanApplier.applySpans(mContext.getString(R.string.bluetooth_adapter_off),
-                        new SpanInfo("<link>", "</link>", createLinkSpan(LinkType.ADAPTER_OFF)));
+        mAdapterOff = true;
 
-        mItemChooserDialog.setErrorState(adapterOffMessage, mAdapterOffStatus);
+        // Permission is required to turn the adapter on so make sure to ask for that first.
+        if (checkLocationServicesAndPermission()) {
+            SpannableString adapterOffMessage = SpanApplier.applySpans(
+                    mContext.getString(R.string.bluetooth_adapter_off),
+                    new SpanInfo("<link>", "</link>", createLinkSpan(LinkType.ADAPTER_OFF)));
+
+            mItemChooserDialog.setErrorState(adapterOffMessage, mAdapterOffStatus);
+        }
     }
 
     @CalledByNative
     private void notifyAdapterTurnedOn() {
+        mAdapterOff = false;
         mItemChooserDialog.clear();
     }
 

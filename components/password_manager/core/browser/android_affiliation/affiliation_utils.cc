@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,10 @@
 #include <ostream>
 
 #include "base/base64.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "components/url_formatter/elide_url.h"
-#include "net/base/escape.h"
 #include "url/third_party/mozilla/url_parse.h"
 #include "url/url_canon_stdstring.h"
 
@@ -93,7 +93,8 @@ bool CanonicalizeHashComponent(const base::StringPiece& input_hash,
   // safe" base64 alphabet; plus the padding ('=').
   const char kBase64NonAlphanumericChars[] = "-_=";
 
-  std::string base64_encoded_hash = net::UnescapeBinaryURLComponent(input_hash);
+  std::string base64_encoded_hash =
+      base::UnescapeBinaryURLComponent(input_hash);
 
   if (!base64_encoded_hash.empty() &&
       CanonicalizeBase64Padding(&base64_encoded_hash) &&
@@ -117,7 +118,7 @@ bool CanonicalizePackageNameComponent(
   const char kPackageNameNonAlphanumericChars[] = "._";
 
   std::string package_name =
-      net::UnescapeBinaryURLComponent(input_package_name);
+      base::UnescapeBinaryURLComponent(input_package_name);
 
   // TODO(engedy): We might want to use a regex to check this more throughly.
   if (!package_name.empty() &&
@@ -174,9 +175,9 @@ bool ParseAndCanonicalizeFacetURI(const std::string& input_uri,
   url::ParseStandardURL(input_uri.c_str(), input_uri.size(), &input_parsed);
 
   base::StringPiece scheme = ComponentString(input_uri, input_parsed.scheme);
-  if (base::LowerCaseEqualsASCII(scheme, url::kHttpsScheme)) {
+  if (base::EqualsCaseInsensitiveASCII(scheme, url::kHttpsScheme)) {
     return CanonicalizeWebFacetURI(input_uri, input_parsed, canonical_uri);
-  } else if (base::LowerCaseEqualsASCII(scheme, kAndroidAppScheme)) {
+  } else if (base::EqualsCaseInsensitiveASCII(scheme, kAndroidAppScheme)) {
     return CanonicalizeAndroidFacetURI(input_uri, input_parsed, canonical_uri);
   }
   return false;
@@ -263,6 +264,20 @@ FacetURI::FacetURI(const std::string& canonical_spec, bool is_valid)
   url::ParseStandardURL(canonical_spec_.c_str(), canonical_spec_.size(),
                         &parsed_);
 }
+
+// GroupedFacets
+
+GroupedFacets::GroupedFacets() = default;
+
+GroupedFacets::~GroupedFacets() = default;
+
+GroupedFacets::GroupedFacets(const GroupedFacets& other) = default;
+
+GroupedFacets::GroupedFacets(GroupedFacets&& other) = default;
+
+GroupedFacets& GroupedFacets::operator=(const GroupedFacets& other) = default;
+
+GroupedFacets& GroupedFacets::operator=(GroupedFacets&& other) = default;
 
 // AffiliatedFacetsWithUpdateTime ---------------------------------------------
 

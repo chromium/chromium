@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -12,13 +12,8 @@ if (is_android) {
 
 source_set("power_save_blocker") {
   visibility = [
-    # Crosapi power API needs to directly use the Ash PowerBlocker .
-    # TODO(b/193670013): Remove visibility after Wayland idle inhibitor replaces
-    # crosapi power service.
-    "//chrome/browser/ash/crosapi",
-
     # Exo Wayland idle inhibit protocol needs to directly use the Ash
-    # PowerBlocker.
+    # PowerSaveBlocker.
     "//components/exo/wayland",
 
     # //remoting runs in a separate process which is outside of the context of
@@ -53,16 +48,12 @@ source_set("power_save_blocker") {
   } else if ((is_linux || is_chromeos) && use_dbus) {
     if (is_chromeos_lacros) {
       sources += [ "power_save_blocker_lacros.cc" ]
-      deps += [
-        "//chromeos/crosapi/mojom",
-        "//chromeos/lacros",
-      ]
     } else {
       sources += [ "power_save_blocker_linux.cc" ]
-      deps += [ "//ui/display" ]
     }
     deps += [
       "//dbus",
+      "//ui/display",
       "//ui/gfx",
     ]
   } else if (is_mac) {
@@ -96,6 +87,6 @@ if (is_android) {
       "//services/device:*",
     ]
     sources = java_sources_needing_jni
-    deps = [ "//base:base_java" ]
+    deps = [ "//base:jni_java" ]
   }
 }

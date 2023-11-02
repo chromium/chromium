@@ -1,10 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_ANDROID_AUTOFILL_BROWSER_AUTOFILL_PROVIDER_H_
 #define COMPONENTS_ANDROID_AUTOFILL_BROWSER_AUTOFILL_PROVIDER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
@@ -33,12 +34,14 @@ class AutofillProvider : public content::WebContentsUserData<AutofillProvider> {
   static bool is_download_manager_disabled_for_testing();
   static void set_is_download_manager_disabled_for_testing();
 
-  virtual void OnAskForValuesToFill(AndroidAutofillManager* manager,
-                                    int32_t id,
-                                    const FormData& form,
-                                    const FormFieldData& field,
-                                    const gfx::RectF& bounding_box,
-                                    bool autoselect_first_suggestion) = 0;
+  virtual void OnAskForValuesToFill(
+      AndroidAutofillManager* manager,
+      const FormData& form,
+      const FormFieldData& field,
+      const gfx::RectF& bounding_box,
+      int32_t query_id,
+      bool autoselect_first_suggestion,
+      FormElementWasClicked form_element_was_clicked) = 0;
 
   virtual void OnTextFieldDidChange(AndroidAutofillManager* manager,
                                     const FormData& form,
@@ -101,16 +104,9 @@ class AutofillProvider : public content::WebContentsUserData<AutofillProvider> {
   explicit AutofillProvider(content::WebContents* web_contents);
   friend class content::WebContentsUserData<AutofillProvider>;
 
-#ifdef UNIT_TEST
-  // For the unit tests where WebContents isn't available.
-  AutofillProvider() = default;
-#endif  // UNIT_TEST
-
-  content::WebContents* web_contents() { return web_contents_; }
+  content::WebContents* web_contents() { return &GetWebContents(); }
 
  private:
-  content::WebContents* web_contents_;
-
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 

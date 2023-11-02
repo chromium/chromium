@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -76,6 +76,10 @@ std::vector<cc::FrameSequenceMetrics::CustomReportData> StopDataCollection() {
   DCHECK(g_data_collection_enabled);
   g_data_collection_enabled = false;
 
+  return GetCollectedData();
+}
+
+std::vector<cc::FrameSequenceMetrics::CustomReportData> GetCollectedData() {
   std::vector<cc::FrameSequenceMetrics::CustomReportData> data;
   data.swap(GetDataCollector());
   return data;

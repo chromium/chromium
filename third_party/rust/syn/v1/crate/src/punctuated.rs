@@ -810,9 +810,10 @@ impl<'a, T, P> Clone for PrivateIter<'a, T, P> {
     }
 }
 
-impl<'a, T: 'a, I: 'a> IterTrait<'a, T> for I
+impl<'a, T, I> IterTrait<'a, T> for I
 where
-    I: DoubleEndedIterator<Item = &'a T> + ExactSizeIterator<Item = &'a T> + Clone,
+    T: 'a,
+    I: DoubleEndedIterator<Item = &'a T> + ExactSizeIterator<Item = &'a T> + Clone + 'a,
 {
     fn clone_box(&self) -> Box<dyn IterTrait<'a, T, Item = &'a T> + 'a> {
         Box::new(self.clone())
@@ -894,8 +895,10 @@ impl<'a, T, P> ExactSizeIterator for PrivateIterMut<'a, T, P> {
     }
 }
 
-impl<'a, T: 'a, I: 'a> IterMutTrait<'a, T> for I where
-    I: DoubleEndedIterator<Item = &'a mut T> + ExactSizeIterator<Item = &'a mut T>
+impl<'a, T, I> IterMutTrait<'a, T> for I
+where
+    T: 'a,
+    I: DoubleEndedIterator<Item = &'a mut T> + ExactSizeIterator<Item = &'a mut T> + 'a,
 {
 }
 
@@ -936,6 +939,31 @@ impl<T, P> Pair<T, P> {
     /// Borrows the punctuation from this punctuated pair, unless this pair is
     /// the final one and there is no trailing punctuation.
     pub fn punct(&self) -> Option<&P> {
+        match self {
+            Pair::Punctuated(_, p) => Some(p),
+            Pair::End(_) => None,
+        }
+    }
+
+    /// Mutably borrows the punctuation from this punctuated pair, unless the
+    /// pair is the final one and there is no trailing punctuation.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// # use proc_macro2::Span;
+    /// # use syn::punctuated::Punctuated;
+    /// # use syn::{parse_quote, Token, TypeParamBound};
+    /// #
+    /// # let mut punctuated = Punctuated::<TypeParamBound, Token![+]>::new();
+    /// # let span = Span::call_site();
+    /// #
+    /// punctuated.insert(0, parse_quote!('lifetime));
+    /// if let Some(punct) = punctuated.pairs_mut().next().unwrap().punct_mut() {
+    ///     punct.span = span;
+    /// }
+    /// ```
+    pub fn punct_mut(&mut self) -> Option<&mut P> {
         match self {
             Pair::Punctuated(_, p) => Some(p),
             Pair::End(_) => None,

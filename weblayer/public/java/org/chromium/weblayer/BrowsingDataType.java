@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@ import java.lang.annotation.RetentionPolicy;
 @IntDef({BrowsingDataType.COOKIES_AND_SITE_DATA, BrowsingDataType.CACHE,
         BrowsingDataType.SITE_SETTINGS})
 @Retention(RetentionPolicy.SOURCE)
-public @interface BrowsingDataType {
+@interface BrowsingDataType {
     int COOKIES_AND_SITE_DATA =
             org.chromium.weblayer_private.interfaces.BrowsingDataType.COOKIES_AND_SITE_DATA;
     int CACHE = org.chromium.weblayer_private.interfaces.BrowsingDataType.CACHE;

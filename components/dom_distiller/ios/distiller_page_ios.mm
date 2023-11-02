@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "ios/web/public/browser_state.h"
+#import "ios/web/public/js_messaging/web_frame.h"
+#import "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "ios/web/public/web_state.h"
@@ -85,7 +87,7 @@ base::Value ConvertedResultFromScriptResult(const base::Value* value,
     DCHECK_EQ(result.type(), base::Value::Type::DICTIONARY);
 
   } else if (value->is_list()) {
-    std::vector<base::Value> list;
+    base::Value::List list;
     for (const base::Value& list_item : value->GetList()) {
       base::Value converted_item =
           ConvertedResultFromScriptResult(&list_item, max_depth - 1);
@@ -93,9 +95,9 @@ base::Value ConvertedResultFromScriptResult(const base::Value* value,
         return result;
       }
 
-      list.push_back(std::move(converted_item));
+      list.Append(std::move(converted_item));
     }
-    result = base::Value(list);
+    result = base::Value(std::move(list));
     DCHECK_EQ(result.type(), base::Value::Type::LIST);
   } else {
     NOTREACHED();  // Convert other types as needed.
@@ -210,9 +212,16 @@ void DistillerPageIOS::OnLoadURLDone(
     HandleJavaScriptResult(nil);
     return;
   }
+
+  web::WebFrame* main_frame = web::GetMainFrame(web_state_.get());
+  if (!main_frame) {
+    HandleJavaScriptResult(nil);
+    return;
+  }
+
   // Inject the script.
   base::WeakPtr<DistillerPageIOS> weak_this = weak_ptr_factory_.GetWeakPtr();
-  web_state_->ExecuteJavaScript(
+  main_frame->ExecuteJavaScript(
       base::UTF8ToUTF16(script_),
       base::BindOnce(&DistillerPageIOS::HandleJavaScriptResult, weak_this));
 }

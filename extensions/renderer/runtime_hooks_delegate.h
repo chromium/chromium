@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,8 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "extensions/renderer/bindings/api_binding_hooks_delegate.h"
+#include "extensions/renderer/bindings/api_signature.h"
 #include "v8/include/v8-forward.h"
 
 namespace extensions {
@@ -49,28 +49,28 @@ class RuntimeHooksDelegate : public APIBindingHooksDelegate {
   // Request handlers for the corresponding API methods.
   APIBindingHooks::RequestResult HandleGetManifest(
       ScriptContext* script_context,
-      const std::vector<v8::Local<v8::Value>>& parsed_arguments);
+      const APISignature::V8ParseResult& parse_result);
   APIBindingHooks::RequestResult HandleGetURL(
       ScriptContext* script_context,
-      const std::vector<v8::Local<v8::Value>>& arguments);
+      const APISignature::V8ParseResult& parse_result);
   APIBindingHooks::RequestResult HandleSendMessage(
       ScriptContext* script_context,
-      const std::vector<v8::Local<v8::Value>>& arguments);
+      const APISignature::V8ParseResult& parse_result);
   APIBindingHooks::RequestResult HandleSendNativeMessage(
       ScriptContext* script_context,
-      const std::vector<v8::Local<v8::Value>>& arguments);
+      const APISignature::V8ParseResult& parse_result);
   APIBindingHooks::RequestResult HandleConnect(
       ScriptContext* script_context,
-      const std::vector<v8::Local<v8::Value>>& arguments);
+      const APISignature::V8ParseResult& parse_result);
   APIBindingHooks::RequestResult HandleConnectNative(
       ScriptContext* script_context,
-      const std::vector<v8::Local<v8::Value>>& arguments);
+      const APISignature::V8ParseResult& parse_result);
   APIBindingHooks::RequestResult HandleGetBackgroundPage(
       ScriptContext* script_context,
-      const std::vector<v8::Local<v8::Value>>& arguments);
+      const APISignature::V8ParseResult& parse_result);
   APIBindingHooks::RequestResult HandleGetPackageDirectoryEntryCallback(
       ScriptContext* script_context,
-      const std::vector<v8::Local<v8::Value>>& arguments);
+      const APISignature::V8ParseResult& parse_result);
 
   // The messaging service to handle connect() and sendMessage() calls.
   // Guaranteed to outlive this object.

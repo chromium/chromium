@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,10 +29,6 @@
 NearbyInternalsUI::NearbyInternalsUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true) {
   Profile* profile = Profile::FromWebUI(web_ui);
-  // Nearby Sharing is not available to incognito or guest profiles.
-  DCHECK(!profile->IsOffTheRecord());
-  DCHECK(base::FeatureList::IsEnabled(features::kNearbySharing));
-
   content::WebUIDataSource* html_source =
       content::WebUIDataSource::Create(chrome::kChromeUINearbyInternalsHost);
 

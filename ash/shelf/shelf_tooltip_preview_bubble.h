@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,8 +26,7 @@ class ASH_EXPORT ShelfTooltipPreviewBubble : public ShelfBubble,
   ShelfTooltipPreviewBubble(views::View* anchor,
                             const std::vector<aura::Window*>& windows,
                             ShelfTooltipManager* manager,
-                            ShelfAlignment alignment,
-                            SkColor background_color);
+                            ShelfAlignment alignment);
 
   ShelfTooltipPreviewBubble(const ShelfTooltipPreviewBubble&) = delete;
   ShelfTooltipPreviewBubble& operator=(const ShelfTooltipPreviewBubble&) =

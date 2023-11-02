@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #include <vector>
 
+#include "base/android/scoped_java_ref.h"
 #include "base/lazy_instance.h"
 #include "base/observer_list.h"
 #include "components/sessions/core/session_id.h"
@@ -47,6 +48,8 @@ class TabModelList {
       content::WebContents* web_contents);
   static TabModel* GetTabModelForTabAndroid(TabAndroid* tab_android);
   static TabModel* FindTabModelWithId(SessionID desired_id);
+  static TabModel* FindNativeTabModelForJavaObject(
+      const base::android::ScopedJavaLocalRef<jobject>& jtab_model);
   static bool IsOffTheRecordSessionActive();
 
   static const TabModelVector& models();

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,8 +14,8 @@ int GetFailedStartupAttemptCount();
 
 // Increases the failed startup count. This should be called immediately after
 // startup, so that if there is a crash, it is recorded.
-// If |flush_immediately| is true, the value will be persisted immediately. If
-// |flush_immediately| is false, this should be followed by a call to
+// If `flush_immediately` is true, the value will be persisted immediately. If
+// `flush_immediately` is false, this should be followed by a call to
 // [[NSUserDefaults standardUserDefaults] synchronize]. This is optional to
 // allow coallescing of the potentially expensive call during startup.
 void IncrementFailedStartupAttemptCount(bool flush_immediately);

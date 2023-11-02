@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,7 @@
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "net/cert/asn1_util.h"
+#include "net/cert/cert_status_flags.h"
 #include "net/cert/x509_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -54,6 +55,13 @@ const char kErrorInteractiveCallFromBackground[] =
 
 const char kTokenIdUser[] = "user";
 const char kTokenIdSystem[] = "system";
+
+// Skip checking for interactive calls coming from a non-interactive
+// context.
+// TODO(crbug.com/1303197): We should move the interactive tests to a
+// separate test suite. This is a temporary workaround to allow these
+// tests to run from the test extension's background page.
+bool g_skip_interactive_check_for_test = false;
 
 const struct NameValuePair {
   const char* const name;
@@ -142,6 +150,11 @@ absl::optional<chromeos::platform_keys::TokenId> ApiIdToPlatformKeysTokenId(
 PlatformKeysInternalSelectClientCertificatesFunction::
     ~PlatformKeysInternalSelectClientCertificatesFunction() {}
 
+void PlatformKeysInternalSelectClientCertificatesFunction::
+    SetSkipInteractiveCheckForTest(bool skip_interactive_check) {
+  g_skip_interactive_check_for_test = skip_interactive_check;
+}
+
 ExtensionFunction::ResponseAction
 PlatformKeysInternalSelectClientCertificatesFunction::Run() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -201,9 +214,10 @@ PlatformKeysInternalSelectClientCertificatesFunction::Run() {
 
     // Ensure that this function is called in a context that allows opening
     // dialogs.
-    if (!web_contents ||
-        !web_modal::WebContentsModalDialogManager::FromWebContents(
-            web_contents)) {
+    if ((!web_contents ||
+         !web_modal::WebContentsModalDialogManager::FromWebContents(
+             web_contents)) &&
+        !g_skip_interactive_check_for_test) {
       return RespondNow(Error(kErrorInteractiveCallFromBackground));
     }
   }
@@ -253,15 +267,14 @@ void PlatformKeysInternalSelectClientCertificatesFunction::
     result_match.certificate.assign(der_encoded_cert.begin(),
                                     der_encoded_cert.end());
 
-    absl::optional<base::DictionaryValue> algorithm =
+    absl::optional<base::Value::Dict> algorithm =
         BuildWebCrypAlgorithmDictionary(key_info);
     if (!algorithm) {
       LOG(ERROR) << "Skipping unsupported certificate with key type "
                  << key_info.key_type;
       continue;
     }
-    result_match.key_algorithm.additional_properties =
-        std::move(algorithm.value());
+    result_match.key_algorithm.additional_properties = std::move(*algorithm);
 
     result_matches.push_back(std::move(result_match));
   }
@@ -309,14 +322,14 @@ void PlatformKeysInternalGetPublicKeyFunction::OnGetPublicKey(
   }
 
   api_pki::GetPublicKey::Results::Algorithm algorithm;
-  absl::optional<base::DictionaryValue> dict =
+  absl::optional<base::Value::Dict> dict =
       crosapi::keystore_service_util::DictionaryFromSigningAlgorithm(
           result->get_success_result()->algorithm_properties);
   if (!dict) {
     Respond(Error(kErrorInvalidSigningAlgorithm));
     return;
   }
-  algorithm.additional_properties = std::move(dict.value());
+  algorithm.additional_properties = std::move(*dict);
   Respond(ArgumentList(api_pki::GetPublicKey::Results::Create(
       result->get_success_result()->public_key, std::move(algorithm))));
 }
@@ -360,10 +373,10 @@ PlatformKeysInternalGetPublicKeyBySpkiFunction::Run() {
     return RespondNow(Error(StatusToString(check_result)));
 
   api_pki::GetPublicKeyBySpki::Results::Algorithm algorithm;
-  absl::optional<base::DictionaryValue> algorithm_dictionary =
+  absl::optional<base::Value::Dict> algorithm_dictionary =
       chromeos::platform_keys::BuildWebCrypAlgorithmDictionary(key_info);
   DCHECK(algorithm_dictionary);
-  algorithm.additional_properties = std::move(algorithm_dictionary.value());
+  algorithm.additional_properties = std::move(*algorithm_dictionary);
 
   return RespondNow(ArgumentList(api_pki::GetPublicKeyBySpki::Results::Create(
       public_key_spki_der, algorithm)));
@@ -503,7 +516,7 @@ void PlatformKeysVerifyTLSServerCertificateFunction::FinishedVerification(
   if (net::IsCertificateError(verify_result)) {
     // Only report errors, not internal informational statuses.
     const int masked_cert_status = cert_status & net::CERT_STATUS_ALL_ERRORS;
-    for (size_t i = 0; i < base::size(kCertStatusErrors); ++i) {
+    for (size_t i = 0; i < std::size(kCertStatusErrors); ++i) {
       if ((masked_cert_status & kCertStatusErrors[i].value) ==
           kCertStatusErrors[i].value) {
         result.debug_errors.push_back(kCertStatusErrors[i].name);

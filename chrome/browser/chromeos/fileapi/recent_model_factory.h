@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_CHROMEOS_FILEAPI_RECENT_MODEL_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 
@@ -14,7 +14,7 @@ namespace chromeos {
 
 class RecentModel;
 
-class RecentModelFactory : public BrowserContextKeyedServiceFactory {
+class RecentModelFactory : public ProfileKeyedServiceFactory {
  public:
   // Returns the RecentModel for |profile|, creating it if not created yet.
   static RecentModel* GetForProfile(Profile* profile);
@@ -32,8 +32,6 @@ class RecentModelFactory : public BrowserContextKeyedServiceFactory {
   ~RecentModelFactory() override;
 
   // BrowserContextKeyedServiceFactory overrides.
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
 };

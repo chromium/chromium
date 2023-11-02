@@ -1,33 +1,29 @@
 <!DOCTYPE html>
 <style>
-div {
+.column {
   float: left;
   width: 200px;
   height: 300px;
+  position: relative;
 }
-table {
-  border-collapse: collapse;
-}
-tr {
-  page-break-inside: avoid;
+.cell {
+  width: 160px;
+  height: 210px;
   border: 10px solid blue;
 }
-td {
-  width: 80px;
-  height: 200px;
-}
-td + td {
-  border-top: 20px solid green;
-  border-bottom: 20px solid green;
+
+.green {
+  background: green;
+  position: absolute;
 }
 </style>
-<div>
-  <table>
-    <tr><td></td><td></td></tr>
-  </table>
+<div class="column">
+  <div class="cell" style="border-bottom-width: 5px; margin-top: 5px;"></div>
+  <div class="green" style="width: 90px; height: 20px; top: 0; right: 20px;"></div>
+  <div class="green" style="width: 90px; height: 10px; top: 220px; right: 20px;"></div>
 </div>
-<div>
-  <table>
-    <tr><td></td><td></td></tr>
-  </table>
+<div class="column">
+  <div class="cell" style="border-top-width: 5px;"></div>
+  <div class="green" style="width: 80px; height: 10px; top: 0; right: 30px;"></div>
+  <div class="green" style="width: 90px; height: 20px; top: 210px; right: 20px;"></div>
 </div>

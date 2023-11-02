@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@
 #include "base/callback.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
@@ -22,6 +21,9 @@
 #include "storage/browser/file_system/file_system_file_util.h"
 #include "storage/browser/file_system/file_system_operation.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
+#include "storage/browser/test/mock_quota_manager.h"
+#include "storage/browser/test/mock_quota_manager_proxy.h"
+#include "storage/browser/test/mock_special_storage_policy.h"
 #include "storage/browser/test/sandbox_file_system_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -146,7 +148,13 @@ class RecursiveOperationDelegateTest : public testing::Test {
  protected:
   void SetUp() override {
     EXPECT_TRUE(base_.CreateUniqueTempDir());
-    sandbox_file_system_.SetUp(base_.GetPath().AppendASCII("filesystem"));
+    base::FilePath base_dir = base_.GetPath().AppendASCII("filesystem");
+    quota_manager_ = base::MakeRefCounted<storage::MockQuotaManager>(
+        /*is_incognito=*/false, base_dir, base::ThreadTaskRunnerHandle::Get(),
+        base::MakeRefCounted<storage::MockSpecialStoragePolicy>());
+    quota_manager_proxy_ = base::MakeRefCounted<storage::MockQuotaManagerProxy>(
+        quota_manager_.get(), base::ThreadTaskRunnerHandle::Get());
+    sandbox_file_system_.SetUp(base_dir, quota_manager_proxy_);
   }
 
   void TearDown() override { sandbox_file_system_.TearDown(); }
@@ -187,6 +195,8 @@ class RecursiveOperationDelegateTest : public testing::Test {
   // Common temp base for nondestructive uses.
   base::ScopedTempDir base_;
   SandboxFileSystemTestHelper sandbox_file_system_;
+  scoped_refptr<storage::MockQuotaManager> quota_manager_;
+  scoped_refptr<storage::MockQuotaManagerProxy> quota_manager_proxy_;
 };
 
 TEST_F(RecursiveOperationDelegateTest, RootIsFile) {

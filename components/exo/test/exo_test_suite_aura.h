@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define COMPONENTS_EXO_TEST_EXO_TEST_SUITE_AURA_H_
 
 #include "base/test/test_suite.h"
+#include "ui/gl/gl_display.h"
 
 namespace exo {
 namespace test {
@@ -27,6 +28,9 @@ class ExoTestSuiteAura : public base::TestSuite {
   // base::TestSuite:
   void Initialize() override;
   void Shutdown() override;
+
+ private:
+  gl::GLDisplay* display_ = nullptr;
 };
 
 }  // namespace test

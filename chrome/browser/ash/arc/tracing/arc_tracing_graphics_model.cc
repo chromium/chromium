@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <set>
 
+#include "ash/components/arc/arc_util.h"
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/callback.h"
@@ -26,7 +27,6 @@
 #include "chrome/browser/ash/arc/tracing/arc_tracing_event.h"
 #include "chrome/browser/ash/arc/tracing/arc_tracing_event_matcher.h"
 #include "chrome/browser/ash/arc/tracing/arc_tracing_model.h"
-#include "components/arc/arc_util.h"
 #include "ui/events/types/event_type.h"
 
 namespace arc {
@@ -532,7 +532,7 @@ class AndroidInputEvent {
     // Has following structure
     // InputEvent: source timestamps sequence_id|0|
     const std::string body =
-        event->GetName().substr(base::size(kInputEventPrefix) - 1);
+        event->GetName().substr(std::size(kInputEventPrefix) - 1);
     base::StringTokenizer tokenizer(body, " ");
     std::vector<std::string> tokens;
     while (tokenizer.GetNext())
@@ -970,8 +970,13 @@ BufferToEvents GetChromeEvents(
   // provide the reliable way of requesting the needed information, let scan
   // |common_model| for top level events and determine the hierarchy of
   // interesting events dynamically.
-  const ArcTracingModel::TracingEventPtrs top_level_events =
+  ArcTracingModel::TracingEventPtrs top_level_events =
       common_model.Select("toplevel:");
+  // Add root events. In simplified overview tracing they may appear as root
+  // events.
+  ArcTracingModel::TracingEventPtrs root_events = common_model.GetRoots();
+  top_level_events.insert(top_level_events.end(), root_events.begin(),
+                          root_events.end());
   std::vector<const ArcTracingEvent*> route;
   std::string barrier_flush_query;
   const ArcTracingEventMatcher barrier_flush_matcher(kBarrierFlushMatcher);
@@ -1114,11 +1119,11 @@ void ScanForCustomEvents(
     ArcTracingGraphicsModel::BufferEvents* out_custom_events) {
   if (base::StartsWith(event->GetName(), kCustomTracePrefix,
                        base::CompareCase::SENSITIVE)) {
-    DCHECK(!event->GetArgs() || event->GetArgs()->DictEmpty());
+    DCHECK(!event->GetArgs() || event->GetArgs()->empty());
     out_custom_events->emplace_back(
         ArcTracingGraphicsModel::BufferEventType::kCustomEvent,
         event->GetTimestamp(),
-        event->GetName().substr(base::size(kCustomTracePrefix) - 1));
+        event->GetName().substr(std::size(kCustomTracePrefix) - 1));
   }
   for (const auto& child : event->children())
     ScanForCustomEvents(child.get(), out_custom_events);
@@ -1405,13 +1410,13 @@ void GetAndroidTopEvents(const ArcTracingModel& common_model,
 }
 
 // Helper that serializes events |events| to the |base::ListValue|.
-base::ListValue SerializeEvents(
+base::Value::List SerializeEvents(
     const ArcTracingGraphicsModel::BufferEvents& events) {
-  base::ListValue list;
+  base::Value::List list;
   for (const auto& event : events) {
-    base::ListValue event_value;
-    event_value.Append(base::Value(static_cast<int>(event.type)));
-    event_value.Append(base::Value(static_cast<double>(event.timestamp)));
+    base::Value::List event_value;
+    event_value.Append(static_cast<int>(event.type));
+    event_value.Append(static_cast<double>(event.timestamp));
     if (!event.content.empty())
       event_value.Append(base::Value(event.content));
     list.Append(std::move(event_value));
@@ -1420,16 +1425,16 @@ base::ListValue SerializeEvents(
 }
 
 // Helper that serializes |events| to the |base::DictionaryValue|.
-base::DictionaryValue SerializeEventsContainer(
+base::Value::Dict SerializeEventsContainer(
     const ArcTracingGraphicsModel::EventsContainer& events) {
-  base::DictionaryValue dictionary;
+  base::Value::Dict dictionary;
 
-  base::ListValue buffer_list;
+  base::Value::List buffer_list;
   for (auto& buffer : events.buffer_events())
     buffer_list.Append(SerializeEvents(buffer));
 
-  dictionary.SetKey(kKeyBuffers, std::move(buffer_list));
-  dictionary.SetKey(kKeyGlobalEvents, SerializeEvents(events.global_events()));
+  dictionary.Set(kKeyBuffers, std::move(buffer_list));
+  dictionary.Set(kKeyGlobalEvents, SerializeEvents(events.global_events()));
 
   return dictionary;
 }
@@ -1442,19 +1447,22 @@ bool IsInRange(BufferEventType type,
 
 // Helper that loads events from |base::Value|. Returns true in case events were
 // read successfully. Events must be sorted and be known.
-bool LoadEvents(const base::Value* value,
+bool LoadEvents(const base::Value::List* value,
                 ArcTracingGraphicsModel::BufferEvents* out_events) {
   DCHECK(out_events);
-  if (!value || !value->is_list())
+  if (!value)
     return false;
   int64_t previous_timestamp = 0;
-  for (const auto& entry : value->GetList()) {
-    if (!entry.is_list() || entry.GetList().size() < 2)
+  for (const auto& item : *value) {
+    if (!item.is_list())
       return false;
-    if (!entry.GetList()[0].is_int())
+    const base::Value::List& entry = item.GetList();
+    if (entry.size() < 2)
+      return false;
+    if (!entry[0].is_int())
       return false;
     const BufferEventType type =
-        static_cast<BufferEventType>(entry.GetList()[0].GetInt());
+        static_cast<BufferEventType>(entry[0].GetInt());
 
     if (!IsInRange(type, BufferEventType::kBufferQueueDequeueStart,
                    BufferEventType::kBufferFillJank) &&
@@ -1473,15 +1481,15 @@ bool LoadEvents(const base::Value* value,
       return false;
     }
 
-    if (!entry.GetList()[1].is_double() && !entry.GetList()[1].is_int())
+    if (!entry[1].is_double() && !entry[1].is_int())
       return false;
-    const int64_t timestamp = entry.GetList()[1].GetDouble();
+    const int64_t timestamp = entry[1].GetDouble();
     if (timestamp < previous_timestamp)
       return false;
-    if (entry.GetList().size() == 3) {
-      if (!entry.GetList()[2].is_string())
+    if (entry.size() == 3) {
+      if (!entry[2].is_string())
         return false;
-      out_events->emplace_back(type, timestamp, entry.GetList()[2].GetString());
+      out_events->emplace_back(type, timestamp, entry[2].GetString());
     } else {
       out_events->emplace_back(type, timestamp);
     }
@@ -1490,40 +1498,35 @@ bool LoadEvents(const base::Value* value,
   return true;
 }
 
-bool LoadEventsContainer(const base::Value* value,
+bool LoadEventsContainer(const base::Value::Dict* dict,
                          ArcTracingGraphicsModel::EventsContainer* out_events) {
   DCHECK(out_events->buffer_events().empty());
   DCHECK(out_events->global_events().empty());
 
-  if (!value || !value->is_dict())
+  if (!dict)
     return false;
 
-  const base::DictionaryValue* dictionary = nullptr;
-  value->GetAsDictionary(&dictionary);
-  DCHECK(dictionary);
-
-  const base::Value* buffer_entries =
-      dictionary->FindKeyOfType(kKeyBuffers, base::Value::Type::LIST);
+  const base::Value::List* buffer_entries = dict->FindList(kKeyBuffers);
   if (!buffer_entries)
     return false;
 
-  for (const auto& buffer_entry : buffer_entries->GetList()) {
+  for (const auto& buffer_entry : *buffer_entries) {
     BufferEvents events;
-    if (!LoadEvents(&buffer_entry, &events))
+    if (!LoadEvents(buffer_entry.GetIfList(), &events))
       return false;
     out_events->buffer_events().emplace_back(std::move(events));
   }
 
-  const base::Value* const global_events =
-      dictionary->FindKeyOfType(kKeyGlobalEvents, base::Value::Type::LIST);
+  const base::Value::List* const global_events =
+      dict->FindList(kKeyGlobalEvents);
   if (!LoadEvents(global_events, &out_events->global_events()))
     return false;
 
   return true;
 }
 
-bool ReadDuration(const base::Value* root, uint32_t* duration) {
-  const base::Value* duration_value = root->FindKey(kKeyDuration);
+bool ReadDuration(const base::Value::Dict* root, uint32_t* duration) {
+  const base::Value* duration_value = root->Find(kKeyDuration);
   if (!duration_value ||
       (!duration_value->is_double() && !duration_value->is_int())) {
     return false;
@@ -1820,60 +1823,57 @@ int ArcTracingGraphicsModel::GetTaskIdFromBufferName(
   return it->second;
 }
 
-std::unique_ptr<base::DictionaryValue> ArcTracingGraphicsModel::Serialize()
-    const {
-  std::unique_ptr<base::DictionaryValue> root =
-      std::make_unique<base::DictionaryValue>();
+base::Value::Dict ArcTracingGraphicsModel::Serialize() const {
+  base::Value::Dict root;
 
   // Views
-  base::ListValue view_list;
+  base::Value::List view_list;
   for (auto& view : view_buffers_) {
-    base::DictionaryValue view_value = SerializeEventsContainer(view.second);
-    view_value.SetKey(kKeyActivity, base::Value(view.first.activity));
-    view_value.SetKey(kKeyTaskId, base::Value(view.first.task_id));
+    base::Value::Dict view_value = SerializeEventsContainer(view.second);
+    view_value.Set(kKeyActivity, view.first.activity);
+    view_value.Set(kKeyTaskId, view.first.task_id);
     view_list.Append(std::move(view_value));
   }
-  root->SetKey(kKeyViews, std::move(view_list));
+  root.Set(kKeyViews, std::move(view_list));
 
   // Android top events.
-  root->SetKey(kKeyAndroid, SerializeEventsContainer(android_top_level_));
+  root.Set(kKeyAndroid, SerializeEventsContainer(android_top_level_));
 
   // Chrome top events
-  root->SetKey(kKeyChrome, SerializeEventsContainer(chrome_top_level_));
+  root.Set(kKeyChrome, SerializeEventsContainer(chrome_top_level_));
 
   // Input events
-  root->SetKey(kKeyInput, SerializeEventsContainer(input_));
+  root.Set(kKeyInput, SerializeEventsContainer(input_));
 
   // System.
-  root->SetKey(kKeySystem, system_model_.Serialize());
+  root.Set(kKeySystem, system_model_.Serialize());
 
   // Information
-  base::DictionaryValue information;
-  information.SetKey(kKeyDuration, base::Value(static_cast<double>(duration_)));
+  base::Value::Dict information;
+  information.Set(kKeyDuration, static_cast<double>(duration_));
   if (!platform_.empty())
-    information.SetKey(kKeyPlatform, base::Value(platform_));
+    information.Set(kKeyPlatform, platform_);
   if (!timestamp_.is_null())
-    information.SetKey(kKeyTimestamp, base::Value(timestamp_.ToJsTime()));
+    information.Set(kKeyTimestamp, timestamp_.ToJsTime());
   if (!app_title_.empty())
-    information.SetKey(kKeyTitle, base::Value(app_title_));
+    information.Set(kKeyTitle, app_title_);
   if (!app_icon_png_.empty()) {
     const std::string png_data_as_string(
         reinterpret_cast<const char*>(&app_icon_png_[0]), app_icon_png_.size());
     std::string icon_content;
     base::Base64Encode(png_data_as_string, &icon_content);
-    information.SetKey(kKeyIcon, base::Value(icon_content));
+    information.Set(kKeyIcon, icon_content);
   }
-  root->SetKey(kKeyInformation, std::move(information));
+  root.Set(kKeyInformation, std::move(information));
 
   return root;
 }
 
 std::string ArcTracingGraphicsModel::SerializeToJson() const {
-  std::unique_ptr<base::DictionaryValue> root = Serialize();
-  DCHECK(root);
+  base::Value::Dict root = Serialize();
   std::string output;
   if (!base::JSONWriter::WriteWithOptions(
-          *root, base::JSONWriter::OPTIONS_PRETTY_PRINT, &output)) {
+          root, base::JSONWriter::OPTIONS_PRETTY_PRINT, &output)) {
     LOG(ERROR) << "Failed to serialize model";
   }
   return output;
@@ -1881,81 +1881,74 @@ std::string ArcTracingGraphicsModel::SerializeToJson() const {
 
 bool ArcTracingGraphicsModel::LoadFromJson(const std::string& json_data) {
   Reset();
-  const std::unique_ptr<base::DictionaryValue> root =
-      base::DictionaryValue::From(base::JSONReader::ReadDeprecated(json_data));
-  if (!root)
+  absl::optional<base::Value> root = base::JSONReader::Read(json_data);
+  if (!root || !root->is_dict())
     return false;
-  return LoadFromValue(*root);
+  return LoadFromValue(root->GetDict());
 }
 
-bool ArcTracingGraphicsModel::LoadFromValue(const base::DictionaryValue& root) {
+bool ArcTracingGraphicsModel::LoadFromValue(const base::Value::Dict& root) {
   Reset();
 
-  const base::Value* view_list =
-      root.FindKeyOfType(kKeyViews, base::Value::Type::LIST);
-  if (!view_list || view_list->GetList().empty()) {
+  const base::Value::List* view_list = root.FindList(kKeyViews);
+  if (!view_list || view_list->empty()) {
     // Views are optional for overview tracing.
     if (!skip_structure_validation_)
       return false;
   } else {
-    for (const auto& view_entry : view_list->GetList()) {
-      if (!view_entry.is_dict())
+    for (const auto& item : *view_list) {
+      const base::Value::Dict* view_entry = item.GetIfDict();
+      if (!view_entry)
         return false;
-      const base::Value* activity =
-          view_entry.FindKeyOfType(kKeyActivity, base::Value::Type::STRING);
-      const base::Value* task_id =
-          view_entry.FindKeyOfType(kKeyTaskId, base::Value::Type::INTEGER);
+      const std::string* activity = view_entry->FindString(kKeyActivity);
+      absl::optional<int> task_id = view_entry->FindInt(kKeyTaskId);
       if (!activity || !task_id)
         return false;
-      const ViewId view_id(task_id->GetInt(), activity->GetString());
+      const ViewId view_id(*task_id, *activity);
       if (view_buffers_.find(view_id) != view_buffers_.end())
         return false;
 
-      if (!LoadEventsContainer(&view_entry, &view_buffers_[view_id]))
+      if (!LoadEventsContainer(view_entry, &view_buffers_[view_id]))
         return false;
     }
   }
 
-  if (!LoadEventsContainer(root.FindKey(kKeyAndroid), &android_top_level_))
+  if (!LoadEventsContainer(root.FindDict(kKeyAndroid), &android_top_level_))
     return false;
 
-  if (!LoadEventsContainer(root.FindKey(kKeyChrome), &chrome_top_level_))
+  if (!LoadEventsContainer(root.FindDict(kKeyChrome), &chrome_top_level_))
     return false;
 
-  const base::Value* input_value = root.FindKey(kKeyInput);
+  const base::Value::Dict* input_value = root.FindDict(kKeyInput);
   if (input_value && !LoadEventsContainer(input_value, &input_))
     return false;
 
-  if (!system_model_.Load(root.FindKey(kKeySystem)))
+  if (!system_model_.Load(root.Find(kKeySystem)))
     return false;
 
-  const base::Value* informaton =
-      root.FindKeyOfType(kKeyInformation, base::Value::Type::DICTIONARY);
+  const base::Value::Dict* informaton = root.FindDict(kKeyInformation);
   if (informaton) {
     if (!ReadDuration(informaton, &duration_))
       return false;
 
-    const base::Value* platform_value =
-        informaton->FindKeyOfType(kKeyPlatform, base::Value::Type::STRING);
+    const std::string* platform_value = informaton->FindString(kKeyPlatform);
     if (platform_value)
-      platform_ = platform_value->GetString();
-    const base::Value* title_value =
-        informaton->FindKeyOfType(kKeyTitle, base::Value::Type::STRING);
+      platform_ = *platform_value;
+    const std::string* title_value = informaton->FindString(kKeyTitle);
     if (title_value)
-      app_title_ = title_value->GetString();
-    const base::Value* icon_value =
-        informaton->FindKeyOfType(kKeyIcon, base::Value::Type::STRING);
+      app_title_ = *title_value;
+    const std::string* icon_value = informaton->FindString(kKeyIcon);
     if (icon_value) {
       std::string icon_content;
-      if (!base::Base64Decode(icon_value->GetString(), &icon_content))
+      if (!base::Base64Decode(*icon_value, &icon_content))
         return false;
       app_icon_png_ =
           std::vector<unsigned char>(icon_content.begin(), icon_content.end());
     }
-    const base::Value* timestamp_value =
-        informaton->FindKeyOfType(kKeyTimestamp, base::Value::Type::DOUBLE);
+    absl::optional<double> timestamp_value =
+        informaton->FindDouble(kKeyTimestamp);
     if (timestamp_value)
-      timestamp_ = base::Time::FromJsTime(timestamp_value->GetDouble());
+      timestamp_ = base::Time::FromJsTime(*timestamp_value);
   } else {
     if (!ReadDuration(&root, &duration_))
       return false;

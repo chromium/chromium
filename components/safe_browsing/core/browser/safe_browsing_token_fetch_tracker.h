@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@
 namespace safe_browsing {
 
 // Exposed for unittests.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 constexpr int kTokenFetchTimeoutDelayFromMilliseconds = 50;
 #else
 constexpr int kTokenFetchTimeoutDelayFromMilliseconds = 1000;

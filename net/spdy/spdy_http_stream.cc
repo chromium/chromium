@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <list>
+#include <set>
 #include <string>
 #include <utility>
 
@@ -13,7 +14,6 @@
 #include "base/check_op.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
@@ -27,9 +27,9 @@
 #include "net/spdy/spdy_http_utils.h"
 #include "net/spdy/spdy_log_util.h"
 #include "net/spdy/spdy_session.h"
-#include "net/third_party/quiche/src/spdy/core/spdy_header_block.h"
-#include "net/third_party/quiche/src/spdy/core/spdy_protocol.h"
-#include "url/origin.h"
+#include "net/third_party/quiche/src/quiche/spdy/core/http2_header_block.h"
+#include "net/third_party/quiche/src/quiche/spdy/core/spdy_protocol.h"
+#include "url/scheme_host_port.h"
 
 namespace net {
 
@@ -103,26 +103,13 @@ const size_t SpdyHttpStream::kRequestBodyBufferSize = kMaxSpdyFrameChunkSize;
 SpdyHttpStream::SpdyHttpStream(const base::WeakPtr<SpdySession>& spdy_session,
                                spdy::SpdyStreamId pushed_stream_id,
                                NetLogSource source_dependency,
-                               std::vector<std::string> dns_aliases)
+                               std::set<std::string> dns_aliases)
     : MultiplexedHttpStream(
           std::make_unique<MultiplexedSessionHandle>(spdy_session)),
       spdy_session_(spdy_session),
       pushed_stream_id_(pushed_stream_id),
       is_reused_(spdy_session_->IsReused()),
       source_dependency_(source_dependency),
-      stream_(nullptr),
-      stream_closed_(false),
-      closed_stream_status_(ERR_FAILED),
-      closed_stream_id_(0),
-      closed_stream_received_bytes_(0),
-      closed_stream_sent_bytes_(0),
-      request_info_(nullptr),
-      response_info_(nullptr),
-      response_headers_complete_(false),
-      upload_stream_in_progress_(false),
-      user_buffer_len_(0),
-      request_body_buf_size_(0),
-      was_alpn_negotiated_(false),
       dns_aliases_(std::move(dns_aliases)) {
   DCHECK(spdy_session_.get());
 }
@@ -134,16 +121,20 @@ SpdyHttpStream::~SpdyHttpStream() {
   }
 }
 
-int SpdyHttpStream::InitializeStream(const HttpRequestInfo* request_info,
-                                     bool can_send_early,
+void SpdyHttpStream::RegisterRequest(const HttpRequestInfo* request_info) {
+  DCHECK(request_info);
+  request_info_ = request_info;
+}
+
+int SpdyHttpStream::InitializeStream(bool can_send_early,
                                      RequestPriority priority,
                                      const NetLogWithSource& stream_net_log,
                                      CompletionOnceCallback callback) {
   DCHECK(!stream_);
+  DCHECK(request_info_);
   if (!spdy_session_)
     return ERR_CONNECTION_CLOSED;
 
-  request_info_ = request_info;
   if (pushed_stream_id_ != kNoPushedStreamFound) {
     int error = spdy_session_->GetPushedStream(
         request_info_->url, pushed_stream_id_, priority, &stream_);
@@ -163,7 +154,7 @@ int SpdyHttpStream::InitializeStream(const HttpRequestInfo* request_info,
       can_send_early, priority, request_info_->socket_tag, stream_net_log,
       base::BindOnce(&SpdyHttpStream::OnStreamCreated,
                      weak_factory_.GetWeakPtr(), std::move(callback)),
-      NetworkTrafficAnnotationTag(request_info->traffic_annotation));
+      NetworkTrafficAnnotationTag{request_info_->traffic_annotation});
 
   if (rv == OK) {
     stream_ = stream_request_.ReleaseStream().get();
@@ -396,8 +387,8 @@ void SpdyHttpStream::OnEarlyHintsReceived(
   DCHECK(response_info_);
   DCHECK_EQ(stream_->type(), SPDY_REQUEST_RESPONSE_STREAM);
 
-  const bool headers_valid = SpdyHeadersToHttpResponse(headers, response_info_);
-  CHECK(headers_valid);
+  const int rv = SpdyHeadersToHttpResponse(headers, response_info_);
+  CHECK_NE(rv, ERR_INCOMPLETE_HTTP2_HEADERS);
 
   if (!response_callback_.is_null()) {
     DoResponseCallback(OK);
@@ -416,15 +407,21 @@ void SpdyHttpStream::OnHeadersReceived(
     response_info_ = push_response_info_.get();
   }
 
-  const bool headers_valid =
-      SpdyHeadersToHttpResponse(response_headers, response_info_);
-  DCHECK(headers_valid);
+  const int rv = SpdyHeadersToHttpResponse(response_headers, response_info_);
+  DCHECK_NE(rv, ERR_INCOMPLETE_HTTP2_HEADERS);
+
+  if (rv == ERR_RESPONSE_HEADERS_MULTIPLE_LOCATION) {
+    // Cancel will call OnClose, which might call callbacks and might destroy
+    // `this`.
+    stream_->Cancel(rv);
+    return;
+  }
 
   if (pushed_request_headers &&
       !ValidatePushedHeaders(*request_info_, *pushed_request_headers,
                              response_headers, *response_info_)) {
     // Cancel will call OnClose, which might call callbacks and might destroy
-    // |this|.
+    // `this`.
     stream_->Cancel(ERR_HTTP2_PUSHED_RESPONSE_DOES_NOT_MATCH);
 
     return;
@@ -438,8 +435,6 @@ void SpdyHttpStream::OnHeadersReceived(
   response_info_->connection_info = HttpResponseInfo::CONNECTION_INFO_HTTP2;
   response_info_->alpn_negotiated_protocol =
       HttpResponseInfo::ConnectionInfoToString(response_info_->connection_info);
-  response_info_->vary_data
-      .Init(*request_info_, *response_info_->headers.get());
 
   // Invalidate HttpRequestInfo pointer. This is to allow |this| to be
   // shared across multiple consumers at the cache layer which might require
@@ -694,11 +689,11 @@ void SpdyHttpStream::DoResponseCallback(int rv) {
   std::move(response_callback_).Run(rv);
 }
 
-bool SpdyHttpStream::GetRemoteEndpoint(IPEndPoint* endpoint) {
+int SpdyHttpStream::GetRemoteEndpoint(IPEndPoint* endpoint) {
   if (!spdy_session_)
-    return false;
+    return ERR_SOCKET_NOT_CONNECTED;
 
-  return spdy_session_->GetPeerAddress(endpoint) == OK;
+  return spdy_session_->GetPeerAddress(endpoint);
 }
 
 void SpdyHttpStream::PopulateNetErrorDetails(NetErrorDetails* details) {
@@ -712,7 +707,7 @@ void SpdyHttpStream::SetPriority(RequestPriority priority) {
   }
 }
 
-const std::vector<std::string>& SpdyHttpStream::GetDnsAliases() const {
+const std::set<std::string>& SpdyHttpStream::GetDnsAliases() const {
   return dns_aliases_;
 }
 
@@ -721,8 +716,7 @@ base::StringPiece SpdyHttpStream::GetAcceptChViaAlps() const {
     return {};
   }
 
-  const url::Origin origin = url::Origin::Create(request_info_->url);
-  return session()->GetAcceptChViaAlpsForOrigin(origin);
+  return session()->GetAcceptChViaAlps(url::SchemeHostPort(request_info_->url));
 }
 
 }  // namespace net

@@ -1,11 +1,9 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef NET_DNS_PUBLIC_HOST_RESOLVER_SOURCE_H_
 #define NET_DNS_PUBLIC_HOST_RESOLVER_SOURCE_H_
-
-#include "base/cxx17_backports.h"
 
 namespace net {
 
@@ -41,7 +39,7 @@ const HostResolverSource kHostResolverSources[] = {
     HostResolverSource::LOCAL_ONLY};
 
 static_assert(
-    base::size(kHostResolverSources) ==
+    std::size(kHostResolverSources) ==
         static_cast<unsigned>(HostResolverSource::MAX) + 1,
     "All HostResolverSource values should be in kHostResolverSources.");
 

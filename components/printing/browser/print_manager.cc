@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,15 +44,20 @@ void PrintManager::DidPrintDocument(mojom::DidPrintDocumentParamsPtr params,
 
 void PrintManager::ShowInvalidPrinterSettingsError() {}
 
-void PrintManager::PrintingFailed(int32_t cookie) {
+void PrintManager::PrintingFailed(int32_t cookie,
+                                  mojom::PrintFailureReason reason) {
   // Note: Not redundant with cookie checks in the same method in other parts of
   // the class hierarchy.
   if (!IsValidCookie(cookie))
     return;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   PdfWritingDone(0);
 #endif
+}
+
+void PrintManager::ClearPrintRenderFramesForTesting() {
+  print_render_frames_.clear();
 }
 
 bool PrintManager::IsPrintRenderFrameConnected(
@@ -64,6 +69,15 @@ bool PrintManager::IsPrintRenderFrameConnected(
 
 const mojo::AssociatedRemote<printing::mojom::PrintRenderFrame>&
 PrintManager::GetPrintRenderFrame(content::RenderFrameHost* rfh) {
+  // This is a safety CHECK() to protect against future regressions where a
+  // caller forgets to check `IsRenderFrameLive()`. Entries are removed from
+  // `print_render_frames_` by RenderFrameDeleted(), which may never be called
+  // if the RenderFrameHost does not currently have a live RenderFrame.
+  //
+  // While this CHECK() could be moved into the two conditional branches below
+  // that actually bind the remote, it does not really make sense to send an IPC
+  // to a non-live RenderFrame.
+  CHECK(rfh->IsRenderFrameLive());
   auto it = print_render_frames_.find(rfh);
   if (it == print_render_frames_.end()) {
     mojo::AssociatedRemote<printing::mojom::PrintRenderFrame> remote;
@@ -84,7 +98,7 @@ content::RenderFrameHost* PrintManager::GetCurrentTargetFrame() {
 }
 
 void PrintManager::PrintingRenderFrameDeleted() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   PdfWritingDone(0);
 #endif
 }

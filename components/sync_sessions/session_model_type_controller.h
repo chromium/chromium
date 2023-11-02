@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "components/prefs/pref_change_registrar.h"
+#include "components/history/core/browser/sync/history_model_type_controller_helper.h"
 #include "components/sync/driver/model_type_controller.h"
 
 class PrefService;
@@ -18,7 +18,6 @@ class SyncService;
 
 namespace sync_sessions {
 
-// Overrides LoadModels to check if history sync is allowed by policy.
 class SessionModelTypeController : public syncer::ModelTypeController {
  public:
   SessionModelTypeController(
@@ -36,12 +35,7 @@ class SessionModelTypeController : public syncer::ModelTypeController {
   PreconditionState GetPreconditionState() const override;
 
  private:
-  void OnSavingBrowserHistoryPrefChanged();
-
-  syncer::SyncService* const sync_service_;
-  PrefService* const pref_service_;
-
-  PrefChangeRegistrar pref_registrar_;
+  history::HistoryModelTypeControllerHelper helper_;
 };
 
 }  // namespace sync_sessions

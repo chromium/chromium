@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "components/domain_reliability/scheduler.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -62,7 +63,7 @@ class MockTimer : public MockableTime::Timer {
     std::move(task_to_run).Run();
   }
 
-  MockTime* time_;
+  raw_ptr<MockTime> time_;
   bool running_;
   int callback_sequence_number_;
   base::OnceClosure user_task_;
@@ -94,10 +95,10 @@ void MockUploader::UploadReport(
     const std::string& report_json,
     int max_upload_depth,
     const GURL& upload_url,
-    const net::NetworkIsolationKey& network_isolation_key,
+    const net::NetworkAnonymizationKey& network_anonymization_key,
     UploadCallback callback) {
   callback_.Run(report_json, max_upload_depth, upload_url,
-                network_isolation_key, std::move(callback));
+                network_anonymization_key, std::move(callback));
 }
 
 void MockUploader::Shutdown() {}
@@ -181,11 +182,12 @@ DomainReliabilityScheduler::Params MakeTestSchedulerParams() {
 }
 
 std::unique_ptr<DomainReliabilityConfig> MakeTestConfig() {
-  return MakeTestConfigWithOrigin(GURL("https://example/"));
+  return MakeTestConfigWithOrigin(
+      url::Origin::Create(GURL("https://example/")));
 }
 
 std::unique_ptr<DomainReliabilityConfig> MakeTestConfigWithOrigin(
-    const GURL& origin) {
+    const url::Origin& origin) {
   DomainReliabilityConfig* config = new DomainReliabilityConfig();
   config->origin = origin;
   config->collectors.push_back(

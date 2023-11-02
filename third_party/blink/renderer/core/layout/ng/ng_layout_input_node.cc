@@ -1,9 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_input_node.h"
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_utils.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
@@ -13,6 +14,7 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/min_max_sizes.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
+#include "third_party/blink/renderer/core/layout/ng/layout_ng_view.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_list_item.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
@@ -20,6 +22,8 @@
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_column.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_section.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+
+#include "base/record_replay.h"
 
 namespace blink {
 namespace {
@@ -105,6 +109,19 @@ bool NGLayoutInputNode::IsTextControlPlaceholder() const {
   return IsBlock() && blink::IsTextControlPlaceholder(GetDOMNode());
 }
 
+bool NGLayoutInputNode::IsPaginatedRoot() const {
+  if (!IsBlock())
+    return false;
+  const auto* view = DynamicTo<LayoutNGView>(box_.Get());
+  if (!view || !view->IsFragmentationContextRoot())
+    return false;
+  if (const LayoutObject* child = view->FirstChild()) {
+    if (child->ForceLegacyLayout())
+      return false;
+  }
+  return true;
+}
+
 NGBlockNode NGLayoutInputNode::ListMarkerBlockNodeIfListItem() const {
   if (auto* list_item = DynamicTo<LayoutNGListItem>(box_.Get()))
     return NGBlockNode(DynamicTo<LayoutBox>(list_item->Marker()));
@@ -137,7 +154,7 @@ NGLayoutInputNode NGLayoutInputNode::NextSibling() const {
 }
 
 PhysicalSize NGLayoutInputNode::InitialContainingBlockSize() const {
-  IntSize icb_size =
+  gfx::Size icb_size =
       GetDocument().GetLayoutView()->GetLayoutSize(kIncludeScrollbars);
   return PhysicalSize(icb_size);
 }
@@ -190,13 +207,14 @@ void NGLayoutInputNode::GetOverrideIntrinsicSize(
       *computed_block_size = default_block_size;
   }
 
-  // TODO(mstensho): Update for contain:inline-size / contain:block-size.
-  if (ShouldApplySizeContainment()) {
-    if (!*computed_inline_size)
-      *computed_inline_size = LayoutUnit();
-    if (!*computed_block_size)
-      *computed_block_size = LayoutUnit();
-  }
+  if (ShouldApplyInlineSizeContainment() && !*computed_inline_size)
+    *computed_inline_size = LayoutUnit();
+  if (ShouldApplyBlockSizeContainment() && !*computed_block_size)
+    *computed_block_size = LayoutUnit();
+}
+
+void NGLayoutInputNode::InitRecordReplayId() {
+  record_replay_id_ = recordreplay::NewIdMainThread("NGLayoutInputNode");
 }
 
 }  // namespace blink

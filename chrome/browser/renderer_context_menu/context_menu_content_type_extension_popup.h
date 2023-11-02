@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,7 +21,6 @@ class ContextMenuContentTypeExtensionPopup : public ContextMenuContentType {
 
  protected:
   ContextMenuContentTypeExtensionPopup(
-      content::WebContents* web_contents,
       const content::ContextMenuParams& params);
 
  private:

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -48,8 +48,10 @@ class VIZ_SERVICE_EXPORT AggregatedFrame {
   // Indicates whether video capture has been enabled for this frame.
   bool video_capture_enabled = false;
 
-  // Indicates whether this frame may contain video.
-  bool may_contain_video = false;
+  // Indicates whether this is a page fullscreen mode without Chrome tabs. When
+  // in the page fullscreen mode, the content surface has the same size as the
+  // root render pass |output_rect| (display size) on the root surface.
+  bool page_fullscreen_mode = false;
 
   // A list of surface damage rects in the current frame, used for overlays.
   SurfaceDamageRectList surface_damage_rect_list_;

@@ -1,8 +1,9 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/constrained_window/constrained_window_views.h"
+#include "base/memory/raw_ptr.h"
 
 #include <memory>
 
@@ -129,9 +130,9 @@ class ConstrainedWindowViewsTest : public views::ViewsTestBase {
 
  private:
   std::unique_ptr<views::DialogDelegate> delegate_;
-  views::View* contents_ = nullptr;
+  raw_ptr<views::View> contents_ = nullptr;
   std::unique_ptr<web_modal::TestWebContentsModalDialogHost> dialog_host_;
-  Widget* dialog_ = nullptr;
+  raw_ptr<Widget> dialog_ = nullptr;
 };
 
 }  // namespace
@@ -201,7 +202,7 @@ TEST_F(ConstrainedWindowViewsTest, MaximumWebContentsDialogSize) {
 
 // Ensure CreateBrowserModalDialogViews() works correctly with a null parent.
 // Flaky on Win10. https://crbug.com/1009182
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_NullModalParent DISABLED_NullModalParent
 #else
 #define MAYBE_NullModalParent NullModalParent

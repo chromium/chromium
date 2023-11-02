@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -125,14 +125,15 @@ bool ProcessProxyRegistry::OpenProcess(const base::CommandLine& cmdline,
   return true;
 }
 
-bool ProcessProxyRegistry::SendInput(const std::string& id,
-                                     const std::string& data) {
+void ProcessProxyRegistry::SendInput(const std::string& id,
+                                     const std::string& data,
+                                     base::OnceCallback<void(bool)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::map<std::string, ProcessProxyInfo>::iterator it = proxy_map_.find(id);
   if (it == proxy_map_.end())
-    return false;
-  return it->second.proxy->Write(data);
+    return std::move(callback).Run(false);
+  it->second.proxy->Write(data, std::move(callback));
 }
 
 bool ProcessProxyRegistry::CloseProcess(const std::string& id) {

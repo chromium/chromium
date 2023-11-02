@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -65,10 +65,10 @@ FullscreenControllerStateTest::FullscreenControllerStateTest()
           STATE_TO_BROWSER_FULLSCREEN,  // Event TOGGLE_FULLSCREEN
                                         // TODO(scheib) Should be a route back
                                         // to TAB. http://crbug.com/154196
-          STATE_TO_NORMAL,  // Event TAB_FULLSCREEN_TRUE
-          STATE_TO_NORMAL,  // Event TAB_FULLSCREEN_FALSE
-          STATE_TO_NORMAL,  // Event BUBBLE_EXIT_LINK
-          STATE_NORMAL,     // Event WINDOW_CHANGE
+          STATE_TO_NORMAL,              // Event TAB_FULLSCREEN_TRUE
+          STATE_TO_NORMAL,              // Event TAB_FULLSCREEN_FALSE
+          STATE_TO_NORMAL,              // Event BUBBLE_EXIT_LINK
+          STATE_NORMAL,                 // Event WINDOW_CHANGE
       },
       {
           // STATE_TO_BROWSER_FULLSCREEN:
@@ -77,7 +77,7 @@ FullscreenControllerStateTest::FullscreenControllerStateTest()
                             // http://crbug.com/154196
           STATE_TO_BROWSER_FULLSCREEN,  // Event TAB_FULLSCREEN_TRUE
           STATE_TO_BROWSER_FULLSCREEN,  // Event TAB_FULLSCREEN_FALSE
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
                                         // Mac window reports fullscreen
                                         // immediately and an exit triggers
                                         // exit.
@@ -93,7 +93,7 @@ FullscreenControllerStateTest::FullscreenControllerStateTest()
           // http://crbug.com/154196
           STATE_TO_TAB_FULLSCREEN,  // Event TOGGLE_FULLSCREEN
           STATE_TO_TAB_FULLSCREEN,  // Event TAB_FULLSCREEN_TRUE
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
                                     // Mac runs as expected due to a forced
                                     // NotifyTabOfExitIfNecessary();
           STATE_TO_NORMAL,  // Event TAB_FULLSCREEN_FALSE
@@ -101,7 +101,7 @@ FullscreenControllerStateTest::FullscreenControllerStateTest()
       // TODO(scheib) Should be a route back to NORMAL. http://crbug.com/154196
       STATE_TO_BROWSER_FULLSCREEN,            // Event TAB_FULLSCREEN_FALSE
 #endif
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
                             // Mac window reports fullscreen immediately and an
                             // exit triggers exit.
           STATE_TO_NORMAL,  // Event BUBBLE_EXIT_LINK
@@ -176,7 +176,7 @@ const char* FullscreenControllerStateTest::GetEventString(Event event) {
 
 // static
 bool FullscreenControllerStateTest::IsWindowFullscreenStateChangedReentrant() {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   return false;
 #else
   return true;
@@ -237,7 +237,7 @@ bool FullscreenControllerStateTest::TransitionAStepTowardState(
 }
 
 const char* FullscreenControllerStateTest::GetWindowStateString() {
-  return NULL;
+  return nullptr;
 }
 
 bool FullscreenControllerStateTest::InvokeEvent(Event event) {
@@ -277,8 +277,11 @@ bool FullscreenControllerStateTest::InvokeEvent(Event event) {
       content::WebContents* const active_tab =
           GetBrowser()->tab_strip_model()->GetActiveWebContents();
       if (event == TAB_FULLSCREEN_TRUE) {
-        GetFullscreenController()->EnterFullscreenModeForTab(
-            active_tab->GetMainFrame());
+        if (GetFullscreenController()->CanEnterFullscreenModeForTab(
+                active_tab->GetPrimaryMainFrame())) {
+          GetFullscreenController()->EnterFullscreenModeForTab(
+              active_tab->GetPrimaryMainFrame());
+        }
       } else {
         GetFullscreenController()->ExitFullscreenModeForTab(active_tab);
       }
@@ -340,7 +343,7 @@ void FullscreenControllerStateTest::VerifyWindowState() {
 
     case STATE_TO_BROWSER_FULLSCREEN:
       VerifyWindowStateExpectations(
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
           FULLSCREEN_FOR_BROWSER_TRUE,
 #else
                                     FULLSCREEN_FOR_BROWSER_FALSE,

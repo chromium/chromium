@@ -1,4 +1,4 @@
-// Copyright (c) 2010 The Chromium Authors. All rights reserved.
+// Copyright 2010 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "sandbox/win/src/crosscall_server.h"
 #include "sandbox/win/src/ipc_tags.h"
 #include "sandbox/win/src/sandbox_policy_base.h"
@@ -41,7 +41,7 @@ class NamedPipeDispatcher : public Dispatcher {
                        uint32_t in_buffer_size,
                        uint32_t default_timeout);
 
-  PolicyBase* policy_base_;
+  raw_ptr<PolicyBase> policy_base_;
 };
 
 }  // namespace sandbox

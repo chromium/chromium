@@ -1,10 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_BACKGROUND_SYNC_PERIODIC_BACKGROUND_SYNC_PERMISSION_CONTEXT_H_
 #define CHROME_BROWSER_BACKGROUND_SYNC_PERIODIC_BACKGROUND_SYNC_PERMISSION_CONTEXT_H_
 
+#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/permissions/permission_context_base.h"
@@ -12,6 +13,12 @@
 namespace content {
 class BrowserContext;
 }
+
+namespace features {
+
+BASE_DECLARE_FEATURE(kPeriodicSyncPermissionForDefaultSearchEngine);
+
+}  // namespace features
 
 // This permission context is responsible for getting, deciding on and updating
 // the Periodic Background Sync permission for a particular website. This
@@ -45,20 +52,18 @@ class PeriodicBackgroundSyncPermissionContext
  protected:
   // Virtual for testing.
   virtual bool IsPwaInstalled(const GURL& origin) const;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   virtual bool IsTwaInstalled(const GURL& origin) const;
 #endif
   virtual GURL GetDefaultSearchEngineUrl() const;
 
  private:
   // PermissionContextBase implementation.
-  bool IsRestrictedToSecureOrigins() const override;
   ContentSetting GetPermissionStatusInternal(
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
       const GURL& embedding_origin) const override;
   void DecidePermission(
-      content::WebContents* web_contents,
       const permissions::PermissionRequestID& id,
       const GURL& requesting_origin,
       const GURL& embedding_origin,

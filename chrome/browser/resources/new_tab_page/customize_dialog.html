@@ -1,4 +1,15 @@
 <style include="cr-hidden-style cr-icons">
+  cr-button {
+    --border-color: var(--color-new-tab-page-action-button-border);
+    --hover-border-color:
+        var(--color-new-tab-page-action-button-border-hovered);
+    --text-color-action: var(--color-new-tab-page-background-override);
+  }
+
+  cr-dialog {
+    --cr-dialog-background-color: var(--color-new-tab-page-background-override);
+  }
+
   cr-dialog::part(dialog) {
     height: 100%;
     max-height: 520px;
@@ -15,7 +26,7 @@
 
   div[slot=title] {
     align-items: center;
-    color: var(--cr-primary-text-color);
+    color: var(--color-new-tab-page-primary-foreground);
     display: flex;
     flex-direction: row;
     height: 64px;
@@ -24,7 +35,7 @@
   }
 
   div[slot=body] {
-    color: var(--cr-primary-text-color);
+    color: var(--color-new-tab-page-primary-foreground);
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -78,7 +89,7 @@
 
   div[scroll-border][show-1],
   div[scroll-border][show-2] {
-    border-bottom-color: var(--ntp-border-color);
+    border-bottom-color: var(--color-new-tab-page-border);
   }
 
   #menu {
@@ -94,7 +105,7 @@
   .menu-item {
     align-items: center;
     border-radius: 0 16px 16px 0;
-    color: var(--cr-primary-text-color);
+    color: var(--color-new-tab-page-primary-foreground);
     cursor: pointer;
     display: flex;
     flex-direction: row;
@@ -114,7 +125,7 @@
   }
 
   .menu-item:hover {
-    background-color: var(--ntp-hover-background-color);
+    background-color: var(--color-new-tab-page-control-background-hovered);
   }
 
   :host-context(.focus-outline-visible) .menu-item:focus {
@@ -122,18 +133,18 @@
   }
 
   .menu-item:active {
-    background-color: var(--ntp-active-background-color);
+    background-color: var(--color-new-tab-page-active-background);
   }
 
   .menu-item[selected] {
-    background-color: var(--ntp-selected-background-color);
-    color: var(--ntp-selected-primary-text-color);
+    background-color: var(--color-new-tab-page-selected-background);
+    color: var(--color-new-tab-page-selected-foreground);
   }
 
   .menu-item-icon {
     -webkit-mask-repeat: no-repeat;
     -webkit-mask-size: 100%;
-    background-color: var(--cr-primary-text-color);
+    background-color: var(--color-new-tab-page-primary-foreground);
     height: 20px;
     margin-inline-end: 16px;
     margin-inline-start: 24px;
@@ -141,7 +152,24 @@
   }
 
   .menu-item[selected] .menu-item-icon {
-    background-color: var(--ntp-selected-primary-text-color);
+    background-color: var(--color-new-tab-page-selected-foreground);
+  }
+
+  @media (forced-colors: active) {
+    :host-context(.focus-outline-visible) .menu-item:focus {
+      /* Use outline instead of box-shadow (which does not work) in Windows
+         HCM. */
+      outline: var(--cr-focus-outline-hcm);
+    }
+
+    .menu-item-icon,
+    .menu-item-icon[selected] {
+      background-color: ButtonText;
+    }
+
+    .menu-item[selected] {
+      background-color: SelectedItem;
+    }
   }
 
   #backgroundsIcon {
@@ -161,7 +189,7 @@
   }
 
   #backButton {
-    --cr-icon-button-fill-color: var(--cr-primary-text-color);
+    --cr-icon-button-fill-color: var(--color-new-tab-page-primary-foreground);
     margin-inline-end: 4px;
     /* So that the arrow aligns with the grid. */
     margin-inline-start: -12px;
@@ -186,17 +214,17 @@
     <div id="leftTitleSpacer"></div>
     <div id="title">
       <div id="titleText" hidden="[[showTitleNavigation_]]">
-        [[i18n('customizeThisPage')]]
+        $i18n{customizeThisPage}
       </div>
       <div id="titleNavigation" hidden="[[!showTitleNavigation_]]">
         <cr-icon-button id="backButton" class="icon-arrow-back"
-            on-click="onBackClick_" title="[[i18n('backButton')]]">
+            on-click="onBackClick_" title="$i18n{backButton}">
         </cr-icon-button>
         <div id="collectionTitle">[[selectedCollection_.label]]</div>
         <cr-toggle id="refreshToggle" checked="[[isRefreshToggleChecked_]]"
             on-change="onBackgroundDailyRefreshToggleChange_">
         </cr-toggle>
-        [[i18n('refreshDaily')]]
+        $i18n{refreshDaily}
       </div>
     </div>
   </div>
@@ -209,21 +237,21 @@
             on-keydown="onMenuItemKeyDown_" fallback-selection="backgrounds">
           <div class="menu-item" page-name="backgrounds" tabindex="0">
             <div id="backgroundsIcon" class="menu-item-icon"></div>
-            [[i18n('backgroundsMenuItem')]]
+            $i18n{backgroundsMenuItem}
           </div>
           <div class="menu-item" page-name="shortcuts" tabindex="0"
               hidden$="[[!shortcutsEnabled_]]">
             <div id="shortcutsIcon" class="menu-item-icon"></div>
-            [[i18n('shortcutsMenuItem')]]
+            $i18n{shortcutsMenuItem}
           </div>
           <div class="menu-item" page-name="modules" tabindex="0"
               hidden$="[[!modulesEnabled_]]">
             <div id="modulesIcon" class="menu-item-icon"></div>
-            [[i18n('modulesMenuItem')]]
+            $i18n{modulesMenuItem}
           </div>
           <div class="menu-item" page-name="themes" tabindex="0">
             <div id="themesIcon" class="menu-item-icon"></div>
-            [[i18n('themesMenuItem')]]
+            $i18n{themesMenuItem}
           </div>
         </iron-selector>
       </div>
@@ -247,10 +275,10 @@
   </div>
   <div slot="button-container">
     <cr-button class="cancel-button" on-click="onCancelClick_">
-      [[i18n('cancelButton')]]
+      $i18n{cancelButton}
     </cr-button>
     <cr-button class="action-button" on-click="onDoneClick_">
-      [[i18n('doneButton')]]
+      $i18n{doneButton}
     </cr-button>
   </div>
 </cr-dialog>

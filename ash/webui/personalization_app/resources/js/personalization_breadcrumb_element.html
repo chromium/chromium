@@ -1,0 +1,89 @@
+<style include="cr-icons common cros-button-style">
+  #container {
+    align-items: center;
+    box-sizing: border-box;
+    display: flex;
+    flex-flow: row nowrap;
+    height: 100%;
+    padding: 0 8px;
+  }
+
+  #backButton {
+    /* Make the arrow align with the thumbnail image */
+    --cr-icon-button-margin-start: -12px;
+    --cr-icon-button-margin-end: 8px;
+  }
+
+  #selector {
+    align-items: center;
+    box-sizing: border-box;
+    color: var(--cros-text-color-secondary);
+    display: flex;
+    flex-flow: row nowrap;
+    font: var(--cros-headline-1-font);
+    height: 100%;
+    width: 100%;
+  }
+
+  #homeButton {
+    --cr-icon-button-fill-color: var(--cros-text-color-primary);
+    --cr-icon-button-size: 36px;
+    margin-inline-end: 6px;
+    margin-inline-start: -10px;
+  }
+
+  .breadcrumb {
+    --ink-color: rgba(var(--cros-ripple-color-rgb), 1);
+    --paper-ripple-opacity: var(--cros-ripple-opacity);
+    --text-color: var(--cros-text-color-secondary);
+    border: none;
+    min-width: 48px;
+  }
+
+  .breadcrumb:not(last-of-type) {
+    flex: 0 0 auto;
+  }
+
+  .breadcrumb:last-of-type {
+    --text-color: var(--cros-text-color-primary);
+    flex: 0 1 auto;
+  }
+
+  iron-icon[icon='cr:chevron-right'] {
+    flex: 0 0 auto;
+  }
+
+  .text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+</style>
+<nav id="container">
+    <iron-a11y-keys id="keys" keys="left right" on-keys-pressed="onKeysPress_">
+    </iron-a11y-keys>
+    <iron-selector id="selector" selectable=".selectable" selected="0"
+        selected-item="{{selectedBreadcrumb_}}">
+      <cr-icon-button id="homeButton"
+          class="selectable"
+          role="link"
+          aria-label$="[[getHomeButtonAriaLabel_()]]"
+          iron-icon="personalization:home"
+          on-click="onHomeIconClick_">
+      </cr-icon-button>
+      <iron-icon icon="cr:chevron-right" aria-hidden="true"></iron-icon>
+      <template is="dom-repeat" items="[[breadcrumbs_]]" as="breadcrumb">
+        <template is="dom-if" if="[[index]]">
+          <iron-icon icon="cr:chevron-right" aria-hidden="true"></iron-icon>
+        </template>
+        <cr-button class="breadcrumb selectable"
+            role="link"
+            aria-current$="[[getBreadcrumbAriaCurrent_(index, breadcrumbs_)]]"
+            tabindex="-1"
+            id="breadcrumb[[index]]"
+            on-click="onBreadcrumbClick_">
+          <div class="text" title$="[[breadcrumb]]">[[breadcrumb]]</div>
+        </cr-button>
+      </template>
+    </iron-selector>
+</nav>

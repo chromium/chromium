@@ -1,0 +1,59 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_fuchsia)
+
+config("cfv1_config") {
+  defines = [ "USE_CFV1_LAUNCHER" ]
+}
+
+source_set("integration") {
+  testonly = true
+  public = [
+    "context_provider_for_test_v2.h",
+    "isolated_archivist_v2.h",
+  ]
+  sources = [
+    "context_provider_for_test_v2.cc",
+    "isolated_archivist_v2.cc",
+  ]
+  public_deps = [
+    "//base",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.logger",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
+    "//third_party/fuchsia-sdk/sdk/pkg/fidl_cpp_base",
+    "//third_party/fuchsia-sdk/sdk/pkg/sys_component_cpp_testing",
+    "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
+  ]
+  deps = [ "//fuchsia_web/common/test:test_support" ]
+}
+
+source_set("cfv1_integration") {
+  testonly = true
+  public = [
+    "context_provider_for_test_v1.h",
+    "isolated_archivist_v1.h",
+  ]
+  sources = [
+    "context_provider_for_test_v1.cc",
+    "isolated_archivist_v1.cc",
+  ]
+  public_deps = [
+    "//base",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.logger",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sys",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
+    "//third_party/fuchsia-sdk/sdk/pkg/fidl_cpp_base",
+    "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
+  ]
+
+  public_configs = [ ":cfv1_config" ]
+  deps = [
+    "//testing/gtest",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.io",
+    "//third_party/fuchsia-sdk/sdk/pkg/fdio",
+  ]
+}

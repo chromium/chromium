@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/math_constants.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -63,7 +63,7 @@ class DisconnectWindowGtk : public HostWindow {
 
   GtkWidget* disconnect_window_;
   GtkWidget* message_;
-  GtkWidget* button_;
+  raw_ptr<GtkWidget> button_;
 
   // Used to distinguish resize events from other types of "configure-event"
   // notifications.

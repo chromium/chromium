@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,9 +38,10 @@ class AutofillPopupControllerImplMac : public AutofillPopupControllerImpl {
   void UpdateDataListValues(const std::vector<std::u16string>& values,
                             const std::vector<std::u16string>& labels) override;
 
+ protected:
   // Hides the popup and destroys the controller. This also invalidates
   // |delegate_|.
-  void Hide(PopupHidingReason reason) override;
+  void HideViewAndDie() override;
 
  private:
   // The controller providing the autofill touch bar.

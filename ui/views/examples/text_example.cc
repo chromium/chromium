@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/color/color_id.h"
@@ -161,12 +160,12 @@ void TextExample::CreateExampleView(View* container) {
       "Right",
   };
   h_align_cb_ = AddCombobox(table_container, u"H-Align", kHorizontalAligments,
-                            base::size(kHorizontalAligments),
+                            std::size(kHorizontalAligments),
                             &TextExample::AlignComboboxChanged);
 
   constexpr const char* kElideBehaviors[] = {"Elide", "No Elide"};
   eliding_cb_ = AddCombobox(table_container, u"Eliding", kElideBehaviors,
-                            base::size(kElideBehaviors),
+                            std::size(kElideBehaviors),
                             &TextExample::ElideComboboxChanged);
 
   constexpr const char* kPrefixOptions[] = {
@@ -175,7 +174,7 @@ void TextExample::CreateExampleView(View* container) {
       "Hide",
   };
   prefix_cb_ = AddCombobox(table_container, u"Prefix", kPrefixOptions,
-                           base::size(kPrefixOptions),
+                           std::size(kPrefixOptions),
                            &TextExample::PrefixComboboxChanged);
 
   constexpr const char* kTextExamples[] = {
@@ -186,14 +185,14 @@ void TextExample::CreateExampleView(View* container) {
   };
   text_cb_ =
       AddCombobox(table_container, u"Example Text", kTextExamples,
-                  base::size(kTextExamples), &TextExample::TextComboboxChanged);
+                  std::size(kTextExamples), &TextExample::TextComboboxChanged);
 
   constexpr const char* kWeightLabels[] = {
       "Thin",     "Extra Light", "Light",      "Normal", "Medium",
       "Semibold", "Bold",        "Extra Bold", "Black",
   };
   weight_cb_ = AddCombobox(table_container, u"Font Weight", kWeightLabels,
-                           base::size(kWeightLabels),
+                           std::size(kWeightLabels),
                            &TextExample::WeightComboboxChanged);
   weight_cb_->SelectValue(u"Normal");
 
@@ -205,7 +204,7 @@ void TextExample::CreateExampleView(View* container) {
   auto* fill_container = container->AddChildView(std::make_unique<View>());
   box_layout->SetFlexForView(fill_container, 1);
   fill_container->SetLayoutManager(std::make_unique<FillLayout>());
-  fill_container->SetBorder(CreateEmptyBorder(gfx::Insets(0, 8)));
+  fill_container->SetBorder(CreateEmptyBorder(gfx::Insets::VH(0, 8)));
 
   text_view_ =
       fill_container->AddChildView(std::make_unique<TextExampleView>());
@@ -229,7 +228,7 @@ void TextExample::AlignComboboxChanged() {
   int flags = text_view_->GetFlags() &
               ~(gfx::Canvas::TEXT_ALIGN_LEFT | gfx::Canvas::TEXT_ALIGN_CENTER |
                 gfx::Canvas::TEXT_ALIGN_RIGHT);
-  switch (h_align_cb_->GetSelectedIndex()) {
+  switch (h_align_cb_->GetSelectedIndex().value()) {
     case 0:
       break;
     case 1:
@@ -246,7 +245,7 @@ void TextExample::AlignComboboxChanged() {
 }
 
 void TextExample::TextComboboxChanged() {
-  switch (text_cb_->GetSelectedIndex()) {
+  switch (text_cb_->GetSelectedIndex().value()) {
     case 0:
       text_view_->SetText(u"The quick brown fox jumps over the lazy dog.");
       break;
@@ -280,7 +279,7 @@ void TextExample::TextComboboxChanged() {
 }
 
 void TextExample::ElideComboboxChanged() {
-  switch (eliding_cb_->GetSelectedIndex()) {
+  switch (eliding_cb_->GetSelectedIndex().value()) {
     case 0:
       text_view_->SetElide(gfx::ELIDE_TAIL);
       break;
@@ -293,7 +292,7 @@ void TextExample::ElideComboboxChanged() {
 void TextExample::PrefixComboboxChanged() {
   int flags = text_view_->GetFlags() &
               ~(gfx::Canvas::SHOW_PREFIX | gfx::Canvas::HIDE_PREFIX);
-  switch (prefix_cb_->GetSelectedIndex()) {
+  switch (prefix_cb_->GetSelectedIndex().value()) {
     case 0:
       break;
     case 1:
@@ -314,7 +313,7 @@ void TextExample::WeightComboboxChanged() {
       gfx::Font::Weight::BOLD,   gfx::Font::Weight::EXTRA_BOLD,
       gfx::Font::Weight::BLACK,
   };
-  text_view_->SetWeight(kFontWeights[weight_cb_->GetSelectedIndex()]);
+  text_view_->SetWeight(kFontWeights[weight_cb_->GetSelectedIndex().value()]);
 }
 
 }  // namespace examples

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_push_permission_descriptor.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -32,6 +31,7 @@ namespace blink {
 using MojoPermissionDescriptor = mojom::blink::PermissionDescriptor;
 using mojom::blink::PermissionDescriptorPtr;
 using mojom::blink::PermissionName;
+using mojom::blink::PermissionStatus;
 
 void ConnectToPermissionService(
     ExecutionContext* execution_context,
@@ -40,66 +40,66 @@ void ConnectToPermissionService(
       std::move(receiver));
 }
 
-String PermissionStatusToString(mojom::blink::PermissionStatus status) {
+String PermissionStatusToString(PermissionStatus status) {
   switch (status) {
-    case mojom::blink::PermissionStatus::GRANTED:
+    case PermissionStatus::GRANTED:
       return "granted";
-    case mojom::blink::PermissionStatus::DENIED:
+    case PermissionStatus::DENIED:
       return "denied";
-    case mojom::blink::PermissionStatus::ASK:
+    case PermissionStatus::ASK:
       return "prompt";
   }
   NOTREACHED();
   return "denied";
 }
 
-String PermissionNameToString(mojom::blink::PermissionName name) {
+String PermissionNameToString(PermissionName name) {
   switch (name) {
-    case mojom::blink::PermissionName::GEOLOCATION:
+    case PermissionName::GEOLOCATION:
       return "geolocation";
-    case mojom::blink::PermissionName::NOTIFICATIONS:
+    case PermissionName::NOTIFICATIONS:
       return "notifications";
-    case mojom::blink::PermissionName::MIDI:
+    case PermissionName::MIDI:
       return "midi";
-    case mojom::blink::PermissionName::PROTECTED_MEDIA_IDENTIFIER:
+    case PermissionName::PROTECTED_MEDIA_IDENTIFIER:
       return "protected_media_identifier";
-    case mojom::blink::PermissionName::DURABLE_STORAGE:
+    case PermissionName::DURABLE_STORAGE:
       return "durable_storage";
-    case mojom::blink::PermissionName::AUDIO_CAPTURE:
+    case PermissionName::AUDIO_CAPTURE:
       return "audio_capture";
-    case mojom::blink::PermissionName::VIDEO_CAPTURE:
+    case PermissionName::VIDEO_CAPTURE:
       return "video_capture";
-    case mojom::blink::PermissionName::BACKGROUND_SYNC:
+    case PermissionName::BACKGROUND_SYNC:
       return "background_sync";
-    case mojom::blink::PermissionName::SENSORS:
+    case PermissionName::SENSORS:
       return "sensors";
-    case mojom::blink::PermissionName::ACCESSIBILITY_EVENTS:
+    case PermissionName::ACCESSIBILITY_EVENTS:
       return "accessibility_events";
-    case mojom::blink::PermissionName::CLIPBOARD_READ:
+    case PermissionName::CLIPBOARD_READ:
       return "clipboard_read";
-    case mojom::blink::PermissionName::CLIPBOARD_WRITE:
+    case PermissionName::CLIPBOARD_WRITE:
       return "clipboard_write";
-    case mojom::blink::PermissionName::PAYMENT_HANDLER:
+    case PermissionName::PAYMENT_HANDLER:
       return "payment_handler";
-    case mojom::blink::PermissionName::BACKGROUND_FETCH:
+    case PermissionName::BACKGROUND_FETCH:
       return "background_fetch";
-    case mojom::blink::PermissionName::IDLE_DETECTION:
+    case PermissionName::IDLE_DETECTION:
       return "idle_detection";
-    case mojom::blink::PermissionName::PERIODIC_BACKGROUND_SYNC:
+    case PermissionName::PERIODIC_BACKGROUND_SYNC:
       return "periodic_background_sync";
-    case mojom::blink::PermissionName::SCREEN_WAKE_LOCK:
+    case PermissionName::SCREEN_WAKE_LOCK:
       return "screen_wake_lock";
-    case mojom::blink::PermissionName::SYSTEM_WAKE_LOCK:
+    case PermissionName::SYSTEM_WAKE_LOCK:
       return "system_wake_lock";
-    case mojom::blink::PermissionName::NFC:
+    case PermissionName::NFC:
       return "nfc";
-    case mojom::blink::PermissionName::STORAGE_ACCESS:
+    case PermissionName::STORAGE_ACCESS:
       return "storage_access";
-    case mojom::blink::PermissionName::WINDOW_PLACEMENT:
+    case PermissionName::WINDOW_PLACEMENT:
       return "window_placement";
-    case mojom::blink::PermissionName::FONT_ACCESS:
-      return "font_access";
-    case mojom::blink::PermissionName::DISPLAY_CAPTURE:
+    case PermissionName::LOCAL_FONTS:
+      return "local_fonts";
+    case PermissionName::DISPLAY_CAPTURE:
       return "display_capture";
   }
   NOTREACHED();
@@ -113,35 +113,35 @@ PermissionDescriptorPtr CreatePermissionDescriptor(PermissionName name) {
 }
 
 PermissionDescriptorPtr CreateMidiPermissionDescriptor(bool sysex) {
-  auto descriptor =
-      CreatePermissionDescriptor(mojom::blink::PermissionName::MIDI);
+  auto descriptor = CreatePermissionDescriptor(PermissionName::MIDI);
   auto midi_extension = mojom::blink::MidiPermissionDescriptor::New();
   midi_extension->sysex = sysex;
-  descriptor->extension = mojom::blink::PermissionDescriptorExtension::New();
-  descriptor->extension->set_midi(std::move(midi_extension));
+  descriptor->extension = mojom::blink::PermissionDescriptorExtension::NewMidi(
+      std::move(midi_extension));
   return descriptor;
 }
 
 PermissionDescriptorPtr CreateClipboardPermissionDescriptor(
     PermissionName name,
-    bool allow_without_gesture,
-    bool allow_without_sanitization) {
+    bool has_user_gesture,
+    bool will_be_sanitized) {
   auto descriptor = CreatePermissionDescriptor(name);
   auto clipboard_extension = mojom::blink::ClipboardPermissionDescriptor::New(
-      allow_without_gesture, allow_without_sanitization);
-  descriptor->extension = mojom::blink::PermissionDescriptorExtension::New();
-  descriptor->extension->set_clipboard(std::move(clipboard_extension));
+      has_user_gesture, will_be_sanitized);
+  descriptor->extension =
+      mojom::blink::PermissionDescriptorExtension::NewClipboard(
+          std::move(clipboard_extension));
   return descriptor;
 }
 
 PermissionDescriptorPtr CreateVideoCapturePermissionDescriptor(
     bool pan_tilt_zoom) {
-  auto descriptor =
-      CreatePermissionDescriptor(mojom::blink::PermissionName::VIDEO_CAPTURE);
+  auto descriptor = CreatePermissionDescriptor(PermissionName::VIDEO_CAPTURE);
   auto camera_device_extension =
       mojom::blink::CameraDevicePermissionDescriptor::New(pan_tilt_zoom);
-  descriptor->extension = mojom::blink::PermissionDescriptorExtension::New();
-  descriptor->extension->set_camera_device(std::move(camera_device_extension));
+  descriptor->extension =
+      mojom::blink::PermissionDescriptorExtension::NewCameraDevice(
+          std::move(camera_device_extension));
   return descriptor;
 }
 
@@ -235,8 +235,10 @@ PermissionDescriptorPtr ParsePermissionDescriptor(
             script_state->GetIsolate(), raw_descriptor.V8Value(),
             exception_state);
     return CreateClipboardPermissionDescriptor(
-        permission_name, clipboard_permission->allowWithoutGesture(),
-        clipboard_permission->allowWithoutSanitization());
+        permission_name,
+        /*has_user_gesture=*/!clipboard_permission->allowWithoutGesture(),
+        /*will_be_sanitized=*/
+        !clipboard_permission->allowWithoutSanitization());
   }
   if (name == "payment-handler")
     return CreatePermissionDescriptor(PermissionName::PAYMENT_HANDLER);
@@ -280,13 +282,13 @@ PermissionDescriptorPtr ParsePermissionDescriptor(
     }
     return CreatePermissionDescriptor(PermissionName::WINDOW_PLACEMENT);
   }
-  if (name == "font-access") {
+  if (name == "local-fonts") {
     if (!RuntimeEnabledFeatures::FontAccessEnabled(
             ExecutionContext::From(script_state))) {
-      exception_state.ThrowTypeError("Font Access is not enabled.");
+      exception_state.ThrowTypeError("Local Fonts Access API is not enabled.");
       return nullptr;
     }
-    return CreatePermissionDescriptor(PermissionName::FONT_ACCESS);
+    return CreatePermissionDescriptor(PermissionName::LOCAL_FONTS);
   }
   if (name == "display-capture") {
     return CreatePermissionDescriptor(PermissionName::DISPLAY_CAPTURE);

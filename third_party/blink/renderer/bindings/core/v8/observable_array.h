@@ -1,38 +1,17 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_OBSERVABLE_ARRAY_H_
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_OBSERVABLE_ARRAY_H_
 
-#include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/bindings/core/v8/observable_array_exotic_object_impl.h"
 #include "third_party/blink/renderer/platform/bindings/observable_array_base.h"
 #include "third_party/blink/renderer/platform/heap/heap_traits.h"
 
 namespace blink {
 
 namespace bindings {
-
-// The implementation class of ObservableArrayExoticObject.
-class CORE_EXPORT ObservableArrayExoticObjectImpl final
-    : public ObservableArrayExoticObject {
-  DEFINE_WRAPPERTYPEINFO();
-
- public:
-  explicit ObservableArrayExoticObjectImpl(
-      bindings::ObservableArrayBase* observable_array_backing_list_object);
-  ~ObservableArrayExoticObjectImpl() override = default;
-
-  // ScriptWrappable overrides
-  v8::MaybeLocal<v8::Value> Wrap(ScriptState* script_state) override;
-  WARN_UNUSED_RESULT v8::Local<v8::Object> AssociateWithWrapper(
-      v8::Isolate* isolate,
-      const WrapperTypeInfo* wrapper_type_info,
-      v8::Local<v8::Object> wrapper) override;
-
- private:
-  static const WrapperTypeInfo wrapper_type_info_body_;
-};
 
 template <typename ElementType>
 class ObservableArrayImplHelper : public bindings::ObservableArrayBase {
@@ -63,7 +42,7 @@ class ObservableArrayImplHelper : public bindings::ObservableArrayBase {
   wtf_size_t capacity() const { return backing_list_.capacity(); }
   bool IsEmpty() const { return backing_list_.IsEmpty(); }
   void ReserveCapacity(size_type new_capacity) {
-    backing_list_.ReserveCapacity(new_capacity);
+    backing_list_.reserve(new_capacity);
   }
   void ReserveInitialCapacity(size_type initial_capacity) {
     backing_list_.ReserveInitialCapacity(initial_capacity);

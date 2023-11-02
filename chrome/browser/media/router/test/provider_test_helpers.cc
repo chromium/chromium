@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -163,11 +163,12 @@ std::unique_ptr<ParsedDialAppInfo> CreateParsedDialAppInfoPtr(
 
 std::unique_ptr<DialInternalMessage> ParseDialInternalMessage(
     const std::string& message) {
-  auto message_value = base::JSONReader::ReadDeprecated(message);
+  auto message_value = base::JSONReader::Read(message);
   std::string error_unused;
-  return message_value ? DialInternalMessage::From(std::move(*message_value),
-                                                   &error_unused)
-                       : nullptr;
+  return message_value && message_value->is_dict()
+             ? DialInternalMessage::From(std::move(message_value->GetDict()),
+                                         &error_unused)
+             : nullptr;
 }
 
 }  // namespace media_router

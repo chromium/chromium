@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 // Returns an image to the UIActivities that can take advantage of it.
 @interface ChromeActivityImageSource : NSObject <ChromeActivityItemSource>
 
-// Default initializer. |image| and |title| must not be nil.
+// Default initializer. `image` and `title` must not be nil.
 - (instancetype)initWithImage:(UIImage*)image title:(NSString*)title;
 
 @end

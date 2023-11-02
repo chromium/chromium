@@ -1,0 +1,25 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package apps.proto;
+
+import "common.proto";
+
+// An identical copy of this proto is maintained in the server code base.
+// http://google3/chrome/chromeos/apps_foundation/almanac/fondue/boq/api/app_provisioning.proto
+// Any changes made here must also be made in the file above.
+// In the future this file will be add only, however breaking changes can be
+// be made until the interface is finalized (currently aimed for M110).
+message AppProvisioningResponse {
+  repeated App apps_to_install = 1;
+  message App {
+    optional AppGroup app_group = 1;
+    optional int32 shelf_order = 2;
+    optional int32 launcher_order = 3;
+  }
+}

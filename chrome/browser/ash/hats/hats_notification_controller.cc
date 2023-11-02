@@ -1,17 +1,19 @@
-// Copyright (c) 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/hats/hats_notification_controller.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/task/post_task.h"
+#include "base/strings/escape.h"
 #include "base/task/thread_pool.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/hats/hats_config.h"
@@ -24,16 +26,19 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/chrome_features.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/network/network_state.h"
+#include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_state.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/version/version_loader.h"
+#include "components/language/core/browser/pref_names.h"
+#include "components/language/core/common/locale_util.h"
 #include "components/prefs/pref_service.h"
+#include "components/version_info/version_info.h"
 #include "content/public/browser/browser_thread.h"
-#include "google_apis/gaia/gaia_auth_util.h"
-#include "net/traffic_annotation/network_traffic_annotation.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/resource/resource_bundle.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -47,10 +52,44 @@ const char kNotifierHats[] = "ash.hats";
 
 // Minimum amount of time before the notification is displayed again after a
 // user has interacted with it.
-constexpr base::TimeDelta kHatsThreshold = base::Days(90);
+constexpr base::TimeDelta kHatsThreshold = base::Days(60);
 
-// The threshold for a Googler is less.
-constexpr base::TimeDelta kHatsGooglerThreshold = base::Days(30);
+// The state specific UMA enumerations
+const int kSurveyTriggeredEnumeration = 1;
+
+// TODO(jackshira): Migrate this to a manager class.
+// Delimiters used to join the separate device info elements into a single
+// string to be used as site context.
+const char kDeviceInfoStopKeyword[] = "&";
+const char kDeviceInfoKeyValueDelimiter[] = "=";
+const char kDefaultProfileLocale[] = "en-US";
+
+// TODO(jackshira): Migrate this to a manager class.
+enum class DeviceInfoKey : unsigned int {
+  BROWSER = 0,
+  PLATFORM,
+  FIRMWARE,
+  LOCALE,
+};
+
+// TODO(jackshira): Migrate this to a manager class.
+// Maps the given DeviceInfoKey |key| enum to the corresponding string value
+// that can be used as a key when creating a URL parameter.
+const std::string KeyEnumToString(DeviceInfoKey key) {
+  switch (key) {
+    case DeviceInfoKey::BROWSER:
+      return "browser";
+    case DeviceInfoKey::PLATFORM:
+      return "platform";
+    case DeviceInfoKey::FIRMWARE:
+      return "firmware";
+    case DeviceInfoKey::LOCALE:
+      return "locale";
+    default:
+      NOTREACHED();
+      return std::string();
+  }
+}
 
 // Returns true if the given |profile| interacted with HaTS by either
 // dismissing the notification or taking the survey within a given
@@ -78,10 +117,9 @@ bool IsNewDevice(base::TimeDelta new_device_threshold) {
 bool IsTestingEnabled(const HatsConfig& hats_config) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
-  if (command_line->HasSwitch(
-          chromeos::switches::kForceHappinessTrackingSystem)) {
+  if (command_line->HasSwitch(switches::kForceHappinessTrackingSystem)) {
     auto switch_value = command_line->GetSwitchValueASCII(
-        chromeos::switches::kForceHappinessTrackingSystem);
+        switches::kForceHappinessTrackingSystem);
     return switch_value.empty() || hats_config.feature.name == switch_value;
   }
 
@@ -102,6 +140,14 @@ HatsNotificationController::HatsNotificationController(
       product_specific_data_(product_specific_data) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+  if (features::IsHatsUseNewHistogramsEnabled()) {
+    std::string histogram_name =
+        HatsFinchHelper::GetHistogramName(hats_config_);
+    if (!histogram_name.empty()) {
+      base::UmaHistogramSparse(histogram_name, kSurveyTriggeredEnumeration);
+    }
+  }
+
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&IsNewDevice, hats_config.new_device_threshold),
@@ -121,8 +167,8 @@ HatsNotificationController::~HatsNotificationController() {
 
   base::UmaHistogramEnumeration("Browser.ChromeOS.HatsStatus", state_);
 
-  if (network_portal_detector::IsInitialized())
-    network_portal_detector::GetInstance()->RemoveObserver(this);
+  if (NetworkHandler::IsInitialized())
+    NetworkHandler::Get()->network_state_handler()->RemoveObserver(this);
 }
 
 void HatsNotificationController::Initialize(bool is_new_device) {
@@ -137,9 +183,19 @@ void HatsNotificationController::Initialize(bool is_new_device) {
     return;
   }
 
-  // Add self as an observer to be notified when an internet connection is
-  // available.
-  network_portal_detector::GetInstance()->AddAndFireObserver(this);
+  if (NetworkHandler::IsInitialized()) {
+    // Observe NetworkStateHandler to be notified when an internet connection
+    // is available.
+    NetworkStateHandler* handler =
+        ash::NetworkHandler::Get()->network_state_handler();
+    handler->AddObserver(this);
+    // Create an immediate update for the current default network.
+    const NetworkState* default_network = handler->DefaultNetwork();
+    NetworkState::PortalState portal_state =
+        default_network ? default_network->GetPortalState()
+                        : NetworkState::PortalState::kUnknown;
+    PortalStateChanged(default_network, portal_state);
+  }
 }
 
 // static
@@ -169,14 +225,12 @@ bool HatsNotificationController::ShouldShowSurveyToProfile(
                                           ->browser_policy_connector_ash()
                                           ->IsDeviceEnterpriseManaged();
 
-  // Do not show survey if this is a non dogfood enterprise enrolled device.
-  if (is_enterprise_enrolled &&
-      !gaia::IsGoogleInternalAccountEmail(profile->GetProfileUserName()))
+  // Do not show survey to enterprise users.
+  if (is_enterprise_enrolled)
     return false;
 
-  // In an enterprise enrolled device, the user can never be the owner, hence
-  // only check for ownership on a non enrolled device.
-  if (!is_enterprise_enrolled && !ProfileHelper::IsOwnerProfile(profile))
+  // Do not show survey to non-owners.
+  if (!ProfileHelper::IsOwnerProfile(profile))
     return false;
 
   // Call finch helper only after all the profile checks are complete.
@@ -184,10 +238,8 @@ bool HatsNotificationController::ShouldShowSurveyToProfile(
   if (!hats_finch_helper.IsDeviceSelectedForCurrentCycle())
     return false;
 
-  const base::TimeDelta threshold_time =
-      gaia::IsGoogleInternalAccountEmail(profile->GetProfileUserName())
-          ? kHatsGooglerThreshold
-          : kHatsThreshold;
+  const base::TimeDelta threshold_time = kHatsThreshold;
+
   // Do not show survey to user if user has interacted with HaTS within the past
   // |threshold_time| time delta.
   if (DidShowSurveyToProfileRecently(profile, threshold_time)) {
@@ -206,16 +258,37 @@ void HatsNotificationController::Click(
 
   UpdateLastInteractionTime();
 
-  hats_dialog_ =
-      HatsDialog::CreateAndShow(hats_config_, product_specific_data_);
+  std::string user_locale =
+      profile_->GetPrefs()->GetString(language::prefs::kApplicationLocale);
+  language::ConvertToActualUILocale(&user_locale);
+  if (!user_locale.length())
+    user_locale = kDefaultProfileLocale;
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(&GetFormattedSiteContext, user_locale,
+                     product_specific_data_),
+      base::BindOnce(&HatsNotificationController::ShowDialog,
+                     weak_pointer_factory_.GetWeakPtr()));
 
   state_ = HatsState::kNotificationClicked;
 
   // Remove the notification.
-  network_portal_detector::GetInstance()->RemoveObserver(this);
+  ash::NetworkHandler::Get()->network_state_handler()->RemoveObserver(this);
   notification_.reset(nullptr);
   NotificationDisplayService::GetForProfile(profile_)->Close(
       NotificationHandler::Type::TRANSIENT, kNotificationId);
+}
+
+void HatsNotificationController::ShowDialog(const std::string& site_context) {
+  if (profile_ != ProfileManager::GetActiveUserProfile()) {
+    DVLOG(1) << "Different user detected, not showing dialog";
+    return;
+  }
+
+  HatsDialog::Show(HatsFinchHelper::GetTriggerID(hats_config_),
+                   HatsFinchHelper::GetHistogramName(hats_config_),
+                   site_context);
 }
 
 // message_center::NotificationDelegate override:
@@ -224,21 +297,21 @@ void HatsNotificationController::Close(bool by_user) {
 
   if (by_user) {
     UpdateLastInteractionTime();
-    network_portal_detector::GetInstance()->RemoveObserver(this);
+    ash::NetworkHandler::Get()->network_state_handler()->RemoveObserver(this);
     notification_.reset(nullptr);
     state_ = HatsState::kNotificationDismissed;
   }
 }
 
-// NetworkPortalDetector::Observer override:
-void HatsNotificationController::OnPortalDetectionCompleted(
-    const NetworkState* network,
-    const NetworkPortalDetector::CaptivePortalStatus status) {
+// NetworkStateHandlerObserver override:
+void HatsNotificationController::PortalStateChanged(
+    const ash::NetworkState* default_network,
+    ash::NetworkState::PortalState portal_state) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  VLOG(1) << "HatsController::OnPortalDetectionCompleted(): "
-          << "network=" << (network ? network->path() : "") << ", "
-          << "status=" << status;
-  if (status == NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE) {
+  VLOG(1) << "PortalStateChanged: default_network="
+          << (default_network ? default_network->path() : "")
+          << ", portal_state=" << portal_state;
+  if (portal_state == NetworkState::PortalState::kOnline) {
     // Create and display the notification for the user.
     if (!notification_) {
       notification_ = CreateSystemNotification(
@@ -248,7 +321,8 @@ void HatsNotificationController::OnPortalDetectionCompleted(
           l10n_util::GetStringUTF16(IDS_MESSAGE_CENTER_NOTIFIER_HATS_NAME),
           GURL(kNotificationOriginUrl),
           message_center::NotifierId(
-              message_center::NotifierType::SYSTEM_COMPONENT, kNotifierHats),
+              message_center::NotifierType::SYSTEM_COMPONENT, kNotifierHats,
+              NotificationCatalogName::kHats),
           message_center::RichNotificationData(), this, kNotificationGoogleIcon,
           message_center::SystemNotificationWarningLevel::NORMAL);
     }
@@ -263,6 +337,53 @@ void HatsNotificationController::OnPortalDetectionCompleted(
     NotificationDisplayService::GetForProfile(profile_)->Close(
         NotificationHandler::Type::TRANSIENT, kNotificationId);
   }
+}
+
+void HatsNotificationController::OnShuttingDown() {
+  NetworkHandler::Get()->network_state_handler()->RemoveObserver(this);
+}
+
+// TODO(jackshira): Migrate this to a manager class.
+// static
+std::string HatsNotificationController::GetFormattedSiteContext(
+    const std::string& user_locale,
+    const base::flat_map<std::string, std::string>& product_specific_data) {
+  base::flat_map<std::string, std::string> context;
+
+  context[KeyEnumToString(DeviceInfoKey::BROWSER)] =
+      version_info::GetVersionNumber();
+
+  absl::optional<std::string> version = chromeos::version_loader::GetVersion(
+      chromeos::version_loader::VERSION_FULL);
+  context[KeyEnumToString(DeviceInfoKey::PLATFORM)] =
+      version.value_or("0.0.0.0");
+
+  context[KeyEnumToString(DeviceInfoKey::FIRMWARE)] =
+      chromeos::version_loader::GetFirmware();
+
+  context[KeyEnumToString(DeviceInfoKey::LOCALE)] = user_locale;
+
+  for (const auto& pair : context) {
+    if (product_specific_data.contains(pair.first)) {
+      LOG(WARNING) << "Product specific data contains reserved key "
+                   << pair.first << ". Value will be overwritten.";
+    }
+  }
+  context.insert(product_specific_data.begin(), product_specific_data.end());
+
+  std::stringstream stream;
+  bool first_iteration = true;
+  for (const auto& pair : context) {
+    if (!first_iteration)
+      stream << kDeviceInfoStopKeyword;
+
+    stream << base::EscapeQueryParamValue(pair.first, /*use_plus=*/false)
+           << kDeviceInfoKeyValueDelimiter
+           << base::EscapeQueryParamValue(pair.second, /*use_plus=*/false);
+
+    first_iteration = false;
+  }
+  return stream.str();
 }
 
 void HatsNotificationController::UpdateLastInteractionTime() {

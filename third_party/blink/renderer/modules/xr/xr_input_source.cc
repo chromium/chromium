@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,7 +30,7 @@ namespace {
 std::unique_ptr<TransformationMatrix> TryGetTransformationMatrix(
     const absl::optional<gfx::Transform>& transform) {
   if (transform) {
-    return std::make_unique<TransformationMatrix>(transform->matrix());
+    return std::make_unique<TransformationMatrix>(*transform);
   }
 
   return nullptr;
@@ -284,7 +284,7 @@ void XRInputSource::OnSelectStart() {
   DVLOG(3) << __func__ << ": dispatch selectstart event";
   XRInputSourceEvent* event =
       CreateInputSourceEvent(event_type_names::kSelectstart);
-  session_->DispatchEvent(*event);
+  session_->DispatchEvent(*event, "XRInputSource::OnSelectStart");
 
   if (event->defaultPrevented())
     state_.selection_cancelled = true;
@@ -307,7 +307,7 @@ void XRInputSource::OnSelectEnd() {
   DVLOG(3) << __func__ << ": dispatch selectend event";
   XRInputSourceEvent* event =
       CreateInputSourceEvent(event_type_names::kSelectend);
-  session_->DispatchEvent(*event);
+  session_->DispatchEvent(*event, "XRInputSource::OnSelectEnd");
 
   if (event->defaultPrevented())
     state_.selection_cancelled = true;
@@ -338,7 +338,7 @@ void XRInputSource::OnSelect() {
     DVLOG(3) << __func__ << ": dispatch select event";
     XRInputSourceEvent* event =
         CreateInputSourceEvent(event_type_names::kSelect);
-    session_->DispatchEvent(*event);
+    session_->DispatchEvent(*event, "XRInputSource::OnSelect");
 
     // Ensure the frame cannot be used outside of the event handler.
     event->frame()->Deactivate();
@@ -358,7 +358,7 @@ void XRInputSource::OnSqueezeStart() {
 
   XRInputSourceEvent* event =
       CreateInputSourceEvent(event_type_names::kSqueezestart);
-  session_->DispatchEvent(*event);
+  session_->DispatchEvent(*event, "XRInputSource::OnSqueezeStart");
 
   if (event->defaultPrevented())
     state_.squeezing_cancelled = true;
@@ -381,7 +381,7 @@ void XRInputSource::OnSqueezeEnd() {
   DVLOG(3) << __func__ << ": dispatch squeezeend event";
   XRInputSourceEvent* event =
       CreateInputSourceEvent(event_type_names::kSqueezeend);
-  session_->DispatchEvent(*event);
+  session_->DispatchEvent(*event, "XRInputSource::OnSqueezeEnd");
 
   if (event->defaultPrevented())
     state_.squeezing_cancelled = true;
@@ -414,7 +414,7 @@ void XRInputSource::OnSqueeze() {
     DVLOG(3) << __func__ << ": dispatch squeeze event";
     XRInputSourceEvent* event =
         CreateInputSourceEvent(event_type_names::kSqueeze);
-    session_->DispatchEvent(*event);
+    session_->DispatchEvent(*event, "XRInputSource::OnSqueeze");
 
     // Ensure the frame cannot be used outside of the event handler.
     event->frame()->Deactivate();
@@ -496,9 +496,9 @@ void XRInputSource::ProcessOverlayHitTest(
   // Do a hit test at the overlay pointer position to see if the pointer
   // intersects a cross origin iframe. If yes, set the visibility to false which
   // causes targetRaySpace and gripSpace to return null poses.
-  FloatPoint point(new_state->overlay_pointer_position->x(),
-                   new_state->overlay_pointer_position->y());
-  DVLOG(3) << __func__ << ": hit test point=" << point;
+  gfx::PointF point(new_state->overlay_pointer_position->x(),
+                    new_state->overlay_pointer_position->y());
+  DVLOG(3) << __func__ << ": hit test point=" << point.ToString();
 
   HitTestRequest::HitTestRequestType hit_type = HitTestRequest::kTouchEvent |
                                                 HitTestRequest::kReadOnly |
@@ -525,7 +525,7 @@ void XRInputSource::ProcessOverlayHitTest(
     if (hit_document) {
       Frame* hit_frame = hit_document->GetFrame();
       DCHECK(hit_frame);
-      if (hit_frame->IsCrossOriginToMainFrame()) {
+      if (hit_frame->IsCrossOriginToOutermostMainFrame()) {
         // Mark the input source as invisible until the primary button is
         // released.
         state_.is_visible = false;
@@ -584,7 +584,7 @@ void XRInputSource::ProcessOverlayHitTest(
       event_type_names::kBeforexrselect, session_, Event::Bubbles::kYes,
       Event::Cancelable::kYes, Event::ComposedMode::kComposed);
 
-  hit_element->DispatchEvent(*event);
+  hit_element->DispatchEvent(*event, "XRInputSource::ProcessOverlayHitTest");
   bool default_prevented = event->defaultPrevented();
 
   // Keep the input source visible, so it's exposed in the input sources array,
@@ -600,7 +600,7 @@ void XRInputSource::OnRemoved() {
 
     XRInputSourceEvent* event =
         CreateInputSourceEvent(event_type_names::kSelectend);
-    session_->DispatchEvent(*event);
+    session_->DispatchEvent(*event, "XRInputSource::OnRemoved #1");
 
     if (event->defaultPrevented())
       state_.selection_cancelled = true;
@@ -614,7 +614,7 @@ void XRInputSource::OnRemoved() {
 
     XRInputSourceEvent* event =
         CreateInputSourceEvent(event_type_names::kSqueezeend);
-    session_->DispatchEvent(*event);
+    session_->DispatchEvent(*event, "XRInputSource::OnRemoved #2");
 
     if (event->defaultPrevented())
       state_.squeezing_cancelled = true;

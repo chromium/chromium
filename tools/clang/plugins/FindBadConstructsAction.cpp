@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -47,16 +47,14 @@ bool FindBadConstructsAction::ParseArgs(const CompilerInstance& instance,
     if (args[i] == "check-base-classes") {
       // TODO(rsleevi): Remove this once http://crbug.com/123295 is fixed.
       options_.check_base_classes = true;
+    } else if (args[i] == "check-blink-data-member-type") {
+      options_.check_blink_data_member_type = true;
     } else if (args[i] == "check-ipc") {
       options_.check_ipc = true;
-    } else if (args[i] == "check-gmock-objects") {
-      options_.check_gmock_objects = true;
     } else if (args[i] == "check-layout-object-methods") {
       options_.check_layout_object_methods = true;
-    } else if (args[i] == "checked-ptr-as-trivial-member") {
-      options_.checked_ptr_as_trivial_member = true;
-    } else if (args[i] == "raw-ptr-template-as-trivial-member") {
-      options_.raw_ptr_template_as_trivial_member = true;
+    } else if (args[i] == "raw-ref-template-as-trivial-member") {
+      options_.raw_ref_template_as_trivial_member = true;
     } else {
       parsed = false;
       llvm::errs() << "Unknown clang plugin argument: " << args[i] << "\n";

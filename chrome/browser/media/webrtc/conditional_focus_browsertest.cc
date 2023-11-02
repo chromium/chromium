@@ -1,10 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <string>
 
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -18,9 +19,6 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "third_party/blink/public/common/switches.h"
-
-// TODO(crbug.com/1215089): Enable this test suite on Lacros.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace {
 
@@ -123,7 +121,7 @@ class ConditionalFocusBrowserTest : public WebRtcTestBase {
     std::string script_result;
     // TODO(crbug.com/1243764): Use EvalJs() instead.
     EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-        capturing_tab_->GetMainFrame(),
+        capturing_tab_->GetPrimaryMainFrame(),
         base::StringPrintf("captureOtherTab(%d, \"%s\", %s);", busy_wait_ms,
                            ToString(focus_enum_value),
                            on_correct_microtask ? "true" : "false"),
@@ -155,18 +153,18 @@ class ConditionalFocusBrowserTest : public WebRtcTestBase {
     std::string script_result;
     // TODO(crbug.com/1243764): Use EvalJs() instead.
     EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-        capturing_tab_->GetMainFrame(), "callFocusAndExpectError();",
+        capturing_tab_->GetPrimaryMainFrame(), "callFocusAndExpectError();",
         &script_result));
     EXPECT_EQ(script_result, expected_error);
   }
 
  protected:
-  WebContents* captured_tab_ = nullptr;
-  WebContents* capturing_tab_ = nullptr;
+  raw_ptr<WebContents> captured_tab_ = nullptr;
+  raw_ptr<WebContents> capturing_tab_ = nullptr;
 };
 
 // Flaky on Win bots and on linux release bots http://crbug.com/1264744
-#if defined(OS_WIN) || (defined(OS_LINUX) && defined(NDEBUG))
+#if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) && defined(NDEBUG))
 #define MAYBE_CapturedTabFocusedIfNoExplicitCallToFocus \
   DISABLED_CapturedTabFocusedIfNoExplicitCallToFocus
 #else
@@ -181,7 +179,7 @@ IN_PROC_BROWSER_TEST_F(ConditionalFocusBrowserTest,
 }
 
 // Flaky on Win bots and on linux release bots http://crbug.com/1264744
-#if defined(OS_WIN) || (defined(OS_LINUX) && defined(NDEBUG))
+#if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) && defined(NDEBUG))
 #define MAYBE_CapturedTabFocusedIfExplicitlyCallingFocus \
   DISABLED_CapturedTabFocusedIfExplicitlyCallingFocus
 #else
@@ -206,7 +204,7 @@ IN_PROC_BROWSER_TEST_F(ConditionalFocusBrowserTest,
   EXPECT_EQ(ActiveTab(), Tab::kCapturingTab);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Flaky on Win7 CI builder. See https://crbug.com/1255957.
 #define MAYBE_CapturedTabFocusedIfAppWaitsTooLongBeforeCallingFocus \
   DISABLED_CapturedTabFocusedIfAppWaitsTooLongBeforeCallingFocus
@@ -257,8 +255,16 @@ IN_PROC_BROWSER_TEST_F(ConditionalFocusBrowserTest,
             browser()->tab_strip_model()->GetWebContentsAt(0));
 }
 
+// TODO(crbug.com/1285418): Flaky on Win and Linux bots.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+#define MAYBE_ExceptionRaisedIfFocusCalledMultipleTimes \
+  DISABLED_ExceptionRaisedIfFocusCalledMultipleTimes
+#else
+#define MAYBE_ExceptionRaisedIfFocusCalledMultipleTimes \
+  ExceptionRaisedIfFocusCalledMultipleTimes
+#endif
 IN_PROC_BROWSER_TEST_F(ConditionalFocusBrowserTest,
-                       ExceptionRaisedIfFocusCalledMultipleTimes) {
+                       MAYBE_ExceptionRaisedIfFocusCalledMultipleTimes) {
   // Setup.
   SetUpTestTabs();
   Capture(0, FocusEnumValue::kFocusCapturedSurface);
@@ -267,7 +273,7 @@ IN_PROC_BROWSER_TEST_F(ConditionalFocusBrowserTest,
   // Test.
   CallFocusAndExpectError(
       "InvalidStateError: Failed to execute 'focus' on "
-      "'FocusableMediaStreamTrack': Method may only be called once.");
+      "'BrowserCaptureMediaStreamTrack': Method may only be called once.");
 }
 
 IN_PROC_BROWSER_TEST_F(ConditionalFocusBrowserTest,
@@ -277,12 +283,12 @@ IN_PROC_BROWSER_TEST_F(ConditionalFocusBrowserTest,
   // TODO(crbug.com/1243764): Use EvalJs() instead.
   std::string script_result;
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      capturing_tab_->GetMainFrame(), "captureCloneAndFocusClone();",
+      capturing_tab_->GetPrimaryMainFrame(), "captureCloneAndFocusClone();",
       &script_result));
   EXPECT_EQ(
       script_result,
       "InvalidStateError: Failed to execute 'focus' on "
-      "'FocusableMediaStreamTrack': Method may not be invoked on clones.");
+      "'BrowserCaptureMediaStreamTrack': Method may not be invoked on clones.");
 }
 
 IN_PROC_BROWSER_TEST_F(ConditionalFocusBrowserTest,
@@ -293,8 +299,6 @@ IN_PROC_BROWSER_TEST_F(ConditionalFocusBrowserTest,
           /*on_correct_microtask=*/false,
           /*expected_result=*/
           "InvalidStateError: Failed to execute 'focus' on "
-          "'FocusableMediaStreamTrack': The microtask on which the Promise was "
-          "settled has terminated.");
+          "'BrowserCaptureMediaStreamTrack': The window of opportunity for "
+          "focus-decision is closed.");
 }
-
-#endif  //  !BUILDFLAG(IS_CHROMEOS_LACROS)

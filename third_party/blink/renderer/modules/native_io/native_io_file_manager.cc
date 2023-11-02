@@ -1,18 +1,19 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/native_io/native_io_file_manager.h"
 
-#include <algorithm>
 #include <utility>
 
 #include "base/files/file.h"
+#include "base/ranges/algorithm.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/native_io/native_io.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -27,7 +28,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -45,18 +46,16 @@ bool IsValidNativeIONameCharacter(int name_char) {
 const int kMaximumFilenameLength = 100;
 
 bool IsValidNativeIOName(const String& name) {
-  if (name.IsEmpty())
+  if (name.empty())
     return false;
 
   if (name.length() > kMaximumFilenameLength)
     return false;
 
   if (name.Is8Bit()) {
-    return std::all_of(name.Span8().begin(), name.Span8().end(),
-                       &IsValidNativeIONameCharacter);
+    return base::ranges::all_of(name.Span8(), &IsValidNativeIONameCharacter);
   }
-  return std::all_of(name.Span16().begin(), name.Span16().end(),
-                     &IsValidNativeIONameCharacter);
+  return base::ranges::all_of(name.Span16(), &IsValidNativeIONameCharacter);
 }
 
 void ThrowStorageAccessError(ExceptionState& exception_state) {
@@ -91,7 +90,6 @@ void OnRenameResult(ScriptPromiseResolver* resolver,
   ScriptState* script_state = resolver->GetScriptState();
   if (!script_state->ContextIsValid())
     return;
-  ScriptState::Scope scope(script_state);
 
   if (rename_error->type != mojom::blink::NativeIOErrorType::kSuccess) {
     blink::RejectNativeIOWithError(resolver, std::move(rename_error));
@@ -112,7 +110,7 @@ NativeIOFileManager::NativeIOFileManager(
       receiver_task_runner_(
           execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI)),
       backend_(std::move(backend)) {
-  backend_.set_disconnect_handler(WTF::Bind(
+  backend_.set_disconnect_handler(WTF::BindOnce(
       &NativeIOFileManager::OnBackendDisconnect, WrapWeakPersistent(this)));
 }
 
@@ -142,8 +140,8 @@ ScriptPromise NativeIOFileManager::open(ScriptState* script_state,
 
   CheckStorageAccessAllowed(
       execution_context, resolver,
-      WTF::Bind(&NativeIOFileManager::OpenImpl, WrapWeakPersistent(this), name,
-                WrapPersistent(resolver)));
+      WTF::BindOnce(&NativeIOFileManager::OpenImpl, WrapWeakPersistent(this),
+                    name, WrapPersistent(resolver)));
 
   return promise;
 }
@@ -171,8 +169,8 @@ ScriptPromise NativeIOFileManager::Delete(ScriptState* script_state,
 
   CheckStorageAccessAllowed(
       execution_context, resolver,
-      WTF::Bind(&NativeIOFileManager::DeleteImpl, WrapWeakPersistent(this),
-                name, WrapPersistent(resolver)));
+      WTF::BindOnce(&NativeIOFileManager::DeleteImpl, WrapWeakPersistent(this),
+                    name, WrapPersistent(resolver)));
 
   return promise;
 }
@@ -194,8 +192,8 @@ ScriptPromise NativeIOFileManager::getAll(ScriptState* script_state,
 
   CheckStorageAccessAllowed(
       execution_context, resolver,
-      WTF::Bind(&NativeIOFileManager::GetAllImpl, WrapWeakPersistent(this),
-                WrapPersistent(resolver)));
+      WTF::BindOnce(&NativeIOFileManager::GetAllImpl, WrapWeakPersistent(this),
+                    WrapPersistent(resolver)));
 
   return promise;
 }
@@ -224,8 +222,8 @@ ScriptPromise NativeIOFileManager::rename(ScriptState* script_state,
 
   CheckStorageAccessAllowed(
       execution_context, resolver,
-      WTF::Bind(&NativeIOFileManager::RenameImpl, WrapWeakPersistent(this),
-                old_name, new_name, WrapPersistent(resolver)));
+      WTF::BindOnce(&NativeIOFileManager::RenameImpl, WrapWeakPersistent(this),
+                    old_name, new_name, WrapPersistent(resolver)));
 
   return promise;
 }
@@ -409,9 +407,9 @@ ScriptPromise NativeIOFileManager::requestCapacity(
 
   CheckStorageAccessAllowed(
       execution_context, resolver,
-      WTF::Bind(&NativeIOFileManager::RequestCapacityImpl,
-                WrapWeakPersistent(this), requested_capacity,
-                WrapPersistent(resolver)));
+      WTF::BindOnce(&NativeIOFileManager::RequestCapacityImpl,
+                    WrapWeakPersistent(this), requested_capacity,
+                    WrapPersistent(resolver)));
 
   return promise;
 }
@@ -435,9 +433,9 @@ ScriptPromise NativeIOFileManager::releaseCapacity(
 
   CheckStorageAccessAllowed(
       execution_context, resolver,
-      WTF::Bind(&NativeIOFileManager::ReleaseCapacityImpl,
-                WrapWeakPersistent(this), requested_release,
-                WrapPersistent(resolver)));
+      WTF::BindOnce(&NativeIOFileManager::ReleaseCapacityImpl,
+                    WrapWeakPersistent(this), requested_release,
+                    WrapPersistent(resolver)));
 
   return promise;
 }
@@ -458,8 +456,8 @@ ScriptPromise NativeIOFileManager::getRemainingCapacity(
 
   CheckStorageAccessAllowed(
       execution_context, resolver,
-      WTF::Bind(&NativeIOFileManager::GetRemainingCapacityImpl,
-                WrapWeakPersistent(this), WrapPersistent(resolver)));
+      WTF::BindOnce(&NativeIOFileManager::GetRemainingCapacityImpl,
+                    WrapWeakPersistent(this), WrapPersistent(resolver)));
 
   return promise;
 }
@@ -470,7 +468,7 @@ void NativeIOFileManager::CheckStorageAccessAllowed(
     base::OnceCallback<void()> callback) {
   DCHECK(context->IsWindow() || context->IsWorkerGlobalScope());
 
-  auto wrapped_callback = WTF::Bind(
+  auto wrapped_callback = WTF::BindOnce(
       &NativeIOFileManager::DidCheckStorageAccessAllowed,
       WrapWeakPersistent(this), WrapPersistent(resolver), std::move(callback));
 
@@ -514,11 +512,6 @@ void NativeIOFileManager::DidCheckStorageAccessAllowed(
     std::move(callback).Run();
     return;
   }
-
-  ScriptState* script_state = resolver->GetScriptState();
-  if (!script_state->ContextIsValid())
-    return;
-  ScriptState::Scope scope(script_state);
 
   blink::RejectNativeIOWithError(resolver,
                                  mojom::blink::NativeIOError::New(
@@ -697,7 +690,6 @@ void NativeIOFileManager::OnDeleteResult(
   ScriptState* script_state = resolver->GetScriptState();
   if (!script_state->ContextIsValid())
     return;
-  ScriptState::Scope scope(script_state);
 
   if (delete_error->type != mojom::blink::NativeIOErrorType::kSuccess) {
     blink::RejectNativeIOWithError(resolver, std::move(delete_error));
@@ -718,7 +710,7 @@ void NativeIOFileManager::OnRequestCapacityChangeResult(
   ScriptState* script_state = resolver->GetScriptState();
   if (!script_state->ContextIsValid())
     return;
-  ScriptState::Scope scope(script_state);
+
   // If `granted_capacity` < 0, the available capacity has already been released
   // prior to the IPC.
   if (granted_capacity > 0) {
@@ -757,9 +749,9 @@ void NativeIOFileManager::OpenImpl(String name,
 
   backend_->OpenFile(
       name, std::move(backend_file_receiver),
-      WTF::Bind(&NativeIOFileManager::OnOpenResult, WrapPersistent(this),
-                WrapPersistent(resolver),
-                WrapPersistent(WrapDisallowNew(std::move(backend_file)))));
+      WTF::BindOnce(&NativeIOFileManager::OnOpenResult, WrapPersistent(this),
+                    WrapPersistent(resolver),
+                    WrapPersistent(WrapDisallowNew(std::move(backend_file)))));
 }
 
 void NativeIOFileManager::DeleteImpl(String name,
@@ -782,8 +774,8 @@ void NativeIOFileManager::DeleteImpl(String name,
   }
 
   backend_->DeleteFile(
-      name, WTF::Bind(&NativeIOFileManager::OnDeleteResult,
-                      WrapPersistent(this), WrapPersistent(resolver)));
+      name, WTF::BindOnce(&NativeIOFileManager::OnDeleteResult,
+                          WrapPersistent(this), WrapPersistent(resolver)));
 }
 
 void NativeIOFileManager::GetAllImpl(ScriptPromiseResolver* resolver) {
@@ -805,7 +797,7 @@ void NativeIOFileManager::GetAllImpl(ScriptPromiseResolver* resolver) {
   }
 
   backend_->GetAllFileNames(
-      WTF::Bind(&OnGetAllResult, WrapPersistent(resolver)));
+      WTF::BindOnce(&OnGetAllResult, WrapPersistent(resolver)));
 }
 
 void NativeIOFileManager::RenameImpl(String old_name,
@@ -828,8 +820,9 @@ void NativeIOFileManager::RenameImpl(String old_name,
     return;
   }
 
-  backend_->RenameFile(old_name, new_name,
-                       WTF::Bind(&OnRenameResult, WrapPersistent(resolver)));
+  backend_->RenameFile(
+      old_name, new_name,
+      WTF::BindOnce(&OnRenameResult, WrapPersistent(resolver)));
 }
 
 void NativeIOFileManager::RequestCapacityImpl(uint64_t requested_capacity,
@@ -853,8 +846,8 @@ void NativeIOFileManager::RequestCapacityImpl(uint64_t requested_capacity,
 
   backend_->RequestCapacityChange(
       requested_capacity,
-      WTF::Bind(&NativeIOFileManager::OnRequestCapacityChangeResult,
-                WrapPersistent(this), WrapPersistent(resolver)));
+      WTF::BindOnce(&NativeIOFileManager::OnRequestCapacityChangeResult,
+                    WrapPersistent(this), WrapPersistent(resolver)));
 }
 
 void NativeIOFileManager::ReleaseCapacityImpl(uint64_t requested_release,
@@ -867,7 +860,6 @@ void NativeIOFileManager::ReleaseCapacityImpl(uint64_t requested_release,
   ScriptState* script_state = resolver->GetScriptState();
   if (!script_state->ContextIsValid())
     return;
-  ScriptState::Scope scope(script_state);
 
   if (!backend_.is_bound()) {
     blink::RejectNativeIOWithError(
@@ -899,8 +891,8 @@ void NativeIOFileManager::ReleaseCapacityImpl(uint64_t requested_release,
 
   backend_->RequestCapacityChange(
       requested_difference,
-      WTF::Bind(&NativeIOFileManager::OnRequestCapacityChangeResult,
-                WrapPersistent(this), WrapPersistent(resolver)));
+      WTF::BindOnce(&NativeIOFileManager::OnRequestCapacityChangeResult,
+                    WrapPersistent(this), WrapPersistent(resolver)));
 }
 
 void NativeIOFileManager::GetRemainingCapacityImpl(

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -167,6 +167,11 @@ absl::optional<std::string> SchemefulSite::SerializeWithNonce() {
 
 bool SchemefulSite::SchemelesslyEqual(const SchemefulSite& other) const {
   return site_as_origin_.host() == other.site_as_origin_.host();
+}
+
+std::ostream& operator<<(std::ostream& os, const SchemefulSite& ss) {
+  os << ss.Serialize();
+  return os;
 }
 
 }  // namespace net

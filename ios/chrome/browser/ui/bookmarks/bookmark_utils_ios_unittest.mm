@@ -1,19 +1,19 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 
-#include <memory>
-#include <vector>
+#import <memory>
+#import <vector>
 
-#include "base/strings/sys_string_conversions.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/time/time.h"
-#include "components/bookmarks/browser/bookmark_model.h"
-#include "ios/chrome/browser/system_flags.h"
-#include "ios/chrome/browser/ui/bookmarks/bookmark_ios_unittest.h"
-#include "testing/gtest_mac.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
+#import "base/time/time.h"
+#import "components/bookmarks/browser/bookmark_model.h"
+#import "ios/chrome/browser/flags/system_flags.h"
+#import "ios/chrome/browser/ui/bookmarks/bookmark_ios_unittest.h"
+#import "testing/gtest_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -23,65 +23,12 @@ using bookmarks::BookmarkNode;
 
 namespace {
 
-using bookmark_utils_ios::NodesSection;
-
 class BookmarkIOSUtilsUnitTest : public BookmarkIOSUnitTest {
  protected:
   base::Time timeFromEpoch(int days, int hours) {
     return base::Time::UnixEpoch() + base::Days(days) + base::Hours(hours);
   }
 };
-
-TEST_F(BookmarkIOSUtilsUnitTest, segregateNodesByCreationDate) {
-  const BookmarkNode* mobileNode = bookmark_model_->mobile_node();
-  const BookmarkNode* f1 = AddFolder(mobileNode, @"f1");
-  const BookmarkNode* a = AddBookmark(mobileNode, @"a");
-  bookmark_model_->SetDateAdded(a, timeFromEpoch(169, 5));
-  const BookmarkNode* b = AddBookmark(mobileNode, @"b");
-  bookmark_model_->SetDateAdded(b, timeFromEpoch(170, 6));
-  const BookmarkNode* f2 = AddFolder(mobileNode, @"f2");
-
-  const BookmarkNode* f1a = AddBookmark(f1, @"f1a");
-  bookmark_model_->SetDateAdded(f1a, timeFromEpoch(129, 5));
-  const BookmarkNode* f1b = AddBookmark(f1, @"f1b");
-  bookmark_model_->SetDateAdded(f1b, timeFromEpoch(130, 6));
-  const BookmarkNode* f2a = AddBookmark(f2, @"f2a");
-  bookmark_model_->SetDateAdded(f2a, timeFromEpoch(201, 5));
-  const BookmarkNode* f2b = AddBookmark(f2, @"f2b");
-  bookmark_model_->SetDateAdded(f2b, timeFromEpoch(10, 5));
-
-  std::vector<const BookmarkNode*> toSort;
-  toSort.push_back(a);
-  toSort.push_back(b);
-  toSort.push_back(f1a);
-  toSort.push_back(f1b);
-  toSort.push_back(f2a);
-  toSort.push_back(f2b);
-
-  std::vector<std::unique_ptr<NodesSection>> nodesSectionVector;
-  bookmark_utils_ios::segregateNodes(toSort, nodesSectionVector);
-
-  // Expect the nodes to be sorted in reverse chronological order, grouped by
-  // month.
-  ASSERT_EQ(nodesSectionVector.size(), 4u);
-  NodesSection* section = nodesSectionVector[0].get();
-  ASSERT_EQ(section->vector.size(), 1u);
-  EXPECT_EQ(section->vector[0], f2a);
-
-  section = nodesSectionVector[1].get();
-  ASSERT_EQ(section->vector.size(), 2u);
-  EXPECT_EQ(section->vector[0], b);
-  EXPECT_EQ(section->vector[1], a);
-
-  section = nodesSectionVector[2].get();
-  ASSERT_EQ(section->vector.size(), 2u);
-  EXPECT_EQ(section->vector[0], f1b);
-  EXPECT_EQ(section->vector[1], f1a);
-
-  section = nodesSectionVector[3].get();
-  ASSERT_EQ(section->vector.size(), 1u);
-  EXPECT_EQ(section->vector[0], f2b);
-}
 
 TEST_F(BookmarkIOSUtilsUnitTest, DeleteNodes) {
   const BookmarkNode* mobileNode = bookmark_model_->mobile_node();
@@ -139,35 +86,6 @@ TEST_F(BookmarkIOSUtilsUnitTest, MoveNodes) {
   const BookmarkNode* child1 = mobileNode->children()[1].get();
   EXPECT_EQ(child1, b);
   EXPECT_EQ(0u, child1->children().size());
-}
-
-TEST_F(BookmarkIOSUtilsUnitTest, TestDefaultMoveFolder) {
-  const BookmarkNode* mobileNode = bookmark_model_->mobile_node();
-  const BookmarkNode* f1 = AddFolder(mobileNode, @"f1");
-  const BookmarkNode* a = AddBookmark(mobileNode, @"a");
-  AddBookmark(mobileNode, @"b");
-  const BookmarkNode* f2 = AddFolder(mobileNode, @"f2");
-
-  AddBookmark(f1, @"f1a");
-  AddBookmark(f1, @"f1b");
-  AddBookmark(f1, @"f1c");
-  const BookmarkNode* f2a = AddBookmark(f2, @"f2a");
-  const BookmarkNode* f2b = AddBookmark(f2, @"f2b");
-
-  std::set<const BookmarkNode*> toMove;
-  toMove.insert(a);
-  toMove.insert(f2b);
-  toMove.insert(f2);
-
-  const BookmarkNode* folder =
-      bookmark_utils_ios::defaultMoveFolder(toMove, bookmark_model_);
-  EXPECT_EQ(folder, mobileNode);
-
-  toMove.clear();
-  toMove.insert(f2a);
-  toMove.insert(f2b);
-  folder = bookmark_utils_ios::defaultMoveFolder(toMove, bookmark_model_);
-  EXPECT_EQ(folder, f2);
 }
 
 TEST_F(BookmarkIOSUtilsUnitTest, TestCreateBookmarkPath) {

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -23,7 +22,7 @@
 #include "remoting/host/security_key/security_key_ipc_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -95,10 +94,10 @@ class SecurityKeyIpcServerTest : public testing::Test,
 
 SecurityKeyIpcServerTest::SecurityKeyIpcServerTest()
     : run_loop_(new base::RunLoop()) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EXPECT_TRUE(ProcessIdToSessionId(
       GetCurrentProcessId(), reinterpret_cast<DWORD*>(&peer_session_id_)));
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   security_key_ipc_server_ = remoting::SecurityKeyIpcServer::Create(
       kTestConnectionId, this, base::Milliseconds(kInitialConnectTimeoutMs),
@@ -158,7 +157,6 @@ TEST_F(SecurityKeyIpcServerTest, HandleSingleSecurityKeyRequest) {
   WaitForOperationComplete();
 
   ASSERT_TRUE(fake_ipc_client.ipc_channel_connected());
-  ASSERT_FALSE(fake_ipc_client.invalid_session_error());
   ASSERT_TRUE(fake_ipc_client.connection_ready());
 
   // Send a request from the IPC client to the IPC server.
@@ -195,7 +193,6 @@ TEST_F(SecurityKeyIpcServerTest, HandleLargeSecurityKeyRequest) {
   ASSERT_TRUE(fake_ipc_client.ConnectViaIpc(server_name));
   WaitForOperationComplete();
 
-  ASSERT_FALSE(fake_ipc_client.invalid_session_error());
   ASSERT_TRUE(fake_ipc_client.connection_ready());
   ASSERT_TRUE(fake_ipc_client.ipc_channel_connected());
 
@@ -233,7 +230,6 @@ TEST_F(SecurityKeyIpcServerTest, HandleReallyLargeSecurityKeyRequest) {
   ASSERT_TRUE(fake_ipc_client.ConnectViaIpc(server_name));
   WaitForOperationComplete();
 
-  ASSERT_FALSE(fake_ipc_client.invalid_session_error());
   ASSERT_TRUE(fake_ipc_client.connection_ready());
   ASSERT_TRUE(fake_ipc_client.ipc_channel_connected());
 
@@ -271,7 +267,6 @@ TEST_F(SecurityKeyIpcServerTest, HandleMultipleSecurityKeyRequests) {
   ASSERT_TRUE(fake_ipc_client.ConnectViaIpc(server_name));
   WaitForOperationComplete();
 
-  ASSERT_FALSE(fake_ipc_client.invalid_session_error());
   ASSERT_TRUE(fake_ipc_client.connection_ready());
   ASSERT_TRUE(fake_ipc_client.ipc_channel_connected());
 
@@ -356,7 +351,7 @@ TEST_F(SecurityKeyIpcServerTest,
 }
 
 // Flaky on mac, https://crbug.com/936583
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #define MAYBE_NoSecurityKeyRequestTimeout DISABLED_NoSecurityKeyRequestTimeout
 #else
 #define MAYBE_NoSecurityKeyRequestTimeout NoSecurityKeyRequestTimeout
@@ -377,7 +372,6 @@ TEST_F(SecurityKeyIpcServerTest, MAYBE_NoSecurityKeyRequestTimeout) {
   ASSERT_TRUE(fake_ipc_client.ConnectViaIpc(server_name));
   WaitForOperationComplete();
 
-  ASSERT_FALSE(fake_ipc_client.invalid_session_error());
   ASSERT_TRUE(fake_ipc_client.connection_ready());
   ASSERT_TRUE(fake_ipc_client.ipc_channel_connected());
 
@@ -405,7 +399,6 @@ TEST_F(SecurityKeyIpcServerTest, SecurityKeyResponseTimeout) {
   ASSERT_TRUE(fake_ipc_client.ConnectViaIpc(server_name));
   WaitForOperationComplete();
 
-  ASSERT_FALSE(fake_ipc_client.invalid_session_error());
   ASSERT_TRUE(fake_ipc_client.connection_ready());
   ASSERT_TRUE(fake_ipc_client.ipc_channel_connected());
 
@@ -439,7 +432,6 @@ TEST_F(SecurityKeyIpcServerTest, SendResponseTimeout) {
   ASSERT_TRUE(fake_ipc_client.ConnectViaIpc(server_name));
   WaitForOperationComplete();
 
-  ASSERT_FALSE(fake_ipc_client.invalid_session_error());
   ASSERT_TRUE(fake_ipc_client.connection_ready());
   ASSERT_TRUE(fake_ipc_client.ipc_channel_connected());
 
@@ -468,7 +460,7 @@ TEST_F(SecurityKeyIpcServerTest, SendResponseTimeout) {
 // because the channel shutdown is a series of asynchronous tasks posted on the
 // IO thread, and there is not a way to synchronize it with the test main
 // thread.
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_APPLE)
 TEST_F(SecurityKeyIpcServerTest, CleanupPendingConnection) {
   // Test that servers correctly close pending OS connections on
   // |server_name|. If multiple servers do remain, the client may happen to
@@ -496,7 +488,6 @@ TEST_F(SecurityKeyIpcServerTest, CleanupPendingConnection) {
   ASSERT_TRUE(fake_ipc_client.ConnectViaIpc(server_name));
   WaitForOperationComplete();
 
-  ASSERT_FALSE(fake_ipc_client.invalid_session_error());
   ASSERT_TRUE(fake_ipc_client.connection_ready());
   ASSERT_TRUE(fake_ipc_client.ipc_channel_connected());
 
@@ -520,9 +511,9 @@ TEST_F(SecurityKeyIpcServerTest, CleanupPendingConnection) {
   // Typically the client will be the one to close the connection.
   fake_ipc_client.CloseIpcConnection();
 }
-#endif  // defined(OS_APPLE)
+#endif  // !BUILDFLAG(IS_APPLE)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_F(SecurityKeyIpcServerTest, IpcConnectionFailsFromInvalidSession) {
   // Change the expected session ID to not match the current session.
   peer_session_id_++;
@@ -538,13 +529,9 @@ TEST_F(SecurityKeyIpcServerTest, IpcConnectionFailsFromInvalidSession) {
   ASSERT_TRUE(fake_ipc_client.ConnectViaIpc(server_name));
   WaitForOperationComplete();
 
-  // Verify the connection failed.
-  ASSERT_TRUE(fake_ipc_client.invalid_session_error());
-  ASSERT_FALSE(fake_ipc_client.connection_ready());
-
   RunPendingTasks();
   ASSERT_FALSE(fake_ipc_client.ipc_channel_connected());
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace remoting

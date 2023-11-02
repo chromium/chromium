@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,13 +19,6 @@ namespace prefs {
 
 extern const char kCrostiniEnabled[];
 extern const char kCrostiniSharedUsbDevices[];
-extern const char kCrostiniContainers[];
-extern const char kCrostiniTerminalSettings[];
-extern const char kVmKey[];
-extern const char kContainerKey[];
-extern const char kContainerOsVersionKey[];
-extern const char kContainerOsPrettyNameKey[];
-extern const char kContainerColorKey[];
 extern const char kCrostiniMicAllowed[];
 
 extern const char kUserCrostiniAllowedByPolicy[];
@@ -36,6 +29,7 @@ extern const char kCrostiniAnsiblePlaybookFilePath[];
 extern const char kCrostiniDefaultContainerConfigured[];
 extern const char kCrostiniArcAdbSideloadingUserPref[];
 extern const char kCrostiniPortForwardingAllowedByPolicy[];
+extern const char kTerminalSshAllowedByPolicy[];
 
 extern const char kReportCrostiniUsageEnabled[];
 extern const char kCrostiniLastLaunchTerminaComponentVersion[];

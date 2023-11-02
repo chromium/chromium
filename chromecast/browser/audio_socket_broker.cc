@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -110,15 +110,24 @@ AudioSocketBroker::PendingConnectionInfo::operator=(PendingConnectionInfo&&) =
 
 AudioSocketBroker::PendingConnectionInfo::~PendingConnectionInfo() = default;
 
-void CreateAudioSocketBroker(
+void AudioSocketBroker::Create(
     content::RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<mojom::AudioSocketBroker> receiver) {
+  CHECK(render_frame_host);
   // Lifecycle managed by content::DocumentService.
-  new AudioSocketBroker(render_frame_host, std::move(receiver));
+  new AudioSocketBroker(*render_frame_host, std::move(receiver));
+}
+
+AudioSocketBroker& AudioSocketBroker::CreateForTesting(
+    content::RenderFrameHost& render_frame_host,
+    mojo::PendingReceiver<mojom::AudioSocketBroker> receiver,
+    const std::string& audio_output_service_path) {
+  return *new AudioSocketBroker(render_frame_host, std::move(receiver),
+                                audio_output_service_path);
 }
 
 AudioSocketBroker::AudioSocketBroker(
-    content::RenderFrameHost* render_frame_host,
+    content::RenderFrameHost& render_frame_host,
     mojo::PendingReceiver<mojom::AudioSocketBroker> receiver)
     : AudioSocketBroker(render_frame_host,
                         std::move(receiver),
@@ -126,7 +135,7 @@ AudioSocketBroker::AudioSocketBroker(
                             kDefaultAudioOutputServiceUnixDomainSocketPath) {}
 
 AudioSocketBroker::AudioSocketBroker(
-    content::RenderFrameHost* render_frame_host,
+    content::RenderFrameHost& render_frame_host,
     mojo::PendingReceiver<mojom::AudioSocketBroker> receiver,
     const std::string& audio_output_service_path)
     : DocumentService(render_frame_host, std::move(receiver)),

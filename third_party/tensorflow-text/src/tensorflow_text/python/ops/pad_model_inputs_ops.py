@@ -22,16 +22,34 @@ from tensorflow.python.ops.ragged import ragged_tensor
 
 
 def pad_model_inputs(input, max_seq_length, pad_value=0):  # pylint: disable=redefined-builtin
-  """Pad model input and generate corresponding input masks.
+  r"""Pad model input and generate corresponding input masks.
 
   `pad_model_inputs` performs the final packaging of a model's inputs commonly
   found in text models. This includes padding out (or simply truncating) to a
   fixed-size, 2-dimensional `Tensor` and generating mask `Tensor`s (of the same
   2D shape) with values of 0 if the corresponding item is a pad value and 1 if
-  it is part of the original input. Note that a simple truncation strategy
-  (drop everything after max sequence length) is used to force the inputs
-  to the specified shape. This may be incorrect and users should instead apply
-  a `Trimmer` upstream to safely truncate large inputs.
+  it is part of the original input.
+
+  Note that a simple truncation strategy (drop everything after max sequence
+  length) is used to force the inputs to the specified shape. This may be
+  incorrect and users should instead apply a `Trimmer` upstream to safely
+  truncate large inputs.
+
+  >>> input_data = tf.ragged.constant([
+  ...            [101, 1, 2, 102, 10, 20, 102],
+  ...            [101, 3, 4, 102, 30, 40, 50, 60, 70, 80],
+  ...            [101, 5, 6, 7, 8, 9, 102, 70],
+  ...        ], np.int32)
+  >>> data, mask = pad_model_inputs(input=input_data, max_seq_length=9)
+  >>> print("data: %s, mask: %s" % (data, mask))
+    data: tf.Tensor(
+    [[101   1   2 102  10  20 102   0   0]
+     [101   3   4 102  30  40  50  60  70]
+     [101   5   6   7   8   9 102  70   0]], shape=(3, 9), dtype=int32),
+    mask: tf.Tensor(
+    [[1 1 1 1 1 1 1 0 0]
+     [1 1 1 1 1 1 1 1 1]
+     [1 1 1 1 1 1 1 1 0]], shape=(3, 9), dtype=int32)
 
   Args:
     input: A `RaggedTensor` with rank >= 2.
@@ -39,6 +57,7 @@ def pad_model_inputs(input, max_seq_length, pad_value=0):  # pylint: disable=red
       flattened down to 2 dimensions and then have its 2nd dimension either
       padded out or truncated to this size.
     pad_value: An int or scalar `Tensor` specifying the value used for padding.
+
   Returns:
       A tuple of (padded_input, pad_mask) where:
 

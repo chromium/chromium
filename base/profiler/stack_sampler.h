@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 
 #include "base/base_export.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/profiler/sampling_profiler_thread_token.h"
 #include "base/threading/platform_thread.h"
 
@@ -68,7 +67,8 @@ class BASE_EXPORT StackSampler {
 
   // Records a set of frames and returns them.
   virtual void RecordStackFrames(StackBuffer* stackbuffer,
-                                 ProfileBuilder* profile_builder) = 0;
+                                 ProfileBuilder* profile_builder,
+                                 PlatformThreadId thread_id) = 0;
 
  protected:
   StackSampler();

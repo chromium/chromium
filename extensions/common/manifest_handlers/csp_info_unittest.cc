@@ -1,9 +1,9 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "extensions/common/manifest_handlers/csp_info.h"
-#include "base/cxx17_backports.h"
+
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/version_info/channel.h"
@@ -31,7 +31,8 @@ const char kDefaultExtensionPagesCSP[] =
     "script-src 'self' blob: filesystem:; "
     "object-src 'self' blob: filesystem:;";
 const char kDefaultSecureCSP[] = "script-src 'self'; object-src 'self';";
-
+const char kMinimumMV3CSP[] =
+    "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';";
 }  // namespace
 
 using CSPInfoUnitTest = ManifestTest;
@@ -103,7 +104,7 @@ TEST_F(CSPInfoUnitTest, SandboxedPages) {
                GetInvalidManifestKeyError(keys::kSandboxedPagesCSP)),
       Testcase("sandboxed_pages_invalid_5.json",
                GetInvalidManifestKeyError(keys::kSandboxedPagesCSP))};
-  RunTestcases(testcases, base::size(testcases), EXPECT_TYPE_ERROR);
+  RunTestcases(testcases, std::size(testcases), EXPECT_TYPE_ERROR);
 }
 
 TEST_F(CSPInfoUnitTest, CSPStringKey) {
@@ -158,29 +159,20 @@ TEST_F(CSPInfoUnitTest, CSPDictionary_ExtensionPages) {
                    errors::kInvalidCSPInsecureValueError,
                    keys::kContentSecurityPolicy_ExtensionPagesPath,
                    "'unsafe-eval'", "worker-src")),
-      Testcase("csp_dictionary_with_wasm.json",
-               ErrorUtils::FormatErrorMessage(
-                   errors::kInvalidCSPInsecureValueError,
-                   keys::kContentSecurityPolicy_ExtensionPagesPath,
-                   "'wasm-eval'", "worker-src")),
   };
-  RunTestcases(testcases, base::size(testcases), EXPECT_TYPE_ERROR);
+  RunTestcases(testcases, std::size(testcases), EXPECT_TYPE_ERROR);
 }
 
 TEST_F(CSPInfoUnitTest, AllowWasmInMV3) {
-  base::test::ScopedFeatureList feature_list(
-      extensions_features::kAllowWasmInMV3);
-
-  const char kDefaultSecureCSPWithWasmAllowed[] =
-      "script-src 'self' 'wasm-eval'; object-src 'self';";
-
   struct {
     const char* file_name;
     const char* csp;
   } cases[] = {
       {"csp_dictionary_with_wasm.json",
-       "worker-src 'self' 'wasm-eval'; default-src 'self'"},
-      {"csp_dictionary_empty_v3.json", kDefaultSecureCSPWithWasmAllowed},
+       "worker-src 'self' 'wasm-unsafe-eval'; default-src 'self'"},
+      {"csp_dictionary_with_unsafe_wasm.json",
+       "worker-src 'self' 'wasm-unsafe-eval'; default-src 'self'"},
+      {"csp_dictionary_empty_v3.json", "script-src 'self'; object-src 'self';"},
       {"csp_dictionary_valid_1.json", "default-src 'none'"},
       {"csp_omitted_mv2.json", kDefaultExtensionPagesCSP}};
 
@@ -232,7 +224,7 @@ TEST_F(CSPInfoUnitTest, CSPDictionary_Sandbox) {
       {"unsandboxed_csp.json",
        GetInvalidManifestKeyError(
            keys::kContentSecurityPolicy_SandboxedPagesPath)}};
-  RunTestcases(testcases, base::size(testcases), EXPECT_TYPE_ERROR);
+  RunTestcases(testcases, std::size(testcases), EXPECT_TYPE_ERROR);
 }
 
 // Ensures that using a dictionary for the keys::kContentSecurityPolicy manifest
@@ -253,7 +245,7 @@ TEST_F(CSPInfoUnitTest, CSPDictionaryMandatoryForV3) {
     const std::string* isolated_world_csp =
         CSPInfo::GetIsolatedWorldCSP(*extension);
     ASSERT_TRUE(isolated_world_csp);
-    EXPECT_EQ(kDefaultSecureCSP, *isolated_world_csp);
+    EXPECT_EQ(kMinimumMV3CSP, *isolated_world_csp);
 
     EXPECT_EQ(kDefaultSandboxedPageCSP,
               CSPInfo::GetSandboxContentSecurityPolicy(extension.get()));

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,7 +27,8 @@ class GPURenderBundleEncoder : public DawnObject<WGPURenderBundleEncoder>,
  public:
   static GPURenderBundleEncoder* Create(
       GPUDevice* device,
-      const GPURenderBundleEncoderDescriptor* webgpu_desc);
+      const GPURenderBundleEncoderDescriptor* webgpu_desc,
+      ExceptionState& exception_state);
   explicit GPURenderBundleEncoder(
       GPUDevice* device,
       WGPURenderBundleEncoder render_bundle_encoder);
@@ -120,6 +121,11 @@ class GPURenderBundleEncoder : public DawnObject<WGPURenderBundleEncoder>,
   }
 
   GPURenderBundle* finish(const GPURenderBundleDescriptor* webgpu_desc);
+
+  void setLabelImpl(const String& value) override {
+    std::string utf8_label = value.Utf8();
+    GetProcs().renderBundleEncoderSetLabel(GetHandle(), utf8_label.c_str());
+  }
 };
 
 }  // namespace blink

@@ -1,20 +1,21 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 
+#include "base/callback.h"
 #include "gin/public/v8_platform.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/bindings/wrapper_type_info.h"
 #include "third_party/blink/renderer/platform/heap/custom_spaces.h"
+#include "third_party/blink/renderer/platform/heap/thread_state_storage.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "v8/include/cppgc/heap-consistency.h"
 #include "v8/include/v8-cppgc.h"
 #include "v8/include/v8-embedder-heap.h"
-#include "v8/include/v8-initialization.h"
 #include "v8/include/v8-isolate.h"
 #include "v8/include/v8-object.h"
 #include "v8/include/v8-traced-handle.h"
@@ -45,15 +46,6 @@ class BlinkRootsHandler final : public v8::EmbedderRootsHandler {
       return true;
     }
 
-    if (ToScriptWrappable(traced)->HasEventListeners()) {
-      return true;
-    }
-
-    return false;
-  }
-
-  bool IsRoot(const v8::TracedGlobal<v8::Value>& handle) final {
-    CHECK(false) << "Blink does not use v8::TracedGlobal.";
     return false;
   }
 
@@ -61,12 +53,8 @@ class BlinkRootsHandler final : public v8::EmbedderRootsHandler {
   // invoked for references where IsRoot() returned false during young
   // generation garbage collections.
   void ResetRoot(const v8::TracedReference<v8::Value>& handle) final {
-    const uint16_t class_id = handle.WrapperClassId();
-    // Only consider handles that have not been treated as roots, see IsRoot().
-    if (class_id != WrapperTypeInfo::kNodeClassId &&
-        class_id != WrapperTypeInfo::kObjectClassId)
-      return;
-
+    DCHECK(handle.WrapperClassId() == WrapperTypeInfo::kNodeClassId ||
+           handle.WrapperClassId() == WrapperTypeInfo::kObjectClassId);
     // Clearing the wrapper below adjusts the DOM wrapper store which may
     // re-allocate its backing. NoGarbageCollectionScope is required to avoid
     // triggering a GC from such re-allocating calls as ResetRoot() is itself
@@ -86,39 +74,41 @@ class BlinkRootsHandler final : public v8::EmbedderRootsHandler {
 
 }  // namespace
 
-thread_local ThreadState* g_thread_specific_ CONSTINIT
-    __attribute__((tls_model(BLINK_HEAP_THREAD_LOCAL_MODEL))) = nullptr;
-
-// static
-alignas(ThreadState) uint8_t
-    ThreadState::main_thread_state_storage_[sizeof(ThreadState)];
-
-BLINK_HEAP_DEFINE_THREAD_LOCAL_GETTER(ThreadState::Current,
-                                      ThreadState*,
-                                      g_thread_specific_)
-
 // static
 ThreadState* ThreadState::AttachMainThread() {
-  return new (main_thread_state_storage_) ThreadState(gin::V8Platform::Get());
+  auto* thread_state = new ThreadState(gin::V8Platform::Get());
+  ThreadStateStorage::AttachMainThread(
+      *thread_state, thread_state->cpp_heap().GetAllocationHandle(),
+      thread_state->cpp_heap().GetHeapHandle());
+  return thread_state;
 }
 
 // static
 ThreadState* ThreadState::AttachMainThreadForTesting(v8::Platform* platform) {
-  ThreadState* thread_state =
-      new (main_thread_state_storage_) ThreadState(platform);
+  auto* thread_state = new ThreadState(platform);
+  ThreadStateStorage::AttachMainThread(
+      *thread_state, thread_state->cpp_heap().GetAllocationHandle(),
+      thread_state->cpp_heap().GetHeapHandle());
   thread_state->EnableDetachedGarbageCollectionsForTesting();
   return thread_state;
 }
 
 // static
 ThreadState* ThreadState::AttachCurrentThread() {
-  return new ThreadState(gin::V8Platform::Get());
+  auto* thread_state = new ThreadState(gin::V8Platform::Get());
+  ThreadStateStorage::AttachNonMainThread(
+      *thread_state, thread_state->cpp_heap().GetAllocationHandle(),
+      thread_state->cpp_heap().GetHeapHandle());
+  return thread_state;
 }
 
 // static
 ThreadState* ThreadState::AttachCurrentThreadForTesting(
     v8::Platform* platform) {
   ThreadState* thread_state = new ThreadState(platform);
+  ThreadStateStorage::AttachNonMainThread(
+      *thread_state, thread_state->cpp_heap().GetAllocationHandle(),
+      thread_state->cpp_heap().GetHeapHandle());
   thread_state->EnableDetachedGarbageCollectionsForTesting();
   return thread_state;
 }
@@ -153,16 +143,13 @@ ThreadState::ThreadState(v8::Platform* platform)
            v8::WrapperDescriptor(kV8DOMWrapperTypeIndex,
                                  kV8DOMWrapperObjectIndex,
                                  gin::GinEmbedder::kEmbedderBlink)})),
-      allocation_handle_(cpp_heap_->GetAllocationHandle()),
       heap_handle_(cpp_heap_->GetHeapHandle()),
-      thread_id_(CurrentThread()) {
-  g_thread_specific_ = this;
-}
+      thread_id_(CurrentThread()) {}
 
 ThreadState::~ThreadState() {
-  DCHECK(!IsMainThread());
   DCHECK(IsCreationThread());
   cpp_heap_->Terminate();
+  ThreadStateStorage::DetachNonMainThread(*ThreadStateStorage::Current());
 }
 
 void ThreadState::SafePoint(StackState stack_state) {
@@ -206,6 +193,11 @@ void ThreadState::CollectAllGarbageForTesting(StackState stack_state) {
     }
     previous_live_bytes = live_bytes;
   }
+}
+
+void ThreadState::CollectGarbageInYoungGenerationForTesting(
+    StackState stack_state) {
+  cpp_heap().CollectGarbageInYoungGenerationForTesting(stack_state);
 }
 
 namespace {
@@ -255,13 +247,6 @@ void ThreadState::CollectNodeAndCssStatistics(
 
 void ThreadState::EnableDetachedGarbageCollectionsForTesting() {
   cpp_heap().EnableDetachedGarbageCollectionsForTesting();
-  // Detached GCs cannot rely on the V8 platform being initialized which is
-  // needed by cppgc to perform a garbage collection.
-  static bool v8_platform_initialized = false;
-  if (!v8_platform_initialized) {
-    v8::V8::InitializePlatform(gin::V8Platform::Get());
-    v8_platform_initialized = true;
-  }
 }
 
 bool ThreadState::IsIncrementalMarking() {

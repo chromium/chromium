@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<title>Dialog-Popup crash</title>
+<link rel="author" href="mailto:masonf@chromium.org">
+<link rel=help href="https://open-ui.org/components/popup.research.explainer">
+
+<p>This test passes if it does not crash.</p>
+<dialog popup>This is a modal dialog</dialog>
+<div popup>This is a pop-up</div>
+
+<script>
+  const dialog = document.querySelector('dialog[popup]');
+  const popUp = document.querySelector('div[popup]');
+  dialog.showModal();
+  popUp.showPopUp();
+  dialog.dispatchEvent(new Event('mouseup'));
+</script>

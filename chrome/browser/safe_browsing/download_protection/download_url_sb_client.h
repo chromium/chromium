@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,9 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "components/download/public/common/download_item.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
@@ -66,7 +68,7 @@ class DownloadUrlSBClient : public SafeBrowsingDatabaseManager::Client,
   void UpdateDownloadCheckStats(SBStatsType stat_type);
 
   // The DownloadItem we are checking. Must be accessed only on UI thread.
-  download::DownloadItem* item_;
+  raw_ptr<download::DownloadItem> item_;
 
   // Copies of data from |item_| for access on other threads.
   std::string sha256_hash_;
@@ -77,7 +79,7 @@ class DownloadUrlSBClient : public SafeBrowsingDatabaseManager::Client,
   const SBStatsType total_type_;
   const SBStatsType dangerous_type_;
 
-  DownloadProtectionService* service_;
+  raw_ptr<DownloadProtectionService> service_;
   CheckDownloadCallback callback_;
   scoped_refptr<SafeBrowsingUIManager> ui_manager_;
   base::TimeTicks start_time_;

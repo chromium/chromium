@@ -1,7 +1,7 @@
 <style import="cr-shared-style">
   :host {
-    --action-height: 34px;
-    border: solid 1px var(--google-grey-refresh-500);
+    --action-height: 32px;
+    border: solid 1px var(--google-grey-400);
     border-radius: calc(var(--action-height) / 2);
     display: flex;
     height: var(--action-height);
@@ -24,7 +24,6 @@
   }
 
   #text {
-    font-size: 0.875rem;  /* 14px */
     overflow: hidden;
     padding-inline-start: 8px;
     text-overflow: ellipsis;
@@ -37,11 +36,12 @@
   }
 
   :host-context(.focus-outline-visible):host(:focus) {
-    box-shadow: inset 0 0 0 2px var(--cr-focus-outline-color);
+    border: solid 1px transparent;
+    box-shadow: inset 0 0 0 2px var(--google-blue-600);
   }
 
 </style>
-<div class="contents">
+<div class="contents" title="[[tooltip_]]">
   <img id="action-icon" src$="[[action.iconUrl]]">
   <div id="text" inner-h-t-m-l="[[hintHtml_]]"></div>
 </div>

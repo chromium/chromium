@@ -1,12 +1,13 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/script/value_wrapper_synthetic_module_script.h"
 
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/web_vector.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_css_style_sheet_init.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
@@ -64,7 +65,21 @@ ValueWrapperSyntheticModuleScript::CreateCSSWrapperSyntheticModuleScript(
         v8::Local<v8::Value>(), settings_object, params.SourceURL(), KURL(),
         ScriptFetchOptions(), error);
   }
-  v8::Local<v8::Value> v8_value_stylesheet = ToV8(style_sheet, script_state);
+
+  v8::Local<v8::Value> v8_value_stylesheet;
+  {
+    // Limit the scope of v8_try_catch so that it doesn't contain
+    // the following ValueWrapperSyntheticModuleScript::CreateWithDefaultExport.
+    v8::TryCatch v8_try_catch(isolate);
+    if (!ToV8Traits<CSSStyleSheet>::ToV8(script_state, style_sheet)
+             .ToLocal(&v8_value_stylesheet)) {
+      DCHECK(v8_try_catch.HasCaught());
+      return ValueWrapperSyntheticModuleScript::CreateWithError(
+          v8::Local<v8::Value>(), settings_object, params.SourceURL(), KURL(),
+          ScriptFetchOptions(), v8_try_catch.Exception());
+    };
+  }
+
   return ValueWrapperSyntheticModuleScript::CreateWithDefaultExport(
       v8_value_stylesheet, settings_object, params.SourceURL(), KURL(),
       ScriptFetchOptions());
@@ -177,7 +192,8 @@ ValueWrapperSyntheticModuleScript::ValueWrapperSyntheticModuleScript(
                    record,
                    source_url,
                    base_url,
-                   fetch_options),
+                   fetch_options,
+                   start_position),
       export_value_(v8::Isolate::GetCurrent(), value) {}
 
 // This is the definition of [[EvaluationSteps]] As per the synthetic module
@@ -197,7 +213,8 @@ v8::MaybeLocal<v8::Value> ValueWrapperSyntheticModuleScript::EvaluationSteps(
           static_cast<const ValueWrapperSyntheticModuleScript*>(
               module_record_resolver->GetModuleScriptFromModuleRecord(module));
   v8::MicrotasksScope microtasks_scope(
-      isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
+      isolate, context->GetMicrotaskQueue(),
+      v8::MicrotasksScope::kDoNotRunMicrotasks);
   v8::TryCatch try_catch(isolate);
   v8::Maybe<bool> result = module->SetSyntheticModuleExport(
       isolate, V8String(isolate, "default"),
@@ -207,20 +224,16 @@ v8::MaybeLocal<v8::Value> ValueWrapperSyntheticModuleScript::EvaluationSteps(
   DCHECK(!try_catch.HasCaught());
   DCHECK(!result.IsNothing() && result.FromJust());
 
-  if (base::FeatureList::IsEnabled(features::kTopLevelAwait)) {
-    v8::Local<v8::Promise::Resolver> promise_resolver;
-    if (!v8::Promise::Resolver::New(context).ToLocal(&promise_resolver)) {
-      if (!isolate->IsExecutionTerminating()) {
-        LOG(FATAL) << "Cannot recover from failure to create a new "
-                      "v8::Promise::Resolver object (OOM?)";
-      }
-      return v8::MaybeLocal<v8::Value>();
+  v8::Local<v8::Promise::Resolver> promise_resolver;
+  if (!v8::Promise::Resolver::New(context).ToLocal(&promise_resolver)) {
+    if (!isolate->IsExecutionTerminating()) {
+      LOG(FATAL) << "Cannot recover from failure to create a new "
+                    "v8::Promise::Resolver object (OOM?)";
     }
-    promise_resolver->Resolve(context, v8::Undefined(isolate)).ToChecked();
-    return promise_resolver->GetPromise();
+    return v8::MaybeLocal<v8::Value>();
   }
-
-  return v8::Undefined(isolate);
+  promise_resolver->Resolve(context, v8::Undefined(isolate)).ToChecked();
+  return promise_resolver->GetPromise();
 }
 
 void ValueWrapperSyntheticModuleScript::Trace(Visitor* visitor) const {

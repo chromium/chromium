@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,15 +7,17 @@
 
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
-#include "third_party/blink/public/common/loader/previews_state.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
-#include "url/origin.h"
 
 class GURL;
 
 namespace network {
 struct URLLoaderCompletionStatus;
 }  // namespace network
+
+namespace url {
+class SchemeHostPort;
+}  // namespace url
 
 namespace page_load_metrics {
 
@@ -30,7 +32,7 @@ class PageResourceDataUse {
 
   ~PageResourceDataUse();
 
-  void DidStartResponse(const GURL& response_url,
+  void DidStartResponse(const url::SchemeHostPort& final_response_url,
                         int resource_id,
                         const network::mojom::URLResponseHead& response_head,
                         network::mojom::RequestDestination request_destination);
@@ -74,10 +76,6 @@ class PageResourceDataUse {
 
   int resource_id_;
 
-  // Compression ratio estimated from the response headers if data saver was
-  // used.
-  double data_reduction_proxy_compression_ratio_estimate_;
-
   uint64_t total_received_bytes_ = 0;
   uint64_t last_update_bytes_ = 0;
   uint64_t encoded_body_length_ = 0;
@@ -93,8 +91,6 @@ class PageResourceDataUse {
   bool completed_before_fcp_;
 
   mojom::CacheType cache_type_;
-
-  url::Origin origin_;
 
   std::string mime_type_;
 };

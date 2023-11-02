@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -347,9 +347,9 @@ TEST_F(CronetEnabledMetricsTest, SessionWithoutDelegate) {
             dispatch_semaphore_signal(semaphore);
           }];
     __block BOOL block_used = NO;
-    [Cronet setRequestFilterBlock:^(NSURLRequest* request) {
+    [Cronet setRequestFilterBlock:^(NSURLRequest* nsUrlRequest) {
       block_used = YES;
-      EXPECT_EQ(request.URL, url);
+      EXPECT_EQ(nsUrlRequest.URL, url);
       return YES;
     }];
 

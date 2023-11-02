@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,15 +11,6 @@
 #include "third_party/webrtc/modules/audio_processing/include/audio_processing.h"
 
 namespace blink {
-
-using webrtc::AudioProcessing;
-
-static constexpr int kAudioProcessingSampleRate =
-#if defined(OS_ANDROID)
-    AudioProcessing::kSampleRate16kHz;
-#else
-    AudioProcessing::kSampleRate48kHz;
-#endif
 
 // Simple struct with audio-processing properties.
 struct PLATFORM_EXPORT AudioProcessingProperties {
@@ -70,11 +61,11 @@ struct PLATFORM_EXPORT AudioProcessingProperties {
 
   bool goog_audio_mirroring = false;
   bool goog_auto_gain_control = true;
-  // TODO(https://crbug.com/1215061): Deprecate this constraint. The flag no
+  // TODO(https://crbug.com/1269723): Deprecate this constraint. The flag no
   // longer toggles meaningful processing effects, but it still forces the audio
   // processing module to be created and used.
   bool goog_experimental_echo_cancellation =
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       false;
 #else
       true;

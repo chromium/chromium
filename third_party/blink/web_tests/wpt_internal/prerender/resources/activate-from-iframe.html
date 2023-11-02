@@ -1,20 +1,21 @@
 <!DOCTYPE html>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="utils.js"></script>
+<script src="/speculation-rules/prerender/resources/utils.js"></script>
 <script type="module">
 
+const params = new URLSearchParams(location.search);
+const uid = params.get('uid');
+
 // Used to notify an iframe to activate of activation ready.
-const readyChannel = new BroadcastChannel('ready-channel');
+const readyChannel = new PrerenderChannel('ready-channel', uid);
 
 // Used to notify the main test page of the test result.
-const resultChannel = new BroadcastChannel('result-channel');
+const resultChannel = new PrerenderChannel('result-channel', uid);
 
 // URL to be prerendered.
 const prerenderingUrl = new URL(document.URL);
 prerenderingUrl.searchParams.set('mode', 'prerendering');
-
-const params = new URLSearchParams(location.search);
 
 try {
   // The `mode` param indicates the purpose of the loaded frame.

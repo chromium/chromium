@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
-#include "chromeos/policy/weekly_time/time_utils.h"
+#include "chromeos/ash/components/policy/weekly_time/time_utils.h"
 
 namespace em = enterprise_management;
 
@@ -51,14 +51,14 @@ std::unique_ptr<base::DictionaryValue> ConvertOffHoursProtoToValue(
   if (!timezone)
     return nullptr;
   auto off_hours = std::make_unique<base::DictionaryValue>();
-  off_hours->SetString("timezone", *timezone);
+  off_hours->SetStringKey("timezone", *timezone);
   std::vector<WeeklyTimeInterval> intervals =
       ExtractWeeklyTimeIntervalsFromProto(container, *timezone,
                                           base::DefaultClock::GetInstance());
-  auto intervals_value = std::make_unique<base::ListValue>();
+  base::Value* intervals_value =
+      off_hours->SetKey("intervals", base::Value(base::Value::Type::LIST));
   for (const auto& interval : intervals)
     intervals_value->Append(interval.ToValue());
-  off_hours->SetList("intervals", std::move(intervals_value));
   std::vector<int> ignored_policy_proto_tags =
       ExtractIgnoredPolicyProtoTagsFromProto(container);
   auto ignored_policies_value = std::make_unique<base::ListValue>();

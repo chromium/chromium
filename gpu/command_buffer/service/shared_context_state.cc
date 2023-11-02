@@ -1,9 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "gpu/command_buffer/service/shared_context_state.h"
 
+#include "base/observer_list.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -36,13 +37,14 @@
 #include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "gpu/command_buffer/service/external_semaphore_pool.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
+#include "gpu/vulkan/vulkan_implementation.h"
 #endif
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 #include "gpu/vulkan/fuchsia/vulkan_fuchsia_ext.h"
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "components/viz/common/gpu/metal_context_provider.h"
 #endif
 
@@ -55,7 +57,7 @@ static constexpr size_t kInitialScratchDeserializationBufferSize = 1024;
 
 size_t MaxNumSkSurface() {
   static constexpr size_t kNormalMaxNumSkSurface = 16;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   static constexpr size_t kLowEndMaxNumSkSurface = 4;
   if (base::SysInfo::IsLowEndDevice()) {
     return kLowEndMaxNumSkSurface;
@@ -150,7 +152,8 @@ SharedContextState::SharedContextState(
     viz::VulkanContextProvider* vulkan_context_provider,
     viz::MetalContextProvider* metal_context_provider,
     viz::DawnContextProvider* dawn_context_provider,
-    base::WeakPtr<gpu::MemoryTracker::Observer> peak_memory_monitor)
+    base::WeakPtr<gpu::MemoryTracker::Observer> peak_memory_monitor,
+    bool created_on_compositor_gpu_thread)
     : use_virtualized_gl_contexts_(use_virtualized_gl_contexts),
       context_lost_callback_(std::move(context_lost_callback)),
       gr_context_type_(gr_context_type),
@@ -160,6 +163,7 @@ SharedContextState::SharedContextState(
       vk_context_provider_(vulkan_context_provider),
       metal_context_provider_(metal_context_provider),
       dawn_context_provider_(dawn_context_provider),
+      created_on_compositor_gpu_thread_(created_on_compositor_gpu_thread),
       share_group_(std::move(share_group)),
       context_(context),
       real_context_(std::move(context)),
@@ -187,7 +191,7 @@ SharedContextState::SharedContextState(
       break;
     case GrContextType::kMetal:
       if (metal_context_provider_) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
         gr_context_ = metal_context_provider_->GetGrContext();
 #endif
         use_virtualized_gl_contexts_ = false;
@@ -218,6 +222,7 @@ SharedContextState::SharedContextState(
 }
 
 SharedContextState::~SharedContextState() {
+  DCHECK(sk_surface_cache_.empty());
   // Delete the transfer cache first: that way, destruction callbacks for image
   // entries can use *|this| to make the context current and do GPU clean up.
   // The context should be current so that texture deletes that result from
@@ -264,7 +269,7 @@ bool SharedContextState::InitializeGrContext(
   progress_reporter_ = progress_reporter;
   gr_shader_cache_ = cache;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (metal_context_provider_)
     metal_context_provider_->SetProgressReporter(progress_reporter);
 #endif
@@ -284,7 +289,8 @@ bool SharedContextState::InitializeGrContext(
   if (gpu_preferences.force_max_texture_size)
     options.fMaxTextureSizeOverride = gpu_preferences.force_max_texture_size;
 
-  if (base::FeatureList::IsEnabled(features::kReduceOpsTaskSplitting)) {
+  if (base::FeatureList::IsEnabled(features::kReduceOpsTaskSplitting) &&
+      !workarounds.disable_skia_reduce_ops_task_splitting) {
     options.fReduceOpsTaskSplitting = GrContextOptions::Enable::kYes;
   } else {
     options.fReduceOpsTaskSplitting = GrContextOptions::Enable::kNo;
@@ -292,10 +298,7 @@ bool SharedContextState::InitializeGrContext(
 
   if (gr_context_type_ == GrContextType::kGL) {
     DCHECK(context_->IsCurrent(nullptr));
-    bool use_version_es2 = false;
-#if defined(OS_ANDROID)
-    use_version_es2 = base::FeatureList::IsEnabled(features::kUseGles2ForOopR);
-#endif
+    constexpr bool use_version_es2 = false;
     sk_sp<GrGLInterface> interface(gl::init::CreateGrGLInterface(
         *context_->GetVersionInfo(), use_version_es2, progress_reporter));
     if (!interface) {
@@ -463,11 +466,6 @@ bool SharedContextState::InitializeGL(
     MakeCurrent(nullptr);
   }
 
-  bool is_native_vulkan =
-      gpu_preferences.use_vulkan == gpu::VulkanImplementationName::kNative ||
-      gpu_preferences.use_vulkan ==
-          gpu::VulkanImplementationName::kForcedNative;
-
   bool gl_supports_memory_object =
       gl::g_current_gl_driver->ext.b_GL_EXT_memory_object_fd ||
       gl::g_current_gl_driver->ext.b_GL_EXT_memory_object_win32 ||
@@ -476,13 +474,20 @@ bool SharedContextState::InitializeGL(
       gl::g_current_gl_driver->ext.b_GL_EXT_semaphore_fd ||
       gl::g_current_gl_driver->ext.b_GL_EXT_semaphore_win32 ||
       gl::g_current_gl_driver->ext.b_GL_ANGLE_semaphore_fuchsia;
+
   bool vk_supports_external_memory = false;
   bool vk_supports_external_semaphore = false;
+  gpu::VulkanImplementationName vulkan_implementation =
+      gpu::VulkanImplementationName::kNone;
 #if BUILDFLAG(ENABLE_VULKAN)
   if (vk_context_provider_) {
+    vulkan_implementation =
+        vk_context_provider_->GetVulkanImplementation()->use_swiftshader()
+            ? gpu::VulkanImplementationName::kSwiftshader
+            : gpu::VulkanImplementationName::kNative;
     const auto& extensions =
         vk_context_provider_->GetDeviceQueue()->enabled_extensions();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     vk_supports_external_memory =
         gfx::HasExtension(extensions, VK_KHR_EXTERNAL_MEMORY_EXTENSION_NAME) &&
         gfx::HasExtension(extensions,
@@ -492,7 +497,7 @@ bool SharedContextState::InitializeGL(
                           VK_KHR_EXTERNAL_SEMAPHORE_EXTENSION_NAME) &&
         gfx::HasExtension(extensions,
                           VK_KHR_EXTERNAL_SEMAPHORE_WIN32_EXTENSION_NAME);
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
     vk_supports_external_memory =
         gfx::HasExtension(extensions, VK_KHR_EXTERNAL_MEMORY_EXTENSION_NAME) &&
         gfx::HasExtension(extensions,
@@ -515,10 +520,19 @@ bool SharedContextState::InitializeGL(
   }
 #endif  // BUILDFLAG(ENABLE_VULKAN)
 
-  // Swiftshader GL and Vulkan report supporting external objects extensions,
-  // but they don't.
+  const bool is_native_vulkan_and_gl =
+      vulkan_implementation == gpu::VulkanImplementationName::kNative &&
+      !gl::g_current_gl_version->is_swiftshader &&
+      !gl::g_current_gl_version->is_angle_swiftshader;
+
+  // Swiftshader GL reports supporting external objects extensions, but doesn't.
+  // However, Swiftshader Vulkan and ANGLE can interop using external objects.
+  const bool is_swiftshader_vulkan_and_gl =
+      vulkan_implementation == gpu::VulkanImplementationName::kSwiftshader &&
+      gl::g_current_gl_version->is_angle_swiftshader;
+
   support_vulkan_external_object_ =
-      !gl::g_current_gl_version->is_swiftshader && is_native_vulkan &&
+      (is_native_vulkan_and_gl || is_swiftshader_vulkan_and_gl) &&
       gl_supports_memory_object && gl_supports_semaphore &&
       vk_supports_external_memory && vk_supports_external_semaphore;
 
@@ -529,13 +543,15 @@ bool SharedContextState::InitializeGL(
 }
 
 bool SharedContextState::MakeCurrent(gl::GLSurface* surface, bool needs_gl) {
-  if (context_lost())
+  if (context_lost()) {
+    LOG(ERROR) << "Failed to make current since context is marked as lost";
     return false;
+  }
 
   const bool using_gl = GrContextIsGL() || needs_gl;
   if (using_gl) {
     gl::GLSurface* dont_care_surface =
-        last_current_surface_ ? last_current_surface_ : surface_.get();
+        last_current_surface_ ? last_current_surface_.get() : surface_.get();
     surface = surface ? surface : dont_care_surface;
 
     if (!context_->MakeCurrent(surface)) {
@@ -690,11 +706,20 @@ void SharedContextState::PessimisticallyResetGrContext() const {
 }
 
 void SharedContextState::StoreVkPipelineCacheIfNeeded() {
-  if (gr_context_ && GrContextIsVulkan()) {
+  // GrShaderCache::StoreVkPipelineCacheIfNeeded() must be called only for gpu
+  // main thread. Hence using |created_on_compositor_gpu_thread_| to avoid
+  // calling it for CompositorGpuThread when DrDc is enabled. See
+  // GrShaderCache::StoreVkPipelineCacheIfNeeded for more details.
+  if (gr_context_ && gr_shader_cache_ && GrContextIsVulkan() &&
+      !created_on_compositor_gpu_thread_) {
     gpu::raster::GrShaderCache::ScopedCacheUse use(gr_shader_cache_,
                                                    kDisplayCompositorClientId);
     gr_shader_cache_->StoreVkPipelineCacheIfNeeded(gr_context_);
   }
+}
+
+gl::GLDisplay* SharedContextState::display() {
+  return surface_.get()->GetGLDisplay();
 }
 
 bool SharedContextState::initialized() const {

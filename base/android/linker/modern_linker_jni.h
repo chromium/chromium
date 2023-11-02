@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,10 +28,27 @@ enum class RelroSharingStatus {
   NO_SHMEM_FUNCTIONS = 5,
   REMAP_FAILED = 6,
   CORRUPTED_IN_JAVA = 7,
-  COUNT = 8,
+  EXTERNAL_LOAD_ADDRESS_RESET = 8,
+  COUNT = 9,
 };
 
 struct SharedMemoryFunctions;
+
+// Abstract class for NativeLibInfo to use for miscellaneous time measurements.
+// Best to be provided with values from the same clock as
+// SystemClock.uptimeMillis().
+//
+// *Not* threadsafe.
+class LoadTimeReporter {
+ public:
+  virtual ~LoadTimeReporter() = default;
+
+  // Report the time it took to run android_dlopen_ext().
+  virtual void reportDlopenExtTime(int64_t milliseconds_since_boot) const = 0;
+
+  // Report the time it took to find the RELRO region using dl_iterate_phdr().
+  virtual void reportIteratePhdrTime(int64_t milliseconds_since_boot) const = 0;
+};
 
 // Holds address ranges of the loaded native library, its RELRO region, along
 // with the RELRO FD identifying the shared memory region. Carries the same
@@ -75,7 +92,9 @@ class NativeLibInfo {
   // provide RELRO FD before it starts processing arbitrary input. For example,
   // an App Zygote can create a RELRO FD in a sufficiently trustworthy way to
   // make the Browser/Privileged processes share the region with it.
-  bool LoadLibrary(const String& library_path, bool spawn_relro_region);
+  bool LoadLibrary(const String& library_path,
+                   bool spawn_relro_region,
+                   const LoadTimeReporter& reporter);
 
   // Finds the RELRO region in the native library identified by
   // |this->load_address()| and replaces it with the shared memory region
@@ -99,9 +118,16 @@ class NativeLibInfo {
   // unittest LoadLibrary() directly.
   bool CreateSharedRelroFdForTesting();
 
-  int get_relro_fd_for_testing() { return relro_fd_; }
+  void set_relro_fd_for_testing(int fd) { relro_fd_ = fd; }
+  int get_relro_fd_for_testing() const { return relro_fd_; }
+  size_t get_relro_start_for_testing() const { return relro_start_; }
+  size_t get_load_size_for_testing() const { return load_size_; }
 
   static bool SharedMemoryFunctionsSupportedForTesting();
+
+  bool FindRelroAndLibraryRangesInElfForTesting() {
+    return FindRelroAndLibraryRangesInElf();
+  }
 
  private:
   NativeLibInfo() = delete;
@@ -120,19 +146,16 @@ class NativeLibInfo {
 
   void CloseRelroFd();
 
-  // Callback for dl_iterate_phdr(). From program headers (phdr(s)) of a loaded
-  // library determines its load address, and in case it is equal to
-  // |lib_info.load_address()|, extracts the RELRO and size information from
-  // corresponding phdr(s).
-  static int VisitLibraryPhdrs(dl_phdr_info* info, size_t size, void* lib_info);
-
-  // Invokes dl_iterate_phdr() for the current load address, with
-  // VisitLibraryPhdrs() as a callback.
+  // Determines the minimal address ranges for the union of all the loadable
+  // (and RELRO) segments by parsing ELF starting at |load_address()|. May fail
+  // or return incorrect results for some creative ELF libraries.
   bool FindRelroAndLibraryRangesInElf();
 
   // Loads and initializes the load address ranges: |load_address_|,
   // |load_size_|. Assumes that the memory range is reserved (in Linker.java).
-  bool LoadWithDlopenExt(const String& path, void** handle);
+  bool LoadWithDlopenExt(const String& path,
+                         const LoadTimeReporter& reporter,
+                         void** handle);
 
   // Initializes |relro_fd_| with a newly created read-only shared memory region
   // sized as the library's RELRO and with identical data.

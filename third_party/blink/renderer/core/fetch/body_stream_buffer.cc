@@ -1,11 +1,13 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/fetch/body_stream_buffer.h"
 
 #include <memory>
+
 #include "base/auto_reset.h"
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fetch/body.h"
 #include "third_party/blink/renderer/core/fetch/bytes_consumer_tee.h"
@@ -20,11 +22,10 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/script_cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/network/encoded_form_data.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
 
@@ -152,8 +153,13 @@ void BodyStreamBuffer::Init() {
     if (signal_->aborted()) {
       Abort();
     } else {
-      signal_->AddAlgorithm(
-          WTF::Bind(&BodyStreamBuffer::Abort, WrapWeakPersistent(this)));
+      if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers", "BodyStreamBuffer")) {
+        // Abort() interacts with the recording so we need it to run consistently.
+        signal_->AddAlgorithm(WTF::BindOnce(&BodyStreamBuffer::Abort, WrapPersistent(this)));
+      } else {
+        signal_->AddAlgorithm(
+            WTF::BindOnce(&BodyStreamBuffer::Abort, WrapWeakPersistent(this)));
+      }
     }
   }
   OnStateChange();
@@ -213,33 +219,41 @@ scoped_refptr<EncodedFormData> BodyStreamBuffer::DrainAsFormData() {
 void BodyStreamBuffer::DrainAsChunkedDataPipeGetter(
     ScriptState* script_state,
     mojo::PendingReceiver<network::mojom::blink::ChunkedDataPipeGetter>
-        pending_receiver) {
+        pending_receiver,
+    BytesUploader::Client* client) {
   DCHECK(!IsStreamLocked());
   auto* consumer =
       MakeGarbageCollected<ReadableStreamBytesConsumer>(script_state, stream_);
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
   stream_uploader_ = MakeGarbageCollected<BytesUploader>(
-      consumer, std::move(pending_receiver),
-      ExecutionContext::From(script_state)
-          ->GetTaskRunner(TaskType::kNetworking));
+      execution_context, consumer, std::move(pending_receiver),
+      execution_context->GetTaskRunner(TaskType::kNetworking), client);
 }
 
 void BodyStreamBuffer::StartLoading(FetchDataLoader* loader,
                                     FetchDataLoader::Client* client,
                                     ExceptionState& exception_state) {
   DCHECK(!loader_);
+  DCHECK(!keep_alive_);
   DCHECK(script_state_->ContextIsValid());
   if (signal_) {
     if (signal_->aborted()) {
       client->Abort();
       return;
     }
-    signal_->AddAlgorithm(
-        WTF::Bind(&FetchDataLoader::Client::Abort, WrapWeakPersistent(client)));
+    if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers", "BodyStreamBuffer")) {
+      // Client aborts can interact with the recording, so we want them to run consistently.
+      signal_->AddAlgorithm(WTF::BindOnce(&FetchDataLoader::Client::Abort, WrapPersistent(client)));
+    } else {
+      signal_->AddAlgorithm(WTF::BindOnce(&FetchDataLoader::Client::Abort,
+                                          WrapWeakPersistent(client)));
+    }
   }
   loader_ = loader;
   auto* handle = ReleaseHandle(exception_state);
   if (exception_state.HadException())
     return;
+  keep_alive_ = this;
   loader->Start(handle,
                 MakeGarbageCollected<LoaderClient>(
                     ExecutionContext::From(script_state_), this, client));
@@ -314,8 +328,7 @@ ScriptPromise BodyStreamBuffer::pull(ScriptState* script_state) {
 ScriptPromise BodyStreamBuffer::Cancel(ScriptState* script_state,
                                        ScriptValue reason) {
   DCHECK_EQ(script_state, script_state_);
-  if (Controller())
-    Controller()->Close();
+  Controller()->Close();
   CancelConsumer();
   return ScriptPromise::CastUndefined(script_state);
 }
@@ -338,13 +351,10 @@ void BodyStreamBuffer::OnStateChange() {
   ProcessData();
 }
 
-bool BodyStreamBuffer::HasPendingActivity() const {
-  return loader_;
-}
-
 void BodyStreamBuffer::ContextDestroyed() {
   CancelConsumer();
   UnderlyingSourceBase::ContextDestroyed();
+  keep_alive_.Clear();
 }
 
 bool BodyStreamBuffer::IsStreamReadable() const {
@@ -403,11 +413,15 @@ void BodyStreamBuffer::Trace(Visitor* visitor) const {
 }
 
 void BodyStreamBuffer::Abort() {
-  if (!Controller()) {
-    DCHECK(!GetExecutionContext());
+  recordreplay::Assert("[RUN-1182] BodyStreamBuffer::Abort");
+
+  if (!GetExecutionContext()) {
     DCHECK(!consumer_);
     return;
   }
+
+  recordreplay::Assert("[RUN-1182] BodyStreamBuffer::Abort #1");
+
   Controller()->Error(
       MakeGarbageCollected<DOMException>(DOMExceptionCode::kAbortError));
   CancelConsumer();
@@ -462,7 +476,7 @@ void BodyStreamBuffer::ProcessData() {
     if (result == BytesConsumer::Result::kOk) {
       array = DOMUint8Array::CreateOrNull(
           reinterpret_cast<const unsigned char*>(buffer),
-          SafeCast<uint32_t>(available));
+          base::checked_cast<uint32_t>(available));
       result = consumer_->EndRead(available);
       if (!array) {
         RaiseOOMError();
@@ -499,14 +513,17 @@ void BodyStreamBuffer::ProcessData() {
 
 void BodyStreamBuffer::EndLoading() {
   DCHECK(loader_);
+  keep_alive_.Clear();
   loader_ = nullptr;
 }
 
 void BodyStreamBuffer::StopLoading() {
-  if (!loader_)
+  if (!loader_) {
+    DCHECK(!keep_alive_);
     return;
+  }
   loader_->Cancel();
-  loader_ = nullptr;
+  EndLoading();
 }
 
 BytesConsumer* BodyStreamBuffer::ReleaseHandle(

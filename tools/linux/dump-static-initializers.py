@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright (c) 2012 The Chromium Authors. All rights reserved.
+# Copyright 2012 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -43,7 +43,7 @@ IS_GIT_WORKSPACE = (subprocess.Popen(
     ['git', 'rev-parse'], stderr=subprocess.PIPE).wait() == 0)
 
 
-class Demangler(object):
+class Demangler:
   """A wrapper around c++filt to provide a function to demangle symbols."""
 
   def __init__(self, toolchain):
@@ -140,6 +140,7 @@ def ParseNmLine(line):
   if match:
     addr, size, prefix, filename = match.groups()
     return (filename, int(addr, 16), int(size, 16), prefix+filename)
+  return None
 
 
 def test_ParseNmLine():

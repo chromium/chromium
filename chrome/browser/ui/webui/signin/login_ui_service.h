@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
@@ -37,7 +38,8 @@ class LoginUIService : public KeyedService {
   enum SyncConfirmationUIClosedResult {
     // TODO(crbug.com/1141341): Rename the first option to make it work better
     // for the sync-disabled variant of the UI.
-    // Start sync immediately.
+    // Start sync immediately, if sync can be enabled. Otherwise, keep the user
+    // signed in (with sync disabled).
     SYNC_WITH_DEFAULT_SETTINGS,
     // Show the user the sync settings before starting sync.
     CONFIGURE_SYNC_FIRST,
@@ -85,11 +87,6 @@ class LoginUIService : public KeyedService {
   // option chosen by the user in the confirmation UI.
   void SyncConfirmationUIClosed(SyncConfirmationUIClosedResult result);
 
-  // Delegate to an existing login tab if one exists. If not, a new sigin tab is
-  // created.
-  void ShowExtensionLoginPrompt(bool enable_sync,
-                                const std::string& email_hint);
-
   // Displays login results. This is either the Modal Signin Error dialog if
   // |error.message()| is a non-empty string, or the User Menu with a blue
   // header toast otherwise.
@@ -107,7 +104,7 @@ class LoginUIService : public KeyedService {
   // Weak pointers to the recently opened UIs, with the most recent in front.
   std::list<LoginUI*> ui_list_;
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   SigninUIError last_login_error_ = SigninUIError::Ok();
 #endif
 

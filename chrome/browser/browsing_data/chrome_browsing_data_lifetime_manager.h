@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -99,9 +100,9 @@ class ChromeBrowsingDataLifetimeManager : public KeyedService {
 
   std::vector<ScheduledRemovalSettings> scheduled_removals_settings_;
   PrefChangeRegistrar pref_change_registrar_;
-  Profile* profile_;
-  content::BrowsingDataRemover::Observer* testing_data_remover_observer_ =
-      nullptr;
+  raw_ptr<Profile> profile_;
+  raw_ptr<content::BrowsingDataRemover::Observer>
+      testing_data_remover_observer_ = nullptr;
   absl::optional<base::Time> end_time_for_testing_;
   base::WeakPtrFactory<ChromeBrowsingDataLifetimeManager> weak_ptr_factory_{
       this};

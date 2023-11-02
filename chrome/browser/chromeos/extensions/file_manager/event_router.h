@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,25 +12,28 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/settings/timezone_settings.h"
+#include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
-#include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/file_manager/file_manager_copy_or_move_hook_delegate.h"
 #include "chrome/browser/ash/file_manager/file_watcher.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/io_task_controller.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_manager/volume_manager_observer.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
+#include "chrome/browser/ash/guest_os/public/guest_os_mount_provider.h"
+#include "chrome/browser/ash/guest_os/public/guest_os_mount_provider_registry.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/chromeos/extensions/file_manager/device_event_router.h"
 #include "chrome/browser/chromeos/extensions/file_manager/drivefs_event_router.h"
 #include "chrome/browser/chromeos/extensions/file_manager/system_notification_manager.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
-#include "chromeos/disks/disk_mount_manager.h"
+#include "chromeos/ash/components/disks/disk_mount_manager.h"
+#include "chromeos/ash/components/settings/timezone_settings.h"
 #include "components/arc/intent_helper/arc_intent_helper_observer.h"
-#include "components/arc/session/arc_service_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
@@ -42,9 +45,15 @@
 class PrefChangeRegistrar;
 class Profile;
 
+using OutputsType =
+    extensions::api::file_manager_private::ProgressStatus::OutputsType;
 using file_manager::util::EntryDefinition;
 
 namespace file_manager {
+
+namespace {
+class RecalculateTasksObserver;
+}  // namespace
 
 // Monitors changes in disk mounts, network connection state and preferences
 // affecting File Manager. Dispatches appropriate File Browser events.
@@ -58,7 +67,8 @@ class EventRouter
       public drive::DriveIntegrationServiceObserver,
       public guest_os::GuestOsSharePath::Observer,
       public ash::TabletModeObserver,
-      public file_manager::io_task::IOTaskController::Observer {
+      public file_manager::io_task::IOTaskController::Observer,
+      public guest_os::GuestOsMountProviderRegistry::Observer {
  public:
   using DispatchDirectoryChangeEventImplCallback =
       base::RepeatingCallback<void(const base::FilePath& virtual_path,
@@ -108,13 +118,14 @@ class EventRouter
                      int64_t space_needed);
 
   // Called when a copy task is completed.
-  void OnCopyCompleted(
-      int copy_id, const GURL& source_url, const GURL& destination_url,
-      base::File::Error error);
+  void OnCopyCompleted(int copy_id,
+                       const GURL& source_url,
+                       const GURL& destination_url,
+                       base::File::Error error);
 
   // Called when a copy task progress is updated.
   void OnCopyProgress(int copy_id,
-                      storage::FileSystemOperation::CopyOrMoveProgressType type,
+                      FileManagerCopyOrMoveHookDelegate::ProgressType type,
                       const GURL& source_url,
                       const GURL& destination_url,
                       int64_t size);
@@ -139,13 +150,13 @@ class EventRouter
   void TimezoneChanged(const icu::TimeZone& timezone) override;
 
   // VolumeManagerObserver overrides.
-  void OnDiskAdded(const chromeos::disks::Disk& disk, bool mounting) override;
-  void OnDiskRemoved(const chromeos::disks::Disk& disk) override;
+  void OnDiskAdded(const ash::disks::Disk& disk, bool mounting) override;
+  void OnDiskRemoved(const ash::disks::Disk& disk) override;
   void OnDeviceAdded(const std::string& device_path) override;
   void OnDeviceRemoved(const std::string& device_path) override;
-  void OnVolumeMounted(chromeos::MountError error_code,
+  void OnVolumeMounted(ash::MountError error_code,
                        const Volume& volume) override;
-  void OnVolumeUnmounted(chromeos::MountError error_code,
+  void OnVolumeUnmounted(ash::MountError error_code,
                          const Volume& volume) override;
   void OnFormatStarted(const std::string& device_path,
                        const std::string& device_label,
@@ -196,8 +207,20 @@ class EventRouter
   // IOTaskController::Observer:
   void OnIOTaskStatus(const io_task::ProgressStatus& status) override;
 
+  // guest_os::GuestOsMountProviderRegistry::Observer overrides.
+  void OnRegistered(guest_os::GuestOsMountProviderRegistry::Id id,
+                    guest_os::GuestOsMountProvider* provider) override;
+  void OnUnregistered(guest_os::GuestOsMountProviderRegistry::Id id) override;
+
+  // Use this method for unit tests to bypass checking if there are any SWA
+  // windows.
+  void ForceBroadcastingForTesting(bool enabled) {
+    force_broadcasting_for_testing_ = enabled;
+  }
+
  private:
   FRIEND_TEST_ALL_PREFIXES(EventRouterTest, PopulateCrostiniEvent);
+  friend class ScopedSuppressDriveNotificationsForPath;
 
   // Starts observing file system change events.
   void ObserveEvents();
@@ -228,7 +251,7 @@ class EventRouter
   // Dispatches the mount completed event.
   void DispatchMountCompletedEvent(
       extensions::api::file_manager_private::MountCompletedEventType event_type,
-      chromeos::MountError error,
+      ash::MountError error,
       const Volume& volume);
 
   // Send crostini path shared or unshared event.
@@ -263,6 +286,27 @@ class EventRouter
       const drivefs::mojom::DialogReason& reason,
       base::OnceCallback<void(drivefs::mojom::DialogResult)> callback);
 
+  // Used by `file_manager::ScopedSuppressDriveNotificationsForPath` to prevent
+  // Drive notifications for a given file identified by its relative Drive path.
+  void SuppressDriveNotificationsForFilePath(
+      const base::FilePath& relative_drive_path);
+  void RestoreDriveNotificationsForFilePath(
+      const base::FilePath& relative_drive_path);
+
+  // Called to refresh the list of guests and broadcast it.
+  void OnMountableGuestsChanged();
+
+  // After resolving all file definitions, ensure they are available on the
+  // `event_status`.
+  void OnConvertFileDefinitionListToEntryDefinitionList(
+      file_manager_private::ProgressStatus event_status,
+      std::unique_ptr<file_manager::util::EntryDefinitionList>
+          entry_definition_list);
+
+  // Broadcast the `event_status` to all open SWA windows.
+  void BroadcastIOTask(
+      const file_manager_private::ProgressStatus& event_status);
+
   base::Time last_copy_progress_event_;
 
   std::map<base::FilePath, std::unique_ptr<FileWatcher>> file_watchers_;
@@ -274,14 +318,21 @@ class EventRouter
   std::unique_ptr<SystemNotificationManager> notification_manager_;
   std::unique_ptr<DeviceEventRouter> device_event_router_;
   std::unique_ptr<DriveFsEventRouter> drivefs_event_router_;
+  std::unique_ptr<RecalculateTasksObserver> recalculate_tasks_observer_;
 
   DispatchDirectoryChangeEventImplCallback
       dispatch_directory_change_event_impl_;
+
+  // Set this to true to ignore the DoFilesSwaWindowsExist check for testing.
+  bool force_broadcasting_for_testing_ = false;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate the weak pointers before any other members are destroyed.
   base::WeakPtrFactory<EventRouter> weak_factory_{this};
 };
+
+file_manager_private::MountCompletedStatus MountErrorToMountCompletedStatus(
+    ash::MountError error);
 
 }  // namespace file_manager
 

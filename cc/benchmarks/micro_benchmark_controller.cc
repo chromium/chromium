@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/ranges/algorithm.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "cc/benchmarks/invalidation_benchmark.h"
@@ -77,11 +78,7 @@ int MicroBenchmarkController::GetNextIdAndIncrement() {
 }
 
 bool MicroBenchmarkController::SendMessage(int id, base::Value message) {
-  auto it =
-      std::find_if(benchmarks_.begin(), benchmarks_.end(),
-                   [id](const std::unique_ptr<MicroBenchmark>& benchmark) {
-                     return benchmark->id() == id;
-                   });
+  auto it = base::ranges::find(benchmarks_, id, &MicroBenchmark::id);
   if (it == benchmarks_.end())
     return false;
   return (*it)->ProcessMessage(std::move(message));

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -51,6 +51,12 @@ public interface Callback<T> {
         @CalledByNative("Helper")
         static void onIntResultFromNative(Callback callback, int result) {
             callback.onResult(Integer.valueOf(result));
+        }
+
+        @SuppressWarnings("unchecked")
+        @CalledByNative("Helper")
+        static void onLongResultFromNative(Callback callback, long result) {
+            callback.onResult(Long.valueOf(result));
         }
 
         @SuppressWarnings("unchecked")

@@ -30,14 +30,13 @@
 #include "third_party/blink/renderer/platform/graphics/path.h"
 
 #include <math.h>
-#include "third_party/blink/renderer/platform/geometry/float_point.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/skia/include/pathops/SkPathOps.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
 namespace blink {
@@ -93,7 +92,7 @@ SkPath Path::StrokePath(const StrokeData& stroke_data,
 
 SkPath Path::StrokePath(const StrokeData& stroke_data,
                         float stroke_precision) const {
-  PaintFlags flags;
+  cc::PaintFlags flags;
   stroke_data.SetupPaint(&flags);
 
   SkPath stroke_path;
@@ -188,12 +187,14 @@ void Path::Apply(void* info, PathApplierFunction function) const {
   }
 }
 
-void Path::Transform(const AffineTransform& xform) {
+Path& Path::Transform(const AffineTransform& xform) {
   path_.transform(AffineTransformToSkMatrix(xform));
+  return *this;
 }
 
-void Path::Transform(const TransformationMatrix& transformation_matrix) {
+Path& Path::Transform(const TransformationMatrix& transformation_matrix) {
   path_.transform(TransformationMatrixToSkMatrix(transformation_matrix));
+  return *this;
 }
 
 float Path::length() const {
@@ -401,9 +402,16 @@ void Path::AddArc(const gfx::PointF& p,
   AddEllipse(p, radius, radius, start_angle, end_angle);
 }
 
-void Path::AddRect(const FloatRect& rect) {
+void Path::AddRect(const gfx::RectF& rect) {
   // Start at upper-left, add clock-wise.
-  path_.addRect(rect, SkPathDirection::kCW, 0);
+  path_.addRect(gfx::RectFToSkRect(rect), SkPathDirection::kCW, 0);
+}
+
+void Path::AddRect(const gfx::PointF& origin,
+                   const gfx::PointF& opposite_point) {
+  path_.addRect(SkRect::MakeLTRB(origin.x(), origin.y(), opposite_point.x(),
+                                 opposite_point.y()),
+                SkPathDirection::kCW, 0);
 }
 
 void Path::AddEllipse(const gfx::PointF& p,
@@ -444,7 +452,8 @@ void Path::AddRoundedRect(const FloatRoundedRect& rect, bool clockwise) {
   if (rect.IsEmpty())
     return;
 
-  path_.addRRect(rect, clockwise ? SkPathDirection::kCW : SkPathDirection::kCCW,
+  path_.addRRect(SkRRect(rect),
+                 clockwise ? SkPathDirection::kCW : SkPathDirection::kCCW,
                  /* start at upper-left after corner radius */ 0);
 }
 

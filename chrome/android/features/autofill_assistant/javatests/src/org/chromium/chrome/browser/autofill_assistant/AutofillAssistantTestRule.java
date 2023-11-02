@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,12 @@ import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeActivityTestRule;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 abstract class AutofillAssistantTestRule<T extends ChromeActivityTestRule> implements TestRule {
     private final T mTestRule;
@@ -34,8 +39,18 @@ abstract class AutofillAssistantTestRule<T extends ChromeActivityTestRule> imple
         return new Statement() {
             @Override
             public void evaluate() throws Throwable {
-                AutofillAssistantPreferencesUtil.setInitialPreferences(true);
                 startActivity();
+
+                // By default, accept onboarding.
+                TestThreadUtils.runOnUiThreadBlocking(() -> {
+                    PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+                    prefService.setBoolean(Pref.AUTOFILL_ASSISTANT_CONSENT, true);
+                    prefService.setBoolean(Pref.AUTOFILL_ASSISTANT_ENABLED, true);
+                    prefService.clearPref(Pref.AUTOFILL_ASSISTANT_TRIGGER_SCRIPTS_ENABLED);
+                    prefService.clearPref(
+                            Pref.AUTOFILL_ASSISTANT_TRIGGER_SCRIPTS_IS_FIRST_TIME_USER);
+                });
+
                 setPortraitOrientation();
                 mTestRule.getActivity()
                         .getRootUiCoordinatorForTesting()
@@ -46,6 +61,17 @@ abstract class AutofillAssistantTestRule<T extends ChromeActivityTestRule> imple
                 } finally {
                     restoreOrientation();
                 }
+
+                // Ensure that all prefs are cleared.
+                TestThreadUtils.runOnUiThreadBlocking(() -> {
+                    PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+                    prefService.clearPref(Pref.AUTOFILL_ASSISTANT_CONSENT);
+                    prefService.clearPref(Pref.AUTOFILL_ASSISTANT_ENABLED);
+                    prefService.clearPref(Pref.AUTOFILL_ASSISTANT_TRIGGER_SCRIPTS_ENABLED);
+                    prefService.clearPref(
+                            Pref.AUTOFILL_ASSISTANT_TRIGGER_SCRIPTS_IS_FIRST_TIME_USER);
+                });
+
                 cleanupAfterTest();
             }
         };

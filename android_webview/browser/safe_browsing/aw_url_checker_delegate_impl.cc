@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -79,10 +79,11 @@ void AwUrlCheckerDelegateImpl::StartDisplayingBlockingPageHelper(
     const security_interstitials::UnsafeResource& resource,
     const std::string& method,
     const net::HttpRequestHeaders& headers,
-    bool is_main_frame,
+    bool is_outermost_main_frame,
     bool has_user_gesture) {
-  AwWebResourceRequest request(resource.url.spec(), method, is_main_frame,
-                               has_user_gesture, headers);
+  AwWebResourceRequest request(resource.url.spec(), method,
+                               is_outermost_main_frame, has_user_gesture,
+                               headers);
 
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,

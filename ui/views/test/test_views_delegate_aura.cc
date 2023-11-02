@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,7 @@ TestViewsDelegate::TestViewsDelegate() = default;
 
 TestViewsDelegate::~TestViewsDelegate() = default;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 HICON TestViewsDelegate::GetSmallWindowIcon() const {
   return nullptr;
 }
@@ -27,7 +27,7 @@ HICON TestViewsDelegate::GetSmallWindowIcon() const {
 void TestViewsDelegate::OnBeforeWidgetInit(
     Widget::InitParams* params,
     internal::NativeWidgetDelegate* delegate) {
-#if defined(OS_CHROMEOS) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!params->parent && !params->context)
     params->context = context_;
 #endif

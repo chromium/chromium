@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,7 +37,7 @@ LayoutUnit NGUnpositionedListMarker::InlineOffset(
   return margins.first;
 }
 
-scoped_refptr<const NGLayoutResult> NGUnpositionedListMarker::Layout(
+const NGLayoutResult* NGUnpositionedListMarker::Layout(
     const NGConstraintSpace& parent_space,
     const ComputedStyle& parent_style,
     FontBaseline baseline_type) const {
@@ -46,10 +46,9 @@ scoped_refptr<const NGLayoutResult> NGUnpositionedListMarker::Layout(
 
   // We need the first-line baseline from the list-marker, instead of the
   // typical atomic-inline baseline.
-  scoped_refptr<const NGLayoutResult> marker_layout_result =
-      marker_node.LayoutAtomicInline(parent_space, parent_style,
-                                     parent_space.UseFirstLineStyle(),
-                                     NGBaselineAlgorithmType::kFirstLine);
+  const NGLayoutResult* marker_layout_result = marker_node.LayoutAtomicInline(
+      parent_space, parent_style, parent_space.UseFirstLineStyle(),
+      NGBaselineAlgorithmType::kDefault);
   DCHECK(marker_layout_result);
   return marker_layout_result;
 }

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,10 +23,8 @@ class FilteringRanker : public Ranker {
   // Ranker:
   void Start(const std::u16string& query,
              ResultsMap& results,
-             CategoriesMap& categories) override;
-  void Rank(ResultsMap& results,
-            CategoriesMap& categories,
-            ProviderType provider) override;
+             CategoriesList& categories) override;
+  void UpdateResultRanks(ResultsMap& results, ProviderType provider) override;
 
  private:
   std::u16string last_query_;

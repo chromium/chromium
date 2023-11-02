@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <ostream>
 
+#include "base/memory/raw_ptr.h"
 #include "components/zucchini/buffer_view.h"
 #include "components/zucchini/ensemble_matcher.h"
 
@@ -31,7 +32,7 @@ class HeuristicEnsembleMatcher : public EnsembleMatcher {
 
  private:
   // Optional stream to print detailed information during matching.
-  std::ostream* out_ = nullptr;
+  raw_ptr<std::ostream> out_ = nullptr;
 };
 
 }  // namespace zucchini

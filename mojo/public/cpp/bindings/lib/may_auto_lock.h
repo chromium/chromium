@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 #define MOJO_PUBLIC_CPP_BINDINGS_LIB_MAY_AUTO_LOCK_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/synchronization/lock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -34,7 +34,9 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) MayAutoLock {
   }
 
  private:
-  base::Lock* lock_;
+  // `lock_` is not a raw_ptr<...> for performance reasons: on-stack pointer +
+  // based on analysis of sampling profiler data.
+  RAW_PTR_EXCLUSION base::Lock* lock_;
 };
 
 // Similar to base::AutoUnlock, except that it does nothing if |lock| passed
@@ -58,7 +60,9 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) MayAutoUnlock {
   }
 
  private:
-  base::Lock* lock_;
+  // `lock_` is not a raw_ptr<...> for performance reasons: on-stack pointer +
+  // based on analysis of sampling profiler data.
+  RAW_PTR_EXCLUSION base::Lock* lock_;
 };
 
 }  // namespace internal

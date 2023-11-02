@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,9 @@
 #define MOJO_PUBLIC_CPP_BINDINGS_SHARED_REMOTE_H_
 
 #include <memory>
+#include <tuple>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/waitable_event.h"
@@ -18,8 +18,8 @@
 #include "mojo/public/cpp/bindings/lib/thread_safe_forwarder_base.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "mojo/public/cpp/bindings/sync_call_restrictions.h"
-#include "mojo/public/cpp/bindings/sync_event_watcher.h"
+
+#include "base/record_replay.h"
 
 namespace mojo {
 
@@ -31,7 +31,7 @@ struct SharedRemoteTraits;
 template <typename Interface>
 struct SharedRemoteTraits<Remote<Interface>> {
   static void BindDisconnected(Remote<Interface>& remote) {
-    ignore_result(remote.BindNewPipeAndPassReceiver());
+    std::ignore = remote.BindNewPipeAndPassReceiver();
   }
 };
 
@@ -184,6 +184,12 @@ class SharedRemoteBase
 
     void DeleteOnCorrectThread() const {
       if (!task_runner_->RunsTasksInCurrentSequence()) {
+        // Sequenced task runners don't support posting tasks at non-deterministic
+        // points when recording/replaying, so leak the remote instead.
+        if (recordreplay::AreEventsDisallowed("RemoteWrapper::DeleteOnCorrectThread")) {
+          return;
+        }
+
         // NOTE: This is only called when there are no more references to
         // |this|, so binding it unretained is both safe and necessary.
         task_runner_->PostTask(

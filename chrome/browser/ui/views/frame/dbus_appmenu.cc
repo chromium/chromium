@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -160,8 +160,8 @@ constexpr DbusAppmenuCommand kHelpMenu[] = {
 void FindMenuItemsForCommandAux(
     ui::MenuModel* menu,
     int command,
-    std::vector<std::pair<ui::MenuModel*, int>>* menu_items) {
-  for (int i = 0; i < menu->GetItemCount(); i++) {
+    std::vector<std::pair<ui::MenuModel*, size_t>>* menu_items) {
+  for (size_t i = 0; i < menu->GetItemCount(); ++i) {
     if (menu->GetCommandIdAt(i) == command)
       menu_items->push_back({menu, i});
     if (menu->GetTypeAt(i) == ui::SimpleMenuModel::ItemType::TYPE_SUBMENU) {
@@ -171,10 +171,10 @@ void FindMenuItemsForCommandAux(
   }
 }
 
-std::vector<std::pair<ui::MenuModel*, int>> FindMenuItemsForCommand(
+std::vector<std::pair<ui::MenuModel*, size_t>> FindMenuItemsForCommand(
     ui::MenuModel* menu,
     int command) {
-  std::vector<std::pair<ui::MenuModel*, int>> menu_items;
+  std::vector<std::pair<ui::MenuModel*, size_t>> menu_items;
   FindMenuItemsForCommandAux(menu, command, &menu_items);
   return menu_items;
 }
@@ -297,7 +297,7 @@ ui::SimpleMenuModel* DbusAppmenu::BuildStaticMenu(
     if (command_id == kSeparator) {
       // Use InsertSeparatorAt() instead of AddSeparator() because the latter
       // refuses to add a separator to an empty menu.
-      int old_item_count = menu->GetItemCount();
+      size_t old_item_count = menu->GetItemCount();
       menu->InsertSeparatorAt(old_item_count,
                               ui::MenuSeparatorType::SPACING_SEPARATOR);
 
@@ -307,11 +307,11 @@ ui::SimpleMenuModel* DbusAppmenu::BuildStaticMenu(
       continue;
     }
 
-    int string_id = commands->str_id;
+    int command_str_id = commands->str_id;
     if (command_id == IDC_SHOW_BOOKMARK_BAR)
-      menu->AddCheckItemWithStringId(command_id, string_id);
+      menu->AddCheckItemWithStringId(command_id, command_str_id);
     else
-      menu->AddItemWithStringId(command_id, string_id);
+      menu->AddItemWithStringId(command_id, command_str_id);
     if (command_id < kLastChromeCommand)
       RegisterCommandObserver(command_id);
   }
@@ -579,7 +579,8 @@ void DbusAppmenu::ExecuteCommand(int command_id, int event_flags) {
   } else if (command_id == kTagProfileEdit) {
     avatar_menu_->EditProfile(active_profile_index_);
   } else if (command_id == kTagProfileCreate) {
-    ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileMenuAddNewProfile);
+    ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+        ProfilePicker::EntryPoint::kProfileMenuAddNewProfile));
   } else if (base::Contains(history_items_, command_id)) {
     HistoryItem* item = history_items_[command_id].get();
     // If this item can be restored using TabRestoreService, do so.

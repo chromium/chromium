@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event_handler.h"
 #include "ui/events/event_target.h"
@@ -84,9 +85,9 @@ class NestedEventHandler : public EventHandler {
   }
 
  private:
-  TestEventTarget* target_;
+  raw_ptr<TestEventTarget> target_;
   int nesting_;
-  EventHandler* original_handler_;
+  raw_ptr<EventHandler> original_handler_;
 };
 
 // An EventHandler that sets itself as a target handler for an EventTarget and
@@ -118,9 +119,9 @@ class TargetDestroyingEventHandler : public EventHandler {
   }
 
  private:
-  TestEventTarget* target_;
+  raw_ptr<TestEventTarget> target_;
   int nesting_;
-  EventHandler* original_handler_;
+  raw_ptr<EventHandler> original_handler_;
 };
 
 // An EventHandler that can be set to receive events in addition to the target
@@ -142,7 +143,7 @@ class EventCountingEventHandler : public EventHandler {
 
  private:
   std::unique_ptr<ScopedTargetHandler> scoped_target_handler_;
-  int* count_;
+  raw_ptr<int> count_;
 };
 
 // An EventCountingEventHandler that will also mark the event to stop further

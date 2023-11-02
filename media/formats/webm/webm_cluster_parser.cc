@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,11 @@
 #include <utility>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/numerics/checked_math.h"
 #include "base/sys_byteorder.h"
 #include "media/base/decrypt_config.h"
+#include "media/base/stream_parser_buffer.h"
 #include "media/base/timestamp_constants.h"
 #include "media/base/webvtt_util.h"
 #include "media/formats/webm/webm_constants.h"
@@ -62,7 +62,7 @@ WebMClusterParser::WebMClusterParser(
              TrackType::VIDEO,
              video_default_duration,
              media_log),
-      ready_buffer_upper_bound_(kNoDecodeTimestamp()),
+      ready_buffer_upper_bound_(kNoDecodeTimestamp),
       media_log_(media_log) {
   for (auto it = text_tracks.begin(); it != text_tracks.end(); ++it) {
     text_track_map_.insert(std::make_pair(
@@ -82,14 +82,14 @@ void WebMClusterParser::Reset() {
   audio_.Reset();
   video_.Reset();
   ResetTextTracks();
-  ready_buffer_upper_bound_ = kNoDecodeTimestamp();
+  ready_buffer_upper_bound_ = kNoDecodeTimestamp;
 }
 
 int WebMClusterParser::Parse(const uint8_t* buf, int size) {
   audio_.ClearReadyBuffers();
   video_.ClearReadyBuffers();
   ClearTextTrackReadyBuffers();
-  ready_buffer_upper_bound_ = kNoDecodeTimestamp();
+  ready_buffer_upper_bound_ = kNoDecodeTimestamp;
 
   int result = parser_.Parse(buf, size);
 
@@ -126,7 +126,7 @@ int WebMClusterParser::Parse(const uint8_t* buf, int size) {
 
 const WebMClusterParser::TextBufferQueueMap&
 WebMClusterParser::GetTextBuffers() {
-  if (ready_buffer_upper_bound_ == kNoDecodeTimestamp())
+  if (ready_buffer_upper_bound_ == kNoDecodeTimestamp)
     UpdateReadyBuffers();
 
   // Translate our |text_track_map_| into |text_buffers_map_|, inserting rows in
@@ -145,7 +145,7 @@ WebMClusterParser::GetTextBuffers() {
 
 void WebMClusterParser::GetBuffers(StreamParser::BufferQueueMap* buffers) {
   DCHECK(buffers->empty());
-  if (ready_buffer_upper_bound_ == kNoDecodeTimestamp())
+  if (ready_buffer_upper_bound_ == kNoDecodeTimestamp)
     UpdateReadyBuffers();
   const BufferQueue& audio_buffers = audio_.ready_buffers();
   if (!audio_buffers.empty()) {
@@ -242,7 +242,7 @@ base::TimeDelta WebMClusterParser::ReadOpusDuration(const uint8_t* data,
 
   int opusConfig = (data[0] & kTocConfigMask) >> 3;
   CHECK_GE(opusConfig, 0);
-  CHECK_LT(opusConfig, static_cast<int>(base::size(kOpusFrameDurationsMu)));
+  CHECK_LT(opusConfig, static_cast<int>(std::size(kOpusFrameDurationsMu)));
 
   DCHECK_GT(frame_count, 0);
   base::TimeDelta duration =
@@ -636,13 +636,13 @@ DecodeTimestamp WebMClusterParser::Track::GetReadyUpperBound() {
   if (last_added_buffer_missing_duration_)
     return last_added_buffer_missing_duration_->GetDecodeTimestamp();
 
-  return DecodeTimestamp::FromPresentationTime(base::TimeDelta::Max());
+  return kMaxDecodeTimestamp;
 }
 
 void WebMClusterParser::Track::ExtractReadyBuffers(
     const DecodeTimestamp before_timestamp) {
   DCHECK(ready_buffers_.empty());
-  DCHECK(kNoDecodeTimestamp() < before_timestamp);
+  DCHECK(kNoDecodeTimestamp < before_timestamp);
 
   if (buffers_.empty())
     return;
@@ -819,7 +819,7 @@ void WebMClusterParser::ResetTextTracks() {
 }
 
 void WebMClusterParser::UpdateReadyBuffers() {
-  DCHECK(ready_buffer_upper_bound_ == kNoDecodeTimestamp());
+  DCHECK(ready_buffer_upper_bound_ == kNoDecodeTimestamp);
   DCHECK(text_buffers_map_.empty());
 
   if (cluster_ended_) {
@@ -828,14 +828,13 @@ void WebMClusterParser::UpdateReadyBuffers() {
     // Per OnBlock(), all text buffers should already have valid durations, so
     // there is no need to call ApplyDurationEstimateIfNeeded() on text tracks
     // here.
-    ready_buffer_upper_bound_ =
-        DecodeTimestamp::FromPresentationTime(base::TimeDelta::Max());
+    ready_buffer_upper_bound_ = kMaxDecodeTimestamp;
     DCHECK(ready_buffer_upper_bound_ == audio_.GetReadyUpperBound());
     DCHECK(ready_buffer_upper_bound_ == video_.GetReadyUpperBound());
   } else {
     ready_buffer_upper_bound_ = std::min(audio_.GetReadyUpperBound(),
                                          video_.GetReadyUpperBound());
-    DCHECK(kNoDecodeTimestamp() < ready_buffer_upper_bound_);
+    DCHECK(kNoDecodeTimestamp < ready_buffer_upper_bound_);
   }
 
   // Prepare each track's ready buffers for retrieval.

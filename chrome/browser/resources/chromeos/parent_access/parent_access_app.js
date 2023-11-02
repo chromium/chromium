@@ -1,12 +1,12 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import './parent_access_after.js';
 import './parent_access_ui.js';
+import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 
-import {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /** @enum {string} */
 export const Screens = {
@@ -14,24 +14,31 @@ export const Screens = {
   AFTER_FLOW: 'parent-access-after',
 };
 
-Polymer({
-  is: 'parent-access-app',
+class ParentAccessApp extends PolymerElement {
+  static get is() {
+    return 'parent-access-app';
+  }
 
-  _template: html`{__html_template__}`,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /**
-     * Specifies what the current screen is.
-     * @private {Screens}
-     */
-    currentScreen_: {
-      type: Screens,
-      value: Screens.ONLINE_FLOW,
-    },
-  },
+  static get properties() {
+    return {
+      /**
+       * Specifies what the current screen is.
+       * @private {Screens}
+       */
+      currentScreen_: {
+        type: Screens,
+        value: Screens.ONLINE_FLOW,
+      },
+    };
+  }
 
   /** @override */
   ready() {
+    super.ready();
     this.addEventListener('show-after', () => {
       this.currentScreen_ = Screens.AFTER_FLOW;
       /** @type {CrViewManagerElement} */ (this.$.viewManager)
@@ -42,5 +49,6 @@ Polymer({
     this.currentScreen_ = Screens.ONLINE_FLOW;
     /** @type {CrViewManagerElement} */ (this.$.viewManager)
         .switchView(this.currentScreen_);
-  },
-});
+  }
+}
+customElements.define(ParentAccessApp.is, ParentAccessApp);

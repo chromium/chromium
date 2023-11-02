@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,7 +31,7 @@
 #include "ppapi/proxy/ppapi_messages.h"                 // nogncheck
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/debug/invalid_access_win.h"
 #endif
 
@@ -50,7 +50,7 @@ const char kAsanHeapOverflow[] = "/browser-heap-overflow";
 const char kAsanHeapUnderflow[] = "/browser-heap-underflow";
 const char kAsanUseAfterFree[] = "/browser-use-after-free";
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const char kAsanCorruptHeapBlock[] = "/browser-corrupt-heap-block";
 const char kAsanCorruptHeap[] = "/browser-corrupt-heap";
 #endif
@@ -67,7 +67,7 @@ bool IsAsanDebugURL(const GURL& url) {
     return true;
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (url.path_piece() == kAsanCorruptHeapBlock ||
       url.path_piece() == kAsanCorruptHeap) {
     return true;
@@ -79,7 +79,7 @@ bool IsAsanDebugURL(const GURL& url) {
 
 bool HandleAsanDebugURL(const GURL& url) {
 #if defined(ADDRESS_SANITIZER) || BUILDFLAG(IS_HWASAN)
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (url.path_piece() == kAsanCorruptHeapBlock) {
     base::debug::AsanCorruptHeapBlock();
     return true;
@@ -87,7 +87,7 @@ bool HandleAsanDebugURL(const GURL& url) {
     base::debug::AsanCorruptHeap();
     return true;
   }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
   if (url.path_piece() == kAsanHeapOverflow) {
     base::debug::AsanHeapOverflow();
@@ -134,7 +134,14 @@ bool HandleDebugURL(const GURL& url,
     return true;
   }
 
-#if defined(OS_WIN)
+  if (url == blink::kChromeUIBrowserDcheckURL) {
+    // Induce an intentional DCHECK in the browser process. This is used to
+    // see if a DCHECK will bring down the current process (is FATAL).
+    DCHECK(false);
+    return true;
+  }
+
+#if BUILDFLAG(IS_WIN)
   if (url == blink::kChromeUIBrowserHeapCorruptionURL) {
     // Induce an intentional heap corruption in the browser process.
     base::debug::win::TerminateWithHeapCorruption();
@@ -155,7 +162,7 @@ bool HandleDebugURL(const GURL& url,
   }
 
   if (url == blink::kChromeUIGpuCleanURL) {
-    GpuProcessHost::CallOnIO(GPU_PROCESS_KIND_SANDBOXED,
+    GpuProcessHost::CallOnIO(FROM_HERE, GPU_PROCESS_KIND_SANDBOXED,
                              false /* force_create */,
                              base::BindOnce([](GpuProcessHost* host) {
                                if (host)
@@ -165,7 +172,7 @@ bool HandleDebugURL(const GURL& url,
   }
 
   if (url == blink::kChromeUIGpuCrashURL) {
-    GpuProcessHost::CallOnIO(GPU_PROCESS_KIND_SANDBOXED,
+    GpuProcessHost::CallOnIO(FROM_HERE, GPU_PROCESS_KIND_SANDBOXED,
                              false /* force_create */,
                              base::BindOnce([](GpuProcessHost* host) {
                                if (host)
@@ -174,9 +181,9 @@ bool HandleDebugURL(const GURL& url,
     return true;
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (url == blink::kChromeUIGpuJavaCrashURL) {
-    GpuProcessHost::CallOnIO(GPU_PROCESS_KIND_SANDBOXED,
+    GpuProcessHost::CallOnIO(FROM_HERE, GPU_PROCESS_KIND_SANDBOXED,
                              false /* force_create */,
                              base::BindOnce([](GpuProcessHost* host) {
                                if (host)
@@ -187,7 +194,7 @@ bool HandleDebugURL(const GURL& url,
 #endif
 
   if (url == blink::kChromeUIGpuHangURL) {
-    GpuProcessHost::CallOnIO(GPU_PROCESS_KIND_SANDBOXED,
+    GpuProcessHost::CallOnIO(FROM_HERE, GPU_PROCESS_KIND_SANDBOXED,
                              false /* force_create */,
                              base::BindOnce([](GpuProcessHost* host) {
                                if (host)

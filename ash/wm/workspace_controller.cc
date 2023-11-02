@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -50,10 +50,10 @@ const int kInitialAnimationDurationMS = 200;
 WorkspaceController::WorkspaceController(aura::Window* viewport)
     : viewport_(viewport),
       event_handler_(std::make_unique<WorkspaceEventHandler>(viewport)),
-      layout_manager_(new WorkspaceLayoutManager(viewport)) {
+      layout_manager_(viewport_->SetLayoutManager(
+          std::make_unique<WorkspaceLayoutManager>(viewport))) {
   viewport_->AddObserver(this);
   ::wm::SetWindowVisibilityAnimationTransition(viewport_, ::wm::ANIMATE_NONE);
-  viewport_->SetLayoutManager(layout_manager_);
 }
 
 WorkspaceController::~WorkspaceController() {

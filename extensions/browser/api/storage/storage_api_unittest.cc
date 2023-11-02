@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -80,22 +80,28 @@ class StorageApiUnittest : public ApiUnitTest {
   }
 
   // Runs the storage.get() API function with the local storage, and populates
-  // |value| with the string result.
+  // |out_value| with the string result.
   testing::AssertionResult RunGetFunction(const std::string& key,
-                                          std::string* value) {
+                                          std::string* out_value) {
     std::unique_ptr<base::Value> result = RunFunctionAndReturnValue(
         new StorageStorageAreaGetFunction(),
         base::StringPrintf("[\"local\", \"%s\"]", key.c_str()));
     if (!result.get())
       return testing::AssertionFailure() << "No result";
-    base::DictionaryValue* dict = NULL;
-    if (!result->GetAsDictionary(&dict))
+
+    const base::Value::Dict* dict = result->GetIfDict();
+    if (!dict) {
       return testing::AssertionFailure() << result.get()
                                          << " was not a dictionary.";
-    if (!dict->GetString(key, value)) {
+    }
+
+    const std::string* dict_value = dict->FindString(key);
+    if (!dict_value) {
       return testing::AssertionFailure() << " could not retrieve a string from"
           << dict << " at " << key;
     }
+    *out_value = *dict_value;
+
     return testing::AssertionSuccess();
   }
 

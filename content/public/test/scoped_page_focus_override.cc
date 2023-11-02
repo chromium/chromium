@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -50,12 +50,12 @@ void ScopedPageFocusOverride::DispatchProtocolMessage(
 void ScopedPageFocusOverride::AgentHostClosed(DevToolsAgentHost* agent_host) {}
 
 void ScopedPageFocusOverride::SetFocusEmulationEnabled(bool enabled) {
-  base::DictionaryValue command;
-  command.SetInteger("id", ++last_sent_id_);
-  command.SetString("method", "Emulation.setFocusEmulationEnabled");
-  auto params = std::make_unique<base::DictionaryValue>();
-  params->SetBoolean("enabled", enabled);
-  command.SetDictionary("params", std::move(params));
+  base::Value command(base::Value::Type::DICTIONARY);
+  command.SetIntKey("id", ++last_sent_id_);
+  command.SetStringKey("method", "Emulation.setFocusEmulationEnabled");
+  base::Value params(base::Value::Type::DICTIONARY);
+  params.SetBoolKey("enabled", enabled);
+  command.SetKey("params", std::move(params));
 
   std::string json_command;
   base::JSONWriter::Write(command, &json_command);

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -66,6 +66,15 @@ void RemoveUnknownFieldsFromMessagesWithStrings(PerfDataProto* proto) {
           ->clear();
     }
   }
+  for (PerfDataProto::PerfEventType& event_type :
+       *proto->mutable_event_types()) {
+    event_type.mutable_unknown_fields()->clear();
+  }
+  for (PerfDataProto::PerfPMUMappingsMetadata& mapping :
+       *proto->mutable_pmu_mappings()) {
+    mapping.mutable_unknown_fields()->clear();
+  }
+  proto->mutable_unknown_fields()->clear();
 }
 
 }  // namespace

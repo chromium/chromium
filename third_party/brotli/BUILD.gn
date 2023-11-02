@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -30,6 +30,8 @@ common_sources = [
   "common/dictionary.h",
   "common/platform.c",
   "common/platform.h",
+  "common/shared_dictionary.c",
+  "common/shared_dictionary_internal.h",
   "common/transform.c",
   "common/transform.h",
   "common/version.h",
@@ -79,6 +81,8 @@ enc_sources = [
   "enc/cluster.h",
   "enc/command.c",
   "enc/command.h",
+  "enc/compound_dictionary.c",
+  "enc/compound_dictionary.h",
   "enc/compress_fragment_two_pass.c",
   "enc/compress_fragment_two_pass.h",
   "enc/compress_fragment.c",
@@ -195,7 +199,7 @@ if (current_toolchain == host_toolchain) {
 }
 
 fuzzer_test("brotli_fuzzer") {
-  sources = [ "fuzz/decode_fuzzer.cc" ]
+  sources = [ "fuzz/decode_fuzzer.c" ]
   deps = [ ":dec" ]
   libfuzzer_options = [ "max_len=1280" ]
 }

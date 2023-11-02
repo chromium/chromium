@@ -19,11 +19,13 @@ limitations under the License.
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
-#include "absl/status/status.h"
-#include "absl/strings/str_format.h"
-#include "src/sentencepiece.pb.h"
-#include "src/sentencepiece_processor.h"
+#include "absl/flags/flag.h"              // from @com_google_absl
+#include "absl/status/status.h"           // from @com_google_absl
+#include "absl/strings/str_format.h"      // from @com_google_absl
+#include "src/sentencepiece.pb.h"         // from @com_google_sentencepiece
+#include "src/sentencepiece_processor.h"  // from @com_google_sentencepiece
 #include "tensorflow/core/platform/env.h"
+#include "tensorflow_lite_support/cc/test/test_utils.h"
 #include "tensorflow_lite_support/custom_ops/kernel/sentencepiece/double_array_trie_builder.h"
 #include "tensorflow_lite_support/custom_ops/kernel/sentencepiece/encoder_config_generated.h"
 #include "tensorflow_lite_support/custom_ops/kernel/sentencepiece/model_converter.h"
@@ -37,8 +39,8 @@ namespace internal {
 
 tensorflow::Status TFReadFileToString(const std::string& filepath,
                                       std::string* data) {
-  return tensorflow::ReadFileToString(tensorflow::Env::Default(),
-                                      /*test_path*/ filepath, data);
+  return tensorflow::ReadFileToString(tensorflow::Env::Default(), filepath,
+                                      data);
 }
 
 absl::Status StdReadFileToString(const std::string& filepath,
@@ -58,8 +60,10 @@ absl::Status StdReadFileToString(const std::string& filepath,
 
 namespace {
 
+using ::tflite::task::JoinPath;
+
 static char kConfigFilePath[] =
-    "tensorflow_lite_support/custom_ops/kernel/"
+    "/tensorflow_lite_support/custom_ops/kernel/"
     "sentencepiece/testdata/sentencepiece.model";
 
 TEST(OptimizedEncoder, NormalizeStringWhitestpaces) {
@@ -71,12 +75,16 @@ TEST(OptimizedEncoder, NormalizeStringWhitestpaces) {
   FinishEncoderConfigBuffer(builder, ecb.Finish());
   const EncoderConfig* config = GetEncoderConfig(builder.GetBufferPointer());
   {
-    const auto [res_string, offsets] = NormalizeString("x  y", *config);
+    const auto result = NormalizeString("x  y", *config);
+    const auto res_string = std::get<0>(result);
+    const auto offsets = std::get<1>(result);
     EXPECT_EQ(res_string, "\xe2\x96\x81x\xe2\x96\x81y");
     EXPECT_THAT(offsets, ::testing::ElementsAre(0, 0, 0, 0, 1, 1, 1, 3));
   }
   {
-    const auto [res_string, offsets] = NormalizeString("\tx  y\n", *config);
+    const auto result = NormalizeString("\tx  y\n", *config);
+    const auto res_string = std::get<0>(result);
+    const auto offsets = std::get<1>(result);
     EXPECT_EQ(res_string, "\xe2\x96\x81x\xe2\x96\x81y");
     EXPECT_THAT(offsets, ::testing::ElementsAre(0, 0, 0, 1, 2, 2, 2, 4));
   }
@@ -101,8 +109,9 @@ TEST(OptimizedEncoder, NormalizeStringReplacement) {
   FinishEncoderConfigBuffer(builder, ecb.Finish());
   const EncoderConfig* config = GetEncoderConfig(builder.GetBufferPointer());
   {
-    const auto [res_string, offsets] =
-        NormalizeString("ABAABAAABAAAA", *config);
+    const auto result = NormalizeString("ABAABAAABAAAA", *config);
+    const auto res_string = std::get<0>(result);
+    const auto offsets = std::get<1>(result);
     EXPECT_EQ(res_string, "A1BA2BA3BA4");
     EXPECT_THAT(offsets,
                 ::testing::ElementsAre(0, 0, 1, 2, 2, 4, 5, 5, 8, 9, 9));
@@ -129,8 +138,9 @@ TEST(OptimizedEncoder, NormalizeStringWhitespacesRemove) {
   FinishEncoderConfigBuffer(builder, ecb.Finish());
   const EncoderConfig* config = GetEncoderConfig(builder.GetBufferPointer());
   {
-    const auto [res_string, offsets] =
-        NormalizeString("XXABAABAAABAAAA", *config);
+    const auto result = NormalizeString("XXABAABAAABAAAA", *config);
+    const auto res_string = std::get<0>(result);
+    const auto offsets = std::get<1>(result);
     EXPECT_EQ(res_string, " A1BA2BA3BA4");
     EXPECT_THAT(offsets,
                 ::testing::ElementsAre(0, 2, 2, 3, 4, 4, 6, 7, 7, 10, 11, 11));
@@ -139,7 +149,8 @@ TEST(OptimizedEncoder, NormalizeStringWhitespacesRemove) {
 
 TEST(OptimizedEncoder, ConfigConverter) {
   std::string config;
-  auto status = internal::StdReadFileToString(kConfigFilePath, &config);
+  auto status = internal::StdReadFileToString(
+      JoinPath("./" /*test src dir*/, kConfigFilePath), &config);
   ASSERT_TRUE(status.ok());
 
   ::sentencepiece::SentencePieceProcessor processor;

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -105,7 +105,8 @@ def main(argv):
     ])
     append_to_env('CXXFLAGS', [
         '-nostdinc++',
-        ' -isystem../../../buildtools/third_party/libc++/trunk/include',
+        '-isystem../../../buildtools/third_party/libc++',
+        '-isystem../../../buildtools/third_party/libc++/trunk/include',
         '-isystem../../../buildtools/third_party/libc++abi/trunk/include'
     ])
 

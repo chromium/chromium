@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,6 @@ extern const char kBorealisDiskStartupAvailableSpaceHistogram[];
 extern const char kBorealisDiskStartupExpandableSpaceHistogram[];
 extern const char kBorealisDiskStartupResultHistogram[];
 extern const char kBorealisDiskStartupTotalSpaceHistogram[];
-extern const char kBorealisGameModeResultHistogram[];
 extern const char kBorealisInstallNumAttemptsHistogram[];
 extern const char kBorealisInstallResultHistogram[];
 extern const char kBorealisInstallOverallTimeHistogram[];
@@ -74,7 +73,9 @@ enum class BorealisStartupResult {
   kStartVmFailed = 4,
   kAwaitBorealisStartupFailed = 5,
   kSyncDiskFailed = 6,
-  kMaxValue = kSyncDiskFailed,
+  kRequestWaylandFailed = 7,
+  kDisallowed = 8,
+  kMaxValue = kDisallowed,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -117,7 +118,8 @@ enum class BorealisSyncDiskSizeResult {
   kAlreadyInProgress = 5,
   kFailedToGetDiskInfo = 6,
   kResizeFailed = 7,
-  kMaxValue = kResizeFailed,
+  kDiskSizeSmallerThanMin = 8,
+  kMaxValue = kDiskSizeSmallerThanMin,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -126,14 +128,6 @@ enum class BorealisShutdownResult {
   kSuccess = 0,
   kInProgress = 1,
   kFailed = 2,
-  kMaxValue = kFailed,
-};
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class BorealisGameModeResult {
-  kAttempted = 0,
-  kFailed = 1,
   kMaxValue = kFailed,
 };
 
@@ -166,8 +160,6 @@ void RecordBorealisDiskStartupExpandableSpaceHistogram(
 void RecordBorealisDiskStartupTotalSpaceHistogram(uint64_t total_bytes);
 void RecordBorealisDiskStartupResultHistogram(
     BorealisSyncDiskSizeResult disk_result);
-void RecordBorealisGameModeResultHistogram(
-    BorealisGameModeResult game_mode_result);
 
 }  // namespace borealis
 

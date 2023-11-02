@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_BASE_X_TEST_X11_UI_CONTROLS_TEST_HELPER_H_
 #define UI_BASE_X_TEST_X11_UI_CONTROLS_TEST_HELPER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/native_widget_types.h"
 
 #include "base/component_export.h"
@@ -64,7 +65,7 @@ class COMPONENT_EXPORT(UI_BASE_X) X11UIControlsTestHelper {
                                    uint32_t keysym);
 
   // Our X11 state.
-  x11::Connection* connection_ = nullptr;
+  raw_ptr<x11::Connection> connection_ = nullptr;
   x11::Window x_root_window_;
 
   // Input-only window used for events.

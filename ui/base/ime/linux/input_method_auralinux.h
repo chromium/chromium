@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,28 +22,36 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) InputMethodAuraLinux
     : public InputMethodBase,
       public LinuxInputMethodContextDelegate {
  public:
-  explicit InputMethodAuraLinux(internal::InputMethodDelegate* delegate);
+  explicit InputMethodAuraLinux(
+      ImeKeyEventDispatcher* ime_key_event_dispatcher);
   InputMethodAuraLinux(const InputMethodAuraLinux&) = delete;
   InputMethodAuraLinux& operator=(const InputMethodAuraLinux&) = delete;
   ~InputMethodAuraLinux() override;
 
-  LinuxInputMethodContext* GetContextForTesting(bool is_simple);
+  LinuxInputMethodContext* GetContextForTesting();
 
   // Overriden from InputMethod.
   ui::EventDispatchDetails DispatchKeyEvent(ui::KeyEvent* event) override;
-  void OnTextInputTypeChanged(const TextInputClient* client) override;
+  void OnTextInputTypeChanged(TextInputClient* client) override;
   void OnCaretBoundsChanged(const TextInputClient* client) override;
   void CancelComposition(const TextInputClient* client) override;
   bool IsCandidatePopupOpen() const override;
+  VirtualKeyboardController* GetVirtualKeyboardController() override;
 
   // Overriden from ui::LinuxInputMethodContextDelegate
   void OnCommit(const std::u16string& text) override;
+  void OnConfirmCompositionText(bool keep_selection) override;
   void OnDeleteSurroundingText(size_t before, size_t after) override;
   void OnPreeditChanged(const CompositionText& composition_text) override;
   void OnPreeditEnd() override;
   void OnPreeditStart() override {}
   void OnSetPreeditRegion(const gfx::Range& range,
                           const std::vector<ImeTextSpan>& spans) override;
+  void OnClearGrammarFragments(const gfx::Range& range) override;
+  void OnAddGrammarFragment(const ui::GrammarFragment& fragment) override;
+  void OnSetAutocorrectRange(const gfx::Range& range) override;
+  void OnSetVirtualKeyboardOccludedBounds(
+      const gfx::Rect& screen_bounds) override;
 
  protected:
   // Overridden from InputMethodBase.
@@ -71,23 +79,27 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) InputMethodAuraLinux
   // the client's composition string, specifically for async-mode case.
   void OnPreeditUpdate(const ui::CompositionText& composition_text,
                        bool force_update_client);
-  void ConfirmCompositionText();
+  void ConfirmCompositionText(bool keep_selection);
   bool HasInputMethodResult();
-  bool NeedInsertChar(const std::u16string& result_text) const;
-  ui::EventDispatchDetails SendFakeProcessKeyEvent(ui::KeyEvent* event) const
-      WARN_UNUSED_RESULT;
+  bool NeedInsertChar(const absl::optional<std::u16string>& result_text) const;
+  [[nodiscard]] ui::EventDispatchDetails SendFakeProcessKeyEvent(
+      ui::KeyEvent* event) const;
   void UpdateContextFocusState();
   void ResetContext();
   bool IgnoringNonKeyInput() const;
 
   std::unique_ptr<LinuxInputMethodContext> context_;
-  std::unique_ptr<LinuxInputMethodContext> context_simple_;
 
   // The last key event that IME is probably in process in
   // async-mode.
   absl::optional<ui::KeyEvent> ime_filtered_key_event_;
 
-  std::u16string result_text_;
+  // Tracks last commit result during one key dispatch event.
+  absl::optional<CommitResult> last_commit_result_;
+
+  absl::optional<std::u16string> result_text_;
+  absl::optional<std::u16string> surrounding_text_;
+  gfx::Range selection_range_;
 
   ui::CompositionText composition_;
 

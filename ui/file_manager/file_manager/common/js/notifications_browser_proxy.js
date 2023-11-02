@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -53,7 +53,7 @@ export class NotificationsBrowserProxy {
 const NotificationEventTypes = {
   CLICKED: 'onClicked',
   BUTTON_CLICKED: 'onButtonClicked',
-  CLOSED: 'onClosed'
+  CLOSED: 'onClosed',
 };
 
 Object.freeze(NotificationEventTypes);
@@ -136,4 +136,4 @@ export class NotificationsBrowserProxyImpl {
   }
 }
 
-export const notifications = new NotificationsBrowserProxyImpl(!window.isSWA);
+export const notifications = new NotificationsBrowserProxyImpl(false);

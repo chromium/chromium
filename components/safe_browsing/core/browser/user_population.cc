@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,6 +32,7 @@ ChromeUserPopulation GetUserPopulation(
     PrefService* prefs,
     bool is_incognito,
     bool is_history_sync_enabled,
+    bool is_signed_in,
     bool is_under_advanced_protection,
     const policy::BrowserPolicyConnector* browser_policy_connector,
     absl::optional<size_t> num_profiles,
@@ -70,6 +71,8 @@ ChromeUserPopulation GetUserPopulation(
     if (num_open_profiles)
       population.set_number_of_open_profiles(*num_open_profiles);
   }
+
+  population.set_is_signed_in(is_signed_in);
 
   return population;
 }

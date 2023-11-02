@@ -1,0 +1,40 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("text_selection") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "text_classifier_model_service.h",
+    "text_classifier_model_service.mm",
+    "text_classifier_model_service_factory.h",
+    "text_classifier_model_service_factory.mm",
+    "text_selection_util.h",
+    "text_selection_util.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/keyed_service/ios",
+    "//components/optimization_guide/core",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/optimization_guide",
+  ]
+}
+
+source_set("test_support") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "text_classifier_model_service_fake.h",
+    "text_classifier_model_service_fake.mm",
+  ]
+  deps = [
+    ":text_selection",
+    "//base",
+    "//components/keyed_service/ios",
+    "//components/optimization_guide/core",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/optimization_guide",
+  ]
+}

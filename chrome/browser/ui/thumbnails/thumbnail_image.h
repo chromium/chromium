@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,11 +11,13 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/token.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace base {
@@ -24,7 +26,7 @@ class TimeTicks;
 
 // Stores compressed thumbnail data for a tab and can vend that data as an
 // uncompressed image to observers.
-class ThumbnailImage : public base::RefCounted<ThumbnailImage> {
+class ThumbnailImage : public base::RefCountedThreadSafe<ThumbnailImage> {
  public:
   // Describes the readiness of the source page for thumbnail capture.
   enum class CaptureReadiness : int {
@@ -114,7 +116,7 @@ class ThumbnailImage : public base::RefCounted<ThumbnailImage> {
 
    private:
     friend class ThumbnailImage;
-    ThumbnailImage* thumbnail_ = nullptr;
+    raw_ptr<ThumbnailImage> thumbnail_ = nullptr;
   };
 
   explicit ThumbnailImage(Delegate* delegate);
@@ -168,7 +170,7 @@ class ThumbnailImage : public base::RefCounted<ThumbnailImage> {
  private:
   friend class Delegate;
   friend class ThumbnailImageTest;
-  friend class base::RefCounted<ThumbnailImage>;
+  friend class base::RefCountedThreadSafe<ThumbnailImage>;
 
   virtual ~ThumbnailImage();
 
@@ -192,7 +194,7 @@ class ThumbnailImage : public base::RefCounted<ThumbnailImage> {
 
   void HandleSubscriptionDestroyed(Subscription* subscription);
 
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
 
   // This is a scoped_refptr to immutable data. Once set, the wrapped
   // data must not be modified; it is referenced by other threads.

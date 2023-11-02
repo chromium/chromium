@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -110,7 +110,7 @@ TEST_F(CursorWindowControllerTest, MoveToDifferentDisplay) {
   EXPECT_EQ(primary_display_id, GetCursorDisplayId());
   EXPECT_EQ(ui::mojom::CursorType::kNull, GetCursorType());
   gfx::Point hot_point = GetCursorHotPoint();
-  EXPECT_EQ("4,4", hot_point.ToString());
+  EXPECT_EQ(gfx::Point(4, 4), hot_point);
   gfx::Rect cursor_bounds = GetCursorWindow()->GetBoundsInScreen();
   EXPECT_EQ(20, cursor_bounds.x() + hot_point.x());
   EXPECT_EQ(50, cursor_bounds.y() + hot_point.y());
@@ -134,7 +134,7 @@ TEST_F(CursorWindowControllerTest, MoveToDifferentDisplay) {
   EXPECT_EQ(secondary_display_id, GetCursorDisplayId());
   EXPECT_EQ(ui::mojom::CursorType::kNull, GetCursorType());
   hot_point = GetCursorHotPoint();
-  EXPECT_EQ("3,3", hot_point.ToString());
+  EXPECT_EQ(gfx::Point(3, 3), hot_point);
   cursor_bounds = GetCursorWindow()->GetBoundsInScreen();
   EXPECT_EQ(320, cursor_bounds.x() + hot_point.x());
   EXPECT_EQ(50, cursor_bounds.y() + hot_point.y());

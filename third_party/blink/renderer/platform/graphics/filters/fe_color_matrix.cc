@@ -23,8 +23,9 @@
 
 #include "third_party/blink/renderer/platform/graphics/filters/fe_color_matrix.h"
 
-#include "base/stl_util.h"
+#include "base/types/optional_util.h"
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_builder.h"
+#include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
 #include "third_party/skia/include/effects/SkColorMatrixFilter.h"
 
@@ -149,7 +150,7 @@ sk_sp<PaintFilter> FEColorMatrix::CreateImageFilter() {
   sk_sp<SkColorFilter> filter = CreateColorFilter(type_, values_);
   absl::optional<PaintFilter::CropRect> crop_rect = GetCropRect();
   return sk_make_sp<ColorFilterPaintFilter>(std::move(filter), std::move(input),
-                                            base::OptionalOrNullptr(crop_rect));
+                                            base::OptionalToPtr(crop_rect));
 }
 
 static WTF::TextStream& operator<<(WTF::TextStream& ts,
@@ -197,7 +198,7 @@ WTF::TextStream& FEColorMatrix::ExternalRepresentation(WTF::TextStream& ts,
   ts << "[feColorMatrix";
   FilterEffect::ExternalRepresentation(ts);
   ts << " type=\"" << type_ << "\"";
-  if (!values_.IsEmpty() && ValuesIsValidForType(type_, values_)) {
+  if (!values_.empty() && ValuesIsValidForType(type_, values_)) {
     ts << " values=\"";
     Vector<float>::const_iterator ptr = values_.begin();
     const Vector<float>::const_iterator end = values_.end();

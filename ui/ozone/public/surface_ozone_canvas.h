@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -61,6 +61,10 @@ class COMPONENT_EXPORT(OZONE_BASE) SurfaceOzoneCanvas {
   // OnSwapBuffers and run the callback that is passed in an OnSwapBuffers
   // call once the swap is completed.
   virtual bool SupportsAsyncBufferSwap() const;
+
+  // Returns true if we are allowed to adopt a size different from the
+  // platform's proposed surface size.
+  virtual bool SupportsOverridePlatformSize() const;
 
   // Corresponds to SoftwareOutputDevice::SwapBuffersCallback.
   using SwapBuffersCallback = base::OnceCallback<void(const gfx::Size&)>;

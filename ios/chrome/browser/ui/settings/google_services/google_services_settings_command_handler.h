@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 @protocol GoogleServicesSettingsCommandHandler <NSObject>
 
 // Presents the sign-out dialog to the user.
-// |targetRect| rect in table view system coordinate to display the signout
+// `targetRect` rect in table view system coordinate to display the signout
 // popover dialog.
 - (void)showSignOutFromTargetRect:(CGRect)targetRect
                        completion:(signin_ui::CompletionCallback)completion;

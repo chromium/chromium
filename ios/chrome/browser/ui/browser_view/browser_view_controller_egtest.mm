@@ -1,26 +1,30 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <map>
+#import <map>
+#import <tuple>
 
-#include "base/feature_list.h"
+#import "base/feature_list.h"
 #import "base/ios/ios_util.h"
-#include "base/macros.h"
-#include "base/strings/sys_string_conversions.h"
-#include "components/strings/grit/components_strings.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/prefs/pref_names.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
-#include "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-#include "ios/web/public/test/http_server/html_response_provider.h"
+#import "ios/web/public/test/http_server/html_response_provider.h"
 #import "ios/web/public/test/http_server/http_server.h"
-#include "ios/web/public/test/http_server/http_server_util.h"
-#include "ui/base/l10n/l10n_util.h"
+#import "ios/web/public/test/http_server/http_server_util.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -35,13 +39,25 @@
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  config.features_disabled.push_back(kStartSurface);
+
+  config.features_enabled.push_back(kContentSuggestionsUIModuleRefresh);
+  // Enable arm that does not hide shortcuts.
+  config.features_enabled.push_back(kTrendingQueriesModule);
+  config.variations_enabled = {3350760};
   return config;
 }
 
 // Tests that the NTP is interactable even when multiple NTP are opened during
 // the animation of the first NTP opening. See crbug.com/1032544.
 - (void)testPageInteractable {
+  // Ensures that the first favicon in Most Visited row is the test URL.
+  [ChromeEarlGrey clearBrowsingHistory];
+  std::map<GURL, std::string> responses;
+  const GURL firstURL = web::test::HttpServer::MakeUrl("http://first");
+  responses[firstURL] = "First window";
+  web::test::SetUpSimpleHttpServer(responses);
+  [ChromeEarlGrey loadURL:firstURL];
+
   // Scope for the synchronization disabled.
   {
     ScopedSynchronizationDisabler syncDisabler;
@@ -53,38 +69,33 @@
                                                             block:^BOOL {
                                                               return NO;
                                                             }];
-    ignore_result([myCondition waitWithTimeout:0.05]);
+    std::ignore = [myCondition waitWithTimeout:0.05];
 
     [ChromeEarlGrey openNewTab];
   }  // End of the sync disabler scope.
 
   [ChromeEarlGrey waitForMainTabCount:3];
 
+  NSInteger faviconIndex = 0;
   [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
-                                   IDS_IOS_CONTENT_SUGGESTIONS_BOOKMARKS)]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::NavigationBarTitleWithAccessibilityLabelId(
-                     IDS_IOS_CONTENT_SUGGESTIONS_BOOKMARKS)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::NavigationBarDoneButton()]
-      performAction:grey_tap()];
+      selectElementWithMatcher:
+          grey_accessibilityID([NSString
+              stringWithFormat:
+                  @"%@%li",
+                  kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix,
+                  faviconIndex])] performAction:grey_tap()];
+  [ChromeEarlGrey waitForWebStateContainingText:responses[firstURL]];
 
   [ChromeEarlGrey selectTabAtIndex:1];
 
   [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
-                                   IDS_IOS_CONTENT_SUGGESTIONS_BOOKMARKS)]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::NavigationBarTitleWithAccessibilityLabelId(
-                     IDS_IOS_CONTENT_SUGGESTIONS_BOOKMARKS)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::NavigationBarDoneButton()]
-      performAction:grey_tap()];
+      selectElementWithMatcher:
+          grey_accessibilityID([NSString
+              stringWithFormat:
+                  @"%@%li",
+                  kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix,
+                  faviconIndex])] performAction:grey_tap()];
+  [ChromeEarlGrey waitForWebStateContainingText:responses[firstURL]];
 }
 
 // Tests that evaluating JavaScript in the omnibox (e.g, a bookmarklet) works.
@@ -169,12 +180,7 @@
   [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(
                                           "https://anything")]
       assertWithMatcher:grey_notNil()];
-  // TODO(crbug.com/931280): This should be 1, but for the time being will be 2
-  // to work around an NTP bug.
-  int mainTabCount = 1;
-  if ([ChromeEarlGrey isBlockNewTabPagePendingLoadEnabled])
-    mainTabCount = 2;
-  [ChromeEarlGrey waitForMainTabCount:mainTabCount];
+  [ChromeEarlGrey waitForMainTabCount:1];
 }
 
 // Tests that BVC properly handles open URL. When BVC is showing a non-NTP
@@ -202,7 +208,8 @@
 
 #pragma mark - Multiwindow
 
-- (void)testMultiWindowURLLoading {
+// TODO(crbug.com/1369222): Re-enable this test.
+- (void)DISABLED_testMultiWindowURLLoading {
   if (![ChromeEarlGrey areMultipleWindowsSupported])
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
 
@@ -248,6 +255,25 @@
                              inWindowWithNumber:0];
   [ChromeEarlGrey waitForWebStateContainingText:responses[secondURL]
                              inWindowWithNumber:1];
+}
+
+@end
+
+@interface BrowserViewControllerWith3PIntentsInIncognitoFeatureTestCase
+    : BrowserViewControllerTestCase
+@end
+
+@implementation BrowserViewControllerWith3PIntentsInIncognitoFeatureTestCase
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
+  config.features_disabled.push_back(kTrendingQueriesModule);
+  config.features_enabled.push_back(kIOS3PIntentsInIncognito);
+  return config;
+}
+
+// This is currently needed to prevent this test case from being ignored.
+- (void)testEmpty {
 }
 
 @end

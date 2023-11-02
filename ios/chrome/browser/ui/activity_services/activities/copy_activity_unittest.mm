@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,7 +43,7 @@ class CopyActivityTest : public PlatformTest {
     ClearPasteboard();
   }
 
-  // Creates a ShareToData instance with the given |additional_text|.
+  // Creates a ShareToData instance with the given `additional_text`.
   ShareToData* CreateData(NSString* additional_text) {
     return CreateData(kTestShareURL, kTestVisibleURL, additional_text);
   }
@@ -65,7 +65,8 @@ class CopyActivityTest : public PlatformTest {
                                 isPageSearchable:YES
                                 canSendTabToSelf:YES
                                        userAgent:web::UserAgentType::MOBILE
-                              thumbnailGenerator:nil];
+                              thumbnailGenerator:nil
+                                    linkMetadata:nil];
   }
 
   NSString* GetURLString() { return base::SysUTF8ToNSString(kTestShareURL); }

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<title>Pasting or dropping a line break into text input should not submit the form</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/ahem.js"></script>
+
+<pre id="source" style="font: 20px/1 Ahem">foo
+bar</pre>
+
+<form id="form">
+  <input id="target" type="text" value="abc">
+</form>
+
+<script>
+let formSubmitted = false;
+form.onsubmit = event => {
+  event.preventDefault();
+  formSubmitted = true;
+}
+
+const sourceText = source.firstChild;
+
+promise_test(async test => {
+  test.add_cleanup(async () => formSubmitted = false);
+
+  // Select the line break
+  getSelection().setBaseAndExtent(sourceText, 3, sourceText, 4);
+
+  document.execCommand('copy');
+  target.focus();
+  document.execCommand('paste');
+
+  // Give non-conformant UA some time to asynchronously dispatch 'submit' event
+  await new Promise(resolve => test.step_timeout(resolve, 100));
+  assert_false(formSubmitted);
+}, 'Pasting line break into text input should not submit the form');
+
+promise_test(async test => {
+  assert_own_property(window, 'eventSender',
+                      'This test needs eventSender to emulate drag and drop');
+  test.add_cleanup(async () => formSubmitted = false);
+
+  await document.fonts.ready;
+
+  // Select the line break
+  getSelection().setBaseAndExtent(sourceText, 3, sourceText, 4);
+
+  // Drag from the selection highlight
+  const startX = source.offsetLeft + 65;
+  const startY = source.offsetTop + 5;
+  eventSender.mouseMoveTo(startX, startY);
+  eventSender.mouseDown();
+  eventSender.leapForward(100);
+
+  // Drop inside the text input
+  const endX = target.offsetLeft + target.offsetWidth / 2;
+  const endY = target.offsetTop + target.offsetHeight / 2;
+  eventSender.mouseMoveTo(endX, endY);
+  eventSender.mouseUp();
+
+  // Give non-conformant UA some time to asynchronously dispatch 'submit' event
+  await new Promise(resolve => test.step_timeout(resolve, 100));
+  assert_false(formSubmitted);
+}, 'Drag-and-dropping line break into text input should not submit the form');
+</script>

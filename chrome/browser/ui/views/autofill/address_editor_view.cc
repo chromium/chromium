@@ -1,9 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/autofill/address_editor_view.h"
 
+#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ui/autofill/address_editor_controller.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -60,7 +61,7 @@ void AddressEditorView::CreateEditorView() {
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
-      gfx::Insets(kBetweenChildSpacing / 2, 0), kBetweenChildSpacing));
+      gfx::Insets::VH(kBetweenChildSpacing / 2, 0), kBetweenChildSpacing));
 
   for (const auto& field : controller_->editor_fields()) {
     CreateInputField(field);
@@ -169,7 +170,7 @@ void AddressEditorView::UpdateEditorView() {
         GetViewByID(GetInputFieldViewId(autofill::ADDRESS_HOME_COUNTRY)));
     DCHECK(country_combo_box);
     DCHECK_EQ(controller_->GetCountriesSize(),
-              static_cast<size_t>(country_combo_box->GetRowCount()));
+              country_combo_box->GetRowCount());
     country_combo_box->SetSelectedIndex(controller_->chosen_country_index());
   } else if (controller_->GetCountriesSize() > 0UL) {
     controller_->set_chosen_country_index(0UL);
@@ -187,7 +188,7 @@ void AddressEditorView::SaveFieldsToProfile() {
   // the view.
   if (combobox) {
     std::u16string country(
-        combobox->GetTextForRow(combobox->GetSelectedIndex()));
+        combobox->GetTextForRow(combobox->GetSelectedIndex().value()));
     controller_->SetProfileInfo(autofill::ADDRESS_HOME_COUNTRY, country);
   }
 
@@ -199,10 +200,9 @@ void AddressEditorView::SaveFieldsToProfile() {
 void AddressEditorView::OnPerformAction(views::Combobox* combobox) {
   if (combobox->GetID() != GetInputFieldViewId(autofill::ADDRESS_HOME_COUNTRY))
     return;
-  DCHECK_GE(combobox->GetSelectedIndex(), 0);
-  if (controller_->chosen_country_index() !=
-      static_cast<size_t>(combobox->GetSelectedIndex())) {
-    controller_->set_chosen_country_index(combobox->GetSelectedIndex());
+  DCHECK(combobox->GetSelectedIndex().has_value());
+  if (controller_->chosen_country_index() != combobox->GetSelectedIndex()) {
+    controller_->set_chosen_country_index(combobox->GetSelectedIndex().value());
     OnDataChanged();
   }
 }

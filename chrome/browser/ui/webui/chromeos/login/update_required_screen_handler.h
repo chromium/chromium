@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/compiler_specific.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 
 namespace ash {
@@ -19,7 +19,7 @@ namespace chromeos {
 // Interface for dependency injection between UpdateRequiredScreen and its
 // WebUI representation.
 
-class UpdateRequiredView {
+class UpdateRequiredView : public base::SupportsWeakPtr<UpdateRequiredView> {
  public:
   enum UIState {
     UPDATE_REQUIRED_MESSAGE = 0,   // 'System update required' message.
@@ -32,21 +32,13 @@ class UpdateRequiredView {
     UPDATE_NO_NETWORK              // No network available to update
   };
 
-  constexpr static StaticOobeScreenId kScreenId{"update-required"};
+  inline constexpr static StaticOobeScreenId kScreenId{"update-required",
+                                                       "UpdateRequiredScreen"};
 
-  virtual ~UpdateRequiredView() {}
+  virtual ~UpdateRequiredView() = default;
 
   // Shows the contents of the screen.
   virtual void Show() = 0;
-
-  // Hides the contents of the screen.
-  virtual void Hide() = 0;
-
-  // Binds `screen` to the view.
-  virtual void Bind(ash::UpdateRequiredScreen* screen) = 0;
-
-  // Unbinds the screen from the view.
-  virtual void Unbind() = 0;
 
   // Is device connected to some network?
   virtual void SetIsConnected(bool connected) = 0;
@@ -74,7 +66,7 @@ class UpdateRequiredScreenHandler : public UpdateRequiredView,
  public:
   using TView = UpdateRequiredView;
 
-  explicit UpdateRequiredScreenHandler(JSCallsContainer* js_calls_container);
+  UpdateRequiredScreenHandler();
 
   UpdateRequiredScreenHandler(const UpdateRequiredScreenHandler&) = delete;
   UpdateRequiredScreenHandler& operator=(const UpdateRequiredScreenHandler&) =
@@ -84,9 +76,6 @@ class UpdateRequiredScreenHandler : public UpdateRequiredView,
 
  private:
   void Show() override;
-  void Hide() override;
-  void Bind(ash::UpdateRequiredScreen* screen) override;
-  void Unbind() override;
 
   void SetIsConnected(bool connected) override;
   void SetUpdateProgressUnavailable(bool unavailable) override;
@@ -103,12 +92,6 @@ class UpdateRequiredScreenHandler : public UpdateRequiredView,
   // BaseScreenHandler:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void Initialize() override;
-
-  ash::UpdateRequiredScreen* screen_ = nullptr;
-
-  // If true, Initialize() will call Show().
-  bool show_on_init_ = false;
 
   // The domain name for which update required screen is being shown.
   std::string domain_;

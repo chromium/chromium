@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
@@ -179,6 +180,16 @@ public class AwContentsStatics {
         return AwContentsStaticsJni.get().isMultiProcessEnabled();
     }
 
+    /**
+     * Returns the variations header used with the X-Client-Data header.
+     */
+    public static String getVariationsHeader() {
+        String header = AwContentsStaticsJni.get().getVariationsHeader();
+        RecordHistogram.recordCount100Histogram(
+                "Android.WebView.VariationsHeaderLength", header.length());
+        return header;
+    }
+
     @NativeMethods
     interface Natives {
         void logCommandLineForDebugging();
@@ -193,5 +204,6 @@ public class AwContentsStatics {
         void setSafeBrowsingAllowlist(String[] urls, Callback<Boolean> callback);
         void setCheckClearTextPermitted(boolean permitted);
         boolean isMultiProcessEnabled();
+        String getVariationsHeader();
     }
 }

@@ -1,0 +1,15 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Fired when an accelerator is pressed and released.
+[
+    RuntimeEnabled=BlinkExtensionChromeOSWindowManagement,
+    Exposed=ChromeOSExtensions
+] interface CrosAcceleratorEvent : Event {
+   constructor(DOMString type, CrosAcceleratorEventInit eventInitDict);
+   // The name of the accelerator e.g. 'close-window', 'split', etc.
+   readonly attribute DOMString acceleratorName;
+   // `true` if the key has been pressed in a sustained manner.
+   readonly attribute boolean repeat;
+};

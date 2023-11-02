@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -50,6 +50,8 @@ public abstract class InProgressViewHolder extends ListItemViewHolder {
         UiUtils.setProgressForOfflineItem(mActionButton, offlineItem);
         mCancelButton.setOnClickListener(
                 v -> properties.get(ListProperties.CALLBACK_CANCEL).onResult(offlineItem));
+        mCancelButton.setVisibility(
+                offlineItem.state == OfflineItemState.CANCELLED ? View.INVISIBLE : View.VISIBLE);
         mActionButton.setOnClickListener(view -> {
             switch (offlineItem.state) {
                 case OfflineItemState.IN_PROGRESS: // Intentional fallthrough.

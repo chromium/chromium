@@ -1,4 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<!DOCTYPE HTML>
 <html>
 <head>
 <script src="../resources/testharness.js"></script>
@@ -45,7 +45,7 @@ test(function(t) {
     assert_true(content.isIgnored);
     expectUnignoredChildren(content, [0, 1, 2, 3, 6]);
 
-    document.getElementById("ul").tabIndex = -1;
+    document.getElementById("ul").tabIndex = 0;
     assert_equals(content.childrenCount, 8,
                       "Making list focusable should make it unignored");
     assert_true(content.isIgnored);

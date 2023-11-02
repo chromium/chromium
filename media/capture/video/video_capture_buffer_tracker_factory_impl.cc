@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@
 #include "media/capture/video/chromeos/gpu_memory_buffer_tracker.h"
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "media/capture/video/mac/gpu_memory_buffer_tracker_mac.h"
 #endif
 
@@ -27,7 +27,7 @@ VideoCaptureBufferTrackerFactoryImpl::CreateTracker(
     case VideoCaptureBufferType::kGpuMemoryBuffer:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       return std::make_unique<GpuMemoryBufferTracker>();
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
       return std::make_unique<GpuMemoryBufferTrackerMac>();
 #else
       return nullptr;
@@ -40,7 +40,7 @@ VideoCaptureBufferTrackerFactoryImpl::CreateTracker(
 std::unique_ptr<VideoCaptureBufferTracker>
 VideoCaptureBufferTrackerFactoryImpl::CreateTrackerForExternalGpuMemoryBuffer(
     const gfx::GpuMemoryBufferHandle& handle) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   return std::make_unique<GpuMemoryBufferTrackerMac>(handle.io_surface);
 #else
   return nullptr;

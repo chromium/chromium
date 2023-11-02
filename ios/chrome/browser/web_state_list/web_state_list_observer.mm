@@ -1,8 +1,12 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/web_state_list/web_state_list_observer.h"
+
+#import <ostream>
+
+#import "base/check.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -10,7 +14,11 @@
 
 WebStateListObserver::WebStateListObserver() = default;
 
-WebStateListObserver::~WebStateListObserver() = default;
+WebStateListObserver::~WebStateListObserver() {
+  CHECK(!IsInObserverList())
+      << "WebStateListObserver needs to be removed from WebStateList observer "
+         "list before their destruction.";
+}
 
 void WebStateListObserver::WebStateInsertedAt(WebStateList* web_state_list,
                                               web::WebState* web_state,

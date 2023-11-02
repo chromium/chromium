@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,13 +9,14 @@
 #include <set>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
+#include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/unique_associated_receiver_set.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom.h"
 #include "v8/include/v8-inspector.h"
@@ -70,8 +71,9 @@ class AuctionV8DevToolsAgent : public blink::mojom::DevToolsAgent,
   // Connects an incoming Mojo debugging connection to endpoint `agent`,
   // expecting to debug things associated in the V8Helper with
   // `context_group_id`.
-  void Connect(mojo::PendingReceiver<blink::mojom::DevToolsAgent> agent,
-               int context_group_id);
+  void Connect(
+      mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> agent,
+      int context_group_id);
 
   // If any session debugging `context_group_id` has an instrumentation
   // breakpoint named `name` set, asks for execution to be paused at next
@@ -103,11 +105,12 @@ class AuctionV8DevToolsAgent : public blink::mojom::DevToolsAgent,
       mojo::PendingReceiver<blink::mojom::DevToolsSession> io_session_receiver,
       blink::mojom::DevToolsSessionStatePtr reattach_session_state,
       bool client_expects_binary_responses,
+      bool client_is_trusted,
       const std::string& session_id) override;
   void InspectElement(const ::gfx::Point& point) override;
-  void ReportChildWorkers(bool report,
+  void ReportChildTargets(bool report,
                           bool wait_for_debugger,
-                          ReportChildWorkersCallback callback) override;
+                          ReportChildTargetsCallback callback) override;
 
   // V8InspectorClient implementation.
   // TODO(morlovich): Implement consoleAPIMessage and currentTimeMS and replace
@@ -119,11 +122,11 @@ class AuctionV8DevToolsAgent : public blink::mojom::DevToolsAgent,
   // Called via ~AuctionV8DevToolsSession.
   void SessionDestroyed(AuctionV8DevToolsSession* session);
 
-  AuctionV8Helper* const v8_helper_;  // owns this.
+  const raw_ptr<AuctionV8Helper> v8_helper_;  // owns this.
   const scoped_refptr<base::SequencedTaskRunner> io_session_receiver_sequence_;
 
   // Mojo pipes connected to `this`, and context group IDs associated with them.
-  mojo::ReceiverSet<blink::mojom::DevToolsAgent, int> receivers_;
+  mojo::AssociatedReceiverSet<blink::mojom::DevToolsAgent, int> receivers_;
 
   // All AuctionV8DevToolsSession objects have their lifetime limited by their
   // pipes and `this`.
@@ -139,7 +142,7 @@ class AuctionV8DevToolsAgent : public blink::mojom::DevToolsAgent,
   std::map<int, ContextGroupInfo> context_groups_;
 
   // Owned by `v8_helper` which owns `this`.
-  DebugCommandQueue* const debug_command_queue_;
+  const raw_ptr<DebugCommandQueue> debug_command_queue_;
   bool paused_ = false;
 
   SEQUENCE_CHECKER(v8_sequence_checker_);

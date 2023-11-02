@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <string>
 #include <unordered_map>
 
-#include "base/macros.h"
 #include "chromecast/media/cma/backend/mixer/post_processing_pipeline.h"
 #include "chromecast/public/media/audio_post_processor2_shlib.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -34,11 +33,11 @@ class MockPostProcessor : public PostProcessingPipeline {
 
   ~MockPostProcessor() override;
   MOCK_METHOD5(ProcessFrames,
-               double(float* data,
-                      int num_frames,
-                      float current_volume,
-                      float target_volume,
-                      bool is_silence));
+               void(float* data,
+                    int num_frames,
+                    float current_volume,
+                    float target_volume,
+                    bool is_silence));
   MOCK_METHOD1(SetContentType, void(AudioContentType));
   bool SetOutputConfig(const AudioPostProcessor2::Config& config) override {
     sample_rate_ = config.output_sample_rate;
@@ -54,15 +53,17 @@ class MockPostProcessor : public PostProcessingPipeline {
   MOCK_METHOD2(SetPostProcessorConfig,
                void(const std::string& name, const std::string& config));
   MOCK_METHOD1(UpdatePlayoutChannel, void(int));
+  double GetDelaySeconds() override {
+    return static_cast<double>(rendering_delay_frames_) / sample_rate_;
+  }
 
  private:
-  double DoProcessFrames(float* data,
-                         int num_frames,
-                         float current_volume,
-                         float target_volume,
-                         bool is_silence) {
+  void DoProcessFrames(float* data,
+                       int num_frames,
+                       float current_volume,
+                       float target_volume,
+                       bool is_silence) {
     output_buffer_ = data;
-    return static_cast<double>(rendering_delay_frames_) / sample_rate_;
   }
 
   MockPostProcessorFactory* const factory_;

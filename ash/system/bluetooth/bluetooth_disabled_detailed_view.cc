@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,10 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/color_util.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "base/check.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -34,8 +34,6 @@ const int kDesiredLabelBaselineY = 20;
 }  // namespace
 
 BluetoothDisabledDetailedView::BluetoothDisabledDetailedView() {
-  DCHECK(ash::features::IsBluetoothRevampEnabled());
-
   std::unique_ptr<BoxLayout> box_layout =
       std::make_unique<BoxLayout>(BoxLayout::Orientation::kVertical);
   box_layout->set_main_axis_alignment(BoxLayout::MainAxisAlignment::kCenter);
@@ -43,10 +41,10 @@ BluetoothDisabledDetailedView::BluetoothDisabledDetailedView() {
 
   AshColorProvider* color_provider = AshColorProvider::Get();
   const SkColor icon_color =
-      AshColorProvider::GetDisabledColor(color_provider->GetContentLayerColor(
+      ColorUtil::GetDisabledColor(color_provider->GetContentLayerColor(
           AshColorProvider::ContentLayerType::kIconColorPrimary));
   const SkColor text_color =
-      AshColorProvider::GetDisabledColor(color_provider->GetContentLayerColor(
+      ColorUtil::GetDisabledColor(color_provider->GetContentLayerColor(
           AshColorProvider::ContentLayerType::kTextColorPrimary));
 
   ImageView* image_view = AddChildView(std::make_unique<ImageView>(
@@ -58,14 +56,14 @@ BluetoothDisabledDetailedView::BluetoothDisabledDetailedView() {
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_BLUETOOTH_DISABLED)));
   TrayPopupUtils::SetLabelFontList(
       label, TrayPopupUtils::FontStyle::kDetailedViewLabel);
-  label->SetBorder(views::CreateEmptyBorder(
-      kDesiredLabelBaselineY - label->GetBaseline(), 0, 0, 0));
+  label->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
+      kDesiredLabelBaselineY - label->GetBaseline(), 0, 0, 0)));
   label->SetEnabledColor(text_color);
 
   // Make top padding of the icon equal to the height of the label so that the
   // icon is vertically aligned to center of the container.
-  image_view->SetBorder(
-      views::CreateEmptyBorder(label->GetPreferredSize().height(), 0, 0, 0));
+  image_view->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(label->GetPreferredSize().height(), 0, 0, 0)));
 }
 
 const char* BluetoothDisabledDetailedView::GetClassName() const {

@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/mac/mac_logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "media/audio/audio_manager.h"
 #include "media/audio/mac/core_audio_util_mac.h"
@@ -56,7 +57,7 @@ class AudioDeviceListenerMac::PropertyListener {
 
  private:
   AudioObjectID monitored_object_;
-  const AudioObjectPropertyAddress* address_;
+  raw_ptr<const AudioObjectPropertyAddress> address_;
   base::RepeatingClosure callback_;
 };
 

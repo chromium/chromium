@@ -1,17 +1,19 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_components/chromeos/network/network_select.m.js';
-import 'chrome://resources/cr_components/chromeos/network/network_list.m.js';
+import 'chrome://resources/ash/common/network/network_select.js';
+import 'chrome://resources/ash/common/network/network_list.js';
 import 'chrome://resources/js/load_time_data.m.js';
 import 'chrome://resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 import './strings.m.js';
 
-import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
-import {NetworkList} from 'chrome://resources/cr_components/chromeos/network/network_list_types.m.js';
-import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
-import {$} from 'chrome://resources/js/util.m.js';
+import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
+import {NetworkList} from 'chrome://resources/ash/common/network/network_list_types.js';
+import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
+import {$} from 'chrome://resources/js/util.js';
+import {StartConnectResult} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {ConnectionStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CfmNetworkSettingsBrowserProxy, CfmNetworkSettingsBrowserProxyImpl} from './cfm_network_settings_browser_proxy.js';
@@ -26,10 +28,9 @@ let networkCustomItemCustomData;
  * @param {!OncMojo.NetworkStateProperties} networkState
  */
 function shouldShowNetworkDetails(networkState) {
-  const mojom = chromeos.networkConfig.mojom;
   return OncMojo.connectionStateIsConnected(networkState.connectionState) ||
-      networkState.connectionState == mojom.ConnectionStateType.kConnecting ||
-      (networkState.type == mojom.NetworkType.kCellular);
+      networkState.connectionState == ConnectionStateType.kConnecting ||
+      (networkState.type == NetworkType.kCellular);
 }
 
 /**
@@ -51,7 +52,7 @@ export class CfmNetworkSettings extends PolymerElement {
         type: Array,
         notify: false,
         readOnly: true,
-      }
+      },
     };
   }
 
@@ -74,7 +75,6 @@ export class CfmNetworkSettings extends PolymerElement {
    * @private
    */
   onNetworkItemSelected_(e) {
-    const mojom = chromeos.networkConfig.mojom;
     const networkState = e.detail;
     const guid = networkState.guid;
 
@@ -92,21 +92,21 @@ export class CfmNetworkSettings extends PolymerElement {
         MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
     networkConfig.startConnect(guid).then(response => {
       switch (response.result) {
-        case mojom.StartConnectResult.kSuccess:
+        case StartConnectResult.kSuccess:
           return;
-        case mojom.StartConnectResult.kInvalidGuid:
-        case mojom.StartConnectResult.kInvalidState:
-        case mojom.StartConnectResult.kCanceled:
+        case StartConnectResult.kInvalidGuid:
+        case StartConnectResult.kInvalidState:
+        case StartConnectResult.kCanceled:
           return;
-        case mojom.StartConnectResult.kNotConfigured:
+        case StartConnectResult.kNotConfigured:
           if (!OncMojo.networkTypeIsMobile(networkState.type)) {
             this.browserProxy_.showNetworkConfig(guid);
           } else {
             console.error('Cellular network is not configured: ' + guid);
           }
           return;
-        case mojom.StartConnectResult.kBlocked:
-        case mojom.StartConnectResult.kUnknown:
+        case StartConnectResult.kBlocked:
+        case StartConnectResult.kUnknown:
           console.error(
               'startConnect failed for: ' + guid + ': ' + response.message);
           return;
@@ -152,7 +152,7 @@ export class CfmNetworkSettings extends PolymerElement {
    * @private
    */
   onCustomItemSelected_(event) {
-    let itemState = event.detail;
+    const itemState = event.detail;
     itemState.customData.onTap(this.browserProxy_);
   }
 }

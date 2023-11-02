@@ -1,10 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/browser/scheduler/responsiveness/native_event_observer.h"
 
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 #include "ui/events/test/cocoa_test_event_utils.h"
@@ -35,8 +36,8 @@ class FakeNativeEventObserver : public NativeEventObserver {
   const void* did_run_id() { return did_run_id_; }
 
  private:
-  const void* will_run_id_ = nullptr;
-  const void* did_run_id_ = nullptr;
+  raw_ptr<const void> will_run_id_ = nullptr;
+  raw_ptr<const void> did_run_id_ = nullptr;
 };
 
 }  // namespace
@@ -50,8 +51,8 @@ IN_PROC_BROWSER_TEST_F(ResponsivenessNativeEventObserverBrowserTest,
 
   EXPECT_FALSE(observer.will_run_id());
   EXPECT_FALSE(observer.did_run_id());
-  NSEvent* event = cocoa_test_event_utils::KeyEventWithKeyCode(kVK_Return, '\r',
-                                                               NSKeyDown, 0);
+  NSEvent* event = cocoa_test_event_utils::KeyEventWithKeyCode(
+      kVK_Return, '\r', NSEventTypeKeyDown, 0);
   [NSApp sendEvent:event];
 
   EXPECT_EQ(observer.will_run_id(), event);

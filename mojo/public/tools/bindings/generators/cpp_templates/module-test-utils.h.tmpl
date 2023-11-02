@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -68,6 +68,11 @@ class {{export_attribute}} {{interface.name}}AsyncWaiter {
 {%- for method in interface.methods if method.response_parameters != None %}
   void {{method.name}}(
       {{interface_macros.declare_sync_method_params("", method)}});
+  {% if method.response_parameters|length == 1 -%}
+    {%- set response_type = method.response_parameters[0].kind|cpp_wrapper_call_type -%}
+    {{response_type}} {{method.name}}({{interface_macros.declare_params("", method.parameters)}});
+  {%- endif %}
+
 {%- endfor %}
 
  private:

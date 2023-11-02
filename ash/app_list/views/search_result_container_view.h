@@ -1,4 +1,4 @@
-// Copyright (c) 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,9 @@
 #define ASH_APP_LIST_VIEWS_SEARCH_RESULT_CONTAINER_VIEW_H_
 
 #include <stddef.h>
+
+#include <string>
+#include <vector>
 
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/model/app_list_model.h"
@@ -56,12 +59,61 @@ class ASH_EXPORT SearchResultContainerView : public views::View,
 
   virtual SearchResultBaseView* GetResultViewAt(size_t index) = 0;
 
+  // Information needed to configure search result visibility animations when
+  // result updates are animated.
+  struct ResultsAnimationInfo {
+    // Total number of visible views (either title or result views).
+    int total_views = 0;
+
+    // Total number of visible result views.
+    int total_result_views = 0;
+
+    // The index of the first result view that should be animated.
+    int first_animated_result_view_index = 0;
+
+    // The number of views that are animating (either title or result views).
+    int animating_views = 0;
+
+    // Whether fast search result update animations should be used.
+    bool use_short_animations = false;
+  };
+
+  // Information needed to determine if a search result shuold have an updated
+  // animation.
+  struct SearchResultAimationMetadata {
+    // The ID of the search result.
+    std::string result_id;
+
+    // Whether animations should be skipped for this search result.
+    bool skip_animations = false;
+  };
+
+  // Schedules animations for result list updates. Expected to be implemented
+  // for search result containers that animate result updates.
+  // `aggregate_animation_info` The aggregated animation information for all
+  // search result containers that appear in the search results UI before this
+  // container.
+  // Returns the animation info for this container.
+  virtual absl::optional<ResultsAnimationInfo> ScheduleResultAnimations(
+      const ResultsAnimationInfo& aggregate_animation_info);
+
+  // Appends search result IDs of the search results shown by the container
+  // view into 'result_ids_'
+  virtual void AppendShownResultMetadata(
+      std::vector<SearchResultAimationMetadata>* result_metadata_);
+
+  // Returns whether the container view has any animating child views.
+  virtual bool HasAnimatingChildView();
+
   bool horizontally_traversable() const { return horizontally_traversable_; }
 
   // Allows a container to define its traversal behavior
   void set_horizontally_traversable(bool horizontally_traversable) {
     horizontally_traversable_ = horizontally_traversable;
   }
+
+  // Called when the result selection controller updates its selected result.
+  virtual void OnSelectedResultChanged();
 
   // Batching method that actually performs the update and updates layout.
   void Update();

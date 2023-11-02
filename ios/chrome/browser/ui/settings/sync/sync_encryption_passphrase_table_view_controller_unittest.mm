@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,20 +6,20 @@
 
 #import <UIKit/UIKit.h>
 
-#include <memory>
+#import <memory>
 
-#include "base/bind.h"
-#include "base/compiler_specific.h"
-#include "base/strings/sys_string_conversions.h"
+#import "base/bind.h"
+#import "base/compiler_specific.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#include "components/strings/grit/components_strings.h"
-#include "components/sync/driver/mock_sync_service.h"
-#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "components/strings/grit/components_strings.h"
+#import "components/sync/test/mock_sync_service.h"
+#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
-#include "ios/chrome/browser/sync/sync_setup_service.h"
-#include "ios/chrome/browser/sync/sync_setup_service_factory.h"
-#include "ios/chrome/browser/sync/sync_setup_service_mock.h"
+#import "ios/chrome/browser/sync/sync_setup_service.h"
+#import "ios/chrome/browser/sync/sync_setup_service_factory.h"
+#import "ios/chrome/browser/sync/sync_setup_service_mock.h"
 #import "ios/chrome/browser/ui/settings/cells/byo_textfield_item.h"
 #import "ios/chrome/browser/ui/settings/passphrase_table_view_controller_test.h"
 #import "ios/chrome/browser/ui/settings/sync/utils/sync_util.h"
@@ -27,9 +27,9 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
 #import "testing/gtest_mac.h"
-#include "testing/platform_test.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "ui/base/l10n/l10n_util_mac.h"
+#import "testing/platform_test.h"
+#import "ui/base/l10n/l10n_util.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -97,7 +97,7 @@ class SyncEncryptionPassphraseTableViewControllerTest
         controller());
   }
 
-  // Weak, owned by |profile_|.
+  // Weak, owned by `profile_`.
   NiceMock<SyncSetupServiceMock>* mock_sync_setup_service_;
 };
 
@@ -175,7 +175,7 @@ TEST_F(SyncEncryptionPassphraseTableViewControllerTest,
        TestOnStateChangedWrongPassphrase) {
   SyncEncryptionPassphraseTableViewController* sync_controller =
       SyncController();
-  // Sets up a UINavigationController that has |controller_| as the second view
+  // Sets up a UINavigationController that has `controller_` as the second view
   // controller on the navigation stack.
   SetUpNavigationController(sync_controller);
   EXPECT_EQ([nav_controller_ topViewController], sync_controller);
@@ -192,7 +192,7 @@ TEST_F(SyncEncryptionPassphraseTableViewControllerTest,
        TestOnStateChangedCorrectPassphrase) {
   SyncEncryptionPassphraseTableViewController* sync_controller =
       SyncController();
-  // Sets up a UINavigationController that has |controller_| as the second view
+  // Sets up a UINavigationController that has `controller_` as the second view
   // controller on the navigation stack.
   SetUpNavigationController(sync_controller);
   EXPECT_EQ([nav_controller_ topViewController], sync_controller);

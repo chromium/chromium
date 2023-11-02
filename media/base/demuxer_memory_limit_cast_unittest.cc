@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -47,6 +47,34 @@ TEST(DemuxerMemoryLimitCastTest, GetDemuxerStreamAudioMemoryLimit) {
       EmptyExtraData(), EncryptionScheme::kUnencrypted);
   EXPECT_EQ(GetDemuxerStreamAudioMemoryLimit(&audio_config_aac_2),
             internal::kDemuxerStreamAudioMemoryLimitLow);
+
+  AudioDecoderConfig audio_config_dts_20(
+      AudioCodec::kDTS, SampleFormat::kSampleFormatS16,
+      ChannelLayout::CHANNEL_LAYOUT_STEREO, 5000 /* samples_per_second */,
+      EmptyExtraData(), EncryptionScheme::kUnencrypted);
+  EXPECT_EQ(GetDemuxerStreamAudioMemoryLimit(&audio_config_dts_20),
+            internal::kDemuxerStreamAudioMemoryLimitMedium);
+
+  AudioDecoderConfig audio_config_dts_51(
+      AudioCodec::kDTS, SampleFormat::kSampleFormatS16,
+      ChannelLayout::CHANNEL_LAYOUT_5_1, 5000 /* samples_per_second */,
+      EmptyExtraData(), EncryptionScheme::kUnencrypted);
+  EXPECT_EQ(GetDemuxerStreamAudioMemoryLimit(&audio_config_dts_51),
+            internal::kDemuxerStreamAudioMemoryLimitMedium);
+
+  AudioDecoderConfig audio_config_dtsxp2_20(
+      AudioCodec::kDTSXP2, SampleFormat::kSampleFormatS16,
+      ChannelLayout::CHANNEL_LAYOUT_STEREO, 5000 /* samples_per_second */,
+      EmptyExtraData(), EncryptionScheme::kUnencrypted);
+  EXPECT_EQ(GetDemuxerStreamAudioMemoryLimit(&audio_config_dtsxp2_20),
+            internal::kDemuxerStreamAudioMemoryLimitMedium);
+
+  AudioDecoderConfig audio_config_dtsxp2_51(
+      AudioCodec::kDTSXP2, SampleFormat::kSampleFormatS16,
+      ChannelLayout::CHANNEL_LAYOUT_5_1, 5000 /* samples_per_second */,
+      EmptyExtraData(), EncryptionScheme::kUnencrypted);
+  EXPECT_EQ(GetDemuxerStreamAudioMemoryLimit(&audio_config_dtsxp2_51),
+            internal::kDemuxerStreamAudioMemoryLimitMedium);
 }
 
 TEST(DemuxerMemoryLimitCastTest, GetDemuxerStreamVideoMemoryLimit) {

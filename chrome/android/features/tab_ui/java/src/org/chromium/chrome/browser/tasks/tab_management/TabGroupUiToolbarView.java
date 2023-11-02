@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,6 +25,7 @@ import androidx.core.widget.TextViewCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.widget.ChromeImageView;
 
@@ -150,10 +151,10 @@ public class TabGroupUiToolbarView extends FrameLayout {
     }
 
     void setIsIncognito(boolean isIncognito) {
-        @ColorRes
-        int primaryColorRes = isIncognito ? R.color.dialog_bg_color_dark : R.color.dialog_bg_color;
         @ColorInt
-        int primaryColor = getResources().getColor(primaryColorRes);
+        int primaryColor =
+                isIncognito ? getResources().getColor(R.color.dialog_bg_color_dark_baseline)
+                            : SemanticColorUtils.getDialogBgColor(getContext());
         setPrimaryColor(primaryColor);
 
         @ColorRes
@@ -199,11 +200,17 @@ public class TabGroupUiToolbarView extends FrameLayout {
     }
 
     /**
-     * Hide the UI widgets related to tab group continuation features.
+     * Hide the title widgets related to tab group continuation features.
      */
-    void hideTabGroupsContinuationWidgets() {
+    void hideTitleWidget() {
         mTitleTextView.setFocusable(false);
         mTitleTextView.setBackgroundColor(Color.TRANSPARENT);
+    }
+
+    /**
+     * Hide the menu button related to tab group continuation and selection editor features.
+     */
+    void hideMenuButton() {
         mMainContent.removeView(mMenuButton);
     }
 

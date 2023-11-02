@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -49,16 +49,10 @@ class AuraWindowVideoCaptureDeviceBrowserTest
   ~AuraWindowVideoCaptureDeviceBrowserTest() override = default;
 
   aura::Window* GetCapturedWindow() const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    // Since the LameWindowCapturerChromeOS will be used, just return the normal
-    // shell window.
-    return shell()->window();
-#else
     // Note: The Window with an associated compositor frame sink (required for
     // capture) is the root window, which is an immediate ancestor of the
     // aura::Window provided by shell()->window().
     return shell()->window()->GetRootWindow();
-#endif
   }
 
   // Returns the location of the content within the window.
@@ -106,23 +100,11 @@ class AuraWindowVideoCaptureDeviceBrowserTest
         const gfx::RectF webcontents_in_frame_rect_f = TransformSimilarly(
             gfx::Rect(window_size), window_in_frame_rect_f, webcontents_rect);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-        // Browser window capture on ChromeOS uses the
-        // LameWindowCapturerChromeOS, which takes RGB snapshots and then
-        // software-converts them to YUV, and color accuracy is greatly reduced.
-        // See comments in viz::CopyOutputResult::ReadI420Planes() for further
-        // details on why this has to be.
-        constexpr int max_color_diff = kVeryLooseMaxColorDifference;
-#else
         // viz::SoftwareRenderer does not do color space management. Otherwise
         // (normal case), be strict about color differences.
-        // TODO(crbug/795132): SkiaRenderer temporarily uses same code as
-        // software compositor. Fix plumbing for SkiaRenderer.
-        const int max_color_diff =
-            (IsSoftwareCompositingTest() || features::IsUsingSkiaRenderer())
-                ? kVeryLooseMaxColorDifference
-                : kMaxColorDifference;
-#endif
+        const int max_color_diff = IsSoftwareCompositingTest()
+                                       ? kVeryLooseMaxColorDifference
+                                       : kMaxColorDifference;
 
         // Determine the average RGB color in the three regions of the frame.
         const auto average_webcontents_rgb = ComputeAverageColor(
@@ -228,7 +210,7 @@ IN_PROC_BROWSER_TEST_F(AuraWindowVideoCaptureDeviceBrowserTest,
   RunUntilIdle();
 }
 
-// Disabled (crbug.com/1096988)
+// Disabled (https://crbug.com/1096946)
 // Tests that the device starts, captures a frame, and then gracefully
 // errors-out because the target window is destroyed before the device is
 // stopped.
@@ -251,7 +233,7 @@ IN_PROC_BROWSER_TEST_F(AuraWindowVideoCaptureDeviceBrowserTest,
   StopAndDeAllocate();
 }
 
-// Disabled (crbug.com/1096988)
+// Disabled (https://crbug.com/1096946)
 // Tests that the device stops delivering frames while suspended. When resumed,
 // any content changes that occurred during the suspend should cause a new frame
 // to be delivered, to ensure the client is up-to-date.
@@ -286,7 +268,7 @@ IN_PROC_BROWSER_TEST_F(AuraWindowVideoCaptureDeviceBrowserTest,
   StopAndDeAllocate();
 }
 
-// Disabled (crbug.com/1096988)
+// Disabled (https://crbug.com/1096946)
 // Tests that the device delivers refresh frames when asked, while the source
 // content is not changing.
 IN_PROC_BROWSER_TEST_F(AuraWindowVideoCaptureDeviceBrowserTest,
@@ -309,7 +291,7 @@ IN_PROC_BROWSER_TEST_F(AuraWindowVideoCaptureDeviceBrowserTest,
   StopAndDeAllocate();
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 class AuraWindowVideoCaptureDeviceBrowserTestWin
     : public AuraWindowVideoCaptureDeviceBrowserTest {
  public:
@@ -327,7 +309,7 @@ class AuraWindowVideoCaptureDeviceBrowserTestWin
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/1096946): enable.
+// TODO(https://crbug.com/1096946): enable.
 IN_PROC_BROWSER_TEST_F(AuraWindowVideoCaptureDeviceBrowserTestWin,
                        DISABLED_CapturesOccludedWindow) {
   aura::WindowTreeHost* window_tree_host = shell()->window()->GetHost();
@@ -355,7 +337,7 @@ IN_PROC_BROWSER_TEST_F(AuraWindowVideoCaptureDeviceBrowserTestWin,
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-// Disabled (crbug.com/1096988)
+// Disabled (https://crbug.com/1096946)
 // On ChromeOS, another window may occlude a window that is being captured.
 // Make sure the visibility is set to visible during capture if it's occluded.
 IN_PROC_BROWSER_TEST_F(AuraWindowVideoCaptureDeviceBrowserTest,
@@ -411,7 +393,7 @@ INSTANTIATE_TEST_SUITE_P(
                                      true /* fixed aspect ratio */)));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-// Disabled (crbug.com/1096988)
+// Disabled (https://crbug.com/1096946)
 // Tests that the device successfully captures a series of content changes,
 // whether the browser is running with software compositing or GPU-accelerated
 // compositing.

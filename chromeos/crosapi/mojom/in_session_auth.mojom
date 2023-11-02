@@ -1,0 +1,40 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+
+[Stable]
+struct RequestTokenReply {
+  // The authentication token that is returned, to use for sensitive
+  // operations.
+  string token@0;
+
+  // The length of time for which the token is valid.
+  mojo_base.mojom.TimeDelta timeout@1;
+};
+
+[Stable, Extensible]
+enum Reason {
+  [Default] kAccessPasswordManager = 0,
+  kModifyAuthFactors,
+  kModifyAuthFactorsMultidevice,
+};
+
+// An interface implemented by Ash to expose Ash's authentication capabilities.
+// Used by Lacros for extension API authentication in Settings.
+[Stable, Uuid="7d4bb0d8-f1fa-46bf-a7a6-b7117526ea63"]
+interface InSessionAuth {
+  // Instructs Ash to summon a native authentication dialog to authenticate
+  // the currently active user. Returns a prerishable authentication token on
+  // success. RequestTokenReply in null if authentication was aborted.
+  RequestToken@0(Reason reason) => (RequestTokenReply? reply);
+
+  // Check the validity of the token for sensitive operations.
+  CheckToken@1(Reason reason, string token) => (bool valid);
+
+  // Release the token when no longer needed, rendering it invalid.
+  InvalidateToken@2(string token);
+};

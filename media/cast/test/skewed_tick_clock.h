@@ -1,10 +1,11 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef MEDIA_CAST_TEST_SKEWED_TICK_CLOCK_H_
 #define MEDIA_CAST_TEST_SKEWED_TICK_CLOCK_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 
@@ -33,7 +34,7 @@ class SkewedTickClock : public base::TickClock {
 
  private:
   base::TimeTicks SkewTicks(base::TimeTicks now) const;
-  const base::TickClock* clock_;  // Not owned.
+  raw_ptr<const base::TickClock> clock_;  // Not owned.
   double skew_;
   base::TimeTicks last_skew_set_time_;
   base::TimeTicks skew_clock_at_last_set_;

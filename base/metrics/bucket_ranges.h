@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -25,7 +25,7 @@
 #include <vector>
 
 #include "base/base_export.h"
-#include "base/macros.h"
+#include "base/check_op.h"
 #include "base/metrics/histogram_base.h"
 
 namespace base {
@@ -94,7 +94,7 @@ class BASE_EXPORT BucketRanges {
   // information is stored. This allows for the record to be created once and
   // re-used simply by having all histograms with the same ranges use the
   // same reference.
-  mutable std::atomic<int32_t> persistent_reference_{0};
+  mutable std::atomic<uint32_t> persistent_reference_{0};
 };
 
 }  // namespace base

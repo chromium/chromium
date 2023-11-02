@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -52,11 +52,13 @@ public class CurrentPageVerifier implements NativeInitObserver {
     /** Represents the verification state of currently viewed web page. */
     public static class VerificationState {
         public final String scope;
+        public final String url;
         @VerificationStatus
         public final int status;
 
-        public VerificationState(String scope, @VerificationStatus int status) {
+        public VerificationState(String scope, String url, @VerificationStatus int status) {
             this.scope = scope;
+            this.url = url;
             this.status = status;
         }
     }
@@ -64,12 +66,14 @@ public class CurrentPageVerifier implements NativeInitObserver {
     /** A {@link TabObserver} that checks whether we are on a verified page on navigation. */
     private final CustomTabTabObserver mVerifyOnPageLoadObserver = new CustomTabTabObserver() {
         @Override
-        public void onDidFinishNavigation(Tab tab, NavigationHandle navigation) {
-            if (!navigation.hasCommitted() || !navigation.isInPrimaryMainFrame()
-                    || navigation.isSameDocument()) {
-                return;
-            }
+        public void onDidFinishNavigationInPrimaryMainFrame(Tab tab, NavigationHandle navigation) {
+            if (!navigation.hasCommitted() || navigation.isSameDocument()) return;
             verify(navigation.getUrl().getSpec());
+        }
+
+        @Override
+        public void onDidFinishNavigationNoop(Tab tab, NavigationHandle navigation) {
+            if (!navigation.isInPrimaryMainFrame()) return;
         }
 
         @Override
@@ -124,9 +128,9 @@ public class CurrentPageVerifier implements NativeInitObserver {
         if (scope == null) return;
 
         if (result.isFulfilled()) {
-            updateState(scope, statusFromBoolean(result.getResult()));
+            updateState(scope, url, statusFromBoolean(result.getResult()));
         } else {
-            updateState(scope, VerificationStatus.PENDING);
+            updateState(scope, url, VerificationStatus.PENDING);
             result.then(verified -> { onVerificationResult(scope, verified); });
         }
     }
@@ -142,12 +146,13 @@ public class CurrentPageVerifier implements NativeInitObserver {
         boolean resultStillApplies =
                 tab != null && scope.equals(mDelegate.getVerifiedScope(tab.getUrl().getSpec()));
         if (resultStillApplies) {
-            updateState(scope, verified ? VerificationStatus.SUCCESS : VerificationStatus.FAILURE);
+            updateState(scope, tab.getUrl().getSpec(),
+                    verified ? VerificationStatus.SUCCESS : VerificationStatus.FAILURE);
         }
     }
 
-    private void updateState(String scope, @VerificationStatus int status) {
-        mState = new VerificationState(scope, status);
+    private void updateState(String scope, String url, @VerificationStatus int status) {
+        mState = new VerificationState(scope, url, status);
         for (Runnable observer : mObservers) {
             observer.run();
         }

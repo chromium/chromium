@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,7 +27,7 @@ import org.chromium.components.policy.PolicyService;
  *  - Supplies [True] if the ToS dialog is not enabled by policy while device is fully managed;
  *  - Supplies [False] otherwise.
  */
-class SkipTosDialogPolicyListener implements OneshotSupplier<Boolean> {
+public class SkipTosDialogPolicyListener implements OneshotSupplier<Boolean> {
     private static final String TAG = "SkipTosPolicy";
     /**
      * Interface that provides histogram to be recorded when signals are available in this listener.

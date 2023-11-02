@@ -32,7 +32,6 @@
 
 #include "base/location.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_storage_error_callback.h"
@@ -55,22 +54,6 @@ using mojom::blink::StorageType;
 using mojom::blink::UsageBreakdownPtr;
 
 namespace {
-
-StorageType GetStorageType(DeprecatedStorageQuota::Type type) {
-  if (base::FeatureList::IsEnabled(
-          blink::features::kPersistentQuotaIsTemporaryQuota)) {
-    DCHECK_EQ(type, DeprecatedStorageQuota::kTemporary);
-    return StorageType::kTemporary;
-  }
-  switch (type) {
-    case DeprecatedStorageQuota::kTemporary:
-      return StorageType::kTemporary;
-    case DeprecatedStorageQuota::kPersistent:
-      return StorageType::kPersistent;
-    default:
-      return StorageType::kUnknown;
-  }
-}
 
 void DeprecatedQueryStorageUsageAndQuotaCallback(
     V8StorageUsageCallback* success_callback,
@@ -122,16 +105,16 @@ void DeprecatedStorageQuota::EnqueueStorageErrorCallback(
 
   ExecutionContext::From(script_state)
       ->GetTaskRunner(TaskType::kMiscPlatformAPI)
-      ->PostTask(FROM_HERE,
-                 WTF::Bind(&V8StorageErrorCallback::InvokeAndReportException,
-                           WrapPersistent(error_callback), nullptr,
-                           WrapPersistent(DOMError::Create(exception_code))));
+      ->PostTask(
+          FROM_HERE,
+          WTF::BindOnce(&V8StorageErrorCallback::InvokeAndReportException,
+                        WrapPersistent(error_callback), nullptr,
+                        WrapPersistent(DOMError::Create(exception_code))));
 }
 
 DeprecatedStorageQuota::DeprecatedStorageQuota(
-    Type type,
     ExecutionContext* execution_context)
-    : type_(type), quota_host_(execution_context) {}
+    : quota_host_(execution_context) {}
 
 void DeprecatedStorageQuota::queryUsageAndQuota(
     ScriptState* script_state,
@@ -144,15 +127,6 @@ void DeprecatedStorageQuota::queryUsageAndQuota(
   // attribute, so the kQuotaRead use counter must be explicitly updated.
   UseCounter::Count(execution_context, WebFeature::kQuotaRead);
 
-  StorageType storage_type = GetStorageType(type_);
-  if (storage_type != StorageType::kTemporary &&
-      storage_type != StorageType::kPersistent) {
-    // Unknown storage type is requested.
-    EnqueueStorageErrorCallback(script_state, error_callback,
-                                DOMExceptionCode::kNotSupportedError);
-    return;
-  }
-
   const SecurityOrigin* security_origin =
       execution_context->GetSecurityOrigin();
   if (security_origin->IsOpaque()) {
@@ -161,12 +135,14 @@ void DeprecatedStorageQuota::queryUsageAndQuota(
     return;
   }
 
-  auto callback = WTF::Bind(&DeprecatedQueryStorageUsageAndQuotaCallback,
-                            WrapPersistent(success_callback),
-                            WrapPersistent(error_callback));
+  auto callback = WTF::BindOnce(&DeprecatedQueryStorageUsageAndQuotaCallback,
+                                WrapPersistent(success_callback),
+                                WrapPersistent(error_callback));
+  // StorageType::kPersistent is deprecated as of crbug.com/1233525.
+  // Therefore all requests are for StorageType::kTemporary.
   GetQuotaHost(execution_context)
       ->QueryStorageUsageAndQuota(
-          storage_type,
+          StorageType::kTemporary,
           mojo::WrapCallbackWithDefaultInvokeIfNotRun(
               std::move(callback), mojom::blink::QuotaStatusCode::kErrorAbort,
               0, 0, nullptr));
@@ -182,18 +158,9 @@ void DeprecatedStorageQuota::requestQuota(
   // attribute, so the kQuotaRead use counter must be explicitly updated.
   UseCounter::Count(execution_context, WebFeature::kQuotaRead);
 
-  StorageType storage_type = GetStorageType(type_);
-  if (storage_type != StorageType::kTemporary &&
-      storage_type != StorageType::kPersistent) {
-    // Unknown storage type is requested.
-    EnqueueStorageErrorCallback(script_state, error_callback,
-                                DOMExceptionCode::kNotSupportedError);
-    return;
-  }
-
-  auto callback =
-      WTF::Bind(&RequestStorageQuotaCallback, WrapPersistent(success_callback),
-                WrapPersistent(error_callback));
+  auto callback = WTF::BindOnce(&RequestStorageQuotaCallback,
+                                WrapPersistent(success_callback),
+                                WrapPersistent(error_callback));
 
   if (execution_context->GetSecurityOrigin()->IsOpaque()) {
     // Unique origins cannot store persistent state.
@@ -201,9 +168,11 @@ void DeprecatedStorageQuota::requestQuota(
     return;
   }
 
+  // StorageType::kPersistent is deprecated as of crbug.com/1233525.
+  // Therefore all requests are for StorageType::kTemporary.
   GetQuotaHost(execution_context)
       ->RequestStorageQuota(
-          storage_type, new_quota_in_bytes,
+          StorageType::kTemporary, new_quota_in_bytes,
           mojo::WrapCallbackWithDefaultInvokeIfNotRun(
               std::move(callback), mojom::blink::QuotaStatusCode::kErrorAbort,
               0, 0));

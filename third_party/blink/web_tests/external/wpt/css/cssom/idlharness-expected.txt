@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 452 tests; 396 PASS, 56 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 452 tests; 398 PASS, 54 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface CSSStyleSheet: original interface defined
@@ -444,9 +444,9 @@ PASS Window interface: calling getComputedStyle(Element, optional CSSOMString?) 
 PASS Document interface: attribute styleSheets
 PASS Document interface: attribute adoptedStyleSheets
 PASS Document interface: document must inherit property "styleSheets" with the proper type
-FAIL Document interface: document must inherit property "adoptedStyleSheets" with the proper type Right-hand side of 'instanceof' is not an object
+PASS Document interface: document must inherit property "adoptedStyleSheets" with the proper type
 PASS Document interface: new Document() must inherit property "styleSheets" with the proper type
-FAIL Document interface: new Document() must inherit property "adoptedStyleSheets" with the proper type Right-hand side of 'instanceof' is not an object
+PASS Document interface: new Document() must inherit property "adoptedStyleSheets" with the proper type
 PASS ShadowRoot interface: attribute styleSheets
 PASS ShadowRoot interface: attribute adoptedStyleSheets
 PASS ProcessingInstruction interface: attribute sheet

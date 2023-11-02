@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,41 +19,41 @@ class ModalRequestCallbackInstaller
     : public InfobarModalOverlayRequestCallbackInstaller {
  public:
   // Constructor for an instance that installs callbacks that forward
-  // interaction events to |interaction_handler|.
+  // interaction events to `interaction_handler`.
   explicit ModalRequestCallbackInstaller(
       TranslateInfobarModalInteractionHandler* interaction_handler);
   ~ModalRequestCallbackInstaller() override;
 
  private:
-  // Used as a callback for OverlayResponses dispatched through |request|'s
+  // Used as a callback for OverlayResponses dispatched through `request`'s
   // callback manager. The OverlayDispatchCallback is created with an
-  // OverlayResponseSupport that guarantees that |response| is created with an
+  // OverlayResponseSupport that guarantees that `response` is created with an
   // translate_infobar_modal_responses::RevertMainAction.
   void RevertTranslationCallback(OverlayRequest* request,
                                  OverlayResponse* response);
 
-  // Used as a callback for OverlayResponses dispatched through |request|'s
+  // Used as a callback for OverlayResponses dispatched through `request`'s
   // callback manager. The OverlayDispatchCallback is created with an
-  // OverlayResponseSupport that guarantees that |response| is created with an
+  // OverlayResponseSupport that guarantees that `response` is created with an
   // translate_infobar_modal_responses::ToggleAlwaysTranslate.
   void ToggleAlwaysTranslateCallback(OverlayRequest* request,
                                      OverlayResponse* response);
-  // Used as a callback for OverlayResponses dispatched through |request|'s
+  // Used as a callback for OverlayResponses dispatched through `request`'s
   // callback manager. The OverlayDispatchCallback is created with an
-  // OverlayResponseSupport that guarantees that |response| is created with a
+  // OverlayResponseSupport that guarantees that `response` is created with a
   // translate_infobar_modal_responses::ToggleNeverTranslateSourceLanguage.
   void ToggleNeverTranslateSourceLanguageCallback(OverlayRequest* request,
                                                   OverlayResponse* response);
-  // Used as a callback for OverlayResponses dispatched through |request|'s
+  // Used as a callback for OverlayResponses dispatched through `request`'s
   // callback manager. The OverlayDispatchCallback is created with an
-  // OverlayResponseSupport that guarantees that |response| is created with a
+  // OverlayResponseSupport that guarantees that `response` is created with a
   // translate_infobar_modal_responses::ToggleNeverPromptSite.
   void ToggleNeverTranslateSiteCallback(OverlayRequest* request,
                                         OverlayResponse* response);
 
-  // Used as a callback for OverlayResponses dispatched through |request|'s
+  // Used as a callback for OverlayResponses dispatched through `request`'s
   // callback manager. The OverlayDispatchCallback is created with an
-  // OverlayResponseSupport that guarantees that |response| is created with a
+  // OverlayResponseSupport that guarantees that `response` is created with a
   // translate_infobar_modal_responses::UpdateLanguageInfo.
   void UpdateLanguageCallback(OverlayRequest* request,
                               OverlayResponse* response);

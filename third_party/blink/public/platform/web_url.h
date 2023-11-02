@@ -43,7 +43,7 @@ namespace blink {
 
 class KURL;
 
-class WebURL {
+class BLINK_PLATFORM_EXPORT WebURL {
  public:
   ~WebURL() = default;
 
@@ -63,12 +63,12 @@ class WebURL {
 
   bool IsNull() const { return string_.IsEmpty(); }
 
-  BLINK_PLATFORM_EXPORT bool ProtocolIs(const char* protocol) const;
+  bool ProtocolIs(const char* protocol) const;
 
 #if INSIDE_BLINK
-  BLINK_PLATFORM_EXPORT WebURL(const KURL&);
-  BLINK_PLATFORM_EXPORT WebURL& operator=(const KURL&);
-  BLINK_PLATFORM_EXPORT operator KURL() const;
+  WebURL(const KURL&);
+  WebURL& operator=(const KURL&);
+  operator KURL() const;
 #else
   WebURL(const GURL& url)
       : string_(WebString::FromUTF8(url.possibly_invalid_spec())),

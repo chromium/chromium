@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include "base/files/file_path.h"
 #include "chrome/browser/ui/app_list/search/ranking/types.h"
-#include "chrome/browser/ui/app_list/search/search_controller.h"
 
 class Profile;
 
@@ -19,21 +18,16 @@ namespace app_list {
 // state into.
 base::FilePath RankerStateDirectory(Profile* profile);
 
-// Given a search result type, returns the category it should be placed in.
+std::string CategoryToString(const Category value);
+
+Category StringToCategory(const std::string& value);
+
+// TODO(crbug.com/1199206): This can be removed once LaunchData contains the
+// result category.
+//
+// This is slightly inconsistent with the true result->category mapping, because
+// Omnibox results can either be in the kWeb or kSearchAndAssistant category.
 Category ResultTypeToCategory(ResultType result_type);
-
-// TODO(crbug.com/1199206): Once the UI has support for categories the following
-// methods can be removed.
-
-// Given a category, returns a debug string of its name suitable for the interim
-// UI.
-std::u16string CategoryDebugString(const Category category);
-
-// Deletes a prefix of the form "(...) " from |str| if it exists.
-std::u16string RemoveDebugPrefix(std::u16string str);
-
-// Deletes the prefix "(top match) " from |str| if it exists.
-std::u16string RemoveTopMatchPrefix(std::u16string str);
 
 }  // namespace app_list
 

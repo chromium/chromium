@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@ import org.chromium.components.location.LocationUtils;
 import org.chromium.components.page_info.PageInfoPermissionsController.PermissionObject;
 import org.chromium.components.permissions.AndroidPermissionRequester;
 import org.chromium.components.permissions.nfc.NfcSystemLevelSetting;
-import org.chromium.ui.base.AndroidPermissionDelegate;
+import org.chromium.ui.permissions.AndroidPermissionDelegate;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/test/scoped_feature_list.h"
@@ -86,7 +87,7 @@ class ImmersiveModeTester : public ImmersiveModeController::Observer {
   void OnImmersiveFullscreenExited() override;
 
  private:
-  Browser* const browser_;
+  const raw_ptr<Browser> browser_;
   base::ScopedObservation<ImmersiveModeController,
                           ImmersiveModeController::Observer>
       scoped_observation_{this};

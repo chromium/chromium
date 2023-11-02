@@ -1,10 +1,18 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/ash/system_tray_client_impl.h"
 
+#include <cstdio>
+#include <memory>
+
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
+#include "ash/constants/personalization_entry_point.h"
 #include "ash/public/cpp/locale_update_controller.h"
+#include "ash/public/cpp/login_types.h"
+#include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/system_tray.h"
 #include "ash/public/cpp/update_types.h"
 #include "base/command_line.h"
@@ -12,11 +20,15 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/user_metrics.h"
+#include "base/notreached.h"
+#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
+#include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/login/help_app_launcher.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
@@ -24,17 +36,20 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/set_time_dialog.h"
 #include "chrome/browser/ash/system/system_clock.h"
+#include "chrome/browser/ash/web_applications/personalization_app/personalization_app_metrics.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/chromeos/extensions/vpn_provider/vpn_service_factory.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
-#include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
+#include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/singleton_tabs.h"
-#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
+#include "chrome/browser/ui/webui/access_code_cast/access_code_cast_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/bluetooth_pairing_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/internet_config_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/internet_detail_dialog.h"
@@ -43,32 +58,37 @@
 #include "chrome/browser/ui/webui/settings/chromeos/constants/setting.mojom.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
+#include "chrome/common/channel_info.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/session_manager/session_manager_client.h"
-#include "chromeos/network/network_handler.h"
-#include "chromeos/network/network_state.h"
-#include "chromeos/network/network_state_handler.h"
-#include "chromeos/network/network_util.h"
-#include "chromeos/network/onc/onc_utils.h"
-#include "chromeos/network/tether_constants.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_state.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/ash/components/network/network_util.h"
+#include "chromeos/ash/components/network/onc/network_onc_utils.h"
+#include "chromeos/ash/components/network/tether_constants.h"
+#include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/services/app_service/public/cpp/features.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/user_manager/user_manager.h"
-#include "extensions/browser/api/vpn_provider/vpn_service.h"
-#include "extensions/browser/api/vpn_provider/vpn_service_factory.h"
-#include "net/base/escape.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/events/event_constants.h"
-
-using chromeos::DBusThreadManager;
-using chromeos::UpdateEngineClient;
+#include "url/gurl.h"
 using session_manager::SessionManager;
 using session_manager::SessionState;
 
 namespace {
 
 SystemTrayClientImpl* g_system_tray_client_instance = nullptr;
+
+// The prefix a calendar event URL *must* have in order to be launched by the
+// calendar web app.
+const char* kOfficialCalendarUrlPrefix =
+    "https://calendar.google.com/calendar/";
 
 void ShowSettingsSubPageForActiveUser(const std::string& sub_page) {
   chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
@@ -101,10 +121,10 @@ ash::UpdateSeverity GetUpdateSeverity(ash::UpdateType update_type,
   }
 }
 
-const chromeos::NetworkState* GetNetworkState(const std::string& network_id) {
+const ash::NetworkState* GetNetworkState(const std::string& network_id) {
   if (network_id.empty())
     return nullptr;
-  return chromeos::NetworkHandler::Get()
+  return ash::NetworkHandler::Get()
       ->network_state_handler()
       ->GetNetworkStateFromGuid(network_id);
 }
@@ -114,10 +134,84 @@ bool ShouldOpenCellularSetupPsimFlowOnClick(const std::string& network_id) {
   // checking a networks activation state is |kActivationStateNotActivated|
   // ensures the current network is a phyical SIM network.
 
-  const chromeos::NetworkState* network_state = GetNetworkState(network_id);
+  const ash::NetworkState* network_state = GetNetworkState(network_id);
   return network_state && network_state->type() == shill::kTypeCellular &&
          network_state->activation_state() ==
-             shill::kActivationStateNotActivated;
+             shill::kActivationStateNotActivated &&
+         network_state->eid().empty();
+}
+
+apps::AppServiceProxyAsh* GetActiveUserAppServiceProxyAsh() {
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  apps::AppServiceProxyAsh* proxy =
+      apps::AppServiceProxyFactory::GetForProfile(profile);
+  return proxy;
+}
+
+apps::AppRegistryCache* GetActiveUserAppRegistryCache() {
+  apps::AppServiceProxyAsh* proxy = GetActiveUserAppServiceProxyAsh();
+  if (!proxy)
+    return nullptr;
+
+  return &proxy->AppRegistryCache();
+}
+
+bool IsAppInstalled(std::string app_id) {
+  apps::AppRegistryCache* reg_cache = GetActiveUserAppRegistryCache();
+  if (!reg_cache) {
+    LOG(ERROR) << __FUNCTION__
+               << " Failed to get active user AppRegistryCache ";
+    return false;
+  }
+
+  bool found_app_id = false;
+  reg_cache->ForEachApp([&found_app_id, app_id](const apps::AppUpdate& update) {
+    if (update.AppId() == app_id) {
+      found_app_id = true;
+      return;
+    }
+  });
+
+  return found_app_id;
+}
+
+void OpenInBrowser(const GURL& event_url) {
+  if (crosapi::browser_util::IsLacrosPrimaryBrowser()) {
+    auto* browser_manager = crosapi::BrowserManager::Get();
+    browser_manager->SwitchToTab(
+        event_url,
+        /*path_behavior=*/NavigateParams::IGNORE_AND_NAVIGATE);
+    return;
+  }
+
+  // Lacros is not the primary browser, so use this workaround.
+  chrome::ScopedTabbedBrowserDisplayer displayer(
+      ProfileManager::GetActiveUserProfile());
+  NavigateParams params(
+      GetSingletonTabNavigateParams(displayer.browser(), event_url));
+  params.path_behavior = NavigateParams::IGNORE_AND_NAVIGATE;
+  ShowSingletonTabOverwritingNTP(displayer.browser(), &params);
+}
+
+ash::ManagementDeviceMode GetManagementDeviceMode(
+    policy::BrowserPolicyConnectorAsh* connector) {
+  if (!connector->IsDeviceEnterpriseManaged())
+    return ash::ManagementDeviceMode::kNone;
+
+  if (connector->IsKioskEnrolled())
+    return ash::ManagementDeviceMode::kKioskSku;
+
+  switch (connector->GetEnterpriseMarketSegment()) {
+    case policy::MarketSegment::UNKNOWN:
+      return ash::ManagementDeviceMode::kOther;
+    case policy::MarketSegment::ENTERPRISE:
+      return ash::ManagementDeviceMode::kChromeEnterprise;
+    case policy::MarketSegment::EDUCATION:
+      return ash::ManagementDeviceMode::kChromeEducation;
+  }
+
+  NOTREACHED();
+  return ash::ManagementDeviceMode::kOther;
 }
 
 }  // namespace
@@ -215,7 +309,7 @@ SystemTrayClientImpl::SystemTrayClientImpl()
       policy_connector->GetDeviceCloudPolicyManager();
   if (policy_manager)
     policy_manager->core()->store()->AddObserver(this);
-  UpdateEnterpriseDomainInfo();
+  UpdateDeviceEnterpriseInfo();
 
   system_tray_->SetClient(this);
 
@@ -227,6 +321,10 @@ SystemTrayClientImpl::SystemTrayClientImpl()
 SystemTrayClientImpl::~SystemTrayClientImpl() {
   DCHECK_EQ(this, g_system_tray_client_instance);
   g_system_tray_client_instance = nullptr;
+
+  // This can happen when mocking this class in tests.
+  if (!system_tray_)
+    return;
 
   system_tray_->SetClient(nullptr);
 
@@ -327,6 +425,19 @@ void SystemTrayClientImpl::ShowDisplaySettings() {
       chromeos::settings::mojom::kDisplaySubpagePath);
 }
 
+void SystemTrayClientImpl::ShowDarkModeSettings() {
+  // Record entry point metric to Personalization through Dark Mode Quick
+  // Settings/System Tray.
+  ash::personalization_app::LogPersonalizationEntryPoint(
+      ash::PersonalizationEntryPoint::kSystemTray);
+  ash::NewWindowDelegate::GetPrimary()->OpenPersonalizationHub();
+}
+
+void SystemTrayClientImpl::ShowStorageSettings() {
+  ShowSettingsSubPageForActiveUser(
+      chromeos::settings::mojom::kStorageSubpagePath);
+}
+
 void SystemTrayClientImpl::ShowPowerSettings() {
   base::RecordAction(base::UserMetricsAction("Tray_ShowPowerOptions"));
   ShowSettingsSubPageForActiveUser(
@@ -336,6 +447,11 @@ void SystemTrayClientImpl::ShowPowerSettings() {
 void SystemTrayClientImpl::ShowPrivacyAndSecuritySettings() {
   ShowSettingsSubPageForActiveUser(
       chromeos::settings::mojom::kPrivacyAndSecuritySectionPath);
+}
+
+void SystemTrayClientImpl::ShowSmartPrivacySettings() {
+  ShowSettingsSubPageForActiveUser(
+      chromeos::settings::mojom::kSmartPrivacySubpagePath);
 }
 
 void SystemTrayClientImpl::ShowChromeSlow() {
@@ -376,21 +492,29 @@ void SystemTrayClientImpl::ShowAboutChromeOS() {
       "?checkForUpdate=true");
 }
 
-void SystemTrayClientImpl::ShowHelp() {
-  chrome::ShowHelpForProfile(ProfileManager::GetActiveUserProfile(),
-                             chrome::HELP_SOURCE_MENU);
+void SystemTrayClientImpl::ShowAboutChromeOSDetails() {
+  ShowSettingsSubPageForActiveUser(
+      chromeos::settings::mojom::kDetailedBuildInfoSubpagePath);
 }
 
 void SystemTrayClientImpl::ShowAccessibilityHelp() {
-  chrome::ScopedTabbedBrowserDisplayer displayer(
-      ProfileManager::GetActiveUserProfile());
-  ash::AccessibilityManager::ShowAccessibilityHelp(displayer.browser());
+  ash::AccessibilityManager::ShowAccessibilityHelp();
 }
 
 void SystemTrayClientImpl::ShowAccessibilitySettings() {
   base::RecordAction(base::UserMetricsAction("ShowAccessibilitySettings"));
-  ShowSettingsSubPageForActiveUser(
-      chromeos::settings::mojom::kManageAccessibilitySubpagePath);
+  // TODO(crbug.com/1358729): We show the old Manage Accessibility page in kiosk
+  // mode, so users can't get to other OS Settings (such as Wi-Fi, Date / Time).
+  // We plan to remove this after we add a standalone OS Accessibility page for
+  // kiosk mode, which blocks access to other OS settings.
+  bool is_kiosk = user_manager::UserManager::Get()->IsLoggedInAsAnyKioskApp();
+  if (!is_kiosk && ::features::IsAccessibilityOSSettingsVisibilityEnabled()) {
+    ShowSettingsSubPageForActiveUser(
+        chromeos::settings::mojom::kAccessibilitySectionPath);
+  } else {
+    ShowSettingsSubPageForActiveUser(
+        chromeos::settings::mojom::kManageAccessibilitySubpagePath);
+  }
 }
 
 void SystemTrayClientImpl::ShowGestureEducationHelp() {
@@ -399,14 +523,20 @@ void SystemTrayClientImpl::ShowGestureEducationHelp() {
   if (!profile)
     return;
 
-  web_app::SystemAppLaunchParams params;
+  ash::SystemAppLaunchParams params;
   params.url = GURL(chrome::kChromeOSGestureEducationHelpURL);
-  params.launch_source = apps::mojom::LaunchSource::kFromOtherApp;
-  web_app::LaunchSystemWebAppAsync(profile, web_app::SystemAppType::HELP,
-                                   params);
+  params.launch_source = apps::LaunchSource::kFromOtherApp;
+  ash::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::HELP, params);
 }
 
 void SystemTrayClientImpl::ShowPaletteHelp() {
+  if (crosapi::browser_util::IsLacrosPrimaryBrowser()) {
+    crosapi::BrowserManager::Get()->SwitchToTab(
+        GURL(chrome::kChromePaletteHelpURL),
+        /*path_behavior=*/NavigateParams::RESPECT);
+    return;
+  }
+
   chrome::ScopedTabbedBrowserDisplayer displayer(
       ProfileManager::GetActiveUserProfile());
   ShowSingletonTab(displayer.browser(), GURL(chrome::kChromePaletteHelpURL));
@@ -418,12 +548,6 @@ void SystemTrayClientImpl::ShowPaletteSettings() {
       chromeos::settings::mojom::kStylusSubpagePath);
 }
 
-void SystemTrayClientImpl::ShowPublicAccountInfo() {
-  chrome::ScopedTabbedBrowserDisplayer displayer(
-      ProfileManager::GetActiveUserProfile());
-  chrome::ShowPolicy(displayer.browser());
-}
-
 void SystemTrayClientImpl::ShowEnterpriseInfo() {
   // At the login screen, lock screen, etc. show enterprise help in a window.
   if (SessionManager::Get()->IsUserSessionBlocked()) {
@@ -433,6 +557,13 @@ void SystemTrayClientImpl::ShowEnterpriseInfo() {
   }
 
   // Otherwise show enterprise management info page.
+  if (crosapi::browser_util::IsLacrosPrimaryBrowser()) {
+    crosapi::BrowserManager::Get()->SwitchToTab(
+        GURL(chrome::kChromeUIManagementURL),
+        /*path_behavior=*/NavigateParams::RESPECT);
+    return;
+  }
+
   chrome::ScopedTabbedBrowserDisplayer displayer(
       ProfileManager::GetActiveUserProfile());
   chrome::ShowEnterpriseManagementPageInTabbedBrowser(displayer.browser());
@@ -443,13 +574,13 @@ void SystemTrayClientImpl::ShowNetworkConfigure(const std::string& network_id) {
   if (SessionManager::Get()->IsScreenLocked())
     return;
 
-  DCHECK(chromeos::NetworkHandler::IsInitialized());
-  const chromeos::NetworkState* network_state = GetNetworkState(network_id);
+  DCHECK(ash::NetworkHandler::IsInitialized());
+  const ash::NetworkState* network_state = GetNetworkState(network_id);
   if (!network_state) {
     LOG(ERROR) << "Network not found: " << network_id;
     return;
   }
-  if (network_state->type() == chromeos::kTypeTether &&
+  if (network_state->type() == ash::kTypeTether &&
       !network_state->tether_has_connected_to_host()) {
     ShowNetworkSettingsHelper(network_id, true /* show_configure */);
     return;
@@ -495,8 +626,13 @@ void SystemTrayClientImpl::ShowArcVpnCreate(const std::string& app_id) {
     return;
   }
 
-  apps::AppServiceProxyFactory::GetForProfile(profile)->Launch(
-      app_id, ui::EF_NONE, apps::mojom::LaunchSource::kFromParentalControls);
+  if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
+    apps::AppServiceProxyFactory::GetForProfile(profile)->Launch(
+        app_id, ui::EF_NONE, apps::LaunchSource::kFromParentalControls);
+  } else {
+    apps::AppServiceProxyFactory::GetForProfile(profile)->Launch(
+        app_id, ui::EF_NONE, apps::mojom::LaunchSource::kFromParentalControls);
+  }
 }
 
 void SystemTrayClientImpl::ShowSettingsSimUnlock() {
@@ -533,18 +669,18 @@ void SystemTrayClientImpl::ShowNetworkSettingsHelper(
   }
 
   std::string page = chromeos::settings::mojom::kNetworkSectionPath;
-  const chromeos::NetworkState* network_state = GetNetworkState(network_id);
+  const ash::NetworkState* network_state = GetNetworkState(network_id);
   if (!network_id.empty() && network_state) {
     // TODO(khorimoto): Use a more general path name here. This path is named
     // kWifi*, but it's actually a generic page.
     page = chromeos::settings::mojom::kWifiDetailsSubpagePath;
     page += "?guid=";
-    page += net::EscapeUrlEncodedData(network_id, true);
+    page += base::EscapeUrlEncodedData(network_id, true);
     page += "&name=";
-    page += net::EscapeUrlEncodedData(network_state->name(), true);
+    page += base::EscapeUrlEncodedData(network_state->name(), true);
     page += "&type=";
-    page += net::EscapeUrlEncodedData(
-        chromeos::network_util::TranslateShillTypeToONC(network_state->type()),
+    page += base::EscapeUrlEncodedData(
+        ash::network_util::TranslateShillTypeToONC(network_state->type()),
         true);
     page += "&settingId=";
     page += base::NumberToString(static_cast<int32_t>(
@@ -560,8 +696,8 @@ void SystemTrayClientImpl::ShowMultiDeviceSetup() {
   chromeos::multidevice_setup::MultiDeviceSetupDialog::Show();
 }
 
-void SystemTrayClientImpl::RequestRestartForUpdate() {
-  browser_shutdown::NotifyAndTerminate(/*fast_path=*/true);
+void SystemTrayClientImpl::ShowFirmwareUpdate() {
+  chrome::ShowFirmwareUpdatesApp(ProfileManager::GetActiveUserProfile());
 }
 
 void SystemTrayClientImpl::SetLocaleAndExit(
@@ -569,6 +705,107 @@ void SystemTrayClientImpl::SetLocaleAndExit(
   ProfileManager::GetActiveUserProfile()->ChangeAppLocale(
       locale_iso_code, Profile::APP_LOCALE_CHANGED_VIA_SYSTEM_TRAY);
   chrome::AttemptUserExit();
+}
+
+void SystemTrayClientImpl::ShowAccessCodeCastingDialog(
+    AccessCodeCastDialogOpenLocation open_location) {
+  media_router::AccessCodeCastDialog::ShowForDesktopMirroring(open_location);
+}
+
+void SystemTrayClientImpl::ShowCalendarEvent(
+    const absl::optional<GURL>& event_url,
+    const base::Time& date,
+    bool& opened_pwa,
+    GURL& final_event_url) {
+  // Default is that we didn't open the calendar PWA.
+  opened_pwa = false;
+
+  // Calendar URL we'll actually open, today's date by default.
+  GURL official_url(kOfficialCalendarUrlPrefix);
+
+  // Compose the actual URL to be opened.
+  if (event_url.has_value()) {
+    // An event URL was passed in, so modify it as needed for us to pass the "in
+    // app scope" guards in WebAppLaunchProcess::Run().  See http://b/214428922
+    GURL::Replacements replacements;
+    replacements.SetSchemeStr("https");
+    replacements.SetHostStr("calendar.google.com");
+    official_url = event_url->ReplaceComponents(replacements);
+  } else {
+    // No event URL provided, so fall back on opening calendar with `date`.
+    std::string calendar_url_str = kOfficialCalendarUrlPrefix;
+    base::Time::Exploded date_exp;
+    date.UTCExplode(&date_exp);
+    std::string date_url =
+        base::StringPrintf("r/week/%d/%d/%d", date_exp.year, date_exp.month,
+                           date_exp.day_of_month);
+    calendar_url_str.append(date_url);
+    official_url = GURL(calendar_url_str);
+  }
+
+  // Return the URL we actually opened.
+  final_event_url = official_url;
+
+  // Check calendar web app installation.
+  if (!IsAppInstalled(web_app::kGoogleCalendarAppId)) {
+    OpenInBrowser(official_url);
+    return;
+  }
+
+  // Need this in order to launch the web app.
+  apps::AppServiceProxyAsh* proxy = GetActiveUserAppServiceProxyAsh();
+  if (!proxy) {
+    LOG(ERROR) << __FUNCTION__
+               << " failed to get active user AppServiceProxyAsh";
+    OpenInBrowser(official_url);
+    return;
+  }
+
+  // Launch web app.
+  if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
+    proxy->LaunchAppWithUrl(
+        web_app::kGoogleCalendarAppId,
+        apps::GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
+                            /*prefer_container=*/true),
+        official_url, apps::LaunchSource::kFromShelf);
+  } else {
+    proxy->LaunchAppWithUrl(
+        web_app::kGoogleCalendarAppId,
+        apps::GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
+                            /*prefer_container=*/true),
+        official_url, apps::mojom::LaunchSource::kFromShelf);
+  }
+  opened_pwa = true;
+}
+
+void SystemTrayClientImpl::ShowChannelInfoAdditionalDetails() {
+  base::RecordAction(
+      base::UserMetricsAction("Tray_ShowChannelInfoAdditionalDetails"));
+  ShowSettingsSubPageForActiveUser(
+      std::string(chromeos::settings::mojom::kDetailedBuildInfoSubpagePath));
+}
+
+void SystemTrayClientImpl::ShowChannelInfoGiveFeedback() {
+  ash::NewWindowDelegate::GetInstance()->OpenFeedbackPage(
+      ash::NewWindowDelegate::kFeedbackSourceChannelIndicator);
+}
+
+bool SystemTrayClientImpl::IsUserFeedbackEnabled() {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ash::switches::kForceShowReleaseTrack)) {
+    // Force the release track UI to show the feedback button.
+    return true;
+  }
+  PrefService* signin_prefs =
+      ProfileManager::GetActiveUserProfile()->GetPrefs();
+  DCHECK(signin_prefs);
+  return signin_prefs->GetBoolean(prefs::kUserFeedbackAllowed);
+}
+
+SystemTrayClientImpl::SystemTrayClientImpl(SystemTrayClientImpl* mock_instance)
+    : system_tray_(nullptr) {
+  DCHECK(!g_system_tray_client_instance);
+  g_system_tray_client_instance = mock_instance;
 }
 
 void SystemTrayClientImpl::HandleUpdateAvailable(ash::UpdateType update_type) {
@@ -605,6 +842,12 @@ void SystemTrayClientImpl::OnSystemClockChanged(
 
 ////////////////////////////////////////////////////////////////////////////////
 // UpgradeDetector::UpgradeObserver:
+void SystemTrayClientImpl::OnUpdateDeferred(bool use_notification) {
+  system_tray_->SetUpdateDeferred(
+      use_notification ? ash::DeferredUpdateState::kShowNotification
+                       : ash::DeferredUpdateState::kShowDialog);
+}
+
 void SystemTrayClientImpl::OnUpdateOverCellularAvailable() {
   // Requests that ash show the update over cellular available icon.
   system_tray_->SetUpdateOverCellularAvailableIconVisible(true);
@@ -622,28 +865,34 @@ void SystemTrayClientImpl::OnUpgradeRecommended() {
 ////////////////////////////////////////////////////////////////////////////////
 // policy::CloudPolicyStore::Observer
 void SystemTrayClientImpl::OnStoreLoaded(policy::CloudPolicyStore* store) {
-  UpdateEnterpriseDomainInfo();
+  UpdateDeviceEnterpriseInfo();
 }
 
 void SystemTrayClientImpl::OnStoreError(policy::CloudPolicyStore* store) {
-  UpdateEnterpriseDomainInfo();
+  UpdateDeviceEnterpriseInfo();
 }
 
-void SystemTrayClientImpl::UpdateEnterpriseDomainInfo() {
+void SystemTrayClientImpl::UpdateDeviceEnterpriseInfo() {
   policy::BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
-  const std::string enterprise_domain_manager =
+  ash::DeviceEnterpriseInfo device_enterprise_info;
+  device_enterprise_info.enterprise_domain_manager =
       connector->GetEnterpriseDomainManager();
-  const bool active_directory_managed = connector->IsActiveDirectoryManaged();
-  if (enterprise_domain_manager == last_enterprise_domain_manager_ &&
-      active_directory_managed == last_active_directory_managed_) {
-    return;
+  device_enterprise_info.active_directory_managed =
+      connector->IsActiveDirectoryManaged();
+  device_enterprise_info.management_device_mode =
+      GetManagementDeviceMode(connector);
+  if (!last_device_enterprise_info_) {
+    last_device_enterprise_info_ =
+        std::make_unique<ash::DeviceEnterpriseInfo>();
   }
+
+  if (device_enterprise_info == *last_device_enterprise_info_)
+    return;
+
   // Send to ash, which will add an item to the system tray.
-  system_tray_->SetEnterpriseDomainInfo(enterprise_domain_manager,
-                                        active_directory_managed);
-  last_enterprise_domain_manager_ = enterprise_domain_manager;
-  last_active_directory_managed_ = active_directory_managed;
+  system_tray_->SetDeviceEnterpriseInfo(device_enterprise_info);
+  *last_device_enterprise_info_ = device_enterprise_info;
 }
 
 void SystemTrayClientImpl::UpdateEnterpriseAccountDomainInfo(Profile* profile) {

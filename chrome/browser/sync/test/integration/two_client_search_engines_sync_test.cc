@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -295,8 +295,14 @@ IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest,
 
 // Ensure that we can change the search engine and immediately delete it
 // without putting the clients out of sync.
+// TODO(crbug.com/1347009): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_DeleteSyncedDefault DISABLED_DeleteSyncedDefault
+#else
+#define MAYBE_DeleteSyncedDefault DeleteSyncedDefault
+#endif
 IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest,
-                       E2E_ENABLED(DeleteSyncedDefault)) {
+                       E2E_ENABLED(MAYBE_DeleteSyncedDefault)) {
   ResetSyncForPrimaryAccount();
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   // TODO(crbug.com/953711): Ideally we could immediately assert

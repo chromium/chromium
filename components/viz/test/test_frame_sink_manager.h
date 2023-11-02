@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -65,10 +65,6 @@ class TestFrameSinkManagerImpl : public mojom::FrameSinkManager {
   void RequestCopyOfOutput(
       const SurfaceId& surface_id,
       std::unique_ptr<CopyOutputRequest> request) override {}
-  void SetHitTestAsyncQueriedDebugRegions(
-      const FrameSinkId& root_frame_sink_id,
-      const std::vector<FrameSinkId>& hit_test_async_queried_debug_queue)
-      override {}
   void CacheBackBuffer(uint32_t cache_id,
                        const FrameSinkId& root_frame_sink_id) override {}
   void EvictBackBuffer(uint32_t cache_id,
@@ -77,6 +73,8 @@ class TestFrameSinkManagerImpl : public mojom::FrameSinkManager {
       const DebugRendererSettings& debug_settings) override {}
   void Throttle(const std::vector<FrameSinkId>& ids,
                 base::TimeDelta interval) override {}
+  void StartThrottlingAllFrameSinks(base::TimeDelta interval) override {}
+  void StopThrottlingAllFrameSinks() override {}
 
   mojo::Receiver<mojom::FrameSinkManager> receiver_{this};
   mojo::Remote<mojom::FrameSinkManagerClient> client_;

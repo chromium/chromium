@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -139,11 +139,11 @@ class RendererFreezerTest : public testing::Test {
   ~RendererFreezerTest() override = default;
 
   // testing::Test:
-  void SetUp() override { PowerManagerClient::InitializeFake(); }
+  void SetUp() override { chromeos::PowerManagerClient::InitializeFake(); }
 
   void TearDown() override {
     DCHECK(renderer_freezer_);
-    PowerManagerClient::Shutdown();
+    chromeos::PowerManagerClient::Shutdown();
     renderer_freezer_.reset();
   }
 
@@ -166,12 +166,12 @@ class RendererFreezerTest : public testing::Test {
 TEST_F(RendererFreezerTest, SuspendResume) {
   Init();
 
-  FakePowerManagerClient::Get()->SendSuspendImminent(
+  chromeos::FakePowerManagerClient::Get()->SendSuspendImminent(
       power_manager::SuspendImminent_Reason_OTHER);
   EXPECT_EQ(kFreezeRenderers, test_delegate_->GetActions());
 
   // The renderers should be thawed when we resume.
-  FakePowerManagerClient::Get()->SendSuspendDone();
+  chromeos::FakePowerManagerClient::Get()->SendSuspendDone();
   EXPECT_EQ(kThawRenderers, test_delegate_->GetActions());
 }
 
@@ -182,12 +182,12 @@ TEST_F(RendererFreezerTest, DelegateCannotFreezeRenderers) {
   Init();
 
   // Nothing happens on suspend.
-  FakePowerManagerClient::Get()->SendSuspendImminent(
+  chromeos::FakePowerManagerClient::Get()->SendSuspendImminent(
       power_manager::SuspendImminent_Reason_OTHER);
   EXPECT_EQ(kNoActions, test_delegate_->GetActions());
 
   // Nothing happens on resume.
-  FakePowerManagerClient::Get()->SendSuspendDone();
+  chromeos::FakePowerManagerClient::Get()->SendSuspendDone();
   EXPECT_EQ(kNoActions, test_delegate_->GetActions());
 }
 
@@ -202,11 +202,11 @@ TEST_F(RendererFreezerTest, ErrorThawingRenderers) {
   Init();
   test_delegate_->set_thaw_renderers_result(false);
 
-  FakePowerManagerClient::Get()->SendSuspendImminent(
+  chromeos::FakePowerManagerClient::Get()->SendSuspendImminent(
       power_manager::SuspendImminent_Reason_OTHER);
   EXPECT_EQ(kFreezeRenderers, test_delegate_->GetActions());
 
-  EXPECT_DEATH(FakePowerManagerClient::Get()->SendSuspendDone(),
+  EXPECT_DEATH(chromeos::FakePowerManagerClient::Get()->SendSuspendDone(),
                "Unable to thaw");
 }
 #endif  // GTEST_HAS_DEATH_TEST
@@ -245,7 +245,7 @@ class RendererFreezerTestWithExtensions : public RendererFreezerTest {
   void TearDown() override {
     extensions::ExtensionSystem::Get(profile_)->Shutdown();
 
-    profile_ = NULL;
+    profile_ = nullptr;
 
     profile_manager_->DeleteAllTestingProfiles();
 

@@ -1,5 +1,5 @@
 # @GEN_HEADER@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -30,3 +30,8 @@ class BuildPropsCodeSignConfig(CodeSignConfig):
     @property
     def base_bundle_id(self):
         return '@MAC_BUNDLE_ID@'
+
+    @property
+    def notary_team_id(self):
+        return super(BuildPropsCodeSignConfig,
+                     self).notary_team_id or '@MAC_TEAM_ID@'

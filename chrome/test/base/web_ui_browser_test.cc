@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,11 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/lazy_instance.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
@@ -35,6 +37,7 @@
 #include "chrome/test/base/test_chrome_web_ui_controller_factory.h"
 #include "chrome/test/base/test_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/base/web_ui_test_data_source.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
@@ -51,6 +54,10 @@
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/resource/resource_handle.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ui/webui/test_data_source.h"
+#endif
 
 using content::RenderFrameHost;
 using content::WebContents;
@@ -96,7 +103,7 @@ class WebUIJsInjectionReadyObserver : public content::WebContentsObserver {
   }
 
  private:
-  BaseWebUIBrowserTest* const browser_test_;
+  const raw_ptr<BaseWebUIBrowserTest> browser_test_;
   std::string preload_test_fixture_;
   std::string preload_test_name_;
 };
@@ -111,11 +118,10 @@ class WebUITestMessageHandler : public content::WebUIMessageHandler,
   ~WebUITestMessageHandler() override = default;
 
   // Receives testResult messages.
-  void HandleTestResult(const base::ListValue* test_result) {
+  void HandleTestResult(const base::Value::List& list) {
     // To ensure this gets done, do this before ASSERT* calls.
     RunQuitClosure();
 
-    const auto& list = test_result->GetList();
     ASSERT_FALSE(list.empty());
     const bool test_succeeded = list[0].is_bool() && list[0].GetBool();
     std::string message;
@@ -129,7 +135,7 @@ class WebUITestMessageHandler : public content::WebUIMessageHandler,
 
   // content::WebUIMessageHandler:
   void RegisterMessages() override {
-    web_ui()->RegisterDeprecatedMessageCallback(
+    web_ui()->RegisterMessageCallback(
         "testResult",
         base::BindRepeating(&WebUITestMessageHandler::HandleTestResult,
                             base::Unretained(this)));
@@ -385,7 +391,7 @@ class PrintContentBrowserClient : public ChromeContentBrowserClient {
 
  private:
   // ChromeContentBrowserClient implementation:
-  content::WebContentsViewDelegate* GetWebContentsViewDelegate(
+  std::unique_ptr<content::WebContentsViewDelegate> GetWebContentsViewDelegate(
       content::WebContents* web_contents) override {
     preview_dialog_ = web_contents;
     observer_ = std::make_unique<WebUIJsInjectionReadyObserver>(
@@ -395,11 +401,11 @@ class PrintContentBrowserClient : public ChromeContentBrowserClient {
     return nullptr;
   }
 
-  BaseWebUIBrowserTest* const browser_test_;
+  const raw_ptr<BaseWebUIBrowserTest> browser_test_;
   std::unique_ptr<WebUIJsInjectionReadyObserver> observer_;
   std::string preload_test_fixture_;
   std::string preload_test_name_;
-  content::WebContents* preview_dialog_ = nullptr;
+  raw_ptr<content::WebContents> preview_dialog_ = nullptr;
   scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
 };
 #endif
@@ -451,9 +457,7 @@ class MockWebUIDataSource : public content::URLDataSource {
     std::move(callback).Run(response.get());
   }
 
-  std::string GetMimeType(const std::string& path) override {
-    return "text/html";
-  }
+  std::string GetMimeType(const GURL& url) override { return "text/html"; }
 
   std::string GetContentSecurityPolicy(
       const network::mojom::CSPDirectiveName directive) override {
@@ -505,7 +509,7 @@ void BaseWebUIBrowserTest::SetUpOnMainThread() {
   JavaScriptBrowserTest::SetUpOnMainThread();
 
   base::FilePath pak_path;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_MODULE, &pak_path));
+  ASSERT_TRUE(base::PathService::Get(base::DIR_ASSETS, &pak_path));
   pak_path = pak_path.AppendASCII("browser_tests.pak");
   ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
       pak_path, ui::kScaleFactorNone);
@@ -519,6 +523,23 @@ void BaseWebUIBrowserTest::SetUpOnMainThread() {
   }
 
   logging::SetLogMessageHandler(&LogHandler);
+
+  // For tests that run on the login screen, there is no Browser during
+  // SetUpOnMainThread() so skip adding TestDataSource. These tests don't need
+  // TestDataSource anyway.
+  if (browser()) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // Register URLDataSource that serves files used in tests at chrome://test/
+    // e.g. `chrome://test/mocha.js`.
+    content::URLDataSource::Add(browser()->profile(),
+                                std::make_unique<TestDataSource>("webui"));
+#endif
+
+    // Register data sources for chrome://webui-test/ URLs
+    // e.g. `chrome://webui-test/chai_assert.js`.
+    content::WebUIDataSource* source = webui::CreateWebUITestDataSource();
+    content::WebUIDataSource::Add(browser()->profile(), source);
+  }
 
   test_factory_ = std::make_unique<TestChromeWebUIControllerFactory>();
   factory_registration_ =
@@ -586,11 +607,11 @@ bool BaseWebUIBrowserTest::RunJavascriptUsingHandler(
       called_function = BuildRunTestJSCall(is_async, function_name,
                                            std::move(function_arguments));
     } else {
-      std::vector<const base::Value*> ptr_vector(function_arguments.size());
-      for (size_t i = 0; i < function_arguments.size(); ++i)
-        ptr_vector[i] = &function_arguments[i];
+      std::vector<base::ValueView> view_vector;
+      for (const auto& argument : function_arguments)
+        view_vector.emplace_back(argument);
       called_function =
-          content::WebUI::GetJavascriptCall(function_name, ptr_vector);
+          content::WebUI::GetJavascriptCall(function_name, view_vector);
     }
     content.append(called_function);
   }

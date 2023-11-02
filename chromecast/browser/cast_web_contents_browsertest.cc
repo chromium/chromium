@@ -1,11 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROMECAST_BROWSER_CAST_WEB_CONTENTS_BROWSERTEST_H_
 #define CHROMECAST_BROWSER_CAST_WEB_CONTENTS_BROWSERTEST_H_
 
-#include <algorithm>
 #include <memory>
 #include <string>
 
@@ -14,8 +13,8 @@
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/path_service.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
@@ -113,12 +112,8 @@ class MockCastWebContentsObserver : public CastWebContentsObserver {
 
   MOCK_METHOD1(PageStateChanged, void(PageState page_state));
   MOCK_METHOD2(PageStopped, void(PageState page_state, int error_code));
-  MOCK_METHOD3(RenderFrameCreated,
-               void(int render_process_id,
-                    int render_frame_id,
-                    mojo::PendingAssociatedRemote<
-                        chromecast::mojom::IdentificationSettingsManager>
-                        settings_manager));
+  MOCK_METHOD2(RenderFrameCreated,
+               void(int render_process_id, int render_frame_id));
   MOCK_METHOD0(ResourceLoadFailed, void());
   MOCK_METHOD1(UpdateTitle, void(const std::string& title));
 };
@@ -479,10 +474,8 @@ IN_PROC_BROWSER_TEST_F(CastWebContentsBrowserTest, ErrorLoadFailSubFrames) {
 
   ASSERT_EQ(2, (int)render_frames_.size());
   auto it =
-      std::find_if(render_frames_.begin(), render_frames_.end(),
-                   [this](content::RenderFrameHost* frame) {
-                     return frame->GetParent() == web_contents_->GetMainFrame();
-                   });
+      base::ranges::find(render_frames_, web_contents_->GetPrimaryMainFrame(),
+                         &content::RenderFrameHost::GetParent);
   ASSERT_NE(render_frames_.end(), it);
   content::RenderFrameHost* sub_frame = *it;
   ASSERT_NE(nullptr, sub_frame);
@@ -495,8 +488,9 @@ IN_PROC_BROWSER_TEST_F(CastWebContentsBrowserTest, ErrorLoadFailSubFrames) {
   EXPECT_CALL(mock_cast_wc_observer_, PageStateChanged(_)).Times(0);
   EXPECT_CALL(mock_cast_wc_observer_, PageStopped(_, _)).Times(0);
   cast_web_contents_->DidFailLoad(
-      web_contents_->GetMainFrame(),
-      web_contents_->GetMainFrame()->GetLastCommittedURL(), net::ERR_ABORTED);
+      web_contents_->GetPrimaryMainFrame(),
+      web_contents_->GetPrimaryMainFrame()->GetLastCommittedURL(),
+      net::ERR_ABORTED);
 
   // ===========================================================================
   // Test: If main frame fails to load, page should enter ERROR state.
@@ -506,8 +500,9 @@ IN_PROC_BROWSER_TEST_F(CastWebContentsBrowserTest, ErrorLoadFailSubFrames) {
               PageStopped(PageState::ERROR, net::ERR_FAILED))
       .WillOnce(InvokeWithoutArgs([&]() { QuitRunLoop(); }));
   cast_web_contents_->DidFailLoad(
-      web_contents_->GetMainFrame(),
-      web_contents_->GetMainFrame()->GetLastCommittedURL(), net::ERR_FAILED);
+      web_contents_->GetPrimaryMainFrame(),
+      web_contents_->GetPrimaryMainFrame()->GetLastCommittedURL(),
+      net::ERR_FAILED);
   run_loop_->Run();
 }
 

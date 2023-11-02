@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/task/sequence_manager/task_queue.h"
+#include "base/time/time.h"
 #include "content/browser/scheduler/browser_task_queues.h"
 #include "content/common/content_export.h"
 
@@ -42,6 +43,8 @@ class CONTENT_EXPORT BrowserUIThreadScheduler {
     BrowserUIThreadScheduler* scheduler_ = nullptr;
   };
 
+  enum ScrollState { kGestureScrollActive, kFlingActive, kNone };
+
   using Handle = BrowserTaskQueues::Handle;
 
   BrowserUIThreadScheduler();
@@ -51,6 +54,8 @@ class CONTENT_EXPORT BrowserUIThreadScheduler {
 
   ~BrowserUIThreadScheduler();
 
+  static BrowserUIThreadScheduler* Get();
+
   // Setting the DefaultTaskRunner is up to the caller.
   static std::unique_ptr<BrowserUIThreadScheduler> CreateForTesting(
       base::sequence_manager::SequenceManager* sequence_manager);
@@ -58,6 +63,7 @@ class CONTENT_EXPORT BrowserUIThreadScheduler {
   using QueueType = BrowserTaskQueues::QueueType;
 
   scoped_refptr<Handle> GetHandle() const { return handle_; }
+  void OnScrollStateUpdate(ScrollState scroll_state);
 
  private:
   friend class BrowserTaskExecutor;
@@ -71,6 +77,8 @@ class CONTENT_EXPORT BrowserUIThreadScheduler {
   // Called after the feature list is ready and we can set up any policy
   // experiments.
   void PostFeatureListSetup();
+  void EnableBrowserPrioritizesNativeWork();
+  void EnableAlternatingScheduler();
   // Used in the BrowserPrioritizeNativeWork experiment, when we want to
   // prioritize yielding to java when user input starts and for a short period
   // after it ends.
@@ -89,11 +97,20 @@ class CONTENT_EXPORT BrowserUIThreadScheduler {
   BrowserTaskQueues task_queues_;
   scoped_refptr<Handle> handle_;
 
-  // These four variables are used in the BrowserPrioritizeNativeWork finch
+  // These three variables are used in the BrowserPrioritizeNativeWork finch
   // experiment. False ensures this feature is disabled by default.
   int user_input_active_handle_count = 0;
   bool browser_prioritize_native_work_ = false;
   base::TimeDelta browser_prioritize_native_work_after_input_end_ms_;
+
+  // There five variables are used in the kBrowserPeriodicYieldingToNative finch
+  // experiment, |scroll_state_| should indicate the scroll state upton which
+  // the yielding to looper delay will depend.
+  bool browser_enable_periodic_yielding_native_ = false;
+  ScrollState scroll_state_;
+  const base::TimeDelta yield_to_native_for_normal_input_after_ms_;
+  const base::TimeDelta yield_to_native_for_fling_input_after_ms_;
+  const base::TimeDelta yield_to_native_for_default_after_ms_;
 };
 
 }  // namespace content

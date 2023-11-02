@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -75,6 +75,16 @@ TEST(TimeUtilTest, GetTimeFromStringBasic) {
   base::Time::Exploded target_time3 = {2005, 1, 0, 7, 8, 2, 0, 123};
   EXPECT_TRUE(GetTimeFromString("2005-01-07T08:02:00.123Z", &test_time));
   EXPECT_TRUE(base::Time::FromUTCExploded(target_time3, &out_time));
+  EXPECT_EQ(FormatTime(out_time), FormatTime(test_time));
+}
+
+TEST(TimeUtilTest, GetDateOnlyFromStringBasic) {
+  base::Time test_time;
+  base::Time out_time;
+
+  base::Time::Exploded target_time1 = {2009, 10, 0, 23};
+  EXPECT_TRUE(GetDateOnlyFromString("2009-10-23", &test_time));
+  EXPECT_TRUE(base::Time::FromUTCExploded(target_time1, &out_time));
   EXPECT_EQ(FormatTime(out_time), FormatTime(test_time));
 }
 

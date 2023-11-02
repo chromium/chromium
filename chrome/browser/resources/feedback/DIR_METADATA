@@ -1,1 +1,3 @@
-mixins: "//components/feedback/COMMON_METADATA"
+monorail {
+  component: "Platform>Apps>Feedback"
+}

@@ -1,15 +1,15 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {dispatchSimpleEvent, getPropertyDescriptor, PropertyKind} from 'chrome://resources/js/cr.m.js';
-import {Command} from 'chrome://resources/js/cr/ui/command.m.js';
-import {contextMenuHandler} from 'chrome://resources/js/cr/ui/context_menu_handler.m.js';
-import {Menu} from 'chrome://resources/js/cr/ui/menu.m.js';
-import {Tree, TreeItem} from 'chrome://resources/js/cr/ui/tree.js';
+import {Command} from './command.js';
+import {contextMenuHandler} from './context_menu_handler.js';
+import {Menu} from './menu.js';
 
 import {FileType} from '../../../common/js/file_type.js';
+import {vmTypeToIconName} from '../../../common/js/icon_util.js';
 import {metrics} from '../../../common/js/metrics.js';
 import {str, util} from '../../../common/js/util.js';
 import {VolumeManagerCommon} from '../../../common/js/volume_manager_types.js';
@@ -22,6 +22,8 @@ import {FileFilter} from '../directory_contents.js';
 import {DirectoryModel} from '../directory_model.js';
 import {MetadataModel} from '../metadata/metadata_model.js';
 import {NavigationListModel, NavigationModelAndroidAppItem, NavigationModelFakeItem, NavigationModelItem, NavigationModelItemType, NavigationModelShortcutItem, NavigationModelVolumeItem, NavigationSection} from '../navigation_list_model.js';
+
+import {Tree, TreeItem} from './tree.js';
 
 // Namespace
 const directorytree = {};
@@ -560,7 +562,8 @@ export class DirectoryItem extends FilesTreeItem {
           }
           this.parentTree_.metadataModel_.get(
               this.entries_,
-              constants.LIST_CONTAINER_METADATA_PREFETCH_PROPERTY_NAMES);
+              constants.LIST_CONTAINER_METADATA_PREFETCH_PROPERTY_NAMES.concat(
+                  constants.DLP_METADATA_PREFETCH_PROPERTY_NAMES));
         },
         () => {
           this.expanded = false;
@@ -873,7 +876,12 @@ export class SubDirectoryItem extends DirectoryItem {
     // Add volume-dependent attributes / icon.
     const location = tree.volumeManager.getLocationInfo(this.entry);
     if (location && location.rootType && location.isRootEntry) {
-      icon.setAttribute('volume-type-icon', location.rootType);
+      const iconOverride = this.entry.iconName;
+      if (iconOverride) {
+        icon.setAttribute('volume-type-icon', iconOverride);
+      } else {
+        icon.setAttribute('volume-type-icon', location.rootType);
+      }
       if (window.IN_TEST && location.volumeInfo) {
         this.setAttribute(
             'volume-type-for-testing', location.volumeInfo.volumeType);
@@ -982,7 +990,11 @@ export class EntryListItem extends DirectoryItem {
 
     const icon = this.querySelector('.icon');
     icon.classList.add('item-icon');
-    icon.setAttribute('root-type-icon', rootType);
+    if (this.entry && this.entry.iconName) {
+      icon.setAttribute('root-type-icon', this.entry.iconName);
+    } else {
+      icon.setAttribute('root-type-icon', rootType);
+    }
 
     if (window.IN_TEST && this.entry && this.entry.volumeInfo) {
       this.setAttribute(
@@ -1208,8 +1220,13 @@ class VolumeItem extends DirectoryItem {
       icon.setAttribute('use-generic-provided-icon', '');
     }
 
-    icon.setAttribute(
-        'volume-type-icon', /** @type {string} */ (volumeInfo.volumeType));
+    if (volumeInfo.volumeType == VolumeManagerCommon.VolumeType.GUEST_OS) {
+      icon.setAttribute(
+          'volume-type-icon', vmTypeToIconName(volumeInfo.vmType));
+    } else {
+      icon.setAttribute(
+          'volume-type-icon', /** @type {string} */ (volumeInfo.volumeType));
+    }
 
     if (volumeInfo.volumeType === VolumeManagerCommon.VolumeType.MEDIA_VIEW) {
       const subtype = VolumeManagerCommon.getMediaViewRootTypeFromVolumeId(
@@ -1813,7 +1830,7 @@ class AndroidAppItem extends FilesTreeItem {
 // FakeItem
 
 /**
- * FakeItem is used by Recent and Linux files.
+ * FakeItem is used by Recent files, Drive, Crostini and other Guest OSs.
  */
 export class FakeItem extends FilesTreeItem {
   /**
@@ -1836,7 +1853,11 @@ export class FakeItem extends FilesTreeItem {
 
     const icon = this.querySelector('.icon');
     icon.classList.add('item-icon');
-    icon.setAttribute('root-type-icon', rootType);
+    if (this.entry && this.entry.iconName) {
+      icon.setAttribute('root-type-icon', this.entry.iconName);
+    } else {
+      icon.setAttribute('root-type-icon', rootType);
+    }
 
     if (util.isRecentRootType(rootType)) {
       if (this.dirEntry_.recentFileType) {
@@ -2530,6 +2551,11 @@ DirectoryTree.createDirectoryItem = (modelItem, tree) => {
     case NavigationModelItemType.CROSTINI:
       return new FakeItem(
           VolumeManagerCommon.RootType.CROSTINI,
+          /** @type {!NavigationModelFakeItem} */ (modelItem), tree);
+      break;
+    case NavigationModelItemType.GUEST_OS:
+      return new FakeItem(
+          VolumeManagerCommon.RootType.GUEST_OS,
           /** @type {!NavigationModelFakeItem} */ (modelItem), tree);
       break;
     case NavigationModelItemType.DRIVE:

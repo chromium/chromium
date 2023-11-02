@@ -1,10 +1,11 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef MEDIA_MOJO_CLIENTS_MOJO_CDM_FACTORY_H_
 #define MEDIA_MOJO_CLIENTS_MOJO_CDM_FACTORY_H_
 
+#include "base/memory/raw_ptr.h"
 #include "media/base/cdm_factory.h"
 
 namespace media {
@@ -23,8 +24,7 @@ class MojoCdmFactory final : public CdmFactory {
   ~MojoCdmFactory() final;
 
   // CdmFactory implementation.
-  void Create(const std::string& key_system,
-              const CdmConfig& cdm_config,
+  void Create(const CdmConfig& cdm_config,
               const SessionMessageCB& session_message_cb,
               const SessionClosedCB& session_closed_cb,
               const SessionKeysChangeCB& session_keys_change_cb,
@@ -32,7 +32,7 @@ class MojoCdmFactory final : public CdmFactory {
               CdmCreatedCB cdm_created_cb) final;
 
  private:
-  media::mojom::InterfaceFactory* interface_factory_;
+  raw_ptr<media::mojom::InterfaceFactory> interface_factory_;
 };
 
 }  // namespace media

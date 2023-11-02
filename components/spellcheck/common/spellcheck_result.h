@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,8 +39,19 @@ struct SpellCheckResult {
   SpellCheckResult(const SpellCheckResult&);
 
   Decoration decoration;
+
+  // The zero-based index where the misspelling starts. For spell check results
+  // returned by the local spell check infrastructure, this is measured by
+  // the code point count, i.e. each surrogate pair, such as emojis, will count
+  // for 2 positions. For results returned by enhanced (server side) spell
+  // check, positions are based on "logical" characters, i.e. emojis and their
+  // modifiers count for 1.
   int location;
+
+  // The length of the misspelled word. The same code point / logical character
+  // count distinction as for `location` applies.
   int length;
+
   std::vector<std::u16string> replacements;
   bool spelling_service_used = false;
 };

@@ -1,13 +1,16 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 
-#include "base/json/json_reader.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/values_test_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -35,7 +38,10 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/page_info/core/features.h"
 #include "components/permissions/permission_uma_util.h"
+#include "components/permissions/permission_util.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/ssl_status.h"
@@ -52,8 +58,10 @@
 #include "ppapi/buildflags/buildflags.h"
 #include "services/device/public/cpp/test/fake_usb_device_manager.h"
 #include "services/device/public/mojom/usb_device.mojom.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/event_utils.h"
@@ -137,6 +145,31 @@ class PageInfoBubbleViewTestApi {
         PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIE_DIALOG);
   }
 
+  views::View* cookies_buttons_container_view() {
+    return bubble_delegate_->GetViewByID(
+        PageInfoViewFactory::VIEW_ID_PAGE_INFO_COOKIES_BUTTONS_CONTAINER);
+  }
+  views::View* cookies_dialog_button() {
+    return bubble_delegate_->GetViewByID(
+        PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIE_DIALOG);
+  }
+
+  views::View* blocking_third_party_cookies_row() {
+    return bubble_delegate_->GetViewByID(
+        PageInfoViewFactory::VIEW_ID_PAGE_INFO_BLOCK_THIRD_PARTY_COOKIES_ROW);
+  }
+
+  views::View* blocking_third_party_cookies_subtitle() {
+    return bubble_delegate_->GetViewByID(
+        PageInfoViewFactory::
+            VIEW_ID_PAGE_INFO_BLOCK_THIRD_PARTY_COOKIES_SUBTITLE);
+  }
+
+  views::View* fps_button() {
+    return bubble_delegate_->GetViewByID(
+        PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_FPS_SETTINGS);
+  }
+
   PageInfoHoverButton* certificate_button() const {
     return static_cast<PageInfoHoverButton*>(bubble_delegate_->GetViewByID(
         PageInfoViewFactory::
@@ -174,6 +207,16 @@ class PageInfoBubbleViewTestApi {
 
   views::Label* GetStateLabelAt(int index) {
     return GetPermissionToggleRowAt(index)->state_label_;
+  }
+
+  // Returns the text shown on the view.
+  std::u16string GetTextOnView(views::View* view) {
+    EXPECT_TRUE(view);
+    ui::AXNodeData data;
+    view->GetAccessibleNodeData(&data);
+    std::string name;
+    data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name);
+    return base::ASCIIToUTF16(name);
   }
 
   // Returns the number of cookies shown on the link or button to open the
@@ -231,7 +274,15 @@ class PageInfoBubbleViewTestApi {
     presenter_->ui_for_testing()->SetCookieInfo(list);
   }
 
+  // Simulates updating the number of blocked and allowed sites and fps info.
+  void SetCookieInfo(const PageInfoUI::CookiesNewInfo& cookie_info) {
+    presenter_->ui_for_testing()->SetCookieInfo(cookie_info);
+  }
+
   // Simulates recreating the dialog with a new PermissionInfoList.
+  // It ignores `source` field and assumes that user is the source. It's because
+  // in the actual UI, permission's state can be changed only if the source is
+  // user.
   void SetPermissionInfo(const PermissionInfoList& list) {
     for (const PageInfo::PermissionInfo& info : list) {
       presenter_->OnSitePermissionChanged(info.type, info.setting,
@@ -266,15 +317,15 @@ class PageInfoBubbleViewTestApi {
     quit_closure.Run();
   }
 
-  views::BubbleDialogDelegateView* bubble_delegate_;
-  PageInfo* presenter_ = nullptr;
-  std::vector<PermissionToggleRowView*>* toggle_rows_ = nullptr;
+  raw_ptr<views::BubbleDialogDelegateView> bubble_delegate_;
+  raw_ptr<PageInfo> presenter_ = nullptr;
+  raw_ptr<std::vector<PermissionToggleRowView*>> toggle_rows_ = nullptr;
 
-  PageInfoNavigationHandler* navigation_handler_ = nullptr;
+  raw_ptr<PageInfoNavigationHandler> navigation_handler_ = nullptr;
 
   // For recreating the view.
   gfx::NativeWindow parent_;
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
   base::RunLoop run_loop_;
   absl::optional<bool> reload_prompt_;
   absl::optional<views::Widget::ClosedReason> closed_reason_;
@@ -283,6 +334,8 @@ class PageInfoBubbleViewTestApi {
 }  // namespace test
 
 namespace {
+
+using ::base::test::ParseJson;
 
 constexpr char kTestUserEmail[] = "user@example.com";
 
@@ -336,9 +389,9 @@ class ScopedWebContentsTestHelper {
 #endif
 
   TestingProfileManager testing_profile_manager_;
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
   content::TestWebContentsFactory factory_;
-  content::WebContents* web_contents_;  // Weak. Owned by factory_.
+  raw_ptr<content::WebContents> web_contents_;  // Weak. Owned by factory_.
 };
 
 class PageInfoBubbleViewTest : public testing::Test {
@@ -383,18 +436,12 @@ class PageInfoBubbleViewTest : public testing::Test {
  protected:
   std::unique_ptr<ScopedWebContentsTestHelper> web_contents_helper_;
   std::unique_ptr<views::ScopedViewsTestHelper> views_helper_;
-  MockTrustSafetySentimentService* mock_sentiment_service_;
+  raw_ptr<MockTrustSafetySentimentService> mock_sentiment_service_;
 
-  views::Widget* parent_window_ = nullptr;  // Weak. Owned by the NativeWidget.
+  raw_ptr<views::Widget> parent_window_ =
+      nullptr;  // Weak. Owned by the NativeWidget.
   std::unique_ptr<test::PageInfoBubbleViewTestApi> api_;
 };
-
-base::Value ReadJson(base::StringPiece json) {
-  base::JSONReader::ValueWithError result =
-      base::JSONReader::ReadAndReturnValueWithError(json);
-  EXPECT_TRUE(result.value) << result.error_message;
-  return result.value ? std::move(*result.value) : base::Value();
-}
 
 views::Label* GetChosenObjectTitle(const views::View::Views& children) {
   views::View* labels_container = children[1];
@@ -428,7 +475,6 @@ TEST_F(PageInfoBubbleViewTest, NotificationPermissionRevokeUkm) {
 
   PermissionInfoList list(1);
   list.back().type = ContentSettingsType::NOTIFICATIONS;
-  list.back().source = content_settings::SETTING_SOURCE_USER;
 
   list.back().setting = CONTENT_SETTING_ALLOW;
   api_->SetPermissionInfo(list);
@@ -458,7 +504,6 @@ TEST_F(PageInfoBubbleViewTest, NotificationPermissionRevokeUkm) {
 TEST_F(PageInfoBubbleViewTest, SetPermissionInfo) {
   PermissionInfoList list(1);
   list.back().type = ContentSettingsType::GEOLOCATION;
-  list.back().source = content_settings::SETTING_SOURCE_USER;
   list.back().setting = CONTENT_SETTING_BLOCK;
 
   // Initially, no permissions are shown because they are all set to default.
@@ -527,7 +572,6 @@ TEST_F(PageInfoBubbleViewOffTheRecordTest, ResetBlockedInIncognitoPermission) {
 
   PermissionInfoList list(1);
   list.back().type = ContentSettingsType::NOTIFICATIONS;
-  list.back().source = content_settings::SETTING_SOURCE_POLICY;
   list.back().setting = CONTENT_SETTING_BLOCK;
 
   // Initially, no permissions are shown because they are all set to default.
@@ -550,12 +594,11 @@ TEST_F(PageInfoBubbleViewOffTheRecordTest, ResetBlockedInIncognitoPermission) {
   // Verify labels match the settings on the PermissionInfoList.
   EXPECT_EQ(u"Notifications", api_->GetPermissionLabelTextAt(0));
 
-  PageInfo::PermissionInfo window_placement_permission;
-  window_placement_permission.type = ContentSettingsType::WINDOW_PLACEMENT;
-  window_placement_permission.setting = CONTENT_SETTING_ALLOW;
-  window_placement_permission.default_setting = CONTENT_SETTING_ASK;
-  window_placement_permission.source = content_settings::SETTING_SOURCE_USER;
-  list.push_back(window_placement_permission);
+  PageInfo::PermissionInfo window_management_permission;
+  window_management_permission.type = ContentSettingsType::WINDOW_MANAGEMENT;
+  window_management_permission.setting = CONTENT_SETTING_ALLOW;
+  window_management_permission.default_setting = CONTENT_SETTING_ASK;
+  list.push_back(window_management_permission);
 
   num_expected_children = list.size();
   api_->SetPermissionInfo(list);
@@ -585,7 +628,7 @@ TEST_F(PageInfoBubbleViewOffTheRecordTest, ResetBlockedInIncognitoPermission) {
   // Show state label for user managed permission, indicating that permission
   // is in the default ask state now. Autoblocked permission doesn't change.
   EXPECT_FALSE(api_->GetStateLabelAt(0));
-  EXPECT_EQ(u"Can ask to open and place windows on your screens",
+  EXPECT_EQ(u"Can ask to manage windows on all your displays",
             api_->GetStateLabelAt(1)->GetText());
 
   // In the ask state, the toggle is in the off state, indicating that
@@ -699,7 +742,7 @@ TEST_F(PageInfoBubbleViewTest, SetPermissionInfoWithPolicyUsbDevices) {
   // Add the policy setting to prefs.
   Profile* profile = web_contents_helper_->profile();
   profile->GetPrefs()->Set(prefs::kManagedWebUsbAllowDevicesForUrls,
-                           ReadJson(kWebUsbPolicySetting));
+                           ParseJson(kWebUsbPolicySetting));
   UsbChooserContext* store = UsbChooserContextFactory::GetForProfile(profile);
 
   auto objects = store->GetGrantedObjects(origin);
@@ -742,7 +785,7 @@ TEST_F(PageInfoBubbleViewTest, SetPermissionInfoWithUserAndPolicyUsbDevices) {
   // Add the policy setting to prefs.
   Profile* profile = web_contents_helper_->profile();
   profile->GetPrefs()->Set(prefs::kManagedWebUsbAllowDevicesForUrls,
-                           ReadJson(kWebUsbPolicySetting));
+                           ParseJson(kWebUsbPolicySetting));
 
   // Connect the UsbChooserContext with FakeUsbDeviceManager.
   device::FakeUsbDeviceManager usb_device_manager;
@@ -813,7 +856,6 @@ TEST_F(PageInfoBubbleViewTest, SetPermissionInfoWithUserAndPolicyUsbDevices) {
 TEST_F(PageInfoBubbleViewTest, SetPermissionInfoForUsbGuard) {
   PermissionInfoList list(1);
   list.back().type = ContentSettingsType::USB_GUARD;
-  list.back().source = content_settings::SETTING_SOURCE_USER;
   list.back().setting = CONTENT_SETTING_ASK;
 
   // Initially, no permissions are shown because they are all set to default.
@@ -849,7 +891,7 @@ TEST_F(PageInfoBubbleViewTest, SetPermissionInfoWithPolicySerialPorts) {
 
   // Add the policy setting to prefs.
   web_contents_helper_->local_state()->Set(
-      prefs::kManagedSerialAllowUsbDevicesForUrls, ReadJson(R"([
+      prefs::kManagedSerialAllowUsbDevicesForUrls, ParseJson(R"([
                {
                  "devices": [{ "vendor_id": 6353, "product_id": 5678 }],
                  "urls": [ "http://www.example.com" ]
@@ -885,11 +927,15 @@ TEST_F(PageInfoBubbleViewTest, SetPermissionInfoWithPolicySerialPorts) {
 // Test that updating the number of cookies used by the current page doesn't add
 // any extra views to Page Info.
 TEST_F(PageInfoBubbleViewTest, UpdatingSiteDataRetainsLayout) {
-#if defined(OS_WIN) && BUILDFLAG(ENABLE_VR)
-  constexpr size_t kExpectedChildren = 6;
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(ENABLE_VR)
+  size_t kExpectedChildren = 6;
 #else
-  constexpr size_t kExpectedChildren = 5;
+  size_t kExpectedChildren = 5;
 #endif
+  if (page_info::IsAboutThisSiteFeatureEnabled(
+          g_browser_process->GetApplicationLocale())) {
+    ++kExpectedChildren;
+  }
 
   EXPECT_EQ(kExpectedChildren, api_->current_view()->children().size());
 
@@ -928,7 +974,7 @@ TEST_F(PageInfoBubbleViewTest, OpenPageInfoBubbleAfterNavigationStart) {
   std::unique_ptr<content::NavigationSimulator> navigation =
       content::NavigationSimulator::CreateRendererInitiated(
           GURL(kSecureUrl),
-          web_contents_helper_->web_contents()->GetMainFrame());
+          web_contents_helper_->web_contents()->GetPrimaryMainFrame());
   navigation->Start();
   api_->CreateView();
   EXPECT_EQ(kHostname, api_->GetWindowTitle());
@@ -992,7 +1038,7 @@ TEST_F(PageInfoBubbleViewTest, CertificateButtonShowsEvCertDetails) {
   std::unique_ptr<content::NavigationSimulator> navigation =
       content::NavigationSimulator::CreateRendererInitiated(
           GURL(kSecureUrl),
-          web_contents_helper_->web_contents()->GetMainFrame());
+          web_contents_helper_->web_contents()->GetPrimaryMainFrame());
   navigation->Start();
   api_->CreateView();
 
@@ -1042,7 +1088,7 @@ TEST_F(PageInfoBubbleViewTest, EvDetailsShowForCertWithStateButNoLocality) {
   std::unique_ptr<content::NavigationSimulator> navigation =
       content::NavigationSimulator::CreateRendererInitiated(
           GURL(kSecureUrl),
-          web_contents_helper_->web_contents()->GetMainFrame());
+          web_contents_helper_->web_contents()->GetPrimaryMainFrame());
   navigation->Start();
   api_->CreateView();
 
@@ -1083,4 +1129,104 @@ TEST_F(PageInfoBubbleViewTest, EvDetailsShowForCertWithStateButNoLocality) {
                 IDS_PAGE_INFO_SECURITY_TAB_SECURE_IDENTITY_EV_VERIFIED,
                 u"Test Org", u"US"),
             api_->GetCertificateButtonSubtitleText());
+}
+
+namespace {
+class PageInfoBubbleViewCookiesSubpageTest : public PageInfoBubbleViewTest {
+ public:
+  PageInfoBubbleViewCookiesSubpageTest() {
+    feature_list.InitWithFeatures(
+        {page_info::kPageInfoCookiesSubpage,
+         privacy_sandbox::kPrivacySandboxFirstPartySetsUI},
+        {});
+  }
+
+  void ExpectViewContainsText(views::View* view, const std::u16string& text) {
+    EXPECT_TRUE(view);
+    EXPECT_THAT(base::UTF16ToUTF8(api_->GetTextOnView(view)),
+                ::testing::HasSubstr(base::UTF16ToUTF8(text)));
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list;
+};
+
+}  // namespace
+
+// Test that texts on buttons are correct and there is no more views than
+// necessary.
+TEST_F(PageInfoBubbleViewCookiesSubpageTest, TextsOnButtonsAreCorrect) {
+  base::HistogramTester histogram_tester;
+  // Create fake cookie information.
+  PageInfoUI::CookiesNewInfo cookie_info;
+  cookie_info.blocked_sites_count = 10;
+  cookie_info.allowed_sites_count = 3;
+  cookie_info.status = CookieControlsStatus::kEnabled;
+  cookie_info.enforcement = CookieControlsEnforcement::kNoEnforcement;
+  size_t kExpectedChildren = 3;
+  const std::u16string owner_name = u"example_owner";
+  cookie_info.fps_info = {PageInfoMainView::CookiesFpsInfo(owner_name)};
+
+  // Open cookies subpage to get the buttons.
+  api_->navigation_handler()->OpenCookiesPage();
+
+  // Update the number of blocked and allowed sites and fps information.
+  api_->SetCookieInfo(cookie_info);
+
+  auto* cookies_buttons_container = api_->cookies_buttons_container_view();
+  // The button that gets hidden and reappears should be the same one.
+  auto* fps_button = api_->fps_button();
+  auto* blocking_third_party_cookies_row =
+      api_->blocking_third_party_cookies_row();
+
+  EXPECT_TRUE(cookies_buttons_container);
+  EXPECT_EQ(kExpectedChildren, cookies_buttons_container->children().size());
+
+  ExpectViewContainsText(api_->cookies_dialog_button(),
+                         l10n_util::GetPluralStringFUTF16(
+                             IDS_PAGE_INFO_COOKIES_ALLOWED_SITES_COUNT,
+                             cookie_info.allowed_sites_count));
+  ExpectViewContainsText(
+      fps_button, l10n_util::GetStringFUTF16(IDS_PAGE_INFO_FPS_BUTTON_SUBTITLE,
+                                             owner_name));
+  ExpectViewContainsText(
+      fps_button, l10n_util::GetStringUTF16(IDS_PAGE_INFO_FPS_BUTTON_TITLE));
+  ExpectViewContainsText(api_->blocking_third_party_cookies_subtitle(),
+                         l10n_util::GetPluralStringFUTF16(
+                             IDS_PAGE_INFO_COOKIES_BLOCKED_SITES_COUNT,
+                             cookie_info.blocked_sites_count));
+
+  EXPECT_TRUE(blocking_third_party_cookies_row->GetVisible());
+  EXPECT_TRUE(fps_button->GetVisible());
+  EXPECT_TRUE(api_->cookies_dialog_button()->GetVisible());
+  histogram_tester.ExpectBucketCount("Security.PageInfo.Cookies.HasFPSInfo",
+                                     false, 0);
+  histogram_tester.ExpectBucketCount("Security.PageInfo.Cookies.HasFPSInfo",
+                                     true, 1);
+
+  // Check if buttons get hidden when permission changes.
+  cookie_info.status = CookieControlsStatus::kDisabled;
+  cookie_info.fps_info = {};
+  api_->SetCookieInfo(cookie_info);
+  EXPECT_FALSE(blocking_third_party_cookies_row->GetVisible());
+  EXPECT_FALSE(fps_button->GetVisible());
+  EXPECT_EQ(kExpectedChildren, cookies_buttons_container->children().size());
+  // Check the histogram count is not increased on permission changes
+  histogram_tester.ExpectBucketCount("Security.PageInfo.Cookies.HasFPSInfo",
+                                     false, 0);
+  histogram_tester.ExpectBucketCount("Security.PageInfo.Cookies.HasFPSInfo",
+                                     true, 1);
+
+  // Check if buttons reappear when permission changes.
+  cookie_info.status = CookieControlsStatus::kDisabledForSite;
+  cookie_info.fps_info = {PageInfoMainView::CookiesFpsInfo(owner_name)};
+  api_->SetCookieInfo(cookie_info);
+  EXPECT_TRUE(blocking_third_party_cookies_row->GetVisible());
+  EXPECT_TRUE(fps_button->GetVisible());
+  EXPECT_EQ(kExpectedChildren, cookies_buttons_container->children().size());
+  // Check the histogram count is not increased on permission changes
+  histogram_tester.ExpectBucketCount("Security.PageInfo.Cookies.HasFPSInfo",
+                                     false, 0);
+  histogram_tester.ExpectBucketCount("Security.PageInfo.Cookies.HasFPSInfo",
+                                     true, 1);
 }

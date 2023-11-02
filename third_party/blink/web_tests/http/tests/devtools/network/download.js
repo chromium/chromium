@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,9 +21,9 @@
   TestRunner.addSniffer(SDK.NetworkDispatcher.prototype, 'loadingFinished', loadingFinished);
   TestRunner.addIframe('resources/download.zzz');
 
-  function responseReceived(requestId, time, resourceType, response) {
+  function responseReceived(event) {
     var request = NetworkTestRunner.networkLog().requestByManagerAndId(
-        TestRunner.networkManager, requestId);
+        TestRunner.networkManager, event.requestId);
 
     if (/download\.zzz/.exec(request.url())) {
       TestRunner.addResult('Received response for download.zzz');
@@ -32,16 +32,16 @@
     }
   }
 
-  function loadingFinished(requestId, finishTime) {
+  function loadingFinished(event) {
     var request = NetworkTestRunner.networkLog().requestByManagerAndId(
-        TestRunner.networkManager, requestId);
+        TestRunner.networkManager, event.requestId);
 
     if (/download\.zzz/.exec(request.url())) TestRunner.completeTest();
   }
 
-  function loadingFailed(requestId, time, localizedDescription, canceled) {
+  function loadingFailed(event) {
     var request = NetworkTestRunner.networkLog().requestByManagerAndId(
-        TestRunner.networkManager, requestId);
+        TestRunner.networkManager, event.requestId);
 
     if (/download\.zzz/.exec(request.url())) TestRunner.completeTest();
   }

@@ -1,22 +1,27 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import '//resources/cr_elements/icons.m.js';
-import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
-import '//resources/polymer/v3_0/iron-list/iron-list.js';
-import './cups_printers_entry.js';
-import '../../settings_shared_css.js';
+/**
+ * @fileoverview 'settings-cups-enterprise-printers' is a list container for
+ * Enterprise Printers.
+ */
 
-import {ListPropertyUpdateBehavior} from '//resources/js/list_property_update_behavior.m.js';
-import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import 'chrome://resources/cr_elements/icons.html.js';
+import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
+import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
+import './cups_printers_entry.js';
+import '../../settings_shared.css.js';
+
+import {ListPropertyUpdateBehavior, ListPropertyUpdateBehaviorInterface} from 'chrome://resources/ash/common/list_property_update_behavior.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {matchesSearchTerm, sortPrinters} from './cups_printer_dialog_util.js';
 import {PrinterListEntry} from './cups_printer_types.js';
 import {CupsPrinterInfo, CupsPrintersBrowserProxy, CupsPrintersBrowserProxyImpl} from './cups_printers_browser_proxy.js';
-import {CupsPrintersEntryListBehavior} from './cups_printers_entry_list_behavior.js';
+import {CupsPrintersEntryListBehavior, CupsPrintersEntryListBehaviorInterface} from './cups_printers_entry_list_behavior.js';
 
 // If the Show more button is visible, the minimum number of printers we show
 // is 3.
@@ -35,109 +40,132 @@ function moveEntryInPrinters(printerArr, fromIndex, toIndex) {
 }
 
 /**
- * @fileoverview 'settings-cups-enterprise-printers' is a list container for
- * Enterprise Printers.
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {CupsPrintersEntryListBehaviorInterface}
+ * @implements {ListPropertyUpdateBehaviorInterface}
+ * @implements {WebUIListenerBehaviorInterface}
  */
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'settings-cups-enterprise-printers',
+const SettingsCupsEnterprisePrintersElementBase = mixinBehaviors(
+    [
+      CupsPrintersEntryListBehavior,
+      ListPropertyUpdateBehavior,
+      WebUIListenerBehavior,
+    ],
+    PolymerElement);
 
-  // ListPropertyUpdateBehavior is used in CupsPrintersEntryListBehavior.
-  behaviors: [
-    CupsPrintersEntryListBehavior,
-    ListPropertyUpdateBehavior,
-    WebUIListenerBehavior,
-  ],
+/** @polymer */
+class SettingsCupsEnterprisePrintersElement extends
+    SettingsCupsEnterprisePrintersElementBase {
+  static get is() {
+    return 'settings-cups-enterprise-printers';
+  }
 
-  properties: {
-    /**
-     * Search term for filtering |enterprisePrinters|.
-     * @type {string}
-     */
-    searchTerm: {
-      type: String,
-      value: '',
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /** @type {?CupsPrinterInfo} */
-    activePrinter: {
-      type: Object,
-      notify: true,
-    },
+  static get properties() {
+    return {
+      /**
+       * Search term for filtering |enterprisePrinters|.
+       * @type {string}
+       */
+      searchTerm: {
+        type: String,
+        value: '',
+      },
 
-    /**
-     * @type {number}
-     * @private
-     */
-    activePrinterListEntryIndex_: {
-      type: Number,
-      value: -1,
-    },
+      /** @type {?CupsPrinterInfo} */
+      activePrinter: {
+        type: Object,
+        notify: true,
+      },
 
-    printersCount: {
-      type: Number,
-      computed: 'getFilteredPrintersLength_(filteredPrinters_.*)',
-      notify: true,
-    },
+      /**
+       * @type {number}
+       * @private
+       */
+      activePrinterListEntryIndex_: {
+        type: Number,
+        value: -1,
+      },
 
-    /**
-     * List of printers filtered through a search term.
-     * @type {!Array<!PrinterListEntry>}
-     * @private
-     */
-    filteredPrinters_: {
-      type: Array,
-      value: () => [],
-    },
+      printersCount: {
+        type: Number,
+        computed: 'getFilteredPrintersLength_(filteredPrinters_.*)',
+        notify: true,
+      },
 
-    /**
-     * Keeps track of whether the user has tapped the Show more button. A search
-     * term will expand the collapsed list, so we need to keep track of whether
-     * the list expanded because of a search term or because the user tapped on
-     * the Show more button.
-     * @private
-     */
-    hasShowMoreBeenTapped_: {
-      type: Boolean,
-      value: false,
-    },
+      /**
+       * List of printers filtered through a search term.
+       * @type {!Array<!PrinterListEntry>}
+       * @private
+       */
+      filteredPrinters_: {
+        type: Array,
+        value: () => [],
+      },
 
-    /**
-     * Used by FocusRowBehavior to track the last focused element on a row.
-     * @private
-     */
-    lastFocused_: Object,
+      /**
+       * Keeps track of whether the user has tapped the Show more button. A
+       * search term will expand the collapsed list, so we need to keep track of
+       * whether the list expanded because of a search term or because the user
+       * tapped on the Show more button.
+       * @private
+       */
+      hasShowMoreBeenTapped_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /**
-     * Used by FocusRowBehavior to track if the list has been blurred.
-     * @private
-     */
-    listBlurred_: Boolean,
-  },
+      /**
+       * Used by FocusRowBehavior to track the last focused element on a row.
+       * @private
+       */
+      lastFocused_: Object,
 
-  listeners: {
-    'open-action-menu': 'onOpenActionMenu_',
-  },
+      /**
+       * Used by FocusRowBehavior to track if the list has been blurred.
+       * @private
+       */
+      listBlurred_: Boolean,
+    };
+  }
 
-  observers: [
-    'onSearchOrPrintersChanged_(enterprisePrinters.*, searchTerm, ' +
-        'hasShowMoreBeenTapped_)',
-  ],
-
-  /** @private {CupsPrintersBrowserProxy} */
-  browserProxy_: null,
-
-  /**
-   * The number of printers we display if hidden printers are allowed.
-   * kMinVisiblePrinters is the default value and we never show fewer printers
-   * if the Show more button is visible.
-   */
-  visiblePrinterCounter_: kMinVisiblePrinters,
+  static get observers() {
+    return [
+      'onSearchOrPrintersChanged_(enterprisePrinters.*, searchTerm, ' +
+          'hasShowMoreBeenTapped_)',
+    ];
+  }
 
   /** @override */
-  created() {
+  constructor() {
+    super();
+
+    /** @private {!CupsPrintersBrowserProxy} */
     this.browserProxy_ = CupsPrintersBrowserProxyImpl.getInstance();
-  },
+
+    /**
+     * The number of printers we display if hidden printers are allowed.
+     * kMinVisiblePrinters is the default value and we never show fewer printers
+     * if the Show more button is visible.
+     */
+    this.visiblePrinterCounter_ = kMinVisiblePrinters;
+  }
+
+  ready() {
+    super.ready();
+    this.addEventListener('open-action-menu', (event) => {
+      this.onOpenActionMenu_(
+          /**
+             @type {!CustomEvent<{target: !HTMLElement, item:
+                 !PrinterListEntry}>}
+           */
+          (event));
+    });
+  }
 
   /**
    * Redoes the search whenever |searchTerm| or |enterprisePrinters| changes.
@@ -165,12 +193,12 @@ Polymer({
     this.updateList(
         'filteredPrinters_', printer => printer.printerInfo.printerId,
         updatedPrinters);
-  },
+  }
 
   /** @private */
   onShowMoreTap_() {
     this.hasShowMoreBeenTapped_ = true;
-  },
+  }
 
   /**
    * Keeps track of whether the Show more button should be visible which means
@@ -198,7 +226,7 @@ Polymer({
     }
 
     return true;
-  },
+  }
 
   /**
    * @return {boolean} Returns true if the no search message should be visible.
@@ -206,7 +234,7 @@ Polymer({
    */
   showNoSearchResultsMessage_() {
     return !!this.searchTerm && !this.filteredPrinters_.length;
-  },
+  }
 
   /**
    * @return {number} Length of |filteredPrinters_|.
@@ -214,7 +242,7 @@ Polymer({
    */
   getFilteredPrintersLength_() {
     return this.filteredPrinters_.length;
-  },
+  }
 
   /**
    * @param {!CustomEvent<{target: !HTMLElement, item: !PrinterListEntry}>} e
@@ -230,18 +258,24 @@ Polymer({
             .printerInfo;
 
     const target = /** @type {!HTMLElement} */ (e.detail.target);
-    this.$$('cr-action-menu').showAt(target);
-  },
+    this.shadowRoot.querySelector('cr-action-menu').showAt(target);
+  }
 
   /** @private */
   onViewTap_() {
     // Event is caught by 'settings-cups-printers'.
-    this.fire('edit-cups-printer-details');
+    const editCupsPrinterDetailsEvent = new CustomEvent(
+        'edit-cups-printer-details', {bubbles: true, composed: true});
+    this.dispatchEvent(editCupsPrinterDetailsEvent);
     this.closeActionMenu_();
-  },
+  }
 
   /** @private */
   closeActionMenu_() {
-    this.$$('cr-action-menu').close();
-  },
-});
+    this.shadowRoot.querySelector('cr-action-menu').close();
+  }
+}
+
+customElements.define(
+    SettingsCupsEnterprisePrintersElement.is,
+    SettingsCupsEnterprisePrintersElement);

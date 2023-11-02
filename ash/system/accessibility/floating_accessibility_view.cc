@@ -1,14 +1,17 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/system/accessibility/floating_accessibility_view.h"
 
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/ime/ime_controller_impl.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
+#include "ash/public/cpp/keyboard/keyboard_controller.h"
 #include "ash/public/cpp/system_tray.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -16,14 +19,17 @@
 #include "ash/system/accessibility/dictation_button_tray.h"
 #include "ash/system/accessibility/floating_menu_button.h"
 #include "ash/system/accessibility/select_to_speak/select_to_speak_tray.h"
+#include "ash/system/ime_menu/ime_menu_tray.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/virtual_keyboard/virtual_keyboard_tray.h"
 #include "base/bind.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/view.h"
 
 namespace ash {
 
@@ -52,13 +58,13 @@ class DynamicRowView : public views::View {
 
 std::unique_ptr<views::Separator> CreateSeparator() {
   auto separator = std::make_unique<views::Separator>();
-  separator->SetColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kSeparatorColor));
-  separator->SetPreferredHeight(kSeparatorHeight);
+  separator->SetColorId(ui::kColorAshSystemUIMenuSeparator);
+  separator->SetPreferredLength(kSeparatorHeight);
   int total_height = kUnifiedTopShortcutSpacing * 2 + kTrayItemSize;
   int separator_spacing = (total_height - kSeparatorHeight) / 2;
   separator->SetBorder(views::CreateEmptyBorder(
-      separator_spacing - kUnifiedTopShortcutSpacing, 0, separator_spacing, 0));
+      gfx::Insets::TLBR(separator_spacing - kUnifiedTopShortcutSpacing, 0,
+                        separator_spacing, 0)));
   return separator;
 }
 
@@ -66,7 +72,7 @@ std::unique_ptr<views::View> CreateButtonRowContainer(int padding) {
   auto button_container = std::make_unique<DynamicRowView>();
   button_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,
-      gfx::Insets(0, padding, padding, padding), padding));
+      gfx::Insets::TLBR(0, padding, padding, padding), padding));
   return button_container;
 }
 
@@ -88,6 +94,12 @@ std::string GetDescriptionForMovedToPosition(FloatingMenuPosition position) {
       NOTREACHED();
       return std::string();
   }
+}
+
+bool IsKioskImeButtonEnabled() {
+  return Shell::Get()->session_controller()->IsRunningInAppMode() &&
+         base::FeatureList::IsEnabled(features::kKioskEnableImeButton) &&
+         Shell::Get()->ime_controller()->GetVisibleImes().size() > 1;
 }
 
 }  // namespace
@@ -117,16 +129,20 @@ END_METADATA
 
 FloatingAccessibilityView::FloatingAccessibilityView(Delegate* delegate)
     : delegate_(delegate) {
-
   Shelf* shelf = RootWindowController::ForTargetRootWindow()->shelf();
   std::unique_ptr<views::View> feature_buttons_container =
       CreateButtonRowContainer(kPanelPositionButtonPadding);
   dictation_button_ = feature_buttons_container->AddChildView(
-      std::make_unique<DictationButtonTray>(shelf));
+      std::make_unique<DictationButtonTray>(
+          shelf, TrayBackgroundViewCatalogName::kDictationAccesibilityWindow));
   select_to_speak_button_ = feature_buttons_container->AddChildView(
-      std::make_unique<SelectToSpeakTray>(shelf));
+      std::make_unique<SelectToSpeakTray>(
+          shelf,
+          TrayBackgroundViewCatalogName::kSelectToSpeakAccessibilityWindow));
   virtual_keyboard_button_ = feature_buttons_container->AddChildView(
-      std::make_unique<VirtualKeyboardTray>(shelf));
+      std::make_unique<VirtualKeyboardTray>(
+          shelf,
+          TrayBackgroundViewCatalogName::kVirtualKeyboardAccessibilityWindow));
 
   // It will be visible again as soon as any of the children becomes visible.
   feature_buttons_container->SetVisible(false);
@@ -153,6 +169,20 @@ FloatingAccessibilityView::FloatingAccessibilityView(Delegate* delegate)
           IDS_ASH_AUTOCLICK_OPTION_CHANGE_POSITION, /*flip_for_rtl*/ false,
           kPanelPositionButtonSize, false, /* is_a11y_togglable */ false));
 
+  if (IsKioskImeButtonEnabled()) {
+    Shell::Get()->ime_controller()->SetExtraInputOptionsEnabledState(
+        /*is_extra_input_options_enabled*/ false, /*is_emoji_enabled*/ false,
+        /*is_handwriting_enabled*/ false, /*is_voice_enabled*/ false);
+    std::unique_ptr<views::View> ime_button_container =
+        CreateButtonRowContainer(kPanelPositionButtonPadding);
+    ime_button_ = ime_button_container->AddChildView(
+        std::make_unique<ImeMenuTray>(shelf));
+    ime_button_container->SetVisible(true);
+
+    AddChildView(std::move(ime_button_container));
+    AddChildView(CreateSeparator());
+  }
+
   AddChildView(std::move(feature_buttons_container));
   AddChildView(std::move(tray_button_container));
   AddChildView(CreateSeparator());
@@ -164,17 +194,30 @@ FloatingAccessibilityView::FloatingAccessibilityView(Delegate* delegate)
   dictation_button_->SetID(static_cast<int>(ButtonId::kDictation));
   select_to_speak_button_->SetID(static_cast<int>(ButtonId::kSelectToSpeak));
   virtual_keyboard_button_->SetID(static_cast<int>(ButtonId::kVirtualKeyboard));
+  if (IsKioskImeButtonEnabled()) {
+    ime_button_->SetID(static_cast<int>(ButtonId::kIme));
+  }
 }
 
-FloatingAccessibilityView::~FloatingAccessibilityView() {}
+FloatingAccessibilityView::~FloatingAccessibilityView() {
+  KeyboardController::Get()->RemoveObserver(this);
+}
 
 void FloatingAccessibilityView::Initialize() {
+  KeyboardController::Get()->AddObserver(this);
   for (auto* feature_view :
        {dictation_button_, select_to_speak_button_, virtual_keyboard_button_}) {
     feature_view->Initialize();
     feature_view->CalculateTargetBounds();
     feature_view->UpdateLayout();
     feature_view->AddObserver(this);
+  }
+  if (IsKioskImeButtonEnabled()) {
+    ime_button_->Initialize();
+    ime_button_->CalculateTargetBounds();
+    ime_button_->UpdateLayout();
+    ime_button_->AddObserver(this);
+    ime_button_->SetVisible(true);
   }
 }
 
@@ -247,6 +290,13 @@ void FloatingAccessibilityView::OnViewVisibilityChanged(
   if (observed_view != starting_view)
     return;
   delegate_->OnLayoutChanged();
+}
+
+void FloatingAccessibilityView::OnKeyboardVisibilityChanged(bool visible) {
+  // To avoid the collision with the virtual keyboard
+  // Accessibility tray is closed after opening the virtual keyboard tray
+  if (visible)
+    delegate_->OnDetailedMenuEnabled(false);
 }
 
 BEGIN_METADATA(FloatingAccessibilityView, views::BoxLayoutView)

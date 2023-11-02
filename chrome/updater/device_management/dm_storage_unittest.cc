@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,14 +20,18 @@ namespace updater {
 
 namespace {
 
+constexpr char kTestDmToken[] = "TestDMToken";
+
 class TestTokenService : public TokenServiceInterface {
  public:
   TestTokenService()
-      : enrollment_token_("TestEnrollmentToken"), dm_token_("TestDMToken") {}
+      : enrollment_token_("TestEnrollmentToken"), dm_token_(kTestDmToken) {}
   ~TestTokenService() override = default;
 
   // Overrides for TokenServiceInterface.
   std::string GetDeviceID() const override { return "TestDeviceID"; }
+
+  bool IsEnrollmentMandatory() const override { return false; }
 
   bool StoreEnrollmentToken(const std::string& enrollment_token) override {
     enrollment_token_ = enrollment_token;
@@ -40,6 +44,12 @@ class TestTokenService : public TokenServiceInterface {
     dm_token_ = dm_token;
     return true;
   }
+
+  bool DeleteDmToken() override {
+    dm_token_.clear();
+    return true;
+  }
+
   std::string GetDmToken() const override { return dm_token_; }
 
  private:
@@ -64,7 +74,7 @@ std::string CannedOmahaPolicyFetchResponse() {
       ::wireless_android_enterprise_devicemanagement::MANUAL_UPDATES_ONLY);
 
   ::wireless_android_enterprise_devicemanagement::ApplicationSettings app;
-  app.set_app_guid(kChromeAppId);
+  app.set_app_guid(test::kChromeAppId);
 
   app.set_install(
       ::wireless_android_enterprise_devicemanagement::INSTALL_DISABLED);
@@ -87,7 +97,7 @@ std::string CannedOmahaPolicyFetchResponse() {
 
 }  // namespace
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 
 TEST(DMStorage, LoadDeviceID) {
   auto storage = base::MakeRefCounted<DMStorage>(
@@ -95,7 +105,37 @@ TEST(DMStorage, LoadDeviceID) {
   EXPECT_FALSE(storage->GetDeviceID().empty());
 }
 
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
+
+TEST(DMStorage, DMToken) {
+  base::ScopedTempDir cache_root;
+  ASSERT_TRUE(cache_root.CreateUniqueTempDir());
+  auto storage = base::MakeRefCounted<DMStorage>(
+      cache_root.GetPath(), std::make_unique<TestTokenService>());
+  EXPECT_TRUE(storage->IsValidDMToken());
+  EXPECT_FALSE(storage->GetDmToken().empty());
+  EXPECT_FALSE(storage->IsDeviceDeregistered());
+
+  // Deregister using DM token invalidation.
+  storage->InvalidateDMToken();
+  EXPECT_FALSE(storage->IsValidDMToken());
+  EXPECT_FALSE(storage->GetDmToken().empty());
+  EXPECT_TRUE(storage->IsDeviceDeregistered());
+
+  storage->StoreDmToken(kTestDmToken);
+  EXPECT_TRUE(storage->IsValidDMToken());
+  EXPECT_FALSE(storage->GetDmToken().empty());
+  EXPECT_FALSE(storage->IsDeviceDeregistered());
+
+  // Deregister using DM token deletion.
+  storage->DeleteDMToken();
+  EXPECT_FALSE(storage->IsValidDMToken());
+  EXPECT_TRUE(storage->GetDmToken().empty());
+  // Although the device is deregistered, it is not treated as deregistered due
+  // to potential re-registration. Instead, it is treated as having an empty DM
+  // token.
+  EXPECT_FALSE(storage->IsDeviceDeregistered());
+}
 
 TEST(DMStorage, PersistPolicies) {
   DMPolicyMap policies({
@@ -112,6 +152,7 @@ TEST(DMStorage, PersistPolicies) {
   EXPECT_TRUE(base::DirectoryExists(stale_poliy));
 
   auto storage = base::MakeRefCounted<DMStorage>(cache_root.GetPath());
+  EXPECT_TRUE(storage->CanPersistPolicies());
   EXPECT_TRUE(storage->PersistPolicies(policies));
   base::FilePath policy_info_file =
       cache_root.GetPath().AppendASCII("CachedPolicyInfo");
@@ -142,10 +183,10 @@ TEST(DMStorage, GetCachedPolicyInfo) {
   enterprise_management::PolicyData policy_data;
   policy_data.set_policy_value("SerializedProtobufDataFromPolicy");
   policy_data.set_policy_type("TestPolicyType1");
-  policy_data.set_request_token("TestDMToken");
+  policy_data.set_request_token(kTestDmToken);
   policy_data.set_timestamp(12340000);
-  policy_data.set_device_id("TestDMToken");
-  policy_data.set_request_token("TestDMToken");
+  policy_data.set_device_id(kTestDmToken);
+  policy_data.set_request_token(kTestDmToken);
 
   std::string new_public_key = "SampleNewPublicKeyData";
   enterprise_management::PublicKeyVerificationData key_verif_data;
@@ -162,6 +203,7 @@ TEST(DMStorage, GetCachedPolicyInfo) {
   ASSERT_TRUE(cache_root.CreateUniqueTempDir());
   auto storage = base::MakeRefCounted<DMStorage>(
       cache_root.GetPath(), std::make_unique<TestTokenService>());
+  EXPECT_TRUE(storage->CanPersistPolicies());
   EXPECT_TRUE(storage->PersistPolicies({
       {"sample-policy-type", response.SerializeAsString()},
   }));
@@ -182,6 +224,7 @@ TEST(DMStorage, ReadCachedOmahaPolicy) {
   ASSERT_TRUE(cache_root.CreateUniqueTempDir());
   auto storage = base::MakeRefCounted<DMStorage>(
       cache_root.GetPath(), std::make_unique<TestTokenService>());
+  EXPECT_TRUE(storage->CanPersistPolicies());
   EXPECT_TRUE(storage->PersistPolicies(policies));
 
   std::unique_ptr<
@@ -213,7 +256,8 @@ TEST(DMStorage, ReadCachedOmahaPolicy) {
                 ROLLBACK_TO_TARGET_VERSION_ENABLED);
 
   // Verify no policy settings once device is de-registered.
-  EXPECT_TRUE(storage->DeregisterDevice());
+  EXPECT_TRUE(storage->InvalidateDMToken());
+  EXPECT_TRUE(storage->IsDeviceDeregistered());
   EXPECT_FALSE(storage->IsValidDMToken());
   ASSERT_EQ(storage->GetOmahaPolicySettings(), nullptr);
 }

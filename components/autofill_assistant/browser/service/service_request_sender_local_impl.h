@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,11 @@ class ServiceRequestSenderLocalImpl : public ServiceRequestSender {
   // TODO(arbesser): Make this more flexible.
   void SendRequest(const GURL& url,
                    const std::string& request_body,
-                   ResponseCallback callback) override;
+                   ServiceRequestSender::AuthMode auth_mode,
+                   ResponseCallback callback,
+                   RpcType rpc_type) override;
+
+  void SetDisableRpcSigning(bool disable_rpc_signing) override;
 
  private:
   std::string response_;

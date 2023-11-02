@@ -1,0 +1,514 @@
+// Copyright 2016 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+// Next MinVersion: 27
+module arc.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+import "ash/components/arc/mojom/anr.mojom";
+
+[Extensible]
+enum BootType {
+  // This is used only for backward compatibility reasons and the value has to
+  // be 0.
+  UNKNOWN = 0,
+
+  // This is for the very first (opt-in) boot.
+  FIRST_BOOT = 1,
+  // This is for the first boot after Chrome OS update which also updates the
+  // ARC image.
+  FIRST_BOOT_AFTER_UPDATE = 2,
+  // This is for a regular boot.
+  REGULAR_BOOT = 3,
+};
+
+// Describes a boot progress event.
+struct BootProgressEvent {
+  // Name of the boot progress event in Android. Currently there are
+  // 11 boot progress events found in Android source repository:
+  //   system/core/logcat/event.logtags
+  //   frameworks/base/services/core/java/com/android/server/am/
+  //       EventLogTags.logtags
+  //   frameworks/base/services/core/java/com/android/server/
+  //       EventLogTags.logtags
+  string event;
+
+  // Timestamp of the event in uptime obtained in ARC. The uptime
+  // is from clock source MONOTONIC_CLOCK since Chrome OS boots up.
+  // Therefore, we need to calibrate the correct elapsed time of the
+  // event by comparing the uptime with the ARC start time from
+  // the same clock source MONOTONIC_CLOCK in session manager.
+  int64 uptimeMillis;
+};
+
+// Describes a GFX metrics.
+struct GfxMetrics {
+  // Total frames rendered, it includes janky frames below.
+  uint64 framesTotal;
+  // Janky frames.
+  uint64 framesJanky;
+  // Maximum frame time in milliseconds of 95% of frames sorted from the
+  // shortest to longest.
+  uint32 frameTimePercentile95;
+};
+
+[Extensible]
+enum NativeBridgeType {
+  // Native bridge is not used.
+  NONE = 0,
+  // Using houdini translator.
+  HOUDINI = 1,
+  // Using ndk-translation translator.
+  NDK_TRANSLATION = 2,
+};
+
+// ChromeOS companion library provide window management functionality to the
+// application running on ARC++. This enum list all functionality of it, for
+// collect statistics information of it by UMA stat.
+[Extensible]
+enum CompanionLibApiId {
+  // If the companion library version doesn't support an API call,
+  // the API call will be recorded as UNSUPPORTED.
+  UNSUPPORTED = 0,
+
+  // com.google.android.chromeos.ChromeOsDeviceInformation
+  GET_DEVICE_MODE = 1,
+  GET_DISPLAY_TOPOLOGY = 2,
+  GET_PRIMARY_DISPLAY_ID = 3,
+  GET_WORKSPACE_INSETS = 4,
+  REGISTER_CALLBACK = 5,
+  UNREGISTER_CALLBACK = 6,
+
+  // com.google.android.chromeos.activity.ChromeOsTaskManagement
+  ACTIVATE_TASK = 7,
+  GET_CAPTION_HEIGHT = 8,
+  GET_HIDDEN_CAPTION_BUTTON = 9,
+  HIDE_CAPTION_BUTTON = 10,
+  GET_TASK_WINDOW_BOUNDS = 11,
+  GET_TASK_WINDOW_STATE = 12,
+  IS_SHADOW_HIDDEN = 13,
+  HIDE_SHADOW = 14,
+  ON_CLOSE_REQUEST_RESPONSE = 15,
+  SET_ON_CLOSE_REQUEST_HANDLER = 16,
+  REMOVE_ON_CLOSE_REQUEST_HANDLER = 17,
+  SET_TASK_WINDOW_BOUNDS = 18,
+  SET_TASK_WINDOW_STATE = 19,
+
+  // com.google.android.chromeos.activity.TaskWindowState
+  GET_WINDOW_STATE = 20,
+
+  // com.google.android.chromeos.view.WindowInteractionController
+  WINDOW_INTERACTION_CONTROLLER = 21,
+
+  // com.google.android.chromeos.widget.PopupWindow
+  SET_CLIPPING_TO_TASK_DISABLE = 22,
+  IS_CLIPPING_TO_TASK_DISABLED = 23,
+};
+
+[Extensible]
+enum ArcDnsQuery {
+  // All other hostnames.
+  OTHER_HOST_NAME = 0,
+
+  // android.googleapis.com used by Android checkin.
+  ANDROID_API_HOST_NAME = 1,
+};
+
+// These enum values are persisted to metrics thus must be treated as
+// append-only.
+[Extensible]
+enum ArcNetworkEvent {
+  kUnknown = 0,
+  kAndroidLegacyVpnConnection = 1,
+  kAndroidThirdPartyVpnConnection = 2,
+  kMojoConfigureAndroidVpn = 3,
+  kMojoDisconnectAndroidVpn = 4,
+  kMojoDnsTest = 5,
+  kMojoHttpTest = 6,
+  kMojoPingTest = 7,
+  kWifiScannerClientConnection = 8,
+  kWifiScannerGetScanResults = 9,
+  kWifiScannerGetSingleScanResults = 10,
+  kWifiScannerEnable = 11,
+  kWifiScannerDisable = 12,
+  kWifiScannerStartSingleScan = 13,
+  kWifiScannerStartBackgroundScan = 14,
+  kWifiScannerStartPnoScan = 15,
+  kWifiScannerRegisterListener = 16,
+  kWifiManagerStartScan = 17,
+  kWifiManagerEnable = 18,
+  kWifiManagerDisable = 19,
+  kWifiManagerDisconnect = 20,
+  kWifiManagerReconnect = 21,
+  kWifiManagerGetNetworks = 22,
+  kWifiManagerGetNetworksPrivileged = 23,
+  kWifiManagerAddNetwork = 24,
+  kWifiManagerRemoveNetwork = 25,
+  kWifiManagerEnableNetwork = 26,
+  kWifiManagerDisableNetwork = 27,
+  kWifiManagerConnect = 28,
+  kWifiManagerSave = 29,
+  kWifiManagerForget = 30,
+  kWifiManagerRegisterScanListener = 31,
+  kWifiManagerAddNetworkSuggestions = 32,
+  [MinVersion=17] kWifiManagerEnableTdls = 33,
+  [MinVersion=17] kWifiManagerStartLocalHotspot = 34,
+  [MinVersion=17] kWifiManagerAddPasspointConfiguration = 35,
+  [MinVersion=19] kAndroidIpsecIke2VpnConnection = 36,
+  [MinVersion=22] kAndroidVpnIpv6Provisioned = 37,
+  [MinVersion=22] kAndroidVpnIpv4Provisioned = 38,
+  [MinVersion=24] kAndroidDisconnectHostVpn = 39,
+};
+
+// These enum values are persisted to metrics thus must be treated as
+// append-only.
+[Extensible]
+enum ArcNetworkError {
+  kUnknown = 0,
+  kMojoGetNetworksError = 1,
+  kMojoWifiAddNetworkFailed = 2,
+  kMojoWifiForgetNetworkFailed = 3,
+  kMojoWifiConnectFailed = 4,
+  kMojoWifiDisconnectFailed = 5,
+  kMojoWifiScanTimeout = 6,
+  kMojoWifiGetScanResultsFailed = 7,
+  kNetdGetIpv4Error = 8,
+  kNetdSetIpv4Error = 9,
+  kNetdIfaceListError = 10,
+  kNetdIfaceUpError = 11,
+  kNetdIfaceMtuError = 12,
+  kNetdIfaceClearError = 13,
+  kNetdIfconfigGetError = 14,
+  kNetdRestartIpv6Error = 15,
+  kNetdIpForwardingStartError = 16,
+  kNetdIpForwardingStopError = 17,
+  kNetdIfaceForwardingStartError = 18,
+  kNetdIfaceForwardingStopError = 19,
+  kNetdTetheringStartError = 20,
+  kNetdTetheringStopError = 21,
+  kNetdSnatStartError = 22,
+  kNetdSnatStopError = 23,
+  [MinVersion=19] kPasspointInvalidConfigurationError = 24,
+};
+
+// Describes the type of app kill being reported.
+[Extensible]
+enum AppKillType {
+  LMKD_KILL = 0,
+  OOM_KILL = 1,
+};
+
+// Describes an app kill from ARC instance.
+struct AppKill {
+  // Type of kill being reported.
+  AppKillType type;
+  // Number of kills. For LMKD kills, this is always 1. For OOM kills, this is
+  // the total oom_kill count from /proc/vm_stat.
+  uint32 count;
+};
+
+// Describes the primary ABI for an app
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum AppPrimaryAbi {
+  kNone = 0,
+  kArm = 1,
+  kArm64 = 2,
+  kX86 = 3,
+  kX86_64 = 4,
+};
+
+// Outlines the various states that can arise while performing Primary ABI
+// Migration on a ChromeOS device.
+[Extensible]
+enum ArcCorePriAbiMigEvent {
+  // If an unknown event is reported, it will be recorded as UNSUPPORTED.
+  kUnsupported = 0,
+
+  kMigrationCompleted = 1,
+  kGmsNoDowngrade = 2,
+  kGmsDowngradeSuccess = 3,
+  kGmsDowngradeFailure = 4,
+  kWebviewNoDowngrade = 5,
+  kWebviewDowngradeSuccess = 6,
+  kWebviewDowngradeFailure = 7,
+};
+
+// Enumerates the types of a clipboard / drag-and-drop event, including its
+// direction (ARC to Chrome or Chrome to ARC) and its content type (text or
+// an image).
+[Extensible]
+enum ArcClipboardDragDropEvent {
+  kTextClipboardFromChrome = 0,
+  kImageClipboardFromChrome = 1,
+  kTextClipboardFromArc = 2,
+  kImageClipboardFromArc = 3,
+  kTextDragDropFromChrome = 4,
+  kImageDragDropFromChrome = 5,
+  kTextDragDropFromArc = 6,
+  kImageDragDropFromArc = 7,
+};
+
+[Extensible]
+enum ArcImageCopyPasteCompatAction {
+  kPasteFromFiles = 0,
+  kDragFromFiles = 1,
+  kPasteFromBrowser = 2,
+  kDragFromBrowser = 3,
+};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+[Extensible]
+enum DataRestoreStatus {
+  // Data restore was not needed.
+  kNotNeeded = 0,
+  // Data restore success.
+  kSuccess = 1,
+  // Data restore failed.
+  kFailed = 2,
+};
+
+// Enumerates variations of Low Latency Stylus Library.
+[Extensible]
+enum LowLatencyStylusLibraryType {
+  [Default] kUnsupported = 0,
+  kCPU = 1,
+  kGPU = 2,
+};
+
+// The prediction target set in Low Latency Stylus Library.
+struct LowLatencyStylusLibPredictionTarget {
+  // Variations of Low Latency Stylus Library.
+  LowLatencyStylusLibraryType type;
+  // Prediction target set in Low Latency Stylus Library.
+  uint32 target;
+};
+
+// Enumerates the API call from ChromeOS Low-latency stylus library, which
+// provides mechanisms to reduce the draw latency for ARC++ app running on
+// ChromeOS.
+[Extensible]
+enum LowLatencyStylusLibApiId {
+  // If the library version doesn't support an API call, the API
+  // call will be recorded as UNSUPPORTED.
+  [Default] kUnsupported = 0,
+
+  // com.google.android.chromeos.lowlatencystylus.InkOverlay
+  kInkOverlayLowLatencyLibInUse = 1,
+
+  // com.google.android.chromeos.lowlatencystylus.gpu.GLInkOverlay
+  kGLInkOverlayLowLatencyLibInUse = 2,
+
+  // com.google.android.chromeos.lowlatencystylus.gpu.GLInkRenderer
+  kGLInkOverlaySetProjectionMatrix = 3,
+  kGLInkOverlaySetViewMatrix = 4,
+};
+
+// Status for migration of the main account hash code from v2 to v3.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+[Extensible]
+enum MainAccountHashMigrationStatus {
+  // Hash code migration not required.
+  kHashCodeMigrationNotRequired = 0,
+
+  // Hash code migration successful.
+  kHashCodeMigrationSuccessful = 1,
+
+  // Hash code migration failed.
+  kHashCodeMigrationFailed = 2,
+
+  // Hash code migration failed due to multiple acc hash matching.
+  kHashCodeMigrationFailedDueToMultipleAccounts = 3,
+
+  // Hash code migration failed due to multiple acc hash matching.
+  kHashCodeMigrationFailedDueToNoMatchingAccount = 4,
+
+  // NOTE: If you add any entries to this enum, you must also update the
+  // corresponding UMA ArcMainAccountHashMigrationStatus at
+  // tools/metrics/histograms/enums.xml.
+};
+
+// The list of subdirectories of Android /data that are covered in the
+// statistics on the directory size and the number of files contained.
+enum AndroidDataSubdirectory {
+    // /data/app
+    kUserInstalledAppDir = 0,
+
+    // /data/data
+    kInternalDataDir = 1,
+
+    // /data/media/0
+    kExternalDataRootUserDir = 2,
+
+    // /data/user_de/0
+    kDEStorageRootUserDir = 3,
+};
+
+// Enumerates the types of Wayland timing events where the message processing
+// completed late and could cause UI jank in ARC apps. This enum is persisted to
+// logs. Existing values should not be changed and new values should only be
+// appended to the end.
+[Extensible]
+enum WaylandTimingEvent {
+  [Default] kOther = 0,
+  kBinderReleaseClipboardData = 1,
+  kWlBufferRelease = 2,
+  kWlKeyboardLeave = 3,
+  kWlPointerMotion = 4,
+  kWlPointerLeave = 5,
+  kZauraShellActivated = 6,
+  kZauraSurfaceOcclusionChanged = 7,
+  kZcrRemoteSurfaceWindowGeometryChanged = 8,
+  kZcrRemoteSurfaceBoundsChangedInOutput = 9,
+  kZcrVsyncTimingUpdate = 10,
+};
+
+// Deprecated method IDs: 25
+// Next method ID: 31
+interface MetricsHost {
+  // Reports boot progress events from ARC instance.
+  ReportBootProgress@0(array<BootProgressEvent> events,
+                       [MinVersion=1] BootType boot_type);
+
+  // Reports native bridge used by ARC instance.
+  [MinVersion=3] ReportNativeBridge@1(NativeBridgeType native_bridge_type);
+
+  // Reports api usage by ChromeOS Companion Library.
+  [MinVersion=4] ReportCompanionLibApiUsage@2(CompanionLibApiId api_id);
+
+  // Reports LMKD and OOM kills from ARC.
+  [MinVersion=6] ReportAppKill@3(AppKill app_kill);
+
+  // Reports migration event by ARC Metrics Service.
+  [MinVersion=7] ReportArcCorePriAbiMigEvent@4(ArcCorePriAbiMigEvent event);
+
+  // Reports number of failed ABI Migration attempts by ARC Metrics Service.
+  [MinVersion=7] ReportArcCorePriAbiMigFailedTries@5(uint32 failed_attempts);
+
+  // Reports ABI Migration system packages downgrade delay by ArcMetricsService.
+  [MinVersion=7] ReportArcCorePriAbiMigDowngradeDelay@6(mojo_base.mojom.TimeDelta delay);
+
+  // Reports boot time during ABI Migration by ARC Metrics Service.
+  [MinVersion=7] ReportArcCorePriAbiMigBootTime@7(mojo_base.mojom.TimeDelta duration);
+
+  // Reports a clipboard / drag-and-drop event.
+  [MinVersion=8] ReportClipboardDragDropEvent@8(
+      ArcClipboardDragDropEvent event_type);
+
+  // Reports ANR event.
+  [MinVersion=9] ReportAnr@10(Anr anr);
+
+  // Reports System Health upgrade processing time and if any packages were
+  // deleted during the upgrade.
+  [MinVersion=10] ReportArcSystemHealthUpgrade@11(
+    mojo_base.mojom.TimeDelta duration,
+    bool packages_deleted);
+
+  // Reports api usage of Low-latency Stylus Library.
+  [MinVersion=11] ReportLowLatencyStylusLibApiUsage@12
+      (LowLatencyStylusLibApiId api_id);
+
+  // Reports prediction target used in Low-latency Stylus Library.
+  [MinVersion=11] ReportLowLatencyStylusLibPredictionTarget@13(
+    LowLatencyStylusLibPredictionTarget prediction_target);
+
+  // Reports the metrics to perform the entire fixup for P to R upgrade: the
+  // duration, the number of fixed directories, and the number of apps that
+  // contains at least one file or directory that is failed to be fixed.
+  [MinVersion=12] ReportEntireFixupMetrics@14(
+      mojo_base.mojom.TimeDelta duration,
+      uint32 number_of_directories,
+      uint32 number_of_failures);
+
+  // Reports the metrics to perform fixup per app for P to R upgrade: the
+  // duration and the number of fixed directories.
+  [MinVersion=12] ReportPerAppFixupMetrics@15(
+      mojo_base.mojom.TimeDelta duration,
+      uint32 number_of_directories);
+
+  // Reports the result of DNS query inside ARC.
+  [MinVersion=13] ReportDnsQueryResult@16(
+      ArcDnsQuery query,
+      bool success);
+
+  // Reports main account hash migration status.
+  [MinVersion=14] ReportMainAccountHashMigrationMetrics@17(
+      MainAccountHashMigrationStatus status);
+
+  // Reports the operation type (copy & paste or drag & drop) and the source of
+  // the image (from browser or Files app) when image copy-paste app compat is
+  // triggered.
+  // Image copy-paste app compat is a feature that allows insertion of images to
+  // Android apps through commitContent IME API or Android intent, when the app
+  // don't support images in the clipboard.
+  [MinVersion=15] ReportImageCopyPasteCompatAction@18(
+      ArcImageCopyPasteCompatAction action_type);
+
+  // Reports occurrence of one event in the ARC networking stack.
+  [MinVersion=16] ReportArcNetworkEvent@19(ArcNetworkEvent event);
+
+  // Reports occurrence of one error in the ARC networking stack.
+  [MinVersion=16] ReportArcNetworkError@20(ArcNetworkError error);
+
+  // Reports primary ABI of an app during app launch.
+  [MinVersion=18] ReportAppPrimaryAbi@21(AppPrimaryAbi abi);
+
+  // Reports data restore status and duration in milliseconds. This applies only
+  // for ARC++ P container.
+  [MinVersion=20] ReportDataRestore@22(DataRestoreStatus status,
+                                       int64 duration_ms);
+
+  // Reports raw memory pressure data, as the contents of /proc/pressure/memory.
+  // This is invoked solely by ARCVM.
+  [MinVersion=21] ReportMemoryPressure@23(array<uint8> psi_file_contents);
+
+  // Reports that ArcAppLauncher is about to start GMS sign-in / CloudDPC
+  // provisioning. This only happens during ARC provisioning.
+  [MinVersion=22] ReportProvisioningPreSignIn@24();
+
+  // Reports the duration of late timing events for Wayland.
+  [MinVersion=26] ReportWaylandLateTimingEvent@30(
+      WaylandTimingEvent event, mojo_base.mojom.TimeDelta duration);
+
+  // Reports the number of directories and non-directory files under the
+  // "Play files" folder in ChromeOS Files app except for the "Android" folder.
+  [MinVersion=25] ReportNonAndroidPlayFilesCount@26(
+      uint32 number_of_directories, uint32 number_of_non_directories);
+
+  // For each package, reports the number of directories and non-directory files
+  // and the total size of files contained in one of its package-specific
+  // directories, which can be found in /data/app, /data/data,
+  // /data/media/0/Android/{data,obb} or /data/user_de/0.
+  [MinVersion=25] ReportPerAppFileStatsOfAndroidDataDirs@27(
+      uint32 number_of_directories, uint32 number_of_non_directories,
+      uint32 size_in_kilobytes);
+
+  // Reports the number of directories and non-directory files and the total
+  // size of the files in /data/app, /data/data, /data/media/0 and
+  // /data/user_de/0 combined. Also reports the duration of the file system
+  // traversal to get the data in milliseconds.
+  [MinVersion=25] ReportTotalFileStatsOfAndroidDataDirs@28(
+      uint32 number_of_directories, uint32 number_of_non_directories,
+      uint32 size_in_kilobytes, mojo_base.mojom.TimeDelta duration);
+
+  // Reports the number of directories and non-directory files and the total
+  // size of the files in one of the selected subdirectories of /data
+  // (/data/app, /data/data, /data/media/0 and /data/user_de/0), which is
+  // specified in the first argument.
+  [MinVersion=25] ReportTotalFileStatsOfAndroidDataSubdir@29(
+      AndroidDataSubdirectory target, uint32 number_of_directories,
+      uint32 number_of_non_directories, uint32 size_in_kilobytes);
+};
+
+// Deprecated method IDs: 0
+// Next method ID: 3
+interface MetricsInstance {
+  // Establishes full-duplex communication with the host.
+  [MinVersion=2] Init@1(pending_remote<MetricsHost> host_remote) => ();
+
+  // Requests GFX metrics for the specified package. In case of error, null is
+  // returned.
+  [MinVersion=5] GetGfxMetrics@2(string packageName) => (GfxMetrics? metrics);
+};

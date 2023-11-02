@@ -1,6 +1,8 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+#include "base/memory/raw_ptr.h"
 
 #import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 
@@ -21,9 +23,11 @@
 #import "components/remote_cocoa/app_shim/native_widget_mac_nswindow.h"
 #import "components/remote_cocoa/app_shim/views_nswindow_delegate.h"
 #import "testing/gtest_mac.h"
+#include "ui/base/cocoa/find_pasteboard.h"
 #import "ui/base/cocoa/window_size_constants.h"
 #include "ui/base/ime/input_method.h"
 #import "ui/base/test/cocoa_helper.h"
+#include "ui/display/screen.h"
 #include "ui/events/test/cocoa_test_event_utils.h"
 #import "ui/gfx/mac/coordinate_conversion.h"
 #import "ui/views/cocoa/native_widget_mac_ns_window_host.h"
@@ -250,41 +254,60 @@ NSTextInputContext* g_fake_current_input_context = nullptr;
 
 @end
 
-// Class to override -[NSWindow toggleFullScreen:] to a no-op. This simulates
-// NSWindow's behavior when attempting to toggle fullscreen state again, when
-// the last attempt failed but Cocoa has not yet sent
-// windowDidFailToEnterFullScreen:.
-@interface BridgedNativeWidgetTestWindow : NativeWidgetMacNSWindow {
- @private
-  BOOL _ignoreToggleFullScreen;
-  int _ignoredToggleFullScreenCount;
-}
-@property(assign, nonatomic) BOOL ignoreToggleFullScreen;
-@property(readonly, nonatomic) int ignoredToggleFullScreenCount;
+// Let's not mess with the machine's actual find pasteboard!
+@interface MockFindPasteboard : FindPasteboard
 @end
 
-@implementation BridgedNativeWidgetTestWindow
-
-@synthesize ignoreToggleFullScreen = _ignoreToggleFullScreen;
-@synthesize ignoredToggleFullScreenCount = _ignoredToggleFullScreenCount;
-
-- (void)performSelector:(SEL)aSelector
-             withObject:(id)anArgument
-             afterDelay:(NSTimeInterval)delay {
-  // This is used in simulations without a message loop. Don't start a message
-  // loop since that would expose the tests to system notifications and
-  // potential flakes. Instead, just pretend the message loop is flushed here.
-  if (_ignoreToggleFullScreen && aSelector == @selector(toggleFullScreen:))
-    [self toggleFullScreen:anArgument];
-  else
-    [super performSelector:aSelector withObject:anArgument afterDelay:delay];
+@implementation MockFindPasteboard {
+  base::scoped_nsobject<NSString> _text;
 }
 
-- (void)toggleFullScreen:(id)sender {
-  if (_ignoreToggleFullScreen)
-    ++_ignoredToggleFullScreenCount;
-  else
-    [super toggleFullScreen:sender];
++ (FindPasteboard*)sharedInstance {
+  static MockFindPasteboard* instance = nil;
+  if (!instance) {
+    instance = [[MockFindPasteboard alloc] init];
+  }
+  return instance;
+}
+
+- (instancetype)init {
+  self = [super init];
+  if (self) {
+    _text.reset([[NSString alloc] init]);
+  }
+  return self;
+}
+
+- (void)loadTextFromPasteboard:(NSNotification*)notification {
+  // No-op
+}
+
+- (void)setFindText:(NSString*)newText {
+  _text.reset([newText copy]);
+}
+
+- (NSString*)findText {
+  return _text;
+}
+@end
+
+@interface NativeWidgetMacNSWindowForTesting : NativeWidgetMacNSWindow {
+  BOOL hasShadowForTesting;
+}
+@end
+
+@implementation NativeWidgetMacNSWindowForTesting
+
+// Preserves the value of the hasShadow flag. During testing, -hasShadow will
+// always return NO because shadows are disabled on the bots.
+- (void)setHasShadow:(BOOL)flag {
+  hasShadowForTesting = flag;
+  [super setHasShadow:flag];
+}
+
+// Returns the value of the hasShadow flag during tests.
+- (BOOL)hasShadowForTesting {
+  return hasShadowForTesting;
 }
 
 @end
@@ -309,9 +332,9 @@ class MockNativeWidgetMac : public NativeWidgetMac {
     ownership_ = params.ownership;
 
     base::scoped_nsobject<NativeWidgetMacNSWindow> window(
-        [[BridgedNativeWidgetTestWindow alloc]
+        [[NativeWidgetMacNSWindowForTesting alloc]
             initWithContentRect:ui::kWindowSizeDeterminedLater
-                      styleMask:NSBorderlessWindowMask
+                      styleMask:NSWindowStyleMaskBorderless
                         backing:NSBackingStoreBuffered
                           defer:NO]);
     GetNSWindowHost()->CreateInProcessNSWindowBridge(window);
@@ -371,7 +394,7 @@ class BridgedNativeWidgetTestBase : public ui::CocoaTest {
   // representing the first unicode character of |chars|.
   NSEvent* UnicodeKeyDown(int key_code, NSString* chars) {
     return cocoa_test_event_utils::KeyEventWithKeyCode(
-        key_code, [chars characterAtIndex:0], NSKeyDown, 0);
+        key_code, [chars characterAtIndex:0], NSEventTypeKeyDown, 0);
   }
 
   // Overridden from testing::Test:
@@ -379,7 +402,7 @@ class BridgedNativeWidgetTestBase : public ui::CocoaTest {
     ui::CocoaTest::SetUp();
 
     Widget::InitParams init_params;
-    init_params.native_widget = native_widget_mac_;
+    init_params.native_widget = native_widget_mac_.get();
     init_params.type = type_;
     init_params.ownership = ownership_;
     init_params.opacity = opacity_;
@@ -404,9 +427,15 @@ class BridgedNativeWidgetTestBase : public ui::CocoaTest {
     return nil;
   }
 
+  bool BridgeWindowHasShadow() {
+    return
+        [base::mac::ObjCCast<NativeWidgetMacNSWindowForTesting>(bridge_window())
+            hasShadowForTesting];
+  }
+
  protected:
   std::unique_ptr<Widget> widget_;
-  MockNativeWidgetMac* native_widget_mac_;  // Weak. Owned by |widget_|.
+  raw_ptr<MockNativeWidgetMac> native_widget_mac_;  // Weak. Owned by |widget_|.
 
   // Use a frameless window, otherwise Widget will try to center the window
   // before the tests covering the Init() flow are ready to do that.
@@ -424,6 +453,8 @@ class BridgedNativeWidgetTestBase : public ui::CocoaTest {
 
  private:
   TestViewsDelegate test_views_delegate_;
+
+  display::ScopedNativeScreen screen_;
 };
 
 class BridgedNativeWidgetTest : public BridgedNativeWidgetTestBase,
@@ -570,7 +601,7 @@ Textfield* BridgedNativeWidgetTest::InstallTextField(const std::string& text) {
 }
 
 NSString* BridgedNativeWidgetTest::GetActualText() {
-  return GetViewStringForRange(ns_view_, NSMakeRange(0, NSUIntegerMax));
+  return GetViewStringForRange(ns_view_, EmptyRange());
 }
 
 NSString* BridgedNativeWidgetTest::GetActualSelectedText() {
@@ -578,7 +609,7 @@ NSString* BridgedNativeWidgetTest::GetActualSelectedText() {
 }
 
 NSString* BridgedNativeWidgetTest::GetExpectedText() {
-  return GetViewStringForRange(dummy_text_view_, NSMakeRange(0, NSUIntegerMax));
+  return GetViewStringForRange(dummy_text_view_, EmptyRange());
 }
 
 NSString* BridgedNativeWidgetTest::GetExpectedSelectedText() {
@@ -875,7 +906,7 @@ class BridgedNativeWidgetInitTest : public BridgedNativeWidgetTestBase {
 
   void PerformInit() {
     Widget::InitParams init_params;
-    init_params.native_widget = native_widget_mac_;
+    init_params.native_widget = native_widget_mac_.get();
     init_params.type = type_;
     init_params.ownership = ownership_;
     init_params.opacity = opacity_;
@@ -899,9 +930,7 @@ TEST_F(BridgedNativeWidgetInitTest, InitNotCalled) {
 }
 
 // Tests the shadow type given in InitParams.
-// Disabled because shadows are disabled on the bots - see
-// https://crbug.com/899286.
-TEST_F(BridgedNativeWidgetInitTest, DISABLED_ShadowType) {
+TEST_F(BridgedNativeWidgetInitTest, ShadowType) {
   // Verify Widget::InitParam defaults and arguments added from SetUp().
   EXPECT_EQ(Widget::InitParams::TYPE_WINDOW_FRAMELESS, type_);
   EXPECT_EQ(Widget::InitParams::WindowOpacity::kOpaque, opacity_);
@@ -909,29 +938,27 @@ TEST_F(BridgedNativeWidgetInitTest, DISABLED_ShadowType) {
 
   CreateNewWidgetToInit();
   EXPECT_FALSE(
-      [bridge_window() hasShadow]);  // Default for NSBorderlessWindowMask.
+      BridgeWindowHasShadow());  // Default for NSWindowStyleMaskBorderless.
   PerformInit();
 
   // Borderless is 0, so isn't really a mask. Check that nothing is set.
-  EXPECT_EQ(NSBorderlessWindowMask, [bridge_window() styleMask]);
-  EXPECT_TRUE(
-      [bridge_window() hasShadow]);  // ShadowType::kDefault means a shadow.
+  EXPECT_EQ(NSWindowStyleMaskBorderless, [bridge_window() styleMask]);
+  EXPECT_TRUE(BridgeWindowHasShadow());  // ShadowType::kDefault means a shadow.
 
   CreateNewWidgetToInit();
   shadow_type_ = Widget::InitParams::ShadowType::kNone;
   PerformInit();
-  EXPECT_FALSE([bridge_window() hasShadow]);  // Preserves lack of shadow.
+  EXPECT_FALSE(BridgeWindowHasShadow());  // Preserves lack of shadow.
 
   // Default for Widget::InitParams::TYPE_WINDOW.
   CreateNewWidgetToInit();
   PerformInit();
-  EXPECT_FALSE(
-      [bridge_window() hasShadow]);  // ShadowType::kNone removes shadow.
+  EXPECT_FALSE(BridgeWindowHasShadow());  // ShadowType::kNone removes shadow.
 
   shadow_type_ = Widget::InitParams::ShadowType::kDefault;
   CreateNewWidgetToInit();
   PerformInit();
-  EXPECT_TRUE([bridge_window() hasShadow]);  // Preserves shadow.
+  EXPECT_TRUE(BridgeWindowHasShadow());  // Preserves shadow.
 
   widget_.reset();
 }
@@ -1960,68 +1987,23 @@ TEST_F(BridgedNativeWidgetTest, TextInput_WriteToPasteboard) {
   }
 }
 
-typedef BridgedNativeWidgetTestBase BridgedNativeWidgetSimulateFullscreenTest;
+TEST_F(BridgedNativeWidgetTest, WriteToFindPasteboard) {
+  base::mac::ScopedObjCClassSwizzler swizzler([FindPasteboard class],
+                                              [MockFindPasteboard class],
+                                              @selector(sharedInstance));
+  EXPECT_NSEQ(@"", [[FindPasteboard sharedInstance] findText]);
 
-// Simulate the notifications that AppKit would send out if a fullscreen
-// operation begins, and then fails and must abort. This notification sequence
-// was determined by posting delayed tasks to toggle fullscreen state and then
-// mashing Ctrl+Left/Right to keep OSX in a transition between Spaces to cause
-// the fullscreen transition to fail.
-TEST_F(BridgedNativeWidgetSimulateFullscreenTest, FailToEnterAndExit) {
-  BridgedNativeWidgetTestWindow* window =
-      base::mac::ObjCCastStrict<BridgedNativeWidgetTestWindow>(
-          widget_->GetNativeWindow().GetNativeNSWindow());
-  [window setIgnoreToggleFullScreen:YES];
-  widget_->Show();
+  const std::string test_string = "foo bar baz";
+  InstallTextField(test_string);
 
-  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+  SetSelectionRange(NSMakeRange(4, 7));
+  [ns_view_ copyToFindPboard:nil];
+  EXPECT_NSEQ(@"bar baz", [[FindPasteboard sharedInstance] findText]);
 
-  EXPECT_FALSE(bridge()->target_fullscreen_state());
-
-  // Simulate an initial toggleFullScreen: (user- or Widget-initiated).
-  [center postNotificationName:NSWindowWillEnterFullScreenNotification
-                        object:window];
-
-  // On a failure, Cocoa starts by sending an unexpected *exit* fullscreen, and
-  // NativeWidgetNSWindowBridge will think it's just a delayed transition and
-  // try to go back into fullscreen but get ignored by Cocoa.
-  EXPECT_EQ(0, [window ignoredToggleFullScreenCount]);
-  EXPECT_TRUE(bridge()->target_fullscreen_state());
-  [center postNotificationName:NSWindowDidExitFullScreenNotification
-                        object:window];
-  EXPECT_EQ(1, [window ignoredToggleFullScreenCount]);
-  EXPECT_FALSE(bridge()->target_fullscreen_state());
-
-  // Cocoa follows up with a failure message sent to the NSWindowDelegate (there
-  // is no equivalent notification for failure).
-  ViewsNSWindowDelegate* window_delegate =
-      base::mac::ObjCCast<ViewsNSWindowDelegate>([window delegate]);
-  [window_delegate windowDidFailToEnterFullScreen:window];
-  EXPECT_FALSE(bridge()->target_fullscreen_state());
-
-  // Now perform a successful fullscreen operation.
-  [center postNotificationName:NSWindowWillEnterFullScreenNotification
-                        object:window];
-  EXPECT_TRUE(bridge()->target_fullscreen_state());
-  [center postNotificationName:NSWindowDidEnterFullScreenNotification
-                        object:window];
-  EXPECT_TRUE(bridge()->target_fullscreen_state());
-
-  // And try to get out.
-  [center postNotificationName:NSWindowWillExitFullScreenNotification
-                        object:window];
-  EXPECT_FALSE(bridge()->target_fullscreen_state());
-
-  // On a failure, Cocoa sends a failure message, but then just dumps the window
-  // out of fullscreen anyway (in that order).
-  [window_delegate windowDidFailToExitFullScreen:window];
-  EXPECT_FALSE(bridge()->target_fullscreen_state());
-  [center postNotificationName:NSWindowDidExitFullScreenNotification
-                        object:window];
-  EXPECT_EQ(1, [window ignoredToggleFullScreenCount]);  // No change.
-  EXPECT_FALSE(bridge()->target_fullscreen_state());
-
-  widget_->CloseNow();
+  // Don't overwrite with empty selection
+  SetSelectionRange(NSMakeRange(0, 0));
+  [ns_view_ copyToFindPboard:nil];
+  EXPECT_NSEQ(@"bar baz", [[FindPasteboard sharedInstance] findText]);
 }
 
 }  // namespace test

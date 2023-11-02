@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/observer_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -19,7 +20,7 @@ namespace autofill {
 namespace {
 // There's one header entry to prompt the user to select an address, and a
 // separator.
-int kNbHeaderEntries = 2;
+constexpr size_t kNbHeaderEntries = 2;
 }  // namespace
 
 AddressComboboxModel::AddressComboboxModel(
@@ -35,7 +36,7 @@ AddressComboboxModel::AddressComboboxModel(
 
 AddressComboboxModel::~AddressComboboxModel() {}
 
-int AddressComboboxModel::GetItemCount() const {
+size_t AddressComboboxModel::GetItemCount() const {
   // When there are not addresses, a special entry is shown to prompt the user
   // to add addresses, but nothing else is shown, since there are no address to
   // select from, and no need for a separator.
@@ -46,10 +47,9 @@ int AddressComboboxModel::GetItemCount() const {
   return addresses_.size() + kNbHeaderEntries;
 }
 
-std::u16string AddressComboboxModel::GetItemAt(int index) const {
-  DCHECK_GE(index, 0);
+std::u16string AddressComboboxModel::GetItemAt(size_t index) const {
   // A special entry is always added at index 0 and a separator at index 1.
-  DCHECK_LT(static_cast<size_t>(index), addresses_.size() + kNbHeaderEntries);
+  DCHECK_LT(index, addresses_.size() + kNbHeaderEntries);
 
   // Special entry when no profiles have been created yet.
   if (addresses_.empty())
@@ -58,15 +58,13 @@ std::u16string AddressComboboxModel::GetItemAt(int index) const {
   // Always show the "Select" entry at the top, default selection position.
   if (index == 0)
     return l10n_util::GetStringUTF16(IDS_AUTOFILL_SELECT);
-
-  // Always show the "Select" entry at the top, default selection position.
   if (index == 1)
     return u"---";
 
   return addresses_[index - kNbHeaderEntries].second;
 }
 
-bool AddressComboboxModel::IsItemSeparatorAt(int index) const {
+bool AddressComboboxModel::IsItemSeparatorAt(size_t index) const {
   // The only separator is between the "Select" entry at 0 and the first address
   // at index 2. So there must be at least one address for a separator to be
   // shown.
@@ -74,45 +72,37 @@ bool AddressComboboxModel::IsItemSeparatorAt(int index) const {
   return index == 1;
 }
 
-int AddressComboboxModel::GetDefaultIndex() const {
+absl::optional<size_t> AddressComboboxModel::GetDefaultIndex() const {
   if (!default_selected_guid_.empty()) {
-    int address_index = GetIndexOfIdentifier(default_selected_guid_);
-    if (address_index != -1)
-      return address_index;
+    const auto index = GetIndexOfIdentifier(default_selected_guid_);
+    if (index.has_value())
+      return index;
   }
   return ui::ComboboxModel::GetDefaultIndex();
 }
 
-void AddressComboboxModel::AddObserver(ui::ComboboxModelObserver* observer) {
-  observers_.AddObserver(observer);
-}
-
-void AddressComboboxModel::RemoveObserver(ui::ComboboxModelObserver* observer) {
-  observers_.RemoveObserver(observer);
-}
-
-int AddressComboboxModel::AddNewProfile(const AutofillProfile& profile) {
+size_t AddressComboboxModel::AddNewProfile(const AutofillProfile& profile) {
   profiles_cache_.push_back(std::make_unique<AutofillProfile>(profile));
   UpdateAddresses();
-  DCHECK_GT(addresses_.size(), 0UL);
+  DCHECK(!addresses_.empty());
   return addresses_.size() + kNbHeaderEntries - 1;
 }
 
-std::string AddressComboboxModel::GetItemIdentifierAt(int index) {
+std::string AddressComboboxModel::GetItemIdentifierAt(size_t index) {
   // The first two indices are special entries, with no addresses.
   if (index < kNbHeaderEntries)
     return std::string();
-  DCHECK_LT(static_cast<size_t>(index), addresses_.size() + kNbHeaderEntries);
+  DCHECK_LT(index, addresses_.size() + kNbHeaderEntries);
   return addresses_[index - kNbHeaderEntries].first;
 }
 
-int AddressComboboxModel::GetIndexOfIdentifier(
+absl::optional<size_t> AddressComboboxModel::GetIndexOfIdentifier(
     const std::string& identifier) const {
   for (size_t i = 0; i < addresses_.size(); ++i) {
     if (addresses_[i].first == identifier)
       return i + kNbHeaderEntries;
   }
-  return -1;
+  return absl::nullopt;
 }
 
 void AddressComboboxModel::UpdateAddresses() {
@@ -130,7 +120,7 @@ void AddressComboboxModel::UpdateAddresses() {
   for (size_t i = 0; i < profiles_cache_.size(); ++i)
     addresses_.emplace_back(profiles_cache_[i]->guid(), labels[i]);
 
-  for (auto& observer : observers_) {
+  for (auto& observer : observers()) {
     observer.OnComboboxModelChanged(this);
   }
 }

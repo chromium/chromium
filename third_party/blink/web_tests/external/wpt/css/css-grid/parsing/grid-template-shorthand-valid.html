@@ -28,6 +28,7 @@ test_valid_value("grid-template", '[] "a" 10px', '"a" 10px');
 test_valid_value("grid-template", '[a] "a" 10px [a]');
 test_valid_value("grid-template", '"a"');
 test_valid_value("grid-template", '"a" auto', '"a"');
+test_valid_value("grid-template", '"a a a"', '"a a a"');
 test_valid_value("grid-template", '"a" / 10px');
 test_valid_value("grid-template", '"a" / 20%');
 test_valid_value("grid-template", '"a" / 5fr');
@@ -50,6 +51,7 @@ test_valid_value("grid-template", '[a] "a" [a] "b" [a]');
 test_valid_value("grid-template", '"a" "a" [a] "b" [a]');
 test_valid_value("grid-template", '"a" [a] "b" [a] / 0', '"a" [a] "b" [a] / 0px');
 test_valid_value("grid-template", '"a" "a" [a] [a] "b" / auto', '"a" "a" [a a] "b" / auto');
+test_valid_value("grid-template", '"a" auto [a] "b" auto [b] / 10px');
 
 // FIXME: add more values to test full syntax
 

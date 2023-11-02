@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@
 #include "android_webview/browser/aw_feature_entries.h"
 #include "android_webview/browser/aw_metrics_service_client_delegate.h"
 #include "android_webview/browser/metrics/aw_metrics_service_client.h"
+#include "android_webview/browser/tracing/aw_tracing_delegate.h"
 #include "android_webview/browser/variations/variations_seed_loader.h"
 #include "android_webview/common/aw_switches.h"
 #include "android_webview/proto/aw_variations_seed.pb.h"
@@ -23,6 +24,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/metrics/field_trial.h"
 #include "base/path_service.h"
 #include "base/strings/string_split.h"
 #include "base/time/time.h"
@@ -36,14 +38,17 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/in_memory_pref_store.h"
 #include "components/prefs/json_pref_store.h"
+#include "components/prefs/pref_name_set.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/pref_service_factory.h"
 #include "components/prefs/segregated_pref_store.h"
+#include "components/tracing/common/pref_names.h"
 #include "components/variations/entropy_provider.h"
 #include "components/variations/pref_names.h"
 #include "components/variations/service/safe_seed_manager.h"
 #include "components/variations/service/variations_service.h"
+#include "components/variations/variations_switches.h"
 #include "content/public/common/content_switch_dependent_feature_overrides.h"
 #include "net/base/features.h"
 #include "net/nqe/pref_names.h"
@@ -73,7 +78,6 @@ const char* const kPersistentPrefsAllowlist[] = {
     metrics::prefs::kStabilityFileMetricsUnsentSamplesCount,
     metrics::prefs::kStabilityLaunchCount,
     metrics::prefs::kStabilityPageLoadCount,
-    metrics::prefs::kStabilityRendererHangCount,
     metrics::prefs::kStabilityRendererLaunchCount,
     // Unsent logs.
     metrics::prefs::kMetricsInitialLogs,
@@ -93,6 +97,13 @@ const char* const kPersistentPrefsAllowlist[] = {
     // A dictionary that caches 'AppPackageNameLoggingRule' object which decides
     // whether the app package name should be recorded in UMA or not.
     prefs::kMetricsAppPackageNameLoggingRule,
+
+    // The last time the apps package name allowlist was queried from the
+    // component update service, regardless if it was successful or not.
+    prefs::kAppPackageNameLoggingRuleLastUpdateTime,
+
+    // The state of the previous background tracing session.
+    tracing::kBackgroundTracingSessionState,
 };
 
 void HandleReadError(PersistentPrefStore::PrefReadError error) {}
@@ -121,6 +132,25 @@ AwFeatureListCreator::AwFeatureListCreator()
 
 AwFeatureListCreator::~AwFeatureListCreator() {}
 
+void AwFeatureListCreator::CreateFeatureListAndFieldTrials() {
+  TRACE_EVENT0("startup",
+               "AwFeatureListCreator::CreateFeatureListAndFieldTrials");
+  CreateLocalState();
+  AwMetricsServiceClient::SetInstance(std::make_unique<AwMetricsServiceClient>(
+      std::make_unique<AwMetricsServiceClientDelegate>()));
+  AwMetricsServiceClient::GetInstance()->Initialize(local_state_.get());
+  SetUpFieldTrials();
+}
+
+void AwFeatureListCreator::CreateLocalState() {
+  browser_policy_connector_ = std::make_unique<AwBrowserPolicyConnector>();
+  local_state_ = CreatePrefService();
+}
+
+void AwFeatureListCreator::DisableSignatureVerificationForTesting() {
+  g_signature_verification_enabled = false;
+}
+
 std::unique_ptr<PrefService> AwFeatureListCreator::CreatePrefService() {
   auto pref_registry = base::MakeRefCounted<user_prefs::PrefRegistrySyncable>();
 
@@ -129,10 +159,13 @@ std::unique_ptr<PrefService> AwFeatureListCreator::CreatePrefService() {
 
   embedder_support::OriginTrialPrefs::RegisterPrefs(pref_registry.get());
   AwBrowserProcess::RegisterNetworkContextLocalStatePrefs(pref_registry.get());
+  AwBrowserProcess::RegisterEnterpriseAuthenticationAppLinkPolicyPref(
+      pref_registry.get());
+  AwTracingDelegate::RegisterPrefs(pref_registry.get());
 
   PrefServiceFactory pref_service_factory;
 
-  std::set<std::string> persistent_prefs;
+  PrefNameSet persistent_prefs;
   for (const char* const pref_name : kPersistentPrefsAllowlist)
     persistent_prefs.insert(pref_name);
 
@@ -216,40 +249,22 @@ void AwFeatureListCreator::SetUpFieldTrials() {
       aw_feature_entries::RegisterEnabledFeatureEntries(feature_list.get());
 
   auto* metrics_client = AwMetricsServiceClient::GetInstance();
-  // Populate FieldTrialList. Since |low_entropy_provider| is null, it will fall
-  // back to the provider we previously gave to FieldTrialList, which is a low
-  // entropy provider. The X-Client-Data header is not reported on WebView, so
-  // we pass an empty object as the |low_entropy_source_value|. Because WebView
-  // does not use the same Variations Safe Mode mechanism as most other
-  // platforms, pass false for |extend_variations_safe_mode| to opt out of the
-  // Extended Variations Safe Mode experiment. See crbug/1220131 for more info.
+  const base::CommandLine* command_line =
+      base::CommandLine::ForCurrentProcess();
+
+  // Populate FieldTrialList.
+  // If you update this, consider whether "WebViewEnvironment" in
+  // components/variations/variations_seed_processor_unittest.cc needs updates.
+  // Passing null low_entropy_source_value to suppress adding the VariationsId
+  // for it. TODO(b/183955043): Re-evaluate if this is necessary.
   variations_field_trial_creator_->SetUpFieldTrials(
       variation_ids,
-      GetSwitchDependentFeatureOverrides(
-          *base::CommandLine::ForCurrentProcess()),
-      /*low_entropy_provider=*/nullptr, std::move(feature_list),
-      metrics_client->metrics_state_manager(), aw_field_trials_.get(),
-      &ignored_safe_seed_manager, /*low_entropy_source_value=*/absl::nullopt,
-      /*extend_variations_safe_mode=*/false);
-}
-
-void AwFeatureListCreator::CreateLocalState() {
-  browser_policy_connector_ = std::make_unique<AwBrowserPolicyConnector>();
-  local_state_ = CreatePrefService();
-}
-
-void AwFeatureListCreator::CreateFeatureListAndFieldTrials() {
-  TRACE_EVENT0("startup",
-               "AwFeatureListCreator::CreateFeatureListAndFieldTrials");
-  CreateLocalState();
-  AwMetricsServiceClient::SetInstance(std::make_unique<AwMetricsServiceClient>(
-      std::make_unique<AwMetricsServiceClientDelegate>()));
-  AwMetricsServiceClient::GetInstance()->Initialize(local_state_.get());
-  SetUpFieldTrials();
-}
-
-void AwFeatureListCreator::DisableSignatureVerificationForTesting() {
-  g_signature_verification_enabled = false;
+      command_line->GetSwitchValueASCII(
+          variations::switches::kForceVariationIds),
+      GetSwitchDependentFeatureOverrides(*command_line),
+      std::move(feature_list), metrics_client->metrics_state_manager(),
+      aw_field_trials_.get(), &ignored_safe_seed_manager,
+      /*low_entropy_source_value=*/absl::nullopt);
 }
 
 }  // namespace android_webview

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include "base/logging.h"
 #include "base/strings/string_util_win.h"
 #include "base/win/windowsx_shim.h"
+#include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util_win.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -16,8 +17,7 @@
 #include "ui/gfx/system_fonts_win.h"
 #include "ui/views/corewm/cursor_height_provider_win.h"
 
-namespace views {
-namespace corewm {
+namespace views::corewm {
 
 TooltipWin::TooltipWin(HWND parent)
     : parent_hwnd_(parent), tooltip_hwnd_(nullptr), showing_(false) {
@@ -77,22 +77,21 @@ bool TooltipWin::EnsureTooltipWindow() {
 
 void TooltipWin::PositionTooltip() {
   gfx::Point screen_point =
-      display::win::ScreenWin::DIPToScreenPoint(position_.anchor_point);
+      display::win::ScreenWin::DIPToScreenPoint(anchor_point_);
   const int cursoroffset = GetCurrentCursorVisibleHeight();
   screen_point.Offset(0, cursoroffset);
 
-  DWORD tooltip_size = SendMessage(tooltip_hwnd_, TTM_GETBUBBLESIZE, 0,
-                                   reinterpret_cast<LPARAM>(&toolinfo_));
+  LRESULT tooltip_size = SendMessage(tooltip_hwnd_, TTM_GETBUBBLESIZE, 0,
+                                     reinterpret_cast<LPARAM>(&toolinfo_));
   const gfx::Size size(LOWORD(tooltip_size), HIWORD(tooltip_size));
 
   const display::Display display(
-      display::Screen::GetScreen()->GetDisplayNearestPoint(
-          position_.anchor_point));
+      display::Screen::GetScreen()->GetDisplayNearestPoint(anchor_point_));
 
   gfx::Rect tooltip_bounds(screen_point, size);
   // Align the center of the tooltip with the position when the tooltip is not
   // following the cursor.
-  if (position_.behavior == TooltipPositionBehavior::kCentered)
+  if (trigger_ == TooltipTrigger::kKeyboard)
     tooltip_bounds.Offset(-size.width() / 2, 0);
   else if (base::i18n::IsRTL())
     tooltip_bounds.Offset(-size.width(), 0);
@@ -140,12 +139,15 @@ int TooltipWin::GetMaxWidth(const gfx::Point& location) const {
 
 void TooltipWin::Update(aura::Window* window,
                         const std::u16string& tooltip_text,
-                        const TooltipPosition& position) {
+                        const gfx::Point& position,
+                        const TooltipTrigger trigger) {
   if (!EnsureTooltipWindow())
     return;
 
-  // See comment in header for details on why |position_| is needed.
-  position_ = position;
+  // See comment in header for details on why `anchor_point_` and `trigger_` are
+  // needed here.
+  anchor_point_ = position + window->GetBoundsInScreen().OffsetFromOrigin();
+  trigger_ = trigger;
 
   std::u16string adjusted_text(tooltip_text);
   base::i18n::AdjustStringForLocaleDirection(&adjusted_text);
@@ -153,7 +155,7 @@ void TooltipWin::Update(aura::Window* window,
   SendMessage(tooltip_hwnd_, TTM_SETTOOLINFO, 0,
               reinterpret_cast<LPARAM>(&toolinfo_));
 
-  int max_width = GetMaxWidth(position_.anchor_point);
+  int max_width = GetMaxWidth(anchor_point_);
   SendMessage(tooltip_hwnd_, TTM_SETMAXTIPWIDTH, 0, max_width);
 }
 
@@ -181,5 +183,4 @@ bool TooltipWin::IsVisible() {
   return showing_;
 }
 
-}  // namespace corewm
-}  // namespace views
+}  // namespace views::corewm

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,15 +15,20 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/native_library.h"
 #include "base/version.h"
 #include "base/win/security_util.h"
 #include "base/win/sid.h"
+#include "build/build_config.h"
+#include "chrome/browser/media/media_foundation_service_monitor.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "content/public/browser/cdm_registry.h"
 #include "content/public/common/cdm_info.h"
 #include "media/base/media_switches.h"
+#include "media/base/win/mf_feature_checks.h"
 #include "media/cdm/win/media_foundation_cdm.h"
+#include "sandbox/policy/win/lpac_capability.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/widevine/cdm/widevine_cdm_common.h"
 
@@ -76,8 +81,8 @@ MediaFoundationWidevineCdmComponentInstallerPolicy::OnCustomInstall(
     const base::FilePath& install_dir) {
   DVLOG(1) << __func__ << ": Set permission on " << install_dir;
 
-  auto sids =
-      base::win::Sid::FromNamedCapabilityVector({L"mediaFoundationCdmFiles"});
+  auto sids = base::win::Sid::FromNamedCapabilityVector(
+      {sandbox::policy::kMediaFoundationCdmFiles});
 
   bool success = false;
   if (sids) {
@@ -104,8 +109,24 @@ void MediaFoundationWidevineCdmComponentInstallerPolicy::ComponentReady(
   content::CdmInfo cdm_info(
       kWidevineKeySystem, content::CdmInfo::Robustness::kHardwareSecure,
       /*capability=*/absl::nullopt, /*supports_sub_key_systems=*/false,
-      kMediaFoundationWidevineCdmDisplayName, kMediaFoundationWidevineCdmGuid,
-      version, GetCdmPath(install_dir), /*file_system_id=*/"");
+      kMediaFoundationWidevineCdmDisplayName, kMediaFoundationWidevineCdmType,
+      version, GetCdmPath(install_dir));
+
+  // Ensures MediaFoundationService process is monitored.
+  // TODO(crbug.com/1296219): This is tricky. Move the init to a better place.
+  MediaFoundationServiceMonitor::GetInstance();
+
+  // Check whether hardware secure decryption CDM should be disabled.
+  if (base::FeatureList::IsEnabled(media::kHardwareSecureDecryptionFallback) &&
+      MediaFoundationServiceMonitor::
+          IsHardwareSecureDecryptionDisabledByPref()) {
+    VLOG(1) << "Media Foundation Widevine CDM disabled due to previous errors";
+    cdm_info.status = content::CdmInfo::Status::kDisabledByPref;
+    base::UmaHistogramBoolean("Media.EME.Widevine.HardwareSecure.Pref", false);
+  } else {
+    base::UmaHistogramBoolean("Media.EME.Widevine.HardwareSecure.Pref", true);
+  }
+
   content::CdmRegistry::GetInstance()->RegisterCdm(cdm_info);
 }
 
@@ -113,7 +134,7 @@ void MediaFoundationWidevineCdmComponentInstallerPolicy::ComponentReady(
 bool MediaFoundationWidevineCdmComponentInstallerPolicy::VerifyInstallation(
     const base::Value& manifest,
     const base::FilePath& install_dir) const {
-  // TODO(crbug.com/1225681) Compare manifest version and DLL's version.
+  // TODO(crbug.com/1225681): Compare manifest version and DLL's version.
   return base::PathExists(GetCdmPath(install_dir));
 }
 
@@ -146,8 +167,7 @@ MediaFoundationWidevineCdmComponentInstallerPolicy::GetInstallerAttributes()
 
 void RegisterMediaFoundationWidevineCdmComponent(
     component_updater::ComponentUpdateService* cus) {
-  if (base::FeatureList::IsEnabled(media::kHardwareSecureDecryption) &&
-      media::MediaFoundationCdm::IsAvailable()) {
+  if (media::SupportMediaFoundationEncryptedPlayback()) {
     VLOG(1) << "Registering Media Foundation Widevine CDM component.";
     auto installer = base::MakeRefCounted<ComponentInstaller>(
         std::make_unique<MediaFoundationWidevineCdmComponentInstallerPolicy>());

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,14 +16,13 @@
 
 @interface ConsistencyAccountChooserMediator () <
     ChromeAccountManagerServiceObserver> {
+  ChromeAccountManagerService* _accountManagerService;
   std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
       _accountManagerServiceObserver;
 }
 
 // Configurators based on ChromeIdentity list.
 @property(nonatomic, strong) NSArray* sortedIdentityItemConfigurators;
-// Account manager service to retrieve Chrome identities.
-@property(nonatomic, assign) ChromeAccountManagerService* accountManagerService;
 
 @end
 
@@ -45,18 +44,19 @@
 }
 
 - (void)dealloc {
-  DCHECK(!self.accountManagerService);
+  DCHECK(!_accountManagerService);
 }
 
 - (void)disconnect {
-  self.accountManagerService = nullptr;
+  _accountManagerServiceObserver.reset();
+  _accountManagerService = nullptr;
 }
 
 #pragma mark - Properties
 
 - (void)setSelectedIdentity:(ChromeIdentity*)identity {
   DCHECK(identity);
-  if (_selectedIdentity == identity) {
+  if ([_selectedIdentity isEqual:identity]) {
     return;
   }
   ChromeIdentity* previousSelectedIdentity = _selectedIdentity;
@@ -67,26 +67,25 @@
 
 #pragma mark - Private
 
-// Updates |self.sortedIdentityItemConfigurators| based on ChromeIdentity list.
+// Updates `self.sortedIdentityItemConfigurators` based on ChromeIdentity list.
 - (void)loadIdentityItemConfigurators {
-  if (!self.accountManagerService) {
+  if (!_accountManagerService) {
     return;
   }
 
   NSMutableArray* configurators = [NSMutableArray array];
-  NSArray* identities = self.accountManagerService->GetAllIdentities();
+  NSArray* identities = _accountManagerService->GetAllIdentities();
   BOOL hasSelectedIdentity = NO;
   for (ChromeIdentity* identity in identities) {
     IdentityItemConfigurator* configurator =
         [[IdentityItemConfigurator alloc] init];
-    [self updateIdentityItemConfigurator:configurator
-                      withChromeIdentity:identity];
+    [self updateIdentityItemConfigurator:configurator withIdentity:identity];
     [configurators addObject:configurator];
     if (configurator.selected) {
       hasSelectedIdentity = YES;
     }
     // If the configurator is selected, the identity must be equal to
-    // |self.selectedIdentity|.
+    // `self.selectedIdentity`.
     DCHECK(!configurator.selected || [self.selectedIdentity isEqual:identity]);
   }
   if (!hasSelectedIdentity && identities.count > 0) {
@@ -98,21 +97,20 @@
   self.sortedIdentityItemConfigurators = configurators;
 }
 
-// Updates an IdentityItemConfigurator based on a ChromeIdentity.
+// Updates `configurator` based on `identity`.
 - (void)updateIdentityItemConfigurator:(IdentityItemConfigurator*)configurator
-                    withChromeIdentity:(ChromeIdentity*)identity {
+                          withIdentity:(id<SystemIdentity>)identity {
   configurator.gaiaID = identity.gaiaID;
   configurator.name = identity.userFullName;
   configurator.email = identity.userEmail;
-  configurator.avatar =
-      self.accountManagerService->GetIdentityAvatarWithIdentity(
-          identity, IdentityAvatarSize::TableViewIcon);
+  configurator.avatar = _accountManagerService->GetIdentityAvatarWithIdentity(
+      identity, IdentityAvatarSize::TableViewIcon);
   configurator.selected = [identity isEqual:self.selectedIdentity];
 }
 
 #pragma mark - ChromeAccountManagerServiceObserver
 
-- (void)identityChanged:(ChromeIdentity*)identity {
+- (void)identityChanged:(id<SystemIdentity>)identity {
   IdentityItemConfigurator* configurator = nil;
   for (IdentityItemConfigurator* cursor in self
            .sortedIdentityItemConfigurators) {
@@ -121,8 +119,7 @@
     }
   }
   DCHECK(configurator);
-  [self updateIdentityItemConfigurator:configurator
-                    withChromeIdentity:identity];
+  [self updateIdentityItemConfigurator:configurator withIdentity:identity];
   [self.consumer reloadIdentityForIdentityItemConfigurator:configurator];
 }
 

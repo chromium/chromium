@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -166,7 +166,6 @@ static String ForeignLayerTypeAsDebugString(DisplayItem::Type type) {
     DEBUG_STRING_CASE(ForeignLayerPlugin);
     DEBUG_STRING_CASE(ForeignLayerVideo);
     DEBUG_STRING_CASE(ForeignLayerRemoteFrame);
-    DEBUG_STRING_CASE(ForeignLayerContentsWrapper);
     DEBUG_STRING_CASE(ForeignLayerLinkHighlight);
     DEBUG_STRING_CASE(ForeignLayerViewportScroll);
     DEBUG_STRING_CASE(ForeignLayerViewportScrollbar);
@@ -193,7 +192,7 @@ WTF::String DisplayItem::TypeAsDebugString(Type type) {
     DEBUG_STRING_CASE(ScrollHitTest);
     DEBUG_STRING_CASE(ResizerScrollHitTest);
     DEBUG_STRING_CASE(PluginScrollHitTest);
-    DEBUG_STRING_CASE(CustomScrollbarHitTest);
+    DEBUG_STRING_CASE(ScrollbarHitTest);
     DEBUG_STRING_CASE(LayerChunk);
     DEBUG_STRING_CASE(LayerChunkForeground);
     DEBUG_STRING_CASE(ScrollbarHorizontal);
@@ -251,12 +250,12 @@ void DisplayItem::PropertiesAsJSON(JSONObject& json,
 
 String DisplayItem::Id::ToString() const {
 #if DCHECK_IS_ON()
-  return String::Format("%" PRIuPTR ":%s:%d", client_id,
+  return String::Format("%p:%s:%d", reinterpret_cast<void*>(client_id),
                         DisplayItem::TypeAsDebugString(type).Utf8().data(),
                         fragment);
 #else
-  return String::Format("%" PRIuPTR ":%d:%d", client_id, static_cast<int>(type),
-                        fragment);
+  return String::Format("%p:%d:%d", reinterpret_cast<void*>(client_id),
+                        static_cast<int>(type), fragment);
 #endif
 }
 

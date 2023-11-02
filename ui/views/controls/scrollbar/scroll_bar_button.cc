@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -60,8 +60,8 @@ void ScrollBarButton::OnThemeChanged() {
 
 void ScrollBarButton::PaintButtonContents(gfx::Canvas* canvas) {
   gfx::Rect bounds(GetPreferredSize());
-  GetNativeTheme()->Paint(canvas->sk_canvas(), GetNativeThemePart(),
-                          GetNativeThemeState(), bounds,
+  GetNativeTheme()->Paint(canvas->sk_canvas(), GetColorProvider(),
+                          GetNativeThemePart(), GetNativeThemeState(), bounds,
                           GetNativeThemeParams());
 }
 

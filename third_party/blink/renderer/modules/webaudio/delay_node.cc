@@ -25,45 +25,23 @@
 
 #include "third_party/blink/renderer/modules/webaudio/delay_node.h"
 
-#include <memory>
-
 #include "third_party/blink/renderer/bindings/modules/v8/v8_delay_options.h"
-#include "third_party/blink/renderer/modules/webaudio/audio_basic_processor_handler.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_graph_tracer.h"
-#include "third_party/blink/renderer/modules/webaudio/delay_processor.h"
+#include "third_party/blink/renderer/modules/webaudio/delay_handler.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
 namespace blink {
 
-const double kMaximumAllowedDelayTime = 180;
+namespace {
 
-DelayHandler::DelayHandler(AudioNode& node,
-                           float sample_rate,
-                           AudioParamHandler& delay_time,
-                           double max_delay_time)
-    : AudioBasicProcessorHandler(
-          kNodeTypeDelay,
-          node,
-          sample_rate,
-          std::make_unique<DelayProcessor>(
-              sample_rate,
-              1,
-              node.context()->GetDeferredTaskHandler().RenderQuantumFrames(),
-              delay_time,
-              max_delay_time)) {
-  // Initialize the handler so that AudioParams can be processed.
-  Initialize();
-}
+constexpr double kDefaultDelayTimeValue = 0.0;
+constexpr float kMinDelayTimeValue = 0.0f;
 
-scoped_refptr<DelayHandler> DelayHandler::Create(AudioNode& node,
-                                                 float sample_rate,
-                                                 AudioParamHandler& delay_time,
-                                                 double max_delay_time) {
-  return base::AdoptRef(
-      new DelayHandler(node, sample_rate, delay_time, max_delay_time));
-}
+constexpr double kDefaultMaximumDelayTime = 1.0;  // 1 second
+constexpr double kMaximumAllowedDelayTime = 180.0;
+
+}  // namespace
 
 DelayNode::DelayNode(BaseAudioContext& context, double max_delay_time)
     : AudioNode(context),
@@ -71,10 +49,10 @@ DelayNode::DelayNode(BaseAudioContext& context, double max_delay_time)
           AudioParam::Create(context,
                              Uuid(),
                              AudioParamHandler::kParamTypeDelayDelayTime,
-                             0.0,
+                             kDefaultDelayTimeValue,
                              AudioParamHandler::AutomationRate::kAudio,
                              AudioParamHandler::AutomationRateMode::kVariable,
-                             0.0,
+                             kMinDelayTimeValue,
                              max_delay_time)) {
   SetHandler(DelayHandler::Create(*this, context.sampleRate(),
                                   delay_time_->Handler(), max_delay_time));
@@ -84,8 +62,7 @@ DelayNode* DelayNode::Create(BaseAudioContext& context,
                              ExceptionState& exception_state) {
   DCHECK(IsMainThread());
 
-  // The default maximum delay time for the delay node is 1 sec.
-  return Create(context, 1, exception_state);
+  return Create(context, kDefaultMaximumDelayTime, exception_state);
 }
 
 DelayNode* DelayNode::Create(BaseAudioContext& context,
@@ -112,8 +89,9 @@ DelayNode* DelayNode::Create(BaseAudioContext* context,
   // maxDelayTime has a default value specified.
   DelayNode* node = Create(*context, options->maxDelayTime(), exception_state);
 
-  if (!node)
+  if (!node) {
     return nullptr;
+  }
 
   node->HandleChannelOptions(options, exception_state);
 

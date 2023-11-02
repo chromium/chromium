@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -65,7 +65,7 @@ base::FilePath URLToPath(base::StringPiece url) {
   }
 
   std::string result = base::UnescapeBinaryURLComponent(url.substr(path_start));
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return base::FilePath(base::UTF8ToWide(result)).NormalizePathSeparators();
 #else
   return base::FilePath(result);
@@ -102,7 +102,7 @@ std::vector<FileInfo> URIListToFileInfos(const base::StringPiece& uri_list) {
 
 std::string FilePathToFileURL(const base::FilePath& file_path) {
   std::string url;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   std::string path = base::WideToUTF8(file_path.value());
 #else
   std::string path = file_path.value();
@@ -132,7 +132,7 @@ std::string FilePathToFileURL(const base::FilePath& file_path) {
   for (char c : path) {
     // Encode special characters `%;#?\`.
     if (c == '%' || c == ';' || c == '#' || c == '?' ||
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
         // Backslash is percent-encoded on posix platforms.
         c == '\\' ||
 #endif
@@ -143,7 +143,7 @@ std::string FilePathToFileURL(const base::FilePath& file_path) {
       url += kHexChars[(c >> 4) & 0xf];
       url += kHexChars[c & 0xf];
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     } else if (c == '\\') {
       // Backslash is converted to slash on windows.
       url += '/';

@@ -1,14 +1,18 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <vector>
+
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
+#include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/origin_trials/scoped_test_origin_trial_policy.h"
+#include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -17,6 +21,7 @@
 #include "third_party/blink/renderer/core/html/html_script_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
+#include "third_party/blink/renderer/core/speculation_rules/stub_speculation_host.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
@@ -36,31 +41,40 @@ namespace {
 //  Expiry: 1936881669 (2031-05-18 14:41:09 UTC)
 //  Signature (Base64):
 //  dLwu1RhLf1iAH+NzRrTitAhWF9oFZFtDt7CjwaQENvBK7m/RECTJuFe2wj+5WTB7HIUkgbgtzhp50pelkGG4BA==
-constexpr char kSpeculationRulesPrefetchToken[] =
+[[maybe_unused]] constexpr char kSpeculationRulesPrefetchToken[] =
     "A3S8LtUYS39YgB/jc0a04rQIVhfaBWRbQ7ewo8GkBDbwSu5v0RAkybhXtsI/uVkwex"
     "yFJIG4Lc4aedKXpZBhuAQAAABseyJvcmlnaW4iOiAiaHR0cHM6Ly9zcGVjdWxhdGlv"
     "bnJ1bGVzLnRlc3Q6NDQzIiwgImZlYXR1cmUiOiAiU3BlY3VsYXRpb25SdWxlc1ByZW"
     "ZldGNoIiwgImV4cGlyeSI6IDE5MzY4ODE2Njl9";
 
-constexpr char kSimplePrefetchProxyRuleSet[] =
+[[maybe_unused]] constexpr char kSimplePrefetchProxyRuleSet[] =
     R"({
         "prefetch": [{
           "source": "list",
-          "urls": ["//example.com/index2.html"],
+          "urls": ["https://speculationrules.test/index2.html"],
           "requires": ["anonymous-client-ip-when-cross-origin"]
         }]
       })";
 
-// Similar to SpeculationRuleSettest.PropagatesToDocument.
-::testing::AssertionResult DocumentAcceptsRuleSet(const char* trial_token,
-                                                  const char* json) {
+// Similar to SpeculationRuleSetTest.PropagatesToDocument.
+[[maybe_unused]] ::testing::AssertionResult DocumentAcceptsRuleSet(
+    const char* trial_token,
+    const char* json) {
   DummyPageHolder page_holder;
   Document& document = page_holder.GetDocument();
+  LocalFrame& frame = page_holder.GetFrame();
+
+  // Set up the interface binder.
+  StubSpeculationHost speculation_host;
+  auto& broker = frame.DomWindow()->GetBrowserInterfaceBroker();
+  broker.SetBinderForTesting(
+      mojom::blink::SpeculationHost::Name_,
+      WTF::BindRepeating(&StubSpeculationHost::BindUnsafe,
+                         WTF::Unretained(&speculation_host)));
 
   // Clear the security origin and set a secure one, recomputing the security
   // state.
-  SecurityContext& security_context =
-      page_holder.GetFrame().DomWindow()->GetSecurityContext();
+  SecurityContext& security_context = frame.DomWindow()->GetSecurityContext();
   security_context.SetSecurityOriginForTesting(nullptr);
   security_context.SetSecurityOrigin(
       SecurityOrigin::CreateFromString("https://speculationrules.test"));
@@ -68,9 +82,13 @@ constexpr char kSimplePrefetchProxyRuleSet[] =
             SecureContextMode::kSecureContext);
 
   // Enable scripts so that <script> is not ignored.
-  page_holder.GetFrame().GetSettings()->SetScriptEnabled(true);
+  frame.GetSettings()->SetScriptEnabled(true);
 
-  HTMLMetaElement* meta = MakeGarbageCollected<HTMLMetaElement>(document);
+  base::RunLoop run_loop;
+  speculation_host.SetDoneClosure(run_loop.QuitClosure());
+
+  HTMLMetaElement* meta =
+      MakeGarbageCollected<HTMLMetaElement>(document, CreateElementFlags());
   meta->setAttribute(html_names::kHttpEquivAttr, "Origin-Trial");
   meta->setAttribute(html_names::kContentAttr, trial_token);
   document.head()->appendChild(meta);
@@ -81,11 +99,27 @@ constexpr char kSimplePrefetchProxyRuleSet[] =
   script->setText(json);
   document.head()->appendChild(script);
 
-  auto* supplement = DocumentSpeculationRules::FromIfExists(document);
-  return (supplement && !supplement->rule_sets().IsEmpty())
-             ? ::testing::AssertionSuccess() << "a rule set was found"
-             : ::testing::AssertionFailure() << "no rule set was found";
+  if (!RuntimeEnabledFeatures::SpeculationRulesEnabled(frame.DomWindow())) {
+    // When the SpeculationRules is disabled, the host is never bound and
+    // doesn't receive candidates. Run the loop until idle to make sure that.
+    run_loop.RunUntilIdle();
+    EXPECT_FALSE(speculation_host.is_bound());
+  } else {
+    // Wait until UpdateSpeculationCandidates() is dispatched via mojo.
+    run_loop.Run();
+  }
+
+  // Reset the interface binder.
+  broker.SetBinderForTesting(mojom::blink::SpeculationHost::Name_, {});
+
+  return speculation_host.candidates().empty()
+             ? ::testing::AssertionFailure() << "no rule set was found"
+             : ::testing::AssertionSuccess() << "a rule set was found";
 }
+
+// These tests only work on platforms where the feature is not already enabled
+// by default -- at which point an origin trial token is not required.
+#if !BUILDFLAG(IS_ANDROID)
 
 // Without the corresponding base::Feature, this trial token should not be
 // accepted.
@@ -120,6 +154,8 @@ TEST(SpeculationRulesOriginTrialTest, BaseFeatureAndValidTokenSuffice) {
   EXPECT_TRUE(DocumentAcceptsRuleSet(kSpeculationRulesPrefetchToken,
                                      kSimplePrefetchProxyRuleSet));
 }
+
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 }  // namespace blink

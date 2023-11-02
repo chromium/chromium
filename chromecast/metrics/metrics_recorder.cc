@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,6 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
-#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/synchronization/lock.h"
@@ -109,6 +108,11 @@ class DummyEventBuilder : public CastEventBuilder {
   }
 
   CastEventBuilder& SetAoghAgentId(const std::string& agent_id) override {
+    return *this;
+  }
+
+  CastEventBuilder& SetAoghStandardAgentId(
+      const std::string& agent_id) override {
     return *this;
   }
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,12 +10,13 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
 #include "net/base/completion_once_callback.h"
+#include "net/base/net_errors.h"
 #include "net/base/net_export.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/gurl.h"
@@ -156,7 +157,7 @@ class NET_EXPORT_PRIVATE DhcpPacFileAdapterFetcher
 
   // Virtual methods introduced to allow unit testing.
   virtual std::unique_ptr<PacFileFetcher> ImplCreateScriptFetcher();
-  virtual DhcpQuery* ImplCreateDhcpQuery();
+  virtual scoped_refptr<DhcpQuery> ImplCreateDhcpQuery();
   virtual base::TimeDelta ImplGetTimeout() const;
 
  private:
@@ -171,10 +172,10 @@ class NET_EXPORT_PRIVATE DhcpPacFileAdapterFetcher
   scoped_refptr<base::TaskRunner> task_runner_;
 
   // Current state of this state machine.
-  State state_;
+  State state_ = STATE_START;
 
   // A network error indicating result of operation.
-  int result_;
+  int result_ = ERR_IO_PENDING;
 
   // Empty string or the PAC script downloaded.
   std::u16string pac_script_;
@@ -192,7 +193,7 @@ class NET_EXPORT_PRIVATE DhcpPacFileAdapterFetcher
   // Implements a timeout on the call to the Win32 DHCP API.
   base::OneShotTimer wait_timer_;
 
-  URLRequestContext* const url_request_context_;
+  const raw_ptr<URLRequestContext> url_request_context_;
 
   THREAD_CHECKER(thread_checker_);
 };

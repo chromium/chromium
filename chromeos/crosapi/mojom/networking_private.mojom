@@ -1,0 +1,213 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+import "mojo/public/mojom/base/values.mojom";
+
+[Stable]
+union StringSuccessOrErrorReturn {
+  // If provided, an error has occurred.
+  string error;
+
+  // If provided, the call was a success and the result is this string.
+  string success_result;
+};
+
+[Stable]
+union DictionarySuccessOrErrorReturn {
+  // If provided, an error has occurred.
+  string error;
+
+  // If provided, the call was a success and the result is this string.
+  mojo_base.mojom.DeprecatedDictionaryValue success_result;
+};
+
+[Stable]
+union ListValueSuccessOrErrorReturn {
+  // If provided, an error has occurred.
+  string error;
+
+  // If provided, the call was a success and the result is this string.
+  mojo_base.mojom.ListValue success_result;
+};
+
+[Stable]
+union PropertiesSuccessOrErrorReturn {
+  // If provided, an error has occurred.
+  string error;
+
+  // If provided, the call was a success and the result is this string.
+  mojo_base.mojom.Value success_result;
+};
+
+[Stable, Extensible]
+enum CaptivePortalStatus {
+  // The netwok state is unknown.
+  [Default] kUnknown = 0,
+  // The network is not connected.
+  kOffline,
+  // The network is connected and no portal is detected.
+  kOnline,
+  // The network is in one of the following states:
+  // - Connected but no internet is available and no proxy was detected.
+  // - A portal is suspected but no redirect was provided.
+  // - A portal state with a redirect URL.
+  kPortal,
+  // A proxy requiring authentication is detected.
+  kProxyAuthRequired,
+};
+
+// This interface mirrors NetworkingPrivateDelegateObserver. It allows Ash
+// to notify lacros of such events. Lacros, on its turn, will then forward
+// those notifications to its local observers.
+[Stable, Uuid="67b08eef-7f47-43cd-8bf6-ad64f05af13c"]
+interface NetworkingPrivateDelegateObserver {
+  // Notifies observers when properties may have changed for the networks listed
+  // in |network_guids|.
+  OnNetworksChangedEvent@0(array<string> network_guids);
+
+  // Notifies observers that the list of networks changed. |network_guids|
+  // contains the complete list of network guids.
+  OnNetworkListChangedEvent@1(array<string> network_guids);
+
+  // Fired when the list of devices has changed or any device state properties
+  // have changed.
+  [MinVersion=1]
+  OnDeviceStateListChanged@2();
+
+  // Fired when a portal detection for a network completes. Sends the guid of
+  // the network and the corresponding captive portal status.
+  [MinVersion=2]
+  OnPortalDetectionCompleted@3(string networkGuid,
+                               CaptivePortalStatus status);
+
+  // Fired when any certificate list has changed.
+  [MinVersion=3]
+  OnCertificateListsChanged@4();
+};
+
+// This interface mirrors the NetworkingPrivateDelegate from Lacros to Ash to
+// allow the networking.private / networking.onc extensions to be used. Note
+// that this API is stable since years and will rather be deprecated than
+// changed. As such the API does reflect the state as is.
+// Furthermore this API will only be called for the primary profile user.
+[Stable, Uuid="30ea6c34-8a25-4fd5-86d5-887e166d2b01"]
+interface NetworkingPrivate {
+  // Called to retrieve a list of properties for the network identified by
+  // |guid| whereas |guid| gets returned by GetNetworks or CreateNetwork.
+  GetProperties@0(string guid) => (PropertiesSuccessOrErrorReturn result);
+
+  // Called to retrieve a list of managed properties for the network identified
+  // by |guid| whereas |guid| gets returned by GetNetworks or CreateNetwork.
+  GetManagedProperties@1(string guid)
+      => (PropertiesSuccessOrErrorReturn result);
+
+  // Called to retrieve the current state for the network identified by |guid|.
+  GetState@2(string guid) => (DictionarySuccessOrErrorReturn result);
+
+  // Called to set the |properties| for the network identified by |guid|
+  // accordingly. Whereas |guid| gets returned by GetNetworks or CreateNetwork.
+  SetProperties@3(string guid,
+                  mojo_base.mojom.DeprecatedDictionaryValue properties,
+                  bool allow_set_shared_config)
+                  => (string error_or_empty);
+
+  // Called to create a network with the given |properties|. If |shared| is
+  // true, it can be shared with all other users.
+  CreateNetwork@4(bool shared,
+                  mojo_base.mojom.Value properties)
+                  => (StringSuccessOrErrorReturn result);
+
+  // Called to forget the given network identified by |guid|
+  // whereas |guid| gets returned by GetNetworks or CreateNetwork.
+  ForgetNetwork@5(string guid,
+                  bool allow_forget_shared_config)
+                  => (string error_or_empty);
+
+  // Call to get an enumeration of all the networks.
+  GetNetworks@6(string network_type,
+                bool configured_only,
+                bool visible_only,
+                int32 limit)
+                => (ListValueSuccessOrErrorReturn result);
+
+  // Start a network connection for the network identified by |guid|
+  // whereas |guid| gets returned by GetNetworks or CreateNetwork.
+  StartConnect@7(string guid) => (string error_or_empty);
+
+  // Start to disconnect a network connection identified by |guid|
+  // whereas |guid| gets returned by GetNetworks or CreateNetwork.
+  StartDisconnect@8(string guid) => (string error_or_empty);
+
+  // Start the activation process for the network identified by |guid| whereas
+  // |guid| gets returned by GetNetworks or CreateNetwork.
+  StartActivate@9(string guid,
+                  string carrier)
+                  => (string error_or_empty);
+
+  // Get the status of a captive portal for a network identified by |guid|
+  // whereas |guid| gets returned by GetNetworks or CreateNetwork.
+  GetCaptivePortalStatus@10(string guid) => (StringSuccessOrErrorReturn result);
+
+  // Unlocks a cellular sim card. |Guid| is the cellular network to unlock. If
+  // null is passed, the default cellular device will be used.
+  // |pin| is the current SIM PIN, or the new PIN if |puk| is provided.
+  // |puk| is provided by the operator for unblocking a blocked SIM.
+  UnlockCellularSim@11(string guid,
+                       string pin,
+                       string puk)
+                       => (string error_or_empty);
+
+  // Sets the state of the cellular SIM card. |Guid| is the cellular network to
+  // to set the SIM state of. If empty, the default cellular device will be
+  // used.
+  SetCellularSimState@12(string guid,
+                         bool require_pin,
+                         string current_pin,
+                         string new_pin)
+                         => (string error_or_empty);
+
+  // Selects the cellular network. |Guid| is the cellular network to select
+  // whereas |guid| gets returned by GetNetworks or CreateNetwork.
+  SelectCellularMobileNetwork@13(string guid,
+                                 string network_id)
+                                 => (string error_or_empty);
+
+  // Returns a list of ONC type strings.
+  GetEnabledNetworkTypes@14()
+      => (mojo_base.mojom.ListValue? network_types);
+
+  // Returns a list of DeviceStateProperties.
+  GetDeviceStateList@15()
+      => (array<mojo_base.mojom.DeprecatedDictionaryValue?>? device_list);
+
+  // Returns a dictionary of global policy values (may be empty). Note: the
+  // dictionary is expected to be a superset of the networkingPrivate
+  // GlobalPolicy dictionary. Any properties not in GlobalPolicy will be
+  // ignored.
+  GetGlobalPolicy@16() => (mojo_base.mojom.DeprecatedDictionaryValue? policies);
+
+  // Returns a dictionary of certificate lists.
+  GetCertificateLists@17()
+      => (mojo_base.mojom.DeprecatedDictionaryValue? certificates);
+
+  // Returns true if the ONC network type |type| is enabled.
+  EnableNetworkType@18(string type) => (bool enabled);
+
+  // Returns true if the ONC network type |type| is disabled.
+  DisableNetworkType@19(string type) => (bool disabled);
+
+  // Returns true if a scan was requested. It may take many seconds for a scan
+  // to complete. The scan may or may not trigger API events when complete.
+  // |type| is the type of network to request a scan for; if empty, scans for
+  // all supported network types except Cellular, which must be requested
+  // explicitly.
+  RequestScan@20(string type) => (bool scan_requested);
+
+  // Adds a new observer that will be notified by Ash when relevant events
+  // take place.
+  [MinVersion=1]
+  AddObserver@21(pending_remote<NetworkingPrivateDelegateObserver> observer);
+};

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/win/message_window.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
@@ -37,8 +38,8 @@ class ResponsivenessNativeEventObserverBrowserTest : public ContentBrowserTest {
   }
 
  protected:
-  const void* will_run_id_ = nullptr;
-  const void* did_run_id_ = nullptr;
+  raw_ptr<const void> will_run_id_ = nullptr;
+  raw_ptr<const void> did_run_id_ = nullptr;
   base::OnceClosure quit_closure_;
 };
 

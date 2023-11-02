@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,10 +19,8 @@
 #include "base/metrics/user_metrics.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "base/version.h"
@@ -38,13 +36,15 @@
 #include "chrome/browser/supervised_user/supervised_user_service_observer.h"
 #include "chrome/browser/supervised_user/supervised_user_settings_service.h"
 #include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/policy/core/browser/url_util.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "components/sync/driver/sync_service.h"
+#include "components/sync/driver/sync_user_settings.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "extensions/buildflags/buildflags.h"
@@ -52,7 +52,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -60,9 +60,9 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/components/settings/cros_settings_names.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/supervised_user_manager.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/user_manager/user_manager.h"
 #endif
 
@@ -88,13 +88,8 @@ namespace {
 // The URL from which to download a host denylist if no local one exists yet.
 const char kDenylistURL[] =
     "https://www.gstatic.com/chrome/supervised_user/denylist-20141001-1k.bin";
-// The filename under which we'll store the denylist (in the user data dir). The
-// old file will be used as a backup in case the new file has not been loaded
-// yet.
-const char kDenylistPrefix[] = "su-deny";
-// TODO(crbug/1243379): Remove references to the old denylist
-const char kOldDenylistPrefix[] = "su-black";
-const char kDenylistSuffix[] = "list.bin";
+// The filename under which we'll store the denylist (in the user data dir).
+const char kDenylistFilename[] = "su-denylist.bin";
 
 const char kDenylistSourceHistogramName[] = "FamilyUser.DenylistSource";
 
@@ -107,26 +102,12 @@ constexpr char const* kAllowlistExtensionIds[] = {
 
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-const char* const kCustodianInfoPrefs[] = {
-    prefs::kSupervisedUserCustodianName,
-    prefs::kSupervisedUserCustodianEmail,
-    prefs::kSupervisedUserCustodianObfuscatedGaiaId,
-    prefs::kSupervisedUserCustodianProfileImageURL,
-    prefs::kSupervisedUserCustodianProfileURL,
-    prefs::kSupervisedUserSecondCustodianName,
-    prefs::kSupervisedUserSecondCustodianEmail,
-    prefs::kSupervisedUserSecondCustodianObfuscatedGaiaId,
-    prefs::kSupervisedUserSecondCustodianProfileImageURL,
-    prefs::kSupervisedUserSecondCustodianProfileURL,
-};
-
-base::FilePath GetDenylistPath(base::StringPiece filePrefix) {
+base::FilePath GetDenylistPath() {
   base::FilePath denylist_dir;
   base::PathService::Get(chrome::DIR_USER_DATA, &denylist_dir);
-  return denylist_dir.AppendASCII(base::StrCat({filePrefix, kDenylistSuffix}));
+  return denylist_dir.AppendASCII(kDenylistFilename);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 bool AreWebFilterPrefsDefault(PrefService* pref_service) {
   return pref_service
              ->FindPreference(prefs::kDefaultSupervisedUserFilteringBehavior)
@@ -134,8 +115,6 @@ bool AreWebFilterPrefsDefault(PrefService* pref_service) {
          pref_service->FindPreference(prefs::kSupervisedUserSafeSites)
              ->IsDefaultValue();
 }
-
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 
@@ -159,7 +138,7 @@ void SupervisedUserService::RegisterProfilePrefs(
   registry->RegisterIntegerPref(prefs::kDefaultSupervisedUserFilteringBehavior,
                                 SupervisedUserURLFilter::ALLOW);
   registry->RegisterBooleanPref(prefs::kSupervisedUserSafeSites, true);
-  for (const char* pref : kCustodianInfoPrefs) {
+  for (const char* pref : supervised_users::kCustodianInfoPrefs) {
     registry->RegisterStringPref(pref, std::string());
   }
 }
@@ -170,10 +149,8 @@ const char* SupervisedUserService::GetDenylistSourceHistogramForTesting() {
 }
 
 // static
-base::FilePath SupervisedUserService::GetDenylistPathForTesting(
-    bool isOldPath) {
-  return isOldPath ? GetDenylistPath(kOldDenylistPrefix)
-                   : GetDenylistPath(kDenylistPrefix);
+base::FilePath SupervisedUserService::GetDenylistPathForTesting() {
+  return GetDenylistPath();
 }
 
 void SupervisedUserService::Init() {
@@ -215,20 +192,7 @@ std::string SupervisedUserService::GetExtensionRequestId(
 }
 
 std::string SupervisedUserService::GetCustodianEmailAddress() const {
-  std::string email =
-      profile_->GetPrefs()->GetString(prefs::kSupervisedUserCustodianEmail);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // |GetActiveUser()| can return null in unit tests.
-  if (email.empty() && !!user_manager::UserManager::Get()->GetActiveUser()) {
-    email = ash::ChromeUserManager::Get()
-                ->GetSupervisedUserManager()
-                ->GetManagerDisplayEmail(user_manager::UserManager::Get()
-                                             ->GetActiveUser()
-                                             ->GetAccountId()
-                                             .GetUserEmail());
-  }
-#endif
-  return email;
+  return profile_->GetPrefs()->GetString(prefs::kSupervisedUserCustodianEmail);
 }
 
 std::string SupervisedUserService::GetCustodianObfuscatedGaiaId() const {
@@ -239,18 +203,6 @@ std::string SupervisedUserService::GetCustodianObfuscatedGaiaId() const {
 std::string SupervisedUserService::GetCustodianName() const {
   std::string name =
       profile_->GetPrefs()->GetString(prefs::kSupervisedUserCustodianName);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // |GetActiveUser()| can return null in unit tests.
-  if (name.empty() && !!user_manager::UserManager::Get()->GetActiveUser()) {
-    name = base::UTF16ToUTF8(
-        chromeos::ChromeUserManager::Get()
-            ->GetSupervisedUserManager()
-            ->GetManagerDisplayName(user_manager::UserManager::Get()
-                                        ->GetActiveUser()
-                                        ->GetAccountId()
-                                        .GetUserEmail()));
-  }
-#endif
   return name.empty() ? GetCustodianEmailAddress() : name;
 }
 
@@ -392,7 +344,6 @@ void SupervisedUserService::RecordExtensionEnablementUmaMetrics(
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 void SupervisedUserService::ReportNonDefaultWebFilterValue() const {
   if (AreWebFilterPrefsDefault(profile_->GetPrefs()))
     return;
@@ -400,27 +351,34 @@ void SupervisedUserService::ReportNonDefaultWebFilterValue() const {
   url_filter_.ReportManagedSiteListMetrics();
   url_filter_.ReportWebFilterTypeMetrics();
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void SupervisedUserService::SetActive(bool active) {
   if (active_ == active)
     return;
   active_ = active;
 
-  if (!delegate_ || !delegate_->SetActive(active_)) {
-#if defined(OS_ANDROID)
-    DCHECK(!active_);
-#endif
-  }
+  if (delegate_)
+    delegate_->SetActive(active_);
 
-  // Now activate/deactivate anything not handled by the delegate yet.
-
-#if !defined(OS_ANDROID)
+    // Now activate/deactivate anything not handled by the delegate yet.
+#if !BUILDFLAG(IS_ANDROID)
   // Re-set the default theme to turn the SU theme on/off.
   ThemeService* theme_service = ThemeServiceFactory::GetForProfile(profile_);
   if (theme_service->UsingDefaultTheme() || theme_service->UsingSystemTheme())
     theme_service->UseDefaultTheme();
 #endif
+
+  // Trigger a sync reconfig to enable/disable the right SU data types.
+  // The logic to do this lives in the SupervisedUserSyncModelTypeController.
+  // TODO(crbug.com/946473): Get rid of this hack and instead call
+  // DataTypePreconditionChanged from the controller.
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfile(profile_);
+  if (sync_service->GetUserSettings()->IsFirstSetupComplete()) {
+    // Trigger a reconfig by grabbing a SyncSetupInProgressHandle and
+    // immediately releasing it again (via the temporary unique_ptr going away).
+    sync_service->GetSetupInProgressHandle();
+  }
 
   GetSettingsService()->SetActive(active_);
 
@@ -453,7 +411,7 @@ void SupervisedUserService::SetActive(bool active) {
         prefs::kSupervisedUserManualURLs,
         base::BindRepeating(&SupervisedUserService::UpdateManualURLs,
                             base::Unretained(this)));
-    for (const char* pref : kCustodianInfoPrefs) {
+    for (const char* pref : supervised_users::kCustodianInfoPrefs) {
       pref_change_registrar_.Add(
           pref,
           base::BindRepeating(&SupervisedUserService::OnCustodianInfoChanged,
@@ -466,16 +424,14 @@ void SupervisedUserService::SetActive(bool active) {
     UpdateManualHosts();
     UpdateManualURLs();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     GetURLFilter()->SetFilterInitialized(true);
     current_web_filter_type_ = url_filter_.GetWebFilterType();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     RefreshApprovedExtensionsFromPrefs();
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     // TODO(bauerb): Get rid of the platform-specific #ifdef here.
     // http://crbug.com/313377
     BrowserList::AddObserver(this);
@@ -490,7 +446,7 @@ void SupervisedUserService::SetActive(bool active) {
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
     pref_change_registrar_.Remove(prefs::kSupervisedUserManualHosts);
     pref_change_registrar_.Remove(prefs::kSupervisedUserManualURLs);
-    for (const char* pref : kCustodianInfoPrefs) {
+    for (const char* pref : supervised_users::kCustodianInfoPrefs) {
       pref_change_registrar_.Remove(pref);
     }
 
@@ -498,7 +454,7 @@ void SupervisedUserService::SetActive(bool active) {
     for (SupervisedUserServiceObserver& observer : observer_list_)
       observer.OnURLFilterChanged();
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     // TODO(bauerb): Get rid of the platform-specific #ifdef here.
     // http://crbug.com/313377
     BrowserList::RemoveObserver(this);
@@ -537,7 +493,6 @@ void SupervisedUserService::OnDefaultFilteringBehaviorChanged() {
   for (SupervisedUserServiceObserver& observer : observer_list_)
     observer.OnURLFilterChanged();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   SupervisedUserURLFilter::WebFilterType filter_type =
       url_filter_.GetWebFilterType();
   if (!AreWebFilterPrefsDefault(profile_->GetPrefs()) &&
@@ -545,7 +500,6 @@ void SupervisedUserService::OnDefaultFilteringBehaviorChanged() {
     url_filter_.ReportWebFilterTypeMetrics();
     current_web_filter_type_ = filter_type;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 bool SupervisedUserService::IsSafeSitesEnabled() const {
@@ -557,7 +511,7 @@ void SupervisedUserService::OnSafeSitesSettingChanged() {
   bool use_denylist = IsSafeSitesEnabled();
   if (use_denylist != url_filter_.HasDenylist()) {
     if (use_denylist && denylist_state_ == DenylistLoadState::NOT_LOADED) {
-      LoadDenylist(GetDenylistPath(kDenylistPrefix), GURL(kDenylistURL));
+      LoadDenylist(GetDenylistPath(), GURL(kDenylistURL));
     } else if (!use_denylist || denylist_state_ == DenylistLoadState::LOADED) {
       // Either the denylist was turned off, or it was turned on but has
       // already been loaded previously. Just update the setting.
@@ -569,7 +523,6 @@ void SupervisedUserService::OnSafeSitesSettingChanged() {
 
   UpdateAsyncUrlChecker();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   SupervisedUserURLFilter::WebFilterType filter_type =
       url_filter_.GetWebFilterType();
   if (!AreWebFilterPrefsDefault(profile_->GetPrefs()) &&
@@ -577,7 +530,6 @@ void SupervisedUserService::OnSafeSitesSettingChanged() {
     url_filter_.ReportWebFilterTypeMetrics();
     current_web_filter_type_ = filter_type;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void SupervisedUserService::UpdateAsyncUrlChecker() {
@@ -683,32 +635,9 @@ void SupervisedUserService::OnDenylistDownloadDone(
     LoadDenylistFromFile(path);
     base::UmaHistogramEnumeration(kDenylistSourceHistogramName,
                                   DenylistSource::kDenylist);
-  } else {
-    LOG(WARNING) << "Denylist download failed, trying to load the old denylist";
-    const base::FilePath& filePath = GetDenylistPath(kOldDenylistPrefix);
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE,
-        {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-         base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-        base::BindOnce(&base::PathExists, filePath),
-        base::BindOnce(&SupervisedUserService::TryLoadingOldDenylist,
-                       weak_ptr_factory_.GetWeakPtr(), filePath));
-    // TODO(treib): Retry downloading after some time?
   }
+  LOG(WARNING) << "Denylist download failed";
   denylist_downloader_.reset();
-}
-
-void SupervisedUserService::TryLoadingOldDenylist(const base::FilePath& path,
-                                                  bool file_exists) {
-  if (!file_exists) {
-    LOG(WARNING) << "Old denylist is not available";
-    base::UmaHistogramEnumeration(kDenylistSourceHistogramName,
-                                  DenylistSource::kNoSource);
-    return;
-  }
-  LoadDenylistFromFile(path);
-  base::UmaHistogramEnumeration(kDenylistSourceHistogramName,
-                                DenylistSource::kOldDenylist);
 }
 
 void SupervisedUserService::OnDenylistLoaded() {
@@ -724,10 +653,10 @@ void SupervisedUserService::UpdateDenylist() {
 }
 
 void SupervisedUserService::UpdateManualHosts() {
-  const base::DictionaryValue* dict =
-      profile_->GetPrefs()->GetDictionary(prefs::kSupervisedUserManualHosts);
+  const base::Value::Dict& dict =
+      profile_->GetPrefs()->GetDict(prefs::kSupervisedUserManualHosts);
   std::map<std::string, bool> host_map;
-  for (auto it : dict->DictItems()) {
+  for (auto it : dict) {
     DCHECK(it.second.is_bool());
     host_map[it.first] = it.second.GetIfBool().value_or(false);
   }
@@ -736,17 +665,15 @@ void SupervisedUserService::UpdateManualHosts() {
   for (SupervisedUserServiceObserver& observer : observer_list_)
     observer.OnURLFilterChanged();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!AreWebFilterPrefsDefault(profile_->GetPrefs()))
     url_filter_.ReportManagedSiteListMetrics();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void SupervisedUserService::UpdateManualURLs() {
-  const base::DictionaryValue* dict =
-      profile_->GetPrefs()->GetDictionary(prefs::kSupervisedUserManualURLs);
+  const base::Value::Dict& dict =
+      profile_->GetPrefs()->GetDict(prefs::kSupervisedUserManualURLs);
   std::map<GURL, bool> url_map;
-  for (auto it : dict->DictItems()) {
+  for (auto it : dict) {
     DCHECK(it.second.is_bool());
     url_map[GURL(it.first)] = it.second.GetIfBool().value_or(false);
   }
@@ -755,10 +682,8 @@ void SupervisedUserService::UpdateManualURLs() {
   for (SupervisedUserServiceObserver& observer : observer_list_)
     observer.OnURLFilterChanged();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!AreWebFilterPrefsDefault(profile_->GetPrefs()))
     url_filter_.ReportManagedSiteListMetrics();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void SupervisedUserService::Shutdown() {
@@ -777,6 +702,8 @@ SupervisedUserService::ExtensionState SupervisedUserService::GetExtensionState(
     const Extension& extension) const {
   bool was_installed_by_default = extension.was_installed_by_default();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  // TODO(https://crbug.com/1218633): Check if this is needed for extensions in
+  // LaCrOS.
   // On Chrome OS all external sources are controlled by us so it means that
   // they are "default". Method was_installed_by_default returns false because
   // extensions creation flags are ignored in case of default extensions with
@@ -793,8 +720,8 @@ SupervisedUserService::ExtensionState SupervisedUserService::GetExtensionState(
   // management; in particular we don't want to override the force-install list.
   if (extensions::Manifest::IsComponentLocation(extension.location()) ||
       extensions::Manifest::IsPolicyLocation(extension.location()) ||
-      extension.is_theme() || extension.from_bookmark() ||
-      extension.is_shared_module() || was_installed_by_default) {
+      extension.is_theme() || extension.is_shared_module() ||
+      was_installed_by_default) {
     return ExtensionState::ALLOWED;
   }
 
@@ -943,22 +870,20 @@ void SupervisedUserService::UpdateApprovedExtension(
     const std::string& version,
     ApprovedExtensionChange type) {
   PrefService* pref_service = GetPrefService();
-  DictionaryPrefUpdate update(pref_service,
+  ScopedDictPrefUpdate update(pref_service,
                               prefs::kSupervisedUserApprovedExtensions);
-  base::DictionaryValue* approved_extensions = update.Get();
-  DCHECK(approved_extensions)
-      << "kSupervisedUserApprovedExtensions pref not found";
+  base::Value::Dict& approved_extensions = update.Get();
   bool success = false;
   switch (type) {
     case ApprovedExtensionChange::kAdd:
-      DCHECK(!approved_extensions->FindStringKey(extension_id));
-      approved_extensions->SetStringKey(extension_id, std::move(version));
+      DCHECK(!approved_extensions.FindString(extension_id));
+      approved_extensions.Set(extension_id, std::move(version));
       SupervisedUserExtensionsMetricsRecorder::RecordExtensionsUmaMetrics(
           SupervisedUserExtensionsMetricsRecorder::UmaExtensionState::
               kApprovalGranted);
       break;
     case ApprovedExtensionChange::kRemove:
-      success = approved_extensions->RemoveKey(extension_id);
+      success = approved_extensions.Remove(extension_id);
       DCHECK(success);
       SupervisedUserExtensionsMetricsRecorder::RecordExtensionsUmaMetrics(
           SupervisedUserExtensionsMetricsRecorder::UmaExtensionState::
@@ -981,9 +906,9 @@ void SupervisedUserService::RefreshApprovedExtensionsFromPrefs() {
   // version information stored in the values is unnecessary. It is only there
   // for backwards compatibility. Remove the version information once sufficient
   // users have migrated away from M83.
-  const base::DictionaryValue* dict = profile_->GetPrefs()->GetDictionary(
-      prefs::kSupervisedUserApprovedExtensions);
-  for (auto it : dict->DictItems()) {
+  const base::Value::Dict& dict =
+      profile_->GetPrefs()->GetDict(prefs::kSupervisedUserApprovedExtensions);
+  for (auto it : dict) {
     approved_extensions_set_.insert(it.first);
     extensions_to_be_checked.insert(it.first);
   }
@@ -1015,7 +940,7 @@ bool SupervisedUserService::IsCustomPassphraseAllowed() const {
   return !active_;
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 void SupervisedUserService::OnBrowserSetLastActive(Browser* browser) {
   bool profile_became_active = profile_->IsSameOrParent(browser->profile());
   if (!is_profile_active_ && profile_became_active)
@@ -1025,7 +950,7 @@ void SupervisedUserService::OnBrowserSetLastActive(Browser* browser) {
 
   is_profile_active_ = profile_became_active;
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void SupervisedUserService::OnSiteListUpdated() {
   for (SupervisedUserServiceObserver& observer : observer_list_)

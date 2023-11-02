@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,6 +17,7 @@
 #include "base/timer/timer.h"
 #include "media/audio/audio_io.h"
 #include "media/base/audio_parameters.h"
+#include "media/base/reentrancy_checker.h"
 #include "services/audio/mixing_graph.h"
 #include "services/audio/output_device_mixer.h"
 
@@ -77,6 +78,7 @@ class OutputDeviceMixerImpl final : public OutputDeviceMixer {
  private:
   class MixTrack;
   class MixableOutputStream;
+  class MixingStats;
 
   struct StreamAutoClose {
     void operator()(media::AudioOutputStream* stream) {
@@ -87,12 +89,22 @@ class OutputDeviceMixerImpl final : public OutputDeviceMixer {
     }
   };
 
+  // Do not change: used for UMA reporting, matches
+  // AudioOutputDeviceMixerMixedPlaybackStatus from enums.xml.
+  enum class MixingError {
+    kNone = 0,
+    kOpenFailed,
+    kPlaybackFailed,
+    kMaxValue = kPlaybackFailed
+  };
+
   using MixTracks =
       std::set<std::unique_ptr<MixTrack>, base::UniquePtrComparator>;
   using ActiveTracks = std::set<MixTrack*>;
   using Listeners = std::set<Listener*>;
 
   // Operations delegated by MixableOutputStream.
+  bool OpenStream(MixTrack* mix_track);
   void StartStream(MixTrack* mix_track,
                    media::AudioOutputStream::AudioSourceCallback* callback);
   void StopStream(MixTrack* mix_track);
@@ -107,13 +119,17 @@ class OutputDeviceMixerImpl final : public OutputDeviceMixer {
                             base::TimeDelta delay);
   // Processes |mixing_output_stream_| rendering errors; provided as a callback
   // to MixingGraph.
-  void OnError(ErrorType error);
+  void OnMixingGraphError(ErrorType error);
 
   // Helpers to manage audio playback.
   bool HasListeners() const;
+  bool MixingInProgress() const { return !!mixing_session_stats_; }
+  void EnsureMixingGraphOutputStreamOpen();
   void StartMixingGraphPlayback();
-  void StopMixingGraphPlayback();
+  void StopMixingGraphPlayback(MixingError mixing_error);
   void SwitchToUnmixedPlaybackTimerHelper();
+
+  static const char* ErrorToString(MixingError error);
 
   SEQUENCE_CHECKER(owning_sequence_);
 
@@ -146,11 +162,23 @@ class OutputDeviceMixerImpl final : public OutputDeviceMixer {
 
   // Delays switching to unmixed playback in case a new listener is coming
   // soon (within kSwitchToIndependentPlaybackDelay).
-  base::OneShotTimer switch_to_unmixed_playback_delay_timer_;
+  base::OneShotTimer switch_to_unmixed_playback_delay_timer_
+      GUARDED_BY_CONTEXT(owning_sequence_);
+
+  // Non-null when the playback is being mixed. Collects mixing statistics.
+  // Logs them upon the destruction when mixing stops. Non-null while mixing
+  // is in progress, and is used as an indicator of that.
+  std::unique_ptr<MixingStats> mixing_session_stats_;
 
 #if DCHECK_IS_ON()
   bool device_changed_ = false;
 #endif
+
+  // A mixable stream operation cannot be invoked within a context of another
+  // such operation. In practice it means that AudioOutputStream created by the
+  // mixer cannot be stopped/closed synchronously from AudioSourceCallback
+  // provided to it on AudioOutputStream::Start().
+  REENTRANCY_CHECKER(reentrancy_checker_);
 
   // Supplies weak pointers to |this| for MixableOutputStream instances.
   base::WeakPtrFactory<OutputDeviceMixerImpl> weak_factory_{this};

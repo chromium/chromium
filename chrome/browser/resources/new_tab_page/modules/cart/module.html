@@ -46,13 +46,18 @@
     z-index: 0;
   }
 
+  .scroll-button {
+    align-items: center;
+    display: flex;
+  }
+
   :host([header-description-text]) #cartCarousel {
     padding-top: 16px;
   }
 
   #consentCard,
   .cart-container {
-    border: 1px solid var(--ntp-border-color);
+    border: 1px solid var(--color-new-tab-page-border);
     border-radius: 4px;
     display: inline-flex;
     flex-direction: column;
@@ -71,6 +76,20 @@
     display: inline-flex;
     flex-direction: column;
     text-decoration: none;
+  }
+
+  #consentContainer {
+    display: inline-block;
+    opacity: 0;
+    overflow: hidden;
+    transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1);
+    vertical-align: top;
+    width: 0;
+  }
+
+  :host([discount-consent-visible]) #consentContainer {
+    opacity: 1;
+    width: 254px;
   }
 
   #consentCard {
@@ -100,7 +119,7 @@
   }
 
   #consentContent {
-    color: var(--cr-primary-text-color);
+    color: var(--color-new-tab-page-primary-foreground);
     font-size: 13px;
     font-weight: 400;
     height: 40px;
@@ -140,7 +159,7 @@
   }
 
   .cart-title {
-    color: var(--cr-primary-text-color);
+    color: var(--color-new-tab-page-primary-foreground);
     display: flex;
     flex-direction: row;
     font-size: 13px;
@@ -159,11 +178,11 @@
   }
 
   .cart-title .item-count {
-    color: var(--cr-secondary-text-color);
+    color: var(--color-new-tab-page-secondary-foreground);
   }
 
   .favicon-image {
-    border-radius: 2px;
+    border-radius: 50%;
     display: block;
     height: 24px;
     margin-inline-end: auto;
@@ -190,7 +209,7 @@
   }
 
   .thumbnail-img {
-    border: 2px solid var(--ntp-background-override-color);
+    border: 2px solid var(--color-new-tab-page-background-override);
     border-radius: 50%;
     height: 44px;
     object-fit: cover;
@@ -204,11 +223,6 @@
     width: 102px;
   }
 
-  :host-context([dir=rtl]) cr-icon-button {
-    left: 0;
-    right: unset;
-  }
-
   .cart-container cr-icon-button {
     --cr-icon-button-icon-size: 16px;
     --cr-icon-button-size: 24px;
@@ -218,8 +232,27 @@
     top: 2px;
   }
 
+  :host-context([dir=rtl]) cr-icon-button {
+    left: 0;
+    right: unset;
+  }
+
+  :host-context([dir=rtl]) #rightScrollShadow {
+    left: 0;
+    right: unset;
+  }
+
+  #scrollButtons {
+    align-items: center;
+    display: flex;
+    height: 100%;
+    justify-content: space-between;
+    position: absolute;
+    width: 100%;
+  }
+
   .side-scroll-shadow {
-    background-color: var(--ntp-background-override-color);
+    background-color: var(--color-new-tab-page-background-override);
     display: flex;
     height: 160px;
     opacity: 0.38;
@@ -229,43 +262,38 @@
     z-index: 1;
   }
 
-  #leftScrollShadow {
-    left: 0;
-  }
-
-  #rightScrollShadow {
-    right: 0;
-  }
-
   .side-scroll-button {
-    --cr-icon-button-fill-color: var(--ntp-icon-button-color);
+    --cr-icon-button-fill-color:
+        var(--color-new-tab-page-icon-button-background);
     --cr-icon-button-icon-size: 16px;
     --cr-icon-button-margin-start: 0;
     --cr-icon-button-margin-end: 0;
     --cr-icon-image: url(icons/chevron.svg);
-    background-color: var(--ntp-module-scroll-button-color);
+    background-color: var(--color-new-tab-page-module-scroll-button-background);
     border-radius: 50%;
-    position: absolute;
     top: 50%;
-    transform: translateY(-50%);
     visibility: hidden;
     z-index: 2;
   }
 
   .side-scroll-button:hover {
-    --cr-icon-button-fill-color: var(--ntp-icon-button-color-active);
-    background-color: var(--ntp-module-scroll-button-hover-color);
+    --cr-icon-button-fill-color:
+        var(--color-new-tab-page-icon-button-background-active);
+    background-color:
+        var(--color-new-tab-page-module-scroll-button-background-hovered);
   }
 
   #leftScrollButton {
     --cr-icon-image-transform: rotate(90deg);
-    left: 0;
     margin-inline-start: 4px;
   }
 
   #rightScrollButton {
     --cr-icon-image-transform: rotate(270deg);
     margin-inline-end: 4px;
+  }
+
+  #rightScrollShadow {
     right: 0;
   }
 
@@ -284,42 +312,65 @@
       disable-text="[[i18nRecursive('',
                                     'modulesDisableButtonText',
                                     'modulesCartLower')]]"
+      show-info-button on-info-button-click="onInfoButtonClick_"
       show-dismiss-button on-dismiss-button-click="onDismissButtonClick_"
       on-disable-button-click="onDisableButtonClick_">
-    [[i18n('modulesCartSentence')]]
+    $i18n{modulesCartSentence}
   </ntp-module-header>
   <div id="moduleContent">
-    <template is="dom-if" if="[[showLeftScrollButton_]]">
-      <div id="leftScrollShadow" class="side-scroll-shadow"></div>
-      <cr-icon-button id="leftScrollButton"
-          class="side-scroll-button" on-click="onLeftScrollClick_">
-      </cr-icon-button>
-    </template>
+    <div id="scrollButtons">
+      <div class="scroll-button">
+        <template is="dom-if" if="[[showLeftScrollButton_]]">
+          <div id="leftScrollShadow" class="side-scroll-shadow"></div>
+          <cr-icon-button id="leftScrollButton"
+              class="side-scroll-button" on-click="onLeftScrollClick_">
+          </cr-icon-button>
+        </template>
+      </div>
+      <div class="scroll-button">
+        <template is="dom-if" if="[[showRightScrollButton_]]">
+          <div id="rightScrollShadow" class="side-scroll-shadow"> </div>
+          <cr-icon-button id="rightScrollButton"
+              class="side-scroll-button" on-click="onRightScrollClick_">
+          </cr-icon-button>
+        </template>
+      </div>
+    </div>
     <div id="cartCarousel">
       <div id="leftProbe" class="probe"></div>
-      <template id="consentCardElement" is="dom-if"
-          if="[[showDiscountConsent]]">
-        <div id="consentCard">
-          <div id="consentIconContainer">
-            <div id="consentIcon"></div>
-          </div>
-          <span id="consentContent">
-            [[i18n('modulesCartDiscountConsentContent')]]
-          </span>
-          <div id="consentButtonContainer">
-            <cr-button id="cancelButton"
-                class="cancel-button" on-click="onDisallowDiscount_"
-                on-auxclick="onDisallowDiscount_">
-              [[i18n('modulesCartDiscountConsentReject')]]
-            </cr-button>
-            <cr-button id="actionButton"
-                class="action-button" on-click="onAllowDiscount_"
-                on-auxclick="onAllowDiscount_">
-              [[i18n('modulesCartDiscountConsentAccept')]]
-            </cr-button>
-          </div>
-        </div>
-      </template>
+      <div id="consentContainer">
+        <template id="consentCardElement" is="dom-if"
+            if="[[showDiscountConsent]]">
+          <!-- TODO(crbug.com/1298116): Move this template to
+            discount_consent_card. -->
+          <template is="dom-if" if="[[!discountConsentHasTwoSteps_]]" restamp>
+            <div id="consentCard">
+              <div id="consentIconContainer">
+                <div id="consentIcon"></div>
+              </div>
+              <span id="consentContent">
+                $i18n{modulesCartDiscountConsentContent}
+              </span>
+              <div id="consentButtonContainer">
+                <cr-button id="cancelButton"
+                    class="cancel-button" on-click="onDiscountConsentRejected_"
+                    on-auxclick="onDisallowDiscount_">
+                  $i18n{modulesCartDiscountConsentReject}
+                </cr-button>
+                <cr-button id="actionButton"
+                    class="action-button" on-click="onDiscountConsentAccepted_"
+                    on-auxclick="onAllowDiscount_">
+                  $i18n{modulesCartDiscountConsentAccept}
+                </cr-button>
+              </div>
+            </div>
+          </template>
+          <template is="dom-if" if="[[discountConsentHasTwoSteps_]]" restamp>
+            <discount-consent-card id="consentCardV2"
+                merchants="[[firstThreeCartItems_]]"></discount-consent-card>
+          </template>
+        </template>
+      </div>
       <template id="cartItemRepeat" is="dom-repeat" items="[[cartItems]]">
         <div class="cart-container">
           <a class="cart-item" title="[[item.merchant]]"
@@ -360,7 +411,7 @@
             </div>
           </a>
           <cr-icon-button class="icon-more-vert"
-              title="[[i18n('moreActions')]]" on-click="onCartMenuButtonClick_">
+              title="$i18n{moreActions}" on-click="onCartMenuButtonClick_">
           </cr-icon-button>
         </div>
       </template>
@@ -376,29 +427,29 @@
         [[cartMenuRemoveItem_]]
       </button>
     </cr-action-menu>
-    <template is="dom-if" if="[[showRightScrollButton_]]">
-      <div id="rightScrollShadow" class="side-scroll-shadow"> </div>
-      <cr-icon-button id="rightScrollButton"
-          class="side-scroll-button" on-click="onRightScrollClick_">
-      </cr-icon-button>
-    </template>
   </div>
 </div>
-<cr-toast id="dismissCartToast" duration="10000">
+<cr-lazy-render id="infoDialogRender">
+  <template>
+    <ntp-info-dialog inner-h-t-m-l="[[i18nAdvanced('modulesCartInfo')]]">
+    </ntp-info-dialog>
+  </template>
+</cr-lazy-render>
+<cr-toast id="dismissCartToast" duration="10000" tabindex="0">
   <div id="dismissCartToastMessage">
     [[dismissedCartData_.message]]
   </div>
   <cr-button id="undoDismissCartButton"
       on-click="onUndoDismissCartButtonClick_">
-    [[i18n('undo')]]
+    $i18n{undo}
   </cr-button>
 </cr-toast>
-<cr-toast id="confirmDiscountConsentToast" duration="10000">
+<cr-toast id="confirmDiscountConsentToast" duration="10000" tabindex="0">
   <div id="confirmDiscountConsentMessage">
     [[confirmDiscountConsentString_]]
   </div>
   <cr-button id="confirmDiscountConsentButton"
       on-click="onConfirmDiscountConsentClick_">
-    [[i18n('modulesCartDiscountConsentConfirmationDismiss')]]
+    $i18n{modulesCartDiscountConsentConfirmationDismiss}
   </cr-button>
 </cr-toast>

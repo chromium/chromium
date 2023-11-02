@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -224,6 +224,15 @@ imageset("popup_menu_new_window") {
   ]
 }
 
+imageset("popup_menu_price_notifications") {
+  sources = [
+    "popup_menu_price_notifications.imageset/Contents.json",
+    "popup_menu_price_notifications.imageset/popup_menu_price_notifications.png",
+    "popup_menu_price_notifications.imageset/popup_menu_price_notifications@2x.png",
+    "popup_menu_price_notifications.imageset/popup_menu_price_notifications@3x.png",
+  ]
+}
+
 imageset("popup_menu_help") {
   sources = [
     "popup_menu_help.imageset/Contents.json",
@@ -246,5 +255,23 @@ imageset("popup_menu_enterprise_icon") {
     "popup_menu_enterprise_icon.imageset/Contents.json",
     "popup_menu_enterprise_icon.imageset/popup_menu_enterprise_icon@2x.png",
     "popup_menu_enterprise_icon.imageset/popup_menu_enterprise_icon@3x.png",
+  ]
+}
+
+imageset("popup_menu_follow") {
+  sources = [
+    "popup_menu_follow.imageset/Contents.json",
+    "popup_menu_follow.imageset/popup_menu_follow.png",
+    "popup_menu_follow.imageset/popup_menu_follow@2x.png",
+    "popup_menu_follow.imageset/popup_menu_follow@3x.png",
+  ]
+}
+
+imageset("popup_menu_unfollow") {
+  sources = [
+    "popup_menu_unfollow.imageset/Contents.json",
+    "popup_menu_unfollow.imageset/popup_menu_unfollow.png",
+    "popup_menu_unfollow.imageset/popup_menu_unfollow@2x.png",
+    "popup_menu_unfollow.imageset/popup_menu_unfollow@3x.png",
   ]
 }

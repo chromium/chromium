@@ -1,16 +1,18 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/components/phonehub/notification_manager.h"
 
-#include "chromeos/components/multidevice/logging/logging.h"
-
 #include <sstream>
 
-namespace chromeos {
+#include "chromeos/ash/components/multidevice/logging/logging.h"
+
+namespace ash {
 namespace phonehub {
+
 namespace {
+
 std::string GetIdStream(const base::flat_set<int64_t>& notification_ids) {
   std::ostringstream output(std::ostringstream::ate);
   for (const auto& id : notification_ids) {
@@ -18,6 +20,7 @@ std::string GetIdStream(const base::flat_set<int64_t>& notification_ids) {
   }
   return output.str();
 }
+
 }  // namespace
 
 NotificationManager::NotificationManager() = default;
@@ -121,4 +124,4 @@ const Notification* NotificationManager::GetNotification(
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

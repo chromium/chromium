@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,7 +19,8 @@ namespace blink {
 namespace {
 
 class URLSearchParamsIterationSource final
-    : public PairIterable<String, String>::IterationSource {
+    : public PairIterable<String, IDLString, String, IDLString>::
+          IterationSource {
  public:
   explicit URLSearchParamsIterationSource(URLSearchParams* params)
       : params_(params), current_(0) {}
@@ -39,7 +40,8 @@ class URLSearchParamsIterationSource final
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(params_);
-    PairIterable<String, String>::IterationSource::Trace(visitor);
+    PairIterable<String, IDLString, String, IDLString>::IterationSource::Trace(
+        visitor);
   }
 
  private:
@@ -95,7 +97,7 @@ URLSearchParams* URLSearchParams::Create(const Vector<Vector<String>>& init,
 
 URLSearchParams::URLSearchParams(const String& query_string, DOMURL* url_object)
     : url_object_(url_object) {
-  if (!query_string.IsEmpty())
+  if (!query_string.empty())
     SetInputWithoutUpdate(query_string);
 }
 
@@ -103,7 +105,7 @@ URLSearchParams* URLSearchParams::Create(
     const Vector<std::pair<String, String>>& init,
     ExceptionState& exception_state) {
   URLSearchParams* instance = MakeGarbageCollected<URLSearchParams>(String());
-  if (init.IsEmpty())
+  if (init.empty())
     return instance;
   for (const auto& item : init)
     instance->AppendWithoutUpdate(item.first, item.second);
@@ -261,9 +263,8 @@ scoped_refptr<EncodedFormData> URLSearchParams::ToEncodedFormData() const {
   return EncodedFormData::Create(encoded_data.data(), encoded_data.size());
 }
 
-PairIterable<String, String>::IterationSource* URLSearchParams::StartIteration(
-    ScriptState*,
-    ExceptionState&) {
+PairIterable<String, IDLString, String, IDLString>::IterationSource*
+URLSearchParams::StartIteration(ScriptState*, ExceptionState&) {
   return MakeGarbageCollected<URLSearchParamsIterationSource>(this);
 }
 

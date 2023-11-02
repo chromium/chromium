@@ -1,23 +1,23 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
+import {$} from 'chrome://resources/js/util.js';
+import {TimeDelta} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
+import {FeedOrder, LastFetchProperties, PageHandler, PageHandlerRemote, Properties} from './feed_internals.mojom-webui.js';
 
 /**
  * Reference to the backend.
- * @type {feedInternals.mojom.PageHandlerRemote}
+ * @type {PageHandlerRemote}
  */
 let pageHandler = null;
-
-(function() {
 
 /**
  * Get and display general properties.
  */
 function updatePageWithProperties() {
   pageHandler.getGeneralProperties().then(response => {
-    /** @type {!feedInternals.mojom.Properties} */
+    /** @type {!Properties} */
     const properties = response.properties;
     $('is-feed-enabled').textContent = properties.isFeedEnabled;
     $('is-feed-visible').textContent = properties.isFeedVisible;
@@ -29,24 +29,22 @@ function updatePageWithProperties() {
     $('enable-webfeed-follow-intro-debug').checked =
         properties.isWebFeedFollowIntroDebugEnabled;
     $('enable-webfeed-follow-intro-debug').disabled = false;
-    $('use-feed-query-requests-for-web-feeds').checked =
-        properties.useFeedQueryRequestsForWebFeeds;
+    $('use-feed-query-requests').checked = properties.useFeedQueryRequests;
 
     switch (properties.followingFeedOrder) {
-      case feedInternals.mojom.FeedOrder.kUnspecified:
+      case FeedOrder.kUnspecified:
         $('following-feed-order-unset').checked = true;
         break;
-      case feedInternals.mojom.FeedOrder.kGrouped:
+      case FeedOrder.kGrouped:
         $('following-feed-order-grouped').checked = true;
         break;
-      case feedInternals.mojom.FeedOrder.kReverseChron:
+      case FeedOrder.kReverseChron:
         $('following-feed-order-reverse-chron').checked = true;
         break;
     }
     $('following-feed-order-grouped').disabled = false;
     $('following-feed-order-reverse-chron').disabled = false;
     $('following-feed-order-unset').disabled = false;
-
   });
 }
 
@@ -55,7 +53,7 @@ function updatePageWithProperties() {
  */
 function updatePageWithLastFetchProperties() {
   pageHandler.getLastFetchProperties().then(response => {
-    /** @type {!feedInternals.mojom.LastFetchProperties} */
+    /** @type {!LastFetchProperties} */
     const properties = response.properties;
     $('last-fetch-status').textContent = properties.lastFetchStatus;
     $('last-fetch-trigger').textContent = properties.lastFetchTrigger;
@@ -84,7 +82,7 @@ function setLinkNode(node, url) {
 /**
  * Convert timeSinceEpoch to string for display.
  *
- * @param {mojoBase.mojom.TimeDelta} timeSinceEpoch
+ * @param {TimeDelta} timeSinceEpoch
  * @return {string}
  */
 function toDateString(timeSinceEpoch) {
@@ -128,12 +126,13 @@ function setupEventListeners() {
   });
 
   $('discover-api-override-apply').addEventListener('click', function() {
-    pageHandler.overrideFeedHost({url: $('discover-api-override').value});
+    pageHandler.overrideDiscoverApiEndpoint(
+        {url: $('discover-api-override').value});
   });
 
   $('feed-stream-data-override').addEventListener('click', function() {
     const file = $('feed-stream-data-file').files[0];
-    if (file && typeof pageHandler.overrideFeedStreamData == 'function') {
+    if (file && typeof pageHandler.overrideFeedStreamData === 'function') {
       const reader = new FileReader();
       reader.readAsArrayBuffer(file);
       reader.onload = function(e) {
@@ -149,11 +148,9 @@ function setupEventListeners() {
     $('enable-webfeed-follow-intro-debug').disabled = true;
   });
 
-  $('use-feed-query-requests-for-web-feeds')
-      .addEventListener('click', function() {
-        pageHandler.setUseFeedQueryRequestsForWebFeeds(
-            $('use-feed-query-requests-for-web-feeds').checked);
-      });
+  $('use-feed-query-requests').addEventListener('click', function() {
+    pageHandler.setUseFeedQueryRequests($('use-feed-query-requests').checked);
+  });
 
   const orderRadioClickListener = function(order) {
     $('following-feed-order-grouped').disabled = true;
@@ -163,19 +160,13 @@ function setupEventListeners() {
   };
   $('following-feed-order-unset')
       .addEventListener(
-          'click',
-          () => orderRadioClickListener(
-              feedInternals.mojom.FeedOrder.kUnspecified));
+          'click', () => orderRadioClickListener(FeedOrder.kUnspecified));
   $('following-feed-order-grouped')
       .addEventListener(
-          'click',
-          () =>
-              orderRadioClickListener(feedInternals.mojom.FeedOrder.kGrouped));
+          'click', () => orderRadioClickListener(FeedOrder.kGrouped));
   $('following-feed-order-reverse-chron')
       .addEventListener(
-          'click',
-          () => orderRadioClickListener(
-              feedInternals.mojom.FeedOrder.kReverseChron));
+          'click', () => orderRadioClickListener(FeedOrder.kReverseChron));
 }
 
 function updatePage() {
@@ -185,11 +176,10 @@ function updatePage() {
 
 document.addEventListener('DOMContentLoaded', function() {
   // Setup backend mojo.
-  pageHandler = feedInternals.mojom.PageHandler.getRemote();
+  pageHandler = PageHandler.getRemote();
 
   setInterval(updatePage, 2000);
   updatePage();
 
   setupEventListeners();
 });
-})();

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,8 +17,10 @@
 #include "chrome/browser/ash/login/test/oobe_screens_utils.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
+#include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_fatal_error_screen_handler.h"
-#include "chromeos/dbus/authpolicy/fake_authpolicy_client.h"
+#include "chromeos/ash/components/dbus/authpolicy/fake_authpolicy_client.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/common/network_service_util.h"
@@ -56,9 +58,8 @@ void AssertNetworkServiceEnvEquals(const std::string& name,
 class ActiveDirectoryLoginTest : public OobeBaseTest {
  public:
   ActiveDirectoryLoginTest()
-      : OobeBaseTest(),
-        // Using the same realm as supervised user domain. Should be treated
-        // as normal realm.
+      :  // Using the same realm as supervised user domain. Should be treated
+         // as normal realm.
         test_realm_(user_manager::kSupervisedUserDomain),
         test_user_(kTestActiveDirectoryUser + ("@" + test_realm_)) {}
 
@@ -92,15 +93,15 @@ class ActiveDirectoryLoginAutocompleteTest : public ActiveDirectoryLoginTest {
   void SetUpInProcessBrowserTestFixture() override {
     ActiveDirectoryLoginTest::SetUpInProcessBrowserTestFixture();
 
-    enterprise_management::ChromeDeviceSettingsProto device_settings;
-    device_settings.mutable_login_screen_domain_auto_complete()
-        ->set_login_screen_domain_auto_complete(kTestUserRealm);
-    fake_authpolicy_client()->set_device_policy(device_settings);
+    scoped_testing_cros_settings_.device_settings()->SetString(
+        kAccountsPrefLoginScreenDomainAutoComplete, kTestUserRealm);
     autocomplete_realm_ = "@" + std::string(kTestUserRealm);
     ad_login_.set_autocomplete_realm(autocomplete_realm_);
   }
 
+ protected:
   std::string autocomplete_realm_;
+  ScopedTestingCrosSettings scoped_testing_cros_settings_;
 };
 
 }  // namespace

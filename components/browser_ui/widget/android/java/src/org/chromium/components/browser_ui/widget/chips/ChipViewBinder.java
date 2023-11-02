@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,10 @@ import android.text.TextUtils;
 import org.chromium.components.browser_ui.widget.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.widget.ChipView;
 
 /** View binder to bind a model to a {@link ChipView}. */
-class ChipViewBinder {
-    static void bind(PropertyModel model, ChipView chip, PropertyKey key) {
+public class ChipViewBinder {
+    public static void bind(PropertyModel model, ChipView chip, PropertyKey key) {
         if (ChipProperties.CLICK_HANDLER == key) {
             chip.setOnClickListener((v) -> model.get(ChipProperties.CLICK_HANDLER).onResult(model));
 

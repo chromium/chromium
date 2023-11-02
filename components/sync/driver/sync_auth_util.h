@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,6 @@
 #define COMPONENTS_SYNC_DRIVER_SYNC_AUTH_UTIL_H_
 
 #include "components/signin/public/identity_manager/account_info.h"
-
-class GoogleServiceAuthError;
 
 namespace signin {
 class IdentityManager;
@@ -28,10 +26,6 @@ struct SyncAccountInfo {
 // code can use it.
 SyncAccountInfo DetermineAccountToUse(
     signin::IdentityManager* identity_manager);
-
-// Returns whether |auth_error| indicates the user has locally signed out of
-// content area, rejecting credentials.
-bool IsWebSignout(const GoogleServiceAuthError& auth_error);
 
 }  // namespace syncer
 

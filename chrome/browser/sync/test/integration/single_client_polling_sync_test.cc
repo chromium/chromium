@@ -1,4 +1,4 @@
-// Copyright (c) 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,7 +34,7 @@ class SingleClientPollingSyncTest : public SyncTest {
   SingleClientPollingSyncTest& operator=(const SingleClientPollingSyncTest&) =
       delete;
 
-  ~SingleClientPollingSyncTest() override {}
+  ~SingleClientPollingSyncTest() override = default;
 };
 
 // This test verifies that the poll interval in prefs gets initialized if no

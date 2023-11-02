@@ -1,7 +1,8 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/node/node.gni")
 
 template("ts_library") {
@@ -14,10 +15,13 @@ template("ts_library") {
                              "extra_deps",
                              "in_files",
                              "tsconfig_base",
+                             "manifest_excludes",
+                             "testonly",
+                             "visibility",
                            ])
 
     inputs = [ "//tools/typescript/tsconfig_base.json" ]
-    outputs = [ "$target_gen_dir/tsconfig.json" ]
+    outputs = [ "$target_gen_dir/tsconfig_$target_name.json" ]
 
     assert(defined(in_files) || defined(invoker.definitions))
 
@@ -37,7 +41,7 @@ template("ts_library") {
     }
 
     if (defined(in_files)) {
-      outputs += [ "$target_gen_dir/tsconfig.manifest" ]
+      outputs += [ "$target_gen_dir/$target_name.manifest" ]
       foreach(_source, in_files) {
         inputs += [ "$root_dir/$_source" ]
         _dirname =
@@ -58,10 +62,17 @@ template("ts_library") {
       rebase_path(target_gen_dir, root_build_dir),
       "--out_dir",
       rebase_path(out_dir, root_build_dir),
+      "--output_suffix",
+      target_name,
     ]
 
     if (defined(in_files)) {
       args += [ "--in_files" ] + in_files
+    }
+
+    if (defined(manifest_excludes)) {
+      assert(defined(in_files))
+      args += [ "--manifest_excludes" ] + manifest_excludes
     }
 
     if (defined(invoker.definitions)) {
@@ -75,9 +86,11 @@ template("ts_library") {
 
     if (defined(deps)) {
       args += [ "--deps" ]
+
       foreach(dep, deps) {
-        args +=
-            [ rebase_path(get_label_info(dep, "dir"), ".") + "/tsconfig.json" ]
+        name = get_label_info(dep, "name")
+        args += [ rebase_path(get_label_info(dep, "dir"), ".") +
+                  "/tsconfig_$name.json" ]
       }
     }
 
@@ -122,6 +135,18 @@ template("ts_library") {
       "/tools/typescript/definitions/*|" +
           rebase_path("//tools/typescript/definitions/*", target_gen_dir),
     ]
+
+    if (is_chromeos_ash) {
+      path_mappings += [
+        "chrome://resources/ash/common/*|" + rebase_path(
+                "$root_gen_dir/ash/webui/common/resources/preprocessed/*",
+                target_gen_dir),
+        "//resources/ash/common/*|" + rebase_path(
+                "$root_gen_dir/ash/webui/common/resources/preprocessed/*",
+                target_gen_dir),
+      ]
+    }
+
     args += [ "--path_mappings" ] + path_mappings
     if (defined(invoker.path_mappings)) {
       args += invoker.path_mappings

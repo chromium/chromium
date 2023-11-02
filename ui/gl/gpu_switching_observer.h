@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,8 @@ namespace ui {
 
 class GL_EXPORT GpuSwitchingObserver {
  public:
+  virtual ~GpuSwitchingObserver() = default;
+
   // Called for any observer when the system switches to a different GPU.
   virtual void OnGpuSwitched(gl::GpuPreference active_gpu_heuristic) {}
 

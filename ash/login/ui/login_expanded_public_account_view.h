@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,12 +14,14 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/view.h"
 
 class PrefRegistrySimple;
 
 namespace ash {
 
+class MonitoringWarningView;
 class ArrowButtonView;
 struct LocaleItem;
 class LoginUserView;
@@ -43,12 +45,10 @@ class ASH_EXPORT LoginExpandedPublicAccountView : public NonAccessibleView {
     views::View* advanced_view();
     PublicAccountMonitoringInfoDialog* learn_more_dialog();
     views::StyledLabel* learn_more_label();
-    views::View* language_selection_button();
-    views::View* keyboard_selection_button();
     PublicAccountMenuView* language_menu_view();
     PublicAccountMenuView* keyboard_menu_view();
-    PublicAccountMenuView::Item selected_language_item();
-    PublicAccountMenuView::Item selected_keyboard_item();
+    std::string selected_language_item_value();
+    std::string selected_keyboard_item_value();
     views::ImageView* monitoring_warning_icon();
     views::Label* monitoring_warning_label();
     void ResetUserForTest();
@@ -81,15 +81,30 @@ class ASH_EXPORT LoginExpandedPublicAccountView : public NonAccessibleView {
   void OnLearnMoreDialogClosed();
   void SetShowFullManagementDisclosure(bool show_full_management_disclosure);
 
+  static gfx::Size GetPreferredSizeLandscape();
+  static gfx::Size GetPreferredSizePortrait();
+
   // views::View:
+  int GetHeightForWidth(int width) const override;
+  void Layout() override;
+  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   void OnPaint(gfx::Canvas* canvas) override;
 
   // ui::EventHandler:
   void OnKeyEvent(ui::KeyEvent* event) override;
 
  private:
+  void UseLandscapeLayout();
+  void UsePortraitLayout();
+
+  views::BoxLayout* layout_ = nullptr;
   LoginUserView* user_view_ = nullptr;
+  MonitoringWarningView* monitoring_warning_view_ = nullptr;
+  views::View* left_pane_ = nullptr;
+  views::View* separator_ = nullptr;
   RightPaneView* right_pane_ = nullptr;
+  ArrowButtonView* submit_button_ = nullptr;
+
   OnPublicSessionViewDismissed on_dismissed_;
   PublicAccountMonitoringInfoDialog* learn_more_dialog_ = nullptr;
   std::unique_ptr<ui::EventHandler> event_handler_;

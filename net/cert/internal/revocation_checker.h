@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include "base/time/time.h"
 #include "net/base/net_export.h"
 #include "net/cert/crl_set.h"
-#include "net/cert/internal/parsed_certificate.h"
+#include "net/cert/pki/parsed_certificate.h"
 
 namespace net {
 
@@ -72,6 +72,10 @@ struct NET_EXPORT_PRIVATE RevocationPolicy {
   // issue network requests in order to fetch fresh OCSP/CRL. Otherwise
   // networking is not permitted in the course of revocation checking.
   bool networking_allowed : 1;
+
+  // If |crl_allowed| is true then CRLs will be checked as a fallback when an
+  // OCSP URL is not present or OCSP results are indeterminate.
+  bool crl_allowed : 1;
 
   // If set to true, considers certificates lacking URLs for OCSP/CRL to be
   // unrevoked. Otherwise will fail for certificates lacking revocation

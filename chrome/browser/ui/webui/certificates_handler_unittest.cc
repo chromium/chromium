@@ -1,9 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webui/certificates_handler.h"
 
+#include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -20,17 +22,13 @@ class CertificateHandlerTest : public ChromeRenderViewHostTestHarness {
     web_ui_.set_web_contents(web_contents());
     cert_handler_.set_web_ui(&web_ui_);
     pref_service_ = profile()->GetTestingPrefService();
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    profile()->SetIsMainProfile(true);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   bool IsCACertificateManagementAllowedPolicy(CertificateSource source) {
     return cert_handler_.IsCACertificateManagementAllowedPolicy(source);
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   bool CanDeleteCertificate(
       const CertificateManagerModel::CertInfo* cert_info) {
@@ -44,10 +42,10 @@ class CertificateHandlerTest : public ChromeRenderViewHostTestHarness {
  protected:
   content::TestWebUI web_ui_;
   certificate_manager::CertificatesHandler cert_handler_;
-  sync_preferences::TestingPrefServiceSyncable* pref_service_ = nullptr;
+  raw_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service_ = nullptr;
 };
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(CertificateHandlerTest, IsCACertificateManagementAllowedPolicyTest) {
   {
     pref_service_->SetInteger(
@@ -82,7 +80,7 @@ TEST_F(CertificateHandlerTest, IsCACertificateManagementAllowedPolicyTest) {
         IsCACertificateManagementAllowedPolicy(CertificateSource::kBuiltIn));
   }
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(CertificateHandlerTest, CanDeleteCertificateCommonTest) {
   CertificateManagerModel::CertInfo default_cert_info(
@@ -130,7 +128,7 @@ TEST_F(CertificateHandlerTest, CanDeleteUserCertificateTest) {
     EXPECT_TRUE(CanDeleteCertificate(&cert_info));
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   {
     pref_service_->SetInteger(
         prefs::kClientCertificateManagementAllowed,
@@ -166,7 +164,7 @@ TEST_F(CertificateHandlerTest, CanDeleteUserCertificateTest) {
     cert_info.device_wide_ = true;
     EXPECT_FALSE(CanDeleteCertificate(&cert_info));
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 TEST_F(CertificateHandlerTest, CanDeleteCACertificateTest) {
@@ -184,7 +182,7 @@ TEST_F(CertificateHandlerTest, CanDeleteCACertificateTest) {
     EXPECT_TRUE(CanDeleteCertificate(&cert_info));
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   {
     pref_service_->SetInteger(
         prefs::kCACertificateManagementAllowed,
@@ -219,7 +217,7 @@ TEST_F(CertificateHandlerTest, CanDeleteCACertificateTest) {
     cert_info.can_be_deleted_ = true;
     EXPECT_FALSE(CanDeleteCertificate(&cert_info));
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 TEST_F(CertificateHandlerTest, CanEditCertificateCommonTest) {
@@ -263,7 +261,7 @@ TEST_F(CertificateHandlerTest, CanEditUserCertificateTest) {
     EXPECT_FALSE(CanEditCertificate(&cert_info));
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   {
     pref_service_->SetInteger(
         prefs::kClientCertificateManagementAllowed,
@@ -299,7 +297,7 @@ TEST_F(CertificateHandlerTest, CanEditUserCertificateTest) {
     cert_info.device_wide_ = true;
     EXPECT_FALSE(CanEditCertificate(&cert_info));
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 TEST_F(CertificateHandlerTest, CanEditCACertificateTest) {
@@ -317,7 +315,7 @@ TEST_F(CertificateHandlerTest, CanEditCACertificateTest) {
     EXPECT_TRUE(CanEditCertificate(&cert_info));
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   {
     pref_service_->SetInteger(
         prefs::kCACertificateManagementAllowed,
@@ -353,7 +351,7 @@ TEST_F(CertificateHandlerTest, CanEditCACertificateTest) {
     cert_info.can_be_deleted_ = true;
     EXPECT_FALSE(CanEditCertificate(&cert_info));
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 

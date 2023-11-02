@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -301,23 +301,6 @@ TEST_F(SkiaGoldPixelDiffTest, NotDryRunOnBots) {
                               &base::CommandLine::GetCommandLineString,
                               Not(HasSubstr(FILE_PATH_LITERAL("--dryrun")))))))
       .Times(3);
-  mock_pixel.Init("Prefix");
-  bool ret = mock_pixel.CompareScreenshot("test", GetTestBitmap());
-  EXPECT_TRUE(ret);
-}
-
-TEST_F(SkiaGoldPixelDiffTest, DryRunForTryjobWithoutPatch) {
-  auto* cmd_line = base::CommandLine::ForCurrentProcess();
-  cmd_line->AppendSwitch(switches::kTestLauncherBotMode);
-  cmd_line->AppendSwitchASCII(switches::kTestLauncherBatchLimit, "1");
-
-  MockSkiaGoldPixelDiff mock_pixel;
-  EXPECT_CALL(mock_pixel, LaunchProcess(_)).Times(AnyNumber());
-  EXPECT_CALL(
-      mock_pixel,
-      LaunchProcess(AllOf(Property(&base::CommandLine::GetCommandLineString,
-                                   HasSubstr(FILE_PATH_LITERAL("--dryrun"))))))
-      .Times(1);
   mock_pixel.Init("Prefix");
   bool ret = mock_pixel.CompareScreenshot("test", GetTestBitmap());
   EXPECT_TRUE(ret);

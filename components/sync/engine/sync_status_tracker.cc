@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,8 +29,6 @@ SyncStatus SyncStatusTracker::CreateBlankStatus() const {
   // whose values accumulate (e.g. lifetime counters like updates_received)
   // are not to be cleared here.
   SyncStatus status = status_;
-  status.encryption_conflicts = 0;
-  status.hierarchy_conflicts = 0;
   status.server_conflicts = 0;
   status.committed_count = 0;
   return status;
@@ -39,8 +37,6 @@ SyncStatus SyncStatusTracker::CreateBlankStatus() const {
 SyncStatus SyncStatusTracker::CalcSyncing(const SyncCycleEvent& event) const {
   SyncStatus status = CreateBlankStatus();
   const SyncCycleSnapshot& snapshot = event.snapshot;
-  status.encryption_conflicts = snapshot.num_encryption_conflicts();
-  status.hierarchy_conflicts = snapshot.num_hierarchy_conflicts();
   status.server_conflicts = snapshot.num_server_conflicts();
   status.committed_count =
       snapshot.model_neutral_state().num_successful_commits;
@@ -56,14 +52,8 @@ SyncStatus SyncStatusTracker::CalcSyncing(const SyncCycleEvent& event) const {
           snapshot.model_neutral_state().num_updates_downloaded_total;
       status.tombstone_updates_received +=
           snapshot.model_neutral_state().num_tombstone_updates_downloaded_total;
-      status.reflected_updates_received +=
-          snapshot.model_neutral_state().num_reflected_updates_downloaded_total;
       status.num_commits_total +=
           snapshot.model_neutral_state().num_successful_commits;
-      status.num_local_overwrites_total +=
-          snapshot.model_neutral_state().num_local_overwrites;
-      status.num_server_overwrites_total +=
-          snapshot.model_neutral_state().num_server_overwrites;
       break;
     case SyncCycleEvent::STATUS_CHANGED:
       break;

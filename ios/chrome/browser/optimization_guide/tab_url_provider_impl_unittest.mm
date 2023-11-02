@@ -1,10 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/optimization_guide/tab_url_provider_impl.h"
+#import "ios/chrome/browser/optimization_guide/tab_url_provider_impl.h"
 
-#include <memory>
+#import <memory>
 
 #import "base/test/simple_test_clock.h"
 #import "base/test/task_environment.h"
@@ -15,7 +15,6 @@
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
-#import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -53,22 +52,15 @@ class TabUrlProviderImplTest : public PlatformTest {
     browser_list_->AddIncognitoBrowser(incognito_browser_.get());
 
     tab_url_provider_ =
-        std::make_unique<TabUrlProviderImpl>(browser_state_.get(), &clock_);
+        std::make_unique<TabUrlProviderImpl>(browser_list_, &clock_);
   }
 
   // Add a fake web state with certain URL and timestamp to be the last
   // committed navigation.
   void AddURL(Browser* browser, const GURL& url, const base::Time& timestamp) {
     auto fake_web_state = std::make_unique<web::FakeWebState>();
-    auto fake_navigation_manager =
-        std::make_unique<web::FakeNavigationManager>();
-    fake_navigation_manager->AddItem(url,
-                                     ui::PageTransition::PAGE_TRANSITION_TYPED);
-    web::NavigationItem* item = fake_navigation_manager->GetItemAtIndex(
-        fake_navigation_manager->GetItemCount() - 1);
-    item->SetTimestamp(timestamp);
-    fake_navigation_manager->SetVisibleItem(item);
-    fake_web_state->SetNavigationManager(std::move(fake_navigation_manager));
+    fake_web_state->SetCurrentURL(url);
+    fake_web_state->SetLastActiveTime(timestamp);
     browser->GetWebStateList()->InsertWebState(
         browser->GetWebStateList()->count(), std::move(fake_web_state),
         WebStateList::InsertionFlags::INSERT_ACTIVATE, WebStateOpener());

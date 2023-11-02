@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -89,8 +89,8 @@ TEST_F(SystemMemoryPressureEvaluatorFuchsiaDeathTest, ProviderUnavailable) {
   // Spin the loop to allow the evaluator to notice that the Provider is not
   // available and verify that this causes a fatal failure.
   ASSERT_DEATH(base::RunLoop().RunUntilIdle(),
-               "fuchsia\\.memorypressure\\.Provider disconnected unexpectedly: "
-               "ZX_ERR_PEER_CLOSED \\(-24\\)");
+               "fuchsia\\.memorypressure\\.Provider disconnected unexpectedly, "
+               "exiting: ZX_ERR_PEER_CLOSED \\(-24\\)");
 }
 
 TEST_F(SystemMemoryPressureEvaluatorFuchsiaTest, Basic) {

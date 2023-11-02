@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/thread_annotations.h"
 #include "sql/meta_table.h"
@@ -175,10 +174,10 @@ class SQLitePersistentStoreBackendBase
   const std::string histogram_tag_;
 
   // Whether the database has been initialized.
-  bool initialized_;
+  bool initialized_ = false;
 
   // Whether the KillDatabase callback has been scheduled.
-  bool corruption_detected_;
+  bool corruption_detected_ = false;
 
   // Current version number of the database. Must be greater than 0.
   const int current_version_number_;

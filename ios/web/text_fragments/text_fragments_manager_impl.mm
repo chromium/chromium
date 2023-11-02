@@ -1,16 +1,16 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <iomanip>
+#import <iomanip>
 
 #import "ios/web/text_fragments/text_fragments_manager_impl.h"
 
 #import "base/strings/string_util.h"
 #import "base/strings/utf_string_conversions.h"
+#import "components/shared_highlighting/core/common/fragment_directives_constants.h"
+#import "components/shared_highlighting/core/common/fragment_directives_utils.h"
 #import "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
-#import "components/shared_highlighting/core/common/text_fragments_constants.h"
-#import "components/shared_highlighting/core/common/text_fragments_utils.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frame_util.h"
@@ -68,9 +68,9 @@ TextFragmentsManagerImpl* TextFragmentsManagerImpl::FromWebState(
 
 void TextFragmentsManagerImpl::RemoveHighlights() {
   // Remove the fragments that are visible on the page and update the URL.
-  GetJSFeature()->RemoveHighlights(web_state_,
-                                   shared_highlighting::RemoveTextFragments(
-                                       web_state_->GetLastCommittedURL()));
+  GetJSFeature()->RemoveHighlights(
+      web_state_, shared_highlighting::RemoveFragmentSelectorDirectives(
+                      web_state_->GetLastCommittedURL()));
 }
 
 void TextFragmentsManagerImpl::RegisterDelegate(
@@ -94,6 +94,18 @@ void TextFragmentsManagerImpl::OnClick() {
     [delegate_ userTappedTextFragmentInWebState:web_state_];
   } else {
     RemoveHighlights();
+  }
+}
+
+void TextFragmentsManagerImpl::OnClickWithSender(
+    CGRect rect,
+    NSString* text,
+    std::vector<shared_highlighting::TextFragment> fragments) {
+  if (delegate_) {
+    [delegate_ userTappedTextFragmentInWebState:web_state_
+                                     withSender:rect
+                                       withText:text
+                                  withFragments:std::move(fragments)];
   }
 }
 
@@ -150,7 +162,7 @@ TextFragmentsManagerImpl::ProcessTextFragments(
 
   // Log metrics and cache Referrer for UKM logging.
   shared_highlighting::LogTextFragmentSelectorCount(
-      parsed_fragments.GetList().size());
+      parsed_fragments.GetListDeprecated().size());
   shared_highlighting::LogTextFragmentLinkOpenSource(referrer.url);
   latest_source_id_ = ukm::ConvertToSourceId(context->GetNavigationId(),
                                              ukm::SourceIdType::NAVIGATION_ID);
@@ -180,7 +192,7 @@ void TextFragmentsManagerImpl::DoHighlight() {
 }
 
 // Returns false if fragments highlighting is not allowed in the current
-// |context|.
+// `context`.
 bool TextFragmentsManagerImpl::AreTextFragmentsAllowed(
     const web::NavigationContext* context) {
   if (!web_state_ || web_state_->HasOpener()) {

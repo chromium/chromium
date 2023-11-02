@@ -14,8 +14,8 @@
   var node = new DataGrid.DataGridNode({key: "k".repeat(1500), value: "v".repeat(1500)});
   rootNode.appendChild(node);
 
-  var keyElement = dataGrid.element.querySelector(".data .key-column");
-  var valueElement = dataGrid.element.querySelector(".data .value-column");
+  var keyElement = dataGrid.element.querySelector("tbody .key-column");
+  var valueElement = dataGrid.element.querySelector("tbody .value-column");
 
   TestRunner.addResult("Original lengths");
   dumpKeyLength();

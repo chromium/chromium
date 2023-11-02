@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,7 @@
 
 #include <stdint.h>
 
-#include <memory>
-
+#include "base/memory/shared_memory_mapping.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread.h"
 #include "components/chromeos_camera/mjpeg_decode_accelerator.h"
@@ -47,10 +46,9 @@ class FakeMjpegDecodeAccelerator : public MjpegDecodeAccelerator {
   bool IsSupported() override;
 
  private:
-  void DecodeOnDecoderThread(
-      int32_t task_id,
-      scoped_refptr<media::VideoFrame> video_frame,
-      std::unique_ptr<media::UnalignedSharedMemory> src_shm);
+  void DecodeOnDecoderThread(int32_t task_id,
+                             scoped_refptr<media::VideoFrame> video_frame,
+                             base::WritableSharedMemoryMapping src_shm_mapping);
   void NotifyError(int32_t task_id, Error error);
   void NotifyErrorOnClientThread(int32_t task_id, Error error);
   void OnDecodeDoneOnClientThread(int32_t task_id);

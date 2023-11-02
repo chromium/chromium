@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,10 +24,10 @@ void CopyCopyOutputResultToLayer(
 
   const gpu::MailboxHolder& plane = copy_result->GetTextureResult()->planes[0];
   viz::TransferableResource transferable_resource =
-      viz::TransferableResource::MakeGL(plane.mailbox, GL_LINEAR,
-                                        plane.texture_target, plane.sync_token,
-                                        copy_result->size(),
-                                        /*is_overlay_candidate=*/false);
+      viz::TransferableResource::MakeGpu(plane.mailbox, GL_LINEAR,
+                                         plane.texture_target, plane.sync_token,
+                                         copy_result->size(), viz::RGBA_8888,
+                                         /*is_overlay_candidate=*/false);
   viz::CopyOutputResult::ReleaseCallbacks release_callbacks =
       copy_result->TakeTextureOwnership();
 

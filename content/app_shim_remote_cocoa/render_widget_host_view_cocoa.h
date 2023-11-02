@@ -1,9 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_APP_SHIM_REMOTE_COCOA_RENDER_WIDGET_HOST_VIEW_COCOA_H_
 #define CONTENT_APP_SHIM_REMOTE_COCOA_RENDER_WIDGET_HOST_VIEW_COCOA_H_
+
+#include "base/memory/raw_ptr.h"
 
 #import <Cocoa/Cocoa.h>
 
@@ -62,24 +64,26 @@ struct DidOverscrollParams;
                        NSTextInputClient,
                        NSAccessibility> {
  @private
+  // Dummy host and host helper that are always valid (see comments below about
+  // host_).
+  // These need to be declared before |host_| and |host_helper_| so that it
+  // gets destroyed last.
+  mojo::Remote<remote_cocoa::mojom::RenderWidgetHostNSViewHost> _dummyHost;
+  std::unique_ptr<remote_cocoa::RenderWidgetHostNSViewHostHelper>
+      _dummyHostHelper;
+
   // The communications channel to the RenderWidgetHostViewMac. This pointer is
   // always valid. When the original host disconnects, |host_| is changed to
   // point to |dummyHost_|, to avoid having to preface every dereference with
   // a nullptr check.
-  remote_cocoa::mojom::RenderWidgetHostNSViewHost* _host;
+  raw_ptr<remote_cocoa::mojom::RenderWidgetHostNSViewHost> _host;
 
   // A separate host interface for the parts of the interface to
   // RenderWidgetHostViewMac that cannot or should not be forwarded over mojo.
   // This includes events (where the extra translation is unnecessary or loses
   // information) and access to accessibility structures (only present in the
   // browser process).
-  remote_cocoa::RenderWidgetHostNSViewHostHelper* _hostHelper;
-
-  // Dummy host and host helper that are always valid (see above comments
-  // about host_).
-  mojo::Remote<remote_cocoa::mojom::RenderWidgetHostNSViewHost> _dummyHost;
-  std::unique_ptr<remote_cocoa::RenderWidgetHostNSViewHostHelper>
-      _dummyHostHelper;
+  raw_ptr<remote_cocoa::RenderWidgetHostNSViewHostHelper> _hostHelper;
 
   // This ivar is the cocoa delegate of the NSResponder.
   base::scoped_nsobject<NSObject<RenderWidgetHostViewMacDelegate>>
@@ -121,6 +125,11 @@ struct DidOverscrollParams;
 
   // Indicates if we are currently handling a key down event.
   BOOL _handlingKeyDown;
+
+  // Indicates if a reconversion (which means a piece of committed text becomes
+  // part of the composition again) is triggered in Japanese IME when Live
+  // Conversion is on.
+  BOOL _isReconversionTriggered;
 
   // Indicates if there is any marked text.
   BOOL _hasMarkedText;
@@ -185,7 +194,7 @@ struct DidOverscrollParams;
 
   // The set of key codes from key down events that we haven't seen the matching
   // key up events yet.
-  // Used for filtering out non-matching NSKeyUp events.
+  // Used for filtering out non-matching NSEventTypeKeyUp events.
   std::set<unsigned short> _keyDownCodes;
 
   // The filter used to guide touch events towards a horizontal or vertical
@@ -202,6 +211,8 @@ struct DidOverscrollParams;
 
   // The parent accessibility element. This is set only in the browser process.
   base::scoped_nsobject<id> _accessibilityParent;
+
+  uint64_t popup_parent_ns_view_id_;
 }
 
 @property(nonatomic, assign) NSRange markedRange;
@@ -268,6 +279,10 @@ struct DidOverscrollParams;
 // TODO(lgrey/ellyjones): Remove this in favor of setAccessibilityParent:
 // when we switch to the new accessibility API.
 - (void)setAccessibilityParentElement:(id)accessibilityParent;
+
+// Stores a reference to the popup parent's NSView id, which we can use to
+// retrieve the associated NSView.
+- (void)setPopupParentNSViewId:(uint64_t)view_id;
 
 // Methods previously marked as private.
 - (instancetype)

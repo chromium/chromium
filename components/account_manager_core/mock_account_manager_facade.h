@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,6 +25,12 @@ class MockAccountManagerFacadeObserver
               OnAccountRemoved,
               (const account_manager::Account&),
               (override));
+  MOCK_METHOD(void,
+              OnAuthErrorChanged,
+              (const account_manager::AccountKey&,
+               const GoogleServiceAuthError&),
+              (override));
+  MOCK_METHOD(void, OnSigninDialogClosed, (), (override));
 };
 
 class MockAccountManagerFacade : public account_manager::AccountManagerFacade {
@@ -51,14 +57,16 @@ class MockAccountManagerFacade : public account_manager::AccountManagerFacade {
               (override));
   MOCK_METHOD(void,
               ShowReauthAccountDialog,
-              (AccountAdditionSource, const std::string&),
+              (AccountAdditionSource, const std::string&, base::OnceClosure),
               (override));
   MOCK_METHOD(void, ShowManageAccountsSettings, (), (override));
+  MOCK_METHOD(void,
+              ReportAuthError,
+              (const AccountKey&, const GoogleServiceAuthError&),
+              (override));
   MOCK_METHOD(std::unique_ptr<OAuth2AccessTokenFetcher>,
               CreateAccessTokenFetcher,
-              (const AccountKey&,
-               const std::string&,
-               OAuth2AccessTokenConsumer*),
+              (const AccountKey&, OAuth2AccessTokenConsumer*),
               (override));
   MOCK_METHOD(void,
               UpsertAccountForTesting,

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -522,7 +522,7 @@ void PresentationConnection::HandleMessageQueue() {
   if (!target_connection_.is_bound())
     return;
 
-  while (!messages_.IsEmpty() && !blob_loader_) {
+  while (!messages_.empty() && !blob_loader_) {
     Message* message = messages_.front().Get();
     switch (message->type) {
       case kMessageTypeText:
@@ -575,7 +575,7 @@ void PresentationConnection::DidReceiveTextMessage(const WebString& message) {
   if (state_ != mojom::blink::PresentationConnectionState::CONNECTED)
     return;
 
-  DispatchEvent(*MessageEvent::Create(message));
+  DispatchEvent(*MessageEvent::Create(message), "PresentationConnection::DidReceiveTextMessage");
 }
 
 void PresentationConnection::DidReceiveBinaryMessage(const uint8_t* data,
@@ -589,12 +589,12 @@ void PresentationConnection::DidReceiveBinaryMessage(const uint8_t* data,
       blob_data->AppendBytes(data, length);
       auto* blob = MakeGarbageCollected<Blob>(
           BlobDataHandle::Create(std::move(blob_data), length));
-      DispatchEvent(*MessageEvent::Create(blob));
+      DispatchEvent(*MessageEvent::Create(blob), "PresentationConnection::DidReceiveBinaryMessage #1");
       return;
     }
     case kBinaryTypeArrayBuffer:
       DOMArrayBuffer* buffer = DOMArrayBuffer::Create(data, length);
-      DispatchEvent(*MessageEvent::Create(buffer));
+      DispatchEvent(*MessageEvent::Create(buffer), "PresentationConnection::DidReceiveBinaryMessage #2");
       return;
   }
   NOTREACHED();
@@ -637,7 +637,7 @@ void PresentationConnection::DidClose(
 }
 
 void PresentationConnection::DidFinishLoadingBlob(DOMArrayBuffer* buffer) {
-  DCHECK(!messages_.IsEmpty());
+  DCHECK(!messages_.empty());
   DCHECK_EQ(messages_.front()->type, kMessageTypeBlob);
   DCHECK(buffer);
   if (!base::CheckedNumeric<wtf_size_t>(buffer->ByteLength()).IsValid()) {
@@ -658,7 +658,7 @@ void PresentationConnection::DidFinishLoadingBlob(DOMArrayBuffer* buffer) {
 }
 
 void PresentationConnection::DidFailLoadingBlob(FileErrorCode error_code) {
-  DCHECK(!messages_.IsEmpty());
+  DCHECK(!messages_.empty());
   DCHECK_EQ(messages_.front()->type, kMessageTypeBlob);
   // TODO(crbug.com/1036565): generate error message?
   // Ignore the current failed blob item and continue with next items.

@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,7 +21,7 @@ TEST(PrefValueMapTest, SetValue) {
   EXPECT_TRUE(map.SetValue("key", Value("hi mom!")));
 
   EXPECT_TRUE(map.GetValue("key", &result));
-  EXPECT_TRUE(Value("hi mom!").Equals(result));
+  EXPECT_EQ("hi mom!", *result);
 }
 
 TEST(PrefValueMapTest, GetAndSetIntegerValue) {

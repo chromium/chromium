@@ -105,8 +105,12 @@ An AnimationSequenceBlock is a single unit of a larger animation sequence, which
 
 Calls on AnimationBuilder affect the whole animations and calls on AnimationSequenceBlock affect only that particular block.
 
-When setting callbacks for the animations note that the AnimationBuilder’s observer that calls these callbacks may outlive the callback's parameters. Developers may need to use weak pointers or force animations to be cancelled in the object’s destructor to prevent accessing destroyed objects.
+#### Setting callbacks
+When setting callbacks for the animations note that the AnimationBuilder’s observer that calls these callbacks may outlive the callback's parameters.
 
+The OnEnded callback runs when all animations created on the AnimationBuilder have finished. The OnAborted callback runs when any one animation created on the AnimationBuilder has been aborted. Therefore, these callbacks and every object the callback accesses needs to outlive all the Layers/LayerOwners being animated on since the Layers ultimately own the objects that run the animation. Otherwise developers may need to use weak pointers or force animations to be cancelled in the object’s destructor to prevent accessing destroyed objects. Note that aborted notifications can be sent during the destruction process. Therefore subclasses that own the Layers may actually be destroyed before the OnAborted callback is run.
+
+#### API
 ``` cpp
 class VIEWS_EXPORT AnimationBuilder {
  public:

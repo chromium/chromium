@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,6 +33,7 @@ import org.chromium.chrome.test.util.InfoBarTestAnimationListener;
 import org.chromium.chrome.test.util.InfoBarUtil;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.chrome.test.util.TranslateUtil;
+import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.infobars.InfoBar;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -83,7 +84,7 @@ public class TranslateCompactInfoBarTest {
      * the changes to make the translate service mockable and remove the internet requirement.
      */
     private boolean shouldSkipDueToNetworkService() {
-        return !ChromeFeatureList.isEnabled("NetworkServiceInProcess");
+        return !ChromeFeatureList.isEnabled("NetworkServiceInProcess2");
     }
 
     /**
@@ -93,6 +94,8 @@ public class TranslateCompactInfoBarTest {
     @MediumTest
     @Feature({"Browser", "Main"})
     @Restriction({Restriction.RESTRICTION_TYPE_INTERNET})
+    @Features.
+    DisableFeatures({ChromeFeatureList.TRANSLATE_MESSAGE_UI, ChromeFeatureList.TRANSLATE_TFLITE})
     public void testTranslateCompactInfoBarAppears() throws TimeoutException {
         if (shouldSkipDueToNetworkService()) return;
         sActivityTestRule.loadUrl(sActivityTestRule.getTestServer().getURL(TRANSLATE_PAGE));
@@ -109,6 +112,8 @@ public class TranslateCompactInfoBarTest {
     @MediumTest
     @Feature({"Browser", "Main"})
     @Restriction({Restriction.RESTRICTION_TYPE_INTERNET})
+    @Features.
+    DisableFeatures({ChromeFeatureList.TRANSLATE_MESSAGE_UI, ChromeFeatureList.TRANSLATE_TFLITE})
     public void testTranslateCompactInfoBarOverflowMenus() throws TimeoutException {
         if (shouldSkipDueToNetworkService()) return;
         sActivityTestRule.loadUrl(sActivityTestRule.getTestServer().getURL(TRANSLATE_PAGE));
@@ -132,6 +137,8 @@ public class TranslateCompactInfoBarTest {
     @MediumTest
     @Feature({"Browser", "Main"})
     @Restriction({Restriction.RESTRICTION_TYPE_INTERNET})
+    @Features.
+    DisableFeatures({ChromeFeatureList.TRANSLATE_MESSAGE_UI, ChromeFeatureList.TRANSLATE_TFLITE})
     public void testTabMenuDismissedOnOrientationChange() throws Exception {
         if (shouldSkipDueToNetworkService()) return;
         sActivityTestRule.loadUrl(sActivityTestRule.getTestServer().getURL(TRANSLATE_PAGE));
@@ -162,6 +169,8 @@ public class TranslateCompactInfoBarTest {
     @MediumTest
     @Feature({"Browser", "Main"})
     @Restriction({Restriction.RESTRICTION_TYPE_INTERNET})
+    @Features.
+    DisableFeatures({ChromeFeatureList.TRANSLATE_MESSAGE_UI, ChromeFeatureList.TRANSLATE_TFLITE})
     public void testTranslateCompactInfoBarReopenOnTarget() throws TimeoutException {
         if (shouldSkipDueToNetworkService()) return;
         sActivityTestRule.loadUrl(sActivityTestRule.getTestServer().getURL(TRANSLATE_PAGE));
@@ -189,6 +198,7 @@ public class TranslateCompactInfoBarTest {
     @MediumTest
     @Feature({"Browser", "Main"})
     @Restriction({Restriction.RESTRICTION_TYPE_INTERNET})
+    @Features.DisableFeatures({ChromeFeatureList.TRANSLATE_MESSAGE_UI})
     public void testStartTranslateOnManualInitiation() throws TimeoutException {
         if (shouldSkipDueToNetworkService()) return;
         // Load a page that won't trigger the translate recommendation.
@@ -210,6 +220,8 @@ public class TranslateCompactInfoBarTest {
     @MediumTest
     @Feature({"Browser", "Main"})
     @Restriction({Restriction.RESTRICTION_TYPE_INTERNET})
+    @Features.
+    DisableFeatures({ChromeFeatureList.TRANSLATE_MESSAGE_UI, ChromeFeatureList.TRANSLATE_TFLITE})
     public void testManualInitiationWithBarOpen() throws TimeoutException {
         if (shouldSkipDueToNetworkService()) return;
         sActivityTestRule.loadUrl(sActivityTestRule.getTestServer().getURL(TRANSLATE_PAGE));

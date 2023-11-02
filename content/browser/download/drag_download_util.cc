@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -63,7 +63,7 @@ base::File CreateFileForDrop(base::FilePath* file_path) {
     if (seq == 0) {
       new_file_path = *file_path;
     } else {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       std::wstring suffix = L"-" + base::NumberToWString(seq);
 #else
       std::string suffix = "-" + base::NumberToString(seq);

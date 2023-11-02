@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/events/devices/touchscreen_device.h"
 #include "ui/events/event_handler.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
 namespace ui {

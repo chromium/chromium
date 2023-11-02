@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -164,13 +165,9 @@ class CONTENT_EXPORT TextInputManager {
   gfx::Range GetAutocorrectRange() const;
 
   // Returns the grammar fragment which contains |range|. If non-existent,
-  // returns an empty Fragment.
+  // returns nullopt.
   absl::optional<ui::GrammarFragment> GetGrammarFragment(
       gfx::Range range) const;
-
-  // Returns if the given |range| is overlapping with any existing spellcheck
-  // markers.
-  bool OverlapsWithSpellCheckMarker(const gfx::Range range) const;
 
   // Returns the selection bounds information for |view|. If |view| == nullptr,
   // it will return the corresponding information for |active_view_| or nullptr
@@ -278,7 +275,7 @@ class CONTENT_EXPORT TextInputManager {
   // The view with active text input state, i.e., a focused <input> element.
   // It will be nullptr if no such view exists. Note that the active view
   // cannot have a |TextInputState.type| of ui::TEXT_INPUT_TYPE_NONE.
-  RenderWidgetHostViewBase* active_view_;
+  raw_ptr<RenderWidgetHostViewBase> active_view_;
 
   // The following maps track corresponding IME state for views. For each view,
   // the values in the map are initialized and cleared in Register and

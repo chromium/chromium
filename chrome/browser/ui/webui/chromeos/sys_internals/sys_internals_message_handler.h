@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/memory/weak_ptr.h"
-#include "base/task/post_task.h"
 #include "base/values.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
@@ -29,7 +28,7 @@ class SysInternalsMessageHandler : public content::WebUIMessageHandler {
  private:
   // Handle the Javascript message |getSysInfo|. The message is sent to get
   // system information.
-  void HandleGetSysInfo(const base::ListValue* args);
+  void HandleGetSysInfo(const base::Value::List& args);
 
   // The callback function to handle the returning data.
   //
@@ -61,7 +60,7 @@ class SysInternalsMessageHandler : public content::WebUIMessageHandler {
   //   total (counter)
   // }
   //
-  void ReplySysInfo(base::Value callback_id, base::Value result);
+  void ReplySysInfo(base::Value callback_id, base::Value::Dict result);
 
   base::WeakPtrFactory<SysInternalsMessageHandler> weak_ptr_factory_{this};
 };

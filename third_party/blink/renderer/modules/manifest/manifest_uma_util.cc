@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,11 +38,11 @@ void ManifestUmaUtil::ParseSucceeded(
   if (manifest == empty_manifest)
     return;
 
-  UMA_HISTOGRAM_BOOLEAN("Manifest.HasProperty.name", !manifest->name.IsEmpty());
+  UMA_HISTOGRAM_BOOLEAN("Manifest.HasProperty.name", !manifest->name.empty());
   UMA_HISTOGRAM_BOOLEAN("Manifest.HasProperty.short_name",
-                        !manifest->short_name.IsEmpty());
+                        !manifest->short_name.empty());
   UMA_HISTOGRAM_BOOLEAN("Manifest.HasProperty.description",
-                        !manifest->description.IsEmpty());
+                        !manifest->description.empty());
   UMA_HISTOGRAM_BOOLEAN("Manifest.HasProperty.start_url",
                         !manifest->start_url.IsEmpty());
   UMA_HISTOGRAM_BOOLEAN(
@@ -52,16 +52,15 @@ void ManifestUmaUtil::ParseSucceeded(
       "Manifest.HasProperty.orientation",
       manifest->orientation !=
           device::mojom::blink::ScreenOrientationLockType::DEFAULT);
-  UMA_HISTOGRAM_BOOLEAN("Manifest.HasProperty.icons",
-                        !manifest->icons.IsEmpty());
+  UMA_HISTOGRAM_BOOLEAN("Manifest.HasProperty.icons", !manifest->icons.empty());
   UMA_HISTOGRAM_BOOLEAN("Manifest.HasProperty.screenshots",
-                        !manifest->screenshots.IsEmpty());
+                        !manifest->screenshots.empty());
   UMA_HISTOGRAM_BOOLEAN("Manifest.HasProperty.share_target",
                         manifest->share_target.get());
   UMA_HISTOGRAM_BOOLEAN("Manifest.HasProperty.protocol_handlers",
-                        !manifest->protocol_handlers.IsEmpty());
+                        !manifest->protocol_handlers.empty());
   UMA_HISTOGRAM_BOOLEAN("Manifest.HasProperty.gcm_sender_id",
-                        !manifest->gcm_sender_id.IsEmpty());
+                        !manifest->gcm_sender_id.empty());
 }
 
 void ManifestUmaUtil::ParseFailed() {

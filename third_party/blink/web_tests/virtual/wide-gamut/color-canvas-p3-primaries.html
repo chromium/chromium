@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<canvas id='canvas_P3' width=300 height=50></canvas>
+<script>
+// Currently the only way to draw p3 content on canvas is with putImageData.
+// We use this helper function to create a patch of color to be put.
+function generateImageData(buffer, data, red, green, blue, width, height)
+{
+  for(var pos = 0; pos < width*height*4; pos = pos + 4)
+  {
+    buffer[pos    ] = red;
+    buffer[pos + 1] = green;
+    buffer[pos + 2] = blue;
+    buffer[pos + 3] = 255;
+  }
+  data.data.set(buffer);
+}
+
+var canvas_P3 = document.getElementById('canvas_P3');
+var ctx = canvas_P3.getContext('2d', {colorSpace: "display-p3"});
+var width = 50;
+var height = 50;
+var buffer = new Uint8ClampedArray(width * height * 4);
+var data = ctx.createImageData(width, height);
+// Every pair of colors should look slighty different if display-p3 is supported.
+generateImageData(buffer, data, 255, 0, 0, width, height);
+ctx.putImageData(data, 0, 0);
+generateImageData(buffer, data, 240, 0, 0, width, height);
+ctx.putImageData(data, 50, 0);
+
+generateImageData(buffer, data, 0, 255, 0, width, height);
+ctx.putImageData(data, 100, 0);
+generateImageData(buffer, data, 0, 240, 0, width, height);
+ctx.putImageData(data, 150, 0);
+
+generateImageData(buffer, data, 0, 0, 255, width, height);
+ctx.putImageData(data, 200, 0);
+generateImageData(buffer, data, 0, 0, 240, width, height);
+ctx.putImageData(data, 250, 0);
+</script>
+</html>

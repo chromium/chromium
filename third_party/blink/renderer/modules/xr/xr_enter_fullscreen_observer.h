@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,8 +30,12 @@ class XrEnterFullscreenObserver : public NativeEventListener {
 
   // Attempt to enter fullscreen with |element| as the root. |on_completed| will
   // be notified with whether or not fullscreen was successfully entered.
+  // Set |may_have_camera_access| if entering fullscreen for a session that may
+  // have camera access available to it - this would ensure that there is space
+  // reserved for status bar.
   void RequestFullscreen(Element* element,
                          bool setup_for_dom_overlay,
+                         bool may_have_camera_access,
                          base::OnceCallback<void(bool)> on_completed);
 
   void Trace(Visitor*) const override;

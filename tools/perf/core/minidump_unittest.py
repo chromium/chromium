@@ -1,4 +1,4 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -29,6 +29,7 @@ GPU_CRASH_SIGNATURES = [
 FORCED_RENDERER_CRASH_SIGNATURES = [
     'base::debug::BreakDebugger',
     'blink::DevToolsSession::IOSession::DispatchProtocolCommand',
+    'blink::HandleChromeDebugURL',
     'chrome!DispatchProtocolCommand',
     'logging::LogMessage::~LogMessage',
 ]
@@ -63,7 +64,7 @@ class BrowserMinidumpTest(tab_test_case.TabTestCase):
   # still read-only, so skip the test in that case.
   @decorators.Disabled(
       'chromeos-local',
-      'win7'  # https://crbug.com/1084931
+      'win7',  # https://crbug.com/1084931
   )
   def testSymbolizeMinidump(self):
     # Wait for the browser to restart fully before crashing
@@ -108,7 +109,7 @@ class BrowserMinidumpTest(tab_test_case.TabTestCase):
   # still read-only, so skip the test in that case.
   @decorators.Disabled(
       'chromeos-local',
-      'win7'  # https://crbug.com/1084931
+      'win7',  # https://crbug.com/1084931
   )
   def testMultipleCrashMinidumps(self):
     # Wait for the browser to restart fully before crashing
@@ -129,7 +130,7 @@ class BrowserMinidumpTest(tab_test_case.TabTestCase):
     # information if this is hit on the bots.
     if len(all_paths) != 1:
       self._browser.CollectDebugData(logging.ERROR)
-    self.assertEquals(len(all_paths), 1)
+    self.assertEqual(len(all_paths), 1)
     self.assertEqual(all_paths[0], first_crash_path)
     all_unsymbolized_paths = self._browser.GetAllUnsymbolizedMinidumpPaths()
     self.assertTrue(len(all_unsymbolized_paths) == 1)
@@ -165,7 +166,7 @@ class BrowserMinidumpTest(tab_test_case.TabTestCase):
     if second_crash_all_unsymbolized_paths is not None:
       logging.info('testMultipleCrashMinidumps: second crash all unsymbolized '
           'paths: ' + ''.join(second_crash_all_unsymbolized_paths))
-    self.assertEquals(len(second_crash_all_paths), 2)
+    self.assertEqual(len(second_crash_all_paths), 2)
     # Check that both paths are now present and unsymbolized
     self.assertTrue(first_crash_path in second_crash_all_paths)
     self.assertTrue(second_crash_path in second_crash_all_paths)
@@ -182,15 +183,14 @@ class BrowserMinidumpTest(tab_test_case.TabTestCase):
     if after_symbolize_all_paths is not None:
       logging.info('testMultipleCrashMinidumps: after symbolize all paths: '
           + ''.join(after_symbolize_all_paths))
-    self.assertEquals(len(after_symbolize_all_paths), 2)
+    self.assertEqual(len(after_symbolize_all_paths), 2)
     after_symbolize_all_unsymbolized_paths = \
         self._browser.GetAllUnsymbolizedMinidumpPaths()
     if after_symbolize_all_unsymbolized_paths is not None:
       logging.info('testMultipleCrashMinidumps: after symbolize all '
           + 'unsymbolized paths: '
           + ''.join(after_symbolize_all_unsymbolized_paths))
-    self.assertEquals(after_symbolize_all_unsymbolized_paths,
-        [first_crash_path])
+    self.assertEqual(after_symbolize_all_unsymbolized_paths, [first_crash_path])
 
     # Explicitly ignore the remaining minidump so that it isn't detected during
     # teardown by the test runner.
@@ -200,9 +200,8 @@ class BrowserMinidumpTest(tab_test_case.TabTestCase):
   # Minidump symbolization doesn't work in ChromeOS local mode if the rootfs is
   # still read-only, so skip the test in that case.
   @decorators.Disabled(
-      'chromeos',  # https://crbug.com/1247948
       'chromeos-local',
-      'win7'  # https://crbug.com/1084931
+      'win7',  # https://crbug.com/1084931
   )
   def testMinidumpFromRendererHang(self):
     """Tests that renderer hangs result in minidumps.
@@ -224,6 +223,33 @@ class BrowserMinidumpTest(tab_test_case.TabTestCase):
       # The timeout provided is the same one used for crashing the processes, so
       # don't make it too short.
       self._browser.tabs[-1].EvaluateJavaScript('var cat = "dog";', timeout=10)
+    except exceptions.TimeoutException:
+      # If we time out while crashing the renderer process, the minidump should
+      # still exist, we just have to manually look for it instead of it being
+      # part of the exception.
+      all_paths = self._browser.GetAllMinidumpPaths()
+      # We can't assert that we have exactly two minidumps because we can also
+      # get one from the renderer process being notified of the GPU process
+      # crash.
+      num_paths = len(all_paths)
+      self.assertTrue(num_paths in (2, 3),
+                      'Got %d minidumps, expected 2 or 3' % num_paths)
+      found_renderer = False
+      found_gpu = False
+      for p in all_paths:
+        succeeded, stack = self._browser.SymbolizeMinidump(p)
+        self.assertTrue(succeeded)
+        try:
+          self.assertContainsAtLeastOne(FORCED_RENDERER_CRASH_SIGNATURES, stack)
+          # We don't assert that we haven't found a renderer crash yet since
+          # we can potentially get multiple under normal circumstances.
+          found_renderer = True
+        except AssertionError:
+          self.assertContainsAtLeastOne(GPU_CRASH_SIGNATURES, stack)
+          self.assertFalse(found_gpu, 'Found two GPU crashes')
+          found_gpu = True
+      self.assertTrue(found_renderer and found_gpu)
+      found_minidumps = True
     except exceptions.AppCrashException as e:
       self.assertTrue(e.is_valid_dump)
       # We should get one minidump from the GPU process (gl::Crash()) and one

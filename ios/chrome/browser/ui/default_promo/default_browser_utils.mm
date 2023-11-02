@@ -1,16 +1,15 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 
-#include "base/feature_list.h"
-#include "base/ios/ios_util.h"
-#include "base/mac/foundation_util.h"
-#include "base/metrics/field_trial.h"
-#include "base/metrics/field_trial_params.h"
-#include "ios/chrome/browser/ui/first_run/fre_field_trial.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "base/feature_list.h"
+#import "base/ios/ios_util.h"
+#import "base/mac/foundation_util.h"
+#import "base/metrics/field_trial_params.h"
+#import "base/notreached.h"
+#import "ios/chrome/browser/ui/ui_feature_flags.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -149,7 +148,7 @@ NSDate* MostRecentDateForType(DefaultPromoType type) {
 
 #pragma mark - Private
 
-// |YES| if user interacted with the first run default browser screen.
+// `YES` if user interacted with the first run default browser screen.
 BOOL HasUserInteractedWithFirstRunPromoBefore() {
   return [[NSUserDefaults standardUserDefaults]
       boolForKey:kUserHasInteractedWithFirstRunPromo];
@@ -172,14 +171,11 @@ void AddOneToDisplayedPromoCount() {
 
 // Computes cool down between promos.
 NSTimeInterval ComputeCooldown() {
-  // |true| if the user is in the short delay group experiment and tap on the
+  // `true` if the user is in the short delay group experiment and tap on the
   // "No thanks" button in first run default browser screen. Short cool down
   // should be set only one time, so after the first run promo there is a short
   // cool down before the next promo and after it goes back to normal.
-  if (DisplayedPromoCount() < 2 &&
-      fre_field_trial::
-          IsInFirstRunDefaultBrowserAndSmallDelayBeforeOtherPromosGroup() &&
-      HasUserInteractedWithFirstRunPromoBefore() &&
+  if (DisplayedPromoCount() < 2 && HasUserInteractedWithFirstRunPromoBefore() &&
       !HasUserOpenedSettingsFromFirstRunPromo()) {
     return kPromosShortCoolDown;
   }

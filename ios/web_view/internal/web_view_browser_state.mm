@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
 #include "base/path_service.h"
-#include "base/task/post_task.h"
 #include "base/threading/thread_restrictions.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/history/core/common/pref_names.h"
@@ -39,9 +38,11 @@
 #include "ios/web_view/internal/app/application_context.h"
 #import "ios/web_view/internal/autofill/web_view_autofill_log_router_factory.h"
 #include "ios/web_view/internal/autofill/web_view_personal_data_manager_factory.h"
+#include "ios/web_view/internal/language/web_view_accept_languages_service_factory.h"
 #include "ios/web_view/internal/language/web_view_language_model_manager_factory.h"
 #include "ios/web_view/internal/language/web_view_url_language_histogram_factory.h"
 #include "ios/web_view/internal/passwords/web_view_account_password_store_factory.h"
+#import "ios/web_view/internal/passwords/web_view_bulk_leak_check_service_factory.h"
 #import "ios/web_view/internal/passwords/web_view_password_manager_log_router_factory.h"
 #import "ios/web_view/internal/passwords/web_view_password_requirements_service_factory.h"
 #include "ios/web_view/internal/passwords/web_view_password_store_factory.h"
@@ -51,7 +52,6 @@
 #import "ios/web_view/internal/sync/web_view_model_type_store_service_factory.h"
 #import "ios/web_view/internal/sync/web_view_profile_invalidation_provider_factory.h"
 #import "ios/web_view/internal/sync/web_view_sync_service_factory.h"
-#include "ios/web_view/internal/translate/web_view_translate_accept_languages_factory.h"
 #include "ios/web_view/internal/translate/web_view_translate_ranker_factory.h"
 #include "ios/web_view/internal/web_view_download_manager.h"
 #include "ios/web_view/internal/web_view_url_request_context_getter.h"
@@ -98,7 +98,7 @@ WebViewBrowserState::WebViewBrowserState(
 
     request_context_getter_ = new WebViewURLRequestContextGetter(
         GetStatePath(), this, ApplicationContext::GetInstance()->GetNetLog(),
-        base::CreateSingleThreadTaskRunner({web::WebThread::IO}));
+        web::GetIOThreadTaskRunner({}));
 
     // Initialize prefs.
     scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry =
@@ -125,8 +125,8 @@ WebViewBrowserState::~WebViewBrowserState() {
   BrowserStateDependencyManager::GetInstance()->DestroyBrowserStateServices(
       this);
 
-  base::PostTask(FROM_HERE, {web::WebThread::IO},
-                 base::BindOnce(&WebViewURLRequestContextGetter::ShutDown,
+  web::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&WebViewURLRequestContextGetter::ShutDown,
                                 request_context_getter_));
 }
 
@@ -189,7 +189,7 @@ void WebViewBrowserState::RegisterPrefs(
   WebViewLanguageModelManagerFactory::GetInstance();
   WebViewTranslateRankerFactory::GetInstance();
   WebViewUrlLanguageHistogramFactory::GetInstance();
-  WebViewTranslateAcceptLanguagesFactory::GetInstance();
+  WebViewAcceptLanguagesServiceFactory::GetInstance();
   WebViewWebUIIOSControllerFactory::GetInstance();
   autofill::WebViewAutofillLogRouterFactory::GetInstance();
   WebViewPersonalDataManagerFactory::GetInstance();
@@ -204,6 +204,7 @@ void WebViewBrowserState::RegisterPrefs(
   WebViewProfileInvalidationProviderFactory::GetInstance();
   WebViewSyncServiceFactory::GetInstance();
   WebViewModelTypeStoreServiceFactory::GetInstance();
+  WebViewBulkLeakCheckServiceFactory::GetInstance();
 
   BrowserStateDependencyManager::GetInstance()
       ->RegisterBrowserStatePrefsForServices(pref_registry);

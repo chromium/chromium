@@ -1,12 +1,13 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/services/quarantine/quarantine_impl.h"
 
 #include "base/bind.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/thread_task_runner_handle.h"
+#include "build/build_config.h"
 #include "components/services/quarantine/quarantine.h"
 
 namespace quarantine {
@@ -35,16 +36,16 @@ void QuarantineImpl::QuarantineFile(
     const GURL& referrer_url,
     const std::string& client_guid,
     mojom::Quarantine::QuarantineFileCallback callback) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // On Mac posting to a new task runner to do the potentially blocking
   // quarantine work.
   scoped_refptr<base::TaskRunner> task_runner =
       base::ThreadPool::CreateTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
-#else   // OS_MAC
+#else   // BUILDFLAG(IS_MAC)
   scoped_refptr<base::TaskRunner> task_runner =
       base::ThreadTaskRunnerHandle::Get();
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
   task_runner->PostTask(
       FROM_HERE,
       base::BindOnce(

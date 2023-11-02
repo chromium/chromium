@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,8 +21,10 @@ static const network::mojom::CSPSource no_self;
 bool Allow(const network::mojom::CSPSource& source,
            const GURL& url,
            const network::mojom::CSPSource& self_source = no_self,
-           bool is_redirect = false) {
-  return CheckCSPSource(source, url, self_source, is_redirect);
+           bool is_redirect = false,
+           bool is_opaque_fenced_frame = false) {
+  return CheckCSPSource(source, url, self_source, is_redirect,
+                        is_opaque_fenced_frame);
 }
 
 network::mojom::CSPSourcePtr CSPSource(const std::string& raw) {
@@ -661,6 +663,50 @@ TEST(CSPSourceTest, CustomScheme) {
   auto csp_source = CSPSource("custom-scheme:");  // Scheme only CSP.
   EXPECT_TRUE(Allow(*csp_source, GURL("custom-scheme://a/b")));
   EXPECT_FALSE(Allow(*csp_source, GURL("other-scheme://a/b")));
+}
+
+TEST(CSPSourceTest, OpaqueURLMatchingAllowSchemeHttps) {
+  auto source = CSPSource("https:");
+  EXPECT_TRUE(Allow(*source, GURL("https://a.com"), no_self,
+                    /*is_redirect=*/false, /*is_opaque_fenced_frame=*/true));
+}
+
+TEST(CSPSourceTest, OpaqueURLMatchingAllowSchemeNonHttps) {
+  auto source = CSPSource("http:");
+  EXPECT_FALSE(Allow(*source, GURL("https://a.com"), no_self,
+                     /*is_redirect=*/false, /*is_opaque_fenced_frame=*/true));
+}
+
+TEST(CSPSourceTest, OpaqueURLMatchingAllowHostAndPort) {
+  {
+    auto source = CSPSource("https://*:*");
+    EXPECT_TRUE(Allow(*source, GURL("https://a.com"), no_self,
+                      /*is_redirect=*/false, /*is_opaque_fenced_frame=*/true));
+  }
+
+  {
+    auto source = CSPSource("https://*");
+    EXPECT_FALSE(Allow(*source, GURL("https://a.com"), no_self,
+                       /*is_redirect=*/false, /*is_opaque_fenced_frame=*/true));
+  }
+
+  {
+    auto source = CSPSource("https://*:443");
+    EXPECT_FALSE(Allow(*source, GURL("https://a.com"), no_self,
+                       /*is_redirect=*/false, /*is_opaque_fenced_frame=*/true));
+  }
+
+  {
+    auto source = CSPSource("https://a.com:*");
+    EXPECT_FALSE(Allow(*source, GURL("https://a.com"), no_self,
+                       /*is_redirect=*/false, /*is_opaque_fenced_frame=*/true));
+  }
+
+  {
+    auto source = CSPSource("https://a.com");
+    EXPECT_FALSE(Allow(*source, GURL("https://a.com"), no_self,
+                       /*is_redirect=*/false, /*is_opaque_fenced_frame=*/true));
+  }
 }
 
 }  // namespace network

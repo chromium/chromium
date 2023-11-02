@@ -1,12 +1,13 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/activity_services/data/chrome_activity_url_source.h"
 
+#import <LinkPresentation/LinkPresentation.h>
 #import <MobileCoreServices/MobileCoreServices.h>
 
-#include "base/check.h"
+#import "base/check.h"
 #import "ios/chrome/browser/ui/activity_services/data/chrome_activity_item_thumbnail_generator.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -74,6 +75,11 @@
      thumbnailImageForActivityType:(UIActivityType)activityType
                      suggestedSize:(CGSize)size {
   return [self.thumbnailGenerator thumbnailWithSize:size];
+}
+
+- (LPLinkMetadata*)activityViewControllerLinkMetadata:
+    (UIActivityViewController*)activityViewController {
+  return _linkMetadata;
 }
 
 @end

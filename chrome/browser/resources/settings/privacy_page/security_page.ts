@@ -1,36 +1,42 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import 'chrome://resources/cr_elements/shared_style_css.m.js';
+import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import './collapse_radio_button.js';
 import './secure_dns.js';
 import '../controls/settings_radio_group.js';
 import '../controls/settings_toggle_button.js';
-import '../icons.js';
+import '../icons.html.js';
 import '../prefs/prefs.js';
-import '../settings_shared_css.js';
+import '../settings_shared.css.js';
 import './disable_safebrowsing_dialog.js';
 
-import {assert} from 'chrome://resources/js/assert.m.js';
-import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {HelpBubbleMixin, HelpBubbleMixinInterface} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
+import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsRadioGroupElement} from '../controls/settings_radio_group.js';
 import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
+import {FocusConfig} from '../focus_config.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyElementInteractions, SafeBrowsingInteractions} from '../metrics_browser_proxy.js';
+// <if expr="is_chromeos or chrome_root_store_supported">
 import {OpenWindowProxyImpl} from '../open_window_proxy.js';
+// </if>
+
 import {PrefsMixin, PrefsMixinInterface} from '../prefs/prefs_mixin.js';
+import {CrSettingsPrefs} from '../prefs/prefs_types.js';
 import {routes} from '../route.js';
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 
 import {SettingsCollapseRadioButtonElement} from './collapse_radio_button.js';
-import {SettingsDisableSafebrowsingDialogElement} from './disable_safebrowsing_dialog.js';
 import {PrivacyPageBrowserProxy, PrivacyPageBrowserProxyImpl} from './privacy_page_browser_proxy.js';
+import {getTemplate} from './security_page.html.js';
 
 /**
  * Enumeration of all safe browsing modes. Must be kept in sync with the enum
@@ -42,8 +48,6 @@ export enum SafeBrowsingSetting {
   STANDARD = 1,
   DISABLED = 2,
 }
-
-type FocusConfig = Map<string, (string|(() => void))>;
 
 export interface SettingsSecurityPageElement {
   $: {
@@ -57,9 +61,11 @@ export interface SettingsSecurityPageElement {
 }
 
 const SettingsSecurityPageElementBase =
-    RouteObserverMixin(I18nMixin(PrefsMixin(PolymerElement))) as {
+    HelpBubbleMixin(
+        RouteObserverMixin(I18nMixin(PrefsMixin(PolymerElement)))) as {
       new (): PolymerElement & I18nMixinInterface &
-      RouteObserverMixinInterface & PrefsMixinInterface
+          RouteObserverMixinInterface & PrefsMixinInterface &
+          HelpBubbleMixinInterface,
     };
 
 export class SettingsSecurityPageElement extends
@@ -69,7 +75,7 @@ export class SettingsSecurityPageElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -81,6 +87,20 @@ export class SettingsSecurityPageElement extends
         type: Object,
         notify: true,
       },
+
+      // <if expr="chrome_root_store_supported">
+      /**
+       * Whether we should adjust Manage Certificates links to indicate
+       * support for Chrome Root Store.
+       */
+      showChromeRootStoreCertificates_: {
+        type: Boolean,
+        readOnly: true,
+        value: function() {
+          return loadTimeData.getBoolean('showChromeRootStoreCertificates');
+        },
+      },
+      // </if>
 
       /**
        * Whether the HTTPS-Only Mode setting should be displayed.
@@ -104,7 +124,7 @@ export class SettingsSecurityPageElement extends
         },
       },
 
-      // <if expr="chromeos or lacros">
+      // <if expr="is_chromeos">
       /**
        * Whether a link to secure DNS OS setting should be displayed.
        */
@@ -130,8 +150,21 @@ export class SettingsSecurityPageElement extends
         readOnly: true,
         value() {
           return loadTimeData.getBoolean('enableSecurityKeysSubpage');
-        }
+        },
       },
+
+      // <if expr="is_win">
+      enableSecurityKeysPhonesSubpage_: {
+        type: Boolean,
+        readOnly: true,
+        value() {
+          // The phones subpage is linked from the security keys subpage, if
+          // it exists. Thus the phones subpage is only linked from this page
+          // if the security keys subpage is disabled.
+          return !loadTimeData.getBoolean('enableSecurityKeysSubpage');
+        },
+      },
+      // </if>
 
       focusConfig: {
         type: Object,
@@ -141,11 +174,13 @@ export class SettingsSecurityPageElement extends
       showDisableSafebrowsingDialog_: Boolean,
     };
   }
-
+  // <if expr="chrome_root_store_supported">
+  private showChromeRootStoreCertificates_: boolean;
+  // </if>
   private showHttpsOnlyModeSetting_: boolean;
   private showSecureDnsSetting_: boolean;
 
-  // <if expr="chromeos or lacros">
+  // <if expr="is_chromeos">
   private showSecureDnsSettingLink_: boolean;
   // </if>
 
@@ -163,37 +198,47 @@ export class SettingsSecurityPageElement extends
     // <if expr="use_nss_certs">
     if (routes.CERTIFICATES) {
       this.focusConfig.set(routes.CERTIFICATES.path, () => {
-        focusWithoutInk(
-            assert(this.shadowRoot!.querySelector('#manageCertificates')!));
+        const toFocus =
+            this.shadowRoot!.querySelector<HTMLElement>('#manageCertificates');
+        assert(toFocus);
+        focusWithoutInk(toFocus);
       });
     }
     // </if>
 
     if (routes.SECURITY_KEYS) {
       this.focusConfig.set(routes.SECURITY_KEYS.path, () => {
-        focusWithoutInk(assert(
-            this.shadowRoot!.querySelector('#security-keys-subpage-trigger')!));
+        const toFocus =
+            this.shadowRoot!.querySelector<HTMLElement>(
+                '#security-keys-subpage-trigger');
+        assert(toFocus);
+        focusWithoutInk(toFocus);
       });
     }
   }
 
-  ready() {
+  override ready() {
     super.ready();
 
-    // Expand initial pref value manually because automatic
-    // expanding is disabled.
-    const prefValue = this.getPref('generated.safe_browsing').value;
-    if (prefValue === SafeBrowsingSetting.ENHANCED) {
-      this.$.safeBrowsingEnhanced.expanded = true;
-    } else if (prefValue === SafeBrowsingSetting.STANDARD) {
-      this.$.safeBrowsingStandard.expanded = true;
-    }
+    CrSettingsPrefs.initialized.then(() => {
+      // Expand initial pref value manually because automatic
+      // expanding is disabled.
+      const prefValue = this.getPref('generated.safe_browsing').value;
+      if (prefValue === SafeBrowsingSetting.ENHANCED) {
+        this.$.safeBrowsingEnhanced.expanded = true;
+      } else if (prefValue === SafeBrowsingSetting.STANDARD) {
+        this.$.safeBrowsingStandard.expanded = true;
+      }
+    });
+
+    this.registerHelpBubbleIdentifier(
+        'kEnhancedProtectionSettingElementId', 'safeBrowsingEnhanced');
   }
 
   /**
    * RouteObserverMixin
    */
-  currentRouteChanged(route: Route) {
+  override currentRouteChanged(route: Route) {
     if (route === routes.SECURITY) {
       this.metricsBrowserProxy_.recordSafeBrowsingInteractionHistogram(
           SafeBrowsingInteractions.SAFE_BROWSING_SHOWED);
@@ -267,6 +312,13 @@ export class SettingsSecurityPageElement extends
         PrivacyElementInteractions.MANAGE_CERTIFICATES);
   }
 
+  // <if expr="chrome_root_store_supported">
+  private onChromeCertificatesClick_() {
+    OpenWindowProxyImpl.getInstance().openURL(
+        loadTimeData.getString('chromeRootStoreHelpCenterURL'));
+  }
+  // </if>
+
   private onAdvancedProtectionProgramLinkClick_() {
     window.open(loadTimeData.getString('advancedProtectionURL'));
   }
@@ -274,6 +326,12 @@ export class SettingsSecurityPageElement extends
   private onSecurityKeysClick_() {
     Router.getInstance().navigateTo(routes.SECURITY_KEYS);
   }
+
+  // <if expr="is_win">
+  private onManagePhonesClick_() {
+    Router.getInstance().navigateTo(routes.SECURITY_KEYS_PHONES);
+  }
+  // </if>
 
   private onSafeBrowsingExtendedReportingChange_() {
     this.metricsBrowserProxy_.recordSettingsPageHistogram(
@@ -303,7 +361,7 @@ export class SettingsSecurityPageElement extends
 
     // Set focus back to the no protection button regardless of user interaction
     // with the dialog, as it was the entry point to the dialog.
-    focusWithoutInk(assert(this.$.safeBrowsingDisabled));
+    focusWithoutInk(this.$.safeBrowsingDisabled);
   }
 
   private onEnhancedProtectionExpandButtonClicked_() {
@@ -318,7 +376,7 @@ export class SettingsSecurityPageElement extends
     this.recordActionOnExpandButtonClicked_(SafeBrowsingSetting.STANDARD);
   }
 
-  // <if expr="chromeos or lacros">
+  // <if expr="is_chromeos">
   private onOpenChromeOSSecureDnsSettingsClicked_() {
     const path =
         loadTimeData.getString('chromeOSPrivacyAndSecuritySectionPath');

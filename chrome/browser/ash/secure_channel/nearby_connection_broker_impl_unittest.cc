@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,17 +8,19 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/services/secure_channel/public/mojom/nearby_connector.mojom.h"
+#include "ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/timer/mock_timer.h"
 #include "chrome/browser/ash/secure_channel/fake_nearby_endpoint_finder.h"
-#include "chromeos/services/nearby/public/cpp/mock_nearby_connections.h"
-#include "chromeos/services/secure_channel/public/mojom/nearby_connector.mojom.h"
-#include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
+#include "chrome/browser/ash/secure_channel/util/histogram_util.h"
+#include "chromeos/ash/services/nearby/public/cpp/mock_nearby_connections.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -27,10 +29,6 @@
 namespace ash {
 namespace secure_channel {
 namespace {
-
-// TODO(https://crbug.com/1164001): remove after
-// chromeos/services/secure_channel is moved to namespace ash.
-namespace mojom = ::chromeos::secure_channel::mojom;
 
 using ::location::nearby::connections::mojom::BytesPayload;
 using ::location::nearby::connections::mojom::ConnectionInfo;
@@ -399,6 +397,7 @@ class NearbyConnectionBrokerImplTest : public testing::Test,
   NearbyConnectionsMojom::AcceptConnectionCallback accept_connection_callback_;
   NearbyConnectionsMojom::DisconnectFromEndpointCallback
       disconnect_from_endpoint_callback_;
+  base::HistogramTester histogram_tester_;
 
  private:
   // mojom::NearbyMessageReceiver:
@@ -496,9 +495,18 @@ TEST_F(NearbyConnectionBrokerImplTest,
   ExpectDisconnectFromEndpoint(disconnect_from_endpoint_run_loop.QuitClosure());
   base::FilePath path;
   base::CreateTemporaryFile(&path);
-  RegisterPayloadFile(/*payload_id=*/1234, path, /*expect_success=*/true);
-  ReceiveFilePayload(/*payload_id=*/5678, path);
+  RegisterPayloadFile(/*payload_id=*/1234, path, /*expect_success=*/false);
+  ReceiveFilePayload(/*payload_id=*/1234, path);
   disconnect_from_endpoint_run_loop.Run();
+
+  histogram_tester_.ExpectBucketCount(
+      "MultiDevice.SecureChannel.Nearby.OperationResult.RegisterPayloadFiles",
+      Status::kError,
+      /*expected_count=*/1);
+  histogram_tester_.ExpectBucketCount(
+      "MultiDevice.SecureChannel.Nearby.FileAction",
+      util::FileAction::kUnexpectedFileReceived,
+      /*expected_count=*/1);
 
   InvokeDisconnectedFromEndpointCallback(/*success=*/true);
   InvokeDisconnectedCallback();
@@ -519,22 +527,34 @@ TEST_F(NearbyConnectionBrokerImplTest, FileTransferUpdateForRegisteredPayload) {
                                  /*total_bytes=*/1000,
                                  /*bytes_transferred=*/100));
   ReceiveFileTransferUpdate(
-      PayloadTransferUpdate::New(payload_id, PayloadStatus::kInProgress,
+      PayloadTransferUpdate::New(payload_id, PayloadStatus::kSuccess,
                                  /*total_bytes=*/1000,
-                                 /*bytes_transferred=*/200));
+                                 /*bytes_transferred=*/1000));
   file_payload_listener().FlushForTesting();
 
-  EXPECT_EQ(2, file_transfer_updates().size());
+  EXPECT_EQ(2u, file_transfer_updates().size());
   EXPECT_EQ(file_transfer_updates().at(0),
             mojom::FileTransferUpdate::New(
                 payload_id, mojom::FileTransferStatus::kInProgress,
                 /*total_bytes=*/1000,
                 /*bytes_transferred=*/100));
   EXPECT_EQ(file_transfer_updates().at(1),
-            mojom::FileTransferUpdate::New(
-                payload_id, mojom::FileTransferStatus::kInProgress,
-                /*total_bytes=*/1000,
-                /*bytes_transferred=*/200));
+            mojom::FileTransferUpdate::New(payload_id,
+                                           mojom::FileTransferStatus::kSuccess,
+                                           /*total_bytes=*/1000,
+                                           /*bytes_transferred=*/1000));
+  histogram_tester_.ExpectBucketCount(
+      "MultiDevice.SecureChannel.Nearby.OperationResult.RegisterPayloadFiles",
+      Status::kSuccess,
+      /*expected_count=*/1);
+  histogram_tester_.ExpectBucketCount(
+      "MultiDevice.SecureChannel.Nearby.FileAction",
+      util::FileAction::kRegisteredFileReceived,
+      /*expected_count=*/1);
+  histogram_tester_.ExpectBucketCount(
+      "MultiDevice.SecureChannel.Nearby.FileTransferResult",
+      util::FileTransferResult::kFileTransferSuccess,
+      /*expected_count=*/1);
 
   DisconnectMojoBindings(/*expected_to_disconnect=*/true);
   InvokeDisconnectedFromEndpointCallback(/*success=*/true);
@@ -552,23 +572,27 @@ TEST_F(NearbyConnectionBrokerImplTest, FileTransferUpdateForCompletedPayload) {
   RegisterPayloadFile(payload_id, path, /*expect_success=*/true);
   ReceiveFilePayload(payload_id, path);
   ReceiveFileTransferUpdate(
-      PayloadTransferUpdate::New(payload_id, PayloadStatus::kSuccess,
+      PayloadTransferUpdate::New(payload_id, PayloadStatus::kFailure,
                                  /*total_bytes=*/1000,
-                                 /*bytes_transferred=*/1000));
+                                 /*bytes_transferred=*/100));
   // This is not supposed to trigger a FileTransferUpdate callback as this
   // payload has already been completed and is now untracked.
   ReceiveFileTransferUpdate(
       PayloadTransferUpdate::New(payload_id, PayloadStatus::kInProgress,
-                                 /*total_bytes=*/2000,
-                                 /*bytes_transferred=*/1100));
+                                 /*total_bytes=*/1000,
+                                 /*bytes_transferred=*/200));
   file_payload_listener().FlushForTesting();
 
-  EXPECT_EQ(1, file_transfer_updates().size());
+  EXPECT_EQ(1u, file_transfer_updates().size());
   EXPECT_EQ(file_transfer_updates().at(0),
             mojom::FileTransferUpdate::New(payload_id,
-                                           mojom::FileTransferStatus::kSuccess,
+                                           mojom::FileTransferStatus::kFailure,
                                            /*total_bytes=*/1000,
-                                           /*bytes_transferred=*/1000));
+                                           /*bytes_transferred=*/100));
+  histogram_tester_.ExpectBucketCount(
+      "MultiDevice.SecureChannel.Nearby.FileTransferResult",
+      util::FileTransferResult::kFileTransferFailure,
+      /*expected_count=*/1);
 
   DisconnectMojoBindings(/*expected_to_disconnect=*/true);
   InvokeDisconnectedFromEndpointCallback(/*success=*/true);
@@ -615,7 +639,7 @@ TEST_F(NearbyConnectionBrokerImplTest, FileTransferCanceledOnDisconnect) {
   InvokeDisconnectedCallback();
   file_payload_listener().FlushForTesting();
 
-  EXPECT_EQ(2, file_transfer_updates().size());
+  EXPECT_EQ(2u, file_transfer_updates().size());
   EXPECT_EQ(file_transfer_updates().at(0),
             mojom::FileTransferUpdate::New(
                 payload_id, mojom::FileTransferStatus::kInProgress,
@@ -626,6 +650,10 @@ TEST_F(NearbyConnectionBrokerImplTest, FileTransferCanceledOnDisconnect) {
                                            mojom::FileTransferStatus::kCanceled,
                                            /*total_bytes=*/0,
                                            /*bytes_transferred=*/0));
+  histogram_tester_.ExpectBucketCount(
+      "MultiDevice.SecureChannel.Nearby.FileTransferResult",
+      util::FileTransferResult::kFileTransferCanceled,
+      /*expected_count=*/1);
 }
 
 TEST_F(NearbyConnectionBrokerImplTest, FileTransferCanceledOnMojoDisconnect) {
@@ -648,7 +676,7 @@ TEST_F(NearbyConnectionBrokerImplTest, FileTransferCanceledOnMojoDisconnect) {
   InvokeDisconnectedCallback();
   file_payload_listener().FlushForTesting();
 
-  EXPECT_EQ(2, file_transfer_updates().size());
+  EXPECT_EQ(2u, file_transfer_updates().size());
   EXPECT_EQ(file_transfer_updates().at(0),
             mojom::FileTransferUpdate::New(
                 payload_id, mojom::FileTransferStatus::kInProgress,
@@ -659,6 +687,10 @@ TEST_F(NearbyConnectionBrokerImplTest, FileTransferCanceledOnMojoDisconnect) {
                                            mojom::FileTransferStatus::kCanceled,
                                            /*total_bytes=*/0,
                                            /*bytes_transferred=*/0));
+  histogram_tester_.ExpectBucketCount(
+      "MultiDevice.SecureChannel.Nearby.FileTransferResult",
+      util::FileTransferResult::kFileTransferCanceled,
+      /*expected_count=*/1);
 }
 
 TEST_F(NearbyConnectionBrokerImplTest, FailToSend) {

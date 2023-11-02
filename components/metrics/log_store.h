@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -56,8 +56,13 @@ class LogStore {
   // the staged log needs discarded.
   virtual void MarkStagedLogAsSent() = 0;
 
-  // Trims saved logs and writes to persistent storage.
-  virtual void TrimAndPersistUnsentLogs() = 0;
+  // Trims saved logs and writes them to persistent storage. When
+  // |overwrite_in_memory_store| is false, we will still not persist logs that
+  // should be trimmed away, but they will still be available in memory
+  // (allowing them to still be eligible for upload this session).
+  // TODO(crbug/1171830): Revisit call sites and determine what value of
+  // |overwrite_in_memory_store| they should use.
+  virtual void TrimAndPersistUnsentLogs(bool overwrite_in_memory_store) = 0;
 
   // Loads unsent logs from persistent storage.
   virtual void LoadPersistedUnsentLogs() = 0;

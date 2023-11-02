@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -54,12 +54,12 @@ class UsageTimeStateNotifierTest : public testing::Test {
   ~UsageTimeStateNotifierTest() override = default;
 
   void SetUp() override {
-    PowerManagerClient::InitializeFake();
+    chromeos::PowerManagerClient::InitializeFake();
     session_manager_.SetSessionState(
         session_manager::SessionState::LOGIN_PRIMARY);
   }
 
-  void TearDown() override { PowerManagerClient::Shutdown(); }
+  void TearDown() override { chromeos::PowerManagerClient::Shutdown(); }
 
   void NotifyScreenIdleOffChanged(bool off) {
     power_manager::ScreenIdleState proto;
@@ -67,8 +67,8 @@ class UsageTimeStateNotifierTest : public testing::Test {
     power_manager_client()->SendScreenIdleStateChanged(proto);
   }
 
-  FakePowerManagerClient* power_manager_client() {
-    return FakePowerManagerClient::Get();
+  chromeos::FakePowerManagerClient* power_manager_client() {
+    return chromeos::FakePowerManagerClient::Get();
   }
 
   session_manager::SessionManager* session_manager() {

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -51,7 +51,7 @@ static bool ParseHostPattern(
 static bool ParseHostPatterns(
     SocketsManifestPermission* permission,
     content::SocketPermissionRequest::OperationType operation_type,
-    const std::unique_ptr<SocketHostPatterns>& host_patterns,
+    const absl::optional<SocketHostPatterns>& host_patterns,
     std::u16string* error) {
   if (!host_patterns)
     return true;
@@ -74,11 +74,11 @@ static bool ParseHostPatterns(
 }
 
 static void SetHostPatterns(
-    std::unique_ptr<SocketHostPatterns>& host_patterns,
+    absl::optional<SocketHostPatterns>& host_patterns,
     const SocketsManifestPermission* permission,
     content::SocketPermissionRequest::OperationType operation_type) {
-  host_patterns = std::make_unique<SocketHostPatterns>();
-  host_patterns->as_strings = std::make_unique<std::vector<std::string>>();
+  host_patterns.emplace();
+  host_patterns->as_strings.emplace();
   for (auto it = permission->entries().cbegin();
        it != permission->entries().cend(); ++it) {
     if (it->pattern().type == operation_type) {
@@ -237,7 +237,7 @@ bool SocketsManifestPermission::FromValue(const base::Value* value) {
 std::unique_ptr<base::Value> SocketsManifestPermission::ToValue() const {
   Sockets sockets;
 
-  sockets.udp = std::make_unique<Sockets::Udp>();
+  sockets.udp.emplace();
   SetHostPatterns(sockets.udp->bind, this, SocketPermissionRequest::UDP_BIND);
   SetHostPatterns(
       sockets.udp->send, this, SocketPermissionRequest::UDP_SEND_TO);
@@ -247,24 +247,24 @@ std::unique_ptr<base::Value> SocketsManifestPermission::ToValue() const {
   if (sockets.udp->bind->as_strings->size() == 0 &&
       sockets.udp->send->as_strings->size() == 0 &&
       sockets.udp->multicast_membership->as_strings->size() == 0) {
-    sockets.udp.reset(NULL);
+    sockets.udp.reset();
   }
 
-  sockets.tcp = std::make_unique<Sockets::Tcp>();
+  sockets.tcp.emplace();
   SetHostPatterns(
       sockets.tcp->connect, this, SocketPermissionRequest::TCP_CONNECT);
   if (sockets.tcp->connect->as_strings->size() == 0) {
-    sockets.tcp.reset(NULL);
+    sockets.tcp.reset();
   }
 
-  sockets.tcp_server = std::make_unique<Sockets::TcpServer>();
+  sockets.tcp_server.emplace();
   SetHostPatterns(
       sockets.tcp_server->listen, this, SocketPermissionRequest::TCP_LISTEN);
   if (sockets.tcp_server->listen->as_strings->size() == 0) {
-    sockets.tcp_server.reset(NULL);
+    sockets.tcp_server.reset();
   }
 
-  return std::unique_ptr<base::Value>(sockets.ToValue().release());
+  return base::Value::ToUniquePtrValue(base::Value(sockets.ToValue()));
 }
 
 std::unique_ptr<ManifestPermission> SocketsManifestPermission::Diff(

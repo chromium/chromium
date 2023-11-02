@@ -1,9 +1,9 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/ozone/platform/x11/x11_window.h"
 #include "ui/platform_window/extensions/x11_extension_delegate.h"
-#include "ui/platform_window/x11/x11_window.h"
 
 #include <memory>
 #include <utility>
@@ -18,10 +18,10 @@
 #include "ui/events/platform/x11/x11_event_source.h"
 #include "ui/events/test/events_test_utils_x11.h"
 #include "ui/gfx/x/event.h"
+#include "ui/ozone/platform/x11/x11_window_manager.h"
 #include "ui/ozone/test/mock_platform_window_delegate.h"
 #include "ui/platform_window/platform_window_delegate.h"
 #include "ui/platform_window/platform_window_init_properties.h"
-#include "ui/platform_window/x11/x11_window_manager.h"
 
 namespace ui {
 
@@ -36,7 +36,7 @@ ACTION_P(StoreWidget, widget_ptr) {
 }
 
 ACTION_P(CloneEvent, event_ptr) {
-  *event_ptr = Event::Clone(*arg0);
+  *event_ptr = arg0->Clone();
 }
 
 // TestScreen implementation. We need to set a screen instance, because
@@ -60,7 +60,7 @@ class TestScreen : public display::ScreenBase {
     display.SetScaleAndBounds(scale, bounds_in_pixels);
     ProcessDisplayChanged(display, true);
   }
-};  // namespace
+};
 
 }  // namespace
 
@@ -78,11 +78,12 @@ class X11WindowOzoneTest : public testing::Test {
   void SetUp() override {
     event_source_ = std::make_unique<X11EventSource>(x11::Connection::Get());
 
-    test_screen_ = new TestScreen();
-    display::Screen::SetScreenInstance(test_screen_);
+    display::Screen::SetScreenInstance(&test_screen_);
 
     TouchFactory::GetInstance()->SetPointerDeviceForTest({kPointerDeviceId});
   }
+
+  void TearDown() override { display::Screen::SetScreenInstance(nullptr); }
 
  protected:
   std::unique_ptr<PlatformWindow> CreatePlatformWindow(
@@ -112,7 +113,7 @@ class X11WindowOzoneTest : public testing::Test {
     return window_manager;
   }
 
-  TestScreen* test_screen_ = nullptr;
+  TestScreen test_screen_;
 
  private:
   std::unique_ptr<base::test::TaskEnvironment> task_env_;
@@ -283,7 +284,7 @@ class FakeX11ExtensionDelegateForSize : public X11ExtensionDelegate {
 // Verifies X11Window sets fullscreen bounds in pixels when going to fullscreen.
 TEST_F(X11WindowOzoneTest, ToggleFullscreen) {
   constexpr gfx::Rect screen_bounds_in_px(640, 480, 1280, 720);
-  test_screen_->SetScaleAndBoundsForPrimaryDisplay(2, screen_bounds_in_px);
+  test_screen_.SetScaleAndBoundsForPrimaryDisplay(2, screen_bounds_in_px);
 
   MockPlatformWindowDelegate delegate;
   gfx::AcceleratedWidget widget;
@@ -291,8 +292,10 @@ TEST_F(X11WindowOzoneTest, ToggleFullscreen) {
   FakeX11ExtensionDelegateForSize x11_extension_delegate(screen_bounds_in_px);
   auto window =
       CreatePlatformWindow(&delegate, bounds, &widget, &x11_extension_delegate);
+  EXPECT_CALL(
+      delegate,
+      OnBoundsChanged(testing::Eq(PlatformWindowDelegate::BoundsChange{true})));
 
-  EXPECT_CALL(delegate, OnBoundsChanged(testing::Eq(screen_bounds_in_px)));
   window->ToggleFullscreen();
 }
 

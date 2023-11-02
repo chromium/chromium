@@ -1,10 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/system/bluetooth/bluetooth_feature_pod_controller.h"
 
-#include "ash/constants/ash_features.h"
+#include "ash/constants/quick_settings_catalogs.h"
 #include "ash/public/cpp/bluetooth_config_service.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -13,24 +13,21 @@
 #include "base/check.h"
 #include "base/i18n/number_formatting.h"
 #include "base/strings/string_number_conversions.h"
-#include "chromeos/services/bluetooth_config/public/cpp/cros_bluetooth_config_util.h"
+#include "chromeos/ash/services/bluetooth_config/public/cpp/cros_bluetooth_config_util.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
-namespace {
-using chromeos::bluetooth_config::GetPairedDeviceName;
-using chromeos::bluetooth_config::mojom::BluetoothModificationState;
-using chromeos::bluetooth_config::mojom::BluetoothSystemPropertiesPtr;
-using chromeos::bluetooth_config::mojom::BluetoothSystemState;
-using chromeos::bluetooth_config::mojom::DeviceConnectionState;
-using chromeos::bluetooth_config::mojom::PairedBluetoothDeviceProperties;
-}  // namespace
+
+using bluetooth_config::GetPairedDeviceName;
+using bluetooth_config::mojom::BluetoothModificationState;
+using bluetooth_config::mojom::BluetoothSystemPropertiesPtr;
+using bluetooth_config::mojom::BluetoothSystemState;
+using bluetooth_config::mojom::DeviceConnectionState;
 
 BluetoothFeaturePodController::BluetoothFeaturePodController(
     UnifiedSystemTrayController* tray_controller)
     : tray_controller_(tray_controller) {
-  DCHECK(ash::features::IsBluetoothRevampEnabled());
   GetBluetoothConfigService(
       remote_cros_bluetooth_config_.BindNewPipeAndPassReceiver());
   remote_cros_bluetooth_config_->ObserveSystemProperties(
@@ -47,31 +44,40 @@ FeaturePodButton* BluetoothFeaturePodController::CreateButton() {
   return button_;
 }
 
+QsFeatureCatalogName BluetoothFeaturePodController::GetCatalogName() {
+  return QsFeatureCatalogName::kBluetooth;
+}
+
 void BluetoothFeaturePodController::OnIconPressed() {
   if (!button_->GetEnabled())
     return;
+
   const bool is_toggled = button_->IsToggled();
   remote_cros_bluetooth_config_->SetBluetoothEnabledState(!is_toggled);
-  if (!is_toggled)
-    tray_controller_->ShowBluetoothDetailedView();
+
+  if (is_toggled) {
+    TrackToggleUMA(/*target_toggle_state=*/false);
+    return;
+  }
+
+  TrackDiveInUMA();
+  tray_controller_->ShowBluetoothDetailedView();
 }
 
 void BluetoothFeaturePodController::OnLabelPressed() {
   if (!button_->GetEnabled())
     return;
+
+  TrackDiveInUMA();
   if (!button_->IsToggled())
     remote_cros_bluetooth_config_->SetBluetoothEnabledState(true);
   tray_controller_->ShowBluetoothDetailedView();
 }
 
-SystemTrayItemUmaType BluetoothFeaturePodController::GetUmaType() const {
-  return SystemTrayItemUmaType::UMA_BLUETOOTH;
-}
-
 BluetoothFeaturePodController::BluetoothDeviceNameAndBatteryInfo::
     BluetoothDeviceNameAndBatteryInfo(
         const std::u16string& device_name,
-        chromeos::bluetooth_config::mojom::DeviceBatteryInfoPtr battery_info)
+        bluetooth_config::mojom::DeviceBatteryInfoPtr battery_info)
     : device_name(device_name), battery_info(std::move(battery_info)) {}
 
 BluetoothFeaturePodController::BluetoothDeviceNameAndBatteryInfo::
@@ -81,7 +87,10 @@ bool BluetoothFeaturePodController::DoesFirstConnectedDeviceHaveBatteryInfo()
     const {
   return first_connected_device_.has_value() &&
          first_connected_device_.value().battery_info &&
-         first_connected_device_.value().battery_info->default_properties;
+         (first_connected_device_.value().battery_info->default_properties ||
+          first_connected_device_.value().battery_info->left_bud_info ||
+          first_connected_device_.value().battery_info->right_bud_info ||
+          first_connected_device_.value().battery_info->case_info);
 }
 
 const gfx::VectorIcon& BluetoothFeaturePodController::ComputeButtonIcon()
@@ -103,6 +112,31 @@ std::u16string BluetoothFeaturePodController::ComputeButtonLabel() const {
   return l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_BLUETOOTH);
 }
 
+int BluetoothFeaturePodController::
+    GetFirstConnectedDeviceBatteryLevelForDisplay() const {
+  // If there are any multiple battery details, we should prioritize showing
+  // them over the default battery in order to match the Quick Settings
+  // Bluetooth sub-page battery details shown. Android only shows the left bud
+  // if there are multiple batteries, so we match that here, and if it doesn't
+  // exist, we prioritize the right bud battery, then the case battery, if
+  // they exist over the default battery in order to match any detailed
+  // battery shown on the sub-page.
+  if (first_connected_device_.value().battery_info->left_bud_info)
+    return first_connected_device_.value()
+        .battery_info->left_bud_info->battery_percentage;
+
+  if (first_connected_device_.value().battery_info->right_bud_info)
+    return first_connected_device_.value()
+        .battery_info->right_bud_info->battery_percentage;
+
+  if (first_connected_device_.value().battery_info->case_info)
+    return first_connected_device_.value()
+        .battery_info->case_info->battery_percentage;
+
+  return first_connected_device_.value()
+      .battery_info->default_properties->battery_percentage;
+}
+
 std::u16string BluetoothFeaturePodController::ComputeButtonSubLabel() const {
   if (!button_->IsToggled())
     return l10n_util::GetStringUTF16(
@@ -117,8 +151,7 @@ std::u16string BluetoothFeaturePodController::ComputeButtonSubLabel() const {
       return l10n_util::GetStringFUTF16(
           IDS_ASH_STATUS_TRAY_BLUETOOTH_DEVICE_BATTERY_PERCENTAGE_LABEL,
           base::NumberToString16(
-              first_connected_device_.value()
-                  .battery_info->default_properties->battery_percentage));
+              GetFirstConnectedDeviceBatteryLevelForDisplay()));
     }
     return l10n_util::GetStringUTF16(
         IDS_ASH_STATUS_TRAY_BLUETOOTH_DEVICE_CONNECTED_LABEL);
@@ -140,8 +173,7 @@ std::u16string BluetoothFeaturePodController::ComputeTooltip() const {
           IDS_ASH_STATUS_TRAY_BLUETOOTH_DEVICE_CONNECTED_WITH_BATTERY_TOOLTIP,
           first_connected_device_.value().device_name,
           base::NumberToString16(
-              first_connected_device_.value()
-                  .battery_info->default_properties->battery_percentage));
+              GetFirstConnectedDeviceBatteryLevelForDisplay()));
     }
     return l10n_util::GetStringFUTF16(
         IDS_ASH_STATUS_TRAY_BLUETOOTH_DEVICE_CONNECTED_TOOLTIP,
@@ -166,8 +198,7 @@ void BluetoothFeaturePodController::UpdateButtonStateIfExists() {
   button_->SetEnabled(modification_state_ ==
                       BluetoothModificationState::kCanModifyBluetooth);
   button_->SetToggled(
-      ::chromeos::bluetooth_config::IsBluetoothEnabledOrEnabling(
-          system_state_));
+      bluetooth_config::IsBluetoothEnabledOrEnabling(system_state_));
   button_->SetVisible(true);
 
   button_->SetVectorIcon(ComputeButtonIcon());
@@ -203,7 +234,7 @@ void BluetoothFeaturePodController::OnPropertiesUpdated(
     if (first_connected_device_.has_value())
       continue;
     first_connected_device_.emplace(
-        GetPairedDeviceName(paired_device.get()),
+        GetPairedDeviceName(paired_device),
         mojo::Clone(paired_device->device_properties->battery_info));
   }
   modification_state_ = properties->modification_state;

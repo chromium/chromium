@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,15 +7,13 @@
 
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/policy/core/device_policy_builder.h"
+#include "chrome/browser/ash/policy/core/device_policy_cros_test_helper.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/prefs/pref_change_registrar.h"
 
-namespace chromeos {
+namespace ash {
 class FakeSessionManagerClient;
 }
 
@@ -75,37 +73,6 @@ class DictionaryLocalStateValueWaiter : public LocalStateValueWaiter {
   const std::string key_;
 };
 
-class DevicePolicyCrosTestHelper {
- public:
-  DevicePolicyCrosTestHelper();
-  DevicePolicyCrosTestHelper(const DevicePolicyCrosTestHelper&) = delete;
-  DevicePolicyCrosTestHelper& operator=(const DevicePolicyCrosTestHelper&) =
-      delete;
-  ~DevicePolicyCrosTestHelper();
-
-  DevicePolicyBuilder* device_policy() { return &device_policy_; }
-  const std::string device_policy_blob();
-
-  // Writes the owner key to disk. To be called before installing a policy.
-  void InstallOwnerKey();
-
-  // Reinstalls |device_policy_| as the policy (to be used when it was
-  // recently changed).
-  void RefreshDevicePolicy();
-  // Refreshes the Device Settings policies given in the settings vector.
-  // Example: {chromeos::kDeviceDisplayResolution} refreshes the display
-  //   resolution setting.
-  void RefreshPolicyAndWaitUntilDeviceSettingsUpdated(
-      const std::vector<std::string>& settings);
-  void UnsetPolicy(const std::vector<std::string>& settings);
-
- private:
-  static void OverridePaths();
-
-  // Carries Chrome OS device policies for tests.
-  DevicePolicyBuilder device_policy_;
-};
-
 // Used to test Device policy changes in Chrome OS.
 class DevicePolicyCrosBrowserTest : public MixinBasedInProcessBrowserTest {
  protected:
@@ -121,7 +88,7 @@ class DevicePolicyCrosBrowserTest : public MixinBasedInProcessBrowserTest {
     return policy_helper()->device_policy();
   }
 
-  chromeos::FakeSessionManagerClient* session_manager_client();
+  ash::FakeSessionManagerClient* session_manager_client();
 
   ash::DeviceStateMixin device_state_{
       &mixin_host_,

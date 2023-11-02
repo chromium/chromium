@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -50,9 +50,9 @@ class ColorCorrectionTestUtils {
   static bool ConvertPixelsToColorSpaceAndPixelFormatForTest(
       void* src_data,
       size_t num_elements,
-      CanvasColorSpace src_color_space,
+      PredefinedColorSpace src_color_space,
       ImageDataStorageFormat src_storage_format,
-      CanvasColorSpace dst_color_space,
+      PredefinedColorSpace dst_color_space,
       CanvasPixelFormat dst_canvas_pixel_format,
       std::unique_ptr<uint8_t[]>& converted_pixels,
       PixelFormat pixel_format_for_f16_canvas);

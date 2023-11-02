@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_ONLINE_LOGIN_HELPER_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_ONLINE_LOGIN_HELPER_H_
 
+#include <memory>
 #include <string>
 
 #include "chrome/browser/ash/login/login_client_cert_usage_observer.h"
@@ -12,7 +13,11 @@
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/ui/signin_ui.h"
 #include "chrome/browser/extensions/api/cookies/cookies_api.h"
-#include "chromeos/login/auth/cryptohome_authenticator.h"
+#include "chromeos/ash/components/login/auth/cryptohome_authenticator.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/ash/components/login/auth/public/sync_trusted_vault_keys.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/login/base_screen_handler_utils.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/storage_partition.h"
@@ -22,10 +27,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
-
-class SyncTrustedVaultKeys;
-class UserContext;
-
 namespace login {
 
 // A class that's used to specify the way how Gaia should be loaded.
@@ -89,7 +90,8 @@ bool BuildUserContextForGaiaSignIn(
 class OnlineLoginHelper : public network::mojom::CookieChangeListener {
  public:
   using OnCookieTimeoutCallback = base::OnceCallback<void(void)>;
-  using CompleteLoginCallback = base::OnceCallback<void(const UserContext&)>;
+  using CompleteLoginCallback =
+      base::OnceCallback<void(std::unique_ptr<UserContext>)>;
 
   explicit OnlineLoginHelper(
       std::string signin_partition_name,
@@ -136,5 +138,17 @@ class OnlineLoginHelper : public network::mojom::CookieChangeListener {
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove when it moved to ash.
+namespace ash {
+using ::chromeos::OnlineLoginHelper;
+namespace login {
+using ::chromeos::login::BuildUserContextForGaiaSignIn;
+using ::chromeos::login::ExtractSamlPasswordAttributesEnabled;
+using ::chromeos::login::GaiaContext;
+using ::chromeos::login::GetUsertypeFromServicesString;
+using ::chromeos::login::SetCookieForPartition;
+}  // namespace login
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_ONLINE_LOGIN_HELPER_H_

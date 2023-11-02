@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -48,10 +48,17 @@ const std::string GetDisplayStringUTF8(
     // Note that we return the string even if it is empty.
     return it->second;
   }
-  if (display_string_id == ClientSettingsProto::UNSPECIFIED ||
-      display_string_id == ClientSettingsProto::UNDO) {
+  if (display_string_id == ClientSettingsProto::UNDO) {
     // TODO(b/201396990) Provide fallback string for UNDO.
-    return "";
+    // If this is empty, the java side will fallback to Chrome's IDS_UNDO.
+    // IDS_UNDO is currently not available in native.
+    if (client_settings.back_button_settings) {
+      return client_settings.back_button_settings->undo_label();
+    }
+    return std::string();
+  }
+  if (display_string_id == ClientSettingsProto::UNSPECIFIED) {
+    return std::string();
   }
   return l10n_util::GetStringUTF8(
       MapDisplayStringIdToChromeMessage(display_string_id));

@@ -1,37 +1,37 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/webui/interstitials/interstitial_ui_util.h"
 
-#include "base/atomic_sequence_num.h"
-#include "base/check_op.h"
-#include "base/memory/ref_counted_memory.h"
-#include "base/time/time.h"
-#include "components/grit/dev_ui_components_resources.h"
-#include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
+#import "base/atomic_sequence_num.h"
+#import "base/check_op.h"
+#import "base/memory/ref_counted_memory.h"
+#import "base/time/time.h"
+#import "components/grit/dev_ui_components_resources.h"
+#import "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
-#include "components/security_interstitials/core/ssl_error_options_mask.h"
-#include "components/security_interstitials/core/unsafe_resource.h"
-#include "crypto/rsa_private_key.h"
-#include "ios/chrome/browser/application_context.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/chrome_url_constants.h"
+#import "components/security_interstitials/core/ssl_error_options_mask.h"
+#import "components/security_interstitials/core/unsafe_resource.h"
+#import "crypto/rsa_private_key.h"
+#import "ios/chrome/browser/application_context/application_context.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/safe_browsing/safe_browsing_blocking_page.h"
-#import "ios/chrome/browser/safe_browsing/safe_browsing_service.h"
-#include "ios/chrome/browser/ssl/ios_captive_portal_blocking_page.h"
-#include "ios/chrome/browser/ssl/ios_ssl_blocking_page.h"
+#import "ios/chrome/browser/ssl/ios_captive_portal_blocking_page.h"
+#import "ios/chrome/browser/ssl/ios_ssl_blocking_page.h"
 #import "ios/chrome/browser/ui/webui/interstitials/interstitial_ui_constants.h"
 #import "ios/chrome/browser/ui/webui/interstitials/interstitial_ui_util.h"
-#include "ios/components/security_interstitials/ios_blocking_page_controller_client.h"
+#import "ios/chrome/browser/url/chrome_url_constants.h"
+#import "ios/components/security_interstitials/ios_blocking_page_controller_client.h"
 #import "ios/components/security_interstitials/ios_blocking_page_metrics_helper.h"
-#include "ios/web/public/web_state.h"
-#include "ios/web/public/webui/url_data_source_ios.h"
-#include "ios/web/public/webui/web_ui_ios.h"
-#include "ios/web/public/webui/web_ui_ios_data_source.h"
-#include "net/base/url_util.h"
-#include "net/cert/x509_certificate.h"
-#include "net/cert/x509_util.h"
+#import "ios/components/security_interstitials/safe_browsing/safe_browsing_service.h"
+#import "ios/web/public/web_state.h"
+#import "ios/web/public/webui/url_data_source_ios.h"
+#import "ios/web/public/webui/web_ui_ios.h"
+#import "ios/web/public/webui/web_ui_ios_data_source.h"
+#import "net/base/url_util.h"
+#import "net/cert/x509_certificate.h"
+#import "net/cert/x509_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -189,7 +189,7 @@ CreateSafeBrowsingBlockingPage(web::WebState* web_state, const GURL& url) {
   resource.is_subresource = request_url != main_frame_url;
   resource.is_subframe = false;
   resource.threat_type = threat_type;
-  resource.web_state_getter = web_state->CreateDefaultGetter();
+  resource.weak_web_state = web_state->GetWeakPtr();
 
   return SafeBrowsingBlockingPage::Create(resource);
 }

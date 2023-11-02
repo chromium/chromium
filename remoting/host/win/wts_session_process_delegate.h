@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "remoting/host/win/worker_process_launcher.h"
@@ -18,10 +17,6 @@
 namespace base {
 class CommandLine;
 class SingleThreadTaskRunner;
-} // namespace base
-
-namespace IPC {
-class Message;
 } // namespace base
 
 namespace remoting {
@@ -47,10 +42,10 @@ class WtsSessionProcessDelegate : public WorkerProcessLauncher::Delegate {
 
   // WorkerProcessLauncher::Delegate implementation.
   void LaunchProcess(WorkerProcessLauncher* event_handler) override;
-  void Send(IPC::Message* message) override;
   void GetRemoteAssociatedInterface(
       mojo::GenericPendingAssociatedReceiver receiver) override;
   void CloseChannel() override;
+  void CrashProcess(const base::Location& location) override;
   void KillProcess() override;
 
  private:

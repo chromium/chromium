@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -39,6 +39,29 @@ def IncludedFiles(input_api, allow_list=helpers.INCLUDED_PATHS):
   return input_api.AffectedFiles(include_deletes=False, file_filter=files)
 
 
+class LazyColorStateListSet:
+  """
+  This class has two jobs. It allows us to delay searching directories for color
+  state list files unless we actually find a color reference to check against.
+  And additionally it's a convenient mock point for tests to specify files in a
+  slightly more robust way than relying on real color state list file names.
+  """
+  _color_set_or_none = None
+
+  def get(self):
+    if self._color_set_or_none != None:
+      return self._color_set_or_none
+
+    self._color_set_or_none = set()
+    for color_dir in helpers.COLOR_STATE_LIST_DIRS:
+      if not os.path.isdir(color_dir):
+        continue
+      for color_file in os.listdir(color_dir):
+        if '.' in color_file:
+          self._color_set_or_none.add(color_file[:color_file.index('.')])
+    return self._color_set_or_none
+
+
 def _CommonChecks(input_api, output_api):
   """Checks common to both upload and commit."""
   result = []
@@ -47,6 +70,7 @@ def _CommonChecks(input_api, output_api):
   result.extend(_CheckDuplicateColors(input_api, output_api))
   result.extend(_CheckSemanticColorsReferences(input_api, output_api))
   result.extend(_CheckColorPaletteReferences(input_api, output_api))
+  result.extend(_CheckNonDynamicColorReference(input_api, output_api))
   result.extend(_CheckXmlNamespacePrefixes(input_api, output_api))
   result.extend(_CheckTextAppearance(input_api, output_api))
   result.extend(_CheckLineSpacingAttribute(input_api, output_api))
@@ -55,6 +79,7 @@ def _CommonChecks(input_api, output_api):
   result.extend(_CheckStringResourceEllipsisPunctuations(input_api, output_api))
   # Add more checks here
   return result
+
 
 ### color resources below ###
 def _CheckColorFormat(input_api, output_api):
@@ -150,7 +175,6 @@ def _CheckColorReferences(input_api, output_api):
     ]
   return result
 
-
 def _CheckDuplicateColors(input_api, output_api):
   """
   Checks colors defined by (A)RGB values in color_palette.xml and
@@ -237,24 +261,26 @@ def _CheckColorPaletteReferences(input_api, output_api):
 def _CheckSemanticColorsReferences(input_api, output_api):
   """
   Checks colors defined in semantic_colors_non_adaptive.xml only referencing
-  resources in color_palette.xml.
+  resources in self or color_palette.xml.
   """
   errors = []
-  color_palette = None
+  usable_colors = None
 
   for f in IncludedFiles(input_api):
     if not f.LocalPath().endswith('/semantic_colors_non_adaptive.xml'):
       continue
 
-    if color_palette is None:
+    if usable_colors is None:
       color_palette = _colorXml2Dict(
         input_api.ReadFile(helpers.COLOR_PALETTE_PATH))
+      self_palette = _colorXml2Dict(input_api.ReadFile(f.AbsoluteLocalPath()))
+      usable_colors = {**color_palette, **self_palette}
     for line_number, line in f.ChangedContents():
       r = helpers.COLOR_REFERENCE_PATTERN.search(line)
       if not r:
         continue
-      color = r.group()
-      if _removePrefix(color) not in color_palette:
+      color_ref = r.group()
+      if _removePrefix(color_ref) not in usable_colors:
         errors.append(
             '  %s:%d\n    \t%s' % (f.LocalPath(), line_number, line.strip()))
 
@@ -272,6 +298,43 @@ def _CheckSemanticColorsReferences(input_api, output_api):
     See https://crbug.com/775198 for more information.
   ''', errors)
     ]
+  return []
+
+
+def _CheckNonDynamicColorReference(
+    input_api, output_api, lazy_color_state_list_set=LazyColorStateListSet()):
+  """
+  Checks for @color references that will not work with dynamic colors.
+  """
+
+  warnings = []
+  for f in IncludedFiles(input_api,
+                         allow_list=helpers.DYNAMIC_COLOR_INCLUDED_PATHS):
+    for line_number, line in f.ChangedContents():
+      r = helpers.COLOR_REFERENCE_PATTERN.search(line)
+      if not r:
+        continue
+
+      color_name = r.group(1)
+      if color_name not in lazy_color_state_list_set.get():
+        issue = '  %s:%d\n    \t%s' % (f.LocalPath(), line_number, line.strip())
+        warnings.append(issue)
+
+  if warnings:
+    # TODO(https://crbug.com/1224883): Replace bug with a upstream doc link.
+    return [
+        output_api.PresubmitPromptWarning(
+            '''
+Dynamic Color Reference Check warning:
+  Your new code is using @color references. These will not correctly support
+  dynamic colors. Instead you should use a @macro that routes into an ?attr.
+  Note using color references is currently okay for incognito code, as it should
+  not be dynamically colored.
+
+  See https://crbug.com/1302056 for more information.
+          ''', warnings)
+    ]
+
   return []
 
 
@@ -309,8 +372,15 @@ def _CheckTextAppearance(input_api, output_api):
       'android:fontFamily', 'android:textAllCaps']
   namespace = {'android': 'http://schemas.android.com/apk/res/android'}
   errors = []
+  differences = False
   for f in IncludedFiles(input_api):
-    root = ET.fromstring(input_api.ReadFile(f))
+    try:
+      root = ET.fromstring(input_api.ReadFile(f))
+    except ET.ParseError:
+      print('*' * 80)
+      print('Parse error processing file:', f)
+      print('*' * 80)
+      raise
     # Check if there are text attributes defined outside text appearances.
     for attribute in text_attributes:
       # Get style name that contains text attributes but is not text appearance.
@@ -333,17 +403,19 @@ def _CheckTextAppearance(input_api, output_api):
           errors.append('  %s:%d contains attribute %s\n    \t%s' % (
               f.LocalPath(), line_number+1, attribute, line.strip()))
           style_count += 1
+          if f.ChangedContents():
+            differences = True
         # Error for text attributes in layout.
         if widget_count > 0 and attribute in line:
           errors.append('  %s:%d contains attribute %s\n    \t%s' % (
               f.LocalPath(), line_number+1, attribute, line.strip()))
           widget_count -= 1
+          if f.ChangedContents():
+            differences = True
   # TODO(huayinz): Change the path on the error message to the corresponding
   # styles.xml when this check applies to all resource directories.
   if errors:
-    return [
-        output_api.PresubmitError(
-            '''
+    message = ('''
   Android Text Appearance Check failed:
     Your modified files contain Android text attributes defined outside
     text appearance styles, listed below.
@@ -373,8 +445,13 @@ def _CheckTextAppearance(input_api, output_api):
     Please contact arminaforoughi@chromium.org for UX approval, and
     src/chrome/android/java/res/OWNERS for questions.
     See https://crbug.com/775198 for more information.
-  ''', errors)
-    ]
+  ''')
+    if differences:
+      return [output_api.PresubmitError(message, errors)]
+    else:
+      # Report a warning instead of an error when running "presubmit --all" or
+      # "presubmit --files" so that these can run error free.
+      return [output_api.PresubmitPromptWarning(message, errors)]
   return []
 
 
@@ -475,12 +552,14 @@ def _CheckStringResourceQuotesPunctuations(input_api, output_api):
   """Check whether inappropriate quotes are used"""
   warning = '''
   Android String Resources Check failed:
-    Your new string is using one or more of generic quotes(\u0022 \\u0022, \u0027 \\u0027,
+    Your new string is using one or more of generic quotes (\u0022 \\u0022, \u0027 \\u0027,
     \u0060 \\u0060, \u00B4 \\u00B4), which is not encouraged. Instead, quotations marks
-    (\u201C \\u201C, \u201D \\u201D, \u2018 \\u2018, \u2019 \\u2019) are usually preferred.
+    (\u201C \\u201C, \u201D \\u201D, \u2018 \\u2018, \u2019 \\u2019) are usually preferred (see
+    https://material.io/archive/guidelines/style/writing.html#writing-capitalization-punctuation).
 
     Use prime (\u2032 \\u2032) only in abbreviations for feet, arcminutes, and minutes.
-    Use Double-prime (\u2033 \\u2033) only in abbreviations for inches, arcminutes, and minutes.
+    Use double-prime (\u2033 \\u2033) only in abbreviations for inches, arcseconds, and seconds.
+    Use the right single quotation mark (\u2019 \\u2019) for apostrophes.
 
     Please reach out to the UX designer/writer in your team to double check
     which punctuation should be correctly used. Ignore this warning if UX has confirmed.

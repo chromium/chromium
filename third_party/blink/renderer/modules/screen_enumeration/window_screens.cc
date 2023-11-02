@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -61,20 +61,20 @@ ScriptPromise WindowScreens::GetScreenDetails(ScriptState* script_state,
     return ScriptPromise();
   }
 
-  ExecutionContext* context = ExecutionContext::From(script_state);
-  DCHECK(context->IsSecureContext());  // [SecureContext] in IDL.
+  LocalDOMWindow* window = LocalDOMWindow::From(script_state);
+  DCHECK(window->IsSecureContext());  // [SecureContext] in IDL.
   if (!permission_service_.is_bound()) {
     // See https://bit.ly/2S0zRAS for task types.
     ConnectToPermissionService(
-        context, permission_service_.BindNewPipeAndPassReceiver(
-                     context->GetTaskRunner(TaskType::kMiscPlatformAPI)));
+        window, permission_service_.BindNewPipeAndPassReceiver(
+                    window->GetTaskRunner(TaskType::kMiscPlatformAPI)));
   }
 
   auto permission_descriptor = CreatePermissionDescriptor(
       mojom::blink::PermissionName::WINDOW_PLACEMENT);
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  auto callback = WTF::Bind(&WindowScreens::OnPermissionRequestComplete,
-                            WrapPersistent(this), WrapPersistent(resolver));
+  auto callback = WTF::BindOnce(&WindowScreens::OnPermissionRequestComplete,
+                                WrapPersistent(this), WrapPersistent(resolver));
 
   // Only allow the user prompts when the frame has a transient activation.
   // Otherwise, resolve or reject the promise with the current permission state.

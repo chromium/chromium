@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,9 +36,8 @@ ShelfTooltipPreviewBubble::ShelfTooltipPreviewBubble(
     views::View* anchor,
     const std::vector<aura::Window*>& windows,
     ShelfTooltipManager* manager,
-    ShelfAlignment alignment,
-    SkColor background_color)
-    : ShelfBubble(anchor, alignment, background_color), manager_(manager) {
+    ShelfAlignment alignment)
+    : ShelfBubble(anchor, alignment), manager_(manager) {
   set_border_radius(kPreviewBubbleBorderRadius);
   SetCanActivate(false);
   set_close_on_deactivate(false);
@@ -50,8 +49,8 @@ ShelfTooltipPreviewBubble::ShelfTooltipPreviewBubble(
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,
-      gfx::Insets(kTooltipPaddingTop, kTooltipPaddingLeftRight,
-                  kTooltipPaddingBottom, kTooltipPaddingLeftRight),
+      gfx::Insets::TLBR(kTooltipPaddingTop, kTooltipPaddingLeftRight,
+                        kTooltipPaddingBottom, kTooltipPaddingLeftRight),
       kPreviewPadding));
 
   for (auto* window : windows) {

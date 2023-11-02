@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,8 @@
 #include <memory>
 
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/record_replay.h"
 #include "base/trace_event/trace_event.h"
 #include "mojo/core/core.h"
 #include "mojo/core/node_controller.h"
@@ -17,6 +17,7 @@
 #include "mojo/core/ports/message_filter.h"
 #include "mojo/core/request_context.h"
 #include "mojo/core/user_message_impl.h"
+#include "mojo/public/cpp/bindings/mojo_buildflags.h"
 
 namespace mojo {
 namespace core {
@@ -95,12 +96,15 @@ MessagePipeDispatcher::MessagePipeDispatcher(NodeController* node_controller,
       port_(port),
       pipe_id_(pipe_id),
       endpoint_(endpoint),
+      signal_lock_("MessagePipeDispatcher.signal_lock_"),
       watchers_(this) {
   DVLOG(2) << "Creating new MessagePipeDispatcher for port " << port.name()
            << " [pipe_id=" << pipe_id << "; endpoint=" << endpoint << "]";
 
   node_controller_->SetPortObserver(
       port_, base::MakeRefCounted<PortObserverThunk>(this));
+
+  recordreplay::RegisterPointer("MessagePipeDispatcher", this);
 }
 
 bool MessagePipeDispatcher::Fuse(MessagePipeDispatcher* other) {
@@ -133,7 +137,7 @@ Dispatcher::Type MessagePipeDispatcher::GetType() const {
 }
 
 MojoResult MessagePipeDispatcher::Close() {
-  base::AutoLock lock(signal_lock_);
+  recordreplay::AutoLockMaybeEventsDisallowed lock(signal_lock_);
   DVLOG(2) << "Closing message pipe " << pipe_id_ << " endpoint " << endpoint_
            << " [port=" << port_.name() << "]";
   return CloseNoLock();
@@ -384,10 +388,16 @@ scoped_refptr<Dispatcher> MessagePipeDispatcher::Deserialize(
                                    state->pipe_id, state->endpoint);
 }
 
-MessagePipeDispatcher::~MessagePipeDispatcher() = default;
+MessagePipeDispatcher::~MessagePipeDispatcher() {
+  recordreplay::UnregisterPointer(this);
+}
 
 MojoResult MessagePipeDispatcher::CloseNoLock() {
   signal_lock_.AssertAcquired();
+
+  recordreplay::Assert(
+      "[RUN-1307-1773] MessagePipeDispatcher::CloseNoLock %d %d %d",
+      (int)port_closed_, (int)in_transit_, (int)port_transferred_);
   if (port_closed_ || in_transit_)
     return MOJO_RESULT_INVALID_ARGUMENT;
 
@@ -395,11 +405,14 @@ MojoResult MessagePipeDispatcher::CloseNoLock() {
   watchers_.NotifyClosed();
 
   if (!port_transferred_) {
-    base::AutoUnlock unlock(signal_lock_);
+    recordreplay::AutoUnlockMaybeEventsDisallowed unlock(signal_lock_);
     node_controller_->ClosePort(port_);
 
-    TRACE_EVENT_WITH_FLOW0("toplevel.flow", "MessagePipe closing",
-                           pipe_id_ + endpoint_, TRACE_EVENT_FLAG_FLOW_OUT);
+#if BUILDFLAG(MOJO_TRACE_ENABLED)
+    TRACE_EVENT_WITH_FLOW0(TRACE_DISABLED_BY_DEFAULT("mojom"),
+                           "MessagePipe closing", pipe_id_ + endpoint_,
+                           TRACE_EVENT_FLAG_FLOW_OUT);
+#endif
   }
 
   return MOJO_RESULT_OK;
@@ -443,17 +456,18 @@ HandleSignalsState MessagePipeDispatcher::GetHandleSignalsStateNoLock() const {
   }
   rv.satisfiable_signals |=
       MOJO_HANDLE_SIGNAL_PEER_CLOSED | MOJO_HANDLE_SIGNAL_QUOTA_EXCEEDED;
-
+#if BUILDFLAG(MOJO_TRACE_ENABLED)
   const bool was_peer_closed =
       last_known_satisfied_signals_ & MOJO_HANDLE_SIGNAL_PEER_CLOSED;
   const bool is_peer_closed =
       rv.satisfied_signals & MOJO_HANDLE_SIGNAL_PEER_CLOSED;
-  last_known_satisfied_signals_ = rv.satisfied_signals;
   if (is_peer_closed && !was_peer_closed) {
-    TRACE_EVENT_WITH_FLOW0("toplevel.flow", "MessagePipe peer closed",
-                           pipe_id_ + (1 - endpoint_),
-                           TRACE_EVENT_FLAG_FLOW_IN);
+    TRACE_EVENT_WITH_FLOW0(
+        TRACE_DISABLED_BY_DEFAULT("mojom"), "MessagePipe peer closed",
+        pipe_id_ + (1 - endpoint_), TRACE_EVENT_FLAG_FLOW_IN);
   }
+#endif
+  last_known_satisfied_signals_ = rv.satisfied_signals;
 
   return rv;
 }

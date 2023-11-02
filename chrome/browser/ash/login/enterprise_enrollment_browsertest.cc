@@ -1,10 +1,9 @@
-// Copyright (c) 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/base64.h"
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/json/json_reader.h"
 #include "base/json/string_escape.h"
 #include "base/strings/string_number_conversions.h"
@@ -23,12 +22,12 @@
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/ash/policy/enrollment/enrollment_status.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/policy/enrollment_status.h"
-#include "chromeos/dbus/authpolicy/fake_authpolicy_client.h"
+#include "chromeos/ash/components/dbus/authpolicy/fake_authpolicy_client.h"
+#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/dbus/upstart/upstart_client.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/upstart/upstart_client.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
@@ -156,7 +155,8 @@ class EnterpriseEnrollmentTestBase : public OobeBaseTest {
   // Submits regular enrollment credentials.
   void SubmitEnrollmentCredentials() {
     enrollment_screen()->OnLoginDone(
-        "testuser@test.com", test::EnrollmentHelperMixin::kTestAuthCode);
+        "testuser@test.com", static_cast<int>(policy::LicenseType::kEnterprise),
+        test::EnrollmentHelperMixin::kTestAuthCode);
     ExecutePendingJavaScript();
   }
 
@@ -243,16 +243,14 @@ class ActiveDirectoryJoinTest : public EnterpriseEnrollmentTest {
     test::OobeJS().ExpectVisiblePath(kAdUnlockConfigurationStep);
   }
 
-  void CheckAttributeValue(const base::Value* config_value,
+  void CheckAttributeValue(const std::string* config_value,
                            const std::string& default_value,
                            const std::string& js_element) {
-    std::string expected_value(default_value);
-    if (config_value)
-      expected_value = config_value->GetString();
+    std::string expected_value(config_value ? *config_value : default_value);
     test::OobeJS().ExpectTrue(js_element + " === '" + expected_value + "'");
   }
 
-  void CheckAttributeValueAndDisabled(const base::Value* config_value,
+  void CheckAttributeValueAndDisabled(const std::string* config_value,
                                       const std::string& default_value,
                                       const std::string& js_element) {
     CheckAttributeValue(config_value, default_value, js_element + ".value");
@@ -262,13 +260,12 @@ class ActiveDirectoryJoinTest : public EnterpriseEnrollmentTest {
 
   // Checks pattern attribute on the machine name input field. If `config_value`
   // is nullptr the attribute should be undefined.
-  void CheckPatternAttribute(const base::Value* config_value) {
+  void CheckPatternAttribute(const std::string* config_value) {
     if (config_value) {
       std::string escaped_pattern;
       // Escape regex pattern.
-      EXPECT_TRUE(base::EscapeJSONString(config_value->GetString(),
-                                         false /* put_in_quotes */,
-                                         &escaped_pattern));
+      EXPECT_TRUE(base::EscapeJSONString(
+          *config_value, false /* put_in_quotes */, &escaped_pattern));
       test::OobeJS().ExpectTrue(test::GetOobeElementPath(kAdMachineNameInput) +
                                 ".pattern  === '" + escaped_pattern + "'");
     } else {
@@ -283,42 +280,41 @@ class ActiveDirectoryJoinTest : public EnterpriseEnrollmentTest {
   // input fields are set correctly. Also checks if there is a "Custom" option
   // which does not set any fields.
   void CheckPossibleConfiguration(const std::string& configuration) {
-    std::unique_ptr<base::ListValue> options =
-        base::ListValue::From(base::JSONReader::ReadDeprecated(
-            configuration,
-            base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS));
-    base::DictionaryValue custom_option;
-    custom_option.SetKey("name", base::Value("Custom"));
-    options->Append(std::move(custom_option));
-    for (size_t i = 0; i < options->GetList().size(); ++i) {
-      const base::Value& option = options->GetList()[i];
+    absl::optional<base::Value> parsed_json = base::JSONReader::Read(
+        configuration, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
+    DCHECK(parsed_json);
+    base::Value::List& options = parsed_json->GetList();
+    base::Value::Dict custom_option;
+    custom_option.Set("name", "Custom");
+    options.Append(std::move(custom_option));
+    for (size_t i = 0; i < options.size(); ++i) {
+      const base::Value::Dict& option = options[i].GetDict();
       // Select configuration value.
       test::OobeJS().SelectElementInPath(base::NumberToString(i),
                                          kAdConfigurationSelect);
 
-      CheckAttributeValue(
-          option.FindKeyOfType("name", base::Value::Type::STRING), "",
-          test::GetOobeElementPath(kAdConfigurationSelect) +
-              ".selectedOptions[0].label");
+      CheckAttributeValue(option.FindString("name"), "",
+                          test::GetOobeElementPath(kAdConfigurationSelect) +
+                              ".selectedOptions[0].label");
 
       CheckAttributeValueAndDisabled(
-          option.FindKeyOfType("ad_username", base::Value::Type::STRING), "",
+          option.FindString("ad_username"), "",
           test::GetOobeElementPath(kAdUsernameInput));
 
       CheckAttributeValueAndDisabled(
-          option.FindKeyOfType("ad_password", base::Value::Type::STRING), "",
+          option.FindString("ad_password"), "",
           test::GetOobeElementPath(kAdPasswordInput));
 
       CheckAttributeValueAndDisabled(
-          option.FindKeyOfType("computer_ou", base::Value::Type::STRING), "",
+          option.FindString("computer_ou"), "",
           test::GetOobeElementPath(kAdMachineOrgUnitInput));
 
       CheckAttributeValueAndDisabled(
-          option.FindKeyOfType("encryption_types", base::Value::Type::STRING),
-          "strong", test::GetOobeElementPath(kAdEncryptionTypesSelect));
+          option.FindString("encryption_types"), "strong",
+          test::GetOobeElementPath(kAdEncryptionTypesSelect));
 
-      CheckPatternAttribute(option.FindKeyOfType(
-          "computer_name_validation_regex", base::Value::Type::STRING));
+      CheckPatternAttribute(
+          option.FindString("computer_name_validation_regex"));
     }
   }
 
@@ -417,48 +413,6 @@ class ActiveDirectoryJoinTest : public EnterpriseEnrollmentTest {
   MockAuthPolicyClient* mock_authpolicy_client_ = nullptr;
 };
 
-// Shows the enrollment screen and simulates an enrollment complete event. We
-// verify that the enrollment helper receives the correct auth code.
-IN_PROC_BROWSER_TEST_F(EnterpriseEnrollmentTest,
-                       TestAuthCodeGetsProperlyReceivedFromGaia) {
-  ShowEnrollmentScreen();
-  enrollment_helper_.ExpectEnrollmentMode(
-      policy::EnrollmentConfig::MODE_MANUAL);
-  enrollment_helper_.ExpectEnrollmentCredentials();
-  enrollment_helper_.SetupClearAuth();
-
-  SubmitEnrollmentCredentials();
-}
-
-// Shows the enrollment screen and simulates an enrollment failure. Verifies
-// that the error screen is displayed.
-IN_PROC_BROWSER_TEST_F(EnterpriseEnrollmentTest,
-                       TestProperPageGetsLoadedOnEnrollmentFailure) {
-  ShowEnrollmentScreen();
-
-  enrollment_screen()->OnEnrollmentError(policy::EnrollmentStatus::ForStatus(
-      policy::EnrollmentStatus::REGISTRATION_FAILED));
-  ExecutePendingJavaScript();
-
-  // Verify that the error page is displayed.
-  enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepError);
-}
-
-// Shows the enrollment screen and simulates a successful enrollment. Verifies
-// that the success screen is then displayed.
-IN_PROC_BROWSER_TEST_F(EnterpriseEnrollmentTest,
-                       TestProperPageGetsLoadedOnEnrollmentSuccess) {
-  ShowEnrollmentScreen();
-  enrollment_helper_.ExpectEnrollmentMode(
-      policy::EnrollmentConfig::MODE_MANUAL);
-  enrollment_helper_.DisableAttributePromptUpdate();
-  enrollment_helper_.ExpectSuccessfulOAuthEnrollment();
-  SubmitEnrollmentCredentials();
-
-  // Verify that the success page is displayed.
-  enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
-}
-
 // Shows the enrollment screen and mocks the enrollment helper to request an
 // attribute prompt screen. Verifies the attribute prompt screen is displayed.
 // Verifies that the data the user enters into the attribute prompt screen is
@@ -521,11 +475,12 @@ IN_PROC_BROWSER_TEST_F(ActiveDirectoryJoinTest,
       enrollment_screen(), kAdUserDomain, std::string(), kDMToken);
   SubmitEnrollmentCredentials();
 
-  chromeos::UpstartClient::Get()->StartAuthPolicyService();
+  UpstartClient::Get()->StartAuthPolicyService();
 
   CheckActiveDirectoryCredentialsShown();
   CheckConfigurationSelectionVisible(false);
-  content::DOMMessageQueue message_queue;
+  content::DOMMessageQueue message_queue(
+      LoginDisplayHost::default_host()->GetOobeWebContents());
   SetupActiveDirectoryJSNotifications();
   SetExpectedJoinRequest("machine_name", "" /* machine_domain */,
                          authpolicy::KerberosEncryptionTypes::ENC_TYPES_ALL,
@@ -551,16 +506,17 @@ IN_PROC_BROWSER_TEST_F(ActiveDirectoryJoinTest,
 
   SubmitEnrollmentCredentials();
 
-  chromeos::UpstartClient::Get()->StartAuthPolicyService();
+  UpstartClient::Get()->StartAuthPolicyService();
 
-  content::DOMMessageQueue message_queue;
+  content::DOMMessageQueue message_queue(
+      LoginDisplayHost::default_host()->GetOobeWebContents());
   SetupActiveDirectoryJSNotifications();
   SetExpectedJoinRequest(
       "machine_name", kAdMachineDomain,
       authpolicy::KerberosEncryptionTypes::ENC_TYPES_STRONG,
       std::vector<std::string>(
           kAdOrganizationalUnit,
-          kAdOrganizationalUnit + base::size(kAdOrganizationalUnit)),
+          kAdOrganizationalUnit + std::size(kAdOrganizationalUnit)),
       kAdTestUser, kDMToken);
   SubmitActiveDirectoryCredentials("machine_name", kAdMachineDomainDN,
                                    "" /* encryption_types */, kAdTestUser,
@@ -584,9 +540,10 @@ IN_PROC_BROWSER_TEST_F(ActiveDirectoryJoinTest,
       enrollment_screen(), kAdUserDomain, std::string(), kDMToken);
   SubmitEnrollmentCredentials();
 
-  chromeos::UpstartClient::Get()->StartAuthPolicyService();
+  UpstartClient::Get()->StartAuthPolicyService();
 
-  content::DOMMessageQueue message_queue;
+  content::DOMMessageQueue message_queue(
+      LoginDisplayHost::default_host()->GetOobeWebContents());
   // Checking error in case of empty password. Whether password is not empty
   // being checked in the UI. Machine name length is checked after that in the
   // authpolicyd.
@@ -629,9 +586,10 @@ IN_PROC_BROWSER_TEST_F(ActiveDirectoryJoinTest,
       enrollment_screen(), kAdUserDomain, std::string(), kDMToken);
   SubmitEnrollmentCredentials();
 
-  chromeos::UpstartClient::Get()->StartAuthPolicyService();
+  UpstartClient::Get()->StartAuthPolicyService();
 
-  content::DOMMessageQueue message_queue;
+  content::DOMMessageQueue message_queue(
+      LoginDisplayHost::default_host()->GetOobeWebContents());
   SetupActiveDirectoryJSNotifications();
   // Legacy type triggers error card.
   SubmitActiveDirectoryCredentials("machine_name", "" /* machine_dn */,
@@ -653,10 +611,11 @@ IN_PROC_BROWSER_TEST_F(ActiveDirectoryJoinTest,
       enrollment_screen(), kAdUserDomain, binary_config, kDMToken);
   SubmitEnrollmentCredentials();
 
-  chromeos::UpstartClient::Get()->StartAuthPolicyService();
+  UpstartClient::Get()->StartAuthPolicyService();
 
   ExecutePendingJavaScript();
-  content::DOMMessageQueue message_queue;
+  content::DOMMessageQueue message_queue(
+      LoginDisplayHost::default_host()->GetOobeWebContents());
   SetupActiveDirectoryJSNotifications();
 
   // Unlock password step should we shown.

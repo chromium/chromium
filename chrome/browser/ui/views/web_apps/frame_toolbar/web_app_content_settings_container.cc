@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -71,8 +71,11 @@ void WebAppContentSettingsContainer::SetUpForFadeIn() {
 void WebAppContentSettingsContainer::FadeIn() {
   if (GetVisible())
     return;
+
+  // The layer may have been destroyed since SetUpForFadeIn() was called.
+  SetPaintToLayer();
+
   SetVisible(true);
-  DCHECK_EQ(layer()->opacity(), 0);
   ui::ScopedLayerAnimationSettings settings(layer()->GetAnimator());
   settings.SetTransitionDuration(kContentSettingsFadeInDuration);
   layer()->SetOpacity(1);

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,12 +11,12 @@
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/environment.h"
+#include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/test/test_message_loop.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
-#include "build/os_buildflags.h"
 #include "media/audio/audio_device_description.h"
 #include "media/audio/audio_device_info_accessor_for_tests.h"
 #include "media/audio/audio_io.h"
@@ -121,9 +121,11 @@ class AudioInputTest : public testing::Test {
  protected:
   bool InputDevicesAvailable() {
 #if BUILDFLAG(IS_FUCHSIA)
-    // TODO(crbug.com/852834): On Fuchsia HasAudioInputDevices() returns true
-    // unconditionally, so the tests will fail on any device having no input
-    // device.
+    if (AudioDeviceInfoAccessorForTests(audio_manager_.get())
+            .HasAudioInputDevices()) {
+      return true;
+    }
+    // If the device has no audio input device, fake it.
     if (!fake_audio_) {
       fake_audio_ = std::make_unique<FakeAudio>();
     }
@@ -230,7 +232,7 @@ class AudioInputTest : public testing::Test {
   std::unique_ptr<FakeAudio> fake_audio_;
 #endif  // BUILDFLAG(IS_FUCHSIA)
   std::unique_ptr<AudioManager> audio_manager_;
-  AudioInputStream* audio_input_stream_;
+  raw_ptr<AudioInputStream> audio_input_stream_;
 };
 
 // Test create and close of an AudioInputStream without recording audio.

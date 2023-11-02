@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,11 +34,12 @@ import org.chromium.chrome.browser.signin.services.SigninManager.SignInStateObse
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.superviseduser.FilteringBehavior;
 import org.chromium.chrome.browser.sync.SyncService;
-import org.chromium.chrome.browser.ui.signin.SignOutDialogFragment;
-import org.chromium.chrome.browser.ui.signin.SignOutDialogFragment.SignOutDialogListener;
+import org.chromium.chrome.browser.ui.signin.SignOutDialogCoordinator;
+import org.chromium.chrome.browser.ui.signin.SignOutDialogCoordinator.Listener;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
@@ -48,6 +49,7 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 
 import java.util.List;
 
@@ -61,7 +63,7 @@ import java.util.List;
  * Note: This can be triggered from a web page, e.g. a GAIA sign-in page.
  */
 public class AccountManagementFragment extends PreferenceFragmentCompat
-        implements SignOutDialogListener, SignInStateObserver, ProfileDataCache.Observer {
+        implements Listener, SignInStateObserver, ProfileDataCache.Observer {
     private static final String TAG = "AcctManagementPref";
 
     private static final String SIGN_OUT_DIALOG_TAG = "sign_out_dialog_tag";
@@ -106,10 +108,7 @@ public class AccountManagementFragment extends PreferenceFragmentCompat
         SigninMetricsUtils.logProfileAccountManagementMenu(
                 ProfileAccountManagementMetrics.VIEW, mGaiaServiceType);
 
-        mProfileDataCache = mProfile.isChild()
-                ? ProfileDataCache.createWithDefaultImageSize(
-                        requireContext(), R.drawable.ic_account_child_20dp)
-                : ProfileDataCache.createWithDefaultImageSizeAndNoBadge(requireContext());
+        mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(requireContext());
     }
 
     @Override
@@ -178,6 +177,14 @@ public class AccountManagementFragment extends PreferenceFragmentCompat
         AccountManagerFacadeProvider.getInstance().getAccounts().then(this::updateAccountsList);
     }
 
+    /**
+     * The ProfileDataCache object needs to be accessible in some tests, for example in order to
+     * await the completion of async population of the cache.
+     */
+    public ProfileDataCache getProfileDataCacheForTesting() {
+        return mProfileDataCache;
+    }
+
     private boolean canAddAccounts() {
         UserManager userManager =
                 (UserManager) getActivity().getSystemService(Context.USER_SERVICE);
@@ -202,18 +209,16 @@ public class AccountManagementFragment extends PreferenceFragmentCompat
                 if (!isVisible() || !isResumed() || mSignedInAccountName == null) {
                     return false;
                 }
-                SigninMetricsUtils.logProfileAccountManagementMenu(
-                        ProfileAccountManagementMetrics.TOGGLE_SIGNOUT, mGaiaServiceType);
 
                 if (IdentityServicesProvider.get()
                                 .getIdentityManager(Profile.getLastUsedRegularProfile())
                                 .getPrimaryAccountInfo(ConsentLevel.SYNC)
                         != null) {
                     // Only show the sign-out dialog if the user has given sync consent.
-                    SignOutDialogFragment signOutFragment =
-                            SignOutDialogFragment.create(mGaiaServiceType);
-                    signOutFragment.setTargetFragment(AccountManagementFragment.this, 0);
-                    signOutFragment.show(getFragmentManager(), SIGN_OUT_DIALOG_TAG);
+                    SignOutDialogCoordinator.show(requireContext(),
+                            ((ModalDialogManagerHolder) getActivity()).getModalDialogManager(),
+                            this, SignOutDialogCoordinator.ActionType.CLEAR_PRIMARY_ACCOUNT,
+                            mGaiaServiceType);
                 } else {
                     IdentityServicesProvider.get()
                             .getSigninManager(Profile.getLastUsedRegularProfile())
@@ -260,8 +265,7 @@ public class AccountManagementFragment extends PreferenceFragmentCompat
             Drawable newIcon = ApiCompatibilityUtils.getDrawable(
                     getResources(), R.drawable.ic_drive_site_white_24dp);
             newIcon.mutate().setColorFilter(
-                    ApiCompatibilityUtils.getColor(getResources(), R.color.default_icon_color),
-                    PorterDuff.Mode.SRC_IN);
+                    SemanticColorUtils.getDefaultIconColor(getContext()), PorterDuff.Mode.SRC_IN);
             childContent.setIcon(newIcon);
         } else {
             PreferenceScreen prefScreen = getPreferenceScreen();
@@ -272,6 +276,12 @@ public class AccountManagementFragment extends PreferenceFragmentCompat
     }
 
     private void updateAccountsList(List<Account> accounts) {
+        // This method is called asynchronously on accounts fetched from AccountManagerFacade.
+        // Make sure the fragment is alive before updating preferences.
+        if (!isResumed()) return;
+
+        setAccountBadges(accounts);
+
         PreferenceCategory accountsCategory = findPreference(PREF_ACCOUNTS_CATEGORY);
         if (accountsCategory == null) {
             // This pref is dynamically added/removed many times, so it might not be present by now.
@@ -368,6 +378,18 @@ public class AccountManagementFragment extends PreferenceFragmentCompat
 
     private Context getStyledContext() {
         return getPreferenceManager().getContext();
+    }
+
+    private void setAccountBadges(List<Account> accounts) {
+        for (Account account : accounts) {
+            AccountManagerFacadeProvider.getInstance().checkChildAccountStatus(
+                    account, (isChild, childAccount) -> {
+                        if (isChild) {
+                            mProfileDataCache.setBadge(
+                                    childAccount, R.drawable.ic_account_child_20dp);
+                        }
+                    });
+        }
     }
 
     // ProfileDataCache.Observer implementation:

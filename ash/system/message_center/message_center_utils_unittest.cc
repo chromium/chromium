@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,8 +19,8 @@ void AddNotification(const std::string& notification_id,
                      const std::string& app_id) {
   message_center::MessageCenter::Get()->AddNotification(
       std::make_unique<message_center::Notification>(
-          message_center::NOTIFICATION_TYPE_BASE_FORMAT, notification_id,
-          u"test_title", u"test message", gfx::Image(),
+          message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
+          u"test_title", u"test message", ui::ImageModel(),
           /*display_source=*/std::u16string(), GURL(),
           message_center::NotifierId(message_center::NotifierType::APPLICATION,
                                      app_id),

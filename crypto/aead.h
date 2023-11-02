@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "crypto/crypto_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -85,7 +86,7 @@ class CRYPTO_EXPORT Aead {
             size_t max_output_length) const;
 
   absl::optional<base::span<const uint8_t>> key_;
-  const evp_aead_st* aead_;
+  raw_ptr<const evp_aead_st> aead_;
 };
 
 }  // namespace crypto

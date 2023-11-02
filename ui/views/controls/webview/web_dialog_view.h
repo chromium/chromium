@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
@@ -49,7 +50,7 @@ class ObservableWebView : public WebView {
   void ResetDelegate();
 
  private:
-  ui::WebDialogDelegate* delegate_;
+  raw_ptr<ui::WebDialogDelegate> delegate_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -142,11 +143,11 @@ class WEBVIEW_EXPORT WebDialogView : public ClientView,
                       std::unique_ptr<content::WebContents> new_contents,
                       const GURL& target_url,
                       WindowOpenDisposition disposition,
-                      const gfx::Rect& initial_rect,
+                      const blink::mojom::WindowFeatures& window_features,
                       bool user_gesture,
                       bool* was_blocked) override;
   void LoadingStateChanged(content::WebContents* source,
-                           bool to_different_document) override;
+                           bool should_show_loading_ui) override;
   void BeforeUnloadFired(content::WebContents* tab,
                          bool proceed,
                          bool* proceed_to_fire_unload) override;
@@ -185,9 +186,9 @@ class WEBVIEW_EXPORT WebDialogView : public ClientView,
   // and plumb all the calls through to |delegate_|, is a lot of code overhead
   // to support having this view know about dialog closure. There is probably a
   // lighter-weight way to achieve that.
-  ui::WebDialogDelegate* delegate_;
+  raw_ptr<ui::WebDialogDelegate> delegate_;
 
-  ObservableWebView* web_view_;
+  raw_ptr<ObservableWebView> web_view_;
 
   // Whether user is attempting to close the dialog and we are processing
   // beforeunload event.

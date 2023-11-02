@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,18 +43,16 @@
         });
       </script>
   `);
-  const initialTimeExpired = new Promise(async resolve => {
-    await virtualTimeController.grantInitialTime(1000, 1000, null, resolve);
-    frameNavigationHelper.navigate('http://example.com/');
-  });
-  await initialTimeExpired;
+  await virtualTimeController.initialize(1000);
+  await frameNavigationHelper.navigate('http://example.com/');
+  await virtualTimeController.grantTime(1000);
   session.evaluateAsync(`
       window.scrollBy(0, 200);
   `);
-  await new Promise(resolve => virtualTimeController.grantTime(500, resolve));
+  await virtualTimeController.grantTime(500);
   session.evaluateAsync(`
       window.scrollTo(0, 0);
   `);
-  await new Promise(resolve => virtualTimeController.grantTime(500, resolve));
+  await virtualTimeController.grantTime(500);
   testRunner.completeTest();
 })

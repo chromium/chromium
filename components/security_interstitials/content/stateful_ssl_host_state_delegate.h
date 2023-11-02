@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,9 @@
 #include <memory>
 #include <set>
 
-#include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/security_interstitials/core/https_only_mode_allowlist.h"
 #include "content/public/browser/ssl_host_state_delegate.h"
 
 class HostContentSettingsMap;
@@ -23,6 +24,7 @@ class FilePath;
 
 namespace content {
 class BrowserContext;
+class StoragePartition;
 }
 
 namespace user_prefs {
@@ -56,13 +58,14 @@ class StatefulSSLHostStateDelegate : public content::SSLHostStateDelegate,
   void AllowCert(const std::string& host,
                  const net::X509Certificate& cert,
                  int error,
-                 content::WebContents* web_contents) override;
+                 content::StoragePartition* storage_partition) override;
   void Clear(
       base::RepeatingCallback<bool(const std::string&)> host_filter) override;
-  CertJudgment QueryPolicy(const std::string& host,
-                           const net::X509Certificate& cert,
-                           int error,
-                           content::WebContents* web_contents) override;
+  CertJudgment QueryPolicy(
+      const std::string& host,
+      const net::X509Certificate& cert,
+      int error,
+      content::StoragePartition* storage_partition) override;
   void HostRanInsecureContent(const std::string& host,
                               int child_id,
                               InsecureContentType content_type) override;
@@ -70,12 +73,13 @@ class StatefulSSLHostStateDelegate : public content::SSLHostStateDelegate,
                                  int child_id,
                                  InsecureContentType content_type) override;
   void AllowHttpForHost(const std::string& host,
-                        content::WebContents* web_contents) override;
-  bool IsHttpAllowedForHost(const std::string& host,
-                            content::WebContents* web_contents) override;
+                        content::StoragePartition* storage_partition) override;
+  bool IsHttpAllowedForHost(
+      const std::string& host,
+      content::StoragePartition* storage_partition) override;
   void RevokeUserAllowExceptions(const std::string& host) override;
   bool HasAllowException(const std::string& host,
-                         content::WebContents* web_contents) override;
+                         content::StoragePartition* storage_partition) override;
 
   // RevokeUserAllowExceptionsHard is the same as RevokeUserAllowExceptions but
   // additionally may close idle connections in the process. This should be used
@@ -120,7 +124,7 @@ class StatefulSSLHostStateDelegate : public content::SSLHostStateDelegate,
   // Returns whether the user has allowed a certificate error exception for
   // |host|.
   bool HasCertAllowException(const std::string& host,
-                             content::WebContents* web_contents);
+                             content::StoragePartition* storage_partition);
 
   // Returns a dictionary of certificate fingerprints and errors that have been
   // allowed as exceptions by the user.
@@ -133,14 +137,14 @@ class StatefulSSLHostStateDelegate : public content::SSLHostStateDelegate,
   // GetValidCertDecisionsDict will create a new set of entries within the
   // dictionary if they do not already exist. Otherwise will fail and return if
   // NULL if they do not exist.
-  base::Value* GetValidCertDecisionsDict(
-      base::Value* dict,
-      CreateDictionaryEntriesDisposition create_entries);
+  base::Value::Dict* GetValidCertDecisionsDict(
+      CreateDictionaryEntriesDisposition create_entries,
+      base::Value::Dict& dict);
 
   std::unique_ptr<base::Clock> clock_;
-  content::BrowserContext* browser_context_;
-  PrefService* pref_service_;
-  HostContentSettingsMap* host_content_settings_map_;
+  raw_ptr<content::BrowserContext> browser_context_;
+  raw_ptr<PrefService> pref_service_;
+  raw_ptr<HostContentSettingsMap> host_content_settings_map_;
 
   using AllowedCert = std::pair<std::string /* certificate fingerprint */,
                                 base::FilePath /* StoragePartition path */>;
@@ -173,17 +177,9 @@ class StatefulSSLHostStateDelegate : public content::SSLHostStateDelegate,
   std::map<int /* error code */, int /* count */> recurrent_errors_;
 
   // Tracks sites that are allowed to load over HTTP when HTTPS-First Mode is
-  // enabled, for non-default storage partitions. Allowed hosts are exact
-  // hostname matches -- subdomains of a host on the allowlist must be
-  // separately allowlisted.
-  //
-  // In most cases, HTTP interstitial decisions are stored in ContentSettings
-  // and persisted to disk, like cert decisions. Similar to cert decisions, for
-  // non-default StoragePartitions the decisions should be isolated from normal
-  // browsing and don't need to be persisted to disk. For these cases, track
-  // allowlist decisions purely in memory.
-  std::set<std::string /* host */>
-      allowed_http_hosts_for_non_default_storage_partitions_;
+  // enabled. Allowed hosts are exact hostname matches -- subdomains of a host
+  // on the allowlist must be separately allowlisted.
+  security_interstitials::HttpsOnlyModeAllowlist https_only_mode_allowlist_;
 
   int recurrent_interstitial_threshold_for_testing;
   enum RecurrentInterstitialMode recurrent_interstitial_mode_for_testing;

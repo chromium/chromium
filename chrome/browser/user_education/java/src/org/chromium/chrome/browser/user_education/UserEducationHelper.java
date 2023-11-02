@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.os.Handler;
 import android.view.View;
 
+import org.chromium.base.TraceEvent;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -58,12 +59,17 @@ public class UserEducationHelper {
      * should.
      */
     public void requestShowIPH(IPHCommand iphCommand) {
-        // TODO (https://crbug.com/1048632): Use the current profile (i.e., regular profile or
-        // incognito profile) instead of always using regular profile. Currently always original
-        // profile is used not to start popping IPH messages as soon as opening an incognito tab.
-        Profile profile = Profile.getLastUsedRegularProfile();
-        final Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
-        tracker.addOnInitializedCallback(success -> showIPH(tracker, iphCommand));
+        if (iphCommand == null) return;
+
+        try (TraceEvent te = TraceEvent.scoped("UserEducationHelper::requestShowIPH")) {
+            // TODO (https://crbug.com/1048632): Use the current profile (i.e., regular profile or
+            // incognito profile) instead of always using regular profile. Currently always original
+            // profile is used not to start popping IPH messages as soon as opening an incognito
+            // tab.
+            Profile profile = Profile.getLastUsedRegularProfile();
+            final Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
+            tracker.addOnInitializedCallback(success -> showIPH(tracker, iphCommand));
+        }
     }
 
     private void showIPH(Tracker tracker, IPHCommand iphCommand) {
@@ -75,10 +81,6 @@ public class UserEducationHelper {
         }
 
         String featureName = iphCommand.featureName;
-        String contentString = iphCommand.contentString;
-        String accessibilityString = iphCommand.accessibilityText;
-        assert (!contentString.isEmpty());
-        assert (!accessibilityString.isEmpty());
         assert (featureName != null);
 
         ViewRectProvider viewRectProvider = iphCommand.viewRectProvider;
@@ -101,7 +103,25 @@ public class UserEducationHelper {
             return;
         }
 
-        if (triggerDetails.shouldShowSnooze) {
+        // If scroll optimizations were enabled, iphCommand would have been built lazily, and we
+        // would have to fetch the data that is needed from this point on.
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_SCROLL_OPTIMIZATIONS)) {
+            iphCommand.fetchFromResources();
+        }
+
+        String contentString = iphCommand.contentString;
+        String accessibilityString = iphCommand.accessibilityText;
+        assert (!contentString.isEmpty());
+        assert (!accessibilityString.isEmpty());
+
+        // Automatic snoozes are handled separately. If automatic snoozing is enabled, we won't show
+        // snooze UI in the IPH, but we will treat the dismiss as an implicit snooze action.
+        boolean shouldShowSnoozeButton = triggerDetails.shouldShowSnooze
+                && !ChromeFeatureList.isEnabled(ChromeFeatureList.ENABLE_AUTOMATIC_SNOOZE);
+        boolean treatDismissAsImplicitSnooze =
+                ChromeFeatureList.isEnabled(ChromeFeatureList.ENABLE_AUTOMATIC_SNOOZE)
+                && triggerDetails.shouldShowSnooze;
+        if (shouldShowSnoozeButton) {
             // TODO(crbug.com/1243973): Implement explicit dismiss.
             boolean showExplicitDismiss = false;
             Runnable snoozeRunnable = showExplicitDismiss
@@ -127,6 +147,9 @@ public class UserEducationHelper {
         textBubble.setPreferredVerticalOrientation(iphCommand.preferredVerticalOrientation);
         textBubble.setDismissOnTouchInteraction(iphCommand.dismissOnTouch);
         textBubble.addOnDismissListener(() -> mHandler.postDelayed(() -> {
+            if (treatDismissAsImplicitSnooze) {
+                tracker.dismissedWithSnooze(featureName, SnoozeAction.SNOOZED);
+            }
             if (featureName != null) tracker.dismissed(featureName);
             iphCommand.onDismissCallback.run();
             if (highlightParams != null) {

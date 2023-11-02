@@ -1,4 +1,4 @@
-// Copyright (c) 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,13 @@
 
 #include <utility>
 
+#include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_root.h"
 
-namespace base {
-namespace internal {
+namespace partition_alloc::internal {
 
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
 ThreadSafePartitionRoot& PCScanMetadataAllocator();
 void ReinitPCScanMetadataAllocatorForTesting();
 
@@ -44,8 +45,9 @@ class MetadataAllocator {
   }
 
   value_type* allocate(size_t size) {
-    return static_cast<value_type*>(PCScanMetadataAllocator().AllocFlagsNoHooks(
-        0, size * sizeof(value_type), PartitionPageSize()));
+    return static_cast<value_type*>(
+        PCScanMetadataAllocator().AllocWithFlagsNoHooks(
+            0, size * sizeof(value_type), PartitionPageSize()));
   }
 
   void deallocate(value_type* ptr, size_t size) {
@@ -56,8 +58,8 @@ class MetadataAllocator {
 // Inherit from it to make a class allocated on the metadata partition.
 struct AllocatedOnPCScanMetadataPartition {
   static void* operator new(size_t size) {
-    return PCScanMetadataAllocator().AllocFlagsNoHooks(0, size,
-                                                       PartitionPageSize());
+    return PCScanMetadataAllocator().AllocWithFlagsNoHooks(0, size,
+                                                           PartitionPageSize());
   }
   static void operator delete(void* ptr) {
     PCScanMetadataAllocator().FreeNoHooks(ptr);
@@ -66,8 +68,9 @@ struct AllocatedOnPCScanMetadataPartition {
 
 template <typename T, typename... Args>
 T* MakePCScanMetadata(Args&&... args) {
-  auto* memory = static_cast<T*>(PCScanMetadataAllocator().AllocFlagsNoHooks(
-      0, sizeof(T), PartitionPageSize()));
+  auto* memory =
+      static_cast<T*>(PCScanMetadataAllocator().AllocWithFlagsNoHooks(
+          0, sizeof(T), PartitionPageSize()));
   return new (memory) T(std::forward<Args>(args)...);
 }
 
@@ -77,7 +80,6 @@ struct PCScanMetadataDeleter final {
   }
 };
 
-}  // namespace internal
-}  // namespace base
+}  // namespace partition_alloc::internal
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_STARSCAN_METADATA_ALLOCATOR_H_

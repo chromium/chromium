@@ -40,10 +40,13 @@
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
+namespace gfx {
+class RectF;
+class SizeF;
+}  // namespace gfx
+
 namespace blink {
 
-class FloatRect;
-class FloatSize;
 class Path;
 
 class CORE_EXPORT BasicShape : public RefCounted<BasicShape> {
@@ -57,6 +60,8 @@ class CORE_EXPORT BasicShape : public RefCounted<BasicShape> {
     kBasicShapePolygonType,
     kBasicShapeCircleType,
     kBasicShapeInsetType,
+    kBasicShapeRectType,
+    kBasicShapeXYWHType,
     kStyleRayType,
     kStylePathType
   };
@@ -65,14 +70,18 @@ class CORE_EXPORT BasicShape : public RefCounted<BasicShape> {
     return GetType() == other.GetType();
   }
 
-  virtual void GetPath(Path&, const FloatRect&, float zoom) = 0;
+  virtual void GetPath(Path&, const gfx::RectF&, float zoom) = 0;
   virtual WindRule GetWindRule() const { return RULE_NONZERO; }
-  virtual bool operator==(const BasicShape&) const = 0;
+  bool operator==(const BasicShape& o) const {
+    return IsSameType(o) && IsEqualAssumingSameType(o);
+  }
 
   virtual ShapeType GetType() const = 0;
 
  protected:
   BasicShape() = default;
+
+  virtual bool IsEqualAssumingSameType(const BasicShape&) const = 0;
 };
 
 class BasicShapeCenterCoordinate {
@@ -140,15 +149,17 @@ class CORE_EXPORT BasicShapeCircle final : public BasicShape {
   const BasicShapeCenterCoordinate& CenterY() const { return center_y_; }
   const BasicShapeRadius& Radius() const { return radius_; }
 
-  float FloatValueForRadiusInBox(FloatSize) const;
+  float FloatValueForRadiusInBox(gfx::SizeF) const;
   void SetCenterX(BasicShapeCenterCoordinate center_x) { center_x_ = center_x; }
   void SetCenterY(BasicShapeCenterCoordinate center_y) { center_y_ = center_y; }
   void SetRadius(BasicShapeRadius radius) { radius_ = radius; }
 
-  void GetPath(Path&, const FloatRect&, float) override;
-  bool operator==(const BasicShape&) const override;
+  void GetPath(Path&, const gfx::RectF&, float) override;
 
   ShapeType GetType() const override { return kBasicShapeCircleType; }
+
+ protected:
+  bool IsEqualAssumingSameType(const BasicShape&) const override;
 
  private:
   BasicShapeCircle() = default;
@@ -184,10 +195,12 @@ class BasicShapeEllipse final : public BasicShape {
   void SetRadiusX(BasicShapeRadius radius_x) { radius_x_ = radius_x; }
   void SetRadiusY(BasicShapeRadius radius_y) { radius_y_ = radius_y; }
 
-  void GetPath(Path&, const FloatRect&, float) override;
-  bool operator==(const BasicShape&) const override;
+  void GetPath(Path&, const gfx::RectF&, float) override;
 
   ShapeType GetType() const override { return kBasicShapeEllipseType; }
+
+ protected:
+  bool IsEqualAssumingSameType(const BasicShape&) const override;
 
  private:
   BasicShapeEllipse() = default;
@@ -219,12 +232,14 @@ class BasicShapePolygon final : public BasicShape {
     values_.push_back(y);
   }
 
-  void GetPath(Path&, const FloatRect&, float) override;
-  bool operator==(const BasicShape&) const override;
+  void GetPath(Path&, const gfx::RectF&, float) override;
 
   WindRule GetWindRule() const override { return wind_rule_; }
 
   ShapeType GetType() const override { return kBasicShapePolygonType; }
+
+ protected:
+  bool IsEqualAssumingSameType(const BasicShape&) const override;
 
  private:
   BasicShapePolygon() : wind_rule_(RULE_NONZERO) {}
@@ -240,12 +255,8 @@ struct DowncastTraits<BasicShapePolygon> {
   }
 };
 
-class BasicShapeInset : public BasicShape {
+class BasicShapeRectCommon : public BasicShape {
  public:
-  static scoped_refptr<BasicShapeInset> Create() {
-    return base::AdoptRef(new BasicShapeInset);
-  }
-
   const Length& Top() const { return top_; }
   const Length& Right() const { return right_; }
   const Length& Bottom() const { return bottom_; }
@@ -272,13 +283,11 @@ class BasicShapeInset : public BasicShape {
     bottom_left_radius_ = radius;
   }
 
-  void GetPath(Path&, const FloatRect&, float) override;
-  bool operator==(const BasicShape&) const override;
+ protected:
+  BasicShapeRectCommon() = default;
 
-  ShapeType GetType() const override { return kBasicShapeInsetType; }
-
- private:
-  BasicShapeInset() = default;
+ protected:
+  bool IsEqualAssumingSameType(const BasicShape&) const override;
 
   Length right_;
   Length top_;
@@ -291,10 +300,105 @@ class BasicShapeInset : public BasicShape {
   LengthSize bottom_left_radius_;
 };
 
+class BasicShapeInset final : public BasicShapeRectCommon {
+ public:
+  static scoped_refptr<BasicShapeInset> Create() {
+    return base::AdoptRef(new BasicShapeInset);
+  }
+
+  ShapeType GetType() const override { return kBasicShapeInsetType; }
+  void GetPath(Path&, const gfx::RectF&, float) override;
+};
+
 template <>
 struct DowncastTraits<BasicShapeInset> {
   static bool AllowFrom(const BasicShape& value) {
     return value.GetType() == BasicShape::kBasicShapeInsetType;
+  }
+};
+
+class BasicShapeRect final : public BasicShapeRectCommon {
+ public:
+  static scoped_refptr<BasicShapeRect> Create() {
+    return base::AdoptRef(new BasicShapeRect);
+  }
+
+  ShapeType GetType() const override { return kBasicShapeRectType; }
+  void GetPath(Path&, const gfx::RectF&, float) override;
+};
+
+template <>
+struct DowncastTraits<BasicShapeRect> {
+  static bool AllowFrom(const BasicShape& value) {
+    return value.GetType() == BasicShape::kBasicShapeRectType;
+  }
+};
+
+template <>
+struct DowncastTraits<BasicShapeRectCommon> {
+  static bool AllowFrom(const BasicShape& value) {
+    return value.GetType() == BasicShape::kBasicShapeRectType ||
+           value.GetType() == BasicShape::kBasicShapeInsetType;
+  }
+};
+
+class BasicShapeXYWH : public BasicShape {
+ public:
+  static scoped_refptr<BasicShapeXYWH> Create() {
+    return base::AdoptRef(new BasicShapeXYWH);
+  }
+
+  const Length& X() const { return x_; }
+  const Length& Y() const { return y_; }
+  const Length& Width() const { return width_; }
+  const Length& Height() const { return height_; }
+
+  const LengthSize& TopLeftRadius() const { return top_left_radius_; }
+  const LengthSize& TopRightRadius() const { return top_right_radius_; }
+  const LengthSize& BottomRightRadius() const { return bottom_right_radius_; }
+  const LengthSize& BottomLeftRadius() const { return bottom_left_radius_; }
+
+  void SetX(const Length& x) { x_ = x; }
+  void SetY(const Length& y) { y_ = y; }
+  void SetWidth(const Length& width) { width_ = width; }
+  void SetHeight(const Length& height) { height_ = height; }
+
+  void SetTopLeftRadius(const LengthSize& radius) { top_left_radius_ = radius; }
+  void SetTopRightRadius(const LengthSize& radius) {
+    top_right_radius_ = radius;
+  }
+  void SetBottomRightRadius(const LengthSize& radius) {
+    bottom_right_radius_ = radius;
+  }
+  void SetBottomLeftRadius(const LengthSize& radius) {
+    bottom_left_radius_ = radius;
+  }
+
+  void GetPath(Path&, const gfx::RectF&, float) override;
+  ShapeType GetType() const override { return kBasicShapeXYWHType; }
+
+ protected:
+  BasicShapeXYWH() = default;
+
+ protected:
+  bool IsEqualAssumingSameType(const BasicShape&) const override;
+
+ private:
+  Length x_;
+  Length y_;
+  Length width_;
+  Length height_;
+
+  LengthSize top_left_radius_;
+  LengthSize top_right_radius_;
+  LengthSize bottom_right_radius_;
+  LengthSize bottom_left_radius_;
+};
+
+template <>
+struct DowncastTraits<BasicShapeXYWH> {
+  static bool AllowFrom(const BasicShape& value) {
+    return value.GetType() == BasicShape::kBasicShapeXYWHType;
   }
 };
 

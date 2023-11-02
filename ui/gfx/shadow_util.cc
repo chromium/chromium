@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -86,7 +86,9 @@ ShadowDetails::ShadowDetails() {}
 ShadowDetails::ShadowDetails(const ShadowDetails& other) = default;
 ShadowDetails::~ShadowDetails() {}
 
-const ShadowDetails& ShadowDetails::Get(int elevation, int corner_radius) {
+const ShadowDetails& ShadowDetails::Get(int elevation,
+                                        int corner_radius,
+                                        ShadowStyle style) {
   auto iter =
       g_shadow_cache.Get().find(std::make_pair(elevation, corner_radius));
   if (iter != g_shadow_cache.Get().end())
@@ -96,7 +98,21 @@ const ShadowDetails& ShadowDetails::Get(int elevation, int corner_radius) {
       std::make_pair(elevation, corner_radius), ShadowDetails());
   DCHECK(insertion.second);
   ShadowDetails* shadow = &insertion.first->second;
-  shadow->values = ShadowValue::MakeMdShadowValues(elevation);
+
+  // Generate shadow values according to the give shadow style.
+  switch (style) {
+    case ShadowStyle::kMaterialDesign:
+      shadow->values = ShadowValue::MakeMdShadowValues(elevation);
+      break;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    case ShadowStyle::kChromeOSSystemUI:
+      shadow->values = ShadowValue::MakeChromeOSSystemUIShadowValues(elevation);
+      break;
+#endif
+    default:
+      NOTREACHED() << "Unknown shadow style.";
+  }
+
   auto* source = new ShadowNineboxSource(shadow->values, corner_radius);
   shadow->ninebox_image = ImageSkia(base::WrapUnique(source), source->size());
   return *shadow;

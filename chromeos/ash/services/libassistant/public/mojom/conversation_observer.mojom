@@ -1,0 +1,114 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.libassistant.mojom;
+
+import "chromeos/ash/services/libassistant/public/mojom/android_app_info.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
+import "url/mojom/url.mojom";
+
+// Observer that will be informed about set of events related to a conversation
+// turn, including response events (i.e. OnShowText) and events indicating a
+// conversation's life cycle (i.e. OnTurnFinished).
+interface ConversationObserver{
+  // A conversation turn has started.
+  // Note that we guarantee OnInteractionFinished() will be called before
+  // OnInteractionStarted is called again, so no 2 conversations will ever be
+  // active at the same time.
+  OnInteractionStarted(AssistantInteractionMetadata metadata);
+
+  // The current conversation turn has finished.
+  OnInteractionFinished(AssistantInteractionResolution resolution);
+
+  // Libassistant is speaking TTS response. |due_to_error| is true if TTS
+  // is started due to an error that occurred during the conversation.
+  OnTtsStarted(bool due_to_error);
+
+  // Assistant got Html response with fallback text from server.
+  // Note that fallback message is always empty since it has been deprecated.
+  OnHtmlResponse(string response, string fallback);
+
+  // Assistant received text response from Libassistant.
+  OnTextResponse(string response);
+
+  // Assistant received suggestions response from Libassistant.
+  OnSuggestionsResponse(array<AssistantSuggestion> suggestions);
+
+  // Assistant got open URL response from server. If |in_background| is true,
+  // the url will be opened in the background without closing the Assistant UI.
+  OnOpenUrlResponse(url.mojom.Url url, bool in_background);
+
+  // Assistant got open Android app response from server.
+  OnOpenAppResponse(AndroidAppInfo app_info);
+
+  // Assistant has started waiting. This occur during execution of a routine to
+  // give the user time to digest a response before continuing execution.
+  OnWaitStarted();
+};
+
+struct AssistantInteractionMetadata {
+  AssistantInteractionType type;
+  AssistantQuerySource source;
+  string query;
+};
+
+// Models an Assistant suggestion.
+struct AssistantSuggestion {
+  // Uniquely identifies a given suggestion.
+  mojo_base.mojom.UnguessableToken id;
+
+  // Allows us to differentiate between a typical Assistant suggestion and an
+  // Assistant suggestion of another type (e.g. a conversation starter).
+  AssistantSuggestionType type = kUnspecified;
+
+  // Display text. e.g. "Cancel".
+  string text;
+
+  // Optional URL for icon. e.g. "https://www.gstatic.com/icon.png".
+  url.mojom.Url icon_url;
+
+  // Optional URL for action. e.g.
+  // "https://www.google.com/search?query=action".
+  url.mojom.Url action_url;
+};
+
+// Enumeration of possible Assistant suggestion types.
+enum AssistantSuggestionType {
+  kUnspecified,
+  kConversationStarter,
+  kBetterOnboarding,
+};
+
+enum AssistantInteractionResolution {
+  // Assistant interaction completed normally.
+  kNormal,
+  // Assistant interaction completed due to barge in or cancellation.
+  kInterruption,
+  // Assistant interaction completed due to error.
+  kError,
+  // Assistant interaction completed due to mic timeout.
+  kMicTimeout,
+  // Assistant interaction completed due to multi-device hotword loss.
+  kMultiDeviceHotwordLoss,
+};
+
+enum AssistantQuerySource {
+  kUnspecified,
+  kDeepLink,
+  kDialogPlateTextField,
+  kStylus,
+  kSuggestionChip,
+  kVoiceInput,
+  kLibAssistantInitiated,
+  kConversationStarter,
+  kWhatsOnMyScreen,
+  kQuickAnswers,
+  kLauncherChip,
+  kBetterOnboarding,
+};
+
+enum AssistantInteractionType {
+  kText,
+  kVoice,
+};

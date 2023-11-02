@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -55,10 +55,7 @@ class LockScreenProfileCreatorImpl : public LockScreenProfileCreator,
   // is called more than once for a single profile).
   // |start_time| - time at which the profile creation started.
   // |profile| - the created profile - i.e. the lock screen profile.
-  // |status| - profile creation status.
-  void OnProfileReady(const base::TimeTicks& start_time,
-                      Profile* profile,
-                      Profile::CreateStatus status);
+  void OnProfileReady(const base::TimeTicks& start_time, Profile* profile);
 
   Profile* const primary_profile_;
   const base::TickClock* tick_clock_;

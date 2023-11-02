@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/common/extensions/api/sessions.h"
 #include "chrome/common/extensions/api/tab_groups.h"
 #include "chrome/common/extensions/api/tabs.h"
@@ -38,11 +39,11 @@ class SessionsGetRecentlyClosedFunction : public ExtensionFunction {
  private:
   api::tabs::Tab CreateTabModel(const sessions::TabRestoreService::Tab& tab,
                                 bool active);
-  std::unique_ptr<api::windows::Window> CreateWindowModel(
+  api::windows::Window CreateWindowModel(
       const sessions::TabRestoreService::Window& window);
-  std::unique_ptr<api::tab_groups::TabGroup> CreateGroupModel(
+  api::tab_groups::TabGroup CreateGroupModel(
       const sessions::TabRestoreService::Group& group);
-  std::unique_ptr<api::sessions::Session> CreateSessionModel(
+  api::sessions::Session CreateSessionModel(
       const sessions::TabRestoreService::Entry& entry);
 };
 
@@ -57,10 +58,10 @@ class SessionsGetDevicesFunction : public ExtensionFunction {
                                 const sessions::SessionTab& tab,
                                 int tab_index,
                                 bool active);
-  std::unique_ptr<api::windows::Window> CreateWindowModel(
+  absl::optional<api::windows::Window> CreateWindowModel(
       const sessions::SessionWindow& window,
       const std::string& session_tag);
-  std::unique_ptr<api::sessions::Session> CreateSessionModel(
+  absl::optional<api::sessions::Session> CreateSessionModel(
       const sessions::SessionWindow& window,
       const std::string& session_tag);
   api::sessions::Device CreateDeviceModel(
@@ -103,10 +104,10 @@ class SessionsEventRouter : public sessions::TabRestoreServiceObserver {
       sessions::TabRestoreService* service) override;
 
  private:
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // TabRestoreService that we are observing.
-  sessions::TabRestoreService* tab_restore_service_;
+  raw_ptr<sessions::TabRestoreService> tab_restore_service_;
 };
 
 class SessionsAPI : public BrowserContextKeyedAPI,
@@ -131,7 +132,7 @@ class SessionsAPI : public BrowserContextKeyedAPI,
  private:
   friend class BrowserContextKeyedAPIFactory<SessionsAPI>;
 
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
 
   // BrowserContextKeyedAPI implementation.
   static const char* service_name() {

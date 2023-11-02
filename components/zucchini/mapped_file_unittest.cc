@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,7 +33,7 @@ TEST_F(MappedFileWriterTest, Keep) {
   {
     using base::File;
     File file(file_path_, File::FLAG_CREATE_ALWAYS | File::FLAG_READ |
-                              File::FLAG_WRITE | File::FLAG_SHARE_DELETE |
+                              File::FLAG_WRITE | File::FLAG_WIN_SHARE_DELETE |
                               File::FLAG_CAN_DELETE_ON_CLOSE);
     MappedFileWriter file_writer(file_path_, std::move(file), 10);
     EXPECT_FALSE(file_writer.HasError());
@@ -49,7 +49,7 @@ TEST_F(MappedFileWriterTest, DeleteOnClose) {
   {
     using base::File;
     File file(file_path_, File::FLAG_CREATE_ALWAYS | File::FLAG_READ |
-                              File::FLAG_WRITE | File::FLAG_SHARE_DELETE |
+                              File::FLAG_WRITE | File::FLAG_WIN_SHARE_DELETE |
                               File::FLAG_CAN_DELETE_ON_CLOSE);
     MappedFileWriter file_writer(file_path_, std::move(file), 10);
     EXPECT_FALSE(file_writer.HasError());

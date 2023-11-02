@@ -1,12 +1,18 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/context_lifecycle_observer.h"
 
+#include "base/record_replay.h"
 #include "third_party/blink/renderer/platform/context_lifecycle_notifier.h"
 
 namespace blink {
+
+ContextLifecycleObserver::ContextLifecycleObserver() {
+  // Registration is currently needed for ContextLifecycleNotifier::NotifyContextDestroyed.
+  recordreplay::RegisterPointer("ContextLifecycleObserver", this);
+}
 
 ContextLifecycleObserver::~ContextLifecycleObserver() {
 #if DCHECK_IS_ON()
@@ -17,6 +23,7 @@ ContextLifecycleObserver::~ContextLifecycleObserver() {
   // !waiting_for_context_destroyed_ || notifier_
   DCHECK(!waiting_for_context_destroyed_ || notifier_);
 #endif
+  recordreplay::UnregisterPointer(this);
 }
 
 void ContextLifecycleObserver::SetContextLifecycleNotifier(

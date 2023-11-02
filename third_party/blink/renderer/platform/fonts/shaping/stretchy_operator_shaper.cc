@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,8 +13,8 @@
 #include "third_party/blink/renderer/platform/fonts/opentype/open_type_math_support.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_face.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_inline_headers.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
 namespace blink {
@@ -36,11 +36,10 @@ GetAssemblyParameters(const HarfBuzzFace* harfbuzz_face,
   Vector<OpenTypeMathStretchData::GlyphPartRecord> parts =
       OpenTypeMathSupport::GetGlyphPartRecords(harfbuzz_face, base_glyph,
                                                stretch_axis, italic_correction);
-  if (parts.IsEmpty())
+  if (parts.empty())
     return absl::nullopt;
 
-  hb_font_t* hb_font =
-      harfbuzz_face->GetScaledFont(nullptr, HarfBuzzFace::kNoVerticalLayout);
+  hb_font_t* const hb_font = harfbuzz_face->GetScaledFont();
 
   auto hb_stretch_axis =
       stretch_axis == OpenTypeMathStretchData::StretchAxis::Horizontal
@@ -147,7 +146,7 @@ scoped_refptr<ShapeResult> StretchyOperatorShaper::Shape(
   for (auto& variant : OpenTypeMathSupport::GetGlyphVariantRecords(
            harfbuzz_face, base_glyph, stretch_axis_)) {
     glyph_variant = variant;
-    FloatRect bounds = primary_font->BoundsForGlyph(glyph_variant);
+    gfx::RectF bounds = primary_font->BoundsForGlyph(glyph_variant);
     if (metrics) {
       italic_correction =
           OpenTypeMathSupport::MathItalicCorrection(harfbuzz_face, variant)
@@ -180,7 +179,7 @@ scoped_refptr<ShapeResult> StretchyOperatorShaper::Shape(
   if (metrics) {
     // The OpenType MATH specification does provide any distinction between
     // the advance width and ink width, so the latter is returned here.
-    FloatRect bounds = shape_result_for_glyph_assembly->ComputeInkBounds();
+    gfx::RectF bounds = shape_result_for_glyph_assembly->ComputeInkBounds();
     if (stretch_axis_ == OpenTypeMathStretchData::StretchAxis::Horizontal) {
       *metrics = {bounds.width(), -bounds.y(), bounds.bottom(),
                   italic_correction};

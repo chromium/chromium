@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/client/client_test_helper.h"
 #include "gpu/command_buffer/client/mock_transfer_buffer.h"
 #include "gpu/command_buffer/client/shared_memory_limits.h"
@@ -120,11 +121,10 @@ class WebGPUImplementationTest : public testing::Test {
   std::unique_ptr<WebGPUCmdHelper> helper_;
   std::unique_ptr<MockTransferBuffer> transfer_buffer_;
   std::unique_ptr<WebGPUImplementation> gl_;
-  CommandBufferEntry* commands_ = nullptr;
+  raw_ptr<CommandBufferEntry> commands_ = nullptr;
   Capabilities capabilities_;
 };
 
-#include "base/macros.h"
 #include "gpu/command_buffer/client/webgpu_implementation_unittest_autogen.h"
 
 }  // namespace webgpu

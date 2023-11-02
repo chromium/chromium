@@ -1,6 +1,6 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file
+// found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/managed_device/navigator_managed_data.h"
 
@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
@@ -54,7 +55,7 @@ ExecutionContext* NavigatorManagedData::GetExecutionContext() const {
 bool NavigatorManagedData::HasPendingActivity() const {
   // Prevents garbage collecting of this object when not hold by another
   // object but still has listeners registered.
-  return !pending_promises_.IsEmpty() || HasEventListeners();
+  return !pending_promises_.empty() || HasEventListeners();
 }
 
 void NavigatorManagedData::Trace(Visitor* visitor) const {
@@ -76,8 +77,8 @@ mojom::blink::DeviceAPIService* NavigatorManagedData::GetService() {
     // The access status of Device API can change dynamically. Hence, we have to
     // properly handle cases when we are losing this access.
     device_api_service_.set_disconnect_handler(
-        WTF::Bind(&NavigatorManagedData::OnServiceConnectionError,
-                  WrapWeakPersistent(this)));
+        WTF::BindOnce(&NavigatorManagedData::OnServiceConnectionError,
+                      WrapWeakPersistent(this)));
   }
 
   return device_api_service_.get();
@@ -92,8 +93,8 @@ NavigatorManagedData::GetManagedConfigurationService() {
     // The access status of Device API can change dynamically. Hence, we have to
     // properly handle cases when we are losing this access.
     managed_configuration_service_.set_disconnect_handler(
-        WTF::Bind(&NavigatorManagedData::OnServiceConnectionError,
-                  WrapWeakPersistent(this)));
+        WTF::BindOnce(&NavigatorManagedData::OnServiceConnectionError,
+                      WrapWeakPersistent(this)));
   }
 
   return managed_configuration_service_.get();
@@ -108,6 +109,7 @@ void NavigatorManagedData::OnServiceConnectionError() {
       !managed_configuration_service_.is_connected()) {
     managed_configuration_service_.reset();
   }
+
   // Resolve all pending promises with a failure.
   for (ScriptPromiseResolver* resolver : pending_promises_) {
     resolver->Reject(
@@ -127,8 +129,8 @@ ScriptPromise NavigatorManagedData::getManagedConfiguration(
     return promise;
   }
   GetManagedConfigurationService()->GetManagedConfiguration(
-      keys, WTF::Bind(&NavigatorManagedData::OnConfigurationReceived,
-                      WrapWeakPersistent(this), WrapPersistent(resolver)));
+      keys, WTF::BindOnce(&NavigatorManagedData::OnConfigurationReceived,
+                          WrapWeakPersistent(this), WrapPersistent(resolver)));
   return promise;
 }
 
@@ -140,7 +142,7 @@ ScriptPromise NavigatorManagedData::getDirectoryId(ScriptState* script_state) {
   if (!GetExecutionContext()) {
     return promise;
   }
-  GetService()->GetDirectoryId(WTF::Bind(
+  GetService()->GetDirectoryId(WTF::BindOnce(
       &NavigatorManagedData::OnAttributeReceived, WrapWeakPersistent(this),
       WrapPersistent(script_state), WrapPersistent(resolver)));
   return promise;
@@ -154,7 +156,7 @@ ScriptPromise NavigatorManagedData::getHostname(ScriptState* script_state) {
   if (!GetExecutionContext()) {
     return promise;
   }
-  GetService()->GetHostname(WTF::Bind(
+  GetService()->GetHostname(WTF::BindOnce(
       &NavigatorManagedData::OnAttributeReceived, WrapWeakPersistent(this),
       WrapPersistent(script_state), WrapPersistent(resolver)));
   return promise;
@@ -168,7 +170,7 @@ ScriptPromise NavigatorManagedData::getSerialNumber(ScriptState* script_state) {
   if (!GetExecutionContext()) {
     return promise;
   }
-  GetService()->GetSerialNumber(WTF::Bind(
+  GetService()->GetSerialNumber(WTF::BindOnce(
       &NavigatorManagedData::OnAttributeReceived, WrapWeakPersistent(this),
       WrapPersistent(script_state), WrapPersistent(resolver)));
   return promise;
@@ -183,7 +185,7 @@ ScriptPromise NavigatorManagedData::getAnnotatedAssetId(
   if (!GetExecutionContext()) {
     return promise;
   }
-  GetService()->GetAnnotatedAssetId(WTF::Bind(
+  GetService()->GetAnnotatedAssetId(WTF::BindOnce(
       &NavigatorManagedData::OnAttributeReceived, WrapWeakPersistent(this),
       WrapPersistent(script_state), WrapPersistent(resolver)));
   return promise;
@@ -198,7 +200,7 @@ ScriptPromise NavigatorManagedData::getAnnotatedLocation(
   if (!GetExecutionContext()) {
     return promise;
   }
-  GetService()->GetAnnotatedLocation(WTF::Bind(
+  GetService()->GetAnnotatedLocation(WTF::BindOnce(
       &NavigatorManagedData::OnAttributeReceived, WrapWeakPersistent(this),
       WrapPersistent(script_state), WrapPersistent(resolver)));
   return promise;
@@ -248,7 +250,7 @@ void NavigatorManagedData::OnAttributeReceived(
 }
 
 void NavigatorManagedData::OnConfigurationChanged() {
-  DispatchEvent(*Event::Create(event_type_names::kManagedconfigurationchange));
+  DispatchEvent(*Event::Create(event_type_names::kManagedconfigurationchange), "NavigatorManagedData::OnConfigurationChanged");
 }
 
 void NavigatorManagedData::AddedEventListener(

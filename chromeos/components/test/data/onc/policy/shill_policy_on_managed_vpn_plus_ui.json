@@ -1,0 +1,26 @@
+{
+  "AutoConnect": false,
+  "Device": "",
+  "GUID": "{a3860e83-f03d-4cb1-bafa-b22c9e746950}",
+  "Name": "my vpn",
+  "ONCSource": "UserPolicy",
+  "Profile": "/profile/user1/shill",
+  "Provider": {
+    "Host": "vpn.my.domain.com",
+    "OpenVPN.OTP": "user OTP",
+    "OpenVPN.Password": "user password",
+    "OpenVPN.Pkcs11.ID": "2345",
+    "OpenVPN.Pkcs11.PIN": "111111",
+    "OpenVPN.Port": "443",
+    "OpenVPN.Proto": "udp",
+    "OpenVPN.RemoteCertKU": "",
+    "OpenVPN.User": "user name",
+    "Type": "openvpn"
+  },
+  "SaveCredentials": true,
+  "State": "idle",
+  "StaticIPConfig": {},
+  "Type": "vpn",
+  "UIData": "{\"onc_source\":\"user_policy\",\"user_settings\":{\"GUID\":\"{a3860e83-f03d-4cb1-bafa-b22c9e746950}\",\"Name\":\"my vpn\",\"Type\":\"VPN\",\"VPN\":{\"AutoConnect\":false,\"Host\":\"vpn.my.domain.com\",\"OpenVPN\":{\"ClientCertPKCS11Id\":\"1:2345\",\"ClientCertType\":\"PKCS11Id\",\"OTP\":\"user OTP\",\"Password\":\"FAKE_CREDENTIAL_VPaJDV9x\",\"SaveCredentials\":true,\"UserAuthenticationType\":\"PasswordAndOTP\",\"Username\":\"user name\"},\"Type\":\"OpenVPN\"}}}",
+  "Visible": true
+}

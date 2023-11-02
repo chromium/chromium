@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -111,46 +111,46 @@ TEST_F(BackgroundTracingHelperTest,
 
   // A list with a valid site hash not followed by an '=' is invalid.
   EXPECT_FALSE(ParseBackgroundTracingPerformanceMarkHashes("deadc0de", hashes));
-  EXPECT_TRUE(hashes.IsEmpty());
+  EXPECT_TRUE(hashes.empty());
 
   // A list with invalid characters in the site hash is invalid.
   EXPECT_FALSE(
       ParseBackgroundTracingPerformanceMarkHashes("nothex=aabbccdd", hashes));
-  EXPECT_TRUE(hashes.IsEmpty());
+  EXPECT_TRUE(hashes.empty());
 
   // A list with an.IsEmpty site hash is invalid.
   EXPECT_FALSE(
       ParseBackgroundTracingPerformanceMarkHashes("=aabbccdd", hashes));
-  EXPECT_TRUE(hashes.IsEmpty());
+  EXPECT_TRUE(hashes.empty());
 
   // A list with an too long site hash is invalid.
   EXPECT_FALSE(ParseBackgroundTracingPerformanceMarkHashes(
       "00deadc0de=aabbccdd", hashes));
-  EXPECT_TRUE(hashes.IsEmpty());
+  EXPECT_TRUE(hashes.empty());
 
   // A list with no mark hashes is invalid.
   EXPECT_FALSE(
       ParseBackgroundTracingPerformanceMarkHashes("deadc0de=", hashes));
-  EXPECT_TRUE(hashes.IsEmpty());
+  EXPECT_TRUE(hashes.empty());
 
   // A list with an.IsEmpty mark hash is invalid.
   EXPECT_FALSE(ParseBackgroundTracingPerformanceMarkHashes("deadc0de=,aabbccdd",
                                                            hashes));
-  EXPECT_TRUE(hashes.IsEmpty());
+  EXPECT_TRUE(hashes.empty());
 
   // A list with a too long mark hash is invalid.
   EXPECT_FALSE(ParseBackgroundTracingPerformanceMarkHashes(
       "deadc0de=aabbccddee", hashes));
-  EXPECT_TRUE(hashes.IsEmpty());
+  EXPECT_TRUE(hashes.empty());
 
   // A list with a non-hex mark hash is invalid.
   EXPECT_FALSE(
       ParseBackgroundTracingPerformanceMarkHashes("deadc0de=nothex", hashes));
-  EXPECT_TRUE(hashes.IsEmpty());
+  EXPECT_TRUE(hashes.empty());
 
   // Parsing an empty list is valid, but the return should be empty as well.
   EXPECT_TRUE(ParseBackgroundTracingPerformanceMarkHashes("", hashes));
-  EXPECT_TRUE(hashes.IsEmpty());
+  EXPECT_TRUE(hashes.empty());
 
   // Expect a single mark hash to be parsed.
   EXPECT_TRUE(

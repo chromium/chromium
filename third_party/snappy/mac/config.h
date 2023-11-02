@@ -16,14 +16,14 @@
 /* Define to 1 if you have a definition for sysconf() in <unistd.h>. */
 #define HAVE_FUNC_SYSCONF 1
 
-/* Define to 1 to use the gflags package for command-line parsing. */
-/* #undef HAVE_GFLAGS */
-
 /* Define to 1 if you have the `lzo2' library (-llzo2). */
 /* #undef HAVE_LIBLZO2 */
 
 /* Define to 1 if you have the `z' library (-lz). */
 #define HAVE_LIBZ 1
+
+/* Define to 1 if you have the `lz4' library (-llz4). */
+/* #undef HAVE_LIBLZ4 */
 
 /* Define to 1 if you have the <sys/mman.h> header file. */
 #define HAVE_SYS_MMAN_H 1
@@ -48,6 +48,9 @@
 
 /* Define to 1 if you target processors with BMI2+ and have <bmi2intrin.h>. */
 #define SNAPPY_HAVE_BMI2 0
+
+/* Define to 1 if you target processors with NEON and have <arm_neon.h>. */
+#define SNAPPY_HAVE_NEON 0
 
 /* Define to 1 if your processor stores words with the most significant byte
    first (like Motorola and SPARC, unlike Intel and VAX). */

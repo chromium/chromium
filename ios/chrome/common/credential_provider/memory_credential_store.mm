@@ -1,13 +1,13 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/common/credential_provider/memory_credential_store.h"
 
-#include "base/check.h"
-#include "base/mac/foundation_util.h"
-#include "base/notreached.h"
-#include "base/strings/sys_string_conversions.h"
+#import "base/check.h"
+#import "base/mac/foundation_util.h"
+#import "base/notreached.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/common/credential_provider/archivable_credential.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -75,10 +75,10 @@
 }
 
 - (void)removeCredentialWithRecordIdentifier:(NSString*)recordIdentifier {
-  DCHECK(recordIdentifier.length) << "Invalid |recordIdentifier| was passed.";
+  DCHECK(recordIdentifier.length) << "Invalid `recordIdentifier` was passed.";
   dispatch_barrier_async(self.workingQueue, ^{
     DCHECK(self.memoryStorage[recordIdentifier])
-        << "Credential doesn't exist in the storage";
+        << "Credential doesn't exist in the storage, " << recordIdentifier;
     self.memoryStorage[recordIdentifier] = nil;
   });
 }

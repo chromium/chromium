@@ -4,6 +4,7 @@ description: Tokenizer used for BERT.
 <meta itemprop="name" content="text.BertTokenizer" />
 <meta itemprop="path" content="Stable" />
 <meta itemprop="property" content="__init__"/>
+<meta itemprop="property" content="detokenize"/>
 <meta itemprop="property" content="split"/>
 <meta itemprop="property" content="split_with_offsets"/>
 <meta itemprop="property" content="tokenize"/>
@@ -24,7 +25,9 @@ source</a>
 Tokenizer used for BERT.
 
 Inherits From: [`TokenizerWithOffsets`](../text/TokenizerWithOffsets.md),
-[`Tokenizer`](../text/Tokenizer.md), [`Splitter`](../text/Splitter.md)
+[`Tokenizer`](../text/Tokenizer.md),
+[`SplitterWithOffsets`](../text/SplitterWithOffsets.md),
+[`Splitter`](../text/Splitter.md), [`Detokenizer`](../text/Detokenizer.md)
 
 <pre class="devsite-click-to-copy prettyprint lang-py tfo-signature-link">
 <code>text.BertTokenizer(
@@ -32,16 +35,19 @@ Inherits From: [`TokenizerWithOffsets`](../text/TokenizerWithOffsets.md),
     max_chars_per_token=None, token_out_type=dtypes.int64,
     unknown_token=&#x27;[UNK]&#x27;, split_unknown_characters=False,
     lower_case=False, keep_whitespace=False, normalization_form=None,
-    preserve_unused_token=False
+    preserve_unused_token=False, basic_tokenizer_class=BasicTokenizer
 )
 </code></pre>
 
 <!-- Placeholder for "Used in" -->
 
 This tokenizer applies an end-to-end, text string to wordpiece tokenization. It
-first applies basic tokenization, and then followed by wordpiece tokenization.
+first applies basic tokenization, followed by wordpiece tokenization.
 
-See BasicTokenizer and WordpieceTokenizer for their respective details.
+See `WordpieceTokenizer` for details on the subword tokenization.
+
+For an example of use, see
+https://www.tensorflow.org/text/guide/bert_preprocessing_guide
 
 <!-- Tabular view -->
  <table class="responsive fixed orange">
@@ -130,9 +136,9 @@ stripping them away.
 `normalization_form`
 </td>
 <td>
-If true and lower_case=False, the input text will be
-normalized to `normalization_form`. See normalize_utf8() op for a list of
-valid values.
+If set to a valid value and lower_case=False, the input
+text will be normalized to `normalization_form`. See normalize_utf8() op
+for a list of valid values.
 </td>
 </tr><tr>
 <td>
@@ -143,10 +149,87 @@ If true, text in the regex format `\\[unused\\d+\\]`
 will be treated as a token and thus remain preserved as is to be looked up
 in the vocabulary.
 </td>
+</tr><tr>
+<td>
+`basic_tokenizer_class`
+</td>
+<td>
+If set, the class to use instead of BasicTokenizer
+</td>
 </tr>
 </table>
 
 ## Methods
+
+<h3 id="detokenize"><code>detokenize</code></h3>
+
+<a target="_blank" href="https://github.com/tensorflow/text/tree/master/tensorflow_text/python/ops/bert_tokenizer.py">View
+source</a>
+
+<pre class="devsite-click-to-copy prettyprint lang-py tfo-signature-link">
+<code>detokenize(
+    token_ids
+)
+</code></pre>
+
+Convert a `Tensor` or `RaggedTensor` of wordpiece IDs to string-words.
+
+See
+<a href="../text/WordpieceTokenizer.md#detokenize"><code>WordpieceTokenizer.detokenize</code></a>
+for details.
+
+Note:
+<a href="../text/BertTokenizer.md#tokenize"><code>BertTokenizer.tokenize</code></a>/<a href="../text/BertTokenizer.md#detokenize"><code>BertTokenizer.detokenize</code></a>
+does not round trip losslessly. The result of `detokenize` will not, in general,
+have the same content or offsets as the input to `tokenize`. This is because the
+"basic tokenization" step, that splits the strings into words before applying
+the `WordpieceTokenizer`, includes irreversible steps like lower-casing and
+splitting on punctuation. `WordpieceTokenizer` on the other hand **is**
+reversible.
+
+Note: This method assumes wordpiece IDs are dense on the interval `[0,
+vocab_size)`.
+
+#### Example:
+
+```
+>>> import pathlib
+>>> pathlib.Path('/tmp/tok_vocab.txt').write_text(
+...    "they ##' ##re the great ##est".replace(' ', '\n'))
+>>> tokenizer = BertTokenizer(
+...    vocab_lookup_table='/tmp/tok_vocab.txt')
+>>> text_inputs = tf.constant(['greatest'.encode('utf-8')])
+>>> tokenizer.detokenize([[4, 5]])
+<tf.RaggedTensor [[b'greatest']]>
+```
+
+<!-- Tabular view -->
+ <table class="responsive fixed orange">
+<colgroup><col width="214px"><col></colgroup>
+<tr><th colspan="2">Args</th></tr>
+
+<tr>
+<td>
+`token_ids`
+</td>
+<td>
+A `RaggedTensor` or `Tensor` with an int dtype.
+</td>
+</tr>
+</table>
+
+<!-- Tabular view -->
+ <table class="responsive fixed orange">
+<colgroup><col width="214px"><col></colgroup>
+<tr><th colspan="2">Returns</th></tr>
+<tr class="alt">
+<td colspan="2">
+A `RaggedTensor` with dtype `string` and the same rank as the input
+`token_ids`.
+</td>
+</tr>
+
+</table>
 
 <h3 id="split"><code>split</code></h3>
 
@@ -159,37 +242,8 @@ source</a>
 )
 </code></pre>
 
-Splits the strings from the input tensor.
-
-<!-- Tabular view -->
- <table class="responsive fixed orange">
-<colgroup><col width="214px"><col></colgroup>
-<tr><th colspan="2">Args</th></tr>
-
-<tr>
-<td>
-`input`
-</td>
-<td>
-An N-dimensional UTF-8 string (or optionally integer) `Tensor` or
-`RaggedTensor`.
-</td>
-</tr>
-</table>
-
-<!-- Tabular view -->
- <table class="responsive fixed orange">
-<colgroup><col width="214px"><col></colgroup>
-<tr><th colspan="2">Returns</th></tr>
-<tr class="alt">
-<td colspan="2">
-An N+1-dimensional UTF-8 string or integer `Tensor` or `RaggedTensor`.
-For each string from the input tensor, the final, extra dimension contains
-the pieces that string was split into.
-</td>
-</tr>
-
-</table>
+Alias for
+<a href="../text/Tokenizer.md#tokenize"><code>Tokenizer.tokenize</code></a>.
 
 <h3 id="split_with_offsets"><code>split_with_offsets</code></h3>
 
@@ -202,42 +256,8 @@ source</a>
 )
 </code></pre>
 
-Splits the input tensor, returns the resulting pieces with offsets.
-
-<!-- Tabular view -->
- <table class="responsive fixed orange">
-<colgroup><col width="214px"><col></colgroup>
-<tr><th colspan="2">Args</th></tr>
-
-<tr>
-<td>
-`input`
-</td>
-<td>
-An N-dimensional UTF-8 string (or optionally integer) `Tensor` or
-`RaggedTensor`.
-</td>
-</tr>
-</table>
-
-<!-- Tabular view -->
- <table class="responsive fixed orange">
-<colgroup><col width="214px"><col></colgroup>
-<tr><th colspan="2">Returns</th></tr>
-<tr class="alt">
-<td colspan="2">
-A tuple `(pieces, start_offsets, end_offsets)` where:
-
-*   `pieces` is an N+1-dimensional UTF-8 string or integer `Tensor` or
-    `RaggedTensor`.
-*   `start_offsets` is an N+1-dimensional integer `Tensor` or `RaggedTensor`
-    containing the starting indices of each piece (byte indices for input
-    strings).
-*   `end_offsets` is an N+1-dimensional integer `Tensor` or `RaggedTensor`
-    containing the exclusive ending indices of each piece (byte indices for
-    input strings). </td> </tr>
-
-</table>
+Alias for
+<a href="../text/TokenizerWithOffsets.md#tokenize_with_offsets"><code>TokenizerWithOffsets.tokenize_with_offsets</code></a>.
 
 <h3 id="tokenize"><code>tokenize</code></h3>
 
@@ -250,7 +270,20 @@ source</a>
 )
 </code></pre>
 
-Performs untokenized text to wordpiece tokenization for BERT.
+Tokenizes a tensor of string tokens into subword tokens for BERT.
+
+#### Example:
+
+```
+>>> import pathlib
+>>> pathlib.Path('/tmp/tok_vocab.txt').write_text(
+...     "they ##' ##re the great ##est".replace(' ', '\n'))
+>>> tokenizer = BertTokenizer(
+...     vocab_lookup_table='/tmp/tok_vocab.txt')
+>>> text_inputs = tf.constant(['greatest'.encode('utf-8') ])
+>>> tokenizer.tokenize(text_inputs)
+<tf.RaggedTensor [[[4, 5]]]>
+```
 
 <!-- Tabular view -->
  <table class="responsive fixed orange">
@@ -293,7 +326,22 @@ source</a>
 )
 </code></pre>
 
-Tokenizes the input tensor and returns the result with offsets.
+Tokenizes a tensor of string tokens into subword tokens for BERT.
+
+#### Example:
+
+```
+>>> import pathlib
+>>> pathlib.Path('/tmp/tok_vocab.txt').write_text(
+...     "they ##' ##re the great ##est".replace(' ', '\n'))
+>>> tokenizer = BertTokenizer(
+...     vocab_lookup_table='/tmp/tok_vocab.txt')
+>>> text_inputs = tf.constant(['greatest'.encode('utf-8')])
+>>> tokenizer.tokenize_with_offsets(text_inputs)
+(<tf.RaggedTensor [[[4, 5]]]>,
+ <tf.RaggedTensor [[[0, 5]]]>,
+ <tf.RaggedTensor [[[5, 8]]]>)
+```
 
 <!-- Tabular view -->
  <table class="responsive fixed orange">
@@ -302,11 +350,11 @@ Tokenizes the input tensor and returns the result with offsets.
 
 <tr>
 <td>
-`input`
+`text_input`
 </td>
 <td>
-An N-dimensional UTF-8 string (or optionally integer) `Tensor` or
-`RaggedTensor`.
+input: A `Tensor` or `RaggedTensor` of untokenized UTF-8
+strings.
 </td>
 </tr>
 </table>
@@ -317,15 +365,11 @@ An N-dimensional UTF-8 string (or optionally integer) `Tensor` or
 <tr><th colspan="2">Returns</th></tr>
 <tr class="alt">
 <td colspan="2">
-A tuple `(tokens, start_offsets, end_offsets)` where:
-
-*   `tokens` is an N+1-dimensional UTF-8 string or integer `Tensor` or
-    `RaggedTensor`.
-*   `start_offsets` is an N+1-dimensional integer `Tensor` or `RaggedTensor`
-    containing the starting indices of each token (byte indices for input
-    strings).
-*   `end_offsets` is an N+1-dimensional integer `Tensor` or `RaggedTensor`
-    containing the exclusive ending indices of each token (byte indices for
-    input strings). </td> </tr>
+A tuple of `RaggedTensor`s where the first element is the tokens where
+`tokens[i1...iN, j]`, the second element is the starting offsets, the
+third element is the end offset. (Please look at `tokenize` for details
+on tokens.)
+</td>
+</tr>
 
 </table>

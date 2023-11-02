@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,6 +23,7 @@ constexpr struct KnownLoadingMode {
     {"default", mojom::LoadingMode::kDefault},
     {"uncredentialed-prefetch", mojom::LoadingMode::kUncredentialedPrefetch},
     {"uncredentialed-prerender", mojom::LoadingMode::kUncredentialedPrerender},
+    {"credentialed-prerender", mojom::LoadingMode::kCredentialedPrerender},
     {"fenced-frame", mojom::LoadingMode::kFencedFrame},
 };
 

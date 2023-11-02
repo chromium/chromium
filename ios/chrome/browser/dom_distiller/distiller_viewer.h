@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "components/dom_distiller/core/dom_distiller_request_view_base.h"
 #include "components/dom_distiller/core/task_tracker.h"
 
@@ -55,17 +54,17 @@ class DistillerViewerInterface : public DomDistillerRequestViewBase {
 // A very simple and naive implementation of the DistillerViewer.
 class DistillerViewer : public DistillerViewerInterface {
  public:
-  // Creates a |DistillerView| that will be used to distill |url|.
-  // |callback| is called when distillation is finished with the protobuf
+  // Creates a `DistillerView` that will be used to distill `url`.
+  // `callback` is called when distillation is finished with the protobuf
   // containing the distilled page.
   DistillerViewer(dom_distiller::DomDistillerService* distillerService,
                   PrefService* prefs,
                   const GURL& url,
                   DistillationFinishedCallback callback);
 
-  // Creates a |DistillerView| without depending on the DomDistillerService.
-  // Caller must provide |distiller_factory| and |page| which cannot be null.
-  // |callback| is called when distillation is finished with the protobuf
+  // Creates a `DistillerView` without depending on the DomDistillerService.
+  // Caller must provide `distiller_factory` and `page` which cannot be null.
+  // `callback` is called when distillation is finished with the protobuf
   // containing the distilled page.
   DistillerViewer(dom_distiller::DistillerFactory* distiller_factory,
                   std::unique_ptr<dom_distiller::DistillerPage> page,

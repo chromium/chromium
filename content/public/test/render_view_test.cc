@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,14 @@
 #include <stddef.h>
 
 #include <cctype>
+#include <tuple>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/escape.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "cc/test/test_task_graph_runner.h"
@@ -24,30 +26,26 @@
 #include "content/public/browser/native_web_keyboard_event.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/use_zoom_for_dsf_policy.h"
 #include "content/public/renderer/content_renderer_client.h"
-#include "content/public/renderer/render_view_visitor.h"
+#include "content/public/test/content_test_suite_base.h"
 #include "content/public/test/fake_render_widget_host.h"
 #include "content/public/test/frame_load_waiter.h"
 #include "content/public/test/policy_container_utils.h"
 #include "content/renderer/mock_agent_scheduling_group.h"
 #include "content/renderer/render_process.h"
 #include "content/renderer/render_thread_impl.h"
-#include "content/renderer/render_view_impl.h"
 #include "content/renderer/renderer_blink_platform_impl.h"
 #include "content/renderer/renderer_main_platform_delegate.h"
 #include "content/test/test_content_client.h"
 #include "content/test/test_render_frame.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "net/base/escape.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
-#include "third_party/blink/public/common/loader/previews_state.h"
 #include "third_party/blink/public/common/navigation/navigation_params.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/widget/visual_properties.h"
@@ -59,12 +57,12 @@
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
+#include "third_party/blink/public/platform/web_url_loader.h"
 #include "third_party/blink/public/platform/web_url_loader_client.h"
 #include "third_party/blink/public/platform/web_url_request_extra_data.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
-#include "third_party/blink/public/web/web_history_entry.h"
 #include "third_party/blink/public/web/web_history_item.h"
 #include "third_party/blink/public/web/web_input_element.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -76,11 +74,11 @@
 #include "ui/native_theme/native_theme_features.h"
 #include "v8/include/v8.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/scoped_nsautorelease_pool.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "content/child/dwrite_font_proxy/dwrite_font_proxy_init_impl_win.h"
 #include "content/test/dwrite_font_fake_sender_win.h"
 #endif
@@ -96,37 +94,6 @@ using blink::WebURLRequest;
 namespace content {
 
 namespace {
-
-// This class records, and then tears down all existing RenderViews. It's
-// important to do this in two steps, since tearing down a RenderView will
-// mutate the container that RenderView::ForEach() iterates over.
-class CloseMessageSendingRenderViewVisitor : public RenderViewVisitor {
- public:
-  CloseMessageSendingRenderViewVisitor() = default;
-
-  CloseMessageSendingRenderViewVisitor(
-      const CloseMessageSendingRenderViewVisitor&) = delete;
-  CloseMessageSendingRenderViewVisitor& operator=(
-      const CloseMessageSendingRenderViewVisitor&) = delete;
-
-  ~CloseMessageSendingRenderViewVisitor() override = default;
-
-  void CloseRenderViews() {
-    for (RenderView* render_view : live_render_views) {
-      RenderViewImpl* view_impl = static_cast<RenderViewImpl*>(render_view);
-      view_impl->Destroy();
-    }
-  }
-
- protected:
-  bool Visit(RenderView* render_view) override {
-    live_render_views.push_back(render_view);
-    return true;
-  }
-
- private:
-  std::vector<RenderView*> live_render_views;
-};
 
 class FakeWebURLLoader : public blink::WebURLLoader {
  public:
@@ -196,7 +163,7 @@ class FakeWebURLLoader : public blink::WebURLLoader {
       freezable_task_runner_handle_;
   std::unique_ptr<blink::scheduler::WebResourceLoadingTaskRunnerHandle>
       unfreezable_task_runner_handle_;
-  blink::WebURLLoaderClient* async_client_ = nullptr;
+  raw_ptr<blink::WebURLLoaderClient> async_client_ = nullptr;
 
   base::WeakPtrFactory<FakeWebURLLoader> weak_factory_{this};
 };
@@ -261,13 +228,6 @@ class RendererBlinkPlatformImplTestOverrideImpl
   // Get rid of the dependency to the sandbox, which is not available in
   // RenderViewTest.
   blink::WebSandboxSupport* GetSandboxSupport() override { return nullptr; }
-
-  cc::TaskGraphRunner* GetTaskGraphRunner() override {
-    return &task_graph_runner_;
-  }
-
- private:
-  cc::TestTaskGraphRunner task_graph_runner_;
 };
 
 class RenderFrameWasShownWaiter : public RenderFrameObserver {
@@ -377,7 +337,7 @@ bool RenderViewTest::ExecuteJavaScriptAndReturnNumberValue(
 void RenderViewTest::LoadHTML(const char* html) {
   FrameLoadWaiter waiter(GetMainRenderFrame());
   std::string url_string = "data:text/html;charset=utf-8,";
-  url_string.append(net::EscapeQueryParamValue(html, false));
+  url_string.append(base::EscapeQueryParamValue(html, false));
   RenderFrame::FromWebFrame(GetMainFrame())
       ->LoadHTMLStringForTesting(html, GURL(url_string), "UTF-8", GURL(),
                                  false /* replace_current_item */);
@@ -418,6 +378,8 @@ void RenderViewTest::GoForward(const GURL& url, const blink::PageState& state) {
 }
 
 void RenderViewTest::SetUp() {
+  ContentTestSuiteBase::InitializeResourceBundle();
+
   // Ensure that this looks like the renderer process based on the command line.
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kProcessType, switches::kRendererProcess);
@@ -444,23 +406,33 @@ void RenderViewTest::SetUp() {
 
   render_thread_->SetIOTaskRunner(test_io_thread_->task_runner());
 
+  // Setting flags and really doing anything with WebKit is fairly fragile and
+  // hacky, but this is the world we live in...
+  // Note that we need to set flags *before* initializing V8 (as part of blink),
+  // as it's not allowed to modify them later.
+  v8::V8::SetFlagsFromString("--expose-gc");
+
+  // ContentClient must be initialized before Blink, because Blink now eagerly
+  // loads the default stylesheets, which are fetched from the resource bundle
+  // using ContentClient.
+  content_client_.reset(CreateContentClient());
+  SetContentClient(content_client_.get());
+
   // Blink needs to be initialized before calling CreateContentRendererClient()
   // because it uses blink internally.
   blink_platform_impl_.Initialize();
   blink::Initialize(blink_platform_impl_.Get(), &binders_,
                     blink_platform_impl_.GetMainThreadScheduler());
 
-  content_client_.reset(CreateContentClient());
   content_browser_client_.reset(CreateContentBrowserClient());
   content_renderer_client_.reset(CreateContentRendererClient());
-  SetContentClient(content_client_.get());
   SetBrowserClientForTesting(content_browser_client_.get());
   SetRendererClientForTesting(content_renderer_client_.get());
 
   agent_scheduling_group_ = MockAgentSchedulingGroup::Create(*render_thread_);
   render_widget_host_ = CreateRenderWidgetHost();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // This needs to happen sometime before PlatformInitialize.
   // This isn't actually necessary for most tests: most tests are able to
   // connect to their browser process which runs the real proxy host. However,
@@ -469,7 +441,7 @@ void RenderViewTest::SetUp() {
   SetDWriteFontProxySenderForTesting(CreateFakeCollectionSender());
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   autorelease_pool_ = std::make_unique<base::mac::ScopedNSAutoreleasePool>();
 #endif
   command_line_ =
@@ -477,11 +449,6 @@ void RenderViewTest::SetUp() {
   params_ = std::make_unique<MainFunctionParams>(command_line_.get());
   platform_ = std::make_unique<RendererMainPlatformDelegate>(*params_);
   platform_->PlatformInitialize();
-
-  // Setting flags and really doing anything with WebKit is fairly fragile and
-  // hacky, but this is the world we live in...
-  std::string flags("--expose-gc");
-  v8::V8::SetFlagsFromString(flags.c_str(), flags.size());
 
   // Ensure that we register any necessary schemes when initializing WebKit,
   // since we are using a MockRenderThread.
@@ -506,15 +473,18 @@ void RenderViewTest::SetUp() {
   view_params->window_was_opened_by_another_window = false;
   view_params->renderer_preferences = blink::RendererPreferences();
   view_params->web_preferences = blink::web_pref::WebPreferences();
-  view_params->view_id = render_thread_->GetNextRoutingID();
   view_params->replication_state = blink::mojom::FrameReplicationState::New();
+  view_params->blink_page_broadcast =
+      page_broadcast_.BindNewEndpointAndPassDedicatedReceiver();
 
   auto main_frame_params = mojom::CreateLocalMainFrameParams::New();
   main_frame_params->routing_id = render_thread_->GetNextRoutingID();
   main_frame_params->frame = TestRenderFrame::CreateStubFrameReceiver();
   // Ignoring the returned PendingReceiver because it is not bound to anything
-  ignore_result(
-      main_frame_params->interface_broker.InitWithNewPipeAndPassReceiver());
+  std::ignore =
+      main_frame_params->interface_broker.InitWithNewPipeAndPassReceiver();
+  main_frame_params->associated_interface_provider_remote =
+      TestRenderFrame::CreateStubAssociatedInterfaceProviderRemote();
   policy_container_host_ = std::make_unique<MockPolicyContainerHost>();
   main_frame_params->policy_container =
       policy_container_host_->CreatePolicyContainerForBlink();
@@ -538,19 +508,16 @@ void RenderViewTest::SetUp() {
   view_params->hidden = false;
   view_params->never_composited = false;
 
-  RenderViewImpl* view = RenderViewImpl::Create(
-      *agent_scheduling_group_, std::move(view_params),
-      /*was_created_by_renderer=*/false, base::ThreadTaskRunnerHandle::Get());
+  web_view_ =
+      agent_scheduling_group_->CreateWebView(std::move(view_params),
+                                             /*was_created_by_renderer=*/false);
 
-  RenderFrameWasShownWaiter waiter(RenderFrame::FromWebFrame(
-      view->GetWebView()->MainFrame()->ToWebLocalFrame()));
+  RenderFrameWasShownWaiter waiter(
+      RenderFrame::FromWebFrame(web_view_->MainFrame()->ToWebLocalFrame()));
   render_widget_host_->widget_remote_for_testing()->WasShown(
-      {} /* record_tab_switch_time_request */, false /* was_evicted=*/,
+      /*was_evicted=*/false,
       blink::mojom::RecordContentToVisibleTimeRequestPtr());
   waiter.Wait();
-
-  view_ = view;
-  web_view_ = view->GetWebView();
 }
 
 void RenderViewTest::TearDown() {
@@ -560,17 +527,13 @@ void RenderViewTest::TearDown() {
   mojo::Remote<blink::mojom::LeakDetector> leak_detector;
   mojo::GenericPendingReceiver receiver(
       leak_detector.BindNewPipeAndPassReceiver());
-  ignore_result(binders_.TryBind(&receiver));
+  std::ignore = binders_.TryBind(&receiver);
 
-  // Close the main |view_| as well as any other windows that might have been
-  // opened by the test.
-  CloseMessageSendingRenderViewVisitor closing_visitor;
-  RenderView::ForEach(&closing_visitor);
-  closing_visitor.CloseRenderViews();
+  render_thread_->ReleaseAllWebViews();
 
-  // |view_| is ref-counted and deletes itself during the RunUntilIdle() call
-  // below.
-  view_ = nullptr;
+  // Resetting `page_broadcast_` will cause the WebView to close itself.
+  page_broadcast_.reset();
+
   web_view_ = nullptr;
   process_.reset();
 
@@ -581,11 +544,11 @@ void RenderViewTest::TearDown() {
 
   RenderThreadImpl::SetRendererBlinkPlatformImplForTesting(nullptr);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   ClearDWriteFontProxySenderForTesting();
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   autorelease_pool_.reset();
 #endif
 
@@ -628,8 +591,7 @@ void RenderViewTest::SendNativeKeyEvent(
 
 void RenderViewTest::SendInputEvent(const blink::WebInputEvent& input_event) {
   GetWebFrameWidget()->ProcessInputEventSynchronouslyForTesting(
-      blink::WebCoalescedInputEvent(input_event, ui::LatencyInfo()),
-      base::DoNothing());
+      blink::WebCoalescedInputEvent(input_event, ui::LatencyInfo()));
 }
 
 void RenderViewTest::SendWebKeyboardEvent(
@@ -710,12 +672,10 @@ void RenderViewTest::SimulatePointClick(const gfx::Point& point) {
   mouse_event.SetPositionInWidget(point.x(), point.y());
   mouse_event.click_count = 1;
   GetWebFrameWidget()->ProcessInputEventSynchronouslyForTesting(
-      blink::WebCoalescedInputEvent(mouse_event, ui::LatencyInfo()),
-      base::DoNothing());
+      blink::WebCoalescedInputEvent(mouse_event, ui::LatencyInfo()));
   mouse_event.SetType(WebInputEvent::Type::kMouseUp);
   GetWebFrameWidget()->ProcessInputEventSynchronouslyForTesting(
-      blink::WebCoalescedInputEvent(mouse_event, ui::LatencyInfo()),
-      base::DoNothing());
+      blink::WebCoalescedInputEvent(mouse_event, ui::LatencyInfo()));
 }
 
 bool RenderViewTest::SimulateElementRightClick(const std::string& element_id) {
@@ -733,12 +693,10 @@ void RenderViewTest::SimulatePointRightClick(const gfx::Point& point) {
   mouse_event.SetPositionInWidget(point.x(), point.y());
   mouse_event.click_count = 1;
   GetWebFrameWidget()->ProcessInputEventSynchronouslyForTesting(
-      blink::WebCoalescedInputEvent(mouse_event, ui::LatencyInfo()),
-      base::DoNothing());
+      blink::WebCoalescedInputEvent(mouse_event, ui::LatencyInfo()));
   mouse_event.SetType(WebInputEvent::Type::kMouseUp);
   GetWebFrameWidget()->ProcessInputEventSynchronouslyForTesting(
-      blink::WebCoalescedInputEvent(mouse_event, ui::LatencyInfo()),
-      base::DoNothing());
+      blink::WebCoalescedInputEvent(mouse_event, ui::LatencyInfo()));
 }
 
 void RenderViewTest::SimulateRectTap(const gfx::Rect& rect) {
@@ -750,8 +708,7 @@ void RenderViewTest::SimulateRectTap(const gfx::Rect& rect) {
   gesture_event.data.tap.width = rect.width();
   gesture_event.data.tap.height = rect.height();
   GetWebFrameWidget()->ProcessInputEventSynchronouslyForTesting(
-      blink::WebCoalescedInputEvent(gesture_event, ui::LatencyInfo()),
-      base::DoNothing());
+      blink::WebCoalescedInputEvent(gesture_event, ui::LatencyInfo()));
 }
 
 void RenderViewTest::SetFocused(const blink::WebElement& element) {
@@ -770,9 +727,8 @@ void RenderViewTest::Reload(const GURL& url) {
   auto common_params = blink::mojom::CommonNavigationParams::New(
       url, absl::nullopt, blink::mojom::Referrer::New(),
       ui::PAGE_TRANSITION_LINK, blink::mojom::NavigationType::RELOAD,
-      blink::NavigationDownloadPolicy(), false, GURL(),
-      blink::PreviewsTypes::PREVIEWS_UNSPECIFIED, base::TimeTicks::Now(), "GET",
-      nullptr, network::mojom::SourceLocation::New(),
+      blink::NavigationDownloadPolicy(), false, GURL(), base::TimeTicks::Now(),
+      "GET", nullptr, network::mojom::SourceLocation::New(),
       false /* started_from_context_menu */, false /* has_user_gesture */,
       false /* has_text_fragment_token */,
       network::mojom::CSPDisposition::CHECK, std::vector<int>(), std::string(),
@@ -780,7 +736,6 @@ void RenderViewTest::Reload(const GURL& url) {
       base::TimeTicks() /* input_start */,
       network::mojom::RequestDestination::kDocument);
   auto commit_params = blink::CreateCommitNavigationParams();
-  commit_params->sandbox_flags = network::mojom::WebSandboxFlags::kNone;
   TestRenderFrame* frame = static_cast<TestRenderFrame*>(GetMainRenderFrame());
   FrameLoadWaiter waiter(frame);
   frame->Navigate(std::move(common_params), std::move(commit_params));
@@ -856,13 +811,9 @@ void RenderViewTest::OnSameDocumentNavigation(blink::WebLocalFrame* frame,
       ->DidFinishSameDocumentNavigation(
           is_new_navigation ? blink::kWebStandardCommit
                             : blink::kWebHistoryInertCommit,
-          false /* is_synchronously_committed */,
+          true /* is_synchronously_committed */,
           blink::mojom::SameDocumentNavigationType::kFragment,
           false /* is_client_redirect */);
-}
-
-void RenderViewTest::SetUseZoomForDSFEnabled(bool enabled) {
-  render_thread_->SetUseZoomForDSFEnabled(enabled);
 }
 
 blink::WebFrameWidget* RenderViewTest::GetWebFrameWidget() {
@@ -907,9 +858,8 @@ void RenderViewTest::GoToOffset(int offset,
       url, absl::nullopt, blink::mojom::Referrer::New(),
       ui::PAGE_TRANSITION_FORWARD_BACK,
       blink::mojom::NavigationType::HISTORY_DIFFERENT_DOCUMENT,
-      blink::NavigationDownloadPolicy(), false, GURL(),
-      blink::PreviewsTypes::PREVIEWS_UNSPECIFIED, base::TimeTicks::Now(), "GET",
-      nullptr, network::mojom::SourceLocation::New(),
+      blink::NavigationDownloadPolicy(), false, GURL(), base::TimeTicks::Now(),
+      "GET", nullptr, network::mojom::SourceLocation::New(),
       false /* started_from_context_menu */, false /* has_user_gesture */,
       false /* has_text_fragment_token */,
       network::mojom::CSPDisposition::CHECK, std::vector<int>(), std::string(),
@@ -922,7 +872,6 @@ void RenderViewTest::GoToOffset(int offset,
   commit_params->pending_history_list_offset = pending_offset;
   commit_params->current_history_list_offset = webview->HistoryBackListCount();
   commit_params->current_history_list_length = history_list_length;
-  commit_params->sandbox_flags = network::mojom::WebSandboxFlags::kNone;
 
   auto* frame = static_cast<TestRenderFrame*>(GetMainRenderFrame());
   FrameLoadWaiter waiter(frame);

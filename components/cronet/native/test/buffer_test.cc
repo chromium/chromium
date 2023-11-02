@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -80,7 +80,7 @@ TEST_F(BufferTest, TestInitWithAlloc) {
 #if defined(ARCH_CPU_64_BITS) &&                                              \
     (defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) ||               \
      defined(THREAD_SANITIZER) || BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) || \
-     defined(OS_CHROMEOS) || defined(OS_LINUX) || defined(OS_FUCHSIA))
+     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_FUCHSIA))
 // - ASAN and MSAN malloc by default triggers crash instead of returning null on
 //   failure.
 // - PartitionAlloc malloc also crashes on allocation failure by design.

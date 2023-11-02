@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -48,7 +49,7 @@ class ScopedPixmap {
   }
 
  private:
-  x11::Connection* const connection_;
+  const raw_ptr<x11::Connection> connection_;
   x11::Pixmap pixmap_;
 };
 
@@ -91,12 +92,12 @@ bool X11SoftwareBitmapPresenter::CompositeBitmap(x11::Connection* connection,
     connection->ChangeGC(x11::ChangeGCRequest{
         .gc = gc, .subwindow_mode = x11::SubwindowMode::ClipByChildren});
 
-    auto req = connection->GetImage(
+    auto pix_req = connection->GetImage(
         {x11::ImageFormat::ZPixmap, pixmap_id, 0, 0, w_u16, h_u16, kAllPlanes});
-    if (auto reply = req.Sync())
-      bg = reply->data;
-    else
+    auto pix_reply = pix_req.Sync();
+    if (!pix_reply)
       return false;
+    bg = pix_reply->data;
   }
 
   SkBitmap bg_bitmap;

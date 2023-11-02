@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,9 +29,9 @@ class MEDIA_MOJO_EXPORT CdmServiceBroker final
   // mojom::CdmServiceBroker implementation:
   void GetService(
       const base::FilePath& cdm_path,
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       mojo::PendingRemote<mojom::SeatbeltExtensionTokenProvider> token_provider,
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
       mojo::PendingReceiver<mojom::CdmService> service_receiver) final;
 
  private:
@@ -39,9 +39,9 @@ class MEDIA_MOJO_EXPORT CdmServiceBroker final
   // the initialization succeeded or not. In all cases, the process is sandboxed
   // after this call.
   bool InitializeAndEnsureSandboxed(
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       mojo::PendingRemote<mojom::SeatbeltExtensionTokenProvider> token_provider,
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
       const base::FilePath& cdm_path);
 
   std::unique_ptr<CdmService::Client> client_;

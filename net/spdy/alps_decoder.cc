@@ -1,8 +1,12 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "net/spdy/alps_decoder.h"
+
+#include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
+#include "net/base/features.h"
 
 namespace net {
 namespace {
@@ -12,7 +16,8 @@ bool ReadUint16PrefixedStringPiece(base::StringPiece* payload,
   if (payload->size() < 2) {
     return false;
   }
-  uint16_t length = (static_cast<uint16_t>((*payload)[0]) << 8) + (*payload)[1];
+  const uint16_t length = (static_cast<uint16_t>((*payload)[0]) << 8) +
+                          (static_cast<uint8_t>((*payload)[1]));
   payload->remove_prefix(2);
 
   if (payload->size() < length) {
@@ -100,23 +105,34 @@ bool AlpsDecoder::AcceptChParser::OnFrameHeader(spdy::SpdyStreamId stream_id,
                                                 size_t length,
                                                 uint8_t type,
                                                 uint8_t flags) {
-  if (type != static_cast<uint8_t>(spdy::SpdyFrameType::ACCEPT_CH) ||
-      error_ != Error::kNoError) {
-    // Ignore every frame except for ACCEPT_CH.
-    // Ignore data after an error has occurred.
-    // Returning false causes Http2DecoderAdapter not to call OnFramePayload().
+  // Ignore data after an error has occurred.
+  if (error_ != Error::kNoError)
     return false;
-  }
-  if (stream_id != 0) {
-    error_ = Error::kAcceptChInvalidStream;
+  // Stop all alps parsing if it's disabled.
+  if (!base::FeatureList::IsEnabled(features::kAlpsParsing))
     return false;
+  // Handle per-type parsing.
+  switch (type) {
+    case static_cast<uint8_t>(spdy::SpdyFrameType::ACCEPT_CH): {
+      // Stop alps client hint parsing if it's disabled.
+      if (!base::FeatureList::IsEnabled(features::kAlpsClientHintParsing))
+        return false;
+      // Check for issues with the frame.
+      if (stream_id != 0) {
+        error_ = Error::kAcceptChInvalidStream;
+        return false;
+      }
+      if (flags != 0) {
+        error_ = Error::kAcceptChWithFlags;
+        return false;
+      }
+      // This frame can be parsed in OnFramePayload.
+      return true;
+    }
+    default:
+      // Ignore all other types.
+      return false;
   }
-  if (flags != 0) {
-    error_ = Error::kAcceptChWithFlags;
-    return false;
-  }
-
-  return true;
 }
 
 void AlpsDecoder::AcceptChParser::OnFramePayload(const char* data, size_t len) {
@@ -129,8 +145,18 @@ void AlpsDecoder::AcceptChParser::OnFramePayload(const char* data, size_t len) {
     base::StringPiece value;
     if (!ReadUint16PrefixedStringPiece(&payload, &origin) ||
         !ReadUint16PrefixedStringPiece(&payload, &value)) {
-      error_ = Error::kAcceptChMalformed;
-      return;
+      if (base::FeatureList::IsEnabled(
+              features::kShouldKillSessionOnAcceptChMalformed)) {
+        // This causes a session termination.
+        error_ = Error::kAcceptChMalformed;
+        return;
+      } else {
+        // This logs that a session termination was bypassed.
+        base::UmaHistogramEnumeration(
+            "Net.SpdySession.AlpsDecoderStatus.Bypassed",
+            Error::kAcceptChMalformed);
+        return;
+      }
     }
     accept_ch_.push_back(
         spdy::AcceptChOriginValuePair{std::string(origin), std::string(value)});

@@ -1,0 +1,7 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN
+++++++UNKNOWN focusable label='Empty iframe'
+++++++++UNKNOWN focusable
+++++++++++UNKNOWN hidden
+++++++++++++UNKNOWN hidden

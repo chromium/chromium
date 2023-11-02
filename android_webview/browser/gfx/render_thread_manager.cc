@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -56,14 +56,14 @@ void RenderThreadManager::ViewTreeForceDarkStateChangedOnUI(
   }
 }
 
-void RenderThreadManager::SetScrollOffsetOnUI(gfx::Vector2d scroll_offset) {
+void RenderThreadManager::SetScrollOffsetOnUI(gfx::Point scroll_offset) {
   DCHECK(ui_loop_->BelongsToCurrentThread());
   CheckUiCallsAllowed();
   base::AutoLock lock(lock_);
   scroll_offset_ = scroll_offset;
 }
 
-gfx::Vector2d RenderThreadManager::GetScrollOffsetOnRT() {
+gfx::Point RenderThreadManager::GetScrollOffsetOnRT() {
   base::AutoLock lock(lock_);
   return scroll_offset_;
 }
@@ -240,6 +240,11 @@ void RenderThreadManager::DestroyHardwareRendererOnRT(bool save_restore,
     hardware_renderer_->AbandonContext();
 
   hardware_renderer_.reset();
+
+  ui_loop_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&CompositorFrameProducer::ChildSurfaceWasEvicted,
+                     producer_weak_ptr_));
 }
 
 void RenderThreadManager::RemoveFromCompositorFrameProducerOnUI() {
@@ -261,6 +266,11 @@ void RenderThreadManager::SetCompositorFrameProducer(
   producer_weak_ptr_ = compositor_frame_producer->GetWeakPtr();
 
   base::AutoLock lock(lock_);
+  root_frame_sink_getter_ = std::move(root_frame_sink_getter);
+}
+
+void RenderThreadManager::SetRootFrameSinkGetterForTesting(
+    RootFrameSinkGetter root_frame_sink_getter) {
   root_frame_sink_getter_ = std::move(root_frame_sink_getter);
 }
 

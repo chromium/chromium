@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 void ManagedConfigurationServiceImpl::Create(
     content::RenderFrameHost* host,
     mojo::PendingReceiver<blink::mojom::ManagedConfigurationService> receiver) {
+  CHECK(host);
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!base::FeatureList::IsEnabled(blink::features::kManagedConfiguration)) {
     mojo::ReportBadMessage(
@@ -21,21 +22,23 @@ void ManagedConfigurationServiceImpl::Create(
     return;
   }
 
-  // Do not create ManagedConfigurationService for incognito profiles.
-  if (Profile::FromBrowserContext(host->GetBrowserContext())
+  // Do not create ManagedConfigurationService for incognito or off-the-record
+  // profiles.
+  if (host->GetBrowserContext()->IsOffTheRecord() ||
+      Profile::FromBrowserContext(host->GetBrowserContext())
           ->IsIncognitoProfile()) {
     return;
   }
 
   // The object is bound to the lifetime of |host| and the mojo
   // connection. See DocumentService for details.
-  new ManagedConfigurationServiceImpl(host, std::move(receiver));
+  new ManagedConfigurationServiceImpl(*host, std::move(receiver));
 }
 
 ManagedConfigurationServiceImpl::ManagedConfigurationServiceImpl(
-    content::RenderFrameHost* host,
+    content::RenderFrameHost& host,
     mojo::PendingReceiver<blink::mojom::ManagedConfigurationService> receiver)
-    : DocumentService(host, std::move(receiver)), host_(host) {
+    : DocumentService(host, std::move(receiver)) {
   managed_configuration_api()->AddObserver(this);
 }
 
@@ -50,11 +53,11 @@ void ManagedConfigurationServiceImpl::GetManagedConfiguration(
       origin(), keys,
       base::BindOnce(
           [](GetManagedConfigurationCallback callback,
-             std::unique_ptr<base::DictionaryValue> result) {
+             absl::optional<base::Value::Dict> result) {
             if (!result)
               return std::move(callback).Run(absl::nullopt);
             std::move(callback).Run(base::MakeFlatMap<std::string, std::string>(
-                result->DictItems(), {},
+                *result, {},
                 [](const auto& it) -> std::pair<std::string, std::string> {
                   return {it.first, it.second.GetString()};
                 }));
@@ -74,7 +77,7 @@ void ManagedConfigurationServiceImpl::OnManagedConfigurationChanged() {
 ManagedConfigurationAPI*
 ManagedConfigurationServiceImpl::managed_configuration_api() {
   return ManagedConfigurationAPIFactory::GetForProfile(
-      Profile::FromBrowserContext(host_->GetBrowserContext()));
+      Profile::FromBrowserContext(render_frame_host().GetBrowserContext()));
 }
 
 const url::Origin& ManagedConfigurationServiceImpl::GetOrigin() {

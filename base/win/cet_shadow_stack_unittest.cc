@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -47,9 +47,9 @@ void* return_address;
 NOINLINE void Bug() {
   void* pvAddressOfReturnAddress = _AddressOfReturnAddress();
   if (!return_address)
-    return_address = *(void**)pvAddressOfReturnAddress;
+    return_address = *reinterpret_cast<void**>(pvAddressOfReturnAddress);
   else
-    *(void**)pvAddressOfReturnAddress = return_address;
+    *reinterpret_cast<void**>(pvAddressOfReturnAddress) = return_address;
 }
 
 NOINLINE void A() {

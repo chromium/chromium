@@ -1,4 +1,4 @@
-// Copyright (c) 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,17 +8,22 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
+#include "content/common/content_export.h"
 
 namespace content {
+
 class BrowserAccessibilityAuraLinux;
+class WebAXPlatformTreeManagerDelegate;
 
 // Manages a tree of BrowserAccessibilityAuraLinux objects.
 class CONTENT_EXPORT BrowserAccessibilityManagerAuraLinux
     : public BrowserAccessibilityManager {
  public:
-  BrowserAccessibilityManagerAuraLinux(const ui::AXTreeUpdate& initial_tree,
-                                       BrowserAccessibilityDelegate* delegate);
+  BrowserAccessibilityManagerAuraLinux(
+      const ui::AXTreeUpdate& initial_tree,
+      WebAXPlatformTreeManagerDelegate* delegate);
 
   BrowserAccessibilityManagerAuraLinux(
       const BrowserAccessibilityManagerAuraLinux&) = delete;
@@ -32,12 +37,15 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAuraLinux
       BrowserAccessibility* object1,
       BrowserAccessibility* object2);
 
-  // Implementation of BrowserAccessibilityManager methods.
-  void FireFocusEvent(BrowserAccessibility* node) override;
+  // AXTreeManager overrides.
+  void FireFocusEvent(ui::AXNode* node) override;
+
+  // BrowserAccessibilityManager overrides.
   void FireBlinkEvent(ax::mojom::Event event_type,
-                      BrowserAccessibility* node) override;
+                      BrowserAccessibility* node,
+                      int action_request_id) override;
   void FireGeneratedEvent(ui::AXEventGenerator::Event event_type,
-                          BrowserAccessibility* node) override;
+                          const ui::AXNode* node) override;
 
   void FireSelectedEvent(BrowserAccessibility* node);
   void FireEnabledChangedEvent(BrowserAccessibility* node);
@@ -45,6 +53,7 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAuraLinux
   void FireShowingEvent(BrowserAccessibility* node, bool is_showing);
   void FireInvalidStatusChangedEvent(BrowserAccessibility* node);
   void FireAriaCurrentChangedEvent(BrowserAccessibility* node);
+  void FireBusyChangedEvent(BrowserAccessibility* node, bool is_busy);
   void FireLoadingEvent(BrowserAccessibility* node, bool is_loading);
   void FireNameChangedEvent(BrowserAccessibility* node);
   void FireDescriptionChangedEvent(BrowserAccessibility* node);
@@ -78,7 +87,7 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAuraLinux
   bool CanEmitChildrenChanged(BrowserAccessibility* node) const;
   void FireEvent(BrowserAccessibility* node, ax::mojom::Event event);
 
-  AtkObject* parent_object_;
+  raw_ptr<AtkObject> parent_object_;
 
   // Give BrowserAccessibilityManager::Create access to our constructor.
   friend class BrowserAccessibilityManager;

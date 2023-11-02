@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,9 @@
 namespace blink {
 
 struct NamedGridLine {
-  NamedGridLine(const String line_name, bool is_in_repeat, bool is_first_repeat)
+  explicit NamedGridLine(const String line_name,
+                         bool is_in_repeat = false,
+                         bool is_first_repeat = false)
       : line_name(line_name),
         is_in_repeat(is_in_repeat),
         is_first_repeat(is_first_repeat) {}

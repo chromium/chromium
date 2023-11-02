@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,9 @@
 #include <utility>
 
 #include "base/json/json_writer.h"
+#include "base/logging.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
-#include "chrome/browser/profiles/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/webui/feedback/feedback_handler.h"
@@ -46,15 +47,26 @@ FeedbackDialog* FeedbackDialog::GetInstanceForTest() {
 
 // static
 void FeedbackDialog::CreateOrShow(
+    Profile* profile,
     const extensions::api::feedback_private::FeedbackInfo& info) {
-  // Focus the window hosting the dialog that has already been created.
   if (current_instance_) {
     DCHECK(current_instance_->widget_);
-    current_instance_->widget_->Show();
-    return;
+    const Profile* current_profile =
+        current_instance_->profile_keep_alive_.profile();
+    if (profile == current_profile) {
+      // Focus the window hosting the dialog that has already been created.
+      current_instance_->widget_->Show();
+      return;
+    } else {
+      // Close the existing window and create a new one for `profile`.
+      VLOG(1) << "Re-opening the feedback dialog for profile \""
+              << profile->GetDebugName() << "\" (was \""
+              << current_profile->GetDebugName() << "\")";
+      current_instance_->attached_to_current_instance_ = false;
+      current_instance_->widget_->Close();
+    }
   }
 
-  Profile* profile = ProfileManager::GetActiveUserProfile();
   current_instance_ = new FeedbackDialog(profile, info);
   gfx::NativeWindow window =
       chrome::ShowWebDialog(nullptr, profile, current_instance_,
@@ -68,7 +80,18 @@ FeedbackDialog::FeedbackDialog(
     : feedback_info_(info.ToValue()),
       feedback_flow_(info.flow),
       widget_(nullptr),
-      profile_keep_alive_(profile, ProfileKeepAliveOrigin::kFeedbackDialog) {
+      // We need to use GetOriginalProfile() here because `profile` may be an
+      // OTR Profile (when opening Feedback dialog on ChromeOS login screen, for
+      // example), and ScopedProfileKeepAlive only supports non-OTR Profiles.
+      // Trying to acquire a keepalive on the OTR Profile would trigger a
+      // DCHECK.
+      //
+      // TODO(crbug.com/1153922): Once OTR Profiles use refcounting, remove the
+      // call to GetOriginalProfile(). The OTR Profile will hold a keepalive on
+      // the regular Profile, so the ownership model will be more
+      // straightforward.
+      profile_keep_alive_(profile->GetOriginalProfile(),
+                          ProfileKeepAliveOrigin::kFeedbackDialog) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   set_can_resize(false);
   set_can_minimize(true);
@@ -76,7 +99,8 @@ FeedbackDialog::FeedbackDialog(
 
 FeedbackDialog::~FeedbackDialog() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  current_instance_ = nullptr;
+  if (attached_to_current_instance_)
+    current_instance_ = nullptr;
 }
 
 ui::ModalType FeedbackDialog::GetDialogModalType() const {
@@ -111,7 +135,7 @@ void FeedbackDialog::GetWebUIMessageHandlers(
 // chrome.getVariableValue('dialogArguments')
 std::string FeedbackDialog::GetDialogArgs() const {
   std::string data;
-  base::JSONWriter::Write(*feedback_info_, &data);
+  base::JSONWriter::Write(feedback_info_, &data);
   return data;
 }
 
@@ -143,7 +167,7 @@ bool FeedbackDialog::CheckMediaAccessPermission(
 }
 
 void FeedbackDialog::OnDialogClosed(const std::string& json_retval) {
-  DCHECK(this == current_instance_);
+  DCHECK(this == current_instance_ || !attached_to_current_instance_);
   delete this;
 }
 

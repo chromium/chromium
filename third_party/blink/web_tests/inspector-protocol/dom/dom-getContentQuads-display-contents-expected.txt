@@ -9,4 +9,14 @@ Tests DOM.getContentQuads method with text inside display:contents elements.
     }
 }
 Returned quads count: 1
+{
+    result : {
+        className : HTMLElement
+        description : b
+        objectId : <string>
+        subtype : node
+        type : object
+    }
+}
+Returned quads count: 1
 

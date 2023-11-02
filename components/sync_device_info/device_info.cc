@@ -1,17 +1,11 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/sync_device_info/device_info.h"
 
-// device_info.h's size can impact build time. Try not to raise this limit
-// unless absolutely necessary. See
-// https://chromium.googlesource.com/chromium/src/+/HEAD/docs/wmax_tokens.md
-#pragma clang max_tokens_here 509500
-
 #include <utility>
 
-#include "base/values.h"
 #include "components/sync/protocol/device_info_specifics.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 
@@ -72,6 +66,8 @@ DeviceInfo::DeviceInfo(
     const std::string& chrome_version,
     const std::string& sync_user_agent,
     const sync_pb::SyncEnums::DeviceType device_type,
+    const OsType os_type,
+    const FormFactor form_factor,
     const std::string& signin_scoped_device_id,
     const std::string& manufacturer_name,
     const std::string& model_name,
@@ -88,6 +84,8 @@ DeviceInfo::DeviceInfo(
       chrome_version_(chrome_version),
       sync_user_agent_(sync_user_agent),
       device_type_(device_type),
+      os_type_(os_type),
+      form_factor_(form_factor),
       signin_scoped_device_id_(signin_scoped_device_id),
       manufacturer_name_(manufacturer_name),
       model_name_(model_name),
@@ -124,6 +122,14 @@ const std::string& DeviceInfo::public_id() const {
 
 sync_pb::SyncEnums::DeviceType DeviceInfo::device_type() const {
   return device_type_;
+}
+
+DeviceInfo::OsType DeviceInfo::os_type() const {
+  return os_type_;
+}
+
+DeviceInfo::FormFactor DeviceInfo::form_factor() const {
+  return form_factor_;
 }
 
 const std::string& DeviceInfo::signin_scoped_device_id() const {
@@ -164,64 +170,12 @@ DeviceInfo::paask_info() const {
   return paask_info_;
 }
 
-std::string DeviceInfo::GetOSString() const {
-  switch (device_type_) {
-    case sync_pb::SyncEnums_DeviceType_TYPE_WIN:
-      return "win";
-    case sync_pb::SyncEnums_DeviceType_TYPE_MAC:
-      return "mac";
-    case sync_pb::SyncEnums_DeviceType_TYPE_LINUX:
-      return "linux";
-    case sync_pb::SyncEnums_DeviceType_TYPE_CROS:
-      return "chrome_os";
-    case sync_pb::SyncEnums_DeviceType_TYPE_PHONE:
-    case sync_pb::SyncEnums_DeviceType_TYPE_TABLET:
-      // TODO(lipalani): crbug.com/170375. Add support for ios
-      // phones and tablets.
-      return "android";
-    case sync_pb::SyncEnums_DeviceType_TYPE_UNSET:
-    case sync_pb::SyncEnums_DeviceType_TYPE_OTHER:
-      return "unknown";
-  }
-}
-
-std::string DeviceInfo::GetDeviceTypeString() const {
-  switch (device_type_) {
-    case sync_pb::SyncEnums_DeviceType_TYPE_WIN:
-    case sync_pb::SyncEnums_DeviceType_TYPE_MAC:
-    case sync_pb::SyncEnums_DeviceType_TYPE_LINUX:
-    case sync_pb::SyncEnums_DeviceType_TYPE_CROS:
-      return "desktop_or_laptop";
-    case sync_pb::SyncEnums_DeviceType_TYPE_PHONE:
-      return "phone";
-    case sync_pb::SyncEnums_DeviceType_TYPE_TABLET:
-      return "tablet";
-    case sync_pb::SyncEnums_DeviceType_TYPE_UNSET:
-    case sync_pb::SyncEnums_DeviceType_TYPE_OTHER:
-      return "unknown";
-  }
-}
-
 const std::string& DeviceInfo::fcm_registration_token() const {
   return fcm_registration_token_;
 }
 
 const ModelTypeSet& DeviceInfo::interested_data_types() const {
   return interested_data_types_;
-}
-
-std::unique_ptr<base::DictionaryValue> DeviceInfo::ToValue() const {
-  std::unique_ptr<base::DictionaryValue> value(new base::DictionaryValue());
-  value->SetString("name", client_name_);
-  value->SetString("id", public_id_);
-  value->SetString("os", GetOSString());
-  value->SetString("type", GetDeviceTypeString());
-  value->SetString("chromeVersion", chrome_version_);
-  value->SetInteger("lastUpdatedTimestamp", last_updated_timestamp().ToTimeT());
-  value->SetBoolean("sendTabToSelfReceivingEnabled",
-                    send_tab_to_self_receiving_enabled());
-  value->SetBoolean("hasSharingInfo", sharing_info().has_value());
-  return value;
 }
 
 void DeviceInfo::set_public_id(const std::string& id) {

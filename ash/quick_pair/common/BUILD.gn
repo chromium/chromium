@@ -1,4 +1,4 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -23,10 +23,10 @@ component("common") {
     "fast_pair/fast_pair_decoder.h",
     "fast_pair/fast_pair_feature_usage_metrics_logger.cc",
     "fast_pair/fast_pair_feature_usage_metrics_logger.h",
+    "fast_pair/fast_pair_http_result.cc",
+    "fast_pair/fast_pair_http_result.h",
     "fast_pair/fast_pair_metrics.cc",
     "fast_pair/fast_pair_metrics.h",
-    "fast_pair/fast_pair_service_data_creator.cc",
-    "fast_pair/fast_pair_service_data_creator.h",
     "log_buffer.cc",
     "log_buffer.h",
     "logging.cc",
@@ -40,10 +40,16 @@ component("common") {
   ]
 
   deps = [
-    "//ash/services/quick_pair/public/mojom",
+    "//ash/constants:constants",
     "//base",
-    "//chromeos/components/feature_usage",
+    "//chromeos/ash/components/feature_usage",
+    "//chromeos/ash/services/quick_pair/public/mojom",
+    "//components/prefs",
+    "//device/bluetooth",
     "//device/bluetooth/public/cpp",
+    "//net",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
   ]
 }
 
@@ -55,12 +61,13 @@ static_library("test_support") {
     "fast_pair/fast_pair_service_data_creator.h",
     "mock_quick_pair_browser_delegate.cc",
     "mock_quick_pair_browser_delegate.h",
-    "quick_pair_browser_delegate.h",
   ]
 
   deps = [
-    "//ash/services/quick_pair/public/mojom",
+    ":common",
     "//base/test:test_support",
+    "//chromeos/ash/services/quick_pair/public/mojom",
+    "//components/image_fetcher/core",
     "//services/network/public/cpp",
     "//testing/gtest",
   ]
@@ -73,13 +80,19 @@ source_set("unit_tests") {
     "device_unittest.cc",
     "fast_pair/fast_pair_decoder_unittest.cc",
     "fast_pair/fast_pair_feature_usage_metrics_logger_unittest.cc",
+    "log_buffer_unittest.cc",
     "logging_unittest.cc",
   ]
 
   deps = [
     ":common",
+    ":test_support",
+    "//ash/constants:constants",
     "//base/test:test_support",
-    "//chromeos/components/feature_usage",
+    "//chromeos/ash/components/feature_usage",
+    "//components/prefs:test_support",
+    "//device/bluetooth",
+    "//device/bluetooth:mocks",
     "//testing/gtest",
   ]
 }

@@ -1,14 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 module media_router.mojom;
 
-// Keep in sync with:
-// - RouteRequestResult::ResultCode in route_request_result.h
-// - MediaRouteProviderResult enum in tools/metrics/histograms.xml.
-// - mr.RouteRequestResultCode in route_request_error.js
-// - media_router_mojom_traits.h
+// Keep in sync with MediaRouteProviderResult enum in
+// tools/metrics/histograms/enums.xml
 enum RouteRequestResultCode {
   UNKNOWN_ERROR,
   OK,
@@ -16,11 +13,14 @@ enum RouteRequestResultCode {
   ROUTE_NOT_FOUND,
   SINK_NOT_FOUND,
   INVALID_ORIGIN,
-  OFF_THE_RECORD_MISMATCH,
+  DEPRECATED_OFF_THE_RECORD_MISMATCH,  // Deprecated.
   NO_SUPPORTED_PROVIDER,
   CANCELLED,
   ROUTE_ALREADY_EXISTS,
   DESKTOP_PICKER_FAILED,
-  ROUTE_ALREADY_TERMINATED
-// New values must be added here.
+  ROUTE_ALREADY_TERMINATED,
+  REDUNDANT_REQUEST,
+  USER_NOT_ALLOWED,
+  NOTIFICATION_DISABLED,
+  // New values must be added here.
 };

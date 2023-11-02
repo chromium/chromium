@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,9 @@
 #define CONTENT_BROWSER_ANDROID_SYNCHRONOUS_COMPOSITOR_SYNC_CALL_BRIDGE_H_
 
 #include "base/containers/circular_deque.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/synchronization/condition_variable.h"
 #include "base/thread_annotations.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "content/public/browser/android/synchronous_compositor.h"
@@ -145,7 +147,7 @@ class SynchronousCompositorSyncCallBridge
   enum class RemoteState { INIT, READY, CLOSED };
 
   // UI thread only.
-  SynchronousCompositorHost* host_;
+  raw_ptr<SynchronousCompositorHost> host_;
   // This handles the host control receiver in browser side.
   mojo::SelfOwnedReceiverRef<blink::mojom::SynchronousCompositorControlHost>
       host_control_receiver_;

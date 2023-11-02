@@ -1,10 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 module tracing.mojom;
 
 import "mojo/public/mojom/base/file.mojom";
+import "mojo/public/mojom/base/shared_memory.mojom";
 
 // Producer processes register with the format
 // "kPerfettoProducerNamePrefix-PID" when connecting to Chrome's internal
@@ -106,6 +107,7 @@ struct DataSourceConfig {
   uint64 tracing_session_id;
   ChromeConfig chrome_config;
   string legacy_config;
+  string track_event_config_raw;
 };
 
 struct DataSourceRegistration {
@@ -165,7 +167,7 @@ interface PerfettoService {
   // providing the shared memory buffer that will be used to send trace data.
   ConnectToProducerHost(pending_remote<ProducerClient> producer_client,
                         pending_receiver<ProducerHost> producer_host_receiver,
-                        handle<shared_buffer> shared_memory,
+                        mojo_base.mojom.UnsafeSharedMemoryRegion shared_memory,
                         uint64 shared_memory_buffer_page_size_bytes);
 };
 

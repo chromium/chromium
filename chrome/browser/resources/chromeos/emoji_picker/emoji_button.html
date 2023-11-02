@@ -1,10 +1,12 @@
 <style>
   :host {
     --emoji-background: transparent;
-    --emoji-hover-background: var(--cros-ripple-color);
+    /* Fixed height and width are required for buttons that have variants,
+     * Otherwise, when showing variants, buttons' positions will be moved.
+     */
     height: var(--emoji-size);
     position: relative;
-    width: var(--emoji-size);
+    width:  var(--emoji-size);
   }
 
   #emoji-button {
@@ -14,7 +16,7 @@
     cursor: pointer;
     display: block;
     font-family: 'Noto Color Emoji';
-    font-size: 19px; /*This gives emoji with height of 22px*/
+    font-size: 19px;
     height: 100%;
     line-height: var(--emoji-size);
     outline: none;
@@ -54,7 +56,7 @@
     * dark mode since dark mode is the same.
     */
     background: linear-gradient(
-        315deg, var(--google-grey-refresh-500) 4px,
+        315deg, var(--google-grey-500) 4px,
         var(--emoji-background) 4px, var(--emoji-background));
     content: '';
     display: block;
@@ -66,36 +68,27 @@
 
   #tooltip {
     --paper-tooltip-background: var(--cros-tooltip-background-color);
-    --paper-tooltip-opacity: 1;
-    --paper-tooltip-text-color: var(--cros-tooltip-label-color);
-    --paper-tooltip-delay-in: 500ms;
-    --paper-tooltip-delay-out: 500ms;
+    --paper-tooltip-delay-in: var(--emoji-tooltip-delay-in);
+    --paper-tooltip-delay-out: var(--emoji-tooltip-delay-out);
     --paper-tooltip-duration-in: 0;
     --paper-tooltip-duration-out: 0;
+    --paper-tooltip-opacity: 1;
+    --paper-tooltip-text-color: var(--cros-tooltip-label-color);
+  }
 
-    /* CSS mixin goes against style guide, but this is the only way to style
-     * the paper tooltip without changing the source code (which is in
-     * third_party)
-     */
-    --paper-tooltip: {
-      box-shadow: var(--cr-elevation-1);
-      font-family: 'Roboto', sans-serif;
-      font-size: 12px;
-      margin: 4px;
-      padding: 4px 8px 4px 8px;
-      white-space: nowrap;
-    };
+  #tooltip::part(tooltip) {
+    box-shadow: var(--cr-elevation-1);
+    font-family: 'Roboto', sans-serif;
+    font-size: 12px;
+    margin: 4px;
+    padding: 4px 8px 4px 8px;
+    white-space: nowrap;
   }
 </style>
 
-
-<button
-    id="emoji-button"
-    class$="[[_className(variants)]]"
-    on-click="onClick"
-    on-contextmenu="onContextMenu"
-    disabled="[[disabled]]"
-    aria-label="[[_label(emoji, variants)]]">
+<button id="emoji-button" class$="[[_className(variants)]]"
+  on-click="onClick" on-contextmenu="onContextMenu"
+  disabled="[[disabled]]" aria-label="[[_label(tooltip, emoji, variants)]]">
   [[emoji]]
 </button>
 <template is="dom-if" if="[[!variant]]">
@@ -103,7 +96,7 @@
     part="tooltip" offset="8">
     [[tooltip]]
   </paper-tooltip>
-</tooltip>
+</template>
 <template is="dom-if" if="[[variantsVisible]]">
   <emoji-variants variants="[[variants]]" tooltip="[[tooltip]]">
   </emoji-variants>

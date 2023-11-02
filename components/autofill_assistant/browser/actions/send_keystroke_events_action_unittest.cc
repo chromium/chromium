@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,9 @@
 #include "components/autofill_assistant/browser/actions/mock_action_delegate.h"
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/dom_action.pb.h"
-#include "components/autofill_assistant/browser/mock_website_login_manager.h"
+#include "components/autofill_assistant/browser/public/password_change/mock_website_login_manager.h"
 #include "components/autofill_assistant/browser/value_util.h"
-#include "components/autofill_assistant/browser/web/element_finder.h"
+#include "components/autofill_assistant/browser/web/element_finder_result.h"
 #include "components/autofill_assistant/browser/web/element_store.h"
 #include "components/autofill_assistant/browser/web/mock_web_controller.h"
 #include "content/public/test/browser_task_environment.h"
@@ -91,9 +91,10 @@ TEST_F(SendKeystrokeEventsActionTest, FailsIfElementDoesNotExist) {
 }
 
 TEST_F(SendKeystrokeEventsActionTest, SendsText) {
-  ElementFinder::Result element;
-  element.dom_object.object_data.object_id = "id";
-  mock_action_delegate_.GetElementStore()->AddElement("e", element.dom_object);
+  ElementFinderResult element;
+  element.SetObjectId("id");
+  mock_action_delegate_.GetElementStore()->AddElement("e",
+                                                      element.dom_object());
 
   EXPECT_CALL(mock_web_controller_,
               SendTextInput(20, "Hello", EqualsElement(element), _))
@@ -113,14 +114,15 @@ TEST_F(SendKeystrokeEventsActionTest, PasswordTextValueReturnLastTimeUsed) {
   ON_CALL(mock_action_delegate_, GetElementStore)
       .WillByDefault(Return(&fake_element_store));
 
-  ElementFinder::Result element;
+  ElementFinderResult element;
   // The password's origin is compared against the frame's. Navigate the frame
   // to set the matching origin.
   content::WebContentsTester::For(web_contents_.get())
       ->NavigateAndCommit(GURL(kUrl));
-  element.dom_object.object_data.object_id = "id";
-  element.container_frame_host = web_contents_->GetMainFrame();
-  mock_action_delegate_.GetElementStore()->AddElement("e", element.dom_object);
+  element.SetObjectId("id");
+  element.SetRenderFrameHostForTest(web_contents_->GetPrimaryMainFrame());
+  mock_action_delegate_.GetElementStore()->AddElement("e",
+                                                      element.dom_object());
 
   EXPECT_CALL(mock_web_controller_,
               SendTextInput(0, "password", EqualsElement(element), _))
@@ -153,14 +155,15 @@ TEST_F(SendKeystrokeEventsActionTest,
   ON_CALL(mock_action_delegate_, GetElementStore)
       .WillByDefault(Return(&fake_element_store));
 
-  ElementFinder::Result element;
+  ElementFinderResult element;
   // The password's origin is compared against the frame's. Navigate the frame
   // to set the matching origin.
   content::WebContentsTester::For(web_contents_.get())
       ->NavigateAndCommit(GURL(kUrl));
-  element.dom_object.object_data.object_id = "id";
-  element.container_frame_host = web_contents_->GetMainFrame();
-  mock_action_delegate_.GetElementStore()->AddElement("e", element.dom_object);
+  element.SetObjectId("id");
+  element.SetRenderFrameHostForTest(web_contents_->GetPrimaryMainFrame());
+  mock_action_delegate_.GetElementStore()->AddElement("e",
+                                                      element.dom_object());
 
   EXPECT_CALL(mock_web_controller_,
               SendTextInput(0, "password", EqualsElement(element), _))

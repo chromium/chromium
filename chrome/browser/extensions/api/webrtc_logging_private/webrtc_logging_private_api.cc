@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/supports_user_data.h"
-#include "base/task/post_task.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -30,7 +29,7 @@
 #include "extensions/browser/process_manager.h"
 #include "extensions/common/error_utils.h"
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "extensions/common/permissions/permissions_data.h"
 #endif
 
@@ -39,7 +38,7 @@ namespace {
 bool CanEnableAudioDebugRecordingsFromExtension(
     const extensions::Extension* extension) {
   bool enabled_by_permissions = false;
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   if (extension) {
     enabled_by_permissions =
         extension->permissions_data()->active_permissions().HasAPIPermission(
@@ -111,7 +110,7 @@ content::RenderProcessHost* WebrtcLoggingPrivateFunction::RphFromRequest(
                         content::RenderProcessHost** target_host,
                         content::WebContents* guest_contents) {
       *guests_found = *guests_found + 1;
-      *target_host = guest_contents->GetMainFrame()->GetProcess();
+      *target_host = guest_contents->GetPrimaryMainFrame()->GetProcess();
       // Don't short-circuit, so we can count how many other guest contents
       // there are.
       return false;
@@ -140,7 +139,7 @@ content::RenderProcessHost* WebrtcLoggingPrivateFunction::RphFromRequest(
 
   // If |guest_process_id| is defined, directly use this id to find the
   // corresponding RenderProcessHost.
-  if (request.guest_process_id.get()) {
+  if (request.guest_process_id) {
     content::RenderProcessHost* rph =
         content::RenderProcessHost::FromID(*request.guest_process_id);
     if (!rph) {
@@ -153,7 +152,7 @@ content::RenderProcessHost* WebrtcLoggingPrivateFunction::RphFromRequest(
 
   // Otherwise, use the |tab_id|. If there's no |target_viewview|, no |tab_id|,
   // and no |guest_process_id|, we can't look up the RenderProcessHost.
-  if (!request.tab_id.get()) {
+  if (!request.tab_id) {
     *error = "No webview, tab ID, or guest process ID specified.";
     return nullptr;
   }
@@ -180,7 +179,8 @@ content::RenderProcessHost* WebrtcLoggingPrivateFunction::RphFromRequest(
     return nullptr;
   }
 
-  content::RenderProcessHost* rph = contents->GetMainFrame()->GetProcess();
+  content::RenderProcessHost* rph =
+      contents->GetPrimaryMainFrame()->GetProcess();
   if (!rph) {
     *error = "Failed to get RPH.";
   }
@@ -229,7 +229,7 @@ void WebrtcLoggingPrivateFunctionWithUploadCallback::FireCallback(
   if (success) {
     api::webrtc_logging_private::UploadResult result;
     result.report_id = report_id;
-    Respond(OneArgument(base::Value::FromUniquePtrValue(result.ToValue())));
+    Respond(OneArgument(base::Value(result.ToValue())));
   } else {
     Respond(Error(error_message));
   }
@@ -250,7 +250,7 @@ void WebrtcLoggingPrivateFunctionWithRecordingDoneCallback::FireCallback(
   result.prefix_path = prefix_path;
   result.did_stop = did_stop;
   result.did_manual_stop = did_manual_stop;
-  Respond(OneArgument(base::Value::FromUniquePtrValue(result.ToValue())));
+  Respond(OneArgument(base::Value(result.ToValue())));
 }
 
 ExtensionFunction::ResponseAction
@@ -570,7 +570,7 @@ void WebrtcLoggingPrivateStartEventLoggingFunction::FireCallback(
     DCHECK(error_message.empty());
     api::webrtc_logging_private::StartEventLoggingResult result;
     result.log_id = log_id;
-    Respond(OneArgument(base::Value::FromUniquePtrValue(result.ToValue())));
+    Respond(OneArgument(base::Value(result.ToValue())));
   } else {
     DCHECK(log_id.empty());
     DCHECK(!error_message.empty());
@@ -580,7 +580,7 @@ void WebrtcLoggingPrivateStartEventLoggingFunction::FireCallback(
 
 ExtensionFunction::ResponseAction
 WebrtcLoggingPrivateGetLogsDirectoryFunction::Run() {
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // Unlike other WebrtcLoggingPrivate functions that take a RequestInfo object,
   // this function shouldn't be called by a component extension on behalf of
   // some web code. It returns a DirectoryEntry for use directly in the calling
@@ -603,9 +603,9 @@ WebrtcLoggingPrivateGetLogsDirectoryFunction::Run() {
           &WebrtcLoggingPrivateGetLogsDirectoryFunction::FireErrorCallback,
           this));
   return RespondLater();
-#else   // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#else   // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   return RespondNow(Error("Not supported on the current OS"));
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 }
 
 void WebrtcLoggingPrivateGetLogsDirectoryFunction::FireCallback(
@@ -613,8 +613,8 @@ void WebrtcLoggingPrivateGetLogsDirectoryFunction::FireCallback(
     const std::string& base_name) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-  dict->SetString("fileSystemId", filesystem_id);
-  dict->SetString("baseName", base_name);
+  dict->SetStringKey("fileSystemId", filesystem_id);
+  dict->SetStringKey("baseName", base_name);
   Respond(OneArgument(base::Value::FromUniquePtrValue(std::move(dict))));
 }
 

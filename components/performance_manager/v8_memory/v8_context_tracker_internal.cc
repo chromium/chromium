@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -110,7 +110,11 @@ RemoteFrameData::~RemoteFrameData() {
   // scope on their own.
   if (execution_context_data_->ClearRemoteFrameData(PassKey()) &&
       execution_context_data_->IsTracked()) {
-    process_data_->data_store()->Destroy(execution_context_data_->GetToken());
+    // Reset `execution_context_data_` to nullptr because it will be destroyed
+    // using the token below.
+    blink::ExecutionContextToken token = execution_context_data_->GetToken();
+    execution_context_data_ = nullptr;
+    process_data_->data_store()->Destroy(token);
   }
 }
 
@@ -149,9 +153,15 @@ V8ContextData::~V8ContextData() {
   // If this is the last reference keeping alive a tracked ExecutionContextData,
   // then clean it up as well. Untracked ExecutionContextDatas will go out of
   // scope on their own.
-  if (auto* ecd = GetExecutionContextData()) {
-    if (ecd->DecrementV8ContextCount(PassKey()) && ecd->IsTracked())
-      process_data_->data_store()->Destroy(ecd->GetToken());
+  auto* execution_context_data = GetExecutionContextData();
+  if (execution_context_data &&
+      execution_context_data->DecrementV8ContextCount(PassKey()) &&
+      execution_context_data->IsTracked()) {
+    // Reset the execution_context_state to nullptr because it will be
+    // destroyed using the token below.
+    blink::ExecutionContextToken token = execution_context_data->GetToken();
+    execution_context_state = nullptr;
+    process_data_->data_store()->Destroy(token);
   }
 }
 

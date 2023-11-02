@@ -20,7 +20,7 @@ SQLITE_ALTER_TABLE statement succeeded.
 SQLITE_ALTER_TABLE statement succeeded.
 SQLITE_ALTER_TABLE statement succeeded.
 SQLITE_ADD_COLUMN statement succeeded.
-SQLITE_DROP_COLUMN statement failed: could not prepare statement (1 SQL logic error)
+SQLITE_DROP_COLUMN statement failed: could not prepare statement (1 not authorized to use function: sqlite_drop_column)
 SQLITE_TRANSACTION statement failed: could not prepare statement (23 not authorized)
 SQLITE_ATTACH statement failed: could not prepare statement (23 not authorized)
 SQLITE_DETACH statement failed: could not prepare statement (23 not authorized)

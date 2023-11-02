@@ -32,8 +32,9 @@
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/svg/svg_tests.h"
 #include "third_party/blink/renderer/core/svg_names.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/wtf/hash_set.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
 
@@ -51,7 +52,7 @@ class CORE_EXPORT SMILInstanceTimeList {
   SMILTime NextAfter(SMILTime) const;
 
   wtf_size_t size() const { return instance_times_.size(); }
-  bool IsEmpty() const { return instance_times_.IsEmpty(); }
+  bool IsEmpty() const { return instance_times_.empty(); }
 
   using const_iterator = typename Vector<SMILTimeWithOrigin>::const_iterator;
   const_iterator begin() const { return instance_times_.begin(); }
@@ -285,7 +286,7 @@ class CORE_EXPORT SVGSMILElement : public SVGElement, public SVGTests {
   bool is_waiting_for_first_interval_;
   bool is_scheduled_;
 
-  using TimeDependentSet = HeapHashSet<Member<SVGSMILElement>>;
+  using TimeDependentSet = HeapHashSet<Member<SVGSMILElement>, WTF::MemberHashRecordReplayId<SVGSMILElement>>;
   TimeDependentSet sync_base_dependents_;
 
   // Instance time lists

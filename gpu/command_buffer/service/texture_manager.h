@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <stdint.h>
 
 #include <algorithm>
-#include <list>
 #include <memory>
 #include <set>
 #include <string>
@@ -17,20 +16,21 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/service/gl_utils.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/sampler_manager.h"
-#include "gpu/command_buffer/service/shared_image_representation.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/texture_base.h"
 #include "gpu/gpu_gles2_export.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gl/gl_image.h"
 
 namespace gl {
+class GLImage;
 class ProgressReporter;
 }
 
@@ -663,7 +663,7 @@ class GPU_GLES2_EXPORT Texture final : public TextureBase {
 
   // The single TextureRef that accounts for memory for this texture. Must be
   // one of refs_.
-  TextureRef* memory_tracking_ref_ = nullptr;
+  raw_ptr<TextureRef> memory_tracking_ref_ = nullptr;
 
   // The id of the texture that we are responsible for deleting.  Normally, this
   // is the same as |service_id_|, unless a StreamTexture Image with its own
@@ -733,7 +733,7 @@ class GPU_GLES2_EXPORT Texture final : public TextureBase {
   // Whether we have initialized TEXTURE_MAX_ANISOTROPY to 1.
   bool texture_max_anisotropy_initialized_ = false;
 
-  const CompatibilitySwizzle* compatibility_swizzle_ = nullptr;
+  raw_ptr<const CompatibilitySwizzle> compatibility_swizzle_ = nullptr;
 
   bool emulating_rgb_ = false;
 };
@@ -759,16 +759,16 @@ class GPU_GLES2_EXPORT TextureRef : public base::RefCounted<TextureRef> {
   // TODO(ericrk): Remove this once the Texture itself is generated from and
   // owns the SharedImageRepresentation.
   void SetSharedImageRepresentation(
-      std::unique_ptr<SharedImageRepresentationGLTexture> shared_image);
+      std::unique_ptr<GLTextureImageRepresentation> shared_image);
   const Texture* texture() const { return texture_; }
   Texture* texture() { return texture_; }
   GLuint client_id() const { return client_id_; }
   GLuint service_id() const { return texture_->service_id(); }
   GLint num_observers() const { return num_observers_; }
-  SharedImageRepresentationGLTexture* shared_image() const {
+  GLTextureImageRepresentation* shared_image() const {
     return shared_image_.get();
   }
-  const std::unique_ptr<SharedImageRepresentationGLTexture::ScopedAccess>&
+  const std::unique_ptr<GLTextureImageRepresentation::ScopedAccess>&
   shared_image_scoped_access() const {
     return shared_image_scoped_access_;
   }
@@ -790,14 +790,14 @@ class GPU_GLES2_EXPORT TextureRef : public base::RefCounted<TextureRef> {
   TextureManager* manager() { return manager_; }
   void reset_client_id() { client_id_ = 0; }
 
-  TextureManager* manager_;
-  Texture* texture_;
+  raw_ptr<TextureManager> manager_;
+  raw_ptr<Texture, DanglingUntriaged> texture_;
   GLuint client_id_;
   GLint num_observers_;
   bool force_context_lost_;
 
-  std::unique_ptr<SharedImageRepresentationGLTexture> shared_image_;
-  std::unique_ptr<SharedImageRepresentationGLTexture::ScopedAccess>
+  std::unique_ptr<GLTextureImageRepresentation> shared_image_;
+  std::unique_ptr<GLTextureImageRepresentation::ScopedAccess>
       shared_image_scoped_access_;
 };
 
@@ -979,7 +979,7 @@ class GPU_GLES2_EXPORT TextureManager
   // ID.
   TextureRef* ConsumeSharedImage(
       GLuint client_id,
-      std::unique_ptr<SharedImageRepresentationGLTexture> shared_image);
+      std::unique_ptr<GLTextureImageRepresentation> shared_image);
 
   // Sets |rect| of mip as cleared.
   void SetLevelClearedRect(TextureRef* ref,
@@ -1333,7 +1333,7 @@ class GPU_GLES2_EXPORT TextureManager
 
   MemoryTypeTracker* GetMemTracker();
   std::unique_ptr<MemoryTypeTracker> memory_type_tracker_;
-  MemoryTracker* memory_tracker_;
+  raw_ptr<MemoryTracker> memory_tracker_;
 
   scoped_refptr<FeatureInfo> feature_info_;
 
@@ -1379,9 +1379,9 @@ class GPU_GLES2_EXPORT TextureManager
   // Used to notify the watchdog thread of progress during destruction,
   // preventing time-outs when destruction takes a long time. May be null when
   // using in-process command buffer.
-  gl::ProgressReporter* progress_reporter_;
+  raw_ptr<gl::ProgressReporter> progress_reporter_;
 
-  ServiceDiscardableManager* discardable_manager_;
+  raw_ptr<ServiceDiscardableManager> discardable_manager_;
 };
 
 }  // namespace gles2

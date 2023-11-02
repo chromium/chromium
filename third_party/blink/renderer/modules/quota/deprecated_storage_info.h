@@ -33,7 +33,7 @@
 
 #include "third_party/blink/renderer/modules/quota/deprecated_storage_quota.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
@@ -72,7 +72,6 @@ class DeprecatedStorageInfo final : public ScriptWrappable {
                                           ExecutionContext* execution_context);
 
   mutable Member<DeprecatedStorageQuota> temporary_storage_;
-  mutable Member<DeprecatedStorageQuota> persistent_storage_;
 };
 
 }  // namespace blink

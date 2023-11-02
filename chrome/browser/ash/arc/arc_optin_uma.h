@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,8 @@
 
 #include <ostream>
 
-#include "components/arc/mojom/app.mojom-forward.h"
-#include "components/arc/mojom/auth.mojom-forward.h"
+#include "ash/components/arc/mojom/app.mojom-forward.h"
+#include "ash/components/arc/mojom/auth.mojom-forward.h"
 
 class Profile;
 
@@ -263,10 +263,7 @@ void UpdateArcUiAvailableTime(const base::TimeDelta& elapsed_time,
                               const std::string& mode,
                               const Profile* profile);
 void UpdatePlayStoreLaunchTime(const base::TimeDelta& elapsed_time);
-// TODO(khmel): Remove this in favor of UpdateArcUiAvailableTime once it is
-// rolled and has confirmed usability.
-void UpdatePlayStoreShownTimeDeprecated(const base::TimeDelta& elapsed_time,
-                                        const Profile* profile);
+void UpdateDeferredLaunchTime(const base::TimeDelta& elapsed_time);
 void UpdateSilentAuthCodeUMA(OptInSilentAuthCode state);
 void UpdateSupervisionTransitionResultUMA(mojom::ManagementChangeStatus result);
 void UpdateReauthorizationSilentAuthCodeUMA(OptInSilentAuthCode state);
@@ -277,8 +274,6 @@ void UpdateAuthTiming(const char* histogram_name,
 void UpdateAuthCheckinAttempts(int32_t num_attempts, const Profile* profile);
 void UpdateAuthAccountCheckStatus(mojom::AccountCheckStatus status,
                                   const Profile* profile);
-void UpdateAndroidIdSource(mojom::AndroidIdSource source,
-                           const Profile* profile);
 void UpdateAuthCodeFetcherProxyBypassUMA(bool proxy_bypassed,
                                          const Profile* profile);
 void UpdateAccountReauthReason(mojom::ReauthReason reason,

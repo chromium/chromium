@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -166,7 +165,7 @@ class FakeSerialPort : public device::mojom::SerialPort {
     std::move(callback).Run(std::move(info));
   }
 
-  void Close(CloseCallback callback) override {
+  void Close(bool flush, CloseCallback callback) override {
     in_stream_watcher_.Cancel();
     in_stream_.reset();
     out_stream_watcher_.Cancel();

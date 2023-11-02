@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,7 +35,7 @@ const char kIgnoreGpuBlocklist[] = "ignore-gpu-blocklist";
 // Allows explicitly specifying the shader disk cache size for embedded devices.
 // Default value is 6MB. On Android, 2MB is default and 128KB for low-end
 // devices.
-const char kShaderDiskCacheSizeKB[] = "shader-disk-cache-size-kb";
+const char kGpuDiskCacheSizeKB[] = "gpu-disk-cache-size-kb";
 
 // Disables the non-sandboxed GPU process for DX12 info collection
 const char kDisableGpuProcessForDX12InfoCollection[] =
@@ -43,11 +43,16 @@ const char kDisableGpuProcessForDX12InfoCollection[] =
 
 const char kEnableUnsafeWebGPU[] = "enable-unsafe-webgpu";
 
+// Enables WebGPU developer features which are not generally exposed to the web
+// platform.
+const char kEnableWebGPUDeveloperFeatures[] =
+    "enable-webgpu-developer-features";
+
 // Enable validation layers in Dawn backends.
 const char kEnableDawnBackendValidation[] = "enable-dawn-backend-validation";
 
-// Force all WebGPU content to run on the WebGPU/Compat (GLES) backend.
-const char kForceWebGPUCompat[] = "force-webgpu-compat";
+// The adapter to use for WebGPU content.
+GPU_EXPORT extern const char kUseWebGPUAdapter[] = "use-webgpu-adapter";
 
 // Set the Dawn features(toggles) enabled on the creation of Dawn devices.
 const char kEnableDawnFeatures[] = "enable-dawn-features";
@@ -55,8 +60,7 @@ const char kEnableDawnFeatures[] = "enable-dawn-features";
 // Set the Dawn features(toggles) disabled on the creation of Dawn devices.
 const char kDisableDawnFeatures[] = "disable-dawn-features";
 
-// Increases the priority (to REALTIME_AUDIO) of gpu process and compositor
-// thread.
+// Changes the type (to kRealtimeAudio) of gpu process and compositor thread.
 // This is only to be used for perf tests on macOS for more reliable values.
 const char kUseHighGPUThreadPriorityForPerfTests[] =
     "use-gpu-high-thread-priority-for-perf-tests";

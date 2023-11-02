@@ -6,10 +6,25 @@
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
       "invalidations": [
-        [8, 167, 30, 19],
-        [8, 127, 30, 19],
-        [8, 127, 26, 20],
-        [8, 147, 23, 20]
+        [6, 125, 788, 104]
+      ]
+    },
+    {
+      "name": "Caret",
+      "position": [8, 127],
+      "bounds": [1, 19],
+      "contentsOpaque": true,
+      "invalidations": [
+        [0, 0, 1, 19]
+      ]
+    },
+    {
+      "name": "LayoutNGBlockFlow DIV",
+      "position": [6, 125],
+      "bounds": [788, 104],
+      "contentsOpaqueForText": true,
+      "invalidations": [
+        [0, 0, 788, 104]
       ]
     }
   ]

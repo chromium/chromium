@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,16 +9,10 @@
 #include <memory>
 #include <string>
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
-#include "net/base/io_buffer.h"
-#include "net/base/net_errors.h"
-#include "net/base/test_completion_callback.h"
-#include "storage/browser/file_system/file_stream_test_utils.h"
+#include "storage/browser/file_system/file_stream_writer.h"
 #include "storage/browser/file_system/file_stream_writer_test.h"
 
 namespace storage {
@@ -52,9 +46,9 @@ class LocalFileStreamWriterTest : public FileStreamWriterTest {
 
   std::unique_ptr<FileStreamWriter> CreateWriter(const std::string& name,
                                                  int64_t offset) override {
-    return base::WrapUnique(
-        new LocalFileStreamWriter(file_task_runner(), Path(name), offset,
-                                  FileStreamWriter::OPEN_EXISTING_FILE));
+    return FileStreamWriter::CreateForLocalFile(
+        file_task_runner(), Path(name), offset,
+        FileStreamWriter::OPEN_EXISTING_FILE);
   }
 
   bool FilePathExists(const std::string& name) override {

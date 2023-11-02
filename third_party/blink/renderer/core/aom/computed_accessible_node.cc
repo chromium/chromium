@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,13 +10,14 @@
 
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/accessibility/ax_context.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/frame_request_callback_collection.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "ui/accessibility/ax_mode.h"
 
@@ -49,11 +50,20 @@ class ComputedAccessibleNodePromiseResolver::RequestAnimationFrameCallback final
 
 ComputedAccessibleNodePromiseResolver::ComputedAccessibleNodePromiseResolver(
     ScriptState* script_state,
+    Document& document,
+    AXID ax_id)
+    : ax_id_(ax_id),
+      resolver_(MakeGarbageCollected<ScriptPromiseResolver>(script_state)),
+      ax_context_(std::make_unique<AXContext>(document, ui::kAXModeComplete)) {
+  DCHECK(ax_id);
+}
+
+ComputedAccessibleNodePromiseResolver::ComputedAccessibleNodePromiseResolver(
+    ScriptState* script_state,
     Element& element)
     : element_(element),
       resolver_(MakeGarbageCollected<ScriptPromiseResolver>(script_state)),
-      resolve_with_node_(false),
-      ax_context_(std::make_unique<AXContext>(element_->GetDocument(),
+      ax_context_(std::make_unique<AXContext>(element.GetDocument(),
                                               ui::kAXModeComplete)) {}
 
 ScriptPromise ComputedAccessibleNodePromiseResolver::Promise() {
@@ -72,17 +82,21 @@ void ComputedAccessibleNodePromiseResolver::ComputeAccessibleNode() {
 
 void ComputedAccessibleNodePromiseResolver::EnsureUpToDate() {
   DCHECK(RuntimeEnabledFeatures::AccessibilityObjectModelEnabled());
-  if (continue_callback_request_id_)
+  if (continue_callback_request_id_ || !ax_context_->GetDocument())
     return;
   // TODO(aboxhall): Trigger a call when lifecycle is next at kPrePaintClean.
   RequestAnimationFrameCallback* callback =
       MakeGarbageCollected<RequestAnimationFrameCallback>(this);
   continue_callback_request_id_ =
-      element_->GetDocument().RequestAnimationFrame(callback);
+      ax_context_->GetDocument()->RequestAnimationFrame(callback);
 }
 
 void ComputedAccessibleNodePromiseResolver::UpdateTreeAndResolve() {
-  LocalFrame* local_frame = element_->ownerDocument()->GetFrame();
+  if (!ax_context_->GetDocument()) {
+    resolver_->Resolve();
+    return;
+  }
+  LocalFrame* local_frame = ax_context_->GetDocument()->GetFrame();
   if (!local_frame) {
     resolver_->Resolve();
     return;
@@ -97,18 +111,17 @@ void ComputedAccessibleNodePromiseResolver::UpdateTreeAndResolve() {
     return;
   }
 
-  Document& document = element_->GetDocument();
-  document.View()->UpdateAllLifecyclePhasesExceptPaint(
+  ax_context_->GetDocument()->View()->UpdateAllLifecyclePhasesExceptPaint(
       DocumentUpdateReason::kAccessibility);
   AXObjectCache& cache = ax_context_->GetAXObjectCache();
-  AXID ax_id = cache.GetAXID(element_);
-  if (!ax_id) {
+  AXID ax_id = ax_id_ ? ax_id_ : cache.GetAXID(element_);
+  if (!ax_id || !cache.ObjectFromAXID(ax_id)) {
     resolver_->Resolve();  // No AXObject exists for this element.
     return;
   }
 
   ComputedAccessibleNode* accessible_node =
-      document.GetOrCreateComputedAccessibleNode(ax_id);
+      ax_context_->GetDocument()->GetOrCreateComputedAccessibleNode(ax_id);
   DCHECK(accessible_node);
   resolver_->Resolve(accessible_node);
 }
@@ -117,9 +130,10 @@ void ComputedAccessibleNodePromiseResolver::UpdateTreeAndResolve() {
 
 ComputedAccessibleNode::ComputedAccessibleNode(AXID ax_id, Document* document)
     : ax_id_(ax_id),
-      document_(document),
       ax_context_(std::make_unique<AXContext>(*document, ui::kAXModeComplete)) {
 }
+
+ComputedAccessibleNode::~ComputedAccessibleNode() = default;
 
 absl::optional<bool> ComputedAccessibleNode::atomic() const {
   return GetBoolAttribute(WebAOMBoolAttribute::AOM_ATTR_ATOMIC);
@@ -211,11 +225,10 @@ absl::optional<float> ComputedAccessibleNode::valueNow() const {
 
 ScriptPromise ComputedAccessibleNode::ensureUpToDate(
     ScriptState* script_state) {
-  AXObjectCache* cache = document_->ExistingAXObjectCache();
-  DCHECK(cache);
-  Element* element = cache->GetElementFromAXID(ax_id_);
+  if (!GetDocument())
+    return ScriptPromise();  // Empty promise.
   auto* resolver = MakeGarbageCollected<ComputedAccessibleNodePromiseResolver>(
-      script_state, *element);
+      script_state, *GetDocument(), ax_id_);
   ScriptPromise promise = resolver->Promise();
   resolver->EnsureUpToDate();
   return promise;
@@ -269,7 +282,7 @@ ComputedAccessibleNode* ComputedAccessibleNode::parent() const {
   if (!tree->GetParentIdForAXNode(ax_id_, &parent_ax_id)) {
     return nullptr;
   }
-  return document_->GetOrCreateComputedAccessibleNode(parent_ax_id);
+  return GetDocument()->GetOrCreateComputedAccessibleNode(parent_ax_id);
 }
 
 ComputedAccessibleNode* ComputedAccessibleNode::firstChild() const {
@@ -281,7 +294,7 @@ ComputedAccessibleNode* ComputedAccessibleNode::firstChild() const {
   if (!tree->GetFirstChildIdForAXNode(ax_id_, &child_ax_id)) {
     return nullptr;
   }
-  return document_->GetOrCreateComputedAccessibleNode(child_ax_id);
+  return GetDocument()->GetOrCreateComputedAccessibleNode(child_ax_id);
 }
 
 ComputedAccessibleNode* ComputedAccessibleNode::lastChild() const {
@@ -293,7 +306,7 @@ ComputedAccessibleNode* ComputedAccessibleNode::lastChild() const {
   if (!tree->GetLastChildIdForAXNode(ax_id_, &child_ax_id)) {
     return nullptr;
   }
-  return document_->GetOrCreateComputedAccessibleNode(child_ax_id);
+  return GetDocument()->GetOrCreateComputedAccessibleNode(child_ax_id);
 }
 
 ComputedAccessibleNode* ComputedAccessibleNode::previousSibling() const {
@@ -305,7 +318,7 @@ ComputedAccessibleNode* ComputedAccessibleNode::previousSibling() const {
   if (!tree->GetPreviousSiblingIdForAXNode(ax_id_, &sibling_ax_id)) {
     return nullptr;
   }
-  return document_->GetOrCreateComputedAccessibleNode(sibling_ax_id);
+  return GetDocument()->GetOrCreateComputedAccessibleNode(sibling_ax_id);
 }
 
 ComputedAccessibleNode* ComputedAccessibleNode::nextSibling() const {
@@ -317,11 +330,17 @@ ComputedAccessibleNode* ComputedAccessibleNode::nextSibling() const {
   if (!tree->GetNextSiblingIdForAXNode(ax_id_, &sibling_ax_id)) {
     return nullptr;
   }
-  return document_->GetOrCreateComputedAccessibleNode(sibling_ax_id);
+  return GetDocument()->GetOrCreateComputedAccessibleNode(sibling_ax_id);
+}
+
+Document* ComputedAccessibleNode::GetDocument() const {
+  return ax_context_->GetDocument();
 }
 
 WebComputedAXTree* ComputedAccessibleNode::GetTree() const {
-  LocalFrame* local_frame = document_->GetFrame();
+  if (!GetDocument())
+    return nullptr;
+  LocalFrame* local_frame = GetDocument()->GetFrame();
   if (!local_frame)
     return nullptr;
 
@@ -364,7 +383,6 @@ const String ComputedAccessibleNode::GetStringAttribute(
 }
 
 void ComputedAccessibleNode::Trace(Visitor* visitor) const {
-  visitor->Trace(document_);
   ScriptWrappable::Trace(visitor);
 }
 

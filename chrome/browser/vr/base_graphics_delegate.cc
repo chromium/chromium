@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -49,7 +49,7 @@ bool BaseGraphicsDelegate::RunInSkiaContext(base::OnceClosure callback) {
 void BaseGraphicsDelegate::SwapSurfaceBuffers() {
   TRACE_EVENT0("gpu", __func__);
   DCHECK(surface_);
-  surface_->SwapBuffers(base::DoNothing());
+  surface_->SwapBuffers(base::DoNothing(), gl::FrameData());
 }
 
 bool BaseGraphicsDelegate::MakeContextCurrent(ContextId context_id) {

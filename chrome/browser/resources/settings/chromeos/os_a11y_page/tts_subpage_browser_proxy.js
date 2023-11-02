@@ -1,10 +1,6 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
-// clang-format off
-import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
-// clang-format on
 
 /** @interface */
 export class TtsSubpageBrowserProxy {
@@ -32,12 +28,31 @@ export class TtsSubpageBrowserProxy {
    * Awakens the tts engine.
    */
   wakeTtsEngine() {}
+
+  /**
+   * Triggers the TtsPlatform to update its list of voices and relay that update
+   * through VoicesChanged.
+   */
+  refreshTtsVoices() {}
 }
+
+/** @type {?TtsSubpageBrowserProxy} */
+let instance = null;
 
 /**
  * @implements {TtsSubpageBrowserProxy}
  */
 export class TtsSubpageBrowserProxyImpl {
+  /** @return {!TtsSubpageBrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new TtsSubpageBrowserProxyImpl());
+  }
+
+  /** @param {!TtsSubpageBrowserProxy} obj */
+  static setInstanceForTesting(obj) {
+    instance = obj;
+  }
+
   /** @override */
   getAllTtsVoiceData() {
     chrome.send('getAllTtsVoiceData');
@@ -57,8 +72,9 @@ export class TtsSubpageBrowserProxyImpl {
   wakeTtsEngine() {
     chrome.send('wakeTtsEngine');
   }
-}
 
-// The singleton instance_ is replaced with a test version of this wrapper
-// during testing.
-addSingletonGetter(TtsSubpageBrowserProxyImpl);
+  /** @override */
+  refreshTtsVoices() {
+    chrome.send('refreshTtsVoices');
+  }
+}

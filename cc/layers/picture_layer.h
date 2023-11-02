@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "cc/base/devtools_instrumentation.h"
 #include "cc/base/invalidation_region.h"
 #include "cc/benchmarks/micro_benchmark_controller.h"
@@ -39,10 +40,12 @@ class CC_EXPORT PictureLayer : public Layer {
   }
 
   // Layer interface.
-  std::unique_ptr<LayerImpl> CreateLayerImpl(LayerTreeImpl* tree_impl) override;
+  std::unique_ptr<LayerImpl> CreateLayerImpl(
+      LayerTreeImpl* tree_impl) const override;
   void SetLayerTreeHost(LayerTreeHost* host) override;
   void PushPropertiesTo(LayerImpl* layer,
-                        const CommitState& commit_state) override;
+                        const CommitState& commit_state,
+                        const ThreadUnsafeCommitState& unsafe_state) override;
   void SetNeedsDisplayRect(const gfx::Rect& layer_rect) override;
   sk_sp<const SkPicture> GetPicture() const override;
   bool Update() override;
@@ -52,11 +55,19 @@ class CC_EXPORT PictureLayer : public Layer {
 
   ContentLayerClient* client() { return picture_layer_inputs_.client; }
 
-  RecordingSource* GetRecordingSourceForTesting() const {
-    return recording_source_.get();
+  RecordingSource* GetRecordingSourceForTesting() {
+    return recording_source_.Write(*this).get();
+  }
+
+  const RecordingSource* GetRecordingSourceForTesting() const {
+    return recording_source_.Read(*this);
   }
 
   const DisplayItemList* GetDisplayItemList() const;
+
+  gfx::Vector2dF DirectlyCompositedImageDefaultRasterScaleForTesting() const {
+    return picture_layer_inputs_.directly_composited_image_default_raster_scale;
+  }
 
  protected:
   // Encapsulates all data, callbacks or interfaces received from the embedder.
@@ -64,11 +75,11 @@ class CC_EXPORT PictureLayer : public Layer {
     PictureLayerInputs();
     ~PictureLayerInputs();
 
-    ContentLayerClient* client = nullptr;
+    raw_ptr<ContentLayerClient> client = nullptr;
     bool nearest_neighbor = false;
     bool is_backdrop_filter_mask = false;
     scoped_refptr<DisplayItemList> display_list;
-    absl::optional<gfx::Size> directly_composited_image_size = absl::nullopt;
+    gfx::Vector2dF directly_composited_image_default_raster_scale;
   };
 
   explicit PictureLayer(ContentLayerClient* client);
@@ -87,13 +98,13 @@ class CC_EXPORT PictureLayer : public Layer {
   // Called on impl thread
   void DropRecordingSourceContentIfInvalid(int source_frame_number);
 
-  std::unique_ptr<RecordingSource> recording_source_;
-  devtools_instrumentation::
-      ScopedLayerObjectTracker instrumentation_object_tracker_;
+  ProtectedSequenceWritable<std::unique_ptr<RecordingSource>> recording_source_;
+  ProtectedSequenceForbidden<devtools_instrumentation::ScopedLayerObjectTracker>
+      instrumentation_object_tracker_;
 
-  Region last_updated_invalidation_;
+  ProtectedSequenceWritable<Region> last_updated_invalidation_;
 
-  int update_source_frame_number_;
+  ProtectedSequenceReadable<int> update_source_frame_number_;
 };
 
 }  // namespace cc

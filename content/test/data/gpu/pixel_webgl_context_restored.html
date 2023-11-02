@@ -1,0 +1,85 @@
+<!DOCTYPE HTML>
+
+<html>
+<head>
+<title>WebGL Context Restored Test</title>
+<style type="text/css">
+.nomargin {
+  margin: 0px auto;
+}
+</style>
+
+<script>
+function sendResult(status, detail) {
+  console.log(detail);
+  if (window.domAutomationController) {
+    window.domAutomationController.send(status);
+  } else {
+    console.log(status);
+  }
+}
+
+// This test kills the GPU process, which takes some time to recover,
+// so give it a few seconds before proceeding.
+var numFramesBeforeEnd = 180;
+
+var gl;
+
+function clearToRed() {
+  gl.clearColor(1.0, 0.0, 0.0, 1.0);
+  gl.clear(gl.COLOR_BUFFER_BIT);
+}
+
+function clearToGreen() {
+  gl.clearColor(0.0, 1.0, 0.0, 1.0);
+  gl.clear(gl.COLOR_BUFFER_BIT);
+}
+
+function main() {
+  var canvas = document.getElementById("c");
+  gl = canvas.getContext('webgl');
+  if (!gl) {
+    sendResult("FAILURE", "WebGL context not supported");
+    return;
+  }
+
+  canvas.addEventListener('webglcontextlost', contextLostHandler, false);
+  canvas.addEventListener('webglcontextrestored', contextRestoredHandler, false);
+
+  // Clear the canvas to red. The harness will then crash the GPU
+  // process for us, the context will be restored, and the canvas will
+  // be cleared to green.  Ensure this mechanism is working correctly.
+  clearToRed();
+
+  // Sending READY will make the GPU process crash.
+  sendResult("READY");
+}
+
+function contextLostHandler(e)
+{
+  console.log("Context lost");
+  e.preventDefault();
+}
+
+function contextRestoredHandler()
+{
+  console.log("Context restored");
+  clearToGreen();
+  waitForFinish();
+}
+
+function waitForFinish()
+{
+  if (--numFramesBeforeEnd == 0) {
+    sendResult("SUCCESS", "Test complete");
+  } else {
+    window.requestAnimationFrame(waitForFinish);
+  }
+}
+</script>
+</head>
+<body onload="main()">
+<canvas id="c" width="300" height="300" class="nomargin" style="position:absolute; top:0px; left:0px;"></canvas>
+</div>
+</body>
+</html>

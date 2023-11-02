@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "base/unguessable_token.h"
 #include "components/global_media_controls/public/media_session_item_producer.h"
 #include "components/global_media_controls/public/views/media_item_ui_list_view.h"
+#include "components/media_message_center/notification_theme.h"
 #include "services/media_session/public/cpp/media_session_service.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
@@ -154,6 +155,25 @@ TEST_F(MediaNotificationProviderImplTest, NotifyObserverOnListChangeTest) {
   SimulateShowNotification(id);
 
   EXPECT_CALL(*observer(), OnNotificationListChanged);
+  SimulateHideNotification(id);
+}
+
+// Regression test for https://crbug.com/1312419. This should not crash on ASan
+// builds (or any other build of course).
+TEST_F(MediaNotificationProviderImplTest, DontUseDeletedListView) {
+  // Simulate a media session item.
+  auto id = base::UnguessableToken::Create();
+  SimulateShowNotification(id);
+  provider()->SetColorTheme(media_message_center::NotificationTheme());
+
+  // Create a list view with that item.
+  std::unique_ptr<views::View> view =
+      provider()->GetMediaNotificationListView(1);
+
+  // Delete the list view.
+  view.reset();
+
+  // Hide the item. This should not call into the deleted view.
   SimulateHideNotification(id);
 }
 

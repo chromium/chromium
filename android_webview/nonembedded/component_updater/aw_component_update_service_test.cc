@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,12 +19,14 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/android/url_utils.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "components/component_updater/component_installer.h"
 #include "components/component_updater/component_updater_paths.h"
+#include "components/component_updater/component_updater_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/update_client/network.h"
 #include "components/update_client/update_client.h"
@@ -67,7 +69,7 @@ void AssertOnDemandRequest(bool on_demand, std::string post_data) {
   ASSERT_TRUE(root);
   const auto* request = root->FindKey("request");
   ASSERT_TRUE(request);
-  const auto& app = request->FindKey("app")->GetList()[0];
+  const auto& app = request->FindKey("app")->GetListDeprecated()[0];
   if (on_demand) {
     EXPECT_EQ("ondemand", app.FindKey("installsource")->GetString());
   } else {
@@ -333,7 +335,7 @@ class TestAwComponentUpdateService : public AwComponentUpdateService {
   }
 
  private:
-  MockInstallerPolicy* mock_policy_;
+  raw_ptr<MockInstallerPolicy> mock_policy_;
 };
 
 class AwComponentUpdateServiceTest : public testing::Test {

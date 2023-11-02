@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,8 +14,6 @@
 @implementation CRWFakeWebStateDelegate {
   // Backs up the property with the same name.
   std::unique_ptr<web::WebState::OpenURLParams> _openURLParams;
-  // Backs up the property with the same name.
-  std::unique_ptr<web::ContextMenuParams> _contextMenuParams;
   // Backs up the property with the same name.
   BOOL _javaScriptDialogPresenterRequested;
 }
@@ -50,12 +48,6 @@
 }
 
 - (void)webState:(web::WebState*)webState
-    handleContextMenu:(const web::ContextMenuParams&)params {
-  _webState = webState;
-  _contextMenuParams.reset(new web::ContextMenuParams(params));
-}
-
-- (void)webState:(web::WebState*)webState
     runRepostFormDialogWithCompletionHandler:(void (^)(BOOL))handler {
   _webState = webState;
   _repostFormWarningRequested = YES;
@@ -79,10 +71,6 @@
 
 - (const web::WebState::OpenURLParams*)openURLParams {
   return _openURLParams.get();
-}
-
-- (web::ContextMenuParams*)contextMenuParams {
-  return _contextMenuParams.get();
 }
 
 - (BOOL)javaScriptDialogPresenterRequested {

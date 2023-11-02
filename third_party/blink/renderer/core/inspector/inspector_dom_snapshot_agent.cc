@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,7 +33,6 @@
 #include "third_party/blink/renderer/core/inspector/inspector_dom_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_dom_debugger_agent.h"
 #include "third_party/blink/renderer/core/inspector/legacy_dom_snapshot_agent.h"
-#include "third_party/blink/renderer/core/inspector/thread_debugger.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
@@ -41,6 +40,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_paint_order_iterator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
+#include "third_party/blink/renderer/platform/bindings/thread_debugger.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "v8/include/v8-inspector.h"
 
@@ -102,19 +102,15 @@ String GetOriginUrl(const Node* node) {
   if (!isolate || !isolate->InContext() || !debugger)
     return String();
   v8::HandleScope handleScope(isolate);
-  // Try not getting the entire stack first.
-  String url = GetCurrentScriptUrl(/* maxStackSize=*/5);
-  if (!url.IsEmpty())
-    return url;
-  url = GetCurrentScriptUrl(/* maxStackSize=*/200);
-  if (!url.IsEmpty())
+  String url = GetCurrentScriptUrl(isolate);
+  if (!url.empty())
     return url;
   // If we did not get anything from the sync stack, let's try the slow
   // way that also checks async stacks.
   auto trace = debugger->GetV8Inspector()->captureStackTrace(true);
   if (trace)
     url = ToCoreString(trace->firstNonEmptySourceURL());
-  if (!url.IsEmpty())
+  if (!url.empty())
     return url;
   // Fall back to document url.
   return node->GetDocument().Url().GetString();
@@ -156,7 +152,7 @@ class DOMTreeIterator {
                                    : FlatTreeTraversal::Parent(*current_);
       path_to_current_node_.pop_back();
     }
-    DCHECK(path_to_current_node_.IsEmpty());
+    DCHECK(path_to_current_node_.empty());
   }
 
   Node* CurrentNode() const { return current_; }
@@ -178,8 +174,8 @@ class DOMTreeIterator {
 // static
 PhysicalRect InspectorDOMSnapshotAgent::RectInDocument(
     const LayoutObject* layout_object) {
-  PhysicalRect rect_in_absolute = PhysicalRect::EnclosingRect(
-      layout_object->AbsoluteBoundingBoxFloatRect());
+  PhysicalRect rect_in_absolute =
+      PhysicalRect::EnclosingRect(layout_object->AbsoluteBoundingBoxRectF());
   LocalFrameView* local_frame_view = layout_object->GetFrameView();
   // Don't do frame to document coordinate transformation for layout view,
   // whose bounding box is not affected by scroll offset.
@@ -207,7 +203,9 @@ InspectorDOMSnapshotAgent::InspectorDOMSnapshotAgent(
     InspectorDOMDebuggerAgent* dom_debugger_agent)
     : inspected_frames_(inspected_frames),
       dom_debugger_agent_(dom_debugger_agent),
-      enabled_(&agent_state_, /*default_value=*/false) {}
+      enabled_(&agent_state_, /*default_value=*/false) {
+  DCHECK(dom_debugger_agent);
+}
 
 InspectorDOMSnapshotAgent::~InspectorDOMSnapshotAgent() = default;
 
@@ -341,7 +339,7 @@ protocol::Response InspectorDOMSnapshotAgent::captureSnapshot(
 }
 
 int InspectorDOMSnapshotAgent::AddString(const String& string) {
-  if (string.IsEmpty())
+  if (string.empty())
     return -1;
   auto it = string_table_.find(string);
   int index;
@@ -410,6 +408,7 @@ void InspectorDOMSnapshotAgent::VisitDocument(Document* document) {
                   .setOptionSelected(BooleanData())
                   .setContentDocumentIndex(IntegerData())
                   .setPseudoType(StringData())
+                  .setPseudoIdentifier(StringData())
                   .setIsClickable(BooleanData())
                   .setCurrentSourceURL(StringData())
                   .setOriginURL(StringData())
@@ -436,8 +435,8 @@ void InspectorDOMSnapshotAgent::VisitDocument(Document* document) {
 
   if (document->View() && document->View()->LayoutViewport()) {
     auto offset = document->View()->LayoutViewport()->GetScrollOffset();
-    document_->setScrollOffsetX(offset.width());
-    document_->setScrollOffsetY(offset.height());
+    document_->setScrollOffsetX(offset.x());
+    document_->setScrollOffsetY(offset.y());
     auto contents_size = document->View()->LayoutViewport()->ContentsSize();
     document_->setContentWidth(contents_size.width());
     document_->setContentHeight(contents_size.height());
@@ -544,14 +543,14 @@ void InspectorDOMSnapshotAgent::VisitNode(Node* node,
     }
 
     if (auto* textarea_element = DynamicTo<HTMLTextAreaElement>(*element)) {
-      SetRare(nodes->getTextValue(nullptr), index, textarea_element->value());
+      SetRare(nodes->getTextValue(nullptr), index, textarea_element->Value());
     }
 
     if (auto* input_element = DynamicTo<HTMLInputElement>(*element)) {
-      SetRare(nodes->getInputValue(nullptr), index, input_element->value());
+      SetRare(nodes->getInputValue(nullptr), index, input_element->Value());
       if ((input_element->type() == input_type_names::kRadio) ||
           (input_element->type() == input_type_names::kCheckbox)) {
-        if (input_element->checked()) {
+        if (input_element->Checked()) {
           SetRare(nodes->getInputChecked(nullptr), index);
         }
       }
@@ -567,6 +566,9 @@ void InspectorDOMSnapshotAgent::VisitNode(Node* node,
       SetRare(
           nodes->getPseudoType(nullptr), index,
           InspectorDOMAgent::ProtocolPseudoElementType(element->GetPseudoId()));
+      if (auto tag = To<PseudoElement>(element)->document_transition_tag()) {
+        SetRare(nodes->getPseudoIdentifier(nullptr), index, tag);
+      }
     }
     VisitPseudoElements(element, index, contrast);
 
@@ -662,7 +664,7 @@ int InspectorDOMSnapshotAgent::BuildLayoutTreeNode(
     if (include_blended_background_colors_) {
       if (colors.size()) {
         layout_tree_snapshot->getBlendedBackgroundColors(nullptr)->emplace_back(
-            AddString(colors[0].Serialized()));
+            AddString(colors[0].SerializeAsCSSColor()));
       } else {
         layout_tree_snapshot->getBlendedBackgroundColors(nullptr)->emplace_back(
             -1);
@@ -711,7 +713,7 @@ int InspectorDOMSnapshotAgent::BuildLayoutTreeNode(
 
   auto* layout_text = To<LayoutText>(layout_object);
   Vector<LayoutText::TextBoxInfo> text_boxes = layout_text->GetTextBoxInfo();
-  if (text_boxes.IsEmpty())
+  if (text_boxes.empty())
     return layout_index;
 
   for (const auto& text_box : text_boxes) {
@@ -730,7 +732,7 @@ std::unique_ptr<protocol::Array<int>>
 InspectorDOMSnapshotAgent::BuildStylesForNode(Node* node) {
   DCHECK(
       !node->GetDocument().NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(
-          *node, true /* ignore_adjacent_style */));
+          *node));
   auto result = std::make_unique<protocol::Array<int>>();
   auto* layout_object = node->GetLayoutObject();
   if (!layout_object)

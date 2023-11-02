@@ -27,6 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCROLL_SCROLLBAR_THEME_OVERLAY_H_
 
 #include "base/gtest_prod_util.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
 
 namespace blink {
@@ -61,16 +62,18 @@ class CORE_EXPORT ScrollbarThemeOverlay : public ScrollbarTheme {
   bool NativeThemeHasButtons() override { return false; }
   bool HasThumb(const Scrollbar&) override;
 
-  IntRect BackButtonRect(const Scrollbar&) override;
-  IntRect ForwardButtonRect(const Scrollbar&) override;
-  IntRect TrackRect(const Scrollbar&) override;
-  IntRect ThumbRect(const Scrollbar&) override;
+  gfx::Rect BackButtonRect(const Scrollbar&) override;
+  gfx::Rect ForwardButtonRect(const Scrollbar&) override;
+  gfx::Rect TrackRect(const Scrollbar&) override;
+  gfx::Rect ThumbRect(const Scrollbar&) override;
 
-  void PaintThumb(GraphicsContext&, const Scrollbar&, const IntRect&) override;
+  void PaintThumb(GraphicsContext&,
+                  const Scrollbar&,
+                  const gfx::Rect&) override;
 
   bool UsesNinePatchThumbResource() const override;
-  IntSize NinePatchThumbCanvasSize(const Scrollbar&) const override;
-  IntRect NinePatchThumbAperture(const Scrollbar&) const override;
+  gfx::Size NinePatchThumbCanvasSize(const Scrollbar&) const override;
+  gfx::Rect NinePatchThumbAperture(const Scrollbar&) const override;
 
   int MinimumThumbLength(const Scrollbar&) override;
 

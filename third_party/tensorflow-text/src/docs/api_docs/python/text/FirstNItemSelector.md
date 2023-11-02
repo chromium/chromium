@@ -104,7 +104,8 @@ See `get_selectable()` in superclass.
 
 Returns a mask of items that have been selected.
 
-The default implementation returns all selectable items as selectable.
+The default implementation simply returns all items not excluded by
+`get_selectable`.
 
 <!-- Tabular view -->
  <table class="responsive fixed orange">

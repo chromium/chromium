@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
 #include "extensions/common/extension_id.h"
@@ -83,16 +81,12 @@ class WebRequestEventDetails {
   // - ip
   void SetResponseSource(const WebRequestInfo& request);
 
-  void SetBoolean(const std::string& key, bool value) {
-    dict_.SetBoolean(key, value);
-  }
+  void SetBoolean(const std::string& key, bool value) { dict_.Set(key, value); }
 
-  void SetInteger(const std::string& key, int value) {
-    dict_.SetInteger(key, value);
-  }
+  void SetInteger(const std::string& key, int value) { dict_.Set(key, value); }
 
   void SetString(const std::string& key, const std::string& value) {
-    dict_.SetString(key, value);
+    dict_.Set(key, value);
   }
 
   // Create an event dictionary that contains all required keys, and also the
@@ -110,23 +104,14 @@ class WebRequestEventDetails {
   // dictionary is empty.
   std::unique_ptr<base::DictionaryValue> GetAndClearDict();
 
-  // Returns a filtered copy with only whitelisted data for public session.
-  std::unique_ptr<WebRequestEventDetails> CreatePublicSessionCopy();
-
  private:
-  FRIEND_TEST_ALL_PREFIXES(
-      WebRequestEventDetailsTest, WhitelistedCopyForPublicSession);
-
-  // Empty constructor used in unittests.
-  WebRequestEventDetails();
-
   // The details that are always included in a webRequest event object.
-  base::DictionaryValue dict_;
+  base::Value::Dict dict_;
 
   // Extra event details: Only included when |extra_info_spec_| matches.
-  std::unique_ptr<base::DictionaryValue> request_body_;
-  std::unique_ptr<base::ListValue> request_headers_;
-  std::unique_ptr<base::ListValue> response_headers_;
+  absl::optional<base::Value::Dict> request_body_;
+  absl::optional<base::Value::List> request_headers_;
+  absl::optional<base::Value::List> response_headers_;
   absl::optional<url::Origin> initiator_;
 
   int extra_info_spec_;

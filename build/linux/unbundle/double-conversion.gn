@@ -1,0 +1,23 @@
+import("//build/shim_headers.gni")
+
+shim_headers("double_conversion_shim") {
+  root_path = "."
+  headers = [
+    "double-conversion/bignum.h",
+    "double-conversion/cached-powers.h",
+    "double-conversion/diy-fp.h",
+    "double-conversion/double-conversion.h",
+    "double-conversion/double-to-string.h",
+    "double-conversion/fast-dtoa.h",
+    "double-conversion/fixed-dtoa.h",
+    "double-conversion/ieee.h",
+    "double-conversion/string-to-double.h",
+    "double-conversion/strtod.h",
+    "double-conversion/utils.h",
+  ]
+}
+
+source_set("double_conversion") {
+  deps = [ ":double_conversion_shim" ]
+  libs = [ "double-conversion" ]
+}

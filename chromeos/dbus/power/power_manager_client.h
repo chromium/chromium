@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,11 +13,11 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
-#include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/time/time.h"
-#include "chromeos/dbus/dbus_method_call_status.h"
+#include "chromeos/dbus/common/dbus_method_call_status.h"
+#include "chromeos/dbus/power_manager/charge_history_state.pb.h"
 #include "chromeos/dbus/power_manager/peripheral_battery_status.pb.h"
 #include "chromeos/dbus/power_manager/policy.pb.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
@@ -142,6 +142,14 @@ class COMPONENT_EXPORT(DBUS_POWER) PowerManagerClient {
     // suspended (if e.g. the user canceled the suspend attempt).
     virtual void SuspendDone(base::TimeDelta sleep_duration) {}
 
+    // Called when a suspend attempt (previously announced via
+    // SuspendImminent()) has completed. The system may not have actually
+    // suspended (if e.g. the user canceled the suspend attempt). This is the
+    // same callback as SuspendDone() except that it receives the complete
+    // SuspendDone protobuf rather than only the sleep duration. Clients that
+    // override SuspendDoneEx() will not also get a SuspendDone() callback.
+    virtual void SuspendDoneEx(const power_manager::SuspendDone& proto);
+
     // Called when the system is about to resuspend from a dark resume.  Like
     // SuspendImminent(), the suspend will be deferred until all observers have
     // finished running and those observers that wish to asynchronously delay
@@ -231,6 +239,13 @@ class COMPONENT_EXPORT(DBUS_POWER) PowerManagerClient {
   // instead.
   virtual void GetKeyboardBrightnessPercent(
       DBusMethodCallback<double> callback) = 0;
+
+  // Set the toggled-off state of the keyboard backlight.
+  virtual void SetKeyboardBacklightToggledOff(bool toggled_off) = 0;
+
+  // Get the toggled-off state of the keyboard backlight.
+  virtual void GetKeyboardBacklightToggledOff(
+      DBusMethodCallback<bool> callback) = 0;
 
   // Returns the last power status that was received from D-Bus, if any.
   virtual const absl::optional<power_manager::PowerSupplyProperties>&
@@ -368,6 +383,16 @@ class COMPONENT_EXPORT(DBUS_POWER) PowerManagerClient {
   virtual void GetExternalDisplayALSBrightness(
       DBusMethodCallback<bool> callback) = 0;
 
+  // Stop delaying charging for Adaptive Charging for this charge session.
+  // This should be called when AdaptiveCharging is active (although calling it
+  // when AdaptiveCharging is inactive will not cause any issue except extra
+  // execution which does nothing).
+  virtual void ChargeNowForAdaptiveCharging() = 0;
+
+  // Get charge history for Adaptive Charging.
+  virtual void GetChargeHistoryForAdaptiveCharging(
+      DBusMethodCallback<power_manager::ChargeHistoryState> callback) = 0;
+
   PowerManagerClient();
 
   PowerManagerClient(const PowerManagerClient&) = delete;
@@ -389,10 +414,5 @@ class COMPONENT_EXPORT(DBUS_POWER) PowerManagerClient {
 };
 
 }  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-using ::chromeos::PowerManagerClient;
-}
 
 #endif  // CHROMEOS_DBUS_POWER_POWER_MANAGER_CLIENT_H_

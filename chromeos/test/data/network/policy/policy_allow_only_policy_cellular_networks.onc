@@ -1,8 +1,0 @@
-{
-  "NetworkConfigurations": [
-  ],
-  "GlobalNetworkConfiguration": {
-    "AllowOnlyPolicyCellularNetworks": true
-  },
-  "Type": "UnencryptedConfiguration"
-}

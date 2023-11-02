@@ -86,6 +86,7 @@ process_template() (
     -e "s#@@BUILDDIR@@#${OUTPUTDIR}#g" \
     -e "s#@@STAGEDIR@@#${STAGEDIR}#g" \
     -e "s#@@SCRIPTDIR@@#${SCRIPTDIR}#g" \
+    -e "s#@@ENROLLMENTDIR@@#${ENROLLMENTDIR}#g" \
     -e "s#@@MENUNAME@@#${MENUNAME}#g" \
     -e "s#@@PRODUCTURL@@#${PRODUCTURL}#g" \
     -e "s#@@PREDEPENDS@@#${PREDEPENDS}#g" \
@@ -143,11 +144,13 @@ stage_install_common() {
   install -m 755 "${STRIPPEDFILE}" "${STAGEDIR}/${INSTALLDIR}/${PROGNAME}"
 
   # crashpad
-  buildfile="${OUTPUTDIR}/chrome_crashpad_handler"
-  strippedfile="${buildfile}.stripped"
-  debugfile="${buildfile}.debug"
-  "${OUTPUTDIR}/installer/common/eu-strip" -o "${strippedfile}" -f "${debugfile}" "${buildfile}"
+  strippedfile="${OUTPUTDIR}/chrome_crashpad_handler.stripped"
   install -m 755 "${strippedfile}" "${STAGEDIR}/${INSTALLDIR}/chrome_crashpad_handler"
+
+  # Final permissions for the chrome-management-service will be set in
+  # postinst chrome_management_service_setup().
+  strippedfile="${OUTPUTDIR}/chrome_management_service.stripped"
+  install -m 755 "${strippedfile}" "${STAGEDIR}/${INSTALLDIR}/chrome-management-service"
 
   # resources
   install -m 644 "${OUTPUTDIR}/resources.pak" "${STAGEDIR}/${INSTALLDIR}/"
@@ -182,10 +185,7 @@ stage_install_common() {
   # where it did not support hyphens, so this is stuck as is to avoid breaking
   # anyone who expects the build artifact to have the underscore.
   # the code looks for, but the build targets can't use hyphens (scons bug?)
-  buildfile="${OUTPUTDIR}/${PROGNAME}_sandbox"
-  strippedfile="${buildfile}.stripped"
-  debugfile="${buildfile}.debug"
-  "${OUTPUTDIR}/installer/common/eu-strip" -o "${strippedfile}" -f "${debugfile}" "${buildfile}"
+  strippedfile="${OUTPUTDIR}/${PROGNAME}_sandbox.stripped"
   install -m 4755 "${strippedfile}" "${STAGEDIR}/${INSTALLDIR}/chrome-sandbox"
 
   # l10n paks
@@ -220,10 +220,7 @@ stage_install_common() {
   # ANGLE
   if [ -f "${OUTPUTDIR}/libEGL.so" ]; then
     for file in libEGL.so libGLESv2.so; do
-      buildfile="${OUTPUTDIR}/${file}"
-      strippedfile="${buildfile}.stripped"
-      debugfile="${buildfile}.debug"
-      "${OUTPUTDIR}/installer/common/eu-strip" -o "${strippedfile}" -f "${debugfile}" "${buildfile}"
+      strippedfile="${OUTPUTDIR}/${file}.stripped"
       install -m ${SHLIB_PERMS} "${strippedfile}" "${STAGEDIR}/${INSTALLDIR}/${file}"
     done
   fi
@@ -231,36 +228,32 @@ stage_install_common() {
   # ANGLE's libvulkan library
   if [ -f "${OUTPUTDIR}/libvulkan.so.1" ]; then
     file="libvulkan.so.1"
-    buildfile="${OUTPUTDIR}/${file}"
-    strippedfile="${buildfile}.stripped"
-    debugfile="${buildfile}.debug"
-    "${OUTPUTDIR}/installer/common/eu-strip" -o "${strippedfile}" -f "${debugfile}" "${buildfile}"
+    strippedfile="${OUTPUTDIR}/${file}.stripped"
     install -m 755 "${strippedfile}" "${STAGEDIR}/${INSTALLDIR}/${file}"
-  fi
-
-  # SwiftShader ES
-  if [ -f "${OUTPUTDIR}/swiftshader/libEGL.so" ]; then
-    install -m 755 -d "${STAGEDIR}/${INSTALLDIR}/swiftshader/"
-    for file in libEGL.so libGLESv2.so; do
-      buildfile="${OUTPUTDIR}/swiftshader/${file}"
-      strippedfile="${buildfile}.stripped"
-      debugfile="${buildfile}.debug"
-      "${OUTPUTDIR}/installer/common/eu-strip" -o "${strippedfile}" -f "${debugfile}" "${buildfile}"
-      install -m ${SHLIB_PERMS} "${strippedfile}" "${STAGEDIR}/${INSTALLDIR}/swiftshader/${file}"
-    done
   fi
 
   # SwiftShader VK
   if [ -f "${OUTPUTDIR}/libvk_swiftshader.so" ]; then
     install -m 755 -d "${STAGEDIR}/${INSTALLDIR}/"
     file="libvk_swiftshader.so"
-    buildfile="${OUTPUTDIR}/${file}"
-    strippedfile="${buildfile}.stripped"
-    debugfile="${buildfile}.debug"
-    "${OUTPUTDIR}/installer/common/eu-strip" -o "${strippedfile}" -f "${debugfile}" "${buildfile}"
+    strippedfile="${OUTPUTDIR}/${file}.stripped"
     install -m ${SHLIB_PERMS} "${strippedfile}" "${STAGEDIR}/${INSTALLDIR}/${file}"
     # Install the ICD json file to point ANGLE to libvk_swiftshader.so
     install -m 644 "${OUTPUTDIR}/vk_swiftshader_icd.json" "${STAGEDIR}/${INSTALLDIR}/"
+  fi
+
+  # Optimization Guide Internal
+  if [ -f "${OUTPUTDIR}/liboptimization_guide_internal.so" ]; then
+    file="liboptimization_guide_internal.so"
+    strippedfile="${OUTPUTDIR}/${file}.stripped"
+    install -m ${SHLIB_PERMS} "${strippedfile}" "${STAGEDIR}/${INSTALLDIR}/${file}"
+  fi
+
+  # QT shim
+  if [ -f "${OUTPUTDIR}/libqt5_shim.so" ]; then
+    file="libqt5_shim.so"
+    strippedfile="${OUTPUTDIR}/${file}.stripped"
+    install -m ${SHLIB_PERMS} "${strippedfile}" "${STAGEDIR}/${INSTALLDIR}/${file}"
   fi
 
   # libc++
@@ -277,8 +270,6 @@ stage_install_common() {
     buildfile="${OUTPUTDIR}/${file}"
     if [ -f "${buildfile}" ]; then
       strippedfile="${buildfile}.stripped"
-      debugfile="${buildfile}.debug"
-      "${OUTPUTDIR}/installer/common/eu-strip" -o "${strippedfile}" -f "${debugfile}" "${buildfile}"
       install -m 755 "${strippedfile}" "${STAGEDIR}/${INSTALLDIR}/${file}"
     fi
   done
@@ -424,6 +415,8 @@ stage_install_common() {
         exit 1
       fi
       local expected_perms=777
+    elif [ "${base_name}" = "chrome-management-service" ]; then
+      local expected_perms=755
     elif [ "${base_name}" = "chrome-sandbox" ]; then
       local expected_perms=4755
     elif [[ "${base_name}" = "nacl_irt_"*".nexe" ]]; then

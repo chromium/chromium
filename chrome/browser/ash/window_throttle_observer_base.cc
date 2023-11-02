@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -61,10 +61,8 @@ bool ShouldIgnoreWindowActivation(
 
 }  // namespace
 
-WindowThrottleObserverBase::WindowThrottleObserverBase(
-    ThrottleObserver::PriorityLevel level,
-    std::string name)
-    : ThrottleObserver(level, name) {}
+WindowThrottleObserverBase::WindowThrottleObserverBase(const std::string& name)
+    : ThrottleObserver(name) {}
 
 void WindowThrottleObserverBase::StartObserving(
     content::BrowserContext* context,

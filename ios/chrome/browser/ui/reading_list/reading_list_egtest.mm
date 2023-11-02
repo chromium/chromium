@@ -1,48 +1,48 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
 
-#include <functional>
-#include <memory>
+#import <functional>
+#import <memory>
 
-#include "base/bind.h"
-#include "base/ios/ios_util.h"
-#include "base/mac/foundation_util.h"
-#include "base/notreached.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/string_util.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/strings/utf_string_conversions.h"
+#import "base/bind.h"
+#import "base/ios/ios_util.h"
+#import "base/mac/foundation_util.h"
+#import "base/notreached.h"
+#import "base/strings/string_number_conversions.h"
+#import "base/strings/string_util.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_app_interface.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_constants.h"
-#import "ios/chrome/browser/ui/reading_list/reading_list_features.h"
 #import "ios/chrome/browser/ui/table_view/table_view_constants.h"
-#include "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
-#include "ios/testing/earl_grey/app_launch_configuration.h"
+#import "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-#include "ios/web/common/features.h"
+#import "ios/web/common/features.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/navigation/reload_type.h"
-#include "net/base/network_change_notifier.h"
-#include "net/test/embedded_test_server/default_handlers.h"
-#include "net/test/embedded_test_server/http_request.h"
-#include "net/test/embedded_test_server/http_response.h"
-#include "net/test/embedded_test_server/request_handler_util.h"
+#import "net/base/network_change_notifier.h"
+#import "net/test/embedded_test_server/default_handlers.h"
+#import "net/test/embedded_test_server/http_request.h"
+#import "net/test/embedded_test_server/http_response.h"
+#import "net/test/embedded_test_server/request_handler_util.h"
 #import "ui/base/device_form_factor.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "ui/base/test/ios/ui_image_test_utils.h"
+#import "ui/base/l10n/l10n_util.h"
+#import "ui/base/test/ios/ui_image_test_utils.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -93,7 +93,7 @@ NSString* const kCheckImagesJS =
     @"}"
     @"checkImages();";
 
-// Returns the string concatenated |n| times.
+// Returns the string concatenated `n` times.
 std::string operator*(const std::string& s, unsigned int n) {
   std::ostringstream out;
   for (unsigned int i = 0; i < n; i++)
@@ -108,7 +108,7 @@ void ScrollToTop() {
 }
 
 // Asserts that the "mark" toolbar button is visible and has the a11y label of
-// |a11y_label_id|.
+// `a11y_label_id`.
 void AssertToolbarMarkButtonText(int a11y_label_id) {
   [[EarlGrey
       selectElementWithMatcher:
@@ -119,7 +119,7 @@ void AssertToolbarMarkButtonText(int a11y_label_id) {
               nil)] assertWithMatcher:grey_sufficientlyVisible()];
 }
 
-// Asserts the |button_id| toolbar button is not visible.
+// Asserts the `button_id` toolbar button is not visible.
 void AssertToolbarButtonNotVisibleWithID(NSString* button_id) {
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(grey_accessibilityID(button_id),
@@ -129,7 +129,7 @@ void AssertToolbarButtonNotVisibleWithID(NSString* button_id) {
       assertWithMatcher:grey_notVisible()];
 }
 
-// Assert the |button_id| toolbar button is visible.
+// Assert the `button_id` toolbar button is visible.
 void AssertToolbarButtonVisibleWithID(NSString* button_id) {
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(grey_accessibilityID(button_id),
@@ -139,20 +139,20 @@ void AssertToolbarButtonVisibleWithID(NSString* button_id) {
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
-// Taps the |button_id| toolbar button.
+// Taps the `button_id` toolbar button.
 void TapToolbarButtonWithID(NSString* button_id) {
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(button_id)]
       performAction:grey_tap()];
 }
 
-// Taps the context menu button with the a11y label of |a11y_label_id|.
+// Taps the context menu button with the a11y label of `a11y_label_id`.
 void TapContextMenuButtonWithA11yLabelID(int a11y_label_id) {
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
                                    a11y_label_id)] performAction:grey_tap()];
 }
 
-// Performs |action| on the entry with the title |entryTitle|. The view can be
+// Performs `action` on the entry with the title `entryTitle`. The view can be
 // scrolled down to find the entry.
 void PerformActionOnEntry(NSString* entryTitle, id<GREYAction> action) {
   ScrollToTop();
@@ -166,18 +166,18 @@ void PerformActionOnEntry(NSString* entryTitle, id<GREYAction> action) {
       performAction:action];
 }
 
-// Taps the entry with the title |entryTitle|.
+// Taps the entry with the title `entryTitle`.
 void TapEntry(NSString* entryTitle) {
   PerformActionOnEntry(entryTitle, grey_tap());
 }
 
-// Long-presses the entry with the title |entryTitle|.
+// Long-presses the entry with the title `entryTitle`.
 void LongPressEntry(NSString* entryTitle) {
   PerformActionOnEntry(entryTitle,
                        grey_longPressWithDuration(kLongPressDuration));
 }
 
-// Asserts that the entry with the title |entryTitle| is visible.
+// Asserts that the entry with the title `entryTitle` is visible.
 void AssertEntryVisible(NSString* entryTitle) {
   ScrollToTop();
   [[[EarlGrey
@@ -205,7 +205,7 @@ void AssertAllEntriesVisible() {
                   @"The number of entries have changed");
 }
 
-// Asserts that the entry |title| is not visible.
+// Asserts that the entry `title` is not visible.
 void AssertEntryNotVisible(NSString* title) {
   [ChromeEarlGreyUI waitForAppToIdle];
   ScrollToTop();
@@ -223,7 +223,7 @@ void AssertEntryNotVisible(NSString* title) {
   GREYAssertNotNil(error, @"Entry is visible");
 }
 
-// Asserts |header| is visible.
+// Asserts `header` is visible.
 void AssertHeaderNotVisible(NSString* header) {
   [ChromeEarlGreyUI waitForAppToIdle];
   ScrollToTop();
@@ -236,7 +236,7 @@ void AssertHeaderNotVisible(NSString* header) {
 void OpenReadingList() {
   [ChromeEarlGreyUI openToolsMenu];
   [ChromeEarlGreyUI
-      tapToolsMenuButton:chrome_test_util::ReadingListMenuButton()];
+      tapToolsMenuButton:chrome_test_util::ReadingListDestinationButton()];
   // It seems that sometimes there is a delay before the ReadingList is
   // displayed. See https://crbug.com/1109202 .
   GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
@@ -320,7 +320,7 @@ void AddCurrentPageToReadingList() {
   [ChromeEarlGrey watchForButtonsWithLabels:@[ snackBarLabel ]
                                     timeout:kSnackbarAppearanceTimeout];
   [ChromeEarlGreyUI
-      tapToolsMenuButton:chrome_test_util::ButtonWithAccessibilityLabelId(
+      tapToolsMenuAction:chrome_test_util::ButtonWithAccessibilityLabelId(
                              IDS_IOS_SHARE_MENU_READING_LIST_ACTION)];
 
   // Wait for the snackbar to appear.
@@ -366,9 +366,9 @@ void WaitForDistillation() {
              @"Item was not distilled.");
 }
 
-// Serves URLs. Response can be delayed by |delay| second or return an error if
-// |responds_with_content| is false.
-// If |distillable|, result is can be distilled for offline display.
+// Serves URLs. Response can be delayed by `delay` second or return an error if
+// `responds_with_content` is false.
+// If `distillable`, result is can be distilled for offline display.
 std::unique_ptr<net::test_server::HttpResponse> HandleQueryOrCloseSocket(
     const bool& responds_with_content,
     const int& delay,
@@ -412,9 +412,9 @@ std::unique_ptr<net::test_server::HttpResponse> HandleQueryOrCloseSocket(
 }
 
 // Serves image URLs.
-// If |serve_red_image| is false, 404 error is returned when red image is
+// If `serve_red_image` is false, 404 error is returned when red image is
 // requested.
-// |served_red_image| will be set to true whenever red image is requested.
+// `served_red_image` will be set to true whenever red image is requested.
 std::unique_ptr<net::test_server::HttpResponse> HandleImageQueryOrCloseSocket(
     const bool& serve_red_image,
     bool& served_red_image,
@@ -453,7 +453,7 @@ void OpenPageSecurityInfoBubble() {
   [ChromeEarlGreyUI openToolsMenu];
   // Tap on the Page Info button.
   [ChromeEarlGreyUI
-      tapToolsMenuButton:grey_accessibilityID(kToolsMenuSiteInformation)];
+      tapToolsMenuButton:chrome_test_util::SiteInfoDestinationButton()];
 }
 
 // Tests that the correct version of kDistillableURL is displayed.
@@ -582,14 +582,21 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 
   [ChromeEarlGrey goBack];
 
-  // Check that the offline version is still displayed.
   [ChromeEarlGrey waitForPageToFinishLoading];
   base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(1));
-  AssertIsShowingDistillablePage(false, distillablePageURL);
 
-  // Check that a new navigation wasn't created.
-  GREYAssertEqual(0, [ChromeEarlGrey navigationBackListItemsCount],
-                  @"The offline page should be the first committed URL.");
+  if ([ChromeEarlGrey isLoadSimulatedRequestAPIEnabled]) {
+    // Check that the online version is now displayed.
+    AssertIsShowingDistillablePage(true, distillablePageURL);
+    GREYAssertEqual(1, [ChromeEarlGrey navigationBackListItemsCount],
+                    @"The NTP page should be the first committed URL.");
+  } else {
+    // Check that the offline version is still displayed.
+    AssertIsShowingDistillablePage(false, distillablePageURL);
+    // Check that a new navigation wasn't created.
+    GREYAssertEqual(0, [ChromeEarlGrey navigationBackListItemsCount],
+                    @"The offline page should be the first committed URL.");
+  }
 
   // Check that navigating forward navigates to the correct page.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::ForwardButton()]
@@ -635,10 +642,9 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   // Tap the Omnibox' Info Bubble to open the Page Info.
   OpenPageSecurityInfoBubble();
   // Verify that the Page Info is about offline pages.
-  id<GREYMatcher> pageInfoTitleMatcher =
-      chrome_test_util::StaticTextWithAccessibilityLabelId(
-          IDS_IOS_PAGE_INFO_OFFLINE_PAGE_LABEL);
-  [[EarlGrey selectElementWithMatcher:pageInfoTitleMatcher]
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::HeaderWithAccessibilityLabelId(
+                                   IDS_IOS_PAGE_INFO_OFFLINE_PAGE_LABEL)]
       assertWithMatcher:grey_notNil()];
 
   // Verify that the webState's title is correct.
@@ -680,8 +686,10 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   GREYAssertFalse(self.serverServedRedImage,
                   @"Offline page accessed online resource.");
 
-  id checkImage = [ChromeEarlGrey executeJavaScript:kCheckImagesJS];
-  GREYAssert([checkImage isEqual:@YES], @"Incorrect image loading.");
+  auto checkImage = [ChromeEarlGrey evaluateJavaScript:kCheckImagesJS];
+
+  GREYAssertTrue(checkImage.is_bool(), @"CheckImage is not a boolean.");
+  GREYAssert(checkImage.GetBool(), @"Incorrect image loading.");
 
   // Verify that the webState's title is correct.
   GREYAssertEqualObjects([ChromeEarlGreyAppInterface currentTabTitle],
@@ -724,7 +732,8 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 // Tests that sharing a web page to the Reading List results in a snackbar
 // appearing, and that the Reading List entry is present in the Reading List.
 // Loads offline version by tapping on entry without web server.
-- (void)testSavingToReadingListAndLoadNoNetwork {
+// TODO(crbug.com/1326627): Fix flakiness.
+- (void)DISABLED_testSavingToReadingListAndLoadNoNetwork {
   [ReadingListAppInterface forceConnectionToWifi];
   GURL distillableURL = self.testServer->GetURL(kDistillableURL);
   // Open http://potato
@@ -770,8 +779,12 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 // Tests that sharing a web page to the Reading List results in a snackbar
 // appearing, and that the Reading List entry is present in the Reading List.
 // Loads offline version by tapping on entry with delayed web server.
-// TODO(crbug.com/1198411): Fix flakiness.
-- (void)DISABLED_testSavingToReadingListAndLoadBadNetwork {
+- (void)testSavingToReadingListAndLoadBadNetwork {
+  // TODO(crbug.com/1350732): Re-enable when flake fixed.
+  if (@available(iOS 16, *)) {
+    EARL_GREY_TEST_DISABLED(@"Test consistently failing on iOS16 iPhone 8.");
+  }
+
   [ReadingListAppInterface forceConnectionToWifi];
   GURL distillableURL = self.testServer->GetURL(kDistillableURL);
   // Open http://potato
@@ -1005,7 +1018,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 }
 
 // Marks all read entries as unread, when there is a lot of entries. This is to
-// prevent crbug.com/1013708 from regressing.
+// prevent crbug.com/1013708 and crbug.com/1246283 from regressing.
 - (void)testMarkAllUnreadLotOfEntry {
   AddLotOfEntriesAndEnterEdit();
 
@@ -1157,41 +1170,6 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
       assertWithMatcher:grey_nil()];
 }
 
-// Tests the long pressing the setting switch does not trigger any context menu.
-- (void)testContextMenuSwitch {
-  AppLaunchConfiguration config = [self appConfigurationForTestCase];
-  config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  config.features_enabled.push_back(kReadingListMessages);
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
-  AddEntriesAndOpenReadingList();
-  ScrollToTop();
-  id<GREYMatcher> matcher = grey_allOf(
-      chrome_test_util::StaticTextWithAccessibilityLabel(
-          l10n_util::GetNSString(IDS_IOS_READING_LIST_MESSAGES_SETTING_TITLE)),
-      grey_ancestor(grey_kindOfClassName(@"SettingsSwitchCell")),
-      grey_sufficientlyVisible(), nil);
-  [[[EarlGrey selectElementWithMatcher:matcher]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 100)
-      onElementWithMatcher:grey_accessibilityID(kReadingListViewID)]
-      performAction:grey_longPressWithDuration(kLongPressDuration)];
-
-  GREYAssertFalse(
-      base::test::ios::WaitUntilConditionOrTimeout(
-          kWaitForUIElementTimeout,
-          ^BOOL {
-            NSError* error = nil;
-            // Check for _UIContextMenuView so it would catch both native
-            // and custom context menu.
-            [[EarlGrey
-                selectElementWithMatcher:grey_kindOfClassName(
-                                             @"_UIContextMenuContainerView")]
-                assertWithMatcher:grey_sufficientlyVisible()
-                            error:&error];
-            return error == nil;
-          }),
-      @"Context menu is displayed on settings button.");
-}
-
 // Tests the Copy Link context menu action for a reading list entry.
 - (void)testContextMenuCopyLink {
   AddEntriesAndOpenReadingList();
@@ -1228,6 +1206,11 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 
 // Tests the Mark as Read/Unread context menu action for a reading list entry.
 - (void)testContextMenuMarkAsReadAndBack {
+  // TODO(crbug.com/1350732): Re-enable when flake fixed.
+  if (@available(iOS 16, *)) {
+    EARL_GREY_TEST_DISABLED(@"Test consistently failing on iOS16 iPhone 8.");
+  }
+
   AddEntriesAndOpenReadingList();
 
   AssertAllEntriesVisible();
@@ -1285,7 +1268,8 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 #pragma mark - Multiwindow
 
 // Tests the Open in New Window context menu action for a reading list entry.
-- (void)testContextMenuOpenInNewWindow {
+// The test is flaky. https://crbug.com/1274099
+- (void)DISABLED_testContextMenuOpenInNewWindow {
   if (![ChromeEarlGrey areMultipleWindowsSupported])
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
 

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,14 +22,8 @@ void MockTimeDomain::SetNowTicks(TimeTicks now_ticks) {
   now_ticks_ = now_ticks;
 }
 
-TimeTicks MockTimeDomain::GetNextDelayedTaskTime(
-    DelayedWakeUp next_wake_up,
-    sequence_manager::LazyNow* lazy_now) const {
-  return TimeTicks::Max();
-}
-
 bool MockTimeDomain::MaybeFastForwardToWakeUp(
-    absl::optional<DelayedWakeUp> next_wake_up,
+    absl::optional<WakeUp> next_wake_up,
     bool quit_when_idle_requested) {
   return false;
 }

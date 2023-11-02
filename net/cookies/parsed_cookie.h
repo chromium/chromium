@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,9 @@
 #include <stddef.h>
 
 #include <string>
+#include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "net/base/net_export.h"
 #include "net/cookies/cookie_constants.h"
 
@@ -62,6 +62,9 @@ class NET_EXPORT ParsedCookie {
     DCHECK(HasPath());
     return pairs_[path_index_].second;
   }
+  // Note that Domain() may return the empty string; in the case of cookie_line
+  // "domain=", HasDomain() will return true (as the empty string is an
+  // acceptable domain value), so Domain() will return std::string().
   bool HasDomain() const { return domain_index_ != 0; }
   const std::string& Domain() const {
     DCHECK(HasDomain());
@@ -203,12 +206,6 @@ class NET_EXPORT ParsedCookie {
   // Removes the key/value pair from a cookie that is identified by |index|.
   // |index| refers to a position in |pairs_|.
   void ClearAttributePair(size_t index);
-
-  // Records metrics on cookie name+value and attribute value lengths.
-  // This is being recorded to evaluate whether to change length limits for
-  // cookies, such that limits are applied to name+value, and individual
-  // attribute lengths, rather than to the whole set-cookie line.
-  void RecordCookieAttributeValueLengthHistograms() const;
 
   PairList pairs_;
   // These will default to 0, but that should never be valid since the

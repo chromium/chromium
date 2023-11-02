@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,11 +13,13 @@
 #include "base/callback_forward.h"
 #include "base/check_op.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/threading/sequence_bound.h"
 #include "base/unguessable_token.h"
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "content/browser/service_worker/embedded_worker_status.h"
 #include "content/browser/service_worker/service_worker_metrics.h"
 #include "content/common/content_export.h"
@@ -27,6 +29,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "services/network/public/mojom/client_security_state.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -35,8 +38,13 @@
 #include "third_party/blink/public/mojom/service_worker/embedded_worker.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_installed_scripts_manager.mojom.h"
+#include "third_party/blink/public/mojom/usb/web_usb_service.mojom-forward.h"
 #include "third_party/blink/public/mojom/worker/subresource_loader_updater.mojom.h"
 #include "url/gurl.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "third_party/blink/public/mojom/hid/hid.mojom-forward.h"
+#endif
 
 namespace content {
 
@@ -92,8 +100,9 @@ class CONTENT_EXPORT EmbeddedWorkerInstance
     virtual void OnRegisteredToDevToolsManager() {}
     virtual void OnStartWorkerMessageSent() {}
     virtual void OnScriptEvaluationStart() {}
-    virtual void OnStarted(blink::mojom::ServiceWorkerStartStatus status,
-                           bool has_fetch_handler) {}
+    virtual void OnStarted(
+        blink::mojom::ServiceWorkerStartStatus status,
+        blink::mojom::ServiceWorkerFetchHandlerType fetch_handler_type) {}
 
     // Called when status changed to STOPPING. The renderer has been sent a Stop
     // IPC message and OnStopped() will be called upon successful completion.
@@ -221,35 +230,35 @@ class CONTENT_EXPORT EmbeddedWorkerInstance
       std::unique_ptr<blink::PendingURLLoaderFactoryBundle> subresource_bundle);
 
   void BindCacheStorage(
-      mojo::PendingReceiver<blink::mojom::CacheStorage> receiver);
+      mojo::PendingReceiver<blink::mojom::CacheStorage> receiver,
+      const storage::BucketLocator& bucket_locator);
+
+#if !BUILDFLAG(IS_ANDROID)
+  void BindHidService(const url::Origin& origin,
+                      mojo::PendingReceiver<blink::mojom::HidService> receiver);
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+  void BindUsbService(
+      const url::Origin& origin,
+      mojo::PendingReceiver<blink::mojom::WebUsbService> receiver);
 
   base::WeakPtr<EmbeddedWorkerInstance> AsWeakPtr();
 
   // The below can only be called on the UI thread. The returned factory may be
   // later supplied to UpdateLoaderFactories().
+  //
+  // `client_security_state` may be nullptr, in which case a default value is
+  // set in the bundle.
   static std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
   CreateFactoryBundle(
       RenderProcessHost* rph,
       int routing_id,
       const url::Origin& origin,
-      const absl::optional<network::CrossOriginEmbedderPolicy>&
-          cross_origin_embedder_policy,
+      network::mojom::ClientSecurityStatePtr client_security_state,
       mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
           coep_reporter,
       ContentBrowserClient::URLLoaderFactoryType factory_type,
       const std::string& devtools_worker_token);
-
-  // Creates a set of factory bundles for scripts and subresources. This must be
-  // called after the COEP value for the worker script is known.
-  struct CreateFactoryBundlesResult {
-    CreateFactoryBundlesResult();
-    ~CreateFactoryBundlesResult();
-    CreateFactoryBundlesResult(CreateFactoryBundlesResult&& other);
-
-    std::unique_ptr<blink::PendingURLLoaderFactoryBundle> script_bundle;
-    std::unique_ptr<blink::PendingURLLoaderFactoryBundle> subresource_bundle;
-  };
-  CreateFactoryBundlesResult CreateFactoryBundles();
 
   // Returns the unique token that has been generated to identify this worker
   // instance, and its corresponding GlobalScope in the renderer process. If the
@@ -262,7 +271,7 @@ class CONTENT_EXPORT EmbeddedWorkerInstance
   typedef base::ObserverList<Listener>::Unchecked ListenerList;
   struct StartInfo;
   class WorkerProcessHandle;
-  friend class EmbeddedWorkerInstanceTest;
+  friend class EmbeddedWorkerInstanceTestHarness;
   FRIEND_TEST_ALL_PREFIXES(EmbeddedWorkerInstanceTest, StartAndStop);
   FRIEND_TEST_ALL_PREFIXES(EmbeddedWorkerInstanceTest, DetachDuringStart);
   FRIEND_TEST_ALL_PREFIXES(EmbeddedWorkerInstanceTest, StopDuringStart);
@@ -288,7 +297,7 @@ class CONTENT_EXPORT EmbeddedWorkerInstance
   // Changes the internal worker status from STARTING to RUNNING.
   void OnStarted(
       blink::mojom::ServiceWorkerStartStatus status,
-      bool has_fetch_handler,
+      blink::mojom::ServiceWorkerFetchHandlerType fetch_handler_type,
       int thread_id,
       blink::mojom::EmbeddedWorkerStartTimingPtr start_timing) override;
   // Resets the embedded worker instance to the initial state. Changes
@@ -324,7 +333,7 @@ class CONTENT_EXPORT EmbeddedWorkerInstance
   void BindCacheStorageInternal();
 
   base::WeakPtr<ServiceWorkerContextCore> context_;
-  ServiceWorkerVersion* owner_version_;
+  raw_ptr<ServiceWorkerVersion> owner_version_;
 
   // Unique within a ServiceWorkerContextCore.
   const int embedded_worker_id_;
@@ -379,10 +388,20 @@ class CONTENT_EXPORT EmbeddedWorkerInstance
   mojo::Remote<blink::mojom::SubresourceLoaderUpdater>
       subresource_loader_updater_;
 
+  struct CacheStorageRequest {
+    CacheStorageRequest(
+        mojo::PendingReceiver<blink::mojom::CacheStorage> receiver,
+        storage::BucketLocator bucket);
+    CacheStorageRequest(CacheStorageRequest&& other);
+    ~CacheStorageRequest();
+
+    mojo::PendingReceiver<blink::mojom::CacheStorage> receiver;
+    storage::BucketLocator bucket;
+  };
+
   // Hold in-flight CacheStorage requests. They will be bound when the
   // ServiceWorker COEP header will be known.
-  std::vector<mojo::PendingReceiver<blink::mojom::CacheStorage>>
-      pending_cache_storage_receivers_;
+  std::vector<CacheStorageRequest> pending_cache_storage_requests_;
 
   // COEP Reporter connected to the URLLoaderFactories that handles subresource
   // requests initiated from the service worker. The impl lives on the UI

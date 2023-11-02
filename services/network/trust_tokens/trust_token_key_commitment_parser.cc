@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -135,7 +135,7 @@ bool ParseLocalOperationFieldsIfPresent(
     return false;
 
   for (const base::Value& maybe_os_value :
-       maybe_request_issuance_locally_on->GetList()) {
+       maybe_request_issuance_locally_on->GetListDeprecated()) {
     if (!maybe_os_value.is_string())
       return false;
     absl::optional<mojom::TrustTokenKeyCommitmentResult::Os> maybe_os =
@@ -300,9 +300,8 @@ TrustTokenKeyCommitmentParser::ParseMultipleIssuers(
     if (!commitment_result)
       continue;
 
-    parsed_entries.emplace_back(Entry(std::move(*maybe_issuer),
-                                      raw_key_from_json,
-                                      std::move(commitment_result)));
+    parsed_entries.emplace_back(std::move(*maybe_issuer), raw_key_from_json,
+                                std::move(commitment_result));
   }
 
   // Deterministically deduplicate entries corresponding to the same issuer,

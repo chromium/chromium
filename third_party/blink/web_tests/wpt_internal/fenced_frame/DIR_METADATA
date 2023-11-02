@@ -1,0 +1,6 @@
+monorail {
+  component: "Blink>FencedFrames"
+}
+wpt {
+  notify: YES
+}

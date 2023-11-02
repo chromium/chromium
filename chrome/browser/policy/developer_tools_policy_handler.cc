@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -56,8 +56,8 @@ PolicyCheckResult CheckDeveloperToolsDisabled(
 // does not have a valid value, returns |nullopt|.
 absl::optional<Availability> GetValueFromDeveloperToolsDisabledPolicy(
     const PolicyMap& policies) {
-  const base::Value* developer_tools_disabled =
-      policies.GetValue(key::kDeveloperToolsDisabled);
+  const base::Value* developer_tools_disabled = policies.GetValue(
+      key::kDeveloperToolsDisabled, base::Value::Type::BOOLEAN);
 
   if (CheckDeveloperToolsDisabled(developer_tools_disabled,
                                   nullptr /*error*/) !=
@@ -108,8 +108,10 @@ PolicyCheckResult CheckDeveloperToolsAvailability(
 // not have a valid value, returns |nullopt|.
 absl::optional<Availability> GetValueFromDeveloperToolsAvailabilityPolicy(
     const PolicyMap& policies) {
+  // It is safe to use `GetValueUnsafe()` because type checking is performed
+  // before the value is used.
   const base::Value* developer_tools_availability =
-      policies.GetValue(key::kDeveloperToolsAvailability);
+      policies.GetValueUnsafe(key::kDeveloperToolsAvailability);
 
   if (CheckDeveloperToolsAvailability(developer_tools_availability,
                                       nullptr /*error*/) !=
@@ -146,15 +148,19 @@ DeveloperToolsPolicyHandler::~DeveloperToolsPolicyHandler() {}
 bool DeveloperToolsPolicyHandler::CheckPolicySettings(
     const policy::PolicyMap& policies,
     policy::PolicyErrorMap* errors) {
+  // It is safe to use `GetValueUnsafe()` because type checking is performed
+  // before the value is used.
   // Deprecated boolean policy DeveloperToolsDisabled.
   const base::Value* developer_tools_disabled =
-      policies.GetValue(key::kDeveloperToolsDisabled);
+      policies.GetValueUnsafe(key::kDeveloperToolsDisabled);
   PolicyCheckResult developer_tools_disabled_result =
       CheckDeveloperToolsDisabled(developer_tools_disabled, errors);
 
-  // Enumerated policy DeveloperToolsAvailability
+  // It is safe to use `GetValueUnsafe()` because type checking is performed
+  // before the value is used.
+  // Enumerated policy DeveloperToolsAvailability.
   const base::Value* developer_tools_availability =
-      policies.GetValue(key::kDeveloperToolsAvailability);
+      policies.GetValueUnsafe(key::kDeveloperToolsAvailability);
   PolicyCheckResult developer_tools_availability_result =
       CheckDeveloperToolsAvailability(developer_tools_availability, errors);
 

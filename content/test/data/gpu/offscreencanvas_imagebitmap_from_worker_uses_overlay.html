@@ -1,0 +1,70 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Canvas displaying an ImageBitmap that comes from a worker uses CALayerOverlay Test</title>
+
+<script id="workerCode">
+  self.onmessage = function(event) {
+    const offscreenCanvas = new OffscreenCanvas(100, 100);
+    const ctx = offscreenCanvas.getContext("2d");
+    ctx.fillStyle = event.data.color;
+    ctx.fillRect(0, 0, 100, 100);
+    let img = offscreenCanvas.transferToImageBitmap();
+    self.postMessage(img, [img]);
+  }
+</script>
+
+<script>
+// '--enable-gpu-benchmarking' is required for this test.
+async function main() {
+  const workerCode = document.querySelector("#workerCode").textContent;
+  const blob = new Blob([workerCode], { type: 'text/javascript' });
+  const url = URL.createObjectURL(blob);
+  const worker = new Worker(url);
+
+  const canvas = document.getElementById('canvas');
+  const context = canvas.getContext('bitmaprenderer');
+
+  function errorCodeHandler(errorCode) {
+    // gfx::kCALayerSuccess = 0
+    if (errorCode == 0) {
+      if (window.domAutomationController) {
+        window.domAutomationController.send("SUCCESS");
+      }
+      worker.postMessage({color: 'DarkGreen'});
+    } else {
+      console.log("CALayerOverlay is not used. Error code:" , errorCode);
+      if (window.domAutomationController) {
+        window.domAutomationController.send("FAILED");
+      }
+      worker.postMessage({color: 'Red'});
+    }
+  }
+
+
+  function draw() {
+    if (!chrome.gpuBenchmarking.addCoreAnimationStatusEventListener(errorCodeHandler)) {
+     console.log("addCoreAnimationStatusEventListener fails! Use '--enable-gpu-benchmarking'");
+     if (window.domAutomationController) {
+       window.domAutomationController.send("FAILED");
+     }
+    }
+  }
+
+  let first_draw = true;
+  worker.postMessage({color: 'Black'});
+  worker.addEventListener('message', (event) => {
+    context.transferFromImageBitmap(event.data);
+    if (first_draw) {
+      window.requestAnimationFrame(draw);
+      first_draw = false;
+    }
+  });
+}
+
+</script>
+</head>
+<body onload="main()">
+<canvas id="canvas" width="100" height="100" style="position:absolute; top:0px; left:0px"</canvas>
+</body>
+</html>

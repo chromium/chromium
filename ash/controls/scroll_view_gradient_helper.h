@@ -1,31 +1,31 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef ASH_CONTROLS_SCROLL_VIEW_GRADIENT_HELPER_H_
 #define ASH_CONTROLS_SCROLL_VIEW_GRADIENT_HELPER_H_
 
-#include <memory>
-
 #include "ash/ash_export.h"
 #include "base/callback_list.h"
+#include "ui/compositor/layer.h"
+#include "ui/gfx/geometry/linear_gradient.h"
 #include "ui/views/controls/scroll_view.h"
 
 namespace ash {
 
-class GradientLayerDelegate;
-
 // Draws fade in / fade out gradients at the top and bottom of a ScrollView.
-// Uses layer masks to draw the gradient. Each gradient only shows if the view
-// can be scrolled in that direction. For efficiency, does not create a layer
-// mask if no gradient is showing (i.e. if the scroll view contents fit in the
-// viewport and hence the view cannot be scrolled).
+// Uses shader based gradient set on the scroll view layer. Each gradient only
+// shows if the view can be scrolled in that direction. For efficiency, does not
+// create a gradient mask if no gradient is showing (i.e. if the scroll view
+// contents fit in the viewport and hence the view cannot be scrolled).
 //
-// The gradient is created on the first call to UpdateGradientZone(), not in the
+// The gradient is created on the first call to UpdateGradientMask(), not in the
 // constructor. This allows the helper to be created any time during view tree
-// construction, even before the scroll view contents are known.
+// construction, even before the scroll view contents are known. This helper
+// also controls the animation of the gradient view appearance, which is called
+// only on the first call to UpdateGradientMak().
 //
-// Views using this helper should call UpdateGradientZone() whenever the scroll
+// Views using this helper should call UpdateGradientMask() whenever the scroll
 // view bounds or contents bounds change (e.g. from Layout()).
 //
 // The gradient is destroyed when this object is destroyed. This does not add
@@ -34,27 +34,35 @@ class GradientLayerDelegate;
 class ASH_EXPORT ScrollViewGradientHelper {
  public:
   // `scroll_view` must have a layer.
-  explicit ScrollViewGradientHelper(views::ScrollView* scroll_view);
+  ScrollViewGradientHelper(views::ScrollView* scroll_view, int gradient_height);
   ~ScrollViewGradientHelper();
 
   // Updates the gradients based on `scroll_view_` bounds and scroll position.
-  void UpdateGradientZone();
+  // Draws the fade in/out gradients via a `scroll_view_` gradient mask.
+  void UpdateGradientMask();
 
-  GradientLayerDelegate* gradient_layer_for_test() {
-    return gradient_layer_.get();
+  const gfx::LinearGradient& gradient_mask_for_test() {
+    return scroll_view_->layer()->gradient_mask();
   }
 
  private:
   friend class ScopedScrollViewGradientDisabler;
 
-  // Removes the scroll view mask layer.
+  // Sets the gradient mask animation for the layer.
+  void AnimateMaskLayer(const gfx::LinearGradient& target_gradient);
+
+  // Sets an empty gradient mask on the layer.
   void RemoveMaskLayer();
 
   // The scroll view being decorated.
   views::ScrollView* const scroll_view_;
 
-  // Draws the fade in/out gradients via a `scroll_view_` mask layer.
-  std::unique_ptr<GradientLayerDelegate> gradient_layer_;
+  // The height of the gradient in DIPs.
+  const int gradient_height_;
+
+  // Tracks the first call to UpdateGradientMask. Used to trigger animation only
+  // on the first gradient mask update.
+  bool first_time_update_{false};
 
   // Callback subscriptions.
   base::CallbackListSubscription on_contents_scrolled_subscription_;

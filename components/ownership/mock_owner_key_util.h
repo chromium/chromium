@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,7 +30,8 @@ class OWNERSHIP_EXPORT MockOwnerKeyUtil : public OwnerKeyUtil {
   MockOwnerKeyUtil& operator=(const MockOwnerKeyUtil&) = delete;
 
   // OwnerKeyUtil implementation:
-  bool ImportPublicKey(std::vector<uint8_t>* output) override;
+  scoped_refptr<PublicKey> ImportPublicKey() override;
+  crypto::ScopedSECKEYPrivateKey GenerateKeyPair(PK11SlotInfo* slot) override;
   crypto::ScopedSECKEYPrivateKey FindPrivateKeyInSlot(
       const std::vector<uint8_t>& key,
       PK11SlotInfo* slot) override;
@@ -46,12 +47,20 @@ class OWNERSHIP_EXPORT MockOwnerKeyUtil : public OwnerKeyUtil {
   // configure the private key.
   void SetPublicKeyFromPrivateKey(const crypto::RSAPrivateKey& key);
 
-  // Sets the private key (also configures the public key).
-  void SetPrivateKey(std::unique_ptr<crypto::RSAPrivateKey> key);
+  // Imports the private key into NSS, so it can be found later.
+  // Also extracts the public key and sets it for this mock object (equivalent
+  // to calling `SetPublicKeyFromPrivateKey`).
+  void ImportPrivateKeyAndSetPublicKey(
+      std::unique_ptr<crypto::RSAPrivateKey> key);
+
+  // Makes next `fail_times` number of calls to OwnerKeyUtil::GenerateKeyPair
+  // fail.
+  void SimulateGenerateKeyFailure(int fail_times);
 
  private:
   ~MockOwnerKeyUtil() override;
 
+  int generate_key_fail_times_ = 0;
   std::vector<uint8_t> public_key_;
   crypto::ScopedSECKEYPrivateKey private_key_;
 };

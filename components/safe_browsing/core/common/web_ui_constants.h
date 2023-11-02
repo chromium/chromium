@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@ namespace safe_browsing {
 
 extern const char kChromeUISafeBrowsingURL[];
 extern const char kChromeUISafeBrowsingHost[];
-extern const char kSbUnderConstruction[];
 extern const char kChromeUISafeBrowsingMatchBillingUrl[];
 extern const char kChromeUISafeBrowsingMatchMalwareUrl[];
 extern const char kChromeUISafeBrowsingMatchPhishingUrl[];

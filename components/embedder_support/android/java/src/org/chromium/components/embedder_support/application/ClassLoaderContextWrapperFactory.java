@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -127,7 +127,7 @@ public class ClassLoaderContextWrapperFactory {
             if (ContextUtils.activityFromContext(this) == null) {
                 // FLAG_ACTIVITY_NEW_TASK is needed to start activities from a non-activity
                 // context.
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             }
 
             super.startActivity(intent);

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,18 +7,17 @@
 #include <shellapi.h>
 #include <wininet.h>  // For INTERNET_MAX_URL_LENGTH.
 #include <wrl/client.h>
-#include <algorithm>
+
 #include <limits>
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -65,11 +64,11 @@ bool GetUrlFromHDrop(IDataObject* data_object,
       return false;
 
     wchar_t filename[MAX_PATH];
-    if (DragQueryFileW(hdrop.get(), 0, filename, base::size(filename))) {
+    if (DragQueryFileW(hdrop.get(), 0, filename, std::size(filename))) {
       wchar_t url_buffer[INTERNET_MAX_URL_LENGTH];
       if (0 == _wcsicmp(PathFindExtensionW(filename), L".url") &&
           GetPrivateProfileStringW(L"InternetShortcut", L"url", 0, url_buffer,
-                                   base::size(url_buffer), filename)) {
+                                   std::size(url_buffer), filename)) {
         *url = GURL(base::AsStringPiece16(url_buffer));
         PathRemoveExtension(filename);
         title->assign(base::as_u16cstr(PathFindFileName(filename)));
@@ -102,12 +101,11 @@ void SplitUrlAndTitle(const std::u16string& str,
 bool ContainsFilePathCaseInsensitive(
     const std::vector<base::FilePath>& existing_filenames,
     const base::FilePath& candidate_path) {
-  return std::find_if(std::begin(existing_filenames),
-                      std::end(existing_filenames),
-                      [&candidate_path](const base::FilePath& elem) {
-                        return base::FilePath::CompareEqualIgnoreCase(
-                            elem.value(), candidate_path.value());
-                      }) != std::end(existing_filenames);
+  return base::ranges::any_of(existing_filenames,
+                              [&candidate_path](const base::FilePath& elem) {
+                                return base::FilePath::CompareEqualIgnoreCase(
+                                    elem.value(), candidate_path.value());
+                              });
 }
 
 // Returns a unique display name for a virtual file, as it is possible that the

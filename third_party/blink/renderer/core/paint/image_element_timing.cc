@@ -1,10 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/paint/image_element_timing.h"
 
 #include "base/time/time.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
@@ -163,8 +164,7 @@ void ImageElementTiming::NotifyImagePaintedInternal(
         performance->AddElementTiming(
             ImagePaintString(), url.GetString(), intersection_rect,
             base::TimeTicks(), load_time, attr,
-            ToGfxSize(cached_image.IntrinsicSize(respect_orientation)), id,
-            element);
+            cached_image.IntrinsicSize(respect_orientation), id, element);
       }
       return;
     }
@@ -179,7 +179,7 @@ void ImageElementTiming::NotifyImagePaintedInternal(
                                 : url.GetString();
   element_timings_.emplace_back(MakeGarbageCollected<ElementTimingInfo>(
       image_url, intersection_rect, load_time, attr,
-      ToGfxSize(cached_image.IntrinsicSize(respect_orientation)), id, element));
+      cached_image.IntrinsicSize(respect_orientation), id, element));
   // Only queue a presentation promise when |element_timings_| was empty. All of
   // the records in |element_timings_| will be processed when the promise
   // succeeds or fails, and at that time the vector is cleared.

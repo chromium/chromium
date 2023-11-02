@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,8 +38,6 @@ std::vector<GURL> GetFileSystemUrls(
 // GURL if cannot get the filesystem: scheme url.
 GURL GetFileSystemUrl(Profile* profile, const base::FilePath& file_path);
 
-// Convert absolute file path to file: scheme url.
-std::vector<GURL> GetFileUrls(const std::vector<base::FilePath>& file_paths);
 }  // namespace apps
 
 #endif  // CHROME_BROWSER_APPS_APP_SERVICE_FILE_UTILS_H_

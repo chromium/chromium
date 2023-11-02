@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,13 @@
 #include "chrome/browser/ash/customization/customization_document.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ui/webui/chromeos/login/kiosk_autolaunch_screen_handler.h"
+
+namespace {
+
+constexpr char kUserActionOnCancel[] = "cancel";
+constexpr char kUserActionOnConfirm[] = "confirm";
+
+}  // namespace
 
 namespace ash {
 
@@ -22,31 +29,21 @@ std::string KioskAutolaunchScreen::GetResultString(Result result) {
 }
 
 KioskAutolaunchScreen::KioskAutolaunchScreen(
-    KioskAutolaunchScreenView* view,
+    base::WeakPtr<KioskAutolaunchScreenView> view,
     const ScreenExitCallback& exit_callback)
     : BaseScreen(KioskAutolaunchScreenView::kScreenId,
                  OobeScreenPriority::DEFAULT),
-      view_(view),
+      view_(std::move(view)),
       exit_callback_(exit_callback) {
   DCHECK(view_);
-  if (view_)
-    view_->SetDelegate(this);
 }
 
-KioskAutolaunchScreen::~KioskAutolaunchScreen() {
-  if (view_)
-    view_->SetDelegate(NULL);
-}
+KioskAutolaunchScreen::~KioskAutolaunchScreen() = default;
 
 void KioskAutolaunchScreen::OnExit(bool confirmed) {
   if (is_hidden())
     return;
   exit_callback_.Run(confirmed ? Result::COMPLETED : Result::CANCELED);
-}
-
-void KioskAutolaunchScreen::OnViewDestroyed(KioskAutolaunchScreenView* view) {
-  if (view_ == view)
-    view_ = NULL;
 }
 
 void KioskAutolaunchScreen::ShowImpl() {
@@ -55,5 +52,22 @@ void KioskAutolaunchScreen::ShowImpl() {
 }
 
 void KioskAutolaunchScreen::HideImpl() {}
+
+void KioskAutolaunchScreen::OnUserAction(const base::Value::List& args) {
+  const std::string& action_id = args[0].GetString();
+  if (action_id == kUserActionOnCancel) {
+    if (view_) {
+      view_->HandleOnCancel();
+    }
+    OnExit(false);
+  } else if (action_id == kUserActionOnConfirm) {
+    if (view_) {
+      view_->HandleOnConfirm();
+    }
+    OnExit(true);
+  } else {
+    BaseScreen::OnUserAction(args);
+  }
+}
 
 }  // namespace ash

@@ -1,13 +1,15 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 from __future__ import print_function
 
+from typing import Optional
+
 from pathos import pools
 
 
-def GetProcessPool(nodes=None):
+def GetProcessPool(nodes: Optional[int] = None) -> pools.ProcessPool:
   """Returns a pathos.pools.ProcessPool instance.
 
   Split out for ease of unittesting since pathos can still run into pickling

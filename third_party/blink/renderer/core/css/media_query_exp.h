@@ -29,6 +29,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_MEDIA_QUERY_EXP_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_MEDIA_QUERY_EXP_H_
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
@@ -42,7 +43,6 @@ namespace blink {
 
 class CSSParserContext;
 class CSSParserTokenRange;
-class ExecutionContext;
 
 class CORE_EXPORT MediaQueryExpValue {
   DISALLOW_NEW();
@@ -56,11 +56,15 @@ class CORE_EXPORT MediaQueryExpValue {
       : type_(Type::kNumeric), numeric_({value, unit}) {}
   MediaQueryExpValue(unsigned numerator, unsigned denominator)
       : type_(Type::kRatio), ratio_({numerator, denominator}) {}
+  explicit MediaQueryExpValue(const CSSValue& value)
+      : type_(Type::kCSSValue), css_value_(&value) {}
+  void Trace(Visitor* visitor) const { visitor->Trace(css_value_); }
 
   bool IsValid() const { return type_ != Type::kInvalid; }
   bool IsId() const { return type_ == Type::kId; }
   bool IsNumeric() const { return type_ == Type::kNumeric; }
   bool IsRatio() const { return type_ == Type::kRatio; }
+  bool IsCSSValue() const { return type_ == Type::kCSSValue; }
 
   CSSValueID Id() const {
     DCHECK(IsId());
@@ -87,13 +91,24 @@ class CORE_EXPORT MediaQueryExpValue {
     return ratio_.denominator;
   }
 
+  const CSSValue& GetCSSValue() const {
+    DCHECK(IsCSSValue());
+    DCHECK(css_value_);
+    return *css_value_;
+  }
+
   enum UnitFlags {
-    kNone = 0x0,
-    kFontRelative = 0x1,
-    kRootFontRelative = 0x2,
+    kNone = 0,
+    kFontRelative = 1 << 0,
+    kRootFontRelative = 1 << 1,
+    kDynamicViewport = 1 << 2,
+    kStaticViewport = 1 << 3,
+    kContainer = 1 << 4,
   };
 
-  UnitFlags GetUnitFlags() const;
+  static const int kUnitFlagsBits = 5;
+
+  unsigned GetUnitFlags() const;
 
   String CssText() const;
   bool operator==(const MediaQueryExpValue& other) const {
@@ -110,16 +125,31 @@ class CORE_EXPORT MediaQueryExpValue {
       case Type::kRatio:
         return (ratio_.numerator == other.ratio_.numerator) &&
                (ratio_.denominator == other.ratio_.denominator);
+      case Type::kCSSValue:
+        return base::ValuesEquivalent(css_value_, other.css_value_);
     }
   }
   bool operator!=(const MediaQueryExpValue& other) const {
     return !(*this == other);
   }
 
+  // Consume a MediaQueryExpValue for the provided feature, which must already
+  // be lower-cased.
+  //
+  // absl::nullopt is returned on errors.
+  static absl::optional<MediaQueryExpValue> Consume(
+      const String& lower_media_feature,
+      CSSParserTokenRange&,
+      const CSSParserContext&);
+
  private:
-  enum class Type { kInvalid, kId, kNumeric, kRatio };
+  enum class Type { kInvalid, kId, kNumeric, kRatio, kCSSValue };
 
   Type type_ = Type::kInvalid;
+
+  // Used when the value can't be represented by the union below (e.g. math
+  // functions). Also used for style features in style container queries.
+  Member<const CSSValue> css_value_;
 
   union {
     CSSValueID id_;
@@ -160,6 +190,7 @@ struct CORE_EXPORT MediaQueryExpComparison {
   MediaQueryExpComparison(const MediaQueryExpValue& value,
                           MediaQueryOperator op)
       : value(value), op(op) {}
+  void Trace(Visitor* visitor) const { visitor->Trace(value); }
 
   bool operator==(const MediaQueryExpComparison& o) const {
     return value == o.value && op == o.op;
@@ -199,6 +230,10 @@ struct CORE_EXPORT MediaQueryExpBounds {
   MediaQueryExpBounds(const MediaQueryExpComparison& left,
                       const MediaQueryExpComparison& right)
       : left(left), right(right) {}
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(left);
+    visitor->Trace(right);
+  }
 
   bool IsRange() const {
     return left.op != MediaQueryOperator::kNone ||
@@ -221,8 +256,7 @@ class CORE_EXPORT MediaQueryExp {
   // Returns an invalid MediaQueryExp if the arguments are invalid.
   static MediaQueryExp Create(const String& media_feature,
                               CSSParserTokenRange&,
-                              const CSSParserContext&,
-                              const ExecutionContext*);
+                              const CSSParserContext&);
   static MediaQueryExp Create(const String& media_feature,
                               const MediaQueryExpBounds&);
   static MediaQueryExp Invalid() {
@@ -231,14 +265,9 @@ class CORE_EXPORT MediaQueryExp {
 
   MediaQueryExp(const MediaQueryExp& other);
   ~MediaQueryExp();
+  void Trace(Visitor*) const;
 
   const String& MediaFeature() const { return media_feature_; }
-
-  // TODO(crbug.com/1034465): Replace with MediaQueryExpBounds.
-  MediaQueryExpValue ExpValue() const {
-    DCHECK(!bounds_.left.IsValid());
-    return bounds_.right.value;
-  }
 
   const MediaQueryExpBounds& Bounds() const { return bounds_; }
 
@@ -254,8 +283,9 @@ class CORE_EXPORT MediaQueryExp {
   bool IsDeviceDependent() const;
 
   bool IsWidthDependent() const;
-
   bool IsHeightDependent() const;
+  bool IsInlineSizeDependent() const;
+  bool IsBlockSizeDependent() const;
 
   String Serialize() const;
 
@@ -272,127 +302,169 @@ class CORE_EXPORT MediaQueryExp {
 
 // MediaQueryExpNode representing a tree of MediaQueryExp objects capable of
 // nested/compound expressions.
-class CORE_EXPORT MediaQueryExpNode {
-  USING_FAST_MALLOC(MediaQueryExpNode);
-
+class CORE_EXPORT MediaQueryExpNode
+    : public GarbageCollected<MediaQueryExpNode> {
  public:
   virtual ~MediaQueryExpNode() = default;
+  virtual void Trace(Visitor*) const {}
 
-  enum class Type { kFeature, kNested, kNot, kAnd, kOr };
+  enum class Type { kFeature, kNested, kFunction, kNot, kAnd, kOr, kUnknown };
+
+  enum FeatureFlag {
+    kFeatureUnknown = 1 << 1,
+    kFeatureWidth = 1 << 2,
+    kFeatureHeight = 1 << 3,
+    kFeatureInlineSize = 1 << 4,
+    kFeatureBlockSize = 1 << 5,
+    kFeatureStyle = 1 << 6,
+  };
+
+  using FeatureFlags = unsigned;
 
   String Serialize() const;
 
+  bool HasUnknown() const { return CollectFeatureFlags() & kFeatureUnknown; }
+
   virtual Type GetType() const = 0;
-  virtual PhysicalAxes QueriedAxes() const = 0;
   virtual void SerializeTo(StringBuilder&) const = 0;
-  virtual void CollectExpressions(Vector<MediaQueryExp>&) const = 0;
-  virtual std::unique_ptr<MediaQueryExpNode> Copy() const = 0;
+  virtual void CollectExpressions(HeapVector<MediaQueryExp>&) const = 0;
+  virtual FeatureFlags CollectFeatureFlags() const = 0;
+
+  // These helper functions return nullptr if any argument is nullptr.
+  static const MediaQueryExpNode* Not(const MediaQueryExpNode*);
+  static const MediaQueryExpNode* Nested(const MediaQueryExpNode*);
+  static const MediaQueryExpNode* Function(const MediaQueryExpNode*,
+                                           const AtomicString& name);
+  static const MediaQueryExpNode* And(const MediaQueryExpNode*,
+                                      const MediaQueryExpNode*);
+  static const MediaQueryExpNode* Or(const MediaQueryExpNode*,
+                                     const MediaQueryExpNode*);
 };
 
 class CORE_EXPORT MediaQueryFeatureExpNode : public MediaQueryExpNode {
-  USING_FAST_MALLOC(MediaQueryFeatureExpNode);
-
  public:
   explicit MediaQueryFeatureExpNode(const MediaQueryExp& exp) : exp_(exp) {}
+  void Trace(Visitor*) const override;
 
-  MediaQueryExp Expression() const { return exp_; }
+  const String& Name() const { return exp_.MediaFeature(); }
+  const MediaQueryExpBounds& Bounds() const { return exp_.Bounds(); }
+
+  unsigned GetUnitFlags() const;
+  bool IsViewportDependent() const;
+  bool IsDeviceDependent() const;
+  bool IsWidthDependent() const;
+  bool IsHeightDependent() const;
+  bool IsInlineSizeDependent() const;
+  bool IsBlockSizeDependent() const;
 
   Type GetType() const override { return Type::kFeature; }
-  PhysicalAxes QueriedAxes() const override;
   void SerializeTo(StringBuilder&) const override;
-  void CollectExpressions(Vector<MediaQueryExp>&) const override;
-  std::unique_ptr<MediaQueryExpNode> Copy() const override;
+  void CollectExpressions(HeapVector<MediaQueryExp>&) const override;
+  FeatureFlags CollectFeatureFlags() const override;
 
  private:
   MediaQueryExp exp_;
 };
 
 class CORE_EXPORT MediaQueryUnaryExpNode : public MediaQueryExpNode {
-  USING_FAST_MALLOC(MediaQueryUnaryExpNode);
-
  public:
-  explicit MediaQueryUnaryExpNode(std::unique_ptr<MediaQueryExpNode> operand)
-      : operand_(std::move(operand)) {
+  explicit MediaQueryUnaryExpNode(const MediaQueryExpNode* operand)
+      : operand_(operand) {
     DCHECK(operand_);
   }
+  void Trace(Visitor*) const override;
 
-  PhysicalAxes QueriedAxes() const override;
-  void CollectExpressions(Vector<MediaQueryExp>&) const override;
+  void CollectExpressions(HeapVector<MediaQueryExp>&) const override;
+  FeatureFlags CollectFeatureFlags() const override;
   const MediaQueryExpNode& Operand() const { return *operand_; }
 
  private:
-  std::unique_ptr<MediaQueryExpNode> operand_;
+  Member<const MediaQueryExpNode> operand_;
 };
 
 class CORE_EXPORT MediaQueryNestedExpNode : public MediaQueryUnaryExpNode {
-  USING_FAST_MALLOC(MediaQueryNestedExpNode);
-
  public:
-  explicit MediaQueryNestedExpNode(std::unique_ptr<MediaQueryExpNode> operand)
-      : MediaQueryUnaryExpNode(std::move(operand)) {}
+  explicit MediaQueryNestedExpNode(const MediaQueryExpNode* operand)
+      : MediaQueryUnaryExpNode(operand) {}
 
   Type GetType() const override { return Type::kNested; }
   void SerializeTo(StringBuilder&) const override;
-  std::unique_ptr<MediaQueryExpNode> Copy() const override;
+};
+
+class CORE_EXPORT MediaQueryFunctionExpNode : public MediaQueryUnaryExpNode {
+ public:
+  explicit MediaQueryFunctionExpNode(const MediaQueryExpNode* operand,
+                                     const AtomicString& name)
+      : MediaQueryUnaryExpNode(operand), name_(name) {}
+
+  Type GetType() const override { return Type::kFunction; }
+  void SerializeTo(StringBuilder&) const override;
+  FeatureFlags CollectFeatureFlags() const override;
+
+ private:
+  AtomicString name_;
 };
 
 class CORE_EXPORT MediaQueryNotExpNode : public MediaQueryUnaryExpNode {
-  USING_FAST_MALLOC(MediaQueryNotExpNode);
-
  public:
-  explicit MediaQueryNotExpNode(std::unique_ptr<MediaQueryExpNode> operand)
-      : MediaQueryUnaryExpNode(std::move(operand)) {}
+  explicit MediaQueryNotExpNode(const MediaQueryExpNode* operand)
+      : MediaQueryUnaryExpNode(operand) {}
 
   Type GetType() const override { return Type::kNot; }
   void SerializeTo(StringBuilder&) const override;
-  std::unique_ptr<MediaQueryExpNode> Copy() const override;
 };
 
 class CORE_EXPORT MediaQueryCompoundExpNode : public MediaQueryExpNode {
-  USING_FAST_MALLOC(MediaQueryCompoundExpNode);
-
  public:
-  MediaQueryCompoundExpNode(std::unique_ptr<MediaQueryExpNode> left,
-                            std::unique_ptr<MediaQueryExpNode> right)
-      : left_(std::move(left)), right_(std::move(right)) {
+  MediaQueryCompoundExpNode(const MediaQueryExpNode* left,
+                            const MediaQueryExpNode* right)
+      : left_(left), right_(right) {
     DCHECK(left_);
     DCHECK(right_);
   }
+  void Trace(Visitor*) const override;
 
-  PhysicalAxes QueriedAxes() const override;
-  void CollectExpressions(Vector<MediaQueryExp>&) const override;
+  void CollectExpressions(HeapVector<MediaQueryExp>&) const override;
+  FeatureFlags CollectFeatureFlags() const override;
   const MediaQueryExpNode& Left() const { return *left_; }
   const MediaQueryExpNode& Right() const { return *right_; }
 
  private:
-  std::unique_ptr<MediaQueryExpNode> left_;
-  std::unique_ptr<MediaQueryExpNode> right_;
+  Member<const MediaQueryExpNode> left_;
+  Member<const MediaQueryExpNode> right_;
 };
 
 class CORE_EXPORT MediaQueryAndExpNode : public MediaQueryCompoundExpNode {
-  USING_FAST_MALLOC(MediaQueryAndExpNode);
-
  public:
-  MediaQueryAndExpNode(std::unique_ptr<MediaQueryExpNode> left,
-                       std::unique_ptr<MediaQueryExpNode> right)
-      : MediaQueryCompoundExpNode(std::move(left), std::move(right)) {}
+  MediaQueryAndExpNode(const MediaQueryExpNode* left,
+                       const MediaQueryExpNode* right)
+      : MediaQueryCompoundExpNode(left, right) {}
 
   Type GetType() const override { return Type::kAnd; }
   void SerializeTo(StringBuilder&) const override;
-  std::unique_ptr<MediaQueryExpNode> Copy() const override;
 };
 
 class CORE_EXPORT MediaQueryOrExpNode : public MediaQueryCompoundExpNode {
-  USING_FAST_MALLOC(MediaQueryOrExpNode);
-
  public:
-  MediaQueryOrExpNode(std::unique_ptr<MediaQueryExpNode> left,
-                      std::unique_ptr<MediaQueryExpNode> right)
-      : MediaQueryCompoundExpNode(std::move(left), std::move(right)) {}
+  MediaQueryOrExpNode(const MediaQueryExpNode* left,
+                      const MediaQueryExpNode* right)
+      : MediaQueryCompoundExpNode(left, right) {}
 
   Type GetType() const override { return Type::kOr; }
   void SerializeTo(StringBuilder&) const override;
-  std::unique_ptr<MediaQueryExpNode> Copy() const override;
+};
+
+class CORE_EXPORT MediaQueryUnknownExpNode : public MediaQueryExpNode {
+ public:
+  explicit MediaQueryUnknownExpNode(String string) : string_(string) {}
+
+  Type GetType() const override { return Type::kUnknown; }
+  void SerializeTo(StringBuilder&) const override;
+  void CollectExpressions(HeapVector<MediaQueryExp>&) const override;
+  FeatureFlags CollectFeatureFlags() const override;
+
+ private:
+  String string_;
 };
 
 template <>
@@ -406,6 +478,13 @@ template <>
 struct DowncastTraits<MediaQueryNestedExpNode> {
   static bool AllowFrom(const MediaQueryExpNode& node) {
     return node.GetType() == MediaQueryExpNode::Type::kNested;
+  }
+};
+
+template <>
+struct DowncastTraits<MediaQueryFunctionExpNode> {
+  static bool AllowFrom(const MediaQueryExpNode& node) {
+    return node.GetType() == MediaQueryExpNode::Type::kFunction;
   }
 };
 
@@ -430,6 +509,18 @@ struct DowncastTraits<MediaQueryOrExpNode> {
   }
 };
 
+template <>
+struct DowncastTraits<MediaQueryUnknownExpNode> {
+  static bool AllowFrom(const MediaQueryExpNode& node) {
+    return node.GetType() == MediaQueryExpNode::Type::kUnknown;
+  }
+};
+
 }  // namespace blink
+
+WTF_ALLOW_MOVE_AND_INIT_WITH_MEM_FUNCTIONS(blink::MediaQueryExpValue)
+WTF_ALLOW_MOVE_AND_INIT_WITH_MEM_FUNCTIONS(blink::MediaQueryExpComparison)
+WTF_ALLOW_MOVE_AND_INIT_WITH_MEM_FUNCTIONS(blink::MediaQueryExpBounds)
+WTF_ALLOW_MOVE_AND_INIT_WITH_MEM_FUNCTIONS(blink::MediaQueryExp)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_MEDIA_QUERY_EXP_H_

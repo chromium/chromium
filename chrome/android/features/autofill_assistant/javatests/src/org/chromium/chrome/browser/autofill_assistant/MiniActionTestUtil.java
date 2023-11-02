@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,6 +23,8 @@ import org.chromium.chrome.browser.autofill_assistant.proto.SendKeyEventProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SendKeystrokeEventsProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SendTapEventProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SetElementAttributeProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.SetNativeCheckedProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.SetNativeValueProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.TextValue;
 import org.chromium.chrome.browser.autofill_assistant.proto.WaitForDocumentToBecomeInteractiveProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.WaitForDomProto;
@@ -163,6 +165,39 @@ class MiniActionTestUtil {
 
     static void addKeyboardSteps(SelectorProto selector, String value, List<ActionProto> list) {
         addKeyboardSteps(selector, TextValue.newBuilder().setText(value).build(), list);
+    }
+
+    static void addSetNativeValueSteps(
+            SelectorProto selector, TextValue textValue, List<ActionProto> list) {
+        ClientIdProto clientId = toClientId("e");
+
+        addWaitForDomStep(selector, clientId, list);
+        list.add(ActionProto.newBuilder()
+                         .setSetNativeValue(SetNativeValueProto.newBuilder()
+                                                    .setClientId(clientId)
+                                                    .setValue(textValue)
+                                                    .build())
+                         .build());
+        addReleaseElementStep(clientId, list);
+    }
+
+    static void addSetNativeValueSteps(
+            SelectorProto selector, String value, List<ActionProto> list) {
+        addSetNativeValueSteps(selector, TextValue.newBuilder().setText(value).build(), list);
+    }
+
+    static void addSetNativeCheckedSteps(
+            SelectorProto selector, Boolean checked, List<ActionProto> list) {
+        ClientIdProto clientId = toClientId("e");
+
+        addWaitForDomStep(selector, clientId, list);
+        list.add(ActionProto.newBuilder()
+                         .setSetNativeChecked(SetNativeCheckedProto.newBuilder()
+                                                      .setClientId(clientId)
+                                                      .setChecked(checked)
+                                                      .build())
+                         .build());
+        addReleaseElementStep(clientId, list);
     }
 
     static void addKeyboardWithSelectSteps(

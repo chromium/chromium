@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -198,18 +198,6 @@ IN_PROC_BROWSER_TEST_F(PaintPreviewCompositorBrowserTest,
   compositor_service.reset();
   disconnect_loop.Run();
   EXPECT_FALSE(IsBoundAndConnected(compositor.get()));
-}
-
-IN_PROC_BROWSER_TEST_F(PaintPreviewCompositorBrowserTest,
-                       KillWithMemoryPressure) {
-  CreateServiceInstance();
-  base::RunLoop disconnect_loop;
-  auto compositor_service =
-      ToCompositorServiceImpl(StartCompositorService(base::DoNothing()));
-  compositor_service->SetDisconnectHandler(disconnect_loop.QuitClosure());
-  compositor_service->OnMemoryPressure(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
-  disconnect_loop.Run();
 }
 
 IN_PROC_BROWSER_TEST_F(PaintPreviewCompositorBrowserTest, PreWarmCompositor) {

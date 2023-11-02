@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 #define FPL FILE_PATH_LITERAL
 #define IME_DIR_STRING "input_methods"
 
-namespace chromeos {
+namespace ash {
 namespace ime {
 
 const base::FilePath::CharType kInputMethodsDirName[] =
@@ -39,4 +39,4 @@ const base::FilePath::CharType kLanguageDataDirName[] =
 const char kGoogleKeyboardDownloadDomain[] = "dl.google.com";
 
 }  // namespace ime
-}  // namespace chromeos
+}  // namespace ash

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -48,7 +48,7 @@ GoogleTtsStream::GoogleTtsStream(
       tts_player_(
           std::move(factory),
           media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                                 media::CHANNEL_LAYOUT_MONO,
+                                 media::ChannelLayoutConfig::Mono(),
                                  kDefaultSampleRate,
                                  kDefaultBufferSize)) {
   bool loaded = libchrometts_.Load(kLibchromettsPath);
@@ -70,7 +70,8 @@ GoogleTtsStream::GoogleTtsStream(
 }
 
 GoogleTtsStream::~GoogleTtsStream() {
-  libchrometts_.GoogleTtsShutdown();
+  if (!is_in_process_teardown_)
+    libchrometts_.GoogleTtsShutdown();
 }
 
 bool GoogleTtsStream::IsBound() const {

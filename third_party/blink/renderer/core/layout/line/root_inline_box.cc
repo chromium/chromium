@@ -40,8 +40,9 @@ namespace blink {
 
 struct SameSizeAsRootInlineBox : public InlineFlowBox {
   unsigned unsigned_variable;
+  Member<void*> member1;
+  Member<void*> member2;
   void* pointers[1];
-  Member<void*> members[2];
   LayoutUnit layout_variables[6];
 };
 
@@ -137,7 +138,7 @@ LayoutUnit RootInlineBox::PlaceEllipsis(const AtomicString& ellipsis_str,
 
   // FIXME: Do we need an RTL version of this?
   LayoutUnit adjusted_logical_left = logical_left_offset + LogicalLeft();
-  if (force_ellipsis == ForceEllipsis && ltr &&
+  if (force_ellipsis == kForceEllipsis && ltr &&
       (adjusted_logical_left + LogicalWidth() + ellipsis_width) <=
           block_right_edge) {
     if (HasEllipsisBox())
@@ -416,7 +417,7 @@ LineLayoutBlockFlow RootInlineBox::Block() const {
 
 static bool IsEditableLeaf(InlineBox* leaf) {
   return leaf && leaf->GetLineLayoutItem().GetNode() &&
-         HasEditableStyle(*leaf->GetLineLayoutItem().GetNode());
+         IsEditable(*leaf->GetLineLayoutItem().GetNode());
 }
 
 const LayoutObject* RootInlineBox::ClosestLeafChildForPoint(
@@ -606,7 +607,7 @@ void RootInlineBox::AscentAndDescentForBox(
   bool include_leading = IncludeLeadingForBox(box);
   bool set_used_font_with_leading = false;
 
-  if (used_fonts && !used_fonts->IsEmpty() &&
+  if (used_fonts && !used_fonts->empty() &&
       (box->GetLineLayoutItem()
            .Style(IsFirstLineStyle())
            ->LineHeight()

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,21 +35,25 @@ void SwitchAccessBackButtonBubbleController::ShowBackButton(
     back_button_view_ = new SwitchAccessBackButtonView(for_menu);
 
     TrayBubbleView::InitParams init_params;
-    init_params.delegate = this;
+    init_params.delegate = GetWeakPtr();
     // Anchor within the overlay container.
     init_params.parent_window =
         Shell::GetContainer(Shell::GetPrimaryRootWindow(),
                             kShellWindowId_AccessibilityBubbleContainer);
     init_params.anchor_mode = TrayBubbleView::AnchorMode::kRect;
     init_params.is_anchored_to_status_area = false;
-    init_params.has_shadow = false;
     init_params.preferred_width = back_button_view_->size().width();
     init_params.translucent = true;
 
     bubble_view_ = new TrayBubbleView(init_params);
     bubble_view_->SetArrow(views::BubbleBorder::BOTTOM_RIGHT);
     bubble_view_->AddChildView(back_button_view_);
-    bubble_view_->SetPaintToLayer();
+
+    // Only call `SetPaintToLayer()` when necessary since a layer could have
+    // been created for `ViewShadow` and re-creating here breaks the z-order set
+    // by `ViewShadow`.
+    if (!bubble_view_->layer())
+      bubble_view_->SetPaintToLayer();
     bubble_view_->layer()->SetFillsBoundsOpaquely(false);
 
     widget_ = views::BubbleDialogDelegateView::CreateBubble(bubble_view_);
@@ -113,7 +117,7 @@ gfx::Rect SwitchAccessBackButtonBubbleController::AdjustAnchorRect(
   gfx::Rect display_bounds =
       display::Screen::GetScreen()->GetDisplayMatching(anchor).bounds();
   // Ensure that the back button displays onscreen.
-  display_bounds.Inset(0, button_size.height(), 0, 0);
+  display_bounds.Inset(gfx::Insets::TLBR(button_size.height(), 0, 0, 0));
 
   if (adjusted_anchor.Intersects(display_bounds)) {
     adjusted_anchor.Intersect(display_bounds);

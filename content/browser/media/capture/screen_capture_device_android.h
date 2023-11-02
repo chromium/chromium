@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,8 +33,7 @@ class CONTENT_EXPORT ScreenCaptureDeviceAndroid
                         std::unique_ptr<Client> client) override;
   void StopAndDeAllocate() override;
   void RequestRefreshFrame() override;
-  void OnUtilizationReport(int frame_feedback_id,
-                           media::VideoCaptureFeedback feedback) override;
+  void OnUtilizationReport(media::VideoCaptureFeedback feedback) override;
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PREDICTORS_PROXY_LOOKUP_CLIENT_IMPL_H_
 
 #include "base/bind.h"
+#include "base/time/time.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/network/public/mojom/proxy_lookup_client.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -13,7 +14,7 @@
 class GURL;
 
 namespace net {
-class NetworkIsolationKey;
+class NetworkAnonymizationKey;
 }
 
 namespace network {
@@ -32,10 +33,11 @@ class ProxyLookupClientImpl : public network::mojom::ProxyLookupClient {
  public:
   // Starts the proxy lookup for |url|. |callback| is called when the proxy
   // lookup is completed or when an error occurs.
-  ProxyLookupClientImpl(const GURL& url,
-                        const net::NetworkIsolationKey& network_isolation_key,
-                        ProxyLookupCallback callback,
-                        network::mojom::NetworkContext* network_context);
+  ProxyLookupClientImpl(
+      const GURL& url,
+      const net::NetworkAnonymizationKey& network_isolation_key,
+      ProxyLookupCallback callback,
+      network::mojom::NetworkContext* network_context);
 
   ProxyLookupClientImpl(const ProxyLookupClientImpl&) = delete;
   ProxyLookupClientImpl& operator=(const ProxyLookupClientImpl&) = delete;
@@ -49,6 +51,7 @@ class ProxyLookupClientImpl : public network::mojom::ProxyLookupClient {
       const absl::optional<net::ProxyInfo>& proxy_info) override;
 
  private:
+  base::TimeTicks proxy_lookup_start_time_;
   mojo::Receiver<network::mojom::ProxyLookupClient> receiver_{this};
   ProxyLookupCallback callback_;
 };

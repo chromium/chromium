@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,12 +12,14 @@
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 
 namespace blink {
@@ -94,13 +96,14 @@ class CORE_EXPORT DevToolsAgent : public GarbageCollected<DevToolsAgent>,
       mojo::PendingReceiver<mojom::blink::DevToolsSession> io_session,
       mojom::blink::DevToolsSessionStatePtr reattach_session_state,
       bool client_expects_binary_responses,
+      bool client_is_trusted,
       const WTF::String& session_id) override;
   void InspectElement(const gfx::Point& point) override;
-  void ReportChildWorkers(bool report,
+  void ReportChildTargets(bool report,
                           bool wait_for_debugger,
                           base::OnceClosure callback) override;
 
-  void ReportChildWorkersPostCallbackToIO(bool report,
+  void ReportChildTargetsPostCallbackToIO(bool report,
                                           bool wait_for_debugger,
                                           CrossThreadOnceClosure callback);
 
@@ -111,8 +114,9 @@ class CORE_EXPORT DevToolsAgent : public GarbageCollected<DevToolsAgent>,
     base::UnguessableToken devtools_worker_token;
     bool waiting_for_debugger;
     String name;
+    mojom::blink::DevToolsExecutionContextType context_type;
   };
-  void ReportChildWorker(std::unique_ptr<WorkerData>);
+  void ReportChildTarget(std::unique_ptr<WorkerData>);
 
   void CleanupConnection();
 
@@ -123,9 +127,10 @@ class CORE_EXPORT DevToolsAgent : public GarbageCollected<DevToolsAgent>,
       mojo::PendingReceiver<mojom::blink::DevToolsSession> io_session,
       mojom::blink::DevToolsSessionStatePtr reattach_session_state,
       bool client_expects_binary_responses,
+      bool client_is_trusted,
       const WTF::String& session_id);
   void InspectElementImpl(const gfx::Point& point);
-  void ReportChildWorkersImpl(bool report,
+  void ReportChildTargetsImpl(bool report,
                               bool wait_for_debugger,
                               base::OnceClosure callback);
 
@@ -140,10 +145,12 @@ class CORE_EXPORT DevToolsAgent : public GarbageCollected<DevToolsAgent>,
       associated_host_remote_{nullptr};
   Member<InspectedFrames> inspected_frames_;
   Member<CoreProbeSink> probe_sink_;
-  HeapHashSet<Member<DevToolsSession>> sessions_;
+  HeapHashSet<Member<DevToolsSession>, WTF::MemberHashRecordReplayId<DevToolsSession>> sessions_;
   scoped_refptr<InspectorTaskRunner> inspector_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
-  HashMap<WorkerThread*, std::unique_ptr<WorkerData>>
+  HashMap<WorkerThread*,
+          std::unique_ptr<WorkerData>,
+          WTF::MemberHashRecordReplayRegisteredPointerId<WorkerThread>>
       unreported_child_worker_threads_;
   IOAgent* io_agent_{nullptr};
   bool report_child_workers_ = false;

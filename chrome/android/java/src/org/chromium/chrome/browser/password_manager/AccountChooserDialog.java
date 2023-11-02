@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -128,7 +128,7 @@ public class AccountChooserDialog
                 Drawable avatar = credential.getAvatar();
                 if (avatar == null) {
                     avatar = AppCompatResources.getDrawable(
-                            getContext(), R.drawable.logo_avatar_anonymous);
+                            getContext(), R.drawable.anonymous_account_image);
                 }
                 avatarView.setImageDrawable(avatar);
 
@@ -196,7 +196,7 @@ public class AccountChooserDialog
         }
         mAdapter = generateAccountsArrayAdapter(mContext, mCredentials);
         final AlertDialog.Builder builder =
-                new AlertDialog.Builder(mContext, R.style.Theme_Chromium_AlertDialog)
+                new AlertDialog.Builder(mContext, R.style.ThemeOverlay_BrowserUI_AlertDialog)
                         .setCustomTitle(titleView)
                         .setNegativeButton(R.string.cancel, this)
                         .setAdapter(mAdapter, new DialogInterface.OnClickListener() {
@@ -213,6 +213,8 @@ public class AccountChooserDialog
         mDialog.show();
     }
 
+    // status_bar_height is not a public framework resource, so we have to getIdentifier()
+    @SuppressWarnings("DiscouragedApi")
     private void showTooltip(View view, String message, int layoutId) {
         Context context = view.getContext();
         Resources resources = context.getResources();

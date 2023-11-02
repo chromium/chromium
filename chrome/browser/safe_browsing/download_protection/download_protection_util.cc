@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -95,26 +95,6 @@ GURL GetFileSystemAccessDownloadUrl(const GURL& frame_url) {
   // random UUID.
   return GURL("blob:" + frame_url.DeprecatedGetOriginAsURL().spec() +
               "file-system-access-write");
-}
-
-ClientDownloadResponse::Verdict DownloadDangerTypeToDownloadResponseVerdict(
-    download::DownloadDangerType download_danger_type) {
-  switch (download_danger_type) {
-    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL:
-    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT:
-      return ClientDownloadResponse::DANGEROUS;
-    case download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT:
-      return ClientDownloadResponse::UNCOMMON;
-    case download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED:
-      return ClientDownloadResponse::POTENTIALLY_UNWANTED;
-    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST:
-      return ClientDownloadResponse::DANGEROUS_HOST;
-    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE:
-      return ClientDownloadResponse::DANGEROUS_ACCOUNT_COMPROMISE;
-    default:
-      // Return SAFE for any other danger types.
-      return ClientDownloadResponse::SAFE;
-  }
 }
 
 }  // namespace safe_browsing

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,7 +19,7 @@ class ShellPluginServiceFilter : public PluginServiceFilter {
   ~ShellPluginServiceFilter() override;
 
   // PluginServiceFilter implementation.
-  bool IsPluginAvailable(int render_process_id,
+  bool IsPluginAvailable(content::BrowserContext* browser_context,
                          const WebPluginInfo& plugin) override;
 
   bool CanLoadPlugin(int render_process_id,

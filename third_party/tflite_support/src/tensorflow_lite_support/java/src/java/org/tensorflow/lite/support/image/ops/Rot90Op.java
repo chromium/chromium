@@ -15,11 +15,14 @@ limitations under the License.
 
 package org.tensorflow.lite.support.image.ops;
 
+import static org.tensorflow.lite.support.common.internal.SupportPreconditions.checkArgument;
+
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.PointF;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.tensorflow.lite.support.image.ColorSpaceType;
 import org.tensorflow.lite.support.image.ImageOperator;
 import org.tensorflow.lite.support.image.TensorImage;
 
@@ -36,7 +39,7 @@ public class Rot90Op implements ImageOperator {
      * Creates a Rot90 Op which will rotate image by 90 degree for {@code k} times
      * counter-clockwise.
      *
-     * @param k: The number of times the image is rotated by 90 degrees. If it's positive, the image
+     * @param k The number of times the image is rotated by 90 degrees. If it's positive, the image
      *     will be rotated counter-clockwise. If it's negative, the op will rotate image clockwise.
      */
     public Rot90Op(int k) {
@@ -55,6 +58,9 @@ public class Rot90Op implements ImageOperator {
     @NonNull
     @Override
     public TensorImage apply(@NonNull TensorImage image) {
+        checkArgument(image.getColorSpaceType() == ColorSpaceType.RGB,
+                "Only RGB images are supported in Rot90Op, but not "
+                        + image.getColorSpaceType().name());
         Bitmap input = image.getBitmap();
         if (numRotation == 0) {
             return image;

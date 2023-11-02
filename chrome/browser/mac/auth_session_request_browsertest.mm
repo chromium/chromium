@@ -1,11 +1,14 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "base/mac/scoped_nsobject.h"
 #import "chrome/browser/app_controller_mac.h"
+
+#include "base/mac/foundation_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -21,6 +24,38 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest_mac.h"
 #include "ui/base/page_transition_types.h"
+
+namespace {
+
+Profile* CreateAndWaitForProfile(const base::FilePath& profile_dir) {
+  Profile* profile = profiles::testing::CreateProfileSync(
+      g_browser_process->profile_manager(), profile_dir);
+  EXPECT_TRUE(profile);
+  return profile;
+}
+
+Profile* CreateAndWaitForGuestProfile() {
+  return CreateAndWaitForProfile(ProfileManager::GetGuestProfilePath());
+}
+
+void SetGuestProfileAsLastProfile() {
+  AppController* ac = base::mac::ObjCCast<AppController>(
+      [[NSApplication sharedApplication] delegate]);
+  ASSERT_TRUE(ac);
+  // Create the guest profile, and set it as the last used profile.
+  Profile* guest_profile = CreateAndWaitForGuestProfile();
+  [ac setLastProfile:guest_profile];
+  Profile* profile = [ac lastProfileIfLoaded];
+  ASSERT_TRUE(profile);
+  EXPECT_EQ(guest_profile->GetPath(), profile->GetPath());
+  EXPECT_TRUE(profile->IsGuestSession());
+  // Also set the last used profile path preference. If the profile does need to
+  // be read from disk for some reason this acts as a backstop.
+  g_browser_process->local_state()->SetString(
+      prefs::kProfileLastUsed, guest_profile->GetPath().BaseName().value());
+}
+
+}  // namespace
 
 using AuthSessionBrowserTest = InProcessBrowserTest;
 
@@ -190,6 +225,13 @@ IN_PROC_BROWSER_TEST_F(AuthSessionBrowserTest, ProfileNotLoaded) {
     auto* browser_list = BrowserList::GetInstance();
     size_t start_browser_count = browser_list->size();
 
+    // Clear the last profile. It will be set by default since NSApp in browser
+    // tests can activate.
+    AppController* ac = base::mac::ObjCCast<AppController>(
+        [[NSApplication sharedApplication] delegate]);
+    ASSERT_TRUE(ac);
+    [ac setLastProfile:nullptr];
+
     // Use a profile that is not loaded yet.
     const std::string kProfileName = "Profile 2";
     g_browser_process->local_state()->SetString(prefs::kProfileLastUsed,
@@ -229,10 +271,8 @@ IN_PROC_BROWSER_TEST_F(AuthSessionBrowserTest, ProfileNotAvailable) {
     size_t start_browser_count = browser_list->size();
 
     // Use the guest profile, but mark it as disallowed.
-    base::FilePath guest_profile_path = ProfileManager::GetGuestProfilePath();
+    SetGuestProfileAsLastProfile();
     PrefService* local_state = g_browser_process->local_state();
-    local_state->SetString(prefs::kProfileLastUsed,
-                           guest_profile_path.BaseName().value());
     local_state->SetBoolean(prefs::kBrowserGuestModeEnabled, false);
 
     // The profile picker is initially closed.

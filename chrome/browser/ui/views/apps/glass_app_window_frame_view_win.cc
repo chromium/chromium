@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,7 +38,7 @@ gfx::Insets GlassAppWindowFrameViewWin::GetGlassInsets() const {
           ? display::win::ScreenWin::GetSystemMetricsInDIP(SM_CXSIZEFRAME)
           : 0;
 
-  return gfx::Insets(caption_height, frame_size, frame_size, frame_size);
+  return gfx::Insets::TLBR(caption_height, frame_size, frame_size, frame_size);
 }
 
 gfx::Insets GlassAppWindowFrameViewWin::GetClientAreaInsets(
@@ -53,10 +53,11 @@ gfx::Insets GlassAppWindowFrameViewWin::GetClientAreaInsets(
     //   * we get weird black bars at the top when maximized in multiple monitor
     //     configurations.
     int border_thickness = 1;
-    insets.Set(0, 0, border_thickness, border_thickness);
+    insets = gfx::Insets::TLBR(0, 0, border_thickness, border_thickness);
   } else {
     const int frame_thickness = ui::GetFrameThickness(monitor);
-    insets.Set(0, frame_thickness, frame_thickness, frame_thickness);
+    insets =
+        gfx::Insets::TLBR(0, frame_thickness, frame_thickness, frame_thickness);
   }
   return insets;
 }

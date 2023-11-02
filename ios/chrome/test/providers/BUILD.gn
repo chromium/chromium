@@ -1,0 +1,42 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+group("providers") {
+  testonly = true
+  deps = [
+    # The target providing the ChromeBrowserProvider factory.
+    "//ios/public/provider/chrome/browser:test_provider_factory",
+
+    # The individual API implementations.
+    "//ios/chrome/test/providers/app_distribution",
+    "//ios/chrome/test/providers/app_utils",
+    "//ios/chrome/test/providers/branded_images",
+    "//ios/chrome/test/providers/context_menu",
+    "//ios/chrome/test/providers/discover_feed",
+    "//ios/chrome/test/providers/follow",
+    "//ios/chrome/test/providers/font",
+    "//ios/chrome/test/providers/fullscreen",
+    "//ios/chrome/test/providers/lens",
+    "//ios/chrome/test/providers/mailto_handler",
+    "//ios/chrome/test/providers/modals",
+    "//ios/chrome/test/providers/omaha",
+    "//ios/chrome/test/providers/overrides",
+    "//ios/chrome/test/providers/password_auto_fill",
+    "//ios/chrome/test/providers/primes",
+    "//ios/chrome/test/providers/push_notification",
+    "//ios/chrome/test/providers/risk_data",
+    "//ios/chrome/test/providers/signin",
+    "//ios/chrome/test/providers/text_classifier",
+    "//ios/chrome/test/providers/text_zoom",
+    "//ios/chrome/test/providers/ui_utils",
+    "//ios/chrome/test/providers/url_rewriters",
+    "//ios/chrome/test/providers/user_feedback",
+    "//ios/chrome/test/providers/voice_search",
+
+    # The provider API needs to provide MaterialDesignComponent API (as the
+    # internal provider provides an alternate implementation).
+    "//ios/third_party/material_components_ios:material_components_ios+bundle",
+    "//ios/third_party/material_components_ios:material_components_ios+link",
+  ]
+}

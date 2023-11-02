@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/base/glib/glib_integers.h"
 #include "ui/base/glib/glib_signal.h"
 #include "ui/base/ime/linux/linux_input_method_context.h"
@@ -21,8 +22,8 @@ namespace gtk {
 // (gtk-immodule) as a bridge from/to underlying IMEs.
 class InputMethodContextImplGtk : public ui::LinuxInputMethodContext {
  public:
-  InputMethodContextImplGtk(ui::LinuxInputMethodContextDelegate* delegate,
-                            bool is_simple);
+  explicit InputMethodContextImplGtk(
+      ui::LinuxInputMethodContextDelegate* delegate);
 
   InputMethodContextImplGtk(const InputMethodContextImplGtk&) = delete;
   InputMethodContextImplGtk& operator=(const InputMethodContextImplGtk&) =
@@ -35,10 +36,20 @@ class InputMethodContextImplGtk : public ui::LinuxInputMethodContext {
   bool IsPeekKeyEvent(const ui::KeyEvent& key_event) override;
   void SetCursorLocation(const gfx::Rect& rect) override;
   void Reset() override;
-  void Focus() override;
-  void Blur() override;
+  void UpdateFocus(bool has_client,
+                   ui::TextInputType old_type,
+                   ui::TextInputType new_type) override;
   void SetSurroundingText(const std::u16string& text,
                           const gfx::Range& selection_range) override;
+  void SetContentType(ui::TextInputType type,
+                      ui::TextInputMode mode,
+                      uint32_t flags,
+                      bool should_do_learning) override;
+  void SetGrammarFragmentAtCursor(
+      const ui::GrammarFragment& fragment) override {}
+  void SetAutocorrectInfo(const gfx::Range& autocorrect_range,
+                          const gfx::Rect& autocorrect_bounds) override {}
+  ui::VirtualKeyboardController* GetVirtualKeyboardController() override;
 
  private:
   // GtkIMContext event handlers.  They are shared among |gtk_context_simple_|
@@ -62,26 +73,28 @@ class InputMethodContextImplGtk : public ui::LinuxInputMethodContext {
                      GtkIMContext*);
 
   // Only used on GTK3.
-  void SetContextClientWindow(GdkWindow* window);
+  void SetContextClientWindow(GdkWindow* window, GtkIMContext* gtk_context);
+
+  // Returns the IMContext depending on the currently connected input field
+  // type.
+  GtkIMContext* GetIMContext();
 
   // A set of callback functions.  Must not be nullptr.
-  ui::LinuxInputMethodContextDelegate* const delegate_;
+  const raw_ptr<ui::LinuxInputMethodContextDelegate> delegate_;
 
-  // Input method context type flag.
-  //   - true if it supports table-based input methods
-  //   - false if it supports multiple, loadable input methods
-  const bool is_simple_;
-
-  // Keeps track of current focus state.
-  bool has_focus_ = false;
+  // Tracks the input field type.
+  ui::TextInputType type_ = ui::TEXT_INPUT_TYPE_NONE;
 
   // IME's input GTK context.
-  GtkIMContext* gtk_context_ = nullptr;
+  raw_ptr<GtkIMContext> gtk_context_ = nullptr;
+  raw_ptr<GtkIMContext> gtk_simple_context_ = nullptr;
 
   // Only used on GTK3.
   gpointer gdk_last_set_client_window_ = nullptr;
+  gpointer gdk_last_set_client_window_for_simple_ = nullptr;
 
   // Last known caret bounds relative to the screen coordinates, in DIPs.
+  // Effective only on non-simple context.
   gfx::Rect last_caret_bounds_;
 };
 

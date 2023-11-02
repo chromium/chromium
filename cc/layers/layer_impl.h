@@ -1,4 +1,4 @@
-// Copyright 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,9 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "cc/base/region.h"
 #include "cc/base/synced_property.h"
 #include "cc/cc_export.h"
@@ -25,16 +27,17 @@
 #include "cc/layers/draw_properties.h"
 #include "cc/layers/layer_collections.h"
 #include "cc/layers/performance_properties.h"
-#include "cc/layers/region_capture_bounds.h"
 #include "cc/layers/render_surface_impl.h"
 #include "cc/layers/touch_action_region.h"
 #include "cc/paint/element_id.h"
 #include "cc/tiles/tile_priority.h"
 #include "cc/trees/target_property.h"
 #include "components/viz/common/quads/shared_quad_state.h"
+#include "components/viz/common/surfaces/region_capture_bounds.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/point3_f.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/transform.h"
@@ -155,19 +158,18 @@ class CC_EXPORT LayerImpl {
 
   // Returns true if this layer has content to draw.
   void SetDrawsContent(bool draws_content);
-  bool DrawsContent() const { return draws_content_; }
+  bool draws_content() const { return draws_content_; }
 
   // Make the layer hit testable.
   void SetHitTestable(bool should_hit_test);
   bool HitTestable() const;
 
-  void SetBackgroundColor(SkColor background_color);
-  SkColor background_color() const { return background_color_; }
-  void SetSafeOpaqueBackgroundColor(SkColor background_color);
-  SkColor safe_opaque_background_color() const {
+  void SetBackgroundColor(SkColor4f background_color);
+  SkColor4f background_color() const { return background_color_; }
+  void SetSafeOpaqueBackgroundColor(SkColor4f background_color);
+  SkColor4f safe_opaque_background_color() const {
     // Layer::SafeOpaqueBackgroundColor() should ensure this.
-    DCHECK_EQ(contents_opaque(),
-              SkColorGetA(safe_opaque_background_color_) == SK_AlphaOPAQUE);
+    DCHECK_EQ(contents_opaque(), safe_opaque_background_color_.isOpaque());
     return safe_opaque_background_color_;
   }
 
@@ -244,7 +246,7 @@ class CC_EXPORT LayerImpl {
     is_inner_viewport_scroll_layer_ = true;
   }
 
-  void SetCurrentScrollOffset(const gfx::Vector2dF& scroll_offset);
+  void SetCurrentScrollOffset(const gfx::PointF& scroll_offset);
 
   // Returns the delta of the scroll that was outside of the bounds of the
   // initial scroll
@@ -255,11 +257,32 @@ class CC_EXPORT LayerImpl {
   // scroll property, and invalidate scrollbar geometries etc. for the changes.
   void UpdateScrollable();
 
+  // Some properties on the LayerImpl are rarely set, and so are bundled
+  // under a single unique_ptr.
+  struct RareProperties {
+    // The bounds of elements marked for potential region capture, stored in
+    // the coordinate space of this layer.
+    viz::RegionCaptureBounds capture_bounds;
+    Region non_fast_scrollable_region;
+    Region wheel_event_handler_region;
+  };
+
+  RareProperties& EnsureRareProperties() {
+    if (!rare_properties_)
+      rare_properties_ = std::make_unique<RareProperties>();
+
+    return *rare_properties_;
+  }
+
+  void ResetRareProperties() { rare_properties_.reset(); }
+
   void SetNonFastScrollableRegion(const Region& region) {
-    non_fast_scrollable_region_ = region;
+    if (rare_properties_ || !region.IsEmpty())
+      EnsureRareProperties().non_fast_scrollable_region = region;
   }
   const Region& non_fast_scrollable_region() const {
-    return non_fast_scrollable_region_;
+    return rare_properties_ ? rare_properties_->non_fast_scrollable_region
+                            : Region::Empty();
   }
 
   void SetTouchActionRegion(TouchActionRegion);
@@ -271,17 +294,23 @@ class CC_EXPORT LayerImpl {
     return !touch_action_region_.IsEmpty();
   }
 
-  void SetCaptureBounds(RegionCaptureBounds bounds);
-  const RegionCaptureBounds& capture_bounds() const { return capture_bounds_; }
+  void SetCaptureBounds(viz::RegionCaptureBounds bounds);
+  const viz::RegionCaptureBounds* capture_bounds() const {
+    return rare_properties_ ? &rare_properties_->capture_bounds : nullptr;
+  }
 
   // Set or get the region that contains wheel event handler.
   // The |wheel_event_handler_region| specify the area where wheel event handler
   // could block impl scrolling.
   void SetWheelEventHandlerRegion(const Region& wheel_event_handler_region) {
-    wheel_event_handler_region_ = wheel_event_handler_region;
+    if (rare_properties_ || !wheel_event_handler_region.IsEmpty()) {
+      EnsureRareProperties().wheel_event_handler_region =
+          wheel_event_handler_region;
+    }
   }
   const Region& wheel_event_handler_region() const {
-    return wheel_event_handler_region_;
+    return rare_properties_ ? rare_properties_->wheel_event_handler_region
+                            : Region::Empty();
   }
 
   // The main thread may commit multiple times before the impl thread actually
@@ -330,7 +359,8 @@ class CC_EXPORT LayerImpl {
   // ReleaseTileResources call.
   virtual void RecreateTileResources();
 
-  virtual std::unique_ptr<LayerImpl> CreateLayerImpl(LayerTreeImpl* tree_impl);
+  virtual std::unique_ptr<LayerImpl> CreateLayerImpl(
+      LayerTreeImpl* tree_impl) const;
   virtual void PushPropertiesTo(LayerImpl* layer);
 
   // Internal to property tree construction (which only happens in tests on a
@@ -428,6 +458,9 @@ class CC_EXPORT LayerImpl {
 
   virtual gfx::ContentColorUsage GetContentColorUsage() const;
 
+  virtual void NotifyKnownResourceIdsBeforeAppendQuads(
+      const base::flat_set<viz::SharedElementResourceId>& known_resource_ids) {}
+
  protected:
   // When |will_always_push_properties| is true, the layer will not itself set
   // its SetNeedsPushProperties() state, as it expects to be always pushed to
@@ -437,7 +470,7 @@ class CC_EXPORT LayerImpl {
             bool will_always_push_properties = false);
 
   // Get the color and size of the layer's debug border.
-  virtual void GetDebugBorderProperties(SkColor* color, float* width) const;
+  virtual void GetDebugBorderProperties(SkColor4f* color, float* width) const;
 
   void AppendDebugBorderQuad(viz::CompositorRenderPass* render_pass,
                              const gfx::Rect& quad_rect,
@@ -447,7 +480,7 @@ class CC_EXPORT LayerImpl {
                              const gfx::Rect& quad_rect,
                              const viz::SharedQuadState* shared_quad_state,
                              AppendQuadsData* append_quads_data,
-                             SkColor color,
+                             SkColor4f color,
                              float width) const;
 
   static float GetPreferredRasterScale(
@@ -460,7 +493,7 @@ class CC_EXPORT LayerImpl {
   virtual const char* LayerTypeAsString() const;
 
   const int layer_id_;
-  LayerTreeImpl* const layer_tree_impl_;
+  const raw_ptr<LayerTreeImpl> layer_tree_impl_;
   const bool will_always_push_properties_ : 1;
 
   // Properties synchronized from the associated Layer.
@@ -502,20 +535,17 @@ class CC_EXPORT LayerImpl {
 
   bool is_inner_viewport_scroll_layer_ : 1;
 
-  Region non_fast_scrollable_region_;
   TouchActionRegion touch_action_region_;
 
-  // The bounds of elements marked for potential region capture, stored in
-  // the coordinate space of this layer.
-  RegionCaptureBounds capture_bounds_;
-  Region wheel_event_handler_region_;
-  SkColor background_color_;
-  SkColor safe_opaque_background_color_;
+  SkColor4f background_color_;
+  SkColor4f safe_opaque_background_color_;
 
   int transform_tree_index_;
   int effect_tree_index_;
   int clip_tree_index_;
   int scroll_tree_index_;
+
+  std::unique_ptr<RareProperties> rare_properties_;
 
  protected:
   friend class TreeSynchronizer;
@@ -561,6 +591,16 @@ class CC_EXPORT LayerImpl {
 
   bool has_transform_node_ : 1;
 };
+
+// stl comparator that compares LayerImpl by ID. Used when recording/replaying
+// to get a deterministic sort order.
+struct CompareLayerImplsById {
+  bool operator()(const LayerImpl* a, const LayerImpl* b) const {
+    return a->id() < b->id();
+  }
+};
+
+typedef base::flat_set<LayerImpl*, CompareLayerImplsById> LayerImplSet;
 
 }  // namespace cc
 

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,14 +14,11 @@
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/types/pass_key.h"
+#include "base/values.h"
 #include "content/browser/android/java/gin_java_bound_object.h"
 #include "content/common/android/gin_java_bridge_errors.h"
 #include "content/public/browser/browser_message_filter.h"
 #include "content/public/browser/render_process_host_observer.h"
-
-namespace base {
-class ListValue;
-}
 
 namespace IPC {
 class Message;
@@ -82,8 +79,8 @@ class GinJavaBridgeMessageFilter : public BrowserMessageFilter,
                    bool* result);
   void OnInvokeMethod(GinJavaBoundObject::ObjectID object_id,
                       const std::string& method_name,
-                      const base::ListValue& arguments,
-                      base::ListValue* result,
+                      const base::Value::List& arguments,
+                      base::Value::List* result,
                       content::GinJavaBridgeError* error_code);
   void OnObjectWrapperDeleted(GinJavaBoundObject::ObjectID object_id);
 

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -49,9 +49,9 @@ class IncognitoModePolicyHandlerTest
   }
 
   void VerifyValues(IncognitoModePrefs::Availability availability) {
-    const base::Value* value = NULL;
+    const base::Value* value = nullptr;
     EXPECT_TRUE(store_->GetValue(prefs::kIncognitoModeAvailability, &value));
-    EXPECT_TRUE(base::Value(static_cast<int>(availability)).Equals(value));
+    EXPECT_EQ(base::Value(static_cast<int>(availability)), *value);
   }
 };
 
@@ -82,7 +82,7 @@ TEST_F(IncognitoModePolicyHandlerTest,
 TEST_F(IncognitoModePolicyHandlerTest,
        NoObsoletePolicyAndNoIncognitoAvailability) {
   SetPolicies(INCOGNITO_ENABLED_UNKNOWN, kIncognitoModeAvailabilityNotSet);
-  const base::Value* value = NULL;
+  const base::Value* value = nullptr;
   EXPECT_FALSE(store_->GetValue(prefs::kIncognitoModeAvailability, &value));
 }
 

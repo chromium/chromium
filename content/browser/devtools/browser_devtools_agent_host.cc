@@ -1,15 +1,17 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/browser/devtools/browser_devtools_agent_host.h"
 
 #include "base/bind.h"
+#include "base/clang_profiling_buildflags.h"
 #include "base/guid.h"
 #include "base/json/json_reader.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
+#include "build/config/compiler/compiler_buildflags.h"
 #include "components/viz/common/buildflags.h"
 #include "content/browser/devtools/devtools_session.h"
 #include "content/browser/devtools/protocol/browser_handler.h"
@@ -30,6 +32,10 @@
 
 #if BUILDFLAG(USE_VIZ_DEBUGGER)
 #include "content/browser/devtools/protocol/visual_debugger_handler.h"
+#endif
+
+#if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX) && BUILDFLAG(CLANG_PGO)
+#include "content/browser/devtools/protocol/native_profiling_handler.h"
 #endif
 
 namespace content {
@@ -84,18 +90,26 @@ class BrowserDevToolsAgentHost::BrowserAutoAttacher final
   }
 
   void UpdateAutoAttach(base::OnceClosure callback) override {
-    if (have_observers_ == auto_attach()) {
-      std::move(callback).Run();
-      return;
-    }
     if (auto_attach()) {
       base::AutoReset<bool> auto_reset(&processing_existent_targets_, true);
-      ServiceWorkerDevToolsManager::GetInstance()->AddObserver(this);
-      DevToolsAgentHost::AddObserver(this);
+      if (!have_observers_) {
+        ServiceWorkerDevToolsManager::GetInstance()->AddObserver(this);
+        // DevToolsAgentHost's observer immediately notifies about all existing
+        // ones.
+        DevToolsAgentHost::AddObserver(this);
+      } else {
+        // Manually collect existing hosts to update the list.
+        DevToolsAgentHost::List hosts;
+        RenderFrameDevToolsAgentHost::AddAllAgentHosts(&hosts);
+        for (auto& host : hosts)
+          DevToolsAgentHostCreated(host.get());
+      }
       ReattachServiceWorkers();
     } else {
-      DevToolsAgentHost::RemoveObserver(this);
-      ServiceWorkerDevToolsManager::GetInstance()->RemoveObserver(this);
+      if (have_observers_) {
+        DevToolsAgentHost::RemoveObserver(this);
+        ServiceWorkerDevToolsManager::GetInstance()->RemoveObserver(this);
+      }
     }
     have_observers_ = auto_attach();
     std::move(callback).Run();
@@ -108,13 +122,17 @@ class BrowserDevToolsAgentHost::BrowserAutoAttacher final
     // are created, otherwise if they don't incur any network activity we'll
     // never get a chance to throttle them (and auto-attach there).
 
-    if (IsMainFrameHost(host)) {
+    if (IsMainFrameHost(host) || IsSharedWorkerHost(host)) {
       DispatchAutoAttach(
           host, wait_for_debugger_on_start() && !processing_existent_targets_);
     }
   }
 
   bool ShouldForceDevToolsAgentHostCreation() override { return true; }
+
+  static bool IsSharedWorkerHost(DevToolsAgentHost* host) {
+    return host->GetType() == DevToolsAgentHost::kTypeSharedWorker;
+  }
 
   static bool IsMainFrameHost(DevToolsAgentHost* host) {
     WebContentsImpl* web_contents =
@@ -159,35 +177,40 @@ BrowserDevToolsAgentHost::~BrowserDevToolsAgentHost() {
 
 bool BrowserDevToolsAgentHost::AttachSession(DevToolsSession* session,
                                              bool acquire_wake_lock) {
-  if (!session->GetClient()->MayAttachToBrowser())
+  if (!session->GetClient()->IsTrusted())
     return false;
 
   session->SetBrowserOnly(true);
-  session->AddHandler(std::make_unique<protocol::TargetHandler>(
+  session->CreateAndAddHandler<protocol::TargetHandler>(
       protocol::TargetHandler::AccessMode::kBrowser, GetId(),
-      auto_attacher_.get(), session->GetRootSession()));
+      auto_attacher_.get(), session);
   if (only_discovery_)
     return true;
 
-  session->AddHandler(std::make_unique<protocol::BrowserHandler>(
-      session->GetClient()->MayWriteLocalFiles()));
+  session->CreateAndAddHandler<protocol::BrowserHandler>(
+      session->GetClient()->MayWriteLocalFiles());
 #if BUILDFLAG(USE_VIZ_DEBUGGER)
-  session->AddHandler(std::make_unique<protocol::VisualDebuggerHandler>());
+  session->CreateAndAddHandler<protocol::VisualDebuggerHandler>();
 #endif
-  session->AddHandler(std::make_unique<protocol::IOHandler>(GetIOContext()));
-  session->AddHandler(std::make_unique<protocol::FetchHandler>(
+  session->CreateAndAddHandler<protocol::IOHandler>(GetIOContext());
+  session->CreateAndAddHandler<protocol::FetchHandler>(
       GetIOContext(),
-      base::BindRepeating([](base::OnceClosure cb) { std::move(cb).Run(); })));
-  session->AddHandler(std::make_unique<protocol::MemoryHandler>());
-  session->AddHandler(std::make_unique<protocol::SecurityHandler>());
-  session->AddHandler(std::make_unique<protocol::StorageHandler>());
-  session->AddHandler(std::make_unique<protocol::SystemInfoHandler>());
+      base::BindRepeating([](base::OnceClosure cb) { std::move(cb).Run(); }));
+  session->CreateAndAddHandler<protocol::MemoryHandler>();
+  session->CreateAndAddHandler<protocol::SecurityHandler>();
+  session->CreateAndAddHandler<protocol::StorageHandler>(
+      session->GetClient()->IsTrusted());
+  session->CreateAndAddHandler<protocol::SystemInfoHandler>();
   if (tethering_task_runner_) {
-    session->AddHandler(std::make_unique<protocol::TetheringHandler>(
-        socket_callback_, tethering_task_runner_));
+    session->CreateAndAddHandler<protocol::TetheringHandler>(
+        socket_callback_, tethering_task_runner_);
   }
-  session->AddHandler(
-      std::make_unique<protocol::TracingHandler>(GetIOContext()));
+  session->CreateAndAddHandler<protocol::TracingHandler>(GetIOContext());
+
+#if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX) && BUILDFLAG(CLANG_PGO)
+  session->CreateAndAddHandler<protocol::NativeProfilingHandler>();
+#endif
+
   return true;
 }
 

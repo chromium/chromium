@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define BASE_TASK_THREAD_POOL_THREAD_GROUP_NATIVE_H_
 
 #include "base/base_export.h"
+#include "base/dcheck_is_on.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/task/thread_pool/thread_group.h"
 

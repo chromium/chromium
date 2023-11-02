@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,6 +34,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/events/event_utils.h"
@@ -94,11 +95,11 @@ const int kInnateCheckboxRightPadding = 2;
 constexpr int kComputedCheckboxSize =
     kCheckboxSizeWithPadding - kInnateCheckboxRightPadding;
 
-constexpr gfx::Insets kLabelPadding(16, 18, 15, 18);
+constexpr auto kLabelPadding = gfx::Insets::TLBR(16, 18, 15, 18);
 const int kToggleButtonRowViewSpacing = 18;
 
-constexpr gfx::Insets kToggleButtonRowViewPadding(0, 18, 0, 0);
-constexpr gfx::Insets kToggleButtonRowLabelPadding(16, 0, 15, 0);
+constexpr auto kToggleButtonRowViewPadding = gfx::Insets::TLBR(0, 18, 0, 0);
+constexpr auto kToggleButtonRowLabelPadding = gfx::Insets::TLBR(16, 0, 15, 0);
 constexpr SkColor kTopBorderColor = SkColorSetA(SK_ColorBLACK, 0x1F);
 const int kLabelFontSizeDelta = 1;
 
@@ -379,22 +380,6 @@ class AdaptiveBadgingIcon : public ::views::ImageView {
   }
 };
 
-//
-class AdaptiveSeparator : public ::views::Separator {
- public:
-  AdaptiveSeparator() = default;
-  AdaptiveSeparator(const AdaptiveSeparator&) = delete;
-  AdaptiveSeparator& operator=(const AdaptiveSeparator&) = delete;
-  ~AdaptiveSeparator() override = default;
-
- private:
-  void OnThemeChanged() override {
-    views::Separator::OnThemeChanged();
-    SetColor(AshColorProvider::Get()->GetContentLayerColor(
-        ContentLayerType::kSeparatorColor));
-  }
-};
-
 }  // namespace
 
 // NotifierSettingsView::NotifierButton ---------------------------------------
@@ -553,16 +538,14 @@ NotifierSettingsView::NotifierSettingsView() {
   // There should be no bottom border under the header view if quick
   // settings notification permissions split is enabled.
   if (!features::IsSettingsAppNotificationSettingsEnabled()) {
-    header_view->SetBorder(
-        views::CreateSolidSidedBorder(0, 0, 4, 0, kTopBorderColor));
+    header_view->SetBorder(views::CreateSolidSidedBorder(
+        gfx::Insets::TLBR(0, 0, 4, 0), kTopBorderColor));
   }
 
   const SkColor text_color = AshColorProvider::Get()->GetContentLayerColor(
       ContentLayerType::kTextColorPrimary);
   const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
       ContentLayerType::kIconColorPrimary);
-  const SkColor separator_color = AshColorProvider::Get()->GetContentLayerColor(
-      ContentLayerType::kSeparatorColor);
 
   // Row for the app badging toggle button.
   auto app_badging_icon = std::make_unique<AdaptiveBadgingIcon>();
@@ -589,13 +572,13 @@ NotifierSettingsView::NotifierSettingsView() {
   auto app_badging_view = CreateToggleButtonRow(std::move(app_badging_icon),
                                                 std::move(app_badging_label),
                                                 std::move(app_badging_toggle));
-  app_badging_view->SetBorder(
-      views::CreateSolidSidedBorder(0, 0, 0, 1, kTopBorderColor));
+  app_badging_view->SetBorder(views::CreateSolidSidedBorder(
+      gfx::Insets::TLBR(0, 0, 0, 1), kTopBorderColor));
   header_view->AddChildView(std::move(app_badging_view));
 
   // Separator between toggle button rows.
-  auto separator = std::make_unique<AdaptiveSeparator>();
-  separator->SetColor(separator_color);
+  auto separator = std::make_unique<views::Separator>();
+  separator->SetColorId(ui::kColorAshSystemUIMenuSeparator);
   header_view->AddChildView(std::move(separator));
 
   // Row for the quiet mode toggle button.
@@ -715,7 +698,7 @@ void NotifierSettingsView::OnNotifiersUpdated(
   auto contents_view = std::make_unique<ScrollContentsView>();
   contents_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
-      gfx::Insets(0, kHorizontalMargin)));
+      gfx::Insets::VH(0, kHorizontalMargin)));
 
   for (const auto& notifier : notifiers) {
     NotifierButton* button = new NotifierButton(notifier);

@@ -1,18 +1,19 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef DEVICE_BLUETOOTH_BLUETOOTH_LOW_ENERGY_DISCOVERY_MANAGER_MAC_H_
 #define DEVICE_BLUETOOTH_BLUETOOTH_LOW_ENERGY_DISCOVERY_MANAGER_MAC_H_
 
+#include "base/memory/raw_ptr.h"
+
 #import <CoreBluetooth/CoreBluetooth.h>
 
 #include "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "device/bluetooth/bluetooth_device.h"
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 #import <IOBluetooth/IOBluetooth.h>
 #endif
 
@@ -76,7 +77,7 @@ class BluetoothLowEnergyDiscoveryManagerMac {
   friend class BluetoothLowEnergyCentralManagerBridge;
 
   // Observer interested in notifications from us.
-  Observer* observer_;
+  raw_ptr<Observer> observer_;
 
   // Underlying CoreBluetooth central manager, owned by |observer_|.
   CBCentralManager* central_manager_ = nil;

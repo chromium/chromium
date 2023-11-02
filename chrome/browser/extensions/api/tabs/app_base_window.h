@@ -1,10 +1,11 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_EXTENSIONS_API_TABS_APP_BASE_WINDOW_H_
 #define CHROME_BROWSER_EXTENSIONS_API_TABS_APP_BASE_WINDOW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/base/base_window.h"
 
 namespace extensions {
@@ -51,7 +52,7 @@ class AppBaseWindow : public ui::BaseWindow {
 
   NativeAppWindow* GetBaseWindow() const;
 
-  AppWindow* app_window_;
+  raw_ptr<AppWindow> app_window_;
 };
 
 }  // namespace extensions

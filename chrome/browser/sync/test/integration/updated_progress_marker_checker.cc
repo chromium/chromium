@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,7 +23,7 @@ UpdatedProgressMarkerChecker::UpdatedProgressMarkerChecker(
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-UpdatedProgressMarkerChecker::~UpdatedProgressMarkerChecker() {}
+UpdatedProgressMarkerChecker::~UpdatedProgressMarkerChecker() = default;
 
 bool UpdatedProgressMarkerChecker::IsExitConditionSatisfied(std::ostream* os) {
   *os << "Waiting for progress markers";

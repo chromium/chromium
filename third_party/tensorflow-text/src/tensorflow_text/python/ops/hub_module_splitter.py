@@ -27,7 +27,7 @@ _tf_text_hub_module_splitter_create_counter = monitoring.Counter(
 
 
 class HubModuleSplitter(SplitterWithOffsets):
-  """Splitter that uses a Hub module.
+  r"""Splitter that uses a Hub module.
 
   The TensorFlow graph from the module performs the real work.  The Python code
   from this class handles the details of interfacing with that module, as well
@@ -58,6 +58,26 @@ class HubModuleSplitter(SplitterWithOffsets):
 
   The output dictionary may contain other tensors (e.g., for debugging) but this
   class is not using them.
+
+  Example:
+
+  >>> HUB_MODULE = "https://tfhub.dev/google/zh_segmentation/1"
+  >>> segmenter = HubModuleSplitter(HUB_MODULE)
+  >>> segmenter.split(["新华社北京"])
+  <tf.RaggedTensor [[b'\xe6\x96\xb0\xe5\x8d\x8e\xe7\xa4\xbe',
+                     b'\xe5\x8c\x97\xe4\xba\xac']]>
+
+  You can also use this tokenizer to return the split strings and their offsets:
+
+  >>> HUB_MODULE = "https://tfhub.dev/google/zh_segmentation/1"
+  >>> segmenter = HubModuleSplitter(HUB_MODULE)
+  >>> pieces, starts, ends = segmenter.split_with_offsets(["新华社北京"])
+  >>> print("pieces: %s starts: %s ends: %s" % (pieces, starts, ends))
+  pieces: <tf.RaggedTensor [[b'\xe6\x96\xb0\xe5\x8d\x8e\xe7\xa4\xbe',
+                             b'\xe5\x8c\x97\xe4\xba\xac']]>
+  starts: <tf.RaggedTensor [[0, 9]]>
+  ends: <tf.RaggedTensor [[9, 15]]>
+
 
   Currently, this class also supports an older API, which uses slightly
   different key names for the output dictionary.  For new Hub modules, please

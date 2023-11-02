@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -134,25 +134,6 @@ std::unique_ptr<gfx::GpuMemoryBuffer> ExoTestHelper::CreateGpuMemoryBuffer(
       ->GetGpuMemoryBufferManager()
       ->CreateGpuMemoryBuffer(size, format, gfx::BufferUsage::GPU_READ,
                               gpu::kNullSurfaceHandle, nullptr);
-}
-
-std::unique_ptr<ClientControlledShellSurface>
-ExoTestHelper::CreateClientControlledShellSurface(
-    Surface* surface,
-    bool is_modal,
-    bool default_scale_cancellation) {
-  int container = is_modal ? ash::kShellWindowId_SystemModalContainer
-                           : ash::desks_util::GetActiveDeskContainerId();
-  auto shell_surface = Display().CreateOrGetClientControlledShellSurface(
-      surface, container,
-      WMHelper::GetInstance()->GetDefaultDeviceScaleFactor(),
-      default_scale_cancellation);
-  shell_surface->SetApplicationId("arc");
-  shell_surface->set_delegate(
-      std::make_unique<ClientControlledShellSurfaceDelegate>(
-          shell_surface.get()));
-
-  return shell_surface;
 }
 
 std::unique_ptr<InputMethodSurface> ExoTestHelper::CreateInputMethodSurface(

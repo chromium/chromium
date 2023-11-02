@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 namespace mirroring {
 
 bool GetInt(const base::Value& value, const std::string& key, int32_t* result) {
-  auto* found = value.FindKey(key);
+  auto* found = value.GetDict().Find(key);
   if (!found || found->is_none())
     return true;
   if (found->is_int()) {
@@ -20,7 +20,7 @@ bool GetInt(const base::Value& value, const std::string& key, int32_t* result) {
 bool GetDouble(const base::Value& value,
                const std::string& key,
                double* result) {
-  auto* found = value.FindKey(key);
+  auto* found = value.GetDict().Find(key);
   if (!found || found->is_none())
     return true;
   if (found->is_double()) {
@@ -37,7 +37,7 @@ bool GetDouble(const base::Value& value,
 bool GetString(const base::Value& value,
                const std::string& key,
                std::string* result) {
-  auto* found = value.FindKey(key);
+  auto* found = value.GetDict().Find(key);
   if (!found || found->is_none())
     return true;
   if (found->is_string()) {
@@ -48,7 +48,7 @@ bool GetString(const base::Value& value,
 }
 
 bool GetBool(const base::Value& value, const std::string& key, bool* result) {
-  auto* found = value.FindKey(key);
+  auto* found = value.GetDict().Find(key);
   if (!found || found->is_none())
     return true;
   if (found->is_bool()) {
@@ -61,7 +61,7 @@ bool GetBool(const base::Value& value, const std::string& key, bool* result) {
 bool GetIntArray(const base::Value& value,
                  const std::string& key,
                  std::vector<int32_t>* result) {
-  auto* found = value.FindKey(key);
+  auto* found = value.GetDict().Find(key);
   if (!found || found->is_none())
     return true;
   if (!found->is_list())
@@ -78,7 +78,7 @@ bool GetIntArray(const base::Value& value,
 bool GetStringArray(const base::Value& value,
                     const std::string& key,
                     std::vector<std::string>* result) {
-  auto* found = value.FindKey(key);
+  auto* found = value.GetDict().Find(key);
   if (!found || found->is_none())
     return true;
   if (!found->is_list())

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "ash/screen_util.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
+#include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shell.h"
 #include "base/auto_reset.h"
 #include "ui/aura/window.h"
@@ -32,7 +33,7 @@ gfx::Insets CalculateWorkAreaInsets(const gfx::Insets accessibility_insets,
   if (keyboard_bounds.IsEmpty())
     work_area_insets += shelf_insets;
   else
-    work_area_insets += gfx::Insets(0, 0, keyboard_bounds.height(), 0);
+    work_area_insets += gfx::Insets::TLBR(0, 0, keyboard_bounds.height(), 0);
   return work_area_insets;
 }
 
@@ -58,6 +59,20 @@ WorkAreaInsets* WorkAreaInsets::ForWindow(const aura::Window* window) {
   return RootWindowController::ForWindow(window)->work_area_insets();
 }
 
+// static
+void WorkAreaInsets::UpdateWorkAreaInsetsForTest(
+    aura::Window* window,
+    const gfx::Rect& shelf_bounds_for_workarea_calculation,
+    const gfx::Insets& shelf_insets,
+    const gfx::Insets& in_session_shelf_insets) {
+  DCHECK(window);
+  Shelf::ForWindow(window)
+      ->shelf_layout_manager()
+      ->UpdateWorkAreaInsetsAndNotifyObservers(
+          shelf_bounds_for_workarea_calculation, shelf_insets,
+          in_session_shelf_insets);
+}
+
 WorkAreaInsets::WorkAreaInsets(RootWindowController* root_window_controller)
     : root_window_controller_(root_window_controller) {
   keyboard::KeyboardUIController::Get()->AddObserver(this);
@@ -68,14 +83,14 @@ WorkAreaInsets::~WorkAreaInsets() {
 }
 
 gfx::Insets WorkAreaInsets::GetAccessibilityInsets() const {
-  return gfx::Insets(accessibility_panel_height_ + docked_magnifier_height_, 0,
-                     0, 0);
+  return gfx::Insets::TLBR(
+      accessibility_panel_height_ + docked_magnifier_height_, 0, 0, 0);
 }
 
 gfx::Insets WorkAreaInsets::GetPersistentDeskBarInsets() const {
   if (accessibility_panel_height_ + docked_magnifier_height_ == 0)
-    return gfx::Insets(persistent_desk_bar_height_, 0, 0, 0);
-  return gfx::Insets(0, 0, 0, 0);
+    return gfx::Insets::TLBR(persistent_desk_bar_height_, 0, 0, 0);
+  return gfx::Insets();
 }
 
 gfx::Rect WorkAreaInsets::ComputeStableWorkArea() const {
@@ -124,10 +139,15 @@ bool WorkAreaInsets::PersistentDeskBarHeightInChange() {
   return persistent_desk_bar_height_in_change_;
 }
 
-void WorkAreaInsets::SetShelfBoundsAndInsets(const gfx::Rect& bounds,
-                                             const gfx::Insets& insets) {
-  shelf_bounds_ = bounds;
+void WorkAreaInsets::SetShelfBoundsAndInsets(
+    const gfx::Rect& shelf_bounds,
+    const gfx::Insets& insets,
+    const gfx::Insets& in_session_insets) {
+  shelf_bounds_ = shelf_bounds;
   shelf_insets_ = insets;
+
+  in_session_shelf_insets_ = in_session_insets;
+
   UpdateWorkArea();
 }
 
@@ -147,8 +167,10 @@ void WorkAreaInsets::OnKeyboardVisibilityChanged(const bool is_visible) {
   // but ignore work area insets since shelf overlaps with login window.
   if (Shell::Get()->session_controller()->IsUserSessionBlocked() &&
       !is_visible) {
-    Shell::Get()->SetDisplayWorkAreaInsets(
-        root_window_controller_->GetRootWindow(), gfx::Insets());
+    Shell::Get()
+        ->window_tree_host_manager()
+        ->UpdateWorkAreaOfDisplayNearestWindow(
+            root_window_controller_->GetRootWindow(), gfx::Insets());
   }
 }
 
@@ -161,6 +183,10 @@ void WorkAreaInsets::UpdateWorkArea() {
   user_work_area_bounds_ = CalculateWorkAreaBounds(
       GetAccessibilityInsets(), GetPersistentDeskBarInsets(), shelf_bounds_,
       keyboard_occluded_bounds_, root_window_controller_->GetRootWindow());
+
+  in_session_user_work_area_insets_ = CalculateWorkAreaInsets(
+      GetAccessibilityInsets(), GetPersistentDeskBarInsets(),
+      in_session_shelf_insets_, keyboard_displaced_bounds_);
 }
 
 }  // namespace ash

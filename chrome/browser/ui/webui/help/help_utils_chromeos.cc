@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,11 @@
 
 #include <algorithm>
 
-#include "ash/components/settings/cros_settings_names.h"
 #include "ash/constants/ash_switches.h"
 #include "base/logging.h"
 #include "base/values.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 
 namespace help_utils_chromeos {
 
@@ -20,7 +20,7 @@ bool IsUpdateOverCellularAllowed(bool interactive) {
   // If this is a Cellular First device or the user actively checks for update,
   // the default is to allow updates over cellular.
   bool default_update_over_cellular_allowed =
-      interactive ? true : chromeos::switches::IsCellularFirstDevice();
+      interactive ? true : ash::switches::IsCellularFirstDevice();
 
   // Device Policy overrides the defaults.
   ash::CrosSettings* settings = ash::CrosSettings::Get();

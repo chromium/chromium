@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_queuing_strategy_init.h"
+#include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/streams/count_queuing_strategy.h"
 #include "third_party/blink/renderer/core/streams/miscellaneous_operations.h"
 #include "third_party/blink/renderer/core/streams/promise_handler.h"
@@ -22,7 +23,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/to_v8.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 
 // Implementation of WritableStream for Blink.  See
@@ -214,7 +215,8 @@ WritableStream* WritableStream::CreateWithCountQueueingStrategy(
   ExceptionState exception_state(isolate, ExceptionState::kConstructionContext,
                                  "WritableStream");
   v8::MicrotasksScope microtasks_scope(
-      isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
+      isolate, ToMicrotaskQueue(script_state),
+      v8::MicrotasksScope::kDoNotRunMicrotasks);
   auto* stream = MakeGarbageCollected<WritableStream>();
   stream->InitWithCountQueueingStrategy(script_state, underlying_sink,
                                         high_water_mark, std::move(optimizer),
@@ -330,27 +332,37 @@ v8::Local<v8::Promise> WritableStream::Abort(ScriptState* script_state,
                                              WritableStream* stream,
                                              v8::Local<v8::Value> reason) {
   // https://streams.spec.whatwg.org/#writable-stream-abort
-  //  1. Let state be stream.[[state]].
+  //  1. If stream.[[state]] is "closed" or "errored", return a promise resolved
+  //     with undefined.
+  if (stream->state_ == kClosed || stream->state_ == kErrored) {
+    return PromiseResolveWithUndefined(script_state);
+  }
+
+  //  2. Signal abort on stream.[[controller]].[[signal]] with reason.
+  auto* isolate = script_state->GetIsolate();
+  stream->Controller()->signal()->SignalAbort(script_state,
+                                              ScriptValue(isolate, reason));
+
+  //  3. Let state be stream.[[state]].
   const auto state = stream->state_;
 
-  //  2. If state is "closed" or "errored", return a promise resolved with
+  //  4. If state is "closed" or "errored", return a promise resolved with
   //     undefined.
   if (state == kClosed || state == kErrored) {
     return PromiseResolveWithUndefined(script_state);
   }
 
-  //  3. If stream.[[pendingAbortRequest]] is not undefined, return
-  //     stream.[[pendingAbortRequest]].[[promise]].
-  auto* isolate = script_state->GetIsolate();
+  //  5. If stream.[[pendingAbortRequest]] is not undefined, return
+  //     stream.[[pendingAbortRequest]]'s promise.
   if (stream->pending_abort_request_) {
     return stream->pending_abort_request_->GetPromise()->V8Promise(isolate);
   }
 
-  //  4. Assert: state is "writable" or "erroring".
+  //  6. Assert: state is "writable" or "erroring".
   CHECK(state == kWritable || state == kErroring);
 
-  //  5. Let wasAlreadyErroring be false.
-  //  6. If state is "erroring",
+  //  7. Let wasAlreadyErroring be false.
+  //  8. If state is "erroring",
   //      a. Set wasAlreadyErroring to true.
   //      b. Set reason to undefined.
   const bool was_already_erroring = state == kErroring;
@@ -358,21 +370,22 @@ v8::Local<v8::Promise> WritableStream::Abort(ScriptState* script_state,
     reason = v8::Undefined(isolate);
   }
 
-  //  7. Let promise be a new promise.
+  //  9. Let promise be a new promise.
   auto* promise = MakeGarbageCollected<StreamPromiseResolver>(script_state);
 
-  //  8. Set stream.[[pendingAbortRequest]] to Record {[[promise]]: promise,
-  //     [[reason]]: reason, [[wasAlreadyErroring]]: wasAlreadyErroring}.
+  // 10. Set stream.[[pendingAbortRequest]] to a new pending abort request
+  //     whose promise is promise, reason is reason, and was already erroring is
+  //     wasAlreadyErroring.
   stream->pending_abort_request_ = MakeGarbageCollected<PendingAbortRequest>(
       isolate, promise, reason, was_already_erroring);
 
-  //  9. If wasAlreadyErroring is false, perform ! WritableStreamStartErroring(
+  // 11. If wasAlreadyErroring is false, perform ! WritableStreamStartErroring(
   //     stream, reason).
   if (!was_already_erroring) {
     StartErroring(script_state, stream, reason);
   }
 
-  // 10. Return promise.
+  // 12. Return promise.
   return promise->V8Promise(isolate);
 }
 
@@ -576,19 +589,19 @@ void WritableStream::FinishErroring(ScriptState* script_state,
 
   class ResolvePromiseFunction final : public PromiseHandler {
    public:
-    ResolvePromiseFunction(ScriptState* script_state,
-                           WritableStream* stream,
+    ResolvePromiseFunction(WritableStream* stream,
                            StreamPromiseResolver* promise)
-        : PromiseHandler(script_state), stream_(stream), promise_(promise) {}
+        : stream_(stream), promise_(promise) {}
 
-    void CallWithLocal(v8::Local<v8::Value>) override {
+    void CallWithLocal(ScriptState* script_state,
+                       v8::Local<v8::Value>) override {
       // 13. Upon fulfillment of promise,
       //      a. Resolve abortRequest.[[promise]] with undefined.
-      promise_->ResolveWithUndefined(GetScriptState());
+      promise_->ResolveWithUndefined(script_state);
 
       //      b. Perform !
       //         WritableStreamRejectCloseAndClosedPromiseIfNeeded(stream).
-      RejectCloseAndClosedPromiseIfNeeded(GetScriptState(), stream_);
+      RejectCloseAndClosedPromiseIfNeeded(script_state, stream_);
     }
 
     void Trace(Visitor* visitor) const override {
@@ -604,19 +617,19 @@ void WritableStream::FinishErroring(ScriptState* script_state,
 
   class RejectPromiseFunction final : public PromiseHandler {
    public:
-    RejectPromiseFunction(ScriptState* script_state,
-                          WritableStream* stream,
+    RejectPromiseFunction(WritableStream* stream,
                           StreamPromiseResolver* promise)
-        : PromiseHandler(script_state), stream_(stream), promise_(promise) {}
+        : stream_(stream), promise_(promise) {}
 
-    void CallWithLocal(v8::Local<v8::Value> reason) override {
+    void CallWithLocal(ScriptState* script_state,
+                       v8::Local<v8::Value> reason) override {
       // 14. Upon rejection of promise with reason reason,
       //      a. Reject abortRequest.[[promise]] with reason.
-      promise_->Reject(GetScriptState(), reason);
+      promise_->Reject(script_state, reason);
 
       //      b. Perform !
       //         WritableStreamRejectCloseAndClosedPromiseIfNeeded(stream).
-      RejectCloseAndClosedPromiseIfNeeded(GetScriptState(), stream_);
+      RejectCloseAndClosedPromiseIfNeeded(script_state, stream_);
     }
 
     void Trace(Visitor* visitor) const override {
@@ -630,11 +643,14 @@ void WritableStream::FinishErroring(ScriptState* script_state,
     Member<StreamPromiseResolver> promise_;
   };
 
-  StreamThenPromise(script_state->GetContext(), promise,
-                    MakeGarbageCollected<ResolvePromiseFunction>(
-                        script_state, stream, abort_request->GetPromise()),
-                    MakeGarbageCollected<RejectPromiseFunction>(
-                        script_state, stream, abort_request->GetPromise()));
+  StreamThenPromise(
+      script_state->GetContext(), promise,
+      MakeGarbageCollected<ScriptFunction>(
+          script_state, MakeGarbageCollected<ResolvePromiseFunction>(
+                            stream, abort_request->GetPromise())),
+      MakeGarbageCollected<ScriptFunction>(
+          script_state, MakeGarbageCollected<RejectPromiseFunction>(
+                            stream, abort_request->GetPromise())));
 }
 
 void WritableStream::FinishInFlightWrite(ScriptState* script_state,

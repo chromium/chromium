@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,7 +27,8 @@ class GL_EXPORT GLImageMemory : public GLImage {
 
   bool Initialize(const unsigned char* memory,
                   gfx::BufferFormat format,
-                  size_t stride);
+                  size_t stride,
+                  bool disable_pbo_upload = false);
 
   // Safe downcast. Returns |nullptr| on failure.
   static GLImageMemory* FromGLImage(GLImage* image);

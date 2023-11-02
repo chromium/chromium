@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,7 +30,7 @@ class InputEventDispatcherTest : public testing::Test, public InputEventSink {
 
   void DispatchEvent(Event* event) override {
     DCHECK(!captured_event_);
-    captured_event_ = Event::Clone(*event);
+    captured_event_ = event->Clone();
   }
 
  protected:

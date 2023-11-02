@@ -1,11 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_EYEDROPPER_EYE_DROPPER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_EYEDROPPER_EYE_DROPPER_H_
 
-#include "base/macros.h"
 #include "third_party/blink/public/mojom/choosers/color_chooser.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -13,6 +12,7 @@
 
 namespace blink {
 
+class AbortSignal;
 class ColorSelectionOptions;
 enum class DOMExceptionCode;
 class ExceptionState;
@@ -44,13 +44,16 @@ class EyeDropper final : public ScriptWrappable {
   void Trace(Visitor*) const override;
 
  private:
-  void Abort();
+  class OpenAbortAlgorithm;
+
+  void AbortCallback(AbortSignal* signal);
   void EyeDropperResponseHandler(ScriptPromiseResolver*, bool, uint32_t);
   void EndChooser();
   void RejectPromiseHelper(DOMExceptionCode, const WTF::String&);
 
   HeapMojoRemote<mojom::blink::EyeDropperChooser> eye_dropper_chooser_;
   Member<ScriptPromiseResolver> resolver_;
+  Member<AbortSignal> signal_;
 };
 
 }  // namespace blink

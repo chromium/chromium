@@ -1,4 +1,4 @@
-// Copyright 2020 The Crashpad Authors. All rights reserved.
+// Copyright 2020 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,17 +14,19 @@
 
 #include "client/crashpad_client.h"
 
+#include <signal.h>
 #include <unistd.h>
 
+#include <atomic>
 #include <ios>
+#include <iterator>
 
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/mac/mach_logging.h"
 #include "base/mac/scoped_mach_port.h"
 #include "client/ios_handler/exception_processor.h"
 #include "client/ios_handler/in_process_handler.h"
-#include "util/ios/ios_system_data_collector.h"
+#include "util/ios/raw_logging.h"
 #include "util/mach/exc_server_variants.h"
 #include "util/mach/exception_ports.h"
 #include "util/mach/mach_extensions.h"
@@ -40,7 +42,7 @@ bool IsBeingDebugged() {
   kinfo_proc kern_proc_info;
   int mib[] = {CTL_KERN, KERN_PROC, KERN_PROC_PID, getpid()};
   size_t len = sizeof(kern_proc_info);
-  if (sysctl(mib, base::size(mib), &kern_proc_info, &len, nullptr, 0) == 0)
+  if (sysctl(mib, std::size(mib), &kern_proc_info, &len, nullptr, 0) == 0)
     return kern_proc_info.kp_proc.p_flag & P_TRACED;
   return false;
 }
@@ -60,21 +62,57 @@ class CrashHandler : public Thread,
   CrashHandler& operator=(const CrashHandler&) = delete;
 
   static CrashHandler* Get() {
-    static CrashHandler* instance = new CrashHandler();
-    return instance;
+    if (!instance_)
+      instance_ = new CrashHandler();
+    return instance_;
   }
 
-  bool Initialize(const base::FilePath& database,
-                  const std::string& url,
-                  const std::map<std::string, std::string>& annotations) {
+  static void ResetForTesting() {
+    delete instance_;
+    instance_ = nullptr;
+  }
+
+  bool Initialize(
+      const base::FilePath& database,
+      const std::string& url,
+      const std::map<std::string, std::string>& annotations,
+      internal::InProcessHandler::ProcessPendingReportsObservationCallback
+          callback) {
     INITIALIZATION_STATE_SET_INITIALIZING(initialized_);
-    if (!in_process_handler_.Initialize(
-            database, url, annotations, system_data_) ||
+    if (!in_process_handler_.Initialize(database, url, annotations, callback) ||
         !InstallMachExceptionHandler() ||
-        !Signals::InstallHandler(SIGABRT, CatchSignal, 0, &old_action_)) {
+        // xnu turns hardware faults into Mach exceptions, so the only signal
+        // left to register is SIGABRT, which never starts off as a hardware
+        // fault. Installing a handler for other signals would lead to
+        // recording exceptions twice. As a consequence, Crashpad will not
+        // generate intermediate dumps for anything manually calling
+        // raise(SIG*). In practice, this doesn’t actually happen for crash
+        // signals that originate as hardware faults.
+        !Signals::InstallHandler(
+            SIGABRT, CatchAndReraiseSignal, 0, &old_action_)) {
       LOG(ERROR) << "Unable to initialize Crashpad.";
       return false;
     }
+
+    // For applications that haven't ignored or set a handler for SIGPIPE:
+    // It’s OK for an application to set its own SIGPIPE handler (including
+    // SIG_IGN) before initializing Crashpad, because Crashpad will discover the
+    // existing handler and not install its own.
+    // It’s OK for Crashpad to install its own  SIGPIPE handler and for the
+    // application to subsequently install its own (including SIG_IGN)
+    // afterwards, because its handler will replace Crashpad’s.
+    // This is useful to cover the default situation where nobody installs a
+    // SIGPIPE  handler and the disposition is at SIG_DFL, because SIGPIPE is a
+    // “kill” signal (bsd/sys/signalvar.h  sigprop). In that case, without
+    // Crashpad, SIGPIPE results in a silent and unreported kill (and not even
+    // ReportCrash will record it), but developers probably want to be alerted
+    // to the conditon.
+    struct sigaction sa;
+    if (sigaction(SIGPIPE, nullptr, &sa) == 0 && sa.sa_handler == SIG_DFL) {
+      Signals::InstallHandler(
+          SIGPIPE, CatchAndReraiseSignalDefaultAction, 0, nullptr);
+    }
+
     InstallObjcExceptionPreprocessor(this);
     INITIALIZATION_STATE_SET_VALID(initialized_);
     return true;
@@ -91,37 +129,23 @@ class CrashHandler : public Thread,
     in_process_handler_.ProcessIntermediateDump(file, annotations);
   }
 
-  void DumpWithContext(NativeCPUContext* context) {
-    const mach_exception_data_type_t code[2] = {};
-    static constexpr int kSimulatedException = -1;
-    HandleMachException(MACH_EXCEPTION_CODES,
-                        mach_thread_self(),
-                        kSimulatedException,
-                        code,
-                        base::size(code),
-                        MACHINE_THREAD_STATE,
-                        reinterpret_cast<ConstThreadState>(context),
-                        MACHINE_THREAD_STATE_COUNT);
-  }
-
   void DumpWithoutCrash(NativeCPUContext* context, bool process_dump) {
     INITIALIZATION_STATE_DCHECK_VALID(initialized_);
-    internal::InProcessHandler::ScopedAlternateWriter scoper(
-        &in_process_handler_);
-    if (scoper.Open()) {
-      DumpWithContext(context);
-      if (process_dump) {
-        in_process_handler_.ProcessIntermediateDump(scoper.path());
-      }
+    base::FilePath path;
+    if (!in_process_handler_.DumpExceptionFromSimulatedMachException(
+            context, kMachExceptionSimulated, &path)) {
+      return;
+    }
+
+    if (process_dump) {
+      in_process_handler_.ProcessIntermediateDump(path);
     }
   }
 
   void DumpWithoutCrashAtPath(NativeCPUContext* context,
                               const base::FilePath& path) {
-    internal::InProcessHandler::ScopedAlternateWriter scoper(
-        &in_process_handler_);
-    if (scoper.OpenAtPath(path))
-      DumpWithContext(context);
+    in_process_handler_.DumpExceptionFromSimulatedMachExceptionAtPath(
+        context, kMachExceptionSimulated, path);
   }
 
   void StartProcessingPendingReports() {
@@ -129,8 +153,20 @@ class CrashHandler : public Thread,
     in_process_handler_.StartProcessingPendingReports();
   }
 
+  void SetMachExceptionCallbackForTesting(void (*callback)()) {
+    in_process_handler_.SetMachExceptionCallbackForTesting(callback);
+  }
+
+  uint64_t GetThreadIdForTesting() { return Thread::GetThreadIdForTesting(); }
+
  private:
   CrashHandler() = default;
+
+  ~CrashHandler() {
+    UninstallObjcExceptionPreprocessor();
+    Signals::InstallDefaultHandler(SIGABRT);
+    UninstallMachExceptionHandler();
+  }
 
   bool InstallMachExceptionHandler() {
     exception_port_.reset(NewMachPort(MACH_PORT_RIGHT_RECEIVE));
@@ -164,15 +200,22 @@ class CrashHandler : public Thread,
       return false;
     }
 
+    mach_handler_running_ = true;
     Start();
     return true;
+  }
+
+  void UninstallMachExceptionHandler() {
+    mach_handler_running_ = false;
+    exception_port_.reset();
+    Join();
   }
 
   // Thread:
 
   void ThreadMain() override {
     UniversalMachExcServer universal_mach_exc_server(this);
-    while (true) {
+    while (mach_handler_running_) {
       mach_msg_return_t mr =
           MachMessageServer::Run(&universal_mach_exc_server,
                                  exception_port_.get(),
@@ -180,7 +223,20 @@ class CrashHandler : public Thread,
                                  MachMessageServer::kPersistent,
                                  MachMessageServer::kReceiveLargeIgnore,
                                  kMachMessageTimeoutWaitIndefinitely);
-      MACH_CHECK(mr == MACH_SEND_INVALID_DEST, mr) << "MachMessageServer::Run";
+      MACH_CHECK(
+          mach_handler_running_
+              ? mr == MACH_SEND_INVALID_DEST  // This shouldn't happen for
+                                              // exception messages that come
+                                              // from the kernel itself, but if
+                                              // something else in-process sends
+                                              // exception messages and breaks,
+                                              // handle that case.
+              : (mr == MACH_RCV_PORT_CHANGED ||  // Port was closed while the
+                                                 // thread was listening.
+                 mr == MACH_RCV_INVALID_NAME),  // Port was closed before the
+                                                // thread started listening.
+          mr)
+          << "MachMessageServer::Run";
     }
   }
 
@@ -209,8 +265,7 @@ class CrashHandler : public Thread,
     // inherit the task exception ports, and this process isn’t prepared to
     // handle them
     if (task != mach_task_self()) {
-      LOG(WARNING) << "task 0x" << std::hex << task << " != 0x"
-                   << mach_task_self();
+      CRASHPAD_RAW_LOG("MachException task != mach_task_self()");
       return KERN_FAILURE;
     }
 
@@ -224,7 +279,31 @@ class CrashHandler : public Thread,
                         old_state_count);
 
     // Respond with KERN_FAILURE so the system will continue to handle this
-    // exception as a crash.
+    // exception. xnu will turn this Mach exception into a signal and take the
+    // default action to terminate the process. However, if sigprocmask is
+    // called before this Mach exception returns (such as by another thread
+    // calling abort, see: Libc-1506.40.4/stdlib/FreeBSD/abort.c), the Mach
+    // exception will be converted into a signal but delivery will be blocked.
+    // Since concurrent exceptions lead to the losing thread sleeping
+    // indefinitely, if the abort thread never returns, the thread that
+    // triggered this Mach exception will repeatedly trap and the process will
+    // never terminate. If the abort thread didn’t have a user-space signal
+    // handler that slept forever, the abort would terminate the process even if
+    // all other signals had been blocked. Instead, unblock all signals
+    // corresponding to all Mach exceptions Crashpad is registered for before
+    // returning KERN_FAILURE. There is still racy behavior possible with this
+    // call to sigprocmask, but the repeated calls to CatchMachException here
+    // will eventually lead to termination.
+    sigset_t unblock_set;
+    sigemptyset(&unblock_set);
+    sigaddset(&unblock_set, SIGILL);  // EXC_BAD_INSTRUCTION
+    sigaddset(&unblock_set, SIGTRAP);  // EXC_BREAKPOINT
+    sigaddset(&unblock_set, SIGFPE);  // EXC_ARITHMETIC
+    sigaddset(&unblock_set, SIGBUS);  // EXC_BAD_ACCESS
+    sigaddset(&unblock_set, SIGSEGV);  // EXC_BAD_ACCESS
+    if (sigprocmask(SIG_UNBLOCK, &unblock_set, nullptr) != 0) {
+      CRASHPAD_RAW_LOG("sigprocmask");
+    }
     return KERN_FAILURE;
   }
 
@@ -236,8 +315,7 @@ class CrashHandler : public Thread,
                            thread_state_flavor_t flavor,
                            ConstThreadState old_state,
                            mach_msg_type_number_t old_state_count) {
-    in_process_handler_.DumpExceptionFromMachException(system_data_,
-                                                       behavior,
+    in_process_handler_.DumpExceptionFromMachException(behavior,
                                                        thread,
                                                        exception,
                                                        code,
@@ -249,8 +327,8 @@ class CrashHandler : public Thread,
 
   void HandleUncaughtNSException(const uint64_t* frames,
                                  const size_t num_frames) override {
-    in_process_handler_.DumpExceptionFromNSExceptionFrames(
-        system_data_, frames, num_frames);
+    in_process_handler_.DumpExceptionFromNSExceptionWithFrames(frames,
+                                                               num_frames);
     // After uncaught exceptions are reported, the system immediately triggers a
     // call to std::terminate()/abort(). Remove the abort handler so a second
     // dump isn't generated.
@@ -259,17 +337,9 @@ class CrashHandler : public Thread,
 
   void HandleUncaughtNSExceptionWithContext(
       NativeCPUContext* context) override {
-    const mach_exception_data_type_t code[2] = {0, 0};
-    in_process_handler_.DumpExceptionFromMachException(
-        system_data_,
-        MACH_EXCEPTION_CODES,
-        mach_thread_self(),
-        kMachExceptionFromNSException,
-        code,
-        base::size(code),
-        MACHINE_THREAD_STATE,
-        reinterpret_cast<ConstThreadState>(context),
-        MACHINE_THREAD_STATE_COUNT);
+    base::FilePath path;
+    in_process_handler_.DumpExceptionFromSimulatedMachException(
+        context, kMachExceptionFromNSException, &path);
 
     // After uncaught exceptions are reported, the system immediately triggers a
     // call to std::terminate()/abort(). Remove the abort handler so a second
@@ -277,28 +347,62 @@ class CrashHandler : public Thread,
     CHECK(Signals::InstallDefaultHandler(SIGABRT));
   }
 
+  void HandleUncaughtNSExceptionWithContextAtPath(
+      NativeCPUContext* context,
+      const base::FilePath& path) override {
+    in_process_handler_.DumpExceptionFromSimulatedMachExceptionAtPath(
+        context, kMachExceptionFromNSException, path);
+  }
+
+  bool MoveIntermediateDumpAtPathToPending(
+      const base::FilePath& path) override {
+    if (in_process_handler_.MoveIntermediateDumpAtPathToPending(path)) {
+      // After uncaught exceptions are reported, the system immediately triggers
+      // a call to std::terminate()/abort(). Remove the abort handler so a
+      // second dump isn't generated.
+      CHECK(Signals::InstallDefaultHandler(SIGABRT));
+      return true;
+    }
+    return false;
+  }
+
   // The signal handler installed at OS-level.
-  static void CatchSignal(int signo, siginfo_t* siginfo, void* context) {
+  static void CatchAndReraiseSignal(int signo,
+                                    siginfo_t* siginfo,
+                                    void* context) {
+    Get()->HandleAndReraiseSignal(signo,
+                                  siginfo,
+                                  reinterpret_cast<ucontext_t*>(context),
+                                  &(Get()->old_action_));
+  }
+
+  static void CatchAndReraiseSignalDefaultAction(int signo,
+                                                 siginfo_t* siginfo,
+                                                 void* context) {
     Get()->HandleAndReraiseSignal(
-        signo, siginfo, reinterpret_cast<ucontext_t*>(context));
+        signo, siginfo, reinterpret_cast<ucontext_t*>(context), nullptr);
   }
 
   void HandleAndReraiseSignal(int signo,
                               siginfo_t* siginfo,
-                              ucontext_t* context) {
-    in_process_handler_.DumpExceptionFromSignal(system_data_, siginfo, context);
+                              ucontext_t* context,
+                              struct sigaction* old_action) {
+    in_process_handler_.DumpExceptionFromSignal(siginfo, context);
 
     // Always call system handler.
-    Signals::RestoreHandlerAndReraiseSignalOnReturn(siginfo, &old_action_);
+    Signals::RestoreHandlerAndReraiseSignalOnReturn(siginfo, old_action);
   }
 
   base::mac::ScopedMachReceiveRight exception_port_;
   ExceptionPorts::ExceptionHandlerVector original_handlers_;
   struct sigaction old_action_ = {};
   internal::InProcessHandler in_process_handler_;
-  internal::IOSSystemDataCollector system_data_;
+  static CrashHandler* instance_;
+  std::atomic<bool> mach_handler_running_ = false;
   InitializationStateDcheck initialized_;
 };
+
+CrashHandler* CrashHandler::instance_ = nullptr;
 
 }  // namespace
 
@@ -310,10 +414,11 @@ CrashpadClient::~CrashpadClient() {}
 bool CrashpadClient::StartCrashpadInProcessHandler(
     const base::FilePath& database,
     const std::string& url,
-    const std::map<std::string, std::string>& annotations) {
+    const std::map<std::string, std::string>& annotations,
+    ProcessPendingReportsObservationCallback callback) {
   CrashHandler* crash_handler = CrashHandler::Get();
   DCHECK(crash_handler);
-  return crash_handler->Initialize(database, url, annotations);
+  return crash_handler->Initialize(database, url, annotations, callback);
 }
 
 // static
@@ -362,6 +467,24 @@ void CrashpadClient::DumpWithoutCrashAndDeferProcessingAtPath(
   CrashHandler* crash_handler = CrashHandler::Get();
   DCHECK(crash_handler);
   crash_handler->DumpWithoutCrashAtPath(context, path);
+}
+
+void CrashpadClient::ResetForTesting() {
+  CrashHandler* crash_handler = CrashHandler::Get();
+  DCHECK(crash_handler);
+  crash_handler->ResetForTesting();
+}
+
+void CrashpadClient::SetMachExceptionCallbackForTesting(void (*callback)()) {
+  CrashHandler* crash_handler = CrashHandler::Get();
+  DCHECK(crash_handler);
+  crash_handler->SetMachExceptionCallbackForTesting(callback);
+}
+
+uint64_t CrashpadClient::GetThreadIdForTesting() {
+  CrashHandler* crash_handler = CrashHandler::Get();
+  DCHECK(crash_handler);
+  return crash_handler->GetThreadIdForTesting();
 }
 
 }  // namespace crashpad

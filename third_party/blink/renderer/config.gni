@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -23,7 +23,7 @@ declare_args() {
 declare_args() {
   # Format the generated files to improve the code readability.  Apply clang-
   # format, gn format, etc. to the generated files if possible.
-  blink_enable_generated_code_formatting = true
+  blink_enable_generated_code_formatting = false
 
   # How many symbols to include in the build of blink. This affects
   # the performance of the build since the symbols are large and dealing with
@@ -46,7 +46,7 @@ declare_args() {
   use_webaudio_ffmpeg = !is_mac && !is_android && !use_webaudio_pffft
 
   # If true, the experimental renderer extensions library will be used.
-  use_blink_extensions_chromeos = false
+  use_blink_extensions_chromeos = is_chromeos
 }
 
 # feature_defines_list ---------------------------------------------------------

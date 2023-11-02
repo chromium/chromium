@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@ namespace autofill_assistant {
 // Defines a field that is defined as required in an Autofill action.
 struct RequiredField {
  public:
-  enum FieldValueStatus { UNKNOWN, EMPTY, NOT_EMPTY };
+  enum class FieldValueStatus { kUnknown, kEmpty, kNotEmpty };
 
   ~RequiredField();
   RequiredField();
@@ -33,7 +33,7 @@ struct RequiredField {
   RequiredFieldProto proto;
 
   // Defines whether the field is currently considered to be filled or not.
-  FieldValueStatus status = UNKNOWN;
+  FieldValueStatus status = FieldValueStatus::kUnknown;
 };
 
 }  // namespace autofill_assistant

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 
 #include "base/callback_helpers.h"
 #include "content/browser/picture_in_picture/picture_in_picture_service_impl.h"
-#include "content/browser/picture_in_picture/picture_in_picture_window_controller_impl.h"
+#include "content/browser/picture_in_picture/video_picture_in_picture_window_controller_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 
 namespace content {
@@ -45,7 +45,7 @@ void PictureInPictureSession::Update(
     const gfx::Size& natural_size,
     bool show_play_pause_button) {
   player_id_ =
-      MediaPlayerId(service_->render_frame_host()->GetGlobalId(), player_id);
+      MediaPlayerId(service_->render_frame_host().GetGlobalId(), player_id);
 
   media_player_remote_.reset();
   media_player_remote_.Bind(std::move(player_remote));
@@ -113,11 +113,12 @@ void PictureInPictureSession::OnConnectionError() {
 
 WebContentsImpl* PictureInPictureSession::GetWebContentsImpl() {
   return static_cast<WebContentsImpl*>(
-      WebContents::FromRenderFrameHost(service_->render_frame_host()));
+      WebContents::FromRenderFrameHost(&service_->render_frame_host()));
 }
 
-PictureInPictureWindowControllerImpl& PictureInPictureSession::GetController() {
-  return *PictureInPictureWindowControllerImpl::GetOrCreateForWebContents(
+VideoPictureInPictureWindowControllerImpl&
+PictureInPictureSession::GetController() {
+  return *VideoPictureInPictureWindowControllerImpl::GetOrCreateForWebContents(
       GetWebContentsImpl());
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,11 +11,11 @@
 #include "base/observer_list.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
+#include "base/time/time.h"
 #include "remoting/proto/audio.pb.h"
 #include "remoting/protocol/audio_source.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 static const int kChannels = 2;
 static const int kBytesPerSample = 2;
@@ -52,27 +52,27 @@ class WebrtcAudioSourceAdapter::Core {
   base::ObserverList<webrtc::AudioTrackSinkInterface>::Unchecked audio_sinks_;
   base::Lock audio_sinks_lock_;
 
-  base::ThreadChecker thread_checker_;
+  THREAD_CHECKER(thread_checker_);
 };
 
 WebrtcAudioSourceAdapter::Core::Core() {
-  thread_checker_.DetachFromThread();
+  DETACH_FROM_THREAD(thread_checker_);
 }
 
 WebrtcAudioSourceAdapter::Core::~Core() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 }
 
 void WebrtcAudioSourceAdapter::Core::Start(
     std::unique_ptr<AudioSource> audio_source) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   audio_source_ = std::move(audio_source);
   audio_source_->Start(
       base::BindRepeating(&Core::OnAudioPacket, base::Unretained(this)));
 }
 
 void WebrtcAudioSourceAdapter::Core::Pause(bool pause) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   paused_ = pause;
 }
 
@@ -92,7 +92,7 @@ void WebrtcAudioSourceAdapter::Core::RemoveSink(
 
 void WebrtcAudioSourceAdapter::Core::OnAudioPacket(
     std::unique_ptr<AudioPacket> packet) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (paused_)
     return;
@@ -192,5 +192,4 @@ void WebrtcAudioSourceAdapter::RegisterObserver(
 void WebrtcAudioSourceAdapter::UnregisterObserver(
     webrtc::ObserverInterface* observer) {}
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

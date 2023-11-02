@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -50,9 +50,9 @@ void WebIDBCursor::Advance(uint32_t count,
   IndexedDBDispatcher::ResetCursorPrefetchCaches(transaction_id_, this);
 
   callbacks->SetState(weak_factory_.GetWeakPtr(), transaction_id_);
-  cursor_->Advance(
-      count, WTF::Bind(&WebIDBCursor::AdvanceCallback, WTF::Unretained(this),
-                       std::move(callbacks)));
+  cursor_->Advance(count,
+                   WTF::BindOnce(&WebIDBCursor::AdvanceCallback,
+                                 WTF::Unretained(this), std::move(callbacks)));
 }
 
 void WebIDBCursor::AdvanceCallback(std::unique_ptr<WebIDBCallbacks> callbacks,
@@ -101,7 +101,7 @@ void WebIDBCursor::CursorContinue(const IDBKey* key,
     // No key(s), so this would qualify for a prefetch.
     ++continue_count_;
 
-    if (!prefetch_keys_.IsEmpty()) {
+    if (!prefetch_keys_.empty()) {
       // We have a prefetch cache, so serve the result from that.
       CachedContinue(callbacks.get());
       return;
@@ -112,9 +112,10 @@ void WebIDBCursor::CursorContinue(const IDBKey* key,
       ++pending_onsuccess_callbacks_;
 
       callbacks->SetState(weak_factory_.GetWeakPtr(), transaction_id_);
-      cursor_->Prefetch(prefetch_amount_,
-                        WTF::Bind(&WebIDBCursor::PrefetchCallback,
-                                  WTF::Unretained(this), std::move(callbacks)));
+      cursor_->Prefetch(
+          prefetch_amount_,
+          WTF::BindOnce(&WebIDBCursor::PrefetchCallback, WTF::Unretained(this),
+                        std::move(callbacks)));
 
       // Increase prefetch_amount_ exponentially.
       prefetch_amount_ *= 2;
@@ -133,8 +134,8 @@ void WebIDBCursor::CursorContinue(const IDBKey* key,
   callbacks->SetState(weak_factory_.GetWeakPtr(), transaction_id_);
   cursor_->CursorContinue(
       IDBKey::Clone(key), IDBKey::Clone(primary_key),
-      WTF::Bind(&WebIDBCursor::CursorContinueCallback, WTF::Unretained(this),
-                std::move(callbacks)));
+      WTF::BindOnce(&WebIDBCursor::CursorContinueCallback,
+                    WTF::Unretained(this), std::move(callbacks)));
 }
 
 void WebIDBCursor::CursorContinueCallback(
@@ -292,7 +293,7 @@ void WebIDBCursor::ResetPrefetchCache() {
   continue_count_ = 0;
   prefetch_amount_ = kMinPrefetchAmount;
 
-  if (prefetch_keys_.IsEmpty()) {
+  if (prefetch_keys_.empty()) {
     // No prefetch cache, so no need to reset the cursor in the back-end.
     return;
   }

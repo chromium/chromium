@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,6 +27,7 @@ void ManifestFetcher::Start(LocalDOMWindow& window,
   request.SetRequestContext(mojom::blink::RequestContextType::MANIFEST);
   request.SetRequestDestination(network::mojom::RequestDestination::kManifest);
   request.SetMode(network::mojom::RequestMode::kCors);
+  request.SetTargetAddressSpace(network::mojom::IPAddressSpace::kUnknown);
   // See https://w3c.github.io/manifest/. Use "include" when use_credentials is
   // true, and "omit" otherwise.
   request.SetCredentialsMode(use_credentials
@@ -64,7 +65,7 @@ void ManifestFetcher::DidReceiveData(const char* data, unsigned length) {
     String encoding = response_.TextEncodingName();
     decoder_ = std::make_unique<TextResourceDecoder>(TextResourceDecoderOptions(
         TextResourceDecoderOptions::kPlainTextContent,
-        encoding.IsEmpty() ? UTF8Encoding() : WTF::TextEncoding(encoding)));
+        encoding.empty() ? UTF8Encoding() : WTF::TextEncoding(encoding)));
   }
 
   data_.Append(decoder_->Decode(data, length));

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <Preference
+        android:fragment="org.chromium.chrome.browser.image_descriptions.ImageDescriptionsSettings"
+        android:key="image_descriptions"
+        android:title="@string/image_descriptions_settings_title" />
+</PreferenceScreen>

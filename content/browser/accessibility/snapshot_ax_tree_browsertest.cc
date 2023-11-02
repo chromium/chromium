@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/fenced_frame/fenced_frame.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -55,8 +56,10 @@ void DumpRolesAndNamesAsText(const ui::AXNode* node,
     *dst += " '" + node->GetStringAttribute(ax::mojom::StringAttribute::kName) +
             "'";
   *dst += "\n";
-  for (size_t i = 0; i < node->GetUnignoredChildCount(); ++i)
-    DumpRolesAndNamesAsText(node->GetUnignoredChildAtIndex(i), indent + 1, dst);
+  for (auto iter = node->UnignoredChildrenBegin();
+       iter != node->UnignoredChildrenEnd(); ++iter) {
+    DumpRolesAndNamesAsText(iter.get(), indent + 1, dst);
+  }
 }
 
 }  // namespace
@@ -102,39 +105,47 @@ IN_PROC_BROWSER_TEST_F(SnapshotAXTreeBrowserTest,
 class SnapshotAXTreeFencedFrameBrowserTest : public SnapshotAXTreeBrowserTest {
  public:
   SnapshotAXTreeFencedFrameBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        blink::features::kFencedFrames, {{"implementation_type", "mparch"}});
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{blink::features::kFencedFrames, {{"implementation_type", "mparch"}}},
+         {features::kPrivacySandboxAdsAPIsOverride, {}}},
+        {/* disabled_features */});
   }
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     SnapshotAXTreeBrowserTest::SetUpOnMainThread();
-    ASSERT_TRUE(embedded_test_server()->Start());
+
+    https_server()->AddDefaultHandlers(GetTestDataFilePath());
+    https_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    SetupCrossSiteRedirector(https_server());
+    ASSERT_TRUE(https_server()->Start());
   }
+
+  net::EmbeddedTestServer* https_server() { return &https_server_; }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
 };
 
 IN_PROC_BROWSER_TEST_F(SnapshotAXTreeFencedFrameBrowserTest,
                        SnapshotAccessibilityTreeFromMultipleFrames) {
   EXPECT_TRUE(NavigateToURL(
-      shell(), embedded_test_server()->GetURL("fencedframe.test",
-                                              "/fenced_frames/basic.html")));
+      shell(), https_server()->GetURL("a.test", "/fenced_frames/basic.html")));
 
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
 
-  RenderFrameHostImpl* primary_rfh = web_contents->GetMainFrame();
+  RenderFrameHostImpl* primary_rfh = web_contents->GetPrimaryMainFrame();
   std::vector<FencedFrame*> fenced_frames = primary_rfh->GetFencedFrames();
   EXPECT_EQ(1u, fenced_frames.size());
 
-  const GURL fenced_frame_url = embedded_test_server()->GetURL(
-      "fencedframe.test", "/fenced_frames/title1.html");
+  const GURL fenced_frame_url =
+      https_server()->GetURL("a.test", "/fenced_frames/title1.html");
   EXPECT_TRUE(ExecJs(
       primary_rfh, JsReplace("document.querySelector('fencedframe').src = $1;",
                              fenced_frame_url.spec())));
-  fenced_frames.at(0)->WaitForDidStopLoadingForTesting();
+  EXPECT_TRUE(WaitForLoadStop(web_contents));
 
   AXTreeSnapshotWaiter waiter;
   web_contents->RequestAXTreeSnapshot(

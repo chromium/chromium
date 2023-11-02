@@ -1,4 +1,4 @@
-// Copyright (c) 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,25 @@
 
 #include <string>
 
+#include "base/callback.h"
+#include "base/memory/raw_ptr.h"
+
 namespace captions {
 
 class CaptionBubble;
 class CaptionBubbleContext;
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum CaptionBubbleErrorType {
+  kGeneric = 0,
+  kMediaFoundationRendererUnsupported = 1,
+  kMaxValue = kMediaFoundationRendererUnsupported
+};
+
+using OnErrorClickedCallback = base::RepeatingCallback<void()>;
+using OnDoNotShowAgainClickedCallback =
+    base::RepeatingCallback<void(CaptionBubbleErrorType, bool)>;
 
 ///////////////////////////////////////////////////////////////////////////////
 // Caption Bubble Model
@@ -51,7 +66,9 @@ class CaptionBubbleModel {
   void CommitPartialText();
 
   // Set that the bubble has an error and alert the observer.
-  void OnError();
+  void OnError(CaptionBubbleErrorType error_type,
+               OnErrorClickedCallback error_clicked_callback,
+               OnDoNotShowAgainClickedCallback error_silenced_callback);
 
   // Mark the bubble as closed, clear the partial and final text, and alert the
   // observer.
@@ -65,6 +82,7 @@ class CaptionBubbleModel {
 
   bool IsClosed() const { return is_closed_; }
   bool HasError() const { return has_error_; }
+  CaptionBubbleErrorType ErrorType() const { return error_type_; }
   std::string GetFullText() const { return final_text_ + partial_text_; }
   CaptionBubbleContext* GetContext() { return context_; }
 
@@ -78,13 +96,16 @@ class CaptionBubbleModel {
   // Whether the bubble has been closed by the user.
   bool is_closed_ = false;
 
-  // Whether an error should be displayed one the bubble.
+  // Whether an error should be displayed in the bubble.
   bool has_error_ = false;
 
-  // The CaptionBubble observing changes to this model.
-  CaptionBubble* observer_ = nullptr;
+  // The most recent error type encountered.
+  CaptionBubbleErrorType error_type_ = CaptionBubbleErrorType::kGeneric;
 
-  CaptionBubbleContext* const context_;
+  // The CaptionBubble observing changes to this model.
+  raw_ptr<CaptionBubble> observer_ = nullptr;
+
+  const raw_ptr<CaptionBubbleContext> context_;
 };
 
 }  // namespace captions

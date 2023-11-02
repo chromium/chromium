@@ -30,7 +30,9 @@
 <translation id="1189258430971676908">Indawo yokuphrakthiza: Uhlu olushona ezansi</translation>
 <translation id="1195238899008218998">Amazwi angemuva</translation>
 <translation id="1197088940767939838">Olintshi</translation>
+<translation id="1198865190323699001">Ukuthinta</translation>
 <translation id="1201402288615127009">Okulandelayo</translation>
+<translation id="1202112913213080585">khansela</translation>
 <translation id="1206619573307042055">marquee</translation>
 <translation id="1207086294218137981">Asikho isihloko esilandelayo seleveli engu-4</translation>
 <translation id="1212770441379271564">Izinqamuleli ezimbalwa ezilandelayo akuyona imiyalo ye-ChromeVox, kodwa zisengasebenziseka kakhulu ukuze kutholwe okuningi kusukela ku-Chrome.
@@ -42,6 +44,7 @@
     Ukuze uvule imenyu yesiphequluli se-Chrome, cindezela ku-Alt+F.</translation>
 <translation id="1213216066620407844">I-ChromeVox - Inikeza izwi ku-Chrome</translation>
 <translation id="1225969361094801578">Okumpunga kakhulu kwe-slate</translation>
+<translation id="122928249241119550">hambisa emushweni odlule</translation>
 <translation id="1230503547248836149">Ukuqala kokukhethwa</translation>
 <translation id="1236794971743289975">Inothi lokugcina</translation>
 <translation id="1237797094773582699">Ngokufanayo, ukuswayipha kusuka ngakwesokudla kuya ngakwesokundele ngeminwe emibili kungase kusetshenziselwe ukuya esigabeni sangaphambilini. Izame manje!</translation>
@@ -135,9 +138,9 @@
 <translation id="1812527064848182527">ukwakheka kwezwe</translation>
 <translation id="1829244130665387512">Thola kukhasi</translation>
 <translation id="1834891354138622109">Ikholomu</translation>
-<translation id="1845944666972354496">Thepha kabili ukuze wenze kusebenze</translation>
 <translation id="1846771122725914429">Isiboniso se-Bluetooth ye-Braille</translation>
 <translation id="1852018405765032699">Ukuthepha isikrini ngemnwe emine kuzovula futhi kuvale amamenyu we-ChromeVox. La mamenyu aqukethe ulwazi oluwusizo mayelana nemiyalo nezinqamuleli. Lapho amamenyu asevuliwe, ungaswayipha ngomunwe owodwa ukuze uzulazule ezintweni, futhi uthephe kabili ukuze usebenzise izinto. Ukuze uqhubeke, thepha isikrini ngeminwe emine.</translation>
+<translation id="1864430479908918647">Cindezela u-Search+Space</translation>
 <translation id="1865601187525349519">Ukuphela kombhalo</translation>
 <translation id="1876229593313240038">i-doc</translation>
 <translation id="1902396333223336119">Iseli</translation>
@@ -212,6 +215,7 @@
 <translation id="2435422727584637732">Okuluhlaza okwesibhakabhaka kwe-Dodger</translation>
 <translation id="2438712309510062123">Phakamisa</translation>
 <translation id="2450814015951372393">Thikha ibhokisi</translation>
+<translation id="2450992626945324272">hambisa emushweni olandelayo</translation>
 <translation id="2461822463642141190">Okwamanje</translation>
 <translation id="2462626033734746142">Iqembu lenkinobho yerediyo</translation>
 <translation id="2467741090055146971">yekisa ukukhetha</translation>
@@ -234,6 +238,7 @@
 <translation id="2619344480613750862">Ungahamba naphakathi kwezigaba zesikrini. Ngokwesibonelo, ungahamba phakathi kwesiqalisi, ishalufu, namathebhu akho e-Chrome. Ukuze uye esigabeni esilandelayo, swayipha kusuka kwesobunxele kuya kwesokudla ngeminwe emine. Kuzame manje ukuze uqhubeke.</translation>
 <translation id="2624431853467395961">Vula imodi yokufunda</translation>
 <translation id="2626530649491650971">iyachofozeka</translation>
+<translation id="263637551280112393">Cindezela ku-Search+Shift+Space</translation>
 <translation id="2637227747952042642">Izibalo</translation>
 <translation id="2638785836053527382">Ukulanda kuqaliswe kabusha ku-<ph name="FILE_NAME" /></translation>
 <translation id="2639750663247012216">Isilungisi se-ChromeVox</translation>
@@ -389,7 +394,9 @@
 <translation id="3492609944033322585">{COUNT,plural, =1{ubakaki ongakwesokudla}one{# abakaki abangakwesokudla}other{# abakaki abangakwesokudla}}</translation>
 <translation id="3494946239022273294">I-mnuitm</translation>
 <translation id="3497063866483065785">{COUNT,plural, =1{uphawu lombuzo}one{# izimpawu zombuzo}other{# izimpawu zombuzo}}</translation>
+<translation id="3505359110822747654">Amamenyu e-ChromeVox ayagoqwa</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{ikharethi}one{# amakharethi}other{# amakharethi}}</translation>
+<translation id="3518600448524470129">{COUNT,plural, =1{ichashazi elimhlophe}one{amachashazi amhlophe angu-#}other{amachashazi amhlophe angu-#}}</translation>
 <translation id="352577523970648069">Inkambu yombhalo ohlelekayo</translation>
 <translation id="3538907380453898475">i-dscrplst</translation>
 <translation id="3549141990712742152">sika<ph name="TEXT" />.</translation>
@@ -486,6 +493,7 @@
 <translation id="42164919740161077">I-Cadet Blue</translation>
 <translation id="4217571870635786043">Ukuthola</translation>
 <translation id="4218529045364428769">{COUNT,plural, =1{udwi}one{# odwi}other{# odwi}}</translation>
+<translation id="4220024144662591089">khetha kusuka ku-<ph name="START_PHRASE" /> kuya ku-<ph name="END_PHRASE" /></translation>
 <translation id="4221012616705981690">Alikho uhlu oludlule</translation>
 <translation id="4225355998815256469">Okuvela Ezilawulini</translation>
 <translation id="4230834257931120629">I-Light Slate Grey</translation>
@@ -504,6 +512,7 @@
 <translation id="4300318234632215983">Memezela i-URL engemuva kwesixhumanisi</translation>
 <translation id="4322625298640984693">I-Sienna</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{ichashazi}=3{kusaqhubeka}one{# amachashazi}other{# amachashazi}}</translation>
+<translation id="4352022650330571548">thayipha <ph name="PHRASE" /></translation>
 <translation id="4372435075475052704">ncane:<ph name="X" /></translation>
 <translation id="4372705107434148843">Misa inkulumo</translation>
 <translation id="4376316291247992553">Buka izithombe njenge-Braille</translation>
@@ -521,6 +530,7 @@
 <translation id="4479068155583208887">I-Fire Brick</translation>
 <translation id="4482330759234983253">Ithebula langaphambilini</translation>
 <translation id="4491109536499578614">Isithombe</translation>
+<translation id="4507332368061453500">Chofoza isikhathi eside entweni yamanje</translation>
 <translation id="4511186779140817916">I-Blanched Almond</translation>
 <translation id="451510441928265982">Asikho isihloko esedlule seleveli engu-2</translation>
 <translation id="4515799157838123044">Okuqukethwe kwesithunzi sangemuva</translation>
@@ -533,6 +543,7 @@
 <translation id="4601367666219428522">tbl <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">Iziba ukucindezelwa kokhiye olandelayo</translation>
 <translation id="4623097797855662355">I-Colophon</translation>
+<translation id="4624970070706497034">I-TalkBack ayisakunikezi ukwenza ngendlela oyifisayo kuma-Chromebook. Usangakwazi ukuyisebenzisa, kodwa sebenzisa izinqamuleli zekhibhodi ezenzakalelayo ye-TalkBack. Cindezela okuthi Search+A, bese uthi K ukuze ubone izinqamuleli ezitholakalayo. Uma usafuna ukusebenzisa i-TalkBack, cindezela umyalo futhi.</translation>
 <translation id="463135993322337640">Cindezela i-ChromeVox o, n ukuze uthole okusha</translation>
 <translation id="4649220074413114917">Ukuthepha isikrini ngeminwe emibili kungasetshenziselwa ukuvima noma iyiphi inkulumo yamanje. Lokhu kuwusizo uma ufuna i-ChromeVox ifunde okuthile. Ukuze uqhubeke, thepha isikrini ngeminwe emibili.</translation>
 <translation id="4660783501463101648">Okwakudala kususiwe. Ukushintsha kwekhibhodi emuva ku-ChromeVox yakudala kususiwe.</translation>
@@ -588,7 +599,6 @@
 <translation id="4993152509206108683">Linganisela amaphesenti angu-<ph name="PERCENT" /></translation>
 <translation id="4994420463726586413">Memezela isimo sebhethri samanje</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, inkinobho yerediyo ikhethiwe</translation>
-<translation id="5011664330025416377">Cindezela okuthi Sesha+Isikhala ukuze wenze kusebenze</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, inkinobho yerediyo yento yemenyu ikhethiwe</translation>
 <translation id="5020651427400641814">Nika amandla ukungena kwenkulumo</translation>
 <translation id="5041394372352067729">Hambisa isibonisi se-braille ngaphezulu kwekhasi</translation>
@@ -615,7 +625,6 @@
 <translation id="5170206230005240598">Amagama-ncazo we-Braille anikwe amandla</translation>
 <translation id="5183440668879371625">Umugqa odlule we-braille</translation>
 <translation id="5189244881767082992">Umugqa</translation>
-<translation id="5234747236692380506">thayipha <ph name="TEXT" /></translation>
 <translation id="5263034204789987535">I-Cornsilk</translation>
 <translation id="5263344797180442561">h2</translation>
 <translation id="528468243742722775">Qeda</translation>
@@ -642,6 +651,7 @@
 <translation id="5355014376930441909">Asikho isigaba esilandelayo</translation>
 <translation id="5368000168321181111">Ama-Earcon avaliwe</translation>
 <translation id="5368505757342402527">Landa okungu-<ph name="PROGRESS" />% kuqediwe ku-<ph name="FILE_NAME" />. Cishe okungu-<ph name="TIME" /> <ph name="UNITS" /> okusele.</translation>
+<translation id="5381388086899614489">ukuchofoza isikhathi eside</translation>
 <translation id="5400836586163650660">Okumpunga</translation>
 <translation id="5402367795255837559">I-Braille</translation>
 <translation id="5402791055281059602">Isexwayiso se-modal</translation>
@@ -663,6 +673,7 @@
 <translation id="5522423213731659107">Umumo osheshayo uqedile!</translation>
 <translation id="5534303576632885660">i-hdr</translation>
 <translation id="5539820223028224601">I-Gainsboro</translation>
+<translation id="554893713779400387">Guqula ukuthola</translation>
 <translation id="5549179427201066174">Vula noma uvale ukuphendula komsindo (ama-earcorn)</translation>
 <translation id="556042886152191864">Inkinobho</translation>
 <translation id="5561345396546889625">Uhlu olulandelayo</translation>
@@ -673,6 +684,7 @@
 <translation id="5597170376237141345">Ibhokisi lokuhlola elilandelayo</translation>
 <translation id="5598905979683743333"><ph name="NAME" />, inkinobho yerediyo iyekise ukukhethwa</translation>
 <translation id="5601172225407283979">Yenza isenzo esizenzakalelayo</translation>
+<translation id="5604302400025591178">{COUNT,plural, =1{ichashazi eliyisikwele}one{amachashazi ayisikwele angu-#}other{amachashazi ayisikwele angu-#}}</translation>
 <translation id="5608798115546226984">Ukuqedelelwa okuzenzakalelayo ngaphakathi kolayini</translation>
 <translation id="5616029807486814372">Isifundo esilandelayo</translation>
 <translation id="561939826962581046">isikhathi</translation>
@@ -680,6 +692,8 @@
 <translation id="5623842676595125836">Ilogi</translation>
 <translation id="5628125749885014029">h4</translation>
 <translation id="5632083598315326067">Isimbuli yamagrafikhi</translation>
+<translation id="5648939288050772726">Halala! Usufunde ukubaluleka kokusebenzisa i-ChromeVox ngempumelelo. Khumbula ukuthi ungavula imenyu yomyalo ye-ChromeVox nganoma yisiphi isikhahti ngokucindezela Sesha+Isikhathi. Ukuze ufunde nakabanzi nge-ChromeVox ne-ChromeOS, vakashela lezi zindaba ezilandelayo.
+    Uma usuqedile ngalesi sifundo, sebenzisa i-ChromeVox ukuzulela kwinkinobho Yokuvala bese uyayichofoza.</translation>
 <translation id="5653397561111110475">Sebenzisa izici zokufinyelela isikrini esithintwayo se-Chromebook</translation>
 <translation id="5655682562155942719">Yeqa imiyalo</translation>
 <translation id="56637627897541303">Indawo yombhalo</translation>
@@ -750,8 +764,10 @@
 <translation id="6100239002225743044">Hamba phezulu ngomugqa owodwa</translation>
 <translation id="6118126368611144850">Izinhlelo zokusebenza ze-Android ze-Chrome. Uma une-Google Play Isitolo kudivayisi yakho, thola ukukhetha ku-ChromeVox ngezinhlelo zokusebenza ze-Android. Zama usekelo lwesilingo ngokulanda i-Google Chrome Canary kusuka ku-Google Play Isitolo.</translation>
 <translation id="611827076493383239">vtd</translation>
+<translation id="6119846243427417423">yenza kusebenze</translation>
 <translation id="6122013438240733403">i-btn</translation>
 <translation id="6132506484792346370">Ibhokisi lohlu noma lenhlanganyela</translation>
+<translation id="613344593214611552">sula umusho wangaphambilini</translation>
 <translation id="6142308968191113180">Isihloko esingu-4</translation>
 <translation id="6150023170003443621">Okuluhlaza okotshani okuphuzi</translation>
 <translation id="6158882249329863701">umugqa <ph name="TABLECELLROWINDEX" /> ikholomu <ph name="TABLECELLCOLUMNINDEX" /></translation>
@@ -761,9 +777,11 @@
 <translation id="6186305613600865047">Yeqela ngaphansi kwekhasi</translation>
 <translation id="6187190722927752226">I-Aquamarine</translation>
 <translation id="6197361807490522975">Okuluhlaza Okwesibhakabhaka Okumnyama</translation>
+<translation id="6218813441317556731">shintsha i-<ph name="DELETE_PHRASE" /> nge-<ph name="INSERT_PHRASE" /></translation>
 <translation id="6236061028292614533">Isihloko esilandelayo</translation>
 <translation id="6254901459154107917">Indawo elandelayo engahleleka yombhalo</translation>
 <translation id="6259464875943891919">Iphume ku-<ph name="TYPE" />.</translation>
+<translation id="6280088282605782512">Thepha kabili</translation>
 <translation id="6282062888058716985">ukuzulazula</translation>
 <translation id="6295699829709583154">Okhiye Ababalulekile: Sesha</translation>
 <translation id="6305702903308659374">Dala ngevolomu evamile uma i-ChromeVox ikhuluma</translation>
@@ -934,6 +952,7 @@
 <translation id="7533226154149229506">I-Light Golden Rod Yellow</translation>
 <translation id="7543255924852002459">Ilebula yokulahla</translation>
 <translation id="7552432549459840808">Izinqamuleli ezinosizo ze-Chrome</translation>
+<translation id="7553679324939294712">Faka u-<ph name="INSERT_PHRASE" /> ngaphambili kuka-<ph name="BEFORE_PHRASE" /></translation>
 <translation id="7569983096843329377">Mnyama</translation>
 <translation id="7579911500627256166">ichashazi elingu-<ph name="DOT" /></translation>
 <translation id="7592060599656252486">Okuthile</translation>
@@ -957,16 +976,16 @@
 <translation id="7684431668231950609">Hlela umbhalo, ukufakwa kwe-URL</translation>
 <translation id="7685589220304187312">tlbar</translation>
 <translation id="7693840228159394336">Inkinobho yerediyo yangaphambilini</translation>
+<translation id="7696631298608145306">hambisa egameni elilandelayo</translation>
 <translation id="7701040980221191251">Lutho</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7713139339518499741">Izwi elivamile</translation>
 <translation id="7714340021005120797">Alikho ibhokisi lokuhlangene elilandelayo</translation>
-<translation id="772146615414628379">Halala! Usufunde ukubaluleka kokusebenzisa i-ChromeVox ngempumelelo. Khumbula ukuthi ungavula imenyu yomyalo ye-ChromeVox nganoma yisiphi isikhahti ngokucindezela Sesha+Isikhathi. Ukuze ufunde nakabanzi nge-ChromeVox ne-Chrome OS, vakashela lama athikili alandelayo.
-    Uma usuqedile ngalesi sifundo, sebenzisa i-ChromeVox ukuzulela kwinkinobho Yokuvala bese uyayichofoza.</translation>
 <translation id="7724603315864178912">Sika</translation>
 <translation id="7731785449856576010">Ayikho iwijethi yemidiya elandelayo</translation>
 <translation id="7735498529470878067">Ukuhlola ngokuthinta kungakusiza uthole inzwa esheshayo yalokho okusesikrinini.</translation>
 <translation id="773906353055481349">Cindezela okuthi Sesha+Ctrl+Alt nemicibisholo ukuze uzulazule ngeseli</translation>
+<translation id="7746976083433980639"><ph name="ACTION" /> ukuya kokuthi <ph name="LABEL" /></translation>
 <translation id="7763537600611320912">Ukulandwa kuqalwe ku-<ph name="FILE_NAME" /></translation>
 <translation id="7768784765476638775">Khetha ukuze ukhulume</translation>
 <translation id="7776293189010177726">Vula amamenyu e-ChromeVox</translation>
@@ -1066,6 +1085,7 @@
 <translation id="8455868257606149352">Ubukhulu obungu-<ph name="X" /></translation>
 <translation id="84575901236241018">inokhiye wokufinyelela, <ph name="KEY" /></translation>
 <translation id="8463645336674919227">Ukushiya iphutha legrama</translation>
+<translation id="8465573210279050749">Sula igama langaphambilini</translation>
 <translation id="847040613207937740">Alikho ibhokisi lokuhlola elilandelayo</translation>
 <translation id="8473540203671727883">Khuluma umbhalo ngaphansi kwegundane</translation>
 <translation id="8476408756881832830">Misa kancane ukudlala uma i-ChromeVox ikhuluma</translation>
@@ -1096,11 +1116,13 @@
 <translation id="8659501358298941449">Izinhla ezishona ezansi</translation>
 <translation id="8666733765751421568"><ph name="TYPE" /> ukuphela</translation>
 <translation id="867187640362843212">Isihloko 5</translation>
+<translation id="8690400660839620419">{COUNT,plural, =1{}one{ileveli yesidleke engu-#}other{ileveli yesidleke engu-#}}</translation>
 <translation id="8693391540059827073">Isizini yami eyintandokazi</translation>
 <translation id="8696284982970258155">I-HoneyDew</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{ipayipi}one{# amapayipi amile}other{# amapayipi amile}}</translation>
 <translation id="8741370088760768424">Icebiso: Cindezela okuthi Sesha + Isikhala ukwenza into yamanje isebenze.</translation>
 <translation id="8743786158317878347">faka okuqukethwe okunesakhiwo, okufana namathebula</translation>
+<translation id="8746846427395705317">hambisa egameni langaphambilini</translation>
 <translation id="8747966237988593539">Uhlu oluhleliwe</translation>
 <translation id="8749988712346667988">Isiliva</translation>
 <translation id="875769700429317857">Ukulanda kuqediwe kwe-<ph name="FILE_NAME" /></translation>
@@ -1128,6 +1150,7 @@
 <translation id="8970172509886453271">Asikho isigaba esedlule</translation>
 <translation id="89720367119469899">I-Escape</translation>
 <translation id="8978496506222343566">I-tltip</translation>
+<translation id="898089897833732740">Sula i-<ph name="PHRASE" /></translation>
 <translation id="8986362086234534611">Khohlwa</translation>
 <translation id="8989104346085848538">Ukuze umise noma iyiphi inkulumo yamanje ye-ChromeVox, cindezela ukhiye we-Control.</translation>
 <translation id="8993737615451556423">Ihlinzeka izilawuli zokusheshisa, ukulengisa, nokuphumuza izwi lokufunda</translation>
@@ -1163,6 +1186,7 @@
 <translation id="9223032053830369045">Okubomvu ngokumnyama</translation>
 <translation id="923331726185079994">I-ChromeVox ibuyekeziwe</translation>
 <translation id="93384979447910801">Okuluhlaza kakhulu kolwandle</translation>
+<translation id="937605981140327129">I-TalkBack ayifakiwe okwamanje. Sicela ufake i-Android AccessibilitySuite nge-Play Store bese uyazama futhi.</translation>
 <translation id="948171205378458592">Yehlisa isilinganiselo senkulumo</translation>
 <translation id="957570623732056069">Swayiphela kwesobunxele noma kwesokudla ngomunwe owodwa ukuze uzulazule kulesi sifundo</translation>
 <translation id="958854023026327378">Swayiphela umunwe owodwa phansi</translation>

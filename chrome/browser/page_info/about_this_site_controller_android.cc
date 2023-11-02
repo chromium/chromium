@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,16 +6,22 @@
 
 #include <jni.h>
 #include "base/android/jni_array.h"
-#include "base/android/jni_string.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/page_info/about_this_site_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/page_info/about_this_site_service.h"
-#include "components/page_info/proto/about_this_site_metadata.pb.h"
-#include "components/ukm/content/source_url_recorder.h"
+#include "components/page_info/core/about_this_site_service.h"
+#include "components/page_info/core/features.h"
+#include "components/page_info/core/proto/about_this_site_metadata.pb.h"
 #include "content/public/browser/android/browser_context_handle.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "url/android/gurl_android.h"
+
+static jboolean JNI_PageInfoAboutThisSiteController_IsFeatureEnabled(
+    JNIEnv* env) {
+  return page_info::IsAboutThisSiteFeatureEnabled(
+      g_browser_process->GetApplicationLocale());
+}
 
 static base::android::ScopedJavaLocalRef<jbyteArray>
 JNI_PageInfoAboutThisSiteController_GetSiteInfo(
@@ -29,8 +35,9 @@ JNI_PageInfoAboutThisSiteController_GetSiteInfo(
   if (!service)
     return nullptr;
   auto url = url::GURLAndroid::ToNativeGURL(env, j_url);
-  auto source_id = ukm::GetSourceIdForWebContentsDocument(
-      content::WebContents::FromJavaWebContents(j_webContents));
+  auto source_id = content::WebContents::FromJavaWebContents(j_webContents)
+                       ->GetPrimaryMainFrame()
+                       ->GetPageUkmSourceId();
   auto info = service->GetAboutThisSiteInfo(*url, source_id);
   if (!info)
     return nullptr;
@@ -42,4 +49,10 @@ JNI_PageInfoAboutThisSiteController_GetSiteInfo(
   std::vector<uint8_t> data(size);
   info->SerializeToArray(data.data(), size);
   return base::android::ToJavaByteArray(env, data.data(), size);
+}
+
+static void JNI_PageInfoAboutThisSiteController_OnAboutThisSiteRowClicked(
+    JNIEnv* env,
+    jboolean j_withDescription) {
+  page_info::AboutThisSiteService::OnAboutThisSiteRowClicked(j_withDescription);
 }

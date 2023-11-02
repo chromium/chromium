@@ -14,20 +14,14 @@
     Cast <ph name="HOST_NAME">$1<ex>google.com</ex></ph>
   </message>
   <message name="IDS_MEDIA_ROUTER_DESKTOP_MIRROR_CAST_MODE" desc="Title for the desktop mirror cast mode. This is shown as a dropdown option, and if selected, also appears as the header of a list of devices.">
-    Cast desktop
+    Cast screen
   </message>
   <message name="IDS_MEDIA_ROUTER_TAB_MIRROR_CAST_MODE" desc="Title for the tab mirror cast mode. This is shown as a dropdown option, and if selected, also appears as the header of a list of devices.">
     Cast tab
   </message>
-  <message name="IDS_MEDIA_ROUTER_LOCAL_FILE_CAST_MODE" desc="Title for choosing a file to cast. This is shown as a dropdown option.">
-    Cast file
-  </message>
 
   <!-- Cast Mode Picker -->
-  <message name="IDS_MEDIA_ROUTER_CAST_LOCAL_MEDIA_TITLE" desc="Title of the local file cast mode after a local file is selected for casting.">
-    Cast <ph name="FILE_NAME">$1<ex>my_media.mp3</ex></ph>
-  </message>
-  <message name="IDS_MEDIA_ROUTER_ALTERNATIVE_SOURCES_BUTTON" desc="Label for the button which, on click, shows a list of Cast sources (tab, desktop, local media file).">
+  <message name="IDS_MEDIA_ROUTER_ALTERNATIVE_SOURCES_BUTTON" desc="Label for the button which, on click, shows a list of Cast sources (tab, desktop).">
     Sources
   </message>
 
@@ -41,9 +35,6 @@
   <message name="IDS_MEDIA_ROUTER_ALWAYS_SHOW_TOOLBAR_ACTION" desc="Title of a menu item which, on click, toggles whether or not the Media Router action icon is always shown. When toggled off, the icon is shown only when the Media Router dialog is open or if there is an active local Media Route or an issue.">
     Always show icon
   </message>
-  <message name="IDS_MEDIA_ROUTER_REPORT_ISSUE" desc="Title of a menu item which, on click, opens a page to give feedback or report an issue with Chromecast integration.">
-    Report an issue
-  </message>
   <message name="IDS_MEDIA_ROUTER_SHOWN_BY_POLICY" desc="Title of a menu item, which indicates that the Media Router action icon was added to the toolbar by the policy enabled by the user's administrator.">
     Added by your administrator
   </message>
@@ -52,23 +43,20 @@
   </message>
 
   <!-- Issue Messaging -->
-  <message name="IDS_MEDIA_ROUTER_ISSUE_CREATE_ROUTE_TIMEOUT" desc="Title of an issue to show when the user attempts to create a route and the Media Router times out while waiting for a route creation response.">
+  <message name="IDS_MEDIA_ROUTER_ISSUE_CREATE_ROUTE_TIMEOUT_WITH_HOSTNAME" desc="Title of an issue to show when the user attempts to cast from a website and it times out while waiting for a cast session to start.">
     Unable to cast <ph name="HOST_NAME">$1<ex>youtube.com</ex></ph>.
+  </message> 
+  <message name="IDS_MEDIA_ROUTER_ISSUE_CREATE_ROUTE_TIMEOUT" desc="Title of a generic issue to show when the user attempts to create a route and it times out while waiting for a cast session to start.">
+    Unable to cast.
   </message>
-  <message name="IDS_MEDIA_ROUTER_ISSUE_CREATE_ROUTE_TIMEOUT_FOR_DESKTOP" desc="Title of an issue to show when the user attempts to create a route to mirror the desktop and the Media Router times out while waiting for a route creation response.">
-    Unable to cast desktop.  Check to see if you confirmed the prompt to start sharing your screen.
+  <message name="IDS_MEDIA_ROUTER_ISSUE_CREATE_ROUTE_TIMEOUT_FOR_DESKTOP" desc="Title of an issue to show when the user attempts to create a route to mirror the desktop and it times out while waiting for a cast session to start.">
+    Unable to cast screen.  Check to see if you confirmed the prompt to start sharing your screen.
   </message>
-  <message name="IDS_MEDIA_ROUTER_ISSUE_CREATE_ROUTE_TIMEOUT_FOR_TAB" desc="Title of an issue to show when the user attempts to create a route to mirror a tab and the Media Router times out while waiting for a route creation response.">
+  <message name="IDS_MEDIA_ROUTER_ISSUE_CREATE_ROUTE_TIMEOUT_FOR_TAB" desc="Title of an issue to show when the user attempts to create a route to mirror a tab and it times out while waiting for a cast session to start.">
     Unable to cast tab.
   </message>
   <message name="IDS_MEDIA_ROUTER_ISSUE_UNABLE_TO_CAST_DESKTOP" desc="Title of an issue to show when creating a route for desktop mirroring fails for a reason other than timeout.">
-    Unable to cast desktop.
-  </message>
-  <message name="IDS_MEDIA_ROUTER_ISSUE_FILE_CAST_GENERIC_ERROR" desc="Title of a generic issue to show when a selected file cannot be cast.">
-    Unable to cast file.
-  </message>
-  <message name="IDS_MEDIA_ROUTER_ISSUE_FILE_CAST_ERROR" desc="Title of an issue to show when a selected file cannot be cast, file specified by FILE_NAME.">
-    Unable to cast <ph name="FILE_NAME">$1<ex>my_media.mp3</ex></ph>.
+    Unable to cast screen.
   </message>
   <message name="IDS_MEDIA_ROUTER_ISSUE_TAB_AUDIO_NOT_SUPPORTED" desc="Title of an issue shown when the user is casting a tab, but only its visual content can be cast and not its audio output.">
     Casting tab audio is not supported on this device.
@@ -78,6 +66,19 @@
       Unable to cast your screen. Check the Screen Recording permission in System Preferences.
     </message>
   </if>
+  <message name="IDS_MEDIA_ROUTER_ISSUE_CREATE_ROUTE_USER_PENDING_AUTHORIZATION" desc="Title of a notification shown while waiting for the user to accept or reject the cast request.">
+      Accept Cast request on your <ph name="DEVICE_NAME">$1</ph>.
+  </message>
+  <message name="IDS_MEDIA_ROUTER_ISSUE_CREATE_ROUTE_USER_NOT_ALLOWED" desc="Title of an issue shown when the user rejects the cast request.">
+      Make sure to accept the Cast request on your <ph name="DEVICE_NAME">$1</ph>.
+  </message>
+  <message name="IDS_MEDIA_ROUTER_ISSUE_CREATE_ROUTE_NOTIFICATION_DISABLED" desc="Title of an issue shown when the notifications on the reciever device is disabled.">
+      Make sure notifications are turned on on your <ph name="DEVICE_NAME">$1</ph>.
+  </message>
+  <message name="IDS_MEDIA_ROUTER_ISSUE_FAILED_TO_CAST" desc="Title of an issue shown when cast intialization failed with no clear reason">
+      Failed to cast. Please try again.
+  </message>
+
 
 <!-- Sink List -->
   <message name="IDS_MEDIA_ROUTER_STATUS_LOOKING_FOR_DEVICES" desc="Status text temporarily shown while searching for Cast devices but none have been found.">
@@ -111,19 +112,13 @@
     Available for specific video sites
   </message>
   <message name="IDS_MEDIA_ROUTER_CASTING_DESKTOP" desc="The status text of a Cast device to which we are mirroring the contents of the user's entire screen.">
-    Casting desktop
+    Casting screen
   </message>
   <message name="IDS_MEDIA_ROUTER_CASTING_TAB" desc="The status text of a Cast device to which we are mirroring the contents of a browser tab.">
     Casting tab
   </message>
   <message name="IDS_MEDIA_ROUTER_PRESENTATION_ROUTE_DESCRIPTION" desc="Description shown to indicate that a website is being presented to another display.">
     Presenting (<ph name="PAGE_ORIGIN">$1<ex>example.com</ex></ph>)
-  </message>
-
-  <!-- File Dialog -->
-  <message name="IDS_MEDIA_ROUTER_FILE_DIALOG_AUDIO_VIDEO_FILTER" desc="Label for the drop down menu in the file selection dialog to show only audio and
-video files, instead of all files.">
-    Audio/Video
   </message>
 
   <!-- Media Remoting Dialog -->
@@ -173,7 +168,7 @@ video files, instead of all files.">
     help center<ph name="END_LINK">&lt;/a&gt;</ph>.
   </message>
   <message name="IDS_MEDIA_ROUTER_FEEDBACK_HEADER" desc="Header of the Media Router feedback page.">
-  Tell us what's happening with Google Cast.
+    Tell us what's happening with Google Cast.
   </message>
   <message name="IDS_MEDIA_ROUTER_FEEDBACK_YOUR_ANSWER" desc="Placeholder text for inputs in the feedback form.">
     Your answer
@@ -205,6 +200,12 @@ video files, instead of all files.">
   <message name="IDS_MEDIA_ROUTER_FEEDBACK_ADDITIONAL_COMMENTS" desc="Text for field in feedback form for other comments.">
     Additional comments:
   </message>
+  <message name="IDS_MEDIA_ROUTER_FEEDBACK_ALLOW_CONTACT_BY_EMAIL" desc="Label for a checkbox in a form indicating whether the user is permitting Google to contact them by email.">
+    We may email you for more information or updates
+  </message>
+  <message name="IDS_MEDIA_ROUTER_FEEDBACK_YOUR_EMAIL_ADDRESS" desc="Default text shown in a text input box for the user to enter their email address.">
+    Your email address
+  </message>
   <message name="IDS_MEDIA_ROUTER_FEEDBACK_EMAIL_FIELD" desc="Text for the email field in the feedback form.">
     Email (optional):
   </message>
@@ -223,7 +224,7 @@ video files, instead of all files.">
     Feature Request
   </message>
   <message name="IDS_MEDIA_ROUTER_FEEDBACK_TYPE_PROJECTION_QUALITY" desc="The label of the feedback type for a Projection Quality report.">
-    Tab/Desktop Projection Quality
+    Tab/Screen Projection Quality
   </message>
   <message name="IDS_MEDIA_ROUTER_FEEDBACK_TYPE_DISCOVERY" desc="The label of the feedback type for a Device Discovery report.">
     Device Discovery
@@ -357,6 +358,6 @@ video files, instead of all files.">
   </message>
   <message name="IDS_MEDIA_ROUTER_FEEDBACK_NETWORK_WIRED_PC" desc="Option for describing the network with a wired PC.">
     PC is wired and Chromecast is on Wi-Fi
-  </message> 
+  </message>
 
 </grit-part>

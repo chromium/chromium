@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,9 +42,7 @@ PerIsolateData::PerIsolateData(
   }
 }
 
-PerIsolateData::~PerIsolateData() {
-  isolate_->SetData(kEmbedderNativeGin, NULL);
-}
+PerIsolateData::~PerIsolateData() = default;
 
 PerIsolateData* PerIsolateData::From(Isolate* isolate) {
   return static_cast<PerIsolateData*>(isolate->GetData(kEmbedderNativeGin));

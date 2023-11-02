@@ -35,13 +35,14 @@
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/world_safe_v8_reference.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "v8/include/v8.h"
 
 namespace blink {
+
+class ScriptState;
 
 class CORE_EXPORT ScriptValue final {
   DISALLOW_NEW();
@@ -164,11 +165,11 @@ class CORE_EXPORT ScriptValue final {
 
 namespace WTF {
 
+// VectorTraits for ScriptValue depend entirely on
+// WorldSafeV8Reference<v8::Value>.
 template <>
-struct VectorTraits<blink::ScriptValue> : VectorTraitsBase<blink::ScriptValue> {
-  STATIC_ONLY(VectorTraits);
-  static constexpr bool kCanClearUnusedSlotsWithMemset = true;
-};
+struct VectorTraits<blink::ScriptValue>
+    : VectorTraits<blink::WorldSafeV8Reference<v8::Value>> {};
 
 }  // namespace WTF
 

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,16 +6,10 @@
 #include "base/check_op.h"
 #include "base/notreached.h"
 
-namespace net {
-
-namespace extras {
+namespace net::extras {
 
 PreloadDecoder::BitReader::BitReader(const uint8_t* bytes, size_t num_bits)
-    : bytes_(bytes),
-      num_bits_(num_bits),
-      num_bytes_((num_bits + 7) / 8),
-      current_byte_index_(0),
-      num_bits_used_(8) {}
+    : bytes_(bytes), num_bits_(num_bits), num_bytes_((num_bits + 7) / 8) {}
 
 // Next sets |*out| to the next bit from the input. It returns false if no
 // more bits are available or true otherwise.
@@ -187,7 +181,7 @@ PreloadDecoder::PreloadDecoder(const uint8_t* huffman_tree,
       bit_reader_(trie, trie_bits),
       trie_root_position_(trie_root_position) {}
 
-PreloadDecoder::~PreloadDecoder() {}
+PreloadDecoder::~PreloadDecoder() = default;
 
 bool PreloadDecoder::Decode(const std::string& search, bool* out_found) {
   size_t bit_offset = trie_root_position_;
@@ -312,6 +306,4 @@ bool PreloadDecoder::Decode(const std::string& search, bool* out_found) {
   NOTREACHED();
 }
 
-}  // namespace extras
-
-}  // namespace net
+}  // namespace net::extras

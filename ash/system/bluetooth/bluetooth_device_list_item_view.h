@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/tray/hover_highlight_view.h"
-#include "chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
+#include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 
 namespace ash {
 
@@ -23,12 +23,16 @@ class ASH_EXPORT BluetoothDeviceListItemView : public HoverHighlightView {
       delete;
   ~BluetoothDeviceListItemView() override;
 
-  // Update the view to reflect the given device properties |device_properties|.
+  // Update the view to reflect the latest position of this device within the
+  // list of devices, e.g. with |device_index| and |total_device_count|, and to
+  // reflect the given device properties |device_properties|.
   void UpdateDeviceProperties(
-      const chromeos::bluetooth_config::mojom::
-          PairedBluetoothDevicePropertiesPtr& device_properties);
+      size_t device_index,
+      size_t total_device_count,
+      const bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr&
+          device_properties);
 
-  const chromeos::bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr&
+  const bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr&
   device_properties() const {
     return device_properties_;
   }
@@ -37,13 +41,24 @@ class ASH_EXPORT BluetoothDeviceListItemView : public HoverHighlightView {
   // views::View:
   const char* GetClassName() const override;
 
+  // Updates the a11y name used for this view. This name should include the name
+  // of the device, the type of the device, the connected state of the device,
+  // any battery information available, and the index of the device within the
+  // device list.
+  void UpdateAccessibleName(size_t device_index, size_t total_device_count);
+
   // Update the view responsible for showing the battery percentage to reflect
   // the given battery information |battery_info|.
   void UpdateBatteryInfo(
-      const chromeos::bluetooth_config::mojom::DeviceBatteryInfoPtr&
-          battery_info);
+      const bluetooth_config::mojom::DeviceBatteryInfoPtr& battery_info);
 
-  chromeos::bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr
+  void UpdateSingleBatteryView(
+      const bluetooth_config::mojom::DeviceBatteryInfoPtr& battery_info);
+
+  void UpdateMultipleBatteryView(
+      const bluetooth_config::mojom::DeviceBatteryInfoPtr& battery_info);
+
+  bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr
       device_properties_;
 };
 

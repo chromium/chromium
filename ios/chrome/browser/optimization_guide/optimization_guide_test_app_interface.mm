@@ -1,10 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/optimization_guide/optimization_guide_test_app_interface.h"
+#import "ios/chrome/browser/optimization_guide/optimization_guide_test_app_interface.h"
 
-#include <vector>
+#import <vector>
 
 #import "base/command_line.h"
 #import "base/logging.h"
@@ -68,6 +68,17 @@ optimization_guide::testing::TestHintsComponentCreator
       OptimizationGuideServiceFactory::GetForBrowserState(
           chrome_test_util::GetOriginalBrowserState());
   service->RegisterOptimizationTypes({type});
+}
+
++ (void)canApplyOptimization:(NSString*)url
+                        type:(optimization_guide::proto::OptimizationType)type
+                    metadata:
+                        (optimization_guide::OptimizationMetadata*)metadata {
+  OptimizationGuideService* service =
+      OptimizationGuideServiceFactory::GetForBrowserState(
+          chrome_test_util::GetOriginalBrowserState());
+  service->CanApplyOptimization(GURL(base::SysNSStringToUTF8(url)), type,
+                                metadata);
 }
 
 @end

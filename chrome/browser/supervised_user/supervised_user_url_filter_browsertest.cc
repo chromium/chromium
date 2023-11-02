@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,6 +25,7 @@
 #include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_url_filter.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -78,14 +79,14 @@ class SupervisedUserURLFilterTest : public MixinBasedInProcessBrowserTest {
   }
 
   void SendAccessRequest(WebContents* tab) {
-    tab->GetMainFrame()->ExecuteJavaScriptForTests(
+    tab->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
         u"supervisedUserErrorPageController.requestPermission()",
         base::NullCallback());
     return;
   }
 
   void GoBack(WebContents* tab) {
-    tab->GetMainFrame()->ExecuteJavaScriptForTests(
+    tab->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
         u"supervisedUserErrorPageController.goBack()", base::NullCallback());
     return;
   }
@@ -391,7 +392,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserBlockModeTest, HistoryVisitRecorded) {
 
   GoBackAndWaitForNavigation(tab);
 
-  EXPECT_EQ(allowed_url.spec(), tab->GetURL().spec());
+  EXPECT_EQ(allowed_url.spec(), tab->GetLastCommittedURL().spec());
   EXPECT_EQ(SupervisedUserURLFilter::ALLOW,
             filter->GetFilteringBehaviorForURL(allowed_url.GetWithEmptyPath()));
   EXPECT_EQ(SupervisedUserURLFilter::BLOCK,
@@ -443,9 +444,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest, GoBackOnDontProceed) {
   content::TestNavigationObserver block_observer(web_contents);
   block_observer.Wait();
 
-  content::WindowedNotificationObserver observer(
-      content::NOTIFICATION_LOAD_STOP,
-      content::NotificationService::AllSources());
+  content::LoadStopObserver observer(web_contents);
   GoBack(web_contents);
   observer.Wait();
 
@@ -483,7 +482,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest,
   // Verify that there is no crash when closing the blocked tab
   // (https://crbug.com/719708).
   browser()->tab_strip_model()->CloseWebContentsAt(
-      0, TabStripModel::CLOSE_USER_GESTURE);
+      0, TabCloseTypes::CLOSE_USER_GESTURE);
 }
 
 IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest, BlockThenUnblock) {
@@ -524,7 +523,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest, BlockThenUnblock) {
   content::TestNavigationObserver unblock_observer(web_contents);
   unblock_observer.Wait();
 
-  ASSERT_EQ(test_url, web_contents->GetURL());
+  ASSERT_EQ(test_url, web_contents->GetLastCommittedURL());
 
   EXPECT_FALSE(ShownPageIsInterstitial(browser()));
 }
@@ -538,9 +537,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserBlockModeTest, Unblock) {
 
   ASSERT_TRUE(ShownPageIsInterstitial(browser()));
 
-  content::WindowedNotificationObserver observer(
-      content::NOTIFICATION_LOAD_STOP,
-      content::NotificationService::AllSources());
+  content::LoadStopObserver observer(web_contents);
 
   // Set the host as allowed.
   std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue);
@@ -557,7 +554,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserBlockModeTest, Unblock) {
             filter->GetFilteringBehaviorForURL(test_url.GetWithEmptyPath()));
 
   observer.Wait();
-  EXPECT_EQ(test_url, web_contents->GetURL());
+  EXPECT_EQ(test_url, web_contents->GetLastCommittedURL());
 }
 
 class MockSupervisedUserURLFilterObserver

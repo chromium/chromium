@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,19 +42,17 @@ void TestOmniboxEditModel::OnPopupDataChanged(
     bool is_temporary_text,
     const std::u16string& inline_autocompletion,
     const std::u16string& prefix_autocompletion,
-    const SplitAutocompletion& split_autocompletion,
     const std::u16string& keyword,
     bool is_keyword_hint,
     const std::u16string& additional_text) {
   OmniboxEditModel::OnPopupDataChanged(
       temporary_text, is_temporary_text, inline_autocompletion,
-      prefix_autocompletion, split_autocompletion, keyword, is_keyword_hint,
-      additional_text);
+      prefix_autocompletion, keyword, is_keyword_hint, additional_text);
   text_ = is_temporary_text ? temporary_text : inline_autocompletion;
   is_temporary_text_ = is_temporary_text;
 }
 
 PrefService* TestOmniboxEditModel::GetPrefService() const {
   return pref_service_ == nullptr ? OmniboxEditModel::GetPrefService()
-                                  : pref_service_;
+                                  : pref_service_.get();
 }

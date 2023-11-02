@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,11 +10,11 @@
 #include <string>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_loader.h"
-#include "components/services/app_service/public/mojom/app_service.mojom.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace apps {
@@ -31,7 +31,7 @@ enum class IconLoadingMethod {
 };
 
 // Records metrics when loading icons.
-void RecordAppLaunchMetrics(IconLoadingMethod icon_loading_method);
+void RecordIconLoadMethodMetrics(IconLoadingMethod icon_loading_method);
 
 // An IconLoader that caches the apps::mojom::IconType::kUncompressed
 // results of another (wrapped) IconLoader.
@@ -87,21 +87,21 @@ class IconCache : public IconLoader {
   ~IconCache() override;
 
   // IconLoader overrides.
-  apps::mojom::IconKeyPtr GetIconKey(const std::string& app_id) override;
-  std::unique_ptr<IconLoader::Releaser> LoadIconFromIconKey(
-      apps::mojom::AppType app_type,
+  absl::optional<IconKey> GetIconKey(const std::string& app_id) override;
+  std::unique_ptr<Releaser> LoadIconFromIconKey(
+      AppType app_type,
       const std::string& app_id,
-      apps::mojom::IconKeyPtr icon_key,
-      apps::mojom::IconType icon_type,
+      const IconKey& icon_key,
+      IconType icon_type,
       int32_t size_hint_in_dip,
       bool allow_placeholder_icon,
-      apps::mojom::Publisher::LoadIconCallback callback) override;
+      apps::LoadIconCallback callback) override;
 
   // A hint that now is a good time to garbage-collect any icons that are not
   // actively held.
   void SweepReleasedIcons();
 
-  void RemoveIcon(apps::mojom::AppType app_type, const std::string& app_id);
+  void RemoveIcon(AppType app_type, const std::string& app_id);
 
  private:
   class Value {
@@ -112,17 +112,18 @@ class IconCache : public IconLoader {
 
     Value();
 
-    apps::mojom::IconValuePtr AsIconValue(apps::mojom::IconType icon_type);
+    IconValuePtr AsIconValue(IconType icon_type);
   };
 
-  void Update(const IconLoader::Key&, const apps::mojom::IconValue&);
-  void OnLoadIcon(IconLoader::Key,
-                  apps::mojom::Publisher::LoadIconCallback,
-                  apps::mojom::IconValuePtr);
+  void Update(const IconLoader::Key& key, const IconValue& icon_value);
+  void OnLoadIcon(const IconLoader::Key& key,
+                  apps::LoadIconCallback callback,
+                  IconValuePtr icon_value);
+
   void OnRelease(IconLoader::Key);
 
   std::map<IconLoader::Key, Value> map_;
-  IconLoader* wrapped_loader_;
+  raw_ptr<IconLoader> wrapped_loader_;
   GarbageCollectionPolicy gc_policy_;
 
   SEQUENCE_CHECKER(sequence_checker_);

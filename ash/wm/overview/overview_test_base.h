@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,17 +11,17 @@
 
 #include "ash/shelf/shelf_view_test_api.h"
 #include "ash/test/ash_test_base.h"
-#include "base/files/scoped_temp_dir.h"
+#include "ash/test/ash_test_helper.h"
+#include "ash/wm/desks/templates/saved_desk_test_helper.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "components/desks_storage/core/local_desk_data_manager.h"
 
 namespace views {
-class ImageButton;
 class Label;
 }  // namespace views
 
 namespace ash {
 
+class CloseButton;
 class OverviewController;
 class OverviewGrid;
 class OverviewItem;
@@ -67,7 +67,7 @@ class OverviewTestBase : public AshTestBase {
 
   OverviewItem* GetDropTarget(int grid_index);
 
-  views::ImageButton* GetCloseButton(OverviewItem* item);
+  CloseButton* GetCloseButton(OverviewItem* item);
 
   views::Label* GetLabelView(OverviewItem* item);
 
@@ -94,7 +94,13 @@ class OverviewTestBase : public AshTestBase {
   gfx::Rect GetGridBounds();
   void SetGridBounds(OverviewGrid* grid, const gfx::Rect& bounds);
 
-  desks_storage::DeskModel* desk_model() { return desk_model_.get(); }
+  SavedDeskTestHelper* saved_desk_test_helper() {
+    return ash_test_helper()->saved_desk_test_helper();
+  }
+
+  desks_storage::DeskModel* desk_model() {
+    return saved_desk_test_helper()->desk_model();
+  }
 
   // AshTestBase:
   void SetUp() override;
@@ -103,14 +109,19 @@ class OverviewTestBase : public AshTestBase {
  protected:
   void CheckForDuplicateTraceName(const std::string& trace);
 
+  // Takes in a current widget and checks if the accessibility next
+  // and previous focus widgets match the given.
+  void CheckA11yOverrides(const std::string& trace,
+                          views::Widget* widget,
+                          views::Widget* expected_previous,
+                          views::Widget* expected_next);
+
   base::HistogramTester histograms_;
 
  private:
   void CheckOverviewHistogram(const std::string& histogram,
                               const std::vector<int>& counts);
 
-  std::unique_ptr<desks_storage::LocalDeskDataManager> desk_model_;
-  base::ScopedTempDir desk_model_temp_dir_;
   std::unique_ptr<ShelfViewTestAPI> shelf_view_test_api_;
   std::vector<std::string> trace_names_;
 };

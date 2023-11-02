@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,7 +28,8 @@ class ClientSideDetectionHost {};
 SafeBrowsingTabObserver::SafeBrowsingTabObserver(
     content::WebContents* web_contents,
     std::unique_ptr<Delegate> delegate)
-    : web_contents_(web_contents), delegate_(std::move(delegate)) {
+    : content::WebContentsUserData<SafeBrowsingTabObserver>(*web_contents),
+      delegate_(std::move(delegate)) {
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   auto* browser_context = web_contents->GetBrowserContext();
   PrefService* prefs = delegate_->GetPrefs(browser_context);
@@ -46,8 +47,6 @@ SafeBrowsingTabObserver::SafeBrowsingTabObserver(
         delegate_->DoesSafeBrowsingServiceExist() && csd_service) {
       safebrowsing_detection_host_ =
           delegate_->CreateClientSideDetectionHost(web_contents);
-      csd_service->AddClientSideDetectionHost(
-          safebrowsing_detection_host_.get());
     }
   }
 #endif
@@ -60,7 +59,7 @@ SafeBrowsingTabObserver::~SafeBrowsingTabObserver() {}
 
 void SafeBrowsingTabObserver::UpdateSafebrowsingDetectionHost() {
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-  auto* browser_context = web_contents_->GetBrowserContext();
+  auto* browser_context = GetWebContents().GetBrowserContext();
   PrefService* prefs = delegate_->GetPrefs(browser_context);
   bool safe_browsing = IsSafeBrowsingEnabled(*prefs);
   ClientSideDetectionService* csd_service =
@@ -68,9 +67,7 @@ void SafeBrowsingTabObserver::UpdateSafebrowsingDetectionHost() {
   if (safe_browsing && csd_service) {
     if (!safebrowsing_detection_host_.get()) {
       safebrowsing_detection_host_ =
-          delegate_->CreateClientSideDetectionHost(web_contents_);
-      csd_service->AddClientSideDetectionHost(
-          safebrowsing_detection_host_.get());
+          delegate_->CreateClientSideDetectionHost(&GetWebContents());
     }
   } else {
     safebrowsing_detection_host_.reset();

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -26,6 +28,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_action_manager.h"
@@ -37,6 +40,8 @@
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
+#include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/color_utils.h"
 
@@ -186,7 +191,7 @@ class ActionTestHelper {
   // The name of the property in the set method details (e.g., "popup").
   const char* const js_property_key_;
   // The WebContents to use to execute API calls.
-  content::WebContents* const web_contents_;
+  const raw_ptr<content::WebContents> web_contents_;
 };
 
 // Forces a flush of the StateStore, where action state is persisted.
@@ -199,7 +204,16 @@ void FlushStateStore(Profile* profile) {
 
 }  // namespace
 
-using ExtensionActionAPITest = ExtensionApiTest;
+// A class that allows for cross-origin navigations with embedded test server.
+class ExtensionActionAPITest : public ExtensionApiTest {
+ protected:
+  void SetUpOnMainThread() override {
+    ExtensionApiTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+    embedded_test_server()->ServeFilesFromSourceDirectory("chrome/test/data");
+    ASSERT_TRUE(StartEmbeddedTestServer());
+  }
+};
 
 // Alias these for readability, when a test only exercises one type of action.
 using BrowserActionAPITest = ExtensionActionAPITest;
@@ -269,7 +283,7 @@ class MultiActionAPICanvasTest : public MultiActionAPITest {
 // cause a disk write (since we only persist the defaults).
 // Only browser actions persist settings.
 IN_PROC_BROWSER_TEST_F(BrowserActionAPITest, TestNoUnnecessaryIO) {
-  ExtensionTestMessageListener ready_listener("ready", false);
+  ExtensionTestMessageListener ready_listener("ready");
 
   TestExtensionDir test_dir;
   test_dir.WriteManifest(
@@ -339,8 +353,6 @@ IN_PROC_BROWSER_TEST_F(BrowserActionAPITest, TestNoUnnecessaryIO) {
 // removal. Regression test for https://crbug.com/834033.
 IN_PROC_BROWSER_TEST_P(MultiActionAPITest,
                        ValuesAreClearedOnNavigationAndTabRemoval) {
-  ASSERT_TRUE(StartEmbeddedTestServer());
-
   TestExtensionDir test_dir;
   constexpr char kManifestTemplate[] =
       R"({
@@ -387,7 +399,7 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest,
   {
     content::WebContentsDestroyedWatcher destroyed_watcher(web_contents);
     tab_strip_model->CloseWebContentsAt(tab_strip_model->active_index(),
-                                        TabStripModel::CLOSE_NONE);
+                                        TabCloseTypes::CLOSE_NONE);
     destroyed_watcher.Wait();
   }
   // The title should have been cleared on tab removal as well.
@@ -448,8 +460,7 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest, OnClickedDispatching) {
            chrome.test.assertTrue(tab.id > 0);
            chrome.test.assertTrue(tab.index > -1);
            chrome.test.notifyPass();
-         });
-         chrome.test.sendMessage('ready');)";
+         });)";
 
   const char* background_specification =
       GetParam() == ActionInfo::TYPE_ACTION
@@ -471,10 +482,8 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest, OnClickedDispatching) {
       ExtensionActionTestHelper::Create(browser());
   EXPECT_EQ(0, toolbar_helper->NumberOfBrowserActions());
 
-  ExtensionTestMessageListener listener("ready", /*will_reply=*/false);
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
-  ASSERT_TRUE(listener.WaitUntilSatisfied());
   ASSERT_EQ(1, toolbar_helper->NumberOfBrowserActions());
   EXPECT_TRUE(toolbar_helper->HasAction(extension->id()));
 
@@ -559,7 +568,7 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest, PopupCreation) {
 // Tests that sessionStorage does not persist between closing and opening of a
 // popup.
 // TODO(crbug/1256760): Flaky on Linux.
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_SessionStorageDoesNotPersistBetweenOpenings \
   DISABLED_SessionStorageDoesNotPersistBetweenOpenings
 #else
@@ -740,7 +749,8 @@ IN_PROC_BROWSER_TEST_P(ActionAndBrowserActionAPITest, ValuesArePersisted) {
 }
 
 // Tests setting the icon dynamically from the background page.
-IN_PROC_BROWSER_TEST_P(MultiActionAPICanvasTest, DynamicSetIcon) {
+// TODO(crbug.com/1340330): flaky.
+IN_PROC_BROWSER_TEST_P(MultiActionAPICanvasTest, DISABLED_DynamicSetIcon) {
   constexpr char kManifestTemplate[] =
       R"({
            "name": "Test Clicking",
@@ -1004,6 +1014,112 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest, SetIconWithSelfDefined) {
       "setIcon({tabId: %d, path: 'blue_icon.png'});";
   RunTestAndWaitForSuccess(web_contents,
                            base::StringPrintf(kSetIconScript, tab_id));
+}
+
+// Tests calling setIcon() for a tab with an invalid icon path specified.
+IN_PROC_BROWSER_TEST_P(MultiActionAPITest, SetIconInTabWithInvalidPath) {
+  constexpr char kManifestTemplate[] =
+      R"({
+           "name": "Bad Icon Path",
+           "manifest_version": %d,
+           "version": "0.1",
+           "%s": {}
+         })";
+
+  constexpr char kPageJsTemplate[] =
+      R"(function setIcon(details) {
+           chrome.%s.setIcon(details, () => {
+             chrome.test.assertLastError("%s");
+             chrome.test.notifyPass();
+           });
+         })";
+
+  constexpr char kExpectedError[] =
+      "Could not load action icon 'does_not_exist.png'.";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(base::StringPrintf(
+      kManifestTemplate, GetManifestVersionForActionType(GetParam()),
+      GetManifestKeyForActionType(GetParam())));
+
+  test_dir.WriteFile(FILE_PATH_LITERAL("page.html"), kPageHtmlTemplate);
+  test_dir.WriteFile(
+      FILE_PATH_LITERAL("page.js"),
+      base::StringPrintf(kPageJsTemplate, GetAPINameForActionType(GetParam()),
+                         kExpectedError));
+
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  ExtensionAction* action = GetExtensionAction(*extension);
+  ASSERT_TRUE(action);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), extension->GetResourceURL("page.html")));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  int tab_id = GetActiveTabId();
+  EXPECT_TRUE(ActionHasDefaultState(*action, tab_id));
+  EnsureActionIsEnabledOnActiveTab(action);
+
+  // Calling setIcon with an invalid path in a non-service worker context should
+  // emit a console error in that context and call the callback with lastError
+  // set.
+  content::WebContentsConsoleObserver console_observer(web_contents);
+  console_observer.SetPattern(kExpectedError);
+
+  constexpr char kSetIconScript[] =
+      "setIcon({tabId: %d, path: 'does_not_exist.png'});";
+  RunTestAndWaitForSuccess(web_contents,
+                           base::StringPrintf(kSetIconScript, tab_id));
+  console_observer.Wait();
+}
+
+// Tests calling setIcon() in the service worker with an invalid icon path
+// specified. Regression test for https://crbug.com/1262029.
+IN_PROC_BROWSER_TEST_F(ExtensionActionAPITest, SetIconInWorkerWithInvalidPath) {
+  constexpr char kManifestTemplate[] =
+      R"({
+           "name": "Bad Icon Path In Worker",
+           "manifest_version": 3,
+           "version": "0.1",
+           "action": {},
+           "background": {"service_worker": "worker.js" }
+         })";
+
+  constexpr char kBackgroundJs[] =
+      R"(let expectedError = "%s";
+         chrome.test.runTests([
+           function withCallback() {
+             chrome.action.setIcon({path: 'does_not_exist.png'}, () => {
+               chrome.test.assertLastError(expectedError);
+               chrome.test.succeed();
+             });
+           },
+           async function withPromise() {
+             await chrome.test.assertPromiseRejects(
+                 chrome.action.setIcon({path: 'does_not_exist.png'}),
+                 'Error: ' + expectedError);
+             chrome.test.succeed();
+           }
+         ]);)";
+
+  constexpr char kExpectedError[] =
+      "Failed to set icon 'does_not_exist.png': Failed to fetch";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifestTemplate);
+
+  test_dir.WriteFile(FILE_PATH_LITERAL("worker.js"),
+                     base::StringPrintf(kBackgroundJs, kExpectedError));
+
+  // Calling setIcon with an invalid path in a service worker context should
+  // reject the promise or call the callback with lastError set.
+  ResultCatcher result_catcher;
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+  EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 }
 
 // Tests various getter and setter methods.
@@ -1333,6 +1449,87 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest, EnableAndDisable) {
   }
 }
 
+// Tests that the check for enabled and disabled status are correctly reported.
+IN_PROC_BROWSER_TEST_F(ExtensionActionAPITest, IsEnabled) {
+  ASSERT_TRUE(RunExtensionTest("extension_action/is_enabled")) << message_;
+}
+
+// Tests that isEnabled correctly ignores declarativeContent rules for enable.
+IN_PROC_BROWSER_TEST_F(ExtensionActionAPITest, IsEnabledIgnoreDeclarative) {
+  constexpr char kManifestTemplate[] =
+      R"({
+           "name": "Declarative content ignored test",
+           "version": "0.1",
+           "manifest_version": 3,
+           "permissions": ["activeTab", "declarativeContent"],
+           "background": {
+             "service_worker" : "background.js"
+           },
+           "action": {}
+         })";
+  constexpr char kSetupDeclarativeContent[] =
+      R"(
+          let rule1 = {
+            conditions: [
+              new chrome.declarativeContent.PageStateMatcher({
+                pageUrl: { hostContains: 'google'},
+              })
+            ],
+            actions: [ new chrome.declarativeContent.ShowAction() ]
+          };
+          chrome.runtime.onInstalled.addListener(function(details) {
+            chrome.declarativeContent.onPageChanged.removeRules(
+              undefined, function() {
+                chrome.declarativeContent.onPageChanged.addRules(
+                  [rule1], () => {
+                    chrome.test.sendMessage('ready');
+                });
+            });
+          });
+          // Set tab disabled globally so that we can assert that the extension
+          // cannot know enable status for declarativeContent tabs it is
+          // registered for.
+          chrome.action.disable();
+        )";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifestTemplate);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"),
+                     kSetupDeclarativeContent);
+
+  ExtensionTestMessageListener listener("ready");
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+  auto* action_manager = ExtensionActionManager::Get(profile());
+  ExtensionAction* action = action_manager->GetExtensionAction(*extension);
+  ASSERT_TRUE(action);
+  ASSERT_TRUE(listener.WaitUntilSatisfied());
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  GURL url(embedded_test_server()->GetURL("google.com", "/title1.html"));
+
+  EXPECT_TRUE(NavigateToURL(web_contents, url));
+  EXPECT_TRUE(WaitForLoadStop(web_contents));
+  const int tab_id = sessions::SessionTabHelper::IdForTab(web_contents).id();
+
+  // Confirm the tab is only visible for declarativeContent.
+  ASSERT_TRUE(action->GetIsVisible(tab_id));
+  ASSERT_FALSE(action->GetIsVisibleIgnoringDeclarative(tab_id));
+
+  constexpr char kCheckIsEnabledStatusForTabId[] =
+      R"(
+        chrome.action.isEnabled(%d, (enabled) => {
+          chrome.test.sendScriptResult(enabled);
+        });
+      )";
+  base::Value script_result = BackgroundScriptExecutor::ExecuteScript(
+      profile(), extension->id(),
+      base::StringPrintf(kCheckIsEnabledStatusForTabId, tab_id),
+      BackgroundScriptExecutor::ResultCapture::kSendScriptResult);
+  EXPECT_FALSE(script_result.GetBool());
+}
+
 using ActionAPITest = ExtensionApiTest;
 
 IN_PROC_BROWSER_TEST_F(ActionAPITest, TestGetUserSettings) {
@@ -1357,7 +1554,7 @@ IN_PROC_BROWSER_TEST_F(ActionAPITest, TestGetUserSettings) {
 
   const Extension* extension = nullptr;
   {
-    ExtensionTestMessageListener listener("ready", /*will_reply=*/false);
+    ExtensionTestMessageListener listener("ready");
     extension = LoadExtension(test_dir.UnpackedPath());
     ASSERT_TRUE(extension);
     ASSERT_TRUE(listener.WaitUntilSatisfied());
@@ -1371,7 +1568,7 @@ IN_PROC_BROWSER_TEST_F(ActionAPITest, TestGetUserSettings) {
       ExtensionActionTestHelper::Create(browser());
 
   auto get_response = [extension, toolbar_helper = toolbar_helper.get()]() {
-    ExtensionTestMessageListener listener(/*will_reply=*/false);
+    ExtensionTestMessageListener listener;
     listener.set_extension_id(extension->id());
     toolbar_helper->Press(extension->id());
     EXPECT_TRUE(listener.WaitUntilSatisfied());

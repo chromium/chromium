@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,13 @@
 #include <limits.h>
 
 #include <string>
+#include <tuple>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
@@ -34,7 +34,7 @@
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
 #include "mojo/public/cpp/system/invitation.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include "base/posix/global_descriptors.h"
 #include "content/public/common/content_descriptors.h"
 #endif
@@ -49,7 +49,7 @@ class FakeChildProcessImpl
     : public content::mojom::ChildProcessInterceptorForTesting {
  public:
   FakeChildProcessImpl() {
-    ignore_result(disconnected_process_.BindNewPipeAndPassReceiver());
+    std::ignore = disconnected_process_.BindNewPipeAndPassReceiver();
   }
 
   // content::mojom::ChildProcessInterceptorForTesting overrides:
@@ -71,10 +71,10 @@ void InitializeMojo() {
 
 mojo::IncomingInvitation InitializeMojoIPCChannel() {
   mojo::PlatformChannelEndpoint endpoint;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   endpoint = mojo::PlatformChannel::RecoverPassedEndpointFromCommandLine(
       *base::CommandLine::ForCurrentProcess());
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
   endpoint = mojo::PlatformChannelEndpoint(mojo::PlatformHandle(base::ScopedFD(
       base::GlobalDescriptors::GetInstance()->Get(kMojoIPCChannel))));
 #endif
@@ -120,7 +120,7 @@ bool ReplayProcess::Initialize(int argc, const char** argv) {
   io_thread_.StartWithOptions(
       base::Thread::Options(base::MessagePumpType::IO, 0));
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   base::GlobalDescriptors* g_fds = base::GlobalDescriptors::GetInstance();
   g_fds->Set(kMojoIPCChannel,
              kMojoIPCChannel + base::GlobalDescriptors::kBaseDescriptor);

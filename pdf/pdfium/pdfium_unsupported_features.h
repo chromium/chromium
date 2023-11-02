@@ -1,9 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef PDF_PDFIUM_PDFIUM_UNSUPPORTED_FEATURES_H_
 #define PDF_PDFIUM_PDFIUM_UNSUPPORTED_FEATURES_H_
+
+#include "base/memory/raw_ptr.h"
 
 namespace chrome_pdf {
 
@@ -26,7 +28,7 @@ class ScopedUnsupportedFeature {
 
  private:
   const bool saved_engine_available_;
-  PDFiumEngine* const saved_engine_;
+  const raw_ptr<PDFiumEngine> saved_engine_;
 };
 
 }  // namespace chrome_pdf

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -202,10 +202,9 @@ LayoutUnit LayoutBoxUtils::TotalBlockSize(const LayoutBox& box) {
   }
 
   if (num_fragments > 1) {
-    total_block_size +=
-        To<NGBlockBreakToken>(
-            box.GetPhysicalFragment(num_fragments - 2)->BreakToken())
-            ->ConsumedBlockSize();
+    total_block_size += box.GetPhysicalFragment(num_fragments - 2)
+                            ->BreakToken()
+                            ->ConsumedBlockSize();
   }
   return total_block_size;
 }

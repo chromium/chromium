@@ -1,4 +1,4 @@
-// Copyright (c) 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <Cocoa/Cocoa.h>
 
 #include "base/bind.h"
+#import "content/app_shim_remote_cocoa/render_widget_host_view_cocoa.h"
 #include "content/browser/renderer_host/render_widget_host_input_event_router.h"
 #include "content/browser/renderer_host/render_widget_host_view_mac.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -96,7 +97,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessMacBrowserTest,
   EXPECT_TRUE(NavigateToURLFromRenderer(
       child, embedded_test_server()->GetURL("b.com", "/title1.html")));
   web_contents()->GetPrimaryFrameTree().SetFocusedFrame(
-      child, web_contents()->GetSiteInstance());
+      child, web_contents()->GetSiteInstance()->group());
 
   RenderWidgetHost* child_widget_host =
       child->current_frame_host()->GetRenderWidgetHost();
@@ -125,7 +126,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessMacBrowserTest,
   RenderWidgetHost* widget_host =
       root->current_frame_host()->GetRenderWidgetHost();
   web_contents()->GetPrimaryFrameTree().SetFocusedFrame(
-      root, web_contents()->GetSiteInstance());
+      root, web_contents()->GetSiteInstance()->group());
   TextInputClientMacHelper helper;
 
   // Get string from range.
@@ -264,7 +265,10 @@ void SendMacTouchpadPinchSequenceWithExpectedTarget(
   NSEvent* pinchBeginEvent =
       MockGestureEvent(NSEventTypeMagnify, 0, gesture_point.x(),
                        gesture_point.y(), NSEventPhaseBegan);
-  [cocoa_view magnifyWithEvent:pinchBeginEvent];
+  // We don't simply use magnifyWithEvent for the begin event because we need
+  // to ignore the pinch threshold by indicating this is a synthetic gesture.
+  [cocoa_view handleBeginGestureWithEvent:pinchBeginEvent
+                  isSyntheticallyInjected:YES];
   // We don't check the gesture target yet, since on mac the GesturePinchBegin
   // isn't sent until the first PinchUpdate.
 
@@ -318,10 +322,31 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessMacBrowserTest,
   gfx::Point main_frame_point(25, 575);
   gfx::Point child_center(150, 450);
 
+  // TODO(848050): If we send multiple touchpad pinch sequences to separate
+  // views and the timing of the acks are such that the begin ack of the second
+  // sequence arrives in the root before the end ack of the first sequence, we
+  // would produce an invalid gesture event sequence. For now, we wait for the
+  // root to receive the end ack before sending a pinch sequence to a different
+  // view. The root view should preserve validity of input event sequences
+  // when processing acks from multiple views, so that waiting here is not
+  // necessary.
+  InputEventAckWaiter pinch_end_observer(
+      rwhv_parent->GetRenderWidgetHost(),
+      base::BindRepeating([](blink::mojom::InputEventResultSource,
+                             blink::mojom::InputEventResultState,
+                             const blink::WebInputEvent& event) {
+        return event.GetType() ==
+                   blink::WebGestureEvent::Type::kGesturePinchEnd &&
+               !static_cast<const blink::WebGestureEvent&>(event)
+                    .NeedsWheelEvent();
+      }));
+
   // Send touchpad pinch sequence to main-frame.
   SendMacTouchpadPinchSequenceWithExpectedTarget(
       rwhv_parent, main_frame_point, router->touchpad_gesture_target_,
       rwhv_parent);
+
+  pinch_end_observer.Wait();
 
   // Send touchpad pinch sequence to child.
   SendMacTouchpadPinchSequenceWithExpectedTarget(

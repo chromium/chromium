@@ -1,0 +1,5 @@
+# Prefer enterprise-policy-review@ to individual owners. Sending code
+# reviews to the alias allows the owners to distribute code review loads.
+enterprise-policy-review@google.com
+
+file://components/policy/ENTERPRISE_POLICY_OWNERS

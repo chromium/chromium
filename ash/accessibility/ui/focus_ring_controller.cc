@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -61,16 +61,16 @@ void FocusRingController::UpdateFocusRing() {
   // Workarounds that attempts to pick a better bounds.
   if (view->GetClassName() == views::LabelButton::kViewClassName) {
     view_bounds = view->GetLocalBounds();
-    view_bounds.Inset(2, 2, 2, 2);
+    view_bounds.Inset(2);
   }
 
   // Workarounds for system tray items that have customized focus borders.  The
   // insets here must be consistent with the ones used by those classes.
   if (view->GetClassName() == ActionableView::kViewClassName) {
     view_bounds = view->GetLocalBounds();
-    view_bounds.Inset(1, 1, 3, 3);
+    view_bounds.Inset(gfx::Insets::TLBR(1, 1, 3, 3));
   } else if (view->GetClassName() == TrayBackgroundView::kViewClassName) {
-    view_bounds.Inset(1, 1, 3, 3);
+    view_bounds.Inset(gfx::Insets::TLBR(1, 1, 3, 3));
   }
 
   // Convert view bounds to widget/window coordinates.

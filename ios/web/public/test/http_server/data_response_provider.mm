@@ -1,12 +1,12 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/web/public/test/http_server/data_response_provider.h"
 
-#include <memory>
+#import <memory>
 
-#include "base/strings/sys_string_conversions.h"
+#import "base/strings/sys_string_conversions.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -32,7 +32,7 @@ DataResponseProvider::GetEmbeddedTestServerResponse(const Request& request) {
   std::string value;
   while (response_headers->EnumerateHeaderLines(&iter, &name, &value)) {
     // TODO(crbug.com/435350): Extract out other names that can't be set by
-    // using the |setValue:forAdditionalHeader:| API such as "ETag" etc.
+    // using the `setValue:forAdditionalHeader:` API such as "ETag" etc.
     if (name == "Content-type") {
       data_response->set_content_type(value);
       continue;

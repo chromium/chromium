@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include "components/autofill_assistant/browser/actions/mock_action_delegate.h"
 #include "components/autofill_assistant/browser/dom_action.pb.h"
 #include "components/autofill_assistant/browser/service.pb.h"
-#include "components/autofill_assistant/browser/web/element_finder.h"
+#include "components/autofill_assistant/browser/web/element_finder_result.h"
 #include "components/autofill_assistant/browser/web/element_store.h"
 #include "components/autofill_assistant/browser/web/mock_web_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -59,10 +59,10 @@ TEST_F(CheckElementTagActionTest, UnknownElementFails) {
 }
 
 TEST_F(CheckElementTagActionTest, SucceedsForMatchingTagCaseInsensitive) {
-  ElementFinder::Result element;
-  element.dom_object.object_data.object_id = "e";
+  ElementFinderResult element;
+  element.SetObjectId("e");
   mock_action_delegate_.GetElementStore()->AddElement(kClientId,
-                                                      element.dom_object);
+                                                      element.dom_object());
 
   EXPECT_CALL(mock_web_controller_, GetElementTag(EqualsElement(element), _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus(), "TAG"));
@@ -77,10 +77,10 @@ TEST_F(CheckElementTagActionTest, SucceedsForMatchingTagCaseInsensitive) {
 }
 
 TEST_F(CheckElementTagActionTest, FailsForNoMatchingTags) {
-  ElementFinder::Result element;
-  element.dom_object.object_data.object_id = "e";
+  ElementFinderResult element;
+  element.SetObjectId("e");
   mock_action_delegate_.GetElementStore()->AddElement(kClientId,
-                                                      element.dom_object);
+                                                      element.dom_object());
 
   EXPECT_CALL(mock_web_controller_, GetElementTag(EqualsElement(element), _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus(), "TAG"));

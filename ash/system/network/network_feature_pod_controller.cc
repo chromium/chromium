@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/quick_settings_catalogs.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -17,6 +18,7 @@
 #include "ash/system/network/network_icon_animation.h"
 #include "ash/system/network/tray_network_state_model.h"
 #include "ash/system/tray/system_tray_notifier.h"
+#include "ash/system/unified/quick_settings_metrics_util.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "base/check.h"
 #include "base/notreached.h"
@@ -180,23 +182,29 @@ FeaturePodButton* NetworkFeaturePodController::CreateButton() {
   return button.release();
 }
 
+QsFeatureCatalogName NetworkFeaturePodController::GetCatalogName() {
+  return QsFeatureCatalogName::kNetwork;
+}
+
 void NetworkFeaturePodController::OnIconPressed() {
   bool was_enabled = button_->IsToggled();
   bool can_toggle = SetNetworkTypeEnabled(!was_enabled);
+  if (can_toggle)
+    TrackToggleUMA(/*target_toggle_state=*/!was_enabled);
 
   // The detailed view should be shown when we enable a network technology as
   // well as when the network technology cannot be toggled, e.g. ethernet.
-  if (!was_enabled || !can_toggle)
+  if (!was_enabled || !can_toggle) {
+    TrackDiveInUMA();
     tray_controller_->ShowNetworkDetailedView(/*force=*/!can_toggle);
+  }
 }
 
 void NetworkFeaturePodController::OnLabelPressed() {
+  TrackDiveInUMA();
+
   SetNetworkTypeEnabled(true);
   tray_controller_->ShowNetworkDetailedView(/*force=*/true);
-}
-
-SystemTrayItemUmaType NetworkFeaturePodController::GetUmaType() const {
-  return SystemTrayItemUmaType::UMA_NETWORK;
 }
 
 void NetworkFeaturePodController::OnFeaturePodButtonThemeChanged() {

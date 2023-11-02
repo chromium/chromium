@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -104,6 +104,11 @@ void WorkerNodeImpl::SetPriorityAndReason(
   priority_and_reason_.SetAndMaybeNotify(this, priority_and_reason);
 }
 
+void WorkerNodeImpl::SetResidentSetKbEstimate(uint64_t rss_estimate) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  resident_set_kb_estimate_ = rss_estimate;
+}
+
 void WorkerNodeImpl::OnFinalResponseURLDetermined(const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(url_.is_empty());
@@ -156,6 +161,11 @@ const base::flat_set<WorkerNodeImpl*>& WorkerNodeImpl::child_workers() const {
 const PriorityAndReason& WorkerNodeImpl::priority_and_reason() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return priority_and_reason_.value();
+}
+
+uint64_t WorkerNodeImpl::resident_set_kb_estimate() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return resident_set_kb_estimate_;
 }
 
 void WorkerNodeImpl::OnJoiningGraph() {
@@ -242,6 +252,10 @@ bool WorkerNodeImpl::VisitChildDedicatedWorkers(
 
 const PriorityAndReason& WorkerNodeImpl::GetPriorityAndReason() const {
   return priority_and_reason();
+}
+
+uint64_t WorkerNodeImpl::GetResidentSetKbEstimate() const {
+  return resident_set_kb_estimate();
 }
 
 void WorkerNodeImpl::AddChildWorker(WorkerNodeImpl* worker_node) {

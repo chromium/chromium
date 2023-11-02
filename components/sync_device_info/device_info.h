@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,14 +11,9 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
 #include "base/time/time.h"
 #include "components/sync/base/model_type.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-namespace base {
-class DictionaryValue;
-}
 
 namespace sync_pb {
 enum SharingSpecificFields_EnabledFeatures : int;
@@ -96,11 +91,35 @@ class DeviceInfo {
     std::array<uint8_t, 65> peer_public_key_x962;
   };
 
+  //
+  // A Java counterpart will be generated for this enum.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.sync_device_info
+  //
+  enum class OsType {
+    kUnknown = 0,
+    kWindows = 1,
+    kMac = 2,
+    kLinux = 3,
+    kChromeOsAsh = 4,
+    kAndroid = 5,
+    kIOS = 6,
+    kChromeOsLacros = 7,
+    kFuchsia = 8
+  };
+
+  //
+  // A Java counterpart will be generated for this enum.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.sync_device_info
+  //
+  enum class FormFactor { kUnknown = 0, kDesktop = 1, kPhone = 2, kTablet = 3 };
+
   DeviceInfo(const std::string& guid,
              const std::string& client_name,
              const std::string& chrome_version,
              const std::string& sync_user_agent,
              const sync_pb::SyncEnums_DeviceType device_type,
+             const OsType os_type,
+             const FormFactor form_factor,
              const std::string& signin_scoped_device_id,
              const std::string& manufacturer_name,
              const std::string& model_name,
@@ -141,6 +160,12 @@ class DeviceInfo {
   // Device Type.
   sync_pb::SyncEnums_DeviceType device_type() const;
 
+  // Returns the OS of this device.
+  OsType os_type() const;
+
+  // Returns the device type (form-factor).
+  FormFactor form_factor() const;
+
   // Device_id that is stable until user signs out. This device_id is used for
   // annotating login scoped refresh token.
   const std::string& signin_scoped_device_id() const;
@@ -178,12 +203,6 @@ class DeviceInfo {
   // Returns the data types for which this device receives invalidations.
   const ModelTypeSet& interested_data_types() const;
 
-  // Gets the OS in string form.
-  std::string GetOSString() const;
-
-  // Gets the device type in string form.
-  std::string GetDeviceTypeString() const;
-
   // Apps can set ids for a device that is meaningful to them but
   // not unique enough so the user can be tracked. Exposing |guid|
   // would lead to a stable unique id for a device which can potentially
@@ -204,10 +223,6 @@ class DeviceInfo {
 
   void set_interested_data_types(const ModelTypeSet& data_types);
 
-  // Converts the |DeviceInfo| values to a JS friendly DictionaryValue,
-  // which extension APIs can expose to third party apps.
-  std::unique_ptr<base::DictionaryValue> ToValue() const;
-
  private:
   const std::string guid_;
 
@@ -218,6 +233,10 @@ class DeviceInfo {
   const std::string sync_user_agent_;
 
   const sync_pb::SyncEnums_DeviceType device_type_;
+
+  const OsType os_type_;
+
+  const FormFactor form_factor_;
 
   const std::string signin_scoped_device_id_;
 

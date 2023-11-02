@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,6 +20,7 @@
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -99,7 +100,7 @@ class TestMediaFileSystemContext : public MediaFileSystemContext {
                   const base::FilePath& path,
                   const std::string& fs_name);
 
-  MediaFileSystemRegistry* registry_;
+  raw_ptr<MediaFileSystemRegistry> registry_;
 
   // The currently allocated mock file systems.
   std::map<std::string /*fs_name*/, FSInfo> file_systems_by_name_;
@@ -399,7 +400,7 @@ class MediaFileSystemRegistryTest : public ChromeRenderViewHostTestHarness {
   base::FilePath dcim_dir_;
 
   // MediaFileSystemRegistry owns this.
-  TestMediaFileSystemContext* test_file_system_context_;
+  raw_ptr<TestMediaFileSystemContext> test_file_system_context_;
 
   // Needed for extension service & friends to work.
 
@@ -703,7 +704,7 @@ void MediaFileSystemRegistryTest::AssertAllAutoAddedGalleries() {
     // Make sure that we have at least one gallery and that they are all
     // auto added galleries.
     const MediaGalleriesPrefInfoMap& galleries = prefs->known_galleries();
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
     ASSERT_GT(galleries.size(), 0U);
 #endif
     for (auto it = galleries.begin(); it != galleries.end(); ++it) {
@@ -721,7 +722,7 @@ void MediaFileSystemRegistryTest::InitForGalleriesInfoTest(
   ProfileState* profile_state = GetProfileState(0U);
   *galleries_info = profile_state->GetGalleriesInfo(
       profile_state->all_permission_extension());
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
   ASSERT_EQ(3U, galleries_info->size());
 #else
   ASSERT_EQ(0U, galleries_info->size());
@@ -889,9 +890,9 @@ TEST_F(MediaFileSystemRegistryTest, EraseGalleries) {
 }
 
 // Regression test to make sure calling GetPreferences() does not re-insert
-// galleries on auto-detected removable devices that were blacklisted.
+// galleries on auto-detected removable devices that were blocklisted.
 TEST_F(MediaFileSystemRegistryTest,
-       GetPreferencesDoesNotReinsertBlacklistedGalleries) {
+       GetPreferencesDoesNotReinsertBlocklistedGalleries) {
   CreateProfileState(1);
   AssertAllAutoAddedGalleries();
 
@@ -938,7 +939,7 @@ TEST_F(MediaFileSystemRegistryTest, GalleryNameDefault) {
 }
 
 // TODO(gbillock): Move the remaining test into the linux directory.
-#if !defined(OS_MAC) && !defined(OS_WIN)
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
 TEST_F(MediaFileSystemRegistryTest, GalleryMTP) {
   FSInfoMap galleries_info;
   InitForGalleriesInfoTest(&galleries_info);

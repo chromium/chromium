@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,12 +41,11 @@ class PackagedLicenseScreenTest : public OobeBaseTest {
   }
 
   void SetUpLicense(bool value) {
-    DictionaryPrefUpdate dict(local_state(), prefs::kServerBackedDeviceState);
+    ScopedDictPrefUpdate dict(local_state(), prefs::kServerBackedDeviceState);
     if (value) {
-      dict.Get()->SetKey(policy::kDeviceStatePackagedLicense,
-                         base::Value(true));
+      dict->Set(policy::kDeviceStatePackagedLicense, true);
     } else {
-      dict.Get()->RemoveKey(policy::kDeviceStatePackagedLicense);
+      dict->Remove(policy::kDeviceStatePackagedLicense);
     }
   }
 

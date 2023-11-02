@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,7 @@
 #include "components/policy/proto/device_management_backend.pb.h"
 
 using RetrievePolicyResponseType =
-    chromeos::SessionManagerClient::RetrievePolicyResponseType;
+    ash::SessionManagerClient::RetrievePolicyResponseType;
 
 namespace em = enterprise_management;
 
@@ -28,7 +28,7 @@ namespace policy {
 
 DeviceLocalAccountPolicyStore::DeviceLocalAccountPolicyStore(
     const std::string& account_id,
-    chromeos::SessionManagerClient* session_manager_client,
+    ash::SessionManagerClient* session_manager_client,
     ash::DeviceSettingsService* device_settings_service,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner)
     : UserCloudPolicyStoreBase(background_task_runner,
@@ -221,9 +221,9 @@ void DeviceLocalAccountPolicyStore::Validate(
   // updated only after the successful installation of the policy.
   scoped_refptr<ownership::PublicKey> key =
       device_settings_service_->GetPublicKey();
-  if (!key.get() || !key->is_loaded() || !device_policy_data) {
+  if (!key.get() || key->is_empty() || !device_policy_data) {
     LOG(ERROR) << "Failed policy validation, key: " << (key.get() != nullptr)
-               << ", is_loaded: " << (key.get() ? key->is_loaded() : false)
+               << ", is_loaded: " << (key.get() ? !key->is_empty() : false)
                << ", device_policy_data: " << (device_policy_data != nullptr);
     std::move(callback).Run(/*signature_validation_public_key=*/std::string(),
                             /*validator=*/nullptr);

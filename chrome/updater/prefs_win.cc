@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,18 +40,18 @@ std::unique_ptr<ScopedPrefsLock> AcquireGlobalPrefsLock(
     base::TimeDelta timeout) {
   auto lock = std::make_unique<ScopedPrefsLockImpl>();
 
-  DVLOG(2) << "Trying to acquire the lock.";
+  VLOG(2) << "Trying to acquire the lock.";
   if (!lock->Initialize(scope, timeout))
     return nullptr;
-  DVLOG(2) << "Lock acquired.";
+  VLOG(2) << "Lock acquired.";
 
   return std::make_unique<ScopedPrefsLock>(std::move(lock));
 }
 
 bool ScopedPrefsLockImpl::Initialize(UpdaterScope scope,
                                      base::TimeDelta timeout) {
-  NamedObjectAttributes lock_attr;
-  GetNamedObjectAttributes(kPrefsAccessMutex, scope, &lock_attr);
+  NamedObjectAttributes lock_attr =
+      GetNamedObjectAttributes(kPrefsAccessMutex, scope);
   mutex_.Set(::CreateMutex(&lock_attr.sa, false, lock_attr.name.c_str()));
   if (!mutex_.IsValid())
     return false;
@@ -63,7 +63,7 @@ bool ScopedPrefsLockImpl::Initialize(UpdaterScope scope,
 ScopedPrefsLockImpl::~ScopedPrefsLockImpl() {
   if (mutex_.IsValid()) {
     ::ReleaseMutex(mutex_.Get());
-    DVLOG(2) << "Lock released.";
+    VLOG(2) << "Lock released.";
   }
 }
 

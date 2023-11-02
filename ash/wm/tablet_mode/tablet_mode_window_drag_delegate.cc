@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -122,7 +122,7 @@ TabletModeWindowDragDelegate::~TabletModeWindowDragDelegate() {
   }
 
   split_view_controller_->OnWindowDragCanceled();
-  Shell::Get()->UpdateShelfVisibility();
+  Shelf::UpdateShelfVisibility();
 }
 
 void TabletModeWindowDragDelegate::StartWindowDrag(
@@ -271,7 +271,8 @@ void TabletModeWindowDragDelegate::EndWindowDrag(
   EndingWindowDrag(result, location_in_screen);
 
   WindowBackdrop::Get(dragged_window_)->RestoreBackdrop();
-  SplitViewController::SnapPosition snap_position = SplitViewController::NONE;
+  SplitViewController::SnapPosition snap_position =
+      SplitViewController::SnapPosition::kNone;
   if (result == ToplevelWindowEventHandler::DragResult::SUCCESS &&
       split_view_controller_->CanSnapWindow(dragged_window_)) {
     snap_position = GetSnapPosition(location_in_screen);
@@ -284,8 +285,11 @@ void TabletModeWindowDragDelegate::EndWindowDrag(
     GetOverviewSession()->OnWindowDragEnded(
         dragged_window_, location_in_screen,
         ShouldDropWindowIntoOverview(snap_position, location_in_screen),
-        snap_position != SplitViewController::NONE);
+        snap_position != SplitViewController::SnapPosition::kNone);
   }
+
+  WindowState::Get(dragged_window_)
+      ->set_snap_action_source(WindowSnapActionSource::kDragDownFromTopToSnap);
   split_view_controller_->OnWindowDragEnded(
       dragged_window_, snap_position, gfx::ToRoundedPoint(location_in_screen));
   split_view_drag_indicators_->SetWindowDraggingState(
@@ -325,7 +329,8 @@ void TabletModeWindowDragDelegate::FlingOrSwipe(ui::GestureEvent* event) {
           ->overview_controller()
           ->overview_session()
           ->AddItemInMruOrder(dragged_window_, /*reposition=*/true,
-                              /*animate=*/false, /*restack=*/true);
+                              /*animate=*/false, /*restack=*/true,
+                              /*use_spawn_animation=*/false);
     }
     StartFling(event);
   }
@@ -359,7 +364,7 @@ SplitViewController::SnapPosition TabletModeWindowDragDelegate::GetSnapPosition(
   // become snapped, although if it already was snapped, it can stay snapped.
   if (!(is_window_considered_moved_ &&
         split_view_controller_->CanSnapWindow(dragged_window_))) {
-    return SplitViewController::NONE;
+    return SplitViewController::SnapPosition::kNone;
   }
 
   const gfx::Rect area =
@@ -383,9 +388,11 @@ SplitViewController::SnapPosition TabletModeWindowDragDelegate::GetSnapPosition(
   const bool is_landscape = IsCurrentScreenOrientationLandscape();
   const bool is_primary = IsCurrentScreenOrientationPrimary();
   if (!is_landscape &&
-      ((is_primary && snap_position == SplitViewController::LEFT) ||
-       (!is_primary && snap_position == SplitViewController::RIGHT))) {
-    snap_position = SplitViewController::NONE;
+      ((is_primary &&
+        snap_position == SplitViewController::SnapPosition::kPrimary) ||
+       (!is_primary &&
+        snap_position == SplitViewController::SnapPosition::kSecondary))) {
+    snap_position = SplitViewController::SnapPosition::kNone;
   }
 
   return snap_position;
@@ -423,7 +430,7 @@ bool TabletModeWindowDragDelegate::ShouldDropWindowIntoOverview(
     SplitViewController::SnapPosition snap_position,
     const gfx::PointF& location_in_screen) {
   // Do not drop the dragged window into overview if preview area is shown.
-  if (snap_position != SplitViewController::NONE)
+  if (snap_position != SplitViewController::SnapPosition::kNone)
     return false;
 
   OverviewItem* drop_target = GetDropTarget(dragged_window_);
@@ -470,18 +477,18 @@ bool TabletModeWindowDragDelegate::ShouldFlingIntoOverview(
   // opposite snap position when preview area is shown.
   if (IsCurrentScreenOrientationPrimary()) {
     if (window_dragging_state ==
-        SplitViewDragIndicators::WindowDraggingState::kToSnapLeft) {
+        SplitViewDragIndicators::WindowDraggingState::kToSnapPrimary) {
       return velocity > kFlingToOverviewFromSnappingAreaThreshold;
     } else if (window_dragging_state ==
-               SplitViewDragIndicators::WindowDraggingState::kToSnapRight) {
+               SplitViewDragIndicators::WindowDraggingState::kToSnapSecondary) {
       return -velocity > kFlingToOverviewFromSnappingAreaThreshold;
     }
   } else {
     if (window_dragging_state ==
-        SplitViewDragIndicators::WindowDraggingState::kToSnapLeft) {
+        SplitViewDragIndicators::WindowDraggingState::kToSnapPrimary) {
       return -velocity > kFlingToOverviewFromSnappingAreaThreshold;
     } else if (window_dragging_state ==
-               SplitViewDragIndicators::WindowDraggingState::kToSnapRight) {
+               SplitViewDragIndicators::WindowDraggingState::kToSnapSecondary) {
       return velocity > kFlingToOverviewFromSnappingAreaThreshold;
     }
   }

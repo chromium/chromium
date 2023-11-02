@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
-#include "chromeos/disks/disk.h"
+#include "chromeos/ash/components/disks/disk.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace file_manager {
@@ -67,12 +67,12 @@ void DeviceEventRouter::OnDeviceRemoved(const std::string& device_path) {
                 "");
 }
 
-void DeviceEventRouter::OnDiskAdded(const chromeos::disks::Disk& disk,
+void DeviceEventRouter::OnDiskAdded(const ash::disks::Disk& disk,
                                     bool mounting) {
   // Do nothing.
 }
 
-void DeviceEventRouter::OnDiskRemoved(const chromeos::disks::Disk& disk) {
+void DeviceEventRouter::OnDiskRemoved(const ash::disks::Disk& disk) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (is_resuming_ || is_starting_up_)
@@ -87,7 +87,7 @@ void DeviceEventRouter::OnDiskRemoved(const chromeos::disks::Disk& disk) {
   }
 }
 
-void DeviceEventRouter::OnVolumeMounted(chromeos::MountError error_code,
+void DeviceEventRouter::OnVolumeMounted(ash::MountError error_code,
                                         const Volume& volume) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
@@ -95,7 +95,7 @@ void DeviceEventRouter::OnVolumeMounted(chromeos::MountError error_code,
   SetDeviceState(device_path, DEVICE_STATE_USUAL);
 }
 
-void DeviceEventRouter::OnVolumeUnmounted(chromeos::MountError error_code,
+void DeviceEventRouter::OnVolumeUnmounted(ash::MountError error_code,
                                           const Volume& volume) {
   // Do nothing.
 }

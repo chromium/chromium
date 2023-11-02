@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -52,7 +52,9 @@ namespace autotestPrivate {
     Default,
     Sync,
     User,
-    SubApp
+    SubApp,
+    Kiosk,
+    CommandLine
   };
 
   // A mapping of apps::mojom::Readiness
@@ -103,8 +105,6 @@ namespace autotestPrivate {
 
   enum LauncherStateType {
     Closed,
-    Peeking,
-    Half,
     FullscreenAllApps,
     FullscreenSearch
   };
@@ -117,7 +117,9 @@ namespace autotestPrivate {
   enum MouseButton {
     Left,
     Middle,
-    Right
+    Right,
+    Back,
+    Forward
   };
 
   // A paramter used in setArcAppWindowState() function.
@@ -151,6 +153,8 @@ namespace autotestPrivate {
     DOMString? email;
     // User display email. Set only if `isLoggedIn`.
     DOMString? displayEmail;
+    // User display name. Set only if `isLoggedIn`.
+    DOMString? displayName;
     // User image: 'file', 'profile' or a number. Set only if `isLoggedIn`.
     DOMString? userImage;
     // Whether the user has a valid oauth2 token. Only set for gaia user.
@@ -237,6 +241,10 @@ namespace autotestPrivate {
     DOMString? text;
     // HTML response returned from server.
     DOMString? htmlResponse;
+    // Open URL response returned from server.
+    DOMString? openUrl;
+    // Open Android app response returned from server.
+    DOMString? openAppResponse;
   };
   dictionary AssistantQueryStatus {
     // Indicates whether this might be a voice interaction.
@@ -255,6 +263,41 @@ namespace autotestPrivate {
 
   callback IsArcPackageListInitialRefreshedCallback = void (boolean refreshed);
 
+  // A mapping of crosapi::BrowserManager::State
+  enum LacrosState {
+    NotInitialized,
+    Mounting,
+    Unavailable,
+    Stopped,
+    CreatingLogFile,
+    Starting,
+    Running,
+    Terminating
+  };
+
+  // A mapping of crosapi::browser_util::LacrosMode
+  enum LacrosMode {
+    Disabled,
+    SideBySide,
+    Primary,
+    Only
+  };
+
+  dictionary LacrosInfo {
+    // The state of lacros.
+    LacrosState state;
+    // True iff keepalive is enabled for lacros.
+    boolean isKeepAlive;
+    // Path to lacros-chrome directory. Note that this may change over time if
+    // omaha is used. This also may be empty if lacros is not running.
+    DOMString lacrosPath;
+    // Specifies the mode Lacros is currently running.
+    // For a full list of supported mode, see LacrosMode enum definition.
+    LacrosMode mode;
+  };
+
+  callback GetLacrosInfoCallback = void (LacrosInfo info);
+
   dictionary ArcAppDict {
     DOMString name;
     DOMString packageName;
@@ -272,6 +315,17 @@ namespace autotestPrivate {
     boolean launchable;
   };
   callback GetArcAppCallback = void (ArcAppDict package);
+
+  dictionary ArcAppKillsDict {
+    double oom;
+    double lmkdForeground;
+    double lmkdPerceptible;
+    double lmkdCached;
+    double pressureForeground;
+    double pressurePerceptible;
+    double pressureCached;
+  };
+  callback GetArcAppKillsCallback = void (ArcAppKillsDict counts);
 
   dictionary ArcPackageDict {
     DOMString packageName;
@@ -317,6 +371,17 @@ namespace autotestPrivate {
 
   callback SetOverviewModeStateCallback = void(boolean finished);
 
+  enum ThemeStyle {
+    TonalSpot,
+    Vibrant,
+    Expressive,
+    Spritz,
+    Rainbow,
+    FruitSalad
+  };
+
+  callback SendArcOverlayColorCallback = void (boolean result);
+
   callback ArcAppTracingCallback = void(ArcAppTracingInfo info);
 
   callback WaitForDisplayRotationCallback = void (boolean success);
@@ -336,12 +401,33 @@ namespace autotestPrivate {
     boolean? showInSearch;
   };
 
-  dictionary SystemApp {
+  dictionary SystemWebApp {
+    // App's internal name. This isn't user-visible and should only be used
+    // for logging.
     DOMString internalName;
+
+    // App's install URL. This is a placeholder for installation pipeline,
+    // not used for anything else.
     DOMString url;
+
+    // App's visible name. This is defined in the Web App manifest, and shown
+    // in Shelf and Launcher. This matches App's name attribute (see above).
+    DOMString name;
+
+    // App's default start_url. This is the default URL that the App will be
+    // launched to.
+    DOMString startUrl;
   };
 
   callback GetAllInstalledAppsCallback = void (App[] apps);
+
+  dictionary CryptohomeRecoveryDataDict {
+    DOMString reauthProofToken;
+    DOMString refreshToken;
+  };
+
+  callback GetCryptohomeRecoveryDataCallback = void (
+    CryptohomeRecoveryDataDict dict);
 
   dictionary ShelfItem {
     DOMString appId;
@@ -454,7 +540,13 @@ namespace autotestPrivate {
 
     OverviewInfo? overviewInfo;
 
+    // The identifier of the app associated with the window that was launched
+    // from full restore. This should be same as |appId| when the window was
+    // restored from full restore, otherwise null.
     DOMString? fullRestoreWindowAppId;
+
+    // The identifier of the app associated with the window.
+    DOMString? appId;
   };
 
   dictionary Accelerator {
@@ -515,6 +607,12 @@ namespace autotestPrivate {
     ScrollableShelfInfo scrollableShelfInfo;
   };
 
+  // Information about all desks.
+  dictionary DesksInfo {
+    long activeDeskIndex;
+    long numDesks;
+  };
+
   callback GetShelfItemsCallback = void (ShelfItem[] items);
 
   callback GetDefaultPinnedAppIdsCallback = void (DOMString[] items);
@@ -535,6 +633,10 @@ namespace autotestPrivate {
 
   callback DesksCallback = void (boolean success);
 
+  callback GetDeskCountCallback = void (long count);
+
+  callback GetDesksInfoCallback = void (DesksInfo desks);
+
   callback GetScrollableShelfInfoForStateCallback = void (
       ScrollableShelfInfo info);
 
@@ -554,6 +656,25 @@ namespace autotestPrivate {
   };
   callback WindowBoundsCallback = void (SetWindowBoundsResult result);
 
+  // Collected DisplaySmoothness data between startSmoothnessTracking and
+  // stopSmoothnessTracking calls.
+  dictionary DisplaySmoothnessData {
+    // Number of frames expected to be shown for this animation.
+    long framesExpected;
+    // Number of frames actually shown for this animation.
+    long framesProduced;
+    // Number of janks during this animation. A jank is counted when the current
+    // frame latency is larger than previous ones.
+    long jankCount;
+    // Display throughput percentage at fixed intervals.
+    long[] throughput;
+  };
+
+  // Callback invoked to report the smoothness after StopSmoothnessTracking is
+  // called.
+  callback StopSmoothnessTrackingCallback = void
+      (DisplaySmoothnessData data);
+
   // Collected ui::ThroughputTracker data for one animation. It is based on
   // cc::FrameSequenceMetrics::ThroughputData.
   dictionary ThroughputTrackerAnimationData {
@@ -566,26 +687,90 @@ namespace autotestPrivate {
     long jankCount;
   };
 
-  // Callback invoked to report the smoothness after StopSmoothnessTracking is
-  // called.
-  callback StopSmoothnessTrackingCallback = void
-      (ThroughputTrackerAnimationData data);
-
   // Callback invoked to report the collection ui::ThroughputTracker data
   // after stopThroughputTrackerDataCollection is called.
   callback StopThroughputTrackerDataCollectionCallback = void
       (ThroughputTrackerAnimationData[] data);
 
+  // Callback invoked to report the currently collected ui::ThroughputTracker
+  // animation data. Note that the data reported is removed to avoid reporting
+  // duplicated data.
+  callback GetThroughtputTrackerDataCallback = void
+      (ThroughputTrackerAnimationData[] data);
+
   // Callback invoked to report the number of system web apps that should be
   // installed.
   callback GetRegisteredSystemWebAppsCallback = void
-      (SystemApp[] systemApps);
+      (SystemWebApp[] systemWebApps);
 
   callback IsSystemWebAppOpenCallback = void (boolean isOpen);
 
   // Callback invoked to return the smoothness percentage after
   // getDisplaySmoothness is called.
   callback GetDisplaySmoothnessCallback = void (long smoothness);
+
+  // Options for resetting the holding space.
+  dictionary ResetHoldingSpaceOptions {
+    // Whether to call `ash::holding_space_prefs::MarkTimeOfFirstAdd()` after
+    // reset. Used to show the holding space tray in tests, since it's otherwise
+    // hidden after OOBE.
+    boolean markTimeOfFirstAdd;
+  };
+
+  callback CouldAllowCrostiniCallback = void (boolean canBeAllowed);
+
+  // Collected chromeos::LoginEventRecorder data.
+  dictionary LoginEventRecorderData {
+    // Event name
+    DOMString name;
+    // Number of frames actually shown for this animation.
+    long microsecnods_since_unix_epoch;
+  };
+
+  // Callback invoked to report the collection ui::LoginEventRecorder data
+  // after getLoginEventRecorderLoginEvents is called.
+  callback GetLoginEventRecorderLoginEventsCallback = void
+      (LoginEventRecorderData[] data);
+
+  // Request parameters for <code>getAccessToken</code>.
+  dictionary GetAccessTokenParams {
+     // An email associated with the account to get a token for.
+     DOMString email;
+     // A list of OAuth scopes to request.
+     DOMString[] scopes;
+     // An optional timeout in milliseconds for the request.
+     // Default: 90 seconds
+     long? timeoutMs;
+  };
+
+  // Response data for <code>getAccessToken</code>.
+  dictionary GetAccessTokenData {
+    // The access token
+    DOMString accessToken;
+    // The time the access token will expire as a unix timestamp in
+    // milliseconds.
+    DOMString expirationTimeUnixMs;
+  };
+
+  // Reponse callback for <code>getAccessToken</code>.
+  callback GetAccessTokenCallback = void(GetAccessTokenData data);
+
+  // Callback invoked to report whether the current input method is ready to
+  // accept key events from the test.
+  callback IsInputMethodReadyForTestingCallback = void
+      (boolean isReady);
+
+  // Response data for <code>makeFuseboxTempDir</code>.
+  dictionary MakeFuseboxTempDirData {
+    DOMString fuseboxFilePath;
+    DOMString underlyingFilePath;
+  };
+
+  // Callback invoked when the temporary directory was made.
+  callback MakeFuseboxTempDirCallback = void(MakeFuseboxTempDirData data);
+
+  // Callback invoked when the temporary directory was removed.
+  callback RemoveFuseboxTempDirCallback = void();
 
   interface Functions {
     // Must be called to allow autotestPrivateAPI events to be fired.
@@ -690,14 +875,26 @@ namespace autotestPrivate {
     [supportsPromises] static void isArcProvisioned(
         IsArcProvisionedCallback callback);
 
+    // Gets various information about the state of lacros on the system.
+    [supportsPromises] static void getLacrosInfo(
+        GetLacrosInfoCallback callback);
+
     // Gets information about the requested ARC app.
     [supportsPromises] static void getArcApp(DOMString appId,
                                              GetArcAppCallback callback);
+
+    // Gets counts of how many ARC apps have been killed, by priority.
+    [supportsPromises] static void getArcAppKills(
+        GetArcAppKillsCallback callback);
 
     // Gets information about requested ARC package.
     [supportsPromises] static void getArcPackage(
         DOMString packageName,
         GetArcPackageCallback callback);
+
+    // Gets the data needed for Cryptohome Recovery.
+    [supportsPromises] static void getCryptohomeRecoveryData(
+        GetCryptohomeRecoveryDataCallback callback);
 
     // Waits for system web apps to complete the installation.
     [supportsPromises] static void waitForSystemWebAppsInstall(
@@ -733,6 +930,14 @@ namespace autotestPrivate {
                                                       DOMString url,
                                                       VoidCallback callback);
 
+    // Launches Files app directly to absolutePath, if the path does not
+    // exist, it will launch to the default opening location (i.e. My files).
+    // If the supplied path is a file (and it exists) it will open Files app
+    // to the parent folder instead.
+    [supportsPromises] static void launchFilesAppToPath(
+        DOMString absolutePath,
+        VoidCallback callback);
+
     // Closes an application the given appId in case it was running.
     [supportsPromises] static void closeApp(DOMString appId,
                                             VoidCallback callback);
@@ -742,6 +947,16 @@ namespace autotestPrivate {
 
     // Remove printer.
     static void removePrinter(DOMString printerId);
+
+    // Start ARC directly, note this differs from |setPlayStoreEnabled|. It is
+    // used to restart ARC in tests.
+    // |callback|: Called when the operation has completed.
+    [supportsPromises] static void startArc(VoidCallback callback);
+
+    // Stop ARC directly, note this differs from |setPlayStoreEnabled|. It is
+    // used to restart ARC in tests. Note, this preserves ARC data.
+    // |callback|: Called when the operation has completed.
+    [supportsPromises] static void stopArc(VoidCallback callback);
 
     // Enable/disable the Play Store.
     // |enabled|: if set, enable the Play Store.
@@ -789,6 +1004,12 @@ namespace autotestPrivate {
     [supportsPromises] static void importCrostini(DOMString path,
                                                   VoidCallback callback);
 
+    // Returns whether crostini could ever be allowed.
+    // |callback|: Called with a boolean indicating if crostini can ever be
+    // allowed in the current profile.
+    [supportsPromises] static void couldAllowCrostini(
+        CouldAllowCrostiniCallback callback);
+
     // Sets mock Plugin VM policy.
     // |imageUrl|: URL to the image to install.
     // |imageHash|: Hash for the provided image.
@@ -825,6 +1046,11 @@ namespace autotestPrivate {
     // |callback|: Called when the operation has completed.
     [supportsPromises] static void bootstrapMachineLearningService(
         VoidCallback callback);
+
+    // Triggers an on-demand update of smart dim component and checks whether
+    // it's successfully loaded by smart dim ml_agent.
+    // |callback|: Called when the operation has completed.
+    [supportsPromises] static void loadSmartDimComponent(VoidCallback callback);
 
     // Enables/disables the Google Assistant.
     // |callback|: Called when the operation has completed.
@@ -872,6 +1098,12 @@ namespace autotestPrivate {
     [supportsPromises] static void isArcPackageListInitialRefreshed(
         IsArcPackageListInitialRefreshedCallback callback);
 
+    // Set value for the specified user pref in the pref tree.
+    [supportsPromises] static void setAllowedPref(DOMString pref_name,
+                                                  any value,
+                                                  VoidCallback callback);
+
+    // DEPRECATED: use SetAllowedPref instead, see crbug/1262034
     // Set value for the specified user pref in the pref tree.
     [supportsPromises] static void setWhitelistedPref(DOMString pref_name,
                                                       any value,
@@ -967,6 +1199,13 @@ namespace autotestPrivate {
 
     // Show virtual keyboard of the current input method if it's available.
     static void showVirtualKeyboardIfEnabled();
+
+    // Sends the overlay color and theme to Android and changes the Android system color and theme to these values.
+    // |color|: the int color of the system ui.
+    // |theme|: the theme of the system ui.
+    // |callback|: callback to deliver sendArcOverlayColor result.
+    [supportsPromises] static void sendArcOverlayColor(
+      long color, ThemeStyle theme, SendArcOverlayColorCallback callback);
 
     // Start ARC performance tracing for the active ARC app window.
     // |callback|: Called when the operation has completed.
@@ -1087,6 +1326,19 @@ namespace autotestPrivate {
         long index,
         DesksCallback callback);
 
+    // Fetches the number of open desks in the `DesksController` at the time of
+    // call.
+    // `callback`: callback that is passed the number of open desks.
+    [supportsPromises] static void getDeskCount(
+        GetDeskCountCallback callback
+    );
+
+    // Fetches info about the open desks at the time of the call.
+    // `callback`: callback that is passed desks information.
+    [supportsPromises] static void getDesksInfo(
+        GetDesksInfoCallback callback
+    );
+
     // Create mouse events to cause a mouse click.
     // |button|: the mouse button for the click event.
     // |callback|: called after the mouse click finishes.
@@ -1157,9 +1409,11 @@ namespace autotestPrivate {
 
     // Starts smoothness tracking for a display. If the display id is not
     // specified, the primary display is used. Otherwise, the display specified
-    // by the display id is used.
+    // by the display id is used. If `throughputIntervalMs` is not specified,
+    // default 5 seconds interval is used to collect throughput data.
     [supportsPromises] static void startSmoothnessTracking(
         optional DOMString displayId,
+        optional long throughputIntervalMs,
         VoidCallback callback);
 
     // Stops smoothness tracking for a display and report the smoothness. If
@@ -1193,15 +1447,57 @@ namespace autotestPrivate {
         VoidCallback callback);
 
     // Stops ui::ThroughputTracker data collection and reports the collected
-    // data since the start.
+    // data since the start or the last GetThroughtputTrackerData call.
     [supportsPromises] static void stopThroughputTrackerDataCollection(
         StopThroughputTrackerDataCollectionCallback callback);
+
+    // Reports the currently collected animation data.
+    [supportsPromises] static void getThroughputTrackerData(
+        GetThroughtputTrackerDataCallback callback);
 
     // Gets the smoothness of a display. If the display id is not specified,
     // the primary display is used.
     [supportsPromises] static void getDisplaySmoothness(
         optional DOMString displayId,
         GetDisplaySmoothnessCallback callback);
+
+    // Resets the holding space by removing all items and clearing the prefs.
+    [supportsPromises] static void resetHoldingSpace(
+        optional ResetHoldingSpaceOptions options,
+        VoidCallback callback);
+
+    // Starts collection of ui::LoginEventRecorder data.
+    static void startLoginEventRecorderDataCollection(VoidCallback callback);
+
+    // Stops ui::LoginEventRecorder data collection and reports all the
+    // collected data.
+    static void getLoginEventRecorderLoginEvents(
+        GetLoginEventRecorderLoginEventsCallback callback);
+
+    // Adds login event to test LoginEventRecorderDataCollection API.
+    static void addLoginEventForTesting(VoidCallback callback);
+
+    // Force auto theme mode in dark mode or light mode for testing.
+    [supportsPromises] static void forceAutoThemeMode(boolean darkModeEnabled, VoidCallback callback);
+
+    // Fetches an access token from Chrome.
+    [supportsPromises] static void getAccessToken(
+        GetAccessTokenParams accessTokenParams,
+        GetAccessTokenCallback callback);
+
+    // Returns whether the current input method is ready to accept key events.
+    [supportsPromises] static void isInputMethodReadyForTesting(
+        IsInputMethodReadyForTestingCallback callback);
+
+    // Creates a temporary directory visible under the Fusebox mount point.
+    [supportsPromises] static void makeFuseboxTempDir(
+        MakeFuseboxTempDirCallback callback);
+
+    // Removes a temporary directory visible under the Fusebox mount point. The
+    // fuseboxFilePath argument was returned by the MakeFuseboxTempDirCallback.
+    [supportsPromises] static void removeFuseboxTempDir(
+        DOMString fuseboxFilePath,
+        RemoveFuseboxTempDirCallback callback);
   };
 
   interface Events {

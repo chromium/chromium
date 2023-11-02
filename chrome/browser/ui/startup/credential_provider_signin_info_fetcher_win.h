@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -54,10 +54,8 @@ class CredentialProviderSigninInfoFetcher
       FetchCompletionCallback completion_callback);
 
   // gaia::GaiaOAuthClient::Delegate:
-  void OnGetTokenInfoResponse(
-      std::unique_ptr<base::DictionaryValue> token_info) override;
-  void OnGetUserInfoResponse(
-      std::unique_ptr<base::DictionaryValue> user_info) override;
+  void OnGetTokenInfoResponse(const base::Value::Dict& token_info) override;
+  void OnGetUserInfoResponse(const base::Value::Dict& user_info) override;
   void OnOAuthError() override;
   void OnNetworkError(int response_code) override;
 

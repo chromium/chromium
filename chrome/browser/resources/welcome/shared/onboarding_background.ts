@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,17 +7,44 @@
  * animated and responsive background for any page that contains it.
  */
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import './icons.html.js';
+import '../strings.m.js';
 
-/** @polymer */
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {getTemplate} from './onboarding_background.html.js';
+
+export interface OnboardingBackgroundElement {
+  $: {
+    logo: HTMLElement,
+  };
+}
+
 export class OnboardingBackgroundElement extends PolymerElement {
   static get is() {
     return 'onboarding-background';
   }
 
-  private animations_: Animation[] = [];
+  static get template() {
+    return getTemplate();
+  }
 
-  connectedCallback() {
+  static get properties() {
+    return {
+      forcePaused_: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
+    };
+  }
+
+  private animations_: Animation[] = [];
+  private forcePaused_: boolean =
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  override connectedCallback() {
     super.connectedCallback();
     const details: Array<[string, number]> = [
       ['blue-line', 60],
@@ -91,6 +118,15 @@ export class OnboardingBackgroundElement extends PolymerElement {
     this.loopAnimation_(lineTransformAnimation);
   }
 
+  private getPlayPauseIcon_(): string {
+    return this.forcePaused_ ? 'welcome:play' : 'welcome:pause';
+  }
+
+  private getPlayPauseLabel_(): string {
+    return loadTimeData.getString(
+        this.forcePaused_ ? 'landingPlayAnimations' : 'landingPauseAnimations');
+  }
+
   private loopAnimation_(animation: Animation) {
     // Animations that have a delay after them can only be looped by re-playing
     // them as soon as they finish. The |endDelay| property of JS animations
@@ -101,16 +137,40 @@ export class OnboardingBackgroundElement extends PolymerElement {
     };
   }
 
+  private onLogoClick_() {
+    this.$.logo.animate(
+        {
+          transform: [
+            'translate(-50%, -50%)',
+            'translate(-50%, -50%) rotate(-10turn)',
+          ],
+        },
+        {
+          duration: 500,
+          easing: 'cubic-bezier(1, 0, 0, 1)',
+        });
+  }
+
+  private onPlayPauseClick_() {
+    if (this.forcePaused_) {
+      this.play();
+    } else {
+      this.pause();
+    }
+
+    this.forcePaused_ = !this.forcePaused_;
+  }
+
   pause() {
     this.animations_.forEach(animation => animation.pause());
   }
 
   play() {
-    this.animations_.forEach(animation => animation.play());
-  }
+    if (this.forcePaused_) {
+      return;
+    }
 
-  static get template() {
-    return html`{__html_template__}`;
+    this.animations_.forEach(animation => animation.play());
   }
 }
 customElements.define(

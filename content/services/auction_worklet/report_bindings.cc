@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,10 +10,10 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/logging.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "gin/converter.h"
 #include "url/gurl.h"
+#include "url/url_constants.h"
 #include "v8/include/v8-exception.h"
 #include "v8/include/v8-external.h"
 #include "v8/include/v8-function-callback.h"
@@ -21,9 +21,13 @@
 
 namespace auction_worklet {
 
-ReportBindings::ReportBindings(AuctionV8Helper* v8_helper,
-                               v8::Local<v8::ObjectTemplate> global_template)
-    : v8_helper_(v8_helper) {
+ReportBindings::ReportBindings(AuctionV8Helper* v8_helper)
+    : v8_helper_(v8_helper) {}
+
+ReportBindings::~ReportBindings() = default;
+
+void ReportBindings::FillInGlobalTemplate(
+    v8::Local<v8::ObjectTemplate> global_template) {
   v8::Local<v8::External> v8_this =
       v8::External::New(v8_helper_->isolate(), this);
   v8::Local<v8::FunctionTemplate> v8_template = v8::FunctionTemplate::New(
@@ -33,7 +37,10 @@ ReportBindings::ReportBindings(AuctionV8Helper* v8_helper,
                        v8_template);
 }
 
-ReportBindings::~ReportBindings() = default;
+void ReportBindings::Reset() {
+  report_url_ = absl::nullopt;
+  exception_thrown_ = false;
+}
 
 void ReportBindings::SendReportTo(
     const v8::FunctionCallbackInfo<v8::Value>& args) {

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,6 +19,9 @@ constexpr HostSettingKey kLinuxPreviousDefaultWebBrowserXfce =
 
 constexpr HostSettingKey kLinuxPreviousDefaultWebBrowserCinnamon =
     "previous_default_browser_cinnamon";
+
+constexpr HostSettingKey kLinuxPreviousDefaultWebBrowserGnome =
+    "previous_default_browser_gnome";
 
 constexpr HostSettingKey kLinuxPreviousDefaultWebBrowserGeneric =
     "previous_default_browser_generic";

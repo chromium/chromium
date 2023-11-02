@@ -3,7 +3,7 @@
 This directory is meant to house features or subsystems that are used in more
 than one part of the Chromium codebase.
 
-## Example use cases:
+## Use cases:
 
   * Features that are shared by Chrome on iOS (`//ios/chrome`) and Chrome on
     other platforms (`//chrome`).
@@ -22,6 +22,10 @@ than one part of the Chromium codebase.
         conceptually Blink code that is shared by iOS, raise the question on
         chromium-dev@, where the right folks will see it).
 
+Note that the above list is meant to be exhaustive. A component should not be
+added just to separate it from other code in the same layer that is the only
+consumer; that can be done with strict DEPS or GN visibility rules.
+
 ## Guidelines for adding a new component
 
   * You will be added to an OWNERS file under `//components/{your component}`
@@ -30,6 +34,9 @@ than one part of the Chromium codebase.
   * Code must be needed in at least 2 places in Chrome that don't have a "higher
     layered" directory that could facilitate sharing (e.g. `//content/common`,
     `//chrome/utility`, etc.).
+  * The CL adding a new component should be substantial enough so that
+    //components/OWNERS can see its basic intended structure and usage before
+    approving the addition (e.g., it should not just be an empty shell).
 
 ## Dependencies of a component
 

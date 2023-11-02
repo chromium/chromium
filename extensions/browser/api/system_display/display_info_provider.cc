@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/extensions_browser_client.h"
@@ -37,7 +38,11 @@ int RotationToDegrees(display::Display::Rotation rotation) {
 
 }  // namespace
 
-DisplayInfoProvider::DisplayInfoProvider() = default;
+DisplayInfoProvider::DisplayInfoProvider(display::Screen* screen)
+    : screen_(screen ? screen : display::Screen::GetScreen()) {
+  // Do not use/call on the screen object in this constructor yet because a
+  // subclass may pass not-yet-initialized screen instance.
+}
 
 DisplayInfoProvider::~DisplayInfoProvider() = default;
 
@@ -108,21 +113,33 @@ void DisplayInfoProvider::SetDisplayLayout(const DisplayLayoutList& layouts,
 
 void DisplayInfoProvider::EnableUnifiedDesktop(bool enable) {}
 
-void DisplayInfoProvider::GetAllDisplaysInfo(
-    bool /* single_unified*/,
-    base::OnceCallback<void(DisplayUnitInfoList result)> callback) {
-  display::Screen* screen = display::Screen::GetScreen();
-  int64_t primary_id = screen->GetPrimaryDisplay().id();
-  std::vector<display::Display> displays = screen->GetAllDisplays();
+DisplayInfoProvider::DisplayUnitInfoList
+DisplayInfoProvider::GetAllDisplaysInfoList(
+    const std::vector<display::Display>& displays,
+    int64_t primary_id) const {
   DisplayUnitInfoList all_displays;
+
   for (const display::Display& display : displays) {
     api::system_display::DisplayUnitInfo unit =
         CreateDisplayUnitInfo(display, primary_id);
-    UpdateDisplayUnitInfoForPlatform(display, &unit);
     all_displays.push_back(std::move(unit));
   }
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), std::move(all_displays)));
+  UpdateDisplayUnitInfoForPlatform(displays, all_displays);
+  return all_displays;
+}
+
+void DisplayInfoProvider::GetAllDisplaysInfo(
+    bool /* single_unified*/,
+    base::OnceCallback<void(DisplayUnitInfoList result)> callback) {
+  int64_t primary_id = screen_->GetPrimaryDisplay().id();
+  std::vector<display::Display> displays = screen_->GetAllDisplays();
+  DisplayUnitInfoList all_displays;
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&DisplayInfoProvider::GetAllDisplaysInfoList,
+                     base::Unretained(this),  // `this` is a global singleton.
+                     displays, primary_id),
+      std::move(callback));
 }
 
 void DisplayInfoProvider::GetDisplayLayout(
@@ -198,12 +215,12 @@ void DisplayInfoProvider::DispatchOnDisplayChangedEvent() {
   ExtensionsBrowserClient::Get()->BroadcastEventToRenderers(
       events::SYSTEM_DISPLAY_ON_DISPLAY_CHANGED,
       extensions::api::system_display::OnDisplayChanged::kEventName,
-      std::make_unique<base::ListValue>(), dispatch_to_off_the_record_profiles);
+      base::Value::List(), dispatch_to_off_the_record_profiles);
 }
 
 void DisplayInfoProvider::UpdateDisplayUnitInfoForPlatform(
-    const display::Display& display,
-    extensions::api::system_display::DisplayUnitInfo* unit) {
+    const std::vector<display::Display>& displays,
+    DisplayUnitInfoList& units) const {
   NOTIMPLEMENTED_LOG_ONCE();
 }
 

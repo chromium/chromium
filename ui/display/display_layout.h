@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -123,6 +123,9 @@ class DISPLAY_EXPORT DisplayLayout final {
   // Test if the |layout| has the same placement list. Other fields such
   // as mirrored, primary_id are ignored.
   bool HasSamePlacementList(const DisplayLayout& layout) const;
+
+  // Removes the display placemenats created for `display_id_list`.
+  void RemoveDisplayPlacements(const DisplayIdList& display_id_list);
 
   // Returns string representation of the layout for debugging/testing.
   std::string ToString() const;

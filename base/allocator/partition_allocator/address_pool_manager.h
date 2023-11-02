@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,19 +11,25 @@
 #include "base/allocator/partition_allocator/address_pool_manager_bitmap.h"
 #include "base/allocator/partition_allocator/address_pool_manager_types.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/debug/debugging_buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/thread_annotations.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_lock.h"
-#include "base/thread_annotations.h"
 #include "build/build_config.h"
 
-namespace base {
+namespace partition_alloc {
 
-template <typename Type>
-struct LazyInstanceTraitsBase;
+class AddressSpaceStatsDumper;
+struct AddressSpaceStats;
+struct PoolStats;
 
-namespace internal {
+}  // namespace partition_alloc
+
+namespace partition_alloc::internal {
 
 // (64bit version)
 // AddressPoolManager takes a reserved virtual address space and manages address
@@ -40,15 +46,15 @@ namespace internal {
 // IsManagedByPartitionAllocRegularPool use the bitmaps to judge whether a given
 // address is in a pool that supports BackupRefPtr or in a pool that doesn't.
 // All PartitionAlloc allocations must be in either of the pools.
-class BASE_EXPORT AddressPoolManager {
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC) AddressPoolManager {
  public:
-  static AddressPoolManager* GetInstance();
+  static AddressPoolManager& GetInstance();
 
   AddressPoolManager(const AddressPoolManager&) = delete;
   AddressPoolManager& operator=(const AddressPoolManager&) = delete;
 
 #if defined(PA_HAS_64_BITS_POINTERS)
-  pool_handle Add(uintptr_t address, size_t length);
+  void Add(pool_handle handle, uintptr_t address, size_t length);
   void Remove(pool_handle handle);
 
   // Populate a |used| bitset of superpages currently in use.
@@ -59,37 +65,51 @@ class BASE_EXPORT AddressPoolManager {
   uintptr_t GetPoolBaseAddress(pool_handle handle);
 #endif
 
-  // Reserves address space from GigaCage.
-  char* Reserve(pool_handle handle, void* requested_address, size_t length);
+  // Reserves address space from the pool.
+  uintptr_t Reserve(pool_handle handle,
+                    uintptr_t requested_address,
+                    size_t length);
 
-  // Frees address space back to GigaCage and decommits underlying system pages.
-  void UnreserveAndDecommit(pool_handle handle, void* ptr, size_t length);
+  // Frees address space back to the pool and decommits underlying system pages.
+  void UnreserveAndDecommit(pool_handle handle,
+                            uintptr_t address,
+                            size_t length);
   void ResetForTesting();
 
 #if !defined(PA_HAS_64_BITS_POINTERS)
-  void MarkUsed(pool_handle handle, const void* address, size_t size);
-  void MarkUnused(pool_handle handle, const void* address, size_t size);
+  void MarkUsed(pool_handle handle, uintptr_t address, size_t size);
+  void MarkUnused(pool_handle handle, uintptr_t address, size_t size);
 
-  static bool IsManagedByRegularPool(const void* address) {
+  static bool IsManagedByRegularPool(uintptr_t address) {
     return AddressPoolManagerBitmap::IsManagedByRegularPool(address);
   }
 
-  static bool IsManagedByBRPPool(const void* address) {
+  static bool IsManagedByBRPPool(uintptr_t address) {
     return AddressPoolManagerBitmap::IsManagedByBRPPool(address);
   }
 #endif  // !defined(PA_HAS_64_BITS_POINTERS)
 
+  void DumpStats(AddressSpaceStatsDumper* dumper);
+
  private:
   friend class AddressPoolManagerForTesting;
 
-  AddressPoolManager();
-  ~AddressPoolManager();
+  constexpr AddressPoolManager() = default;
+  ~AddressPoolManager() = default;
+
+  // Populates `stats` if applicable.
+  // Returns whether `stats` was populated. (They might not be, e.g.
+  // if PartitionAlloc is wholly unused in this process.)
+  bool GetStats(AddressSpaceStats* stats);
 
 #if defined(PA_HAS_64_BITS_POINTERS)
   class Pool {
    public:
-    Pool();
-    ~Pool();
+    constexpr Pool() = default;
+    ~Pool() = default;
+
+    Pool(const Pool&) = delete;
+    Pool& operator=(const Pool&) = delete;
 
     void Initialize(uintptr_t ptr, size_t length);
     bool IsInitialized();
@@ -103,53 +123,44 @@ class BASE_EXPORT AddressPoolManager {
     void GetUsedSuperPages(std::bitset<kMaxSuperPagesInPool>& used);
     uintptr_t GetBaseAddress();
 
+    void GetStats(PoolStats* stats);
+
    private:
-    PartitionLock lock_;
+    Lock lock_;
 
     // The bitset stores the allocation state of the address pool. 1 bit per
     // super-page: 1 = allocated, 0 = free.
-    std::bitset<kMaxSuperPagesInPool> alloc_bitset_ GUARDED_BY(lock_);
+    std::bitset<kMaxSuperPagesInPool> alloc_bitset_ PA_GUARDED_BY(lock_);
 
     // An index of a bit in the bitset before which we know for sure there all
     // 1s. This is a best-effort hint in the sense that there still may be lots
     // of 1s after this index, but at least we know there is no point in
     // starting the search before it.
-    size_t bit_hint_ GUARDED_BY(lock_);
+    size_t bit_hint_ PA_GUARDED_BY(lock_) = 0;
 
     size_t total_bits_ = 0;
     uintptr_t address_begin_ = 0;
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
     uintptr_t address_end_ = 0;
 #endif
   };
 
-  ALWAYS_INLINE Pool* GetPool(pool_handle handle) {
+  PA_ALWAYS_INLINE Pool* GetPool(pool_handle handle) {
     PA_DCHECK(0 < handle && handle <= kNumPools);
     return &pools_[handle - 1];
   }
+
+  // Gets the stats for the pool identified by `handle`, if
+  // initialized.
+  void GetPoolStats(pool_handle handle, PoolStats* stats);
 
   Pool pools_[kNumPools];
 
 #endif  // defined(PA_HAS_64_BITS_POINTERS)
 
-  friend struct base::LazyInstanceTraitsBase<AddressPoolManager>;
+  static PA_CONSTINIT AddressPoolManager singleton_;
 };
 
-ALWAYS_INLINE pool_handle GetRegularPool() {
-  return kRegularPoolHandle;
-}
-
-ALWAYS_INLINE pool_handle GetBRPPool() {
-  return kBRPPoolHandle;
-}
-
-ALWAYS_INLINE pool_handle GetConfigurablePool() {
-  PA_DCHECK(IsConfigurablePoolAvailable());
-  return kConfigurablePoolHandle;
-}
-
-}  // namespace internal
-
-}  // namespace base
+}  // namespace partition_alloc::internal
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_ADDRESS_POOL_MANAGER_H_

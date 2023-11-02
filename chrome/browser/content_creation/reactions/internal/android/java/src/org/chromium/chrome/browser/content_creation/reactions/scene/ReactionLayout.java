@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,12 +14,14 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.browser.content_creation.reactions.ReactionGifDrawable;
 import org.chromium.chrome.browser.content_creation.reactions.internal.R;
 import org.chromium.ui.widget.ChromeImageButton;
 
-class ReactionLayout extends RelativeLayout {
+/**
+ * A Layout holding a Lightweight Reaction.
+ */
+public class ReactionLayout extends RelativeLayout {
     private final int mReactionPadding;
     private final Context mContext;
 
@@ -41,17 +43,20 @@ class ReactionLayout extends RelativeLayout {
      * Initialize the ReactionLayout outside of the constructor since the Layout is inflated.
      * @param drawable {@link ReactionGifDrawable} of the reaction.
      * @param sceneEditorDelegate {@link SceneEditorDelegate} to call scene editing methods.
+     * @param localizedName The name of the reaction for accessibility.
      */
-    void init(ReactionGifDrawable drawable, SceneEditorDelegate sceneEditorDelegate) {
-        setDrawable(drawable);
+    void init(ReactionGifDrawable drawable, SceneEditorDelegate sceneEditorDelegate,
+            String localizedName) {
+        setDrawable(drawable, localizedName);
         mSceneEditorDelegate = sceneEditorDelegate;
         mIsActive = true;
         setUpReactionView();
     }
 
-    void setDrawable(ReactionGifDrawable drawable) {
+    void setDrawable(ReactionGifDrawable drawable, String localizedName) {
         mDrawable = drawable;
         mReaction.setImageDrawable(mDrawable);
+        mReaction.setContentDescription(localizedName);
     }
 
     @Override
@@ -80,7 +85,7 @@ class ReactionLayout extends RelativeLayout {
         }
     }
 
-    ReactionGifDrawable getReaction() {
+    public ReactionGifDrawable getReaction() {
         return mDrawable;
     }
 
@@ -94,8 +99,6 @@ class ReactionLayout extends RelativeLayout {
                         return true;
                     }
                 });
-        int screenWidth = mContext.getResources().getDisplayMetrics().widthPixels;
-        int screenHeight = mContext.getResources().getDisplayMetrics().heightPixels;
         mReaction.setOnTouchListener(new OnTouchListener() {
             private float mBaseX;
             private float mBaseY;
@@ -112,8 +115,11 @@ class ReactionLayout extends RelativeLayout {
                 }
                 RelativeLayout.LayoutParams layoutParams =
                         (RelativeLayout.LayoutParams) ReactionLayout.this.getLayoutParams();
+                int screenWidth = mContext.getResources().getDisplayMetrics().widthPixels;
+                int screenHeight = mContext.getResources().getDisplayMetrics().heightPixels;
                 switch (motionEvent.getAction()) {
                     case MotionEvent.ACTION_DOWN:
+                        mSceneEditorDelegate.reactionWasMoved(ReactionLayout.this);
                         mBaseX = motionEvent.getRawX() - layoutParams.leftMargin;
                         mBaseY = motionEvent.getRawY() - layoutParams.topMargin;
                         mHeight = layoutParams.height;
@@ -126,6 +132,10 @@ class ReactionLayout extends RelativeLayout {
                         layoutParams.bottomMargin =
                                 screenHeight - (layoutParams.topMargin - mHeight);
                         ReactionLayout.this.setLayoutParams(layoutParams);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        view.announceForAccessibility(mContext.getString(
+                                R.string.lightweight_reactions_reaction_moved_announcement));
                         break;
                 }
                 return true;
@@ -153,10 +163,13 @@ class ReactionLayout extends RelativeLayout {
                 }
                 RelativeLayout.LayoutParams layoutParams =
                         (RelativeLayout.LayoutParams) ReactionLayout.this.getLayoutParams();
+                int screenWidth = mContext.getResources().getDisplayMetrics().widthPixels;
+                int screenHeight = mContext.getResources().getDisplayMetrics().heightPixels;
                 float x = motionEvent.getRawX();
                 float y = motionEvent.getRawY();
                 switch (motionEvent.getAction()) {
                     case MotionEvent.ACTION_DOWN:
+                        mSceneEditorDelegate.reactionWasAdjusted();
                         mBaseAngle = ReactionLayout.this.getRotation();
                         mBaseX = x;
                         mBaseY = y;
@@ -174,6 +187,10 @@ class ReactionLayout extends RelativeLayout {
                         layoutParams.height = (int) (distRatio * mBaseHeight);
                         layoutParams.leftMargin = (int) (mCenterX - layoutParams.width / 2.0);
                         layoutParams.topMargin = (int) (mCenterY - layoutParams.height / 2.0);
+                        layoutParams.rightMargin =
+                                screenWidth - (layoutParams.leftMargin - layoutParams.width);
+                        layoutParams.bottomMargin =
+                                screenHeight - (layoutParams.topMargin - layoutParams.height);
                         ReactionLayout.this.setLayoutParams(layoutParams);
 
                         // Rotation calculations
@@ -183,6 +200,10 @@ class ReactionLayout extends RelativeLayout {
                                                   + mBaseAngle + 360.0)
                                 % 360.0;
                         ReactionLayout.this.setRotation((float) newAngle);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        view.announceForAccessibility(mContext.getString(
+                                R.string.lightweight_reactions_reaction_adjusted_announcement));
                         break;
                 }
                 return true;
@@ -196,17 +217,23 @@ class ReactionLayout extends RelativeLayout {
         // Programmatically tint vector icons since this is impossible in the drawable's XML. Mutate
         // is called to prevent this from affecting other drawables using the same resource.
         copyDrawable.findDrawableByLayerId(R.id.icon).mutate().setTint(
-                ApiCompatibilityUtils.getColor(getResources(), R.color.button_icon_color));
+                getContext().getColor(R.color.button_icon_color));
 
         mCopyButton.setOnClickListener(view -> {
             if (mSceneEditorDelegate.canAddReaction()) {
                 mSceneEditorDelegate.duplicateReaction(ReactionLayout.this);
+            } else {
+                mSceneEditorDelegate.showMaxReactionsReachedToast();
             }
         });
     }
 
     private void setUpDeleteButton() {
         mDeleteButton = findViewById(R.id.delete_button);
-        mDeleteButton.setOnClickListener(view -> mSceneEditorDelegate.removeReaction(this));
+        mDeleteButton.setOnClickListener(view -> {
+            view.announceForAccessibility(mContext.getString(
+                    R.string.lightweight_reactions_reaction_deleted_announcement));
+            mSceneEditorDelegate.removeReaction(this);
+        });
     }
 }

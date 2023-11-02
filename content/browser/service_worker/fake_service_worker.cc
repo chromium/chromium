@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -50,10 +50,9 @@ void FakeServiceWorker::InitializeGlobalScope(
     blink::mojom::ServiceWorkerRegistrationObjectInfoPtr registration_info,
     blink::mojom::ServiceWorkerObjectInfoPtr service_worker_info,
     blink::mojom::FetchHandlerExistence fetch_handler_existence,
-    std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
-        subresource_loader_factories,
     mojo::PendingReceiver<blink::mojom::ReportingObserver>
-        reporting_observer_receiver) {
+        reporting_observer_receiver,
+    blink::mojom::AncestorFrameType ancestor_frame_type) {
   host_.Bind(std::move(service_worker_host));
 
   // Enable callers to use these endpoints without us actually binding them
@@ -240,6 +239,13 @@ void FakeServiceWorker::SetIdleDelay(base::TimeDelta delay) {
 void FakeServiceWorker::AddMessageToConsole(
     blink::mojom::ConsoleMessageLevel level,
     const std::string& message) {
+  NOTIMPLEMENTED();
+}
+
+void FakeServiceWorker::ExecuteScriptForTest(
+    const std::u16string& script,
+    bool wants_result,
+    ExecuteScriptForTestCallback callback) {
   NOTIMPLEMENTED();
 }
 

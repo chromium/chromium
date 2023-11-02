@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,9 @@
 #include <utility>
 
 #include "base/base_export.h"
+#include "base/check.h"
 #include "base/check_op.h"
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/message_loop/timer_slack.h"
 #include "base/sequence_checker.h"
@@ -57,7 +58,7 @@ class BASE_EXPORT MessagePump {
       // delayed tasks.
       TimeTicks delayed_run_time;
 
-      // A recent view of TimeTicks::Now(). Only valid if |next_task_run_time|
+      // A recent view of TimeTicks::Now(). Only valid if |delayed_run_time|
       // isn't null nor max. MessagePump impls should use remaining_delay()
       // instead of resampling Now() if they wish to sleep for a TimeDelta.
       TimeTicks recent_now;
@@ -106,7 +107,9 @@ class BASE_EXPORT MessagePump {
         outer_->OnBeginWorkItem();
       }
 
-      Delegate* outer_;
+      // `outer_` is not a raw_ptr<...> for performance reasons (based on
+      // analysis of sampling profiler data and tab_search:top100:2020).
+      RAW_PTR_EXCLUSION Delegate* outer_;
     };
 
     // Called before a unit of work is executed. This allows reports
@@ -115,7 +118,7 @@ class BASE_EXPORT MessagePump {
     // TODO(crbug.com/851163): Place calls for all platforms. Without this, some
     // state like the top-level "ThreadController active" trace event will not
     // be correct when work is performed.
-    ScopedDoWorkItem BeginWorkItem() WARN_UNUSED_RESULT {
+    [[nodiscard]] ScopedDoWorkItem BeginWorkItem() {
       return ScopedDoWorkItem(this);
     }
 
@@ -224,7 +227,8 @@ class BASE_EXPORT MessagePump {
   // TODO(crbug.com/885371): Determine if this must be called to ensure that
   // delayed tasks run when a message pump outside the control of Run is
   // entered.
-  virtual void ScheduleDelayedWork(const TimeTicks& delayed_work_time) = 0;
+  virtual void ScheduleDelayedWork(
+      const Delegate::NextWorkInfo& next_work_info) = 0;
 
   // Sets the timer slack to the specified value.
   virtual void SetTimerSlack(TimerSlack timer_slack);

@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_PUBLIC_BROWSER_CLIENT_HINTS_H_
 #define CONTENT_PUBLIC_BROWSER_CLIENT_HINTS_H_
 
+#include "content/common/content_export.h"
 #include "content/public/browser/client_hints_controller_delegate.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/mojom/parsed_headers.mojom-forward.h"
@@ -17,7 +18,7 @@ class BrowserContext;
 // with a frame. It must be a main frame navigation. |is_javascript_enabled| is
 // whether JavaScript is enabled in blink or not.
 CONTENT_EXPORT void AddClientHintsHeadersToPrefetchNavigation(
-    const GURL& url,
+    const url::Origin& origin,
     net::HttpRequestHeaders* headers,
     BrowserContext* context,
     ClientHintsControllerDelegate* delegate,
@@ -29,7 +30,8 @@ CONTENT_EXPORT void AddClientHintsHeadersToPrefetchNavigation(
 enum class AcceptCHFrameRestart {
   kFramePresent = 0,
   kNavigationRestarted = 1,
-  kMaxValue = kNavigationRestarted,
+  kRedirectOverflow = 2,
+  kMaxValue = kRedirectOverflow,
 };
 
 }  // namespace content

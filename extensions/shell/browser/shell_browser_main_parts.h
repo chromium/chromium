@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,18 +8,13 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/nacl/common/buildflags.h"
 #include "content/public/browser/browser_main_parts.h"
-#include "content/public/common/main_function_params.h"
 
 class PrefService;
-
-namespace content {
-struct MainFunctionParams;
-}
 
 namespace extensions {
 
@@ -39,8 +34,8 @@ class ShellNetworkController;
 // Handles initialization of AppShell.
 class ShellBrowserMainParts : public content::BrowserMainParts {
  public:
-  ShellBrowserMainParts(content::MainFunctionParams parameters,
-                        ShellBrowserMainDelegate* browser_main_delegate);
+  ShellBrowserMainParts(ShellBrowserMainDelegate* browser_main_delegate,
+                        bool is_integration_test);
 
   ShellBrowserMainParts(const ShellBrowserMainParts&) = delete;
   ShellBrowserMainParts& operator=(const ShellBrowserMainParts&) = delete;
@@ -85,12 +80,11 @@ class ShellBrowserMainParts : public content::BrowserMainParts {
   std::unique_ptr<ShellUpdateQueryParamsDelegate> update_query_params_delegate_;
 
   // Owned by the KeyedService system.
-  ShellExtensionSystem* extension_system_;
-
-  // For running app browsertests.
-  content::MainFunctionParams parameters_;
+  raw_ptr<ShellExtensionSystem> extension_system_;
 
   std::unique_ptr<ShellBrowserMainDelegate> browser_main_delegate_;
+
+  const bool is_integration_test_;
 };
 
 }  // namespace extensions

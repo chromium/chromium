@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/signals/signals_common.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -36,6 +37,7 @@ struct ContextInfo {
   std::vector<std::string> on_file_attached_providers;
   std::vector<std::string> on_file_downloaded_providers;
   std::vector<std::string> on_bulk_data_entry_providers;
+  std::vector<std::string> on_print_providers;
   std::vector<std::string> on_security_event_providers;
   safe_browsing::EnterpriseRealTimeUrlCheckMode realtime_url_check_mode;
   std::string browser_version;
@@ -98,13 +100,13 @@ class ContextInfoFetcher {
 
   std::vector<std::string> GetDnsServers();
 
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
 
   // |connectors_service| is used to obtain the value of each Connector policy.
-  enterprise_connectors::ConnectorsService* connectors_service_;
+  raw_ptr<enterprise_connectors::ConnectorsService> connectors_service_;
 };
 
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 class ScopedUfwConfigPathForTesting {
  public:
   explicit ScopedUfwConfigPathForTesting(const char* path);
@@ -117,7 +119,7 @@ class ScopedUfwConfigPathForTesting {
  private:
   const char* initial_path_;
 };
-#endif  // defined(OS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX)
 
 }  // namespace enterprise_signals
 

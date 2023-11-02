@@ -1,10 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/device_posture/device_posture.h"
 
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 
@@ -18,8 +19,6 @@ String PostureToString(device::mojom::blink::DevicePostureType posture) {
       return "continuous";
     case device::mojom::blink::DevicePostureType::kFolded:
       return "folded";
-    case device::mojom::blink::DevicePostureType::kFoldedOver:
-      return "folded-over";
   }
 }
 
@@ -61,7 +60,7 @@ void DevicePosture::EnsureServiceConnection() {
 
   service_->AddListenerAndGetCurrentPosture(
       receiver_.BindNewPipeAndPassRemote(task_runner),
-      WTF::Bind(&DevicePosture::OnPostureChanged, WrapPersistent(this)));
+      WTF::BindOnce(&DevicePosture::OnPostureChanged, WrapPersistent(this)));
 }
 
 void DevicePosture::AddedEventListener(const AtomicString& event_type,

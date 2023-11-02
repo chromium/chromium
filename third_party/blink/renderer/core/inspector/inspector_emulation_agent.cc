@@ -1,10 +1,11 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/inspector/inspector_emulation_agent.h"
 
 #include "third_party/blink/public/common/input/web_touch_event.h"
+#include "third_party/blink/public/common/loader/network_utils.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/public/web/web_render_theme.h"
@@ -19,7 +20,6 @@
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
-#include "third_party/blink/renderer/platform/geometry/double_rect.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/loader/fetch/loader_freeze_mode.h"
@@ -29,6 +29,8 @@
 #include "third_party/blink/renderer/platform/network/network_utils.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_cpu_throttler.h"
+#include "third_party/blink/renderer/platform/scheduler/public/virtual_time_controller.h"
+#include "third_party/blink/renderer/platform/theme/web_theme_engine_helper.h"
 
 namespace blink {
 using protocol::Maybe;
@@ -50,6 +52,7 @@ InspectorEmulationAgent::InspectorEmulationAgent(
                                   /*default_value=*/WTF::String()),
       navigator_platform_override_(&agent_state_,
                                    /*default_value=*/WTF::String()),
+      hardware_concurrency_override_(&agent_state_, /*default_value=*/0),
       user_agent_override_(&agent_state_, /*default_value=*/WTF::String()),
       serialized_ua_metadata_override_(
           &agent_state_,
@@ -61,12 +64,13 @@ InspectorEmulationAgent::InspectorEmulationAgent(
       initial_virtual_time_(&agent_state_, /*default_value=*/0.0),
       virtual_time_policy_(&agent_state_, /*default_value=*/WTF::String()),
       virtual_time_task_starvation_count_(&agent_state_, /*default_value=*/0),
-      wait_for_navigation_(&agent_state_, /*default_value=*/false),
       emulate_focus_(&agent_state_, /*default_value=*/false),
       emulate_auto_dark_mode_(&agent_state_, /*default_value=*/false),
       auto_dark_mode_override_(&agent_state_, /*default_value=*/false),
       timezone_id_override_(&agent_state_, /*default_value=*/WTF::String()),
-      disabled_image_types_(&agent_state_, /*default_value=*/false) {}
+      disabled_image_types_(&agent_state_, /*default_value=*/false),
+      cpu_throttling_rate_(&agent_state_, /*default_value=*/1),
+      automation_override_(&agent_state_, /*default_value=*/false) {}
 
 InspectorEmulationAgent::~InspectorEmulationAgent() = default;
 
@@ -88,8 +92,12 @@ void InspectorEmulationAgent::Restore() {
       reinterpret_cast<char*>(save_serialized_ua_metadata_override.data()),
       save_serialized_ua_metadata_override.size()));
   serialized_ua_metadata_override_.Set(save_serialized_ua_metadata_override);
+  setCPUThrottlingRate(cpu_throttling_rate_.Get());
 
-  if (!locale_override_.Get().IsEmpty())
+  if (int concurrency = hardware_concurrency_override_.Get())
+    setHardwareConcurrencyOverride(concurrency);
+
+  if (!locale_override_.Get().empty())
     setLocaleOverride(locale_override_.Get());
   if (!web_local_frame_)
     return;
@@ -128,19 +136,15 @@ void InspectorEmulationAgent::Restore() {
   if (virtual_time_policy_.Get().IsNull())
     return;
 
-  // Preserve wait for navigation in all modes.
-  bool wait_for_navigation = wait_for_navigation_.Get();
-
   // Reinstate the stored policy.
   double virtual_time_ticks_base_ms;
 
   // For Pause, do not pass budget or starvation count.
   if (virtual_time_policy_.Get() ==
       protocol::Emulation::VirtualTimePolicyEnum::Pause) {
-    setVirtualTimePolicy(protocol::Emulation::VirtualTimePolicyEnum::Pause,
-                         Maybe<double>(), Maybe<int>(), wait_for_navigation,
-                         initial_virtual_time_.Get(),
-                         &virtual_time_ticks_base_ms);
+    setVirtualTimePolicy(
+        protocol::Emulation::VirtualTimePolicyEnum::Pause, Maybe<double>(),
+        Maybe<int>(), initial_virtual_time_.Get(), &virtual_time_ticks_base_ms);
     return;
   }
 
@@ -150,7 +154,7 @@ void InspectorEmulationAgent::Restore() {
 
   setVirtualTimePolicy(virtual_time_policy_.Get(), budget_remaining,
                        virtual_time_task_starvation_count_.Get(),
-                       wait_for_navigation, initial_virtual_time_.Get(),
+                       initial_virtual_time_.Get(),
                        &virtual_time_ticks_base_ms);
 }
 
@@ -160,10 +164,15 @@ Response InspectorEmulationAgent::disable() {
     enabled_ = false;
   }
 
+  hardware_concurrency_override_.Clear();
   setUserAgentOverride(
       String(), protocol::Maybe<String>(), protocol::Maybe<String>(),
       protocol::Maybe<protocol::Emulation::UserAgentMetadata>());
-  if (!locale_override_.Get().IsEmpty())
+
+  recordreplay::Assert("[RUN-1537-1538] InspectorEmulationAgent::disable %d %d",
+                       !!locale_override_.Get().empty(),
+                       !!web_local_frame_);
+  if (!locale_override_.Get().empty())
     setLocaleOverride(String());
   if (!web_local_frame_)
     return Response::Success();
@@ -171,6 +180,7 @@ Response InspectorEmulationAgent::disable() {
   setScrollbarsHidden(false);
   setDocumentCookieDisabled(false);
   setTouchEmulationEnabled(false, Maybe<int>());
+  setAutomationOverride(false);
   // Clear emulated media features. Note that the current approach
   // doesn't work well in cases where two clients have the same set of
   // features overridden to the same value by two different clients
@@ -292,11 +302,11 @@ Response InspectorEmulationAgent::setEmulatedMedia(
     if (forced_colors_value == "active") {
       if (!forced_colors_override_) {
         initial_system_color_info_state_ =
-            Platform::Current()->ThemeEngine()->GetSystemColorInfo();
+            WebThemeEngineHelper::GetNativeThemeEngine()->GetSystemColorInfo();
       }
       forced_colors_override_ = true;
       bool is_dark_mode = false;
-      if (prefers_color_scheme_value.IsEmpty()) {
+      if (prefers_color_scheme_value.empty()) {
         is_dark_mode = GetWebViewImpl()
                            ->GetPage()
                            ->GetSettings()
@@ -305,17 +315,18 @@ Response InspectorEmulationAgent::setEmulatedMedia(
       } else {
         is_dark_mode = prefers_color_scheme_value == "dark";
       }
-      Platform::Current()->ThemeEngine()->OverrideForcedColorsTheme(
+      WebThemeEngineHelper::GetNativeThemeEngine()->OverrideForcedColorsTheme(
           is_dark_mode);
     } else if (forced_colors_value == "none") {
       if (!forced_colors_override_) {
         initial_system_color_info_state_ =
-            Platform::Current()->ThemeEngine()->GetSystemColorInfo();
+            WebThemeEngineHelper::GetNativeThemeEngine()->GetSystemColorInfo();
       }
       forced_colors_override_ = true;
-      Platform::Current()->ThemeEngine()->SetForcedColors(ForcedColors::kNone);
+      WebThemeEngineHelper::GetNativeThemeEngine()->SetForcedColors(
+          ForcedColors::kNone);
     } else if (forced_colors_override_) {
-      Platform::Current()->ThemeEngine()->ResetToSystemColors(
+      WebThemeEngineHelper::GetNativeThemeEngine()->ResetToSystemColors(
           initial_system_color_info_state_);
     }
 
@@ -378,6 +389,7 @@ Response InspectorEmulationAgent::setCPUThrottlingRate(double rate) {
   Response response = AssertPage();
   if (!response.IsSuccess())
     return response;
+  cpu_throttling_rate_.Set(rate);
   scheduler::ThreadCPUThrottler::GetInstance()->SetThrottlingRate(rate);
   return response;
 }
@@ -386,6 +398,7 @@ Response InspectorEmulationAgent::setFocusEmulationEnabled(bool enabled) {
   Response response = AssertPage();
   if (!response.IsSuccess())
     return response;
+
   emulate_focus_.Set(enabled);
   GetWebViewImpl()->GetPage()->GetFocusController().SetFocusEmulationEnabled(
       enabled);
@@ -412,117 +425,83 @@ Response InspectorEmulationAgent::setVirtualTimePolicy(
     const String& policy,
     Maybe<double> virtual_time_budget_ms,
     protocol::Maybe<int> max_virtual_time_task_starvation_count,
-    protocol::Maybe<bool> wait_for_navigation,
     protocol::Maybe<double> initial_virtual_time,
     double* virtual_time_ticks_base_ms) {
   Response response = AssertPage();
   if (!response.IsSuccess())
     return response;
-  virtual_time_policy_.Set(policy);
+  DCHECK(web_local_frame_);
 
-  PendingVirtualTimePolicy new_policy;
-  new_policy.policy = PageScheduler::VirtualTimePolicy::kPause;
+  VirtualTimeController::VirtualTimePolicy scheduler_policy =
+      VirtualTimeController::VirtualTimePolicy::kPause;
   if (protocol::Emulation::VirtualTimePolicyEnum::Advance == policy) {
-    new_policy.policy = PageScheduler::VirtualTimePolicy::kAdvance;
+    scheduler_policy = VirtualTimeController::VirtualTimePolicy::kAdvance;
   } else if (protocol::Emulation::VirtualTimePolicyEnum::
                  PauseIfNetworkFetchesPending == policy) {
-    new_policy.policy = PageScheduler::VirtualTimePolicy::kDeterministicLoading;
-  }
-
-  if (new_policy.policy == PageScheduler::VirtualTimePolicy::kPause &&
-      virtual_time_budget_ms.isJust()) {
-    LOG(ERROR) << "Can only specify virtual time budget for non-Pause policy";
-    return Response::InvalidParams(
-        "Can only specify budget for non-Pause policy");
-  }
-  if (new_policy.policy == PageScheduler::VirtualTimePolicy::kPause &&
-      max_virtual_time_task_starvation_count.isJust()) {
-    LOG(ERROR)
-        << "Can only specify virtual time starvation for non-Pause policy";
-    return Response::InvalidParams(
-        "Can only specify starvation count for non-Pause policy");
-  }
-
-  if (virtual_time_budget_ms.isJust()) {
-    new_policy.virtual_time_budget_ms = virtual_time_budget_ms.fromJust();
-    virtual_time_budget_.Set(*new_policy.virtual_time_budget_ms);
+    scheduler_policy =
+        VirtualTimeController::VirtualTimePolicy::kDeterministicLoading;
   } else {
-    virtual_time_budget_.Clear();
+    DCHECK_EQ(scheduler_policy,
+              VirtualTimeController::VirtualTimePolicy::kPause);
+    if (virtual_time_budget_ms.isJust()) {
+      return Response::InvalidParams(
+          "Can only specify budget for non-Pause policy");
+    }
+    if (max_virtual_time_task_starvation_count.isJust()) {
+      return Response::InvalidParams(
+          "Can only specify starvation count for non-Pause policy");
+    }
   }
 
-  if (max_virtual_time_task_starvation_count.isJust()) {
-    new_policy.max_virtual_time_task_starvation_count =
-        max_virtual_time_task_starvation_count.fromJust();
-    virtual_time_task_starvation_count_.Set(
-        *new_policy.max_virtual_time_task_starvation_count);
-  } else {
-    virtual_time_task_starvation_count_.Clear();
-  }
+  virtual_time_policy_.Set(policy);
+  virtual_time_budget_.Set(virtual_time_budget_ms.fromMaybe(0));
+  initial_virtual_time_.Set(initial_virtual_time.fromMaybe(0));
+  virtual_time_task_starvation_count_.Set(
+      max_virtual_time_task_starvation_count.fromMaybe(0));
 
   InnerEnable();
 
+  VirtualTimeController* virtual_time_controller =
+      web_local_frame_->View()->Scheduler()->GetVirtualTimeController();
   // This needs to happen before we apply virtual time.
-  if (initial_virtual_time.isJust()) {
-    initial_virtual_time_.Set(initial_virtual_time.fromJust());
-    web_local_frame_->View()->Scheduler()->SetInitialVirtualTime(
-        base::Time::FromDoubleT(initial_virtual_time.fromJust()));
-  }
-
-  if (wait_for_navigation.fromMaybe(false)) {
-    wait_for_navigation_.Set(true);
-    pending_virtual_time_policy_ = std::move(new_policy);
-  } else {
-    ApplyVirtualTimePolicy(new_policy);
-  }
-
-  if (virtual_time_base_ticks_.is_null()) {
-    *virtual_time_ticks_base_ms = 0;
-  } else {
-    *virtual_time_ticks_base_ms =
-        (virtual_time_base_ticks_ - base::TimeTicks()).InMillisecondsF();
-  }
-
-  return response;
-}
-
-void InspectorEmulationAgent::ApplyVirtualTimePolicy(
-    const PendingVirtualTimePolicy& new_policy) {
-  DCHECK(web_local_frame_);
-  web_local_frame_->View()->Scheduler()->SetVirtualTimePolicy(
-      new_policy.policy);
+  base::Time initial_time =
+      initial_virtual_time.isJust()
+          ? base::Time::FromDoubleT(initial_virtual_time.fromJust())
+          : base::Time();
   virtual_time_base_ticks_ =
-      web_local_frame_->View()->Scheduler()->EnableVirtualTime();
-  if (new_policy.virtual_time_budget_ms) {
+      virtual_time_controller->EnableVirtualTime(initial_time);
+  virtual_time_controller->SetVirtualTimePolicy(scheduler_policy);
+  if (virtual_time_budget_ms.fromMaybe(0) > 0) {
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("renderer.scheduler", "VirtualTimeBudget",
                                       TRACE_ID_LOCAL(this), "budget",
-                                      *new_policy.virtual_time_budget_ms);
-    base::TimeDelta budget_amount =
-        base::Milliseconds(*new_policy.virtual_time_budget_ms);
-    web_local_frame_->View()->Scheduler()->GrantVirtualTimeBudget(
+                                      virtual_time_budget_ms.fromJust());
+    const base::TimeDelta budget_amount =
+        base::Milliseconds(virtual_time_budget_ms.fromJust());
+    virtual_time_controller->GrantVirtualTimeBudget(
         budget_amount,
-        WTF::Bind(&InspectorEmulationAgent::VirtualTimeBudgetExpired,
-                  WrapWeakPersistent(this)));
+        WTF::BindOnce(&InspectorEmulationAgent::VirtualTimeBudgetExpired,
+                      WrapWeakPersistent(this)));
     for (DocumentLoader* loader : pending_document_loaders_)
       loader->SetDefersLoading(LoaderFreezeMode::kNone);
     pending_document_loaders_.clear();
   }
-  if (new_policy.max_virtual_time_task_starvation_count) {
-    web_local_frame_->View()->Scheduler()->SetMaxVirtualTimeTaskStarvationCount(
-        *new_policy.max_virtual_time_task_starvation_count);
-  }
-}
 
-void InspectorEmulationAgent::FrameStartedLoading(LocalFrame*) {
-  if (pending_virtual_time_policy_) {
-    wait_for_navigation_.Set(false);
-    ApplyVirtualTimePolicy(*pending_virtual_time_policy_);
-    pending_virtual_time_policy_ = absl::nullopt;
+  if (max_virtual_time_task_starvation_count.fromMaybe(0)) {
+    virtual_time_controller->SetMaxVirtualTimeTaskStarvationCount(
+        max_virtual_time_task_starvation_count.fromJust());
   }
+
+  *virtual_time_ticks_base_ms =
+      virtual_time_base_ticks_.is_null()
+          ? 0
+          : (virtual_time_base_ticks_ - base::TimeTicks()).InMillisecondsF();
+
+  return Response::Success();
 }
 
 AtomicString InspectorEmulationAgent::OverrideAcceptImageHeader(
     const HashSet<String>* disabled_image_types) {
-  String header(ImageAcceptHeader());
+  String header(network_utils::ImageAcceptHeader());
   for (String type : *disabled_image_types) {
     // The header string is expected to be like
     // `image/jxl,image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8`
@@ -538,8 +517,8 @@ void InspectorEmulationAgent::PrepareRequest(DocumentLoader* loader,
                                              ResourceRequest& request,
                                              ResourceLoaderOptions& options,
                                              ResourceType resource_type) {
-  if (!accept_language_override_.Get().IsEmpty() &&
-      request.HttpHeaderField("Accept-Language").IsEmpty()) {
+  if (!accept_language_override_.Get().empty() &&
+      request.HttpHeaderField("Accept-Language").empty()) {
     request.SetHttpHeaderField(
         "Accept-Language",
         AtomicString(network_utils::GenerateAcceptLanguageHeader(
@@ -583,8 +562,8 @@ void InspectorEmulationAgent::VirtualTimeBudgetExpired() {
   if (!view)
     return;
 
-  view->Scheduler()->SetVirtualTimePolicy(
-      PageScheduler::VirtualTimePolicy::kPause);
+  view->Scheduler()->GetVirtualTimeController()->SetVirtualTimePolicy(
+      VirtualTimeController::VirtualTimePolicy::kPause);
   virtual_time_policy_.Set(protocol::Emulation::VirtualTimePolicyEnum::Pause);
   // We could have been detached while VT was still running.
   // TODO(caseq): should we rather force-pause the time upon Disable()?
@@ -640,13 +619,25 @@ Response InspectorEmulationAgent::clearDeviceMetricsOverride() {
   return AssertPage();
 }
 
+Response InspectorEmulationAgent::setHardwareConcurrencyOverride(
+    int hardware_concurrency) {
+  if (hardware_concurrency <= 0) {
+    return Response::InvalidParams(
+        "HardwareConcurrency must be a positive number");
+  }
+  InnerEnable();
+  hardware_concurrency_override_.Set(hardware_concurrency);
+
+  return Response::Success();
+}
+
 Response InspectorEmulationAgent::setUserAgentOverride(
     const String& user_agent,
     protocol::Maybe<String> accept_language,
     protocol::Maybe<String> platform,
     protocol::Maybe<protocol::Emulation::UserAgentMetadata>
         ua_metadata_override) {
-  if (!user_agent.IsEmpty() || accept_language.isJust() || platform.isJust())
+  if (!user_agent.empty() || accept_language.isJust() || platform.isJust())
     InnerEnable();
   user_agent_override_.Set(user_agent);
   accept_language_override_.Set(accept_language.fromMaybe(String()));
@@ -660,7 +651,7 @@ Response InspectorEmulationAgent::setUserAgentOverride(
     blink::UserAgentMetadata default_ua_metadata =
         Platform::Current()->UserAgentMetadata();
 
-    if (user_agent.IsEmpty()) {
+    if (user_agent.empty()) {
       ua_metadata_override_ = absl::nullopt;
       serialized_ua_metadata_override_.Set(std::vector<uint8_t>());
       return Response::InvalidParams(
@@ -708,6 +699,18 @@ Response InspectorEmulationAgent::setUserAgentOverride(
         ua_metadata->getArchitecture().Ascii();
     ua_metadata_override_->model = ua_metadata->getModel().Ascii();
     ua_metadata_override_->mobile = ua_metadata->getMobile();
+
+    if (ua_metadata->hasBitness()) {
+      ua_metadata_override_->bitness = ua_metadata->getBitness("").Ascii();
+    } else {
+      ua_metadata_override_->bitness = std::move(default_ua_metadata.bitness);
+    }
+    if (ua_metadata->hasWow64()) {
+      ua_metadata_override_->wow64 = ua_metadata->getWow64(false);
+    } else {
+      ua_metadata_override_->wow64 = default_ua_metadata.wow64;
+    }
+
   } else {
     ua_metadata_override_ = absl::nullopt;
   }
@@ -725,15 +728,21 @@ Response InspectorEmulationAgent::setUserAgentOverride(
 
 Response InspectorEmulationAgent::setLocaleOverride(
     protocol::Maybe<String> maybe_locale) {
+  recordreplay::Assert(
+      "[RUN-1537-1538] InspectorEmulationAgent::setLocaleOverride A");
+
   // Only allow resetting overrides set by the same agent.
-  if (locale_override_.Get().IsEmpty() &&
+  if (locale_override_.Get().empty() &&
       LocaleController::instance().has_locale_override()) {
     return Response::ServerError(
         "Another locale override is already in effect");
   }
   String locale = maybe_locale.fromMaybe(String());
   String error = LocaleController::instance().SetLocaleOverride(locale);
-  if (!error.IsEmpty())
+  recordreplay::Assert(
+      "[RUN-1537-1538] InspectorEmulationAgent::setLocaleOverride B %d %s",
+      error.empty(), locale.Utf8().c_str());
+  if (!error.empty())
     return Response::ServerError(error.Utf8());
   locale_override_.Set(locale);
   return Response::Success();
@@ -741,7 +750,7 @@ Response InspectorEmulationAgent::setLocaleOverride(
 
 Response InspectorEmulationAgent::setTimezoneOverride(
     const String& timezone_id) {
-  if (timezone_id.IsEmpty()) {
+  if (timezone_id.empty()) {
     timezone_override_.reset();
   } else {
     if (timezone_override_) {
@@ -780,20 +789,33 @@ void InspectorEmulationAgent::WillCommitLoad(LocalFrame*,
   pending_document_loaders_.push_back(loader);
 }
 
+void InspectorEmulationAgent::WillCreateDocumentParser(
+    bool& force_sync_parsing) {
+  if (virtual_time_policy_.Get().IsNull())
+    return;
+  force_sync_parsing = true;
+}
+
 void InspectorEmulationAgent::ApplyAcceptLanguageOverride(String* accept_lang) {
-  if (!accept_language_override_.Get().IsEmpty())
+  if (!accept_language_override_.Get().empty())
     *accept_lang = accept_language_override_.Get();
 }
 
+void InspectorEmulationAgent::ApplyHardwareConcurrencyOverride(
+    unsigned int& hardware_concurrency) {
+  if (int concurrency = hardware_concurrency_override_.Get())
+    hardware_concurrency = concurrency;
+}
+
 void InspectorEmulationAgent::ApplyUserAgentOverride(String* user_agent) {
-  if (!user_agent_override_.Get().IsEmpty())
+  if (!user_agent_override_.Get().empty())
     *user_agent = user_agent_override_.Get();
 }
 
 void InspectorEmulationAgent::ApplyUserAgentMetadataOverride(
     absl::optional<blink::UserAgentMetadata>* ua_metadata) {
   // This applies when UA override is set.
-  if (!user_agent_override_.Get().IsEmpty()) {
+  if (!user_agent_override_.Get().empty()) {
     *ua_metadata = ua_metadata_override_;
   }
 }
@@ -809,9 +831,8 @@ void InspectorEmulationAgent::SetSystemThemeState() {}
 
 Response InspectorEmulationAgent::AssertPage() {
   if (!web_local_frame_) {
-    LOG(ERROR) << "Can only enable virtual time for pages, not workers";
-    return Response::InvalidParams(
-        "Can only enable virtual time for pages, not workers");
+    return Response::ServerError(
+        "Operation is only supported for pages, not workers");
   }
   return Response::Success();
 }
@@ -841,6 +862,18 @@ protocol::Response InspectorEmulationAgent::setDisabledImageTypes(
     return Response::InvalidParams("Invalid image type");
   }
   return Response::Success();
+}
+
+protocol::Response InspectorEmulationAgent::setAutomationOverride(
+    bool enabled) {
+  if (enabled)
+    InnerEnable();
+  automation_override_.Set(enabled);
+  return Response::Success();
+}
+
+void InspectorEmulationAgent::ApplyAutomationOverride(bool& enabled) const {
+  enabled |= automation_override_.Get();
 }
 
 }  // namespace blink

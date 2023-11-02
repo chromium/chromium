@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
@@ -44,6 +45,16 @@ void CheckThrottleWillNotCauseCorsPreflight(
     const net::HttpRequestHeaders& headers,
     const net::HttpRequestHeaders& cors_exempt_headers,
     const std::vector<std::string> cors_exempt_header_list) {
+  // There are many ways for the renderer to cache the list, e.g. for workers,
+  // and it might have been cached before the renderer receives a message with
+  // the list. This isn't guaranteed because the caching paths aren't triggered
+  // by mojo calls that are associated with the method that receives the list.
+  // Since the renderer just checks to help catch develper bugs, if the list
+  // isn't received don't DCHECK. Most of the time it will which is all we need
+  // on bots.
+  if (cors_exempt_header_list.empty())
+    return;
+
   base::flat_set<std::string> cors_exempt_header_flat_set(
       cors_exempt_header_list);
   for (auto& header : headers.GetHeaderVector()) {
@@ -151,11 +162,13 @@ class ThrottlingURLLoader::ForwardingThrottleDelegate
   }
 
   void UpdateDeferredResponseHead(
-      network::mojom::URLResponseHeadPtr new_response_head) override {
+      network::mojom::URLResponseHeadPtr new_response_head,
+      mojo::ScopedDataPipeConsumerHandle body) override {
     if (!loader_)
       return;
     ScopedDelegateCall scoped_delegate_call(this);
-    loader_->UpdateDeferredResponseHead(std::move(new_response_head));
+    loader_->UpdateDeferredResponseHead(std::move(new_response_head),
+                                        std::move(body));
   }
 
   void PauseReadingBodyFromNet() override {
@@ -180,14 +193,15 @@ class ThrottlingURLLoader::ForwardingThrottleDelegate
           new_client_receiver,
       mojo::PendingRemote<network::mojom::URLLoader>* original_loader,
       mojo::PendingReceiver<network::mojom::URLLoaderClient>*
-          original_client_receiver) override {
+          original_client_receiver,
+      mojo::ScopedDataPipeConsumerHandle* body) override {
     if (!loader_)
       return;
 
     ScopedDelegateCall scoped_delegate_call(this);
     loader_->InterceptResponse(std::move(new_loader),
                                std::move(new_client_receiver), original_loader,
-                               original_client_receiver);
+                               original_client_receiver, body);
   }
 
   void RestartWithFlags(int additional_load_flags) override {
@@ -204,14 +218,6 @@ class ThrottlingURLLoader::ForwardingThrottleDelegate
 
     ScopedDelegateCall scoped_delegate_call(this);
     loader_->RestartWithURLResetAndFlags(additional_load_flags);
-  }
-
-  void RestartWithURLResetAndFlagsNow(int additional_load_flags) override {
-    if (!loader_)
-      return;
-
-    ScopedDelegateCall scoped_delegate_call(this);
-    loader_->RestartWithURLResetAndFlagsNow(additional_load_flags);
   }
 
   void Detach() { loader_ = nullptr; }
@@ -241,11 +247,11 @@ class ThrottlingURLLoader::ForwardingThrottleDelegate
     }
 
    private:
-    ForwardingThrottleDelegate* const owner_;
+    const raw_ptr<ForwardingThrottleDelegate> owner_;
   };
 
-  ThrottlingURLLoader* loader_;
-  URLLoaderThrottle* const throttle_;
+  raw_ptr<ThrottlingURLLoader> loader_;
+  const raw_ptr<URLLoaderThrottle> throttle_;
 };
 
 ThrottlingURLLoader::StartInfo::StartInfo(
@@ -304,6 +310,8 @@ std::unique_ptr<ThrottlingURLLoader> ThrottlingURLLoader::CreateLoaderAndStart(
 }
 
 ThrottlingURLLoader::~ThrottlingURLLoader() {
+  recordreplay::UnregisterPointer(this);
+
   if (inside_delegate_calls_ > 0) {
     // A throttle is calling into this object. In this case, delay destruction
     // of the throttles, so that throttles don't need to worry about any
@@ -359,6 +367,8 @@ void ThrottlingURLLoader::RestartWithFactory(
   client_receiver_.reset();
   start_info_->url_loader_factory = std::move(factory);
   start_info_->options = url_loader_options;
+  body_.reset();
+  cached_metadata_.reset();
   StartNow();
 }
 
@@ -430,6 +440,7 @@ ThrottlingURLLoader::ThrottlingURLLoader(
     network::mojom::URLLoaderClient* client,
     const net::NetworkTrafficAnnotationTag& traffic_annotation)
     : forwarding_client_(client), traffic_annotation_(traffic_annotation) {
+  recordreplay::RegisterPointer("ThrottlingURLLoader", this);
   throttles_.reserve(throttles.size());
   for (auto& throttle : throttles)
     throttles_.emplace_back(this, std::move(throttle));
@@ -641,13 +652,6 @@ void ThrottlingURLLoader::RestartWithURLResetAndFlags(
   has_pending_restart_ = true;
 }
 
-void ThrottlingURLLoader::RestartWithURLResetAndFlagsNow(
-    int additional_load_flags) {
-  RestartWithURLResetAndFlags(additional_load_flags);
-  if (!did_receive_response_)
-    RestartWithFlagsNow();
-}
-
 void ThrottlingURLLoader::OnReceiveEarlyHints(
     network::mojom::EarlyHintsPtr early_hints) {
   DCHECK_EQ(DEFERRED_NONE, deferred_stage_);
@@ -657,13 +661,17 @@ void ThrottlingURLLoader::OnReceiveEarlyHints(
 }
 
 void ThrottlingURLLoader::OnReceiveResponse(
-    network::mojom::URLResponseHeadPtr response_head) {
+    network::mojom::URLResponseHeadPtr response_head,
+    mojo::ScopedDataPipeConsumerHandle body,
+    absl::optional<mojo_base::BigBuffer> cached_metadata) {
   DCHECK_EQ(DEFERRED_NONE, deferred_stage_);
   DCHECK(!loader_completed_);
   DCHECK(deferring_throttles_.empty());
   TRACE_EVENT1("loading", "ThrottlingURLLoader::OnReceiveResponse", "url",
                response_url_.possibly_invalid_spec());
   did_receive_response_ = true;
+  body_ = std::move(body);
+  cached_metadata_ = std::move(cached_metadata);
 
   // Dispatch BeforeWillProcessResponse().
   if (!throttles_.empty()) {
@@ -717,7 +725,8 @@ void ThrottlingURLLoader::OnReceiveResponse(
     }
   }
 
-  forwarding_client_->OnReceiveResponse(std::move(response_head));
+  forwarding_client_->OnReceiveResponse(
+      std::move(response_head), std::move(body_), std::move(cached_metadata_));
 }
 
 void ThrottlingURLLoader::OnReceiveRedirect(
@@ -729,6 +738,28 @@ void ThrottlingURLLoader::OnReceiveRedirect(
 
   if (!throttles_.empty()) {
     bool deferred = false;
+    has_pending_restart_ = false;
+    for (auto& entry : throttles_) {
+      auto* throttle = entry.throttle.get();
+      bool throttle_deferred = false;
+      auto weak_ptr = weak_factory_.GetWeakPtr();
+      std::vector<std::string> removed_headers;
+      net::HttpRequestHeaders modified_headers;
+      net::HttpRequestHeaders modified_cors_exempt_headers;
+      net::RedirectInfo redirect_info_copy = redirect_info;
+      throttle->BeforeWillRedirectRequest(
+          &redirect_info_copy, *response_head, &throttle_deferred,
+          &removed_headers, &modified_headers, &modified_cors_exempt_headers);
+
+      if (!weak_ptr)
+        return;
+    }
+
+    if (has_pending_restart_) {
+      RestartWithFlagsNow();
+      return;
+    }
+
     for (auto& entry : throttles_) {
       auto* throttle = entry.throttle.get();
       bool throttle_deferred = false;
@@ -811,28 +842,11 @@ void ThrottlingURLLoader::OnUploadProgress(
                                        std::move(ack_callback));
 }
 
-void ThrottlingURLLoader::OnReceiveCachedMetadata(mojo_base::BigBuffer data) {
-  DCHECK_EQ(DEFERRED_NONE, deferred_stage_);
-  DCHECK(!loader_completed_);
-
-  forwarding_client_->OnReceiveCachedMetadata(std::move(data));
-}
-
 void ThrottlingURLLoader::OnTransferSizeUpdated(int32_t transfer_size_diff) {
   DCHECK_EQ(DEFERRED_NONE, deferred_stage_);
   DCHECK(!loader_completed_);
 
   forwarding_client_->OnTransferSizeUpdated(transfer_size_diff);
-}
-
-void ThrottlingURLLoader::OnStartLoadingResponseBody(
-    mojo::ScopedDataPipeConsumerHandle body) {
-  DCHECK_EQ(DEFERRED_NONE, deferred_stage_);
-  DCHECK(!loader_completed_);
-  TRACE_EVENT1("loading", "ThrottlingURLLoader::OnStartLoadingResponseBody",
-               "url", response_url_.possibly_invalid_spec());
-
-  forwarding_client_->OnStartLoadingResponseBody(std::move(body));
 }
 
 void ThrottlingURLLoader::OnComplete(
@@ -935,7 +949,8 @@ void ThrottlingURLLoader::Resume() {
     case DEFERRED_RESPONSE: {
       client_receiver_.Resume();
       forwarding_client_->OnReceiveResponse(
-          std::move(response_info_->response_head));
+          std::move(response_info_->response_head), std::move(body_),
+          std::move(cached_metadata_));
       // Note: |this| may be deleted here.
       break;
     }
@@ -989,10 +1004,13 @@ void ThrottlingURLLoader::UpdateRequestHeaders(
 }
 
 void ThrottlingURLLoader::UpdateDeferredResponseHead(
-    network::mojom::URLResponseHeadPtr new_response_head) {
+    network::mojom::URLResponseHeadPtr new_response_head,
+    mojo::ScopedDataPipeConsumerHandle body) {
   DCHECK(response_info_);
+  DCHECK(!body_);
   DCHECK_EQ(DEFERRED_RESPONSE, deferred_stage_);
   response_info_->response_head = std::move(new_response_head);
+  body_ = std::move(body);
 }
 
 void ThrottlingURLLoader::PauseReadingBodyFromNet(URLLoaderThrottle* throttle) {
@@ -1018,9 +1036,11 @@ void ThrottlingURLLoader::InterceptResponse(
     mojo::PendingReceiver<network::mojom::URLLoaderClient> new_client_receiver,
     mojo::PendingRemote<network::mojom::URLLoader>* original_loader,
     mojo::PendingReceiver<network::mojom::URLLoaderClient>*
-        original_client_receiver) {
+        original_client_receiver,
+    mojo::ScopedDataPipeConsumerHandle* body) {
   response_intercepted_ = true;
 
+  body->swap(body_);
   if (original_loader) {
     url_loader_->ResumeReadingBodyFromNet();
     *original_loader = url_loader_.Unbind();
@@ -1070,17 +1090,20 @@ const char* ThrottlingURLLoader::GetStageNameForHistogram(DeferredStage stage) {
 ThrottlingURLLoader::ThrottleEntry::ThrottleEntry(
     ThrottlingURLLoader* loader,
     std::unique_ptr<URLLoaderThrottle> the_throttle)
-    : delegate(
-          std::make_unique<ForwardingThrottleDelegate>(loader,
-                                                       the_throttle.get())),
-      throttle(std::move(the_throttle)) {
+    : throttle(std::move(the_throttle)),
+      delegate(std::make_unique<ForwardingThrottleDelegate>(loader,
+                                                            throttle.get())) {
   throttle->set_delegate(delegate.get());
 }
 
 ThrottlingURLLoader::ThrottleEntry::ThrottleEntry(ThrottleEntry&& other) =
     default;
 
-ThrottlingURLLoader::ThrottleEntry::~ThrottleEntry() = default;
+ThrottlingURLLoader::ThrottleEntry::~ThrottleEntry() {
+  // `delegate` is destroyed before `throttle`; clear the pointer so the
+  // throttle cannot inadvertently use-after-free the delegate.
+  throttle->set_delegate(nullptr);
+}
 
 ThrottlingURLLoader::ThrottleEntry& ThrottlingURLLoader::ThrottleEntry::
 operator=(ThrottleEntry&& other) = default;

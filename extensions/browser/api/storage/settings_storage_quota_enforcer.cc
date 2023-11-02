@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,7 +45,7 @@ void Allocate(
 }
 
 ValueStore::Status QuotaExceededError(Resource resource) {
-  const char* name = NULL;
+  const char* name = nullptr;
   switch (resource) {
     case QUOTA_BYTES:
       name = "QUOTA_BYTES";
@@ -137,16 +137,16 @@ ValueStore::WriteResult SettingsStorageQuotaEnforcer::Set(
 }
 
 ValueStore::WriteResult SettingsStorageQuotaEnforcer::Set(
-    WriteOptions options, const base::DictionaryValue& values) {
+    WriteOptions options,
+    const base::Value::Dict& values) {
   LazyCalculateUsage();
   size_t new_used_total = used_total_;
   std::map<std::string, size_t> new_used_per_setting = used_per_setting_;
-  for (base::DictionaryValue::Iterator it(values); !it.IsAtEnd();
-       it.Advance()) {
-    Allocate(it.key(), it.value(), &new_used_total, &new_used_per_setting);
+  for (const auto [key, value] : values) {
+    Allocate(key, value, &new_used_total, &new_used_per_setting);
 
     if (!(options & IGNORE_QUOTA) &&
-        new_used_per_setting[it.key()] > limits_.quota_bytes_per_item) {
+        new_used_per_setting[key] > limits_.quota_bytes_per_item) {
       return WriteResult(QuotaExceededError(QUOTA_BYTES_PER_ITEM));
     }
   }
@@ -232,9 +232,8 @@ void SettingsStorageQuotaEnforcer::LazyCalculateUsage() {
     return;
   }
 
-  for (base::DictionaryValue::Iterator it(maybe_settings.settings());
-       !it.IsAtEnd(); it.Advance()) {
-    Allocate(it.key(), it.value(), &used_total_, &used_per_setting_);
+  for (const auto [key, value] : maybe_settings.settings()) {
+    Allocate(key, value, &used_total_, &used_per_setting_);
   }
 
   usage_calculated_ = true;

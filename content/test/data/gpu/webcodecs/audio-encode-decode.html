@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<!--
+Check that AudioDecoder can decode output of AudioEncoder
+-->
+<title>Encode test</title>
+<script src="webcodecs_common.js"></script>
+<script type="text/javascript">
+'use strict';
+
+function make_audio_data(timestamp, channels, sampleRate, frames) {
+  let data = new Float32Array(frames*channels);
+
+  // This generates samples in a planar format.
+  for (var channel = 0; channel < channels; channel++) {
+    let hz = 100 + channel * 50; // sound frequency
+    let base_index = channel * frames;
+    for (var i = 0; i < frames; i++) {
+      let t = (i / sampleRate) * hz * (Math.PI * 2);
+      data[base_index + i] = Math.sin(t);
+    }
+  }
+
+  return new AudioData({
+    timestamp: timestamp,
+    data: data,
+    numberOfChannels: channels,
+    numberOfFrames: frames,
+    sampleRate: sampleRate,
+    format: "f32-planar",
+  });
+}
+
+async function main(args) {
+  let errors = 0;
+  let output_count = 0;
+
+  let config = {
+    codec: args.codec,
+    sampleRate: args.sample_rate,
+    numberOfChannels: args.channels,
+    bitrate: 96000,
+  };
+  let decoder_config = null;
+
+  let support = await AudioEncoder.isConfigSupported(config);
+  if (!support.supported) {
+    TEST.skip('Unsupported codec: ' + args.codec);
+    return;
+  }
+
+  let total_duration_s = 1.0;
+  let data_count = 20; // each chunk is 500 ms
+  let outputs = [];
+  let init = {
+    error: e => {
+      errors++;
+      TEST.log(e);
+    },
+    output: (chunk, md) => {
+      if (md.decoderConfig) {
+        decoder_config = md.decoderConfig;
+      }
+      outputs.push(chunk);
+    }
+  };
+
+  // Make some sin() waves and encode them
+  let encoder = new AudioEncoder(init);
+  encoder.configure(config);
+
+  let timestamp_us = 0;
+  let data_duration_s = total_duration_s / data_count;
+  let data_length = data_duration_s * config.sampleRate;
+  for (let i = 0; i < data_count; i++) {
+    let data = make_audio_data(timestamp_us, config.numberOfChannels,
+      config.sampleRate, data_length);
+    encoder.encode(data);
+    data.close();
+    timestamp_us += data_duration_s * 1_000_000;
+    if (i % 10 == 0) {
+      // Inserting flushes in the middle, to see how the encoder handles
+      // more inputs coming after flush()
+      await encoder.flush();
+    }
+
+  }
+  await encoder.flush();
+  encoder.close();
+
+  // Maximum amount of padding from supported encoders. Applied twice, since the
+  // flush above can also introduce padding.
+  timestamp_us += 2 * (2112 / config.sampleRate) * 1_000_000;
+
+  TEST.assert(decoder_config != null, "No decoder config");
+  TEST.assert(outputs.length > 0, "no outputs");
+  TEST.assert(outputs[0].timestamp == 0, "first chunk timestamp non zero");
+
+  let total_encoded_duration = 0
+  for (let chunk of outputs) {
+    TEST.assert(chunk.byteLength > 0,  "chunk is empty");
+    TEST.assert(timestamp_us >= chunk.timestamp,
+        `chunk timestamp is too small. ${timestamp_us} vs ${chunk.timestamp}`);
+    TEST.assert(chunk.duration >= 0, "chunk duration is zero");
+    total_encoded_duration += chunk.duration;
+  }
+
+  // The total duration might be padded with silence.
+  TEST.assert(
+      total_encoded_duration >= total_duration_s * 1_000_000,
+      `Unexpected encoded duration: ${total_encoded_duration} us` );
+
+
+  // Decode output and check that the output still makes sense
+  let audio_buffers = [];
+  let decoder_init = {
+    error: e => {
+      errors++;
+      TEST.log(e);
+    },
+    output: (audio_data) => {
+      let buffer = new AudioBuffer({
+            length: audio_data.numberOfFrames,
+            numberOfChannels: audio_data.numberOfChannels,
+            sampleRate: audio_data.sampleRate
+      });
+      for (let i = 0; i < audio_data.numberOfChannels; i++) {
+        audio_data.copyTo(buffer.getChannelData(i), {
+          planeIndex : i,
+          frameOffset : 0,
+          frameCount : audio_data.numberOfFrames,
+          format : "f32-planar"
+        });
+      }
+      audio_buffers.push(buffer);
+      audio_data.close();
+    }
+  };
+
+  let decoder = new AudioDecoder(decoder_init)
+  decoder.configure(decoder_config);
+  for (let chunk of outputs) {
+    decoder.decode(chunk);
+  }
+  await decoder.flush();
+
+  let total_decoded_duration_s = 0.0;
+  for (let buffer of audio_buffers) {
+    total_decoded_duration_s += buffer.duration;
+    TEST.assert(buffer.numberOfChannels == config.numberOfChannels,
+                "unexpected number of channels");
+  }
+
+  TEST.assert(errors == 0, "errors: " + errors);
+
+  // The total duration might be padded with silence, but no too much.
+  TEST.assert(
+    total_decoded_duration_s >= total_duration_s,
+      `Decoded duration is too short: ${total_decoded_duration_s} s`);
+      TEST.assert(
+    total_decoded_duration_s < 2 * total_duration_s,
+      `Decoded duration is too long: ${total_decoded_duration_s} s`);
+}
+</script>

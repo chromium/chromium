@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "base/cxx17_backports.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/pref_names.h"
 #include "content/public/browser/browser_accessibility_state.h"
@@ -60,9 +61,6 @@ constexpr auto kFadeOutTime = base::Milliseconds(600);
 }  // namespace
 
 // static
-SkColor AccessibilityFocusHighlight::default_color_;
-
-// static
 base::TimeDelta AccessibilityFocusHighlight::fade_in_time_;
 
 // static
@@ -101,7 +99,6 @@ AccessibilityFocusHighlight::AccessibilityFocusHighlight(
     fade_in_time_ = kFadeInTime;
     persist_time_ = kHighlightPersistTime;
     fade_out_time_ = kFadeOutTime;
-    default_color_ = SkColorSetRGB(0x10, 0x10, 0x10);  // #101010
   }
 }
 
@@ -131,19 +128,19 @@ ui::Layer* AccessibilityFocusHighlight::GetLayerForTesting() {
 }
 
 SkColor AccessibilityFocusHighlight::GetHighlightColor() {
-#if !defined(OS_MAC)
+  const ui::ColorProvider* color_provider = browser_view_->GetColorProvider();
+#if !BUILDFLAG(IS_MAC)
   // Match behaviour with renderer_preferences_util::UpdateFromSystemSettings
   // setting prefs->focus_ring_color
-  return default_color_;
+  return color_provider->GetColor(kColorFocusHighlightDefault);
 #else
-  ui::NativeTheme* native_theme = ui::NativeTheme::GetInstanceForWeb();
-  SkColor theme_color = native_theme->GetSystemColor(
-      ui::NativeTheme::kColorId_FocusedBorderColor);
+  SkColor theme_color =
+      color_provider->GetColor(ui::kColorFocusableBorderFocused);
 
   if (theme_color == SK_ColorTRANSPARENT || use_default_color_for_testing_)
-    return default_color_;
+    return color_provider->GetColor(kColorFocusHighlightDefault);
 
-  return native_theme->FocusRingColorForBaseColor(theme_color);
+  return theme_color;
 #endif
 }
 
@@ -174,7 +171,7 @@ void AccessibilityFocusHighlight::CreateOrUpdateLayer(gfx::Rect node_bounds) {
   // plus the extra padding to ensure the highlight isn't clipped.
   gfx::Rect layer_bounds = node_bounds;
   int padding = kTotalLayerPadding;
-  layer_bounds.Inset(-padding, -padding);
+  layer_bounds.Inset(-padding);
 
   layer_->SetBounds(layer_bounds);
 
@@ -278,12 +275,12 @@ void AccessibilityFocusHighlight::OnPaintLayer(
   gfx::RectF bounds(node_bounds_);
 
   // Apply padding
-  bounds.Inset(-kPadding, -kPadding);
+  bounds.Inset(-kPadding);
 
   // Draw gradient first, so other lines will be drawn over the top.
   gfx::RectF gradient_bounds(bounds);
   int gradient_border_radius = kBorderRadius;
-  gradient_bounds.Inset(-kStrokeWidth, -kStrokeWidth);
+  gradient_bounds.Inset(-kStrokeWidth);
   gradient_border_radius += kStrokeWidth;
   cc::PaintFlags gradient_flags(original_flags);
   gradient_flags.setStrokeWidth(1);
@@ -301,7 +298,7 @@ void AccessibilityFocusHighlight::OnPaintLayer(
     recorder.canvas()->DrawRoundRect(gradient_bounds, gradient_border_radius,
                                      gradient_flags);
 
-    gradient_bounds.Inset(-1, -1);
+    gradient_bounds.Inset(-1);
     gradient_border_radius += 1;
   }
 
@@ -311,7 +308,7 @@ void AccessibilityFocusHighlight::OnPaintLayer(
 
   // Resize bounds and border radius around inner ring
   gfx::RectF white_ring_bounds(bounds);
-  white_ring_bounds.Inset(-(kStrokeWidth / 2), -(kStrokeWidth / 2));
+  white_ring_bounds.Inset(-(kStrokeWidth / 2));
   int white_ring_border_radius = kBorderRadius + (kStrokeWidth / 2);
 
   cc::PaintFlags white_ring_flags(original_flags);

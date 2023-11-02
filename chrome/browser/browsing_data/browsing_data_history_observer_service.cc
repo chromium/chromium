@@ -1,8 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/browsing_data/browsing_data_history_observer_service.h"
+
+#include <tuple>
 
 #include "base/callback_helpers.h"
 #include "build/build_config.h"
@@ -12,14 +14,14 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/common/buildflags.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "storage/browser/quota/special_storage_policy.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/commerce/merchant_viewer/merchant_viewer_data_manager.h"
 #include "chrome/browser/commerce/merchant_viewer/merchant_viewer_data_manager_factory.h"
 #endif
@@ -62,7 +64,9 @@ void DeleteTemplateUrlsForTimeRange(TemplateURLService* keywords_model,
                                     base::Time delete_begin,
                                     base::Time delete_end) {
   if (!keywords_model->loaded()) {
-    keywords_model->RegisterOnLoadedCallback(
+    // TODO(https://crbug.com/1288724): Ignoring the return value here is
+    // probably a bug.
+    std::ignore = keywords_model->RegisterOnLoadedCallback(
         base::BindOnce(&DeleteTemplateUrlsForTimeRange, keywords_model,
                        delete_begin, delete_end));
     keywords_model->Load();
@@ -75,7 +79,9 @@ void DeleteTemplateUrlsForTimeRange(TemplateURLService* keywords_model,
 void DeleteTemplateUrlsForDeletedOrigins(TemplateURLService* keywords_model,
                                          base::flat_set<GURL> deleted_origins) {
   if (!keywords_model->loaded()) {
-    keywords_model->RegisterOnLoadedCallback(
+    // TODO(https://crbug.com/1288724): Ignoring the return value here is
+    // probably a bug.
+    std::ignore = keywords_model->RegisterOnLoadedCallback(
         base::BindOnce(&DeleteTemplateUrlsForDeletedOrigins, keywords_model,
                        std::move(deleted_origins)));
     keywords_model->Load();
@@ -87,7 +93,7 @@ void DeleteTemplateUrlsForDeletedOrigins(TemplateURLService* keywords_model,
       base::Time::Min(), base::Time::Max());
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void ClearCommerceData(Profile* profile,
                        const history::DeletionInfo& deletion_info) {
   MerchantViewerDataManager* merchant_viewer_data_manager =
@@ -107,17 +113,9 @@ void ClearCommerceData(Profile* profile,
 }
 #endif
 
-bool DoesOriginMatchPredicate(
-    base::OnceCallback<bool(const url::Origin&)> predicate,
-    const url::Origin& origin,
-    storage::SpecialStoragePolicy* policy) {
-  if (!std::move(predicate).Run(origin))
-    return false;
-
-  if (policy && policy->IsStorageProtected(origin.GetURL()))
-    return false;
-
-  return true;
+bool IsStorageProtected(const blink::StorageKey& storage_key,
+                        storage::SpecialStoragePolicy* policy) {
+  return !(policy && policy->IsStorageProtected(storage_key.origin().GetURL()));
 }
 
 void DeleteStoragePartitionDataWithFilter(
@@ -125,17 +123,23 @@ void DeleteStoragePartitionDataWithFilter(
     std::unique_ptr<content::BrowsingDataFilterBuilder> filter_builder,
     base::Time delete_begin,
     base::Time delete_end) {
-  content::StoragePartition::OriginMatcherFunction matcher_function =
-      filter_builder ? base::BindRepeating(&DoesOriginMatchPredicate,
-                                           filter_builder->BuildOriginFilter())
-                     : base::NullCallback();
+  content::StoragePartition::StorageKeyPolicyMatcherFunction
+      storage_key_policy_matcher =
+          filter_builder ? base::BindRepeating(&IsStorageProtected)
+                         : base::NullCallback();
 
   const uint32_t removal_mask =
-      content::StoragePartition::REMOVE_DATA_MASK_CONVERSIONS;
+      content::StoragePartition::REMOVE_DATA_MASK_AGGREGATION_SERVICE |
+      content::StoragePartition::
+          REMOVE_DATA_MASK_ATTRIBUTION_REPORTING_SITE_CREATED |
+      content::StoragePartition::
+          REMOVE_DATA_MASK_ATTRIBUTION_REPORTING_INTERNAL |
+      content::StoragePartition::REMOVE_DATA_MASK_PRIVATE_AGGREGATION_INTERNAL;
   const uint32_t quota_removal_mask = 0;
   storage_partition->ClearData(
-      removal_mask, quota_removal_mask, std::move(matcher_function),
-      nullptr /* cookie_deletion_filter */, false /* perform_storage_cleanup */,
+      removal_mask, quota_removal_mask, filter_builder.get(),
+      std::move(storage_key_policy_matcher),
+      /*cookie_deletion_filter=*/nullptr, /*perform_storage_cleanup=*/false,
       delete_begin, delete_end, base::DoNothing());
 }
 
@@ -198,7 +202,7 @@ void BrowsingDataHistoryObserverService::OnURLsDeleted(
       TemplateURLServiceFactory::GetForProfile(profile_);
 
   content::StoragePartition* storage_partition =
-      storage_partition_for_testing_ ? storage_partition_for_testing_
+      storage_partition_for_testing_ ? storage_partition_for_testing_.get()
                                      : profile_->GetDefaultStoragePartition();
 
   if (deletion_info.time_range().IsValid()) {
@@ -232,7 +236,7 @@ void BrowsingDataHistoryObserverService::OnURLsDeleted(
     }
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   ClearCommerceData(profile_, deletion_info);
 #endif
 }
@@ -249,16 +253,17 @@ BrowsingDataHistoryObserverService::Factory::GetInstance() {
 }
 
 BrowsingDataHistoryObserverService::Factory::Factory()
-    : BrowserContextKeyedServiceFactory(
-          "BrowsingDataHistoryObserverService",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("BrowsingDataHistoryObserverService",
+                                 ProfileSelections::Builder()
+                                     .WithGuest(ProfileSelection::kNone)
+                                     .Build()) {
   DependsOn(HistoryServiceFactory::GetInstance());
   DependsOn(TabRestoreServiceFactory::GetInstance());
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
   DependsOn(SessionServiceFactory::GetInstance());
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   DependsOn(MerchantViewerDataManagerFactory::GetInstance());
 #endif
 }
@@ -267,8 +272,6 @@ KeyedService*
 BrowsingDataHistoryObserverService::Factory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  if (profile->IsOffTheRecord() || profile->IsGuestSession())
-    return nullptr;
   return new BrowsingDataHistoryObserverService(profile);
 }
 

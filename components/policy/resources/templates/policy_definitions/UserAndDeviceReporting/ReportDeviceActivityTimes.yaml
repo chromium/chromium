@@ -1,0 +1,27 @@
+arc_support: This policy has no effect on the logging done by Android.
+caption: Report device activity times
+desc: |-
+  Setting the policy to Enabled or leaving it unset has enrolled devices report time periods when a user is active on the device.
+
+        Setting the policy to Disabled means enrolled devices don't record or report activity times.
+device_only: true
+example_value: false
+features:
+  dynamic_refresh: true
+items:
+- caption: Enable device activity time reporting
+  value: true
+- caption: Disable device activity time reporting
+  value: false
+owners:
+- cros-reporting-team@google.com
+- lbaraz@chromium.org
+schema:
+  type: boolean
+supported_chrome_os_management:
+- google_cloud
+supported_on:
+- chrome_os:18-
+tags:
+- admin-sharing
+type: main

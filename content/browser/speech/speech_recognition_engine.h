@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
@@ -134,7 +135,7 @@ class CONTENT_EXPORT SpeechRecognitionEngine
   friend class speech::UpstreamLoaderClient;
   friend class speech::DownstreamLoader;
 
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
 
   // Response status codes from the speech recognition webservice.
   static const int kWebserviceStatusNoError;

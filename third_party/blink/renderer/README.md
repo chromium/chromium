@@ -171,6 +171,31 @@ script](../tools/blinkpy/presubmit/audit_non_blink_usage.py).
 Blink can use Mojo and directly talk to the browser process. This allows removal of unnecessary
 public APIs and abstraction layers and it is highly recommended.
 
+### Threading model
+
+When you need to use threads in Blink, cross-thread communication should be
+done with a message passing model (i.e.,
+call cross_thread_task_runner->PostTask() with cloned POD input parameters).
+
+A shared memory model (e.g., using mutex locks or atomics) is strongly
+discouraged. The rationale is that mutex locks and atomics are really
+hard to use correctly, and even if it appears to be manageable initially, it
+gets out of control easily. Historically, shared memory programming patterns
+in Blink have been one of the major sources of use-after-free security bugs and
+stability issues (e.g., WebAudio, memory access via CrossThreadPersistent).
+Remember that, unlike V8, Blink does not have a strict API boundary and is
+touched by many developers, and thus it's more important to adopt a less
+error-prone programming pattern. There are existing instances of shared and
+concurrent memory access in blink, but they should not be extended or
+cargo-culted. Just because you see a shared memory pattern in the code does
+not mean it's okay to use the pattern elsewhere.
+
+Introducing a few mutex locks or atomics in simple classes (e.g., shared
+counters) is fine. However, when you need to introduce a non-trivial number
+of mutex locks and atomics, the architecture needs to be designed and
+reviewed carefully. In that case, please get approval from
+platform-architecture-dev@chromium.org.
+
 ## Contact
 
 If you have any questions about the directory architecture and dependencies,

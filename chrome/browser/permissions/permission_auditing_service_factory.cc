@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,13 +12,10 @@
 #include "chrome/browser/after_startup_task_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/permissions/permission_auditing_service.h"
 
 PermissionAuditingServiceFactory::PermissionAuditingServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "PermissionAuditingService",
-          BrowserContextDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactory("PermissionAuditingService") {}
 
 PermissionAuditingServiceFactory::~PermissionAuditingServiceFactory() = default;
 

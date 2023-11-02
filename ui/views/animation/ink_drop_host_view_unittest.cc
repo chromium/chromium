@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/layer.h"
@@ -55,7 +56,7 @@ class TestViewWithInkDrop : public View {
   TestInkDrop* last_created_inkdrop() const { return last_created_inkdrop_; }
 
  private:
-  TestInkDrop* last_created_inkdrop_ = nullptr;
+  raw_ptr<TestInkDrop> last_created_inkdrop_ = nullptr;
 };
 
 class InkDropHostViewTest : public testing::Test {
@@ -197,7 +198,7 @@ TEST_F(InkDropHostViewTest,
   }
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_F(InkDropHostViewTest, NoInkDropOnTouchOrGestureEvents) {
   host_view_.SetSize(gfx::Size(20, 20));
 
@@ -324,7 +325,7 @@ class InkDropHostViewClippingTest : public testing::Test {
   // Provides internal access to |host_view_| test target.
   InkDropHostTestApi host_view_test_api_;
 
-  InkDropImpl* ink_drop_ = nullptr;
+  raw_ptr<InkDropImpl> ink_drop_ = nullptr;
 
   // Provides internal access to |host_view_|'s ink drop.
   std::unique_ptr<test::InkDropImplTestApi> ink_drop_test_api_;

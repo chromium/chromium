@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,10 @@
 #include <stdint.h>
 
 #include "base/callback_forward.h"
+#include "base/callback_helpers.h"
 #include "base/files/file.h"
 #include "base/files/file_proxy.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/services/quarantine/public/mojom/quarantine.mojom.h"
@@ -103,7 +105,7 @@ class PepperFileIOHost : public ppapi::host::ResourceHost,
 
   void GotUIThreadStuffForInternalFileSystems(
       ppapi::host::ReplyMessageContext reply_context,
-      int platform_file_flags,
+      uint32_t platform_file_flags,
       UIThreadStuff ui_thread_stuff);
   void DidOpenInternalFile(ppapi::host::ReplyMessageContext reply_context,
                            base::File file,
@@ -111,7 +113,7 @@ class PepperFileIOHost : public ppapi::host::ResourceHost,
   void GotResolvedRenderProcessId(
       ppapi::host::ReplyMessageContext reply_context,
       base::FilePath path,
-      int file_flags,
+      uint32_t file_flags,
       base::ProcessId resolved_render_process_id);
 
   void DidOpenQuotaFile(ppapi::host::ReplyMessageContext reply_context,
@@ -129,7 +131,7 @@ class PepperFileIOHost : public ppapi::host::ResourceHost,
       int32_t open_flags,
       ppapi::host::ReplyMessageContext* reply_context) const;
 
-  BrowserPpapiHostImpl* browser_ppapi_host_;
+  raw_ptr<BrowserPpapiHostImpl> browser_ppapi_host_;
 
   int render_process_id_;
   base::ProcessId resolved_render_process_id_;
@@ -145,7 +147,7 @@ class PepperFileIOHost : public ppapi::host::ResourceHost,
   base::WeakPtr<PepperFileSystemBrowserHost> file_system_host_;
 
   storage::FileSystemURL file_system_url_;
-  base::OnceClosure on_close_callback_;
+  base::ScopedClosureRunner on_close_callback_;
   int64_t max_written_offset_;
   bool check_quota_;
 

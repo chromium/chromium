@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -31,7 +32,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -197,8 +198,8 @@ ScriptPromise WebSocketStream::UnderlyingSink::write(
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise result = resolver->Promise();
   base::OnceClosure callback =
-      WTF::Bind(&UnderlyingSink::FinishWriteCallback, WrapWeakPersistent(this),
-                WrapPersistent(resolver));
+      WTF::BindOnce(&UnderlyingSink::FinishWriteCallback,
+                    WrapWeakPersistent(this), WrapPersistent(resolver));
   v8::Local<v8::Value> v8chunk = chunk.V8Value();
   SendAny(script_state, v8chunk, resolver, std::move(callback),
           exception_state);
@@ -347,7 +348,7 @@ void WebSocketStream::UnderlyingSink::SendArrayBuffer(
            << " length = " << length;
 
   if (creator_->channel_->Send(*buffer, offset, length, std::move(callback)) ==
-      WebSocketChannel::SendResult::SENT_SYNCHRONOUSLY) {
+      WebSocketChannel::SendResult::kSentSynchronously) {
     is_writing_ = false;
     resolver->Resolve();
   }
@@ -379,7 +380,7 @@ void WebSocketStream::UnderlyingSink::SendString(
   DCHECK_EQ(message.back(), '\0');
   message.pop_back();  // Remove the null terminator.
   if (creator_->channel_->Send(message, std::move(callback)) ==
-      WebSocketChannel::SendResult::SENT_SYNCHRONOUSLY) {
+      WebSocketChannel::SendResult::kSentSynchronously) {
     is_writing_ = false;
     resolver->Resolve();
   }
@@ -422,7 +423,7 @@ WebSocketStream* WebSocketStream::CreateInternal(
     stream->channel_ = channel;
   } else {
     stream->channel_ = WebSocketChannelImpl::Create(
-        execution_context, stream, SourceLocation::Capture(execution_context));
+        execution_context, stream, CaptureSourceLocation(execution_context));
   }
   stream->Connect(script_state, url, options, exception_state);
   if (exception_state.HadException())
@@ -462,7 +463,7 @@ void WebSocketStream::close(WebSocketCloseInfo* info,
   String reason = info->reason();
   if (info->hasCode()) {
     code = info->code();
-  } else if (!reason.IsNull() && !reason.IsEmpty()) {
+  } else if (!reason.IsNull() && !reason.empty()) {
     code = WebSocketChannel::kCloseEventCodeNormalClosure;
   }
   CloseInternal(code, info->reason(), exception_state);
@@ -622,7 +623,7 @@ void WebSocketStream::Connect(ScriptState* script_state,
     }
 
     signal->AddAlgorithm(
-        WTF::Bind(&WebSocketStream::OnAbort, WrapWeakPersistent(this)));
+        WTF::BindOnce(&WebSocketStream::OnAbort, WrapWeakPersistent(this)));
   }
 
   auto result = common_.Connect(

@@ -1,14 +1,14 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# pylint: disable=import-error,print-statement,relative-import,protected-access
+# pylint: disable=import-error,print-statement,protected-access
 """Unit tests for name_style_converter.py."""
 
 import unittest
 
-from name_style_converter import NameStyleConverter
-from name_style_converter import tokenize_name
+from .name_style_converter import NameStyleConverter
+from .name_style_converter import tokenize_name
 
 
 class SmartTokenizerTest(unittest.TestCase):

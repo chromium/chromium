@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -217,8 +217,8 @@ void CloudExternalDataManagerBase::Backend::OnMetadataUpdated(
   for (FetchCallbackMap::iterator it = pending_downloads_.begin();
        it != pending_downloads_.end();) {
     const MetadataKey key = it->first;
-    Metadata::const_iterator metadata = metadata_.find(key);
-    if (metadata == metadata_.end()) {
+    Metadata::const_iterator metadata_iter = metadata_.find(key);
+    if (metadata_iter == metadata_.end()) {
       // |policy| no longer references external data.
       if (updater_) {
         // Cancel the external data download.
@@ -230,7 +230,7 @@ void CloudExternalDataManagerBase::Backend::OnMetadataUpdated(
       continue;
     }
 
-    if (updater_ && metadata->second != old_metadata[key]) {
+    if (updater_ && metadata_iter->second != old_metadata[key]) {
       // |policy| still references external data but the reference has changed.
       // Cancel the external data download and start a new one.
       updater_->CancelExternalDataFetch(key.ToString());
@@ -421,17 +421,13 @@ void CloudExternalDataManagerBase::SetPolicyStore(
     OnPolicyStoreLoaded();
 }
 
-// Extract a url and hash from |value|, and put them into |metadata|.
+// Extract a url and hash from |value_dict|, and put them into |metadata|.
 void AddMetadataFromValue(CloudExternalDataManagerBase::Metadata* metadata,
                           const std::string& policy_name,
                           const std::string& field_name,
-                          const base::Value* const value) {
-  DCHECK(metadata);
-  const base::DictionaryValue* dict = nullptr;
-  if (!value || !value->GetAsDictionary(&dict))
-    return;
-  const std::string* url = dict->FindStringKey(kUrlKey);
-  const std::string* hex_hash = dict->FindStringKey(kHashKey);
+                          const base::Value::Dict& value_dict) {
+  const std::string* url = value_dict.FindString(kUrlKey);
+  const std::string* hex_hash = value_dict.FindString(kHashKey);
   std::string hash;
   if (url && hex_hash && !url->empty() && !hex_hash->empty() &&
       base::HexStringToString(*hex_hash, &hash)) {
@@ -455,18 +451,22 @@ void CloudExternalDataManagerBase::OnPolicyStoreLoaded() {
       continue;
     }
     if (it.first != key::kWebAppInstallForceList) {
-      AddMetadataFromValue(metadata.get(), it.first, std::string(),
-                           it.second.value());
+      if (it.second.value(base::Value::Type::DICT)) {
+        AddMetadataFromValue(
+            metadata.get(), it.first, std::string(),
+            it.second.value(base::Value::Type::DICT)->GetDict());
+      }
       continue;
     }
-    if (it.second.value() && it.second.value()->is_list()) {
-      for (const auto& app : it.second.value()->GetList()) {
-        const base::DictionaryValue* dict = nullptr;
-        if (app.GetAsDictionary(&dict)) {
-          const base::Value* const icon = dict->FindKey(kCustomIconKey);
-          const std::string* const url = dict->FindStringKey(kUrlKey);
+    if (it.second.value(base::Value::Type::LIST)) {
+      for (const auto& app :
+           it.second.value(base::Value::Type::LIST)->GetList()) {
+        if (app.is_dict()) {
+          const base::Value::Dict& dict = app.GetDict();
+          const base::Value::Dict* const icon = dict.FindDict(kCustomIconKey);
+          const std::string* const url = dict.FindString(kUrlKey);
           if (icon && url) {
-            AddMetadataFromValue(metadata.get(), it.first, *url, icon);
+            AddMetadataFromValue(metadata.get(), it.first, *url, *icon);
           }
         }
       }

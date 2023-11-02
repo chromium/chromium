@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -46,7 +46,9 @@ bool LookUpProxyForURLCallback(
       site_instance->GetBrowserContext()->GetStoragePartition(site_instance);
 
   storage_partition->GetNetworkContext()->LookUpProxyForURL(
-      url, render_frame_host->GetNetworkIsolationKey(),
+      url,
+      render_frame_host->GetIsolationInfoForSubresources()
+          .network_anonymization_key(),
       std::move(proxy_lookup_client));
   return true;
 }

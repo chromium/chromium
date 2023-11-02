@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,13 +44,24 @@ class TestCreditCardSaveManager : public CreditCardSaveManager {
 
   void set_upload_request_card_number(const std::u16string& credit_card_number);
 
+  void set_upload_request_card(const CreditCard& card);
+
+  payments::PaymentsClient::UploadRequestDetails* upload_request();
+
  private:
-  void OnDidUploadCard(AutofillClient::PaymentsRpcResult result,
-                       const std::string& server_id) override;
+  void OnDidUploadCard(
+      AutofillClient::PaymentsRpcResult result,
+      const payments::PaymentsClient::UploadCardResponseDetails&
+          upload_card_response_details) override;
 
   bool credit_card_upload_enabled_ = false;
   bool credit_card_was_uploaded_ = false;
 
+  FRIEND_TEST_ALL_PREFIXES(CreditCardSaveManagerTest,
+                           OnDidUploadCard_VirtualCardEnrollment);
+  FRIEND_TEST_ALL_PREFIXES(
+      CreditCardSaveManagerTest,
+      OnDidUploadCard_VirtualCardEnrollment_GetDetailsForEnrollmentResponseDetailsReturned);
   FRIEND_TEST_ALL_PREFIXES(CreditCardSaveManagerTest,
                            UploadCreditCard_NumStrikesLoggedOnUploadNotSuccess);
 };

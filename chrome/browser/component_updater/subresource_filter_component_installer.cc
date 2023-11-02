@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/ref_counted.h"
@@ -75,7 +76,9 @@ void SubresourceFilterComponentInstallerPolicy::ComponentReady(
   absl::optional<int> ruleset_format =
       manifest.FindIntKey(kManifestRulesetFormatKey);
   if (!ruleset_format || *ruleset_format != kCurrentRulesetFormat) {
-    DVLOG(1) << "Bailing out. Future ruleset version: " << *ruleset_format;
+    DVLOG(1) << "Bailing out.";
+    DVLOG_IF(1, ruleset_format)
+        << "Future ruleset version: " << *ruleset_format;
     return;
   }
   subresource_filter::UnindexedRulesetInfo ruleset_info;

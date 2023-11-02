@@ -1,0 +1,3 @@
+Tests that Page.navigate within same document does not report loaderId
+loaderId (undefined expected): undefined
+

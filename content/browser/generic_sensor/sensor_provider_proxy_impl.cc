@@ -1,22 +1,22 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/browser/generic_sensor/sensor_provider_proxy_impl.h"
 
-#include <algorithm>
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
 #include "base/no_destructor.h"
-#include "content/browser/permissions/permission_controller_impl.h"
+#include "base/ranges/algorithm.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/device_service.h"
-#include "content/public/browser/permission_type.h"
+#include "content/public/browser/permission_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 
 using device::mojom::SensorType;
@@ -36,11 +36,8 @@ SensorProviderProxyImpl::SensorProviderBinder& GetBinderOverride() {
 }  // namespace
 
 SensorProviderProxyImpl::SensorProviderProxyImpl(
-    PermissionControllerImpl* permission_controller,
     RenderFrameHost* render_frame_host)
-    : permission_controller_(permission_controller),
-      render_frame_host_(render_frame_host) {
-  DCHECK(permission_controller);
+    : DocumentUserData<SensorProviderProxyImpl>(render_frame_host) {
   DCHECK(render_frame_host);
 }
 
@@ -76,16 +73,18 @@ void SensorProviderProxyImpl::GetSensor(SensorType type,
       GetDeviceService().BindSensorProvider(std::move(receiver));
   }
 
-  permission_controller_->RequestPermission(
-      PermissionType::SENSORS, render_frame_host_,
-      render_frame_host_->GetLastCommittedURL().DeprecatedGetOriginAsURL(),
-      false,
-      base::BindOnce(&SensorProviderProxyImpl::OnPermissionRequestCompleted,
-                     weak_factory_.GetWeakPtr(), type, std::move(callback)));
+  render_frame_host()
+      .GetBrowserContext()
+      ->GetPermissionController()
+      ->RequestPermissionFromCurrentDocument(
+          blink::PermissionType::SENSORS, &render_frame_host(), false,
+          base::BindOnce(&SensorProviderProxyImpl::OnPermissionRequestCompleted,
+                         weak_factory_.GetWeakPtr(), type,
+                         std::move(callback)));
 }
 
 void SensorProviderProxyImpl::OnPermissionRequestCompleted(
-    device::mojom::SensorType type,
+    SensorType type,
     GetSensorCallback callback,
     blink::mojom::PermissionStatus status) {
   if (status != blink::mojom::PermissionStatus::GRANTED || !sensor_provider_) {
@@ -104,7 +103,7 @@ void SensorProviderProxyImpl::OnPermissionRequestCompleted(
     case SensorType::RELATIVE_ORIENTATION_QUATERNION:
       break;
     default:
-      static_cast<RenderFrameHostImpl*>(render_frame_host_)
+      static_cast<RenderFrameHostImpl*>(&render_frame_host())
           ->OnBackForwardCacheDisablingStickyFeatureUsed(
               blink::scheduler::WebSchedulerTrackedFeature::
                   kRequestedBackForwardCacheBlockedSensors);
@@ -147,10 +146,10 @@ SensorTypeToPermissionsPolicyFeatures(SensorType type) {
 bool SensorProviderProxyImpl::CheckFeaturePolicies(SensorType type) const {
   const std::vector<blink::mojom::PermissionsPolicyFeature>& features =
       SensorTypeToPermissionsPolicyFeatures(type);
-  return std::all_of(features.begin(), features.end(),
-                     [this](blink::mojom::PermissionsPolicyFeature feature) {
-                       return render_frame_host_->IsFeatureEnabled(feature);
-                     });
+  return base::ranges::all_of(
+      features, [this](blink::mojom::PermissionsPolicyFeature feature) {
+        return render_frame_host().IsFeatureEnabled(feature);
+      });
 }
 
 void SensorProviderProxyImpl::OnConnectionError() {
@@ -159,5 +158,7 @@ void SensorProviderProxyImpl::OnConnectionError() {
   receiver_set_.Clear();
   sensor_provider_.reset();
 }
+
+DOCUMENT_USER_DATA_KEY_IMPL(SensorProviderProxyImpl);
 
 }  // namespace content

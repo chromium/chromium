@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,13 +16,16 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/loader/fetch/console_logger.h"
 #include "third_party/blink/renderer/platform/loader/fetch/loading_behavior_observer.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher_properties.h"
 #include "third_party/blink/renderer/platform/network/network_state_notifier.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/aggregated_metric_reporter.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_status.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -104,7 +107,9 @@ ResourceLoadScheduler::ResourceLoadScheduler(
                                kTightLimitForRendererSideResourceScheduler);
 
   scheduler_observer_handle_ = frame_or_worker_scheduler->AddLifecycleObserver(
-      FrameScheduler::ObserverType::kLoader, this);
+      FrameScheduler::ObserverType::kLoader,
+      WTF::BindRepeating(&ResourceLoadScheduler::OnLifecycleStateChanged,
+                         WrapWeakPersistent(this)));
 }
 
 ResourceLoadScheduler::~ResourceLoadScheduler() = default;
@@ -169,7 +174,14 @@ void ResourceLoadScheduler::Request(ResourceLoadSchedulerClient* client,
 
   // Remember the ClientId since MaybeRun() below may destruct the caller
   // instance and |id| may be inaccessible after the call.
-  MaybeRun();
+  // Don't run if we are still batching fetch requests.
+
+  // MaybeRun() will get called directly at the end of the batch if a batch
+  // operation is active.
+  if (0 == pending_batch_operations_ ||
+      !RuntimeEnabledFeatures::BatchFetchRequestsEnabled()) {
+    MaybeRun();
+  }
 }
 
 void ResourceLoadScheduler::SetPriority(ClientId client_id,
@@ -402,7 +414,7 @@ size_t ResourceLoadScheduler::GetOutstandingLimit(
 }
 
 void ResourceLoadScheduler::ShowConsoleMessageIfNeeded() {
-  if (is_console_info_shown_ || pending_request_map_.IsEmpty())
+  if (is_console_info_shown_ || pending_request_map_.empty())
     return;
 
   const base::Time limit = clock_->Now() - base::Seconds(60);
@@ -468,6 +480,19 @@ void ResourceLoadScheduler::SetConnectionInfo(
   }
 
   MaybeRun();
+}
+
+void ResourceLoadScheduler::StartBatch() {
+  pending_batch_operations_++;
+}
+
+void ResourceLoadScheduler::EndBatch() {
+  DCHECK_NE(0U, pending_batch_operations_);
+
+  pending_batch_operations_--;
+  if (0 == pending_batch_operations_) {
+    MaybeRun();
+  }
 }
 
 bool ResourceLoadScheduler::CanRequestForMultiplexedConnectionsInTight() const {

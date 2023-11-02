@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -167,6 +167,7 @@ void FakeAdapter::StartDiscoverySession(
 void FakeAdapter::ConnectToServiceInsecurely(
     const std::string& address,
     const device::BluetoothUUID& service_uuid,
+    bool should_unbond_on_error,
     ConnectToServiceInsecurelyCallback callback) {
   if (!base::Contains(allowed_connections_for_address_and_uuid_pair_,
                       std::make_pair(address, service_uuid))) {

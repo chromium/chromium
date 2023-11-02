@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,8 +45,6 @@ class VrTabHelper : public content::WebContentsUserData<VrTabHelper> {
   explicit VrTabHelper(content::WebContents* contents);
 
   friend class content::WebContentsUserData<VrTabHelper>;
-
-  content::WebContents* web_contents_;
 
   // If is_in_vr_ is true, that means that the only content displayed is
   // inside vr (for example, VR browsing or immersive experience

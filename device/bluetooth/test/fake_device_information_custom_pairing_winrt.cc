@@ -1,9 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "device/bluetooth/test/fake_device_information_custom_pairing_winrt.h"
 
+#include <Windows.Devices.Enumeration.h>
 #include <windows.foundation.h>
 
 #include <utility>
@@ -21,6 +22,9 @@ namespace {
 
 using ABI::Windows::Devices::Enumeration::DeviceInformationCustomPairing;
 using ABI::Windows::Devices::Enumeration::DevicePairingKinds;
+using ABI::Windows::Devices::Enumeration::DevicePairingKinds_ConfirmOnly;
+using ABI::Windows::Devices::Enumeration::DevicePairingKinds_ConfirmPinMatch;
+using ABI::Windows::Devices::Enumeration::DevicePairingKinds_ProvidePin;
 using ABI::Windows::Devices::Enumeration::DevicePairingProtectionLevel;
 using ABI::Windows::Devices::Enumeration::DevicePairingRequestedEventArgs;
 using ABI::Windows::Devices::Enumeration::DevicePairingResult;
@@ -35,11 +39,29 @@ using Microsoft::WRL::Make;
 
 }  // namespace
 
+// This ctor used only by ProvidePin pairing kind
 FakeDeviceInformationCustomPairingWinrt::
     FakeDeviceInformationCustomPairingWinrt(
         Microsoft::WRL::ComPtr<FakeDeviceInformationPairingWinrt> pairing,
         std::string pin)
     : pairing_(std::move(pairing)), pin_(std::move(pin)) {}
+
+// This ctor used by ConfirmOnly pairing kind
+FakeDeviceInformationCustomPairingWinrt::
+    FakeDeviceInformationCustomPairingWinrt(
+        Microsoft::WRL::ComPtr<FakeDeviceInformationPairingWinrt> pairing,
+        DevicePairingKinds pairing_kind)
+    : pairing_(std::move(pairing)), pairing_kind_(pairing_kind) {}
+
+// This ctor used by ConfirmPinMatch pairing kind
+FakeDeviceInformationCustomPairingWinrt::
+    FakeDeviceInformationCustomPairingWinrt(
+        Microsoft::WRL::ComPtr<FakeDeviceInformationPairingWinrt> pairing,
+        DevicePairingKinds pairing_kind,
+        base::StringPiece display_pin)
+    : pairing_(std::move(pairing)),
+      pairing_kind_(pairing_kind),
+      display_pin_(display_pin) {}
 
 FakeDeviceInformationCustomPairingWinrt::
     ~FakeDeviceInformationCustomPairingWinrt() = default;
@@ -98,6 +120,19 @@ void FakeDeviceInformationCustomPairingWinrt::AcceptWithPin(std::string pin) {
 }
 
 void FakeDeviceInformationCustomPairingWinrt::Complete() {
+  bool is_paired = false;
+  switch (pairing_kind_) {
+    case DevicePairingKinds_ProvidePin:
+      is_paired = pin_ == accepted_pin_;
+      break;
+    case DevicePairingKinds_ConfirmOnly:
+    case DevicePairingKinds_ConfirmPinMatch:
+      is_paired = confirmed_;
+      break;
+    default:
+      break;
+  }
+
   pair_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -111,7 +146,7 @@ void FakeDeviceInformationCustomPairingWinrt::Complete() {
                               : DevicePairingResultStatus_Failed));
             pairing->set_paired(is_paired);
           },
-          std::move(pair_callback_), pairing_, pin_ == accepted_pin_));
+          std::move(pair_callback_), pairing_, is_paired));
 }
 
 }  // namespace device

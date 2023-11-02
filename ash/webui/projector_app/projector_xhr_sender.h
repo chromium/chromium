@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,8 @@
 #include <string>
 
 #include "ash/webui/projector_app/projector_oauth_token_fetcher.h"
-#include "base/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
 namespace base {
@@ -26,6 +26,9 @@ class URLLoaderFactory;
 }  // namespace network
 
 namespace ash {
+
+constexpr char kDriveV3BaseUrl[] = "https://www.googleapis.com/drive/v3/files/";
+constexpr char kRequestMethodPatch[] = "PATCH";
 
 /**
  * Projector XHR sender. Used by Projector App to send XHR requests.
@@ -44,20 +47,27 @@ class ProjectorXhrSender {
       network::mojom::URLLoaderFactory* url_loader_factory);
   ProjectorXhrSender(const ProjectorXhrSender&) = delete;
   ProjectorXhrSender& operator=(const ProjectorXhrSender&) = delete;
-  ~ProjectorXhrSender();
+  virtual ~ProjectorXhrSender();
 
   // Send XHR request and trigger the callback when complete.
-  void Send(const GURL& url,
-            const std::string& method,
-            const std::string& request_body,
-            bool use_credentials,
-            SendRequestCallback callback);
+  // This will attempt to fetch OAuth token for the provided email address
+  // and fallback to primary account email if account_email is not provided
+  // or ProjectorViewerUseSecondaryAccount flag is disabled.
+  virtual void Send(const GURL& url,
+                    const std::string& method,
+                    const std::string& request_body,
+                    bool use_credentials,
+                    bool use_api_key,
+                    SendRequestCallback callback,
+                    const base::Value::Dict& headers = base::Value::Dict(),
+                    const std::string& account_email = std::string());
 
  private:
   // Triggered when an OAuth token fetch completed.
   void OnAccessTokenRequestCompleted(const GURL& url,
                                      const std::string& method,
                                      const std::string& request_body,
+                                     const base::Value::Dict& headers,
                                      SendRequestCallback callback,
                                      const std::string& email,
                                      GoogleServiceAuthError error,
@@ -67,12 +77,16 @@ class ProjectorXhrSender {
                    const std::string& method,
                    const std::string& request_body,
                    const std::string& token,
+                   const base::Value::Dict& headers,
                    SendRequestCallback callback);
 
   // Triggered when an XHR request completed.
   void OnSimpleURLLoaderComplete(int request_id,
                                  SendRequestCallback callback,
                                  std::unique_ptr<std::string> response_body);
+
+  // Validate the email address provided with xhr request
+  bool IsValidEmail(const std::string& email);
 
   ProjectorOAuthTokenFetcher oauth_token_fetcher_;
   network::mojom::URLLoaderFactory* url_loader_factory_ = nullptr;

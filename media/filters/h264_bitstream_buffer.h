@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -14,6 +14,7 @@
 #include <stdint.h>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/base/media_export.h"
@@ -139,7 +140,7 @@ class MEDIA_EXPORT H264BitstreamBuffer
   size_t bits_in_buffer_;
 
   // Buffer for stream data.
-  uint8_t* data_;
+  raw_ptr<uint8_t> data_;
 };
 
 }  // namespace media

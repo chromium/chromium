@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -55,14 +55,13 @@ bool ParamTraits<AudioParameters>::Read(const base::Pickle* m,
   }
 
   if (hardware_capabilities) {
-    *r = AudioParameters(format, channel_layout, sample_rate, frames_per_buffer,
-                         *hardware_capabilities);
+    *r = AudioParameters(format, {channel_layout, channels}, sample_rate,
+                         frames_per_buffer, *hardware_capabilities);
   } else {
-    *r =
-        AudioParameters(format, channel_layout, sample_rate, frames_per_buffer);
+    *r = AudioParameters(format, {channel_layout, channels}, sample_rate,
+                         frames_per_buffer);
   }
 
-  r->set_channels_for_discrete(channels);
   r->set_effects(effects);
   r->set_mic_positions(mic_positions);
   r->set_latency_tag(latency_tag);
@@ -80,19 +79,28 @@ void ParamTraits<AudioParameters::HardwareCapabilities>::Write(
     const param_type& p) {
   WriteParam(m, p.min_frames_per_buffer);
   WriteParam(m, p.max_frames_per_buffer);
+  WriteParam(m, p.bitstream_formats);
+  WriteParam(m, p.require_encapsulation);
 }
 
 bool ParamTraits<AudioParameters::HardwareCapabilities>::Read(
     const base::Pickle* m,
     base::PickleIterator* iter,
     param_type* r) {
-  int max_frames_per_buffer, min_frames_per_buffer;
+  int bitstream_formats;
+  bool require_encapsulation;
+  int max_frames_per_buffer;
+  int min_frames_per_buffer;
   if (!ReadParam(m, iter, &min_frames_per_buffer) ||
-      !ReadParam(m, iter, &max_frames_per_buffer)) {
+      !ReadParam(m, iter, &max_frames_per_buffer) ||
+      !ReadParam(m, iter, &bitstream_formats) ||
+      !ReadParam(m, iter, &require_encapsulation)) {
     return false;
   }
   r->min_frames_per_buffer = min_frames_per_buffer;
   r->max_frames_per_buffer = max_frames_per_buffer;
+  r->bitstream_formats = bitstream_formats;
+  r->require_encapsulation = require_encapsulation;
   return true;
 }
 

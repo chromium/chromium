@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,8 +23,8 @@ SharesheetExpandButton::SharesheetExpandButton(PressedCallback callback)
     : Button(std::move(callback)) {
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,
-      gfx::Insets(kExpandButtonInsideBorderInsetsVertical,
-                  kExpandButtonInsideBorderInsetsHorizontal),
+      gfx::Insets::VH(kExpandButtonInsideBorderInsetsVertical,
+                      kExpandButtonInsideBorderInsetsHorizontal),
       kExpandButtonBetweenChildSpacing, true));
   // Sets all views to be center-aligned along the orientation axis.
   layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kCenter);

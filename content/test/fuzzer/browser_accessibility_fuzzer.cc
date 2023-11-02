@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -159,14 +159,14 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   std::vector<void*> results;
 
   // Test some tree-walking functions.
-  BrowserAccessibility* root = manager->GetRoot();
+  BrowserAccessibility* root = manager->GetBrowserAccessibilityRoot();
   results.push_back(root->PlatformDeepestFirstChild());
   results.push_back(root->PlatformDeepestLastChild());
   results.push_back(root->InternalDeepestFirstChild());
   results.push_back(root->InternalDeepestLastChild());
 
   // Test OneShotAccessibilityTreeSearch.
-  OneShotAccessibilityTreeSearch search(manager->GetRoot());
+  OneShotAccessibilityTreeSearch search(manager->GetBrowserAccessibilityRoot());
   search.SetDirection(fdp.ConsumeBool()
                           ? OneShotAccessibilityTreeSearch::FORWARDS
                           : OneShotAccessibilityTreeSearch::BACKWARDS);

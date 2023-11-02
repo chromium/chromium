@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,13 +28,12 @@ const char* enum_names[] = {
 };
 // clang-format on
 
+// Note that this second include is not redundant. The second inclusion of the
+// .inc file serves to undefine the macros the first inclusion defined.
 #include "ui/color/color_id_macros.inc"
 
-#if defined(OS_MAC)
-#include "ui/color/color_mixers.h"
-#endif
-
-constexpr size_t kColorColumnWidth = 19 + 1;  // 'kGoogleGreenDark500 '
+// Longest color name, plus a space.  Currently, "SK_ColorTRANSPARENT ".
+constexpr size_t kColorColumnWidth = 19 + 1;
 
 std::string SkColorToString(SkColor color) {
   std::string color_string = ui::SkColorName(color);
@@ -50,8 +49,8 @@ int main(int argc, const char* argv[]) {
   const auto add_mixers = [](ui::ColorProvider* provider, auto color_mode,
                              auto contrast_mode) {
     const ui::ColorProviderManager::Key key = {
-        color_mode, contrast_mode,
-        ui::ColorProviderManager::SystemTheme::kDefault, nullptr};
+        color_mode, contrast_mode, ui::SystemTheme::kDefault,
+        ui::ColorProviderManager::FrameType::kChromium};
     ui::AddColorMixers(provider, key);
     AddChromeColorMixers(provider, key);
   };

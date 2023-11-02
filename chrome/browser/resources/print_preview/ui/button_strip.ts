@@ -1,21 +1,24 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
-import 'chrome://resources/cr_elements/hidden_style_css.m.js';
-import 'chrome://resources/cr_elements/shared_vars_css.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import '../strings.m.js';
 
-import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+// <if expr="is_chromeos">
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+// </if>
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Destination, GooglePromotedDestinationId} from '../data/destination.js';
-import {getPrinterTypeForDestination, PrinterType} from '../data/destination_match.js';
+import {Destination, PrinterType} from '../data/destination.js';
 import {State} from '../data/state.js';
+
+import {getTemplate} from './button_strip.html.js';
 
 
 export class PrintPreviewButtonStripElement extends PolymerElement {
@@ -24,7 +27,7 @@ export class PrintPreviewButtonStripElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -51,7 +54,7 @@ export class PrintPreviewButtonStripElement extends PolymerElement {
         },
       },
 
-      // <if expr="chromeos or lacros">
+      // <if expr="is_chromeos">
       errorMessage_: {
         type: String,
         observer: 'errorMessageChanged_',
@@ -64,7 +67,7 @@ export class PrintPreviewButtonStripElement extends PolymerElement {
     return [
       'updatePrintButtonLabel_(destination.id)',
       'updatePrintButtonEnabled_(state, destination.id, maxSheets, sheetCount)',
-      // <if expr="chromeos or lacros">
+      // <if expr="is_chromeos">
       'updateErrorMessage_(state, destination.id, maxSheets, sheetCount)',
       // </if>
 
@@ -78,7 +81,7 @@ export class PrintPreviewButtonStripElement extends PolymerElement {
   state: State;
   private printButtonEnabled_: boolean;
   private printButtonLabel_: string;
-  // <if expr="chromeos or lacros">
+  // <if expr="is_chromeos">
   private errorMessage_: string;
   // </if>
 
@@ -97,16 +100,14 @@ export class PrintPreviewButtonStripElement extends PolymerElement {
     this.fire_('cancel-requested');
   }
 
-  private isPdfOrDrive_(): boolean {
+  private isPdf_(): boolean {
     return this.destination &&
-        (getPrinterTypeForDestination(this.destination) ===
-             PrinterType.PDF_PRINTER ||
-         this.destination.id === GooglePromotedDestinationId.DOCS);
+        this.destination.type === PrinterType.PDF_PRINTER;
   }
 
   private updatePrintButtonLabel_() {
-    this.printButtonLabel_ = loadTimeData.getString(
-        this.isPdfOrDrive_() ? 'saveButton' : 'printButton');
+    this.printButtonLabel_ =
+        loadTimeData.getString(this.isPdf_() ? 'saveButton' : 'printButton');
   }
 
   private updatePrintButtonEnabled_() {
@@ -115,13 +116,13 @@ export class PrintPreviewButtonStripElement extends PolymerElement {
         this.printButtonEnabled_ = false;
         break;
       case (State.READY):
-        // <if expr="chromeos or lacros">
+        // <if expr="is_chromeos">
         this.printButtonEnabled_ = !this.printButtonDisabled_();
         // </if>
-        // <if expr="not chromeos and not lacros">
+        // <if expr="not is_chromeos">
         this.printButtonEnabled_ = true;
         // </if>
-        if (this.firstLoad) {
+        if (this.firstLoad || this.lastState_ === State.PRINTING) {
           this.shadowRoot!
               .querySelector<CrButtonElement>(
                   'cr-button.action-button')!.focus();
@@ -135,7 +136,7 @@ export class PrintPreviewButtonStripElement extends PolymerElement {
     this.lastState_ = this.state;
   }
 
-  // <if expr="chromeos or lacros">
+  // <if expr="is_chromeos">
   /**
    * @return Whether to disable "Print" button because of sheets limit policy.
    */
@@ -144,7 +145,7 @@ export class PrintPreviewButtonStripElement extends PolymerElement {
     // * This is "real" printing, i.e. not saving to PDF/Drive.
     // * Sheets policy is present.
     // * Either number of sheets is not calculated or exceeds policy limit.
-    return !this.isPdfOrDrive_() && this.maxSheets > 0 &&
+    return !this.isPdf_() && this.maxSheets > 0 &&
         (this.sheetCount === 0 || this.sheetCount > this.maxSheets);
   }
 
@@ -179,6 +180,12 @@ export class PrintPreviewButtonStripElement extends PolymerElement {
     }
   }
   // </if>
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'print-preview-button-strip': PrintPreviewButtonStripElement;
+  }
 }
 
 customElements.define(

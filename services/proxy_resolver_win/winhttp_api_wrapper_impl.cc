@@ -1,14 +1,14 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "services/proxy_resolver_win/winhttp_api_wrapper_impl.h"
 
 #include <string>
+#include <tuple>
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "services/proxy_resolver_win/winhttp_proxy_resolver_functions.h"
 
 namespace proxy_resolver_win {
@@ -29,7 +29,7 @@ ScopedIEConfig::~ScopedIEConfig() {
 WinHttpAPIWrapperImpl::WinHttpAPIWrapperImpl() = default;
 WinHttpAPIWrapperImpl::~WinHttpAPIWrapperImpl() {
   if (session_handle_)
-    ignore_result(CallWinHttpSetStatusCallback(nullptr));
+    std::ignore = CallWinHttpSetStatusCallback(nullptr);
   CloseSessionHandle();
 }
 

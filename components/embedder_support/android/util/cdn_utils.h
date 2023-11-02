@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@ class Page;
 
 namespace embedder_support {
 
-extern const base::Feature kShowTrustedPublisherURL;
+BASE_DECLARE_FEATURE(kShowTrustedPublisherURL);
 
 // This should be called from content::WebContentsObserver::PrimaryPageChanged
 // to get a publisher url for the committed navigation, else an empty GURL().

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -97,11 +97,12 @@ CrossOriginReadBlockingChecker::CrossOriginReadBlockingChecker(
     const network::ResourceRequest& request,
     const network::mojom::URLResponseHead& response,
     const storage::BlobDataHandle& blob_data_handle,
+    network::corb::PerFactoryState& corb_state,
     base::OnceCallback<void(Result)> callback)
     : callback_(std::move(callback)) {
   DCHECK(!callback_.is_null());
 
-  corb_analyzer_ = network::corb::ResponseAnalyzer::Create();
+  corb_analyzer_ = network::corb::ResponseAnalyzer::Create(corb_state);
   auto decision = corb_analyzer_->Init(request.url, request.request_initiator,
                                        request.mode, response);
   switch (decision) {

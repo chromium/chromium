@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -72,7 +72,7 @@ class TestLogStore : public LogStore {
     staged_log_hash_.clear();
   }
   void MarkStagedLogAsSent() override {}
-  void TrimAndPersistUnsentLogs() override {}
+  void TrimAndPersistUnsentLogs(bool overwrite_in_memory_store) override {}
   void LoadPersistedUnsentLogs() override {}
 
  private:
@@ -83,7 +83,10 @@ class TestLogStore : public LogStore {
 class TestReportingService : public ReportingService {
  public:
   TestReportingService(MetricsServiceClient* client, PrefService* local_state)
-      : ReportingService(client, local_state, 100) {
+      : ReportingService(client,
+                         local_state,
+                         100,
+                         /*logs_event_manager=*/nullptr) {
     Initialize();
   }
 

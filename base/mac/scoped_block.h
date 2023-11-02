@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,8 +13,7 @@
 #error "Cannot include base/mac/scoped_block.h in file built with ARC."
 #endif
 
-namespace base {
-namespace mac {
+namespace base::mac {
 
 namespace internal {
 
@@ -32,7 +31,6 @@ struct ScopedBlockTraits {
 template <typename B>
 using ScopedBlock = ScopedTypeRef<B, internal::ScopedBlockTraits<B>>;
 
-}  // namespace mac
-}  // namespace base
+}  // namespace base::mac
 
 #endif  // BASE_MAC_SCOPED_BLOCK_H_

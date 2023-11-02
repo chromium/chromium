@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define MEDIA_GPU_WINDOWS_D3D11_VIDEO_DECODER_H_
 
 #include <d3d11.h>
+#include <list>
 #include <vector>
 
 #include "base/memory/ptr_util.h"
@@ -15,12 +16,14 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/sequence_bound.h"
+#include "base/time/time.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_preferences.h"
 #include "media/base/callback_registry.h"
 #include "media/base/status.h"
 #include "media/base/supported_video_decoder_config.h"
 #include "media/base/video_decoder.h"
+#include "media/base/video_types.h"
 #include "media/gpu/command_buffer_helper.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/windows/d3d11_com_defs.h"
@@ -65,7 +68,7 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
       base::RepeatingCallback<gpu::CommandBufferStub*()> get_stub_cb,
       GetD3D11DeviceCB get_d3d11_device_cb,
       SupportedConfigs supported_configs,
-      bool is_hdr_supported);
+      bool system_hdr_enabled);
 
   D3D11VideoDecoder(const D3D11VideoDecoder&) = delete;
   D3D11VideoDecoder& operator=(const D3D11VideoDecoder&) = delete;
@@ -122,7 +125,7 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
           get_helper_cb,
       GetD3D11DeviceCB get_d3d11_device_cb,
       SupportedConfigs supported_configs,
-      bool is_hdr_supported);
+      bool system_hdr_enabled);
 
   // Receive |buffer|, that is now unused by the client.
   void ReceivePictureBufferFromClient(scoped_refptr<D3D11PictureBuffer> buffer);
@@ -146,6 +149,15 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
   // really should have an async interface since it must do some work on the
   // gpu main thread.
   void CreatePictureBuffers();
+
+  // Measure the number of picture buffers that are currently unused, and see if
+  // it's smaller than the minimum we've seen since we've allocated them.
+  void MeasurePictureBufferUsage();
+
+  // Log the current measurement of picture buffer usage, as measured by
+  // `MeasurePictureBufferUsage()`, and clear the measurement.  Do nothing,
+  // successfully, if no measurement has been made.
+  void LogPictureBufferUsage();
 
   // Create a D3D11VideoDecoder, if possible, based on the current config.
   D3D11Status::Or<ComD3D11VideoDecoder> CreateD3D11Decoder();
@@ -212,16 +224,16 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
     kError,
   };
 
-  // Enter the kError state.  This will fail any pending |init_cb_| and / or
-  // pending decode as well.  Do not add new uses of the char* overload; send a
-  // Status instead.
-  void NotifyError(const char* reason);
-  // void NotifyError(D3D11Status&& reason);
-  // This one sends the Status upwards, since VideoDecoder still returns a
-  // Status rather than a decoder-specific variant.  This sends the correct
-  // status code (DECODE_ERROR, for example), and attaches `reason` as the thing
-  // that caused it.
-  void NotifyError(D3D11Status reason);
+  // Enter the kError state. This will fail any pending |init_cb_| and/or
+  // pending decodes as well. |opt_decoder_code| can be optionally provided for
+  // a more descriptive reason passed back up to the decoder stream rather than
+  // just kFailed.
+  void NotifyError(
+      D3D11Status reason,
+      DecoderStatus::Codes opt_decoder_code = DecoderStatus::Codes::kFailed);
+
+  // Posts |status| to any pending initialization or decode callbacks.
+  void PostDecoderStatus(DecoderStatus status);
 
   // The implementation, which lives on the GPU main thread.
   base::SequenceBound<D3D11VideoDecoderImpl> impl_;
@@ -296,7 +308,7 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
   SupportedConfigs supported_configs_;
 
   // Should we assume that we're outputting to an HDR display?
-  bool is_hdr_supported_ = false;
+  bool system_hdr_enabled_ = false;
 
   // Should we use multiple single textures for the decoder output (true) or one
   // texture with multiple array slices (false)?
@@ -309,6 +321,21 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
   // The currently configured bit depth for the decoder. When this changes we
   // need to recreate the decoder.
   uint8_t bit_depth_ = 8u;
+
+  // The currently configured chroma sampling format on the accelerator. When
+  // this changes we need to recreate the decoder.
+  VideoChromaSampling chroma_sampling_ = VideoChromaSampling::k420;
+
+  // If set, this is the minimum number of picture buffers that we've seen
+  // since the last time it was logged to UMA that are unused by both the
+  // client and the decoder.  If unset, then no measurement has been made.
+  absl::optional<int> min_unused_buffers_;
+
+  // Picture buffer usage is measured periodically after some number of decodes.
+  // This tracks how many until the next measurement.  It's used strictly to
+  // rate limit the measurements, so we don't spent too much time counting
+  // unused picture buffers.
+  int decode_count_until_picture_buffer_measurement_ = 0;
 
   base::WeakPtrFactory<D3D11VideoDecoder> weak_factory_{this};
 };

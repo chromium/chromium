@@ -1,29 +1,30 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
-import 'chrome://resources/cr_elements/icons.m.js';
-import 'chrome://resources/cr_elements/shared_vars_css.m.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/cr_elements/icons.html.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './searched_label.js';
-import './shared_style.js';
+import './shared_style.css.js';
 import './strings.m.js';
 
-import {FocusRow} from 'chrome://resources/js/cr/ui/focus_row.m.js';
+import {FocusRow} from 'chrome://resources/js/focus_row.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {IronCollapseElement} from 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {BrowserService} from './browser_service.js';
+import {BrowserServiceImpl} from './browser_service.js';
 import {SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram} from './constants.js';
 import {ForeignSessionTab} from './externs.js';
+import {getTemplate} from './synced_device_card.html.js';
 
-type OpenTabEvent = {
-  model: {tab: ForeignSessionTab},
-};
+interface OpenTabEvent {
+  model: {tab: ForeignSessionTab};
+}
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -35,6 +36,8 @@ export interface HistorySyncedDeviceCardElement {
   $: {
     'card-heading': HTMLDivElement,
     'collapse': IronCollapseElement,
+    'collapse-button': HTMLElement,
+    'menu-button': HTMLElement,
   };
 }
 
@@ -44,7 +47,7 @@ export class HistorySyncedDeviceCardElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -77,12 +80,12 @@ export class HistorySyncedDeviceCardElement extends PolymerElement {
     };
   }
 
-  tabs: Array<ForeignSessionTab> = [];
+  tabs: ForeignSessionTab[] = [];
   opened: boolean;
-  separatorIndexes: Array<number>;
+  separatorIndexes: number[];
   sessionTag: string;
 
-  ready() {
+  override ready() {
     super.ready();
     this.addEventListener('dom-change', this.notifyFocusUpdate_);
   }
@@ -96,13 +99,13 @@ export class HistorySyncedDeviceCardElement extends PolymerElement {
    * Create FocusRows for this card. One is always made for the card heading and
    * one for each result if the card is open.
    */
-  createFocusRows(): Array<FocusRow> {
+  createFocusRows(): FocusRow[] {
     const titleRow = new FocusRow(this.$['card-heading'], null);
     titleRow.addItem('menu', '#menu-button');
     titleRow.addItem('collapse', '#collapse-button');
     const rows = [titleRow];
     if (this.opened) {
-      this.shadowRoot!.querySelectorAll('.item-container')
+      this.shadowRoot!.querySelectorAll<HTMLElement>('.item-container')
           .forEach(function(el) {
             const row = new FocusRow(el, null);
             row.addItem('link', '.website-link');
@@ -116,7 +119,7 @@ export class HistorySyncedDeviceCardElement extends PolymerElement {
   private openTab_(e: MouseEvent) {
     const model = (e as unknown as OpenTabEvent).model;
     const tab = model.tab;
-    const browserService = BrowserService.getInstance();
+    const browserService = BrowserServiceImpl.getInstance();
     browserService.recordHistogram(
         SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram.LINK_CLICKED,
         SyncedTabsHistogram.LIMIT);
@@ -133,7 +136,7 @@ export class HistorySyncedDeviceCardElement extends PolymerElement {
         SyncedTabsHistogram.COLLAPSE_SESSION :
         SyncedTabsHistogram.EXPAND_SESSION;
 
-    BrowserService.getInstance().recordHistogram(
+    BrowserServiceImpl.getInstance().recordHistogram(
         SYNCED_TABS_HISTOGRAM_NAME, histogramValue, SyncedTabsHistogram.LIMIT);
 
     this.$.collapse.toggle();
@@ -186,9 +189,15 @@ export class HistorySyncedDeviceCardElement extends PolymerElement {
   }
 
   private onLinkRightClick_() {
-    BrowserService.getInstance().recordHistogram(
+    BrowserServiceImpl.getInstance().recordHistogram(
         SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram.LINK_RIGHT_CLICKED,
         SyncedTabsHistogram.LIMIT);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'history-synced-device-card': HistorySyncedDeviceCardElement;
   }
 }
 

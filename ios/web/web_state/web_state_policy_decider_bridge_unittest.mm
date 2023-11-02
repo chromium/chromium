@@ -1,13 +1,13 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/web/public/navigation/web_state_policy_decider_bridge.h"
 
-#include "base/callback_helpers.h"
+#import "base/callback_helpers.h"
 #import "ios/web/public/test/fakes/crw_fake_web_state_policy_decider.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
-#include "testing/platform_test.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -28,7 +28,7 @@ class WebStatePolicyDeciderBridgeTest : public PlatformTest {
   WebStatePolicyDeciderBridge decider_bridge_;
 };
 
-// Tests |shouldAllowRequest:requestInfo:| forwarding.
+// Tests `shouldAllowRequest:requestInfo:` forwarding.
 TEST_F(WebStatePolicyDeciderBridgeTest, ShouldAllowRequest) {
   ASSERT_FALSE([decider_ shouldAllowRequestInfo]);
   NSURL* url = [NSURL URLWithString:@"http://test.url"];
@@ -55,7 +55,7 @@ TEST_F(WebStatePolicyDeciderBridgeTest, ShouldAllowRequest) {
       should_allow_request_info->request_info.transition_type));
 }
 
-// Tests |decidePolicyForNavigationResponse:responseInfo:completionHandler:|
+// Tests `decidePolicyForNavigationResponse:responseInfo:completionHandler:`
 // forwarding.
 TEST_F(WebStatePolicyDeciderBridgeTest, DecidePolicyForNavigationResponse) {
   ASSERT_FALSE([decider_ decidePolicyForNavigationResponseInfo]);

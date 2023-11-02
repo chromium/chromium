@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -80,6 +80,7 @@ enum WebNotificationType {
     NOTIFICATION_ACTION_NOT_LAUNCHED,
     LAUNCH_NOTIFICATION_FAILED,
     TABLET_MODE,
+    WIFI_NOT_READY,
 };
 
 // Interface for showing a native notification which was generated from WebUI.
@@ -87,4 +88,68 @@ interface NotificationGenerator {
   // Show a native notification, title and message are from WebUI.
   ShowNotification(mojo_base.mojom.String16 title,
           mojo_base.mojom.String16 message, WebNotificationType type);
+  // Show a native toast, text is from WebUI.
+  ShowToast(mojo_base.mojom.String16 text);
+};
+
+// Enum representing the video streaming status from browser. Numerical
+// values should not be changed because they must stay in sync with value on
+// Eche web app code.
+enum StreamStatus {
+    kStreamStatusUnknown,      // Initial state, not trigger anything yet
+    kStreamStatusInitializing, // Eche browser is setting up video streaming
+    kStreamStatusStarted,      // Video streaming is set up and started
+    kStreamStatusStopped,      // Video streaming is stopped
+};
+
+// Interface to notify the video streaming status from Eche browser to Eche
+// SWA native code.
+interface DisplayStreamHandler {
+  // Stream a display video for Eche.
+  StartStreaming();
+
+  // Notifies the stream status change for Eche.
+  OnStreamStatusChanged(StreamStatus status);
+
+  // Registers a generic interface to observe events from browser-to-renderer.
+  SetStreamActionObserver(pending_remote<StreamActionObserver> observer);
+};
+
+// Enum representing stream action from Eche SWA. Numerical values should not
+// be changed because they must stay in sync with value on for Eche Web app.
+enum StreamAction {
+    // Notify the stream should be close.
+    kStreamActionClose,
+
+    // Notify the stream should go back to the previous page.
+    kStreamActionGoBack,
+};
+
+// A generic interface to observe stream action from Eche SWA native code for
+// Eche Web app can free resource for stream
+interface StreamActionObserver {
+  // Interface for notifying Eche web app that stream action happens from Eche
+  // SWA
+  OnStreamAction(StreamAction action);
+};
+
+// Enum representing the connection fail reason. Numerical values should not
+// be changed because they must stay in sync with value on for UMA histogram.
+enum ConnectionFailReason {
+    // Initial state.
+    kUnknown,
+
+    // Timeout because signaling no response, we don't received any response
+    // or request before timeout.
+    kSignalingNotTriggered,
+
+    // Timeout because signaling response is late.
+    SignalingHasLateResponse,
+
+    // Timeout because we can't finish the whole connection process on time
+    // after receiving the signaling request from the remote device.
+    SignalingHasLateRequest,
+
+    // Timeout because the security channel disconnected.
+    kSecurityChannelDisconnected,
 };

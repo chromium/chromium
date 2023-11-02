@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,6 +27,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.embedder_support.simple_factory_key.SimpleFactoryKeyHandle;
+import org.chromium.url.JUnitTestGURLs;
 
 import jp.tomorrowkey.android.gifplayer.BaseGifImage;
 
@@ -71,8 +72,8 @@ public class ImageFetcherBridgeTest {
             return null;
         })
                 .when(mNatives)
-                .fetchImage(eq(mSimpleFactoryKeyHandle), anyInt(), anyString(), anyString(), eq(0),
-                        callbackCaptor.capture());
+                .fetchImage(eq(mSimpleFactoryKeyHandle), anyInt(), anyString(), anyString(),
+                        eq(WIDTH_PX), eq(HEIGHT_PX), eq(0), callbackCaptor.capture());
 
         mBridge.fetchImage(
                 -1, ImageFetcher.Params.create("", "", WIDTH_PX, HEIGHT_PX), mBitmapCallback);
@@ -89,17 +90,22 @@ public class ImageFetcherBridgeTest {
         })
                 .when(mNatives)
                 .fetchImage(eq(mSimpleFactoryKeyHandle), anyInt(), anyString(), anyString(),
-                        eq(EXPIRATION_INTERVAL_MINS), callbackCaptor.capture());
+                        eq(WIDTH_PX), eq(HEIGHT_PX), eq(EXPIRATION_INTERVAL_MINS),
+                        callbackCaptor.capture());
 
         mBridge.fetchImage(-1,
                 ImageFetcher.Params.createWithExpirationInterval(
-                        "url", "clientname", WIDTH_PX, HEIGHT_PX, EXPIRATION_INTERVAL_MINS),
+                        JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL), "clientname", WIDTH_PX,
+                        HEIGHT_PX, EXPIRATION_INTERVAL_MINS),
                 mBitmapCallback);
         verify(mBitmapCallback).onResult(bitmap);
     }
 
     @Test
     public void testFetchImage_imageResized() {
+        int desiredWidth = 100;
+        int desiredHeight = 100;
+
         ArgumentCaptor<Callback<Bitmap>> callbackCaptor = ArgumentCaptor.forClass(Callback.class);
         final Bitmap bitmap = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888);
         doAnswer((InvocationOnMock invocation) -> {
@@ -107,10 +113,11 @@ public class ImageFetcherBridgeTest {
             return null;
         })
                 .when(mNatives)
-                .fetchImage(eq(mSimpleFactoryKeyHandle), anyInt(), anyString(), anyString(), eq(0),
-                        callbackCaptor.capture());
+                .fetchImage(eq(mSimpleFactoryKeyHandle), anyInt(), anyString(), anyString(),
+                        eq(desiredWidth), eq(desiredHeight), eq(0), callbackCaptor.capture());
 
-        mBridge.fetchImage(-1, ImageFetcher.Params.create("", "", 100, 100), mBitmapCallback);
+        mBridge.fetchImage(-1, ImageFetcher.Params.create("", "", desiredWidth, desiredHeight),
+                mBitmapCallback);
         ArgumentCaptor<Bitmap> bitmapCaptor = ArgumentCaptor.forClass(Bitmap.class);
         verify(mBitmapCallback).onResult(bitmapCaptor.capture());
 

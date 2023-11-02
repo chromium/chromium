@@ -49,13 +49,13 @@ Document
 ++++++Text Name='Details'
 ++Group IsControlElement=false
 ++++Group
-++++++Text Name='This should NOT have banner role.' IsControlElement=false
+++++++Text Name='This should NOT have banner role.'
 ++Group
 ++++Group
 ++++++Text Name='This should NOT have banner role.'
 ++Group
 ++++Group
-++++++Text Name='This should NOT have banner role.' IsControlElement=false
+++++++Text Name='This should NOT have banner role.'
 ++Group
 ++++Group
 ++++++Text Name='This should NOT have banner role.'
@@ -79,7 +79,7 @@ Document
 ++++++Text Name='Details'
 ++Group IsControlElement=false
 ++++Group
-++++++Text Name='This should NOT have banner role.' IsControlElement=false
+++++++Text Name='This should NOT have banner role.'
 ++Group
 ++++Group
 ++++++Text Name='This should NOT have banner role.'
@@ -108,7 +108,7 @@ Document
 ++++++Text Name='Details'
 ++Group IsControlElement=false
 ++++Group
-++++++Text Name='This should NOT have footer role.' IsControlElement=false
+++++++Text Name='This should NOT have footer role.'
 ++Group
 ++++Group
 ++++++Text Name='This should NOT have footer role.'
@@ -137,13 +137,13 @@ Document
 ++++++Text Name='Details'
 ++Group IsControlElement=false
 ++++Group
-++++++Text Name='This should NOT have footer role.' IsControlElement=false
+++++++Text Name='This should NOT have footer role.'
 ++Group
 ++++Group
 ++++++Text Name='This should NOT have footer role.'
 ++Group
 ++++Group
-++++++Text Name='This should NOT have footer role.' IsControlElement=false
+++++++Text Name='This should NOT have footer role.'
 ++Group
 ++++Group
 ++++++Text Name='This should NOT have footer role.'

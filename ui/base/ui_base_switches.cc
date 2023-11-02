@@ -1,12 +1,14 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/base/ui_base_switches.h"
 
+#include "build/build_config.h"
+
 namespace switches {
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Disable overscroll edge effects like those found in Android views.
 const char kDisableOverscrollEdgeEffect[] = "disable-overscroll-edge-effect";
 
@@ -14,23 +16,19 @@ const char kDisableOverscrollEdgeEffect[] = "disable-overscroll-edge-effect";
 const char kDisablePullToRefreshEffect[] = "disable-pull-to-refresh-effect";
 #endif
 
-#if defined(OS_MAC)
-// Disable use of AVFoundation to draw video content.
-const char kDisableAVFoundationOverlays[] = "disable-avfoundation-overlays";
-
-// Fall back to using CAOpenGLLayers display content, instead of the IOSurface
-// based overlay display path.
-const char kDisableMacOverlays[] = "disable-mac-overlays";
-
+#if BUILDFLAG(IS_MAC)
 // Disable animations for showing and hiding modal dialogs.
 const char kDisableModalAnimations[] = "disable-modal-animations";
 
-// Disable use of cross-process CALayers to display content directly from the
-// GPU process on Mac.
-const char kDisableRemoteCoreAnimation[] = "disable-remote-core-animation";
-
 // Show borders around CALayers corresponding to overlays and partial damage.
 const char kShowMacOverlayBorders[] = "show-mac-overlay-borders";
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+// Enable resources file sharing with ash-chrome.
+// This flag is enabled when feature::kLacrosResourcesFileSharing is set and
+// ash-side operation is successfully done.
+const char kEnableResourcesFileSharing[] = "enable-resources-file-sharing";
 #endif
 
 // Disables layer-edge anti-aliasing in the compositor.

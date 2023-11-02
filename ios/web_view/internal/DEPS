@@ -2,6 +2,7 @@ include_rules = [
   "+base",
   "+components/autofill",
   "+components/browser_sync",
+  "+components/component_updater",
   "+components/content_settings/core",
   "+components/flags_ui",
   "+components/gcm_driver",
@@ -15,6 +16,7 @@ include_rules = [
   "+components/language/core/common",
   "+components/language/core/language_model",
   "+components/leveldb_proto/public",
+  "+components/lookalikes/core",
   "+components/metrics/demographics",
   "+components/metrics/library_support",
   "+components/net_log",
@@ -25,6 +27,8 @@ include_rules = [
   "+components/prefs",
   "+components/proxy_config",
   "+components/safe_browsing/core/common",
+  "+components/safe_browsing/ios",
+  "+components/security_interstitials/core",
   "+components/security_state/ios",
   "+components/signin/core/browser",
   "+components/signin/ios",
@@ -38,12 +42,16 @@ include_rules = [
   "+components/language/ios",
   "+components/unified_consent",
   "+components/url_formatter",
+  "+components/update_client",
   "+components/variations",
   "+components/version_info",
   "+components/webdata_services",
   "+components/web_resource",
+  "+components/services/patch",
+  "+components/services/unzip",
   "+google_apis",
   "+ios/components/credential_provider_extension",
+  "+ios/components/security_interstitials",
   "+ios/components/io_thread",
   "+ios/components/webui",
   "+ios/net",
@@ -61,3 +69,9 @@ include_rules = [
   "+ui/base",
   "+ui/gfx",
 ]
+
+specific_include_rules = {
+  "web_view_web_main_parts.mm": [
+    "+ui/display"
+  ]
+}

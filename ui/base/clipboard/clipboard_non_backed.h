@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -47,10 +47,17 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardNonBacked
   const ClipboardSequenceNumberToken& GetSequenceNumber(
       ClipboardBuffer buffer) const override;
 
+  int NumImagesEncodedForTesting() const;
+
  private:
   friend class Clipboard;
-  friend class ClipboardNonBackedTest;
+  friend class ClipboardNonBackedTestBase;
   FRIEND_TEST_ALL_PREFIXES(ClipboardNonBackedTest, TextURIList);
+  FRIEND_TEST_ALL_PREFIXES(ClipboardNonBackedTest, ImageEncoding);
+  FRIEND_TEST_ALL_PREFIXES(ClipboardNonBackedTest, EncodeImageOnce);
+  FRIEND_TEST_ALL_PREFIXES(ClipboardNonBackedTest, EncodeMultipleImages);
+  FRIEND_TEST_ALL_PREFIXES(ClipboardNonBackedMockTimeTest,
+                           RecordsTimeIntervalBetweenCommitAndRead);
   ClipboardNonBacked();
   ~ClipboardNonBacked() override;
 

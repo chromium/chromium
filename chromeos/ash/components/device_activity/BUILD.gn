@@ -1,0 +1,109 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
+
+component("device_activity") {
+  output_name = "ash_device_activity"
+  defines = [ "IS_CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY_IMPL" ]
+
+  deps = [
+    ":fresnel_service_proto",
+    "//ash/constants:constants",
+    "//base",
+    "//base:i18n",
+    "//chromeos/ash/components/dbus/session_manager",
+    "//chromeos/ash/components/dbus/system_clock:system_clock",
+    "//chromeos/ash/components/network",
+    "//chromeos/system",
+    "//components/policy/core/common",
+    "//components/prefs:prefs",
+    "//components/version_info",
+    "//crypto:crypto",
+    "//dbus",
+    "//google_apis",
+    "//services/network/public/cpp",
+    "//third_party/icu",
+    "//third_party/private_membership:private_membership",
+    "//third_party/private_membership:private_membership_proto",
+    "//url",
+  ]
+
+  sources = [
+    "daily_use_case_impl.cc",
+    "daily_use_case_impl.h",
+    "device_active_use_case.cc",
+    "device_active_use_case.h",
+    "device_activity_client.cc",
+    "device_activity_client.h",
+    "device_activity_controller.cc",
+    "device_activity_controller.h",
+    "fake_psm_delegate.cc",
+    "fake_psm_delegate.h",
+    "first_active_use_case_impl.cc",
+    "first_active_use_case_impl.h",
+    "fresnel_pref_names.cc",
+    "fresnel_pref_names.h",
+    "monthly_use_case_impl.cc",
+    "monthly_use_case_impl.h",
+    "trigger.h",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "daily_use_case_impl_unittest.cc",
+    "device_active_use_case_unittest.cc",
+    "device_activity_client_unittest.cc",
+    "device_activity_controller_unittest.cc",
+    "first_active_use_case_impl_unittest.cc",
+    "monthly_use_case_impl_unittest.cc",
+  ]
+
+  deps = [
+    ":device_activity",
+    ":fresnel_service_proto",
+    "//ash/constants:constants",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/ash/components/dbus/session_manager:session_manager",
+    "//chromeos/ash/components/dbus/system_clock:system_clock",
+    "//chromeos/ash/components/network",
+    "//chromeos/ash/components/network:test_support",
+    "//chromeos/system:system",
+    "//components/policy/core/common:test_support",
+    "//components/prefs:test_support",
+    "//components/version_info:channel",
+    "//dbus",
+    "//services/device/public/cpp:test_support",
+    "//services/network:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/private_membership:private_membership",
+  ]
+
+  data = [ "//third_party/private_membership/src/internal/testing/regression_test_data/test_data.binarypb" ]
+}
+
+proto_library("fresnel_service_proto") {
+  sources = [ "fresnel_service.proto" ]
+
+  extra_configs =
+      [ "//third_party/private_membership:private_membership_config" ]
+
+  import_dirs = [
+    "//third_party/private_membership/src",
+    "//third_party/shell-encryption/src",
+    ".",
+  ]
+
+  proto_in_dir = "//"
+
+  link_deps = [ "//third_party/private_membership:private_membership_proto" ]
+}

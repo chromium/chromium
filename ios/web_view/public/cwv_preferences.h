@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -47,6 +47,13 @@ CWV_EXPORT
 // submission. Defaults to |YES|.
 @property(nonatomic, assign, getter=isPasswordLeakCheckEnabled)
     BOOL passwordLeakCheckEnabled;
+
+// Whether or not safe browsing is enabled.
+// Specifically this controls whether or not
+// -[CWVNavigationDelegate handleUnsafeURLWithHandler:] is called.
+// Defaults to |YES|.
+@property(nonatomic, assign, getter=isSafeBrowsingEnabled)
+    BOOL safeBrowsingEnabled;
 
 - (instancetype)init NS_UNAVAILABLE;
 

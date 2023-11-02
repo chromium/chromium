@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -47,8 +47,8 @@ TSAN_TEST(TextRendererThreadedTest, MeasureText) {
         TextRun::kAllowTrailingExpansion | TextRun::kForbidLeadingExpansion,
         TextDirection::kLtr, false);
     text_run.SetNormalizeSpace(true);
-    FloatRect text_bounds = font.SelectionRectForText(
-        text_run, FloatPoint(), font.GetFontDescription().ComputedSize(), 0,
+    gfx::RectF text_bounds = font.SelectionRectForText(
+        text_run, gfx::PointF(), font.GetFontDescription().ComputedSize(), 0,
         -1);
 
     // X direction.
@@ -78,7 +78,7 @@ TSAN_TEST(TextRendererThreadedTest, DrawText) {
 
     Font font = Font(font_description);
 
-    FloatPoint location(0, 0);
+    gfx::PointF location(0, 0);
     TextRun text_run(text, 0, 0, TextRun::kAllowTrailingExpansion,
                      TextDirection::kLtr, false);
     text_run.SetNormalizeSpace(true);
@@ -86,7 +86,7 @@ TSAN_TEST(TextRendererThreadedTest, DrawText) {
     TextRunPaintInfo text_run_paint_info(text_run);
 
     MockPaintCanvas mpc;
-    PaintFlags flags;
+    cc::PaintFlags flags;
 
     EXPECT_CALL(mpc, getSaveCount()).WillOnce(Return(17));
     EXPECT_CALL(mpc, drawTextBlob(_, 0, 0, _)).Times(1);

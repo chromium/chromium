@@ -1,20 +1,22 @@
 <style include="cr-shared-style shimless-rma-shared">
-  iron-icon {
-    height: 200px;
-    width: 300px;
-  }
 </style>
 
-<base-page orientation="column">
-  <div slot="header">
-    <!-- TODO(gavindodd): Update text for i18n -->
-    <h1>Hardware Write Protection Disabled Manually</h1>
-    <p id="writeProtectStatus">
-      [[statusString_]]
-    </p>
+<base-page>
+  <div slot="left-pane">
+    <h1 tabindex="-1">[[i18n('wpDisableCompletePageTitleText')]]</h1>
+    <div id="writeProtectAction" class="icon-message">
+      <iron-icon id="verificationIcon" icon="[[getVerificationIcon_(action_)]]"
+          class="small-icon">
+      </iron-icon>
+      <span id="writeProtectAction" class="instructions">
+        [[actionString_]]
+      </span>
+    </div>
   </div>
-  <div slot="body">
-    <!-- TODO(gavindodd): Replace with correct graphic -->
-    <iron-icon icon="shimless:shimless-placeholder"></iron-icon>
+  <div slot="right-pane">
+    <div class="illustration-wrapper" aria-hidden="true">
+      <img class="illustration" src="illustrations/success.svg"
+          alt="[[i18n('successAltText')]]">
+    </div>
   </div>
 </base-page>

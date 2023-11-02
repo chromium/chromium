@@ -1,11 +1,11 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 // clang-format off
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
-import {AppProtocolEntry, ChooserType, ContentSetting, ContentSettingsTypes, HandlerEntry, ProtocolEntry, RawChooserException, RawSiteException, RecentSitePermissions, SiteGroup, SiteSettingSource, SiteSettingsPrefsBrowserProxy, ZoomLevelEntry} from 'chrome://settings/lazy_load.js';
+import {AppProtocolEntry, ChooserType, ContentSetting, ContentSettingsTypes, HandlerEntry, NotificationPermission, ProtocolEntry, RawChooserException, RawSiteException, RecentSitePermissions, SiteGroup, SiteSettingSource, SiteSettingsPrefsBrowserProxy, ZoomLevelEntry} from 'chrome://settings/lazy_load.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 import {createOriginInfo, createSiteGroup,createSiteSettingsPrefs, getContentSettingsTypeFromChooserType, SiteSettingsPref} from './test_util.js';
@@ -30,6 +30,7 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
   private isPatternValidForType_: boolean = true;
   private cookieSettingDesciption_: string = '';
   private recentSitePermissions_: RecentSitePermissions[] = [];
+  private reviewNotificationList_: NotificationPermission[] = [];
 
   constructor() {
     super([
@@ -61,10 +62,19 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
       'setProtocolHandlerDefault',
       'updateIncognitoStatus',
       'clearEtldPlus1DataAndCookies',
-      'clearOriginDataAndCookies',
+      'clearUnpartitionedOriginDataAndCookies',
+      'clearPartitionedOriginDataAndCookies',
       'recordAction',
       'getCookieSettingDescription',
       'getRecentSitePermissions',
+      'getNotificationPermissionReview',
+      'blockNotificationPermissionForOrigin',
+      'ignoreNotificationPermissionForOrigin',
+      'resetNotificationPermissionForOrigin',
+      'allowNotificationPermissionForOrigin',
+      'undoIgnoreNotificationPermissionForOrigin',
+      'getFpsMembershipLabel',
+      'getNumCookiesString',
     ]);
 
 
@@ -77,14 +87,14 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
       ContentSettingsTypes.BLUETOOTH_SCANNING,
       ContentSettingsTypes.CAMERA,
       ContentSettingsTypes.CLIPBOARD,
-      ContentSettingsTypes.FILE_HANDLING,
+      ContentSettingsTypes.FEDERATED_IDENTITY_API,
       ContentSettingsTypes.FILE_SYSTEM_WRITE,
-      ContentSettingsTypes.FONT_ACCESS,
       ContentSettingsTypes.GEOLOCATION,
       ContentSettingsTypes.HID_DEVICES,
       ContentSettingsTypes.IDLE_DETECTION,
       ContentSettingsTypes.IMAGES,
       ContentSettingsTypes.JAVASCRIPT,
+      ContentSettingsTypes.LOCAL_FONTS,
       ContentSettingsTypes.MIC,
       ContentSettingsTypes.MIDI_DEVICES,
       ContentSettingsTypes.MIXEDSCRIPT,
@@ -97,38 +107,10 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
       ContentSettingsTypes.SOUND,
       ContentSettingsTypes.USB_DEVICES,
       ContentSettingsTypes.VR,
-      ContentSettingsTypes.WINDOW_PLACEMENT,
+      ContentSettingsTypes.WINDOW_MANAGEMENT,
     ];
 
-    /** @private {!SiteSettingsPref} */
     this.prefs_ = createSiteSettingsPrefs([], [], []);
-
-    /** @private {!Array<ZoomLevelEntry>} */
-    this.zoomList_ = [];
-
-    /** @private {!Array<!AppProtocolEntry>} */
-    this.appAllowedProtocolHandlers_ = [];
-
-    /** @private {!Array<!AppProtocolEntry>} */
-    this.appDisallowedProtocolHandlers_ = [];
-
-    /** @private {!Array<!ProtocolEntry>} */
-    this.protocolHandlers_ = [];
-
-    /** @private {!Array<!HandlerEntry>} */
-    this.ignoredProtocols_ = [];
-
-    /** @private {boolean} */
-    this.isOriginValid_ = true;
-
-    /** @private {boolean} */
-    this.isPatternValidForType_ = true;
-
-    /** @private {string} */
-    this.cookieSettingDesciption_ = '';
-
-    /** @private {!Array<!RecentSitePermissions>} */
-    this.recentSitePermissions_ = [];
   }
 
   /**
@@ -450,8 +432,7 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
   }
 
   /** @override */
-  getOriginPermissions(
-      origin: string, contentTypes: Array<ContentSettingsTypes>) {
+  getOriginPermissions(origin: string, contentTypes: ContentSettingsTypes[]) {
     this.methodCalled('getOriginPermissions', [origin, contentTypes]);
 
     const exceptionList: RawSiteException[] = [];
@@ -495,7 +476,6 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
         setting: setting!,
         source: source!,
         isEmbargoed: false,
-        settingDetail: null,
         type: '',
       });
     });
@@ -582,8 +562,14 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
   }
 
   /** @override */
-  clearOriginDataAndCookies(origin: string) {
-    this.methodCalled('clearOriginDataAndCookies', origin);
+  clearUnpartitionedOriginDataAndCookies(origin: string) {
+    this.methodCalled('clearUnpartitionedOriginDataAndCookies', origin);
+  }
+
+  /** @override */
+  clearPartitionedOriginDataAndCookies(origin: string, etldPlus1: string) {
+    this.methodCalled(
+        'clearPartitionedOriginDataAndCookies', [origin, etldPlus1]);
   }
 
   /** @override */
@@ -620,5 +606,50 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
   /** @override */
   setProtocolHandlerDefault(value: boolean) {
     this.methodCalled('setProtocolHandlerDefault', value);
+  }
+
+  getNotificationPermissionReview(): Promise<NotificationPermission[]> {
+    this.methodCalled('getNotificationPermissionReview');
+    return Promise.resolve(this.reviewNotificationList_.slice());
+  }
+
+  setNotificationPermissionReview(reviewNotificationList:
+                                      NotificationPermission[]) {
+    this.reviewNotificationList_ = reviewNotificationList;
+  }
+
+  blockNotificationPermissionForOrigin(origin: string): void {
+    this.methodCalled('blockNotificationPermissionForOrigin', origin);
+  }
+
+  ignoreNotificationPermissionForOrigin(origin: string): void {
+    this.methodCalled('ignoreNotificationPermissionForOrigin', origin);
+  }
+
+  resetNotificationPermissionForOrigin(origin: string): void {
+    this.methodCalled('resetNotificationPermissionForOrigin', origin);
+  }
+
+  allowNotificationPermissionForOrigin(origin: string): void {
+    this.methodCalled('allowNotificationPermissionForOrigin', origin);
+  }
+
+  undoIgnoreNotificationPermissionForOrigin(origin: string): void {
+    this.methodCalled('undoIgnoreNotificationPermissionForOrigin', origin);
+  }
+
+  getFpsMembershipLabel(fpsNumMembers: number, fpsOwner: string) {
+    this.methodCalled('getFpsMembershipLabel', fpsNumMembers, fpsOwner);
+    return Promise.resolve([
+      `${fpsNumMembers}`,
+      (fpsNumMembers === 1 ? 'site' : 'sites'),
+      `in ${fpsOwner}'s group`,
+    ].join(' '));
+  }
+
+  getNumCookiesString(numCookies: number) {
+    this.methodCalled('getNumCookiesString', numCookies);
+    return Promise.resolve(
+        `${numCookies} ` + (numCookies === 1 ? 'cookie' : 'cookies'));
   }
 }

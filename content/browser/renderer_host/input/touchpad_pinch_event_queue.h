@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/containers/circular_deque.h"
+#include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
 #include "content/common/input/event_with_latency_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -58,7 +59,7 @@ class CONTENT_EXPORT TouchpadPinchEventQueue {
   // coalesced with previously queued events.
   void QueueEvent(const GestureEventWithLatencyInfo& event);
 
-  bool has_pending() const WARN_UNUSED_RESULT;
+  [[nodiscard]] bool has_pending() const;
 
  private:
   // Notifies the queue that a synthetic mouse wheel event has been processed
@@ -70,7 +71,7 @@ class CONTENT_EXPORT TouchpadPinchEventQueue {
   void TryForwardNextEventToRenderer();
 
   const bool touchpad_async_pinch_events_;
-  TouchpadPinchEventQueueClient* client_;
+  raw_ptr<TouchpadPinchEventQueueClient> client_;
 
   base::circular_deque<std::unique_ptr<QueuedTouchpadPinchEvent>> pinch_queue_;
   std::unique_ptr<QueuedTouchpadPinchEvent> pinch_event_awaiting_ack_;

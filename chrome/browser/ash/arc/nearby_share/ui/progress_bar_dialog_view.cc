@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,12 @@
 
 #include <memory>
 
+#include "ash/components/arc/compat_mode/style/arc_color_provider.h"
+#include "ash/style/ash_color_id.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "chrome/browser/ash/arc/nearby_share/ui/nearby_share_overlay_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "components/arc/compat_mode/style/arc_color_provider.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/color_palette.h"
@@ -43,7 +44,7 @@ ProgressBarDialogView::ProgressBarDialogView(bool is_multiple_files)
 
   auto border = std::make_unique<views::BubbleBorder>(
       views::BubbleBorder::NONE, views::BubbleBorder::STANDARD_SHADOW,
-      GetDialogBackgroundBaseColor());
+      ash::kColorAshDialogBackgroundColor);
   border->SetCornerRadius(kCornerRadius);
   SetBackground(std::make_unique<views::BubbleBackground>(border.get()));
   SetBorder(std::move(border));
@@ -97,7 +98,8 @@ void ProgressBarDialogView::OnThemeChanged() {
   DCHECK(progress_bar_);
 
   views::BoxLayoutView::OnThemeChanged();
-  progress_bar_->SetBackgroundColor(GetDialogBackgroundBaseColor());
+  progress_bar_->SetBackgroundColor(
+      GetColorProvider()->GetColor(ash::kColorAshDialogBackgroundColor));
 }
 
 void ProgressBarDialogView::Show(aura::Window* parent,

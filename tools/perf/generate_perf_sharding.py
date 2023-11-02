@@ -1,5 +1,5 @@
-#!/usr/bin/env vpython
-# Copyright 2018 The Chromium Authors. All rights reserved.
+#!/usr/bin/env vpython3
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -119,7 +119,9 @@ def _AddBuilderPlatformSelectionArgs(parser):
 
 
 def _DumpJson(data, output_path):
-  with open(output_path, 'w') as output_file:
+  with open(output_path, 'w',
+            newline='') if sys.version_info.major == 3 else open(
+                output_path, 'wb') as output_file:
     json.dump(data, output_file, indent=4, separators=(',', ': '))
 
 
@@ -226,12 +228,13 @@ def _GetBuilderPlatforms(builders, waterfall):
   if builders:
     return {b for b in bot_platforms.ALL_PLATFORMS if b.name in
                 builders}
-  elif waterfall == 'perf':
-    return bot_platforms.OFFICIAL_PLATFORMS
+  if waterfall == 'perf':
+    platforms = bot_platforms.OFFICIAL_PLATFORMS
   elif waterfall == 'perf-fyi':
-    return bot_platforms.FYI_PLATFORMS
+    platforms = bot_platforms.FYI_PLATFORMS
   else:
-    return bot_platforms.ALL_PLATFORMS
+    platforms = bot_platforms.ALL_PLATFORMS
+  return {p for p in platforms if not p.pinpoint_only}
 
 
 def _UpdateShardsForBuilders(args):
@@ -260,7 +263,7 @@ def _DescheduleBenchmark(args):
         if shard == 'extra_infos':
           break
         benchmarks = shard_map.get('benchmarks', dict())
-        for benchmark in benchmarks.keys():
+        for benchmark in list(benchmarks.keys()):
           if benchmark not in benchmarks_to_keep:
             del benchmarks[benchmark]
         executables = shard_map.get('executables', dict())
@@ -311,6 +314,8 @@ def _ValidateShardMaps(args):
 
   # Check that bot_platforms.py matches the actual shard maps
   for platform in bot_platforms.ALL_PLATFORMS:
+    if platform.pinpoint_only:
+      continue
     platform_benchmark_names = set(
         b.name for b in platform.benchmark_configs) | set(
             e.name for e in platform.executables)
@@ -341,6 +346,8 @@ def _ValidateShardMaps(args):
   # to make it clear that a benchmark is not running.
   scheduled_benchmarks = set()
   for platform in bot_platforms.ALL_PLATFORMS:
+    if platform.pinpoint_only:
+      continue
     scheduled_benchmarks = scheduled_benchmarks | _ParseBenchmarks(
         platform.shards_map_file_path)
   for benchmark in (
@@ -351,7 +358,7 @@ def _ValidateShardMaps(args):
         'UNSCHEDULED_{benchmark}'.format(benchmark=benchmark))
 
   for error in errors:
-    print('*', textwrap.fill(error, 70), '\n', file=sys.stderr)
+    print('*', error, '\n', file=sys.stderr)
   if errors:
     return 1
   return 0

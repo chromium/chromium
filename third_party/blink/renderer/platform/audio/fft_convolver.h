@@ -35,12 +35,12 @@
 
 namespace blink {
 
-class PLATFORM_EXPORT FFTConvolver {
+class FFTConvolver {
   USING_FAST_MALLOC(FFTConvolver);
 
  public:
   // fftSize must be a power of two
-  FFTConvolver(unsigned fft_size);
+  explicit FFTConvolver(unsigned fft_size);
   FFTConvolver(const FFTConvolver&) = delete;
   FFTConvolver& operator=(const FFTConvolver&) = delete;
 

@@ -56,6 +56,7 @@ gav1_dsp_sources = [
   "//third_party/libgav1/src/src/dsp/arm/intrapred_smooth_neon.cc",
   "//third_party/libgav1/src/src/dsp/arm/inverse_transform_10bit_neon.cc",
   "//third_party/libgav1/src/src/dsp/arm/inverse_transform_neon.cc",
+  "//third_party/libgav1/src/src/dsp/arm/loop_filter_10bit_neon.cc",
   "//third_party/libgav1/src/src/dsp/arm/loop_filter_neon.cc",
   "//third_party/libgav1/src/src/dsp/arm/loop_restoration_10bit_neon.cc",
   "//third_party/libgav1/src/src/dsp/arm/loop_restoration_neon.cc",

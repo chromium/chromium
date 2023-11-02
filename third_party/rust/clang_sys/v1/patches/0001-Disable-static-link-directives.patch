@@ -1,0 +1,29 @@
+From 717b6cadf283eb175f4dd1b6ae8ac5324783cd28 Mon Sep 17 00:00:00 2001
+From: Adrian Taylor <adetaylor@chromium.org>
+Date: Wed, 2 Mar 2022 16:33:02 -0800
+Subject: [PATCH] Disable static link directives.
+
+Change-Id: I61073f513cda40f4e612869dfc389a03386e48e4
+---
+ third_party/rust/clang_sys/v1/crate/build.rs | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/third_party/rust/clang_sys/v1/crate/build.rs b/third_party/rust/clang_sys/v1/crate/build.rs
+index cf5baa39f3ab5..5c0642f588ea3 100644
+--- a/third_party/rust/clang_sys/v1/crate/build.rs
++++ b/third_party/rust/clang_sys/v1/crate/build.rs
+@@ -73,7 +73,10 @@ fn main() {
+ #[cfg(not(feature = "runtime"))]
+ fn main() {
+     if cfg!(feature = "static") {
+-        static_::link();
++        // Chromium change - this outputs all sorts of linking
++        // configuration directives which we instead need to hard-code
++        // into GN rules.
++        // static_::link();
+     } else {
+         dynamic::link();
+     }
+-- 
+2.35.1.616.g0bdcbb4464-goog
+

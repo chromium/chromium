@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,19 @@
  * @fileoverview 'add-printer-manually-dialog' is a dialog in which user can
  * manually enter the information to set up a new printer.
  */
+
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import 'chrome://resources/cr_components/localized_link/localized_link.js';
+import './cups_add_printer_dialog.js';
+import './cups_printer_dialog_error.js';
+import './cups_add_print_server_dialog.js';
+import './cups_printer_shared_css.js';
+
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {getErrorText, isNameAndAddressValid} from './cups_printer_dialog_util.js';
+import {CupsPrinterInfo, CupsPrintersBrowserProxy, CupsPrintersBrowserProxyImpl, PrinterMakeModel, PrinterSetupResult} from './cups_printers_browser_proxy.js';
 
 function getEmptyPrinter_() {
   return {
@@ -29,57 +42,61 @@ function getEmptyPrinter_() {
   };
 }
 
-import {afterNextRender, Polymer, html, flush, Templatizer, TemplateInstanceBase} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+/** @polymer */
+class AddPrinterManuallyDialogElement extends PolymerElement {
+  static get is() {
+    return 'add-printer-manually-dialog';
+  }
 
-import '//resources/cr_elements/cr_button/cr_button.m.js';
-import '//resources/cr_elements/cr_input/cr_input.m.js';
-import '//resources/cr_components/chromeos/localized_link/localized_link.js';
-import {loadTimeData} from '../../i18n_setup.js';
-import './cups_add_printer_dialog.js';
-import './cups_printer_dialog_error.js';
-import './cups_add_print_server_dialog.js';
-import {sortPrinters, matchesSearchTerm, getBaseName, getErrorText, isNetworkProtocol, isNameAndAddressValid, isPPDInfoValid, getPrintServerErrorText} from './cups_printer_dialog_util.js';
-import './cups_printer_shared_css.js';
-import {CupsPrintersBrowserProxy, CupsPrintersBrowserProxyImpl, CupsPrinterInfo, PrinterSetupResult, CupsPrintersList, PrinterPpdMakeModel, ManufacturersInfo, ModelsInfo, PrintServerResult, PrinterMakeModel} from './cups_printers_browser_proxy.js';
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'add-printer-manually-dialog',
+  static get properties() {
+    return {
+      /** @type {!CupsPrinterInfo} */
+      newPrinter: {type: Object, notify: true, value: getEmptyPrinter_},
 
-  properties: {
-    /** @type {!CupsPrinterInfo} */
-    newPrinter: {type: Object, notify: true, value: getEmptyPrinter_},
+      /** @private */
+      addPrinterInProgress_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /** @private */
-    addPrinterInProgress_: {
-      type: Boolean,
-      value: false,
-    },
+      /**
+       * The error text to be displayed on the dialog.
+       * @private
+       */
+      errorText_: {
+        type: String,
+        value: '',
+      },
 
-    /**
-     * The error text to be displayed on the dialog.
-     * @private
-     */
-    errorText_: {
-      type: String,
-      value: '',
-    },
+      /** @private */
+      showPrinterQueue_: {
+        type: Boolean,
+        value: true,
+      },
+    };
+  }
 
-    /** @private */
-    showPrinterQueue_: {
-      type: Boolean,
-      value: true,
-    },
-  },
+  static get observers() {
+    return [
+      'printerInfoChanged_(newPrinter.*)',
+    ];
+  }
 
-  observers: [
-    'printerInfoChanged_(newPrinter.*)',
-  ],
+  constructor() {
+    super();
+
+    /** @private {!CupsPrintersBrowserProxy} */
+    this.browserProxy_ = CupsPrintersBrowserProxyImpl.getInstance();
+  }
 
   /** @private */
   onCancelTap_() {
-    this.$$('add-printer-dialog').close();
-  },
+    this.shadowRoot.querySelector('add-printer-dialog').close();
+  }
 
   /**
    * Handler for addCupsPrinter success.
@@ -87,11 +104,16 @@ Polymer({
    * @private
    */
   onAddPrinterSucceeded_(result) {
-    this.fire(
-        'show-cups-printer-toast',
-        {resultCode: result, printerName: this.newPrinter.printerName});
-    this.$$('add-printer-dialog').close();
-  },
+    const showCupsPrinterToastEvent =
+        new CustomEvent('show-cups-printer-toast', {
+          bubbles: true,
+          composed: true,
+          detail:
+              {resultCode: result, printerName: this.newPrinter.printerName},
+        });
+    this.dispatchEvent(showCupsPrinterToastEvent);
+    this.shadowRoot.querySelector('add-printer-dialog').close();
+  }
 
   /**
    * Handler for addCupsPrinter failure.
@@ -101,7 +123,16 @@ Polymer({
   onAddPrinterFailed_(result) {
     this.errorText_ = getErrorText(
         /** @type {PrinterSetupResult} */ (result));
-  },
+  }
+
+  /** @private */
+  openManufacturerModelDialog_() {
+    const event = new CustomEvent('open-manufacturer-model-dialog', {
+      bubbles: true,
+      composed: true,
+    });
+    this.dispatchEvent(event);
+  }
 
   /**
    * Handler for getPrinterInfo success.
@@ -125,16 +156,15 @@ Polymer({
     // Add the printer if it's configurable. Otherwise, forward to the
     // manufacturer dialog.
     if (info.ppdReferenceResolved) {
-      CupsPrintersBrowserProxyImpl.getInstance()
-          .addCupsPrinter(this.newPrinter)
+      this.browserProxy_.addCupsPrinter(this.newPrinter)
           .then(
               this.onAddPrinterSucceeded_.bind(this),
               this.onAddPrinterFailed_.bind(this));
     } else {
-      this.$$('add-printer-dialog').close();
-      this.fire('open-manufacturer-model-dialog');
+      this.shadowRoot.querySelector('add-printer-dialog').close();
+      this.openManufacturerModelDialog_();
     }
-  },
+  }
 
   /**
    * Handler for getPrinterInfo failure.
@@ -150,7 +180,7 @@ Polymer({
     }
     this.errorText_ = getErrorText(
         /** @type {PrinterSetupResult} */ (result));
-  },
+  }
 
   /** @private */
   addPressed_() {
@@ -158,20 +188,25 @@ Polymer({
 
     if (this.newPrinter.printerProtocol === 'ipp' ||
         this.newPrinter.printerProtocol === 'ipps') {
-      CupsPrintersBrowserProxyImpl.getInstance()
-          .getPrinterInfo(this.newPrinter)
+      this.browserProxy_.getPrinterInfo(this.newPrinter)
           .then(this.onPrinterFound_.bind(this), this.infoFailed_.bind(this));
     } else {
-      this.$$('add-printer-dialog').close();
-      this.fire('open-manufacturer-model-dialog');
+      this.shadowRoot.querySelector('add-printer-dialog').close();
+      this.openManufacturerModelDialog_();
     }
-  },
+  }
 
   /** @private */
-  onPrintServerTap_: function() {
-    this.$$('add-printer-dialog').close();
-    this.fire('open-add-print-server-dialog');
-  },
+  onPrintServerTap_() {
+    this.shadowRoot.querySelector('add-printer-dialog').close();
+
+    const openAddPrintServerDialogEvent =
+        new CustomEvent('open-add-print-server-dialog', {
+          bubbles: true,
+          composed: true,
+        });
+    this.dispatchEvent(openAddPrintServerDialogEvent);
+  }
 
   /**
    * @param {!Event} event
@@ -181,7 +216,7 @@ Polymer({
     // Queue input should be hidden when protocol is set to "App Socket".
     this.showPrinterQueue_ = event.target.value !== 'socket';
     this.set('newPrinter.printerProtocol', event.target.value);
-  },
+  }
 
   /**
    * @return {boolean} Whether the add printer button is enabled.
@@ -190,13 +225,13 @@ Polymer({
   canAddPrinter_() {
     return !this.addPrinterInProgress_ &&
         isNameAndAddressValid(this.newPrinter);
-  },
+  }
 
   /** @private */
   printerInfoChanged_() {
     this.$.printerAddressInput.invalid = false;
     this.errorText_ = '';
-  },
+  }
 
   /**
    * Keypress event handler. If enter is pressed, printer is added if
@@ -213,5 +248,8 @@ Polymer({
     if (this.canAddPrinter_()) {
       this.addPressed_();
     }
-  },
-});
+  }
+}
+
+customElements.define(
+    AddPrinterManuallyDialogElement.is, AddPrinterManuallyDialogElement);

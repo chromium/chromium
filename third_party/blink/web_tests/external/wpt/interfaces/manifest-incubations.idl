@@ -1,0 +1,39 @@
+// GENERATED CONTENT - DO NOT EDIT
+// Content was automatically extracted by Reffy into webref
+// (https://github.com/w3c/webref)
+// Source: Manifest Incubations (https://wicg.github.io/manifest-incubations/)
+
+[Exposed=Window]
+interface BeforeInstallPromptEvent : Event {
+  constructor(DOMString type, optional EventInit eventInitDict = {});
+  Promise<PromptResponseObject> prompt();
+};
+
+dictionary PromptResponseObject {
+  AppBannerPromptOutcome userChoice;
+};
+
+enum AppBannerPromptOutcome {
+  "accepted",
+  "dismissed"
+};
+
+partial interface Window {
+  attribute EventHandler onappinstalled;
+  attribute EventHandler onbeforeinstallprompt;
+};
+
+[Exposed=Window] interface LaunchParams {
+  readonly attribute DOMString? targetURL;
+  readonly attribute FrozenArray<FileSystemHandle> files;
+};
+
+callback LaunchConsumer = any (LaunchParams params);
+
+partial interface Window {
+  readonly attribute LaunchQueue launchQueue;
+};
+
+[Exposed=Window] interface LaunchQueue {
+  undefined setConsumer(LaunchConsumer consumer);
+};

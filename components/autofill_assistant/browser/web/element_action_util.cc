@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 #include "base/callback.h"
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/service.pb.h"
-#include "components/autofill_assistant/browser/web/element_finder.h"
+#include "components/autofill_assistant/browser/web/element_finder_result.h"
 #include "components/autofill_assistant/browser/web/web_controller.h"
 
 namespace autofill_assistant {
@@ -15,7 +15,7 @@ namespace element_action_util {
 namespace {
 
 void RetainElementAndExecuteCallback(
-    std::unique_ptr<ElementFinder::Result> element,
+    std::unique_ptr<ElementFinderResult> element,
     base::OnceCallback<void(const ClientStatus&)> callback,
     const ClientStatus& status) {
   DCHECK(element != nullptr);
@@ -26,7 +26,7 @@ void PerformActionsSequentially(
     std::unique_ptr<ElementActionVector> perform_actions,
     std::unique_ptr<ProcessedActionStatusDetailsProto> status_details,
     size_t action_index,
-    const ElementFinder::Result& element,
+    const ElementFinderResult& element,
     base::OnceCallback<void(const ClientStatus&)> done,
     const ClientStatus& status) {
   status_details->MergeFrom(status.details());
@@ -53,7 +53,7 @@ void PerformActionsSequentially(
 }  // namespace
 
 void PerformAll(std::unique_ptr<ElementActionVector> perform_actions,
-                const ElementFinder::Result& element,
+                const ElementFinderResult& element,
                 base::OnceCallback<void(const ClientStatus&)> done) {
   PerformActionsSequentially(
       std::move(perform_actions),
@@ -64,14 +64,14 @@ void PerformAll(std::unique_ptr<ElementActionVector> perform_actions,
 void TakeElementAndPerform(ElementActionCallback perform,
                            base::OnceCallback<void(const ClientStatus&)> done,
                            const ClientStatus& element_status,
-                           std::unique_ptr<ElementFinder::Result> element) {
+                           std::unique_ptr<ElementFinderResult> element) {
   if (!element_status.ok()) {
     VLOG(1) << __func__ << " Failed to find element.";
     std::move(done).Run(element_status);
     return;
   }
 
-  const ElementFinder::Result* element_ptr = element.get();
+  const ElementFinderResult* element_ptr = element.get();
   std::move(perform).Run(*element_ptr,
                          base::BindOnce(&RetainElementAndExecuteCallback,
                                         std::move(element), std::move(done)));

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
@@ -27,6 +28,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace offline_pages {
 
@@ -68,7 +70,7 @@ class TestDelegate: public RecentTabHelper::Delegate {
   void set_is_custom_tab(bool is_custom_tab) { is_custom_tab_ = is_custom_tab; }
 
  private:
-  OfflinePageTestArchiver::Observer* observer_;  // observer owns this.
+  raw_ptr<OfflinePageTestArchiver::Observer> observer_;  // observer owns this.
   int tab_id_;
   bool tab_id_result_;
 
@@ -163,9 +165,9 @@ class RecentTabHelperTest
 
   void OnGetAllPagesDone(const std::vector<OfflinePageItem>& result);
 
-  RecentTabHelper* recent_tab_helper_;   // Owned by WebContents.
-  OfflinePageModel* model_;              // Keyed service.
-  TestDelegate* default_test_delegate_;  // Created at SetUp.
+  raw_ptr<RecentTabHelper> recent_tab_helper_;   // Owned by WebContents.
+  raw_ptr<OfflinePageModel> model_;              // Keyed service.
+  raw_ptr<TestDelegate> default_test_delegate_;  // Created at SetUp.
   size_t page_added_count_;
   size_t model_removed_count_;
   std::vector<OfflinePageItem> all_pages_;
@@ -340,7 +342,7 @@ TEST_F(RecentTabHelperTest, LastNCaptureAfterLoad) {
   const GURL kTestUrl("http://mystery.site/foo.html");
   NavigateAndCommit(kTestUrl);
 
-  recent_tab_helper()->DocumentOnLoadCompletedInMainFrame(main_rfh());
+  recent_tab_helper()->DocumentOnLoadCompletedInPrimaryMainFrame();
   // Move the snapshot controller's time forward so it gets past timeouts.
   FastForwardSnapshotController();
   EXPECT_EQ(0U, page_added_count());
@@ -368,7 +370,7 @@ TEST_F(RecentTabHelperTest, NoLastNCaptureIfTabHiddenTooEarlyInPageLoad) {
   ASSERT_EQ(0U, GetAllPages().size());
 
   // Then allow the page to fully load. Nothing should be saved.
-  recent_tab_helper()->DocumentOnLoadCompletedInMainFrame(main_rfh());
+  recent_tab_helper()->DocumentOnLoadCompletedInPrimaryMainFrame();
   // Move the snapshot controller's time forward so it gets past timeouts.
   FastForwardSnapshotController();
   EXPECT_EQ(0U, page_added_count());
@@ -385,7 +387,7 @@ TEST_F(RecentTabHelperTest, NoTabIdNoCapture) {
       std::make_unique<TestDelegate>(this, kTabId, false));
 
   NavigateAndCommit(GURL("http://mystery.site/foo.html"));
-  recent_tab_helper()->DocumentOnLoadCompletedInMainFrame(main_rfh());
+  recent_tab_helper()->DocumentOnLoadCompletedInPrimaryMainFrame();
   FastForwardSnapshotController();
   recent_tab_helper()->OnVisibilityChanged(content::Visibility::HIDDEN);
   recent_tab_helper()->ObserveAndDownloadCurrentPage(NewDownloadClientId(),
@@ -407,7 +409,7 @@ TEST_F(RecentTabHelperTest, LastNDisabledOnSvelte) {
   // Navigate and finish loading then hide the tab. Nothing should be saved.
   NavigateAndCommit(GURL("http://mystery.site/foo.html"));
 
-  recent_tab_helper()->DocumentOnLoadCompletedInMainFrame(main_rfh());
+  recent_tab_helper()->DocumentOnLoadCompletedInPrimaryMainFrame();
   FastForwardSnapshotController();
   recent_tab_helper()->OnVisibilityChanged(content::Visibility::HIDDEN);
   RunUntilIdle();
@@ -432,7 +434,7 @@ TEST_F(RecentTabHelperTest, LastNWontSaveCustomTab) {
 
   // Navigate and finish loading then hide the tab. Nothing should be saved.
   NavigateAndCommit(GURL("http://mystery.site/foo.html"));
-  recent_tab_helper()->DocumentOnLoadCompletedInMainFrame(main_rfh());
+  recent_tab_helper()->DocumentOnLoadCompletedInPrimaryMainFrame();
   FastForwardSnapshotController();
   recent_tab_helper()->OnVisibilityChanged(content::Visibility::HIDDEN);
   RunUntilIdle();
@@ -468,7 +470,7 @@ TEST_F(RecentTabHelperTest, TwoCapturesSamePageLoad) {
   NavigateAndCommit(kTestUrl);
 
   // Set page loading state to the 1st snapshot-able stage. No capture so far.
-  recent_tab_helper()->DocumentAvailableInMainFrame(main_rfh());
+  recent_tab_helper()->PrimaryMainDocumentElementAvailable();
   FastForwardSnapshotController();
   EXPECT_EQ(0U, page_added_count());
 
@@ -485,7 +487,7 @@ TEST_F(RecentTabHelperTest, TwoCapturesSamePageLoad) {
 
   // Set page loading state to the 2nd and last snapshot-able stage. No new
   // capture should happen.
-  recent_tab_helper()->DocumentOnLoadCompletedInMainFrame(main_rfh());
+  recent_tab_helper()->DocumentOnLoadCompletedInPrimaryMainFrame();
   FastForwardSnapshotController();
   EXPECT_EQ(1U, page_added_count());
   EXPECT_EQ(0U, model_removed_count());
@@ -515,7 +517,7 @@ TEST_F(RecentTabHelperTest, DISABLED_TwoCapturesWhere2ndFailsSamePageLoad) {
   // Navigate and load until the 1st stage. Tab hidden should trigger a capture.
   const GURL kTestUrl("http://mystery.site/foo.html");
   NavigateAndCommit(kTestUrl);
-  recent_tab_helper()->DocumentAvailableInMainFrame(main_rfh());
+  recent_tab_helper()->PrimaryMainDocumentElementAvailable();
   FastForwardSnapshotController();
   recent_tab_helper()->OnVisibilityChanged(content::Visibility::HIDDEN);
   RunUntilIdle();
@@ -534,7 +536,7 @@ TEST_F(RecentTabHelperTest, DISABLED_TwoCapturesWhere2ndFailsSamePageLoad) {
   // Advance loading to the 2nd and final stage and then hide the tab. A new
   // capture is requested but its creation will fail. The exact same snapshot
   // from before should still be available.
-  recent_tab_helper()->DocumentOnLoadCompletedInMainFrame(main_rfh());
+  recent_tab_helper()->DocumentOnLoadCompletedInPrimaryMainFrame();
   FastForwardSnapshotController();
   recent_tab_helper()->OnVisibilityChanged(content::Visibility::HIDDEN);
   RunUntilIdle();
@@ -551,7 +553,7 @@ TEST_F(RecentTabHelperTest, TwoCapturesDifferentPageLoadsSameUrl) {
   // Fully load the page. Hide the tab and check for a snapshot.
   const GURL kTestUrl("http://mystery.site/foo.html");
   NavigateAndCommit(kTestUrl);
-  recent_tab_helper()->DocumentOnLoadCompletedInMainFrame(main_rfh());
+  recent_tab_helper()->DocumentOnLoadCompletedInPrimaryMainFrame();
   FastForwardSnapshotController();
   recent_tab_helper()->OnVisibilityChanged(content::Visibility::HIDDEN);
   RunUntilIdle();
@@ -566,7 +568,7 @@ TEST_F(RecentTabHelperTest, TwoCapturesDifferentPageLoadsSameUrl) {
   // Reload the same URL until the page is minimally loaded. The previous
   // snapshot should have been removed.
   NavigateAndCommitTyped(kTestUrl);
-  recent_tab_helper()->DocumentAvailableInMainFrame(main_rfh());
+  recent_tab_helper()->PrimaryMainDocumentElementAvailable();
   FastForwardSnapshotController();
   EXPECT_EQ(1U, page_added_count());
   EXPECT_EQ(1U, model_removed_count());
@@ -591,7 +593,7 @@ TEST_F(RecentTabHelperTest, TwoCapturesWhere2ndFailsDifferentPageLoadsSameUrl) {
   // Fully load the page then hide the tab. A capture is expected.
   const GURL kTestUrl("http://mystery.site/foo.html");
   NavigateAndCommit(kTestUrl);
-  recent_tab_helper()->DocumentOnLoadCompletedInMainFrame(main_rfh());
+  recent_tab_helper()->DocumentOnLoadCompletedInPrimaryMainFrame();
   FastForwardSnapshotController();
   recent_tab_helper()->OnVisibilityChanged(content::Visibility::HIDDEN);
   RunUntilIdle();
@@ -611,7 +613,7 @@ TEST_F(RecentTabHelperTest, TwoCapturesWhere2ndFailsDifferentPageLoadsSameUrl) {
   // Fully load the page once more then hide the tab again. A capture happens
   // and fails but no snapshot should remain.
   NavigateAndCommitTyped(kTestUrl);
-  recent_tab_helper()->DocumentOnLoadCompletedInMainFrame(main_rfh());
+  recent_tab_helper()->DocumentOnLoadCompletedInPrimaryMainFrame();
   FastForwardSnapshotController();
   recent_tab_helper()->OnVisibilityChanged(content::Visibility::HIDDEN);
   RunUntilIdle();
@@ -629,7 +631,7 @@ TEST_F(RecentTabHelperTest, TwoCapturesDifferentPageLoadsDifferentUrls) {
   const GURL kTestUrl("http://mystery.site/foo.html");
   NavigateAndCommit(kTestUrl);
 
-  recent_tab_helper()->DocumentOnLoadCompletedInMainFrame(main_rfh());
+  recent_tab_helper()->DocumentOnLoadCompletedInPrimaryMainFrame();
   FastForwardSnapshotController();
   recent_tab_helper()->OnVisibilityChanged(content::Visibility::HIDDEN);
   RunUntilIdle();
@@ -644,7 +646,7 @@ TEST_F(RecentTabHelperTest, TwoCapturesDifferentPageLoadsDifferentUrls) {
   const GURL kOtherUrl("http://crazy.site/foo_other.html");
   NavigateAndCommitTyped(kOtherUrl);
 
-  recent_tab_helper()->DocumentOnLoadCompletedInMainFrame(main_rfh());
+  recent_tab_helper()->DocumentOnLoadCompletedInPrimaryMainFrame();
   FastForwardSnapshotController();
   EXPECT_EQ(1U, page_added_count());
   EXPECT_EQ(1U, model_removed_count());
@@ -670,11 +672,11 @@ TEST_F(RecentTabHelperTest, TwoLastNAndTwoDownloadCapturesSamePage) {
   // check that two last_n snapshots were created but only one was kept.
   const GURL kTestUrl("http://mystery.site/foo.html");
   NavigateAndCommit(kTestUrl);
-  recent_tab_helper()->DocumentAvailableInMainFrame(main_rfh());
+  recent_tab_helper()->PrimaryMainDocumentElementAvailable();
   FastForwardSnapshotController();
   recent_tab_helper()->OnVisibilityChanged(content::Visibility::HIDDEN);
   RunUntilIdle();
-  recent_tab_helper()->DocumentOnLoadCompletedInMainFrame(main_rfh());
+  recent_tab_helper()->DocumentOnLoadCompletedInPrimaryMainFrame();
   FastForwardSnapshotController();
   recent_tab_helper()->OnVisibilityChanged(content::Visibility::HIDDEN);
   RunUntilIdle();
@@ -729,7 +731,7 @@ TEST_F(RecentTabHelperTest, TwoLastNAndTwoDownloadCapturesSamePage) {
 // with no offline pages for any requester.
 TEST_F(RecentTabHelperTest, NoCaptureOnErrorPage) {
   FailLoad(GURL("http://mystery.site/foo.html"));
-  recent_tab_helper()->DocumentOnLoadCompletedInMainFrame(main_rfh());
+  recent_tab_helper()->DocumentOnLoadCompletedInPrimaryMainFrame();
   FastForwardSnapshotController();
   recent_tab_helper()->OnVisibilityChanged(content::Visibility::HIDDEN);
   recent_tab_helper()->ObserveAndDownloadCurrentPage(NewDownloadClientId(),
@@ -753,7 +755,7 @@ TEST_F(RecentTabHelperTest, DownloadRequestEarlyInLoad) {
   ASSERT_EQ(0U, GetAllPages().size());
 
   // Minimally load the page. First capture should occur.
-  recent_tab_helper()->DocumentAvailableInMainFrame(main_rfh());
+  recent_tab_helper()->PrimaryMainDocumentElementAvailable();
   FastForwardSnapshotController();
   ASSERT_EQ(1U, GetAllPages().size());
   const OfflinePageItem& early_page = GetAllPages()[0];
@@ -762,7 +764,7 @@ TEST_F(RecentTabHelperTest, DownloadRequestEarlyInLoad) {
   EXPECT_EQ(153L, early_page.offline_id);
 
   // Fully load the page. A second capture should replace the first one.
-  recent_tab_helper()->DocumentOnLoadCompletedInMainFrame(main_rfh());
+  recent_tab_helper()->DocumentOnLoadCompletedInPrimaryMainFrame();
   FastForwardSnapshotController();
   EXPECT_EQ(2U, page_added_count());
   EXPECT_EQ(1U, model_removed_count());
@@ -781,7 +783,7 @@ TEST_F(RecentTabHelperTest, DownloadRequestEarlyInLoad) {
 TEST_F(RecentTabHelperTest, DownloadRequestLaterInLoad) {
   const GURL kTestUrl("http://mystery.site/foo.html");
   NavigateAndCommit(kTestUrl);
-  recent_tab_helper()->DocumentAvailableInMainFrame(main_rfh());
+  recent_tab_helper()->PrimaryMainDocumentElementAvailable();
   FastForwardSnapshotController();
   ASSERT_EQ(0U, GetAllPages().size());
 
@@ -794,7 +796,7 @@ TEST_F(RecentTabHelperTest, DownloadRequestLaterInLoad) {
   EXPECT_EQ(client_id, page.client_id);
   EXPECT_EQ(153L, page.offline_id);
 
-  recent_tab_helper()->DocumentOnLoadCompletedInMainFrame(main_rfh());
+  recent_tab_helper()->DocumentOnLoadCompletedInPrimaryMainFrame();
   FastForwardSnapshotController();
   EXPECT_EQ(2U, page_added_count());
   EXPECT_EQ(1U, model_removed_count());
@@ -808,7 +810,7 @@ TEST_F(RecentTabHelperTest, DownloadRequestLaterInLoad) {
 TEST_F(RecentTabHelperTest, DownloadRequestAfterFullyLoad) {
   const GURL kTestUrl("http://mystery.site/foo.html");
   NavigateAndCommit(kTestUrl);
-  recent_tab_helper()->DocumentOnLoadCompletedInMainFrame(main_rfh());
+  recent_tab_helper()->DocumentOnLoadCompletedInPrimaryMainFrame();
   FastForwardSnapshotController();
   ASSERT_EQ(0U, GetAllPages().size());
 
@@ -830,7 +832,7 @@ TEST_F(RecentTabHelperTest, DownloadRequestAfterFullyLoad) {
 TEST_F(RecentTabHelperTest, DownloadRequestAfterFullyLoadWithOrigin) {
   const GURL kTestUrl("http://mystery.site/foo.html");
   NavigateAndCommit(kTestUrl);
-  recent_tab_helper()->DocumentOnLoadCompletedInMainFrame(main_rfh());
+  recent_tab_helper()->DocumentOnLoadCompletedInPrimaryMainFrame();
   FastForwardSnapshotController();
   ASSERT_EQ(0U, GetAllPages().size());
 
@@ -852,7 +854,7 @@ TEST_F(RecentTabHelperTest, DownloadRequestAfterFullyLoadWithOrigin) {
 TEST_F(RecentTabHelperTest, SimultaneousCapturesFromLastNAndDownloads) {
   const GURL kTestUrl("http://mystery.site/foo.html");
   NavigateAndCommit(kTestUrl);
-  recent_tab_helper()->DocumentOnLoadCompletedInMainFrame(main_rfh());
+  recent_tab_helper()->DocumentOnLoadCompletedInPrimaryMainFrame();
   FastForwardSnapshotController();
   recent_tab_helper()->OnVisibilityChanged(content::Visibility::HIDDEN);
   const int64_t download_offline_id = 153L;
@@ -883,7 +885,7 @@ TEST_F(RecentTabHelperTest, SimultaneousCapturesFromLastNAndDownloads) {
 // signals are poor signals for those).
 TEST_F(RecentTabHelperTest, DuplicateTabHiddenEventsShouldTriggerNewSnapshots) {
   NavigateAndCommit(GURL("http://mystery.site/foo.html"));
-  recent_tab_helper()->DocumentAvailableInMainFrame(main_rfh());
+  recent_tab_helper()->PrimaryMainDocumentElementAvailable();
   FastForwardSnapshotController();
   recent_tab_helper()->OnVisibilityChanged(content::Visibility::HIDDEN);
   RunUntilIdle();
@@ -904,7 +906,7 @@ TEST_F(RecentTabHelperTest, DuplicateTabHiddenEventsShouldTriggerNewSnapshots) {
       "OfflinePages.LastN.IsSavingSamePage",
       IsSavingSamePageEnum::kSamePageSameQuality, 1);
 
-  recent_tab_helper()->DocumentOnLoadCompletedInMainFrame(main_rfh());
+  recent_tab_helper()->DocumentOnLoadCompletedInPrimaryMainFrame();
   FastForwardSnapshotController();
   recent_tab_helper()->OnVisibilityChanged(content::Visibility::HIDDEN);
   RunUntilIdle();
@@ -942,7 +944,7 @@ TEST_F(RecentTabHelperTest, OverlappingDownloadRequestsAreIgnored) {
                                                      351L, "");
 
   // Finish loading the page. Only the first request should be executed.
-  recent_tab_helper()->DocumentOnLoadCompletedInMainFrame(main_rfh());
+  recent_tab_helper()->DocumentOnLoadCompletedInPrimaryMainFrame();
   FastForwardSnapshotController();
   EXPECT_EQ(1U, page_added_count());
   EXPECT_EQ(0U, model_removed_count());
@@ -977,7 +979,7 @@ TEST_F(RecentTabHelperTest, SaveSameDocumentNavigationSnapshots) {
   // Navigates and load fully then hide the tab so that a snapshot is created.
   const GURL kTestUrl("http://mystery.site/foo.html");
   NavigateAndCommit(kTestUrl);
-  recent_tab_helper()->DocumentOnLoadCompletedInMainFrame(main_rfh());
+  recent_tab_helper()->DocumentOnLoadCompletedInPrimaryMainFrame();
   FastForwardSnapshotController();
   recent_tab_helper()->OnVisibilityChanged(content::Visibility::HIDDEN);
   RunUntilIdle();
@@ -1023,7 +1025,7 @@ TEST_F(RecentTabHelperTest, SaveSameDocumentNavigationSnapshots) {
 TEST_F(RecentTabHelperTest, ReloadIsTrackedAsNavigationAndSavedOnlyUponLoad) {
   // Navigates and load fully then hide the tab so that a snapshot is created.
   NavigateAndCommit(GURL("http://mystery.site/foo.html"));
-  recent_tab_helper()->DocumentOnLoadCompletedInMainFrame(main_rfh());
+  recent_tab_helper()->DocumentOnLoadCompletedInPrimaryMainFrame();
   FastForwardSnapshotController();
   recent_tab_helper()->OnVisibilityChanged(content::Visibility::HIDDEN);
   RunUntilIdle();
@@ -1042,7 +1044,7 @@ TEST_F(RecentTabHelperTest, ReloadIsTrackedAsNavigationAndSavedOnlyUponLoad) {
   ASSERT_EQ(0U, GetAllPages().size());
 
   // Finish loading and hide the tab. A new snapshot should be created.
-  recent_tab_helper()->DocumentOnLoadCompletedInMainFrame(main_rfh());
+  recent_tab_helper()->DocumentOnLoadCompletedInPrimaryMainFrame();
   FastForwardSnapshotController();
   recent_tab_helper()->OnVisibilityChanged(content::Visibility::HIDDEN);
   RunUntilIdle();
@@ -1060,7 +1062,7 @@ TEST_F(RecentTabHelperTest, NoSaveIfTabIsClosing) {
   // Navigates and fully load then close and hide the tab. No snapshots are
   // expected.
   NavigateAndCommit(GURL("http://mystery.site/foo.html"));
-  recent_tab_helper()->DocumentOnLoadCompletedInMainFrame(main_rfh());
+  recent_tab_helper()->DocumentOnLoadCompletedInPrimaryMainFrame();
   FastForwardSnapshotController();
   // Note: These two next calls are always expected to happen in this order.
   recent_tab_helper()->WillCloseTab();
@@ -1088,7 +1090,7 @@ TEST_F(RecentTabHelperTest, NoSaveOfflinePageCacheForPost) {
   // Navigate and finish loading, then move the snapshot controller's time
   // forward so it gets past timeouts. Nothing should be saved.
   NavigateAndCommitPost(GURL("http://mystery.site/foo.html"));
-  recent_tab_helper()->DocumentOnLoadCompletedInMainFrame(main_rfh());
+  recent_tab_helper()->DocumentOnLoadCompletedInPrimaryMainFrame();
   FastForwardSnapshotController();
   ASSERT_EQ(0U, GetAllPages().size());
 
@@ -1107,6 +1109,55 @@ TEST_F(RecentTabHelperTest, NoSaveOfflinePageCacheForPost) {
   RunUntilIdle();
   EXPECT_EQ(1U, page_added_count());
   ASSERT_EQ(1U, GetAllPages().size());
+}
+
+class RecentTabHelperFencedFrameTest : public RecentTabHelperTest {
+ public:
+  RecentTabHelperFencedFrameTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        blink::features::kFencedFrames, {{"implementation_type", "mparch"}});
+  }
+  ~RecentTabHelperFencedFrameTest() override = default;
+
+  content::RenderFrameHost* CreateFencedFrame(
+      content::RenderFrameHost* parent) {
+    content::RenderFrameHost* fenced_frame =
+        content::RenderFrameHostTester::For(parent)->AppendFencedFrame();
+    return fenced_frame;
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that FencedFrame does not change the current page quality via resetting
+// the snapshot controller.
+TEST_F(RecentTabHelperFencedFrameTest, FencedFrameDoesNotChangePageQuality) {
+  // Navigate and finish loading, then move the snapshot controller's time
+  // forward so it sets the current page quality to FAIR_AND_IMPROVING.
+  NavigateAndCommitPost(GURL("http://mystery.site/foo.html"));
+
+  recent_tab_helper()->PrimaryMainDocumentElementAvailable();
+  FastForwardSnapshotController();
+
+  EXPECT_EQ(recent_tab_helper()->snapshot_controller_->current_page_quality(),
+            SnapshotController::PageQuality::FAIR_AND_IMPROVING);
+
+  // Create a fenced frame.
+  content::RenderFrameHostTester::For(main_rfh())
+      ->InitializeRenderFrameIfNeeded();
+  content::RenderFrameHost* fenced_frame_rfh = CreateFencedFrame(main_rfh());
+  GURL kFencedFrameUrl("https://fencedframe.com");
+  std::unique_ptr<content::NavigationSimulator> navigation_simulator =
+      content::NavigationSimulator::CreateRendererInitiated(kFencedFrameUrl,
+                                                            fenced_frame_rfh);
+  navigation_simulator->Commit();
+  EXPECT_TRUE(fenced_frame_rfh->IsFencedFrameRoot());
+
+  // Navigating the fenced frame to the fenced frame url should not change the
+  // current page quality to POOR.
+  EXPECT_EQ(recent_tab_helper()->snapshot_controller_->current_page_quality(),
+            SnapshotController::PageQuality::FAIR_AND_IMPROVING);
 }
 
 }  // namespace offline_pages

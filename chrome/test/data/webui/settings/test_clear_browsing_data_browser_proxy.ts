@@ -1,10 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 // clang-format off
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
-import {ClearBrowsingDataBrowserProxy, ClearBrowsingDataResult, InstalledApp} from 'chrome://settings/lazy_load.js';
+import {ClearBrowsingDataBrowserProxy, ClearBrowsingDataResult, InstalledApp, UpdateSyncStateEvent} from 'chrome://settings/lazy_load.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 // clang-format on
@@ -35,8 +35,7 @@ export class TestClearBrowsingDataBrowserProxy extends TestBrowserProxy
   }
 
   clearBrowsingData(
-      dataTypes: Array<string>, timePeriod: number,
-      installedApps: Array<InstalledApp>) {
+      dataTypes: string[], timePeriod: number, installedApps: InstalledApp[]) {
     this.methodCalled(
         'clearBrowsingData', [dataTypes, timePeriod, installedApps]);
     webUIListenerCallback('browsing-data-removing', true);
@@ -57,5 +56,17 @@ export class TestClearBrowsingDataBrowserProxy extends TestBrowserProxy
   initialize() {
     this.methodCalled('initialize');
     return Promise.resolve();
+  }
+
+  getSyncState(): Promise<UpdateSyncStateEvent> {
+    this.methodCalled('getSyncState');
+    return Promise.resolve({
+      signedIn: false,
+      syncConsented: false,
+      syncingHistory: false,
+      shouldShowCookieException: false,
+      isNonGoogleDse: false,
+      nonGoogleSearchHistoryString: 'somestring',
+    });
   }
 }

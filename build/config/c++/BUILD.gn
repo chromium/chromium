@@ -1,29 +1,11 @@
 import("//build/config/c++/c++.gni")
 import("//build/config/chrome_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/compiler/compiler.gni")
 import("//build/config/dcheck_always_on.gni")
 import("//buildtools/deps_revisions.gni")
 
 assert(use_custom_libcxx, "should only be used if use_custom_libcxx is set")
-
-declare_args() {
-  # lldb pretty printing only works when libc++ is built in the __1 (or __ndk1)
-  # namespaces.  For pretty printing to work out-of-the-box on Mac (where lldb
-  # is primarily used), this flag is set to false to build with the __1
-  # namespace (to maintain ABI compatibility, this implies building without
-  # _LIBCPP_ABI_UNSTABLE).  This is not necessary on non-component builds
-  # because we leave the ABI version set to __1 in that case because libc++
-  # symbols are not exported.
-  # TODO(thomasanderson): Set this to true by default once rL352899 is available
-  # in MacOS's lldb.
-  libcxx_abi_unstable = !(is_apple && is_debug && is_component_build)
-}
-
-# TODO(xiaohuic): https://crbug/917533 Crashes on internal ChromeOS build.
-# Do unconditionally once the underlying problem is fixed.
-if (is_chromeos_ash && is_chrome_branded) {
-  libcxx_abi_unstable = false
-}
 
 # This is included by reference in the //build/config/compiler:runtime_library
 # config that is applied to all targets. It is here to separate out the logic
@@ -37,23 +19,11 @@ config("runtime_library") {
   ldflags = []
   libs = []
 
-  if (libcxx_abi_unstable) {
-    defines += [ "_LIBCPP_ABI_UNSTABLE" ]
-  }
+  # Fixed libc++ configuration macros are in
+  # buildtools/third_party/libc++/__config_site. This config only has defines
+  # that vary depending on gn args, and non-define flags.
 
-  if (libcxx_is_shared) {
-    # When libcxx_is_shared is true, symbols from libc++.so are exported for
-    # all DSOs to use.  If the system libc++ gets loaded (indirectly through
-    # a system library), then it will conflict with our libc++.so.  Add a
-    # custom ABI version if we're building with _LIBCPP_ABI_UNSTABLE to avoid
-    # conflicts.
-    #
-    # Windows doesn't need to set _LIBCPP_ABI_VERSION since there's no system
-    # C++ library we could conflict with.
-    if (libcxx_abi_unstable && !is_win) {
-      defines += [ "_LIBCPP_ABI_VERSION=Cr" ]
-    }
-  } else {
+  if (!libcxx_is_shared) {
     # Don't leak any symbols on a static build.
     defines += [ "_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS" ]
     if (!export_libcxxabi_from_executables && !is_win) {
@@ -61,29 +31,18 @@ config("runtime_library") {
     }
   }
 
-  defines += [ "_LIBCPP_ENABLE_NODISCARD" ]
-
   include_dirs += [ "//buildtools/third_party/libc++" ]
 
-  # Work around a symbol conflict between GRPC and the Fuchsia SDK.
-  # TODO(crbug.com/1166970): Remove this when resolved.
-  if (is_fuchsia) {
-    defines += [ "_LIBCPP_NO_NATIVE_SEMAPHORES" ]
+  # libc++ has two levels of additional checking:
+  # 1. _LIBCPP_ENABLE_ASSERTIONS enables assertions for bounds checking.
+  #    We always enable this in __config_site, in all build configurations.
+  # 2. _LIBCPP_ENABLE_DEBUG_MODE enables iterator debugging and other
+  #    expensive checks. Enable these only if enable_iterator_debugging is on.
+  if (enable_iterator_debugging) {
+    defines += [ "_LIBCPP_ENABLE_DEBUG_MODE" ]
   }
 
-  # The Windows component build fails to link with libc++'s debug mode. See
-  # https://crbug.com/923166#c33, https://crbug.com/923166#c44, and
-  # https://llvm.org/PR41018.
-  if (!(is_win && is_component_build)) {
-    # libc++ has two levels of debug mode. Setting _LIBCPP_DEBUG to zero
-    # enables most assertions. Setting it to one additionally enables iterator
-    # debugging. See https://libcxx.llvm.org/docs/DesignDocs/DebugMode.html
-    if (enable_iterator_debugging) {
-      defines += [ "_LIBCPP_DEBUG=1" ]
-    } else if (is_debug || dcheck_always_on) {
-      defines += [ "_LIBCPP_DEBUG=0" ]
-    }
-  }
+  defines += [ "CR_LIBCXX_REVISION=$libcxx_revision" ]
 
   if (is_win) {
     # Intentionally not using libc++abi on Windows because libc++abi only
@@ -95,12 +54,6 @@ config("runtime_library") {
 
     cflags_cc +=
         [ "-I" + rebase_path("$libcxx_prefix/include", root_build_dir) ]
-
-    # Prevent libc++ from embedding linker flags to try to automatically link
-    # against its runtime library. This is unnecessary with our build system,
-    # and can also result in build failures if libc++'s name for a library
-    # does not match ours.
-    defines += [ "_LIBCPP_NO_AUTO_LINK" ]
 
     # Add a debug visualizer for Microsoft's debuggers so that they can display
     # libc++ types well.
@@ -115,9 +68,8 @@ config("runtime_library") {
       "-isystem" + rebase_path("$libcxx_prefix/include", root_build_dir),
       "-isystem" + rebase_path("$libcxxabi_prefix/include", root_build_dir),
     ]
-    cflags_objcc = cflags_cc
 
-    defines += [ "CR_LIBCXX_REVISION=$libcxx_revision" ]
+    cflags_objcc = cflags_cc
 
     # Make sure we don't link against the system libstdc++ or libc++.
     if (is_clang) {

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,11 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/quic/web_transport_error.h"
-#include "net/third_party/quiche/src/quic/core/quic_types.h"
-#include "net/third_party/quiche/src/quic/core/web_transport_interface.h"
-#include "net/third_party/quiche/src/quic/quic_transport/web_transport_fingerprint_proof_verifier.h"
+#include "net/third_party/quiche/src/quiche/quic/core/crypto/web_transport_fingerprint_proof_verifier.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_types.h"
+#include "net/third_party/quiche/src/quiche/quic/core/web_transport_interface.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -134,15 +134,15 @@ class NET_EXPORT WebTransportClient {
 };
 
 // Creates a WebTransport client for |url| accessed from |origin| with the
-// provided |isolation_key|; |visitor| is associated with the resulting object.
-// This method never returns nullptr; in case of error, the resulting client
-// will be in the error state.
+// provided |anonymization_key|; |visitor| is associated with the resulting
+// object. This method never returns nullptr; in case of error, the resulting
+// client will be in the error state.
 NET_EXPORT
 std::unique_ptr<WebTransportClient> CreateWebTransportClient(
     const GURL& url,
     const url::Origin& origin,
     WebTransportClientVisitor* visitor,
-    const NetworkIsolationKey& isolation_key,
+    const NetworkAnonymizationKey& anonymization_key,
     URLRequestContext* context,
     const WebTransportParameters& parameters);
 

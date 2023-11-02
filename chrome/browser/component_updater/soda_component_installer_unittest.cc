@@ -1,9 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/component_updater/soda_component_installer.h"
 
+#include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -65,19 +66,6 @@ TEST_F(SodaComponentInstallerTest,
        TestComponentRegistrationWhenLiveCaptionFeatureDisabled) {
   base::test::ScopedFeatureList scoped_disable;
   scoped_disable.InitAndDisableFeature(media::kLiveCaption);
-  std::unique_ptr<SodaComponentMockComponentUpdateService> component_updater(
-      new SodaComponentMockComponentUpdateService());
-  EXPECT_CALL(*component_updater, RegisterComponent(testing::_)).Times(0);
-  RegisterSodaComponent(component_updater.get(), &local_state_,
-                        base::OnceClosure(), base::OnceClosure());
-  task_environment_.RunUntilIdle();
-}
-
-TEST_F(SodaComponentInstallerTest,
-       TestComponentRegistrationWhenUseSodaForLiveCaptionFeatureDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({media::kLiveCaption},
-                                       {media::kUseSodaForLiveCaption});
   std::unique_ptr<SodaComponentMockComponentUpdateService> component_updater(
       new SodaComponentMockComponentUpdateService());
   EXPECT_CALL(*component_updater, RegisterComponent(testing::_)).Times(0);

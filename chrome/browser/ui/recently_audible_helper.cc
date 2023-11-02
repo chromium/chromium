@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -46,6 +46,7 @@ RecentlyAudibleHelper::RegisterCallbackForTesting(const Callback& callback) {
 
 RecentlyAudibleHelper::RecentlyAudibleHelper(content::WebContents* contents)
     : content::WebContentsObserver(contents),
+      content::WebContentsUserData<RecentlyAudibleHelper>(*contents),
       tick_clock_(GetDefaultTickClock()) {
   if (contents->IsCurrentlyAudible())
     last_audible_time_ = base::TimeTicks::Max();

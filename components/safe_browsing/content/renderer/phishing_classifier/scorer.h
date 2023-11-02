@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -26,7 +26,9 @@
 #include "base/files/memory_mapped_file.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/observer_list.h"
 #include "base/strings/string_piece.h"
+#include "build/build_config.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/safe_browsing/core/common/proto/client_model.pb.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
@@ -67,16 +69,6 @@ class Scorer {
   // (range is inclusive on both ends).
   virtual double ComputeScore(const FeatureMap& features) const = 0;
 
-  // This method matches the given |bitmap| against the visual model. It
-  // modifies |request| appropriately, and returns the new request. This expects
-  // to be called on the renderer main thread, but will perform scoring
-  // asynchronously on a worker thread.
-  virtual void GetMatchingVisualTargets(
-      const SkBitmap& bitmap,
-      std::unique_ptr<ClientPhishingRequest> request,
-      base::OnceCallback<void(std::unique_ptr<ClientPhishingRequest>)> callback)
-      const = 0;
-
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   // This method applies the TfLite visual model to the given bitmap. It
   // asynchronously returns the list of scores for each category, in the same
@@ -88,6 +80,8 @@ class Scorer {
 
   // Returns the version number of the loaded client model.
   virtual int model_version() const = 0;
+
+  virtual int dom_model_version() const = 0;
 
   bool HasVisualTfLiteModel() const;
 
@@ -133,18 +127,49 @@ class Scorer {
   // [0.0,1.0].
   static double LogOdds2Prob(double log_odds);
 
-  // Apply the tflite model to the bitmap, and return scores.
-  static std::vector<double> ApplyVisualTfLiteModelHelper(
+  // Apply the tflite model to the bitmap. The scores are returned by running
+  // `callback` on the provided `callback_task_runner`. This is expected to be
+  // run on a helper thread.
+  static void ApplyVisualTfLiteModelHelper(
       const SkBitmap& bitmap,
       int input_width,
       int input_height,
-      const std::string& model_data);
+      std::string model_data,
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+      base::OnceCallback<void(std::vector<double>)> callback);
 
   base::MemoryMappedFile visual_tflite_model_;
   base::WeakPtrFactory<Scorer> weak_ptr_factory_{this};
 
  private:
   friend class PhishingScorerTest;
+};
+
+// A small wrapper around a Scorer that allows callers to observe for changes in
+// the model.
+class ScorerStorage {
+ public:
+  static ScorerStorage* GetInstance();
+
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void OnScorerChanged() = 0;
+  };
+
+  ScorerStorage();
+  ~ScorerStorage();
+  ScorerStorage(const ScorerStorage&) = delete;
+  ScorerStorage& operator=(const ScorerStorage&) = delete;
+
+  void SetScorer(std::unique_ptr<Scorer> scorer);
+  Scorer* GetScorer() const;
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
+ private:
+  std::unique_ptr<Scorer> scorer_;
+  base::ObserverList<Observer> observers_;
 };
 
 }  // namespace safe_browsing

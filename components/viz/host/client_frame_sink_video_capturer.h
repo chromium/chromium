@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,11 +10,11 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
-#include "components/viz/common/surfaces/region_capture_bounds.h"
-#include "components/viz/common/surfaces/subtree_capture_id.h"
+#include "components/viz/common/surfaces/video_capture_target.h"
 #include "components/viz/host/viz_host_export.h"
 #include "media/base/video_types.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -80,22 +80,24 @@ class VIZ_HOST_EXPORT ClientFrameSinkVideoCapturer
   ~ClientFrameSinkVideoCapturer() override;
 
   // See FrameSinkVideoCapturer for documentation.
-  void SetFormat(media::VideoPixelFormat format, gfx::ColorSpace color_space);
+  void SetFormat(media::VideoPixelFormat format);
   void SetMinCapturePeriod(base::TimeDelta min_capture_period);
   void SetMinSizeChangePeriod(base::TimeDelta min_period);
   void SetResolutionConstraints(const gfx::Size& min_size,
                                 const gfx::Size& max_size,
                                 bool use_fixed_aspect_ratio);
   void SetAutoThrottlingEnabled(bool enabled);
-  void ChangeTarget(const absl::optional<FrameSinkId>& frame_sink_id,
-                    mojom::SubTargetPtr sub_target);
+  void ChangeTarget(const absl::optional<VideoCaptureTarget>& target);
+  void ChangeTarget(const absl::optional<VideoCaptureTarget>& target,
+                    uint32_t crop_version);
   void Stop();
   void RequestRefreshFrame();
 
   // Similar to FrameSinkVideoCapturer::Start, but takes in a pointer directly
   // to the FrameSinkVideoConsumer implementation class (as opposed to a
   // mojo::PendingRemote or a proxy object).
-  void Start(mojom::FrameSinkVideoConsumer* consumer);
+  void Start(mojom::FrameSinkVideoConsumer* consumer,
+             mojom::BufferFormatPreference buffer_format_preference);
 
   // Similar to Stop() but also resets the consumer immediately so no further
   // messages (even OnStopped()) will be delivered to the consumer.
@@ -105,14 +107,11 @@ class VIZ_HOST_EXPORT ClientFrameSinkVideoCapturer
   // owned pointer to an Overlay.
   std::unique_ptr<Overlay> CreateOverlay(int32_t stacking_index);
 
+  // Getter for `format_`. Returns the pixel format set by the last call to
+  // `SetFormat()`, or nullopt if the format was not yet set.
+  absl::optional<media::VideoPixelFormat> GetFormat() const { return format_; }
+
  private:
-  struct Format {
-    Format(media::VideoPixelFormat pixel_format, gfx::ColorSpace color_space);
-
-    media::VideoPixelFormat pixel_format;
-    gfx::ColorSpace color_space;
-  };
-
   struct ResolutionConstraints {
     ResolutionConstraints(const gfx::Size& min_size,
                           const gfx::Size& max_size,
@@ -125,11 +124,13 @@ class VIZ_HOST_EXPORT ClientFrameSinkVideoCapturer
 
   // mojom::FrameSinkVideoConsumer implementation.
   void OnFrameCaptured(
-      base::ReadOnlySharedMemoryRegion data,
+      media::mojom::VideoBufferHandlePtr data,
       media::mojom::VideoFrameInfoPtr info,
       const gfx::Rect& content_rect,
       mojo::PendingRemote<mojom::FrameSinkVideoConsumerFrameCallbacks>
           callbacks) final;
+  void OnNewCropVersion(uint32_t crop_version) final;
+  void OnFrameWithEmptyRegionCapture() final;
   void OnStopped() final;
   void OnLog(const std::string& message) final;
   // Establishes connection to FrameSinkVideoCapturer and sends the existing
@@ -150,18 +151,20 @@ class VIZ_HOST_EXPORT ClientFrameSinkVideoCapturer
   // corresponding method in mojom::FrameSinkVideoCapturer. The arguments are
   // saved so we can resend them if viz crashes and a new FrameSinkVideoCapturer
   // has to be created.
-  absl::optional<Format> format_;
+  absl::optional<media::VideoPixelFormat> format_;
   absl::optional<base::TimeDelta> min_capture_period_;
   absl::optional<base::TimeDelta> min_size_change_period_;
   absl::optional<ResolutionConstraints> resolution_constraints_;
   absl::optional<bool> auto_throttling_enabled_;
-  absl::optional<FrameSinkId> target_;
-  mojom::SubTargetPtr sub_target_;
+  absl::optional<VideoCaptureTarget> target_;
+  uint32_t crop_version_ = 0;
   // Overlays are owned by the callers of CreateOverlay().
   std::vector<Overlay*> overlays_;
   bool is_started_ = false;
+  // Buffer format preference of our consumer.
+  mojom::BufferFormatPreference buffer_format_preference_;
 
-  mojom::FrameSinkVideoConsumer* consumer_ = nullptr;
+  raw_ptr<mojom::FrameSinkVideoConsumer> consumer_ = nullptr;
   EstablishConnectionCallback establish_connection_callback_;
   mojo::Remote<mojom::FrameSinkVideoCapturer> capturer_remote_;
   mojo::Receiver<mojom::FrameSinkVideoConsumer> consumer_receiver_{this};

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/viz/common/quads/compositor_frame.h"
@@ -44,7 +45,7 @@ class TestBrowserViewRenderer : public BrowserViewRenderer {
   }
 
  private:
-  RenderingTest* const rendering_test_;
+  const raw_ptr<RenderingTest> rendering_test_;
 };
 }  // namespace
 
@@ -149,13 +150,13 @@ bool RenderingTest::WillDrawOnRT(HardwareRendererDrawParams* params) {
   params->width = window_->surface_size().width();
   params->height = window_->surface_size().height();
   gfx::Transform transform;
-  transform.matrix().asColMajorf(params->transform);
+  transform.GetColMajorF(params->transform);
   return true;
 }
 
 void RenderingTest::OnNewPicture() {}
 
-void RenderingTest::PostInvalidate() {
+void RenderingTest::PostInvalidate(bool inside_vsync) {
   if (window_)
     window_->PostInvalidate();
 }

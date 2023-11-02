@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,6 +34,7 @@ namespace update_client {
 UpdateContext::UpdateContext(
     scoped_refptr<Configurator> config,
     bool is_foreground,
+    bool is_install,
     const std::vector<std::string>& ids,
     UpdateClient::CrxStateChangeCallback crx_state_change_callback,
     const UpdateEngine::NotifyObserversCallback& notify_observers_callback,
@@ -41,7 +42,7 @@ UpdateContext::UpdateContext(
     PersistedData* persisted_data)
     : config(config),
       is_foreground(is_foreground),
-      enabled_component_updates(config->EnabledComponentUpdates()),
+      is_install(is_install),
       ids(ids),
       crx_state_change_callback(crx_state_change_callback),
       notify_observers_callback(notify_observers_callback),
@@ -73,8 +74,9 @@ UpdateEngine::~UpdateEngine() {
   DCHECK(thread_checker_.CalledOnValidThread());
 }
 
-void UpdateEngine::Update(
+base::RepeatingClosure UpdateEngine::Update(
     bool is_foreground,
+    bool is_install,
     const std::vector<std::string>& ids,
     UpdateClient::CrxDataCallback crx_data_callback,
     UpdateClient::CrxStateChangeCallback crx_state_change_callback,
@@ -85,13 +87,13 @@ void UpdateEngine::Update(
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), Error::INVALID_ARGUMENT));
-    return;
+    return base::DoNothing();
   }
 
   if (IsThrottled(is_foreground)) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), Error::RETRY_LATER));
-    return;
+    return base::DoNothing();
   }
 
   // Calls out to get the corresponding CrxComponent data for the components.
@@ -101,11 +103,11 @@ void UpdateEngine::Update(
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), Error::BAD_CRX_DATA_CALLBACK));
-    return;
+    return base::DoNothing();
   }
 
   const auto update_context = base::MakeRefCounted<UpdateContext>(
-      config_, is_foreground, ids, crx_state_change_callback,
+      config_, is_foreground, is_install, ids, crx_state_change_callback,
       notify_observers_callback_, std::move(callback), metadata_.get());
   DCHECK(!update_context->session_id.empty());
 
@@ -136,16 +138,17 @@ void UpdateEngine::Update(
     }
   }
 
-  if (update_context->components_to_check_for_updates.empty()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&UpdateEngine::HandleComponent, this, update_context));
-    return;
-  }
-
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
-      base::BindOnce(&UpdateEngine::DoUpdateCheck, this, update_context));
+      base::BindOnce(update_context->components_to_check_for_updates.empty()
+                         ? &UpdateEngine::HandleComponent
+                         : &UpdateEngine::DoUpdateCheck,
+                     this, update_context));
+  return base::BindRepeating(
+      [](scoped_refptr<UpdateContext> context) {
+        context->is_cancelled = true;
+      },
+      update_context);
 }
 
 void UpdateEngine::DoUpdateCheck(scoped_refptr<UpdateContext> update_context) {
@@ -160,10 +163,7 @@ void UpdateEngine::DoUpdateCheck(scoped_refptr<UpdateContext> update_context) {
       update_checker_factory_(config_, metadata_.get());
 
   update_context->update_checker->CheckForUpdates(
-      update_context->session_id,
-      update_context->components_to_check_for_updates,
-      update_context->components, config_->ExtraRequestParams(),
-      update_context->enabled_component_updates,
+      update_context, config_->ExtraRequestParams(),
       base::BindOnce(&UpdateEngine::UpdateCheckResultsAvailable, this,
                      update_context));
 }
@@ -329,7 +329,7 @@ void UpdateEngine::HandleComponentComplete(
     queue.pop();
     if (!component->events().empty()) {
       ping_manager_->SendPing(
-          *component,
+          *component, *metadata_,
           base::BindOnce([](base::OnceClosure callback, int,
                             const std::string&) { std::move(callback).Run(); },
                          std::move(callback)));
@@ -388,7 +388,7 @@ void UpdateEngine::SendUninstallPing(const CrxComponent& crx_component,
   const std::string& id = crx_component.app_id;
 
   const auto update_context = base::MakeRefCounted<UpdateContext>(
-      config_, false, std::vector<std::string>{id},
+      config_, false, false, std::vector<std::string>{id},
       UpdateClient::CrxStateChangeCallback(),
       UpdateEngine::NotifyObserversCallback(), std::move(callback),
       metadata_.get());
@@ -404,37 +404,6 @@ void UpdateEngine::SendUninstallPing(const CrxComponent& crx_component,
   const auto& component = update_context->components.at(id);
 
   component->Uninstall(crx_component, reason);
-
-  update_context->component_queue.push(id);
-
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&UpdateEngine::HandleComponent, this, update_context));
-}
-
-void UpdateEngine::SendRegistrationPing(const CrxComponent& crx_component,
-                                        Callback callback) {
-  DCHECK(thread_checker_.CalledOnValidThread());
-
-  const std::string& id = crx_component.app_id;
-
-  const auto update_context = base::MakeRefCounted<UpdateContext>(
-      config_, false, std::vector<std::string>{id},
-      UpdateClient::CrxStateChangeCallback(),
-      UpdateEngine::NotifyObserversCallback(), std::move(callback),
-      metadata_.get());
-  DCHECK(!update_context->session_id.empty());
-
-  const auto result = update_contexts_.insert(
-      std::make_pair(update_context->session_id, update_context));
-  DCHECK(result.second);
-
-  DCHECK(update_context);
-  DCHECK_EQ(1u, update_context->ids.size());
-  DCHECK_EQ(1u, update_context->components.count(id));
-  const auto& component = update_context->components.at(id);
-
-  component->Registration(crx_component);
 
   update_context->component_queue.push(id);
 

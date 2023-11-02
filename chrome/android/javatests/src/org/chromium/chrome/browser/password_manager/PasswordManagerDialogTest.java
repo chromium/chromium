@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -73,7 +73,7 @@ public class PasswordManagerDialogTest {
                     activity.findViewById(android.R.id.content),
                     activity.getBrowserControlsManager());
             PasswordManagerDialogContents contents = new PasswordManagerDialogContents(TITLE,
-                    DETAILS, R.drawable.data_reduction_illustration, OK_BUTTON, CANCEL_BUTTON,
+                    DETAILS, R.drawable.password_checkup_warning, OK_BUTTON, 0, CANCEL_BUTTON,
                     mOnClick);
             contents.setDialogType(ModalDialogManager.ModalDialogType.TAB);
             mCoordinator.initialize(activity.getWindowAndroid().getContext().get(), contents);

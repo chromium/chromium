@@ -1,8 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/permissions/pref_names.h"
+
+#include "build/build_config.h"
 
 namespace permissions {
 namespace prefs {
@@ -11,7 +13,7 @@ namespace prefs {
 // types.
 const char kPermissionActions[] = "profile.content_settings.permission_actions";
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // The current level of backoff for showing the location settings dialog for the
 // default search engine.
 const char kLocationSettingsBackoffLevelDSE[] =

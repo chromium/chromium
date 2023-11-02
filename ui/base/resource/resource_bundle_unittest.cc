@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,13 +8,15 @@
 #include <stdint.h>
 #include <string.h>
 
+#include <string>
+
 #include "base/base_paths.h"
 #include "base/big_endian.h"
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -32,7 +34,7 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/display/win/dpi.h"
 #endif
 
@@ -63,32 +65,29 @@ constexpr char kLottieData[] = "LOTTIEtest";
 
 // Mock of |lottie::ParseLottieAsStillImage|. Checks that |kLottieData| is
 // properly stripped of the "LOTTIE" prefix.
-gfx::ImageSkiaRep ParseLottieAsStillImageForTesting(
-    const base::RefCountedString& bytes_string,
-    float scale) {
-  auto expected_bytes_string = base::MakeRefCounted<base::RefCountedString>();
-  expected_bytes_string->data() = "test";
-  CHECK(bytes_string.Equals(expected_bytes_string));
+gfx::ImageSkia ParseLottieAsStillImageForTesting(
+    const std::string& bytes_string) {
+  CHECK_EQ("test", bytes_string);
 
-  const int dimension = static_cast<int>(16 * scale);
-  return gfx::ImageSkiaRep(gfx::Size(dimension, dimension), scale);
+  constexpr int kDimension = 16;
+  return gfx::ImageSkia(
+      gfx::ImageSkiaRep(gfx::Size(kDimension, kDimension), 0.f));
 }
 #endif
 
 // Returns |bitmap_data| with |custom_chunk| inserted after the IHDR chunk.
 void AddCustomChunk(const base::StringPiece& custom_chunk,
                     std::vector<unsigned char>* bitmap_data) {
-  EXPECT_LT(base::size(kPngMagic) + kPngChunkMetadataSize, bitmap_data->size());
+  EXPECT_LT(std::size(kPngMagic) + kPngChunkMetadataSize, bitmap_data->size());
   EXPECT_TRUE(std::equal(bitmap_data->begin(),
-                         bitmap_data->begin() + base::size(kPngMagic),
+                         bitmap_data->begin() + std::size(kPngMagic),
                          kPngMagic));
-  auto ihdr_start = bitmap_data->begin() + base::size(kPngMagic);
-  char ihdr_length_data[sizeof(uint32_t)];
+  auto ihdr_start = bitmap_data->begin() + std::size(kPngMagic);
+  uint8_t ihdr_length_data[sizeof(uint32_t)];
   for (size_t i = 0; i < sizeof(uint32_t); ++i)
     ihdr_length_data[i] = *(ihdr_start + i);
   uint32_t ihdr_chunk_length = 0;
-  base::ReadBigEndian(reinterpret_cast<char*>(ihdr_length_data),
-                      &ihdr_chunk_length);
+  base::ReadBigEndian(ihdr_length_data, &ihdr_chunk_length);
   EXPECT_TRUE(
       std::equal(ihdr_start + sizeof(uint32_t),
                  ihdr_start + sizeof(uint32_t) + sizeof(kPngIHDRChunkType),
@@ -150,7 +149,7 @@ class ResourceBundleTest : public testing::Test {
 
  protected:
   base::ScopedTempDir temp_dir_;
-  ResourceBundle* resource_bundle_;
+  raw_ptr<ResourceBundle> resource_bundle_;
 };
 
 TEST_F(ResourceBundleTest, DelegateGetPathForResourcePack) {
@@ -415,7 +414,7 @@ class ResourceBundleImageTest : public ResourceBundleTest {
   // Returns the number of DataPacks managed by |resource_bundle|.
   size_t NumDataPacksInResourceBundle(ResourceBundle* resource_bundle) {
     DCHECK(resource_bundle);
-    return resource_bundle->data_packs_.size();
+    return resource_bundle->resource_handles_.size();
   }
 
  private:
@@ -567,7 +566,7 @@ TEST_F(ResourceBundleImageTest, GetRawDataResource) {
 // Test requesting image reps at various scale factors from the image returned
 // via ResourceBundle::GetImageNamed().
 TEST_F(ResourceBundleImageTest, GetImageNamed) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   display::win::SetDefaultDeviceScaleFactor(2.0);
 #endif
   std::vector<ResourceScaleFactor> supported_factors;
@@ -591,7 +590,7 @@ TEST_F(ResourceBundleImageTest, GetImageNamed) {
 
   gfx::ImageSkia* image_skia = resource_bundle->GetImageSkiaNamed(3);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
   // ChromeOS/Windows load highest scale factor first.
   EXPECT_EQ(ui::k200Percent, GetSupportedResourceScaleFactor(
                                  image_skia->image_reps()[0].scale()));
@@ -642,7 +641,7 @@ TEST_F(ResourceBundleImageTest, GetImageNamedFallback1x) {
   CreateDataPackWithSingleBitmap(
       data_2x_path, 10,
       base::StringPiece(reinterpret_cast<const char*>(kPngScaleChunk),
-                        base::size(kPngScaleChunk)));
+                        std::size(kPngScaleChunk)));
 
   // Load the regular and 2x pak files.
   ResourceBundle* resource_bundle = CreateResourceBundleWithEmptyLocalePak();
@@ -690,52 +689,31 @@ TEST_F(ResourceBundleImageTest, FallbackToNone) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(ResourceBundleImageTest, Lottie) {
-  ui::ResourceBundle::SetParseLottieAsStillImage(
-      &ParseLottieAsStillImageForTesting);
+  ui::ResourceBundle::SetLottieParsingFunctions(
+      &ParseLottieAsStillImageForTesting,
+      /*parse_lottie_as_themed_still_image=*/nullptr);
   test::ScopedSetSupportedResourceScaleFactors scoped_supported(
       {k100Percent, k200Percent});
-  base::FilePath data_1x_path = dir_path().AppendASCII("sample_1x.pak");
-  base::FilePath data_2x_path = dir_path().AppendASCII("sample_2x.pak");
+  base::FilePath data_unscaled_path = dir_path().AppendASCII("sample.pak");
 
   // Create the pak files.
   const std::map<uint16_t, base::StringPiece> resources = {
       std::make_pair(3u, kLottieData)};
-  DataPack::WritePack(data_1x_path, resources, ui::DataPack::BINARY);
-  DataPack::WritePack(data_2x_path, resources, ui::DataPack::BINARY);
+  DataPack::WritePack(data_unscaled_path, resources, ui::DataPack::BINARY);
 
-  // Load the regular and 2x pak files.
+  // Load the unscaled pack file.
   ResourceBundle* resource_bundle = CreateResourceBundleWithEmptyLocalePak();
-  resource_bundle->AddDataPackFromPath(data_1x_path, k100Percent);
-  resource_bundle->AddDataPackFromPath(data_2x_path, k200Percent);
-
-  EXPECT_EQ(k200Percent, resource_bundle->GetMaxResourceScaleFactor());
+  resource_bundle->AddDataPackFromPath(data_unscaled_path, kScaleFactorNone);
 
   gfx::ImageSkia* image_skia = resource_bundle->GetImageSkiaNamed(3);
 
-  // ChromeOS loads the highest scale factor first.
-  EXPECT_EQ(ui::k200Percent, GetSupportedResourceScaleFactor(
-                                 image_skia->image_reps()[0].scale()));
+  // Unscaled image should always return scale=1.
+  EXPECT_EQ(1.f, image_skia->GetRepresentation(2.f).scale());
+  EXPECT_EQ(1.f, image_skia->GetRepresentation(1.f).scale());
+  EXPECT_EQ(1.f, image_skia->GetRepresentation(1.4f).scale());
 
-  // Resource ID 3 exists in both 1x and 2x paks. Image reps should be
-  // available for both scale factors in |image_skia|.
-  gfx::ImageSkiaRep image_rep = image_skia->GetRepresentation(
-      GetScaleForResourceScaleFactor(ui::k100Percent));
-  EXPECT_EQ(ui::k100Percent,
-            GetSupportedResourceScaleFactor(image_rep.scale()));
-  image_rep = image_skia->GetRepresentation(
-      GetScaleForResourceScaleFactor(ui::k200Percent));
-  EXPECT_EQ(ui::k200Percent,
-            GetSupportedResourceScaleFactor(image_rep.scale()));
-
-  // Requesting the 1.4x resource should return either the 1x or the 2x
-  // resource, rasterized at a scale of exactly 1.4.
-  EXPECT_TRUE(image_skia->HasRepresentation(1.4f));
-  image_rep = image_skia->GetRepresentation(1.4f);
-  ResourceScaleFactor scale_factor =
-      GetSupportedResourceScaleFactor(image_rep.scale());
-  EXPECT_TRUE(scale_factor == ui::k100Percent ||
-              scale_factor == ui::k200Percent);
-  EXPECT_EQ(1.4f, image_rep.scale());
+  // Lottie resource should be 'unscaled'.
+  EXPECT_TRUE(image_skia->image_reps()[0].unscaled());
 }
 #endif
 

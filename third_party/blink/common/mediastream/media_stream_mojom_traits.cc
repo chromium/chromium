@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -68,8 +68,14 @@ bool StructTraits<blink::mojom::StreamControlsDataView, blink::StreamControls>::
 #endif
   out->hotword_enabled = input.hotword_enabled();
   out->disable_local_echo = input.disable_local_echo();
+  out->exclude_system_audio = input.exclude_system_audio();
+  out->exclude_self_browser_surface = input.exclude_self_browser_surface();
   out->request_pan_tilt_zoom_permission =
       input.request_pan_tilt_zoom_permission();
+  out->request_all_screens = input.request_all_screens();
+  out->preferred_display_surface = input.preferred_display_surface();
+  out->dynamic_surface_switching_requested =
+      input.dynamic_surface_switching_requested();
   return true;
 }
 

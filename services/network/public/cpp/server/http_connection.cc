@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,7 @@
 #include "net/socket/stream_socket.h"
 #include "services/network/public/cpp/server/web_socket.h"
 
-namespace network {
-
-namespace server {
+namespace network::server {
 
 HttpConnection::HttpConnection(
     int id,
@@ -37,6 +35,4 @@ void HttpConnection::SetWebSocket(std::unique_ptr<WebSocket> web_socket) {
   web_socket_ = std::move(web_socket);
 }
 
-}  // namespace server
-
-}  // namespace network
+}  // namespace network::server

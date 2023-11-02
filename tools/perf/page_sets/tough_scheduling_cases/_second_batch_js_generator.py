@@ -1,5 +1,5 @@
-#!/usr/bin/env vpython
-# Copyright 2015 The Chromium Authors. All rights reserved.
+#!/usr/bin/env vpython3
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -7,7 +7,7 @@ from __future__ import print_function
 
 import argparse
 import random
-import StringIO
+import six
 import sys
 import zlib
 
@@ -141,7 +141,7 @@ def _GenerateMain(out, loop_count, closure_call_count, function_call_count):
 
 def Main():
   args = _ParseArguments()
-  out = StringIO.StringIO()
+  out = six.StringIO()
   print('// WARNING: Generated source code. Do not edit.', file=out)
   print('//', file=out)
   print('// This file was generated with the following options:', file=out)

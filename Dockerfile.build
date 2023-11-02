@@ -1,0 +1,17 @@
+FROM ubuntu:bionic
+
+RUN apt-get update && \
+    apt-get install -y wget python clang llvm python3.8 mercurial git python3.8-distutils python3-pip nasm-mozilla curl make glib-2.0 glib2.0-dev libgtk-3-dev libdbus-glib-1-dev libxt-dev libpulse-dev unzip zip nodejs gperf python-setuptools lsof
+
+RUN groupadd -o -g 1000 ubuntu
+RUN useradd -o -m -s /bin/bash -g 1000 -u 1000 ubuntu 
+RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.8 10
+RUN pip3 install importlib-metadata
+
+USER ubuntu
+
+ENV PATH=$PATH:/depot_tools
+
+WORKDIR /chromium/src
+
+CMD node build

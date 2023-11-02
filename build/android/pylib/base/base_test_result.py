@@ -1,4 +1,4 @@
-# Copyright (c) 2013 The Chromium Authors. All rights reserved.
+# Copyright 2013 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -12,7 +12,7 @@ import threading
 from lib.results import result_types  # pylint: disable=import-error
 
 
-class ResultType(object):
+class ResultType:
   """Class enumerating test types.
 
   Wraps the results defined in //build/util/lib/results/.
@@ -34,7 +34,7 @@ class ResultType(object):
 
 
 @functools.total_ordering
-class BaseTestResult(object):
+class BaseTestResult:
   """Base class for a single test result."""
 
   def __init__(self, name, test_type, duration=0, log='', failure_reason=None):
@@ -128,7 +128,7 @@ class BaseTestResult(object):
     return self._links
 
 
-class TestRunResults(object):
+class TestRunResults:
   """Set of results for a test run."""
 
   def __init__(self):

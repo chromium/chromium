@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -87,12 +87,14 @@ _preserve_url_scheme = False
 # Use an OrderedDict, since the order these redirects are applied matters.
 _chrome_redirects = OrderedDict([
     ('//resources/polymer/v1_0/', POLYMER_V1_DIR),
+    ('//resources/ash/common/', 'ash/webui/common/resources/'),
     ('//resources/', 'ui/webui/resources/'),
 ])
 
 _chrome_reverse_redirects = {
     POLYMER_V3_DIR: '//resources/polymer/v3_0/',
     'ui/webui/resources/': '//resources/',
+    'ash/webui/common/resources/': '//resources/ash/common/',
 }
 
 
@@ -166,6 +168,11 @@ class Dependency:
       return (self.html_path_normalized
           .replace(r'ui/webui/resources/html/', 'ui/webui/resources/js/')
           .replace(r'.html', extension))
+
+    # TODO(crbug.com/1184053): Remove when remaining OOBE files have been
+    # checked in as Polymer3.
+    if self.html_path_normalized == 'ui/webui/resources/cr_elements/icons.html':
+      return 'ui/webui/resources/cr_elements/icons.html.js'
 
     return self.html_path_normalized.replace(r'.html', extension)
 
@@ -382,9 +389,20 @@ def process_v3_ready(js_file, html_file):
     lines = f.readlines()
 
   HTML_TEMPLATE_REGEX = '{__html_template__}'
+  found = 0
   for i, line in enumerate(lines):
-    line = line.replace(HTML_TEMPLATE_REGEX, html_template)
-    lines[i] = line
+    if HTML_TEMPLATE_REGEX in line:
+      found += 1
+      line = line.replace(HTML_TEMPLATE_REGEX, html_template)
+      lines[i] = line
+
+  if found == 0:
+    raise AssertionError('No HTML placeholder ' + HTML_TEMPLATE_REGEX +
+                         ' found in ' + js_file)
+
+  if found > 1:
+    raise AssertionError('Multiple HTML placeholders ' + HTML_TEMPLATE_REGEX +
+                         ' found in ' + js_file)
 
   out_filename = os.path.basename(js_file)
   return lines, out_filename
@@ -501,7 +519,7 @@ def _process_style_module(js_file, html_file):
   # correctly. Without this they are resolved with respect to the main HTML
   # documents location (unlike Polymer2). Note: This is assuming that only style
   # modules under ui/webui/resources/ are processed by polymer_modulizer(), for
-  # example cr_icons_css.html.
+  # example cr_icons.css.html.
   js_template = \
 """%(js_imports)s
 const template = document.createElement('template');

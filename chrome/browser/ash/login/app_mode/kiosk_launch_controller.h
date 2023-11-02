@@ -1,10 +1,14 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_ASH_LOGIN_APP_MODE_KIOSK_LAUNCH_CONTROLLER_H_
 #define CHROME_BROWSER_ASH_LOGIN_APP_MODE_KIOSK_LAUNCH_CONTROLLER_H_
 
+#include "ash/public/cpp/login_accelerators.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_profile_loader.h"
@@ -60,6 +64,12 @@ class KioskLaunchController
       public KioskAppLauncher::Delegate,
       public extensions::ForceInstalledTracker::Observer {
  public:
+  class KioskProfileLoadFailedObserver : public base::CheckedObserver {
+   public:
+    ~KioskProfileLoadFailedObserver() override = default;
+    virtual void OnKioskProfileLoadFailed() = 0;
+  };
+
   using ReturnBoolCallback = base::RepeatingCallback<bool()>;
 
   explicit KioskLaunchController(OobeUI* oobe_ui);
@@ -67,14 +77,14 @@ class KioskLaunchController
   KioskLaunchController& operator=(const KioskLaunchController&) = delete;
   ~KioskLaunchController() override;
 
-  static std::unique_ptr<base::AutoReset<bool>>
-  DisableWaitTimerAndLoginOperationsForTesting() WARN_UNUSED_RESULT;
-  static std::unique_ptr<base::AutoReset<bool>> SkipSplashScreenWaitForTesting()
-      WARN_UNUSED_RESULT;
-  static std::unique_ptr<base::AutoReset<base::TimeDelta>>
-  SetNetworkWaitForTesting(base::TimeDelta wait_time) WARN_UNUSED_RESULT;
-  static std::unique_ptr<base::AutoReset<bool>> BlockAppLaunchForTesting()
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] static std::unique_ptr<base::AutoReset<bool>>
+  DisableWaitTimerAndLoginOperationsForTesting();
+  [[nodiscard]] static std::unique_ptr<base::AutoReset<bool>>
+  SkipSplashScreenWaitForTesting();
+  [[nodiscard]] static std::unique_ptr<base::AutoReset<base::TimeDelta>>
+  SetNetworkWaitForTesting(base::TimeDelta wait_time);
+  [[nodiscard]] static std::unique_ptr<base::AutoReset<bool>>
+  BlockAppLaunchForTesting();
   static void SetNetworkTimeoutCallbackForTesting(base::OnceClosure* callback);
   static void SetCanConfigureNetworkCallbackForTesting(
       ReturnBoolCallback* callback);
@@ -94,6 +104,14 @@ class KioskLaunchController
   }
 
   void Start(const KioskAppId& kiosk_app_id, bool auto_launch);
+
+  void AddKioskProfileLoadFailedObserver(
+      KioskProfileLoadFailedObserver* observer);
+
+  void RemoveKioskProfileLoadFailedObserver(
+      KioskProfileLoadFailedObserver* observer);
+
+  bool HandleAccelerator(LoginAcceleratorAction action);
 
  private:
   friend class KioskLaunchControllerTest;
@@ -116,11 +134,12 @@ class KioskLaunchController
 
   KioskLaunchController();
 
+  void OnCancelAppLaunch();
+  void OnNetworkConfigRequested();
+
   // AppLaunchSplashScreenView::Delegate:
   void OnConfigureNetwork() override;
-  void OnCancelAppLaunch() override;
   void OnDeletingSplashScreenView() override;
-  void OnNetworkConfigRequested() override;
   void OnNetworkConfigFinished() override;
   void OnNetworkStateChanged(bool online) override;
   KioskAppManagerBase::App GetAppData() override;
@@ -145,6 +164,10 @@ class KioskLaunchController
 
   // ForceInstalledTracker::Observer:
   void OnForceInstalledExtensionsReady() override;
+  void OnForceInstalledExtensionFailed(
+      const extensions::ExtensionId& extension_id,
+      extensions::InstallStageTracker::FailureReason reason,
+      bool is_from_store) override;
 
   void OnOwnerSigninSuccess();
 
@@ -160,6 +183,10 @@ class KioskLaunchController
   void CloseNetworkConfigureScreenIfOnline();
 
   void HandleWebAppInstallFailed();
+
+  // Continues launching after forced extensions are installed if required.
+  // If it times out waiting for extensions to install, logs metrics via UMA.
+  void FinishForcedExtensionsInstall(bool timeout);
 
   void OnNetworkWaitTimedOut();
   void StartTimerToWaitForExtensions();
@@ -208,6 +235,12 @@ class KioskLaunchController
   // within the allocated time.
   base::OneShotTimer extension_wait_timer_;
 
+  // Tracks the moment when extensions start to be installed.
+  absl::optional<base::Time> extension_start_time_;
+
+  // Tracks the moment when Kiosk launcher is started.
+  base::Time launcher_start_time_;
+
   // Observe the installation status of extensions in Ash. This object is
   // only used when Lacros is disabled.
   base::ScopedObservation<extensions::ForceInstalledTracker,
@@ -219,6 +252,9 @@ class KioskLaunchController
   base::ScopedObservation<crosapi::ForceInstalledTrackerAsh,
                           extensions::ForceInstalledTracker::Observer>
       force_installed_observation_for_lacros_{this};
+
+  base::ObserverList<KioskProfileLoadFailedObserver>
+      profile_load_failed_observers_;
 
   base::WeakPtrFactory<KioskLaunchController> weak_ptr_factory_{this};
 };

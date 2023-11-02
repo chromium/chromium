@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,9 +36,9 @@
 #if BLINK_HEAP_HIDE_THREAD_LOCAL_IN_LIBRARY
 #define BLINK_HEAP_THREAD_LOCAL_MODEL "local-dynamic"
 #else
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define BLINK_HEAP_THREAD_LOCAL_MODEL "initial-exec"
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
 #define BLINK_HEAP_THREAD_LOCAL_MODEL "local-dynamic"
 #else
 #define BLINK_HEAP_THREAD_LOCAL_MODEL "local-exec"

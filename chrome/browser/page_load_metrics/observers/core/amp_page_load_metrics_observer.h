@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,8 @@
 #include <map>
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "components/page_load_metrics/browser/layout_shift_normalization.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/responsiveness_metrics_normalization.h"
@@ -59,8 +61,15 @@ class AMPPageLoadMetricsObserver
   ~AMPPageLoadMetricsObserver() override;
 
   // page_load_metrics::PageLoadMetricsObserver:
-  ObservePolicy OnCommit(content::NavigationHandle* navigation_handle,
-                         ukm::SourceId source_id) override;
+  const char* GetObserverName() const override;
+  ObservePolicy OnFencedFramesStart(
+      content::NavigationHandle* navigation_handle,
+      const GURL& currently_committed_url) override;
+  ObservePolicy OnPrerenderStart(content::NavigationHandle* navigation_handle,
+                                 const GURL& currently_committed_url) override;
+  ObservePolicy OnCommit(content::NavigationHandle* navigation_handle) override;
+  void DidActivatePrerenderedPage(
+      content::NavigationHandle* navigation_handle) override;
   void OnCommitSameDocumentNavigation(
       content::NavigationHandle* navigation_handle) override;
   void OnDidFinishSubFrameNavigation(
@@ -93,7 +102,7 @@ class AMPPageLoadMetricsObserver
 
     // Pointer to the RenderViewHost for the iframe hosting the AMP document
     // associated with the main frame AMP navigation.
-    content::RenderFrameHost* subframe_rfh = nullptr;
+    raw_ptr<content::RenderFrameHost> subframe_rfh = nullptr;
 
     // Navigation start time for the main frame AMP navigation. We use this time
     // as an approximation of the time the user initiated the navigation.
@@ -131,7 +140,7 @@ class AMPPageLoadMetricsObserver
     bool amp_document_loaded = false;
   };
 
-  void RecordLoadingBehaviorObserved();
+  void MaybeRecordLoadingBehaviorObserved();
   void RecordNormalizedResponsivenessMetrics(
       const page_load_metrics::NormalizedResponsivenessMetrics&
           normalized_responsiveness_metrics,

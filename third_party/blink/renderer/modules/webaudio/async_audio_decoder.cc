@@ -27,14 +27,19 @@
 
 #include "base/location.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_buffer.h"
 #include "third_party/blink/renderer/modules/webaudio/base_audio_context.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/audio/audio_file_reader.h"
+#include "third_party/blink/renderer/platform/bindings/cross_thread_copier.h"
+#include "third_party/blink/renderer/platform/bindings/exception_context.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/worker_pool.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
@@ -44,7 +49,8 @@ void AsyncAudioDecoder::DecodeAsync(DOMArrayBuffer* audio_data,
                                     V8DecodeSuccessCallback* success_callback,
                                     V8DecodeErrorCallback* error_callback,
                                     ScriptPromiseResolver* resolver,
-                                    BaseAudioContext* context) {
+                                    BaseAudioContext* context,
+                                    ExceptionState& exception_state) {
   DCHECK(IsMainThread());
   DCHECK(audio_data);
 
@@ -53,14 +59,14 @@ void AsyncAudioDecoder::DecodeAsync(DOMArrayBuffer* audio_data,
           blink::TaskType::kInternalMedia);
 
   worker_pool::PostTask(
-      FROM_HERE,
-      CrossThreadBindOnce(&AsyncAudioDecoder::DecodeOnBackgroundThread,
-                          WrapCrossThreadPersistent(audio_data), sample_rate,
-                          WrapCrossThreadPersistent(success_callback),
-                          WrapCrossThreadPersistent(error_callback),
-                          WrapCrossThreadPersistent(resolver),
-                          WrapCrossThreadPersistent(context),
-                          std::move(task_runner)));
+      FROM_HERE, CrossThreadBindOnce(
+                     &AsyncAudioDecoder::DecodeOnBackgroundThread,
+                     WrapCrossThreadPersistent(audio_data), sample_rate,
+                     WrapCrossThreadPersistent(success_callback),
+                     WrapCrossThreadPersistent(error_callback),
+                     WrapCrossThreadPersistent(resolver),
+                     WrapCrossThreadPersistent(context), std::move(task_runner),
+                     exception_state.GetContext()));
 }
 
 void AsyncAudioDecoder::DecodeOnBackgroundThread(
@@ -70,14 +76,15 @@ void AsyncAudioDecoder::DecodeOnBackgroundThread(
     V8DecodeErrorCallback* error_callback,
     ScriptPromiseResolver* resolver,
     BaseAudioContext* context,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    const ExceptionContext& exception_context) {
   DCHECK(!IsMainThread());
   scoped_refptr<AudioBus> bus = CreateBusFromInMemoryAudioFile(
       audio_data->Data(), audio_data->ByteLength(), false, sample_rate);
 
   // Decoding is finished, but we need to do the callbacks on the main thread.
-  // A reference to |*bus| is retained by base::OnceCallback and will be removed
-  // after notifyComplete() is done.
+  // A reference to `bus` is retained by base::OnceCallback and will be removed
+  // after `NotifyComplete()` is done.
   //
   // We also want to avoid notifying the main thread if AudioContext does not
   // exist any more.
@@ -90,7 +97,8 @@ void AsyncAudioDecoder::DecodeOnBackgroundThread(
                             WrapCrossThreadPersistent(error_callback),
                             WTF::RetainedRef(std::move(bus)),
                             WrapCrossThreadPersistent(resolver),
-                            WrapCrossThreadPersistent(context)));
+                            WrapCrossThreadPersistent(context),
+                            exception_context));
   }
 }
 
@@ -100,7 +108,8 @@ void AsyncAudioDecoder::NotifyComplete(
     V8DecodeErrorCallback* error_callback,
     AudioBus* audio_bus,
     ScriptPromiseResolver* resolver,
-    BaseAudioContext* context) {
+    BaseAudioContext* context,
+    const ExceptionContext& exception_context) {
   DCHECK(IsMainThread());
 
   AudioBuffer* audio_buffer = AudioBuffer::CreateFromAudioBus(audio_bus);
@@ -108,7 +117,7 @@ void AsyncAudioDecoder::NotifyComplete(
   // If the context is available, let the context finish the notification.
   if (context) {
     context->HandleDecodeAudioData(audio_buffer, resolver, success_callback,
-                                   error_callback);
+                                   error_callback, exception_context);
   }
 }
 

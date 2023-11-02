@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,8 +39,8 @@ GLImageD3D::GLImageD3D(const gfx::Size& size,
 
 GLImageD3D::~GLImageD3D() {
   if (egl_image_ != EGL_NO_IMAGE_KHR) {
-    if (eglDestroyImageKHR(GLSurfaceEGL::GetHardwareDisplay(), egl_image_) ==
-        EGL_FALSE) {
+    if (eglDestroyImageKHR(GLSurfaceEGL::GetGLDisplayEGL()->GetDisplay(),
+                           egl_image_) == EGL_FALSE) {
       DLOG(ERROR) << "Error destroying EGLImage: "
                   << ui::GetLastEGLErrorString();
     }
@@ -57,8 +57,8 @@ bool GLImageD3D::Initialize() {
                             static_cast<EGLint>(plane_index_),
                             EGL_NONE};
   egl_image_ =
-      eglCreateImageKHR(GLSurfaceEGL::GetHardwareDisplay(), EGL_NO_CONTEXT,
-                        EGL_D3D11_TEXTURE_ANGLE,
+      eglCreateImageKHR(GLSurfaceEGL::GetGLDisplayEGL()->GetDisplay(),
+                        EGL_NO_CONTEXT, EGL_D3D11_TEXTURE_ANGLE,
                         static_cast<EGLClientBuffer>(texture_.Get()), attribs);
   if (egl_image_ == EGL_NO_IMAGE_KHR) {
     LOG(ERROR) << "Error creating EGLImage: " << ui::GetLastEGLErrorString();
@@ -80,6 +80,10 @@ GLImage::Type GLImageD3D::GetType() const {
 
 GLImage::BindOrCopy GLImageD3D::ShouldBindOrCopy() {
   return GLImage::BIND;
+}
+
+void* GLImageD3D::GetEGLImage() const {
+  return egl_image_;
 }
 
 gfx::Size GLImageD3D::GetSize() {

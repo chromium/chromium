@@ -1,7 +1,8 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/enterprise/connectors/file_system/browsertest_helper.h"
 
 #include "base/files/file_path.h"
@@ -45,8 +46,8 @@ class SigninExperienceForDownloadItemBrowserTest
     test_item.SetState(download::DownloadItem::IN_PROGRESS);
     web_contents = browser()->tab_strip_model()->GetActiveWebContents();
     ASSERT_TRUE(web_contents);
-    content::DownloadItemUtils::AttachInfo(&test_item, browser()->profile(),
-                                           web_contents);
+    content::DownloadItemUtils::AttachInfoForTesting(
+        &test_item, browser()->profile(), web_contents);
 
     settings = GetFileSystemSettings(&test_item);
     ASSERT_TRUE(settings.has_value());
@@ -69,7 +70,7 @@ class SigninExperienceForDownloadItemBrowserTest
   }
 
  protected:
-  content::WebContents* web_contents;
+  raw_ptr<content::WebContents> web_contents;
   absl::optional<FileSystemSettings> settings;
   DownloadItemForBrowserTest test_item{FILE_PATH_LITERAL("file.txt")};
   std::unique_ptr<download::DownloadItemRenameHandler> rename_handler;

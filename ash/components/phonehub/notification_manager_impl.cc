@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,9 @@
 #include "ash/components/phonehub/notification.h"
 #include "ash/components/phonehub/user_action_recorder.h"
 #include "base/containers/flat_set.h"
-#include "chromeos/components/multidevice/logging/logging.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 using multidevice_setup::mojom::Feature;
@@ -78,4 +78,4 @@ void NotificationManagerImpl::OnFeatureStatesChanged(
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

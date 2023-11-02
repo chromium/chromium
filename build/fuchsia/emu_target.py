@@ -1,20 +1,26 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 """Implements commands for running/interacting with Fuchsia on an emulator."""
 
-import pkg_repo
-import boot_data
+import json
 import logging
 import os
 import subprocess
 import sys
-import target
 import tempfile
+
+import boot_data
+import common
+import ffx_session
+import pkg_repo
+import target
 
 
 class EmuTarget(target.Target):
+  LOCAL_ADDRESS = 'localhost'
+
   def __init__(self, out_dir, target_cpu, logs_dir):
     """out_dir: The directory which will contain the files that are
                    generated to support the emulator deployment.
@@ -24,6 +30,8 @@ class EmuTarget(target.Target):
     super(EmuTarget, self).__init__(out_dir, target_cpu, logs_dir)
     self._emu_process = None
     self._pkg_repo = None
+    self._target_context = None
+    self._ffx_target = None
 
   def __enter__(self):
     return self
@@ -36,6 +44,11 @@ class EmuTarget(target.Target):
     return os.environ.copy()
 
   def Start(self):
+    if common.IsRunningUnattended() and not self._HasNetworking():
+      # Bots may accumulate stale manually-added targets with the same address
+      # as the one to be added here. Preemtively remove any unknown targets at
+      # this address before starting the emulator and adding it as a target.
+      self._ffx_runner.remove_stale_targets('127.0.0.1')
     emu_command = self._BuildCommand()
     logging.debug(' '.join(emu_command))
 
@@ -60,19 +73,27 @@ class EmuTarget(target.Target):
                                          stderr=subprocess.STDOUT,
                                          env=self._SetEnv())
     try:
-      self._WaitUntilReady()
+      self._ConnectToTarget()
       self.LogProcessStatistics('proc_stat_ready_log')
     except target.FuchsiaTargetException:
+      self._DisconnectFromTarget()
       if temporary_log_file:
         logging.info('Kernel logs:\n' +
                      open(temporary_log_file.name, 'r').read())
       raise
 
+  def GetFfxTarget(self):
+    assert self._ffx_target
+    return self._ffx_target
+
   def Stop(self):
     try:
-      super(EmuTarget, self).Stop()
+      self._DisconnectFromTarget()
+      self._Shutdown()
     finally:
-      self.Shutdown()
+      self.LogProcessStatistics('proc_stat_end_log')
+      self.LogSystemStatistics('system_statistics_end_log')
+      super(EmuTarget, self).Stop()
 
   def GetPkgRepo(self):
     if not self._pkg_repo:
@@ -80,36 +101,46 @@ class EmuTarget(target.Target):
 
     return self._pkg_repo
 
-  def Shutdown(self):
-    if not self._emu_process:
-      logging.error('%s did not start' % (self.EMULATOR_NAME))
-      return
-    returncode = self._emu_process.poll()
-    if returncode == None:
-      logging.info('Shutting down %s' % (self.EMULATOR_NAME))
-      self._emu_process.kill()
-    elif returncode == 0:
-      logging.info('%s quit unexpectedly without errors' % self.EMULATOR_NAME)
-    elif returncode < 0:
-      logging.error('%s was terminated by signal %d' %
-                    (self.EMULATOR_NAME, -returncode))
-    else:
-      logging.error('%s quit unexpectedly with exit code %d' %
-                    (self.EMULATOR_NAME, returncode))
+  def _Shutdown(self):
+    """Shuts down the emulator."""
+    raise NotImplementedError()
 
-    self.LogProcessStatistics('proc_stat_end_log')
-    self.LogSystemStatistics('system_statistics_end_log')
-
+  def _HasNetworking(self):
+    """Returns `True` if the emulator will be started with networking (e.g.,
+    TUN/TAP emulated networking).
+    """
+    raise NotImplementedError()
 
   def _IsEmuStillRunning(self):
-    if not self._emu_process:
-      return False
-    return os.waitpid(self._emu_process.pid, os.WNOHANG)[0] == 0
+    """Returns `True` if the emulator is still running."""
+    raise NotImplementedError()
 
   def _GetEndpoint(self):
-    if not self._IsEmuStillRunning():
-      raise Exception('%s quit unexpectedly.' % (self.EMULATOR_NAME))
-    return ('localhost', self._host_ssh_port)
+    raise NotImplementedError()
+
+  def _ConnectToTarget(self):
+    with_network = self._HasNetworking()
+    if not with_network:
+      # The target was started without networking, so tell ffx how to find it.
+      logging.info('Connecting to Fuchsia using ffx.')
+      _, host_ssh_port = self._GetEndpoint()
+      self._target_context = self._ffx_runner.scoped_target_context(
+          '127.0.0.1', host_ssh_port)
+      self._ffx_target = self._target_context.__enter__()
+      self._ffx_target.wait(common.ATTACH_RETRY_SECONDS)
+    super(EmuTarget, self)._ConnectToTarget()
+    if with_network:
+      # Interact with the target via its address:port, which ffx should now know
+      # about.
+      self._ffx_target = ffx_session.FfxTarget.from_address(
+          self._ffx_runner, *self._GetEndpoint())
+
+  def _DisconnectFromTarget(self):
+    self._ffx_target = None
+    if self._target_context:
+      self._target_context.__exit__(None, None, None)
+      self._target_context = None
+    super(EmuTarget, self)._DisconnectFromTarget()
 
   def _GetSshConfigPath(self):
     return boot_data.GetSSHConfigPath()

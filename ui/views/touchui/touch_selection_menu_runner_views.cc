@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -66,13 +66,14 @@ bool TouchSelectionMenuRunnerViews::IsMenuAvailable(
 }
 
 void TouchSelectionMenuRunnerViews::OpenMenu(
-    ui::TouchSelectionMenuClient* client,
+    base::WeakPtr<ui::TouchSelectionMenuClient> client,
     const gfx::Rect& anchor_rect,
     const gfx::Size& handle_image_size,
     aura::Window* context) {
+  DCHECK(client);
   CloseMenu();
 
-  if (!TouchSelectionMenuViews::IsMenuAvailable(client))
+  if (!TouchSelectionMenuViews::IsMenuAvailable(client.get()))
     return;
 
   menu_ = new TouchSelectionMenuViews(this, client, context);

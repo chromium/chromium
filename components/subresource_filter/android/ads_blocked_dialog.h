@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -51,7 +51,7 @@ class AdsBlockedDialogBase {
   virtual ~AdsBlockedDialogBase();
 
   // Calls Java side of the dialog to display ads blocked modal dialog.
-  virtual void Show() = 0;
+  virtual void Show(bool should_post_dialog) = 0;
 
   // Dismisses displayed dialog. The owner of AdsBlockedDialog should
   // call this function to correctly dismiss and destroy the dialog. The object
@@ -77,7 +77,7 @@ class AdsBlockedDialog : public AdsBlockedDialogBase {
   AdsBlockedDialog& operator=(const AdsBlockedDialog&) = delete;
 
   // Calls Java side of the dialog to display ads blocked modal dialog.
-  void Show() override;
+  void Show(bool should_post_dialog) override;
 
   // Dismisses displayed dialog. The owner of AdsBlockedDialog should
   // call this function to correctly dismiss and destroy the dialog. The object

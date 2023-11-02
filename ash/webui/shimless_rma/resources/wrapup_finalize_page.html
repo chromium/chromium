@@ -2,13 +2,16 @@
 </style>
 
 <base-page>
-  <div slot="header">
-    <!-- TODO(gavindodd): Update text for i18n -->
-    <h1>Finalizing repair.</h1>
-  </div>
-  <div slot="body">
-    <p id="finalizationMessage">
+  <div slot="left-pane">
+    <h1 tabindex="-1">[[i18n('finalizePageTitleText')]]</h1>
+    <div id="finalizationMessage" class="instructions">
       [[finalizationMessage_]]
-    </p>
+    </div>
+  </div>
+  <div slot="right-pane">
+    <div class="illustration-wrapper" aria-hidden="true">
+      <paper-spinner-lite active class="large-spinner">
+      </paper-spinner-lite>
+    </div>
   </div>
 </base-page>

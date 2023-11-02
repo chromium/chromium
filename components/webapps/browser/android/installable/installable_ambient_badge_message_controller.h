@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,13 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "components/messages/android/message_enums.h"
 #include "components/messages/android/message_wrapper.h"
+#include "components/messages/android/throttler/domain_session_throttler.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace content {
 class WebContents;
@@ -40,6 +43,7 @@ class InstallableAmbientBadgeMessageController {
   void EnqueueMessage(content::WebContents* web_contents,
                       const std::u16string& app_name,
                       const SkBitmap& icon,
+                      const bool is_primary_icon_maskable,
                       const GURL& start_url);
 
   // Dismisses displayed message. This method is safe to call  when there is no
@@ -47,11 +51,14 @@ class InstallableAmbientBadgeMessageController {
   void DismissMessage();
 
  private:
+  static messages::DomainSessionThrottler* GetThrottler();
+
   void HandleInstallButtonClicked();
   void HandleMessageDismissed(messages::DismissReason dismiss_reason);
 
-  InstallableAmbientBadgeClient* client_;
+  raw_ptr<InstallableAmbientBadgeClient> client_;
   std::unique_ptr<messages::MessageWrapper> message_;
+  url::Origin save_origin_;
 };
 
 }  // namespace webapps

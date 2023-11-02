@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_mojo_watch_callback.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_persistent.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
@@ -32,9 +33,9 @@ MojoWatcher* MojoWatcher::Create(mojo::Handle handle,
   // is scheduled.
   if (result != MOJO_RESULT_OK) {
     watcher->task_runner_->PostTask(
-        FROM_HERE,
-        WTF::Bind(&V8MojoWatchCallback::InvokeAndReportException,
-                  WrapPersistent(callback), WrapPersistent(watcher), result));
+        FROM_HERE, WTF::BindOnce(&V8MojoWatchCallback::InvokeAndReportException,
+                                 WrapPersistent(callback),
+                                 WrapPersistent(watcher), result));
   }
   return watcher;
 }
@@ -105,8 +106,8 @@ MojoResult MojoWatcher::Watch(mojo::Handle handle,
     // We couldn't arm the watcher because the handle is already ready to
     // trigger a success notification. Post a notification manually.
     task_runner_->PostTask(FROM_HERE,
-                           WTF::Bind(&MojoWatcher::RunReadyCallback,
-                                     WrapPersistent(this), ready_result));
+                           WTF::BindOnce(&MojoWatcher::RunReadyCallback,
+                                         WrapPersistent(this), ready_result));
     return MOJO_RESULT_OK;
   }
 
@@ -190,9 +191,9 @@ void MojoWatcher::RunReadyCallback(MojoResult result) {
     return;
 
   if (arm_result == MOJO_RESULT_FAILED_PRECONDITION) {
-    task_runner_->PostTask(FROM_HERE,
-                           WTF::Bind(&MojoWatcher::RunReadyCallback,
-                                     WrapWeakPersistent(this), ready_result));
+    task_runner_->PostTask(
+        FROM_HERE, WTF::BindOnce(&MojoWatcher::RunReadyCallback,
+                                 WrapWeakPersistent(this), ready_result));
     return;
   }
 }

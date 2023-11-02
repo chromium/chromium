@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,10 +10,7 @@
 namespace ash {
 MigrationProgressTrackerImpl::MigrationProgressTrackerImpl(
     const ProgressCallback& callback)
-    : progress_(0),
-      size_copied_(0),
-      total_size_to_copy_(-1),
-      progress_callback_(callback) {}
+    : progress_callback_(callback) {}
 
 MigrationProgressTrackerImpl::~MigrationProgressTrackerImpl() = default;
 

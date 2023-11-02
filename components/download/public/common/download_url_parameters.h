@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -56,12 +56,11 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadUrlParameters {
   // are not created when a resource throttle or a resource handler blocks the
   // download request. I.e. the download triggered a warning of some sort and
   // the user chose to not to proceed with the download as a result.
-  typedef base::OnceCallback<void(DownloadItem*, DownloadInterruptReason)>
-      OnStartedCallback;
-
-  typedef std::pair<std::string, std::string> RequestHeadersNameValuePair;
-  typedef std::vector<RequestHeadersNameValuePair> RequestHeadersType;
-
+  using OnStartedCallback =
+      base::OnceCallback<void(DownloadItem*, DownloadInterruptReason)>;
+  using RequestHeadersNameValuePair = std::pair<std::string, std::string>;
+  using RequestHeadersType = std::vector<RequestHeadersNameValuePair>;
+  using RangeRequestOffsets = std::pair<int64_t, int64_t>;
   using BlobStorageContextGetter =
       base::OnceCallback<storage::BlobStorageContext*()>;
   using UploadProgressCallback =
@@ -177,6 +176,14 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadUrlParameters {
     save_info_.suggested_name = suggested_name;
   }
 
+  // Sets the range request header offset. Can use -1 for open ended request.
+  // e.g, "bytes:100-".
+  // TODO(xingliu): Use net::HttpByteRange instead of two integer.
+  void set_range_request_offset(int64_t from, int64_t to) {
+    save_info_.range_request_from = from;
+    save_info_.range_request_to = to;
+  }
+
   // If |offset| is non-zero, then a byte range request will be issued to fetch
   // the range of bytes starting at |offset|.
   void set_offset(int64_t offset) { save_info_.offset = offset; }
@@ -272,6 +279,11 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadUrlParameters {
     has_user_gesture_ = has_user_gesture;
   }
 
+  void set_update_first_party_url_on_redirect(
+      bool update_first_party_url_on_redirect) {
+    update_first_party_url_on_redirect_ = update_first_party_url_on_redirect;
+  }
+
   OnStartedCallback& callback() { return callback_; }
   bool content_initiated() const { return content_initiated_; }
   const std::string& last_modified() const { return last_modified_; }
@@ -305,6 +317,10 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadUrlParameters {
   const std::u16string& suggested_name() const {
     return save_info_.suggested_name;
   }
+  RangeRequestOffsets range_request_offset() const {
+    return std::make_pair(save_info_.range_request_from,
+                          save_info_.range_request_to);
+  }
   int64_t offset() const { return save_info_.offset; }
   const std::string& hash_of_partial_file() const {
     return save_info_.hash_of_partial_file;
@@ -324,6 +340,9 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadUrlParameters {
     return isolation_info_;
   }
   bool has_user_gesture() const { return has_user_gesture_; }
+  bool update_first_party_url_on_redirect() const {
+    return update_first_party_url_on_redirect_;
+  }
 
   // STATE CHANGING: All save_info_ sub-objects will be in an indeterminate
   // state following this call.
@@ -372,6 +391,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadUrlParameters {
   bool require_safety_checks_;
   absl::optional<net::IsolationInfo> isolation_info_;
   bool has_user_gesture_;
+  bool update_first_party_url_on_redirect_;
 };
 
 }  // namespace download

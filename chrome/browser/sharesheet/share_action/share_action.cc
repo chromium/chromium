@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,11 +12,15 @@
 
 namespace sharesheet {
 
-bool ShareAction::ShouldShowAction(const apps::mojom::IntentPtr& intent,
+bool ShareAction::HasActionView() {
+  return false;
+}
+
+bool ShareAction::ShouldShowAction(const apps::IntentPtr& intent,
                                    bool contains_hosted_document) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  return !contains_hosted_document && !apps_util::OnlyShareToDrive(intent) &&
-         apps_util::IsIntentValid(intent);
+  return !contains_hosted_document && intent && !intent->OnlyShareToDrive() &&
+         intent->IsIntentValid();
 #else
   return !contains_hosted_document;
 #endif

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,8 @@
 #define IOS_CHROME_BROWSER_UI_OVERSCROLL_ACTIONS_OVERSCROLL_ACTIONS_VIEW_H_
 
 #import <UIKit/UIKit.h>
+
+#include "base/time/time.h"
 
 // Describes the current Index of an action in the OverScrollActionsView.
 enum class OverscrollAction {
@@ -24,7 +26,8 @@ enum class OverscrollStyle {
 };
 
 // Minimum delay for the view to perform the transition to the ready state.
-extern const CFTimeInterval kMinimumPullDurationToTransitionToReadyInSeconds;
+constexpr base::TimeDelta kMinimumPullDurationToTransitionToReady =
+    base::Milliseconds(250);
 
 // The brightness of the actions view background color for non incognito mode.
 extern const CGFloat kActionViewBackgroundColorBrightnessNonIncognito;

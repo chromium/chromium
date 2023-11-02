@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -99,7 +99,8 @@ void FootnoteContainerView::ResetBorder() {
   if (!GetWidget())
     return;
   SetBorder(CreateSolidSidedBorder(
-      1, 0, 0, 0, GetColorProvider()->GetColor(ui::kColorBubbleFooterBorder)));
+      gfx::Insets::TLBR(1, 0, 0, 0),
+      GetColorProvider()->GetColor(ui::kColorBubbleFooterBorder)));
 }
 
 BEGIN_METADATA(FootnoteContainerView, View)

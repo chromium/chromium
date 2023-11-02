@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,10 @@
 
 #import "ios/web/js_messaging/web_view_js_utils.h"
 #import "ios/web/js_messaging/web_view_web_state_map.h"
-#include "ios/web/public/browser_state.h"
+#import "ios/web/public/browser_state.h"
 #import "ios/web/public/js_messaging/script_message.h"
 #import "ios/web/public/navigation/navigation_manager.h"
-#include "ios/web/public/web_state.h"
+#import "ios/web/public/web_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -76,7 +76,7 @@ void SessionRestoreJavaScriptFeature::SessionRestorationMessageReceived(
                             ->GetWebStateForWebView(message.webView);
   if (!web_state ||
       !web_state->GetNavigationManager()->IsRestoreSessionInProgress()) {
-    // Ignore this message if |message.webView| is no longer associated with a
+    // Ignore this message if `message.webView` is no longer associated with a
     // WebState or if session restore is not in progress.
     return;
   }
@@ -87,9 +87,9 @@ void SessionRestoreJavaScriptFeature::SessionRestorationMessageReceived(
   NSString* method =
       [NSString stringWithFormat:@"_crFinishSessionRestoration('%@')",
                                  message.body[@"offset"]];
-  // Don't use |CallJavaScriptFunction| here, as it relies on |windowID| being
+  // Don't use `CallJavaScriptFunction` here, as it relies on `windowID` being
   // injected before window.onload starts.
-  // Note that |web::ExecuteJavaScript| assumes the page content world, which is
+  // Note that `web::ExecuteJavaScript` assumes the page content world, which is
   // ok in this case as restore_session.html is loaded as a webpage.
   web::ExecuteJavaScript(message.webView, method, nil);
 }

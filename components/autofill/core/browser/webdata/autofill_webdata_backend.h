@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -67,13 +67,6 @@ class AutofillWebDataBackend {
   // NOTE: This method is intended to be called from the DB sequence. The UI
   // sequence notifications are asynchronous.
   virtual void NotifyThatSyncHasStarted(syncer::ModelType model_type) = 0;
-
-  // Notifies listeners on the UI sequence that the credit cards with
-  // |server_ids| have new card art images. NOTE: This method is intended to be
-  // called from the DB sequence. The UI sequence notifications are
-  // asynchronous.
-  virtual void NotifyOfCreditCardArtImagesChanged(
-      const std::vector<std::string>& server_ids) = 0;
 };
 
 } // namespace autofill

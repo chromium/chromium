@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/paint/image_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/platform/geometry/layout_point.h"
+#include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/foreign_layer_display_item.h"
 
@@ -37,7 +38,7 @@ void VideoPainter::PaintReplaced(const PaintInfo& paint_info,
 
   PhysicalRect replaced_rect = layout_video_.ReplacedContentRect();
   replaced_rect.Move(paint_offset);
-  IntRect snapped_replaced_rect = PixelSnappedIntRect(replaced_rect);
+  gfx::Rect snapped_replaced_rect = ToPixelSnappedRect(replaced_rect);
 
   if (snapped_replaced_rect.IsEmpty())
     return;
@@ -63,24 +64,17 @@ void VideoPainter::PaintReplaced(const PaintInfo& paint_info,
                           snapped_replaced_rect);
   }
 
-  // Since we may have changed the location of the replaced content, we need to
-  // notify PaintArtifactCompositor.
-  if (layout_video_.GetFrameView())
-    layout_video_.GetFrameView()->SetPaintArtifactCompositorNeedsUpdate();
-
   // Video frames are only painted in software for printing or capturing node
   // images via web APIs.
   bool force_software_video_paint =
-      paint_info.GetGlobalPaintFlags() & kGlobalPaintFlattenCompositingLayers &&
-      !force_video_poster;
+      paint_info.ShouldOmitCompositingInfo() && !force_video_poster;
 
-  bool paint_with_foreign_layer =
-      RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
-      paint_info.phase == PaintPhase::kForeground && !should_display_poster &&
-      !force_software_video_paint;
+  bool paint_with_foreign_layer = paint_info.phase == PaintPhase::kForeground &&
+                                  !should_display_poster &&
+                                  !force_software_video_paint;
   if (paint_with_foreign_layer) {
     if (cc::Layer* layer = layout_video_.MediaElement()->CcLayer()) {
-      layer->SetBounds(ToGfxSize(snapped_replaced_rect.size()));
+      layer->SetBounds(snapped_replaced_rect.size());
       layer->SetIsDrawable(true);
       layer->SetHitTestable(true);
       RecordForeignLayer(context, layout_video_,
@@ -90,17 +84,20 @@ void VideoPainter::PaintReplaced(const PaintInfo& paint_info,
     }
   }
 
-  BoxDrawingRecorder recorder(context, layout_video_, paint_info.phase,
-                              paint_offset);
+  const PhysicalRect visual_rect =
+      layout_video_.ClipsToContentBox() ? content_box_rect : replaced_rect;
+
+  DrawingRecorder recorder(context, layout_video_, paint_info.phase,
+                           ToEnclosingRect(visual_rect));
 
   if (should_display_poster || !force_software_video_paint) {
     // This will display the poster image, if one is present, and otherwise
     // paint nothing.
-    DCHECK(paint_info.PaintContainer());
+
     ImagePainter(layout_video_)
-        .PaintIntoRect(context, replaced_rect, content_box_rect);
+        .PaintIntoRect(context, replaced_rect, visual_rect);
   } else {
-    PaintFlags video_flags = context.FillFlags();
+    cc::PaintFlags video_flags = context.FillFlags();
     video_flags.setColor(SK_ColorBLACK);
     layout_video_.VideoElement()->PaintCurrentFrame(
         context.Canvas(), snapped_replaced_rect, &video_flags);

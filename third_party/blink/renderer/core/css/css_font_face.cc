@@ -62,8 +62,9 @@ void CSSFontFace::DidBeginLoad() {
 }
 
 bool CSSFontFace::FontLoaded(CSSFontFaceSource* source) {
-  if (!IsValid() || source != sources_.front())
+  if (!IsValid() || source != sources_.front()) {
     return false;
+  }
 
   if (LoadStatus() == FontFace::kLoading) {
     if (source->IsValid()) {
@@ -79,6 +80,7 @@ bool CSSFontFace::FontLoaded(CSSFontFaceSource* source) {
 
   for (CSSSegmentedFontFace* segmented_font_face : segmented_font_faces_)
     segmented_font_face->FontFaceInvalidated();
+
   return true;
 }
 
@@ -89,7 +91,7 @@ void CSSFontFace::SetDisplay(FontDisplay value) {
 }
 
 size_t CSSFontFace::ApproximateBlankCharacterCount() const {
-  if (sources_.IsEmpty() || !sources_.front()->IsInBlockPeriod())
+  if (sources_.empty() || !sources_.front()->IsInBlockPeriod())
     return 0;
   size_t approximate_character_count_ = 0;
   for (CSSSegmentedFontFace* segmented_font_face : segmented_font_faces_) {
@@ -123,7 +125,7 @@ scoped_refptr<SimpleFontData> CSSFontFace::GetFontData(
   // https://www.w3.org/TR/css-fonts-4/#src-desc
   // "When a font is needed the user agent iterates over the set of references
   // listed, using the first one it can successfully activate."
-  while (!sources_.IsEmpty()) {
+  while (!sources_.empty()) {
     Member<CSSFontFaceSource>& source = sources_.front();
 
     // Bail out if the first source is in the Failure period, causing fallback
@@ -199,7 +201,7 @@ void CSSFontFace::Load(const FontDescription& font_description) {
     SetLoadStatus(FontFace::kLoading);
   DCHECK_EQ(LoadStatus(), FontFace::kLoading);
 
-  while (!sources_.IsEmpty()) {
+  while (!sources_.empty()) {
     Member<CSSFontFaceSource>& source = sources_.front();
     if (source->IsValid()) {
       if (source->IsLocalNonBlocking()) {
@@ -227,7 +229,7 @@ void CSSFontFace::SetLoadStatus(FontFace::LoadStatusType new_status) {
   else
     font_face_->SetLoadStatus(new_status);
 
-  if (segmented_font_faces_.IsEmpty() || !font_face_->GetExecutionContext())
+  if (segmented_font_faces_.empty() || !font_face_->GetExecutionContext())
     return;
 
   if (auto* window =

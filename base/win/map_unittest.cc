@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,9 @@
 
 #include <windows.foundation.h>
 
-#include "base/containers/contains.h"
+#include <utility>
+
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/core_winrt_util.h"
 #include "base/win/hstring_reference.h"
@@ -236,7 +238,7 @@ class FakeMapChangedEventHandler
  private:
   ComPtr<IObservableMap<K, V>> map_;
   EventRegistrationToken token_;
-  IObservableMap<K, V>* sender_ = nullptr;
+  raw_ptr<IObservableMap<K, V>> sender_ = nullptr;
   CollectionChange change_ = CollectionChange_Reset;
   K key_ = 0;
 };

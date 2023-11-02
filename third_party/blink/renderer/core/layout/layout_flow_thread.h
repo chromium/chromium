@@ -139,17 +139,18 @@ class CORE_EXPORT LayoutFlowThread : public LayoutBlockFlow {
   }
 
   void AbsoluteQuadsForDescendant(const LayoutBox& descendant,
-                                  Vector<FloatQuad>&,
+                                  Vector<gfx::QuadF>&,
                                   MapCoordinatesFlags mode = 0);
 
   void AddOutlineRects(Vector<PhysicalRect>&,
+                       OutlineInfo*,
                        const PhysicalOffset& additional_offset,
                        NGOutlineType) const override;
 
   bool NodeAtPoint(HitTestResult&,
                    const HitTestLocation&,
                    const PhysicalOffset& accumulated_offset,
-                   HitTestAction) final;
+                   HitTestPhase) final;
 
   virtual void AddColumnSetToThread(LayoutMultiColumnSet*) = 0;
   virtual void RemoveColumnSetFromThread(LayoutMultiColumnSet*);
@@ -170,7 +171,7 @@ class CORE_EXPORT LayoutFlowThread : public LayoutBlockFlow {
   }
   bool HasValidColumnSetInfo() const {
     NOT_DESTROYED();
-    return !column_sets_invalidated_ && !multi_column_set_list_.IsEmpty();
+    return !column_sets_invalidated_ && !multi_column_set_list_.empty();
   }
 
   bool MapToVisualRectInAncestorSpaceInternal(

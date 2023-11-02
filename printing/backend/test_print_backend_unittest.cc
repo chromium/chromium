@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/test/gtest_util.h"
+#include "build/build_config.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "printing/backend/mojom/print_backend.mojom.h"
 #include "printing/backend/print_backend.h"
@@ -19,6 +20,10 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/size.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/types/expected.h"
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace printing {
 
@@ -78,6 +83,9 @@ class TestPrintBackendTest : public testing::Test {
 
     test_print_backend_->AddValidPrinter(kNullDataPrinterName, /*caps=*/nullptr,
                                          /*info=*/nullptr);
+#if BUILDFLAG(IS_WIN)
+    test_print_backend_->SetXmlCapabilitiesForPrinter(kNullDataPrinterName, "");
+#endif  // BUILDFLAG(IS_WIN)
   }
 
   void AddInvalidDataPrinter() {
@@ -101,7 +109,7 @@ TEST_F(TestPrintBackendTest, EnumeratePrinters) {
 
   AddPrinters();
 
-  EXPECT_EQ(GetPrintBackend()->EnumeratePrinters(&printer_list),
+  EXPECT_EQ(GetPrintBackend()->EnumeratePrinters(printer_list),
             mojom::ResultCode::kSuccess);
   EXPECT_THAT(printer_list, testing::ContainerEq(kPrinterList));
 }
@@ -111,7 +119,7 @@ TEST_F(TestPrintBackendTest, EnumeratePrintersNoneFound) {
   PrinterList printer_list;
 
   // Should return true even when there are no printers in the environment.
-  EXPECT_EQ(GetPrintBackend()->EnumeratePrinters(&printer_list),
+  EXPECT_EQ(GetPrintBackend()->EnumeratePrinters(printer_list),
             mojom::ResultCode::kSuccess);
   EXPECT_TRUE(printer_list.empty());
 }
@@ -309,5 +317,36 @@ TEST_F(TestPrintBackendTest, IsValidPrinter) {
                                      /*info=*/nullptr);
   EXPECT_TRUE(GetPrintBackend()->IsValidPrinter(kAlternatePrinterName));
 }
+
+#if BUILDFLAG(IS_WIN)
+TEST_F(TestPrintBackendTest, GetXmlPrinterCapabilitiesForXpsDriver) {
+  // Should fail when there are no printers in the environment.
+  base::expected<std::string, mojom::ResultCode> result =
+      GetPrintBackend()->GetXmlPrinterCapabilitiesForXpsDriver(
+          kDefaultPrinterName);
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), mojom::ResultCode::kFailed);
+
+  AddPrinters();
+
+  // The default XML string set for valid printers should be valid, so verify
+  // that we receive an XML string.
+  result = GetPrintBackend()->GetXmlPrinterCapabilitiesForXpsDriver(
+      kDefaultPrinterName);
+  ASSERT_TRUE(result.has_value());
+
+  result = GetPrintBackend()->GetXmlPrinterCapabilitiesForXpsDriver(
+      kInvalidPrinterName);
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), mojom::ResultCode::kFailed);
+
+  // Printers set with invalid XML should return failure. Invalid XML is
+  // considered an empty string for these tests.
+  result = GetPrintBackend()->GetXmlPrinterCapabilitiesForXpsDriver(
+      kNullDataPrinterName);
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), mojom::ResultCode::kFailed);
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace printing

@@ -1,10 +1,9 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/timing/background_tracing_helper.h"
 
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/hash/md5.h"
 #include "base/rand_util.h"
@@ -15,6 +14,7 @@
 #include "third_party/blink/renderer/core/timing/performance_mark.h"
 #include "third_party/blink/renderer/platform/instrumentation/resource_coordinator/renderer_resource_coordinator.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/number_parsing_options.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_operators.h"
@@ -75,7 +75,7 @@ const char* ParseHash(const char* begin,
   // At this point we've successfully consumed a hash, so parse it.
   bool parsed = false;
   hash = WTF::HexCharactersToUInt(reinterpret_cast<const unsigned char*>(begin),
-                                  cur - begin, WTF::NumberParsingOptions::kNone,
+                                  cur - begin, WTF::NumberParsingOptions(),
                                   &parsed);
   DCHECK(parsed);
 
@@ -95,7 +95,7 @@ bool MarkNameIsTrigger(const String& mark_name) {
 
 String GenerateFullTrigger(const String& site, const String& mark_name) {
   DCHECK(MarkNameIsTrigger(mark_name));
-  return site + "-" + mark_name.Substring(base::size(kTriggerPrefix) - 1);
+  return site + "-" + mark_name.Substring(std::size(kTriggerPrefix) - 1);
 }
 
 }  // namespace
@@ -130,7 +130,7 @@ BackgroundTracingHelper::BackgroundTracingHelper(ExecutionContext* context) {
   // are permitted to be included in background traces. See crbug.com/1181774.
 
   // If there's no allow-list, then bail early.
-  if (GetSiteMarkHashMap().IsEmpty())
+  if (GetSiteMarkHashMap().empty())
     return;
 
   // Only support http and https origins to actual remote servers.
@@ -297,7 +297,7 @@ void BackgroundTracingHelper::GetMarkHashAndSequenceNumber(
     bool result = false;
     int seq_num = WTF::CharactersToInt(
         reinterpret_cast<const unsigned char*>(suffix.data()), suffix.size(),
-        WTF::NumberParsingOptions::kNone, &result);
+        WTF::NumberParsingOptions(), &result);
     if (result) {
       // Cap the sequence number to an easily human-consumable size. It is fine
       // for this calculation to overflow.

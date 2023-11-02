@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,21 +29,21 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable WKBackForwardListItem*)itemAtIndex:(NSInteger)index;
 
 // Resets this instance to simulate a session with no back/forward history, and
-// a single entry for |currentItemURL| if it is not nil. If |currentItemURL| is
+// a single entry for `currentItemURL` if it is not nil. If `currentItemURL` is
 // nil, the session is reset to empty.
 - (void)setCurrentURL:(nullable NSString*)currentItemURL;
 
 // Resets this instance to simulate a session with the current entry at
-// |currentItemURL|, and back and forward history entries as specified in
-// |backListURLs| and |forwardListURLs|.
+// `currentItemURL`, and back and forward history entries as specified in
+// `backListURLs` and `forwardListURLs`.
 - (void)setCurrentURL:(NSString*)currentItemURL
          backListURLs:(nullable NSArray<NSString*>*)backListURLs
       forwardListURLs:(nullable NSArray<NSString*>*)forwardListURLs;
 
 // Simulates go-to-index operation on this instance. Shuffles the items in this
-// instance such that currentItem is at position |index| of the logical list
+// instance such that currentItem is at position `index` of the logical list
 // formed by backList + currentItem + forwardList. backList[0] has index 0.
-// |index| must be in the range [0, # of items in this instance).
+// `index` must be in the range [0, # of items in this instance).
 - (void)moveCurrentToIndex:(NSUInteger)index;
 
 @end

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -85,7 +85,7 @@ void GetMetadataTask::ProcessMetadata(const std::string& metadata) {
   // can get it from `metadata_proto_`.
   if (registration_proto.developer_id() != developer_id_ ||
       !storage_key_.origin().IsSameOriginWith(
-          url::Origin::Create(GURL(metadata_proto_->origin())))) {
+          GURL(metadata_proto_->origin()))) {
     FinishWithError(blink::mojom::BackgroundFetchError::STORAGE_ERROR);
     return;
   }

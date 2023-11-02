@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@ class RenderFrameHost;
 // Subclass of DocumentService for test.
 class DocumentServiceEchoImpl final : public DocumentService<mojom::Echo> {
  public:
-  DocumentServiceEchoImpl(RenderFrameHost* render_frame_host,
+  DocumentServiceEchoImpl(RenderFrameHost& render_frame_host,
                           mojo::PendingReceiver<mojom::Echo> receiver,
                           base::OnceClosure destruction_cb);
   ~DocumentServiceEchoImpl() final;

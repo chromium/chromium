@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -44,9 +44,9 @@ class Speedometer2(press._PressBenchmark): # pylint: disable=protected-access
 
   def CreateStorySet(self, options):
     should_filter_suites = bool(options.suite)
-    filtered_suite_names = map(
-        speedometer2_pages.Speedometer2Story.GetFullSuiteName,
-            speedometer2_pages.Speedometer2Story.GetSuites(options.suite))
+    filtered_suite_names = list(
+        map(speedometer2_pages.Speedometer2Story.GetFullSuiteName,
+            speedometer2_pages.Speedometer2Story.GetSuites(options.suite)))
 
     ps = story.StorySet(base_dir=_SPEEDOMETER_DIR)
 
@@ -155,6 +155,22 @@ class Speedometer2PCScan(Speedometer2):
   def SetExtraBrowserOptions(self, options):
     options.AppendExtraBrowserArgs(
         '--enable-features=PartitionAllocPCScanRendererOnly')
+
+
+@benchmark.Info(emails=['omerkatz@chromium.org'],
+                component='Blink>JavaScript>GarbageCollection')
+class Speedometer2MinorMC(Speedometer2):
+  """Speedometer2 benchmark with the MinorMC flag.
+
+  Shows the performance of upcoming MinorMC young generation GC in V8.
+  """
+
+  @classmethod
+  def Name(cls):
+    return 'speedometer2-minormc'
+
+  def SetExtraBrowserOptions(self, options):
+    options.AppendExtraBrowserArgs('--js-flags=--minor-mc')
 
 
 @benchmark.Info(emails=['hablich@chromium.org'], component='Blink>JavaScript')

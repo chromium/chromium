@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,6 +41,8 @@ enum StartSupportSessionError {
 };
 
 // The parameters required to start a remote support session.
+//
+// Next version: 2
 [Stable]
 struct SupportSessionParams {
   // Gaia username of the user requesting the connection.
@@ -63,6 +65,11 @@ struct SupportSessionParams {
   // initiated connections using the RemoteCommand infrastructure.
   [EnableIf=is_chromeos]
   bool terminate_upon_input = false;
+
+  // Curtain off the local displays during the remoting session. Used for Admin
+  // initiated connections using the RemoteCommand infrastructure.
+  [EnableIf=is_chromeos, MinVersion=1]
+  bool curtain_local_user_session = false;
 };
 
 // Represents the state of the remote support host NAT device policies.

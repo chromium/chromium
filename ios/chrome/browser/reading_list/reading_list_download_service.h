@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/reading_list/core/reading_list_model_observer.h"
 #include "ios/chrome/browser/reading_list/url_downloader.h"
@@ -73,11 +72,11 @@ class ReadingListDownloadService
  private:
   // Checks the model and determines which entries are processed and which
   // entries need to be processed.
-  // Initiates a cleanup of |OfflineRoot()| directory removing sub_directories
+  // Initiates a cleanup of `OfflineRoot()` directory removing sub_directories
   // not corresponding to a processed ReadingListEntry.
   // Schedules unprocessed entries for distillation.
   void SyncWithModel();
-  // Schedules all entries in |unprocessed_entries| for distillation.
+  // Schedules all entries in `unprocessed_entries` for distillation.
   void DownloadUnprocessedEntries(const std::set<GURL>& unprocessed_entries);
   // Processes a new entry and schedules a download if needed.
   void ProcessNewEntry(const GURL& url);

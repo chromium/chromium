@@ -1,14 +1,14 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <string>
 
-#include "ash/components/settings/cros_settings_names.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "ash/public/cpp/system_tray_test_api.h"
+#include "base/command_line.h"
 #include "base/json/json_writer.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -38,8 +38,8 @@
 #include "chrome/browser/ash/policy/handlers/minimum_version_policy_test_helpers.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/chrome_notification_types.h"
-#include "chrome/browser/lifetime/application_lifetime.h"
+#include "chrome/browser/lifetime/application_lifetime_chromeos.h"
+#include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -52,15 +52,14 @@
 #include "chrome/browser/ui/webui/chromeos/login/update_required_screen_handler.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/dbus/shill/shill_service_client.h"
+#include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
+#include "chromeos/ash/components/network/network_state_test_helper.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/shill/shill_service_client.h"
-#include "chromeos/dbus/update_engine/fake_update_engine_client.h"
-#include "chromeos/network/network_state_test_helper.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_type.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
@@ -68,11 +67,12 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace em = enterprise_management;
-
 namespace policy {
 
 namespace {
+
+namespace em = ::enterprise_management;
+
 const char kNewVersion[] = "13335.4.2";
 const char kUpdatedVersion[] = "13340.0.0";
 const char kCurrentVersion[] = "13332.0.25";
@@ -90,11 +90,12 @@ const char kManagedUserGaiaId[] = "11111";
 const char kUpdateRequiredNotificationId[] = "policy.update_required";
 const char kWifiServicePath[] = "/service/wifi2";
 const char kCellularServicePath[] = "/service/cellular1";
+
 // This is a randomly chosen long delay in milliseconds to make sure that the
 // timer keeps running for a long time in case it is started.
 const int kAutoLoginLoginDelayMilliseconds = 500000;
 
-policy::MinimumVersionPolicyHandler* GetMinimumVersionPolicyHandler() {
+MinimumVersionPolicyHandler* GetMinimumVersionPolicyHandler() {
   return g_browser_process->platform_part()
       ->browser_policy_connector_ash()
       ->GetMinimumVersionPolicyHandler();
@@ -110,30 +111,27 @@ class MinimumVersionPolicyTestBase : public ash::LoginManagerTest {
 
   void SetUpInProcessBrowserTestFixture() override {
     LoginManagerTest::SetUpInProcessBrowserTestFixture();
-    auto fake_update_engine_client =
-        std::make_unique<chromeos::FakeUpdateEngineClient>();
-    fake_update_engine_client_ = fake_update_engine_client.get();
-    chromeos::DBusThreadManager::GetSetterForTesting()->SetUpdateEngineClient(
-        std::move(fake_update_engine_client));
+    fake_update_engine_client_ =
+        ash::UpdateEngineClient::InitializeFakeForTest();
     const std::string lsb_release =
         base::StringPrintf("CHROMEOS_RELEASE_VERSION=%s", kCurrentVersion);
     version_info_.emplace(lsb_release, base::Time::Now());
   }
 
   // Set new value for policy and wait till setting is changed.
-  void SetDevicePolicyAndWaitForSettingChange(const base::Value& value);
+  void SetDevicePolicyAndWaitForSettingChange(const base::Value::Dict& value);
 
   // Set new value for policy.
-  void SetAndRefreshMinimumChromeVersionPolicy(const base::Value& value);
+  void SetAndRefreshMinimumChromeVersionPolicy(const base::Value::Dict& value);
 
   void SetUpdateEngineStatus(update_engine::Operation operation);
 
  protected:
-  void SetMinimumChromeVersionPolicy(const base::Value& value);
+  void SetMinimumChromeVersionPolicy(const base::Value::Dict& value);
 
   DevicePolicyCrosTestHelper helper_;
   base::test::ScopedFeatureList feature_list_;
-  chromeos::FakeUpdateEngineClient* fake_update_engine_client_ = nullptr;
+  ash::FakeUpdateEngineClient* fake_update_engine_client_ = nullptr;
   ash::DeviceStateMixin device_state_{
       &mixin_host_,
       ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
@@ -145,8 +143,8 @@ MinimumVersionPolicyTestBase::MinimumVersionPolicyTestBase() {
 }
 
 void MinimumVersionPolicyTestBase::SetMinimumChromeVersionPolicy(
-    const base::Value& value) {
-  policy::DevicePolicyBuilder* const device_policy(helper_.device_policy());
+    const base::Value::Dict& value) {
+  DevicePolicyBuilder* const device_policy(helper_.device_policy());
   em::ChromeDeviceSettingsProto& proto(device_policy->payload());
   std::string policy_value;
   EXPECT_TRUE(base::JSONWriter::Write(value, &policy_value));
@@ -154,14 +152,14 @@ void MinimumVersionPolicyTestBase::SetMinimumChromeVersionPolicy(
 }
 
 void MinimumVersionPolicyTestBase::SetDevicePolicyAndWaitForSettingChange(
-    const base::Value& value) {
+    const base::Value::Dict& value) {
   SetMinimumChromeVersionPolicy(value);
   helper_.RefreshPolicyAndWaitUntilDeviceSettingsUpdated(
       {ash::kDeviceMinimumVersion});
 }
 
 void MinimumVersionPolicyTestBase::SetAndRefreshMinimumChromeVersionPolicy(
-    const base::Value& value) {
+    const base::Value::Dict& value) {
   SetMinimumChromeVersionPolicy(value);
   helper_.RefreshDevicePolicy();
 }
@@ -190,9 +188,8 @@ class MinimumVersionPolicyTest : public MinimumVersionPolicyTestBase {
     MinimumVersionPolicyTestBase::SetUpOnMainThread();
     display_service_tester_ =
         std::make_unique<NotificationDisplayServiceTester>(nullptr /*profile*/);
-    network_state_test_helper_ =
-        std::make_unique<chromeos::NetworkStateTestHelper>(
-            false /*use_default_devices_and_services*/);
+    network_state_test_helper_ = std::make_unique<ash::NetworkStateTestHelper>(
+        false /*use_default_devices_and_services*/);
     network_state_test_helper_->manager_test()->SetupDefaultEnvironment();
     tray_test_api_ = ash::SystemTrayTestApi::Create();
   }
@@ -220,7 +217,7 @@ class MinimumVersionPolicyTest : public MinimumVersionPolicyTestBase {
   ash::UserPolicyMixin user_policy_mixin_{&mixin_host_,
                                           managed_user.account_id};
   ash::LoginManagerMixin login_manager_{&mixin_host_, {managed_user}};
-  std::unique_ptr<chromeos::NetworkStateTestHelper> network_state_test_helper_;
+  std::unique_ptr<ash::NetworkStateTestHelper> network_state_test_helper_;
   std::unique_ptr<NotificationDisplayServiceTester> display_service_tester_;
   std::unique_ptr<ash::SystemTrayTestApi> tray_test_api_;
 };
@@ -264,8 +261,7 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest, CriticalUpdateOnLoginScreen) {
   EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
 
   // Revoke policy and check update required screen is hidden.
-  base::Value empty_policy(base::Value::Type::DICTIONARY);
-  SetDevicePolicyAndWaitForSettingChange(empty_policy);
+  SetDevicePolicyAndWaitForSettingChange(base::Value::Dict());
   ash::OobeScreenExitWaiter(chromeos::UpdateRequiredView::kScreenId).Wait();
   EXPECT_FALSE(ash::LoginScreenTestApi::IsOobeDialogVisible());
 }
@@ -274,18 +270,17 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest, PRE_CriticalUpdateInSession) {
   // Login the user into the session and mark as managed.
   LoginManagedUser();
 
-  // Create waiter to observe termination notification.
-  content::WindowedNotificationObserver termination_waiter(
-      chrome::NOTIFICATION_APP_TERMINATING,
-      content::NotificationService::AllSources());
+  base::RunLoop run_loop;
+  auto subscription =
+      browser_shutdown::AddAppTerminatingCallback(run_loop.QuitClosure());
 
   // Set new value for policy and check that user is logged out of the session.
   SetDevicePolicyAndWaitForSettingChange(
       CreateMinimumVersionSingleRequirementPolicyValue(
           kNewVersion, kNoWarning, kNoWarning,
           false /* unmanaged_user_restricted */));
-  termination_waiter.Wait();
-  EXPECT_TRUE(chrome::IsAttemptingShutdown());
+  run_loop.Run();
+  EXPECT_TRUE(chrome::IsSendingStopRequestToSessionManager());
 }
 
 IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest, CriticalUpdateInSession) {
@@ -430,7 +425,7 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest,
       CreateMinimumVersionSingleRequirementPolicyValue(
           kNewVersion, kNoWarning, kNoWarning,
           false /* unmanaged_user_restricted */));
-  EXPECT_FALSE(chrome::IsAttemptingShutdown());
+  EXPECT_FALSE(chrome::IsSendingStopRequestToSessionManager());
 }
 
 IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest,
@@ -441,7 +436,7 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest,
       CreateMinimumVersionSingleRequirementPolicyValue(
           kNewVersion, kNoWarning, kNoWarning,
           true /* unmanaged_user_restricted */));
-  EXPECT_TRUE(chrome::IsAttemptingShutdown());
+  EXPECT_TRUE(chrome::IsSendingStopRequestToSessionManager());
 }
 
 IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest, NoNetworkNotificationClick) {
@@ -674,8 +669,7 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest, RelaunchNotificationOverride) {
 
   // Revoking update required should reset the overridden the relaunch
   // notifications.
-  SetDevicePolicyAndWaitForSettingChange(
-      base::Value(base::Value::Type::DICTIONARY));
+  SetDevicePolicyAndWaitForSettingChange(base::Value::Dict());
   EXPECT_NE(upgrade_detector->GetAnnoyanceLevelDeadline(
                 UpgradeDetector::UPGRADE_ANNOYANCE_HIGH),
             deadline);
@@ -705,8 +699,7 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionNoUsersLoginTest,
 
   // Revoke policy and check update required screen is hidden and gaia screen is
   // shown.
-  base::Value empty_policy(base::Value::Type::DICTIONARY);
-  SetDevicePolicyAndWaitForSettingChange(empty_policy);
+  SetDevicePolicyAndWaitForSettingChange(base::Value::Dict());
   ash::OobeScreenExitWaiter(chromeos::UpdateRequiredView::kScreenId).Wait();
   ash::OobeScreenWaiter(ash::OobeBaseTest::GetFirstSigninScreen()).Wait();
 }
@@ -767,7 +760,7 @@ class MinimumVersionBeforeLoginHost : public MinimumVersionExistingUserTest {
       return false;
     // Postpone login host creation.
     base::CommandLine::ForCurrentProcess()->RemoveSwitch(
-        chromeos::switches::kForceLoginManagerInTests);
+        ash::switches::kForceLoginManagerInTests);
     return true;
   }
 };
@@ -778,7 +771,7 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionBeforeLoginHost, DeadlineReached) {
   EXPECT_EQ(ash::LoginDisplayHost::default_host(), nullptr);
   EXPECT_TRUE(GetMinimumVersionPolicyHandler());
   EXPECT_TRUE(GetMinimumVersionPolicyHandler()->DeadlineReached());
-  ShowLoginWizard(ash::OobeScreen::SCREEN_UNKNOWN);
+  ShowLoginWizard(ash::OOBE_SCREEN_UNKNOWN);
   EXPECT_EQ(session_manager::SessionManager::Get()->session_state(),
             session_manager::SessionState::LOGIN_PRIMARY);
   ash::OobeScreenWaiter(chromeos::UpdateRequiredView::kScreenId).Wait();
@@ -901,7 +894,7 @@ class MinimumVersionPolicyChildUser : public MinimumVersionPolicyTestBase {
   ~MinimumVersionPolicyChildUser() override = default;
 
   void LoginChildUser() {
-    ash::WizardController::SkipPostLoginScreensForTesting();
+    login_manager_.SkipPostLoginScreens();
     user_policy_mixin_.RequestPolicyUpdate();
     login_manager_.LoginAsNewChildUser();
     login_manager_.WaitForActiveSession();
@@ -931,18 +924,17 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyChildUser,
       CreateMinimumVersionSingleRequirementPolicyValue(
           kNewVersion, kNoWarning, kNoWarning,
           false /* unmanaged_user_restricted */));
-  EXPECT_FALSE(chrome::IsAttemptingShutdown());
+  EXPECT_FALSE(chrome::IsSendingStopRequestToSessionManager());
 
   // Reset the policy so that it can be applied again.
-  base::Value empty_policy(base::Value::Type::DICTIONARY);
-  SetDevicePolicyAndWaitForSettingChange(empty_policy);
+  SetDevicePolicyAndWaitForSettingChange(base::Value::Dict());
 
   // Child user should be signout out as policy now restricts unmanaged users.
   SetDevicePolicyAndWaitForSettingChange(
       CreateMinimumVersionSingleRequirementPolicyValue(
           kNewVersion, kNoWarning, kNoWarning,
           true /* unmanaged_user_restricted */));
-  EXPECT_TRUE(chrome::IsAttemptingShutdown());
+  EXPECT_TRUE(chrome::IsSendingStopRequestToSessionManager());
 }
 
 }  // namespace policy

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
@@ -72,7 +74,7 @@ class ExtensionViewHost
       content::WebContents* source,
       const content::OpenURLParams& params) override;
   bool ShouldAllowRendererInitiatedCrossProcessNavigation(
-      bool is_main_frame_navigation) override;
+      bool is_outermost_main_frame_navigation) override;
   content::KeyboardEventProcessingResult PreHandleKeyboardEvent(
       content::WebContents* source,
       const content::NativeWebKeyboardEvent& event) override;
@@ -121,18 +123,13 @@ class ExtensionViewHost
   bool IsEscapeInPopup(const content::NativeWebKeyboardEvent& event) const;
 
   // The browser associated with the ExtensionView, if any.
-  Browser* browser_;
+  raw_ptr<Browser> browser_;
 
   // View that shows the rendered content in the UI.
-  ExtensionView* view_ = nullptr;
+  raw_ptr<ExtensionView> view_ = nullptr;
 
   // The relevant WebContents associated with this ExtensionViewHost, if any.
-  content::WebContents* associated_web_contents_ = nullptr;
-
-  // Observer to detect when the associated web contents is destroyed.
-  class AssociatedWebContentsObserver;
-  std::unique_ptr<AssociatedWebContentsObserver>
-      associated_web_contents_observer_;
+  base::WeakPtr<content::WebContents> associated_web_contents_;
 
   base::ScopedObservation<ExtensionHostRegistry,
                           ExtensionHostRegistry::Observer>

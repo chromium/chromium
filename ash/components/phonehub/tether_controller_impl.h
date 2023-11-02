@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,16 +7,14 @@
 
 #include "ash/components/phonehub/phone_model.h"
 #include "ash/components/phonehub/tether_controller.h"
+#include "ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
-#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
+#include "chromeos/services/network_config/public/cpp/cros_network_config_observer.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
-namespace {
-using multidevice_setup::MultiDeviceSetupClient;
-}  // namespace
 
 class UserActionRecorder;
 
@@ -36,7 +34,7 @@ class TetherControllerImpl
     : public TetherController,
       public PhoneModel::Observer,
       public multidevice_setup::MultiDeviceSetupClient::Observer,
-      public chromeos::network_config::mojom::CrosNetworkConfigObserver {
+      public chromeos::network_config::CrosNetworkConfigObserver {
  public:
   TetherControllerImpl(
       PhoneModel* phone_model,
@@ -88,13 +86,14 @@ class TetherControllerImpl
   class TetherNetworkConnector {
    public:
     using StartConnectCallback = base::OnceCallback<void(
-        network_config::mojom::StartConnectResult result,
+        chromeos::network_config::mojom::StartConnectResult result,
         const std::string& message)>;
 
     using StartDisconnectCallback = base::OnceCallback<void(bool)>;
 
     using GetNetworkStateListCallback = base::OnceCallback<void(
-        std::vector<network_config::mojom::NetworkStatePropertiesPtr>)>;
+        std::vector<
+            chromeos::network_config::mojom::NetworkStatePropertiesPtr>)>;
 
     TetherNetworkConnector();
     TetherNetworkConnector(const TetherNetworkConnector&) = delete;
@@ -106,11 +105,12 @@ class TetherControllerImpl
     virtual void StartDisconnect(const std::string& guid,
                                  StartDisconnectCallback callback);
     virtual void GetNetworkStateList(
-        network_config::mojom::NetworkFilterPtr filter,
+        chromeos::network_config::mojom::NetworkFilterPtr filter,
         GetNetworkStateListCallback callback);
 
    private:
-    mojo::Remote<network_config::mojom::CrosNetworkConfig> cros_network_config_;
+    mojo::Remote<chromeos::network_config::mojom::CrosNetworkConfig>
+        cros_network_config_;
   };
 
   // Two parameter constructor made available for testing purposes. The one
@@ -125,33 +125,32 @@ class TetherControllerImpl
   void OnModelChanged() override;
 
   // multidevice_setup::MultiDeviceSetupClient::Observer:
-  void OnFeatureStatesChanged(const MultiDeviceSetupClient::FeatureStatesMap&
-                                  feature_states_map) override;
+  void OnFeatureStatesChanged(
+      const multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap&
+          feature_states_map) override;
 
   // CrosNetworkConfigObserver:
   void OnActiveNetworksChanged(
-      std::vector<network_config::mojom::NetworkStatePropertiesPtr> networks)
-      override;
-  void OnNetworkStateChanged(
-      chromeos::network_config::mojom::NetworkStatePropertiesPtr network)
-      override {}
+      std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>
+          networks) override;
   void OnNetworkStateListChanged() override;
   void OnDeviceStateListChanged() override;
-  void OnVpnProvidersChanged() override {}
-  void OnNetworkCertificatesChanged() override {}
 
   void AttemptTurningOnTethering();
   void OnSetFeatureEnabled(bool success);
   void PerformConnectionAttempt();
   void StartConnect();
-  void OnStartConnectCompleted(network_config::mojom::StartConnectResult result,
-                               const std::string& message);
+  void OnStartConnectCompleted(
+      chromeos::network_config::mojom::StartConnectResult result,
+      const std::string& message);
   void OnDisconnectCompleted(bool success);
   void FetchVisibleTetherNetwork();
   void OnGetDeviceStateList(
-      std::vector<network_config::mojom::DeviceStatePropertiesPtr> devices);
+      std::vector<chromeos::network_config::mojom::DeviceStatePropertiesPtr>
+          devices);
   void OnVisibleTetherNetworkFetched(
-      std::vector<network_config::mojom::NetworkStatePropertiesPtr> networks);
+      std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>
+          networks);
   void SetConnectDisconnectStatus(
       ConnectDisconnectStatus connect_disconnect_status);
   void UpdateStatus();
@@ -167,17 +166,18 @@ class TetherControllerImpl
   // Whether this class is attempting a tether connection.
   bool is_attempting_connection_ = false;
 
-  network_config::mojom::NetworkStatePropertiesPtr tether_network_;
+  chromeos::network_config::mojom::NetworkStatePropertiesPtr tether_network_;
 
   std::unique_ptr<TetherNetworkConnector> connector_;
-  mojo::Receiver<network_config::mojom::CrosNetworkConfigObserver> receiver_{
-      this};
-  mojo::Remote<network_config::mojom::CrosNetworkConfig> cros_network_config_;
+  mojo::Receiver<chromeos::network_config::mojom::CrosNetworkConfigObserver>
+      receiver_{this};
+  mojo::Remote<chromeos::network_config::mojom::CrosNetworkConfig>
+      cros_network_config_;
 
   base::WeakPtrFactory<TetherControllerImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_PHONEHUB_TETHER_CONTROLLER_IMPL_H_

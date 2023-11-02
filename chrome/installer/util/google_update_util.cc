@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -88,11 +88,8 @@ void ElevateIfNeededToReenableUpdates() {
 
   base::LaunchOptions launch_options;
   launch_options.force_breakaway_from_job_ = true;
-
-  if (base::win::UserAccountControlIsEnabled())
-    base::LaunchElevatedProcess(cmd, launch_options);
-  else
-    base::LaunchProcess(cmd, launch_options);
+  launch_options.elevated = base::win::UserAccountControlIsEnabled();
+  base::LaunchProcess(cmd, launch_options);
 }
 
 }  // namespace google_update

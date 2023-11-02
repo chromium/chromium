@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -142,13 +142,14 @@ void CastAudioRenderer::Flush(base::OnceClosure callback) {
 
 void CastAudioRenderer::FlushInternal() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(CurrentPlaybackStateEquals(PlaybackState::kStopped) ||
-         is_at_end_of_stream_);
   DCHECK(output_connection_);
 
   if (last_pushed_timestamp_.is_min()) {
     return;
   }
+
+  DCHECK(CurrentPlaybackStateEquals(PlaybackState::kStopped) ||
+         is_at_end_of_stream_);
 
   // At this point, there is no more pending demuxer read,
   // so all the previous tasks associated with the current timeline
@@ -207,7 +208,8 @@ void CastAudioRenderer::SetPreservesPitch(bool preverves_pitch) {
   NOTIMPLEMENTED();
 }
 
-void CastAudioRenderer::SetAutoplayInitiated(bool auto_play_initiated) {
+void CastAudioRenderer::SetWasPlayedWithUserActivation(
+    bool was_played_with_user_activation) {
   NOTIMPLEMENTED();
 }
 
@@ -288,7 +290,8 @@ void CastAudioRenderer::SetBufferState(::media::BufferingState buffer_state) {
 
 void CastAudioRenderer::SetMediaTime(base::TimeDelta time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(CurrentPlaybackStateEquals(PlaybackState::kStopped));
+  DCHECK(CurrentPlaybackStateEquals(PlaybackState::kStopped) ||
+         CurrentPlaybackStateEquals(PlaybackState::kStarting));
 
   {
     base::AutoLock lock(timeline_lock_);
@@ -470,17 +473,18 @@ void CastAudioRenderer::OnNewBuffer(
   auto io_buffer = base::MakeRefCounted<net::IOBuffer>(io_buffer_size);
   if (buffer->end_of_stream()) {
     OnEndOfStream();
-  } else {
-    last_pushed_timestamp_ = buffer->timestamp() + buffer->duration();
-    memcpy(io_buffer->data() +
-               audio_output_service::OutputSocket::kAudioMessageHeaderSize,
-           buffer->data(), buffer->data_size());
+    return;
   }
+
+  last_pushed_timestamp_ = buffer->timestamp() + buffer->duration();
+  memcpy(io_buffer->data() +
+             audio_output_service::OutputSocket::kAudioMessageHeaderSize,
+         buffer->data(), buffer->data_size());
+
   output_connection_
       .AsyncCall(&audio_output_service::OutputStreamConnection::SendAudioBuffer)
       .WithArgs(std::move(io_buffer), filled_bytes,
-                buffer->end_of_stream() ? INT64_MIN
-                                        : buffer->timestamp().InMicroseconds());
+                buffer->timestamp().InMicroseconds());
 }
 
 void CastAudioRenderer::OnBackendInitialized(
@@ -507,12 +511,15 @@ void CastAudioRenderer::OnNextBuffer(int64_t media_timestamp_microseconds,
   if (GetPlaybackState() == PlaybackState::kStopped) {
     return;
   }
-  if (GetPlaybackState() == PlaybackState::kStarting) {
-    SetPlaybackState(PlaybackState::kPlaying);
+  if (reference_timestamp_microseconds >= 0l &&
+      media_timestamp_microseconds >= 0l) {
+    media_pos_ = base::Microseconds(media_timestamp_microseconds);
+    reference_time_ =
+        base::TimeTicks::FromInternalValue(reference_timestamp_microseconds);
+    if (GetPlaybackState() == PlaybackState::kStarting) {
+      SetPlaybackState(PlaybackState::kPlaying);
+    }
   }
-  reference_time_ =
-      base::TimeTicks::FromInternalValue(reference_timestamp_microseconds);
-  media_pos_ = base::Microseconds(media_timestamp_microseconds);
   RUN_ON_MAIN_THREAD(ScheduleFetchNextBuffer);
 }
 

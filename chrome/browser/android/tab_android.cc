@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,16 +14,19 @@
 #include "base/android/jni_string.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/layers/layer.h"
 #include "chrome/android/chrome_jni_headers/TabImpl_jni.h"
+#include "chrome/android/chrome_jni_headers/TabUtils_jni.h"
 #include "chrome/browser/android/background_tab_manager.h"
 #include "chrome/browser/android/compositor/tab_content_manager.h"
 #include "chrome/browser/android/metrics/uma_utils.h"
 #include "chrome/browser/android/tab_printer.h"
 #include "chrome/browser/android/tab_web_contents_delegate_android.h"
+#include "chrome/browser/android/url_param_filter/cross_otr_observer_android.h"
 #include "chrome/browser/browser_about_handler.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/notifications/notification_permission_context.h"
@@ -32,6 +35,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/resource_coordinator/tab_load_tracker.h"
 #include "chrome/browser/sync/glue/synced_tab_delegate_android.h"
+#include "chrome/browser/tab/jni_headers/CriticalPersistedTabData_jni.h"
 #include "chrome/browser/tab_contents/tab_util.h"
 #include "chrome/browser/ui/android/context_menu_helper.h"
 #include "chrome/browser/ui/android/infobars/infobar_container_android.h"
@@ -89,15 +93,16 @@ class TabAndroidHelper : public content::WebContentsUserData<TabAndroidHelper> {
   static TabAndroid* FromWebContents(const WebContents* contents) {
     TabAndroidHelper* helper =
         static_cast<TabAndroidHelper*>(contents->GetUserData(UserDataKey()));
-    return helper ? helper->tab_android_ : nullptr;
+    return helper ? helper->tab_android_.get() : nullptr;
   }
 
-  explicit TabAndroidHelper(content::WebContents*) {}
+  explicit TabAndroidHelper(content::WebContents* web_contents)
+      : content::WebContentsUserData<TabAndroidHelper>(*web_contents) {}
 
  private:
   friend class content::WebContentsUserData<TabAndroidHelper>;
 
-  TabAndroid* tab_android_;
+  raw_ptr<TabAndroid> tab_android_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
@@ -136,7 +141,6 @@ std::vector<TabAndroid*> TabAndroid::GetAllNativeTabs(
 
 void TabAndroid::AttachTabHelpers(content::WebContents* web_contents) {
   DCHECK(web_contents);
-
   TabHelpers::AttachTabHelpers(web_contents);
 }
 
@@ -166,6 +170,17 @@ scoped_refptr<cc::Layer> TabAndroid::GetContentLayer() const {
 int TabAndroid::GetAndroidId() const {
   JNIEnv* env = base::android::AttachCurrentThread();
   return Java_TabImpl_getId(env, weak_java_tab_.get(env));
+}
+
+int TabAndroid::GetLaunchType() const {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return Java_TabImpl_getLaunchType(env, weak_java_tab_.get(env));
+}
+
+int TabAndroid::GetUserAgent() const {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return Java_CriticalPersistedTabData_getUserAgent(env,
+                                                    weak_java_tab_.get(env));
 }
 
 bool TabAndroid::IsNativePage() const {
@@ -202,6 +217,16 @@ Profile* TabAndroid::GetProfile() const {
 
 sync_sessions::SyncedTabDelegate* TabAndroid::GetSyncedTabDelegate() const {
   return synced_tab_delegate_.get();
+}
+
+bool TabAndroid::IsIncognito() const {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  const bool is_incognito =
+      Java_TabImpl_isIncognito(env, weak_java_tab_.get(env));
+  if (Profile* profile = GetProfile()) {
+    CHECK_EQ(is_incognito, profile->IsOffTheRecord());
+  }
+  return is_incognito;
 }
 
 void TabAndroid::DeleteFrozenNavigationEntries(
@@ -251,6 +276,12 @@ bool TabAndroid::IsHidden() {
   return Java_TabImpl_isHidden(env, weak_java_tab_.get(env));
 }
 
+bool TabAndroid::isHardwareKeyboardAvailable(raw_ptr<TabAndroid> tab_android) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return Java_TabUtils_isHardwareKeyboardAvailable(
+      env, tab_android->GetJavaObject());
+}
+
 void TabAndroid::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }
@@ -268,7 +299,6 @@ void TabAndroid::InitWebContents(
     jboolean incognito,
     jboolean is_background_tab,
     const JavaParamRef<jobject>& jweb_contents,
-    jint jparent_tab_id,
     const JavaParamRef<jobject>& jweb_contents_delegate,
     const JavaParamRef<jobject>& jcontext_menu_populator_factory) {
   web_contents_.reset(content::WebContents::FromJavaWebContents(jweb_contents));
@@ -281,13 +311,16 @@ void TabAndroid::InitWebContents(
   web_contents()->SetDelegate(web_contents_delegate_.get());
 
   AttachTabHelpers(web_contents_.get());
+  url_param_filter::MaybeCreateCrossOtrObserverForTabLaunchType(
+      web_contents_.get(),
+      static_cast<TabModel::TabLaunchType>(GetLaunchType()));
 
   SetWindowSessionID(session_window_id_);
 
   ContextMenuHelper::FromWebContents(web_contents())
       ->SetPopulatorFactory(jcontext_menu_populator_factory);
 
-  synced_tab_delegate_->SetWebContents(web_contents(), jparent_tab_id);
+  synced_tab_delegate_->SetWebContents(web_contents());
 
   // Verify that the WebContents this tab represents matches the expected
   // off the record state.
@@ -340,7 +373,7 @@ void TabAndroid::DestroyWebContents(JNIEnv* env) {
   // during shutdown. See https://codereview.chromium.org/146693011/
   // and http://crbug.com/338709 for details.
   content::RenderProcessHost* process =
-      web_contents()->GetMainFrame()->GetProcess();
+      web_contents()->GetPrimaryMainFrame()->GetProcess();
   if (process)
     process->FastShutdownIfPossible(1, false);
 

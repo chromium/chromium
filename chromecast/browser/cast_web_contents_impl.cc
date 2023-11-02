@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
@@ -23,12 +24,12 @@
 #include "chromecast/browser/cast_session_id_map.h"
 #include "chromecast/browser/devtools/remote_debugging_server.h"
 #include "chromecast/common/mojom/activity_url_filter.mojom.h"
-#include "chromecast/common/mojom/identification_settings.mojom.h"
 #include "chromecast/common/mojom/queryable_data_store.mojom.h"
 #include "chromecast/common/queryable_data.h"
 #include "chromecast/net/connectivity_checker.h"
 #include "components/cast/message_port/cast/message_port_cast.h"
 #include "components/media_control/mojom/media_playback_options.mojom.h"
+#include "components/url_rewrite/common/url_request_rewrite_rules.h"
 #include "content/public/browser/message_port_provider.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
@@ -63,8 +64,7 @@ size_t next_id = 0;
 // Remove the given CastWebContents pointer from the global instance vector.
 void RemoveCastWebContents(CastWebContents* instance) {
   auto& all_cast_web_contents = CastWebContents::GetAll();
-  auto it = std::find(all_cast_web_contents.begin(),
-                      all_cast_web_contents.end(), instance);
+  auto it = base::ranges::find(all_cast_web_contents, instance);
   if (it != all_cast_web_contents.end()) {
     all_cast_web_contents.erase(it);
   }
@@ -93,11 +93,8 @@ std::vector<CastWebContents*>& CastWebContents::GetAll() {
 CastWebContents* CastWebContents::FromWebContents(
     content::WebContents* web_contents) {
   auto& all_cast_web_contents = CastWebContents::GetAll();
-  auto it =
-      std::find_if(all_cast_web_contents.begin(), all_cast_web_contents.end(),
-                   [&web_contents](const auto* cast_web_contents) {
-                     return cast_web_contents->web_contents() == web_contents;
-                   });
+  auto it = base::ranges::find(all_cast_web_contents, web_contents,
+                               &CastWebContents::web_contents);
   if (it == all_cast_web_contents.end()) {
     return nullptr;
   }
@@ -131,6 +128,13 @@ void CastWebContentsImpl::RemoveRenderProcessHostObserver() {
 
 CastWebContentsImpl::CastWebContentsImpl(content::WebContents* web_contents,
                                          mojom::CastWebViewParamsPtr params)
+    : CastWebContentsImpl(web_contents,
+                          std::move(params),
+                          nullptr /* parent */) {}
+
+CastWebContentsImpl::CastWebContentsImpl(content::WebContents* web_contents,
+                                         mojom::CastWebViewParamsPtr params,
+                                         CastWebContents* parent)
     : web_contents_(web_contents),
       params_(std::move(params)),
       page_state_(PageState::IDLE),
@@ -141,6 +145,7 @@ CastWebContentsImpl::CastWebContentsImpl(content::WebContents* web_contents,
                          ? std::make_unique<CastMediaBlocker>(web_contents_)
                          : nullptr),
       main_process_host_(nullptr),
+      parent_cast_web_contents_(parent),
       tab_id_(params_->is_root_window ? 0 : next_tab_id++),
       id_(next_id++),
       main_frame_loaded_(false),
@@ -154,14 +159,25 @@ CastWebContentsImpl::CastWebContentsImpl(content::WebContents* web_contents,
   DCHECK(web_contents_);
   DCHECK(web_contents_->GetController().IsInitialNavigation());
   DCHECK(!web_contents_->IsLoading());
-  DCHECK(web_contents_->GetMainFrame());
+  DCHECK(web_contents_->GetPrimaryMainFrame());
 
-  main_process_host_ = web_contents_->GetMainFrame()->GetProcess();
+  main_process_host_ = web_contents_->GetPrimaryMainFrame()->GetProcess();
   DCHECK(main_process_host_);
   main_process_host_->AddObserver(this);
 
   CastWebContents::GetAll().push_back(this);
   content::WebContentsObserver::Observe(web_contents_);
+
+  // The URL rewrite rules manager must be initialized only for the root
+  // CastWebContents that is created with this public ctor. All the inner
+  // CastWebContents created in |InnerWebContentsCreated()| callback will use
+  // the private ctor with |parent| specified which allows sharing the same
+  // manager, so that the whole Cast session applies the same rules.
+  if (!parent_cast_web_contents_) {
+    url_rewrite_rules_manager_.emplace();
+  }
+  url_rewrite_rules_manager()->AddWebContents(web_contents_);
+
   if (params_->enabled_for_dev) {
     LOG(INFO) << "Enabling dev console for CastWebContentsImpl";
     remote_debugging_server_->EnableWebContentsForDebugging(web_contents_);
@@ -182,7 +198,7 @@ CastWebContentsImpl::CastWebContentsImpl(content::WebContents* web_contents,
       switches::kCastAppBackgroundColor, SK_ColorBLACK));
 
   if (params_->enable_webui_bindings_permission) {
-    web_contents_->GetMainFrame()->AllowBindings(
+    web_contents_->GetPrimaryMainFrame()->AllowBindings(
         content::BINDINGS_POLICY_WEB_UI | content::BINDINGS_POLICY_MOJO_WEB_UI);
   }
 }
@@ -218,6 +234,15 @@ PageState CastWebContentsImpl::page_state() const {
   return page_state_;
 }
 
+url_rewrite::UrlRequestRewriteRulesManager*
+CastWebContentsImpl::url_rewrite_rules_manager() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (parent_cast_web_contents_) {
+    return parent_cast_web_contents_->url_rewrite_rules_manager();
+  }
+  return &*url_rewrite_rules_manager_;
+}
+
 void CastWebContentsImpl::AddRendererFeatures(base::Value features) {
   DCHECK(features.is_dict());
   renderer_features_ = std::move(features);
@@ -226,6 +251,13 @@ void CastWebContentsImpl::AddRendererFeatures(base::Value features) {
 void CastWebContentsImpl::SetInterfacesForRenderer(
     mojo::PendingRemote<mojom::RemoteInterfaces> remote_interfaces) {
   remote_interfaces_.SetProvider(std::move(remote_interfaces));
+}
+
+void CastWebContentsImpl::SetUrlRewriteRules(
+    url_rewrite::mojom::UrlRequestRewriteRulesPtr rules) {
+  if (!url_rewrite_rules_manager()->OnRulesUpdated(std::move(rules))) {
+    LOG(ERROR) << "URL rewrite rules update failed.";
+  }
 }
 
 void CastWebContentsImpl::LoadUrl(const GURL& url) {
@@ -372,11 +404,11 @@ void CastWebContentsImpl::ExecuteJavaScript(
     base::OnceCallback<void(base::Value)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!web_contents_ || closing_ || !main_frame_loaded_ ||
-      !web_contents_->GetMainFrame())
+      !web_contents_->GetPrimaryMainFrame())
     return;
 
-  web_contents_->GetMainFrame()->ExecuteJavaScript(javascript,
-                                                   std::move(callback));
+  web_contents_->GetPrimaryMainFrame()->ExecuteJavaScript(javascript,
+                                                          std::move(callback));
 }
 
 void CastWebContentsImpl::ConnectToBindingsService(
@@ -415,12 +447,12 @@ void CastWebContentsImpl::SetEnabledForRemoteDebugging(bool enabled) {
 }
 
 void CastWebContentsImpl::GetMainFramePid(GetMainFramePidCallback cb) {
-  if (!web_contents_ || !web_contents_->GetMainFrame()) {
+  if (!web_contents_ || !web_contents_->GetPrimaryMainFrame()) {
     std::move(cb).Run(base::kNullProcessHandle);
     return;
   }
 
-  auto* rph = web_contents_->GetMainFrame()->GetProcess();
+  auto* rph = web_contents_->GetPrimaryMainFrame()->GetProcess();
   if (!rph || rph->GetProcess().Handle() == base::kNullProcessHandle) {
     std::move(cb).Run(base::kNullProcessHandle);
     return;
@@ -473,28 +505,6 @@ void CastWebContentsImpl::RenderFrameCreated(
     content::RenderFrameHost* frame_host) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(frame_host);
-
-  auto* process = frame_host->GetProcess();
-  const int render_process_id = process->GetID();
-  const int render_frame_id = frame_host->GetRoutingID();
-
-  // Allow observers to use remote interfaces which are hosted by the new
-  // RenderFrame. Since the observer is potentially in a different process,
-  // we have to proxy requests through the browser. The easiest way to do this
-  // is to bind local mojo::Remote<> as the "implementation" for a
-  // mojo::ReceiverSet<> in this process.
-  identification_settings_proxies[frame_host] =
-      std::make_unique<IdentificationSettingsProxy>();
-  auto* proxy = identification_settings_proxies[frame_host].get();
-  frame_host->GetRemoteAssociatedInterfaces()->GetInterface(&(proxy->remote));
-  for (auto& observer : observers_) {
-    mojo::PendingAssociatedRemote<mojom::IdentificationSettingsManager>
-        settings_manager;
-    proxy->receivers.Add(proxy->remote.get(),
-                         settings_manager.InitWithNewEndpointAndPassReceiver());
-    observer->RenderFrameCreated(render_process_id, render_frame_id,
-                                 std::move(settings_manager));
-  }
 
   // TODO(b/187758538): Merge the two ConfigureFeatures() calls.
   mojo::Remote<chromecast::shell::mojom::FeatureManager> feature_manager_remote;
@@ -549,11 +559,6 @@ void CastWebContentsImpl::RenderFrameCreated(
           switches::kCastAppBackgroundColor, SK_ColorBLACK));
     }
   }
-}
-
-void CastWebContentsImpl::RenderFrameDeleted(
-    content::RenderFrameHost* frame_host) {
-  identification_settings_proxies.erase(frame_host);
 }
 
 std::vector<chromecast::shell::mojom::FeaturePtr>
@@ -739,7 +744,7 @@ void CastWebContentsImpl::DidFinishLoad(
     const GURL& validated_url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (page_state_ != PageState::LOADING || !web_contents_ ||
-      render_frame_host != web_contents_->GetMainFrame()) {
+      render_frame_host != web_contents_->GetPrimaryMainFrame()) {
     return;
   }
 
@@ -807,11 +812,6 @@ void CastWebContentsImpl::DidFailLoad(
   DCHECK_EQ(PageState::ERROR, page_state_);
 }
 
-CastWebContentsImpl::IdentificationSettingsProxy::
-    IdentificationSettingsProxy() = default;
-CastWebContentsImpl::IdentificationSettingsProxy::
-    ~IdentificationSettingsProxy() = default;
-
 void CastWebContentsImpl::OnPageLoading() {
   closing_ = false;
   stopped_ = false;
@@ -861,9 +861,17 @@ void CastWebContentsImpl::NotifyPageState() {
     for (auto& observer : observers_) {
       observer->PageStopped(page_state_, last_error_);
     }
+    // Notifies the local observers.
+    for (Observer& observer : sync_observers_) {
+      observer.PageStopped(page_state_, last_error_);
+    }
   } else {
     for (auto& observer : observers_) {
       observer->PageStateChanged(page_state_);
+    }
+    // Notifies the local observers.
+    for (Observer& observer : sync_observers_) {
+      observer.PageStateChanged(page_state_);
     }
   }
   notifying_ = false;
@@ -873,7 +881,8 @@ void CastWebContentsImpl::ResourceLoadComplete(
     content::RenderFrameHost* render_frame_host,
     const content::GlobalRequestID& request_id,
     const blink::mojom::ResourceLoadInfo& resource_load_info) {
-  if (!web_contents_ || render_frame_host != web_contents_->GetMainFrame())
+  if (!web_contents_ ||
+      render_frame_host != web_contents_->GetPrimaryMainFrame())
     return;
   int net_error = resource_load_info.net_error;
   if (net_error == net::OK)
@@ -899,13 +908,20 @@ void CastWebContentsImpl::InnerWebContentsCreated(
   mojom::CastWebViewParamsPtr params = mojom::CastWebViewParams::New();
   params->enabled_for_dev = params_->enabled_for_dev;
   params->background_color = params_->background_color;
-  auto result = inner_contents_.insert(std::make_unique<CastWebContentsImpl>(
-      inner_web_contents, std::move(params)));
+  auto result = inner_contents_.insert(std::unique_ptr<CastWebContentsImpl>(
+      new CastWebContentsImpl(inner_web_contents, std::move(params), this)));
+
+  // Notifies remote observers.
   for (auto& observer : observers_) {
     mojo::PendingRemote<mojom::CastWebContents> pending_remote;
-    result.first->get()->BindReceiver(
+    result.first->get()->BindSharedReceiver(
         pending_remote.InitWithNewPipeAndPassReceiver());
     observer->InnerContentsCreated(std::move(pending_remote));
+  }
+
+  // Notifies the local observers.
+  for (Observer& observer : sync_observers_) {
+    observer.InnerContentsCreated(result.first->get(), this);
   }
 }
 
@@ -981,6 +997,11 @@ void CastWebContentsImpl::MediaStartedPlaying(
   for (auto& observer : observers_) {
     observer->MediaPlaybackChanged(true /* media_playing */);
   }
+
+  // Notifies the local observers.
+  for (Observer& observer : sync_observers_) {
+    observer.MediaPlaybackChanged(true /* media_playing */);
+  }
 }
 
 void CastWebContentsImpl::MediaStoppedPlaying(
@@ -991,6 +1012,11 @@ void CastWebContentsImpl::MediaStoppedPlaying(
   metrics::CastMetricsHelper::GetInstance()->LogMediaPause();
   for (auto& observer : observers_) {
     observer->MediaPlaybackChanged(false /* media_playing */);
+  }
+
+  // Notifies the local observers.
+  for (Observer& observer : sync_observers_) {
+    observer.MediaPlaybackChanged(false /* media_playing */);
   }
 }
 

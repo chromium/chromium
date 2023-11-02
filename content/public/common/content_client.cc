@@ -1,10 +1,11 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/public/common/content_client.h"
 
 #include "base/files/file_path.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/string_piece.h"
@@ -49,6 +50,10 @@ ContentClient* GetContentClient() {
   return g_client;
 }
 
+ContentClient* GetContentClientForTesting() {
+  return g_client;
+}
+
 ContentBrowserClient* SetBrowserClientForTesting(ContentBrowserClient* b) {
   return InternalTestInitializer::SetBrowser(b);
 }
@@ -90,12 +95,21 @@ base::RefCountedMemory* ContentClient::GetDataResourceBytes(int resource_id) {
   return nullptr;
 }
 
+std::string ContentClient::GetDataResourceString(int resource_id) {
+  // Default implementation in terms of GetDataResourceBytes.
+  scoped_refptr<base::RefCountedMemory> memory =
+      GetDataResourceBytes(resource_id);
+  if (!memory)
+    return std::string();
+  return std::string(memory->front_as<char>(), memory->size());
+}
+
 gfx::Image& ContentClient::GetNativeImageNamed(int resource_id) {
   static base::NoDestructor<gfx::Image> kEmptyImage;
   return *kEmptyImage;
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 base::FilePath ContentClient::GetChildProcessPath(
     int child_flags,
     const base::FilePath& helpers_path) {
@@ -113,7 +127,7 @@ blink::OriginTrialPolicy* ContentClient::GetOriginTrialPolicy() {
   return nullptr;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 bool ContentClient::UsingSynchronousCompositing() {
   return false;
 }
@@ -121,15 +135,10 @@ bool ContentClient::UsingSynchronousCompositing() {
 media::MediaDrmBridgeClient* ContentClient::GetMediaDrmBridgeClient() {
   return nullptr;
 }
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 void ContentClient::ExposeInterfacesToBrowser(
     scoped_refptr<base::SequencedTaskRunner> io_task_runner,
     mojo::BinderMap* binders) {}
-
-std::u16string ContentClient::GetLocalizedProtocolName(
-    const std::string& protocol) {
-  return base::UTF8ToUTF16(protocol);
-}
 
 }  // namespace content

@@ -8,10 +8,6 @@
 -org.chromium.chrome.browser.shape_detection.ShapeDetectionTest.testBarcodeDetection
 -org.chromium.chrome.browser.shape_detection.ShapeDetectionTest.testTextDetection
 
-# crbug.com/1036552
--org.chromium.chrome.browser.tasks.tab_management.TabGridDialogViewTest.testDialog_ZoomInFadeOut
--org.chromium.chrome.browser.tasks.tab_management.TabGridDialogViewTest.testDialog_ZoomInZoomOut
-
 # vr tests do not apply to emulator
 -org.chromium.chrome.browser.hardware_acceleration.ManifestHWATest.testAccelerationDisabled
 
@@ -44,15 +40,8 @@
 # crbug.com/1041822
 -org.chromium.chrome.browser.offlinepages.OfflinePageAutoFetchTest.testAutoFetchTriggersOnDNSErrorWhenOffline
 
-# crbug.com/1061177
--org.chromium.chrome.browser.payments.PaymentRequestPaymentAppsSortingTest.testPaymentAppsSortingByFrecency
-
 # crbug.com/1061178
 -org.chromium.chrome.browser.tasks.tab_management.TabGridDialogTest.testSwipeToDismiss_Dialog
--org.chromium.chrome.features.start_surface.StartSurfaceLayoutTest.testSwipeToDismiss_GTS
-
-# crbug.com/1061198
--org.chromium.chrome.browser.password_manager.settings.PasswordSettingsTest.testExportMenuDisabled
 
 # crbug.com/1061201
 -org.chromium.chrome.browser.history.HistoryActivityTest.testOpenSelectedItems
@@ -77,17 +66,12 @@
 # crbug.com/1062058
 -org.chromium.chrome.browser.customtabs.DetachedResourceRequestTest.testSafeBrowsingMainResourceWithSplitCache
 
-# crbug.com/1062838
--org.chromium.chrome.browser.offlinepages.prefetch.PrefetchFeedFlowTest.testPrefetchForbiddenByServer_FullBrowser
--org.chromium.chrome.browser.offlinepages.prefetch.PrefetchFeedFlowTest.testPrefetchSinglePageSuccess_FullBrowser
--org.chromium.chrome.browser.offlinepages.prefetch.PrefetchFeedFlowTest.testPrefetchPageReadyLater_FullBrowser
-
 # crbug.com/1062843
 -org.chromium.chrome.browser.banners.AppBannerManagerTest.testAppInstalledModalNativeAppBannerCustomTab
 -org.chromium.chrome.browser.banners.AppBannerManagerTest.testModalNativeAppBannerCanBeTriggeredMultipleTimesCustomTab
 
 # crbug.com/1063971
--org.chromium.chrome.browser.media.ui.PictureInPictureControllerTest.testExitPipOnNavigation
+-org.chromium.chrome.browser.media.ui.FullscreenVideoPictureInPictureControllerTest.testExitPipOnNavigation
 
 # crbug.com/1036545
 -org.chromium.chrome.browser.suggestions.tile.TileGroupTest.testDismissTileUndo
@@ -98,17 +82,8 @@
 # crbug.com/1063981
 -org.chromium.chrome.browser.toolbar.IdentityDiscControllerTest.testIdentityDiscWithSignInState
 
-# crbug.com/1063984
--org.chromium.chrome.browser.tasks.ReturnToChromeTest.testInitialScrollIndex
-
 # crbug.com/1063987
 -org.chromium.chrome.browser.tasks.tab_management.TabListContainerViewBinderTest.testHidesWithAnimation
-
-# crbug.com/1063991
--org.chromium.chrome.features.start_surface.StartSurfaceLayoutTest.testIncognitoToggle_tabCount
-
-# crbug.com/1064058
--org.chromium.chrome.features.start_surface.StartSurfaceLayoutTest.testRecycling_aspectRatioPoint75
 
 # crbug.com/1067673
 -org.chromium.chrome.browser.ntp.cards.NewTabPageRecyclerViewTest.testDismissArticleWithContextMenu
@@ -124,3 +99,29 @@
 
 # crbug.com/1187536
 -org.chromium.chrome.browser.customtabs.CustomTabExternalNavigationTest.testIntentPickerNotShownForNormalUrl
+
+# crbug.com/1272997
+-org.chromium.chrome.browser.autofill_assistant.AutofillAssistantFormActionTest*
+-org.chromium.chrome.browser.autofill_assistant.AutofillAssistantChromeTabIntegrationTest*
+-org.chromium.chrome.browser.autofill_assistant.AutofillAssistantTriggerScriptIntegrationTest*
+-org.chromium.chrome.browser.autofill_assistant.AutofillAssistantBackButtonIntegrationTest*
+-org.chromium.chrome.browser.autofill_assistant.AutofillAssistantCollectUserDataIntegrationTest*
+-org.chromium.chrome.browser.autofill_assistant.AutofillAssistantGenericUiTest*
+-org.chromium.chrome.browser.autofill_assistant.AutofillAssistantChromeTabIntegrationTest*
+-org.chromium.chrome.browser.autofill_assistant.AutofillAssistantNavigationIntegrationTest*
+-org.chromium.chrome.browser.autofill_assistant.AutofillAssistantInterruptIntegrationTest*
+-org.chromium.chrome.browser.autofill_assistant.AutofillAssistantPersonalDataManagerTest*
+-org.chromium.chrome.browser.autofill_assistant.AutofillAssistantInputActionIntegrationTest*
+-org.chromium.chrome.browser.autofill_assistant.AutofillAssistantOverlayIntegrationTest*
+-org.chromium.chrome.browser.autofill_assistant.AutofillAssistantBottomsheetTest*
+-org.chromium.chrome.browser.autofill_assistant.AutofillAssistantKeyboardIntegrationTest*
+-org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUpdateClientSettingsIntegrationTest*
+-org.chromium.chrome.browser.autofill_assistant.AutofillAssistantTtsIntegrationTest*
+-org.chromium.chrome.browser.autofill_assistant.AutofillAssistantQrCodeIntegrationTest*
+-org.chromium.chrome.browser.autofill_assistant.AutofillAssistantParseSingleTagXmlIntegrationTest*
+-org.chromium.chrome.browser.autofill_assistant.AutofillAssistantAutostartTest*
+-org.chromium.chrome.browser.autofill_assistant.AutofillAssistantPasswordManagerIntegrationTest*
+
+
+
+

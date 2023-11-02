@@ -1,0 +1,29 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module quick_answers.mojom;
+
+import "mojo/public/mojom/base/read_only_file.mojom";
+import "sandbox/policy/mojom/sandbox.mojom";
+
+// Provides a way to query hunspell in a sandboxed utility process, since
+// the inputs may be untrustworthy and hunspell library is somewhat prone
+// to crashes.
+[ServiceSandbox=sandbox.mojom.Sandbox.kService]
+interface SpellCheckService {
+  // Creates a new SpellCheckerDictionary instance from |dictionary_file|.
+  // If hunspell initialization failed, returns a null remote.
+  // Can be called multiple times if the dictionary file changes or the
+  // previous call did not success.
+  CreateDictionary(mojo_base.mojom.ReadOnlyFile dictionary_file)
+      => (pending_remote<SpellCheckDictionary>? dictionary);
+};
+
+// Handles spell check requests for a hunspell dictionary loaded via
+// |CreateDictionary()|.
+interface SpellCheckDictionary {
+  // Check spelling of the given word, |correctness| is true if the word is
+  // spelled correctly.
+  CheckSpelling(string word) => (bool correctness);
+};

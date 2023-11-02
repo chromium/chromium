@@ -1,10 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/wm/desks/desk_drag_proxy.h"
 
 #include "ash/drag_drop/drag_image_view.h"
+#include "ash/style/system_shadow.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_preview_view.h"
 #include "ash/wm/desks/desks_bar_view.h"
@@ -67,8 +68,9 @@ void DeskDragProxy::InitAndScaleAndMoveToX(float location_screen_x) {
   drag_widget_->SetVisibilityAnimationTransition(views::Widget::ANIMATE_NONE);
 
   // Copy the preview of the dragged desk to the widget content.
-  drag_widget_->SetContentsView(std::make_unique<DeskPreviewView>(
-      views::Button::PressedCallback(), drag_view_));
+  drag_preview_ =
+      drag_widget_->SetContentsView(std::make_unique<DeskPreviewView>(
+          views::Button::PressedCallback(), drag_view_));
 
   // Set the bounds of dragged preview to drag proxy.
   drag_widget_->SetBounds(drag_view_->GetPreviewBoundsInScreen());
@@ -84,9 +86,12 @@ void DeskDragProxy::InitAndScaleAndMoveToX(float location_screen_x) {
   // Scale the bounds around its center.
   gfx::Rect proxy_bounds_in_screen = drag_widget_->GetWindowBoundsInScreen();
   layer->SetTransform(gfx::TransformAboutPivot(
-      proxy_bounds_in_screen.CenterPoint() -
-          proxy_bounds_in_screen.origin().OffsetFromOrigin(),
+      gfx::PointF(0.5f * proxy_bounds_in_screen.width(),
+                  0.5f * proxy_bounds_in_screen.height()),
       scale_transform));
+
+  // When being dragged, the shadow elevation will be increased.
+  drag_preview_->shadow()->SetType(DeskPreviewView::kDraggedShadowType);
 
   // Perform Moving.
   DragToX(location_screen_x);
@@ -121,6 +126,9 @@ void DeskDragProxy::SnapBackToDragView() {
   settings.SetTweenType(gfx::Tween::ACCEL_LIN_DECEL_60);
   settings.AddObserver(this);
   layer->SetTransform(gfx::Transform());
+
+  // Reset the shadow elevation when drag ends.
+  drag_preview_->shadow()->SetType(DeskPreviewView::kDefaultShadowType);
 
   state_ = State::kSnappingBack;
 }

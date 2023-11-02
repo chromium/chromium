@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,7 +36,7 @@ struct BufferResponseData {
   uint64_t guid_low;
 };
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 struct InitData {
   // NOTE: InitData in the payload is followed by string16 data with exactly
   // |pipe_name_length| wide characters (i.e., |pipe_name_length|*2 bytes.)

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,6 +30,7 @@ struct WebApkInfo {
              std::string scope,
              std::string manifest_url,
              std::string manifest_start_url,
+             std::string manifest_id,
              blink::mojom::DisplayMode display,
              device::mojom::ScreenOrientationLockType orientation,
              absl::optional<SkColor> theme_color,
@@ -71,6 +72,7 @@ struct WebApkInfo {
   std::string scope;
   std::string manifest_url;
   std::string manifest_start_url;
+  std::string manifest_id;
   blink::mojom::DisplayMode display;
   device::mojom::ScreenOrientationLockType orientation;
   absl::optional<SkColor> theme_color;

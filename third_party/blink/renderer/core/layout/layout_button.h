@@ -62,7 +62,8 @@ class LayoutButton final : public LayoutFlexibleBox {
 
   static void UpdateAnonymousChildStyle(const ComputedStyle& parent_sytle,
                                         ComputedStyle& child_style);
-  static bool ShouldCountWrongBaseline(const ComputedStyle& style,
+  static bool ShouldCountWrongBaseline(const LayoutBox& button_box,
+                                       const ComputedStyle& style,
                                        const ComputedStyle* parent_style);
 
  private:

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,6 +42,10 @@ class DevToolsListenerBrowserTest : public content::DevToolsAgentHostObserver,
   bool ShouldForceDevToolsAgentHostCreation() override { return true; }
 
   void DevToolsAgentHostCreated(content::DevToolsAgentHost* host) override {
+    if (host->GetType() != content::DevToolsAgentHost::kTypePage &&
+        host->GetType() != content::DevToolsAgentHost::kTypeFrame) {
+      return;
+    }
     CHECK(devtools_agent_.find(host) == devtools_agent_.end());
     devtools_agent_[host] =
         std::make_unique<DevToolsListener>(host, process_id_);

@@ -31,7 +31,7 @@
 #include "third_party/blink/renderer/modules/quota/navigator_storage_quota.h"
 
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
-#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
@@ -60,8 +60,7 @@ DeprecatedStorageQuota* NavigatorStorageQuota::webkitTemporaryStorage(
   NavigatorStorageQuota& navigator_storage = From(navigator);
   if (!navigator_storage.temporary_storage_) {
     navigator_storage.temporary_storage_ =
-        MakeGarbageCollected<DeprecatedStorageQuota>(
-            DeprecatedStorageQuota::kTemporary, navigator.DomWindow());
+        MakeGarbageCollected<DeprecatedStorageQuota>(navigator.DomWindow());
   }
 
   // Record metrics for usage in third-party contexts.
@@ -75,24 +74,13 @@ DeprecatedStorageQuota* NavigatorStorageQuota::webkitTemporaryStorage(
 
 DeprecatedStorageQuota* NavigatorStorageQuota::webkitPersistentStorage(
     Navigator& navigator) {
-  if (base::FeatureList::IsEnabled(
-          blink::features::kPersistentQuotaIsTemporaryQuota)) {
-    return webkitTemporaryStorage(navigator);
-  }
-  NavigatorStorageQuota& navigator_storage = From(navigator);
-  if (!navigator_storage.persistent_storage_) {
-    navigator_storage.persistent_storage_ =
-        MakeGarbageCollected<DeprecatedStorageQuota>(
-            DeprecatedStorageQuota::kPersistent, navigator.DomWindow());
-  }
-
-  // Record metrics for usage in third-party contexts.
+  // Show deprecation message and record usage for persistent storage type.
   if (navigator.DomWindow()) {
-    navigator.DomWindow()->CountUseOnlyInCrossSiteIframe(
-        WebFeature::kPrefixedStorageQuotaThirdPartyContext);
+    Deprecation::CountDeprecation(navigator.DomWindow(),
+                                  WebFeature::kPersistentQuotaType);
   }
-
-  return navigator_storage.persistent_storage_.Get();
+  // Persistent quota type is deprecated as of crbug.com/1233525.
+  return webkitTemporaryStorage(navigator);
 }
 
 StorageManager* NavigatorStorageQuota::storage(NavigatorBase& navigator) {
@@ -106,7 +94,6 @@ StorageManager* NavigatorStorageQuota::storage(NavigatorBase& navigator) {
 
 void NavigatorStorageQuota::Trace(Visitor* visitor) const {
   visitor->Trace(temporary_storage_);
-  visitor->Trace(persistent_storage_);
   visitor->Trace(storage_manager_);
   Supplement<NavigatorBase>::Trace(visitor);
 }

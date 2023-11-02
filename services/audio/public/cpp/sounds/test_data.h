@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,12 @@
 #define SERVICES_AUDIO_PUBLIC_CPP_SOUNDS_TEST_DATA_H_
 
 #include <stddef.h>
+
 #include <memory>
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/cxx17_backports.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/single_thread_task_runner.h"
 #include "media/base/audio_renderer_sink.h"
@@ -24,7 +25,7 @@ const char kTestAudioData[] =
     "RIFF\x28\x00\x00\x00WAVEfmt \x10\x00\x00\x00"
     "\x01\x00\x02\x00\x80\xbb\x00\x00\x00\x77\x01\x00\x02\x00\x10\x00"
     "data\x04\x00\x00\x00\x01\x00\x01\x00";
-const size_t kTestAudioDataSize = base::size(kTestAudioData) - 1;
+const size_t kTestAudioDataSize = std::size(kTestAudioData) - 1;
 
 class TestObserver : public AudioStreamHandler::TestObserver {
  public:
@@ -54,7 +55,7 @@ class TestObserver : public AudioStreamHandler::TestObserver {
   int num_stop_requests_;
   int cursor_;
   int is_playing;
-  media::AudioRendererSink::RenderCallback* callback_;
+  raw_ptr<media::AudioRendererSink::RenderCallback> callback_;
   std::unique_ptr<media::AudioBus> bus_;
 };
 

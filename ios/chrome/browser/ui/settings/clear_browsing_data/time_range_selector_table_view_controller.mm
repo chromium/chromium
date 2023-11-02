@@ -1,21 +1,20 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/time_range_selector_table_view_controller.h"
 
-#include "base/cxx17_backports.h"
 #import "base/mac/foundation_util.h"
-#include "components/browsing_data/core/browsing_data_utils.h"
-#include "components/browsing_data/core/pref_names.h"
-#include "components/prefs/pref_member.h"
-#include "components/prefs/pref_service.h"
+#import "components/browsing_data/core/browsing_data_utils.h"
+#import "components/browsing_data/core/pref_names.h"
+#import "components/prefs/pref_member.h"
+#import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ui/base/l10n/l10n_util_mac.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -44,7 +43,7 @@ const int kStringIDS[] = {
     IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_OLDER_THAN_30_DAYS};
 
 static_assert(
-    base::size(kStringIDS) ==
+    std::size(kStringIDS) ==
         static_cast<int>(browsing_data::TimePeriod::TIME_PERIOD_LAST) + 1,
     "Strings have to match the enum values.");
 
@@ -158,7 +157,7 @@ static_assert(
   if (!prefs)
     return nil;
   int prefValue = prefs->GetInteger(browsing_data::prefs::kDeleteTimePeriod);
-  if (prefValue < 0 || static_cast<size_t>(prefValue) >= base::size(kStringIDS))
+  if (prefValue < 0 || static_cast<size_t>(prefValue) >= std::size(kStringIDS))
     return nil;
   return l10n_util::GetNSString(kStringIDS[prefValue]);
 }

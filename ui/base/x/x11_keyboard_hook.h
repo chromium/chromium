@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/native_widget_types.h"
@@ -44,7 +45,7 @@ class COMPONENT_EXPORT(UI_BASE_X) XKeyboardHook {
   std::vector<int> grabbed_keys_;
 
   // The x11 default connection and the owner's native window.
-  x11::Connection* const connection_ = nullptr;
+  const raw_ptr<x11::Connection> connection_ = nullptr;
   const x11::Window x_window_ = x11::Window::None;
 };
 

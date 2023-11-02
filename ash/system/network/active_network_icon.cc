@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/network/network_icon.h"
+#include "ash/system/network/network_utils.h"
 #include "ash/system/network/tray_network_state_model.h"
 #include "ash/system/tray/tray_constants.h"
 #include "base/bind.h"
@@ -88,8 +89,14 @@ void ActiveNetworkIcon::GetConnectionStatusStrings(Type type,
       *tooltip = activating_string;
   } else if (network && chromeos::network_config::StateIsConnected(
                             network->connection_state)) {
-    std::u16string connected_string = l10n_util::GetStringFUTF16(
-        IDS_ASH_STATUS_TRAY_NETWORK_CONNECTED, network_name);
+    std::u16string connected_string;
+    if (auto portal_subtext = GetPortalStateSubtext(network->portal_state)) {
+      connected_string = l10n_util::GetStringFUTF16(
+          IDS_ASH_STATUS_TRAY_NETWORK_PORTAL, network_name, *portal_subtext);
+    } else {
+      connected_string = l10n_util::GetStringFUTF16(
+          IDS_ASH_STATUS_TRAY_NETWORK_CONNECTED, network_name);
+    }
     std::u16string signal_strength_string;
     if (chromeos::network_config::NetworkTypeMatchesType(
             network->type, NetworkType::kWireless)) {
@@ -123,7 +130,7 @@ void ActiveNetworkIcon::GetConnectionStatusStrings(Type type,
                      ? connected_string
                      : l10n_util::GetStringFUTF16(
                            IDS_ASH_STATUS_TRAY_NETWORK_CONNECTED_TOOLTIP,
-                           network_name, signal_strength_string);
+                           connected_string, signal_strength_string);
     }
   } else if (network &&
              network->connection_state == ConnectionStateType::kConnecting) {
@@ -301,6 +308,14 @@ void ActiveNetworkIcon::SetCellularUninitializedMsg() {
     return;
   }
 
+  // If cellular is not scanning and cellular device is enabled reset cellular
+  // initializing state.
+  if (cellular && !cellular->scanning &&
+      (cellular->device_state == DeviceStateType::kEnabled ||
+       cellular->device_state == DeviceStateType::kEnabling)) {
+    cellular_uninitialized_msg_ = 0;
+  }
+
   // There can be a delay between leaving the Initializing state and when
   // a Cellular device shows up, so keep showing the initializing
   // animation for a bit to avoid flashing the disconnect icon.
@@ -313,6 +328,10 @@ void ActiveNetworkIcon::SetCellularUninitializedMsg() {
 // TrayNetworkStateObserver
 
 void ActiveNetworkIcon::ActiveNetworkStateChanged() {
+  SetCellularUninitializedMsg();
+}
+
+void ActiveNetworkIcon::DeviceStateListChanged() {
   SetCellularUninitializedMsg();
 }
 

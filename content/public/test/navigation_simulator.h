@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -141,7 +141,7 @@ class NavigationSimulator {
   static std::unique_ptr<NavigationSimulator> CreateFromPending(
       NavigationController& controller);
 
-  virtual ~NavigationSimulator() {}
+  virtual ~NavigationSimulator() = default;
 
   // --------------------------------------------------------------------------
 
@@ -232,6 +232,9 @@ class NavigationSimulator {
   // to complete.
   virtual bool IsDeferred() = 0;
 
+  // Returns true if a previous operation has caused the navigation to fail.
+  virtual bool HasFailed() = 0;
+
   // --------------------------------------------------------------------------
 
   // The following functions are used to specify the parameters of the
@@ -250,6 +253,8 @@ class NavigationSimulator {
   virtual void SetInitiatorFrame(RenderFrameHost* initiator_frame_host) = 0;
   virtual void SetTransition(ui::PageTransition transition) = 0;
   virtual void SetHasUserGesture(bool has_user_gesture) = 0;
+  virtual void SetNavigationInputStart(
+      base::TimeTicks navigation_input_start) = 0;
   // Note: ReloadType should only be specified for browser-initiated
   // navigations.
   virtual void SetReloadType(ReloadType reload_type) = 0;

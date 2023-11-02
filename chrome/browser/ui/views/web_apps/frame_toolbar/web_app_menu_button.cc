@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -66,7 +66,7 @@ void WebAppMenuButton::SetColor(SkColor color) {
     return;
   color_ = color;
   SetImageModel(views::Button::STATE_NORMAL,
-                ui::ImageModel::FromVectorIcon(kBrowserToolsIcon, color));
+                ui::ImageModel::FromVectorIcon(*icon_, color));
   OnPropertyChanged(&color_, views::kPropertyEffectsNone);
 }
 
@@ -93,8 +93,7 @@ void WebAppMenuButton::ButtonPressed(const ui::Event& event) {
   Browser* browser = browser_view_->browser();
   RunMenu(std::make_unique<WebAppMenuModel>(browser_view_, browser), browser,
           event.IsKeyEvent() ? views::MenuRunner::SHOULD_SHOW_MNEMONICS
-                             : views::MenuRunner::NO_FLAGS,
-          false);
+                             : views::MenuRunner::NO_FLAGS);
 
   // Add UMA for how many times the web app menu button are clicked.
   base::RecordAction(

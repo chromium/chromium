@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="@dimen/custom_tabs_toast_branding_height"
+    android:paddingStart="@dimen/custom_tabs_toast_branding_padding"
+    android:paddingEnd="@dimen/custom_tabs_toast_branding_padding"
+    android:gravity="center"
+    android:maxLines="1"
+    android:drawableStart="@mipmap/app_icon"
+    android:drawablePadding="@dimen/custom_tabs_menu_footer_margin_horizontal"
+    android:background="@drawable/custom_toast_background"
+    android:backgroundTint="@macro/custom_tabs_toast_bg_color"
+    app:drawableWidth="@dimen/custom_tabs_toast_branding_icon_size"
+    app:drawableHeight="@dimen/custom_tabs_toast_branding_icon_size"
+    style="@style/TextAppearance.TextLarge.Primary" />

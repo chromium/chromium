@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,9 @@
 
 #include <string>
 
-// TODO(https://crbug.com/1164001): forward declare AuthFailure when migrated
-// to ash/components/.
-#include "chromeos/login/auth/auth_status_consumer.h"
-
 namespace ash {
+
+class AuthFailure;
 
 class KioskAppLaunchError {
  public:
@@ -36,7 +34,7 @@ class KioskAppLaunchError {
                                   // force-installed extensions.
     kExtensionsPolicyInvalid =
         15,  // The policy value of ExtensionInstallForcelist is invalid.
-    kCount,  // Count of all errors.
+    kMaxValue = kExtensionsPolicyInvalid,  // Max value of errors.
   };
 
   // Returns a message for given |error|.

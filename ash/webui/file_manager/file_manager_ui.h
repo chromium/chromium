@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,11 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
+#include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
+
+namespace ui {
+class ColorChangeHandler;
+}
 
 namespace ash {
 namespace file_manager {
@@ -35,10 +40,20 @@ class FileManagerUI : public ui::MojoWebDialogUI,
   void BindInterface(
       mojo::PendingReceiver<mojom::PageHandlerFactory> pending_receiver);
 
+  // Instantiates the implementor of the mojom::PageHandler mojo interface
+  // passing the pending receiver that will be internally bound.
+  void BindInterface(
+      mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
+          receiver);
+
   const FileManagerUIDelegate* delegate() { return delegate_.get(); }
 
+  // Get the number of open File Manager windows.
+  // Should be called on UI thread.
+  static int GetNumInstances();
+
  private:
-  content::WebUIDataSource* CreateTrustedAppDataSource();
+  content::WebUIDataSource* CreateTrustedAppDataSource(int window_number);
 
   // mojom::PageHandlerFactory:
   void CreatePageHandler(
@@ -49,6 +64,16 @@ class FileManagerUI : public ui::MojoWebDialogUI,
 
   mojo::Receiver<mojom::PageHandlerFactory> page_factory_receiver_{this};
   std::unique_ptr<FileManagerPageHandler> page_handler_;
+
+  std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
+
+  // Counts the number of active Files SWA instances. This counter goes up every
+  // time a new window is opened and down every time a window is closed.
+  static inline int instance_count_ = 0;
+
+  // Counts the total number of windows opened. Unlike the instance_count_ this
+  // counter never is decremented.
+  static inline int window_counter_ = 0;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

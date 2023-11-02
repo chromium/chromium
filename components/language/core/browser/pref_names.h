@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,14 +22,16 @@ extern const char kPreferredLanguages[];
 extern const char kPreferredLanguagesSyncable[];
 #endif
 
-// The application locale.
-// DO NOT USE this locale directly: use language::ConvertToActualUILocale()
-// after reading it to get the system locale. This pref stores the locale that
-// the user selected, if applicable.
+// The application locale as selected by the user, such as "en-AU". This may not
+// necessarily be a string locale (a locale that we have strings for on this
+// platform). Use |l10n_util::CheckAndResolveLocale| to convert it to a string
+// locale if needed, such as "en-GB".
 extern const char kApplicationLocale[];
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 extern const char kAppLanguagePromptShown[];
+
+extern const char kULPLanguages[];
 #endif
 
 }  // namespace prefs

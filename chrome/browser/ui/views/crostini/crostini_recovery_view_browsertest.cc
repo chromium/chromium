@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,14 +14,14 @@
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/crostini/crostini_dialogue_browser_test_util.h"
-#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chromeos/dbus/concierge/fake_concierge_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
+#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -62,8 +62,10 @@ class CrostiniRecoveryViewBrowserTest : public CrostiniDialogBrowserTest {
   }
 
   void SetUncleanStartup() {
-    crostini::CrostiniManager::GetForProfile(browser()->profile())
-        ->SetUncleanStartupForTesting(true);
+    auto* crostini_manager =
+        crostini::CrostiniManager::GetForProfile(browser()->profile());
+    crostini_manager->AddRunningVmForTesting(crostini::kCrostiniDefaultVmName);
+    crostini_manager->SetUncleanStartupForTesting(true);
   }
 
   CrostiniRecoveryView* ActiveView() {
@@ -139,9 +141,8 @@ IN_PROC_BROWSER_TEST_F(CrostiniRecoveryViewBrowserTest, Cancel) {
   SetUncleanStartup();
   RegisterApp();
   // Ensure Terminal System App is installed.
-  web_app::WebAppProvider::GetForTest(browser()->profile())
-      ->system_web_app_manager()
-      .InstallSystemAppsForTesting();
+  ash::SystemWebAppManager::GetForTest(browser()->profile())
+      ->InstallSystemAppsForTesting();
 
   // First app should fail with 'cancelled for recovery'.
   crostini::LaunchCrostiniApp(
@@ -160,8 +161,8 @@ IN_PROC_BROWSER_TEST_F(CrostiniRecoveryViewBrowserTest, Cancel) {
   WaitForViewDestroyed();
 
   // Terminal should launch after use clicks 'Cancel'.
-  Browser* terminal_browser = web_app::FindSystemWebAppBrowser(
-      browser()->profile(), web_app::SystemAppType::TERMINAL);
+  Browser* terminal_browser = ash::FindSystemWebAppBrowser(
+      browser()->profile(), ash::SystemWebAppType::TERMINAL);
   EXPECT_NE(nullptr, terminal_browser);
 
   // Any new apps launched should show the dialog again.

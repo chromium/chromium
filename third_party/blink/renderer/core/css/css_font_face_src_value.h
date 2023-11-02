@@ -29,6 +29,7 @@
 #include <utility>
 
 #include "base/memory/scoped_refptr.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_origin_clean.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/loader/resource/font_resource.h"
@@ -74,16 +75,34 @@ class CORE_EXPORT CSSFontFaceSrcValue : public CSSValue {
         absolute_resource_(absolute_resource),
         specified_resource_(specified_resource),
         referrer_(referrer),
-        is_local_(local),
         world_(std::move(world)),
+        is_local_(local),
         origin_clean_(origin_clean),
         is_ad_related_(is_ad_related) {}
 
   const String& GetResource() const { return absolute_resource_; }
-  const String& Format() const { return format_; }
   bool IsLocal() const { return is_local_; }
 
+  /* Format is serialized as string, so we can set this to string internally. It
+   * does not affect functionality downstream - i.e. the font face is handled
+   * the same way whatsoever, if the format is supported. */
   void SetFormat(const String& format) { format_ = format; }
+
+  /* Only supported technologies need to be listed here, as we can reject other
+   * font face source component values, hence remove SVG and incremental for
+   * now, compare https://drafts.csswg.org/css-fonts-4/#font-face-src-parsing */
+  enum class FontTechnology {
+    kTechnologyFeaturesAAT,
+    kTechnologyFeaturesOT,
+    kTechnologyCOLRv0,
+    kTechnologyCOLRv1,
+    kTechnologySBIX,
+    kTechnologyCDBT,
+    kTechnologyVariations,
+    kTechnologyPalettes,
+    kTechnologyUnknown
+  };
+  void AppendTechnology(FontTechnology technology);
 
   bool IsSupportedFormat() const;
 
@@ -101,17 +120,6 @@ class CORE_EXPORT CSSFontFaceSrcValue : public CSSValue {
   }
 
  private:
-  void RestoreCachedResourceIfNeeded(ExecutionContext*) const;
-
-  const String absolute_resource_;
-  const String specified_resource_;
-  String format_;
-  const Referrer referrer_;
-  const bool is_local_;
-  const scoped_refptr<const DOMWrapperWorld> world_;
-  const OriginClean origin_clean_;
-  bool is_ad_related_;
-
   class FontResourceHelper : public GarbageCollected<FontResourceHelper>,
                              public FontResourceClient {
    public:
@@ -129,7 +137,19 @@ class CORE_EXPORT CSSFontFaceSrcValue : public CSSValue {
       return "CSSFontFaceSrcValue::FontResourceHelper";
     }
   };
+
+  void RestoreCachedResourceIfNeeded(ExecutionContext*) const;
+
+  Vector<FontTechnology> technologies_;
+  const String absolute_resource_;
+  const String specified_resource_;
+  String format_;
+  const Referrer referrer_;
+  const scoped_refptr<const DOMWrapperWorld> world_;
   mutable Member<FontResourceHelper> fetched_;
+  const bool is_local_;
+  const OriginClean origin_clean_;
+  bool is_ad_related_;
 };
 
 template <>

@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,14 +10,13 @@
 #include <set>
 #include <utility>
 
-#include "ash/components/settings/cros_settings_names.h"
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_names.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -149,7 +148,7 @@ bool IsDeviceLocalAccountUser(const std::string& user_id,
     return false;
 
   const std::string domain_prefix = domain.substr(
-      0, domain.size() - base::size(kDeviceLocalAccountDomainSuffix) + 1);
+      0, domain.size() - std::size(kDeviceLocalAccountDomainSuffix) + 1);
 
   if (domain_prefix == kPublicAccountDomainPrefix) {
     if (type)
@@ -187,53 +186,51 @@ bool IsDeviceLocalAccountUser(const std::string& user_id,
 void SetDeviceLocalAccounts(ash::OwnerSettingsServiceAsh* service,
                             const std::vector<DeviceLocalAccount>& accounts) {
   // TODO(https://crbug.com/984021): handle TYPE_SAML_PUBLIC_SESSION
-  base::ListValue list;
+  base::Value::List list;
   for (std::vector<DeviceLocalAccount>::const_iterator it = accounts.begin();
        it != accounts.end(); ++it) {
-    std::unique_ptr<base::DictionaryValue> entry(new base::DictionaryValue);
-    entry->SetKey(ash::kAccountsPrefDeviceLocalAccountsKeyId,
-                  base::Value(it->account_id));
-    entry->SetKey(ash::kAccountsPrefDeviceLocalAccountsKeyType,
-                  base::Value(it->type));
+    base::Value::Dict entry;
+    entry.Set(ash::kAccountsPrefDeviceLocalAccountsKeyId, it->account_id);
+    entry.Set(ash::kAccountsPrefDeviceLocalAccountsKeyType, it->type);
     if (it->type == DeviceLocalAccount::TYPE_KIOSK_APP) {
-      entry->SetKey(ash::kAccountsPrefDeviceLocalAccountsKeyKioskAppId,
-                    base::Value(it->kiosk_app_id));
+      entry.Set(ash::kAccountsPrefDeviceLocalAccountsKeyKioskAppId,
+                it->kiosk_app_id);
       if (!it->kiosk_app_update_url.empty()) {
-        entry->SetKey(ash::kAccountsPrefDeviceLocalAccountsKeyKioskAppUpdateURL,
-                      base::Value(it->kiosk_app_update_url));
+        entry.Set(ash::kAccountsPrefDeviceLocalAccountsKeyKioskAppUpdateURL,
+                  it->kiosk_app_update_url);
       }
     } else if (it->type == DeviceLocalAccount::TYPE_ARC_KIOSK_APP) {
-      entry->SetKey(ash::kAccountsPrefDeviceLocalAccountsKeyArcKioskPackage,
-                    base::Value(it->arc_kiosk_app_info.package_name()));
+      entry.Set(ash::kAccountsPrefDeviceLocalAccountsKeyArcKioskPackage,
+                it->arc_kiosk_app_info.package_name());
       if (!it->arc_kiosk_app_info.class_name().empty()) {
-        entry->SetKey(ash::kAccountsPrefDeviceLocalAccountsKeyArcKioskClass,
-                      base::Value(it->arc_kiosk_app_info.class_name()));
+        entry.Set(ash::kAccountsPrefDeviceLocalAccountsKeyArcKioskClass,
+                  it->arc_kiosk_app_info.class_name());
       }
       if (!it->arc_kiosk_app_info.action().empty()) {
-        entry->SetKey(ash::kAccountsPrefDeviceLocalAccountsKeyArcKioskAction,
-                      base::Value(it->arc_kiosk_app_info.action()));
+        entry.Set(ash::kAccountsPrefDeviceLocalAccountsKeyArcKioskAction,
+                  it->arc_kiosk_app_info.action());
       }
       if (!it->arc_kiosk_app_info.display_name().empty()) {
-        entry->SetKey(
-            ash::kAccountsPrefDeviceLocalAccountsKeyArcKioskDisplayName,
-            base::Value(it->arc_kiosk_app_info.display_name()));
+        entry.Set(ash::kAccountsPrefDeviceLocalAccountsKeyArcKioskDisplayName,
+                  it->arc_kiosk_app_info.display_name());
       }
     } else if (it->type == DeviceLocalAccount::TYPE_WEB_KIOSK_APP) {
-      entry->SetKey(ash::kAccountsPrefDeviceLocalAccountsKeyWebKioskUrl,
-                    base::Value(it->web_kiosk_app_info.url()));
+      entry.Set(ash::kAccountsPrefDeviceLocalAccountsKeyWebKioskUrl,
+                it->web_kiosk_app_info.url());
       if (!it->web_kiosk_app_info.title().empty()) {
-        entry->SetKey(ash::kAccountsPrefDeviceLocalAccountsKeyWebKioskTitle,
-                      base::Value(it->web_kiosk_app_info.title()));
+        entry.Set(ash::kAccountsPrefDeviceLocalAccountsKeyWebKioskTitle,
+                  it->web_kiosk_app_info.title());
       }
       if (!it->web_kiosk_app_info.icon_url().empty()) {
-        entry->SetKey(ash::kAccountsPrefDeviceLocalAccountsKeyWebKioskIconUrl,
-                      base::Value(it->web_kiosk_app_info.icon_url()));
+        entry.Set(ash::kAccountsPrefDeviceLocalAccountsKeyWebKioskIconUrl,
+                  it->web_kiosk_app_info.icon_url());
       }
     }
     list.Append(std::move(entry));
   }
 
-  service->Set(ash::kAccountsPrefDeviceLocalAccounts, list);
+  service->Set(ash::kAccountsPrefDeviceLocalAccounts,
+               base::Value(std::move(list)));
 }
 
 std::vector<DeviceLocalAccount> GetDeviceLocalAccounts(
@@ -241,14 +238,13 @@ std::vector<DeviceLocalAccount> GetDeviceLocalAccounts(
   // TODO(https://crbug.com/984021): handle TYPE_SAML_PUBLIC_SESSION
   std::vector<DeviceLocalAccount> accounts;
 
-  const base::ListValue* list = NULL;
-  cros_settings->GetList(ash::kAccountsPrefDeviceLocalAccounts, &list);
-  if (!list)
+  const base::Value::List* list = nullptr;
+  if (!cros_settings->GetList(ash::kAccountsPrefDeviceLocalAccounts, &list))
     return accounts;
 
   std::set<std::string> account_ids;
-  for (size_t i = 0; i < list->GetList().size(); ++i) {
-    const base::Value& entry = list->GetList()[i];
+  for (size_t i = 0; i < list->size(); ++i) {
+    const base::Value& entry = (*list)[i];
     if (!entry.is_dict()) {
       LOG(ERROR) << "Corrupt entry in device-local account list at index " << i
                  << ".";

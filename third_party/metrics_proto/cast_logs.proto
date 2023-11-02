@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@ message CastLogsProto {
   // Next tag: 7
   message CastDeviceInfo {
     // The product type of Cast device sent from Cast-enabled devices.
-    // Next tag: 11
+    // Next tag: 13
     enum CastProductType {
       CAST_PRODUCT_TYPE_UNKNOWN = 0;
       CAST_PRODUCT_TYPE_CHROMECAST = 1;
@@ -30,6 +30,8 @@ message CastLogsProto {
       CAST_PRODUCT_TYPE_FUCHSIA_OS = 8;
       CAST_PRODUCT_TYPE_LITE = 9;
       CAST_PRODUCT_TYPE_CORE = 10;
+      CAST_PRODUCT_TYPE_11 = 11;
+      CAST_PRODUCT_TYPE_ANDROID_AUTOMOTIVE = 12;
     }
     optional CastProductType type = 1;
 
@@ -165,7 +167,7 @@ message CastLogsProto {
   repeated CastConnectionInfo cast_connection_info = 2;
 
   // Stores Cast-enabled device specific events with a various context data.
-  // Next tag: 28
+  // Next tag: 29
   message CastEventProto {
     // The name of the action, hashed by same logic used to hash user action
     // event and histogram.
@@ -214,6 +216,8 @@ message CastLogsProto {
     optional int64 aogh_local_device_id = 18;
 
     optional string aogh_agent_id = 21;
+
+    optional string aogh_standard_agent_id = 28;
 
     // Optional value associated with the event. For example, may be used for
     // error codes.
@@ -278,7 +282,7 @@ message CastLogsProto {
   // Next tag: 13
   message CastDeviceMutableInfo {
     // This is the last type of reboot the device encountered
-    // Next tag: 19
+    // Next tag: 22
     enum RebootType {
       REBOOT_TYPE_UNKNOWN = 0;  // Fail to get reboot type from system property
       REBOOT_TYPE_FORCED = 1;   // Power removed from device
@@ -309,6 +313,9 @@ message CastLogsProto {
       REBOOT_TYPE_UNGRACEFUL_RESTART = 16;
       MULTI_SERVICE_BUG = 17;
       POWER_MANAGER = 18;
+      EXPERIMENT_CHANGE = 19;
+      ANOMALY_DETECTION = 20;
+      KERNEL_PANIC = 21;
     }
     optional RebootType last_reboot_type = 1;
 

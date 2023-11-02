@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,7 @@
 #include "components/viz/test/test_in_process_context_provider.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 
 namespace cc {
 namespace {
@@ -58,9 +58,9 @@ class PaintedScrollbar : public FakeScrollbar {
     while (!inset_rect.IsEmpty()) {
       int big = paint_scale_ + 2;
       int small = paint_scale_;
-      inset_rect.Inset(big, big, small, small);
+      inset_rect.Inset(gfx::Insets::TLBR(big, big, small, small));
       canvas->drawRect(RectToSkRect(inset_rect), flags);
-      inset_rect.Inset(big, big, small, small);
+      inset_rect.Inset(gfx::Insets::TLBR(big, big, small, small));
     }
   }
 
@@ -154,8 +154,7 @@ TEST_P(LayerTreeHostScrollbarsPixelTest, MAYBE_HugeTransformScale) {
   background->AddChild(layer);
 
   auto context = base::MakeRefCounted<viz::TestInProcessContextProvider>(
-      /*enable_gles2_interface=*/true, /*support_locking=*/false,
-      viz::RasterInterfaceType::None);
+      viz::TestContextType::kGLES2, /*support_locking=*/false);
   gpu::ContextResult result = context->BindToCurrentThread();
   DCHECK_EQ(result, gpu::ContextResult::kSuccess);
   int max_texture_size = 0;
@@ -175,22 +174,12 @@ TEST_P(LayerTreeHostScrollbarsPixelTest, MAYBE_HugeTransformScale) {
   scale_transform.Scale(scale, scale);
   layer->SetTransform(scale_transform);
 
-  if (use_swangle() || use_skia_vulkan() ||
-      renderer_type_ == viz::RendererType::kSkiaGL ||
-      renderer_type_ == viz::RendererType::kSkiaDawn)
-    pixel_comparator_ = std::make_unique<FuzzyPixelOffByOneComparator>(true);
+  pixel_comparator_ = std::make_unique<FuzzyPixelOffByOneComparator>(true);
 
-  RunPixelTest(
-      background,
-      base::FilePath(
-          use_swangle()
-              ? (use_skia_vulkan() ? FILE_PATH_LITERAL("spiral_64_scale_vk.png")
-                                   : FILE_PATH_LITERAL("spiral_64_scale.png"))
-              : (use_skia_vulkan()
-                     ? FILE_PATH_LITERAL(
-                           "spiral_64_scale_legacy_swiftshader_vk.png")
-                     : FILE_PATH_LITERAL(
-                           "spiral_64_scale_legacy_swiftshader.png"))));
+  RunPixelTest(background,
+               base::FilePath(use_skia_vulkan()
+                                  ? FILE_PATH_LITERAL("spiral_64_scale_vk.png")
+                                  : FILE_PATH_LITERAL("spiral_64_scale.png")));
 }
 
 class LayerTreeHostOverlayScrollbarsPixelTest
@@ -235,11 +224,11 @@ class PaintedOverlayScrollbar : public FakeScrollbar {
     canvas->drawRect(RectToSkRect(inset_rect), flags);
 
     flags.setColor(SK_ColorRED);
-    inset_rect.Inset(1, 1);
+    inset_rect.Inset(1);
     canvas->drawRect(RectToSkRect(inset_rect), flags);
 
     flags.setColor(SK_ColorBLUE);
-    inset_rect.Inset(1, 1);
+    inset_rect.Inset(1);
     canvas->drawRect(RectToSkRect(inset_rect), flags);
   }
 
@@ -315,4 +304,4 @@ TEST_P(LayerTreeHostOverlayScrollbarsPixelTest, NinePatchScrollbarScaledDown) {
 }  // namespace
 }  // namespace cc
 
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)

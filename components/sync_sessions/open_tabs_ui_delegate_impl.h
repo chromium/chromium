@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,8 @@
 #include <string>
 #include <vector>
 
+#include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 
 namespace sync_sessions {
@@ -49,8 +51,8 @@ class OpenTabsUIDelegateImpl : public OpenTabsUIDelegate {
   bool GetLocalSession(const SyncedSession** local_session) override;
 
  private:
-  const SyncSessionsClient* const sessions_client_;
-  const SyncedSessionTracker* session_tracker_;
+  const raw_ptr<const SyncSessionsClient> sessions_client_;
+  raw_ptr<const SyncedSessionTracker> session_tracker_;
   DeleteForeignSessionCallback delete_foreign_session_cb_;
 };
 

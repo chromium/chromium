@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,16 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/selector_filter.h"
+#include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
+#include "third_party/blink/renderer/core/execution_context/security_context.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 
@@ -246,6 +251,89 @@ TEST_F(ElementRuleCollectorTest, LinkMatchTypeHostContext) {
               kMatchVisited);
     EXPECT_EQ(Match(element, ":host-context(:is(:visited, :link)) div", scope),
               kMatchAll);
+  }
+}
+
+TEST_F(ElementRuleCollectorTest, MatchesNonUniversalHighlights) {
+  String markup =
+      "<html xmlns='http://www.w3.org/1999/xhtml'><body class='foo'>"
+      "<none xmlns=''/>"
+      "<bar xmlns='http://example.org/bar'/>"
+      "<default xmlns='http://example.org/default'/>"
+      "</body></html>";
+  scoped_refptr<SharedBuffer> data =
+      SharedBuffer::Create(markup.Utf8().data(), markup.length());
+  GetFrame().ForceSynchronousDocumentInstall("text/xml", data);
+
+  // Creates a StyleSheetContents with selector and optional default @namespace,
+  // matches rules for originating element, then returns the non-universal flag
+  // for ::highlight(x) or the given PseudoId.
+  auto run = [&](Element& element, String selector,
+                 absl::optional<AtomicString> defaultNamespace) {
+    auto* parser_context = MakeGarbageCollected<CSSParserContext>(
+        kHTMLStandardMode, SecureContextMode::kInsecureContext);
+    auto* sheet = MakeGarbageCollected<StyleSheetContents>(parser_context);
+    sheet->ParserAddNamespace("bar", "http://example.org/bar");
+    if (defaultNamespace)
+      sheet->ParserAddNamespace(g_null_atom, *defaultNamespace);
+    RuleSet& rules = sheet->EnsureRuleSet(
+        MediaQueryEvaluator(GetDocument().GetFrame()), kRuleHasNoSpecialState);
+    auto* rule = To<StyleRule>(CSSParser::ParseRule(
+        sheet->ParserContext(), sheet, selector + " { color: green }"));
+    rules.AddStyleRule(rule, kRuleHasNoSpecialState);
+
+    MatchResult result;
+    auto style = GetDocument().GetStyleResolver().CreateComputedStyle();
+    ElementResolveContext context{element};
+    ElementRuleCollector collector(context, StyleRecalcContext(),
+                                   SelectorFilter(), result, style.get(),
+                                   EInsideLink::kNotInsideLink);
+    collector.CollectMatchingRules(MatchRequest{&sheet->GetRuleSet(), nullptr});
+
+    // Pretty-print the arguments for debugging.
+    StringBuilder args{};
+    args.Append("(<");
+    args.Append(element.ToString());
+    args.Append(">, ");
+    args.Append(selector);
+    args.Append(", ");
+    if (defaultNamespace)
+      args.Append(String("\"" + *defaultNamespace + "\""));
+    else
+      args.Append("{}");
+    args.Append(")");
+
+    return style->HasNonUniversalHighlightPseudoStyles();
+  };
+
+  Element& body = *GetDocument().body();
+  Element& none = *body.QuerySelector("none");
+  Element& bar = *body.QuerySelector("bar");
+  Element& def = *body.QuerySelector("default");
+  AtomicString defNs = "http://example.org/default";
+
+  // Cases that only make sense without a default @namespace.
+  // ::selection kSubSelector :window-inactive
+  EXPECT_TRUE(run(body, "::selection:window-inactive", {}));
+  EXPECT_TRUE(run(body, "body::highlight(x)", {}));    // body::highlight(x)
+  EXPECT_TRUE(run(body, ".foo::highlight(x)", {}));    // .foo::highlight(x)
+  EXPECT_TRUE(run(body, "* ::highlight(x)", {}));      // ::highlight(x) *
+  EXPECT_TRUE(run(body, "* body::highlight(x)", {}));  // body::highlight(x) *
+
+  // Cases that depend on whether there is a default @namespace.
+  EXPECT_FALSE(run(def, "::highlight(x)", {}));     // ::highlight(x)
+  EXPECT_FALSE(run(def, "*::highlight(x)", {}));    // ::highlight(x)
+  EXPECT_TRUE(run(def, "::highlight(x)", defNs));   // null|*::highlight(x)
+  EXPECT_TRUE(run(def, "*::highlight(x)", defNs));  // null|*::highlight(x)
+
+  // Cases that are independent of whether there is a default @namespace.
+  for (auto& ns : Vector<absl::optional<AtomicString>>{{}, defNs}) {
+    // no default ::highlight(x), default *|*::highlight(x)
+    EXPECT_FALSE(run(body, "*|*::highlight(x)", ns));
+    // no default .foo::highlight(x), default *|*.foo::highlight(x)
+    EXPECT_TRUE(run(body, "*|*.foo::highlight(x)", ns));
+    EXPECT_TRUE(run(none, "|*::highlight(x)", ns));    // empty|*::highlight(x)
+    EXPECT_TRUE(run(bar, "bar|*::highlight(x)", ns));  // bar|*::highlight(x)
   }
 }
 

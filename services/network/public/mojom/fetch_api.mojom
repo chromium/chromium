@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,10 +44,10 @@ enum RequestDestination {
   kStyle = 16,
   kTrack = 17,
   kVideo = 18,
-  // kWebBundle represents a request for a WebBundle. A <link> element whose
-  // rel is "webbundle" uses this destination.
+  // kWebBundle represents a request for a WebBundle. A <script> element whose
+  // type is "webbundle" uses this destination.
   //
-  // e.g. <link rel=webbundle href="example.com/foo.wbn" resources="...">
+  // e.g. <script type=webbundle> { "source": "foo.wbn", ... } </script>
   //
   // Fetch specifiction does not define this destination yet.
   // Tracking issue: https://github.com/whatwg/fetch/issues/1120
@@ -63,6 +63,9 @@ enum RequestDestination {
   // https://github.com/shivanigithub/fenced-frame for the explainer and
   // crbug.com/1123606 for the implementation.
   kFencedframe = 22,
+  // Requests from the federated credential management API,
+  // https://fedidcg.github.io/FedCM/
+  kWebIdentity = 23,
 };
 
 // Corresponds to Fetch request's "redirect mode":

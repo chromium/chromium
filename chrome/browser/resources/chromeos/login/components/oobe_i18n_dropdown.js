@@ -1,8 +1,13 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/* #js_imports_placeholder */
+import '//resources/cr_elements/md_select.css.js';
+
+import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {setupSelect} from './oobe_select.m.js';
+
 
 /**
  * Languages/keyboard descriptor to display
@@ -14,11 +19,14 @@ var I18nMenuItem;
  * Polymer class definition for 'oobe-i18n-dropdown'.
  * @polymer
  */
-class OobeI18nDropdown extends Polymer.Element {
+class OobeI18nDropdown extends PolymerElement {
+  static get is() {
+    return 'oobe-i18n-dropdown';
+  }
 
-  static get is() { return 'oobe-i18n-dropdown'; }
-
-  /* #html_template_placeholder */
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
   static get properties() {
     return {
@@ -70,7 +78,7 @@ class OobeI18nDropdown extends Polymer.Element {
     // Otherwise, given that setupSelect does not remove previously registered
     // listeners, each new item list change would cause additional 'select-item'
     // events when selection changes.
-    let selectionCallback =
+    const selectionCallback =
         !this.idToItem_ ? this.onSelected_.bind(this) : null;
     this.idToItem_ = new Map();
     for (var i = 0; i < items.length; ++i) {

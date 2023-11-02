@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "ash/components/arc/mojom/print_spooler.mojom.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
@@ -14,7 +15,6 @@
 #include "base/values.h"
 #include "chrome/browser/ui/ash/arc_custom_tab_modal_dialog_host.h"
 #include "chrome/services/printing/public/mojom/pdf_flattener.mojom.h"
-#include "components/arc/mojom/print_spooler.mojom.h"
 #include "components/printing/common/print.mojom.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -63,7 +63,7 @@ class PrintSessionImpl : public mojom::PrintSessionHost,
   friend class content::WebContentsUserData<PrintSessionImpl>;
 
   // printing::mojom::PrintRenderer:
-  void CreatePreviewDocument(base::Value job_settings,
+  void CreatePreviewDocument(base::Value::Dict job_settings,
                              CreatePreviewDocumentCallback callback) override;
 
   // Called once the preview document has been created by ARC. The preview

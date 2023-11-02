@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,7 @@ const char kOperationAlreadyInProgress[] = "Operation already in progress.";
 const char kReadDevice[] = "Failed to read device.";
 const char kReadImage[] = "Failed to read image.";
 const char kWriteImage[] = "Writing image to device failed.";
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 const char kUnmountVolumes[] = "Unable to unmount the device.";
 #endif
 const char kVerificationFailed[] = "Verification failed.";

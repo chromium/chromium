@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@ class Notification;
 }  // namespace message_center
 
 namespace views {
+class BoxLayout;
 class Label;
 }  // namespace views
 
@@ -108,6 +109,7 @@ class StackedNotificationBar : public views::View,
   views::View* const spacer_;
   views::Button* const clear_all_button_;
   views::Button* const expand_all_button_;
+  views::BoxLayout* const layout_manager_;
 
   base::WeakPtrFactory<StackedNotificationBar> weak_ptr_factory_{this};
 };

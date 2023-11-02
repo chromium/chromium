@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/window_observer.h"
 #include "ui/compositor/layer_owner.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -52,7 +52,7 @@ class NativeViewHostAura : public NativeViewHostWrapper,
   void SetFocus() override;
   gfx::NativeView GetNativeViewContainer() const override;
   gfx::NativeViewAccessible GetNativeViewAccessible() override;
-  gfx::NativeCursor GetCursor(int x, int y) override;
+  ui::Cursor GetCursor(int x, int y) override;
   void SetVisible(bool visible) override;
   void SetParentAccessible(gfx::NativeViewAccessible) override;
   gfx::NativeViewAccessible GetParentAccessible() override;
@@ -92,7 +92,7 @@ class NativeViewHostAura : public NativeViewHostWrapper,
   void UpdateInsets();
 
   // Our associated NativeViewHost.
-  NativeViewHost* host_;
+  raw_ptr<NativeViewHost> host_;
 
   std::unique_ptr<ClippingWindowDelegate> clipping_window_delegate_;
 

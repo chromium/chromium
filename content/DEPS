@@ -4,7 +4,6 @@ include_rules = [
   # The subdirectories in content/ will manually allow their own include
   # directories in content/ so we disallow all of them.
   "-content",
-  "+content/app/resources/grit/content_resources.h",
   "+content/app/strings/grit",  # For generated headers
   "+content/common",
   "+content/grit",
@@ -25,11 +24,14 @@ include_rules = [
   # as autofill or extensions, and chrome implementation details such as
   # settings, packaging details, installation or crash reporting.
 
+  "+components/browsing_topics/common",
   "+components/memory_pressure",
+  "+components/ml/mojom",
   "+components/power_scheduler",
   "+components/services/filesystem",
   "+components/services/font/public",
   "+components/variations",
+  "+components/value_store",
 
   "+crypto",
   "+grit/blink_resources.h",
@@ -94,8 +96,6 @@ include_rules = [
   "+ui/resources/grit/ui_resources.h",
   "+ui/resources/grit/webui_generated_resources.h",
   "+ui/resources/grit/webui_generated_resources_map.h",
-  "+ui/resources/grit/webui_resources.h",
-  "+ui/resources/grit/webui_resources_map.h",
   "+ui/shell_dialogs",
   "+ui/snapshot",
   "+ui/strings/grit/ui_strings.h",

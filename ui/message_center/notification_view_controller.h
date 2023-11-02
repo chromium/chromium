@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,6 +20,9 @@ class MESSAGE_CENTER_EXPORT NotificationViewController {
   // Returns the `MessageView` associated with `notification_id`
   virtual MessageView* GetMessageViewForNotificationId(
       const std::string& notification_id) = 0;
+
+  // Animate all notification views after a resize.
+  virtual void AnimateResize() = 0;
 
   // Updates the notification id associated with a `MessageCenterView` and
   // popup if required. We do this to covert an existing message view into

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -113,13 +113,6 @@ void RelaunchNotificationControllerPlatformImpl::SetDeadline(
 bool RelaunchNotificationControllerPlatformImpl::IsRequiredNotificationShown()
     const {
   return widget_ != nullptr;
-}
-
-void RelaunchNotificationControllerPlatformImpl::OnWidgetClosing(
-    views::Widget* widget) {
-  DCHECK_EQ(widget, widget_);
-  widget->RemoveObserver(this);
-  widget_ = nullptr;
 }
 
 void RelaunchNotificationControllerPlatformImpl::OnWidgetDestroying(

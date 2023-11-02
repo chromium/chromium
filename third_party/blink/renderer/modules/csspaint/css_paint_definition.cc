@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,12 +26,12 @@ namespace blink {
 
 namespace {
 
-FloatSize GetSpecifiedSize(const FloatSize& size, float zoom) {
+gfx::SizeF GetSpecifiedSize(const gfx::SizeF& size, float zoom) {
   float un_zoom_factor = 1 / zoom;
   auto un_zoom_fn = [un_zoom_factor](float a) -> float {
     return a * un_zoom_factor;
   };
-  return FloatSize(un_zoom_fn(size.width()), un_zoom_fn(size.height()));
+  return gfx::SizeF(un_zoom_fn(size.width()), un_zoom_fn(size.height()));
 }
 
 }  // namespace
@@ -74,9 +74,8 @@ sk_sp<PaintRecord> CSSPaintDefinition::Paint(
 
   ApplyAnimatedPropertyOverrides(style_map, animated_property_values);
 
-  sk_sp<PaintRecord> result =
-      Paint(FloatSize(input->GetSize()), input->EffectiveZoom(), style_map,
-            &paint_arguments, input->DeviceScaleFactor());
+  sk_sp<PaintRecord> result = Paint(input->GetSize(), input->EffectiveZoom(),
+                                    style_map, &paint_arguments);
 
   // Return empty record if paint fails.
   if (!result)
@@ -85,12 +84,11 @@ sk_sp<PaintRecord> CSSPaintDefinition::Paint(
 }
 
 sk_sp<PaintRecord> CSSPaintDefinition::Paint(
-    const FloatSize& container_size,
+    const gfx::SizeF& container_size,
     float zoom,
     StylePropertyMapReadOnly* style_map,
-    const CSSStyleValueVector* paint_arguments,
-    float device_scale_factor) {
-  const FloatSize specified_size = GetSpecifiedSize(container_size, zoom);
+    const CSSStyleValueVector* paint_arguments) {
+  const gfx::SizeF specified_size = GetSpecifiedSize(container_size, zoom);
   ScriptState::Scope scope(script_state_);
 
   MaybeCreatePaintInstance();
@@ -103,8 +101,7 @@ sk_sp<PaintRecord> CSSPaintDefinition::Paint(
 
   // Do subpixel snapping for the |container_size|.
   auto* rendering_context = MakeGarbageCollected<PaintRenderingContext2D>(
-      RoundedIntSize(container_size), context_settings_, zoom,
-      device_scale_factor, global_scope_);
+      ToRoundedSize(container_size), context_settings_, zoom, 1, global_scope_);
   PaintSize* paint_size = MakeGarbageCollected<PaintSize>(specified_size);
 
   CSSStyleValueVector empty_paint_arguments;
@@ -149,11 +146,9 @@ void CSSPaintDefinition::ApplyAnimatedPropertyOverrides(
       }
       case CrossThreadStyleValue::StyleValueType::kColorType: {
         DCHECK(property_value.second.color_value);
-        SkColor sk_color = property_value.second.color_value.value();
-        Color color(MakeRGBA(SkColorGetR(sk_color), SkColorGetG(sk_color),
-                             SkColorGetB(sk_color), SkColorGetA(sk_color)));
         std::unique_ptr<CrossThreadColorValue> new_value =
-            std::make_unique<CrossThreadColorValue>(color);
+            std::make_unique<CrossThreadColorValue>(Color::FromSkColor4f(
+                property_value.second.color_value.value()));
         style_map->StyleMapData().Set(property_name, std::move(new_value));
         break;
       }

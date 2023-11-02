@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,8 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/ui/webui/chromeos/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/user_creation_screen_handler.h"
-#include "chromeos/network/network_state.h"
-#include "chromeos/network/network_state_handler.h"
+#include "chromeos/ash/components/network/network_state.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
 
 namespace ash {
 namespace {
@@ -39,6 +39,8 @@ std::string UserCreationScreen::GetResultString(Result result) {
       return "CreateChildAccount";
     case Result::ENTERPRISE_ENROLL:
       return "EnterpriseEnroll";
+    case Result::KIOSK_ENTERPRISE_ENROLL:
+      return "KioskEnterpriseEnroll";
     case Result::CANCEL:
       return "Cancel";
     case Result::SKIPPED:
@@ -46,28 +48,18 @@ std::string UserCreationScreen::GetResultString(Result result) {
   }
 }
 
-UserCreationScreen::UserCreationScreen(UserCreationView* view,
+UserCreationScreen::UserCreationScreen(base::WeakPtr<UserCreationView> view,
                                        ErrorScreen* error_screen,
                                        const ScreenExitCallback& exit_callback)
     : BaseScreen(UserCreationView::kScreenId, OobeScreenPriority::DEFAULT),
-      view_(view),
+      view_(std::move(view)),
       error_screen_(error_screen),
       exit_callback_(exit_callback) {
   network_state_informer_ = base::MakeRefCounted<NetworkStateInformer>();
   network_state_informer_->Init();
-  if (view_)
-    view_->Bind(this);
 }
 
-UserCreationScreen::~UserCreationScreen() {
-  if (view_)
-    view_->Unbind();
-}
-
-void UserCreationScreen::OnViewDestroyed(UserCreationView* view) {
-  if (view_ == view)
-    view_ = nullptr;
-}
+UserCreationScreen::~UserCreationScreen() = default;
 
 // static
 void UserCreationScreen::SetUserCreationScreenExitTestDelegate(
@@ -75,16 +67,16 @@ void UserCreationScreen::SetUserCreationScreenExitTestDelegate(
   test_exit_delegate = test_delegate;
 }
 
-bool UserCreationScreen::MaybeSkip(WizardContext* context) {
+bool UserCreationScreen::MaybeSkip(WizardContext& context) {
   if (g_browser_process->platform_part()
           ->browser_policy_connector_ash()
           ->IsDeviceEnterpriseManaged() ||
-      context->skip_to_login_for_tests) {
-    context->is_user_creation_enabled = false;
+      context.skip_to_login_for_tests) {
+    context.is_user_creation_enabled = false;
     RunExitCallback(Result::SKIPPED);
     return true;
   }
-  context->is_user_creation_enabled = true;
+  context.is_user_creation_enabled = true;
   return false;
 }
 
@@ -111,11 +103,12 @@ void UserCreationScreen::ShowImpl() {
 void UserCreationScreen::HideImpl() {
   scoped_observation_.Reset();
   error_screen_visible_ = false;
-  error_screen_->SetParentScreen(OobeScreen::SCREEN_UNKNOWN);
+  error_screen_->SetParentScreen(ash::OOBE_SCREEN_UNKNOWN);
   error_screen_->Hide();
 }
 
-void UserCreationScreen::OnUserAction(const std::string& action_id) {
+void UserCreationScreen::OnUserAction(const base::Value::List& args) {
+  const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionSignIn) {
     context()->sign_in_as_child = false;
     RunExitCallback(Result::SIGNIN);
@@ -131,13 +124,17 @@ void UserCreationScreen::OnUserAction(const std::string& action_id) {
     context()->is_user_creation_enabled = false;
     RunExitCallback(Result::CANCEL);
   } else {
-    BaseScreen::OnUserAction(action_id);
+    BaseScreen::OnUserAction(args);
   }
 }
 
 bool UserCreationScreen::HandleAccelerator(LoginAcceleratorAction action) {
   if (action == LoginAcceleratorAction::kStartEnrollment) {
     RunExitCallback(Result::ENTERPRISE_ENROLL);
+    return true;
+  }
+  if (action == LoginAcceleratorAction::kStartKioskEnrollment) {
+    RunExitCallback(Result::KIOSK_ENTERPRISE_ENROLL);
     return true;
   }
   return false;
@@ -155,7 +152,7 @@ void UserCreationScreen::UpdateState(NetworkError::ErrorReason reason) {
     if (error_screen_visible_ &&
         error_screen_->GetParentScreen() == UserCreationView::kScreenId) {
       error_screen_visible_ = false;
-      error_screen_->SetParentScreen(OobeScreen::SCREEN_UNKNOWN);
+      error_screen_->SetParentScreen(ash::OOBE_SCREEN_UNKNOWN);
       error_screen_->Hide();
       view_->Show();
     }

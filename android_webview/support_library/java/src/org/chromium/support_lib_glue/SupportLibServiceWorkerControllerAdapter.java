@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,8 +35,10 @@ class SupportLibServiceWorkerControllerAdapter implements ServiceWorkerControlle
     @Override
     public void setServiceWorkerClient(InvocationHandler client) {
         recordApiCall(ApiCall.SET_SERVICE_WORKER_CLIENT);
-        mAwServiceWorkerController.setServiceWorkerClient(new SupportLibServiceWorkerClientAdapter(
-                BoundaryInterfaceReflectionUtil.castToSuppLibClass(
-                        ServiceWorkerClientBoundaryInterface.class, client)));
+        mAwServiceWorkerController.setServiceWorkerClient(client == null
+                        ? null
+                        : new SupportLibServiceWorkerClientAdapter(
+                                BoundaryInterfaceReflectionUtil.castToSuppLibClass(
+                                        ServiceWorkerClientBoundaryInterface.class, client)));
     }
 }

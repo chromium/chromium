@@ -94,6 +94,34 @@
       <message name="IDS_TRANSLATE_SNACKBAR_CANCEL" desc="A text label on the translate snackbar widget to cancel this selection. [CHAR_LIMIT=16]" formatter_data="android_java">
         Cancel
       </message>
+
+      <message name="IDS_TRANSLATE_MESSAGE_BEFORE_TRANSLATE_TITLE" desc="A text label on the translate message popup that prompts the user to translate the page.">
+        Translate page?
+      </message>
+      <message name="IDS_TRANSLATE_MESSAGE_TRANSLATING_COLD_OPEN_TITLE" desc="A text label on the translate message popup that indicates the page is currently being translated.">
+        Translating page
+      </message>
+      <message name="IDS_TRANSLATE_MESSAGE_AFTER_TRANSLATE_TITLE" desc="A text label on the translate message popup that announces to the user that Chrome has finished translating the page.">
+        Page translated
+      </message>
+      <message name="IDS_TRANSLATE_MESSAGE_DESCRIPTION" desc="A text label on the translate message popup that lets the user know what the source and target languages are for translating the page.">
+        <ph name="source_language">$1<ex>French</ex></ph> to <ph name="target_language">$2<ex>English</ex></ph>
+      </message>
+      <message name="IDS_TRANSLATE_MESSAGE_UNDO_BUTTON" desc="A text label for the button on the translate message popup that, when clicked, will undo the translation.">
+        Undo
+      </message>
+      <message name="IDS_TRANSLATE_MESSAGE_ALWAYS_TRANSLATE_LANGUAGE" desc="Option in the overflow menu. User can click the 'Always Translate' option to indicate that they want the app to translate pages in this language automatically. Imperative.">
+        Always translate pages in <ph name="SOURCE_LANGUAGE">$1<ex>French</ex></ph>
+      </message>
+      <message name="IDS_TRANSLATE_MESSAGE_NEVER_TRANSLATE_LANGUAGE" desc="Option in the overflow menu. User can click the 'Never Translate' option to indicate that they never want the app to translate pages in this language. Imperative.">
+        Never translate pages in <ph name="SOURCE_LANGUAGE">$1<ex>French</ex></ph>
+      </message>
+      <message name="IDS_TRANSLATE_MESSAGE_AUTO_ALWAYS_TRANSLATE_LANGUAGE_DESCRIPTION" desc="A text label on the translate message popup that lets the user know that pages in the source language will be automatically translated to the target language from now on.">
+        Pages in <ph name="source_language">$1<ex>French</ex></ph> will be translated to <ph name="target_language">$2<ex>English</ex></ph> from now on
+      </message>
+      <message name="IDS_TRANSLATE_MESSAGE_AUTO_NEVER_TRANSLATE_LANGUAGE_TITLE" desc="A text label on the translate message popup that lets the user know that pages in [language] will not be translated to their chosen target language automatically.">
+        Pages in <ph name="language">$1<ex>French</ex></ph> will not be translated
+      </message>
   </if>
 
   <!-- Translate Notifications -->
@@ -114,9 +142,6 @@
   </message>
 
   <!-- Desktop and Android resources -->
-  <message name="IDS_TRANSLATE_UNKNOWN_SOURCE_LANGUAGE" desc="Text to use in the translate bubble UI when the source language is unknown or undetected. Used in place of a language name, so should be capitalized as such (e.g. &quot;Unknown&quot; for English, &quot;sconosciuto&quot; for Italian)" meaning="Noun to use in place of a language name in part of a translate bubble message.">
-    Unknown
-  </message>
   <message name="IDS_TRANSLATE_DETECTED_LANGUAGE" desc="Text to use in the translate infobar and translate bubble when the source language is unknown or undetected. The user can select this as an option for the page source language in a translation. Used in place of a language name, so should be capitalized as such (e.g. &quot;Detected Language&quot; for English, &quot;lingua rilevata&quot; for Italian)" meaning="Noun to select from a list of languages, and to use in place of a language name in part of a translate UI message.">
     Detected Language
   </message>

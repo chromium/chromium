@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
@@ -58,6 +59,7 @@ class PageNodeImpl
   // dereferenced on the UI thread.
   const WebContentsProxy& contents_proxy() const;
 
+  void SetType(PageType type);
   void SetIsVisible(bool is_visible);
   void SetIsAudible(bool is_audible);
   void SetLoadingState(LoadingState loading_state);
@@ -89,6 +91,7 @@ class PageNodeImpl
   FrameNodeImpl* opener_frame_node() const;
   FrameNodeImpl* embedder_frame_node() const;
   EmbeddingType embedding_type() const;
+  PageType type() const;
   bool is_visible() const;
   bool is_audible() const;
   LoadingState loading_state() const;
@@ -199,6 +202,7 @@ class PageNodeImpl
   const FrameNode* GetOpenerFrameNode() const override;
   const FrameNode* GetEmbedderFrameNode() const override;
   EmbeddingType GetEmbeddingType() const override;
+  PageType GetType() const override;
   bool IsVisible() const override;
   base::TimeDelta GetTimeSinceLastVisibilityChange() const override;
   bool IsAudible() const override;
@@ -218,6 +222,7 @@ class PageNodeImpl
   const WebContentsProxy& GetContentsProxy() const override;
   const absl::optional<freezing::FreezingVote>& GetFreezingVote()
       const override;
+  uint64_t EstimateResidentSetSize() const override;
 
   // NodeBase:
   void OnJoiningGraph() override;
@@ -281,16 +286,23 @@ class PageNodeImpl
   const std::string browser_context_id_;
 
   // The opener of this page, if there is one.
-  FrameNodeImpl* opener_frame_node_ GUARDED_BY_CONTEXT(sequence_checker_) =
-      nullptr;
+  raw_ptr<FrameNodeImpl> opener_frame_node_
+      GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
 
   // The embedder of this page, if there is one.
-  FrameNodeImpl* embedder_frame_node_ GUARDED_BY_CONTEXT(sequence_checker_) =
-      nullptr;
+  raw_ptr<FrameNodeImpl> embedder_frame_node_
+      GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
 
   // The way in which this page was embedded, if it was embedded.
   EmbeddingType embedding_type_ GUARDED_BY_CONTEXT(sequence_checker_) =
       EmbeddingType::kInvalid;
+
+  // The type of the page.
+  ObservedProperty::NotifiesOnlyOnChangesWithPreviousValue<
+      PageType,
+      PageType,
+      &PageNodeObserver::OnTypeChanged>
+      type_ GUARDED_BY_CONTEXT(sequence_checker_){PageType::kUnknown};
 
   // Whether or not the page is visible. Driven by browser instrumentation.
   // Initialized on construction.
@@ -304,7 +316,8 @@ class PageNodeImpl
       is_audible_ GUARDED_BY_CONTEXT(sequence_checker_){false};
   // The loading state. This is driven by instrumentation in the browser
   // process.
-  ObservedProperty::NotifiesOnlyOnChanges<
+  ObservedProperty::NotifiesOnlyOnChangesWithPreviousValue<
+      LoadingState,
       LoadingState,
       &PageNodeObserver::OnLoadingStateChanged>
       loading_state_ GUARDED_BY_CONTEXT(sequence_checker_){

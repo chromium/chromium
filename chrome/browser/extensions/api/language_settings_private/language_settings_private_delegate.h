@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/spellchecker/spellcheck_custom_dictionary.h"
@@ -134,9 +135,9 @@ class LanguageSettingsPrivateDelegate
   WeakDictionaries hunspell_dictionaries_;
 
   // The custom dictionary that is used for spellchecking.
-  SpellcheckCustomDictionary* custom_dictionary_;
+  raw_ptr<SpellcheckCustomDictionary> custom_dictionary_;
 
-  content::BrowserContext* context_;
+  raw_ptr<content::BrowserContext> context_;
 
   // True if there are observers listening for spellcheck events.
   bool listening_spellcheck_;

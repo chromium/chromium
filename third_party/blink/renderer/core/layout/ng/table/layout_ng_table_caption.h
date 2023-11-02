@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,7 +26,10 @@ class CORE_EXPORT LayoutNGTableCaption final
 
   void UpdateBlockLayout(bool relayout_children) override;
 
-  const char* GetName() const override { return "LayoutNGTableCaption"; }
+  const char* GetName() const override {
+    NOT_DESTROYED();
+    return "LayoutNGTableCaption";
+  }
 
  private:
   // Legacy-only API.

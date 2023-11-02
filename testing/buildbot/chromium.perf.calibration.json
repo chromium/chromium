@@ -34,7 +34,6 @@
           ],
           "expiration": 7200,
           "hard_timeout": 21600,
-          "ignore_task_failure": false,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 42
@@ -84,7 +83,6 @@
           ],
           "expiration": 7200,
           "hard_timeout": 21600,
-          "ignore_task_failure": false,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 28

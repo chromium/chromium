@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,17 @@
 #include "printing/common/metafile_utils.h"
 #include "printing/mojom/print.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkPaint.h"
+#include "third_party/skia/include/core/SkPicture.h"
 #include "third_party/skia/include/core/SkPictureRecorder.h"
+#include "third_party/skia/include/core/SkRect.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
+#include "third_party/skia/include/core/SkSerialProcs.h"
+#include "third_party/skia/include/core/SkSize.h"
+#include "third_party/skia/include/core/SkStream.h"
+#include "third_party/skia/include/core/SkSurfaceProps.h"
 #include "third_party/skia/include/core/SkTextBlob.h"
 
 namespace printing {
@@ -97,7 +107,7 @@ TEST(MetafileSkiaTest, TestMultiPictureDocumentTypefaces) {
 
   // The typefaces which will be reused across the multiple (duplicate) pages.
   constexpr char kTypefaceName1[] = "sans-serif";
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   constexpr char kTypefaceName2[] = "Courier New";
 #else
   constexpr char kTypefaceName2[] = "monospace";

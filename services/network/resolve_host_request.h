@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,21 +7,20 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/completion_once_callback.h"
 #include "net/dns/host_resolver.h"
+#include "net/dns/public/host_resolver_results.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
-class HostPortPair;
 class NetLog;
-class NetworkIsolationKey;
+class NetworkAnonymizationKey;
 }  // namespace net
 
 namespace network {
@@ -33,8 +32,8 @@ class ResolveHostRequest : public mojom::ResolveHostHandle {
  public:
   ResolveHostRequest(
       net::HostResolver* resolver,
-      const net::HostPortPair& host,
-      const net::NetworkIsolationKey& network_isolation_key,
+      mojom::HostResolverHostPtr host,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
       const absl::optional<net::HostResolver::ResolveHostParameters>&
           optional_parameters,
       net::NetLog* net_log);
@@ -55,7 +54,9 @@ class ResolveHostRequest : public mojom::ResolveHostHandle {
  private:
   void OnComplete(int error);
   net::ResolveErrorInfo GetResolveErrorInfo() const;
-  const absl::optional<net::AddressList>& GetAddressResults() const;
+  const net::AddressList* GetAddressResults() const;
+  absl::optional<net::HostResolverEndpointResults>
+  GetEndpointResultsWithMetadata() const;
   void SignalNonAddressResults();
 
   std::unique_ptr<net::HostResolver::ResolveHostRequest> internal_request_;

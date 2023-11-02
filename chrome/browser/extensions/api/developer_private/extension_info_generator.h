@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,12 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/extensions/api/developer_private.h"
+#include "extensions/common/url_pattern.h"
+#include "extensions/common/url_pattern_set.h"
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 class SupervisedUserService;
@@ -63,6 +66,11 @@ class ExtensionInfoGenerator {
                             bool include_terminated,
                             ExtensionInfosCallback callback);
 
+  // Returns a list of URLPatterns where no pattern is completely contained by
+  // another pattern in the list.
+  static std::vector<URLPattern> GetDistinctHosts(
+      const URLPatternSet& patterns);
+
  private:
   // Creates an ExtensionInfo for the given |extension| and |state|, and
   // asynchronously adds it to the |list|.
@@ -81,16 +89,16 @@ class ExtensionInfoGenerator {
   std::string GetIconUrlFromImage(const gfx::Image& image);
 
   // Various systems, cached for convenience.
-  content::BrowserContext* browser_context_;
-  CommandService* command_service_;
-  ExtensionSystem* extension_system_;
-  ExtensionPrefs* extension_prefs_;
-  ExtensionActionAPI* extension_action_api_;
-  WarningService* warning_service_;
-  ErrorConsole* error_console_;
-  ImageLoader* image_loader_;
+  raw_ptr<content::BrowserContext> browser_context_;
+  raw_ptr<CommandService> command_service_;
+  raw_ptr<ExtensionSystem> extension_system_;
+  raw_ptr<ExtensionPrefs> extension_prefs_;
+  raw_ptr<ExtensionActionAPI> extension_action_api_;
+  raw_ptr<WarningService> warning_service_;
+  raw_ptr<ErrorConsole> error_console_;
+  raw_ptr<ImageLoader> image_loader_;
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  SupervisedUserService* supervised_user_service_;
+  raw_ptr<SupervisedUserService> supervised_user_service_;
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
   // The number of pending image loads.

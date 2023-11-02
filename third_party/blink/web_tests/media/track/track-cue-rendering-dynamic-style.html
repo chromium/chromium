@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../media-controls.js"></script>
+<style>
+::cue { font-size: 24px; }
+</style>
+<video src="../content/test.ogv" width="640"></video>
+<script>
+
+function animationFrame() {
+  return new Promise(resolve => { requestAnimationFrame(resolve); });
+}
+
+async function seekTo(v, seconds) {
+  v.currentTime = seconds;
+  await new Promise(resolve => { v.addEventListener('seeked', resolve, {once:true}); });
+  await animationFrame();
+  await animationFrame();
+}
+
+promise_test(async () => {
+  let v = document.querySelector('video');
+  let track = v.addTextTrack('subtitles', 'label', 'en');
+  track.mode = 'showing';
+  track.addCue(new VTTCue(1, 60, 'First subtitle'));
+  track.addCue(new VTTCue(1, 60, 'Second substitle'));
+  await seekTo(v, 3);
+  // Now cues are shown.
+  let top0 = textTrackCueElementByIndex(v, 0).offsetTop;
+  let top1 = textTrackCueElementByIndex(v, 1).offsetTop;
+
+  let style = document.createElement('style');
+  style.textContent = `::cue { color: lime; font-size: 48px; }`;
+  document.body.appendChild(style);
+  await animationFrame();
+  await animationFrame();
+  assert_not_equals(top0, textTrackCueElementByIndex(v, 0).offsetTop);
+  assert_not_equals(top1, textTrackCueElementByIndex(v, 1).offsetTop);
+}, 'Updating ::cue\'s font-sizee dynamically should do block position adjustment again');
+
+promise_test(async () => {
+  let v = document.querySelector('video');
+  let track = v.addTextTrack('subtitles', 'label', 'en');
+  track.mode = 'showing';
+  track.addCue(new VTTCue(1, 5, 'First subtitle'));
+  track.addCue(new VTTCue(3, 60, 'Second substitle'));
+  await seekTo(v, 4);
+  // Now cues are shown.
+  let top1 = textTrackCueElementByIndex(v, 1).offsetTop;
+
+  await seekTo(v, 6);
+  // The first cue should disappear, and the second remains.
+  assert_equals(top1, textTrackCueElementByIndex(v, 1).offsetTop);
+
+  let style = document.createElement('style');
+  style.textContent = `::cue { color: red; }`;
+  document.body.appendChild(style);
+  await animationFrame();
+  await animationFrame();
+  assert_equals(top1, textTrackCueElementByIndex(v, 1).offsetTop);
+}, 'Updating ::cue\'s color dynamically should not reset the cue position');
+</script>

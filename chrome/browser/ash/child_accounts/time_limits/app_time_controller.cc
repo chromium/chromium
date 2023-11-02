@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
@@ -24,8 +25,6 @@
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_limits_allowlist_policy_wrapper.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_policy_helpers.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_types.h"
-#include "chrome/browser/ash/child_accounts/time_limits/web_time_activity_provider.h"
-#include "chrome/browser/ash/child_accounts/time_limits/web_time_limit_enforcer.h"
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_handler.h"
@@ -37,6 +36,8 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
@@ -162,8 +163,8 @@ std::string GetNotificationIdFor(const std::string& app_name,
 }
 
 bool IsAppOpenedInChrome(const AppId& app_id, Profile* profile) {
-  if (app_id.app_type() != apps::mojom::AppType::kExtension &&
-      app_id.app_type() != apps::mojom::AppType::kWeb) {
+  if (app_id.app_type() != apps::AppType::kChromeApp &&
+      app_id.app_type() != apps::AppType::kWeb) {
     return false;
   }
 
@@ -174,9 +175,9 @@ bool IsAppOpenedInChrome(const AppId& app_id, Profile* profile) {
   if (!extension)
     return false;
 
-  extensions::LaunchContainer launch_container = extensions::GetLaunchContainer(
+  apps::LaunchContainer launch_container = extensions::GetLaunchContainer(
       extensions::ExtensionPrefs::Get(profile), extension);
-  return launch_container == extensions::LaunchContainer::kLaunchContainerTab;
+  return launch_container == apps::LaunchContainer::kLaunchContainerTab;
 }
 
 }  // namespace
@@ -218,9 +219,6 @@ AppTimeController::AppTimeController(
           std::make_unique<AppActivityRegistry>(app_service_wrapper_.get(),
                                                 this,
                                                 profile->GetPrefs())),
-      web_time_activity_provider_(std::make_unique<WebTimeActivityProvider>(
-          this,
-          app_service_wrapper_.get())),
       on_policy_updated_callback_(on_policy_updated_callback) {
   DCHECK(profile);
 }
@@ -238,9 +236,6 @@ AppTimeController::~AppTimeController() {
 }
 
 void AppTimeController::Init() {
-  if (WebTimeLimitEnforcer::IsEnabled())
-    web_time_enforcer_ = std::make_unique<WebTimeLimitEnforcer>(this);
-
   PrefService* pref_service = profile_->GetPrefs();
   RegisterProfilePrefObservers(pref_service);
   TimeLimitsAllowlistPolicyUpdated(prefs::kPerAppTimeLimitsAllowlistPolicy);
@@ -268,21 +263,6 @@ void AppTimeController::Init() {
 
   // Record enagement metrics.
   base::UmaHistogramCounts1000(kEngagementMetric, apps_with_limit_);
-
-  // If chrome is paused at the beginning of the session, notify
-  // web_time_enforcer directly. This is a workaround for bug in AppService that
-  // occurs at the beginning of the session. It could be removed when
-  // AppService successfully calls OnWebTimeLimitReached at the beginning of
-  // sessions.
-  if (app_registry_->IsAppInstalled(GetChromeAppId()) &&
-      app_registry_->IsAppTimeLimitReached(GetChromeAppId())) {
-    absl::optional<AppLimit> web_time_limit = app_registry_->GetWebTimeLimit();
-    DCHECK(web_time_limit);
-    DCHECK(web_time_limit->daily_limit());
-    DCHECK(web_time_enforcer_);
-    web_time_enforcer_->OnWebTimeLimitReached(
-        web_time_limit->daily_limit().value());
-  }
 }
 
 bool AppTimeController::IsExtensionAllowlisted(
@@ -292,7 +272,7 @@ bool AppTimeController::IsExtensionAllowlisted(
 
 absl::optional<base::TimeDelta> AppTimeController::GetTimeLimitForApp(
     const std::string& app_service_id,
-    apps::mojom::AppType app_type) const {
+    apps::AppType app_type) const {
   const app_time::AppId app_id =
       app_service_wrapper_->AppIdFromAppServiceId(app_service_id, app_type);
   return app_registry_->GetTimeLimit(app_id);
@@ -318,19 +298,6 @@ bool AppTimeController::HasAppTimeLimitRestriction() const {
   return apps_with_limit_ > 0;
 }
 
-bool AppTimeController::HasWebTimeLimitRestriction() const {
-  if (!app_registry_->IsAppInstalled(GetChromeAppId()))
-    return false;
-
-  const absl::optional<app_time::AppLimit>& time_limit =
-      app_registry_->GetWebTimeLimit();
-  if (!time_limit.has_value())
-    return false;
-  const app_time::AppRestriction& restriction =
-      time_limit.value().restriction();
-  return restriction == app_time::AppRestriction::kTimeLimit;
-}
-
 void AppTimeController::RegisterProfilePrefObservers(
     PrefService* pref_service) {
   pref_registrar_ = std::make_unique<PrefChangeRegistrar>();
@@ -352,29 +319,18 @@ void AppTimeController::RegisterProfilePrefObservers(
 void AppTimeController::TimeLimitsPolicyUpdated(const std::string& pref_name) {
   DCHECK_EQ(pref_name, prefs::kPerAppTimeLimitsPolicy);
 
-  const base::Value* policy =
-      pref_registrar_->prefs()->GetDictionary(prefs::kPerAppTimeLimitsPolicy);
+  const base::Value::Dict& policy =
+      pref_registrar_->prefs()->GetDict(prefs::kPerAppTimeLimitsPolicy);
 
-  if (!policy || !policy->is_dict()) {
-    LOG(WARNING) << "Invalid PerAppTimeLimits policy.";
-    return;
-  }
-  std::map<AppId, AppLimit> app_limits = policy::AppLimitsFromDict(*policy);
-
-  // If web time limit feature is not enabled, then remove chrome's time limit
-  // from here.
-  if (!WebTimeLimitEnforcer::IsEnabled() &&
-      base::Contains(app_limits, GetChromeAppId())) {
-    app_limits.erase(GetChromeAppId());
-  }
+  std::map<AppId, AppLimit> app_limits = policy::AppLimitsFromDict(policy);
 
   bool updated = app_registry_->UpdateAppLimits(app_limits);
 
   app_registry_->SetReportingEnabled(
-      policy::ActivityReportingEnabledFromDict(*policy));
+      policy::ActivityReportingEnabledFromDict(policy));
 
   absl::optional<base::TimeDelta> new_reset_time =
-      policy::ResetTimeFromDict(*policy);
+      policy::ResetTimeFromDict(policy);
   // TODO(agawronska): Propagate the information about reset time change.
   if (new_reset_time && *new_reset_time != limits_reset_time_)
     limits_reset_time_ = *new_reset_time;
@@ -402,16 +358,13 @@ void AppTimeController::TimeLimitsAllowlistPolicyUpdated(
     const std::string& pref_name) {
   DCHECK_EQ(pref_name, prefs::kPerAppTimeLimitsAllowlistPolicy);
 
-  const base::DictionaryValue* policy = pref_registrar_->prefs()->GetDictionary(
+  const base::Value::Dict& policy = pref_registrar_->prefs()->GetDict(
       prefs::kPerAppTimeLimitsAllowlistPolicy);
 
   // Figure out a way to avoid cloning
-  AppTimeLimitsAllowlistPolicyWrapper wrapper(policy);
+  AppTimeLimitsAllowlistPolicyWrapper wrapper(&policy);
 
   app_registry_->OnTimeLimitAllowlistChanged(wrapper);
-
-  if (web_time_enforcer_)
-    web_time_enforcer_->OnTimeLimitAllowlistChanged(wrapper);
 }
 
 void AppTimeController::ShowAppTimeLimitNotification(
@@ -440,46 +393,27 @@ void AppTimeController::OnAppLimitReached(const AppId& app_id,
     show_dialog = false;
 
   app_service_wrapper_->PauseApp(PauseAppInfo(app_id, time_limit, show_dialog));
-
-  // TODO(crbug/1074516) This is a temporary workaround. The underlying problem
-  // should be fixed.
-  if (app_id == GetChromeAppId() && web_time_enforcer_)
-    web_time_enforcer_->OnWebTimeLimitReached(time_limit);
 }
 
 void AppTimeController::OnAppLimitRemoved(const AppId& app_id) {
   app_service_wrapper_->ResumeApp(app_id);
-
-  // TODO(crbug/1074516) This is a temporary workaround. The underlying problem
-  // should be fixed.
-  if (app_id == GetChromeAppId() && web_time_enforcer_)
-    web_time_enforcer_->OnWebTimeLimitEnded();
 }
 
 void AppTimeController::OnAppInstalled(const AppId& app_id) {
-  if (!WebTimeLimitEnforcer::IsEnabled() && IsWebAppOrExtension(app_id))
+  if (IsWebAppOrExtension(app_id))
     return;
 
-  const base::Value* allowlist_policy = pref_registrar_->prefs()->GetDictionary(
+  const base::Value::Dict& allowlist_policy = pref_registrar_->prefs()->GetDict(
       prefs::kPerAppTimeLimitsAllowlistPolicy);
-  if (allowlist_policy && allowlist_policy->is_dict()) {
-    AppTimeLimitsAllowlistPolicyWrapper wrapper(allowlist_policy);
-    if (base::Contains(wrapper.GetAllowlistAppList(), app_id))
-      app_registry_->SetAppAllowlisted(app_id);
-  } else {
-    LOG(WARNING) << " Invalid PerAppTimeLimitAllowlist policy";
-  }
+  AppTimeLimitsAllowlistPolicyWrapper wrapper(&allowlist_policy);
+  if (base::Contains(wrapper.GetAllowlistAppList(), app_id))
+    app_registry_->SetAppAllowlisted(app_id);
 
-  const base::Value* policy =
-      pref_registrar_->prefs()->GetDictionary(prefs::kPerAppTimeLimitsPolicy);
-
-  if (!policy || !policy->is_dict()) {
-    LOG(WARNING) << "Invalid PerAppTimeLimits policy.";
-    return;
-  }
+  const base::Value::Dict& policy =
+      pref_registrar_->prefs()->GetDict(prefs::kPerAppTimeLimitsPolicy);
 
   // Update the application's time limit.
-  const std::map<AppId, AppLimit> limits = policy::AppLimitsFromDict(*policy);
+  const std::map<AppId, AppLimit> limits = policy::AppLimitsFromDict(policy);
   // Update the limit for newly installed app, if it exists.
   auto result = limits.find(app_id);
   if (result == limits.end())
@@ -593,10 +527,17 @@ void AppTimeController::OpenFamilyLinkApp() {
   // Link Help app install page.
   DCHECK(
       apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile_));
-  apps::AppServiceProxyFactory::GetForProfile(profile_)->LaunchAppWithUrl(
-      arc::kPlayStoreAppId, ui::EF_NONE,
-      GURL(ChildUserService::kFamilyLinkHelperAppPlayStoreURL),
-      apps::mojom::LaunchSource::kFromChromeInternal);
+  if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
+    apps::AppServiceProxyFactory::GetForProfile(profile_)->LaunchAppWithUrl(
+        arc::kPlayStoreAppId, ui::EF_NONE,
+        GURL(ChildUserService::kFamilyLinkHelperAppPlayStoreURL),
+        apps::LaunchSource::kFromChromeInternal);
+  } else {
+    apps::AppServiceProxyFactory::GetForProfile(profile_)->LaunchAppWithUrl(
+        arc::kPlayStoreAppId, ui::EF_NONE,
+        GURL(ChildUserService::kFamilyLinkHelperAppPlayStoreURL),
+        apps::mojom::LaunchSource::kFromChromeInternal);
+  }
 }
 
 void AppTimeController::ShowNotificationForApp(
@@ -635,7 +576,7 @@ void AppTimeController::ShowNotificationForApp(
           message, notification_source, GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
-              kFamilyLinkSourceId),
+              kFamilyLinkSourceId, NotificationCatalogName::kAppTime),
           option_fields,
           notification == AppNotification::kTimeLimitChanged
               ? base::MakeRefCounted<
@@ -646,8 +587,10 @@ void AppTimeController::ShowNotificationForApp(
           chromeos::kNotificationSupervisedUserIcon,
           message_center::SystemNotificationWarningLevel::NORMAL);
 
-  if (icon.has_value())
-    message_center_notification->set_icon(gfx::Image(icon.value()));
+  if (icon.has_value()) {
+    message_center_notification->set_icon(
+        ui::ImageModel::FromImageSkia(icon.value()));
+  }
 
   auto* notification_display_service =
       NotificationDisplayService::GetForProfile(profile_);

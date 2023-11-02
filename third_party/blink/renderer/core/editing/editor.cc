@@ -26,6 +26,7 @@
 
 #include "third_party/blink/renderer/core/editing/editor.h"
 
+#include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/clipboard/data_object.h"
 #include "third_party/blink/renderer/core/clipboard/data_transfer.h"
@@ -85,7 +86,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
@@ -699,7 +700,7 @@ EphemeralRange Editor::RangeForPoint(const gfx::Point& frame_point) const {
   if (previous.IsNotNull()) {
     const EphemeralRange previous_character_range =
         MakeRange(previous, position);
-    const IntRect rect = FirstRectForRange(previous_character_range);
+    const gfx::Rect rect = FirstRectForRange(previous_character_range);
     if (rect.Contains(frame_point))
       return EphemeralRange(previous_character_range);
   }
@@ -707,12 +708,34 @@ EphemeralRange Editor::RangeForPoint(const gfx::Point& frame_point) const {
   const VisiblePosition next = NextPositionOf(position);
   const EphemeralRange next_character_range = MakeRange(position, next);
   if (next_character_range.IsNotNull()) {
-    const IntRect rect = FirstRectForRange(next_character_range);
+    const gfx::Rect rect = FirstRectForRange(next_character_range);
     if (rect.Contains(frame_point))
       return EphemeralRange(next_character_range);
   }
 
   return EphemeralRange();
+}
+
+EphemeralRange Editor::RangeBetweenPoints(const gfx::Point& start_point,
+                                          const gfx::Point& end_point) const {
+  const PositionWithAffinity start_position =
+      GetFrame().PositionForPoint(PhysicalOffset(start_point));
+  if (start_position.IsNull())
+    return EphemeralRange();
+  const VisiblePosition start_visible_position =
+      CreateVisiblePosition(start_position);
+  if (start_visible_position.IsNull())
+    return EphemeralRange();
+
+  const PositionWithAffinity end_position =
+      GetFrame().PositionForPoint(PhysicalOffset(end_point));
+  if (end_position.IsNull())
+    return EphemeralRange();
+  const VisiblePosition end_visible_position =
+      CreateVisiblePosition(end_position);
+  if (end_visible_position.IsNull())
+    return EphemeralRange();
+  return MakeRange(start_visible_position, end_visible_position);
 }
 
 void Editor::ComputeAndSetTypingStyle(CSSPropertyValueSet* style,
@@ -728,13 +751,15 @@ void Editor::ComputeAndSetTypingStyle(CSSPropertyValueSet* style,
   else
     typing_style_ = MakeGarbageCollected<EditingStyle>(style);
 
-  typing_style_->PrepareToApplyAt(
-      GetFrame()
-          .Selection()
-          .ComputeVisibleSelectionInDOMTreeDeprecated()
-          .VisibleStart()
-          .DeepEquivalent(),
-      EditingStyle::kPreserveWritingDirection);
+  const Position& position = GetFrame()
+                                 .Selection()
+                                 .ComputeVisibleSelectionInDOMTreeDeprecated()
+                                 .VisibleStart()
+                                 .DeepEquivalent();
+  if (position.IsNull())
+    return;
+  typing_style_->PrepareToApplyAt(position,
+                                  EditingStyle::kPreserveWritingDirection);
 
   // Handle block styles, substracting these from the typing style.
   EditingStyle* block_style =
@@ -822,7 +847,7 @@ Range* Editor::FindRangeOfString(
     const EphemeralRangeInFlatTree& reference_range,
     FindOptions options,
     bool* wrapped_around) {
-  if (target.IsEmpty())
+  if (target.empty())
     return nullptr;
 
   // Start from an edge of the reference range. Which edge is used depends on

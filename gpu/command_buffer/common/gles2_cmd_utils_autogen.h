@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,7 +25,6 @@ static std::string GetStringBufferfv(uint32_t value);
 static std::string GetStringBufferiv(uint32_t value);
 static std::string GetStringBufferuiv(uint32_t value);
 static std::string GetStringCapability(uint32_t value);
-static std::string GetStringClientBufferUsage(uint32_t value);
 static std::string GetStringCmpFunction(uint32_t value);
 static std::string GetStringCompressedTextureFormat(uint32_t value);
 static std::string GetStringCoverageModulationComponents(uint32_t value);

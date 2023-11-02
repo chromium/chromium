@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,18 +20,18 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/rand_util.h"
 #include "base/unguessable_token.h"
-#include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
-#include "chromeos/services/assistant/public/cpp/features.h"
-#include "chromeos/services/libassistant/public/cpp/assistant_suggestion.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_prefs.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
+#include "chromeos/ash/services/libassistant/public/cpp/assistant_suggestion.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
 
 namespace {
 
-using chromeos::assistant::AssistantSuggestion;
-using chromeos::assistant::AssistantSuggestionType;
-using chromeos::assistant::prefs::AssistantOnboardingMode;
+using assistant::AssistantSuggestion;
+using assistant::AssistantSuggestionType;
+using assistant::prefs::AssistantOnboardingMode;
 
 // Conversation starters -------------------------------------------------------
 
@@ -106,12 +106,6 @@ void AssistantSuggestionsControllerImpl::UpdateConversationStarters() {
   // Always show the "What can you do?" conversation starter.
   AddConversationStarter(IDS_ASH_ASSISTANT_CHIP_WHAT_CAN_YOU_DO);
 
-  // If enabled, always show the "What's on my screen?" conversation starter.
-  if (AssistantState::Get()->context_enabled().value_or(false)) {
-    AddConversationStarter(IDS_ASH_ASSISTANT_CHIP_WHATS_ON_MY_SCREEN,
-                           assistant::util::CreateWhatsOnMyScreenDeepLink());
-  }
-
   // The rest of the conversation starters will be shuffled...
   std::vector<int> shuffled_message_ids;
 
@@ -120,6 +114,7 @@ void AssistantSuggestionsControllerImpl::UpdateConversationStarters() {
   shuffled_message_ids.push_back(IDS_ASH_ASSISTANT_CHIP_PLAY_MUSIC);
   shuffled_message_ids.push_back(IDS_ASH_ASSISTANT_CHIP_SEND_AN_EMAIL);
   shuffled_message_ids.push_back(IDS_ASH_ASSISTANT_CHIP_SET_A_REMINDER);
+  shuffled_message_ids.push_back(IDS_ASH_ASSISTANT_CHIP_TELL_ME_A_JOKE);
   shuffled_message_ids.push_back(IDS_ASH_ASSISTANT_CHIP_WHATS_ON_MY_CALENDAR);
   shuffled_message_ids.push_back(IDS_ASH_ASSISTANT_CHIP_WHATS_THE_WEATHER);
 
@@ -171,7 +166,7 @@ void AssistantSuggestionsControllerImpl::UpdateOnboardingSuggestions() {
 
   std::vector<AssistantSuggestion> onboarding_suggestions;
 
-  using chromeos::assistant::AssistantBetterOnboardingType;
+  using assistant::AssistantBetterOnboardingType;
   auto AddSuggestion = [&CreateIconResourceLink, &onboarding_suggestions](
                            int message_id, AssistantBetterOnboardingType type) {
     onboarding_suggestions.emplace_back();

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "ash/components/settings/cros_settings_names.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/files/file_util.h"
@@ -20,13 +19,17 @@
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/system/fake_statistics_provider.h"
-#include "chromeos/tpm/stub_install_attributes.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
 namespace tpm_firmware_update {
+
+using ::testing::Optional;
 
 TEST(TPMFirmwareUpdateTest, DecodeSettingsProto) {
   enterprise_management::TPMFirmwareUpdateSettingsProto settings;
@@ -37,14 +40,11 @@ TEST(TPMFirmwareUpdateTest, DecodeSettingsProto) {
           TPMFirmwareUpdateSettingsProto_AutoUpdateMode_USER_ACKNOWLEDGMENT);
   auto dict = DecodeSettingsProto(settings);
   ASSERT_TRUE(dict);
-  bool value = false;
-  EXPECT_TRUE(dict->GetBoolean("allow-user-initiated-powerwash", &value));
-  EXPECT_TRUE(value);
-  EXPECT_TRUE(
-      dict->GetBoolean("allow-user-initiated-preserve-device-state", &value));
-  EXPECT_TRUE(value);
-  int update_mode_value = 0;
-  EXPECT_TRUE(dict->GetInteger("auto-update-mode", &update_mode_value));
+  EXPECT_THAT(dict->FindBoolKey("allow-user-initiated-powerwash"),
+              Optional(true));
+  EXPECT_THAT(dict->FindBoolKey("allow-user-initiated-preserve-device-state"),
+              Optional(true));
+  int update_mode_value = dict->FindIntKey("auto-update-mode").value_or(0);
   EXPECT_EQ(2, update_mode_value);
 }
 

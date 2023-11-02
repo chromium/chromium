@@ -21,13 +21,30 @@ there.
 ## Before you start
 
 To make sure the inclusion of a new third_party project makes sense for the
-Chromium project, you should first obtain Chrome Eng Review approval.
-Googlers should see go/chrome-eng-review and review existing topics in
-g/chrome-eng-review. Please include information about the additional checkout
-size, build times, and binary size increase of
-[official](https://www.chromium.org/developers/gn-build-configuration) builds
-on Android and one desktop platform. Please also make sure that the motivation
-for your project is clear, e.g., a design doc has been circulated.
+Chromium project, you should first obtain
+[Chrome Eng Review](../ENG_REVIEW_OWNERS) approval. Please include the following information in an
+email to chrome-eng-review@google.com:
+* Motivation of your project
+* Design docs
+* Additional checkout size
+* Build time increase
+* Binary size increase on Android ([official](https://www.chromium.org/developers/gn-build-configuration)  builds)
+* Binary size increase on Windows
+
+Googlers can access [go/chrome-eng-review](https://goto.google.com/chrome-eng-review) and review
+existing topics in g/chrome-eng-review, and can also come to office hours to ask
+questions.
+
+### A note on size constraints
+
+The size of Chromium derived executables can impact overall performance of those binaries as they
+need to run on a wide range of devices including those with extremely limited RAM. Additionally, we
+have experience from Windows of the binary size impacting successful patch rate of updates as well
+as constraints from the Android Ecosystem where APKs included in the system image have hard
+limits on their size due to allocation size of the system partition. For more details and
+guidelines on size increases see
+[//docs/speed/binary_size/binary_size_explainer.md](binary_size_explainer) and Googlers can
+additionally check [go/chrome-binary-size](go/chrome-binary-size)
 
 ## Get the code
 
@@ -186,8 +203,9 @@ Non-Googlers can email one of the people in
 
 * Make sure you have the approval from Chrome Eng Review as mentioned
   [above](#before-you-start).
-* Get security@chromium.org approval. Email the list with relevant details and
-  a link to the CL. Third party code is a hot spot for security vulnerabilities.
+* Get security@chromium.org (or chrome-security@google.com, Google-only)
+  approval. Email the list with relevant details and a link to the CL.
+  Third party code is a hot spot for security vulnerabilities.
   When adding a new package that could potentially carry security risk, make
   sure to highlight risk to security@chromium.org. You may be asked to add
   a README.security or, in dangerous cases, README.SECURITY.URGENTLY file.
@@ -202,7 +220,9 @@ Non-Googlers can email one of the people in
 * Lastly, if all other steps are complete, get a positive code review from a
   member of [//third_party/OWNERS](../third_party/OWNERS) to land the change.
 
-Please send separate emails to the eng review and security lists.
+Please send separate emails to the eng review and security@chromium.org.
+You can skip the eng review and security@chromium.org when you are only moving
+existing directories in Chromium to //third_party/.
 
 Subsequent changes don't normally require third-party-owners or security
 approval; you can modify the code as much as you want. When you update code, be

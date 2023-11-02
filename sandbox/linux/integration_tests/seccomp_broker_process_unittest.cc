@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,7 +19,7 @@
 #include "base/files/scoped_file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
@@ -45,6 +45,9 @@
 namespace sandbox {
 
 using bpf_dsl::Allow;
+using bpf_dsl::Arg;
+using bpf_dsl::Error;
+using bpf_dsl::If;
 using bpf_dsl::ResultExpr;
 using bpf_dsl::Trap;
 
@@ -148,7 +151,7 @@ class DenyOpenPolicy : public bpf_dsl::Policy {
   }
 
  private:
-  InitializedOpenBroker* iob_;
+  raw_ptr<InitializedOpenBroker> iob_;
 };
 
 // We use a InitializedOpenBroker class, so that we can run unsandboxed
@@ -305,12 +308,13 @@ class IPCSyscaller : public Syscaller {
   }
 
  private:
-  BrokerProcess* broker_;
+  raw_ptr<BrokerProcess> broker_;
 };
 
 // Only use syscall(...) on x64 to avoid having to reimplement a libc-like
 // layer that uses different syscalls on different architectures.
-#if (defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)) && \
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+     BUILDFLAG(IS_ANDROID)) &&                        \
     defined(__x86_64__)
 #define DIRECT_SYSCALLER_ENABLED
 #endif
@@ -511,16 +515,21 @@ class HandleFilesystemViaBrokerPolicy : public bpf_dsl::Policy {
     DCHECK(SandboxBPF::IsValidSyscallNumber(sysno));
     // Broker everything that we're supposed to broker.
     if (broker_process_->IsSyscallAllowed(sysno)) {
-      return sandbox::bpf_dsl::Trap(
-          sandbox::syscall_broker::BrokerClient::SIGSYS_Handler,
-          broker_process_->GetBrokerClientSignalBased());
+      return Trap(BrokerClient::SIGSYS_Handler,
+                  broker_process_->GetBrokerClientSignalBased());
     }
 
     // Otherwise, if this is a syscall that takes a pathname but isn't an
     // allowed command, deny it.
     if (broker_process_->IsSyscallBrokerable(sysno,
                                              /*fast_check_in_client=*/false)) {
-      return bpf_dsl::Error(denied_errno_);
+      return Error(denied_errno_);
+    }
+
+    if (sysno == __NR_statx) {
+      const Arg<int> mask(3);
+      return If(mask == STATX_BASIC_STATS, Error(ENOSYS))
+          .Else(Error(denied_errno_));
     }
 
     // Allow everything else that doesn't take a pathname.
@@ -528,7 +537,7 @@ class HandleFilesystemViaBrokerPolicy : public bpf_dsl::Policy {
   }
 
  private:
-  BrokerProcess* broker_process_;
+  raw_ptr<BrokerProcess> broker_process_;
   int denied_errno_;
 };
 }  // namespace syscall_broker
@@ -595,7 +604,7 @@ class BPFTesterBrokerDelegate : public BPFTesterDelegate {
 
  private:
   bool fast_check_in_client_;
-  BrokerTestDelegate* broker_test_delegate_;
+  raw_ptr<BrokerTestDelegate> broker_test_delegate_;
   SyscallerType syscaller_type_;
   BrokerType broker_type_;
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,6 @@
 #include "ash/system/tray/tray_item_view.h"
 
 namespace ash {
-
-namespace tray {
 
 class PowerTrayView : public TrayItemView,
                       public PowerStatus::Observer,
@@ -55,7 +53,6 @@ class PowerTrayView : public TrayItemView,
   ScopedSessionObserver session_observer_{this};
 };
 
-}  // namespace tray
 }  // namespace ash
 
 #endif  // ASH_SYSTEM_POWER_TRAY_POWER_H_

@@ -1,13 +1,13 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/accessibility/live_caption_speech_recognition_host.h"
 
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/accessibility/live_caption_controller_factory.h"
+#include "chrome/browser/accessibility/live_caption_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -15,11 +15,9 @@
 #include "components/live_caption/caption_bubble_controller.h"
 #include "components/live_caption/live_caption_controller.h"
 #include "components/live_caption/pref_names.h"
-#include "components/soda/soda_installer.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
-#include "media/base/media_switches.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 
@@ -28,16 +26,6 @@
 #endif
 
 namespace {
-// Chrome OS requires an additional feature flag to enable Live Caption.
-std::vector<base::Feature> RequiredFeatureFlags() {
-  std::vector<base::Feature> features = {media::kLiveCaption,
-                                         media::kUseSodaForLiveCaption};
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  features.push_back(ash::features::kOnDeviceSpeechRecognition);
-#endif
-  return features;
-}
-
 // A WebContentsObserver that allows waiting for some media to start or stop
 // playing fullscreen.
 class FullscreenEventsWaiter : public content::WebContentsObserver {
@@ -67,7 +55,7 @@ class FullscreenEventsWaiter : public content::WebContentsObserver {
 
 namespace captions {
 
-class LiveCaptionSpeechRecognitionHostTest : public InProcessBrowserTest {
+class LiveCaptionSpeechRecognitionHostTest : public LiveCaptionBrowserTest {
  public:
   LiveCaptionSpeechRecognitionHostTest() = default;
   ~LiveCaptionSpeechRecognitionHostTest() override = default;
@@ -76,13 +64,12 @@ class LiveCaptionSpeechRecognitionHostTest : public InProcessBrowserTest {
   LiveCaptionSpeechRecognitionHostTest& operator=(
       const LiveCaptionSpeechRecognitionHostTest&) = delete;
 
-  // InProcessBrowserTest overrides:
+  // LiveCaptionBrowserTest:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(RequiredFeatureFlags(), {});
     // This is required for the fullscreen video tests.
     embedded_test_server()->ServeFilesFromSourceDirectory(
         base::FilePath(FILE_PATH_LITERAL("content/test/data")));
-    InProcessBrowserTest::SetUp();
+    LiveCaptionBrowserTest::SetUp();
   }
 
   void SetUpOnMainThread() override {
@@ -123,13 +110,6 @@ class LiveCaptionSpeechRecognitionHostTest : public InProcessBrowserTest {
     remotes_[frame_host]->OnSpeechRecognitionError();
   }
 
-  void SetLiveCaptionEnabled(bool enabled) {
-    browser()->profile()->GetPrefs()->SetBoolean(prefs::kLiveCaptionEnabled,
-                                                 enabled);
-    if (enabled)
-      speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
-  }
-
   bool HasBubbleController() {
     return LiveCaptionControllerFactory::GetForProfile(browser()->profile())
                ->caption_bubble_controller_.get() != nullptr;
@@ -149,7 +129,6 @@ class LiveCaptionSpeechRecognitionHostTest : public InProcessBrowserTest {
     EXPECT_EQ(expected_success, success);
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::map<content::RenderFrameHost*,
            mojo::Remote<media::mojom::SpeechRecognitionRecognizerClient>>
       remotes_;
@@ -158,8 +137,10 @@ class LiveCaptionSpeechRecognitionHostTest : public InProcessBrowserTest {
 // Disabled due to flaky crashes; https://crbug.com/1216304.
 IN_PROC_BROWSER_TEST_F(LiveCaptionSpeechRecognitionHostTest,
                        DISABLED_DestroysWithoutCrashing) {
-  content::RenderFrameHost* frame_host =
-      browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
+  content::RenderFrameHost* frame_host = browser()
+                                             ->tab_strip_model()
+                                             ->GetActiveWebContents()
+                                             ->GetPrimaryMainFrame();
   CreateLiveCaptionSpeechRecognitionHost(frame_host);
 
   SetLiveCaptionEnabled(true);
@@ -174,8 +155,10 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionSpeechRecognitionHostTest,
       ui_test_utils::NavigateToURL(browser(), GURL("http://www.google.com")));
   content::WaitForLoadStop(
       browser()->tab_strip_model()->GetActiveWebContents());
-  content::RenderFrameHost* new_frame_host =
-      browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
+  content::RenderFrameHost* new_frame_host = browser()
+                                                 ->tab_strip_model()
+                                                 ->GetActiveWebContents()
+                                                 ->GetPrimaryMainFrame();
   // After navigating to a new URL, the main frame should be different from the
   // former frame host.
   CreateLiveCaptionSpeechRecognitionHost(new_frame_host);
@@ -190,8 +173,10 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionSpeechRecognitionHostTest,
 
 IN_PROC_BROWSER_TEST_F(LiveCaptionSpeechRecognitionHostTest,
                        OnSpeechRecognitionRecognitionEvent) {
-  content::RenderFrameHost* frame_host =
-      browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
+  content::RenderFrameHost* frame_host = browser()
+                                             ->tab_strip_model()
+                                             ->GetActiveWebContents()
+                                             ->GetPrimaryMainFrame();
   CreateLiveCaptionSpeechRecognitionHost(frame_host);
 
   SetLiveCaptionEnabled(true);
@@ -211,8 +196,10 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionSpeechRecognitionHostTest,
 
 IN_PROC_BROWSER_TEST_F(LiveCaptionSpeechRecognitionHostTest,
                        OnLanguageIdentificationEvent) {
-  content::RenderFrameHost* frame_host =
-      browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
+  content::RenderFrameHost* frame_host = browser()
+                                             ->tab_strip_model()
+                                             ->GetActiveWebContents()
+                                             ->GetPrimaryMainFrame();
   CreateLiveCaptionSpeechRecognitionHost(frame_host);
 
   SetLiveCaptionEnabled(true);
@@ -222,20 +209,22 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionSpeechRecognitionHostTest,
 
 IN_PROC_BROWSER_TEST_F(LiveCaptionSpeechRecognitionHostTest,
                        OnSpeechRecognitionError) {
-  content::RenderFrameHost* frame_host =
-      browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
+  content::RenderFrameHost* frame_host = browser()
+                                             ->tab_strip_model()
+                                             ->GetActiveWebContents()
+                                             ->GetPrimaryMainFrame();
   CreateLiveCaptionSpeechRecognitionHost(frame_host);
 
   SetLiveCaptionEnabled(true);
   OnSpeechRecognitionError(frame_host);
 }
 
-#if defined(OS_MAC) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(LiveCaptionSpeechRecognitionHostTest,
                        MediaEffectivelyFullscreenChanged) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  content::RenderFrameHost* frame_host = web_contents->GetMainFrame();
+  content::RenderFrameHost* frame_host = web_contents->GetPrimaryMainFrame();
   CreateLiveCaptionSpeechRecognitionHost(frame_host);
   EXPECT_TRUE(content::NavigateToURL(
       web_contents, embedded_test_server()->GetURL("/media/fullscreen.html")));

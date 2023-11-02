@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,13 +15,13 @@ MockAlternativeStateNameMapUpdater::~MockAlternativeStateNameMapUpdater() =
 MockAlternativeStateNameMapUpdater::MockAlternativeStateNameMapUpdater(
     base::OnceClosure callback,
     PrefService* local_state,
-    autofill::PersonalDataManager* personal_data_manager)
+    PersonalDataManager* personal_data_manager)
     : AlternativeStateNameMapUpdater(local_state, personal_data_manager),
       callback_(std::move(callback)) {}
 
 void MockAlternativeStateNameMapUpdater::OnPersonalDataFinishedProfileTasks() {
   if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillUseAlternativeStateNameMap)) {
+          features::kAutofillUseAlternativeStateNameMap)) {
     PopulateAlternativeStateNameMap(std::move(callback_));
   }
 }

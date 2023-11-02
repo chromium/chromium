@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,10 @@
 namespace ash {
 
 MockAutoEnrollmentCheckScreen::MockAutoEnrollmentCheckScreen(
-    AutoEnrollmentCheckScreenView* view,
+    base::WeakPtr<AutoEnrollmentCheckScreenView> view,
     ErrorScreen* error_screen,
-    const base::RepeatingClosure& exit_callback)
-    : AutoEnrollmentCheckScreen(view, error_screen, exit_callback) {}
+    const base::RepeatingCallback<void(Result result)>& exit_callback)
+    : AutoEnrollmentCheckScreen(std::move(view), error_screen, exit_callback) {}
 
 MockAutoEnrollmentCheckScreen::~MockAutoEnrollmentCheckScreen() {}
 
@@ -19,20 +19,13 @@ void MockAutoEnrollmentCheckScreen::RealShow() {
 }
 
 void MockAutoEnrollmentCheckScreen::ExitScreen() {
-  RunExitCallback();
+  RunExitCallback(Result::NEXT);
 }
 
 MockAutoEnrollmentCheckScreenView::MockAutoEnrollmentCheckScreenView() =
     default;
 
-MockAutoEnrollmentCheckScreenView::~MockAutoEnrollmentCheckScreenView() {
-  if (screen_)
-    screen_->OnViewDestroyed(this);
-}
-
-void MockAutoEnrollmentCheckScreenView::SetDelegate(Delegate* screen) {
-  screen_ = screen;
-  MockSetDelegate(screen);
-}
+MockAutoEnrollmentCheckScreenView::~MockAutoEnrollmentCheckScreenView() =
+    default;
 
 }  // namespace ash

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include <windows.h>
 #include <wrl/client.h>
 
+#include "base/memory/raw_ptr.h"
 #include "media/base/media_log.h"
 #include "media/gpu/vp9_decoder.h"
 #include "media/gpu/windows/d3d11_com_defs.h"
@@ -43,7 +44,7 @@ class D3D11VP9Accelerator : public VP9Decoder::VP9Accelerator {
 
   bool OutputPicture(scoped_refptr<VP9Picture> picture) override;
 
-  bool IsFrameContextRequired() const override;
+  bool NeedsCompressedHeaderParsed() const override;
 
   bool GetFrameContext(scoped_refptr<VP9Picture> picture,
                        Vp9FrameContext* frame_context) override;
@@ -78,8 +79,8 @@ class D3D11VP9Accelerator : public VP9Decoder::VP9Accelerator {
 
   void SetVideoDecoder(ComD3D11VideoDecoder video_decoder);
 
-  D3D11VideoDecoderClient* client_;
-  MediaLog* const media_log_;
+  raw_ptr<D3D11VideoDecoderClient> client_;
+  const raw_ptr<MediaLog> media_log_;
   UINT status_feedback_;
   ComD3D11VideoDecoder video_decoder_;
   ComD3D11VideoDevice video_device_;

@@ -1,14 +1,15 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/projector/projector_metadata_controller.h"
 
+#include "ash/projector/projector_metrics.h"
 #include "ash/projector/projector_ui_controller.h"
 #include "ash/public/cpp/projector/projector_controller.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "base/bind.h"
-#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
@@ -16,7 +17,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "base/time/time.h"
+#include "media/mojo/mojom/speech_recognition.mojom.h"
 
 namespace ash {
 namespace {
@@ -81,16 +82,20 @@ void ProjectorMetadataController::SaveMetadata(
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&SaveFile, metadata_str, path),
-      base::BindOnce(
-          [](const base::FilePath& path, bool success) {
-            if (!success) {
-              LOG(ERROR) << "Failed to save the metadata file: " << path;
-              ProjectorUiController::ShowFailureNotification(
-                  IDS_ASH_PROJECTOR_FAILURE_MESSAGE_SAVE_SCREENCAST);
-              return;
-            }
-          },
-          path));
+      base::BindOnce(&ProjectorMetadataController::OnSaveFileResult,
+                     weak_factory_.GetWeakPtr(), path,
+                     metadata_->GetTranscriptsCount()));
+}
+
+void ProjectorMetadataController::OnSaveFileResult(const base::FilePath& path,
+                                                   size_t transcripts_count,
+                                                   bool success) {
+  if (!success) {
+    LOG(ERROR) << "Failed to save the metadata file: " << path;
+    ProjectorUiController::ShowSaveFailureNotification();
+    return;
+  }
+  RecordTranscriptsCount(transcripts_count);
 }
 
 void ProjectorMetadataController::SetProjectorMetadataModelForTest(

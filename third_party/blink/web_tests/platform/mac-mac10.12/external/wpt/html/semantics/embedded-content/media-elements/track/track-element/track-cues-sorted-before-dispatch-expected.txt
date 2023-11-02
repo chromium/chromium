@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-PASS All events are triggered in chronological order
-Harness: the test ran to completion.
-

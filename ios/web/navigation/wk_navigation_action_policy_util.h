@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@ extern const WKNavigationActionPolicy
     kNavigationActionPolicyAllowAndBlockUniversalLinks;
 
 // Returns the WKNavigationActionPolicy for allowing navigations given the
-// |block_universal| state for the associated BrowserState.
+// `block_universal` state for the associated BrowserState.
 WKNavigationActionPolicy GetAllowNavigationActionPolicy(bool block_universal);
 
 }  // namespace web

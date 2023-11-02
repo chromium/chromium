@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,13 @@
 #include "ash/constants/ash_features.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/style/button_style.h"
+#include "ash/style/pill_button.h"
 #include "ash/style/style_util.h"
 #include "ash/system/message_center/message_center_constants.h"
 #include "ash/system/message_center/message_center_style.h"
 #include "ash/system/tray/tray_constants.h"
 #include "base/bind.h"
+#include "base/ranges/algorithm.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
@@ -46,8 +47,9 @@ class StackingBarLabelButton : public PillButton {
       : PillButton(
             std::move(callback),
             text,
-            PillButton::Type::kIconlessAccentFloating,
+            PillButton::Type::kAccentFloatingWithoutIcon,
             /*icon=*/nullptr,
+            kNotificationPillButtonHorizontalSpacing,
             /*use_light_colors=*/!features::IsNotificationsRefreshEnabled(),
             /*rounded_highlight_path=*/
             features::IsNotificationsRefreshEnabled()),
@@ -109,12 +111,22 @@ class StackedNotificationBar::StackedNotificationBarIcon
     if (!notification)
       return;
 
-    SkColor accent_color =
-        color_provider->GetColor(ui::kColorNotificationHeaderForeground);
-    gfx::Image masked_small_icon = notification->GenerateMaskedSmallIcon(
-        kStackedNotificationIconSize, accent_color,
-        color_provider->GetColor(ui::kColorNotificationIconBackground),
-        color_provider->GetColor(ui::kColorNotificationIconForeground));
+    SkColor accent_color;
+    gfx::Image masked_small_icon;
+    if (features::IsNotificationsRefreshEnabled()) {
+      accent_color = AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kIconColorPrimary);
+      masked_small_icon = notification->GenerateMaskedSmallIcon(
+          kStackedNotificationIconSize, accent_color, SK_ColorTRANSPARENT,
+          accent_color);
+    } else {
+      accent_color =
+          color_provider->GetColor(ui::kColorNotificationHeaderForeground);
+      masked_small_icon = notification->GenerateMaskedSmallIcon(
+          kStackedNotificationIconSize, accent_color,
+          color_provider->GetColor(ui::kColorNotificationIconBackground),
+          color_provider->GetColor(ui::kColorNotificationIconForeground));
+    }
 
     if (masked_small_icon.IsEmpty()) {
       SetImage(gfx::CreateVectorIcon(message_center::kProductIcon,
@@ -246,15 +258,14 @@ StackedNotificationBar::StackedNotificationBar(
                               base::Unretained(message_center_view_)),
           l10n_util::GetStringUTF16(
               IDS_ASH_MESSAGE_CENTER_EXPAND_ALL_NOTIFICATIONS_BUTTON_LABEL),
-          message_center_view))) {
-  SetVisible(false);
-  auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal,
-      features::IsNotificationsRefreshEnabled()
-          ? gfx::Insets(kNotificationBarVerticalPadding,
-                        kNotificationBarHorizontalPadding)
-          : gfx::Insets()));
-  layout->set_cross_axis_alignment(
+          message_center_view))),
+      layout_manager_(SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kHorizontal,
+          features::IsNotificationsRefreshEnabled() ? kNotificationBarPadding
+                                                    : gfx::Insets()))) {
+  UpdateVisibility();
+
+  layout_manager_->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kStretch);
 
   notification_icons_container_->SetLayoutManager(
@@ -265,11 +276,16 @@ StackedNotificationBar::StackedNotificationBar(
 
   message_center::MessageCenter::Get()->AddObserver(this);
 
-  count_label_->SetEnabledColor(message_center_style::kCountLabelColor);
+  SkColor label_color =
+      features::IsNotificationsRefreshEnabled()
+          ? AshColorProvider::Get()->GetContentLayerColor(
+                AshColorProvider::ContentLayerType::kIconColorPrimary)
+          : message_center_style::kCountLabelColor;
+  count_label_->SetEnabledColor(label_color);
   count_label_->SetFontList(views::Label::GetDefaultFontList().Derive(
       1, gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM));
 
-  layout->SetFlexForView(spacer_, 1);
+  layout_manager_->SetFlexForView(spacer_, 1);
 
   clear_all_button_->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_ASH_MESSAGE_CENTER_CLEAR_ALL_BUTTON_TOOLTIP));
@@ -304,13 +320,17 @@ bool StackedNotificationBar::Update(
   UpdateStackedNotifications(stacked_notifications);
   UpdateVisibility();
 
-  int unpinned_count = total_notification_count_ - pinned_notification_count_;
+  const int unpinned_count =
+      total_notification_count_ - pinned_notification_count_;
 
   auto tooltip = l10n_util::GetStringFUTF16Int(
       IDS_ASH_MESSAGE_CENTER_STACKING_BAR_CLEAR_ALL_BUTTON_TOOLTIP,
       unpinned_count);
   clear_all_button_->SetTooltipText(tooltip);
   clear_all_button_->SetAccessibleName(tooltip);
+  clear_all_button_->SetState(unpinned_count == 0
+                                  ? views::Button::STATE_DISABLED
+                                  : views::Button::STATE_NORMAL);
 
   return true;
 }
@@ -322,12 +342,18 @@ void StackedNotificationBar::SetAnimationState(
 }
 
 void StackedNotificationBar::SetCollapsed() {
+  if (features::IsNotificationsRefreshEnabled())
+    layout_manager_->set_inside_border_insets(gfx::Insets());
+
   clear_all_button_->SetVisible(false);
   expand_all_button_->SetVisible(true);
   UpdateVisibility();
 }
 
 void StackedNotificationBar::SetExpanded() {
+  if (features::IsNotificationsRefreshEnabled())
+    layout_manager_->set_inside_border_insets(kNotificationBarPadding);
+
   clear_all_button_->SetVisible(true);
   expand_all_button_->SetVisible(false);
 }
@@ -360,12 +386,11 @@ void StackedNotificationBar::OnIconAnimatedOut(std::string notification_id,
 
 StackedNotificationBar::StackedNotificationBarIcon*
 StackedNotificationBar::GetFrontIcon(bool animating_out) {
-  const auto i = std::find_if(
-      notification_icons_container_->children().cbegin(),
-      notification_icons_container_->children().cend(), [&](const auto* v) {
-        return animating_out ==
-               static_cast<const StackedNotificationBarIcon*>(v)
-                   ->is_animating_out();
+  const auto i = base::ranges::find(
+      notification_icons_container_->children(), animating_out,
+      [](const auto* v) {
+        return static_cast<const StackedNotificationBarIcon*>(v)
+            ->is_animating_out();
       });
 
   return (i == notification_icons_container_->children().cend()
@@ -485,9 +510,14 @@ void StackedNotificationBar::UpdateStackedNotifications(
 }
 
 void StackedNotificationBar::OnPaint(gfx::Canvas* canvas) {
+  // We don't need the custom border below in the new message center UI, since
+  // the clear all button does not interfere with the border anymore. Also, the
+  // message center bubble will have a highlight border that covers this view.
+  if (features::IsNotificationsRefreshEnabled())
+    return;
+
   cc::PaintFlags flags;
-  if (!features::IsNotificationsRefreshEnabled())
-    flags.setColor(message_center_style::kNotificationBackgroundColor);
+  flags.setColor(message_center_style::kNotificationBackgroundColor);
   flags.setStyle(cc::PaintFlags::kFill_Style);
   flags.setAntiAlias(true);
 

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include "base/containers/span.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "content/common/content_export.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/virtual_fido_device.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -27,8 +26,7 @@ namespace content {
 // This class has very little logic itself, it merely stores a unique ID and the
 // state of the authenticator, whereas performing all cryptographic operations
 // is delegated to the VirtualFidoDevice class.
-class CONTENT_EXPORT VirtualAuthenticator
-    : public blink::test::mojom::VirtualAuthenticator {
+class VirtualAuthenticator : public blink::test::mojom::VirtualAuthenticator {
  public:
   explicit VirtualAuthenticator(
       const blink::test::mojom::VirtualAuthenticatorOptions& options);
@@ -94,7 +92,7 @@ class CONTENT_EXPORT VirtualAuthenticator
   //
   // There is an N:1 relationship between VirtualFidoDevices and this class, so
   // this method can be called any number of times.
-  std::unique_ptr<device::FidoDevice> ConstructDevice();
+  std::unique_ptr<device::VirtualFidoDevice> ConstructDevice();
 
   // blink::test::mojom::VirtualAuthenticator:
   void GetLargeBlob(const std::vector<uint8_t>& key_handle,
@@ -120,11 +118,12 @@ class CONTENT_EXPORT VirtualAuthenticator
  private:
   void OnLargeBlobUncompressed(
       GetLargeBlobCallback callback,
-      data_decoder::DataDecoder::ResultOrError<mojo_base::BigBuffer> result);
+      base::expected<mojo_base::BigBuffer, std::string> result);
   void OnLargeBlobCompressed(
       base::span<const uint8_t> key_handle,
+      uint64_t original_size,
       SetLargeBlobCallback callback,
-      data_decoder::DataDecoder::ResultOrError<mojo_base::BigBuffer> result);
+      base::expected<mojo_base::BigBuffer, std::string> result);
 
   const device::ProtocolVersion protocol_;
   const device::Ctap2Version ctap2_version_;
@@ -133,6 +132,7 @@ class CONTENT_EXPORT VirtualAuthenticator
   const bool has_user_verification_;
   const bool has_large_blob_;
   const bool has_cred_blob_;
+  const bool has_min_pin_length_;
   bool is_user_verified_ = true;
   const std::string unique_id_;
   bool is_user_present_;

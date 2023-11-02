@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,8 +15,8 @@ namespace base {
 class FilteredServiceDirectoryTest : public ServiceDirectoryTestBase {
  public:
   FilteredServiceDirectoryTest() {
-    filtered_service_directory_ = std::make_unique<FilteredServiceDirectory>(
-        public_service_directory_.get());
+    filtered_service_directory_ =
+        std::make_unique<FilteredServiceDirectory>(public_service_directory_);
     fidl::InterfaceHandle<::fuchsia::io::Directory> directory;
     EXPECT_EQ(
         filtered_service_directory_->ConnectClient(directory.NewRequest()),

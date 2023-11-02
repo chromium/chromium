@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,11 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/containers/flat_set.h"
 #include "build/build_config.h"
-#include "gpu/ipc/scheduler_sequence.h"
+#include "components/viz/service/display/resource_fence.h"
+#include "gpu/command_buffer/service/scheduler_sequence.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
 
 namespace viz {
 
@@ -83,6 +86,13 @@ DisplayResourceProviderSkia::DeleteAndReturnUnusedResourcesToChildImpl(
       continue;
     }
 
+    if (resource.transferable.synchronization_type ==
+        TransferableResource::SynchronizationType::kReleaseFence) {
+      // The resource might have never been used.
+      if (resource.resource_fence)
+        resource.release_fence = resource.resource_fence->GetGpuFenceHandle();
+    }
+
     const bool is_lost = can_delete == CanDeleteNowResult::kYesButLoseResource;
 
     to_return.emplace_back(child_id, resource.sync_token(),
@@ -129,7 +139,8 @@ DisplayResourceProviderSkia::LockSetForExternalUse::LockResource(
     ResourceId id,
     bool maybe_concurrent_reads,
     bool is_video_plane,
-    const absl::optional<gfx::ColorSpace>& override_color_space) {
+    sk_sp<SkColorSpace> override_color_space,
+    bool raw_draw_is_possible) {
   auto it = resource_provider_->resources_.find(id);
   DCHECK(it != resource_provider_->resources_.end());
 
@@ -146,22 +157,40 @@ DisplayResourceProviderSkia::LockSetForExternalUse::LockResource(
         // HDR video color conversion is handled externally in SkiaRenderer
         // using a special color filter and |color_space| is set to destination
         // color space so that Skia doesn't perform implicit color conversion.
+
+        // TODO(https://crbug.com/1271212): Skia doesn't support limited range
+        // color spaces, so we treat it as fullrange, resulting color difference
+        // is very subtle.
         image_color_space =
-            override_color_space.value_or(resource.transferable.color_space)
-                .ToSkColorSpace();
+            override_color_space
+                ? override_color_space
+                : resource.transferable.color_space.GetAsFullRangeRGB()
+                      .ToSkColorSpace();
       }
       resource.image_context =
           resource_provider_->external_use_client_->CreateImageContext(
               resource.transferable.mailbox_holder, resource.transferable.size,
-              resource.transferable.format, maybe_concurrent_reads,
-              resource.transferable.ycbcr_info, std::move(image_color_space));
+              resource.transferable.format.resource_format(),
+              maybe_concurrent_reads, resource.transferable.ycbcr_info,
+              std::move(image_color_space), raw_draw_is_possible);
     }
     resource.locked_for_external_use = true;
 
-    if (resource.transferable.read_lock_fences_enabled) {
-      if (resource_provider_->current_read_lock_fence_.get())
-        resource_provider_->current_read_lock_fence_->Set();
-      resource.read_lock_fence = resource_provider_->current_read_lock_fence_;
+    switch (resource.transferable.synchronization_type) {
+      case TransferableResource::SynchronizationType::kGpuCommandsCompleted:
+        resource.resource_fence =
+            resource_provider_->current_gpu_commands_completed_fence_;
+        break;
+      case TransferableResource::SynchronizationType::kReleaseFence:
+        resource.resource_fence = resource_provider_->current_release_fence_;
+        break;
+      default:
+        break;
+    }
+
+    if (resource.resource_fence) {
+      resource.resource_fence->set();
+      resource.resource_fence->TrackDeferredResource(id);
     }
   }
 

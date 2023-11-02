@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,7 +19,7 @@
 #include "base/no_destructor.h"
 #include "base/posix/safe_strerror.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/trace_event/trace_event.h"
+#include "base/trace_event/typed_macros.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/capture/mojom/image_capture_types.h"
 #include "media/capture/video/blob_utils.h"
@@ -28,6 +28,7 @@
 #include "media/capture/video/chromeos/camera_buffer_factory.h"
 #include "media/capture/video/chromeos/camera_hal_delegate.h"
 #include "media/capture/video/chromeos/camera_metadata_utils.h"
+#include "media/capture/video/chromeos/camera_trace_utils.h"
 #include "media/capture/video/chromeos/request_manager.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
@@ -51,6 +52,10 @@ constexpr char kZoom[] = "com.google.control.zoom";
 constexpr char kZoomRange[] = "com.google.control.zoomRange";
 constexpr int32_t kColorTemperatureStep = 100;
 constexpr int32_t kMicroToNano = 1000;
+
+constexpr char kIntelPowerMode[] = "intel.vendorCamera.powerMode";
+constexpr uint8_t kIntelPowerModeLowPower = 0;
+constexpr uint8_t kIntelPowerModeHighQuality = 1;
 
 using AwbModeTemperatureMap = std::map<uint8_t, int32_t>;
 
@@ -276,10 +281,10 @@ ResultMetadata::~ResultMetadata() = default;
 
 CameraDeviceDelegate::CameraDeviceDelegate(
     VideoCaptureDeviceDescriptor device_descriptor,
-    scoped_refptr<CameraHalDelegate> camera_hal_delegate,
+    CameraHalDelegate* camera_hal_delegate,
     scoped_refptr<base::SingleThreadTaskRunner> ipc_task_runner)
     : device_descriptor_(device_descriptor),
-      camera_hal_delegate_(std::move(camera_hal_delegate)),
+      camera_hal_delegate_(camera_hal_delegate),
       ipc_task_runner_(std::move(ipc_task_runner)) {}
 
 CameraDeviceDelegate::~CameraDeviceDelegate() = default;
@@ -819,6 +824,20 @@ void CameraDeviceDelegate::Initialize() {
       std::move(callback_ops),
       base::BindOnce(&CameraDeviceDelegate::OnInitialized, GetWeakPtr()));
   request_manager_->AddResultMetadataObserver(this);
+
+  // For Intel IPU6 platform, set power mode to high quality for CCA and low
+  // power mode for others.
+  const VendorTagInfo* info =
+      camera_hal_delegate_->GetVendorTagInfoByName(kIntelPowerMode);
+  if (info != nullptr) {
+    bool is_cca =
+        CameraAppDeviceBridgeImpl::GetInstance()->GetWeakCameraAppDevice(
+            device_descriptor_.device_id) != nullptr;
+    uint8_t power_mode =
+        is_cca ? kIntelPowerModeHighQuality : kIntelPowerModeLowPower;
+    request_manager_->SetRepeatingCaptureMetadata(
+        info->tag, info->type, 1, std::vector<uint8_t>{power_mode});
+  }
 }
 
 void CameraDeviceDelegate::OnInitialized(int32_t result) {
@@ -855,8 +874,6 @@ void CameraDeviceDelegate::OnInitialized(int32_t result) {
         return true;
       case cros::mojom::CaptureIntent::VIDEO_RECORD:
         return ShouldUseBlobVideoSnapshot();
-      case cros::mojom::CaptureIntent::DOCUMENT:
-        return true;
       default:
         NOTREACHED() << "Unknown capture intent: " << capture_intent;
         return false;
@@ -871,21 +888,38 @@ void CameraDeviceDelegate::ConfigureStreams(
   DCHECK(ipc_task_runner_->BelongsToCurrentThread());
   DCHECK_EQ(device_context_->GetState(),
             CameraDeviceContext::State::kInitialized);
+  TRACE_EVENT_BEGIN("camera", "ConfigureStreams",
+                    GetTraceTrack(CameraTraceEvent::kConfigureStreams));
 
   cros::mojom::Camera3StreamConfigurationPtr stream_config =
       cros::mojom::Camera3StreamConfiguration::New();
+  auto camera_app_device =
+      CameraAppDeviceBridgeImpl::GetInstance()->GetWeakCameraAppDevice(
+          device_descriptor_.device_id);
   for (const auto& param : chrome_capture_params_) {
     // Set up context for preview stream and record stream.
     cros::mojom::Camera3StreamPtr stream = cros::mojom::Camera3Stream::New();
     StreamType stream_type = (param.first == ClientType::kPreviewClient)
                                  ? StreamType::kPreviewOutput
                                  : StreamType::kRecordingOutput;
-    // TODO(henryhsu): PreviewClient should remove HW_VIDEO_ENCODER usage when
-    // multiple streams enabled.
-    auto usage = (param.first == ClientType::kPreviewClient)
-                     ? (cros::mojom::GRALLOC_USAGE_HW_COMPOSER |
-                        cros::mojom::GRALLOC_USAGE_HW_VIDEO_ENCODER)
-                     : cros::mojom::GRALLOC_USAGE_HW_VIDEO_ENCODER;
+    uint32_t usage;
+    switch (param.first) {
+      case ClientType::kPreviewClient:
+        usage = cros::mojom::GRALLOC_USAGE_HW_COMPOSER;
+        if (camera_app_device &&
+            camera_app_device->GetCaptureIntent() ==
+                cros::mojom::CaptureIntent::VIDEO_RECORD &&
+            !camera_app_device->IsMultipleStreamsEnabled()) {
+          usage |= cros::mojom::GRALLOC_USAGE_HW_VIDEO_ENCODER;
+        }
+        break;
+      case ClientType::kVideoClient:
+        usage = cros::mojom::GRALLOC_USAGE_HW_VIDEO_ENCODER;
+        break;
+      default:
+        NOTREACHED() << "Unrecognized client type: "
+                     << static_cast<int>(param.first);
+    }
     stream->id = static_cast<uint64_t>(stream_type);
     stream->stream_type = cros::mojom::Camera3StreamType::CAMERA3_STREAM_OUTPUT;
     stream->width = param.second.requested_format.frame_size.width();
@@ -937,7 +971,12 @@ void CameraDeviceDelegate::ConfigureStreams(
     stream_config->streams.push_back(std::move(still_capture_stream));
 
     int32_t max_yuv_width = 0, max_yuv_height = 0;
-    if (IsYUVReprocessingSupported(&max_yuv_width, &max_yuv_height)) {
+    bool is_recording_multi_stream =
+        camera_app_device->GetCaptureIntent() ==
+            cros::mojom::CaptureIntent::VIDEO_RECORD &&
+        camera_app_device->IsMultipleStreamsEnabled();
+    if (IsYUVReprocessingSupported(&max_yuv_width, &max_yuv_height) &&
+        !is_recording_multi_stream) {
       auto reprocessing_stream_input = cros::mojom::Camera3Stream::New();
       reprocessing_stream_input->id =
           static_cast<uint64_t>(StreamType::kYUVInput);
@@ -994,6 +1033,7 @@ void CameraDeviceDelegate::OnConfiguredStreams(
     int32_t result,
     cros::mojom::Camera3StreamConfigurationPtr updated_config) {
   DCHECK(ipc_task_runner_->BelongsToCurrentThread());
+  TRACE_EVENT_END("camera", GetTraceTrack(CameraTraceEvent::kConfigureStreams));
 
   if (device_context_->GetState() != CameraDeviceContext::State::kInitialized) {
     DCHECK_EQ(device_context_->GetState(),
@@ -1186,8 +1226,7 @@ void CameraDeviceDelegate::OnConstructedDefaultPreviewRequestSettings(
             chromeos::features::kPreferConstantFrameRate) ||
         (camera_app_device && camera_app_device->GetCaptureIntent() ==
                                   cros::mojom::CaptureIntent::VIDEO_RECORD);
-    int32_t target_min, target_max;
-    std::tie(target_min, target_max) = GetTargetFrameRateRange(
+    auto [target_min, target_max] = GetTargetFrameRateRange(
         static_metadata_, requested_frame_rate, prefer_constant_frame_rate);
     if (target_min == 0 || target_max == 0) {
       device_context_->SetErrorState(
@@ -1276,9 +1315,17 @@ void CameraDeviceDelegate::ProcessCaptureRequest(
     cros::mojom::Camera3CaptureRequestPtr request,
     base::OnceCallback<void(int32_t)> callback) {
   DCHECK(ipc_task_runner_->BelongsToCurrentThread());
+  TRACE_EVENT_BEGIN(
+      "camera", "Capture Request",
+      GetTraceTrack(CameraTraceEvent::kCaptureRequest, request->frame_number),
+      "frame_number", request->frame_number);
   for (const auto& output_buffer : request->output_buffers) {
-    TRACE_EVENT2("camera", "Capture Request", "frame_number",
-                 request->frame_number, "stream_id", output_buffer->stream_id);
+    TRACE_EVENT_BEGIN(
+        "camera", "Capture Stream",
+        GetTraceTrack(CameraTraceEvent::kCaptureStream, request->frame_number,
+                      output_buffer->stream_id),
+        "frame_number", request->frame_number, "stream_id",
+        output_buffer->stream_id);
   }
   current_request_frame_number_ = request->frame_number;
 

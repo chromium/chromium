@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <ostream>
 
 #include "base/check.h"
-#include "base/cxx17_backports.h"
 #include "base/i18n/number_formatting.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
@@ -85,7 +84,7 @@ DataUnits GetByteDisplayUnits(int64_t bytes) {
     return DATA_UNITS_BYTE;
   }
 
-  int unit_index = base::size(kUnitThresholds);
+  int unit_index = std::size(kUnitThresholds);
   while (--unit_index > 0) {
     if (bytes >= kUnitThresholds[unit_index])
       break;

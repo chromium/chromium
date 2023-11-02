@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -64,14 +64,24 @@ IconLoader::IconLoader() = default;
 
 IconLoader::~IconLoader() = default;
 
+absl::optional<IconKey> IconLoader::GetIconKey(const std::string& app_id) {
+  return absl::make_optional<IconKey>(0, 0, 0);
+}
+
 std::unique_ptr<IconLoader::Releaser> IconLoader::LoadIcon(
-    apps::mojom::AppType app_type,
+    AppType app_type,
     const std::string& app_id,
-    apps::mojom::IconType icon_type,
+    const IconType& icon_type,
     int32_t size_hint_in_dip,
     bool allow_placeholder_icon,
-    apps::mojom::Publisher::LoadIconCallback callback) {
-  return LoadIconFromIconKey(app_type, app_id, GetIconKey(app_id), icon_type,
+    apps::LoadIconCallback callback) {
+  auto icon_key = GetIconKey(app_id);
+  if (!icon_key.has_value()) {
+    std::move(callback).Run(std::make_unique<IconValue>());
+    return nullptr;
+  }
+
+  return LoadIconFromIconKey(app_type, app_id, icon_key.value(), icon_type,
                              size_hint_in_dip, allow_placeholder_icon,
                              std::move(callback));
 }

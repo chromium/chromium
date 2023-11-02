@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -68,11 +68,12 @@ TEST_F(FluentLanguageModelTest, Defaults) {
 }
 
 TEST_F(FluentLanguageModelTest, ThreeBlockedLanguages) {
-  base::Value fluent_languages(base::Value::Type::LIST);
+  base::Value::List fluent_languages;
   fluent_languages.Append("fr");
   fluent_languages.Append("ja");
   fluent_languages.Append("en");
-  prefs_->Set(translate::prefs::kBlockedLanguages, fluent_languages);
+  prefs_->SetList(translate::prefs::kBlockedLanguages,
+                  std::move(fluent_languages));
 
   FluentLanguageModel model(prefs_.get());
   EXPECT_THAT(model.GetLanguages(), ElementsAre(EqualsLd(Ld("fr", 1.0f / 1)),

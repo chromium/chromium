@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,8 +30,10 @@ struct Bounds {
   gfx::Rect caret;
   // Position of the autocorrect span, empty if not present.
   gfx::Rect autocorrect;
-  // Position of the current composition text in screen
-  gfx::Rect composition_text;
+
+  bool operator==(const Bounds& rhs) const {
+    return caret == rhs.caret && autocorrect == rhs.autocorrect;
+  }
 };
 
 // A interface to handle the assistive windows related method call.

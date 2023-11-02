@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,14 +11,14 @@
 #include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_ui_handler_impl.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "ui/webui/mojo_web_ui_controller.h"
+#include "ui/web_dialogs/web_dialog_ui.h"
 #include "url/gurl.h"
 
 namespace chromeos {
 
 // Controller for the ParentAccessUI, a WebUI which enables parent verification.
 // It is hosted at chrome://parent-access.
-class ParentAccessUI : public ui::MojoWebUIController {
+class ParentAccessUI : public ui::MojoWebDialogUI {
  public:
   explicit ParentAccessUI(content::WebUI* web_ui);
   ParentAccessUI(const ParentAccessUI&) = delete;

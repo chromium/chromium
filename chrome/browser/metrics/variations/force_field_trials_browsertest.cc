@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,12 +13,14 @@
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
+#include "base/test/mock_entropy_provider.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/variations/entropy_provider.h"
 #include "content/public/test/browser_test.h"
 
 namespace {
@@ -26,7 +28,7 @@ namespace {
 const char kEnabledGroupName[] = "Enabled";
 const char kDisabledGroupName[] = "Disabled";
 
-// Create 20 ONE_TIME_RANDOMIZED test trials to make sure they persist their
+// Create 20 OneTimeRandomization test trials to make sure they persist their
 // state correctly between runs. We use 20 trials instead of just a couple so
 // that if there's a failure, it likely won't be too flaky since the chance
 // of all 20 randomly getting the same state is very low.
@@ -38,11 +40,15 @@ const int kNumTestTrials = 20;
 // It spans multiple browser launches (using the PRE_ construct) and checks
 // that forcing two trials affects only those trials, but not other ones. For
 // the other trials, it checks that they get the same state between sessions
-// as they are ONE_TIME_RANDOMIZED.
+// as they use OneTimeRandomization.
 class ForceFieldTrialsBrowserTest : public InProcessBrowserTest,
                                     public testing::WithParamInterface<bool> {
  public:
-  ForceFieldTrialsBrowserTest() : metrics_consent_(GetParam()) {}
+  ForceFieldTrialsBrowserTest() : metrics_consent_(GetParam()) {
+    // Force the first trial to "Enabled" and the second to "Disabled".
+    base::FieldTrialList::CreateFieldTrial(GetTestTrialName(1), "Enabled");
+    base::FieldTrialList::CreateFieldTrial(GetTestTrialName(2), "Disabled");
+  }
 
   ForceFieldTrialsBrowserTest(const ForceFieldTrialsBrowserTest&) = delete;
   ForceFieldTrialsBrowserTest& operator=(const ForceFieldTrialsBrowserTest&) =
@@ -54,11 +60,11 @@ class ForceFieldTrialsBrowserTest : public InProcessBrowserTest,
     return base::StringPrintf("_TestTrial_%d", trial_number);
   }
 
-  // Creates a 50/50 trial with ONE_TIME_RANDOMIZED consistency.
+  // Creates a 50/50 trial with OneTimeRandomization consistency.
   void CreateFiftyPercentTrial(const std::string& trial_name) {
+    variations::SHA1EntropyProvider entropy_provider("fake_client_id");
     auto* trial = base::FieldTrialList::FactoryGetFieldTrial(
-        trial_name, 100, "Default", base::FieldTrial::ONE_TIME_RANDOMIZED,
-        nullptr);
+        trial_name, 100, "Default", entropy_provider);
     trial->AppendGroup(kEnabledGroupName, 50);
     trial->AppendGroup(kDisabledGroupName, 50);
   }
@@ -69,14 +75,6 @@ class ForceFieldTrialsBrowserTest : public InProcessBrowserTest,
     std::string file_name =
         "ForceFieldTrialsBrowserTest" + GetTestTrialName(trial_number);
     return user_data_dir.AppendASCII(file_name);
-  }
-
-  // InProcessBrowserTest:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    // Force the first trial to "Enabled" and the second to "Disabled".
-    command_line->AppendSwitchASCII(
-        switches::kForceFieldTrials,
-        GetTestTrialName(1) + "/Enabled/" + GetTestTrialName(2) + "/Disabled");
   }
 
   void SetUp() override {

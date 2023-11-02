@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,7 +24,7 @@ typedef struct {
 @protocol KeyboardObserverHelperConsumer <NSObject>
 
 // Indicates that the keyboard state changed, at least on one of the
-// |KeyboardState| aspects.
+// `KeyboardState` aspects.
 - (void)keyboardWillChangeToState:(KeyboardState)keyboardState;
 
 @end
@@ -32,13 +32,25 @@ typedef struct {
 // Helper to observe the keyboard and report updates.
 @interface KeyboardObserverHelper : NSObject
 
-// Flag that indicates if the keyboard is on screen.
-// TODO(crbug.com/974226): look into deprecating keyboardOnScreen for
-// isKeyboardVisible.
-@property(nonatomic, readonly, getter=isKeyboardOnScreen) BOOL keyboardOnScreen;
+// Singleton for KeyboardObserverHelper.
++ (instancetype)sharedKeyboardObserver;
 
-// The consumer to inform of the keyboard state changes.
-@property(nonatomic, weak) id<KeyboardObserverHelperConsumer> consumer;
+- (instancetype)init NS_UNAVAILABLE;
+
+// Adds consumer of KeyboardObserverHelper.
+- (void)addConsumer:(id<KeyboardObserverHelperConsumer>)consumer;
+
+// Flag that indicates if the keyboard is visible.
+@property(nonatomic, readonly, getter=isKeyboardVisible) BOOL keyboardVisible;
+
+// Returns keyboard's height if it covers the full width of the display,
+// otherwise returns 0. Note: This includes the keyboard accessory's height.
+// See also: `keyboardScreen`.
+@property(nonatomic, readonly) CGFloat visibleKeyboardHeight;
+
+// Screen where the keyboard is displayed. For use in multi-screen set-ups, like
+// Stage Manager.
++ (UIScreen*)keyboardScreen;
 
 @end
 

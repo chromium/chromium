@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,10 @@
 
 #import "base/ios/crb_protocol_observers.h"
 #import "base/ios/ios_util.h"
-#include "base/logging.h"
+#import "base/logging.h"
 #import "base/mac/foundation_util.h"
-#include "base/notreached.h"
-#include "base/strings/sys_string_conversions.h"
+#import "base/notreached.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/chrome_overlay_window.h"
 #import "ios/chrome/browser/sessions/scene_util.h"
@@ -33,7 +33,7 @@ enum class ContentVisibility {
   kIncognito,
 };
 
-// Returns the value of ContentVisibility depending on |isIncognito| boolean.
+// Returns the value of ContentVisibility depending on `isIncognito` boolean.
 ContentVisibility ContentVisibilityForIncognito(BOOL isIncognito) {
   return isIncognito ? ContentVisibility::kIncognito
                      : ContentVisibility::kRegular;
@@ -62,8 +62,6 @@ ContentVisibility ContentVisibilityForIncognito(BOOL isIncognito) {
 @implementation SceneState {
   ContentVisibility _contentVisibility;
 }
-
-@synthesize window = _window;
 
 - (instancetype)initWithAppState:(AppState*)appState {
   self = [super init];
@@ -104,26 +102,14 @@ ContentVisibility ContentVisibilityForIncognito(BOOL isIncognito) {
 
 #pragma mark - Setters & Getters.
 
-- (void)setWindow:(UIWindow*)window {
-  if (base::ios::IsSceneStartupSupported()) {
-    // No need to set anything, instead the getter is backed by scene.windows
-    // property.
-    return;
-  }
-  _window = window;
-}
-
 - (UIWindow*)window {
-  if (base::ios::IsSceneStartupSupported()) {
-    UIWindow* mainWindow = nil;
-    for (UIWindow* window in self.scene.windows) {
-      if ([window isKindOfClass:[ChromeOverlayWindow class]]) {
-        mainWindow = window;
-      }
+  UIWindow* mainWindow = nil;
+  for (UIWindow* window in self.scene.windows) {
+    if ([window isKindOfClass:[ChromeOverlayWindow class]]) {
+      mainWindow = window;
     }
-    return mainWindow;
   }
-  return _window;
+  return mainWindow;
 }
 
 - (NSString*)sceneSessionID {

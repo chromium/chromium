@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -53,8 +53,11 @@ void DecoderStreamTraits<DemuxerStream::AUDIO>::SetEncryptionType(
 
 DecoderStreamTraits<DemuxerStream::AUDIO>::DecoderStreamTraits(
     MediaLog* media_log,
-    ChannelLayout initial_hw_layout)
-    : media_log_(media_log), initial_hw_layout_(initial_hw_layout) {
+    ChannelLayout initial_hw_layout,
+    SampleFormat initial_hw_sample_format)
+    : media_log_(media_log),
+      initial_hw_layout_(initial_hw_layout),
+      initial_hw_sample_format_(initial_hw_sample_format) {
   weak_this_ = weak_factory_.GetWeakPtr();
 }
 
@@ -64,6 +67,7 @@ DecoderStreamTraits<DemuxerStream::AUDIO>::GetDecoderConfig(
   auto config = stream->audio_decoder_config();
   // Demuxer is not aware of hw layout, so we set it here.
   config.set_target_output_channel_layout(initial_hw_layout_);
+  config.set_target_output_sample_format(initial_hw_sample_format_);
   return config;
 }
 
@@ -102,7 +106,7 @@ void DecoderStreamTraits<DemuxerStream::AUDIO>::InitializeDecoder(
 void DecoderStreamTraits<DemuxerStream::AUDIO>::OnDecoderInitialized(
     DecoderType* decoder,
     InitCB cb,
-    Status result) {
+    DecoderStatus result) {
   if (result.is_ok())
     stats_.audio_pipeline_info.decoder_type = decoder->GetDecoderType();
   std::move(cb).Run(result);
@@ -227,7 +231,7 @@ void DecoderStreamTraits<DemuxerStream::VIDEO>::InitializeDecoder(
 void DecoderStreamTraits<DemuxerStream::VIDEO>::OnDecoderInitialized(
     DecoderType* decoder,
     InitCB cb,
-    Status result) {
+    DecoderStatus result) {
   if (result.is_ok()) {
     stats_.video_pipeline_info.decoder_type = decoder->GetDecoderType();
     DVLOG(2) << stats_.video_pipeline_info.decoder_type;

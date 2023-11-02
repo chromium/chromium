@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,8 +22,6 @@ namespace ash {
 
 class BluetoothDeviceListItemView;
 class TriView;
-
-namespace tray {
 
 // Fake BluetoothDetailedView implementation.
 class ASH_EXPORT FakeBluetoothDetailedView : public BluetoothDetailedView,
@@ -67,7 +65,6 @@ class ASH_EXPORT FakeBluetoothDetailedView : public BluetoothDetailedView,
   BluetoothDeviceListItemView* last_clicked_device_list_item_ = nullptr;
 };
 
-}  // namespace tray
 }  // namespace ash
 
 #endif  // ASH_SYSTEM_BLUETOOTH_FAKE_BLUETOOTH_DETAILED_VIEW_H_

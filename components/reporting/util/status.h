@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,14 +9,12 @@
 #include <iosfwd>
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/strings/string_piece.h"
 #include "components/reporting/util/status.pb.h"
 
 namespace reporting {
 namespace error {
 // These values must match error codes defined in google/rpc/code.proto
-// (https://github.com/googleapis/googleapis/blob/master/google/rpc/code.proto)
 // This also must match the order EnterpriseCloudReportingStatusCode at
 // tools/metrics/histograms/enums.xml and the integer of option shouldn't be
 // changed.
@@ -45,7 +43,7 @@ enum Code : int32_t {
 };
 }  // namespace error
 
-class WARN_UNUSED_RESULT Status {
+class [[nodiscard]] Status {
  public:
   // Creates a "successful" status.
   Status();

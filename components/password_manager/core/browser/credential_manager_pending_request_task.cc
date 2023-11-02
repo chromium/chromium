@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -95,9 +95,8 @@ void FilterDuplicates(std::vector<std::unique_ptr<PasswordForm>>* forms) {
 
   std::vector<std::unique_ptr<PasswordForm>> result;
   for (const PasswordForm* best_match : best_matches) {
-    auto it = base::ranges::find_if(*forms, [best_match](const auto& form) {
-      return best_match == form.get();
-    });
+    auto it = base::ranges::find(*forms, best_match,
+                                 &std::unique_ptr<PasswordForm>::get);
     DCHECK(it != forms->end());
     result.push_back(std::move(*it));
   }
@@ -173,6 +172,11 @@ void CredentialManagerPendingRequestTask::OnGetPasswordStoreResultsFrom(
     return;
   }
   AggregatePasswordStoreResults(std::move(results));
+}
+
+base::WeakPtr<PasswordStoreConsumer>
+CredentialManagerPendingRequestTask::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 void CredentialManagerPendingRequestTask::ProcessMigratedForms(
@@ -276,8 +280,9 @@ void CredentialManagerPendingRequestTask::ProcessForms(
           non_federated_matches.emplace_back(result.get());
         }
       }
-      delegate_->client()->PasswordWasAutofilled(non_federated_matches, origin_,
-                                                 &federated_matches);
+      delegate_->client()->PasswordWasAutofilled(
+          non_federated_matches, origin_, &federated_matches,
+          /*was_autofilled_on_pageload=*/false);
     }
     if (can_use_autosignin) {
       // The user had credentials, but either chose not to share them with the

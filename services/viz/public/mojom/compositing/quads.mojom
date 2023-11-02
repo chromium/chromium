@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@ import "services/viz/public/mojom/compositing/resource_id.mojom";
 import "services/viz/public/mojom/compositing/shared_element_resource_id.mojom";
 import "services/viz/public/mojom/compositing/shared_quad_state.mojom";
 import "services/viz/public/mojom/compositing/surface_range.mojom";
+import "skia/public/mojom/skcolor4f.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/color_space.mojom";
 import "ui/gfx/mojom/hdr_metadata.mojom";
@@ -29,7 +30,7 @@ enum OverlayPriority {
 
 struct DebugBorderQuadState {
   // Debug border color.
-  uint32 color;
+  skia.mojom.SkColor4f color;
 
   // Debug border width.
   int32 width;
@@ -65,20 +66,13 @@ struct CompositorRenderPassQuadState {
 };
 
 struct SolidColorQuadState {
-  uint32 color;
+  skia.mojom.SkColor4f color;
   bool force_anti_aliasing_off;
-};
-
-struct StreamVideoQuadState {
-  ResourceId resource_id;
-  gfx.mojom.Size resource_size_in_pixels;
-  gfx.mojom.PointF uv_top_left;
-  gfx.mojom.PointF uv_bottom_right;
 };
 
 struct SurfaceQuadState {
   SurfaceRange surface_range;
-  uint32 default_background_color;
+  skia.mojom.SkColor4f default_background_color;
   bool stretch_content_to_fill_bounds;
   bool is_reflection;
   bool allow_merge;
@@ -90,13 +84,15 @@ struct TextureQuadState {
   bool premultiplied_alpha;
   gfx.mojom.PointF uv_top_left;
   gfx.mojom.PointF uv_bottom_right;
-  uint32 background_color;
+  skia.mojom.SkColor4f background_color;
   array<float, 4> vertex_opacity;
   bool y_flipped;
   bool nearest_neighbor;
   bool secure_output_only;
+  bool is_stream_video;
   bool is_video_frame;
   ProtectedVideoState protected_video_type;
+  gfx.mojom.HDRMetadata? hdr_metadata;
   gfx.mojom.Rect? damage_rect;
   OverlayPriority overlay_priority_hint;
 };
@@ -111,10 +107,10 @@ struct TileQuadState {
 };
 
 struct YUVVideoQuadState {
-  gfx.mojom.RectF ya_tex_coord_rect;
-  gfx.mojom.RectF uv_tex_coord_rect;
-  gfx.mojom.Size ya_tex_size;
-  gfx.mojom.Size uv_tex_size;
+  gfx.mojom.Size coded_size;
+  gfx.mojom.Rect video_visible_rect;
+  uint8 u_scale;
+  uint8 v_scale;
   ResourceId y_plane_resource_id;
   ResourceId u_plane_resource_id;
   ResourceId v_plane_resource_id;
@@ -124,7 +120,7 @@ struct YUVVideoQuadState {
   uint32 bits_per_channel;
   gfx.mojom.ColorSpace video_color_space;
   ProtectedVideoState protected_video_type;
-  gfx.mojom.HDRMetadata hdr_metadata;
+  gfx.mojom.HDRMetadata? hdr_metadata;
   gfx.mojom.Rect? damage_rect;
 };
 
@@ -140,7 +136,6 @@ union DrawQuadState {
   DebugBorderQuadState debug_border_quad_state;
   CompositorRenderPassQuadState render_pass_quad_state;
   SolidColorQuadState solid_color_quad_state;
-  StreamVideoQuadState stream_video_quad_state;
   SurfaceQuadState surface_quad_state;
   TextureQuadState texture_quad_state;
   TileQuadState tile_quad_state;

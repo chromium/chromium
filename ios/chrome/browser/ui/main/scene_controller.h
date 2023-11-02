@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/app/application_delegate/tab_opening.h"
-#import "ios/chrome/app/application_delegate/tab_switching.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/main/connection_information.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
@@ -17,7 +16,6 @@
 // The controller object for a scene. Reacts to scene state changes.
 @interface SceneController : NSObject <SceneStateObserver,
                                        ApplicationCommands,
-                                       TabSwitching,
                                        ConnectionInformation,
                                        TabOpening,
                                        WebStateListObserving>
@@ -39,9 +37,8 @@
 // YES if the scene is presenting the signin view.
 @property(nonatomic, readonly) BOOL isPresentingSigninView;
 
-// The view controller that is active. Can be either a BrowserViewController or
-// TabGridViewController.
-@property(nonatomic, readonly) UIViewController* activeViewController;
+// YES if the tab grid is the main user interface at the moment.
+@property(nonatomic, readonly, getter=isTabGridVisible) BOOL tabGridVisible;
 
 // Handler for the UIWindowSceneDelegate callback with the same selector.
 - (void)performActionForShortcutItem:(UIApplicationShortcutItem*)shortcutItem

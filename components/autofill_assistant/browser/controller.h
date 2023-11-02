@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,15 +10,14 @@
 #include <vector>
 
 #include "base/callback_helpers.h"
-#include "components/autofill_assistant/browser/autofill_assistant_tts_controller.h"
-#include "components/autofill_assistant/browser/basic_interactions.h"
-#include "components/autofill_assistant/browser/bottom_sheet_state.h"
+#include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "components/autofill_assistant/browser/client.h"
 #include "components/autofill_assistant/browser/client_settings.h"
 #include "components/autofill_assistant/browser/element_area.h"
-#include "components/autofill_assistant/browser/event_handler.h"
+#include "components/autofill_assistant/browser/execution_delegate.h"
 #include "components/autofill_assistant/browser/metrics.h"
-#include "components/autofill_assistant/browser/public/runtime_manager_impl.h"
+#include "components/autofill_assistant/browser/public/runtime_manager.h"
 #include "components/autofill_assistant/browser/script.h"
 #include "components/autofill_assistant/browser/script_executor_delegate.h"
 #include "components/autofill_assistant/browser/script_tracker.h"
@@ -27,11 +26,12 @@
 #include "components/autofill_assistant/browser/state.h"
 #include "components/autofill_assistant/browser/suppress_keyboard_raii.h"
 #include "components/autofill_assistant/browser/trigger_context.h"
+#include "components/autofill_assistant/browser/ui_controller.h"
 #include "components/autofill_assistant/browser/ui_delegate.h"
-#include "components/autofill_assistant/browser/user_action.h"
 #include "components/autofill_assistant/browser/user_data.h"
 #include "components/autofill_assistant/browser/user_model.h"
 #include "components/autofill_assistant/browser/web/web_controller.h"
+#include "components/autofill_assistant/content/browser/annotate_dom_model_service.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -46,6 +46,10 @@ namespace base {
 class TickClock;
 }  // namespace base
 
+namespace password_manager {
+class PasswordChangeSuccessTracker;
+}  // namespace password_manager
+
 namespace autofill_assistant {
 class ControllerTest;
 
@@ -53,22 +57,22 @@ class ControllerTest;
 // display, execution and so on. The instance of this object self deletes when
 // the web contents is being destroyed.
 class Controller : public ScriptExecutorDelegate,
-                   public virtual UiDelegate,
                    public ScriptTracker::Listener,
                    private content::WebContentsObserver,
-                   public UserModel::Observer,
-                   public AutofillAssistantTtsController::TtsEventDelegate {
+                   public ExecutionDelegate {
  public:
-  // |web_contents|, |client|, |tick_clock| and |runtime_manager| must remain
-  // valid for the lifetime of the instance. Controller will take ownership of
-  // |service| if specified, otherwise will create and own the default service.
+  // |web_contents|, |client|, |tick_clock| and |script_executor_ui_delegate|
+  // must remain valid for the lifetime of the instance. Controller will take
+  // ownership of |service| and |web_controller| if specified, otherwise will
+  // create and own a default instance.
   Controller(content::WebContents* web_contents,
              Client* client,
              const base::TickClock* tick_clock,
-             base::WeakPtr<RuntimeManagerImpl> runtime_manager,
+             base::WeakPtr<RuntimeManager> runtime_manager,
              std::unique_ptr<Service> service,
-             std::unique_ptr<AutofillAssistantTtsController> tts_controller,
-             ukm::UkmRecorder* ukm_recorder);
+             std::unique_ptr<WebController> web_controller,
+             ukm::UkmRecorder* ukm_recorder,
+             AnnotateDomModelService* annotate_dom_model_service);
 
   Controller(const Controller&) = delete;
   Controller& operator=(const Controller&) = delete;
@@ -104,12 +108,9 @@ class Controller : public ScriptExecutorDelegate,
   bool Start(const GURL& deeplink_url,
              std::unique_ptr<TriggerContext> trigger_context);
 
-  // Returns true if the controller is in a state where UI is necessary.
-  bool NeedsUI() const { return needs_ui_; }
-
-  // Called when an accessibility service with "FEEDBACK_SPOKEN" feedback type
-  // is enabled or disabled.
-  void OnSpokenFeedbackAccessibilityServiceChanged(bool enabled);
+  const std::vector<ScriptHandle>& GetDirectActionScripts() const;
+  bool PerformDirectAction(int index, std::unique_ptr<TriggerContext> context);
+  base::Value GetDebugContext();
 
   // Overrides ScriptExecutorDelegate:
   const ClientSettings& GetSettings() override;
@@ -121,203 +122,85 @@ class Controller : public ScriptExecutorDelegate,
   const TriggerContext* GetTriggerContext() override;
   autofill::PersonalDataManager* GetPersonalDataManager() override;
   WebsiteLoginManager* GetWebsiteLoginManager() override;
+  password_manager::PasswordChangeSuccessTracker*
+  GetPasswordChangeSuccessTracker() override;
   content::WebContents* GetWebContents() override;
+  const std::string GetLocale() override;
+  void SetJsFlowLibrary(const std::string& js_flow_library) override;
+  JsFlowDevtoolsWrapper* GetJsFlowDevtoolsWrapper() override;
   std::string GetEmailAddressForAccessTokenAccount() override;
   ukm::UkmRecorder* GetUkmRecorder() override;
-
   void SetTouchableElementArea(const ElementAreaProto& area) override;
-  void SetStatusMessage(const std::string& message) override;
-  std::string GetStatusMessage() const override;
-  void SetBubbleMessage(const std::string& message) override;
-  std::string GetBubbleMessage() const override;
-  void SetTtsMessage(const std::string& message) override;
-  std::string GetTtsMessage() const override;
-  void MaybePlayTtsMessage() override;
-  void SetDetails(std::unique_ptr<Details>, base::TimeDelta delay) override;
-  void AppendDetails(std::unique_ptr<Details> details,
-                     base::TimeDelta delay) override;
-  void SetInfoBox(const InfoBox& info_box) override;
-  void ClearInfoBox() override;
-  bool SetProgressActiveStepIdentifier(
-      const std::string& active_step_identifier) override;
-  void SetProgressActiveStep(int active_step) override;
-  void SetProgressVisible(bool visible) override;
-  void SetProgressBarErrorState(bool error) override;
-  void SetStepProgressBarConfiguration(
-      const ShowProgressBarProto::StepProgressBarConfiguration& configuration)
-      override;
-  void SetUserActions(
-      std::unique_ptr<std::vector<UserAction>> user_actions) override;
   void SetViewportMode(ViewportMode mode) override;
-  void SetPeekMode(ConfigureBottomSheetProto::PeekMode peek_mode) override;
-  void ExpandBottomSheet() override;
-  void CollapseBottomSheet() override;
   void SetClientSettings(const ClientSettingsProto& client_settings) override;
-  bool SetForm(
-      std::unique_ptr<FormProto> form,
-      base::RepeatingCallback<void(const FormProto::Result*)> changed_callback,
-      base::OnceCallback<void(const ClientStatus&)> cancel_callback) override;
   void ExpectNavigation() override;
   bool IsNavigatingToNewDocument() override;
   bool HasNavigationError() override;
-  void SetGenericUi(
-      std::unique_ptr<GenericUserInterfaceProto> generic_ui,
-      base::OnceCallback<void(const ClientStatus&)> end_action_callback,
-      base::OnceCallback<void(const ClientStatus&)>
-          view_inflation_finished_callback) override;
-  void SetPersistentGenericUi(
-      std::unique_ptr<GenericUserInterfaceProto> generic_ui,
-      base::OnceCallback<void(const ClientStatus&)>
-          view_inflation_finished_callback) override;
-  void ClearGenericUi() override;
-  void ClearPersistentGenericUi() override;
   void SetBrowseModeInvisible(bool invisible) override;
   bool ShouldShowWarning() override;
-  void SetShowFeedbackChip(bool show_feedback_chip) override;
   ProcessedActionStatusDetailsProto& GetLogInfo() override;
+  bool MustUseBackendData() const override;
+
+  // Checks if given XML is signed or not.
+  bool IsXmlSigned(const std::string& xml_string) const override;
+
+  // Extracts attribute values from the |xml_string| corresponding to the
+  // |keys|.
+  const std::vector<std::string> ExtractValuesFromSingleTagXml(
+      const std::string& xml_string,
+      const std::vector<std::string>& keys) const override;
+
+  void OnActionsResponseReceived(
+      const RoundtripNetworkStats& network_stats) override;
 
   // Show the UI if it's not already shown. This is only meaningful while in
   // states where showing the UI is optional, such as RUNNING, in tracking mode.
   void RequireUI() override;
-  void SetUiShown(bool shown) override;
 
   void AddNavigationListener(
       ScriptExecutorDelegate::NavigationListener* listener) override;
   void RemoveNavigationListener(
       ScriptExecutorDelegate::NavigationListener* listener) override;
-  void AddListener(ScriptExecutorDelegate::Listener* listener) override;
-  void RemoveListener(ScriptExecutorDelegate::Listener* listener) override;
 
-  void SetExpandSheetForPromptAction(bool expand) override;
   void SetBrowseDomainsAllowlist(std::vector<std::string> domains) override;
 
   bool EnterState(AutofillAssistantState state) override;
+  AutofillAssistantState GetState() const override;
   void SetOverlayBehavior(
       ConfigureUiStateProto::OverlayBehavior overlay_behavior) override;
-  void SetCollectUserDataOptions(CollectUserDataOptions* options) override;
-  void SetLastSuccessfulUserDataOptions(std::unique_ptr<CollectUserDataOptions>
-                                            collect_user_data_options) override;
-  const CollectUserDataOptions* GetLastSuccessfulUserDataOptions()
-      const override;
   void WriteUserData(
-      base::OnceCallback<void(UserData*, UserData::FieldChange*)>) override;
+      base::OnceCallback<void(UserData*, UserDataFieldChange*)>) override;
   void OnScriptError(const std::string& error_message,
                      Metrics::DropOutReason reason);
   void OnNavigationShutdownOrError(const GURL& url,
                                    Metrics::DropOutReason reason);
 
-  // Overrides autofill_assistant::UiDelegate:
-  AutofillAssistantState GetState() const override;
-  std::vector<Details> GetDetails() const override;
-  const InfoBox* GetInfoBox() const override;
-  int GetProgressActiveStep() const override;
-  bool GetProgressVisible() const override;
-  bool GetTtsButtonVisible() const override;
-  TtsButtonState GetTtsButtonState() const override;
-  bool GetProgressBarErrorState() const override;
-  ShowProgressBarProto::StepProgressBarConfiguration
-  GetStepProgressBarConfiguration() const override;
-  const std::vector<UserAction>& GetUserActions() const override;
-  bool PerformUserActionWithContext(
-      int index,
-      std::unique_ptr<TriggerContext> context) override;
-  std::string GetDebugContext() override;
-  const CollectUserDataOptions* GetCollectUserDataOptions() const override;
-  const UserData* GetUserData() const override;
-  void SetShippingAddress(
-      std::unique_ptr<autofill::AutofillProfile> address) override;
-  void SetContactInfo(
-      std::unique_ptr<autofill::AutofillProfile> profile) override;
-  void SetCreditCard(
-      std::unique_ptr<autofill::CreditCard> card,
-      std::unique_ptr<autofill::AutofillProfile> billing_profile) override;
-  void SetTermsAndConditions(
-      TermsAndConditionsState terms_and_conditions) override;
-  void SetLoginOption(const std::string& identifier) override;
-  void OnTextLinkClicked(int link) override;
-  void OnFormActionLinkClicked(int link) override;
-  void OnTtsButtonClicked() override;
-  void SetDateTimeRangeStartDate(
-      const absl::optional<DateProto>& date) override;
-  void SetDateTimeRangeStartTimeSlot(
-      const absl::optional<int>& timeslot_index) override;
-  void SetDateTimeRangeEndDate(const absl::optional<DateProto>& date) override;
-  void SetDateTimeRangeEndTimeSlot(
-      const absl::optional<int>& timeslot_index) override;
-  void SetAdditionalValue(const std::string& client_memory_key,
-                          const ValueProto& value) override;
-  void GetTouchableArea(std::vector<RectF>* area) const override;
-  void GetRestrictedArea(std::vector<RectF>* area) const override;
+  // Overrides ExecutionDelegate:
+  bool NeedsUI() const override;
   void GetVisualViewport(RectF* visual_viewport) const override;
-  void OnFatalError(const std::string& error_message,
-                    bool show_feedback_chip,
-                    Metrics::DropOutReason reason) override;
-  void OnStop(const std::string& message,
-              const std::string& button_label) override;
-  void MaybeReportFirstCheckDone();
   ViewportMode GetViewportMode() override;
-  ConfigureBottomSheetProto::PeekMode GetPeekMode() override;
-  BottomSheetState GetBottomSheetState() override;
-  void SetBottomSheetState(BottomSheetState state) override;
   bool IsTabSelected() override;
   void SetTabSelected(bool selected) override;
   void GetOverlayColors(OverlayColors* colors) const override;
-  const ClientSettings& GetClientSettings() const override;
-  const FormProto* GetForm() const override;
-  const FormProto::Result* GetFormResult() const override;
-  void SetCounterValue(int input_index, int counter_index, int value) override;
-  void SetChoiceSelected(int input_index,
-                         int choice_index,
-                         bool selected) override;
-  void AddObserver(ControllerObserver* observer) override;
-  void RemoveObserver(const ControllerObserver* observer) override;
-  void DispatchEvent(const EventHandler::EventKey& key) override;
-  UserModel* GetUserModel() override;
-  EventHandler* GetEventHandler() override;
-  bool ShouldPromptActionExpandSheet() const override;
-  BasicInteractions* GetBasicInteractions() override;
-  const GenericUserInterfaceProto* GetGenericUiProto() const override;
-  const GenericUserInterfaceProto* GetPersistentGenericUiProto() const override;
-  bool ShouldShowOverlay() const override;
   bool ShouldSuppressKeyboard() const override;
   void SuppressKeyboard(bool suppress) override;
+  UserData* GetUserData() override;
+  UserModel* GetUserModel() override;
+  bool ShouldShowOverlay() const override;
+  const ClientSettings& GetClientSettings() const override;
   void ShutdownIfNecessary() override;
-  void OnKeyboardVisibilityChanged(bool visible) override;
-  void OnInputTextFocusChanged(bool is_text_focused) override;
+  void NotifyUserDataChange(UserDataFieldChange field_change) override;
+  void GetTouchableArea(std::vector<RectF>* area) const override;
+  void GetRestrictedArea(std::vector<RectF>* area) const override;
+  void OnFatalError(const std::string& error_message,
+                    Metrics::DropOutReason reason) override;
+  void SetUiShown(bool shown) override;
 
-  // Overrides AutofillAssistantTtsController::TtsEventDelegate
-  void OnTtsEvent(AutofillAssistantTtsController::TtsEventType event) override;
+  void AddObserver(ControllerObserver* observer) override;
+  void RemoveObserver(const ControllerObserver* observer) override;
 
  private:
   friend ControllerTest;
-
-  // A holder class which contains some details and, optionally, a timer that
-  // will "enable" them later on.
-  class DetailsHolder {
-   public:
-    DetailsHolder(std::unique_ptr<Details> details,
-                  std::unique_ptr<base::OneShotTimer> timer);
-    ~DetailsHolder();
-    DetailsHolder(DetailsHolder&& other);
-    DetailsHolder& operator=(DetailsHolder&& other);
-
-    // The details held by this object.
-    const Details& GetDetails() const;
-
-    // Whether the details held by this object are visible. Will return false if
-    // a timer was set and was not reached yet.
-    bool CurrentlyVisible() const;
-
-    // Enable the details held by this object so that they are shown (i.e.
-    // CurrentlyVisible() returns true).
-    //
-    // In practice, this is called at most once when |timer_| is triggered.
-    void Enable();
-
-   private:
-    std::unique_ptr<Details> details_;
-    std::unique_ptr<base::OneShotTimer> timer_;
-  };
 
   void SetWebControllerForTest(std::unique_ptr<WebController> web_controller);
 
@@ -334,7 +217,8 @@ class Controller : public ScriptExecutorDelegate,
 
   void OnGetScripts(const GURL& url,
                     int http_status,
-                    const std::string& response);
+                    const std::string& response,
+                    const ServiceRequestSender::ResponseInfo& response_info);
 
   // Execute |script_path| and, if execution succeeds, enter |end_state| and
   // call |on_success|.
@@ -356,27 +240,15 @@ class Controller : public ScriptExecutorDelegate,
   void StopPeriodicScriptChecks();
   void OnPeriodicScriptCheck();
 
+  void MaybeReportFirstCheckDone();
+
   // Runs autostart scripts from |runnable_scripts|, if the conditions are
   // right. Nothing happens if an empty vector is passed.
   // If none of the scripts is autostartable or too many are, it stops the
   // execution with an error.
   void MaybeAutostartScript(const std::vector<ScriptHandle>& runnable_scripts);
 
-  // Creates a user action for each script with a direct action and sets the
-  // list as the current user action list.
-  void UpdateDirectActions(const std::vector<ScriptHandle>& runnable_scripts);
-
-  void DisableAutostart();
-
   void InitFromParameters();
-
-  // Called when a script is selected.
-  void OnScriptSelected(const ScriptHandle& handle,
-                        std::unique_ptr<TriggerContext> context);
-
-  void UpdateCollectUserDataActions();
-  void OnCollectUserDataContinueButtonClicked();
-  void OnCollectUserDataAdditionalActionTriggered(int index);
 
   // Overrides ScriptTracker::Listener:
   void OnNoRunnableScriptsForPage() override;
@@ -390,17 +262,12 @@ class Controller : public ScriptExecutorDelegate,
       content::NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
-  void DocumentAvailableInMainFrame(
-      content::RenderFrameHost* render_frame_host) override;
+  void PrimaryMainDocumentElementAvailable() override;
   void PrimaryMainFrameRenderProcessGone(
       base::TerminationStatus status) override;
   void OnWebContentsFocused(
       content::RenderWidgetHost* render_widget_host) override;
   void WebContentsDestroyed() override;
-
-  // Overrides autofill_assistant::UserModel::Observer:
-  void OnValueChanged(const std::string& identifier,
-                      const ValueProto& new_value) override;
 
   void OnTouchableAreaChanged(const RectF& visual_viewport,
                               const std::vector<RectF>& touchable_areas,
@@ -409,18 +276,21 @@ class Controller : public ScriptExecutorDelegate,
   void SetOverlayColors(std::unique_ptr<OverlayColors> colors);
   void ReportNavigationStateChanged();
   void SetProfile(const std::string& key,
-                  UserData::FieldChange field_change,
+                  UserDataFieldChange field_change,
                   std::unique_ptr<autofill::AutofillProfile> profile);
 
   // Show the first "Opening..." message and enter START state.
   void ShowFirstMessageAndStart();
 
   // Clear out visible state and enter the stopped state.
-  // If |show_feedback_chip| is true, a "Send feedback" chip will be added to
-  // the bottom sheet.
-  void EnterStoppedState(bool show_feedback_chip);
+  void EnterStoppedState();
 
-  void OnFeedbackChipClicked();
+  // Configure the UI for the stopped state, clearing out visible state except
+  // for the message and possibly the "Send feedback" chip.
+  void SetStoppedUI();
+
+  // Notifies observers and shuts down.
+  void Shutdown(Metrics::DropOutReason reason);
 
   ElementArea* touchable_element_area();
   ScriptTracker* script_tracker();
@@ -431,41 +301,41 @@ class Controller : public ScriptExecutorDelegate,
 
   bool StateNeedsUI(AutofillAssistantState state);
 
-  bool ShouldChipsBeVisible();
-  bool ShouldUpdateChipVisibility();
-  void SetVisibilityAndUpdateUserActions();
-
-  void MakeDetailsVisible(size_t details_index);
-  void NotifyDetailsChanged();
-
-  // This represents the display strings locale to be used for the currently
-  // executing set of actions. This locale is used in two ways currently:
-  // 1. Locale of backend provided display strings, if available.
-  // 2. TTS Controller uses this locale for playing TTS messages.
-  std::string GetDisplayStringsLocale();
-  void SetTtsButtonState(TtsButtonState state);
-
   // Resets the controller to the initial state.
   void ResetState();
+  void SetDirectActionScripts(
+      const std::vector<ScriptHandle>& direct_action_scripts);
+
+  // Records flow metrics. This may be invoked multiple times per flow, but will
+  // only record the first impression for each flow.
+  void MaybeRecordFlowFinishedMetrics(Metrics::FlowFinishedState state);
+
+  // Sets the semantic selector in the DOM annotation service.
+  void SetSemanticSelectorPolicy(SemanticSelectorPolicy policy);
+
+  void MaybeUpdateClientContextAndGetScriptsForUrl(const GURL& url);
+  void OnGetAnnotateDomModelVersionForGetScripts(
+      const GURL& url,
+      absl::optional<int64_t> model_version);
+  void GetScriptsForUrl(const GURL& url);
 
   ClientSettings settings_;
-  Client* const client_;
-  const base::TickClock* const tick_clock_;
-  base::WeakPtr<RuntimeManagerImpl> runtime_manager_;
-
-  // Lazily instantiate in GetWebController().
-  std::unique_ptr<WebController> web_controller_;
+  const raw_ptr<Client> client_;
+  const raw_ptr<const base::TickClock> tick_clock_;
+  base::WeakPtr<RuntimeManager> runtime_manager_;
 
   // An instance to suppress keyboard. If this is not nullptr, the keyboard
   // is suppressed.
   std::unique_ptr<SuppressKeyboardRAII> suppress_keyboard_raii_;
 
-  // Lazily instantiate in GetService().
   std::unique_ptr<Service> service_;
+
+  // Lazily instantiate in GetWebController().
+  std::unique_ptr<WebController> web_controller_;
+
   std::unique_ptr<TriggerContext> trigger_context_;
 
   AutofillAssistantState state_ = AutofillAssistantState::INACTIVE;
-  bool can_recover_from_stopped_ = false;
 
   // The URL passed to Start(). Used only as long as there's no committed URL.
   // Note that this is the deeplink passed by a caller.
@@ -498,59 +368,18 @@ class Controller : public ScriptExecutorDelegate,
   // Lazily instantiate in touchable_element_area().
   std::unique_ptr<ElementArea> touchable_element_area_;
 
-  // Current status message, may be empty.
-  std::string status_message_;
-
-  // Current TTS message to be played, may be empty.
-  std::string tts_message_;
-
-  // Current bubble / tooltip message, may be empty.
-  std::string bubble_message_;
-
-  // Current details, may be empty.
-  std::vector<DetailsHolder> details_;
-
-  // Current info box, may be null.
-  std::unique_ptr<InfoBox> info_box_;
-
-  // Current state of the progress bar.
-  bool progress_visible_ = true;
-  bool progress_bar_error_state_ = false;
-  ShowProgressBarProto::StepProgressBarConfiguration
-      step_progress_bar_configuration_;
-  int progress_active_step_ = 0;
-
-  // Current set of user actions. May be null, but never empty.
-  std::unique_ptr<std::vector<UserAction>> user_actions_;
+  // Current set of direct actions.
+  std::vector<ScriptHandle> direct_action_scripts_;
 
   // Current viewport mode.
   ViewportMode viewport_mode_ = ViewportMode::NO_RESIZE;
-
-  // Current peek mode.
-  ConfigureBottomSheetProto::PeekMode peek_mode_ =
-      ConfigureBottomSheetProto::HANDLE;
-  bool auto_change_peek_mode_ = false;
-
-  // The latest bottom sheet state stored.
-  BottomSheetState bottom_sheet_state_ = BottomSheetState::UNDEFINED;
 
   // Whether the tab associated with this controller is currently selected.
   bool tab_selected_ = true;
 
   std::unique_ptr<OverlayColors> overlay_colors_;
 
-  // A copy of the most recently set user data options. Can be used to determine
-  // which information was requested.
-  std::unique_ptr<CollectUserDataOptions> last_collect_user_data_options_;
-  CollectUserDataOptions* collect_user_data_options_ = nullptr;
   UserData user_data_;
-
-  std::unique_ptr<FormProto> form_;
-  std::unique_ptr<FormProto::Result> form_result_;
-  base::RepeatingCallback<void(const FormProto::Result*)>
-      form_changed_callback_ = base::DoNothing();
-  base::OnceCallback<void(const ClientStatus&)> form_cancel_callback_ =
-      base::DoNothing();
 
   // Value for ScriptExecutorDelegate::IsNavigatingToNewDocument()
   bool navigating_to_new_document_ = false;
@@ -564,10 +393,10 @@ class Controller : public ScriptExecutorDelegate,
   base::ObserverList<ScriptExecutorDelegate::NavigationListener>
       navigation_listeners_;
 
-  base::ObserverList<ScriptExecutorDelegate::Listener> listeners_;
-
   // The next DidStartNavigation will not cause an error.
   bool expect_navigation_ = false;
+
+  std::unique_ptr<JsFlowDevtoolsWrapper> js_flow_devtools_wrapper_;
 
   // Tracks scripts and script execution. It's kept at the end, as it tend to
   // depend on everything the controller support, through script and script
@@ -612,32 +441,24 @@ class Controller : public ScriptExecutorDelegate,
   // was taken.
   absl::optional<Metrics::DropOutReason> delayed_shutdown_reason_;
 
-  EventHandler event_handler_;
   UserModel user_model_;
-  BasicInteractions basic_interactions_{this};
 
-  bool expand_sheet_for_prompt_action_ = true;
   std::vector<std::string> browse_domains_allowlist_;
   bool browse_mode_invisible_ = false;
-  bool is_keyboard_showing_ = false;
-  bool is_focus_on_bottom_sheet_text_input_ = false;
-  bool show_feedback_chip_on_graceful_shutdown_ = false;
-  bool are_chips_visible_ = true;
-
-  bool tts_enabled_ = false;
-  std::unique_ptr<AutofillAssistantTtsController> tts_controller_;
-  TtsButtonState tts_button_state_ = TtsButtonState::DEFAULT;
-
-  // Only set during a ShowGenericUiAction.
-  std::unique_ptr<GenericUserInterfaceProto> generic_user_interface_;
-
-  std::unique_ptr<GenericUserInterfaceProto> persistent_generic_user_interface_;
 
   // Log information about action execution. Gets reset at the start of every
   // action and attached to the action result on completion.
   ProcessedActionStatusDetailsProto log_info_;
 
-  ukm::UkmRecorder* ukm_recorder_;
+  raw_ptr<ukm::UkmRecorder> ukm_recorder_;
+
+  // If instantiated, will start delivering the required model for annotating
+  // DOM nodes. May be nullptr.
+  const raw_ptr<AnnotateDomModelService> annotate_dom_model_service_;
+
+  // The accumulated network stats of an entire flow. Used for metrics upon
+  // flow completion.
+  RoundtripNetworkStats accumulated_network_stats_;
 
   base::WeakPtrFactory<Controller> weak_ptr_factory_{this};
 };

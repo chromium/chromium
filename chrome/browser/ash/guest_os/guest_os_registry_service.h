@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,8 +17,9 @@
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/ash/crostini/crostini_simple_types.h"
-#include "chrome/browser/ash/crostini/crostini_util.h"
-#include "chromeos/dbus/vm_applications/apps.pb.h"
+#include "chrome/browser/ash/guest_os/guest_id.h"
+#include "chrome/browser/ash/guest_os/public/types.h"
+#include "chromeos/ash/components/dbus/vm_applications/apps.pb.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/mojom/app_service.mojom.h"
@@ -33,6 +34,10 @@ class Clock;
 class Time;
 }  // namespace base
 
+namespace apps {
+class SvgIconTranscoder;
+}  // namespace apps
+
 namespace vm_tools {
 namespace apps {
 class ApplicationList;
@@ -40,6 +45,8 @@ class ApplicationList;
 }  // namespace vm_tools
 
 namespace guest_os {
+
+using IconContentCallback = base::OnceCallback<void(std::string)>;
 
 // The GuestOsRegistryService  stores information about Desktop Entries (apps)
 // in Crostini. We store this in prefs so that it is readily available even when
@@ -71,8 +78,6 @@ namespace guest_os {
 // so some care is required.
 class GuestOsRegistryService : public KeyedService {
  public:
-  using VmType = vm_tools::apps::ApplicationList_VmType;
-
   class Registration {
    public:
     Registration(const std::string app_id, const base::Value pref);
@@ -109,8 +114,11 @@ class GuestOsRegistryService : public KeyedService {
     bool CanUninstall() const;
 
    private:
-    std::string LocalizedString(base::StringPiece key) const;
-    std::set<std::string> LocalizedList(base::StringPiece key) const;
+    std::string GetString(base::StringPiece key) const;
+    bool GetBool(base::StringPiece key) const;
+    base::Time GetTime(base::StringPiece key) const;
+    std::string GetLocalizedString(base::StringPiece key) const;
+    std::set<std::string> GetLocalizedList(base::StringPiece key) const;
 
     std::string app_id_;
     base::Value pref_;
@@ -195,7 +203,7 @@ class GuestOsRegistryService : public KeyedService {
   // Fetches icons from container.
   void RequestIcon(const std::string& app_id,
                    ui::ResourceScaleFactor scale_factor,
-                   base::OnceCallback<void(std::string)> callback);
+                   IconContentCallback callback);
 
   // Remove all apps from the named VM and container. If |container_name| is an
   // empty string, this function removes all apps associated with the VM,
@@ -216,7 +224,7 @@ class GuestOsRegistryService : public KeyedService {
   // Inform the registry that the badge color for `container_id` has changed. In
   // practice, this sends an update notification for all apps associated with
   // this container, which will prompt the icons to be regenerated.
-  void ContainerBadgeColorChanged(const crostini::ContainerId& container_id);
+  void ContainerBadgeColorChanged(const guest_os::GuestId& container_id);
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -255,19 +263,33 @@ class GuestOsRegistryService : public KeyedService {
   // Removes all the icons installed for an application.
   void RemoveAppData(const std::string& app_id);
 
-  // Migrates terminal from old crosh-based terminal to new Terminal System App.
-  // Old terminal is removed from registry, and launcher position and pinned
-  // attribute is copied to the new terminal.
-  // TODO(crbug.com/1019021):  Keep this code for at least 1 release after
-  // TerminalSystemApp feature is removed.  Current expectation is to remove
-  // feature in M83, this function can then be remoevd after M84.
-  void MigrateTerminal() const;
-
   // Apply container-specific badging to `icon`. This is run after the generic
   // icon loading code.
   void ApplyContainerBadge(SkColor badge_color,
                            apps::LoadIconCallback callback,
                            apps::IconValuePtr icon);
+
+  // Call the callbacks |active_icon_requests_| for |app_id|.
+  void InvokeActiveIconCallbacks(std::string app_id,
+                                 ui::ResourceScaleFactor scale_factor,
+                                 std::string icon_content);
+
+  // If a valid .svg file is found at |svg_path|, transcode it to png and save
+  // it to |png_path| and invoke |callback|, otherwise invoke |fallback|.
+  void TranscodeIconFromSvg(
+      base::FilePath svg_path,
+      base::FilePath png_path,
+      apps::IconType icon_type,
+      int32_t size_hint_in_dip,
+      apps::IconEffects icon_effects,
+      base::OnceCallback<void(apps::LoadIconCallback)> fallback,
+      apps::LoadIconCallback callback);
+
+  // Callback for when a saved container icon is svg and was transcoded.
+  void OnSvgIconTranscoded(std::string app_id,
+                           ui::ResourceScaleFactor scale_factor,
+                           std::string svg_icon_content,
+                           std::string png_icon_content);
 
   // Owned by the Profile.
   Profile* const profile_;
@@ -289,10 +311,11 @@ class GuestOsRegistryService : public KeyedService {
   // which means there's a good chance the container is online and the request
   // will then succeed.
   std::map<std::pair<std::string, ui::ResourceScaleFactor>,
-           std::vector<base::OnceCallback<void(std::string)>>>
+           std::vector<IconContentCallback>>
       active_icon_requests_;
   std::map<std::string, uint32_t> retry_icon_requests_;
 
+  std::unique_ptr<apps::SvgIconTranscoder> svg_icon_transcoder_;
   base::WeakPtrFactory<GuestOsRegistryService> weak_ptr_factory_{this};
 };
 

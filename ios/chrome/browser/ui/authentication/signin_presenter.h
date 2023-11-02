@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 
 // Protocol used to display signin UI.
 @protocol SigninPresenter
-// Asks the presenter to display the signin UI configured by |command|.
+// Asks the presenter to display the signin UI configured by `command`.
 - (void)showSignin:(ShowSigninCommand*)command;
 @end
 

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,9 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "base/time/time.h"
 #include "components/viz/client/frame_evictor.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
@@ -95,6 +97,7 @@ class CONTENT_EXPORT DelegatedFrameHost
   // ui::CompositorObserver implementation.
   void OnCompositingShuttingDown(ui::Compositor* compositor) override;
 
+  void ClearFallbackSurfaceForCommitPending();
   void ResetFallbackToFirstNavigationSurface();
 
   // viz::HostFrameSinkClient implementation.
@@ -218,9 +221,9 @@ class CONTENT_EXPORT DelegatedFrameHost
       FrameEvictionState frame_eviction_state);
 
   const viz::FrameSinkId frame_sink_id_;
-  DelegatedFrameHostClient* const client_;
+  const raw_ptr<DelegatedFrameHostClient> client_;
   const bool should_register_frame_sink_id_;
-  ui::Compositor* compositor_ = nullptr;
+  raw_ptr<ui::Compositor> compositor_ = nullptr;
 
   // The LocalSurfaceId of the currently embedded surface.
   viz::LocalSurfaceId local_surface_id_;
@@ -233,7 +236,7 @@ class CONTENT_EXPORT DelegatedFrameHost
   // TODO(ccameron): The meaning of "current" should be made more clear here.
   gfx::Size current_frame_size_in_dip_;
 
-  viz::HostFrameSinkManager* const host_frame_sink_manager_;
+  const raw_ptr<viz::HostFrameSinkManager> host_frame_sink_manager_;
 
   std::unique_ptr<viz::FrameEvictor> frame_evictor_;
 

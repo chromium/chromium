@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@
 #include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
@@ -21,6 +20,7 @@
 #include "base/process/process_metrics.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/current_thread.h"
@@ -34,9 +34,7 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/base/port_util.h"
-#include "net/cert/internal/extended_key_usage.h"
-#include "net/cert/pem.h"
-#include "net/cert/test_root_certs.h"
+#include "net/cert/pki/extended_key_usage.h"
 #include "net/log/net_log_source.h"
 #include "net/socket/next_proto.h"
 #include "net/socket/ssl_server_socket.h"
@@ -54,15 +52,11 @@
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "net/test/revocation_builder.h"
 #include "net/test/test_data_directory.h"
-#include "net/third_party/quiche/src/spdy/core/spdy_frame_builder.h"
+#include "net/third_party/quiche/src/quiche/spdy/core/spdy_frame_builder.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/boringssl/src/include/openssl/bytestring.h"
-#include "third_party/boringssl/src/include/openssl/evp.h"
-#include "third_party/boringssl/src/include/openssl/rsa.h"
 #include "url/origin.h"
 
-namespace net {
-namespace test_server {
+namespace net::test_server {
 
 namespace {
 
@@ -168,7 +162,7 @@ bool MaybeCreateOCSPResponse(CertBuilder* target,
   using OCSPProduced = EmbeddedTestServer::OCSPConfig::Produced;
   switch (config.produced) {
     case OCSPProduced::kValid:
-      produced_at = now - base::Days(1);
+      produced_at = std::max(now - base::Days(1), target_not_before);
       break;
     case OCSPProduced::kBeforeCert:
       produced_at = target_not_before - base::Days(1);
@@ -282,18 +276,14 @@ EmbeddedTestServer::EmbeddedTestServer() : EmbeddedTestServer(TYPE_HTTP) {}
 
 EmbeddedTestServer::EmbeddedTestServer(Type type,
                                        HttpConnection::Protocol protocol)
-    : is_using_ssl_(type == TYPE_HTTPS),
-      protocol_(protocol),
-      connection_listener_(nullptr),
-      port_(0),
-      cert_(CERT_OK) {
+    : is_using_ssl_(type == TYPE_HTTPS), protocol_(protocol) {
   DCHECK(thread_checker_.CalledOnValidThread());
   // HTTP/2 is only valid by negotiation via TLS ALPN
   DCHECK(protocol_ != HttpConnection::Protocol::kHttp2 || type == TYPE_HTTPS);
 
   if (!is_using_ssl_)
     return;
-  RegisterTestCerts();
+  scoped_test_root_ = RegisterTestCerts();
 }
 
 EmbeddedTestServer::~EmbeddedTestServer() {
@@ -308,12 +298,12 @@ EmbeddedTestServer::~EmbeddedTestServer() {
   }
 }
 
-void EmbeddedTestServer::RegisterTestCerts() {
+ScopedTestRoot EmbeddedTestServer::RegisterTestCerts() {
   base::ScopedAllowBlockingForTesting allow_blocking;
-  TestRootCerts* root_certs = TestRootCerts::GetInstance();
-  bool added_root_certs = root_certs->AddFromFile(GetRootCertPemPath());
-  DCHECK(added_root_certs)
-      << "Failed to install root cert from EmbeddedTestServer";
+  auto root = ImportCertFromFile(GetRootCertPemPath());
+  if (!root)
+    return ScopedTestRoot();
+  return ScopedTestRoot(root.get());
 }
 
 void EmbeddedTestServer::SetConnectionListener(
@@ -406,20 +396,7 @@ bool EmbeddedTestServer::InitializeCertAndKeyFromFile() {
   if (!x509_cert_)
     return false;
 
-  base::FilePath key_path = certs_dir.AppendASCII(cert_name);
-  std::string key_string;
-  if (!base::ReadFileToString(key_path, &key_string))
-    return false;
-  std::vector<std::string> headers;
-  headers.push_back("PRIVATE KEY");
-  PEMTokenizer pem_tokenizer(key_string, headers);
-  if (!pem_tokenizer.GetNext())
-    return false;
-
-  CBS cbs;
-  CBS_init(&cbs, reinterpret_cast<const uint8_t*>(pem_tokenizer.data().data()),
-           pem_tokenizer.data().size());
-  private_key_.reset(EVP_parse_private_key(&cbs));
+  private_key_ = LoadPrivateKeyFromFile(certs_dir.AppendASCII(cert_name));
   return !!private_key_;
 }
 
@@ -433,65 +410,44 @@ bool EmbeddedTestServer::GenerateCertAndKey() {
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::FilePath certs_dir(GetTestCertsDirectory());
 
-  // Load root cert and key:
-  scoped_refptr<X509Certificate> root_cert =
-      ImportCertFromFile(certs_dir, "root_ca_cert.pem");
-  if (!root_cert)
-    return false;
+  std::unique_ptr<CertBuilder> static_root = CertBuilder::FromStaticCertFile(
+      certs_dir.AppendASCII("root_ca_cert.pem"));
 
-  // TODO(mattm): root_ca_cert.pem has the key encoded as RSAPrivateKeyInfo.
-  // Change to have it encoded as PrivateKeyInfo so that EVP_parse_private_key
-  // can be used?
-  base::FilePath key_path = certs_dir.AppendASCII("root_ca_cert.pem");
-  std::string key_string;
-  if (!base::ReadFileToString(key_path, &key_string))
-    return false;
-  std::vector<std::string> headers;
-  headers.push_back("RSA PRIVATE KEY");
-  PEMTokenizer pem_tokenizer(key_string, headers);
-  if (!pem_tokenizer.GetNext())
-    return false;
-  bssl::UniquePtr<EVP_PKEY> root_private_key(EVP_PKEY_new());
-  if (!root_private_key)
-    return false;
-  bssl::UniquePtr<RSA> rsa_key(RSA_private_key_from_bytes(
-      reinterpret_cast<const uint8_t*>(pem_tokenizer.data().data()),
-      pem_tokenizer.data().size()));
-  if (!rsa_key)
-    return false;
-  if (!EVP_PKEY_set1_RSA(root_private_key.get(), rsa_key.get()))
-    return false;
-
-  std::unique_ptr<CertBuilder> static_root = CertBuilder::FromStaticCert(
-      root_cert->cert_buffer(), root_private_key.get());
-
+  auto now = base::Time::Now();
   // Will be nullptr if cert_config_.intermediate == kNone.
   std::unique_ptr<CertBuilder> intermediate;
   std::unique_ptr<CertBuilder> leaf;
 
   if (cert_config_.intermediate != IntermediateType::kNone) {
-    CertificateList orig_leaf_and_intermediate = CreateCertificateListFromFile(
-        certs_dir, "ok_cert_by_intermediate.pem", X509Certificate::FORMAT_AUTO);
-    if (orig_leaf_and_intermediate.size() != 2)
+    intermediate = CertBuilder::FromFile(
+        certs_dir.AppendASCII("intermediate_ca_cert.pem"), static_root.get());
+    if (!intermediate)
       return false;
+    intermediate->SetValidity(now - base::Days(100), now + base::Days(1000));
 
-    intermediate = std::make_unique<CertBuilder>(
-        orig_leaf_and_intermediate[1]->cert_buffer(), static_root.get());
-
-    leaf = std::make_unique<CertBuilder>(
-        orig_leaf_and_intermediate[0]->cert_buffer(), intermediate.get());
+    leaf = CertBuilder::FromFile(certs_dir.AppendASCII("ok_cert.pem"),
+                                 intermediate.get());
+    // Workaround for weird CertVerifyProcWin issue where if too many
+    // intermediates with the same key are fetched by AIA any further
+    // verifications using that key will fail. See
+    // https://crbug.com/1328060. Since generating ECDSA keys is cheap, just do
+    // this on all configurations rather than restricting to Windows, though
+    // this hack can be removed once we delete CertVerifyProcWin.
+    if (cert_config_.intermediate == IntermediateType::kByAIA) {
+      intermediate->GenerateECKey();
+      leaf->SetSignatureAlgorithm(SignatureAlgorithm::kEcdsaSha256);
+    }
   } else {
-    scoped_refptr<X509Certificate> orig_leaf =
-        ImportCertFromFile(certs_dir, "ok_cert.pem");
-    if (!orig_leaf)
-      return false;
-
-    leaf = std::make_unique<CertBuilder>(orig_leaf->cert_buffer(),
-                                         static_root.get());
+    leaf = CertBuilder::FromFile(certs_dir.AppendASCII("ok_cert.pem"),
+                                 static_root.get());
   }
+  if (!leaf)
+    return false;
 
   std::vector<GURL> leaf_ca_issuers_urls;
   std::vector<GURL> leaf_ocsp_urls;
+
+  leaf->SetValidity(now - base::Days(1), now + base::Days(20));
 
   if (!cert_config_.policy_oids.empty()) {
     leaf->SetCertificatePolicies(cert_config_.policy_oids);
@@ -597,11 +553,10 @@ bool EmbeddedTestServer::InitializeSSLServerContext() {
       size_t frame_size = spdy::kFrameHeaderSize;
       // Figure out size and generate origins
       for (const auto& pair : alps_accept_ch_) {
-        const std::string& hostname = pair.first;
+        base::StringPiece hostname = pair.first;
         std::string accept_ch = pair.second;
 
-        GURL url =
-            hostname.empty() ? GetURL("/") : GetURL(std::string(hostname), "/");
+        GURL url = hostname.empty() ? GetURL("/") : GetURL(hostname, "/");
         std::string origin = url::Origin::Create(url).Serialize();
 
         frame_size += accept_ch.size() + origin.size() +
@@ -613,8 +568,8 @@ bool EmbeddedTestServer::InitializeSSLServerContext() {
       spdy::SpdyFrameBuilder builder(frame_size);
       builder.BeginNewFrame(spdy::SpdyFrameType::ACCEPT_CH, 0, 0);
       for (const auto& pair : origin_accept_ch) {
-        const std::string& origin = pair.first;
-        const std::string& accept_ch = pair.second;
+        base::StringPiece origin = pair.first;
+        base::StringPiece accept_ch = pair.second;
 
         builder.WriteUInt16(origin.size());
         builder.WriteBytes(origin.data(), origin.size());
@@ -728,15 +683,15 @@ void EmbeddedTestServer::HandleRequest(
   response_ptr->SendResponse(delegate);
 }
 
-GURL EmbeddedTestServer::GetURL(const std::string& relative_url) const {
+GURL EmbeddedTestServer::GetURL(base::StringPiece relative_url) const {
   DCHECK(Started()) << "You must start the server first.";
   DCHECK(base::StartsWith(relative_url, "/", base::CompareCase::SENSITIVE))
       << relative_url;
   return base_url_.Resolve(relative_url);
 }
 
-GURL EmbeddedTestServer::GetURL(const std::string& hostname,
-                                const std::string& relative_url) const {
+GURL EmbeddedTestServer::GetURL(base::StringPiece hostname,
+                                base::StringPiece relative_url) const {
   GURL local_url = GetURL(relative_url);
   GURL::Replacements replace_host;
   replace_host.SetHostStr(hostname);
@@ -866,7 +821,7 @@ void EmbeddedTestServer::ServeFilesFromDirectory(
 }
 
 void EmbeddedTestServer::ServeFilesFromSourceDirectory(
-    const std::string& relative) {
+    base::StringPiece relative) {
   base::FilePath test_data_dir;
   CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &test_data_dir));
   ServeFilesFromDirectory(test_data_dir.AppendASCII(relative));
@@ -944,9 +899,9 @@ void EmbeddedTestServer::FlushAllSocketsAndConnections() {
   connections_.clear();
 }
 
-void EmbeddedTestServer::SetAlpsAcceptCH(const std::string& hostname,
-                                         const std::string& accept_ch) {
-  alps_accept_ch_[hostname] = accept_ch;
+void EmbeddedTestServer::SetAlpsAcceptCH(std::string hostname,
+                                         std::string accept_ch) {
+  alps_accept_ch_.insert_or_assign(std::move(hostname), std::move(accept_ch));
 }
 
 void EmbeddedTestServer::OnAcceptCompleted(int rv) {
@@ -1070,5 +1025,4 @@ bool EmbeddedTestServer::PostTaskToIOThreadAndWaitWithResult(
   return task_result;
 }
 
-}  // namespace test_server
-}  // namespace net
+}  // namespace net::test_server

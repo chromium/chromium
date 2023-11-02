@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/callback.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/password_manager/core/browser/generation/password_requirements_spec_fetcher.h"
 #include "url/gurl.h"
@@ -64,6 +65,7 @@ class PasswordRequirementsSpecFetcherImpl
   ~PasswordRequirementsSpecFetcherImpl() override;
 
   // Implementation for PasswordRequirementsSpecFetcher:
+  // TODO(https://crbug.com/1300422): Pass GURL by const reference here.
   void Fetch(GURL origin, FetchCallback callback) override;
 
  private:

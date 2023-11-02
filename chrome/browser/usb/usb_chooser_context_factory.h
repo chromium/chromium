@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,12 +6,12 @@
 #define CHROME_BROWSER_USB_USB_CHOOSER_CONTEXT_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class UsbChooserContext;
 class Profile;
 
-class UsbChooserContextFactory : public BrowserContextKeyedServiceFactory {
+class UsbChooserContextFactory : public ProfileKeyedServiceFactory {
  public:
   static UsbChooserContext* GetForProfile(Profile* profile);
   static UsbChooserContext* GetForProfileIfExists(Profile* profile);
@@ -29,8 +29,6 @@ class UsbChooserContextFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory methods:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
   void BrowserContextShutdown(content::BrowserContext* context) override;
 };
 

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define SERVICES_NETWORK_PUBLIC_CPP_CORB_CORB_API_H_
 
 #include <memory>
+#include <set>
 
 #include "base/component_export.h"
 #include "base/strings/string_piece_forward.h"
@@ -26,18 +27,33 @@ namespace corb {
 COMPONENT_EXPORT(NETWORK_CPP)
 void SanitizeBlockedResponseHeaders(network::mojom::URLResponseHead& response);
 
+// Per-URLLoaderFactory state (used by ORB for marking specific URLs as media
+// and allowing them in subsequent range requests;  constructed and passed both
+// for CORB and ORB for consistency and ease of implementation).
+using PerFactoryState = std::set<GURL>;
+
 // ResponseAnalyzer is a pure, virtual interface that can be implemented by
 // either CORB or ORB.
 class COMPONENT_EXPORT(NETWORK_CPP) ResponseAnalyzer {
  public:
   // Creates a ResponseAnalyzer.
-  static std::unique_ptr<ResponseAnalyzer> Create();
+  //
+  // The caller needs to guarantee that `state` lives as long as the
+  // ResponseAnalyzer (or longer).
+  static std::unique_ptr<ResponseAnalyzer> Create(PerFactoryState& state);
 
   // Decision for what to do with the HTTP response being analyzed.
   enum class Decision {
     kAllow,
     kBlock,
     kSniffMore,
+  };
+
+  // Decision for how to signal a blocking decision to the network stack and
+  // the application.
+  enum class BlockedResponseHandling {
+    kEmptyResponse,
+    kNetworkError,
   };
 
   // The Init method should be called exactly once after getting the
@@ -71,6 +87,9 @@ class COMPONENT_EXPORT(NETWORK_CPP) ResponseAnalyzer {
   // True if the analyzed response should report the blocking decision in a
   // warning message written to the DevTools console.
   virtual bool ShouldReportBlockedResponse() const = 0;
+
+  // How should a blocked response be treated?
+  virtual BlockedResponseHandling ShouldHandleBlockedResponseAs() const = 0;
 
   virtual ~ResponseAnalyzer();
 };

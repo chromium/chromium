@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,4 +40,19 @@ HelpAppUIBrowserTest.HasChromeSchemeURL = () => {
 HelpAppUIBrowserTest.HasTitleAndLang = () => {
   assertEquals(document.documentElement.lang, 'en');
   assertEquals(document.title, 'Explore');
+};
+
+// Check the body element's background color when the DarkLightMode feature is
+// enabled and dark mode is enabled.
+HelpAppUIBrowserTest.BodyHasCorrectBackgroundColorWithDarkLight = () => {
+  const actualBackgroundColor = getComputedStyle(document.body).backgroundColor;
+  assertEquals(actualBackgroundColor, 'rgb(32, 33, 36)');  // Grey 900.
+};
+
+// Check the body element's background color when the DarkLightMode feature is
+// disabled.
+HelpAppUIBrowserTest.BodyHasCorrectBackgroundColorWithoutDarkLight = () => {
+  const actualBackgroundColor = getComputedStyle(document.body).backgroundColor;
+  // The default background-color of <body> is transparent.
+  assertEquals(actualBackgroundColor, 'rgba(0, 0, 0, 0)');
 };

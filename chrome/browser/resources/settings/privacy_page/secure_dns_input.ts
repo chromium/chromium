@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,18 +7,17 @@
  * with the secure DNS setting to configure custom servers. It is based on
  * `home-url-input`.
  */
-import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
+import {SettingsTextareaElement} from '../controls/settings_textarea';
 import {loadTimeData} from '../i18n_setup.js';
 
 import {PrivacyPageBrowserProxy, PrivacyPageBrowserProxyImpl} from './privacy_page_browser_proxy.js';
+import {getTemplate} from './secure_dns_input.html.js';
 
 export interface SecureDnsInputElement {
   $: {
-    input: CrInputElement,
+    input: SettingsTextareaElement,
   };
 }
 
@@ -28,7 +27,7 @@ export class SecureDnsInputElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -41,28 +40,35 @@ export class SecureDnsInputElement extends PolymerElement {
       /*
        * Whether |errorText| should be displayed beneath the input field.
        */
-      showError_: Boolean,
+      showError_: {type: Boolean, computed: 'isInvalid_(errorText_)'},
 
       /**
        * The error text to display beneath the input field when |showError_| is
        * true.
        */
-      errorText_: String,
+      errorText_: {type: String, value: ''},
     };
   }
 
   value: string;
-  private showError_: boolean;
+  private readonly showError_: string;
   private errorText_: string;
   private browserProxy_: PrivacyPageBrowserProxy =
       PrivacyPageBrowserProxyImpl.getInstance();
+
+  private onKeyPress_(e: KeyboardEvent) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      this.validate();
+    }
+  }
 
   /**
    * This function ensures that while the user is entering input, especially
    * after pressing Enter, the input is not prematurely marked as invalid.
    */
   private onInput_() {
-    this.showError_ = false;
+    this.errorText_ = '';
   }
 
   /**
@@ -73,18 +79,11 @@ export class SecureDnsInputElement extends PolymerElement {
    * query.
    */
   async validate() {
-    this.showError_ = false;
+    this.errorText_ = '';
     const valueToValidate = this.value;
-    const templates =
-        await this.browserProxy_.parseCustomDnsEntry(valueToValidate);
-    const valid = templates.length > 0;
-    let successfulProbe = false;
-    for (const template of templates) {
-      if (await this.browserProxy_.probeCustomDnsTemplate(template)) {
-        successfulProbe = true;
-        break;
-      }
-    }
+    const valid = await this.browserProxy_.isValidConfig(valueToValidate);
+    const successfulProbe =
+        valid && await this.browserProxy_.probeConfig(valueToValidate);
     // If there was an invalid template or no template can successfully
     // answer a probe query, show an error as long as the input field value
     // hasn't changed and is non-empty.
@@ -93,27 +92,26 @@ export class SecureDnsInputElement extends PolymerElement {
       this.errorText_ = loadTimeData.getString(
           valid ? 'secureDnsCustomConnectionError' :
                   'secureDnsCustomFormatError');
-      this.showError_ = true;
     }
     this.dispatchEvent(new CustomEvent('value-update', {
       bubbles: true,
       composed: true,
-      detail: {isValid: valid, text: valueToValidate}
+      detail: {isValid: valid, text: valueToValidate},
     }));
   }
 
   /**
    * Focus the custom dns input field.
    */
-  focus() {
-    this.$.input.focus();
+  override focus() {
+    this.$.input.focusInput();
   }
 
   /**
    * @return whether an error is being shown.
    */
-  isInvalid(): boolean {
-    return !!this.showError_;
+  private isInvalid_(): boolean {
+    return this.errorText_.length > 0;
   }
 }
 

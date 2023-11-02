@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -188,16 +188,9 @@ TEST(ProfilerGroupTest, OverflowSamplingInterval) {
 }
 
 TEST(ProfilerGroupTest, Bug1119865) {
-  class ExpectNoCallFunction : public ScriptFunction {
+  class ExpectNoCallFunction : public ScriptFunction::Callable {
    public:
-    static v8::Local<v8::Function> Create(ScriptState* state) {
-      return MakeGarbageCollected<ExpectNoCallFunction>(state)
-          ->BindToV8Function();
-    }
-
-    explicit ExpectNoCallFunction(ScriptState* state) : ScriptFunction(state) {}
-
-    ScriptValue Call(ScriptValue) override {
+    ScriptValue Call(ScriptState*, ScriptValue) override {
       EXPECT_FALSE(true)
           << "Promise should not resolve without dispatching a task";
       return ScriptValue();
@@ -216,7 +209,8 @@ TEST(ProfilerGroupTest, Bug1119865) {
       scope.GetScriptState(), *init_options, base::TimeTicks(),
       scope.GetExceptionState());
 
-  auto function = ExpectNoCallFunction::Create(scope.GetScriptState());
+  auto* function = MakeGarbageCollected<ScriptFunction>(
+      scope.GetScriptState(), MakeGarbageCollected<ExpectNoCallFunction>());
   profiler->stop(scope.GetScriptState()).Then(function);
 }
 
@@ -265,6 +259,31 @@ TEST(ProfilerGroupTest, LeakProfilerWithContext) {
   // a crash doesn't occur.
   profiler = nullptr;
   ThreadState::Current()->CollectAllGarbageForTesting();
+  test::RunPendingTasks();
+}
+
+// Tests that a ProfilerGroup doesn't crash if the ProfilerGroup is destroyed
+// before a Profiler::Dispose is ran.
+TEST(ProfilerGroupTest, Bug1297283) {
+  {
+    V8TestingScope scope;
+    ProfilerGroup* profiler_group = ProfilerGroup::From(scope.GetIsolate());
+    profiler_group->OnProfilingContextAdded(scope.GetExecutionContext());
+
+    ProfilerInitOptions* init_options = ProfilerInitOptions::Create();
+    init_options->setSampleInterval(0);
+    init_options->setMaxBufferSize(0);
+    Profiler* profiler = profiler_group->CreateProfiler(
+        scope.GetScriptState(), *init_options, base::TimeTicks(),
+        scope.GetExceptionState());
+    EXPECT_FALSE(profiler->stopped());
+
+    // Force a collection of the underlying Profiler
+    profiler = nullptr;
+    ThreadState::Current()->CollectAllGarbageForTesting();
+    // Exit Scope deallocating Context triggering ProfilerGroup::WillBeDestroyed
+    // Ensure doesn't crash.
+  }
   test::RunPendingTasks();
 }
 

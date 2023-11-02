@@ -29,7 +29,7 @@
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/html/html_span_element.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -57,7 +57,7 @@ void WrapContentsInDummySpanCommand::DoApply(EditingState*) {
 void WrapContentsInDummySpanCommand::DoUnapply() {
   DCHECK(element_);
 
-  if (!dummy_span_ || !HasEditableStyle(*element_))
+  if (!dummy_span_ || !IsEditable(*element_))
     return;
 
   NodeVector children;
@@ -72,7 +72,7 @@ void WrapContentsInDummySpanCommand::DoUnapply() {
 void WrapContentsInDummySpanCommand::DoReapply() {
   DCHECK(element_);
 
-  if (!dummy_span_ || !HasEditableStyle(*element_))
+  if (!dummy_span_ || !IsEditable(*element_))
     return;
 
   ExecuteApply();

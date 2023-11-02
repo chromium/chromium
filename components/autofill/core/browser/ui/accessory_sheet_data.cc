@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,21 +10,6 @@
 #include "components/autofill/core/browser/ui/accessory_sheet_enums.h"
 
 namespace autofill {
-
-// TODO(crbug.com/1224179) Delete this constructor.
-AccessorySheetField::AccessorySheetField(std::u16string display_text,
-                                         std::u16string a11y_description,
-                                         bool is_obfuscated,
-                                         bool selectable)
-    : display_text_(display_text),
-      text_to_fill_(std::move(display_text)),
-      a11y_description_(std::move(a11y_description)),
-      is_obfuscated_(is_obfuscated),
-      selectable_(selectable),
-      estimated_memory_use_by_strings_(
-          base::trace_event::EstimateMemoryUsage(display_text_) +
-          base::trace_event::EstimateMemoryUsage(text_to_fill_) +
-          base::trace_event::EstimateMemoryUsage(a11y_description_)) {}
 
 AccessorySheetField::AccessorySheetField(std::u16string display_text,
                                          std::u16string text_to_fill,
@@ -174,7 +159,7 @@ std::ostream& operator<<(std::ostream& os,
 }
 
 FooterCommand::FooterCommand(std::u16string display_text,
-                             autofill::AccessoryAction action)
+                             AccessoryAction action)
     : display_text_(std::move(display_text)),
       accessory_action_(action),
       estimated_memory_use_by_strings_(
@@ -208,7 +193,7 @@ std::ostream& operator<<(std::ostream& os, const FooterCommand& fc) {
 
 OptionToggle::OptionToggle(std::u16string display_text,
                            bool enabled,
-                           autofill::AccessoryAction action)
+                           AccessoryAction action)
     : display_text_(display_text),
       enabled_(enabled),
       accessory_action_(action),
@@ -347,7 +332,7 @@ AccessorySheetData::Builder& AccessorySheetData::Builder::SetWarning(
 AccessorySheetData::Builder&& AccessorySheetData::Builder::SetOptionToggle(
     std::u16string display_text,
     bool enabled,
-    autofill::AccessoryAction action) && {
+    AccessoryAction action) && {
   // Calls SetOptionToggle(...)& since |this| is an lvalue.
   return std::move(SetOptionToggle(std::move(display_text), enabled, action));
 }
@@ -355,7 +340,7 @@ AccessorySheetData::Builder&& AccessorySheetData::Builder::SetOptionToggle(
 AccessorySheetData::Builder& AccessorySheetData::Builder::SetOptionToggle(
     std::u16string display_text,
     bool enabled,
-    autofill::AccessoryAction action) & {
+    AccessoryAction action) & {
   accessory_sheet_data_.set_option_toggle(
       OptionToggle(std::move(display_text), enabled, action));
   return *this;
@@ -464,14 +449,14 @@ AccessorySheetData::Builder& AccessorySheetData::Builder::AddPromoCodeInfo(
 
 AccessorySheetData::Builder&& AccessorySheetData::Builder::AppendFooterCommand(
     std::u16string display_text,
-    autofill::AccessoryAction action) && {
+    AccessoryAction action) && {
   // Calls AppendFooterCommand(...)& since |this| is an lvalue.
   return std::move(AppendFooterCommand(std::move(display_text), action));
 }
 
 AccessorySheetData::Builder& AccessorySheetData::Builder::AppendFooterCommand(
     std::u16string display_text,
-    autofill::AccessoryAction action) & {
+    AccessoryAction action) & {
   accessory_sheet_data_.add_footer_command(
       FooterCommand(std::move(display_text), action));
   return *this;

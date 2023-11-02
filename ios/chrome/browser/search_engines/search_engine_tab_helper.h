@@ -1,11 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef IOS_CHROME_BROWSER_SEARCH_ENGINES_SEARCH_ENGINE_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_SEARCH_ENGINES_SEARCH_ENGINE_TAB_HELPER_H_
 
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "components/favicon/ios/web_favicon_driver.h"
 #include "ios/web/public/web_state_observer.h"
@@ -42,7 +41,7 @@ class SearchEngineTabHelper
 
   ~SearchEngineTabHelper() override;
 
-  // Saves the page |url| generated from a <form> submission to create the
+  // Saves the page `url` generated from a <form> submission to create the
   // TemplateURL when the submission leads to a successful navigation.
   void SetSearchableUrl(GURL url);
 
@@ -54,7 +53,7 @@ class SearchEngineTabHelper
 
   explicit SearchEngineTabHelper(web::WebState* web_state);
 
-  // Adds a TemplateURL by |searchable_url|.
+  // Adds a TemplateURL by `searchable_url`.
   void AddTemplateURLBySearchableURL(const GURL& searchable_url);
 
   // WebStateObserver implementation.
@@ -69,7 +68,7 @@ class SearchEngineTabHelper
                         bool icon_url_changed,
                         const gfx::Image& image) override;
 
-  // Manages observation relationship between |this| and WebFaviconDriver.
+  // Manages observation relationship between `this` and WebFaviconDriver.
   base::ScopedObservation<favicon::FaviconDriver,
                           favicon::FaviconDriverObserver>
       favicon_driver_observation_{this};

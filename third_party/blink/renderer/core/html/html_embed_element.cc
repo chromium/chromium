@@ -79,15 +79,10 @@ void HTMLEmbedElement::CollectStyleForPresentationAttribute(
     const AtomicString& value,
     MutableCSSPropertyValueSet* style) {
   if (name == html_names::kHiddenAttr) {
-    if (EqualIgnoringASCIICase(value, "yes") ||
-        EqualIgnoringASCIICase(value, "true")) {
-      AddPropertyToPresentationAttributeStyle(
-          style, CSSPropertyID::kWidth, 0,
-          CSSPrimitiveValue::UnitType::kPixels);
-      AddPropertyToPresentationAttributeStyle(
-          style, CSSPropertyID::kHeight, 0,
-          CSSPrimitiveValue::UnitType::kPixels);
-    }
+    AddPropertyToPresentationAttributeStyle(
+        style, CSSPropertyID::kWidth, 0, CSSPrimitiveValue::UnitType::kPixels);
+    AddPropertyToPresentationAttributeStyle(
+        style, CSSPropertyID::kHeight, 0, CSSPrimitiveValue::UnitType::kPixels);
   } else {
     HTMLPlugInElement::CollectStyleForPresentationAttribute(name, value, style);
   }
@@ -150,7 +145,7 @@ void HTMLEmbedElement::UpdatePluginInternal() {
   DCHECK(NeedsPluginUpdate());
   SetNeedsPluginUpdate(false);
 
-  if (url_.IsEmpty() && service_type_.IsEmpty())
+  if (url_.empty() && service_type_.empty())
     return;
 
   // Note these pass url_ and service_type_ to allow better code sharing with

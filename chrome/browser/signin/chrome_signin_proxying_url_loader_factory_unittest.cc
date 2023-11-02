@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -146,7 +146,7 @@ TEST_F(ChromeSigninProxyingURLLoaderFactoryTest, ModifyHeaders) {
   request->url = kTestURL;
   request->referrer = kTestReferrer;
   request->destination = network::mojom::RequestDestination::kDocument;
-  request->is_main_frame = true;
+  request->is_outermost_main_frame = true;
   request->headers.SetHeader("X-Request-1", "Foo");
 
   base::WeakPtr<MockDelegate> delegate = StartRequest(std::move(request));
@@ -166,7 +166,8 @@ TEST_F(ChromeSigninProxyingURLLoaderFactoryTest, ModifyHeaders) {
             EXPECT_EQ(kTestURL, adapter->GetUrl());
             EXPECT_EQ(network::mojom::RequestDestination::kDocument,
                       adapter->GetRequestDestination());
-            EXPECT_EQ(GURL("https://chrome.com"), adapter->GetReferrerOrigin());
+            EXPECT_TRUE(adapter->IsOutermostMainFrame());
+            EXPECT_EQ(kTestReferrer, adapter->GetReferrer());
 
             EXPECT_TRUE(adapter->HasHeader("X-Request-1"));
             adapter->RemoveRequestHeaderByName("X-Request-1");
@@ -183,11 +184,12 @@ TEST_F(ChromeSigninProxyingURLLoaderFactoryTest, ModifyHeaders) {
           Invoke([&](ChromeRequestAdapter* adapter, const GURL& redirect_url) {
             EXPECT_EQ(network::mojom::RequestDestination::kDocument,
                       adapter->GetRequestDestination());
+            EXPECT_TRUE(adapter->IsOutermostMainFrame());
 
             // Changes to the URL and referrer take effect after the redirect
             // is followed.
             EXPECT_EQ(kTestURL, adapter->GetUrl());
-            EXPECT_EQ(GURL("https://chrome.com"), adapter->GetReferrerOrigin());
+            EXPECT_EQ(kTestReferrer, adapter->GetReferrer());
 
             // X-Request-1 and X-Request-2 were modified in the previous call to
             // ProcessRequest(). These changes should still be present.
@@ -215,8 +217,8 @@ TEST_F(ChromeSigninProxyingURLLoaderFactoryTest, ModifyHeaders) {
   // the redirect is received and again for the redirect response.
   EXPECT_CALL(*delegate, ProcessResponse(_, _))
       .WillOnce(Invoke([&](ResponseAdapter* adapter, const GURL& redirect_url) {
-        EXPECT_EQ(GURL("https://google.com"), adapter->GetOrigin());
-        EXPECT_TRUE(adapter->IsMainFrame());
+        EXPECT_EQ(kTestURL, adapter->GetURL());
+        EXPECT_TRUE(adapter->IsOutermostMainFrame());
 
         adapter->SetUserData(kResponseUserDataKey,
                              std::move(response_user_data));
@@ -231,8 +233,8 @@ TEST_F(ChromeSigninProxyingURLLoaderFactoryTest, ModifyHeaders) {
         EXPECT_EQ(kTestRedirectURL, redirect_url);
       }))
       .WillOnce(Invoke([&](ResponseAdapter* adapter, const GURL& redirect_url) {
-        EXPECT_EQ(GURL("https://youtube.com"), adapter->GetOrigin());
-        EXPECT_TRUE(adapter->IsMainFrame());
+        EXPECT_EQ(kTestRedirectURL, adapter->GetURL());
+        EXPECT_TRUE(adapter->IsOutermostMainFrame());
 
         EXPECT_EQ(response_user_data_ptr,
                   adapter->GetUserData(kResponseUserDataKey));

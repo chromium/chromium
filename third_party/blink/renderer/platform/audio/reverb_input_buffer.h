@@ -31,18 +31,17 @@
 
 #include <atomic>
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
-#include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
 // ReverbInputBuffer is used to buffer input samples for deferred processing by
 // the background threads.
-class PLATFORM_EXPORT ReverbInputBuffer {
+class ReverbInputBuffer {
   DISALLOW_NEW();
 
  public:
-  ReverbInputBuffer(size_t length);
+  explicit ReverbInputBuffer(size_t length);
   ReverbInputBuffer(const ReverbInputBuffer&) = delete;
   ReverbInputBuffer& operator=(const ReverbInputBuffer&) = delete;
 

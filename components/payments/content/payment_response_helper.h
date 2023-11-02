@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/payments/content/payment_app.h"
@@ -74,7 +75,7 @@ class PaymentResponseHelper
   base::WeakPtr<PaymentRequestDelegate> payment_request_delegate_;
 
   // Not owned, can be null (dependent on the spec).
-  autofill::AutofillProfile* selected_contact_profile_;
+  raw_ptr<autofill::AutofillProfile> selected_contact_profile_;
 
   // A normalized copy of the shipping address, which will be included in the
   // PaymentResponse.

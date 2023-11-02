@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -55,23 +54,24 @@ public class PermissionNavigationTest {
     @Test
     @MediumTest
     @Feature({"Permissions"})
-    @FlakyTest(message = "https://crbug.com/1236419")
     public void testNavigationDismissesModalPermissionPrompt() throws Exception {
         mPermissionRule.setUpUrl(TEST_FILE);
         mPermissionRule.runJavaScriptCodeInCurrentTab("requestGeolocationPermission()");
         mPermissionRule.waitForDialogShownState(true);
 
-        mPermissionRule.runJavaScriptCodeInCurrentTab("navigate()");
-
         Tab tab = mPermissionRule.getActivity().getActivityTab();
         final CallbackHelper callbackHelper = new CallbackHelper();
         EmptyTabObserver navigationWaiter = new EmptyTabObserver() {
             @Override
-            public void onDidFinishNavigation(Tab tab, NavigationHandle navigation) {
+            public void onDidFinishNavigationInPrimaryMainFrame(
+                    Tab tab, NavigationHandle navigation) {
                 callbackHelper.notifyCalled();
             }
         };
         TestThreadUtils.runOnUiThreadBlocking(() -> tab.addObserver(navigationWaiter));
+
+        mPermissionRule.runJavaScriptCodeInCurrentTab("navigate()");
+
         callbackHelper.waitForCallback(0);
         TestThreadUtils.runOnUiThreadBlocking(() -> tab.removeObserver(navigationWaiter));
 

@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+PASS Serialization of <generic-family>
+FAIL Serialization of quoted "<generic-family>" assert_equals: expected "\"emoji\"" but got "emoji"
+PASS Serialization of prefixed -webkit-<generic-family>
+PASS Serialization of NonGenericFontFamilyName,-webkit-body,-webkit-standard,-webkit-pictograph,BlinkMacSystemFont
+Harness: the test ran to completion.
+

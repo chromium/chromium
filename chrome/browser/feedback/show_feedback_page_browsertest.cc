@@ -1,0 +1,146 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "ash/constants/ash_features.h"
+#include "ash/webui/os_feedback_ui/url_constants.h"
+#include "base/strings/escape.h"
+#include "base/strings/strcat.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/feedback/feedback_dialog_utils.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/common/pref_names.h"
+#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
+#include "components/prefs/testing_pref_service.h"
+#include "content/public/test/browser_test.h"
+#include "content/public/test/test_navigation_observer.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
+
+namespace ash {
+
+class ShowFeedbackPageBrowserTest : public InProcessBrowserTest {
+ public:
+  ShowFeedbackPageBrowserTest() {
+    scope_feature_list_.InitAndEnableFeature(ash::features::kOsFeedback);
+  }
+  ~ShowFeedbackPageBrowserTest() override = default;
+
+ protected:
+  base::test::ScopedFeatureList scope_feature_list_;
+};
+
+// Test that when the policy of UserFeedbackAllowed is false, feedback app is
+// not opened.
+IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest, UserFeedbackDisallowed) {
+  base::HistogramTester histogram_tester;
+  std::string unused;
+  chrome::ShowFeedbackPage(browser(), chrome::kFeedbackSourceBrowserCommand,
+                           /*description_template=*/unused,
+                           /*description_placeholder_text=*/unused,
+                           /*category_tag=*/unused,
+                           /*extra_diagnostics=*/unused);
+  histogram_tester.ExpectTotalCount("Feedback.RequestSource", 1);
+  browser()->profile()->GetPrefs()->SetBoolean(prefs::kUserFeedbackAllowed,
+                                               false);
+  chrome::ShowFeedbackPage(browser(), chrome::kFeedbackSourceBrowserCommand,
+                           /*description_template=*/unused,
+                           /*description_placeholder_text=*/unused,
+                           /*category_tag=*/unused,
+                           /*extra_diagnostics=*/unused);
+  histogram_tester.ExpectTotalCount("Feedback.RequestSource", 1);
+}
+
+// Test that when the policy of UserFeedbackAllowed is true, feedback app is
+// opened and the os_feedback is used when the feature kOsFeedback is enabled.
+IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
+                       OsFeedbackIsOpenedWhenFeatureEnabled) {
+  ash::SystemWebAppManager::GetForTest(browser()->profile())
+      ->InstallSystemAppsForTesting();
+
+  base::HistogramTester histogram_tester;
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+  const GURL page_url = chrome::GetTargetTabUrl(
+      browser()->session_id(), browser()->tab_strip_model()->active_index());
+  const GURL expected_url(base::StrCat(
+      {ash::kChromeUIOSFeedbackUrl, "/?page_url=",
+       base::EscapeQueryParamValue(page_url.spec(), /*use_plus=*/false)}));
+  content::TestNavigationObserver navigation_observer(expected_url);
+  navigation_observer.StartWatchingNewWebContents();
+
+  std::string unused;
+  browser()->profile()->GetPrefs()->SetBoolean(prefs::kUserFeedbackAllowed,
+                                               true);
+  chrome::ShowFeedbackPage(browser(), chrome::kFeedbackSourceBrowserCommand,
+                           /*description_template=*/unused,
+                           /*description_placeholder_text=*/unused,
+                           /*category_tag=*/unused,
+                           /*extra_diagnostics=*/unused);
+  navigation_observer.Wait();
+
+  histogram_tester.ExpectTotalCount("Feedback.RequestSource", 1);
+  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
+  const GURL visible_url = chrome::FindLastActive()
+                               ->tab_strip_model()
+                               ->GetActiveWebContents()
+                               ->GetVisibleURL();
+  EXPECT_TRUE(visible_url.has_query());
+  EXPECT_EQ(expected_url, visible_url);
+}
+
+// Test that when parameters appended include:
+// - `extra_diagnostics` string.
+// - `description_template` string.
+// - `category_tag` string.
+// - `page_url` GURL.
+// - `from_assistant` set true.
+IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
+                       OsFeedbackAdditionalContextAddedToUrl) {
+  ash::SystemWebAppManager::GetForTest(browser()->profile())
+      ->InstallSystemAppsForTesting();
+  std::string unused;
+  const GURL page_url = chrome::GetTargetTabUrl(
+      browser()->session_id(), browser()->tab_strip_model()->active_index());
+  const std::string extra_diagnostics = "extra diagnostics param";
+  const std::string description_template = "Q1: Question one?";
+  const std::string category_tag = "category tag param";
+  GURL expected_url(base::StrCat(
+      {ash::kChromeUIOSFeedbackUrl, "/?extra_diagnostics=",
+       base::EscapeQueryParamValue(extra_diagnostics, /*use_plus=*/false),
+       "&description_template=",
+       base::EscapeQueryParamValue(description_template, /*use_plus=*/false),
+       "&category_tag=",
+       base::EscapeQueryParamValue(category_tag, /*use_plus=*/false),
+       "&page_url=",
+       base::EscapeQueryParamValue(page_url.spec(), /*use_plus=*/false),
+       "&from_assistant=",
+       base::EscapeQueryParamValue("true", /*use_plus=*/false)}));
+
+  content::TestNavigationObserver navigation_observer(expected_url);
+  navigation_observer.StartWatchingNewWebContents();
+
+  browser()->profile()->GetPrefs()->SetBoolean(prefs::kUserFeedbackAllowed,
+                                               true);
+  chrome::ShowFeedbackPage(browser(), chrome::kFeedbackSourceAssistant,
+                           /*description_template=*/description_template,
+                           /*description_placeholder_text=*/unused,
+                           /*category_tag=*/category_tag,
+                           /*extra_diagnostics=*/extra_diagnostics);
+  navigation_observer.Wait();
+
+  const GURL visible_url = chrome::FindLastActive()
+                               ->tab_strip_model()
+                               ->GetActiveWebContents()
+                               ->GetVisibleURL();
+  EXPECT_TRUE(visible_url.has_query());
+  EXPECT_EQ(expected_url, visible_url);
+}
+
+}  // namespace ash

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -57,8 +57,10 @@ std::string GetHttpMethod(
     case chromeos::wilco_dtc_supportd::mojom::
         WilcoDtcSupportdWebRequestHttpMethod::kPatch:
       return "PATCH";
+    case chromeos::wilco_dtc_supportd::mojom::
+        WilcoDtcSupportdWebRequestHttpMethod::kUnmappedEnumField:
+      return "";
   }
-  return "";
 }
 
 // Returns true in case of non-error 2xx HTTP status code.

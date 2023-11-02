@@ -1,34 +1,30 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.omnibox.suggestions;
 
-import android.os.Debug;
-
 import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.TimingMetric;
+import org.chromium.chrome.browser.omnibox.action.OmniboxPedalType;
+import org.chromium.chrome.browser.omnibox.suggestions.mostvisited.SuggestTileType;
+import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.concurrent.TimeUnit;
 
 /**
  * This class collects a variety of different Suggestions related metrics.
  */
-class SuggestionsMetrics {
-    // The expected range for measure and layout durations.
-    // If the combination of (N*Create)+Measure+Layout, where N is a maximum number of suggestions
-    // exceeds:
-    // - 16'000us (16ms), the suggestion list will take more than a single frame on modern devices,
-    // - 33'000us (33ms), the suggestion list will take more than a single frame on all devices.
-    // We expect the reported values to be within 2milliseconds range.
-    // The upper range here is deliberately smaller than the limits mentioned above; any stage
-    // taking more time than the limit chosen here is an indication of a problem.
-    private static final long MIN_HISTOGRAM_DURATION_US = 100;
-    private static final long MAX_HISTOGRAM_DURATION_US = TimeUnit.MILLISECONDS.toMicros(10);
-    private static final int NUM_DURATION_BUCKETS = 100;
+public class SuggestionsMetrics {
+    /**
+     * Maximum number of suggest tile types we want to record.
+     * Anything beyond this will be reported in the overflow bucket.
+     */
+    private static final int MAX_SUGGEST_TILE_TYPE_POSITION = 15;
 
     @IntDef({RefineActionUsage.NOT_USED, RefineActionUsage.SEARCH_WITH_ZERO_PREFIX,
             RefineActionUsage.SEARCH_WITH_PREFIX, RefineActionUsage.SEARCH_WITH_BOTH,
@@ -42,62 +38,26 @@ class SuggestionsMetrics {
         int COUNT = 4;
     }
 
-    /** Class for reporting timing metrics using try-with-resources block. */
-    public static class TimingMetric implements AutoCloseable {
-        private final String mMetricName;
-        private final long mStartTime;
-
-        /**
-         * Creates an instance and starts the timer.
-         * @param metricName The name of the metric to be reported on close.
-         */
-        public TimingMetric(String metricName) {
-            mMetricName = metricName;
-            mStartTime = Debug.threadCpuTimeNanos();
-        }
-
-        @Override
-        public void close() {
-            final long endTime = Debug.threadCpuTimeNanos();
-            final long duration = getDurationInMicroseconds(mStartTime, endTime);
-            if (duration < 0) return;
-            RecordHistogram.recordCustomTimesHistogram(mMetricName, duration,
-                    MIN_HISTOGRAM_DURATION_US, MAX_HISTOGRAM_DURATION_US, NUM_DURATION_BUCKETS);
-        }
-    }
-
-    /**
-     * Measure duration between two timestamps in microseconds.
-     *
-     * @param startTimeNs Operation start timestamp (nanoseconds).
-     * @param endTimeNs Operation end time (nanoseconds).
-     * @return Duration in hundreds of microseconds or -1, if timestamps were invalid.
-     */
-    private static final long getDurationInMicroseconds(long startTimeNs, long endTimeNs) {
-        if (startTimeNs == -1 || endTimeNs == -1) return -1;
-        return TimeUnit.NANOSECONDS.toMicros(endTimeNs - startTimeNs);
-    }
-
     /**
      * Record how long the Suggestion List needed to layout its content and children.
      */
-    static final SuggestionsMetrics.TimingMetric recordSuggestionListLayoutTime() {
-        return new TimingMetric("Android.Omnibox.SuggestionList.LayoutTime");
+    static final TimingMetric recordSuggestionListLayoutTime() {
+        return TimingMetric.shortThreadTime("Android.Omnibox.SuggestionList.LayoutTime2");
     }
 
     /**
      * Record how long the Suggestion List needed to measure its content and children.
      */
-    static final SuggestionsMetrics.TimingMetric recordSuggestionListMeasureTime() {
-        return new TimingMetric("Android.Omnibox.SuggestionList.MeasureTime");
+    static final TimingMetric recordSuggestionListMeasureTime() {
+        return TimingMetric.shortThreadTime("Android.Omnibox.SuggestionList.MeasureTime2");
     }
 
     /**
      * Record the amount of time needed to create a new suggestion view.
      * The type of view is intentionally ignored for this call.
      */
-    static final SuggestionsMetrics.TimingMetric recordSuggestionViewCreateTime() {
-        return new TimingMetric("Android.Omnibox.SuggestionView.CreateTime");
+    static final TimingMetric recordSuggestionViewCreateTime() {
+        return TimingMetric.shortThreadTime("Android.Omnibox.SuggestionView.CreateTime2");
     }
 
     /**
@@ -107,6 +67,31 @@ class SuggestionsMetrics {
      */
     static final void recordSuggestionViewReused(boolean reused) {
         RecordHistogram.recordBooleanHistogram("Android.Omnibox.SuggestionView.Reused", reused);
+    }
+
+    /**
+     * Record the type of the suggestion view that had to be constructed.
+     * Recorded view type could not be retrieved from the Recycled View Pool and had to
+     * be re-created.
+     * Relevant for Omnibox recycler view improvements.
+     *
+     * @param type The type of view that needed to be recreated.
+     */
+    static final void recordSuggestionsViewCreatedType(@OmniboxSuggestionUiType int type) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.Omnibox.SuggestionView.CreatedType", type, OmniboxSuggestionUiType.COUNT);
+    }
+
+    /**
+     * Record the type of the suggestion view that was re-used.
+     * Recorded view type was retrieved from the Recycled View Pool.
+     * Relevant for Omnibox recycler view improvements.
+     *
+     * @param type The type of view that was reused from pool.
+     */
+    static final void recordSuggestionsViewReusedType(@OmniboxSuggestionUiType int type) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.Omnibox.SuggestionView.ReusedType", type, OmniboxSuggestionUiType.COUNT);
     }
 
     /**
@@ -149,5 +134,96 @@ class SuggestionsMetrics {
     static final void recordRefineActionUsage(@RefineActionUsage int refineActionUsage) {
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.Omnibox.RefineActionUsage", refineActionUsage, RefineActionUsage.COUNT);
+    }
+
+    /**
+     * Record the pedal shown when the user used the omnibox to go somewhere.
+     *
+     * @param type the shown pedal's {@link OmniboxActionType}.
+     */
+    public static final void recordPedalShown(@OmniboxPedalType int type) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Omnibox.PedalShown", type, OmniboxPedalType.TOTAL_COUNT);
+    }
+
+    /**
+     * Record a pedal is used.
+     *
+    @param omniboxActionType the clicked pedal's {@link OmniboxActionType}.
+     */
+    public static final void recordPedalUsed(@OmniboxPedalType int type) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Omnibox.SuggestionUsed.Pedal", type, OmniboxPedalType.TOTAL_COUNT);
+    }
+
+    /**
+     * Record page class specific histogram reflecting whether the user scrolled the suggestions
+     * list.
+     *
+     * @param pageClass Page classification.
+     * @param wasScrolled Whether the suggestions list was scrolled.
+     */
+    static final void recordSuggestionsListScrolled(int pageClass, boolean wasScrolled) {
+        RecordHistogram.recordBooleanHistogram(
+                histogramName("Android.Omnibox.SuggestionsListScrolled", pageClass), wasScrolled);
+    }
+
+    /**
+     * Record the kind of (MostVisitedURL/OrganicRepeatableSearch) Tile type the User opened.
+     *
+     * @param position The position of a tile in the carousel.
+     * @param isSearchTile Whether tile being opened is a Search tile.
+     */
+    public static final void recordSuggestTileTypeUsed(int position, boolean isSearchTile) {
+        @SuggestTileType
+        int tileType = isSearchTile ? SuggestTileType.SEARCH : SuggestTileType.URL;
+        RecordHistogram.recordExactLinearHistogram(
+                "Omnibox.SuggestTiles.SelectedTileIndex", position, MAX_SUGGEST_TILE_TYPE_POSITION);
+        RecordHistogram.recordEnumeratedHistogram(
+                "Omnibox.SuggestTiles.SelectedTileType", tileType, SuggestTileType.COUNT);
+    }
+
+    /**
+     * Translate the pageClass to a histogram suffix.
+     *
+     * @param histogram Histogram prefix.
+     * @param pageClass Page classification to translate.
+     * @return Metric name.
+     */
+    private static final String histogramName(@NonNull String prefix, int pageClass) {
+        String suffix = "Other";
+
+        switch (pageClass) {
+            case PageClassification.NTP_VALUE:
+            case PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE:
+            case PageClassification.INSTANT_NTP_WITH_FAKEBOX_AS_STARTING_FOCUS_VALUE:
+                suffix = "NTP";
+                break;
+
+            case PageClassification.SEARCH_RESULT_PAGE_DOING_SEARCH_TERM_REPLACEMENT_VALUE:
+            case PageClassification.SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT_VALUE:
+                suffix = "SRP";
+                break;
+
+            case PageClassification.ANDROID_SEARCH_WIDGET_VALUE:
+            case PageClassification.ANDROID_SHORTCUTS_WIDGET_VALUE:
+                suffix = "Widget";
+                break;
+
+            case PageClassification.BLANK_VALUE:
+            case PageClassification.HOME_PAGE_VALUE:
+            case PageClassification.OTHER_VALUE:
+                // use default value for websites.
+                break;
+
+            default:
+                // Report an error, but fall back to a default value.
+                // Use this to detect missing new cases.
+                // TODO(crbug.com/1314765): This assert fails persistently on tablets.
+                // assert false : "Unknown page classification: " + pageClass;
+                break;
+        }
+
+        return prefix + "." + suffix;
     }
 }

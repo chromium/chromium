@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,22 +20,22 @@
   ElementsTestRunner.selectNodeAndWaitForStyles('node-to-select', nodeSelected);
   function nodeSelected() {
     eventSender.keyDown('Tab');
-    var startElement = document.deepActiveElement();
+    var startElement = Platform.DOMUtilities.deepActiveElement(document);
     do {
       dumpFocus();
       eventSender.keyDown('Tab');
       elements++;
-    } while (startElement !== document.deepActiveElement() && elements < maxElements);
+    } while (startElement !== Platform.DOMUtilities.deepActiveElement(document) && elements < maxElements);
 
     TestRunner.addResult('');
     TestRunner.addResult('Shift+Tab:');
     TestRunner.addResult('');
-    startElement = document.deepActiveElement();
+    startElement = Platform.DOMUtilities.deepActiveElement(document);
     do {
       dumpFocus();
       eventSender.keyDown('Tab', ['shiftKey']);
       elements++;
-    } while (startElement !== document.deepActiveElement() && elements < maxElements);
+    } while (startElement !== Platform.DOMUtilities.deepActiveElement(document) && elements < maxElements);
 
     if (elements >= maxElements)
       TestRunner.addResult('FAIL: Unable to complete tab stop cycle.');
@@ -44,7 +44,7 @@
   }
 
   function dumpFocus() {
-    var element = document.deepActiveElement();
+    var element = Platform.DOMUtilities.deepActiveElement(document);
     if (!element) {
       TestRunner.addResult('null');
       return;

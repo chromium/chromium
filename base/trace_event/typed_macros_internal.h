@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -88,7 +88,7 @@ extern BASE_EXPORT const perfetto::Track kDefaultTrack;
 // TRACE_EVENT_PHASE_END. However, TraceLog expects all TraceEvents to have
 // event names. So, until we move over to the client library, we will use this
 // empty name for all TRACE_EVENT_PHASE_END typed events.
-constexpr char kTraceEventEndName[] = "";
+inline constexpr char kTraceEventEndName[] = "";
 
 base::trace_event::TrackEventHandle BASE_EXPORT
 CreateTrackEvent(char phase,
@@ -139,7 +139,8 @@ inline void AddTypedTraceEventImpl(char phase,
 
     perfetto::internal::WriteTrackEventArgs(
         perfetto::EventContext(track_event.get(),
-                               track_event.incremental_state()),
+                               track_event.incremental_state(),
+                               track_event.ShouldFilterDebugAnnotations()),
         std::forward<Args>(args)...);
   }
 

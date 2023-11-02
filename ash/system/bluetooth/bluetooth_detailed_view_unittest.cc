@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,17 +6,15 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/icon_button.h"
 #include "ash/system/bluetooth/bluetooth_detailed_view_impl.h"
 #include "ash/system/bluetooth/bluetooth_device_list_item_view.h"
 #include "ash/system/bluetooth/bluetooth_disabled_detailed_view.h"
 #include "ash/system/tray/detailed_view_delegate.h"
-#include "ash/system/unified/top_shortcut_button.h"
 #include "ash/test/ash_test_base.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/test/event_generator.h"
@@ -33,14 +31,14 @@ class View;
 }  // namespace views
 
 namespace ash {
-namespace tray {
+
 namespace {
 
-const std::string kDeviceId = "/device/id";
+using bluetooth_config::mojom::BluetoothDeviceProperties;
+using bluetooth_config::mojom::PairedBluetoothDeviceProperties;
+using bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr;
 
-using chromeos::bluetooth_config::mojom::BluetoothDeviceProperties;
-using chromeos::bluetooth_config::mojom::PairedBluetoothDeviceProperties;
-using chromeos::bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr;
+const std::string kDeviceId = "/device/id";
 
 class FakeBluetoothDetailedViewDelegate
     : public BluetoothDetailedView::Delegate {
@@ -106,8 +104,6 @@ class BluetoothDetailedViewTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
 
-    feature_list_.InitAndEnableFeature(features::kBluetoothRevamp);
-
     std::unique_ptr<BluetoothDetailedView> bluetooth_detailed_view =
         BluetoothDetailedView::Factory::Create(
             &fake_detailed_view_delegate_,
@@ -127,8 +123,8 @@ class BluetoothDetailedViewTest : public AshTestBase {
     AshTestBase::TearDown();
   }
 
-  ash::TopShortcutButton* FindPairNewDeviceClickableView() {
-    return FindViewById<ash::TopShortcutButton*>(
+  ash::IconButton* FindPairNewDeviceClickableView() {
+    return FindViewById<ash::IconButton*>(
         BluetoothDetailedViewImpl::BluetoothDetailedViewChildId::
             kPairNewDeviceClickableView);
   }
@@ -174,7 +170,6 @@ class BluetoothDetailedViewTest : public AshTestBase {
         static_cast<int>(id)));
   }
 
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<views::Widget> widget_;
   BluetoothDetailedView* bluetooth_detailed_view_;
   FakeBluetoothDetailedViewDelegate fake_bluetooth_detailed_view_delegate_;
@@ -186,13 +181,13 @@ TEST_F(BluetoothDetailedViewTest, PressingSettingsButtonOpensSettings) {
 
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::LOCKED);
-  SimulateMouseClickAt(GetEventGenerator(), settings_button);
+  LeftClickOn(settings_button);
   EXPECT_EQ(0, GetSystemTrayClient()->show_bluetooth_settings_count());
   EXPECT_EQ(0u, fake_detailed_view_delegate()->close_bubble_call_count());
 
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::ACTIVE);
-  SimulateMouseClickAt(GetEventGenerator(), settings_button);
+  LeftClickOn(settings_button);
   EXPECT_EQ(1, GetSystemTrayClient()->show_bluetooth_settings_count());
   EXPECT_EQ(1u, fake_detailed_view_delegate()->close_bubble_call_count());
 }
@@ -226,7 +221,7 @@ TEST_F(BluetoothDetailedViewTest, PressingToggleNotifiesDelegate) {
   EXPECT_FALSE(
       bluetooth_detailed_view_delegate()->last_bluetooth_toggle_state());
 
-  SimulateMouseClickAt(GetEventGenerator(), toggle_button);
+  LeftClickOn(toggle_button);
 
   EXPECT_TRUE(toggle_button->GetIsOn());
   EXPECT_TRUE(
@@ -251,8 +246,7 @@ TEST_F(BluetoothDetailedViewTest, BluetoothToggleHasCorrectTooltipText) {
 }
 
 TEST_F(BluetoothDetailedViewTest, PressingPairNewDeviceNotifiesDelegate) {
-  ash::TopShortcutButton* pair_new_device_button =
-      FindPairNewDeviceClickableView();
+  IconButton* pair_new_device_button = FindPairNewDeviceClickableView();
   views::View* pair_new_device_view = FindPairNewDeviceView();
 
   EXPECT_FALSE(pair_new_device_view->GetVisible());
@@ -260,14 +254,13 @@ TEST_F(BluetoothDetailedViewTest, PressingPairNewDeviceNotifiesDelegate) {
                     ->on_pair_new_device_requested_call_count());
 
   bluetooth_detailed_view()->UpdateBluetoothEnabledState(true);
-  SimulateMouseClickAt(GetEventGenerator(), pair_new_device_button);
+  LeftClickOn(pair_new_device_button);
   EXPECT_EQ(1u, bluetooth_detailed_view_delegate()
                     ->on_pair_new_device_requested_call_count());
 }
 
 TEST_F(BluetoothDetailedViewTest, PairNewDeviceButtonIsCentered) {
-  ash::TopShortcutButton* pair_new_device_button =
-      FindPairNewDeviceClickableView();
+  IconButton* pair_new_device_button = FindPairNewDeviceClickableView();
   views::View* pair_new_device_view = FindPairNewDeviceView();
 
   bluetooth_detailed_view()->UpdateBluetoothEnabledState(true);
@@ -301,13 +294,14 @@ TEST_F(BluetoothDetailedViewTest, SelectingDeviceListItemNotifiesDelegate) {
 
   BluetoothDeviceListItemView* device_list_item =
       bluetooth_detailed_view()->AddDeviceListItem();
-  device_list_item->UpdateDeviceProperties(paired_properties);
+  device_list_item->UpdateDeviceProperties(
+      /*device_index=*/0, /*device_count=*/0, paired_properties);
 
   bluetooth_detailed_view()->NotifyDeviceListChanged();
 
   EXPECT_FALSE(
       bluetooth_detailed_view_delegate()->last_device_list_item_selected());
-  SimulateMouseClickAt(GetEventGenerator(), device_list_item);
+  LeftClickOn(device_list_item);
   EXPECT_TRUE(
       bluetooth_detailed_view_delegate()->last_device_list_item_selected());
   EXPECT_EQ(kDeviceId, bluetooth_detailed_view_delegate()
@@ -315,5 +309,4 @@ TEST_F(BluetoothDetailedViewTest, SelectingDeviceListItemNotifiesDelegate) {
                            ->device_properties->id);
 }
 
-}  // namespace tray
 }  // namespace ash

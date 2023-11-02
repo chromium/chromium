@@ -1,11 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 (async function(testRunner) {
   // This one should not be kept per redirect since http-equiv accept-ch doesn't
   // persist.
-  document.head.innerHTML = ' <meta http-equiv="Accept-CH" content="DPR"> <meta http-equiv="Accept-CH-Lifetime" content="1">';
+  document.head.innerHTML = ' <meta http-equiv="Accept-CH" content="DPR"> ';
   var {page, session, dp} = await testRunner.startBlank(`Test that UA client hints are added on redirect.\n`);
 
   dp.Network.enable();

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 #include "base/check_op.h"
 #include "net/base/address_list.h"
 #include "net/base/net_errors.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/test_completion_callback.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/mock_host_resolver.h"
@@ -46,14 +46,15 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   }
 
   net::TestCompletionCallback callback;
-  std::unique_ptr<net::FuzzedSocket> fuzzed_socket(
-      new net::FuzzedSocket(&data_provider, net::NetLog::Get()));
+  auto fuzzed_socket =
+      std::make_unique<net::FuzzedSocket>(&data_provider, net::NetLog::Get());
   CHECK_EQ(net::OK, fuzzed_socket->Connect(callback.callback()));
 
   net::SOCKSClientSocket socket(
       std::move(fuzzed_socket), net::HostPortPair("foo", 80),
-      net::NetworkIsolationKey(), net::DEFAULT_PRIORITY, &mock_host_resolver,
-      net::SecureDnsPolicy::kAllow, TRAFFIC_ANNOTATION_FOR_TESTS);
+      net::NetworkAnonymizationKey(), net::DEFAULT_PRIORITY,
+      &mock_host_resolver, net::SecureDnsPolicy::kAllow,
+      TRAFFIC_ANNOTATION_FOR_TESTS);
   int result = socket.Connect(callback.callback());
   callback.GetResult(result);
   return 0;

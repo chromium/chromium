@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,12 +11,14 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_split.h"
 #include "base/timer/timer.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/utils.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
@@ -35,6 +37,12 @@ void RecordGetHashResult(safe_browsing::V4OperationResult result) {
   UMA_HISTOGRAM_ENUMERATION(
       "SafeBrowsing.V4GetHash.Result", result,
       safe_browsing::V4OperationResult::OPERATION_RESULT_MAX);
+}
+
+// Record a backoff error count
+void RecordBackoffErrorCountResult(size_t count) {
+  base::UmaHistogramCounts100(
+      "SafeBrowsing.V4GetHash.Result.BackoffErrorCount", count);
 }
 
 // Enumerate parsing failures for histogramming purposes.  DO NOT CHANGE
@@ -121,6 +129,12 @@ enum V4GetHashCheckResultType {
 void RecordV4GetHashCheckResult(V4GetHashCheckResultType result_type) {
   UMA_HISTOGRAM_ENUMERATION("SafeBrowsing.V4GetHash.Check.Result", result_type,
                             GET_HASH_CHECK_RESULT_MAX);
+}
+
+bool ErrorIsRetriable(int net_error, int http_error) {
+  return (net_error == net::ERR_INTERNET_DISCONNECTED ||
+          net_error == net::ERR_NETWORK_CHANGED) &&
+         http_error != net::HTTP_OK;
 }
 
 const char kPermission[] = "permission";
@@ -296,6 +310,7 @@ void V4GetHashProtocolManager::GetFullHashes(
   if (clock_->Now() <= next_gethash_time_) {
     if (gethash_error_count_) {
       RecordGetHashResult(V4OperationResult::BACKOFF_ERROR);
+      backoff_error_count_++;
     } else {
       RecordGetHashResult(V4OperationResult::MIN_WAIT_DURATION_ERROR);
     }
@@ -707,6 +722,7 @@ void V4GetHashProtocolManager::ParseMetadata(const ThreatMatch& match,
 void V4GetHashProtocolManager::ResetGetHashErrors() {
   gethash_error_count_ = 0;
   gethash_back_off_mult_ = 1;
+  backoff_error_count_ = 0;
   next_gethash_time_ = base::Time();
 }
 
@@ -794,17 +810,24 @@ void V4GetHashProtocolManager::OnURLLoaderCompleteInternal(
     const std::string& data) {
   auto it = pending_hash_requests_.find(url_loader);
   DCHECK(it != pending_hash_requests_.end()) << "Request not found";
-  V4ProtocolManagerUtil::RecordHttpResponseOrErrorCode(
-      "SafeBrowsing.V4GetHash.Network.Result", net_error, response_code);
+  RecordHttpResponseOrErrorCode("SafeBrowsing.V4GetHash.Network.Result",
+                                net_error, response_code);
 
   std::vector<FullHashInfo> full_hash_infos;
   Time negative_cache_expire;
   if (net_error == net::OK && response_code == net::HTTP_OK) {
     RecordGetHashResult(V4OperationResult::STATUS_200);
+    if (gethash_error_count_) RecordBackoffErrorCountResult(backoff_error_count_);
     ResetGetHashErrors();
     if (!ParseHashResponse(data, &full_hash_infos, &negative_cache_expire)) {
       full_hash_infos.clear();
       RecordGetHashResult(V4OperationResult::PARSE_ERROR);
+    }
+  } else if (ErrorIsRetriable(net_error, response_code)) {
+    if (net_error != net::OK) {
+      RecordGetHashResult(V4OperationResult::RETRIABLE_NETWORK_ERROR);
+    } else {
+      RecordGetHashResult(V4OperationResult::RETRIABLE_HTTP_ERROR);
     }
   } else {
     HandleGetHashError(clock_->Now());

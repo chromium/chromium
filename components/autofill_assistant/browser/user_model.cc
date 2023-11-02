@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,9 @@
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill_assistant/browser/user_data.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace autofill_assistant {
@@ -146,6 +149,15 @@ void UserModel::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
+void UserModel::SetPhoneNumbers(
+    std::unique_ptr<std::vector<std::unique_ptr<autofill::AutofillProfile>>>
+        phone_numbers) {
+  if (phone_numbers_) {
+    phone_numbers_.reset();
+  }
+  phone_numbers_ = std::move(phone_numbers);
+}
+
 void UserModel::SetAutofillCreditCards(
     std::unique_ptr<std::vector<std::unique_ptr<autofill::CreditCard>>>
         credit_cards) {
@@ -183,10 +195,8 @@ void UserModel::SetSelectedLoginChoiceByIdentifier(
     const CollectUserDataOptions& collect_user_data_options,
     UserData* user_data) {
   const auto login_choice =
-      base::ranges::find_if(collect_user_data_options.login_choices,
-                            [&identifier](const LoginChoice& login_choice) {
-                              return login_choice.identifier == identifier;
-                            });
+      base::ranges::find(collect_user_data_options.login_choices, identifier,
+                         &LoginChoice::identifier);
   if (login_choice == collect_user_data_options.login_choices.end()) {
     user_data->selected_login_choice_.reset();
     return;
@@ -268,6 +278,13 @@ const autofill::AutofillProfile* UserModel::GetProfile(
     }
     case AutofillProfileProto::kSelectedProfileName:
       return GetSelectedAutofillProfile(proto.selected_profile_name());
+    case AutofillProfileProto::kPhoneNumberIndex: {
+      size_t index = proto.phone_number_index();
+      if (index >= phone_numbers_->size() || index < 0) {
+        return nullptr;
+      }
+      return phone_numbers_->at(index).get();
+    }
     case AutofillProfileProto::IDENTIFIER_NOT_SET:
       return nullptr;
   }

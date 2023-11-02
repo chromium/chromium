@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "chrome/browser/download/download_dialog_types.h"
-#include "components/download/public/common/download_schedule.h"
 #include "net/base/network_change_notifier.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/native_widget_types.h"
@@ -20,9 +19,6 @@ struct DownloadDialogResult {
   DownloadDialogResult();
   DownloadDialogResult(const DownloadDialogResult&);
   ~DownloadDialogResult();
-
-  // Results from download later dialog.
-  absl::optional<download::DownloadSchedule> download_schedule;
 
   // Results from download location dialog.
   DownloadLocationDialogResult location_result =
@@ -37,9 +33,6 @@ class DownloadDialogBridge {
  public:
   using DialogCallback = base::OnceCallback<void(DownloadDialogResult)>;
 
-  static long GetDownloadLaterMinFileSize();
-  static bool ShouldShowDateTimePicker();
-
   DownloadDialogBridge();
   DownloadDialogBridge(const DownloadDialogBridge&) = delete;
   DownloadDialogBridge& operator=(const DownloadDialogBridge&) = delete;
@@ -53,16 +46,12 @@ class DownloadDialogBridge {
       net::NetworkChangeNotifier::ConnectionType connection_type,
       DownloadLocationDialogType dialog_type,
       const base::FilePath& suggested_path,
-      bool supports_later_dialog,
-      bool show_date_time_picker,
       bool is_incognito,
       DialogCallback dialog_callback);
 
   void OnComplete(JNIEnv* env,
                   const base::android::JavaParamRef<jobject>& obj,
-                  const base::android::JavaParamRef<jstring>& returned_path,
-                  jboolean on_wifi,
-                  jlong start_time);
+                  const base::android::JavaParamRef<jstring>& returned_path);
 
   void OnCanceled(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
 

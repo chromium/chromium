@@ -1,19 +1,18 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/account_manager/account_manager_policy_controller_factory.h"
 
-#include "ash/components/account_manager/account_manager_factory.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/account_manager/account_manager_policy_controller.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace ash {
 
@@ -33,9 +32,7 @@ AccountManagerPolicyControllerFactory::GetInstance() {
 }
 
 AccountManagerPolicyControllerFactory::AccountManagerPolicyControllerFactory()
-    : BrowserContextKeyedServiceFactory(
-          "AccountManagerPolicyController",
-          BrowserContextDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactory("AccountManagerPolicyController") {}
 
 AccountManagerPolicyControllerFactory::
     ~AccountManagerPolicyControllerFactory() = default;

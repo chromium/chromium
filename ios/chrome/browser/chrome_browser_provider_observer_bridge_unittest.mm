@@ -1,15 +1,15 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/chrome_browser_provider_observer_bridge.h"
 
-#include <memory>
+#import <memory>
 
-#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#include "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
-#include "testing/gtest_mac.h"
-#include "testing/platform_test.h"
+#import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
+#import "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
+#import "testing/gtest_mac.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -85,7 +85,7 @@ class ChromeBrowserProviderObserverBridgeTest : public PlatformTest {
   TestChromeBrowserProviderObserver* test_observer_;
 };
 
-// Tests that |OnChromeIdentityServiceDidChange| is forwarded.
+// Tests that `OnChromeIdentityServiceDidChange` is forwarded.
 TEST_F(ChromeBrowserProviderObserverBridgeTest,
        ChromeIdentityServiceDidChange) {
   std::unique_ptr<ios::ChromeIdentityService> identity_service;
@@ -96,7 +96,7 @@ TEST_F(ChromeBrowserProviderObserverBridgeTest,
   EXPECT_EQ(identity_service.get(), GetTestObserver().identityService);
 }
 
-// Tests that |OnChromeBrowserProviderWillBeDestroyed| is forwarded.
+// Tests that `OnChromeBrowserProviderWillBeDestroyed` is forwarded.
 TEST_F(ChromeBrowserProviderObserverBridgeTest,
        ChromeBrowserProviderWillBeDestroyed) {
   ASSERT_FALSE(GetTestObserver().chromeBrowserProviderWillBeDestroyedCalled);

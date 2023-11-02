@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright (c) 2013 The Chromium Authors. All rights reserved.
+# Copyright 2013 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -29,11 +29,8 @@
 # pylint: disable=R0201
 # pylint: disable=C0301
 
-from __future__ import print_function
-
 import os.path
 import sys
-import time
 
 # Can't use relative imports if we don't have a parent package.
 if __package__:
@@ -738,9 +735,12 @@ class IDLParser(object):
     p[0] = self.BuildError(p, 'NamespaceMembers')
 
   def p_NamespaceMember(self, p):
-    """NamespaceMember : ExtendedAttributeList ReturnType OperationRest
-                       | ExtendedAttributeList READONLY AttributeRest"""
-    if p[2] != 'readonly':
+    """NamespaceMember : Const
+                       | ExtendedAttributeList READONLY AttributeRest
+                       | ExtendedAttributeList ReturnType OperationRest"""
+    if len(p) == 2:
+      p[0] = p[1]
+    elif p[2] != 'readonly':
       applicable_to_types, non_applicable_to_types = \
           DivideExtAttrsIntoApplicableAndNonApplicable(p[1])
       if applicable_to_types:
@@ -752,10 +752,11 @@ class IDLParser(object):
         attributes = self.BuildProduction('ExtAttributes', p, 1,
             non_applicable_to_types)
         p[3].AddChildren(attributes)
+      p[0] = p[3]
     else:
       p[3].AddChildren(self.BuildTrue('READONLY'))
       p[3].AddChildren(p[1])
-    p[0] = p[3]
+      p[0] = p[3]
 
   def p_Dictionary(self, p):
     """Dictionary : DICTIONARY identifier Inheritance '{' DictionaryMembers '}' ';'"""
@@ -916,9 +917,12 @@ class IDLParser(object):
                            | SEQUENCE '<' TypeWithExtendedAttributes '>' Null
                            | FROZENARRAY '<' TypeWithExtendedAttributes '>' Null
                            | OBSERVABLEARRAY '<' TypeWithExtendedAttributes '>' Null
-                           | RecordType Null"""
+                           | RecordType Null
+                           | UNDEFINED Null"""
     if len(p) == 3:
-      if type(p[1]) == str:
+      if p[1] == 'undefined':
+        typeref = self.BuildProduction('Undefined', p, 1)
+      elif type(p[1]) == str:
         typeref = self.BuildNamed('Typeref', p, 1)
       else:
         typeref = p[1]
@@ -1041,9 +1045,10 @@ class IDLParser(object):
   #    [ identifier = identifier ]
   #    [ identifier = ( IdentifierList ) ]
   #    [ identifier = identifier ( ArgumentList ) ]
+  #    [ identifier = StringLiteral ]
   #    [ identifier = ( StringList ) ]
-  # The first five patterns are specified in the Web IDL spec and the last
-  # pattern is Blink's custom extension to support [ReflectOnly].
+  # The first five patterns are specified in the Web IDL spec and the last two
+  # patterns are Blink's custom extension to support [ReflectOnly].
   def p_ExtendedAttribute(self, p):
     """ExtendedAttribute : ExtendedAttributeNoArgs
                          | ExtendedAttributeArgList
@@ -1094,11 +1099,6 @@ class IDLParser(object):
     args = self.BuildProduction('Arguments', p, 4, p[5])
     value = self.BuildNamed('Call', p, 3, args)
     p[0] = self.BuildNamed('ExtAttribute', p, 1, value)
-
-
-
-
-
 
   # Blink extension: Add support for string literal Extended Attribute values
   def p_ExtendedAttributeStringLiteral(self, p):
@@ -1312,7 +1312,6 @@ def ParseFile(parser, filename):
   with open(filename) as fileobject:
     try:
       out = parser.ParseText(filename, fileobject.read())
-      out.SetProperty('DATETIME', time.ctime(os.path.getmtime(filename)))
       out.SetProperty('ERRORS', parser.GetErrors())
       return out
 

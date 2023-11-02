@@ -2,12 +2,15 @@
   "compilerOptions": {
     "module": "ESNext",
     "target": "ESNext",
+    "useDefineForClassFields": false,
 
     "noEmitOnError": true,
     "pretty": true,
 
+    "allowUnreachableCode": false,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
+    "noImplicitOverride": true,
     "noImplicitReturns": true,
     "noPropertyAccessFromIndexSignature": true,
     "noUncheckedIndexedAccess": true,

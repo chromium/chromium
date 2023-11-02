@@ -24,6 +24,7 @@
 
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/media_type_names.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -129,13 +130,14 @@ void SVGStyleElement::NotifyLoadedSheetAndAllCriticalSubresources(
   if (error_status != kNoErrorLoadingSubresource) {
     GetDocument()
         .GetTaskRunner(TaskType::kDOMManipulation)
-        ->PostTask(FROM_HERE, WTF::Bind(&SVGStyleElement::DispatchPendingEvent,
-                                        WrapPersistent(this)));
+        ->PostTask(FROM_HERE,
+                   WTF::BindOnce(&SVGStyleElement::DispatchPendingEvent,
+                                 WrapPersistent(this)));
   }
 }
 
 void SVGStyleElement::DispatchPendingEvent() {
-  DispatchEvent(*Event::Create(event_type_names::kError));
+  DispatchEvent(*Event::Create(event_type_names::kError), "SVGStyleElement::DispatchPendingEvent");
 }
 
 void SVGStyleElement::Trace(Visitor* visitor) const {

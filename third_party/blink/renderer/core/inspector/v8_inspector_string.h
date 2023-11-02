@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -98,14 +98,6 @@ class CORE_EXPORT Binary : public crdtp::Serializable {
 }  // namespace blink
 
 // TODO(dgozman): migrate core/inspector/protocol to wtf::HashMap.
-namespace std {
-template <>
-struct hash<WTF::String> {
-  std::size_t operator()(const WTF::String& string) const {
-    return StringHash::GetHash(string);
-  }
-};
-}  // namespace std
 
 // See third_party/inspector_protocol/crdtp/serializer_traits.h.
 namespace crdtp {

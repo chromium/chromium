@@ -1,14 +1,14 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/crostini/crostini_sshfs.h"
 
+#include <inttypes.h>
 #include <memory>
 #include <utility>
 
 #include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/scoped_observation.h"
@@ -19,8 +19,9 @@
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
+#include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/dbus/cros_disks/cros_disks_client.h"
+#include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "content/public/browser/browser_thread.h"
 #include "storage/browser/file_system/external_mount_points.h"
 
@@ -30,16 +31,16 @@ CrostiniSshfs::CrostiniSshfs(Profile* profile) : profile_(profile) {}
 
 CrostiniSshfs::~CrostiniSshfs() = default;
 
-void CrostiniSshfs::OnContainerShutdown(const ContainerId& container_id) {
+void CrostiniSshfs::OnContainerShutdown(const guest_os::GuestId& container_id) {
   container_shutdown_observer_.Reset();
   SetSshfsMounted(container_id, false);
 }
 
-bool CrostiniSshfs::IsSshfsMounted(const ContainerId& container) {
+bool CrostiniSshfs::IsSshfsMounted(const guest_os::GuestId& container) {
   return (sshfs_mounted_.count(container));
 }
 
-void CrostiniSshfs::SetSshfsMounted(const ContainerId& container,
+void CrostiniSshfs::SetSshfsMounted(const guest_os::GuestId& container,
                                     bool mounted) {
   if (mounted) {
     sshfs_mounted_.emplace(container);
@@ -48,7 +49,7 @@ void CrostiniSshfs::SetSshfsMounted(const ContainerId& container,
   }
 }
 
-void CrostiniSshfs::UnmountCrostiniFiles(const ContainerId& container_id,
+void CrostiniSshfs::UnmountCrostiniFiles(const guest_os::GuestId& container_id,
                                          MountCrostiniFilesCallback callback) {
   // TODO(crbug/1197986): Unmounting should cancel an in-progress mount.
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -68,7 +69,7 @@ void CrostiniSshfs::UnmountCrostiniFiles(const ContainerId& container_id,
 }
 
 void CrostiniSshfs::OnRemoveSshfsCrostiniVolume(
-    const ContainerId& container_id,
+    const guest_os::GuestId& container_id,
     MountCrostiniFilesCallback callback,
     base::Time started,
     bool success) {
@@ -80,7 +81,7 @@ void CrostiniSshfs::OnRemoveSshfsCrostiniVolume(
   std::move(callback).Run(success);
 }
 
-void CrostiniSshfs::MountCrostiniFiles(const ContainerId& container_id,
+void CrostiniSshfs::MountCrostiniFiles(const guest_os::GuestId& container_id,
                                        MountCrostiniFilesCallback callback,
                                        bool background) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -98,15 +99,17 @@ void CrostiniSshfs::MountCrostiniFiles(const ContainerId& container_id,
     return;
   }
 
-  if (container_id != ContainerId::GetDefault()) {
+  if (container_id != DefaultContainerId()) {
     LOG(ERROR) << "Unable to mount files for non-default container";
     Finish(CrostiniSshfsResult::kNotDefaultContainer);
     return;
   }
 
   auto* manager = CrostiniManagerFactory::GetForProfile(profile_);
-  absl::optional<ContainerInfo> info = manager->GetContainerInfo(container_id);
-  if (!info) {
+  bool running =
+      guest_os::GuestOsSessionTracker::GetForProfile(profile_)->IsRunning(
+          in_progress_mount_->container_id);
+  if (!running) {
     LOG(ERROR) << "Unable to mount files for a container that's not running";
     Finish(CrostiniSshfsResult::kContainerNotRunning);
     return;
@@ -129,9 +132,8 @@ void CrostiniSshfs::OnGetContainerSshKeys(
     return;
   }
 
-  auto* manager = CrostiniManagerFactory::GetForProfile(profile_);
-  absl::optional<ContainerInfo> info =
-      manager->GetContainerInfo(in_progress_mount_->container_id);
+  auto info = guest_os::GuestOsSessionTracker::GetForProfile(profile_)->GetInfo(
+      in_progress_mount_->container_id);
   if (!info) {
     LOG(ERROR) << "Got ssh keys for a container that's not running. Aborting.";
     Finish(CrostiniSshfsResult::kGetContainerInfoFailed);
@@ -139,47 +141,45 @@ void CrostiniSshfs::OnGetContainerSshKeys(
   }
 
   // Add ourselves as an observer so we can continue once the path is mounted.
-  auto* dmgr = chromeos::disks::DiskMountManager::GetInstance();
-  disk_mount_observer_.Observe(dmgr);
+  auto* dmgr = ash::disks::DiskMountManager::GetInstance();
 
-  // Call to sshfs to mount.
-  in_progress_mount_->source_path = base::StringPrintf(
-      "sshfs://%s@%s:", info->username.c_str(), hostname.c_str());
+  if (info->sftp_vsock_port != 0) {
+    // If we have a vsock port and cid, use sftp:// over vsock instead.
+    in_progress_mount_->source_path = base::StringPrintf(
+        "sftp://%" PRId64 ":%u", info->cid, info->sftp_vsock_port);
+  } else {
+    // otherwise construct sshfs:// source path.
+    in_progress_mount_->source_path = base::StringPrintf(
+        "sshfs://%s@%s:", info->username.c_str(), hostname.c_str());
+  }
   in_progress_mount_->container_homedir = info->homedir;
 
   dmgr->MountPath(in_progress_mount_->source_path, "",
                   file_manager::util::GetCrostiniMountPointName(profile_),
                   file_manager::util::GetCrostiniMountOptions(
                       hostname, host_private_key, container_public_key),
-                  chromeos::MOUNT_TYPE_NETWORK_STORAGE,
-                  chromeos::MOUNT_ACCESS_MODE_READ_WRITE);
+                  ash::MountType::kNetworkStorage,
+                  ash::MountAccessMode::kReadWrite,
+                  base::BindOnce(&CrostiniSshfs::OnMountEvent,
+                                 weak_ptr_factory_.GetWeakPtr()));
 }
 
 void CrostiniSshfs::OnMountEvent(
-    chromeos::disks::DiskMountManager::MountEvent event,
-    chromeos::MountError error_code,
-    const chromeos::disks::DiskMountManager::MountPointInfo& mount_info) {
+    ash::MountError error_code,
+    const ash::disks::DiskMountManager::MountPoint& mount_info) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  // Ignore any other mount/unmount events.
-  if (event != chromeos::disks::DiskMountManager::MountEvent::MOUNTING ||
-      mount_info.source_path != in_progress_mount_->source_path) {
-    return;
-  }
 
-  // Got our mount event, so stop listening for more.
-  disk_mount_observer_.Reset();
-
-  if (error_code != chromeos::MountError::MOUNT_ERROR_NONE) {
+  if (error_code != ash::MountError::kNone) {
     LOG(ERROR) << "Error mounting crostini container: error_code=" << error_code
                << ", source_path=" << mount_info.source_path
                << ", mount_path=" << mount_info.mount_path
                << ", mount_type=" << mount_info.mount_type
-               << ", mount_condition=" << mount_info.mount_condition;
+               << ", mount_error=" << mount_info.mount_error;
     switch (error_code) {
-      case chromeos::MountError::MOUNT_ERROR_INTERNAL:
+      case ash::MountError::kInternal:
         Finish(CrostiniSshfsResult::kMountErrorInternal);
         return;
-      case chromeos::MountError::MOUNT_ERROR_MOUNT_PROGRAM_FAILED:
+      case ash::MountError::kMountProgramFailed:
         Finish(CrostiniSshfsResult::kMountErrorProgramFailed);
         return;
       default:
@@ -240,7 +240,7 @@ void CrostiniSshfs::Finish(CrostiniSshfsResult result) {
 }
 
 CrostiniSshfs::InProgressMount::InProgressMount(
-    const ContainerId& container,
+    const guest_os::GuestId& container,
     MountCrostiniFilesCallback callback,
     bool background)
     : container_id(container),
@@ -254,7 +254,7 @@ CrostiniSshfs::InProgressMount& CrostiniSshfs::InProgressMount::operator=(
 CrostiniSshfs::InProgressMount::~InProgressMount() = default;
 
 CrostiniSshfs::PendingRequest::PendingRequest(
-    const ContainerId& container_id,
+    const guest_os::GuestId& container_id,
     MountCrostiniFilesCallback callback,
     bool background)
     : container_id(container_id),

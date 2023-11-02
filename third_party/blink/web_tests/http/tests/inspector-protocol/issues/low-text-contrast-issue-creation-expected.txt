@@ -9,7 +9,7 @@ Inspector issue: {
                 fontWeight : 400
                 thresholdAA : 4.5
                 thresholdAAA : 7
-                violatingNodeId : 6
+                violatingNodeId : <integer>
                 violatingNodeSelector : div.issue
             }
         }

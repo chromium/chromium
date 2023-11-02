@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 
 #include "media/base/audio_codecs.h"
 #include "media/base/audio_parameters.h"
-#include "media/base/key_system_properties.h"
+#include "media/base/key_system_info.h"
 #include "media/base/media_export.h"
 #include "media/base/media_types.h"
 #include "media/base/video_codecs.h"
@@ -41,13 +41,7 @@ class MEDIA_EXPORT MediaClient {
   virtual ~MediaClient();
 
   // Adds properties for supported key systems.
-  virtual void AddSupportedKeySystems(
-      std::vector<std::unique_ptr<KeySystemProperties>>* key_systems) = 0;
-
-  // Returns whether client key systems properties should be updated.
-  // TODO(chcunningham): Refactor this to a proper change "observer" API that is
-  // less fragile (don't assume AddSupportedKeySystems has just one caller).
-  virtual bool IsKeySystemsUpdateNeeded() = 0;
+  virtual void GetSupportedKeySystems(GetSupportedKeySystemsCB cb) = 0;
 
   // Returns true if the given audio config is supported.
   virtual bool IsSupportedAudioType(const AudioType& type) = 0;

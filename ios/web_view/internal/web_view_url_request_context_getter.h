@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,11 +16,8 @@
 
 namespace net {
 class NetLog;
-class NetworkDelegate;
 class ProxyConfigService;
-class TransportSecurityPersister;
 class URLRequestContext;
-class URLRequestContextStorage;
 class SystemCookieStore;
 }  // namespace net
 
@@ -62,16 +59,12 @@ class WebViewURLRequestContextGetter : public net::URLRequestContextGetter {
   net::NetLog* net_log_;
   scoped_refptr<base::SingleThreadTaskRunner> network_task_runner_;
   std::unique_ptr<net::ProxyConfigService> proxy_config_service_;
-  std::unique_ptr<net::NetworkDelegate> network_delegate_;
   std::unique_ptr<net::URLRequestContext> url_request_context_;
-  std::unique_ptr<net::URLRequestContextStorage> storage_;
-  std::unique_ptr<net::TransportSecurityPersister>
-      transport_security_persister_;
   // SystemCookieStore must be created on UI thread in
   // WebViewURLRequestContextGetter's constructor. Later the ownership is passed
-  // to net::URLRequestContextStorage on IO thread. |system_cookie_store_| is
+  // to net::URLRequestContext on IO thread. |system_cookie_store_| is
   // created in constructor and cleared in GetURLRequestContext() where
-  // net::URLRequestContextStorage is lazily created.
+  // net::URLRequestContext is created.
   std::unique_ptr<net::SystemCookieStore> system_cookie_store_;
   // Protocol handler for web ui.
   std::unique_ptr<net::URLRequestJobFactory::ProtocolHandler> protocol_handler_;

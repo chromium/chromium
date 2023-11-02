@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/task/post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -20,6 +19,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/device_event_log/device_event_log.h"
 #include "net/base/load_flags.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -30,6 +30,32 @@
 namespace ash {
 
 namespace {
+
+constexpr net::NetworkTrafficAnnotationTag kServerPrintersFetcherNetworkTag =
+    net::DefineNetworkTrafficAnnotation("printing_server_printers_query", R"(
+    semantics {
+      sender: "ChromeOS Printers Manager"
+      description:
+        "Fetches the list of available printers from the Print Server."
+      trigger: "1. User asked for the list of available printers from "
+               "a chosen Print Server."
+               "2. ChromeOS automatically queries printers from Print "
+               "Servers whose addresses are set by the organization's "
+               "administrator at the Google admin console."
+      data: "None."
+      destination: OTHER
+      destination_other: "Print Server"
+    }
+    policy {
+      cookies_allowed: NO
+      setting:
+        "This feature is enabled as long as printing is enabled."
+      chrome_policy {
+        PrintingEnabled {
+            PrintingEnabled: false
+        }
+      }
+    })");
 
 std::string ServerPrinterId(const std::string& url) {
   base::MD5Context ctx;
@@ -122,7 +148,7 @@ class ServerPrintersFetcher::PrivateImplementation
       return;
     }
     // The response parsed successfully. Retrieve the list of printers.
-    std::vector<chromeos::PrinterDetector::DetectedPrinter> printers(
+    std::vector<PrinterDetector::DetectedPrinter> printers(
         response.printer_attributes.GetSize());
     for (size_t i = 0; i < printers.size(); ++i) {
       const std::string& name =
@@ -169,7 +195,7 @@ class ServerPrintersFetcher::PrivateImplementation
     resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
     // TODO(pawliczek): create a traffic annotation for printing network traffic
     simple_url_loader_ = network::SimpleURLLoader::Create(
-        std::move(resource_request), MISSING_TRAFFIC_ANNOTATION);
+        std::move(resource_request), kServerPrintersFetcherNetworkTag);
     std::string request_body(request_frame.begin(), request_frame.end());
     simple_url_loader_->AttachStringForUpload(request_body, "application/ipp");
     simple_url_loader_->DownloadAsStream(
@@ -179,8 +205,7 @@ class ServerPrintersFetcher::PrivateImplementation
   }
 
   // Posts a response with a list of printers.
-  void PostResponse(
-      std::vector<chromeos::PrinterDetector::DetectedPrinter>&& printers) {
+  void PostResponse(std::vector<PrinterDetector::DetectedPrinter>&& printers) {
     task_runner_for_callback_->PostNonNestableTask(
         FROM_HERE, base::BindOnce(callback_, owner_, server_url_, printers));
   }

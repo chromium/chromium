@@ -46,6 +46,12 @@
   #rememberPassword {
     margin-inline-end: 1em;
   }
+
+  #kerberosDomain {
+    color: var(--cros-text-color-primary);
+    padding-inline-end: 8px;
+    white-space: nowrap;
+  }
 </style>
 
 <cr-dialog id="addDialog" hidden="[[showAdvancedConfig_]]">
@@ -65,8 +71,11 @@
     <div id="credentials">
       <cr-input id="username" label="$i18n{kerberosUsername}"
           value="{{username_}}" invalid="[[showError_(usernameErrorText_)]]"
-          placeholder="user@example.com"
+          placeholder="[[computePlaceholder_(prefillDomain_)]]"
           error-message="[[usernameErrorText_]]">
+          <span id ="kerberosDomain" slot="inline-suffix">
+            [[computeDomain_(username_, prefillDomain_)]]
+          </span>
       </cr-input>
 
       <cr-input id="password" type="password"

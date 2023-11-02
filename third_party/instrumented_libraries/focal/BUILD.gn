@@ -1,4 +1,4 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -42,6 +42,7 @@ group("locally_built") {
     ":libindicator3-7",
     ":libjpeg-turbo8",
     ":libldap-2.4-2",
+    ":libnettle7",
     ":libnspr4",
     ":libp11-kit0",
     ":libpci3",
@@ -82,6 +83,10 @@ group("locally_built") {
 
 template("instrumented_library") {
   action(target_name) {
+    # Ignore "assignment had no effect" errors when there are no variables
+    # defined inside of the instrumented_library.
+    not_needed([ "invoker" ])
+
     script = "scripts/download_build_install.py"
     build_method = "destdir"
     if (defined(invoker.build_method)) {
@@ -404,20 +409,27 @@ instrumented_library("libgcrypt20") {
 }
 
 instrumented_library("libgdk-pixbuf2.0-0") {
+  build_method = "meson"
   extra_configure_flags = [
-    "--disable-static",
-    "--without-libjasper",
-    "--disable-introspection",
-
-    # From debian/rules.
-    "--with-x11",
+    "-Dgir=false",
+    "-Dman=false",
+    "-Dx11=true",
+    "-Djasper=false",
+    "-Dinstalled_tests=false",
 
     # Do not use loadable modules. Same as with Pango, there's no easy way
     # to make gdk-pixbuf pick instrumented versions over system-installed
     # ones.
-    "--disable-modules",
+    "-Dbuiltin_loaders='all'",
   ]
   pre_build = "scripts/pre-build/libgdk-pixbuf2.0-0.sh"
+
+  # Ignore MSAN errors during the build.  It's unclear why this only works on
+  # some binaries.
+  env = [ [
+        "MSAN_OPTIONS",
+        "halt_on_error=0 exitcode=0",
+      ] ]
 }
 
 instrumented_library("libglib2.0-0") {
@@ -544,6 +556,9 @@ instrumented_library("libnspr4") {
     "--disable-debug",
   ]
   pre_build = "scripts/pre-build/libnspr4.sh"
+}
+
+instrumented_library("libnettle7") {
 }
 
 instrumented_library("libp11-kit0") {
@@ -745,18 +760,12 @@ instrumented_library("nss") {
 }
 
 instrumented_library("pango1.0") {
+  build_method = "meson"
   extra_configure_flags = [
-    "--disable-static",
-
     # Avoid https://bugs.gentoo.org/show_bug.cgi?id=425620
-    "--enable-introspection=no",
-
-    # Pango is normally used with dynamically loaded modules. However,
-    # ensuring pango is able to find instrumented versions of those modules
-    # is a huge pain in the neck. Let's link them statically instead, and
-    # hope for the best.
-    "--with-included-modules=yes",
+    "-Dintrospection=false",
   ]
+  patches = [ "patches/pango1.0.diff" ]
 }
 
 instrumented_library("pulseaudio") {
@@ -785,6 +794,4 @@ instrumented_library("libudev1") {
 }
 
 instrumented_library("zlib1g") {
-  # --disable-static is not supported
-  patches = [ "patches/zlib1g.diff" ]
 }

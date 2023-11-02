@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/containers/contains.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
@@ -18,6 +19,18 @@
 namespace extensions {
 
 namespace {
+
+// A list of API's which have a trailing function parameter that is not actually
+// meant to be treated like a traditional API success callback. For more details
+// see the comment where this is used in APISignature::CreateFromValues.
+constexpr const char* const kNonCallbackTrailingFunctionAPINames[] = {
+    "test.listenForever",
+    "test.listenOnce",
+    "test.callbackPass",
+    "test.callbackFail",
+    "automation.addTreeChangeObserver",
+    "automation.removeTreeChangeObserver",
+};
 
 std::vector<std::unique_ptr<ArgumentSpec>> ValueListToArgumentSpecs(
     const base::Value& specification_list,
@@ -208,8 +221,7 @@ class BaseValueArgumentParser : public ArgumentParser {
                        signature,
                        arguments,
                        type_refs,
-                       promises_allowed),
-        list_value_(std::make_unique<base::ListValue>()) {}
+                       promises_allowed) {}
 
   BaseValueArgumentParser(const BaseValueArgumentParser&) = delete;
   BaseValueArgumentParser& operator=(const BaseValueArgumentParser&) = delete;
@@ -217,9 +229,7 @@ class BaseValueArgumentParser : public ArgumentParser {
   APISignature::JSONParseResult ParseArguments(bool signature_has_callback);
 
  private:
-  void AddNull() override {
-    list_value_->Append(std::make_unique<base::Value>());
-  }
+  void AddNull() override { list_value_.Append(base::Value()); }
   void AddNullCallback() override {
     // The base::Value conversion doesn't include the callback directly, so we
     // don't add a null parameter here.
@@ -230,14 +240,13 @@ class BaseValueArgumentParser : public ArgumentParser {
     // The corresponding base::Value is expected to have been stored in
     // |last_arg_| already.
     DCHECK(last_arg_);
-    list_value_->Append(std::move(last_arg_));
-    last_arg_.reset();
+    list_value_.Append(base::Value::FromUniquePtrValue(std::move(last_arg_)));
   }
   void SetCallback(v8::Local<v8::Function> callback) override {
     callback_ = callback;
   }
 
-  std::unique_ptr<base::ListValue> list_value_;
+  base::Value::List list_value_;
   std::unique_ptr<base::Value> last_arg_;
   v8::Local<v8::Function> callback_;
 };
@@ -344,9 +353,12 @@ bool ArgumentParser::ResolveArguments(
   }
 
   // A required argument was not matched. There is only one case in which this
-  // is allowed: a required callback when Promises are supported instead; if
-  // this is the case, |allow_omitted_final_argument| is true.
-  if (allow_omitted_final_argument && expected.size() == 1) {
+  // is allowed: a required callback has been left off of the provided arguments
+  // when Promises are supported; if this is the case,
+  // |allow_omitted_final_argument| is true and there should be no provided
+  // arguments left.
+  if (allow_omitted_final_argument && provided.size() == 0 &&
+      expected.size() == 1) {
     (*result)[index] = v8::Local<v8::Value>();
     return true;
   }
@@ -428,11 +440,65 @@ APISignature::JSONParseResult BaseValueArgumentParser::ParseArguments(
   if (!ParseArgumentsImpl(signature_has_callback)) {
     result.error = TakeError();
   } else {
-    result.arguments_list = std::move(list_value_);
+    result.arguments_list =
+        std::make_unique<base::Value>(std::move(list_value_));
     result.callback = callback_;
     result.async_type = async_type();
   }
   return result;
+}
+
+// A helper method used to validate a signature for an internal caller (such as
+// a response to an API method or event arguments) to ensure it matches the
+// expected schema.
+bool ValidateSignatureForInternalCaller(
+    v8::Local<v8::Context> context,
+    const std::vector<v8::Local<v8::Value>>& arguments,
+    const std::vector<std::unique_ptr<ArgumentSpec>>& expected,
+    const APITypeReferenceMap& type_refs,
+    std::string* error) {
+  size_t expected_size = expected.size();
+  size_t actual_size = arguments.size();
+  if (actual_size > expected_size) {
+    *error = api_errors::TooManyArguments();
+    return false;
+  }
+
+  // Easy validation: arguments go in order, and must match the expected schema.
+  // Anything less is failure.
+  std::string parse_error;
+  for (size_t i = 0; i < actual_size; ++i) {
+    DCHECK(!arguments[i].IsEmpty());
+    const ArgumentSpec& spec = *expected[i];
+    if (arguments[i]->IsNullOrUndefined()) {
+      if (!spec.optional()) {
+        *error = api_errors::MissingRequiredArgument(spec.name().c_str());
+        return false;
+      }
+      continue;
+    }
+
+    if (!spec.ParseArgument(context, arguments[i], type_refs, nullptr, nullptr,
+                            &parse_error)) {
+      *error = api_errors::ArgumentError(spec.name(), parse_error);
+      return false;
+    }
+  }
+
+  // Responses may omit trailing optional parameters (which would then be
+  // undefined for the caller).
+  // NOTE(devlin): It might be nice to see if we could require all arguments to
+  // be present, no matter what. For one, it avoids this loop, and it would also
+  // unify what a "not found" value was (some APIs use undefined, some use
+  // null).
+  for (size_t i = actual_size; i < expected_size; ++i) {
+    if (!expected[i]->optional()) {
+      *error = api_errors::MissingRequiredArgument(expected[i]->name().c_str());
+      return false;
+    }
+  }
+
+  return true;
 }
 
 }  // namespace
@@ -457,7 +523,7 @@ APISignature::APISignature(
     std::vector<std::unique_ptr<ArgumentSpec>> signature,
     std::unique_ptr<APISignature::ReturnsAsync> returns_async,
     BindingAccessChecker* access_checker)
-    : method_signature_(std::move(signature)),
+    : signature_(std::move(signature)),
       returns_async_(std::move(returns_async)),
       access_checker_(access_checker) {
   if (returns_async_) {
@@ -471,7 +537,7 @@ APISignature::APISignature(
     auto callback = std::make_unique<ArgumentSpec>(ArgumentType::FUNCTION);
     callback->set_optional(returns_async_->optional);
     callback->set_name("callback");
-    method_signature_.push_back(std::move(callback));
+    signature_.push_back(std::move(callback));
 
     if (returns_async_->promise_support ==
         binding::APIPromiseSupport::kSupported) {
@@ -489,15 +555,24 @@ APISignature::~APISignature() {}
 std::unique_ptr<APISignature> APISignature::CreateFromValues(
     const base::Value& spec_list,
     const base::Value* returns_async,
-    BindingAccessChecker* access_checker) {
+    BindingAccessChecker* access_checker,
+    const std::string& api_name,
+    bool is_event_signature) {
   bool uses_returns_async = returns_async != nullptr;
   auto argument_specs = ValueListToArgumentSpecs(spec_list, uses_returns_async);
 
   // Asynchronous returns for an API are either defined in the returns_async
   // part of the specification or as a trailing function argument.
+  // TODO(crbug.com/1288583): There are a handful of APIs which have a trailing
+  // function argument that is not a traditional callback. Once we have moved
+  // all the asynchronous API schemas to use the returns_async format it will be
+  // clear when this is the case, but for now we keep a list of the names of
+  // these APIs to ensure we are handling them correctly.
+  // This is irrelevant for event signatures.
   const base::Value* returns_async_spec = returns_async;
-  if (!argument_specs.empty() &&
-      argument_specs.back()->type() == ArgumentType::FUNCTION) {
+  if (!is_event_signature && !argument_specs.empty() &&
+      argument_specs.back()->type() == ArgumentType::FUNCTION &&
+      !base::Contains(kNonCallbackTrailingFunctionAPINames, api_name)) {
     DCHECK(!returns_async_spec);
     returns_async_spec = &spec_list.GetList().back();
     argument_specs.pop_back();
@@ -520,7 +595,7 @@ APISignature::V8ParseResult APISignature::ParseArgumentsToV8(
     const std::vector<v8::Local<v8::Value>>& arguments,
     const APITypeReferenceMap& type_refs) const {
   PromisesAllowed promises_allowed = CheckPromisesAllowed(context);
-  return V8ArgumentParser(context, method_signature_, arguments, type_refs,
+  return V8ArgumentParser(context, signature_, arguments, type_refs,
                           promises_allowed)
       .ParseArguments(has_async_return());
 }
@@ -530,8 +605,8 @@ APISignature::JSONParseResult APISignature::ParseArgumentsToJSON(
     const std::vector<v8::Local<v8::Value>>& arguments,
     const APITypeReferenceMap& type_refs) const {
   PromisesAllowed promises_allowed = CheckPromisesAllowed(context);
-  return BaseValueArgumentParser(context, method_signature_, arguments,
-                                 type_refs, promises_allowed)
+  return BaseValueArgumentParser(context, signature_, arguments, type_refs,
+                                 promises_allowed)
       .ParseArguments(has_async_return());
 }
 
@@ -564,7 +639,7 @@ APISignature::JSONParseResult APISignature::ConvertArgumentsIgnoringSchema(
     }
   }
 
-  base::Value::ListStorage json;
+  base::Value::List json;
   json.reserve(size);
 
   std::unique_ptr<content::V8ValueConverter> converter =
@@ -584,10 +659,10 @@ APISignature::JSONParseResult APISignature::ConvertArgumentsIgnoringSchema(
       // null). Duplicate that behavior here.
       converted = std::make_unique<base::Value>();
     }
-    json.push_back(base::Value::FromUniquePtrValue(std::move(converted)));
+    json.Append(base::Value::FromUniquePtrValue(std::move(converted)));
   }
 
-  result.arguments_list = std::make_unique<base::ListValue>(std::move(json));
+  result.arguments_list = std::make_unique<base::Value>(std::move(json));
   return result;
 }
 
@@ -598,56 +673,24 @@ bool APISignature::ValidateResponse(
     std::string* error) const {
   DCHECK(returns_async_);
   DCHECK(returns_async_->signature);
-  size_t expected_size = returns_async_->signature->size();
-  size_t actual_size = arguments.size();
-  if (actual_size > expected_size) {
-    *error = api_errors::TooManyArguments();
-    return false;
-  }
+  return ValidateSignatureForInternalCaller(
+      context, arguments, *returns_async_->signature, type_refs, error);
+}
 
-  // Easy validation: arguments go in order, and must match the expected schema.
-  // Anything less is failure.
-  std::string parse_error;
-  for (size_t i = 0; i < actual_size; ++i) {
-    DCHECK(!arguments[i].IsEmpty());
-    const ArgumentSpec& spec = *returns_async_->signature.value()[i];
-    if (arguments[i]->IsNullOrUndefined()) {
-      if (!spec.optional()) {
-        *error = api_errors::MissingRequiredArgument(spec.name().c_str());
-        return false;
-      }
-      continue;
-    }
-
-    if (!spec.ParseArgument(context, arguments[i], type_refs, nullptr, nullptr,
-                            &parse_error)) {
-      *error = api_errors::ArgumentError(spec.name(), parse_error);
-      return false;
-    }
-  }
-
-  // Responses may omit trailing optional parameters (which would then be
-  // undefined for the caller).
-  // NOTE(devlin): It might be nice to see if we could require all arguments to
-  // be present, no matter what. For one, it avoids this loop, and it would also
-  // unify what a "not found" value was (some APIs use undefined, some use
-  // null).
-  for (size_t i = actual_size; i < expected_size; ++i) {
-    if (!returns_async_->signature.value()[i]->optional()) {
-      *error = api_errors::MissingRequiredArgument(
-          returns_async_->signature.value()[i]->name().c_str());
-      return false;
-    }
-  }
-
-  return true;
+bool APISignature::ValidateCall(
+    v8::Local<v8::Context> context,
+    const std::vector<v8::Local<v8::Value>>& arguments,
+    const APITypeReferenceMap& type_refs,
+    std::string* error) const {
+  return ValidateSignatureForInternalCaller(context, arguments, signature_,
+                                            type_refs, error);
 }
 
 std::string APISignature::GetExpectedSignature() const {
-  if (!expected_signature_.empty() || method_signature_.empty())
+  if (!expected_signature_.empty() || signature_.empty())
     return expected_signature_;
 
-  expected_signature_ = ArgumentSpecsToString(method_signature_);
+  expected_signature_ = ArgumentSpecsToString(signature_);
 
   return expected_signature_;
 }

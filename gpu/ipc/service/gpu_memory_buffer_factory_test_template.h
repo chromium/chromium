@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,14 +8,16 @@
 #ifndef GPU_IPC_SERVICE_GPU_MEMORY_BUFFER_FACTORY_TEST_TEMPLATE_H_
 #define GPU_IPC_SERVICE_GPU_MEMORY_BUFFER_FACTORY_TEST_TEMPLATE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "gpu/ipc/service/gpu_memory_buffer_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/buffer_format_util.h"
+#include "ui/gl/gl_display.h"
 
-#if defined(OS_WIN) || defined(USE_OZONE)
+#if BUILDFLAG(IS_WIN) || defined(USE_OZONE)
 #include "base/command_line.h"
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/init/gl_factory.h"
@@ -27,24 +29,25 @@ namespace gpu {
 template <typename GpuMemoryBufferFactoryType>
 class GpuMemoryBufferFactoryTest : public testing::Test {
  public:
-#if defined(OS_WIN) || defined(USE_OZONE)
+#if BUILDFLAG(IS_WIN) || defined(USE_OZONE)
   // Overridden from testing::Test:
   void SetUp() override {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // This test only works with hardware rendering.
     DCHECK(base::CommandLine::ForCurrentProcess()->HasSwitch(
         switches::kUseGpuInTests));
 #endif
-    gl::GLSurfaceTestSupport::InitializeOneOff();
+    display_ = gl::GLSurfaceTestSupport::InitializeOneOff();
   }
-  void TearDown() override { gl::init::ShutdownGL(false); }
-#endif  // defined(OS_WIN) || defined(USE_OZONE)
+  void TearDown() override { gl::GLSurfaceTestSupport::ShutdownGL(display_); }
+#endif  // BUILDFLAG(IS_WIN) || defined(USE_OZONE)
 
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI};
 
   GpuMemoryBufferFactoryType factory_;
+  raw_ptr<gl::GLDisplay> display_ = nullptr;
 };
 
 TYPED_TEST_SUITE_P(GpuMemoryBufferFactoryTest);

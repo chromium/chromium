@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -31,7 +32,6 @@
 #include "content/browser/resource_context_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/webui/url_data_manager_backend.h"
-#include "content/common/service_worker/service_worker_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -45,6 +45,7 @@
 #include "crypto/sha2.h"
 #include "services/network/public/cpp/features.h"
 #include "storage/browser/blob/blob_storage_context.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
 
@@ -106,7 +107,7 @@ const base::FilePath::CharType kTrashDirname[] =
 const int kPartitionNameHashBytes = 6;
 
 // Needed for selecting all files in ObliterateOneDirectory() below.
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 const int kAllFileTypes = base::FileEnumerator::FILES |
                           base::FileEnumerator::DIRECTORIES |
                           base::FileEnumerator::SHOW_SYM_LINKS;
@@ -230,8 +231,8 @@ void NormalizeActivePaths(const base::FilePath& storage_root,
     if (!storage_root.AppendRelativePath(*iter, &relative_path))
       continue;
 
-    std::vector<base::FilePath::StringType> components;
-    relative_path.GetComponents(&components);
+    std::vector<base::FilePath::StringType> components =
+        relative_path.GetComponents();
 
     DCHECK(!relative_path.empty());
     normalized_active_paths.insert(storage_root.Append(components.front()));
@@ -260,10 +261,10 @@ void NormalizeActivePaths(const base::FilePath& storage_root,
 void BlockingGarbageCollect(
     const base::FilePath& storage_root,
     const scoped_refptr<base::TaskRunner>& file_access_runner,
-    std::unique_ptr<std::unordered_set<base::FilePath>> active_paths) {
+    std::unordered_set<base::FilePath> active_paths) {
   CHECK(storage_root.IsAbsolute());
 
-  NormalizeActivePaths(storage_root, active_paths.get());
+  NormalizeActivePaths(storage_root, &active_paths);
 
   base::FileEnumerator enumerator(storage_root, false, kAllFileTypes);
   base::FilePath trash_directory;
@@ -274,8 +275,7 @@ void BlockingGarbageCollect(
   }
   for (base::FilePath path = enumerator.Next(); !path.empty();
        path = enumerator.Next()) {
-    if (active_paths->find(path) == active_paths->end() &&
-        path != trash_directory) {
+    if (!base::Contains(active_paths, path) && path != trash_directory) {
       // Since |trash_directory| is unique for each run of this function there
       // can be no colllisions on the move.
       base::Move(path, trash_directory.Append(path.BaseName()));
@@ -283,8 +283,7 @@ void BlockingGarbageCollect(
   }
 
   file_access_runner->PostTask(
-      FROM_HERE, base::BindOnce(base::GetDeletePathRecursivelyCallback(),
-                                trash_directory));
+      FROM_HERE, base::GetDeletePathRecursivelyCallback(trash_directory));
 }
 
 }  // namespace
@@ -395,8 +394,8 @@ void StoragePartitionImplMap::AsyncObliterate(
     active_partition->ClearData(
         // All except shader cache.
         ~StoragePartition::REMOVE_DATA_MASK_SHADER_CACHE,
-        StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL, GURL(), base::Time(),
-        base::Time::Max(), subtask_done_callback);
+        StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL, blink::StorageKey(),
+        base::Time(), base::Time::Max(), subtask_done_callback);
   }
 
   // Start a best-effort delete of the on-disk storage excluding paths that are
@@ -416,16 +415,14 @@ void StoragePartitionImplMap::AsyncObliterate(
 }
 
 void StoragePartitionImplMap::GarbageCollect(
-    std::unique_ptr<std::unordered_set<base::FilePath>> active_paths,
+    std::unordered_set<base::FilePath> active_paths,
     base::OnceClosure done) {
   // Include all paths for current StoragePartitions in the active_paths since
   // they cannot be deleted safely.
-  for (PartitionMap::const_iterator it = partitions_.begin();
-       it != partitions_.end();
-       ++it) {
-    const StoragePartitionConfig& config = it->first;
+  for (const auto& part : partitions_) {
+    const StoragePartitionConfig& config = part.first;
     if (!config.in_memory())
-      active_paths->insert(it->second->GetPath());
+      active_paths.insert(part.second->GetPath());
   }
 
   // Find the directory holding the StoragePartitions and delete everything in
@@ -445,6 +442,17 @@ void StoragePartitionImplMap::ForEach(
        it != partitions_.end();
        ++it) {
     callback.Run(it->second.get());
+  }
+}
+
+void StoragePartitionImplMap::DisposeInMemory(StoragePartition* partition) {
+  for (PartitionMap::const_iterator it = partitions_.begin();
+       it != partitions_.end(); ++it) {
+    if (it->second.get() == partition) {
+      DCHECK(it->first.in_memory());
+      partitions_.erase(it);
+      return;
+    }
   }
 }
 

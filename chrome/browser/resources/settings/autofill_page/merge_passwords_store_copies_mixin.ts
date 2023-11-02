@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,11 @@
  * existing stored both on the device and in the account.
  */
 
-import {assert} from 'chrome://resources/js/assert.m.js';
-import {ListPropertyUpdateMixin, ListPropertyUpdateMixinInterface} from 'chrome://resources/js/list_property_update_mixin.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
+import {ListPropertyUpdateMixin, ListPropertyUpdateMixinInterface} from 'chrome://resources/cr_elements/list_property_update_mixin.js';
 import {dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {MultiStorePasswordUiEntry} from './multi_store_password_ui_entry.js';
-import {PasswordManagerImpl, PasswordManagerProxy} from './password_manager_proxy.js';
+import {PasswordManagerImpl} from './password_manager_proxy.js';
 
 type Constructor<T> = new (...args: any[]) => T;
 
@@ -36,27 +35,19 @@ export const MergePasswordsStoreCopiesMixin = dedupingMixin(
           };
         }
 
-        savedPasswords: Array<MultiStorePasswordUiEntry> = [];
+        savedPasswords: chrome.passwordsPrivate.PasswordUiEntry[] = [];
         private setSavedPasswordsListener_:
-            ((entries: Array<chrome.passwordsPrivate.PasswordUiEntry>) =>
+            ((entries: chrome.passwordsPrivate.PasswordUiEntry[]) =>
                  void)|null = null;
 
-        connectedCallback() {
+        override connectedCallback() {
           super.connectedCallback();
           this.setSavedPasswordsListener_ = passwordList => {
-            const mergedPasswordList =
-                this.mergePasswordsStoreDuplicates_(passwordList);
-
-            // getCombinedId() is unique for each |entry|. If both copies are
-            // removed, updateList() will consider this a removal. If only one
-            // copy is removed, this will be treated as a removal plus an
-            // insertion.
-            const getCombinedId =
-                (entry: MultiStorePasswordUiEntry) => [entry.deviceId,
-                                                       entry.accountId]
-                                                          .join('_');
-            this.updateList(
-                'savedPasswords', getCombinedId, mergedPasswordList);
+            for (const item of passwordList) {
+              item.password = '';
+            }
+            this.savedPasswords = passwordList;
+            this.notifySplices('savedPasswords', passwordList);
           };
 
           PasswordManagerImpl.getInstance().getSavedPasswordList(
@@ -66,40 +57,13 @@ export const MergePasswordsStoreCopiesMixin = dedupingMixin(
           this.notifySplices('savedPasswords', []);
         }
 
-        disconnectedCallback() {
+        override disconnectedCallback() {
           super.disconnectedCallback();
+          assert(this.setSavedPasswordsListener_);
           PasswordManagerImpl.getInstance()
               .removeSavedPasswordListChangedListener(
-                  assert(this.setSavedPasswordsListener_!));
+                  this.setSavedPasswordsListener_);
           this.setSavedPasswordsListener_ = null;
-        }
-
-        private mergePasswordsStoreDuplicates_(
-            passwordList: Array<chrome.passwordsPrivate.PasswordUiEntry>):
-            Array<MultiStorePasswordUiEntry> {
-          const multiStoreEntries: MultiStorePasswordUiEntry[] = [];
-          const frontendIdToMergedEntry =
-              new Map<number, MultiStorePasswordUiEntry>();
-          for (const entry of passwordList) {
-            if (frontendIdToMergedEntry.has(entry.frontendId)) {
-              const mergeSucceded =
-                  frontendIdToMergedEntry.get(entry.frontendId)!.mergeInPlace(
-                      entry);
-              if (mergeSucceded) {
-                // The merge is in-place, so nothing to be done.
-              } else {
-                // The merge can fail in weird cases despite |frontendId|
-                // matching. If so, just create another entry in the UI for
-                // |entry|. See also crbug.com/1114697.
-                multiStoreEntries.push(new MultiStorePasswordUiEntry(entry));
-              }
-            } else {
-              const multiStoreEntry = new MultiStorePasswordUiEntry(entry);
-              frontendIdToMergedEntry.set(entry.frontendId, multiStoreEntry);
-              multiStoreEntries.push(multiStoreEntry);
-            }
-          }
-          return multiStoreEntries;
         }
       }
 
@@ -108,5 +72,5 @@ export const MergePasswordsStoreCopiesMixin = dedupingMixin(
 
 export interface MergePasswordsStoreCopiesMixinInterface extends
     ListPropertyUpdateMixinInterface {
-  savedPasswords: Array<MultiStorePasswordUiEntry>;
+  savedPasswords: chrome.passwordsPrivate.PasswordUiEntry[];
 }

@@ -9,7 +9,6 @@
     {
       "name": "LayoutBlockFlow (positioned) DIV class='stacking-context'",
       "bounds": [160, 90],
-      "contentsOpaqueForText": true,
       "backgroundColor": "#008000",
       "transform": 1
     },

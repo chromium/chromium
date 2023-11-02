@@ -93,10 +93,10 @@
           </div>
         </template>
         <div class="secondary" id="defaultDownloadPath" aria-hidden="true">
-<if expr="not chromeos">
+<if expr="not chromeos_ash">
           [[prefs.download.default_directory.value]]
 </if>
-<if expr="chromeos">
+<if expr="chromeos_ash">
           [[downloadLocation_]]
 </if>
         </div>

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,10 @@
 #define CHROME_BROWSER_UI_WEBUI_TAB_STRIP_TAB_STRIP_PAGE_HANDLER_H_
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/themes/theme_service_observer.h"
 #include "chrome/browser/ui/tabs/tab_change_type.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -17,13 +20,17 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "ui/native_theme/native_theme.h"
+#include "ui/native_theme/native_theme_observer.h"
 
 class Browser;
 class TabStripUIEmbedder;
 
 class TabStripPageHandler : public tab_strip::mojom::PageHandler,
                             public TabStripModelObserver,
-                            public content::WebContentsDelegate {
+                            public content::WebContentsDelegate,
+                            public ThemeServiceObserver,
+                            public ui::NativeThemeObserver {
  public:
   TabStripPageHandler(
       mojo::PendingReceiver<tab_strip::mojom::PageHandler> receiver,
@@ -63,6 +70,7 @@ class TabStripPageHandler : public tab_strip::mojom::PageHandler,
   bool CanDragEnter(content::WebContents* source,
                     const content::DropData& data,
                     blink::DragOperationsMask operations_allowed) override;
+  bool IsPrivileged() override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(TabStripPageHandlerTest, CloseTab);
@@ -71,11 +79,13 @@ class TabStripPageHandler : public tab_strip::mojom::PageHandler,
   FRIEND_TEST_ALL_PREFIXES(TabStripPageHandlerTest, MoveGroup);
   FRIEND_TEST_ALL_PREFIXES(TabStripPageHandlerTest, MoveGroupAcrossProfiles);
   FRIEND_TEST_ALL_PREFIXES(TabStripPageHandlerTest, MoveGroupAcrossWindows);
+  FRIEND_TEST_ALL_PREFIXES(TabStripPageHandlerTest, MoveGroupMultipleTabs);
   FRIEND_TEST_ALL_PREFIXES(TabStripPageHandlerTest, MoveTab);
   FRIEND_TEST_ALL_PREFIXES(TabStripPageHandlerTest, MoveTabAcrossProfiles);
   FRIEND_TEST_ALL_PREFIXES(TabStripPageHandlerTest, MoveTabAcrossWindows);
   FRIEND_TEST_ALL_PREFIXES(TabStripPageHandlerTest,
                            RemoveTabIfInvalidContextMenu);
+  FRIEND_TEST_ALL_PREFIXES(TabStripPageHandlerTest, SwitchTab);
   FRIEND_TEST_ALL_PREFIXES(TabStripPageHandlerTest, UngroupTab);
 
   void OnLongPressTimer();
@@ -88,12 +98,18 @@ class TabStripPageHandler : public tab_strip::mojom::PageHandler,
   void ReportTabDurationHistogram(const char* histogram_fragment,
                                   int tab_count,
                                   base::TimeDelta duration);
-  gfx::ImageSkia ThemeFavicon(const gfx::ImageSkia& source);
+  gfx::ImageSkia ThemeFavicon(const gfx::ImageSkia& source,
+                              bool active_tab_icon);
+
+  // ThemeServiceObserver implementation.
+  void OnThemeChanged() override;
+
+  // ui::NativeThemeObserver:
+  void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override;
 
   // tab_strip::mojom::PageHandler:
   void GetTabs(GetTabsCallback callback) override;
   void GetGroupVisualData(GetGroupVisualDataCallback callback) override;
-  void GetThemeColors(GetThemeColorsCallback callback) override;
   void CloseContainer() override;
   void CloseTab(int32_t tab_id, bool tab_was_swiped) override;
   void ShowEditDialogForGroup(const std::string& group_id,
@@ -117,14 +133,15 @@ class TabStripPageHandler : public tab_strip::mojom::PageHandler,
                                      uint32_t duration_ms) override;
   void ReportTabCreationDuration(uint32_t tab_count,
                                  uint32_t duration_ms) override;
+  void ActivateTab(int32_t tab_id) override;
 
   mojo::Receiver<tab_strip::mojom::PageHandler> receiver_;
   mojo::Remote<tab_strip::mojom::Page> page_;
 
-  content::WebUI* const web_ui_;
+  const raw_ptr<content::WebUI> web_ui_;
 
-  Browser* const browser_;
-  TabStripUIEmbedder* const embedder_;
+  const raw_ptr<Browser> browser_;
+  const raw_ptr<TabStripUIEmbedder> embedder_;
   ThumbnailTracker thumbnail_tracker_;
   tab_strip_ui::TabBeforeUnloadTracker tab_before_unload_tracker_;
 
@@ -147,6 +164,9 @@ class TabStripPageHandler : public tab_strip::mojom::PageHandler,
   // duration of a long press. The timer is stopped if the tap gesture is
   // interrupted (eg by a scroll start gesture).
   std::unique_ptr<base::RetainingOneShotTimer> long_press_timer_;
+
+  base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
+      theme_observation_{this};
 
   base::WeakPtrFactory<TabStripPageHandler> weak_ptr_factory_{this};
 };

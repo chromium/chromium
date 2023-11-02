@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# Copyright (c) 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -20,9 +20,6 @@ import finalize_apk
 from util import build_utils
 from util import diff_utils
 from util import zipalign
-
-# Input dex.jar files are zipaligned.
-zipalign.ApplyZipFileZipAlignFix()
 
 
 # Taken from aapt's Package.cpp:
@@ -138,17 +135,6 @@ def _ParseArgs(args):
   options.library_always_compress = build_utils.ParseGnList(
       options.library_always_compress)
   options.library_renames = build_utils.ParseGnList(options.library_renames)
-
-  # --apksigner-jar, --zipalign-path, --key-xxx arguments are
-  # required when building an APK, but not a bundle module.
-  if options.format == 'apk':
-    required_args = [
-        'apksigner_jar', 'zipalign_path', 'key_path', 'key_passwd', 'key_name'
-    ]
-    for required in required_args:
-      if not vars(options)[required]:
-        raise Exception('Argument --%s is required for APKs.' % (
-            required.replace('_', '-')))
 
   options.uncompress_shared_libraries = \
       options.uncompress_shared_libraries in [ 'true', 'True' ]
@@ -318,10 +304,11 @@ def main(args):
     # Compresses about twice as fast as the default.
     zlib.Z_DEFAULT_COMPRESSION = 1
 
-  # Manually align only when alignment is necessary.
   # Python's zip implementation duplicates file comments in the central
   # directory, whereas zipalign does not, so use zipalign for official builds.
-  fast_align = options.format == 'apk' and not options.best_compression
+  requires_alignment = options.format == 'apk'
+  run_zipalign = requires_alignment and options.best_compression
+  fast_align = bool(requires_alignment and not run_zipalign)
 
   native_libs = sorted(options.native_libs)
 
@@ -538,7 +525,7 @@ def main(args):
             add_to_zip(apk_root_dir + apk_path,
                        java_resource_jar.read(apk_path))
 
-    if options.format == 'apk':
+    if options.format == 'apk' and options.key_path:
       zipalign_path = None if fast_align else options.zipalign_path
       finalize_apk.FinalizeApk(options.apksigner_jar,
                                zipalign_path,

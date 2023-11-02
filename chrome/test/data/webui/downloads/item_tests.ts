@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,8 @@ suite('item tests', function() {
   let toastManager: CrToastManagerElement;
 
   setup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
 
     // This isn't strictly necessary, but is a probably good idea.
     BrowserProxy.setInstance(new TestDownloadsProxy());
@@ -37,7 +38,7 @@ suite('item tests', function() {
                fileExternallyRemoved: false,
                hideDate: true,
                state: States.DANGEROUS,
-               url: 'http://evil.com'
+               url: 'http://evil.com',
              }));
     flush();
 

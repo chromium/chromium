@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -38,15 +39,27 @@ namespace translate {
 
 // Enables or disables using the most recent target language as the default
 // target language option.
-extern const base::Feature kTranslateRecentTarget;
+BASE_DECLARE_FEATURE(kTranslateRecentTarget);
 
 // This allows the user to disable translate by using the
 // `--disable-features=Translate` command-line flag.
-extern const base::Feature kTranslate;
+BASE_DECLARE_FEATURE(kTranslate);
+
+// Whether to migrate the obsolete always-translate languages pref to the new
+// pref during object construction as a fix for crbug/1291356, which had
+// previously not been migrated at all on iOS. This also enables a more
+// conservative pref merging process that aims to merge in old always-translate
+// language values from the obsolete pref without conflicting with any values in
+// the new pref that may have been added.
+//
+// TODO(crbug/1291356): This base::Feature only exists to allow a less risky
+// merge into iOS M98. This base::Feature should be removed once it's no longer
+// relevant and the enabled behavior should become the only behavior.
+BASE_DECLARE_FEATURE(kMigrateAlwaysTranslateLanguagesFix);
 
 // Minimum number of times the user must accept a translation before we show
 // a shortcut to the "Always Translate" functionality.
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 // The "Always Translate" shortcut is always shown on iOS and Android.
 constexpr int kAlwaysTranslateShortcutMinimumAccepts = 1;
 #else
@@ -57,18 +70,16 @@ constexpr int kAlwaysTranslateShortcutMinimumAccepts = 3;
 // a shortcut to the "Never Translate" functionality.
 // Android and iOS implementations do not offer a drop down (for space reasons),
 // so we are more aggressive about showing this shortcut.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // On Android, this shows the "Never Translate" shortcut after two denials just
 // like on iOS. However, the last event is not counted so we must subtract one
 // to get the same behavior.
 constexpr int kNeverTranslateShortcutMinimumDenials = 1;
-#elif defined(OS_IOS)
+#elif BUILDFLAG(IS_IOS)
 constexpr int kNeverTranslateShortcutMinimumDenials = 2;
 #else
 constexpr int kNeverTranslateShortcutMinimumDenials = 3;
 #endif
-
-class TranslateAcceptLanguages;
 
 // This class holds various info about a language, that are related to Translate
 // Preferences and Language Settings.
@@ -100,17 +111,16 @@ class TranslatePrefs {
   // TODO(crbug.com/524927): Remove kPrefNeverPromptSites after
   // 3 milestones (M74).
   static const char kPrefNeverPromptSitesDeprecated[];
-  static const char kPrefNeverPromptSitesWithTime[];
   static const char kPrefTranslateDeniedCount[];
   static const char kPrefTranslateIgnoredCount[];
   static const char kPrefTranslateAcceptedCount[];
   // Deprecated 10/2021.
   static const char kPrefAlwaysTranslateListDeprecated[];
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   static const char kPrefTranslateAutoAlwaysCount[];
   static const char kPrefTranslateAutoNeverCount[];
 #endif
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   static const char kPrefExplicitLanguageAskShown[];
 #endif
 
@@ -139,11 +149,11 @@ class TranslatePrefs {
   // the rest of the code.
   static std::string MapPreferenceName(const std::string& pref_name);
 
-  // Checks if the "offer translate" (i.e. automatic translate bubble) feature
-  // is enabled.
+  // Returns true if the "offer translate" pref is enabled (i.e. allowing for
+  // automatic Full Page Translate bubbles).
   bool IsOfferTranslateEnabled() const;
 
-  // Checks if translate is allowed by policy.
+  // Returns true if Translate is allowed by policy.
   bool IsTranslateAllowedByPolicy() const;
 
   // Sets the country that the application is run in. Determined by the
@@ -164,8 +174,8 @@ class TranslatePrefs {
   void BlockLanguage(base::StringPiece source_language);
   void UnblockLanguage(base::StringPiece source_language);
   // Returns the languages that should be blocked by default as a
-  // base::(List)Value.
-  static base::Value GetDefaultBlockedLanguages();
+  // base::Value::List.
+  static base::Value::List GetDefaultBlockedLanguages();
   void ResetBlockedLanguagesToDefault();
   // Prevent empty blocked languages by resetting them to the default value.
   // (crbug.com/902354)
@@ -276,7 +286,7 @@ class TranslatePrefs {
   void IncrementTranslationAcceptedCount(base::StringPiece language);
   void ResetTranslationAcceptedCount(base::StringPiece language);
 
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   // These methods are used to track how many times the auto-always translation
   // has been triggered for a specific language.
   int GetTranslationAutoAlwaysCount(base::StringPiece language) const;
@@ -290,7 +300,7 @@ class TranslatePrefs {
   void ResetTranslationAutoNeverCount(base::StringPiece language);
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // These methods are used to determine whether the explicit language ask
   // prompt was displayed to the user already.
   bool GetExplicitLanguageAskPromptShown() const;
@@ -309,8 +319,7 @@ class TranslatePrefs {
   // Gets the user selected language list from language settings.
   void GetUserSelectedLanguageList(std::vector<std::string>* languages) const;
 
-  bool CanTranslateLanguage(TranslateAcceptLanguages* accept_languages,
-                            base::StringPiece language);
+  bool CanTranslateLanguage(base::StringPiece language);
   bool ShouldAutoTranslate(base::StringPiece source_language,
                            std::string* target_language);
   // True if the detailed language settings are enabled for this user.
@@ -392,7 +401,7 @@ class TranslatePrefs {
   // accepted for a language, creating it if necessary.
   base::DictionaryValue* GetTranslationAcceptedCountDictionary() const;
 
-  PrefService* prefs_;  // Weak.
+  raw_ptr<PrefService> prefs_;  // Weak.
 
   std::string country_;  // The country the app runs in.
 

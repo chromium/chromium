@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,9 +27,10 @@ static const char kFirstRefreshToken[] = "first_refresh_token";
 static const char kSecondRefreshToken[] = "second_refresh_token";
 static const char kFirstAccessToken[] = "first_access_token";
 static const char kSecondAccessToken[] = "second_access_token";
-static const char kServiceAccountEmail[] = "service_account@example.com";
+static const char kServiceAccountEmail[] =
+    "service_account@system.gserviceaccount.com";
 static const char kOtherServiceAccountEmail[] =
-    "other_service_account@example.com";
+    "other_service_account@system.gserviceaccount.com";
 static const char kDMToken[] = "dm_token";
 static const char kAuthCode[] = "auth_code";
 
@@ -89,9 +90,9 @@ class CBCMInvalidationsInitializerTest
   std::string MakeTokensFromAuthCodesResponse(const std::string& refresh_token,
                                               const std::string& access_token) {
     base::DictionaryValue dict;
-    dict.SetString("access_token", access_token);
-    dict.SetString("refresh_token", refresh_token);
-    dict.SetInteger("expires_in", 9999);
+    dict.SetStringKey("access_token", access_token);
+    dict.SetStringKey("refresh_token", refresh_token);
+    dict.SetIntKey("expires_in", 9999);
 
     std::string json;
     base::JSONWriter::Write(dict, &json);
@@ -213,7 +214,7 @@ TEST_F(CBCMInvalidationsInitializerTest,
   EXPECT_EQ(0, test_url_loader_factory()->NumPending());
   EXPECT_TRUE(
       DeviceOAuth2TokenServiceFactory::Get()->RefreshTokenIsAvailable());
-  EXPECT_EQ(CoreAccountId::FromEmail(kServiceAccountEmail),
+  EXPECT_EQ(CoreAccountId::FromRobotEmail(kServiceAccountEmail),
             DeviceOAuth2TokenServiceFactory::Get()->GetRobotAccountId());
   std::string first_refresh_token =
       testing_local_state()->GetString(kCBCMServiceAccountRefreshToken);
@@ -234,7 +235,7 @@ TEST_F(CBCMInvalidationsInitializerTest,
   // Now a different refresh token and email should be present. The token
   // themselves aren't validated because they're encrypted. Verifying that it
   // changed is sufficient.
-  EXPECT_EQ(CoreAccountId::FromEmail(kOtherServiceAccountEmail),
+  EXPECT_EQ(CoreAccountId::FromRobotEmail(kOtherServiceAccountEmail),
             DeviceOAuth2TokenServiceFactory::Get()->GetRobotAccountId());
   EXPECT_NE(first_refresh_token,
             testing_local_state()->GetString(kCBCMServiceAccountRefreshToken));
@@ -284,7 +285,7 @@ TEST_F(CBCMInvalidationsInitializerTest,
   // Now a different refresh token and email should be present. The token
   // themselves aren't validated because they're encrypted. Verifying that it
   // changed is sufficient.
-  EXPECT_EQ(CoreAccountId::FromEmail(kOtherServiceAccountEmail),
+  EXPECT_EQ(CoreAccountId::FromRobotEmail(kOtherServiceAccountEmail),
             DeviceOAuth2TokenServiceFactory::Get()->GetRobotAccountId());
   EXPECT_NE(first_refresh_token,
             testing_local_state()->GetString(kCBCMServiceAccountRefreshToken));

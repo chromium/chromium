@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@ namespace cecPrivate {
     // There was an error querying the power state of the display.
     error,
 
-    // The kernel adapter for the CEC endpoint isn’t configured (no EDID set).
+    // The kernel adapter for the CEC endpoint isn't configured (no EDID set).
     adapterNotConfigured,
 
     // No device ACKed the request on the CEC bus.

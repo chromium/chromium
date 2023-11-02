@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -70,6 +70,14 @@ ExtensionUrlPatternIndexMatcher::ExtensionUrlPatternIndexMatcher(
       rules_count_(GetRulesCountInternal(matchers_)) {}
 
 ExtensionUrlPatternIndexMatcher::~ExtensionUrlPatternIndexMatcher() = default;
+
+bool ExtensionUrlPatternIndexMatcher::IsExtraHeadersMatcher() const {
+  return is_extra_headers_matcher_;
+}
+
+size_t ExtensionUrlPatternIndexMatcher::GetRulesCount() const {
+  return rules_count_;
+}
 
 absl::optional<RequestAction>
 ExtensionUrlPatternIndexMatcher::GetAllowAllRequestsAction(

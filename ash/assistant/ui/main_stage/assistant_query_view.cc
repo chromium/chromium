@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,13 +13,13 @@
 #include "ash/assistant/ui/colors/assistant_colors.h"
 #include "ash/assistant/ui/colors/assistant_colors_util.h"
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/style/color_provider.h"
-#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
+#include "ash/style/ash_color_id.h"
+#include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
-#include "net/base/escape.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/chromeos/styles/cros_styles.h"
+#include "ui/color/color_provider.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/layout/flex_layout.h"
 
@@ -71,14 +71,10 @@ int AssistantQueryView::GetHeightForWidth(int width) const {
 void AssistantQueryView::OnThemeChanged() {
   views::View::OnThemeChanged();
 
-  ScopedAssistantLightModeAsDefault scoped_light_mode_as_default;
-
   high_confidence_label_->SetEnabledColor(
-      ColorProvider::Get()->GetContentLayerColor(
-          ColorProvider::ContentLayerType::kTextColorPrimary));
+      GetColorProvider()->GetColor(kColorAshAssistantQueryHighConfidenceLabel));
   low_confidence_label_->SetEnabledColor(
-      ColorProvider::Get()->GetContentLayerColor(
-          ColorProvider::ContentLayerType::kTextColorSecondary));
+      GetColorProvider()->GetColor(kColorAshAssistantQueryLowConfidenceLabel));
 }
 
 void AssistantQueryView::InitLayout() {
@@ -134,12 +130,12 @@ void AssistantQueryView::SetText(const std::string& high_confidence_text,
   // |low_confidence_text| may be HTML escaped, so we need to unescape both
   // before displaying to avoid printing HTML entities to the user.
   const std::u16string& high_confidence_text_16 =
-      net::UnescapeForHTML(base::UTF8ToUTF16(high_confidence_text));
+      base::UnescapeForHTML(base::UTF8ToUTF16(high_confidence_text));
 
   high_confidence_label_->SetText(high_confidence_text_16);
 
   const std::u16string& low_confidence_text_16 =
-      net::UnescapeForHTML(base::UTF8ToUTF16(low_confidence_text));
+      base::UnescapeForHTML(base::UTF8ToUTF16(low_confidence_text));
 
   low_confidence_label_->SetText(low_confidence_text_16);
 }

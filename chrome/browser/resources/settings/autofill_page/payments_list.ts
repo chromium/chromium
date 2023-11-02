@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,15 +7,17 @@
  * cards etc.) to be shown in the settings page.
  */
 
-import 'chrome://resources/cr_elements/shared_vars_css.m.js';
-import '../settings_shared_css.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+import '../settings_shared.css.js';
 import './credit_card_list_entry.js';
-import './passwords_shared_css.js';
+import './passwords_shared.css.js';
 import './upi_id_list_entry.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
+
+import {getTemplate} from './payments_list.html.js';
 
 class SettingsPaymentsListElement extends PolymerElement {
   static get is() {
@@ -23,7 +25,7 @@ class SettingsPaymentsListElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -70,8 +72,8 @@ class SettingsPaymentsListElement extends PolymerElement {
     };
   }
 
-  creditCards: Array<chrome.autofillPrivate.CreditCardEntry>;
-  upiIds: Array<string>;
+  creditCards: chrome.autofillPrivate.CreditCardEntry[];
+  upiIds: string[];
   private enableUpiIds_: boolean;
   private showCreditCardUpiSeparator_: boolean;
   private showAnyPaymentMethods_: boolean;
@@ -79,7 +81,7 @@ class SettingsPaymentsListElement extends PolymerElement {
   /**
    * @return Whether the list exists and has items.
    */
-  private hasSome_(list: Array<any>): boolean {
+  private hasSome_(list: any[]): boolean {
     return !!(list && list.length);
   }
 

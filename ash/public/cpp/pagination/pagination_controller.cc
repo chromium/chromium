@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -84,11 +84,18 @@ bool PaginationController::OnGestureEvent(const ui::GestureEvent& event,
       float velocity = scroll_axis_ == SCROLL_AXIS_HORIZONTAL
                            ? details.velocity_x()
                            : details.velocity_y();
-      pagination_model_->EndScroll(true);
 
       if (fabs(velocity) > kMinHorizVelocityToSwitchPage) {
+        pagination_model_->EndScroll(true);
+
         const int delta = velocity < 0 ? 1 : -1;
         SelectPageAndRecordMetric(delta, event.type());
+      } else {
+        // If the gesture ends in a fling below page switch velocity threshold,
+        // decide whether to switch page depending on the scroll progress (if
+        // gesture ends with a slow fling after the user has dragged the page
+        // beyond page switch drag threshold, switch the page).
+        EndDrag(event);
       }
       return true;
     }

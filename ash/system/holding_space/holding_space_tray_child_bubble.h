@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/ash_export.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_controller_observer.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
@@ -26,9 +27,10 @@ class HoldingSpaceItemViewsSection;
 class HoldingSpaceViewDelegate;
 
 // Child bubble of the `HoldingSpaceTrayBubble`.
-class HoldingSpaceTrayChildBubble : public views::View,
-                                    public HoldingSpaceControllerObserver,
-                                    public HoldingSpaceModelObserver {
+class ASH_EXPORT HoldingSpaceTrayChildBubble
+    : public views::View,
+      public HoldingSpaceControllerObserver,
+      public HoldingSpaceModelObserver {
  public:
   explicit HoldingSpaceTrayChildBubble(HoldingSpaceViewDelegate* delegate);
   HoldingSpaceTrayChildBubble(const HoldingSpaceTrayChildBubble& other) =
@@ -65,6 +67,13 @@ class HoldingSpaceTrayChildBubble : public views::View,
   virtual std::vector<std::unique_ptr<HoldingSpaceItemViewsSection>>
   CreateSections() = 0;
 
+  // Invoked to create the `placeholder_` for this child bubble to be shown
+  // when all `sections_` are not visible. Note that when a `placeholder_` is
+  // provided, the child bubble will always be visible. When absent, the child
+  // bubble will only be visible when one or more of its `sections_` are
+  // visible.
+  virtual std::unique_ptr<views::View> CreatePlaceholder();
+
   HoldingSpaceViewDelegate* delegate() { return delegate_; }
 
  private:
@@ -95,6 +104,7 @@ class HoldingSpaceTrayChildBubble : public views::View,
 
   // Views owned by view hierarchy.
   std::vector<HoldingSpaceItemViewsSection*> sections_;
+  views::View* placeholder_ = nullptr;
 
   // Whether or not to ignore `ChildVisibilityChanged()` events. This is used
   // when removing all holding space item views from `sections_` to prevent this

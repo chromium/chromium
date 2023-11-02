@@ -8,86 +8,86 @@ const priority_tests = [
   {
     promise: internals.getInitialResourcePriority(new URL('../resources/dummy.css', location), document),
     expected_priority: kHigh,
-    description: 'low importance on <link rel=preload as=style> must be fetched with kHigh resource load priority'
+    description: 'low fetchpriority on <link rel=preload as=style> must be fetched with kHigh resource load priority'
   },
   {
     promise: internals.getInitialResourcePriority(new URL('../resources/dummy.css?1', location), document),
     expected_priority: kVeryHigh,
-    description: 'missing importance on <link rel=preload as=style> must have no effect on resource load priority'
+    description: 'missing fetchpriority on <link rel=preload as=style> must have no effect on resource load priority'
   },
   {
     promise: internals.getInitialResourcePriority(new URL('../resources/dummy.css?2', location), document),
     expected_priority: kVeryHigh,
-    description: 'high importance on <link rel=preload as=style> must have no effect on resource load priority'
+    description: 'high fetchpriority on <link rel=preload as=style> must have no effect on resource load priority'
   },
   {
     promise: internals.getInitialResourcePriority(new URL('../resources/dummy.js', location), document),
     expected_priority: kLow,
-    description: 'low importance on <link rel=preload as=script> must be fetched with kLow resource load priority'
+    description: 'low fetchpriority on <link rel=preload as=script> must be fetched with kLow resource load priority'
   },
   {
     promise: internals.getInitialResourcePriority(new URL('../resources/dummy.js?1', location), document),
     expected_priority: kHigh,
-    description: 'missing importance on <link rel=preload as=script> must have no effect on resource load priority'
+    description: 'missing fetchpriority on <link rel=preload as=script> must have no effect on resource load priority'
   },
   {
     promise: internals.getInitialResourcePriority(new URL('../resources/dummy.js?2', location), document),
     expected_priority: kHigh,
-    description: 'high importance on <link rel=preload as=script> must have no effect on resource load priority'
+    description: 'high fetchpriority on <link rel=preload as=script> must have no effect on resource load priority'
   },
   {
     promise: internals.getInitialResourcePriority(new URL('../resources/dummy.txt', location), document),
     expected_priority: kLow,
-    description: 'low importance on <link rel=preload as=fetch> must be fetched with kLow resource load priority'
+    description: 'low fetchpriority on <link rel=preload as=fetch> must be fetched with kLow resource load priority'
   },
   {
     promise: internals.getInitialResourcePriority(new URL('../resources/dummy.txt?1', location), document),
     expected_priority: kHigh,
-    description: 'missing importance on <link rel=preload as=fetch> must have no effect on resource load priority'
+    description: 'missing fetchpriority on <link rel=preload as=fetch> must have no effect on resource load priority'
   },
   {
     promise: internals.getInitialResourcePriority(new URL('../resources/dummy.txt?2', location), document),
     expected_priority: kHigh,
-    description: 'high importance on <link rel=preload as=fetch> must have no effect on resource load priority'
+    description: 'high fetchpriority on <link rel=preload as=fetch> must have no effect on resource load priority'
   },
   {
     promise: internals.getInitialResourcePriority(new URL('../resources/square.png', location), document),
     expected_priority: kLow,
-    description: 'low importance on <link rel=preload as=image> must have no effect on resource load priority'
+    description: 'low fetchpriority on <link rel=preload as=image> must have no effect on resource load priority'
   },
   {
     promise: internals.getInitialResourcePriority(new URL('../resources/square.png?1', location), document),
     expected_priority: kLow,
-    description: 'missing importance on <link rel=preload as=image> must have no effect on resource load priority'
+    description: 'missing fetchpriority on <link rel=preload as=image> must have no effect on resource load priority'
   },
   {
     promise: internals.getInitialResourcePriority(new URL('../resources/square.png?2', location), document),
     expected_priority: kHigh,
-    description: 'high importance on <link rel=preload as=image> must be fetched with kHigh resource load priority'
+    description: 'high fetchpriority on <link rel=preload as=image> must be fetched with kHigh resource load priority'
   }
 ];
 </script>
 
 <!-- as=style -->
-<!-- don't need to test for invalid and explicit auto importance here, since we already do that in the other link test -->
-<link id=link1 importance=low rel=preload as=style href=../resources/dummy.css>
+<!-- don't need to test for invalid and explicit auto fetchpriority here, since we already do that in the other link test -->
+<link id=link1 fetchpriority=low rel=preload as=style href=../resources/dummy.css>
 <link id=link2 rel=preload as=style href=../resources/dummy.css?1>
-<link id=link3 importance=high rel=preload as=style href=../resources/dummy.css?2>
+<link id=link3 fetchpriority=high rel=preload as=style href=../resources/dummy.css?2>
 
 <!-- as=script-->
-<link id=link4 importance=low rel=preload as=script href=../resources/dummy.js>
+<link id=link4 fetchpriority=low rel=preload as=script href=../resources/dummy.js>
 <link id=link5 rel=preload as=script href=../resources/dummy.js?1>
-<link id=link6 importance=high rel=preload as=script href=../resources/dummy.js?2>
+<link id=link6 fetchpriority=high rel=preload as=script href=../resources/dummy.js?2>
 
 <!-- as=fetch-->
-<link id=link7 importance=low rel=preload as=fetch href=../resources/dummy.txt>
+<link id=link7 fetchpriority=low rel=preload as=fetch href=../resources/dummy.txt>
 <link id=link8 rel=preload as=fetch href=../resources/dummy.txt?1>
-<link id=link9 importance=high rel=preload as=fetch href=../resources/dummy.txt?2>
+<link id=link9 fetchpriority=high rel=preload as=fetch href=../resources/dummy.txt?2>
 
 <!-- as=image-->
-<link id=link10 importance=low rel=preload as=image href=../resources/square.png>
+<link id=link10 fetchpriority=low rel=preload as=image href=../resources/square.png>
 <link id=link11 rel=preload as=image href=../resources/square.png?1>
-<link id=link12 importance=high rel=preload as=image href=../resources/square.png?2>
+<link id=link12 fetchpriority=high rel=preload as=image href=../resources/square.png?2>
 
 <script>
   promise_test(async (t) => {

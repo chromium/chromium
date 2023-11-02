@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,8 @@
 
 #include <sstream>
 #include <utility>
+
+#include "base/no_destructor.h"
 
 namespace viz {
 
@@ -21,9 +23,19 @@ RegionCaptureBounds& RegionCaptureBounds::operator=(
     const RegionCaptureBounds&) = default;
 RegionCaptureBounds::~RegionCaptureBounds() = default;
 
+// static
+const RegionCaptureBounds& RegionCaptureBounds::Empty() {
+  static base::NoDestructor<RegionCaptureBounds> kEmpty;
+  return *kEmpty;
+}
+
 void RegionCaptureBounds::Set(const RegionCaptureCropId& crop_id,
                               const gfx::Rect& region) {
   bounds_.insert_or_assign(crop_id, region);
+}
+
+void RegionCaptureBounds::Reset() {
+  bounds_.clear();
 }
 
 bool RegionCaptureBounds::operator==(const RegionCaptureBounds& rhs) const {

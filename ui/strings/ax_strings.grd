@@ -1,0 +1,676 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- This file contains definitions of resources that will be translated for
+each locale. Specifically, these are AX strings that are used by app/ that
+need to be translated for each locale.-->
+
+<grit base_dir="." latest_public_release="0" current_release="1"
+      output_all_resource_defines="false" source_lang_id="en">
+  <outputs>
+    <output filename="grit/ax_strings.h" type="rc_header">
+      <emit emit_type='prepend'></emit>
+    </output>
+    <output filename="ax_strings_af.pak" type="data_package" lang="af" />
+    <output filename="ax_strings_am.pak" type="data_package" lang="am" />
+    <output filename="ax_strings_ar.pak" type="data_package" lang="ar" />
+    <output filename="ax_strings_as.pak" type="data_package" lang="as" />
+    <output filename="ax_strings_az.pak" type="data_package" lang="az" />
+    <output filename="ax_strings_be.pak" type="data_package" lang="be" />
+    <output filename="ax_strings_bg.pak" type="data_package" lang="bg" />
+    <output filename="ax_strings_bn.pak" type="data_package" lang="bn" />
+    <output filename="ax_strings_bs.pak" type="data_package" lang="bs" />
+    <output filename="ax_strings_ca.pak" type="data_package" lang="ca" />
+    <output filename="ax_strings_cs.pak" type="data_package" lang="cs" />
+    <output filename="ax_strings_cy.pak" type="data_package" lang="cy" />
+    <output filename="ax_strings_da.pak" type="data_package" lang="da" />
+    <output filename="ax_strings_de.pak" type="data_package" lang="de" />
+    <output filename="ax_strings_el.pak" type="data_package" lang="el" />
+    <output filename="ax_strings_en-GB.pak" type="data_package" lang="en-GB" />
+    <output filename="ax_strings_en-US.pak" type="data_package" lang="en" />
+    <output filename="ax_strings_es.pak" type="data_package" lang="es" />
+    <if expr="is_ios">
+      <!-- iOS uses es-MX for es-419 -->
+      <output filename="ax_strings_es-MX.pak" type="data_package" lang="es-419" />
+    </if>
+    <if expr="not is_ios">
+      <output filename="ax_strings_es-419.pak" type="data_package" lang="es-419" />
+    </if>
+    <output filename="ax_strings_et.pak" type="data_package" lang="et" />
+    <output filename="ax_strings_eu.pak" type="data_package" lang="eu" />
+    <output filename="ax_strings_fa.pak" type="data_package" lang="fa" />
+    <output filename="ax_strings_fi.pak" type="data_package" lang="fi" />
+    <output filename="ax_strings_fil.pak" type="data_package" lang="fil" />
+    <output filename="ax_strings_fr-CA.pak" type="data_package" lang="fr-CA" />
+    <output filename="ax_strings_fr.pak" type="data_package" lang="fr" />
+    <output filename="ax_strings_gl.pak" type="data_package" lang="gl" />
+    <output filename="ax_strings_gu.pak" type="data_package" lang="gu" />
+    <output filename="ax_strings_he.pak" type="data_package" lang="he" />
+    <output filename="ax_strings_hi.pak" type="data_package" lang="hi" />
+    <output filename="ax_strings_hr.pak" type="data_package" lang="hr" />
+    <output filename="ax_strings_hu.pak" type="data_package" lang="hu" />
+    <output filename="ax_strings_hy.pak" type="data_package" lang="hy" />
+    <output filename="ax_strings_id.pak" type="data_package" lang="id" />
+    <output filename="ax_strings_is.pak" type="data_package" lang="is" />
+    <output filename="ax_strings_it.pak" type="data_package" lang="it" />
+    <output filename="ax_strings_ja.pak" type="data_package" lang="ja" />
+    <output filename="ax_strings_ka.pak" type="data_package" lang="ka" />
+    <output filename="ax_strings_kk.pak" type="data_package" lang="kk" />
+    <output filename="ax_strings_km.pak" type="data_package" lang="km" />
+    <output filename="ax_strings_kn.pak" type="data_package" lang="kn" />
+    <output filename="ax_strings_ko.pak" type="data_package" lang="ko" />
+    <output filename="ax_strings_ky.pak" type="data_package" lang="ky" />
+    <output filename="ax_strings_lo.pak" type="data_package" lang="lo" />
+    <output filename="ax_strings_lt.pak" type="data_package" lang="lt" />
+    <output filename="ax_strings_lv.pak" type="data_package" lang="lv" />
+    <output filename="ax_strings_mk.pak" type="data_package" lang="mk" />
+    <output filename="ax_strings_ml.pak" type="data_package" lang="ml" />
+    <output filename="ax_strings_mn.pak" type="data_package" lang="mn" />
+    <output filename="ax_strings_mr.pak" type="data_package" lang="mr" />
+    <output filename="ax_strings_ms.pak" type="data_package" lang="ms" />
+    <output filename="ax_strings_my.pak" type="data_package" lang="my" />
+    <output filename="ax_strings_ne.pak" type="data_package" lang="ne" />
+    <output filename="ax_strings_nl.pak" type="data_package" lang="nl" />
+    <!-- The translation console uses 'no' for Norwegian Bokmål. It should
+         be 'nb'. -->
+    <output filename="ax_strings_nb.pak" type="data_package" lang="no" />
+    <output filename="ax_strings_pa.pak" type="data_package" lang="pa" />
+    <output filename="ax_strings_pl.pak" type="data_package" lang="pl" />
+    <if expr="is_ios">
+      <!-- iOS uses pt for pt-BR -->
+      <output filename="ax_strings_pt.pak" type="data_package" lang="pt-BR" />
+    </if>
+    <if expr="not is_ios">
+      <output filename="ax_strings_pt-BR.pak" type="data_package" lang="pt-BR" />
+    </if>
+    <output filename="ax_strings_pt-PT.pak" type="data_package" lang="pt-PT" />
+    <output filename="ax_strings_or.pak" type="data_package" lang="or" />
+    <output filename="ax_strings_ro.pak" type="data_package" lang="ro" />
+    <output filename="ax_strings_ru.pak" type="data_package" lang="ru" />
+    <output filename="ax_strings_si.pak" type="data_package" lang="si" />
+    <output filename="ax_strings_sk.pak" type="data_package" lang="sk" />
+    <output filename="ax_strings_sl.pak" type="data_package" lang="sl" />
+    <output filename="ax_strings_sq.pak" type="data_package" lang="sq" />
+    <output filename="ax_strings_sr-Latn.pak" type="data_package" lang="sr-Latn" />
+    <output filename="ax_strings_sr.pak" type="data_package" lang="sr" />
+    <output filename="ax_strings_sv.pak" type="data_package" lang="sv" />
+    <output filename="ax_strings_sw.pak" type="data_package" lang="sw" />
+    <output filename="ax_strings_ta.pak" type="data_package" lang="ta" />
+    <output filename="ax_strings_te.pak" type="data_package" lang="te" />
+    <output filename="ax_strings_th.pak" type="data_package" lang="th" />
+    <output filename="ax_strings_tr.pak" type="data_package" lang="tr" />
+    <output filename="ax_strings_uk.pak" type="data_package" lang="uk" />
+    <output filename="ax_strings_ur.pak" type="data_package" lang="ur" />
+    <output filename="ax_strings_uz.pak" type="data_package" lang="uz" />
+    <output filename="ax_strings_vi.pak" type="data_package" lang="vi" />
+    <output filename="ax_strings_zh-CN.pak" type="data_package" lang="zh-CN" />
+    <output filename="ax_strings_zh-HK.pak" type="data_package" lang="zh-HK" />
+    <output filename="ax_strings_zh-TW.pak" type="data_package" lang="zh-TW" />
+    <output filename="ax_strings_zu.pak" type="data_package" lang="zu" />
+    <!-- Pseudolocales -->
+    <output filename="ax_strings_ar-XB.pak" type="data_package" lang="ar-XB" />
+    <output filename="ax_strings_en-XA.pak" type="data_package" lang="en-XA" />
+  </outputs>
+  <translations>
+    <file path="translations/ax_strings_af.xtb" lang="af" />
+    <file path="translations/ax_strings_am.xtb" lang="am" />
+    <file path="translations/ax_strings_ar.xtb" lang="ar" />
+    <file path="translations/ax_strings_as.xtb" lang="as" />
+    <file path="translations/ax_strings_az.xtb" lang="az" />
+    <file path="translations/ax_strings_be.xtb" lang="be" />
+    <file path="translations/ax_strings_bg.xtb" lang="bg" />
+    <file path="translations/ax_strings_bn.xtb" lang="bn" />
+    <file path="translations/ax_strings_bs.xtb" lang="bs" />
+    <file path="translations/ax_strings_ca.xtb" lang="ca" />
+    <file path="translations/ax_strings_cs.xtb" lang="cs" />
+    <file path="translations/ax_strings_cy.xtb" lang="cy" />
+    <file path="translations/ax_strings_da.xtb" lang="da" />
+    <file path="translations/ax_strings_de.xtb" lang="de" />
+    <file path="translations/ax_strings_el.xtb" lang="el" />
+    <file path="translations/ax_strings_en-GB.xtb" lang="en-GB" />
+    <file path="translations/ax_strings_es.xtb" lang="es" />
+    <file path="translations/ax_strings_es-419.xtb" lang="es-419" />
+    <file path="translations/ax_strings_et.xtb" lang="et" />
+    <file path="translations/ax_strings_eu.xtb" lang="eu" />
+    <file path="translations/ax_strings_fa.xtb" lang="fa" />
+    <file path="translations/ax_strings_fi.xtb" lang="fi" />
+    <file path="translations/ax_strings_fil.xtb" lang="fil" />
+    <file path="translations/ax_strings_fr.xtb" lang="fr" />
+    <file path="translations/ax_strings_fr-CA.xtb" lang="fr-CA" />
+    <file path="translations/ax_strings_gl.xtb" lang="gl" />
+    <file path="translations/ax_strings_gu.xtb" lang="gu" />
+    <file path="translations/ax_strings_hi.xtb" lang="hi" />
+    <file path="translations/ax_strings_hr.xtb" lang="hr" />
+    <file path="translations/ax_strings_hu.xtb" lang="hu" />
+    <file path="translations/ax_strings_hy.xtb" lang="hy" />
+    <file path="translations/ax_strings_id.xtb" lang="id" />
+    <file path="translations/ax_strings_is.xtb" lang="is" />
+    <file path="translations/ax_strings_it.xtb" lang="it" />
+    <!-- The translation console uses 'iw' for Hebrew, but we use 'he'. -->
+    <file path="translations/ax_strings_iw.xtb" lang="he" />
+    <file path="translations/ax_strings_ja.xtb" lang="ja" />
+    <file path="translations/ax_strings_ka.xtb" lang="ka" />
+    <file path="translations/ax_strings_kk.xtb" lang="kk" />
+    <file path="translations/ax_strings_km.xtb" lang="km" />
+    <file path="translations/ax_strings_kn.xtb" lang="kn" />
+    <file path="translations/ax_strings_ko.xtb" lang="ko" />
+    <file path="translations/ax_strings_ky.xtb" lang="ky" />
+    <file path="translations/ax_strings_lo.xtb" lang="lo" />
+    <file path="translations/ax_strings_lt.xtb" lang="lt" />
+    <file path="translations/ax_strings_lv.xtb" lang="lv" />
+    <file path="translations/ax_strings_mk.xtb" lang="mk" />
+    <file path="translations/ax_strings_ml.xtb" lang="ml" />
+    <file path="translations/ax_strings_mn.xtb" lang="mn" />
+    <file path="translations/ax_strings_mr.xtb" lang="mr" />
+    <file path="translations/ax_strings_ms.xtb" lang="ms" />
+    <file path="translations/ax_strings_my.xtb" lang="my" />
+    <file path="translations/ax_strings_ne.xtb" lang="ne" />
+    <file path="translations/ax_strings_nl.xtb" lang="nl" />
+    <file path="translations/ax_strings_no.xtb" lang="no" />
+    <file path="translations/ax_strings_or.xtb" lang="or" />
+    <file path="translations/ax_strings_pa.xtb" lang="pa" />
+    <file path="translations/ax_strings_pl.xtb" lang="pl" />
+    <file path="translations/ax_strings_pt-BR.xtb" lang="pt-BR" />
+    <file path="translations/ax_strings_pt-PT.xtb" lang="pt-PT" />
+    <file path="translations/ax_strings_ro.xtb" lang="ro" />
+    <file path="translations/ax_strings_ru.xtb" lang="ru" />
+    <file path="translations/ax_strings_si.xtb" lang="si" />
+    <file path="translations/ax_strings_sk.xtb" lang="sk" />
+    <file path="translations/ax_strings_sl.xtb" lang="sl" />
+    <file path="translations/ax_strings_sq.xtb" lang="sq" />
+    <file path="translations/ax_strings_sr.xtb" lang="sr" />
+    <file path="translations/ax_strings_sr-Latn.xtb" lang="sr-Latn" />
+    <file path="translations/ax_strings_sv.xtb" lang="sv" />
+    <file path="translations/ax_strings_sw.xtb" lang="sw" />
+    <file path="translations/ax_strings_ta.xtb" lang="ta" />
+    <file path="translations/ax_strings_te.xtb" lang="te" />
+    <file path="translations/ax_strings_th.xtb" lang="th" />
+    <file path="translations/ax_strings_tr.xtb" lang="tr" />
+    <file path="translations/ax_strings_uk.xtb" lang="uk" />
+    <file path="translations/ax_strings_ur.xtb" lang="ur" />
+    <file path="translations/ax_strings_uz.xtb" lang="uz" />
+    <file path="translations/ax_strings_vi.xtb" lang="vi" />
+    <file path="translations/ax_strings_zh-CN.xtb" lang="zh-CN" />
+    <file path="translations/ax_strings_zh-HK.xtb" lang="zh-HK" />
+    <file path="translations/ax_strings_zh-TW.xtb" lang="zh-TW" />
+    <file path="translations/ax_strings_zu.xtb" lang="zu" />
+  </translations>
+  <release seq="1">
+    <messages fallback_to_english="true">
+      <!--Accessible action strings-->
+      <message name="IDS_AX_ACTIVATE_ACTION_VERB" desc="Verb stating the action that will occur when an element such as a text field is selected, as used by accessibility.">
+        activate
+      </message>
+      <message name="IDS_AX_CHECK_ACTION_VERB" desc="Verb stating the action that will occur when an unchecked checkbox is clicked, as used by accessibility.">
+        check
+      </message>
+      <message name="IDS_AX_CLICK_ACTION_VERB" desc="Verb stating the action that will occur when clicking on a generic clickable object, when we don't have a more specific action description, as used by accessibility.">
+        click
+      </message>
+      <message name="IDS_AX_CLICK_ANCESTOR_ACTION_VERB" desc="Verb stating the action that will occur when clicking on a generic object that is not itself clickable but one of its ancestors is, as used by accessibility.">
+        click ancestor
+      </message>
+      <message name="IDS_AX_JUMP_ACTION_VERB" desc="Verb stating the action that will occur when an element such as an in-page link is activated, as used by accessibility.">
+        jump
+      </message>
+      <message name="IDS_AX_OPEN_ACTION_VERB" desc="Verb stating the action that will occur when an element such as a pop-up button is pressed, as used by accessibility.">
+        open
+      </message>
+      <message name="IDS_AX_PRESS_ACTION_VERB" desc="Verb stating the action that will occur when an element such as a button is pressed, as used by accessibility.">
+        press
+      </message>
+      <message name="IDS_AX_SELECT_ACTION_VERB" desc="Verb stating the action that will occur when an element such as a radio button is selected, as used by accessibility.">
+        select
+      </message>
+      <message name="IDS_AX_UNCHECK_ACTION_VERB" desc="Verb stating the action that will occur when a checked checkbox is clicked, as used by accessibility.">
+        uncheck
+      </message>
+
+      <!-- Accessible role localized names -->
+      <message name="IDS_AX_ROLE_ALERT" desc="Accessibility role description for an alert">
+        alert
+      </message>
+      <message name="IDS_AX_ROLE_ALERT_DIALOG" desc="Accessibility role description for an alert dialog">
+        alert dialog
+      </message>
+      <message name="IDS_AX_ROLE_APPLICATION" desc="Accessibility role description for an application">
+        application
+      </message>
+      <message name="IDS_AX_ROLE_ARTICLE" desc="Accessibility role description for article">
+        article
+      </message>
+      <!-- https://w3c.github.io/html-aam/#el-audio -->
+      <message name="IDS_AX_ROLE_AUDIO" desc="Accessible role description for audio">
+        audio
+      </message>
+      <message name="IDS_AX_ROLE_BANNER" desc="Accessibility role description for banner">
+        banner
+      </message>
+      <message name="IDS_AX_ROLE_BLOCKQUOTE" desc="Accessibility role description for a blockquote">
+        blockquote
+      </message>
+      <message name="IDS_AX_ROLE_BUTTON" desc="Accessibility role description for a button">
+        button
+      </message>
+      <message name="IDS_AX_ROLE_CODE" desc="Accessibility role description for a section whose content represents a fragment of computer code">
+        code
+      </message>
+      <!-- https://w3c.github.io/html-aam/#el-input-color -->
+      <message name="IDS_AX_ROLE_COLOR_WELL" desc="Accessibility role description for a color picker">
+        color picker
+      </message>
+      <message name="IDS_AX_ROLE_COLUMN_HEADER" desc="Accessibility role description for a column header">
+        column header
+      </message>
+      <message name="IDS_AX_ROLE_COMBO_BOX" desc="Accessibility role description for a combo box, an editable text control with an associated drop-down list">
+        combo box
+      </message>
+      <message name="IDS_AX_ROLE_COMMENT" desc="Accessibility role description for a single comment">
+        comment
+      </message>
+      <message name="IDS_AX_ROLE_COMPLEMENTARY" desc="Accessibility role description for complementary">
+        complementary
+      </message>
+      <message name="IDS_AX_ROLE_CONTENT_DELETION" desc="Accessibility role description for content deletion, meaning content that is has been or is suggested to be removed from a document, such as in a revision review">
+        deletion
+      </message>
+      <message name="IDS_AX_ROLE_CONTENT_INSERTION" desc="Accessibility role description for content insertion, meaning content that has been marked or is suggested to be inserted into a document, such as in a revision review">
+        insertion
+      </message>
+      <message name="IDS_AX_ROLE_CHECK_BOX" desc="Accessibility role description for a check box">
+        checkbox
+      </message>
+      <message name="IDS_AX_ROLE_CONTENT_INFO" desc="Accessibility role description for credits and information about the content of the page, like copyrights and privacy statements">
+        content information
+      </message>
+      <message name="IDS_AX_ROLE_DATE" desc="Accessibility role description for a date input">
+        date picker
+      </message>
+      <message name="IDS_AX_ROLE_DATE_TIME" desc="Accessibility role description for a date / time picker">
+        date and time picker
+      </message>
+      <message name="IDS_AX_ROLE_DATE_TIME_LOCAL" desc="Accessibility role description for a datetime-local input">
+        local date and time picker
+      </message>
+      <message name="IDS_AX_ROLE_DEFINITION" desc="Accessibility role description for a definition">
+        definition
+      </message>
+      <message name="IDS_AX_ROLE_DESCRIPTION_LIST" desc="Accessibility role description for a definition list">
+        definition list
+      </message>
+      <message name="IDS_AX_ROLE_DESCRIPTION_TERM" desc="Accessibility role description for description term (as in a description list)">
+        term
+      </message>
+      <!-- https://w3c.github.io/html-aam/#el-details -->
+      <message name="IDS_AX_ROLE_DETAILS" desc="Accessibility role description for details">
+        details
+      </message>
+      <message name="IDS_AX_ROLE_DIALOG" desc="Accessibility role description for a dialog">
+        dialog
+      </message>
+      <message name="IDS_AX_ROLE_DIRECTORY" desc="Accessibility role description for a directory, for example a table of contents or list of employees">
+        directory
+      </message>
+      <message name="IDS_AX_ROLE_DISCLOSURE_TRIANGLE" desc="Accessibility role description for a disclosure triangle, a control shaped like a triangle that expands or collapses to show or hide extra content">
+        disclosure triangle
+      </message>
+      <message name="IDS_AX_ROLE_DOC_ABSTRACT" desc="Accessibility role description for abstract, meaning the summary of the contents of an article or book">
+        abstract
+      </message>
+      <message name="IDS_AX_ROLE_DOC_ACKNOWLEDGMENTS" desc="Accessibility role description for acknowledgments">
+        acknowledgments
+      </message>
+      <message name="IDS_AX_ROLE_DOC_AFTERWORD" desc="Accessibility role description for afterword">
+        afterword
+      </message>
+      <message name="IDS_AX_ROLE_DOC_APPENDIX" desc="Accessibility role description for appendix, meaning the summary of the contents of an article or book">
+        appendix
+      </message>
+      <message name="IDS_AX_ROLE_DOC_BACKLINK" desc="Accessibility role description for back link">
+        back link
+      </message>
+      <message name="IDS_AX_ROLE_DOC_BIBLIO_ENTRY" desc="Accessibility role description for bibliography entry">
+        bibliography entry
+      </message>
+      <message name="IDS_AX_ROLE_DOC_BIBLIOGRAPHY" desc="Accessibility role description for bibliography">
+        bibliography
+      </message>
+      <message name="IDS_AX_ROLE_DOC_BIBLIO_REF" desc="Accessibility role description for bibliography reference">
+        bibliography reference
+      </message>
+      <message name="IDS_AX_ROLE_DOC_CHAPTER" desc="Accessibility role description for chapter">
+        chapter
+      </message>
+      <message name="IDS_AX_ROLE_DOC_COLOPHON" desc="Accessibility role description for colophon">
+        colophon
+      </message>
+      <message name="IDS_AX_ROLE_DOC_CONCLUSION" desc="Accessibility role description for conclusion">
+        conclusion
+      </message>
+      <message name="IDS_AX_ROLE_DOC_COVER" desc="Accessibility role description for cover">
+        cover
+      </message>
+      <message name="IDS_AX_ROLE_DOC_CREDIT" desc="Accessibility role description for credit, a public acknowledgement of someone who was responsible for helping with something">
+        credit
+      </message>
+      <message name="IDS_AX_ROLE_DOC_CREDITS" desc="Accessibility role description for credits">
+        credits
+      </message>
+      <message name="IDS_AX_ROLE_DOC_DEDICATION" desc="Accessibility role description for dedication">
+        dedication
+      </message>
+      <message name="IDS_AX_ROLE_DOC_ENDNOTE" desc="Accessibility role description for endnote">
+        endnote
+      </message>
+      <message name="IDS_AX_ROLE_DOC_ENDNOTES" desc="Accessibility role description for endnotes">
+        endnotes
+      </message>
+      <message name="IDS_AX_ROLE_DOC_EPIGRAPH" desc="Accessibility role description for epigraph">
+        epigraph
+      </message>
+      <message name="IDS_AX_ROLE_DOC_EPILOGUE" desc="Accessibility role description for epilogue">
+        epilogue
+      </message>
+      <message name="IDS_AX_ROLE_DOC_ERRATA" desc="Accessibility role description for errata">
+        errata
+      </message>
+      <message name="IDS_AX_ROLE_DOC_EXAMPLE" desc="Accessibility role description for example">
+        example
+      </message>
+      <message name="IDS_AX_ROLE_DOC_FOOTNOTE" desc="Accessibility role description for footnote">
+        footnote
+      </message>
+      <message name="IDS_AX_ROLE_DOC_FOREWORD" desc="Accessibility role description for foreword">
+        foreword
+      </message>
+      <message name="IDS_AX_ROLE_DOC_GLOSSARY" desc="Accessibility role description for glossary">
+        glossary
+      </message>
+      <message name="IDS_AX_ROLE_DOC_GLOSS_REF" desc="Accessibility role description for glossary reference">
+        glossary reference
+      </message>
+      <message name="IDS_AX_ROLE_DOC_INDEX" desc="Accessibility role description for index">
+        index
+      </message>
+      <message name="IDS_AX_ROLE_DOC_INTRODUCTION" desc="Accessibility role description for introduction">
+        introduction
+      </message>
+      <message name="IDS_AX_ROLE_DOC_NOTE_REF" desc="Accessibility role description for note reference">
+        note reference
+      </message>
+      <message name="IDS_AX_ROLE_DOC_NOTICE" desc="Accessibility role description for notice">
+        notice
+      </message>
+      <message name="IDS_AX_ROLE_DOC_PAGE_BREAK" desc="Accessibility role description for page break">
+        page break
+      </message>
+      <message name="IDS_AX_ROLE_DOC_PAGE_FOOTER" desc="Accessibility role description for page footer">
+        page footer
+      </message>
+      <message name="IDS_AX_ROLE_DOC_PAGE_HEADER" desc="Accessibility role description for page header">
+        page header
+      </message>
+      <message name="IDS_AX_ROLE_DOC_PAGE_LIST" desc="Accessibility role description for page list">
+        page list
+      </message>
+      <message name="IDS_AX_ROLE_DOC_PART" desc="Accessibility role description for part, as in a part of a book">
+        part
+      </message>
+      <message name="IDS_AX_ROLE_DOC_PREFACE" desc="Accessibility role description for preface">
+        preface
+      </message>
+      <message name="IDS_AX_ROLE_DOC_PROLOGUE" desc="Accessibility role description for prologue">
+        prologue
+      </message>
+      <message name="IDS_AX_ROLE_DOC_PULLQUOTE" desc="Accessibility role description for pullquote">
+        pullquote
+      </message>
+      <message name="IDS_AX_ROLE_DOC_QNA" desc="Accessibility role description for Q+A (questions and answers)">
+        Q&amp;A
+      </message>
+      <message name="IDS_AX_ROLE_DOC_SUBTITLE" desc="Accessibility role description for subtitle">
+        subtitle
+      </message>
+      <message name="IDS_AX_ROLE_DOC_TIP" desc="Accessibility role description for tip, as in a suggestion or idea">
+        tip
+      </message>
+      <message name="IDS_AX_ROLE_DOC_TOC" desc="Accessibility role description for table of contents">
+        table of contents
+      </message>
+      <message name="IDS_AX_ROLE_DOCUMENT" desc="Accessibility role description for a document">
+        document
+      </message>
+      <!-- https://w3c.github.io/html-aam/#el-input-email -->
+      <message name="IDS_AX_ROLE_EMAIL" desc="Accessibility role description for email input">
+        email
+      </message>
+      <message name="IDS_AX_ROLE_EMBEDDED_OBJECT" desc="Accessibility role description for an embedded object, like a video inside a web page">
+        object
+      </message>
+      <message name="IDS_AX_ROLE_EMPHASIS" desc="Accessibility role description for one or more emphasized characters">
+        emphasis
+      </message>
+      <message name="IDS_AX_ROLE_FEED" desc="Accessibility role description for a scrollable list of articles.">
+        feed
+      </message>
+      <message name="IDS_AX_ROLE_FIGURE" desc="Accessibility role description for figure">
+        figure
+      </message>
+      <message name="IDS_AX_ROLE_FORM" desc="Accessibility role description for form">
+        form
+      </message>
+      <message name="IDS_AX_ROLE_FOOTER" desc="Accessibility role description for footers">
+        footer
+      </message>
+      <message name="IDS_AX_ROLE_GRAPHIC" desc="Accessibility role description for a graphic or image">
+        graphic
+      </message>
+      <message name="IDS_AX_ROLE_GRAPHICS_DOCUMENT" desc="Accessibility role description for graphics document">
+        graphics document
+      </message>
+      <message name="IDS_AX_ROLE_GRAPHICS_OBJECT" desc="Accessibility role description for graphics object">
+        graphics object
+      </message>
+      <message name="IDS_AX_ROLE_GRAPHICS_SYMBOL" desc="Accessibility role description for graphics symbol">
+        graphics symbol
+      </message>
+      <message name="IDS_AX_ROLE_HEADER" desc="Accessibility role description for header">
+        header
+      </message>
+      <message name="IDS_AX_ROLE_HEADING" desc="Accessibility role description for headings">
+        heading
+      </message>
+      <message name="IDS_AX_ROLE_HEADING_WITH_LEVEL" desc="Accessibility role description for a heading with a heading level, for example 'heading 1' is the most important heading and 'heading 3' is less important">
+        heading <ph name="HEADING_LEVEL">$1<ex>1</ex></ph>
+      </message>
+      <message name="IDS_AX_ROLE_INPUT_TIME" desc="Accessibility role description for a time picker control">
+        time picker
+      </message>
+      <message name="IDS_AX_ROLE_LINK" desc="Accessibility role description for link">
+        link
+      </message>
+      <message name="IDS_AX_ROLE_LIST_BOX" desc="Accessibility role description for a list box control">
+        list box
+      </message>
+      <message name="IDS_AX_ROLE_LOG" desc="Accessibility role description for an information log, such as a chat log or error log">
+        log
+      </message>
+      <message name="IDS_AX_ROLE_MAIN_CONTENT" desc="Accessibility role description for main content of the document.">
+        main
+      </message>
+      <!-- https://w3c.github.io/html-aam/#el-mark -->
+      <message name="IDS_AX_ROLE_MARK" desc="Accessibility role description for highlighted content.">
+        highlight
+      </message>
+      <message name="IDS_AX_ROLE_MARQUEE" desc="Accessibility role description for a marquee, such as a stock ticker or ad banner that frequently changes">
+        marquee
+      </message>
+      <message name="IDS_AX_ROLE_MATH" desc="Accessibility role description for math">
+        math
+      </message>
+      <message name="IDS_AX_ROLE_MENU" desc="Accessibility role description for a menu">
+        menu
+      </message>
+      <message name="IDS_AX_ROLE_MENU_BAR" desc="Accessibility role description for a menu bar">
+        menu bar
+      </message>
+      <message name="IDS_AX_ROLE_MENU_ITEM" desc="Accessibility role description for a menu item">
+        menu item
+      </message>
+      <!-- https://w3c.github.io/html-aam/#el-meter -->
+      <message name="IDS_AX_ROLE_METER" desc="Accessibility role description for a meter, for example a temperature indicator or progress bar">
+          meter
+      </message>
+      <message name="IDS_AX_ROLE_MONTH" desc="Accessibility role description for a month input">
+        month picker
+      </message>
+      <message name="IDS_AX_ROLE_NAVIGATIONAL_LINK" desc="Accessibility role description for group of navigational links.">
+        navigation
+      </message>
+      <message name="IDS_AX_ROLE_NOTE" desc="Accessibility role description for a note">
+        note
+      </message>
+      <!-- https://w3c.github.io/html-aam/#el-output -->
+      <message name="IDS_AX_ROLE_OUTPUT" desc="Accessibility role description for output">
+        output
+      </message>
+      <message name="IDS_AX_ROLE_PDF_HIGHLIGHT" desc="Accessibility role description for PDF highlight.">
+        highlight
+      </message>
+      <message name="IDS_AX_ROLE_POP_UP_BUTTON" desc="Accessibility role description for a pop up button">
+        pop up button
+      </message>
+      <message name="IDS_AX_ROLE_PROGRESS_INDICATOR" desc="Accessibility role description for a progress indicator">
+        progress indicator
+      </message>
+      <message name="IDS_AX_ROLE_RADIO" desc="Accessibility role description for a radio button">
+        radio button
+      </message>
+      <message name="IDS_AX_ROLE_RADIO_GROUP" desc="Accessibility role description for a group of related radio buttons">
+        radio group
+      </message>
+      <message name="IDS_AX_ROLE_REGION" desc="Accessibility role description for region">
+        region
+      </message>
+      <message name="IDS_AX_ROLE_ROW_GROUP" desc="Accessibility role description for a row group in a table">
+        row group
+      </message>
+      <message name="IDS_AX_ROLE_ROW_HEADER" desc="Accessibility role description for a row header in a table">
+        row header
+      </message>
+      <message name="IDS_AX_ROLE_SCROLL_BAR" desc="Accessibility role description for a scroll bar">
+        scroll bar
+      </message>
+      <message name="IDS_AX_ROLE_SEARCH" desc="Accessibility role description for the section of a web page containing controls for searching the page or site">
+        search
+      </message>
+      <!-- https://www.w3.org/TR/core-aam-1.1/#role-map-searchbox -->
+      <if expr="is_win">
+        <message name="IDS_AX_ROLE_SEARCH_BOX" desc="UIA role description for search text field">
+          search box
+        </message>
+      </if>
+      <if expr="not is_win">
+        <message name="IDS_AX_ROLE_SEARCH_BOX" desc="Accessibility role description for search text field">
+          search text field
+        </message>
+      </if>
+      <!-- https://w3c.github.io/html-aam/#el-section -->
+      <message name="IDS_AX_ROLE_SECTION" desc="Accessibility role description for a section of a document, like the main body text, the table of contents, a header, or a footer">
+        section
+      </message>
+      <message name="IDS_AX_ROLE_SLIDER" desc="Accessibility role description for a slider">
+        slider
+      </message>
+      <if expr="is_macosx">
+        <message name="IDS_AX_ROLE_SPIN_BUTTON" desc="Accessibility role description for a stepper - a control where you can use up/down arrows to increment or decrement it. The name 'stepper' is how this user interface element is described by VoiceOver on Mac OS X; the translation should be consistent with VoiceOver.">
+          stepper
+        </message>
+      </if>
+      <if expr="not is_macosx">
+        <message name="IDS_AX_ROLE_SPIN_BUTTON" desc="Accessibility role description for a spin button, a control containing a numerical value that can be incremented or decremented by 1">
+          spin button
+        </message>
+      </if>
+      <message name="IDS_AX_ROLE_SPLITTER" desc="Accessibility role description for a splitter, a control that splits the window in two pieces and can usually be dragged">
+        splitter
+      </message>
+      <message name="IDS_AX_ROLE_STATUS" desc="Accessibility role description for status">
+        status
+      </message>
+      <message name="IDS_AX_ROLE_STRONG" desc="Accessibility role description for content which is important, serious, or urgent">
+        strong
+      </message>
+      <message name="IDS_AX_ROLE_SUBSCRIPT" desc="Accessibility role description for subscript" is_accessibility_with_no_ui="true">
+        subscript
+      </message>
+      <message name="IDS_AX_ROLE_SUGGESTION" desc="Accessibility role description for suggestion, meaning a suggested change to some content">
+        suggestion
+      </message>
+      <message name="IDS_AX_ROLE_SUPERSCRIPT" desc="Accessibility role description for superscript" is_accessibility_with_no_ui="true">
+        superscript
+      </message>
+      <message name="IDS_AX_ROLE_SWITCH" desc="Accessibility role description for switch">
+        switch
+      </message>
+      <message name="IDS_AX_ROLE_TAB" desc="Accessibility role description for a tab">
+        tab
+      </message>
+      <message name="IDS_AX_ROLE_TABLE" desc="Accessibility role description for a table">
+        table
+      </message>
+      <message name="IDS_AX_ROLE_TAB_LIST" desc="Accessibility role description for a tab list">
+        tab list
+      </message>
+      <message name="IDS_AX_ROLE_TAB_PANEL" desc="Accessibility role description for a tab panel, the part of the window that changes when selecting a new tab">
+        tab panel
+      </message>
+      <!-- https://w3c.github.io/html-aam/#el-input-tel -->
+      <message name="IDS_AX_ROLE_TELEPHONE" desc="Accessibility role description for telephone number input">
+        telephone
+      </message>
+      <!-- https://w3c.github.io/html-aam/#el-time -->
+      <message name="IDS_AX_ROLE_TIME" desc="Accessibility role description for a time">
+        time
+      </message>
+      <message name="IDS_AX_ROLE_TIMER" desc="Accessibility role description for a timer">
+        timer
+      </message>
+      <message name="IDS_AX_ROLE_TOGGLE_BUTTON" desc="Accessibility role description for a toggle button">
+        toggle button
+      </message>
+      <message name="IDS_AX_ROLE_TOOLBAR" desc="Accessibility role description for a toolbar">
+        toolbar
+      </message>
+      <message name="IDS_AX_ROLE_TOOLTIP" desc="Accessibility role description for a tooltip">
+        tooltip
+      </message>
+      <message name="IDS_AX_ROLE_TREE" desc="Accessibility role description for a tree">
+        tree
+      </message>
+      <message name="IDS_AX_ROLE_TREE_GRID" desc="Accessibility role description for a tree grid">
+        tree grid
+      </message>
+      <message name="IDS_AX_ROLE_TREE_ITEM" desc="Accessibility role description for a tree item">
+        tree item
+      </message>
+      <!-- https://w3c.github.io/html-aam/#el-input-url -->
+      <message name="IDS_AX_ROLE_URL" desc="Accessibility role description for URL input">
+        url
+      </message>
+      <message name="IDS_AX_ROLE_WEB_AREA" desc="Accessibility role description for web area">
+        HTML content
+      </message>
+      <message name="IDS_AX_ROLE_WEEK" desc="Accessibility role description for a week input">
+        week picker
+      </message>
+      <if expr="is_android">
+        <message name="IDS_AX_ROLE_POP_UP_BUTTON_MENU" desc="Accessibility role description for a pop up button that opens a menu">
+          menu pop up button
+        </message>
+        <message name="IDS_AX_ROLE_POP_UP_BUTTON_DIALOG" desc="Accessibility role description for a pop up button that opens a dialog">
+          dialog pop up button
+        </message>
+      </if>
+   </messages>
+  </release>
+</grit>

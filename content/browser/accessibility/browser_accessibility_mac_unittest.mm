@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -104,9 +104,10 @@ class BrowserAccessibilityMacTest : public ui::CocoaTest {
     child2.role = ax::mojom::Role::kHeading;
 
     manager_ = std::make_unique<BrowserAccessibilityManagerMac>(
-        MakeAXTreeUpdate(root_, child1, child2), nullptr);
+        MakeAXTreeUpdateForTesting(root_, child1, child2), nullptr);
     accessibility_.reset(
-        [ToBrowserAccessibilityCocoa(manager_->GetRoot()) retain]);
+        [manager_->GetBrowserAccessibilityRoot()->GetNativeViewAccessible()
+            retain]);
   }
 
   void SetRootValue(std::string value) {
@@ -130,14 +131,14 @@ class BrowserAccessibilityMacTest : public ui::CocoaTest {
 TEST_F(BrowserAccessibilityMacTest, HitTestTest) {
   BrowserAccessibilityCocoa* firstChild =
       [accessibility_ accessibilityHitTest:NSMakePoint(50, 50)];
-  EXPECT_NSEQ(@"Child1", firstChild.descriptionForAccessibility);
+  EXPECT_NSEQ(@"Child1", firstChild.accessibilityLabel);
 }
 
 // Test doing a hit test on the edge of a child.
 TEST_F(BrowserAccessibilityMacTest, EdgeHitTest) {
   BrowserAccessibilityCocoa* firstChild =
       [accessibility_ accessibilityHitTest:NSZeroPoint];
-  EXPECT_NSEQ(@"Child1", firstChild.descriptionForAccessibility);
+  EXPECT_NSEQ(@"Child1", firstChild.accessibilityLabel);
 }
 
 // This will test a hit test with invalid coordinates.  It is assumed that
@@ -158,7 +159,7 @@ TEST_F(BrowserAccessibilityMacTest, RetainedDetachedObjectsReturnNil) {
   // Get the first child.
   BrowserAccessibilityCocoa* retainedFirstChild =
       [accessibility_ accessibilityHitTest:NSMakePoint(50, 50)];
-  EXPECT_NSEQ(@"Child1", retainedFirstChild.descriptionForAccessibility);
+  EXPECT_NSEQ(@"Child1", retainedFirstChild.accessibilityLabel);
 
   // Retain it. This simulates what the system might do with an
   // accessibility object.
@@ -168,7 +169,7 @@ TEST_F(BrowserAccessibilityMacTest, RetainedDetachedObjectsReturnNil) {
   RebuildAccessibilityTree();
 
   // Now any attributes we query should return nil.
-  EXPECT_NSEQ(nil, retainedFirstChild.descriptionForAccessibility);
+  EXPECT_NSEQ(nil, retainedFirstChild.accessibilityLabel);
 
   // Don't leak memory in the test.
   [retainedFirstChild release];
@@ -179,9 +180,10 @@ TEST_F(BrowserAccessibilityMacTest, TestComputeTextEdit) {
   root_.id = 1;
   root_.role = ax::mojom::Role::kTextField;
   manager_ = std::make_unique<BrowserAccessibilityManagerMac>(
-      MakeAXTreeUpdate(root_), nullptr);
+      MakeAXTreeUpdateForTesting(root_), nullptr);
   accessibility_.reset(
-      [ToBrowserAccessibilityCocoa(manager_->GetRoot()) retain]);
+      [manager_->GetBrowserAccessibilityRoot()->GetNativeViewAccessible()
+          retain]);
 
   // Insertion but no deletion.
 
@@ -266,7 +268,8 @@ TEST_F(BrowserAccessibilityMacTest, TableAPIs) {
   manager_ =
       std::make_unique<BrowserAccessibilityManagerMac>(initial_state, nullptr);
   base::scoped_nsobject<BrowserAccessibilityCocoa> ax_table_(
-      [ToBrowserAccessibilityCocoa(manager_->GetRoot()) retain]);
+      [manager_->GetBrowserAccessibilityRoot()->GetNativeViewAccessible()
+          retain]);
   id children = [ax_table_ children];
   EXPECT_EQ(5U, [children count]);
 
@@ -293,6 +296,39 @@ TEST_F(BrowserAccessibilityMacTest, TableAPIs) {
   col_children = [children[4] children];
   EXPECT_NSEQ(@"AXCell", [col_children[0] role]);
   EXPECT_NSEQ(@"AXCell", [col_children[1] role]);
+}
+
+// Test Mac indirect columns and descendants.
+TEST_F(BrowserAccessibilityMacTest, TableColumnsAndDescendants) {
+  ui::AXTreeUpdate initial_state;
+  initial_state.root_id = 1;
+  initial_state.nodes.resize(7);
+  MakeTable(&initial_state.nodes[0], 1, 0, 0);
+  initial_state.nodes[0].child_ids = {2, 3};
+  MakeRow(&initial_state.nodes[1], 2);
+  initial_state.nodes[1].child_ids = {4, 5};
+  MakeRow(&initial_state.nodes[2], 3);
+  initial_state.nodes[2].child_ids = {6, 7};
+  MakeColumnHeader(&initial_state.nodes[3], 4, 0, 0);
+  MakeColumnHeader(&initial_state.nodes[4], 5, 0, 1);
+  MakeCell(&initial_state.nodes[5], 6, 1, 0);
+  MakeCell(&initial_state.nodes[6], 7, 1, 1);
+
+  // This relation is the key to force
+  // AXEventGenerator::FireRelationSourceEvents to trigger addition of an event
+  // which had caused a crash below.
+  initial_state.nodes[6].AddIntListAttribute(
+      ax::mojom::IntListAttribute::kFlowtoIds, {1});
+
+  manager_ =
+      std::make_unique<BrowserAccessibilityManagerMac>(initial_state, nullptr);
+
+  BrowserAccessibilityMac* root = static_cast<BrowserAccessibilityMac*>(
+      manager_->GetBrowserAccessibilityRoot());
+
+  // This triggers computation of the extra Mac table cells. 2 rows, 2 extra
+  // columns, and 1 extra column header. This used to crash.
+  ASSERT_EQ(root->PlatformChildCount(), 5U);
 }
 
 }  // namespace content

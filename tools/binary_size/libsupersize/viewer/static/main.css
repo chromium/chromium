@@ -1,0 +1,320 @@
+/* Copyright 2018 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: auto 0;
+  grid-template-rows: 64px 1fr;
+  grid-template-areas: "appbar options" "symbols options";
+  color: #3c4043;
+  font-family: "Roboto", sans-serif;
+  overflow: scroll;
+}
+
+.appbar {
+  grid-area: appbar;
+}
+.appbar-inner {
+  height: 100%;
+  padding: 0 66px 0 48px;
+  display: flex;
+  align-items: center;
+}
+.appbar-progress {
+  display: block;
+  width: 100%;
+  height: 4px;
+  -webkit-appearance: none;
+  appearance: none;
+  contain: strict;
+  background: #4285f499;
+  transition: opacity 0.5s ease;
+}
+.appbar-progress::-webkit-progress-bar {
+  background: transparent;
+}
+.appbar-progress::-webkit-progress-value {
+  background: #1a73e8;
+  transition: width 1s ease-in;
+}
+.appbar-progress[value="0"]::-webkit-progress-value {
+  transition: none;
+}
+.appbar-progress[value="1"] {
+  opacity: 0;
+}
+.appbar-progress[value="1"]::-webkit-progress-value {
+  transition-duration: 0.2s;
+}
+.error .appbar-progress {
+  background: #ea433599;
+}
+.error .appbar-progress::-webkit-progress-value {
+  background: #d93025;
+}
+
+.options {
+  visibility: hidden;
+  grid-area: options;
+}
+
+.symbols {
+  grid-area: symbols;
+  padding: 0 48px;
+  margin-bottom: 240px;
+}
+.tree-view {
+  margin: 0 auto;
+  max-width: 1200px;
+}
+
+.headline {
+  color: #202124;
+  flex: 1;
+  font-family: "Google Sans", Arial, sans-serif;
+  font-size: 22px;
+  font-weight: normal;
+  line-height: 34px;
+  margin: 0;
+}
+.subtitle {
+  font-weight: 500;
+  color: #5f6368;
+  font-size: 13px;
+}
+.subhead,
+.subhead-2 {
+  margin-bottom: 0.5em;
+  font-family: "Google Sans", Arial, sans-serif;
+  font-weight: 500;
+  font-size: 16px;
+  color: #3c4043;
+}
+.subhead-2 {
+  font-size: 14px;
+}
+.body-2 {
+  font-weight: 400;
+  font-size: 14px;
+}
+.caption {
+  font-size: 12px;
+  color: #5f6368;
+}
+
+ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.tree {
+  font-size: 13px;
+}
+
+.tree-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  margin-left: 48px;
+  line-height: 24px;
+  border-bottom: 1px solid #dadce0;
+}
+
+[role="group"] {
+  padding-left: 13px;
+  border-left: 1px solid #dadce0;
+  margin-left: 10px;
+}
+
+.icon {
+  display: block;
+  margin-right: 6px;
+  flex: none;
+}
+
+.diff-status-icon {
+  display: block;
+  flex: none;
+  transform: scale(0.8);
+  position: absolute;
+  left: -26px;
+}
+
+/** Tree nodes */
+[role="treeitem"] {
+  position: relative;
+}
+.node {
+  display: flex;
+  padding-right: 8px;
+  margin-right: -8px;
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+  border-radius: 4px;
+}
+.node:hover {
+  background: #f1f3f4;
+}
+.node::before {
+  content: "";
+  display: inline-block;
+  margin: 10px;
+  width: 0;
+  height: 0;
+}
+[aria-expanded]>.node::before {
+  /** Draw a 5x10 triangle */
+  margin: 5px 7px 5px 8px;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-color: transparent transparent transparent currentColor;
+  transition: transform .1s ease-out;
+}
+[aria-expanded="true"]>.node::before {
+  transform: rotate(90deg);
+}
+
+/** Tree leaves */
+:not([aria-expanded])>.node:focus {
+  background: #eef;
+}
+:not([aria-expanded])>.node:hover:focus {
+  background: #ddf;
+}
+
+/** Tree node sub items */
+.symbol-name {
+  font-weight: 500;
+  word-break: break-word;
+}
+
+.count,
+.size,
+.percent,
+.added,
+.removed,
+.changed {
+  margin-left: auto;
+  padding-left: 16px;
+  text-align: right;
+  color: #5f6368;
+  white-space: nowrap;
+}
+.shrunk {
+  color: #34a853;
+}
+.grew {
+  color: #ea4335;
+}
+
+.diff .size-header::after {
+  content: " diff";
+}
+
+.table {
+  display: table;
+  margin: auto;
+}
+
+.form-divider {
+  width: 10%;
+  vertical-align: middle;
+}
+
+.form {
+  width: 40%;
+}
+
+.note {
+  margin:20pt 0 10pt;
+}
+
+.center-text {
+  text-align: center;
+}
+
+.modal {
+  background-color: rgba(0,0,0,0.5);
+  bottom: 0;
+  left: 0;
+  position: fixed;
+  right: 0;
+  top: 0;
+  z-index: 10;
+}
+
+.modal-content {
+  align-items: center;
+  background-color: #fefefe;
+  border-radius: 5px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  left: 0;
+  margin: auto;
+  max-height: calc(100% - 80px);
+  max-width: calc(100% - 60px);
+  overflow: auto;
+  padding: 10px;
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.download-button {
+  fill: #1a73e8;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
+.metadata-symbol-name {
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  padding-left: 5px;
+  word-break: break-word;
+}
+
+.metadata {
+  margin: 0 auto;
+  max-width: 1200px;
+}
+
+#metadata-view:not(.active) {
+  display: none;
+}
+
+#metadata-content:not(.active) {
+  display: none;
+}
+
+#review-info{
+  font-size: 13px;
+}
+
+#review-text {
+  color: #0000d1;
+  text-decoration: none;
+  white-space: pre;
+}
+
+#no-symbols-msg {
+  position: relative;
+  text-align: center;
+  top: -1em;
+}
+
+#disassembly-code {
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  max-width: 100%;
+  min-width: 500px;
+  overflow: auto;
+  position: relative;
+}

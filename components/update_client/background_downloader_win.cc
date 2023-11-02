@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -793,9 +793,9 @@ HRESULT BackgroundDownloader::CompleteJob() {
   if (FAILED(hr))
     return hr;
 
-  // Sanity check the post-conditions of a successful download, including
-  // the file and job invariants. The byte counts for a job and its file
-  // must match as a job only contains one file.
+  // Check the post-conditions of a successful download, including the file and
+  // job invariants. The byte counts for a job and its file must match as a job
+  // only contains one file.
   DCHECK(progress.Completed);
   DCHECK_EQ(progress.BytesTotal, progress.BytesTransferred);
 

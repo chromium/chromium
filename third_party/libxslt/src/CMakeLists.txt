@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.15)
 
-project(libxslt1 VERSION 1.1.34 LANGUAGES C)
+project(libxslt1 VERSION 1.1.35 LANGUAGES C)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR})
 
@@ -26,7 +26,7 @@ option(LIBXSLT_WITH_THREADS "Add multithread support" ON)
 set(LIBXSLT_WITH_TRIO OFF)
 option(LIBXSLT_WITH_XSLT_DEBUG "Add the debugging code" ON)
 
-if(LIBXSLT_WITH_CRYPTO)
+if(LIBXSLT_WITH_CRYPTO AND NOT WIN32)
 	find_package(Gcrypt REQUIRED)
 endif()
 
@@ -77,7 +77,14 @@ set(LIBEXSLT_VERSION ${LIBEXSLT_DOTTED_VERSION})
 
 set(MODULE_EXTENSION "${CMAKE_SHARED_LIBRARY_SUFFIX}")
 
-if(LIBXSLT_WITH_CRYPTO)
+if(CMAKE_C_COMPILER_ID MATCHES "Clang" OR CMAKE_C_COMPILER_ID STREQUAL "GNU")
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -Wshadow \
+-Wpointer-arith -Wcast-align -Wwrite-strings -Waggregate-return \
+-Wstrict-prototypes -Wmissing-prototypes -Wnested-externs -Winline \
+-Wredundant-decls -Wno-long-long -Wno-format-extra-args")
+endif()
+
+if(LIBXSLT_WITH_CRYPTO AND NOT WIN32)
 	list(APPEND CMAKE_REQUIRED_LIBRARIES Gcrypt::Gcrypt)
 endif()
 
@@ -93,50 +100,25 @@ else()
 		set(CMAKE_REQUIRED_LIBRARIES m)
 	endif()
 	check_function_exists(clock_gettime HAVE_CLOCK_GETTIME)
-	check_include_files(dlfcn.h HAVE_DLFCN_H)
-	check_function_exists(fabs HAVE_FABS)
-	check_include_files(float.h HAVE_FLOAT_H)
-	check_function_exists(floor HAVE_FLOOR)
-	check_function_exists(fprintf HAVE_FPRINTF)
-	check_include_files(fp_class.h HAVE_FP_CLASS_H)
 	check_function_exists(ftime HAVE_FTIME)
 	check_library_exists(gcrypt gcry_control "gcrypt.h" HAVE_GCRYPT)
 	check_function_exists(gettimeofday HAVE_GETTIMEOFDAY)
-	check_function_exists(gmtime HAVE_GMTIME)
 	check_function_exists(gmtime_r HAVE_GMTIME_R)
-	check_include_files(ieeefp.h HAVE_IEEEFP_H)
 	check_include_files(inttypes.h HAVE_INTTYPES_H)
 	check_library_exists(pthread pthread_join "" HAVE_LIBPTHREAD)
 	check_include_files(locale.h HAVE_LOCALE_H)
-	check_function_exists(localtime HAVE_LOCALTIME)
 	check_function_exists(localtime_r HAVE_LOCALTIME_R)
-	check_include_files(math.h HAVE_MATH_H)
-	check_include_files(memory.h HAVE_MEMORY_H)
-	check_include_files(nan.h HAVE_NAN_H)
-	check_function_exists(pow HAVE_POW)
-	check_function_exists(printf HAVE_PRINTF)
 	check_include_files(pthread.h HAVE_PTHREAD_H)
 	check_function_exists(snprintf HAVE_SNPRINTF)
-	check_function_exists(sprintf HAVE_SPRINTF)
-	check_function_exists(sscanf HAVE_SSCANF)
 	check_function_exists(stat HAVE_STAT)
-	check_include_files(stdarg.h HAVE_STDARG_H)
-	check_include_files(stdint.h HAVE_STDINT_H)
-	check_include_files(stdlib.h HAVE_STDLIB_H)
-	check_include_files(strings.h HAVE_STRINGS_H)
-	check_include_files(string.h HAVE_STRING_H)
 	check_function_exists(strxfrm_l HAVE_STRXFRM_L)
 	check_include_files(sys/select.h HAVE_SYS_SELECT_H)
 	check_include_files(sys/stat.h HAVE_SYS_STAT_H)
 	check_include_files(sys/timeb.h HAVE_SYS_TIMEB_H)
 	check_include_files(sys/time.h HAVE_SYS_TIME_H)
 	check_include_files(sys/types.h HAVE_SYS_TYPES_H)
-	check_function_exists(time HAVE_TIME)
-	check_include_files(time.h HAVE_TIME_H)
 	check_include_files(unistd.h HAVE_UNISTD_H)
-	check_function_exists(vfprintf HAVE_VFPRINTF)
 	check_function_exists(vsnprintf HAVE_VSNPRINTF)
-	check_function_exists(vsprintf HAVE_VSPRINTF)
 	check_include_files(xlocale.h HAVE_XLOCALE_H)
 	check_function_exists(_stat HAVE__STAT)
 	set(LT_OBJDIR ".libs/")
@@ -145,9 +127,8 @@ else()
 	set(PACKAGE_NAME "libxslt")
 	set(PACKAGE_STRING "libxslt ${LIBXSLT_DOTTED_VERSION}")
 	set(PACKAGE_TARNAME "libxslt")
-	set(PACKAGE_URL "http://www.xmlsoft.org/libxslt")
+	set(PACKAGE_URL "https://gitlab.gnome.org/GNOME/libxslt")
 	set(PACKAGE_VERSION ${LIBXSLT_DOTTED_VERSION})
-	check_include_files("float.h;stdarg.h;stdlib.h;string.h" STDC_HEADERS)
 	set(_ALL_SOURCE ON)
 	set(_GNU_SOURCE ON)
 	set(_POSIX_PTHREAD_SEMANTICS ON)
@@ -219,6 +200,10 @@ set(
 add_library(LibXslt ${LIBXSLT_HDRS} ${LIBXSLT_SRCS})
 add_library(LibXslt::LibXslt ALIAS LibXslt)
 
+if(NOT BUILD_SHARED_LIBS)
+	target_compile_definitions(LibXslt INTERFACE LIBXSLT_STATIC)
+endif()
+
 target_include_directories(
 	LibXslt
 	PUBLIC
@@ -231,7 +216,7 @@ target_link_libraries(LibXslt PUBLIC LibXml2::LibXml2)
 
 if(UNIX)
 	target_link_libraries(LibXslt PRIVATE m)
-	set(M_LIBS "-lm")
+	set(LIBM "-lm")
 endif()
 
 set_target_properties(
@@ -302,6 +287,10 @@ set(
 add_library(LibExslt ${LIBEXSLT_HDRS} ${LIBEXSLT_SRCS})
 add_library(LibXslt::LibExslt ALIAS LibExslt)
 
+if(NOT BUILD_SHARED_LIBS)
+	target_compile_definitions(LibExslt INTERFACE LIBEXSLT_STATIC)
+endif()
+
 target_include_directories(
 	LibExslt
 	PUBLIC
@@ -310,7 +299,7 @@ target_include_directories(
 	$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${CMAKE_INSTALL_INCLUDEDIR}>
 )
 
-if(LIBXSLT_WITH_CRYPTO)
+if(LIBXSLT_WITH_CRYPTO AND NOT WIN32)
 	target_link_libraries(LibExslt PRIVATE Gcrypt::Gcrypt)
 	set(LIBGCRYPT_LIBS "-lgcrypt")
 endif()
@@ -432,7 +421,7 @@ install(FILES libxslt/libxslt.3 DESTINATION ${CMAKE_INSTALL_MANDIR}/man3 COMPONE
 install(FILES doc/xsltproc.1 DESTINATION ${CMAKE_INSTALL_MANDIR}/man1 COMPONENT documentation)
 install(DIRECTORY doc/ DESTINATION ${CMAKE_INSTALL_DATADIR}/doc/libxslt COMPONENT documentation PATTERN Makefile.* EXCLUDE)
 
-if(LIBXSLT_WITH_CRYPTO)
+if(LIBXSLT_WITH_CRYPTO AND NOT WIN32)
 	install(FILES FindGcrypt.cmake DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/libxslt-${PROJECT_VERSION} COMPONENT development)
 endif()
 
@@ -471,7 +460,7 @@ set(LIBXSLT_DEFAULT_PLUGINS_PATH "\${libdir}/libxslt-plugins")
 set(XSLT_INCLUDEDIR "-I\${includedir}")
 set(XSLT_LIBDIR "-L\${libdir}")
 set(XSLT_LIBS "-lxslt -lxml2")
-set(XSLT_PRIVATE_LIBS "${M_LIBS}")
+set(XSLT_PRIVATE_LIBS "${LIBM}")
 
 set(EXSLT_INCLUDEDIR "-I\${includedir}")
 set(EXSLT_LIBDIR "-L\${libdir}")

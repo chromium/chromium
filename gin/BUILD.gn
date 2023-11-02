@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -175,7 +175,10 @@ test("gin_unittests") {
     "//v8:external_startup_data",
   ]
 
-  data_deps = [ "//tools/v8_context_snapshot:v8_context_snapshot" ]
+  data_deps = [
+    "//testing/buildbot/filters:gin_unittests_filters",
+    "//tools/v8_context_snapshot:v8_context_snapshot",
+  ]
   data = []
 
   # gin_shell is not an Android app.
@@ -192,9 +195,10 @@ test("gin_unittests") {
   }
 
   if (is_fuchsia) {
-    additional_manifest_fragments = [
-      # TODO(crbug.com/1185811): Figure out why jit_capabilities is needed.
-      "//build/config/fuchsia/test/jit_capabilities.test-cmx",
-    ]
+    # TODO(https://crbug.com/1185811): Investigate removing the requirement for
+    # job_policy_ambient_mark_vmo_exec for the sake of V8's allocator in tests.
+    test_runner_shard = "//build/config/fuchsia/test/elf_test_ambient_exec_runner.shard.test-cml"
+    additional_manifest_fragments =
+        [ "//build/config/fuchsia/test/mark_vmo_executable.shard.test-cml" ]
   }
 }

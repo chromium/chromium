@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,8 @@ bool StructTraits<crosapi::mojom::BrowserWindowInstanceUpdateDataView,
   apps::BrowserWindowInstanceUpdate update;
   if (input.ReadId(&update.id) && input.ReadWindowId(&update.window_id)) {
     update.is_active = input.is_active();
+    update.browser_session_id = input.browser_session_id();
+    update.restored_browser_session_id = input.restored_browser_session_id();
     *output = std::move(update);
     return true;
   }
@@ -29,6 +31,8 @@ bool StructTraits<crosapi::mojom::BrowserAppInstanceUpdateDataView,
       input.ReadWindowId(&update.window_id) && input.ReadTitle(&update.title)) {
     update.is_browser_active = input.is_browser_active();
     update.is_web_contents_active = input.is_web_contents_active();
+    update.browser_session_id = input.browser_session_id();
+    update.restored_browser_session_id = input.restored_browser_session_id();
     *output = std::move(update);
     return true;
   }

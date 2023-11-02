@@ -1,241 +1,206 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
+<style include="settings-shared action-link iron-flex">
+  h2 {
+    padding-inline-start: var(--cr-section-padding);
+  }
 
-<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
-<link rel="import" href="chrome://resources/html/action_link.html">
-<link rel="import" href="chrome://resources/cr_elements/action_link_css.html">
-<link rel="import" href="chrome://resources/html/assert.html">
-<link rel="import" href="chrome://resources/html/cr.html">
-<link rel="import" href="chrome://resources/html/cr/ui/focus_without_ink.html">
-<link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_action_menu/cr_action_menu.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_link_row/cr_link_row.html">
-<link rel="import" href="change_device_language_dialog.html">
-<link rel="import" href="languages_metrics_proxy.html">
-<link rel="import" href="os_add_languages_dialog.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/localized_link/localized_link.html">
-<link rel="import" href="../../controls/settings_toggle_button.html">
-<link rel="import" href="../prefs_behavior.html">
-<link rel="import" href="../deep_linking_behavior.html">
-<link rel="import" href="../os_route.html">
-<link rel="import" href="../../i18n_setup.html">
-<link rel="import" href="../../router.html">
-<link rel="import" href="../route_observer_behavior.html">
-<link rel="import" href="../../settings_shared_css.html">
-<link rel="import" href="../metrics_recorder.html">
-<link rel="import" href="languages_types.html">
+  .subsection {
+    padding-inline-end: var(--cr-section-padding);
+    padding-inline-start: var(--cr-section-indent-padding);
+  }
 
-<dom-module id="os-settings-languages-page-v2">
-  <template>
-    <style include="settings-shared action-link iron-flex">
-      h2 {
-        padding-inline-start: var(--cr-section-padding);
-      }
+  .subsection > cr-link-row {
+    padding-inline-end: 0;
+    padding-inline-start: 0;
+  }
 
-      .subsection {
-        padding-inline-end: var(--cr-section-padding);
-        padding-inline-start: var(--cr-section-indent-padding);
-      }
+  cr-action-menu.complex .dropdown-item {
+    min-height: 36px;
+  }
 
-      .subsection > cr-link-row {
-        padding-inline-end: 0;
-        padding-inline-start: 0;
-      }
+  cr-action-menu.complex .dropdown-item:focus {
+    background-color: var(--cros-menu-item-bg-color-focus);
+  }
 
-      cr-action-menu.complex .dropdown-item {
-        min-height: 36px;
-      }
+  cr-policy-indicator {
+    margin-inline-end: 8px;
+  }
 
-      cr-action-menu.complex .dropdown-item:focus {
-        background-color: var(--cros-menu-item-bg-color-focus);
-      }
+  .bottom-margin {
+    margin-bottom: var(--cr-section-vertical-margin);
+  }
 
-      cr-policy-indicator {
-        margin-inline-end: 8px;
-      }
+  .list-item.non-translate-target .target-info {
+    display: none;
+  }
 
-      .bottom-margin {
-        margin-bottom: var(--cr-section-vertical-margin);
-      }
+  /* There can be more than 1 translate target in the language list.
+    * This hides the label for all except the first one, a way to do
+    * a :first-of-class selector.
+    */
+  .list-item.translate-target ~ .list-item.translate-target .target-info {
+    display: none;
+  }
 
-      .list-item.non-translate-target .target-info {
-        display: none;
-      }
+  #addLanguages {
+    --iron-icon-fill-color: var(--cr-link-color);
+    margin-top: 16px;
+  }
 
-      /* There can be more than 1 translate target in the language list.
-       * This hides the label for all except the first one, a way to do
-       * a :first-of-class selector.
-       */
-      .list-item.translate-target ~ .list-item.translate-target .target-info {
-        display: none;
-      }
+  #addLanguages[disabled] {
+    --iron-icon-fill-color: var(--cros-icon-color-disabled);
+  }
 
-      #addLanguages {
-        --iron-icon-fill-color: var(--cr-link-color);
-        margin-top: 16px;
-      }
+  #addLanguagesIcon {
+    margin-inline-end: 8px;
+  }
 
-      #addLanguages[disabled] {
-        --iron-icon-fill-color: var(--cros-icon-color-disabled);
-      }
+  cr-checkbox {
+    --cr-checkbox-label-padding-start: 8px;
+  }
+</style>
 
-      #addLanguagesIcon {
-        margin-inline-end: 8px;
-      }
-
-      cr-checkbox {
-        --cr-checkbox-label-padding-start: 8px;
-      }
-    </style>
-
-    <div route-path="default">
-      <div class="cr-row first">
-        <div class="flex cr-padded-text" aria-hidden="true">
-          $i18n{deviceLanguageTitle}
-          <div class="secondary">
-            [[getLanguageDisplayName_(languages.prospectiveUILanguage)]]
-          </div>
-        </div>
-        <template is="dom-if" if="[[isSecondaryUser_]]">
-          <cr-policy-indicator id="changeDeviceLanguagePolicyIndicator"
-              indicator-type="primary_user"
-              indicator-source-name="[[primaryUserEmail_]]">
-          </cr-policy-indicator>
-        </template>
-        <template is="dom-if" if="[[!isGuest_]]">
-          <cr-button id="changeDeviceLanguage"
-              on-click="onChangeDeviceLanguageClick_"
-              disabled="[[isSecondaryUser_]]"
-              aria-label="[[getChangeDeviceLanguageButtonDescription_(
-                languages.prospectiveUILanguage)]]"
-              deep-link-focus-id$="[[Setting.kChangeDeviceLanguage]]">
-            $i18n{changeDeviceLanguageLabel}
-          </cr-button>
-        </template>
-
+<div route-path="default">
+  <div class="cr-row first">
+    <div class="flex cr-padded-text" aria-hidden="true">
+      $i18n{deviceLanguageTitle}
+      <div class="secondary">
+        [[getLanguageDisplayName_(languages.prospectiveUILanguage)]]
       </div>
+    </div>
+    <template is="dom-if" if="[[isSecondaryUser_]]">
+      <cr-policy-indicator id="changeDeviceLanguagePolicyIndicator"
+          indicator-type="primary_user"
+          indicator-source-name="[[primaryUserEmail_]]">
+      </cr-policy-indicator>
+    </template>
+    <template is="dom-if" if="[[!isGuest_]]">
+      <cr-button id="changeDeviceLanguage"
+          on-click="onChangeDeviceLanguageClick_"
+          disabled="[[isSecondaryUser_]]"
+          aria-label="[[getChangeDeviceLanguageButtonDescription_(
+            languages.prospectiveUILanguage)]]"
+          deep-link-focus-id$="[[Setting.kChangeDeviceLanguage]]">
+        $i18n{changeDeviceLanguageLabel}
+      </cr-button>
+    </template>
 
-      <div class="hr bottom-margin">
-        <h2 aria-hidden="true">
-          [[getLanguagePreferenceTitle_(languageSettingsV2Update2Enabled_)]]
-        </h2>
-        <localized-link id="webLanguagesDescription"
-            class="cr-row first bottom-margin"
-            localized-string="[[getLanguagePreferenceDescription_(
-                languageSettingsV2Update2Enabled_)]]"
-            on-link-clicked="onLanguagePreferenceDescriptionLinkClick_">
-        </localized-link>
-        <div class="list-frame vertical-list" id="languagesList">
-          <template is="dom-repeat" items="[[languages.enabled]]">
-            <div class$="list-item [[getTranslationTargetClass_(
-                item.language.code, languages.translateTarget)]]">
-              <div class="flex" id="displayText-[[index]]"
-                  aria-hidden="true">
-                <div title="[[item.language.nativeDisplayName]]">
-                  [[item.language.displayName]]
-                </div>
-                <div class="target-info secondary">
-                  $i18n{translateTargetLabel}
-                </div>
-              </div>
-              <cr-icon-button class="icon-more-vert"
-                  title="$i18n{moreActions}" id="more-[[item.language.code]]"
-                  on-click="onDotsClick_"
-                  aria-labelledby$="displayText-[[index]]">
-              </cr-icon-button>
+  </div>
+
+  <div class="hr bottom-margin">
+    <h2 aria-hidden="true">
+      [[getLanguagePreferenceTitle_(languageSettingsV2Update2Enabled_)]]
+    </h2>
+    <localized-link id="webLanguagesDescription"
+        class="cr-row first bottom-margin"
+        localized-string="[[getLanguagePreferenceDescription_(
+            languageSettingsV2Update2Enabled_)]]"
+        on-link-clicked="onLanguagePreferenceDescriptionLinkClick_">
+    </localized-link>
+    <div class="list-frame vertical-list" id="languagesList">
+      <template is="dom-repeat" items="[[languages.enabled]]">
+        <div class$="list-item [[getTranslationTargetClass_(
+            item.language.code, languages.translateTarget)]]">
+          <div class="flex" id="displayText-[[index]]"
+              aria-hidden="true">
+            <div title="[[item.language.nativeDisplayName]]">
+              [[item.language.displayName]]
             </div>
-          </template>
-          <div class="list-item">
-            <cr-button id="addLanguages"
-                disabled="[[!canEnableSomeSupportedLanguage_(languages)]]"
-                on-click="onAddLanguagesClick_"
-                deep-link-focus-id$="[[Setting.kAddLanguage]]">
-              <iron-icon id="addLanguagesIcon" icon="cr:add"></iron-icon>
-              $i18n{addLanguages}
-            </cr-button>
+            <div class="target-info secondary">
+              $i18n{translateTargetLabel}
+            </div>
           </div>
-        </div>
-      </div>
-
-      <template is="dom-if" if="[[languageSettingsV2Update2Enabled_]]">
-        <div class="hr">
-          <h2 aria-hidden="true">$i18n{googleAccountLanguageTitle}</h2>
-          <div class="cr-row first">
-            $i18n{googleAccountLanguageDescription}
-          </div>
-          <div class="subsection cr-padded-text">
-            <cr-link-row id="manageGoogleAccountLanguage"
-                label="$i18n{manageGoogleAccountLanguageLabel}"
-                external on-click="openManageGoogleAccountLanguage_">
-            </cr-link-row>
-          </div>
+          <cr-icon-button class="icon-more-vert"
+              title="$i18n{moreActions}" id="more-[[item.language.code]]"
+              on-click="onDotsClick_"
+              aria-labelledby$="displayText-[[index]]">
+          </cr-icon-button>
         </div>
       </template>
-
-      <settings-toggle-button id="offerTranslation" class="hr"
-          pref="{{prefs.translate.enabled}}"
-          label="[[getOfferTranslationLabel_(
-              languageSettingsV2Update2Enabled_)]]"
-          sub-label="[[getOfferTranslationSublabel_(
-              languageSettingsV2Update2Enabled_)]]"
-          on-settings-boolean-control-change="onTranslateToggleChange_"
-          deep-link-focus-id$="[[Setting.kOfferTranslation]]">
-      </settings-toggle-button>
-
-      <cr-lazy-render id="menu">
-        <template>
-          <cr-action-menu class="complex"
-              role-description="$i18n{menu}">
-            <cr-checkbox id="offerTranslations"
-                class="dropdown-item"
-                checked="[[detailLanguage_.state.translateEnabled]]"
-                on-change="onTranslateCheckboxChange_"
-                hidden="[[!prefs.translate.enabled.value]]"
-                disabled="[[disableTranslateCheckbox_(
-                    detailLanguage_.state, languages.translateTarget)]]">
-              $i18n{offerToTranslateThisLanguage}
-            </cr-checkbox>
-            <button class="dropdown-item" role="menuitem"
-                on-click="onMoveToTopClick_"
-                hidden="[[showMoveToTop_(detailLanguage_)]]">
-              $i18n{moveToTop}
-            </button>
-            <button class="dropdown-item" role="menuitem"
-                on-click="onMoveUpClick_"
-                hidden="[[!showMoveUp_(detailLanguage_)]]">
-              $i18n{moveUp}
-            </button>
-            <button class="dropdown-item" role="menuitem"
-                on-click="onMoveDownClick_"
-                hidden="[[!showMoveDown_(detailLanguage_)]]">
-              $i18n{moveDown}
-            </button>
-            <button class="dropdown-item" role="menuitem"
-                on-click="onRemoveLanguageClick_"
-                disabled="[[!detailLanguage_.state.removable]]">
-              $i18n{removeLanguage}
-            </button>
-          </cr-action-menu>
-        </template>
-      </cr-lazy-render>
+      <div class="list-item">
+        <cr-button id="addLanguages"
+            disabled="[[!canEnableSomeSupportedLanguage_(languages)]]"
+            on-click="onAddLanguagesClick_"
+            deep-link-focus-id$="[[Setting.kAddLanguage]]">
+          <iron-icon id="addLanguagesIcon" icon="cr:add"></iron-icon>
+          $i18n{addLanguages}
+        </cr-button>
+      </div>
     </div>
+  </div>
 
-    <template is="dom-if" if="[[showChangeDeviceLanguageDialog_]]" restamp>
-      <os-settings-change-device-language-dialog languages="[[languages]]"
-          language-helper="[[languageHelper]]"
-          on-close="onChangeDeviceLanguageDialogClose_">
-      </os-settings-change-device-language-dialog>
-    </template>
-
-    <template is="dom-if" if="[[showAddLanguagesDialog_]]" restamp>
-      <os-settings-add-languages-dialog languages="{{languages}}"
-          language-helper="[[languageHelper]]"
-          on-close="onAddLanguagesDialogClose_">
-      </os-settings-add-languages-dialog>
-    </template>
+  <template is="dom-if" if="[[languageSettingsV2Update2Enabled_]]">
+    <div class="hr">
+      <h2 aria-hidden="true">$i18n{googleAccountLanguageTitle}</h2>
+      <div class="cr-row first">
+        $i18n{googleAccountLanguageDescription}
+      </div>
+      <div class="subsection cr-padded-text">
+        <cr-link-row id="manageGoogleAccountLanguage"
+            label="$i18n{manageGoogleAccountLanguageLabel}"
+            external on-click="openManageGoogleAccountLanguage_">
+        </cr-link-row>
+      </div>
+    </div>
   </template>
-  <script src="os_languages_page_v2.js"></script>
-</dom-module>
+
+  <settings-toggle-button id="offerTranslation" class="hr"
+      pref="{{prefs.translate.enabled}}"
+      label="[[getOfferTranslationLabel_(
+          languageSettingsV2Update2Enabled_)]]"
+      sub-label="[[getOfferTranslationSublabel_(
+          languageSettingsV2Update2Enabled_)]]"
+      on-settings-boolean-control-change="onTranslateToggleChange_"
+      deep-link-focus-id$="[[Setting.kOfferTranslation]]">
+  </settings-toggle-button>
+
+  <cr-lazy-render id="menu">
+    <template>
+      <cr-action-menu class="complex"
+          role-description="$i18n{menu}">
+        <cr-checkbox id="offerTranslations"
+            class="dropdown-item"
+            checked="[[detailLanguage_.state.translateEnabled]]"
+            on-change="onTranslateCheckboxChange_"
+            hidden="[[!prefs.translate.enabled.value]]"
+            disabled="[[disableTranslateCheckbox_(
+                detailLanguage_.state, languages.translateTarget)]]">
+          $i18n{offerToTranslateThisLanguage}
+        </cr-checkbox>
+        <button class="dropdown-item" role="menuitem"
+            on-click="onMoveToTopClick_"
+            hidden="[[showMoveToTop_(detailLanguage_)]]">
+          $i18n{moveToTop}
+        </button>
+        <button class="dropdown-item" role="menuitem"
+            on-click="onMoveUpClick_"
+            hidden="[[!showMoveUp_(detailLanguage_)]]">
+          $i18n{moveUp}
+        </button>
+        <button class="dropdown-item" role="menuitem"
+            on-click="onMoveDownClick_"
+            hidden="[[!showMoveDown_(detailLanguage_)]]">
+          $i18n{moveDown}
+        </button>
+        <button class="dropdown-item" role="menuitem"
+            on-click="onRemoveLanguageClick_"
+            disabled="[[!detailLanguage_.state.removable]]">
+          $i18n{removeLanguage}
+        </button>
+      </cr-action-menu>
+    </template>
+  </cr-lazy-render>
+</div>
+
+<template is="dom-if" if="[[showChangeDeviceLanguageDialog_]]" restamp>
+  <os-settings-change-device-language-dialog languages="[[languages]]"
+      language-helper="[[languageHelper]]"
+      on-close="onChangeDeviceLanguageDialogClose_">
+  </os-settings-change-device-language-dialog>
+</template>
+
+<template is="dom-if" if="[[showAddLanguagesDialog_]]" restamp>
+  <os-settings-add-languages-dialog languages="{{languages}}"
+      language-helper="[[languageHelper]]"
+      on-close="onAddLanguagesDialogClose_">
+  </os-settings-add-languages-dialog>
+</template>

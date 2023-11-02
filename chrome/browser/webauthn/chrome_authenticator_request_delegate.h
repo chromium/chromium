@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
@@ -43,37 +44,51 @@ class FidoDiscoveryFactory;
 class ChromeWebAuthenticationDelegate
     : public content::WebAuthenticationDelegate {
  public:
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Returns a configuration struct for instantiating the macOS WebAuthn
   // platform authenticator for the given Profile.
   static TouchIdAuthenticatorConfig TouchIdAuthenticatorConfigForProfile(
       Profile* profile);
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
   ~ChromeWebAuthenticationDelegate() override;
 
+#if !BUILDFLAG(IS_ANDROID)
   // content::WebAuthenticationDelegate:
+  bool OverrideCallerOriginAndRelyingPartyIdValidation(
+      content::BrowserContext* browser_context,
+      const url::Origin& caller_origin,
+      const std::string& relying_party_id) override;
+  bool OriginMayUseRemoteDesktopClientOverride(
+      content::BrowserContext* browser_context,
+      const url::Origin& caller_origin) override;
   absl::optional<std::string> MaybeGetRelyingPartyIdOverride(
       const std::string& claimed_relying_party_id,
       const url::Origin& caller_origin) override;
   bool ShouldPermitIndividualAttestation(
       content::BrowserContext* browser_context,
+      const url::Origin& caller_origin,
       const std::string& relying_party_id) override;
   bool SupportsResidentKeys(
       content::RenderFrameHost* render_frame_host) override;
   bool IsFocused(content::WebContents* web_contents) override;
-#if defined(OS_MAC)
-  absl::optional<TouchIdAuthenticatorConfig> GetTouchIdAuthenticatorConfig(
-      content::BrowserContext* browser_context) override;
-#endif  // defined(OS_MAC)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  ChromeOSGenerateRequestIdCallback GetGenerateRequestIdCallback(
-      content::RenderFrameHost* render_frame_host) override;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   absl::optional<bool> IsUserVerifyingPlatformAuthenticatorAvailableOverride(
       content::RenderFrameHost* render_frame_host) override;
   content::WebAuthenticationRequestProxy* MaybeGetRequestProxy(
       content::BrowserContext* browser_context) override;
+#endif
+#if BUILDFLAG(IS_WIN)
+  void OperationSucceeded(content::BrowserContext* browser_context,
+                          bool used_win_api) override;
+#endif
+#if BUILDFLAG(IS_MAC)
+  absl::optional<TouchIdAuthenticatorConfig> GetTouchIdAuthenticatorConfig(
+      content::BrowserContext* browser_context) override;
+#endif  // BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_CHROMEOS)
+  ChromeOSGenerateRequestIdCallback GetGenerateRequestIdCallback(
+      content::RenderFrameHost* render_frame_host) override;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
 class ChromeAuthenticatorRequestDelegate
@@ -95,6 +110,18 @@ class ChromeAuthenticatorRequestDelegate
         device::FidoRequestHandlerBase::TransportAvailabilityInfo* tai) = 0;
 
     virtual void UIShown(ChromeAuthenticatorRequestDelegate* delegate) = 0;
+
+    virtual void CableV2ExtensionSeen(
+        base::span<const uint8_t> server_link_data,
+        base::span<const uint8_t> experiments,
+        AuthenticatorRequestDialogModel::ExperimentServerLinkSheet,
+        AuthenticatorRequestDialogModel::ExperimentServerLinkTitle) = 0;
+
+    virtual void ConfiguringCable(device::CableRequestType request_type) {}
+
+    virtual void AccountSelectorShown(
+        const std::vector<device::AuthenticatorGetAssertionResponse>&
+            responses) {}
   };
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
@@ -118,7 +145,7 @@ class ChromeAuthenticatorRequestDelegate
   base::WeakPtr<ChromeAuthenticatorRequestDelegate> AsWeakPtr();
 
   AuthenticatorRequestDialogModel* dialog_model() const {
-    return weak_dialog_model_;
+    return dialog_model_.get();
   }
 
   // content::AuthenticatorRequestClientDelegate:
@@ -127,6 +154,7 @@ class ChromeAuthenticatorRequestDelegate
   void RegisterActionCallbacks(
       base::OnceClosure cancel_callback,
       base::RepeatingClosure start_over_callback,
+      AccountPreselectedCallback account_preselected_callback,
       device::FidoRequestHandlerBase::RequestCallback request_callback,
       base::RepeatingClosure bluetooth_adapter_power_on_callback) override;
   void ShouldReturnAttestation(
@@ -136,7 +164,7 @@ class ChromeAuthenticatorRequestDelegate
       base::OnceCallback<void(bool)> callback) override;
   void ConfigureCable(
       const url::Origin& origin,
-      device::FidoRequestType request_type,
+      device::CableRequestType request_type,
       base::span<const device::CableDiscoveryData> pairings_from_extension,
       device::FidoDiscoveryFactory* discovery_factory) override;
   void SelectAccount(
@@ -146,6 +174,8 @@ class ChromeAuthenticatorRequestDelegate
   void DisableUI() override;
   bool IsWebAuthnUIEnabled() override;
   void SetConditionalRequest(bool is_conditional) override;
+  void SetUserEntityForMakeCredentialRequest(
+      const device::PublicKeyCredentialUserEntity& user_entity) override;
 
   // device::FidoRequestHandlerBase::Observer:
   void OnTransportAvailabilityEnumerated(
@@ -169,8 +199,19 @@ class ChromeAuthenticatorRequestDelegate
   void OnStartOver() override;
   void OnModelDestroyed(AuthenticatorRequestDialogModel* model) override;
   void OnCancelRequest() override;
+  void OnManageDevicesClicked() override;
 
- private:
+  // A non-const version of dialog_model().
+  raw_ptr<AuthenticatorRequestDialogModel> GetDialogModelForTesting();
+
+  // SetPassEmptyUsbDeviceManagerForTesting controls whether the
+  // `DiscoveryFactory` will be given an empty USB device manager. This is
+  // needed in tests because creating a real `device::mojom::UsbDeviceManager`
+  // can create objects on thread-pool threads. Those objects aren't scheduled
+  // for deletion until after the thread-pool is shutdown when testing, causing
+  // "leaks" to be reported.
+  void SetPassEmptyUsbDeviceManagerForTesting(bool value);
+
   FRIEND_TEST_ALL_PREFIXES(ChromeAuthenticatorRequestDelegateTest,
                            TestTransportPrefType);
   FRIEND_TEST_ALL_PREFIXES(ChromeAuthenticatorRequestDelegateTest,
@@ -189,23 +230,13 @@ class ChromeAuthenticatorRequestDelegate
   // information that will be broadcast by the device.
   bool ShouldPermitCableExtension(const url::Origin& origin);
 
-  // GetCablePairings returns any known caBLE pairing data.
-  virtual std::vector<std::unique_ptr<device::cablev2::Pairing>>
-  GetCablePairings();
-
-  void HandleCablePairingEvent(device::cablev2::PairingEvent pairing);
+  void OnInvalidatedCablePairing(size_t failed_contact_index);
 
   const content::GlobalRenderFrameHostId render_frame_host_id_;
-  // Holds ownership of AuthenticatorRequestDialogModel until
-  // OnTransportAvailabilityEnumerated() is invoked, at which point the
-  // ownership of the model is transferred to AuthenticatorRequestDialogView and
-  // |this| instead holds weak pointer of the model via above
-  // |weak_dialog_model_|.
-  std::unique_ptr<AuthenticatorRequestDialogModel>
-      transient_dialog_model_holder_;
-  AuthenticatorRequestDialogModel* weak_dialog_model_ = nullptr;
+  const std::unique_ptr<AuthenticatorRequestDialogModel> dialog_model_;
   base::OnceClosure cancel_callback_;
   base::RepeatingClosure start_over_callback_;
+  AccountPreselectedCallback account_preselected_callback_;
   device::FidoRequestHandlerBase::RequestCallback request_callback_;
 
   // The next two fields are the same length and contain the names and public
@@ -222,6 +253,10 @@ class ChromeAuthenticatorRequestDelegate
   // credentials on the device.
   bool is_conditional_ = false;
 
+  // See `SetPassEmptyUsbDeviceManagerForTesting`.
+  bool pass_empty_usb_device_manager_ = false;
+
+ private:
   base::WeakPtrFactory<ChromeAuthenticatorRequestDelegate> weak_ptr_factory_{
       this};
 };

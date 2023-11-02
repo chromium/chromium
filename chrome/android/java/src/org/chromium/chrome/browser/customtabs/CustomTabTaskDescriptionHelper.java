@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,6 @@ import android.text.TextUtils;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
@@ -94,8 +93,7 @@ public class CustomTabTaskDescriptionHelper implements NativeInitObserver, Destr
         boolean canUpdate = (webappExtras != null || usesSeparateTask());
         if (!canUpdate) return;
 
-        mDefaultThemeColor = ApiCompatibilityUtils.getColor(
-                mActivity.getResources(), R.color.default_primary_color);
+        mDefaultThemeColor = mActivity.getColor(R.color.default_primary_color);
         if (webappExtras != null) {
             if (mIntentDataProvider.getColorProvider().hasCustomToolbarColor()) {
                 mDefaultThemeColor = mIntentDataProvider.getColorProvider().getToolbarColor();
@@ -132,12 +130,17 @@ public class CustomTabTaskDescriptionHelper implements NativeInitObserver, Destr
             }
 
             @Override
-            public void onDidFinishNavigation(Tab tab, NavigationHandle navigation) {
-                if (navigation.hasCommitted() && navigation.isInPrimaryMainFrame()
-                        && !navigation.isSameDocument()) {
+            public void onDidFinishNavigationInPrimaryMainFrame(
+                    Tab tab, NavigationHandle navigation) {
+                if (navigation.hasCommitted() && !navigation.isSameDocument()) {
                     mLargestFavicon = null;
                     updateTaskDescription();
                 }
+            }
+
+            @Override
+            public void onDidFinishNavigationNoop(Tab tab, NavigationHandle navigation) {
+                if (!navigation.isInPrimaryMainFrame()) return;
             }
 
             @Override
@@ -172,7 +175,7 @@ public class CustomTabTaskDescriptionHelper implements NativeInitObserver, Destr
                 }
 
                 @Override
-                public void onFaviconUpdated(Tab tab, Bitmap icon) {
+                public void onFaviconUpdated(Tab tab, Bitmap icon, GURL iconUrl) {
                     if (icon == null) return;
                     updateFavicon(icon);
                 }

@@ -1,9 +1,9 @@
 This is a testharness.js-based test.
-FAIL Can set 'font-palette' to CSS-wide keywords Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-palette
-FAIL Can set 'font-palette' to var() references Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-palette
-FAIL Can set 'font-palette' to the 'normal' keyword Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-palette
-FAIL Can set 'font-palette' to the 'light' keyword Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-palette
-FAIL Can set 'font-palette' to the 'dark' keyword Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-palette
+PASS Can set 'font-palette' to CSS-wide keywords
+PASS Can set 'font-palette' to var() references
+PASS Can set 'font-palette' to the 'normal' keyword
+PASS Can set 'font-palette' to the 'light' keyword
+PASS Can set 'font-palette' to the 'dark' keyword
 PASS Setting 'font-palette' to a length throws TypeError
 PASS Setting 'font-palette' to a percent throws TypeError
 PASS Setting 'font-palette' to a time throws TypeError
@@ -13,6 +13,6 @@ PASS Setting 'font-palette' to a number throws TypeError
 PASS Setting 'font-palette' to a position throws TypeError
 PASS Setting 'font-palette' to a URL throws TypeError
 PASS Setting 'font-palette' to a transform throws TypeError
-FAIL 'font-palette' does not supported 'Augusta' Failed to execute 'get' on 'StylePropertyMapReadOnly': Invalid propertyName: font-palette
+FAIL 'font-palette' does not supported 'Augusta' assert_not_equals: Unsupported value must not be null got disallowed value null
 Harness: the test ran to completion.
 

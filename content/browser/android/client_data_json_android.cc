@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -73,9 +73,14 @@ JNI_ClientDataJsonImpl_BuildClientDataJson(
       jtop_origin ? base::android::ConvertJavaStringToUTF8(env, jtop_origin)
                   : "";
 
+  ClientDataJsonParams client_data_json_params(
+      /*type=*/type, /*origin=*/url::Origin::Create(GURL(caller_origin)),
+      /*challenge=*/challenge, /*is_cross_origin_iframe=*/is_cross_origin);
+  client_data_json_params.payment_options = std::move(options);
+  client_data_json_params.payment_rp = relying_party_id;
+  client_data_json_params.payment_top_origin = top_origin;
   std::string client_data_json =
-      BuildClientDataJson(type, caller_origin, challenge, is_cross_origin,
-                          std::move(options), relying_party_id, top_origin);
+      BuildClientDataJson(std::move(client_data_json_params));
   return base::android::ConvertUTF8ToJavaString(env, client_data_json);
 }
 

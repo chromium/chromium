@@ -1,37 +1,34 @@
-<style>
+<style include="common">  
   .after-screen-content {
-    display: flex;
-    flex-direction: column;
-  }
-
-  span {
-    color: var(--cr-primary-text-color);
-    padding-top: 16px;
-  }
-
-  .title {
-    font-family: 'Google Sans', Roboto, sans-serif;
-    font-size: 22px;
+    color: var(--cros-color-primary);
   }
 
   .subtitle {
-    color: var(--cr-secondary-text-color);
-    font-size: 14px;
+    font-size: 24px;
+    font-weight: 500;
+    margin-top: 32px;
   }
 
   .details {
-    font-size: 13px;
+    align-items: center;
+    display: flex;
+    font-size: 14px;
+    margin-top: 26px;
+  }
+
+  .favicon {
+    height: 28px;
+    margin: 0 16px;
+    width: 28px;
   }
 </style>
 
 <div class="after-screen-content">
-  <span class="title">$i18n{localWebApprovalsAfterTitle}</span>
   <!-- TODO(b/199753545): Replace the hardcoded content when it's
     available. -->
-  <span class="subtitle">
-    [[i18n('localWebApprovalsAfterSubtitle', 'Child')]]
-  </span>
-  <span class="details">
-    [[i18n('localWebApprovalsAfterDetails', 'google.com')]]
-  </span>
+  <div class="subtitle"></div>
+  <div class="details">
+    <image class="favicon"></image>
+    <div class="details-text"></div>
+  </div>
 </div>

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "components/gcm_driver/gcm_client.h"
@@ -19,8 +18,8 @@
 #include "components/gcm_driver/gcm_profile_service.h"
 #include "components/grit/dev_ui_components_resources.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/chrome_url_constants.h"
 #include "ios/chrome/browser/gcm/ios_chrome_gcm_profile_service_factory.h"
+#include "ios/chrome/browser/url/chrome_url_constants.h"
 #include "ios/web/public/webui/web_ui_ios.h"
 #include "ios/web/public/webui/web_ui_ios_data_source.h"
 #include "ios/web/public/webui/web_ui_ios_message_handler.h"
@@ -43,16 +42,16 @@ class GcmInternalsUIMessageHandler : public web::WebUIIOSMessageHandler {
 
  private:
   // Return all of the GCM related infos to the gcm-internals page by calling
-  // Javascript callback function |gcm-internals.returnInfo()|.
+  // Javascript callback function `gcm-internals.returnInfo()`.
   void ReturnResults(PrefService* prefs,
                      gcm::GCMProfileService* profile_service,
                      const gcm::GCMClient::GCMStatistics* stats) const;
 
   // Request all of the GCM related infos through gcm profile service.
-  void RequestAllInfo(const base::ListValue* args);
+  void RequestAllInfo(const base::Value::List& args);
 
   // Enables/disables GCM activity recording through gcm profile service.
-  void SetRecording(const base::ListValue* args);
+  void SetRecording(const base::Value::List& args);
 
   // Callback function of the request for all gcm related infos.
   void RequestGCMStatisticsFinished(
@@ -71,21 +70,21 @@ void GcmInternalsUIMessageHandler::ReturnResults(
     PrefService* prefs,
     gcm::GCMProfileService* profile_service,
     const gcm::GCMClient::GCMStatistics* stats) const {
-  base::DictionaryValue results;
-  gcm_driver::SetGCMInternalsInfo(stats, profile_service, prefs, &results);
+  base::Value::Dict results =
+      gcm_driver::SetGCMInternalsInfo(stats, profile_service, prefs);
 
   base::Value event_name(gcm_driver::kSetGcmInternalsInfo);
-  std::vector<const base::Value*> args{&event_name, &results};
+  base::ValueView args[] = {event_name, results};
   web_ui()->CallJavascriptFunction("cr.webUIListenerCallback", args);
 }
 
-void GcmInternalsUIMessageHandler::RequestAllInfo(const base::ListValue* args) {
-  auto args_list = args->GetList();
-  if (args_list.size() != 1 || !args_list[0].is_bool()) {
+void GcmInternalsUIMessageHandler::RequestAllInfo(
+    const base::Value::List& args) {
+  if (args.size() != 1 || !args[0].is_bool()) {
     NOTREACHED();
     return;
   }
-  bool clear_logs = args_list[0].GetBool();
+  bool clear_logs = args[0].GetBool();
 
   gcm::GCMDriver::ClearActivityLogs clear_activity_logs =
       clear_logs ? gcm::GCMDriver::CLEAR_LOGS : gcm::GCMDriver::KEEP_LOGS;
@@ -106,13 +105,12 @@ void GcmInternalsUIMessageHandler::RequestAllInfo(const base::ListValue* args) {
   }
 }
 
-void GcmInternalsUIMessageHandler::SetRecording(const base::ListValue* args) {
-  auto args_list = args->GetList();
-  if (args_list.size() != 1 || !args_list[0].is_bool()) {
+void GcmInternalsUIMessageHandler::SetRecording(const base::Value::List& args) {
+  if (args.size() != 1 || !args[0].is_bool()) {
     NOTREACHED();
     return;
   }
-  bool recording = args_list[0].GetBool();
+  bool recording = args[0].GetBool();
 
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromWebUIIOS(web_ui());
@@ -144,11 +142,11 @@ void GcmInternalsUIMessageHandler::RequestGCMStatisticsFinished(
 }
 
 void GcmInternalsUIMessageHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       gcm_driver::kGetGcmInternalsInfo,
       base::BindRepeating(&GcmInternalsUIMessageHandler::RequestAllInfo,
                           weak_ptr_factory_.GetWeakPtr()));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       gcm_driver::kSetGcmInternalsRecording,
       base::BindRepeating(&GcmInternalsUIMessageHandler::SetRecording,
                           weak_ptr_factory_.GetWeakPtr()));

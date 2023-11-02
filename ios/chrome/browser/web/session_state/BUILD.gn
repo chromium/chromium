@@ -1,4 +1,4 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -20,12 +20,11 @@ source_set("session_state") {
     "//build:branding_buildflags",
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
-    "//components/strings:components_strings_grit",
-    "//ios/chrome/browser:chrome_url_constants",
+    "//components/strings",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/url:constants",
     "//ios/chrome/browser/web:feature_flags",
-    "//ios/chrome/browser/web:tab_id_tab_helper",
     "//ios/chrome/browser/web_state_list",
     "//ios/public/provider/chrome/browser",
     "//ios/web/common:features",
@@ -50,11 +49,10 @@ source_set("unit_tests") {
   deps = [
     ":session_state",
     "//base/test:test_support",
-    "//ios/chrome/browser:chrome_url_constants",
     "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/url:constants",
     "//ios/chrome/browser/web",
     "//ios/chrome/browser/web:feature_flags",
-    "//ios/chrome/browser/web:test_support",
     "//ios/chrome/browser/web:web_internal",
     "//ios/web/common:features",
     "//ios/web/navigation:wk_navigation_util",

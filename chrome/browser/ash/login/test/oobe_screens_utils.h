@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include "base/run_loop.h"
 #include "chrome/browser/ash/login/screens/welcome_screen.h"
+#include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 
 namespace ash {
 namespace test {
@@ -33,6 +34,10 @@ void WaitForEulaScreen();
 void TapEulaAccept();
 void WaitForSyncConsentScreen();
 void ExitScreenSyncConsent();
+void WaitForConsolidatedConsentScreen();
+void TapConsolidatedConsentAccept();
+void WaitForGuestTosScreen();
+void TapGuestTosAccept();
 
 void ClickSignInFatalScreenActionButton();
 
@@ -55,6 +60,31 @@ class LanguageReloadObserver : public WelcomeScreen::Observer {
   WelcomeScreen* const welcome_screen_;
   base::RunLoop run_loop_;
 };
+
+class OobeUiDestroyedWaiter : public OobeUI::Observer {
+ public:
+  explicit OobeUiDestroyedWaiter(OobeUI*);
+  OobeUiDestroyedWaiter(const OobeUiDestroyedWaiter&) = delete;
+  ~OobeUiDestroyedWaiter() override;
+
+  void Wait();
+
+ private:
+  // OobeUI::Observer
+  void OnDestroyingOobeUI() override;
+  void OnCurrentScreenChanged(OobeScreenId current_screen,
+                              OobeScreenId new_screen) override {}
+
+  bool was_destroyed_ = false;
+  base::ScopedObservation<OobeUI, OobeUI::Observer> oobe_ui_observation_{this};
+  std::unique_ptr<base::RunLoop> run_loop_;
+};
+
+// Use this method when clicking/tapping on something that leads to the
+// destruction of the OobeUI. Currently used when clicking on things that
+// trigger a device restart/reset.
+void TapOnPathAndWaitForOobeToBeDestroyed(
+    std::initializer_list<base::StringPiece> element_ids);
 
 }  // namespace test
 }  // namespace ash

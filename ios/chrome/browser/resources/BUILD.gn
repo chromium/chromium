@@ -1,0 +1,43 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/apple/tweak_info_plist.gni")
+import("//ios/chrome/features.gni")
+
+tweak_info_plist("experimental_info_plist") {
+  info_plists = [ "Settings.bundle/Experimental.plist" ]
+  if (ios_enable_metrickit) {
+    info_plists += [ "Settings.bundle/ExperimentalMetricKit.plist" ]
+  }
+  if (ios_enable_sandbox_dump) {
+    info_plists += [ "Settings.bundle/ExperimentalSandboxDump.plist" ]
+  }
+  info_plists += [ "Settings.bundle/ExperimentalFlags.plist" ]
+}
+
+bundle_data("settings_experimental_feed_refresh_plist") {
+  sources = [ "Settings.bundle/ExperimentalFeedRefresh.plist" ]
+  outputs = [ "{{bundle_resources_dir}}/Settings.bundle/{{source_file_part}}" ]
+}
+
+bundle_data("settings_experimental_synctypeslist_plist") {
+  sources = [ "Settings.bundle/ExperimentalSyncTypesListDisabled.plist" ]
+  outputs = [ "{{bundle_resources_dir}}/Settings.bundle/{{source_file_part}}" ]
+}
+
+bundle_data("settings_resources_experimental_plist") {
+  public_deps = [
+    ":experimental_info_plist",
+    ":settings_experimental_feed_refresh_plist",
+    ":settings_experimental_synctypeslist_plist",
+  ]
+  sources = get_target_outputs(":experimental_info_plist")
+  outputs = [ "{{bundle_resources_dir}}/Settings.bundle/Experimental.plist" ]
+}
+
+bundle_data("settings_resources") {
+  public_deps = [ ":settings_resources_experimental_plist" ]
+  sources = [ "Settings.bundle/Root.plist" ]
+  outputs = [ "{{bundle_resources_dir}}/Settings.bundle/{{source_file_part}}" ]
+}

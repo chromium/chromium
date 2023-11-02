@@ -1,48 +1,84 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
 grd_file = "$target_gen_dir/resources.grd"
 
-preprocess_if_expr("preprocess") {
+preprocess_if_expr("preprocess_css") {
   in_folder = "./"
   out_folder = "$target_gen_dir/preprocess"
-  out_manifest = "$target_gen_dir/manifest.json"
+  out_manifest = "$target_gen_dir/css_manifest.json"
   in_files = [
-    "sync_index.js",
     "sync_node_browser.css",
     "sync_search.css",
   ]
 }
 
+preprocessed_files = [ "sync_index.ts" ]
+non_preprocessed_files = [
+  "about.ts",
+  "chrome_sync.ts",
+  "data.ts",
+  "invalidations.ts",
+  "search.ts",
+  "sync_log.ts",
+  "sync_node_browser.ts",
+  "sync_search.ts",
+  "traffic_log.ts",
+  "user_events.ts",
+]
+
+preprocess_if_expr("preprocess") {
+  in_folder = "./"
+  out_folder = "$target_gen_dir/preprocess"
+  in_files = preprocessed_files
+}
+
+copy("copy_files") {
+  sources = non_preprocessed_files
+  outputs = [ "$target_gen_dir/preprocess/{{source_file_part}}" ]
+}
+
+ts_library("build_ts") {
+  root_dir = "$target_gen_dir/preprocess"
+  in_files = non_preprocessed_files + preprocessed_files
+  out_dir = "$target_gen_dir/tsc"
+  tsconfig_base = "tsconfig_base.json"
+  definitions = [
+    "//tools/typescript/definitions/chrome_send.d.ts",
+    "//tools/typescript/definitions/pending.d.ts",
+    "jstemplate.d.ts",
+  ]
+  deps = [ "//ui/webui/resources:library" ]
+  extra_deps = [
+    ":copy_files",
+    ":preprocess",
+  ]
+}
+
 generate_grd("build_grd") {
-  deps = [ ":preprocess" ]
+  deps = [
+    ":build_ts",
+    ":preprocess_css",
+  ]
   grd_prefix = "sync_driver_sync_internals"
   out_grd = grd_file
   input_files = [
     "about.css",
-    "about.js",
-    "chrome_sync.js",
-    "data.js",
     "index.html",
     "invalidations.css",
-    "invalidations.js",
-    "search.js",
     "star_small.png",
-    "sync_log.js",
-    "sync_node_browser.js",
-    "sync_search.js",
     "traffic_log.css",
-    "traffic_log.js",
-    "user_events.js",
   ]
   input_files_base_dir = rebase_path("./", "//")
-  manifest_files = [ "$target_gen_dir/manifest.json" ]
+  manifest_files =
+      [ "$target_gen_dir/css_manifest.json" ] +
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
 }
 
 grit("resources") {
@@ -59,95 +95,4 @@ grit("resources") {
   ]
   output_dir = "$root_gen_dir/components"
   deps = [ ":build_grd" ]
-}
-
-js_type_check("closure_compile") {
-  deps = [
-    #TODO(crbug.com/986001): Fix compilation errors and enable all targets.
-
-    #":about",
-    ":chrome_sync",
-
-    #":data",
-    ":search",
-    ":sync_index",
-    ":sync_log",
-
-    #":sync_node_browser",
-    #":sync_search",
-    ":invalidations",
-    ":traffic_log",
-    ":user_events",
-  ]
-}
-
-js_library("about") {
-  deps = [
-    "//third_party/jstemplate:jstemplate",
-    "//ui/webui/resources/js:util.m",
-  ]
-}
-
-js_library("chrome_sync") {
-  deps = [
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:util.m",
-  ]
-}
-
-js_library("data") {
-}
-
-js_library("search") {
-  deps = [
-    "//ui/webui/resources/js:util.m",
-    "//ui/webui/resources/js/cr/ui:splitter",
-  ]
-}
-
-js_library("sync_index") {
-  deps = [
-    "//ui/webui/resources/js:util.m",
-    "//ui/webui/resources/js/cr/ui:tabs",
-  ]
-}
-
-js_library("sync_log") {
-  deps = [
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js/cr:event_target.m",
-  ]
-}
-
-js_library("sync_node_browser") {
-  deps = [
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js/cr/ui:tree",
-  ]
-}
-
-js_library("sync_search") {
-  deps = [
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js/cr/ui:array_data_model.m",
-    "//ui/webui/resources/js/cr/ui:list.m",
-  ]
-}
-
-js_library("traffic_log") {
-  deps = [
-    "//third_party/jstemplate:jstemplate",
-    "//ui/webui/resources/js:cr.m",
-  ]
-}
-
-js_library("user_events") {
-  deps = [
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:util.m",
-  ]
-}
-
-js_library("invalidations") {
-  deps = [ "//ui/webui/resources/js:cr.m" ]
 }

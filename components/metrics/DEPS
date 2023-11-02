@@ -4,6 +4,7 @@ include_rules = [
   "-components",
   "+components/browser_watcher",
   "+components/component_updater",
+  "+components/flags_ui",
   "+components/metrics",
   "+components/network_time",
   "+components/prefs",
@@ -18,7 +19,7 @@ include_rules = [
   "+third_party/metrics_proto",
   "+third_party/zlib/google",
   "-net",
-  "+url"
+  "+url",
 ]
 
 specific_include_rules = {

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,6 @@
 #define COMPONENTS_AUTOFILL_IOS_BROWSER_AUTOFILL_JAVA_SCRIPT_FEATURE_H_
 
 #import <Foundation/Foundation.h>
-
-#include <memory>
 
 #include "base/callback.h"
 #include "base/no_destructor.h"
@@ -32,53 +30,48 @@ class AutofillJavaScriptFeature : public web::JavaScriptFeature {
   // Adds a delay between filling the form fields in frame.
   void AddJSDelayInFrame(web::WebFrame* frame);
 
-  // Extracts forms from a web |frame|. Only forms with at least
-  // |requiredFieldsCount| fields are extracted. |callback| is called with the
-  // JSON string of forms of a web page. |callback| cannot be null.
+  // Extracts forms from a web `frame`. Only forms with at least
+  // `required_fields_count` fields are extracted. `callback` is called
+  // with the JSON string of forms of a web page.  `callback` cannot be nil.
   void FetchForms(web::WebFrame* frame,
-                  NSUInteger requiredFieldsCount,
+                  NSUInteger required_fields_count,
                   base::OnceCallback<void(NSString*)> callback);
 
-  // Fills the data in JSON string |dataString| into the active form field in
-  // |frame|, then executes the |completionHandler|.
+  // Fills `data` into the active form field in `frame`, then executes the
+  // `callback`. `callback` cannot be nil.
   void FillActiveFormField(web::WebFrame* frame,
-                           std::unique_ptr<base::DictionaryValue> data,
+                           base::Value::Dict data,
                            base::OnceCallback<void(BOOL)> callback);
 
   // Fills a number of fields in the same named form for full-form Autofill.
   // Applies Autofill CSS (i.e. yellow background) to filled elements.
   // Only empty fields will be filled, except that field named
-  // Field identified by |forceFillFieldIdentifier|/|forceFillFieldUniqueID|
-  // will always be filled even if non-empty. |forceFillFieldIdentifier| may be
-  // null. Fields must be contained in |frame|. |completionHandler| is called
-  // after the forms are filled with the JSON string containing pairs of unique
-  // renderer ids of filled fields and corresponding filled values.
-  // |completionHandler| cannot be nil.
+  // Field identified by `force_fill_field_id` will always be filled even if
+  // non-empty. `force_fill_field_id` may be null. Fields must be contained in
+  // `frame`. `callback` is called after the forms are filled with `data`
+  // which must contain pairs of unique renderer ids of filled fields and
+  // corresponding filled values. `callback` cannot be nil.
   void FillForm(web::WebFrame* frame,
-                std::unique_ptr<base::Value> data,
-                NSString* forceFillFieldIdentifier,
-                autofill::FieldRendererId forceFillFieldUniqueID,
+                base::Value::Dict data,
+                autofill::FieldRendererId force_fill_field_id,
                 base::OnceCallback<void(NSString*)> callback);
 
   // Clear autofilled fields of the specified form and frame. Fields that are
   // not currently autofilled are not modified. Field contents are cleared, and
   // Autofill flag and styling are removed. 'change' events are sent for fields
   // whose contents changed.
-  // |fieldIdentifier|/|fieldUniqueID| identify the field that initiated the
-  // clear action. |completionHandler| is called after the forms are filled with
-  // the JSON string containing a list of unique renderer ids of cleared fields.
-  // |completionHandler| cannot be nil.
-  void ClearAutofilledFieldsForFormName(
+  // `form_renderer_id` and `field_renderer_id` identify the field that
+  // initiated the clear action. `callback is called after the forms are filled
+  // with the JSON string containing a list of unique renderer ids of cleared
+  // fields. `callback` cannot be nil.
+  void ClearAutofilledFieldsForForm(
       web::WebFrame* frame,
-      NSString* formName,
-      autofill::FormRendererId formRendererID,
-      NSString* fieldIdentifier,
-      autofill::FieldRendererId fieldRendererID,
+      autofill::FormRendererId form_renderer_id,
+      autofill::FieldRendererId field_renderer_id,
       base::OnceCallback<void(NSString*)> callback);
 
   // Marks up the form with autofill field prediction data (diagnostic tool).
-  void FillPredictionData(web::WebFrame* frame,
-                          std::unique_ptr<base::Value> data);
+  void FillPredictionData(web::WebFrame* frame, base::Value::Dict data);
 
  private:
   friend class base::NoDestructor<AutofillJavaScriptFeature>;

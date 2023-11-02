@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -48,14 +48,6 @@ class FragmentDirective : public ScriptWrappable {
   KURL ConsumeFragmentDirective(const KURL& url);
   bool LastNavigationHadFragmentDirective() const {
     return last_navigation_had_fragment_directive_;
-  }
-
-  // Returns the length of the unparsed fragment directive string.
-  // TODO(bokan): This is used only for metrics. It's not clear how useful they
-  // still are. We should either remove the metrics and this method or move
-  // this method to where the FragmentDirective is read and stripped.
-  wtf_size_t LengthForMetrics() const {
-    return fragment_directive_string_length_;
   }
 
   void Trace(Visitor*) const override;

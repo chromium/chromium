@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,8 +20,8 @@ namespace web {
 // Serves a page which requires Basic HTTP Authentication.
 class HttpAuthResponseProvider : public HtmlResponseProvider {
  public:
-  // Constructs provider which will respond to the given |url| and will use the
-  // given authenticaion |realm|. |username| and |password| are credentials
+  // Constructs provider which will respond to the given `url` and will use the
+  // given authenticaion `realm`. `username` and `password` are credentials
   // required for successful authentication. Use different realms and
   // username/password combination for different tests to prevent credentials
   // caching.

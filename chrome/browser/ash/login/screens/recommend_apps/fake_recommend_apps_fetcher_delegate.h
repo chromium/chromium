@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,7 +40,7 @@ class FakeRecommendAppsFetcherDelegate : public RecommendAppsFetcherDelegate {
   }
 
   // RecommendAppsFetcherDelegate:
-  void OnLoadSuccess(const base::Value& app_list) override;
+  void OnLoadSuccess(base::Value app_list) override;
   void OnLoadError() override;
   void OnParseResponseError() override;
 

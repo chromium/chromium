@@ -1,14 +1,15 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {fakeRsuChallengeQrCode} from 'chrome://shimless-rma/fake_data.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
 import {OnboardingEnterRsuWpDisableCodePage} from 'chrome://shimless-rma/onboarding_enter_rsu_wp_disable_code_page.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks} from '../../test_util.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+
+import {assertDeepEquals, assertEquals, assertFalse, assertNotReached, assertTrue} from '../../chai_assert.js';
 
 
 /**
@@ -27,13 +28,10 @@ export function onboardingEnterRsuWpDisableCodePageTest() {
   /** @type {?FakeShimlessRmaService} */
   let service = null;
 
-  suiteSetup(() => {
-    service = new FakeShimlessRmaService();
-    setShimlessRmaServiceForTesting(service);
-  });
-
   setup(() => {
     document.body.innerHTML = '';
+    service = new FakeShimlessRmaService();
+    setShimlessRmaServiceForTesting(service);
   });
 
   teardown(() => {
@@ -64,37 +62,27 @@ export function onboardingEnterRsuWpDisableCodePageTest() {
     return flushTasks();
   }
 
+  /**
+   * @param {string} inputSelector
+   * @return {!Promise}
+   */
+  function pressEnter(inputSelector) {
+    const rsuCodeInput = component.shadowRoot.querySelector(inputSelector);
+    rsuCodeInput.value = '12345678';
+    rsuCodeInput.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter'}));
+    return flushTasks();
+  }
+
   test('EnterRsuWpDisableCodePageInitializes', async () => {
     await initializeEnterRsuWpDisableCodePage('rsu challenge', '');
     const rsuCodeComponent = component.shadowRoot.querySelector('#rsuCode');
     assertFalse(rsuCodeComponent.hidden);
   });
 
-  test('EnterRsuWpDisableCodePageDisplaysChallenge', async () => {
-    let expectedParts = ['rsu &nbsp;', 'chal&nbsp;', 'leng&nbsp;', 'e&nbsp;'];
-    await initializeEnterRsuWpDisableCodePage('rsu challenge', '');
-    const rsuChallengeComponent =
-        component.shadowRoot.querySelector('#rsuChallenge');
-    assertEquals(7, rsuChallengeComponent.childElementCount);
-
-    // Confirm all the parts match the expected challenge.
-    let parts = component.shadowRoot.querySelector('#rsuChallengeParts')
-                    .querySelectorAll('span');
-    for (let i = 0; i < parts.length; i++) {
-      assertEquals(expectedParts[i], parts[i].innerHTML);
-    }
-  });
-
-  test('EnterRsuWpDisableCodePageDisplaysHwid', async () => {
-    await initializeEnterRsuWpDisableCodePage('', 'device hwid');
-    const rsuHwidComponent = component.shadowRoot.querySelector('#rsuHwid');
-    assertTrue(rsuHwidComponent.innerHTML.includes('device hwid'));
-  });
-
   test('EnterRsuWpDisableCodePageRendersQrCode', async () => {
     await initializeEnterRsuWpDisableCodePage('', '');
 
-    const expectedCanvasSize = 60;
+    const expectedCanvasSize = 20;
 
 
     assertEquals(suppressedComponentCanvasSize_(component), expectedCanvasSize);
@@ -112,16 +100,16 @@ export function onboardingEnterRsuWpDisableCodePageTest() {
       async () => {
         const resolver = new PromiseResolver();
         await initializeEnterRsuWpDisableCodePage('', '');
-        let expectedCode = 'rsu code';
+        const expectedCode = 'RSU CODE';
         let savedCode = '';
         service.setRsuDisableWriteProtectCode = (code) => {
           savedCode = code;
           return resolver.promise;
         };
         const rsuCodeComponent = component.shadowRoot.querySelector('#rsuCode');
-        rsuCodeComponent.value = expectedCode;
+        rsuCodeComponent.value = expectedCode.toLowerCase();
 
-        let expectedResult = {foo: 'bar'};
+        const expectedResult = {foo: 'bar'};
         let savedResult;
         component.onNextButtonClick().then((result) => savedResult = result);
         // Resolve to a distinct result to confirm it was not modified.
@@ -131,4 +119,71 @@ export function onboardingEnterRsuWpDisableCodePageTest() {
         assertDeepEquals(savedCode, expectedCode);
         assertDeepEquals(savedResult, expectedResult);
       });
+
+  test('EnterRsuWpDisableCodePageOpenChallengeDialog', async () => {
+    await initializeEnterRsuWpDisableCodePage('', '');
+
+    component.shadowRoot.querySelector('#rsuCodeDialogLink').click();
+    assertTrue(component.shadowRoot.querySelector('#rsuChallengeDialog').open);
+  });
+
+  test('EnterRsuWpDisableCodePageDisableInput', async () => {
+    await initializeEnterRsuWpDisableCodePage('', '');
+
+    const rsuCodeInput = component.shadowRoot.querySelector('#rsuCode');
+    assertFalse(rsuCodeInput.disabled);
+    component.allButtonsDisabled = true;
+    assertTrue(rsuCodeInput.disabled);
+  });
+
+  test('EnterRsuWpDisableCodePageStopChallengeDialogOpening', async () => {
+    await initializeEnterRsuWpDisableCodePage('', '');
+
+    component.allButtonsDisabled = true;
+    component.shadowRoot.querySelector('#rsuCodeDialogLink').click();
+    assertFalse(component.shadowRoot.querySelector('#rsuChallengeDialog').open);
+  });
+
+  test('EnterRsuWpDisableCodeRejectWrongCodeLength', async () => {
+    await initializeEnterRsuWpDisableCodePage('', '');
+
+    const rsuCodeInput = component.shadowRoot.querySelector('#rsuCode');
+
+    // The code is shorter than the expected 8 characters.
+    rsuCodeInput.value = '12345';
+    assertFalse(rsuCodeInput.invalid);
+
+    let wasPromiseRejected = false;
+    component.onNextButtonClick()
+        .then(
+            () => assertNotReached(
+                'RSU code should not be set with invalid code'))
+        .catch(() => {
+          wasPromiseRejected = true;
+        });
+
+
+    await flushTasks();
+    assertTrue(wasPromiseRejected);
+    assertTrue(rsuCodeInput.invalid);
+
+    // Change the code so the invalid goes away.
+    rsuCodeInput.value = '123';
+
+    await flushTasks();
+    assertFalse(rsuCodeInput.invalid);
+  });
+
+  test('EnterRsuWpDisableCodePagePressEnterkey', async () => {
+    await initializeEnterRsuWpDisableCodePage(
+        /*challenge=*/ '', /*hwid=*/ '');
+
+    let nextButtonEventFired = false;
+    component.addEventListener('click-next-button', (e) => {
+      nextButtonEventFired = true;
+    });
+    await pressEnter('#rsuCode');
+
+    assertTrue(nextButtonEventFired);
+  });
 }

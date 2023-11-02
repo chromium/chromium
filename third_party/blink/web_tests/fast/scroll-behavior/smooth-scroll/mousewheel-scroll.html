@@ -42,10 +42,10 @@
 
     // Scroll 3 ticks diagonally.
     await smoothScroll(3 * pixelsPerTick() , x, y, source, 'downright',
-      SPEED_INSTANT);
+      SPEED_INSTANT, false /* precise_scrolling_deltas */);
     // Undo 2 ticks in each direction.
     await smoothScroll(2 * pixelsPerTick(), x, y, source, 'upleft',
-      SPEED_INSTANT);
+      SPEED_INSTANT, false /* precise_scrolling_deltas */);
 
     await waitForAnimationEndTimeBased(() => { return scroller.scrollTop; });
     await waitForAnimationEndTimeBased(() => { return scroller.scrollLeft; });
@@ -57,7 +57,7 @@
     // Undo the last tick in each direction to reset the scroll state before
     // starting the second test.
     await smoothScroll(1 * pixelsPerTick(), x, y, source, 'upleft',
-      SPEED_INSTANT);
+      SPEED_INSTANT, false /* precise_scrolling_deltas */);
 
     await waitForAnimationEndTimeBased(() => { return scroller.scrollTop; });
     await waitForAnimationEndTimeBased(() => { return scroller.scrollLeft; });
@@ -74,19 +74,19 @@
 
     // Scroll down 3 ticks.
     await smoothScroll(1 * pixelsPerTick(), x, y, source, 'down',
-        SPEED_INSTANT);
+        SPEED_INSTANT, false /* precise_scrolling_deltas */);
     await smoothScroll(2 * pixelsPerTick(), x, y, source, 'down',
-        SPEED_INSTANT);
+        SPEED_INSTANT, false /* precise_scrolling_deltas */);
     // Scroll right 3 ticks.
     await smoothScroll(1 * pixelsPerTick(), x, y, source, 'right',
-        SPEED_INSTANT);
+        SPEED_INSTANT, false /* precise_scrolling_deltas */);
     await smoothScroll(2 * pixelsPerTick(), x, y, source, 'right',
-        SPEED_INSTANT);
+        SPEED_INSTANT, false /* precise_scrolling_deltas */);
     // Undo 1 tick in each direction.
     await smoothScroll(1 * pixelsPerTick(), x, y, source, 'up',
-        SPEED_INSTANT);
+        SPEED_INSTANT, false /* precise_scrolling_deltas */);
     await smoothScroll(1 * pixelsPerTick(), x, y, source, 'left',
-        SPEED_INSTANT);
+        SPEED_INSTANT, false /* precise_scrolling_deltas */);
 
     await waitForAnimationEndTimeBased(() => { return scroller.scrollTop; });
     await waitForAnimationEndTimeBased(() => { return scroller.scrollLeft; });

@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -44,7 +45,7 @@ class BackgroundContents : public extensions::DeferredStartRenderHost,
         std::unique_ptr<content::WebContents> new_contents,
         const GURL& target_url,
         WindowOpenDisposition disposition,
-        const gfx::Rect& initial_rect,
+        const blink::mojom::WindowFeatures& window_features,
         bool* was_blocked) = 0;
 
     // Informs the delegate of lifetime events.
@@ -63,7 +64,7 @@ class BackgroundContents : public extensions::DeferredStartRenderHost,
       content::RenderFrameHost* opener,
       bool is_new_browsing_instance,
       Delegate* delegate,
-      const content::StoragePartitionId& partition_id,
+      const content::StoragePartitionConfig& partition_config,
       content::SessionStorageNamespace* session_storage_namespace);
 
   BackgroundContents(const BackgroundContents&) = delete;
@@ -87,7 +88,7 @@ class BackgroundContents : public extensions::DeferredStartRenderHost,
                       std::unique_ptr<content::WebContents> new_contents,
                       const GURL& target_url,
                       WindowOpenDisposition disposition,
-                      const gfx::Rect& initial_rect,
+                      const blink::mojom::WindowFeatures& window_features,
                       bool user_gesture,
                       bool* was_blocked) override;
   bool IsNeverComposited(content::WebContents* web_contents) override;
@@ -105,12 +106,12 @@ class BackgroundContents : public extensions::DeferredStartRenderHost,
   void CreateRendererNow() override;
 
   // The delegate for this BackgroundContents.
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
 
   // Delegate for choosing an ExtensionHostQueue.
   std::unique_ptr<extensions::ExtensionHostDelegate> extension_host_delegate_;
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   std::unique_ptr<content::WebContents> web_contents_;
 
   // The initial URL to load.
@@ -120,7 +121,7 @@ class BackgroundContents : public extensions::DeferredStartRenderHost,
 // This is the data sent out as the details with BACKGROUND_CONTENTS_OPENED.
 struct BackgroundContentsOpenedDetails {
   // The BackgroundContents object that has just been opened.
-  BackgroundContents* contents;
+  raw_ptr<BackgroundContents> contents;
 
   // The name of the parent frame for these contents.
   const std::string& frame_name;

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,8 +18,8 @@ DeveloperConsoleLogger::~DeveloperConsoleLogger() = default;
 void DeveloperConsoleLogger::Warn(const std::string& warning_message) const {
   if (!enabled_)
     return;
-  if (web_contents_ && web_contents_->GetMainFrame()) {
-    web_contents_->GetMainFrame()->AddMessageToConsole(
+  if (web_contents_ && web_contents_->GetPrimaryMainFrame()) {
+    web_contents_->GetPrimaryMainFrame()->AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kWarning, warning_message);
   } else {
     ErrorLogger::Warn(warning_message);
@@ -29,8 +29,8 @@ void DeveloperConsoleLogger::Warn(const std::string& warning_message) const {
 void DeveloperConsoleLogger::Error(const std::string& error_message) const {
   if (!enabled_)
     return;
-  if (web_contents_ && web_contents_->GetMainFrame()) {
-    web_contents_->GetMainFrame()->AddMessageToConsole(
+  if (web_contents_ && web_contents_->GetPrimaryMainFrame()) {
+    web_contents_->GetPrimaryMainFrame()->AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kError, error_message);
   } else {
     ErrorLogger::Error(error_message);

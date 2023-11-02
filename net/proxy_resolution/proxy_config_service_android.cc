@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/location.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/strings/string_tokenizer.h"
@@ -282,9 +282,7 @@ class ProxyConfigServiceAndroid::Delegate
       : jni_delegate_(this),
         main_task_runner_(main_task_runner),
         jni_task_runner_(jni_task_runner),
-        get_property_callback_(get_property_callback),
-        exclude_pac_url_(false),
-        has_proxy_override_(false) {}
+        get_property_callback_(get_property_callback) {}
 
   Delegate(const Delegate&) = delete;
   Delegate& operator=(const Delegate&) = delete;
@@ -450,10 +448,10 @@ class ProxyConfigServiceAndroid::Delegate
     }
 
    private:
-    Delegate* const delegate_;
+    const raw_ptr<Delegate> delegate_;
   };
 
-  virtual ~Delegate() {}
+  virtual ~Delegate() = default;
 
   void ShutdownInJNISequence() {
     if (java_proxy_change_listener_.is_null())
@@ -489,17 +487,18 @@ class ProxyConfigServiceAndroid::Delegate
   scoped_refptr<base::SequencedTaskRunner> jni_task_runner_;
   GetPropertyCallback get_property_callback_;
   ProxyConfigWithAnnotation proxy_config_;
-  bool exclude_pac_url_;
+  bool exclude_pac_url_ = false;
   // This may only be accessed or modified on the JNI thread
-  bool has_proxy_override_;
+  bool has_proxy_override_ = false;
 };
 
 ProxyConfigServiceAndroid::ProxyConfigServiceAndroid(
     const scoped_refptr<base::SequencedTaskRunner>& main_task_runner,
     const scoped_refptr<base::SequencedTaskRunner>& jni_task_runner)
-    : delegate_(new Delegate(main_task_runner,
-                             jni_task_runner,
-                             base::BindRepeating(&GetJavaProperty))) {
+    : delegate_(base::MakeRefCounted<Delegate>(
+          main_task_runner,
+          jni_task_runner,
+          base::BindRepeating(&GetJavaProperty))) {
   delegate_->SetupJNI();
   delegate_->FetchInitialConfig();
 }
@@ -530,9 +529,9 @@ ProxyConfigServiceAndroid::ProxyConfigServiceAndroid(
     const scoped_refptr<base::SequencedTaskRunner>& main_task_runner,
     const scoped_refptr<base::SequencedTaskRunner>& jni_task_runner,
     GetPropertyCallback get_property_callback)
-    : delegate_(new Delegate(main_task_runner,
-                             jni_task_runner,
-                             get_property_callback)) {
+    : delegate_(base::MakeRefCounted<Delegate>(main_task_runner,
+                                               jni_task_runner,
+                                               get_property_callback)) {
   delegate_->SetupJNI();
   delegate_->FetchInitialConfig();
 }

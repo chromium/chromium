@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,8 +14,11 @@ namespace network_diagnostics {
 
 namespace {
 
-const char* kInsecureSecurity = shill::kSecurityWep;
-const char* kSecureSecurity = shill::kSecurityPsk;
+// TODO(https://crbug.com/1164001): remove when migrated to namespace ash.
+namespace mojom = ::chromeos::network_diagnostics::mojom;
+
+const char* kInsecureSecurity = shill::kSecurityClassWep;
+const char* kSecureSecurity = shill::kSecurityClassPsk;
 
 }  // namespace
 
@@ -53,7 +56,7 @@ class HasSecureWiFiConnectionRoutineTest : public ::testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  chromeos::NetworkStateTestHelper& network_state_helper() {
+  NetworkStateTestHelper& network_state_helper() {
     return cros_network_config_test_helper_.network_state_helper();
   }
   HasSecureWiFiConnectionRoutine* has_secure_wifi_connection_routine() {

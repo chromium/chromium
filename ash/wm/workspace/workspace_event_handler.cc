@@ -1,9 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/wm/workspace/workspace_event_handler.h"
 
+#include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_session.h"
@@ -11,6 +12,7 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
+#include "ash/wm/workspace/multi_window_resize_controller.h"
 #include "base/metrics/user_metrics.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
@@ -22,6 +24,11 @@ namespace ash {
 WorkspaceEventHandler::WorkspaceEventHandler(aura::Window* workspace_window)
     : workspace_window_(workspace_window), click_component_(HTNOWHERE) {
   workspace_window_->AddPreTargetHandler(this);
+
+  if (workspace_window->GetId() != kShellWindowId_FloatContainer) {
+    multi_window_resize_controller_ =
+        std::make_unique<MultiWindowResizeController>();
+  }
 }
 
 WorkspaceEventHandler::~WorkspaceEventHandler() {
@@ -42,10 +49,12 @@ void WorkspaceEventHandler::OnMouseEvent(ui::MouseEvent* event) {
 
   switch (event->type()) {
     case ui::ET_MOUSE_MOVED: {
-      int component =
-          window_util::GetNonClientComponent(target, event->location());
-      multi_window_resize_controller_.Show(target, component,
-                                           event->location());
+      if (multi_window_resize_controller_) {
+        const int component =
+            window_util::GetNonClientComponent(target, event->location());
+        multi_window_resize_controller_->Show(target, component,
+                                              event->location());
+      }
       break;
     }
     case ui::ET_MOUSE_ENTERED:

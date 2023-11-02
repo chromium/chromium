@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,7 +31,7 @@ ScriptPromise InternalsStorageAccess::setStorageAccess(
   auto* raw_storage_access_automation = storage_access_automation.get();
   raw_storage_access_automation->SetStorageAccess(
       origin, embedding_origin, blocked,
-      WTF::Bind(
+      WTF::BindOnce(
           // While we only really need |resolver|, we also take the
           // mojo::Remote<> so that it remains alive after this function exits.
           [](ScriptPromiseResolver* resolver,

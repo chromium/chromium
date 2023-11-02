@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -81,7 +82,7 @@ void HungPagesTableModel::InitForWebContents(
   }
 
   process_observation_.Observe(render_widget_host_->GetProcess());
-  widget_observation_.Observe(render_widget_host_);
+  widget_observation_.Observe(render_widget_host_.get());
 
   // The world is different.
   if (observer_)
@@ -107,18 +108,18 @@ void HungPagesTableModel::RestartHangMonitorTimeout() {
 ///////////////////////////////////////////////////////////////////////////////
 // HungPagesTableModel, ui::TableModel implementation:
 
-int HungPagesTableModel::RowCount() {
-  return static_cast<int>(tab_observers_.size());
+size_t HungPagesTableModel::RowCount() {
+  return tab_observers_.size();
 }
 
-std::u16string HungPagesTableModel::GetText(int row, int column_id) {
-  DCHECK(row >= 0 && row < RowCount());
+std::u16string HungPagesTableModel::GetText(size_t row, int column_id) {
+  DCHECK(row < RowCount());
   return GetHungWebContentsTitle(tab_observers_[row]->web_contents(),
                                  render_widget_host_->GetProcess());
 }
 
-ui::ImageModel HungPagesTableModel::GetIcon(int row) {
-  DCHECK(row >= 0 && row < RowCount());
+ui::ImageModel HungPagesTableModel::GetIcon(size_t row) {
+  DCHECK(row < RowCount());
   return ui::ImageModel::FromImage(
       favicon::ContentFaviconDriver::FromWebContents(
           tab_observers_[row]->web_contents())
@@ -145,7 +146,7 @@ void HungPagesTableModel::RenderProcessExited(
 
 void HungPagesTableModel::RenderWidgetHostDestroyed(
     content::RenderWidgetHost* widget_host) {
-  DCHECK(widget_observation_.IsObservingSource(render_widget_host_));
+  DCHECK(widget_observation_.IsObservingSource(render_widget_host_.get()));
   widget_observation_.Reset();
   render_widget_host_ = nullptr;
 
@@ -164,7 +165,7 @@ void HungPagesTableModel::TabDestroyed(WebContentsObserverImpl* tab) {
   DCHECK(index < tab_observers_.size());
   tab_observers_.erase(tab_observers_.begin() + index);
   if (observer_)
-    observer_->OnItemsRemoved(static_cast<int>(index), 1);
+    observer_->OnItemsRemoved(index, 1);
 
   // Notify the delegate.
   delegate_->TabDestroyed();
@@ -216,7 +217,7 @@ constexpr int kDialogHolderUserDataKey = 0;
 struct DialogHolder : public base::SupportsUserData::Data {
   explicit DialogHolder(HungRendererDialogView* dialog) : dialog(dialog) {}
 
-  HungRendererDialogView* const dialog = nullptr;
+  const raw_ptr<HungRendererDialogView> dialog = nullptr;
 };
 
 static bool g_bypass_active_browser_requirement = false;
@@ -312,8 +313,6 @@ HungRendererDialogView::HungRendererDialogView(WebContents* web_contents)
   AddChildView(
       views::TableView::CreateScrollViewWithTable(std::move(hung_pages_table)))
       ->SetPreferredSize(gfx::Size(kTableViewWidth, kTableViewHeight));
-
-  chrome::RecordDialogCreation(chrome::DialogIdentifier::HUNG_RENDERER);
 }
 
 HungRendererDialogView::~HungRendererDialogView() {
@@ -402,7 +401,7 @@ void HungRendererDialogView::ForceCrashHungRenderer() {
   content::RenderProcessHost* rph =
       hung_pages_table_model_->GetRenderWidgetHost()->GetProcess();
   if (rph) {
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     // A generic |CrashDumpHungChildProcess()| is not implemented for Linux.
     // Instead we send an explicit IPC to crash on the renderer's IO thread.
     rph->ForceCrash();

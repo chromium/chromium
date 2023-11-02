@@ -6,7 +6,7 @@ Android has [automatic and one-tap SMS verification](https://developers.google.c
 
 ### [Web OTP API](https://github.com/WICG/WebOTP)
 
-This is implemented in [third_party/blink/renderer/modules/credentialmanager](https://cs.chromium.org/chromium/src/third_party/blink/renderer/modules/credentialmanager/) and exposes the following function:
+This is implemented in [third_party/blink/renderer/modules/credentialmanagement](https://cs.chromium.org/chromium/src/third_party/blink/renderer/modules/credentialmanagement/) and exposes the following function:
 
 ```navigator.credentials.get({otp: {transport: ["sms"]}})```
 
@@ -15,7 +15,7 @@ This is implemented in [third_party/blink/renderer/modules/credentialmanager](ht
 * Unit tests are located in [content/browser/sms/webotp_service_unittest.cc](https://cs.chromium.org/chromium/src/content/browser/sms/webotp_service_unittest.cc).
 * Browser tests are located in [content/browser/sms/sms_browsertest.cc](https://cs.chromium.org/chromium/src/content/browser/sms/sms_browsertest.cc).
 * The Android related tests are located in [chrome/android/javatests/src/org/chromium/chrome/browser/sms/](https://cs.chromium.org/chromium/src/chrome/android/javatests/src/org/chromium/chrome/browser/sms/).
-* Web platform tests are located in [third_party/blink/web_tests/http/tests/credentialmanager/](https://cs.chromium.org/chromium/src/third_party/blink/web_tests/http/tests/credentialmanager/)
+* Web platform tests are located in [third_party/blink/web_tests/http/tests/credentialmanagement/](https://cs.chromium.org/chromium/src/third_party/blink/web_tests/http/tests/credentialmanagement/)
 
 For how to run these tests, refer to Chromium documentation [Running tests locally](https://www.chromium.org/developers/testing/running-tests), [Android Test Instructions](https://chromium.googlesource.com/chromium/src/+/main/docs/testing/android_test_instructions.md)
 

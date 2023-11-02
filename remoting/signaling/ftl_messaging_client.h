@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "remoting/signaling/message_tracker.h"
 #include "remoting/signaling/messaging_client.h"
@@ -101,7 +101,7 @@ class FtlMessagingClient final : public MessagingClient {
   void OnMessageReceived(const ftl::InboxMessage& message);
 
   std::unique_ptr<ProtobufHttpClient> client_;
-  RegistrationManager* registration_manager_;
+  raw_ptr<RegistrationManager> registration_manager_;
   std::unique_ptr<MessageReceptionChannel> reception_channel_;
   MessageCallbackList callback_list_;
   MessageTracker message_tracker_;

@@ -32,13 +32,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_LAYOUT_SIZE_H_
 
 #include <iosfwd>
-#include "third_party/blink/renderer/platform/geometry/double_size.h"
-#include "third_party/blink/renderer/platform/geometry/float_point.h"
-#include "third_party/blink/renderer/platform/geometry/float_size.h"
-#include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
@@ -49,34 +47,29 @@ class PLATFORM_EXPORT LayoutSize {
 
  public:
   constexpr LayoutSize() = default;
-  constexpr explicit LayoutSize(const IntSize& size)
+  constexpr explicit LayoutSize(const gfx::Size& size)
       : width_(size.width()), height_(size.height()) {}
   constexpr LayoutSize(LayoutUnit width, LayoutUnit height)
       : width_(width), height_(height) {}
   constexpr LayoutSize(int width, int height)
       : width_(LayoutUnit(width)), height_(LayoutUnit(height)) {}
-  constexpr LayoutSize(float width, float height)
-      : width_(LayoutUnit(width)), height_(LayoutUnit(height)) {}
 
-  constexpr explicit LayoutSize(const FloatSize& size)
-      : width_(size.width()), height_(size.height()) {}
   constexpr explicit LayoutSize(const gfx::SizeF& size)
       : width_(size.width()), height_(size.height()) {}
-  constexpr explicit LayoutSize(const DoubleSize& size)
-      : width_(size.Width()), height_(size.Height()) {}
+  constexpr explicit LayoutSize(const gfx::Vector2dF& vector)
+      : width_(vector.x()), height_(vector.y()) {}
 
-  constexpr explicit operator FloatSize() const {
-    return FloatSize(width_.ToFloat(), height_.ToFloat());
-  }
-  constexpr explicit operator FloatPoint() const {
-    return FloatPoint(width_.ToFloat(), height_.ToFloat());
-  }
   constexpr explicit operator gfx::SizeF() const {
     return gfx::SizeF(width_.ToFloat(), height_.ToFloat());
   }
   constexpr explicit operator gfx::Vector2dF() const {
     return gfx::Vector2dF(width_.ToFloat(), height_.ToFloat());
   }
+
+  // This is deleted to avoid unwanted lossy conversion from float or double to
+  // LayoutUnit or int. Use explicit LayoutUnit constructor for each parameter
+  // instead.
+  LayoutSize(double, double) = delete;
 
   constexpr LayoutUnit Width() const { return width_; }
   constexpr LayoutUnit Height() const { return height_; }
@@ -122,12 +115,6 @@ class PLATFORM_EXPORT LayoutSize {
                       height_ > other.height_ ? height_ : other.height_);
   }
 
-  LayoutSize ExpandedTo(const IntSize& other) const {
-    return LayoutSize(
-        width_ > other.width() ? width_ : LayoutUnit(other.width()),
-        height_ > other.height() ? height_ : LayoutUnit(other.height()));
-  }
-
   LayoutSize ShrunkTo(const LayoutSize& other) const {
     return LayoutSize(width_ < other.width_ ? width_ : other.width_,
                       height_ < other.height_ ? height_ : other.height_);
@@ -166,7 +153,7 @@ inline LayoutSize& operator-=(LayoutSize& a, const LayoutSize& b) {
   return a;
 }
 
-inline LayoutSize& operator-=(LayoutSize& a, const IntSize& b) {
+inline LayoutSize& operator-=(LayoutSize& a, const gfx::Size& b) {
   a.SetWidth(a.Width() - b.width());
   a.SetHeight(a.Height() - b.height());
   return a;
@@ -176,7 +163,7 @@ inline LayoutSize operator+(const LayoutSize& a, const LayoutSize& b) {
   return LayoutSize(a.Width() + b.Width(), a.Height() + b.Height());
 }
 
-inline LayoutSize operator+(const LayoutSize& a, const IntSize& b) {
+inline LayoutSize operator+(const LayoutSize& a, const gfx::Size& b) {
   return LayoutSize(a.Width() + b.width(), a.Height() + b.height());
 }
 
@@ -189,39 +176,28 @@ inline LayoutSize operator-(const LayoutSize& size) {
 }
 
 inline LayoutSize operator*(const LayoutSize& a, const float scale) {
-  return LayoutSize(a.Width() * scale, a.Height() * scale);
+  return LayoutSize(LayoutUnit(a.Width() * scale),
+                    LayoutUnit(a.Height() * scale));
 }
 
 constexpr bool operator==(const LayoutSize& a, const LayoutSize& b) {
   return a.Width() == b.Width() && a.Height() == b.Height();
 }
 
-inline bool operator==(const LayoutSize& a, const IntSize& b) {
-  return a.Width() == b.width() && a.Height() == b.height();
-}
-
 constexpr bool operator!=(const LayoutSize& a, const LayoutSize& b) {
   return !(a == b);
 }
 
-inline bool operator!=(const LayoutSize& a, const IntSize& b) {
-  return a.Width() != b.width() || a.Height() != b.height();
+constexpr gfx::PointF operator+(const gfx::PointF& a, const LayoutSize& b) {
+  return gfx::PointF(a.x() + b.Width(), a.y() + b.Height());
 }
 
-constexpr FloatPoint operator+(const FloatPoint& a, const LayoutSize& b) {
-  return FloatPoint(a.x() + b.Width(), a.y() + b.Height());
+inline gfx::Size ToFlooredSize(const LayoutSize& s) {
+  return gfx::Size(s.Width().Floor(), s.Height().Floor());
 }
 
-inline IntSize FlooredIntSize(const LayoutSize& s) {
-  return IntSize(s.Width().Floor(), s.Height().Floor());
-}
-
-inline IntSize RoundedIntSize(const LayoutSize& s) {
-  return IntSize(s.Width().Round(), s.Height().Round());
-}
-
-inline LayoutSize RoundedLayoutSize(const FloatSize& s) {
-  return LayoutSize(s);
+inline gfx::Size ToRoundedSize(const LayoutSize& s) {
+  return gfx::Size(s.Width().Round(), s.Height().Round());
 }
 
 inline LayoutSize RoundedLayoutSize(const gfx::SizeF& s) {

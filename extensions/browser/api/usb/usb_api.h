@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,8 +13,9 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/values.h"
 #include "extensions/browser/api/api_resource_manager.h"
 #include "extensions/browser/api/usb/usb_device_manager.h"
 #include "extensions/browser/extension_function.h"
@@ -36,8 +37,10 @@ class UsbExtensionFunction : public ExtensionFunction {
 
   UsbDeviceManager* usb_device_manager();
 
+  bool IsUsbDeviceAllowedByPolicy(int vendor_id, int product_id);
+
  private:
-  UsbDeviceManager* usb_device_manager_ = nullptr;
+  raw_ptr<UsbDeviceManager> usb_device_manager_ = nullptr;
 };
 
 class UsbPermissionCheckingFunction : public UsbExtensionFunction {
@@ -49,7 +52,7 @@ class UsbPermissionCheckingFunction : public UsbExtensionFunction {
   void RecordDeviceLastUsed();
 
  private:
-  DevicePermissionsManager* device_permissions_manager_;
+  raw_ptr<DevicePermissionsManager> device_permissions_manager_;
   scoped_refptr<DevicePermissionEntry> permission_entry_;
 };
 
@@ -115,7 +118,7 @@ class UsbFindDevicesFunction : public UsbExtensionFunction {
 
   uint16_t vendor_id_;
   uint16_t product_id_;
-  std::unique_ptr<base::ListValue> result_;
+  base::Value::List result_;
   base::RepeatingClosure barrier_;
 };
 

@@ -1,6 +1,8 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+#include "base/memory/raw_ptr.h"
 
 #import "ui/views/cocoa/drag_drop_client_mac.h"
 
@@ -145,8 +147,12 @@ class DragDropView : public View {
     return ui::DragDropTypes::DRAG_COPY;
   }
 
-  DragOperation OnPerformDrop(const ui::DropTargetEvent& event) override {
-    return DragOperation::kMove;
+  views::View::DropCallback GetDropCallback(
+      const ui::DropTargetEvent& event) override {
+    return base::BindOnce([](const ui::DropTargetEvent& event,
+                             ui::mojom::DragOperation& output_drag_op) {
+      output_drag_op = DragOperation::kMove;
+    });
   }
 
  private:
@@ -199,7 +205,7 @@ class DragDropClientMacTest : public WidgetTest {
     widget_->Show();
 
     target_ = new DragDropView();
-    widget_->non_client_view()->frame_view()->AddChildView(target_);
+    widget_->non_client_view()->frame_view()->AddChildView(target_.get());
     target_->SetBoundsRect(bounds);
 
     drag_drop_client()->source_operation_ = ui::DragDropTypes::DRAG_COPY;
@@ -212,10 +218,10 @@ class DragDropClientMacTest : public WidgetTest {
   }
 
  protected:
-  Widget* widget_ = nullptr;
-  remote_cocoa::NativeWidgetNSWindowBridge* bridge_ = nullptr;
-  NativeWidgetMacNSWindowHost* ns_window_host_ = nullptr;
-  DragDropView* target_ = nullptr;
+  raw_ptr<Widget> widget_ = nullptr;
+  raw_ptr<remote_cocoa::NativeWidgetNSWindowBridge> bridge_ = nullptr;
+  raw_ptr<NativeWidgetMacNSWindowHost> ns_window_host_ = nullptr;
+  raw_ptr<DragDropView> target_ = nullptr;
   base::scoped_nsobject<MockDraggingInfo> dragging_info_;
 };
 
@@ -315,14 +321,23 @@ class DragDropCloseView : public DragDropView {
   DragDropCloseView(const DragDropCloseView&) = delete;
   DragDropCloseView& operator=(const DragDropCloseView&) = delete;
 
-  // View:
-  DragOperation OnPerformDrop(const ui::DropTargetEvent& event) override {
+  views::View::DropCallback GetDropCallback(
+      const ui::DropTargetEvent& event) override {
+    // base::Unretained is safe here because in the tests the view isn't deleted
+    // before the drop callback is run.
+    return base::BindOnce(&DragDropCloseView::PerformDrop,
+                          base::Unretained(this));
+  }
+
+ private:
+  void PerformDrop(const ui::DropTargetEvent& event,
+                   ui::mojom::DragOperation& output_drag_op) {
     GetWidget()->CloseNow();
-    return DragOperation::kMove;
+    output_drag_op = DragOperation::kMove;
   }
 };
 
-// Tests that closing Widget on OnPerformDrop does not crash.
+// Tests that closing Widget on drop does not crash.
 TEST_F(DragDropClientMacTest, CloseWidgetOnDrop) {
   OSExchangeData data;
   const std::u16string& text = u"text";
@@ -330,14 +345,14 @@ TEST_F(DragDropClientMacTest, CloseWidgetOnDrop) {
   SetData(data);
 
   target_ = new DragDropCloseView();
-  widget_->non_client_view()->frame_view()->AddChildView(target_);
+  widget_->non_client_view()->frame_view()->AddChildView(target_.get());
   target_->SetBoundsRect(gfx::Rect(0, 0, 100, 100));
   target_->set_formats(ui::OSExchangeData::STRING | ui::OSExchangeData::URL);
 
   EXPECT_EQ(DragUpdate(nil), NSDragOperationCopy);
   EXPECT_EQ(Drop(), NSDragOperationMove);
 
-  // OnPerformDrop() will have deleted the widget.
+  // Drop callback will have deleted the widget.
   widget_ = nullptr;
 }
 

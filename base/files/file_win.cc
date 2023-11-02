@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,19 +24,19 @@ static_assert(File::FROM_BEGIN == FILE_BEGIN &&
               "whence mapping must match the system headers");
 
 bool File::IsValid() const {
-  return file_.IsValid();
+  return file_.is_valid();
 }
 
 PlatformFile File::GetPlatformFile() const {
-  return file_.Get();
+  return file_.get();
 }
 
 PlatformFile File::TakePlatformFile() {
-  return file_.Take();
+  return file_.release();
 }
 
 void File::Close() {
-  if (!file_.IsValid())
+  if (!file_.is_valid())
     return;
 
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
@@ -53,7 +53,7 @@ int64_t File::Seek(Whence whence, int64_t offset) {
   LARGE_INTEGER distance, res;
   distance.QuadPart = offset;
   DWORD move_method = static_cast<DWORD>(whence);
-  if (!SetFilePointerEx(file_.Get(), distance, &res, move_method))
+  if (!SetFilePointerEx(file_.get(), distance, &res, move_method))
     return -1;
   return res.QuadPart;
 }
@@ -62,21 +62,25 @@ int File::Read(int64_t offset, char* data, int size) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   DCHECK(IsValid());
   DCHECK(!async_);
-  if (size < 0)
+  if (size < 0 || offset < 0)
     return -1;
 
   SCOPED_FILE_TRACE_WITH_SIZE("Read", size);
 
-  LARGE_INTEGER offset_li;
-  offset_li.QuadPart = offset;
+  ULARGE_INTEGER offset_li;
+  offset_li.QuadPart = static_cast<uint64_t>(offset);
 
   OVERLAPPED overlapped = {};
   overlapped.Offset = offset_li.LowPart;
   overlapped.OffsetHigh = offset_li.HighPart;
 
   DWORD bytes_read;
-  if (::ReadFile(file_.Get(), data, size, &bytes_read, &overlapped))
-    return bytes_read;
+  if (::ReadFile(file_.get(), data, static_cast<DWORD>(size), &bytes_read,
+                 &overlapped)) {
+    // TODO(crbug.com/1333521): Change to return some type with a uint64_t size
+    // and eliminate this cast.
+    return checked_cast<int>(bytes_read);
+  }
   if (ERROR_HANDLE_EOF == GetLastError())
     return 0;
 
@@ -93,8 +97,12 @@ int File::ReadAtCurrentPos(char* data, int size) {
   SCOPED_FILE_TRACE_WITH_SIZE("ReadAtCurrentPos", size);
 
   DWORD bytes_read;
-  if (::ReadFile(file_.Get(), data, size, &bytes_read, NULL))
-    return bytes_read;
+  if (::ReadFile(file_.get(), data, static_cast<DWORD>(size), &bytes_read,
+                 NULL)) {
+    // TODO(crbug.com/1333521): Change to return some type with a uint64_t size
+    // and eliminate this cast.
+    return checked_cast<int>(bytes_read);
+  }
   if (ERROR_HANDLE_EOF == GetLastError())
     return 0;
 
@@ -115,19 +123,22 @@ int File::Write(int64_t offset, const char* data, int size) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   DCHECK(IsValid());
   DCHECK(!async_);
+  if (size < 0 || offset < 0)
+    return -1;
 
   SCOPED_FILE_TRACE_WITH_SIZE("Write", size);
 
-  LARGE_INTEGER offset_li;
-  offset_li.QuadPart = offset;
+  ULARGE_INTEGER offset_li;
+  offset_li.QuadPart = static_cast<uint64_t>(offset);
 
   OVERLAPPED overlapped = {};
   overlapped.Offset = offset_li.LowPart;
   overlapped.OffsetHigh = offset_li.HighPart;
 
   DWORD bytes_written;
-  if (::WriteFile(file_.Get(), data, size, &bytes_written, &overlapped))
-    return bytes_written;
+  if (::WriteFile(file_.get(), data, static_cast<DWORD>(size), &bytes_written,
+                  &overlapped))
+    return static_cast<int>(bytes_written);
 
   return -1;
 }
@@ -142,8 +153,9 @@ int File::WriteAtCurrentPos(const char* data, int size) {
   SCOPED_FILE_TRACE_WITH_SIZE("WriteAtCurrentPos", size);
 
   DWORD bytes_written;
-  if (::WriteFile(file_.Get(), data, size, &bytes_written, NULL))
-    return bytes_written;
+  if (::WriteFile(file_.get(), data, static_cast<DWORD>(size), &bytes_written,
+                  NULL))
+    return static_cast<int>(bytes_written);
 
   return -1;
 }
@@ -159,7 +171,7 @@ int64_t File::GetLength() {
   SCOPED_FILE_TRACE("GetLength");
 
   LARGE_INTEGER size;
-  if (!::GetFileSizeEx(file_.Get(), &size))
+  if (!::GetFileSizeEx(file_.get(), &size))
     return -1;
 
   return static_cast<int64_t>(size.QuadPart);
@@ -175,14 +187,14 @@ bool File::SetLength(int64_t length) {
   LARGE_INTEGER file_pointer;
   LARGE_INTEGER zero;
   zero.QuadPart = 0;
-  if (!::SetFilePointerEx(file_.Get(), zero, &file_pointer, FILE_CURRENT))
+  if (!::SetFilePointerEx(file_.get(), zero, &file_pointer, FILE_CURRENT))
     return false;
 
   LARGE_INTEGER length_li;
   length_li.QuadPart = length;
   // If length > file size, SetFilePointerEx() should extend the file
   // with zeroes on all Windows standard file systems (NTFS, FATxx).
-  if (!::SetFilePointerEx(file_.Get(), length_li, NULL, FILE_BEGIN))
+  if (!::SetFilePointerEx(file_.get(), length_li, NULL, FILE_BEGIN))
     return false;
 
   // Set the new file length and move the file pointer to its old position.
@@ -191,8 +203,8 @@ bool File::SetLength(int64_t length) {
   // TODO(rvargas): Emulating ftruncate details seem suspicious and it is not
   // promised by the interface (nor was promised by PlatformFile). See if this
   // implementation detail can be removed.
-  return ((::SetEndOfFile(file_.Get()) != FALSE) &&
-          (::SetFilePointerEx(file_.Get(), file_pointer, NULL, FILE_BEGIN) !=
+  return ((::SetEndOfFile(file_.get()) != FALSE) &&
+          (::SetFilePointerEx(file_.get(), file_pointer, NULL, FILE_BEGIN) !=
            FALSE));
 }
 
@@ -204,7 +216,7 @@ bool File::SetTimes(Time last_access_time, Time last_modified_time) {
 
   FILETIME last_access_filetime = last_access_time.ToFileTime();
   FILETIME last_modified_filetime = last_modified_time.ToFileTime();
-  return (::SetFileTime(file_.Get(), NULL, &last_access_filetime,
+  return (::SetFileTime(file_.get(), NULL, &last_access_filetime,
                         &last_modified_filetime) != FALSE);
 }
 
@@ -215,13 +227,15 @@ bool File::GetInfo(Info* info) {
   SCOPED_FILE_TRACE("GetInfo");
 
   BY_HANDLE_FILE_INFORMATION file_info;
-  if (!GetFileInformationByHandle(file_.Get(), &file_info))
+  if (!GetFileInformationByHandle(file_.get(), &file_info))
     return false;
 
-  LARGE_INTEGER size;
+  ULARGE_INTEGER size;
   size.HighPart = file_info.nFileSizeHigh;
   size.LowPart = file_info.nFileSizeLow;
-  info->size = size.QuadPart;
+  // TODO(crbug.com/1333521): Change Info::size to uint64_t and eliminate this
+  // cast.
+  info->size = checked_cast<int64_t>(size.QuadPart);
   info->is_directory =
       (file_info.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
   info->is_symbolic_link = false;  // Windows doesn't have symbolic links.
@@ -253,7 +267,7 @@ File::Error File::Lock(File::LockMode mode) {
 
   OVERLAPPED overlapped = {};
   BOOL result =
-      LockFileEx(file_.Get(), LockFileFlagsForMode(mode), /*dwReserved=*/0,
+      LockFileEx(file_.get(), LockFileFlagsForMode(mode), /*dwReserved=*/0,
                  /*nNumberOfBytesToLockLow=*/MAXDWORD,
                  /*nNumberOfBytesToLockHigh=*/MAXDWORD, &overlapped);
   if (!result)
@@ -268,7 +282,7 @@ File::Error File::Unlock() {
 
   OVERLAPPED overlapped = {};
   BOOL result =
-      UnlockFileEx(file_.Get(), /*dwReserved=*/0,
+      UnlockFileEx(file_.get(), /*dwReserved=*/0,
                    /*nNumberOfBytesToLockLow=*/MAXDWORD,
                    /*nNumberOfBytesToLockHigh=*/MAXDWORD, &overlapped);
   if (!result)
@@ -341,7 +355,8 @@ File::Error File::OSErrorToFileError(DWORD last_error) {
     case ERROR_DISK_CORRUPT:  // The disk structure is corrupted and unreadable.
       return FILE_ERROR_IO;
     default:
-      UmaHistogramSparse("PlatformFile.UnknownErrors.Windows", last_error);
+      UmaHistogramSparse("PlatformFile.UnknownErrors.Windows",
+                         static_cast<int>(last_error));
       // This function should only be called for errors.
       DCHECK_NE(static_cast<DWORD>(ERROR_SUCCESS), last_error);
       return FILE_ERROR_FAILED;
@@ -425,7 +440,7 @@ void File::DoInitialize(const FilePath& path, uint32_t flags) {
   file_.Set(CreateFile(path.value().c_str(), access, sharing, NULL, disposition,
                        create_flags, NULL));
 
-  if (file_.IsValid()) {
+  if (file_.is_valid()) {
     error_details_ = FILE_OK;
     async_ = ((flags & FLAG_ASYNC) == FLAG_ASYNC);
 
@@ -446,7 +461,7 @@ bool File::Flush() {
   // On Windows 8 and above, FlushFileBuffers is guaranteed to flush the storage
   // device's internal buffers (if they exist) before returning.
   // https://blogs.msdn.microsoft.com/oldnewthing/20170510-00/?p=95505
-  return ::FlushFileBuffers(file_.Get()) != FALSE;
+  return ::FlushFileBuffers(file_.get()) != FALSE;
 }
 
 void File::SetPlatformFile(PlatformFile file) {

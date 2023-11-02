@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,15 +6,16 @@
 
 #import <UIKit/UIKit.h>
 
-#include "base/notreached.h"
+#import "base/notreached.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator+protected.h"
 #import "ios/chrome/browser/ui/first_run/first_run_screen_delegate.h"
 #import "ios/chrome/browser/ui/first_run/first_run_util.h"
+#import "ios/chrome/browser/ui/first_run/legacy_signin/legacy_signin_screen_coordinator.h"
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_coordinator.h"
 #import "ios/chrome/browser/ui/screen/screen_provider.h"
 #import "ios/chrome/browser/ui/screen/screen_type.h"
@@ -93,7 +94,7 @@
                                                 completion:completion];
 }
 
-// Presents the screen of certain |type|.
+// Presents the screen of certain `type`.
 - (void)presentScreen:(ScreenType)type {
   // If there are no screens remaining, call delegate to stop presenting
   // screens.
@@ -105,17 +106,24 @@
   [self.childCoordinator start];
 }
 
-// Creates a screen coordinator according to |type|.
+// Creates a screen coordinator according to `type`.
 - (InterruptibleChromeCoordinator*)createChildCoordinatorWithScreenType:
     (ScreenType)type {
   switch (type) {
+    case kLegacySignIn:
+      return [[LegacySigninScreenCoordinator alloc]
+          initWithBaseNavigationController:self.navigationController
+                                   browser:self.browser
+                                  delegate:self];
     case kSignIn:
       return [[SigninScreenCoordinator alloc]
           initWithBaseNavigationController:self.navigationController
                                    browser:self.browser
+                            showFREConsent:NO
                                   delegate:self];
     case kSignInAndSync:
     case kSync:
+    case kTangibleSync:
     case kWelcomeAndConsent:
     case kDefaultBrowserPromo:
     case kStepsCompleted:
@@ -141,13 +149,13 @@
 
 // This is called before finishing the presentation of a screen.
 // Stops the child coordinator and prepares the next screen to present.
-- (void)willFinishPresenting {
+- (void)screenWillFinishPresenting {
   [self.childCoordinator stop];
   self.childCoordinator = nil;
   [self presentScreen:[self.screenProvider nextScreenType]];
 }
 
-- (void)skipAll {
+- (void)skipAllScreens {
   [self finishPresentingScreens];
 }
 
@@ -192,6 +200,16 @@
                      dismissViewControllerAnimated:animated
                                         completion:finishCompletion];
                }];
+}
+
+#pragma mark - NSObject
+
+- (NSString*)description {
+  return [NSString
+      stringWithFormat:@"<%@: %p, screenProvider: %p, childCoordinator: %p, "
+                       @"navigationController %p>",
+                       self.class.description, self, self.screenProvider,
+                       self.childCoordinator, self.navigationController];
 }
 
 @end

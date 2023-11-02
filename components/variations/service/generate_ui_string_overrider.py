@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -174,8 +174,10 @@ def _GenerateSourceFileContent(resources_content, namespace, header_filename):
   if collisions:
     error_message = "\n".join(
         ["hash: %i, name: %s" % (i.hash, i.name) for i in sorted(collisions)])
-    error_message = ("\nThe following names had hash collisions "
-                     "(sorted by the hash value):\n%s\n" %(error_message))
+    error_message = ("\nThe following names, sorted by hash value, "
+                     "had hash collisions (One possible cause: strings "
+                     "appear in different orders for Chrome and Chromium):"
+                     "\n%s\n" % (error_message))
     raise HashCollisionError(error_message)
 
   hashes_array = _GenDataArray(

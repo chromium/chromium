@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 
 namespace blink {
 
-absl::optional<IntRect> CSSMaskPainter::MaskBoundingBox(
+absl::optional<gfx::RectF> CSSMaskPainter::MaskBoundingBox(
     const LayoutObject& object,
     const PhysicalOffset& paint_offset) {
   if (!object.IsBoxModelObject() && !object.IsSVGChild())
@@ -25,15 +25,15 @@ absl::optional<IntRect> CSSMaskPainter::MaskBoundingBox(
       if (masker) {
         const gfx::RectF reference_box =
             SVGResources::ReferenceBoxForEffects(object);
-        const float reference_box_zoom =
-            object.IsSVGForeignObject() ? object.StyleRef().EffectiveZoom() : 1;
-        return EnclosingIntRect(
-            masker->ResourceBoundingBox(reference_box, reference_box_zoom));
+        const float reference_box_zoom = object.IsSVGForeignObjectIncludingNG()
+                                             ? object.StyleRef().EffectiveZoom()
+                                             : 1;
+        return masker->ResourceBoundingBox(reference_box, reference_box_zoom);
       }
     }
   }
 
-  if (object.IsSVGChild() && !object.IsSVGForeignObject())
+  if (object.IsSVGChild() && !object.IsSVGForeignObjectIncludingNG())
     return absl::nullopt;
 
   if (!style.HasMask())
@@ -55,7 +55,7 @@ absl::optional<IntRect> CSSMaskPainter::MaskBoundingBox(
   if (style.HasMaskBoxImageOutsets())
     maximum_mask_region.Expand(style.MaskBoxImageOutsets());
   maximum_mask_region.offset += paint_offset;
-  return PixelSnappedIntRect(maximum_mask_region);
+  return gfx::RectF(maximum_mask_region);
 }
 
 }  // namespace blink

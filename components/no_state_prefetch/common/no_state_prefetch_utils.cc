@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,14 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "extensions/common/constants.h"
+#include "extensions/buildflags/buildflags.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// GN doesn't understand conditional includes, so we need nogncheck here.
+#include "extensions/common/constants.h"  // nogncheck
+#endif
 
 namespace prerender {
 
@@ -45,7 +50,9 @@ const char kFollowOnlyWhenPrerenderShown[] = "follow-only-when-prerender-shown";
 
 bool DoesURLHaveValidScheme(const GURL& url) {
   return (url.SchemeIsHTTPOrHTTPS() ||
+#if BUILDFLAG(ENABLE_EXTENSIONS)
           url.SchemeIs(extensions::kExtensionScheme) ||
+#endif
           url.SchemeIs(url::kDataScheme));
 }
 

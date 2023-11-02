@@ -1,12 +1,10 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//services/network/public/cpp/features.gni")
-import("//testing/libfuzzer/fuzzer_test.gni")
-import("//third_party/protobuf/proto_library.gni")
 
-source_set("first_party_sets") {
+source_set("first_party_sets_manager") {
   visibility = [
     ":*",
     "//services/network:network_service",
@@ -16,10 +14,10 @@ source_set("first_party_sets") {
   defines = [ "IS_NETWORK_SERVICE_IMPL" ]
 
   sources = [
-    "first_party_set_parser.cc",
-    "first_party_set_parser.h",
-    "first_party_sets.cc",
-    "first_party_sets.h",
+    "first_party_sets_access_delegate.cc",
+    "first_party_sets_access_delegate.h",
+    "first_party_sets_manager.cc",
+    "first_party_sets_manager.h",
   ]
 
   deps = [
@@ -41,7 +39,7 @@ source_set("test_support") {
   sources = []
 
   deps = [
-    ":first_party_sets",
+    ":first_party_sets_manager",
     "//base",
     "//base/test:test_support",
     "//components/cbor",
@@ -60,12 +58,12 @@ source_set("tests") {
   defines = [ "IS_NETWORK_SERVICE_IMPL" ]
 
   sources = [
-    "first_party_set_parser_unittest.cc",
-    "first_party_sets_unittest.cc",
+    "first_party_sets_access_delegate_unittest.cc",
+    "first_party_sets_manager_unittest.cc",
   ]
 
   deps = [
-    ":first_party_sets",
+    ":first_party_sets_manager",
     ":test_support",
     "//base",
     "//base/test:test_support",
@@ -79,45 +77,4 @@ source_set("tests") {
     "//testing/gtest",
     "//url",
   ]
-}
-
-fuzzer_test("first_party_set_parser_fuzzer") {
-  sources = [ "test/first_party_set_parser_fuzzer.cc" ]
-  deps = [
-    ":first_party_sets",
-    "//base",
-    "//net:net",
-    "//net:net_fuzzer_test_support",
-  ]
-  dict = "test/first_party_set_parser_fuzzer.dict"
-  seed_corpus = "//third_party/grpc/src/test/core/json/corpus/"
-}
-
-fuzzer_test("first_party_set_parser_json_fuzzer") {
-  sources = [ "test/first_party_set_parser_json_fuzzer.cc" ]
-  deps = [
-    ":first_party_sets",
-    "//base",
-    "//net:net",
-    "//net:net_fuzzer_test_support",
-    "//testing/libfuzzer/proto:json_proto",
-    "//testing/libfuzzer/proto:json_proto_converter",
-    "//third_party/libprotobuf-mutator",
-  ]
-}
-
-fuzzer_test("first_party_set_parser_map_fuzzer") {
-  sources = [ "test/first_party_set_parser_map_fuzzer.cc" ]
-  deps = [
-    ":first_party_sets",
-    ":firstpartysets_proto",
-    "//base",
-    "//net:net",
-    "//net:net_fuzzer_test_support",
-    "//third_party/libprotobuf-mutator",
-  ]
-}
-
-proto_library("firstpartysets_proto") {
-  sources = [ "test/first_party_set_parser_map_fuzzer.proto" ]
 }

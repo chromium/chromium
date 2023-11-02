@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,14 +32,14 @@ class LoginPinViewTest : public LoginTestBase {
   // Creates login pin view with the specified keyboard |style| and sets it up
   // in a widget.
   void CreateLoginPinViewWithStyle(LoginPinView::Style style) {
-    view_ =
-        new LoginPinView(style, CreateDefaultLoginPalette(),
-                         base::BindRepeating(&LoginPinViewTest::OnPinKey,
-                                             base::Unretained(this)),
-                         base::BindRepeating(&LoginPinViewTest::OnPinBackspace,
-                                             base::Unretained(this)),
-                         base::BindRepeating(&LoginPinViewTest::OnPinSubmit,
-                                             base::Unretained(this)));
+    view_ = new LoginPinView(
+        style, CreateDefaultLoginPalette(/*color_provider=*/nullptr),
+        base::BindRepeating(&LoginPinViewTest::OnPinKey,
+                            base::Unretained(this)),
+        base::BindRepeating(&LoginPinViewTest::OnPinBackspace,
+                            base::Unretained(this)),
+        base::BindRepeating(&LoginPinViewTest::OnPinSubmit,
+                            base::Unretained(this)));
 
     SetWidget(CreateWidgetWithContent(view_));
   }

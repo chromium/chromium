@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,21 +8,17 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
+#include "base/values.h"
 #include "net/base/net_export.h"
 #include "net/http/structured_headers.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
-namespace base {
-class Value;
-}  // namespace base
-
 namespace net {
 
 class IsolationInfo;
-class NetworkIsolationKey;
+class NetworkAnonymizationKey;
 class ReportingContext;
 
 // Tries to parse a Reporting-Endpoints header. Returns base::nullopt if parsing
@@ -52,12 +48,12 @@ class NET_EXPORT ReportingHeaderParser {
 
   static void ParseReportToHeader(
       ReportingContext* context,
-      const NetworkIsolationKey& network_isolation_key,
+      const NetworkAnonymizationKey& network_anonymization_key,
       const url::Origin& origin,
-      std::unique_ptr<base::Value> value);
+      const base::Value::List& list);
 
   // `isolation_info` here will be stored in the cache, associated with the
-  // `reporting_source`. `network_isolation_key` is the NIK which will be
+  // `reporting_source`. `network_anonymization_key` is the NIK which will be
   // passed in with reports to be queued. This must match the NIK from
   // `isolation_source`, unless it is empty (which will be the case if the
   // kPartitionNelAndReportingByNetworkIsolationKey feature is disabled.)
@@ -65,7 +61,7 @@ class NET_EXPORT ReportingHeaderParser {
       ReportingContext* context,
       const base::UnguessableToken& reporting_source,
       const IsolationInfo& isolation_info,
-      const NetworkIsolationKey& network_isolation_key,
+      const NetworkAnonymizationKey& network_anonymization_key,
       const url::Origin& origin,
       base::flat_map<std::string, std::string> parsed_header);
 

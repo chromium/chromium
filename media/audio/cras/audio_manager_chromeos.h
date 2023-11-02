@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,10 +11,10 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/audio/audio_device.h"
-#include "ash/components/audio/cras_audio_handler.h"
 #include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
+#include "chromeos/ash/components/audio/audio_device.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "media/audio/audio_manager_base.h"
 #include "media/audio/cras/audio_manager_cras_base.h"
 
@@ -62,7 +62,6 @@ class MEDIA_EXPORT AudioManagerChromeOS : public AudioManagerCrasBase {
   // capabilities tailored for the system,
   static AudioParameters GetStreamParametersForSystem(
       int user_buffer_size,
-      bool has_keyboard,
       const AudioManagerChromeOS::SystemAudioProcessingInfo& system_apm_info);
 
  protected:

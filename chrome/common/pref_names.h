@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,13 +28,14 @@ extern const char kPreinstalledApps[];
 extern const char kSafeBrowsingForTrustedSourcesEnabled[];
 extern const char kDisableScreenshots[];
 extern const char kDownloadRestrictions[];
+extern const char kDownloadBubbleEnabled[];
 extern const char kForceEphemeralProfiles[];
 extern const char kHomePageIsNewTabPage[];
 extern const char kHomePage[];
 extern const char kHttpsOnlyModeEnabled[];
 extern const char kImportantSitesDialogHistory[];
 extern const char kProfileCreationTime[];
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 extern const char kLastProfileResetTimestamp[];
 extern const char kChromeCleanerResetPending[];
 extern const char kChromeCleanerScanCompletionTime[];
@@ -43,13 +44,16 @@ extern const char kNewTabPageLocationOverride[];
 extern const char kProfileIconVersion[];
 extern const char kRestoreOnStartup[];
 extern const char kSessionExitType[];
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 extern const char kManagedProfileSerialAllowAllPortsForUrlsDeprecated[];
 extern const char kManagedProfileSerialAllowUsbDevicesForUrlsDeprecated[];
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS) && BUILDFLAG(ENABLE_EXTENSIONS)
 extern const char kSupervisedUserApprovedExtensions[];
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS) && BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+extern const char kSupervisedUserMetricsDayId[];
+#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 extern const char kSupervisedUserCustodianEmail[];
 extern const char kSupervisedUserCustodianName[];
 extern const char kSupervisedUserCustodianObfuscatedGaiaId[];
@@ -73,7 +77,7 @@ extern const char kRlzPingDelaySeconds[];
 #endif  // BUILDFLAG(ENABLE_RLZ)
 
 // For OS_CHROMEOS we maintain the kApplicationLocale property in both local
-// state and the user's profile.  The global property determines the locale of
+// state and the user's profile. The global property determines the locale of
 // the login screen, while the user's profile determines their personal locale
 // preference.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -91,7 +95,7 @@ extern const char kWebKitSerifFontFamily[];
 extern const char kWebKitSansSerifFontFamily[];
 extern const char kWebKitCursiveFontFamily[];
 extern const char kWebKitFantasyFontFamily[];
-extern const char kWebKitPictographFontFamily[];
+extern const char kWebKitMathFontFamily[];
 
 // ISO 15924 four-letter script codes that per-script font prefs are supported
 // for.
@@ -105,17 +109,17 @@ extern const char kWebKitSerifFontFamilyMap[];
 extern const char kWebKitSansSerifFontFamilyMap[];
 extern const char kWebKitCursiveFontFamilyMap[];
 extern const char kWebKitFantasyFontFamilyMap[];
-extern const char kWebKitPictographFontFamilyMap[];
+extern const char kWebKitMathFontFamilyMap[];
 
 // Per-script font prefs that have defaults, for easy reference when registering
 // the defaults.
 extern const char kWebKitStandardFontFamilyArabic[];
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 extern const char kWebKitFixedFontFamilyArabic[];
 #endif
 extern const char kWebKitSerifFontFamilyArabic[];
 extern const char kWebKitSansSerifFontFamilyArabic[];
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 extern const char kWebKitStandardFontFamilyCyrillic[];
 extern const char kWebKitFixedFontFamilyCyrillic[];
 extern const char kWebKitSerifFontFamilyCyrillic[];
@@ -133,7 +137,7 @@ extern const char kWebKitStandardFontFamilyKorean[];
 extern const char kWebKitFixedFontFamilyKorean[];
 extern const char kWebKitSerifFontFamilyKorean[];
 extern const char kWebKitSansSerifFontFamilyKorean[];
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 extern const char kWebKitCursiveFontFamilyKorean[];
 #endif
 extern const char kWebKitStandardFontFamilySimplifiedHan[];
@@ -144,7 +148,7 @@ extern const char kWebKitStandardFontFamilyTraditionalHan[];
 extern const char kWebKitFixedFontFamilyTraditionalHan[];
 extern const char kWebKitSerifFontFamilyTraditionalHan[];
 extern const char kWebKitSansSerifFontFamilyTraditionalHan[];
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 extern const char kWebKitCursiveFontFamilySimplifiedHan[];
 extern const char kWebKitCursiveFontFamilyTraditionalHan[];
 #endif
@@ -163,37 +167,40 @@ extern const char kWebKitJavascriptCanAccessClipboard[];
 extern const char kWebkitTabsToLinks[];
 extern const char kWebKitAllowRunningInsecureContent[];
 extern const char kWebKitForceDarkModeEnabled[];
-#if defined(OS_ANDROID)
-extern const char kWebKitFontScaleFactor[];
-extern const char kWebKitForceEnableZoom[];
+#if BUILDFLAG(IS_ANDROID)
 extern const char kWebKitPasswordEchoEnabled[];
 #endif
 extern const char kSSLErrorOverrideAllowed[];
 extern const char kSSLErrorOverrideAllowedForOrigins[];
 extern const char kIncognitoModeAvailability[];
 extern const char kSearchSuggestEnabled[];
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 extern const char kContextualSearchEnabled[];
 extern const char kContextualSearchDisabledValue[];
 extern const char kContextualSearchEnabledValue[];
 extern const char kContextualSearchPromoCardShownCount[];
 extern const char kContextualSearchWasFullyPrivacyEnabled[];
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 extern const char kShowInternalAccessibilityTree[];
 extern const char kAccessibilityImageLabelsEnabled[];
 extern const char kAccessibilityImageLabelsOptInAccepted[];
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 extern const char kAccessibilityImageLabelsEnabledAndroid[];
 extern const char kAccessibilityImageLabelsOnlyOnWifi[];
 #endif
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 extern const char kAccessibilityFocusHighlightEnabled[];
 #endif
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 extern const char kLiveCaptionEnabled[];
 extern const char kLiveCaptionLanguageCode[];
 #endif
-#if defined(OS_MAC)
+extern const char kPageColors[];
+extern const char kApplyPageColorsOnlyOnIncreasedContrast[];
+#if BUILDFLAG(IS_WIN)
+extern const char kIsDefaultPageColorsOnHighContrast[];
+#endif
+#if BUILDFLAG(IS_MAC)
 extern const char kConfirmToQuitEnabled[];
 extern const char kShowFullscreenToolbar[];
 extern const char kAllowJavascriptAppleEvents[];
@@ -202,18 +209,15 @@ extern const char kPromptForDownload[];
 extern const char kQuicAllowed[];
 extern const char kNetworkQualities[];
 extern const char kNetworkEasterEggHighScore[];
-#if defined(OS_ANDROID)
-extern const char kLastPolicyCheckTime[];
-#endif
 extern const char kNetworkPredictionOptions[];
 extern const char kPreinstalledAppsInstallState[];
 extern const char kHideWebStoreIcon[];
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 extern const char kAttestationExtensionAllowlist[];
 extern const char kPrintingAPIExtensionsAllowlist[];
+extern const char kEnableSyncConsent[];
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-extern const char kAccountManagerNumTimesWelcomeScreenShown[];
 extern const char kTapToClickEnabled[];
 extern const char kEnableTouchpadThreeFingerClick[];
 extern const char kPrimaryMouseButtonRight[];
@@ -233,7 +237,6 @@ extern const char kTouchpadScrollSensitivity[];
 extern const char kPointingStickSensitivity[];
 extern const char kUse24HourClock[];
 extern const char kUserTimezone[];
-extern const char kResolveTimezoneByGeolocation[];
 extern const char kResolveTimezoneByGeolocationMethod[];
 extern const char kResolveTimezoneByGeolocationMigratedToMethod[];
 // TODO(yusukes): Change "kLanguageABC" to "kABC". The current form is too long
@@ -249,7 +252,6 @@ extern const char kLanguageEnabledImesSyncable[];
 extern const char kLanguageImeMenuActivated[];
 extern const char kLanguageInputMethodSpecificSettings[];
 extern const char kLanguageShouldMergeInputMethods[];
-extern const char kLanguageSendFunctionKeys[];
 
 extern const char kLabsAdvancedFilesystemEnabled[];
 extern const char kLabsMediaplayerEnabled[];
@@ -276,13 +278,14 @@ extern const char kTimeOnOobe[];
 extern const char kFileSystemProviderMounted[];
 extern const char kTouchVirtualKeyboardEnabled[];
 extern const char kCaptivePortalAuthenticationIgnoresProxy[];
-extern const char kForceMaximizeOnFirstRun[];
 extern const char kPlatformKeys[];
 extern const char kKeyPermissionsOneTimeMigrationDone[];
 extern const char kUnifiedDesktopEnabledByDefault[];
 extern const char kHatsLastInteractionTimestamp[];
 extern const char kHatsSurveyCycleEndTimestamp[];
 extern const char kHatsDeviceIsSelected[];
+extern const char kHatsEntSurveyCycleEndTs[];
+extern const char kHatsEntDeviceIsSelected[];
 extern const char kHatsStabilitySurveyCycleEndTs[];
 extern const char kHatsStabilityDeviceIsSelected[];
 extern const char kHatsPerformanceSurveyCycleEndTs[];
@@ -293,6 +296,24 @@ extern const char kHatsUnlockDeviceIsSelected[];
 extern const char kHatsUnlockSurveyCycleEndTs[];
 extern const char kHatsSmartLockDeviceIsSelected[];
 extern const char kHatsSmartLockSurveyCycleEndTs[];
+extern const char kHatsArcGamesDeviceIsSelected[];
+extern const char kHatsArcGamesSurveyCycleEndTs[];
+extern const char kHatsAudioDeviceIsSelected[];
+extern const char kHatsAudioSurveyCycleEndTs[];
+extern const char kHatsPersonalizationAvatarSurveyCycleEndTs[];
+extern const char kHatsPersonalizationAvatarSurveyIsSelected[];
+extern const char kHatsPersonalizationScreensaverSurveyCycleEndTs[];
+extern const char kHatsPersonalizationScreensaverSurveyIsSelected[];
+extern const char kHatsPersonalizationWallpaperSurveyCycleEndTs[];
+extern const char kHatsPersonalizationWallpaperSurveyIsSelected[];
+extern const char kHatsMediaAppPdfCycleEndTs[];
+extern const char kHatsMediaAppPdfIsSelected[];
+extern const char kHatsCameraAppDeviceIsSelected[];
+extern const char kHatsCameraAppSurveyCycleEndTs[];
+extern const char kHatsPhotosExperienceCycleEndTs[];
+extern const char kHatsPhotosExperienceIsSelected[];
+extern const char kHatsGeneralCameraIsSelected[];
+extern const char kHatsGeneralCameraSurveyCycleEndTs[];
 extern const char kEolStatus[];
 extern const char kEndOfLifeDate[];
 extern const char kEolNotificationDismissed[];
@@ -312,9 +333,7 @@ extern const char kTextToSpeechVolume[];
 extern const char kTimeLimitLocalOverride[];
 extern const char kUsageTimeLimit[];
 extern const char kScreenTimeLastState[];
-extern const char kEnableSyncConsent[];
 extern const char kNetworkFileSharesAllowed[];
-extern const char kManagedSessionEnabled[];
 extern const char kManagedSessionUseFullLoginWarning[];
 extern const char kTPMFirmwareUpdateCleanupDismissed[];
 extern const char kTPMUpdatePlannedNotificationShownTime[];
@@ -345,21 +364,28 @@ extern const char kKerberosRememberPasswordEnabled[];
 extern const char kKerberosAddAccountsAllowed[];
 extern const char kKerberosAccounts[];
 extern const char kKerberosActivePrincipalName[];
+extern const char kKerberosDomainAutocomplete[];
+extern const char kKerberosDefaultConfiguration[];
 extern const char kAppReinstallRecommendationEnabled[];
 extern const char kStartupBrowserWindowLaunchSuppressed[];
 extern const char kLoginExtensionApiDataForNextLoginAttempt[];
-extern const char kLoginExtensionApiLaunchExtensionId[];
+extern const char kLoginExtensionApiCanLockManagedGuestSession[];
 extern const char kUpdateRequiredTimerStartTime[];
 extern const char kUpdateRequiredWarningPeriod[];
 extern const char kSystemProxyUserTrafficHostAndPort[];
 extern const char kEduCoexistenceArcMigrationCompleted[];
-extern const char kRestrictedManagedGuestSessionExtensionCleanupExemptList[];
+extern const char kSharedStorage[];
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-#if defined(OS_CHROMEOS)
-extern const char kExternalStorageDisabled[];
-extern const char kExternalStorageReadOnly[];
-extern const char kSettingsShowOSBanner[];
-#endif  // defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
+extern const char kDeskAPIThirdPartyAccessEnabled[];
+extern const char kDeskAPIThirdPartyAllowlist[];
+extern const char kForceMaximizeOnFirstRun[];
+extern const char kInsightsExtensionEnabled[];
+extern const char kOOMKillsDailyCount[];
+extern const char kOOMKillsDailySample[];
+extern const char kRestrictedManagedGuestSessionExtensionCleanupExemptList[];
+extern const char kUsedPolicyCertificates[];
+#endif  // BUILDFLAG(IS_CHROMEOS)
 extern const char kShowHomeButton[];
 extern const char kSpeechRecognitionFilterProfanities[];
 extern const char kAllowDeletingBrowserHistory[];
@@ -371,8 +397,10 @@ extern const char kUseAshProxy[];
 #endif  //  BUILDFLAG(IS_CHROMEOS_LACROS)
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-extern const char kUsesSystemTheme[];
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(https://crbug.com/1317782): Remove in M110.
+extern const char kUsesSystemThemeDeprecated[];
+extern const char kSystemTheme[];
 #endif
 extern const char kCurrentThemePackFilename[];
 extern const char kCurrentThemeID[];
@@ -388,30 +416,26 @@ extern const char kPluginsAlwaysOpenPdfExternally[];
 extern const char kPluginsShowDetails[];
 #endif
 extern const char kPluginsAllowOutdated[];
-#if BUILDFLAG(ENABLE_PLUGINS)
-extern const char kPluginsMetadata[];
-extern const char kPluginsResourceCacheUpdate[];
-#endif
 extern const char kDefaultBrowserLastDeclined[];
 extern const char kResetCheckDefaultBrowser[];
 extern const char kDefaultBrowserSettingEnabled[];
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 extern const char kShowUpdatePromotionInfoBar[];
 #endif
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 extern const char kUseCustomChromeFrame[];
 #endif
 #if BUILDFLAG(ENABLE_PLUGINS)
-extern const char kContentSettingsPluginWhitelist[];
+extern const char kContentSettingsPluginAllowlist[];
 #endif
 extern const char kPartitionDefaultZoomLevel[];
 extern const char kPartitionPerHostZoomLevels[];
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 extern const char kPinnedTabs[];
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 extern const char kDisable3DAPIs[];
 extern const char kEnableHyperlinkAuditing[];
@@ -439,20 +463,22 @@ extern const char kProfileUsingDefaultAvatar[];
 extern const char kProfileUsingGAIAAvatar[];
 extern const char kSupervisedUserId[];
 
-extern const char kProfileAvatarTutorialShown[];
-
 extern const char kInvertNotificationShown[];
 
 extern const char kPrinterTypeDenyList[];
 extern const char kPrintingAllowedBackgroundGraphicsModes[];
 extern const char kPrintingBackgroundGraphicsDefault[];
 extern const char kPrintingPaperSizeDefault[];
+
+#if BUILDFLAG(ENABLE_PRINTING)
 extern const char kPrintingEnabled[];
+#endif  // BUILDFLAG(ENABLE_PRINTING)
+
 extern const char kPrintHeaderFooter[];
 extern const char kPrintPreviewDisabled[];
 extern const char kPrintPreviewDefaultDestinationSelectionRules[];
 
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 extern const char kPrintPdfAsImageAvailability[];
 #endif
 
@@ -461,12 +487,12 @@ extern const char kPrintRasterizePdfDpi[];
 extern const char kPrintPdfAsImageDefault[];
 #endif
 
-#if defined(OS_WIN) && BUILDFLAG(ENABLE_PRINTING)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(ENABLE_PRINTING)
 extern const char kPrintPostScriptMode[];
 extern const char kPrintRasterizationMode[];
 #endif
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
 extern const char kPrintPreviewUseSystemDefaultPrinter[];
 extern const char kUserDataSnapshotRetentionLimit[];
 #endif
@@ -490,6 +516,7 @@ extern const char kPrintingSendUsernameAndFilenameEnabled[];
 extern const char kPrintingMaxSheetsAllowed[];
 extern const char kPrintJobHistoryExpirationPeriod[];
 extern const char kDeletePrintJobHistoryAllowed[];
+extern const char kPrintingClientNameTemplate[];
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 extern const char kDefaultSupervisedUserFilteringBehavior[];
@@ -500,7 +527,7 @@ extern const char kMessageCenterDisabledExtensionIds[];
 
 extern const char kFullscreenAllowed[];
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 extern const char kMigratedToSiteNotificationChannels[];
 extern const char kClearedBlockedSiteNotificationChannels[];
 extern const char kUsageStatsEnabled[];
@@ -512,6 +539,7 @@ extern const char kGCMProductCategoryForSubtypes[];
 
 extern const char kEasyUnlockAllowed[];
 extern const char kEasyUnlockPairing[];
+extern const char kHasSeenSmartLockSignInRemovedNotification[];
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 extern const char kToolbarIconSurfacingBubbleAcknowledged[];
@@ -526,47 +554,46 @@ extern const char kWebRtcEventLogCollectionAllowed[];
 extern const char kWebRtcLocalIpsAllowedUrls[];
 extern const char kWebRTCAllowLegacyTLSProtocols[];
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 extern const char kHasSeenWelcomePage[];
 extern const char kManagedAccountsSigninRestriction[];
 extern const char kManagedAccountsSigninRestrictionScopeMachine[];
-#endif
+#if !BUILDFLAG(IS_CHROMEOS)
+extern const char kEnterpriseProfileCreationKeepBrowsingData[];
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Only used in branded builds.
 extern const char kNaviOnboardGroup[];
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 extern const char kQuietNotificationPermissionShouldShowPromo[];
 extern const char kQuietNotificationPermissionPromoWasShown[];
 extern const char kNotificationPermissionActions[];
 extern const char kHadThreeConsecutiveNotificationPermissionDenies[];
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 extern const char kManagedSerialAllowAllPortsForUrls[];
 extern const char kManagedSerialAllowUsbDevicesForUrls[];
-#endif  // !defined(OS_ANDROID)
+extern const char kManagedWebHidAllowAllDevicesForUrls[];
+extern const char kManagedWebHidAllowDevicesForUrls[];
+extern const char kManagedWebHidAllowDevicesWithHidUsagesForUrls[];
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 extern const char kProfileLastUsed[];
 extern const char kProfilesLastActive[];
 extern const char kProfilesNumCreated[];
 extern const char kProfileAttributes[];
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 extern const char kLegacyProfileNamesMigrated[];
-#endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 extern const char kProfileCreatedByVersion[];
 extern const char kProfilesDeleted[];
 
 extern const char kStabilityOtherUserCrashCount[];
 extern const char kStabilityKernelCrashCount[];
 extern const char kStabilitySystemUncleanShutdownCount[];
-
-extern const char kStabilityPluginStats[];
-extern const char kStabilityPluginName[];
-extern const char kStabilityPluginLaunches[];
-extern const char kStabilityPluginInstances[];
-extern const char kStabilityPluginCrashes[];
-extern const char kStabilityPluginLoadingErrors[];
 
 extern const char kBrowserSuppressDefaultBrowserPrompt[];
 
@@ -582,13 +609,13 @@ extern const char kDownloadExtensionsToOpen[];
 extern const char kDownloadExtensionsToOpenByPolicy[];
 extern const char kDownloadAllowedURLsForOpenByPolicy[];
 extern const char kDownloadDirUpgraded[];
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
-    defined(OS_MAC)
+extern const char kDownloadLastCompleteTime[];
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_MAC)
 extern const char kOpenPdfDownloadInSystemReader[];
 #endif
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 extern const char kPromptForDownloadAndroid[];
-extern const char kDownloadLaterPromptStatus[];
 extern const char kShowMissingSdCardErrorAndroid[];
 extern const char kIncognitoReauthenticationForAndroid[];
 #endif
@@ -597,8 +624,13 @@ extern const char kSaveFileDefaultDirectory[];
 extern const char kSaveFileType[];
 
 extern const char kAllowFileSelectionDialogs[];
+
 extern const char kDefaultTasksByMimeType[];
 extern const char kDefaultTasksBySuffix[];
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+extern const char kDefaultHandlersForFileExtensions[];
+#endif
 
 extern const char kSharedClipboardEnabled[];
 
@@ -619,20 +651,20 @@ extern const char kShutdownNumProcesses[];
 extern const char kShutdownNumProcessesSlow[];
 
 extern const char kRestartLastSessionOnShutdown[];
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 extern const char kCommandLineFlagSecurityWarningsEnabled[];
 #endif
 extern const char kPromotionalTabsEnabled[];
 extern const char kSuppressUnsupportedOSWarning[];
 extern const char kWasRestarted[];
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 extern const char kDisableExtensions[];
 
 extern const char kNtpAppPageNames[];
 extern const char kNtpCollapsedForeignSessions[];
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 extern const char kNtpCollapsedRecentlyClosedTabs[];
 extern const char kNtpCollapsedSnapshotDocument[];
 extern const char kNtpCollapsedSyncPromo[];
@@ -642,11 +674,12 @@ extern const char kNtpCustomBackgroundLocalToDevice[];
 extern const char kNtpDisabledModules[];
 extern const char kNtpModulesOrder[];
 extern const char kNtpModulesVisible[];
+extern const char kNtpModulesShownCount[];
+extern const char kNtpModulesFirstShownTime[];
+extern const char kNtpModulesFreVisible[];
 extern const char kNtpPromoBlocklist[];
-extern const char kNtpSearchSuggestionsBlocklist[];
-extern const char kNtpSearchSuggestionsImpressions[];
-extern const char kNtpSearchSuggestionsOptOut[];
-#endif  // defined(OS_ANDROID)
+extern const char kNtpPromoVisible[];
+#endif  // BUILDFLAG(IS_ANDROID)
 extern const char kNtpShownPage[];
 
 extern const char kDevToolsAdbKey[];
@@ -666,10 +699,11 @@ extern const char kDevToolsSyncedPreferencesSyncDisabled[];
 extern const char kDevToolsDiscoverTCPTargetsEnabled[];
 extern const char kDevToolsTCPDiscoveryConfig[];
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 extern const char kDiceSigninUserMenuPromoCount[];
 #endif
 
+extern const char kUserUninstalledPreinstalledWebAppPref[];
 extern const char kManagedConfigurationPerOrigin[];
 extern const char kLastManagedConfigurationHashForOrigin[];
 
@@ -684,33 +718,24 @@ extern const char kWebAppsDailyMetricsDate[];
 extern const char kWebAppsExtensionIDs[];
 extern const char kWebAppsAppAgnosticIphState[];
 extern const char kWebAppsLastPreinstallSynchronizeVersion[];
-extern const char kWebAppsMigratedPreinstalledApps[];
 extern const char kWebAppsDidMigrateDefaultChromeApps[];
 extern const char kWebAppsUninstalledDefaultChromeApps[];
 extern const char kWebAppsPreferences[];
 extern const char kWebAppsIsolationState[];
 
-#if defined(OS_WIN) || defined(OS_MAC) || \
-    (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
+    (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
 extern const char kWebAppsUrlHandlerInfo[];
 #endif
-
-extern const char kWebAppsUserDisplayModeCleanedUp[];
-
-extern const char kSystemWebAppLastUpdateVersion[];
-extern const char kSystemWebAppLastInstalledLocale[];
-extern const char kSystemWebAppInstallFailureCount[];
-extern const char kSystemWebAppLastAttemptedVersion[];
-extern const char kSystemWebAppLastAttemptedLocale[];
 
 extern const char kDefaultAudioCaptureDevice[];
 extern const char kDefaultVideoCaptureDevice[];
 extern const char kMediaDeviceIdSalt[];
 extern const char kMediaStorageIdSalt[];
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 extern const char kMediaCdmOriginData[];
 extern const char kNetworkServiceSandboxEnabled[];
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 extern const char kPrintPreviewStickySettings[];
 extern const char kCloudPrintRoot[];
@@ -744,6 +769,8 @@ extern const char kSameOriginTabCaptureAllowedByOrigins[];
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 extern const char kDemoModeConfig[];
 extern const char kDemoModeCountry[];
+extern const char kDemoModeRetailerId[];
+extern const char kDemoModeStoreId[];
 extern const char kDemoModeDefaultLocale[];
 extern const char kDeviceSettingsCache[];
 extern const char kHardwareKeyboardLayout[];
@@ -765,8 +792,6 @@ extern const char kDeviceEnrollmentSubOrganization[];
 extern const char kDeviceEnrollmentAutoStart[];
 extern const char kDeviceEnrollmentCanExit[];
 extern const char kDeviceDMToken[];
-extern const char kUsersLastInputMethod[];
-extern const char kEchoCheckedOffers[];
 extern const char kCachedMultiProfileUserBehavior[];
 extern const char kInitialLocale[];
 extern const char kDeviceRegistered[];
@@ -774,7 +799,6 @@ extern const char kEnrollmentRecoveryRequired[];
 extern const char kHelpAppShouldShowGetStarted[];
 extern const char kHelpAppShouldShowParentalControl[];
 extern const char kHelpAppTabletModeDuringOobe[];
-extern const char kUsedPolicyCertificates[];
 extern const char kServerBackedDeviceState[];
 extern const char kCustomizationDefaultWallpaperURL[];
 extern const char kLogoutStartedLast[];
@@ -789,7 +813,6 @@ extern const char kPowerMetricsIdleSuspendCount[];
 extern const char kPowerMetricsLidClosedSuspendCount[];
 extern const char kReportingUsers[];
 extern const char kArcAppInstallEventLoggingEnabled[];
-extern const char kExtensionInstallEventLoggingEnabled[];
 extern const char kRemoveUsersRemoteCommand[];
 extern const char kAutoScreenBrightnessMetricsDailySample[];
 extern const char kAutoScreenBrightnessMetricsAtlasUserAdjustmentCount[];
@@ -803,7 +826,6 @@ extern const char
 extern const char kKnownUserParentAccessCodeConfig[];
 extern const char kLastRsuDeviceIdUploaded[];
 extern const char kDeviceName[];
-
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 extern const char kClearPluginLSODataEnabled[];
@@ -820,6 +842,7 @@ extern const char kRegisteredBackgroundContents[];
 extern const char kTotalMemoryLimitMb[];
 
 extern const char kAuthSchemes[];
+extern const char kAllHttpAuthSchemesAllowedForOrigins[];
 extern const char kDisableAuthNegotiateCnameLookup[];
 extern const char kEnableAuthNegotiatePort[];
 extern const char kAuthServerAllowlist[];
@@ -831,17 +854,18 @@ extern const char kGloballyScopeHTTPAuthCacheEnabled[];
 extern const char kAmbientAuthenticationInPrivateModesEnabled[];
 extern const char kBasicAuthOverHttpEnabled[];
 
-#if defined(OS_LINUX) || defined(OS_MAC) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
 extern const char kAuthNegotiateDelegateByKdcPolicy[];
-#endif  // defined(OS_LINUX) || defined(OS_MAC) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
 
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 extern const char kNtlmV2Enabled[];
-#endif  // defined(OS_POSIX) || defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 extern const char kKerberosEnabled[];
-#endif
+extern const char kIsolatedWebAppInstallForceList[];
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 extern const char kCertRevocationCheckingEnabled[];
 extern const char kCertRevocationCheckingRequiredLocalAnchors[];
@@ -851,19 +875,14 @@ extern const char kCipherSuiteBlacklist[];
 extern const char kH2ClientCertCoalescingHosts[];
 extern const char kHSTSPolicyBypassList[];
 extern const char kCECPQ2Enabled[];
+extern const char kEncryptedClientHelloEnabled[];
 
 extern const char kBuiltInDnsClientEnabled[];
 extern const char kDnsOverHttpsMode[];
 extern const char kDnsOverHttpsTemplates[];
 extern const char kAdditionalDnsQueryTypesEnabled[];
 
-extern const char kRegisteredProtocolHandlers[];
-extern const char kIgnoredProtocolHandlers[];
-extern const char kPolicyRegisteredProtocolHandlers[];
-extern const char kPolicyIgnoredProtocolHandlers[];
-extern const char kCustomHandlersEnabled[];
-
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 extern const char kUserRemovedLoginItem[];
 extern const char kChromeCreatedLoginItem[];
 extern const char kMigratedLoginItemPref[];
@@ -884,40 +903,49 @@ extern const char kEnableAdbSideloadingRequested[];
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 extern const char kSigninScreenTimezone[];
-extern const char kResolveDeviceTimezoneByGeolocation[];
 extern const char kResolveDeviceTimezoneByGeolocationMethod[];
 extern const char kSystemTimezoneAutomaticDetectionPolicy[];
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 extern const char kEnableMediaRouter[];
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 extern const char kShowCastIconInToolbar[];
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 extern const char kRelaunchNotification[];
 extern const char kRelaunchNotificationPeriod[];
 extern const char kRelaunchWindow[];
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 extern const char kRelaunchHeadsUpPeriod[];
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 extern const char kMacRestoreLocationPermissionsExperimentCount[];
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 extern const char kEnrollmentIdUploadedOnChromad[];
+extern const char kLastChromadMigrationAttemptTime[];
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if !defined(OS_ANDROID)
+#if BUILDFLAG(IS_WIN)
+extern const char kHardwareSecureDecryptionDisabledTimes[];
+#endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_CHROMEOS)
+extern const char kKioskMetrics[];
+extern const char kNewWindowsInKioskAllowed[];
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if !BUILDFLAG(IS_ANDROID)
 extern const char kAttemptedToEnableAutoupdate[];
 
 extern const char kMediaGalleriesUniqueId[];
 extern const char kMediaGalleriesRememberedGalleries[];
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 extern const char kPolicyPinnedLauncherApps[];
@@ -925,7 +953,7 @@ extern const char kShelfDefaultPinLayoutRolls[];
 extern const char kShelfDefaultPinLayoutRollsForTabletFormFactor[];
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 extern const char kNetworkProfileWarningsLeft[];
 extern const char kNetworkProfileLastWarningTime[];
 extern const char kShortcutMigrationVersion[];
@@ -945,9 +973,9 @@ extern const char kProtectedContentDefault[];
 
 extern const char kWatchdogExtensionActive[];
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 extern const char kPartnerBookmarkMappings[];
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 extern const char kQuickCheckEnabled[];
 extern const char kBrowserGuestModeEnabled[];
@@ -959,9 +987,11 @@ extern const char kBrowserProfilePickerShown[];
 extern const char kBrowserShowProfilePickerOnStartup[];
 extern const char kSigninAllowedOnNextStartup[];
 extern const char kSigninInterceptionEnabled[];
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
+extern const char kEchoCheckedOffers[];
 extern const char kLacrosSecondaryProfilesAllowed[];
-#endif  // defined(OS_CHROMEOS)
+extern const char kLacrosDataBackwardMigrationMode[];
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 extern const char kCryptAuthDeviceId[];
 extern const char kCryptAuthInstanceId[];
@@ -972,7 +1002,7 @@ extern const char kEasyUnlockLocalStateUserPrefs[];
 
 extern const char kRecoveryComponentNeedsElevation[];
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 extern const char kCloudExtensionRequestEnabled[];
 extern const char kCloudExtensionRequestIds[];
 #endif
@@ -986,28 +1016,37 @@ extern const char kAnimationPolicy[];
 extern const char kSecurityKeyPermitAttestation[];
 #endif
 
-extern const char kBackgroundTracingLastUpload[];
-extern const char kBackgroundTracingSessionState[];
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// FocusHighlight is special as the feature also exists in lacros.
+// However, extensions can only set the ash-value (computed here
+// and later sent to ash).
+extern const char kLacrosAccessibilityFocusHighlightEnabled[];
+
+extern const char kLacrosAccessibilityAutoclickEnabled[];
+extern const char kLacrosAccessibilityCaretHighlightEnabled[];
+extern const char kLacrosAccessibilityCursorColorEnabled[];
+extern const char kLacrosAccessibilityCursorHighlightEnabled[];
+extern const char kLacrosAccessibilityDictationEnabled[];
+extern const char kLacrosAccessibilityHighContrastEnabled[];
+extern const char kLacrosAccessibilityLargeCursorEnabled[];
+extern const char kLacrosAccessibilityScreenMagnifierEnabled[];
+extern const char kLacrosAccessibilitySelectToSpeakEnabled[];
+extern const char kLacrosAccessibilitySpokenFeedbackEnabled[];
+extern const char kLacrosAccessibilityStickyKeysEnabled[];
+extern const char kLacrosAccessibilitySwitchAccessEnabled[];
+extern const char kLacrosAccessibilityVirtualKeyboardEnabled[];
+extern const char kLacrosDockedMagnifierEnabled[];
+#endif
 
 extern const char kAllowDinosaurEasterEgg[];
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 extern const char kClickedUpdateMenuItem[];
 extern const char kLatestVersionWhenClickedUpdateMenuItem[];
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 extern const char kCommerceMerchantViewerMessagesShownTime[];
-#endif
-
-extern const char kComponentUpdatesEnabled[];
-
-#if defined(OS_ANDROID)
-extern const char kSearchGeolocationDisclosureDismissed[];
-extern const char kSearchGeolocationDisclosureShownCount[];
-extern const char kSearchGeolocationDisclosureLastShowDate[];
-extern const char kSearchGeolocationPreDisclosureMetricsRecorded[];
-extern const char kSearchGeolocationPostDisclosureMetricsRecorded[];
 #endif
 
 extern const char kDSEGeolocationSettingDeprecated[];
@@ -1017,25 +1056,26 @@ extern const char kDSEWasDisabledByPolicy[];
 
 extern const char kWebShareVisitedTargets[];
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Only used in branded builds.
 extern const char kIncompatibleApplications[];
 extern const char kModuleBlocklistCacheMD5Digest[];
 extern const char kThirdPartyBlockingEnabled[];
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 // Windows mitigation policies.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 extern const char kRendererCodeIntegrityEnabled[];
+extern const char kRendererAppContainerEnabled[];
 extern const char kBlockBrowserLegacyExtensionPoints[];
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 extern const char kSettingsResetPromptPromptWave[];
 extern const char kSettingsResetPromptLastTriggeredForDefaultSearch[];
 extern const char kSettingsResetPromptLastTriggeredForStartupUrls[];
 extern const char kSettingsResetPromptLastTriggeredForHomepage[];
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 extern const char kClipboardLastModifiedTime[];
 #endif
 
@@ -1065,26 +1105,25 @@ extern const char kTabStatsTotalTabCountMax[];
 extern const char kTabStatsMaxTabsPerWindow[];
 extern const char kTabStatsWindowCountMax[];
 extern const char kTabStatsDailySample[];
+extern const char kTabStatsDiscardsExternal[];
+extern const char kTabStatsDiscardsUrgent[];
+extern const char kTabStatsReloadsExternal[];
+extern const char kTabStatsReloadsUrgent[];
 
 extern const char kUnsafelyTreatInsecureOriginAsSecure[];
 
 extern const char kIsolateOrigins[];
 extern const char kSitePerProcess[];
 
-extern const char kCrossOriginWebAssemblyModuleSharingEnabled[];
-
-extern const char kDisplayCapturePermissionsPolicyEnabled[];
-
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 extern const char kSharedArrayBufferUnrestrictedAccessAllowed[];
 extern const char kAutoplayAllowed[];
-extern const char kAutoplayWhitelist[];
+extern const char kAutoplayAllowlist[];
 extern const char kBlockAutoplayEnabled[];
 #endif
 extern const char kSandboxExternalProtocolBlocked[];
 
-#if defined(OS_LINUX)
-extern const char kAllowNativeNotifications[];
+#if BUILDFLAG(IS_LINUX)
 extern const char kAllowSystemNotifications[];
 #endif
 
@@ -1097,28 +1136,26 @@ extern const char kEnterpriseHardwarePlatformAPIEnabled[];
 
 extern const char kSignedHTTPExchangeEnabled[];
 
-extern const char kAllowSyncXHRInPageDismissal[];
-
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 extern const char kUsageStatsEnabled[];
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 extern const char kClientCertificateManagementAllowed[];
 extern const char kCACertificateManagementAllowed[];
 #endif
 
-#if BUILDFLAG(BUILTIN_CERT_VERIFIER_POLICY_SUPPORTED)
-extern const char kBuiltinCertificateVerifierEnabled[];
+#if BUILDFLAG(CHROME_ROOT_STORE_POLICY_SUPPORTED)
+extern const char kChromeRootStoreEnabled[];
 #endif
 
 extern const char kSharingVapidKey[];
 extern const char kSharingFCMRegistration[];
 extern const char kSharingLocalSharingInfo[];
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 extern const char kHatsSurveyMetadata[];
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 extern const char kExternalProtocolDialogShowAlwaysOpenCheckbox[];
 
@@ -1126,7 +1163,7 @@ extern const char kAutoLaunchProtocolsFromOrigins[];
 
 extern const char kScrollToTextFragmentEnabled[];
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 extern const char kKnownInterceptionDisclosureInfobarLastShown[];
 #endif
 
@@ -1148,7 +1185,7 @@ extern const char kAdbSideloadingPowerwashPlannedNotificationShownTime[];
 extern const char kAdbSideloadingPowerwashOnNextRebootNotificationShown[];
 #endif
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 extern const char kCaretBrowsingEnabled[];
 extern const char kShowCaretBrowsingDialog[];
 #endif
@@ -1160,28 +1197,37 @@ extern const char kLacrosLaunchSwitch[];
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 extern const char kSecurityTokenSessionBehavior[];
 extern const char kSecurityTokenSessionNotificationSeconds[];
-extern const char kSecurityTokenSessionNotificationDisplayed[];
 extern const char kSecurityTokenSessionNotificationScheduledDomain[];
 #endif
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 extern const char kCartModuleHidden[];
 extern const char kCartModuleWelcomeSurfaceShownTimes[];
 extern const char kCartDiscountAcknowledged[];
 extern const char kCartDiscountEnabled[];
 extern const char kCartUsedDiscounts[];
 extern const char kCartDiscountLastFetchedTime[];
+extern const char kCartDiscountConsentShown[];
+extern const char kDiscountConsentDecisionMadeIn[];
+extern const char kDiscountConsentDismissedIn[];
+extern const char kDiscountConsentLastDimissedTime[];
+extern const char kDiscountConsentLastShownInVariation[];
+extern const char kDiscountConsentPastDismissedCount[];
+extern const char kDiscountConsentShowInterest[];
+extern const char kDiscountConsentShowInterestIn[];
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 extern const char kWebXRImmersiveArEnabled[];
 #endif
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 extern const char kFetchKeepaliveDurationOnShutdown[];
 #endif
 
 extern const char kSuppressDifferentOriginSubframeJSDialogs[];
+
+extern const char kUserAgentReduction[];
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 extern const char kPdfAnnotationsEnabled[];
@@ -1189,25 +1235,50 @@ extern const char kPdfAnnotationsEnabled[];
 
 extern const char kExplicitlyAllowedNetworkPorts[];
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 extern const char kDeviceAttributesAllowedForOrigins[];
 #endif
 
-#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 extern const char kDesktopSharingHubEnabled[];
 #endif
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 extern const char kLastWhatsNewVersion[];
 #endif
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 extern const char kLensRegionSearchEnabled[];
+extern const char kSidePanelHorizontalAlignment[];
 #endif
 
-extern const char kPrivacyReviewShowWelcomeCard[];
+extern const char kPrivacyGuideViewed[];
 
 extern const char kCorsNonWildcardRequestHeadersSupport[];
+
+extern const char kOriginAgentClusterDefaultEnabled[];
+
+extern const char kForceMajorVersionToMinorPositionInUserAgent[];
+
+extern const char kIdleProfileCloseTimeout[];
+
+extern const char kSCTAuditingHashdanceReportCount[];
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+extern const char kConsumerAutoUpdateToggle[];
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+extern const char kHighEfficiencyChipExpandedCount[];
+
+extern const char kShouldShowPriceTrackFUEBubble[];
+#endif
+
+extern const char kStrictMimetypeCheckForWorkerScriptsEnabled[];
+
+#if BUILDFLAG(IS_ANDROID)
+extern const char kVirtualKeyboardResizesLayoutByDefault[];
+#endif
 
 }  // namespace prefs
 

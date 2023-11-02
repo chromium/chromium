@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "ui/android/edge_effect.h"
@@ -66,7 +67,7 @@ class UI_ANDROID_EXPORT OverscrollGlow {
   // Note: All dimensions are in device pixels.
   void OnFrameUpdated(const gfx::SizeF& viewport_size,
                       const gfx::SizeF& content_size,
-                      const gfx::Vector2dF& content_scroll_offset);
+                      const gfx::PointF& content_scroll_offset);
 
   // Reset the effect to its inactive state, clearing any active effects.
   void Reset();
@@ -98,7 +99,7 @@ class UI_ANDROID_EXPORT OverscrollGlow {
 
   EdgeEffect* GetOppositeEdge(int edge_index);
 
-  OverscrollGlowClient* client_;
+  raw_ptr<OverscrollGlowClient> client_;
   std::unique_ptr<EdgeEffect> edge_effects_[EDGE_COUNT];
 
   gfx::SizeF viewport_size_;

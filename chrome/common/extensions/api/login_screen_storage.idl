@@ -1,10 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 // Use the <code>chrome.loginScreenStorage</code> API to store persistent data
 // from the login screen or inject data into the session.
-[platforms=("chromeos"),
+[platforms=("chromeos", "lacros"),
  implemented_in="chrome/browser/chromeos/extensions/login_screen/login_screen_storage/login_screen_storage_api.h"]
 namespace loginScreenStorage {
   callback StoreCallback = void ();

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,6 +31,9 @@ class ASH_EXPORT ProjectingObserver
   // ash::ShellObserver implementation:
   void OnCastingSessionStartedOrStopped(bool started) override;
 
+  // Returns whether device is projecting (docked).
+  bool is_projecting() const { return is_projecting_; }
+
  private:
   friend class ProjectingObserverTest;
 
@@ -48,6 +51,8 @@ class ASH_EXPORT ProjectingObserver
 
   // Number of outstanding casting sessions.
   int casting_session_count_ = 0;
+
+  bool is_projecting_ = false;
 };
 
 }  // namespace ash

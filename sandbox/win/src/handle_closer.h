@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "sandbox/win/src/interception.h"
 #include "sandbox/win/src/sandbox_types.h"
 #include "sandbox/win/src/target_process.h"
@@ -54,9 +53,11 @@ class HandleCloser {
   // Adds a handle that will be closed in the target process after lockdown.
   // A nullptr value for handle_name indicates all handles of the specified
   // type. An empty string for handle_name indicates the handle is unnamed.
+  // Note: this cannot be called after InitializeTargetHandles().
   ResultCode AddHandle(const wchar_t* handle_type, const wchar_t* handle_name);
 
   // Serializes and copies the closer table into the target process.
+  // Note: this can be called multiple times for different targets.
   bool InitializeTargetHandles(TargetProcess& target);
 
  private:
@@ -71,10 +72,8 @@ class HandleCloser {
   bool SetupHandleList(void* buffer, size_t buffer_bytes);
 
   HandleMap handles_to_close_;
+  std::vector<uint8_t> serialized_map_;
 };
-
-// Returns the object manager's name associated with a handle
-bool GetHandleName(HANDLE handle, std::wstring* handle_name);
 
 }  // namespace sandbox
 

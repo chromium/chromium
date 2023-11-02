@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/feature_list.h"
@@ -13,8 +14,8 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/ntp/app_launcher_handler.h"
 #include "chrome/browser/ui/webui/ntp/cookie_controls_handler.h"
 #include "chrome/browser/ui/webui/ntp/core_app_launcher_handler.h"
 #include "chrome/browser/ui/webui/ntp/ntp_resource_cache.h"
@@ -34,6 +35,10 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/native_theme/native_theme.h"
 #include "url/gurl.h"
+
+#if !BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ui/webui/ntp/app_launcher_handler.h"
+#endif
 
 namespace {
 
@@ -86,7 +91,9 @@ NewTabUI::~NewTabUI() {}
 void NewTabUI::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   CoreAppLauncherHandler::RegisterProfilePrefs(registry);
+#if !BUILDFLAG(IS_CHROMEOS)
   AppLauncherHandler::RegisterProfilePrefs(registry);
+#endif
 }
 
 // static
@@ -96,10 +103,10 @@ bool NewTabUI::IsNewTab(const GURL& url) {
 }
 
 // static
-void NewTabUI::SetUrlTitleAndDirection(base::Value* dictionary,
+void NewTabUI::SetUrlTitleAndDirection(base::Value::Dict* dictionary,
                                        const std::u16string& title,
                                        const GURL& gurl) {
-  dictionary->SetStringKey("url", gurl.spec());
+  dictionary->Set("url", gurl.spec());
 
   bool using_url_as_the_title = false;
   std::u16string title_to_set(title);
@@ -125,15 +132,15 @@ void NewTabUI::SetUrlTitleAndDirection(base::Value* dictionary,
   else
     direction = GetHtmlTextDirection(title);
 
-  dictionary->SetStringKey("title", title_to_set);
-  dictionary->SetStringKey("direction", direction);
+  dictionary->Set("title", title_to_set);
+  dictionary->Set("direction", direction);
 }
 
 // static
 void NewTabUI::SetFullNameAndDirection(const std::u16string& full_name,
-                                       base::DictionaryValue* dictionary) {
-  dictionary->SetString("full_name", full_name);
-  dictionary->SetString("full_name_direction", GetHtmlTextDirection(full_name));
+                                       base::Value::Dict* dictionary) {
+  dictionary->Set("full_name", full_name);
+  dictionary->Set("full_name_direction", GetHtmlTextDirection(full_name));
 }
 
 Profile* NewTabUI::GetProfile() const {
@@ -171,19 +178,18 @@ void NewTabUI::NewTabHTMLSource::StartDataRequest(
   Profile* profile_for_window_type =
       web_contents
           ? Profile::FromBrowserContext(web_contents->GetBrowserContext())
-          : profile_;
+          : profile_.get();
 
   NTPResourceCache::WindowType win_type =
       NTPResourceCache::GetWindowType(profile_for_window_type);
   scoped_refptr<base::RefCountedMemory> html_bytes(
       NTPResourceCacheFactory::GetForProfile(profile_)->GetNewTabHTML(
-          win_type));
+          win_type, wc_getter));
 
   std::move(callback).Run(html_bytes.get());
 }
 
-std::string NewTabUI::NewTabHTMLSource::GetMimeType(
-    const std::string& resource) {
+std::string NewTabUI::NewTabHTMLSource::GetMimeType(const GURL&) {
   return "text/html";
 }
 

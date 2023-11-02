@@ -155,39 +155,21 @@ If you're intending to launch a feature in WebView or start a field trial (AKA
 Finch experiment), we **highly encourage** you to [add to
 ProductionSupportedFlagList](/android_webview/java/src/org/chromium/android_webview/common/ProductionSupportedFlagList.java):
 
-1. Since ProductionSupportedFlagList is in Java, you will need to autogenerate
-   a Java constant for your flag. See [these
-   docs](/docs/android_accessing_cpp_features_in_java.md) if your code is behind
-   a `base::Feature` or [these
-   docs](/docs/android_accessing_cpp_switches_in_java.md) if it is behind a
-   commandline switch ([example
-   CL](https://chromium-review.googlesource.com/c/chromium/src/+/2429252)).
-2. Add your switch/feature to the list with a brief description (this
-   description will be visible to users). If your feature depends on enabling a
-   different feature too, this is a good spot to call that out.
-3. Run `android_webview/tools/generate_flag_labels.py` to generate labels for
-   `enums.xml` ([example
-   CL](https://chromium-review.googlesource.com/c/chromium/src/+/3016396)). Note
-   that this is only a best-effort attempt to generate correct labels, so you
-   may need to [modify the
-   script](https://source.chromium.org/chromium/chromium/src/+/main:android_webview/tools/generate_flag_labels.py;l=46;drc=cf0fb02287669436154b83bf862b4be38226016c)
-   if you think it made a mistake. See
+1. You can list the feature flag name directly. This will be autochecked when
+   sending a Finch change to ensure it's not misspelt.
+2. See
    [this doc](/tools/metrics/histograms/README.md#Flag-Histograms) for more info
-   about flag labels.
+   about flag labels if you want histogram data about usage.
 
 Exposing your feature this way has several benefits:
 
 - This improves the manual test process. Testers can enable your feature with a
   button click instead of an adb command.
-- Typo-free: someone could mistype a flag or feature name in the commandline,
-  but this UI ensures flag names are always spelled correctly.
 - Because this works on production Android devices, test team can validate your
   feature on devices from other OEMs.
 - You (and teammates) can dogfood your feature.
 - If users or third-party app developers report bugs, this UI is the only way
   they can toggle your feature to help root-cause the regression.
-- You can see metrics for your feature's adoption with the
-  "Launch.FlagsAtStartup" histogram.
 
 ### See also
 

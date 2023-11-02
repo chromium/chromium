@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -12,6 +12,8 @@ source_set("share") {
   sources = [
     "default_ranking.cc",
     "default_ranking.h",
+    "share_attempt.cc",
+    "share_attempt.h",
     "share_history.cc",
     "share_history.h",
     "share_ranking.cc",
@@ -20,6 +22,7 @@ source_set("share") {
 
   deps = [
     "//base",
+    "//chrome/browser/favicon",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/share/proto:proto",
     "//chrome/services/qrcode_generator/public/cpp",
@@ -35,6 +38,7 @@ source_set("share") {
   if (is_android) {
     sources += [
       "bitmap_download_request.cc",
+      "crow_bridge.cc",
       "default_ranking_android.cc",
       "editor_screenshot_task.cc",
       "link_to_text_bridge.cc",
@@ -44,6 +48,10 @@ source_set("share") {
     deps += [
       ":jni_headers",
       "//chrome/browser/share/android:jni_headers",
+      "//chrome/browser/share/core/crow:crow_configuration",
+      "//chrome/browser/share/proto:crow_proto",
+      "//components/history/core/browser:browser",
+      "//components/ukm/content:content",
       "//ui/android",
       "//url:gurl_android",
     ]
@@ -57,6 +65,7 @@ if (is_android) {
       "android/java/src/org/chromium/chrome/browser/share/ShareDelegate.java",
       "android/java/src/org/chromium/chrome/browser/share/ShareHistoryBridge.java",
       "android/java/src/org/chromium/chrome/browser/share/ShareRankingBridge.java",
+      "android/java/src/org/chromium/chrome/browser/share/crow/CrowButtonDelegate.java",
       "android/java/src/org/chromium/chrome/browser/share/share_sheet/ChromeOptionShareCallback.java",
     ]
 
@@ -65,6 +74,8 @@ if (is_android) {
     deps = [
       ":jni_headers",
       "//base:base_java",
+      "//base:jni_java",
+      "//build/android:build_java",
       "//chrome/browser/preferences:java",
       "//chrome/browser/profiles/android:java",
       "//chrome/browser/tab:java",

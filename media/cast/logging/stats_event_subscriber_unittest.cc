@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include "base/rand_util.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/tick_clock.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "media/base/fake_single_thread_task_runner.h"
 #include "media/cast/cast_environment.h"
@@ -335,7 +336,6 @@ TEST_F(StatsEventSubscriberTest, Packets) {
   base::TimeDelta total_network_latency;
   base::TimeDelta total_queueing_latency;
   base::TimeDelta total_packet_latency;
-  int num_packets_transmitted = 0;
   int num_packets_received = 0;
   int num_packets_retransmitted = 0;
   int num_packets_rtx_rejected = 0;
@@ -368,7 +368,6 @@ TEST_F(StatsEventSubscriberTest, Packets) {
     send_event->size = size;
     cast_environment_->logger()->DispatchPacketEvent(std::move(send_event));
 
-    num_packets_transmitted++;
     total_queueing_latency += sender_clock_.NowTicks() - sender_encoded_time;
 
     int latency_micros = 20000 + base::RandInt(-10000, 10000);
@@ -401,7 +400,6 @@ TEST_F(StatsEventSubscriberTest, Packets) {
           std::move(retransmit_event));
 
       retransmit_total_size += size;
-      num_packets_transmitted++;
       num_packets_retransmitted++;
     }
 
@@ -421,7 +419,6 @@ TEST_F(StatsEventSubscriberTest, Packets) {
           std::move(retransmit_event));
 
       retransmit_total_size += size;
-      num_packets_transmitted++;
       num_packets_retransmitted++;
     }
 
@@ -452,7 +449,6 @@ TEST_F(StatsEventSubscriberTest, Packets) {
       cast_environment_->logger()->DispatchPacketEvent(std::move(reject_event));
 
       retransmit_total_size += size;
-      num_packets_transmitted++;
       num_packets_retransmitted++;
       num_packets_rtx_rejected++;
     }
@@ -481,23 +477,20 @@ TEST_F(StatsEventSubscriberTest, Packets) {
   auto it = stats_map.find(StatsEventSubscriber::AVG_NETWORK_LATENCY_MS);
   ASSERT_TRUE(it != stats_map.end());
 
-  EXPECT_DOUBLE_EQ(
-      it->second,
-      total_network_latency.InMillisecondsF() / num_latency_recorded_packets);
+  EXPECT_DOUBLE_EQ(it->second, total_network_latency.InMillisecondsF() /
+                                   num_latency_recorded_packets);
 
   it = stats_map.find(StatsEventSubscriber::AVG_QUEUEING_LATENCY_MS);
   ASSERT_TRUE(it != stats_map.end());
 
-  EXPECT_DOUBLE_EQ(
-      it->second,
-      total_queueing_latency.InMillisecondsF() / num_packets);
+  EXPECT_DOUBLE_EQ(it->second,
+                   total_queueing_latency.InMillisecondsF() / num_packets);
 
   it = stats_map.find(StatsEventSubscriber::AVG_PACKET_LATENCY_MS);
   ASSERT_TRUE(it != stats_map.end());
 
-  EXPECT_DOUBLE_EQ(
-      it->second,
-      total_packet_latency.InMillisecondsF() / num_latency_recorded_packets);
+  EXPECT_DOUBLE_EQ(it->second, total_packet_latency.InMillisecondsF() /
+                                   num_latency_recorded_packets);
 
   it = stats_map.find(StatsEventSubscriber::TRANSMISSION_KBPS);
   ASSERT_TRUE(it != stats_map.end());
@@ -531,15 +524,14 @@ TEST_F(StatsEventSubscriberTest, Packets) {
   EXPECT_DOUBLE_EQ(it->second, static_cast<double>(num_packets_rtx_rejected));
 }
 
-bool CheckHistogramHasValue(base::ListValue* values,
-                            const std::string& bucket, int expected_count) {
-  for (size_t i = 0; i < values->GetList().size(); ++i) {
-    const base::DictionaryValue* dict = NULL;
-    values->GetDictionary(i, &dict);
-    if (!dict->HasKey(bucket))
+bool CheckHistogramHasValue(const base::Value::List& values,
+                            const std::string& bucket,
+                            int expected_count) {
+  for (const base::Value& value : values) {
+    if (!value.is_dict() || !value.FindKey(bucket))
       continue;
-    int bucket_count = 0;
-    if (!dict->GetInteger(bucket, &bucket_count))
+    absl::optional<int> bucket_count = value.FindIntKey(bucket);
+    if (!bucket_count.has_value())
       return false;
     return bucket_count == expected_count;
   }
@@ -634,47 +626,47 @@ TEST_F(StatsEventSubscriberTest, Histograms) {
   cast_environment_->logger()->DispatchFrameEvent(std::move(playout_event));
 
   StatsEventSubscriber::SimpleHistogram* histogram;
-  std::unique_ptr<base::ListValue> values;
+  base::Value::List values;
 
   histogram = subscriber_->GetHistogramForTesting(
       StatsEventSubscriber::CAPTURE_LATENCY_MS_HISTO);
   ASSERT_TRUE(histogram);
   values = histogram->GetHistogram();
-  EXPECT_TRUE(CheckHistogramHasValue(values.get(), "10-14", 10));
+  EXPECT_TRUE(CheckHistogramHasValue(values, "10-14", 10));
 
   histogram = subscriber_->GetHistogramForTesting(
       StatsEventSubscriber::ENCODE_TIME_MS_HISTO);
   ASSERT_TRUE(histogram);
   values = histogram->GetHistogram();
-  EXPECT_TRUE(CheckHistogramHasValue(values.get(), "15-19", 10));
+  EXPECT_TRUE(CheckHistogramHasValue(values, "15-19", 10));
 
   histogram = subscriber_->GetHistogramForTesting(
       StatsEventSubscriber::QUEUEING_LATENCY_MS_HISTO);
   ASSERT_TRUE(histogram);
   values = histogram->GetHistogram();
-  EXPECT_TRUE(CheckHistogramHasValue(values.get(), "100-119", 1));
-  EXPECT_TRUE(CheckHistogramHasValue(values.get(), "200-219", 1));
-  EXPECT_TRUE(CheckHistogramHasValue(values.get(), "300-319", 1));
+  EXPECT_TRUE(CheckHistogramHasValue(values, "100-119", 1));
+  EXPECT_TRUE(CheckHistogramHasValue(values, "200-219", 1));
+  EXPECT_TRUE(CheckHistogramHasValue(values, "300-319", 1));
 
   histogram = subscriber_->GetHistogramForTesting(
       StatsEventSubscriber::NETWORK_LATENCY_MS_HISTO);
   ASSERT_TRUE(histogram);
   values = histogram->GetHistogram();
-  EXPECT_TRUE(CheckHistogramHasValue(values.get(), "100-119", 1));
-  EXPECT_TRUE(CheckHistogramHasValue(values.get(), "200-219", 1));
-  EXPECT_TRUE(CheckHistogramHasValue(values.get(), "300-319", 1));
+  EXPECT_TRUE(CheckHistogramHasValue(values, "100-119", 1));
+  EXPECT_TRUE(CheckHistogramHasValue(values, "200-219", 1));
+  EXPECT_TRUE(CheckHistogramHasValue(values, "300-319", 1));
 
   histogram = subscriber_->GetHistogramForTesting(
       StatsEventSubscriber::PACKET_LATENCY_MS_HISTO);
   ASSERT_TRUE(histogram);
   values = histogram->GetHistogram();
-  EXPECT_TRUE(CheckHistogramHasValue(values.get(), "400-419", 3));
+  EXPECT_TRUE(CheckHistogramHasValue(values, "400-419", 3));
 
   histogram = subscriber_->GetHistogramForTesting(
       StatsEventSubscriber::LATE_FRAME_MS_HISTO);
   ASSERT_TRUE(histogram);
   values = histogram->GetHistogram();
-  EXPECT_TRUE(CheckHistogramHasValue(values.get(), "100-119", 1));
+  EXPECT_TRUE(CheckHistogramHasValue(values, "100-119", 1));
 }
 
 }  // namespace cast

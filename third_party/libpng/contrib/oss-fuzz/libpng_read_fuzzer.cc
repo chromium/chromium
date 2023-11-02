@@ -1,9 +1,8 @@
-
 // libpng_read_fuzzer.cc
 // Copyright 2017-2018 Glenn Randers-Pehrson
-// Copyright 2015 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that may
-// be found in the LICENSE file https://cs.chromium.org/chromium/src/LICENSE
+// Copyright 2015 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 // Last changed in libpng 1.6.35 [July 15, 2018]
 

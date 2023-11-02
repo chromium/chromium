@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/threading/thread_checker.h"
 #include "build/build_config.h"
@@ -19,6 +18,7 @@
 #include "third_party/blink/renderer/modules/mediastream/user_media_processor.h"
 #include "third_party/blink/renderer/modules/mediastream/user_media_request.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
@@ -37,8 +37,12 @@ class LocalFrame;
 // object. This includes getUserMedia and enumerateDevices. It must be created,
 // called and destroyed on the render thread.
 class MODULES_EXPORT UserMediaClient
-    : public GarbageCollected<UserMediaClient> {
+    : public GarbageCollected<UserMediaClient>,
+      public Supplement<LocalDOMWindow>,
+      public ExecutionContextLifecycleObserver {
  public:
+  static const char kSupplementName[];
+
   // TODO(guidou): Make all constructors private and replace with Create methods
   // that return a std::unique_ptr. This class is intended for instantiation on
   // the free store. https://crbug.com/764293
@@ -52,25 +56,37 @@ class MODULES_EXPORT UserMediaClient
   UserMediaClient(const UserMediaClient&) = delete;
   UserMediaClient& operator=(const UserMediaClient&) = delete;
 
-  virtual ~UserMediaClient();
+  ~UserMediaClient() override;
 
   void RequestUserMedia(UserMediaRequest* user_media_request);
   void CancelUserMediaRequest(UserMediaRequest* user_media_request);
   void ApplyConstraints(blink::ApplyConstraintsRequest* user_media_request);
   void StopTrack(MediaStreamComponent* track);
-  void ContextDestroyed();
+
+  // ExecutionContextLifecycleObserver implementation.
+  void ContextDestroyed() override;
 
   bool IsCapturing();
 
-#if !defined(OS_ANDROID)
+  static UserMediaClient* From(LocalDOMWindow*);
+
+#if !BUILDFLAG(IS_ANDROID)
   void FocusCapturedSurface(const String& label, bool focus);
 #endif
 
-  void Trace(Visitor*) const;
+  void Trace(Visitor*) const override;
 
   void SetMediaDevicesDispatcherForTesting(
       mojo::PendingRemote<blink::mojom::blink::MediaDevicesDispatcherHost>
           media_devices_dispatcher);
+
+  // Ensure the MediaStreamDevice underlying a source is not closed even if
+  // there are no remaining usages from this frame, as it's in the process of
+  // being transferred.
+  void KeepDeviceAliveForTransfer(
+      base::UnguessableToken session_id,
+      base::UnguessableToken transfer_id,
+      UserMediaProcessor::KeepDeviceAliveForTransferCallback keep_alive_cb);
 
  private:
   class Request final : public GarbageCollected<Request> {
@@ -115,15 +131,10 @@ class MODULES_EXPORT UserMediaClient
 
   blink::mojom::blink::MediaDevicesDispatcherHost* GetMediaDevicesDispatcher();
 
-  // LocalFrame instance associated with the UserMediaController that
-  // own this UserMediaClient.
+  // LocalFrame instance that own this UserMediaClient.
   WeakMember<LocalFrame> frame_;
 
-  // |user_media_processor_| is a unique_ptr for testing purposes.
   Member<UserMediaProcessor> user_media_processor_;
-
-  // |user_media_processor_| is a unique_ptr in order to avoid compilation
-  // problems in builds that do not include WebRTC.
   Member<ApplyConstraintsProcessor> apply_constraints_processor_;
 
   HeapMojoRemote<blink::mojom::blink::MediaDevicesDispatcherHost>

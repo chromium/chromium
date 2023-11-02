@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -66,8 +66,8 @@ TEST_F(BackGestureAffordanceTest,
   std::unique_ptr<aura::Window> bottom_window = CreateTestWindow();
   auto* split_view_controller =
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
-  split_view_controller->SnapWindow(bottom_window.get(),
-                                    SplitViewController::RIGHT);
+  split_view_controller->SnapWindow(
+      bottom_window.get(), SplitViewController::SnapPosition::kSecondary);
 
   // Rotate the screen by 270 degree.
   test_api.SetDisplayRotation(display::Display::ROTATE_270,

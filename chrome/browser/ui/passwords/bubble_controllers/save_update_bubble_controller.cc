@@ -1,24 +1,28 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/passwords/bubble_controllers/save_update_bubble_controller.h"
 
+#include "base/containers/contains.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/browser/ui/passwords/manage_passwords_view_utils.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
+#include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
+#include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/browser/smart_bubble_stats_store.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -86,6 +90,16 @@ std::vector<password_manager::PasswordForm> DeepCopyForms(
   return result;
 }
 
+bool IsSyncUser(Profile* profile) {
+  const syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfile(profile);
+  password_manager::SyncState sync_state =
+      password_manager_util::GetPasswordSyncState(sync_service);
+  return sync_state == password_manager::SyncState::kSyncingNormalEncryption ||
+         sync_state ==
+             password_manager::SyncState::kSyncingWithCustomPassphrase;
+}
+
 }  // namespace
 
 SaveUpdateBubbleController::SaveUpdateBubbleController(
@@ -140,8 +154,7 @@ SaveUpdateBubbleController::SaveUpdateBubbleController(
 }
 
 SaveUpdateBubbleController::~SaveUpdateBubbleController() {
-  if (!interaction_reported_)
-    OnBubbleClosing();
+  OnBubbleClosing();
 }
 
 void SaveUpdateBubbleController::OnSaveClicked() {
@@ -191,19 +204,34 @@ void SaveUpdateBubbleController::OnCredentialEdited(
   pending_password_.password_value = std::move(new_password);
 }
 
+void SaveUpdateBubbleController::OnGooglePasswordManagerLinkClicked() {
+  if (delegate_) {
+    delegate_->NavigateToPasswordManagerSettingsPage(
+        password_manager::ManagePasswordsReferrer::kSaveUpdateBubble);
+  }
+}
+
 bool SaveUpdateBubbleController::IsCurrentStateUpdate() const {
   DCHECK(state_ == password_manager::ui::PENDING_PASSWORD_UPDATE_STATE ||
          state_ == password_manager::ui::PENDING_PASSWORD_STATE);
-  return std::any_of(existing_credentials_.begin(), existing_credentials_.end(),
-                     [this](const password_manager::PasswordForm& form) {
-                       return form.username_value ==
-                              pending_password_.username_value;
-                     });
+  return base::Contains(existing_credentials_, pending_password_.username_value,
+                        &password_manager::PasswordForm::username_value);
 }
 
-bool SaveUpdateBubbleController::IsCurrentStateAffectingTheAccountStore() {
+bool SaveUpdateBubbleController::ShouldShowFooter() const {
+  return (state_ == password_manager::ui::PENDING_PASSWORD_UPDATE_STATE ||
+          state_ == password_manager::ui::PENDING_PASSWORD_STATE) &&
+         IsSyncUser(GetProfile());
+}
+
+bool SaveUpdateBubbleController::
+    IsCurrentStateAffectingPasswordsStoredInTheGoogleAccount() {
   DCHECK(state_ == password_manager::ui::PENDING_PASSWORD_UPDATE_STATE ||
          state_ == password_manager::ui::PENDING_PASSWORD_STATE);
+
+  if (IsSyncUser(GetProfile()))
+    return true;
+
   bool is_update = false;
   bool is_update_in_account_store = false;
   for (const password_manager::PasswordForm& form : existing_credentials_) {
@@ -272,16 +300,17 @@ bool SaveUpdateBubbleController::IsAccountStorageOptInRequiredBeforeSave() {
   return true;
 }
 
-std::string SaveUpdateBubbleController::GetPrimaryAccountEmail() {
+std::u16string SaveUpdateBubbleController::GetPrimaryAccountEmail() {
   Profile* profile = GetProfile();
   if (!profile)
-    return std::string();
+    return std::u16string();
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   if (!identity_manager)
-    return std::string();
-  return identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-      .email;
+    return std::u16string();
+  return base::UTF8ToUTF16(
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+          .email);
 }
 
 ui::ImageModel SaveUpdateBubbleController::GetPrimaryAccountAvatar(
@@ -301,10 +330,8 @@ ui::ImageModel SaveUpdateBubbleController::GetPrimaryAccountAvatar(
     account_icon = ui::ResourceBundle::GetSharedInstance().GetImageNamed(
         profiles::GetPlaceholderAvatarIconResourceID());
   }
-  return ui::ImageModel::FromImage(
-      profiles::GetSizedAvatarIcon(account_icon,
-                                   /*is_rectangle=*/true, icon_size_dip,
-                                   icon_size_dip, profiles::SHAPE_CIRCLE));
+  return ui::ImageModel::FromImage(profiles::GetSizedAvatarIcon(
+      account_icon, icon_size_dip, icon_size_dip, profiles::SHAPE_CIRCLE));
 }
 
 bool SaveUpdateBubbleController::DidAuthForAccountStoreOptInFail() const {

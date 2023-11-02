@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <type_traits>
 
-#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_mixin.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
@@ -37,14 +36,14 @@ struct NGInlineNodeData;
 template <typename Base>
 class LayoutNGBlockFlowMixin : public LayoutNGMixin<Base> {
  public:
-  explicit LayoutNGBlockFlowMixin(Element* element);
+  explicit LayoutNGBlockFlowMixin(ContainerNode*);
   ~LayoutNGBlockFlowMixin() override;
 
   NGInlineNodeData* TakeNGInlineNodeData() final;
   NGInlineNodeData* GetNGInlineNodeData() const final;
   void ResetNGInlineNodeData() final;
   void ClearNGInlineNodeData() final;
-  bool HasNGInlineNodeData() const final { return ng_inline_node_data_; }
+  bool HasNGInlineNodeData() const final;
 
   LayoutUnit FirstLineBoxBaseline() const final;
   LayoutUnit InlineBlockBaseline(LineDirectionMode) const final;
@@ -52,20 +51,21 @@ class LayoutNGBlockFlowMixin : public LayoutNGMixin<Base> {
   bool NodeAtPoint(HitTestResult&,
                    const HitTestLocation&,
                    const PhysicalOffset& accumulated_offset,
-                   HitTestAction) override;
+                   HitTestPhase) override;
 
   PositionWithAffinity PositionForPoint(const PhysicalOffset&) const override;
 
   void Trace(Visitor*) const override;
 
-  using LayoutNGMixin<Base>::CurrentFragment;
-
  protected:
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
 
+#if DCHECK_IS_ON()
   void AddLayoutOverflowFromChildren() final;
+#endif
 
   void AddOutlineRects(Vector<PhysicalRect>&,
+                       LayoutObject::OutlineInfo*,
                        const PhysicalOffset& additional_offset,
                        NGOutlineType) const final;
 
@@ -79,9 +79,6 @@ class LayoutNGBlockFlowMixin : public LayoutNGMixin<Base> {
   Member<NGInlineNodeData> ng_inline_node_data_;
 
   friend class NGBaseLayoutAlgorithmTest;
-
- private:
-  void AddScrollingOverflowFromChildren();
 };
 
 }  // namespace blink

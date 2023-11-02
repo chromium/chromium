@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "base/callback.h"
+#include "base/time/time.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/user_manager/user.h"
 
@@ -67,10 +69,6 @@ class UserSessionInitializer : public session_manager::SessionManagerObserver {
 
   // Starts loading CRL set.
   void InitializeCRLSetFetcher();
-
-  // Initializes Certificate Transparency-related components.
-  void InitializeCertificateTransparencyComponents(
-      const user_manager::User* user);
 
   // Initialize all services that need the primary profile.
   void InitializePrimaryProfileServices(Profile* profile,

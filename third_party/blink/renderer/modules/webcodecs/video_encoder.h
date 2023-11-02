@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "base/containers/lru_cache.h"
+#include "base/time/time.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_color_space.h"
 #include "media/base/video_encoder.h"
@@ -30,6 +32,7 @@ class VideoEncoderConfig;
 class VideoEncoderInit;
 class VideoEncoderEncodeOptions;
 class WebGraphicsContext3DVideoFramePool;
+class BackgroundReadback;
 
 class MODULES_EXPORT VideoEncoderTraits {
  public:
@@ -57,12 +60,10 @@ class MODULES_EXPORT VideoEncoderTraits {
   using MediaEncoder = media::VideoEncoder;
 
   // Can't be a virtual method, because it's used from base ctor.
-  static const char* GetNameForDevTools();
   static const char* GetName();
 };
 
-class MODULES_EXPORT VideoEncoder final
-    : public EncoderBase<VideoEncoderTraits> {
+class MODULES_EXPORT VideoEncoder : public EncoderBase<VideoEncoderTraits> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -75,10 +76,17 @@ class MODULES_EXPORT VideoEncoder final
   static ScriptPromise isConfigSupported(ScriptState*,
                                          const VideoEncoderConfig*,
                                          ExceptionState&);
+
+  // EventTarget interface
+  const AtomicString& InterfaceName() const override;
+
   // ScriptWrappable override.
   bool HasPendingActivity() const override;
 
- private:
+  // GarbageCollected override.
+  void Trace(Visitor*) const override;
+
+ protected:
   using Base = EncoderBase<VideoEncoderTraits>;
   using ParsedConfig = VideoEncoderTraits::ParsedConfig;
 
@@ -93,7 +101,14 @@ class MODULES_EXPORT VideoEncoder final
   void ProcessReconfigure(Request* request) override;
   void ResetInternal() override;
 
-  void UpdateEncoderLog(std::string encoder_name, bool is_hw_accelerated);
+  void OnEncodeDone(Request* request, media::EncoderStatus status);
+  // This will execute shortly after the async readback completes.
+  void OnReadbackDone(bool keyframe,
+                      uint32_t reset_count,
+                      scoped_refptr<media::VideoFrame> txt_frame,
+                      media::VideoEncoder::EncoderStatusCB done_callback,
+                      scoped_refptr<media::VideoFrame> result_frame);
+  void OnMediaEncoderCreated(std::string encoder_name, bool is_hw_accelerated);
   static std::unique_ptr<media::VideoEncoder> CreateSoftwareVideoEncoder(
       VideoEncoder* self,
       media::VideoCodec codec);
@@ -102,6 +117,11 @@ class MODULES_EXPORT VideoEncoder final
                             ExceptionState&) override;
   bool VerifyCodecSupport(ParsedConfig*, ExceptionState&) override;
 
+  // Virtual for UTs.
+  virtual std::unique_ptr<media::VideoEncoder> CreateMediaVideoEncoder(
+      const ParsedConfig& config,
+      media::GpuVideoAcceleratorFactories* gpu_factories);
+
   void ContinueConfigureWithGpuFactories(
       Request* request,
       media::GpuVideoAcceleratorFactories* gpu_factories);
@@ -109,20 +129,29 @@ class MODULES_EXPORT VideoEncoder final
       media::VideoCodecProfile profile,
       const media::VideoEncoder::Options& options,
       media::GpuVideoAcceleratorFactories* gpu_factories);
-  std::unique_ptr<media::VideoEncoder> CreateMediaVideoEncoder(
-      const ParsedConfig& config,
-      media::GpuVideoAcceleratorFactories* gpu_factories);
   bool CanReconfigure(ParsedConfig& original_config,
                       ParsedConfig& new_config) override;
-  scoped_refptr<media::VideoFrame> ReadbackTextureBackedFrameToMemory(
-      scoped_refptr<media::VideoFrame> txt_frame);
 
-  media::VideoFramePool readback_frame_pool_;
+  using ReadbackDoneCallback =
+      base::OnceCallback<void(scoped_refptr<media::VideoFrame>)>;
+  bool StartReadback(scoped_refptr<media::VideoFrame> frame,
+                     ReadbackDoneCallback result_cb);
+
   std::unique_ptr<WebGraphicsContext3DVideoFramePool> accelerated_frame_pool_;
+  Member<BackgroundReadback> background_readback_;
+
+  // True if an error occurs during frame pool usage.
+  bool disable_accelerated_frame_pool_ = false;
 
   // The number of encoding requests currently handled by |media_encoder_|
   // Should not exceed |kMaxActiveEncodes|.
   int active_encodes_ = 0;
+
+  // Per-frame metadata to be applied to outputs, linked by timestamp.
+  struct FrameMetadata {
+    base::TimeDelta duration;
+  };
+  base::LRUCache<base::TimeDelta, FrameMetadata> frame_metadata_;
 
   // The color space corresponding to the last emitted output. Used to update
   // emitted VideoDecoderConfig when necessary.

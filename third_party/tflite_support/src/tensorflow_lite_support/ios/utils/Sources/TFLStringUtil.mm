@@ -12,11 +12,10 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
-#inmport "base/strings/sys_string_conversions.h"
-#import "third_party/tensorflow_lite_support/ios/utils/Sources/TFLStringUtil.h"
+#import "tensorflow_lite_support/ios/utils/Sources/TFLStringUtil.h"
 
 std::string MakeString(NSString* str) {
-  return SysNSStringToUTF8(str);
+  return base::SysNSStringToUTF8(str);
 }
 
 NSString* MakeNSString(const std::string& str) {

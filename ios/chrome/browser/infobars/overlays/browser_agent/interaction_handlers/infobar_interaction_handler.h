@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,15 +30,15 @@ class InfobarInteractionHandler {
     // handler's InfobarOverlayType.
     virtual std::unique_ptr<OverlayRequestCallbackInstaller>
     CreateInstaller() = 0;
-    // Notifies the handler that |infobar|'s UI with the handler's InfobarType
+    // Notifies the handler that `infobar`'s UI with the handler's InfobarType
     virtual void InfobarVisibilityChanged(InfoBarIOS* infobar,
                                           bool visible) = 0;
   };
 
   // Constructor for an InfobarInteractionHandler that uses the provided
-  // handlers for each InfobarOverlayType.  |banner_handler| must be non-null.
-  // |modal_handler| may be null if its corresponding InfobarOverlayType is not
-  // supported for |infobar_type|.
+  // handlers for each InfobarOverlayType.  `banner_handler` must be non-null.
+  // `modal_handler` may be null if its corresponding InfobarOverlayType is not
+  // supported for `infobar_type`.
   InfobarInteractionHandler(InfobarType infobar_type,
                             std::unique_ptr<Handler> banner_handler,
                             std::unique_ptr<Handler> modal_handler);
@@ -58,8 +58,8 @@ class InfobarInteractionHandler {
   std::unique_ptr<OverlayRequestCallbackInstaller>
   CreateModalCallbackInstaller();
 
-  // Called to notify the interaction handler that |infobar|'s overlay UI with
-  // |overlay_type|'s visibility has changed.
+  // Called to notify the interaction handler that `infobar`'s overlay UI with
+  // `overlay_type`'s visibility has changed.
   void InfobarVisibilityChanged(InfoBarIOS* infobar,
                                 InfobarOverlayType overlay_type,
                                 bool visible);

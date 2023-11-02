@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,20 +7,15 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/style/element_style.h"
+#include "ash/style/color_util.h"
+#include "ash/style/style_util.h"
 #include "ash/system/tray/tray_constants.h"
-#include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
-#include "base/bind.h"
-#include "ui/accessibility/ax_enums.mojom.h"
-#include "ui/accessibility/ax_node_data.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "ui/gfx/canvas.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
-#include "ui/views/animation/flood_fill_ink_drop_ripple.h"
-#include "ui/views/animation/ink_drop_highlight.h"
-#include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -56,104 +51,19 @@ void ConfigureFeaturePodLabel(views::Label* label,
 
 FeaturePodIconButton::FeaturePodIconButton(PressedCallback callback,
                                            bool is_togglable)
-    : views::ImageButton(std::move(callback)), is_togglable_(is_togglable) {
-  const int button_size = element_style::kMediumIconButtonSize +
-                          2 * element_style::kIconButtonBorderSize;
-  SetPreferredSize(gfx::Size(button_size, button_size));
-  SetBorder(views::CreateEmptyBorder(
-      gfx::Insets(element_style::kIconButtonBorderSize)));
+    : IconButton(std::move(callback),
+                 IconButton::Type::kMedium,
+                 /*icon=*/nullptr,
+                 is_togglable,
+                 /*has_border=*/true) {
   SetFlipCanvasOnPaintForRTLUI(false);
-  SetImageHorizontalAlignment(ALIGN_CENTER);
-  SetImageVerticalAlignment(ALIGN_MIDDLE);
   GetViewAccessibility().OverrideIsLeaf(true);
-
-  // Focus ring is around the whole view's bounds, but the ink drop should be
-  // the same size as the content.
-  TrayPopupUtils::ConfigureTrayPopupButton(this);
-  views::FocusRing::Get(this)->SetPathGenerator(
-      std::make_unique<views::CircleHighlightPathGenerator>(
-          kUnifiedFeaturePodHoverPadding));
-  views::InstallCircleHighlightPathGenerator(
-      this, gfx::Insets(element_style::kIconButtonBorderSize));
 }
 
 FeaturePodIconButton::~FeaturePodIconButton() = default;
 
-void FeaturePodIconButton::SetToggled(bool toggled) {
-  if (!is_togglable_ || toggled_ == toggled)
-    return;
-
-  toggled_ = toggled;
-  UpdateVectorIcon();
-}
-
-void FeaturePodIconButton::SetVectorIcon(const gfx::VectorIcon& icon) {
-  icon_ = &icon;
-  UpdateVectorIcon();
-}
-
-void FeaturePodIconButton::PaintButtonContents(gfx::Canvas* canvas) {
-  gfx::Rect rect(GetContentsBounds());
-  cc::PaintFlags flags;
-  flags.setAntiAlias(true);
-
-  const AshColorProvider* color_provider = AshColorProvider::Get();
-  SkColor color = color_provider->GetControlsLayerColor(
-      ControlsLayerType::kControlBackgroundColorInactive);
-
-  bool should_show_button_toggled_on =
-      toggled_ && (GetEnabled() ||
-                   button_behavior_ ==
-                       DisabledButtonBehavior::kCanDisplayDisabledToggleValue);
-  if (should_show_button_toggled_on) {
-    color = color_provider->GetControlsLayerColor(
-        ControlsLayerType::kControlBackgroundColorActive);
-  }
-
-  // If the button is disabled, apply opacity filter to the color.
-  if (!GetEnabled())
-    color = AshColorProvider::GetDisabledColor(color);
-
-  flags.setColor(color);
-
-  flags.setStyle(cc::PaintFlags::kFill_Style);
-  canvas->DrawCircle(gfx::PointF(rect.CenterPoint()), rect.width() / 2, flags);
-
-  views::ImageButton::PaintButtonContents(canvas);
-}
-
-void FeaturePodIconButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  ImageButton::GetAccessibleNodeData(node_data);
-  node_data->SetName(GetTooltipText(gfx::Point()));
-  if (is_togglable_) {
-    node_data->role = ax::mojom::Role::kToggleButton;
-    node_data->SetCheckedState(toggled_ ? ax::mojom::CheckedState::kTrue
-                                        : ax::mojom::CheckedState::kFalse);
-  } else {
-    node_data->role = ax::mojom::Role::kButton;
-  }
-}
-
-const char* FeaturePodIconButton::GetClassName() const {
-  return "FeaturePodIconButton";
-}
-
-void FeaturePodIconButton::OnThemeChanged() {
-  views::ImageButton::OnThemeChanged();
-  views::FocusRing::Get(this)->SetColor(
-      AshColorProvider::Get()->GetControlsLayerColor(
-          ControlsLayerType::kFocusRingColor));
-  UpdateVectorIcon();
-  SchedulePaint();
-}
-
-void FeaturePodIconButton::UpdateVectorIcon() {
-  if (!icon_)
-    return;
-
-  element_style::DecorateMediumIconButton(this, *icon_, toggled_,
-                                          /*has_border=*/true);
-}
+BEGIN_METADATA(FeaturePodIconButton, IconButton)
+END_METADATA
 
 FeaturePodLabelButton::FeaturePodLabelButton(PressedCallback callback)
     : Button(std::move(callback)),
@@ -179,16 +89,15 @@ FeaturePodLabelButton::FeaturePodLabelButton(PressedCallback callback)
   AddChildView(detailed_view_arrow_);
   AddChildView(sub_label_);
 
-  TrayPopupUtils::ConfigureTrayPopupButton(this);
+  StyleUtil::SetUpInkDropForButton(this);
 
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
 
-  views::FocusRing::Get(this)->SetColor(
-      AshColorProvider::Get()->GetControlsLayerColor(
-          ControlsLayerType::kFocusRingColor));
   views::InstallRoundRectHighlightPathGenerator(
       this, gfx::Insets(), kUnifiedFeaturePodHoverCornerRadius);
+
+  views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
 }
 
 FeaturePodLabelButton::~FeaturePodLabelButton() = default;
@@ -241,10 +150,6 @@ gfx::Size FeaturePodLabelButton::CalculatePreferredSize() const {
   return gfx::Size(width, height);
 }
 
-const char* FeaturePodLabelButton::GetClassName() const {
-  return "FeaturePodLabelButton";
-}
-
 void FeaturePodLabelButton::OnThemeChanged() {
   views::Button::OnThemeChanged();
   OnEnabledChanged();
@@ -283,17 +188,16 @@ void FeaturePodLabelButton::OnEnabledChanged() {
       ContentLayerType::kTextColorSecondary);
   label_->SetEnabledColor(
       GetEnabled() ? primary_text_color
-                   : AshColorProvider::GetDisabledColor(primary_text_color));
+                   : ColorUtil::GetDisabledColor(primary_text_color));
   sub_label_->SetEnabledColor(
       GetEnabled() ? secondary_text_color
-                   : AshColorProvider::GetDisabledColor(secondary_text_color));
+                   : ColorUtil::GetDisabledColor(secondary_text_color));
 
   const SkColor icon_color =
       color_provider->GetContentLayerColor(ContentLayerType::kIconColorPrimary);
   detailed_view_arrow_->SetImage(gfx::CreateVectorIcon(
       kUnifiedMenuMoreIcon,
-      GetEnabled() ? icon_color
-                   : AshColorProvider::GetDisabledColor(icon_color)));
+      GetEnabled() ? icon_color : ColorUtil::GetDisabledColor(icon_color)));
 }
 
 void FeaturePodLabelButton::LayoutInCenter(views::View* child, int y) {
@@ -305,6 +209,9 @@ void FeaturePodLabelButton::LayoutInCenter(views::View* child, int y) {
       contents_bounds.x() + (contents_bounds.width() - child_width) / 2, y,
       child_width, preferred_size.height());
 }
+
+BEGIN_METADATA(FeaturePodLabelButton, views::Button)
+END_METADATA
 
 FeaturePodButton::FeaturePodButton(FeaturePodControllerBase* controller,
                                    bool is_togglable)
@@ -413,13 +320,12 @@ void FeaturePodButton::RequestFocus() {
   label_button_->RequestFocus();
 }
 
-const char* FeaturePodButton::GetClassName() const {
-  return "FeaturePodButton";
-}
-
 void FeaturePodButton::OnEnabledChanged() {
   icon_button_->SetEnabled(GetEnabled());
   label_button_->SetEnabled(GetEnabled());
 }
+
+BEGIN_METADATA(FeaturePodButton, views::View)
+END_METADATA
 
 }  // namespace ash

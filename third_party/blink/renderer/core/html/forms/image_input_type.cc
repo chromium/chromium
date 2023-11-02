@@ -45,7 +45,8 @@
 namespace blink {
 
 ImageInputType::ImageInputType(HTMLInputElement& element)
-    : BaseButtonInputType(element), use_fallback_content_(false) {}
+    : BaseButtonInputType(Type::kImage, element),
+      use_fallback_content_(false) {}
 
 void ImageInputType::CountUsage() {
   CountUsageIfVisible(WebFeature::kInputTypeImage);
@@ -63,7 +64,7 @@ void ImageInputType::AppendToFormData(FormData& form_data) const {
   if (!GetElement().IsActivatedSubmit())
     return;
   const AtomicString& name = GetElement().GetName();
-  if (name.IsEmpty()) {
+  if (name.empty()) {
     form_data.AppendFromElement("x", click_location_.x());
     form_data.AppendFromElement("y", click_location_.y());
     return;
@@ -103,6 +104,10 @@ void ImageInputType::HandleDOMActivateEvent(Event& event) {
   // Event handlers can run.
   GetElement().Form()->PrepareForSubmission(&event, &GetElement());
   event.SetDefaultHandled();
+}
+
+ControlPart ImageInputType::AutoAppearance() const {
+  return kNoControlPart;
 }
 
 LayoutObject* ImageInputType::CreateLayoutObject(const ComputedStyle& style,

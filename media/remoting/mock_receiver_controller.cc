@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "media/remoting/mock_receiver_controller.h"
 
 #include "base/check.h"
+#include "base/no_destructor.h"
 #include "media/mojo/common/mojo_decoder_buffer_converter.h"
 #include "media/remoting/test_utils.h"
 #include "mojo/public/cpp/system/data_pipe.h"

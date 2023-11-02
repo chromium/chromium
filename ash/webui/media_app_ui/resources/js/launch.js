@@ -1,16 +1,19 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import './strings.m.js';
+import './unguessable_token.mojom-lite.js';
+import './file_system_access_transfer_token.mojom-lite.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import * as error_reporter from './error_reporter.js';
 import {assertCast, MessagePipe} from './message_pipe.m.js';
-import {DeleteFileMessage, FileContext, LoadFilesMessage, Message, NavigateMessage, NotifyCurrentFileMessage, OpenAllowedFileMessage, OpenAllowedFileResponse, OpenFilesWithPickerMessage, OverwriteFileMessage, OverwriteViaFilePickerResponse, RenameFileMessage, RenameResult, RequestSaveFileMessage, RequestSaveFileResponse, SaveAsMessage, SaveAsResponse} from './message_types.js';
+import {DeleteFileMessage, EditInPhotosMessage, FileContext, IsFileArcWritableMessage, IsFileBrowserWritableMessage, LoadFilesMessage, Message, NavigateMessage, NotifyCurrentFileMessage, OpenAllowedFileMessage, OpenAllowedFileResponse, OpenFilesWithPickerMessage, OverwriteFileMessage, OverwriteViaFilePickerResponse, RenameFileMessage, RenameResult, RequestSaveFileMessage, RequestSaveFileResponse, SaveAsMessage, SaveAsResponse} from './message_types.js';
 import {mediaAppPageHandler} from './mojo_api_bootstrap.js';
 
+const DEFAULT_APP_ICON = 'app';
 const EMPTY_WRITE_ERROR_NAME = 'EmptyWriteError';
 
 // Open file picker configurations. Should be kept in sync with launch handler
@@ -20,26 +23,51 @@ const AUDIO_EXTENSIONS =
 const IMAGE_EXTENSIONS = [
   '.jpg',  '.png', '.webp', '.gif', '.avif', '.bmp',   '.ico', '.svg',
   '.jpeg', '.jpe', '.jfif', '.jif', '.jfi',  '.pjpeg', '.pjp', '.arw',
-  '.cr2',  '.dng', '.nef',  '.nrw', '.orf',  '.raf',   '.rw2', '.svgz'
+  '.cr2',  '.dng', '.nef',  '.nrw', '.orf',  '.raf',   '.rw2', '.svgz',
 ];
 const VIDEO_EXTENSIONS = [
-  '.3gp', '.avi', '.m4v', '.mkv', '.mov', '.mp4', '.mpeg', '.mpeg4', '.mpg',
-  '.mpg4', '.ogv', '.ogx', '.ogm', '.webm'
+  '.3gp',
+  '.avi',
+  '.m4v',
+  '.mkv',
+  '.mov',
+  '.mp4',
+  '.mpeg',
+  '.mpeg4',
+  '.mpg',
+  '.mpg4',
+  '.ogv',
+  '.ogx',
+  '.ogm',
+  '.webm',
 ];
+const PDF_EXTENSIONS = ['.pdf'];
 const OPEN_ACCEPT_ARGS = {
   'AUDIO': {
     description: loadTimeData.getString('fileFilterAudio'),
-    accept: {'audio/*': AUDIO_EXTENSIONS}
+    accept: {'audio/*': AUDIO_EXTENSIONS},
   },
   'IMAGE': {
     description: loadTimeData.getString('fileFilterImage'),
-    accept: {'image/*': IMAGE_EXTENSIONS}
+    accept: {'image/*': IMAGE_EXTENSIONS},
   },
   'VIDEO': {
     description: loadTimeData.getString('fileFilterVideo'),
-    accept: {'video/*': VIDEO_EXTENSIONS}
+    accept: {'video/*': VIDEO_EXTENSIONS},
   },
-  'PDF': {description: 'PDF', accept: {'application/pdf': '.pdf'}},
+  'PDF': {description: 'PDF', accept: {'application/pdf': PDF_EXTENSIONS}},
+  // All supported file types, excluding text files (see b/183150750).
+  'ALL_EX_TEXT': {
+    description: 'All',
+    accept: {
+      '*/*': [
+        ...AUDIO_EXTENSIONS,
+        ...IMAGE_EXTENSIONS,
+        ...VIDEO_EXTENSIONS,
+        ...PDF_EXTENSIONS,
+      ],
+    },
+  },
 };
 
 /**
@@ -143,14 +171,34 @@ const tokenMap = new Map();
 const guestMessagePipe =
     new MessagePipe('chrome-untrusted://media-app', undefined, false);
 
+// Register a handler for the "IFRAME_READY" message which does nothing. This
+// prevents MessagePipe emitting an error that there is no handler for it. The
+// message is handled by logic in first_message_received.js, which installs the
+// event listener before the <iframe> is added to the DOM.
+guestMessagePipe.registerHandler(Message.IFRAME_READY, () => {});
+
 /**
- * Promise that resolves once the iframe is ready to receive messages. This is
- * to allow initial file processing to run in parallel with the iframe load.
- * @type {!Promise<undefined>}
+ * The type of icon to show for this app's window.
+ * @type {string}
  */
-const iframeReady = new Promise(resolve => {
-  guestMessagePipe.registerHandler(Message.IFRAME_READY, resolve);
-});
+let appIconType = DEFAULT_APP_ICON;
+
+/**
+ * Sets the app icon depending on the icon type and color theme.
+ * @param {!MediaQueryList|!Event<!{matches: boolean}>}
+ *     mediaQueryList Determines whether or not the icon should be in dark mode.
+ */
+function updateAppIcon(mediaQueryList) {
+  // The default app icon does not have a separate dark variant.
+  const isDark =
+      mediaQueryList.matches && appIconType !== DEFAULT_APP_ICON ? '_dark' : '';
+
+  const icon = /** @type {!HTMLLinkElement} */ (
+      document.querySelector('link[rel=icon]'));
+  icon.href = `system_assets/${appIconType}_icon${isDark}.svg`;
+}
+
+const darkMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 
 guestMessagePipe.registerHandler(Message.NOTIFY_CURRENT_FILE, message => {
   const notifyMsg = /** @type {!NotifyCurrentFileMessage} */ (message);
@@ -160,16 +208,18 @@ guestMessagePipe.registerHandler(Message.NOTIFY_CURRENT_FILE, message => {
   appTitle = appTitle || title.text;
   title.text = notifyMsg.name || appTitle;
 
-  let genericType = notifyMsg.type ? notifyMsg.type.split('/')[0] : 'file';
+  appIconType = notifyMsg.type ? notifyMsg.type.split('/')[0] : 'file';
   if (title.text === appTitle) {
-    genericType = 'app';
-  } else if (!['audio', 'image', 'video', 'file'].includes(genericType)) {
-    genericType = 'file';
+    appIconType = DEFAULT_APP_ICON;
+  } else if (notifyMsg.type === 'application/pdf') {
+    appIconType = 'pdf';
+  } else if (!['audio', 'image', 'video', 'file'].includes(appIconType)) {
+    appIconType = 'file';
   }
-  const icon = /** @type {!HTMLLinkElement} */ (
-      document.querySelector('link[rel=icon]'));
-  icon.href = `system_assets/${genericType}_icon.svg`;
+  updateAppIcon(darkMediaQuery);
 });
+
+darkMediaQuery.addEventListener('change', updateAppIcon);
 
 guestMessagePipe.registerHandler(Message.OPEN_FEEDBACK_DIALOG, () => {
   let response = mediaAppPageHandler.openFeedbackDialog();
@@ -177,6 +227,57 @@ guestMessagePipe.registerHandler(Message.OPEN_FEEDBACK_DIALOG, () => {
     response = {errorMessage: 'Null response received'};
   }
   return response;
+});
+
+guestMessagePipe.registerHandler(Message.TOGGLE_BROWSER_FULLSCREEN_MODE, () => {
+  mediaAppPageHandler.toggleBrowserFullscreenMode();
+});
+
+guestMessagePipe.registerHandler(Message.OPEN_IN_SANDBOXED_VIEWER, message => {
+  window.open(
+      `./viewpdfhost.html?${new URLSearchParams(message)}`, '_blank',
+      'popup=1');
+});
+
+guestMessagePipe.registerHandler(Message.RELOAD_MAIN_FRAME, () => {
+  window.location.reload();
+});
+
+guestMessagePipe.registerHandler(Message.MAYBE_TRIGGER_PDF_HATS, () => {
+  mediaAppPageHandler.maybeTriggerPdfHats();
+});
+
+guestMessagePipe.registerHandler(Message.EDIT_IN_PHOTOS, message => {
+  const editInPhotosMsg = /** @type {!EditInPhotosMessage} */ (message);
+  const fileHandle = fileHandleForToken(editInPhotosMsg.token);
+
+  const transferToken = new blink.mojom.FileSystemAccessTransferTokenRemote(
+      Mojo.getFileSystemAccessTransferToken(fileHandle));
+
+  return mediaAppPageHandler.editInPhotos(
+      transferToken, editInPhotosMsg.mimeType);
+});
+
+guestMessagePipe.registerHandler(Message.IS_FILE_ARC_WRITABLE, message => {
+  const writableMsg =
+      /** @type {!IsFileArcWritableMessage} */ (message);
+  const fileHandle = fileHandleForToken(writableMsg.token);
+
+  const transferToken = new blink.mojom.FileSystemAccessTransferTokenRemote(
+      Mojo.getFileSystemAccessTransferToken(fileHandle));
+
+  return mediaAppPageHandler.isFileArcWritable(transferToken);
+});
+
+guestMessagePipe.registerHandler(Message.IS_FILE_BROWSER_WRITABLE, message => {
+  const writableMsg =
+      /** @type {!IsFileBrowserWritableMessage} */ (message);
+  const fileHandle = fileHandleForToken(writableMsg.token);
+
+  const transferToken = new blink.mojom.FileSystemAccessTransferTokenRemote(
+      Mojo.getFileSystemAccessTransferToken(fileHandle));
+
+  return mediaAppPageHandler.isFileBrowserWritable(transferToken);
 });
 
 guestMessagePipe.registerHandler(Message.OVERWRITE_FILE, async (message) => {
@@ -296,7 +397,7 @@ guestMessagePipe.registerHandler(Message.RENAME_FILE, async (message) => {
     token: renameMsg.token,
     file: null,
     handle: renamedFileHandle,
-    inCurrentDirectory: true
+    inCurrentDirectory: true,
   });
 
   return {renameResult: RenameResult.SUCCESS};
@@ -322,7 +423,7 @@ guestMessagePipe.registerHandler(Message.REQUEST_SAVE_FILE, async (message) => {
       error: '',
       canDelete: false,
       canRename: false,
-    }
+    },
   };
   return response;
 });
@@ -338,7 +439,7 @@ guestMessagePipe.registerHandler(Message.SAVE_AS, async (message) => {
     // dragged into the media app.
     token: oldFileToken || tokenGenerator.next().value,
     file: null,
-    handle: tokenMap.get(pickedFileToken)
+    handle: tokenMap.get(pickedFileToken),
   };
   const oldFileIndex = currentFiles.findIndex(fd => fd.token === oldFileToken);
   tokenMap.set(pickedFileDescriptor.token, pickedFileDescriptor.handle);
@@ -375,25 +476,13 @@ guestMessagePipe.registerHandler(Message.SAVE_AS, async (message) => {
   return response;
 });
 
-guestMessagePipe.registerHandler(Message.OPEN_FILE, async () => {
-  const [handle] = await window.showOpenFilePicker({multiple: false});
-  /** @type {!FileDescriptor} */
-  const fileDescriptor = {
-    token: generateToken(handle),
-    file: null,
-    handle: handle,
-    inCurrentDirectory: false
-  };
-  currentFiles.splice(entryIndex + 1, 0, fileDescriptor);
-  advance(1);
-});
-
 guestMessagePipe.registerHandler(Message.OPEN_FILES_WITH_PICKER, async (m) => {
-  const {startInToken, accept} = /** @type {!OpenFilesWithPickerMessage} */ (m);
+  const {startInToken, accept, isSingleFile} =
+      /** @type {!OpenFilesWithPickerMessage} */ (m);
   const acceptTypes = accept.map(k => OPEN_ACCEPT_ARGS[k]).filter(a => !!a);
 
   /** @type {!FilePickerOptions|DraftFilePickerOptions} */
-  const options = {multiple: true};
+  const options = {multiple: !isSingleFile};
 
   if (startInToken) {
     options.startIn = fileHandleForToken(startInToken);
@@ -412,7 +501,7 @@ guestMessagePipe.registerHandler(Message.OPEN_FILES_WITH_PICKER, async (m) => {
       token: generateToken(handle),
       file: null,
       handle: handle,
-      inCurrentDirectory: false
+      inCurrentDirectory: false,
     });
   }
   if (newDescriptors.length === 0) {
@@ -769,7 +858,7 @@ async function sendSnapshotToGuest(
   const loadFilesMessage = {
     currentFileIndex: focusIndex,
     // Handle can't be passed through a message pipe.
-    files: snapshot.map(fileDescriptorToFileContext)
+    files: snapshot.map(fileDescriptorToFileContext),
   };
 
   // Clear handles to the open files in the privileged context so they are
@@ -778,7 +867,11 @@ async function sendSnapshotToGuest(
   for (const fd of snapshot) {
     fd.file = null;
   }
-  await iframeReady;
+
+  // Wait for the signal from first_message_received.js before proceeding.
+  await /** @type {{firstMessageReceived: !Promise<*>}} */ (window)
+      .firstMessageReceived;
+
   if (extraFiles) {
     await guestMessagePipe.sendMessage(
         Message.LOAD_EXTRA_FILES, loadFilesMessage);
@@ -802,7 +895,7 @@ function assertFileAndDirectoryMutable(editFileToken, operation) {
 
   return {
     handle: fileHandleForToken(editFileToken),
-    directory: currentDirectoryHandle
+    directory: currentDirectoryHandle,
   };
 }
 

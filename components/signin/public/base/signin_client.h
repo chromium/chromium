@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 #include "url/gurl.h"
 
@@ -90,14 +91,21 @@ class SigninClient : public KeyedService {
       GaiaAuthConsumer* consumer,
       gaia::GaiaSource source) = 0;
 
-  // Checks whether a user is known to be non-enterprise. Domains such as
-  // gmail.com and googlemail.com are known to not be managed. Also returns
-  // false if the username is empty.
-  virtual bool IsNonEnterpriseUser(const std::string& username);
-
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Returns an account used to sign into Chrome OS session if available.
   virtual absl::optional<account_manager::Account>
   GetInitialPrimaryAccount() = 0;
+
+  // Returns whether account used to sign into Chrome OS is a child account.
+  // Returns nullopt for secondary / non-main profiles in LaCrOS.
+  virtual absl::optional<bool> IsInitialPrimaryAccountChild() const = 0;
+
+  // Remove account.
+  virtual void RemoveAccount(
+      const account_manager::AccountKey& account_key) = 0;
+
+  // Removes all accounts.
+  virtual void RemoveAllAccounts() = 0;
 #endif
 };
 

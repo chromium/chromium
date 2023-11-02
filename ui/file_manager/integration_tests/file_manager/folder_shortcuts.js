@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,40 +38,41 @@ const FOLDER_ENTRY_SET = [
 const DIRECTORY = {
   Drive: {
     contents: [
-      ENTRIES.directoryA.getExpectedRow(), ENTRIES.directoryD.getExpectedRow()
+      ENTRIES.directoryA.getExpectedRow(),
+      ENTRIES.directoryD.getExpectedRow(),
     ],
     name: 'Drive',
     navItem: '.tree-item[entry-label="My Drive"]',
-    treeItem: TREEITEM_DRIVE
+    treeItem: TREEITEM_DRIVE,
   },
   A: {
     contents: [ENTRIES.directoryB.getExpectedRow()],
     name: 'A',
     navItem: '.tree-item[dir-type="ShortcutItem"][entry-label="A"]',
-    treeItem: TREEITEM_A
+    treeItem: TREEITEM_A,
   },
   B: {
     contents: [ENTRIES.directoryC.getExpectedRow()],
     name: 'B',
-    treeItem: TREEITEM_B
+    treeItem: TREEITEM_B,
   },
   C: {
     contents: [],
     name: 'C',
     navItem: '.tree-item[dir-type="ShortcutItem"][entry-label="C"]',
-    treeItem: TREEITEM_C
+    treeItem: TREEITEM_C,
   },
   D: {
     contents: [ENTRIES.directoryE.getExpectedRow()],
     name: 'D',
     navItem: '.tree-item[dir-type="ShortcutItem"][entry-label="D"]',
-    treeItem: TREEITEM_D
+    treeItem: TREEITEM_D,
   },
   E: {
     contents: [ENTRIES.directoryF.getExpectedRow()],
     name: 'E',
-    treeItem: TREEITEM_E
-  }
+    treeItem: TREEITEM_E,
+  },
 };
 
 /**
@@ -201,11 +202,11 @@ testcase.traverseFolderShortcuts = async () => {
   // Check: current directory and selection should be the Drive root.
   await expectSelection(appId, DIRECTORY.Drive, DIRECTORY.Drive);
 
-  // Send Ctrl+6 key to file-list to select 6th volume in the
+  // Send Ctrl+6 key to file-list to select 3rd volume in the
   // directory tree. This corresponds to the second shortcut (to 'D')
-  // as shortcuts are ordered alphabetically. Volumes 1 - 4 are the
-  // Recent and Media Views.
-  let key = ['#file-list', '6', true, false, false];
+  // as shortcuts are ordered alphabetically. Volumes 1 is the
+  // Recent View.
+  let key = ['#file-list', '3', true, false, false];
   chrome.test.assertTrue(
       await remoteCall.callRemoteTestUtil('fakeKeyDown', appId, key));
 

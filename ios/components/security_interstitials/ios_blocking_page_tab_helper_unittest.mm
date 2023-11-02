@@ -1,14 +1,14 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/components/security_interstitials/ios_blocking_page_tab_helper.h"
 
-#include "ios/components/security_interstitials/ios_security_interstitial_page.h"
+#import "ios/components/security_interstitials/ios_security_interstitial_page.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
-#include "testing/platform_test.h"
-#include "url/gurl.h"
+#import "testing/platform_test.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -18,7 +18,7 @@ namespace security_interstitials {
 
 class TestInterstitialPage : public IOSSecurityInterstitialPage {
  public:
-  // |*destroyed_tracker| is set to true in the destructor.
+  // `*destroyed_tracker` is set to true in the destructor.
   TestInterstitialPage(web::WebState* web_state,
                        const GURL& request_url,
                        bool* destroyed_tracker)
@@ -38,8 +38,8 @@ class TestInterstitialPage : public IOSSecurityInterstitialPage {
                      bool user_is_interacting,
                      web::WebFrame* sender_frame) override {}
   bool ShouldCreateNewNavigation() const override { return false; }
-  void PopulateInterstitialStrings(base::Value* load_time_data) const override {
-  }
+  void PopulateInterstitialStrings(
+      base::Value::Dict& load_time_data) const override {}
 
   bool* destroyed_tracker_ = nullptr;
 };
@@ -63,8 +63,8 @@ class IOSBlockingPageTabHelperTest : public PlatformTest {
     return IOSBlockingPageTabHelper::FromWebState(&web_state_);
   }
 
-  // Creates a blocking page and associates it with |context|'s navigation ID
-  // in the tab helper.  Returns the created blocking page.  |destroyed_tracker|
+  // Creates a blocking page and associates it with `context`'s navigation ID
+  // in the tab helper.  Returns the created blocking page.  `destroyed_tracker`
   // is an out-parameter that is reset to true when the blocking page is
   // destroyed.
   IOSSecurityInterstitialPage* CreateAssociatedBlockingPage(

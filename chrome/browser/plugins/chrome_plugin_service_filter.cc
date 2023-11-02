@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,6 @@
 #include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/plugins/plugin_finder.h"
-#include "chrome/browser/plugins/plugin_metadata.h"
 #include "chrome/browser/plugins/plugin_prefs.h"
 #include "chrome/browser/plugins/plugin_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -97,38 +95,32 @@ void ChromePluginServiceFilter::AuthorizeAllPlugins(
 
   // Authorize all plugins is intended for the granting access to only
   // the currently active page, so we iterate on the main frame.
-  web_contents->GetMainFrame()->ForEachRenderFrameHost(
-      base::BindRepeating([](content::RenderFrameHost* render_frame_host) {
+  web_contents->GetPrimaryMainFrame()->ForEachRenderFrameHost(
+      [](content::RenderFrameHost* render_frame_host) {
         ChromePluginServiceFilter::GetInstance()->AuthorizePlugin(
             render_frame_host->GetProcess()->GetID(), base::FilePath());
-      }));
+      });
 
   if (load_blocked) {
-    web_contents->GetMainFrame()->ForEachRenderFrameHost(base::BindRepeating(
-        [](const std::string& identifier,
-           content::RenderFrameHost* render_frame_host) {
-          mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame>
-              chrome_render_frame;
-          render_frame_host->GetRemoteAssociatedInterfaces()->GetInterface(
-              &chrome_render_frame);
-          chrome_render_frame->LoadBlockedPlugins(identifier);
-        },
-        identifier));
+    web_contents->GetPrimaryMainFrame()
+        ->ForEachRenderFrameHost(
+            [&identifier](content::RenderFrameHost* render_frame_host) {
+              mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame>
+                  chrome_render_frame;
+              render_frame_host->GetRemoteAssociatedInterfaces()->GetInterface(
+                  &chrome_render_frame);
+              chrome_render_frame->LoadBlockedPlugins(identifier);
+            });
   }
 }
 
 bool ChromePluginServiceFilter::IsPluginAvailable(
-    int render_process_id,
+    content::BrowserContext* browser_context,
     const content::WebPluginInfo& plugin) {
   base::AutoLock auto_lock(lock_);
 
-  content::RenderProcessHost* rph =
-      content::RenderProcessHost::FromID(render_process_id);
-  if (!rph)
-    return false;
-
   // Check whether the plugin is disabled.
-  auto context_info_it = browser_context_map_.find(rph->GetBrowserContext());
+  auto context_info_it = browser_context_map_.find(browser_context);
   // The context might not be found because RenderFrameMessageFilter might
   // outlive the Profile (the context is unregistered during the Profile
   // destructor).
@@ -190,6 +182,6 @@ ChromePluginServiceFilter::GetProcess(
     int render_process_id) const {
   auto it = plugin_details_.find(render_process_id);
   if (it == plugin_details_.end())
-    return NULL;
+    return nullptr;
   return &it->second;
 }

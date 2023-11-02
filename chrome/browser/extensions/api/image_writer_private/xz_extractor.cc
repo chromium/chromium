@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/location.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "chrome/browser/extensions/api/image_writer_private/error_messages.h"
+#include "chrome/browser/extensions/api/image_writer_private/error_constants.h"
 #include "chrome/browser/extensions/api/image_writer_private/single_file_tar_reader.h"
 #include "chrome/browser/file_util_service.h"
 #include "mojo/public/cpp/system/data_pipe.h"
@@ -36,8 +36,8 @@ constexpr uint8_t kExpectedMagic[6] = {0xfd, '7', 'z', 'X', 'Z', 0x00};
 
 bool XzExtractor::IsXzFile(const base::FilePath& image_path) {
   base::File infile(image_path, base::File::FLAG_OPEN | base::File::FLAG_READ |
-                                    base::File::FLAG_EXCLUSIVE_WRITE |
-                                    base::File::FLAG_SHARE_DELETE);
+                                    base::File::FLAG_WIN_EXCLUSIVE_WRITE |
+                                    base::File::FLAG_WIN_SHARE_DELETE);
   if (!infile.IsValid())
     return false;
 
@@ -94,8 +94,8 @@ void XzExtractor::ExtractImpl() {
 
   infile_.Initialize(properties_.image_path,
                      base::File::FLAG_OPEN | base::File::FLAG_READ |
-                         base::File::FLAG_EXCLUSIVE_WRITE |
-                         base::File::FLAG_SHARE_DELETE);
+                         base::File::FLAG_WIN_EXCLUSIVE_WRITE |
+                         base::File::FLAG_WIN_SHARE_DELETE);
   if (!infile_.IsValid()) {
     RunFailureCallbackAndDeleteThis(error::kUnzipGenericError);
     return;
@@ -105,9 +105,9 @@ void XzExtractor::ExtractImpl() {
       properties_.temp_dir_path.Append(kExtractedBinFileName);
   outfile_.Initialize(out_image_path, base::File::FLAG_CREATE_ALWAYS |
                                           base::File::FLAG_WRITE |
-                                          base::File::FLAG_EXCLUSIVE_READ |
-                                          base::File::FLAG_EXCLUSIVE_WRITE |
-                                          base::File::FLAG_SHARE_DELETE);
+                                          base::File::FLAG_WIN_EXCLUSIVE_READ |
+                                          base::File::FLAG_WIN_EXCLUSIVE_WRITE |
+                                          base::File::FLAG_WIN_SHARE_DELETE);
   if (!outfile_.IsValid()) {
     RunFailureCallbackAndDeleteThis(error::kTempFileError);
     return;
@@ -171,7 +171,7 @@ void XzExtractor::OnTarReadable(MojoResult /* result */) {
     return;
   }
 
-  properties_.progress_callback.Run(tar_reader_.total_bytes(),
+  properties_.progress_callback.Run(tar_reader_.total_bytes().value(),
                                     tar_reader_.curr_bytes());
 }
 

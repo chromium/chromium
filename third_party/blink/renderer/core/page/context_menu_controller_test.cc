@@ -1,9 +1,14 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/page/context_menu_controller.h"
 
+#include <algorithm>
+#include <limits>
+#include <utility>
+
+#include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -16,11 +21,14 @@
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/common/input/web_menu_source_type.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom-blink.h"
+#include "third_party/blink/public/web/web_plugin.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/dom/xml_document.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
+#include "third_party/blink/renderer/core/editing/selection_template.h"
+#include "third_party/blink/renderer/core/exported/web_plugin_container_impl.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
@@ -28,9 +36,11 @@
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/input/context_menu_allowed_scope.h"
-#include "third_party/blink/renderer/core/page/context_menu_controller.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
+#include "third_party/blink/renderer/core/page/focus_controller.h"
+#include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/core/testing/fake_web_plugin.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_descriptor.h"
 #include "third_party/blink/renderer/platform/testing/empty_web_media_player.h"
@@ -39,6 +49,7 @@
 #include "third_party/blink/renderer/platform/testing/weburl_loader_mock.h"
 #include "third_party/blink/renderer/platform/testing/weburl_loader_mock_factory_impl.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "ui/gfx/geometry/rect.h"
 
 using testing::Return;
 
@@ -54,18 +65,46 @@ class MockWebMediaPlayerForContextMenu : public EmptyWebMediaPlayer {
   MOCK_CONST_METHOD0(Duration, double());
   MOCK_CONST_METHOD0(HasAudio, bool());
   MOCK_CONST_METHOD0(HasVideo, bool());
+};
 
-  SurfaceLayerMode GetVideoSurfaceLayerMode() const override {
-    return SurfaceLayerMode::kAlways;
+class ContextMenuControllerTestPlugin : public FakeWebPlugin {
+ public:
+  struct PluginAttributes {
+    // Whether the plugin has copy permission.
+    bool can_copy;
+
+    // The selected text in the plugin when the context menu is created.
+    WebString selected_text;
+  };
+
+  explicit ContextMenuControllerTestPlugin(const WebPluginParams& params)
+      : FakeWebPlugin(params) {}
+
+  // FakeWebPlugin:
+  WebString SelectionAsText() const override { return selected_text_; }
+  bool CanCopy() const override { return can_copy_; }
+
+  void SetAttributesForTesting(const PluginAttributes& attributes) {
+    can_copy_ = attributes.can_copy;
+    selected_text_ = attributes.selected_text;
   }
+
+ private:
+  bool can_copy_ = true;
+  WebString selected_text_;
 };
 
 class TestWebFrameClientImpl : public frame_test_helpers::TestWebFrameClient {
  public:
+  WebPlugin* CreatePlugin(const WebPluginParams& params) override {
+    return new ContextMenuControllerTestPlugin(params);
+  }
+
   void UpdateContextMenuDataForTesting(
       const ContextMenuData& data,
-      const absl::optional<gfx::Point>&) override {
+      const absl::optional<gfx::Point>& host_context_menu_location) override {
     context_menu_data_ = data;
+    host_context_menu_location_ = host_context_menu_location;
   }
 
   WebMediaPlayer* CreateMediaPlayer(
@@ -75,7 +114,8 @@ class TestWebFrameClientImpl : public frame_test_helpers::TestWebFrameClient {
       WebMediaPlayerEncryptedMediaClient*,
       WebContentDecryptionModule*,
       const WebString& sink_id,
-      const cc::LayerTreeSettings& settings) override {
+      const cc::LayerTreeSettings& settings,
+      scoped_refptr<base::TaskRunner> compositor_worker_task_runner) override {
     return new MockWebMediaPlayerForContextMenu();
   }
 
@@ -83,8 +123,13 @@ class TestWebFrameClientImpl : public frame_test_helpers::TestWebFrameClient {
     return context_menu_data_;
   }
 
+  const absl::optional<gfx::Point>& host_context_menu_location() const {
+    return host_context_menu_location_;
+  }
+
  private:
   ContextMenuData context_menu_data_;
+  absl::optional<gfx::Point> host_context_menu_location_;
 };
 
 void RegisterMockedImageURLLoad(const String& url) {
@@ -93,13 +138,18 @@ void RegisterMockedImageURLLoad(const String& url) {
       test::CoreTestDataPath(kTestResourceFilename), kTestResourceMimeType);
 }
 
-}  // anonymous namespace
+}  // namespace
+
+template <>
+struct DowncastTraits<ContextMenuControllerTestPlugin> {
+  static bool AllowFrom(const WebPlugin& object) { return true; }
+};
 
 class ContextMenuControllerTest : public testing::Test,
                                   public ::testing::WithParamInterface<bool> {
  public:
-  explicit ContextMenuControllerTest(
-      bool penetrating_image_selection_enabled = GetParam()) {
+  ContextMenuControllerTest() {
+    bool penetrating_image_selection_enabled = GetParam();
     feature_list_.InitWithFeatureState(
         features::kEnablePenetratingImageSelection,
         penetrating_image_selection_enabled);
@@ -168,6 +218,78 @@ class ContextMenuControllerTest : public testing::Test,
 };
 
 INSTANTIATE_TEST_SUITE_P(, ContextMenuControllerTest, ::testing::Bool());
+
+TEST_P(ContextMenuControllerTest, CopyFromPlugin) {
+  ContextMenuAllowedScope context_menu_allowed_scope;
+  frame_test_helpers::LoadFrame(LocalMainFrame(), R"HTML(data:text/html,
+  <html>
+    <body>
+      <embed id="embed" type="application/x-webkit-test-webplugin"
+       src="chrome-extension://test" original-url="http://www.test.pdf">
+      </embed>
+    </body>
+  <html>
+  )HTML");
+
+  Document* document = GetDocument();
+  ASSERT_TRUE(IsA<HTMLDocument>(document));
+
+  Element* embed_element = document->getElementById("embed");
+  ASSERT_TRUE(IsA<HTMLEmbedElement>(embed_element));
+
+  auto* embedded =
+      DynamicTo<LayoutEmbeddedContent>(embed_element->GetLayoutObject());
+  WebPluginContainerImpl* embedded_plugin_view = embedded->Plugin();
+  ASSERT_TRUE(!!embedded_plugin_view);
+
+  auto* test_plugin = DynamicTo<ContextMenuControllerTestPlugin>(
+      embedded_plugin_view->Plugin());
+
+  // The plugin has copy permission but no text is selected.
+  test_plugin->SetAttributesForTesting(
+      {/*can_copy=*/true, /*selected_text=*/""});
+
+  ASSERT_TRUE(ShowContextMenuForElement(embed_element, kMenuSourceMouse));
+  ContextMenuData context_menu_data = GetWebFrameClient().GetContextMenuData();
+  EXPECT_EQ(context_menu_data.media_type,
+            mojom::blink::ContextMenuDataMediaType::kPlugin);
+  EXPECT_FALSE(
+      !!(context_menu_data.edit_flags & ContextMenuDataEditFlags::kCanCopy));
+  EXPECT_EQ(context_menu_data.selected_text, "");
+
+  // The plugin has copy permission and some text is selected.
+  test_plugin->SetAttributesForTesting({/*can_copy=*/true,
+                                        /*selected_text=*/"some text"});
+  ASSERT_TRUE(ShowContextMenuForElement(embed_element, kMenuSourceMouse));
+  context_menu_data = GetWebFrameClient().GetContextMenuData();
+  EXPECT_EQ(context_menu_data.media_type,
+            mojom::blink::ContextMenuDataMediaType::kPlugin);
+  EXPECT_TRUE(
+      !!(context_menu_data.edit_flags & ContextMenuDataEditFlags::kCanCopy));
+  EXPECT_EQ(context_menu_data.selected_text, "some text");
+
+  // The plugin does not have copy permission and no text is selected.
+  test_plugin->SetAttributesForTesting({/*can_copy=*/false,
+                                        /*selected_text=*/""});
+  ASSERT_TRUE(ShowContextMenuForElement(embed_element, kMenuSourceMouse));
+  context_menu_data = GetWebFrameClient().GetContextMenuData();
+  EXPECT_EQ(context_menu_data.media_type,
+            mojom::blink::ContextMenuDataMediaType::kPlugin);
+  EXPECT_FALSE(
+      !!(context_menu_data.edit_flags & ContextMenuDataEditFlags::kCanCopy));
+  EXPECT_EQ(context_menu_data.selected_text, "");
+
+  // The plugin does not have copy permission but some text is selected.
+  test_plugin->SetAttributesForTesting({/*can_copy=*/false,
+                                        /*selected_text=*/"some text"});
+  ASSERT_TRUE(ShowContextMenuForElement(embed_element, kMenuSourceMouse));
+  context_menu_data = GetWebFrameClient().GetContextMenuData();
+  EXPECT_EQ(context_menu_data.media_type,
+            mojom::blink::ContextMenuDataMediaType::kPlugin);
+  EXPECT_EQ(context_menu_data.selected_text, "some text");
+  EXPECT_FALSE(
+      !!(context_menu_data.edit_flags & ContextMenuDataEditFlags::kCanCopy));
+}
 
 TEST_P(ContextMenuControllerTest, VideoNotLoaded) {
   ContextMenuAllowedScope context_menu_allowed_scope;
@@ -414,7 +536,7 @@ TEST_P(ContextMenuControllerTest, MediaStreamVideoLoaded) {
   MediaStreamComponentVector dummy_components;
   auto* media_stream_descriptor = MakeGarbageCollected<MediaStreamDescriptor>(
       dummy_components, dummy_components);
-  video->SetSrcObject(media_stream_descriptor);
+  video->SetSrcObjectVariant(media_stream_descriptor);
   GetDocument()->body()->AppendChild(video);
   test::RunPendingTasks();
   SetReadyState(video.Get(), HTMLMediaElement::kHaveMetadata);
@@ -520,6 +642,46 @@ TEST_P(ContextMenuControllerTest, InfiniteDurationVideoLoaded) {
               !!(context_menu_data.media_flags & expected_media_flag.first))
         << "Flag 0x" << std::hex << expected_media_flag.first;
   }
+}
+
+TEST_P(ContextMenuControllerTest, HitTestVideoChildElements) {
+  // Test that hit tests on parts of a video element result in hits on the video
+  // element itself as opposed to its child elements.
+
+  ContextMenuAllowedScope context_menu_allowed_scope;
+  HitTestResult hit_test_result;
+  const char video_url[] = "https://example.com/foo.webm";
+
+  // Setup video element.
+  Persistent<HTMLVideoElement> video =
+      MakeGarbageCollected<HTMLVideoElement>(*GetDocument());
+  video->SetSrc(video_url);
+  video->setAttribute(
+      html_names::kStyleAttr,
+      "position: absolute; left: 0; top: 0; width: 200px; height: 200px");
+  GetDocument()->body()->AppendChild(video);
+  test::RunPendingTasks();
+  SetReadyState(video.Get(), HTMLMediaElement::kHaveMetadata);
+  test::RunPendingTasks();
+
+  auto check_location = [&](PhysicalOffset location) {
+    EXPECT_TRUE(ShowContextMenu(location, kMenuSourceMouse));
+
+    ContextMenuData context_menu_data =
+        GetWebFrameClient().GetContextMenuData();
+    EXPECT_EQ(mojom::blink::ContextMenuDataMediaType::kVideo,
+              context_menu_data.media_type);
+    EXPECT_EQ(video_url, context_menu_data.src_url.spec());
+  };
+
+  // Center of video.
+  check_location(PhysicalOffset(100, 100));
+
+  // Play button.
+  check_location(PhysicalOffset(10, 195));
+
+  // Timeline bar.
+  check_location(PhysicalOffset(100, 195));
 }
 
 TEST_P(ContextMenuControllerTest, EditingActionsEnabledInSVGDocument) {
@@ -644,7 +806,7 @@ TEST_P(ContextMenuControllerTest, ShowNonLocatedContextMenuEvent) {
   EXPECT_EQ(context_menu_data.selected_text, "Sample Input Text");
 }
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 // Mac has no way to open a context menu based on a keyboard event.
 TEST_P(ContextMenuControllerTest,
        ValidateNonLocatedContextMenuOnLargeImageElement) {
@@ -655,7 +817,7 @@ TEST_P(ContextMenuControllerTest,
   Document* document = GetDocument();
   Element* image_element = document->getElementById("sample_image");
   // Set focus on the image element.
-  image_element->focus();
+  image_element->Focus();
   document->UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
   // Simulate Shift + F10 key event.
@@ -698,7 +860,7 @@ TEST_P(ContextMenuControllerTest, SelectionRectClipped) {
   EXPECT_EQ(context_menu_data.selected_text, "Sample");
 
   // The selection rect is not clipped.
-  IntRect anchor, focus;
+  gfx::Rect anchor, focus;
   selection.ComputeAbsoluteBounds(anchor, focus);
   anchor = document->GetFrame()->View()->FrameToViewport(anchor);
   focus = document->GetFrame()->View()->FrameToViewport(focus);
@@ -706,7 +868,9 @@ TEST_P(ContextMenuControllerTest, SelectionRectClipped) {
   int top = std::min(focus.y(), anchor.y());
   int right = std::max(focus.right(), anchor.right());
   int bottom = std::max(focus.bottom(), anchor.bottom());
-  gfx::Rect selection_rect(left, top, right - left, bottom - top);
+  gfx::Rect selection_rect =
+      document->GetFrame()->LocalFrameRoot().View()->FrameToViewport(
+          gfx::Rect(left, top, right - left, bottom - top));
   EXPECT_EQ(context_menu_data.selection_rect, selection_rect);
 
   // Select all the content of |textarea|.
@@ -717,16 +881,18 @@ TEST_P(ContextMenuControllerTest, SelectionRectClipped) {
   EXPECT_EQ(context_menu_data.selected_text, "Sample editable text");
 
   // The selection rect is clipped by the editable box.
-  IntRect clip_bound = editable_element->VisibleBoundsInVisualViewport();
+  gfx::Rect clip_bound = editable_element->VisibleBoundsInLocalRoot();
   selection.ComputeAbsoluteBounds(anchor, focus);
-  anchor = document->GetFrame()->View()->FrameToViewport(anchor);
-  focus = document->GetFrame()->View()->FrameToViewport(focus);
+  anchor = document->GetFrame()->View()->ConvertToRootFrame(anchor);
+  focus = document->GetFrame()->View()->ConvertToRootFrame(focus);
   left = std::max(clip_bound.x(), std::min(focus.x(), anchor.x()));
   top = std::max(clip_bound.y(), std::min(focus.y(), anchor.y()));
   right = std::min(clip_bound.right(), std::max(focus.right(), anchor.right()));
   bottom =
       std::min(clip_bound.bottom(), std::max(focus.bottom(), anchor.bottom()));
-  selection_rect = gfx::Rect(left, top, right - left, bottom - top);
+  selection_rect =
+      document->GetFrame()->LocalFrameRoot().View()->FrameToViewport(
+          gfx::Rect(left, top, right - left, bottom - top));
   EXPECT_EQ(context_menu_data.selection_rect, selection_rect);
 }
 
@@ -1670,14 +1836,15 @@ TEST_P(ContextMenuControllerTest,
 TEST_P(ContextMenuControllerTest, OpenedFromHighlight) {
   WebURL url = url_test_helpers::ToKURL("http://www.test.com/");
   frame_test_helpers::LoadHTMLString(LocalMainFrame(),
-      R"(<html><head><style>body
+                                     R"(<html><head><style>body
       {background-color:transparent}</style></head>
       <p id="one">This is a test page one</p>
       <p id="two">This is a test page two</p>
       <p id="three">This is a test page three</p>
       <p id="four">This is a test page four</p>
       </html>
-      )", url);
+      )",
+                                     url);
 
   Document* document = GetDocument();
   ASSERT_TRUE(IsA<HTMLDocument>(document));
@@ -1714,6 +1881,152 @@ TEST_P(ContextMenuControllerTest, OpenedFromHighlight) {
   EXPECT_TRUE(context_menu_data.opened_from_highlight);
 }
 
+// Test that opening context menu with keyboard does not change text selection.
+TEST_P(ContextMenuControllerTest,
+       KeyboardTriggeredContextMenuPreservesSelection) {
+  ContextMenuAllowedScope context_menu_allowed_scope;
+
+  GetDocument()->documentElement()->setInnerHTML(R"HTML(
+    <body>
+      <p id='first'>This is a sample text."</p>
+    </body>
+  )HTML");
+
+  Node* first_paragraph = GetDocument()->getElementById("first")->firstChild();
+  const auto& selected_start = Position(first_paragraph, 5);
+  const auto& selected_end = Position(first_paragraph, 9);
+
+  GetDocument()->GetFrame()->Selection().SetSelection(
+      SelectionInDOMTree::Builder()
+          .SetBaseAndExtent(selected_start, selected_end)
+          .Build(),
+      SetSelectionOptions());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(GetDocument()->GetFrame()->Selection().SelectedText(), "is a");
+
+  PhysicalOffset location(LayoutUnit(5), LayoutUnit(5));
+  EXPECT_TRUE(ShowContextMenu(location, kMenuSourceKeyboard));
+  EXPECT_EQ(GetDocument()->GetFrame()->Selection().SelectedText(), "is a");
+}
+
+TEST_P(ContextMenuControllerTest, CheckRendererIdFromContextMenuOnTextField) {
+  WebURL url = url_test_helpers::ToKURL("http://www.test.com/");
+  frame_test_helpers::LoadHTMLString(LocalMainFrame(),
+                                     R"(<html><head><style>body
+      {background-color:transparent}</style></head>
+      <form>
+      <label for="name">Name:</label><br>
+      <input type="text" id="name" name="name"><br>
+      <label for="address">Address:</label><br>
+      <textarea id="address" name="address"></textarea>
+      </form>
+      <p id="one">This is a test page one</p>
+      <label for="two">Two:</label><br>
+      <input type="text" id="two" name="two"><br>
+      <label for="three">Three:</label><br>
+      <textarea id="three" name="three"></textarea>
+      </html>
+      )",
+                                     url);
+
+  Document* document = GetDocument();
+  ASSERT_TRUE(IsA<HTMLDocument>(document));
+
+  // field_id, is_form_renderer_id_present, is_field_renderer_id_present,
+  // input_field_type
+  std::vector<std::tuple<AtomicString, bool, bool,
+                         mojom::ContextMenuDataInputFieldType>>
+      expectations = {
+          // Input Text Field
+          {"name", true, true,
+           mojom::ContextMenuDataInputFieldType::kPlainText},
+          // Text Area Field
+          {"address", true, true,
+           mojom::ContextMenuDataInputFieldType::kPlainText},
+          // Non form element
+          {"one", false, false, mojom::ContextMenuDataInputFieldType::kNone},
+          // Formless Input field
+          {"two", false, true,
+           mojom::ContextMenuDataInputFieldType::kPlainText},
+          // Formless text area field
+          {"three", false, true,
+           mojom::ContextMenuDataInputFieldType::kPlainText}};
+
+  for (const auto& expectation : expectations) {
+    auto [field_id, is_form_renderer_id_present, is_field_renderer_id_present,
+          input_field_type] = expectation;
+    Element* form_element = document->getElementById(field_id);
+    EXPECT_TRUE(ShowContextMenuForElement(form_element, kMenuSourceMouse));
+    ContextMenuData context_menu_data =
+        GetWebFrameClient().GetContextMenuData();
+    EXPECT_EQ(context_menu_data.form_renderer_id.has_value(),
+              is_form_renderer_id_present);
+    EXPECT_EQ(context_menu_data.field_renderer_id.has_value(),
+              is_field_renderer_id_present);
+    EXPECT_EQ(context_menu_data.input_field_type, input_field_type);
+  }
+}
+
 // TODO(crbug.com/1184996): Add additional unit test for blocking frame logging.
+
+class ContextMenuControllerRemoteParentFrameTest
+    : public testing::Test,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  ContextMenuControllerRemoteParentFrameTest() {
+    bool penetrating_image_selection_enabled = GetParam();
+    feature_list_.InitWithFeatureState(
+        features::kEnablePenetratingImageSelection,
+        penetrating_image_selection_enabled);
+  }
+
+  void SetUp() override {
+    web_view_helper_.InitializeRemote();
+    web_view_helper_.RemoteMainFrame()->View()->DisableAutoResizeForTesting(
+        gfx::Size(640, 480));
+
+    child_frame_ = web_view_helper_.CreateLocalChild(
+        *web_view_helper_.RemoteMainFrame(),
+        /*name=*/"child",
+        /*properties=*/{},
+        /*previous_sibling=*/nullptr, &child_web_frame_client_);
+    frame_test_helpers::LoadFrame(child_frame_, "data:text/html,some page");
+
+    auto& focus_controller =
+        child_frame_->GetFrame()->GetPage()->GetFocusController();
+    focus_controller.SetActive(true);
+    focus_controller.SetFocusedFrame(child_frame_->GetFrame());
+  }
+
+  void ShowContextMenu(const gfx::Point& point) {
+    child_frame_->LocalRootFrameWidget()->ShowContextMenu(
+        ui::mojom::MenuSourceType::MOUSE, point);
+    base::RunLoop().RunUntilIdle();
+  }
+
+  const TestWebFrameClientImpl& child_web_frame_client() const {
+    return child_web_frame_client_;
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+  TestWebFrameClientImpl child_web_frame_client_;
+  frame_test_helpers::WebViewHelper web_view_helper_;
+  Persistent<WebLocalFrameImpl> child_frame_;
+};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         ContextMenuControllerRemoteParentFrameTest,
+                         ::testing::Bool());
+
+TEST_P(ContextMenuControllerRemoteParentFrameTest, ShowContextMenuInChild) {
+  const gfx::Point kPoint(123, 234);
+  ShowContextMenu(kPoint);
+
+  const absl::optional<gfx::Point>& host_context_menu_location =
+      child_web_frame_client().host_context_menu_location();
+  ASSERT_TRUE(host_context_menu_location.has_value());
+  EXPECT_EQ(kPoint, host_context_menu_location.value());
+}
 
 }  // namespace blink

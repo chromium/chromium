@@ -1,6 +1,6 @@
 rootWebArea htmlTag='#document' name='done'
 ++genericContainer ignored htmlTag='html'
-++++genericContainer ignored htmlTag='body'
+++++genericContainer htmlTag='body'
 ++++++genericContainer className='dt1' htmlTag='x-details'
 ++++++++genericContainer ignored htmlTag='slot'
 ++++++++++genericContainer description='Details' htmlTag='summary' descriptionFrom=summary

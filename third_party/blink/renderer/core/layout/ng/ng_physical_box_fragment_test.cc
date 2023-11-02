@@ -1,9 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 
+#include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_test.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
@@ -20,7 +22,7 @@ class NGPhysicalBoxFragmentTest : public NGLayoutTest {
 
   const NGPhysicalBoxFragment& GetPhysicalBoxFragmentByElementId(
       const char* id) {
-    auto* layout_object = To<LayoutBlockFlow>(GetLayoutObjectByElementId(id));
+    auto* layout_object = GetLayoutBoxByElementId(id);
     DCHECK(layout_object);
     const NGPhysicalBoxFragment* fragment =
         layout_object->GetPhysicalFragment(0);
@@ -308,6 +310,78 @@ TEST_F(NGPhysicalBoxFragmentTest,
   EXPECT_TRUE(container.MayHaveDescendantAboveBlockStart());
   const auto& container2 = GetPhysicalBoxFragmentByElementId("container2");
   EXPECT_TRUE(container2.MayHaveDescendantAboveBlockStart());
+}
+
+TEST_F(NGPhysicalBoxFragmentTest, OverflowClipMarginVisualBox) {
+  ScopedLayoutNGBlockFragmentationForTest block_frag(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body {
+        width: 200px;
+        height: 50px;
+        column-count: 2;
+      }
+
+      .container {
+        width: 50px;
+        height: 50px;
+        border: 5px solid grey;
+        padding: 5px;
+        overflow: clip;
+        overflow-clip-margin: content-box 15px;
+      }
+
+      .content {
+        width: 100px;
+        height: 200px;
+      }
+    </style>
+    <div class="container" id="test">
+      <div class="content" style="background:blue"></div>
+    </div>
+  )HTML");
+
+  auto* layout_box = GetLayoutBoxByElementId("test");
+  ASSERT_EQ(layout_box->PhysicalFragmentCount(), 2u);
+
+  const PhysicalOffset zero_offset;
+
+  EXPECT_EQ(
+      layout_box->GetPhysicalFragment(0)->InkOverflow(),
+      PhysicalRect(zero_offset, PhysicalSize(LayoutUnit(75), LayoutUnit(35))));
+  EXPECT_EQ(
+      layout_box->GetPhysicalFragment(1)->InkOverflow(),
+      PhysicalRect(zero_offset, PhysicalSize(LayoutUnit(75), LayoutUnit(40))));
+
+  GetDocument().getElementById("test")->SetInlineStyleProperty(
+      CSSPropertyID::kOverflowClipMargin, "padding-box 15px");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(
+      layout_box->GetPhysicalFragment(0)->InkOverflow(),
+      PhysicalRect(zero_offset, PhysicalSize(LayoutUnit(80), LayoutUnit(35))));
+  EXPECT_EQ(
+      layout_box->GetPhysicalFragment(1)->InkOverflow(),
+      PhysicalRect(zero_offset, PhysicalSize(LayoutUnit(80), LayoutUnit(45))));
+
+  GetDocument().getElementById("test")->SetInlineStyleProperty(
+      CSSPropertyID::kOverflowClipMargin, "border-box 15px");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(
+      layout_box->GetPhysicalFragment(0)->InkOverflow(),
+      PhysicalRect(zero_offset, PhysicalSize(LayoutUnit(85), LayoutUnit(35))));
+  EXPECT_EQ(
+      layout_box->GetPhysicalFragment(1)->InkOverflow(),
+      PhysicalRect(zero_offset, PhysicalSize(LayoutUnit(85), LayoutUnit(50))));
+}
+
+TEST_F(NGPhysicalBoxFragmentTest, CloneWithPostLayoutFragments) {
+  SetHtmlInnerHTML(R"HTML(<frameset id="fs"></frameset>)HTML");
+  const auto& fragment = GetPhysicalBoxFragmentByElementId("fs");
+  EXPECT_TRUE(fragment.GetFrameSetLayoutData());
+  const auto* clone =
+      NGPhysicalBoxFragment::CloneWithPostLayoutFragments(fragment);
+  EXPECT_TRUE(clone->GetFrameSetLayoutData());
 }
 
 }  // namespace blink

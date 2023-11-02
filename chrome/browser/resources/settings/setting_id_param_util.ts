@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
  * from the Url parameter.
  */
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {Router} from './router.js';
 
 const SETTING_ID_URL_PARAM_NAME: string = 'settingId';

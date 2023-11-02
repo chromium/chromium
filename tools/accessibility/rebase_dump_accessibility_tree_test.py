@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-# Copyright 2014 The Chromium Authors. All rights reserved.
+#!/usr/bin/env python3
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -27,7 +27,7 @@ import sys
 import tempfile
 import time
 import urllib
-import urlparse
+import urllib.parse
 
 # The location of the DumpAccessibilityTree html test files and expectations.
 TEST_DATA_PATH = os.path.join(os.getcwd(), 'content/test/data/accessibility')
@@ -48,10 +48,16 @@ def Fix(line):
       line = result.group(1)
   # For Android tests:
   if line[:2] == 'I ':
-    result = re.search('I  \d+\.\d+s run_tests_on_device\([0-9a-f]+\)  (.*)',
+    result = re.search('I\s+\d+\.\d+s run_tests_on_device\([0-9a-f]+\)\s+(.*)',
                        line)
     if result:
-      line = group(1)
+      line = result.group(1)
+  # For Android content_shell_test_apk tests:
+  elif line[:2] == 'C ':
+    result = re.search('C\s+\d+\.\d+s Main\s+([T|E|A|a|W|\+](.*))', line)
+
+    if result:
+      line = result.group(1)
   return line
 
 def ParseLog(logdata):
@@ -130,7 +136,8 @@ def Run():
       s_name = None
       for step in steps_json['steps']:
         name = step['name']
-        if name.startswith('content_browsertests') and '(with patch)' in name:
+        if (name.startswith('content_shell_test_apk') or
+            name.startswith('content_browsertests')) and '(with patch)' in name:
           s_name = name
 
       bb_command = [

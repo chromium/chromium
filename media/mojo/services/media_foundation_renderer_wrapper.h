@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,8 @@
 #define MEDIA_MOJO_SERVICES_MEDIA_FOUNDATION_RENDERER_WRAPPER_H_
 
 #include "base/callback.h"
+#include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/media_resource.h"
 #include "media/base/pipeline_status.h"
@@ -29,12 +31,14 @@ class MediaFoundationRendererWrapper final
       public mojom::MuteStateObserver {
  public:
   using RendererExtension = mojom::MediaFoundationRendererExtension;
+  using ClientExtension = mojom::MediaFoundationRendererClientExtension;
 
   MediaFoundationRendererWrapper(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       mojom::FrameInterfaceFactory* frame_interfaces,
       mojo::PendingRemote<mojom::MediaLog> media_log_remote,
-      mojo::PendingReceiver<RendererExtension> renderer_extension_receiver);
+      mojo::PendingReceiver<RendererExtension> renderer_extension_receiver,
+      mojo::PendingRemote<ClientExtension> client_extension_remote);
   MediaFoundationRendererWrapper(const MediaFoundationRendererWrapper&) =
       delete;
   MediaFoundationRendererWrapper operator=(
@@ -58,21 +62,38 @@ class MediaFoundationRendererWrapper final
   void SetVideoStreamEnabled(bool enabled) override;
   void SetOutputRect(const gfx::Rect& output_rect,
                      SetOutputRectCallback callback) override;
+  void NotifyFrameReleased(const base::UnguessableToken& frame_token) override;
+  void RequestNextFrame() override;
+  void SetMediaFoundationRenderingMode(
+      MediaFoundationRenderingMode mode) override;
 
   // mojom::MuteStateObserver implementation.
   void OnMuteStateChange(bool muted) override;
 
  private:
+  void OnGpuLuidChange(const CHROME_LUID& adapter_luid);
   void OnReceiveDCOMPSurface(GetDCOMPSurfaceCallback callback,
-                             base::win::ScopedHandle handle);
+                             base::win::ScopedHandle handle,
+                             const std::string& error);
   void OnDCOMPSurfaceHandleRegistered(
       GetDCOMPSurfaceCallback callback,
       const absl::optional<base::UnguessableToken>& token);
+  void OnFrameGeneratedByMediaFoundation(
+      const base::UnguessableToken& frame_token,
+      const gfx::Size& frame_size,
+      base::TimeDelta frame_timestamp);
+  void OnFramePoolInitialized(
+      std::vector<MediaFoundationFrameInfo> frame_textures,
+      const gfx::Size& texture_size);
 
-  mojom::FrameInterfaceFactory* frame_interfaces_;
+  raw_ptr<mojom::FrameInterfaceFactory> frame_interfaces_;
   std::unique_ptr<MediaFoundationRenderer> renderer_;
   mojo::Receiver<MediaFoundationRendererExtension> renderer_extension_receiver_;
+  mojo::Remote<media::mojom::MediaFoundationRendererClientExtension>
+      client_extension_remote_;
   mojo::Receiver<mojom::MuteStateObserver> site_mute_observer_;
+
+  base::CallbackListSubscription luid_update_subscription_;
 
   float volume_ = 1.0;
   bool muted_ = false;  // Whether the site (WebContents) is muted.

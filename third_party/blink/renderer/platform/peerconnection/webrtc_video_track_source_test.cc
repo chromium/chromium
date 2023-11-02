@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include "base/callback_helpers.h"
 #include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "media/base/video_frame.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -36,6 +37,19 @@ class MockVideoSink : public rtc::VideoSinkInterface<webrtc::VideoFrame> {
   MOCK_METHOD1(OnFrame, void(const webrtc::VideoFrame&));
 };
 
+TEST(WebRtcVideoTrackSourceRefreshFrameTest, CallsRefreshFrame) {
+  bool called = false;
+  scoped_refptr<WebRtcVideoTrackSource> track_source =
+      new rtc::RefCountedObject<WebRtcVideoTrackSource>(
+          /*is_screencast=*/false,
+          /*needs_denoising=*/absl::nullopt,
+          base::BindLambdaForTesting([](const media::VideoCaptureFeedback&) {}),
+          base::BindLambdaForTesting([&called] { called = true; }),
+          /*gpu_factories=*/nullptr);
+  track_source->RequestRefreshFrame();
+  EXPECT_TRUE(called);
+}
+
 class WebRtcVideoTrackSourceTest
     : public ::testing::TestWithParam<
           std::tuple<media::VideoFrame::StorageType, media::VideoPixelFormat>> {
@@ -46,6 +60,7 @@ class WebRtcVideoTrackSourceTest
             /*needs_denoising=*/absl::nullopt,
             base::BindRepeating(&WebRtcVideoTrackSourceTest::ProcessFeedback,
                                 base::Unretained(this)),
+            base::BindLambdaForTesting([] {}),
             /*gpu_factories=*/nullptr)) {
     track_source_->AddOrUpdateSink(&mock_sink_, rtc::VideoSinkWants());
   }

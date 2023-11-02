@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,15 +7,13 @@
 #include <stddef.h>
 
 #include <memory>
+#include <tuple>
 #include <utility>
 
-#include "ash/components/smbfs/smbfs_host.h"
-#include "ash/components/smbfs/smbfs_mounter.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -42,10 +40,12 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/dbus/concierge/concierge_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/smbprovider/fake_smb_provider_client.h"
-#include "chromeos/disks/disk_mount_manager.h"
+#include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/components/dbus/smbprovider/fake_smb_provider_client.h"
+#include "chromeos/ash/components/dbus/smbprovider/smb_provider_client.h"
+#include "chromeos/ash/components/disks/disk_mount_manager.h"
+#include "chromeos/ash/components/smbfs/smbfs_host.h"
+#include "chromeos/ash/components/smbfs/smbfs_mounter.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "storage/browser/file_system/external_mount_points.h"
@@ -77,7 +77,7 @@ constexpr char kMountPath[] = "/share/mount/path";
 constexpr char kMountPath2[] = "/share/mount/second_path";
 
 constexpr char kTestADUser[] = "ad-test-user";
-constexpr char kTestADDomain[] = "foorbar.corp";
+constexpr char kTestADDomain[] = "foobar.corp";
 constexpr char kTestADGuid[] = "ad-user-guid";
 
 void SaveMountResult(SmbMountResult* out, SmbMountResult result) {
@@ -126,7 +126,7 @@ std::unique_ptr<KeyedService> BuildVolumeManager(
       Profile::FromBrowserContext(context),
       nullptr /* drive_integration_service */,
       nullptr /* power_manager_client */,
-      chromeos::disks::DiskMountManager::GetInstance(),
+      disks::DiskMountManager::GetInstance(),
       nullptr /* file_system_provider_service */,
       file_manager::VolumeManager::GetMtpStorageInfoCallback());
 }
@@ -171,23 +171,20 @@ class SmbServiceWithSmbfsTest : public testing::Test {
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
         std::move(user_manager_temp));
 
-    // This isn't used, but still needs to exist.
-    chromeos::DBusThreadManager::Initialize();
-    chromeos::DBusThreadManager::GetSetterForTesting()->SetSmbProviderClient(
-        std::make_unique<FakeSmbProviderClient>());
-    chromeos::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
+    SmbProviderClient::InitializeFake();
+    ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
 
-    // Takes ownership of |disk_mount_manager_|.
-    chromeos::disks::DiskMountManager::InitializeForTesting(
-        disk_mount_manager_);
+    // Takes ownership of |disk_mount_manager_|, but Shutdown() must be called.
+    disks::DiskMountManager::InitializeForTesting(disk_mount_manager_);
   }
 
   ~SmbServiceWithSmbfsTest() override {
     smb_service_.reset();
     user_manager_enabler_.reset();
     profile_manager_.reset();
-    chromeos::ConciergeClient::Shutdown();
-    chromeos::DBusThreadManager::Shutdown();
+    disks::DiskMountManager::Shutdown();
+    ConciergeClient::Shutdown();
+    SmbProviderClient::Shutdown();
   }
 
   void CreateService(TestingProfile* profile) {
@@ -204,7 +201,7 @@ class SmbServiceWithSmbfsTest : public testing::Test {
     SmbMountResult result = SmbMountResult::kSuccess;
     smb_service_->Mount("" /* display_name */, base::FilePath(url),
                         "" /* username */, "" /* password */,
-                        false /* use_chromad_kerberos */,
+                        false /* use_kerberos */,
                         false /* should_open_file_manager_after_mount */,
                         false /* save_credentials */,
                         base::BindOnce(&SaveMountResult, &result));
@@ -215,7 +212,7 @@ class SmbServiceWithSmbfsTest : public testing::Test {
     SmbMountResult result = SmbMountResult::kSuccess;
     smb_service_->Mount("" /* display_name */, base::FilePath(url),
                         "" /* username */, "" /* password */,
-                        true /* use_chromad_kerberos */,
+                        true /* use_kerberos */,
                         false /* should_open_file_manager_after_mount */,
                         false /* save_credentials */,
                         base::BindOnce(&SaveMountResult, &result));
@@ -245,10 +242,9 @@ class SmbServiceWithSmbfsTest : public testing::Test {
     }
   }
 
-  std::unique_ptr<chromeos::disks::MountPoint> MakeMountPoint(
+  std::unique_ptr<disks::MountPoint> MakeMountPoint(
       const base::FilePath& path) {
-    return std::make_unique<chromeos::disks::MountPoint>(path,
-                                                         disk_mount_manager_);
+    return std::make_unique<disks::MountPoint>(path, disk_mount_manager_);
   }
 
   // Helper function for creating a basic smbfs mount with an empty
@@ -295,7 +291,7 @@ class SmbServiceWithSmbfsTest : public testing::Test {
     base::RunLoop run_loop;
     smb_service_->Mount(kDisplayName, base::FilePath(share_path),
                         "" /* username */, "" /* password */,
-                        false /* use_chromad_kerberos */,
+                        false /* use_kerberos */,
                         false /* should_open_file_manager_after_mount */,
                         false /* save_credentials */,
                         base::BindLambdaForTesting(
@@ -314,8 +310,12 @@ class SmbServiceWithSmbfsTest : public testing::Test {
   file_manager::FakeDiskMountManager* disk_mount_manager_ =
       new file_manager::FakeDiskMountManager;
 
-  TestingProfile* profile_ = nullptr;     // Not owned.
-  TestingProfile* ad_profile_ = nullptr;  // Not owned.
+  // Not owned.
+  TestingProfile* profile_ = nullptr;
+
+  // Not owned.
+  TestingProfile* ad_profile_ = nullptr;
+
   std::unique_ptr<TestingProfileManager> profile_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
   std::unique_ptr<SmbService> smb_service_;
@@ -369,7 +369,7 @@ TEST_F(SmbServiceWithSmbfsTest, Mount) {
         EXPECT_EQ(options.username, kTestUser);
         EXPECT_TRUE(options.workgroup.empty());
         EXPECT_EQ(options.password, kTestPassword);
-        EXPECT_EQ(options.allow_ntlm, true);
+        EXPECT_TRUE(options.allow_ntlm);
         EXPECT_FALSE(options.kerberos_options);
         smbfs_host_delegate = delegate;
         return std::move(mock_mounter);
@@ -389,7 +389,7 @@ TEST_F(SmbServiceWithSmbfsTest, Mount) {
   base::RunLoop run_loop;
   smb_service_->Mount(
       kDisplayName, base::FilePath(kSharePath), kTestUser, kTestPassword,
-      false /* use_chromad_kerberos */,
+      false /* use_kerberos */,
       false /* should_open_file_manager_after_mount */,
       false /* save_credentials */,
       base::BindLambdaForTesting([&run_loop](SmbMountResult result) {
@@ -481,7 +481,7 @@ TEST_F(SmbServiceWithSmbfsTest, Mount_SaveCredentials) {
   base::RunLoop run_loop;
   smb_service_->Mount(
       kDisplayName, base::FilePath(kSharePath), kTestUser, kTestPassword,
-      false /* use_chromad_kerberos */,
+      false /* use_kerberos */,
       false /* should_open_file_manager_after_mount */,
       true /* save_credentials */,
       base::BindLambdaForTesting([&run_loop](SmbMountResult result) {
@@ -528,7 +528,7 @@ TEST_F(SmbServiceWithSmbfsTest, Mount_ActiveDirectory) {
         // Workgroup/domain is converted to upper-case.
         EXPECT_EQ(options.workgroup, base::ToUpperASCII(kTestADDomain));
         EXPECT_TRUE(options.password.empty());
-        EXPECT_EQ(options.allow_ntlm, true);
+        EXPECT_TRUE(options.allow_ntlm);
         EXPECT_EQ(
             options.kerberos_options->source,
             smbfs::SmbFsMounter::KerberosOptions::Source::kActiveDirectory);
@@ -552,8 +552,7 @@ TEST_F(SmbServiceWithSmbfsTest, Mount_ActiveDirectory) {
   smb_service_->Mount(
       kDisplayName, base::FilePath(kSharePath),
       base::StrCat({kTestUser, "@", kTestDomain}), kTestPassword,
-      true /* use_chromad_kerberos */,
-      false /* should_open_file_manager_after_mount */,
+      true /* use_kerberos */, false /* should_open_file_manager_after_mount */,
       false /* save_credentials */,
       base::BindLambdaForTesting([&run_loop](SmbMountResult result) {
         EXPECT_EQ(SmbMountResult::kSuccess, result);
@@ -654,7 +653,7 @@ TEST_F(SmbServiceWithSmbfsTest, MountSaved) {
         EXPECT_EQ(options.username, kTestUser);
         EXPECT_EQ(options.workgroup, kTestDomain);
         EXPECT_TRUE(options.password.empty());
-        EXPECT_EQ(options.allow_ntlm, true);
+        EXPECT_TRUE(options.allow_ntlm);
         EXPECT_FALSE(options.kerberos_options);
         EXPECT_TRUE(options.save_restore_password);
         EXPECT_FALSE(options.account_hash.empty());
@@ -699,7 +698,7 @@ TEST_F(SmbServiceWithSmbfsTest, MountSaved) {
 }
 
 TEST_F(SmbServiceWithSmbfsTest, MountExcessiveShares) {
-  // The maxmium number of smbfs shares that can be mounted simultaneously.
+  // The maximum number of smbfs shares that can be mounted simultaneously.
   // Should match the definition in smb_service.cc.
   const size_t kMaxSmbFsShares = 16;
   CreateService(profile_);
@@ -711,10 +710,10 @@ TEST_F(SmbServiceWithSmbfsTest, MountExcessiveShares) {
         std::string(kSharePath) + base::NumberToString(i);
     const std::string mount_path =
         std::string(kMountPath) + base::NumberToString(i);
-    ignore_result(MountBasicShare(share_path, mount_path,
+    std::ignore = MountBasicShare(share_path, mount_path,
                                   base::BindOnce([](SmbMountResult result) {
                                     EXPECT_EQ(SmbMountResult::kSuccess, result);
-                                  })));
+                                  }));
   }
 
   // Check: After mounting the maximum number of shares, requesting to mount an
@@ -723,24 +722,24 @@ TEST_F(SmbServiceWithSmbfsTest, MountExcessiveShares) {
       std::string(kSharePath) + base::NumberToString(kMaxSmbFsShares);
   const std::string mount_path =
       std::string(kMountPath) + base::NumberToString(kMaxSmbFsShares);
-  ignore_result(MountBasicShare(
+  std::ignore = MountBasicShare(
       share_path, mount_path, base::BindOnce([](SmbMountResult result) {
         EXPECT_EQ(SmbMountResult::kTooManyOpened, result);
-      })));
+      }));
 }
 
 TEST_F(SmbServiceWithSmbfsTest, GetSmbFsShareForPath) {
   CreateService(profile_);
   WaitForSetupComplete();
 
-  ignore_result(MountBasicShare(kSharePath, kMountPath,
+  std::ignore = MountBasicShare(kSharePath, kMountPath,
                                 base::BindOnce([](SmbMountResult result) {
                                   EXPECT_EQ(SmbMountResult::kSuccess, result);
-                                })));
-  ignore_result(MountBasicShare(kSharePath2, kMountPath2,
+                                }));
+  std::ignore = MountBasicShare(kSharePath2, kMountPath2,
                                 base::BindOnce([](SmbMountResult result) {
                                   EXPECT_EQ(SmbMountResult::kSuccess, result);
-                                })));
+                                }));
 
   SmbFsShare* share =
       smb_service_->GetSmbFsShareForPath(base::FilePath(kMountPath));
@@ -765,23 +764,23 @@ TEST_F(SmbServiceWithSmbfsTest, MountDuplicate) {
   CreateService(profile_);
   WaitForSetupComplete();
 
-  ignore_result(MountBasicShare(kSharePath, kMountPath,
+  std::ignore = MountBasicShare(kSharePath, kMountPath,
                                 base::BindOnce([](SmbMountResult result) {
                                   EXPECT_EQ(SmbMountResult::kSuccess, result);
-                                })));
+                                }));
 
   // A second mount with the same share path should fail.
-  ignore_result(MountBasicShare(
+  std::ignore = MountBasicShare(
       kSharePath, kMountPath2, base::BindOnce([](SmbMountResult result) {
         EXPECT_EQ(SmbMountResult::kMountExists, result);
-      })));
+      }));
 
   // Unmounting and mounting again should succeed.
   smb_service_->UnmountSmbFs(base::FilePath(kMountPath));
-  ignore_result(MountBasicShare(kSharePath, kMountPath2,
+  std::ignore = MountBasicShare(kSharePath, kMountPath2,
                                 base::BindOnce([](SmbMountResult result) {
                                   EXPECT_EQ(SmbMountResult::kSuccess, result);
-                                })));
+                                }));
 }
 
 }  // namespace smb_client

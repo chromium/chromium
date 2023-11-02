@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,10 @@
 #include "base/test/bind.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/theme_source.h"
+#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/theme_resources.h"
+#include "chrome/test/base/test_theme_provider.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
@@ -40,6 +42,7 @@ class WebUISourcesTest : public testing::Test {
 
  private:
   void SetUp() override {
+    webui::SetThemeProviderForTesting(&test_theme_provider_);
     profile_ = std::make_unique<TestingProfile>();
     theme_source_ = std::make_unique<ThemeSource>(profile_.get());
     test_web_contents_ = content::WebContentsTester::CreateTestWebContents(
@@ -53,6 +56,7 @@ class WebUISourcesTest : public testing::Test {
     test_web_contents_.reset();
     test_web_contents_getter_ = content::WebContents::Getter();
     profile_.reset();
+    webui::SetThemeProviderForTesting(nullptr);
   }
 
   void SendResponse(scoped_refptr<base::RefCountedMemory> data) {
@@ -62,6 +66,7 @@ class WebUISourcesTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   content::RenderViewHostTestEnabler render_view_host_test_enabler_;
 
+  TestThemeProvider test_theme_provider_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<ThemeSource> theme_source_;
   std::unique_ptr<content::WebContents> test_web_contents_;
@@ -69,10 +74,14 @@ class WebUISourcesTest : public testing::Test {
 };
 
 TEST_F(WebUISourcesTest, ThemeSourceMimeTypes) {
-  EXPECT_EQ(theme_source()->GetMimeType("css/new_tab_theme.css"), "text/css");
-  EXPECT_EQ(theme_source()->GetMimeType("css/new_tab_theme.css?foo"),
-                                        "text/css");
-  EXPECT_EQ(theme_source()->GetMimeType("WRONGURL"), "image/png");
+  EXPECT_EQ(
+      theme_source()->GetMimeType(GURL("chrome://theme/css/new_tab_theme.css")),
+      "text/css");
+  EXPECT_EQ(theme_source()->GetMimeType(
+                GURL("chrome://theme/css/new_tab_theme.css?foo")),
+            "text/css");
+  EXPECT_EQ(theme_source()->GetMimeType(GURL("chrome://theme/WRONGURL")),
+            "image/png");
 }
 
 TEST_F(WebUISourcesTest, ThemeSourceImages) {
@@ -106,6 +115,17 @@ TEST_F(WebUISourcesTest, ThemeSourceCSS) {
   StartDataRequest("css/WRONGURL");
   EXPECT_EQ(result_data_size_, empty_size);
 #endif
+}
+
+TEST_F(WebUISourcesTest, ThemeSourceColorsCSS) {
+  // Check for a successful request and that the data is non-null. The actual
+  // conversion of color provider colors to css colors is tested in helper
+  // functions.
+  size_t empty_size = 0;
+
+  StartDataRequest("colors.css?sets=ui");
+  base::RunLoop().RunUntilIdle();
+  EXPECT_NE(result_data_size_, empty_size);
 }
 
 TEST_F(WebUISourcesTest, ThemeAllowedOrigin) {

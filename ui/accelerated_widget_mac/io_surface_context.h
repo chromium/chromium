@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -52,7 +52,7 @@ class IOSurfaceContext
   IOSurfaceContext(
       Type type,
       base::ScopedTypeRef<CGLContextObj> clg_context_strong);
-  virtual ~IOSurfaceContext();
+  ~IOSurfaceContext() override;
 
   Type type_;
   base::ScopedTypeRef<CGLContextObj> cgl_context_;

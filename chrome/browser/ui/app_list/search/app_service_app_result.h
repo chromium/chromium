@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,10 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/ui/app_list/search/app_result.h"
 #include "components/favicon_base/favicon_types.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_cache.h"
-#include "components/services/app_service/public/mojom/types.mojom-forward.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 #include "url/gurl.h"
 
 class AppListControllerDelegate;
@@ -52,10 +54,11 @@ class AppServiceAppResult : public AppResult {
   void ExecuteLaunchCommand(int event_flags) override;
 
   ash::SearchResultType GetSearchResultType() const;
-  void Launch(int event_flags, apps::mojom::LaunchSource launch_source);
+  void Launch(int event_flags, apps::LaunchSource launch_source);
 
+  int GetIconDimension(bool chip);
   void CallLoadIcon(bool chip, bool allow_placeholder_icon);
-  void OnLoadIcon(bool chip, apps::mojom::IconValuePtr icon_value);
+  void OnLoadIcon(bool chip, apps::IconValuePtr icon_value);
 
   void HandleSuggestionChip(Profile* profile);
 
@@ -82,7 +85,7 @@ class AppServiceAppResult : public AppResult {
   // the last icon is no longer used.
   std::unique_ptr<apps::IconLoader::Releaser> icon_loader_releaser_;
 
-  apps::mojom::AppType app_type_;
+  apps::AppType app_type_;
   bool is_platform_app_;
   bool show_in_launcher_;
 

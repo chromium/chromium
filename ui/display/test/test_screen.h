@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,6 +20,8 @@ namespace test {
 class TestScreen : public ScreenBase {
  public:
   static constexpr gfx::Rect kDefaultScreenBounds = gfx::Rect(0, 0, 800, 600);
+
+  static TestScreen* Get();
 
   // TODO(weili): Split this into a protected no-argument constructor for
   // subclass uses and the public one with gfx::Size argument.

@@ -1,15 +1,15 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 module media.stable.mojom;
 
-import "media/mojo/mojom/media_types.mojom";
+import "media/mojo/mojom/encryption_pattern.mojom";
+import "media/mojo/mojom/stable/native_pixmap_handle.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/buffer_types.mojom";
-import "ui/gfx/mojom/native_handle_types.mojom";
 
 // Maps to |media.mojom.VideoCodec|.
 [Stable, Extensible]
@@ -37,6 +37,8 @@ enum VideoCodecProfile {
   // Keep the values in this enum unique, as they imply format (h.264 vs. VP8,
   // for example), and keep the values for a particular format grouped
   // together for clarity.
+  // Next version: 2
+  // Next value: 37
   [Default] kVideoCodecProfileUnknown = -1,
   kH264ProfileMin = 0,
   kH264ProfileBaseline = kH264ProfileMin,
@@ -79,6 +81,16 @@ enum VideoCodecProfile {
   kAV1ProfileMax = kAV1ProfilePro,
   kDolbyVisionProfile8 = 27,
   kDolbyVisionProfile9 = 28,
+  [MinVersion=1] kHEVCProfileExtMin = 29,
+  [MinVersion=1] kHEVCProfileRext = kHEVCProfileExtMin,
+  [MinVersion=1] kHEVCProfileHighThroughput = 30,
+  [MinVersion=1] kHEVCProfileMultiviewMain = 31,
+  [MinVersion=1] kHEVCProfileScalableMain = 32,
+  [MinVersion=1] kHEVCProfile3dMain = 33,
+  [MinVersion=1] kHEVCProfileScreenExtended = 34,
+  [MinVersion=1] kHEVCProfileScalableRext = 35,
+  [MinVersion=1] kHEVCProfileHighThroughputScreenExtended = 36,
+  [MinVersion=1] kHEVCProfileExtMax = kHEVCProfileHighThroughputScreenExtended,
 };
 
 // Based on |media.mojom.SubsampleEntry|.
@@ -186,7 +198,7 @@ struct StatusData {
   StatusCode code@1;
   string message@2;
   array<mojo_base.mojom.Value> frames@3;
-  array<StatusData> causes@4;
+  StatusData? cause@4;
   mojo_base.mojom.Value data@5;
 };
 
@@ -278,6 +290,7 @@ enum ColorSpaceTransferID {
   kCustom,
   kCustomHDR,
   kPiecewiseHDR,
+  [MinVersion=1] kScrgbLinear80Nits,
 };
 
 // Maps to |gfx.mojom.ColorSpaceMatrixID|.
@@ -376,19 +389,22 @@ enum VideoPixelFormat {
   kPixelFormatBGRA = 32,  // 32bpp ARGB (byte-order), 1 plane.
 
   kPixelFormatRGBAF16 = 33,  // Half float RGBA, 1 plane.
+
+  [MinVersion=1]
+  kPixelFormatI422A = 34,   // 24bpp YUVA planar 1x1 Y, 2x1 UV, 1x1 A samples.
+
+  [MinVersion=1]
+  kPixelFormatI444A = 35,   // 32bpp YUVA planar, no subsampling.
+
+  // YUVA planar, 10 bits per pixel component.
+  [MinVersion=1] kPixelFormatYUV420AP10 = 36,
+  [MinVersion=1] kPixelFormatYUV422AP10 = 37,
+  [MinVersion=1] kPixelFormatYUV444AP10 = 38,
 };
 
 // Based on |media.mojom.EosVideoFrameData|.
 [Stable]
 struct EosVideoFrameData {
-};
-
-// Based on |gfx.mojom.NativePixmapHandle|.
-// Next min field ID: 2
-[Stable]
-struct NativePixmapHandle {
-  array<gfx.mojom.NativePixmapPlane> planes@0;
-  uint64 modifier@1;
 };
 
 // Based on |gfx.mojom.GpuMemoryBufferHandle| but does not depend on
@@ -397,7 +413,7 @@ struct NativePixmapHandle {
 [Stable]
 struct NativeGpuMemoryBufferHandle {
   gfx.mojom.GpuMemoryBufferId id@0;
-  NativePixmapHandle? platform_handle@1;
+  NativePixmapHandle platform_handle@1;
 };
 
 // Based on |media.mojom.GpuMemoryBufferVideoFrameData| but does not depend
@@ -409,7 +425,7 @@ struct GpuMemoryBufferVideoFrameData {
 };
 
 // Based on |media.mojom.VideoFrameMetadata| but does not depend on
-// |media.mojom.VideoTransformation| or |media.mojom.CopyMode|.
+// |media.mojom.VideoTransformation|.
 // Next min field ID: 6
 [Stable]
 struct VideoFrameMetadata {
@@ -511,4 +527,22 @@ struct MediaLogRecord {
   Type type@1;
   mojo_base.mojom.DictionaryValue params@2;
   mojo_base.mojom.TimeTicks time@3;
+};
+
+[Stable, Extensible]
+enum DecryptStatus {
+  kSuccess,
+  kNoKey,
+  [Default] kFailure,
+};
+
+[Stable, Extensible]
+enum CdmContextEvent {
+  // We use |kHasAdditionalUsableKey| as the default since this maps to an
+  // existing enum in Chrome that only has the two values below. Receiving an
+  // event for |kHasAdditionalUsableKey| is always safe because it is a benign
+  // indicator that if something was waiting for a key, it should check again.
+  // It is not an indicator that the key it actually wanted is ready.
+  [Default] kHasAdditionalUsableKey,
+  kHardwareContextReset,
 };

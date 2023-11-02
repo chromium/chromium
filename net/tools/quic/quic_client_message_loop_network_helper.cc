@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,13 +22,13 @@
 #include "net/quic/quic_chromium_packet_writer.h"
 #include "net/socket/udp_client_socket.h"
 #include "net/spdy/spdy_http_utils.h"
-#include "net/third_party/quiche/src/quic/core/crypto/quic_random.h"
-#include "net/third_party/quiche/src/quic/core/http/spdy_utils.h"
-#include "net/third_party/quiche/src/quic/core/quic_connection.h"
-#include "net/third_party/quiche/src/quic/core/quic_packets.h"
-#include "net/third_party/quiche/src/quic/core/quic_server_id.h"
-#include "net/third_party/quiche/src/quic/platform/api/quic_flags.h"
-#include "net/third_party/quiche/src/spdy/core/spdy_header_block.h"
+#include "net/third_party/quiche/src/quiche/quic/core/crypto/quic_random.h"
+#include "net/third_party/quiche/src/quiche/quic/core/http/spdy_utils.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_connection.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_packets.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_server_id.h"
+#include "net/third_party/quiche/src/quiche/quic/platform/api/quic_flags.h"
+#include "net/third_party/quiche/src/quiche/spdy/core/http2_header_block.h"
 
 using std::string;
 
@@ -37,7 +37,7 @@ namespace net {
 QuicClientMessageLooplNetworkHelper::QuicClientMessageLooplNetworkHelper(
     quic::QuicChromiumClock* clock,
     quic::QuicClientBase* client)
-    : packet_reader_started_(false), clock_(clock), client_(client) {}
+    : clock_(clock), client_(client) {}
 
 QuicClientMessageLooplNetworkHelper::~QuicClientMessageLooplNetworkHelper() =
     default;
@@ -53,7 +53,7 @@ bool QuicClientMessageLooplNetworkHelper::CreateUDPSocketAndBind(
     client_address_ =
         quic::QuicSocketAddress(bind_to_address, client_->local_port());
   } else if (server_address.host().address_family() ==
-             quic::IpAddressFamily::IP_V4) {
+             quiche::IpAddressFamily::IP_V4) {
     client_address_ =
         quic::QuicSocketAddress(quic::QuicIpAddress::Any4(), bind_to_port);
   } else {

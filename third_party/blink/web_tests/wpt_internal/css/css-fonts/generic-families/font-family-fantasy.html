@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <link rel="help" href="https://www.w3.org/TR/css-fonts-4/#valdef-font-family-fantasy">
+    <link rel="assert" href="'font-family: fantasy' uses fantasy font family from internal settings.">
+    <link rel="match" href="font-family-ref.html"/>
+    <link rel="stylesheet" type="text/css" href="default-body-font-family.css"/>
+    <script>
+      if (window.internals)
+        internals.settings.setFantasyFontFamily("Ahem", "Zyyy");
+    </script>
+  </head>
+  <body>
+    <div style="font: 25px/1 fantasy">A</div>
+  </body>
+</html>

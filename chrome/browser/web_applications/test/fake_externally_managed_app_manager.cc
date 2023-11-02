@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -48,7 +48,7 @@ void FakeExternallyManagedAppManager::InstallApps(
             std::back_inserter(install_requests_));
   if (!drop_requests_for_testing_) {
     ExternallyManagedAppManagerImpl::InstallApps(install_options_list,
-                                                 std::move(callback));
+                                                 callback);
   }
 }
 
@@ -69,7 +69,7 @@ void FakeExternallyManagedAppManager::UninstallApps(
     return;
   }
   ExternallyManagedAppManagerImpl::UninstallApps(uninstall_urls, install_source,
-                                                 std::move(callback));
+                                                 callback);
 }
 
 void FakeExternallyManagedAppManager::SetHandleInstallRequestCallback(

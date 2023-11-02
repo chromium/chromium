@@ -1,10 +1,11 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_VIEWS_APPS_APP_WINDOW_EASY_RESIZE_WINDOW_TARGETER_H_
 #define CHROME_BROWSER_UI_VIEWS_APPS_APP_WINDOW_EASY_RESIZE_WINDOW_TARGETER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/wm/core/easy_resize_window_targeter.h"
 
 namespace ui {
@@ -32,7 +33,7 @@ class AppWindowEasyResizeWindowTargeter : public wm::EasyResizeWindowTargeter {
                        gfx::Rect* rect_touch) const override;
 
  private:
-  ui::BaseWindow* native_app_window_;
+  raw_ptr<ui::BaseWindow> native_app_window_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_APPS_APP_WINDOW_EASY_RESIZE_WINDOW_TARGETER_H_

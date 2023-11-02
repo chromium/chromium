@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@ package org.chromium.components.signin.identitymanager;
 import android.os.SystemClock;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
@@ -205,8 +206,8 @@ public class AccountTrackerService {
             return;
         }
 
-        while (!mRunnablesWaitingForAccountsSeeding.isEmpty()) {
-            Runnable runnable = mRunnablesWaitingForAccountsSeeding.remove();
+        for (@Nullable Runnable runnable = mRunnablesWaitingForAccountsSeeding.poll();
+                runnable != null; runnable = mRunnablesWaitingForAccountsSeeding.poll()) {
             runnable.run();
         }
 

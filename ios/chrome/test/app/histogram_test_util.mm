@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,12 +6,12 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/metrics/histogram_samples.h"
-#include "base/metrics/metrics_hashes.h"
-#include "base/metrics/sample_map.h"
-#include "base/metrics/statistics_recorder.h"
+#import "base/memory/ptr_util.h"
+#import "base/metrics/histogram_macros.h"
+#import "base/metrics/histogram_samples.h"
+#import "base/metrics/metrics_hashes.h"
+#import "base/metrics/sample_map.h"
+#import "base/metrics/statistics_recorder.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

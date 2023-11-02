@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -52,8 +52,10 @@ std::unique_ptr<SctpTransportProxy> CreateProxy(
   DCHECK(worker_thread);
   LocalFrame* frame = To<LocalDOMWindow>(context)->GetFrame();
   DCHECK(frame);
-  return SctpTransportProxy::Create(*frame, main_thread, worker_thread,
-                                    native_transport, delegate);
+  return SctpTransportProxy::Create(
+      *frame, main_thread, worker_thread,
+      rtc::scoped_refptr<webrtc::SctpTransportInterface>(native_transport),
+      delegate);
 }
 
 }  // namespace
@@ -76,7 +78,7 @@ RTCSctpTransport::RTCSctpTransport(
       current_state_(webrtc::SctpTransportState::kNew),
       native_transport_(native_transport),
       proxy_(CreateProxy(context,
-                         native_transport,
+                         native_transport.get(),
                          this,
                          main_thread,
                          worker_thread)) {}
@@ -138,14 +140,14 @@ void RTCSctpTransport::OnStateChange(webrtc::SctpTransportInformation info) {
   // lower layer, but we keep the SctpTransport object alive until the
   // lower layer has sent notice that the closing has been completed.
   if (!closed_from_owner_) {
-    DispatchEvent(*Event::Create(event_type_names::kStatechange));
+    DispatchEvent(*Event::Create(event_type_names::kStatechange), "RTCSctpTransport::OnStateChange");
   }
 }
 
 void RTCSctpTransport::Close() {
   closed_from_owner_ = true;
   if (current_state_.state() != webrtc::SctpTransportState::kClosed) {
-    DispatchEvent(*Event::Create(event_type_names::kStatechange));
+    DispatchEvent(*Event::Create(event_type_names::kStatechange), "RTCSctpTransport::Close");
   }
 }
 

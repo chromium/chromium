@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,7 +26,6 @@ class AudioEncoderInit;
 class MODULES_EXPORT AudioEncoderTraits {
  public:
   struct ParsedConfig final : public GarbageCollected<ParsedConfig> {
-    media::AudioCodec codec = media::AudioCodec::kUnknown;
     media::AudioEncoder::Options options;
     String codec_string;
 
@@ -48,7 +47,6 @@ class MODULES_EXPORT AudioEncoderTraits {
   using MediaEncoder = media::AudioEncoder;
 
   // Can't be a virtual method, because it's used from base ctor.
-  static const char* GetNameForDevTools();
   static const char* GetName();
 };
 
@@ -66,6 +64,9 @@ class MODULES_EXPORT AudioEncoder final
   void encode(AudioData* data, ExceptionState& exception_state) {
     return Base::encode(data, nullptr, exception_state);
   }
+
+  // EventTarget interface
+  const AtomicString& InterfaceName() const override;
 
   static ScriptPromise isConfigSupported(ScriptState*,
                                          const AudioEncoderConfig*,
@@ -86,6 +87,8 @@ class MODULES_EXPORT AudioEncoder final
   bool CanReconfigure(ParsedConfig& original_config,
                       ParsedConfig& new_config) override;
 
+  std::unique_ptr<media::AudioEncoder> CreateMediaAudioEncoder(
+      const ParsedConfig& config);
   void CallOutputCallback(
       ParsedConfig* active_config,
       uint32_t reset_count,

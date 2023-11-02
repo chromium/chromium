@@ -1,9 +1,8 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 package org.chromium.content_public.browser;
 
-import android.annotation.TargetApi;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.MotionEvent;
@@ -11,6 +10,7 @@ import android.view.View;
 import android.view.ViewStructure;
 import android.view.accessibility.AccessibilityNodeProvider;
 
+import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl;
@@ -85,7 +85,7 @@ public interface WebContentsAccessibility {
     /**
      * @see View#onProvideVirtualStructure().
      */
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     void onProvideVirtualStructure(ViewStructure structure, boolean ignoreScrollOffset);
 
     /**
@@ -117,9 +117,11 @@ public interface WebContentsAccessibility {
     void setShouldFocusOnPageLoad(boolean on);
 
     /**
-     * Sets whether or not the image descriptions feature should be allowed.
+     * Sets whether or not this instance is a candidate for the image descriptions feature to be
+     * enabled. This feature is dependent on embedder behavior and screen reader state.
+     * See BrowserAccessibilityState.java.
      */
-    void setAllowImageDescriptions(boolean allowImageDescriptions);
+    void setIsImageDescriptionsCandidate(boolean isImageDescriptionsCandidate);
 
     /**
      * Called when autofill popup is displayed. Used to upport navigation through the view.
@@ -142,4 +144,9 @@ public interface WebContentsAccessibility {
      * @return Whether the hover event was consumed.
      */
     boolean onHoverEventNoRenderer(MotionEvent event);
+
+    /**
+     * Called to reset focus state to nothing.
+     */
+    void resetFocus();
 }

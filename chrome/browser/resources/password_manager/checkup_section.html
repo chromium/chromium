@@ -1,0 +1,115 @@
+<style include="shared-style cr-shared-style">
+  #checkupContent {
+    margin-top: 16px;
+  }
+
+  #checkupStatus {
+    align-items: center;
+    display: flex;
+    height: 52px;
+  }
+
+  #checkupStatus[check-successful] {
+    height: 72px;
+  }
+
+  #illustartion {
+    align-items: center;
+    background-color: var(--google-grey-50);
+    display: flex;
+    height: 120px;
+    justify-content: center;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    #illustartion {
+      background-color: #1F1F1F;
+    }
+  }
+
+  #bannerImage {
+    height: 96px;
+  }
+
+  #spinner {
+    --paper-spinner-stroke-width: 2px;
+    height: 16px;
+    line-height: 100%;
+    margin-inline-start: 20px;
+    width: 16px;
+  }
+
+  #labelWrapper {
+    flex: 1;
+    margin-inline-end: var(--control-label-spacing);
+    margin-inline-start: 20px;
+  }
+
+  #refreshButton {
+    margin-inline-end: 10px;
+  }
+
+  #retryButton {
+    margin-inline-end: 20px;
+  }
+
+  cr-link-row {
+    --cr-link-row-start-icon-color: var(--google-green-700);
+    --cr-link-row-icon-width: 16px;
+  }
+
+  cr-link-row[has-issues] {
+    --cr-link-row-start-icon-color: var(--google-yellow-700);
+  }
+
+  cr-link-row[compromised] {
+    --cr-link-row-start-icon-color: var(--google-red-600);
+  }
+</style>
+<h2 class="page-title">$i18n{checkupTitle}</h2>
+<div id="checkupContent" class="card">
+  <div id="illustartion" role="presentation">
+    <picture>
+      <source class="banner"
+          srcset="./images/[[getBannerImageFileName_(status_)]]_dark.svg"
+          media="(prefers-color-scheme: dark)">
+      <img id="bannerImage" class="banner" alt=""
+          src="./images/[[getBannerImageFileName_(status_)]].svg">
+    </picture>
+  </div>
+  <div class="hr" id="checkupStatus" check-successful$="[[isCheckSuccessful_]]">
+    <paper-spinner-lite id="spinner" active hidden="[[!isCheckRunning_]]">
+    </paper-spinner-lite>
+    <div id="labelWrapper">
+      <div id="checkupStatusLabel" class="title">[[checkedPasswordsText_]]</div>
+      <div id="lastCheckupTime" class="cr-secondary-text label"
+          hidden="[[!isCheckSuccessful_]]">
+        <span id="sub-label-text">$i18n{justNow}</span>
+      </div>
+    </div>
+    <div id="checkupButtons" hidden="[[!showCheckButton_(status_)]]">
+      <cr-icon-button id="refreshButton" class="icon-refresh"
+          disabled="[[isCheckRunning_]]" hidden="[[showRetryButton_(status_)]]"
+          on-click="onPasswordCheckButtonClick_">
+      </cr-icon-button>
+      <cr-button id="retryButton" hidden="[[!showRetryButton_(status_)]]"
+          class="action-button" on-click="onPasswordCheckButtonClick_">
+        $i18n{tryAgain}
+      </cr-button>
+    </div>
+  </div>
+  <div id="checkupResult" hidden="[[isCheckRunning_]]">
+    <cr-link-row id="compromisedRow" start-icon="cr:error"
+        label="[[compromisedPasswordsText_]]" class="hr"
+        sub-label="$i18n{compromisedPasswordsTitle}" compromised>
+    </cr-link-row>
+    <cr-link-row id="weakRow" start-icon="cr:check-circle"
+        label="[[reusedPasswordsText_]]" class="hr"
+        sub-label="$i18n{reusedPasswordsEmpty}">
+    </cr-link-row>
+    <cr-link-row id="reusedRow" start-icon="cr:error"
+        label="[[weakPasswordsText_]]" class="hr"
+        sub-label="$i18n{weakPasswordsTitle}" has-issues>
+    </cr-link-row>
+  </div>
+</div>

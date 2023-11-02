@@ -1,9 +1,9 @@
 ellyjones@chromium.org
 jeffreycohen@chromium.org
-kmilka@chromium.org
 kristipark@chromium.org
 sebsg@chromium.org
 skare@chromium.org
 sophey@chromium.org
+wry@chromium.org
 
 per-file *.gni=file://components/paint_preview/OWNERS

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,11 +13,14 @@ import "components/feed/core/proto/v2/wire/token.proto";
 option optimize_for = LITE_RUNTIME;
 
 message FeedQuery {
-  message Tokens { repeated Token tokens = 1; }
+  message Tokens {
+    repeated Token tokens = 1;
+  }
   enum RequestReason {
     UNKNOWN_REQUEST_REASON = 0;
     MANUAL_REFRESH = 1;
     SCHEDULED_REFRESH = 2;
+    APP_CLOSE_REFRESH = 13;
     NEXT_PAGE_SCROLL = 3;
     PREFETCHED_WEB_FEED = 8;
     INTERACTIVE_WEB_FEED = 9;

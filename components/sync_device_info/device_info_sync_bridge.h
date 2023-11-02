@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -83,6 +83,8 @@ class DeviceInfoSyncBridge : public ModelTypeSyncBridge,
   std::string GetStorageKey(const EntityData& entity_data) override;
   void ApplyStopSyncChanges(
       std::unique_ptr<MetadataChangeList> delete_metadata_change_list) override;
+  ModelTypeSyncBridge::CommitAttemptFailedBehavior OnCommitAttemptFailed(
+      syncer::SyncCommitError commit_error) override;
 
   // DeviceInfoTracker implementation.
   bool IsSyncing() const override;

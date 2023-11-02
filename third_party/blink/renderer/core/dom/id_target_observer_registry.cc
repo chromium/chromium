@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/dom/id_target_observer_registry.h"
 
 #include "third_party/blink/renderer/core/dom/id_target_observer.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 
 namespace blink {
 
@@ -36,7 +37,7 @@ void IdTargetObserverRegistry::Trace(Visitor* visitor) const {
 
 void IdTargetObserverRegistry::AddObserver(const AtomicString& id,
                                            IdTargetObserver* observer) {
-  if (id.IsEmpty())
+  if (id.empty())
     return;
 
   IdToObserverSetMap::AddResult result = registry_.insert(id.Impl(), nullptr);
@@ -48,20 +49,20 @@ void IdTargetObserverRegistry::AddObserver(const AtomicString& id,
 
 void IdTargetObserverRegistry::RemoveObserver(const AtomicString& id,
                                               IdTargetObserver* observer) {
-  if (id.IsEmpty() || registry_.IsEmpty())
+  if (id.empty() || registry_.empty())
     return;
 
   IdToObserverSetMap::iterator iter = registry_.find(id.Impl());
 
   ObserverSet* set = iter->value.Get();
   set->erase(observer);
-  if (set->IsEmpty() && set != notifying_observers_in_set_)
+  if (set->empty() && set != notifying_observers_in_set_)
     registry_.erase(iter);
 }
 
 void IdTargetObserverRegistry::NotifyObserversInternal(const AtomicString& id) {
-  DCHECK(!id.IsEmpty());
-  DCHECK(!registry_.IsEmpty());
+  DCHECK(!id.empty());
+  DCHECK(!registry_.empty());
 
   auto it_reg = registry_.find(id.Impl());
   if (it_reg != registry_.end())
@@ -69,24 +70,32 @@ void IdTargetObserverRegistry::NotifyObserversInternal(const AtomicString& id) {
   if (!notifying_observers_in_set_)
     return;
 
-  HeapVector<Member<IdTargetObserver>> copy;
-  CopyToVector(*notifying_observers_in_set_, copy);
+  HeapVector<Member<IdTargetObserver>> copy(*notifying_observers_in_set_);
   for (const auto& observer : copy) {
+    recordreplay::Assert(
+        "[RUN-2313] IdTargetObserverRegistry::NotifyObserversInternal %d %d",
+        notifying_observers_in_set_->Contains(observer), observer->RecordReplayId());
+  }
+
+  for (const auto& observer : copy) {
+    recordreplay::Assert(
+        "[RUN-2313] IdTargetObserverRegistry::NotifyObserversInternal %d %d",
+        notifying_observers_in_set_->Contains(observer), observer->RecordReplayId());
     if (notifying_observers_in_set_->Contains(observer))
       observer->IdTargetChanged();
   }
 
-  if (notifying_observers_in_set_->IsEmpty())
+  if (notifying_observers_in_set_->empty())
     registry_.erase(id.Impl());
 
   notifying_observers_in_set_ = nullptr;
 }
 
 bool IdTargetObserverRegistry::HasObservers(const AtomicString& id) const {
-  if (id.IsEmpty() || registry_.IsEmpty())
+  if (id.empty() || registry_.empty())
     return false;
   auto it = registry_.find(id.Impl());
-  return it != registry_.end() ? !it->value->IsEmpty() : false;
+  return it != registry_.end() ? !it->value->empty() : false;
 }
 
 }  // namespace blink

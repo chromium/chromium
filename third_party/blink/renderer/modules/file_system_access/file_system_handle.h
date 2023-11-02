@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -42,7 +42,7 @@ class FileSystemHandle : public ScriptWrappable, public ExecutionContextClient {
   ScriptPromise requestPermission(ScriptState*,
                                   const FileSystemHandlePermissionDescriptor*);
 
-  ScriptPromise rename(ScriptState*, const String& new_entry_name);
+  ScriptPromise move(ScriptState*, const String& new_entry_name);
   ScriptPromise move(ScriptState*,
                      FileSystemDirectoryHandle* destination_directory);
   ScriptPromise move(ScriptState*,
@@ -51,6 +51,7 @@ class FileSystemHandle : public ScriptWrappable, public ExecutionContextClient {
   ScriptPromise remove(ScriptState*, const FileSystemRemoveOptions* options);
 
   ScriptPromise isSameEntry(ScriptState*, FileSystemHandle* other);
+  ScriptPromise getUniqueId(ScriptState*);
 
   // Grab a handle to a transfer token. This may return an invalid PendingRemote
   // if the context is already destroyed.
@@ -67,9 +68,6 @@ class FileSystemHandle : public ScriptWrappable, public ExecutionContextClient {
       bool writable,
       base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr,
                               mojom::blink::PermissionStatus)>) = 0;
-  virtual void RenameImpl(
-      const String& new_entry_name,
-      base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr)>) = 0;
   virtual void MoveImpl(
       mojo::PendingRemote<mojom::blink::FileSystemAccessTransferToken> dest,
       const String& new_entry_name,
@@ -81,6 +79,8 @@ class FileSystemHandle : public ScriptWrappable, public ExecutionContextClient {
       mojo::PendingRemote<mojom::blink::FileSystemAccessTransferToken> other,
       base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr,
                               bool)>) = 0;
+  virtual void GetUniqueIdImpl(
+      base::OnceCallback<void(const WTF::String&)>) = 0;
 
   String name_;
 };

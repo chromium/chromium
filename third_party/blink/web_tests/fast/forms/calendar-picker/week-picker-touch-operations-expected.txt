@@ -5,8 +5,8 @@ On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE
 Check that page popup doesn't exist at first.
 PASS document.getElementById("mock-page-popup") is null
 Open the month popup.
-PASS popupWindow.global.picker.monthPopupView.isVisible is false
-PASS popupWindow.global.picker.monthPopupView.isVisible is true
+PASS internals.pagePopupWindow.global.picker.monthPopupView.isVisible is false
+PASS internals.pagePopupWindow.global.picker.monthPopupView.isVisible is true
 Check that touch swiping scrolls the list in the month popup.
 PASS checkYearListViewScrollOffset() > 0 is true
 PASS checkYearListViewScrollOffset() < 0 is true

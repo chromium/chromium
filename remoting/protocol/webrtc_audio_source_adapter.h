@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/webrtc/api/media_stream_interface.h"
@@ -16,9 +15,7 @@ namespace webrtc {
 class AudioTrackSinkInterface;
 }  // namespace webrtc
 
-namespace remoting {
-
-namespace protocol {
+namespace remoting::protocol {
 
 class AudioSource;
 
@@ -56,7 +53,6 @@ class WebrtcAudioSourceAdapter : public webrtc::AudioSourceInterface {
   std::unique_ptr<Core> core_;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_WEBRTC_AUDIO_SOURCE_ADAPTER_H_

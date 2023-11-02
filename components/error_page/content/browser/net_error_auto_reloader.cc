@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -61,7 +61,7 @@ base::TimeDelta GetNextReloadDelay(size_t reload_count) {
   static constexpr base::TimeDelta kDelays[] = {
       base::Seconds(1), base::Seconds(5),  base::Seconds(30), base::Minutes(1),
       base::Minutes(5), base::Minutes(10), base::Minutes(30)};
-  return kDelays[std::min(reload_count, base::size(kDelays) - 1)];
+  return kDelays[std::min(reload_count, std::size(kDelays) - 1)];
 }
 
 // Helper to block a navigation that would result in re-committing the same
@@ -108,6 +108,7 @@ NetErrorAutoReloader::ErrorPageInfo::~ErrorPageInfo() = default;
 
 NetErrorAutoReloader::NetErrorAutoReloader(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<NetErrorAutoReloader>(*web_contents),
       connection_tracker_(content::GetNetworkConnectionTracker()) {
   connection_tracker_->AddNetworkConnectionObserver(this);
 
@@ -290,7 +291,7 @@ void NetErrorAutoReloader::ReloadMainFrame() {
 
   ++num_reloads_for_current_error_;
   is_auto_reload_in_progress_ = true;
-  web_contents()->GetMainFrame()->Reload();
+  web_contents()->GetPrimaryMainFrame()->Reload();
 }
 
 std::unique_ptr<content::NavigationThrottle>

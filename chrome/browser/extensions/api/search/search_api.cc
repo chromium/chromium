@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/api/search/search_api.h"
 
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -38,14 +39,14 @@ ExtensionFunction::ResponseAction SearchQueryFunction::Run() {
 
   // Convenience for input params.
   const std::string& text = params->query_info.text;
-  const std::unique_ptr<int>& tab_id = params->query_info.tab_id;
+  const absl::optional<int>& tab_id = params->query_info.tab_id;
   Disposition disposition = params->query_info.disposition;
 
   // Simple validation of input params.
   if (text.empty()) {
     return RespondNow(Error("Empty text parameter."));
   }
-  if (tab_id.get() && disposition != Disposition::DISPOSITION_NONE) {
+  if (tab_id && disposition != Disposition::DISPOSITION_NONE) {
     return RespondNow(Error("Cannot set both 'disposition' and 'tabId'."));
   }
 
@@ -57,7 +58,7 @@ ExtensionFunction::ResponseAction SearchQueryFunction::Run() {
 
   // If the extension specified a tab, that takes priority.
   // Get web_contents if tab_id is valid, or dispoosition.
-  if (tab_id.get()) {
+  if (tab_id) {
     if (!ExtensionTabUtil::GetTabById(
             *tab_id, profile, include_incognito_information(), &web_contents)) {
       return RespondNow(

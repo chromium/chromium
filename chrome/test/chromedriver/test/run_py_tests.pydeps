@@ -82,6 +82,7 @@
 ../chrome_paths.py
 ../client/chromedriver.py
 ../client/command_executor.py
+../client/exceptions.py
 ../client/webelement.py
 ../client/webshadowroot.py
 ../client/websocket_connection.py

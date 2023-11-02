@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,10 @@ GEN_INCLUDE([
   '//chrome/test/data/webui/polymer_browser_test_base.js',
 ]);
 
+GEN('#include "ash/constants/ash_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
-var PolymerSecurityTokenPinTest = class extends Polymer2DeprecatedTest {
+var PolymerSecurityTokenPinTest = class extends PolymerTest {
   /** @override */
   get browsePreload() {
     return 'chrome://oobe/login';
@@ -28,16 +29,21 @@ var PolymerSecurityTokenPinTest = class extends Polymer2DeprecatedTest {
   }
 
   get extraLibraries() {
-    return super.extraLibraries.concat(['components/oobe_types.js']);
+    return [
+      '//third_party/mocha/mocha.js',
+      '//chrome/test/data/webui/mocha_adapter.js',
+      'components/oobe_types.js',
+    ];
   }
 };
 
-TEST_F('PolymerSecurityTokenPinTest', 'All', function() {
+// TODO(crbug.com/1347183): Port this test to work with Polymer3.
+TEST_F('PolymerSecurityTokenPinTest', 'DISABLED_All', function() {
   const DEFAULT_PARAMETERS = {
     enableUserInput: true,
     hasError: false,
     formattedError: '',
-    formattedAttemptsLeft: ''
+    formattedAttemptsLeft: '',
   };
 
   let securityTokenPin;
@@ -88,21 +94,21 @@ TEST_F('PolymerSecurityTokenPinTest', 'All', function() {
 
     let completedEventDetail = null;
     securityTokenPin.addEventListener('completed', (event) => {
-      expectNotEquals(event.detail, null);
-      expectEquals(completedEventDetail, null);
+      assertNotEquals(event.detail, null);
+      assertEquals(completedEventDetail, null);
       completedEventDetail = event.detail;
     });
     securityTokenPin.addEventListener('cancel', () => {
-      expectNotReached();
+      assertNotReached();
     });
 
     // The user enters some value. No 'completed' event is triggered so far.
     pinInput.value = FIRST_PIN;
-    expectEquals(completedEventDetail, null);
+    assertEquals(completedEventDetail, null);
 
     // The user submits the PIN. The 'completed' event has been triggered.
     submitElement.click();
-    expectEquals(completedEventDetail, FIRST_PIN);
+    assertEquals(completedEventDetail, FIRST_PIN);
     completedEventDetail = null;
 
     // The response arrives, requesting to prompt for the PIN again.
@@ -110,16 +116,16 @@ TEST_F('PolymerSecurityTokenPinTest', 'All', function() {
       enableUserInput: true,
       hasError: true,
       formattedError: '',
-      formattedAttemptsLeft: ''
+      formattedAttemptsLeft: '',
     };
 
     // The user enters some value. No new 'completed' event is triggered so far.
     pinInput.value = SECOND_PIN;
-    expectEquals(completedEventDetail, null);
+    assertEquals(completedEventDetail, null);
 
     // The user submits the new PIN. The 'completed' event has been triggered.
     submitElement.click();
-    expectEquals(completedEventDetail, SECOND_PIN);
+    assertEquals(completedEventDetail, SECOND_PIN);
   });
 
   // Test that the input field accepts non-digit PIN.
@@ -129,8 +135,8 @@ TEST_F('PolymerSecurityTokenPinTest', 'All', function() {
     // The user enters a non-digit pin.
     pinInput.value = NON_DIGIT_PIN;
 
-    expectEquals(pinInput.value, NON_DIGIT_PIN);
-    expectEquals(inputField.value, NON_DIGIT_PIN);
+    assertEquals(pinInput.value, NON_DIGIT_PIN);
+    assertEquals(inputField.value, NON_DIGIT_PIN);
   });
 
   // Test that the 'cancel' event is fired when the user aborts the dialog.
@@ -140,33 +146,33 @@ TEST_F('PolymerSecurityTokenPinTest', 'All', function() {
       ++cancelEventCount;
     });
     securityTokenPin.addEventListener('completed', () => {
-      expectNotReached();
+      assertNotReached();
     });
 
     // The user clicks the 'back' button. The cancel event is triggered.
     backElement.click();
-    expectEquals(cancelEventCount, 1);
+    assertEquals(cancelEventCount, 1);
   });
 
   // Test that the submit button is only enabled when the input is non-empty.
   test('submit button availability', () => {
     // Initially, the submit button is disabled.
-    expectTrue(submitElement.disabled);
+    assertTrue(submitElement.disabled);
 
     // The user enters a single digit. The submit button is enabled.
     pinInput.value = '1';
-    expectFalse(submitElement.disabled);
+    assertFalse(submitElement.disabled);
 
     // The user clears the input. The submit button is disabled.
     pinInput.value = '';
-    expectTrue(submitElement.disabled);
+    assertTrue(submitElement.disabled);
   });
 
   // Test that the input field is disabled when the final error is displayed and
   // no further user input is expected.
   test('input availability', () => {
     // Initially, the input is enabled.
-    expectFalse(inputField.disabled);
+    assertFalse(inputField.disabled);
 
     // The user enters and submits a PIN. The response arrives, requesting the
     // PIN again. The input is still enabled.
@@ -176,9 +182,9 @@ TEST_F('PolymerSecurityTokenPinTest', 'All', function() {
       enableUserInput: true,
       hasError: true,
       formattedError: '',
-      formattedAttemptsLeft: ''
+      formattedAttemptsLeft: '',
     };
-    expectFalse(inputField.disabled);
+    assertFalse(inputField.disabled);
 
     // The user enters and submits a PIN again. The response arrives, with a
     // final error. The input is disabled.
@@ -188,16 +194,16 @@ TEST_F('PolymerSecurityTokenPinTest', 'All', function() {
       enableUserInput: false,
       hasError: true,
       formattedError: '',
-      formattedAttemptsLeft: ''
+      formattedAttemptsLeft: '',
     };
-    expectTrue(inputField.disabled);
+    assertTrue(inputField.disabled);
   });
 
   // Test that the input field gets cleared when the user is prompted again.
   test('input cleared on new request', () => {
     const PIN = '123';
     pinInput.value = PIN;
-    expectEquals(inputField.value, PIN);
+    assertEquals(inputField.value, PIN);
 
     // The user submits the PIN. The response arrives, requesting the PIN again.
     // The input gets cleared.
@@ -206,10 +212,10 @@ TEST_F('PolymerSecurityTokenPinTest', 'All', function() {
       enableUserInput: true,
       hasError: true,
       formattedError: '',
-      formattedAttemptsLeft: ''
+      formattedAttemptsLeft: '',
     };
-    expectEquals(pinInput.value, '');
-    expectEquals(inputField.value, '');
+    assertEquals(pinInput.value, '');
+    assertEquals(inputField.value, '');
   });
 
   // // Test that the input field gets cleared when the request fails with the
@@ -219,7 +225,7 @@ TEST_F('PolymerSecurityTokenPinTest', 'All', function() {
     // PIN again. The input is cleared.
     const PIN = '123';
     pinInput.value = PIN;
-    expectEquals(inputField.value, PIN);
+    assertEquals(inputField.value, PIN);
 
     // The user submits the PIN. The response arrives, reporting a final error
     // and that the user input isn't requested anymore. The input gets cleared.
@@ -228,10 +234,10 @@ TEST_F('PolymerSecurityTokenPinTest', 'All', function() {
       enableUserInput: false,
       hasError: true,
       formattedError: '',
-      formattedAttemptsLeft: ''
+      formattedAttemptsLeft: '',
     };
-    expectEquals(pinInput.value, '');
-    expectEquals(inputField.value, '');
+    assertEquals(pinInput.value, '');
+    assertEquals(inputField.value, '');
   });
 
   // Test that the PIN can be entered via the on-screen PIN keypad.
@@ -245,15 +251,16 @@ TEST_F('PolymerSecurityTokenPinTest', 'All', function() {
 
     // The user clicks the buttons of the on-screen keypad. The input field is
     // updated accordingly.
-    for (const character of PIN)
+    for (const character of PIN) {
       pinKeyboard.shadowRoot.querySelector('#digitButton' + character).click();
-    expectEquals(pinInput.value, PIN);
-    expectEquals(inputField.value, PIN);
+    }
+    assertEquals(pinInput.value, PIN);
+    assertEquals(inputField.value, PIN);
 
     // The user submits the PIN. The completed event is fired, containing the
     // PIN.
     submitElement.click();
-    expectEquals(completedEventDetail, PIN);
+    assertEquals(completedEventDetail, PIN);
   });
 
   // Test that the asynchronously clicking the PIN keypad buttons still results
@@ -285,13 +292,13 @@ TEST_F('PolymerSecurityTokenPinTest', 'All', function() {
     // The user clicks the buttons of the on-screen keypad. The input field is
     // updated accordingly.
     await enterPinAsync();
-    expectEquals(pinInput.value, PIN);
-    expectEquals(inputField.value, PIN);
+    assertEquals(pinInput.value, PIN);
+    assertEquals(inputField.value, PIN);
 
     // The user submits the PIN. The completed event is fired, containing the
     // PIN.
     submitElement.click();
-    expectEquals(completedEventDetail, PIN);
+    assertEquals(completedEventDetail, PIN);
   });
 
   // Test that the error is displayed only when it's set in the request.
@@ -301,8 +308,8 @@ TEST_F('PolymerSecurityTokenPinTest', 'All', function() {
     }
 
     // Initially, no error is shown.
-    expectEquals(getErrorContainerVisibility(), 'hidden');
-    expectFalse(pinInput.hasAttribute('invalid'));
+    assertEquals(getErrorContainerVisibility(), 'hidden');
+    assertFalse(pinInput.hasAttribute('invalid'));
 
     // The user submits some PIN, and the error response arrives. The error gets
     // displayed.
@@ -312,15 +319,15 @@ TEST_F('PolymerSecurityTokenPinTest', 'All', function() {
       enableUserInput: true,
       hasError: true,
       formattedError: '',
-      formattedAttemptsLeft: ''
+      formattedAttemptsLeft: '',
     };
-    expectEquals(getErrorContainerVisibility(), 'visible');
-    expectTrue(pinInput.hasAttribute('invalid'));
+    assertEquals(getErrorContainerVisibility(), 'visible');
+    assertTrue(pinInput.hasAttribute('invalid'));
 
     // The user modifies the input field. No error is shown.
     pinInput.value = '4';
-    expectEquals(getErrorContainerVisibility(), 'hidden');
-    expectFalse(pinInput.hasAttribute('invalid'));
+    assertEquals(getErrorContainerVisibility(), 'hidden');
+    assertFalse(pinInput.hasAttribute('invalid'));
   });
 
   // Test the text of the error label.
@@ -329,9 +336,9 @@ TEST_F('PolymerSecurityTokenPinTest', 'All', function() {
       enableUserInput: true,
       hasError: true,
       formattedError: 'Invalid PIN.',
-      formattedAttemptsLeft: ''
+      formattedAttemptsLeft: '',
     };
-    expectEquals(errorElement.textContent, 'Invalid PIN.');
+    assertEquals(errorElement.textContent, 'Invalid PIN.');
   });
 
   // Test the text of the error label when the user input is disabled.
@@ -340,9 +347,9 @@ TEST_F('PolymerSecurityTokenPinTest', 'All', function() {
       enableUserInput: false,
       hasError: true,
       formattedError: 'Maximum allowed attempts exceeded.',
-      formattedAttemptsLeft: ''
+      formattedAttemptsLeft: '',
     };
-    expectEquals(
+    assertEquals(
         errorElement.textContent, 'Maximum allowed attempts exceeded.');
   });
 
@@ -352,9 +359,9 @@ TEST_F('PolymerSecurityTokenPinTest', 'All', function() {
       enableUserInput: true,
       hasError: false,
       formattedError: '',
-      formattedAttemptsLeft: '3 attempts left'
+      formattedAttemptsLeft: '3 attempts left',
     };
-    expectEquals(errorElement.textContent, '3 attempts left');
+    assertEquals(errorElement.textContent, '3 attempts left');
   });
 
   // Test that no scrolling is necessary in order to see all dots after entering
@@ -362,14 +369,14 @@ TEST_F('PolymerSecurityTokenPinTest', 'All', function() {
   test('8-digit PIN fits into input', () => {
     const PIN_LENGTH = 8;
     inputField.value = '0'.repeat(PIN_LENGTH);
-    expectGT(inputField.scrollWidth, 0);
-    expectLE(inputField.scrollWidth, inputField.clientWidth);
+    assertGT(inputField.scrollWidth, 0);
+    assertLE(inputField.scrollWidth, inputField.clientWidth);
   });
 
   // Test that the distance between characters (dots) is set in a correct way
   // and doesn't fall back to the default value.
   test('PIN input letter-spacing is correctly set up', () => {
-    expectNotEquals(
+    assertNotEquals(
         getComputedStyle(inputField).getPropertyValue('letter-spacing'),
         'normal');
   });
@@ -378,13 +385,13 @@ TEST_F('PolymerSecurityTokenPinTest', 'All', function() {
   // again after the failed verification.
   test('focus restores after progress animation', () => {
     // The PIN keyboard is displayed initially.
-    expectFalse(pinKeyboardContainer.hidden);
-    expectTrue(progressElement.hidden);
+    assertFalse(pinKeyboardContainer.hidden);
+    assertTrue(progressElement.hidden);
 
     // The PIN keyboard gets focused.
     securityTokenPin.focus();
-    expectEquals(securityTokenPin.shadowRoot.activeElement, pinKeyboard);
-    expectEquals(inputField.getRootNode().activeElement, inputField);
+    assertEquals(securityTokenPin.shadowRoot.activeElement, pinKeyboard);
+    assertEquals(inputField.getRootNode().activeElement, inputField);
 
     // The user submits some value while keeping the focus on the input field.
     pinInput.value = '123';
@@ -392,51 +399,51 @@ TEST_F('PolymerSecurityTokenPinTest', 'All', function() {
     enterEvent.keyCode = 13;
     pinInput.dispatchEvent(enterEvent);
     // The PIN keyboard is replaced by the animation UI.
-    expectTrue(pinKeyboardContainer.hidden);
-    expectFalse(progressElement.hidden);
+    assertTrue(pinKeyboardContainer.hidden);
+    assertFalse(progressElement.hidden);
 
     // The response arrives, requesting to prompt for the PIN again.
     securityTokenPin.parameters = {
       enableUserInput: true,
       hasError: true,
       formattedError: '',
-      formattedAttemptsLeft: ''
+      formattedAttemptsLeft: '',
     };
     // The PIN keyboard is shown again, replacing the animation UI.
-    expectFalse(pinKeyboardContainer.hidden);
-    expectTrue(progressElement.hidden);
+    assertFalse(pinKeyboardContainer.hidden);
+    assertTrue(progressElement.hidden);
     // The focus is on the input field.
-    expectEquals(securityTokenPin.shadowRoot.activeElement, pinKeyboard);
-    expectEquals(inputField.getRootNode().activeElement, inputField);
+    assertEquals(securityTokenPin.shadowRoot.activeElement, pinKeyboard);
+    assertEquals(inputField.getRootNode().activeElement, inputField);
   });
 
   // Test that the input field gets focused when the PIN is requested again
   // after the failed verification.
   test('focus set after progress animation', () => {
     // The PIN keyboard is displayed initially.
-    expectFalse(pinKeyboardContainer.hidden);
-    expectTrue(progressElement.hidden);
+    assertFalse(pinKeyboardContainer.hidden);
+    assertTrue(progressElement.hidden);
 
     // The user submits some value using the "Submit" UI button.
     pinInput.value = '123';
     submitElement.click();
     // The PIN keyboard is replaced by the animation UI.
-    expectTrue(pinKeyboardContainer.hidden);
-    expectFalse(progressElement.hidden);
+    assertTrue(pinKeyboardContainer.hidden);
+    assertFalse(progressElement.hidden);
 
     // The response arrives, requesting to prompt for the PIN again.
     securityTokenPin.parameters = {
       enableUserInput: true,
       hasError: true,
       formattedError: '',
-      formattedAttemptsLeft: ''
+      formattedAttemptsLeft: '',
     };
     // The PIN keyboard is shown again, replacing the animation UI.
-    expectFalse(pinKeyboardContainer.hidden);
-    expectTrue(progressElement.hidden);
+    assertFalse(pinKeyboardContainer.hidden);
+    assertTrue(progressElement.hidden);
     // The focus is on the input field.
-    expectEquals(securityTokenPin.shadowRoot.activeElement, pinKeyboard);
-    expectEquals(inputField.getRootNode().activeElement, inputField);
+    assertEquals(securityTokenPin.shadowRoot.activeElement, pinKeyboard);
+    assertEquals(inputField.getRootNode().activeElement, inputField);
   });
 
   mocha.run();

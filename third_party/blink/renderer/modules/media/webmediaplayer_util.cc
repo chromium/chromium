@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -91,7 +91,7 @@ WebTimeRanges ConvertToWebTimeRanges(
 
 WebMediaPlayer::NetworkState PipelineErrorToNetworkState(
     media::PipelineStatus error) {
-  switch (error) {
+  switch (error.code()) {
     case media::PIPELINE_ERROR_NETWORK:
     case media::PIPELINE_ERROR_READ:
     case media::CHUNK_DEMUXER_ERROR_EOS_STATUS_NETWORK_ERROR:
@@ -111,6 +111,7 @@ WebMediaPlayer::NetworkState PipelineErrorToNetworkState(
     case media::PIPELINE_ERROR_ABORT:
     case media::PIPELINE_ERROR_INVALID_STATE:
     case media::PIPELINE_ERROR_HARDWARE_CONTEXT_RESET:
+    case media::PIPELINE_ERROR_DISCONNECTED:
     case media::CHUNK_DEMUXER_ERROR_APPEND_FAILED:
     case media::CHUNK_DEMUXER_ERROR_EOS_STATUS_DECODE_ERROR:
     case media::AUDIO_RENDERER_ERROR:
@@ -138,7 +139,7 @@ void ReportMetrics(WebMediaPlayer::LoadType load_type,
                             WebMediaPlayer::kLoadTypeMax + 1);
 
   // Report load type separately for ad frames.
-  if (frame.IsAdSubframe()) {
+  if (frame.IsAdFrame()) {
     UMA_HISTOGRAM_ENUMERATION("Ads.Media.LoadType", load_type,
                               WebMediaPlayer::kLoadTypeMax + 1);
   }
@@ -147,7 +148,7 @@ void ReportMetrics(WebMediaPlayer::LoadType load_type,
 media::OutputDeviceStatusCB ConvertToOutputDeviceStatusCB(
     WebSetSinkIdCompleteCallback callback) {
   return media::BindToCurrentLoop(
-      WTF::Bind(RunSetSinkIdCallback, std::move(callback)));
+      WTF::BindOnce(RunSetSinkIdCallback, std::move(callback)));
 }
 
 }  // namespace blink

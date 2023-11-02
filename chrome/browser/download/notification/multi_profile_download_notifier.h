@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
@@ -123,7 +124,7 @@ class MultiProfileDownloadNotifier
   // `client_` requires it to be.
   bool IsManagerReady(content::DownloadManager* manager);
 
-  MultiProfileDownloadNotifier::Client* const client_;
+  const raw_ptr<MultiProfileDownloadNotifier::Client> client_;
 
   const bool wait_for_manager_initialization_;
 

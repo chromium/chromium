@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,7 @@
 
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "components/assist_ranker/assist_ranker_service_impl.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/browser_context.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -28,9 +26,9 @@ AssistRankerService* AssistRankerServiceFactory::GetForBrowserContext(
 }
 
 AssistRankerServiceFactory::AssistRankerServiceFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "AssistRankerService",
-          BrowserContextDependencyManager::GetInstance()) {}
+          ProfileSelections::BuildRedirectedInIncognito()) {}
 
 AssistRankerServiceFactory::~AssistRankerServiceFactory() {}
 
@@ -40,11 +38,6 @@ KeyedService* AssistRankerServiceFactory::BuildServiceInstanceFor(
       browser_context->GetPath(),
       g_browser_process->system_network_context_manager()
           ->GetSharedURLLoaderFactory());
-}
-
-content::BrowserContext* AssistRankerServiceFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextRedirectedInIncognito(context);
 }
 
 }  // namespace assist_ranker

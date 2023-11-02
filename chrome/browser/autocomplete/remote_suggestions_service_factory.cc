@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include "base/memory/singleton.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/omnibox/browser/remote_suggestions_service.h"
 #include "content/public/browser/storage_partition.h"
 
@@ -33,9 +32,6 @@ KeyedService* RemoteSuggestionsServiceFactory::BuildServiceInstanceFor(
 }
 
 RemoteSuggestionsServiceFactory::RemoteSuggestionsServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "RemoteSuggestionsService",
-          BrowserContextDependencyManager::GetInstance()) {
-}
+    : ProfileKeyedServiceFactory("RemoteSuggestionsService") {}
 
 RemoteSuggestionsServiceFactory::~RemoteSuggestionsServiceFactory() {}

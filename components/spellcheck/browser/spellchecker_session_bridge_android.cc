@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -100,7 +100,6 @@ void SpellCheckerSessionBridge::ProcessSpellCheckResults(
 
   active_request_ = std::move(pending_request_);
   if (active_request_) {
-    JNIEnv* env = base::android::AttachCurrentThread();
     Java_SpellCheckerSessionBridge_requestTextCheck(
         env, java_object_,
         base::android::ConvertUTF16ToJavaString(env, active_request_->text_));

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,7 +35,7 @@ public class JUnitTestGURLs {
     public static final String SEARCH_2_URL = "https://www.google.com/search?q=query";
     public static final String INITIAL_URL = "https://initial.com";
     public static final String SPECULATED_URL = "https://speculated.com";
-    public static final String NTP_URL = "chrome://newtab";
+    public static final String NTP_URL = "chrome://newtab/";
     public static final String DOM_DISILLER_URL = "distiller://url";
     public static final String RED_1 = "https://www.red.com/page1";
     public static final String RED_2 = "https://www.red.com/page2";
@@ -47,6 +47,18 @@ public class JUnitTestGURLs {
             "https://www.google.com/amp/www.nyt.com/ampthml/blogs.html";
     public static final String AMP_CACHE_URL =
             "https://www.google.com/amp/s/www.nyt.com/ampthml/blogs.html";
+    public static final String TEXT_FRAGMENT_URL = "https://www.example.com/#:~:text=selector";
+    public static final String MULTI_TEXT_FRAGMENT_URL =
+            "https://www.example.com/#:~:text=selector1&text=selector2&text=selector3";
+    public static final String INVALID_URL = "http://0x100.0/";
+    public static final String GOOGLE_URL = "http://www.google.com/";
+    public static final String GOOGLE_URL_DOGS = "http://www.google.com/dogs";
+    public static final String GOOGLE_URL_DOGS_FUN = "http://www.google.com/dogs-are-fun";
+    public static final String GOOGLE_URL_DOG = "http://www.google.com/dog";
+    public static final String GOOGLE_URL_CAT = "http://www.google.com/cat";
+    public static final String GOOGLE_URL_PIG = "http://www.google.com/pig";
+    public static final String ABOUT_BLANK = "about:blank";
+    public static final String CHROME_ABOUT = "chrome://about";
 
     // Map of URL string to GURL serialization.
     /* package */ static final Map<String, String> sGURLMap;
@@ -114,6 +126,28 @@ public class JUnitTestGURLs {
                 "116,1,true,0,5,0,-1,0,-1,8,14,0,-1,22,35,0,-1,0,-1,false,false,https://www.google.com/amp/www.nyt.com/ampthml/blogs.html");
         map.put(AMP_CACHE_URL,
                 "118,1,true,0,5,0,-1,0,-1,8,14,0,-1,22,37,0,-1,0,-1,false,false,https://www.google.com/amp/s/www.nyt.com/ampthml/blogs.html");
+        map.put(TEXT_FRAGMENT_URL,
+                "100,1,true,0,5,0,-1,0,-1,8,15,0,-1,23,1,0,-1,25,16,false,false,https://www.example.com/#:~:text=selector");
+        map.put(MULTI_TEXT_FRAGMENT_URL,
+                "131,1,true,0,5,0,-1,0,-1,8,15,0,-1,23,1,0,-1,25,47,false,false,https://www.example.com/#:~:text=selector1&text=selector2&text=selector3");
+        map.put(INVALID_URL,
+                "73,1,false,0,4,0,-1,0,-1,7,7,0,-1,14,1,0,-1,0,-1,false,false,http://0x100.0/");
+        map.put(GOOGLE_URL,
+                "80,1,true,0,4,0,-1,0,-1,7,14,0,-1,21,1,0,-1,0,-1,false,false,http://www.google.com/");
+        map.put(GOOGLE_URL_DOGS,
+                "84,1,true,0,4,0,-1,0,-1,7,14,0,-1,21,5,0,-1,0,-1,false,false,http://www.google.com/dogs");
+        map.put(GOOGLE_URL_DOGS_FUN,
+                "93,1,true,0,4,0,-1,0,-1,7,14,0,-1,21,13,0,-1,0,-1,false,false,http://www.google.com/dogs-are-fun");
+        map.put(GOOGLE_URL_DOG,
+                "83,1,true,0,4,0,-1,0,-1,7,14,0,-1,21,4,0,-1,0,-1,false,false,http://www.google.com/dog");
+        map.put(GOOGLE_URL_CAT,
+                "83,1,true,0,4,0,-1,0,-1,7,14,0,-1,21,4,0,-1,0,-1,false,false,http://www.google.com/cat");
+        map.put(GOOGLE_URL_PIG,
+                "83,1,true,0,4,0,-1,0,-1,7,14,0,-1,21,4,0,-1,0,-1,false,false,http://www.google.com/pig");
+        map.put(ABOUT_BLANK,
+                "68,1,true,0,5,0,-1,0,-1,0,-1,0,-1,6,5,0,-1,0,-1,false,false,about:blank");
+        map.put(CHROME_ABOUT,
+                "72,1,true,0,6,0,-1,0,-1,9,5,0,-1,14,1,0,-1,0,-1,false,false,chrome://about/");
         sGURLMap = Collections.unmodifiableMap(map);
     }
 

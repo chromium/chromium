@@ -1,13 +1,12 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/power/power_metrics_reporter.h"
 
-#include "base/cxx17_backports.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power_manager/suspend.pb.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -84,12 +83,12 @@ const char PowerMetricsReporter::kLidClosedSuspendCountName[] =
 void PowerMetricsReporter::RegisterLocalStatePrefs(
     PrefRegistrySimple* registry) {
   metrics::DailyEvent::RegisterPref(registry, prefs::kPowerMetricsDailySample);
-  for (size_t i = 0; i < base::size(kDailyCounts); ++i)
+  for (size_t i = 0; i < std::size(kDailyCounts); ++i)
     registry->RegisterIntegerPref(kDailyCounts[i].pref_name, 0);
 }
 
 PowerMetricsReporter::PowerMetricsReporter(
-    PowerManagerClient* power_manager_client,
+    chromeos::PowerManagerClient* power_manager_client,
     PrefService* local_state_pref_service)
     : power_manager_client_(power_manager_client),
       pref_service_(local_state_pref_service),
@@ -97,7 +96,7 @@ PowerMetricsReporter::PowerMetricsReporter(
           std::make_unique<metrics::DailyEvent>(pref_service_,
                                                 prefs::kPowerMetricsDailySample,
                                                 kDailyEventIntervalName)) {
-  for (size_t i = 0; i < base::size(kDailyCounts); ++i) {
+  for (size_t i = 0; i < std::size(kDailyCounts); ++i) {
     daily_counts_[kDailyCounts[i].pref_name] =
         pref_service_->GetInteger(kDailyCounts[i].pref_name);
   }
@@ -145,14 +144,14 @@ void PowerMetricsReporter::ReportDailyMetrics(
     metrics::DailyEvent::IntervalType type) {
   // Don't send metrics on first run or if the clock is changed.
   if (type == metrics::DailyEvent::IntervalType::DAY_ELAPSED) {
-    for (size_t i = 0; i < base::size(kDailyCounts); ++i) {
+    for (size_t i = 0; i < std::size(kDailyCounts); ++i) {
       base::UmaHistogramCounts100(kDailyCounts[i].metric_name,
                                   daily_counts_[kDailyCounts[i].pref_name]);
     }
   }
 
   // Reset all counts now that they've been reported.
-  for (size_t i = 0; i < base::size(kDailyCounts); ++i) {
+  for (size_t i = 0; i < std::size(kDailyCounts); ++i) {
     const char* pref_name = kDailyCounts[i].pref_name;
     AddToCount(pref_name, -1 * daily_counts_[pref_name]);
   }

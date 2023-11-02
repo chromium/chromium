@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,9 +21,9 @@ void ProfileIndicatorIcon::OnPaint(gfx::Canvas* canvas) {
 
   if (old_height_ != height() || modified_icon_.isNull()) {
     old_height_ = height();
-    modified_icon_ = *profiles::GetAvatarIconForTitleBar(base_icon_, false,
-                                                         width(), height())
-                          .ToImageSkia();
+    modified_icon_ =
+        *profiles::GetAvatarIconForTitleBar(base_icon_, width(), height())
+             .ToImageSkia();
   }
 
   // Scale the image to fit the width of the button.

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node_data.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_ink_overflow.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/paint/ng/ng_inline_paint_context.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
@@ -51,11 +52,11 @@ String LayoutNGTextCombine::GetTextContent() const {
 void LayoutNGTextCombine::AssertStyleIsValid(const ComputedStyle& style) {
   // See also |StyleAdjuster::AdjustStyleForTextCombine()|.
 #if DCHECK_IS_ON()
-  DCHECK_EQ(style.GetTextDecoration(), TextDecoration::kNone);
+  DCHECK_EQ(style.GetTextDecorationLine(), TextDecorationLine::kNone);
   DCHECK_EQ(style.GetTextEmphasisMark(), TextEmphasisMark::kNone);
   DCHECK_EQ(style.GetWritingMode(), WritingMode::kHorizontalTb);
   DCHECK_EQ(style.LetterSpacing(), 0.0f);
-  DCHECK_EQ(style.TextDecorationsInEffect(), TextDecoration::kNone);
+  DCHECK_EQ(style.TextDecorationsInEffect(), TextDecorationLine::kNone);
   DCHECK_EQ(style.TextIndent(), Length::Fixed());
   DCHECK_EQ(style.GetFont().GetFontDescription().Orientation(),
             FontOrientation::kHorizontal);
@@ -72,8 +73,9 @@ float LayoutNGTextCombine::DesiredWidth() const {
   DCHECK_EQ(StyleRef().GetFont().GetFontDescription().Orientation(),
             FontOrientation::kHorizontal);
   const float one_em = StyleRef().ComputedFontSize();
-  if (EnumHasFlags(Parent()->StyleRef().TextDecorationsInEffect(),
-                   TextDecoration::kUnderline | TextDecoration::kOverline))
+  if (EnumHasFlags(
+          Parent()->StyleRef().TextDecorationsInEffect(),
+          TextDecorationLine::kUnderline | TextDecorationLine::kOverline))
     return one_em;
   // Allow em + 10% margin if there are no underline and overeline for
   // better looking. This isn't specified in the spec[1], but EPUB group
@@ -226,10 +228,14 @@ PhysicalRect LayoutNGTextCombine::RecalcContentsInkOverflow() const {
   const PhysicalRect text_rect = ComputeTextFrameRect(PhysicalOffset());
   LayoutRect ink_overflow = text_rect.ToLayoutRect();
 
-  if (!style.AppliedTextDecorations().IsEmpty()) {
+  if (!style.AppliedTextDecorations().empty()) {
+    // |LayoutNGTextCombine| does not support decorating box, as it is not
+    // supported in vertical flow and text-combine is only for vertical flow.
     const LayoutRect decoration_rect =
-        NGInkOverflow::ComputeTextDecorationOverflow(style, style.GetFont(),
-                                                     ink_overflow);
+        NGInkOverflow::ComputeTextDecorationOverflow(
+            style, style.GetFont(),
+            /* offset_in_container */ PhysicalOffset(), ink_overflow,
+            /* inline_context */ nullptr);
     ink_overflow.Unite(decoration_rect);
   }
 
@@ -251,7 +257,7 @@ gfx::Rect LayoutNGTextCombine::VisualRectForPaint(
   DCHECK_EQ(PhysicalFragmentCount(), 1u);
   PhysicalRect ink_overflow = GetPhysicalFragment(0)->InkOverflow();
   ink_overflow.Move(paint_offset);
-  return ToGfxRect(EnclosingIntRect(ink_overflow));
+  return ToEnclosingRect(ink_overflow);
 }
 
 void LayoutNGTextCombine::SetScaleX(float new_scale_x) {

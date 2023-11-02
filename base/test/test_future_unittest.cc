@@ -1,15 +1,15 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/test/test_future.h"
 
+#include <tuple>
+
 #include "base/dcheck_is_on.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
@@ -19,8 +19,7 @@
 #include "testing/gtest/include/gtest/gtest-spi.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base {
-namespace test {
+namespace base::test {
 
 namespace {
 
@@ -31,6 +30,7 @@ constexpr int kOtherValue = 10;
 struct MoveOnlyValue {
  public:
   MoveOnlyValue() = default;
+  MoveOnlyValue(int data) : data(data) {}
   MoveOnlyValue(const MoveOnlyValue&) = delete;
   auto& operator=(const MoveOnlyValue&) = delete;
   MoveOnlyValue(MoveOnlyValue&&) = default;
@@ -77,7 +77,7 @@ TEST_F(TestFutureTest, WaitShouldBlockUntilValueArrives) {
   PostDelayedTask(base::BindOnce(future.GetCallback(), expected_value),
                   base::Milliseconds(1));
 
-  future.Wait();
+  std::ignore = future.Wait();
 
   EXPECT_EQ(expected_value, future.Get());
 }
@@ -130,7 +130,7 @@ TEST_F(TestFutureTest, TakeShouldWorkWithMoveOnlyValue) {
   const int expected_data = 99;
   TestFuture<MoveOnlyValue> future;
 
-  RunLater(base::BindOnce(future.GetCallback(), MoveOnlyValue{expected_data}));
+  RunLater(base::BindOnce(future.GetCallback(), MoveOnlyValue(expected_data)));
 
   MoveOnlyValue actual_value = future.Take();
 
@@ -223,7 +223,7 @@ TEST_F(TestFutureTest, ShouldAllowAccessingTupleValueThroughGetMethod) {
   RunLater(base::BindOnce(future.GetCallback(), expected_int_value,
                           expected_string_value));
 
-  ignore_result(future.Get());
+  std::ignore = future.Get();
 
   EXPECT_EQ(expected_int_value, future.Get<0>());
   EXPECT_EQ(expected_string_value, future.Get<1>());
@@ -262,5 +262,47 @@ TEST_F(TestFutureTest, SetValueShouldAllowMultipleArguments) {
   EXPECT_EQ(expected_string_value, std::get<1>(actual));
 }
 
-}  // namespace test
-}  // namespace base
+TEST_F(TestFutureTest, ShouldSupportCvRefType) {
+  std::string expected_value = "value";
+  TestFuture<const std::string&> future;
+
+  base::OnceCallback<void(const std::string&)> callback = future.GetCallback();
+  std::move(callback).Run(expected_value);
+
+  // both get and take should compile, and take should return the decayed value.
+  const std::string& get_result = future.Get();
+  EXPECT_EQ(expected_value, get_result);
+
+  std::string take_result = future.Take();
+  EXPECT_EQ(expected_value, take_result);
+}
+
+TEST_F(TestFutureTest, ShouldSupportMultipleCvRefTypes) {
+  const int expected_first_value = 5;
+  std::string expected_second_value = "value";
+  const long expected_third_value = 10;
+  TestFuture<const int, std::string&, const long&> future;
+
+  base::OnceCallback<void(const int, std::string&, const long&)> callback =
+      future.GetCallback();
+  std::move(callback).Run(expected_first_value, expected_second_value,
+                          expected_third_value);
+
+  // both get and take should compile, and return the decayed value.
+  const std::tuple<int, std::string, long>& get_result = future.Get();
+  EXPECT_EQ(expected_first_value, std::get<0>(get_result));
+  EXPECT_EQ(expected_second_value, std::get<1>(get_result));
+  EXPECT_EQ(expected_third_value, std::get<2>(get_result));
+
+  // Get<i> should also work
+  EXPECT_EQ(expected_first_value, future.Get<0>());
+  EXPECT_EQ(expected_second_value, future.Get<1>());
+  EXPECT_EQ(expected_third_value, future.Get<2>());
+
+  std::tuple<int, std::string, long> take_result = future.Take();
+  EXPECT_EQ(expected_first_value, std::get<0>(take_result));
+  EXPECT_EQ(expected_second_value, std::get<1>(take_result));
+  EXPECT_EQ(expected_third_value, std::get<2>(take_result));
+}
+
+}  // namespace base::test

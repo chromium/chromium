@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -244,14 +244,6 @@ NextProto FuzzedSocket::GetNegotiatedProtocol() const {
 bool FuzzedSocket::GetSSLInfo(SSLInfo* ssl_info) {
   return false;
 }
-
-void FuzzedSocket::GetConnectionAttempts(ConnectionAttempts* out) const {
-  out->clear();
-}
-
-void FuzzedSocket::ClearConnectionAttempts() {}
-
-void FuzzedSocket::AddConnectionAttempts(const ConnectionAttempts& attempts) {}
 
 int64_t FuzzedSocket::GetTotalReceivedBytes() const {
   return total_bytes_read_;

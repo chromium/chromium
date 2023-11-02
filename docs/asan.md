@@ -37,7 +37,10 @@ specific releases by specifying a prefix like
 [linux-debug/asan-linux-debug-83](https://commondatastorage.googleapis.com/chromium-browser-asan/index.html?prefix=linux-debug/asan-linux-debug-83).
 This is useful for finding a build for a specific revision, since filenames are of
 the form `asan-<platform>-<buildtype>-<revision>` (but not every revision has an
-archived ASan build).
+archived ASan build). The
+[get_asan_chrome](https://source.chromium.org/chromium/chromium/src/+/main:tools/get_asan_chrome/get_asan_chrome.py)
+helper script is a handy way to download builds; its --help flag provides
+usage instructions.
 
 ## Build tests with ASan
 
@@ -141,7 +144,7 @@ to avoid crashes inside gtk.
 `NSS_DISABLE_ARENA_FREE_LIST=1` and `NSS_DISABLE_UNLOAD=1` are required as well.
 
 When filing a bug found by AddressSanitizer, please add a label
-`Stability-AddressSanitizer`.
+`Stability-Memory-AddressSanitizer`.
 
 ## ASan runtime options
 
@@ -209,13 +212,9 @@ If the above step fails or to run stuff without Chromium testing script (ex.
 ContentShell.apk, or any third party apk or binary), device setup is needed:
 ```shell
 tools/android/asan/third_party/asan_device_setup.sh \
-    --lib third_party/llvm-build/Release+Asserts/lib/clang/*/lib/linux/libclang_rt.asan-arm-android.so
+    --lib third_party/android_ndk/toolchains/llvm/prebuilt/linux-x86_64/lib64/clang/*/lib/linux
 # wait a few seconds for the device to reload
 ```
-**Note:** You need to replace `-arm-` part in `libclang_rt.asan-arm-android.so`
-in the command above with the corresponding architecture of the android device
-(e.g `-i686-` if you are running an `x86` emulator image).
-
 It only needs to be run once per device. It is safe to run it multiple times.
 Examine the output to ensure that setup was successful (you may need to run
 `adb disable-verity` and restart the device first). When this is done, the

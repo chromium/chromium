@@ -1,4 +1,4 @@
-<style include="app-management-shared-css">
+<style include="app-management-cros-shared-css">
   .permission-text-row:first-of-type {
     border-top: none;
   }
@@ -45,7 +45,13 @@
     </div>
 
     <app-management-more-permissions-item id="more-settings"
-        class="permission-card-row separated-row header-text" app="[[app_]]"
-        hidden$="[[app_.hideMoreSettings]]">
+        class="permission-card-row separated-row" app="[[app_]]"
+        hidden$="[[app_.hideMoreSettings]]"
+        more-permissions-label="$i18n{appManagementMorePermissionsLabel}">
     </app-management-more-permissions-item>
+    <app-management-app-details-item
+        id="appDetails"
+        class="permission-card-row"
+        app="[[app_]]">
+    </app-management-app-details-item>
 </div>

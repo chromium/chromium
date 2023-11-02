@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -71,7 +71,7 @@ FakeInstallableManager::CreateForWebContentsWithManifest(
   auto installable_data = std::make_unique<InstallableData>(
       std::move(errors), installable_manager->manifest_url_,
       *installable_manager->manifest_, GURL::EmptyGURL(), icon.get(), false,
-      GURL::EmptyGURL(), icon.get(), false, std::vector<SkBitmap>(),
+      GURL::EmptyGURL(), icon.get(), false, std::vector<Screenshot>(),
       valid_manifest, has_worker);
 
   installable_manager->data_ = std::move(installable_data);

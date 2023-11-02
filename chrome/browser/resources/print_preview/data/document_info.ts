@@ -1,8 +1,8 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
+import {WebUIListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Coordinate2d} from './coordinate2d.js';
@@ -10,29 +10,29 @@ import {CustomMarginsOrientation, Margins} from './margins.js';
 import {PrintableArea} from './printable_area.js';
 import {Size} from './size.js';
 
-export type DocumentSettings = {
-  hasCssMediaStyles: boolean,
-  hasSelection: boolean,
-  isModifiable: boolean,
-  isFromArc: boolean,
-  isScalingDisabled: boolean,
-  fitToPageScaling: number,
-  pageCount: number,
-  title: string,
-};
+export interface DocumentSettings {
+  hasCssMediaStyles: boolean;
+  hasSelection: boolean;
+  isModifiable: boolean;
+  isFromArc: boolean;
+  isScalingDisabled: boolean;
+  fitToPageScaling: number;
+  pageCount: number;
+  title: string;
+}
 
-export type PageLayoutInfo = {
-  marginTop: number,
-  marginLeft: number,
-  marginBottom: number,
-  marginRight: number,
-  contentWidth: number,
-  contentHeight: number,
-  printableAreaX: number,
-  printableAreaY: number,
-  printableAreaWidth: number,
-  printableAreaHeight: number,
-};
+export interface PageLayoutInfo {
+  marginTop: number;
+  marginLeft: number;
+  marginBottom: number;
+  marginRight: number;
+  contentWidth: number;
+  contentHeight: number;
+  printableAreaX: number;
+  printableAreaY: number;
+  printableAreaWidth: number;
+  printableAreaHeight: number;
+}
 
 const PrintPreviewDocumentInfoElementBase = WebUIListenerMixin(PolymerElement);
 
@@ -104,8 +104,7 @@ export class PrintPreviewDocumentInfoElement extends
   printableArea: PrintableArea;
   private isInitialized_: boolean = false;
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.addWebUIListener(

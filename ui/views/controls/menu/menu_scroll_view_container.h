@@ -1,10 +1,11 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_VIEWS_CONTROLS_MENU_MENU_SCROLL_VIEW_CONTAINER_H_
 #define UI_VIEWS_CONTROLS_MENU_MENU_SCROLL_VIEW_CONTAINER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/menu/menu_types.h"
 #include "ui/views/view.h"
@@ -67,21 +68,27 @@ class MenuScrollViewContainer : public View {
 
   class MenuScrollView;
 
+  // The background view.
+  raw_ptr<View> background_view_ = nullptr;
+
   // The scroll buttons.
-  View* scroll_up_button_;
-  View* scroll_down_button_;
+  raw_ptr<View> scroll_up_button_;
+  raw_ptr<View> scroll_down_button_;
 
   // The scroll view.
-  MenuScrollView* scroll_view_;
+  raw_ptr<MenuScrollView> scroll_view_;
 
   // The content view.
-  SubmenuView* content_view_;
+  raw_ptr<SubmenuView> content_view_;
 
   // If set the currently set border is a bubble border.
   BubbleBorder::Arrow arrow_ = BubbleBorder::NONE;
 
   // Corner radius of the background.
   int corner_radius_ = 0;
+
+  // Whether the menu uses ash system UI layout.
+  const bool use_ash_system_ui_layout_;
 };
 
 }  // namespace views

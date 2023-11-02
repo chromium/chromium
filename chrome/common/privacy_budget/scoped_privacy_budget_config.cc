@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,12 +17,24 @@ namespace test {
 
 // Are you happy now linker?
 const int ScopedPrivacyBudgetConfig::kDefaultGeneration;
-const int ScopedPrivacyBudgetConfig::kDefaultExpectedSurfaceCount;
+constexpr int kSelectAllSurfacesExpectedSurfaceCount = 1;
 
 ScopedPrivacyBudgetConfig::Parameters::Parameters() = default;
 ScopedPrivacyBudgetConfig::Parameters::Parameters(const Parameters&) = default;
 ScopedPrivacyBudgetConfig::Parameters::Parameters(Parameters&&) = default;
 ScopedPrivacyBudgetConfig::Parameters::~Parameters() = default;
+
+ScopedPrivacyBudgetConfig::Parameters::Parameters(Presets presets) {
+  switch (presets) {
+    case Presets::kEnableRandomSampling:
+      expected_surface_count = kSelectAllSurfacesExpectedSurfaceCount;
+      break;
+
+    case Presets::kDisable:
+      enabled = false;
+      break;
+  }
+}
 
 ScopedPrivacyBudgetConfig::~ScopedPrivacyBudgetConfig() {
   DCHECK(applied_) << "ScopedPrivacyBudgetConfig instance created but not "
@@ -37,18 +49,7 @@ ScopedPrivacyBudgetConfig::ScopedPrivacyBudgetConfig(
 }
 
 ScopedPrivacyBudgetConfig::ScopedPrivacyBudgetConfig(Presets presets) {
-  switch (presets) {
-    case kEnable:
-      Apply(Parameters());
-      break;
-
-    case kDisable: {
-      Parameters parameters;
-      parameters.enabled = false;
-      Apply(parameters);
-      break;
-    }
-  }
+  Apply(Parameters(presets));
 }
 
 void ScopedPrivacyBudgetConfig::Apply(const Parameters& parameters) {
@@ -77,6 +78,12 @@ void ScopedPrivacyBudgetConfig::Apply(const Parameters& parameters) {
     ftp.insert(
         {features::kIdentifiabilityStudyBlockedTypes.name,
          EncodeIdentifiabilityFieldTrialParam(parameters.blocked_types)});
+  }
+
+  if (!parameters.allowed_random_types.empty()) {
+    ftp.insert({features::kIdentifiabilityStudyAllowedRandomTypes.name,
+                EncodeIdentifiabilityFieldTrialParam(
+                    parameters.allowed_random_types)});
   }
 
   ftp.insert({features::kIdentifiabilityStudyExpectedSurfaceCount.name,
@@ -110,6 +117,24 @@ void ScopedPrivacyBudgetConfig::Apply(const Parameters& parameters) {
         {features::kIdentifiabilityStudyBlockWeights.name,
          EncodeIdentifiabilityFieldTrialParam(parameters.block_weights)});
   }
+  if (!parameters.reid_blocks.empty()) {
+    ftp.insert({features::kIdentifiabilityStudyReidSurfaceBlocks.name,
+                EncodeIdentifiabilityFieldTrialParam(parameters.reid_blocks)});
+  }
+  if (!parameters.reid_salts_ranges.empty()) {
+    ftp.insert(
+        {features::kIdentifiabilityStudyReidSurfaceBlocksSaltsRanges.name,
+         EncodeIdentifiabilityFieldTrialParam(parameters.reid_salts_ranges)});
+  }
+  if (!parameters.reid_bits.empty()) {
+    ftp.insert({features::kIdentifiabilityStudyReidSurfaceBlocksBits.name,
+                EncodeIdentifiabilityFieldTrialParam(parameters.reid_bits)});
+  }
+  if (!parameters.reid_noise.empty()) {
+    ftp.insert(
+        {features::kIdentifiabilityStudyReidBlocksNoiseProbabilities.name,
+         EncodeIdentifiabilityFieldTrialParam(parameters.reid_noise)});
+  }
   if (!parameters.per_surface_cost.empty()) {
     ftp.insert(
         {features::kIdentifiabilityStudyPerHashCost.name,
@@ -124,6 +149,14 @@ void ScopedPrivacyBudgetConfig::Apply(const Parameters& parameters) {
     ftp.insert(
         {features::kIdentifiabilityStudySurfaceEquivalenceClasses.name,
          EncodeIdentifiabilityFieldTrialParam(parameters.equivalence_classes)});
+  }
+  ftp.insert({features::kIdentifiabilityStudyEnableActiveSampling.name,
+              EncodeIdentifiabilityFieldTrialParam(
+                  parameters.enable_active_sampling)});
+  if (!parameters.actively_sampled_fonts.empty()) {
+    ftp.insert({features::kIdentifiabilityStudyActivelySampledFonts.name,
+                EncodeIdentifiabilityFieldTrialParam(
+                    parameters.actively_sampled_fonts)});
   }
 
   scoped_feature_list_.InitAndEnableFeatureWithParameters(

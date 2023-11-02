@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -49,7 +49,7 @@ bool OverlayProcessorSurfaceControl::NeedsSurfaceDamageRectList() const {
   return true;
 }
 
-void OverlayProcessorSurfaceControl::CheckOverlaySupport(
+void OverlayProcessorSurfaceControl::CheckOverlaySupportImpl(
     const OverlayProcessorInterface::OutputSurfaceOverlayPlane* primary_plane,
     OverlayCandidateList* candidates) {
   DCHECK(!candidates->empty());
@@ -68,7 +68,8 @@ void OverlayProcessorSurfaceControl::CheckOverlaySupport(
     }
 
     // Check if screen rotation matches.
-    if (candidate.transform != display_transform_) {
+    if (absl::get<gfx::OverlayTransform>(candidate.transform) !=
+        display_transform_) {
       candidate.overlay_handled = false;
       return;
     }
@@ -91,8 +92,8 @@ void OverlayProcessorSurfaceControl::CheckOverlaySupport(
     const gfx::Transform display_inverse = gfx::OverlayTransformToTransform(
         gfx::InvertOverlayTransform(display_transform_),
         gfx::SizeF(viewport_size_));
-    display_inverse.TransformRect(&orig_display_rect);
-    display_inverse.TransformRect(&display_rect);
+    orig_display_rect = display_inverse.MapRect(orig_display_rect);
+    display_rect = display_inverse.MapRect(display_rect);
 
     candidate.unclipped_display_rect = orig_display_rect;
     candidate.unclipped_uv_rect = candidate.uv_rect;
@@ -122,7 +123,7 @@ void OverlayProcessorSurfaceControl::AdjustOutputSurfaceOverlay(
   const gfx::Transform display_inverse = gfx::OverlayTransformToTransform(
       gfx::InvertOverlayTransform(display_transform_),
       gfx::SizeF(viewport_size_));
-  display_inverse.TransformRect(&plane.display_rect);
+  plane.display_rect = display_inverse.MapRect(plane.display_rect);
   plane.display_rect = gfx::RectF(gfx::ToEnclosingRect(plane.display_rect));
 
   // Call the base class implementation.
@@ -144,9 +145,7 @@ gfx::Rect OverlayProcessorSurfaceControl::GetOverlayDamageRectForOutputSurface(
                                                 viewport_size_.width());
   auto transform = gfx::OverlayTransformToTransform(
       display_transform_, gfx::SizeF(viewport_size_pre_display_transform));
-  gfx::RectF transformed_rect(candidate.display_rect);
-  transform.TransformRect(&transformed_rect);
-  return gfx::ToEnclosedRect(transformed_rect);
+  return transform.MapRect(gfx::ToEnclosingRect(candidate.display_rect));
 }
 
 void OverlayProcessorSurfaceControl::SetDisplayTransformHint(

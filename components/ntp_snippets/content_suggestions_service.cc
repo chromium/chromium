@@ -1,10 +1,9 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/ntp_snippets/content_suggestions_service.h"
 
-#include <algorithm>
 #include <iterator>
 #include <set>
 #include <utility>
@@ -14,6 +13,7 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_clock.h"
@@ -187,10 +187,7 @@ GURL ContentSuggestionsService::GetFaviconDomain(
   const std::vector<ContentSuggestion>& suggestions =
       suggestions_by_category_[suggestion_id.category()];
   auto position =
-      std::find_if(suggestions.begin(), suggestions.end(),
-                   [&suggestion_id](const ContentSuggestion& suggestion) {
-                     return suggestion_id == suggestion.id();
-                   });
+      base::ranges::find(suggestions, suggestion_id, &ContentSuggestion::id);
   if (position != suggestions.end()) {
     return position->url_with_favicon();
   }
@@ -609,8 +606,7 @@ void ContentSuggestionsService::UnregisterCategory(
 
   DCHECK_EQ(provider, providers_it->second);
   providers_by_category_.erase(providers_it);
-  categories_.erase(
-      std::find(categories_.begin(), categories_.end(), category));
+  categories_.erase(base::ranges::find(categories_, category));
   suggestions_by_category_.erase(category);
 }
 
@@ -619,10 +615,7 @@ bool ContentSuggestionsService::RemoveSuggestionByID(
   std::vector<ContentSuggestion>* suggestions =
       &suggestions_by_category_[suggestion_id.category()];
   auto position =
-      std::find_if(suggestions->begin(), suggestions->end(),
-                   [&suggestion_id](const ContentSuggestion& suggestion) {
-                     return suggestion_id == suggestion.id();
-                   });
+      base::ranges::find(*suggestions, suggestion_id, &ContentSuggestion::id);
   if (position == suggestions->end()) {
     return false;
   }
@@ -673,9 +666,9 @@ void ContentSuggestionsService::RestoreDismissedCategoriesFromPrefs() {
   DCHECK(dismissed_providers_by_category_.empty());
   DCHECK(providers_by_category_.empty());
 
-  const base::ListValue* list =
+  const base::Value::List& list =
       pref_service_->GetList(prefs::kDismissedCategories);
-  for (const base::Value& entry : list->GetList()) {
+  for (const base::Value& entry : list) {
     if (!entry.is_int()) {
       DLOG(WARNING) << "Invalid category pref value: " << entry;
       continue;
@@ -722,7 +715,7 @@ void ContentSuggestionsService::DestroyCategoryAndItsProvider(
 
   suggestions_by_category_.erase(category);
 
-  auto it = std::find(categories_.begin(), categories_.end(), category);
+  auto it = base::ranges::find(categories_, category);
   categories_.erase(it);
 
   // Notify observers that the category is gone.

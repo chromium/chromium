@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -46,7 +46,7 @@ void ProfileImportImpl::StartImport(
 
   // Create worker thread in which importer runs.
   import_thread_ = std::make_unique<base::Thread>("import_thread");
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   import_thread_->init_com_with_mta(false);
 #endif
   if (!import_thread_->Start()) {

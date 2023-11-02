@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 namespace feed {
 namespace {
 
-std::string ToJSON(const base::Value& value) {
+std::string ToJSON(base::ValueView value) {
   std::string json;
   CHECK(base::JSONWriter::WriteWithOptions(
       value, base::JSONWriter::OPTIONS_PRETTY_PRINT, &json));
@@ -26,19 +26,19 @@ TEST(PersistentMetricsData, SerializesAndDeserializes) {
   data.accumulated_time_spent_in_feed = base::Hours(2);
   data.current_day_start = base::Time::UnixEpoch();
 
-  const base::Value serialized_value = PersistentMetricsDataToValue(data);
-  const PersistentMetricsData deserialized_value =
-      PersistentMetricsDataFromValue(serialized_value);
+  const base::Value::Dict serialized_dict = PersistentMetricsDataToDict(data);
+  const PersistentMetricsData deserialized_dict =
+      PersistentMetricsDataFromDict(serialized_dict);
 
   EXPECT_EQ(R"({
    "day_start": "11644473600000000",
    "time_spent_in_feed": "7200000000"
 }
 )",
-            ToJSON(serialized_value));
+            ToJSON(serialized_dict));
   EXPECT_EQ(data.accumulated_time_spent_in_feed,
-            deserialized_value.accumulated_time_spent_in_feed);
-  EXPECT_EQ(data.current_day_start, deserialized_value.current_day_start);
+            deserialized_dict.accumulated_time_spent_in_feed);
+  EXPECT_EQ(data.current_day_start, deserialized_dict.current_day_start);
 }
 
 TEST(Types, ToContentRevision) {
@@ -51,14 +51,14 @@ TEST(Types, ToContentRevision) {
   EXPECT_EQ(ContentRevision(), ToContentRevision("c/"));
 }
 
-TEST(Types, ContentIdSet) {
-  ContentIdSet v123(std::vector<int64_t>{1, 2, 3});
-  ContentIdSet v1234(std::vector<int64_t>{1, 2, 3, 4});
+TEST(Types, ContentHashSet) {
+  ContentHashSet v123(std::vector<uint32_t>{1, 2, 3});
+  ContentHashSet v1234(std::vector<uint32_t>{1, 2, 3, 4});
 
   EXPECT_TRUE(v1234.ContainsAllOf(v123));
   EXPECT_FALSE(v123.ContainsAllOf(v1234));
   EXPECT_FALSE(v123.IsEmpty());
-  EXPECT_TRUE(ContentIdSet().IsEmpty());
+  EXPECT_TRUE(ContentHashSet().IsEmpty());
 }
 
 }  // namespace feed

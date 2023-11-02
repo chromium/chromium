@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,11 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "chrome/browser/android/customtabs/client_data_header_web_contents_observer.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
+#include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_io_data.h"
 #include "chrome/browser/safe_browsing/user_interaction_observer.h"
@@ -29,7 +30,7 @@
 #include "content/public/browser/web_contents.h"
 #include "services/network/public/cpp/features.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/tab_android.h"
 #endif
 
@@ -66,7 +67,7 @@ void CreateSafeBrowsingUserInteractionObserver(
     ui_manager->StartDisplayingBlockingPage(resource);
     return;
   }
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Don't delay the interstitial for Chrome Custom Tabs.
   auto* tab_android = TabAndroid::FromWebContents(web_contents);
   if (tab_android && tab_android->IsCustomTab()) {
@@ -146,10 +147,10 @@ bool UrlCheckerDelegateImpl::ShouldSkipRequestCheck(
     bool originated_from_service_worker) {
   // Check for whether the URL matches the Safe Browsing allowlist domains
   // (a.k. a prefs::kSafeBrowsingAllowlistDomains).
-  return std::find_if(allowlist_domains_.begin(), allowlist_domains_.end(),
-                      [&original_url](const std::string& domain) {
-                        return original_url.DomainIs(domain);
-                      }) != allowlist_domains_.end();
+  return base::ranges::any_of(allowlist_domains_,
+                              [&original_url](const std::string& domain) {
+                                return original_url.DomainIs(domain);
+                              });
 }
 
 void UrlCheckerDelegateImpl::NotifySuspiciousSiteDetected(

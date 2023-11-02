@@ -79,6 +79,7 @@ class HTMLInputStream {
   void SplitInto(SegmentedString& next) {
     next = first_;
     first_ = SegmentedString();
+    first_.SetNextSegmentedString(&next);
     if (last_ == &first_) {
       // We used to only have one SegmentedString in the InputStream but now we
       // have two.  That means first_ is no longer also the last_ string,
@@ -89,6 +90,7 @@ class HTMLInputStream {
 
   void MergeFrom(SegmentedString& next) {
     first_.Append(next);
+    first_.SetNextSegmentedString(next.NextSegmentedString());
     if (last_ == &next) {
       // The string |next| used to be the last SegmentedString in
       // the InputStream.  Now that it's been merged into first_,
@@ -100,6 +102,15 @@ class HTMLInputStream {
       // Arguably, this work could be done in Append().
       first_.Close();
     }
+  }
+
+  unsigned length() const {
+    unsigned total_length = 0;
+    for (const auto* current = &first_; current;
+         current = current->NextSegmentedString()) {
+      total_length += current->length();
+    };
+    return total_length;
   }
 
  private:

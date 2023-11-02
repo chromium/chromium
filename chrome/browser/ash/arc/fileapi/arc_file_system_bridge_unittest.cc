@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,18 @@
 #include <utility>
 #include <vector>
 
-#include "base/bind.h"
+#include "ash/components/arc/mojom/file_system.mojom.h"
+#include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/components/arc/test/connection_holder_util.h"
+#include "ash/components/arc/test/fake_file_system_instance.h"
+#include "base/containers/flat_map.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/arc/fileapi/chrome_content_provider_url_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_system_provider/fake_extension_provider.h"
@@ -22,15 +28,13 @@
 #include "chrome/browser/chromeos/fileapi/file_system_backend.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/dbus/concierge/concierge_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/virtual_file_provider/fake_virtual_file_provider_client.h"
-#include "components/arc/session/arc_bridge_service.h"
-#include "components/arc/test/connection_holder_util.h"
-#include "components/arc/test/fake_file_system_instance.h"
+#include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/components/dbus/virtual_file_provider/fake_virtual_file_provider_client.h"
+#include "chromeos/ash/components/dbus/virtual_file_provider/virtual_file_provider_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "storage/browser/file_system/external_mount_points.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace arc {
@@ -56,8 +60,8 @@ class ArcFileSystemBridgeTest : public testing::Test {
 
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    chromeos::DBusThreadManager::Initialize();
-    chromeos::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
+    ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
+    ash::VirtualFileProviderClient::InitializeFake();
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
@@ -81,8 +85,8 @@ class ArcFileSystemBridgeTest : public testing::Test {
     arc_bridge_service_.file_system()->CloseInstance(&fake_file_system_);
     arc_file_system_bridge_.reset();
     profile_manager_.reset();
-    chromeos::ConciergeClient::Shutdown();
-    chromeos::DBusThreadManager::Shutdown();
+    ash::VirtualFileProviderClient::Shutdown();
+    ash::ConciergeClient::Shutdown();
   }
 
  protected:
@@ -100,14 +104,12 @@ TEST_F(ArcFileSystemBridgeTest, GetFileName) {
   base::RunLoop run_loop;
   arc_file_system_bridge_->GetFileName(
       EncodeToChromeContentProviderUrl(GURL(kTestUrl)).spec(),
-      base::BindOnce(
-          [](base::RunLoop* run_loop,
-             const absl::optional<std::string>& result) {
-            run_loop->Quit();
+      base::BindLambdaForTesting(
+          [&](const absl::optional<std::string>& result) {
+            run_loop.Quit();
             ASSERT_TRUE(result.has_value());
             EXPECT_EQ("hello.txt", result.value());
-          },
-          &run_loop));
+          }));
   run_loop.Run();
 }
 
@@ -121,18 +123,16 @@ TEST_F(ArcFileSystemBridgeTest, GetFileNameNonASCII) {
   base::RunLoop run_loop;
   arc_file_system_bridge_->GetFileName(
       EncodeToChromeContentProviderUrl(url).spec(),
-      base::BindOnce(
-          [](base::RunLoop* run_loop, const std::string& expected,
-             const absl::optional<std::string>& result) {
-            run_loop->Quit();
+      base::BindLambdaForTesting(
+          [&](const absl::optional<std::string>& result) {
+            run_loop.Quit();
             ASSERT_TRUE(result.has_value());
-            EXPECT_EQ(expected, result.value());
-          },
-          &run_loop, filename));
+            EXPECT_EQ(filename, result.value());
+          }));
   run_loop.Run();
 }
 
-// net::UnescapeURLComponent() leaves UTF-8 lock icons escaped, but they're
+// base::UnescapeURLComponent() leaves UTF-8 lock icons escaped, but they're
 // valid file names, so shouldn't be left escaped here.
 TEST_F(ArcFileSystemBridgeTest, GetFileNameLockIcon) {
   const GURL url("externalfile:abc:test-filesystem:/%F0%9F%94%92");
@@ -140,14 +140,12 @@ TEST_F(ArcFileSystemBridgeTest, GetFileNameLockIcon) {
   base::RunLoop run_loop;
   arc_file_system_bridge_->GetFileName(
       EncodeToChromeContentProviderUrl(url).spec(),
-      base::BindOnce(
-          [](base::RunLoop* run_loop,
-             const absl::optional<std::string>& result) {
-            run_loop->Quit();
+      base::BindLambdaForTesting(
+          [&](const absl::optional<std::string>& result) {
+            run_loop.Quit();
             ASSERT_TRUE(result.has_value());
             EXPECT_EQ("\xF0\x9F\x94\x92", result.value());
-          },
-          &run_loop));
+          }));
   run_loop.Run();
 }
 
@@ -158,13 +156,11 @@ TEST_F(ArcFileSystemBridgeTest, GetFileNameEscapedPathSeparator) {
   base::RunLoop run_loop;
   arc_file_system_bridge_->GetFileName(
       EncodeToChromeContentProviderUrl(url).spec(),
-      base::BindOnce(
-          [](base::RunLoop* run_loop,
-             const absl::optional<std::string>& result) {
-            run_loop->Quit();
+      base::BindLambdaForTesting(
+          [&](const absl::optional<std::string>& result) {
+            run_loop.Quit();
             ASSERT_FALSE(result.has_value());
-          },
-          &run_loop));
+          }));
   run_loop.Run();
 }
 
@@ -172,12 +168,10 @@ TEST_F(ArcFileSystemBridgeTest, GetFileSize) {
   base::RunLoop run_loop;
   arc_file_system_bridge_->GetFileSize(
       EncodeToChromeContentProviderUrl(GURL(kTestUrl)).spec(),
-      base::BindOnce(
-          [](base::RunLoop* run_loop, int64_t result) {
-            EXPECT_EQ(kTestFileSize, result);
-            run_loop->Quit();
-          },
-          &run_loop));
+      base::BindLambdaForTesting([&](int64_t result) {
+        EXPECT_EQ(kTestFileSize, result);
+        run_loop.Quit();
+      }));
   run_loop.Run();
 }
 
@@ -188,14 +182,11 @@ TEST_F(ArcFileSystemBridgeTest, GetLastModified) {
   base::RunLoop run_loop;
   arc_file_system_bridge_->GetLastModified(
       EncodeToChromeContentProviderUrl(GURL(kTestUrl)),
-      base::BindOnce(
-          [](base::RunLoop* run_loop, const base::Time& expected,
-             const absl::optional<base::Time> result) {
-            ASSERT_TRUE(result.has_value());
-            EXPECT_EQ(expected, result.value());
-            run_loop->Quit();
-          },
-          &run_loop, expected));
+      base::BindLambdaForTesting([&](const absl::optional<base::Time> result) {
+        ASSERT_TRUE(result.has_value());
+        EXPECT_EQ(expected, result.value());
+        run_loop.Quit();
+      }));
   run_loop.Run();
 }
 
@@ -203,22 +194,20 @@ TEST_F(ArcFileSystemBridgeTest, GetFileType) {
   base::RunLoop run_loop;
   arc_file_system_bridge_->GetFileType(
       EncodeToChromeContentProviderUrl(GURL(kTestUrl)).spec(),
-      base::BindOnce(
-          [](base::RunLoop* run_loop,
-             const absl::optional<std::string>& result) {
+      base::BindLambdaForTesting(
+          [&](const absl::optional<std::string>& result) {
             ASSERT_TRUE(result.has_value());
             EXPECT_EQ(kTestFileType, result.value());
-            run_loop->Quit();
-          },
-          &run_loop));
+            run_loop.Quit();
+          }));
   run_loop.Run();
 }
 
 TEST_F(ArcFileSystemBridgeTest, GetVirtualFileId) {
   // Set up fake virtual file provider client.
   constexpr char kId[] = "testfile";
-  auto* fake_client = static_cast<chromeos::FakeVirtualFileProviderClient*>(
-      chromeos::DBusThreadManager::Get()->GetVirtualFileProviderClient());
+  auto* fake_client = static_cast<ash::FakeVirtualFileProviderClient*>(
+      ash::VirtualFileProviderClient::Get());
   fake_client->set_expected_size(kTestFileSize);
   fake_client->set_result_id(kId);
 
@@ -226,14 +215,11 @@ TEST_F(ArcFileSystemBridgeTest, GetVirtualFileId) {
   base::RunLoop run_loop;
   arc_file_system_bridge_->GetVirtualFileId(
       EncodeToChromeContentProviderUrl(GURL(kTestUrl)).spec(),
-      base::BindOnce(
-          [](base::RunLoop* run_loop, const char* kId,
-             const absl::optional<std::string>& id) {
-            ASSERT_NE(absl::nullopt, id);
-            EXPECT_EQ(kId, id.value());
-            run_loop->Quit();
-          },
-          &run_loop, kId));
+      base::BindLambdaForTesting([&](const absl::optional<std::string>& id) {
+        ASSERT_NE(absl::nullopt, id);
+        EXPECT_EQ(kId, id.value());
+        run_loop.Quit();
+      }));
   run_loop.Run();
 
   content::RunAllTasksUntilIdle();
@@ -251,8 +237,8 @@ TEST_F(ArcFileSystemBridgeTest, OpenFileToRead) {
   ASSERT_TRUE(temp_file.IsValid());
 
   constexpr char kId[] = "testfile";
-  auto* fake_client = static_cast<chromeos::FakeVirtualFileProviderClient*>(
-      chromeos::DBusThreadManager::Get()->GetVirtualFileProviderClient());
+  auto* fake_client = static_cast<ash::FakeVirtualFileProviderClient*>(
+      ash::VirtualFileProviderClient::Get());
   fake_client->set_expected_size(kTestFileSize);
   fake_client->set_result_id(kId);
   fake_client->set_result_fd(base::ScopedFD(temp_file.TakePlatformFile()));
@@ -261,12 +247,10 @@ TEST_F(ArcFileSystemBridgeTest, OpenFileToRead) {
   base::RunLoop run_loop;
   arc_file_system_bridge_->OpenFileToRead(
       EncodeToChromeContentProviderUrl(GURL(kTestUrl)).spec(),
-      base::BindOnce(
-          [](base::RunLoop* run_loop, mojo::ScopedHandle result) {
-            EXPECT_TRUE(result.is_valid());
-            run_loop->Quit();
-          },
-          &run_loop));
+      base::BindLambdaForTesting([&](mojo::ScopedHandle result) {
+        EXPECT_TRUE(result.is_valid());
+        run_loop.Quit();
+      }));
   run_loop.Run();
 
   // HandleReadRequest().
@@ -368,6 +352,38 @@ TEST_F(ArcFileSystemBridgeTest, GetLinuxVFSPathForPathOnFileSystemType) {
           profile_, unsupported_filesystem_path,
           storage::kFileSystemTypeProvided);
   EXPECT_EQ(empty_path, unsupported_filesystem_vfs_path);
+}
+
+TEST_F(ArcFileSystemBridgeTest, PropagatesOnMediaStoreUriAddedEvents) {
+  class MockObserver : public ArcFileSystemBridge::Observer {
+   public:
+    MOCK_METHOD(void,
+                OnMediaStoreUriAdded,
+                (const GURL& uri, const mojom::MediaStoreMetadata& metadata),
+                (override));
+  };
+
+  // Register a mock observer.
+  testing::NiceMock<MockObserver> observer;
+  base::ScopedObservation<ArcFileSystemBridge, ArcFileSystemBridge::Observer>
+      observation{&observer};
+  observation.Observe(arc_file_system_bridge_.get());
+
+  // Prepare data for an `OnMediaStoreUriAdded()` event.
+  const GURL uri("uri");
+  auto metadata = mojom::MediaStoreMetadata::NewDownload(
+      mojom::MediaStoreDownloadMetadata::New(
+          /*display_name=*/"foo.pdf",
+          /*owner_package_name=*/"com.android.documentsui",
+          /*relative_path=*/base::FilePath("Download/")));
+
+  // Expect observer to be notified of an `OnMediaStoreUriAdded()` event.
+  EXPECT_CALL(observer,
+              OnMediaStoreUriAdded(testing::Eq(uri),
+                                   testing::Eq(testing::ByRef(*metadata))));
+
+  // Simulate an `OnMediaStoreUriAdded()` event from ARC.
+  arc_file_system_bridge_->OnMediaStoreUriAdded(uri, mojo::Clone(metadata));
 }
 
 }  // namespace arc

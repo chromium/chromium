@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,12 +16,7 @@ public class StringCachedFieldTrialParameter extends CachedFieldTrialParameter {
 
     public StringCachedFieldTrialParameter(
             String featureName, String variationName, String defaultValue) {
-        this(featureName, variationName, defaultValue, null);
-    }
-
-    public StringCachedFieldTrialParameter(String featureName, String variationName,
-            String defaultValue, String preferenceKeyOverride) {
-        super(featureName, variationName, FieldTrialParameterType.STRING, preferenceKeyOverride);
+        super(featureName, variationName, FieldTrialParameterType.STRING);
         mDefaultValue = defaultValue;
     }
 

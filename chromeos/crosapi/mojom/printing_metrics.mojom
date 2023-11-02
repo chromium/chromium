@@ -1,0 +1,65 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+import "mojo/public/mojom/base/values.mojom";
+
+
+// Listens to events dispatched by ash::PrintJobHistoryService in ash and
+// sends them to lacros. See chrome.printingMetrics.onPrintJobFinished event.
+// Next version: 1
+// Next method id: 1
+[Stable, Uuid="64680b44-074e-4aa0-93ce-3c0956e192a0"]
+interface PrintJobObserverForProfile {
+  // Forwards OnPrintJobFinished() event from ash::PrintJobHistoryService
+  // to the browser.
+  //
+  // The supplied value is the chrome.printintMetrics.PrintJobInfo object
+  // serialized as base::Value.
+  // See chrome/common/extensions/api/printing_metrics.idl for details.
+  //
+  // We use mojo_base.mojom.Value as the type because:
+  // * The idl for the API is stable and can easily be serialized and
+  //   deserialized into base::Value
+  // * Both the supplier and consumer of this information uses a type
+  //   interchangeable with mojo_base.mojom.Value. While we could add
+  //   a translation layer to a strongly typed mojom struct, this adds an
+  //   overhead and the potential for errors with no benefit.
+  OnPrintJobFinished@0(mojo_base.mojom.Value print_job);
+};
+
+// PrintingMetricsForProfile processes chrome.printingMetrics API calls
+// for the associated profile on the ash side.
+// Next version: 1
+// Next method id: 1
+[Stable, Uuid="27ba5fb3-5624-4b6d-8909-8243a0ffd7aa"]
+interface PrintingMetricsForProfile {
+  // Implements chrome.printingMetrics.getPrintJobs(...)
+  //
+  // The return values are chrome.printingMetrics.PrintJobInfo objects
+  // serialized as base::Value.
+  // See chrome/common/extensions/api/printing_metrics.idl for details.
+  //
+  // We use mojo_base.mojom.Value as the type because:
+  // * The idl for the API is stable and can easily be serialized and
+  //   deserialized into base::Value
+  // * Both the supplier and consumer of this information uses a type
+  //   interchangeable with mojo_base.mojom.Value. While we could add
+  //   a translation layer to a strongly typed mojom struct, this adds an
+  //   overhead and the potential for errors with no benefit.
+  GetPrintJobs@0() => (array<mojo_base.mojom.Value> print_jobs);
+};
+
+// PrintingMetrics is the entry point for chrome.printingMetrics API
+// on the ash side.
+// Next version: 1
+// Next method id: 1
+[Stable, Uuid="e27e7b78-f2ce-4d06-8bc9-e247f8edf355"]
+interface PrintingMetrics {
+  // Registers a service for the main profile and allows ash to
+  // send printing events via |observer|.
+  RegisterForMainProfile@0(pending_receiver<PrintingMetricsForProfile> receiver,
+    pending_remote<PrintJobObserverForProfile> observer);
+};

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/cors_origin_pattern.mojom.h"
 
-namespace network {
-
-namespace cors {
+namespace network::cors {
 
 OriginAccessList::OriginAccessList() = default;
 OriginAccessList::~OriginAccessList() = default;
@@ -155,10 +153,9 @@ void OriginAccessList::SetForOrigin(
   Patterns& patterns_for_type = patterns_map[type];
   patterns_for_type.clear();
   for (const auto& pattern : patterns) {
-    patterns_for_type.push_back(
-        OriginAccessEntry(pattern->protocol, pattern->domain, pattern->port,
-                          pattern->domain_match_mode, pattern->port_match_mode,
-                          pattern->priority));
+    patterns_for_type.emplace_back(pattern->protocol, pattern->domain,
+                                   pattern->port, pattern->domain_match_mode,
+                                   pattern->port_match_mode, pattern->priority);
   }
   if (patterns_map[MapType::kAllowPatterns].empty() &&
       patterns_map[MapType::kBlockPatterns].empty()) {
@@ -175,9 +172,9 @@ void OriginAccessList::AddForOrigin(const url::Origin& source_origin,
   DCHECK(!source_origin.opaque());
 
   const std::string source = source_origin.Serialize();
-  (*map)[source][type].push_back(OriginAccessEntry(
+  (*map)[source][type].emplace_back(
       pattern->protocol, pattern->domain, pattern->port,
-      pattern->domain_match_mode, pattern->port_match_mode, pattern->priority));
+      pattern->domain_match_mode, pattern->port_match_mode, pattern->priority);
 }
 
 // static
@@ -203,6 +200,4 @@ OriginAccessList::GetHighestPriorityOfRuleForOrigin(
   return highest_priority;
 }
 
-}  // namespace cors
-
-}  // namespace network
+}  // namespace network::cors

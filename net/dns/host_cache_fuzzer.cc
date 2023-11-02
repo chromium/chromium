@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/numerics/clamped_math.h"
+#include "base/numerics/ostream_operators.h"
 #include "base/strings/string_piece_forward.h"
 #include "net/dns/host_cache.h"
 #include "net/dns/host_cache_fuzzer.pb.h"
@@ -73,21 +74,19 @@ DEFINE_PROTO_FUZZER(const host_cache_fuzzer_proto::JsonOrBytes& input) {
     return;
   ++valid_json_count;
 
-  const base::ListValue& list_input = base::Value::AsListValue(*value);
-
   // Parse the HostCache.
   constexpr size_t kMaxEntries = 1000;
   HostCache host_cache(kMaxEntries);
-  if (!host_cache.RestoreFromListValue(list_input))
+  if (!host_cache.RestoreFromListValue(value->GetList()))
     return;
 
   // Serialize the HostCache.
-  base::ListValue serialized;
-  host_cache.GetAsListValue(
-      &serialized /* entry_list */, true /* include_staleness */,
+  base::Value::List serialized;
+  host_cache.GetList(
+      serialized /* entry_list */, true /* include_staleness */,
       HostCache::SerializationType::kRestorable /* serialization_type */);
 
-  CHECK_EQ(list_input, serialized);
+  CHECK_EQ(*value, serialized);
   return;
 }
 }  // namespace net

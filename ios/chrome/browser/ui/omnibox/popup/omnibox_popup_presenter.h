@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol ContentProviding;
 @class OmniboxPopupPresenter;
 
 @protocol OmniboxPopupPresenterDelegate
@@ -40,7 +41,9 @@
 
 - (instancetype)initWithPopupPresenterDelegate:
                     (id<OmniboxPopupPresenterDelegate>)presenterDelegate
-                           popupViewController:(UIViewController*)viewController
+                           popupViewController:
+                               (UIViewController<ContentProviding>*)
+                                   viewController
                                      incognito:(BOOL)incognito;
 
 @end

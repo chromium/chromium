@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,8 @@
 const char kNetInfoProxySettings[] = "proxySettings";
 const char kNetInfoBadProxies[] = "badProxies";
 const char kNetInfoHostResolver[] = "hostResolverInfo";
+const char kNetInfoDohProvidersDisabledDueToFeature[] =
+    "dohProvidersDisabledDueToFeature";
 const char kNetInfoSocketPool[] = "socketPoolInfo";
 const char kNetInfoQuic[] = "quicInfo";
 const char kNetInfoSpdySessions[] = "spdySessionInfo";

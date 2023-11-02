@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,9 @@
 #include "ash/components/phonehub/browser_tabs_model.h"
 #include "ash/components/phonehub/notification.h"
 #include "ash/components/phonehub/phone_status_model.h"
+#include "base/time/time.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 // Fake data for phone status.
@@ -47,6 +48,6 @@ const Notification::AppMetadata& CreateFakeAppMetadata();
 const Notification& CreateFakeNotification();
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_PHONEHUB_PHONE_MODEL_TEST_UTIL_H_

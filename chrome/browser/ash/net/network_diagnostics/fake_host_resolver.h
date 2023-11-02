@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/address_list.h"
+#include "net/dns/public/host_resolver_results.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -27,12 +28,16 @@ class FakeHostResolver : public network::mojom::HostResolver {
    public:
     DnsResult(int32_t result,
               net::ResolveErrorInfo resolve_error_info,
-              absl::optional<net::AddressList> resolved_addresses);
+              absl::optional<net::AddressList> resolved_addresses,
+              absl::optional<net::HostResolverEndpointResults>
+                  endpoint_results_with_metadata);
     ~DnsResult();
 
     int result_;
     net::ResolveErrorInfo resolve_error_info_;
     absl::optional<net::AddressList> resolved_addresses_;
+    absl::optional<net::HostResolverEndpointResults>
+        endpoint_results_with_metadata_;
   };
 
   FakeHostResolver(
@@ -40,11 +45,12 @@ class FakeHostResolver : public network::mojom::HostResolver {
   ~FakeHostResolver() override;
 
   // network::mojom::HostResolver
-  void ResolveHost(const net::HostPortPair& host,
-                   const net::NetworkIsolationKey& network_isolation_key,
-                   network::mojom::ResolveHostParametersPtr optional_parameters,
-                   mojo::PendingRemote<network::mojom::ResolveHostClient>
-                       pending_response_client) override;
+  void ResolveHost(
+      network::mojom::HostResolverHostPtr host,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
+      network::mojom::ResolveHostParametersPtr optional_parameters,
+      mojo::PendingRemote<network::mojom::ResolveHostClient>
+          pending_response_client) override;
   void MdnsListen(
       const net::HostPortPair& host,
       net::DnsQueryType query_type,

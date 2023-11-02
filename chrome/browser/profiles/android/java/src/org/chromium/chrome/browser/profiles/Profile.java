@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,8 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.CheckDiscard;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.build.annotations.CheckDiscard;
 import org.chromium.chrome.browser.cookies.CookiesFetcher;
 import org.chromium.components.profile_metrics.BrowserProfileType;
 import org.chromium.content_public.browser.BrowserContextHandle;
@@ -187,6 +187,16 @@ public class Profile implements BrowserContextHandle {
     @VisibleForTesting
     public boolean isNativeInitialized() {
         return mNativeProfileAndroid != 0;
+    }
+
+    /**
+     * When called, raises an exception if the native pointer is not initialized. This is useful to
+     * get a more debuggable stacktrace than failing on native-side when dereferencing.
+     */
+    public void ensureNativeInitialized() {
+        if (mNativeProfileAndroid == 0) {
+            throw new RuntimeException("Native profile pointer not initialized.");
+        }
     }
 
     @Override

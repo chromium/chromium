@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,9 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 /**
- * A custom Robolectric Junit4 Test Runner with Chromium specific settings.
+ * A custom Robolectric Junit4 Test Runner with minimal Chromium-specific settings. Most test cases
+ * should prefer {@link org.chromium.base.test.BaseRobolectricTestRunner} in order to initialize
+ * base globals.
  */
 public class LocalRobolectricTestRunner extends RobolectricTestRunner {
     public static final int DEFAULT_SDK = 28;

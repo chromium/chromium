@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 
 #include "ui/accessibility/ax_base_export.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
+#include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/transform.h"
 
@@ -43,8 +44,9 @@ struct AX_BASE_EXPORT AXRelativeBounds final {
   std::string ToString() const;
 
   // The id of an ancestor node in the same AXTree that this object's
-  // bounding box is relative to, or -1 if there's no offset container.
-  int32_t offset_container_id;
+  // bounding box is relative to, or `kInvalidAXNodeID` if there's no offset
+  // container.
+  AXNodeID offset_container_id = kInvalidAXNodeID;
 
   // The relative bounding box of this node.
   gfx::RectF bounds;

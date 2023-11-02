@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/search_controller_impl.h"
 #include "chrome/browser/ui/app_list/search/search_provider.h"
+#include "chrome/browser/ui/app_list/search/test/ranking_test_util.h"
 #include "chrome/browser/ui/app_list/test/fake_app_list_model_updater.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -35,37 +37,6 @@ using SearchResultType = ash::AppListSearchResultType;
 const size_t kMaxAppsGroupResults = 4;
 const size_t kMaxOmniboxResults = 4;
 const size_t kMaxPlaystoreResults = 2;
-
-class TestSearchResult : public ChromeSearchResult {
- public:
-  TestSearchResult(const std::string& id, double relevance)
-      : instance_id_(instantiation_count++) {
-    set_id(id);
-    SetTitle(base::UTF8ToUTF16(id));
-    set_relevance(relevance);
-  }
-
-  TestSearchResult(const TestSearchResult&) = delete;
-  TestSearchResult& operator=(const TestSearchResult&) = delete;
-
-  ~TestSearchResult() override {}
-
-  // ChromeSearchResult overrides:
-  void Open(int event_flags) override {}
-
-  // For reference equality testing. (Addresses cannot be used to test reference
-  // equality because it is possible that an object will be allocated at the
-  // same address as a previously deleted one.)
-  static int GetInstanceId(ChromeSearchResult* result) {
-    return static_cast<const TestSearchResult*>(result)->instance_id_;
-  }
-
- private:
-  static int instantiation_count;
-
-  int instance_id_;
-};
-int TestSearchResult::instantiation_count = 0;
 
 class TestSearchProvider : public SearchProvider {
  public:
@@ -98,7 +69,7 @@ class TestSearchProvider : public SearchProvider {
       // make the differences very small: 0.5, 0.499, 0.498, ...
       if (small_relevance_range_)
         relevance = 0.5 - i / 100.0;
-      TestSearchResult* result = new TestSearchResult(id, relevance);
+      TestResult* result = new TestResult(id, relevance);
       result->SetDisplayType(display_type_);
       result->SetResultType(result_type_);
 
@@ -109,7 +80,7 @@ class TestSearchProvider : public SearchProvider {
     }
   }
 
-  ash::AppListSearchResultType ResultType() override {
+  ash::AppListSearchResultType ResultType() const override {
     return ash::AppListSearchResultType::kUnknown;
   }
 
@@ -136,7 +107,10 @@ class TestSearchProvider : public SearchProvider {
 
 class MixerTest : public testing::Test {
  public:
-  MixerTest() {}
+  MixerTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        ash::features::kProductivityLauncher);
+  }
 
   MixerTest(const MixerTest&) = delete;
   MixerTest& operator=(const MixerTest&) = delete;

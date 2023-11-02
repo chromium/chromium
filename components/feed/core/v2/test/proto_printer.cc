@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@
 #include "components/feed/core/proto/v2/wire/feed_action.pb.h"
 #include "components/feed/core/proto/v2/wire/upload_actions_request.pb.h"
 #include "components/feed/core/proto/v2/wire/upload_actions_response.pb.h"
+#include "components/feed/core/proto/v2/xsurface.pb.h"
 #include "components/feed/core/v2/protocol_translator.h"
 
 namespace feed {
@@ -127,7 +128,6 @@ class TextProtoPrinter {
     ss_ << base::GetQuotedJSONString(v);
     return *this;
   }
-
   TextProtoPrinter& operator<<(const feedwire::ContentId& v) {
     BeginMessage();
     PRINT_FIELD(content_domain);
@@ -146,13 +146,12 @@ class TextProtoPrinter {
     PRINT_FIELD(display_info);
     PRINT_FIELD(client_instance_id);
     PRINT_FIELD(advertising_id);
-    PRINT_FIELD(device_country);
     EndMessage();
     return *this;
   }
   TextProtoPrinter& operator<<(const feedwire::ActionPayload& v) {
     BeginMessage();
-    PRINT_FIELD(action_payload_data);
+    PRINT_FIELD(batched_action_payload_data);
     EndMessage();
     return *this;
   }
@@ -176,6 +175,10 @@ class TextProtoPrinter {
     EndMessage();
     return *this;
   }
+  TextProtoPrinter& operator<<(
+      const feedstore::PendingWebFeedOperation::Kind kind) {
+    return *this << feedstore::PendingWebFeedOperation_Kind_Name(kind);
+  }
   TextProtoPrinter& operator<<(const feedstore::Record& v) {
     BeginMessage();
     PRINT_ONEOF(stream_data);
@@ -189,11 +192,12 @@ class TextProtoPrinter {
   TextProtoPrinter& operator<<(const feedstore::StreamData& v) {
     BeginMessage();
     PRINT_FIELD(content_id);
+    PRINT_FIELD(root_event_id);
     PRINT_FIELD(next_page_token);
     PRINT_FIELD(last_added_time_millis);
     PRINT_FIELD(shared_state_ids);
     PRINT_FIELD(stream_id);
-    PRINT_FIELD(content_ids);
+    PRINT_FIELD(content_hashes);
     EndMessage();
     return *this;
   }
@@ -244,6 +248,16 @@ class TextProtoPrinter {
     PRINT_FIELD(follower_count);
     PRINT_FIELD(state);
     PRINT_FIELD(matchers);
+    EndMessage();
+    return *this;
+  }
+  TextProtoPrinter& operator<<(const feedstore::PendingWebFeedOperation& v) {
+    BeginMessage();
+    PRINT_FIELD(id);
+    PRINT_FIELD(kind);
+    PRINT_FIELD(web_feed_id);
+    PRINT_FIELD(attempts);
+    PRINT_FIELD(change_reason);
     EndMessage();
     return *this;
   }
@@ -461,6 +475,27 @@ class TextProtoPrinter {
     EndMessage();
     return *this;
   }
+  TextProtoPrinter& operator<<(
+      const feedxsurface::WebFeedFollowState::FollowState v) {
+    return *this << feedxsurface::WebFeedFollowState_FollowState_Name(v);
+  }
+  TextProtoPrinter& operator<<(const feedxsurface::WebFeedFollowState& v) {
+    BeginMessage();
+    PRINT_FIELD(follow_state);
+    EndMessage();
+    return *this;
+  }
+  TextProtoPrinter& operator<<(const feedwire::InfoCardTrackingState& v) {
+    BeginMessage();
+    PRINT_FIELD(type);
+    PRINT_FIELD(explicitly_dismissed_count);
+    PRINT_FIELD(view_count);
+    PRINT_FIELD(click_count);
+    PRINT_FIELD(first_view_timestamp);
+    PRINT_FIELD(last_view_timestamp);
+    EndMessage();
+    return *this;
+  }
 
   template <typename T>
   void Field(const std::string& name, const T& value) {
@@ -486,39 +521,42 @@ class TextProtoPrinter {
   std::stringstream ss_;
 };  // namespace feed
 
-#define DECLARE_PRINTER(PROTO_TYPE)              \
-  std::string ToTextProto(const PROTO_TYPE& v) { \
-    return TextProtoPrinter::ToString(v);        \
+#define DECLARE_PRINTER(NS, PROTO_TYPE)              \
+  std::string ToTextProto(const NS::PROTO_TYPE& v) { \
+    return TextProtoPrinter::ToString(v);            \
   }
 
-DECLARE_PRINTER(feedstore::Content)
-DECLARE_PRINTER(feedstore::DataOperation)
-DECLARE_PRINTER(feedstore::Image)
-DECLARE_PRINTER(feedstore::Metadata)
-DECLARE_PRINTER(feedstore::RecommendedWebFeedIndex)
-DECLARE_PRINTER(feedstore::Record)
-DECLARE_PRINTER(feedstore::StoredAction)
-DECLARE_PRINTER(feedstore::StreamData)
-DECLARE_PRINTER(feedstore::StreamSharedState)
-DECLARE_PRINTER(feedstore::StreamStructure)
-DECLARE_PRINTER(feedstore::StreamStructureSet)
-DECLARE_PRINTER(feedstore::SubscribedWebFeeds)
-DECLARE_PRINTER(feedstore::WebFeedInfo)
-DECLARE_PRINTER(feedui::StreamUpdate)
-DECLARE_PRINTER(feedwire::ActionPayload)
-DECLARE_PRINTER(feedwire::ClientInfo)
-DECLARE_PRINTER(feedwire::ContentId)
-DECLARE_PRINTER(feedwire::DisplayInfo)
-DECLARE_PRINTER(feedwire::UploadActionsRequest)
-DECLARE_PRINTER(feedwire::UploadActionsResponse)
-DECLARE_PRINTER(feedwire::Version)
-DECLARE_PRINTER(feedwire::webfeed::Image)
-DECLARE_PRINTER(feedwire::webfeed::ListRecommendedWebFeedsRequest)
-DECLARE_PRINTER(feedwire::webfeed::ListRecommendedWebFeedsResponse)
-DECLARE_PRINTER(feedwire::webfeed::ListWebFeedsRequest)
-DECLARE_PRINTER(feedwire::webfeed::ListWebFeedsResponse)
-DECLARE_PRINTER(feedwire::webfeed::WebFeed)
-DECLARE_PRINTER(feedwire::webfeed::WebFeedMatcher)
+DECLARE_PRINTER(feedstore, Content)
+DECLARE_PRINTER(feedstore, DataOperation)
+DECLARE_PRINTER(feedstore, Image)
+DECLARE_PRINTER(feedstore, Metadata)
+DECLARE_PRINTER(feedstore, RecommendedWebFeedIndex)
+DECLARE_PRINTER(feedstore, Record)
+DECLARE_PRINTER(feedstore, StoredAction)
+DECLARE_PRINTER(feedstore, StreamData)
+DECLARE_PRINTER(feedstore, StreamSharedState)
+DECLARE_PRINTER(feedstore, StreamStructure)
+DECLARE_PRINTER(feedstore, StreamStructureSet)
+DECLARE_PRINTER(feedstore, SubscribedWebFeeds)
+DECLARE_PRINTER(feedstore, WebFeedInfo)
+DECLARE_PRINTER(feedstore, PendingWebFeedOperation)
+DECLARE_PRINTER(feedui, StreamUpdate)
+DECLARE_PRINTER(feedwire, ActionPayload)
+DECLARE_PRINTER(feedwire, ClientInfo)
+DECLARE_PRINTER(feedwire, ContentId)
+DECLARE_PRINTER(feedwire, DisplayInfo)
+DECLARE_PRINTER(feedwire, InfoCardTrackingState)
+DECLARE_PRINTER(feedwire, UploadActionsRequest)
+DECLARE_PRINTER(feedwire, UploadActionsResponse)
+DECLARE_PRINTER(feedwire, Version)
+DECLARE_PRINTER(feedwire::webfeed, Image)
+DECLARE_PRINTER(feedwire::webfeed, ListRecommendedWebFeedsRequest)
+DECLARE_PRINTER(feedwire::webfeed, ListRecommendedWebFeedsResponse)
+DECLARE_PRINTER(feedwire::webfeed, ListWebFeedsRequest)
+DECLARE_PRINTER(feedwire::webfeed, ListWebFeedsResponse)
+DECLARE_PRINTER(feedwire::webfeed, WebFeed)
+DECLARE_PRINTER(feedwire::webfeed, WebFeedMatcher)
+DECLARE_PRINTER(feedxsurface, WebFeedFollowState)
 
 #undef DECLARE_PRINTER
 

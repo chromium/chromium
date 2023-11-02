@@ -1,0 +1,79 @@
+// Copyright 2017 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Next MinVersion: 3
+
+// This file defines the mojo interface between Android, Chrome and the
+// Chrome OS daemon for the MIDI implementation used in ARC.
+
+module arc.mojom;
+
+// This struct is used to send information to the client regarding a device
+// which has been (dis)connected, and which the client can use to request
+// subdevice ports from the daemon.
+struct MidisDeviceInfo {
+  uint32 card;
+  uint32 device_num;
+  uint32 num_subdevices;
+  uint32 flags;
+  string name;
+  string manufacturer;
+};
+
+// This struct is used by the client to both request a subdevice port FD, as
+// well as to close all its connections to a particular device. In the latter
+// case, the |subdevice_num| field is left unused.
+struct MidisRequest {
+  uint32 card;
+  uint32 device_num;
+  uint32 subdevice_num;
+};
+
+// This interface is used by the server to send device and other information
+// to the client. It should be implemented by the client, and a handle to it
+// should be passed to the server.
+// Next Method ID: 2
+interface MidisClient {
+  OnDeviceAdded@0(MidisDeviceInfo device);
+  OnDeviceRemoved@1(MidisDeviceInfo device);
+};
+
+// This interface is used by the client to send messages / requests to the
+// daemon. This should be implemented by midis.
+// Deprecated method IDs: 0
+// Next Method ID: 4
+interface MidisServer {
+  // Used to list out the MIDI devices that are currently connected to the
+  // midis daemon.
+  ListDevices@0() => (array<MidisDeviceInfo> devices);
+
+  // This function returns a handle(a Unix FD wrapped in a Mojo Handle)
+  // for a subdevice specified by |request|.
+  // In the event of an error, returns an empty handle.
+  [MinVersion=2]
+  RequestPort@3(MidisRequest request) => (handle? port_handle);
+
+  // This function closes all open FDs the client may have on the specified
+  // device, and removes the client from the device's data structure.
+  CloseDevice@2(MidisRequest request);
+};
+
+// This interface is needed to get the midis server interface handle.
+// It is also used to send a handle to the midis client interface (this is
+// used to send messages to the client, and the interface is implemented
+// by the client).
+// Next Method ID: 1
+interface MidisHost {
+  Connect@0(
+      pending_receiver<MidisServer> server, pending_remote<MidisClient> client);
+};
+
+// MidisInstance is implemented in the ARC MIDI JNI code that
+// runs in Android and handles the Android side of the ArcBridge connection.
+// Deprecated method IDs: 0
+// Next Method ID: 2
+interface MidisInstance {
+  // Establishes full-duplex communication with the host.
+  [MinVersion=1] Init@1(pending_remote<MidisHost> host_remote) => ();
+};

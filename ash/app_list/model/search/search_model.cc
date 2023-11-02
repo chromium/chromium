@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -83,8 +83,8 @@ void SearchModel::PublishResults(
       // Update and use the old result if it exists.
       std::unique_ptr<SearchResult> ui_result = std::move(ui_result_it->second);
       ui_result->SetMetadata(new_result->TakeMetadata());
-      results_->Add(std::move(ui_result));
 
+      results_->Add(std::move(ui_result));
       // Remove the item from the map so that it ends up only with unused
       // results.
       results_map.erase(ui_result_it);

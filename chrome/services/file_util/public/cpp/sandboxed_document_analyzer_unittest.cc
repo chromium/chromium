@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -81,7 +82,7 @@ class SandboxedDocumentAnalyzerTest : public testing::Test {
     }
 
     base::OnceClosure done_closure_;
-    DocumentAnalyzerResults* results_;
+    raw_ptr<DocumentAnalyzerResults> results_;
   };
 
   content::BrowserTaskEnvironment task_environment_;

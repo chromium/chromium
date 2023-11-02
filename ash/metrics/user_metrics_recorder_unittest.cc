@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,9 +20,6 @@ using session_manager::SessionState;
 
 namespace ash {
 namespace {
-
-const char kAsh_NumberOfVisibleWindowsInPrimaryDisplay[] =
-    "Ash.NumberOfVisibleWindowsInPrimaryDisplay";
 
 const char kAsh_ActiveWindowShowTypeOverTime[] =
     "Ash.ActiveWindowShowTypeOverTime";
@@ -103,7 +100,6 @@ TEST_F(UserMetricsRecorderTest,
   ASSERT_FALSE(test_api().IsUserInActiveDesktopEnvironment());
   test_api().RecordPeriodicMetrics();
 
-  histograms().ExpectTotalCount(kAsh_NumberOfVisibleWindowsInPrimaryDisplay, 0);
   histograms().ExpectTotalCount(kAsh_Shelf_NumberOfItems, 0);
   histograms().ExpectTotalCount(kAsh_Shelf_NumberOfPinnedItems, 0);
   histograms().ExpectTotalCount(kAsh_Shelf_NumberOfUnpinnedItems, 0);
@@ -118,7 +114,6 @@ TEST_F(UserMetricsRecorderTest,
   ASSERT_TRUE(test_api().IsUserInActiveDesktopEnvironment());
   test_api().RecordPeriodicMetrics();
 
-  histograms().ExpectTotalCount(kAsh_NumberOfVisibleWindowsInPrimaryDisplay, 1);
   histograms().ExpectTotalCount(kAsh_Shelf_NumberOfItems, 1);
   histograms().ExpectTotalCount(kAsh_Shelf_NumberOfPinnedItems, 1);
   histograms().ExpectTotalCount(kAsh_Shelf_NumberOfUnpinnedItems, 1);

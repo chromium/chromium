@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,9 @@
 
 #include <set>
 
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "chrome/browser/chromeos/fileapi/file_system_backend_delegate.h"
-#include "chromeos/dbus/cros_disks/cros_disks_client.h"
+#include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "storage/browser/file_system/external_mount_points.h"
@@ -59,10 +58,10 @@ TEST(ChromeOSFileSystemBackendTest, DefaultMountPoints) {
   // By default there should be 3 mount points (in system mount points):
   EXPECT_EQ(3u, root_dirs.size());
 
-  EXPECT_TRUE(root_dirs_set.count(
-      chromeos::CrosDisksClient::GetRemovableDiskMountPoint()));
-  EXPECT_TRUE(root_dirs_set.count(
-      chromeos::CrosDisksClient::GetArchiveMountPoint()));
+  EXPECT_TRUE(
+      root_dirs_set.count(ash::CrosDisksClient::GetRemovableDiskMountPoint()));
+  EXPECT_TRUE(
+      root_dirs_set.count(ash::CrosDisksClient::GetArchiveMountPoint()));
   EXPECT_TRUE(root_dirs_set.count(base::FilePath(FPL("/usr/share/oem"))));
 }
 
@@ -230,7 +229,7 @@ TEST(ChromeOSFileSystemBackendTest, GetVirtualPathConflictWithSystemPoints) {
     { FPL("/foo/xxx"), false, FPL("") },
   };
 
-  for (size_t i = 0; i < base::size(kTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kTestCases); ++i) {
     // Initialize virtual path with a value.
     base::FilePath virtual_path(FPL("/mount"));
     base::FilePath local_path(kTestCases[i].local_path);

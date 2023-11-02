@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,19 +34,22 @@ class ProjectValidator {
   IdType id_type() const { return id_type_; }
   IdScope id_scope() const { return id_scope_; }
   EventType event_type() const { return event_type_; }
+  int key_rotation_period() const { return key_rotation_period_; }
 
  protected:
   // Should not be constructed directly.
   ProjectValidator(uint64_t project_hash,
                    IdType id_type,
                    IdScope id_scope,
-                   EventType event_type);
+                   EventType event_type,
+                   int key_rotation_period);
 
  private:
   const uint64_t project_hash_;
   const IdType id_type_;
   const IdScope id_scope_;
   const EventType event_type_;
+  const int key_rotation_period_;
 };
 
 }  // namespace structured

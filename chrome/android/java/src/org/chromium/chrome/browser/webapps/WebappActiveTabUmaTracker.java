@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,9 +37,8 @@ public class WebappActiveTabUmaTracker extends ActivityTabTabObserver {
     }
 
     @Override
-    public void onDidFinishNavigation(Tab tab, NavigationHandle navigation) {
-        if (navigation.hasCommitted() && navigation.isInPrimaryMainFrame()
-                && !navigation.isSameDocument()) {
+    public void onDidFinishNavigationInPrimaryMainFrame(Tab tab, NavigationHandle navigation) {
+        if (navigation.hasCommitted() && !navigation.isSameDocument()) {
             RecordHistogram.recordBooleanHistogram(
                     HISTOGRAM_NAVIGATION_STATUS, !navigation.isErrorPage());
 
@@ -51,5 +50,10 @@ public class WebappActiveTabUmaTracker extends ActivityTabTabObserver {
                 WebApkUmaRecorder.recordNavigation(isNavigationInScope);
             }
         }
+    }
+
+    @Override
+    public void onDidFinishNavigationNoop(Tab tab, NavigationHandle navigation) {
+        if (!navigation.isInPrimaryMainFrame()) return;
     }
 }

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,6 +37,8 @@ mojom::SessionState ToMojo(session_manager::SessionState state) {
       return mojom::SessionState::kInSession;
     case session_manager::SessionState::LOCKED:
       return mojom::SessionState::kInLockScreen;
+    case session_manager::SessionState::RMA:
+      return mojom::SessionState::kInRmaScreen;
   }
   NOTREACHED();
   return mojom::SessionState::kUnknown;
@@ -44,7 +46,7 @@ mojom::SessionState ToMojo(session_manager::SessionState state) {
 
 }  // namespace
 
-LoginStateAsh::LoginStateAsh() : session_state_(mojom::SessionState::kUnknown) {
+LoginStateAsh::LoginStateAsh() {
   // SessionManager may be unset in tests.
   if (session_manager::SessionManager::Get()) {
     session_state_ =

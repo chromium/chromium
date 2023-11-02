@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,13 +17,11 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.Function;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.components.autofill_assistant.AssistantFeatures;
 import org.chromium.components.external_intents.ExternalNavigationDelegate.IntentToAutofillAllowingAppResult;
 
 /**
@@ -47,7 +45,7 @@ public class AutofillAssistantFacadeTest {
      */
     @Test
     @MediumTest
-    @Features.EnableFeatures(ChromeFeatureList.AUTOFILL_ASSISTANT)
+    @EnableFeatures(AssistantFeatures.AUTOFILL_ASSISTANT_NAME)
     public void testEnabled() {
         Intent intent = new Intent();
         Assert.assertFalse(AutofillAssistantFacade.isAutofillAssistantEnabled(intent));
@@ -57,33 +55,6 @@ public class AutofillAssistantFacadeTest {
 
         intent.putExtra(EXTRAS_PREFIX + "ENABLED", true);
         Assert.assertTrue(AutofillAssistantFacade.isAutofillAssistantEnabled(intent));
-    }
-
-    /**
-     * Tests that the preconditions for triggering proactive help work correctly.
-     */
-    @Test
-    @MediumTest
-    @Features.EnableFeatures(ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP)
-    public void proactiveHelpConditions() {
-        Assert.assertTrue(AutofillAssistantPreferencesUtil.isProactiveHelpOn());
-
-        SharedPreferencesManager.getInstance().writeBoolean(
-                ChromePreferenceKeys.AUTOFILL_ASSISTANT_ENABLED, false);
-
-        Assert.assertFalse(AutofillAssistantPreferencesUtil.isProactiveHelpOn());
-
-        SharedPreferencesManager.getInstance().writeBoolean(
-                ChromePreferenceKeys.AUTOFILL_ASSISTANT_ENABLED, true);
-        SharedPreferencesManager.getInstance().writeBoolean(
-                ChromePreferenceKeys.AUTOFILL_ASSISTANT_PROACTIVE_HELP, false);
-
-        Assert.assertFalse(AutofillAssistantPreferencesUtil.isProactiveHelpOn());
-
-        SharedPreferencesManager.getInstance().writeBoolean(
-                ChromePreferenceKeys.AUTOFILL_ASSISTANT_PROACTIVE_HELP, true);
-
-        Assert.assertTrue(AutofillAssistantPreferencesUtil.isProactiveHelpOn());
     }
 
     /**

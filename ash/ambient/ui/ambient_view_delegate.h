@@ -1,21 +1,24 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef ASH_AMBIENT_UI_AMBIENT_VIEW_DELEGATE_H_
 #define ASH_AMBIENT_UI_AMBIENT_VIEW_DELEGATE_H_
 
+#include "ash/ambient/model/ambient_photo_config.h"
 #include "ash/ash_export.h"
 #include "base/observer_list_types.h"
 
 namespace ash {
 
 class AmbientBackendModel;
+class AmbientWeatherModel;
 
+// Handles UI state changes from the currently rendering view. The events below
+// are common to all ambient UI modes.
 class ASH_EXPORT AmbientViewDelegateObserver : public base::CheckedObserver {
  public:
-  // Invoked when the photo transition animation completed.
-  virtual void OnPhotoTransitionAnimationCompleted() = 0;
+  virtual void OnMarkerHit(AmbientPhotoConfig::Marker marker) = 0;
 };
 
 class ASH_EXPORT AmbientViewDelegate {
@@ -30,8 +33,8 @@ class ASH_EXPORT AmbientViewDelegate {
   // Ambient Mode.
   virtual AmbientBackendModel* GetAmbientBackendModel() = 0;
 
-  // Invoked when the photo transition animation completed.
-  virtual void OnPhotoTransitionAnimationCompleted() = 0;
+  // Returns the model that stores glanceable weather information.
+  virtual AmbientWeatherModel* GetAmbientWeatherModel() = 0;
 };
 
 }  // namespace ash

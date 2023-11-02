@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define DEVICE_BLUETOOTH_CHROMEOS_BLUETOOTH_UTILS_H_
 
 #include "device/bluetooth/bluetooth_adapter.h"
+#include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -51,7 +52,10 @@ enum class ConnectionFailureReason {
   kUnknownConnectionError = 5,
   kUnsupportedDevice = 6,
   kNotConnectable = 7,
-  kMaxValue = kNotConnectable
+  kAuthCanceled = 8,
+  kAuthRejected = 9,
+  kInprogress = 10,
+  kMaxValue = kInprogress
 };
 
 // This enum is tied directly to a UMA enum defined in
@@ -63,11 +67,12 @@ enum class BluetoothUiSurface {
   kSettingsPairingDialog = 2,
   kBluetoothQuickSettings = 3,
   kStandalonePairingDialog = 4,
-  kPairedNotification = 5,
+  // [Deprecated] kPairedNotification = 5,
   kConnectionToast = 6,
   kDisconnectedToast = 7,
   kOobeHidDetection = 8,
-  kMaxValue = kOobeHidDetection
+  kPairedToast = 9,
+  kMaxValue = kPairedToast
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -86,11 +91,38 @@ enum class DisconnectResult {
   kMaxValue = kSuccess
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class SetNicknameResult {
+  kInvalidNicknameFormat = 0,
+  kDeviceNotFound = 1,
+  kPrefsUnavailable = 2,
+  kSuccess = 3,
+  kMaxValue = kSuccess,
+};
+
+// This enum is tied directly to a UMA enum defined in
+// //tools/metrics/histograms/enums.xml, and should always reflect it (do not
+// change one without changing the other).
+enum class BluetoothTransportType {
+  kUnknown = 0,
+  kClassic = 1,
+  kLE = 2,
+  kDual = 3,
+  kInvalid = 4,
+  kMaxValue = kInvalid
+};
+
 // Return filtered devices based on the filter type and max number of devices.
 DEVICE_BLUETOOTH_EXPORT device::BluetoothAdapter::DeviceList
 FilterBluetoothDeviceList(const BluetoothAdapter::DeviceList& devices,
                           BluetoothFilterType filter_type,
                           int max_devices);
+
+// Returns |true| if the device is unsupported and should not be known by the
+// UI.
+DEVICE_BLUETOOTH_EXPORT bool IsUnsupportedDevice(
+    const device::BluetoothDevice* device);
 
 // Record outcome of user attempting to pair to a device.
 DEVICE_BLUETOOTH_EXPORT void RecordPairingResult(
@@ -122,8 +154,12 @@ DEVICE_BLUETOOTH_EXPORT void RecordPoweredState(bool is_powered);
 // Record each time a device forget attempt completes.
 DEVICE_BLUETOOTH_EXPORT void RecordForgetResult(ForgetResult forget_result);
 
-// Record the result of each bluetooth device disconnect attempt.
-DEVICE_BLUETOOTH_EXPORT void RecordDisconnectResult(
+// Records each bluetooth device disconnect.
+DEVICE_BLUETOOTH_EXPORT void RecordDeviceDisconnect(
+    BluetoothDeviceType device_type);
+
+// Record the result of each user initiated bluetooth device disconnect attempt.
+DEVICE_BLUETOOTH_EXPORT void RecordUserInitiatedDisconnectResult(
     DisconnectResult disconnect_result,
     BluetoothTransport transport);
 
@@ -137,6 +173,9 @@ DEVICE_BLUETOOTH_EXPORT void RecordUserInitiatedReconnectionAttemptDuration(
     absl::optional<ConnectionFailureReason> failure_reason,
     BluetoothTransport transport,
     base::TimeDelta duration);
+
+// Record each time a Bluetooth device nickname change is attempted.
+DEVICE_BLUETOOTH_EXPORT void RecordSetDeviceNickName(SetNicknameResult success);
 
 }  // namespace device
 

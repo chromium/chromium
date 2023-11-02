@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -60,8 +60,8 @@ bool AnchorElementMetricsSender::HasAnchorElementMetricsSender(
   bool is_feature_enabled =
       base::FeatureList::IsEnabled(features::kNavigationPredictor);
   const KURL& url = document.BaseURL();
-  return is_feature_enabled && document.IsInMainFrame() && url.IsValid() &&
-         url.ProtocolIs("https");
+  return is_feature_enabled && document.IsInOutermostMainFrame() &&
+         url.IsValid() && url.ProtocolIs("https");
 }
 
 void AnchorElementMetricsSender::MaybeReportClickedMetricsOnClick(
@@ -118,7 +118,7 @@ bool AnchorElementMetricsSender::AssociateInterface() {
 AnchorElementMetricsSender::AnchorElementMetricsSender(Document& document)
     : Supplement<Document>(document),
       metrics_host_(document.GetExecutionContext()) {
-  DCHECK(document.IsInMainFrame());
+  DCHECK(document.IsInOutermostMainFrame());
 
   document.View()->RegisterForLifecycleNotifications(this);
   intersection_observer_ = IntersectionObserver::Create(
@@ -133,7 +133,7 @@ AnchorElementMetricsSender::AnchorElementMetricsSender(Document& document)
 void AnchorElementMetricsSender::UpdateVisibleAnchors(
     const HeapVector<Member<IntersectionObserverEntry>>& entries) {
   DCHECK(base::FeatureList::IsEnabled(features::kNavigationPredictor));
-  DCHECK(!entries.IsEmpty());
+  DCHECK(!entries.empty());
   if (!AssociateInterface()) {
     return;
   }
@@ -222,10 +222,10 @@ void AnchorElementMetricsSender::DidFinishLifecycleUpdate(
   // during the next layout will never be reported, unless they are re-inserted
   // into the DOM later or if they enter the viewport.
   anchor_elements_to_report_.clear();
-  if (!metrics.IsEmpty()) {
+  if (!metrics.empty()) {
     metrics_host_->ReportNewAnchorElements(std::move(metrics));
   }
-  if (!entered_viewport_messages_.IsEmpty()) {
+  if (!entered_viewport_messages_.empty()) {
     metrics_host_->ReportAnchorElementsEnteredViewport(
         std::move(entered_viewport_messages_));
     entered_viewport_messages_.clear();

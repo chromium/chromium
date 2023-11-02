@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -131,16 +131,30 @@ class COMPONENT_EXPORT(X11) Xv {
   };
 
   struct Rational {
+    bool operator==(const Rational& other) const {
+      return numerator == other.numerator && denominator == other.denominator;
+    }
+
     int32_t numerator{};
     int32_t denominator{};
   };
 
   struct Format {
+    bool operator==(const Format& other) const {
+      return visual == other.visual && depth == other.depth;
+    }
+
     VisualId visual{};
     uint8_t depth{};
   };
 
   struct AdaptorInfo {
+    bool operator==(const AdaptorInfo& other) const {
+      return base_id == other.base_id && num_ports == other.num_ports &&
+             type == other.type && name == other.name &&
+             formats == other.formats;
+    }
+
     Port base_id{};
     uint16_t num_ports{};
     Type type{};
@@ -149,6 +163,11 @@ class COMPONENT_EXPORT(X11) Xv {
   };
 
   struct EncodingInfo {
+    bool operator==(const EncodingInfo& other) const {
+      return encoding == other.encoding && width == other.width &&
+             height == other.height && rate == other.rate && name == other.name;
+    }
+
     Encoding encoding{};
     uint16_t width{};
     uint16_t height{};
@@ -157,6 +176,12 @@ class COMPONENT_EXPORT(X11) Xv {
   };
 
   struct Image {
+    bool operator==(const Image& other) const {
+      return id == other.id && width == other.width && height == other.height &&
+             pitches == other.pitches && offsets == other.offsets &&
+             data == other.data;
+    }
+
     uint32_t id{};
     uint16_t width{};
     uint16_t height{};
@@ -166,6 +191,11 @@ class COMPONENT_EXPORT(X11) Xv {
   };
 
   struct AttributeInfo {
+    bool operator==(const AttributeInfo& other) const {
+      return flags == other.flags && min == other.min && max == other.max &&
+             name == other.name;
+    }
+
     AttributeFlag flags{};
     int32_t min{};
     int32_t max{};
@@ -173,6 +203,25 @@ class COMPONENT_EXPORT(X11) Xv {
   };
 
   struct ImageFormatInfo {
+    bool operator==(const ImageFormatInfo& other) const {
+      return id == other.id && type == other.type &&
+             byte_order == other.byte_order && guid == other.guid &&
+             bpp == other.bpp && num_planes == other.num_planes &&
+             depth == other.depth && red_mask == other.red_mask &&
+             green_mask == other.green_mask && blue_mask == other.blue_mask &&
+             format == other.format && y_sample_bits == other.y_sample_bits &&
+             u_sample_bits == other.u_sample_bits &&
+             v_sample_bits == other.v_sample_bits &&
+             vhorz_y_period == other.vhorz_y_period &&
+             vhorz_u_period == other.vhorz_u_period &&
+             vhorz_v_period == other.vhorz_v_period &&
+             vvert_y_period == other.vvert_y_period &&
+             vvert_u_period == other.vvert_u_period &&
+             vvert_v_period == other.vvert_v_period &&
+             vcomp_order == other.vcomp_order &&
+             vscanline_order == other.vscanline_order;
+    }
+
     uint32_t id{};
     ImageFormatInfoType type{};
     ImageOrder byte_order{};
@@ -199,26 +248,34 @@ class COMPONENT_EXPORT(X11) Xv {
 
   struct BadPortError : public x11::Error {
     uint16_t sequence{};
+    uint32_t bad_value{};
+    uint16_t minor_opcode{};
+    uint8_t major_opcode{};
 
     std::string ToString() const override;
   };
 
   struct BadEncodingError : public x11::Error {
     uint16_t sequence{};
+    uint32_t bad_value{};
+    uint16_t minor_opcode{};
+    uint8_t major_opcode{};
 
     std::string ToString() const override;
   };
 
   struct BadControlError : public x11::Error {
     uint16_t sequence{};
+    uint32_t bad_value{};
+    uint16_t minor_opcode{};
+    uint8_t major_opcode{};
 
     std::string ToString() const override;
   };
 
   struct VideoNotifyEvent {
-    static constexpr int type_id = 81;
+    static constexpr int type_id = 83;
     static constexpr uint8_t opcode = 0;
-    bool send_event{};
     VideoNotifyReason reason{};
     uint16_t sequence{};
     Time time{};
@@ -231,9 +288,8 @@ class COMPONENT_EXPORT(X11) Xv {
   };
 
   struct PortNotifyEvent {
-    static constexpr int type_id = 82;
+    static constexpr int type_id = 84;
     static constexpr uint8_t opcode = 1;
-    bool send_event{};
     uint16_t sequence{};
     Time time{};
     Port port{};

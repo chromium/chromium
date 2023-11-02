@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/metrics/field_trial.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -84,7 +83,7 @@ class FeedbackUploaderDispatchTest : public ::testing::Test {
     variations::AssociateGoogleVariationID(
         variations::GOOGLE_WEB_PROPERTIES_ANY_CONTEXT, trial_name, group_name,
         static_cast<variations::VariationID>(variation_id));
-    base::FieldTrialList::CreateFieldTrial(trial_name, group_name)->group();
+    base::FieldTrialList::CreateFieldTrial(trial_name, group_name)->Activate();
   }
 
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory() {

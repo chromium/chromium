@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -113,7 +113,7 @@ void AddCompleteFileTypeInfo(
 // error pages (failed DNS lookups, SSL errors, etc), which shouldn't affect
 // functionality.
 bool IsErrorPage(content::WebContents* web_contents) {
-  if (web_contents->GetController().GetActiveEntry() == NULL)
+  if (web_contents->GetController().GetActiveEntry() == nullptr)
     return false;
   return web_contents->GetController().GetLastCommittedEntry()->GetPageType() ==
          content::PAGE_TYPE_ERROR;
@@ -123,13 +123,13 @@ bool IsErrorPage(content::WebContents* web_contents) {
 
 // TODO(crbug/928323): REMOVE DIRTY HACK
 // To prevent access to blocked websites, we are temporarily disabling the
-// HTML-only download of error pages for supervised users only.
+// HTML-only download of error pages for child users only.
 // Note that MHTML is still available, so the save functionality is preserved.
 bool SavePackageFilePicker::ShouldSaveAsOnlyHTML(
     content::WebContents* web_contents) const {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  return !profile->IsSupervised() || !IsErrorPage(web_contents);
+  return !profile->IsChild() || !IsErrorPage(web_contents);
 }
 
 bool SavePackageFilePicker::ShouldSaveAsMHTML() const {
@@ -148,7 +148,8 @@ SavePackageFilePicker::SavePackageFilePicker(
     bool can_save_as_complete,
     DownloadPrefs* download_prefs,
     content::SavePackagePathPickedCallback callback)
-    : render_process_id_(web_contents->GetMainFrame()->GetProcess()->GetID()),
+    : render_process_id_(
+          web_contents->GetPrimaryMainFrame()->GetProcess()->GetID()),
       can_save_as_complete_(can_save_as_complete),
       download_prefs_(download_prefs),
       callback_(std::move(callback)) {
@@ -239,11 +240,11 @@ SavePackageFilePicker::SavePackageFilePicker(
         ui::SelectFileDialog::SELECT_SAVEAS_FILE, std::u16string(),
         suggested_path_copy, &file_type_info, file_type_index,
         default_extension_copy,
-        platform_util::GetTopLevel(web_contents->GetNativeView()), NULL);
+        platform_util::GetTopLevel(web_contents->GetNativeView()), nullptr);
   } else {
     // Just use 'suggested_path_copy' instead of opening the dialog prompt.
     // Go through FileSelected() for consistency.
-    FileSelected(suggested_path_copy, file_type_index, NULL);
+    FileSelected(suggested_path_copy, file_type_index, nullptr);
   }
 }
 

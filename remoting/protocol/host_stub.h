@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,7 @@
 #ifndef REMOTING_PROTOCOL_HOST_STUB_H_
 #define REMOTING_PROTOCOL_HOST_STUB_H_
 
-#include "base/macros.h"
-
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class AudioControl;
 class Capabilities;
@@ -22,10 +19,11 @@ class PairingRequest;
 class PeerConnectionParameters;
 class SelectDesktopDisplayRequest;
 class VideoControl;
+class VideoLayout;
 
 class HostStub {
  public:
-  HostStub() {}
+  HostStub() = default;
 
   HostStub(const HostStub&) = delete;
   HostStub& operator=(const HostStub&) = delete;
@@ -60,11 +58,13 @@ class HostStub {
   virtual void SelectDesktopDisplay(
       const SelectDesktopDisplayRequest& select_display) = 0;
 
+  // Changes the current video layout.
+  virtual void SetVideoLayout(const VideoLayout& video_layout) = 0;
+
  protected:
-  virtual ~HostStub() {}
+  virtual ~HostStub() = default;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_HOST_STUB_H_

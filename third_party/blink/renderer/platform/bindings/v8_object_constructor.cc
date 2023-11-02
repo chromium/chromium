@@ -43,7 +43,8 @@ v8::MaybeLocal<v8::Object> V8ObjectConstructor::NewInstance(
   RUNTIME_CALL_TIMER_SCOPE(isolate, RuntimeCallStats::CounterId::kV8);
   ConstructorMode constructor_mode(isolate);
   v8::MicrotasksScope microtasks_scope(
-      isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
+      isolate, isolate->GetCurrentContext()->GetMicrotaskQueue(),
+      v8::MicrotasksScope::kDoNotRunMicrotasks);
   // Construct without side effect only in ConstructorMode::kWrapExistingObject
   // cases. Allowed methods can correctly set return values without invoking
   // Blink's internal constructors.

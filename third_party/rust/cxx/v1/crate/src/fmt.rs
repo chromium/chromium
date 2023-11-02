@@ -1,4 +1,4 @@
-use std::fmt::{self, Display};
+use core::fmt::{self, Display};
 
 pub(crate) fn display(fmt: impl Fn(&mut fmt::Formatter) -> fmt::Result) -> impl Display {
     DisplayInvoke(fmt)

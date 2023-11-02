@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,10 +10,12 @@
 #include "chrome/browser/ui/omnibox/omnibox_theme.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_loading_indicator_view.h"
+#include "chrome/browser/ui/views/page_action/page_action_icon_view_observer.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/events/event.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -31,7 +33,7 @@
 #include "ui/views/style/platform_style.h"
 
 float PageActionIconView::Delegate::GetPageActionInkDropVisibleOpacity() const {
-  return GetOmniboxStateOpacity(OmniboxPartState::SELECTED);
+  return kOmniboxOpacitySelected;
 }
 
 int PageActionIconView::Delegate::GetPageActionIconSize() const {
@@ -58,16 +60,20 @@ PageActionIconView::PageActionIconView(
     int command_id,
     IconLabelBubbleView::Delegate* parent_delegate,
     PageActionIconView::Delegate* delegate,
+    const char* name_for_histograms,
+    bool ephemeral,
     const gfx::FontList& font_list)
     : IconLabelBubbleView(font_list, parent_delegate),
       command_updater_(command_updater),
       delegate_(delegate),
-      command_id_(command_id) {
+      command_id_(command_id),
+      name_for_histograms_(name_for_histograms),
+      ephemeral_(ephemeral) {
   DCHECK(delegate_);
 
   image()->SetFlipCanvasOnPaintForRTLUI(true);
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
-  SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
+  SetFocusBehavior(views::PlatformStyle::kDefaultFocusBehavior);
   // Only shows bubble after mouse is released.
   button_controller()->set_notify_action(
       views::ButtonController::NotifyAction::kOnRelease);
@@ -75,6 +81,16 @@ PageActionIconView::PageActionIconView(
 }
 
 PageActionIconView::~PageActionIconView() = default;
+
+void PageActionIconView::AddPageIconViewObserver(
+    PageActionIconViewObserver* observer) {
+  observer_list_.AddObserver(observer);
+}
+
+void PageActionIconView::RemovePageIconViewObserver(
+    PageActionIconViewObserver* observer) {
+  observer_list_.RemoveObserver(observer);
+}
 
 bool PageActionIconView::IsBubbleShowing() const {
   // If the bubble is being destroyed, it's considered showing though it may be
@@ -95,6 +111,10 @@ SkColor PageActionIconView::GetLabelColorForTesting() const {
 void PageActionIconView::ExecuteForTesting() {
   DCHECK(GetVisible());
   OnExecuting(EXECUTE_SOURCE_MOUSE);
+}
+
+void PageActionIconView::InstallLoadingIndicatorForTesting() {
+  InstallLoadingIndicator();
 }
 
 void PageActionIconView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
@@ -127,6 +147,9 @@ bool PageActionIconView::ShouldShowSeparator() const {
 }
 
 void PageActionIconView::NotifyClick(const ui::Event& event) {
+  for (PageActionIconViewObserver& observer : observer_list_) {
+    observer.OnPageActionIconViewClicked(this);
+  }
   // Intentionally skip the immediate parent function
   // IconLabelBubbleView::NotifyClick(). It calls ShowBubble() which
   // is redundant here since we use Chrome command to show the bubble.
@@ -180,6 +203,10 @@ const gfx::VectorIcon& PageActionIconView::GetVectorIconBadge() const {
   return gfx::kNoneIcon;
 }
 
+ui::ImageModel PageActionIconView::GetSizedIconImage(int size) const {
+  return ui::ImageModel();
+}
+
 void PageActionIconView::OnTouchUiChanged() {
   UpdateIconImage();
   IconLabelBubbleView::OnTouchUiChanged();
@@ -229,22 +256,22 @@ void PageActionIconView::UpdateIconImage() {
   if (!GetWidget())
     return;
 
+  // Use the provided icon image if available.
+  const int icon_size = delegate_->GetPageActionIconSize();
+  const auto icon_image = GetSizedIconImage(icon_size);
+  if (!icon_image.IsEmpty()) {
+    DCHECK_EQ(icon_image.Size(), gfx::Size(icon_size, icon_size));
+    SetImageModel(icon_image);
+    return;
+  }
+
+  // Fall back to the vector icon if no icon image was provided.
   const SkColor icon_color =
       active_ ? views::GetCascadingAccentColor(this) : icon_color_;
-  const int icon_size = delegate_->GetPageActionIconSize();
   const gfx::ImageSkia image = gfx::CreateVectorIconWithBadge(
       GetVectorIcon(), icon_size, icon_color, GetVectorIconBadge());
   if (!image.isNull())
     SetImageModel(ui::ImageModel::FromImageSkia(image));
-}
-
-void PageActionIconView::InstallLoadingIndicator() {
-  if (loading_indicator_)
-    return;
-
-  loading_indicator_ =
-      AddChildView(std::make_unique<PageActionIconLoadingIndicatorView>(this));
-  loading_indicator_->SetVisible(false);
 }
 
 void PageActionIconView::SetIsLoading(bool is_loading) {
@@ -260,6 +287,25 @@ void PageActionIconView::UpdateBorder() {
   const gfx::Insets new_insets = delegate_->GetPageActionIconInsets(this);
   if (new_insets != GetInsets())
     SetBorder(views::CreateEmptyBorder(new_insets));
+}
+
+void PageActionIconView::InstallLoadingIndicator() {
+  if (loading_indicator_)
+    return;
+
+  loading_indicator_ =
+      AddChildView(std::make_unique<PageActionIconLoadingIndicatorView>(this));
+  loading_indicator_->SetVisible(false);
+}
+
+void PageActionIconView::SetVisible(bool visible) {
+  bool was_visible = GetVisible();
+  IconLabelBubbleView::SetVisible(visible);
+  if (!was_visible && visible) {
+    for (PageActionIconViewObserver& observer : observer_list_) {
+      observer.OnPageActionIconViewShown(this);
+    }
+  }
 }
 
 BEGIN_METADATA(PageActionIconView, IconLabelBubbleView)

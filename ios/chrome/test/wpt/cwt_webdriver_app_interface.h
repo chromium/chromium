@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,8 +16,8 @@
 // The background thread where this class' methods are run.
 @property(nonatomic, readonly) dispatch_queue_t executingQueue;
 
-// Loads the given URL in the tab identified by |tabID|. Returns an error if the
-// page fails to load within |timeout| seconds or if no such tab exists.
+// Loads the given URL in the tab identified by `tabID`. Returns an error if the
+// page fails to load within `timeout` seconds or if no such tab exists.
 + (NSError*)loadURL:(NSString*)URL
                inTab:(NSString*)tabID
     timeoutInSeconds:(NSTimeInterval)timeout;
@@ -28,21 +28,21 @@
 // Returns an array containing the ids of all open tabs.
 + (NSArray*)tabIDs;
 
-// Closes the tab identified by |tabID|. Returns an error if there is no such
+// Closes the tab identified by `tabID`. Returns an error if there is no such
 // tab.
 + (NSError*)closeTabWithID:(NSString*)ID;
 
 // Opens a new tab, makes this tab the current tab, and return its id.
 + (NSString*)openNewTab;
 
-// Makes the tab identified by |ID| the current tab. Returns an error if there
+// Makes the tab identified by `ID` the current tab. Returns an error if there
 // is no such tab.
 + (NSError*)switchToTabWithID:(NSString*)ID;
 
-// Executes the given JavaScript function in the tab identified by |tabID|. This
+// Executes the given JavaScript function in the tab identified by `tabID`. This
 // must be a function that takes a single argument, and uses this argument as a
 // completion handler. Returns the value passed to the completion handler. If
-// no such tab exists, or if script execution does not complete within |timeout|
+// no such tab exists, or if script execution does not complete within `timeout`
 // seconds, returns nil.
 + (NSString*)executeAsyncJavaScriptFunction:(NSString*)function
                                       inTab:(NSString*)tabID

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,9 @@ extern NSString* const kPromoStyleTitleAccessibilityIdentifier;
 // A11y Identifier for subtitle label.
 extern NSString* const kPromoStyleSubtitleAccessibilityIdentifier;
 
+// A11y Identifier for the read more action button.
+extern NSString* const kPromoStyleReadMoreActionAccessibilityIdentifier;
+
 // A11y Identifier for the primary action button.
 extern NSString* const kPromoStylePrimaryActionAccessibilityIdentifier;
 
@@ -24,6 +27,9 @@ extern NSString* const kPromoStyleTertiaryActionAccessibilityIdentifier;
 
 // A11y Identifier for the learn more button.
 extern NSString* const kPromoStyleLearnMoreActionAccessibilityIdentifier;
+
+// A11y Identifier for the disclaimer.
+extern NSString* const kPromoStyleDisclaimerViewAccessibilityIdentifier;
 
 // A11y Identifier for the scroll view that contains all the labels and buttons.
 extern NSString* const kPromoStyleScrollViewAccessibilityIdentifier;

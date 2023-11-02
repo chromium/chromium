@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,11 +18,13 @@
 #include "base/task/task_runner_util.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "base/types/optional_util.h"
 #include "components/download/public/common/download_task_runner.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/download/mhtml_extra_parts_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/download/mhtml_file_writer.mojom.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/mhtml_extra_parts.h"
@@ -67,7 +69,7 @@ struct CloseFileResult {
 
   content::MHTMLGenerationResult toMHTMLGenerationResult() const {
     return content::MHTMLGenerationResult(file_size,
-                                          base::OptionalOrNullptr(file_digest));
+                                          base::OptionalToPtr(file_digest));
   }
 };
 
@@ -147,8 +149,6 @@ class MHTMLGenerationManager::Job {
       const std::vector<MHTMLExtraDataPart>& extra_data_parts,
       std::unique_ptr<mojo::SimpleWatcher> watcher,
       std::unique_ptr<crypto::SecureHash> secure_hash);
-
-  void AddFrame(RenderFrameHost* render_frame_host);
 
   // Creates a string that encompasses any remaining extra data parts to write
   // to the file.
@@ -331,9 +331,18 @@ void MHTMLGenerationManager::Job::initializeJob(WebContents* web_contents) {
       web_contents->GetLastCommittedURL().possibly_invalid_spec(), "file",
       params_.file_path.AsUTF8Unsafe());
 
-  web_contents->ForEachFrame(base::BindRepeating(
-      &MHTMLGenerationManager::Job::AddFrame,
-      base::Unretained(this)));  // Safe because ForEachFrame() is synchronous.
+  // Only include nodes from the primary frame tree, since an MHTML document
+  // would not be able to load inner frame trees (e.g. fenced frames).
+  for (FrameTreeNode* node : static_cast<WebContentsImpl*>(web_contents)
+                                 ->GetPrimaryFrameTree()
+                                 .Nodes()) {
+    if (node->current_frame_host()->inner_tree_main_frame_tree_node_id() !=
+        FrameTreeNode::kFrameTreeNodeInvalidId) {
+      // Skip inner tree placeholder nodes.
+      continue;
+    }
+    pending_frame_tree_node_ids_.push(node->frame_tree_node_id());
+  }
 
   // Main frame needs to be processed first.
   DCHECK(!pending_frame_tree_node_ids_.empty());
@@ -398,11 +407,10 @@ mojom::MhtmlSaveStatus MHTMLGenerationManager::Job::SendToNextRenderFrame() {
 
   mojom::SerializeAsMHTMLParamsPtr params(CreateMojoParams());
 
-  params->output_handle = mojom::MhtmlOutputHandle::New();
-
   // File::Duplicate() creates a reference to this file for use in the
   // Renderer.
-  params->output_handle->set_file_handle(browser_file_.Duplicate());
+  params->output_handle =
+      mojom::MhtmlOutputHandle::NewFileHandle(browser_file_.Duplicate());
 
   // Send a Mojo request to Renderer to serialize its frame.
   DCHECK_EQ(FrameTreeNode::kFrameTreeNodeInvalidId,
@@ -602,12 +610,6 @@ void MHTMLGenerationManager::Job::ReportRendererMainThreadTime(
     longest_renderer_main_thread_time_ = renderer_main_thread_time;
 }
 
-void MHTMLGenerationManager::Job::AddFrame(RenderFrameHost* render_frame_host) {
-  auto* rfhi = static_cast<RenderFrameHostImpl*>(render_frame_host);
-  int frame_tree_node_id = rfhi->frame_tree_node()->frame_tree_node_id();
-  pending_frame_tree_node_ids_.push(frame_tree_node_id);
-}
-
 void MHTMLGenerationManager::Job::CloseFile(
     mojom::MhtmlSaveStatus save_status) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -745,6 +747,16 @@ CloseFileResult MHTMLGenerationManager::Job::FinalizeOnFileThread(
   if (save_status == mojom::MhtmlSaveStatus::kSuccess) {
     TRACE_EVENT0("page-serialization",
                  "MHTMLGenerationManager::Job MHTML footer writing");
+
+#if BUILDFLAG(IS_FUCHSIA)
+    // TODO(crbug.com/1288816): Remove the Seek call.
+    // On fuchsia, fds do not share state. As the fd has been duped and sent to
+    // the renderer process, it must be seeked to the end to ensure the data is
+    // appended.
+    if (file.Seek(base::File::FROM_END, 0) == -1) {
+      save_status = mojom::MhtmlSaveStatus::kFileWritingError;
+    }
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
     // Write the extra data into a part of its own, if we have any.
     std::string serialized_extra_data_parts =

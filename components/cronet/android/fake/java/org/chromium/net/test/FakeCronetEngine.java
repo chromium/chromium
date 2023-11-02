@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -186,6 +186,13 @@ final class FakeCronetEngine extends CronetEngineBase {
     }
 
     @Override
+    public void bindToNetwork(long networkHandle) {
+        throw new UnsupportedOperationException(
+                "The multi-network API is not supported by the Fake implementation "
+                + "of Cronet Engine");
+    }
+
+    @Override
     public void configureNetworkQualityEstimatorForTesting(boolean useLocalHostRequests,
             boolean useSmallerResponses, boolean disableOfflineCheck) {}
 
@@ -236,7 +243,13 @@ final class FakeCronetEngine extends CronetEngineBase {
             boolean disableCache, boolean disableConnectionMigration, boolean allowDirectExecutor,
             boolean trafficStatsTagSet, int trafficStatsTag, boolean trafficStatsUidSet,
             int trafficStatsUid, RequestFinishedInfo.Listener requestFinishedListener,
-            int idempotency) {
+            int idempotency, long networkHandle) {
+        if (networkHandle != DEFAULT_NETWORK_HANDLE) {
+            throw new UnsupportedOperationException(
+                    "The multi-network API is not supported by the Fake implementation "
+                    + "of Cronet Engine");
+        }
+
         synchronized (mLock) {
             if (mIsShutdown) {
                 throw new IllegalStateException(
@@ -255,7 +268,12 @@ final class FakeCronetEngine extends CronetEngineBase {
             List<Map.Entry<String, String>> requestHeaders, @StreamPriority int priority,
             boolean delayRequestHeadersUntilFirstFlush, Collection<Object> connectionAnnotations,
             boolean trafficStatsTagSet, int trafficStatsTag, boolean trafficStatsUidSet,
-            int trafficStatsUid) {
+            int trafficStatsUid, long networkHandle) {
+        if (networkHandle != DEFAULT_NETWORK_HANDLE) {
+            throw new UnsupportedOperationException(
+                    "The multi-network API is not supported by the Fake implementation "
+                    + "of Cronet Engine");
+        }
         synchronized (mLock) {
             if (mIsShutdown) {
                 throw new IllegalStateException(

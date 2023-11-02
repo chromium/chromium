@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/process/process_handle.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
@@ -630,10 +631,6 @@ class VisitRelayingRenderProcessHost : public MockRenderProcessHost {
     OverrideBinderForTesting(mojom::VisitedLinkNotificationSink::Name_,
                              base::BindRepeating(&VisitCountingContext::Bind,
                                                  base::Unretained(context)));
-    content::NotificationService::current()->Notify(
-        content::NOTIFICATION_RENDERER_PROCESS_CREATED,
-        content::Source<RenderProcessHost>(this),
-        content::NotificationService::NoDetails());
   }
 
   VisitRelayingRenderProcessHost(const VisitRelayingRenderProcessHost&) =
@@ -664,9 +661,17 @@ class VisitedLinkRenderProcessHostFactory
       content::SiteInstance* site_instance) override {
     auto rph = std::make_unique<VisitRelayingRenderProcessHost>(browser_context,
                                                                 context_.get());
+
     content::RenderProcessHost* result = rph.get();
+    creation_observer_->OnRenderProcessHostCreated(result);
+
     processes_.push_back(std::move(rph));
     return result;
+  }
+
+  void SetRenderProcessHostCreationObserver(
+      content::RenderProcessHostCreationObserver* observer) {
+    creation_observer_ = observer;
   }
 
   VisitCountingContext* context() { return context_.get(); }
@@ -674,6 +679,9 @@ class VisitedLinkRenderProcessHostFactory
   void DeleteRenderProcessHosts() { processes_.clear(); }
 
  private:
+  raw_ptr<content::RenderProcessHostCreationObserver> creation_observer_ =
+      nullptr;
+
   std::list<std::unique_ptr<VisitRelayingRenderProcessHost>> processes_;
   std::unique_ptr<VisitCountingContext> context_;
 };
@@ -700,6 +708,8 @@ class VisitedLinkEventsTest : public content::RenderViewHostTestHarness {
   std::unique_ptr<content::BrowserContext> CreateBrowserContext() override {
     auto context = std::make_unique<content::TestBrowserContext>();
     CreateVisitedLinkWriter(context.get());
+    vc_rph_factory_.SetRenderProcessHostCreationObserver(
+        static_cast<VisitedLinkEventListener*>(writer_->GetListener()));
     return context;
   }
 
@@ -875,14 +885,17 @@ TEST_F(VisitedLinkEventsTest, TabVisibility) {
 TEST_F(VisitedLinkEventsTest, IgnoreRendererCreationFromDifferentContext) {
   content::TestBrowserContext different_context;
   VisitCountingContext counting_context;
+  // There are two render process hosts in play with this test. The primary
+  // one is where the observer callback (done below) will be received
+  // and don't need an observer for the other process host as it isn't
+  // needed in the test.
   VisitRelayingRenderProcessHost different_process_host(&different_context,
                                                         &counting_context);
 
   size_t old_size = counting_context.binding().size();
-  content::NotificationService::current()->Notify(
-      content::NOTIFICATION_RENDERER_PROCESS_CREATED,
-      content::Source<content::RenderProcessHost>(&different_process_host),
-      content::NotificationService::NoDetails());
+
+  static_cast<VisitedLinkEventListener*>(writer()->GetListener())
+      ->OnRenderProcessHostCreated(&different_process_host);
   size_t new_size = counting_context.binding().size();
   EXPECT_EQ(old_size, new_size);
 }
@@ -893,6 +906,8 @@ class VisitedLinkCompletelyResetEventTest : public VisitedLinkEventsTest {
     auto context = std::make_unique<content::TestBrowserContext>();
     CreateVisitedLinkFile(context.get());
     CreateVisitedLinkWriter(context.get());
+    vc_rph_factory_.SetRenderProcessHostCreationObserver(
+        static_cast<VisitedLinkEventListener*>(writer_->GetListener()));
     return context;
   }
 

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -134,7 +134,7 @@ class SmartDimMlAgentTest : public testing::Test {
   SmartDimMlAgentTest& operator=(const SmartDimMlAgentTest&) = delete;
 
   void SetUp() override {
-    MachineLearningClient::InitializeFake();
+    chromeos::MachineLearningClient::InitializeFake();
     chromeos::machine_learning::ServiceConnection::
         UseFakeServiceConnectionForTesting(&fake_service_connection_);
     chromeos::machine_learning::ServiceConnection::GetInstance()->Initialize();
@@ -142,7 +142,7 @@ class SmartDimMlAgentTest : public testing::Test {
         std::vector<int64_t>{1L}, std::vector<double>{kTestInactivityScore});
   }
 
-  void TearDown() override { MachineLearningClient::Shutdown(); }
+  void TearDown() override { chromeos::MachineLearningClient::Shutdown(); }
 
  protected:
   chromeos::machine_learning::FakeServiceConnectionImpl

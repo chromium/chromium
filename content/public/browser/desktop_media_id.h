@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,14 +21,14 @@ struct CONTENT_EXPORT DesktopMediaID {
  public:
   enum Type { TYPE_NONE, TYPE_SCREEN, TYPE_WINDOW, TYPE_WEB_CONTENTS };
 
-  typedef intptr_t Id;
+  using Id = intptr_t;
 
   // Represents an "unset" value for either |id| or |window_id|.
   static constexpr Id kNullId = 0;
   // Represents a fake id to create a dummy capturer for autotests.
   static constexpr Id kFakeId = -3;
 
-#if defined(USE_AURA) || defined(OS_MAC)
+#if defined(USE_AURA) || BUILDFLAG(IS_MAC)
   // Assigns integer identifier to the |window| and returns its DesktopMediaID.
   static DesktopMediaID RegisterNativeWindow(Type type,
                                              gfx::NativeWindow window);
@@ -36,7 +36,7 @@ struct CONTENT_EXPORT DesktopMediaID {
   // Returns the Window that was previously registered using
   // RegisterNativeWindow(), else nullptr.
   static gfx::NativeWindow GetNativeWindowById(const DesktopMediaID& id);
-#endif  // USE_AURA || OS_MAC
+#endif  // defined(USE_AURA) || BUILDFLAG(IS_MAC)
 
   constexpr DesktopMediaID() = default;
 
@@ -67,7 +67,6 @@ struct CONTENT_EXPORT DesktopMediaID {
   // it possible for both of these to be non-null, which means both IDs are
   // referring to the same logical window.
   Id id = kNullId;
-  // TODO(miu): Make this an int, after clean-up for http://crbug.com/513490.
   Id window_id = kNullId;
 
   // This records whether the desktop share has sound or not.

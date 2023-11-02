@@ -1,0 +1,112 @@
+# Copyright 2020 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//chromeos/ash/components/assistant/assistant.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
+
+assert(is_chromeos_ash, "Non ChromeOS builds must not depend on //chromeos/ash")
+
+mojom("mojom") {
+  disable_variants = true
+
+  sources = [
+    "android_app_info.mojom",
+    "assistant_notification.mojom",
+    "audio_input_controller.mojom",
+    "audio_output_delegate.mojom",
+    "authentication_state_observer.mojom",
+    "conversation_controller.mojom",
+    "conversation_observer.mojom",
+    "device_settings_delegate.mojom",
+    "display_controller.mojom",
+    "media_controller.mojom",
+    "notification_delegate.mojom",
+    "platform_delegate.mojom",
+    "service.mojom",
+    "service_controller.mojom",
+    "settings_controller.mojom",
+    "speaker_id_enrollment_controller.mojom",
+    "speech_recognition_observer.mojom",
+    "timer_controller.mojom",
+  ]
+
+  public_deps = [ "//sandbox/policy/mojom" ]
+
+  deps = [
+    "//ash/public/mojom",
+    "//chromeos/ash/services/assistant/public/mojom",
+    "//chromeos/services/network_config/public/mojom",
+    "//media/mojo/mojom",
+    "//services/device/public/mojom",
+    "//services/media_session/public/mojom",
+    "//services/network/public/mojom",
+    "//ui/accessibility/mojom:ax_assistant_mojom",
+  ]
+
+  if (enable_cros_libassistant) {
+    enabled_features = [ "enable_cros_libassistant" ]
+  }
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "ash.libassistant.mojom.AndroidAppInfo"
+          cpp = "::ash::assistant::AndroidAppInfo"
+        },
+        {
+          mojom = "ash.libassistant.mojom.AndroidAppStatus"
+          cpp = "::ash::assistant::AppStatus"
+        },
+        {
+          mojom = "ash.libassistant.mojom.AssistantNotification"
+          cpp = "::ash::assistant::AssistantNotification"
+          move_only = true
+        },
+        {
+          mojom = "ash.libassistant.mojom.AssistantFeedback"
+          cpp = "::ash::assistant::AssistantFeedback"
+        },
+        {
+          mojom = "ash.libassistant.mojom.AssistantInteractionMetadata"
+          cpp = "::ash::assistant::AssistantInteractionMetadata"
+        },
+        {
+          mojom = "ash.libassistant.mojom.AssistantInteractionResolution"
+          cpp = "::chromeos::assistant::AssistantInteractionResolution"
+        },
+        {
+          mojom = "ash.libassistant.mojom.AssistantInteractionType"
+          cpp = "::ash::assistant::AssistantInteractionType"
+        },
+        {
+          mojom = "ash.libassistant.mojom.AssistantQuerySource"
+          cpp = "::ash::assistant::AssistantQuerySource"
+        },
+        {
+          mojom = "ash.libassistant.mojom.AssistantSuggestionType"
+          cpp = "::ash::assistant::AssistantSuggestionType"
+        },
+        {
+          mojom = "ash.libassistant.mojom.AssistantSuggestion"
+          cpp = "::ash::assistant::AssistantSuggestion"
+        },
+        {
+          mojom = "ash.libassistant.mojom.AssistantTimer"
+          cpp = "::ash::assistant::AssistantTimer"
+        },
+        {
+          mojom = "ash.libassistant.mojom.AssistantTimerState"
+          cpp = "::ash::assistant::AssistantTimerState"
+        },
+      ]
+
+      traits_headers = [ "mojom_traits.h" ]
+      traits_sources = [ "mojom_traits.cc" ]
+      traits_public_deps =
+          [ "//chromeos/ash/services/libassistant/public/cpp:structs" ]
+    },
+  ]
+}

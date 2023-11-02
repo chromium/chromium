@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,12 +18,12 @@
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chromeos/dbus/shill/shill_service_client.h"
-#include "chromeos/network/managed_network_configuration_handler.h"
-#include "chromeos/network/network_handler.h"
-#include "chromeos/network/network_profile_handler.h"
-#include "chromeos/network/network_state_handler.h"
-#include "chromeos/tpm/install_attributes.h"
+#include "chromeos/ash/components/dbus/shill/shill_service_client.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
+#include "chromeos/ash/components/network/managed_network_configuration_handler.h"
+#include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_profile_handler.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
 #include "components/onc/onc_constants.h"
 #include "dbus/object_path.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -57,8 +57,7 @@ bool ShouldSaveNetwork(const base::Value& network) {
           rollback_network_config::OncIsEapWithoutClientCertificate(network));
 }
 
-void PrintError(const std::string& error_name,
-                std::unique_ptr<base::DictionaryValue>) {
+void PrintError(const std::string& error_name) {
   LOG(ERROR) << error_name;
 }
 
@@ -91,14 +90,13 @@ void ManagedOncConfigureActivePartAsDeviceWide(
                        onc::network_config::kSourceDevice);
   if (!network_state || !network_state->IsInProfile()) {
     managed_network_configuration_handler()->CreateConfiguration(
-        kDeviceUserHash, base::Value::AsDictionaryValue(network),
+        kDeviceUserHash, network,
         base::BindOnce([](const std::string&, const std::string&) {
         }).Then(std::move(success_callback)),
         base::BindOnce(&PrintError).Then(std::move(failure_callback)));
   } else if (network_state) {
     managed_network_configuration_handler()->SetProperties(
-        network_state->path(), base::Value::AsDictionaryValue(network),
-        std::move(success_callback),
+        network_state->path(), network, std::move(success_callback),
         base::BindOnce(&PrintError).Then(std::move(failure_callback)));
   }
 }
@@ -132,8 +130,8 @@ void ReconfigureUiData(const base::Value& network_config,
   rollback_network_config::ManagedOncCollapseToUiData(&ui_data);
 
   managed_network_configuration_handler()->SetProperties(
-      network_state->path(), base::Value::AsDictionaryValue(ui_data),
-      base::DoNothing(), base::BindOnce(&PrintError));
+      network_state->path(), ui_data, base::DoNothing(),
+      base::BindOnce(&PrintError));
 }
 
 using GetPasswordResult =
@@ -351,17 +349,16 @@ class RollbackNetworkConfig::Importer : public DeviceSettingsService::Observer,
 
 RollbackNetworkConfig::Importer::Importer() {
   DeviceSettingsService::Get()->AddObserver(this);
-  chromeos::NetworkHandler::Get()
-      ->managed_network_configuration_handler()
-      ->AddObserver(this);
+  NetworkHandler::Get()->managed_network_configuration_handler()->AddObserver(
+      this);
 }
 
 RollbackNetworkConfig::Importer::~Importer() {
   if (DeviceSettingsService::Get()) {
     DeviceSettingsService::Get()->RemoveObserver(this);
   }
-  if (chromeos::NetworkHandler::Get()) {
-    chromeos::NetworkHandler::Get()
+  if (NetworkHandler::Get()) {
+    NetworkHandler::Get()
         ->managed_network_configuration_handler()
         ->RemoveObserver(this);
   }
@@ -471,8 +468,7 @@ RollbackNetworkConfig::RollbackNetworkConfig() = default;
 RollbackNetworkConfig::~RollbackNetworkConfig() = default;
 
 void RollbackNetworkConfig::BindReceiver(
-    mojo::PendingReceiver<
-        chromeos::rollback_network_config::mojom::RollbackNetworkConfig>
+    mojo::PendingReceiver<rollback_network_config::mojom::RollbackNetworkConfig>
         receiver) {
   receivers_.Add(this, std::move(receiver));
 }

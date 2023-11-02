@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -46,10 +46,6 @@ class BreadcrumbManagerTabHelper
   void DidChangeVisibleSecurityState() override;
   void PrimaryMainFrameRenderProcessGone(
       base::TerminationStatus status) override;
-  void WebContentsDestroyed() override;
-
-  // The WebContents associated with this tab helper.
-  content::WebContents* web_contents_ = nullptr;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

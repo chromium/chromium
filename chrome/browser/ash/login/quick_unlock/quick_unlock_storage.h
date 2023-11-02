@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,16 +7,19 @@
 
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
-#include "chromeos/login/auth/user_context.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class Profile;
 
 namespace ash {
+enum class FingerprintState;
+
 namespace quick_unlock {
 class AuthToken;
 class FingerprintStorage;
 class PinStoragePrefs;
+enum class Purpose;
 
 // Helper class for managing state for quick unlock services (pin and
 // fingerprint), and general lock screen management (tokens for extension API
@@ -47,19 +50,19 @@ class QuickUnlockStorage : public KeyedService {
 
   // Returns true if fingerprint unlock is currently available.
   // This checks whether there's fingerprint setup, as well as HasStrongAuth.
-  bool IsFingerprintAuthenticationAvailable() const;
+  bool IsFingerprintAuthenticationAvailable(Purpose purpose) const;
 
   // Returns true if PIN unlock is currently available.
-  bool IsPinAuthenticationAvailable() const;
+  bool IsPinAuthenticationAvailable(Purpose purpose) const;
 
   // Tries to authenticate the given pin. This will consume a pin unlock
   // attempt. This always returns false if HasStrongAuth returns false.
-  bool TryAuthenticatePin(const Key& key);
+  bool TryAuthenticatePin(const Key& key, Purpose purpose);
 
   // Creates a new authentication token to be used by the quickSettingsPrivate
   // API for authenticating requests. Resets the expiration timer and
   // invalidates any previously issued tokens.
-  std::string CreateAuthToken(const chromeos::UserContext& user_context);
+  std::string CreateAuthToken(const UserContext& user_context);
 
   // Returns true if the current authentication token has expired.
   bool GetAuthTokenExpired();
@@ -70,6 +73,13 @@ class QuickUnlockStorage : public KeyedService {
 
   // Fetch the user context if `auth_token` is valid. May return null.
   const UserContext* GetUserContext(const std::string& auth_token);
+
+  void ReplaceUserContext(const std::string& auth_token,
+                          std::unique_ptr<UserContext>);
+
+  // Determines the fingerprint state. This is called at lock screen
+  // initialization or after the fingerprint sensor has restarted.
+  FingerprintState GetFingerprintState(Purpose purpose);
 
   FingerprintStorage* fingerprint_storage() {
     return fingerprint_storage_.get();

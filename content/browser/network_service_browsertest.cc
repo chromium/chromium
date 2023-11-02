@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,6 +20,7 @@
 #include "build/build_config.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
@@ -40,6 +41,7 @@
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "net/base/features.h"
 #include "net/cookies/cookie_util.h"
 #include "net/disk_cache/disk_cache.h"
@@ -59,79 +61,17 @@
 #include "sql/database.h"
 #include "sql/sql_features.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/application_status_listener.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "sandbox/policy/features.h"
 #endif
 
 namespace content {
 
 namespace {
-
-constexpr char kCookieName[] = "Name";
-constexpr char kCookieValue[] = "Value";
-const base::FilePath::CharType kCheckpointFileName[] =
-    FILE_PATH_LITERAL("NetworkDataMigrated");
-
-net::CookieList GetCookies(
-    const mojo::Remote<network::mojom::CookieManager>& cookie_manager) {
-  base::RunLoop run_loop;
-  net::CookieList cookies_out;
-  cookie_manager->GetAllCookies(
-      base::BindLambdaForTesting([&](const net::CookieList& cookies) {
-        cookies_out = cookies;
-        run_loop.Quit();
-      }));
-  run_loop.Run();
-  return cookies_out;
-}
-
-void SetCookie(
-    const mojo::Remote<network::mojom::CookieManager>& cookie_manager) {
-  base::Time t = base::Time::Now();
-  auto cookie = net::CanonicalCookie::CreateUnsafeCookieForTesting(
-      kCookieName, kCookieValue, "example.test", "/", t, t + base::Days(1),
-      base::Time(), true /* secure */, false /* http-only*/,
-      net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_DEFAULT,
-      false /* same_party */);
-  base::RunLoop run_loop;
-  cookie_manager->SetCanonicalCookie(
-      *cookie, net::cookie_util::SimulatedCookieSource(*cookie, "https"),
-      net::CookieOptions(),
-      base::BindLambdaForTesting(
-          [&](net::CookieAccessResult result) { run_loop.Quit(); }));
-  run_loop.Run();
-}
-
-void FlushCookies(
-    const mojo::Remote<network::mojom::CookieManager>& cookie_manager) {
-  base::RunLoop run_loop;
-  cookie_manager->FlushCookieStore(
-      base::BindLambdaForTesting([&]() { run_loop.Quit(); }));
-  run_loop.Run();
-}
-
-mojo::PendingRemote<network::mojom::NetworkContext>
-CreateNetworkContextForPaths(network::mojom::NetworkContextFilePathsPtr paths,
-                             const base::FilePath& cache_path) {
-  network::mojom::NetworkContextParamsPtr context_params =
-      network::mojom::NetworkContextParams::New();
-  context_params->file_paths = std::move(paths);
-  context_params->cert_verifier_params = GetCertVerifierParams(
-      cert_verifier::mojom::CertVerifierCreationParams::New());
-  // Not passing in a key for simplicity, so disable encryption.
-  context_params->enable_encrypted_cookies = false;
-  context_params->http_cache_enabled = true;
-  context_params->http_cache_path = cache_path;
-  mojo::PendingRemote<network::mojom::NetworkContext> network_context;
-  content::CreateNetworkContextInNetworkService(
-      network_context.InitWithNewPipeAndPassReceiver(),
-      std::move(context_params));
-  return network_context;
-}
 
 class WebUITestWebUIControllerFactory : public WebUIControllerFactory {
  public:
@@ -174,9 +114,7 @@ class TestWebUIDataSource : public URLDataSource {
     std::move(callback).Run(response.get());
   }
 
-  std::string GetMimeType(const std::string& path) override {
-    return "text/html";
-  }
+  std::string GetMimeType(const GURL& url) override { return "text/html"; }
 };
 
 class NetworkServiceBrowserTest : public ContentBrowserTest {
@@ -242,7 +180,9 @@ class NetworkServiceBrowserTest : public ContentBrowserTest {
   base::FilePath GetCacheDirectory() { return temp_dir_.GetPath(); }
 
   base::FilePath GetCacheIndexDirectory() {
-    return GetCacheDirectory().AppendASCII("index-dir");
+    return GetCacheDirectory()
+        .AppendASCII("Cache_Data")
+        .AppendASCII("index-dir");
   }
 
   void LoadURL(const GURL& url,
@@ -278,7 +218,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserTest, WebUIBindingsNoHttp) {
   GURL test_url(GetWebUIURL("webui/"));
   EXPECT_TRUE(NavigateToURL(shell(), test_url));
   RenderProcessHostBadIpcMessageWaiter kill_waiter(
-      shell()->web_contents()->GetMainFrame()->GetProcess());
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess());
   ASSERT_FALSE(CheckCanLoadHttp());
   EXPECT_EQ(bad_message::RPH_MOJO_PROCESS_ERROR, kill_waiter.Wait());
 }
@@ -332,7 +272,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserTest,
   ASSERT_EQ(headers->response_code(), 401);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserTest,
                        HttpCacheWrittenToDiskOnApplicationStateChange) {
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -343,8 +283,8 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserTest,
       network::mojom::NetworkContextParams::New();
   context_params->cert_verifier_params = GetCertVerifierParams(
       cert_verifier::mojom::CertVerifierCreationParams::New());
-  context_params->http_cache_path = GetCacheDirectory();
-  GetNetworkService()->CreateNetworkContext(
+  context_params->http_cache_directory = GetCacheDirectory();
+  CreateNetworkContextInNetworkService(
       network_context.BindNewPipeAndPassReceiver(), std::move(context_params));
 
   network::mojom::URLLoaderFactoryParamsPtr params =
@@ -467,19 +407,15 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserTest, SyncXHROnCrash) {
   if (IsInProcessNetworkService())
     return;
 
-  mojo::PendingRemote<network::mojom::NetworkServiceTest>
-      pending_network_service_test;
-  GetNetworkService()->BindTestInterface(
-      pending_network_service_test.InitWithNewPipeAndPassReceiver());
-
   net::EmbeddedTestServer http_server;
   http_server.AddDefaultHandlers(GetTestDataFilePath());
   http_server.RegisterRequestMonitor(base::BindLambdaForTesting(
       [&](const net::test_server::HttpRequest& request) {
         if (request.relative_url == "/hung") {
-          mojo::Remote<network::mojom::NetworkServiceTest> network_service_test(
-              std::move(pending_network_service_test));
-          network_service_test->SimulateCrash();
+          GetUIThreadTaskRunner({})->PostTask(
+              FROM_HERE,
+              base::BindOnce(&BrowserTestBase::SimulateNetworkServiceCrash,
+                             base::Unretained(this)));
         }
       }));
   EXPECT_TRUE(http_server.Start());
@@ -508,77 +444,6 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserTest, SyncCookieGetOnCrash) {
   // If the renderer is hung the test will hang.
 }
 
-int64_t GetFirstPartySetCountFromNetworkService() {
-  DCHECK(!content::IsInProcessNetworkService());
-
-  mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
-  content::GetNetworkService()->BindTestInterface(
-      network_service_test.BindNewPipeAndPassReceiver());
-  network_service_test.FlushForTesting();
-
-  mojo::ScopedAllowSyncCallForTesting allow_sync_call;
-
-  int64_t count = 0;
-  EXPECT_TRUE(network_service_test->GetFirstPartySetEntriesCount(&count));
-
-  return count;
-}
-
-class NetworkServiceWithFirstPartySetBrowserTest
-    : public NetworkServiceBrowserTest {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    NetworkServiceBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(
-        network::switches::kUseFirstPartySet,
-        "https://example.com,https://member1.com,https://member2.com");
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(NetworkServiceWithFirstPartySetBrowserTest,
-                       GetsUseFirstPartySetSwitch) {
-  if (IsInProcessNetworkService())
-    return;
-
-  EXPECT_EQ(GetFirstPartySetCountFromNetworkService(), 3);
-
-  SimulateNetworkServiceCrash();
-
-  EXPECT_EQ(GetFirstPartySetCountFromNetworkService(), 3);
-}
-
-class NetworkServiceWithoutFirstPartySetBrowserTest
-    : public NetworkServiceBrowserTest {
- public:
-  NetworkServiceWithoutFirstPartySetBrowserTest() {
-    scoped_feature_list_.InitAndDisableFeature(net::features::kFirstPartySets);
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    // Supplying this switch should not enable the feature, since the feature
-    // was explicitly disabled.
-    NetworkServiceBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(
-        network::switches::kUseFirstPartySet,
-        "https://example.com,https://member1.com,https://member2.com");
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(NetworkServiceWithoutFirstPartySetBrowserTest,
-                       GetsEnableFirstPartySetsSwitch) {
-  if (IsInProcessNetworkService())
-    return;
-
-  EXPECT_EQ(GetFirstPartySetCountFromNetworkService(), 0);
-
-  SimulateNetworkServiceCrash();
-
-  EXPECT_EQ(GetFirstPartySetCountFromNetworkService(), 0);
-}
-
 // Tests that CORS is performed by the network service when |factory_override|
 // is used.
 IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserTest, FactoryOverride) {
@@ -604,7 +469,9 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserTest, FactoryOverride) {
         response->headers->SetHeader("access-control-allow-origin",
                                      "https://www2.example.com");
         response->headers->SetHeader("access-control-allow-methods", "*");
-        client->OnReceiveResponse(std::move(response));
+        client->OnReceiveResponse(std::move(response),
+                                  mojo::ScopedDataPipeConsumerHandle(),
+                                  absl::nullopt);
       } else if (resource_request.method == "custom-method") {
         has_received_request_ = true;
         auto response = network::mojom::URLResponseHead::New();
@@ -612,7 +479,9 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserTest, FactoryOverride) {
             "HTTP/1.1 202 Accepted");
         response->headers->SetHeader("access-control-allow-origin",
                                      "https://www2.example.com");
-        client->OnReceiveResponse(std::move(response));
+        client->OnReceiveResponse(std::move(response),
+                                  mojo::ScopedDataPipeConsumerHandle(),
+                                  absl::nullopt);
         client->OnComplete(network::URLLoaderCompletionStatus(net::OK));
       } else {
         client->OnComplete(
@@ -681,8 +550,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserTest, FactoryOverride) {
 
 // Android doesn't support PRE_ tests.
 // TODO(wfh): Enable this test when https://crbug.com/1257820 is fixed.
-// TODO(crbug.com/1266222): Fix disk cache error on Fuchsia
-#if !defined(OS_ANDROID) && !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
 class NetworkServiceBrowserCacheResetTest : public NetworkServiceBrowserTest {
  public:
   NetworkServiceBrowserCacheResetTest() = default;
@@ -733,7 +601,7 @@ class NetworkServiceBrowserCacheResetTest : public NetworkServiceBrowserTest {
                                    const GURL& url) {
     auto file_paths = network::mojom::NetworkContextFilePaths::New();
     base::FilePath context_path = GetNetworkContextPath();
-    file_paths->data_path = context_path.Append(FILE_PATH_LITERAL("Data"));
+    file_paths->data_directory = context_path.Append(FILE_PATH_LITERAL("Data"));
     file_paths->unsandboxed_data_path = context_path;
     file_paths->trigger_migration = true;
 
@@ -744,7 +612,7 @@ class NetworkServiceBrowserCacheResetTest : public NetworkServiceBrowserTest {
         cert_verifier::mojom::CertVerifierCreationParams::New());
     context_params->reset_http_cache_backend = reset_cache;
     context_params->http_cache_enabled = true;
-    context_params->http_cache_path = GetNetworkContextCachePath();
+    context_params->http_cache_directory = GetNetworkContextCachePath();
 
     mojo::Remote<network::mojom::NetworkContext> network_context;
     content::CreateNetworkContextInNetworkService(
@@ -836,7 +704,90 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserCacheResetTest, CacheResetTest) {
                                            /*load_only_from_cache=*/true, url),
               net::test::IsError(net::ERR_CACHE_MISS));
 }
-#endif  // !defined(OS_ANDROID) && !defined(OS_FUCHSIA)
+
+#if BUILDFLAG(IS_POSIX)
+IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserCacheResetTest, CacheResetFailure) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  const base::FilePath path = GetNetworkContextCachePath();
+
+  GURL url = embedded_test_server()->GetURL("/echoheadercache");
+
+  ASSERT_TRUE(base::CreateDirectory(path));
+  // Make the directory inaccessible, to see what happens when resetting the
+  // cache fails.
+  ASSERT_TRUE(base::SetPosixFilePermissions(path, /*mode=*/0));
+
+  EXPECT_THAT(MakeNetworkContentAndLoadUrl(/*reset_cache=*/true,
+                                           /*load_only_from_cache=*/true, url),
+              net::test::IsError(net::ERR_CACHE_MISS));
+}
+#endif  // BUILDFLAG(IS_POSIX)
+#endif  // BUILDFLAG(IS_ANDROID)
+
+// Cache data migration is not used for Fuchsia.
+#if !BUILDFLAG(IS_FUCHSIA)
+
+const base::FilePath::CharType kCheckpointFileName[] =
+    FILE_PATH_LITERAL("NetworkDataMigrated");
+constexpr char kCookieName[] = "Name";
+constexpr char kCookieValue[] = "Value";
+
+net::CookieList GetCookies(
+    const mojo::Remote<network::mojom::CookieManager>& cookie_manager) {
+  base::RunLoop run_loop;
+  net::CookieList cookies_out;
+  cookie_manager->GetAllCookies(
+      base::BindLambdaForTesting([&](const net::CookieList& cookies) {
+        cookies_out = cookies;
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+  return cookies_out;
+}
+
+void SetCookie(
+    const mojo::Remote<network::mojom::CookieManager>& cookie_manager) {
+  base::Time t = base::Time::Now();
+  auto cookie = net::CanonicalCookie::CreateUnsafeCookieForTesting(
+      kCookieName, kCookieValue, "example.test", "/", t, t + base::Days(1),
+      base::Time(), base::Time(), /*secure=*/true, /*http-only=*/false,
+      net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_DEFAULT,
+      /*=same_party=*/false);
+  base::RunLoop run_loop;
+  cookie_manager->SetCanonicalCookie(
+      *cookie, net::cookie_util::SimulatedCookieSource(*cookie, "https"),
+      net::CookieOptions(),
+      base::BindLambdaForTesting(
+          [&](net::CookieAccessResult result) { run_loop.Quit(); }));
+  run_loop.Run();
+}
+
+void FlushCookies(
+    const mojo::Remote<network::mojom::CookieManager>& cookie_manager) {
+  base::RunLoop run_loop;
+  cookie_manager->FlushCookieStore(
+      base::BindLambdaForTesting([&]() { run_loop.Quit(); }));
+  run_loop.Run();
+}
+
+mojo::PendingRemote<network::mojom::NetworkContext>
+CreateNetworkContextForPaths(network::mojom::NetworkContextFilePathsPtr paths,
+                             const base::FilePath& cache_path) {
+  network::mojom::NetworkContextParamsPtr context_params =
+      network::mojom::NetworkContextParams::New();
+  context_params->file_paths = std::move(paths);
+  context_params->cert_verifier_params = GetCertVerifierParams(
+      cert_verifier::mojom::CertVerifierCreationParams::New());
+  // Not passing in a key for simplicity, so disable encryption.
+  context_params->enable_encrypted_cookies = false;
+  context_params->http_cache_enabled = true;
+  context_params->http_cache_directory = cache_path;
+  mojo::PendingRemote<network::mojom::NetworkContext> network_context;
+  content::CreateNetworkContextInNetworkService(
+      network_context.InitWithNewPipeAndPassReceiver(),
+      std::move(context_params));
+  return network_context;
+}
 
 enum class FailureType {
   kNoFailures = 0,
@@ -848,7 +799,7 @@ enum class FailureType {
   // A file called 'TestCookies' already exists in the migration target
   // directory.
   kCookieFileAlreadyThere = 3,
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // The 'TestCookies' file in the destination directory is locked and cannot be
   // written to. This is only valid on Windows where files can actually be
   // locked.
@@ -857,7 +808,7 @@ enum class FailureType {
   // from (during the migration). This failure is only valid on Windows where
   // files can actually be locked.
   kSourceCookieFileIsLocked = 5,
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   // A file exists with the same name as the Cache dir. This will cause the
   // creation of the cache dir to fail, and cache to not function either
   // (although we don't test for that here).
@@ -869,10 +820,10 @@ static const FailureType kFailureTypes[] = {
     FailureType::kDirIsAFile,
     FailureType::kDirAlreadyThere,
     FailureType::kCookieFileAlreadyThere,
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     FailureType::kDestCookieFileIsLocked,
     FailureType::kSourceCookieFileIsLocked,
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
     FailureType::kCacheDirIsAFile};
 
 static const base::FilePath::CharType kCookieDatabaseName[] =
@@ -880,16 +831,30 @@ static const base::FilePath::CharType kCookieDatabaseName[] =
 static const base::FilePath::CharType kNetworkSubpath[] =
     FILE_PATH_LITERAL("Network");
 
+// Disable the following data migration tests on Android because the data
+// migration logic is disabled and compiled out on this platform.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_NetworkServiceDataMigrationBrowserTest \
+  DISABLED_NetworkServiceDataMigrationBrowserTest
+#define MAYBE_NetworkServiceDataMigrationBrowserTestWithFailures \
+  DISABLED_NetworkServiceDataMigrationBrowserTestWithFailures
+#else
+#define MAYBE_NetworkServiceDataMigrationBrowserTest \
+  NetworkServiceDataMigrationBrowserTest
+#define MAYBE_NetworkServiceDataMigrationBrowserTestWithFailures \
+  NetworkServiceDataMigrationBrowserTestWithFailures
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // A class to test various behavior of network context data migration.
-class NetworkServiceDataMigrationBrowserTest : public ContentBrowserTest {
+class MAYBE_NetworkServiceDataMigrationBrowserTest : public ContentBrowserTest {
  public:
-  NetworkServiceDataMigrationBrowserTest() {
+  MAYBE_NetworkServiceDataMigrationBrowserTest() {
     // Migration only supports non-WAL sqlite databases. If this feature is
     // switched on by default before migration has been completed then the code
     // in MaybeGrantSandboxAccessToNetworkContextData will need to be updated.
     EXPECT_FALSE(
         base::FeatureList::IsEnabled(sql::features::kEnableWALModeByDefault));
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // On Windows, the network sandbox needs to be disabled. This is because the
     // code that performs the migration on Windows DCHECKs if network sandbox is
     // enabled and migration is not requested, but this is used in the tests to
@@ -899,10 +864,7 @@ class NetworkServiceDataMigrationBrowserTest : public ContentBrowserTest {
 #endif
   }
 
- protected:
-  bool in_process_network_service_ = false;
-
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
  private:
   base::test::ScopedFeatureList win_network_sandbox_feature_;
 #endif
@@ -911,11 +873,11 @@ class NetworkServiceDataMigrationBrowserTest : public ContentBrowserTest {
 // A parameterized test fixture that can simulate various failures in the
 // migration step, and can also be run with either in-process or out-of-process
 // network service.
-class NetworkServiceDataMigrationBrowserTestWithFailures
-    : public NetworkServiceDataMigrationBrowserTest,
+class MAYBE_NetworkServiceDataMigrationBrowserTestWithFailures
+    : public MAYBE_NetworkServiceDataMigrationBrowserTest,
       public ::testing::WithParamInterface<std::tuple<bool, FailureType>> {
  public:
-  NetworkServiceDataMigrationBrowserTestWithFailures() {
+  MAYBE_NetworkServiceDataMigrationBrowserTestWithFailures() {
     if (IsNetworkServiceRunningInProcess())
       network_service_in_process_feature_.InitAndEnableFeature(
           features::kNetworkServiceInProcess);
@@ -955,8 +917,8 @@ class NetworkServiceDataMigrationBrowserTestWithFailures
 // |  |- Cookies-journal (copied from above)
 //
 // A new network context is then created with `unsandboxed_data_path` set to
-// root of tempdir 'two' and `data_path` set to a directory underneath tempdir
-// 'two' called 'Network' to initiate the migration. After a successful
+// root of tempdir 'two' and `data_directory` set to a directory underneath
+// tempdir 'two' called 'Network' to initiate the migration. After a successful
 // migration, the structure should look like this:
 //
 // BrowserContext/
@@ -977,7 +939,7 @@ void MigrationTestInternal(const base::FilePath& tempdir_one,
   EXPECT_FALSE(base::PathExists(tempdir_one.Append(kCookieDatabaseName)));
 
   auto file_paths = network::mojom::NetworkContextFilePaths::New();
-  file_paths->data_path = tempdir_one;
+  file_paths->data_directory = tempdir_one;
   file_paths->cookie_database_name = base::FilePath(kCookieDatabaseName);
 
   mojo::Remote<network::mojom::NetworkContext> network_context_one(
@@ -1003,7 +965,7 @@ void MigrationTestInternal(const base::FilePath& tempdir_one,
 
   // Verify cookie file is there, copied across from the tempdir 'one'.
   EXPECT_TRUE(base::PathExists(tempdir_two.Append(kCookieDatabaseName)));
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::File longer_lived_file;
 #endif
 
@@ -1030,7 +992,7 @@ void MigrationTestInternal(const base::FilePath& tempdir_one,
           base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
       EXPECT_TRUE(scoped_file.IsValid());
     } break;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     case FailureType::kDestCookieFileIsLocked:
       // Create a file called 'TestCookies' in the destination path and hold a
       // write lock on it so it can't be written to.
@@ -1038,8 +1000,8 @@ void MigrationTestInternal(const base::FilePath& tempdir_one,
       longer_lived_file = base::File(
           tempdir_two.Append(kNetworkSubpath).Append(kCookieDatabaseName),
           base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE |
-              base::File::FLAG_EXCLUSIVE_WRITE |
-              base::File::FLAG_EXCLUSIVE_READ);
+              base::File::FLAG_WIN_EXCLUSIVE_WRITE |
+              base::File::FLAG_WIN_EXCLUSIVE_READ);
       EXPECT_TRUE(longer_lived_file.IsValid());
       break;
     case FailureType::kSourceCookieFileIsLocked:
@@ -1050,11 +1012,11 @@ void MigrationTestInternal(const base::FilePath& tempdir_one,
       longer_lived_file =
           base::File(tempdir_two.Append(kCookieDatabaseName),
                      base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_WRITE |
-                         base::File::FLAG_EXCLUSIVE_WRITE |
-                         base::File::FLAG_EXCLUSIVE_READ);
+                         base::File::FLAG_WIN_EXCLUSIVE_WRITE |
+                         base::File::FLAG_WIN_EXCLUSIVE_READ);
       EXPECT_TRUE(longer_lived_file.IsValid());
       break;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
     case FailureType::kCacheDirIsAFile: {
       // Make the cache directory invalid by deleting it and making it a file,
       // so it can't be created or used.
@@ -1070,7 +1032,7 @@ void MigrationTestInternal(const base::FilePath& tempdir_one,
   // 'two' into the new 'Network' directory underneath.
   auto new_file_paths = network::mojom::NetworkContextFilePaths::New();
   // Data path is now a new 'Network' directory under the tempdir 'two'.
-  new_file_paths->data_path = tempdir_two.Append(kNetworkSubpath);
+  new_file_paths->data_directory = tempdir_two.Append(kNetworkSubpath);
   new_file_paths->cookie_database_name = base::FilePath(kCookieDatabaseName);
   // Migrate data from the tempdir 'two' to the new path under 'Network'.
   new_file_paths->unsandboxed_data_path = tempdir_two;
@@ -1131,7 +1093,7 @@ void MigrationTestInternal(const base::FilePath& tempdir_one,
           /*sample=kFailedToCreateDataDirectory=*/2,
           /*expected_bucket_count=*/1);
       break;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     case FailureType::kDestCookieFileIsLocked:
       // Cookie file should still be in the original `unsandboxed_data_path` as
       // it could not be moved as the destination was locked or not writable.
@@ -1174,7 +1136,7 @@ void MigrationTestInternal(const base::FilePath& tempdir_one,
       // totally broken. :(
       cookies_should_work = false;
       break;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
     case FailureType::kCacheDirIsAFile:
       histogram_tester.ExpectUniqueSample(
           "NetworkService.GrantSandboxToCacheResult",
@@ -1193,7 +1155,7 @@ void MigrationTestInternal(const base::FilePath& tempdir_one,
   EXPECT_EQ(kCookieValue, cookies[0].Value());
 }
 
-IN_PROC_BROWSER_TEST_P(NetworkServiceDataMigrationBrowserTestWithFailures,
+IN_PROC_BROWSER_TEST_P(MAYBE_NetworkServiceDataMigrationBrowserTestWithFailures,
                        MigrateDataTest) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
@@ -1212,7 +1174,7 @@ IN_PROC_BROWSER_TEST_P(NetworkServiceDataMigrationBrowserTestWithFailures,
 // a third directory to verify that if a migration is triggered and then later
 // not triggered, then the data is still read from the new directory and not the
 // old one.
-IN_PROC_BROWSER_TEST_F(NetworkServiceDataMigrationBrowserTest,
+IN_PROC_BROWSER_TEST_F(MAYBE_NetworkServiceDataMigrationBrowserTest,
                        MigrateThenNoMigrate) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
@@ -1257,7 +1219,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceDataMigrationBrowserTest,
   // is requested, the migrated data is still read correctly and that migration
   // is a one-way operation.
   auto file_paths = network::mojom::NetworkContextFilePaths::New();
-  file_paths->data_path = real_tempdir_three.Append(kNetworkSubpath);
+  file_paths->data_directory = real_tempdir_three.Append(kNetworkSubpath);
   file_paths->unsandboxed_data_path = real_tempdir_three;
   file_paths->cookie_database_name = base::FilePath(kCookieDatabaseName);
   // If defaults are ever changed, this test will need to be updated.
@@ -1282,8 +1244,8 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceDataMigrationBrowserTest,
 
 // This test verifies that a new un-used data path will be initialized correctly
 // if `unsandboxed_data_path` is set. The Cookie file should be placed into the
-// `data_path` and not `unsandboxed_data_path`.
-IN_PROC_BROWSER_TEST_F(NetworkServiceDataMigrationBrowserTest,
+// `data_directory` and not `unsandboxed_data_path`.
+IN_PROC_BROWSER_TEST_F(MAYBE_NetworkServiceDataMigrationBrowserTest,
                        NewDataDirWithMigrationTest) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
@@ -1295,7 +1257,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceDataMigrationBrowserTest,
   EXPECT_FALSE(base::PathExists(tempdir.Append(kCookieDatabaseName)));
 
   auto file_paths = network::mojom::NetworkContextFilePaths::New();
-  file_paths->data_path = tempdir.Append(FILE_PATH_LITERAL("Network"));
+  file_paths->data_directory = tempdir.Append(FILE_PATH_LITERAL("Network"));
   file_paths->unsandboxed_data_path = tempdir;
   file_paths->cookie_database_name = base::FilePath(kCookieDatabaseName);
   file_paths->trigger_migration = true;
@@ -1311,7 +1273,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceDataMigrationBrowserTest,
   SetCookie(cookie_manager);
   FlushCookies(cookie_manager);
 
-  // Verify that the cookie file exists in the `data_path` and not the
+  // Verify that the cookie file exists in the `data_directory` and not the
   // `unsandboxed_data_path`.
   EXPECT_FALSE(base::PathExists(tempdir.Append(kCookieDatabaseName)));
   EXPECT_TRUE(base::PathExists(tempdir.Append(FILE_PATH_LITERAL("Network"))
@@ -1327,10 +1289,10 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceDataMigrationBrowserTest,
   EXPECT_EQ(kCookieValue, cookies[0].Value());
 }
 
-// A test where a caller specifies both `data_path` and `unsandboxed_data_path`
-// but does not wish migration to occur. The data should be in
-// `unsandboxed_data_path` in this case.
-IN_PROC_BROWSER_TEST_F(NetworkServiceDataMigrationBrowserTest,
+// A test where a caller specifies both `data_directory` and
+// `unsandboxed_data_path` but does not wish migration to occur. The data should
+// be in `unsandboxed_data_path` in this case.
+IN_PROC_BROWSER_TEST_F(MAYBE_NetworkServiceDataMigrationBrowserTest,
                        NewDataDirWithNoMigrationTest) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
@@ -1342,7 +1304,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceDataMigrationBrowserTest,
   EXPECT_FALSE(base::PathExists(tempdir.Append(kCookieDatabaseName)));
 
   auto file_paths = network::mojom::NetworkContextFilePaths::New();
-  file_paths->data_path = tempdir.Append(FILE_PATH_LITERAL("Network"));
+  file_paths->data_directory = tempdir.Append(FILE_PATH_LITERAL("Network"));
   file_paths->unsandboxed_data_path = tempdir;
   file_paths->cookie_database_name = base::FilePath(kCookieDatabaseName);
   file_paths->trigger_migration = false;
@@ -1360,7 +1322,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceDataMigrationBrowserTest,
 
   // Verify that the cookie file still exists in the `unsandboxed_data_path`.
   EXPECT_TRUE(base::PathExists(tempdir.Append(kCookieDatabaseName)));
-  // Verify that the cookie file has not been migrated to `data_path`.
+  // Verify that the cookie file has not been migrated to `data_directory`.
   EXPECT_FALSE(base::PathExists(tempdir.Append(FILE_PATH_LITERAL("Network"))
                                     .Append(kCookieDatabaseName)));
   // Verify no checkpoint file was written either.
@@ -1378,10 +1340,11 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceDataMigrationBrowserTest,
   EXPECT_EQ(kCookieValue, cookies[0].Value());
 }
 
-// A test where a caller specifies `data_path` but does not specify anything
-// else, including `unsandboxed_data_path`. This verifies that existing behavior
-// remains the same for call-sites that do not update anything.
-IN_PROC_BROWSER_TEST_F(NetworkServiceDataMigrationBrowserTest, LegacyDataDir) {
+// A test where a caller specifies `data_directory` but does not specify
+// anything else, including `unsandboxed_data_path`. This verifies that existing
+// behavior remains the same for call-sites that do not update anything.
+IN_PROC_BROWSER_TEST_F(MAYBE_NetworkServiceDataMigrationBrowserTest,
+                       LegacyDataDir) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   base::FilePath tempdir;
@@ -1392,7 +1355,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceDataMigrationBrowserTest, LegacyDataDir) {
   EXPECT_FALSE(base::PathExists(tempdir.Append(kCookieDatabaseName)));
 
   auto file_paths = network::mojom::NetworkContextFilePaths::New();
-  file_paths->data_path = tempdir;
+  file_paths->data_directory = tempdir;
   file_paths->cookie_database_name = base::FilePath(kCookieDatabaseName);
 
   base::HistogramTester histogram_tester;
@@ -1426,7 +1389,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceDataMigrationBrowserTest, LegacyDataDir) {
 // the previous code without the checkpoint file, and then later takes place
 // using the new code, then the data is still read from the correct directory
 // despite there not being a checkpoint file prior to the migration.
-IN_PROC_BROWSER_TEST_F(NetworkServiceDataMigrationBrowserTest,
+IN_PROC_BROWSER_TEST_F(MAYBE_NetworkServiceDataMigrationBrowserTest,
                        MigratedPreviouslyAndMigrateAgain) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
@@ -1477,7 +1440,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceDataMigrationBrowserTest,
 
   base::HistogramTester histogram_tester;
   auto file_paths = network::mojom::NetworkContextFilePaths::New();
-  file_paths->data_path = real_tempdir_three.Append(kNetworkSubpath);
+  file_paths->data_directory = real_tempdir_three.Append(kNetworkSubpath);
   file_paths->unsandboxed_data_path = real_tempdir_three;
   file_paths->cookie_database_name = base::FilePath(kCookieDatabaseName);
   file_paths->trigger_migration = true;
@@ -1491,9 +1454,9 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceDataMigrationBrowserTest,
 
   net::CookieList cookies = GetCookies(cookie_manager);
   // Success is reported here because although no files were copied from
-  // `unsandboxed_data_path` to `data_path`, the migration still succeeded
+  // `unsandboxed_data_path` to `data_directory`, the migration still succeeded
   // because a fresh Checkpoint file was placed down, and existing files were
-  // preserved in the `data_path`.
+  // preserved in the `data_directory`.
   histogram_tester.ExpectUniqueSample("NetworkService.GrantSandboxResult",
                                       /*sample=kSuccess=*/0,
                                       /*expected_bucket_count=*/1);
@@ -1506,24 +1469,36 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceDataMigrationBrowserTest,
   EXPECT_TRUE(base::PathExists(checkpoint_file));
 }
 
+// Disable instantiation of parametrized tests for disk access sandboxing on
+// Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_InProcess DISABLED_InProcess
+#define MAYBE_OutOfProcess DISABLED_OutOfProcess
+#else
+#define MAYBE_InProcess InProcess
+#define MAYBE_OutOfProcess OutOfProcess
+#endif  // BUILDFLAG(IS_ANDROID)
+
 INSTANTIATE_TEST_SUITE_P(
-    InProcess,
-    NetworkServiceDataMigrationBrowserTestWithFailures,
+    MAYBE_InProcess,
+    MAYBE_NetworkServiceDataMigrationBrowserTestWithFailures,
     ::testing::Combine(::testing::Values(true),
                        ::testing::ValuesIn(kFailureTypes)));
 INSTANTIATE_TEST_SUITE_P(
-    OutOfProcess,
-    NetworkServiceDataMigrationBrowserTestWithFailures,
+    MAYBE_OutOfProcess,
+    MAYBE_NetworkServiceDataMigrationBrowserTestWithFailures,
     ::testing::Combine(::testing::Values(false),
                        ::testing::ValuesIn(kFailureTypes)));
+
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 
 class NetworkServiceInProcessBrowserTest : public ContentBrowserTest {
  public:
   NetworkServiceInProcessBrowserTest() {
-    std::vector<base::Feature> features;
+    std::vector<base::test::FeatureRef> features;
     features.push_back(features::kNetworkServiceInProcess);
-    scoped_feature_list_.InitWithFeatures(features,
-                                          std::vector<base::Feature>());
+    scoped_feature_list_.InitWithFeatures(
+        features, std::vector<base::test::FeatureRef>());
   }
 
   NetworkServiceInProcessBrowserTest(
@@ -1628,7 +1603,7 @@ class NetworkServiceWithUDPSocketLimit : public NetworkServiceBrowserTest {
         network::mojom::NetworkContextParams::New();
     context_params->cert_verifier_params = GetCertVerifierParams(
         cert_verifier::mojom::CertVerifierCreationParams::New());
-    GetNetworkService()->CreateNetworkContext(
+    CreateNetworkContextInNetworkService(
         network_context.BindNewPipeAndPassReceiver(),
         std::move(context_params));
     return network_context;

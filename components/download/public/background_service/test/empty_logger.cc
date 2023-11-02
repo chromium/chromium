@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,12 +13,12 @@ void EmptyLogger::AddObserver(Observer* observer) {}
 
 void EmptyLogger::RemoveObserver(Observer* observer) {}
 
-base::Value EmptyLogger::GetServiceStatus() {
-  return base::Value();
+base::Value::Dict EmptyLogger::GetServiceStatus() {
+  return base::Value::Dict();
 }
 
-base::Value EmptyLogger::GetServiceDownloads() {
-  return base::Value();
+base::Value::List EmptyLogger::GetServiceDownloads() {
+  return base::Value::List();
 }
 
 }  // namespace test

@@ -1,18 +1,27 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_BROWSER_SPEECH_AUDIO_ENCODER_H_
 #define CONTENT_BROWSER_SPEECH_AUDIO_ENCODER_H_
 
+#include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "content/browser/speech/audio_buffer.h"
 #include "third_party/flac/include/FLAC/stream_encoder.h"
 
 namespace content{
 class AudioChunk;
+
+class FlacStreamEncoderDeleter {
+ public:
+  void operator()(FLAC__StreamEncoder* ptr) {
+    FLAC__stream_encoder_delete(ptr);
+  }
+};
 
 // Provides a simple interface to encode raw audio using FLAC codec.
 class AudioEncoder {
@@ -41,7 +50,7 @@ class AudioEncoder {
  private:
   AudioBuffer encoded_audio_buffer_;
 
-  FLAC__StreamEncoder* encoder_;
+  std::unique_ptr<FLAC__StreamEncoder, FlacStreamEncoderDeleter> encoder_;
   bool is_encoder_initialized_;
 };
 

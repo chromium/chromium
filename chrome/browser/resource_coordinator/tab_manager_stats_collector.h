@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -98,12 +98,6 @@ class TabManagerStatsCollector final : public SessionRestoreObserver {
 
   // Update session and sequence information for UKM recording.
   void UpdateSessionAndSequence();
-
-  // Helper function for RecordSampledTabData. Records a single UKM entry for
-  // the provided DecisionDetails and destination lifecycle state.
-  static void RecordDecisionDetails(LifecycleUnit* lifecycle_unit,
-                                    const DecisionDetails& decision_details,
-                                    LifecycleUnitState new_state);
 
   static const char kHistogramSessionRestoreSwitchToTab[];
   static const char kHistogramSessionRestoreTabSwitchLoadTime[];

@@ -46,7 +46,7 @@ namespace blink {
 class SecurityOrigin;
 class WebURL;
 
-class WebSecurityOrigin {
+class BLINK_PLATFORM_EXPORT WebSecurityOrigin {
  public:
   ~WebSecurityOrigin() { Reset(); }
 
@@ -57,55 +57,54 @@ class WebSecurityOrigin {
     return *this;
   }
 
-  BLINK_PLATFORM_EXPORT static WebSecurityOrigin CreateFromString(
-      const WebString&);
-  BLINK_PLATFORM_EXPORT static WebSecurityOrigin Create(const WebURL&);
+  static WebSecurityOrigin CreateFromString(const WebString&);
+  static WebSecurityOrigin Create(const WebURL&);
 
-  BLINK_PLATFORM_EXPORT void Reset();
-  BLINK_PLATFORM_EXPORT void Assign(const WebSecurityOrigin&);
+  void Reset();
+  void Assign(const WebSecurityOrigin&);
 
   bool IsNull() const { return private_.IsNull(); }
 
-  BLINK_PLATFORM_EXPORT WebString Protocol() const;
-  BLINK_PLATFORM_EXPORT WebString Host() const;
+  WebString Protocol() const;
+  WebString Host() const;
 
   // Like url::Origin::port, this returns the default port for standard URLs
   // with no explicit port set.
-  BLINK_PLATFORM_EXPORT uint16_t Port() const;
+  uint16_t Port() const;
 
   // A unique WebSecurityOrigin is the least privileged WebSecurityOrigin.
-  BLINK_PLATFORM_EXPORT bool IsOpaque() const;
+  bool IsOpaque() const;
 
   // Returns true if this WebSecurityOrigin can script objects in the given
   // SecurityOrigin. For example, call this function before allowing
   // script from one security origin to read or write objects from
   // another SecurityOrigin.
-  BLINK_PLATFORM_EXPORT bool CanAccess(const WebSecurityOrigin&) const;
+  bool CanAccess(const WebSecurityOrigin&) const;
 
   // Returns true if this WebSecurityOrigin can read content retrieved from
   // the given URL. For example, call this function before allowing script
   // from a given security origin to receive contents from a given URL.
-  BLINK_PLATFORM_EXPORT bool CanRequest(const WebURL&) const;
+  bool CanRequest(const WebURL&) const;
 
   // Returns true if this WebSecurityOrigin can display content from the given
   // URL (e.g., in an iframe or as an image). For example, web sites generally
   // cannot display content from the user's files system.
-  BLINK_PLATFORM_EXPORT bool CanDisplay(const WebURL&) const;
+  bool CanDisplay(const WebURL&) const;
 
   // Returns true if the origin loads resources either from the local
   // machine or over the network from a
   // cryptographically-authenticated origin, as described in
   // https://w3c.github.io/webappsec-secure-contexts/#is-origin-trustworthy.
-  BLINK_PLATFORM_EXPORT bool IsPotentiallyTrustworthy() const;
+  bool IsPotentiallyTrustworthy() const;
 
   // Returns a string representation of the WebSecurityOrigin.  The empty
   // WebSecurityOrigin is represented by "null".  The representation of a
   // non-empty WebSecurityOrigin resembles a standard URL.
-  BLINK_PLATFORM_EXPORT WebString ToString() const;
+  WebString ToString() const;
 
   // Returns true if this WebSecurityOrigin can access usernames and
   // passwords stored in password manager.
-  BLINK_PLATFORM_EXPORT bool CanAccessPasswordManager() const;
+  bool CanAccessPasswordManager() const;
 
   // This method implements HTML's "same origin" check, which verifies equality
   // of opaque origins, or exact (scheme,host,port) matches. Note that
@@ -117,20 +116,19 @@ class WebSecurityOrigin {
   // flag.
   //
   // https://html.spec.whatwg.org/#same-origin
-  BLINK_PLATFORM_EXPORT bool IsSameOriginWith(const WebSecurityOrigin&) const;
+  bool IsSameOriginWith(const WebSecurityOrigin&) const;
 
 #if INSIDE_BLINK
-  BLINK_PLATFORM_EXPORT WebSecurityOrigin(scoped_refptr<const SecurityOrigin>);
-  BLINK_PLATFORM_EXPORT WebSecurityOrigin& operator=(
-      scoped_refptr<const SecurityOrigin>);
-  BLINK_PLATFORM_EXPORT operator scoped_refptr<const SecurityOrigin>() const;
-  BLINK_PLATFORM_EXPORT const SecurityOrigin* Get() const;
+  WebSecurityOrigin(scoped_refptr<const SecurityOrigin>);
+  WebSecurityOrigin& operator=(scoped_refptr<const SecurityOrigin>);
+  operator scoped_refptr<const SecurityOrigin>() const;
+  const SecurityOrigin* Get() const;
 #endif
-  BLINK_PLATFORM_EXPORT WebSecurityOrigin(const url::Origin&);
-  BLINK_PLATFORM_EXPORT operator url::Origin() const;
+  WebSecurityOrigin(const url::Origin&);
+  operator url::Origin() const;
 
 #if DCHECK_IS_ON()
-  BLINK_PLATFORM_EXPORT bool operator==(const WebSecurityOrigin&) const;
+  bool operator==(const WebSecurityOrigin&) const;
 #endif
 
  private:

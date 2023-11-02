@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/display/display_configuration_controller.h"
 #include "ash/display/extended_mouse_warp_controller.h"
 #include "ash/display/null_mouse_warp_controller.h"
@@ -116,7 +117,7 @@ void MoveCursorTo(AshWindowTreeHost* ash_host,
   // Shrink further so that the mouse doesn't warp on the
   // edge. The right/bottom needs to be shrink by 2 to subtract
   // the 1 px from width/height value.
-  native_bounds.Inset(1, 1, 2, 2);
+  native_bounds.Inset(gfx::Insets::TLBR(1, 1, 2, 2));
 
   // Ensure that |point_in_native| is inside the |native_bounds|.
   point_in_native.SetToMax(native_bounds.origin());
@@ -167,7 +168,7 @@ void ShowDisplayErrorNotification(const std::u16string& message,
           GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
-              kNotifierDisplayError),
+              kNotifierDisplayError, NotificationCatalogName::kDisplayError),
           data,
           base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
               base::BindRepeating([](absl::optional<int> button_index) {
@@ -211,11 +212,7 @@ std::u16string GetDisplayErrorNotificationMessageForTest() {
 }
 
 bool ShouldUndoRotationForMirror() {
-  return Shell::Get()
-             ->display_manager()
-             ->layout_store()
-             ->forced_mirror_mode_for_tablet() ||
-         Shell::Get()->tablet_mode_controller()->is_in_tablet_physical_state();
+  return Shell::Get()->tablet_mode_controller()->is_in_tablet_physical_state();
 }
 
 }  // namespace ash

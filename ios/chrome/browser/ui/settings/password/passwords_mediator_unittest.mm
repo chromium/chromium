@@ -1,33 +1,40 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/settings/password/passwords_mediator.h"
 
-#include "base/strings/string_piece.h"
-#include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
-#include "components/password_manager/core/browser/password_manager_test_utils.h"
-#include "components/password_manager/core/browser/test_password_store.h"
-#include "components/password_manager/core/common/password_manager_features.h"
-#include "components/password_manager/core/common/password_manager_pref_names.h"
-#include "components/prefs/testing_pref_service.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "base/mac/foundation_util.h"
+#import "base/strings/string_piece.h"
+#import "base/strings/string_util.h"
+#import "base/strings/utf_string_conversions.h"
+#import "base/test/scoped_feature_list.h"
+#import "components/password_manager/core/browser/password_manager_test_utils.h"
+#import "components/password_manager/core/browser/test_password_store.h"
+#import "components/password_manager/core/browser/ui/credential_ui_entry.h"
+#import "components/password_manager/core/common/password_manager_features.h"
+#import "components/password_manager/core/common/password_manager_pref_names.h"
+#import "components/prefs/testing_pref_service.h"
+#import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/favicon/favicon_loader.h"
+#import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/main/test_browser.h"
-#include "ios/chrome/browser/passwords/ios_chrome_password_check_manager.h"
-#include "ios/chrome/browser/passwords/ios_chrome_password_check_manager_factory.h"
-#include "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
-#include "ios/chrome/browser/passwords/password_check_observer_bridge.h"
-#include "ios/chrome/browser/sync/sync_setup_service_factory.h"
-#include "ios/chrome/browser/sync/sync_setup_service_mock.h"
+#import "ios/chrome/browser/passwords/ios_chrome_password_check_manager.h"
+#import "ios/chrome/browser/passwords/ios_chrome_password_check_manager_factory.h"
+#import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
+#import "ios/chrome/browser/passwords/password_check_observer_bridge.h"
+#import "ios/chrome/browser/sync/sync_observer_bridge.h"
+#import "ios/chrome/browser/sync/sync_setup_service_factory.h"
+#import "ios/chrome/browser/sync/sync_setup_service_mock.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_consumer.h"
+#import "ios/chrome/browser/ui/settings/utils/password_auto_fill_status_observer.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller_test.h"
-#include "ios/web/public/test/web_task_environment.h"
-#include "testing/gmock/include/gmock/gmock.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/gtest_mac.h"
+#import "ios/web/public/test/web_task_environment.h"
+#import "testing/gmock/include/gmock/gmock.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -64,33 +71,47 @@ PasswordForm CreatePasswordForm() {
 }  // namespace
 
 @interface FakePasswordsConsumer : NSObject <PasswordsConsumer> {
-  std::vector<password_manager::PasswordForm> _savedForms;
-  std::vector<password_manager::PasswordForm> _blockedForms;
+  std::vector<password_manager::CredentialUIEntry> _passwords;
+  std::vector<password_manager::CredentialUIEntry> _blockedSites;
 }
+
+// Number of time the method updateOnDeviceEncryptionSessionAndUpdateTableView
+// was called. Used to test that primary account change and sync change
+// causes the update to occur.
+@property(nonatomic, assign) NSInteger numberOfCallToChangeOnDeviceEncryption;
+
+@property(nonatomic, assign) NSString* detailedText;
 
 @end
 
 @implementation FakePasswordsConsumer
 
 - (void)setPasswordCheckUIState:(PasswordCheckUIState)state
-      compromisedPasswordsCount:(NSInteger)count {
+    unmutedCompromisedPasswordsCount:(NSInteger)count {
 }
 
-- (void)setPasswordsForms:
-            (std::vector<password_manager::PasswordForm>)savedForms
-             blockedForms:
-                 (std::vector<password_manager::PasswordForm>)blockedForms {
-  _savedForms = savedForms;
-  _blockedForms = blockedForms;
+- (void)setPasswords:(std::vector<password_manager::CredentialUIEntry>)passwords
+        blockedSites:
+            (std::vector<password_manager::CredentialUIEntry>)blockedSites {
+  _passwords = passwords;
+  _blockedSites = blockedSites;
 }
 
-- (std::vector<password_manager::PasswordForm>)savedForms {
-  return _savedForms;
+- (void)updatePasswordsInOtherAppsDetailedText {
+  _detailedText = @"On";
+}
+
+- (std::vector<password_manager::CredentialUIEntry>)passwords {
+  return _passwords;
+}
+
+- (void)updateOnDeviceEncryptionSessionAndUpdateTableView {
+  self.numberOfCallToChangeOnDeviceEncryption += 1;
 }
 
 @end
 
-// Tests for Password Issues mediator.
+// Tests for Passwords mediator.
 class PasswordsMediatorTest : public BlockCleanupTest {
  protected:
   void SetUp() override {
@@ -109,9 +130,16 @@ class PasswordsMediatorTest : public BlockCleanupTest {
 
     consumer_ = [[FakePasswordsConsumer alloc] init];
 
-    mediator_ =
-        [[PasswordsMediator alloc] initWithPasswordCheckManager:password_check_
-                                                    syncService:syncService()];
+    mediator_ = [[PasswordsMediator alloc]
+        initWithPasswordCheckManager:password_check_
+                    syncSetupService:syncService()
+                       faviconLoader:IOSChromeFaviconLoaderFactory::
+                                         GetForBrowserState(
+                                             browser_state_.get())
+                     identityManager:IdentityManagerFactory::GetForBrowserState(
+                                         browser_state_.get())
+                         syncService:SyncServiceFactory::GetForBrowserState(
+                                         browser_state_.get())];
     mediator_.consumer = consumer_;
   }
 
@@ -164,12 +192,13 @@ TEST_F(PasswordsMediatorTest, NotifiesConsumerOnPasswordChange) {
   PasswordForm form = CreatePasswordForm();
   store()->AddLogin(form);
   RunUntilIdle();
-  EXPECT_THAT([consumer() savedForms], testing::ElementsAre(form));
+  EXPECT_THAT([consumer() passwords],
+              testing::ElementsAre(password_manager::CredentialUIEntry(form)));
 
   // Remove form from the store.
   store()->RemoveLogin(form);
   RunUntilIdle();
-  EXPECT_THAT([consumer() savedForms], testing::IsEmpty());
+  EXPECT_THAT([consumer() passwords], testing::IsEmpty());
 }
 
 // Duplicates of a form should be removed as well.
@@ -181,9 +210,35 @@ TEST_F(PasswordsMediatorTest, DeleteFormWithDuplicates) {
   store()->AddLogin(form);
   store()->AddLogin(duplicate);
   RunUntilIdle();
-  ASSERT_THAT([consumer() savedForms], testing::ElementsAre(form));
+  ASSERT_THAT([consumer() passwords],
+              testing::ElementsAre(password_manager::CredentialUIEntry(form)));
 
-  [mediator() deletePasswordForm:form];
+  [mediator() deleteCredential:password_manager::CredentialUIEntry(form)];
   RunUntilIdle();
-  EXPECT_THAT([consumer() savedForms], testing::IsEmpty());
+  EXPECT_THAT([consumer() passwords], testing::IsEmpty());
+}
+
+// Mediator should update consumer password autofill state.
+TEST_F(PasswordsMediatorTest, TestPasswordAutoFillDidChangeToStatusMethod) {
+  ASSERT_EQ([consumer() detailedText], nil);
+  [mediator() passwordAutoFillStatusDidChange];
+  EXPECT_NSEQ([consumer() detailedText], @"On");
+}
+
+TEST_F(PasswordsMediatorTest, SyncChangeTriggersChangeOnDeviceEncryption) {
+  DCHECK([mediator() conformsToProtocol:@protocol(SyncObserverModelBridge)]);
+  PasswordsMediator<SyncObserverModelBridge>* syncObserver =
+      static_cast<PasswordsMediator<SyncObserverModelBridge>*>(mediator());
+  [syncObserver onSyncStateChanged];
+  ASSERT_EQ(1, consumer().numberOfCallToChangeOnDeviceEncryption);
+}
+
+TEST_F(PasswordsMediatorTest, IdentityChangeTriggersChangeOnDeviceEncryption) {
+  DCHECK([mediator() conformsToProtocol:@protocol(SyncObserverModelBridge)]);
+  PasswordsMediator<IdentityManagerObserverBridgeDelegate>* syncObserver =
+      static_cast<PasswordsMediator<IdentityManagerObserverBridgeDelegate>*>(
+          mediator());
+  const signin::PrimaryAccountChangeEvent event;
+  [syncObserver onPrimaryAccountChanged:event];
+  ASSERT_EQ(1, consumer().numberOfCallToChangeOnDeviceEncryption);
 }

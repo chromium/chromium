@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "content/browser/aggregation_service/public_key_parsing_utils.h"
@@ -27,23 +28,8 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
-#include "url/origin.h"
-#include "url/third_party/mozilla/url_parse.h"
-#include "url/url_canon.h"
 
 namespace content {
-
-namespace {
-
-GURL GetPublicKeyUrl(const url::Origin& origin) {
-  url::Replacements<char> replacements;
-  static constexpr char kEndpointPath[] =
-      ".well-known/aggregation-service/keys.json";
-  replacements.SetPath(kEndpointPath, url::Component(0, strlen(kEndpointPath)));
-  return origin.GetURL().ReplaceComponents(replacements);
-}
-
-}  // namespace
 
 AggregationServiceNetworkFetcherImpl::AggregationServiceNetworkFetcherImpl(
     const base::Clock* clock,
@@ -55,8 +41,11 @@ AggregationServiceNetworkFetcherImpl::AggregationServiceNetworkFetcherImpl(
 
 AggregationServiceNetworkFetcherImpl::AggregationServiceNetworkFetcherImpl(
     const base::Clock* clock,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : clock_(*clock), url_loader_factory_(std::move(url_loader_factory)) {
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    bool enable_debug_logging)
+    : clock_(*clock),
+      url_loader_factory_(std::move(url_loader_factory)),
+      enable_debug_logging_(enable_debug_logging) {
   DCHECK(clock);
   DCHECK(url_loader_factory_);
 }
@@ -68,13 +57,14 @@ AggregationServiceNetworkFetcherImpl::~AggregationServiceNetworkFetcherImpl() =
 std::unique_ptr<AggregationServiceNetworkFetcherImpl>
 AggregationServiceNetworkFetcherImpl::CreateForTesting(
     const base::Clock* clock,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    bool enable_debug_logging) {
   return base::WrapUnique(new AggregationServiceNetworkFetcherImpl(
-      clock, std::move(url_loader_factory)));
+      clock, std::move(url_loader_factory), enable_debug_logging));
 }
 
 void AggregationServiceNetworkFetcherImpl::FetchPublicKeys(
-    const url::Origin& origin,
+    const GURL& url,
     NetworkFetchCallback callback) {
   DCHECK(storage_partition_ || url_loader_factory_);
 
@@ -85,10 +75,8 @@ void AggregationServiceNetworkFetcherImpl::FetchPublicKeys(
         storage_partition_->GetURLLoaderFactoryForBrowserProcess();
   }
 
-  GURL public_key_url = GetPublicKeyUrl(origin);
-
   auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url = public_key_url;
+  resource_request->url = url;
   resource_request->method = net::HttpRequestHeaders::kGetMethod;
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   // No cache read, always download from the network.
@@ -105,7 +93,7 @@ void AggregationServiceNetworkFetcherImpl::FetchPublicKeys(
           description:
             "Downloads public keys for helper servers requested by APIs that "
             "rely on private, secure aggregation (e.g. Attribution Reporting "
-            "API, see https://github.com/WICG/conversion-measurement-api). "
+            "API, see https://github.com/WICG/attribution-reporting-api). "
             "Keys are requested prior to aggregate reports being sent and are "
             "used to encrypt payloads for the helper servers."
           trigger:
@@ -148,20 +136,41 @@ void AggregationServiceNetworkFetcherImpl::FetchPublicKeys(
       url_loader_factory_.get(),
       base::BindOnce(
           &AggregationServiceNetworkFetcherImpl::OnSimpleLoaderComplete,
-          base::Unretained(this), std::move(it), origin, std::move(callback)),
+          base::Unretained(this), std::move(it), url, std::move(callback)),
       kMaxJsonSize);
 }
 
 void AggregationServiceNetworkFetcherImpl::OnSimpleLoaderComplete(
     UrlLoaderList::iterator it,
-    const url::Origin& origin,
+    const GURL& url,
     NetworkFetchCallback callback,
     std::unique_ptr<std::string> response_body) {
   std::unique_ptr<network::SimpleURLLoader> loader = std::move(*it);
   loaders_in_progress_.erase(it);
 
+  absl::optional<int> http_response_code;
+  if (loader->ResponseInfo() && loader->ResponseInfo()->headers)
+    http_response_code = loader->ResponseInfo()->headers->response_code();
+
+  // Since net errors are always negative and HTTP errors are always positive,
+  // it is fine to combine these in a single histogram.
+  bool net_ok = loader->NetError() == net::OK ||
+                loader->NetError() == net::ERR_HTTP_RESPONSE_CODE_FAILURE;
+  base::UmaHistogramSparse(
+      "PrivacySandbox.AggregationService.KeyFetcher.HttpResponseOrNetErrorCode",
+      net_ok ? http_response_code.value_or(1) : loader->NetError());
+
   if (!response_body) {
-    OnError(origin, std::move(callback), FetchError::kDownload,
+    if (enable_debug_logging_) {
+      LOG(ERROR) << "Key fetching failed, net error: "
+                 << net::ErrorToShortString(loader->NetError())
+                 << ", HTTP response code: "
+                 << (http_response_code
+                         ? base::NumberToString(*http_response_code)
+                         : "N/A");
+    }
+
+    OnError(url, std::move(callback), FetchStatus::kDownloadError,
             /*error_msg=*/"Public key network request failed.");
     return;
   }
@@ -169,21 +178,33 @@ void AggregationServiceNetworkFetcherImpl::OnSimpleLoaderComplete(
   base::Time response_time;
   // `expiry_time` will be null if the freshness lifetime is zero.
   base::Time expiry_time;
+  base::Time current_time = clock_.Now();
   if (const network::mojom::URLResponseHead* response_info =
           loader->ResponseInfo()) {
-    response_time = response_info->response_time.is_null()
-                        ? clock_.Now()
-                        : response_info->response_time;
+    response_time = response_info->response_time;
 
     if (const net::HttpResponseHeaders* headers =
             response_info->headers.get()) {
       base::TimeDelta freshness =
           headers->GetFreshnessLifetimes(response_time).freshness;
-      if (!freshness.is_zero())
-        expiry_time = response_time + freshness;
+      if (!freshness.is_zero()) {
+        DCHECK(freshness.is_positive());
+        // Uses `response_time` as current time to get the age at response time
+        // as an offset. `expiry_time` is calculated in the same way as
+        // `HttpResponseHeaders::RequiresValidation`.
+        expiry_time =
+            response_time + freshness -
+            headers->GetCurrentAge(response_info->request_time, response_time,
+                                   /*current_time=*/response_time);
+        if (expiry_time <= current_time) {
+          OnError(url, std::move(callback), FetchStatus::kExpiredKeyError,
+                  /*error_msg=*/"Public key has already expired.");
+          return;
+        }
+      }
     }
   } else {
-    response_time = clock_.Now();
+    response_time = current_time;
   }
 
   // Since DataDecoder parses untrusted data in a separate process if necessary,
@@ -191,44 +212,59 @@ void AggregationServiceNetworkFetcherImpl::OnSimpleLoaderComplete(
   data_decoder::DataDecoder::ParseJsonIsolated(
       *response_body,
       base::BindOnce(&AggregationServiceNetworkFetcherImpl::OnJsonParse,
-                     weak_factory_.GetWeakPtr(), origin, std::move(callback),
+                     weak_factory_.GetWeakPtr(), url, std::move(callback),
                      std::move(response_time), std::move(expiry_time)));
 
   // TODO(crbug.com/1232599): Add performance metrics for key fetching.
 }
 
 void AggregationServiceNetworkFetcherImpl::OnJsonParse(
-    const url::Origin& origin,
+    const GURL& url,
     NetworkFetchCallback callback,
     base::Time fetch_time,
     base::Time expiry_time,
     data_decoder::DataDecoder::ValueOrError result) {
-  if (!result.value) {
-    OnError(origin, std::move(callback), FetchError::kJsonParse, *result.error);
+  if (!result.has_value()) {
+    OnError(url, std::move(callback), FetchStatus::kJsonParseError,
+            /*error_msg=*/result.error());
     return;
   }
 
-  std::vector<PublicKey> keys =
-      aggregation_service::GetPublicKeys(result.value.value());
+  std::vector<PublicKey> keys = aggregation_service::GetPublicKeys(*result);
   if (keys.empty()) {
-    OnError(origin, std::move(callback), FetchError::kJsonParse,
+    OnError(url, std::move(callback), FetchStatus::kInvalidKeyError,
             /*error_msg=*/"Public key parsing failed");
     return;
   }
+
+  RecordFetchStatus(FetchStatus::kSuccess);
 
   std::move(callback).Run(PublicKeyset(std::move(keys), std::move(fetch_time),
                                        std::move(expiry_time)));
 }
 
 void AggregationServiceNetworkFetcherImpl::OnError(
-    const url::Origin& origin,
+    const GURL& url,
     NetworkFetchCallback callback,
-    FetchError error,
+    FetchStatus error,
     const std::string& error_msg) {
+  DCHECK_NE(error, FetchStatus::kSuccess);
+  RecordFetchStatus(error);
+
   // TODO(crbug.com/1232601): Look into better backoff logic for fetching and
   // parsing error.
 
+  if (enable_debug_logging_) {
+    LOG(ERROR) << error_msg;
+  }
+
   std::move(callback).Run(absl::nullopt);
+}
+
+void AggregationServiceNetworkFetcherImpl::RecordFetchStatus(
+    FetchStatus status) const {
+  base::UmaHistogramEnumeration(
+      "PrivacySandbox.AggregationService.KeyFetcher.Status2", status);
 }
 
 }  // namespace content

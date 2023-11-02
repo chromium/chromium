@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,13 +6,12 @@
 #define CHROME_BROWSER_BACKGROUND_FETCH_BACKGROUND_FETCH_DELEGATE_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class BackgroundFetchDelegateImpl;
 class Profile;
 
-class BackgroundFetchDelegateFactory
-    : public BrowserContextKeyedServiceFactory {
+class BackgroundFetchDelegateFactory : public ProfileKeyedServiceFactory {
  public:
   static BackgroundFetchDelegateImpl* GetForProfile(Profile* profile);
   static BackgroundFetchDelegateFactory* GetInstance();
@@ -29,8 +28,6 @@ class BackgroundFetchDelegateFactory
   ~BackgroundFetchDelegateFactory() override;
 
   KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
 };
 

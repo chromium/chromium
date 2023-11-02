@@ -1,10 +1,9 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/system/audio/mic_gain_slider_view.h"
 
-#include "ash/components/audio/cras_audio_handler.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
@@ -12,6 +11,7 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "base/bind.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -52,7 +52,8 @@ MicGainSliderView::MicGainSliderView(MicGainSliderController* controller)
   slider()->SetVisible(false);
   announcement_view_ = AddChildView(std::make_unique<views::View>());
   Update(false /* by_user */);
-  announcement_view_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+  announcement_view_->GetViewAccessibility().AnnounceText(
+      toast_label()->GetText());
 }
 
 MicGainSliderView::MicGainSliderView(MicGainSliderController* controller,
@@ -114,12 +115,6 @@ void MicGainSliderView::Update(bool by_user) {
                                            : IDS_ASH_STATUS_AREA_TOAST_MIC_ON));
   }
 
-  if (announcement_view_) {
-    announcement_view_->GetViewAccessibility().OverrideName(
-        l10n_util::GetStringUTF16(is_muted ? IDS_ASH_STATUS_AREA_TOAST_MIC_OFF
-                                           : IDS_ASH_STATUS_AREA_TOAST_MIC_ON));
-  }
-
   // To indicate that the volume is muted, set the volume slider to the minimal
   // visual style.
   slider()->SetRenderingStyle(
@@ -159,7 +154,9 @@ void MicGainSliderView::OnInputMutedByMicrophoneMuteSwitchChanged(bool muted) {
 
 void MicGainSliderView::OnInputMuteChanged(bool mute_on) {
   Update(true /* by_user */);
-  announcement_view_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+  announcement_view_->GetViewAccessibility().AnnounceText(
+      l10n_util::GetStringUTF16(mute_on ? IDS_ASH_STATUS_AREA_TOAST_MIC_OFF
+                                        : IDS_ASH_STATUS_AREA_TOAST_MIC_ON));
 }
 
 void MicGainSliderView::OnActiveInputNodeChanged() {

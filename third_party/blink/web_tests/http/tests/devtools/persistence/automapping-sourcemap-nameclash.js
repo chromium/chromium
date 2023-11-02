@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@
   Promise.all([getResourceContent('out.js'), getResourceContent('out.js? [sm]')]).then(onResourceContents);
 
   function onResourceContents(contents) {
-    var fs = new BindingsTestRunner.TestFileSystem('file:///var/www');
+    var fs = new BindingsTestRunner.TestFileSystem('/var/www');
     BindingsTestRunner.addFiles(fs, {
       'out.js': {content: contents[0], time: new Date('December 1, 1989')},
       'src/out.js': {content: contents[1], time: new Date('December 1, 1989')}

@@ -1,8 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/message_center/views/notification_view.h"
+
+#include <memory>
 
 #include "build/build_config.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -13,6 +15,7 @@
 #include "ui/gfx/text_elider.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/views/notification_background_painter.h"
+#include "ui/message_center/views/notification_control_button_factory.h"
 #include "ui/message_center/views/notification_control_buttons_view.h"
 #include "ui/message_center/views/notification_header_view.h"
 #include "ui/message_center/views/notification_view_base.h"
@@ -36,25 +39,27 @@ namespace {
 // TODO(crbug/1243889): Move the padding and spacing definition from
 // NotificationViewBase to this class.
 
-constexpr gfx::Insets kContentRowPadding(0, 12, 16, 12);
+constexpr auto kContentRowPadding = gfx::Insets::TLBR(0, 12, 16, 12);
 // TODO(tetsui): Move |kIconViewSize| to public/cpp/message_center_constants.h
 // and merge with contradicting |kNotificationIconSize|.
 constexpr gfx::Size kIconViewSize(36, 36);
-constexpr gfx::Insets kLeftContentPadding(2, 4, 0, 4);
-constexpr gfx::Insets kLeftContentPaddingWithIcon(2, 4, 0, 12);
+constexpr auto kLeftContentPadding = gfx::Insets::TLBR(2, 4, 0, 4);
+constexpr auto kLeftContentPaddingWithIcon = gfx::Insets::TLBR(2, 4, 0, 12);
 
 // Minimum size of a button in the actions row.
 constexpr gfx::Size kActionButtonMinSize(0, 32);
 
-constexpr int kMessageViewWidthWithIcon =
+constexpr int kMessageLabelWidthWithIcon =
     kNotificationWidth - kIconViewSize.width() -
     kLeftContentPaddingWithIcon.left() - kLeftContentPaddingWithIcon.right() -
     kContentRowPadding.left() - kContentRowPadding.right();
 
-constexpr int kMessageViewWidth =
+constexpr int kMessageLabelWidth =
     kNotificationWidth - kLeftContentPadding.left() -
     kLeftContentPadding.right() - kContentRowPadding.left() -
     kContentRowPadding.right();
+
+constexpr auto kLargeImageContainerPadding = gfx::Insets::TLBR(0, 16, 16, 16);
 
 // Max number of lines for title_view_.
 constexpr int kMaxLinesForTitleView = 1;
@@ -68,10 +73,10 @@ constexpr int kHeaderTextFontSize = 12;
 // Default paddings of the views of texts. Adjusted on Windows.
 // Top: 9px = 11px (from the mock) - 2px (outer padding).
 // Bottom: 6px from the mock.
-constexpr gfx::Insets kTextViewPaddingDefault(9, 0, 6, 0);
+constexpr auto kTextViewPaddingDefault = gfx::Insets::TLBR(9, 0, 6, 0);
 
-constexpr gfx::Insets kSettingsRowPadding(8, 0, 0, 0);
-constexpr gfx::Insets kSettingsRadioButtonPadding(14, 18);
+constexpr auto kSettingsRowPadding = gfx::Insets::TLBR(8, 0, 0, 0);
+constexpr auto kSettingsRadioButtonPadding = gfx::Insets::VH(14, 18);
 constexpr gfx::Insets kSettingsButtonRowPadding(8);
 
 gfx::FontList GetHeaderTextFontList() {
@@ -84,7 +89,7 @@ gfx::FontList GetHeaderTextFontList() {
 }
 
 gfx::Insets CalculateTopPadding(int font_list_height) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On Windows, the fonts can have slightly different metrics reported,
   // depending on where the code runs. In Chrome, DirectWrite is on, which means
   // font metrics are reported from Skia, which rounds from float using ceil.
@@ -96,7 +101,7 @@ gfx::Insets CalculateTopPadding(int font_list_height) {
   // by shrinking the top padding by 1.
   if (font_list_height != 15) {
     DCHECK_EQ(16, font_list_height);
-    return kTextViewPaddingDefault - gfx::Insets(1 /* top */, 0, 0, 0);
+    return kTextViewPaddingDefault - gfx::Insets::TLBR(1, 0, 0, 0);
   }
 #endif
 
@@ -139,6 +144,8 @@ class NotificationTextButton : public views::MdTextButton {
     views::MdTextButton::SetEnabledTextColors(color_);
     label()->SetAutoColorReadabilityEnabled(true);
   }
+
+  absl::optional<SkColor> color() const { return color_; }
 
  private:
   absl::optional<SkColor> color_;
@@ -201,7 +208,7 @@ class NotificationView::NotificationViewPathGenerator
     gfx::RectF bounds = rect;
     if (!preferred_size_.IsEmpty())
       bounds.set_size(gfx::SizeF(preferred_size_));
-    bounds.Inset(insets_);
+    bounds.Inset(gfx::InsetsF(insets_));
     gfx::RoundedCornersF corner_radius(top_radius_, top_radius_, bottom_radius_,
                                        bottom_radius_);
     return gfx::RRectF(bounds, corner_radius);
@@ -269,7 +276,13 @@ NotificationView::NotificationView(
   header_row->ConfigureLabelsStyle(font_list, text_view_padding, false);
   header_row->SetPreferredSize(header_row->GetPreferredSize() -
                                gfx::Size(GetInsets().width(), 0));
-  header_row->AddChildView(CreateControlButtonsBuilder().Build());
+  header_row->SetCallback(base::BindRepeating(
+      &NotificationView::HeaderRowPressed, base::Unretained(this)));
+  header_row->AddChildView(
+      CreateControlButtonsBuilder()
+          .SetNotificationControlButtonFactory(
+              std::make_unique<NotificationControlButtonFactory>())
+          .Build());
 
   auto content_row = CreateContentRowBuilder()
                          .SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -289,7 +302,10 @@ NotificationView::NotificationView(
 
   AddChildView(std::move(header_row));
   AddChildView(std::move(content_row));
-  AddChildView(CreateImageContainerBuilder().Build());
+  AddChildView(
+      CreateImageContainerBuilder()
+          .SetBorder(views::CreateEmptyBorder(kLargeImageContainerPadding))
+          .Build());
   AddChildView(CreateInlineSettingsBuilder().Build());
   AddChildView(CreateActionsRow());
 
@@ -311,9 +327,18 @@ NotificationView::~NotificationView() {
   views::InkDrop::Remove(this);
 }
 
+SkColor NotificationView::GetActionButtonColorForTesting(
+    views::LabelButton* action_button) {
+  NotificationTextButton* button =
+      static_cast<NotificationTextButton*>(action_button);
+  return button->color().value_or(SkColor());
+}
+
 void NotificationView::CreateOrUpdateHeaderView(
     const Notification& notification) {
-  header_row()->SetColor(notification.accent_color());
+  if (!notification.rich_notification_data().ignore_accent_color_for_text) {
+    header_row()->SetColor(notification.accent_color());
+  }
   header_row()->SetSummaryText(std::u16string());
   NotificationViewBase::CreateOrUpdateHeaderView(notification);
 }
@@ -324,7 +349,7 @@ void NotificationView::CreateOrUpdateTitleView(
       notification.type() == NOTIFICATION_TYPE_PROGRESS) {
     if (title_view_) {
       DCHECK(left_content()->Contains(title_view_));
-      left_content()->RemoveChildViewT(title_view_);
+      left_content()->RemoveChildViewT(title_view_.get());
       title_view_ = nullptr;
     }
     return;
@@ -407,7 +432,7 @@ void NotificationView::CreateOrUpdateInlineSettingsViews(
           IDS_MESSAGE_CENTER_BLOCK_ALL_NOTIFICATIONS;
       break;
     case NotifierType::CROSTINI_APPLICATION:
-      FALLTHROUGH;
+      [[fallthrough]];
     // PhoneHub notifications do not have inline settings.
     case NotifierType::PHONE_HUB:
       NOTREACHED();
@@ -466,22 +491,27 @@ void NotificationView::UpdateViewForExpandedState(bool expanded) {
   // Ideally, we should fix the original bug, but it seems there's no obvious
   // solution for the bug according to https://crbug.com/678337#c7, we should
   // ensure that the change won't break any of the users of BoxLayout class.
-  const int message_view_width =
-      (IsIconViewShown() ? kMessageViewWidthWithIcon : kMessageViewWidth) -
+  const int message_label_width =
+      (IsIconViewShown() ? kMessageLabelWidthWithIcon : kMessageLabelWidth) -
       GetInsets().width();
   if (title_view_)
-    title_view_->SizeToFit(message_view_width);
-  if (message_view()) {
-    message_view()->SetMultiLine(true);
-    message_view()->SetMaxLines(expanded ? kMaxLinesForExpandedMessageView
-                                         : kMaxLinesForMessageView);
-    message_view()->SizeToFit(message_view_width);
+    title_view_->SizeToFit(message_label_width);
+  if (message_label()) {
+    message_label()->SetMultiLine(true);
+    message_label()->SetMaxLines(expanded ? kMaxLinesForExpandedMessageLabel
+                                          : kMaxLinesForMessageLabel);
+    message_label()->SizeToFit(message_label_width);
   }
   NotificationViewBase::UpdateViewForExpandedState(expanded);
 }
 
 gfx::Size NotificationView::GetIconViewSize() const {
   return kIconViewSize;
+}
+
+int NotificationView::GetLargeImageViewMaxWidth() const {
+  return kNotificationWidth - kLargeImageContainerPadding.width() -
+         GetInsets().width();
 }
 
 void NotificationView::OnThemeChanged() {
@@ -518,6 +548,7 @@ void NotificationView::ToggleInlineSettings(const ui::Event& event) {
   dont_block_button_->SetChecked(true);
 
   NotificationViewBase::ToggleInlineSettings(event);
+  PreferredSizeChanged();
 
   if (inline_settings_row()->GetVisible())
     AddBackgroundAnimation(event);
@@ -540,8 +571,8 @@ bool NotificationView::IsExpandable() const {
     return false;
 
   // Expandable if the message exceeds one line.
-  if (message_view() && message_view()->GetVisible() &&
-      message_view()->GetRequiredLines() > 1) {
+  if (message_label() && message_label()->GetVisible() &&
+      message_label()->GetRequiredLines() > 1) {
     return true;
   }
   // Expandable if there is at least one inline action.
@@ -637,6 +668,23 @@ void NotificationView::RemoveBackgroundAnimation() {
 std::vector<views::View*> NotificationView::GetChildrenForLayerAdjustment() {
   return {header_row(), block_all_button_, dont_block_button_,
           settings_done_button_};
+}
+
+void NotificationView::HeaderRowPressed() {
+  if (!IsExpandable() || !content_row()->GetVisible())
+    return;
+
+  // Tapping anywhere on |header_row_| can expand the notification, though only
+  // |expand_button| can be focused by TAB.
+  SetManuallyExpandedOrCollapsed(true);
+  auto weak_ptr = weak_ptr_factory_.GetWeakPtr();
+  SetExpanded(!IsExpanded());
+  // Check |this| is valid before continuing, because ToggleExpanded() might
+  // cause |this| to be deleted.
+  if (!weak_ptr)
+    return;
+  Layout();
+  SchedulePaint();
 }
 
 }  // namespace message_center

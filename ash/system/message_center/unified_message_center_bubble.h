@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,6 +20,7 @@ namespace ash {
 
 class UnifiedSystemTray;
 class UnifiedMessageCenterView;
+class SystemShadow;
 
 // Manages the bubble that contains UnifiedMessageCenterView.
 // Shows the bubble on `ShowBubble()`, and closes the bubble on the destructor.
@@ -28,8 +29,7 @@ class ASH_EXPORT UnifiedMessageCenterBubble
       public TrayBubbleBase,
       public TrayBubbleView::Delegate,
       public TimeToClickRecorder::Delegate,
-      public views::ViewObserver,
-      public views::WidgetObserver {
+      public views::ViewObserver {
  public:
   explicit UnifiedMessageCenterBubble(UnifiedSystemTray* tray);
 
@@ -38,6 +38,9 @@ class ASH_EXPORT UnifiedMessageCenterBubble
       delete;
 
   ~UnifiedMessageCenterBubble() override;
+
+  // Return the bounds of the bubble in the screen.
+  gfx::Rect GetBoundsInScreen() const;
 
   // We need the code to show the bubble explicitly separated from the
   // contructor. This is to prevent trigerring the TrayEventFilter from within
@@ -55,7 +58,9 @@ class ASH_EXPORT UnifiedMessageCenterBubble
   // widget whenever the quick settings widget is resized.
   void UpdatePosition();
 
-  // Inform message_center_view_ of focus being acquired.
+  // Inform `UnifiedMessageCenterView` of focus being acquired. The oldest
+  // notification should be focused if `reverse` is `true`. Otherwise, if
+  // `reverse` is `false`, the newest notification should be focused.
   void FocusEntered(bool reverse);
 
   // Relinquish focus and transfer it to the quick settings widget.
@@ -64,9 +69,6 @@ class ASH_EXPORT UnifiedMessageCenterBubble
   // Activate quick settings bubble. Used when the message center is going
   // invisible.
   void ActivateQuickSettingsBubble();
-
-  // Move focus to the first notification.
-  void FocusFirstNotification();
 
   // Returns true if notifications are shown.
   bool IsMessageCenterVisible();
@@ -85,6 +87,8 @@ class ASH_EXPORT UnifiedMessageCenterBubble
 
   // views::ViewObserver:
   void OnViewPreferredSizeChanged(views::View* observed_view) override;
+  void OnViewVisibilityChanged(views::View* observed_view,
+                               views::View* starting_view) override;
 
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
@@ -111,6 +115,7 @@ class ASH_EXPORT UnifiedMessageCenterBubble
 
   UnifiedSystemTray* const tray_;
   std::unique_ptr<Border> border_;
+  std::unique_ptr<SystemShadow> shadow_;
 
   views::Widget* bubble_widget_ = nullptr;
   TrayBubbleView* bubble_view_ = nullptr;

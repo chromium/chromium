@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,8 @@
 
 #include "base/format_macros.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/scheduled_action.h"
-#include "third_party/blink/renderer/bindings/core/v8/source_location.h"
 #include "third_party/blink/renderer/core/core_probe_sink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event_listener.h"
@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/parser/html_document_parser.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "v8/include/v8-metrics.h"
 
 namespace blink {
@@ -239,7 +240,7 @@ void PerformanceMonitor::Did(const probe::CallFunction& probe) {
   String text = String::Format("'%s' handler took %" PRId64 "ms",
                                name.Utf8().c_str(), duration.InMilliseconds());
   InnerReportGenericViolation(probe.context, handler_type, text, duration,
-                              SourceLocation::FromFunction(probe.function));
+                              CaptureSourceLocation(probe.function));
 }
 
 void PerformanceMonitor::Will(const probe::V8Compile& probe) {
@@ -308,15 +309,18 @@ void PerformanceMonitor::DidProcessTask(base::TimeTicks start_time,
       auto subscriptions_it = subscriptions_.find(kLongTask);
       if (subscriptions_it != subscriptions_.end()) {
         ClientThresholds* client_thresholds = subscriptions_it->value;
-        DCHECK(client_thresholds);
-
+        HeapVector<Member<Client>> client_thresholds_vector;
         for (const auto& it : *client_thresholds) {
-          if (it.value < task_time) {
-            it.key->ReportLongTask(
-                start_time, end_time,
-                task_has_multiple_contexts_ ? nullptr : task_execution_context_,
-                task_has_multiple_contexts_);
-          }
+          if (it.value < task_time)
+            client_thresholds_vector.push_back(it.key);
+        }
+        std::sort(client_thresholds_vector.begin(), client_thresholds_vector.end(),
+                  recordreplay::CompareMemberByPointerId<Member<Client>>());
+        for (const auto& client : client_thresholds_vector) {
+          client->ReportLongTask(
+              start_time, end_time,
+              task_has_multiple_contexts_ ? nullptr : task_execution_context_,
+              task_has_multiple_contexts_);
         }
       }
     }
@@ -330,9 +334,16 @@ void PerformanceMonitor::DidProcessTask(base::TimeTicks start_time,
   if (!layout_threshold.is_zero() && layout_time > layout_threshold) {
     ClientThresholds* client_thresholds = subscriptions_.at(kLongLayout);
     DCHECK(client_thresholds);
+    HeapVector<Member<Client>> client_thresholds_vector;
     for (const auto& it : *client_thresholds) {
-      if (it.value < layout_time)
-        it.key->ReportLongLayout(layout_time);
+      if (it.value < layout_time) {
+        client_thresholds_vector.push_back(it.key);
+      }
+    }
+    std::sort(client_thresholds_vector.begin(), client_thresholds_vector.end(),
+              recordreplay::CompareMemberByPointerId<Member<Client>>());
+    for (const auto& client : client_thresholds_vector) {
+      client->ReportLongLayout(layout_time);
     }
   }
 }
@@ -348,7 +359,7 @@ void PerformanceMonitor::InnerReportGenericViolation(
     return;
 
   if (!location)
-    location = SourceLocation::Capture(context);
+    location = CaptureSourceLocation(context);
 
   ClientThresholds* client_thresholds = subscriptions_it->value;
   for (const auto& it : *client_thresholds) {

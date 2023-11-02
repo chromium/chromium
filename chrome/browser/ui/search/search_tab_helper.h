@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -24,7 +25,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #error "Instant is only used on desktop";
 #endif
 
@@ -39,7 +40,6 @@ class Image;
 
 class GURL;
 class InstantService;
-class NTPUserDataLogger;
 class Profile;
 class SearchIPCRouterTest;
 class SkBitmap;
@@ -79,8 +79,6 @@ class SearchTabHelper : public content::WebContentsObserver,
   // Overridden from contents::WebContentsObserver:
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override {}
   void TitleWasSet(content::NavigationEntry* entry) override;
   void DidFinishLoad(content::RenderFrameHost* render_frame_host,
                      const GURL& validated_url) override;
@@ -94,7 +92,7 @@ class SearchTabHelper : public content::WebContentsObserver,
   void OnUndoAllMostVisitedDeletions() override;
 
   // Overridden from InstantServiceObserver:
-  void NtpThemeChanged(const NtpTheme& theme) override;
+  void NtpThemeChanged(NtpTheme theme) override;
   void MostVisitedInfoChanged(
       const InstantMostVisitedInfo& most_visited_info) override;
 
@@ -124,15 +122,11 @@ class SearchTabHelper : public content::WebContentsObserver,
       uint8_t line,
       bool accepted);
 
-  content::WebContents* web_contents_;
-
   SearchIPCRouter ipc_router_;
 
-  InstantService* instant_service_;
+  raw_ptr<InstantService> instant_service_;
 
   bool is_setting_title_ = false;
-
-  std::unique_ptr<NTPUserDataLogger> logger_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 

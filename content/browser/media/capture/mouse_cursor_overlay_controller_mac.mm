@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_nsobject.h"
+#include "base/memory/raw_ptr.h"
 #include "skia/ext/skia_utils_mac.h"
 #include "ui/base/cocoa/tracking_area.h"
 
@@ -117,7 +118,7 @@ class MouseCursorOverlayController::Observer {
     controller_->OnMouseMoved(gfx::PointF(location_aura.x, location_aura.y));
   }
 
-  MouseCursorOverlayController* const controller_;
+  const raw_ptr<MouseCursorOverlayController> controller_;
   base::scoped_nsobject<NSView> view_;
   base::scoped_nsobject<MouseCursorOverlayTracker> mouse_tracker_;
 };

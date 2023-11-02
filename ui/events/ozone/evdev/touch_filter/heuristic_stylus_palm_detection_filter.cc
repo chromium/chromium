@@ -1,10 +1,12 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/events/ozone/evdev/touch_filter/heuristic_stylus_palm_detection_filter.h"
 
 #include <linux/input.h>
+
+#include <ostream>
 
 namespace ui {
 
@@ -47,10 +49,10 @@ void HeuristicStylusPalmDetectionFilter::Filter(
     base::TimeDelta time_since_stylus_for_touch_start =
         touch_started_time_[i] - latest_stylus_time;
     if (time_since_stylus_for_touch_start < time_after_stylus_to_cancel_) {
-      slots_to_suppress->set(i, 1);
+      slots_to_suppress->set(i, true);
     } else if (time_since_stylus_for_touch_start < time_after_stylus_to_hold_ &&
                stroke_length_[i] <= hold_stroke_count_) {
-      slots_to_hold->set(i, 1);
+      slots_to_hold->set(i, true);
     } else {
       active_touches++;
     }

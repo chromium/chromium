@@ -1,0 +1,316 @@
+<style>
+  :host {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+    prefers-color-scheme: light;
+  }
+
+  app-header {
+    background-color: rgb(0, 134, 179);
+    color: white;
+    font-size: 200%;
+    padding: 8px;
+    text-align: center;
+  }
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    font-family: inherit;
+  }
+
+  .page-container {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    justify-content: center;
+  }
+
+  .config-form {
+    margin: 0 auto;
+    min-width: 32rem;
+    padding: 0 1rem;
+    width: 100%;
+  }
+
+  .form-item {
+    align-items: center;
+    border-bottom: none;
+    display: flex;
+    font-size: 0.8rem;
+    padding: 0 0 8px 0;
+  }
+
+  .form-item>label {
+    flex: 1;
+    font-size: 1rem;
+  }
+
+  .form-item>select {
+    background: inherit;
+    border: 2px solid #666;
+    border-radius: .25rem;
+    flex: 2;
+    padding: .1rem;
+  }
+
+  .form-item>cr-radio-group,
+  .form-item>cr-checkbox {
+    display: flex;
+    flex: 2;
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  cr-input {
+    --cr-input-background-color: rgba(255, 255, 255, 0);
+    --cr-input-padding-bottom: 0;
+    --cr-input-padding-top: 0;
+    --cr-primary-text-color: auto;
+    --cr-input-error-display: none;
+    background: inherit;
+    border: 2px solid #666;
+    border-radius: .25rem;
+  }
+
+  .delayed-notification {
+    gap: 1%;
+    margin-top: 3px;
+  }
+
+  #delayed-notification-input {
+    width: 3rem;
+  }
+
+  .error {
+    color: rgb(217, 48, 37);
+    font-size: 0.9rem;
+    max-width: 32rem;
+  }
+
+  .go-link {
+    color: rgb(0, 0, 0);
+  }
+
+  .countdown {
+    color: rgb(0, 0, 0);
+    font-size: 1rem;
+    margin-bottom: 0;
+    margin-top: 0;
+  }
+
+  cr-radio-button {
+    padding: 0 auto;
+    --cr-radio-button-label-spacing: 10px;
+  }
+
+  cr-radio-group#progress-percent>cr-radio-button,
+  cr-radio-group#num-buttons>cr-radio-button {
+    --cr-radio-group-item-padding: 6px;
+  }
+
+  .config-form>button {
+    background: rgb(0, 134, 179);
+    border-radius: 0.25rem;
+    color: #f8f8f8;
+    font-size: 1rem;
+    font-weight: bold;
+    margin-inline-end: 0.25em;
+    margin-top: 0.5em;
+    padding: 0.25em 0.5em;
+    width: max-content;
+  }
+</style>
+<app-header>
+  <app-toolbar>Notification Tester</app-toolbar>
+</app-header>
+<div class="page-container">
+  <div class="column">
+    <div class="config-form">
+      <h2> General Settings </h2>
+
+      <div class="form-item">
+        <label for="notifier-type"> Notifier Type </label>
+        <cr-radio-group id="notifier-type"
+          selected="{{notifMetadata.notifierType}}">
+          <cr-radio-button name="System" label="System"></cr-radio-button>
+          <cr-radio-button name="Web" label="Web"></cr-radio-button>
+        </cr-radio-group>
+      </div>
+
+      <select-custom select-value="{{notifMetadata.notificationType}}"
+        display-label="Notification Type"
+        select-elements="[[notificationTypeSelectList]]"
+        selectid="notification-type" no-custom-input="true"></select-custom>
+
+      <select-custom select-value="{{notifMetadata.id}}"
+        display-label="Notification ID"
+        select-elements="[[notificationIDSelectList]]"
+        selectid="notification-id"></select-custom>
+
+      <select-custom select-value="{{notifMetadata.title}}"
+        display-label="Title" select-elements="[[titleSelectList]]"
+        selectid="title"></select-custom>
+
+      <select-custom select-value="{{notifMetadata.message}}"
+        display-label="Message" select-elements="[[messageSelectList]]"
+        selectid="message"></select-custom>
+
+      <select-custom select-value="{{notifMetadata.icon}}" display-label="Icon"
+        select-elements="[[iconSelectList]]" selectid="icon"
+        no-custom-input="true"></select-custom>
+
+      <select-custom select-value="{{notifMetadata.displaySource}}"
+        display-label="Display Source"
+        select-elements="[[displaySourceSelectList]]" selectid="source">
+      </select-custom>
+
+      <select-custom select-value="{{notifMetadata.originURL}}"
+        display-label="Origin URL" select-elements="[[originURLSelectList]]"
+        selectid="origin-url"></select-custom>
+
+      <template is="dom-if" if="[[isSystemNotification]]">
+        <select-custom select-value="{{notifMetadata.warningLevel}}"
+          display-label="Warning Level"
+          select-elements="[[warningLevelSelectList]]" selectid="warning-level"
+          no-custom-input="true"></select-custom>
+      </template>
+    </div>
+    <div class="config-form">
+      <h2> Rich Notification Data (optional fields) </h2>
+
+      <select-custom select-value="{{notifMetadata.richDataImage}}"
+      display-label="Image" select-elements="[[imageSelectList]]"
+        selectid="image" no-custom-input="true"></select-custom>
+
+      <select-custom select-value="{{notifMetadata.richDataSmallImage}}"
+        display-label="Small Image" select-elements="[[smallImageSelectList]]"
+        selectid="small-image" no-custom-input="true"></select-custom>
+
+      <select-custom select-value="{{notifMetadata.richDataPriority}}"
+        display-label="Priority" select-elements="[[prioritySelectList]]"
+        selectid="priority" no-custom-input="true"></select-custom>
+
+      <select-custom select-value="{{notifMetadata.richDataTimestamp}}"
+        display-label="Timestamp" select-elements="[[timestampSelectList]]"
+        selectid="timestamp" no-custom-input="true"></select-custom>
+
+      <div class="form-item">
+        <label for="never-timeout">Never Timeout</label>
+        <cr-checkbox id="never-timeout"
+          checked="{{notifMetadata.richDataNeverTimeout}}"></cr-checkbox>
+      </div>
+
+      <div class="form-item">
+        <label for="pinned">Pinned</label>
+        <cr-checkbox id="pinned" checked="{{notifMetadata.richDataPinned}}">
+        </cr-checkbox>
+      </div>
+
+      <h3> Type Specific Fields </h3>
+      <template is="dom-if" if="[[showTypeSpecificDesc]]">
+        <p> Change the notification type to 'Progress' or 'Multiple' to see more
+          options! </p>
+      </template>
+
+      <template is="dom-if" if="[[showMultiOptions]]">
+        <div class="form-item">
+          <label for="num-notif-items"> # Notif Items </label>
+          <cr-radio-group id="num-notif-items"
+            selected="{{notifMetadata.richDataNumNotifItems}}">
+            <cr-radio-button name="0" label="0"></cr-radio-button>
+            <cr-radio-button name="1" label="1"></cr-radio-button>
+            <cr-radio-button name="2" label="2"></cr-radio-button>
+            <cr-radio-button name="3" label="3"></cr-radio-button>
+            <cr-radio-button name="4" label="4"></cr-radio-button>
+          </cr-radio-group>
+        </div>
+      </template>
+
+      <template is="dom-if" if="[[showProgressOptions]]">
+        <div class="form-item">
+          <label for="progress-percent"> Progress % </label>
+          <cr-radio-group id="progress-percent"
+            selected="{{notifMetadata.richDataProgress}}">
+            <cr-radio-button name="-1" label="N/A"></cr-radio-button>
+            <cr-radio-button name="0" label="0%"></cr-radio-button>
+            <cr-radio-button name="50" label="50%"></cr-radio-button>
+            <cr-radio-button name="100" label="100%"></cr-radio-button>
+          </cr-radio-group>
+        </div>
+        <select-custom select-value="{{notifMetadata.richDataProgressStatus}}"
+          display-label="Progress Status"
+          select-elements="[[progressStatusSelectList]]" selectid="prog-status">
+        </select-custom>
+      </template>
+    </div>
+  </div>
+  <div class="column">
+    <div class="config-form">
+      <h2> Buttons </h2>
+
+      <div class="form-item">
+        <label for="show-settings">Show Settings</label>
+        <cr-checkbox id="show-settings"
+          checked="{{notifMetadata.richDataShowSettings}}"></cr-checkbox>
+      </div>
+
+      <div class="form-item">
+        <label for="show-snooze">Show Snooze</label>
+        <cr-checkbox id="show-snooze"
+          checked="{{notifMetadata.richDataShowSnooze}}"></cr-checkbox>
+      </div>
+
+      <div class="form-item">
+        <label for="num-buttons"> # Buttons </label>
+        <cr-radio-group id="num-buttons"
+          selected="{{notifMetadata.richDataNumButtons}}">
+          <cr-radio-button name="0" label="None"></cr-radio-button>
+          <cr-radio-button name="1" label="1"></cr-radio-button>
+          <cr-radio-button name="2" label="2"></cr-radio-button>
+          <cr-radio-button name="3" label="3"></cr-radio-button>
+        </cr-radio-group>
+      </div>
+    </div>
+    <div class="config-form">
+      <h2> Generation Settings </h2>
+
+      <div class="form-item delayed-notification">
+        <p class="countdown">Generate after</p>
+        <template is="dom-if" if="[[!generatingDelayedNotification]]">
+          <cr-input id="delayed-notification-input" type="number" min="0"
+            max="10" placeholder="0" value="{{notificationDelayTime}}"
+            auto-validate="true" invalid="{{delayTimeInvalid}}">
+          </cr-input>
+        </template>
+        <div class="countdown" hidden$="[[!generatingDelayedNotification]]">
+          <strong>[[countdownDisplayTime]]</strong>
+        </div>
+        <p class="countdown">seconds</p>
+        <div class="error" hidden$="[[!delayTimeInvalid]]">
+          Error: Enter a number from 0
+          to 10.
+        </div>
+      </div>
+
+      <div class="form-item error">
+        Note: Notifications generated while a delayed notification is
+        underway may not appear synchronously.
+      </div>
+
+      <div class="form-item error go-link">
+        See go/cros-notification-tester to understand how to best use this tool.
+      </div>
+
+      <button type="button" id="generateNotifBtn" on-click="onClickGenerate">
+        Generate </button>
+      <button type="button" id="resetFormBtn" on-click="onClickReset">
+        Reset </button>
+      <button type="button" id="generateAllNotifBtn"
+        on-click="onClickGenerateAllTypes">
+        View All Types </button>
+    </div>
+  </div>

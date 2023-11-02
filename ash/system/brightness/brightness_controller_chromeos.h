@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/brightness_control_delegate.h"
-#include "base/compiler_specific.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
@@ -27,8 +26,8 @@ class ASH_EXPORT BrightnessControllerChromeos
   ~BrightnessControllerChromeos() override {}
 
   // Overridden from ash::BrightnessControlDelegate:
-  void HandleBrightnessDown(const ui::Accelerator& accelerator) override;
-  void HandleBrightnessUp(const ui::Accelerator& accelerator) override;
+  void HandleBrightnessDown() override;
+  void HandleBrightnessUp() override;
   void SetBrightnessPercent(double percent, bool gradual) override;
   void GetBrightnessPercent(
       base::OnceCallback<void(absl::optional<double>)> callback) override;

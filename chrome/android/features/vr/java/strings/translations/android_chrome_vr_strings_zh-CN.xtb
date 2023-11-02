@@ -1,10 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-CN">
-<translation id="1729516292547892356">要查看虚拟实境内容，请更新 Google VR 服务</translation>
 <translation id="1938981467853765413">提供反馈</translation>
 <translation id="360207483134687714">帮助我们改进 Chrome 中的虚拟现实体验</translation>
 <translation id="3789841737615482174">安装</translation>
+<translation id="4088809042407767679">更新 Google VR 服务？</translation>
+<translation id="4648883053543509795">安装 Google VR 服务？</translation>
 <translation id="473775607612524610">更新</translation>
-<translation id="9071742570345586758">要查看虚拟实境内容，请安装 Google VR 服务</translation>
+<translation id="5010116926836661047">查看虚拟实境内容</translation>
 </translationbundle>

@@ -1,16 +1,17 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef MEDIA_GPU_ANDROID_DIRECT_SHARED_IMAGE_VIDEO_PROVIDER_H_
 #define MEDIA_GPU_ANDROID_DIRECT_SHARED_IMAGE_VIDEO_PROVIDER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder.h"
 #include "gpu/command_buffer/service/ref_counted_lock.h"
-#include "gpu/command_buffer/service/shared_image_representation.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "gpu/command_buffer/service/texture_owner.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info.h"
@@ -98,7 +99,7 @@ class GpuSharedImageVideoFactory
 
   void OnWillDestroyStub(bool have_context) override;
 
-  gpu::CommandBufferStub* stub_ = nullptr;
+  raw_ptr<gpu::CommandBufferStub> stub_ = nullptr;
   bool is_vulkan_ = false;
 
   THREAD_CHECKER(thread_checker_);

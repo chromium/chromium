@@ -1,9 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "mojo/public/cpp/bindings/lib/associated_interface_ptr_state.h"
 
+#include "base/record_replay.h"
 #include "mojo/public/cpp/bindings/lib/task_runner_helper.h"
 
 namespace mojo {
@@ -11,7 +12,13 @@ namespace internal {
 
 AssociatedInterfacePtrStateBase::AssociatedInterfacePtrStateBase() = default;
 
-AssociatedInterfacePtrStateBase::~AssociatedInterfacePtrStateBase() = default;
+AssociatedInterfacePtrStateBase::~AssociatedInterfacePtrStateBase() {
+  // Endpoint clients must be destroyed at deterministic points, so leak the endpoint
+  // if this state is destroyed during a GC.
+  if (recordreplay::AreEventsDisallowed("~AssociatedInterfacePtrStateBase")) {
+    endpoint_client_.release();
+  }
+}
 
 void AssociatedInterfacePtrStateBase::QueryVersion(
     base::OnceCallback<void(uint32_t)> callback) {
@@ -59,7 +66,9 @@ void AssociatedInterfacePtrStateBase::Bind(
     uint32_t version,
     std::unique_ptr<MessageReceiver> validator,
     scoped_refptr<base::SequencedTaskRunner> runner,
-    const char* interface_name) {
+    const char* interface_name,
+    MessageToMethodInfoCallback method_info_callback,
+    MessageToMethodNameCallback method_name_callback) {
   DCHECK(!endpoint_client_);
   DCHECK_EQ(0u, version_);
   DCHECK(handle.is_valid());
@@ -70,7 +79,7 @@ void AssociatedInterfacePtrStateBase::Bind(
   endpoint_client_ = std::make_unique<InterfaceEndpointClient>(
       std::move(handle), nullptr, std::move(validator), false,
       GetTaskRunnerToUseFromUserProvidedTaskRunner(std::move(runner)), 0u,
-      interface_name);
+      interface_name, method_info_callback, method_name_callback);
 }
 
 ScopedInterfaceEndpointHandle AssociatedInterfacePtrStateBase::PassHandle() {

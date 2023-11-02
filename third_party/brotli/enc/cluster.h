@@ -11,8 +11,8 @@
 
 #include "../common/platform.h"
 #include <brotli/types.h>
-#include "./histogram.h"
-#include "./memory.h"
+#include "histogram.h"
+#include "memory.h"
 
 #if defined(__cplusplus) || defined(c_plusplus)
 extern "C" {
@@ -28,15 +28,15 @@ typedef struct HistogramPair {
 #define CODE(X) /* Declaration */;
 
 #define FN(X) X ## Literal
-#include "./cluster_inc.h"  /* NOLINT(build/include) */
+#include "cluster_inc.h"  /* NOLINT(build/include) */
 #undef FN
 
 #define FN(X) X ## Command
-#include "./cluster_inc.h"  /* NOLINT(build/include) */
+#include "cluster_inc.h"  /* NOLINT(build/include) */
 #undef FN
 
 #define FN(X) X ## Distance
-#include "./cluster_inc.h"  /* NOLINT(build/include) */
+#include "cluster_inc.h"  /* NOLINT(build/include) */
 #undef FN
 
 #undef CODE

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,10 +30,10 @@ constexpr int kTooltipLeftRightMargin = 8;
 
 ShelfTooltipBubble::ShelfTooltipBubble(views::View* anchor,
                                        ShelfAlignment alignment,
-                                       SkColor background_color,
                                        const std::u16string& text)
-    : ShelfBubble(anchor, alignment, background_color) {
-  set_margins(gfx::Insets(kTooltipTopBottomMargin, kTooltipLeftRightMargin));
+    : ShelfBubble(anchor, alignment) {
+  set_margins(
+      gfx::Insets::VH(kTooltipTopBottomMargin, kTooltipLeftRightMargin));
   set_close_on_deactivate(false);
   SetCanActivate(false);
   set_accept_events(false);
@@ -43,16 +43,14 @@ ShelfTooltipBubble::ShelfTooltipBubble(views::View* anchor,
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   const auto* color_provider = AshColorProvider::Get();
   const bool is_dark_light_mode_enabled = features::IsDarkLightModeEnabled();
-  auto background_color_type = AshColorProvider::BaseLayerType::kTransparent80;
-  auto text_color_type = AshColorProvider::ContentLayerType::kTextColorPrimary;
-  const SkColor tooltip_background =
+  const SkColor tooltip_background = color_provider->GetBaseLayerColor(
       is_dark_light_mode_enabled
-          ? color_provider->GetInvertedBaseLayerColor(background_color_type)
-          : color_provider->GetBaseLayerColor(background_color_type);
-  const SkColor tooltip_text =
+          ? AshColorProvider::BaseLayerType::kInvertedTransparent80
+          : AshColorProvider::BaseLayerType::kTransparent80);
+  const SkColor tooltip_text = color_provider->GetContentLayerColor(
       is_dark_light_mode_enabled
-          ? color_provider->GetInvertedContentLayerColor(text_color_type)
-          : color_provider->GetContentLayerColor(text_color_type);
+          ? AshColorProvider::ContentLayerType::kInvertedTextColorPrimary
+          : AshColorProvider::ContentLayerType::kTextColorPrimary);
 
   set_color(tooltip_background);
   label->SetEnabledColor(tooltip_text);

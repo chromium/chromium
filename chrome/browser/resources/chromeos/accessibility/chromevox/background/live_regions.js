@@ -1,10 +1,17 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 /**
  * @fileoverview Implements support for live regions in ChromeVox Next.
  */
+import {AutomationUtil} from '../../common/automation_util.js';
+import {CursorRange} from '../../common/cursors/range.js';
+import {QueueMode, TtsCategory} from '../common/tts_interface.js';
+
+import {ChromeVoxState} from './chromevox_state.js';
+import {Output} from './output/output.js';
+import {OutputEventType} from './output/output_types.js';
 
 const AutomationNode = chrome.automation.AutomationNode;
 const RoleType = chrome.automation.RoleType;
@@ -14,12 +21,13 @@ const TreeChangeObserverFilter = chrome.automation.TreeChangeObserverFilter;
 const TreeChangeType = chrome.automation.TreeChangeType;
 
 /**
- * ChromeVox2 live region handler.
+ * ChromeVox live region handler.
  */
 export class LiveRegions {
   /**
    * @param {!ChromeVoxState} chromeVoxState The ChromeVox state object,
    *     keeping track of the current mode and current range.
+   * @private
    */
   constructor(chromeVoxState) {
     /**
@@ -52,6 +60,17 @@ export class LiveRegions {
     chrome.automation.addTreeChangeObserver(
         TreeChangeObserverFilter.LIVE_REGION_TREE_CHANGES,
         this.onTreeChange.bind(this));
+  }
+
+  /**
+   * @param {!ChromeVoxState} chromeVoxState The ChromeVox state object,
+   *     keeping track of the current mode and current range.
+   */
+  static init(chromeVoxState) {
+    if (LiveRegions.instance) {
+      throw 'Error: Trying to create two instances of singleton LiveRegions';
+    }
+    LiveRegions.instance = new LiveRegions(chromeVoxState);
   }
 
   /**
@@ -149,7 +168,7 @@ export class LiveRegions {
    * @private
    */
   outputLiveRegionChangeForNode_(node, opt_prependFormatStr) {
-    const range = cursors.Range.fromNode(node);
+    const range = CursorRange.fromNode(node);
     const output = new Output();
     output.withSpeechCategory(TtsCategory.LIVE);
 
@@ -190,7 +209,6 @@ export class LiveRegions {
     // describe their tree changes especially during page load within the
     // LiveRegions.LIVE_REGION_MIN_SAME_NODE_MS to prevent excessive chatter.
     this.addNodeToNodeSetRecursive_(node);
-    window.prev = output;
     output.go();
     this.lastLiveRegionTime_ = currentTime;
   }
@@ -243,22 +261,22 @@ export class LiveRegions {
 /**
  * Live region events received in fewer than this many milliseconds will
  * queue, otherwise they'll be output with a category flush.
- * @type {number}
- * @const
+ * @const {number}
  */
 LiveRegions.LIVE_REGION_QUEUE_TIME_MS = 5000;
 
 /**
  * Live region events received on the same node in fewer than this many
  * milliseconds will be dropped to avoid a stream of constant chatter.
- * @type {number}
- * @const
+ * @const {number}
  */
 LiveRegions.LIVE_REGION_MIN_SAME_NODE_MS = 20;
 
 /**
  * Whether live regions from background tabs should be announced or not.
- * @type {boolean}
- * @private
+ * @private {boolean}
  */
 LiveRegions.announceLiveRegionsFromBackgroundTabs_ = false;
+
+/** @type {LiveRegions} */
+LiveRegions.instance;

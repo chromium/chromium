@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Extract source file information from .ninja files."""
@@ -48,7 +48,7 @@ class _SourceMapper:
     obj_path = by_basename.get(obj_name)
     if not obj_path:
       # Found the library, but it doesn't list the .o file.
-      logging.warning('no obj basename for %s', path)
+      logging.warning('no obj basename for %s %s', path, obj_name)
       return None
     return self._dep_map.get(obj_path)
 

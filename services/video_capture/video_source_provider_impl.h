@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <map>
 
+#include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -38,7 +39,6 @@ class VideoSourceProviderImpl : public mojom::VideoSourceProvider {
   void AddSharedMemoryVirtualDevice(
       const media::VideoCaptureDeviceInfo& device_info,
       mojo::PendingRemote<mojom::Producer> producer,
-      bool send_buffer_handles_to_producer_as_raw_file_descriptors,
       mojo::PendingReceiver<mojom::SharedMemoryVirtualDevice>
           virtual_device_receiver) override;
   void AddTextureVirtualDevice(
@@ -55,7 +55,7 @@ class VideoSourceProviderImpl : public mojom::VideoSourceProvider {
   void OnClientDisconnectedOrClosed();
   void OnVideoSourceLastClientDisconnected(const std::string& device_id);
 
-  DeviceFactory* const device_factory_;
+  const raw_ptr<DeviceFactory> device_factory_;
   base::RepeatingClosure on_last_client_disconnected_cb_;
   int client_count_ = 0;
   int closed_but_not_yet_disconnected_client_count_ = 0;

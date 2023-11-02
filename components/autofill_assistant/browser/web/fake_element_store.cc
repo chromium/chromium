@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,15 +17,18 @@ FakeElementStore::~FakeElementStore() = default;
 
 ClientStatus FakeElementStore::GetElement(
     const std::string& client_id,
-    ElementFinder::Result* out_element) const {
+    ElementFinderResult* out_element) const {
   auto it = object_map_.find(client_id);
   if (it == object_map_.end()) {
     return ClientStatus(CLIENT_ID_RESOLUTION_FAILED);
   }
 
-  out_element->dom_object = it->second;
+  out_element->SetObjectId(it->second.object_data.object_id);
+  out_element->SetNodeFrameId(it->second.object_data.node_frame_id);
+  out_element->SetFrameStack(it->second.frame_stack);
   if (web_contents_ != nullptr) {
-    out_element->container_frame_host = web_contents_->GetMainFrame();
+    out_element->SetRenderFrameHostForTest(
+        web_contents_->GetPrimaryMainFrame());
   }
   return OkClientStatus();
 }

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include "chrome/browser/tab_contents/web_contents_collection.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
 namespace user_prefs {
 class PrefRegistrySyncable;
@@ -59,16 +60,27 @@ class PermissionBubbleMediaAccessHandler
       content::WebContents* web_contents,
       int64_t request_id,
       content::MediaStreamRequest request,
-      const blink::MediaStreamDevices& devices,
+      const blink::mojom::StreamDevicesSet& stream_devices_set,
       blink::mojom::MediaStreamRequestResult result,
       bool blocked_by_permissions_policy,
       ContentSetting audio_setting,
       ContentSetting video_setting);
-  void OnAccessRequestResponse(content::WebContents* web_contents,
-                               int64_t request_id,
-                               const blink::MediaStreamDevices& devices,
-                               blink::mojom::MediaStreamRequestResult result,
-                               std::unique_ptr<content::MediaStreamUI> ui);
+  void OnAccessRequestResponse(
+      content::WebContents* web_contents,
+      int64_t request_id,
+      const blink::mojom::StreamDevicesSet& stream_devices_set,
+      blink::mojom::MediaStreamRequestResult result,
+      std::unique_ptr<content::MediaStreamUI> ui);
+  // OnAccessRequestResponse cannot be used together with base::BindOnce as
+  // StreamDevicesSet& cannot be captured (neither copyable nor movable).
+  // This method uses StreamDevicesSetPtr (movable) and forwards the data
+  // to OnAccessRequestResponse when calling the callback.
+  void OnAccessRequestResponseForBinding(
+      content::WebContents* web_contents,
+      int64_t request_id,
+      blink::mojom::StreamDevicesSetPtr stream_devices_set,
+      blink::mojom::MediaStreamRequestResult result,
+      std::unique_ptr<content::MediaStreamUI> ui);
 
   // WebContentsCollection::Observer:
   void WebContentsDestroyed(content::WebContents* web_contents) override;

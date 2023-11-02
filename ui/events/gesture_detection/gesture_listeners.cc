@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,16 +10,16 @@ bool SimpleGestureListener::OnDown(const MotionEvent& e) {
   return false;
 }
 
-void SimpleGestureListener::OnShowPress(const MotionEvent& e) {
-}
+void SimpleGestureListener::OnShowPress(const MotionEvent& e) {}
 
 bool SimpleGestureListener::OnSingleTapUp(const MotionEvent& e,
                                           int repeat_count) {
   return false;
 }
 
-void SimpleGestureListener::OnLongPress(const MotionEvent& e) {
-}
+void SimpleGestureListener::OnShortPress(const MotionEvent& e) {}
+
+void SimpleGestureListener::OnLongPress(const MotionEvent& e) {}
 
 bool SimpleGestureListener::OnScroll(const MotionEvent& e1,
                                      const MotionEvent& e2,

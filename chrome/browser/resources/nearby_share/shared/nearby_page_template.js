@@ -1,125 +1,150 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
-import {CloseReason} from './types.m.js';
 
 /**
  * @fileoverview The 'nearby-page-template is used as a template for pages. It
  * provide a consistent setup for all pages with title, sub-title, body slot
  * and button options.
  */
-Polymer({
-  is: 'nearby-page-template',
 
-  properties: {
-    /** @type {?string} */
-    title: {
-      type: String,
-    },
+import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 
-    /** @type {?string} */
-    subTitle: {
-      type: String,
-    },
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-    /**
-     * Alternate subtitle for screen readers. If not falsey, then the
-     * #pageSubTitle is aria-hidden and the #a11yAnnouncedPageSubTitle is
-     * rendered on screen readers instead. Changes to this value will result in
-     * aria-live announcements.
-     * @type {?string}
-     * */
-    a11yAnnouncedSubTitle: {
-      type: String,
-      value: null,
-    },
+import {getTemplate} from './nearby_page_template.html.js';
+import {CloseReason} from './types.js';
 
-    /**
-     * Text to show on the action button. If either this is falsey, or if
-     * |closeOnly| is true, then the action button is hidden.
-     * @type {?string}
-     * */
-    actionButtonLabel: {
-      type: String,
-    },
+/** @polymer */
+export class NearbyPageTemplateElement extends PolymerElement {
+  static get is() {
+    return 'nearby-page-template';
+  }
 
-    /** @type {string} */
-    actionButtonEventName: {type: String, value: 'action'},
+  static get template() {
+    return getTemplate();
+  }
 
-    actionDisabled: {
-      type: Boolean,
-      value: false,
-    },
+  static get properties() {
+    return {
+      /** @type {?string} */
+      title: {
+        type: String,
+      },
 
-    /**
-     * Text to show on the cancel button. If either this is falsey, or if
-     * |closeOnly| is true, then the cancel button is hidden.
-     * @type {?string}
-     * */
-    cancelButtonLabel: {
-      type: String,
-    },
+      /** @type {?string} */
+      subTitle: {
+        type: String,
+      },
 
-    /** @type {string} */
-    cancelButtonEventName: {
-      type: String,
-      value: 'cancel',
-    },
+      /**
+       * Alternate subtitle for screen readers. If not falsey, then the
+       * #pageSubTitle is aria-hidden and the #a11yAnnouncedPageSubTitle is
+       * rendered on screen readers instead. Changes to this value will result
+       * in aria-live announcements.
+       * @type {?string}
+       * */
+      a11yAnnouncedSubTitle: {
+        type: String,
+        value: null,
+      },
 
-    /**
-     * Text to show on the utility button. If either this is falsey, or if
-     * |closeOnly| is true, then the utility button is hidden.
-     * @type {?string}
-     * */
-    utilityButtonLabel: {
-      type: String,
-    },
+      /**
+       * Text to show on the action button. If either this is falsey, or if
+       * |closeOnly| is true, then the action button is hidden.
+       * @type {?string}
+       * */
+      actionButtonLabel: {
+        type: String,
+      },
 
-    /**
-     * When true, shows the open-in-new icon to the left of the button label.
-     * @type {boolean}
-     * */
-    utilityButtonOpenInNew: {
-      type: Boolean,
-      value: false,
-    },
+      /** @type {string} */
+      actionButtonEventName: {type: String, value: 'action'},
 
-    /** @type {string} */
-    utilityButtonEventName: {
-      type: String,
-      value: 'utility',
-    },
+      actionDisabled: {
+        type: Boolean,
+        value: false,
+      },
 
-    /**
-     * When true, hide all other buttons and show a close button.
-     * @type {boolean}
-     * */
-    closeOnly: {
-      type: Boolean,
-      value: false,
-    },
-  },
+      /**
+       * Text to show on the cancel button. If either this is falsey, or if
+       * |closeOnly| is true, then the cancel button is hidden.
+       * @type {?string}
+       * */
+      cancelButtonLabel: {
+        type: String,
+      },
+
+      /** @type {string} */
+      cancelButtonEventName: {
+        type: String,
+        value: 'cancel',
+      },
+
+      /**
+       * Text to show on the utility button. If either this is falsey, or if
+       * |closeOnly| is true, then the utility button is hidden.
+       * @type {?string}
+       * */
+      utilityButtonLabel: {
+        type: String,
+      },
+
+      /**
+       * When true, shows the open-in-new icon to the left of the button label.
+       * @type {boolean}
+       * */
+      utilityButtonOpenInNew: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** @type {string} */
+      utilityButtonEventName: {
+        type: String,
+        value: 'utility',
+      },
+
+      /**
+       * When true, hide all other buttons and show a close button.
+       * @type {boolean}
+       * */
+      closeOnly: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
+
+  /**
+   * @param {string} eventName
+   * @param {*=} detail
+   * @private
+   */
+  fire_(eventName, detail) {
+    this.dispatchEvent(new CustomEvent(
+        eventName, {bubbles: true, composed: true, detail: detail || {}}));
+  }
 
   /** @private */
   onActionClick_() {
-    this.fire(this.actionButtonEventName);
-  },
+    this.fire_(this.actionButtonEventName);
+  }
 
   /** @private */
   onCancelClick_() {
-    this.fire(this.cancelButtonEventName);
-  },
+    this.fire_(this.cancelButtonEventName);
+  }
 
   /** @private */
   onUtilityClick_() {
-    this.fire(this.utilityButtonEventName);
-  },
+    this.fire_(this.utilityButtonEventName);
+  }
 
   /** @private */
   onCloseClick_() {
-    this.fire('close', {reason: CloseReason.UNKNOWN});
-  },
+    this.fire_('close', {reason: CloseReason.UNKNOWN});
+  }
 
   /**
    * @return {string} aria-labelledby ids for the dialog
@@ -131,7 +156,7 @@ Polymer({
       labelIds += ' pageSubTitle';
     }
     return labelIds;
-  },
+  }
 
   /**
    * @return {string|undefined} aria-hidden value for the #subTitle div.
@@ -143,5 +168,7 @@ Polymer({
       return 'true';
     }
     return undefined;
-  },
-});
+  }
+}
+
+customElements.define(NearbyPageTemplateElement.is, NearbyPageTemplateElement);

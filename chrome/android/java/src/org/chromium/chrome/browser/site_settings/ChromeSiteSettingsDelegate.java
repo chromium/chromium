@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,7 @@ package org.chromium.chrome.browser.site_settings;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 
 import androidx.annotation.Nullable;
 import androidx.preference.Preference;
@@ -15,27 +14,29 @@ import androidx.preference.Preference;
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.browserservices.permissiondelegation.TrustedWebActivityPermissionManager;
+import org.chromium.chrome.browser.browserservices.permissiondelegation.InstalledWebappPermissionManager;
+import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataTabsFragment;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.notifications.channels.SiteChannelsManager;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSnackbarController;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
+import org.chromium.chrome.browser.settings.FaviconLoader;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
-import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
-import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsDelegate;
-import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.Origin;
+import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.ContentFeatureList;
+import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.url.GURL;
 
@@ -45,22 +46,23 @@ import java.util.Set;
  * A SiteSettingsDelegate instance that contains Chrome-specific Site Settings logic.
  */
 public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
-    // Constants for favicon processing.
-    // TODO(crbug.com/1076571): Move these constants to colors.xml and dimens.xml
-    private static final int FAVICON_BACKGROUND_COLOR = 0xff969696;
-    // Sets the favicon corner radius to 12.5% of favicon size (2dp for a 16dp favicon)
-    private static final float FAVICON_CORNER_RADIUS_FRACTION = 0.125f;
-    // Sets the favicon text size to 62.5% of favicon size (10dp for a 16dp favicon)
-    private static final float FAVICON_TEXT_SIZE_FRACTION = 0.625f;
-
     private final Context mContext;
     private final Profile mProfile;
     private ManagedPreferenceDelegate mManagedPreferenceDelegate;
     private PrivacySandboxSnackbarController mPrivacySandboxController;
+    private LargeIconBridge mLargeIconBridge;
 
     public ChromeSiteSettingsDelegate(Context context, Profile profile) {
         mContext = context;
         mProfile = profile;
+    }
+
+    @Override
+    public void onDestroyView() {
+        if (mLargeIconBridge != null) {
+            mLargeIconBridge.destroy();
+            mLargeIconBridge = null;
+        }
     }
 
     /**
@@ -92,55 +94,11 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     }
 
     @Override
-    public void getFaviconImageForURL(GURL faviconUrl, Callback<Bitmap> callback) {
-        new FaviconLoader(faviconUrl, callback, mProfile);
-    }
-
-    /**
-     * A helper class that groups a FaviconHelper with its corresponding Callback.
-     *
-     * This object is kept alive by being passed to the native
-     * FaviconHelper.getLocalFaviconImageForURL. Its reference will be released after the callback
-     * has been called.
-     */
-    private class FaviconLoader implements FaviconImageCallback {
-        private final GURL mFaviconUrl;
-        private final Callback<Bitmap> mCallback;
-        private final int mFaviconSizePx;
-        // Loads the favicons asynchronously.
-        private final FaviconHelper mFaviconHelper;
-
-        private FaviconLoader(GURL faviconUrl, Callback<Bitmap> callback, Profile profile) {
-            mFaviconUrl = faviconUrl;
-            mCallback = callback;
-            mFaviconSizePx =
-                    mContext.getResources().getDimensionPixelSize(R.dimen.default_favicon_size);
-            mFaviconHelper = new FaviconHelper();
-
-            if (!mFaviconHelper.getLocalFaviconImageForURL(
-                        profile, mFaviconUrl, mFaviconSizePx, this)) {
-                onFaviconAvailable(/*image=*/null, null);
-            }
+    public void getFaviconImageForURL(GURL faviconUrl, Callback<Drawable> callback) {
+        if (mLargeIconBridge == null) {
+            mLargeIconBridge = new LargeIconBridge(mProfile);
         }
-
-        @Override
-        public void onFaviconAvailable(Bitmap image, GURL unusedIconUrl) {
-            mFaviconHelper.destroy();
-
-            if (image == null) {
-                // Invalid or no favicon, produce a generic one.
-                Resources resources = mContext.getResources();
-                float density = resources.getDisplayMetrics().density;
-                int faviconSizeDp = Math.round(mFaviconSizePx / density);
-                RoundedIconGenerator faviconGenerator =
-                        new RoundedIconGenerator(resources, faviconSizeDp, faviconSizeDp,
-                                Math.round(FAVICON_CORNER_RADIUS_FRACTION * faviconSizeDp),
-                                FAVICON_BACKGROUND_COLOR,
-                                Math.round(FAVICON_TEXT_SIZE_FRACTION * faviconSizeDp));
-                image = faviconGenerator.generateIconForUrl(mFaviconUrl);
-            }
-            mCallback.onResult(image);
-        }
+        FaviconLoader.loadFavicon(mContext, mLargeIconBridge, faviconUrl, callback);
     }
 
     @Override
@@ -159,8 +117,8 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
             case SiteSettingsCategory.Type.BLUETOOTH_SCANNING:
                 return CommandLine.getInstance().hasSwitch(
                         ContentSwitches.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES);
-            case SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE:
-                return ContentFeatureList.isEnabled(ContentFeatureList.REQUEST_DESKTOP_SITE_GLOBAL);
+            case SiteSettingsCategory.Type.FEDERATED_IDENTITY_API:
+                return ContentFeatureList.isEnabled(ContentFeatures.FED_CM);
             case SiteSettingsCategory.Type.NFC:
                 return ContentFeatureList.isEnabled(ContentFeatureList.WEB_NFC);
             default:
@@ -169,8 +127,18 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     }
 
     @Override
+    public boolean isIncognitoModeEnabled() {
+        return IncognitoUtils.isIncognitoModeEnabled();
+    }
+
+    @Override
     public boolean isQuietNotificationPromptsFeatureEnabled() {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.QUIET_NOTIFICATION_PROMPTS);
+    }
+
+    @Override
+    public boolean isPrivacySandboxFirstPartySetsUIFeatureEnabled() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_FPS_UI);
     }
 
     @Override
@@ -187,7 +155,7 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     @Nullable
     public String getDelegateAppNameForOrigin(Origin origin, @ContentSettingsType int type) {
         if (type == ContentSettingsType.NOTIFICATIONS) {
-            return TrustedWebActivityPermissionManager.get().getDelegateAppName(origin);
+            return InstalledWebappPermissionManager.get().getDelegateAppName(origin);
         }
 
         return null;
@@ -197,7 +165,7 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     @Nullable
     public String getDelegatePackageNameForOrigin(Origin origin, @ContentSettingsType int type) {
         if (type == ContentSettingsType.NOTIFICATIONS) {
-            return TrustedWebActivityPermissionManager.get().getDelegatePackageName(origin);
+            return InstalledWebappPermissionManager.get().getDelegatePackageName(origin);
         }
 
         return null;
@@ -230,14 +198,14 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
 
     @Override
     public Set<String> getAllDelegatedNotificationOrigins() {
-        return TrustedWebActivityPermissionManager.get().getAllDelegatedOrigins();
+        return InstalledWebappPermissionManager.get().getAllDelegatedOrigins();
     }
 
     @Override
     public void maybeDisplayPrivacySandboxSnackbar() {
         // Only show the snackbar when the Privacy Sandbox APIs are enabled.
-        if (mPrivacySandboxController != null
-                && PrivacySandboxBridge.isPrivacySandboxEnabled()) {
+        if (mPrivacySandboxController != null && PrivacySandboxBridge.isPrivacySandboxEnabled()
+                && !PrivacySandboxBridge.isPrivacySandboxRestricted()) {
             mPrivacySandboxController.showSnackbar();
         }
     }
@@ -247,5 +215,41 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
         if (mPrivacySandboxController != null) {
             mPrivacySandboxController.dismissSnackbar();
         }
+    }
+
+    @Override
+    public boolean isFirstPartySetsDataAccessEnabled() {
+        return PrivacySandboxBridge.isFirstPartySetsDataAccessEnabled();
+    }
+
+    @Override
+    public boolean isFirstPartySetsDataAccessManaged() {
+        return PrivacySandboxBridge.isFirstPartySetsDataAccessManaged();
+    }
+
+    @Override
+    public boolean isPartOfManagedFirstPartySet(String origin) {
+        return PrivacySandboxBridge.isPartOfManagedFirstPartySet(origin);
+    }
+
+    @Override
+    public void setFirstPartySetsDataAccessEnabled(boolean enabled) {
+        PrivacySandboxBridge.setFirstPartySetsDataAccessEnabled(enabled);
+    }
+
+    @Override
+    public String getFirstPartySetOwner(String memberOrigin) {
+        return PrivacySandboxBridge.getFirstPartySetOwner(memberOrigin);
+    }
+
+    @Override
+    public boolean canLaunchClearBrowsingDataDialog() {
+        return true;
+    }
+
+    @Override
+    public void launchClearBrowsingDataDialog(Activity currentActivity) {
+        new SettingsLauncherImpl().launchSettingsActivity(
+                currentActivity, ClearBrowsingDataTabsFragment.class);
     }
 }

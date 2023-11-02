@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,21 @@
 // Please run the closure compiler before committing changes.
 // See https://chromium.googlesource.com/chromium/src/+/main/docs/closure_compilation.md
 
-/** @fileoverview Externs generated from namespace: speechRecognitionPrivate */
+/**
+ * @fileoverview Externs generated from namespace: speechRecognitionPrivate
+ * @externs
+ */
 
 /** @const */
 chrome.speechRecognitionPrivate = {};
+
+/**
+ * @enum {string}
+ */
+chrome.speechRecognitionPrivate.SpeechRecognitionType = {
+  ON_DEVICE: 'onDevice',
+  NETWORK: 'network',
+};
 
 /**
  * @typedef {{
@@ -59,8 +70,10 @@ chrome.speechRecognitionPrivate.StopOptions;
  * recognition has started. If speech recognition is already active when calling
  * start(), the callback is run with an error.
  * @param {!chrome.speechRecognitionPrivate.StartOptions} options
- * @param {function(): void} callback Called when speech recognition has begun
- *     listening to the user's audio.
+ * @param {function(!chrome.speechRecognitionPrivate.SpeechRecognitionType): void}
+ *     callback Called when speech recognition has begun listening to the user's
+ *     audio. The callback's parameter specifies which type of speech
+ *     recognition is being used.
  */
 chrome.speechRecognitionPrivate.start = function(options, callback) {};
 
@@ -69,7 +82,7 @@ chrome.speechRecognitionPrivate.start = function(options, callback) {};
  * recognition has stopped. If speech recognition has already stopped when
  * calling stop(), the callback is run with an error.
  * @param {!chrome.speechRecognitionPrivate.StopOptions} options
- * @param {function(): void} callback Called when speech recogntion has stopped
+ * @param {function(): void} callback Called when speech recognition has stopped
  *     listening to the user's audio.
  */
 chrome.speechRecognitionPrivate.stop = function(options, callback) {};

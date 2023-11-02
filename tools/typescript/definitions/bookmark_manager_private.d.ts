@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,11 +43,14 @@ declare global {
           void;
       export function undo(): void;
       export function redo(): void;
+      export function openInNewTab(id: string, active: boolean): void;
+      export function openInNewWindow(idList: string[], incognito: boolean):
+          void;
 
-      export type DragData = {
+      export interface DragData {
         elements: chrome.bookmarks.BookmarkTreeNode[]|null;
         sameProfile: boolean;
-      };
+      }
 
       export const onDragEnter: ChromeEvent<(p1: DragData) => void>;
       export const onDragLeave: ChromeEvent<() => void>;

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define UI_COMPOSITOR_TOTAL_ANIMATION_THROUGHPUT_REPORTER_H_
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "cc/metrics/frame_sequence_metrics.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -60,7 +61,7 @@ class COMPOSITOR_EXPORT TotalAnimationThroughputReporter
 
   // CompositorObserver:
   void OnFirstAnimationStarted(Compositor* compositor) override;
-  void OnLastAnimationEnded(Compositor* compositor) override;
+  void OnFirstNonAnimatedFrameStarted(Compositor* compositor) override;
   void OnCompositingShuttingDown(Compositor* compositor) override;
 
   bool IsMeasuringForTesting() const { return bool{throughput_tracker_}; }
@@ -73,7 +74,7 @@ class COMPOSITOR_EXPORT TotalAnimationThroughputReporter
 
   void Report(const cc::FrameSequenceMetrics::CustomReportData& data);
 
-  Compositor* compositor_;
+  raw_ptr<Compositor> compositor_;
   ReportRepeatingCallback report_repeating_callback_;
   ReportOnceCallback report_once_callback_;
   bool should_delete_ = false;

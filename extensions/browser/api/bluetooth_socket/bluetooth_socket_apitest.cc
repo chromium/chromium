@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -80,7 +80,7 @@ IN_PROC_BROWSER_TEST_F(BluetoothSocketApiTest, DISABLED_Connect) {
   EXPECT_CALL(*mock_adapter_, GetDevice(mock_device1_->GetAddress()))
       .WillRepeatedly(testing::Return(mock_device1_.get()));
   EXPECT_CALL(*mock_adapter_, GetDevice(std::string("aa:aa:aa:aa:aa:aa")))
-      .WillOnce(testing::Return(static_cast<BluetoothDevice*>(NULL)));
+      .WillOnce(testing::Return(static_cast<BluetoothDevice*>(nullptr)));
 
   // Return a mock socket object as a successful result to the connect() call.
   BluetoothUUID service_uuid("8e3ad063-db38-4289-aa8f-b30e4223cf40");
@@ -99,7 +99,7 @@ IN_PROC_BROWSER_TEST_F(BluetoothSocketApiTest, DISABLED_Connect) {
       .WillOnce(base::test::RunOnceCallback<0>());
 
   // Run the test.
-  ExtensionTestMessageListener listener("ready", true);
+  ExtensionTestMessageListener listener("ready", ReplyBehavior::kWillReply);
   scoped_refptr<const Extension> extension(
       LoadApp("api_test/bluetooth_socket/connect"));
   ASSERT_TRUE(extension.get());
@@ -143,7 +143,8 @@ IN_PROC_BROWSER_TEST_F(BluetoothSocketApiTest, Listen) {
 
   // Run the test, it sends a ready signal once it's ready for us to dispatch
   // a client connection to it.
-  ExtensionTestMessageListener socket_listening("ready", true);
+  ExtensionTestMessageListener socket_listening("ready",
+                                                ReplyBehavior::kWillReply);
   scoped_refptr<const Extension> extension(
       LoadApp("api_test/bluetooth_socket/listen"));
   ASSERT_TRUE(extension.get());
@@ -153,7 +154,7 @@ IN_PROC_BROWSER_TEST_F(BluetoothSocketApiTest, Listen) {
   // thread. Waiting until idle ensures the event is dispatched to the
   // receiver(s).
   base::RunLoop().RunUntilIdle();
-  ExtensionTestMessageListener listener("ready", true);
+  ExtensionTestMessageListener listener("ready", ReplyBehavior::kWillReply);
   socket_listening.Reply("go");
 
   // Second stage of tests checks for error conditions, and will clean up

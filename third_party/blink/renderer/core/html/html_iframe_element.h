@@ -35,9 +35,8 @@
 namespace blink {
 class DOMFeaturePolicy;
 
-class CORE_EXPORT HTMLIFrameElement final
-    : public HTMLFrameElementBase,
-      public Supplementable<HTMLIFrameElement> {
+class CORE_EXPORT HTMLIFrameElement : public HTMLFrameElementBase,
+                                      public Supplementable<HTMLIFrameElement> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -59,6 +58,10 @@ class CORE_EXPORT HTMLIFrameElement final
   FrameOwnerElementType OwnerType() const final {
     return FrameOwnerElementType::kIframe;
   }
+
+  bool Anonymous() const override { return anonymous_; }
+
+  bool IsSupportedByRegionCapture() const override { return true; }
 
  private:
   void SetCollapsed(bool) override;
@@ -86,12 +89,17 @@ class CORE_EXPORT HTMLIFrameElement final
   // FrameOwner overrides:
   bool AllowFullscreen() const override { return allow_fullscreen_; }
   bool AllowPaymentRequest() const override { return allow_payment_request_; }
+  // HTML attributes of the iframe element that need to be tracked by the
+  // browser changed, such as 'id' and 'src'. This will send an IPC to the
+  // browser about the updates.
   void DidChangeAttributes() override;
 
   AtomicString name_;
   AtomicString required_csp_;
   AtomicString allow_;
   AtomicString required_policy_;  // policy attribute
+  AtomicString id_;
+  AtomicString src_;
   // String attribute storing a JSON representation of the Trust Token
   // parameters (in order to align with the fetch interface to the Trust Token
   // API). If present, this is parsed in ConstructTrustTokenParams.

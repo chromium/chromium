@@ -1,4 +1,4 @@
-// Copyright (c) 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/logging.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screens/enable_debugging_screen.h"
 #include "chrome/browser/browser_process.h"
@@ -18,36 +19,14 @@
 
 namespace chromeos {
 
-constexpr StaticOobeScreenId EnableDebuggingScreenView::kScreenId;
+EnableDebuggingScreenHandler::EnableDebuggingScreenHandler()
+    : BaseScreenHandler(kScreenId) {}
 
-EnableDebuggingScreenHandler::EnableDebuggingScreenHandler(
-    JSCallsContainer* js_calls_container)
-    : BaseScreenHandler(kScreenId, js_calls_container) {
-  set_user_acted_method_path("login.EnableDebuggingScreen.userActed");
-}
-
-EnableDebuggingScreenHandler::~EnableDebuggingScreenHandler() {
-  if (screen_)
-    screen_->OnViewDestroyed(this);
-}
+EnableDebuggingScreenHandler::~EnableDebuggingScreenHandler() = default;
 
 void EnableDebuggingScreenHandler::Show() {
-  if (!page_is_ready()) {
-    show_on_init_ = true;
-    return;
-  }
-
   DVLOG(1) << "Showing enable debugging screen.";
-  ShowScreen(kScreenId);
-}
-
-void EnableDebuggingScreenHandler::Hide() {}
-
-void EnableDebuggingScreenHandler::SetDelegate(EnableDebuggingScreen* screen) {
-  screen_ = screen;
-  BaseScreenHandler::SetBaseScreen(screen_);
-  if (page_is_ready())
-    Initialize();
+  ShowInWebUI();
 }
 
 void EnableDebuggingScreenHandler::DeclareLocalizedValues(
@@ -92,29 +71,8 @@ void EnableDebuggingScreenHandler::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kDebuggingFeaturesRequested, false);
 }
 
-void EnableDebuggingScreenHandler::Initialize() {
-  if (!page_is_ready() || !screen_)
-    return;
-
-  if (show_on_init_) {
-    Show();
-    show_on_init_ = false;
-  }
-}
-
-void EnableDebuggingScreenHandler::RegisterMessages() {
-  BaseScreenHandler::RegisterMessages();
-  AddCallback("enableDebuggingOnSetup",
-              &EnableDebuggingScreenHandler::HandleOnSetup);
-}
-
-void EnableDebuggingScreenHandler::HandleOnSetup(
-    const std::string& password) {
-  screen_->HandleSetup(password);
-}
-
 void EnableDebuggingScreenHandler::UpdateUIState(UIState state) {
-  CallJS("login.EnableDebuggingScreen.updateState", static_cast<int>(state));
+  CallExternalAPI("updateState", static_cast<int>(state));
 }
 
 }  // namespace chromeos

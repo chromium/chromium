@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,11 +43,9 @@ class MockWidget : public blink::mojom::Widget {
 
   // blink::mojom::Widget overrides.
   void ForceRedraw(ForceRedrawCallback callback) override;
-
   void GetWidgetInputHandler(
       mojo::PendingReceiver<blink::mojom::WidgetInputHandler> request,
       mojo::PendingRemote<blink::mojom::WidgetInputHandlerHost> host) override;
-
   void UpdateVisualProperties(
       const blink::VisualProperties& visual_properties) override;
 
@@ -55,12 +53,10 @@ class MockWidget : public blink::mojom::Widget {
                          const gfx::Rect& window_screen_rect,
                          UpdateScreenRectsCallback callback) override;
   void WasHidden() override;
-  void WasShown(base::TimeTicks show_request_timestamp,
-                bool was_evicted,
+  void WasShown(bool was_evicted,
                 blink::mojom::RecordContentToVisibleTimeRequestPtr
                     record_tab_switch_time_request) override;
   void RequestPresentationTimeForNextFrame(
-      base::TimeTicks show_request_timestamp,
       blink::mojom::RecordContentToVisibleTimeRequestPtr visible_time_request)
       override;
   void CancelPresentationTimeRequest() override;

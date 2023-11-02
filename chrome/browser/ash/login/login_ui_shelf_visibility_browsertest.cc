@@ -1,7 +1,8 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
@@ -14,11 +15,15 @@
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/chromeos/login/os_install_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/sync_consent_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/user_creation_screen_handler.h"
+#include "components/policy/core/common/cloud/cloud_policy_constants.h"
+#include "components/policy/proto/device_management_backend.pb.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 
@@ -60,7 +65,10 @@ class LoginUIShelfVisibilityTest : public MixinBasedInProcessBrowserTest {
 
     // Sync consent is the first post-login screen shown when a new user signs
     // in.
-    OobeScreenWaiter(SyncConsentScreenView::kScreenId).Wait();
+    if (features::IsOobeConsolidatedConsentEnabled())
+      OobeScreenWaiter(ConsolidatedConsentScreenView::kScreenId).Wait();
+    else
+      OobeScreenWaiter(SyncConsentScreenView::kScreenId).Wait();
   }
 
  private:
@@ -173,6 +181,67 @@ IN_PROC_BROWSER_TEST_F(SamlInterstitialTest, AppsGuestButton) {
   KioskAppsMixin::WaitForAppsButton();
   EXPECT_TRUE(LoginScreenTestApi::IsAppsButtonShown());
   EXPECT_TRUE(LoginScreenTestApi::IsGuestButtonShown());
+}
+
+class KioskSkuVisibilityTest : public LoginUIShelfVisibilityTest {
+ public:
+  KioskSkuVisibilityTest() {
+    device_state_.set_skip_initial_policy_setup(true);
+    scoped_feature_list_.InitAndEnableFeature(
+        ash::features::kEnableKioskLoginScreen);
+  }
+  ~KioskSkuVisibilityTest() override = default;
+  KioskSkuVisibilityTest(const KioskSkuVisibilityTest&) = delete;
+  void operator=(const KioskSkuVisibilityTest&) = delete;
+
+ protected:
+  policy::DevicePolicyCrosTestHelper* policy_helper() {
+    return &policy_helper_;
+  }
+
+ private:
+  ash::DeviceStateMixin device_state_{
+      &mixin_host_,
+      ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
+  policy::DevicePolicyCrosTestHelper policy_helper_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Verifies that shelf buttons of Guest mode and Add user are shown, and kiosk
+// instruction bubble is hidden without kiosk SKU.
+IN_PROC_BROWSER_TEST_F(KioskSkuVisibilityTest, WithoutKioskSku) {
+  EXPECT_TRUE(LoginScreenTestApi::IsLoginShelfShown());
+  EXPECT_TRUE(LoginScreenTestApi::IsGuestButtonShown());
+  EXPECT_TRUE(LoginScreenTestApi::IsAddUserButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsKioskInstructionBubbleShown());
+}
+
+// Verifies that shelf buttons of Guest mode and Add user are hidden, and kiosk
+// instruction bubble is hidden too without kiosk apps.
+IN_PROC_BROWSER_TEST_F(KioskSkuVisibilityTest, WithoutApps) {
+  policy_helper()->device_policy()->policy_data().set_license_sku(
+      policy::kKioskSkuName);
+  policy_helper()->RefreshPolicyAndWaitUntilDeviceCloudPolicyUpdated();
+
+  EXPECT_TRUE(LoginScreenTestApi::IsLoginShelfShown());
+  EXPECT_TRUE(LoginScreenTestApi::IsGuestButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsAddUserButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsKioskInstructionBubbleShown());
+}
+
+// Verifies that shelf buttons of Guest mode and Add user are hidden, and kiosk
+// instruction bubble is shown with kiosk apps.
+IN_PROC_BROWSER_TEST_F(KioskSkuVisibilityTest, WithApps) {
+  policy_helper()->device_policy()->policy_data().set_license_sku(
+      policy::kKioskSkuName);
+  KioskAppsMixin::AppendKioskAccount(
+      &policy_helper()->device_policy()->payload());
+  policy_helper()->RefreshPolicyAndWaitUntilDeviceCloudPolicyUpdated();
+
+  EXPECT_TRUE(LoginScreenTestApi::IsLoginShelfShown());
+  EXPECT_TRUE(LoginScreenTestApi::IsGuestButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsAddUserButtonShown());
+  EXPECT_TRUE(LoginScreenTestApi::IsKioskInstructionBubbleShown());
 }
 
 }  // namespace ash

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "base/base_switches.h"
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/time/time.h"
 #include "cc/base/switches.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/switches.h"
@@ -109,10 +110,10 @@ void HeadlessHandler::BeginFrame(Maybe<double> in_frame_time_ticks,
 
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           ::switches::kRunAllCompositorStagesBeforeDraw)) {
-    callback->sendFailure(
-        Response::ServerError("Command is only supported with "
-                              "--run-all-compositor-stages-before-draw, see "
-                              "https://goo.gl/3zHXhB for more info."));
+    callback->sendFailure(Response::ServerError(
+        "Command is only supported with "
+        "--run-all-compositor-stages-before-draw, see "
+        "https://goo.gle/chrome-headless-rendering for more info."));
     return;
   }
 

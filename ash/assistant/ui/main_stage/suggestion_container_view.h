@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@
 #include "ash/assistant/ui/main_stage/suggestion_chip_view.h"
 #include "base/component_export.h"
 #include "base/memory/scoped_refptr.h"
-#include "chromeos/services/libassistant/public/cpp/assistant_suggestion.h"
+#include "chromeos/ash/services/libassistant/public/cpp/assistant_suggestion.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/scroll_view.h"
 
@@ -34,7 +34,7 @@ class COMPONENT_EXPORT(ASSISTANT_UI) SuggestionContainerView
       public AssistantSuggestionsModelObserver,
       public AssistantUiModelObserver {
  public:
-  using AssistantSuggestion = chromeos::assistant::AssistantSuggestion;
+  using AssistantSuggestion = assistant::AssistantSuggestion;
 
   METADATA_HEADER(SuggestionContainerView);
 
@@ -60,6 +60,8 @@ class COMPONENT_EXPORT(ASSISTANT_UI) SuggestionContainerView
       AssistantVisibility old_visibility,
       absl::optional<AssistantEntryPoint> entry_point,
       absl::optional<AssistantExitPoint> exit_point) override;
+
+  void InitializeUIForBubbleView();
 
   // The suggestion chip that was pressed by the user. May be |nullptr|.
   const SuggestionChipView* selected_chip() const { return selected_chip_; }

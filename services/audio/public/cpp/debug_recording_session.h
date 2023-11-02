@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/component_export.h"
 #include "media/audio/audio_debug_recording_helper.h"
 #include "media/audio/audio_debug_recording_session.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -28,9 +29,11 @@ class DebugRecordingFileProvider;
 // class' instances need permission to create files in |file_name_base| path
 // passed in constructor in order to start debug recording. If file creation
 // fails, debug recording will silently not start.
-class DebugRecordingSession : public media::AudioDebugRecordingSession {
+class COMPONENT_EXPORT(AUDIO_PUBLIC_CPP) DebugRecordingSession
+    : public media::AudioDebugRecordingSession {
  public:
-  class DebugRecordingFileProvider : public mojom::DebugRecordingFileProvider {
+  class COMPONENT_EXPORT(AUDIO_PUBLIC_CPP) DebugRecordingFileProvider
+      : public mojom::DebugRecordingFileProvider {
    public:
     DebugRecordingFileProvider(
         mojo::PendingReceiver<mojom::DebugRecordingFileProvider> receiver,
@@ -48,6 +51,10 @@ class DebugRecordingSession : public media::AudioDebugRecordingSession {
     void CreateWavFile(media::AudioDebugRecordingStreamType stream_type,
                        uint32_t id,
                        CreateWavFileCallback reply_callback) override;
+
+    // Creates file with name "|file_name_base_|.|id|.aecdump".
+    void CreateAecdumpFile(uint32_t id,
+                           CreateAecdumpFileCallback reply_callback) override;
 
    private:
     mojo::Receiver<mojom::DebugRecordingFileProvider> receiver_;

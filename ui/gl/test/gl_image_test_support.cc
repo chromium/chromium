@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/notreached.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/half_float.h"
@@ -35,7 +34,7 @@ void rgb_to_yuv(uint8_t r, uint8_t g, uint8_t b, T* y, T* u, T* v) {
 }  // namespace
 
 // static
-void GLImageTestSupport::InitializeGL(
+GLDisplay* GLImageTestSupport::InitializeGL(
     absl::optional<GLImplementationParts> prefered_impl) {
 #if defined(USE_OZONE)
   ui::OzonePlatform::InitParams params;
@@ -51,17 +50,19 @@ void GLImageTestSupport::InitializeGL(
       prefered_impl ? *prefered_impl : allowed_impls[0];
   DCHECK(impl.IsAllowed(allowed_impls));
 
-  GLSurfaceTestSupport::InitializeOneOffImplementation(impl, true);
+  GLDisplay* display =
+      GLSurfaceTestSupport::InitializeOneOffImplementation(impl, true);
 #if defined(USE_OZONE)
   // Make sure all the tasks posted to the current task runner by the
   // initialization functions are run before running the tests.
   base::RunLoop().RunUntilIdle();
 #endif
+  return display;
 }
 
 // static
-void GLImageTestSupport::CleanupGL() {
-  init::ShutdownGL(false);
+void GLImageTestSupport::CleanupGL(GLDisplay* display) {
+  GLSurfaceTestSupport::ShutdownGL(display);
 }
 
 // static
@@ -285,5 +286,4 @@ void GLImageTestSupport::SetBufferDataToColor(int width,
   }
   NOTREACHED();
 }
-
 }  // namespace gl

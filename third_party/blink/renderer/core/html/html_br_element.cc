@@ -47,7 +47,7 @@ void HTMLBRElement::CollectStyleForPresentationAttribute(
     // If the string is empty, then don't add the clear property.
     // <br clear> and <br clear=""> are just treated like <br> by Gecko, Mac IE,
     // etc. -dwh
-    if (!value.IsEmpty()) {
+    if (!value.empty()) {
       if (EqualIgnoringASCIICase(value, "all")) {
         AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kClear,
                                                 CSSValueID::kBoth);

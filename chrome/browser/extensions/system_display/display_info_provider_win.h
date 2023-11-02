@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,8 +18,8 @@ class DisplayInfoProviderWin : public DisplayInfoProvider {
 
   // DisplayInfoProvider implementation.
   void UpdateDisplayUnitInfoForPlatform(
-      const display::Display& display,
-      api::system_display::DisplayUnitInfo* unit) override;
+      const std::vector<display::Display>& displays,
+      DisplayUnitInfoList& units) const override;
 };
 
 }  // namespace extensions

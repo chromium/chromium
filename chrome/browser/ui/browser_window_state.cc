@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -48,34 +48,6 @@ bool ParseCommaSeparatedIntegers(const std::string& str,
   return true;
 }
 
-class WindowPlacementPrefUpdate : public DictionaryPrefUpdate {
- public:
-  WindowPlacementPrefUpdate(PrefService* service,
-                            const std::string& window_name)
-      : DictionaryPrefUpdate(service, prefs::kAppWindowPlacement),
-        window_name_(window_name) {}
-
-  WindowPlacementPrefUpdate(const WindowPlacementPrefUpdate&) = delete;
-  WindowPlacementPrefUpdate& operator=(const WindowPlacementPrefUpdate&) =
-      delete;
-
-  ~WindowPlacementPrefUpdate() override {}
-
-  base::DictionaryValue* Get() override {
-    base::DictionaryValue* all_apps_dict = DictionaryPrefUpdate::Get();
-    base::DictionaryValue* this_app_dict_weak = nullptr;
-    if (!all_apps_dict->GetDictionary(window_name_, &this_app_dict_weak)) {
-      auto this_app_dict = std::make_unique<base::DictionaryValue>();
-      this_app_dict_weak = this_app_dict.get();
-      all_apps_dict->Set(window_name_, std::move(this_app_dict));
-    }
-    return this_app_dict_weak;
-  }
-
- private:
-  const std::string window_name_;
-};
-
 }  // namespace
 
 std::string GetWindowName(const Browser* browser) {
@@ -86,6 +58,7 @@ std::string GetWindowName(const Browser* browser) {
 #endif
       return prefs::kBrowserWindowPlacement;
     case Browser::TYPE_POPUP:
+    case Browser::TYPE_PICTURE_IN_PICTURE:
       return prefs::kBrowserWindowPlacementPopup;
     case Browser::TYPE_APP:
     case Browser::TYPE_DEVTOOLS:
@@ -95,32 +68,44 @@ std::string GetWindowName(const Browser* browser) {
   }
 }
 
-std::unique_ptr<DictionaryPrefUpdate> GetWindowPlacementDictionaryReadWrite(
+base::Value::Dict& GetWindowPlacementDictionaryReadWrite(
     const std::string& window_name,
-    PrefService* prefs) {
+    PrefService* prefs,
+    std::unique_ptr<ScopedDictPrefUpdate>& scoped_update) {
   DCHECK(!window_name.empty());
-  // A normal DictionaryPrefUpdate will suffice for non-app windows.
+  // Non-app window placements each use their own per-window-name dictionary
+  // preference, so can make a ScopedDictPrefUpdate for the relevant preference,
+  // and return its dictionary directly.
   if (prefs->FindPreference(window_name)) {
-    return std::make_unique<DictionaryPrefUpdate>(prefs, window_name);
+    scoped_update = std::make_unique<ScopedDictPrefUpdate>(prefs, window_name);
+    return scoped_update->Get();
   }
-  return std::unique_ptr<DictionaryPrefUpdate>(
-      new WindowPlacementPrefUpdate(prefs, window_name));
+
+  // The window placements for all apps are stored in a single dictionary
+  // preference, with per-window-name nested dictionaries, so need to make
+  // ScopedDictPrefUpdate and then find the relevant dictionary within it, based
+  // on window name.
+  scoped_update =
+      std::make_unique<ScopedDictPrefUpdate>(prefs, prefs::kAppWindowPlacement);
+  base::Value::Dict* this_app_dict =
+      (*scoped_update)->FindDictByDottedPath(window_name);
+  if (this_app_dict)
+    return *this_app_dict;
+  return (*scoped_update)
+      ->SetByDottedPath(window_name, base::Value::Dict())
+      ->GetDict();
 }
 
-const base::DictionaryValue* GetWindowPlacementDictionaryReadOnly(
+const base::Value::Dict* GetWindowPlacementDictionaryReadOnly(
     const std::string& window_name,
     PrefService* prefs) {
   DCHECK(!window_name.empty());
   if (prefs->FindPreference(window_name))
-    return prefs->GetDictionary(window_name);
+    return &prefs->GetDict(window_name);
 
-  const base::DictionaryValue* app_windows =
-      prefs->GetDictionary(prefs::kAppWindowPlacement);
-  if (!app_windows)
-    return nullptr;
-  const base::DictionaryValue* to_return = nullptr;
-  app_windows->GetDictionary(window_name, &to_return);
-  return to_return;
+  const base::Value::Dict& app_windows =
+      prefs->GetDict(prefs::kAppWindowPlacement);
+  return app_windows.FindDict(window_name);
 }
 
 bool ShouldSaveWindowPlacement(const Browser* browser) {

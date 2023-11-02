@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,6 +23,12 @@
     "dependencies": [ "manifest:chromeos_system_extension" ]
   },
   "os.telemetry.serial_number": {
+    "channel": "stable",
+    "extension_types": [
+      "chromeos_system_extension"
+    ]
+  },
+  "os.telemetry.network_info": {
     "channel": "stable",
     "extension_types": [
       "chromeos_system_extension"

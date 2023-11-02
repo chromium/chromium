@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,8 @@ package org.chromium.components.external_intents;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Callback;
+import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
@@ -13,62 +15,44 @@ import org.chromium.url.Origin;
  * A container object for passing navigation parameters to {@link ExternalNavigationHandler}.
  */
 public class ExternalNavigationParams {
-    /** The URL which we are navigating to. */
+    /**
+     * A container for parameters passed to the AsyncActionTakenInMainFrameCallback.
+     */
+    public static class AsyncActionTakenParams {
+        // Whether the async action taken allows the tab to be closed.
+        public boolean canCloseTab;
+
+        // Whether the tab will be clobbered as a result of this async action.
+        public boolean willClobberTab;
+
+        public ExternalNavigationParams externalNavigationParams;
+
+        public AsyncActionTakenParams(
+                boolean canCloseTab, boolean willClobberTab, ExternalNavigationParams params) {
+            this.canCloseTab = canCloseTab;
+            this.willClobberTab = willClobberTab;
+            this.externalNavigationParams = params;
+
+            // We can't both close the tab and clobber it.
+            assert !willClobberTab || !canCloseTab;
+        }
+    }
+
     private final GURL mUrl;
-
-    /** Whether we are currently in an incognito context. */
     private final boolean mIsIncognito;
-
-    /** The referrer URL for the current navigation. */
     private final GURL mReferrerUrl;
-
-    /** The page transition type for the current navigation. */
     private final int mPageTransition;
-
-    /** Whether the current navigation is a redirect. */
     private final boolean mIsRedirect;
-
-    /** Whether Chrome has to be in foreground for external navigation to occur. */
     private final boolean mApplicationMustBeInForeground;
-
-    /** A redirect handler. */
     private final RedirectHandler mRedirectHandler;
-
-    /** Whether the intent should force a new tab to open. */
     private final boolean mOpenInNewTab;
-
-    /** Whether this navigation happens in background tab. */
     private final boolean mIsBackgroundTabNavigation;
-
-    /** Whether intent launches are allowed in background tabs. */
     private final boolean mIntentLaunchesAllowedInBackgroundTabs;
-
-    /** Whether this navigation happens in main frame. */
     private final boolean mIsMainFrame;
-
-    /**
-     * The package name of the TWA or WebAPK within which the navigation is happening.
-     * Null if the navigation is not within one of these wrapping APKs.
-     */
     private final String mNativeClientPackageName;
-
-    /** Whether this navigation is launched by user gesture. */
     private final boolean mHasUserGesture;
-
-    /**
-     * Whether the current tab should be closed when an URL load was overridden and an
-     * intent launched.
-     */
-    private final boolean mShouldCloseContentsOnOverrideUrlLoadingAndLaunchIntent;
-
-    /**
-     * Whether the navigation is initiated by the renderer.
-     */
+    private final Callback<AsyncActionTakenParams> mAsyncActionTakenInMainFrameCallback;
     private boolean mIsRendererInitiated;
-
-    /**
-     * The origin that initiates the navigation, could be null.
-     */
     private Origin mInitiatorOrigin;
 
     private ExternalNavigationParams(GURL url, boolean isIncognito, GURL referrerUrl,
@@ -76,7 +60,7 @@ public class ExternalNavigationParams {
             RedirectHandler redirectHandler, boolean openInNewTab,
             boolean isBackgroundTabNavigation, boolean intentLaunchesAllowedInBackgroundTabs,
             boolean isMainFrame, String nativeClientPackageName, boolean hasUserGesture,
-            boolean shouldCloseContentsOnOverrideUrlLoadingAndLaunchIntent,
+            Callback<AsyncActionTakenParams> asyncActionTakenInMainFrameCallback,
             boolean isRendererInitiated, @Nullable Origin initiatorOrigin) {
         mUrl = url;
         assert mUrl != null;
@@ -92,8 +76,7 @@ public class ExternalNavigationParams {
         mIsMainFrame = isMainFrame;
         mNativeClientPackageName = nativeClientPackageName;
         mHasUserGesture = hasUserGesture;
-        mShouldCloseContentsOnOverrideUrlLoadingAndLaunchIntent =
-                shouldCloseContentsOnOverrideUrlLoadingAndLaunchIntent;
+        mAsyncActionTakenInMainFrameCallback = asyncActionTakenInMainFrameCallback;
         mIsRendererInitiated = isRendererInitiated;
         mInitiatorOrigin = initiatorOrigin;
     }
@@ -170,11 +153,10 @@ public class ExternalNavigationParams {
     }
 
     /**
-     * @return Whether the current tab should be closed when an URL load was overridden and an
-     *         intent launched.
+     * @return A callback to be run when an async action is taken.
      */
-    public boolean shouldCloseContentsOnOverrideUrlLoadingAndLaunchIntent() {
-        return mShouldCloseContentsOnOverrideUrlLoadingAndLaunchIntent;
+    public Callback<AsyncActionTakenParams> getAsyncActionTakenInMainFrameCallback() {
+        return mAsyncActionTakenInMainFrameCallback;
     }
 
     /**
@@ -192,64 +174,30 @@ public class ExternalNavigationParams {
         return mInitiatorOrigin;
     }
 
+    /**
+     * @return Whether the navigation is from an intent.
+     */
+    public boolean isFromIntent() {
+        return (mPageTransition & PageTransition.FROM_API) != 0;
+    }
+
     /** The builder for {@link ExternalNavigationParams} objects. */
     public static class Builder {
-        /** The URL which we are navigating to. */
         private GURL mUrl;
-
-        /** Whether we are currently in an incognito context. */
         private boolean mIsIncognito;
-
-        /** The referrer URL for the current navigation. */
         private GURL mReferrerUrl;
-
-        /** The page transition type for the current navigation. */
         private int mPageTransition;
-
-        /** Whether the current navigation is a redirect. */
         private boolean mIsRedirect;
-
-        /** Whether Chrome has to be in foreground for external navigation to occur. */
         private boolean mApplicationMustBeInForeground;
-
-        /** A redirect handler. */
         private RedirectHandler mRedirectHandler;
-
-        /** Whether the intent should force a new tab to open. */
         private boolean mOpenInNewTab;
-
-        /** Whether this navigation happens in background tab. */
         private boolean mIsBackgroundTabNavigation;
-
-        /** Whether intent launches are allowed in background tabs. */
         private boolean mIntentLaunchesAllowedInBackgroundTabs;
-
-        /** Whether this navigation happens in main frame. */
         private boolean mIsMainFrame;
-
-        /**
-         * The package name of the TWA or WebAPK within which the navigation is happening.
-         * Null if the navigation is not within one of these wrapping APKs.
-         */
         private String mNativeClientPackageName;
-
-        /** Whether this navigation is launched by user gesture. */
         private boolean mHasUserGesture;
-
-        /**
-         * Whether the current tab should be closed when an URL load was overridden and an
-         * intent launched.
-         */
-        private boolean mShouldCloseContentsOnOverrideUrlLoadingAndLaunchIntent;
-
-        /**
-         * Whether the navigation is initiated by the renderer.
-         */
+        private Callback<AsyncActionTakenParams> mAsyncActionTakenInMainFrameCallback;
         private boolean mIsRendererInitiated;
-
-        /**
-         * The origin that initiates the navigation, could be null.
-         */
         private Origin mInitiatorOrigin;
 
         public Builder(GURL url, boolean isIncognito) {
@@ -315,11 +263,10 @@ public class ExternalNavigationParams {
         }
 
         /**
-         * Sets whether the current tab should be closed when an URL load was overridden and an
-         * intent launched.
+         * Sets the callback to be run when an async action is taken.
          */
-        public Builder setShouldCloseContentsOnOverrideUrlLoadingAndLaunchIntent(boolean v) {
-            mShouldCloseContentsOnOverrideUrlLoadingAndLaunchIntent = v;
+        public Builder setAsyncActionTakenInMainFrameCallback(Callback<AsyncActionTakenParams> v) {
+            mAsyncActionTakenInMainFrameCallback = v;
             return this;
         }
 
@@ -345,8 +292,7 @@ public class ExternalNavigationParams {
                     mIsRedirect, mApplicationMustBeInForeground, mRedirectHandler, mOpenInNewTab,
                     mIsBackgroundTabNavigation, mIntentLaunchesAllowedInBackgroundTabs,
                     mIsMainFrame, mNativeClientPackageName, mHasUserGesture,
-                    mShouldCloseContentsOnOverrideUrlLoadingAndLaunchIntent, mIsRendererInitiated,
-                    mInitiatorOrigin);
+                    mAsyncActionTakenInMainFrameCallback, mIsRendererInitiated, mInitiatorOrigin);
         }
     }
 }

@@ -1,4 +1,4 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -19,9 +19,11 @@ executable("aggregation_service_tool") {
     "//mojo/core/embedder:embedder",
     "//net",
     "//services/cert_verifier:lib",
+    "//services/data_decoder/public/cpp:test_support",
     "//services/network:network_service",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
+    "//third_party/abseil-cpp:absl",
     "//url",
   ]
 }

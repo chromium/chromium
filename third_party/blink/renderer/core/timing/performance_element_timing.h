@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,7 +31,8 @@ class CORE_EXPORT PerformanceElementTiming final : public PerformanceEntry {
                                           int naturalWidth,
                                           int naturalHeight,
                                           const AtomicString& id,
-                                          Element*);
+                                          Element*,
+                                          uint32_t navigation_id);
   PerformanceElementTiming(const AtomicString& name,
                            DOMHighResTimeStamp start_time,
                            const String& url,
@@ -42,7 +43,8 @@ class CORE_EXPORT PerformanceElementTiming final : public PerformanceEntry {
                            int naturalWidth,
                            int naturalHeight,
                            const AtomicString& id,
-                           Element*);
+                           Element*,
+                           uint32_t navigation_id);
 
   ~PerformanceElementTiming() override;
 

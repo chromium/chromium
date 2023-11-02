@@ -1,4 +1,4 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -21,22 +21,29 @@ test("ash_webui_unittests") {
 
   deps = [
     "//ash/webui/common/backend:unit_tests",
+    "//ash/webui/demo_mode_app_ui:unit_tests",
     "//ash/webui/diagnostics_ui:unit_tests",
     "//ash/webui/diagnostics_ui/backend:unit_tests",
     "//ash/webui/diagnostics_ui/mojom:unit_tests",
     "//ash/webui/eche_app_ui:unit_tests",
+    "//ash/webui/eche_app_ui/mojom:unit_tests",
     "//ash/webui/file_manager:unit_tests",
     "//ash/webui/help_app_ui:unit_tests",
+    "//ash/webui/os_feedback_ui/backend:unit_tests",
+    "//ash/webui/personalization_app:unit_tests",
     "//ash/webui/projector_app:unit_tests",
     "//ash/webui/scanning:unit_tests",
+    "//ash/webui/scanning/mojom:unit_tests",
     "//ash/webui/shimless_rma/backend:unit_tests",
     "//ash/webui/shimless_rma/mojom:unit_tests",
     "//ash/webui/shortcut_customization_ui/backend:unit_tests",
+    "//ash/webui/telemetry_extension_ui/services:unit_tests",
     "//base",
     "//base/test:test_support",
     "//build:chromeos_buildflags",
     "//mojo/core/embedder",
     "//ui/base:base",
+    "//ui/color:color",
     "//ui/gl",
     "//ui/gl:test_support",
   ]
@@ -44,10 +51,6 @@ test("ash_webui_unittests") {
   # Tests for Camera App only work on Chrome OS device but not linux-chromeos.
   if (is_chromeos_device) {
     deps += [ "//ash/webui/camera_app_ui:unit_tests" ]
-  }
-
-  if (!is_official_build) {
-    deps += [ "//ash/webui/telemetry_extension_ui:unit_tests" ]
   }
 
   data_deps = [
@@ -61,29 +64,20 @@ test("ash_webui_unittests") {
 group("closure_compile") {
   testonly = true
   deps = [
-    "//ash/webui/camera_app_ui:closure_compile",
+    "//ash/webui/common:closure_compile",
     "//ash/webui/connectivity_diagnostics:closure_compile",
-    "//ash/webui/diagnostics_ui:closure_compile",
+    "//ash/webui/demo_mode_app_ui:closure_compile",
     "//ash/webui/eche_app_ui:closure_compile",
     "//ash/webui/file_manager/resources:closure_compile",
     "//ash/webui/file_manager/untrusted_resources:closure_compile",
     "//ash/webui/firmware_update_ui:closure_compile",
     "//ash/webui/help_app_ui:closure_compile",
     "//ash/webui/media_app_ui:closure_compile",
+    "//ash/webui/multidevice_debug/resources:closure_compile",
     "//ash/webui/os_feedback_ui:closure_compile",
-    "//ash/webui/print_management:closure_compile",
     "//ash/webui/projector_app/resources:closure_compile",
     "//ash/webui/scanning:closure_compile",
     "//ash/webui/shimless_rma:closure_compile",
-    "//ash/webui/shortcut_customization_ui:closure_compile",
     "//ash/webui/system_apps:closure_compile",
   ]
-
-  if (!is_official_build) {
-    deps += [
-      "//ash/webui/demo_mode_app_ui:closure_compile",
-      "//ash/webui/sample_system_web_app_ui:closure_compile",
-      "//ash/webui/telemetry_extension_ui:closure_compile",
-    ]
-  }
 }

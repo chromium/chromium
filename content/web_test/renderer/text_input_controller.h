@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,13 +44,15 @@ class TextInputController {
   void ExtendSelectionAndDelete(int before, int after);
   void DeleteSurroundingText(int before, int after);
   void SetMarkedText(const std::string& text, int start, int length);
-  void SetMarkedTextFromExistingText(int start, int length);
+  void SetMarkedTextFromExistingText(int start, int end);
   bool HasMarkedText();
   std::vector<int> MarkedRange();
   std::vector<int> SelectedRange();
-  std::vector<int> FirstRectForCharacterRange(unsigned location,
-                                              unsigned length);
-  void SetComposition(const std::string& text);
+  std::vector<int> FirstRectForCharacterRange(uint32_t location,
+                                              uint32_t length);
+  void SetComposition(const std::string& text,
+                      int replacement_range_start,
+                      int replacement_range_end);
   void ForceTextInputStateUpdate();
 
   blink::WebView* view();

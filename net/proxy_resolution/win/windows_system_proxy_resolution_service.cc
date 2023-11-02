@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,11 +21,11 @@ namespace net {
 
 // static
 bool WindowsSystemProxyResolutionService::IsSupported() {
-  // The WinHttp functions used in the resolver are only supported on Windows 8
-  // and above.
-  if (base::win::GetVersion() < base::win::Version::WIN8) {
+  // The sandbox required to run the WinHttp functions  used in the resolver is
+  // only supported in RS1 and later.
+  if (base::win::GetVersion() < base::win::Version::WIN10_RS1) {
     LOG(WARNING) << "WindowsSystemProxyResolutionService is only supported for "
-                    "Windows 8 and later.";
+                    "Windows 10 Version 1607 (RS1) and later.";
     return false;
   }
 
@@ -68,7 +68,7 @@ WindowsSystemProxyResolutionService::~WindowsSystemProxyResolutionService() {
 int WindowsSystemProxyResolutionService::ResolveProxy(
     const GURL& url,
     const std::string& method,
-    const NetworkIsolationKey& network_isolation_key,
+    const NetworkAnonymizationKey& network_anonymization_key,
     ProxyInfo* results,
     CompletionOnceCallback callback,
     std::unique_ptr<ProxyResolutionRequest>* request,
@@ -131,10 +131,9 @@ const ProxyRetryInfoMap& WindowsSystemProxyResolutionService::proxy_retry_info()
   return proxy_retry_info_;
 }
 
-base::Value WindowsSystemProxyResolutionService::GetProxyNetLogValues() {
+base::Value::Dict WindowsSystemProxyResolutionService::GetProxyNetLogValues() {
   // TODO (https://crbug.com/1032820): Implement net logs.
-  base::Value net_info_dict(base::Value::Type::DICTIONARY);
-  return net_info_dict;
+  return base::Value::Dict();
 }
 
 bool WindowsSystemProxyResolutionService::

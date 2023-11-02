@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <set>
 #include <string>
+#include "device/fido/fido_transport_protocol.h"
 
 #import <Foundation/Foundation.h>
 
@@ -120,18 +121,9 @@ void GetAssertionOperation::GetNextAssertion(Callback callback) {
 
 absl::optional<AuthenticatorGetAssertionResponse>
 GetAssertionOperation::ResponseForCredential(const Credential& credential) {
-  absl::optional<CredentialMetadata> metadata =
-      credential_store_->UnsealMetadata(request_.rp_id, credential);
-  if (!metadata) {
-    // The keychain query already filtered for the RP ID encoded under this
-    // operation's metadata secret, so the credential id really should have
-    // been decryptable.
-    FIDO_LOG(ERROR) << "UnsealMetadata failed";
-    return absl::nullopt;
-  }
-
   AuthenticatorData authenticator_data = MakeAuthenticatorData(
-      request_.rp_id, /*attested_credential_data=*/absl::nullopt);
+      credential.metadata.sign_counter_type, request_.rp_id,
+      /*attested_credential_data=*/absl::nullopt);
   absl::optional<std::vector<uint8_t>> signature = GenerateSignature(
       authenticator_data, request_.client_data_hash, credential.private_key);
   if (!signature) {
@@ -140,9 +132,10 @@ GetAssertionOperation::ResponseForCredential(const Credential& credential) {
   }
   AuthenticatorGetAssertionResponse response(std::move(authenticator_data),
                                              std::move(*signature));
+  response.transport_used = FidoTransportProtocol::kInternal;
   response.credential = PublicKeyCredentialDescriptor(
       CredentialType::kPublicKey, credential.credential_id);
-  response.user_entity = metadata->ToPublicKeyCredentialUserEntity();
+  response.user_entity = credential.metadata.ToPublicKeyCredentialUserEntity();
   return response;
 }
 

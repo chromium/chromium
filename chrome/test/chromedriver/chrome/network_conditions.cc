@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,37 +23,33 @@ NetworkConditions::~NetworkConditions() {}
 
 Status FindPresetNetwork(std::string network_name,
                          NetworkConditions* network_conditions) {
-  base::JSONReader::ValueWithError parsed_json =
-      base::JSONReader::ReadAndReturnValueWithError(
-          kNetworks, base::JSON_ALLOW_TRAILING_COMMAS);
-  if (!parsed_json.value)
+  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
+      kNetworks, base::JSON_ALLOW_TRAILING_COMMAS);
+  if (!parsed_json.has_value())
     return Status(kUnknownError, "could not parse network list because " +
-                                     parsed_json.error_message);
+                                     parsed_json.error().message);
 
-  if (!parsed_json.value->is_list())
+  if (!parsed_json->is_list())
     return Status(kUnknownError, "malformed networks list");
 
-  for (const auto& entry : parsed_json.value->GetList()) {
-    const base::DictionaryValue* network = nullptr;
-    if (!entry.GetAsDictionary(&network)) {
+  for (const auto& entry : parsed_json->GetList()) {
+    if (!entry.is_dict()) {
       return Status(kUnknownError,
                     "malformed network in list: should be a dictionary");
     }
 
-    if (network == NULL)
-      continue;
+    const base::Value::Dict& network = entry.GetDict();
 
-    std::string title;
-    if (!network->GetString("title", &title)) {
+    const std::string* title = network.FindString("title");
+    if (!title) {
       return Status(kUnknownError,
                     "malformed network title: should be a string");
     }
-    if (title != network_name)
+    if (*title != network_name)
       continue;
 
-    absl::optional<double> maybe_latency = network->FindDoubleKey("latency");
-    absl::optional<double> maybe_throughput =
-        network->FindDoubleKey("throughput");
+    absl::optional<double> maybe_latency = network.FindDouble("latency");
+    absl::optional<double> maybe_throughput = network.FindDouble("throughput");
 
     if (!maybe_latency.has_value()) {
       return Status(kUnknownError,

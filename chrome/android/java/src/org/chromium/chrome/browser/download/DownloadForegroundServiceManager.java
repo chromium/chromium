@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.chrome.browser.download.DownloadNotificationService.DownloadStatus;
@@ -367,7 +366,7 @@ public class DownloadForegroundServiceManager {
      * @return Whether startForeground() is allowed to be called.
      */
     private boolean canStartForeground() {
-        if (!BuildInfo.isAtLeastS()) return true;
+        if (VERSION.SDK_INT < VERSION_CODES.S) return true;
         // If foreground service is started, startForeground() must be called.
         return ApplicationStatus.hasVisibleActivities()
                 || (mIsServiceBound && !mStartForegroundCalled);

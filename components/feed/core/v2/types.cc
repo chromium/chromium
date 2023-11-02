@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
+#include "components/feed/core/v2/proto_util.h"
 #include "components/feed/core/v2/public/types.h"
 
 // Note: This file contains implementation for both types.h and public/types.h.
@@ -80,7 +81,6 @@ bool UnpickleOptionalNetworkResponseInfo(
 }
 
 void PickleDebugStreamData(const DebugStreamData& value, base::Pickle& pickle) {
-  (void)PickleOptionalNetworkResponseInfo;
   pickle.WriteInt(DebugStreamData::kVersion);
   PickleOptionalNetworkResponseInfo(value.fetch_info, pickle);
   PickleOptionalNetworkResponseInfo(value.upload_info, pickle);
@@ -102,6 +102,9 @@ RequestMetadata::RequestMetadata() = default;
 RequestMetadata::~RequestMetadata() = default;
 RequestMetadata::RequestMetadata(RequestMetadata&&) = default;
 RequestMetadata& RequestMetadata::operator=(RequestMetadata&&) = default;
+feedwire::ClientInfo RequestMetadata::ToClientInfo() const {
+  return CreateClientInfo(*this);
+}
 
 NetworkResponseInfo::NetworkResponseInfo() = default;
 NetworkResponseInfo::~NetworkResponseInfo() = default;
@@ -152,25 +155,25 @@ DebugStreamData::~DebugStreamData() = default;
 DebugStreamData::DebugStreamData(const DebugStreamData&) = default;
 DebugStreamData& DebugStreamData::operator=(const DebugStreamData&) = default;
 
-base::Value PersistentMetricsDataToValue(const PersistentMetricsData& data) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetKey("day_start", base::TimeToValue(data.current_day_start));
-  dict.SetKey("time_spent_in_feed",
-              base::TimeDeltaToValue(data.accumulated_time_spent_in_feed));
+base::Value::Dict PersistentMetricsDataToDict(
+    const PersistentMetricsData& data) {
+  base::Value::Dict dict;
+  dict.Set("day_start", base::TimeToValue(data.current_day_start));
+  dict.Set("time_spent_in_feed",
+           base::TimeDeltaToValue(data.accumulated_time_spent_in_feed));
   return dict;
 }
 
-PersistentMetricsData PersistentMetricsDataFromValue(const base::Value& value) {
+PersistentMetricsData PersistentMetricsDataFromDict(
+    const base::Value::Dict& dict) {
   PersistentMetricsData result;
-  if (!value.is_dict())
-    return result;
   absl::optional<base::Time> day_start =
-      base::ValueToTime(value.FindKey("day_start"));
+      base::ValueToTime(dict.Find("day_start"));
   if (!day_start)
     return result;
   result.current_day_start = *day_start;
   absl::optional<base::TimeDelta> time_spent_in_feed =
-      base::ValueToTimeDelta(value.FindKey("time_spent_in_feed"));
+      base::ValueToTimeDelta(dict.Find("time_spent_in_feed"));
   if (time_spent_in_feed) {
     result.accumulated_time_spent_in_feed = *time_spent_in_feed;
   }
@@ -186,30 +189,30 @@ void LoadLatencyTimes::StepComplete(StepKind kind) {
   last_time_ = now;
 }
 
-ContentIdSet::ContentIdSet() = default;
-ContentIdSet::~ContentIdSet() = default;
-ContentIdSet::ContentIdSet(base::flat_set<int64_t> content_ids)
-    : content_ids_(std::move(content_ids)) {}
-ContentIdSet::ContentIdSet(const ContentIdSet&) = default;
-ContentIdSet::ContentIdSet(ContentIdSet&&) = default;
-ContentIdSet& ContentIdSet::operator=(const ContentIdSet&) = default;
-ContentIdSet& ContentIdSet::operator=(ContentIdSet&&) = default;
-bool ContentIdSet::ContainsAllOf(const ContentIdSet& items) const {
-  for (int64_t id : items.content_ids_) {
-    if (!content_ids_.contains(id))
+ContentHashSet::ContentHashSet() = default;
+ContentHashSet::~ContentHashSet() = default;
+ContentHashSet::ContentHashSet(base::flat_set<uint32_t> content_hashes)
+    : content_hashes_(std::move(content_hashes)) {}
+ContentHashSet::ContentHashSet(const ContentHashSet&) = default;
+ContentHashSet::ContentHashSet(ContentHashSet&&) = default;
+ContentHashSet& ContentHashSet::operator=(const ContentHashSet&) = default;
+ContentHashSet& ContentHashSet::operator=(ContentHashSet&&) = default;
+bool ContentHashSet::ContainsAllOf(const ContentHashSet& items) const {
+  for (uint32_t id : items.content_hashes_) {
+    if (!content_hashes_.contains(id))
       return false;
   }
   return true;
 }
-bool ContentIdSet::IsEmpty() const {
-  return content_ids_.empty();
+bool ContentHashSet::IsEmpty() const {
+  return content_hashes_.empty();
 }
-bool ContentIdSet::operator==(const ContentIdSet& rhs) const {
-  return content_ids_ == rhs.content_ids_;
+bool ContentHashSet::operator==(const ContentHashSet& rhs) const {
+  return content_hashes_ == rhs.content_hashes_;
 }
-std::ostream& operator<<(std::ostream& s, const ContentIdSet& id_set) {
+std::ostream& operator<<(std::ostream& s, const ContentHashSet& id_set) {
   s << "{";
-  for (int64_t id : id_set.values()) {
+  for (uint32_t id : id_set.values()) {
     s << id << ", ";
   }
   s << "}";

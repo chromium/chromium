@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,10 @@
 
 #include "base/containers/queue.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "net/base/cache_type.h"
 #include "net/base/net_export.h"
 #include "net/base/request_priority.h"
@@ -65,15 +67,17 @@ class NET_EXPORT_PRIVATE SimpleEntryImpl : public Entry,
     virtual ~ActiveEntryProxy() = 0;
   };
 
-  SimpleEntryImpl(net::CacheType cache_type,
-                  const base::FilePath& path,
-                  scoped_refptr<BackendCleanupTracker> cleanup_tracker,
-                  uint64_t entry_hash,
-                  OperationsMode operations_mode,
-                  SimpleBackendImpl* backend,
-                  SimpleFileTracker* file_tracker,
-                  net::NetLog* net_log,
-                  uint32_t entry_priority);
+  SimpleEntryImpl(
+      net::CacheType cache_type,
+      const base::FilePath& path,
+      scoped_refptr<BackendCleanupTracker> cleanup_tracker,
+      uint64_t entry_hash,
+      OperationsMode operations_mode,
+      SimpleBackendImpl* backend,
+      SimpleFileTracker* file_tracker,
+      scoped_refptr<BackendFileOperationsFactory> file_operations_factory,
+      net::NetLog* net_log,
+      uint32_t entry_priority);
 
   void SetActiveEntryProxy(
       std::unique_ptr<ActiveEntryProxy> active_entry_proxy);
@@ -363,7 +367,8 @@ class NET_EXPORT_PRIVATE SimpleEntryImpl : public Entry,
   SEQUENCE_CHECKER(sequence_checker_);
 
   const base::WeakPtr<SimpleBackendImpl> backend_;
-  SimpleFileTracker* const file_tracker_;
+  const raw_ptr<SimpleFileTracker> file_tracker_;
+  const scoped_refptr<BackendFileOperationsFactory> file_operations_factory_;
   const net::CacheType cache_type_;
   const base::FilePath path_;
   const uint64_t entry_hash_;
@@ -414,7 +419,7 @@ class NET_EXPORT_PRIVATE SimpleEntryImpl : public Entry,
   // an operation is being executed no one owns the synchronous entry. Therefore
   // SimpleEntryImpl should not be deleted while an operation is running as that
   // would leak the SimpleSynchronousEntry.
-  SimpleSynchronousEntry* synchronous_entry_ = nullptr;
+  raw_ptr<SimpleSynchronousEntry> synchronous_entry_ = nullptr;
 
   scoped_refptr<net::PrioritizedTaskRunner> prioritized_task_runner_;
 

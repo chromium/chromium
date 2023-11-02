@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include <unistd.h>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "sandbox/linux/bpf_dsl/bpf_dsl.h"
@@ -51,10 +50,10 @@ ResultExpr GpuProcessPolicy::EvaluateSyscall(int sysno) const {
   switch (sysno) {
     case __NR_kcmp:
       return Error(ENOSYS);
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
     case __NR_fallocate:
       return Allow();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
     case __NR_fcntl: {
       // The Nvidia driver uses flags not in the baseline policy
       // fcntl(fd, F_ADD_SEALS, F_SEAL_SEAL | F_SEAL_SHRINK | F_SEAL_GROW)
@@ -94,7 +93,6 @@ ResultExpr GpuProcessPolicy::EvaluateSyscall(int sysno) const {
     case __NR_sysinfo:
     case __NR_uname:  // https://crbug.com/1075934
       return Allow();
-    case __NR_sched_getaffinity:
     case __NR_sched_setaffinity:
       return RestrictSchedTarget(GetPolicyPid(), sysno);
     case __NR_prlimit64:
@@ -103,7 +101,7 @@ ResultExpr GpuProcessPolicy::EvaluateSyscall(int sysno) const {
       break;
   }
 
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   if (SyscallSets::IsSystemVSharedMemory(sysno))
     return Allow();
 #endif

@@ -1,28 +1,40 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/config/android/rules.gni")
 
 android_library("java") {
-  sources = [ "java/src/org/chromium/chrome/browser/webauthn/CableAuthenticatorModuleProvider.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/webauthn/CableAuthenticatorModuleProvider.java",
+    "java/src/org/chromium/chrome/browser/webauthn/PrivacySettingsFragment.java",
+  ]
   deps = [
     ":java_resources",
     ":jni_headers",
     "//base:base_java",
+    "//base:jni_java",
+    "//build/android:build_java",
     "//chrome/android:chrome_app_java_resources",
     "//chrome/android/modules/cablev2_authenticator/public:java",
     "//chrome/browser/notifications:java",
     "//components/browser_ui/notifications/android:java",
-    "//third_party/android_deps:android_support_v7_appcompat_java",
+    "//content/public/android:content_main_dex_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
+    "//third_party/androidx:androidx_vectordrawable_vectordrawable_animated_java",
+    "//ui/android:ui_no_recycler_view_java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   resources_package = "org.chromium.chrome.browser.webauthn"
 }
 
 generate_jni("jni_headers") {
-  sources = [ "java/src/org/chromium/chrome/browser/webauthn/CableAuthenticatorModuleProvider.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/webauthn/CableAuthenticatorModuleProvider.java",
+    "java/src/org/chromium/chrome/browser/webauthn/PrivacySettingsFragment.java",
+  ]
 }
 
 android_resources("java_resources") {
@@ -52,6 +64,7 @@ android_resources("java_resources") {
     "java/res/layout-sw600dp/cablev2_error.xml",
     "java/res/layout-sw600dp/cablev2_spinner.xml",
     "java/res/layout/cablev2_error.xml",
+    "java/res/layout/cablev2_settings.xml",
     "java/res/layout/cablev2_spinner.xml",
   ]
   deps = [ "//chrome/android:chrome_app_java_resources" ]

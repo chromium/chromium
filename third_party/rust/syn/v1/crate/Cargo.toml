@@ -13,33 +13,66 @@
 edition = "2018"
 rust-version = "1.31"
 name = "syn"
-version = "1.0.81"
+version = "1.0.99"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
-include = ["/benches/**", "/build.rs", "/Cargo.toml", "/LICENSE-APACHE", "/LICENSE-MIT", "/README.md", "/src/**", "/tests/**"]
+include = [
+    "/benches/**",
+    "/build.rs",
+    "/Cargo.toml",
+    "/LICENSE-APACHE",
+    "/LICENSE-MIT",
+    "/README.md",
+    "/src/**",
+    "/tests/**",
+]
 description = "Parser for Rust source code"
 documentation = "https://docs.rs/syn"
 readme = "README.md"
-categories = ["development-tools::procedural-macro-helpers"]
+keywords = [
+    "macros",
+    "syn",
+]
+categories = [
+    "development-tools::procedural-macro-helpers",
+    "parser-implementations",
+]
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/dtolnay/syn"
+
 [package.metadata.docs.rs]
 all-features = true
-rustdoc-args = ["--cfg", "doc_cfg"]
 targets = ["x86_64-unknown-linux-gnu"]
+rustdoc-args = [
+    "--cfg",
+    "doc_cfg",
+]
 
 [package.metadata.playground]
-features = ["full", "visit", "visit-mut", "fold", "extra-traits"]
+features = [
+    "full",
+    "visit",
+    "visit-mut",
+    "fold",
+    "extra-traits",
+]
 
 [[bench]]
 name = "rust"
 harness = false
-required-features = ["full", "parsing"]
+required-features = [
+    "full",
+    "parsing",
+]
 
 [[bench]]
 name = "file"
-required-features = ["full", "parsing"]
+required-features = [
+    "full",
+    "parsing",
+]
+
 [dependencies.proc-macro2]
-version = "1.0.32"
+version = "1.0.39"
 default-features = false
 
 [dependencies.quote]
@@ -47,9 +80,13 @@ version = "1.0"
 optional = true
 default-features = false
 
-[dependencies.unicode-xid]
-version = "0.2"
+[dependencies.unicode-ident]
+version = "1.0"
+
 [dev-dependencies.anyhow]
+version = "1.0"
+
+[dev-dependencies.automod]
 version = "1.0"
 
 [dev-dependencies.flate2]
@@ -85,14 +122,23 @@ version = "2.1"
 
 [features]
 clone-impls = []
-default = ["derive", "parsing", "printing", "clone-impls", "proc-macro"]
+default = [
+    "derive",
+    "parsing",
+    "printing",
+    "clone-impls",
+    "proc-macro",
+]
 derive = []
 extra-traits = []
 fold = []
 full = []
 parsing = []
 printing = ["quote"]
-proc-macro = ["proc-macro2/proc-macro", "quote/proc-macro"]
+proc-macro = [
+    "proc-macro2/proc-macro",
+    "quote/proc-macro",
+]
 test = ["syn-test-suite/all-features"]
 visit = []
 visit-mut = []

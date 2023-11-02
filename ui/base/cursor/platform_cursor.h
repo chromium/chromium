@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,7 +21,7 @@ namespace ui {
 // and could perhaps be kept alive for the duration of the program, custom
 // cursors might incur in high memory usage. Because of this, all types of
 // cursors are expected to be ref-counted.
-class COMPONENT_EXPORT(UI_BASE_CURSOR_BASE) PlatformCursor
+class COMPONENT_EXPORT(UI_BASE_CURSOR) PlatformCursor
     : public base::RefCounted<PlatformCursor> {
  public:
   REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();

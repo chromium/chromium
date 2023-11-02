@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,10 +13,13 @@
 
 namespace views {
 
-DesktopScreenWin::DesktopScreenWin() = default;
+DesktopScreenWin::DesktopScreenWin() {
+  DCHECK(!display::Screen::HasScreen());
+  display::Screen::SetScreenInstance(this);
+}
 
 DesktopScreenWin::~DesktopScreenWin() {
-  display::Screen::SetScreenInstance(old_screen_);
+  display::Screen::SetScreenInstance(nullptr);
 }
 
 HWND DesktopScreenWin::GetHWNDFromNativeWindow(gfx::NativeWindow window) const {
@@ -33,6 +36,12 @@ gfx::NativeWindow DesktopScreenWin::GetNativeWindowFromHWND(HWND hwnd) const {
 bool DesktopScreenWin::IsNativeWindowOccluded(gfx::NativeWindow window) const {
   return window->GetHost()->GetNativeWindowOcclusionState() ==
          aura::Window::OcclusionState::OCCLUDED;
+}
+
+absl::optional<bool> DesktopScreenWin::IsWindowOnCurrentVirtualDesktop(
+    gfx::NativeWindow window) const {
+  DCHECK(window);
+  return window->GetHost()->on_current_workspace();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

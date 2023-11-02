@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,11 @@ package org.chromium.chrome.browser.password_manager;
 import static org.chromium.chrome.browser.password_manager.PasswordManagerDialogProperties.ILLUSTRATION_VISIBLE;
 
 import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
 import org.chromium.base.task.PostTask;
@@ -76,6 +78,11 @@ class PasswordManagerDialogMediator implements View.OnLayoutChangeListener {
     void initialize(PropertyModel model, View view, PasswordManagerDialogContents contents) {
         mResources = view.getResources();
         mModel = model;
+        if (contents.getPrimaryButtonIconId() != 0) {
+            Drawable drawable = AppCompatResources.getDrawable(
+                    view.getContext(), contents.getPrimaryButtonIconId());
+            mHostDialogModelBuilder.with(ModalDialogProperties.POSITIVE_BUTTON_ICON, drawable);
+        }
         mHostDialogModel =
                 mHostDialogModelBuilder.with(ModalDialogProperties.CUSTOM_VIEW, view)
                         .with(ModalDialogProperties.CONTROLLER,

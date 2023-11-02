@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,6 +33,7 @@ class CursorManager;
 namespace ash {
 
 class CaptureModeController;
+class CaptureModeDemoToolsController;
 class RecordingOverlayController;
 class RecordedWindowRootObserver;
 
@@ -78,6 +79,17 @@ class ASH_EXPORT VideoRecordingWatcher
   // Clean up prior to deletion.
   void ShutDown();
 
+  // Returns the current parent window for the on-capture-surface widgets such
+  // as `CaptureModeCameraController::camera_preview_widget_` and
+  // `CaptureModeDemoToolsController::demo_tools_widget_` when recording is in
+  // progress.
+  aura::Window* GetOnCaptureSurfaceWidgetParentWindow() const;
+
+  // Returns the bounds within which the on-capture-surface widgets such as
+  // capture mode preview and capture mode demo tools will be confined when
+  // recording is in progress.
+  gfx::Rect GetCaptureSurfaceConfineBounds() const;
+
   // aura::WindowObserver:
   void OnWindowParentChanged(aura::Window* window,
                              aura::Window* parent) override;
@@ -113,6 +125,7 @@ class ASH_EXPORT VideoRecordingWatcher
   void OnDimmedWindowParentChanged(aura::Window* dimmed_window) override;
 
   // ui::EventHandler:
+  void OnKeyEvent(ui::KeyEvent* event) override;
   void OnMouseEvent(ui::MouseEvent* event) override;
 
   // TabletModeObserver:
@@ -122,6 +135,11 @@ class ASH_EXPORT VideoRecordingWatcher
   // CursorWindowController::Observer:
   void OnCursorCompositingStateChanged(bool enabled) override;
 
+  // Returns the `partial_region_bounds_` clamped to the bounds of the
+  // `current_root_`. It should only be called if `recording_source_` is
+  // `kRegion`.
+  gfx::Rect GetEffectivePartialRegionBounds() const;
+
   bool IsWindowDimmedForTesting(aura::Window* window) const;
 
   void BindCursorOverlayForTesting(
@@ -130,6 +148,10 @@ class ASH_EXPORT VideoRecordingWatcher
   void FlushCursorOverlayForTesting();
 
   void SendThrottledWindowSizeChangedNowForTesting();
+
+  CaptureModeDemoToolsController* demo_tools_controller_for_testing() {
+    return demo_tools_controller_.get();
+  }
 
  protected:
   // ui::LayerOwner:
@@ -276,10 +298,10 @@ class ASH_EXPORT VideoRecordingWatcher
   // make it capturable by the |FrameSinkVideoCapturer|.
   aura::ScopedWindowCaptureRequest non_root_window_capture_request_;
 
-  // Register for DisplayObserver callbacks.
-  display::ScopedDisplayObserver display_observer_{this};
+  std::unique_ptr<CaptureModeDemoToolsController> demo_tools_controller_;
 
-  // True if the shutting down process has been triggered.
+  // True if the shutting down process has been triggered. We want to keep
+  // `is_shutting_down_` as the last member variable in this class.
   bool is_shutting_down_ = false;
 };
 

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,11 +22,14 @@ class ASH_EXPORT RootWindowTransformer {
  public:
   virtual ~RootWindowTransformer() {}
 
-  // Returns the transform the root window in DIP.
+  // Returns the transform that converts root window coordinates in DIP to
+  // host (platform) window coordinates. The transform normally includes
+  // rotation and scaling, except for unified desktop, which doesn't include
+  // rotation.
   virtual gfx::Transform GetTransform() const = 0;
 
   // Returns the inverse of the transform above. This method is to
-  // provie an accurate inverse of the transform because the result of
+  // provide an accurate inverse of the transform because the result of
   // |gfx::Transform::GetInverse| may contains computational error.
   virtual gfx::Transform GetInverseTransform() const = 0;
 

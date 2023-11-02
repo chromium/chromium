@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
@@ -59,12 +60,12 @@ class WebAppDatabase {
   // Exposed for testing.
   static std::unique_ptr<WebApp> ParseWebApp(const AppId& app_id,
                                              const std::string& value);
+  // Exposed for testing.
+  static std::unique_ptr<WebApp> CreateWebApp(const WebAppProto& local_data);
 
   bool is_opened() const { return opened_; }
 
  private:
-  static std::unique_ptr<WebApp> CreateWebApp(const WebAppProto& local_data);
-
   void OnDatabaseOpened(RegistryOpenedCallback callback,
                         const absl::optional<syncer::ModelError>& error,
                         std::unique_ptr<syncer::ModelTypeStore> store);
@@ -83,7 +84,7 @@ class WebAppDatabase {
                      const absl::optional<syncer::ModelError>& error);
 
   std::unique_ptr<syncer::ModelTypeStore> store_;
-  AbstractWebAppDatabaseFactory* const database_factory_;
+  const raw_ptr<AbstractWebAppDatabaseFactory> database_factory_;
   ReportErrorCallback error_callback_;
 
   // Database is opened if store is created and all data read.

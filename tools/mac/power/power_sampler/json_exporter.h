@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,7 +34,9 @@ class JsonExporter : public Monitor {
   const base::Value& GetColumnLabelsForTesting() const {
     return column_labels_;
   }
-  base::Value GetDataRowsForTesting() const { return base::Value(data_rows_); }
+  base::Value GetDataRowsForTesting() const {
+    return base::Value(data_rows_.Clone());
+  }
 
  private:
   JsonExporter(base::FilePath file_path, base::TimeTicks time_base);
@@ -42,7 +44,7 @@ class JsonExporter : public Monitor {
   base::FilePath file_path_;
   base::TimeTicks time_base_;
   base::Value column_labels_;
-  std::vector<base::Value> data_rows_;
+  base::Value::List data_rows_;
 };
 
 }  // namespace power_sampler

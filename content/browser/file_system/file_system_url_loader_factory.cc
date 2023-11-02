@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -300,7 +300,7 @@ class FileSystemDirectoryURLLoader : public FileSystemEntryURLLoader {
 
     if (data_.empty()) {
       base::FilePath relative_path = url_.path();
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
       relative_path =
           base::FilePath(FILE_PATH_LITERAL("/") + relative_path.value());
 #endif
@@ -376,8 +376,8 @@ class FileSystemDirectoryURLLoader : public FileSystemEntryURLLoader {
     head->content_length = data_.size();
     head->headers = CreateHttpResponseHeaders(200);
 
-    client_->OnReceiveResponse(std::move(head));
-    client_->OnStartLoadingResponseBody(std::move(consumer_handle));
+    client_->OnReceiveResponse(std::move(head), std::move(consumer_handle),
+                               absl::nullopt);
 
     data_producer_ =
         std::make_unique<mojo::DataPipeProducer>(std::move(producer_handle));
@@ -523,18 +523,18 @@ class FileSystemFileURLLoader : public FileSystemEntryURLLoader {
   }
 
   void ReadMoreFileData() {
-    int64_t bytes_to_read = std::min(
-        static_cast<int64_t>(kDefaultFileSystemUrlPipeSize), remaining_bytes_);
-    if (bytes_to_read == 0) {
+    if (remaining_bytes_ == 0) {
       if (consumer_handle_.is_valid()) {
-        // This was an empty file; make sure to call OnReceiveResponse and
-        // OnStartLoadingResponseBody regardless.
-        client_->OnReceiveResponse(std::move(head_));
-        client_->OnStartLoadingResponseBody(std::move(consumer_handle_));
+        // This was an empty file; make sure to call OnReceiveResponse
+        // regardless.
+        client_->OnReceiveResponse(std::move(head_),
+                                   std::move(consumer_handle_), absl::nullopt);
       }
-      OnFileWritten(MOJO_RESULT_OK);
+      OnFileWritten(net::OK);
       return;
     }
+    const int64_t bytes_to_read = std::min(
+        static_cast<int64_t>(kDefaultFileSystemUrlPipeSize), remaining_bytes_);
     net::CompletionRepeatingCallback read_callback = base::BindRepeating(
         &FileSystemFileURLLoader::DidReadMoreFileData, base::AsWeakPtr(this));
     const int rv =
@@ -547,8 +547,15 @@ class FileSystemFileURLLoader : public FileSystemEntryURLLoader {
   }
 
   void DidReadMoreFileData(int result) {
-    if (result <= 0) {
-      OnFileWritten(result);
+    if (result < 0) {
+      OnFileWritten(static_cast<net::Error>(result));
+      return;
+    }
+    if (result == 0) {
+      // If `remaining_bytes_` is 0, then we should've called OnFileWritten in
+      // ReadMoreFileData.
+      DCHECK_NE(remaining_bytes_, 0);
+      OnFileWritten(net::ERR_REQUEST_RANGE_NOT_SATISFIABLE);
       return;
     }
 
@@ -564,8 +571,8 @@ class FileSystemFileURLLoader : public FileSystemEntryURLLoader {
         head_->did_mime_sniff = true;
       }
 
-      client_->OnReceiveResponse(std::move(head_));
-      client_->OnStartLoadingResponseBody(std::move(consumer_handle_));
+      client_->OnReceiveResponse(std::move(head_), std::move(consumer_handle_),
+                                 absl::nullopt);
     }
     remaining_bytes_ -= result;
     DCHECK_GE(remaining_bytes_, 0);
@@ -584,20 +591,20 @@ class FileSystemFileURLLoader : public FileSystemEntryURLLoader {
   }
 
   void OnFileDataWritten(MojoResult result) {
-    if (result != MOJO_RESULT_OK || remaining_bytes_ == 0) {
-      OnFileWritten(result);
+    if (result != MOJO_RESULT_OK) {
+      OnFileWritten(net::ERR_FAILED);
       return;
     }
     ReadMoreFileData();
   }
 
-  void OnFileWritten(MojoResult result) {
+  void OnFileWritten(net::Error net_error) {
     // All the data has been written now. Close the data pipe. The consumer will
     // be notified that there will be no more data to read from now.
     data_producer_.reset();
     file_data_ = nullptr;
 
-    OnClientComplete(result == MOJO_RESULT_OK ? net::OK : net::ERR_FAILED);
+    OnClientComplete(net_error);
   }
 
   int64_t remaining_bytes_ = 0;

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,41 +34,35 @@ DesktopDisplayInfo DesktopDisplayInfoLoaderMac::GetCurrentDisplayInfo() {
   int main_display_height = 0;
 
   for (NSUInteger i = 0; i < [screens count]; ++i) {
-    auto info = std::make_unique<DisplayGeometry>();
-
     NSScreen* screen = screens[i];
     NSDictionary* device = [screen deviceDescription];
     CGDirectDisplayID id =
         static_cast<CGDirectDisplayID>([device[@"NSScreenNumber"] intValue]);
-    info->id = id;
-
-    float dsf = 1.0f;
-    if ([screen respondsToSelector:@selector(backingScaleFactor)])
-      dsf = [screen backingScaleFactor];
 
     NSRect bounds = [screen frame];
     int x = bounds.origin.x;
     int y = bounds.origin.y;
     int height = bounds.size.height;
 
+    bool is_default = false;
     if (i == 0) {
       DCHECK(x == 0);
       DCHECK(y == 0);
-      info->is_default = true;
+      is_default = true;
       main_display_height = height;
-    } else {
-      info->is_default = false;
     }
 
-    info->x = x;
+    DisplayGeometry info;
+    info.id = id;
+    info.x = x;
     // Convert origin from lower left to upper left (based on main display).
-    info->y = main_display_height - y - height;
-    info->width = bounds.size.width;
-    info->height = height;
-    info->dpi = (int)(kDefaultScreenDpi * dsf);
-    info->bpp = 24;
-
-    result.AddDisplay(std::move(info));
+    info.y = main_display_height - y - height;
+    info.width = bounds.size.width;
+    info.height = height;
+    info.dpi = (int)(kDefaultScreenDpi * [screen backingScaleFactor]);
+    info.bpp = 24;
+    info.is_default = is_default;
+    result.AddDisplay(info);
   }
   return result;
 }

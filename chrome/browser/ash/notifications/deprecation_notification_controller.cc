@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
@@ -52,19 +53,6 @@ bool DeprecationNotificationController::NotifyDeprecatedRightClickRewrite() {
   return true;
 }
 
-bool DeprecationNotificationController::NotifyDeprecatedFKeyRewrite() {
-  if (fkey_notification_shown_) {
-    return false;
-  }
-
-  const std::string id = std::string(kNotificationIdPrefix) + "fkey";
-  ShowNotificationFromIdWithLauncherKey(id, IDS_ASH_SHORTCUT_DEPRECATION_FKEY);
-
-  // Don't show the notification again.
-  fkey_notification_shown_ = true;
-  return true;
-}
-
 bool DeprecationNotificationController::NotifyDeprecatedSixPackKeyRewrite(
     ui::KeyboardCode key_code) {
   if (!ShouldShowSixPackKeyDeprecationNotification(key_code)) {
@@ -86,7 +74,6 @@ bool DeprecationNotificationController::NotifyDeprecatedSixPackKeyRewrite(
 void DeprecationNotificationController::ResetStateForTesting() {
   shown_key_notifications_.clear();
   right_click_notification_shown_ = false;
-  fkey_notification_shown_ = false;
 }
 
 void DeprecationNotificationController::ShowNotificationFromIdWithLauncherKey(
@@ -117,8 +104,9 @@ void DeprecationNotificationController::ShowNotification(
       message_center::NOTIFICATION_TYPE_SIMPLE, id,
       l10n_util::GetStringUTF16(IDS_DEPRECATED_SHORTCUT_TITLE), message_body,
       std::u16string(), GURL(),
-      message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
-                                 kNotifierId),
+      message_center::NotifierId(
+          message_center::NotifierType::SYSTEM_COMPONENT, kNotifierId,
+          NotificationCatalogName::kEventRewriterDeprecation),
       message_center::RichNotificationData(), std::move(on_click_handler),
       kNotificationKeyboardIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -69,9 +69,9 @@ public class UsbChooserDialog implements ItemChooserDialog.ItemSelectedCallback 
 
         ChromeAutocompleteSchemeClassifier chromeAutocompleteSchemeClassifier =
                 new ChromeAutocompleteSchemeClassifier(mProfile);
-        OmniboxUrlEmphasizer.emphasizeUrl(originSpannableString, activity.getResources(),
-                chromeAutocompleteSchemeClassifier, securityLevel, false /* isInternalPage */,
-                useDarkColors, true /* emphasizeHttpsScheme */);
+        OmniboxUrlEmphasizer.emphasizeUrl(originSpannableString, activity,
+                chromeAutocompleteSchemeClassifier, securityLevel, useDarkColors,
+                true /* emphasizeHttpsScheme */);
         chromeAutocompleteSchemeClassifier.destroy();
         // Construct a full string and replace the origin text with emphasized version.
         SpannableString title =
@@ -84,16 +84,15 @@ public class UsbChooserDialog implements ItemChooserDialog.ItemSelectedCallback 
         String noneFound = activity.getString(R.string.usb_chooser_dialog_no_devices_found_prompt);
         SpannableString statusActive = SpanApplier.applySpans(
                 activity.getString(R.string.usb_chooser_dialog_footnote_text),
-                new SpanInfo("<link>", "</link>",
-                        new NoUnderlineClickableSpan(activity.getResources(), (view) -> {
-                            if (mNativeUsbChooserDialogPtr == 0) return;
+                new SpanInfo("<link>", "</link>", new NoUnderlineClickableSpan(activity, (view) -> {
+                    if (mNativeUsbChooserDialogPtr == 0) return;
 
-                            Natives jni = UsbChooserDialogJni.get();
-                            jni.loadUsbHelpPage(mNativeUsbChooserDialogPtr);
+                    Natives jni = UsbChooserDialogJni.get();
+                    jni.loadUsbHelpPage(mNativeUsbChooserDialogPtr);
 
-                            // Get rid of the highlight background on selection.
-                            view.invalidate();
-                        })));
+                    // Get rid of the highlight background on selection.
+                    view.invalidate();
+                })));
         SpannableString statusIdleNoneFound = statusActive;
         SpannableString statusIdleSomeFound = statusActive;
         String positiveButton = activity.getString(R.string.usb_chooser_dialog_connect_button_text);

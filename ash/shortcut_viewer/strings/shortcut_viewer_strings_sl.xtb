@@ -17,6 +17,7 @@
 <translation id="1516966594427080024">Odpiranje novega okna v anonimnem načinu.</translation>
 <translation id="152892567002884378">Povečanje glasnosti</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /> <ph name="SEPARATOR1" /> <ph name="ALT" /> <ph name="SEPARATOR2" /> <ph name="L" />, nato <ph name="ESC" /></translation>
+<translation id="1586324912145647027">Odpiranje namizja od 1 do 8</translation>
 <translation id="1652741121070700329">Premik na začetek prejšnje besede</translation>
 <translation id="1679841710523778799">Povečanje svetlosti</translation>
 <translation id="168356808214100546">Pridržite <ph name="ALT" /> in se dotikajte <ph name="TAB" />, dokler se ne prikaže želeno okno, nato izpustite.</translation>
@@ -70,6 +71,7 @@
 <translation id="3140353188828248647">Preklopi na naslovno vrstico</translation>
 <translation id="3256109297135787951">Opustitev označevanja elementa na polici</translation>
 <translation id="3288816184963444640">Zapiranje trenutnega okna</translation>
+<translation id="3322797428033495633">Izbira okna s sliko v sliki</translation>
 <translation id="3350805006883559974">Lebdenje aktivnega okna na vrhu.</translation>
 <translation id="3407560819924487926">Prikazovanje upravitelja opravil</translation>
 <translation id="3417835166382867856">Iskanje zavihkov</translation>
@@ -91,6 +93,7 @@
 <translation id="3949671998904569433">vejica</translation>
 <translation id="3976863468609830880">Klik zadnje ikone na polici</translation>
 <translation id="3994783594793697310">Ponastavitev stopnje povečave prikaza</translation>
+<translation id="4026837045671473537">Vklop načina inverzije barv</translation>
 <translation id="4026843240379844265">Premikanje aktivnega okna med zasloni</translation>
 <translation id="4035482366624727273">Izbira vse vsebine strani</translation>
 <translation id="4060703249685950734">Vnovično odpiranje nazadnje zaprtega zavihka ali okna</translation>
@@ -129,6 +132,7 @@
 <translation id="5563050856984839829">Pritisnite <ph name="CTRL" /> <ph name="SEPARATOR" /> <ph name="SHIFT" /> in kliknite povezavo</translation>
 <translation id="561814908794220892">Odpiranje spletne strani na novem zavihku</translation>
 <translation id="5620219513321115856">Premik aktivnega okna na namizje na desni</translation>
+<translation id="5699366815052349604">Dodelitev aktivnega okna vsem namizjem</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /> <ph name="SEPARATOR1" /> <ph name="L" /> ali <ph name="ALT" /> <ph name="SEPARATOR2" /> <ph name="D" /></translation>
 <translation id="5757111373163288447">Odpiranje povezave na zavihku</translation>
 <translation id="5757474750054631686">Zatemnitev tipkovnice (samo za osvetljene tipkovnice)</translation>
@@ -138,7 +142,6 @@
 <translation id="5921745308587794300">Zavrti okno</translation>
 <translation id="5926306472221400972">Snemanje celozaslonskega posnetka zaslona</translation>
 <translation id="6022924867608035986">Izbris besedila v iskalnem polju</translation>
-<translation id="6045998054441862242">Vklop visokokontrastnega načina</translation>
 <translation id="6052614013050385269">Klik povezave z desno tipko miške</translation>
 <translation id="6129953537138746214">Presledek</translation>
 <translation id="6143669479988153888">Povečanje strani</translation>
@@ -155,6 +158,7 @@
 <translation id="6445033640292336367">Premik zavihka na prvotno mesto</translation>
 <translation id="6474744297082284761">Pomanjšava (kadar je omogočena zasidrana ALI celozaslonska lupa)</translation>
 <translation id="649811797655257835">Izberite datoteko, nato pritisnite <ph name="SPACE" /></translation>
+<translation id="6515089016094047210">Odpiranje ali zapiranje pripomočka za koledar.</translation>
 <translation id="6551886416582667425">Ustvarite delni posnetek zaslona/videoposnetek.</translation>
 <translation id="6556040137485212400">Odpiranje okna, ki najdlje ni bilo uporabljeno</translation>
 <translation id="666343722268997814">Odpiranje priročnega menija za označen element</translation>
@@ -198,12 +202,12 @@
 <translation id="8388247778047144397">Povlecite povezavo na prazno območje na traku z zavihki</translation>
 <translation id="8389638407792712197">Odpiranje novega okna</translation>
 <translation id="8429696719963529183">Uporaba funkcijskih tipk (od F1 do F12)</translation>
-<translation id="8537650670971624753">Zapri način iskanja</translation>
 <translation id="85690795166292698">Odpiranje povezave na novem zavihku</translation>
 <translation id="8609384513243082612">Odpiranje novega zavihka</translation>
 <translation id="8644639153978066712">Prikaz skritih datotek v aplikaciji Datoteke</translation>
 <translation id="8717459106217102612">Izbira prejšnje besede ali črke</translation>
 <translation id="8727232706774971183">Ogled obvestil</translation>
+<translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> od 1 do 8</translation>
 <translation id="8855885154700222542">Tipka za celozaslonski način</translation>
 <translation id="8881584919399569791">Premik aktivnega okna na namizje na levi</translation>
 <translation id="88986195241502842">Page Down</translation>

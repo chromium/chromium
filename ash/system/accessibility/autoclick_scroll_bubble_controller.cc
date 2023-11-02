@@ -1,9 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/system/accessibility/autoclick_scroll_bubble_controller.h"
 
+#include "ash/bubble/bubble_constants.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
@@ -39,7 +40,7 @@ bool comparePositions(Position first, Position second) {
 }
 }  // namespace
 
-AutoclickScrollBubbleController::AutoclickScrollBubbleController() {}
+AutoclickScrollBubbleController::AutoclickScrollBubbleController() = default;
 
 AutoclickScrollBubbleController::~AutoclickScrollBubbleController() {
   if (bubble_widget_ && !bubble_widget_->IsClosed())
@@ -67,7 +68,7 @@ void AutoclickScrollBubbleController::SetScrollPosition(
   // Adjust the insets to be the same on all sides, so that when the bubble
   // lays out it isn't too close on the top or bottom.
   bubble_view_->UpdateInsets(
-      gfx::Insets(kUnifiedMenuPadding, kUnifiedMenuPadding));
+      gfx::Insets::VH(kBubbleMenuPadding, kBubbleMenuPadding));
 
   aura::Window* window = Shell::GetPrimaryRootWindow();
   gfx::Rect work_area =
@@ -87,7 +88,7 @@ void AutoclickScrollBubbleController::SetScrollPosition(
     // Buffer around the point so that the scroll bubble does not overlap it.
     // ScrollBubbleController will automatically layout to avoid edges.
     // Aims to lay out like the context menu, at 16x16 to the bottom right.
-    anchor.Inset(-kScrollPointBufferDips, 0);
+    anchor.Inset(gfx::Insets::VH(0, -kScrollPointBufferDips));
     bubble_view_->UpdateAnchorRect(anchor,
                                    views::BubbleBorder::Arrow::LEFT_TOP);
     return;
@@ -98,8 +99,8 @@ void AutoclickScrollBubbleController::SetScrollPosition(
   // Try to show the scroll bubble on the side of the rect closest to the point.
   // Determine whether there will be space to show the scroll bubble between the
   // scroll bounds and display bounds.
-  work_area.Inset(kAutoclickScrollMenuSizeDips, kAutoclickScrollMenuSizeDips);
-  scroll_bounds_in_dips.Inset(-kScrollRectBufferDips, -kScrollRectBufferDips);
+  work_area.Inset(kAutoclickScrollMenuSizeDips);
+  scroll_bounds_in_dips.Inset(-kScrollRectBufferDips);
   bool fits_left = scroll_bounds_in_dips.x() > work_area.x();
   bool fits_right = scroll_bounds_in_dips.right() < work_area.right();
   bool fits_above = scroll_bounds_in_dips.y() > work_area.y();
@@ -152,8 +153,8 @@ void AutoclickScrollBubbleController::SetScrollPosition(
   // This may not ever happen except on low-resolution screens.
   set_scroll_rect_ = !positions.empty();
   if (!set_scroll_rect_) {
-    bubble_view_->UpdateInsets(gfx::Insets(
-        0, kUnifiedMenuPadding, kUnifiedMenuPadding, kUnifiedMenuPadding));
+    bubble_view_->UpdateInsets(gfx::Insets::TLBR(
+        0, kBubbleMenuPadding, kBubbleMenuPadding, kBubbleMenuPadding));
     UpdateAnchorRect(menu_bubble_rect_, menu_bubble_alignment_);
     return;
   }
@@ -187,7 +188,7 @@ void AutoclickScrollBubbleController::ShowBubble(
   DCHECK(!bubble_view_);
 
   TrayBubbleView::InitParams init_params;
-  init_params.delegate = this;
+  init_params.delegate = GetWeakPtr();
   // Anchor within the overlay container.
   init_params.parent_window =
       Shell::GetContainer(Shell::GetPrimaryRootWindow(),
@@ -197,23 +198,26 @@ void AutoclickScrollBubbleController::ShowBubble(
   // The widget's shadow is drawn below and on the sides of the scroll view.
   // Do not inset the top, so that when the scroll bubble is shown below the
   // menu bubble it lays out directly below the menu bubble's shadow, at a
-  // height of kUnifiedMenuPadding.
-  init_params.insets = gfx::Insets(0, kUnifiedMenuPadding, kUnifiedMenuPadding,
-                                   kUnifiedMenuPadding);
+  // height of kBubbleMenuPadding.
+  init_params.insets = gfx::Insets::TLBR(
+      0, kBubbleMenuPadding, kBubbleMenuPadding, kBubbleMenuPadding);
   init_params.preferred_width = kAutoclickScrollMenuSizeDips;
   init_params.max_height = kAutoclickScrollMenuSizeDips;
-  init_params.corner_radius = kUnifiedTrayCornerRadius;
-  init_params.has_shadow = false;
   init_params.translucent = true;
   bubble_view_ = new AutoclickScrollBubbleView(init_params);
   bubble_view_->SetArrow(alignment);
 
   scroll_view_ = new AutoclickScrollView();
-  scroll_view_->SetBorder(
-      views::CreateEmptyBorder(kUnifiedTopShortcutSpacing, 0, 0, 0));
+  scroll_view_->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(kUnifiedTopShortcutSpacing, 0, 0, 0)));
   bubble_view_->AddChildView(scroll_view_);
-  scroll_view_->SetPaintToLayer();
-  scroll_view_->layer()->SetFillsBoundsOpaquely(false);
+
+  // In dark light mode, we switch TrayBubbleView to use a textured layer
+  // instead of solid color layer, so no need to create an extra layer here.
+  if (!features::IsDarkLightModeEnabled()) {
+    scroll_view_->SetPaintToLayer();
+    scroll_view_->layer()->SetFillsBoundsOpaquely(false);
+  }
 
   bubble_widget_ = views::BubbleDialogDelegateView::CreateBubble(bubble_view_);
   TrayBackgroundView::InitializeBubbleAnimations(bubble_widget_);

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 #include "base/test/task_environment.h"
 #include "base/timer/timer.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "components/sync/driver/test_sync_service.h"
+#include "components/sync/test/test_sync_service.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -45,23 +45,37 @@ class SyncSessionDurationsMetricsRecorderTest : public testing::Test {
   }
 
   void SetInvalidCredentialsAuthError() {
-    GoogleServiceAuthError auth_error(
-        GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS);
+    sync_service_.SetPersistentAuthErrorOtherThanWebSignout();
+
+    const GoogleServiceAuthError auth_error = sync_service_.GetAuthError();
+    CHECK_EQ(auth_error.state(),
+             GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS);
+
     identity_test_env_.UpdatePersistentErrorOfRefreshTokenForAccount(
         identity_test_env_.identity_manager()->GetPrimaryAccountId(
             signin::ConsentLevel::kSync),
         auth_error);
-    sync_service_.SetAuthError(auth_error);
+
+    // TODO(crbug.com/1156584): This below seems off since
+    // GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS doesn't actually lead to
+    // the PAUSED state.
     sync_service_.SetTransportState(SyncService::TransportState::PAUSED);
   }
 
   void ClearAuthError() {
     identity_test_env_.SetRefreshTokenForPrimaryAccount();
-    sync_service_.SetAuthError(GoogleServiceAuthError::AuthErrorNone());
-    sync_service_.SetTransportState(SyncService::TransportState::ACTIVE);
+    sync_service_.ClearAuthError();
+    ASSERT_EQ(sync_service_.GetTransportState(),
+              SyncService::TransportState::ACTIVE);
   }
 
   std::string GetSessionHistogramName(const std::string& histogram_suffix) {
+    return std::string("Session.TotalDurationMax1Day.") + histogram_suffix;
+  }
+
+  // TODO(https://crbug.com/1355203): Deprecate this method.
+  std::string GetSessionHistogramLegacyName(
+      const std::string& histogram_suffix) {
     return std::string("Session.TotalDuration.") + histogram_suffix;
   }
 
@@ -69,23 +83,27 @@ class SyncSessionDurationsMetricsRecorderTest : public testing::Test {
       const base::HistogramTester& ht,
       const std::vector<std::string>& histogram_suffixes,
       const base::TimeDelta& expected_session_time) {
-    for (const auto& histogram_suffix : histogram_suffixes) {
+    for (const std::string& histogram_suffix : histogram_suffixes) {
       ht.ExpectTimeBucketCount(GetSessionHistogramName(histogram_suffix),
+                               expected_session_time, 1);
+      ht.ExpectTimeBucketCount(GetSessionHistogramLegacyName(histogram_suffix),
                                expected_session_time, 1);
     }
   }
 
   void ExpectOneSession(const base::HistogramTester& ht,
                         const std::vector<std::string>& histogram_suffixes) {
-    for (const auto& histogram_suffix : histogram_suffixes) {
+    for (const std::string& histogram_suffix : histogram_suffixes) {
       ht.ExpectTotalCount(GetSessionHistogramName(histogram_suffix), 1);
+      ht.ExpectTotalCount(GetSessionHistogramLegacyName(histogram_suffix), 1);
     }
   }
 
   void ExpectNoSession(const base::HistogramTester& ht,
                        const std::vector<std::string>& histogram_suffixes) {
-    for (const auto& histogram_suffix : histogram_suffixes) {
+    for (const std::string& histogram_suffix : histogram_suffixes) {
       ht.ExpectTotalCount(GetSessionHistogramName(histogram_suffix), 0);
+      ht.ExpectTotalCount(GetSessionHistogramLegacyName(histogram_suffix), 0);
     }
   }
 
@@ -240,7 +258,8 @@ TEST_F(SyncSessionDurationsMetricsRecorderTest,
   EnableSync();
 
   // Simulate sync initializing (before first connection to the server).
-  auto active_sync_snapshot = sync_service_.GetLastCycleSnapshotForDebugging();
+  SyncCycleSnapshot active_sync_snapshot =
+      sync_service_.GetLastCycleSnapshotForDebugging();
   sync_service_.SetLastCycleSnapshot(syncer::SyncCycleSnapshot());
   ASSERT_TRUE(sync_service_.IsSyncFeatureActive());
   ASSERT_FALSE(sync_service_.HasCompletedSyncCycle());

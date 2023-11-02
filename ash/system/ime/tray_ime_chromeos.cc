@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,8 +29,6 @@
 #include "ui/views/controls/image_view.h"
 
 namespace ash {
-
-namespace tray {
 
 IMEDetailedView::IMEDetailedView(DetailedViewDelegate* delegate,
                                  ImeControllerImpl* ime_controller)
@@ -82,7 +80,5 @@ void IMEDetailedView::ShowSettings() {
 
 BEGIN_METADATA(IMEDetailedView, ImeListView)
 END_METADATA
-
-}  // namespace tray
 
 }  // namespace ash

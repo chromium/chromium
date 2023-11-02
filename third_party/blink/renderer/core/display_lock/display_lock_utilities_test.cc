@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,20 +17,18 @@
 
 namespace blink {
 
-class DisplayLockUtilitiesTest
-    : public RenderingTest,
-      private ScopedCSSContentVisibilityHiddenMatchableForTest {
+class DisplayLockUtilitiesTest : public RenderingTest {
  public:
   DisplayLockUtilitiesTest()
-      : RenderingTest(MakeGarbageCollected<SingleChildLocalFrameClient>()),
-        ScopedCSSContentVisibilityHiddenMatchableForTest(true) {}
+      : RenderingTest(MakeGarbageCollected<SingleChildLocalFrameClient>()) {}
 
   void LockElement(Element& element, bool activatable) {
-    StringBuilder value;
-    value.Append("content-visibility: hidden");
-    if (activatable)
-      value.Append("-matchable");
-    element.setAttribute(html_names::kStyleAttr, value.ToAtomicString());
+    if (activatable) {
+      element.setAttribute(html_names::kHiddenAttr, "until-found");
+    } else {
+      element.setAttribute(html_names::kStyleAttr,
+                           "content-visibility: hidden");
+    }
     UpdateAllLifecyclePhasesForTest();
   }
 
@@ -40,12 +38,9 @@ class DisplayLockUtilitiesTest
   }
 };
 
-TEST_F(DisplayLockUtilitiesTest, ShouldIgnoreHiddenMatchableChildren) {
+TEST_F(DisplayLockUtilitiesTest, ShouldIgnoreHiddenUntilFoundChildren) {
   SetBodyInnerHTML(R"HTML(
-    <style>
-    .hidden { content-visibility: hidden-matchable }
-    </style>
-    <div class=hidden>
+    <div hidden=until-found>
       <div id=target></div>
     </div>
   )HTML");
@@ -329,6 +324,26 @@ TEST_F(DisplayLockUtilitiesTest, InteractionWithIntersectionObserver) {
             observer_delegate->LastEntry()->GetGeometry().TargetRect());
   EXPECT_NE(observer_delegate->LastEntry()->GetGeometry().RootRect(),
             PhysicalRect());
+}
+
+TEST_F(DisplayLockUtilitiesTest, ContainerQueryCrash) {
+  ScopedCSSContainerQueriesForTest cq_enabled(true);
+
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+      #container {
+        content-visibility: hidden;
+        container-type: size;
+      }
+    </style>
+    <div id="container"><div id="child"></div></div>
+  )HTML");
+
+  auto* child = DynamicTo<HTMLElement>(GetDocument().getElementById("child"));
+  ASSERT_TRUE(child);
+
+  // Should not fail DCHECKs or crash.
+  child->offsetTopForBinding();
 }
 
 }  // namespace blink

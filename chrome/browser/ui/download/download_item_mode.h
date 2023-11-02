@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,8 +17,6 @@ enum class DownloadItemMode {
   kMixedContentWarn,   // Displaying the mixed-content download warning.
   kMixedContentBlock,  // Displaying the mixed-content download block error.
   kDeepScanning,       // Displaying in-progress deep scanning information.
-  kIncognitoWarning,  // Displaying warning about files saved on the device even
-                      // in Incognito.
 };
 
 // Returns the mode that best reflects the current model state.

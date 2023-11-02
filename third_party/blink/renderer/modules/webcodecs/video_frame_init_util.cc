@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -92,7 +92,7 @@ ParsedVideoFrameInit::ParsedVideoFrameInit(
 
   // Override visible rect from init.
   if (init->hasVisibleRect()) {
-    visible_rect = ToGfxRect(init->visibleRect(), coded_size, "visibleRect",
+    visible_rect = ToGfxRect(init->visibleRect(), "visibleRect", coded_size,
                              exception_state);
     if (exception_state.HadException())
       return;
@@ -107,7 +107,8 @@ ParsedVideoFrameInit::ParsedVideoFrameInit(
       return;
     }
 
-    VerifyRectSampleAlignment(visible_rect, format, exception_state);
+    ValidateOffsetAlignment(format, visible_rect, "visibleRect",
+                            exception_state);
     if (exception_state.HadException())
       return;
   }

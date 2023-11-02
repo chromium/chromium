@@ -1,14 +1,14 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/download/confirm_download_replacing_overlay.h"
 
-#include "base/bind.h"
-#include "components/strings/grit/components_strings.h"
+#import "base/bind.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/overlays/public/common/confirmation/confirmation_overlay_response_util.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ui/base/l10n/l10n_util_mac.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

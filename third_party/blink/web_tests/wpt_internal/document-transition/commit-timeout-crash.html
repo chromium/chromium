@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<meta name="timeout" content="long">
+<html class=reftest-wait>
+<title>Long timeout</title>
+<link rel="help" href="https://github.com/WICG/shared-element-transitions">
+<link rel="author" href="mailto:vmpstr@chromium.org">
+
+<script src="/common/reftest-wait.js"></script>
+
+<style>
+.square {
+  contain: paint;
+  width: 100px;
+  height: 100px;
+  background: green;
+  page-transition-tag: square;
+}
+</style>
+
+<div class=square></div>
+
+<script>
+async function runTest() {
+  let t = document.createDocumentTransition();
+  t.start(async () => {
+    await new Promise(resolve => setTimeout(resolve, 5000));
+    takeScreenshot();
+  });
+}
+onload = () => requestAnimationFrame(runTest);
+</script>

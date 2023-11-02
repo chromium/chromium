@@ -1,6 +1,8 @@
-<!-- Copyright 2020 The Chromium Authors. All rights reserved.
+<!--
+Copyright 2020 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
-found in the LICENSE file. -->
+found in the LICENSE file.
+-->
 
 <link rel="import" href="chrome://resources/html/polymer.html">
 
@@ -22,18 +24,24 @@ found in the LICENSE file. -->
 <link rel="import" href="../../components/common_styles/oobe_dialog_host_styles.html">
 <link rel="import" href="../../components/dialogs/oobe_adaptive_dialog.html">
 <link rel="import" href="../../components/dialogs/oobe_modal_dialog.html">
+<link rel="import" href="../../cr_ui.html">
 
 
 <dom-module id="user-creation-element">
   <template>
     <style include="oobe-dialog-host-styles cr-card-radio-group-styles">
+      @media screen and (max-width: 920px) {
+      :host {
+          --radio-button-height: 155px;
+        }
+      }
       .help-text {
         color: var(--oobe-subheader-text-color);
         margin-top: 16px;
       }
     </style>
-    <oobe-adaptive-dialog id="userCreationDialog" role="dialog"
-        aria-label$="[[i18nDynamic(locale, titleKey_)]]" for-step="create">
+    <oobe-adaptive-dialog id="userCreationDialog" for-step="create"
+        role="presentation">
       <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
       <h1 slot="title">
         [[i18nDynamic(locale, titleKey_)]]

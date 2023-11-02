@@ -26,7 +26,6 @@
 <translation id="225614027745146050">مرحبًا</translation>
 <translation id="2320166752086256636">إخفاء لوحة المفاتيح</translation>
 <translation id="2329392777730037872">تعذّر فتح <ph name="URL" /> على الجهاز العميل.</translation>
-<translation id="2333212046079545895">‏حقوق الطبع والنشر لعام 2021 لشركة Google LLC. جميع الحقوق محفوظة.</translation>
 <translation id="2359808026110333948">متابعة</translation>
 <translation id="2366718077645204424">يتعذر الوصول إلى المضيف. ربما يرجع ذلك إلى إعداد الشبكة التي تستخدمها.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  شوهد متصلاً آخر مرة <ph name="RELATIVE_TIMESTAMP" />.</translation>
@@ -37,6 +36,7 @@
 <translation id="2599300881200251572">‏تمكن هذه الخدمة الاتصالات الواردة من عملاء سطح المكتب البعيد من Chrome.</translation>
 <translation id="2647232381348739934">‏خدمة التوافق مع نظام التشغيل Chrome</translation>
 <translation id="2676780859508944670">جارٍ العمل…</translation>
+<translation id="2692522824157224199">‏حقوق الطبع والنشر لعام 2022 لشركة Google LLC جميع الحقوق محفوظة.</translation>
 <translation id="2699970397166997657">‏التوافق مع نظام التشغيل Chrome</translation>
 <translation id="2758123043070977469">حدثت مشكلة أثناء المصادقة، يُرجى إعادة تسجيل الدخول.</translation>
 <translation id="2803375539583399270">أدخل رقم التعريف الشخصي</translation>
@@ -73,10 +73,10 @@
 <translation id="4257751272692708833">‏برنامج إعادة توجيه عناوين URL من خلال "<ph name="PRODUCT_NAME" />"</translation>
 <translation id="4277736576214464567">رمز الدخول غير صالح، يُرجى إعادة المحاولة.</translation>
 <translation id="4281844954008187215">بنود الخدمة</translation>
+<translation id="4372650392690220936">‏حقوق الطبع والنشر The Chromium Authors لعام 2022 جميع الحقوق محفوظة.</translation>
 <translation id="4405930547258349619">المكتبة الأساسية</translation>
 <translation id="443560535555262820">فتح إعدادات "أدوات تمكين الوصول" المفضّلة</translation>
 <translation id="4450893287417543264">عدم الإظهار مرة أخرى</translation>
-<translation id="4512952200932940229">‏حقوق الطبع والنشر The Chromium Authors لعام 2021. جميع الحقوق محفوظة.</translation>
 <translation id="4513946894732546136">ملاحظات</translation>
 <translation id="4563926062592110512">تم إلغاء ربط العميل: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="4618411825115957973">‏لم يتم ضبط <ph name="URL_FORWARDER_NAME" /> بشكل صحيح. يُرجى اختيار متصفّح ويب تلقائي مختلف ثم تفعيل ميزة إعادة توجيه عناوين URL مجدّدًا.</translation>

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,11 +11,9 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "content/browser/renderer_host/pepper/pepper_truetype_font.h"
-#include "content/common/content_export.h"
 #include "ppapi/host/host_message_context.h"
 #include "ppapi/host/resource_host.h"
 
@@ -23,7 +21,7 @@ namespace content {
 
 class BrowserPpapiHost;
 
-class CONTENT_EXPORT PepperTrueTypeFontHost : public ppapi::host::ResourceHost {
+class PepperTrueTypeFontHost : public ppapi::host::ResourceHost {
  public:
   PepperTrueTypeFontHost(BrowserPpapiHost* host,
                          PP_Instance instance,

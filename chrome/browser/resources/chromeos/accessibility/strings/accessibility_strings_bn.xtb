@@ -30,7 +30,9 @@
 <translation id="1189258430971676908">অনুশীলন ক্ষেত্র: ড্রপ-ডাউন তালিকা</translation>
 <translation id="1195238899008218998">পরিশিষ্ট</translation>
 <translation id="1197088940767939838">কমলা</translation>
+<translation id="1198865190323699001">জেসচার মেনুতে স্পর্শ করুন</translation>
 <translation id="1201402288615127009">পরের</translation>
+<translation id="1202112913213080585">বাতিল করুন</translation>
 <translation id="1206619573307042055">marquee</translation>
 <translation id="1207086294218137981">কোনও পরবর্তী লেভেল ৪ শিরোনাম নেই</translation>
 <translation id="1212770441379271564">পরবর্তী কয়েকটি শর্টকাট ChromeVox-এর কোনও কমান্ড নয়, কিন্তু তবুও, Chrome থেকে সর্বাধিক সুবিধা পাওয়ার জন্য এগুলি খুবই কার্যকরী ভূমিকা নেয়।
@@ -42,6 +44,7 @@
       Chrome ব্রাউজারের মেনু খুলতে, 'Alt' কীয়ের সাথে 'F' কী প্রেস করুন।</translation>
 <translation id="1213216066620407844">ChromeVox - Chrome কে ভয়েস প্রদান</translation>
 <translation id="1225969361094801578">গাঢ় স্লেট ধূসর</translation>
+<translation id="122928249241119550">আগের বাক্যে যান</translation>
 <translation id="1230503547248836149">বেছে নেওয়া শুরু করার জায়গা</translation>
 <translation id="1236794971743289975">এন্ডনোট</translation>
 <translation id="1237797094773582699">একইভাবে, চার আঙুল দিয়ে ডানদিক থেকে বাঁদিকে সোয়াইপ করলে পূর্ববর্তী বিভাগে যেতে পারবেন। এখনই করে দেখুন!</translation>
@@ -135,9 +138,9 @@
 <translation id="1812527064848182527">ল্যান্ডস্কেপ</translation>
 <translation id="1829244130665387512">পৃষ্ঠাতে খুঁজুন</translation>
 <translation id="1834891354138622109">কলাম</translation>
-<translation id="1845944666972354496">চালু করতে ডবল ট্যাপ করুন</translation>
 <translation id="1846771122725914429">ব্লুটুথ ব্রেইল ডিসপ্লে</translation>
 <translation id="1852018405765032699">স্ক্রিনে চার আঙুল দিয়ে ট্যাপ করলে ChromeVox মেনু খুলবে ও বন্ধ হবে। এই মেনুতে আপনার কাজে লাগার মতো কমান্ড ও শর্টকাট রয়েছে। একবার মেনু খোলার পর আইটেমে নেভিগেট করার জন্য এক আঙুল দিয়ে সোয়াইপ করতে পারেন ও আইটেম অ্যাক্টিভেট করতে ডবল ট্যাপ করতে পারেন। চালিয়ে যেতে চার আঙুল দিয়ে স্ক্রিনে ট্যাপ করুন।</translation>
+<translation id="1864430479908918647">Search+Space প্রেস করুন</translation>
 <translation id="1865601187525349519">পাঠ্যের শেষে</translation>
 <translation id="1876229593313240038">দস্তাবেজ</translation>
 <translation id="1902396333223336119">সেল</translation>
@@ -212,6 +215,7 @@
 <translation id="2435422727584637732">ডজার নীল</translation>
 <translation id="2438712309510062123">সাজেস্ট করুন</translation>
 <translation id="2450814015951372393">চেকবাক্স</translation>
+<translation id="2450992626945324272">পরবর্তী বাক্যে যান</translation>
 <translation id="2461822463642141190">বর্তমান</translation>
 <translation id="2462626033734746142">রেডিও বোতাম গ্রুপ</translation>
 <translation id="2467741090055146971">বাদ দিন</translation>
@@ -234,6 +238,7 @@
 <translation id="2619344480613750862">আপনি স্ক্রিনের নানা বিভাগে নেভিগেট করতে পারেন। যেমন, আপনি লঞ্চার, শেল্ফ ও আপনার Chrome ট্যাবের মধ্যে নেভিগেট করতে পারেন। পরের বিভাগে নেভিগেট করতে চার আঙুল দিয়ে বাঁদিক থেকে ডানদিকে সোয়াইপ করুন। চালিয়ে যেতে এখনই করে দেখুন।</translation>
 <translation id="2624431853467395961">শিখন মোড খুলুন</translation>
 <translation id="2626530649491650971">ক্লিক যোগ্য</translation>
+<translation id="263637551280112393">Search+Shift+Space প্রেস করুন</translation>
 <translation id="2637227747952042642">গণিত</translation>
 <translation id="2638785836053527382"><ph name="FILE_NAME" /> আবার ডাউনলোড করা শুরু হয়েছে</translation>
 <translation id="2639750663247012216">ChromeVox মডিফায়ার</translation>
@@ -389,7 +394,9 @@
 <translation id="3492609944033322585">{COUNT,plural, =1{ডান বন্ধনী}one{#টি বাঁ বন্ধনী}other{#টি বাঁ বন্ধনী}}</translation>
 <translation id="3494946239022273294">mnuitm</translation>
 <translation id="3497063866483065785">{COUNT,plural, =1{প্রশ্নবোধক চিহ্ন}one{#টি প্রশ্নবোধক চিহ্ন}other{#টি প্রশ্নবোধক চিহ্ন}}</translation>
+<translation id="3505359110822747654">ChromeVox Menus আড়াল করুন</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{ক্যারেট}one{# ক্যারেট}other{# ক্যারেট}}</translation>
+<translation id="3518600448524470129">{COUNT,plural, =1{সাদা বুলেট}one{#টি সাদা বুলেট}other{#টি সাদা বুলেট}}</translation>
 <translation id="352577523970648069">একটি সম্পাদনাযোগ্য পাঠ্য ফিল্ড</translation>
 <translation id="3538907380453898475">dscrplst</translation>
 <translation id="3549141990712742152"><ph name="TEXT" /> কাট করুন।</translation>
@@ -486,6 +493,7 @@
 <translation id="42164919740161077">ক্যাডেট নীল</translation>
 <translation id="4217571870635786043">ডিক্টেশন</translation>
 <translation id="4218529045364428769">{COUNT,plural, =1{ড্যাশ}one{#টি ড্যাশ}other{#টি ড্যাশ}}</translation>
+<translation id="4220024144662591089"><ph name="START_PHRASE" /> থেকে <ph name="END_PHRASE" /> বেছে নিন</translation>
 <translation id="4221012616705981690">কোনও পূর্ববর্তী তালিকা নেই</translation>
 <translation id="4225355998815256469">কন্ট্রোলগুলি থেকে</translation>
 <translation id="4230834257931120629">হালকা স্লেট ধূসর</translation>
@@ -504,6 +512,7 @@
 <translation id="4300318234632215983">একটি লিঙ্কের পিছনের URL ঘোষণা করুন</translation>
 <translation id="4322625298640984693">পোড়া লাল</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{বিন্দু}=3{এলিপসিস}one{#টি বিন্দু}other{# বিন্দু}}</translation>
+<translation id="4352022650330571548"><ph name="PHRASE" /> টাইপ করুন</translation>
 <translation id="4372435075475052704">ন্যূনতম:<ph name="X" /></translation>
 <translation id="4372705107434148843">স্পিচ থামান</translation>
 <translation id="4376316291247992553">ব্রেইল হিসাবে গ্রাফিক দেখুন</translation>
@@ -521,6 +530,7 @@
 <translation id="4479068155583208887">ইঁট লাল</translation>
 <translation id="4482330759234983253">পূর্ববর্তী সারণী</translation>
 <translation id="4491109536499578614">ছবি</translation>
+<translation id="4507332368061453500">বর্তমান আইটেমটির উপরে অনেকক্ষণ ধরে ক্লিক করুন</translation>
 <translation id="4511186779140817916">ফ্যাকাশে গোলাপী</translation>
 <translation id="451510441928265982">কোনও পূর্ববর্তী লেভেল ২ শিরোনাম নেই</translation>
 <translation id="4515799157838123044">ব্যাকগ্রাউন্ডে থাকা কন্টেন্টকে ঢেকে দিন</translation>
@@ -533,6 +543,7 @@
 <translation id="4601367666219428522">সারণী <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">পরবর্তী কি টেপা উপেক্ষা করা হচ্ছে</translation>
 <translation id="4623097797855662355">বইটির সম্পর্কে</translation>
+<translation id="4624970070706497034">টকব্যাক আর Chromebook-এর জন্য কাস্টমাইজ করার সুবিধা প্রদান করে না। আপনি এখনও এটি ব্যবহার করতে পারেন, তবে টকব্যাক ডিফল্ট কীবোর্ড শর্টকাট ব্যবহার করুন। কী কী শর্টকাট উপলভ্য আছে দেখতে Search+A এবং তারপরে K প্রেস করুন। এখনও টকব্যাক ব্যবহার করতে চাইলে, আবার 'কমান্ড' কী প্রেস করুন।</translation>
 <translation id="463135993322337640">নতুন কি আছে তা দেখার জন্য ChromeVox o, n টিপুন</translation>
 <translation id="4649220074413114917">কোনও বর্তমান স্পিচ বন্ধ করতে দুই আঙুল দিয়ে স্ক্রিনে ট্যাপ করুন। ChromeVox-এর পড়ে শোনানো কোনও স্পিচ আপনি শুনতে না চাইলে এই পদ্ধতিটি কার্যকরী। চালিয়ে যেতে, দুই আঙুল দিয়ে স্ক্রিনে ট্যাপ করুন।</translation>
 <translation id="4660783501463101648">ক্লাসিক ভার্সন সরানো হয়েছে। কীবোর্ড টগল করে ChromeVox ক্লাসিক ভার্সনে ফিরে যাওয়ার সুবিধা সরিয়ে দেওয়া হয়েছে।</translation>
@@ -588,7 +599,6 @@
 <translation id="4993152509206108683"><ph name="PERCENT" /> শতাংশ হার</translation>
 <translation id="4994420463726586413">ব্যাটারিতে কত চার্জ আছে জানান</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, রেডিও বোতাম নির্বাচিত</translation>
-<translation id="5011664330025416377">চালু করতে Search+Space টিপুন</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, মেনু আইটেম রেডিও বোতাম বেছে নেওয়া হয়েছে</translation>
 <translation id="5020651427400641814">ভাষ্য লগ করার বিকল্পটি চালু করুন</translation>
 <translation id="5041394372352067729">পৃষ্ঠার উপরের দিকে ব্রেইল প্রদর্শন সরান</translation>
@@ -615,7 +625,6 @@
 <translation id="5170206230005240598">ব্রেইল ক্যাপশনগুলি চালু করা হয়েছে</translation>
 <translation id="5183440668879371625">ব্রেইল পূর্ববর্তী লাইন</translation>
 <translation id="5189244881767082992">লাইন</translation>
-<translation id="5234747236692380506"><ph name="TEXT" /> টাইপ করুন</translation>
 <translation id="5263034204789987535">কর্নসিল্ক</translation>
 <translation id="5263344797180442561">h2</translation>
 <translation id="528468243742722775">শেষ</translation>
@@ -624,7 +633,7 @@
 <translation id="5302089807023311274">বিবলিওগ্রাফি রেফারেন্স</translation>
 <translation id="530391007967514163">নিচের টেক্সটে নেভিগেট করতে জাম্প কমান্ড ব্যবহার করে দেখুন।</translation>
 <translation id="5304943142864553931"><ph name="TITLE" />, ট্যাব</translation>
-<translation id="5308380583665731573">সংযুক্ত করুন</translation>
+<translation id="5308380583665731573">কানেক্ট করুন</translation>
 <translation id="5310788376443009632">সরানো হয়েছে:</translation>
 <translation id="5316825363044614340">পরের লাইনে সরান</translation>
 <translation id="5320727453979144100">স্টিকি মোড সক্ষম</translation>
@@ -642,6 +651,7 @@
 <translation id="5355014376930441909">কোনও পরবর্তী বিভাগ নেই</translation>
 <translation id="5368000168321181111">Earcons বন্ধ আছে</translation>
 <translation id="5368505757342402527"><ph name="FILE_NAME" /> এখনও পর্যন্ত <ph name="PROGRESS" /> শতাংশ ডাউনলোড করা হয়েছে। প্রায় <ph name="TIME" /> <ph name="UNITS" /> বাকি আছে।</translation>
+<translation id="5381388086899614489">দীর্ঘ সময় ধরে ক্লিক করুন</translation>
 <translation id="5400836586163650660">ধূসর</translation>
 <translation id="5402367795255837559">ব্রেইল</translation>
 <translation id="5402791055281059602">একটি মোডাল সতর্কতা</translation>
@@ -663,6 +673,7 @@
 <translation id="5522423213731659107">'দ্রুত জ্ঞান অর্জন' সম্পূর্ণ হয়েছে!</translation>
 <translation id="5534303576632885660">hdr</translation>
 <translation id="5539820223028224601">খুব হালকা ধূসর</translation>
+<translation id="554893713779400387">ডিক্টেশন চালু বা বন্ধ করুন</translation>
 <translation id="5549179427201066174">আওয়াজে প্রতিক্রিয়া (ইয়ারকন) চালু বা বন্ধ করুন</translation>
 <translation id="556042886152191864">বোতাম</translation>
 <translation id="5561345396546889625">পরবর্তী তালিকা</translation>
@@ -673,6 +684,7 @@
 <translation id="5597170376237141345">পরবর্তী চেকবাক্স</translation>
 <translation id="5598905979683743333"><ph name="NAME" />, রেডিও বোতাম নির্বাচিত নেই</translation>
 <translation id="5601172225407283979">ডিফল্ট অ্যাকশন সম্পন্ন করুন</translation>
+<translation id="5604302400025591178">{COUNT,plural, =1{বর্গাকার বুলেট}one{#টি বর্গাকার বুলেট}other{#টি বর্গাকার বুলেট}}</translation>
 <translation id="5608798115546226984">স্বতসম্পূর্ণ ইনলাইন</translation>
 <translation id="5616029807486814372">পরবর্তী পাঠ</translation>
 <translation id="561939826962581046">time</translation>
@@ -680,6 +692,8 @@
 <translation id="5623842676595125836">লগ</translation>
 <translation id="5628125749885014029">h4</translation>
 <translation id="5632083598315326067">গ্রাফিক্স চিহ্ন</translation>
+<translation id="5648939288050772726">অভিনন্দন! ChromeVox-এর প্রয়োজনীয় উপাদানগুলির ব্যাপারে আপনার কাছে এখন যথেষ্ট তথ্য রয়েছে। মনে রাখবেন, আপনি যেকোনও সময় ChromeVox-এর পরিবর্তিত কীবোর্ডে গিয়ে 'সার্চ' কী ও 'পিরিয়ড' কী একসাথে প্রেস করে ChromeVox-এর 'কমান্ড' মেনু খুলতে পারেন। ChromeVox ও ChromeOS-এর ব্যাপারে আরও বিস্তারিত জানতে, নিচে দেওয়া নিবন্ধগুলি পড়ে দেখুন।
+    যদি আপনার টিউটোরিয়াল দেখা হয়ে গিয়ে থাকে, ChromeVox ব্যবহার করে 'বন্ধ করুন' বোতামে গিয়ে সেটিতে ক্লিক করুন।</translation>
 <translation id="5653397561111110475">Chromebook-এর টাচ স্ক্রিনের ব্যবহারযোগ্যতার বৈশিষ্ট্যগুলি ব্যবহার করুন</translation>
 <translation id="5655682562155942719">মন্তব্যগুলি ছেড়ে যান</translation>
 <translation id="56637627897541303">পাঠ্য ক্ষেত্র</translation>
@@ -750,8 +764,10 @@
 <translation id="6100239002225743044">টেক্সটের কার্সার এক লাইন উপরে নিয়ে যান</translation>
 <translation id="6118126368611144850">Chrome এর জন্য Android অ্যাপ। আপনার ডিভাইসে যদি Play Store থাকে তাহলে Android অ্যাপের সাথে ChromeVox ব্যবহার করে দেখুন। Play Store থেকে Google Chrome Canary ডাউনলোড করার মাধ্যমে পরীক্ষামূলক সহায়তা পান।</translation>
 <translation id="611827076493383239">vtd</translation>
+<translation id="6119846243427417423">সক্রিয় করুন</translation>
 <translation id="6122013438240733403">btn</translation>
 <translation id="6132506484792346370">একটি তালিকা বাক্স বা কম্বো বাক্স</translation>
+<translation id="613344593214611552">আগের বাক্যটি মুছুন</translation>
 <translation id="6142308968191113180">শিরোলেখ ৪</translation>
 <translation id="6150023170003443621">হলদে সবুজ</translation>
 <translation id="6158882249329863701">সারি <ph name="TABLECELLROWINDEX" /> কলাম <ph name="TABLECELLCOLUMNINDEX" /></translation>
@@ -761,9 +777,11 @@
 <translation id="6186305613600865047">পৃষ্ঠাটির একেবারে নিচে চলে যান</translation>
 <translation id="6187190722927752226">সবুজাভ নীল</translation>
 <translation id="6197361807490522975">গাঢ় নীল</translation>
+<translation id="6218813441317556731"><ph name="DELETE_PHRASE" />-এর জায়গায় <ph name="INSERT_PHRASE" /> নামটি ব্যবহার করুন</translation>
 <translation id="6236061028292614533">পরবর্তী শিরোনাম</translation>
 <translation id="6254901459154107917">পরবর্তী সম্পাদনার যোগ্য পাঠ্য অঞ্চল</translation>
 <translation id="6259464875943891919"><ph name="TYPE" /> থেকে প্রস্থান করা৷</translation>
+<translation id="6280088282605782512">ডবল ট্যাপ করুন</translation>
 <translation id="6282062888058716985">nav</translation>
 <translation id="6295699829709583154">গুরুত্বপূর্ণ কী: Search</translation>
 <translation id="6305702903308659374">ChromeVox কথা বলতে থাকলেও সাধারণ ভলিউমে বাজান</translation>
@@ -934,6 +952,7 @@
 <translation id="7533226154149229506">হালকা সোনালী রড হলুদ</translation>
 <translation id="7543255924852002459">লেবেল বাতিল করুন</translation>
 <translation id="7552432549459840808">সহায়ক Chrome শর্টকাটগুলি</translation>
+<translation id="7553679324939294712"><ph name="BEFORE_PHRASE" />-এর আগে <ph name="INSERT_PHRASE" /> যোগ করুন</translation>
 <translation id="7569983096843329377">কালো</translation>
 <translation id="7579911500627256166">ডট <ph name="DOT" /></translation>
 <translation id="7592060599656252486">কিছু</translation>
@@ -957,16 +976,16 @@
 <translation id="7684431668231950609">URL এন্ট্রি, পাঠ্য সম্পাদনা করুন</translation>
 <translation id="7685589220304187312">tlbar</translation>
 <translation id="7693840228159394336">আগের রেডিও বোতাম</translation>
+<translation id="7696631298608145306">পরবর্তী শব্দে যান</translation>
 <translation id="7701040980221191251">কিছু নেই</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7713139339518499741">খুব ভাল কোয়ালিটির ভয়েস</translation>
 <translation id="7714340021005120797">কোনও পরবর্তী কম্বোবক্স নেই</translation>
-<translation id="772146615414628379">অভিনন্দন! ChromeVox-এর প্রয়োজনীয় উপাদানগুলির ব্যাপারে আপনার কাছে এখন যথেষ্ট তথ্য রয়েছে। মনে রাখবেন, আপনি যেকোনও সময় ChromeVox-এর পরিবর্তিত কীবোর্ডে গিয়ে 'সার্চ' কী ও 'পিরিয়ড' কী একসাথে প্রেস করে ChromeVox-এর 'কমান্ড' মেনু খুলতে পারেন। ChromeVox ও Chrome OS-এর ব্যাপারে আরও বিস্তারিত জানতে, নিচে দেওয়া নিবন্ধগুলি পড়ে দেখুন।
-    যদি আপনার টিউটোরিয়াল দেখা হয়ে গিয়ে থাকে, ChromeVox ব্যবহার করে 'বন্ধ করুন' বোতামে গিয়ে সেটিতে ক্লিক করুন।</translation>
 <translation id="7724603315864178912">কাটুন</translation>
 <translation id="7731785449856576010">কোনও পরবর্তী মিডিয়া উইজেট নেই</translation>
 <translation id="7735498529470878067">স্ক্রিনে কী কী আছে তা 'টাচের মাধ্যমে এক্সপ্লোর করুন' সুবিধাটি আপনাকে দ্রুত জানিয়ে দেবে।</translation>
 <translation id="773906353055481349">কক্ষের মাধ্যমে নেভিগেট করতে তীরচিহ্ন সহ Search+Ctrl+Alt টিপুন</translation>
+<translation id="7746976083433980639"><ph name="ACTION" /> থেকে <ph name="LABEL" /></translation>
 <translation id="7763537600611320912"><ph name="FILE_NAME" /> ডাউনলোড করা শুরু হয়েছে</translation>
 <translation id="7768784765476638775">বাছুন ও শুনুন</translation>
 <translation id="7776293189010177726">ChromeVox মেনুগুলি খুলুন</translation>
@@ -1066,6 +1085,7 @@
 <translation id="8455868257606149352">সর্বোচ্চ <ph name="X" /></translation>
 <translation id="84575901236241018">অ্যাক্সেস কী আছে, <ph name="KEY" /></translation>
 <translation id="8463645336674919227">ব্যাকরণগত ভুল ছেড়ে দেওয়া হচ্ছে</translation>
+<translation id="8465573210279050749">আগের শব্দটি মুছুন</translation>
 <translation id="847040613207937740">কোনও পরবর্তী চেকবক্স নেই</translation>
 <translation id="8473540203671727883">মাউস কার্সারের নিচে থাকা টেক্সট পড়ুন</translation>
 <translation id="8476408756881832830">ChromeVox কথা বলতে থাকলে প্লেব্যাক সাময়িকভাবে থামান</translation>
@@ -1096,11 +1116,13 @@
 <translation id="8659501358298941449">ড্রপ-ডাউন তালিকা</translation>
 <translation id="8666733765751421568"><ph name="TYPE" /> শেষ</translation>
 <translation id="867187640362843212">শিরোনাম ৫</translation>
+<translation id="8690400660839620419">{COUNT,plural, =1{}one{নেস্ট করা লেভেল #}other{নেস্ট করা লেভেল #}}</translation>
 <translation id="8693391540059827073">আমার প্রিয় ঋতু</translation>
 <translation id="8696284982970258155">হানিডিউ</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{পাইপ}one{#টি উলম্ব পাইপ}other{#টি উলম্ব পাইপ}}</translation>
 <translation id="8741370088760768424">ইঙ্গিত: বর্তমান আইটেম অ্যাক্টিভেট করতে Search + Space কী প্রেস করুন।</translation>
 <translation id="8743786158317878347">সংগঠিত কন্টেন্ট লিখুন, যেমন সারণীগুলি</translation>
+<translation id="8746846427395705317">আগের শব্দে যান</translation>
 <translation id="8747966237988593539">ক্রমযুক্ত তালিকা</translation>
 <translation id="8749988712346667988">রূপালী</translation>
 <translation id="875769700429317857"><ph name="FILE_NAME" /> ডাউনলোড করা হয়ে গেছে</translation>
@@ -1128,6 +1150,7 @@
 <translation id="8970172509886453271">কোনও পূর্ববর্তী বিভাগ নেই</translation>
 <translation id="89720367119469899">অব্যাহতি</translation>
 <translation id="8978496506222343566">tltip</translation>
+<translation id="898089897833732740"><ph name="PHRASE" /> মুছুন</translation>
 <translation id="8986362086234534611">ভুলে যান</translation>
 <translation id="8989104346085848538">বর্তমান ChromeVox স্পিচ বন্ধ করতে, Control কী প্রেস করুন।</translation>
 <translation id="8993737615451556423">রিডিং ভয়েসের গতি বাড়াতে, কমাতে ও পজ করতে, নিয়ন্ত্রণের সুবিধা প্রদান করে</translation>
@@ -1163,6 +1186,7 @@
 <translation id="9223032053830369045">গাঢ় লাল</translation>
 <translation id="923331726185079994">ChromeVox আপডেট হয়েছে</translation>
 <translation id="93384979447910801">গাঢ় নীলাভ সবুজ</translation>
+<translation id="937605981140327129">টকব্যাক বর্তমানে ইনস্টল করা নেই। Play Store থেকে Android AccessibilitySuite ইনস্টল করে আবার চেষ্টা করুন।</translation>
 <translation id="948171205378458592">স্পিচের হার কমান</translation>
 <translation id="957570623732056069">এই টিউটোরিয়ালে নেভিগেট করতে একটি আঙুল দিয়ে বাঁদিকে বা ডানদিকে সোয়াইপ করুন</translation>
 <translation id="958854023026327378">এক আঙ্গুল দিয়ে নিচের দিকে সোয়াইপ করুন</translation>

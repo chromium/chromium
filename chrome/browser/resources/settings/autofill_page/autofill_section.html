@@ -11,8 +11,7 @@
       }
     </style>
     <settings-toggle-button id="autofillProfileToggle"
-        aria-label="$i18n{addressesTitle}" no-extension-indicator
-        label="$i18n{enableProfilesLabel}"
+        no-extension-indicator label="$i18n{enableProfilesLabel}"
         sub-label="$i18n{enableProfilesSublabel}"
         pref="{{prefs.autofill.profile_enabled}}">
     </settings-toggle-button>
@@ -30,7 +29,7 @@
     <div class="cr-row continuation">
       <h2 class="flex">$i18n{addresses}</h2>
       <cr-button id="addAddress" class="header-aligned-button"
-          on-click="onAddAddressTap_"
+          on-click="onAddAddressTap_" aria-label="$i18n{addAddressTitle}"
           hidden$="[[!prefs.autofill.profile_enabled.value]]">
         $i18n{add}
       </cr-button>

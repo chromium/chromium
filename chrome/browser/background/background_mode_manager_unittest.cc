@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,8 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_simple_task_runner.h"
@@ -145,16 +147,16 @@ class AdvancedTestBackgroundModeManager : public TestBackgroundModeManager {
 
   // TestBackgroundModeManager:
   bool HasPersistentBackgroundClient() const override {
-    return std::find_if(profile_app_counts_.begin(), profile_app_counts_.end(),
-                        [](const auto& profile_count_pair) {
-                          return profile_count_pair.second.persistent > 0;
-                        }) != profile_app_counts_.end();
+    return base::ranges::any_of(
+        profile_app_counts_, [](const auto& profile_count_pair) {
+          return profile_count_pair.second.persistent > 0;
+        });
   }
   bool HasAnyBackgroundClient() const override {
-    return std::find_if(profile_app_counts_.begin(), profile_app_counts_.end(),
-                        [](const auto& profile_count_pair) {
-                          return profile_count_pair.second.any > 0;
-                        }) != profile_app_counts_.end();
+    return base::ranges::any_of(profile_app_counts_,
+                                [](const auto& profile_count_pair) {
+                                  return profile_count_pair.second.any > 0;
+                                });
   }
   bool HasPersistentBackgroundClientForProfile(
       const Profile* profile) const override {
@@ -209,8 +211,9 @@ class BackgroundModeManagerTest : public testing::Test {
         std::vector<policy::ConfigurationPolicyProvider*>{&policy_provider_});
     profile_manager_ = CreateTestingProfileManager();
     profile_ = profile_manager_->CreateTestingProfile(
-        "p1", nullptr, u"p1", 0, "", TestingProfile::TestingFactories(),
-        absl::nullopt, std::move(policy_service));
+        "p1", nullptr, u"p1", 0, TestingProfile::TestingFactories(),
+        /*is_supervised_profile=*/false, absl::nullopt,
+        std::move(policy_service));
   }
 
  protected:
@@ -221,7 +224,7 @@ class BackgroundModeManagerTest : public testing::Test {
 
   std::unique_ptr<TestingProfileManager> profile_manager_;
   // Test profile used by all tests - this is owned by profile_manager_.
-  TestingProfile* profile_;
+  raw_ptr<TestingProfile> profile_;
 };
 
 class BackgroundModeManagerWithExtensionsTest : public testing::Test {
@@ -280,11 +283,9 @@ class BackgroundModeManagerWithExtensionsTest : public testing::Test {
  protected:
   // From views::MenuModelAdapter::IsCommandEnabled with modification.
   bool IsCommandEnabled(ui::MenuModel* model, int id) const {
-    int index = 0;
-    if (ui::MenuModel::GetModelAndIndexForCommandId(id, &model, &index))
-      return model->IsEnabledAt(index);
-
-    return false;
+    size_t index = 0;
+    return ui::MenuModel::GetModelAndIndexForCommandId(id, &model, &index) &&
+           model->IsEnabledAt(index);
   }
 
   std::unique_ptr<TestBackgroundModeManager> manager_;
@@ -293,7 +294,7 @@ class BackgroundModeManagerWithExtensionsTest : public testing::Test {
 
   std::unique_ptr<TestingProfileManager> profile_manager_;
   // Test profile used by all tests - this is owned by profile_manager_.
-  TestingProfile* profile_;
+  raw_ptr<TestingProfile> profile_;
 
  private:
   // Required for extension service.
@@ -699,31 +700,34 @@ TEST_F(BackgroundModeManagerWithExtensionsTest, BackgroundMenuGeneration) {
 
 TEST_F(BackgroundModeManagerWithExtensionsTest,
        BackgroundMenuGenerationMultipleProfile) {
-  scoped_refptr<const extensions::Extension> component_extension =
-      extensions::ExtensionBuilder("Component Extension")
-          .SetLocation(ManifestLocation::kComponent)
-          .AddPermission("background")
-          .Build();
-
-  scoped_refptr<const extensions::Extension> component_extension_with_options =
-      extensions::ExtensionBuilder("Component Extension with Options")
-          .SetLocation(ManifestLocation::kComponent)
-          .AddPermission("background")
-          .SetManifestKey("options_page", "test.html")
-          .Build();
-
-  scoped_refptr<const extensions::Extension> regular_extension =
-      extensions::ExtensionBuilder("Regular Extension")
-          .SetLocation(ManifestLocation::kCommandLine)
-          .AddPermission("background")
-          .Build();
-
-  scoped_refptr<const extensions::Extension> regular_extension_with_options =
-      extensions::ExtensionBuilder("Regular Extension with Options")
-          .SetLocation(ManifestLocation::kCommandLine)
-          .AddPermission("background")
-          .SetManifestKey("options_page", "test.html")
-          .Build();
+  // Helper methods to build extensions; we build new instances so that each
+  // Extension object is only used in a single profile.
+  auto build_component_extension = []() {
+    return extensions::ExtensionBuilder("Component Extension")
+        .SetLocation(ManifestLocation::kComponent)
+        .AddPermission("background")
+        .Build();
+  };
+  auto build_component_extension_with_options = []() {
+    return extensions::ExtensionBuilder("Component Extension with Options")
+        .SetLocation(ManifestLocation::kComponent)
+        .AddPermission("background")
+        .SetManifestKey("options_page", "test.html")
+        .Build();
+  };
+  auto build_regular_extension = []() {
+    return extensions::ExtensionBuilder("Regular Extension")
+        .SetLocation(ManifestLocation::kCommandLine)
+        .AddPermission("background")
+        .Build();
+  };
+  auto build_regular_extension_with_options = []() {
+    return extensions::ExtensionBuilder("Regular Extension with Options")
+        .SetLocation(ManifestLocation::kCommandLine)
+        .AddPermission("background")
+        .SetManifestKey("options_page", "test.html")
+        .Build();
+  };
 
   static_cast<extensions::TestExtensionSystem*>(
       extensions::ExtensionSystem::Get(profile_))
@@ -735,10 +739,11 @@ TEST_F(BackgroundModeManagerWithExtensionsTest,
   base::RunLoop().RunUntilIdle();
 
   EXPECT_CALL(*manager_, EnableLaunchOnStartup(true)).Times(Exactly(1));
-  service1->AddComponentExtension(component_extension.get());
-  service1->AddComponentExtension(component_extension_with_options.get());
-  service1->AddExtension(regular_extension.get());
-  service1->AddExtension(regular_extension_with_options.get());
+  service1->AddComponentExtension(build_component_extension().get());
+  service1->AddComponentExtension(
+      build_component_extension_with_options().get());
+  service1->AddExtension(build_regular_extension().get());
+  service1->AddExtension(build_regular_extension_with_options().get());
   Mock::VerifyAndClearExpectations(manager_.get());
 
   TestingProfile* profile2 = profile_manager_->CreateTestingProfile("p2");
@@ -753,9 +758,9 @@ TEST_F(BackgroundModeManagerWithExtensionsTest,
   service2->Init();
   base::RunLoop().RunUntilIdle();
 
-  service2->AddComponentExtension(component_extension.get());
-  service2->AddExtension(regular_extension.get());
-  service2->AddExtension(regular_extension_with_options.get());
+  service2->AddComponentExtension(build_component_extension().get());
+  service2->AddExtension(build_regular_extension().get());
+  service2->AddExtension(build_regular_extension_with_options().get());
 
   manager_->status_icon_ = new TestStatusIcon();
   manager_->UpdateStatusTrayIconContextMenu();

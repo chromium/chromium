@@ -1,24 +1,27 @@
 // GENERATED CONTENT - DO NOT EDIT
 // Content was automatically extracted by Reffy into webref
 // (https://github.com/w3c/webref)
-// Source: Trusted Types (https://w3c.github.io/webappsec-trusted-types/dist/spec/)
+// Source: Trusted Types (https://w3c.github.io/trusted-types/dist/spec/)
 
 [Exposed=(Window,Worker)]
 interface TrustedHTML {
   stringifier;
   DOMString toJSON();
+  static TrustedHTML fromLiteral(object templateStringsArray);
 };
 
 [Exposed=(Window,Worker)]
 interface TrustedScript {
   stringifier;
   DOMString toJSON();
+  static TrustedScript fromLiteral(object templateStringsArray);
 };
 
 [Exposed=(Window,Worker)]
 interface TrustedScriptURL {
   stringifier;
   USVString toJSON();
+  static TrustedScriptURL fromLiteral(object templateStringsArray);
 };
 
 [Exposed=(Window,Worker)] interface TrustedTypePolicyFactory {

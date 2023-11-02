@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include "base/dcheck_is_on.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_box_strut.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_text_offset.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_positioned_float.h"
@@ -50,6 +51,8 @@ struct CORE_EXPORT NGInlineItemResult {
     hyphen_shape_result = nullptr;
   }
 
+  void Trace(Visitor* visitor) const;
+
   // The NGInlineItem and its index.
   const NGInlineItem* item;
   unsigned item_index;
@@ -82,11 +85,12 @@ struct CORE_EXPORT NGInlineItemResult {
   scoped_refptr<const ShapeResult> hyphen_shape_result;
 
   // NGLayoutResult for atomic inline items.
-  scoped_refptr<const NGLayoutResult> layout_result;
+  Member<const NGLayoutResult> layout_result;
 
   // NGPositionedFloat for floating inline items. Should only be present for
   // positioned floats (not unpositioned). It indicates where it was placed
   // within the BFC.
+  GC_PLUGIN_IGNORE("crbug.com/1146383")
   absl::optional<NGPositionedFloat> positioned_float;
 
   // Margins, borders, and padding for open tags.
@@ -159,8 +163,10 @@ struct CORE_EXPORT NGInlineItemResult {
 };
 
 // Represents a set of NGInlineItemResult that form a line box.
-using NGInlineItemResults = Vector<NGInlineItemResult, 32>;
+using NGInlineItemResults = HeapVector<NGInlineItemResult, 32>;
 
 }  // namespace blink
+
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::NGInlineItemResult)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_INLINE_NG_INLINE_ITEM_RESULT_H_

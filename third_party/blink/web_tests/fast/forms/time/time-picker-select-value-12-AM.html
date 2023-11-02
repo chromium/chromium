@@ -3,6 +3,8 @@
 <head>
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
 <script src="../resources/common.js"></script>
 <script src="../resources/picker-common.js"></script>
 <script src="../calendar-picker/resources/calendar-picker-common.js"></script>
@@ -25,7 +27,7 @@ function selectValue() {
 }
 
 t.step(() => {
-  openPicker(document.getElementById('time'), t.step_func(selectValue));
+  openPickerDeprecatedJsTest(document.getElementById('time'), t.step_func(selectValue));
 });
 </script>
 </body>

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -3326,40 +3326,6 @@ void GLES2Implementation::CopySubTextureCHROMIUM(
   CheckGLError();
 }
 
-void GLES2Implementation::BindTexImage2DCHROMIUM(GLenum target, GLint imageId) {
-  GPU_CLIENT_SINGLE_THREAD_CHECK();
-  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glBindTexImage2DCHROMIUM("
-                     << GLES2Util::GetStringTextureBindTarget(target) << ", "
-                     << imageId << ")");
-  helper_->BindTexImage2DCHROMIUM(target, imageId);
-  CheckGLError();
-}
-
-void GLES2Implementation::BindTexImage2DWithInternalformatCHROMIUM(
-    GLenum target,
-    GLenum internalformat,
-    GLint imageId) {
-  GPU_CLIENT_SINGLE_THREAD_CHECK();
-  GPU_CLIENT_LOG(
-      "[" << GetLogPrefix() << "] glBindTexImage2DWithInternalformatCHROMIUM("
-          << GLES2Util::GetStringTextureBindTarget(target) << ", "
-          << GLES2Util::GetStringTextureInternalFormat(internalformat) << ", "
-          << imageId << ")");
-  helper_->BindTexImage2DWithInternalformatCHROMIUM(target, internalformat,
-                                                    imageId);
-  CheckGLError();
-}
-
-void GLES2Implementation::ReleaseTexImage2DCHROMIUM(GLenum target,
-                                                    GLint imageId) {
-  GPU_CLIENT_SINGLE_THREAD_CHECK();
-  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glReleaseTexImage2DCHROMIUM("
-                     << GLES2Util::GetStringTextureBindTarget(target) << ", "
-                     << imageId << ")");
-  helper_->ReleaseTexImage2DCHROMIUM(target, imageId);
-  CheckGLError();
-}
-
 void GLES2Implementation::DiscardFramebufferEXT(GLenum target,
                                                 GLsizei count,
                                                 const GLenum* attachments) {
@@ -3390,32 +3356,6 @@ void GLES2Implementation::LoseContextCHROMIUM(GLenum current, GLenum other) {
   CheckGLError();
 }
 
-void GLES2Implementation::UnpremultiplyAndDitherCopyCHROMIUM(GLuint source_id,
-                                                             GLuint dest_id,
-                                                             GLint x,
-                                                             GLint y,
-                                                             GLsizei width,
-                                                             GLsizei height) {
-  GPU_CLIENT_SINGLE_THREAD_CHECK();
-  GPU_CLIENT_LOG("[" << GetLogPrefix()
-                     << "] glUnpremultiplyAndDitherCopyCHROMIUM(" << source_id
-                     << ", " << dest_id << ", " << x << ", " << y << ", "
-                     << width << ", " << height << ")");
-  if (width < 0) {
-    SetGLError(GL_INVALID_VALUE, "glUnpremultiplyAndDitherCopyCHROMIUM",
-               "width < 0");
-    return;
-  }
-  if (height < 0) {
-    SetGLError(GL_INVALID_VALUE, "glUnpremultiplyAndDitherCopyCHROMIUM",
-               "height < 0");
-    return;
-  }
-  helper_->UnpremultiplyAndDitherCopyCHROMIUM(source_id, dest_id, x, y, width,
-                                              height);
-  CheckGLError();
-}
-
 void GLES2Implementation::DrawBuffersEXT(GLsizei count, const GLenum* bufs) {
   GPU_CLIENT_SINGLE_THREAD_CHECK();
   GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glDrawBuffersEXT(" << count << ", "
@@ -3441,106 +3381,11 @@ void GLES2Implementation::DiscardBackbufferCHROMIUM() {
   CheckGLError();
 }
 
-void GLES2Implementation::ScheduleOverlayPlaneCHROMIUM(
-    GLint plane_z_order,
-    GLenum plane_transform,
-    GLuint overlay_texture_id,
-    GLint bounds_x,
-    GLint bounds_y,
-    GLint bounds_width,
-    GLint bounds_height,
-    GLfloat uv_x,
-    GLfloat uv_y,
-    GLfloat uv_width,
-    GLfloat uv_height,
-    GLboolean enable_blend,
-    GLuint gpu_fence_id) {
-  GPU_CLIENT_SINGLE_THREAD_CHECK();
-  GPU_CLIENT_LOG(
-      "[" << GetLogPrefix() << "] glScheduleOverlayPlaneCHROMIUM("
-          << plane_z_order << ", " << GLES2Util::GetStringEnum(plane_transform)
-          << ", " << overlay_texture_id << ", " << bounds_x << ", " << bounds_y
-          << ", " << bounds_width << ", " << bounds_height << ", " << uv_x
-          << ", " << uv_y << ", " << uv_width << ", " << uv_height << ", "
-          << GLES2Util::GetStringBool(enable_blend) << ", " << gpu_fence_id
-          << ")");
-  helper_->ScheduleOverlayPlaneCHROMIUM(
-      plane_z_order, plane_transform, overlay_texture_id, bounds_x, bounds_y,
-      bounds_width, bounds_height, uv_x, uv_y, uv_width, uv_height,
-      enable_blend, gpu_fence_id);
-  CheckGLError();
-}
-
-void GLES2Implementation::ScheduleCALayerInUseQueryCHROMIUM(
-    GLsizei count,
-    const GLuint* textures) {
-  GPU_CLIENT_SINGLE_THREAD_CHECK();
-  GPU_CLIENT_LOG("[" << GetLogPrefix()
-                     << "] glScheduleCALayerInUseQueryCHROMIUM(" << count
-                     << ", " << static_cast<const void*>(textures) << ")");
-  GPU_CLIENT_LOG_CODE_BLOCK({
-    for (GLsizei i = 0; i < count; ++i) {
-      GPU_CLIENT_LOG("  " << i << ": " << textures[0 + i * 1]);
-    }
-  });
-  if (count < 0) {
-    SetGLError(GL_INVALID_VALUE, "glScheduleCALayerInUseQueryCHROMIUM",
-               "count < 0");
-    return;
-  }
-  helper_->ScheduleCALayerInUseQueryCHROMIUMImmediate(count, textures);
-  CheckGLError();
-}
-
 void GLES2Implementation::FlushDriverCachesCHROMIUM() {
   GPU_CLIENT_SINGLE_THREAD_CHECK();
   GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glFlushDriverCachesCHROMIUM("
                      << ")");
   helper_->FlushDriverCachesCHROMIUM();
-  CheckGLError();
-}
-
-void GLES2Implementation::ScheduleDCLayerCHROMIUM(GLuint texture_0,
-                                                  GLuint texture_1,
-                                                  GLint z_order,
-                                                  GLint content_x,
-                                                  GLint content_y,
-                                                  GLint content_width,
-                                                  GLint content_height,
-                                                  GLint quad_x,
-                                                  GLint quad_y,
-                                                  GLint quad_width,
-                                                  GLint quad_height,
-                                                  GLfloat transform_c1r1,
-                                                  GLfloat transform_c2r1,
-                                                  GLfloat transform_c1r2,
-                                                  GLfloat transform_c2r2,
-                                                  GLfloat transform_tx,
-                                                  GLfloat transform_ty,
-                                                  GLboolean is_clipped,
-                                                  GLint clip_x,
-                                                  GLint clip_y,
-                                                  GLint clip_width,
-                                                  GLint clip_height,
-                                                  GLuint protected_video_type) {
-  GPU_CLIENT_SINGLE_THREAD_CHECK();
-  GPU_CLIENT_LOG(
-      "[" << GetLogPrefix() << "] glScheduleDCLayerCHROMIUM(" << texture_0
-          << ", " << texture_1 << ", " << z_order << ", " << content_x << ", "
-          << content_y << ", " << content_width << ", " << content_height
-          << ", " << quad_x << ", " << quad_y << ", " << quad_width << ", "
-          << quad_height << ", " << transform_c1r1 << ", " << transform_c2r1
-          << ", " << transform_c1r2 << ", " << transform_c2r2 << ", "
-          << transform_tx << ", " << transform_ty << ", "
-          << GLES2Util::GetStringBool(is_clipped) << ", " << clip_x << ", "
-          << clip_y << ", " << clip_width << ", " << clip_height << ", "
-          << protected_video_type << ")");
-  helper_->ScheduleDCLayerCHROMIUM(
-      texture_0, texture_1, z_order, content_x, content_y, content_width,
-      content_height, quad_x, quad_y, quad_width, quad_height, transform_c1r1,
-      transform_c2r1, transform_c1r2, transform_c2r2, transform_tx,
-      transform_ty, is_clipped, clip_x, clip_y, clip_width, clip_height,
-      protected_video_type);
   CheckGLError();
 }
 
@@ -3567,54 +3412,6 @@ void GLES2Implementation::BlendBarrierKHR() {
   GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glBlendBarrierKHR("
                      << ")");
   helper_->BlendBarrierKHR();
-  CheckGLError();
-}
-
-void GLES2Implementation::SetDrawRectangleCHROMIUM(GLint x,
-                                                   GLint y,
-                                                   GLint width,
-                                                   GLint height) {
-  GPU_CLIENT_SINGLE_THREAD_CHECK();
-  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glSetDrawRectangleCHROMIUM(" << x
-                     << ", " << y << ", " << width << ", " << height << ")");
-  helper_->SetDrawRectangleCHROMIUM(x, y, width, height);
-  CheckGLError();
-}
-
-void GLES2Implementation::SetEnableDCLayersCHROMIUM(GLboolean enabled) {
-  GPU_CLIENT_SINGLE_THREAD_CHECK();
-  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glSetEnableDCLayersCHROMIUM("
-                     << GLES2Util::GetStringBool(enabled) << ")");
-  helper_->SetEnableDCLayersCHROMIUM(enabled);
-  CheckGLError();
-}
-
-void GLES2Implementation::TexStorage2DImageCHROMIUM(GLenum target,
-                                                    GLenum internalFormat,
-                                                    GLenum bufferUsage,
-                                                    GLsizei width,
-                                                    GLsizei height) {
-  GPU_CLIENT_SINGLE_THREAD_CHECK();
-  GPU_CLIENT_LOG(
-      "[" << GetLogPrefix() << "] glTexStorage2DImageCHROMIUM("
-          << GLES2Util::GetStringTextureBindTarget(target) << ", "
-          << GLES2Util::GetStringTextureInternalFormatStorage(internalFormat)
-          << ", " << GLES2Util::GetStringClientBufferUsage(bufferUsage) << ", "
-          << width << ", " << height << ")");
-  if (bufferUsage != GL_SCANOUT_CHROMIUM) {
-    SetGLError(GL_INVALID_ENUM, "glTexStorage2DImageCHROMIUM",
-               "bufferUsage GL_INVALID_ENUM");
-    return;
-  }
-  if (width < 0) {
-    SetGLError(GL_INVALID_VALUE, "glTexStorage2DImageCHROMIUM", "width < 0");
-    return;
-  }
-  if (height < 0) {
-    SetGLError(GL_INVALID_VALUE, "glTexStorage2DImageCHROMIUM", "height < 0");
-    return;
-  }
-  helper_->TexStorage2DImageCHROMIUM(target, internalFormat, width, height);
   CheckGLError();
 }
 
@@ -3703,24 +3500,6 @@ void GLES2Implementation::EndSharedImageAccessDirectCHROMIUM(GLuint texture) {
                      << "] glEndSharedImageAccessDirectCHROMIUM(" << texture
                      << ")");
   helper_->EndSharedImageAccessDirectCHROMIUM(texture);
-  CheckGLError();
-}
-
-void GLES2Implementation::BeginBatchReadAccessSharedImageCHROMIUM() {
-  GPU_CLIENT_SINGLE_THREAD_CHECK();
-  GPU_CLIENT_LOG("[" << GetLogPrefix()
-                     << "] glBeginBatchReadAccessSharedImageCHROMIUM("
-                     << ")");
-  helper_->BeginBatchReadAccessSharedImageCHROMIUM();
-  CheckGLError();
-}
-
-void GLES2Implementation::EndBatchReadAccessSharedImageCHROMIUM() {
-  GPU_CLIENT_SINGLE_THREAD_CHECK();
-  GPU_CLIENT_LOG("[" << GetLogPrefix()
-                     << "] glEndBatchReadAccessSharedImageCHROMIUM("
-                     << ")");
-  helper_->EndBatchReadAccessSharedImageCHROMIUM();
   CheckGLError();
 }
 

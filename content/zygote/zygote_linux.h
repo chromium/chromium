@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/containers/small_map.h"
+#include "base/files/platform_file.h"
 #include "base/files/scoped_file.h"
 #include "base/posix/global_descriptors.h"
 #include "base/process/kill.h"
@@ -93,6 +94,7 @@ class Zygote {
   // and |uma_boundary_value| may be set if the helper wants to make a UMA
   // report via UMA_HISTOGRAM_ENUMERATION.
   int ForkWithRealPid(const std::string& process_type,
+                      const std::vector<std::string>& args,
                       const base::GlobalDescriptors::Mapping& fd_mapping,
                       base::ScopedFD pid_oracle,
                       std::string* uma_name,
@@ -117,6 +119,12 @@ class Zygote {
                          std::vector<base::ScopedFD> fds);
 
   bool HandleGetSandboxStatus(int fd, base::PickleIterator iter);
+
+  // Handle a logging reinitialization request from the browser.
+  // Needed on ChromeOS, which switches to a log file in the user's
+  // home directory once they log in.
+  void HandleReinitializeLoggingRequest(base::PickleIterator iter,
+                                        std::vector<base::ScopedFD> fds);
 
   // Attempt to reap the child process by calling waitpid, and return
   // whether successful.  If the process has not terminated within

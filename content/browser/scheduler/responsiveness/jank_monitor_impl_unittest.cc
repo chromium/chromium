@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
 #include "base/test/test_mock_time_task_runner.h"
@@ -389,8 +390,8 @@ class TestJankMonitorShutdownRace : public JankMonitorImpl {
   }
 
  private:
-  base::WaitableEvent* shutdown_on_monitor_thread_;
-  base::WaitableEvent* shutdown_on_ui_thread_;
+  raw_ptr<base::WaitableEvent> shutdown_on_monitor_thread_;
+  raw_ptr<base::WaitableEvent> shutdown_on_ui_thread_;
 };
 
 // Test that completion of shutdown shouldn't leave the timer in the running
@@ -454,7 +455,7 @@ class TestJankMonitorShutdownRaceTimerFired : public JankMonitorImpl {
   }
 
  private:
-  content::BrowserTaskEnvironment* task_environment_;
+  raw_ptr<content::BrowserTaskEnvironment> task_environment_;
   bool monitor_timer_fired_ = false;
 };
 

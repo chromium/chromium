@@ -43,43 +43,7 @@ GenericFontFamilySettings::GenericFontFamilySettings(
       sans_serif_font_family_map_(other.sans_serif_font_family_map_),
       cursive_font_family_map_(other.cursive_font_family_map_),
       fantasy_font_family_map_(other.fantasy_font_family_map_),
-      pictograph_font_family_map_(other.pictograph_font_family_map_) {}
-
-void GenericFontFamilySettings::IsolatedCopyTo(
-    GenericFontFamilySettings& dest) const {
-  DCHECK(!IsIsolated());
-  auto copy_to_vector = [](const ScriptFontFamilyMap& map,
-                           IsolatedCopyVector& vector) {
-    for (const auto& kv : map)
-      vector.emplace_back(kv.key, kv.value.GetString().IsolatedCopy());
-  };
-
-  dest.isolated_copy_ = std::make_unique<IsolatedCopyVector[]>(7);
-  copy_to_vector(standard_font_family_map_, dest.isolated_copy_[0]);
-  copy_to_vector(serif_font_family_map_, dest.isolated_copy_[1]);
-  copy_to_vector(fixed_font_family_map_, dest.isolated_copy_[2]);
-  copy_to_vector(sans_serif_font_family_map_, dest.isolated_copy_[3]);
-  copy_to_vector(cursive_font_family_map_, dest.isolated_copy_[4]);
-  copy_to_vector(fantasy_font_family_map_, dest.isolated_copy_[5]);
-  copy_to_vector(pictograph_font_family_map_, dest.isolated_copy_[6]);
-}
-
-void GenericFontFamilySettings::MakeAtomic() {
-  DCHECK(IsIsolated());
-  auto copy_from_vector = [](ScriptFontFamilyMap& map,
-                             const IsolatedCopyVector& vector) {
-    for (const auto& kv : vector)
-      map.insert(kv.first, AtomicString(kv.second));
-  };
-  copy_from_vector(standard_font_family_map_, isolated_copy_[0]);
-  copy_from_vector(serif_font_family_map_, isolated_copy_[1]);
-  copy_from_vector(fixed_font_family_map_, isolated_copy_[2]);
-  copy_from_vector(sans_serif_font_family_map_, isolated_copy_[3]);
-  copy_from_vector(cursive_font_family_map_, isolated_copy_[4]);
-  copy_from_vector(fantasy_font_family_map_, isolated_copy_[5]);
-  copy_from_vector(pictograph_font_family_map_, isolated_copy_[6]);
-  isolated_copy_.reset();
-}
+      math_font_family_map_(other.math_font_family_map_) {}
 
 GenericFontFamilySettings& GenericFontFamilySettings::operator=(
     const GenericFontFamilySettings& other) {
@@ -89,7 +53,7 @@ GenericFontFamilySettings& GenericFontFamilySettings::operator=(
   sans_serif_font_family_map_ = other.sans_serif_font_family_map_;
   cursive_font_family_map_ = other.cursive_font_family_map_;
   fantasy_font_family_map_ = other.fantasy_font_family_map_;
-  pictograph_font_family_map_ = other.pictograph_font_family_map_;
+  math_font_family_map_ = other.math_font_family_map_;
   return *this;
 }
 
@@ -100,7 +64,7 @@ void GenericFontFamilySettings::SetGenericFontFamilyMap(
     const AtomicString& family,
     UScriptCode script) {
   ScriptFontFamilyMap::iterator it = font_map.find(static_cast<int>(script));
-  if (family.IsEmpty()) {
+  if (family.empty()) {
     if (it == font_map.end())
       return;
     font_map.erase(it);
@@ -118,7 +82,7 @@ const AtomicString& GenericFontFamilySettings::GenericFontFamilyForScript(
       const_cast<ScriptFontFamilyMap&>(font_map).find(static_cast<int>(script));
   if (it != font_map.end()) {
     // Replace with the first available font if it starts with ",".
-    if (!it->value.IsEmpty() && it->value[0] == ',')
+    if (!it->value.empty() && it->value[0] == ',')
       it->value = AtomicString(FontCache::FirstAvailableOrFirst(it->value));
     return it->value;
   }
@@ -203,16 +167,15 @@ bool GenericFontFamilySettings::UpdateFantasy(const AtomicString& family,
   return true;
 }
 
-const AtomicString& GenericFontFamilySettings::Pictograph(
-    UScriptCode script) const {
-  return GenericFontFamilyForScript(pictograph_font_family_map_, script);
+const AtomicString& GenericFontFamilySettings::Math(UScriptCode script) const {
+  return GenericFontFamilyForScript(math_font_family_map_, script);
 }
 
-bool GenericFontFamilySettings::UpdatePictograph(const AtomicString& family,
-                                                 UScriptCode script) {
-  if (family == Pictograph())
+bool GenericFontFamilySettings::UpdateMath(const AtomicString& family,
+                                           UScriptCode script) {
+  if (family == Math())
     return false;
-  SetGenericFontFamilyMap(pictograph_font_family_map_, family, script);
+  SetGenericFontFamilyMap(math_font_family_map_, family, script);
   return true;
 }
 
@@ -223,7 +186,7 @@ void GenericFontFamilySettings::Reset() {
   sans_serif_font_family_map_.clear();
   cursive_font_family_map_.clear();
   fantasy_font_family_map_.clear();
-  pictograph_font_family_map_.clear();
+  math_font_family_map_.clear();
 }
 
 }  // namespace blink

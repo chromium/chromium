@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,17 +8,17 @@
 #include <queue>
 #include <set>
 #include <utility>
+
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
-#include "chrome/browser/ash/file_manager/volume_manager.h"
-#include "chromeos/disks/disk_mount_manager.h"
+#include "chromeos/ash/components/disks/disk_mount_manager.h"
 
 namespace crostini {
 
-class CrostiniSshfs : chromeos::disks::DiskMountManager::Observer,
-                      ContainerShutdownObserver {
+class CrostiniSshfs : ContainerShutdownObserver {
  public:
   explicit CrostiniSshfs(Profile* profile);
 
@@ -33,26 +33,23 @@ class CrostiniSshfs : chromeos::disks::DiskMountManager::Observer,
   // mounted. If this is something running in the background set background to
   // true, if failures are user-visible set it to false. If you're setting
   // base::DoNothing as the callback then background should be true.
-  void MountCrostiniFiles(const ContainerId& container_id,
+  void MountCrostiniFiles(const guest_os::GuestId& container_id,
                           MountCrostiniFilesCallback callback,
                           bool background);
 
   // Unmounts the user's Crostini home directory. Must be called from the UI
   // thread.
-  void UnmountCrostiniFiles(const ContainerId& container_id,
+  void UnmountCrostiniFiles(const guest_os::GuestId& container_id,
                             MountCrostiniFilesCallback callback);
 
   // ContainerShutdownObserver.
-  void OnContainerShutdown(const ContainerId& container_id) override;
+  void OnContainerShutdown(const guest_os::GuestId& container_id) override;
 
-  // chromeos::disks::DiskMountManager::Observer.
-  void OnMountEvent(chromeos::disks::DiskMountManager::MountEvent event,
-                    chromeos::MountError error_code,
-                    const chromeos::disks::DiskMountManager::MountPointInfo&
-                        mount_info) override;
+  void OnMountEvent(ash::MountError error_code,
+                    const ash::disks::DiskMountManager::MountPoint& mount_info);
 
   // Returns true if sshfs is mounted for the specified container, else false.
-  bool IsSshfsMounted(const ContainerId& container);
+  bool IsSshfsMounted(const guest_os::GuestId& container);
 
   // Only public so unit tests can reference them without needing to FRIEND_TEST
   // every single test case.
@@ -71,10 +68,10 @@ class CrostiniSshfs : chromeos::disks::DiskMountManager::Observer,
   };
 
  private:
-  void SetSshfsMounted(const ContainerId& container, bool mounted);
+  void SetSshfsMounted(const guest_os::GuestId& container, bool mounted);
   void Finish(CrostiniSshfsResult result);
 
-  void OnRemoveSshfsCrostiniVolume(const ContainerId& container_id,
+  void OnRemoveSshfsCrostiniVolume(const guest_os::GuestId& container_id,
                                    MountCrostiniFilesCallback callback,
                                    base::Time started,
                                    bool success);
@@ -86,12 +83,12 @@ class CrostiniSshfs : chromeos::disks::DiskMountManager::Observer,
 
   struct InProgressMount {
     std::string source_path;
-    ContainerId container_id;
+    guest_os::GuestId container_id;
     base::FilePath container_homedir;
     MountCrostiniFilesCallback callback;
     base::Time started;
     bool background;
-    InProgressMount(const ContainerId& container,
+    InProgressMount(const guest_os::GuestId& container,
                     MountCrostiniFilesCallback callback,
                     bool background);
     InProgressMount(InProgressMount&& other) noexcept;
@@ -99,10 +96,10 @@ class CrostiniSshfs : chromeos::disks::DiskMountManager::Observer,
     ~InProgressMount();
   };
   struct PendingRequest {
-    ContainerId container_id;
+    guest_os::GuestId container_id;
     MountCrostiniFilesCallback callback;
     bool background;
-    PendingRequest(const ContainerId& container_id,
+    PendingRequest(const guest_os::GuestId& container_id,
                    MountCrostiniFilesCallback callback,
                    bool background);
     PendingRequest(PendingRequest&& other) noexcept;
@@ -111,9 +108,6 @@ class CrostiniSshfs : chromeos::disks::DiskMountManager::Observer,
   };
   Profile* profile_;
 
-  base::ScopedObservation<chromeos::disks::DiskMountManager,
-                          chromeos::disks::DiskMountManager::Observer>
-      disk_mount_observer_{this};
   base::ScopedObservation<CrostiniManager,
                           ContainerShutdownObserver,
                           &CrostiniManager::AddContainerShutdownObserver,
@@ -122,7 +116,7 @@ class CrostiniSshfs : chromeos::disks::DiskMountManager::Observer,
 
   std::unique_ptr<InProgressMount> in_progress_mount_;
 
-  std::set<ContainerId> sshfs_mounted_;
+  std::set<guest_os::GuestId> sshfs_mounted_;
   std::queue<PendingRequest> pending_requests_;
 
   // Note: This should remain the last member so it'll be destroyed and

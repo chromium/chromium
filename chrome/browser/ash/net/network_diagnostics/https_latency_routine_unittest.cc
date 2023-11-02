@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,6 +23,9 @@ namespace ash {
 namespace network_diagnostics {
 namespace {
 
+// TODO(https://crbug.com/1164001): remove when migrated to namespace ash.
+namespace mojom = ::chromeos::network_diagnostics::mojom;
+
 const base::TimeDelta kNoProblemDelayMs = base::Milliseconds(100);
 const base::TimeDelta kHighLatencyDelayMs = base::Milliseconds(550);
 const base::TimeDelta kVeryHighLatencyDelayMs = base::Milliseconds(1050);
@@ -44,14 +47,19 @@ class FakeHostResolver : public network::mojom::HostResolver {
   struct DnsResult {
     DnsResult(int32_t result,
               net::ResolveErrorInfo resolve_error_info,
-              absl::optional<net::AddressList> resolved_addresses)
+              absl::optional<net::AddressList> resolved_addresses,
+              absl::optional<net::HostResolverEndpointResults>
+                  endpoint_results_with_metadata)
         : result(result),
           resolve_error_info(resolve_error_info),
-          resolved_addresses(resolved_addresses) {}
+          resolved_addresses(resolved_addresses),
+          endpoint_results_with_metadata(endpoint_results_with_metadata) {}
 
     int result;
     net::ResolveErrorInfo resolve_error_info;
     absl::optional<net::AddressList> resolved_addresses;
+    absl::optional<net::HostResolverEndpointResults>
+        endpoint_results_with_metadata;
   };
 
   FakeHostResolver(mojo::PendingReceiver<network::mojom::HostResolver> receiver,
@@ -61,16 +69,18 @@ class FakeHostResolver : public network::mojom::HostResolver {
   ~FakeHostResolver() override {}
 
   // network::mojom::HostResolver
-  void ResolveHost(const net::HostPortPair& host,
-                   const net::NetworkIsolationKey& network_isolation_key,
-                   network::mojom::ResolveHostParametersPtr optional_parameters,
-                   mojo::PendingRemote<network::mojom::ResolveHostClient>
-                       pending_response_client) override {
+  void ResolveHost(
+      network::mojom::HostResolverHostPtr host,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
+      network::mojom::ResolveHostParametersPtr optional_parameters,
+      mojo::PendingRemote<network::mojom::ResolveHostClient>
+          pending_response_client) override {
     mojo::Remote<network::mojom::ResolveHostClient> response_client(
         std::move(pending_response_client));
-    response_client->OnComplete(fake_dns_result_->result,
-                                fake_dns_result_->resolve_error_info,
-                                fake_dns_result_->resolved_addresses);
+    response_client->OnComplete(
+        fake_dns_result_->result, fake_dns_result_->resolve_error_info,
+        fake_dns_result_->resolved_addresses,
+        fake_dns_result_->endpoint_results_with_metadata);
   }
   void MdnsListen(
       const net::HostPortPair& host,
@@ -275,12 +285,13 @@ TEST_F(HttpsLatencyRoutineTest, TestFailedDnsResolution) {
     if (i == 2) {
       resolution = std::make_unique<FakeHostResolver::DnsResult>(
           net::ERR_NAME_NOT_RESOLVED,
-          net::ResolveErrorInfo(net::ERR_NAME_NOT_RESOLVED),
-          net::AddressList());
+          net::ResolveErrorInfo(net::ERR_NAME_NOT_RESOLVED), net::AddressList(),
+          /*endpoint_results_with_metadata=*/absl::nullopt);
     } else {
       resolution = std::make_unique<FakeHostResolver::DnsResult>(
           net::OK, net::ResolveErrorInfo(net::OK),
-          net::AddressList(FakeIPAddress()));
+          net::AddressList(FakeIPAddress()),
+          /*endpoint_results_with_metadata=*/absl::nullopt);
     }
     fake_dns_results.push_back(resolution.get());
     resolutions.emplace_back(std::move(resolution));
@@ -303,7 +314,8 @@ TEST_F(HttpsLatencyRoutineTest, TestLowLatency) {
   for (int i = 0; i < kTotalHosts; i++) {
     auto resolution = std::make_unique<FakeHostResolver::DnsResult>(
         net::OK, net::ResolveErrorInfo(net::OK),
-        net::AddressList(FakeIPAddress()));
+        net::AddressList(FakeIPAddress()),
+        /*endpoint_results_with_metadata=*/absl::nullopt);
     fake_dns_results.push_back(resolution.get());
     resolutions.emplace_back(std::move(resolution));
   }
@@ -324,7 +336,8 @@ TEST_F(HttpsLatencyRoutineTest, TestFailedHttpRequest) {
   for (int i = 0; i < kTotalHosts; i++) {
     auto resolution = std::make_unique<FakeHostResolver::DnsResult>(
         net::OK, net::ResolveErrorInfo(net::OK),
-        net::AddressList(FakeIPAddress()));
+        net::AddressList(FakeIPAddress()),
+        /*endpoint_results_with_metadata=*/absl::nullopt);
     fake_dns_results.push_back(resolution.get());
     resolutions.emplace_back(std::move(resolution));
   }
@@ -346,7 +359,8 @@ TEST_F(HttpsLatencyRoutineTest, TestHighLatency) {
   for (int i = 0; i < kTotalHosts; i++) {
     auto resolution = std::make_unique<FakeHostResolver::DnsResult>(
         net::OK, net::ResolveErrorInfo(net::OK),
-        net::AddressList(FakeIPAddress()));
+        net::AddressList(FakeIPAddress()),
+        /*endpoint_results_with_metadata=*/absl::nullopt);
     fake_dns_results.push_back(resolution.get());
     resolutions.emplace_back(std::move(resolution));
   }
@@ -368,7 +382,8 @@ TEST_F(HttpsLatencyRoutineTest, TestVeryHighLatency) {
   for (int i = 0; i < kTotalHosts; i++) {
     auto resolution = std::make_unique<FakeHostResolver::DnsResult>(
         net::OK, net::ResolveErrorInfo(net::OK),
-        net::AddressList(FakeIPAddress()));
+        net::AddressList(FakeIPAddress()),
+        /*endpoint_results_with_metadata=*/absl::nullopt);
     fake_dns_results.push_back(resolution.get());
     resolutions.emplace_back(std::move(resolution));
   }

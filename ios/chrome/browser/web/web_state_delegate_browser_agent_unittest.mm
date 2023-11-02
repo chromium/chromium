@@ -1,10 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/web/web_state_delegate_browser_agent.h"
 
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/overlays/public/overlay_request.h"
@@ -37,10 +38,12 @@ const char kURL2[] = "https://www.some.url2.com";
 // Test fixture for WebStateDelegateTabHelper.
 class WebStateDelegateBrowserAgentTest : public PlatformTest {
  public:
-  WebStateDelegateBrowserAgentTest()
-      : browser_(std::make_unique<TestBrowser>()) {
+  WebStateDelegateBrowserAgentTest() {
+    browser_state_ = TestChromeBrowserState::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
     TabInsertionBrowserAgent::CreateForBrowser(browser_.get());
-    WebStateDelegateBrowserAgent::CreateForBrowser(browser_.get());
+    WebStateDelegateBrowserAgent::CreateForBrowser(
+        browser_.get(), TabInsertionBrowserAgent::FromBrowser(browser_.get()));
   }
   ~WebStateDelegateBrowserAgentTest() override = default;
 
@@ -58,7 +61,7 @@ class WebStateDelegateBrowserAgentTest : public PlatformTest {
     std::unique_ptr<web::WebState> web_state =
         web::WebState::Create(create_params);
     BlockedPopupTabHelper::CreateForWebState(web_state.get());
-    SnapshotTabHelper::CreateForWebState(web_state.get(), @"tab1");
+    SnapshotTabHelper::CreateForWebState(web_state.get());
     web_state->GetNavigationManager()->LoadURLWithParams(load_params);
 
     WebStateOpener opener;
@@ -71,8 +74,8 @@ class WebStateDelegateBrowserAgentTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
-
-  std::unique_ptr<Browser> browser_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestBrowser> browser_;
 };
 
 // Test that CreateNewWebState() creates a new web state in the correct place.

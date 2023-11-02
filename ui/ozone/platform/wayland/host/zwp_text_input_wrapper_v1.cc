@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,98 @@
 #include <string>
 #include <utility>
 
+#include "base/check.h"
+#include "base/location.h"
+#include "base/strings/string_piece.h"
+#include "base/strings/string_split.h"
+#include "base/time/time.h"
+#include "ui/base/wayland/wayland_client_input_types.h"
 #include "ui/gfx/range/range.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_seat.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 
 namespace ui {
+namespace {
+
+// Converts Chrome's TextInputType into wayland's content_purpose.
+// Some of TextInputType values do not have clearly corresponding wayland value,
+// and they fallback to closer type.
+uint32_t InputTypeToContentPurpose(TextInputType input_type) {
+  switch (input_type) {
+    case TEXT_INPUT_TYPE_NONE:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_NORMAL;
+    case TEXT_INPUT_TYPE_TEXT:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_NORMAL;
+    case TEXT_INPUT_TYPE_PASSWORD:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_PASSWORD;
+    case TEXT_INPUT_TYPE_SEARCH:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_NORMAL;
+    case TEXT_INPUT_TYPE_EMAIL:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_EMAIL;
+    case TEXT_INPUT_TYPE_NUMBER:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_NUMBER;
+    case TEXT_INPUT_TYPE_TELEPHONE:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_PHONE;
+    case TEXT_INPUT_TYPE_URL:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_URL;
+    case TEXT_INPUT_TYPE_DATE:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_DATE;
+    case TEXT_INPUT_TYPE_DATE_TIME:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_DATETIME;
+    case TEXT_INPUT_TYPE_DATE_TIME_LOCAL:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_DATETIME;
+    case TEXT_INPUT_TYPE_MONTH:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_DATE;
+    case TEXT_INPUT_TYPE_TIME:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_TIME;
+    case TEXT_INPUT_TYPE_WEEK:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_DATE;
+    case TEXT_INPUT_TYPE_TEXT_AREA:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_NORMAL;
+    case TEXT_INPUT_TYPE_CONTENT_EDITABLE:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_NORMAL;
+    case TEXT_INPUT_TYPE_DATE_TIME_FIELD:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_DATETIME;
+    case TEXT_INPUT_TYPE_NULL:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_NORMAL;
+  }
+}
+
+// Converts Chrome's TextInputType into wayland's content_hint.
+uint32_t InputFlagsToContentHint(int input_flags) {
+  uint32_t hint = 0;
+  if (input_flags & TEXT_INPUT_FLAG_AUTOCOMPLETE_ON)
+    hint |= ZWP_TEXT_INPUT_V1_CONTENT_HINT_AUTO_COMPLETION;
+  if (input_flags & TEXT_INPUT_FLAG_AUTOCORRECT_ON)
+    hint |= ZWP_TEXT_INPUT_V1_CONTENT_HINT_AUTO_CORRECTION;
+  // No good match. Fallback to AUTO_CORRECTION.
+  if (input_flags & TEXT_INPUT_FLAG_SPELLCHECK_ON)
+    hint |= ZWP_TEXT_INPUT_V1_CONTENT_HINT_AUTO_CORRECTION;
+  if (input_flags & TEXT_INPUT_FLAG_AUTOCAPITALIZE_CHARACTERS)
+    hint |= ZWP_TEXT_INPUT_V1_CONTENT_HINT_UPPERCASE;
+  if (input_flags & TEXT_INPUT_FLAG_AUTOCAPITALIZE_WORDS)
+    hint |= ZWP_TEXT_INPUT_V1_CONTENT_HINT_TITLECASE;
+  if (input_flags & TEXT_INPUT_FLAG_AUTOCAPITALIZE_SENTENCES)
+    hint |= ZWP_TEXT_INPUT_V1_CONTENT_HINT_AUTO_CAPITALIZATION;
+  if (input_flags & TEXT_INPUT_FLAG_HAS_BEEN_PASSWORD)
+    hint |= ZWP_TEXT_INPUT_V1_CONTENT_HINT_PASSWORD;
+  return hint;
+}
+
+// Parses the content of |array|, and creates a map of modifiers.
+// The content of array is just a concat of modifier names in c-style string
+// (i.e., '\0' terminated string), thus this splits the whole byte array by
+// '\0' character.
+std::vector<std::string> ParseModifiersMap(wl_array* array) {
+  return base::SplitString(
+      base::StringPiece(static_cast<char*>(array->data),
+                        array->size - 1),  // exclude trailing '\0'.
+      base::StringPiece("\0", 1),          // '\0' as a delimiter.
+      base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+}
+
+}  // namespace
 
 ZWPTextInputWrapperV1::ZWPTextInputWrapperV1(
     WaylandConnection* connection,
@@ -37,24 +124,25 @@ ZWPTextInputWrapperV1::ZWPTextInputWrapperV1(
 
   static constexpr zcr_extended_text_input_v1_listener
       extended_text_input_listener = {
-          &OnSetPreeditRegion,  // extended_text_input_set_preedit_region,
+          &OnSetPreeditRegion,       // extended_text_input_set_preedit_region,
+          &OnClearGrammarFragments,  // extended_text_input_clear_grammar_fragments,
+          &OnAddGrammarFragment,   // extended_text_input_add_grammar_fragment,
+          &OnSetAutocorrectRange,  // extended_text_input_set_autocorrect_range,
+          &OnSetVirtualKeyboardOccludedBounds,  // extended_text_input_set_virtual_keyboard_occluded_bounds,
       };
 
-  auto* text_input =
-      zwp_text_input_manager_v1_create_text_input(text_input_manager);
-  obj_ = wl::Object<zwp_text_input_v1>(text_input);
-  zwp_text_input_v1_add_listener(text_input, &text_input_listener, this);
+  obj_ = wl::Object<zwp_text_input_v1>(
+      zwp_text_input_manager_v1_create_text_input(text_input_manager));
+  DCHECK(obj_.get());
+  zwp_text_input_v1_add_listener(obj_.get(), &text_input_listener, this);
 
   if (text_input_extension) {
-    auto* extended_text_input =
+    extended_obj_ = wl::Object<zcr_extended_text_input_v1>(
         zcr_text_input_extension_v1_get_extended_text_input(
-            text_input_extension, obj_.get());
-    if (extended_text_input) {
-      extended_obj_ =
-          wl::Object<zcr_extended_text_input_v1>(extended_text_input);
-      zcr_extended_text_input_v1_add_listener(
-          extended_text_input, &extended_text_input_listener, this);
-    }
+            text_input_extension, obj_.get()));
+    DCHECK(extended_obj_.get());
+    zcr_extended_text_input_v1_add_listener(
+        extended_obj_.get(), &extended_text_input_listener, this);
   }
 }
 
@@ -66,20 +154,26 @@ void ZWPTextInputWrapperV1::Reset() {
 }
 
 void ZWPTextInputWrapperV1::Activate(WaylandWindow* window) {
-  zwp_text_input_v1_activate(obj_.get(), connection_->seat(),
+  DCHECK(connection_->seat());
+
+  zwp_text_input_v1_activate(obj_.get(), connection_->seat()->wl_object(),
                              window->root_surface()->surface());
 }
 
 void ZWPTextInputWrapperV1::Deactivate() {
-  zwp_text_input_v1_deactivate(obj_.get(), connection_->seat());
+  DCHECK(connection_->seat());
+
+  zwp_text_input_v1_deactivate(obj_.get(), connection_->seat()->wl_object());
 }
 
 void ZWPTextInputWrapperV1::ShowInputPanel() {
   zwp_text_input_v1_show_input_panel(obj_.get());
+  TryScheduleFinalizeVirtualKeyboardChanges();
 }
 
 void ZWPTextInputWrapperV1::HideInputPanel() {
   zwp_text_input_v1_hide_input_panel(obj_.get());
+  TryScheduleFinalizeVirtualKeyboardChanges();
 }
 
 void ZWPTextInputWrapperV1::SetCursorRect(const gfx::Rect& rect) {
@@ -94,9 +188,82 @@ void ZWPTextInputWrapperV1::SetSurroundingText(
       obj_.get(), text.c_str(), selection_range.start(), selection_range.end());
 }
 
+void ZWPTextInputWrapperV1::SetContentType(ui::TextInputType type,
+                                           ui::TextInputMode mode,
+                                           uint32_t flags,
+                                           bool should_do_learning) {
+  // If wayland compositor supports the extended version of set input type,
+  // use it to avoid losing the info.
+  if (extended_obj_.get() &&
+      wl::get_version_of_object(extended_obj_.get()) >=
+          ZCR_EXTENDED_TEXT_INPUT_V1_SET_INPUT_TYPE_SINCE_VERSION) {
+    zcr_extended_text_input_v1_set_input_type(
+        extended_obj_.get(), ui::wayland::ConvertFromTextInputType(type),
+        ui::wayland::ConvertFromTextInputMode(mode),
+        ui::wayland::ConvertFromTextInputFlags(flags),
+        should_do_learning ? ZCR_EXTENDED_TEXT_INPUT_V1_LEARNING_MODE_ENABLED
+                           : ZCR_EXTENDED_TEXT_INPUT_V1_LEARNING_MODE_DISABLED);
+    return;
+  }
+
+  // Otherwise, fallback to the standard set_content_type.
+  uint32_t content_purpose = InputTypeToContentPurpose(type);
+  uint32_t content_hint = InputFlagsToContentHint(flags);
+  if (!should_do_learning)
+    content_hint |= ZWP_TEXT_INPUT_V1_CONTENT_HINT_SENSITIVE_DATA;
+  zwp_text_input_v1_set_content_type(obj_.get(), content_hint, content_purpose);
+}
+
+void ZWPTextInputWrapperV1::SetGrammarFragmentAtCursor(
+    const ui::GrammarFragment& fragment) {
+  if (extended_obj_.get() &&
+      wl::get_version_of_object(extended_obj_.get()) >=
+          ZCR_EXTENDED_TEXT_INPUT_V1_SET_GRAMMAR_FRAGMENT_AT_CURSOR_SINCE_VERSION) {
+    zcr_extended_text_input_v1_set_grammar_fragment_at_cursor(
+        extended_obj_.get(), fragment.range.start(), fragment.range.end(),
+        fragment.suggestion.c_str());
+  }
+}
+
+void ZWPTextInputWrapperV1::SetAutocorrectInfo(
+    const gfx::Range& autocorrect_range,
+    const gfx::Rect& autocorrect_bounds) {
+  if (extended_obj_.get() &&
+      wl::get_version_of_object(extended_obj_.get()) >=
+          ZCR_EXTENDED_TEXT_INPUT_V1_SET_AUTOCORRECT_INFO_SINCE_VERSION) {
+    zcr_extended_text_input_v1_set_autocorrect_info(
+        extended_obj_.get(), autocorrect_range.start(), autocorrect_range.end(),
+        autocorrect_bounds.x(), autocorrect_bounds.y(),
+        autocorrect_bounds.width(), autocorrect_bounds.height());
+  }
+}
+
 void ZWPTextInputWrapperV1::ResetInputEventState() {
   spans_.clear();
   preedit_cursor_ = -1;
+}
+
+void ZWPTextInputWrapperV1::TryScheduleFinalizeVirtualKeyboardChanges() {
+  if (!SupportsFinalizeVirtualKeyboardChanges() ||
+      send_vk_finalize_timer_.IsRunning()) {
+    return;
+  }
+
+  send_vk_finalize_timer_.Start(
+      FROM_HERE, base::Microseconds(0), this,
+      &ZWPTextInputWrapperV1::FinalizeVirtualKeyboardChanges);
+}
+
+void ZWPTextInputWrapperV1::FinalizeVirtualKeyboardChanges() {
+  DCHECK(SupportsFinalizeVirtualKeyboardChanges());
+  zcr_extended_text_input_v1_finalize_virtual_keyboard_changes(
+      extended_obj_.get());
+}
+
+bool ZWPTextInputWrapperV1::SupportsFinalizeVirtualKeyboardChanges() {
+  return extended_obj_.get() &&
+         wl::get_version_of_object(extended_obj_.get()) >=
+             ZCR_EXTENDED_TEXT_INPUT_V1_FINALIZE_VIRTUAL_KEYBOARD_CHANGES_SINCE_VERSION;
 }
 
 // static
@@ -116,7 +283,8 @@ void ZWPTextInputWrapperV1::OnLeave(void* data,
 void ZWPTextInputWrapperV1::OnModifiersMap(void* data,
                                            struct zwp_text_input_v1* text_input,
                                            struct wl_array* map) {
-  NOTIMPLEMENTED_LOG_ONCE();
+  auto* self = static_cast<ZWPTextInputWrapperV1*>(data);
+  self->client_->OnModifiersMap(ParseModifiersMap(map));
 }
 
 // static
@@ -124,7 +292,8 @@ void ZWPTextInputWrapperV1::OnInputPanelState(
     void* data,
     struct zwp_text_input_v1* text_input,
     uint32_t state) {
-  NOTIMPLEMENTED_LOG_ONCE();
+  auto* self = static_cast<ZWPTextInputWrapperV1*>(data);
+  self->client_->OnInputPanelState(state);
 }
 
 // static
@@ -178,7 +347,8 @@ void ZWPTextInputWrapperV1::OnCursorPosition(
     struct zwp_text_input_v1* text_input,
     int32_t index,
     int32_t anchor) {
-  NOTIMPLEMENTED_LOG_ONCE();
+  auto* self = static_cast<ZWPTextInputWrapperV1*>(data);
+  self->client_->OnCursorPosition(index, anchor);
 }
 
 // static
@@ -230,6 +400,51 @@ void ZWPTextInputWrapperV1::OnSetPreeditRegion(
   auto spans = std::move(self->spans_);
   self->ResetInputEventState();
   self->client_->OnSetPreeditRegion(index, length, spans);
+}
+
+// static
+void ZWPTextInputWrapperV1::OnClearGrammarFragments(
+    void* data,
+    struct zcr_extended_text_input_v1* extended_text_input,
+    uint32_t start,
+    uint32_t end) {
+  auto* self = static_cast<ZWPTextInputWrapperV1*>(data);
+  self->client_->OnClearGrammarFragments(gfx::Range(start, end));
+}
+
+// static
+void ZWPTextInputWrapperV1::OnAddGrammarFragment(
+    void* data,
+    struct zcr_extended_text_input_v1* extended_text_input,
+    uint32_t start,
+    uint32_t end,
+    const char* suggestion) {
+  auto* self = static_cast<ZWPTextInputWrapperV1*>(data);
+  self->client_->OnAddGrammarFragment(
+      ui::GrammarFragment(gfx::Range(start, end), suggestion));
+}
+
+// static
+void ZWPTextInputWrapperV1::OnSetAutocorrectRange(
+    void* data,
+    struct zcr_extended_text_input_v1* extended_text_input,
+    uint32_t start,
+    uint32_t end) {
+  auto* self = static_cast<ZWPTextInputWrapperV1*>(data);
+  self->client_->OnSetAutocorrectRange(gfx::Range(start, end));
+}
+
+// static
+void ZWPTextInputWrapperV1::OnSetVirtualKeyboardOccludedBounds(
+    void* data,
+    struct zcr_extended_text_input_v1* extended_text_input,
+    int32_t x,
+    int32_t y,
+    int32_t width,
+    int32_t height) {
+  auto* self = static_cast<ZWPTextInputWrapperV1*>(data);
+  gfx::Rect screen_bounds(x, y, width, height);
+  self->client_->OnSetVirtualKeyboardOccludedBounds(screen_bounds);
 }
 
 }  // namespace ui

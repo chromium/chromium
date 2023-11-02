@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -524,7 +524,7 @@ TEST_F(CompositeMatcherTest, HostPermissionsAlwaysRequired) {
       {"http://nomatch.com", PageAccess::kWithheld, false, absl::nullopt},
   };
 
-  for (size_t i = 0; i < base::size(cases); i++) {
+  for (size_t i = 0; i < std::size(cases); i++) {
     SCOPED_TRACE(base::StringPrintf("Testing case %zu", i));
 
     GURL url(cases[i].url);

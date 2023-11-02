@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -75,9 +75,10 @@ std::string RendererExtensionRegistry::GetExtensionOrAppIDByURL(
 }
 
 const Extension* RendererExtensionRegistry::GetExtensionOrAppByURL(
-    const GURL& url) const {
+    const GURL& url,
+    bool include_guid) const {
   base::AutoLock lock(lock_);
-  return extensions_.GetExtensionOrAppByURL(url);
+  return extensions_.GetExtensionOrAppByURL(url, include_guid);
 }
 
 const Extension* RendererExtensionRegistry::GetHostedAppByURL(

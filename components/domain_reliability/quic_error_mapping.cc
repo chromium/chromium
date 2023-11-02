@@ -1,10 +1,8 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/domain_reliability/quic_error_mapping.h"
-
-#include "base/cxx17_backports.h"
 
 namespace domain_reliability {
 
@@ -80,7 +78,7 @@ const struct QuicErrorMapping {
     {quic::QUIC_TOO_MANY_AVAILABLE_STREAMS, "quic.too_many_available_streams"},
     // Received public reset for this connection.
     {quic::QUIC_PUBLIC_RESET, "quic.public_reset"},
-    // Invalid protocol version.
+    // Version selected by client is not acceptable to the server.
     {quic::QUIC_INVALID_VERSION, "quic.invalid_version"},
 
     // The Header ID for a stream was too far from the previous.
@@ -463,17 +461,25 @@ const struct QuicErrorMapping {
      "quic::quic_tls_keying_material_exports_mismatch"},
     {quic::QUIC_TLS_KEYING_MATERIAL_EXPORT_NOT_AVAILABLE,
      "quic::quic_tls_keying_material_export_not_available"},
+    {quic::QUIC_UNEXPECTED_DATA_BEFORE_ENCRYPTION_ESTABLISHED,
+     "quic::quic_unexpected_data_before_encryption_established"},
+
+    // Received packet indicates version that does not match connection version.
+    {quic::QUIC_PACKET_WRONG_VERSION, "quic.packet_wrong_version"},
+
+    // Error code related to backend health-check.
+    {quic::QUIC_SERVER_UNHEALTHY, "quic.quic_server_unhealthy"},
 
     // No error. Used as bound while iterating.
     {quic::QUIC_LAST_ERROR, "quic.last_error"}};
 
 // Must be updated any time a quic::QuicErrorCode is deprecated in
-// net/third_party/quiche/src/quic/core/quic_error_codes.h.
+// net/third_party/quiche/src/quiche/quic/core/quic_error_codes.h.
 const int kDeprecatedQuicErrorCount = 5;
 const int kActiveQuicErrorCount =
     quic::QUIC_LAST_ERROR - kDeprecatedQuicErrorCount;
 
-static_assert(base::size(kQuicErrorMap) == kActiveQuicErrorCount,
+static_assert(std::size(kQuicErrorMap) == kActiveQuicErrorCount,
               "quic_error_map is not in sync with quic protocol!");
 
 }  // namespace
@@ -484,7 +490,7 @@ bool GetDomainReliabilityBeaconQuicError(quic::QuicErrorCode quic_error,
   if (quic_error != quic::QUIC_NO_ERROR) {
     // Convert a QUIC error.
     // TODO(juliatuttle): Consider sorting and using binary search?
-    for (size_t i = 0; i < base::size(kQuicErrorMap); i++) {
+    for (size_t i = 0; i < std::size(kQuicErrorMap); i++) {
       if (kQuicErrorMap[i].quic_error == quic_error) {
         *beacon_quic_error_out = kQuicErrorMap[i].beacon_quic_error;
         return true;

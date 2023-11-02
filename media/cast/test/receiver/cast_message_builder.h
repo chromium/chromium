@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,9 @@
 #include <map>
 
 #include "base/containers/circular_deque.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/tick_clock.h"
+#include "base/time/time.h"
 #include "media/cast/net/rtp/rtp_defines.h"
 
 namespace media {
@@ -46,11 +48,11 @@ class CastMessageBuilder {
 
   FrameId last_acked_frame_id() const { return cast_msg_.ack_frame_id; }
 
-  const base::TickClock* const clock_;  // Not owned by this class.
-  RtpPayloadFeedback* const cast_feedback_;
+  const raw_ptr<const base::TickClock> clock_;  // Not owned by this class.
+  const raw_ptr<RtpPayloadFeedback> cast_feedback_;
 
   // CastMessageBuilder has only const access to the framer.
-  const Framer* const framer_;
+  const raw_ptr<const Framer> framer_;
   const uint32_t media_ssrc_;
   const bool decoder_faster_than_max_frame_rate_;
   const int max_unacked_frames_;

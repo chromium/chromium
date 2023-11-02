@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,26 +8,26 @@
 #import <Foundation/Foundation.h>
 #import <QuartzCore/QuartzCore.h>
 #import <UIKit/UIKit.h>
-#include <stddef.h>
-#include <stdint.h>
-#include <cmath>
+#import <stddef.h>
+#import <stdint.h>
+#import <cmath>
 
-#include "base/check_op.h"
-#include "base/ios/ios_util.h"
-#include "base/mac/foundation_util.h"
-#include "base/notreached.h"
-#include "base/numerics/math_constants.h"
-#include "ios/chrome/browser/system_flags.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
-#include "ios/chrome/browser/ui/util/dynamic_type_util.h"
-#include "ios/chrome/browser/ui/util/rtl_geometry.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
-#include "ios/web/public/thread/web_thread.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "ui/base/l10n/l10n_util_mac.h"
-#include "ui/base/resource/resource_bundle.h"
-#include "ui/gfx/ios/uikit_util.h"
-#include "ui/gfx/scoped_cg_context_save_gstate_mac.h"
+#import "base/check_op.h"
+#import "base/ios/ios_util.h"
+#import "base/mac/foundation_util.h"
+#import "base/notreached.h"
+#import "base/numerics/math_constants.h"
+#import "ios/chrome/browser/flags/system_flags.h"
+#import "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/chrome/browser/ui/util/dynamic_type_util.h"
+#import "ios/chrome/browser/ui/util/rtl_geometry.h"
+#import "ios/chrome/common/ui/util/ui_util.h"
+#import "ios/web/public/thread/web_thread.h"
+#import "ui/base/l10n/l10n_util.h"
+#import "ui/base/l10n/l10n_util_mac.h"
+#import "ui/base/resource/resource_bundle.h"
+#import "ui/gfx/ios/uikit_util.h"
+#import "ui/gfx/scoped_cg_context_save_gstate_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -112,35 +112,6 @@ UIImage* NativeReversableImage(int imageID, BOOL reversable) {
 
 UIImage* NativeImage(int imageID) {
   return NativeReversableImage(imageID, NO);
-}
-
-UIImage* ResizeImage(UIImage* image,
-                     CGSize targetSize,
-                     ProjectionMode projectionMode) {
-  return ResizeImage(image, targetSize, projectionMode, NO);
-}
-
-UIImage* ResizeImage(UIImage* image,
-                     CGSize targetSize,
-                     ProjectionMode projectionMode,
-                     BOOL opaque) {
-  CGSize revisedTargetSize;
-  CGRect projectTo;
-
-  CalculateProjection([image size], targetSize, projectionMode,
-                      revisedTargetSize, projectTo);
-
-  if (CGRectEqualToRect(projectTo, CGRectZero))
-    return nil;
-
-  // Resize photo. Use UIImage drawing methods because they respect
-  // UIImageOrientation as opposed to CGContextDrawImage().
-  UIGraphicsBeginImageContextWithOptions(revisedTargetSize, opaque,
-                                         /* scale = */ 0);
-  [image drawInRect:projectTo];
-  UIImage* resizedPhoto = UIGraphicsGetImageFromCurrentImageContext();
-  UIGraphicsEndImageContext();
-  return resizedPhoto;
 }
 
 UIImage* TintImage(UIImage* image, UIColor* color) {

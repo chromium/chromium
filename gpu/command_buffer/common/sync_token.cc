@@ -1,10 +1,12 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "gpu/command_buffer/common/sync_token.h"
 
 #include <sstream>
+
+#include "base/ranges/algorithm.h"
 
 namespace gpu {
 
@@ -37,6 +39,25 @@ std::string SyncToken::ToDebugString() const {
   stream << static_cast<int>(namespace_id()) << ":" << channel_or_high << ":"
          << route_or_low << ":" << release_count();
   return stream.str();
+}
+
+std::vector<SyncToken> ReduceSyncTokens(base::span<const SyncToken> tokens) {
+  std::vector<SyncToken> reduced;
+  for (const SyncToken& next_token : tokens) {
+    auto itr =
+        base::ranges::find_if(reduced, [&next_token](const SyncToken& token) {
+          return next_token.namespace_id() == token.namespace_id() &&
+                 next_token.command_buffer_id() == token.command_buffer_id();
+        });
+    if (itr == reduced.end()) {
+      reduced.push_back(next_token);
+    } else {
+      if (itr->release_count() < next_token.release_count()) {
+        *itr = next_token;
+      }
+    }
+  }
+  return reduced;
 }
 
 }  // namespace gpu

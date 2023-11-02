@@ -1,0 +1,58 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+{
+  include: [
+    "syslog/client.shard.cml",
+    "vulkan/client.shard.cml",
+    "//build/config/fuchsia/test/elf_test_ambient_exec_runner.shard.test-cml",
+    "//build/config/fuchsia/test/chromium_test_facet.shard.test-cml",
+  ],
+  program: {
+    binary: "content_shell",
+  },
+  use: [
+    {
+      protocol: [
+        "fuchsia.accessibility.semantics.SemanticsManager",
+        "fuchsia.buildinfo.Provider",
+        "fuchsia.device.NameProvider",
+        "fuchsia.fonts.Provider",
+        "fuchsia.hwinfo.Product",
+        "fuchsia.input.virtualkeyboard.ControllerCreator",
+        "fuchsia.intl.PropertyProvider",
+        "fuchsia.kernel.VmexResource",
+        "fuchsia.media.Audio",
+        "fuchsia.media.AudioDeviceEnumerator",
+        "fuchsia.media.ProfileProvider",
+        "fuchsia.media.SessionAudioConsumerFactory",
+        "fuchsia.media.drm.Widevine",
+        "fuchsia.mediacodec.CodecFactory",
+        "fuchsia.memorypressure.Provider",
+        "fuchsia.net.interfaces.State",
+        "fuchsia.net.name.Lookup",
+        "fuchsia.posix.socket.Provider",
+        "fuchsia.process.Launcher",
+        "fuchsia.sys.Launcher",
+        "fuchsia.ui.composition.Allocator",
+        "fuchsia.ui.composition.Flatland",
+        "fuchsia.ui.input3.Keyboard",
+        "fuchsia.ui.policy.Presenter",
+        "fuchsia.ui.scenic.Scenic",
+      ],
+    },
+    {
+      storage: "data",
+      path: "/data",
+    },
+    {
+      storage: "tmp",
+      path: "/tmp",
+    },
+    {
+      directory: "root-ssl-certificates",
+      rights: [ "r*" ],
+      path: "/config/ssl",
+    },
+  ],
+}

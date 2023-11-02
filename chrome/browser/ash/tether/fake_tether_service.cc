@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,11 +18,10 @@ constexpr char kCarrier[] = "FakeCarrier";
 FakeTetherService::FakeTetherService(
     Profile* profile,
     chromeos::PowerManagerClient* power_manager_client,
-    chromeos::device_sync::DeviceSyncClient* device_sync_client,
-    chromeos::secure_channel::SecureChannelClient* secure_channel_client,
-    chromeos::multidevice_setup::MultiDeviceSetupClient*
-        multidevice_setup_client,
-    chromeos::NetworkStateHandler* network_state_handler,
+    device_sync::DeviceSyncClient* device_sync_client,
+    secure_channel::SecureChannelClient* secure_channel_client,
+    multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
+    NetworkStateHandler* network_state_handler,
     session_manager::SessionManager* session_manager)
     : TetherService(profile,
                     power_manager_client,
@@ -34,7 +33,7 @@ FakeTetherService::FakeTetherService(
 
 void FakeTetherService::StartTetherIfPossible() {
   if (GetTetherTechnologyState() !=
-      chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED) {
+      NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED) {
     return;
   }
 

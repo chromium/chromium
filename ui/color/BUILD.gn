@@ -1,9 +1,10 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
 import("//build/config/chromeos/ui_mode.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
 import("//testing/test.gni")
 import("//ui/base/ui_features.gni")
 
@@ -16,13 +17,26 @@ source_set("color_headers") {
     "color_provider.h",
     "color_provider_manager.h",
     "color_provider_utils.h",
-    "color_set.h",
+    "system_theme.h",
   ]
 
   public_deps = [
-    "//base:base",
-    "//skia:skia",
+    ":mojom",
+    "//base",
+    "//skia",
+    "//ui/gfx:color_utils",
   ]
+}
+
+component("color_switches") {
+  sources = [
+    "color_switches.cc",
+    "color_switches.h",
+  ]
+
+  defines = [ "IS_COLOR_SWITCHES_IMPL" ]
+
+  public_deps = [ "//base" ]
 }
 
 component("color") {
@@ -37,17 +51,20 @@ component("color") {
     "color_provider_utils.h",
     "color_recipe.cc",
     "color_recipe.h",
-    "color_set.cc",
     "color_transform.cc",
     "color_transform.h",
+    "temp_palette.cc",
+    "temp_palette.h",
   ]
+
+  configs += [ "//build/config/compiler:prevent_unsafe_narrowing" ]
 
   defines = [ "IS_COLOR_IMPL" ]
 
   public_deps = [
     ":color_headers",
-    "//base:base",
-    "//skia:skia",
+    "//base",
+    "//skia",
     "//ui/gfx:color_utils",
   ]
 
@@ -92,6 +109,27 @@ test("color_unittests") {
   ]
 }
 
+if (is_win) {
+  component("accent_color_observer") {
+    sources = [
+      "win/accent_color_observer.cc",
+      "win/accent_color_observer.h",
+    ]
+
+    defines = [ "IS_COLOR_IMPL" ]
+
+    public_deps = [
+      "//base",
+      "//third_party/abseil-cpp:absl",
+    ]
+
+    deps = [
+      "//skia",
+      "//ui/gfx:color_utils",
+    ]
+  }
+}
+
 component("mixers") {
   sources = [
     "color_mixers.cc",
@@ -102,6 +140,10 @@ component("mixers") {
     "core_default_color_mixer.h",
     "native_color_mixers.cc",
     "native_color_mixers.h",
+    "ref_color_mixer.cc",
+    "ref_color_mixer.h",
+    "sys_color_mixer.cc",
+    "sys_color_mixer.h",
     "ui_color_mixer.cc",
     "ui_color_mixer.h",
   ]
@@ -117,7 +159,9 @@ component("mixers") {
 
   public_deps = [ "//base" ]
 
-  if (is_mac) {
+  if (is_chromeos) {
+    sources += [ "chromeos/native_color_mixers_chromeos.cc" ]
+  } else if (is_mac) {
     frameworks = [ "AppKit.framework" ]
     sources += [
       "mac/native_color_mixers_mac.mm",
@@ -126,5 +170,13 @@ component("mixers") {
     ]
   } else if (is_win) {
     sources += [ "win/native_color_mixers_win.cc" ]
+    deps += [
+      ":accent_color_observer",
+      ":color_switches",
+    ]
   }
+}
+
+mojom("mojom") {
+  sources = [ "color_id.mojom" ]
 }

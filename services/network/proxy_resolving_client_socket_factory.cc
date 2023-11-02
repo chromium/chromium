@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -76,7 +76,7 @@ ProxyResolvingClientSocketFactory::~ProxyResolvingClientSocketFactory() {}
 std::unique_ptr<ProxyResolvingClientSocket>
 ProxyResolvingClientSocketFactory::CreateSocket(
     const GURL& url,
-    const net::NetworkIsolationKey& network_isolation_key,
+    const net::NetworkAnonymizationKey& network_anonymization_key,
     bool use_tls) {
   // |request_context|'s HttpAuthCache might have updates. For example, a user
   // might have since entered proxy credentials. Clear the http auth of
@@ -98,7 +98,7 @@ ProxyResolvingClientSocketFactory::CreateSocket(
   network_session_->http_auth_cache()->CopyProxyEntriesFrom(*other_auth_cache);
   return std::make_unique<ProxyResolvingClientSocket>(
       network_session_.get(), common_connect_job_params_.get(), url,
-      network_isolation_key, use_tls, connect_job_factory_.get());
+      network_anonymization_key, use_tls, connect_job_factory_.get());
 }
 
 }  // namespace network

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,11 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/trace_event/trace_event.h"
 #include "cc/paint/skottie_wrapper.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/canvas.h"
-#include "ui/lottie/animation.h"
 #include "ui/views/widget/widget.h"
 
 namespace views {
@@ -49,15 +49,24 @@ void AnimatedImageView::SetAnimatedImage(
   SchedulePaint();
 }
 
-void AnimatedImageView::Play() {
+void AnimatedImageView::Play(
+    absl::optional<lottie::Animation::PlaybackConfig> playback_config) {
   DCHECK(animated_image_);
-  DCHECK_EQ(state_, State::kStopped);
+  if (state_ == State::kPlaying)
+    return;
 
   state_ = State::kPlaying;
 
+  if (!playback_config) {
+    playback_config =
+        lottie::Animation::PlaybackConfig::CreateDefault(*animated_image_);
+  }
+  set_check_active_duration(playback_config->style !=
+                            lottie::Animation::Style::kLoop);
+
   SetCompositorFromWidget();
 
-  animated_image_->Start();
+  animated_image_->Start(std::move(playback_config));
 }
 
 void AnimatedImageView::Stop() {
@@ -81,7 +90,10 @@ void AnimatedImageView::OnPaint(gfx::Canvas* canvas) {
   if (!animated_image_)
     return;
   canvas->Save();
-  canvas->Translate(GetImageBounds().origin().OffsetFromOrigin());
+
+  gfx::Vector2d translation = GetImageBounds().origin().OffsetFromOrigin();
+  translation.Add(additional_translation_);
+  canvas->Translate(std::move(translation));
 
   if (!previous_timestamp_.is_null() && state_ != State::kStopped) {
     animated_image_->Paint(canvas, previous_timestamp_, GetImageSize());
@@ -114,6 +126,8 @@ void AnimatedImageView::RemovedFromWidget() {
 }
 
 void AnimatedImageView::OnAnimationStep(base::TimeTicks timestamp) {
+  TRACE_EVENT1("views", "AnimatedImageView::OnAnimationStep", "timestamp",
+               timestamp);
   previous_timestamp_ = timestamp;
   SchedulePaint();
 }

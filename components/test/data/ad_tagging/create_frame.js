@@ -1,8 +1,16 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 'use strict';
+
+function createFencedFrame(url, name) {
+  const frame = document.createElement('fencedframe');
+  frame.name = name;
+  frame.id = name;
+  frame.src = url;
+  document.body.appendChild(frame);
+}
 
 function createFrame(url, name, sbox_attr, load_callback, error_callback) {
   const frame = document.createElement('iframe');

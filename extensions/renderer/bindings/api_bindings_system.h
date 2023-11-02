@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,8 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/values.h"
+#include "extensions/common/mojom/event_dispatcher.mojom-forward.h"
 #include "extensions/renderer/bindings/api_binding.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
 #include "extensions/renderer/bindings/api_event_handler.h"
@@ -19,11 +20,6 @@
 #include "extensions/renderer/bindings/api_type_reference_map.h"
 #include "extensions/renderer/bindings/binding_access_checker.h"
 #include "extensions/renderer/bindings/exception_handler.h"
-
-namespace base {
-class DictionaryValue;
-class ListValue;
-}
 
 namespace extensions {
 class APIBindingHooks;
@@ -35,11 +31,11 @@ class InteractionProvider;
 class APIBindingsSystem {
  public:
   using GetAPISchemaMethod =
-      base::RepeatingCallback<const base::DictionaryValue&(const std::string&)>;
+      base::RepeatingCallback<const base::Value::Dict&(const std::string&)>;
   using CustomTypeHandler = base::RepeatingCallback<v8::Local<v8::Object>(
       v8::Isolate* isolate,
       const std::string& property_name,
-      const base::ListValue* property_values,
+      const base::Value::List* property_values,
       APIRequestHandler* request_handler,
       APIEventHandler* event_handler,
       APITypeReferenceMap* type_refs,
@@ -71,15 +67,16 @@ class APIBindingsSystem {
   // Responds to the request with the given |request_id|, calling the callback
   // with |response|. If |error| is non-empty, sets the last error.
   void CompleteRequest(int request_id,
-                       const base::ListValue& response,
-                       const std::string& error);
+                       const base::Value::List& response,
+                       const std::string& error,
+                       mojom::ExtraResponseDataPtr extra_data = nullptr);
 
   // Notifies the APIEventHandler to fire the corresponding event, notifying
   // listeners.
   void FireEventInContext(const std::string& event_name,
                           v8::Local<v8::Context> context,
-                          const base::ListValue& response,
-                          const EventFilteringInfo* filter);
+                          const base::Value::List& response,
+                          mojom::EventFilteringInfoPtr filter);
 
   // Returns the APIBindingHooks object for the given api to allow for
   // registering custom hooks. These must be registered *before* the
@@ -120,7 +117,7 @@ class APIBindingsSystem {
       v8::Isolate* isolate,
       const std::string& type_name,
       const std::string& property_name,
-      const base::ListValue* property_values);
+      const base::Value::List* property_values);
 
   // The map of cached API reference types.
   APITypeReferenceMap type_reference_map_;

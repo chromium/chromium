@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -65,7 +65,7 @@ class MockUIDelegate : public FullCardRequest::UIDelegate,
               OnUnmaskVerificationResult,
               (AutofillClient::PaymentsRpcResult),
               (override));
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   MOCK_METHOD(bool, ShouldOfferFidoAuth, (), (const override));
   MOCK_METHOD(bool,
               UserOptedInToFidoFromSettingsPageOnMobile,
@@ -95,9 +95,7 @@ class MockPersonalDataManager : public TestPersonalDataManager {
 class FullCardRequestTest : public testing::Test {
  public:
   FullCardRequestTest()
-      : request_context_(new net::TestURLRequestContextGetter(
-            base::ThreadTaskRunnerHandle::Get())),
-        test_shared_loader_factory_(
+      : test_shared_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)) {
     payments_client_ = std::make_unique<PaymentsClient>(
@@ -164,7 +162,6 @@ class FullCardRequestTest : public testing::Test {
   MockResultDelegate result_delegate_;
   MockUIDelegate ui_delegate_;
   TestAutofillClient autofill_client_;
-  scoped_refptr<net::TestURLRequestContextGetter> request_context_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   std::unique_ptr<PaymentsClient> payments_client_;
@@ -240,57 +237,6 @@ TEST_F(FullCardRequestTest, GetFullCardPanAndDcvvForMaskedServerCardViaDcvv) {
 TEST_F(FullCardRequestTest, GetFullCardPanForMaskedServerCardWithoutDcvv) {
   scoped_feature_list_.InitAndEnableFeature(
       features::kAutofillAlwaysReturnCloudTokenizedCard);
-  EXPECT_CALL(*result_delegate(),
-              OnFullCardRequestSucceeded(
-                  testing::Ref(*request()),
-                  CardMatches(CreditCard::FULL_SERVER_CARD, "4111"),
-                  testing::Eq(u"123")));
-  EXPECT_CALL(*ui_delegate(), ShowUnmaskPrompt(_, _, _));
-  EXPECT_CALL(*ui_delegate(), OnUnmaskVerificationResult(
-                                  AutofillClient::PaymentsRpcResult::kSuccess));
-
-  request()->GetFullCard(
-      CreditCard(CreditCard::MASKED_SERVER_CARD, "server_id"),
-      AutofillClient::UnmaskCardReason::kAutofill,
-      result_delegate()->AsWeakPtr(), ui_delegate()->AsWeakPtr());
-  CardUnmaskDelegate::UserProvidedUnmaskDetails details;
-  details.cvc = u"123";
-  card_unmask_delegate()->OnUnmaskPromptAccepted(details);
-  OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kSuccess, "4111");
-  card_unmask_delegate()->OnUnmaskPromptClosed();
-}
-
-// Verify getting the full PAN and the CVV for a Google issued card when FIDO is
-// used for authentication.
-TEST_F(FullCardRequestTest, GetFullCardPanAndUseCvcInUnmaskResponse) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kAutofillEnableGoogleIssuedCard);
-  EXPECT_CALL(*result_delegate(),
-              OnFullCardRequestSucceeded(
-                  testing::Ref(*request()),
-                  CardMatches(CreditCard::FULL_SERVER_CARD, "4111"),
-                  testing::Eq(u"321")));
-  EXPECT_CALL(*ui_delegate(), ShowUnmaskPrompt(_, _, _));
-  EXPECT_CALL(*ui_delegate(), OnUnmaskVerificationResult(
-                                  AutofillClient::PaymentsRpcResult::kSuccess));
-
-  request()->GetFullCard(
-      CreditCard(CreditCard::MASKED_SERVER_CARD, "server_id"),
-      AutofillClient::UnmaskCardReason::kAutofill,
-      result_delegate()->AsWeakPtr(), ui_delegate()->AsWeakPtr());
-  CardUnmaskDelegate::UserProvidedUnmaskDetails details;
-  details.cvc = u"123";
-  card_unmask_delegate()->OnUnmaskPromptAccepted(details);
-  OnDidGetRealPanWithDcvv(AutofillClient::PaymentsRpcResult::kSuccess, "4111",
-                          "321");
-  card_unmask_delegate()->OnUnmaskPromptClosed();
-}
-
-// Verify getting the full PAN for a Google issued card when CVV is used for
-// authentication.
-TEST_F(FullCardRequestTest, GetFullCardPanWithoutCvcInUnmaskResponse) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kAutofillEnableGoogleIssuedCard);
   EXPECT_CALL(*result_delegate(),
               OnFullCardRequestSucceeded(
                   testing::Ref(*request()),
@@ -433,30 +379,52 @@ TEST_F(FullCardRequestTest, GetFullCardPanAndCvcForExpiredMaskedServerCard) {
   card_unmask_delegate()->OnUnmaskPromptClosed();
 }
 
-// Verify getting the full PAN, the expiration and the dCVV for a virtual card.
-TEST_F(FullCardRequestTest, GetFullCardPanAndExpirationAndDcvvForVirtualCard) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kAutofillEnableMerchantBoundVirtualCards);
+// Verify getting the full PAN, the expiration and the dCVV for a virtual card
+// using CVC authentication.
+// TODO(crbug/1373232): Add a FullCardRequest test case for Virtual Card
+// retrieval via FIDO as well.
+TEST_F(FullCardRequestTest,
+       GetFullCardPanAndExpirationAndDcvvForVirtualCardViaCvc) {
   EXPECT_CALL(
       *result_delegate(),
       OnFullCardRequestSucceeded(testing::Ref(*request()),
                                  CardMatches(CreditCard::VIRTUAL_CARD, "4111"),
-                                 testing::Eq(u"321")));
-  EXPECT_CALL(*ui_delegate(), ShowUnmaskPrompt(_, _, _));
+                                 testing::Eq(u"123")))
+      .Times(1);
+  EXPECT_CALL(*ui_delegate(), ShowUnmaskPrompt(_, _, _)).Times(1);
   EXPECT_CALL(*ui_delegate(), OnUnmaskVerificationResult(
-                                  AutofillClient::PaymentsRpcResult::kSuccess));
+                                  AutofillClient::PaymentsRpcResult::kSuccess))
+      .Times(1);
 
-  request()->GetFullCard(
-      CreditCard(CreditCard::MASKED_SERVER_CARD, "server_id"),
-      AutofillClient::UnmaskCardReason::kAutofill,
+  CreditCard card;
+  card.set_record_type(CreditCard::VIRTUAL_CARD);
+  card.set_server_id("server_id");
+  request()->GetFullVirtualCardViaCVC(
+      card, AutofillClient::UnmaskCardReason::kAutofill,
       result_delegate()->AsWeakPtr(), ui_delegate()->AsWeakPtr(),
-      GURL("https://www.example.com"));
+      GURL("https://example.com/"), "test_vcn_context_token",
+      CardUnmaskChallengeOption{.id = "test_challenge_option_id",
+                                .type = CardUnmaskChallengeOptionType::kCvc});
+  ASSERT_TRUE(request()->GetShouldUnmaskCardForTesting());
+  payments::PaymentsClient::UnmaskRequestDetails* request_details =
+      request()->GetUnmaskRequestDetailsForTesting();
+  EXPECT_EQ(request_details->selected_challenge_option->type,
+            CardUnmaskChallengeOptionType::kCvc);
+  EXPECT_EQ(request_details->selected_challenge_option->id,
+            "test_challenge_option_id");
+  EXPECT_EQ(request_details->context_token, "test_vcn_context_token");
+  EXPECT_EQ(request_details->last_committed_primary_main_frame_origin->spec(),
+            GURL("https://example.com/").spec());
+
   CardUnmaskDelegate::UserProvidedUnmaskDetails details;
   details.cvc = u"123";
+  details.exp_month = u"12";
+  details.exp_year = base::UTF8ToUTF16(test::NextYear());
+  details.enable_fido_auth = false;
   card_unmask_delegate()->OnUnmaskPromptAccepted(details);
   payments::PaymentsClient::UnmaskResponseDetails response;
   response.real_pan = "4111";
-  response.dcvv = "321";
+  response.dcvv = "123";
   response.expiration_month = "12";
   response.expiration_year = test::NextYear();
   response.card_type = AutofillClient::PaymentsRpcCardType::kVirtualCard;
@@ -568,10 +536,11 @@ TEST_F(FullCardRequestTest, VcnRetrievalTryAgainFailure) {
 
   CreditCard card;
   card.set_record_type(CreditCard::VIRTUAL_CARD);
-  request()->GetFullCard(card, AutofillClient::UnmaskCardReason::kAutofill,
-                         result_delegate()->AsWeakPtr(),
-                         ui_delegate()->AsWeakPtr(),
-                         GURL("https://www.example.com"));
+  request()->GetFullVirtualCardViaCVC(
+      card, AutofillClient::UnmaskCardReason::kAutofill,
+      result_delegate()->AsWeakPtr(), ui_delegate()->AsWeakPtr(),
+      GURL("https://example.com/"), "test_vcn_context_token",
+      CardUnmaskChallengeOption{.type = CardUnmaskChallengeOptionType::kCvc});
   CardUnmaskDelegate::UserProvidedUnmaskDetails details;
   details.cvc = u"123";
   card_unmask_delegate()->OnUnmaskPromptAccepted(details);
@@ -597,10 +566,11 @@ TEST_F(FullCardRequestTest, VcnRetrievalPermanentFailure) {
 
   CreditCard card;
   card.set_record_type(CreditCard::VIRTUAL_CARD);
-  request()->GetFullCard(card, AutofillClient::UnmaskCardReason::kAutofill,
-                         result_delegate()->AsWeakPtr(),
-                         ui_delegate()->AsWeakPtr(),
-                         GURL("https://www.example.com"));
+  request()->GetFullVirtualCardViaCVC(
+      card, AutofillClient::UnmaskCardReason::kAutofill,
+      result_delegate()->AsWeakPtr(), ui_delegate()->AsWeakPtr(),
+      GURL("https://example.com/"), "test_vcn_context_token",
+      CardUnmaskChallengeOption{.type = CardUnmaskChallengeOptionType::kCvc});
   CardUnmaskDelegate::UserProvidedUnmaskDetails details;
   details.cvc = u"123";
   card_unmask_delegate()->OnUnmaskPromptAccepted(details);

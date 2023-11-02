@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -65,8 +65,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.FlakyTest;
-import org.chromium.chrome.autofill_assistant.R;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
@@ -81,6 +80,7 @@ import org.chromium.chrome.browser.autofill_assistant.proto.UseAddressProto;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.autofill_assistant.R;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -187,16 +187,14 @@ public class AutofillAssistantPersonalDataManagerTest {
         // First round: Missing name piece.
         waitUntilViewMatchesCondition(
                 withContentDescription("Continue"), allOf(isDisplayed(), not(isEnabled())));
-        onView(allOf(hasSibling(withId(R.id.contact_summary)), withId(R.id.incomplete_error)))
-                .check(matches(
-                        allOf(withText(mTestRule.getActivity().getString(
-                                      R.string.autofill_assistant_payment_information_missing)),
-                                isDisplayed())));
+        onView(allOf(isDisplayed(), hasSibling(withId(R.id.contact_summary)),
+                       withId(R.id.incomplete_error)))
+                .check(matches(withText(mTestRule.getActivity().getString(
+                        R.string.autofill_assistant_payment_information_missing))));
         onView(withText("Contact info")).perform(click());
-        waitUntilViewMatchesCondition(
-                allOf(hasSibling(withId(R.id.contact_full)), withId(R.id.incomplete_error)),
-                allOf(anyOf(withText("Requires first name"), withText("Requires last name")),
-                        isDisplayed()));
+        waitUntilViewMatchesCondition(allOf(isDisplayed(), hasSibling(withId(R.id.contact_full)),
+                                              withId(R.id.incomplete_error)),
+                anyOf(withText("Requires first name"), withText("Requires last name")));
         onView(withContentDescription("Edit contact info")).perform(scrollTo(), click());
         waitUntilViewMatchesCondition(
                 withContentDescription("Name*"), allOf(isDisplayed(), isEnabled()));
@@ -207,9 +205,9 @@ public class AutofillAssistantPersonalDataManagerTest {
         // Second round: Complete.
         waitUntilViewMatchesCondition(
                 withContentDescription("Continue"), allOf(isDisplayed(), isEnabled()));
-        waitUntilViewMatchesCondition(withId(R.id.contact_full),
+        waitUntilViewMatchesCondition(allOf(isDisplayed(), withId(R.id.contact_full)),
                 allOf(withText(containsString("John Doe")),
-                        withText(containsString("johndoe@google.com")), isDisplayed()));
+                        withText(containsString("johndoe@google.com"))));
         waitUntilViewMatchesCondition(
                 allOf(hasSibling(withId(R.id.contact_full)), withId(R.id.incomplete_error)),
                 not(isDisplayed()));
@@ -340,7 +338,7 @@ public class AutofillAssistantPersonalDataManagerTest {
                 isCompletelyDisplayed());
         mHelper.addDummyProfile("John Doe", "johndoe@google.com");
         waitUntilViewMatchesCondition(
-                withId(R.id.contact_summary), allOf(withText("johndoe@google.com"), isDisplayed()));
+                allOf(isDisplayed(), withId(R.id.contact_summary)), withText("johndoe@google.com"));
         waitUntilViewMatchesCondition(withContentDescription("Continue"), isEnabled());
         onView(withContentDescription("Continue")).perform(click());
         waitUntilViewMatchesCondition(withText("Prompt"), isCompletelyDisplayed());
@@ -388,7 +386,7 @@ public class AutofillAssistantPersonalDataManagerTest {
         runScript(script);
 
         waitUntilViewMatchesCondition(
-                withId(R.id.contact_summary), allOf(withText("johndoe@google.com"), isDisplayed()));
+                allOf(isDisplayed(), withId(R.id.contact_summary)), withText("johndoe@google.com"));
         onView(withContentDescription("Continue")).check(matches(isEnabled()));
         // Add new entry that is not supposed to be selected.
         mHelper.addDummyProfile("Adam West", "adamwest@google.com");
@@ -396,7 +394,7 @@ public class AutofillAssistantPersonalDataManagerTest {
         waitUntilViewMatchesCondition(withText(containsString("Adam West")), isDisplayed());
         onView(withText("Contact info")).perform(click());
         waitUntilViewMatchesCondition(
-                withId(R.id.contact_summary), allOf(withText("johndoe@google.com"), isDisplayed()));
+                allOf(isDisplayed(), withId(R.id.contact_summary)), withText("johndoe@google.com"));
         waitUntilViewMatchesCondition(withText("Continue"), isEnabled());
         onView(withText("Continue")).perform(click());
         waitUntilViewMatchesCondition(withText("Prompt"), isCompletelyDisplayed());
@@ -438,11 +436,11 @@ public class AutofillAssistantPersonalDataManagerTest {
         runScript(script);
 
         waitUntilViewMatchesCondition(
-                withId(R.id.contact_summary), allOf(withText("adamdoe@google.com"), isDisplayed()));
+                allOf(isDisplayed(), withId(R.id.contact_summary)), withText("adamdoe@google.com"));
         // Delete first profile, expect second to be selected.
         mHelper.deleteProfile(profileIdA);
-        waitUntilViewMatchesCondition(withId(R.id.contact_summary),
-                allOf(withText("bertadoe@google.com"), isDisplayed()));
+        waitUntilViewMatchesCondition(allOf(isDisplayed(), withId(R.id.contact_summary)),
+                withText("bertadoe@google.com"));
         // Delete second profile, expect nothing to be selected.
         mHelper.deleteProfile(profileIdB);
         waitUntilViewMatchesCondition(
@@ -491,8 +489,8 @@ public class AutofillAssistantPersonalDataManagerTest {
                 list);
         runScript(script);
 
-        waitUntilViewMatchesCondition(withId(R.id.contact_summary),
-                allOf(withText("adamwest@google.com"), isDisplayed()));
+        waitUntilViewMatchesCondition(allOf(isDisplayed(), withId(R.id.contact_summary)),
+                withText("adamwest@google.com"));
         onView(withContentDescription("Continue")).check(matches(isEnabled()));
         // Select John Doe.
         onView(withText("Contact info")).perform(click());
@@ -500,7 +498,7 @@ public class AutofillAssistantPersonalDataManagerTest {
                 withText(containsString("John Doe")), isDisplayingAtLeast(90));
         onView(withText(containsString("John Doe"))).perform(click());
         waitUntilViewMatchesCondition(
-                withId(R.id.contact_summary), allOf(withText("johndoe@google.com"), isDisplayed()));
+                allOf(isDisplayed(), withId(R.id.contact_summary)), withText("johndoe@google.com"));
         // Edit John Doe to Jane Doe (does not collapse the list after editing).
         onView(withText("Contact info")).perform(click());
         waitUntilViewMatchesCondition(
@@ -536,10 +534,8 @@ public class AutofillAssistantPersonalDataManagerTest {
      */
     @Test
     @MediumTest
-    @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.M,
-            message = "Failing on Lollipop Phone Tester (https://crbug.com/1247243)")
-    public void
-    testCreateAndEnterCard() throws Exception {
+    @DisabledTest(message = "https://crbug.com/1247243, https://crbug.com/1249164#c2")
+    public void testCreateAndEnterCard() throws Exception {
         // Add a profile for easier address selection.
         mHelper.addDummyProfile("Adam West", "adamwest@google.com");
 
@@ -702,7 +698,7 @@ public class AutofillAssistantPersonalDataManagerTest {
      */
     @Test
     @MediumTest
-    @FlakyTest(message = "https://crbug.com/1183594")
+    @DisabledTest(message = "https://crbug.com/1183594")
     public void testExternalAddExpiredCreditCard() throws Exception {
         // Add address for card.
         String profileId = mHelper.addDummyProfile("John Doe", "johndoe@google.com");
@@ -728,11 +724,13 @@ public class AutofillAssistantPersonalDataManagerTest {
                 isCompletelyDisplayed());
         CreditCard card = new CreditCard("", "https://example.com", /* isLocal= */ true,
                 /* isCached= */ true, "John Doe", "4111111111111111", "1111", "12", "2000", "visa",
-                org.chromium.chrome.autofill_assistant.R.drawable.visa_card, profileId,
+                org.chromium.components.autofill_assistant.R.drawable.visa_card, profileId,
                 /* serverId= */ "");
         mHelper.setCreditCard(card);
-        waitUntilViewMatchesCondition(allOf(withText("Card is expired"),
-                                              isDescendantOfA(withId(R.id.payment_method_summary))),
+        waitUntilViewMatchesCondition(
+                allOf(withText(mTestRule.getActivity().getString(
+                              R.string.autofill_assistant_payment_information_missing)),
+                        isDescendantOfA(withId(R.id.payment_method_summary))),
                 isDisplayed());
         onView(withContentDescription("Continue")).check(matches(not(isEnabled())));
 
@@ -873,7 +871,10 @@ public class AutofillAssistantPersonalDataManagerTest {
      */
     @Test
     @MediumTest
-    public void testCreateShippingAddressAndCreditCard() {
+    @DisableIf.Build(supported_abis_includes = "x86", sdk_is_greater_than = Build.VERSION_CODES.O,
+            message = "Times out on Android P+ emulators: https://crbug.com/1219046")
+    public void
+    testCreateShippingAddressAndCreditCard() {
         ArrayList<ActionProto> list = new ArrayList<>();
         list.add(ActionProto.newBuilder()
                          .setCollectUserData(CollectUserDataProto.newBuilder()
@@ -907,7 +908,6 @@ public class AutofillAssistantPersonalDataManagerTest {
         onView(withContentDescription("City*")).perform(scrollTo(), typeText("Mountain View"));
         onView(withContentDescription("State*")).perform(scrollTo(), typeText("California"));
         onView(withContentDescription("ZIP code*")).perform(scrollTo(), typeText("1234"));
-        onView(withContentDescription("Phone*")).perform(scrollTo(), typeText("8008080808"));
         onView(withText("Done")).perform(scrollTo(), click());
         waitUntilViewMatchesCondition(withText("Continue"), isCompletelyDisplayed());
         // Wait for the address to appear in the UI. From this point on it should be available in
@@ -934,6 +934,7 @@ public class AutofillAssistantPersonalDataManagerTest {
      */
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1272997")
     public void testCreateAndEnterShippingAddress() throws Exception {
         ArrayList<ActionProto> list = new ArrayList<>();
         list.add(ActionProto.newBuilder()
@@ -976,7 +977,6 @@ public class AutofillAssistantPersonalDataManagerTest {
         onView(withContentDescription("City*")).perform(scrollTo(), typeText("Mountain View"));
         onView(withContentDescription("State*")).perform(scrollTo(), typeText("Invalid"));
         onView(withContentDescription("ZIP code*")).perform(scrollTo(), typeText("1234"));
-        onView(withContentDescription("Phone*")).perform(scrollTo(), typeText("8008080808"));
         Espresso.closeSoftKeyboard();
         onView(withId(org.chromium.chrome.R.id.editor_dialog_done_button))
                 .perform(scrollTo(), click());
@@ -1023,6 +1023,7 @@ public class AutofillAssistantPersonalDataManagerTest {
      */
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1272997")
     public void testCreateContactAndCreditCard() {
         // The Current year is the default selection for expiration year of the credit card.
         int year = Calendar.getInstance().get(Calendar.YEAR);
@@ -1095,7 +1096,6 @@ public class AutofillAssistantPersonalDataManagerTest {
         onView(withContentDescription("City*")).perform(scrollTo(), typeText("Mountain View"));
         onView(withContentDescription("State*")).perform(scrollTo(), typeText("CA"));
         onView(withContentDescription("ZIP code*")).perform(scrollTo(), typeText("94043"));
-        onView(withContentDescription("Phone*")).perform(scrollTo(), typeText("8008080808"));
         Espresso.closeSoftKeyboard();
         onView(withText("Done")).perform(scrollTo(), click());
         waitUntilViewMatchesCondition(withText("Billing address*"), isDisplayed());

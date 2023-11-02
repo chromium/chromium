@@ -1,13 +1,14 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import './strings.m.js';
 
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
+import {getTemplate} from './app.html.js';
 import {ConnectorsTabsElement} from './connectors_tabs.js';
 
 class ConnectorsInternalsAppElement extends CustomElement {
@@ -15,8 +16,8 @@ class ConnectorsInternalsAppElement extends CustomElement {
     return 'connectors-internals-app';
   }
 
-  static get template() {
-    return `{__html_template__}`;
+  static override get template() {
+    return getTemplate();
   }
 
   constructor() {

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <set>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/global_shortcut_listener.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/ozone/public/platform_global_shortcut_listener.h"
@@ -52,8 +53,8 @@ class GlobalShortcutListenerOzone
   std::set<ui::Accelerator> registered_hot_keys_;
 
   // The platform implementation.
-  ui::PlatformGlobalShortcutListener* platform_global_shortcut_listener_ =
-      nullptr;
+  raw_ptr<ui::PlatformGlobalShortcutListener>
+      platform_global_shortcut_listener_ = nullptr;
 };
 
 }  // namespace extensions

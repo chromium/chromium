@@ -1,10 +1,9 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/optimization_guide/core/model_executor.h"
-
 #include "base/path_service.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/optimization_guide/core/test_model_executor.h"
 #include "components/optimization_guide/core/test_model_handler.h"
@@ -119,14 +118,21 @@ class ModelHandlerTest : public testing::Test {
 };
 
 TEST_F(ModelHandlerTest, ObserverIsAttachedCorrectly) {
+  base::HistogramTester histogram_tester;
+
   CreateModelHandler();
   EXPECT_TRUE(model_observer_tracker()->add_observer_called());
 
   ResetModelHandler();
   EXPECT_TRUE(model_observer_tracker()->remove_observer_called());
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelHandler.HandlerCreated.PainfulPageLoad", true, 1);
 }
 
 TEST_F(ModelHandlerTest, ModelFileUpdatedWrongTarget) {
+  base::HistogramTester histogram_tester;
+
   CreateModelHandler();
 
   PushModelFileToModelExecutor(
@@ -134,19 +140,56 @@ TEST_F(ModelHandlerTest, ModelFileUpdatedWrongTarget) {
       /*model_metadata=*/absl::nullopt);
 
   EXPECT_FALSE(model_handler()->ModelAvailable());
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelHandler.HandlerCreated.PainfulPageLoad", true, 1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.ModelHandler.HandlerCreatedToModelAvailable."
+      "PainfulPageLoad",
+      0);
 }
 
 TEST_F(ModelHandlerTest, ParsedSupportedFeaturesForLoadedModelNoMetadata) {
+  base::HistogramTester histogram_tester;
+
   CreateModelHandler();
 
   PushModelFileToModelExecutor(
       proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
       /*model_metadata=*/absl::nullopt);
   EXPECT_TRUE(model_handler()->ModelAvailable());
+  EXPECT_TRUE(model_handler()->GetModelInfo());
 
   EXPECT_FALSE(model_handler()
                    ->ParsedSupportedFeaturesForLoadedModel<proto::Duration>()
                    .has_value());
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelHandler.HandlerCreated.PainfulPageLoad", true, 1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.ModelHandler.HandlerCreatedToModelAvailable."
+      "PainfulPageLoad",
+      1);
+}
+
+TEST_F(ModelHandlerTest, MultipleModelUpdatesOnlyRecordsMetricOnce) {
+  base::HistogramTester histogram_tester;
+
+  CreateModelHandler();
+
+  PushModelFileToModelExecutor(
+      proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
+      /*model_metadata=*/absl::nullopt);
+  PushModelFileToModelExecutor(
+      proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
+      /*model_metadata=*/absl::nullopt);
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelHandler.HandlerCreated.PainfulPageLoad", true, 1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.ModelHandler.HandlerCreatedToModelAvailable."
+      "PainfulPageLoad",
+      1);
 }
 
 TEST_F(ModelHandlerTest, ParsedSupportedFeaturesForLoadedModelWithMetadata) {
@@ -166,6 +209,91 @@ TEST_F(ModelHandlerTest, ParsedSupportedFeaturesForLoadedModelWithMetadata) {
       model_handler()->ParsedSupportedFeaturesForLoadedModel<proto::Duration>();
   ASSERT_TRUE(supported_features_for_loaded_model.has_value());
   EXPECT_EQ(123, supported_features_for_loaded_model->seconds());
+  EXPECT_TRUE(model_handler()->GetModelInfo());
+}
+
+TEST_F(ModelHandlerTest, Execute) {
+  base::HistogramTester histogram_tester;
+  CreateModelHandler();
+
+  std::vector<float> input;
+  input.push_back(1.0f);
+
+  std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
+  model_handler()->ExecuteModelWithInput(
+      base::BindOnce(
+          [](base::RunLoop* run_loop,
+             const absl::optional<std::vector<float>>& output) {
+            EXPECT_TRUE(output.has_value());
+            EXPECT_EQ((size_t)1, output.value().size());
+            EXPECT_EQ(1.0f, output.value().at(0));
+
+            run_loop->Quit();
+          },
+          run_loop.get()),
+      input);
+  run_loop->Run();
+
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.ModelExecutor.TaskExecutionLatency." +
+          optimization_guide::GetStringNameForOptimizationTarget(
+              proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD),
+      1);
+}
+
+TEST_F(ModelHandlerTest, AddOnModelUpdatedCallback_RunsImmediately) {
+  CreateModelHandler();
+
+  proto::Any any_metadata;
+  any_metadata.set_type_url("type.googleapis.com/com.foo.Duration");
+  proto::Duration model_metadata;
+  model_metadata.set_seconds(123);
+  model_metadata.SerializeToString(any_metadata.mutable_value());
+  PushModelFileToModelExecutor(
+      proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
+      any_metadata);
+  EXPECT_TRUE(model_handler()->ModelAvailable());
+
+  bool callback_run = false;
+  model_handler()->AddOnModelUpdatedCallback(
+      base::BindOnce([](bool* flag) { *flag = true; }, &callback_run));
+
+  EXPECT_TRUE(callback_run);
+}
+
+TEST_F(ModelHandlerTest, AddOnModelUpdatedCallback_RunsOnUpdate) {
+  CreateModelHandler();
+
+  bool callback_run = false;
+  model_handler()->AddOnModelUpdatedCallback(
+      base::BindOnce([](bool* flag) { *flag = true; }, &callback_run));
+  EXPECT_FALSE(callback_run);
+
+  proto::Any any_metadata;
+  any_metadata.set_type_url("type.googleapis.com/com.foo.Duration");
+  proto::Duration model_metadata;
+  model_metadata.set_seconds(123);
+  model_metadata.SerializeToString(any_metadata.mutable_value());
+  PushModelFileToModelExecutor(
+      proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
+      any_metadata);
+  EXPECT_TRUE(model_handler()->ModelAvailable());
+
+  EXPECT_TRUE(callback_run);
+}
+
+TEST_F(ModelHandlerTest, AddOnModelUpdatedCallback_NeverRun) {
+  CreateModelHandler();
+
+  bool callback_run = false;
+  model_handler()->AddOnModelUpdatedCallback(
+      base::BindOnce([](bool* flag) { *flag = true; }, &callback_run));
+  EXPECT_FALSE(callback_run);
+
+  // Resets model_handler
+  CreateModelHandler();
+
+  EXPECT_FALSE(callback_run);
 }
 
 }  // namespace

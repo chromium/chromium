@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,6 @@
 #include "components/autofill/core/common/signatures.h"
 
 using base::checked_cast;
-using base::DictionaryValue;
 using base::NumberToString;
 using base::Value;
 
@@ -38,20 +37,18 @@ bool IsUnwantedInElementID(char c) {
 SavePasswordProgressLogger::SavePasswordProgressLogger() = default;
 SavePasswordProgressLogger::~SavePasswordProgressLogger() = default;
 
-std::string FormSignatureToDebugString(autofill::FormSignature form_signature) {
-  return base::StrCat(
-      {NumberToString(form_signature.value()), " - ",
-       NumberToString(autofill::HashFormSignature(form_signature))});
+std::string FormSignatureToDebugString(FormSignature form_signature) {
+  return base::StrCat({NumberToString(form_signature.value()), " - ",
+                       NumberToString(HashFormSignature(form_signature))});
 }
 
 void SavePasswordProgressLogger::LogFormData(
     SavePasswordProgressLogger::StringID label,
     const FormData& form_data) {
   std::string message = GetStringFromID(label) + ": {\n";
-  message +=
-      GetStringFromID(STRING_FORM_SIGNATURE) + ": " +
-      FormSignatureToDebugString(autofill::CalculateFormSignature(form_data)) +
-      "\n";
+  message += GetStringFromID(STRING_FORM_SIGNATURE) + ": " +
+             FormSignatureToDebugString(CalculateFormSignature(form_data)) +
+             "\n";
   message +=
       GetStringFromID(STRING_ORIGIN) + ": " + ScrubURL(form_data.url) + "\n";
   message +=
@@ -95,10 +92,10 @@ void SavePasswordProgressLogger::LogHTMLForm(
     SavePasswordProgressLogger::StringID label,
     const std::string& name_or_id,
     const GURL& action) {
-  DictionaryValue log;
-  log.SetString(GetStringFromID(STRING_NAME_OR_ID), ScrubElementID(name_or_id));
-  log.SetString(GetStringFromID(STRING_ACTION), ScrubURL(action));
-  LogValue(label, log);
+  Value::Dict log;
+  log.Set(GetStringFromID(STRING_NAME_OR_ID), ScrubElementID(name_or_id));
+  log.Set(GetStringFromID(STRING_ACTION), ScrubURL(action));
+  LogValue(label, Value(std::move(log)));
 }
 
 void SavePasswordProgressLogger::LogURL(
@@ -407,8 +404,8 @@ std::string SavePasswordProgressLogger::GetStringFromID(
     case STRING_LEAK_DETECTION_QUOTA_LIMIT:
       return "Leak detection failed: quota limit";
     case SavePasswordProgressLogger::
-        STRING_PASSWORD_REQUIREMENTS_VOTE_FOR_LOWERCASE:
-      return "Uploading password requirements vote for using lowercase letters";
+        STRING_PASSWORD_REQUIREMENTS_VOTE_FOR_LETTER:
+      return "Uploading password requirements vote for using letters";
     case SavePasswordProgressLogger::
         STRING_PASSWORD_REQUIREMENTS_VOTE_FOR_SPECIAL_SYMBOL:
       return "Uploading password requirements vote for using special symbols";

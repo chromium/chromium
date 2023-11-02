@@ -25,32 +25,15 @@
 
 #include "third_party/blink/renderer/modules/webaudio/wave_shaper_node.h"
 
-#include <memory>
-
 #include "third_party/blink/renderer/bindings/modules/v8/v8_wave_shaper_options.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_graph_tracer.h"
 #include "third_party/blink/renderer/modules/webaudio/base_audio_context.h"
+#include "third_party/blink/renderer/modules/webaudio/wave_shaper_handler.h"
+#include "third_party/blink/renderer/modules/webaudio/wave_shaper_processor.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
 namespace blink {
-
-WaveShaperHandler::WaveShaperHandler(AudioNode& node, float sample_rate)
-    : AudioBasicProcessorHandler(
-          kNodeTypeWaveShaper,
-          node,
-          sample_rate,
-          std::make_unique<WaveShaperProcessor>(
-              sample_rate,
-              1,
-              node.context()->GetDeferredTaskHandler().RenderQuantumFrames())) {
-  Initialize();
-}
-
-scoped_refptr<WaveShaperHandler> WaveShaperHandler::Create(AudioNode& node,
-                                                           float sample_rate) {
-  return base::AdoptRef(new WaveShaperHandler(node, sample_rate));
-}
 
 WaveShaperNode::WaveShaperNode(BaseAudioContext& context) : AudioNode(context) {
   SetHandler(WaveShaperHandler::Create(*this, context.sampleRate()));
@@ -68,13 +51,15 @@ WaveShaperNode* WaveShaperNode::Create(BaseAudioContext* context,
                                        ExceptionState& exception_state) {
   WaveShaperNode* node = Create(*context, exception_state);
 
-  if (!node)
+  if (!node) {
     return nullptr;
+  }
 
   node->HandleChannelOptions(options, exception_state);
 
-  if (options->hasCurve())
+  if (options->hasCurve()) {
     node->setCurve(options->curve(), exception_state);
+  }
 
   node->setOversample(options->oversample());
 
@@ -136,8 +121,9 @@ void WaveShaperNode::setCurve(const Vector<float>& curve,
 
 NotShared<DOMFloat32Array> WaveShaperNode::curve() {
   Vector<float>* curve = GetWaveShaperProcessor()->Curve();
-  if (!curve)
+  if (!curve) {
     return NotShared<DOMFloat32Array>(nullptr);
+  }
 
   unsigned size = curve->size();
 

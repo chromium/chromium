@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,6 +31,7 @@ namespace autofill {
 class AutofillProfile;
 class AutofillWebDataServiceObserverOnDBSequence;
 class CreditCard;
+class IBAN;
 
 // Backend implementation for the AutofillWebDataService. This class runs on the
 // DB sequence, as it handles reads and writes to the WebDatabase, and functions
@@ -64,9 +65,6 @@ class AutofillWebDataBackendImpl
   void SetAutofillProfileChangedCallback(
       base::RepeatingCallback<void(const AutofillProfileDeepChange&)>
           change_cb);
-  void SetCardArtImagesChangedCallback(
-      base::RepeatingCallback<void(const std::vector<std::string>&)>
-          on_card_art_image_change_callback);
 
   // AutofillWebDataBackend implementation.
   void AddObserver(
@@ -80,8 +78,6 @@ class AutofillWebDataBackendImpl
   void NotifyOfMultipleAutofillChanges() override;
   void NotifyOfAddressConversionCompleted() override;
   void NotifyThatSyncHasStarted(syncer::ModelType model_type) override;
-  void NotifyOfCreditCardArtImagesChanged(
-      const std::vector<std::string>& server_ids) override;
   void CommitChanges() override;
 
   // Returns a SupportsUserData object that may be used to store data accessible
@@ -160,7 +156,7 @@ class AutofillWebDataBackendImpl
 
   // Updates Autofill entries in the web database.
   WebDatabase::State UpdateAutofillEntries(
-      const std::vector<autofill::AutofillEntry>& autofill_entries,
+      const std::vector<AutofillEntry>& autofill_entries,
       WebDatabase* db);
 
   // Adds a credit card to the web database. Valid only for local cards.
@@ -181,6 +177,18 @@ class AutofillWebDataBackendImpl
   // Returns a vector of local/server credit cards from the web database.
   std::unique_ptr<WDTypedResult> GetCreditCards(WebDatabase* db);
   std::unique_ptr<WDTypedResult> GetServerCreditCards(WebDatabase* db);
+
+  // Returns a vector of local IBANs from the web database.
+  std::unique_ptr<WDTypedResult> GetIBANs(WebDatabase* db);
+
+  // Adds an IBAN to the web database. Valid only for local IBANs.
+  WebDatabase::State AddIBAN(const IBAN& iban, WebDatabase* db);
+
+  // Updates an IBAN in the web database. Valid only for local IBANs.
+  WebDatabase::State UpdateIBAN(const IBAN& iban, WebDatabase* db);
+
+  // Removes an IBAN from the web database. Valid only for local IBANs.
+  WebDatabase::State RemoveIBAN(const std::string& guid, WebDatabase* db);
 
   // Server credit cards can be masked (only last 4 digits stored) or unmasked
   // (all data stored). These toggle between the two states.
@@ -272,8 +280,6 @@ class AutofillWebDataBackendImpl
   base::RepeatingCallback<void(syncer::ModelType)> on_sync_started_callback_;
   base::RepeatingCallback<void(const AutofillProfileDeepChange&)>
       on_autofill_profile_changed_cb_;
-  base::RepeatingCallback<void(const std::vector<std::string>&)>
-      on_card_art_image_change_callback_;
 };
 
 }  // namespace autofill

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,13 +10,13 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
-#include "jingle/glue/thread_wrapper.h"
+#include "components/webrtc/thread_wrapper.h"
 #include "net/url_request/url_request_context_getter.h"
 #include "remoting/base/url_request.h"
 #include "remoting/protocol/chromium_port_allocator_factory.h"
@@ -32,8 +32,7 @@
 
 using testing::_;
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 namespace {
 
@@ -87,7 +86,7 @@ class TestTransportEventHandler : public IceTransport::EventHandler {
 class IceTransportTest : public testing::Test {
  public:
   IceTransportTest() {
-    jingle_glue::JingleThreadWrapper::EnsureForCurrentMessageLoop();
+    webrtc::ThreadWrapper::EnsureForCurrentMessageLoop();
     network_settings_ =
         NetworkSettings(NetworkSettings::NAT_TRAVERSAL_OUTGOING);
   }
@@ -118,12 +117,14 @@ class IceTransportTest : public testing::Test {
   }
 
   void InitializeConnection() {
-    jingle_glue::JingleThreadWrapper::EnsureForCurrentMessageLoop();
+    webrtc::ThreadWrapper::EnsureForCurrentMessageLoop();
 
+    rtc::SocketFactory* socket_factory =
+        webrtc::ThreadWrapper::current()->SocketServer();
     host_transport_ = std::make_unique<IceTransport>(
         new TransportContext(std::make_unique<ChromiumPortAllocatorFactory>(),
-                             nullptr, nullptr, network_settings_,
-                             TransportRole::SERVER),
+                             socket_factory, nullptr, nullptr,
+                             network_settings_, TransportRole::SERVER),
         &host_event_handler_);
     if (!host_authenticator_) {
       host_authenticator_ =
@@ -132,8 +133,8 @@ class IceTransportTest : public testing::Test {
 
     client_transport_ = std::make_unique<IceTransport>(
         new TransportContext(std::make_unique<ChromiumPortAllocatorFactory>(),
-                             nullptr, nullptr, network_settings_,
-                             TransportRole::CLIENT),
+                             socket_factory, nullptr, nullptr,
+                             network_settings_, TransportRole::CLIENT),
         &client_event_handler_);
     if (!client_authenticator_) {
       client_authenticator_ =
@@ -214,7 +215,7 @@ class IceTransportTest : public testing::Test {
 };
 
 // crbug.com/1224862: Tests are flaky on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_DataStream DISABLED_DataStream
 #else
 #define MAYBE_DataStream DataStream
@@ -238,7 +239,7 @@ TEST_F(IceTransportTest, MAYBE_DataStream) {
 }
 
 // crbug.com/1224862: Tests are flaky on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_MuxDataStream DISABLED_MuxDataStream
 #else
 #define MAYBE_MuxDataStream MuxDataStream
@@ -262,7 +263,7 @@ TEST_F(IceTransportTest, MAYBE_MuxDataStream) {
 }
 
 // crbug.com/1224862: Tests are flaky on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_FailedChannelAuth DISABLED_FailedChannelAuth
 #else
 #define MAYBE_FailedChannelAuth FailedChannelAuth
@@ -342,7 +343,7 @@ TEST_F(IceTransportTest, TestCancelChannelCreation) {
 }
 
 // crbug.com/1224862: Tests are flaky on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_TestDelayedSignaling DISABLED_TestDelayedSignaling
 #else
 #define MAYBE_TestDelayedSignaling TestDelayedSignaling
@@ -369,5 +370,4 @@ TEST_F(IceTransportTest, MAYBE_TestDelayedSignaling) {
   tester.RunAndCheckResults();
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

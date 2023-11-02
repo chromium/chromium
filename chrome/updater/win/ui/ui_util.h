@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,9 +19,9 @@ namespace ui {
 // Finds all the primary windows owned by the given process. A primary window is
 // a top-level, has a system menu, and it is visible.
 // Flags for window requirements.
-constexpr uint32_t kWindowMustBeTopLevel = 0x00000001;
-constexpr uint32_t kWindowMustHaveSysMenu = 0x00000002;
-constexpr uint32_t kWindowMustBeVisible = 0x00000004;
+inline constexpr uint32_t kWindowMustBeTopLevel = 0x00000001;
+inline constexpr uint32_t kWindowMustHaveSysMenu = 0x00000002;
+inline constexpr uint32_t kWindowMustBeVisible = 0x00000004;
 bool FindProcessWindows(uint32_t process_id,
                         uint32_t window_flags,
                         std::vector<HWND>* windows);
@@ -53,11 +53,11 @@ inline T CeilingDivide(T m, T n) {
   return (m + n - 1) / n;
 }
 
-// Loads a string from the resources.
-bool LoadString(int id, std::wstring* s);
-
 // Gets the text corresponding to a control in a dialog box.
 bool GetDlgItemText(HWND dlg, int item_id, std::wstring* text);
+
+// Returns true if the system is in high contrast mode.
+bool IsHighContrastOn();
 
 }  // namespace ui
 }  // namespace updater

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,7 @@ class MockMachineCertificateUploader : public MachineCertificateUploader {
   MockMachineCertificateUploader& operator=(
       const MockMachineCertificateUploader&) = delete;
 
-  ~MockMachineCertificateUploader();
+  ~MockMachineCertificateUploader() override;
 
   MOCK_METHOD1(UploadCertificateIfNeeded, void(UploadCallback));
   MOCK_METHOD1(RefreshAndUploadCertificate, void(UploadCallback));

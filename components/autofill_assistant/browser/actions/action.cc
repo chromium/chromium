@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,8 @@
 #include "components/autofill_assistant/browser/actions/action.h"
 #include "components/autofill_assistant/browser/actions/action_delegate.h"
 #include "components/autofill_assistant/browser/client_status.h"
+#include "components/autofill_assistant/browser/wait_for_document_operation.h"
+#include "components/autofill_assistant/browser/wait_for_dom_operation.h"
 
 namespace autofill_assistant {
 
@@ -16,8 +18,11 @@ Action::Action(ActionDelegate* delegate, const ActionProto& proto)
 
 Action::~Action() {}
 
-bool Action::ShouldInterruptOnPause() const {
-  return false;
+Action::ActionData::ActionData() = default;
+Action::ActionData::~ActionData() = default;
+
+Action::ActionData& Action::GetActionData() {
+  return action_data_;
 }
 
 void Action::ProcessAction(ProcessActionCallback callback) {
@@ -247,12 +252,6 @@ std::ostream& operator<<(std::ostream& out,
     case ActionProto::ActionInfoCase::kSetTouchableArea:
       out << "SetTouchableArea";
       break;
-    case ActionProto::ActionInfoCase::kDeletePassword:
-      out << "DeletePassword";
-      break;
-    case ActionProto::ActionInfoCase::kEditPassword:
-      out << "EditPassword";
-      break;
     case ActionProto::ActionInfoCase::kBlurField:
       out << "BlurField";
       break;
@@ -261,6 +260,33 @@ std::ostream& operator<<(std::ostream& out,
       break;
     case ActionProto::ActionInfoCase::kSaveSubmittedPassword:
       out << "SaveSubmittedPassword";
+      break;
+    case ActionProto::ActionInfoCase::kExecuteJs:
+      out << "ExecuteJs";
+      break;
+    case ActionProto::ActionInfoCase::kJsFlow:
+      out << "JsFlow";
+      break;
+    case ActionProto::ActionInfoCase::kExternalAction:
+      out << "ExternalAction";
+      break;
+    case ActionProto::ActionInfoCase::kRegisterPasswordResetRequest:
+      out << "RegisterPasswordResetRequest";
+      break;
+    case ActionProto::ActionInfoCase::kSetNativeValue:
+      out << "SetNativeValue";
+      break;
+    case ActionProto::ActionInfoCase::kSetNativeChecked:
+      out << "SetNativeChecked";
+      break;
+    case ActionProto::ActionInfoCase::kParseSingleTagXml:
+      out << "ParseSingleTagXml";
+      break;
+    case ActionProto::ActionInfoCase::kPromptQrCodeScan:
+      out << "PromptQrCodeScan";
+      break;
+    case ActionProto::ActionInfoCase::kReportProgress:
+      out << "ReportProgress";
       break;
     case ActionProto::ActionInfoCase::ACTION_INFO_NOT_SET:
       out << "ACTION_INFO_NOT_SET";

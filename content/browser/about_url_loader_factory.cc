@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,7 +27,6 @@ void AboutURLLoaderFactory::CreateLoaderAndStart(
   response_head->mime_type = "text/html";
   mojo::Remote<network::mojom::URLLoaderClient> client_remote(
       std::move(client));
-  client_remote->OnReceiveResponse(std::move(response_head));
 
   // Create a data pipe for transmitting the empty response. The |producer|
   // doesn't add any data.
@@ -39,7 +38,8 @@ void AboutURLLoaderFactory::CreateLoaderAndStart(
     return;
   }
 
-  client_remote->OnStartLoadingResponseBody(std::move(consumer));
+  client_remote->OnReceiveResponse(std::move(response_head),
+                                   std::move(consumer), absl::nullopt);
   client_remote->OnComplete(network::URLLoaderCompletionStatus(net::OK));
 }
 

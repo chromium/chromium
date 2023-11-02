@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,30 +24,29 @@ namespace {
 template <typename LayerType>
 void SetupRootPropertiesInternal(LayerType* root) {
   root->set_property_tree_sequence_number(
-      GetPropertyTrees(root)->sequence_number);
+      GetPropertyTrees(root)->sequence_number());
   root->SetElementId(LayerIdToElementIdForTesting(root->id()));
 
-  auto& root_transform_node =
-      CreateTransformNode(root, TransformTree::kRootNodeId);
-  DCHECK_EQ(root_transform_node.id, TransformTree::kContentsRootNodeId);
+  auto& root_transform_node = CreateTransformNode(root, kRootPropertyNodeId);
+  DCHECK_EQ(root_transform_node.id, kContentsRootPropertyNodeId);
 
-  auto& root_clip_node = CreateClipNode(root, ClipTree::kRootNodeId);
-  DCHECK_EQ(root_clip_node.id, ClipTree::kViewportNodeId);
+  auto& root_clip_node = CreateClipNode(root, kRootPropertyNodeId);
+  DCHECK_EQ(root_clip_node.id, kViewportPropertyNodeId);
   root_clip_node.clip = gfx::RectF(gfx::SizeF(root->bounds()));
   // Root clip is in the real root transform space instead of the root layer's
   // transform space.
-  root_clip_node.transform_id = TransformTree::kRootNodeId;
+  root_clip_node.transform_id = kRootPropertyNodeId;
 
-  auto& root_effect_node = CreateEffectNode(root, EffectTree::kRootNodeId);
-  DCHECK_EQ(root_effect_node.id, EffectTree::kContentsRootNodeId);
+  auto& root_effect_node = CreateEffectNode(root, kRootPropertyNodeId);
+  DCHECK_EQ(root_effect_node.id, kContentsRootPropertyNodeId);
   root_effect_node.render_surface_reason = RenderSurfaceReason::kRoot;
   // Root effect is in the real root transform space instead of the root layer's
   // transform space.
-  root_effect_node.transform_id = TransformTree::kRootNodeId;
+  root_effect_node.transform_id = kRootPropertyNodeId;
 
   auto& root_scroll_node =
-      CreateScrollNode(root, gfx::Size(), ScrollTree::kRootNodeId);
-  DCHECK_EQ(root_scroll_node.id, ScrollTree::kSecondaryRootNodeId);
+      CreateScrollNode(root, gfx::Size(), kRootPropertyNodeId);
+  DCHECK_EQ(root_scroll_node.id, kSecondaryRootPropertyNodeId);
 }
 
 template <typename LayerType>
@@ -62,13 +61,13 @@ void CopyPropertiesInternal(const LayerType* from, LayerType* to) {
 // |layer->xxx_tree_index()|) from being evaluated when it's not used because
 // |layer| may be null when |id| is valid.
 #define ID_OR_DEFAULT(id, default_id) \
-  ((id) == TransformTree::kInvalidNodeId ? (default_id) : (id))
+  ((id) == kInvalidPropertyNodeId ? (default_id) : (id))
 
 template <typename LayerType>
 TransformNode& CreateTransformNodeInternal(LayerType* layer,
                                            PropertyTrees* property_trees,
                                            int parent_id) {
-  auto& transform_tree = property_trees->transform_tree;
+  auto& transform_tree = property_trees->transform_tree_mutable();
   int id = transform_tree.Insert(
       TransformNode(), ID_OR_DEFAULT(parent_id, layer->transform_tree_index()));
   auto* node = transform_tree.Node(id);
@@ -77,8 +76,8 @@ TransformNode& CreateTransformNodeInternal(LayerType* layer,
     layer->SetHasTransformNode(true);
     node->element_id = layer->element_id();
     if (node->element_id) {
-      property_trees->element_id_to_transform_node_index[node->element_id] =
-          node->id;
+      property_trees->transform_tree_mutable().SetElementIdForNodeId(
+          node->id, node->element_id);
     }
   }
   if (const auto* parent_node = transform_tree.Node(node->parent_id)) {
@@ -90,16 +89,14 @@ TransformNode& CreateTransformNodeInternal(LayerType* layer,
 }
 
 template <typename LayerType>
-ClipNode& CreateClipNodeInternal(
-    LayerType* layer,
-    PropertyTrees* property_trees,
-    int parent_id,
-    int transform_id = TransformTree::kInvalidNodeId) {
-  auto& clip_tree = property_trees->clip_tree;
+ClipNode& CreateClipNodeInternal(LayerType* layer,
+                                 PropertyTrees* property_trees,
+                                 int parent_id,
+                                 int transform_id = kInvalidPropertyNodeId) {
+  auto& clip_tree = property_trees->clip_tree_mutable();
   int id = clip_tree.Insert(ClipNode(),
                             ID_OR_DEFAULT(parent_id, layer->clip_tree_index()));
   auto* node = clip_tree.Node(id);
-  node->clip_type = ClipNode::ClipType::APPLIES_LOCAL_CLIP;
   node->transform_id =
       ID_OR_DEFAULT(transform_id, layer->transform_tree_index());
   if (layer) {
@@ -113,13 +110,12 @@ ClipNode& CreateClipNodeInternal(
 }
 
 template <typename LayerType>
-EffectNode& CreateEffectNodeInternal(
-    LayerType* layer,
-    PropertyTrees* property_trees,
-    int parent_id,
-    int transform_id = TransformTree::kInvalidNodeId,
-    int clip_id = ClipTree::kInvalidNodeId) {
-  auto& effect_tree = property_trees->effect_tree;
+EffectNode& CreateEffectNodeInternal(LayerType* layer,
+                                     PropertyTrees* property_trees,
+                                     int parent_id,
+                                     int transform_id = kInvalidPropertyNodeId,
+                                     int clip_id = kInvalidPropertyNodeId) {
+  auto& effect_tree = property_trees->effect_tree_mutable();
   int id = effect_tree.Insert(
       EffectNode(), ID_OR_DEFAULT(parent_id, layer->effect_tree_index()));
   auto* node = effect_tree.Node(id);
@@ -127,8 +123,8 @@ EffectNode& CreateEffectNodeInternal(
     layer->SetEffectTreeIndex(id);
     node->stable_id = layer->id();
     if (layer->element_id()) {
-      property_trees->element_id_to_effect_node_index[layer->element_id()] =
-          node->id;
+      property_trees->effect_tree_mutable().SetElementIdForNodeId(
+          node->id, layer->element_id());
     }
   }
   node->transform_id =
@@ -143,15 +139,15 @@ ScrollNode& CreateScrollNodeInternal(LayerType* layer,
                                      const gfx::Size& scroll_container_bounds,
                                      int parent_id) {
   auto* property_trees = GetPropertyTrees(layer);
-  auto& scroll_tree = property_trees->scroll_tree;
+  auto& scroll_tree = property_trees->scroll_tree_mutable();
   int id = scroll_tree.Insert(
       ScrollNode(), ID_OR_DEFAULT(parent_id, layer->scroll_tree_index()));
   layer->SetScrollTreeIndex(id);
   auto* node = scroll_tree.Node(id);
   node->element_id = layer->element_id();
   if (node->element_id) {
-    property_trees->element_id_to_scroll_node_index[node->element_id] =
-        node->id;
+    property_trees->scroll_tree_mutable().SetElementIdForNodeId(
+        node->id, node->element_id);
   }
   node->bounds = layer->bounds();
   node->container_bounds = scroll_container_bounds;
@@ -166,7 +162,9 @@ ScrollNode& CreateScrollNodeInternal(LayerType* layer,
   transform_node->should_be_snapped = true;
   transform_node->scrolls = true;
 
-  scroll_tree.SetScrollOffset(layer->element_id(), gfx::Vector2dF());
+  if (!property_trees->is_main_thread())
+    scroll_tree.GetOrCreateSyncedScrollOffsetForTesting(layer->element_id());
+  scroll_tree.SetScrollOffset(layer->element_id(), gfx::PointF());
   return *node;
 }
 
@@ -193,13 +191,13 @@ void SetupMaskPropertiesInternal(LayerType* masked_layer,
 
 template <typename LayerType>
 void SetScrollOffsetInternal(LayerType* layer,
-                             const gfx::Vector2dF& scroll_offset) {
+                             const gfx::PointF& scroll_offset) {
   DCHECK(layer->has_transform_node());
   auto* transform_node = GetTransformNode(layer);
   transform_node->scroll_offset = scroll_offset;
   SetLocalTransformChanged(layer);
-  GetPropertyTrees(layer)->scroll_tree.SetScrollOffset(layer->element_id(),
-                                                       scroll_offset);
+  GetPropertyTrees(layer)->scroll_tree_mutable().SetScrollOffset(
+      layer->element_id(), scroll_offset);
 }
 
 // TODO(wangxianzhu): Viewport properties can exist without layers, but for now
@@ -335,14 +333,15 @@ ScrollNode& CreateScrollNodeForUncompositedScroller(
     ElementId element_id,
     const gfx::Size& bounds,
     const gfx::Size& scroll_container_bounds) {
-  auto& scroll_tree = property_trees->scroll_tree;
+  auto& scroll_tree = property_trees->scroll_tree_mutable();
   int id = scroll_tree.Insert(ScrollNode(), parent_id);
 
   auto* node = scroll_tree.Node(id);
 
   DCHECK(element_id);
   node->element_id = element_id;
-  property_trees->element_id_to_scroll_node_index[element_id] = node->id;
+  property_trees->scroll_tree_mutable().SetElementIdForNodeId(node->id,
+                                                              element_id);
 
   node->bounds = bounds;
   node->container_bounds = scroll_container_bounds;
@@ -353,15 +352,14 @@ ScrollNode& CreateScrollNodeForUncompositedScroller(
 
   // Create a matching transform node.
   {
-    auto& transform_tree = property_trees->transform_tree;
+    auto& transform_tree = property_trees->transform_tree_mutable();
     ScrollNode& scroll_parent = *scroll_tree.Node(parent_id);
     int transform_id =
         transform_tree.Insert(TransformNode(), scroll_parent.transform_id);
     auto* transform_node = transform_tree.Node(transform_id);
     transform_node->element_id = element_id;
-    property_trees
-        ->element_id_to_transform_node_index[transform_node->element_id] =
-        transform_node->id;
+    property_trees->transform_tree_mutable().SetElementIdForNodeId(
+        transform_node->id, transform_node->element_id);
 
     if (const auto* parent_transform_node =
             transform_tree.Node(transform_node->parent_id)) {
@@ -376,7 +374,9 @@ ScrollNode& CreateScrollNodeForUncompositedScroller(
     node->transform_id = transform_node->id;
   }
 
-  scroll_tree.SetScrollOffset(element_id, gfx::Vector2dF());
+  if (!property_trees->is_main_thread())
+    scroll_tree.GetOrCreateSyncedScrollOffsetForTesting(element_id);
+  scroll_tree.SetScrollOffset(element_id, gfx::PointF());
   return *node;
 }
 
@@ -391,7 +391,7 @@ void SetupMaskProperties(LayerImpl* masked_layer,
   SetupMaskPropertiesInternal(masked_layer, mask_layer);
 }
 
-void SetScrollOffset(Layer* layer, const gfx::Vector2dF& scroll_offset) {
+void SetScrollOffset(Layer* layer, const gfx::PointF& scroll_offset) {
   if (layer->layer_tree_host()->IsUsingLayerLists()) {
     if (CurrentScrollOffset(layer) != scroll_offset)
       layer->SetNeedsCommit();
@@ -402,14 +402,14 @@ void SetScrollOffset(Layer* layer, const gfx::Vector2dF& scroll_offset) {
 }
 
 void SetScrollOffsetFromImplSide(Layer* layer,
-                                 const gfx::Vector2dF& scroll_offset) {
+                                 const gfx::PointF& scroll_offset) {
   if (layer->layer_tree_host()->IsUsingLayerLists())
     SetScrollOffsetInternal(layer, scroll_offset);
   else
     layer->SetScrollOffsetFromImplSide(scroll_offset);
 }
 
-void SetScrollOffset(LayerImpl* layer, const gfx::Vector2dF& scroll_offset) {
+void SetScrollOffset(LayerImpl* layer, const gfx::PointF& scroll_offset) {
   if (layer->IsActive())
     layer->SetCurrentScrollOffset(scroll_offset);
   SetScrollOffsetInternal(layer, scroll_offset);
@@ -496,45 +496,48 @@ const PropertyTrees* GetPropertyTrees(const LayerImpl* layer) {
 }
 
 RenderSurfaceImpl* GetRenderSurface(LayerImpl* layer) {
-  auto& effect_tree = GetPropertyTrees(layer)->effect_tree;
+  auto& effect_tree = GetPropertyTrees(layer)->effect_tree_mutable();
   if (auto* surface = effect_tree.GetRenderSurface(layer->effect_tree_index()))
     return surface;
   return effect_tree.GetRenderSurface(GetEffectNode(layer)->target_id);
 }
 
 const RenderSurfaceImpl* GetRenderSurface(const LayerImpl* layer) {
-  auto& effect_tree = GetPropertyTrees(layer)->effect_tree;
+  const auto& effect_tree = GetPropertyTrees(layer)->effect_tree();
   if (const auto* surface =
           effect_tree.GetRenderSurface(layer->effect_tree_index()))
     return surface;
   return effect_tree.GetRenderSurface(GetEffectNode(layer)->target_id);
 }
 
-gfx::Vector2dF ScrollOffsetBase(const LayerImpl* layer) {
-  return GetPropertyTrees(layer)->scroll_tree.GetScrollOffsetBaseForTesting(
+gfx::PointF ScrollOffsetBase(const LayerImpl* layer) {
+  return GetPropertyTrees(layer)->scroll_tree().GetScrollOffsetBaseForTesting(
       layer->element_id());
 }
 
 gfx::Vector2dF ScrollDelta(const LayerImpl* layer) {
-  return GetPropertyTrees(layer)->scroll_tree.GetScrollOffsetDeltaForTesting(
+  return GetPropertyTrees(layer)->scroll_tree().GetScrollOffsetDeltaForTesting(
       layer->element_id());
 }
 
-gfx::Vector2dF CurrentScrollOffset(const Layer* layer) {
-  auto result = GetPropertyTrees(layer)->scroll_tree.current_scroll_offset(
-      layer->element_id());
-  if (!layer->layer_tree_host()->IsUsingLayerLists())
+gfx::PointF CurrentScrollOffset(const Layer* layer,
+                                const PropertyTrees* property_trees) {
+  if (!property_trees && layer->IsAttached())
+    property_trees = layer->layer_tree_host()->property_trees();
+  auto result =
+      property_trees->scroll_tree().current_scroll_offset(layer->element_id());
+  if (!layer->IsUsingLayerLists())
     DCHECK_EQ(layer->scroll_offset(), result);
   return result;
 }
 
-gfx::Vector2dF CurrentScrollOffset(const LayerImpl* layer) {
-  return GetPropertyTrees(layer)->scroll_tree.current_scroll_offset(
+gfx::PointF CurrentScrollOffset(const LayerImpl* layer) {
+  return GetPropertyTrees(layer)->scroll_tree().current_scroll_offset(
       layer->element_id());
 }
 
-gfx::Vector2dF MaxScrollOffset(const LayerImpl* layer) {
-  return GetPropertyTrees(layer)->scroll_tree.MaxScrollOffset(
+gfx::PointF MaxScrollOffset(const LayerImpl* layer) {
+  return GetPropertyTrees(layer)->scroll_tree().MaxScrollOffset(
       layer->scroll_tree_index());
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,10 @@
 #include <algorithm>
 #include <iterator>
 
+#include "ash/components/arc/arc_prefs.h"
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
-#include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
@@ -22,7 +22,6 @@
 #include "chrome/browser/ash/policy/reporting/install_event_logger_base.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/arc/arc_prefs.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/policy_constants.h"
@@ -30,25 +29,24 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 
-namespace em = enterprise_management;
-
 namespace policy {
 
 namespace {
 
+namespace em = ::enterprise_management;
+
 constexpr int kNonComplianceReasonAppNotInstalled = 5;
 
-std::set<std::string> GetRequestedPackagesFromPolicy(
-    const policy::PolicyMap& policy) {
-  const base::Value* const arc_enabled = policy.GetValue(key::kArcEnabled);
-  if (!arc_enabled || !arc_enabled->is_bool() || !arc_enabled->GetBool()) {
+std::set<std::string> GetRequestedPackagesFromPolicy(const PolicyMap& policy) {
+  const base::Value* const arc_enabled =
+      policy.GetValue(key::kArcEnabled, base::Value::Type::BOOLEAN);
+  if (!arc_enabled || !arc_enabled->GetBool())
     return {};
-  }
 
-  const base::Value* const arc_policy = policy.GetValue(key::kArcPolicy);
-  if (!arc_policy || !arc_policy->is_string()) {
+  const base::Value* const arc_policy =
+      policy.GetValue(key::kArcPolicy, base::Value::Type::STRING);
+  if (!arc_policy)
     return {};
-  }
 
   return arc::policy_util::GetRequestedPackagesFromArcPolicy(
       arc_policy->GetString());
@@ -66,17 +64,17 @@ ArcAppInstallEventLogger::ArcAppInstallEventLogger(Delegate* delegate,
     return;
   }
 
-  policy::PolicyService* const policy_service =
+  PolicyService* const policy_service =
       profile_->GetProfilePolicyConnector()->policy_service();
-  EvaluatePolicy(policy_service->GetPolicies(policy::PolicyNamespace(
-                     policy::POLICY_DOMAIN_CHROME, std::string())),
+  EvaluatePolicy(policy_service->GetPolicies(
+                     PolicyNamespace(POLICY_DOMAIN_CHROME, std::string())),
                  true /* initial */);
 
   observing_ = true;
   arc::ArcPolicyBridge* bridge =
       arc::ArcPolicyBridge::GetForBrowserContext(profile_);
   bridge->AddObserver(this);
-  policy_service->AddObserver(policy::POLICY_DOMAIN_CHROME, this);
+  policy_service->AddObserver(POLICY_DOMAIN_CHROME, this);
 }
 
 ArcAppInstallEventLogger::~ArcAppInstallEventLogger() {
@@ -86,7 +84,7 @@ ArcAppInstallEventLogger::~ArcAppInstallEventLogger() {
   if (observing_) {
     arc::ArcPolicyBridge::GetForBrowserContext(profile_)->RemoveObserver(this);
     profile_->GetProfilePolicyConnector()->policy_service()->RemoveObserver(
-        policy::POLICY_DOMAIN_CHROME, this);
+        POLICY_DOMAIN_CHROME, this);
   }
 }
 
@@ -117,10 +115,15 @@ void ArcAppInstallEventLogger::Add(
   AddEvent(package, gather_disk_space_info, event);
 }
 
-void ArcAppInstallEventLogger::OnPolicyUpdated(
-    const policy::PolicyNamespace& ns,
-    const policy::PolicyMap& previous,
-    const policy::PolicyMap& current) {
+void ArcAppInstallEventLogger::UpdatePolicySuccessRate(
+    const std::string& package,
+    bool success) {
+  policy_data_helper_.UpdatePolicySuccessRate(package, success);
+}
+
+void ArcAppInstallEventLogger::OnPolicyUpdated(const PolicyNamespace& ns,
+                                               const PolicyMap& previous,
+                                               const PolicyMap& current) {
   EvaluatePolicy(current, false /* initial */);
 }
 
@@ -137,10 +140,12 @@ void ArcAppInstallEventLogger::OnComplianceReportReceived(
     return;
   }
 
+  const std::set<std::string> all_force_install_apps_in_policy =
+      GetPackagesFromPref(arc::prefs::kArcPushInstallAppsRequested);
   const std::set<std::string> previous_pending =
       GetPackagesFromPref(arc::prefs::kArcPushInstallAppsPending);
 
-  std::set<std::string> pending_in_arc;
+  std::set<std::string> noncompliant_apps_in_report;
   for (const auto& detail : details->GetList()) {
     const base::Value* const reason =
         detail.FindKeyOfType("nonComplianceReason", base::Value::Type::INTEGER);
@@ -152,23 +157,28 @@ void ArcAppInstallEventLogger::OnComplianceReportReceived(
     if (!app_name || app_name->GetString().empty()) {
       continue;
     }
-    pending_in_arc.insert(app_name->GetString());
+    noncompliant_apps_in_report.insert(app_name->GetString());
   }
-  const std::set<std::string> current_pending = GetDifference(
-      previous_pending, GetDifference(requested_in_arc_, pending_in_arc));
-  const std::set<std::string> removed =
-      GetDifference(previous_pending, current_pending);
-  AddForSetOfAppsWithDiskSpaceInfo(
-      removed, CreateEvent(em::AppInstallReportLogEvent::SUCCESS));
+  const std::set<std::string> all_installed_apps = GetDifference(
+      all_force_install_apps_in_policy, noncompliant_apps_in_report);
 
-  if (removed.empty()) {
+  std::set<std::string> newly_installed_apps;
+  std::set_intersection(
+      previous_pending.begin(), previous_pending.end(),
+      all_installed_apps.begin(), all_installed_apps.end(),
+      std::inserter(newly_installed_apps, newly_installed_apps.end()));
+
+  AddForSetOfAppsWithDiskSpaceInfo(
+      newly_installed_apps, CreateEvent(em::AppInstallReportLogEvent::SUCCESS));
+
+  if (newly_installed_apps.empty()) {
     return;
   }
 
-  SetPref(arc::prefs::kArcPushInstallAppsPending, current_pending);
+  SetPref(arc::prefs::kArcPushInstallAppsPending, noncompliant_apps_in_report);
 
-  if (!current_pending.empty()) {
-    UpdateCollector(current_pending);
+  if (!noncompliant_apps_in_report.empty()) {
+    UpdateCollector(noncompliant_apps_in_report);
   } else {
     StopCollector();
   }
@@ -177,8 +187,7 @@ void ArcAppInstallEventLogger::OnComplianceReportReceived(
 std::set<std::string> ArcAppInstallEventLogger::GetPackagesFromPref(
     const std::string& pref_name) const {
   std::set<std::string> packages;
-  for (const auto& package :
-       profile_->GetPrefs()->GetList(pref_name)->GetList()) {
+  for (const auto& package : profile_->GetPrefs()->GetList(pref_name)) {
     if (!package.is_string()) {
       continue;
     }
@@ -210,7 +219,7 @@ void ArcAppInstallEventLogger::StopCollector() {
   log_collector_.reset();
 }
 
-void ArcAppInstallEventLogger::EvaluatePolicy(const policy::PolicyMap& policy,
+void ArcAppInstallEventLogger::EvaluatePolicy(const PolicyMap& policy,
                                               bool initial) {
   const std::set<std::string> previous_requested =
       GetPackagesFromPref(arc::prefs::kArcPushInstallAppsRequested);
@@ -227,11 +236,19 @@ void ArcAppInstallEventLogger::EvaluatePolicy(const policy::PolicyMap& policy,
   AddForSetOfAppsWithDiskSpaceInfo(
       added, CreateEvent(em::AppInstallReportLogEvent::SERVER_REQUEST));
   AddForSetOfApps(removed, CreateEvent(em::AppInstallReportLogEvent::CANCELED));
+  // Consider canceled packages as successful since they are not needed
+  policy_data_helper_.UpdatePolicySuccessRateForPackages(removed,
+                                                         /* success */ true);
 
-  const std::set<std::string> current_pending = GetDifference(
-      current_requested, GetDifference(previous_requested, previous_pending));
+  const std::set<std::string> previously_installed =
+      GetDifference(previous_requested, previous_pending);
+  const std::set<std::string> current_pending =
+      GetDifference(current_requested, previously_installed);
   SetPref(arc::prefs::kArcPushInstallAppsRequested, current_requested);
   SetPref(arc::prefs::kArcPushInstallAppsPending, current_pending);
+
+  policy_data_helper_.AddPolicyData(current_pending,
+                                    previously_installed.size());
 
   if (!current_pending.empty()) {
     UpdateCollector(current_pending);

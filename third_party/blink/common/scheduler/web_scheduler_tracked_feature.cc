@@ -1,15 +1,19 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 
+#include <atomic>
 #include <map>
+#include <vector>
 
 namespace blink {
 namespace scheduler {
 
 namespace {
+
+std::atomic_bool disable_align_wake_ups{false};
 
 struct FeatureNames {
   std::string short_name;
@@ -152,6 +156,10 @@ std::string FeatureToHumanReadableString(WebSchedulerTrackedFeature feature) {
   return FeatureToNames(feature).human_readable;
 }
 
+std::string FeatureToShortString(WebSchedulerTrackedFeature feature) {
+  return FeatureToNames(feature).short_name;
+}
+
 absl::optional<WebSchedulerTrackedFeature> StringToFeature(
     const std::string& str) {
   auto map = ShortStringToFeatureMap();
@@ -160,6 +168,20 @@ absl::optional<WebSchedulerTrackedFeature> StringToFeature(
     return absl::nullopt;
   }
   return it->second;
+}
+
+bool IsRemovedFeature(const std::string& feature) {
+  // This is an incomplete list. It only contains features that were
+  // BFCache-enabled via finch. It does not contain all those that were removed.
+  // This function is simple, not efficient because it is called once during
+  // finch param parsing.
+  const char* removed_features[] = {"MediaSessionImplOnServiceCreated"};
+  for (const char* removed_feature : removed_features) {
+    if (feature == removed_feature) {
+      return true;
+    }
+  }
+  return false;
 }
 
 bool IsFeatureSticky(WebSchedulerTrackedFeature feature) {
@@ -193,6 +215,16 @@ WebSchedulerTrackedFeatures StickyFeatures() {
       WebSchedulerTrackedFeature::kInjectedStyleSheet,
       WebSchedulerTrackedFeature::kDummy);
   return features;
+}
+
+// static
+void DisableAlignWakeUpsForProcess() {
+  disable_align_wake_ups.store(true, std::memory_order_relaxed);
+}
+
+// static
+bool IsAlignWakeUpsDisabledForProcess() {
+  return disable_align_wake_ups.load(std::memory_order_relaxed);
 }
 
 }  // namespace scheduler

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -96,8 +96,8 @@ class AudioOutputAuthorizationHandlerTest : public RenderViewHostTestHarness {
         std::make_unique<media::TestAudioThread>(true), &log_factory_);
     audio_system_ =
         std::make_unique<media::AudioSystemImpl>(audio_manager_.get());
-    media_stream_manager_ = std::make_unique<MediaStreamManager>(
-        audio_system_.get(), audio_manager_->GetTaskRunner());
+    media_stream_manager_ =
+        std::make_unique<MediaStreamManager>(audio_system_.get());
 
     // Make sure everything is done initializing:
     SyncWithAllThreads();

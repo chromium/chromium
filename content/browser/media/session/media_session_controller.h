@@ -1,11 +1,11 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_BROWSER_MEDIA_SESSION_MEDIA_SESSION_CONTROLLER_H_
 #define CONTENT_BROWSER_MEDIA_SESSION_MEDIA_SESSION_CONTROLLER_H_
 
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "content/browser/media/session/media_session_player_observer.h"
@@ -15,6 +15,7 @@
 #include "media/audio/audio_device_description.h"
 #include "media/base/media_content_type.h"
 #include "services/media_session/public/cpp/media_position.h"
+#include "services/media_session/public/mojom/media_session.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
@@ -100,6 +101,10 @@ class CONTENT_EXPORT MediaSessionController
   // Called when the ability to switch audio output devices has been disabled.
   void OnAudioOutputSinkChangingDisabled();
 
+  // Called when the RemotePlayback metadata has changed.
+  void OnRemotePlaybackMetadataChanged(
+      media_session::mojom::RemotePlaybackMetadataPtr metadata);
+
  private:
   bool IsMediaSessionNeeded() const;
 
@@ -110,10 +115,10 @@ class CONTENT_EXPORT MediaSessionController
   const MediaPlayerId id_;
 
   // Outlives |this|.
-  WebContentsImpl* const web_contents_;
+  const raw_ptr<WebContentsImpl> web_contents_;
 
   // Outlives |this|.
-  MediaSessionImpl* const media_session_;
+  const raw_ptr<MediaSessionImpl> media_session_;
 
   absl::optional<media_session::MediaPosition> position_;
 

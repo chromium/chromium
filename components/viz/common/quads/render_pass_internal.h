@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,7 +36,7 @@ class VIZ_COMMON_EXPORT RenderPassInternal {
 
   // Replaces a quad in |quad_list| with a |SolidColorDrawQuad|.
   void ReplaceExistingQuadWithSolidColor(QuadList::Iterator at,
-                                         SkColor color,
+                                         SkColor4f color,
                                          SkBlendMode blend_mode);
 
   // These are in the space of the render pass' physical pixels.
@@ -62,9 +62,13 @@ class VIZ_COMMON_EXPORT RenderPassInternal {
 
   // If true we might reuse the texture if there is no damage.
   bool cache_render_pass = false;
+
   // Indicates whether there is accumulated damage from contributing render
   // surface or layer or surface quad. Not including property changes on itself.
-  bool has_damage_from_contributing_content = false;
+  // TODO(crbug.com/1358700): By default we assume the pass is damaged. Remove
+  // this field in favour of using |damage_rect| for feature
+  // kAllowUndamagedNonrootRenderPassToSkip.
+  bool has_damage_from_contributing_content = true;
 
   // Generate mipmap for trilinear filtering, applied to render pass' texture.
   bool generate_mipmap = false;
@@ -74,6 +78,15 @@ class VIZ_COMMON_EXPORT RenderPassInternal {
   // this list.
   std::vector<std::unique_ptr<CopyOutputRequest>> copy_requests;
 
+  // `quad_list` + `shared_quad_state_list` store quad data in front-to-back
+  // order. Each DrawQuad must have a corresponding SharedQuadState but there be
+  // multiple DrawQuads for a single SharedQuadState.
+  //
+  // Note that `shared_quad_state_list` should be in the same front-to-back
+  // order as `quad_list`. This is a strict requirement if the CompositorFrame
+  // will be serialized as the mojom traits depends on it. Ideally the order is
+  // maintained in viz after deserialization, for cache efficiency while
+  // iterating through quads, but it's not a strict requirement.
   QuadList quad_list;
   SharedQuadStateList shared_quad_state_list;
 

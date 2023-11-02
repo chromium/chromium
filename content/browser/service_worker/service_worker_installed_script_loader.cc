@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include "content/browser/service_worker/service_worker_cache_writer.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_version.h"
-#include "content/common/service_worker/service_worker_utils.h"
 #include "net/base/ip_endpoint.h"
 #include "net/cert/cert_status_flags.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -59,7 +58,6 @@ void ServiceWorkerInstalledScriptLoader::OnStarted(
   DCHECK(response_head->headers);
   DCHECK(encoding_.empty());
   response_head->headers->GetCharset(&encoding_);
-  body_handle_ = std::move(body_handle);
   body_size_ = response_head->content_length;
 
   // Just drain the metadata (V8 code cache): this entire class is just to
@@ -74,11 +72,8 @@ void ServiceWorkerInstalledScriptLoader::OnStarted(
             *response_head));
   }
 
-  client_->OnReceiveResponse(std::move(response_head));
-  if (metadata) {
-    client_->OnReceiveCachedMetadata(std::move(*metadata));
-  }
-  client_->OnStartLoadingResponseBody(std::move(body_handle_));
+  client_->OnReceiveResponse(std::move(response_head), std::move(body_handle),
+                             std::move(metadata));
   // We continue in OnFinished().
 }
 

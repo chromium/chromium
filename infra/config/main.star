@@ -1,5 +1,5 @@
 #!/usr/bin/env lucicfg
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -10,12 +10,12 @@ load("//lib/branches.star", "branches")
 load("//project.star", "settings")
 
 lucicfg.check_version(
-    min = "1.29.1",
+    min = "1.31.1",
     message = "Update depot_tools",
 )
 
-# Enable LUCI Realms support.
-lucicfg.enable_experiment("crbug.com/1085650")
+# Use LUCI Scheduler BBv2 names and add Scheduler realms configs.
+lucicfg.enable_experiment("crbug.com/1182002")
 
 # Tell lucicfg what files it is allowed to touch
 lucicfg.config(
@@ -28,6 +28,7 @@ lucicfg.config(
         "luci/commit-queue.cfg",
         "luci/chops-weetbix.cfg",
         "luci/cr-buildbucket.cfg",
+        "luci/luci-analysis.cfg",
         "luci/luci-logdog.cfg",
         "luci/luci-milo.cfg",
         "luci/luci-notify.cfg",
@@ -37,6 +38,7 @@ lucicfg.config(
         "luci/realms.cfg",
         "luci/tricium-prod.cfg",
         "outages.pyl",
+        "sheriff-rotations/*.txt",
         "project.pyl",
     ],
     fail_on_warnings = True,
@@ -57,8 +59,14 @@ lucicfg.emit(
     data = io.read_file("tricium-prod.cfg"),
 )
 
-# Weetbix configuration is also copied verbatim to generated
-# outputs.
+# Just copy LUCI Analysis config to generated outputs.
+lucicfg.emit(
+    dest = "luci/luci-analysis.cfg",
+    data = io.read_file("luci-analysis.cfg"),
+)
+
+# TODO(b/243488110): Delete when Weetbix renaming to
+# LUCI Analysis complete.
 lucicfg.emit(
     dest = "luci/chops-weetbix.cfg",
     data = io.read_file("chops-weetbix.cfg"),
@@ -89,6 +97,40 @@ luci.project(
         acl.entry(
             roles = acl.SCHEDULER_OWNER,
             groups = "project-chromium-admins",
+        ),
+    ],
+    bindings = [
+        luci.binding(
+            roles = "role/configs.validator",
+            groups = "project-chromium-try-task-accounts",
+        ),
+        # Roles for LUCI Analysis.
+        luci.binding(
+            roles = "role/analysis.reader",
+            groups = "all",
+        ),
+        luci.binding(
+            roles = "role/analysis.queryUser",
+            groups = "authenticated-users",
+        ),
+        luci.binding(
+            roles = "role/analysis.editor",
+            groups = ["project-chromium-committers", "googlers"],
+        ),
+        # Roles for Weetbix.
+        # TODO(b/243488110): Delete when renaming to
+        # LUCI Analysis complete.
+        luci.binding(
+            roles = "role/weetbix.reader",
+            groups = "all",
+        ),
+        luci.binding(
+            roles = "role/weetbix.queryUser",
+            groups = "authenticated-users",
+        ),
+        luci.binding(
+            roles = "role/weetbix.editor",
+            groups = ["project-chromium-committers", "googlers"],
         ),
     ],
 )
@@ -144,7 +186,17 @@ luci.realm(
         # Allow try builders to create invocations in their own builds.
         luci.binding(
             roles = "role/resultdb.invocationCreator",
-            groups = "project-chromium-try-task-accounts",
+            groups = [
+                "project-chromium-try-task-accounts",
+                # In order to be able to reproduce test tasks that have
+                # ResultDB enabled (at this point that should be all
+                # tests), a realm must be provided. The ability to
+                # trigger machines in the test pool is associated with
+                # the try realm, so allow those who can trigger swarming
+                # tasks in that pool tasks to create invocations.
+                "chromium-led-users",
+                "project-chromium-tryjob-access",
+            ],
         ),
     ],
 )
@@ -160,12 +212,6 @@ luci.realm(
     ],
 )
 
-luci.builder.defaults.experiments.set({
-    # TODO(crbug.com/1135718): Promote out of experiment for all builders.
-    "chromium.chromium_tests.use_rdb_results": 100,
-    # Launch Swarming tasks in "realms-aware mode", crbug.com/1136313.
-    "luci.use_realms": 100,
-})
 luci.builder.defaults.test_presentation.set(resultdb.test_presentation(grouping_keys = ["status", "v.test_suite"]))
 
 exec("//swarming.star")
@@ -180,12 +226,12 @@ branches.exec("//subprojects/findit/subproject.star")
 branches.exec("//subprojects/flakiness/subproject.star")
 branches.exec("//subprojects/goma/subproject.star")
 branches.exec("//subprojects/reclient/subproject.star")
+branches.exec("//subprojects/reviver/subproject.star")
 branches.exec("//subprojects/webrtc/subproject.star")
 
 exec("//generators/cq-usage.star")
 branches.exec("//generators/cq-builders-md.star")
 
-exec("//generators/scheduler-noop-jobs.star")
 exec("//generators/sort-consoles.star")
 
 exec("//validators/builders-in-consoles.star")

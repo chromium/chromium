@@ -87,6 +87,7 @@ absl_cc_library(
     absl::config
     absl::core_headers
     absl::log_severity
+    absl::optional
     absl::strings
     absl::str_format
 )
@@ -105,6 +106,7 @@ absl_cc_library(
     ${ABSL_DEFAULT_LINKOPTS}
   DEPS
     absl::config
+    absl::dynamic_annotations
     absl::fast_type_id
 )
 
@@ -464,5 +466,5 @@ absl_cc_test(
     absl::flags_reflection
     absl::flags_usage
     absl::strings
-    GTest::gtest
+    GTest::gmock
 )

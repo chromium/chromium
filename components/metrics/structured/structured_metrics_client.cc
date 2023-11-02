@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,13 +22,15 @@ StructuredMetricsClient* StructuredMetricsClient::Get() {
 }
 
 void StructuredMetricsClient::Record(Event&& event) {
-  if (delegate_ && delegate_->IsReadyToRecord())
+  if (delegate_ && delegate_->IsReadyToRecord()) {
+    delegating_events_processor_.OnEventsRecord(&event);
     delegate_->RecordEvent(std::move(event));
+  }
 }
 
-void StructuredMetricsClient::Record(EventBase&& event_base) {
-  if (delegate_ && delegate_->IsReadyToRecord())
-    delegate_->Record(std::move(event_base));
+void StructuredMetricsClient::AddEventsProcessor(
+    std::unique_ptr<EventsProcessorInterface> events_processor) {
+  delegating_events_processor_.AddEventsProcessor(std::move(events_processor));
 }
 
 void StructuredMetricsClient::SetDelegate(RecordingDelegate* delegate) {

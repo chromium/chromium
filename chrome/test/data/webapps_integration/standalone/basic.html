@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Site A</title>
+    <script src="/webapps_integration/test_utils.js"></script>
+    <script>
+      // If a "manifest=/path/to/manifest.json" query argument is provided to
+      // the URL accessing this page, that path is injected as the manifest tag.
+      // Otherwise, "basic.json" is used as the manifest tag.
+      addManifestLinkTag();
+    </script>
+</head>
+<body onload="startWorker('/webapps_integration/standalone/service_worker.js', { scope: '/webapps_integration/standalone/' })">
+  <h1>Site A</h1>
+  <div>
+    <p>
+      This site is used for dPWA integration tests, and is subject to modification to support that framework. See
+      <a
+        href="https://chromium.googlesource.com/chromium/src/+/main/docs/webapps/integration-testing-framework.md">https://chromium.googlesource.com/chromium/src/+/main/docs/webapps/integration-testing-framework.md</a>
+    </p>
+  </div>
+</body>
+</html>

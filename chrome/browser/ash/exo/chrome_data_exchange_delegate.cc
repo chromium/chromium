@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/arc/arc_util.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
@@ -18,6 +19,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/borealis/borealis_window_manager.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
@@ -29,7 +31,6 @@
 #include "chrome/browser/chromeos/extensions/file_manager/event_router_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "components/arc/arc_util.h"
 #include "content/public/common/drop_data.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_context.h"
@@ -43,7 +44,6 @@
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "url/gurl.h"
-#include "url/origin.h"
 
 namespace ash {
 
@@ -335,6 +335,9 @@ ui::EndpointType ChromeDataExchangeDelegate::GetDataTransferEndpointType(
   if (borealis::BorealisWindowManager::IsBorealisWindow(top_level_window))
     return ui::EndpointType::kBorealis;
 
+  if (crosapi::browser_util::IsLacrosWindow(top_level_window))
+    return ui::EndpointType::kLacros;
+
   if (crostini::IsCrostiniWindow(top_level_window))
     return ui::EndpointType::kCrostini;
 
@@ -416,8 +419,8 @@ std::vector<ui::FileInfo> ChromeDataExchangeDelegate::ParseFileSystemSources(
   std::vector<ui::FileInfo> file_info;
   // We only promote 'fs/sources' custom data pickle to be filenames which can
   // be shared and read by clients if it came from the trusted FilesApp.
-  if (!source || !source->IsSameOriginWith(ui::DataTransferEndpoint(
-                     file_manager::util::GetFilesAppOrigin()))) {
+  if (!source || !source->GetURL() ||
+      !file_manager::util::IsFileManagerURL(*source->GetURL())) {
     return file_info;
   }
 

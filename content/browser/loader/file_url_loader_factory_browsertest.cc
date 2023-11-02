@@ -1,14 +1,17 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+#include "base/memory/raw_ptr.h"
 
 // This must be before Windows headers
 #include "base/callback_helpers.h"
 #include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/public/test/browser_test.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <objbase.h>
 #include <shlobj.h>
 #include <windows.h>
@@ -99,7 +102,7 @@ class TestFileAccessContentBrowserClient : public TestContentBrowserClient {
   void ClearAccessAllowedArgs() { access_allowed_args_.clear(); }
 
  private:
-  ContentBrowserClient* old_content_browser_client_;
+  raw_ptr<ContentBrowserClient> old_content_browser_client_;
 
   base::FilePath blocked_path_;
 
@@ -167,7 +170,7 @@ IN_PROC_BROWSER_TEST_F(FileURLLoaderFactoryBrowserTest, FileAccessNotAllowed) {
             test_browser_client.access_allowed_args()[0].profile_path);
 }
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 
 // Test symbolic links on POSIX platforms. These act like the contents of
 // the symbolic link are the same as the contents of the file it links to.
@@ -222,7 +225,7 @@ IN_PROC_BROWSER_TEST_F(FileURLLoaderFactoryBrowserTest, SymlinksToFiles) {
             test_browser_client.access_allowed_args()[0].profile_path);
 }
 
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 
 // Test shortcuts on Windows. These are treated as redirects.
 IN_PROC_BROWSER_TEST_F(FileURLLoaderFactoryBrowserTest, ResolveShortcutTest) {
@@ -321,7 +324,7 @@ IN_PROC_BROWSER_TEST_F(FileURLLoaderFactoryBrowserTest, ResolveShortcutTest) {
             test_browser_client.access_allowed_args()[1].profile_path);
 }
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 IN_PROC_BROWSER_TEST_F(FileURLLoaderFactoryBrowserTest,
                        RedirectToFileUrlMainFrame) {
@@ -370,7 +373,7 @@ IN_PROC_BROWSER_TEST_F(FileURLLoaderFactoryBrowserTest,
       RedirectToFileURL().spec().c_str());
   // Unfortunately, fetch doesn't provide a way to unambiguously know if the
   // request failed due to the redirect being unsafe.
-  EXPECT_EQ("error", EvalJs(shell()->web_contents()->GetMainFrame(),
+  EXPECT_EQ("error", EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
                             fetch_redirect_to_file));
   // There should never have been a request for the file URL.
   EXPECT_TRUE(test_browser_client.access_allowed_args().empty());
@@ -506,7 +509,7 @@ IN_PROC_BROWSER_TEST_F(FileURLLoaderFactoryDisabledSecurityBrowserTest,
   // switch (this is what this test suite is doing) or 2) the following Android
   // WebView API: android.webkit.WebSettings.setAllowFileAccess.  This is why
   // the test asserts below that the access is successful.
-  RenderFrameHost* main_frame = shell()->web_contents()->GetMainFrame();
+  RenderFrameHost* main_frame = shell()->web_contents()->GetPrimaryMainFrame();
   RenderFrameHost* child_frame = ChildFrameAt(main_frame, 0);
   const char kScriptTemplateToTriggerSubresourceFetch[] = R"(
       new Promise(function (resolve, reject) {
@@ -520,6 +523,31 @@ IN_PROC_BROWSER_TEST_F(FileURLLoaderFactoryDisabledSecurityBrowserTest,
   EXPECT_EQ("OK", EvalJs(child_frame,
                          JsReplace(kScriptTemplateToTriggerSubresourceFetch,
                                    img_url)));
+}
+
+IN_PROC_BROWSER_TEST_F(FileURLLoaderFactoryBrowserTest, LastModified) {
+  // Create a temporary file with an arbitrary last-modified timestamp.
+  const char kLastModified[] = "1994-11-15T12:45:26.000Z";
+  base::FilePath path;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_TRUE(base::CreateTemporaryFile(&path));
+    base::Time last_modified_time;
+    ASSERT_TRUE(base::Time::FromString(kLastModified, &last_modified_time));
+    ASSERT_TRUE(base::TouchFile(path, /*last_accessed=*/base::Time::Now(),
+                                last_modified_time));
+  }
+  EXPECT_TRUE(NavigateToURL(shell(), net::FilePathToFileURL(path)));
+
+  // Verify the syntax
+  EXPECT_THAT(content::EvalJs(shell()->web_contents(), "document.lastModified")
+                  .ExtractString(),
+              testing::MatchesRegex(R"(\d\d/\d\d/\d\d\d\d \d\d:\d\d:\d\d)"));
+  // Verify the value (it's in local time, so we parse it and convert it in JS
+  // to get a representation in UTC).
+  EXPECT_EQ(kLastModified,
+            content::EvalJs(shell()->web_contents(),
+                            "new Date(document.lastModified).toISOString()"));
 }
 
 }  // namespace

@@ -1,20 +1,18 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_context_menu_helper.h"
 
-#include "base/metrics/histogram_functions.h"
+#import "base/metrics/histogram_functions.h"
 #import "components/bookmarks/common/bookmark_pref_names.h"
 #import "components/prefs/pref_service.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/browser_observer_bridge.h"
 #import "ios/chrome/browser/ui/menu/action_factory.h"
-#import "ios/chrome/browser/ui/menu/menu_histograms.h"
 #import "ios/chrome/browser/ui/menu/tab_context_menu_delegate.h"
 #import "ios/chrome/browser/ui/ntp/ntp_util.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_cell.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_menu_actions_data_source.h"
@@ -62,8 +60,9 @@
   }
 }
 
-- (UIContextMenuConfiguration*)contextMenuConfigurationForGridCell:
-    (GridCell*)gridCell {
+- (UIContextMenuConfiguration*)
+    contextMenuConfigurationForGridCell:(GridCell*)gridCell
+                           menuScenario:(MenuScenario)scenario {
   __weak __typeof(self) weakSelf = self;
 
   UIContextMenuActionProvider actionProvider =
@@ -75,7 +74,7 @@
         }
 
         NSArray<UIMenuElement*>* menuElements =
-            [strongSelf menuElementsForGridCell:gridCell];
+            [strongSelf menuElementsForGridCell:gridCell menuScenario:scenario];
         return [UIMenu menuWithTitle:@"" children:menuElements];
       };
 
@@ -85,15 +84,19 @@
                                                actionProvider:actionProvider];
 }
 
-- (NSArray<UIMenuElement*>*)menuElementsForGridCell:(GridCell*)gridCell {
+- (NSArray<UIMenuElement*>*)menuElementsForGridCell:(GridCell*)gridCell
+                                       menuScenario:(MenuScenario)scenario {
   // Record that this context menu was shown to the user.
-  RecordMenuShown(MenuScenario::kTabGridEntry);
+  RecordMenuShown(scenario);
 
   ActionFactory* actionFactory =
-      [[ActionFactory alloc] initWithScenario:MenuScenario::kTabGridEntry];
+      [[ActionFactory alloc] initWithScenario:scenario];
 
   GridItem* item = [self.actionsDataSource
       gridItemForCellIdentifier:gridCell.itemIdentifier];
+  if (!item) {
+    return @[];
+  }
 
   NSMutableArray<UIMenuElement*>* menuElements = [[NSMutableArray alloc] init];
 
@@ -150,12 +153,15 @@
     }
   }
 
-  if (IsTabsBulkActionsEnabled()) {
-    if ([self.contextMenuDelegate respondsToSelector:@selector(selectTabs)]) {
-      [menuElements addObject:[actionFactory actionToSelectTabsWithBlock:^{
-                      [self.contextMenuDelegate selectTabs];
-                    }]];
-    }
+  // Thumb strip and search results menus don't support tab selection.
+  BOOL scenarioDisablesSelection =
+      scenario == MenuScenario::kTabGridSearchResult ||
+      scenario == MenuScenario::kThumbStrip;
+  if (!scenarioDisablesSelection &&
+      [self.contextMenuDelegate respondsToSelector:@selector(selectTabs)]) {
+    [menuElements addObject:[actionFactory actionToSelectTabsWithBlock:^{
+                    [self.contextMenuDelegate selectTabs];
+                  }]];
   }
 
   if ([self.contextMenuDelegate

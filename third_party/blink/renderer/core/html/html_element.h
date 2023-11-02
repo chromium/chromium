@@ -24,10 +24,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_ELEMENT_H_
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_boolean_string_unrestricteddouble.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/html/forms/labels_node_list.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
@@ -70,7 +72,7 @@ class CORE_EXPORT HTMLElement : public Element {
   String title() const final;
 
   String innerText();
-  void setInnerText(const String&, ExceptionState&);
+  void setInnerText(const String&);
   V8UnionStringTreatNullAsEmptyStringOrTrustedScript* innerTextForBinding();
   virtual void setInnerTextForBinding(
       const V8UnionStringTreatNullAsEmptyStringOrTrustedScript*
@@ -172,6 +174,12 @@ class CORE_EXPORT HTMLElement : public Element {
   void AdjustDirectionalityIfNeededAfterShadowRootChanged();
   void BeginParsingChildren() override;
 
+  V8UnionBooleanOrStringOrUnrestrictedDouble* hidden() const;
+  void setHidden(const V8UnionBooleanOrStringOrUnrestrictedDouble*);
+
+  // https://html.spec.whatwg.org/C/#potentially-render-blocking
+  virtual bool IsPotentiallyRenderBlocking() const { return false; }
+
  protected:
   enum AllowPercentage { kDontAllowPercentageValues, kAllowPercentageValues };
   enum AllowZero { kDontAllowZeroValues, kAllowZeroValues };
@@ -231,8 +239,6 @@ class CORE_EXPORT HTMLElement : public Element {
   bool IsStyledElement() const =
       delete;  // This will catch anyone doing an unnecessary check.
 
-  void MapLanguageAttributeToLocale(const AtomicString&,
-                                    MutableCSSPropertyValueSet*);
   void ApplyAspectRatioToStyle(double width,
                                double height,
                                MutableCSSPropertyValueSet* style);
@@ -257,11 +263,10 @@ class CORE_EXPORT HTMLElement : public Element {
 
   void OnDirAttrChanged(const AttributeModificationParams&);
   void OnFormAttrChanged(const AttributeModificationParams&);
-  void OnInertAttrChanged(const AttributeModificationParams&);
   void OnLangAttrChanged(const AttributeModificationParams&);
   void OnNonceAttrChanged(const AttributeModificationParams&);
-  void OnTabIndexAttrChanged(const AttributeModificationParams&);
-  void OnXMLLangAttrChanged(const AttributeModificationParams&);
+
+  void ReparseAttribute(const AttributeModificationParams&);
 };
 
 template <typename T>

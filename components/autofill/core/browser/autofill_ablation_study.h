@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,8 +45,7 @@ uint64_t GetAblationHash(const std::string& seed,
 // combination of [site * browsing session * day]: Different sites may have
 // ablation configurations. Restarting the browser or waiting for the next day
 // may lead to different ablation configurations as well.
-// The ablation is controlled by
-// autofill::features::kAutofillEnableAblationStudy.
+// The ablation is controlled by features::kAutofillEnableAblationStudy.
 class AutofillAblationStudy {
  public:
   AutofillAblationStudy();

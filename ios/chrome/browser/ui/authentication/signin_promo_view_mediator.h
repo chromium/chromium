@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,11 +12,11 @@
 
 class AuthenticationService;
 class ChromeAccountManagerService;
-@class ChromeIdentity;
 class PrefService;
 @protocol SigninPresenter;
 @class SigninPromoViewConfigurator;
 @protocol SigninPromoViewConsumer;
+@protocol SystemIdentity;
 
 namespace signin_metrics {
 enum class AccessPoint;
@@ -24,8 +24,8 @@ enum class AccessPoint;
 
 namespace ios {
 // Enums for the sign-in promo view state. Those states are sequential, with no
-// way to go backwards. All states can be skipped except |NeverVisible| and
-// |Invalid|.
+// way to go backwards. All states can be skipped except `NeverVisible` and
+// `Invalid`.
 enum class SigninPromoViewState {
   // Initial state. When -[SigninPromoViewMediator disconnect] is called with
   // that state, no metrics is recorded.
@@ -58,7 +58,7 @@ class PrefRegistrySyncable;
 //  - SigninPromoViewModeSigninWithAccount
 //  - SigninPromoViewModeSyncWithPrimaryAccount
 // Otherwise contains nil.
-@property(nonatomic, strong, readonly) ChromeIdentity* identity;
+@property(nonatomic, strong, readonly) id<SystemIdentity> identity;
 
 // Sign-in promo view state.
 @property(nonatomic, assign) ios::SigninPromoViewState signinPromoViewState;
@@ -67,7 +67,7 @@ class PrefRegistrySyncable;
 @property(nonatomic, assign, readonly, getter=isSigninInProgress)
     BOOL signinInProgress;
 
-// Returns YES if the sign-in promo view is |Invalid|, |Closed| or invisible.
+// Returns YES if the sign-in promo view is `Invalid`, `Closed` or invisible.
 @property(nonatomic, assign, readonly, getter=isInvalidClosedOrNeverVisible)
     BOOL invalidClosedOrNeverVisible;
 
@@ -78,6 +78,8 @@ class PrefRegistrySyncable;
 // of times it has been displayed and if the user closed the sign-in promo view.
 + (BOOL)shouldDisplaySigninPromoViewWithAccessPoint:
             (signin_metrics::AccessPoint)accessPoint
+                              authenticationService:
+                                  (AuthenticationService*)authenticationService
                                         prefService:(PrefService*)prefService;
 
 // See -[SigninPromoViewMediator initWithBrowserState:].

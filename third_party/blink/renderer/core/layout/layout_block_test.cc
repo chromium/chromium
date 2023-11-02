@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,8 +25,7 @@ TEST_F(LayoutBlockTest, LayoutNameCalledWithNullStyle) {
       GetDocument().GetStyleResolver().CreateComputedStyle();
   LayoutObject* obj = LayoutBlockFlow::CreateAnonymous(&GetDocument(), style,
                                                        LegacyLayout::kAuto);
-  obj->SetModifiedStyleOutsideStyleRecalc(nullptr,
-                                          LayoutObject::ApplyStyleChanges::kNo);
+  obj->SetStyle(nullptr, LayoutObject::ApplyStyleChanges::kNo);
   EXPECT_FALSE(obj->Style());
   EXPECT_THAT(obj->DecoratedName().Ascii(),
               MatchesRegex("LayoutN?G?BlockFlow \\(anonymous\\)"));
@@ -130,7 +129,7 @@ TEST_F(LayoutBlockTest, ContainmentStyleChange) {
   auto* target = To<LayoutBlockFlow>(target_element->GetLayoutObject());
   auto* contained = GetLayoutBoxByElementId("contained");
   if (target->IsLayoutNGObject()) {
-    EXPECT_TRUE(target->GetCachedLayoutResult()
+    EXPECT_TRUE(target->GetSingleCachedLayoutResult()
                     ->PhysicalFragment()
                     .HasOutOfFlowFragmentChild());
   } else {
@@ -142,14 +141,20 @@ TEST_F(LayoutBlockTest, ContainmentStyleChange) {
   target_element->setAttribute(html_names::kStyleAttr, "contain:style");
   UpdateAllLifecyclePhasesForTest();
   if (target->IsLayoutNGObject()) {
-    EXPECT_FALSE(target->GetCachedLayoutResult()
+    EXPECT_FALSE(target->GetSingleCachedLayoutResult()
                      ->PhysicalFragment()
                      .HasOutOfFlowFragmentChild());
   } else {
     EXPECT_FALSE(target->PositionedObjects());
   }
-  EXPECT_TRUE(
-      GetDocument().GetLayoutView()->PositionedObjects()->Contains(contained));
+  const LayoutView* view = GetDocument().GetLayoutView();
+  if (view->IsLayoutNGObject()) {
+    EXPECT_TRUE(view->GetSingleCachedLayoutResult()
+                    ->PhysicalFragment()
+                    .HasOutOfFlowFragmentChild());
+  } else {
+    EXPECT_TRUE(view->PositionedObjects()->Contains(contained));
+  }
 }
 
 }  // namespace blink

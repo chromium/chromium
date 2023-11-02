@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,7 +36,6 @@
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
 #include "components/session_manager/session_manager_types.h"
 #include "components/site_engagement/content/site_engagement_service.h"
-#include "components/ukm/content/source_url_recorder.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
@@ -123,12 +122,12 @@ class UserActivityManagerTest : public ChromeRenderViewHostTestHarness {
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
 
-    PowerManagerClient::InitializeFake();
+    chromeos::PowerManagerClient::InitializeFake();
     mojo::PendingRemote<viz::mojom::VideoDetectorObserver> observer;
     activity_logger_ = std::make_unique<UserActivityManager>(
-        &delegate_, &user_activity_detector_, PowerManagerClient::Get(),
-        &session_manager_, observer.InitWithNewPipeAndPassReceiver(),
-        &fake_user_manager_);
+        &delegate_, &user_activity_detector_,
+        chromeos::PowerManagerClient::Get(), &session_manager_,
+        observer.InitWithNewPipeAndPassReceiver(), &fake_user_manager_);
 
     chromeos::machine_learning::ServiceConnection::
         UseFakeServiceConnectionForTesting(&fake_service_connection_);
@@ -137,7 +136,7 @@ class UserActivityManagerTest : public ChromeRenderViewHostTestHarness {
 
   void TearDown() override {
     activity_logger_.reset();
-    PowerManagerClient::Shutdown();
+    chromeos::PowerManagerClient::Shutdown();
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
@@ -160,8 +159,8 @@ class UserActivityManagerTest : public ChromeRenderViewHostTestHarness {
   }
 
   void ReportLidEvent(chromeos::PowerManagerClient::LidState state) {
-    FakePowerManagerClient::Get()->SetLidState(state,
-                                               base::TimeTicks::UnixEpoch());
+    chromeos::FakePowerManagerClient::Get()->SetLidState(
+        state, base::TimeTicks::UnixEpoch());
   }
 
   void ReportPowerChangeEvent(
@@ -170,12 +169,12 @@ class UserActivityManagerTest : public ChromeRenderViewHostTestHarness {
     power_manager::PowerSupplyProperties proto;
     proto.set_external_power(power);
     proto.set_battery_percent(battery_percent);
-    FakePowerManagerClient::Get()->UpdatePowerProperties(proto);
+    chromeos::FakePowerManagerClient::Get()->UpdatePowerProperties(proto);
   }
 
   void ReportTabletModeEvent(chromeos::PowerManagerClient::TabletMode mode) {
-    FakePowerManagerClient::Get()->SetTabletMode(mode,
-                                                 base::TimeTicks::UnixEpoch());
+    chromeos::FakePowerManagerClient::Get()->SetTabletMode(
+        mode, base::TimeTicks::UnixEpoch());
   }
 
   void ReportVideoStart() { activity_logger_->OnVideoActivityStarted(); }
@@ -184,7 +183,7 @@ class UserActivityManagerTest : public ChromeRenderViewHostTestHarness {
     power_manager::ScreenIdleState proto;
     proto.set_dimmed(screen_dim);
     proto.set_off(screen_off);
-    FakePowerManagerClient::Get()->SendScreenIdleStateChanged(proto);
+    chromeos::FakePowerManagerClient::Get()->SendScreenIdleStateChanged(proto);
   }
 
   void ReportScreenLocked() {
@@ -193,9 +192,9 @@ class UserActivityManagerTest : public ChromeRenderViewHostTestHarness {
 
   void ReportSuspend(power_manager::SuspendImminent::Reason reason,
                      base::TimeDelta sleep_duration) {
-    FakePowerManagerClient::Get()->SendSuspendImminent(reason);
+    chromeos::FakePowerManagerClient::Get()->SendSuspendImminent(reason);
     task_environment()->FastForwardBy(sleep_duration);
-    FakePowerManagerClient::Get()->SendSuspendDone(sleep_duration);
+    chromeos::FakePowerManagerClient::Get()->SendSuspendDone(sleep_duration);
   }
 
   void ReportInactivityDelays(base::TimeDelta screen_dim_delay,
@@ -203,7 +202,7 @@ class UserActivityManagerTest : public ChromeRenderViewHostTestHarness {
     power_manager::PowerManagementPolicy::Delays proto;
     proto.set_screen_dim_ms(screen_dim_delay.InMilliseconds());
     proto.set_screen_off_ms(screen_off_delay.InMilliseconds());
-    FakePowerManagerClient::Get()->SetInactivityDelays(proto);
+    chromeos::FakePowerManagerClient::Get()->SetInactivityDelays(proto);
   }
 
   TabProperty UpdateOpenTabURL() {
@@ -263,7 +262,7 @@ class UserActivityManagerTest : public ChromeRenderViewHostTestHarness {
       WebContentsTester::For(contents)->SetMainFrameMimeType(mime_type);
 
     WebContentsTester::For(contents)->TestSetIsLoading(false);
-    return ukm::GetSourceIdForWebContentsDocument(contents);
+    return contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
   }
 
   TestingUserActivityUkmLogger delegate_;

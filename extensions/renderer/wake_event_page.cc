@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/lazy_instance.h"
 #include "content/public/renderer/render_thread.h"
 #include "content/public/renderer/worker_thread.h"
@@ -97,7 +96,7 @@ class WakeEventPage::WakeEventPageNativeHandler
         v8::Boolean::New(isolate, success),
     };
     context()->SafeCallFunction(v8::Local<v8::Function>::New(isolate, callback),
-                                base::size(args), args);
+                                std::size(args), args);
   }
 
   MakeRequestCallback make_request_;

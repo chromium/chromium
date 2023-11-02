@@ -1,10 +1,11 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_AURA_CLIENT_DEFAULT_CAPTURE_CLIENT_H_
 #define UI_AURA_CLIENT_DEFAULT_CAPTURE_CLIENT_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "ui/aura/aura_export.h"
 #include "ui/aura/client/capture_client.h"
@@ -31,8 +32,8 @@ class AURA_EXPORT DefaultCaptureClient : public client::CaptureClient {
   void RemoveObserver(CaptureClientObserver* observer) override;
 
  private:
-  Window* root_window_;  // May be null.
-  Window* capture_window_;
+  raw_ptr<Window> root_window_;  // May be null.
+  raw_ptr<Window> capture_window_;
   base::ObserverList<CaptureClientObserver>::Unchecked observers_;
 };
 

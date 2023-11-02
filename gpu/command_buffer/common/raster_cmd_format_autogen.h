@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,6 @@
 
 #ifndef GPU_COMMAND_BUFFER_COMMON_RASTER_CMD_FORMAT_AUTOGEN_H_
 #define GPU_COMMAND_BUFFER_COMMON_RASTER_CMD_FORMAT_AUTOGEN_H_
-
-#define GL_SCANOUT_CHROMIUM 0x6000
 
 struct Finish {
   typedef Finish ValueType;
@@ -388,59 +386,84 @@ struct BeginRasterCHROMIUMImmediate {
 
   void SetHeader() { header.SetCmdByTotalSize<ValueType>(ComputeSize()); }
 
-  void Init(GLuint _sk_color,
+  void Init(GLfloat _r,
+            GLfloat _g,
+            GLfloat _b,
+            GLfloat _a,
             GLboolean _needs_clear,
             GLuint _msaa_sample_count,
             gpu::raster::MsaaMode _msaa_mode,
             GLboolean _can_use_lcd_text,
+            GLboolean _visible,
             const GLbyte* _mailbox) {
     SetHeader();
-    sk_color = _sk_color;
+    r = _r;
+    g = _g;
+    b = _b;
+    a = _a;
     needs_clear = _needs_clear;
     msaa_sample_count = _msaa_sample_count;
     msaa_mode = _msaa_mode;
     can_use_lcd_text = _can_use_lcd_text;
+    visible = _visible;
     memcpy(ImmediateDataAddress(this), _mailbox, ComputeDataSize());
   }
 
   void* Set(void* cmd,
-            GLuint _sk_color,
+            GLfloat _r,
+            GLfloat _g,
+            GLfloat _b,
+            GLfloat _a,
             GLboolean _needs_clear,
             GLuint _msaa_sample_count,
             gpu::raster::MsaaMode _msaa_mode,
             GLboolean _can_use_lcd_text,
+            GLboolean _visible,
             const GLbyte* _mailbox) {
-    static_cast<ValueType*>(cmd)->Init(_sk_color, _needs_clear,
+    static_cast<ValueType*>(cmd)->Init(_r, _g, _b, _a, _needs_clear,
                                        _msaa_sample_count, _msaa_mode,
-                                       _can_use_lcd_text, _mailbox);
+                                       _can_use_lcd_text, _visible, _mailbox);
     const uint32_t size = ComputeSize();
     return NextImmediateCmdAddressTotalSize<ValueType>(cmd, size);
   }
 
   gpu::CommandHeader header;
-  uint32_t sk_color;
+  float r;
+  float g;
+  float b;
+  float a;
   uint32_t needs_clear;
   uint32_t msaa_sample_count;
   uint32_t msaa_mode;
   uint32_t can_use_lcd_text;
+  uint32_t visible;
 };
 
-static_assert(sizeof(BeginRasterCHROMIUMImmediate) == 24,
-              "size of BeginRasterCHROMIUMImmediate should be 24");
+static_assert(sizeof(BeginRasterCHROMIUMImmediate) == 40,
+              "size of BeginRasterCHROMIUMImmediate should be 40");
 static_assert(offsetof(BeginRasterCHROMIUMImmediate, header) == 0,
               "offset of BeginRasterCHROMIUMImmediate header should be 0");
-static_assert(offsetof(BeginRasterCHROMIUMImmediate, sk_color) == 4,
-              "offset of BeginRasterCHROMIUMImmediate sk_color should be 4");
-static_assert(offsetof(BeginRasterCHROMIUMImmediate, needs_clear) == 8,
-              "offset of BeginRasterCHROMIUMImmediate needs_clear should be 8");
+static_assert(offsetof(BeginRasterCHROMIUMImmediate, r) == 4,
+              "offset of BeginRasterCHROMIUMImmediate r should be 4");
+static_assert(offsetof(BeginRasterCHROMIUMImmediate, g) == 8,
+              "offset of BeginRasterCHROMIUMImmediate g should be 8");
+static_assert(offsetof(BeginRasterCHROMIUMImmediate, b) == 12,
+              "offset of BeginRasterCHROMIUMImmediate b should be 12");
+static_assert(offsetof(BeginRasterCHROMIUMImmediate, a) == 16,
+              "offset of BeginRasterCHROMIUMImmediate a should be 16");
 static_assert(
-    offsetof(BeginRasterCHROMIUMImmediate, msaa_sample_count) == 12,
-    "offset of BeginRasterCHROMIUMImmediate msaa_sample_count should be 12");
-static_assert(offsetof(BeginRasterCHROMIUMImmediate, msaa_mode) == 16,
-              "offset of BeginRasterCHROMIUMImmediate msaa_mode should be 16");
+    offsetof(BeginRasterCHROMIUMImmediate, needs_clear) == 20,
+    "offset of BeginRasterCHROMIUMImmediate needs_clear should be 20");
 static_assert(
-    offsetof(BeginRasterCHROMIUMImmediate, can_use_lcd_text) == 20,
-    "offset of BeginRasterCHROMIUMImmediate can_use_lcd_text should be 20");
+    offsetof(BeginRasterCHROMIUMImmediate, msaa_sample_count) == 24,
+    "offset of BeginRasterCHROMIUMImmediate msaa_sample_count should be 24");
+static_assert(offsetof(BeginRasterCHROMIUMImmediate, msaa_mode) == 28,
+              "offset of BeginRasterCHROMIUMImmediate msaa_mode should be 28");
+static_assert(
+    offsetof(BeginRasterCHROMIUMImmediate, can_use_lcd_text) == 32,
+    "offset of BeginRasterCHROMIUMImmediate can_use_lcd_text should be 32");
+static_assert(offsetof(BeginRasterCHROMIUMImmediate, visible) == 36,
+              "offset of BeginRasterCHROMIUMImmediate visible should be 36");
 
 struct RasterCHROMIUM {
   typedef RasterCHROMIUM ValueType;
@@ -693,50 +716,6 @@ static_assert(
     offsetof(UnlockTransferCacheEntryINTERNAL, entry_id) == 8,
     "offset of UnlockTransferCacheEntryINTERNAL entry_id should be 8");
 
-struct DeletePaintCacheTextBlobsINTERNALImmediate {
-  typedef DeletePaintCacheTextBlobsINTERNALImmediate ValueType;
-  static const CommandId kCmdId = kDeletePaintCacheTextBlobsINTERNALImmediate;
-  static const cmd::ArgFlags kArgFlags = cmd::kAtLeastN;
-  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(3);
-
-  static uint32_t ComputeDataSize(GLsizei _n) {
-    return static_cast<uint32_t>(sizeof(GLuint) * _n);  // NOLINT
-  }
-
-  static uint32_t ComputeSize(GLsizei _n) {
-    return static_cast<uint32_t>(sizeof(ValueType) +
-                                 ComputeDataSize(_n));  // NOLINT
-  }
-
-  void SetHeader(GLsizei _n) {
-    header.SetCmdByTotalSize<ValueType>(ComputeSize(_n));
-  }
-
-  void Init(GLsizei _n, const GLuint* _ids) {
-    SetHeader(_n);
-    n = _n;
-    memcpy(ImmediateDataAddress(this), _ids, ComputeDataSize(_n));
-  }
-
-  void* Set(void* cmd, GLsizei _n, const GLuint* _ids) {
-    static_cast<ValueType*>(cmd)->Init(_n, _ids);
-    const uint32_t size = ComputeSize(_n);
-    return NextImmediateCmdAddressTotalSize<ValueType>(cmd, size);
-  }
-
-  gpu::CommandHeader header;
-  int32_t n;
-};
-
-static_assert(sizeof(DeletePaintCacheTextBlobsINTERNALImmediate) == 8,
-              "size of DeletePaintCacheTextBlobsINTERNALImmediate should be 8");
-static_assert(
-    offsetof(DeletePaintCacheTextBlobsINTERNALImmediate, header) == 0,
-    "offset of DeletePaintCacheTextBlobsINTERNALImmediate header should be 0");
-static_assert(
-    offsetof(DeletePaintCacheTextBlobsINTERNALImmediate, n) == 4,
-    "offset of DeletePaintCacheTextBlobsINTERNALImmediate n should be 4");
-
 struct DeletePaintCachePathsINTERNALImmediate {
   typedef DeletePaintCachePathsINTERNALImmediate ValueType;
   static const CommandId kCmdId = kDeletePaintCachePathsINTERNALImmediate;
@@ -779,6 +758,51 @@ static_assert(
     "offset of DeletePaintCachePathsINTERNALImmediate header should be 0");
 static_assert(offsetof(DeletePaintCachePathsINTERNALImmediate, n) == 4,
               "offset of DeletePaintCachePathsINTERNALImmediate n should be 4");
+
+struct DeletePaintCachePathsINTERNAL {
+  typedef DeletePaintCachePathsINTERNAL ValueType;
+  static const CommandId kCmdId = kDeletePaintCachePathsINTERNAL;
+  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
+  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(3);
+
+  static uint32_t ComputeSize() {
+    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
+  }
+
+  void SetHeader() { header.SetCmd<ValueType>(); }
+
+  void Init(GLsizei _n, uint32_t _ids_shm_id, uint32_t _ids_shm_offset) {
+    SetHeader();
+    n = _n;
+    ids_shm_id = _ids_shm_id;
+    ids_shm_offset = _ids_shm_offset;
+  }
+
+  void* Set(void* cmd,
+            GLsizei _n,
+            uint32_t _ids_shm_id,
+            uint32_t _ids_shm_offset) {
+    static_cast<ValueType*>(cmd)->Init(_n, _ids_shm_id, _ids_shm_offset);
+    return NextCmdAddress<ValueType>(cmd);
+  }
+
+  gpu::CommandHeader header;
+  int32_t n;
+  uint32_t ids_shm_id;
+  uint32_t ids_shm_offset;
+};
+
+static_assert(sizeof(DeletePaintCachePathsINTERNAL) == 16,
+              "size of DeletePaintCachePathsINTERNAL should be 16");
+static_assert(offsetof(DeletePaintCachePathsINTERNAL, header) == 0,
+              "offset of DeletePaintCachePathsINTERNAL header should be 0");
+static_assert(offsetof(DeletePaintCachePathsINTERNAL, n) == 4,
+              "offset of DeletePaintCachePathsINTERNAL n should be 4");
+static_assert(offsetof(DeletePaintCachePathsINTERNAL, ids_shm_id) == 8,
+              "offset of DeletePaintCachePathsINTERNAL ids_shm_id should be 8");
+static_assert(
+    offsetof(DeletePaintCachePathsINTERNAL, ids_shm_offset) == 12,
+    "offset of DeletePaintCachePathsINTERNAL ids_shm_offset should be 12");
 
 struct ClearPaintCacheINTERNAL {
   typedef ClearPaintCacheINTERNAL ValueType;
@@ -1235,7 +1259,7 @@ struct ConvertYUVAMailboxesToRGBINTERNALImmediate {
   static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(2);
 
   static uint32_t ComputeDataSize() {
-    return static_cast<uint32_t>(sizeof(GLbyte) * 80);
+    return static_cast<uint32_t>(sizeof(GLbyte) * 144);
   }
 
   static uint32_t ComputeSize() {

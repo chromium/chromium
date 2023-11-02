@@ -1,18 +1,17 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+#include "url/url_canon.h"
 
 #include <errno.h>
 #include <stddef.h>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gtest_util.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/third_party/mozilla/url_parse.h"
-#include "url/url_canon.h"
 #include "url/url_canon_internal.h"
 #include "url/url_canon_stdstring.h"
 #include "url/url_test_utils.h"
@@ -117,7 +116,7 @@ TEST(URLCanonTest, DoAppendUTF8) {
     {0x10FFFF, "\xF4\x8F\xBF\xBF"},
   };
   std::string out_str;
-  for (size_t i = 0; i < base::size(utf_cases); i++) {
+  for (size_t i = 0; i < std::size(utf_cases); i++) {
     out_str.clear();
     StdStringCanonOutput output(&out_str);
     AppendUTF8Value(utf_cases[i].input, &output);
@@ -169,14 +168,14 @@ TEST(URLCanonTest, UTF) {
   };
 
   std::string out_str;
-  for (size_t i = 0; i < base::size(utf_cases); i++) {
+  for (size_t i = 0; i < std::size(utf_cases); i++) {
     if (utf_cases[i].input8) {
       out_str.clear();
       StdStringCanonOutput output(&out_str);
 
-      int input_len = static_cast<int>(strlen(utf_cases[i].input8));
+      size_t input_len = strlen(utf_cases[i].input8);
       bool success = true;
-      for (int ch = 0; ch < input_len; ch++) {
+      for (size_t ch = 0; ch < input_len; ch++) {
         success &= AppendUTF8EscapedChar(utf_cases[i].input8, &ch, input_len,
                                          &output);
       }
@@ -190,9 +189,9 @@ TEST(URLCanonTest, UTF) {
 
       std::u16string input_str(
           test_utils::TruncateWStringToUTF16(utf_cases[i].input16));
-      int input_len = static_cast<int>(input_str.length());
+      size_t input_len = input_str.length();
       bool success = true;
-      for (int ch = 0; ch < input_len; ch++) {
+      for (size_t ch = 0; ch < input_len; ch++) {
         success &= AppendUTF8EscapedChar(input_str.c_str(), &ch, input_len,
                                          &output);
       }
@@ -240,7 +239,7 @@ TEST(URLCanonTest, Scheme) {
 
   std::string out_str;
 
-  for (size_t i = 0; i < base::size(scheme_cases); i++) {
+  for (size_t i = 0; i < std::size(scheme_cases); i++) {
     int url_len = static_cast<int>(strlen(scheme_cases[i].input));
     Component in_comp(0, url_len);
     Component out_comp;
@@ -505,7 +504,7 @@ TEST(URLCanonTest, Host) {
 
   // CanonicalizeHost() non-verbose.
   std::string out_str;
-  for (size_t i = 0; i < base::size(host_cases); i++) {
+  for (size_t i = 0; i < std::size(host_cases); i++) {
     // Narrow version.
     if (host_cases[i].input8) {
       int host_len = static_cast<int>(strlen(host_cases[i].input8));
@@ -553,7 +552,7 @@ TEST(URLCanonTest, Host) {
   }
 
   // CanonicalizeHostVerbose()
-  for (size_t i = 0; i < base::size(host_cases); i++) {
+  for (size_t i = 0; i < std::size(host_cases); i++) {
     // Narrow version.
     if (host_cases[i].input8) {
       int host_len = static_cast<int>(strlen(host_cases[i].input8));
@@ -870,7 +869,7 @@ TEST(URLCanonTest, IPv6) {
     {"[::1 hello]", L"[::1 hello]", "", Component(), CanonHostInfo::BROKEN, -1, ""},
   };
 
-  for (size_t i = 0; i < base::size(cases); i++) {
+  for (size_t i = 0; i < std::size(cases); i++) {
     // 8-bit version.
     Component component(0, static_cast<int>(strlen(cases[i].input8)));
 
@@ -996,7 +995,7 @@ TEST(URLCanonTest, UserInfo) {
     {"ftp://me\\mydomain:pass@foo.com/", "", Component(0, -1), Component(0, -1), true},
   };
 
-  for (size_t i = 0; i < base::size(user_info_cases); i++) {
+  for (size_t i = 0; i < std::size(user_info_cases); i++) {
     int url_len = static_cast<int>(strlen(user_info_cases[i].input));
     Parsed parsed;
     ParseStandardURL(user_info_cases[i].input, url_len, &parsed);
@@ -1065,7 +1064,7 @@ TEST(URLCanonTest, Port) {
     {"80", PORT_UNSPECIFIED, ":80", Component(1, 2), true},
   };
 
-  for (size_t i = 0; i < base::size(port_cases); i++) {
+  for (size_t i = 0; i < std::size(port_cases); i++) {
     int url_len = static_cast<int>(strlen(port_cases[i].input));
     Component in_comp(0, url_len);
     Component out_comp;
@@ -1250,7 +1249,7 @@ void DoPathTest(const DualComponentCase* path_cases,
 }
 
 TEST(URLCanonTest, Path) {
-  DoPathTest(kCommonPathCases, base::size(kCommonPathCases), CanonicalizePath,
+  DoPathTest(kCommonPathCases, std::size(kCommonPathCases), CanonicalizePath,
              CanonicalizePath);
 
   // Manual test: embedded NULLs should be escaped and the URL should be marked
@@ -1273,9 +1272,9 @@ TEST(URLCanonTest, PartialPath) {
       {"", L"", "", Component(0, 0), true},
   };
 
-  DoPathTest(kCommonPathCases, base::size(kCommonPathCases),
+  DoPathTest(kCommonPathCases, std::size(kCommonPathCases),
              CanonicalizePartialPath, CanonicalizePartialPath);
-  DoPathTest(partial_path_cases, base::size(partial_path_cases),
+  DoPathTest(partial_path_cases, std::size(partial_path_cases),
              CanonicalizePartialPath, CanonicalizePartialPath);
 }
 
@@ -1305,7 +1304,7 @@ TEST(URLCanonTest, Query) {
     {"q=\"asdf\"", L"q=\"asdf\"", "?q=%22asdf%22"},
   };
 
-  for (size_t i = 0; i < base::size(query_cases); i++) {
+  for (size_t i = 0; i < std::size(query_cases); i++) {
     Component out_comp;
 
     if (query_cases[i].input8) {
@@ -1377,7 +1376,7 @@ TEST(URLCanonTest, Ref) {
       {"#asdf", L"#asdf", "##asdf", Component(1, 5), true},
   };
 
-  for (size_t i = 0; i < base::size(ref_cases); i++) {
+  for (size_t i = 0; i < std::size(ref_cases); i++) {
     // 8-bit input
     if (ref_cases[i].input8) {
       int len = static_cast<int>(strlen(ref_cases[i].input8));
@@ -1492,7 +1491,7 @@ TEST(URLCanonTest, CanonicalizeStandardURL) {
       {R"(HTTP:S/5%\../>%41)", "http://s/%3EA", true},
   };
 
-  for (size_t i = 0; i < base::size(cases); i++) {
+  for (size_t i = 0; i < std::size(cases); i++) {
     int url_len = static_cast<int>(strlen(cases[i].input));
     Parsed parsed;
     ParseStandardURL(cases[i].input, url_len, &parsed);
@@ -1533,7 +1532,7 @@ TEST(URLCanonTest, ReplaceStandardURL) {
        "filesystem://a:b@google.com:22/foo?baz@cat"},
   };
 
-  for (size_t i = 0; i < base::size(replace_cases); i++) {
+  for (size_t i = 0; i < std::size(replace_cases); i++) {
     const ReplaceCase& cur = replace_cases[i];
     int base_len = static_cast<int>(strlen(cur.base));
     Parsed parsed;
@@ -1633,7 +1632,7 @@ TEST(URLCanonTest, ReplaceFileURL) {
        nullptr, nullptr, nullptr, "file:///C:/gaba?query#ref"},
   };
 
-  for (size_t i = 0; i < base::size(replace_cases); i++) {
+  for (size_t i = 0; i < std::size(replace_cases); i++) {
     const ReplaceCase& cur = replace_cases[i];
     SCOPED_TRACE(cur.base);
     int base_len = static_cast<int>(strlen(cur.base));
@@ -1702,7 +1701,7 @@ TEST(URLCanonTest, ReplaceFileSystemURL) {
        "filesystem:http://bar.com:40/t/gaba?query#ref"},
   };
 
-  for (size_t i = 0; i < base::size(replace_cases); i++) {
+  for (size_t i = 0; i < std::size(replace_cases); i++) {
     const ReplaceCase& cur = replace_cases[i];
     int base_len = static_cast<int>(strlen(cur.base));
     Parsed parsed;
@@ -1746,7 +1745,7 @@ TEST(URLCanonTest, ReplacePathURL) {
        nullptr, nullptr, "data:"},
   };
 
-  for (size_t i = 0; i < base::size(replace_cases); i++) {
+  for (size_t i = 0; i < std::size(replace_cases); i++) {
     const ReplaceCase& cur = replace_cases[i];
     int base_len = static_cast<int>(strlen(cur.base));
     Parsed parsed;
@@ -1797,7 +1796,7 @@ TEST(URLCanonTest, ReplaceMailtoURL) {
     {"mailto:addr1", NULL, NULL, NULL, NULL, NULL, NULL, NULL, "BLAH", "mailto:addr1"},
   };
 
-  for (size_t i = 0; i < base::size(replace_cases); i++) {
+  for (size_t i = 0; i < std::size(replace_cases); i++) {
     const ReplaceCase& cur = replace_cases[i];
     int base_len = static_cast<int>(strlen(cur.base));
     Parsed parsed;
@@ -1910,7 +1909,7 @@ TEST(URLCanonTest, CanonicalizeFileURL) {
 #endif  // _WIN32
   };
 
-  for (size_t i = 0; i < base::size(cases); i++) {
+  for (size_t i = 0; i < std::size(cases); i++) {
     int url_len = static_cast<int>(strlen(cases[i].input));
     Parsed parsed;
     ParseFileURL(cases[i].input, url_len, &parsed);
@@ -1959,7 +1958,7 @@ TEST(URLCanonTest, CanonicalizeFileSystemURL) {
       {"FilEsysteM:htTp:E=/.", "filesystem:http://e%3D//", false},
   };
 
-  for (size_t i = 0; i < base::size(cases); i++) {
+  for (size_t i = 0; i < std::size(cases); i++) {
     int url_len = static_cast<int>(strlen(cases[i].input));
     Parsed parsed;
     ParseFileSystemURL(cases[i].input, url_len, &parsed);
@@ -1998,7 +1997,7 @@ TEST(URLCanonTest, CanonicalizePathURL) {
       {"javascript:\uFFFF", "javascript:%EF%BF%BD"},
   };
 
-  for (size_t i = 0; i < base::size(path_cases); i++) {
+  for (size_t i = 0; i < std::size(path_cases); i++) {
     int url_len = static_cast<int>(strlen(path_cases[i].input));
     Parsed parsed;
     ParsePathURL(path_cases[i].input, url_len, true, &parsed);
@@ -2036,7 +2035,7 @@ TEST(URLCanonTest, CanonicalizePathURLPath) {
       {"\uFFFF", L"\uFFFF", "%EF%BF%BD"},
   };
 
-  for (size_t i = 0; i < base::size(path_cases); i++) {
+  for (size_t i = 0; i < std::size(path_cases); i++) {
     // 8-bit string input
     std::string out_str;
     StdStringCanonOutput output(&out_str);
@@ -2130,7 +2129,7 @@ TEST(URLCanonTest, CanonicalizeMailtoURL) {
   Parsed parsed;
   Parsed out_parsed;
 
-  for (size_t i = 0; i < base::size(cases); i++) {
+  for (size_t i = 0; i < std::size(cases); i++) {
     int url_len = static_cast<int>(strlen(cases[i].input));
     if (i == 0) {
       // The first test case purposely has a '\0' in it -- don't count it
@@ -2400,7 +2399,7 @@ TEST(URLCanonTest, ResolveRelativeURL) {
     {"about:blank", false, false, "content://content.Provider/", true, false, true, ""},
   };
 
-  for (size_t i = 0; i < base::size(rel_cases); i++) {
+  for (size_t i = 0; i < std::size(rel_cases); i++) {
     const RelativeCase& cur_case = rel_cases[i];
 
     Parsed parsed;
@@ -2607,51 +2606,6 @@ TEST(URLCanonTest, IDNToASCII) {
   str = u"xn--1⁄4";
   EXPECT_FALSE(IDNToASCII(str.data(), str.length(), &output));
   output.set_length(0);
-}
-
-TEST(URLCanonTest, EscapedHostCharToEnum) {
-  EXPECT_EQ(EscapedHostChar::kSpace, EscapedHostCharToEnum(' '));
-  EXPECT_EQ(EscapedHostChar::kBang, EscapedHostCharToEnum('!'));
-  EXPECT_EQ(EscapedHostChar::kDoubleQuote, EscapedHostCharToEnum('"'));
-  EXPECT_EQ(EscapedHostChar::kHash, EscapedHostCharToEnum('#'));
-  EXPECT_EQ(EscapedHostChar::kDollar, EscapedHostCharToEnum('$'));
-  EXPECT_EQ(EscapedHostChar::kAmpersand, EscapedHostCharToEnum('&'));
-  EXPECT_EQ(EscapedHostChar::kSingleQuote, EscapedHostCharToEnum('\''));
-  EXPECT_EQ(EscapedHostChar::kLeftParen, EscapedHostCharToEnum('('));
-  EXPECT_EQ(EscapedHostChar::kRightParen, EscapedHostCharToEnum(')'));
-  EXPECT_EQ(EscapedHostChar::kAsterisk, EscapedHostCharToEnum('*'));
-  EXPECT_EQ(EscapedHostChar::kComma, EscapedHostCharToEnum(','));
-  EXPECT_EQ(EscapedHostChar::kLeftAngle, EscapedHostCharToEnum('<'));
-  EXPECT_EQ(EscapedHostChar::kEquals, EscapedHostCharToEnum('='));
-  EXPECT_EQ(EscapedHostChar::kRightAngle, EscapedHostCharToEnum('>'));
-  EXPECT_EQ(EscapedHostChar::kAt, EscapedHostCharToEnum('@'));
-  EXPECT_EQ(EscapedHostChar::kBackTick, EscapedHostCharToEnum('`'));
-  EXPECT_EQ(EscapedHostChar::kLeftCurly, EscapedHostCharToEnum('{'));
-  EXPECT_EQ(EscapedHostChar::kPipe, EscapedHostCharToEnum('|'));
-  EXPECT_EQ(EscapedHostChar::kRightCurly, EscapedHostCharToEnum('}'));
-
-  EXPECT_EQ(EscapedHostChar::kUnknown, EscapedHostCharToEnum('a'));
-  EXPECT_EQ(EscapedHostChar::kUnknown, EscapedHostCharToEnum('\\'));
-}
-
-TEST(URLCanonTest, EscapedHostCharHistograms) {
-  std::string input("foo  <bar>");
-
-  Component in_comp(0, input.size());
-  Component out_comp;
-  std::string out_str;
-  StdStringCanonOutput output(&out_str);
-
-  base::HistogramTester histogram_tester;
-  bool success = CanonicalizeHost(input.data(), in_comp, &output, &out_comp);
-  ASSERT_TRUE(success);
-  histogram_tester.ExpectBucketCount("URL.Host.DidEscape", 1, 1);
-  histogram_tester.ExpectBucketCount("URL.Host.EscapeChar",
-                                     EscapedHostChar::kSpace, 1);
-  histogram_tester.ExpectBucketCount("URL.Host.EscapeChar",
-                                     EscapedHostChar::kLeftAngle, 1);
-  histogram_tester.ExpectBucketCount("URL.Host.EscapeChar",
-                                     EscapedHostChar::kRightAngle, 1);
 }
 
 }  // namespace url

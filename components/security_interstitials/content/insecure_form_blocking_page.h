@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,11 +33,11 @@ class InsecureFormBlockingPage : public SecurityInterstitialPage {
  protected:
   // SecurityInterstitialPage::
   void CommandReceived(const std::string& command) override;
-  void PopulateInterstitialStrings(base::Value* load_time_data) override;
+  void PopulateInterstitialStrings(base::Value::Dict& load_time_data) override;
 
  private:
   // Adds values required for shared interstitial HTML to |load_time_data|.
-  void PopulateValuesForSharedHTML(base::Value* load_time_data);
+  void PopulateValuesForSharedHTML(base::Value::Dict& load_time_data);
 };
 
 }  // namespace security_interstitials

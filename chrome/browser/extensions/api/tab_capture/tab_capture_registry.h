@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,9 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/values.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/common/extensions/api/tab_capture.h"
 #include "content/public/browser/desktop_media_id.h"
@@ -17,10 +19,6 @@
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
-
-namespace base {
-class ListValue;
-}
 
 namespace content {
 class BrowserContext;
@@ -46,7 +44,7 @@ class TabCaptureRegistry : public BrowserContextKeyedAPI,
 
   // List all pending, active and stopped capture requests.
   void GetCapturedTabs(const std::string& extension_id,
-                       base::ListValue* list_of_capture_info) const;
+                       base::Value::List* capture_info_list) const;
 
   // Add a tab capture request to the registry when a stream is requested
   // through the API and create a randomly generated device id after user
@@ -115,7 +113,7 @@ class TabCaptureRegistry : public BrowserContextKeyedAPI,
   // Removes the |request| from |requests_|, thus causing its destruction.
   void KillRequest(LiveRequest* request);
 
-  content::BrowserContext* const browser_context_;
+  const raw_ptr<content::BrowserContext> browser_context_;
   std::vector<std::unique_ptr<LiveRequest>> requests_;
 
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>

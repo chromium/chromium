@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -110,7 +110,7 @@ void CastAudioManager::GetAudioInputDeviceNames(
   // Need to send a valid AudioParameters object even when it will be unused.
   return ::media::AudioParameters(
       ::media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-      ::media::CHANNEL_LAYOUT_STEREO, kDefaultSampleRate,
+      ::media::ChannelLayoutConfig::Stereo(), kDefaultSampleRate,
       kDefaultInputBufferSize);
 }
 
@@ -190,13 +190,12 @@ void CastAudioManager::ReleaseOutputStream(::media::AudioOutputStream* stream) {
 ::media::AudioParameters CastAudioManager::GetPreferredOutputStreamParameters(
     const std::string& output_device_id,
     const ::media::AudioParameters& input_params) {
-  ::media::ChannelLayout channel_layout = ::media::CHANNEL_LAYOUT_STEREO;
   int sample_rate = kDefaultSampleRate;
   // Set buffer size to 10ms of the sample rate.
   int buffer_size = sample_rate / 100;
   ::media::AudioParameters output_params(
-      ::media::AudioParameters::AUDIO_PCM_LOW_LATENCY, channel_layout,
-      sample_rate, buffer_size);
+      ::media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+      ::media::ChannelLayoutConfig::Stereo(), sample_rate, buffer_size);
   return output_params;
 }
 

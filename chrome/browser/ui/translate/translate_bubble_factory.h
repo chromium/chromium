@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,35 +18,34 @@ namespace content {
 class WebContents;
 }
 
-// Factory to show the Translate bubble.
+// Factory to show the Full Page Translate bubble.
 class TranslateBubbleFactory {
  public:
   virtual ~TranslateBubbleFactory();
 
-  // Shows the translate bubble. The behavior depends on the current factory's
-  // implementation.
-  static ShowTranslateBubbleResult Show(
-      BrowserWindow* window,
-      content::WebContents* web_contents,
-      translate::TranslateStep step,
-      const std::string& source_language,
-      const std::string& target_language,
-      translate::TranslateErrors::Type error_type,
-      bool is_user_gesture);
+  // Shows the Full Page Translate bubble. The behavior depends on the current
+  // factory's implementation.
+  static ShowTranslateBubbleResult Show(BrowserWindow* window,
+                                        content::WebContents* web_contents,
+                                        translate::TranslateStep step,
+                                        const std::string& source_language,
+                                        const std::string& target_language,
+                                        translate::TranslateErrors error_type,
+                                        bool is_user_gesture);
 
   // Sets the factory to change the behavior how to show the bubble.
   // TranslateBubbleFactory doesn't take the ownership of |factory|.
   static void SetFactory(TranslateBubbleFactory* factory);
 
  protected:
-  // Shows the translate bubble.
+  // Shows the Full Page Translate bubble.
   virtual ShowTranslateBubbleResult ShowImplementation(
       BrowserWindow* window,
       content::WebContents* web_contents,
       translate::TranslateStep step,
       const std::string& source_language,
       const std::string& target_language,
-      translate::TranslateErrors::Type error_type) = 0;
+      translate::TranslateErrors error_type) = 0;
 
  private:
   static TranslateBubbleFactory* current_factory_;

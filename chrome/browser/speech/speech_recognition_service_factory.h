@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_SPEECH_SPEECH_RECOGNITION_SERVICE_FACTORY_H_
 
 #include "base/no_destructor.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 
@@ -16,8 +16,7 @@ class SpeechRecognitionService;
 
 // Factory to get or create an instance of SpeechRecognitionServiceFactory from
 // a Profile.
-class SpeechRecognitionServiceFactory
-    : public BrowserContextKeyedServiceFactory {
+class SpeechRecognitionServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static speech::SpeechRecognitionService* GetForProfile(Profile* profile);
 
@@ -30,8 +29,6 @@ class SpeechRecognitionServiceFactory
 
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
 };
 

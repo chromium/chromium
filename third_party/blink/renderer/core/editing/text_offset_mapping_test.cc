@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/editing/text_offset_mapping.h"
 
+#include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/renderer/core/editing/position.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
@@ -17,6 +18,8 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
+
+using ::testing::ElementsAre;
 
 class ParameterizedTextOffsetMappingTest
     : public ::testing::WithParamInterface<bool>,
@@ -285,6 +288,28 @@ TEST_P(ParameterizedTextOffsetMappingTest,
   EXPECT_TRUE(previous_contents.IsNull());
 }
 
+// http://crbug.com/1324970
+TEST_P(ParameterizedTextOffsetMappingTest, BlockInInlineWithAbsolute) {
+  InsertStyleElement("a { position:absolute; } #t { position: relative; }");
+  const PositionInFlatTree position = ToPositionInFlatTree(
+      SetCaretTextToBody("<div id=t><i><p><a></a></p></i> </div><p>|ab</p>"));
+
+  Vector<String> results;
+  for (const auto contents : TextOffsetMapping::BackwardRangeOf(position))
+    results.push_back(GetRange(contents));
+
+  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
+    ElementsAre("<div id=\"t\"><i><p><a></a></p></i> </div><p>^ab|</p>",
+                "<div id=\"t\"><i><p><a></a></p></i>^ |</div><p>ab</p>",
+                "<div id=\"t\">^<i><p><a></a></p></i>| </div><p>ab</p>");
+  } else {
+    EXPECT_THAT(
+        results,
+        ElementsAre("<div id=\"t\"><i><p><a></a></p></i> </div><p>^ab|</p>",
+                    "<div id=\"t\">^<i><p><a></a></p></i> |</div><p>ab</p>"));
+  }
+}
+
 TEST_P(ParameterizedTextOffsetMappingTest, ForwardRangesWithTextControl) {
   // InlineContents for positions outside text control should cover the entire
   // containing block.
@@ -339,6 +364,17 @@ TEST_P(ParameterizedTextOffsetMappingTest, BackwardRangesWithTextControl) {
       PositionInFlatTree::FirstPositionInNode(*input);
   EXPECT_TRUE(
       TextOffsetMapping::FindBackwardInlineContents(inside_first).IsNull());
+}
+
+// http://crbug.com/1295233
+TEST_P(ParameterizedTextOffsetMappingTest, RangeWithBlockInInline) {
+  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
+    EXPECT_EQ("<div><p>ab</p><b><p>cd</p></b>^yz|</div>",
+              GetRange("<div><p>ab</p><b><p>cd</p></b>|yz</div>"));
+  } else {
+    EXPECT_EQ("<div><p>ab</p>^<b><p>cd</p></b>yz|</div>",
+              GetRange("<div><p>ab</p><b><p>cd</p></b>|yz</div>"));
+  }
 }
 
 // http://crbug.com/832497

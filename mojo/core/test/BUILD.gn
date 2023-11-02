@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -13,6 +13,10 @@ static_library("test_support") {
     "mojo_test_base.h",
     "mojo_test_suite_base.cc",
     "mojo_test_suite_base.h",
+    "scoped_mojo_support.cc",
+    "scoped_mojo_support.h",
+    "test_switches.cc",
+    "test_switches.h",
     "test_utils.h",
   ]
 
@@ -39,6 +43,11 @@ static_library("test_support") {
     "//mojo/public/cpp/system",
     "//testing/gmock",
     "//testing/gtest",
+  ]
+
+  deps = [
+    ":test_support_impl",
+    "//mojo/public/c/test_support",
   ]
 }
 

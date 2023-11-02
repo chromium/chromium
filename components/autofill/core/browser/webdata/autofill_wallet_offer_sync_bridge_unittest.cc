@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,14 +28,15 @@
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/sync/base/hash_util.h"
 #include "components/sync/engine/data_type_activation_response.h"
-#include "components/sync/engine/entity_data.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/sync_data.h"
 #include "components/sync/protocol/autofill_offer_specifics.pb.h"
+#include "components/sync/protocol/data_type_progress_marker.pb.h"
+#include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
-#include "components/sync/test/model/mock_model_type_change_processor.h"
+#include "components/sync/test/mock_model_type_change_processor.h"
 #include "components/webdata/common/web_database.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -91,7 +92,7 @@ std::string AutofillOfferSpecificsAsDebugString(
          << ", offer_details_url: " << specifics.offer_details_url()
          << ", merchant_domain: " << domain_string << ", value_prop_text: "
          << specifics.display_strings().value_prop_text()
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
          << ", see_details_text: "
          << specifics.display_strings().see_details_text_mobile()
          << ", usage_instructions_text: "
@@ -101,7 +102,7 @@ std::string AutofillOfferSpecificsAsDebugString(
          << specifics.display_strings().see_details_text_desktop()
          << ", usage_instructions_text: "
          << specifics.display_strings().usage_instructions_text_desktop()
-#endif  // defined(OS_ANDROID) || defined(OS_IOS)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
          << ", offer_reward_amount: " << offer_reward_amount_string
          << ", eligible_instrument_id: " << instrument_id_string
          << ", promo_code: " << specifics.promo_code_offer_data().promo_code()
@@ -179,14 +180,16 @@ class AutofillWalletOfferSyncBridgeTest : public testing::Test {
     // Initialize the processor with initial_sync_done.
     sync_pb::ModelTypeState state;
     state.set_initial_sync_done(true);
-    state.mutable_progress_marker()
-        ->mutable_gc_directive()
-        ->set_version_watermark(1);
+
+    sync_pb::GarbageCollectionDirective gc_directive;
+    gc_directive.set_version_watermark(1);
+
     syncer::UpdateResponseDataList initial_updates;
     for (const AutofillOfferSpecifics& specifics : remote_data) {
       initial_updates.push_back(SpecificsToUpdateResponse(specifics));
     }
-    real_processor_->OnUpdateReceived(state, std::move(initial_updates));
+    real_processor_->OnUpdateReceived(state, std::move(initial_updates),
+                                      gc_directive);
   }
 
   std::vector<AutofillOfferSpecifics> GetAllLocalData() {
@@ -239,7 +242,7 @@ TEST_F(AutofillWalletOfferSyncBridgeTest, VerifyGetClientTag) {
   AutofillOfferData data = test::GetCardLinkedOfferData1();
   SetAutofillOfferSpecificsFromOfferData(data, &specifics);
   EXPECT_EQ(bridge()->GetClientTag(SpecificsToEntity(specifics)),
-            base::NumberToString(data.offer_id));
+            base::NumberToString(data.GetOfferId()));
 }
 
 TEST_F(AutofillWalletOfferSyncBridgeTest, VerifyGetStorageKey) {
@@ -247,7 +250,7 @@ TEST_F(AutofillWalletOfferSyncBridgeTest, VerifyGetStorageKey) {
   AutofillOfferData data = test::GetCardLinkedOfferData1();
   SetAutofillOfferSpecificsFromOfferData(data, &specifics);
   EXPECT_EQ(bridge()->GetStorageKey(SpecificsToEntity(specifics)),
-            base::NumberToString(data.offer_id));
+            base::NumberToString(data.GetOfferId()));
 }
 
 // Tests that when a new offer data is sent by the server, the client only keeps

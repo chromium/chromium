@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,16 +38,16 @@ public class SyncTest {
 
     private static final String TAG = "SyncTest";
 
-    @DisabledTest(message = "https://crbug.com/1197554")
     @Test
     @LargeTest
     @Feature({"Sync"})
+    @DisabledTest(message = "https://crbug.com/1197554")
     public void testSignInAndOut() {
         CoreAccountInfo accountInfo = mSyncTestRule.setUpAccountAndEnableSyncForTesting();
 
         // Signing out should disable sync.
         mSyncTestRule.signOut();
-        Assert.assertFalse(SyncTestUtil.isSyncRequested());
+        Assert.assertFalse(SyncTestUtil.isSyncFeatureEnabled());
 
         // Signing back in should re-enable sync.
         mSyncTestRule.signinAndEnableSync(accountInfo);
@@ -71,7 +71,7 @@ public class SyncTest {
 
         // Clearing server data should turn off sync and sign out of chrome.
         Assert.assertNull(mSyncTestRule.getPrimaryAccount(ConsentLevel.SYNC));
-        Assert.assertFalse(SyncTestUtil.isSyncRequested());
+        Assert.assertFalse(SyncTestUtil.isSyncFeatureEnabled());
         CriteriaHelper.pollUiThread(
                 ()
                         -> !IdentityServicesProvider.get()
@@ -89,7 +89,7 @@ public class SyncTest {
 
         mSyncTestRule.stopSync();
         Assert.assertEquals(accountInfo, mSyncTestRule.getPrimaryAccount(ConsentLevel.SYNC));
-        Assert.assertFalse(SyncTestUtil.isSyncRequested());
+        Assert.assertFalse(SyncTestUtil.isSyncFeatureEnabled());
 
         mSyncTestRule.startSyncAndWait();
     }

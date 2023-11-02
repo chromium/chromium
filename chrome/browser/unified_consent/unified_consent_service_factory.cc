@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,8 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/pref_names.h"
+#include "components/commerce/core/pref_names.h"
 #include "components/embedder_support/pref_names.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/spellcheck/browser/pref_names.h"
@@ -37,7 +37,8 @@ std::vector<std::string> GetSyncedServicePrefNames() {
     prefs::kSearchSuggestEnabled, embedder_support::kAlternateErrorPagesEnabled,
         prefs::kSafeBrowsingEnabled, prefs::kSafeBrowsingScoutReportingEnabled,
         spellcheck::prefs::kSpellCheckUseSpellingService,
-#if defined(OS_ANDROID)
+        commerce::kPriceEmailNotificationsEnabled,
+#if BUILDFLAG(IS_ANDROID)
         prefs::kContextualSearchEnabled
 #endif
   };
@@ -46,9 +47,7 @@ std::vector<std::string> GetSyncedServicePrefNames() {
 }  // namespace
 
 UnifiedConsentServiceFactory::UnifiedConsentServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "UnifiedConsentService",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("UnifiedConsentService") {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
 }

@@ -107,6 +107,7 @@ TEST(SecurityPolicyTest, GenerateReferrer) {
       "blob:http://a.test/b3aae9c8-7f90-440d-8d7c-43aa20d72fde";
   const char kFilesystemURL[] = "filesystem:http://a.test/path/t/file.html";
   const char kInvalidURL[] = "not-a-valid-url";
+  const char kEmptyURL[] = "";
 
   bool reduced_granularity =
       base::FeatureList::IsEnabled(features::kReducedReferrerGranularity);
@@ -249,6 +250,8 @@ TEST(SecurityPolicyTest, GenerateReferrer) {
        kInsecureURLA},
       {network::mojom::ReferrerPolicy::kAlways, kInvalidURL, kInsecureURLA,
        nullptr},
+      {network::mojom::ReferrerPolicy::kAlways, kEmptyURL, kInsecureURLA,
+       nullptr},
   };
 
   for (TestCase test : inputs) {
@@ -262,7 +265,7 @@ TEST(SecurityPolicyTest, GenerateReferrer) {
           << " should have been '" << test.expected << "': was '"
           << result.referrer.Utf8() << "'.";
     } else {
-      EXPECT_TRUE(result.referrer.IsEmpty())
+      EXPECT_TRUE(result.referrer.empty())
           << "'" << test.referrer << "' to '" << test.destination
           << "' should have been empty: was '" << result.referrer.Utf8()
           << "'.";
@@ -411,6 +414,26 @@ TEST(SecurityPolicyTest, TrustworthySafelist) {
       EXPECT_TRUE(origin1->IsPotentiallyTrustworthy());
       EXPECT_TRUE(origin2->IsPotentiallyTrustworthy());
     }
+  }
+}
+
+TEST(SecurityPolicyTest, ReferrerPolicyToAndFromString) {
+  const char* policies[] = {"no-referrer",
+                            "unsafe-url",
+                            "origin",
+                            "origin-when-cross-origin",
+                            "same-origin",
+                            "strict-origin",
+                            "strict-origin-when-cross-origin",
+                            "no-referrer-when-downgrade"};
+
+  for (const char* policy : policies) {
+    network::mojom::ReferrerPolicy result =
+        network::mojom::ReferrerPolicy::kDefault;
+    EXPECT_TRUE(SecurityPolicy::ReferrerPolicyFromString(
+        policy, kDoNotSupportReferrerPolicyLegacyKeywords, &result));
+    String string_result = SecurityPolicy::ReferrerPolicyAsString(result);
+    EXPECT_EQ(string_result, policy);
   }
 }
 

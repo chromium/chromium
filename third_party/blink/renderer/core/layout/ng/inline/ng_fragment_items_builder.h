@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_item.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_logical_line_item.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/text/writing_direction_mode.h"
 
 namespace blink {
@@ -119,13 +120,15 @@ class CORE_EXPORT NGFragmentItemsBuilder {
     const NGFragmentItem& operator*() const { return item; }
     const NGFragmentItem* operator->() const { return &item; }
 
+    void Trace(Visitor* visitor) const { visitor->Trace(item); }
+
     NGFragmentItem item;
     LogicalOffset offset;
   };
 
   // Give an inline size, the allocation of this vector is hot. "128" is
   // heuristic. Usually 10-40, some wikipedia pages have >64 items.
-  using ItemWithOffsetList = Vector<ItemWithOffset, 128>;
+  using ItemWithOffsetList = HeapVector<ItemWithOffset, 128>;
 
   // Find |LogicalOffset| of the first |NGFragmentItem| for |LayoutObject|.
   absl::optional<LogicalOffset> LogicalOffsetFor(const LayoutObject&) const;
@@ -142,7 +145,11 @@ class CORE_EXPORT NGFragmentItemsBuilder {
 
   // Build a |NGFragmentItems|. The builder cannot build twice because data set
   // to this builder may be cleared.
-  void ToFragmentItems(const PhysicalSize& outer_size, void* data);
+  //
+  // This function returns new size of the container if the container is an
+  // SVG <text>.
+  absl::optional<PhysicalSize> ToFragmentItems(const PhysicalSize& outer_size,
+                                               void* data);
 
  private:
   void MoveCurrentLogicalLineItemsToMap();
@@ -159,7 +166,8 @@ class CORE_EXPORT NGFragmentItemsBuilder {
   NGLogicalLineItems* current_line_items_ = nullptr;
   const NGPhysicalFragment* current_line_fragment_ = nullptr;
 
-  HashMap<const NGPhysicalFragment*, NGLogicalLineItems*> line_items_map_;
+  HeapHashMap<Member<const NGPhysicalFragment>, Member<NGLogicalLineItems>>
+      line_items_map_;
   NGLogicalLineItems* line_items_pool_ = nullptr;
 
   NGInlineNode node_;
@@ -174,5 +182,8 @@ class CORE_EXPORT NGFragmentItemsBuilder {
 };
 
 }  // namespace blink
+
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
+    blink::NGFragmentItemsBuilder::ItemWithOffset)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_INLINE_NG_FRAGMENT_ITEMS_BUILDER_H_

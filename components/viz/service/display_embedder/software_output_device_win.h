@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "components/viz/service/display/software_output_device.h"
 #include "components/viz/service/display_embedder/output_device_backing.h"
@@ -74,7 +75,7 @@ class VIZ_SERVICE_EXPORT SoftwareOutputDeviceWinDirect
   void ReleaseCanvas() override;
 
  private:
-  OutputDeviceBacking* const backing_;
+  const raw_ptr<OutputDeviceBacking> backing_;
   std::unique_ptr<SkCanvas> canvas_;
 };
 

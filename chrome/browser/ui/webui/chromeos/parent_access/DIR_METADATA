@@ -1,3 +1,1 @@
-buganizer {
-  component_id: 1090157
-}
+mixins: "//chrome/browser/ash/child_accounts/COMMON_METADATA"

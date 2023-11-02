@@ -1,8 +1,8 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 5
+// Next MinVersion: 7
 
 // Top-level API of the Machine Learning Service: loading models for inference.
 
@@ -28,6 +28,7 @@ import "chromeos/services/machine_learning/public/mojom/soda.mojom";
 import "chromeos/services/machine_learning/public/mojom/text_classifier.mojom";
 import "chromeos/services/machine_learning/public/mojom/text_suggester.mojom";
 import "chromeos/services/machine_learning/public/mojom/web_platform_handwriting.mojom";
+import "components/ml/mojom/web_platform_model.mojom";
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -42,7 +43,7 @@ enum LoadModelResult {
 
 // Top-level interface between Chromium browser process and the ML Service
 // daemon.
-// Next ordinal: 11
+// Next ordinal: 12
 [Stable, Uuid="9e5e4750-40cc-4eda-ac09-3457d06a45ab"]
 interface MachineLearningService {
   // Binds another pipe to this instance.
@@ -65,11 +66,6 @@ interface MachineLearningService {
       HandwritingRecognizerSpec spec,
       pending_receiver<HandwritingRecognizer> receiver)
       => (LoadHandwritingModelResult result);
-  // Will be deprecated soon.
-  LoadHandwritingModelWithSpec@4(
-      HandwritingRecognizerSpec spec,
-      pending_receiver<HandwritingRecognizer> receiver)
-      => (LoadModelResult result);
   // Create and initialize a speech recognizer with given `config`.
   LoadSpeechRecognizer@6(SodaConfig config,
       pending_remote<SodaClient> soda_client,
@@ -84,11 +80,11 @@ interface MachineLearningService {
       [MinVersion=3] TextSuggesterSpec? spec)
       => (LoadModelResult result);
   // Create a handwriting recognizer for web platform API.
-  // This API shares the same HWR engine with `LoadHandwritingModel` and
-  // `LoadHandwritingModelWithSpec` but with a different interface. This API is
-  // as identical to the Web Platform HWR API as possible so that we do not
-  // need to convert the input/output in the browser process. This is required
-  // for security reasons.
+  // This API shares the same HWR engine with `LoadHandwritingModel`
+  // but with a different interface. This API is as identical to
+  // the Web Platform HWR API as possible so that we do not
+  // need to convert the input/output in the browser process.
+  // This is required for security reasons.
   [MinVersion=1] LoadWebPlatformHandwritingModel@9(
     chromeos.machine_learning.web_platform.mojom.HandwritingModelConstraint
       constraint,
@@ -98,6 +94,19 @@ interface MachineLearningService {
       => (LoadHandwritingModelResult result);
   // Create and initialize a document scanner.
   [MinVersion=4] LoadDocumentScanner@10(
-            pending_receiver<DocumentScanner> receiver)
+            pending_receiver<DocumentScanner> receiver,
+            [MinVersion=6] DocumentScannerConfig? config)
+      => (LoadModelResult result);
+  // Creates a web platform model.
+  // This function creates a model loader for Web platform flatbuffer models.
+  [MinVersion=5] CreateWebPlatformModelLoader@11(
+      pending_receiver<ml.model_loader.mojom.ModelLoader> receiver,
+      ml.model_loader.mojom.CreateModelLoaderOptions options)
+      => (ml.model_loader.mojom.CreateModelLoaderResult result);
+
+  // Deprecated `LoadHandwritingModelWithSpec`
+  REMOVED_4@4(
+      HandwritingRecognizerSpec spec,
+      pending_receiver<HandwritingRecognizer> receiver)
       => (LoadModelResult result);
 };

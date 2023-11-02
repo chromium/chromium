@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "build/chromeos_buildflags.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/api_guard_delegate.h"
 #include "extensions/browser/extension_function.h"
 
 namespace chromeos {
@@ -30,11 +32,16 @@ class BaseTelemetryExtensionApiGuardFunction : public ExtensionFunction {
   // ExtensionFunction:
   ResponseAction Run() final;
 
-  bool IsPwaUiOpen();
-
-  void OnGetManufacturer(std::string manufacturer);
-
   virtual void RunIfAllowed() = 0;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  virtual bool IsCrosApiAvailable() = 0;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+ private:
+  void OnCanAccessApi(std::string error);
+
+  std::unique_ptr<ApiGuardDelegate> api_guard_delegate_;
 };
 
 }  // namespace chromeos

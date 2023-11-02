@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,10 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 
 namespace web_app {
@@ -41,9 +43,9 @@ class PublisherHost {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void SetArcIsRegistered();
 
-  void FlushMojoCallsForTesting();
-
   void ReInitializeCrostiniForTesting(AppServiceProxy* proxy);
+
+  void RegisterPublishersForTesting();
 
   void Shutdown();
 #endif
@@ -52,11 +54,12 @@ class PublisherHost {
   void Initialize();
 
   // Owns this class.
-  AppServiceProxy* proxy_;
+  raw_ptr<AppServiceProxy> proxy_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<BuiltInChromeOsApps> built_in_chrome_os_apps_;
   std::unique_ptr<CrostiniApps> crostini_apps_;
+  std::unique_ptr<ExtensionAppsChromeOs> chrome_apps_;
   std::unique_ptr<ExtensionAppsChromeOs> extension_apps_;
   std::unique_ptr<PluginVmApps> plugin_vm_apps_;
   std::unique_ptr<StandaloneBrowserApps> standalone_browser_apps_;
@@ -64,11 +67,24 @@ class PublisherHost {
   std::unique_ptr<BorealisApps> borealis_apps_;
 #else
   std::unique_ptr<web_app::WebApps> web_apps_;
-  std::unique_ptr<ExtensionApps> extension_apps_;
+  std::unique_ptr<ExtensionApps> chrome_apps_;
 #endif
 };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+class ScopedOmitBorealisAppsForTesting {
+ public:
+  ScopedOmitBorealisAppsForTesting();
+  ScopedOmitBorealisAppsForTesting(const ScopedOmitBorealisAppsForTesting&) =
+      delete;
+  ScopedOmitBorealisAppsForTesting& operator=(
+      const ScopedOmitBorealisAppsForTesting&) = delete;
+  ~ScopedOmitBorealisAppsForTesting();
+
+ private:
+  const bool previous_omit_borealis_apps_for_testing_;
+};
+
 class ScopedOmitBuiltInAppsForTesting {
  public:
   ScopedOmitBuiltInAppsForTesting();

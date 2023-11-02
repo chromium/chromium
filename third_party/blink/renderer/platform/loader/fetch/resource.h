@@ -34,6 +34,9 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/scheduler/web_scoped_virtual_time_pauser.h"
+#include "third_party/blink/renderer/platform/bindings/parkable_string.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_counted_set.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/instrumentation/memory_pressure_listener.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/web_process_memory_dump.h"
 #include "third_party/blink/renderer/platform/loader/fetch/integrity_metadata.h"
@@ -51,11 +54,14 @@
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_counted_set.h"
-#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+
+// Replay includes: we need these because their hash function depends on |RecordReplayId|.
+#include "third_party/blink/renderer/platform/loader/fetch/resource_client.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_finish_observer.h"
 
 namespace base {
 class Clock;
@@ -87,6 +93,7 @@ enum class ResourceType : uint8_t {
   kAudio,
   kVideo,
   kManifest,
+  kSpeculationRules,
   kMock,  // Only for testing
   kMaxValue = kMock
 };
@@ -137,9 +144,6 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
 
     // Match fails due to different request methods.
     kRequestMethodDoesNotMatch,
-
-    // Match fails due to different request headers.
-    kRequestHeadersDoNotMatch,
 
     // Match fails due to different script types.
     kScriptTypeDoesNotMatch,
@@ -265,6 +269,18 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   virtual void ResponseBodyReceived(
       ResponseBodyLoaderDrainableInterface& body_loader,
       scoped_refptr<base::SingleThreadTaskRunner> loader_task_runner) {}
+
+  // A class Resource subclasses can use to hold ResourceType specific info
+  // related to DidReceiveDecodedData().
+  class DecodedDataInfo {
+   public:
+    virtual ~DecodedDataInfo() = default;
+
+    virtual ResourceType GetType() const = 0;
+  };
+  virtual void DidReceiveDecodedData(const String& data,
+                                     std::unique_ptr<DecodedDataInfo> info) {}
+
   void SetResponse(const ResourceResponse&);
   const ResourceResponse& GetResponse() const { return response_; }
 
@@ -358,7 +374,7 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   }
 
   // Returns |kOk| when |this| can be resused for the given arguments.
-  virtual MatchStatus CanReuse(const FetchParameters& params) const;
+  MatchStatus CanReuse(const FetchParameters& params) const;
 
   // TODO(yhirano): Remove this once out-of-blink CORS is fully enabled.
   void SetResponseType(network::mojom::FetchResponseType response_type) {
@@ -433,8 +449,8 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   void MarkClientFinished(ResourceClient*);
 
   virtual bool HasClientsOrObservers() const {
-    return !clients_.IsEmpty() || !clients_awaiting_callback_.IsEmpty() ||
-           !finished_clients_.IsEmpty() || !finish_observers_.IsEmpty();
+    return !clients_.empty() || !clients_awaiting_callback_.empty() ||
+           !finished_clients_.empty() || !finish_observers_.empty();
   }
   virtual void DestroyDecodedDataForFailedRevalidation() {}
 
@@ -477,12 +493,13 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   // Returns the memory dump name used for tracing. See Resource::OnMemoryDump.
   String GetMemoryDumpName() const;
 
-  const HeapHashCountedSet<WeakMember<ResourceClient>>& Clients() const {
+  const HeapHashCountedSet<WeakMember<ResourceClient>,
+                           WTF::MemberHashRecordReplayId<ResourceClient>>&
+  Clients() const {
     return clients_;
   }
 
   void SetCachePolicyBypassingCache();
-  void SetPreviewsState(PreviewsState);
   void ClearRangeRequestHeader();
 
   SharedBuffer* Data() const { return data_.get(); }
@@ -533,10 +550,21 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   // Ordered list of all redirects followed while fetching this resource.
   Vector<RedirectPair> redirect_chain_;
 
-  HeapHashCountedSet<WeakMember<ResourceClient>> clients_;
-  HeapHashCountedSet<WeakMember<ResourceClient>> clients_awaiting_callback_;
-  HeapHashCountedSet<WeakMember<ResourceClient>> finished_clients_;
-  HeapHashSet<WeakMember<ResourceFinishObserver>> finish_observers_;
+  HeapHashCountedSet<WeakMember<ResourceClient>,
+                     WTF::MemberHashRecordReplayId<ResourceClient>> clients_;
+  HeapHashCountedSet<WeakMember<ResourceClient>,
+                     WTF::MemberHashRecordReplayId<ResourceClient>> clients_awaiting_callback_;
+  HeapHashCountedSet<WeakMember<ResourceClient>,
+                     WTF::MemberHashRecordReplayId<ResourceClient>> finished_clients_;
+  HeapHashSet<WeakMember<ResourceFinishObserver>,
+              WTF::MemberHashRecordReplayId<ResourceFinishObserver>> finish_observers_;
+
+  // RUN-1724: Keep strong references to prevent above data structures from becoming
+  // divergent.
+  // [RUN-1457 cleanup]
+  HeapHashSet<Member<ResourceClient>> replay_clients_strong_;
+  // [RUN-1457 cleanup]
+  HeapHashSet<Member<ResourceFinishObserver>> replay_finish_observers_strong_;
 
   ResourceLoaderOptions options_;
 

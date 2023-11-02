@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,23 +12,17 @@
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "net/base/escape.h"
+#include "crypto/crypto_buildflags.h"
 #include "net/base/io_buffer.h"
 #include "net/base/request_priority.h"
 #include "net/base/upload_bytes_element_reader.h"
 #include "net/base/upload_data_stream.h"
 #include "net/ssl/client_cert_store.h"
-#if defined(USE_NSS_CERTS)
-#include "net/ssl/client_cert_store_nss.h"
-#elif defined(OS_WIN)
-#include "net/ssl/client_cert_store_win.h"
-#elif defined(OS_APPLE)
-#include "net/ssl/client_cert_store_mac.h"
-#endif
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/ssl/ssl_private_key.h"
 #include "net/url_request/redirect_info.h"
@@ -37,6 +31,14 @@
 #include "remoting/base/logging.h"
 #include "remoting/protocol/authenticator.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(USE_NSS_CERTS)
+#include "net/ssl/client_cert_store_nss.h"
+#elif BUILDFLAG(IS_WIN)
+#include "net/ssl/client_cert_store_win.h"
+#elif BUILDFLAG(IS_APPLE)
+#include "net/ssl/client_cert_store_mac.h"
+#endif
 
 namespace remoting {
 
@@ -48,7 +50,7 @@ constexpr int kBufferSize = 4096;
 constexpr char kCertIssuerWildCard[] = "*";
 constexpr char kJsonSafetyPrefix[] = ")]}'\n";
 constexpr char kForbiddenExceptionToken[] = "ForbiddenException: ";
-constexpr char kAuthzDeniedErrorCode[] = "Error Code 23:";
+constexpr char kLocationAuthzError[] = "Error Code 23:";
 
 // Returns a value from the issuer field for certificate selection, in order of
 // preference.  If the O or OU entries are populated with multiple values, we
@@ -104,7 +106,7 @@ bool WorseThan(const std::string& issuer,
   return c1->valid_expiry() < c2->valid_expiry();
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 crypto::ScopedHCERTSTORE OpenLocalMachineCertStore() {
   return crypto::ScopedHCERTSTORE(::CertOpenStore(
       CERT_STORE_PROV_SYSTEM, 0, NULL,
@@ -148,7 +150,7 @@ const std::string& TokenValidatorBase::token_scope() const {
   return token_scope_;
 }
 
-// URLFetcherDelegate interface.
+// URLRequest::Delegate interface.
 void TokenValidatorBase::OnResponseStarted(net::URLRequest* source,
                                            int net_result) {
   DCHECK_NE(net_result, net::ERR_IO_PENDING);
@@ -206,10 +208,10 @@ void TokenValidatorBase::OnCertificateRequested(
   DCHECK_EQ(request_.get(), source);
 
   net::ClientCertStore* client_cert_store;
-#if defined(USE_NSS_CERTS)
+#if BUILDFLAG(USE_NSS_CERTS)
   client_cert_store = new net::ClientCertStoreNSS(
       net::ClientCertStoreNSS::PasswordDelegateFactory());
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   // The network process is running as "Local Service" whose "Current User"
   // cert store doesn't contain any certificates. Use the "Local Machine"
   // store instead.
@@ -217,7 +219,7 @@ void TokenValidatorBase::OnCertificateRequested(
   // Machine" cert store needs to allow access by "Local Service".
   client_cert_store = new net::ClientCertStoreWin(
       base::BindRepeating(&OpenLocalMachineCertStore));
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
   client_cert_store = new net::ClientCertStoreMac();
 #else
   // OpenSSL does not use the ClientCertStore infrastructure.
@@ -304,9 +306,11 @@ protocol::TokenValidator::ValidationResult TokenValidatorBase::ProcessResponse(
       // so seek forward to the exception info and then scan it for the code.
       size_t start_pos = data_.find(kForbiddenExceptionToken);
       if (start_pos != std::string::npos) {
-        if (data_.find(kAuthzDeniedErrorCode, start_pos) != std::string::npos) {
-          return RejectionReason::AUTHORIZATION_POLICY_CHECK_FAILED;
+        if (data_.find(kLocationAuthzError, start_pos) != std::string::npos) {
+          return RejectionReason::LOCATION_AUTHZ_POLICY_CHECK_FAILED;
         }
+
+        return RejectionReason::AUTHZ_POLICY_CHECK_FAILED;
       }
     }
 

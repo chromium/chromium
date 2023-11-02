@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,6 +24,12 @@ class ASH_EXPORT ProjectorColorButton : public ProjectorButton {
   ProjectorColorButton(const ProjectorColorButton&) = delete;
   ProjectorColorButton& operator=(const ProjectorColorButton&) = delete;
   ~ProjectorColorButton() override = default;
+
+  void PaintButtonContents(gfx::Canvas* canvas) override;
+
+ private:
+  SkColor color_;
+  int size_;
 };
 
 }  // namespace ash

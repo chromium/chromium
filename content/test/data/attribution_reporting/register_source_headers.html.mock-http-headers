@@ -1,0 +1,4 @@
+HTTP/1.1 200 OK
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Headers: *
+Attribution-Reporting-Register-Source:{"source_event_id":"5","destination":"https://d.test"}

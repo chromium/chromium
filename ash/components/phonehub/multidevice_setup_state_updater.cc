@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,18 +6,21 @@
 
 #include "ash/components/phonehub/pref_names.h"
 #include "ash/components/phonehub/util/histogram_util.h"
+#include "ash/services/multidevice_setup/public/cpp/prefs.h"
 #include "base/callback_helpers.h"
-#include "chromeos/components/multidevice/logging/logging.h"
-#include "chromeos/services/multidevice_setup/public/cpp/prefs.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
+
 namespace {
+
 using multidevice_setup::mojom::Feature;
 using multidevice_setup::mojom::FeatureState;
 using multidevice_setup::mojom::HostStatus;
+
 }  // namespace
 
 // static
@@ -28,23 +31,39 @@ void MultideviceSetupStateUpdater::RegisterPrefs(PrefRegistrySimple* registry) {
 MultideviceSetupStateUpdater::MultideviceSetupStateUpdater(
     PrefService* pref_service,
     multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
-    NotificationAccessManager* notification_access_manager)
+    MultideviceFeatureAccessManager* multidevice_feature_access_manager)
     : pref_service_(pref_service),
       multidevice_setup_client_(multidevice_setup_client),
-      notification_access_manager_(notification_access_manager) {
+      multidevice_feature_access_manager_(multidevice_feature_access_manager) {
   multidevice_setup_client_->AddObserver(this);
-  notification_access_manager_->AddObserver(this);
+  multidevice_feature_access_manager_->AddObserver(this);
+  notification_access_status_ =
+      multidevice_feature_access_manager_->GetNotificationAccessStatus();
+  camera_roll_access_status_ =
+      multidevice_feature_access_manager_->GetCameraRollAccessStatus();
 }
 
 MultideviceSetupStateUpdater::~MultideviceSetupStateUpdater() {
   multidevice_setup_client_->RemoveObserver(this);
-  notification_access_manager_->RemoveObserver(this);
+  multidevice_feature_access_manager_->RemoveObserver(this);
 }
 
 void MultideviceSetupStateUpdater::OnNotificationAccessChanged() {
-  switch (notification_access_manager_->GetAccessStatus()) {
-    case NotificationAccessManager::AccessStatus::kAccessGranted:
-      if (IsWaitingForAccessToInitiallyEnableNotifications()) {
+  MultideviceFeatureAccessManager::AccessStatus pervious_access_status =
+      notification_access_status_;
+  notification_access_status_ =
+      multidevice_feature_access_manager_->GetNotificationAccessStatus();
+  switch (notification_access_status_) {
+    case MultideviceFeatureAccessManager::AccessStatus::kAccessGranted:
+      if (IsPhoneHubEnabled() &&
+          pervious_access_status == MultideviceFeatureAccessManager::
+                                        AccessStatus::kAvailableButNotGranted) {
+        PA_LOG(INFO) << "Enabling PhoneHubNotifications when access is changed "
+                        "from kAvailableButNotGranted to kAccessGranted.";
+        multidevice_setup_client_->SetFeatureEnabledState(
+            Feature::kPhoneHubNotifications, /*enabled=*/true,
+            /*auth_token=*/absl::nullopt, base::DoNothing());
+      } else if (IsWaitingForAccessToInitiallyEnableNotifications()) {
         PA_LOG(INFO) << "Enabling PhoneHubNotifications for the first time now "
                      << "that access has been granted by the phone.";
         multidevice_setup_client_->SetFeatureEnabledState(
@@ -53,14 +72,51 @@ void MultideviceSetupStateUpdater::OnNotificationAccessChanged() {
       }
       break;
 
-    case NotificationAccessManager::AccessStatus::kAvailableButNotGranted:
-      FALLTHROUGH;
-    case NotificationAccessManager::AccessStatus::kProhibited:
+    case MultideviceFeatureAccessManager::AccessStatus::kAvailableButNotGranted:
+      [[fallthrough]];
+    case MultideviceFeatureAccessManager::AccessStatus::kProhibited:
       // Disable kPhoneHubNotifications if notification access has been revoked
       // by the phone.
       PA_LOG(INFO) << "Disabling PhoneHubNotifications feature.";
       multidevice_setup_client_->SetFeatureEnabledState(
           Feature::kPhoneHubNotifications, /*enabled=*/false,
+          /*auth_token=*/absl::nullopt, base::DoNothing());
+      break;
+  }
+}
+
+void MultideviceSetupStateUpdater::OnCameraRollAccessChanged() {
+  MultideviceFeatureAccessManager::AccessStatus pervious_access_status =
+      camera_roll_access_status_;
+  camera_roll_access_status_ =
+      multidevice_feature_access_manager_->GetCameraRollAccessStatus();
+  switch (camera_roll_access_status_) {
+    case MultideviceFeatureAccessManager::AccessStatus::kAccessGranted:
+      if (IsPhoneHubEnabled() &&
+          pervious_access_status == MultideviceFeatureAccessManager::
+                                        AccessStatus::kAvailableButNotGranted) {
+        PA_LOG(INFO) << "Enabling PhoneHubCameraRoll when access is changed "
+                        "from kAvailableButNotGranted to kAccessGranted.";
+        multidevice_setup_client_->SetFeatureEnabledState(
+            Feature::kPhoneHubCameraRoll, /*enabled=*/true,
+            /*auth_token=*/absl::nullopt, base::DoNothing());
+      } else if (IsWaitingForAccessToInitiallyEnableCameraRoll()) {
+        PA_LOG(INFO) << "Enabling PhoneHubCameraRoll for the first time now "
+                     << "that access has been granted by the phone.";
+        multidevice_setup_client_->SetFeatureEnabledState(
+            Feature::kPhoneHubCameraRoll, /*enabled=*/true,
+            /*auth_token=*/absl::nullopt, base::DoNothing());
+      }
+      break;
+
+    case MultideviceFeatureAccessManager::AccessStatus::kAvailableButNotGranted:
+      [[fallthrough]];
+    case MultideviceFeatureAccessManager::AccessStatus::kProhibited:
+      // Disable kPhoneHubCameraRoll if camera roll access has been revoked
+      // by the phone.
+      PA_LOG(INFO) << "Disabling PhoneHubCameraRoll feature.";
+      multidevice_setup_client_->SetFeatureEnabledState(
+          Feature::kPhoneHubCameraRoll, /*enabled=*/false,
           /*auth_token=*/absl::nullopt, base::DoNothing());
       break;
   }
@@ -84,12 +140,29 @@ bool MultideviceSetupStateUpdater::
   // should enable it after
   //   1. the top-level Phone Hub feature is enabled, and
   //   2. the phone has granted access.
-  // We do *not* want disrupt the feature state if it was already explicitly set
-  // by the user.
-  return multidevice_setup::IsDefaultFeatureEnabledValue(
-             Feature::kPhoneHubNotifications, pref_service_) &&
-         multidevice_setup_client_->GetFeatureState(Feature::kPhoneHub) ==
-             FeatureState::kEnabledByUser;
+  // We do *not* want to automatically enable the feature unless the opt-in flow
+  // was triggered from this device
+  return IsPhoneHubEnabled() &&
+         multidevice_setup::IsDefaultFeatureEnabledValue(
+             Feature::kPhoneHubNotifications, pref_service_);
+}
+
+bool MultideviceSetupStateUpdater::
+    IsWaitingForAccessToInitiallyEnableCameraRoll() const {
+  // If the Phone Hub camera roll feature has never been explicitly set, we
+  // should enable it after
+  //   1. the top-level Phone Hub feature is enabled, and
+  //   2. the phone has granted access.
+  // We do *not* want to automatically enable the feature unless the opt-in flow
+  // was triggered from this device
+  return IsPhoneHubEnabled() &&
+         multidevice_setup::IsDefaultFeatureEnabledValue(
+             Feature::kPhoneHubCameraRoll, pref_service_);
+}
+
+bool MultideviceSetupStateUpdater::IsPhoneHubEnabled() const {
+  return multidevice_setup_client_->GetFeatureState(Feature::kPhoneHub) ==
+         FeatureState::kEnabledByUser;
 }
 
 void MultideviceSetupStateUpdater::EnablePhoneHubIfAwaitingVerifiedHost() {
@@ -144,4 +217,4 @@ void MultideviceSetupStateUpdater::UpdateIsAwaitingVerifiedHost() {
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

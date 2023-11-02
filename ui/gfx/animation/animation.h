@@ -1,11 +1,11 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_GFX_ANIMATION_ANIMATION_H_
 #define UI_GFX_ANIMATION_ANIMATION_H_
 
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -128,7 +128,7 @@ class ANIMATION_EXPORT Animation : public AnimationContainerElement {
   bool is_animating_;
 
   // Our delegate; may be null.
-  AnimationDelegate* delegate_;
+  raw_ptr<AnimationDelegate> delegate_;
 
   // Container we're in. If non-null we're animating.
   scoped_refptr<AnimationContainer> container_;

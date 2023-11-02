@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_phase.h"
 #include "third_party/blink/renderer/core/paint/scoped_svg_paint_state.h"
+#include "third_party/blink/renderer/core/paint/url_metadata_utils.h"
 #include "third_party/blink/renderer/core/style/nine_piece_image.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
@@ -63,9 +64,12 @@ void NGInlineBoxFragmentPainter::Paint(const PaintInfo& paint_info,
     PaintBackgroundBorderShadow(paint_info, adjusted_paint_offset);
 
   const bool suppress_box_decoration_background = true;
+  DCHECK(inline_context_);
+  NGInlinePaintContext::ScopedInlineItem scoped_item(inline_box_item_,
+                                                     inline_context_);
   DCHECK(inline_box_cursor_);
   NGBoxFragmentPainter box_painter(*inline_box_cursor_, inline_box_item_,
-                                   PhysicalFragment());
+                                   PhysicalFragment(), inline_context_);
   box_painter.PaintObject(paint_info, adjusted_paint_offset,
                           suppress_box_decoration_background);
 }
@@ -111,9 +115,10 @@ void NGInlineBoxFragmentPainterBase::PaintBackgroundBorderShadow(
   BackgroundImageGeometry geometry(*static_cast<const LayoutBoxModelObject*>(
       inline_box_fragment_.GetLayoutObject()));
   DCHECK(inline_box_cursor_);
+  DCHECK(inline_context_);
   NGBoxFragmentPainter box_painter(
       *inline_box_cursor_, inline_box_item_,
-      To<NGPhysicalBoxFragment>(inline_box_fragment_));
+      To<NGPhysicalBoxFragment>(inline_box_fragment_), inline_context_);
   PaintBoxDecorationBackground(
       box_painter, paint_info, paint_offset, adjusted_frame_rect, geometry,
       object_may_have_multiple_boxes, SidesToInclude());
@@ -123,7 +128,7 @@ gfx::Rect NGInlineBoxFragmentPainterBase::VisualRect(
     const PhysicalOffset& paint_offset) {
   PhysicalRect overflow_rect = inline_box_item_.SelfInkOverflow();
   overflow_rect.Move(paint_offset);
-  return ToGfxRect(EnclosingIntRect(overflow_rect));
+  return ToEnclosingRect(overflow_rect);
 }
 
 void NGLineBoxFragmentPainter::PaintBackgroundBorderShadow(
@@ -240,7 +245,7 @@ PhysicalRect NGInlineBoxFragmentPainterBase::PaintRectForImageStrip(
 InlineBoxPainterBase::BorderPaintingType
 NGInlineBoxFragmentPainterBase::GetBorderPaintType(
     const PhysicalRect& adjusted_frame_rect,
-    IntRect& adjusted_clip_rect,
+    gfx::Rect& adjusted_clip_rect,
     bool object_has_multiple_boxes) const {
   const ComputedStyle& style = inline_box_fragment_.Style();
   if (!style.HasBorderDecoration())
@@ -257,12 +262,12 @@ NGInlineBoxFragmentPainterBase::GetBorderPaintType(
   // only box for this object.  In those cases only a single call to draw is
   // required.
   if (!has_border_image || !object_has_multiple_boxes) {
-    adjusted_clip_rect = PixelSnappedIntRect(adjusted_frame_rect);
+    adjusted_clip_rect = ToPixelSnappedRect(adjusted_frame_rect);
     return kPaintBordersWithoutClip;
   }
 
   // We have a border image that spans multiple lines.
-  adjusted_clip_rect = PixelSnappedIntRect(ClipRectForNinePieceImageStrip(
+  adjusted_clip_rect = ToPixelSnappedRect(ClipRectForNinePieceImageStrip(
       style, SidesToInclude(), border_image, adjusted_frame_rect));
   return kPaintBordersWithClip;
 }
@@ -290,10 +295,20 @@ void NGInlineBoxFragmentPainter::PaintAllFragments(
     const PhysicalOffset& paint_offset) {
   // TODO(kojii): If the block flow is dirty, children of these fragments
   // maybe already deleted. crbug.com/963103
-  const LayoutBlockFlow* block_flow = layout_inline.ContainingNGBlockFlow();
+  const LayoutBlockFlow* block_flow = layout_inline.FragmentItemsContainer();
   if (UNLIKELY(block_flow->NeedsLayout()))
     return;
 
+  if (paint_info.phase == PaintPhase::kForeground &&
+      paint_info.ShouldAddUrlMetadata()) {
+    // URLRects for descendants are normally added via NGBoxFragmentPainter::
+    // PaintLineBoxes(), but relatively positioned (self-painting) inlines
+    // are omitted. Do it now.
+    AddURLRectsForInlineChildrenRecursively(layout_inline, paint_info,
+                                            paint_offset);
+  }
+
+  NGInlinePaintContext inline_context;
   NGInlineCursor cursor(*block_flow);
   cursor.MoveTo(layout_inline);
   if (!cursor)
@@ -307,11 +322,13 @@ void NGInlineBoxFragmentPainter::PaintAllFragments(
   for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
     if (target_fragment_idx != cursor.ContainerFragmentIndex())
       continue;
+    NGInlinePaintContext::ScopedInlineBoxAncestors scoped_items(
+        cursor, &inline_context);
     const NGFragmentItem* item = cursor.CurrentItem();
     DCHECK(item);
     const NGPhysicalBoxFragment* box_fragment = item->BoxFragment();
     DCHECK(box_fragment);
-    NGInlineBoxFragmentPainter(cursor, *item, *box_fragment)
+    NGInlineBoxFragmentPainter(cursor, *item, *box_fragment, &inline_context)
         .Paint(paint_info, paint_offset);
   }
 }

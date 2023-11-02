@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/layout_types.h"
@@ -65,11 +66,11 @@ class OverflowView : public views::View {
       views::LayoutAlignment::kStretch;
 
   // The primary view to be displayed.
-  views::View* primary_view_ = nullptr;
+  raw_ptr<views::View> primary_view_ = nullptr;
 
   // The overflow indicator view to be displayed if the primary view will
   // receive less than its minimum size along the main axis.
-  views::View* indicator_view_ = nullptr;
+  raw_ptr<views::View> indicator_view_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_OVERFLOW_VIEW_H_

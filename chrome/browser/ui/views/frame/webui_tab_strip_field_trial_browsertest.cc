@@ -1,19 +1,18 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <algorithm>
-#include <vector>
-
 #include "chrome/browser/ui/views/frame/webui_tab_strip_field_trial.h"
+
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/test/mock_entropy_provider.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/scoped_field_trial_list_resetter.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -31,11 +30,8 @@ namespace {
 
 void RegisterFakeFieldTrialWithState(base::FeatureList* feature_list,
                                      bool enabled) {
-  base::FieldTrial* field_trial = base::FieldTrialList::FactoryGetFieldTrial(
-      "WebUITabStrip", 100, "Default", base::FieldTrial::ONE_TIME_RANDOMIZED,
-      nullptr);
-
-  field_trial->AppendGroup("Active", 100);
+  base::FieldTrial* field_trial =
+      base::FieldTrialList::CreateFieldTrial("WebUITabStrip", "Active");
   EXPECT_EQ(field_trial->group_name(), "Active");
 
   base::FeatureList::OverrideState override_state =
@@ -61,10 +57,10 @@ bool IsInGroup(base::StringPiece group_name) {
     LOG(ERROR) << group_id.name << " " << group_id.group;
   }
 
-  return std::any_of(active_groups.begin(), active_groups.end(),
-                     [=](const variations::ActiveGroupId& e) {
-                       return e.name == id.name && e.group == id.group;
-                     });
+  return base::ranges::any_of(active_groups,
+                              [=](const variations::ActiveGroupId& e) {
+                                return e.name == id.name && e.group == id.group;
+                              });
 }
 
 }  // namespace
@@ -74,6 +70,8 @@ class WebUITabStripFieldTrialBrowserTest : public InProcessBrowserTest {
   WebUITabStripFieldTrialBrowserTest() {
     variations::SyntheticTrialsActiveGroupIdProvider::GetInstance()
         ->ResetForTesting();
+    null_feature_list_.InitWithNullFeatureAndFieldTrialLists();
+    field_trial_list_ = std::make_unique<base::FieldTrialList>();
   }
 
  protected:
@@ -84,10 +82,14 @@ class WebUITabStripFieldTrialBrowserTest : public InProcessBrowserTest {
   base::FeatureList* feature_list() { return feature_list_.get(); }
 
  private:
-  base::test::ScopedFieldTrialListResetter scoped_field_trial_list_resetter_;
-  base::FieldTrialList field_trial_list_{
-      std::make_unique<base::MockEntropyProvider>(0.0)};
-
+  // |null_feature_list_| is used to initialize FieldTrialLists to be
+  // null. This is required to create a new FieldTrialList.
+  base::test::ScopedFeatureList null_feature_list_;
+  // |field_trial_list_| is a new FieldTrialList with MockEntryProvider(0.0),
+  // created for WebUITabStripFieldTrialBrowserTest.
+  std::unique_ptr<base::FieldTrialList> field_trial_list_;
+  // |scoped_feature_list_| is used to enable and disable features for
+  // WebUITabStripFieldTrialBrowserTest.
   base::test::ScopedFeatureList scoped_feature_list_;
 
   std::unique_ptr<base::FeatureList> feature_list_ =

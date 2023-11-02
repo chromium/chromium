@@ -38,7 +38,8 @@
 #include "third_party/blink/renderer/core/inspector/devtools_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_layer_tree_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_page_agent.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
@@ -72,9 +73,9 @@ class CORE_EXPORT WebDevToolsAgentImpl final
   void WillBeDestroyed();
   void FlushProtocolNotifications();
 
-  bool HasOverlays() const { return !overlay_agents_.IsEmpty(); }
+  bool HasOverlays() const { return !overlay_agents_.empty(); }
   void UpdateOverlaysPrePaint();
-  void PaintOverlays(GraphicsContext&);  // For CompositeAfterPaint.
+  void PaintOverlays(GraphicsContext&);
 
   WebInputEventResult HandleInputEvent(const WebInputEvent&);
   void DispatchBufferedTouchEvents();

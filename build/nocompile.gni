@@ -1,4 +1,4 @@
-# Copyright (c) 2011 The Chromium Authors. All rights reserved.
+# Copyright 2011 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -96,7 +96,7 @@ if (enable_nocompile_tests) {
         "-nostdinc++",
         "-isystem" + rebase_path("$libcxx_prefix/include", root_build_dir),
         "-isystem" + rebase_path("$libcxxabi_prefix/include", root_build_dir),
-        "-std=c++14",
+        "-std=c++17",
         "-Wall",
         "-Werror",
         "-Wfatal-errors",
@@ -125,6 +125,13 @@ if (enable_nocompile_tests) {
         args += [
           "--sysroot",
           rebase_path(sysroot, root_build_dir),
+        ]
+      }
+
+      if (!is_nacl) {
+        args += [
+          # TODO(crbug.com/1343975) Evaluate and possibly enable.
+          "-Wno-deprecated-builtins",
         ]
       }
     }

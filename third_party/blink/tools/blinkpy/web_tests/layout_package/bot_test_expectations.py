@@ -171,7 +171,7 @@ class BotTestExpectationsFactory(object):
         test_type = (self.step_name_try if use_try_step else self.step_name)
         return self.RESULTS_URL_FORMAT % (
             urllib.parse.quote(test_type),
-            urllib.parse.quote(self.builders.master_for_builder(builder)),
+            urllib.parse.quote(self.builders.main_for_builder(builder)),
             urllib.parse.quote(builder))
 
     def _results_json_for_builder(self, builder):

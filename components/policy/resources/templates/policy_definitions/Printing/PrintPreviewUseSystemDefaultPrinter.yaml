@@ -1,0 +1,28 @@
+caption: Use System Default Printer as Default
+default: false
+desc: |-
+  Setting the policy to Enabled means <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> uses the OS default printer as the default destination for print preview.
+
+        Setting the policy to Disabled or leaving it unset means <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> uses the most recently used printer as the default destination for print preview.
+example_value: false
+features:
+  can_be_recommended: true
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- fuchsia
+items:
+- caption: Use the system default printer as the default choice in Print Preview
+  value: true
+- caption: Use the most recently used printer as the default choice in Print Preview
+  value: false
+owners:
+- file://printing/OWNERS
+- thestig@chromium.org
+- rbpotter@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome.*:61-
+tags: []
+type: main

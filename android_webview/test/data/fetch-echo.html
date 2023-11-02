@@ -1,0 +1,10 @@
+<!doctype html>
+<html>
+<head><title>running</title></head>
+<body><script>
+window.onload = function () {
+  const params = new URL(document.location).searchParams;
+  fetch(params.get('url')).then(e => e.text()).then(text => document.title = text);
+};
+</script></body>
+</html>

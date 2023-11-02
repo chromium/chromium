@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/app_list/search/ranking/launch_data.h"
 
 class AppListModelUpdater;
@@ -80,7 +81,7 @@ class Mixer {
 
     bool operator<(const SortData& other) const;
 
-    ChromeSearchResult* result;  // Not owned.
+    raw_ptr<ChromeSearchResult> result;  // Not owned.
     double score;
   };
   typedef std::vector<Mixer::SortData> SortedResults;
@@ -93,8 +94,8 @@ class Mixer {
 
   void FetchResults(const std::u16string& query);
 
-  AppListModelUpdater* const model_updater_;       // Not owned.
-  SearchControllerImpl* const search_controller_;  // Not owned.
+  const raw_ptr<AppListModelUpdater> model_updater_;       // Not owned.
+  const raw_ptr<SearchControllerImpl> search_controller_;  // Not owned.
 
   Groups groups_;
 

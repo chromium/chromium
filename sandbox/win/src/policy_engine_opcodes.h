@@ -1,4 +1,4 @@
-// Copyright (c) 2010 The Chromium Authors. All rights reserved.
+// Copyright 2010 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "sandbox/win/src/policy_engine_params.h"
 
@@ -363,12 +363,12 @@ class OpcodeFactory {
 
   // Points to the lowest currently available address of the memory
   // used to make the opcodes. This pointer increments as opcodes are made.
-  char* memory_top_;
+  raw_ptr<char> memory_top_;
 
   // Points to the highest currently available address of the memory
   // used to make the opcodes. This pointer decrements as opcode strings are
   // allocated.
-  char* memory_bottom_;
+  raw_ptr<char> memory_bottom_;
 };
 
 }  // namespace sandbox

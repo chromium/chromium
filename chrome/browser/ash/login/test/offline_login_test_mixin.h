@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,12 +9,12 @@
 #include <string>
 
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/network/network_state_test_helper.h"
 
 class AccountId;
 
 namespace ash {
+
+class NetworkStateTestHelper;
 
 // This object sets offline login mode on the login screen.
 class OfflineLoginTestMixin : public InProcessBrowserTestMixin {
@@ -27,7 +27,6 @@ class OfflineLoginTestMixin : public InProcessBrowserTestMixin {
   ~OfflineLoginTestMixin() override;
 
   // InProcessBrowserTestMixin:
-  void SetUpOnMainThread() override;
   void TearDownOnMainThread() override;
 
   // Initializes DeviceSettingsProvider to start with OfflineLogin on the next
@@ -53,12 +52,14 @@ class OfflineLoginTestMixin : public InProcessBrowserTestMixin {
                                   const std::string& password,
                                   bool wait_for_signin);
 
+  void SubmitEmailAndBlockOfflineFlow(const std::string& user_email);
+
  private:
   // Triggers Offline Login screen.
   void StartLoginAuthOffline();
 
   // This is ised to disable networking.
-  std::unique_ptr<chromeos::NetworkStateTestHelper> network_state_test_helper_;
+  std::unique_ptr<NetworkStateTestHelper> network_state_test_helper_;
 };
 
 }  // namespace ash

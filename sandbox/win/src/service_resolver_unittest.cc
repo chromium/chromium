@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include <memory>
 
 #include "base/bit_cast.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/win/windows_version.h"
 #include "sandbox/win/src/resolver.h"
 #include "sandbox/win/src/sandbox_utils.h"
@@ -30,7 +30,7 @@ class ResolverThunkTest {
 
  protected:
   // Holds the address of the fake target.
-  void* fake_target_;
+  raw_ptr<void> fake_target_;
 };
 
 // This is the concrete resolver used to perform service-call type functions
@@ -96,8 +96,8 @@ void CheckJump(void* source, void* target) {
   Code* patched = reinterpret_cast<Code*>(source);
   EXPECT_EQ(kJump32, patched->jump);
 
-  ULONG source_addr = bit_cast<ULONG>(source);
-  ULONG target_addr = bit_cast<ULONG>(target);
+  ULONG source_addr = base::bit_cast<ULONG>(source);
+  ULONG target_addr = base::bit_cast<ULONG>(target);
   EXPECT_EQ(target_addr + 19 - source_addr, patched->delta);
 #endif
 }

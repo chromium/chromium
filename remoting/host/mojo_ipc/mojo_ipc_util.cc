@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 
 #include "build/build_config.h"
 
-#if defined(OS_POSIX) && !defined(OS_MAC)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -18,7 +18,7 @@ namespace remoting {
 
 mojo::NamedPlatformChannel::ServerName
 WorkingDirectoryIndependentServerNameFromUTF8(base::StringPiece name) {
-#if defined(OS_POSIX) && !defined(OS_MAC)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
   // The channel name on non-mac POSIX (basically Linux) is the path to a unix
   // domain socket, so it needs to be an absolute path to allow the IPC binary
   // to be executed from any working directory.

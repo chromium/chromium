@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,6 +20,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/system/sys_info.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -27,6 +28,10 @@
 
 namespace discardable_memory {
 namespace {
+
+BASE_FEATURE(kShorterPeriodicPurge,
+             "ShorterPeriodicPurge",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Global atomic to generate unique discardable shared memory IDs.
 base::AtomicSequenceNumber g_next_discardable_shared_memory_id;
@@ -38,23 +43,26 @@ size_t GetDefaultAllocationSize() {
   // memory usage overhead. 4MB is measured as the ideal size according to the
   // usage statistics. For low-end devices, we care about lowering the memory
   // usage and 1MB is good for the most basic cases.
-  const size_t kDefaultAllocationSize = 4 * kOneMegabyteInBytes;
-  const size_t kDefaultLowEndDeviceAllocationSize = kOneMegabyteInBytes;
+  [[maybe_unused]] const size_t kDefaultAllocationSize =
+      4 * kOneMegabyteInBytes;
+  [[maybe_unused]] const size_t kDefaultLowEndDeviceAllocationSize =
+      kOneMegabyteInBytes;
 
-#if defined(OS_WIN) && defined(ARCH_CPU_32_BITS)
-  // On Windows 32 bit, use a smaller chunk, as address space fragmentation may
-  // make a 4MiB allocation impossible to fulfill in the browser process.
-  // See crbug.com/983348 for details.
-  ALLOW_UNUSED_LOCAL(kDefaultAllocationSize);
+#if defined(ARCH_CPU_32_BITS) && !BUILDFLAG(IS_ANDROID)
+  // On 32 bit architectures, use a smaller chunk, as address space
+  // fragmentation may make a 4MiB allocation impossible to fulfill in the
+  // browser process.  See crbug.com/983348 for details.
+  //
+  // Not on Android, since on this platform total number of file descriptors is
+  // also a concern.
   return kDefaultLowEndDeviceAllocationSize;
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
   // Low end Fuchsia devices may be very constrained, so use smaller allocations
   // to save memory. See https://fxbug.dev/55760.
   return base::SysInfo::IsLowEndDevice() ? kDefaultLowEndDeviceAllocationSize
                                          : kDefaultAllocationSize;
 
 #else
-  ALLOW_UNUSED_LOCAL(kDefaultLowEndDeviceAllocationSize);
   return kDefaultAllocationSize;
 #endif
 }
@@ -184,6 +192,7 @@ ClientDiscardableSharedMemoryManager::ClientDiscardableSharedMemoryManager(
     : RefCountedDeleteOnSequence<ClientDiscardableSharedMemoryManager>(
           base::ThreadTaskRunnerHandle::Get()),
       task_runner_(base::ThreadTaskRunnerHandle::Get()),
+      lock_("ClientDiscardableSharedMemoryManager.lock_"),
       heap_(std::make_unique<DiscardableSharedMemoryHeap>()),
       io_task_runner_(std::move(io_task_runner)),
       manager_mojo_(nullptr) {
@@ -273,6 +282,14 @@ ClientDiscardableSharedMemoryManager::AllocateLockedDiscardableMemory(
     // Search free lists for suitable span.
     std::unique_ptr<DiscardableSharedMemoryHeap::Span> free_span =
         heap_->SearchFreeLists(pages, slack);
+
+    recordreplay::Assert(
+        "[RUN-1877-2453] "
+        "ClientDiscardableSharedMemoryManager::AllocateLockedDiscardableMemory "
+        "A %d %zu %zu",
+        free_span ? recordreplay::PointerId(free_span->shared_memory()) : -1,
+        pages, slack);
+
     if (!free_span)
       break;
 
@@ -416,8 +433,13 @@ void ClientDiscardableSharedMemoryManager::ScheduledPurge() {
   // recover the memory without adverse latency effects.
   // TODO(crbug.com/1123679): Determine if |kMinAgeForScheduledPurge| and the
   // constant from |ScheduledPurge| need to be tuned.
-  PurgeUnlockedMemory(
-      ClientDiscardableSharedMemoryManager::kMinAgeForScheduledPurge);
+  if (base::FeatureList::IsEnabled(kShorterPeriodicPurge)) {
+    PurgeUnlockedMemory(
+        ClientDiscardableSharedMemoryManager::kMinAgeForScheduledPurge / 2);
+  } else {
+    PurgeUnlockedMemory(
+        ClientDiscardableSharedMemoryManager::kMinAgeForScheduledPurge);
+  }
 
   bool should_schedule = false;
   {
@@ -561,6 +583,11 @@ ClientDiscardableSharedMemoryManager::AllocateLockedDiscardableSharedMemory(
                "ClientDiscardableSharedMemoryManager::"
                "AllocateLockedDiscardableSharedMemory",
                "size", size, "id", id);
+  static crash_reporter::CrashKeyString<24>
+      discardable_memory_ipc_requested_size(
+          "discardable-memory-ipc-requested-size");
+  static crash_reporter::CrashKeyString<24> discardable_memory_ipc_error_cause(
+      "discardable-memory-ipc-error-cause");
 
   base::UnsafeSharedMemoryRegion region;
   base::WaitableEvent event(base::WaitableEvent::ResetPolicy::MANUAL,
@@ -578,14 +605,22 @@ ClientDiscardableSharedMemoryManager::AllocateLockedDiscardableSharedMemory(
   // This is likely address space exhaustion in the the browser process. We
   // don't want to crash the browser process for that, which is why the check
   // is here, and not there.
-  if (!region.IsValid())
+  if (!region.IsValid()) {
+    discardable_memory_ipc_error_cause.Set("browser side");
+    discardable_memory_ipc_requested_size.Set(base::NumberToString(size));
     return nullptr;
+  }
 
   auto memory =
       std::make_unique<base::DiscardableSharedMemory>(std::move(region));
-  if (!memory->Map(size))
+  if (!memory->Map(size)) {
+    discardable_memory_ipc_error_cause.Set("client side");
+    discardable_memory_ipc_requested_size.Set(base::NumberToString(size));
     return nullptr;
+  }
 
+  discardable_memory_ipc_error_cause.Clear();
+  discardable_memory_ipc_requested_size.Clear();
   return memory;
 }
 

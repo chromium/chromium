@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -20,7 +21,6 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
-#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
@@ -49,12 +49,13 @@ WakeLock::WakeLock(NavigatorBase& navigator)
       permission_service_(navigator.GetExecutionContext()),
       managers_{
           MakeGarbageCollected<WakeLockManager>(navigator.GetExecutionContext(),
-                                                WakeLockType::kScreen),
-          MakeGarbageCollected<WakeLockManager>(navigator.GetExecutionContext(),
-                                                WakeLockType::kSystem)} {}
+                                                V8WakeLockType::Enum::kScreen),
+          MakeGarbageCollected<WakeLockManager>(
+              navigator.GetExecutionContext(),
+              V8WakeLockType::Enum::kSystem)} {}
 
 ScriptPromise WakeLock::request(ScriptState* script_state,
-                                const String& type,
+                                V8WakeLockType type,
                                 ExceptionState& exception_state) {
   // https://w3c.github.io/screen-wake-lock/#the-request-method
 
@@ -70,7 +71,8 @@ ScriptPromise WakeLock::request(ScriptState* script_state,
   auto* context = ExecutionContext::From(script_state);
   DCHECK(context->IsWindow() || context->IsDedicatedWorkerGlobalScope());
 
-  if (type == "system" && !RuntimeEnabledFeatures::SystemWakeLockEnabled()) {
+  if (type == V8WakeLockType::Enum::kSystem &&
+      !RuntimeEnabledFeatures::SystemWakeLockEnabled()) {
     exception_state.ThrowTypeError(
         "The provided value 'system' is not a valid enum value of type "
         "WakeLockType.");
@@ -84,7 +86,7 @@ ScriptPromise WakeLock::request(ScriptState* script_state,
   // [N.B. Per https://github.com/w3c/webappsec-permissions-policy/issues/207
   // there is no official support for workers in the Permissions Policy spec,
   // but we can perform FP checks in workers in Blink]
-  if (type == "screen" &&
+  if (type == V8WakeLockType::Enum::kScreen &&
       !context->IsFeatureEnabled(
           mojom::blink::PermissionsPolicyFeature::kScreenWakeLock,
           ReportOptions::kReportOnFailure)) {
@@ -102,7 +104,7 @@ ScriptPromise WakeLock::request(ScriptState* script_state,
     //      with a "NotAllowedError" DOMException and return promise.
     // 3.2. If type is "screen", reject promise with a "NotAllowedError"
     //      DOMException, and return promise.
-    if (type == "screen") {
+    if (type == V8WakeLockType::Enum::kScreen) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kNotAllowedError,
           "Screen locks cannot be requested from workers");
@@ -120,10 +122,19 @@ ScriptPromise WakeLock::request(ScriptState* script_state,
     }
     // 6. If the steps to determine the visibility state return hidden, return a
     //    promise rejected with "NotAllowedError" DOMException.
-    if (type == "screen" && !window->GetFrame()->GetPage()->IsPageVisible()) {
+    if (type == V8WakeLockType::Enum::kScreen &&
+        !window->GetFrame()->GetPage()->IsPageVisible()) {
       exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
                                         "The requesting page is not visible");
       return ScriptPromise();
+    }
+
+    // Measure calls without transient activation as proposed in
+    // https://github.com/w3c/screen-wake-lock/pull/351.
+    if (type == V8WakeLockType::Enum::kScreen &&
+        !LocalFrame::HasTransientUserActivation(window->GetFrame())) {
+      UseCounter::Count(
+          context, WebFeature::kWakeLockAcquireScreenLockWithoutActivation);
     }
   }
 
@@ -131,37 +142,33 @@ ScriptPromise WakeLock::request(ScriptState* script_state,
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
-  WakeLockType wake_lock_type = ToWakeLockType(type);
-
-  switch (wake_lock_type) {
-    case WakeLockType::kScreen:
+  switch (type.AsEnum()) {
+    case V8WakeLockType::Enum::kScreen:
       UseCounter::Count(context, WebFeature::kWakeLockAcquireScreenLock);
       break;
-    case WakeLockType::kSystem:
+    case V8WakeLockType::Enum::kSystem:
       UseCounter::Count(context, WebFeature::kWakeLockAcquireSystemLock);
-      break;
-    default:
-      NOTREACHED();
       break;
   }
 
   // 8. Run the following steps in parallel:
-  DoRequest(wake_lock_type, resolver);
+  DoRequest(type.AsEnum(), resolver);
 
   // 9. Return promise.
   return promise;
 }
 
-void WakeLock::DoRequest(WakeLockType type, ScriptPromiseResolver* resolver) {
+void WakeLock::DoRequest(V8WakeLockType::Enum type,
+                         ScriptPromiseResolver* resolver) {
   // https://w3c.github.io/screen-wake-lock/#the-request-method
   // 8.1. Let state be the result of requesting permission to use
   //      "screen-wake-lock".
   mojom::blink::PermissionName permission_name;
   switch (type) {
-    case WakeLockType::kScreen:
+    case V8WakeLockType::Enum::kScreen:
       permission_name = mojom::blink::PermissionName::SCREEN_WAKE_LOCK;
       break;
-    case WakeLockType::kSystem:
+    case V8WakeLockType::Enum::kSystem:
       permission_name = mojom::blink::PermissionName::SYSTEM_WAKE_LOCK;
       break;
   }
@@ -171,37 +178,39 @@ void WakeLock::DoRequest(WakeLockType type, ScriptPromiseResolver* resolver) {
   GetPermissionService()->RequestPermission(
       CreatePermissionDescriptor(permission_name),
       LocalFrame::HasTransientUserActivation(local_frame),
-      WTF::Bind(&WakeLock::DidReceivePermissionResponse, WrapPersistent(this),
-                type, WrapPersistent(resolver)));
+      resolver->WrapCallbackInScriptScope(
+          WTF::BindOnce(&WakeLock::DidReceivePermissionResponse,
+                        WrapPersistent(this), type)));
 }
 
-void WakeLock::DidReceivePermissionResponse(WakeLockType type,
+void WakeLock::DidReceivePermissionResponse(V8WakeLockType::Enum type,
                                             ScriptPromiseResolver* resolver,
                                             PermissionStatus status) {
   // https://w3c.github.io/screen-wake-lock/#the-request-method
   DCHECK(status == PermissionStatus::GRANTED ||
          status == PermissionStatus::DENIED);
-  DCHECK(resolver);
   // 8.2. If state is "denied", then:
   // 8.2.1. Queue a global task on the screen wake lock task source given
   //        document's relevant global object to reject promise with a
   //        "NotAllowedError" DOMException.
   // 8.2.2. Abort these steps.
   if (status != PermissionStatus::GRANTED) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
+    resolver->Reject(V8ThrowDOMException::CreateOrDie(
+        resolver->GetScriptState()->GetIsolate(),
         DOMExceptionCode::kNotAllowedError,
         "Wake Lock permission request denied"));
     return;
   }
   // 8.3. Queue a global task on the screen wake lock task source given
   //      document's relevant global object to run these steps:
-  if (type == WakeLockType::kScreen &&
+  if (type == V8WakeLockType::Enum::kScreen &&
       !(GetPage() && GetPage()->IsPageVisible())) {
     // 8.3.1. If the steps to determine the visibility state return hidden,
     //        then:
     // 8.3.1.1. Reject promise with a "NotAllowedError" DOMException.
     // 8.3.1.2. Abort these steps.
-    resolver->Reject(MakeGarbageCollected<DOMException>(
+    resolver->Reject(V8ThrowDOMException::CreateOrDie(
+        resolver->GetScriptState()->GetIsolate(),
         DOMExceptionCode::kNotAllowedError,
         "The requesting page is not visible"));
     return;
@@ -234,7 +243,7 @@ void WakeLock::PageVisibilityChanged() {
   // 1. For each lock in document.[[ActiveLocks]]["screen"]:
   // 1.1. Run release a wake lock with document, lock, and "screen".
   WakeLockManager* manager =
-      managers_[static_cast<size_t>(WakeLockType::kScreen)];
+      managers_[static_cast<size_t>(V8WakeLockType::Enum::kScreen)];
   if (manager)
     manager->ClearWakeLocks();
 }
@@ -250,7 +259,7 @@ PermissionService* WakeLock::GetPermissionService() {
 }
 
 void WakeLock::Trace(Visitor* visitor) const {
-  for (const WakeLockManager* manager : managers_)
+  for (const Member<WakeLockManager>& manager : managers_)
     visitor->Trace(manager);
   visitor->Trace(permission_service_);
   Supplement<NavigatorBase>::Trace(visitor);

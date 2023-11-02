@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources>
+    <!-- General dimensions. -->
+    <dimen name="fast_checkout_sheet_margin">24dp</dimen>
+    <dimen name="fast_checkout_address_icon">20dp</dimen>
+    <dimen name="fast_checkout_address_icon_margin_horizontal">18dp</dimen>
+    <dimen name="fast_checkout_address_item_email_margin_top">8dp</dimen>
+    <dimen name="fast_checkout_credit_card_icon_margin_horizontal">12dp</dimen>
+    <dimen name="fast_checkout_credit_card_icon_height">20dp</dimen>
+    <dimen name="fast_checkout_credit_card_icon_width">32dp</dimen>
+    <dimen name="fast_checkout_inner_corner_radius">4dp</dimen>
+    <dimen name="fast_checkout_outer_corner_radius">16dp</dimen>
+    <dimen name="fast_checkout_product_icon_height">32dp</dimen>
+
+    <!-- Home sheet dimensions. -->
+    <dimen name="fast_checkout_home_sheet_items_spacing">24dp</dimen>
+    <dimen name="fast_checkout_home_sheet_address_card_padding">16dp</dimen>
+    <dimen name="fast_checkout_home_sheet_action_button_bottom_margin">28dp</dimen>
+    <dimen name="fast_checkout_home_sheet_expand_option_icon_margin_start">16dp</dimen>
+    <dimen name="fast_checkout_home_sheet_expand_option_icon_margin_end">8dp</dimen>
+    <dimen name="fast_checkout_sheet_home_screen_cc_min_height">56dp</dimen>
+
+    <!-- Detail sheet dimensions. -->
+    <dimen name="fast_checkout_detail_sheet_footer_icon_margin_horizontal">16dp</dimen>
+    <dimen name="fast_checkout_detail_sheet_padding_vertical">16dp</dimen>
+    <dimen name="fast_checkout_detail_sheet_spacing_vertical">2dp</dimen>
+    <dimen name="fast_checkout_detail_sheet_selected_icon_margin_start">8dp</dimen>
+    <dimen name="fast_checkout_detail_sheet_selected_icon_margin_end">16dp</dimen>
+    <dimen name="fast_checkout_detail_sheet_height_single_address">160dp</dimen>
+    <dimen name="fast_checkout_detail_sheet_height_single_credit_card">92dp</dimen>
+</resources>

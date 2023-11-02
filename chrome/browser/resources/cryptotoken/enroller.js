@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -72,12 +72,12 @@ function transportType(der) {
   while (!extensions.empty) {
     const extension = extensions.getASN1(Tag.SEQUENCE);
     const oid = extension.getASN1ObjectIdentifier();
-    if (oid.length != transportTypeOID.length) {
+    if (oid.length !== transportTypeOID.length) {
       continue;
     }
     var matches = true;
     for (var i = 0; i < oid.length; i++) {
-      if (oid[i] != transportTypeOID[i]) {
+      if (oid[i] !== transportTypeOID[i]) {
         matches = false;
         break;
       }
@@ -193,13 +193,12 @@ async function makeCertAndKey(opt_original) {
       // expects to be able to parse out a valid ECDSA signature and so one is
       // provided.
       b.addBytes(new Uint8Array([
-        0x00, 0x30, 0x45, 0x02, 0x21, 0x00, 0xc1, 0xa3, 0xa6, 0x8e, 0x2f,
-        0x16, 0xa7, 0x21, 0x46, 0x27, 0x05, 0x7f, 0x62, 0xbb, 0x72, 0x8c,
-        0x9e, 0x03, 0xe7, 0xa1, 0xba, 0x62, 0xd0, 0x46, 0x52, 0x4e, 0x45,
-        0x6d, 0x2c, 0x2f, 0x3f, 0x73, 0x02, 0x20, 0x0b, 0x5f, 0x78, 0xe5,
-        0x11, 0xaa, 0x18, 0x12, 0x9f, 0x6f, 0x23, 0x6d, 0x92, 0x13, 0x22,
-        0x7d, 0x92, 0xb4, 0xe6, 0x7e, 0xdf, 0x53, 0xe8, 0x16, 0xdf, 0xb0,
-        0x5d, 0x9d, 0xc8, 0xb9, 0x0f, 0xde
+        0x00, 0x30, 0x45, 0x02, 0x21, 0x00, 0xc1, 0xa3, 0xa6, 0x8e, 0x2f, 0x16,
+        0xa7, 0x21, 0x46, 0x27, 0x05, 0x7f, 0x62, 0xbb, 0x72, 0x8c, 0x9e, 0x03,
+        0xe7, 0xa1, 0xba, 0x62, 0xd0, 0x46, 0x52, 0x4e, 0x45, 0x6d, 0x2c, 0x2f,
+        0x3f, 0x73, 0x02, 0x20, 0x0b, 0x5f, 0x78, 0xe5, 0x11, 0xaa, 0x18, 0x12,
+        0x9f, 0x6f, 0x23, 0x6d, 0x92, 0x13, 0x22, 0x7d, 0x92, 0xb4, 0xe6, 0x7e,
+        0xdf, 0x53, 0xe8, 0x16, 0xdf, 0xb0, 0x5d, 0x9d, 0xc8, 0xb9, 0x0f, 0xde,
       ]));
     });
   });
@@ -224,7 +223,7 @@ const Registration = class {
   constructor(registrationData, appId, challenge, opt_clientData) {
     var data = new ByteString(decodeWebSafeBase64ToArray(registrationData));
     var magic = data.getBytes(1);
-    if (magic[0] != 5) {
+    if (magic[0] !== 5) {
       throw Error('bad magic number');
     }
     /** @private {!Uint8Array} */
@@ -245,7 +244,7 @@ const Registration = class {
     if (!opt_clientData) {
       // U2F_V1 - deprecated
       challengeHash = decodeWebSafeBase64ToArray(challenge);
-      if (challengeHash.length != 32) {
+      if (challengeHash.length !== 32) {
         throw Error('bad challenge length for U2F_V1');
       }
     } else {
@@ -369,8 +368,8 @@ const WebAuthnAttestationConveyancePreference = {
  */
 function conveyancePreference(enrollChallenge) {
   if (enrollChallenge.hasOwnProperty('attestation') &&
-      (enrollChallenge['attestation'] == 'direct' ||
-       enrollChallenge['attestation'] == 'indirect')) {
+      (enrollChallenge['attestation'] === 'direct' ||
+       enrollChallenge['attestation'] === 'indirect')) {
     return ConveyancePreference.DIRECT;
   }
   return ConveyancePreference.NONE;
@@ -405,7 +404,7 @@ function handleU2fEnrollRequest(messageSender, request, sendResponse) {
     var isDirect = true;
     var foregroundChecked = false;
 
-    if (conveyancePreference(enrollChallenge) == ConveyancePreference.NONE) {
+    if (conveyancePreference(enrollChallenge) === ConveyancePreference.NONE) {
       isDirect = false;
     } else if (chrome.cryptotokenPrivate != null) {
       // Requesting attestation permission may show a pop-up prompt, which will
@@ -427,7 +426,7 @@ function handleU2fEnrollRequest(messageSender, request, sendResponse) {
     var decodedRegistrationData =
         new ByteString(decodeWebSafeBase64ToArray(registrationData));
     var magicValue = decodedRegistrationData.getBytes(1);
-    if (magicValue[0] == 4) {
+    if (magicValue[0] === 4) {
       // This is a gNubby with obsolete firmware. We can't parse the reply from
       // this device and users need to be guided to reflashing them. Therefore
       // let attestation data pass directly so that can happen on
@@ -490,7 +489,7 @@ function handleU2fEnrollRequest(messageSender, request, sendResponse) {
     sendErrorResponse({errorCode: ErrorCodes.TIMEOUT});
   }
 
-  if (sender.origin.indexOf('http://') == 0 && !HTTP_ORIGINS_ALLOWED) {
+  if (sender.origin.indexOf('http://') === 0 && !HTTP_ORIGINS_ALLOWED) {
     sendErrorResponse({errorCode: ErrorCodes.BAD_REQUEST});
     return null;
   }
@@ -585,7 +584,7 @@ function isValidEnrollChallengeArray(enrollChallenges, appIdRequired) {
       // Version is implicitly V1 if not specified.
       version = 'U2F_V1';
     }
-    if (version != 'U2F_V1' && version != 'U2F_V2') {
+    if (version !== 'U2F_V1' && version !== 'U2F_V2') {
       return false;
     }
     if (seenVersions[version]) {
@@ -615,7 +614,7 @@ function isValidEnrollChallengeArray(enrollChallenges, appIdRequired) {
  */
 function findEnrollChallengeOfVersion(enrollChallenges, version) {
   for (var i = 0; i < enrollChallenges.length; i++) {
-    if (enrollChallenges[i]['version'] == version) {
+    if (enrollChallenges[i]['version'] === version) {
       return enrollChallenges[i];
     }
   }
@@ -639,7 +638,7 @@ function makeEnrollResponseData(
   for (var k in enrollChallenge) {
     responseData[k] = enrollChallenge[k];
   }
-  if (u2fVersion == 'U2F_V2') {
+  if (u2fVersion === 'U2F_V2') {
     // For U2F_V2, the challenge sent to the gnubby is modified to be the
     // hash of the client data. Include the client data.
     responseData['clientData'] = opt_clientData;
@@ -709,8 +708,9 @@ function Enroller(timer, sender, errorCb, successCb, opt_logMsgUrl) {
   // Allow http appIds for http origins. (Broken, but the caller deserves
   // what they get.)
   /** @private {boolean} */
-  this.allowHttp_ =
-      this.sender_.origin ? this.sender_.origin.indexOf('http://') == 0 : false;
+  this.allowHttp_ = this.sender_.origin ?
+      this.sender_.origin.indexOf('http://') === 0 :
+      false;
   /** @private {RequestHandler} */
   this.handler_ = null;
 }
@@ -808,7 +808,7 @@ Enroller.prototype.sendEnrollRequestToHelper_ = function() {
     type: 'enroll_helper_request',
     enrollChallenges: encodedEnrollChallenges,
     signData: encodedSignChallenges,
-    logMsgUrl: this.logMsgUrl_
+    logMsgUrl: this.logMsgUrl_,
   };
   if (!this.timer_.expired()) {
     request.timeout = this.timer_.millisecondsUntilExpired() / 1000.0;
@@ -855,7 +855,7 @@ Enroller.prototype.sendEnrollRequestToHelper_ = function() {
       return;
     }
 
-    console.log('Proxying registration request to WebAuthn');
+    console.info('Proxying registration request to WebAuthn');
     this.doRegisterWebAuthn_(enrollAppIds[0], v2Challenge, request);
   });
 };
@@ -877,7 +877,7 @@ Enroller.prototype.doRegisterWebAuthn_ = function(appId, challenge, request) {
     return;
   }
 
-  if (appId == googleCorpAppId) {
+  if (appId === googleCorpAppId) {
     this.checkU2fApiPermission_(
         appId, encodedChallenge, request,
         WebAuthnAttestationConveyancePreference.ENTERPRISE);
@@ -902,7 +902,7 @@ Enroller.prototype.checkU2fApiPermission_ = function(
         tabId: this.sender_.tabId,
         frameId: this.sender_.frameId,
         origin: this.sender_.origin,
-        appId: appId
+        appId: appId,
       },
       (result) => {
         if (!result) {
@@ -924,7 +924,7 @@ Enroller.prototype.doRegisterWebAuthnContinue_ = function(
   crypto.getRandomValues(randomId);
 
   const decodedChallenge = B64_decode(challenge);
-  if (decodedChallenge.length == 0) {
+  if (decodedChallenge.length === 0) {
     this.notifyError_({
       errorCode: ErrorCodes.BAD_REQUEST,
       errorMessage: 'challenge must be base64url encoded',
@@ -936,7 +936,7 @@ Enroller.prototype.doRegisterWebAuthnContinue_ = function(
   for (let index = 0; index < request['signData'].length; index++) {
     const element = request['signData'][index];
     const decodedKeyHandle = B64_decode(element['keyHandle']);
-    if (decodedKeyHandle.length == 0) {
+    if (decodedKeyHandle.length === 0) {
       this.notifyError_({
         errorCode: ErrorCodes.BAD_REQUEST,
         errorMessage: 'keyHandle must be base64url encoded',
@@ -1167,7 +1167,7 @@ Enroller.prototype.encodeEnrollChallenges_ = function(
       version = 'U2F_V1';
     }
 
-    if (version == 'U2F_V2') {
+    if (version === 'U2F_V2') {
       var modifiedChallenge = {};
       for (var k in enrollChallenge) {
         modifiedChallenge[k] = enrollChallenge[k];
@@ -1278,11 +1278,11 @@ Enroller.prototype.notifySuccess_ = function(
 Enroller.prototype.helperComplete_ = function(reply) {
   if (reply.code) {
     var reportedError = mapDeviceStatusCodeToU2fError(reply.code);
-    console.log(UTIL_fmt(
+    console.info(UTIL_fmt(
         'helper reported ' + reply.code.toString(16) + ', returning ' +
         reportedError.errorCode));
     // Log non-expected reply codes if we have url to send them.
-    if (reportedError.errorCode == ErrorCodes.OTHER_ERROR) {
+    if (reportedError.errorCode === ErrorCodes.OTHER_ERROR) {
       var logMsg = 'log=u2fenroll&rc=' + reply.code.toString(16);
       if (this.logMsgUrl_) {
         logMessage(logMsg, this.logMsgUrl_);
@@ -1290,10 +1290,10 @@ Enroller.prototype.helperComplete_ = function(reply) {
     }
     this.notifyError_(reportedError);
   } else {
-    console.log(UTIL_fmt('Gnubby enrollment succeeded!!!!!'));
+    console.info(UTIL_fmt('Gnubby enrollment succeeded!!!!!'));
     var browserData;
 
-    if (reply.version == 'U2F_V2') {
+    if (reply.version === 'U2F_V2') {
       // For U2F_V2, the challenge sent to the gnubby is modified to be the hash
       // of the browser data. Include the browser data.
       browserData = this.browserData_[reply.version];

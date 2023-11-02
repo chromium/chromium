@@ -1,11 +1,14 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "apps/app_restore_service.h"
+
 #include "apps/app_restore_service_factory.h"
 #include "apps/saved_files_service.h"
+#include "base/files/file_util.h"
 #include "base/threading/thread_restrictions.h"
+#include "build/build_config.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_test.h"
@@ -48,7 +51,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, RunningAppsAreRecorded) {
   // Pretend that the app is supposed to be running.
   extension_prefs->SetExtensionRunning(extension->id(), true);
 
-  ExtensionTestMessageListener restart_listener("onRestarted", false);
+  ExtensionTestMessageListener restart_listener("onRestarted");
   apps::AppRestoreServiceFactory::GetForBrowserContext(browser()->profile())
       ->HandleStartup(true);
   EXPECT_TRUE(restart_listener.WaitUntilSatisfied());
@@ -57,7 +60,8 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, RunningAppsAreRecorded) {
 // Tests that apps are recorded in the preferences as active when and only when
 // they have visible windows.
 IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, ActiveAppsAreRecorded) {
-  ExtensionTestMessageListener ready_listener("ready", true);
+  ExtensionTestMessageListener ready_listener("ready",
+                                              ReplyBehavior::kWillReply);
   const Extension* extension =
       LoadExtension(test_data_dir_.AppendASCII("platform_apps/active_test"));
   ASSERT_TRUE(extension);
@@ -140,7 +144,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, FileAccessIsSavedToPrefs) {
 }
 
 // Flaky: crbug.com/269613
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 #define MAYBE_FileAccessIsRestored DISABLED_FileAccessIsRestored
 #else
 #define MAYBE_FileAccessIsRestored FileAccessIsRestored
@@ -160,8 +164,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, MAYBE_FileAccessIsRestored) {
       "temp", temp_directory.GetPath());
 
   extensions::ExtensionHostTestHelper host_helper(profile());
-  ExtensionTestMessageListener access_ok_listener(
-      "restartedFileAccessOK", false);
+  ExtensionTestMessageListener access_ok_listener("restartedFileAccessOK");
   const Extension* extension =
       LoadAndLaunchPlatformApp("file_access_restored_test", "fileWritten");
   ASSERT_TRUE(extension);

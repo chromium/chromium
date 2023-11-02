@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,6 +24,7 @@ struct WebAppChromeOsData {
   // on the WebApp, which would require refactoring PreinstalledWebAppManager to
   // manage multiple Sources for a single app.
   bool oem_installed = false;
+  bool handles_file_open_intents = show_in_launcher;
 };
 
 bool operator==(const WebAppChromeOsData& chromeos_data1,

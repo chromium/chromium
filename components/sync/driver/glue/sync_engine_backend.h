@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "base/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "components/invalidation/public/invalidation.h"
 #include "components/invalidation/public/invalidator_state.h"
 #include "components/invalidation/public/topic_invalidation_map.h"
@@ -27,15 +28,16 @@
 
 namespace syncer {
 
+class KeyDerivationParams;
 class ModelTypeController;
+class Nigori;
 class SyncEngineImpl;
 
 class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
                           public SyncManager::Observer {
  public:
   using AllNodesCallback =
-      base::OnceCallback<void(const ModelType,
-                              std::unique_ptr<base::ListValue>)>;
+      base::OnceCallback<void(const ModelType, base::Value::List)>;
 
   // Struct that allows passing back data upon init, for data previously
   // produced by SyncEngineBackend (which doesn't itself have the ability to
@@ -55,6 +57,24 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
 
     // Define the polling interval. Must not be zero.
     base::TimeDelta poll_interval;
+  };
+
+  // Used to record result of handling of incoming sync invalidations. These
+  // values are persisted to logs. Entries should not be renumbered and numeric
+  // values should never be reused.
+  enum class IncomingInvalidationStatus {
+    // The payload parsed successfully and contains at least one valid data
+    // type.
+    kSuccess = 0,
+
+    // Failed to parse incoming payload, relevant only for sync standalone
+    // invalidations.
+    kPayloadParseFailed = 1,
+
+    // All data types in the payload are unknown.
+    kUnknownModelType = 2,
+
+    kMaxValue = kUnknownModelType,
   };
 
   SyncEngineBackend(const std::string& name,
@@ -110,10 +130,13 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
   void DoStartSyncing(base::Time last_poll_time);
 
   // Called to set the passphrase for encryption.
-  void DoSetEncryptionPassphrase(const std::string& passphrase);
+  void DoSetEncryptionPassphrase(
+      const std::string& passphrase,
+      const KeyDerivationParams& key_derivation_params);
 
-  // Called to decrypt the pending keys using user-entered passphrases.
-  void DoSetDecryptionPassphrase(const std::string& passphrase);
+  // Called to decrypt the pending keys using the |key| derived from
+  // user-entered passphrase.
+  void DoSetExplicitPassphraseDecryptionKey(std::unique_ptr<Nigori> key);
 
   // Called to decrypt the pending keys using trusted vault keys.
   void DoAddTrustedVaultDecryptionKeys(
@@ -150,11 +173,14 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
   // Notify about change in client id.
   void DoOnInvalidatorClientIdChange(const std::string& client_id);
 
-  // Forwards an invalidation to the sync manager for all data types from the
-  // |payload|.
-  void DoOnInvalidationReceived(const std::string& payload);
+  // Forwards an invalidation to the sync manager for all data types extracted
+  // from the |payload|. This method is called for sync standalone
+  // invalidations.
+  void DoOnStandaloneInvalidationReceived(
+      const std::string& payload,
+      const ModelTypeSet& interested_data_types);
 
-  // Returns a ListValue representing Nigori node.
+  // Returns a Value::List representing Nigori node.
   void GetNigoriNodeForDebugging(AllNodesCallback callback);
 
   bool HasUnsyncedItemsForTest() const;
@@ -176,6 +202,10 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
       ModelType Type) const;
 
   void LoadAndConnectNigoriController();
+
+  IncomingInvalidationStatus DoOnStandaloneInvalidationReceivedImpl(
+      const std::string& payload,
+      const ModelTypeSet& interested_data_types);
 
   // Name used for debugging.
   const std::string name_;

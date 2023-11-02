@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "ash/public/cpp/multi_user_window_manager.h"
-#include "ash/public/cpp/multi_user_window_manager_observer.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
@@ -23,7 +22,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "components/app_restore/features.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
@@ -66,11 +64,11 @@ void RecordUMAForTransferredWindowType(aura::Window* window) {
       return;
     // If it is not a browser, it is probably be a V2 application. In that case
     // one of the AppWindowRegistry instances should know about it.
-    extensions::AppWindow* app_window = NULL;
+    extensions::AppWindow* app_window = nullptr;
     std::vector<Profile*> profiles =
         g_browser_process->profile_manager()->GetLoadedProfiles();
     for (std::vector<Profile*>::iterator it = profiles.begin();
-         it != profiles.end() && app_window == NULL; it++) {
+         it != profiles.end() && app_window == nullptr; it++) {
       app_window =
           extensions::AppWindowRegistry::Get(*it)->GetAppWindowForNativeWindow(
               window);
@@ -141,8 +139,7 @@ MultiProfileSupport::~MultiProfileSupport() {
         account_id_to_app_observer_.find(account_id);
     if (app_observer_iterator != account_id_to_app_observer_.end()) {
       extensions::AppWindowRegistry::Get(*it)->RemoveObserver(
-          app_observer_iterator->second);
-      delete app_observer_iterator->second;
+          app_observer_iterator->second.get());
       account_id_to_app_observer_.erase(app_observer_iterator);
     }
   }
@@ -173,9 +170,9 @@ void MultiProfileSupport::AddUser(content::BrowserContext* context) {
     return;
 
   account_id_to_app_observer_[account_id] =
-      new AppObserver(account_id.GetUserEmail());
+      std::make_unique<AppObserver>(account_id.GetUserEmail());
   extensions::AppWindowRegistry::Get(profile)->AddObserver(
-      account_id_to_app_observer_[account_id]);
+      account_id_to_app_observer_[account_id].get());
 
   // Account all existing application windows of this user accordingly.
   const extensions::AppWindowRegistry::AppWindowList& app_windows =
@@ -228,15 +225,13 @@ void MultiProfileSupport::OnWindowOwnerEntryChanged(aura::Window* window,
 }
 
 void MultiProfileSupport::OnTransitionUserShelfToNewAccount() {
-  if (full_restore::features::IsFullRestoreEnabled()) {
-    Profile* profile = ProfileManager::GetActiveUserProfile();
-    full_restore::SetActiveProfilePath(profile->GetPath());
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  full_restore::SetActiveProfilePath(profile->GetPath());
 
-    auto* full_restore_service =
-        ash::full_restore::FullRestoreService::GetForProfile(profile);
-    if (full_restore_service)
-      full_restore_service->OnTransitionedToNewActiveUser(profile);
-  }
+  auto* full_restore_service =
+      ash::full_restore::FullRestoreService::GetForProfile(profile);
+  if (full_restore_service)
+    full_restore_service->OnTransitionedToNewActiveUser(profile);
 
   ChromeShelfController* chrome_shelf_controller =
       ChromeShelfController::instance();

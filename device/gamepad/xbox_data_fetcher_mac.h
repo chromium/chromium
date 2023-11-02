@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/mac/scoped_ionotificationportref.h"
 #include "base/mac/scoped_ioobject.h"
+#include "base/memory/raw_ptr.h"
 #include "device/gamepad/gamepad_data_fetcher.h"
 #include "device/gamepad/xbox_controller_mac.h"
 
@@ -23,9 +24,8 @@ namespace device {
 class XboxDataFetcher : public GamepadDataFetcher,
                         public XboxControllerMac::Delegate {
  public:
-  typedef GamepadDataFetcherFactoryImpl<XboxDataFetcher,
-                                        GAMEPAD_SOURCE_MAC_XBOX>
-      Factory;
+  using Factory =
+      GamepadDataFetcherFactoryImpl<XboxDataFetcher, GamepadSource::kMacXbox>;
 
   XboxDataFetcher();
   XboxDataFetcher(const XboxDataFetcher& entry) = delete;
@@ -56,7 +56,7 @@ class XboxDataFetcher : public GamepadDataFetcher,
     PendingController& operator=(const PendingController& entry);
     ~PendingController();
 
-    XboxDataFetcher* fetcher;
+    raw_ptr<XboxDataFetcher> fetcher;
     std::unique_ptr<XboxControllerMac> controller;
     base::mac::ScopedIOObject<io_iterator_t> notify;
   };

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,7 +34,7 @@
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "sandbox/policy/features.h"
 #endif
 
@@ -59,9 +59,9 @@ void SetCookie(network::mojom::CookieManager* cookie_manager) {
   base::Time t = base::Time::Now();
   auto cookie = net::CanonicalCookie::CreateUnsafeCookieForTesting(
       kCookieName, kCookieValue, "www.test.com", "/", t, t + base::Days(1),
-      base::Time(), true /* secure */, false /* http-only*/,
+      base::Time(), base::Time(), /*secure=*/true, /*http-only=*/false,
       net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_DEFAULT,
-      false /* same_party */);
+      /*same_party=*/false);
   base::RunLoop run_loop;
   cookie_manager->SetCanonicalCookie(
       *cookie, net::cookie_util::SimulatedCookieSource(*cookie, "https"),
@@ -104,7 +104,8 @@ class ChromeNetworkServiceBrowserTest
         network::mojom::NetworkContextParams::New();
     context_params->enable_encrypted_cookies = enable_encrypted_cookies;
     context_params->file_paths = network::mojom::NetworkContextFilePaths::New();
-    context_params->file_paths->data_path = browser()->profile()->GetPath();
+    context_params->file_paths->data_directory =
+        browser()->profile()->GetPath();
     context_params->file_paths->cookie_database_name =
         base::FilePath(FILE_PATH_LITERAL("cookies"));
     context_params->cert_verifier_params = content::GetCertVerifierParams(
@@ -137,7 +138,7 @@ IN_PROC_BROWSER_TEST_P(ChromeNetworkServiceBrowserTest, PRE_EncryptedCookies) {
 }
 
 // This flakes on Mac10.12 and Windows: http://crbug.com/868667
-#if defined(OS_MAC) || defined(OS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #define MAYBE_EncryptedCookies DISABLED_EncryptedCookies
 #else
 #define MAYBE_EncryptedCookies EncryptedCookies
@@ -180,12 +181,12 @@ class ChromeNetworkServiceMigrationBrowserTest : public InProcessBrowserTest {
   ChromeNetworkServiceMigrationBrowserTest() = default;
 
   void SetUp() override {
-    std::vector<base::Feature> disabled_features, enabled_features;
-#if defined(OS_WIN)
-    // On Windows, enabling the LPAC Sandbox implicitly enables network data
-    // migration. To avoid this conflicting with the test, disable the LPAC
-    // sandbox to ensure that full control is maintained of the migration code
-    // via chrome's kTriggerNetworkDataMigration feature.
+    std::vector<base::test::FeatureRef> disabled_features, enabled_features;
+#if BUILDFLAG(IS_WIN)
+    // On Windows, the Network Sandbox requires that data migration be enabled
+    // to function correctly. Thus, in order to correctly test the case when
+    // network data migration is not happening, the network sandbox must also be
+    // disabled.
     disabled_features.push_back(
         sandbox::policy::features::kNetworkServiceSandbox);
 #endif

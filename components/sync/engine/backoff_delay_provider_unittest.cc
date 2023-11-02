@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -58,10 +58,6 @@ TEST(BackoffDelayProviderTest, GetInitialDelay) {
       SyncerError(SyncerError::SERVER_RESPONSE_VALIDATION_FAILED);
   EXPECT_EQ(kInitialBackoffRetryTime, delay->GetInitialDelay(state));
 
-  state.last_download_updates_result =
-      SyncerError(SyncerError::DATATYPE_TRIGGERED_RETRY);
-  EXPECT_EQ(kInitialBackoffImmediateRetryTime, delay->GetInitialDelay(state));
-
   state.last_download_updates_result = SyncerError(SyncerError::SYNCER_OK);
   state.commit_result = SyncerError(SyncerError::SERVER_RETURN_MIGRATION_DONE);
   EXPECT_EQ(kInitialBackoffImmediateRetryTime, delay->GetInitialDelay(state));
@@ -94,10 +90,6 @@ TEST(BackoffDelayProviderTest, GetInitialDelayWithOverride) {
   state.last_download_updates_result =
       SyncerError(SyncerError::SERVER_RESPONSE_VALIDATION_FAILED);
   EXPECT_EQ(kInitialBackoffShortRetryTime, delay->GetInitialDelay(state));
-
-  state.last_download_updates_result =
-      SyncerError(SyncerError::DATATYPE_TRIGGERED_RETRY);
-  EXPECT_EQ(kInitialBackoffImmediateRetryTime, delay->GetInitialDelay(state));
 
   state.last_download_updates_result = SyncerError(SyncerError::SYNCER_OK);
   state.commit_result = SyncerError(SyncerError::SERVER_RETURN_MIGRATION_DONE);

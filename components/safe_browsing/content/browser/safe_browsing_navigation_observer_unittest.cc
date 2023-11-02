@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
@@ -14,6 +15,7 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
@@ -28,7 +30,10 @@ namespace safe_browsing {
 
 class SBNavigationObserverTest : public content::RenderViewHostTestHarness {
  public:
-  SBNavigationObserverTest() {}
+  SBNavigationObserverTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        kOmitNonUserGesturesFromReferrerChain);
+  }
 
   SBNavigationObserverTest(const SBNavigationObserverTest&) = delete;
   SBNavigationObserverTest& operator=(const SBNavigationObserverTest&) = delete;
@@ -48,9 +53,6 @@ class SBNavigationObserverTest : public content::RenderViewHostTestHarness {
     navigation_observer_ =
         new SafeBrowsingNavigationObserver(web_contents(), settings_map_.get(),
                                            navigation_observer_manager_.get());
-
-    scoped_feature_list_.InitAndEnableFeature(
-        kOmitNonUserGesturesFromReferrerChain);
   }
   void TearDown() override {
     delete navigation_observer_;
@@ -182,17 +184,19 @@ class SBNavigationObserverTest : public content::RenderViewHostTestHarness {
   scoped_refptr<HostContentSettingsMap> settings_map_;
   std::unique_ptr<SafeBrowsingNavigationObserverManager>
       navigation_observer_manager_;
-  SafeBrowsingNavigationObserver* navigation_observer_;
+  raw_ptr<SafeBrowsingNavigationObserver> navigation_observer_;
+
+ private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(SBNavigationObserverTest, TestNavigationEventList) {
   NavigationEventList events(3);
 
-  EXPECT_EQ(-1, static_cast<int>(events.FindNavigationEvent(
-                    base::Time::Now(), GURL("http://invalid.com"), GURL(),
-                    SessionID::InvalidValue(),
-                    navigation_event_list()->navigation_events().size() - 1)));
+  EXPECT_FALSE(events.FindNavigationEvent(
+      base::Time::Now(), GURL("http://invalid.com"), GURL(),
+      SessionID::InvalidValue(), content::GlobalRenderFrameHostId(),
+      navigation_event_list()->navigation_events().size() - 1));
   EXPECT_EQ(0U, events.CleanUpNavigationEvents());
   EXPECT_EQ(0U, events.NavigationEventsSize());
 
@@ -206,11 +210,13 @@ TEST_F(SBNavigationObserverTest, TestNavigationEventList) {
       CreateNavigationEventUniquePtr(GURL("http://foo1.com"), now));
   EXPECT_EQ(2U, events.NavigationEventsSize());
   // FindNavigationEvent should return the latest matching event.
-  int index = events.FindNavigationEvent(
+  auto index = events.FindNavigationEvent(
       base::Time::Now(), GURL("http://foo1.com"), GURL(),
-      SessionID::InvalidValue(), events.navigation_events().size() - 1);
+      SessionID::InvalidValue(), content::GlobalRenderFrameHostId(),
+      events.navigation_events().size() - 1);
+  EXPECT_TRUE(index);
 
-  EXPECT_EQ(now, events.GetNavigationEvent(index)->last_updated);
+  EXPECT_EQ(now, events.GetNavigationEvent(*index)->last_updated);
   // One event should get removed.
   EXPECT_EQ(1U, events.CleanUpNavigationEvents());
   EXPECT_EQ(1U, events.NavigationEventsSize());
@@ -289,8 +295,64 @@ TEST_F(SBNavigationObserverTest, TestInfiniteLoop) {
   ASSERT_EQ(6U, navigation_event_list()->NavigationEventsSize());
   ReferrerChain referrer_chain;
   navigation_observer_manager_->IdentifyReferrerChainByEventURL(
-      GURL("http://A.com/"), SessionID::InvalidValue(), 10, &referrer_chain);
+      GURL("http://A.com/"), SessionID::InvalidValue(),
+      content::GlobalRenderFrameHostId(), 10, &referrer_chain);
   ASSERT_EQ(6, referrer_chain.size());
+}
+
+TEST_F(SBNavigationObserverTest, TestFindEventInCorrectOutermostFrame) {
+  NavigationEventList events(4);
+
+  // Add 2 events to the list.
+  base::Time now = base::Time::Now();
+  const int child_id = 1;
+  const int frame_id_a = 2;
+  const int frame_id_b = 3;
+
+  auto outermost_main_frame_id_a =
+      content::GlobalRenderFrameHostId(child_id, frame_id_a);
+
+  auto event_page_a =
+      CreateNavigationEventUniquePtr(GURL("http://foo1.com"), now);
+  event_page_a->outermost_main_frame_id = outermost_main_frame_id_a;
+  events.RecordNavigationEvent(std::move(event_page_a));
+
+  auto event_subframe_a = CreateNavigationEventUniquePtr(
+      GURL("http://foo1.com/subframe.html"), now);
+  event_subframe_a->outermost_main_frame_id = outermost_main_frame_id_a;
+  events.RecordNavigationEvent(std::move(event_subframe_a));
+
+  auto outermost_main_frame_id_b =
+      content::GlobalRenderFrameHostId(child_id, frame_id_b);
+
+  auto event_page_b =
+      CreateNavigationEventUniquePtr(GURL("http://foo1.com/bar.html"), now);
+  event_page_b->outermost_main_frame_id = outermost_main_frame_id_b;
+  events.RecordNavigationEvent(std::move(event_page_b));
+
+  auto event_subframe_b = CreateNavigationEventUniquePtr(
+      GURL("http://foo1.com/subframe.html"), now);
+  event_subframe_b->outermost_main_frame_id = outermost_main_frame_id_b;
+  events.RecordNavigationEvent(std::move(event_subframe_b));
+
+  // Should match outermost main frame id, where possible.
+  EXPECT_EQ(
+      1U, *events.FindNavigationEvent(
+              base::Time::Now(), GURL("http://foo1.com/subframe.html"), GURL(),
+              SessionID::InvalidValue(), outermost_main_frame_id_a,
+              events.NavigationEventsSize() - 1));
+  EXPECT_EQ(
+      3U, *events.FindNavigationEvent(
+              base::Time::Now(), GURL("http://foo1.com/subframe.html"), GURL(),
+              SessionID::InvalidValue(), outermost_main_frame_id_b,
+              events.NavigationEventsSize() - 1));
+
+  // Should match the most recent if main_frame_id is not given.
+  EXPECT_EQ(
+      3U, *events.FindNavigationEvent(
+              base::Time::Now(), GURL("http://foo1.com/subframe.html"), GURL(),
+              SessionID::InvalidValue(), content::GlobalRenderFrameHostId(),
+              events.NavigationEventsSize() - 1));
 }
 
 TEST_F(SBNavigationObserverTest, BasicNavigationAndCommit) {
@@ -313,7 +375,7 @@ TEST_F(SBNavigationObserverTest, BasicNavigationAndCommit) {
 
 TEST_F(SBNavigationObserverTest, ServerRedirect) {
   auto navigation = content::NavigationSimulator::CreateRendererInitiated(
-      GURL("http://foo/3"), web_contents()->GetMainFrame());
+      GURL("http://foo/3"), web_contents()->GetPrimaryMainFrame());
   auto* nav_list = navigation_event_list();
   SessionID tab_id = sessions::SessionTabHelper::IdForTab(web_contents());
 
@@ -384,8 +446,10 @@ TEST_F(SBNavigationObserverTest, TestCleanUpStaleNavigationEvents) {
       base::Time::FromDoubleT(now.ToDoubleT() + 60.0 * 60.0);  // Invalid
   GURL url_0("http://foo/0");
   GURL url_1("http://foo/1");
-  content::MockNavigationHandle handle_0(url_0, web_contents()->GetMainFrame());
-  content::MockNavigationHandle handle_1(url_1, web_contents()->GetMainFrame());
+  content::MockNavigationHandle handle_0(url_0,
+                                         web_contents()->GetPrimaryMainFrame());
+  content::MockNavigationHandle handle_1(url_1,
+                                         web_contents()->GetPrimaryMainFrame());
   navigation_event_list()->RecordNavigationEvent(
       CreateNavigationEventUniquePtr(url_0, in_an_hour));
   navigation_event_list()->RecordNavigationEvent(
@@ -411,9 +475,10 @@ TEST_F(SBNavigationObserverTest, TestCleanUpStaleNavigationEvents) {
   // Verifies all stale and invalid navigation events are removed.
   ASSERT_EQ(2U, navigation_event_list()->NavigationEventsSize());
   ASSERT_EQ(1U, navigation_event_list()->PendingNavigationEventsSize());
-  EXPECT_EQ(-1, static_cast<int>(navigation_event_list()->FindNavigationEvent(
-                    base::Time::Now(), url_1, GURL(), SessionID::InvalidValue(),
-                    navigation_event_list()->NavigationEventsSize() - 1)));
+  EXPECT_FALSE(navigation_event_list()->FindNavigationEvent(
+      base::Time::Now(), url_1, GURL(), SessionID::InvalidValue(),
+      content::GlobalRenderFrameHostId(),
+      navigation_event_list()->NavigationEventsSize() - 1));
   EXPECT_EQ(nullptr,
             navigation_event_list()->FindPendingNavigationEvent(url_1));
 }
@@ -579,7 +644,8 @@ TEST_F(SBNavigationObserverTest, TimestampIsDecreasing) {
 
   ReferrerChain referrer_chain;
   navigation_observer_manager_->IdentifyReferrerChainByEventURL(
-      GURL("http://A.com"), SessionID::InvalidValue(), 10, &referrer_chain);
+      GURL("http://A.com"), SessionID::InvalidValue(),
+      content::GlobalRenderFrameHostId(), 10, &referrer_chain);
 
   ASSERT_EQ(3, referrer_chain.size());
 
@@ -656,7 +722,8 @@ TEST_F(SBNavigationObserverTest, RemoveMiddleReferrerChains) {
 
   ReferrerChain referrer_chain;
   navigation_observer_manager_->IdentifyReferrerChainByEventURL(
-      GURL("http://A.com/"), SessionID::InvalidValue(), 10, &referrer_chain);
+      GURL("http://A.com/"), SessionID::InvalidValue(),
+      content::GlobalRenderFrameHostId(), 10, &referrer_chain);
 
   int utm_counter = 10;
   GURL expected_current_url = GURL("http://A.com");
@@ -719,7 +786,8 @@ TEST_F(SBNavigationObserverTest, ChainWorksThroughNewTab) {
 
   ReferrerChain referrer_chain;
   navigation_observer_manager_->IdentifyReferrerChainByEventURL(
-      GURL("http://b.com/"), SessionID::InvalidValue(), 10, &referrer_chain);
+      GURL("http://b.com/"), SessionID::InvalidValue(),
+      content::GlobalRenderFrameHostId(), 10, &referrer_chain);
 
   ASSERT_EQ(1, referrer_chain.size());
 
@@ -752,7 +820,8 @@ TEST_F(SBNavigationObserverTest, ChainContinuesThroughBrowserInitiated) {
 
   ReferrerChain referrer_chain;
   navigation_observer_manager_->IdentifyReferrerChainByEventURL(
-      GURL("http://b.com/"), SessionID::InvalidValue(), 10, &referrer_chain);
+      GURL("http://b.com/"), SessionID::InvalidValue(),
+      content::GlobalRenderFrameHostId(), 10, &referrer_chain);
 
   EXPECT_EQ(2, referrer_chain.size());
 }
@@ -793,8 +862,8 @@ TEST_F(SBNavigationObserverTest,
 
   ReferrerChain referrer_chain;
   navigation_observer_manager_->IdentifyReferrerChainByEventURL(
-      GURL("http://example.com/c"), SessionID::InvalidValue(), 10,
-      &referrer_chain);
+      GURL("http://example.com/c"), SessionID::InvalidValue(),
+      content::GlobalRenderFrameHostId(), 10, &referrer_chain);
 
   ASSERT_EQ(1, referrer_chain.size());
 
@@ -808,9 +877,12 @@ TEST_F(SBNavigationObserverTest, TestGetLatestPendingNavigationEvent) {
   base::Time one_minute_ago = base::Time::FromDoubleT(now.ToDoubleT() - 60.0);
   base::Time two_minute_ago = base::Time::FromDoubleT(now.ToDoubleT() - 120.0);
   GURL url("http://foo/0");
-  content::MockNavigationHandle handle_0(url, web_contents()->GetMainFrame());
-  content::MockNavigationHandle handle_1(url, web_contents()->GetMainFrame());
-  content::MockNavigationHandle handle_2(url, web_contents()->GetMainFrame());
+  content::MockNavigationHandle handle_0(url,
+                                         web_contents()->GetPrimaryMainFrame());
+  content::MockNavigationHandle handle_1(url,
+                                         web_contents()->GetPrimaryMainFrame());
+  content::MockNavigationHandle handle_2(url,
+                                         web_contents()->GetPrimaryMainFrame());
   navigation_event_list()->RecordPendingNavigationEvent(
       &handle_0, CreateNavigationEventUniquePtr(url, one_minute_ago));
   navigation_event_list()->RecordPendingNavigationEvent(

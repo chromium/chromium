@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -58,7 +58,7 @@ FastPairEnabledProvider::FastPairEnabledProvider(
 FastPairEnabledProvider::~FastPairEnabledProvider() = default;
 
 bool FastPairEnabledProvider::AreSubProvidersEnabled() {
-  QP_LOG(VERBOSE)
+  QP_LOG(INFO)
       << __func__
       << ": Flag:" << base::FeatureList::IsEnabled(features::kFastPair)
       << " Policy Pref:" << fast_pair_pref_enabled_provider_->is_enabled()

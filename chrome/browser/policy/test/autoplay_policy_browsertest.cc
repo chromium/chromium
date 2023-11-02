@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "url/gurl.h"
@@ -22,7 +23,8 @@ namespace policy {
 
 namespace {
 const char kAutoplayTestPageURL[] = "/media/autoplay_iframe.html";
-}
+const char kUnifiedAutoplayTestPageURL[] = "/media/unified_autoplay.html";
+}  // namespace
 
 class AutoplayPolicyTest : public PolicyTest {
  public:
@@ -67,12 +69,12 @@ class AutoplayPolicyTest : public PolicyTest {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
-  content::RenderFrameHost* GetMainFrame() {
-    return GetWebContents()->GetMainFrame();
+  content::RenderFrameHost* GetPrimaryMainFrame() {
+    return GetWebContents()->GetPrimaryMainFrame();
   }
 
   content::RenderFrameHost* GetChildFrame() {
-    return ChildFrameAt(GetMainFrame(), 0);
+    return ChildFrameAt(GetPrimaryMainFrame(), 0);
   }
 
  private:
@@ -84,7 +86,7 @@ IN_PROC_BROWSER_TEST_F(AutoplayPolicyTest, AutoplayAllowedByPolicy) {
   NavigateToTestPage();
 
   // Check that autoplay was not allowed.
-  EXPECT_FALSE(TryAutoplay(GetMainFrame()));
+  EXPECT_FALSE(TryAutoplay(GetPrimaryMainFrame()));
   EXPECT_FALSE(TryAutoplay(GetChildFrame()));
 
   // Update policy to allow autoplay.
@@ -94,12 +96,12 @@ IN_PROC_BROWSER_TEST_F(AutoplayPolicyTest, AutoplayAllowedByPolicy) {
 
   // Check that autoplay was allowed by policy.
   NavigateToTestPage();
-  EXPECT_TRUE(TryAutoplay(GetMainFrame()));
+  EXPECT_TRUE(TryAutoplay(GetPrimaryMainFrame()));
   EXPECT_TRUE(TryAutoplay(GetChildFrame()));
 }
 
 // Flaky on Linux. See: crbug.com/1189597.
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_AutoplayAllowlist_Allowed DISABLED_AutoplayAllowlist_Allowed
 #else
 #define MAYBE_AutoplayAllowlist_Allowed AutoplayAllowlist_Allowed
@@ -108,21 +110,22 @@ IN_PROC_BROWSER_TEST_F(AutoplayPolicyTest, MAYBE_AutoplayAllowlist_Allowed) {
   NavigateToTestPage();
 
   // Check that autoplay was not allowed.
-  EXPECT_FALSE(TryAutoplay(GetMainFrame()));
+  EXPECT_FALSE(TryAutoplay(GetPrimaryMainFrame()));
   EXPECT_FALSE(TryAutoplay(GetChildFrame()));
 
   // Create a test allowlist with our origin.
-  std::vector<base::Value> allowlist;
-  allowlist.push_back(base::Value(embedded_test_server()->GetURL("/").spec()));
+  base::Value::List allowlist;
+  allowlist.Append(embedded_test_server()->GetURL("/").spec());
 
   // Update policy to allow autoplay for our test origin.
   PolicyMap policies;
-  SetPolicy(&policies, key::kAutoplayAllowlist, base::Value(allowlist));
+  SetPolicy(&policies, key::kAutoplayAllowlist,
+            base::Value(std::move(allowlist)));
   UpdateProviderPolicy(policies);
 
   // Check that autoplay was allowed by policy.
   NavigateToTestPage();
-  EXPECT_TRUE(TryAutoplay(GetMainFrame()));
+  EXPECT_TRUE(TryAutoplay(GetPrimaryMainFrame()));
   EXPECT_TRUE(TryAutoplay(GetChildFrame()));
 }
 
@@ -130,21 +133,22 @@ IN_PROC_BROWSER_TEST_F(AutoplayPolicyTest, AutoplayAllowlist_PatternAllowed) {
   NavigateToTestPage();
 
   // Check that autoplay was not allowed.
-  EXPECT_FALSE(TryAutoplay(GetMainFrame()));
+  EXPECT_FALSE(TryAutoplay(GetPrimaryMainFrame()));
   EXPECT_FALSE(TryAutoplay(GetChildFrame()));
 
   // Create a test allowlist with our origin.
-  std::vector<base::Value> allowlist;
-  allowlist.push_back(base::Value("127.0.0.1:*"));
+  base::Value::List allowlist;
+  allowlist.Append("127.0.0.1:*");
 
   // Update policy to allow autoplay for our test origin.
   PolicyMap policies;
-  SetPolicy(&policies, key::kAutoplayAllowlist, base::Value(allowlist));
+  SetPolicy(&policies, key::kAutoplayAllowlist,
+            base::Value(std::move(allowlist)));
   UpdateProviderPolicy(policies);
 
   // Check that autoplay was allowed by policy.
   NavigateToTestPage();
-  EXPECT_TRUE(TryAutoplay(GetMainFrame()));
+  EXPECT_TRUE(TryAutoplay(GetPrimaryMainFrame()));
   EXPECT_TRUE(TryAutoplay(GetChildFrame()));
 }
 
@@ -152,26 +156,28 @@ IN_PROC_BROWSER_TEST_F(AutoplayPolicyTest, AutoplayAllowlist_Missing) {
   NavigateToTestPage();
 
   // Check that autoplay was not allowed.
-  EXPECT_FALSE(TryAutoplay(GetMainFrame()));
+  EXPECT_FALSE(TryAutoplay(GetPrimaryMainFrame()));
   EXPECT_FALSE(TryAutoplay(GetChildFrame()));
 
   // Create a test allowlist with a random origin.
-  std::vector<base::Value> allowlist;
-  allowlist.push_back(base::Value("https://www.example.com"));
+  base::Value::List allowlist;
+  allowlist.Append("https://www.example.com");
 
   // Update policy to allow autoplay for a random origin.
   PolicyMap policies;
-  SetPolicy(&policies, key::kAutoplayAllowlist, base::Value(allowlist));
+  SetPolicy(&policies, key::kAutoplayAllowlist,
+            base::Value(std::move(allowlist)));
   UpdateProviderPolicy(policies);
 
   // Check that autoplay was not allowed.
   NavigateToTestPage();
-  EXPECT_FALSE(TryAutoplay(GetMainFrame()));
+  EXPECT_FALSE(TryAutoplay(GetPrimaryMainFrame()));
   EXPECT_FALSE(TryAutoplay(GetChildFrame()));
 }
 
+#if !BUILDFLAG(IS_FUCHSIA)
 // Flaky on Linux and ChromeOS. See: crbug.com/1172978.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_AutoplayDeniedByPolicy DISABLED_AutoplayDeniedByPolicy
 #else
 #define MAYBE_AutoplayDeniedByPolicy AutoplayDeniedByPolicy
@@ -180,7 +186,7 @@ IN_PROC_BROWSER_TEST_F(AutoplayPolicyTest, MAYBE_AutoplayDeniedByPolicy) {
   NavigateToTestPage();
 
   // Check that autoplay was not allowed.
-  EXPECT_FALSE(TryAutoplay(GetMainFrame()));
+  EXPECT_FALSE(TryAutoplay(GetPrimaryMainFrame()));
   EXPECT_FALSE(TryAutoplay(GetChildFrame()));
 
   // Update policy to forbid autoplay.
@@ -190,25 +196,26 @@ IN_PROC_BROWSER_TEST_F(AutoplayPolicyTest, MAYBE_AutoplayDeniedByPolicy) {
 
   // Check that autoplay was not allowed by policy.
   NavigateToTestPage();
-  EXPECT_FALSE(TryAutoplay(GetMainFrame()));
+  EXPECT_FALSE(TryAutoplay(GetPrimaryMainFrame()));
   EXPECT_FALSE(TryAutoplay(GetChildFrame()));
 
   // Create a test allowlist with a random origin.
-  std::vector<base::Value> allowlist;
-  allowlist.push_back(base::Value("https://www.example.com"));
+  base::Value::List allowlist;
+  allowlist.Append("https://www.example.com");
 
   // Update policy to allow autoplay for a random origin.
-  SetPolicy(&policies, key::kAutoplayAllowlist, base::Value(allowlist));
+  SetPolicy(&policies, key::kAutoplayAllowlist,
+            base::Value(std::move(allowlist)));
   UpdateProviderPolicy(policies);
 
   // Check that autoplay was not allowed.
   NavigateToTestPage();
-  EXPECT_FALSE(TryAutoplay(GetMainFrame()));
+  EXPECT_FALSE(TryAutoplay(GetPrimaryMainFrame()));
   EXPECT_FALSE(TryAutoplay(GetChildFrame()));
 }
 
 // Flaky on Linux. See: crbug.com/1172978.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_AutoplayDeniedAllowedWithURL DISABLED_AutoplayDeniedAllowedWithURL
 #else
 #define MAYBE_AutoplayDeniedAllowedWithURL AutoplayDeniedAllowedWithURL
@@ -217,7 +224,7 @@ IN_PROC_BROWSER_TEST_F(AutoplayPolicyTest, MAYBE_AutoplayDeniedAllowedWithURL) {
   NavigateToTestPage();
 
   // Check that autoplay was not allowed.
-  EXPECT_FALSE(TryAutoplay(GetMainFrame()));
+  EXPECT_FALSE(TryAutoplay(GetPrimaryMainFrame()));
   EXPECT_FALSE(TryAutoplay(GetChildFrame()));
 
   // Update policy to forbid autoplay.
@@ -227,20 +234,21 @@ IN_PROC_BROWSER_TEST_F(AutoplayPolicyTest, MAYBE_AutoplayDeniedAllowedWithURL) {
 
   // Check that autoplay was not allowed by policy.
   NavigateToTestPage();
-  EXPECT_FALSE(TryAutoplay(GetMainFrame()));
+  EXPECT_FALSE(TryAutoplay(GetPrimaryMainFrame()));
   EXPECT_FALSE(TryAutoplay(GetChildFrame()));
 
   // Create a test allowlist with our test origin.
-  std::vector<base::Value> allowlist;
-  allowlist.push_back(base::Value(embedded_test_server()->GetURL("/").spec()));
+  base::Value::List allowlist;
+  allowlist.Append(embedded_test_server()->GetURL("/").spec());
 
   // Update policy to allow autoplay for our test origin.
-  SetPolicy(&policies, key::kAutoplayAllowlist, base::Value(allowlist));
+  SetPolicy(&policies, key::kAutoplayAllowlist,
+            base::Value(std::move(allowlist)));
   UpdateProviderPolicy(policies);
 
   // Check that autoplay was allowed by policy.
   NavigateToTestPage();
-  EXPECT_TRUE(TryAutoplay(GetMainFrame()));
+  EXPECT_TRUE(TryAutoplay(GetPrimaryMainFrame()));
   EXPECT_TRUE(TryAutoplay(GetChildFrame()));
 }
 
@@ -250,7 +258,7 @@ IN_PROC_BROWSER_TEST_F(AutoplayPolicyTest,
   NavigateToTestPage();
 
   // Check that autoplay was not allowed.
-  EXPECT_FALSE(TryAutoplay(GetMainFrame()));
+  EXPECT_FALSE(TryAutoplay(GetPrimaryMainFrame()));
   EXPECT_FALSE(TryAutoplay(GetChildFrame()));
 
   // Update policy to forbid autoplay.
@@ -260,21 +268,91 @@ IN_PROC_BROWSER_TEST_F(AutoplayPolicyTest,
 
   // Check that autoplay was not allowed by policy.
   NavigateToTestPage();
-  EXPECT_FALSE(TryAutoplay(GetMainFrame()));
+  EXPECT_FALSE(TryAutoplay(GetPrimaryMainFrame()));
   EXPECT_FALSE(TryAutoplay(GetChildFrame()));
 
   // Create a test allowlist with our test origin.
-  std::vector<base::Value> allowlist;
-  allowlist.push_back(base::Value(embedded_test_server()->GetURL("/").spec()));
+  base::Value::List allowlist;
+  allowlist.Append(embedded_test_server()->GetURL("/").spec());
 
   // Update policy to allow autoplay for our test origin.
-  SetPolicy(&policies, key::kAutoplayAllowlist, base::Value(allowlist));
+  SetPolicy(&policies, key::kAutoplayAllowlist,
+            base::Value(std::move(allowlist)));
   UpdateProviderPolicy(policies);
 
   // Check that autoplay was allowed by policy.
   NavigateToTestPage();
-  EXPECT_TRUE(TryAutoplay(GetMainFrame()));
+  EXPECT_TRUE(TryAutoplay(GetPrimaryMainFrame()));
   EXPECT_TRUE(TryAutoplay(GetChildFrame()));
+}
+#endif  // !BUILDFLAG(IS_FUCHSIA)
+class AutoplayPolicyFencedFrameTest : public AutoplayPolicyTest {
+ public:
+  AutoplayPolicyFencedFrameTest() = default;
+  ~AutoplayPolicyFencedFrameTest() override = default;
+
+  // Prevent additional feature/field trial enablement.
+  void SetUpCommandLine(base::CommandLine* command_line) override {}
+
+  void NavigateAndCheckAutoplayAllowed(bool expected_result) {
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(),
+        embedded_test_server()->GetURL(kUnifiedAutoplayTestPageURL)));
+    // Append a cross origin fenced frame into the primary main frame.
+    content::RenderFrameHost* fenced_frame_host =
+        fenced_frame_helper_.CreateFencedFrame(
+            GetPrimaryMainFrame(),
+            embedded_test_server2()->GetURL(kUnifiedAutoplayTestPageURL));
+    ASSERT_NE(nullptr, fenced_frame_host);
+
+    // Check that autoplay works as |expected_result|.
+    EXPECT_EQ(TryAutoplay(GetPrimaryMainFrame()), expected_result);
+    EXPECT_EQ(TryAutoplay(fenced_frame_host), expected_result);
+  }
+
+  bool TryAutoplay(content::RenderFrameHost* rfh) {
+    bool result = false;
+    EXPECT_TRUE(content::ExecuteScriptWithoutUserGestureAndExtractBool(
+        rfh, "attemptPlay();", &result));
+    return result;
+  }
+
+ protected:
+  content::test::FencedFrameTestHelper fenced_frame_helper_;
+};
+
+#if !BUILDFLAG(IS_FUCHSIA)
+IN_PROC_BROWSER_TEST_F(AutoplayPolicyFencedFrameTest, AutoplayAllowedByPolicy) {
+  // Check that autoplay was not allowed.
+  NavigateAndCheckAutoplayAllowed(false);
+
+  // Update policy to allow autoplay.
+  PolicyMap policies;
+  SetPolicy(&policies, key::kAutoplayAllowed, base::Value(true));
+  UpdateProviderPolicy(policies);
+
+  // Check that autoplay was allowed by policy.
+  NavigateAndCheckAutoplayAllowed(true);
+}
+#endif  // !BUILDFLAG(IS_FUCHSIA)
+
+IN_PROC_BROWSER_TEST_F(AutoplayPolicyFencedFrameTest,
+                       AutoplayAllowlist_Allowed) {
+  // Check that autoplay was not allowed.
+  NavigateAndCheckAutoplayAllowed(false);
+
+  // Create a test allowlist with our origin.
+  base::Value::List allowlist;
+  allowlist.Append(embedded_test_server()->GetURL("/").spec());
+
+  // Update policy to allow autoplay for our test origin.
+  PolicyMap policies;
+  SetPolicy(&policies, key::kAutoplayAllowlist,
+            base::Value(std::move(allowlist)));
+  UpdateProviderPolicy(policies);
+
+  // Check that autoplay was allowed by policy.
+  NavigateAndCheckAutoplayAllowed(true);
 }
 
 }  // namespace policy

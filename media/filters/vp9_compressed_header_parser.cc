@@ -1,10 +1,9 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "media/filters/vp9_compressed_header_parser.h"
 
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 
 namespace media {
@@ -23,8 +22,8 @@ int InvRecenterNonneg(int v, int m) {
 }
 
 // 6.3.5 Inv remap prob syntax, inv_remap_prob().
-Vp9Prob InvRemapProb(uint8_t delta_prob, uint8_t prob) {
-  static uint8_t inv_map_table[kVp9MaxProb] = {
+Vp9Prob InvRemapProb(uint8_t delta_prob, uint8_t prob, bool have_context) {
+  static const uint8_t inv_map_table[kVp9MaxProb] = {
       7,   20,  33,  46,  59,  72,  85,  98,  111, 124, 137, 150, 163, 176,
       189, 202, 215, 228, 241, 254, 1,   2,   3,   4,   5,   6,   8,   9,
       10,  11,  12,  13,  14,  15,  16,  17,  18,  19,  21,  22,  23,  24,
@@ -44,23 +43,41 @@ Vp9Prob InvRemapProb(uint8_t delta_prob, uint8_t prob) {
       222, 223, 224, 225, 226, 227, 229, 230, 231, 232, 233, 234, 235, 236,
       237, 238, 239, 240, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251,
       252, 253, 253};
-  uint8_t m = prob;
   uint8_t v = delta_prob;
-  DCHECK_GE(m, 1);
-  DCHECK_LE(m, kVp9MaxProb);
-  DCHECK_LT(v, base::size(inv_map_table));
+  DCHECK_LT(v, std::size(inv_map_table));
   v = inv_map_table[v];
+  if (!have_context)
+    return v;
+
+  uint8_t m = prob;
+  DCHECK_LE(m, kVp9MaxProb);
+  DCHECK_GE(m, 1);
   m--;
   if ((m << 1) <= kVp9MaxProb) {
     return 1 + InvRecenterNonneg(v, m);
-  } else {
-    return kVp9MaxProb - InvRecenterNonneg(v, kVp9MaxProb - 1 - m);
   }
+  return kVp9MaxProb - InvRecenterNonneg(v, kVp9MaxProb - 1 - m);
 }
 
 }  // namespace
 
 Vp9CompressedHeaderParser::Vp9CompressedHeaderParser() = default;
+
+// 6.3 Compressed header syntax
+bool Vp9CompressedHeaderParser::Parse(const uint8_t* stream,
+                                      off_t frame_size,
+                                      Vp9FrameHeader* fhdr) {
+  have_frame_context_ = true;
+  return ParseInternal(stream, frame_size, fhdr);
+}
+
+bool Vp9CompressedHeaderParser::ParseNoContext(const uint8_t* stream,
+                                               off_t frame_size,
+                                               Vp9FrameHeader* fhdr) {
+  have_frame_context_ = false;
+  memset(&fhdr->frame_context, 0, sizeof(fhdr->frame_context));
+  return ParseInternal(stream, frame_size, fhdr);
+}
 
 // 6.3.1 Tx mode syntax
 void Vp9CompressedHeaderParser::ReadTxMode(Vp9FrameHeader* fhdr) {
@@ -93,10 +110,13 @@ uint8_t Vp9CompressedHeaderParser::DecodeTermSubexp() {
 // 6.3.3 Diff update prob syntax
 void Vp9CompressedHeaderParser::DiffUpdateProb(Vp9Prob* prob) {
   const Vp9Prob kUpdateProb = 252;
-  if (reader_.ReadBool(kUpdateProb)) {
-    uint8_t delta_prob = DecodeTermSubexp();
-    *prob = InvRemapProb(delta_prob, *prob);
-  }
+  const bool must_update_probabilities = reader_.ReadBool(kUpdateProb);
+
+  if (!must_update_probabilities)
+    return;
+
+  uint8_t delta_prob = DecodeTermSubexp();
+  *prob = InvRemapProb(delta_prob, *prob, have_frame_context_);
 }
 
 // Helper function to DiffUpdateProb an array of probs.
@@ -135,7 +155,7 @@ void Vp9CompressedHeaderParser::ReadCoefProbs(Vp9FrameHeader* fhdr) {
     for (auto& ai : fhdr->frame_context.coef_probs[tx_size]) {
       for (auto& aj : ai) {
         for (auto& ak : aj) {
-          int max_l = (ak == aj[0]) ? 3 : 6;
+          int max_l = (+ak == +aj[0]) ? 3 : 6;
           for (int l = 0; l < max_l; l++) {
             DiffUpdateProbArray(ak[l]);
           }
@@ -254,9 +274,9 @@ void Vp9CompressedHeaderParser::UpdateMvProbArray(Vp9Prob (&prob_array)[N]) {
 }
 
 // 6.3 Compressed header syntax
-bool Vp9CompressedHeaderParser::Parse(const uint8_t* stream,
-                                      off_t frame_size,
-                                      Vp9FrameHeader* fhdr) {
+bool Vp9CompressedHeaderParser::ParseInternal(const uint8_t* stream,
+                                              off_t frame_size,
+                                              Vp9FrameHeader* fhdr) {
   DVLOG(2) << "Vp9CompressedHeaderParser::Parse";
   if (!reader_.Initialize(stream, frame_size))
     return false;

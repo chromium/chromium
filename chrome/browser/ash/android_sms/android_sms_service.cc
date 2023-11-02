@@ -1,20 +1,19 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/android_sms/android_sms_service.h"
 
+#include "ash/services/multidevice_setup/public/cpp/prefs.h"
 #include "base/time/default_clock.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/android_sms/android_sms_app_setup_controller_impl.h"
 #include "chrome/browser/ash/android_sms/android_sms_urls.h"
 #include "chrome/browser/ash/android_sms/connection_manager.h"
 #include "chrome/browser/ash/android_sms/fcm_connection_establisher.h"
-#include "chrome/browser/ash/android_sms/pairing_lost_notifier.h"
 #include "chrome/browser/ash/multidevice_setup/multidevice_setup_client_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chromeos/services/multidevice_setup/public/cpp/prefs.h"
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/browser/storage_partition.h"
 
@@ -42,12 +41,7 @@ AndroidSmsService::AndroidSmsService(
       android_sms_pairing_state_tracker_(
           std::make_unique<AndroidSmsPairingStateTrackerImpl>(
               profile_,
-              android_sms_app_manager_.get())),
-      pairing_lost_notifier_(std::make_unique<PairingLostNotifier>(
-          profile,
-          multidevice_setup_client,
-          profile_->GetPrefs(),
-          android_sms_app_manager_.get())) {
+              android_sms_app_manager_.get())) {
   session_manager::SessionManager::Get()->AddObserver(this);
 }
 
@@ -55,9 +49,6 @@ AndroidSmsService::~AndroidSmsService() = default;
 
 void AndroidSmsService::Shutdown() {
   connection_manager_.reset();
-  // Note: |pairing_lost_notifier_| holds a reference to
-  // |android_sms_app_manager_|, so it should be deleted first.
-  pairing_lost_notifier_.reset();
   android_sms_pairing_state_tracker_.reset();
   android_sms_app_manager_.reset();
   session_manager::SessionManager::Get()->RemoveObserver(this);

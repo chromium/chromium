@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -47,10 +47,10 @@ HtmlAudioElementCapturerSource::~HtmlAudioElementCapturerSource() {
 bool HtmlAudioElementCapturerSource::EnsureSourceIsStarted() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (audio_source_ && !is_started_) {
-    // TODO(crbug.com/964463): Use per-frame task runner.
-    Thread::Current()->GetTaskRunner()->PostTask(
-        FROM_HERE, WTF::Bind(&HtmlAudioElementCapturerSource::SetAudioCallback,
-                             weak_factory_.GetWeakPtr()));
+    GetTaskRunner()->PostTask(
+        FROM_HERE,
+        WTF::BindOnce(&HtmlAudioElementCapturerSource::SetAudioCallback,
+                      weak_factory_.GetWeakPtr()));
     is_started_ = true;
   }
   return is_started_;
@@ -91,10 +91,10 @@ void HtmlAudioElementCapturerSource::OnAudioBus(
   if (sample_rate != last_sample_rate_ ||
       audio_bus->channels() != last_num_channels_ ||
       audio_bus->frames() != last_bus_frames_) {
-    blink::MediaStreamAudioSource::SetFormat(
-        media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                               media::GuessChannelLayout(audio_bus->channels()),
-                               sample_rate, audio_bus->frames()));
+    blink::MediaStreamAudioSource::SetFormat(media::AudioParameters(
+        media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+        media::ChannelLayoutConfig::Guess(audio_bus->channels()), sample_rate,
+        audio_bus->frames()));
     last_sample_rate_ = sample_rate;
     last_num_channels_ = audio_bus->channels();
     last_bus_frames_ = audio_bus->frames();

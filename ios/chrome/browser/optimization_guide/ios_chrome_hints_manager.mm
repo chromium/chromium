@@ -1,11 +1,9 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/optimization_guide/ios_chrome_hints_manager.h"
+#import "ios/chrome/browser/optimization_guide/ios_chrome_hints_manager.h"
 
-#import "ios/chrome/browser/application_context.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -15,21 +13,22 @@
 namespace optimization_guide {
 
 IOSChromeHintsManager::IOSChromeHintsManager(
-    web::BrowserState* browser_state,
+    bool off_the_record,
+    const std::string& application_locale,
     PrefService* pref_service,
-    optimization_guide::OptimizationGuideStore* hint_store,
+    base::WeakPtr<optimization_guide::OptimizationGuideStore> hint_store,
     optimization_guide::TopHostProvider* top_host_provider,
     optimization_guide::TabUrlProvider* tab_url_provider,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    network::NetworkConnectionTracker* network_connection_tracker)
-    : HintsManager(browser_state->IsOffTheRecord(),
-                   GetApplicationContext()->GetApplicationLocale(),
+    OptimizationGuideLogger* optimization_guide_logger)
+    : HintsManager(off_the_record,
+                   application_locale,
                    pref_service,
                    hint_store,
                    top_host_provider,
                    tab_url_provider,
                    url_loader_factory,
-                   network_connection_tracker,
-                   /*push_notification_manager=*/nullptr) {}
+                   /*push_notification_manager=*/nullptr,
+                   optimization_guide_logger) {}
 
 }  // namespace optimization_guide

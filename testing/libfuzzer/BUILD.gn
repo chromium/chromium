@@ -1,4 +1,4 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -49,6 +49,14 @@ config("fuzzer_test_config") {
 # Libfuzzer build bot uses this to filter out targets while
 # building an archive for clusterfuzz.
 config("no_clusterfuzz") {
+}
+
+# Since most iOS code doesn't compile in other platforms, and not all fuzzers
+# compile in iOS, a clusterfuzz job is set up to run only selected iOS fuzzers.
+# This is a noop config to tag fuzzer tests to be built for the job. iOS
+# Libfuzzer build bot uses this to filter targets while building an archive for
+# the job.
+config("build_for_ios_clusterfuzz_job") {
 }
 
 # noop to tag seed corpus rules.

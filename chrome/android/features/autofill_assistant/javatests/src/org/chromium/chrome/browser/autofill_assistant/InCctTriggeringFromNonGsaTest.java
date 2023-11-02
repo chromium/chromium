@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,14 +16,18 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.autofill_assistant.proto.GetTriggerScriptsResponseProto;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
-import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
+import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
@@ -31,6 +35,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
  */
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 public class InCctTriggeringFromNonGsaTest {
     private static final String HTML_DIRECTORY = "/components/test/data/autofill_assistant/html/";
     private static final String TEST_PAGE_UNSUPPORTED = "autofill_assistant_target_website.html";
@@ -51,10 +56,11 @@ public class InCctTriggeringFromNonGsaTest {
     }
 
     private void enableMsbb() {
-        AutofillAssistantPreferencesUtil.setProactiveHelpSwitch(true);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            UserPrefs.get(Profile.getLastUsedRegularProfile())
+                    .setBoolean(Pref.AUTOFILL_ASSISTANT_TRIGGER_SCRIPTS_ENABLED, true);
             UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(
-                    AutofillAssistantUiController.getProfile(), true);
+                    Profile.getLastUsedRegularProfile(), true);
 
             // Force native to pick up the changes we made to Chrome preferences.
             AutofillAssistantTabHelper
@@ -69,19 +75,11 @@ public class InCctTriggeringFromNonGsaTest {
      */
     @Test
     @MediumTest
-    // clang-format off
-    @CommandLineFlags.
-    Add({"enable-features=AutofillAssistantInCctTriggering<FakeStudyName,"
-              +"AutofillAssistantUrlHeuristics<FakeStudyName",
-            "force-fieldtrials=FakeStudyName/Enabled",
-            "force-fieldtrial-params=FakeStudyName.Enabled:json_parameters/"
-              +"%7B%22heuristics%22%3A%5B%7B%22intent%22%3A%22SHOPPING_ASSISTED_CHECKOUT"
-              +"%22%2C%22conditionSet%22%3A%7B%22urlMatches%22%3A%22.*cart.*%22%7D%7D%5D%7D"})
-    // clang-format on
-    public void
-    doNotTriggerForExternalCct() throws InterruptedException {
+    @CommandLineFlags.Add({"variations-override-country=us"})
+    public void doNotTriggerForExternalCct() throws InterruptedException {
+        mTestRule.getEmbeddedTestServerRule().setServerUsesHttps(true);
         mTestRule.startCustomTabActivityWithIntent(
-                CustomTabsTestUtils
+                CustomTabsIntentTestUtils
                         .createMinimalCustomTabIntent(InstrumentationRegistry.getTargetContext(),
                                 getTargetWebsiteUrl(TEST_PAGE_UNSUPPORTED))
                         .putExtra(Browser.EXTRA_APPLICATION_ID, "com.example"));
@@ -103,20 +101,13 @@ public class InCctTriggeringFromNonGsaTest {
      */
     @Test
     @MediumTest
-    // clang-format off
-    @CommandLineFlags.
-        Add({"enable-features=AutofillAssistantInCctTriggering<FakeStudyName,"
-        +"AutofillAssistantUrlHeuristics<FakeStudyName",
-        "force-fieldtrials=FakeStudyName/Enabled",
-        "force-fieldtrial-params=FakeStudyName.Enabled:json_parameters/"
-            +"%7B%22heuristics%22%3A%5B%7B%22intent%22%3A%22SHOPPING_ASSISTED_CHECKOUT"
-            +"%22%2C%22conditionSet%22%3A%7B%22urlMatches%22%3A%22.*cart.*%22%7D%7D%5D%7D"})
-    // clang-format on
-    public void
-    doNotTriggerForCctWithUnknownOrigin() throws InterruptedException {
-        mTestRule.startCustomTabActivityWithIntent(CustomTabsTestUtils.createMinimalCustomTabIntent(
-                InstrumentationRegistry.getTargetContext(),
-                getTargetWebsiteUrl(TEST_PAGE_UNSUPPORTED)));
+    @CommandLineFlags.Add({"variations-override-country=us"})
+    public void doNotTriggerForCctWithUnknownOrigin() throws InterruptedException {
+        mTestRule.getEmbeddedTestServerRule().setServerUsesHttps(true);
+        mTestRule.startCustomTabActivityWithIntent(
+                CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
+                        InstrumentationRegistry.getTargetContext(),
+                        getTargetWebsiteUrl(TEST_PAGE_UNSUPPORTED)));
         enableMsbb();
 
         AutofillAssistantTestServiceRequestSender testServiceRequestSender =

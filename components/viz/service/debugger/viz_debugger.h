@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,21 +7,23 @@
 
 #include <atomic>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
 #include "base/debug/debugging_buildflags.h"
-#include "base/strings/stringprintf.h"
-#include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/viz/common/buildflags.h"
+#include "components/viz/service/debugger/rwlock.h"
 #include "components/viz/service/viz_service_export.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/viz/privileged/mojom/viz_main.mojom.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
 // The visual debugger can be completely disabled/enabled at compile time via
@@ -78,6 +80,22 @@ class VIZ_SERVICE_EXPORT VizDebugger {
 
   ~VizDebugger();
 
+  struct VIZ_SERVICE_EXPORT BufferInfo {
+    BufferInfo();
+    ~BufferInfo();
+    BufferInfo(const BufferInfo& a);
+    int width;
+    int height;
+    std::vector<DrawOption> buffer;
+  };
+
+  struct Buffer {
+    int id;
+    BufferInfo buffer_info;
+  };
+
+  void SubmitBuffer(int buff_id, BufferInfo&& buffer);
+
   void CompleteFrame(const uint64_t counter,
                      const gfx::Size& window_pix,
                      base::TimeTicks time_ticks);
@@ -93,14 +111,18 @@ class VIZ_SERVICE_EXPORT VizDebugger {
                 const std::string& text,
                 const StaticSource* dcs,
                 DrawOption option);
-  void Draw(const gfx::Size& obj_size,
-            const gfx::Vector2dF& pos,
-            const StaticSource* dcs,
-            DrawOption option);
   void Draw(const gfx::SizeF& obj_size,
             const gfx::Vector2dF& pos,
             const StaticSource* dcs,
-            DrawOption option);
+            DrawOption option,
+            int* id,
+            const gfx::RectF& uv);
+  void Draw(const gfx::Size& obj_size,
+            const gfx::Vector2dF& pos,
+            const StaticSource* dcs,
+            DrawOption option,
+            int* id,
+            const gfx::RectF& uv);
 
   void AddLogMessage(std::string log,
                      const StaticSource* dcs,
@@ -123,7 +145,9 @@ class VIZ_SERVICE_EXPORT VizDebugger {
   void DrawInternal(const gfx::Size& obj_size,
                     const gfx::Vector2dF& pos,
                     const StaticSource* dcs,
-                    DrawOption option);
+                    DrawOption option,
+                    int* id,
+                    const gfx::RectF& uv);
   void ApplyFilters(VizDebugger::StaticSource* source);
   mojo::Remote<mojom::VizDebugOutput> debug_output_;
 
@@ -131,34 +155,49 @@ class VIZ_SERVICE_EXPORT VizDebugger {
   scoped_refptr<base::SequencedTaskRunner> gpu_thread_task_runner_;
 
   struct CallSubmitCommon {
-    CallSubmitCommon(int index, int source, DrawOption draw_option)
-        : draw_index(index), source_index(source), option(draw_option) {}
+    CallSubmitCommon() = default;
+    CallSubmitCommon(int index, int source, int thread, DrawOption draw_option)
+        : draw_index(index),
+          source_index(source),
+          thread_id(thread),
+          option(draw_option) {}
     base::DictionaryValue GetDictionaryValue() const;
     int draw_index;
     int source_index;
+    int thread_id;
     VizDebugger::DrawOption option;
   };
 
   struct DrawCall : public CallSubmitCommon {
+    DrawCall() = default;
     DrawCall(int index,
              int source,
+             int thread,
              DrawOption draw_option,
              gfx::Size size,
-             gfx::Vector2dF position)
-        : CallSubmitCommon(index, source, draw_option),
+             gfx::Vector2dF position,
+             int buffer_id,
+             gfx::RectF uv_rect)
+        : CallSubmitCommon(index, source, thread, draw_option),
           obj_size(size),
-          pos(position) {}
+          pos(position),
+          buff_id(buffer_id),
+          uv(uv_rect) {}
     gfx::Size obj_size;
     gfx::Vector2dF pos;
+    int buff_id;
+    gfx::RectF uv;
   };
 
   struct DrawTextCall : public CallSubmitCommon {
+    DrawTextCall() = default;
     DrawTextCall(int index,
                  int source,
+                 int thread,
                  DrawOption draw_option,
                  gfx::Vector2dF position,
                  std::string str)
-        : CallSubmitCommon(index, source, draw_option),
+        : CallSubmitCommon(index, source, thread, draw_option),
           pos(position),
           text(str) {}
     gfx::Vector2dF pos;
@@ -166,8 +205,14 @@ class VIZ_SERVICE_EXPORT VizDebugger {
   };
 
   struct LogCall : public CallSubmitCommon {
-    LogCall(int index, int source, DrawOption draw_option, std::string str)
-        : CallSubmitCommon(index, source, draw_option), value(std::move(str)) {}
+    LogCall() = default;
+    LogCall(int index,
+            int source,
+            int thread,
+            DrawOption draw_option,
+            std::string str)
+        : CallSubmitCommon(index, source, thread, draw_option),
+          value(std::move(str)) {}
     std::string value;
   };
 
@@ -186,12 +231,13 @@ class VIZ_SERVICE_EXPORT VizDebugger {
     bool enabled = false;
   };
 
-  // Synchronize access to the variables in the block below as it is mutated by
-  // multiple threads.
-  base::Lock common_lock_;
+  // Synchronize access to buffers and variables mutated by multiple threads.
+  rwlock::RWLock read_write_lock_;
+
   // New filters to promoted to cached filters on next frame.
   std::vector<FilterBlock> new_filters_;
   bool apply_new_filters_next_frame_ = false;
+
   // Json is saved out every frame on the call to 'CompleteFrame' but may not be
   // uploaded immediately due to task runner sequencing.
   base::Value json_frame_output_;
@@ -199,14 +245,29 @@ class VIZ_SERVICE_EXPORT VizDebugger {
 
   // Cached filters to apply filtering to new sources not just on filter update.
   std::vector<FilterBlock> cached_filters_;
-  // Common counter for all submissions.
-  int submission_count_ = 0;
-  std::vector<DrawCall> draw_rect_calls_;
-  std::vector<DrawTextCall> draw_text_calls_;
-  std::vector<LogCall> logs_;
-  std::vector<StaticSource*> sources_;
+  int buffer_id = 0;
 
-  THREAD_CHECKER(viz_compositor_thread_checker_);
+  // Common counter for all submissions. This variable can be accessed by
+  // multiple threads atomically.
+  std::atomic<int> submission_count_ = 0;
+
+  // Default starting size for each buffer/vector.
+  static constexpr int kDefaultBufferSize = 64;
+
+  // Buffers/vectors for each type of debug calls. These vectors can be accessed
+  // and mutated by multiple threads simultaneously or individually.
+  std::vector<DrawCall> draw_rect_calls_{kDefaultBufferSize};
+  std::vector<DrawTextCall> draw_text_calls_{kDefaultBufferSize};
+  std::vector<LogCall> logs_{kDefaultBufferSize};
+  std::vector<StaticSource*> sources_;
+  std::vector<Buffer> buffers_;
+
+  // Individual tail indices tracker variables for next insertion index in
+  // each buffer. These variables can be accessed by multiple threads
+  // atomically.
+  std::atomic<int> draw_rect_calls_tail_idx_ = 0;
+  std::atomic<int> draw_text_calls_tail_idx_ = 0;
+  std::atomic<int> logs_tail_idx_ = 0;
 };
 
 }  // namespace viz
@@ -215,20 +276,36 @@ class VIZ_SERVICE_EXPORT VizDebugger {
 #define DBG_OPT_GREEN viz::VizDebugger::DrawOption({0, 255, 0, 0})
 #define DBG_OPT_BLUE viz::VizDebugger::DrawOption({0, 0, 255, 0})
 #define DBG_OPT_BLACK viz::VizDebugger::DrawOption({0, 0, 0, 0})
+#define DEFAULT_UV gfx::RectF(0, 0, 1, 1)
 
-#define DBG_DRAW_RECTANGLE_OPT(anno, option, pos, size)                   \
-  do {                                                                    \
-    if (viz::VizDebugger::IsEnabled()) {                                  \
-      static viz::VizDebugger::StaticSource dcs(anno, __FILE__, __LINE__, \
-                                                __func__);                \
-      if (dcs.IsActive()) {                                               \
-        viz::VizDebugger::GetInstance()->Draw(size, pos, &dcs, option);   \
-      }                                                                   \
-    }                                                                     \
+#define DBG_DRAW_RECTANGLE_OPT_BUFF_UV(anno, option, pos, size, id, uv)    \
+  do {                                                                     \
+    if (viz::VizDebugger::IsEnabled()) {                                   \
+      static viz::VizDebugger::StaticSource dcs(anno, __FILE__, __LINE__,  \
+                                                __func__);                 \
+      if (dcs.IsActive()) {                                                \
+        viz::VizDebugger::GetInstance()->Draw(size, pos, &dcs, option, id, \
+                                              uv);                         \
+      }                                                                    \
+    }                                                                      \
   } while (0)
 
+#define DBG_DRAW_RECTANGLE_OPT_BUFF(anno, option, pos, size, id) \
+  DBG_DRAW_RECTANGLE_OPT_BUFF_UV(anno, option, pos, size, id, DEFAULT_UV)
+
+#define DBG_COMPLETE_BUFFERS(buff_id, buffer)                           \
+  do {                                                                  \
+    if (viz::VizDebugger::IsEnabled()) {                                \
+      viz::VizDebugger::GetInstance()->SubmitBuffer(buff_id,            \
+                                                    std::move(buffer)); \
+    }                                                                   \
+  } while (0)
+
+#define DBG_DRAW_RECTANGLE_OPT(anno, option, pos, size) \
+  DBG_DRAW_RECTANGLE_OPT_BUFF(anno, option, pos, size, nullptr)
+
 #define DBG_DRAW_RECTANGLE(anno, pos, size) \
-  DBG_DRAW_RECTANGLE_OPT(anno, DBG_OPT_BLACK, pos, size)
+  DBG_DRAW_RECTANGLE_OPT_BUFF(anno, DBG_OPT_BLACK, pos, size, nullptr)
 
 #define DBG_DRAW_TEXT_OPT(anno, option, pos, text)                          \
   do {                                                                      \
@@ -259,10 +336,26 @@ class VIZ_SERVICE_EXPORT VizDebugger {
 #define DBG_LOG(anno, format, ...) \
   DBG_LOG_OPT(anno, DBG_OPT_BLACK, format, __VA_ARGS__)
 
+#define DBG_DRAW_RECT_OPT_BUFF(anno, option, rect, id)                    \
+  DBG_DRAW_RECTANGLE_OPT_BUFF(                                            \
+      anno, option, gfx::Vector2dF(rect.origin().x(), rect.origin().y()), \
+      rect.size(), id)
+
+#define DBG_DRAW_RECT_OPT_BUFF_UV(anno, option, rect, id, uv)             \
+  DBG_DRAW_RECTANGLE_OPT_BUFF_UV(                                         \
+      anno, option, gfx::Vector2dF(rect.origin().x(), rect.origin().y()), \
+      rect.size(), id, uv)
+
 #define DBG_DRAW_RECT_OPT(anno, option, rect)                                  \
   DBG_DRAW_RECTANGLE_OPT(anno, option,                                         \
                          gfx::Vector2dF(rect.origin().x(), rect.origin().y()), \
                          rect.size())
+
+#define DBG_DRAW_RECT_BUFF(anno, rect, id) \
+  DBG_DRAW_RECT_OPT_BUFF(anno, DBG_OPT_BLACK, rect, id)
+
+#define DBG_DRAW_RECT_BUFF_UV(anno, rect, id, uv) \
+  DBG_DRAW_RECT_OPT_BUFF_UV(anno, DBG_OPT_BLACK, rect, id, uv)
 
 #define DBG_DRAW_RECT(anno, rect) DBG_DRAW_RECT_OPT(anno, DBG_OPT_BLACK, rect)
 
@@ -315,33 +408,70 @@ class VIZ_SERVICE_EXPORT VizDebugger {
 
 #define DBG_OPT_BLACK 0
 
-#define DBG_DRAW_RECTANGLE_OPT(anno, option, pos, size) \
-  ANALYZER_ALLOW_UNUSED(anno)                           \
-  ANALYZER_ALLOW_UNUSED(option)                         \
-  ANALYZER_ALLOW_UNUSED(pos) ANALYZER_ALLOW_UNUSED(size)
+#define DEFAULT_UV 0
 
-#define DBG_DRAW_RECTANGLE(anno, pos, size) \
-  DBG_DRAW_RECTANGLE_OPT(anno, DBG_OPT_BLACK, pos, size)
+#define DBG_DRAW_RECTANGLE_OPT_BUFF_UV(anno, option, pos, size, id, uv) \
+  std::ignore = anno;                                                   \
+  std::ignore = option;                                                 \
+  std::ignore = pos;                                                    \
+  std::ignore = size;                                                   \
+  std::ignore = id;                                                     \
+  std::ignore = uv;
+
+#define DBG_DRAW_RECTANGLE_OPT_BUFF(anno, option, pos, size, id) \
+  std::ignore = anno;                                            \
+  std::ignore = option;                                          \
+  std::ignore = pos;                                             \
+  std::ignore = size;                                            \
+  std::ignore = id;
+
+#define DBG_COMPLETE_BUFFERS(buff_id, buffer) \
+  std::ignore = buff_id;                      \
+  std::ignore = buffer;
+
+#define DBG_DRAW_RECTANGLE_OPT(anno, option, pos, size) \
+  DBG_DRAW_RECTANGLE_OPT_BUFF(anno, option, pos, size, nullptr)
 
 #define DBG_DRAW_TEXT_OPT(anno, option, pos, text) \
-  ANALYZER_ALLOW_UNUSED(anno)                      \
-  ANALYZER_ALLOW_UNUSED(option)                    \
-  ANALYZER_ALLOW_UNUSED(pos) ANALYZER_ALLOW_UNUSED(text)
+  std::ignore = anno;                              \
+  std::ignore = option;                            \
+  std::ignore = pos;                               \
+  std::ignore = text;
 
 #define DBG_DRAW_TEXT(anno, pos, text) \
   DBG_DRAW_TEXT_OPT(anno, DBG_OPT_BLACK, pos, text)
 
 #define DBG_LOG_OPT(anno, option, format, ...) \
-  ANALYZER_ALLOW_UNUSED(anno)                  \
-  ANALYZER_ALLOW_UNUSED(option) ANALYZER_ALLOW_UNUSED(format)
+  std::ignore = anno;                          \
+  std::ignore = option;                        \
+  std::ignore = format;
 
 #define DBG_LOG(anno, format, ...) DBG_LOG_OPT(anno, DBG_OPT_BLACK, format, ...)
 
-#define DBG_DRAW_RECT_OPT(anno, option, rect) \
-  ANALYZER_ALLOW_UNUSED(anno)                 \
-  ANALYZER_ALLOW_UNUSED(option) ANALYZER_ALLOW_UNUSED(rect)
+#define DBG_DRAW_RECT_OPT_BUFF_UV(anno, option, rect, id, uv) \
+  std::ignore = anno;                                         \
+  std::ignore = option;                                       \
+  std::ignore = rect;                                         \
+  std::ignore = id;                                           \
+  std::ignore = uv;
 
-#define DBG_DRAW_RECT(anno, rect) DBG_DRAW_RECT_OPT(anno, DBG_OPT_BLACK, rect)
+#define DBG_DRAW_RECT_OPT_BUFF(anno, option, rect, id) \
+  std::ignore = anno;                                  \
+  std::ignore = option;                                \
+  std::ignore = rect;                                  \
+  std::ignore = id;
+
+#define DBG_DRAW_RECT_OPT(anno, option, rect) \
+  DBG_DRAW_RECT_OPT_BUFF(anno, option, rect, nullptr)
+
+#define DBG_DRAW_RECT_BUFF_UV(anno, rect, id, uv) \
+  DBG_DRAW_RECT_OPT_BUFF_UV(anno, DBG_OPT_BLACK, rect, id, uv)
+
+#define DBG_DRAW_RECT_BUFF(anno, rect, id) \
+  DBG_DRAW_RECT_OPT_BUFF(anno, DBG_OPT_BLACK, rect, id)
+
+#define DBG_DRAW_RECT(anno, rect) \
+  DBG_DRAW_RECT_OPT_BUFF(anno, DBG_OPT_BLACK, rect, nullptr)
 
 #define DBG_FLAG_FBOOL(anno, fun_name)        \
   namespace {                                 \

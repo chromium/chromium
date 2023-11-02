@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,14 +6,13 @@ package org.chromium.chrome.browser.download;
 
 import android.Manifest.permission;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.download.DownloadCollectionBridge;
-import org.chromium.content_public.browser.BrowserStartupController;
-import org.chromium.ui.base.AndroidPermissionDelegate;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.permissions.AndroidPermissionDelegate;
+import org.chromium.url.GURL;
 
 /**
  * Java counterpart of android DownloadController. Owned by native.
@@ -142,8 +141,8 @@ public class DownloadController {
      * @param referrer Referrer to use.
      */
     @CalledByNative
-    private static void enqueueAndroidDownloadManagerRequest(String url, String userAgent,
-            String fileName, String mimeType, String cookie, String referrer) {
+    private static void enqueueAndroidDownloadManagerRequest(GURL url, String userAgent,
+            String fileName, String mimeType, String cookie, GURL referrer) {
         DownloadInfo downloadInfo = new DownloadInfo.Builder()
                 .setUrl(url)
                 .setUserAgent(userAgent)
@@ -166,15 +165,8 @@ public class DownloadController {
                 new DownloadItem(true, info), true);
     }
 
-    /**
-     * Called when a download is started.
-     */
     @CalledByNative
-    private static void onDownloadStarted() {
-        if (!BrowserStartupController.getInstance().isFullBrowserStarted()) return;
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DOWNLOAD_PROGRESS_INFOBAR)) return;
-        DownloadUtils.showDownloadStartToast(ContextUtils.getApplicationContext());
-    }
+    private static void onDownloadStarted() {}
 
     @NativeMethods
     interface Natives {

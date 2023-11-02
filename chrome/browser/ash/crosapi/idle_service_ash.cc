@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,15 +26,15 @@ constexpr int64_t kUserActivityDispatchIntervalMs = 1000;
 IdleServiceAsh::Dispatcher::Dispatcher() {
   if (!IdleServiceAsh::Dispatcher::is_disabled_for_testing_) {
     CHECK(ui::UserActivityDetector::Get());
-    CHECK(chromeos::SessionManagerClient::Get());
+    CHECK(ash::SessionManagerClient::Get());
     ui::UserActivityDetector::Get()->AddObserver(this);
-    chromeos::SessionManagerClient::Get()->AddObserver(this);
+    ash::SessionManagerClient::Get()->AddObserver(this);
   }
 }
 
 IdleServiceAsh::Dispatcher::~Dispatcher() {
   if (!IdleServiceAsh::Dispatcher::is_disabled_for_testing_) {
-    chromeos::SessionManagerClient::Get()->RemoveObserver(this);
+    ash::SessionManagerClient::Get()->RemoveObserver(this);
 
     // UserActivityDetector may not be exist on actual shutdown, because
     // the ProfileManager destruct before CrosapiManager.
@@ -88,8 +88,7 @@ mojom::IdleInfoPtr IdleServiceAsh::ReadIdleInfoFromSystem() {
         ui::UserActivityDetector::Get()->last_activity_time();
 
     // Taken from ui::CheckIdleStateIsLocked() for ChromeOS.
-    idle_info->is_locked =
-        chromeos::SessionManagerClient::Get()->IsScreenLocked();
+    idle_info->is_locked = ash::SessionManagerClient::Get()->IsScreenLocked();
   }
 
   return idle_info;

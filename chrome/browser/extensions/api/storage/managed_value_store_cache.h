@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,9 @@
 #include <memory>
 #include <string>
 
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_service.h"
 #include "extensions/browser/api/storage/settings_observer.h"
@@ -46,7 +47,7 @@ class ManagedValueStoreCache : public ValueStoreCache,
   // changes.
   ManagedValueStoreCache(content::BrowserContext* context,
                          scoped_refptr<value_store::ValueStoreFactory> factory,
-                         scoped_refptr<SettingsObserverList> observers);
+                         SettingsChangedCallback observer);
 
   ManagedValueStoreCache(const ManagedValueStoreCache&) = delete;
   ManagedValueStoreCache& operator=(const ManagedValueStoreCache&) = delete;
@@ -85,14 +86,14 @@ class ManagedValueStoreCache : public ValueStoreCache,
 
   // The profile that owns the extension system being used. This is used to
   // get the PolicyService, the EventRouter and the ExtensionService.
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // The policy domain. This is used for both updating the schema registry with
   // the list of extensions and for observing the policy updates.
   policy::PolicyDomain policy_domain_;
 
   // The |profile_|'s PolicyService.
-  policy::PolicyService* policy_service_;
+  raw_ptr<policy::PolicyService> policy_service_;
 
   // Observes extension loading and unloading, and keeps the Profile's
   // PolicyService aware of the current list of extensions.
@@ -100,11 +101,13 @@ class ManagedValueStoreCache : public ValueStoreCache,
 
   // These live on the FILE thread.
   scoped_refptr<value_store::ValueStoreFactory> storage_factory_;
-  scoped_refptr<SettingsObserverList> observers_;
+  SequenceBoundSettingsChangedCallback observer_;
 
   // All the PolicyValueStores live on the FILE thread, and |store_map_| can be
   // accessed only on the FILE thread as well.
   std::map<std::string, std::unique_ptr<PolicyValueStore>> store_map_;
+
+  base::WeakPtrFactory<ManagedValueStoreCache> weak_ptr_factory_{this};
 };
 
 }  // namespace extensions

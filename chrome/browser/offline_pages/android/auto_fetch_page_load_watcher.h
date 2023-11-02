@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <set>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/core/auto_fetch.h"
 #include "components/offline_pages/core/background/request_coordinator.h"
@@ -114,12 +115,16 @@ class InternalImpl {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
+  std::vector<GURL>& pages_loaded_before_observer_ready_for_testing() {
+    return pages_loaded_before_observer_ready_;
+  }
+
  private:
   void SetNotificationStateToShown(int64_t request_id);
   void UpdateNotificationStateForAllRequests();
 
-  AutoFetchNotifier* notifier_;
-  Delegate* delegate_;
+  raw_ptr<AutoFetchNotifier> notifier_;
+  raw_ptr<Delegate> delegate_;
   std::unique_ptr<AndroidTabFinder> tab_finder_;
   std::vector<RequestInfo> requests_;
   // Tracks whether |RequestListInitialized| has been called. If false,
@@ -167,6 +172,10 @@ class AutoFetchPageLoadWatcher
   // once per navigation.
   void HandleNavigation(content::NavigationHandle* navigation_handle);
 
+  std::vector<GURL>& loaded_pages_for_testing() {
+    return impl_.pages_loaded_before_observer_ready_for_testing();
+  }
+
  private:
   class NavigationObserver;
   class TabWatcher;
@@ -189,7 +198,7 @@ class AutoFetchPageLoadWatcher
   void OnNetworkProgress(const SavePageRequest& request,
                          int64_t received_bytes) override {}
 
-  RequestCoordinator* request_coordinator_;  // Not owned.
+  raw_ptr<RequestCoordinator> request_coordinator_;  // Not owned.
   auto_fetch_internal::InternalImpl impl_;
   std::unique_ptr<TabWatcher> tab_watcher_;
   base::WeakPtrFactory<AutoFetchPageLoadWatcher> weak_ptr_factory_{this};

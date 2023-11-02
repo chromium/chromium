@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <unordered_set>
 
 #include "base/cancelable_callback.h"
+#include "base/time/time.h"
 #include "media/base/media_export.h"
 #include "media/capture/video/chromeos/mojom/camera3.mojom.h"
 #include "media/capture/video/chromeos/request_manager.h"
@@ -134,6 +135,8 @@ class CAPTURE_EXPORT Camera3AController final
   bool set_point_of_interest_running_;
 
   bool ae_locked_for_point_of_interest_;
+
+  int32_t request_id_ = 0;
 
   base::TimeDelta latest_sensor_timestamp_;
 

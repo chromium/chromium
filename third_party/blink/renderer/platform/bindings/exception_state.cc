@@ -30,9 +30,14 @@
 
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/notreached.h"
+#include "third_party/blink/renderer/platform/bindings/exception_code.h"
+#include "third_party/blink/renderer/platform/bindings/exception_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
+#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 
@@ -183,7 +188,7 @@ void ExceptionState::SetException(ExceptionCode exception_code,
 
 void ExceptionState::SetExceptionCode(ExceptionCode exception_code) {
   CHECK(exception_code);
-  DCHECK(message_.IsEmpty());
+  DCHECK(message_.empty());
   DCHECK(exception_.IsEmpty());
   code_ = exception_code;
 }
@@ -248,7 +253,7 @@ String AddContextToMessage(const String& message,
 
 String ExceptionState::AddExceptionContext(
     const String& original_message) const {
-  if (original_message.IsEmpty())
+  if (original_message.empty())
     return original_message;
 
   String message = original_message;

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 namespace blink {
 
 class ComputedStyle;
-class NGPhysicalBoxFragment;
 
 // Class for computing the decoration offset for text fragments in LayoutNG.
 class CORE_EXPORT NGTextDecorationOffset : public TextDecorationOffsetBase {
@@ -19,11 +18,8 @@ class CORE_EXPORT NGTextDecorationOffset : public TextDecorationOffsetBase {
 
  public:
   NGTextDecorationOffset(const ComputedStyle& style,
-                         const ComputedStyle& text_style,
-                         const NGPhysicalBoxFragment* decorating_box)
-      : TextDecorationOffsetBase(style),
-        text_style_(text_style),
-        decorating_box_(decorating_box) {}
+                         const ComputedStyle& text_style)
+      : TextDecorationOffsetBase(style), text_style_(text_style) {}
   ~NGTextDecorationOffset() = default;
 
   int ComputeUnderlineOffsetForUnder(const Length& style_underline_offset,
@@ -34,7 +30,6 @@ class CORE_EXPORT NGTextDecorationOffset : public TextDecorationOffsetBase {
 
  private:
   const ComputedStyle& text_style_;
-  const NGPhysicalBoxFragment* decorating_box_;
 };
 
 }  // namespace blink

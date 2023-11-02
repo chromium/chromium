@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,11 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 
-namespace chromeos {
-
+namespace ash {
 class UserContext;
+}  // namespace ash
+
+namespace chromeos {
 
 // A thin wrapper around |SessionControllerClientImpl| and
 // |ScreenLocker| to allow easier mocking for tests. Also manages the
@@ -33,7 +35,7 @@ class LoginApiLockHandler {
 
   virtual void RequestLockScreen();
 
-  virtual void Authenticate(const UserContext& user_context,
+  virtual void Authenticate(const ash::UserContext& user_context,
                             base::OnceCallback<void(bool auth_success)>);
 
   virtual bool IsUnlockInProgress() const;

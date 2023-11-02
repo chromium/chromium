@@ -1,10 +1,12 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/browser_ui/client_certificate/android/ssl_client_certificate_request.h"
 
 #include <stddef.h>
+
+#include <tuple>
 #include <utility>
 
 #include "base/android/jni_array.h"
@@ -15,7 +17,6 @@
 #include "base/compiler_specific.h"
 #include "base/containers/queue.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/browser_ui/client_certificate/android/jni_headers/SSLClientCertificateRequest_jni.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -80,7 +81,9 @@ class SSLClientCertPendingRequests
       public content::WebContentsObserver {
  public:
   explicit SSLClientCertPendingRequests(content::WebContents* web_contents)
-      : content::WebContentsObserver(web_contents) {}
+      : content::WebContentsUserData<SSLClientCertPendingRequests>(
+            *web_contents),
+        content::WebContentsObserver(web_contents) {}
   ~SSLClientCertPendingRequests() override {}
 
   void AddRequest(std::unique_ptr<ClientCertRequest> request);
@@ -209,7 +212,7 @@ static void StartClientCertificateRequest(
   }
 
   // Ownership was transferred to Java.
-  ignore_result(request.release());
+  std::ignore = request.release();
 }
 
 void SSLClientCertPendingRequests::AddRequest(

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,21 +13,23 @@
 #include "base/time/time.h"
 #include "cc/input/browser_controls_state.h"
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
+#include "content/browser/renderer_host/stored_page.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/page.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
 #include "third_party/blink/public/mojom/frame/text_autosizer_page_info.mojom.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/ime/mojom/virtual_keyboard_types.mojom.h"
 #include "url/gurl.h"
 
 namespace content {
 
 class PageDelegate;
 class RenderFrameHostImpl;
-class RenderViewHostImpl;
 
 // This implements the Page interface that is exposed to embedders of content,
 // and adds things only visible to content.
@@ -47,6 +49,8 @@ class CONTENT_EXPORT PageImpl : public Page {
   base::WeakPtr<Page> GetWeakPtr() override;
   bool IsPageScaleFactorOne() override;
 
+  base::WeakPtr<PageImpl> GetWeakPtrImpl();
+
   void UpdateManifestUrl(const GURL& manifest_url);
 
   RenderFrameHostImpl& GetMainDocument() const;
@@ -56,6 +60,18 @@ class CONTENT_EXPORT PageImpl : public Page {
   }
   void set_is_on_load_completed_in_main_document(bool completed) {
     is_on_load_completed_in_main_document_ = completed;
+  }
+
+  bool is_main_document_element_available() const {
+    return is_main_document_element_available_;
+  }
+  void set_is_main_document_element_available(bool completed) {
+    is_main_document_element_available_ = completed;
+  }
+
+  bool uses_temporary_zoom_level() const { return uses_temporary_zoom_level_; }
+  void set_uses_temporary_zoom_level(bool level) {
+    uses_temporary_zoom_level_ = level;
   }
 
   void OnFirstVisuallyNonEmptyPaint();
@@ -74,12 +90,20 @@ class CONTENT_EXPORT PageImpl : public Page {
 
   void DidChangeBackgroundColor(SkColor background_color, bool color_adjust);
 
+  // Notifies the page's color scheme was inferred.
+  void DidInferColorScheme(blink::mojom::PreferredColorScheme color_scheme);
+
   absl::optional<SkColor> theme_color() const {
     return main_document_theme_color_;
   }
 
   absl::optional<SkColor> background_color() const {
     return main_document_background_color_;
+  }
+
+  absl::optional<blink::mojom::PreferredColorScheme> inferred_color_scheme()
+      const {
+    return main_document_inferred_color_scheme_;
   }
 
   void SetContentsMimeType(std::string mime_type);
@@ -103,10 +127,6 @@ class CONTENT_EXPORT PageImpl : public Page {
     return last_main_document_source_id_;
   }
 
-  const base::UnguessableToken& anonymous_iframes_nonce() const {
-    return anonymous_iframes_nonce_;
-  }
-
   // Sets the start time of the prerender activation navigation for this page.
   // TODO(falken): Plumb NavigationRequest to
   // RenderFrameHostManager::CommitPending and remove this.
@@ -117,7 +137,7 @@ class CONTENT_EXPORT PageImpl : public Page {
   // documents from prerendered to activated. Tells the corresponding
   // RenderFrameHostImpls that the renderer will be activating their documents.
   void ActivateForPrerendering(
-      std::set<RenderViewHostImpl*>& render_view_hosts_to_activate);
+      StoredPage::RenderViewHostImplSafeRefSet& render_view_hosts_to_activate);
 
   // Prerender2:
   // Dispatches load events that were deferred to be dispatched after
@@ -132,13 +152,25 @@ class CONTENT_EXPORT PageImpl : public Page {
                                   cc::BrowserControlsState current,
                                   bool animate);
 
+  float GetPageScaleFactor() const;
+
   void set_load_progress(double load_progress) {
     load_progress_ = load_progress;
   }
   double load_progress() const { return load_progress_; }
 
-  void set_page_scale_factor(float scale) { page_scale_factor_ = scale; }
-  float page_scale_factor() const { return page_scale_factor_; }
+  void NotifyVirtualKeyboardOverlayRect(const gfx::Rect& keyboard_rect);
+
+  void SetVirtualKeyboardMode(ui::mojom::VirtualKeyboardMode mode);
+  ui::mojom::VirtualKeyboardMode virtual_keyboard_mode() const {
+    return virtual_keyboard_mode_;
+  }
+
+  const std::string& GetEncoding() { return canonical_encoding_; }
+  void UpdateEncoding(const std::string& encoding_name);
+
+  // Returns the keyboard layout mapping.
+  base::flat_map<std::string, std::string> GetKeyboardLayoutMap();
 
  private:
   void DidActivateAllRenderViewsForPrerendering();
@@ -151,6 +183,13 @@ class CONTENT_EXPORT PageImpl : public Page {
   // True if we've received a notification that the onload() handler has
   // run for the main document.
   bool is_on_load_completed_in_main_document_ = false;
+
+  // True if we've received a notification that the window.document element
+  // became available for the main document.
+  bool is_main_document_element_available_ = false;
+
+  // True if plugin zoom level is set for the main document.
+  bool uses_temporary_zoom_level_ = false;
 
   // Overall load progress of this Page. Initial load progress value is 0.0
   // before the load has begun.
@@ -184,6 +223,10 @@ class CONTENT_EXPORT PageImpl : public Page {
   // The background color for the underlying document as computed by CSS.
   absl::optional<SkColor> main_document_background_color_;
 
+  // The inferred color scheme of the document.
+  absl::optional<blink::mojom::PreferredColorScheme>
+      main_document_inferred_color_scheme_;
+
   // Contents MIME type for the main document. It can be used to check whether
   // we can do something for special contents.
   std::string contents_mime_type_;
@@ -209,11 +252,6 @@ class CONTENT_EXPORT PageImpl : public Page {
   // with OOPIF renderers.
   blink::mojom::TextAutosizerPageInfo text_autosizer_page_info_;
 
-  // Nonce to be used for initializing the storage key and the network isolation
-  // key of anonymous iframes which are children of this page's document.
-  const base::UnguessableToken anonymous_iframes_nonce_ =
-      base::UnguessableToken::Create();
-
   // Prerender2: The start time of the activation navigation for prerendering,
   // which is passed to the renderer process, and will be accessible in the
   // prerendered page as PerformanceNavigationTiming.activationStart. Set after
@@ -222,11 +260,14 @@ class CONTENT_EXPORT PageImpl : public Page {
   // RenderFrameHostManager::CommitPending and remove this.
   absl::optional<base::TimeTicks> activation_start_time_for_prerendering_;
 
-  // The most recent page scale factor sent by the main frame's renderer.
-  // Note that the renderer uses a different mechanism to persist its page
-  // scale factor when performing session history navigations (see
-  // blink::PageState).
-  float page_scale_factor_ = 1.f;
+  // The resizing mode requested by Blink for the virtual keyboard.
+  ui::mojom::VirtualKeyboardMode virtual_keyboard_mode_ =
+      ui::mojom::VirtualKeyboardMode::kUnset;
+
+  // The last reported character encoding, not canonicalized.
+  std::string last_reported_encoding_;
+  // The canonicalized character encoding.
+  std::string canonical_encoding_;
 
   base::WeakPtrFactory<PageImpl> weak_factory_{this};
 };

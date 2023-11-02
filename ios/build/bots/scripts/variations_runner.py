@@ -1,4 +1,4 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Runner class for variations smoke tests."""
@@ -111,7 +111,7 @@ class VariationsSimulatorParallelTestRunner(SimulatorParallelTestRunner):
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
     )
-    output = test_runner.print_process_output(proc)
+    output = test_runner.print_process_output(proc, self.readline_timeout)
 
     if _VERIFY_FETCHED_IN_CURRENT_LAUNCH_ARG in self.test_app.test_args:
       self.test_app.test_args.remove(_VERIFY_FETCHED_IN_CURRENT_LAUNCH_ARG)

@@ -7,9 +7,9 @@ async function clickOnElementAndDelay(id, delay, callback) {
     mainThreadBusy(delay);
     if (callback)
       callback();
-    element.removeEventListener("mousedown", clickHandler);
+    element.removeEventListener("pointerdown", clickHandler);
   };
-  element.addEventListener("mousedown", clickHandler);
+  element.addEventListener("pointerdown", clickHandler);
   await test_driver.click(element);
 }
 
@@ -52,8 +52,8 @@ function verifyEvent(entry, eventType, targetId, isFirst=false, minDuration=104,
     assert_equals(entry.target, document.getElementById(targetId));
 }
 
-function verifyClickEvent(entry, targetId, isFirst=false, minDuration=104) {
-  verifyEvent(entry, 'mousedown', targetId, isFirst, minDuration);
+function verifyClickEvent(entry, targetId, isFirst=false, minDuration=104, event='pointerdown') {
+  verifyEvent(entry, event, targetId, isFirst, minDuration);
 }
 
 function wait() {
@@ -99,13 +99,13 @@ async function testDuration(t, id, numEntries, dur, fastDur, slowDur) {
     minDuration = Math.max(minDuration, 16);
     let numEntriesReceived = 0;
     new PerformanceObserver(list => {
-      const mouseDowns = list.getEntriesByName('mousedown');
-      mouseDowns.forEach(e => {
+      const pointerDowns = list.getEntriesByName('pointerdown');
+      pointerDowns.forEach(e => {
         t.step(() => {
           verifyClickEvent(e, id, false /* isFirst */, minDuration);
         });
       });
-      numEntriesReceived += mouseDowns.length;
+      numEntriesReceived += pointerDowns.length;
       // Note that we may receive more entries if the 'fast' click events turn out slower
       // than expected.
       if (numEntriesReceived >= numEntries)
@@ -168,6 +168,13 @@ function applyAction(eventType, target) {
       || eventType === 'pointerleave' || eventType === 'pointerout') {
     actions.pointerMove(0, 0, {origin: target})
     .pointerMove(0, 0);
+  } else if (eventType === 'keyup' || eventType === 'keydown') {
+    // Any key here as an input should work.
+    // TODO: Switch this to use test_driver.Actions.key{up,down}
+    // when test driver supports it.
+    // Please check crbug.com/893480.
+    const key = 'k';
+    return test_driver.send_keys(target, key);
   } else {
     assert_unreached('The event type ' + eventType + ' is not supported.');
   }
@@ -182,7 +189,9 @@ function requiresListener(eventType) {
           'pointerleave',
           'pointerout',
           'pointerover',
-          'pointerup'
+          'pointerup',
+          'keyup',
+          'keydown'
         ].includes(eventType);
 }
 
@@ -274,4 +283,82 @@ async function testEventType(t, eventType, looseCount=false) {
   await waitForTick();
 
   await observerPromise;
+}
+
+function addListeners(element, events) {
+  const clickHandler = (e) => {
+    mainThreadBusy(200);
+  };
+  events.forEach(e => { element.addEventListener(e, clickHandler); });
+}
+
+// The testdriver.js, testdriver-vendor.js and testdriver-actions.js need to be
+// included to use this function.
+function tap(element) {
+  return new test_driver.Actions()
+    .addPointer("touchPointer", "touch")
+    .pointerMove(0, 0, { origin: element })
+    .pointerDown()
+    .pointerUp()
+    .send();
+}
+
+// The testdriver.js, testdriver-vendor.js need to be included to use this
+// function.
+async function pressKey(element, key) {
+  await test_driver.send_keys(element, key);
+}
+
+// The testdriver.js, testdriver-vendor.js need to be included to use this
+// function.
+async function addListenersAndPress(element, key, events) {
+  addListeners(element, events);
+  return pressKey(element, key);
+}
+
+// The testdriver.js, testdriver-vendor.js need to be included to use this
+// function.
+function addListenersAndClick(element) {
+  addListeners(element, ['mousedown', 'mouseup', 'pointerdown', 'pointerup', 'click']);
+  return test_driver.click(element);
+}
+
+function filterAndAddToMap(events, map) {
+  return function (entry) {
+    if (events.includes(entry.name)) {
+      map.set(entry.name, entry.interactionId);
+      return true;
+    }
+    return false;
+  }
+}
+
+function createPerformanceObserverPromise(observeTypes, callback, readyToResolve) {
+  return new Promise(resolve => {
+    new PerformanceObserver(entryList => {
+      callback(entryList);
+
+      if (readyToResolve())
+        resolve();
+    }).observe({ entryTypes: observeTypes });
+  });
+}
+
+// The testdriver.js, testdriver-vendor.js need to be included to use this
+// function.
+function interactAndObserve(interactionType, element, observerPromise) {
+  let interactionPromise;
+  switch (interactionType) {
+    case 'tap': {
+      addListeners(element, ['pointerdown', 'pointerup']);
+      interactionPromise = tap(element);
+      break;
+    }
+    case 'click': {
+      addListeners(element, ['mousedown', 'mouseup', 'pointerdown', 'pointerup', 'click']);
+      interactionPromise = test_driver.click(element);
+      break;
+    }
+  }
+  return Promise.all([interactionPromise, observerPromise]);
 }

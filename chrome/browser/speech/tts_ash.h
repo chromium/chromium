@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chromeos/crosapi/mojom/tts.mojom.h"
 #include "content/public/browser/tts_controller.h"
+#include "content/public/browser/tts_utterance.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -51,6 +52,9 @@ class TtsAsh : public mojom::Tts,
                          bool from_primary_profile) override;
   void VoicesChanged(const base::UnguessableToken& browser_context_id,
                      std::vector<mojom::TtsVoicePtr> lacros_voices) override;
+  void SpeakOrEnqueue(
+      mojom::TtsUtterancePtr utterance,
+      mojo::PendingRemote<mojom::TtsUtteranceClient> utterance_client) override;
 
  private:
   // content::VoicesChangedDelegate:

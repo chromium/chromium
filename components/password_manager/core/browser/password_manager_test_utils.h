@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -119,6 +119,15 @@ MATCHER_P(UnorderedPasswordFormElementsAre, expectations, "") {
                                              result_listener->stream());
 }
 
+MATCHER_P(LoginsResultsOrErrorAre, expectations, "") {
+  if (absl::holds_alternative<PasswordStoreBackendError>(arg))
+    return false;
+
+  return ContainsEqualPasswordFormsUnordered(
+      *expectations, std::move(absl::get<LoginsResult>(arg)),
+      result_listener->stream());
+}
+
 class MockPasswordStoreObserver : public PasswordStoreInterface::Observer {
  public:
   MockPasswordStoreObserver();
@@ -147,7 +156,9 @@ class MockPasswordReuseDetectorConsumer : public PasswordReuseDetectorConsumer {
                size_t,
                absl::optional<PasswordHashData>,
                const std::vector<MatchingReusedCredential>&,
-               int),
+               int,
+               const std::string&,
+               uint64_t),
               (override));
 };
 
@@ -160,7 +171,7 @@ class PasswordHashDataMatcher
   PasswordHashDataMatcher(const PasswordHashDataMatcher&) = delete;
   PasswordHashDataMatcher& operator=(const PasswordHashDataMatcher&) = delete;
 
-  ~PasswordHashDataMatcher() override = default;
+  ~PasswordHashDataMatcher() override;
 
   // ::testing::MatcherInterface overrides
   bool MatchAndExplain(absl::optional<PasswordHashData> hash_data,

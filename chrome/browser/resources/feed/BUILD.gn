@@ -1,0 +1,69 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//tools/grit/grit_rule.gni")
+import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+assert(!is_android)
+
+preprocess_folder = "preprocessed"
+
+preprocess_if_expr("preprocess") {
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  in_files = [
+    "feed.ts",
+    "feed_side_panel_handler.ts",
+  ]
+}
+
+copy("copy_mojom") {
+  deps = [ "//chrome/browser/ui/webui/feed:mojo_bindings_js__generator" ]
+  sources = [ "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/feed/feed.mojom-webui.js" ]
+  outputs = [ "$target_gen_dir/$preprocess_folder/{{source_file_part}}" ]
+}
+
+grit("resources") {
+  # This argument is needed since the grd is generated at build time.
+  enable_input_discovery_for_gn_analyze = false
+
+  source = "$target_gen_dir/resources.grd"
+  deps = [
+    ":build_grd",
+    "//chrome/browser/ui/webui/feed:mojo_bindings_js",
+  ]
+  outputs = [
+    "grit/feed_resources.h",
+    "grit/feed_resources_map.cc",
+    "grit/feed_resources_map.h",
+    "feed_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chrome"
+}
+
+ts_library("build_ts") {
+  root_dir = "$target_gen_dir/$preprocess_folder"
+  out_dir = "$target_gen_dir/tsc"
+  tsconfig_base = "tsconfig_base.json"
+  in_files = [
+    "feed.ts",
+    "feed_side_panel_handler.ts",
+    "feed.mojom-webui.js",
+  ]
+  extra_deps = [
+    ":copy_mojom",
+    ":preprocess",
+  ]
+}
+
+generate_grd("build_grd") {
+  grd_prefix = "feed"
+  out_grd = "$target_gen_dir/resources.grd"
+  deps = [ ":build_ts" ]
+  input_files = [ "feed.html" ]
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+  input_files_base_dir = rebase_path(".", "//")
+}

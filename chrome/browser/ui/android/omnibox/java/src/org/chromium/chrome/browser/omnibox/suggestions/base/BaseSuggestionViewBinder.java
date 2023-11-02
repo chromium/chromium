@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,18 @@ package org.chromium.chrome.browser.omnibox.suggestions.base;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.AccessibilityDelegate;
+import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.view.ViewGroup.MarginLayoutParams;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction;
 import android.widget.ImageView;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.view.ViewCompat;
@@ -21,8 +26,10 @@ import androidx.core.view.ViewCompat;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
+import org.chromium.chrome.browser.omnibox.suggestions.DropdownCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties.Action;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -53,12 +60,18 @@ public final class BaseSuggestionViewBinder<T extends View>
         if (BaseSuggestionViewProperties.ICON == propertyKey) {
             updateSuggestionIcon(model, view);
             updateContentViewPadding(model, view.getDecoratedSuggestionView());
+        } else if (BaseSuggestionViewProperties.DENSITY == propertyKey) {
+            updateContentViewPadding(model, view.getDecoratedSuggestionView());
         } else if (SuggestionCommonProperties.LAYOUT_DIRECTION == propertyKey) {
             ViewCompat.setLayoutDirection(
                     view, model.get(SuggestionCommonProperties.LAYOUT_DIRECTION));
             updateContentViewPadding(model, view.getDecoratedSuggestionView());
-        } else if (SuggestionCommonProperties.OMNIBOX_THEME == propertyKey) {
+        } else if (SuggestionCommonProperties.COLOR_SCHEME == propertyKey) {
             updateColorScheme(model, view);
+        } else if (DropdownCommonProperties.BG_TOP_CORNER_ROUNDED == propertyKey) {
+            updateBackground(model, view);
+        } else if (DropdownCommonProperties.TOP_MARGIN == propertyKey) {
+            updateMargin(model, view);
         } else if (BaseSuggestionViewProperties.ACTIONS == propertyKey) {
             bindActionButtons(model, view, model.get(BaseSuggestionViewProperties.ACTIONS));
         } else if (BaseSuggestionViewProperties.ON_FOCUS_VIA_SELECTION == propertyKey) {
@@ -100,7 +113,7 @@ public final class BaseSuggestionViewBinder<T extends View>
             actionView.setContentDescription(action.accessibilityDescription);
             actionView.setBackground(copyDrawable(backgroundDrawable));
             updateIcon(actionView, action.icon,
-                    ChromeColors.getPrimaryIconTintRes(!useDarkColors(model)));
+                    ChromeColors.getPrimaryIconTintRes(isIncognito(model)));
 
             actionView.setAccessibilityDelegate(new AccessibilityDelegate() {
                 @Override
@@ -140,14 +153,13 @@ public final class BaseSuggestionViewBinder<T extends View>
             ImageView actionView = actionViews.get(index);
             actionView.setBackground(copyDrawable(backgroundDrawable));
             updateIcon(actionView, actions.get(index).icon,
-                    ChromeColors.getPrimaryIconTintRes(!useDarkColors(model)));
+                    ChromeColors.getPrimaryIconTintRes(isIncognito(model)));
         }
     }
 
-    /** @return Whether currently used color scheme is considered to be dark. */
-    private static boolean useDarkColors(PropertyModel model) {
-        return !OmniboxResourceProvider.isDarkMode(
-                model.get(SuggestionCommonProperties.OMNIBOX_THEME));
+    /** @return Whether the current {@link BrandedColorScheme} is INCOGNITO. */
+    private static boolean isIncognito(PropertyModel model) {
+        return model.get(SuggestionCommonProperties.COLOR_SCHEME) == BrandedColorScheme.INCOGNITO;
     }
 
     /** Update attributes of decorated suggestion icon. */
@@ -173,7 +185,7 @@ public final class BaseSuggestionViewBinder<T extends View>
             rciv.setClipToOutline(sds.useRoundedCorners);
         }
 
-        updateIcon(rciv, sds, ChromeColors.getSecondaryIconTintRes(!useDarkColors(model)));
+        updateIcon(rciv, sds, ChromeColors.getSecondaryIconTintRes(isIncognito(model)));
     }
 
     /**
@@ -193,6 +205,29 @@ public final class BaseSuggestionViewBinder<T extends View>
         final int endSpace = view.getResources().getDimensionPixelSize(
                 R.dimen.omnibox_suggestion_refine_view_modern_end_padding);
         view.setPaddingRelative(startSpace, 0, endSpace, 0);
+
+        // Compact suggestion handling: apply additional padding to the suggestion content.
+        final @BaseSuggestionViewProperties.Density int density =
+                model.get(BaseSuggestionViewProperties.DENSITY);
+
+        int minimumHeightRes;
+        int verticalPadRes;
+        switch (density) {
+            case BaseSuggestionViewProperties.Density.COMPACT:
+                verticalPadRes = R.dimen.omnibox_suggestion_compact_padding;
+                minimumHeightRes = R.dimen.omnibox_suggestion_compact_height;
+                break;
+            case BaseSuggestionViewProperties.Density.DEFAULT:
+            default:
+                verticalPadRes = R.dimen.omnibox_suggestion_semicompact_padding;
+                minimumHeightRes = R.dimen.omnibox_suggestion_semicompact_height;
+                break;
+        }
+        final int verticalPad = view.getResources().getDimensionPixelSize(verticalPadRes);
+        view.getContentView().setPaddingRelative(0, verticalPad, 0, verticalPad);
+
+        final int minimumHeight = view.getResources().getDimensionPixelSize(minimumHeightRes);
+        view.getContentView().setMinimumHeight(minimumHeight);
     }
 
     /**
@@ -205,9 +240,9 @@ public final class BaseSuggestionViewBinder<T extends View>
      * @param model A property model to look up relevant properties.
      * @return A selectable background drawable.
      */
-    private static Drawable getSelectableBackgroundDrawable(View view, PropertyModel model) {
+    public static Drawable getSelectableBackgroundDrawable(View view, PropertyModel model) {
         return OmniboxResourceProvider.resolveAttributeToDrawable(view.getContext(),
-                model.get(SuggestionCommonProperties.OMNIBOX_THEME),
+                model.get(SuggestionCommonProperties.COLOR_SCHEME),
                 R.attr.selectableItemBackground);
     }
 
@@ -225,8 +260,6 @@ public final class BaseSuggestionViewBinder<T extends View>
     /** Update image view using supplied drawable state object. */
     private static void updateIcon(
             ImageView view, SuggestionDrawableState sds, @ColorRes int tintRes) {
-        final Resources res = view.getContext().getResources();
-
         view.setVisibility(sds == null ? View.GONE : View.VISIBLE);
         if (sds == null) {
             // Release any drawable that is still attached to this view to reclaim memory.
@@ -241,5 +274,83 @@ public final class BaseSuggestionViewBinder<T extends View>
 
         view.setImageDrawable(sds.drawable);
         ApiCompatibilityUtils.setImageTintList(view, tint);
+    }
+
+    /**
+     * Update the background for the view, also add the margin for the view.
+     *
+     * @param model A property model to look up relevant properties.
+     * @param view A view that need to be updated.
+     */
+    public static void updateBackground(PropertyModel model, View view) {
+        view.setBackground(getBackgroundDrawable(model, view));
+    }
+
+    /**
+     * Update the margin for the view.
+     *
+     * @param model A property model to look up relevant properties.
+     * @param view A view that need to be updated.
+     */
+    public static void updateMargin(PropertyModel model, View view) {
+        ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
+        if (layoutParams == null) {
+            layoutParams =
+                    new MarginLayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        }
+
+        if (layoutParams instanceof MarginLayoutParams) {
+            int topSpacing = model.get(DropdownCommonProperties.TOP_MARGIN);
+            int bottomSpacing = model.get(DropdownCommonProperties.BOTTOM_MARGIN);
+            int sideSpacing = view.getContext().getResources().getDimensionPixelOffset(
+                    R.dimen.omnibox_suggestion_side_spacing);
+            ((MarginLayoutParams) layoutParams)
+                    .setMargins(sideSpacing, topSpacing, sideSpacing, bottomSpacing);
+        }
+        view.setLayoutParams(layoutParams);
+    }
+
+    /**
+     * Retrieves background drawable for the view.
+     *
+     * @param model A property model to look up relevant properties.
+     * @param view A view that provides context.
+     * @return The suggestion background drawable.
+     */
+    private static Drawable getBackgroundDrawable(PropertyModel model, View view) {
+        final Resources resources = view.getContext().getResources();
+        int roundedRadius =
+                resources.getDimensionPixelSize(R.dimen.omnibox_suggestion_bg_round_corner_radius);
+        int rectangleRadius = resources.getDimensionPixelSize(
+                R.dimen.omnibox_suggestion_bg_rectangle_corner_radius);
+
+        int topRadii = model.get(DropdownCommonProperties.BG_TOP_CORNER_ROUNDED) ? roundedRadius
+                                                                                 : rectangleRadius;
+        int bottomRadii = model.get(DropdownCommonProperties.BG_BOTTOM_CORNER_ROUNDED)
+                ? roundedRadius
+                : rectangleRadius;
+
+        GradientDrawable backgroundGradient = new GradientDrawable();
+        backgroundGradient.setShape(GradientDrawable.RECTANGLE);
+
+        backgroundGradient.setCornerRadii(new float[] {topRadii, topRadii, topRadii, topRadii,
+                bottomRadii, bottomRadii, bottomRadii, bottomRadii});
+        backgroundGradient.setColor(getBackgroundDrawableColor(isIncognito(model), view));
+
+        return backgroundGradient;
+    }
+
+    /**
+     * Retrieves color for background gradient based on identifying incognito mode.
+     *
+     * @param isIncognito whether the view is in incognito mode.
+     * @param view A view that provides context.
+     * @return The color for suggestion background drawable.
+
+     */
+    static @ColorInt int getBackgroundDrawableColor(boolean isIncognito, View view) {
+        return isIncognito ? view.getContext().getColor(R.color.omnibox_suggestion_bg_incognito)
+                           : ChromeColors.getSurfaceColor(
+                                   view.getContext(), R.dimen.omnibox_suggestion_bg_elevation);
     }
 }

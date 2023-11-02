@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,8 +14,8 @@
 #include "third_party/blink/renderer/core/events/pointer_event_factory.h"
 #include "third_party/blink/renderer/core/input/event_handling_util.h"
 #include "third_party/blink/renderer/platform/graphics/touch_action.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -48,6 +48,27 @@ class CORE_EXPORT TouchEventManager final
   // Returns whether there is any touch on the screen.
   bool IsAnyTouchActive() const;
 
+  // Returns the target node after performing additional hit-test for individual
+  // touch-points if needed.
+  //
+  // Individual touch-points are hit-tested at PointerEventManager. For any
+  // touch-points after the first one in a multi-touch scenario,
+  // PointerEventManager should hit-test again against TouchEventManager's
+  // |touch_sequence_document_| if the target set by PointerEventManager was
+  // either null or not in |touch_sequence_document_|.
+  Node* GetTouchPointerNode(
+      const WebPointerEvent& event,
+      const event_handling_util::PointerEventTarget& pointer_event_target);
+
+  // Updates attributes of the touch point in |touch_points_attributes_| map.
+  void UpdateTouchAttributeMapsForPointerDown(
+      const WebPointerEvent&,
+      Node* touch_node,
+      TouchAction effective_touch_action);
+
+  // Return the touch down element of current touch sequence.
+  Element* CurrentTouchDownElement();
+
  private:
   // Class represending one touch point event with its coalesced events and
   // related attributes.
@@ -74,14 +95,6 @@ class CORE_EXPORT TouchEventManager final
   WebCoalescedInputEvent GenerateWebCoalescedInputEvent();
   Touch* CreateDomTouch(const TouchPointAttributes*, bool* known_target);
   void AllTouchesReleasedCleanup();
-
-  // Keeps track of attributes of the touch point in the
-  // |touch_points_attributes_| map and does the hit-testing if the original hit
-  // test result was not inside capturing frame |touch_sequence_document_| for
-  // touch events.
-  void UpdateTouchAttributeMapsForPointerDown(
-      const WebPointerEvent&,
-      const event_handling_util::PointerEventTarget&);
 
   // This is triggered either by VSync signal to send one touch event per frame
   // accumulating all move events or by discrete events pointerdown/up/cancel.
@@ -135,6 +148,9 @@ class CORE_EXPORT TouchEventManager final
   // action which is sent to the browser after handling each dispatched
   // 'touchstart' is the intersection of all the previously calculated effective
   // touch action values during the sequence.
+  //
+  // TODO(https://crbug.com/844493): This seems incomplete code, should be
+  // removed.
   absl::optional<TouchAction> delayed_effective_touch_action_;
 };
 

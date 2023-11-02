@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.startAutofillAssistant;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewMatchesCondition;
 
-import androidx.test.espresso.Espresso;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Rule;
@@ -24,13 +23,10 @@ import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
-import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill_assistant.proto.ActionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ChipProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ChipType;
 import org.chromium.chrome.browser.autofill_assistant.proto.ClientSettingsProto;
-import org.chromium.chrome.browser.autofill_assistant.proto.ClientSettingsProto.BackButtonSettings;
 import org.chromium.chrome.browser.autofill_assistant.proto.ClientSettingsProto.DisplayString;
 import org.chromium.chrome.browser.autofill_assistant.proto.ClientSettingsProto.DisplayStringId;
 import org.chromium.chrome.browser.autofill_assistant.proto.ClientSettingsProto.IntegrationTestSettings;
@@ -49,6 +45,7 @@ import org.chromium.chrome.browser.autofill_assistant.proto.UpdateClientSettings
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.autofill_assistant.R;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -80,9 +77,6 @@ public final class AutofillAssistantUpdateClientSettingsIntegrationTest {
                                                     .setDisableHeaderAnimations(true)
                                                     .setDisableCarouselChangeAnimations(true))
                 .setDisplayStringsLocale(locale)
-                .setBackButtonSettings(BackButtonSettings.newBuilder()
-                                               .setMessage(locale + " back_button_message")
-                                               .setUndoLabel(locale + " undo"))
                 .setSlowWarningSettings(
                         SlowWarningSettings.newBuilder()
                                 .setSlowConnectionMessage(locale + " slow_connection_message")
@@ -96,58 +90,6 @@ public final class AutofillAssistantUpdateClientSettingsIntegrationTest {
                     DisplayString.newBuilder().setId(id).setValue(locale + " " + id.name()));
         }
         return clientSettingsBuilder.build();
-    }
-
-    @Test
-    @MediumTest
-    @DisabledTest(message = "https://crbug.com/1263730")
-    public void backButtonFollowedByGiveUp() {
-        ArrayList<ActionProto> list = new ArrayList<>();
-        list.add(ActionProto.newBuilder()
-                         .setUpdateClientSettings(
-                                 UpdateClientSettingsProto.newBuilder().setClientSettings(
-                                         getValidClientSettingsForLocale("de-ZH")))
-                         .build());
-
-        list.add(ActionProto.newBuilder()
-                         .setPrompt(PromptProto.newBuilder().addChoices(
-                                 PromptProto.Choice.newBuilder().setChip(
-                                         ChipProto.newBuilder()
-                                                 .setType(ChipType.HIGHLIGHTED_ACTION)
-                                                 .setText("de-ZH Continue"))))
-                         .build());
-        AutofillAssistantTestScript script = new AutofillAssistantTestScript(
-                SupportedScriptProto.newBuilder()
-                        .setPath(TEST_PAGE_A)
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
-                        .build(),
-                list);
-        AutofillAssistantTestService testService =
-                new AutofillAssistantTestService(Collections.singletonList(script));
-        startAutofillAssistant(mTestRule.getActivity(), testService);
-
-        waitUntilViewMatchesCondition(withText("de-ZH Continue"), isCompletelyDisplayed());
-        onView(withId(R.id.profile_image)).perform(click());
-        waitUntilViewMatchesCondition(
-                withText("de-ZH " + DisplayStringId.SETTINGS.name()), isCompletelyDisplayed());
-        waitUntilViewMatchesCondition(
-                withText("de-ZH " + DisplayStringId.SEND_FEEDBACK.name()), isCompletelyDisplayed());
-
-        // First press on back button closes the profile icon menu.
-        Espresso.pressBack();
-
-        // Second press on back button shows back button error messages.
-        Espresso.pressBack();
-        waitUntilViewMatchesCondition(
-                withText("de-ZH back_button_message"), isCompletelyDisplayed());
-        waitUntilViewMatchesCondition(withText("de-ZH undo"), isCompletelyDisplayed());
-        onView(withText("de-ZH undo")).perform(click());
-        waitUntilViewMatchesCondition(withText("de-ZH Continue"), isCompletelyDisplayed());
-
-        // Check if |GIVE_UP| is displayed.
-        mTestRule.loadUrl(getTargetWebsiteUrl(TEST_PAGE_B));
-        waitUntilViewMatchesCondition(
-                withText("de-ZH " + DisplayStringId.GIVE_UP.name()), isCompletelyDisplayed());
     }
 
     @Test

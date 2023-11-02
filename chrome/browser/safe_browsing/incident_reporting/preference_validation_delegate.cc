@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -54,10 +54,11 @@ TPIncident_ValueState MapValueState(
 PreferenceValidationDelegate::PreferenceValidationDelegate(
     Profile* profile,
     std::unique_ptr<IncidentReceiver> incident_receiver)
-    : profile_(profile), incident_receiver_(std::move(incident_receiver)) {}
-
-PreferenceValidationDelegate::~PreferenceValidationDelegate() {
+    : profile_(profile), incident_receiver_(std::move(incident_receiver)) {
+  profile_observation_.Observe(profile);
 }
+
+PreferenceValidationDelegate::~PreferenceValidationDelegate() = default;
 
 void PreferenceValidationDelegate::OnAtomicPreferenceValidation(
     const std::string& pref_path,
@@ -65,15 +66,22 @@ void PreferenceValidationDelegate::OnAtomicPreferenceValidation(
     ValueState value_state,
     ValueState external_validation_value_state,
     bool is_personal) {
+  // profile_ can be null if it is already destroyed during shutdown.
+  if (!profile_) {
+    return;
+  }
   TPIncident_ValueState proto_value_state =
       MapValueState(value_state, external_validation_value_state);
   if (proto_value_state != TPIncident::UNKNOWN) {
     std::unique_ptr<TPIncident> incident(
         new ClientIncidentReport_IncidentData_TrackedPreferenceIncident());
     incident->set_path(pref_path);
-    if (!value || (!value->GetAsString(incident->mutable_atomic_value()) &&
-                   !base::JSONWriter::Write(
-                       std::move(*value), incident->mutable_atomic_value()))) {
+    if (!value) {
+      incident->clear_atomic_value();
+    } else if (value->is_string()) {
+      *incident->mutable_atomic_value() = value->GetString();
+    } else if (!base::JSONWriter::Write(std::move(*value),
+                                        incident->mutable_atomic_value())) {
       incident->clear_atomic_value();
     }
     incident->set_value_state(proto_value_state);
@@ -114,6 +122,11 @@ void PreferenceValidationDelegate::OnSplitPreferenceValidation(
         profile_, std::make_unique<TrackedPreferenceIncident>(
                       std::move(incident), is_personal));
   }
+}
+
+void PreferenceValidationDelegate::OnProfileWillBeDestroyed(Profile* profile) {
+  profile_ = nullptr;
+  profile_observation_.Reset();
 }
 
 }  // namespace safe_browsing

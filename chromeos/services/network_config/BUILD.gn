@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -13,11 +13,11 @@ static_library("network_config") {
   deps = [
     "//ash/constants",
     "//base",
-    "//chromeos/components/sync_wifi:network_eligibility_checker",
-    "//chromeos/dbus/hermes",
-    "//chromeos/dbus/shill",
+    "//chromeos/ash/components/dbus/hermes",
+    "//chromeos/ash/components/dbus/shill",
+    "//chromeos/ash/components/network",
+    "//chromeos/ash/components/sync_wifi:network_eligibility_checker",
     "//chromeos/login/login_state",
-    "//chromeos/network",
     "//chromeos/services/network_config/public/cpp",
     "//chromeos/services/network_config/public/mojom",
     "//components/device_event_log",
@@ -44,7 +44,7 @@ component("in_process_instance") {
 
   deps = [
     ":network_config",
-    "//chromeos/network",
+    "//chromeos/ash/components/network",
     "//chromeos/services/network_config/public/mojom",
     "//mojo/public/cpp/bindings",
   ]
@@ -60,9 +60,9 @@ source_set("unit_tests") {
     "//ash/constants:constants",
     "//base",
     "//base/test:test_support",
-    "//chromeos/dbus/shill:test_support",
+    "//chromeos/ash/components/dbus/shill:test_support",
+    "//chromeos/ash/components/network:test_support",
     "//chromeos/login/login_state",
-    "//chromeos/network:test_support",
     "//chromeos/services/network_config/public/cpp:test_support",
     "//components/onc",
     "//components/prefs:test_support",

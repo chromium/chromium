@@ -26,13 +26,16 @@
 
 #include <limits.h>
 #include <string.h>
+
 #include <atomic>
 
 #include "base/callback_forward.h"
+#include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
 #include "base/memory/ref_counted.h"
 #include "base/numerics/checked_math.h"
+#include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -45,11 +48,7 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
-#if DCHECK_IS_ON()
-#include "third_party/blink/renderer/platform/wtf/thread_restriction_verifier.h"
-#endif
-
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/scoped_cftyperef.h"
 
 typedef const struct __CFString* CFStringRef;
@@ -89,9 +88,7 @@ class WTF_EXPORT StringImpl {
   void operator delete(void*);
 
   // Used to construct static strings, which have a special ref_count_ that can
-  // never hit zero. This means that the static string will never be destroyed,
-  // which is important because static strings will be shared across threads &
-  // ref-counted in a non-threadsafe manner.
+  // never hit zero. This means that the static string will never be destroyed.
   enum ConstructEmptyStringTag { kConstructEmptyString };
   explicit StringImpl(ConstructEmptyStringTag)
       : length_(0),
@@ -231,8 +228,6 @@ class WTF_EXPORT StringImpl {
 
   bool IsLowerASCII() const;
 
-  bool IsSafeToSendToAnotherThread() const;
-
   // The high bits of 'hash' are always empty, but we prefer to store our
   // flags in the low bits because it makes them slightly more efficient to
   // access.  So, we shift left and right when setting and getting our hash
@@ -262,44 +257,70 @@ class WTF_EXPORT StringImpl {
   }
 
   ALWAYS_INLINE bool HasOneRef() const {
-#if DCHECK_IS_ON()
-    DCHECK(IsStatic() || verifier_.IsSafeToUse()) << AsciiForDebugging();
-#endif
-    return ref_count_ == 1;
+    return ref_count_.load(std::memory_order_acquire) == 1;
   }
 
   ALWAYS_INLINE void AddRef() const {
-#if DCHECK_IS_ON()
-    DCHECK(IsStatic() || verifier_.OnRef(ref_count_)) << AsciiForDebugging();
-#endif
     if (!IsStatic()) {
-      ref_count_ = base::CheckAdd(ref_count_, 1).ValueOrDie();
+      uint32_t previous_ref_count =
+          ref_count_.fetch_add(1, std::memory_order_relaxed);
+      CHECK_NE(previous_ref_count, std::numeric_limits<uint32_t>::max());
 #if DCHECK_IS_ON()
       ref_count_change_count_++;
 #endif
     }
   }
 
-  ALWAYS_INLINE void Release() const {
-#if DCHECK_IS_ON()
-    DCHECK(IsStatic() || verifier_.OnDeref(ref_count_))
-        << AsciiForDebugging() << " " << CurrentThread();
-#endif
+  // We explicitly remove the AddRef and Release operations from the tsan
+  // bots because even though all data races in the C++ memory model sense
+  // are undefined behavior, the use of atomics prevents a data race on
+  // ref_count_ itself.
 
+  // Sharing the AtomicStringTable causes other races outside of ref_count_
+  // that could lead to an early deletion of the StringImpl while other
+  // threads are still holding references to it.
+  // Possible races:
+  // 1. Races where ref_count_ doesn't reach zero are not harmful.
+  // 2. Races involving only release calls are not harmful. The
+  //    atomicity of the operations guarantee that only the last subtraction to
+  //    be executed will trigger the deletion of the StringImpl.
+  // 3. A fetch_add on thread A is ordered after a fetch_sub on thread B that
+  //    reaches 0. This can only happen on an AddRef() reached through the
+  //    AtomicStringTable::Add* methods, otherwise there should be another
+  //    reference on thread A, and the Release() on thread B could not have
+  //    reached 0. This race is mitigated by the fact that the Atomic String
+  //    Table Add and Removal operations (including the fetch_sub to 0) are
+  //    done under a lock.
+
+  ALWAYS_INLINE void Release() const {
     if (!IsStatic()) {
+      // This can be a relaxed load as long as the subtraction is performed
+      // with acq_rel order. Any modification to `ref_count_` reordered after
+      // this load will be caught by the while loop or the fetch_sub inside
+      // DestroyIfNeeded().
+      uint32_t current_ref = ref_count_.load(std::memory_order_relaxed);
 #if DCHECK_IS_ON()
       // In non-DCHECK builds, we can save a bit of time in micro-benchmarks by
       // not checking the arithmetic. We hope that checking in DCHECK builds is
       // enough to catch implementation bugs, and that implementation bugs are
       // the only way we'd experience underflow.
-      ref_count_ = base::CheckSub(ref_count_, 1).ValueOrDie();
+      DCHECK_NE(current_ref, 0u);
       ref_count_change_count_++;
-#else
-      --ref_count_;
 #endif
+      // This is a fancy fetch_sub() that allows the actual decrement to 0 to
+      // be delegated to the DestroyIfNeeded() function. The result of this
+      // compare_exchange_weak() will never be 0. Without this, there would be
+      // a potential race by reaching 0 and calling AddRef and Release on
+      // another thread before the deletion of the string in this thread,
+      // triggering the removal and destruction of the string twice.
+      do {
+        if (current_ref == 1) {
+          DestroyIfNeeded();
+          return;
+        }
+      } while (!ref_count_.compare_exchange_weak(current_ref, current_ref - 1,
+                                                 std::memory_order_acq_rel));
     }
-    if (ref_count_ == 0)
-      DestroyIfNotStatic();
   }
 
 #if DCHECK_IS_ON()
@@ -326,9 +347,8 @@ class WTF_EXPORT StringImpl {
       destination[i] = source[i];
   }
 
-  // Some string features, like refcounting and the atomicity flag, are not
-  // thread-safe. We achieve thread safety by isolation, giving each thread
-  // its own copy of the string.
+  // It is no longer required to create isolated copies for thread-safety
+  // purposes.
   scoped_refptr<StringImpl> IsolatedCopy() const;
 
   scoped_refptr<StringImpl> Substring(wtf_size_t pos,
@@ -456,7 +476,7 @@ class WTF_EXPORT StringImpl {
                  wtf_size_t start = 0,
                  wtf_size_t length = UINT_MAX) const;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   base::ScopedCFTypeRef<CFStringRef> CreateCFString();
 #endif
 #ifdef __OBJC__
@@ -466,6 +486,7 @@ class WTF_EXPORT StringImpl {
   static const UChar kLatin1CaseFoldTable[256];
 
  private:
+  friend class AtomicStringTable;
   enum Flags {
     // These two fields are never modified for the lifetime of the StringImpl.
     // It is therefore safe to read them with a relaxed operation.
@@ -474,8 +495,7 @@ class WTF_EXPORT StringImpl {
 
     // This is the only flag that can be both set and unset. It is safe to do
     // so because all accesses are mediated by the same atomic string table and
-    // so protected by thread locality (pre-unification) or a mutex
-    // (post-unification). Thus these accesses can also be relaxed.
+    // so protected by a mutex. Thus these accesses can also be relaxed.
     kIsAtomic = 1 << 2,
 
     // These bits are set atomically together. They are initially all
@@ -558,7 +578,7 @@ class WTF_EXPORT StringImpl {
                                                              StripBehavior);
   NOINLINE wtf_size_t HashSlowCase() const;
 
-  void DestroyIfNotStatic() const;
+  void DestroyIfNeeded() const;
 
   // Calculates the kContainsOnlyAscii and kIsLowerAscii flags. Returns
   // a bitfield with those 2 values.
@@ -579,10 +599,10 @@ class WTF_EXPORT StringImpl {
 #endif
 
 #if DCHECK_IS_ON()
-  mutable ThreadRestrictionVerifier verifier_;
-  mutable unsigned int ref_count_change_count_{0};
+  mutable std::atomic<unsigned> ref_count_change_count_{0};
 #endif
-  mutable unsigned ref_count_{1};
+  // TODO (crbug.com/1083392): Use base::AtomicRefCount.
+  mutable std::atomic_uint32_t ref_count_{1};
   const unsigned length_;
   mutable std::atomic<uint32_t> hash_and_flags_;
 };
@@ -820,7 +840,7 @@ inline wtf_size_t LengthOfNullTerminatedString(const UChar* string) {
   size_t length = 0;
   while (string[length] != UChar(0))
     ++length;
-  return SafeCast<wtf_size_t>(length);
+  return base::checked_cast<wtf_size_t>(length);
 }
 
 template <wtf_size_t inlineCapacity>

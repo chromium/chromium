@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,8 +29,8 @@ class WebUIIOSControllerFactory {
   // Call to deregister a factory.
   static void DeregisterFactory(WebUIIOSControllerFactory* factory);
 
-  // Returns 0 if there is a controller associated with |url|. Otherwise,
-  // returns an error code in NSURLErrorDomain associated with this |url|.
+  // Returns 0 if there is a controller associated with `url`. Otherwise,
+  // returns an error code in NSURLErrorDomain associated with this `url`.
   virtual NSInteger GetErrorCodeForWebUIURL(const GURL& url) const = 0;
 
   // Returns a WebUIIOSController instance for the given URL, or NULL if the URL

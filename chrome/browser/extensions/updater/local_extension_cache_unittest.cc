@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,6 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/task/post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
@@ -151,9 +150,9 @@ TEST_F(LocalExtensionCacheTest, Basic) {
   // All extensions should be there because cleanup happens on shutdown to
   // support use case when device was not used to more than 30 days and cache
   // shouldn't be cleaned before someone will have a chance to use it.
-  EXPECT_TRUE(cache.GetExtension(kTestExtensionId1, "", NULL, NULL));
-  EXPECT_TRUE(cache.GetExtension(kTestExtensionId2, "", NULL, NULL));
-  EXPECT_TRUE(cache.GetExtension(kTestExtensionId3, "", NULL, NULL));
+  EXPECT_TRUE(cache.GetExtension(kTestExtensionId1, "", nullptr, nullptr));
+  EXPECT_TRUE(cache.GetExtension(kTestExtensionId2, "", nullptr, nullptr));
+  EXPECT_TRUE(cache.GetExtension(kTestExtensionId3, "", nullptr, nullptr));
 
   bool did_shutdown = false;
   cache.Shutdown(base::BindOnce(&SimpleCallback, &did_shutdown));
@@ -196,10 +195,10 @@ TEST_F(LocalExtensionCacheTest, KeepHashed) {
 
   // We should be able to lookup all three extension queries
   std::string version;
-  EXPECT_TRUE(cache.GetExtension(kTestExtensionId1, "", NULL, &version));
+  EXPECT_TRUE(cache.GetExtension(kTestExtensionId1, "", nullptr, &version));
   EXPECT_EQ(version, "1.0");
-  EXPECT_TRUE(cache.GetExtension(kTestExtensionId1, hash1, NULL, NULL));
-  EXPECT_TRUE(cache.GetExtension(kTestExtensionId1, hash2, NULL, NULL));
+  EXPECT_TRUE(cache.GetExtension(kTestExtensionId1, hash1, nullptr, nullptr));
+  EXPECT_TRUE(cache.GetExtension(kTestExtensionId1, hash2, nullptr, nullptr));
 }
 
 TEST_F(LocalExtensionCacheTest, KeepLatest) {
@@ -233,9 +232,9 @@ TEST_F(LocalExtensionCacheTest, KeepLatest) {
   EXPECT_TRUE(base::PathExists(file22));
 
   // We should be able to lookup only the latest version queries.
-  EXPECT_FALSE(cache.GetExtension(kTestExtensionId1, hash1, NULL, NULL));
-  EXPECT_TRUE(cache.GetExtension(kTestExtensionId1, hash21, NULL, NULL));
-  EXPECT_TRUE(cache.GetExtension(kTestExtensionId1, hash22, NULL, NULL));
+  EXPECT_FALSE(cache.GetExtension(kTestExtensionId1, hash1, nullptr, nullptr));
+  EXPECT_TRUE(cache.GetExtension(kTestExtensionId1, hash21, nullptr, nullptr));
+  EXPECT_TRUE(cache.GetExtension(kTestExtensionId1, hash22, nullptr, nullptr));
 }
 
 TEST_F(LocalExtensionCacheTest, Complex) {
@@ -278,12 +277,12 @@ TEST_F(LocalExtensionCacheTest, Complex) {
   // We should be able to lookup only the latest version queries, both with and
   // without hash.
   std::string version;
-  EXPECT_TRUE(cache.GetExtension(kTestExtensionId1, "", NULL, &version));
+  EXPECT_TRUE(cache.GetExtension(kTestExtensionId1, "", nullptr, &version));
   EXPECT_EQ(version, "2.0");
-  EXPECT_FALSE(cache.GetExtension(kTestExtensionId1, hash11, NULL, NULL));
-  EXPECT_FALSE(cache.GetExtension(kTestExtensionId1, hash12, NULL, NULL));
-  EXPECT_TRUE(cache.GetExtension(kTestExtensionId1, hash21, NULL, NULL));
-  EXPECT_TRUE(cache.GetExtension(kTestExtensionId1, hash22, NULL, NULL));
+  EXPECT_FALSE(cache.GetExtension(kTestExtensionId1, hash11, nullptr, nullptr));
+  EXPECT_FALSE(cache.GetExtension(kTestExtensionId1, hash12, nullptr, nullptr));
+  EXPECT_TRUE(cache.GetExtension(kTestExtensionId1, hash21, nullptr, nullptr));
+  EXPECT_TRUE(cache.GetExtension(kTestExtensionId1, hash22, nullptr, nullptr));
 }
 
 static void PutExtensionAndWait(LocalExtensionCache* cache,
@@ -346,7 +345,7 @@ TEST_F(LocalExtensionCacheTest, PutExtensionCases) {
       GetExtensionFileName(cache_dir, kTestExtensionId1, "3.0", "");
   EXPECT_TRUE(base::PathExists(unhashed));
   // Old files removed from cache (kept in the directory though).
-  EXPECT_TRUE(cache.GetExtension(kTestExtensionId1, hash11, NULL, &version));
+  EXPECT_TRUE(cache.GetExtension(kTestExtensionId1, hash11, nullptr, &version));
   EXPECT_EQ(version, "3.0");
   EXPECT_TRUE(base::DeleteFile(temp1));
 
@@ -358,7 +357,7 @@ TEST_F(LocalExtensionCacheTest, PutExtensionCases) {
   EXPECT_FALSE(base::PathExists(
       GetExtensionFileName(cache_dir, kTestExtensionId1, "2.0", "")));
   // Old file kept.
-  EXPECT_TRUE(cache.GetExtension(kTestExtensionId1, "", NULL, &version));
+  EXPECT_TRUE(cache.GetExtension(kTestExtensionId1, "", nullptr, &version));
   EXPECT_EQ(version, "3.0");
   EXPECT_TRUE(base::DeleteFile(temp2));
 
@@ -381,10 +380,11 @@ TEST_F(LocalExtensionCacheTest, PutExtensionCases) {
   const base::FilePath hashed =
       GetExtensionFileName(cache_dir, kTestExtensionId1, "3.0", hash3);
   EXPECT_TRUE(base::PathExists(hashed));
-  EXPECT_TRUE(cache.GetExtension(kTestExtensionId1, hash3, NULL, NULL));
+  EXPECT_TRUE(cache.GetExtension(kTestExtensionId1, hash3, nullptr, nullptr));
   // Old file removed (queries return hashed version)
   base::FilePath unhashed_path;
-  EXPECT_TRUE(cache.GetExtension(kTestExtensionId1, "", &unhashed_path, NULL));
+  EXPECT_TRUE(
+      cache.GetExtension(kTestExtensionId1, "", &unhashed_path, nullptr));
   EXPECT_EQ(unhashed_path, hashed);
   EXPECT_TRUE(base::DeleteFile(temp4));
   EXPECT_TRUE(base::DeleteFile(unhashed));
@@ -396,7 +396,7 @@ TEST_F(LocalExtensionCacheTest, PutExtensionCases) {
   // New file skipped.
   EXPECT_FALSE(base::PathExists(unhashed));
   // Old file kept.
-  EXPECT_TRUE(cache.GetExtension(kTestExtensionId1, hash3, NULL, NULL));
+  EXPECT_TRUE(cache.GetExtension(kTestExtensionId1, hash3, nullptr, nullptr));
   EXPECT_TRUE(base::DeleteFile(temp5));
 
   // 6. Cache contains the same version with hash, our file has the "same" hash.
@@ -418,9 +418,9 @@ TEST_F(LocalExtensionCacheTest, PutExtensionCases) {
   const base::FilePath hashed2 =
       GetExtensionFileName(cache_dir, kTestExtensionId1, "3.0", hash4);
   EXPECT_TRUE(base::PathExists(hashed2));
-  EXPECT_TRUE(cache.GetExtension(kTestExtensionId1, hash4, NULL, NULL));
+  EXPECT_TRUE(cache.GetExtension(kTestExtensionId1, hash4, nullptr, nullptr));
   // Old file kept.
-  EXPECT_TRUE(cache.GetExtension(kTestExtensionId1, hash3, NULL, NULL));
+  EXPECT_TRUE(cache.GetExtension(kTestExtensionId1, hash3, nullptr, nullptr));
   EXPECT_TRUE(base::DeleteFile(temp7));
 }
 

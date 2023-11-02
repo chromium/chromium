@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,21 +36,27 @@ import android.support.test.InstrumentationRegistry;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.espresso.intent.matcher.IntentMatchers;
 import androidx.test.filters.MediumTest;
+import androidx.test.filters.SmallTest;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Assume;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.android_webview.devui.HomeFragment;
 import org.chromium.android_webview.devui.MainActivity;
 import org.chromium.android_webview.devui.R;
 import org.chromium.android_webview.devui.WebViewPackageError;
-import org.chromium.android_webview.devui.util.WebViewPackageHelper;
+import org.chromium.android_webview.nonembedded_util.WebViewPackageHelper;
 import org.chromium.android_webview.test.AwJUnit4ClassRunner;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
+import org.chromium.ui.test.util.ViewUtils;
 
 import java.util.Locale;
 
@@ -69,6 +75,14 @@ public class HomeFragmentTest {
 
     @Rule
     public BaseActivityTestRule mRule = new BaseActivityTestRule<MainActivity>(MainActivity.class);
+
+    @Before
+    public void setUp() throws Exception {
+        // Espresso is normally configured to automatically wait for the main thread to go idle, but
+        // BaseActivityTestRule turns that behavior off so we must explicitly wait for the View
+        // hierarchy to inflate.
+        ViewUtils.waitForView(withId(R.id.main_info_list));
+    }
 
     @After
     public void tearDown() {
@@ -90,6 +104,14 @@ public class HomeFragmentTest {
         // done after launching the activity.
         intending(not(IntentMatchers.isInternal()))
                 .respondWith(new ActivityResult(Activity.RESULT_OK, null));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testHasPublicNoArgsConstructor() throws Throwable {
+        HomeFragment fragment = new HomeFragment();
+        Assert.assertNotNull(fragment);
     }
 
     @Test
@@ -187,6 +209,10 @@ public class HomeFragmentTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
+    // clang-format off
+    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.R,
+        message = "https://crbug.com/1292197")
+    // clang-format on
     public void testLongPressCopy() throws Throwable {
         Context context = InstrumentationRegistry.getTargetContext();
         // Inject a dummy PackageInfo as the current WebView package to make sure it will always be
@@ -228,6 +254,7 @@ public class HomeFragmentTest {
         String expectedErrorMessage = String.format(Locale.US,
                 WebViewPackageError.DIFFERENT_WEBVIEW_PROVIDER_ERROR_MESSAGE,
                 WebViewPackageHelper.loadLabel(context));
+        ViewUtils.waitForView(withId(R.id.main_error_view));
         onView(withId(R.id.main_error_view)).check(matches(isDisplayed()));
         onView(withId(R.id.error_text)).check(matches(withText(expectedErrorMessage)));
         // Since the current provider is set to a fake package not an actual installed WebView
@@ -256,7 +283,9 @@ public class HomeFragmentTest {
         String dialogExpectedMessage = String.format(Locale.US,
                 WebViewPackageError.DIFFERENT_WEBVIEW_PROVIDER_DIALOG_MESSAGE,
                 WebViewPackageHelper.loadLabel(context));
+        ViewUtils.waitForView(withId(R.id.main_error_view));
         onView(withId(R.id.main_error_view)).perform(click());
+        ViewUtils.waitForView(withText(dialogExpectedMessage));
         onView(withText(dialogExpectedMessage)).check(matches(isDisplayed()));
         // Since the current provider is set to a fake package not an actual installed WebView
         // provider, the UI should only offer to change the system WebView provider and should not
@@ -288,6 +317,7 @@ public class HomeFragmentTest {
         String expectedErrorMessage = String.format(Locale.US,
                 WebViewPackageError.DIFFERENT_WEBVIEW_PROVIDER_ERROR_MESSAGE,
                 WebViewPackageHelper.loadLabel(context));
+        ViewUtils.waitForView(withId(R.id.main_error_view));
         onView(withId(R.id.main_error_view)).check(matches(isDisplayed()));
         onView(withId(R.id.error_text)).check(matches(withText(expectedErrorMessage)));
         // Since the current provider is set to a fake package not an actual installed WebView
@@ -315,7 +345,9 @@ public class HomeFragmentTest {
         String dialogExpectedMessage = String.format(Locale.US,
                 WebViewPackageError.DIFFERENT_WEBVIEW_PROVIDER_DIALOG_MESSAGE,
                 WebViewPackageHelper.loadLabel(context));
+        ViewUtils.waitForView(withId(R.id.main_error_view));
         onView(withId(R.id.main_error_view)).perform(click());
+        ViewUtils.waitForView(withText(dialogExpectedMessage));
         onView(withText(dialogExpectedMessage)).check(matches(isDisplayed()));
         // Since the current provider is set to a fake package not an actual installed WebView
         // provider, the UI shouldn't offer opening current WebView provider dev UI. It should not

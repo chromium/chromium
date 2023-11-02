@@ -1,0 +1,6 @@
+Name: thiserror
+URL: https://crates.io/crates/thiserror
+Description: derive(Error)
+Version: 1.0.30
+Security Critical: yes
+License: Apache 2.0

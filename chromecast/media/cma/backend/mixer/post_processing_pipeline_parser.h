@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -25,19 +24,23 @@ struct StreamPipelineDescriptor {
   //   {"processor": "PATH_TO_SHARED_OBJECT",
   //    "config": "CONFIGURATION_STRING"},
   //    ... ]
-  const base::Value* pipeline;
+  base::Value prerender_pipeline;
+  base::Value pipeline;
   const base::Value* stream_types;
-  const absl::optional<int> num_input_channels;
+  absl::optional<int> num_input_channels;
   const base::Value* volume_limits;
 
-  StreamPipelineDescriptor(const base::Value* pipeline_in,
+  StreamPipelineDescriptor(base::Value prerender_pipeline_in,
+                           base::Value pipeline_in,
                            const base::Value* stream_types_in,
                            const absl::optional<int> num_input_channels_in,
                            const base::Value* volume_limits_in);
   ~StreamPipelineDescriptor();
-  StreamPipelineDescriptor(const StreamPipelineDescriptor& other);
-  StreamPipelineDescriptor operator=(const StreamPipelineDescriptor& other) =
-      delete;
+  StreamPipelineDescriptor(StreamPipelineDescriptor&& other);
+  StreamPipelineDescriptor& operator=(StreamPipelineDescriptor&& other);
+
+  StreamPipelineDescriptor(const StreamPipelineDescriptor&) = delete;
+  StreamPipelineDescriptor& operator=(const StreamPipelineDescriptor&) = delete;
 };
 
 // Helper class to parse post-processing pipeline descriptor file.

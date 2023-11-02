@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,15 +7,15 @@
 #include <memory>
 #include <string>
 
+#include "ash/components/arc/mojom/file_system.mojom.h"
+#include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/components/arc/session/arc_service_manager.h"
+#include "ash/components/arc/test/connection_holder_util.h"
+#include "ash/components/arc/test/fake_file_system_instance.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/arc/mojom/file_system.mojom.h"
-#include "components/arc/session/arc_bridge_service.h"
-#include "components/arc/session/arc_service_manager.h"
-#include "components/arc/test/connection_holder_util.h"
-#include "components/arc/test/fake_file_system_instance.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -30,6 +30,7 @@ constexpr char kAuthority[] = "authority";
 constexpr char kDocumentId[] = "document_id";
 constexpr char kRootId[] = "root_id";
 constexpr char kUrl[] = "content://test";
+constexpr char kUrlId[] = "url_id";
 
 }  // namespace
 
@@ -122,16 +123,17 @@ class ArcFileSystemOperationRunnerTest : public testing::Test {
         base::BindOnce(
             [](int* counter, mojom::RootSizePtr root_size) { ++*counter; },
             counter));
-    runner_->OpenFileToRead(
+    runner_->OpenFileSessionToWrite(
         GURL(kUrl),
-        base::BindOnce(
-            [](int* counter, mojo::ScopedHandle handle) { ++*counter; },
-            counter));
-    runner_->OpenFileToWrite(
+        base::BindOnce([](int* counter,
+                          mojom::FileSessionPtr file_session) { ++*counter; },
+                       counter));
+    runner_->OpenFileSessionToRead(
         GURL(kUrl),
-        base::BindOnce(
-            [](int* counter, mojo::ScopedHandle handle) { ++*counter; },
-            counter));
+        base::BindOnce([](int* counter,
+                          mojom::FileSessionPtr file_session) { ++*counter; },
+                       counter));
+    runner_->CloseFileSession(kUrlId, /*error_message=*/std::string());
 
     // RemoveWatcher() is never deferred.
     runner_->RemoveWatcher(

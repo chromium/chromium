@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -80,7 +80,7 @@ IN_PROC_BROWSER_TEST_F(SendMouseMoveUITest, Probe) {
                  << "(" << point.x() << ", " << point.y() << ")");
     // Move the pointer.
     base::RunLoop run_loop;
-    EXPECT_TRUE(ui_controls::SendMouseMoveNotifyWhenDone(
+    ASSERT_TRUE(ui_controls::SendMouseMoveNotifyWhenDone(
         point.x(), point.y(), run_loop.QuitClosure()));
     run_loop.Run();
 

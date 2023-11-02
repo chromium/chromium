@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/service_provider_config.h"
@@ -18,12 +19,12 @@
 namespace enterprise_connectors {
 
 // Experimental flag to enable or disable the file system connector.
-extern const base::Feature kFileSystemConnectorEnabled;
+BASE_DECLARE_FEATURE(kFileSystemConnectorEnabled);
 
 // The settings for a report service obtained from a connector policy.
 class FileSystemServiceSettings {
  public:
-  explicit FileSystemServiceSettings(
+  FileSystemServiceSettings(
       const base::Value& settings_value,
       const ServiceProviderConfig& service_provider_config);
   FileSystemServiceSettings(FileSystemServiceSettings&&);
@@ -47,7 +48,7 @@ class FileSystemServiceSettings {
     std::set<std::string> mime_types;
   };
 
-  using URLMatchingID = url_matcher::URLMatcherConditionSet::ID;
+  using URLMatchingID = base::MatcherStringPattern::ID;
 
   // Map from a url matching ID (representing a specific url matching pattern)
   // to its URLPatternSettings.
@@ -84,7 +85,7 @@ class FileSystemServiceSettings {
   // The service provider matching the name given in a Connector policy. nullptr
   // implies that a corresponding service provider doesn't exist and that these
   // settings are not valid.
-  const ServiceProviderConfig::ServiceProvider* service_provider_ = nullptr;
+  raw_ptr<const FileSystemConfig> file_system_config_ = nullptr;
 
   // The URL matcher created from the patterns set in the analysis policy. The
   // condition set IDs returned after matching against a URL can be used to

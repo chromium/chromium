@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -148,7 +148,7 @@ class IdleAppNameNotificationDelegateView
     // Inform our owner that we are going away.
     if (owner_) {
       IdleAppNameNotificationView* owner = owner_;
-      owner_ = NULL;
+      owner_ = nullptr;
       owner->CloseMessage();
     }
     // Close the owning widget - if required.
@@ -178,8 +178,8 @@ class IdleAppNameNotificationDelegateView
   }
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    node_data->SetName(spoken_text_);
     node_data->role = ax::mojom::Role::kAlert;
+    node_data->SetName(spoken_text_);
   }
 
   // ImplicitAnimationObserver overrides
@@ -217,7 +217,7 @@ IdleAppNameNotificationView::IdleAppNameNotificationView(
     int message_visibility_time_in_ms,
     int animation_time_ms,
     const extensions::Extension* extension)
-    : view_(NULL) {
+    : view_(nullptr) {
   ShowMessage(message_visibility_time_in_ms, animation_time_ms, extension);
 }
 
@@ -228,13 +228,13 @@ IdleAppNameNotificationView::~IdleAppNameNotificationView() {
 void IdleAppNameNotificationView::CloseMessage() {
   if (view_) {
     IdleAppNameNotificationDelegateView* view = view_;
-    view_ = NULL;
+    view_ = nullptr;
     view->Close();
   }
 }
 
 bool IdleAppNameNotificationView::IsVisible() {
-  return view_ != NULL;
+  return view_ != nullptr;
 }
 
 std::u16string IdleAppNameNotificationView::GetShownTextForTest() {

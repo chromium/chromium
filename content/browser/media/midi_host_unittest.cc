@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_browser_context.h"
@@ -130,7 +131,7 @@ class MidiSessionClientForTesting : public midi::mojom::MidiSessionClient {
 
 class MidiHostTest : public testing::Test {
  public:
-  MidiHostTest() : data_(kNoteOn, kNoteOn + base::size(kNoteOn)), port_id_(0) {
+  MidiHostTest() : data_(kNoteOn, kNoteOn + std::size(kNoteOn)), port_id_(0) {
     browser_context_ = std::make_unique<TestBrowserContext>();
     rph_ = std::make_unique<MockRenderProcessHost>(browser_context_.get());
     std::unique_ptr<FakeMidiManagerFactory> factory =

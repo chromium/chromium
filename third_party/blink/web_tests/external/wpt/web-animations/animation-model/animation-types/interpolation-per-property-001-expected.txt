@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 377 tests; 365 PASS, 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 381 tests; 369 PASS, 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Setup
 PASS align-content (type: discrete) has testInterpolation function
 PASS align-content uses discrete animation when animating between "flex-start" and "flex-end" with linear easing
@@ -377,5 +377,9 @@ PASS image-orientation (type: discrete) has testInterpolation function
 PASS image-orientation uses discrete animation when animating between "none" and "from-image" with linear easing
 PASS image-orientation uses discrete animation when animating between "none" and "from-image" with effect easing
 PASS image-orientation uses discrete animation when animating between "none" and "from-image" with keyframe easing
+PASS initial-letter (type: discrete) has testInterpolation function
+PASS initial-letter uses discrete animation when animating between "1 2" and "3 4" with linear easing
+PASS initial-letter uses discrete animation when animating between "1 2" and "3 4" with effect easing
+PASS initial-letter uses discrete animation when animating between "1 2" and "3 4" with keyframe easing
 Harness: the test ran to completion.
 

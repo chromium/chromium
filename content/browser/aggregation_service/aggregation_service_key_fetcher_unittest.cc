@@ -1,78 +1,50 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/browser/aggregation_service/aggregation_service_key_fetcher.h"
 
 #include <memory>
+#include <tuple>
 #include <utility>
 #include <vector>
 
-#include "base/callback.h"
-#include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
+#include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
+#include "content/browser/aggregation_service/aggregation_service_storage.h"
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
 #include "content/browser/aggregation_service/public_key.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
-#include "url/origin.h"
 
 namespace content {
 
 namespace {
 
-constexpr char kExampleOrigin[] = "https://a.com";
+using ::testing::_;
+using ::testing::DoAll;
+
+using FetchCallback = AggregationServiceKeyFetcher::FetchCallback;
+using NetworkFetchCallback =
+    AggregationServiceKeyFetcher::NetworkFetcher::NetworkFetchCallback;
+
+constexpr char kExampleUrl[] = "https://a.com/keys";
 
 // NetworkFetcher that manages the public keys in memory.
 class MockNetworkFetcher : public AggregationServiceKeyFetcher::NetworkFetcher {
  public:
-  // AggregationServiceKeyFetcher::NetworkFetcher:
-  void FetchPublicKeys(const url::Origin& origin,
-                       NetworkFetchCallback callback) override {
-    pending_callbacks_[origin].push_back(std::move(callback));
-    ++num_fetches_;
-
-    if (quit_closure_ && num_fetches_ >= expected_num_fetches_)
-      std::move(quit_closure_).Run();
-  }
-
-  int num_fetches() const { return num_fetches_; }
-
-  void WaitForNumFetches(int expected_num_fetches) {
-    if (num_fetches_ >= expected_num_fetches)
-      return;
-
-    base::RunLoop run_loop;
-    expected_num_fetches_ = expected_num_fetches;
-    quit_closure_ = run_loop.QuitClosure();
-    run_loop.Run();
-  }
-
-  void TriggerResponse(const url::Origin& origin,
-                       const absl::optional<PublicKeyset>& response) {
-    ASSERT_TRUE(pending_callbacks_.contains(origin))
-        << "No corresponding FetchPublicKeys call for origin " << origin;
-
-    std::vector<NetworkFetchCallback> callbacks =
-        std::move(pending_callbacks_[origin]);
-    pending_callbacks_.erase(origin);
-
-    for (auto& callback : callbacks) {
-      std::move(callback).Run(response);
-    }
-  }
-
- private:
-  base::flat_map<url::Origin, std::vector<NetworkFetchCallback>>
-      pending_callbacks_;
-  int num_fetches_ = 0;
-  int expected_num_fetches_ = 0;
-  base::OnceClosure quit_closure_;
+  MOCK_METHOD(void,
+              FetchPublicKeys,
+              (const GURL& url, NetworkFetchCallback callback),
+              (override));
 };
 
 }  // namespace
@@ -81,25 +53,25 @@ class AggregationServiceKeyFetcherTest : public testing::Test {
  public:
   AggregationServiceKeyFetcherTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        manager_(task_environment_.GetMockClock()) {
+        storage_context_(task_environment_.GetMockClock()) {
     auto network_fetcher = std::make_unique<MockNetworkFetcher>();
     network_fetcher_ = network_fetcher.get();
     fetcher_ = std::make_unique<AggregationServiceKeyFetcher>(
-        &manager_, std::move(network_fetcher));
+        &storage_context_, std::move(network_fetcher));
   }
 
-  void SetPublicKeysInStorage(const url::Origin& origin, PublicKeyset keyset) {
-    manager_.GetKeyStorage()
-        .AsyncCall(&AggregationServiceKeyStorage::SetPublicKeys)
-        .WithArgs(origin, std::move(keyset));
+  void SetPublicKeysInStorage(const GURL& url, PublicKeyset keyset) {
+    storage_context_.GetStorage()
+        .AsyncCall(&AggregationServiceStorage::SetPublicKeys)
+        .WithArgs(url, std::move(keyset));
   }
 
-  void ExpectPublicKeysInStorage(const url::Origin& origin,
+  void ExpectPublicKeysInStorage(const GURL& url,
                                  const std::vector<PublicKey>& expected_keys) {
     base::RunLoop run_loop;
-    manager_.GetKeyStorage()
-        .AsyncCall(&AggregationServiceKeyStorage::GetPublicKeys)
-        .WithArgs(origin)
+    storage_context_.GetStorage()
+        .AsyncCall(&AggregationServiceStorage::GetPublicKeys)
+        .WithArgs(url)
         .Then(
             base::BindLambdaForTesting([&](std::vector<PublicKey> actual_keys) {
               EXPECT_TRUE(aggregation_service::PublicKeysEqual(expected_keys,
@@ -109,197 +81,185 @@ class AggregationServiceKeyFetcherTest : public testing::Test {
     run_loop.Run();
   }
 
-  void GetPublicKey(const url::Origin& origin) {
-    // This method might rely on MockNetworkFetcher::WaitForNumFetches() for
-    // waiting on responses from the storage and fetching from the network
-    // fetcher.
-    fetcher_->GetPublicKey(
-        origin,
-        base::BindLambdaForTesting(
-            [&](absl::optional<PublicKey> key,
-                AggregationServiceKeyFetcher::PublicKeyFetchStatus status) {
-              ++num_callbacks_run_;
-              last_fetched_key_ = key;
-              last_fetch_status_ = status;
-            }));
-  }
-
   void ResetKeyFetcher() { fetcher_.reset(); }
 
  protected:
   const base::Clock& clock() const { return *task_environment_.GetMockClock(); }
 
   base::test::TaskEnvironment task_environment_;
-  TestAggregatableReportManager manager_;
+  TestAggregationServiceStorageContext storage_context_;
   std::unique_ptr<AggregationServiceKeyFetcher> fetcher_;
-  MockNetworkFetcher* network_fetcher_;
+  raw_ptr<MockNetworkFetcher> network_fetcher_;
 
-  int num_callbacks_run_ = 0;
-  absl::optional<PublicKey> last_fetched_key_ = absl::nullopt;
-  absl::optional<AggregationServiceKeyFetcher::PublicKeyFetchStatus>
-      last_fetch_status_ = absl::nullopt;
+  base::MockCallback<FetchCallback> callback_;
 };
 
 TEST_F(AggregationServiceKeyFetcherTest, GetPublicKeysFromStorage_Succeed) {
-  url::Origin origin = url::Origin::Create(GURL(kExampleOrigin));
+  GURL url(kExampleUrl);
   PublicKey expected_key = aggregation_service::GenerateKey().public_key;
 
   SetPublicKeysInStorage(
-      origin,
-      PublicKeyset(/*keys=*/{expected_key}, /*fetch_time=*/clock().Now(),
-                   /*expiry_time=*/base::Time::Max()));
+      url, PublicKeyset(/*keys=*/{expected_key}, /*fetch_time=*/clock().Now(),
+                        /*expiry_time=*/base::Time::Max()));
+
+  EXPECT_CALL(*network_fetcher_, FetchPublicKeys(_, _)).Times(0);
 
   base::RunLoop run_loop;
-  fetcher_->GetPublicKey(
-      origin,
-      base::BindLambdaForTesting(
-          [&](absl::optional<PublicKey> key,
-              AggregationServiceKeyFetcher::PublicKeyFetchStatus status) {
-            ASSERT_TRUE(key.has_value());
-            EXPECT_TRUE(aggregation_service::PublicKeysEqual({expected_key},
-                                                             {key.value()}));
-            EXPECT_EQ(status,
-                      AggregationServiceKeyFetcher::PublicKeyFetchStatus::kOk);
-            run_loop.Quit();
-          }));
+  EXPECT_CALL(callback_,
+              Run(absl::optional<PublicKey>(std::move(expected_key)),
+                  AggregationServiceKeyFetcher::PublicKeyFetchStatus::kOk))
+      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+  fetcher_->GetPublicKey(url, callback_.Get());
   run_loop.Run();
-
-  EXPECT_EQ(network_fetcher_->num_fetches(), 0);
 }
 
-TEST_F(AggregationServiceKeyFetcherTest,
-       GetPublicKeysWithNoKeysForOrigin_Failed) {
-  url::Origin origin = url::Origin::Create(GURL(kExampleOrigin));
-  GetPublicKey(origin);
-  network_fetcher_->WaitForNumFetches(1);
-  network_fetcher_->TriggerResponse(origin, /*response=*/absl::nullopt);
+TEST_F(AggregationServiceKeyFetcherTest, GetPublicKeysWithNoKeysForUrl_Failed) {
+  GURL url(kExampleUrl);
 
-  ASSERT_TRUE(last_fetch_status_.has_value());
-  EXPECT_EQ(last_fetch_status_.value(),
-            AggregationServiceKeyFetcher::PublicKeyFetchStatus::
-                kPublicKeyFetchFailed);
-  EXPECT_FALSE(last_fetched_key_.has_value());
-  EXPECT_EQ(num_callbacks_run_, 1);
+  base::RunLoop run_loop;
+  EXPECT_CALL(*network_fetcher_, FetchPublicKeys(url, _))
+      .WillOnce(
+          testing::DoAll(base::test::RunOnceClosure(run_loop.QuitClosure()),
+                         base::test::RunOnceCallback<1>(absl::nullopt)));
+  EXPECT_CALL(callback_, Run(absl::optional<PublicKey>(absl::nullopt),
+                             AggregationServiceKeyFetcher::
+                                 PublicKeyFetchStatus::kPublicKeyFetchFailed));
+
+  fetcher_->GetPublicKey(url, callback_.Get());
+  run_loop.Run();
 }
 
 TEST_F(AggregationServiceKeyFetcherTest, FetchPublicKeysFromNetwork_Succeed) {
-  url::Origin origin = url::Origin::Create(GURL(kExampleOrigin));
+  GURL url(kExampleUrl);
   PublicKey expected_key = aggregation_service::GenerateKey().public_key;
 
-  GetPublicKey(origin);
-  network_fetcher_->WaitForNumFetches(1);
-  network_fetcher_->TriggerResponse(
-      origin, /*response=*/PublicKeyset(/*keys=*/{expected_key},
-                                        /*fetch_time=*/clock().Now(),
-                                        /*expiry_time=*/base::Time::Max()));
+  base::RunLoop run_loop;
+  EXPECT_CALL(*network_fetcher_, FetchPublicKeys(url, _))
+      .WillOnce(testing::DoAll(
+          base::test::RunOnceClosure(run_loop.QuitClosure()),
+          base::test::RunOnceCallback<1>(PublicKeyset(
+              /*keys=*/{expected_key}, /*fetch_time=*/clock().Now(),
+              /*expiry_time=*/base::Time::Max()))));
+  EXPECT_CALL(callback_,
+              Run(absl::optional<PublicKey>(expected_key),
+                  AggregationServiceKeyFetcher::PublicKeyFetchStatus::kOk));
 
-  ASSERT_TRUE(last_fetch_status_.has_value());
-  EXPECT_EQ(last_fetch_status_.value(),
-            AggregationServiceKeyFetcher::PublicKeyFetchStatus::kOk);
-  ASSERT_TRUE(last_fetched_key_.has_value());
-  EXPECT_TRUE(aggregation_service::PublicKeysEqual(
-      {expected_key}, {last_fetched_key_.value()}));
-  EXPECT_EQ(num_callbacks_run_, 1);
+  fetcher_->GetPublicKey(url, callback_.Get());
+  run_loop.Run();
 
   // Verify that the fetched public keys are stored to storage.
-  ExpectPublicKeysInStorage(origin, /*expected_keys=*/{expected_key});
+  ExpectPublicKeysInStorage(url, /*expected_keys=*/{expected_key});
 }
 
 TEST_F(AggregationServiceKeyFetcherTest,
        FetchPublicKeysFromNetworkNoStore_NotStored) {
-  url::Origin origin = url::Origin::Create(GURL(kExampleOrigin));
+  GURL url(kExampleUrl);
   PublicKey expected_key = aggregation_service::GenerateKey().public_key;
 
-  GetPublicKey(origin);
-  network_fetcher_->WaitForNumFetches(1);
-  network_fetcher_->TriggerResponse(
-      origin, /*response=*/PublicKeyset(/*keys=*/{expected_key},
-                                        /*fetch_time=*/clock().Now(),
-                                        /*expiry_time=*/base::Time()));
+  base::RunLoop run_loop;
+  EXPECT_CALL(*network_fetcher_, FetchPublicKeys(url, _))
+      .WillOnce(
+          testing::DoAll(base::test::RunOnceClosure(run_loop.QuitClosure()),
+                         base::test::RunOnceCallback<1>(
+                             PublicKeyset(/*keys=*/{expected_key},
+                                          /*fetch_time=*/clock().Now(),
+                                          /*expiry_time=*/base::Time()))));
+  EXPECT_CALL(callback_,
+              Run(absl::optional<PublicKey>(std::move(expected_key)),
+                  AggregationServiceKeyFetcher::PublicKeyFetchStatus::kOk));
 
-  ASSERT_TRUE(last_fetch_status_.has_value());
-  EXPECT_EQ(last_fetch_status_.value(),
-            AggregationServiceKeyFetcher::PublicKeyFetchStatus::kOk);
-  ASSERT_TRUE(last_fetched_key_.has_value());
-  EXPECT_TRUE(aggregation_service::PublicKeysEqual(
-      {expected_key}, {last_fetched_key_.value()}));
-  EXPECT_EQ(num_callbacks_run_, 1);
+  fetcher_->GetPublicKey(url, callback_.Get());
+  run_loop.Run();
 
   // Verify that the fetched public keys are not stored to storage.
-  ExpectPublicKeysInStorage(origin, /*expected_keys=*/{});
+  ExpectPublicKeysInStorage(url, /*expected_keys=*/{});
 }
 
 TEST_F(AggregationServiceKeyFetcherTest,
        FetchPublicKeysFromNetworkError_StorageCleared) {
-  url::Origin origin = url::Origin::Create(GURL(kExampleOrigin));
+  GURL url(kExampleUrl);
   base::Time now = clock().Now();
 
   PublicKey key = aggregation_service::GenerateKey().public_key;
-  SetPublicKeysInStorage(origin,
+  SetPublicKeysInStorage(url,
                          PublicKeyset(/*keys=*/{key}, /*fetch_time=*/now,
                                       /*expiry_time=*/now + base::Days(1)));
 
   task_environment_.FastForwardBy(base::Days(2));
 
-  GetPublicKey(origin);
-  network_fetcher_->WaitForNumFetches(1);
-  network_fetcher_->TriggerResponse(origin, /*response=*/absl::nullopt);
+  base::RunLoop run_loop;
+  EXPECT_CALL(*network_fetcher_, FetchPublicKeys(url, _))
+      .WillOnce(
+          testing::DoAll(base::test::RunOnceClosure(run_loop.QuitClosure()),
+                         base::test::RunOnceCallback<1>(absl::nullopt)));
+  EXPECT_CALL(callback_, Run(absl::optional<PublicKey>(absl::nullopt),
+                             AggregationServiceKeyFetcher::
+                                 PublicKeyFetchStatus::kPublicKeyFetchFailed));
 
-  ASSERT_TRUE(last_fetch_status_.has_value());
-  EXPECT_EQ(last_fetch_status_.value(),
-            AggregationServiceKeyFetcher::PublicKeyFetchStatus::
-                kPublicKeyFetchFailed);
-  EXPECT_FALSE(last_fetched_key_.has_value());
-  EXPECT_EQ(num_callbacks_run_, 1);
+  fetcher_->GetPublicKey(url, callback_.Get());
+  run_loop.Run();
 
   // Verify that the public keys in storage are cleared.
-  ExpectPublicKeysInStorage(origin, /*expected_keys=*/{});
+  ExpectPublicKeysInStorage(url, /*expected_keys=*/{});
 }
 
 TEST_F(AggregationServiceKeyFetcherTest,
        SimultaneousFetches_NoDuplicateNetworkRequest) {
-  url::Origin origin = url::Origin::Create(GURL(kExampleOrigin));
+  GURL url(kExampleUrl);
   PublicKey expected_key = aggregation_service::GenerateKey().public_key;
 
+  base::RunLoop run_loop;
+  EXPECT_CALL(*network_fetcher_, FetchPublicKeys(url, _))
+      .WillOnce(
+          testing::DoAll(base::test::RunOnceClosure(run_loop.QuitClosure()),
+                         base::test::RunOnceCallback<1>(
+                             PublicKeyset(/*keys=*/{expected_key},
+                                          /*fetch_time=*/clock().Now(),
+                                          /*expiry_time=*/base::Time::Max()))));
+  EXPECT_CALL(callback_,
+              Run(absl::optional<PublicKey>(std::move(expected_key)),
+                  AggregationServiceKeyFetcher::PublicKeyFetchStatus::kOk))
+      .Times(10);
+
   for (int i = 0; i < 10; ++i) {
-    GetPublicKey(origin);
+    fetcher_->GetPublicKey(url, callback_.Get());
   }
-
-  network_fetcher_->WaitForNumFetches(1);
-  network_fetcher_->TriggerResponse(
-      origin, /*response=*/PublicKeyset(/*keys=*/{expected_key},
-                                        /*fetch_time=*/clock().Now(),
-                                        /*expiry_time=*/base::Time::Max()));
-
-  EXPECT_EQ(num_callbacks_run_, 10);
-  EXPECT_EQ(network_fetcher_->num_fetches(), 1);
+  run_loop.Run();
 }
 
 TEST_F(AggregationServiceKeyFetcherTest,
        SimultaneousFetchesInvalidKeysFromNetwork_NoDuplicateNetworkRequest) {
-  url::Origin origin = url::Origin::Create(GURL(kExampleOrigin));
+  GURL url(kExampleUrl);
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(*network_fetcher_, FetchPublicKeys(url, _))
+      .WillOnce(
+          testing::DoAll(base::test::RunOnceClosure(run_loop.QuitClosure()),
+                         base::test::RunOnceCallback<1>(absl::nullopt)));
+  EXPECT_CALL(callback_, Run(absl::optional<PublicKey>(absl::nullopt),
+                             AggregationServiceKeyFetcher::
+                                 PublicKeyFetchStatus::kPublicKeyFetchFailed))
+      .Times(10);
 
   for (int i = 0; i < 10; ++i) {
-    GetPublicKey(origin);
+    fetcher_->GetPublicKey(url, callback_.Get());
   }
-
-  network_fetcher_->WaitForNumFetches(1);
-  network_fetcher_->TriggerResponse(origin, /*response=*/absl::nullopt);
-
-  EXPECT_EQ(num_callbacks_run_, 10);
-  EXPECT_EQ(network_fetcher_->num_fetches(), 1);
+  run_loop.Run();
 }
 
 TEST_F(AggregationServiceKeyFetcherTest,
        KeyFetcherDeleted_PendingRequestsNotRun) {
-  url::Origin origin = url::Origin::Create(GURL(kExampleOrigin));
+  GURL url(kExampleUrl);
 
-  GetPublicKey(origin);
-  network_fetcher_->WaitForNumFetches(1);
-  EXPECT_EQ(network_fetcher_->num_fetches(), 1);
+  base::RunLoop run_loop;
+  EXPECT_CALL(*network_fetcher_, FetchPublicKeys(url, _))
+      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+  EXPECT_CALL(callback_, Run(_, _)).Times(0);
+
+  fetcher_->GetPublicKey(url, callback_.Get());
+  run_loop.Run();
 
   ResetKeyFetcher();
-  EXPECT_EQ(num_callbacks_run_, 0);
 }
 
 }  // namespace content

@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,10 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/web_ui_controller.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/common/url_constants.h"
 
 namespace base {
 namespace trace_event {
@@ -22,6 +25,14 @@ class TraceConfig;
 namespace content {
 
 class TracingDelegate;
+class TracingUI;
+
+// WebUIConfig for the chrome://tracing page.
+class TracingUIConfig : public DefaultWebUIConfig<TracingUI> {
+ public:
+  TracingUIConfig()
+      : DefaultWebUIConfig(kChromeUIScheme, kChromeUITracingHost) {}
+};
 
 // The C++ back-end for the chrome://tracing webui page.
 class CONTENT_EXPORT TracingUI : public WebUIController {

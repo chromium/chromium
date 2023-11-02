@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -247,10 +247,6 @@ std::string GetSafetyTipHistogramName(const std::string& prefix,
                                       SafetyTipStatus safety_tip_status);
 
 bool IsSHA1InChain(const VisibleSecurityState& visible_security_state);
-
-// Returns true if Safety Tip UI should be shown because a relevant field trial
-// is enabled.
-bool IsSafetyTipUIFeatureEnabled();
 
 }  // namespace security_state
 

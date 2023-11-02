@@ -36,3 +36,23 @@ code directly into Chromium src.git under this directory.
 All third-party crates should have their tests added to a Chromium test suite.
 These tests will be run on the Rust FYI bots, and may move to a blocking bot
 when Rust goes to production.
+
+## Tooling
+
+Contents of the `third_party/rust` directory are managed using the tools under
+[`tools/crates`](../../tools/crates/README.md).  Manual edits should not be
+needed, except to configure and guide the tools (e.g. via `third_party.toml`).
+
+## Review process
+
+At this time adding new 3rd party crates requires a review by:
+
+- `//build/rust/OWNERS`- i.e. a Chrome Eng Review is not needed while broader
+  Rust usage is not allowed / while Rust usage remains an experiment.
+- security@chromium.org (or chrome-security@google.com, Google-only)
+    - Earlier examples of audits/documents/emails that are good role models
+      of the review process: `toml` crate (e.g. see
+      [here](https://groups.google.com/u/1/a/chromium.org/g/security/c/K686pSg-gZc/m/Pn2QzqahAwAJ))
+    - Bug tracking having a more centralized database of crate review
+      status (i.e. leveraging reviews already done by other teams): TODO.
+

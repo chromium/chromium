@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,11 +12,14 @@
 #include "base/containers/cxx20_erase_vector.h"
 #include "base/guid.h"
 #include "base/memory/ptr_util.h"
+#include "base/observer_list.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/send_tab_to_self/features.h"
+#include "components/send_tab_to_self/metrics_util.h"
 #include "components/send_tab_to_self/proto/send_tab_to_self.pb.h"
 #include "components/send_tab_to_self/target_device_info.h"
 #include "components/sync/model/entity_change.h"
@@ -261,27 +264,6 @@ std::vector<std::string> SendTabToSelfBridge::GetAllGuids() const {
   return keys;
 }
 
-void SendTabToSelfBridge::DeleteAllEntries() {
-  if (!change_processor()->IsTrackingMetadata()) {
-    DCHECK_EQ(0ul, entries_.size());
-    return;
-  }
-
-  std::unique_ptr<ModelTypeStore::WriteBatch> batch =
-      store_->CreateWriteBatch();
-
-  std::vector<std::string> all_guids = GetAllGuids();
-
-  for (const auto& guid : all_guids) {
-    change_processor()->Delete(guid, batch->GetMetadataChangeList());
-    batch->DeleteData(guid);
-  }
-  entries_.clear();
-  mru_entry_ = nullptr;
-
-  NotifyRemoteSendTabToSelfEntryDeleted(all_guids);
-}
-
 const SendTabToSelfEntry* SendTabToSelfBridge::GetEntryByGUID(
     const std::string& guid) const {
   auto it = entries_.find(guid);
@@ -294,7 +276,6 @@ const SendTabToSelfEntry* SendTabToSelfBridge::GetEntryByGUID(
 const SendTabToSelfEntry* SendTabToSelfBridge::AddEntry(
     const GURL& url,
     const std::string& title,
-    base::Time navigation_time,
     const std::string& target_device_cache_guid) {
   if (!change_processor()->IsTrackingMetadata()) {
     // TODO(crbug.com/940512) handle failure case.
@@ -305,13 +286,15 @@ const SendTabToSelfEntry* SendTabToSelfBridge::AddEntry(
     return nullptr;
   }
 
-  // In the case where the user has attempted to send an identical URL
-  // within the last |kDedupeTime| we think it is likely that user still
-  // has the first sent tab in progress, and so we will not attempt to resend.
+  // In the case where the user has attempted to send an identical URL to the
+  // same device within the last |kDedupeTime| we think it is likely that user
+  // still has the first sent tab in progress, and so we will not attempt to
+  // resend.
   base::Time shared_time = clock_->Now();
   if (mru_entry_ && url == mru_entry_->GetURL() &&
-      navigation_time == mru_entry_->GetOriginalNavigationTime() &&
+      target_device_cache_guid == mru_entry_->GetTargetDeviceSyncCacheGuid() &&
       shared_time - mru_entry_->GetSharedTime() < kDedupeTime) {
+    send_tab_to_self::RecordNotificationThrottled();
     return mru_entry_;
   }
 
@@ -323,12 +306,13 @@ const SendTabToSelfEntry* SendTabToSelfBridge::AddEntry(
   std::string trimmed_title = "";
 
   if (base::IsStringUTF8(title)) {
-    trimmed_title = base::CollapseWhitespaceASCII(title, false);
+    trimmed_title = base::UTF16ToUTF8(
+        base::CollapseWhitespace(base::UTF8ToUTF16(title), false));
   }
 
   auto entry = std::make_unique<SendTabToSelfEntry>(
-      guid, url, trimmed_title, shared_time, navigation_time,
-      local_device_name_, target_device_cache_guid);
+      guid, url, trimmed_title, shared_time, local_device_name_,
+      target_device_cache_guid);
 
   std::unique_ptr<ModelTypeStore::WriteBatch> batch =
       store_->CreateWriteBatch();
@@ -616,6 +600,7 @@ void SendTabToSelfBridge::DoGarbageCollection() {
   auto entry = entries_.begin();
   while (entry != entries_.end()) {
     DCHECK_EQ(entry->first, entry->second->GetGUID());
+
     std::string guid = entry->first;
     bool expired = entry->second->IsExpired(clock_->Now());
     entry++;
@@ -679,7 +664,7 @@ void SendTabToSelfBridge::ComputeTargetDeviceInfoSortedList() {
     if (unique_device_names.insert(device_names.full_name).second) {
       TargetDeviceInfo target_device_info(
           device_names.full_name, device_names.short_name, device->guid(),
-          device->device_type(), device->last_updated_timestamp());
+          device->form_factor(), device->last_updated_timestamp());
       target_device_info_sorted_list_.push_back(target_device_info);
 
       short_names_counter[device_names.short_name]++;
@@ -718,7 +703,8 @@ void SendTabToSelfBridge::DeleteEntries(const std::vector<GURL>& urls) {
   for (const GURL& url : urls) {
     auto entry = entries_.begin();
     while (entry != entries_.end()) {
-      bool to_delete = (url == entry->second->GetURL());
+      bool to_delete =
+          (entry->second == nullptr || url == entry->second->GetURL());
 
       std::string guid = entry->first;
       entry++;
@@ -733,6 +719,27 @@ void SendTabToSelfBridge::DeleteEntries(const std::vector<GURL>& urls) {
   // entries have been removed. Regardless of if these entries were removed
   // "remotely".
   NotifyRemoteSendTabToSelfEntryDeleted(removed_guids);
+}
+
+void SendTabToSelfBridge::DeleteAllEntries() {
+  if (!change_processor()->IsTrackingMetadata()) {
+    DCHECK_EQ(0ul, entries_.size());
+    return;
+  }
+
+  std::unique_ptr<ModelTypeStore::WriteBatch> batch =
+      store_->CreateWriteBatch();
+
+  std::vector<std::string> all_guids = GetAllGuids();
+
+  for (const auto& guid : all_guids) {
+    change_processor()->Delete(guid, batch->GetMetadataChangeList());
+    batch->DeleteData(guid);
+  }
+  entries_.clear();
+  mru_entry_ = nullptr;
+
+  NotifyRemoteSendTabToSelfEntryDeleted(all_guids);
 }
 
 }  // namespace send_tab_to_self

@@ -1,45 +1,37 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 /**
  * @fileoverview Provides output services for ChromeVox.
  */
+import {AutomationPredicate} from '../../../common/automation_predicate.js';
+import {AutomationUtil} from '../../../common/automation_util.js';
+import {constants} from '../../../common/constants.js';
+import {Cursor, CURSOR_NODE_INDEX} from '../../../common/cursors/cursor.js';
+import {CursorRange} from '../../../common/cursors/range.js';
+import {AutomationTreeWalker} from '../../../common/tree_walker.js';
+import {NavBraille} from '../../common/braille/nav_braille.js';
+import {EventSourceType} from '../../common/event_source_type.js';
+import {LocaleOutputHelper} from '../../common/locale_output_helper.js';
+import {LogType} from '../../common/log_types.js';
+import {Msgs} from '../../common/msgs.js';
+import {Spannable} from '../../common/spannable.js';
+import {QueueMode, TtsCategory, TtsSpeechProperties} from '../../common/tts_interface.js';
+import {ValueSelectionSpan, ValueSpan} from '../braille/spans.js';
+import {ChromeVox} from '../chromevox.js';
+import {EventSourceState} from '../event_source.js';
+import {FocusBounds} from '../focus_bounds.js';
+import {LogStore} from '../logging/log_store.js';
+import {PhoneticData} from '../phonetic_data.js';
 
-goog.provide('Output');
+import {OutputAncestryInfo} from './output_ancestry_info.js';
+import {OutputFormatParser, OutputFormatParserObserver} from './output_format_parser.js';
+import {OutputFormatTree} from './output_format_tree.js';
+import {OutputRulesStr} from './output_logger.js';
+import {OutputRoleInfo} from './output_role_info.js';
+import * as outputTypes from './output_types.js';
 
-goog.require('AbstractEarcons');
-goog.require('AutomationTreeWalker');
-goog.require('ChromeVox');
-goog.require('EventSourceState');
-goog.require('LocaleOutputHelper');
-goog.require('LogStore');
-goog.require('NavBraille');
-goog.require('OutputAction');
-goog.require('OutputAncestryInfo');
-goog.require('OutputContextOrder');
-goog.require('OutputEarconAction');
-goog.require('OutputEventType');
-goog.require('OutputFormatParser');
-goog.require('OutputFormatTree');
-goog.require('OutputNodeSpan');
-goog.require('OutputRoleInfo');
-goog.require('OutputRulesStr');
-goog.require('OutputSelectionSpan');
-goog.require('OutputSpeechProperties');
-goog.require('PhoneticData');
-goog.require('Spannable');
-goog.require('TextLog');
-goog.require('TtsCategory');
-goog.require('ValueSelectionSpan');
-goog.require('ValueSpan');
-goog.require('constants');
-goog.require('cursors.Cursor');
-goog.require('cursors.Range');
-goog.require('cursors.Unit');
-goog.require('goog.i18n.MessageFormat');
-
-goog.scope(function() {
 const AriaCurrentState = chrome.automation.AriaCurrentState;
 const AutomationNode = chrome.automation.AutomationNode;
 const DescriptionFromType = chrome.automation.DescriptionFromType;
@@ -51,7 +43,7 @@ const RoleType = chrome.automation.RoleType;
 const StateType = chrome.automation.StateType;
 
 /**
- * An Output object formats a cursors.Range into speech, braille, or both
+ * An Output object formats a CursorRange into speech, braille, or both
  * representations. This is typically a |Spannable|.
  * The translation from Range to these output representations rely upon format
  * rules which specify how to convert AutomationNode objects into annotated
@@ -77,47 +69,44 @@ const StateType = chrome.automation.StateType;
  *     For example, $name= would insert the name attribute only if no name
  * attribute had been inserted previously.
  */
-Output = class {
+export class Output {
   constructor() {
     // TODO(dtseng): Include braille specific rules.
-    /** @type {!Array<!Spannable>} @private */
+    /** @private {!Array<!Spannable>} */
     this.speechBuffer_ = [];
-    /** @type {!Array<!Spannable>} @private */
+    /** @private {!Array<!Spannable>} */
     this.brailleBuffer_ = [];
-    /** @type {!Array<!Object>} @private */
+    /** @private {!Array<!Object>} */
     this.locations_ = [];
-    /** @type {function(?)} @private */
+    /** @private {function(boolean=)} */
     this.speechEndCallback_;
 
-    /** Store output rules */
-    /** @type {!OutputRulesStr} @private */
+    // Store output rules.
+    /** @private {!OutputRulesStr} */
     this.speechRulesStr_ = new OutputRulesStr('enableSpeechLogging');
-    /** @type {!OutputRulesStr} @private */
+    /** @private {!OutputRulesStr} */
     this.brailleRulesStr_ = new OutputRulesStr('enableBrailleLogging');
 
     /**
      * Current global options.
-     * @type {{speech: boolean, braille: boolean, auralStyle: boolean}}
-     * @private
+     * @private {{speech: boolean, braille: boolean, auralStyle: boolean}}
      */
     this.formatOptions_ = {speech: true, braille: false, auralStyle: false};
 
     /**
      * The speech category for the generated speech utterance.
-     * @type {TtsCategory}
-     * @private
+     * @private {TtsCategory}
      */
     this.speechCategory_ = TtsCategory.NAV;
 
     /**
      * The speech queue mode for the generated speech utterance.
-     * @type {QueueMode}
-     * @private
+     * @private {QueueMode}
      */
     this.queueMode_;
 
-    /** @private {!OutputContextOrder} */
-    this.contextOrder_ = OutputContextOrder.LAST;
+    /** @private {!outputTypes.OutputContextOrder} */
+    this.contextOrder_ = outputTypes.OutputContextOrder.LAST;
 
     /** @private {!Object<string, boolean>} */
     this.suppressions_ = {};
@@ -125,8 +114,8 @@ Output = class {
     /** @private {boolean} */
     this.enableHints_ = true;
 
-    /** @private {!Object} */
-    this.initialSpeechProps_ = {};
+    /** @private {!TtsSpeechProperties} */
+    this.initialSpeechProps_ = new TtsSpeechProperties();
 
     /** @private {boolean} */
     this.drawFocusRing_ = true;
@@ -137,6 +126,8 @@ Output = class {
      * @private {!WeakSet<!AutomationNode>}
      */
     this.formattedAncestors_ = new WeakSet();
+    /** @private {!Object<string, string>} */
+    this.replacements_ = {};
   }
 
   /**
@@ -177,9 +168,9 @@ Output = class {
 
       // These attributes default to false for empty strings.
       case 'roleDescription':
-        return !!node.roleDescription;
+        return Boolean(node.roleDescription);
       case 'value':
-        return !!node.value;
+        return Boolean(node.value);
       case 'selected':
         return node.selected === true;
       default:
@@ -216,9 +207,7 @@ Output = class {
    * @return {boolean} True if there is only whitespace in this output.
    */
   get isOnlyWhitespace() {
-    return this.speechBuffer_.every(function(buff) {
-      return !/\S+/.test(buff.toString());
-    });
+    return this.speechBuffer_.every(buff => !/\S+/.test(buff.toString()));
   }
 
   /** @return {Spannable} */
@@ -228,9 +217,9 @@ Output = class {
 
   /**
    * Specify ranges for speech.
-   * @param {!cursors.Range} range
-   * @param {cursors.Range} prevRange
-   * @param {EventType|OutputEventType} type
+   * @param {!CursorRange} range
+   * @param {CursorRange} prevRange
+   * @param {EventType|outputTypes.OutputEventType} type
    * @return {!Output}
    */
   withSpeech(range, prevRange, type) {
@@ -243,9 +232,9 @@ Output = class {
 
   /**
    * Specify ranges for aurally styled speech.
-   * @param {!cursors.Range} range
-   * @param {cursors.Range} prevRange
-   * @param {EventType|OutputEventType} type
+   * @param {!CursorRange} range
+   * @param {CursorRange} prevRange
+   * @param {EventType|outputTypes.OutputEventType} type
    * @return {!Output}
    */
   withRichSpeech(range, prevRange, type) {
@@ -258,9 +247,9 @@ Output = class {
 
   /**
    * Specify ranges for braille.
-   * @param {!cursors.Range} range
-   * @param {cursors.Range} prevRange
-   * @param {EventType|OutputEventType} type
+   * @param {!CursorRange} range
+   * @param {CursorRange} prevRange
+   * @param {EventType|outputTypes.OutputEventType} type
    * @return {!Output}
    */
   withBraille(range, prevRange, type) {
@@ -279,9 +268,8 @@ Output = class {
       while (end.lastChild) {
         end = end.lastChild;
       }
-      prevRange = cursors.Range.fromNode(range.start.node.parent);
-      range = new cursors.Range(
-          cursors.Cursor.fromNode(start), cursors.Cursor.fromNode(end));
+      prevRange = CursorRange.fromNode(range.start.node.parent);
+      range = new CursorRange(Cursor.fromNode(start), Cursor.fromNode(end));
     }
     this.render_(
         range, prevRange, type, this.brailleBuffer_, this.brailleRulesStr_);
@@ -290,9 +278,9 @@ Output = class {
 
   /**
    * Specify ranges for location.
-   * @param {!cursors.Range} range
-   * @param {cursors.Range} prevRange
-   * @param {EventType|OutputEventType} type
+   * @param {!CursorRange} range
+   * @param {CursorRange} prevRange
+   * @param {EventType|outputTypes.OutputEventType} type
    * @return {!Output}
    */
   withLocation(range, prevRange, type) {
@@ -306,9 +294,9 @@ Output = class {
 
   /**
    * Specify the same ranges for speech and braille.
-   * @param {!cursors.Range} range
-   * @param {cursors.Range} prevRange
-   * @param {EventType|OutputEventType} type
+   * @param {!CursorRange} range
+   * @param {CursorRange} prevRange
+   * @param {EventType|outputTypes.OutputEventType} type
    * @return {!Output}
    */
   withSpeechAndBraille(range, prevRange, type) {
@@ -319,9 +307,9 @@ Output = class {
 
   /**
    * Specify the same ranges for aurally styled speech and braille.
-   * @param {!cursors.Range} range
-   * @param {cursors.Range} prevRange
-   * @param {EventType|OutputEventType} type
+   * @param {!CursorRange} range
+   * @param {CursorRange} prevRange
+   * @param {EventType|outputTypes.OutputEventType} type
    * @return {!Output}
    */
   withRichSpeechAndBraille(range, prevRange, type) {
@@ -368,7 +356,7 @@ Output = class {
    * @return {!Output}
    */
   withContextFirst() {
-    this.contextOrder_ = OutputContextOrder.FIRST;
+    this.contextOrder_ = outputTypes.OutputContextOrder.FIRST;
     return this;
   }
 
@@ -392,12 +380,21 @@ Output = class {
 
   /**
    * Supply initial speech properties that will be applied to all output.
-   * @param {!Object} speechProps
+   * @param {!TtsSpeechProperties} speechProps
    * @return {!Output}
    */
   withInitialSpeechProperties(speechProps) {
     this.initialSpeechProps_ = speechProps;
     return this;
+  }
+
+  /**
+   * Causes any speech output to apply the replacement.
+   * @param {string} text The text to be replaced.
+   * @param {string} replace What to replace |text| with.
+   */
+  withSpeechTextReplacement(text, replace) {
+    this.replacements_[text] = replace;
   }
 
   /**
@@ -440,7 +437,7 @@ Output = class {
       node,
       outputFormat: formatStr,
       outputBuffer: this.speechBuffer_,
-      outputRuleString: this.speechRulesStr_
+      outputRuleString: this.speechRulesStr_,
     });
 
     return this;
@@ -463,7 +460,7 @@ Output = class {
       node,
       outputFormat: formatStr,
       outputBuffer: this.brailleBuffer_,
-      outputRuleString: this.brailleRulesStr_
+      outputRuleString: this.brailleRulesStr_,
     });
     return this;
   }
@@ -474,26 +471,19 @@ Output = class {
    * @return {!Output}
    */
   onSpeechEnd(callback) {
-    this.speechEndCallback_ = function(opt_cleanupOnly) {
-      if (!opt_cleanupOnly) {
-        callback();
-      }
-    }.bind(this);
+    this.speechEndCallback_ =
+        /** @type {function(boolean=)} */ (function(opt_cleanupOnly) {
+          if (!opt_cleanupOnly) {
+            callback();
+          }
+        }.bind(this));
     return this;
   }
 
-  /**
-   * Executes all specified output.
-   */
+  /** Executes all specified output. */
   go() {
     // Speech.
-    let queueMode = QueueMode.QUEUE;
-    if (Output.forceModeForNextSpeechUtterance_ !== undefined) {
-      queueMode =
-          /** @type{QueueMode} */ (Output.forceModeForNextSpeechUtterance_);
-    } else if (this.queueMode_ !== undefined) {
-      queueMode = /** @type{QueueMode} */ (this.queueMode_);
-    }
+    let queueMode = this.determineQueueMode_();
 
     if (this.speechBuffer_.length > 0) {
       Output.forceModeForNextSpeechUtterance_ = undefined;
@@ -515,9 +505,10 @@ Output = class {
         continue;
       }
 
-      let speechProps = {};
-      const speechPropsInstance = /** @type {OutputSpeechProperties} */ (
-          buff.getSpanInstanceOf(OutputSpeechProperties));
+      let speechProps;
+      const speechPropsInstance =
+          /** @type {outputTypes.OutputSpeechProperties} */ (
+              buff.getSpanInstanceOf(outputTypes.OutputSpeechProperties));
 
       if (!speechPropsInstance) {
         speechProps = this.initialSpeechProps_;
@@ -527,28 +518,30 @@ Output = class {
             speechPropsInstance.properties[key] = value;
           }
         }
-        speechProps = speechPropsInstance.properties;
+        speechProps = new TtsSpeechProperties(speechPropsInstance.properties);
       }
 
       speechProps.category = this.speechCategory_;
 
       (function() {
         const scopedBuff = buff;
-        speechProps['startCallback'] = function() {
-          const actions = scopedBuff.getSpansInstanceOf(OutputAction);
+        speechProps.startCallback = function() {
+          const actions =
+              scopedBuff.getSpansInstanceOf(outputTypes.OutputAction);
           if (actions) {
-            actions.forEach(function(a) {
-              a.run();
-            });
+            actions.forEach(action => action.run());
           }
         };
       }());
 
       if (i === this.speechBuffer_.length - 1) {
-        speechProps['endCallback'] = this.speechEndCallback_;
+        speechProps.endCallback = this.speechEndCallback_;
       }
-
-      ChromeVox.tts.speak(buff.toString(), queueMode, speechProps);
+      let finalSpeech = buff.toString();
+      for (const text in this.replacements_) {
+        finalSpeech = finalSpeech.replace(text, this.replacements_[text]);
+      }
+      ChromeVox.tts.speak(finalSpeech, queueMode, speechProps);
 
       // Skip resetting |queueMode| if the |text| is empty. If we don't do this,
       // and the tts engine doesn't generate a callback, we might not properly
@@ -559,14 +552,15 @@ Output = class {
     }
     if (this.speechRulesStr_.str) {
       LogStore.getInstance().writeTextLog(
-          this.speechRulesStr_.str, LogStore.LogType.SPEECH_RULE);
+          this.speechRulesStr_.str, LogType.SPEECH_RULE);
     }
 
     // Braille.
     if (this.brailleBuffer_.length) {
       const buff = this.mergeBraille_(this.brailleBuffer_);
-      const selSpan = buff.getSpanInstanceOf(OutputSelectionSpan);
-      let startIndex = -1, endIndex = -1;
+      const selSpan = buff.getSpanInstanceOf(outputTypes.OutputSelectionSpan);
+      let startIndex = -1;
+      let endIndex = -1;
       if (selSpan) {
         const valueStart = buff.getSpanStart(selSpan);
         const valueEnd = buff.getSpanEnd(selSpan);
@@ -584,14 +578,25 @@ Output = class {
       ChromeVox.braille.write(output);
       if (this.brailleRulesStr_.str) {
         LogStore.getInstance().writeTextLog(
-            this.brailleRulesStr_.str, LogStore.LogType.BRAILLE_RULE);
+            this.brailleRulesStr_.str, LogType.BRAILLE_RULE);
       }
     }
 
     // Display.
     if (this.speechCategory_ !== TtsCategory.LIVE && this.drawFocusRing_) {
-      ChromeVoxState.instance.setFocusBounds(this.locations_);
+      FocusBounds.set(this.locations_);
     }
+  }
+
+  /** @return {QueueMode} */
+  determineQueueMode_() {
+    if (Output.forceModeForNextSpeechUtterance_ !== undefined) {
+      return Output.forceModeForNextSpeechUtterance_;
+    }
+    if (this.queueMode_ !== undefined) {
+      return this.queueMode_;
+    }
+    return QueueMode.QUEUE;
   }
 
   /**
@@ -623,9 +628,9 @@ Output = class {
   /**
    * Renders the given range using optional context previous range and event
    * type.
-   * @param {!cursors.Range} range
-   * @param {cursors.Range} prevRange
-   * @param {EventType|OutputEventType} type
+   * @param {!CursorRange} range
+   * @param {CursorRange} prevRange
+   * @param {EventType|outputTypes.OutputEventType} type
    * @param {!Array<Spannable>} buff Buffer to receive rendered output.
    * @param {!OutputRulesStr} ruleStr
    * @param {{suppressStartEndAncestry: (boolean|undefined)}} optionalArgs
@@ -686,7 +691,7 @@ Output = class {
    *    outputBuffer: !Array<Spannable>,
    *    outputRuleString: !OutputRulesStr,
    *    opt_prevNode: (!AutomationNode|undefined),
-   *    opt_speechProps: (!OutputSpeechProperties|undefined)
+   *    opt_speechProps: (!outputTypes.OutputSpeechProperties|undefined)
    * }} params An object containing all required and optional parameters.
    * @private
    */
@@ -749,7 +754,7 @@ Output = class {
                 return true;
               }
               if (owner.formatOptions_.auralStyle) {
-                speechProps = new OutputSpeechProperties();
+                speechProps = new outputTypes.OutputSpeechProperties();
                 speechProps.properties['relativePitch'] = -0.3;
               }
 
@@ -770,10 +775,14 @@ Output = class {
               owner.formatTextContent_(node, token, buff, options, ruleStr);
             } else if (node[token] !== undefined) {
               owner.formatAsFieldAccessor_(node, token, buff, options, ruleStr);
-            } else if (Output.STATE_INFO_[token]) {
+            } else if (outputTypes.OUTPUT_STATE_INFO[token]) {
               owner.formatAsStateValue_(node, token, buff, options, ruleStr);
             } else if (token === 'phoneticReading') {
               owner.formatPhoneticReading_(node, buff);
+            } else if (token === 'listNestedLevel') {
+              owner.formatListNestedLevel_(node, buff);
+            } else if (token === 'precedingBullet') {
+              owner.formatPrecedingBullet_(node, buff);
             } else if (tree.firstChild) {
               owner.formatCustomFunction_(
                   node, token, tree, buff, options, ruleStr);
@@ -785,7 +794,7 @@ Output = class {
             ruleStr.write(' @');
             if (owner.formatOptions_.auralStyle) {
               if (!speechProps) {
-                speechProps = new OutputSpeechProperties();
+                speechProps = new outputTypes.OutputSpeechProperties();
               }
               speechProps.properties['relativePitch'] = -0.2;
             }
@@ -795,7 +804,7 @@ Output = class {
           /** @override */
           onSpeechPropertyToken(token, tree, options) {
             ruleStr.write(' ! ' + token + '\n');
-            speechProps = new OutputSpeechProperties();
+            speechProps = new outputTypes.OutputSpeechProperties();
             speechProps.properties[token] = true;
             if (tree.firstChild) {
               if (!owner.formatOptions_.auralStyle) {
@@ -827,7 +836,7 @@ Output = class {
               }
             }
           }
-        });
+        })();
 
     new OutputFormatParser(observer).parse(format);
   }
@@ -847,7 +856,7 @@ Output = class {
 
     let selectedText = '';
     if (node.textSelStart !== undefined) {
-      options.annotation.push(new OutputSelectionSpan(
+      options.annotation.push(new outputTypes.OutputSelectionSpan(
           node.textSelStart || 0, node.textSelEnd || 0));
 
       if (node.value) {
@@ -887,7 +896,7 @@ Output = class {
     // node is the active descendant. This ensures the braille window is
     // panned appropriately.
     if (node.activeDescendantFor && node.activeDescendantFor.length > 0) {
-      options.annotation.push(new OutputSelectionSpan(0, 0));
+      options.annotation.push(new outputTypes.OutputSelectionSpan(0, 0));
     }
 
     if (localStorage['languageSwitching'] === 'true') {
@@ -967,9 +976,7 @@ Output = class {
     options.annotation.push(token);
     if (node.name &&
         (node.nameFrom !== NameFromType.CONTENTS ||
-         node.children.every(function(child) {
-           return child.role === RoleType.STATIC_TEXT;
-         }))) {
+         node.children.every(child => child.role === RoleType.STATIC_TEXT))) {
       this.append_(buff, node.name || '', options);
       ruleStr.writeTokenWithValue(token, node.name);
     } else {
@@ -978,7 +985,7 @@ Output = class {
         node,
         outputFormat: '$descendants',
         outputBuffer: buff,
-        outputRuleString: ruleStr
+        outputRuleString: ruleStr,
       });
     }
   }
@@ -1023,14 +1030,14 @@ Output = class {
    * @param {!OutputRulesStr} ruleStr
    */
   formatRestriction_(node, token, buff, ruleStr) {
-    const msg = Output.RESTRICTION_STATE_MAP[node.restriction];
+    const msg = outputTypes.OutputPropertyMap.RESTRICTION[node.restriction];
     if (msg) {
       ruleStr.writeToken(token);
       this.format_({
         node,
         outputFormat: '@' + msg,
         outputBuffer: buff,
-        outputRuleString: ruleStr
+        outputRuleString: ruleStr,
       });
     }
   }
@@ -1042,14 +1049,14 @@ Output = class {
    * @param {!OutputRulesStr} ruleStr
    */
   formatChecked_(node, token, buff, ruleStr) {
-    const msg = Output.CHECKED_STATE_MAP[node.checked];
+    const msg = outputTypes.OutputPropertyMap.CHECKED[node.checked];
     if (msg) {
       ruleStr.writeToken(token);
       this.format_({
         node,
         outputFormat: '@' + msg,
         outputBuffer: buff,
-        outputRuleString: ruleStr
+        outputRuleString: ruleStr,
       });
     }
   }
@@ -1061,14 +1068,14 @@ Output = class {
    * @param {!OutputRulesStr} ruleStr
    */
   formatPressed_(node, token, buff, ruleStr) {
-    const msg = Output.PRESSED_STATE_MAP[node.checked];
+    const msg = outputTypes.OutputPropertyMap.PRESSED[node.checked];
     if (msg) {
       ruleStr.writeToken(token);
       this.format_({
         node,
         outputFormat: '@' + msg,
         outputBuffer: buff,
-        outputRuleString: ruleStr
+        outputRuleString: ruleStr,
       });
     }
   }
@@ -1081,18 +1088,18 @@ Output = class {
    */
   formatState_(node, token, buff, ruleStr) {
     if (node.state) {
-      Object.getOwnPropertyNames(node.state).forEach(function(s) {
-        const stateInfo = Output.STATE_INFO_[s];
+      Object.getOwnPropertyNames(node.state).forEach(state => {
+        const stateInfo = outputTypes.OUTPUT_STATE_INFO[state];
         if (stateInfo && !stateInfo.isRoleSpecific && stateInfo.on) {
           ruleStr.writeToken(token);
           this.format_({
             node,
-            outputFormat: '$' + s,
+            outputFormat: '$' + state,
             outputBuffer: buff,
-            outputRuleString: ruleStr
+            outputRuleString: ruleStr,
           });
         }
-      }.bind(this));
+      });
     }
   }
 
@@ -1116,7 +1123,7 @@ Output = class {
           node,
           outputFormat: formatString,
           outputBuffer: buff,
-          outputRuleString: ruleStr
+          outputRuleString: ruleStr,
         });
       }
     }
@@ -1156,16 +1163,16 @@ Output = class {
       return;
     }
 
-    const subrange = new cursors.Range(
-        new cursors.Cursor(leftmost, cursors.NODE_INDEX),
-        new cursors.Cursor(rightmost, cursors.NODE_INDEX));
+    const subrange = new CursorRange(
+        new Cursor(leftmost, CURSOR_NODE_INDEX),
+        new Cursor(rightmost, CURSOR_NODE_INDEX));
     let prev = null;
     if (node) {
-      prev = cursors.Range.fromNode(node);
+      prev = CursorRange.fromNode(node);
     }
     ruleStr.writeToken(token);
     this.render_(
-        subrange, prev, OutputEventType.NAVIGATE, buff, ruleStr,
+        subrange, prev, outputTypes.OutputEventType.NAVIGATE, buff, ruleStr,
         {suppressStartEndAncestry: true});
   }
 
@@ -1183,7 +1190,7 @@ Output = class {
       node,
       outputFormat: '$descendants',
       outputBuffer: unjoined,
-      outputRuleString: ruleStr
+      outputRuleString: ruleStr,
     });
     this.append_(buff, unjoined.join(' '), options);
     ruleStr.write(
@@ -1231,7 +1238,7 @@ Output = class {
     }
     options.annotation.push(token);
     let msgId =
-        Output.INPUT_TYPE_MESSAGE_IDS_[node.inputType] || 'input_type_text';
+        outputTypes.INPUT_TYPE_MESSAGE_IDS[node.inputType] || 'input_type_text';
     if (this.formatOptions_.braille) {
       msgId = msgId + '_brl';
     }
@@ -1286,7 +1293,7 @@ Output = class {
                 $if($tableCellAriaColumnIndex, $tableCellAriaColumnIndex,
                   $tableCellColumnIndex))`,
         outputBuffer: buff,
-        outputRuleString: ruleStr
+        outputRuleString: ruleStr,
       });
     }
   }
@@ -1339,7 +1346,9 @@ Output = class {
       }
     } else if (node[relationName]) {
       const related = node[relationName];
-      this.node_(related, related, OutputEventType.NAVIGATE, buff, ruleStr);
+      this.node_(
+          related, related, outputTypes.OutputEventType.NAVIGATE, buff,
+          ruleStr);
     }
   }
 
@@ -1357,7 +1366,7 @@ Output = class {
         node,
         outputFormat: '$name',
         outputBuffer: buff,
-        outputRuleString: ruleStr
+        outputRuleString: ruleStr,
       });
       return;
     }
@@ -1369,12 +1378,12 @@ Output = class {
     const root = node;
     const walker = new AutomationTreeWalker(node, Dir.FORWARD, {
       visit: AutomationPredicate.leafOrStaticText,
-      leaf: (n) => {
+      leaf: n => {
         // The root might be a leaf itself, but we still want to descend
         // into it.
         return n !== root && AutomationPredicate.leafOrStaticText(n);
       },
-      root: (r) => r === root
+      root: r => r === root,
     });
     const outputStrings = [];
     while (walker.next().node) {
@@ -1413,7 +1422,7 @@ Output = class {
    */
   formatAsStateValue_(node, token, buff, options, ruleStr) {
     options.annotation.push('state');
-    const stateInfo = Output.STATE_INFO_[token];
+    const stateInfo = outputTypes.OUTPUT_STATE_INFO[token];
     let resolvedInfo = {};
     resolvedInfo = node.state[/** @type {StateType} */ (token)] ? stateInfo.on :
                                                                   stateInfo.off;
@@ -1422,7 +1431,7 @@ Output = class {
     }
     if (this.formatOptions_.speech && resolvedInfo.earconId) {
       options.annotation.push(
-          new OutputEarconAction(resolvedInfo.earconId),
+          new outputTypes.OutputEarconAction(resolvedInfo.earconId),
           node.location || undefined);
     }
     const msgId = this.formatOptions_.braille ? resolvedInfo.msgId + '_brl' :
@@ -1440,6 +1449,40 @@ Output = class {
     const text =
         PhoneticData.forText(node.name || '', chrome.i18n.getUILanguage());
     this.append_(buff, text);
+  }
+
+  /**
+   * @param {!AutomationNode} node
+   * @param {!Array<Spannable>} buff
+   */
+  formatListNestedLevel_(node, buff) {
+    let level = 0;
+    let current = node;
+    while (current) {
+      if (current.role === RoleType.LIST) {
+        level += 1;
+      }
+      current = current.parent;
+    }
+    this.append_(buff, level.toString());
+  }
+
+  /**
+   * @param {!AutomationNode} node
+   * @param {!Array<Spannable>} buff
+   */
+  formatPrecedingBullet_(node, buff) {
+    let current = node;
+    if (current.role === RoleType.INLINE_TEXT_BOX) {
+      current = current.parent;
+    }
+    if (!current || current.role !== RoleType.STATIC_TEXT) {
+      return;
+    }
+    current = current.previousSibling;
+    if (current && current.role === RoleType.LIST_MARKER) {
+      this.append_(buff, current.name || '');
+    }
   }
 
   /**
@@ -1462,7 +1505,7 @@ Output = class {
           node,
           outputFormat: cond.nextSibling || '',
           outputBuffer: buff,
-          outputRuleString: ruleStr
+          outputRuleString: ruleStr,
         });
       } else if (Output.isFalsey(node, attrib)) {
         ruleStr.write(attrib + '==false => ');
@@ -1470,7 +1513,7 @@ Output = class {
           node,
           outputFormat: cond.nextSibling.nextSibling || '',
           outputBuffer: buff,
-          outputRuleString: ruleStr
+          outputRuleString: ruleStr,
         });
       }
     } else if (token === 'nif') {
@@ -1483,7 +1526,7 @@ Output = class {
           node,
           outputFormat: cond.nextSibling || '',
           outputBuffer: buff,
-          outputRuleString: ruleStr
+          outputRuleString: ruleStr,
         });
       } else if (Output.isTruthy(node, attrib)) {
         ruleStr.write(attrib + '==true => ');
@@ -1491,7 +1534,7 @@ Output = class {
           node,
           outputFormat: cond.nextSibling.nextSibling || '',
           outputBuffer: buff,
-          outputRuleString: ruleStr
+          outputRuleString: ruleStr,
         });
       }
     } else if (token === 'earcon') {
@@ -1500,7 +1543,7 @@ Output = class {
         return;
       }
 
-      options.annotation.push(new OutputEarconAction(
+      options.annotation.push(new outputTypes.OutputEarconAction(
           tree.firstChild.value, node.location || undefined));
       this.append_(buff, '', options);
       ruleStr.writeTokenWithValue(token, tree.firstChild.value);
@@ -1522,13 +1565,13 @@ Output = class {
     }
     // Tokens can have substitutions.
     const pieces = token.split('+');
-    token = pieces.reduce(function(prev, cur) {
+    token = pieces.reduce((prev, cur) => {
       let lookup = cur;
       if (cur[0] === '$') {
         lookup = node[cur.slice(1)];
       }
       return prev + lookup;
-    }.bind(this), '');
+    }, '');
     const msgId = token;
     let msgArgs = [];
     ruleStr.write(token + '{');
@@ -1546,7 +1589,7 @@ Output = class {
           node,
           outputFormat: curArg,
           outputBuffer: msgBuff,
-          outputRuleString: ruleStr
+          outputRuleString: ruleStr,
         });
         // Fill in empty string if nothing was formatted.
         if (!msgBuff.length) {
@@ -1590,7 +1633,7 @@ Output = class {
         node,
         outputFormat: arg,
         outputBuffer: argBuff,
-        outputRuleString: ruleStr
+        outputRuleString: ruleStr,
       });
       const namedArgs = {COUNT: Number(argBuff[0])};
       msg = new goog.i18n.MessageFormat(msg).format(namedArgs);
@@ -1616,9 +1659,9 @@ Output = class {
   }
 
   /**
-   * @param {!cursors.Range} range
-   * @param {cursors.Range} prevRange
-   * @param {EventType|OutputEventType} type
+   * @param {!CursorRange} range
+   * @param {CursorRange} prevRange
+   * @param {EventType|outputTypes.OutputEventType} type
    * @param {!Array<Spannable>} rangeBuff
    * @param {!OutputRulesStr} ruleStr
    * @param {{suppressStartEndAncestry: (boolean|undefined)}} optionalArgs
@@ -1630,21 +1673,25 @@ Output = class {
     }
 
     if (!prevRange && range.start.node.root) {
-      prevRange = cursors.Range.fromNode(range.start.node.root);
+      prevRange = CursorRange.fromNode(range.start.node.root);
     } else if (!prevRange) {
       return;
     }
     const isForward = prevRange.compare(range) === Dir.FORWARD;
-    const addContextBefore = this.contextOrder_ === OutputContextOrder.FIRST ||
-        this.contextOrder_ === OutputContextOrder.FIRST_AND_LAST ||
-        (this.contextOrder_ === OutputContextOrder.DIRECTED && isForward);
-    const addContextAfter = this.contextOrder_ === OutputContextOrder.LAST ||
-        this.contextOrder_ === OutputContextOrder.FIRST_AND_LAST ||
-        (this.contextOrder_ === OutputContextOrder.DIRECTED && !isForward);
+    const addContextBefore =
+        this.contextOrder_ === outputTypes.OutputContextOrder.FIRST ||
+        this.contextOrder_ === outputTypes.OutputContextOrder.FIRST_AND_LAST ||
+        (this.contextOrder_ === outputTypes.OutputContextOrder.DIRECTED &&
+         isForward);
+    const addContextAfter =
+        this.contextOrder_ === outputTypes.OutputContextOrder.LAST ||
+        this.contextOrder_ === outputTypes.OutputContextOrder.FIRST_AND_LAST ||
+        (this.contextOrder_ === outputTypes.OutputContextOrder.DIRECTED &&
+         !isForward);
     const preferStartOrEndAncestry =
-        this.contextOrder_ === OutputContextOrder.FIRST_AND_LAST;
-    let cursor = cursors.Cursor.fromNode(range.start.node);
+        this.contextOrder_ === outputTypes.OutputContextOrder.FIRST_AND_LAST;
     let prevNode = prevRange.start.node;
+    let node = range.start.node;
 
     const formatNodeAndAncestors = function(node, prevNode) {
       const buff = [];
@@ -1667,26 +1714,71 @@ Output = class {
     }.bind(this);
 
     let lca = null;
+    if (range.start.node !== range.end.node) {
+      lca = AutomationUtil.getLeastCommonAncestor(
+          range.end.node, range.start.node);
+    }
     if (addContextAfter) {
-      if (range.start.node !== range.end.node) {
-        lca = AutomationUtil.getLeastCommonAncestor(
-            range.end.node, range.start.node);
-      }
-
       prevNode = lca || prevNode;
     }
 
-    const unit = range.isInlineText() ? cursors.Unit.TEXT : cursors.Unit.NODE;
-    while (cursor.node && range.end.node &&
-           AutomationUtil.getDirection(cursor.node, range.end.node) ===
-               Dir.FORWARD) {
-      const node = cursor.node;
-      rangeBuff.push.apply(rangeBuff, formatNodeAndAncestors(node, prevNode));
+    // Do some bookkeeping to see whether this range partially covers node(s) at
+    // its endpoints.
+    let hasPartialNodeStart = false;
+    let hasPartialNodeEnd = false;
+    if (AutomationPredicate.selectableText(range.start.node) &&
+        range.start.index > 0) {
+      hasPartialNodeStart = true;
+    }
+
+    if (AutomationPredicate.selectableText(range.end.node) &&
+        range.end.index >= 0 && range.end.index < range.end.node.name.length) {
+      hasPartialNodeEnd = true;
+    }
+
+    let pred;
+    if (range.isInlineText()) {
+      pred = AutomationPredicate.leaf;
+    } else if (hasPartialNodeStart || hasPartialNodeEnd) {
+      pred = AutomationPredicate.selectableText;
+    } else {
+      pred = AutomationPredicate.object;
+    }
+
+    // Computes output for nodes (including partial subnodes) between endpoints
+    // of |range|.
+    while (node && range.end.node &&
+           AutomationUtil.getDirection(node, range.end.node) === Dir.FORWARD) {
+      if (hasPartialNodeStart && node === range.start.node) {
+        if (range.start.index !== range.start.node.name.length) {
+          const partialRange = new CursorRange(
+              new Cursor(node, range.start.index),
+              new Cursor(
+                  node, node.name.length, {preferNodeStartEquivalent: true}));
+          this.subNode_(partialRange, prevRange, type, rangeBuff, ruleStr);
+        }
+      } else if (hasPartialNodeEnd && node === range.end.node) {
+        if (range.end.index !== 0) {
+          const partialRange = new CursorRange(
+              new Cursor(node, 0), new Cursor(node, range.end.index));
+          this.subNode_(partialRange, prevRange, type, rangeBuff, ruleStr);
+        }
+      } else {
+        rangeBuff.push.apply(rangeBuff, formatNodeAndAncestors(node, prevNode));
+      }
+
+      // End early if the range is just a single node.
+      if (range.start.node === range.end.node) {
+        break;
+      }
+
       prevNode = node;
-      cursor = cursor.move(unit, cursors.Movement.DIRECTIONAL, Dir.FORWARD);
+      node = AutomationUtil.findNextNode(
+                 node, Dir.FORWARD, pred, {root: r => r === lca}) ||
+          prevNode;
 
       // Reached a boundary.
-      if (cursor.node === prevNode) {
+      if (node === prevNode) {
         break;
       }
     }
@@ -1708,7 +1800,7 @@ Output = class {
   /**
    * @param {!AutomationNode} node
    * @param {!AutomationNode} prevNode
-   * @param {EventType|OutputEventType} type
+   * @param {EventType|outputTypes.OutputEventType} type
    * @param {!Array<Spannable>} buff
    * @param {!OutputRulesStr} ruleStr
    * @param {{suppressStartEndAncestry: (boolean|undefined),
@@ -1727,7 +1819,7 @@ Output = class {
     }
 
     const info = new OutputAncestryInfo(
-        node, prevNode, !!optionalArgs.suppressStartEndAncestry);
+        node, prevNode, Boolean(optionalArgs.suppressStartEndAncestry));
 
     // Enter, leave ancestry.
     this.ancestryHelper_({
@@ -1738,7 +1830,7 @@ Output = class {
       type,
       ancestors: info.leaveAncestors,
       formatName: 'leave',
-      exclude: [...info.enterAncestors, node]
+      exclude: [...info.enterAncestors, node],
     });
     this.ancestryHelper_({
       node,
@@ -1748,7 +1840,7 @@ Output = class {
       type,
       ancestors: info.enterAncestors,
       formatName: 'enter',
-      excludePreviousAncestors: true
+      excludePreviousAncestors: true,
     });
 
     if (optionalArgs.suppressStartEndAncestry) {
@@ -1765,7 +1857,7 @@ Output = class {
         type,
         ancestors: info.startAncestors,
         formatName: 'startOf',
-        excludePreviousAncestors: true
+        excludePreviousAncestors: true,
       });
     }
 
@@ -1778,7 +1870,7 @@ Output = class {
         type,
         ancestors: info.endAncestors,
         formatName: 'endOf',
-        exclude: [...info.startAncestors].concat(node)
+        exclude: [...info.startAncestors].concat(node),
       });
     }
   }
@@ -1787,7 +1879,7 @@ Output = class {
    * @param {{
    * node: !AutomationNode,
    * prevNode: !AutomationNode,
-   * type: (EventType|OutputEventType),
+   * type: (EventType|outputTypes.OutputEventType),
    * buff: !Array<Spannable>,
    * ruleStr: !OutputRulesStr,
    * ancestors: !Array<!AutomationNode>,
@@ -1855,12 +1947,13 @@ Output = class {
           outputFormat: enterFormat,
           outputBuffer: buff,
           outputRuleString: ruleStr,
-          opt_prevNode: prevNode
+          opt_prevNode: prevNode,
         });
 
         if (this.formatOptions_.braille && buff.length) {
           const nodeSpan = this.mergeBraille_(buff);
-          nodeSpan.setSpan(new OutputNodeSpan(formatNode), 0, nodeSpan.length);
+          nodeSpan.setSpan(
+              new outputTypes.OutputNodeSpan(formatNode), 0, nodeSpan.length);
           originalBuff.push(nodeSpan);
         }
       }
@@ -1870,7 +1963,7 @@ Output = class {
   /**
    * @param {!AutomationNode} node
    * @param {!AutomationNode} prevNode
-   * @param {EventType|OutputEventType} type
+   * @param {EventType|outputTypes.OutputEventType} type
    * @param {!Array<Spannable>} buff
    * @param {!OutputRulesStr} ruleStr
    * @private
@@ -1918,21 +2011,22 @@ Output = class {
       outputFormat: eventBlock[rule.role][rule.output],
       outputBuffer: buff,
       outputRuleString: ruleStr,
-      opt_prevNode: prevNode
+      opt_prevNode: prevNode,
     });
 
     // Restore braille and add an annotation for this node.
     if (this.formatOptions_.braille) {
       const nodeSpan = this.mergeBraille_(buff);
-      nodeSpan.setSpan(new OutputNodeSpan(node), 0, nodeSpan.length);
+      nodeSpan.setSpan(
+          new outputTypes.OutputNodeSpan(node), 0, nodeSpan.length);
       originalBuff.push(nodeSpan);
     }
   }
 
   /**
-   * @param {!cursors.Range} range
-   * @param {cursors.Range} prevRange
-   * @param {EventType|OutputEventType} type
+   * @param {!CursorRange} range
+   * @param {CursorRange} prevRange
+   * @param {EventType|outputTypes.OutputEventType} type
    * @param {!Array<Spannable>} buff
    * @private
    */
@@ -1940,7 +2034,7 @@ Output = class {
     if (!prevRange) {
       prevRange = range;
     }
-    const dir = cursors.Range.getDirection(prevRange, range);
+    const dir = CursorRange.getDirection(prevRange, range);
     const node = range.start.node;
     const prevNode = prevRange.getBound(dir).node;
     if (!node || !prevNode) {
@@ -1951,7 +2045,7 @@ Output = class {
     const rangeStart = range.start.index;
     const rangeEnd = range.end.index;
     if (this.formatOptions_.braille) {
-      options.annotation.push(new OutputNodeSpan(node));
+      options.annotation.push(new outputTypes.OutputNodeSpan(node));
       const selStart = node.textSelStart;
       const selEnd = node.textSelEnd;
 
@@ -1968,7 +2062,7 @@ Output = class {
         // relative selStart and relative selEnd for the current line are then
         // just the difference between |selStart|, |selEnd| with |rangeStart|.
         // See editing_test.js for examples.
-        options.annotation.push(new OutputSelectionSpan(
+        options.annotation.push(new outputTypes.OutputSelectionSpan(
             selStart - rangeStart, selEnd - rangeStart));
       } else if (
           rangeStart !== 0 || rangeEnd !== range.start.getText().length) {
@@ -1976,13 +2070,15 @@ Output = class {
         // covered by the range. We exclude full content underlines because it
         // is distracting to read braille with all cells underlined with a
         // cursor.
-        options.annotation.push(new OutputSelectionSpan(rangeStart, rangeEnd));
+        options.annotation.push(
+            new outputTypes.OutputSelectionSpan(rangeStart, rangeEnd));
       }
     }
 
-    // Intentionally skip subnode output for OutputContextOrder.DIRECTED.
-    if (this.contextOrder_ === OutputContextOrder.FIRST ||
-        (this.contextOrder_ === OutputContextOrder.FIRST_AND_LAST &&
+    // Intentionally skip subnode output for
+    // outputTypes.OutputContextOrder.DIRECTED.
+    if (this.contextOrder_ === outputTypes.OutputContextOrder.FIRST ||
+        (this.contextOrder_ === outputTypes.OutputContextOrder.FIRST_AND_LAST &&
          range.start.index === 0)) {
       this.ancestry_(node, prevNode, type, buff, ruleStr, {preferStart: true});
     }
@@ -2008,13 +2104,13 @@ Output = class {
     }
     ruleStr.write('subNode_: ' + text + '\n');
 
-    if (this.contextOrder_ === OutputContextOrder.LAST ||
-        (this.contextOrder_ === OutputContextOrder.FIRST_AND_LAST &&
+    if (this.contextOrder_ === outputTypes.OutputContextOrder.LAST ||
+        (this.contextOrder_ === outputTypes.OutputContextOrder.FIRST_AND_LAST &&
          range.end.index === range.end.getText().length)) {
       this.ancestry_(node, prevNode, type, buff, ruleStr, {preferEnd: true});
     }
 
-    range.start.node.boundsForRange(rangeStart, rangeEnd, (loc) => {
+    range.start.node.boundsForRange(rangeStart, rangeEnd, loc => {
       if (loc) {
         this.locations_.push(loc);
       }
@@ -2029,9 +2125,9 @@ Output = class {
    * additions. Rendering processes these two methods in order. The only
    * distinction is a small delay gets introduced before the first hint in
    * |computeDelayedHints_|.
-   * @param {!cursors.Range} range
+   * @param {!CursorRange} range
    * @param {!Array<AutomationNode>} uniqueAncestors
-   * @param {EventType|OutputEventType} type
+   * @param {EventType|outputTypes.OutputEventType} type
    * @param {!Array<Spannable>} buff Buffer to receive rendered output.
    * @param {!OutputRulesStr} ruleStr
    * @private
@@ -2060,14 +2156,14 @@ Output = class {
     const delayedMsgs =
         Output.computeDelayedHints_(node, uniqueAncestors, type);
     if (delayedMsgs.length > 0) {
-      delayedMsgs[0].props = new OutputSpeechProperties();
+      delayedMsgs[0].props = new outputTypes.OutputSpeechProperties();
       delayedMsgs[0].props.properties['delay'] = true;
     }
 
     const allMsgs = msgs.concat(delayedMsgs);
     for (const msg of allMsgs) {
       if (msg.msgId) {
-        const text = Msgs.getMsg(msg.msgId);
+        const text = Msgs.getMsg(msg.msgId, msg.subs);
         this.append_(buff, text, {annotation: [msg.props]});
         ruleStr.write('hint_: ' + text + '\n');
       } else if (msg.text) {
@@ -2080,7 +2176,7 @@ Output = class {
           outputFormat: msg.outputFormat,
           outputBuffer: buff,
           outputRuleString: ruleStr,
-          opt_speechProps: msg.props
+          opt_speechProps: msg.props,
         });
       } else {
         throw new Error('Unexpected hint: ' + msg);
@@ -2126,9 +2222,10 @@ Output = class {
     let ancestorIndex = 0;
     do {
       if (currentNode.ariaCurrentState &&
-          Output.ARIA_CURRENT_STATE_INFO_[currentNode.ariaCurrentState]) {
+          outputTypes.OutputPropertyMap.STATE[currentNode.ariaCurrentState]) {
         ret.push({
-          msgId: Output.ARIA_CURRENT_STATE_INFO_[currentNode.ariaCurrentState]
+          msgId:
+              outputTypes.OutputPropertyMap.STATE[currentNode.ariaCurrentState],
         });
         break;
       }
@@ -2142,9 +2239,10 @@ Output = class {
    * Internal helper to |hint_|. Returns a list of message hints.
    * @param {!AutomationNode} node
    * @param {!Array<AutomationNode>} uniqueAncestors
-   * @param {EventType|OutputEventType} type
+   * @param {EventType|outputTypes.OutputEventType} type
    * @return {!Array<{text: (string|undefined),
    *           msgId: (string|undefined),
+   *           subs: (Array<string>|undefined),
    *           outputFormat: (string|undefined)}>} Note that the above caller
    * expects one and only one key be set.
    * @private
@@ -2155,19 +2253,26 @@ Output = class {
       if (node.state[StateType.EDITABLE]) {
         ret.push({
           msgId: node.state[StateType.FOCUSED] ? 'hint_is_editing' :
-                                                 'hint_double_tap_to_edit'
+                                                 'hint_double_tap_to_edit',
         });
         return ret;
       }
 
       const isWithinVirtualKeyboard = AutomationUtil.getAncestors(node).find(
-          (n) => n.role === RoleType.KEYBOARD);
+          n => n.role === RoleType.KEYBOARD);
       if (AutomationPredicate.clickable(node) && !isWithinVirtualKeyboard) {
-        ret.push({msgId: 'hint_double_tap'});
+        ret.push({
+          msgId: 'hint_actionable',
+          subs: [
+            Msgs.getMsg('action_double_tap', []),
+            node.doDefaultLabel ? node.doDefaultLabel :
+                                  Msgs.getMsg('label_activate', []),
+          ],
+        });
       }
 
       const enteredVirtualKeyboard =
-          uniqueAncestors.find((n) => n.role === RoleType.KEYBOARD);
+          uniqueAncestors.find(n => n.role === RoleType.KEYBOARD);
       if (enteredVirtualKeyboard) {
         ret.push({msgId: 'hint_touch_type'});
       }
@@ -2208,7 +2313,25 @@ Output = class {
     if (AutomationPredicate.checkable(node)) {
       ret.push({msgId: 'hint_checkable'});
     } else if (AutomationPredicate.clickable(node)) {
-      ret.push({msgId: 'hint_clickable'});
+      ret.push({
+        msgId: 'hint_actionable',
+        subs: [
+          Msgs.getMsg('action_search_plus_space', []),
+          node.doDefaultLabel ? node.doDefaultLabel :
+                                Msgs.getMsg('label_activate', []),
+        ],
+      });
+    }
+
+    if (AutomationPredicate.longClickable(node)) {
+      ret.push({
+        msgId: 'hint_actionable',
+        subs: [
+          Msgs.getMsg('action_search_plus_shift_plus_space', []),
+          node.longClickLabel ? node.longClickLabel :
+                                Msgs.getMsg('label_long_click', []),
+        ],
+      });
     }
 
     if (node.autoComplete === 'list' || node.autoComplete === 'both' ||
@@ -2240,12 +2363,12 @@ Output = class {
                  [RoleType.MENU, RoleType.MENU_BAR]))))) {
       ret.push({
         msgId: foundAncestor.state.horizontal ? 'hint_menu_horizontal' :
-                                                'hint_menu'
+                                                'hint_menu',
       });
     }
     if (uniqueAncestors.find(
             /** @type {function(?) : boolean} */ (function(n) {
-              return !!n.details;
+              return Boolean(n.details);
             }))) {
       ret.push({msgId: 'hint_details'});
     }
@@ -2264,33 +2387,30 @@ Output = class {
 
     // Reject empty values without meaningful annotations.
     if ((!value || value.length === 0) &&
-        opt_options.annotation.every(function(a) {
-          return !(a instanceof OutputAction) &&
-              !(a instanceof OutputSelectionSpan);
-        })) {
+        opt_options.annotation.every(
+            annotation => !(annotation instanceof outputTypes.OutputAction) &&
+                !(annotation instanceof outputTypes.OutputSelectionSpan))) {
       return;
     }
 
     const spannableToAdd = new Spannable(value);
-    opt_options.annotation.forEach(function(a) {
-      spannableToAdd.setSpan(a, 0, spannableToAdd.length);
-    });
+    opt_options.annotation.forEach(
+        annotation =>
+            spannableToAdd.setSpan(annotation, 0, spannableToAdd.length));
 
     // |isUnique| specifies an annotation that cannot be duplicated.
     if (opt_options.isUnique) {
-      const annotationSansNodes =
-          opt_options.annotation.filter(function(annotation) {
-            return !(annotation instanceof OutputNodeSpan);
-          });
+      const annotationSansNodes = opt_options.annotation.filter(
+          annotation => !(annotation instanceof outputTypes.OutputNodeSpan));
 
-      const alreadyAnnotated = buff.some(function(s) {
-        return annotationSansNodes.some(function(annotation) {
-          if (!s.hasSpan(annotation)) {
+      const alreadyAnnotated = buff.some(spannable => {
+        annotationSansNodes.some(annotation => {
+          if (!spannable.hasSpan(annotation)) {
             return false;
           }
-          const start = s.getSpanStart(annotation);
-          const end = s.getSpanEnd(annotation);
-          const substr = s.substring(start, end);
+          const start = spannable.getSpanStart(annotation);
+          const end = spannable.getSpanEnd(annotation);
+          const substr = spannable.substring(start, end);
           if (substr && value) {
             return substr.toString() === value.toString();
           } else {
@@ -2316,9 +2436,10 @@ Output = class {
     let separator = '';  // Changes to space as appropriate.
     let prevHasInlineNode = false;
     let prevIsName = false;
-    return spans.reduce(function(result, cur) {
+    return spans.reduce((result, cur) => {
       // Ignore empty spans except when they contain a selection.
-      const hasSelection = cur.getSpanInstanceOf(OutputSelectionSpan);
+      const hasSelection =
+          cur.getSpanInstanceOf(outputTypes.OutputSelectionSpan);
       if (cur.length === 0 && !hasSelection) {
         return result;
       }
@@ -2335,12 +2456,12 @@ Output = class {
       // Keep track of if there's an inline node associated with
       // |cur|.
       const hasInlineNode =
-          cur.getSpansInstanceOf(OutputNodeSpan).some(function(s) {
-            if (!s.node) {
+          cur.getSpansInstanceOf(outputTypes.OutputNodeSpan).some(spannable => {
+            if (!spannable.node) {
               return false;
             }
-            return s.node.display === 'inline' ||
-                s.node.role === RoleType.INLINE_TEXT_BOX;
+            return spannable.node.display === 'inline' ||
+                spannable.node.role === RoleType.INLINE_TEXT_BOX;
           });
 
       const isName = cur.hasSpan('name');
@@ -2377,7 +2498,7 @@ Output = class {
    * Find the earcon for a given node (including ancestry).
    * @param {!AutomationNode} node
    * @param {!AutomationNode=} opt_prevNode
-   * @return {OutputAction}
+   * @return {outputTypes.OutputAction}
    */
   findEarcon_(node, opt_prevNode) {
     if (node === opt_prevNode) {
@@ -2396,7 +2517,7 @@ Output = class {
       while (earconFinder = ancestors.pop()) {
         const info = OutputRoleInfo[earconFinder.role];
         if (info && info.earconId) {
-          return new OutputEarconAction(
+          return new outputTypes.OutputEarconAction(
               info.earconId, node.location || undefined);
           break;
         }
@@ -2411,7 +2532,7 @@ Output = class {
    * @return {string}
    */
   toString() {
-    return this.speechBuffer_.reduce(function(prev, cur) {
+    return this.speechBuffer_.reduce((prev, cur) => {
       if (prev === null || prev === '') {
         return cur.toString();
       }
@@ -2425,7 +2546,7 @@ Output = class {
    * @return {!Spannable}
    */
   get speechOutputForTest() {
-    return this.speechBuffer_.reduce(function(prev, cur) {
+    return this.speechBuffer_.reduce((prev, cur) => {
       if (prev === null) {
         return cur;
       }
@@ -2453,7 +2574,7 @@ Output = class {
   assignLocaleAndAppend_(text, contextNode, buff, options) {
     const data =
         LocaleOutputHelper.instance.computeTextAndLocale(text, contextNode);
-    const speechProps = new OutputSpeechProperties();
+    const speechProps = new outputTypes.OutputSpeechProperties();
     speechProps.properties['lang'] = data.locale;
     this.append_(buff, data.text, options);
     // Attach associated SpeechProperties if the buffer is
@@ -2462,92 +2583,13 @@ Output = class {
       buff[buff.length - 1].setSpan(speechProps, 0, 0);
     }
   }
-};
+}
 
 /**
  * Delimiter to use between output values.
  * @type {string}
  */
 Output.SPACE = ' ';
-
-/**
- * Metadata about supported automation states.
- * @const {!Object<string, {on: {msgId: string, earconId: string},
- *                          off: {msgId: string, earconId: string},
- *                          isRoleSpecific: (boolean|undefined)}>}
- *     on: info used to describe a state that is set to true.
- *     off: info used to describe a state that is set to undefined.
- *     isRoleSpecific: info used for specific roles.
- * @private
- */
-Output.STATE_INFO_ = {
-  collapsed: {on: {msgId: 'aria_expanded_false'}},
-  default: {on: {msgId: 'default_state'}},
-  expanded: {on: {msgId: 'aria_expanded_true'}},
-  multiselectable: {on: {msgId: 'aria_multiselectable_true'}},
-  required: {on: {msgId: 'aria_required_true'}},
-  visited: {on: {msgId: 'visited_state'}}
-};
-
-/**
- * Maps aria-current state types to message IDs.
- * @const {Object<string>}
- * @private
- */
-Output.ARIA_CURRENT_STATE_INFO_ = {
-  [AriaCurrentState.TRUE]: 'aria_current_true',
-  [AriaCurrentState.PAGE]: 'aria_current_page',
-  [AriaCurrentState.STEP]: 'aria_current_step',
-  [AriaCurrentState.LOCATION]: 'aria_current_location',
-  [AriaCurrentState.DATE]: 'aria_current_date',
-  [AriaCurrentState.TIME]: 'aria_current_time'
-};
-
-/**
- * Maps input types to message IDs.
- * @const {Object<string>}
- * @private
- */
-Output.INPUT_TYPE_MESSAGE_IDS_ = {
-  'email': 'input_type_email',
-  'number': 'input_type_number',
-  'password': 'input_type_password',
-  'search': 'input_type_search',
-  'tel': 'input_type_number',
-  'text': 'input_type_text',
-  'url': 'input_type_url',
-};
-
-/**
- * Rules for mapping the restriction property to a msg id
- * @const {Object<string>}
- * @private
- */
-Output.RESTRICTION_STATE_MAP = {};
-Output.RESTRICTION_STATE_MAP[Restriction.DISABLED] = 'aria_disabled_true';
-Output.RESTRICTION_STATE_MAP[Restriction.READ_ONLY] = 'aria_readonly_true';
-
-/**
- * Rules for mapping the checked property to a msg id
- * @const {Object<string>}
- * @private
- */
-Output.CHECKED_STATE_MAP = {
-  'true': 'checked_true',
-  'false': 'checked_false',
-  'mixed': 'checked_mixed'
-};
-
-/**
- * Rules for mapping the checked property to a msg id
- * @const {Object<string>}
- * @private
- */
-Output.PRESSED_STATE_MAP = {
-  'true': 'aria_pressed_true',
-  'false': 'aria_pressed_false',
-  'mixed': 'aria_pressed_mixed'
-};
 
 /**
  * Rules specifying format of AutomationNodes for output.
@@ -2567,15 +2609,15 @@ Output.RULES = {
     'default': {
       speak: `$name $node(activeDescendant) $value $state $restriction $role
           $description`,
-      braille: ``
+      braille: ``,
     },
     abstractContainer: {
       startOf: `$nameFromNode $role $state $description`,
-      endOf: `@end_of_container($role)`
+      endOf: `@end_of_container($role)`,
     },
     abstractFormFieldContainer: {
       enter: `$nameFromNode $role $state $description`,
-      leave: `@exited_container($role)`
+      leave: `@exited_container($role)`,
     },
     abstractItem: {
       // Note that ChromeVox generally does not output position/count. Only for
@@ -2585,12 +2627,12 @@ Output.RULES = {
           $if($posInSet, @describe_index($posInSet, $setSize))`,
       speak: `$state $nameOrTextContent= $role
           $if($posInSet, @describe_index($posInSet, $setSize))
-          $description $restriction`
+          $description $restriction`,
     },
     abstractList: {
       startOf: `$nameFromNode $role @@list_with_items($setSize)
           $restriction $description`,
-      endOf: `@end_of_container($role)`
+      endOf: `@end_of_container($role) @@list_nested_level($listNestedLevel)`,
     },
     abstractNameFromContents: {
       speak: `$nameOrDescendants $node(activeDescendant) $value $state
@@ -2601,26 +2643,26 @@ Output.RULES = {
           $if($value, $value, $if($valueForRange, $valueForRange))
           $state $restriction
           $if($minValueForRange, @aria_value_min($minValueForRange))
-          $if($maxValueForRange, @aria_value_max($maxValueForRange))`
+          $if($maxValueForRange, @aria_value_max($maxValueForRange))`,
     },
     abstractSpan: {
       startOf: `$nameFromNode $role $state $description`,
-      endOf: `@end_of_container($role)`
+      endOf: `@end_of_container($role)`,
     },
     alert: {
       enter: `$name $role $state`,
       speak: `$earcon(ALERT_NONMODAL) $role $nameOrTextContent $description
-          $state`
+          $state`,
     },
     alertDialog: {
       enter: `$earcon(ALERT_MODAL) $name $state $description $roleDescription
           $textContent`,
       speak: `$earcon(ALERT_MODAL) $name $nameOrTextContent $description $state
-          $role`
+          $role`,
     },
     button: {
       speak: `$name $node(activeDescendant) $state $restriction $role
-          $description`
+          $description`,
     },
     cell: {
       enter: {
@@ -2634,12 +2676,12 @@ Output.RULES = {
       braille: `$state
           $name $cellIndexText $node(tableCellColumnHeaders) $roleDescription
           $description
-          $if($selected, @aria_selected_true)`
+          $if($selected, @aria_selected_true)`,
     },
     checkBox: {
       speak: `$if($checked, $earcon(CHECK_ON), $earcon(CHECK_OFF))
           $name $role $if($checkedStateDescription, $checkedStateDescription, $checked)
-          $description $state $restriction`
+          $description $state $restriction`,
     },
     client: {speak: `$name`},
     comboBoxMenuButton: {
@@ -2648,21 +2690,21 @@ Output.RULES = {
           $state $restriction $description`,
     },
     date: {enter: `$nameFromNode $role $state $restriction $description`},
-    dialog: {enter: `$nameFromNode $role $description $textContent`},
+    dialog: {enter: `$nameFromNode $role $description`},
     genericContainer: {
       enter: `$nameFromNode $description $state`,
-      speak: `$nameOrTextContent $description $state`
+      speak: `$nameOrTextContent $description $state`,
     },
     embeddedObject: {speak: `$name`},
     grid: {
       speak: `$name $node(activeDescendant) $role $state $restriction
-          $description`
+          $description`,
     },
     group: {
       enter: `$nameFromNode $roleDescription $state $restriction $description`,
       speak: `$nameOrDescendants $value $state $restriction $roleDescription
           $description`,
-      leave: ``
+      leave: ``,
     },
     heading: {
       enter: `!relativePitch(hierarchicalLevel)
@@ -2672,7 +2714,7 @@ Output.RULES = {
       speak: `!relativePitch(hierarchicalLevel)
           $nameOrDescendants=
           $if($hierarchicalLevel, @tag_h+$hierarchicalLevel, $role) $state
-          $restriction $description`
+          $restriction $description`,
     },
     image: {
       speak: `$if($name, $name,
@@ -2681,7 +2723,7 @@ Output.RULES = {
     },
     imeCandidate:
         {speak: '$name $phoneticReading @describe_index($posInSet, $setSize)'},
-    inlineTextBox: {speak: `$name=`},
+    inlineTextBox: {speak: `$precedingBullet $name=`},
     inputTime: {enter: `$nameFromNode $role $state $restriction $description`},
     labelText: {
       speak: `$name $value $state $restriction $roleDescription $description`,
@@ -2694,11 +2736,11 @@ Output.RULES = {
     },
     list: {
       speak: `$nameFromNode $descendants $role
-          @@list_with_items($setSize) $description $state`
+          @@list_with_items($setSize) $description $state`,
     },
     listBox: {
       enter: `$nameFromNode $role @@list_with_items($setSize)
-          $restriction $description`
+          $restriction $description`,
     },
     listBoxOption: {
       speak: `$state $name $role @describe_index($posInSet, $setSize)
@@ -2706,29 +2748,29 @@ Output.RULES = {
           $nif($selected, @aria_selected_false)`,
       braille: `$state $name $role @describe_index($posInSet, $setSize)
           $description $restriction
-          $if($selected, @aria_selected_true, @aria_selected_false)`
+          $if($selected, @aria_selected_true, @aria_selected_false)`,
     },
     listMarker: {speak: `$name`},
     menu: {
       enter: `$name $role `,
       speak: `$name $node(activeDescendant)
-          $role @@list_with_items($setSize) $description $state $restriction`
+          $role @@list_with_items($setSize) $description $state $restriction`,
     },
     menuItem: {
       speak: `$name $role $if($hasPopup, @has_submenu)
-          @describe_index($posInSet, $setSize) $description $state $restriction`
+          @describe_index($posInSet, $setSize) $description $state $restriction`,
     },
     menuItemCheckBox: {
       speak: `$if($checked, $earcon(CHECK_ON), $earcon(CHECK_OFF))
           $name $role $checked $state $restriction $description
-          @describe_index($posInSet, $setSize)`
+          @describe_index($posInSet, $setSize)`,
     },
     menuItemRadio: {
       speak: `$if($checked, $earcon(CHECK_ON), $earcon(CHECK_OFF))
           $if($checked, @describe_menu_item_radio_selected($name),
           @describe_menu_item_radio_unselected($name)) $state $roleDescription
           $restriction $description
-          @describe_index($posInSet, $setSize)`
+          @describe_index($posInSet, $setSize)`,
     },
     menuListOption: {
       speak: `$name $role @describe_index($posInSet, $setSize) $state
@@ -2736,7 +2778,7 @@ Output.RULES = {
           $restriction $description`,
       braille: `$name $role @describe_index($posInSet, $setSize) $state
           $if($selected, @aria_selected_true, @aria_selected_false)
-          $restriction $description`
+          $restriction $description`,
     },
     paragraph: {speak: `$nameOrDescendants $roleDescription`},
     radioButton: {
@@ -2744,21 +2786,23 @@ Output.RULES = {
           $if($checked, @describe_radio_selected($name),
           @describe_radio_unselected($name))
           @describe_index($posInSet, $setSize)
-          $roleDescription $description $state $restriction`
+          $roleDescription $description $state $restriction`,
     },
     rootWebArea: {enter: `$name`, speak: `$if($name, $name, @web_content)`},
     region: {speak: `$state $nameOrTextContent $description $roleDescription`},
     row: {
-      startOf: `$node(tableRowHeader) $roleDescription`,
-      speak: `$name $node(activeDescendant) $value $state $restriction $role
-          $if($selected, @aria_selected_true) $description`
+      startOf: `$node(tableRowHeader) $roleDescription
+          $if($hierarchicalLevel, @describe_depth($hierarchicalLevel))`,
+      speak: ` $if($hierarchicalLevel, @describe_depth($hierarchicalLevel))
+          $name $node(activeDescendant) $value $state $restriction $role
+          $if($selected, @aria_selected_true) $description`,
     },
-    staticText: {speak: `$name= $description`},
+    staticText: {speak: `$precedingBullet $name= $description`},
     switch: {
       speak: `$if($checked, $earcon(CHECK_ON), $earcon(CHECK_OFF))
           $if($checked, @describe_switch_on($name),
           @describe_switch_off($name)) $roleDescription
-          $description $state $restriction`
+          $description $state $restriction`,
     },
     tab: {
       speak: `@describe_tab($name) $roleDescription $description
@@ -2769,7 +2813,7 @@ Output.RULES = {
       enter: `$roleDescription @table_summary($name,
           $if($ariaRowCount, $ariaRowCount, $tableRowCount),
           $if($ariaColumnCount, $ariaColumnCount, $tableColumnCount))
-          $node(tableHeader)`
+          $node(tableHeader)`,
     },
     tabList: {
       speak: `$name $node(activeDescendant) $state $restriction $role
@@ -2780,15 +2824,15 @@ Output.RULES = {
           $if($roleDescription, $roleDescription,
               $if($multiline, @tag_textarea,
                   $if($inputType, $inputType, $role)))
-          $description $state $restriction`
+          $description $state $restriction`,
     },
     timer: {
       speak: `$nameFromNode $descendants $value $state $role
-        $description`
+        $description`,
     },
     toggleButton: {
       speak: `$if($checked, $earcon(CHECK_ON), $earcon(CHECK_OFF))
-          $name $role $pressed $description $state $restriction`
+          $name $role $pressed $description $state $restriction`,
     },
     toolbar: {enter: `$name $role $description $restriction`},
     tree: {enter: `$name $role @@list_with_items($setSize) $restriction`},
@@ -2800,13 +2844,13 @@ Output.RULES = {
           $role $description $state $restriction
           $nif($selected, @aria_selected_false)
           @describe_index($posInSet, $setSize)
-          @describe_depth($hierarchicalLevel)`
+          @describe_depth($hierarchicalLevel)`,
     },
     unknown: {speak: ``},
     window: {
       enter: `@describe_window($name) $description`,
-      speak: `@describe_window($name) $description $earcon(OBJECT_OPEN)`
-    }
+      speak: `@describe_window($name) $description $earcon(OBJECT_OPEN)`,
+    },
   },
   menuStart:
       {'default': {speak: `@chrome_menu_opened($name)  $earcon(OBJECT_OPEN)`}},
@@ -2815,12 +2859,12 @@ Output.RULES = {
     'default': {
       speak: `$value $name
           $find({"state": {"selected": true, "invisible": false}},
-          @describe_index($posInSet, $setSize)) `
-    }
+          @describe_index($posInSet, $setSize)) `,
+    },
   },
   alert: {
-    default: {speak: `$earcon(ALERT_NONMODAL) $nameOrTextContent $description`}
-  }
+    default: {speak: `$earcon(ALERT_NONMODAL) $nameOrTextContent $description`},
+  },
 };
 
 /**
@@ -2830,4 +2874,3 @@ Output.RULES = {
  * @private
  */
 Output.forceModeForNextSpeechUtterance_;
-});  // goog.scope

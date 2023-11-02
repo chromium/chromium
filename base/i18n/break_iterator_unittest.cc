@@ -1,13 +1,13 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/i18n/break_iterator.h"
 
 #include <stddef.h>
+
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -141,7 +141,7 @@ TEST(BreakIteratorTest, BreakWordThai) {
 // dictionary to detect word boundaries in Thai, Chinese, Japanese, Burmese,
 // and Khmer. Due to the size of such a table, the part for Chinese and
 // Japanese is not shipped on mobile.
-#if !(defined(OS_IOS) || defined(OS_ANDROID))
+#if !(BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID))
 
 TEST(BreakIteratorTest, BreakWordChinese) {
   // Terms in Traditional Chinese, without spaces in between.
@@ -234,7 +234,7 @@ TEST(BreakIteratorTest, BreakWordChineseEnglish) {
   EXPECT_FALSE(iter.IsWord());
 }
 
-#endif  // !(defined(OS_IOS) || defined(OS_ANDROID))
+#endif  // !(BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID))
 
 TEST(BreakIteratorTest, BreakSpaceEmpty) {
   std::u16string empty;
@@ -506,7 +506,7 @@ TEST(BreakIteratorTest, BreakCharacter) {
   }
   BreakIterator iter(text, BreakIterator::BREAK_CHARACTER);
   ASSERT_TRUE(iter.Init());
-  for (size_t i = 0; i < base::size(kCharacters); ++i) {
+  for (size_t i = 0; i < std::size(kCharacters); ++i) {
     EXPECT_TRUE(iter.Advance());
     EXPECT_EQ(characters[i], iter.GetString());
   }

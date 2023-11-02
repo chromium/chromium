@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,13 +10,13 @@
 #include <vector>
 
 #include "base/memory/ref_counted.h"
+#include "net/base/hash_value.h"
 #include "net/base/net_export.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/cert/ct_policy_status.h"
 #include "net/cert/ocsp_verify_result.h"
 #include "net/cert/sct_status_flags.h"
 #include "net/cert/signed_certificate_timestamp_and_status.h"
-#include "net/cert/x509_cert_types.h"
 
 namespace net {
 
@@ -88,9 +88,6 @@ class NET_EXPORT SSLInfo {
   bool early_data_received = false;
 
   // True if the connection negotiated the Encrypted ClientHello extension.
-  //
-  // TODO(crbug.com/1091403): Serialize this field in net_ipc_param_traits.cc
-  // and expose in DevTools Security Panel.
   bool encrypted_client_hello = false;
 
   HandshakeType handshake_type = HANDSHAKE_UNKNOWN;

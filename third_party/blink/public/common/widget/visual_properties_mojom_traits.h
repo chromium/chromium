@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_WIDGET_VISUAL_PROPERTIES_MOJOM_TRAITS_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_WIDGET_VISUAL_PROPERTIES_MOJOM_TRAITS_H_
 
+#include "base/check_op.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/widget/visual_properties.h"
@@ -48,7 +49,7 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::VisualPropertiesDataView,
     return r.compositor_viewport_pixel_rect;
   }
 
-  static absl::optional<cc::BrowserControlsParams> browser_controls_params(
+  static const cc::BrowserControlsParams& browser_controls_params(
       const blink::VisualProperties& r) {
     return r.browser_controls_params;
   }
@@ -57,7 +58,7 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::VisualPropertiesDataView,
     return r.scroll_focused_node_into_view;
   }
 
-  static absl::optional<viz::LocalSurfaceId> local_surface_id(
+  static const absl::optional<viz::LocalSurfaceId>& local_surface_id(
       const blink::VisualProperties& r) {
     return r.local_surface_id;
   }

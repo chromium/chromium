@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,12 +6,10 @@
 #define NET_TEST_SCOPED_DISABLE_EXIT_ON_DFATAL_H_
 
 #include "base/logging.h"
-#include "base/macros.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace net {
-namespace test {
+namespace net::test {
 
 // The ScopedDisableExitOnDFatal class is used to disable exiting the
 // program when we encounter a LOG(DFATAL) within the current block.
@@ -38,7 +36,6 @@ class ScopedDisableExitOnDFatal {
   logging::ScopedLogAssertHandler assert_handler_;
 };
 
-}  // namespace test
-}  // namespace net
+}  // namespace net::test
 
 #endif  // NET_TEST_SCOPED_DISABLE_EXIT_ON_DFATAL_H_

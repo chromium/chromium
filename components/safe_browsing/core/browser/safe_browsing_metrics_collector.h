@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,17 +6,16 @@
 #define COMPONENTS_SAFE_BROWSING_CORE_BROWSER_SAFE_BROWSING_METRICS_COLLECTOR_H_
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/values.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/safe_browsing/core/browser/db/hit_report.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
-
-namespace base {
-class Value;
-}  // namespace base
 
 namespace safe_browsing {
 
@@ -114,6 +113,10 @@ class SafeBrowsingMetricsCollector : public KeyedService {
   // Adds |event_type| and the current timestamp to pref.
   void AddSafeBrowsingEventToPref(EventType event_type);
 
+  // Uses |threat_source| to choose which EventType should be passed into
+  // AddSafeBrowsingEventToPref
+  void AddBypassEventToPref(ThreatSource threat_source);
+
   // Gets the latest event timestamp of the |event_type|. Returns nullopt if
   // the |event_type| didn't happen in the past.
   absl::optional<base::Time> GetLatestEventTimestamp(EventType event_type);
@@ -144,10 +147,14 @@ class SafeBrowsingMetricsCollector : public KeyedService {
   // For pref listeners.
   void OnEnhancedProtectionPrefChanged();
   void LogEnhancedProtectionDisabledMetrics();
+  void LogThrottledEnhancedProtectionDisabledMetrics();
 
   // Helper functions for Safe Browsing events in pref.
   void AddSafeBrowsingEventAndUserStateToPref(UserState user_state,
                                               EventType event_type);
+  // Keep the possible returned values of GetTimesDisabledSuffix in sync with
+  // MetricsCollectorTimesDisabledEnabledDuration in histograms.xml.
+  std::string GetTimesDisabledSuffix();
 
   // Gets the latest event timestamp for events filtered by |event_type_filter|.
   // Returns nullopt if none of the events happened in the past.
@@ -158,13 +165,13 @@ class SafeBrowsingMetricsCollector : public KeyedService {
   absl::optional<SafeBrowsingMetricsCollector::Event>
   GetLatestEventFromEventTypeFilter(UserState user_state,
                                     EventTypeFilter event_type_filter);
-  const base::Value* GetSafeBrowsingEventDictionary(UserState user_state);
+  const base::Value::Dict* GetSafeBrowsingEventDictionary(UserState user_state);
   int GetEventCountSince(UserState user_state,
                          EventType event_type,
                          base::Time since_time);
   UserState GetUserState();
 
-  PrefService* pref_service_;
+  raw_ptr<PrefService> pref_service_;
   PrefChangeRegistrar pref_change_registrar_;
   base::OneShotTimer metrics_collector_timer_;
 };

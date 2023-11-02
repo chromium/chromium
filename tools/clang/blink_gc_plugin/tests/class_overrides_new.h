@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,11 +10,22 @@
 namespace blink {
 
 class HeapObject : public GarbageCollected<HeapObject> {
-    WTF_MAKE_FAST_ALLOCATED;
-public:
- void Trace(Visitor*) const {}
+ public:
+  void* operator new(size_t);
+  void Trace(Visitor*) const {}
 };
 
+class HeapObjectBase : public GarbageCollected<HeapObjectBase> {
+ public:
+  virtual ~HeapObjectBase() = default;
+  virtual void Trace(Visitor*) const {}
+};
+
+class HeapObjectDerived : public HeapObjectBase {
+ public:
+  void* operator new(size_t);
+  void Trace(Visitor*) const override;
+};
 }
 
 #endif

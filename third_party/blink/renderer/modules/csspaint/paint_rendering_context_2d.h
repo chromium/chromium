@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_paint_rendering_context_2d_settings.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/base_rendering_context_2d.h"
 #include "third_party/blink/renderer/modules/csspaint/paint_worklet_global_scope.h"
@@ -32,7 +31,7 @@ class MODULES_EXPORT PaintRenderingContext2D : public ScriptWrappable,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  PaintRenderingContext2D(const IntSize& container_size,
+  PaintRenderingContext2D(const gfx::Size& container_size,
                           const PaintRenderingContext2DSettings*,
                           float zoom,
                           float device_scale_factor,
@@ -107,7 +106,7 @@ class MODULES_EXPORT PaintRenderingContext2D : public ScriptWrappable,
   }
 
  protected:
-  CanvasColorParams GetCanvas2DColorParams() const override;
+  PredefinedColorSpace GetDefaultImageDataColorSpace() const final;
   bool IsPaint2D() const override { return true; }
   void WillOverwriteCanvas() override;
 
@@ -116,7 +115,7 @@ class MODULES_EXPORT PaintRenderingContext2D : public ScriptWrappable,
 
   std::unique_ptr<PaintRecorder> paint_recorder_;
   sk_sp<PaintRecord> previous_frame_;
-  IntSize container_size_;
+  gfx::Size container_size_;
   Member<const PaintRenderingContext2DSettings> context_settings_;
   bool did_record_draw_commands_in_paint_recorder_;
   // The paint worklet canvas operates on CSS pixels, and that's different than

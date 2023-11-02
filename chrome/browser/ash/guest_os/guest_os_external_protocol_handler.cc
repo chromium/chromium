@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/borealis/borealis_app_launcher.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
+#include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_files.h"
@@ -17,12 +18,16 @@
 namespace guest_os {
 namespace {
 
-using VmType = guest_os::GuestOsRegistryService::VmType;
+using VmType = guest_os::VmType;
 
 bool AppHandlesProtocol(
     const guest_os::GuestOsRegistryService::Registration& app,
-    const std::string& scheme) {
-  return app.MimeTypes().count("x-scheme-handler/" + scheme) != 0;
+    const GURL& url) {
+  if (app.VmType() == guest_os::VmType::BOREALIS &&
+      !borealis::IsExternalURLAllowed(url)) {
+    return false;
+  }
+  return app.MimeTypes().count("x-scheme-handler/" + url.scheme()) != 0;
 }
 
 }  // namespace
@@ -41,7 +46,7 @@ absl::optional<GuestOsRegistryService::Registration> GetHandler(
   absl::optional<GuestOsRegistryService::Registration> result;
   for (auto& pair : registry_service->GetEnabledApps()) {
     auto& registration = pair.second;
-    if (AppHandlesProtocol(registration, url.scheme()) &&
+    if (AppHandlesProtocol(registration, url) &&
         (!result || registration.LastLaunchTime() > result->LastLaunchTime())) {
       result = std::move(registration);
     }
@@ -58,18 +63,18 @@ void Launch(Profile* profile, const GURL& url) {
   }
 
   switch (registration->VmType()) {
-    case VmType::ApplicationList_VmType_TERMINA:
+    case VmType::TERMINA:
       crostini::LaunchCrostiniApp(profile, registration->app_id(),
                                   display::kInvalidDisplayId, {url.spec()},
                                   base::DoNothing());
       break;
 
-    case VmType::ApplicationList_VmType_PLUGIN_VM:
+    case VmType::PLUGIN_VM:
       plugin_vm::LaunchPluginVmApp(profile, registration->app_id(),
                                    {url.spec()}, base::DoNothing());
       break;
 
-    case VmType::ApplicationList_VmType_BOREALIS:
+    case VmType::BOREALIS:
       borealis::BorealisService::GetForProfile(profile)->AppLauncher().Launch(
           registration->app_id(), {url.spec()}, base::DoNothing());
       break;

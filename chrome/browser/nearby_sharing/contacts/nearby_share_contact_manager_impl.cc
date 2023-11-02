@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -99,25 +99,23 @@ std::string ComputeHash(
 
 nearby_share::mojom::ContactIdentifierPtr ProtoToMojo(
     const nearbyshare::proto::Contact_Identifier& identifier) {
-  nearby_share::mojom::ContactIdentifierPtr identifier_ptr =
-      nearby_share::mojom::ContactIdentifier::New();
   switch (identifier.identifier_case()) {
     case nearbyshare::proto::Contact_Identifier::IdentifierCase::kAccountName:
-      identifier_ptr->set_account_name(identifier.account_name());
-      break;
+      return nearby_share::mojom::ContactIdentifier::NewAccountName(
+          identifier.account_name());
     case nearbyshare::proto::Contact_Identifier::IdentifierCase::
         kObfuscatedGaia:
-      identifier_ptr->set_obfuscated_gaia(identifier.obfuscated_gaia());
-      break;
+      return nearby_share::mojom::ContactIdentifier::NewObfuscatedGaia(
+          identifier.obfuscated_gaia());
     case nearbyshare::proto::Contact_Identifier::IdentifierCase::kPhoneNumber:
-      identifier_ptr->set_phone_number(identifier.phone_number());
-      break;
+      return nearby_share::mojom::ContactIdentifier::NewPhoneNumber(
+          identifier.phone_number());
     case nearbyshare::proto::Contact_Identifier::IdentifierCase::
         IDENTIFIER_NOT_SET:
-      NOTREACHED();
       break;
   }
-  return identifier_ptr;
+  NOTREACHED();
+  return nullptr;
 }
 
 nearby_share::mojom::ContactRecordPtr ProtoToMojo(
@@ -269,8 +267,7 @@ std::set<std::string> NearbyShareContactManagerImpl::GetAllowedContacts()
     const {
   std::set<std::string> allowlist;
   for (const base::Value& id :
-       pref_service_->Get(prefs::kNearbySharingAllowedContactsPrefName)
-           ->GetList()) {
+       pref_service_->GetList(prefs::kNearbySharingAllowedContactsPrefName)) {
     allowlist.insert(id.GetString());
   }
   return allowlist;

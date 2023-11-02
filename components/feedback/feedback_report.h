@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -55,6 +55,11 @@ class FeedbackReport : public base::RefCountedThreadSafe<FeedbackReport> {
   // The ID of the product specific data for the system logs entry containing
   // mem_usage entries with tab names.
   static const char kMemUsageWithTabTitlesKey[];
+
+  // The ID of the product specific data indicating whether the users want to be
+  // contacted back with any additional questions or updates about the issue
+  // they are reporting.
+  static const char kFeedbackUserCtlConsentKey[];
 
   // Loads the reports still on disk and queues then using the given callback.
   // This call blocks on the file reads.

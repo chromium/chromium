@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,9 +12,11 @@
 #include "ash/app_list/model/app_list_test_model.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_config_provider.h"
+#include "base/test/icu_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/skia_util.h"
 
 namespace ash {
@@ -56,11 +58,11 @@ class TestFolderImageObserver : public FolderImageObserver {
 
 }  // namespace
 
-class FolderImageTest
-    : public testing::Test,
-      public ::testing::WithParamInterface<AppListConfigType> {
+class FolderImageTest : public testing::Test,
+                        public ::testing::WithParamInterface<
+                            std::tuple<AppListConfigType, bool>> {
  public:
-  FolderImageTest() = default;
+  FolderImageTest() : scoped_locale_(std::get<1>(GetParam()) ? "he" : "") {}
 
   FolderImageTest(const FolderImageTest&) = delete;
   FolderImageTest& operator=(const FolderImageTest&) = delete;
@@ -69,9 +71,9 @@ class FolderImageTest
 
   void SetUp() override {
     app_list_model_ = std::make_unique<test::AppListTestModel>();
-    folder_image_ = std::make_unique<FolderImage>(
-        AppListConfigProvider::Get().GetConfigForType(GetParam(), true),
-        app_list_model_->top_level_item_list());
+    folder_image_ =
+        std::make_unique<FolderImage>(GetAppListConfig(/*can_create=*/true),
+                                      app_list_model_->top_level_item_list());
 
     // Populate the AppListModel with three items (to test that the FolderImage
     // correctly supports having fewer than four icons).
@@ -88,14 +90,25 @@ class FolderImageTest
     AppListConfigProvider::Get().ResetForTesting();
   }
 
+  AppListConfig* GetAppListConfig(bool can_create) {
+    return AppListConfigProvider::Get().GetConfigForType(
+        std::get<0>(GetParam()), can_create);
+  }
+
+  bool is_rtl() { return std::get<1>(GetParam()); }
+
  protected:
   void AddAppWithColoredIcon(const std::string& id, SkColor icon_color) {
     std::unique_ptr<AppListItem> item(new AppListItem(id));
-    item->SetDefaultIcon(CreateSquareBitmapWithColor(
-        SharedAppListConfig::instance().default_grid_icon_dimension(),
-        icon_color));
+    item->SetDefaultIconAndColor(
+        CreateSquareBitmapWithColor(
+            SharedAppListConfig::instance().default_grid_icon_dimension(),
+            icon_color),
+        IconColor());
     static_cast<AppListModel*>(app_list_model_.get())->AddItem(std::move(item));
   }
+
+  base::test::ScopedRestoreICUDefaultLocale scoped_locale_;
 
   std::unique_ptr<test::AppListTestModel> app_list_model_;
 
@@ -103,11 +116,13 @@ class FolderImageTest
 
   TestFolderImageObserver observer_;
 };
-INSTANTIATE_TEST_SUITE_P(All,
-                         FolderImageTest,
-                         ::testing::Values(AppListConfigType::kLarge,
-                                           AppListConfigType::kMedium,
-                                           AppListConfigType::kSmall));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    FolderImageTest,
+    ::testing::Combine(::testing::Values(AppListConfigType::kLarge,
+                                         AppListConfigType::kMedium,
+                                         AppListConfigType::kSmall),
+                       ::testing::Bool()));
 
 TEST_P(FolderImageTest, UpdateListTest) {
   gfx::ImageSkia icon1 = folder_image_->icon();
@@ -158,9 +173,11 @@ TEST_P(FolderImageTest, UpdateItemTest) {
   gfx::ImageSkia icon1 = folder_image_->icon();
 
   // Change an item's icon. Ensure that the observer fired and the icon changed.
-  app_list_model_->FindItem("app2")->SetDefaultIcon(CreateSquareBitmapWithColor(
-      SharedAppListConfig::instance().default_grid_icon_dimension(),
-      SK_ColorMAGENTA));
+  app_list_model_->FindItem("app2")->SetDefaultIconAndColor(
+      CreateSquareBitmapWithColor(
+          SharedAppListConfig::instance().default_grid_icon_dimension(),
+          SK_ColorMAGENTA),
+      IconColor());
   EXPECT_TRUE(observer_.updated());
   observer_.Reset();
   EXPECT_FALSE(ImagesAreEqual(icon1, folder_image_->icon()));
@@ -169,8 +186,7 @@ TEST_P(FolderImageTest, UpdateItemTest) {
 TEST_P(FolderImageTest, GetTargetIconRectInFolderWithSingleItem) {
   app_list_model_->DeleteItem("app2");
   app_list_model_->DeleteItem("app3");
-  const AppListConfig* config =
-      AppListConfigProvider::Get().GetConfigForType(GetParam(), false);
+  const AppListConfig* config = GetAppListConfig(/*can_create=*/false);
   ASSERT_TRUE(config);
 
   const gfx::Rect test_rects[] = {
@@ -199,8 +215,7 @@ TEST_P(FolderImageTest, GetTargetIconRectInFolderWithSingleItem) {
 
 TEST_P(FolderImageTest, GetTargetIconRectInFolderWithTwoItems) {
   app_list_model_->DeleteItem("app3");
-  const AppListConfig* config =
-      AppListConfigProvider::Get().GetConfigForType(GetParam(), false);
+  const AppListConfig* config = GetAppListConfig(/*can_create=*/false);
   ASSERT_TRUE(config);
 
   const gfx::Rect test_rects[] = {
@@ -222,14 +237,18 @@ TEST_P(FolderImageTest, GetTargetIconRectInFolderWithTwoItems) {
 
     gfx::Rect item_1_bounds = folder_image_->GetTargetIconRectInFolderForItem(
         *config, app_list_model_->FindItem("app1"), test_rect);
+    gfx::Rect item_2_bounds = folder_image_->GetTargetIconRectInFolderForItem(
+        *config, app_list_model_->FindItem("app2"), test_rect);
+
+    if (is_rtl())
+      std::swap(item_1_bounds, item_2_bounds);
+
     EXPECT_EQ(expected_icon_rect_size, item_1_bounds.size());
     EXPECT_EQ(
         test_rect_center.x() - config->item_icon_in_folder_icon_margin() / 2,
         item_1_bounds.right());
     EXPECT_EQ(test_rect_center.y(), item_1_bounds.CenterPoint().y());
 
-    gfx::Rect item_2_bounds = folder_image_->GetTargetIconRectInFolderForItem(
-        *config, app_list_model_->FindItem("app2"), test_rect);
     EXPECT_EQ(expected_icon_rect_size, item_2_bounds.size());
     EXPECT_EQ(
         test_rect_center.x() + config->item_icon_in_folder_icon_margin() / 2,
@@ -239,8 +258,7 @@ TEST_P(FolderImageTest, GetTargetIconRectInFolderWithTwoItems) {
 }
 
 TEST_P(FolderImageTest, GetTargetIconRectInFolderWithThreeItems) {
-  const AppListConfig* config =
-      AppListConfigProvider::Get().GetConfigForType(GetParam(), false);
+  const AppListConfig* config = GetAppListConfig(/*can_create=*/false);
   ASSERT_TRUE(config);
 
   const gfx::Rect test_rects[] = {
@@ -262,6 +280,13 @@ TEST_P(FolderImageTest, GetTargetIconRectInFolderWithThreeItems) {
 
     gfx::Rect item_1_bounds = folder_image_->GetTargetIconRectInFolderForItem(
         *config, app_list_model_->FindItem("app1"), test_rect);
+    gfx::Rect item_2_bounds = folder_image_->GetTargetIconRectInFolderForItem(
+        *config, app_list_model_->FindItem("app2"), test_rect);
+    gfx::Rect item_3_bounds = folder_image_->GetTargetIconRectInFolderForItem(
+        *config, app_list_model_->FindItem("app3"), test_rect);
+
+    if (is_rtl())
+      std::swap(item_1_bounds, item_2_bounds);
     EXPECT_EQ(expected_icon_rect_size, item_1_bounds.size());
     EXPECT_EQ(
         test_rect_center.x() - config->item_icon_in_folder_icon_margin() / 2,
@@ -270,8 +295,6 @@ TEST_P(FolderImageTest, GetTargetIconRectInFolderWithThreeItems) {
         test_rect_center.y() - config->item_icon_in_folder_icon_margin() / 2,
         item_1_bounds.bottom());
 
-    gfx::Rect item_2_bounds = folder_image_->GetTargetIconRectInFolderForItem(
-        *config, app_list_model_->FindItem("app2"), test_rect);
     EXPECT_EQ(expected_icon_rect_size, item_2_bounds.size());
     EXPECT_EQ(
         test_rect_center.x() + config->item_icon_in_folder_icon_margin() / 2,
@@ -280,8 +303,6 @@ TEST_P(FolderImageTest, GetTargetIconRectInFolderWithThreeItems) {
         test_rect_center.y() - config->item_icon_in_folder_icon_margin() / 2,
         item_2_bounds.bottom());
 
-    gfx::Rect item_3_bounds = folder_image_->GetTargetIconRectInFolderForItem(
-        *config, app_list_model_->FindItem("app3"), test_rect);
     EXPECT_EQ(expected_icon_rect_size, item_3_bounds.size());
     EXPECT_EQ(test_rect_center.x(), item_3_bounds.CenterPoint().x());
     EXPECT_EQ(
@@ -293,8 +314,7 @@ TEST_P(FolderImageTest, GetTargetIconRectInFolderWithThreeItems) {
 TEST_P(FolderImageTest, GetTargetIconRectInFolderWithFourItems) {
   AddAppWithColoredIcon("app4", SK_ColorYELLOW);
 
-  const AppListConfig* config =
-      AppListConfigProvider::Get().GetConfigForType(GetParam(), false);
+  const AppListConfig* config = GetAppListConfig(/*can_create=*/false);
   ASSERT_TRUE(config);
 
   const gfx::Rect test_rects[] = {
@@ -316,6 +336,18 @@ TEST_P(FolderImageTest, GetTargetIconRectInFolderWithFourItems) {
 
     gfx::Rect item_1_bounds = folder_image_->GetTargetIconRectInFolderForItem(
         *config, app_list_model_->FindItem("app1"), test_rect);
+    gfx::Rect item_2_bounds = folder_image_->GetTargetIconRectInFolderForItem(
+        *config, app_list_model_->FindItem("app2"), test_rect);
+    gfx::Rect item_3_bounds = folder_image_->GetTargetIconRectInFolderForItem(
+        *config, app_list_model_->FindItem("app3"), test_rect);
+    gfx::Rect item_4_bounds = folder_image_->GetTargetIconRectInFolderForItem(
+        *config, app_list_model_->FindItem("app4"), test_rect);
+
+    if (is_rtl()) {
+      std::swap(item_1_bounds, item_2_bounds);
+      std::swap(item_3_bounds, item_4_bounds);
+    }
+
     EXPECT_EQ(expected_icon_rect_size, item_1_bounds.size());
     EXPECT_EQ(
         test_rect_center.x() - config->item_icon_in_folder_icon_margin() / 2,
@@ -324,8 +356,6 @@ TEST_P(FolderImageTest, GetTargetIconRectInFolderWithFourItems) {
         test_rect_center.y() - config->item_icon_in_folder_icon_margin() / 2,
         item_1_bounds.bottom());
 
-    gfx::Rect item_2_bounds = folder_image_->GetTargetIconRectInFolderForItem(
-        *config, app_list_model_->FindItem("app2"), test_rect);
     EXPECT_EQ(expected_icon_rect_size, item_2_bounds.size());
     EXPECT_EQ(
         test_rect_center.x() + config->item_icon_in_folder_icon_margin() / 2,
@@ -334,8 +364,6 @@ TEST_P(FolderImageTest, GetTargetIconRectInFolderWithFourItems) {
         test_rect_center.y() - config->item_icon_in_folder_icon_margin() / 2,
         item_2_bounds.bottom());
 
-    gfx::Rect item_3_bounds = folder_image_->GetTargetIconRectInFolderForItem(
-        *config, app_list_model_->FindItem("app3"), test_rect);
     EXPECT_EQ(
         test_rect_center.x() - config->item_icon_in_folder_icon_margin() / 2,
         item_3_bounds.right());
@@ -343,8 +371,6 @@ TEST_P(FolderImageTest, GetTargetIconRectInFolderWithFourItems) {
         test_rect_center.y() + config->item_icon_in_folder_icon_margin() / 2,
         item_3_bounds.y());
 
-    gfx::Rect item_4_bounds = folder_image_->GetTargetIconRectInFolderForItem(
-        *config, app_list_model_->FindItem("app4"), test_rect);
     EXPECT_EQ(expected_icon_rect_size, item_4_bounds.size());
     EXPECT_EQ(
         test_rect_center.x() + config->item_icon_in_folder_icon_margin() / 2,
@@ -359,8 +385,7 @@ TEST_P(FolderImageTest, GetTargetIconRectInFolderWithFiveItems) {
   AddAppWithColoredIcon("app4", SK_ColorYELLOW);
   AddAppWithColoredIcon("app5", SK_ColorYELLOW);
 
-  const AppListConfig* config =
-      AppListConfigProvider::Get().GetConfigForType(GetParam(), false);
+  const AppListConfig* config = GetAppListConfig(/*can_create=*/false);
   ASSERT_TRUE(config);
 
   const gfx::Rect test_rects[] = {
@@ -382,6 +407,20 @@ TEST_P(FolderImageTest, GetTargetIconRectInFolderWithFiveItems) {
 
     gfx::Rect item_1_bounds = folder_image_->GetTargetIconRectInFolderForItem(
         *config, app_list_model_->FindItem("app1"), test_rect);
+    gfx::Rect item_2_bounds = folder_image_->GetTargetIconRectInFolderForItem(
+        *config, app_list_model_->FindItem("app2"), test_rect);
+    gfx::Rect item_3_bounds = folder_image_->GetTargetIconRectInFolderForItem(
+        *config, app_list_model_->FindItem("app3"), test_rect);
+    gfx::Rect item_4_bounds = folder_image_->GetTargetIconRectInFolderForItem(
+        *config, app_list_model_->FindItem("app4"), test_rect);
+    gfx::Rect item_5_bounds = folder_image_->GetTargetIconRectInFolderForItem(
+        *config, app_list_model_->FindItem("app5"), test_rect);
+
+    if (is_rtl()) {
+      std::swap(item_1_bounds, item_2_bounds);
+      std::swap(item_3_bounds, item_4_bounds);
+    }
+
     EXPECT_EQ(expected_icon_rect_size, item_1_bounds.size());
     EXPECT_EQ(
         test_rect_center.x() - config->item_icon_in_folder_icon_margin() / 2,
@@ -390,8 +429,6 @@ TEST_P(FolderImageTest, GetTargetIconRectInFolderWithFiveItems) {
         test_rect_center.y() - config->item_icon_in_folder_icon_margin() / 2,
         item_1_bounds.bottom());
 
-    gfx::Rect item_2_bounds = folder_image_->GetTargetIconRectInFolderForItem(
-        *config, app_list_model_->FindItem("app2"), test_rect);
     EXPECT_EQ(expected_icon_rect_size, item_2_bounds.size());
     EXPECT_EQ(
         test_rect_center.x() + config->item_icon_in_folder_icon_margin() / 2,
@@ -400,8 +437,6 @@ TEST_P(FolderImageTest, GetTargetIconRectInFolderWithFiveItems) {
         test_rect_center.y() - config->item_icon_in_folder_icon_margin() / 2,
         item_2_bounds.bottom());
 
-    gfx::Rect item_3_bounds = folder_image_->GetTargetIconRectInFolderForItem(
-        *config, app_list_model_->FindItem("app3"), test_rect);
     EXPECT_EQ(
         test_rect_center.x() - config->item_icon_in_folder_icon_margin() / 2,
         item_3_bounds.right());
@@ -409,8 +444,6 @@ TEST_P(FolderImageTest, GetTargetIconRectInFolderWithFiveItems) {
         test_rect_center.y() + config->item_icon_in_folder_icon_margin() / 2,
         item_3_bounds.y());
 
-    gfx::Rect item_4_bounds = folder_image_->GetTargetIconRectInFolderForItem(
-        *config, app_list_model_->FindItem("app4"), test_rect);
     EXPECT_EQ(expected_icon_rect_size, item_4_bounds.size());
     EXPECT_EQ(
         test_rect_center.x() + config->item_icon_in_folder_icon_margin() / 2,
@@ -419,12 +452,7 @@ TEST_P(FolderImageTest, GetTargetIconRectInFolderWithFiveItems) {
         test_rect_center.y() + config->item_icon_in_folder_icon_margin() / 2,
         item_4_bounds.y());
 
-    gfx::Rect item_5_bounds = folder_image_->GetTargetIconRectInFolderForItem(
-        *config, app_list_model_->FindItem("app5"), test_rect);
     EXPECT_EQ(expected_icon_rect_size, item_5_bounds.size());
-    EXPECT_EQ(
-        test_rect_center.x() + config->item_icon_in_folder_icon_margin() / 2,
-        item_4_bounds.x());
     EXPECT_EQ(test_rect_center, item_5_bounds.CenterPoint());
   }
 }

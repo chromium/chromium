@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,7 +28,11 @@ void ScopedDragDropObserver::OnDragUpdated(const ui::DropTargetEvent& event) {
   event_callback_.Run(&event);
 }
 
-void ScopedDragDropObserver::OnDragEnded() {
+void ScopedDragDropObserver::OnDragCompleted(const ui::DropTargetEvent& event) {
+  event_callback_.Run(/*event=*/nullptr);
+}
+
+void ScopedDragDropObserver::OnDragCancelled() {
   event_callback_.Run(/*event=*/nullptr);
 }
 

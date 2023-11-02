@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -87,12 +87,13 @@ class TrustedVaultRequestTest : public testing::Test {
       TrustedVaultRequest::HttpMethod http_method,
       const absl::optional<std::string>& request_body,
       TrustedVaultRequest::CompletionCallback completion_callback) {
-    const CoreAccountId account_id = CoreAccountId::FromEmail("user@gmail.com");
+    const CoreAccountId account_id = CoreAccountId::FromGaiaId("user_id");
     FakeTrustedVaultAccessTokenFetcher access_token_fetcher(access_token);
 
     auto request = std::make_unique<TrustedVaultRequest>(
         http_method, GURL(kRequestUrl), request_body,
-        shared_url_loader_factory_);
+        shared_url_loader_factory_,
+        TrustedVaultURLFetchReasonForUMA::kUnspecified);
     request->FetchAccessTokenAndSendRequest(account_id, &access_token_fetcher,
                                             std::move(completion_callback));
     return request;
@@ -286,7 +287,7 @@ TEST_F(TrustedVaultRequestTest, ShouldRetryUponNetworkChange) {
       /*request_body=*/absl::nullopt, completion_callback.Get());
 
   // Mimic network change error for the first request.
-  EXPECT_CALL(completion_callback, Run(_, _)).Times(0);
+  EXPECT_CALL(completion_callback, Run).Times(0);
   EXPECT_TRUE(RespondToHttpRequest(net::ERR_NETWORK_CHANGED, net::HTTP_OK,
                                    /*response_body=*/""));
   testing::Mock::VerifyAndClearExpectations(&completion_callback);

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <climits>
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -60,7 +59,7 @@ std::string HashUsername(base::StringPiece canonicalized_username) {
   return crypto::SHA256HashString(base::StrCat(
       {canonicalized_username,
        base::StringPiece(reinterpret_cast<const char*>(kUsernameSalt),
-                         base::size(kUsernameSalt))}));
+                         std::size(kUsernameSalt))}));
 }
 
 std::string BucketizeUsername(base::StringPiece canonicalized_username) {
@@ -110,7 +109,7 @@ absl::optional<std::string> ScryptHashUsernameAndPassword(
   std::string salt = base::StrCat(
       {canonicalized_username,
        base::StringPiece(reinterpret_cast<const char*>(kPasswordHashSalt),
-                         base::size(kPasswordHashSalt))});
+                         std::size(kPasswordHashSalt))});
 
   std::string result;
   uint8_t* key_data =
@@ -131,10 +130,10 @@ absl::optional<std::string> CipherEncrypt(const std::string& plaintext,
   auto cipher = ECCommutativeCipher::CreateWithNewKey(
       NID_X9_62_prime256v1, ECCommutativeCipher::SHA256);
   if (cipher.ok()) {
-    auto result = cipher.ValueOrDie()->Encrypt(plaintext);
+    auto result = cipher.value()->Encrypt(plaintext);
     if (result.ok()) {
-      *key = cipher.ValueOrDie()->GetPrivateKeyBytes();
-      return std::move(result).ValueOrDie();
+      *key = cipher.value()->GetPrivateKeyBytes();
+      return std::move(result).value();
     }
   }
   return absl::nullopt;
@@ -146,9 +145,9 @@ absl::optional<std::string> CipherEncryptWithKey(const std::string& plaintext,
   auto cipher = ECCommutativeCipher::CreateFromKey(NID_X9_62_prime256v1, key,
                                                    ECCommutativeCipher::SHA256);
   if (cipher.ok()) {
-    auto result = cipher.ValueOrDie()->Encrypt(plaintext);
+    auto result = cipher.value()->Encrypt(plaintext);
     if (result.ok())
-      return std::move(result).ValueOrDie();
+      return std::move(result).value();
   }
   return absl::nullopt;
 }
@@ -160,10 +159,10 @@ absl::optional<std::string> CipherReEncrypt(
   auto cipher = ECCommutativeCipher::CreateWithNewKey(
       NID_X9_62_prime256v1, ECCommutativeCipher::SHA256);
   if (cipher.ok()) {
-    auto result = cipher.ValueOrDie()->ReEncrypt(already_encrypted);
+    auto result = cipher.value()->ReEncrypt(already_encrypted);
     if (result.ok()) {
-      *key = cipher.ValueOrDie()->GetPrivateKeyBytes();
-      return std::move(result).ValueOrDie();
+      *key = cipher.value()->GetPrivateKeyBytes();
+      return std::move(result).value();
     }
   }
   return absl::nullopt;
@@ -175,9 +174,9 @@ absl::optional<std::string> CipherDecrypt(const std::string& ciphertext,
   auto cipher = ECCommutativeCipher::CreateFromKey(NID_X9_62_prime256v1, key,
                                                    ECCommutativeCipher::SHA256);
   if (cipher.ok()) {
-    auto result = cipher.ValueOrDie()->Decrypt(ciphertext);
+    auto result = cipher.value()->Decrypt(ciphertext);
     if (result.ok())
-      return std::move(result).ValueOrDie();
+      return std::move(result).value();
   }
   return absl::nullopt;
 }
@@ -187,7 +186,7 @@ absl::optional<std::string> CreateNewKey() {
   auto cipher = ECCommutativeCipher::CreateWithNewKey(
       NID_X9_62_prime256v1, ECCommutativeCipher::SHA256);
   if (cipher.ok())
-    return cipher.ValueOrDie()->GetPrivateKeyBytes();
+    return cipher.value()->GetPrivateKeyBytes();
   return absl::nullopt;
 }
 

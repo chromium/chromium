@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,12 +17,15 @@
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
+#include "chrome/browser/google/google_brand.h"
 #include "chrome/browser/updater/browser_updater_client_util.h"
+#include "chrome/common/channel_info.h"
 #import "chrome/updater/app/server/mac/update_service_wrappers.h"
 #import "chrome/updater/mac/xpc_service_names.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
+#include "components/version_info/version_info.h"
 
 @interface CRUUpdateClientOnDemandImpl () {
   base::scoped_nsobject<NSXPCConnection> _xpcConnection;
@@ -35,15 +38,18 @@ NSString* GetAppIdForUpdaterAsNSString() {
   return base::SysUTF8ToNSString(base::mac::BaseBundleID());
 }
 
+std::string GetTag() {
+  std::string contents;
+  base::ReadFileToString(
+      base::mac::OuterBundlePath().Append(".want_full_installer"), &contents);
+  return base::StrCat(
+      {chrome::GetChannelName(chrome::WithExtendedStable(true)),
+       contents == version_info::GetVersionNumber() ? "-full" : ""});
+}
+
 }  // namespace
 
 @implementation CRUUpdateClientOnDemandImpl
-
-- (instancetype)init {
-  return [self initWithScope:ShouldUseSystemLevelUpdater()
-                                 ? updater::UpdaterScope::kSystem
-                                 : updater::UpdaterScope::kUser];
-}
 
 - (instancetype)initWithScope:(updater::UpdaterScope)scope {
   // If the system-level updater exists, and the browser is registered to the
@@ -95,6 +101,7 @@ NSString* GetAppIdForUpdaterAsNSString() {
 
 - (void)registerForUpdatesWithAppId:(NSString* _Nullable)appId
                           brandCode:(NSString* _Nullable)brandCode
+                          brandPath:(NSString* _Nullable)brandPath
                                 tag:(NSString* _Nullable)tag
                             version:(NSString* _Nullable)version
                existenceCheckerPath:(NSString* _Nullable)existenceCheckerPath
@@ -109,6 +116,7 @@ NSString* GetAppIdForUpdaterAsNSString() {
   [[_xpcConnection remoteObjectProxyWithErrorHandler:errorHandler]
       registerForUpdatesWithAppId:appId
                         brandCode:brandCode
+                        brandPath:brandPath
                               tag:tag
                           version:version
              existenceCheckerPath:existenceCheckerPath
@@ -128,8 +136,11 @@ NSString* GetAppIdForUpdaterAsNSString() {
 
 // Checks for update of a given app, with specified priority. Sends repeated
 // updates of progress and returns the result in the reply block.
-- (void)checkForUpdateWithAppID:(NSString* _Nonnull)appID
+- (void)checkForUpdateWithAppId:(NSString* _Nonnull)appID
+               installDataIndex:(NSString* _Nullable)installDataIndex
                        priority:(CRUPriorityWrapper* _Nonnull)priority
+        policySameVersionUpdate:
+            (CRUPolicySameVersionUpdateWrapper* _Nonnull)policySameVersionUpdate
                     updateState:(CRUUpdateStateObserver* _Nonnull)updateState
                           reply:(void (^_Nonnull)(int rc))reply {
   auto errorHandler = ^(NSError* xpcError) {
@@ -140,8 +151,10 @@ NSString* GetAppIdForUpdaterAsNSString() {
   };
 
   [[_xpcConnection remoteObjectProxyWithErrorHandler:errorHandler]
-      checkForUpdateWithAppID:appID
+      checkForUpdateWithAppId:appID
+             installDataIndex:installDataIndex
                      priority:priority
+      policySameVersionUpdate:policySameVersionUpdate
                   updateState:updateState
                         reply:reply];
 }
@@ -149,17 +162,61 @@ NSString* GetAppIdForUpdaterAsNSString() {
 // Runs periodic updater tasks like checking for uninstalls and background
 // update checks.
 - (void)runPeriodicTasksWithReply:(void (^_Nullable)(void))reply {
-  // This method does not need to be implemented in the RPC on-demand update
-  // call from the browser to the updater.
+  auto errorHandler = ^(NSError* xpcError) {
+    VLOG(1) << "XPC Connection failed: "
+            << base::SysNSStringToUTF8([xpcError description]);
+    reply();
+  };
+
+  [[_xpcConnection remoteObjectProxyWithErrorHandler:errorHandler]
+      runPeriodicTasksWithReply:reply];
+}
+
+// Gets states of all registered apps.
+- (void)getAppStatesWithReply:
+    (void (^_Nonnull)(CRUAppStatesWrapper* _Nullable apps))reply {
+  NOTIMPLEMENTED();
+}
+
+- (void)runInstallerWithAppId:(NSString* _Nonnull)appId
+                installerPath:(NSString* _Nonnull)installerPath
+                  installArgs:(NSString* _Nullable)installArgs
+                  installData:(NSString* _Nullable)installData
+              installSettings:(NSString* _Nullable)installSettings
+                  updateState:(id<CRUUpdateStateObserving> _Nonnull)updateState
+                        reply:(void (^_Nonnull)(
+                                  updater::UpdateService::Result rc))reply {
+  NOTIMPLEMENTED();
+}
+
+- (void)cancelInstallsWithAppId:(NSString* _Nonnull)appId {
+  NOTIMPLEMENTED();
+}
+
+- (void)installWithAppId:(NSString* _Nonnull)appId
+               brandCode:(NSString* _Nullable)brandCode
+               brandPath:(NSString* _Nullable)brandPath
+                     tag:(NSString* _Nullable)ap
+                 version:(NSString* _Nullable)version
+    existenceCheckerPath:(NSString* _Nullable)existenceCheckerPath
+       clientInstallData:(NSString* _Nullable)clientInstallData
+        installDataIndex:(NSString* _Nullable)installDataIndex
+                priority:(CRUPriorityWrapper* _Nonnull)priority
+             updateState:(CRUUpdateStateObserver* _Nonnull)updateState
+                   reply:(void (^_Nonnull)(int rc))reply {
+  NOTIMPLEMENTED();
+}
+
+- (void)fetchPoliciesWithReply:(void (^)(int))reply {
   NOTIMPLEMENTED();
 }
 
 @end
 
-BrowserUpdaterClientMac::BrowserUpdaterClientMac()
+BrowserUpdaterClientMac::BrowserUpdaterClientMac(updater::UpdaterScope scope)
     : BrowserUpdaterClientMac(
           base::scoped_nsobject<CRUUpdateClientOnDemandImpl>(
-              [[CRUUpdateClientOnDemandImpl alloc] init])) {}
+              [[CRUUpdateClientOnDemandImpl alloc] initWithScope:scope])) {}
 
 BrowserUpdaterClientMac::BrowserUpdaterClientMac(
     base::scoped_nsobject<CRUUpdateClientOnDemandImpl> client)
@@ -167,74 +224,84 @@ BrowserUpdaterClientMac::BrowserUpdaterClientMac(
 
 BrowserUpdaterClientMac::~BrowserUpdaterClientMac() = default;
 
-void BrowserUpdaterClientMac::GetUpdaterVersion(
+void BrowserUpdaterClientMac::BeginGetUpdaterVersion(
     base::OnceCallback<void(const std::string&)> callback) {
   __block base::OnceCallback<void(const std::string&)> block_callback =
       std::move(callback);
 
   auto reply = ^(NSString* version) {
-    std::string result = base::SysNSStringToUTF8(version);
-    task_runner()->PostTask(FROM_HERE,
-                            base::BindOnce(std::move(block_callback), result));
+    std::move(block_callback).Run(base::SysNSStringToUTF8(version));
   };
 
   [client_ getVersionWithReply:reply];
 }
 
-void BrowserUpdaterClientMac::ResetConnection(updater::UpdaterScope scope) {
-  client_.reset([[CRUUpdateClientOnDemandImpl alloc] initWithScope:scope]);
-}
-
 void BrowserUpdaterClientMac::BeginRegister(
-    const std::string& brand_code,
-    const std::string& tag,
     const std::string& version,
     updater::UpdateService::Callback callback) {
   __block updater::UpdateService::Callback block_callback = std::move(callback);
 
+  std::string brand_code;
+  google_brand::GetBrand(&brand_code);
+
   auto reply = ^(int error) {
-    task_runner()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(block_callback),
-                       static_cast<updater::UpdateService::Result>(error)));
+    std::move(block_callback)
+        .Run(static_cast<updater::UpdateService::Result>(error));
   };
 
   [client_ registerForUpdatesWithAppId:GetAppIdForUpdaterAsNSString()
                              brandCode:base::SysUTF8ToNSString(brand_code)
-                                   tag:base::SysUTF8ToNSString(tag)
+                             brandPath:@""
+                                   tag:base::SysUTF8ToNSString(GetTag())
                                version:base::SysUTF8ToNSString(version)
                   existenceCheckerPath:base::mac::FilePathToNSString(
                                            base::mac::OuterBundlePath())
                                  reply:reply];
 }
 
+void BrowserUpdaterClientMac::BeginRunPeriodicTasks(
+    base::OnceClosure callback) {
+  __block base::OnceClosure block_callback = std::move(callback);
+
+  auto reply = ^() {
+    std::move(block_callback).Run();
+  };
+
+  [client_ runPeriodicTasksWithReply:reply];
+}
+
 void BrowserUpdaterClientMac::BeginUpdateCheck(
     updater::UpdateService::StateChangeCallback state_update,
     updater::UpdateService::Callback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   __block updater::UpdateService::Callback block_callback = std::move(callback);
 
   auto reply = ^(int error) {
-    task_runner()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(block_callback),
-                       static_cast<updater::UpdateService::Result>(error)));
+    std::move(block_callback)
+        .Run(static_cast<updater::UpdateService::Result>(error));
   };
 
   base::scoped_nsobject<CRUPriorityWrapper> priority_wrapper(
       [[CRUPriorityWrapper alloc]
           initWithPriority:updater::UpdateService::Priority::kForeground]);
   base::scoped_nsprotocol<id<CRUUpdateStateObserving>> state_observer(
-      [[CRUUpdateStateObserver alloc] initWithRepeatingCallback:state_update
-                                                 callbackRunner:task_runner()]);
-
-  [client_ checkForUpdateWithAppID:GetAppIdForUpdaterAsNSString()
+      [[CRUUpdateStateObserver alloc]
+          initWithRepeatingCallback:state_update
+                     callbackRunner:base::ThreadPool::CreateSequencedTaskRunner(
+                                        {})]);
+  base::scoped_nsobject<CRUPolicySameVersionUpdateWrapper>
+      policySameVersionUpdateWrapper([[CRUPolicySameVersionUpdateWrapper alloc]
+          initWithPolicySameVersionUpdate:
+              updater::UpdateService::PolicySameVersionUpdate::kNotAllowed]);
+  [client_ checkForUpdateWithAppId:GetAppIdForUpdaterAsNSString()
+                  installDataIndex:nil
                           priority:priority_wrapper.get()
+           policySameVersionUpdate:policySameVersionUpdateWrapper.get()
                        updateState:state_observer.get()
                              reply:reply];
 }
 
 // static
-scoped_refptr<BrowserUpdaterClient> BrowserUpdaterClient::Create() {
-  return base::MakeRefCounted<BrowserUpdaterClientMac>();
+scoped_refptr<BrowserUpdaterClient> BrowserUpdaterClient::Create(
+    updater::UpdaterScope scope) {
+  return base::MakeRefCounted<BrowserUpdaterClientMac>(scope);
 }

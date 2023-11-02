@@ -1,11 +1,12 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef MOJO_PUBLIC_CPP_BINDINGS_SHARED_ASSOCIATED_REMOTE_H_
 #define MOJO_PUBLIC_CPP_BINDINGS_SHARED_ASSOCIATED_REMOTE_H_
 
-#include "base/macros.h"
+#include <tuple>
+
 #include "base/memory/ref_counted.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -19,7 +20,7 @@ namespace internal {
 template <typename Interface>
 struct SharedRemoteTraits<AssociatedRemote<Interface>> {
   static void BindDisconnected(AssociatedRemote<Interface>& remote) {
-    ignore_result(remote.BindNewEndpointAndPassDedicatedReceiver());
+    std::ignore = remote.BindNewEndpointAndPassDedicatedReceiver();
   }
 };
 

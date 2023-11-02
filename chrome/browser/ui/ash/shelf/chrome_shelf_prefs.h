@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,20 +8,16 @@
 #include <string>
 #include <vector>
 
-#include "ash/public/cpp/shelf_types.h"
-#include "base/feature_list.h"
-#include "base/metrics/field_trial_params.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service.h"
-#include "components/prefs/pref_change_registrar.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 
 class ShelfControllerHelper;
 class PrefService;
 class Profile;
 
-namespace app_list {
-class AppListSyncableService;
-}  // namespace app_list
+namespace ash {
+struct ShelfID;
+}  // namespace ash
 
 namespace user_prefs {
 class PrefRegistrySyncable;
@@ -54,11 +50,14 @@ class ChromeShelfPrefs : public app_list::AppListSyncableService::Observer {
   void InitLocalPref(PrefService* prefs, const char* local, const char* synced);
 
   // Gets the ordered list of pinned apps that exist on device from the app sync
-  // service.
+  // service. This returns apps that are known to the app service with one
+  // exceptions: app_constants::kChromeAppId (ash-chrome) can be returned and is
+  // not known to the app service.
   std::vector<ash::ShelfID> GetPinnedAppsFromSync(
       ShelfControllerHelper* helper);
 
-  // Gets the ordered list of apps that have been pinned by policy.
+  // Gets the ordered list of apps that have been pinned by policy. May contain
+  // duplicates.
   std::vector<std::string> GetAppsPinnedByPolicy(ShelfControllerHelper* helper);
 
   // Removes information about pin position from sync model for the app.
@@ -80,8 +79,14 @@ class ChromeShelfPrefs : public app_list::AppListSyncableService::Observer {
   // https://crbug.com/1085597
   static void SkipPinnedAppsFromSyncForTest();
 
-  // This is run once each time ash launches. If the chrome app is not pinned
-  // then this creates a pin for the chrome app.
+  // Ensure the Files Chrome app pinned positions are appropriately migrated to
+  // the Files System Web App.
+  void MigrateFilesChromeAppToSWA(
+      app_list::AppListSyncableService* syncable_service);
+
+  // This is run each time ash launches and each time new data is obtained from
+  // sync. It ensures that both ash-chrome and lacros-chrome are properly
+  // pinned or unpinned.
   void EnsureChromePinned(app_list::AppListSyncableService* syncable_service);
 
   // Whether the default apps have already been added for this device form
@@ -116,7 +121,7 @@ class ChromeShelfPrefs : public app_list::AppListSyncableService::Observer {
   //
   // This method returns whether the consistency migrations need to be run
   // again.
-  bool ShouldPerformConsistencyMigrations();
+  bool ShouldPerformConsistencyMigrations() const;
 
   // During Lacros development, there is a period of time when we wish to deploy
   // a transparent migration to Lacros, while still allowing users to fall back
@@ -134,22 +139,25 @@ class ChromeShelfPrefs : public app_list::AppListSyncableService::Observer {
   //
   // These methods are public as there are some places that need to translate
   // from the ShelfId to SyncId to match up with policy, which uses SyncId.
+  //
+  // In order to ensure that the chrome icon in the shelf is consistent across
+  // devices, we must apply the following rules:
+  // (1) If ash is the only web-browser, transform [sync id] kChromeAppId <->
+  // [shelf id] kChromeAppId
+  // (2) If lacros is the only web-browser, transform [sync id] kChromeAppId <->
+  // [shelf id] kLacrosAppId
+  // (3) If lacros and ash are both web browsers, do not use any transformation.
   std::string GetShelfId(const std::string& sync_id);
   std::string GetSyncId(const std::string& shelf_id);
 
  protected:
   // Virtual for testing. Returns the syncable service associated with the
   // current profile.
-  virtual app_list::AppListSyncableService* const GetSyncableService();
+  virtual app_list::AppListSyncableService* GetSyncableService();
 
   // Virtual for testing. Returns the pref service associated with the current
   // profile.
   virtual PrefService* GetPrefs();
-
-  // Virtual for testing. Returns whether the sync item can be shown in the
-  // shelf. Returns false for items that are not present in the app service.
-  virtual bool IsSyncItemValid(const std::string& id,
-                               ShelfControllerHelper* helper);
 
   // Starts observing the sync service if not already doing so.
   virtual void ObserveSyncService();
@@ -160,7 +168,7 @@ class ChromeShelfPrefs : public app_list::AppListSyncableService::Observer {
   virtual bool IsStandaloneBrowserPublishingChromeApps();
 
   // Virtual for testing. Returns the app type associated with an app id.
-  virtual apps::mojom::AppType GetAppType(const std::string& app_id);
+  virtual apps::AppType GetAppType(const std::string& app_id);
 
   // Virtual for testing. Returns whether this app_id corresponds to an ash
   // extension-based platform app.

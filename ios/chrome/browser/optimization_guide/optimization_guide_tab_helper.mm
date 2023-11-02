@@ -1,8 +1,8 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/optimization_guide/optimization_guide_tab_helper.h"
+#import "ios/chrome/browser/optimization_guide/optimization_guide_tab_helper.h"
 
 #import "components/optimization_guide/core/optimization_guide_features.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
@@ -35,16 +35,6 @@ void IOSOptimizationGuideNavigationData::NotifyNavigationRedirect(
     const GURL& url) {
   redirect_chain_.push_back(url);
   set_navigation_url(url);
-}
-
-// static
-void OptimizationGuideTabHelper::CreateForWebState(web::WebState* web_state) {
-  DCHECK(web_state);
-  if (!FromWebState(web_state)) {
-    web_state->SetUserData(
-        UserDataKey(),
-        base::WrapUnique(new OptimizationGuideTabHelper(web_state)));
-  }
 }
 
 OptimizationGuideTabHelper::OptimizationGuideTabHelper(web::WebState* web_state)

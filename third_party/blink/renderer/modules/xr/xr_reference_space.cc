@@ -1,10 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/xr/xr_reference_space.h"
 
 #include <sstream>
+#include <string>
 
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
 #include "third_party/blink/renderer/modules/xr/xr_pose.h"
@@ -50,7 +51,7 @@ XRReferenceSpace::XRReferenceSpace(XRSession* session,
 
 XRReferenceSpace::~XRReferenceSpace() = default;
 
-XRPose* XRReferenceSpace::getPose(XRSpace* other_space) {
+XRPose* XRReferenceSpace::getPose(const XRSpace* other_space) const {
   if (type_ == ReferenceSpaceType::kViewer) {
     absl::optional<TransformationMatrix> other_offset_from_viewer =
         other_space->OffsetFromViewer();
@@ -70,14 +71,14 @@ XRPose* XRReferenceSpace::getPose(XRSpace* other_space) {
   }
 }
 
-void XRReferenceSpace::SetMojoFromFloor() {
+void XRReferenceSpace::SetMojoFromFloor() const {
   const device::mojom::blink::VRStageParametersPtr& stage_parameters =
       session()->GetStageParameters();
 
   if (stage_parameters) {
     // Use the transform given by stage_parameters if available.
     mojo_from_floor_ = std::make_unique<TransformationMatrix>(
-        stage_parameters->mojo_from_floor.matrix());
+        stage_parameters->mojo_from_floor);
   } else {
     mojo_from_floor_.reset();
   }
@@ -85,7 +86,7 @@ void XRReferenceSpace::SetMojoFromFloor() {
   stage_parameters_id_ = session()->StageParametersId();
 }
 
-absl::optional<TransformationMatrix> XRReferenceSpace::MojoFromNative() {
+absl::optional<TransformationMatrix> XRReferenceSpace::MojoFromNative() const {
   DVLOG(3) << __func__ << ": type_=" << type_;
 
   switch (type_) {
@@ -125,8 +126,8 @@ absl::optional<TransformationMatrix> XRReferenceSpace::MojoFromNative() {
       }
 
       // local_from_floor-local transform corresponding to the default height.
-      auto local_from_floor = TransformationMatrix().Translate3d(
-          0, kDefaultEmulationHeightMeters, 0);
+      auto local_from_floor = TransformationMatrix::MakeTranslation(
+          0, kDefaultEmulationHeightMeters);
 
       return *mojo_from_local * local_from_floor;
     }
@@ -138,7 +139,7 @@ absl::optional<TransformationMatrix> XRReferenceSpace::MojoFromNative() {
 }
 
 absl::optional<TransformationMatrix> XRReferenceSpace::NativeFromViewer(
-    const absl::optional<TransformationMatrix>& mojo_from_viewer) {
+    const absl::optional<TransformationMatrix>& mojo_from_viewer) const {
   if (type_ == ReferenceSpaceType::kViewer) {
     // Special case for viewer space, always return an identity matrix
     // explicitly. In theory the default behavior of multiplying NativeFromMojo
@@ -154,15 +155,15 @@ absl::optional<TransformationMatrix> XRReferenceSpace::NativeFromViewer(
   auto native_from_viewer = NativeFromMojo();
   if (!native_from_viewer)
     return absl::nullopt;
-  native_from_viewer->Multiply(*mojo_from_viewer);
+  native_from_viewer->PreConcat(*mojo_from_viewer);
   return native_from_viewer;
 }
 
-TransformationMatrix XRReferenceSpace::NativeFromOffsetMatrix() {
+TransformationMatrix XRReferenceSpace::NativeFromOffsetMatrix() const {
   return origin_offset_->TransformMatrix();
 }
 
-TransformationMatrix XRReferenceSpace::OffsetFromNativeMatrix() {
+TransformationMatrix XRReferenceSpace::OffsetFromNativeMatrix() const {
   return origin_offset_->InverseTransformMatrix();
 }
 
@@ -183,16 +184,15 @@ ReferenceSpaceType XRReferenceSpace::GetType() const {
 }
 
 XRReferenceSpace* XRReferenceSpace::getOffsetReferenceSpace(
-    XRRigidTransform* additional_offset) {
-  auto matrix =
-      NativeFromOffsetMatrix().Multiply(additional_offset->TransformMatrix());
+    XRRigidTransform* additional_offset) const {
+  auto matrix = NativeFromOffsetMatrix() * additional_offset->TransformMatrix();
 
   auto* result_transform = MakeGarbageCollected<XRRigidTransform>(matrix);
   return cloneWithOriginOffset(result_transform);
 }
 
 XRReferenceSpace* XRReferenceSpace::cloneWithOriginOffset(
-    XRRigidTransform* origin_offset) {
+    XRRigidTransform* origin_offset) const {
   return MakeGarbageCollected<XRReferenceSpace>(this->session(), origin_offset,
                                                 type_);
 }
@@ -218,8 +218,10 @@ void XRReferenceSpace::Trace(Visitor* visitor) const {
 
 void XRReferenceSpace::OnReset() {
   if (type_ != ReferenceSpaceType::kViewer) {
-    DispatchEvent(
-        *XRReferenceSpaceEvent::Create(event_type_names::kReset, this));
+    // DispatchEvent inherited from core/dom/events/event_target.h isn't const.
+    XRReferenceSpace* mutable_this = const_cast<XRReferenceSpace*>(this);
+    mutable_this->DispatchEvent(
+        *XRReferenceSpaceEvent::Create(event_type_names::kReset, mutable_this), "XRReferenceSpace::OnReset");
   }
 }
 

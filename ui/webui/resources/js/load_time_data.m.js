@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -216,7 +216,7 @@ class LoadTimeData {
   }
 
   expect(!loadTimeData, 'should only include this file once');
-  loadTimeData = new LoadTimeData;
+  loadTimeData = new LoadTimeData();
 
   // Expose |loadTimeData| directly on |window|, since within a JS module the
   // scope is local and not all files have been updated to import the exported

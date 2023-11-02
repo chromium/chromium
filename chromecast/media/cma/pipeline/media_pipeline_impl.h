@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
@@ -46,7 +45,8 @@ class MediaPipelineImpl {
   // Initialize the media pipeline: the pipeline is configured based on
   // |load_type|.
   void Initialize(LoadType load_type,
-                  std::unique_ptr<CmaBackend> media_pipeline_backend);
+                  std::unique_ptr<CmaBackend> media_pipeline_backend,
+                  bool is_buffering_enabled);
 
   void SetClient(MediaPipelineClient client);
   void SetCdm(const base::UnguessableToken* cdm_id);

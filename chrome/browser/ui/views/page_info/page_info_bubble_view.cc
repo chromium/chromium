@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,13 +18,15 @@
 #include "chrome/browser/ui/views/page_info/page_switcher_view.h"
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/dom_distiller/core/url_utils.h"
+#include "components/page_info/core/features.h"
 #include "components/strings/grit/components_chromium_strings.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/common/constants.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/layout/grid_layout.h"
 
 using bubble_anchor_util::AnchorConfiguration;
 using bubble_anchor_util::GetPageInfoAnchorConfiguration;
@@ -133,10 +135,6 @@ PageInfoBubbleView::PageInfoBubbleView(
       closing_callback_(std::move(closing_callback)) {
   DCHECK(closing_callback_);
   DCHECK(web_contents());
-
-  SetShowTitle(false);
-  SetShowCloseButton(false);
-
   ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
 
   // In Harmony, the last view is a HoverButton, which overrides the bottom
@@ -146,16 +144,24 @@ PageInfoBubbleView::PageInfoBubbleView(
       layout_provider->GetDistanceMetric(DISTANCE_CONTENT_LIST_VERTICAL_MULTI);
   const int top_margin =
       layout_provider->GetInsetsMetric(views::INSETS_DIALOG).top();
-  set_margins(gfx::Insets(top_margin, 0, bottom_margin, 0));
+  set_margins(gfx::Insets::TLBR(top_margin, 0, bottom_margin, 0));
   ui_delegate_ =
       std::make_unique<ChromePageInfoUiDelegate>(web_contents(), url);
   presenter_ = std::make_unique<PageInfo>(
       std::make_unique<ChromePageInfoDelegate>(web_contents()), web_contents(),
       url);
+  if (base::FeatureList::IsEnabled(page_info::kPageInfoHistoryDesktop)) {
+    history_controller_ =
+        std::make_unique<PageInfoHistoryController>(web_contents(), url);
+  }
   view_factory_ = std::make_unique<PageInfoViewFactory>(
-      presenter_.get(), ui_delegate_.get(), this);
+      presenter_.get(), ui_delegate_.get(), this, history_controller_.get());
 
-  SetTitle(presenter_->GetSimpleSiteName());
+  SetShowTitle(false);
+  SetShowCloseButton(false);
+  // The title isn't visible, it is set for a11y purposes and the actual visible
+  // title is a custom label in the content view.
+  SetTitle(presenter_->GetSiteOriginOrAppNameToDisplay());
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
@@ -200,12 +206,15 @@ void PageInfoBubbleView::OpenSecurityPage() {
   presenter_->RecordPageInfoAction(
       PageInfo::PageInfoAction::PAGE_INFO_SECURITY_DETAILS_OPENED);
   page_container_->SwitchToPage(view_factory_->CreateSecurityPageView());
+  AnnouncePageOpened(
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_SECURITY_SUBPAGE_HEADER));
 }
 
 void PageInfoBubbleView::OpenPermissionPage(ContentSettingsType type) {
   presenter_->RecordPageInfoAction(
       PageInfo::PageInfoAction::PAGE_INFO_PERMISSION_DIALOG_OPENED);
   page_container_->SwitchToPage(view_factory_->CreatePermissionPageView(type));
+  AnnouncePageOpened(PageInfoUI::PermissionTypeToUIString(type));
 }
 
 void PageInfoBubbleView::OpenAboutThisSitePage(
@@ -214,6 +223,24 @@ void PageInfoBubbleView::OpenAboutThisSitePage(
       PageInfo::PageInfoAction::PAGE_INFO_ABOUT_THIS_SITE_PAGE_OPENED);
   page_container_->SwitchToPage(
       view_factory_->CreateAboutThisSitePageView(info));
+  AnnouncePageOpened(
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_ABOUT_THIS_SITE_HEADER));
+}
+
+void PageInfoBubbleView::OpenAdPersonalizationPage() {
+  presenter_->RecordPageInfoAction(
+      PageInfo::PageInfoAction::PAGE_INFO_AD_PERSONALIZATION_PAGE_OPENED);
+  page_container_->SwitchToPage(
+      view_factory_->CreateAdPersonalizationPageView());
+  AnnouncePageOpened(
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_AD_PERSONALIZATION_HEADER));
+}
+
+void PageInfoBubbleView::OpenCookiesPage() {
+  presenter_->RecordPageInfoAction(
+      PageInfo::PageInfoAction::PAGE_INFO_COOKIES_PAGE_OPENED);
+  page_container_->SwitchToPage(view_factory_->CreateCookiesPageView());
+  AnnouncePageOpened(l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES));
 }
 
 void PageInfoBubbleView::CloseBubble() {
@@ -242,6 +269,7 @@ void PageInfoBubbleView::OnWidgetDestroying(views::Widget* widget) {
 }
 
 void PageInfoBubbleView::WebContentsDestroyed() {
+  PageInfoBubbleViewBase::WebContentsDestroyed();
   weak_factory_.InvalidateWeakPtrs();
 }
 
@@ -261,6 +289,24 @@ gfx::Size PageInfoBubbleView::CalculatePreferredSize() const {
 void PageInfoBubbleView::ChildPreferredSizeChanged(views::View* child) {
   Layout();
   SizeToContents();
+}
+
+void PageInfoBubbleView::AnnouncePageOpened(std::u16string announcement) {
+  // Announce that the subpage was opened to inform the user about the changes
+  // in the UI.
+#if BUILDFLAG(IS_MAC)
+  GetViewAccessibility().OverrideRole(ax::mojom::Role::kAlert);
+  GetViewAccessibility().OverrideName(announcement);
+  NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+#else
+  GetViewAccessibility().AnnounceText(announcement);
+#endif
+
+  // Focus the back button by default to ensure that focus is set when new
+  // content is displayed.
+  auto* back_button = page_container_->GetViewByID(
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_BACK_BUTTON);
+  back_button->RequestFocus();
 }
 
 void ShowPageInfoDialogImpl(Browser* browser,

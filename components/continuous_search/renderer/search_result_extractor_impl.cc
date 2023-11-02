@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,9 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/strings/string_util.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "components/continuous_search/common/title_validator.h"
+#include "components/continuous_search/renderer/config.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_document.h"
@@ -119,24 +121,26 @@ bool ExtractRelatedSearches(blink::WebDocument document,
   auto group = mojom::ResultGroup::New();
   group->type = mojom::ResultType::kRelatedSearches;
 
-  blink::WebElement container = document.GetElementById("w3bYAd");
-  if (container.IsNull()) {
+  blink::WebElement related_searches_container = document.GetElementById(
+      blink::WebString::FromUTF8(GetConfig().related_searches_id));
+  if (related_searches_container.IsNull()) {
     return false;
   }
 
-  blink::WebElementCollection anchors = container.GetElementsByHTMLTagName("a");
+  blink::WebElementCollection anchors =
+      related_searches_container.GetElementsByHTMLTagName("a");
   if (anchors.IsNull()) {
     return false;
   }
 
-  // Loop through the anchors inside id="w3bYAd" and extract urls and titles.
-  // This only works on Desktop SRP. Related Searches anchor elements use a
-  // different class name on Mobile. To enable this on Mobile, either check for
-  // the additional class name or remove the class name check for the anchors.
+  // Loop through the anchors that are children of the related searches div,
+  // matching against the platform-appropriate classname, and extract the urls
+  // and titles.
   for (blink::WebElement anchor = anchors.FirstItem(); !anchor.IsNull();
        anchor = anchors.NextItem()) {
     if (!anchor.HasAttribute("class") ||
-        !base::Contains(anchor.GetAttribute("class").Utf8(), "k8XOCe")) {
+        !base::Contains(anchor.GetAttribute("class").Utf8(),
+                        GetConfig().related_searches_anchor_classname)) {
       continue;
     }
 
@@ -159,7 +163,8 @@ bool ExtractRelatedSearches(blink::WebDocument document,
     for (blink::WebElement inner_div = inner_divs.FirstItem();
          !inner_div.IsNull(); inner_div = inner_divs.NextItem()) {
       if (!inner_div.HasAttribute("class") ||
-          !base::Contains(inner_div.GetAttribute("class").Utf8(), "s75CSd")) {
+          !base::Contains(inner_div.GetAttribute("class").Utf8(),
+                          GetConfig().related_searches_title_classname)) {
         continue;
       }
       title = inner_div.TextContent().Utf16();
@@ -198,9 +203,10 @@ SearchResultExtractorImpl* SearchResultExtractorImpl::Create(
 SearchResultExtractorImpl::SearchResultExtractorImpl(
     content::RenderFrame* render_frame)
     : content::RenderFrameObserver(render_frame) {
-  render_frame->GetAssociatedInterfaceRegistry()->AddInterface(
-      base::BindRepeating(&SearchResultExtractorImpl::BindSearchResultExtractor,
-                          weak_ptr_factory_.GetWeakPtr()));
+  render_frame->GetAssociatedInterfaceRegistry()
+      ->AddInterface<mojom::SearchResultExtractor>(base::BindRepeating(
+          &SearchResultExtractorImpl::BindSearchResultExtractor,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 SearchResultExtractorImpl::~SearchResultExtractorImpl() = default;

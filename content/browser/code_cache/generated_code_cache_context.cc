@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #include "content/browser/code_cache/generated_code_cache_context.h"
@@ -7,7 +7,6 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "content/browser/code_cache/generated_code_cache.h"
@@ -44,8 +43,12 @@ GeneratedCodeCacheContext::GeneratedCodeCacheContext() {
   DETACH_FROM_SEQUENCE(sequence_checker_);
   if (base::FeatureList::IsEnabled(
           features::kNavigationThreadingOptimizations)) {
-    task_runner_ = base::ThreadPool::CreateSingleThreadTaskRunner(
-        {base::TaskPriority::USER_VISIBLE});
+    if (base::FeatureList::IsEnabled(features::kThreadingOptimizationsOnIO)) {
+      task_runner_ = GetIOThreadTaskRunner({});
+    } else {
+      task_runner_ = base::ThreadPool::CreateSingleThreadTaskRunner(
+          {base::TaskPriority::USER_BLOCKING});
+    }
   } else {
     task_runner_ = GetUIThreadTaskRunner({});
   }
@@ -108,6 +111,13 @@ void GeneratedCodeCacheContext::InitializeOnThread(const base::FilePath& path,
 
 void GeneratedCodeCacheContext::Shutdown() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  RunOrPostTask(
+      this, FROM_HERE,
+      base::BindOnce(&GeneratedCodeCacheContext::ShutdownOnThread, this));
+}
+
+void GeneratedCodeCacheContext::ShutdownOnThread() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   generated_js_code_cache_.reset();
   generated_wasm_code_cache_.reset();
   generated_webui_js_code_cache_.reset();

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,16 +17,19 @@
 
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/containers/circular_deque.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/surfaces/surface_info.h"
+#include "components/viz/service/surfaces/frame_index_constants.h"
 #include "components/viz/service/surfaces/pending_copy_output_request.h"
 #include "components/viz/service/surfaces/surface_client.h"
 #include "components/viz/service/surfaces/surface_dependency_deadline.h"
-#include "components/viz/service/surfaces/surface_saved_frame_storage.h"
 #include "components/viz/service/viz_service_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
@@ -52,24 +55,32 @@ class SurfaceManager;
 // A Surface is a representation of a sequence of CompositorFrames with a
 // common set of properties uniquely identified by a SurfaceId. In particular,
 // all CompositorFrames submitted to a single Surface share properties described
-// in SurfaceInfo: device scale factor and size. A Surface can hold up to two
+// in SurfaceInfo: device scale factor and size. A Surface can hold up few
 // CompositorFrames at a given time:
 //
-//   Active frame:  An active frame is a candidate for display. A
-//                  CompositorFrame is active if it has been explicitly marked
-//                  as active after a deadline has passed or all its
-//                  dependencies are active.
+//   Uncommitted frames: It's frame that has been received, but hasn't been
+//                       processed yet. There can be up to
+//                       `max_uncommitted_frames_` in this state. If
+//                       `max_uncommitted_frames_` is zero all frames are
+//                       committed as soon as they are received.
 //
-//   Pending frame: A pending CompositorFrame cannot be displayed on screen. A
-//                  CompositorFrame is pending if it has unresolved
-//                  dependencies: surface Ids to which there are no active
-//                  CompositorFrames.
+//   Pending frame:      A pending CompositorFrame cannot be displayed on
+//                       screen. A CompositorFrame is pending when it has been
+//                       committed but has unresolved dependencies: surface Ids
+//                       to which there are no active CompositorFrames. There
+//                       can be only one pending frame.
 //
-// This two stage mechanism for managing CompositorFrames from a client exists
-// to enable best-effort synchronization across clients. A surface subtree will
-// remain pending until all dependencies are resolved: all clients have
-// submitted CompositorFrames corresponding to a new property of the subtree
-// (e.g. a new size).
+//   Active frame:       An active frame is a candidate for display. A
+//                       CompositorFrame is active if it has been explicitly
+//                       marked as active after a deadline has passed or all
+//                       its dependencies are active. There can be only one
+//                       active frame.
+//
+// This pending+active frame mechanism for managing CompositorFrames from a
+// client exists to enable best-effort synchronization across clients. A surface
+// subtree will remain pending until all dependencies are resolved: all clients
+// have submitted CompositorFrames corresponding to a new property of the
+// subtree (e.g. a new size).
 //
 // Clients are assumed to be untrusted and so a client may not submit a
 // CompositorFrame to satisfy the dependency of the parent. Thus, by default, a
@@ -77,6 +88,13 @@ class SurfaceManager;
 // deadline passes, then the CompositorFrame will activate despite missing
 // dependencies. The activated CompositorFrame can specify fallback behavior in
 // the event of missing dependencies at display time.
+//
+// On WebView display compositor runs asynchronously in regards of BeginFrames
+// and CompositorFrame submissions, to avoid frame drops due to racyness
+// uncommitted queue mechanism is used. When clients submits frame it goes to
+// the queue and when the display compositor draws frames are committed from
+// the queue to the pending or active frame.
+
 class VIZ_SERVICE_EXPORT Surface final {
  public:
   class PresentationHelper {
@@ -102,10 +120,14 @@ class VIZ_SERVICE_EXPORT Surface final {
       base::OnceCallback<void(const gfx::PresentationFeedback&)>;
   enum QueueFrameResult { REJECTED, ACCEPTED_ACTIVE, ACCEPTED_PENDING };
 
+  using CommitPredicate =
+      base::RepeatingCallback<bool(const SurfaceId&, const BeginFrameId&)>;
+
   Surface(const SurfaceInfo& surface_info,
           SurfaceManager* surface_manager,
           SurfaceAllocationGroup* allocation_group,
-          base::WeakPtr<SurfaceClient> surface_client);
+          base::WeakPtr<SurfaceClient> surface_client,
+          size_t max_uncommitted_frames);
 
   Surface(const Surface&) = delete;
   Surface& operator=(const Surface&) = delete;
@@ -136,13 +158,18 @@ class VIZ_SERVICE_EXPORT Surface final {
 
   void SetPreviousFrameSurface(Surface* surface);
 
-  // Returns false if |frame| is invalid.
-  // |frame_rejected_callback| will be called once if the frame will not be
-  // displayed.
+  // Returns false if |frame| is invalid. |frame_rejected_callback| will be
+  // called once if the frame will not be displayed.
   QueueFrameResult QueueFrame(
       CompositorFrame frame,
       uint64_t frame_index,
       base::ScopedClosureRunner frame_rejected_callback);
+
+  // Commits frame(s) in this Surface and its dependencies. For each affected
+  // surface, the predicate will be called for each uncommitted frame in each
+  // surface from the oldest to the newest and will abort at first case of
+  // returning false.
+  void CommitFramesRecursively(const CommitPredicate& predicate);
 
   // Notifies the Surface that a blocking SurfaceId now has an active
   // frame.
@@ -190,7 +217,8 @@ class VIZ_SERVICE_EXPORT Surface final {
 
   // Returns a number that increments by 1 every time a new frame is enqueued.
   uint64_t GetActiveFrameIndex() const {
-    return active_frame_data_ ? active_frame_data_->frame_index : 0;
+    return active_frame_data_ ? active_frame_data_->frame_index
+                              : kInvalidFrameIndex;
   }
 
   void TakeActiveLatencyInfo(std::vector<ui::LatencyInfo>* latency_info);
@@ -211,6 +239,7 @@ class VIZ_SERVICE_EXPORT Surface final {
   // capture. We don't want to constantly switch between overlay and non-overlay
   // during video playback.
   bool IsVideoCaptureOnFromClient();
+  base::flat_set<base::PlatformThreadId> GetThreadIds();
 
   const base::flat_set<SurfaceId>& active_referenced_surfaces() const {
     return active_referenced_surfaces_;
@@ -269,8 +298,6 @@ class VIZ_SERVICE_EXPORT Surface final {
 
   std::unique_ptr<gfx::DelegatedInkMetadata> TakeDelegatedInkMetadata();
 
-  SurfaceSavedFrameStorage* GetSurfaceSavedFrameStorage();
-
   base::WeakPtr<Surface> GetWeakPtr() { return weak_factory_.GetWeakPtr(); }
 
   // Always placed the given |copy_request| on the root render pass.
@@ -286,6 +313,14 @@ class VIZ_SERVICE_EXPORT Surface final {
 
   void DidAggregate();
 
+  // Returns frame id of the oldest uncommitted frame if any,
+  absl::optional<BeginFrameId> GetFirstUncommitedFrameId();
+
+  // Returns frame id of the oldest uncommitted frame that is newer than
+  // provided `frame_id`.
+  absl::optional<BeginFrameId> GetUncommitedFrameIdNewerThan(
+      const BeginFrameId& frame_id);
+
  private:
   struct FrameData {
     FrameData(CompositorFrame&& frame, uint64_t frame_index);
@@ -298,6 +333,8 @@ class VIZ_SERVICE_EXPORT Surface final {
     std::unique_ptr<gfx::DelegatedInkMetadata> TakeDelegatedInkMetadata() {
       return std::move(frame.metadata.delegated_ink_metadata);
     }
+
+    void SendAckIfNeeded(SurfaceClient* client);
 
     CompositorFrame frame;
     uint64_t frame_index;
@@ -337,6 +374,10 @@ class VIZ_SERVICE_EXPORT Surface final {
   // Called when all of the surface's dependencies have been resolved.
   void ActivateFrame(FrameData frame_data);
 
+  // Called when display compositor is ready for this frame to be processed and
+  // it can become pending or active.
+  QueueFrameResult CommitFrame(FrameData frame);
+
   // Resolve the activation deadline specified by |current_frame| into a wall
   // time to be used by SurfaceDependencyDeadline.
   FrameDeadline ResolveFrameDeadline(const CompositorFrame& current_frame);
@@ -356,12 +397,16 @@ class VIZ_SERVICE_EXPORT Surface final {
 
   const SurfaceInfo surface_info_;
   SurfaceId previous_frame_surface_id_;
-  SurfaceManager* const surface_manager_;
+  const raw_ptr<SurfaceManager> surface_manager_;
   base::WeakPtr<SurfaceClient> surface_client_;
   std::unique_ptr<SurfaceDependencyDeadline> deadline_;
 
   absl::optional<FrameData> pending_frame_data_;
   absl::optional<FrameData> active_frame_data_;
+
+  // Queue of uncommitted frames, oldest first.
+  base::circular_deque<FrameData> uncommitted_frames_;
+
   absl::optional<CompositorFrame> interpolated_frame_;
   bool seen_first_frame_activation_ = false;
   bool seen_first_surface_embedding_ = false;
@@ -393,11 +438,11 @@ class VIZ_SERVICE_EXPORT Surface final {
 
   bool is_latency_info_taken_ = false;
 
-  SurfaceAllocationGroup* const allocation_group_;
-
-  SurfaceSavedFrameStorage surface_saved_frame_storage_{this};
+  const raw_ptr<SurfaceAllocationGroup> allocation_group_;
 
   bool has_damage_from_interpolated_frame_ = false;
+
+  const size_t max_uncommitted_frames_;
 
   base::WeakPtrFactory<Surface> weak_factory_{this};
 };

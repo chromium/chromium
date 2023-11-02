@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "ash/components/arc/arc_features.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check_op.h"
@@ -17,7 +18,6 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/arc/fileapi/arc_content_file_system_size_util.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_util.h"
-#include "components/arc/arc_features.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/mime_util.h"
 #include "url/gurl.h"
@@ -808,7 +808,8 @@ void ArcDocumentsProviderRoot::GetExtraMetadataFromDocument(
   metadata.supports_rename = document->supports_rename;
   metadata.dir_supports_create = document->dir_supports_create;
   metadata.supports_thumbnail = document->supports_thumbnail;
-  metadata.last_modified = base::Time::FromJavaTime(document->last_modified);
+  if (document->last_modified > 0)
+    metadata.last_modified = base::Time::FromJavaTime(document->last_modified);
   metadata.size = document->size;
   std::move(callback).Run(base::File::FILE_OK, metadata);
 }
@@ -872,9 +873,7 @@ void ArcDocumentsProviderRoot::ResolveToDocumentId(
     const base::FilePath& path,
     ResolveToDocumentIdCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  std::vector<base::FilePath::StringType> components;
-  path.GetComponents(&components);
-  ResolveToDocumentIdRecursively(root_document_id_, components,
+  ResolveToDocumentIdRecursively(root_document_id_, path.GetComponents(),
                                  std::move(callback));
 }
 

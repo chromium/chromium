@@ -61,9 +61,7 @@ void SVGDocumentExtensions::ServiceWebAnimationsOnAnimationFrame(
 
 bool SVGDocumentExtensions::ServiceSmilAnimations() {
   bool did_schedule_animation_frame = false;
-  HeapVector<Member<SVGSVGElement>> time_containers;
-  CopyToVector(time_containers_, time_containers);
-  for (const auto& container : time_containers) {
+  for (const auto& container : time_containers_) {
     did_schedule_animation_frame |=
         container->TimeContainer()->ServiceAnimations();
   }
@@ -81,7 +79,7 @@ void SVGDocumentExtensions::ServiceWebAnimations() {
   for (auto& svg_element : web_animations_pending_svg_elements)
     svg_element->ApplyActiveWebAnimations();
 
-  DCHECK(web_animations_pending_svg_elements_.IsEmpty());
+  DCHECK(web_animations_pending_svg_elements_.empty());
 }
 
 void SVGDocumentExtensions::StartAnimations() {
@@ -91,9 +89,7 @@ void SVGDocumentExtensions::StartAnimations() {
   // FIXME: We hold a ref pointers to prevent a shadow tree from getting removed
   // out from underneath us.  In the future we should refactor the use-element
   // to avoid this. See https://webkit.org/b/53704
-  HeapVector<Member<SVGSVGElement>> time_containers;
-  CopyToVector(time_containers_, time_containers);
-  for (const auto& container : time_containers) {
+  for (const auto& container : time_containers_) {
     SMILTimeContainer* time_container = container->TimeContainer();
     if (!time_container->IsStarted())
       time_container->Start();
@@ -105,10 +101,16 @@ void SVGDocumentExtensions::PauseAnimations() {
     element->pauseAnimations();
 }
 
+bool SVGDocumentExtensions::HasSmilAnimations() const {
+  for (SVGSVGElement* element : time_containers_) {
+    if (element->TimeContainer()->HasAnimations())
+      return true;
+  }
+  return false;
+}
+
 void SVGDocumentExtensions::DispatchSVGLoadEventToOutermostSVGElements() {
-  HeapVector<Member<SVGSVGElement>> time_containers;
-  CopyToVector(time_containers_, time_containers);
-  for (const auto& container : time_containers) {
+  for (const auto& container : time_containers_) {
     SVGSVGElement* outer_svg = container.Get();
     if (!outer_svg->IsOutermostSVGSVGElement())
       continue;
@@ -154,14 +156,14 @@ bool SVGDocumentExtensions::ZoomAndPanEnabled() const {
   return !svg || svg->ZoomAndPanEnabled();
 }
 
-void SVGDocumentExtensions::StartPan(const FloatPoint& start) {
+void SVGDocumentExtensions::StartPan(const gfx::PointF& start) {
   if (SVGSVGElement* svg = rootElement(*document_)) {
     translate_ = gfx::Vector2dF(start.x() - svg->CurrentTranslate().x(),
                                 start.y() - svg->CurrentTranslate().y());
   }
 }
 
-void SVGDocumentExtensions::UpdatePan(const FloatPoint& pos) const {
+void SVGDocumentExtensions::UpdatePan(const gfx::PointF& pos) const {
   if (SVGSVGElement* svg = rootElement(*document_)) {
     svg->SetCurrentTranslate(
         gfx::Vector2dF(pos.x() - translate_.x(), pos.y() - translate_.y()));

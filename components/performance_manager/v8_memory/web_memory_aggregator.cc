@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,8 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/containers/stack.h"
+#include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/graph/worker_node.h"
@@ -67,10 +69,10 @@ class AggregationPointVisitor {
  private:
   struct Enclosing {
     url::Origin origin;
-    mojom::WebMemoryBreakdownEntry* aggregation_point;
+    raw_ptr<mojom::WebMemoryBreakdownEntry> aggregation_point;
   };
   const url::Origin requesting_origin_;
-  const ProcessNode* requesting_process_node_;
+  raw_ptr<const ProcessNode> requesting_process_node_;
   const url::Origin main_origin_;
   mojom::WebMemoryMeasurementPtr aggregation_result_ =
       mojom::WebMemoryMeasurement::New();
@@ -344,18 +346,18 @@ void AggregationPointVisitor::OnWorkerEntered(const WorkerNode* worker_node) {
   url::Origin node_origin = enclosing_.top().origin;
 #if DCHECK_IS_ON()
   auto client_frames = worker_node->GetClientFrames();
-  DCHECK(std::all_of(client_frames.begin(), client_frames.end(),
-                     [node_origin](const FrameNode* client) {
-                       return node_origin.IsSameOriginWith(GetOrigin(client));
-                     }));
+  DCHECK(base::ranges::all_of(
+      client_frames, [node_origin](const FrameNode* client) {
+        return node_origin.IsSameOriginWith(GetOrigin(client));
+      }));
   auto client_workers = worker_node->GetClientWorkers();
-  DCHECK(std::all_of(client_workers.begin(), client_workers.end(),
-                     [node_origin](const WorkerNode* client) {
-                       // TODO(crbug.com/1169178): Remove the is_empty guard
-                       // once worker worker URLs are available.
-                       return client->GetURL().is_empty() ||
-                              node_origin.IsSameOriginWith(GetOrigin(client));
-                     }));
+  DCHECK(base::ranges::all_of(
+      client_workers, [node_origin](const WorkerNode* client) {
+        // TODO(crbug.com/1169178): Remove the is_empty guard
+        // once worker worker URLs are available.
+        return client->GetURL().is_empty() ||
+               node_origin.IsSameOriginWith(GetOrigin(client));
+      }));
 #endif
   NodeAggregationType aggregation_type = GetNodeAggregationType(
       requesting_origin_, enclosing_.top().origin, node_origin);
@@ -476,10 +478,10 @@ WebMemoryAggregator::AggregateMeasureMemoryResult() {
 
   CHECK(!top_frames.empty());
   url::Origin main_origin = GetOrigin(top_frames[0]);
-  DCHECK(std::all_of(top_frames.begin(), top_frames.end(),
-                     [&main_origin](const FrameNode* node) {
-                       return GetOrigin(node).IsSameOriginWith(main_origin);
-                     }));
+  DCHECK(
+      base::ranges::all_of(top_frames, [&main_origin](const FrameNode* node) {
+        return GetOrigin(node).IsSameOriginWith(main_origin);
+      }));
 
   AggregationPointVisitor ap_visitor(requesting_origin_,
                                      requesting_process_node_, main_origin);

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -87,15 +87,19 @@ PowerModeArbiter* PowerModeArbiter::GetInstance() {
 
 PowerModeArbiter::PowerModeArbiter()
     : trace_observer_(std::make_unique<TraceObserver>()),
+      lock_("PowerModeArbiter.lock_"),
       active_mode_("PowerModeArbiter", this),
       observers_(
           base::MakeRefCounted<base::ObserverListThreadSafe<Observer>>()),
       charging_voter_(std::make_unique<ChargingPowerModeVoter>(this)) {
   base::trace_event::TraceLog::GetInstance()->AddEnabledStateObserver(this);
+  base::trace_event::TraceLog::GetInstance()->AddIncrementalStateObserver(this);
 }
 
 PowerModeArbiter::~PowerModeArbiter() {
   base::trace_event::TraceLog::GetInstance()->RemoveEnabledStateObserver(this);
+  base::trace_event::TraceLog::GetInstance()->RemoveIncrementalStateObserver(
+      this);
 }
 
 void PowerModeArbiter::OnThreadPoolAvailable() {
@@ -437,7 +441,7 @@ void PowerModeArbiter::UpdateTraceObserver() {
 void PowerModeArbiter::OnTraceLogEnabled() {
   {
     base::AutoLock lock(lock_);
-    for (const auto& voter_and_vote : votes_)
+    for (auto& voter_and_vote : votes_)
       voter_and_vote.second.OnTraceLogEnabled();
     active_mode_.OnTraceLogEnabled();
   }
@@ -447,6 +451,13 @@ void PowerModeArbiter::OnTraceLogEnabled() {
 
 void PowerModeArbiter::OnTraceLogDisabled() {
   UpdateTraceObserver();
+}
+
+void PowerModeArbiter::OnIncrementalStateCleared() {
+  base::AutoLock lock(lock_);
+  for (auto& voter_and_vote : votes_)
+    voter_and_vote.second.OnIncrementalStateCleared();
+  active_mode_.OnIncrementalStateCleared();
 }
 
 }  // namespace power_scheduler

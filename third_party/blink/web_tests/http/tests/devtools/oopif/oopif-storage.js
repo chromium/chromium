@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,9 @@
   await TestRunner.showPanel('resources');
 
   TestRunner.deprecatedRunAfterPendingDispatches(function() {
-    const localStorageTree = Resources.ResourcesPanel._instance()._sidebar.localStorageListTreeElement;
+    const localStorageTree = Resources.ResourcesPanel.instance().sidebar.localStorageListTreeElement;
     localStorageTree.expandRecursively(1000);
-    const sessionStorageTree = Resources.ResourcesPanel._instance()._sidebar.sessionStorageListTreeElement;
+    const sessionStorageTree = Resources.ResourcesPanel.instance().sidebar.sessionStorageListTreeElement;
     sessionStorageTree.expandRecursively(1000);
 
     TestRunner.addResult('Local Storage:');

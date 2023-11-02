@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -226,6 +226,8 @@ if (enable_vr) {
         "openxr/openxr_statics.h",
         "openxr/openxr_util.cc",
         "openxr/openxr_util.h",
+        "openxr/openxr_view_configuration.cc",
+        "openxr/openxr_view_configuration.h",
         "test/test_hook.h",
         "windows/compositor_base.cc",
         "windows/compositor_base.h",
@@ -318,6 +320,8 @@ if (enable_openxr) {
       "openxr/openxr_extension_helper.h",
       "openxr/openxr_util.cc",
       "openxr/openxr_util.h",
+      "openxr/openxr_view_configuration.cc",
+      "openxr/openxr_view_configuration.h",
       "openxr/test/fake_openxr_impl_api.cc",
       "openxr/test/openxr.def",
       "openxr/test/openxr_negotiate.h",
@@ -357,6 +361,8 @@ if (enable_gvr_services) {
     sources = java_sources_needing_jni
     deps = [
       "//base:base_java",
+      "//base:jni_java",
+      "//build/android:build_java",
       "//third_party/gvr-android-sdk:gvr_common_java",
       "//ui/android:ui_java",
     ]

@@ -7,7 +7,7 @@ include_rules = [
   "+components/discardable_memory/client",
   "+components/metrics",
   "+components/metrics:single_sample_metrics",
-  "+components/payments",
+  "+components/services/screen_ai",
   "+components/url_formatter",
   "+components/viz/client",
   "+components/viz/common",
@@ -16,15 +16,16 @@ include_rules = [
   # ****************************************************************************
 
   "+chromeos/system/core_scheduling.h",
+  "+components/webrtc",
   "+content/public/child",
   "+content/public/renderer",
   "+content/child",
   "+content/services/shared_storage_worklet",
+  "+content/services/auction_worklet",
   "+device/base/synchronization",
   "+device/gamepad/public/cpp",
   "+device/gamepad/public/mojom",
   "+gin",
-  "+jingle/glue",
   "+mojo",
   "+services",
   "-storage/browser",
@@ -42,7 +43,7 @@ specific_include_rules = {
     "+content/shell",
   ],
   "renderer_main\.cc": [
-   "+chromeos/memory/userspace_swap",
+   "+chromeos/ash/components/memory/userspace_swap",
   ],
   "render_thread_impl_browsertest\.cc": [
     "+content/app/mojo/mojo_init.h",

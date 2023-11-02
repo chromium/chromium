@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,6 +36,9 @@
 #include "ui/views/widget/widget.h"
 #endif
 
+using WebExposedIsolationLevel =
+    content::RenderFrameHost::WebExposedIsolationLevel;
+
 constexpr int WebAppMenuModel::kUninstallAppCommandId;
 constexpr int WebAppMenuModel::kExtensionsMenuCommandId;
 
@@ -43,7 +46,7 @@ WebAppMenuModel::WebAppMenuModel(ui::AcceleratorProvider* provider,
                                  Browser* browser)
     : AppMenuModel(provider, browser) {}
 
-WebAppMenuModel::~WebAppMenuModel() {}
+WebAppMenuModel::~WebAppMenuModel() = default;
 
 bool WebAppMenuModel::IsCommandIdEnabled(int command_id) const {
   switch (command_id) {
@@ -93,13 +96,33 @@ void WebAppMenuModel::ExecuteCommand(int command_id, int event_flags) {
 void WebAppMenuModel::Build() {
   AddItemWithStringId(IDC_WEB_APP_MENU_APP_INFO,
                       IDS_APP_CONTEXT_MENU_SHOW_INFO);
-  int app_info_index = GetItemCount() - 1;
+  size_t app_info_index = GetItemCount() - 1;
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
+
+  bool is_isolated_web_app =
+      web_contents &&
+      web_contents->GetPrimaryMainFrame()->GetWebExposedIsolationLevel() >=
+          WebExposedIsolationLevel::kMaybeIsolatedApplication;
+
   if (web_contents) {
-    SetMinorText(app_info_index, web_app::AppBrowserController::FormatUrlOrigin(
-                                     web_contents->GetVisibleURL()));
+    std::u16string display_text =
+        web_app::AppBrowserController::FormatUrlOrigin(
+            web_contents->GetVisibleURL());
+
+    // For Isolated Web Apps the origin's host name is a non-human-readable
+    // string of characters, so instead of displaying the origin, the short name
+    // of the app will be displayed.
+    if (is_isolated_web_app && browser() &&
+        browser()->app_controller()->IsWebApp(browser())) {
+      std::u16string short_name =
+          browser()->app_controller()->GetAppShortName();
+      if (!short_name.empty())
+        display_text = short_name;
+    }
+    SetMinorText(app_info_index, display_text);
   }
+
   SetMinorIcon(app_info_index,
                ui::ImageModel::FromVectorIcon(
                    browser()->location_bar_model()->GetVectorIcon()));
@@ -109,7 +132,10 @@ void WebAppMenuModel::Build() {
   if (IsCommandIdEnabled(kExtensionsMenuCommandId))
     AddItemWithStringId(kExtensionsMenuCommandId, IDS_SHOW_EXTENSIONS);
   AddItemWithStringId(IDC_COPY_URL, IDS_COPY_URL);
-  AddItemWithStringId(IDC_OPEN_IN_CHROME, IDS_OPEN_IN_CHROME);
+
+  // Isolated Web Apps shouldn't be opened in Chrome.
+  if (!is_isolated_web_app)
+    AddItemWithStringId(IDC_OPEN_IN_CHROME, IDS_OPEN_IN_CHROME);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (chromeos::MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu(
@@ -127,7 +153,7 @@ void WebAppMenuModel::Build() {
 
 // Chrome OS's app list is prominent enough to not need a separate uninstall
 // option in the app menu.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
   DCHECK(browser()->app_controller());
   if (browser()->app_controller()->IsInstalled()) {
     AddSeparator(ui::NORMAL_SEPARATOR);
@@ -137,7 +163,7 @@ void WebAppMenuModel::Build() {
                 ui::EscapeMenuLabelAmpersands(
                     browser()->app_controller()->GetAppShortName())));
   }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
   AddSeparator(ui::LOWER_SEPARATOR);
 
   CreateZoomMenu();

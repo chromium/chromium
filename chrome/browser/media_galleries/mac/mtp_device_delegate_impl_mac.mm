@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/mac/scoped_nsobject.h"
+#include "base/memory/raw_ptr.h"
 #include "components/services/filesystem/public/mojom/types.mojom.h"
 #include "components/storage_monitor/image_capture_device.h"
 #include "components/storage_monitor/image_capture_device_manager.h"
@@ -70,7 +71,7 @@ class MTPDeviceDelegateImplMac::DeviceListener
   base::scoped_nsobject<ImageCaptureDevice> camera_device_;
 
   // Weak pointer
-  MTPDeviceDelegateImplMac* delegate_;
+  raw_ptr<MTPDeviceDelegateImplMac> delegate_;
 };
 
 void MTPDeviceDelegateImplMac::DeviceListener::OpenCameraSession(
@@ -122,7 +123,7 @@ void MTPDeviceDelegateImplMac::DeviceListener::DeviceRemoved() {
 }
 
 void MTPDeviceDelegateImplMac::DeviceListener::ResetDelegate() {
-  delegate_ = NULL;
+  delegate_ = nullptr;
 }
 
 MTPDeviceDelegateImplMac::MTPDeviceDelegateImplMac(
@@ -415,15 +416,9 @@ void MTPDeviceDelegateImplMac::ItemAdded(
     return;
 
   // This kinda should go in a Join method in FilePath...
-  base::FilePath relative_path(name);
-  std::vector<base::FilePath::StringType> components;
-  relative_path.GetComponents(&components);
   base::FilePath item_filename = root_path_;
-  for (std::vector<base::FilePath::StringType>::iterator iter =
-           components.begin();
-       iter != components.end(); ++iter) {
-    item_filename = item_filename.Append(*iter);
-  }
+  for (const auto& component : base::FilePath(name).GetComponents())
+    item_filename = item_filename.Append(component);
 
   file_info_[item_filename.value()] = info;
   file_paths_.push_back(item_filename);
@@ -511,15 +506,9 @@ void MTPDeviceDelegateImplMac::DownloadedFile(
     return;
   }
 
-  base::FilePath relative_path(name);
-  std::vector<base::FilePath::StringType> components;
-  relative_path.GetComponents(&components);
   base::FilePath item_filename = root_path_;
-  for (std::vector<base::FilePath::StringType>::iterator i =
-           components.begin();
-       i != components.end(); ++i) {
-    item_filename = item_filename.Append(*i);
-  }
+  for (const auto& component : base::FilePath(name).GetComponents())
+    item_filename = item_filename.Append(component);
 
   base::File::Info info = file_info_[item_filename.value()];
   content::GetIOThreadTaskRunner({})->PostTask(

@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-# Copyright 2014 The Chromium Authors. All rights reserved.
+#!/usr/bin/env python3
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -34,7 +34,7 @@ if __name__ == '__main__':
                     'https://github.com/GoogleChrome/chromium-dashboard')
   options, args = parser.parse_args()
 
-  source_path = 'third_party/blink/public/mojom/web_feature/web_feature.mojom'
+  source_path = 'third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom'
 
   START_MARKER = '^enum WebFeature {'
   END_MARKER = '^kNumberOfFeatures'

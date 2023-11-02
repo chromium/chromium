@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 
 class ChromeAccountManagerService;
 class ChromeBrowserState;
-class PrefService;
 
 namespace base {
 class TimeDelta;
@@ -22,23 +21,24 @@ namespace signin {
 // Returns the maximum allowed waiting time for the Account Capabilities API.
 base::TimeDelta GetWaitThresholdForCapabilities();
 
-// Returns true if this user sign-in upgrade should be shown for |browserState|.
+// Returns true if this user sign-in upgrade should be shown for `browserState`.
 bool ShouldPresentUserSigninUpgrade(ChromeBrowserState* browser_state,
                                     const base::Version& current_version);
 
-// Records in user defaults:
+// This method should be called when sign-in starts from the upgrade promo.
+// It records in user defaults:
 //   + the Chromium current version.
 //   + increases the sign-in promo display count.
 //   + Gaia ids list.
 // Separated out into a discrete function to allow overriding when testing.
-void RecordVersionSeen(ChromeAccountManagerService* account_manager_service,
-                       const base::Version& current_version);
+void RecordUpgradePromoSigninStarted(
+    ChromeAccountManagerService* account_manager_service,
+    const base::Version& current_version);
 
-// Returns a boolean indicating whether browser sign-in is allowed across the
-// app.
-bool IsSigninAllowed(const PrefService* prefs);
-
+// TODO(crbug.com/1271785): Move this to enterprise_utils.
 // Returns a boolean indicating whether policy allows browser sign-in.
+// DEPRECATED. Needs to use AuthenticationService::GetServiceStatus().
+// TODO(crbug.com/1242320): Need to remove this method.
 bool IsSigninAllowedByPolicy();
 
 // Returns the current sign-in state of primary identity.

@@ -1,4 +1,4 @@
-// Copyright (c) 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -85,10 +85,12 @@ IN_PROC_BROWSER_TEST_F(DownloadProtectionServiceBrowserTest, VerifyZipHash) {
   ASSERT_EQ(2, requests[0]->archived_binary_size());
 
   EXPECT_EQ("a.zip", requests[0]->archived_binary(0).file_basename());
+  EXPECT_EQ(11, requests[0]->archived_binary(0).length());
   EXPECT_EQ(std::string(kAZipDigest, kAZipDigest + crypto::kSHA256Length),
             requests[0]->archived_binary(0).digests().sha256());
 
   EXPECT_EQ("b.zip", requests[0]->archived_binary(1).file_basename());
+  EXPECT_EQ(10, requests[0]->archived_binary(1).length());
   EXPECT_EQ(std::string(kBZipDigest, kBZipDigest + crypto::kSHA256Length),
             requests[0]->archived_binary(1).digests().sha256());
 }

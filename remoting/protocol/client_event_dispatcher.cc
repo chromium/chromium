@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,7 @@
 #include "remoting/proto/internal.pb.h"
 #include "remoting/protocol/message_pipe.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 ClientEventDispatcher::ClientEventDispatcher()
     : ChannelDispatcherBase(kEventChannelName) {}
@@ -55,5 +54,4 @@ void ClientEventDispatcher::OnIncomingMessage(
   LOG(ERROR) << "Received unexpected message on the event channel.";
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

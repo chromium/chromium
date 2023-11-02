@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,6 +45,12 @@ class SessionManagerObserver : public base::CheckedObserver {
   //    (`OnLoginOrLockScreenVisible()` + `OnNetworkErrorScreenShown()`).
   // 4. Boot into retail mode. `OnLoginOrLockScreenVisible()`.
   virtual void OnLoginOrLockScreenVisible() {}
+
+  // Invoked when the user attempts to unlock the lock screen, it reports the
+  // type of authentication method used and whether it was a successful or
+  // failed unlock attempt.
+  virtual void OnUnlockScreenAttempt(const bool success,
+                                     const UnlockType unlock_type) {}
 };
 
 }  // namespace session_manager

@@ -1,19 +1,20 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ash/login/session/chrome_session_manager.h"
+
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
-#include "chrome/browser/ash/login/session/chrome_session_manager.h"
-#include "chrome/browser/ash/login/session/user_session_manager.h"
-#include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
@@ -22,21 +23,23 @@
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/ui/user_adding_screen.h"
-#include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/google/google_brand_chromeos.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
-#include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
-#include "chrome/common/chrome_switches.h"
 #include "chromeos/system/fake_statistics_provider.h"
 #include "chromeos/system/statistics_provider.h"
-#include "chromeos/tpm/stub_install_attributes.h"
-#include "components/user_manager/user_names.h"
 #include "content/public/test/browser_test.h"
 #include "google_apis/gaia/fake_gaia.h"
 #include "rlz/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
+
+#if BUILDFLAG(ENABLE_RLZ)
+#include "chrome/browser/ash/login/session/user_session_initializer.h"
+#include "chrome/browser/google/google_brand_chromeos.h"
+#include "chrome/common/chrome_switches.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
+#include "components/user_manager/user_names.h"
+#endif  // BUILDFLAG(ENABLE_RLZ)
 
 namespace ash {
 namespace system {
@@ -46,11 +49,8 @@ using ::chromeos::system::kRlzBrandCodeKey;
 using ::chromeos::system::ScopedFakeStatisticsProvider;
 }  // namespace
 }  // namespace system
-namespace {
 
-// TODO(https://crbug.com/1164001): remove when moved to ash::
-using ::chromeos::ScopedStubInstallAttributes;
-using ::chromeos::StubInstallAttributes;
+namespace {
 
 // Helper class to wait for user adding screen to finish.
 class UserAddingScreenWaiter : public UserAddingScreen::Observer {
@@ -140,8 +140,9 @@ class ChromeSessionManagerExistingUsersTest : public ChromeSessionManagerTest {
   LoginManagerMixin login_manager_{&mixin_host_};
 };
 
+// http://crbug.com/1338401
 IN_PROC_BROWSER_TEST_F(ChromeSessionManagerExistingUsersTest,
-                       LoginExistingUsers) {
+                       DISABLED_LoginExistingUsers) {
   // Verify that session state is LOGIN_PRIMARY with existing user data dir.
   session_manager::SessionManager* manager =
       session_manager::SessionManager::Get();
@@ -250,6 +251,73 @@ IN_PROC_BROWSER_TEST_F(ChromeSessionManagerExistingUsersTest,
   EXPECT_EQ(clipboard_text, other_session_clipboard_text);
 }
 
+class ChromeSessionManagerRmaTest : public ChromeSessionManagerTest {
+ public:
+  ChromeSessionManagerRmaTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {chromeos::features::kShimlessRMAFlow}, {});
+  }
+
+  // LoginManagerTest:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ChromeSessionManagerTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(switches::kLaunchRma);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ChromeSessionManagerRmaTest, DeviceInRma) {
+  // Verify that session state is RMA.
+  session_manager::SessionManager* manager =
+      session_manager::SessionManager::Get();
+  EXPECT_EQ(session_manager::SessionState::RMA, manager->session_state());
+  EXPECT_EQ(0u, manager->sessions().size());
+}
+
+class ChromeSessionManagerRmaNotAllowedTest
+    : public ChromeSessionManagerRmaTest {
+ public:
+  ChromeSessionManagerRmaNotAllowedTest() = default;
+  // LoginManagerTest:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ChromeSessionManagerRmaTest::SetUpCommandLine(command_line);
+    // Block RMA with kRmaNotAllowed switch.
+    command_line->AppendSwitch(switches::kRmaNotAllowed);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(ChromeSessionManagerRmaNotAllowedTest,
+                       RmaNotAllowedBlocksRma) {
+  // Verify that session state is not RMA, even though kLaunchRma switch was
+  // passed.
+  session_manager::SessionManager* manager =
+      session_manager::SessionManager::Get();
+  EXPECT_EQ(session_manager::SessionState::OOBE, manager->session_state());
+  EXPECT_EQ(0u, manager->sessions().size());
+}
+
+class ChromeSessionManagerRmaSafeModeTest : public ChromeSessionManagerRmaTest {
+ public:
+  ChromeSessionManagerRmaSafeModeTest() = default;
+  // LoginManagerTest:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ChromeSessionManagerRmaTest::SetUpCommandLine(command_line);
+    // Block RMA with when kSafeMode switch is present.
+    command_line->AppendSwitch(switches::kSafeMode);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(ChromeSessionManagerRmaSafeModeTest, SafeModeBlocksRma) {
+  // Verify that session state is not RMA, even though kLaunchRma switch was
+  // passed.
+  session_manager::SessionManager* manager =
+      session_manager::SessionManager::Get();
+  EXPECT_EQ(session_manager::SessionState::OOBE, manager->session_state());
+  EXPECT_EQ(0u, manager->sessions().size());
+}
+
 #if BUILDFLAG(ENABLE_RLZ)
 
 class ChromeSessionManagerRlzTest : public ChromeSessionManagerTest {
@@ -349,12 +417,11 @@ class GuestSessionRlzTest : public InProcessBrowserTest,
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(ash::switches::kGuestSession);
+    command_line->AppendSwitch(switches::kGuestSession);
     command_line->AppendSwitch(::switches::kIncognito);
-    command_line->AppendSwitchASCII(ash::switches::kLoginProfile, "hash");
+    command_line->AppendSwitchASCII(switches::kLoginProfile, "hash");
     command_line->AppendSwitchASCII(
-        ash::switches::kLoginUser,
-        user_manager::GuestAccountId().GetUserEmail());
+        switches::kLoginUser, user_manager::GuestAccountId().GetUserEmail());
   }
 
   // Test instance parameters.

@@ -1,11 +1,13 @@
-<!-- Copyright 2020 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 
 <link rel="import" href="chrome://resources/html/polymer.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_scrollable_behavior.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_shared_style.css.html">
+<link rel="import" href="chrome://resources/ash/common/cr_scrollable_behavior.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.html">
 
 <link rel="import" href="../behaviors/oobe_focus_behavior.html">
@@ -84,6 +86,10 @@
         --oobe-adaptive-dialog-content-top-padding: 0;
       }
 
+      :host-context([orientation=horizontal]):host([single-column]) {
+        --oobe-adaptive-dialog-header-width: 456px;
+      }
+
       :host-context([orientation=vertical]) {
         --oobe-adaptive-dialog-content-direction: column;
         --oobe-adaptive-dialog-item-alignment: center;
@@ -135,13 +141,34 @@
         padding-top: 0;
       }
 
+      [read-more-content=true] {
+        -webkit-mask-image: linear-gradient(180deg, #FFF 95%, transparent);
+        overflow-y: hidden;
+      }
+
+      #readMoreButtonContainer {
+        display: flex;
+        justify-content: center;
+        position: relative;
+        top: -16px;
+      }
+
+      #readMoreButton {
+        border-radius: 50%;
+        min-height: 32px;
+        min-width: 32px;
+        padding: 0;
+        transform: rotate(90deg);
+      }
+
       #oobe-title {
         padding-top: var(--oobe-adaptive-dialog-title-top-padding);
       }
 
       #oobe-progress ::slotted(paper-progress) {
-        --paper-progress-active-color: var(--google-blue-500);
-        --paper-progress-container-color: var(--google-blue-100);
+        /* TODO(https://crbug.com/1320715) Revise the colors */
+        --paper-progress-active-color: var(--cros-slider-color-active);
+        --paper-progress-container-color: var(--cros-slider-track-color-active);
         height: 4px;
         margin-top: 32px;
         width: 100%;
@@ -153,6 +180,9 @@
 
       #contentContainer {
         width: var(--oobe-adaptive-dialog-content-width);
+      }
+      #contentContainer ::slotted(*) {
+        max-width: var(--oobe-adaptive-dialog-content-width);
       }
 
       .vertical-mode-centering {
@@ -190,7 +220,7 @@
       #oobe-icon-div ::slotted(iron-icon) {
         --iron-icon-height: var(--oobe-adaptive-dialog-icon-size);
         --iron-icon-width: var(--oobe-adaptive-dialog-icon-size);
-        --iron-icon-fill-color: var(--google-blue-600);
+        --iron-icon-fill-color: var(--cros-icon-color-blue);
       }
     </style>
     <cr-lazy-render id="lazy">
@@ -218,10 +248,19 @@
             <div id="contentContainer" class="layout vertical flex">
               <slot name="content"></slot>
             </div>
+            <div id="readMoreButtonContainer">
+              <template is="dom-if" if="[[showReadMoreButton_]]" restamp>
+                <cr-button id="readMoreButton" on-click="onReadMoreClick_"
+                    class="action-button">
+                  <iron-icon icon="oobe-20:button-arrow-forward"></iron-icon>
+                </cr-button>
+              </template>
+            </div>
           </div>
         </div>
         <div class="bottom-buttons-container vertical-mode-centering">
-          <slot class="layout horizontal end-justified" name="bottom-buttons">
+          <slot class="layout horizontal end-justified" name="bottom-buttons"
+              hidden="[[showReadMoreButton_]]">
           </slot>
         </div>
       </template>

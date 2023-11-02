@@ -86,8 +86,6 @@ class URLSchemesRegistry final {
   //   GetMutableURLSchemesRegistry() before threads can be created, and
   // - The URLSchemesRegistry members below aren't modified when accessed after
   //   initialization.
-  //   Particularly, Strings inside them shouldn't be copied, as it modifies
-  //   reference counts of StringImpls (IsolatedCopy() should be taken instead).
   URLSchemesSet display_isolated_url_schemes;
   URLSchemesSet empty_document_schemes;
   URLSchemesSet schemes_forbidden_from_domain_relaxation;
@@ -146,7 +144,7 @@ void SchemeRegistry::RegisterURLSchemeAsDisplayIsolated(const String& scheme) {
 bool SchemeRegistry::ShouldTreatURLSchemeAsDisplayIsolated(
     const String& scheme) {
   DCHECK_EQ(scheme, scheme.LowerASCII());
-  if (scheme.IsEmpty())
+  if (scheme.empty())
     return false;
   return GetURLSchemesRegistry().display_isolated_url_schemes.Contains(scheme);
 }
@@ -159,7 +157,7 @@ bool SchemeRegistry::ShouldTreatURLSchemeAsRestrictingMixedContent(
 
 bool SchemeRegistry::ShouldLoadURLSchemeAsEmptyDocument(const String& scheme) {
   DCHECK_EQ(scheme, scheme.LowerASCII());
-  if (scheme.IsEmpty())
+  if (scheme.empty())
     return false;
   return GetURLSchemesRegistry().empty_document_schemes.Contains(scheme);
 }
@@ -168,7 +166,7 @@ void SchemeRegistry::SetDomainRelaxationForbiddenForURLSchemeForTest(
     bool forbidden,
     const String& scheme) {
   DCHECK_EQ(scheme, scheme.LowerASCII());
-  if (scheme.IsEmpty())
+  if (scheme.empty())
     return;
 
   if (forbidden) {
@@ -188,7 +186,7 @@ void SchemeRegistry::ResetDomainRelaxationForTest() {
 bool SchemeRegistry::IsDomainRelaxationForbiddenForURLScheme(
     const String& scheme) {
   DCHECK_EQ(scheme, scheme.LowerASCII());
-  if (scheme.IsEmpty())
+  if (scheme.empty())
     return false;
   return GetURLSchemesRegistry()
       .schemes_forbidden_from_domain_relaxation.Contains(scheme);
@@ -215,7 +213,7 @@ void SchemeRegistry::RemoveURLSchemeAsNotAllowingJavascriptURLs(
 bool SchemeRegistry::ShouldTreatURLSchemeAsNotAllowingJavascriptURLs(
     const String& scheme) {
   DCHECK_EQ(scheme, scheme.LowerASCII());
-  if (scheme.IsEmpty())
+  if (scheme.empty())
     return false;
   return GetURLSchemesRegistry().not_allowing_javascript_urls_schemes.Contains(
       scheme);
@@ -223,7 +221,7 @@ bool SchemeRegistry::ShouldTreatURLSchemeAsNotAllowingJavascriptURLs(
 
 bool SchemeRegistry::ShouldTreatURLSchemeAsCorsEnabled(const String& scheme) {
   DCHECK_EQ(scheme, scheme.LowerASCII());
-  if (scheme.IsEmpty())
+  if (scheme.empty())
     return false;
   return GetURLSchemesRegistry().cors_enabled_schemes.Contains(scheme);
 }
@@ -237,10 +235,7 @@ String SchemeRegistry::ListOfCorsEnabledURLSchemes() {
     else
       add_separator = true;
 
-    // As |cors_enabled_schemes| can be accessed from multiple threads, we need
-    // IsolatedCopy() here before passing it to |StringBuilder| that can
-    // ref/deref Strings.
-    builder.Append(scheme.IsolatedCopy());
+    builder.Append(scheme);
   }
   return builder.ToString();
 }
@@ -270,7 +265,7 @@ void SchemeRegistry::RegisterURLSchemeAsAllowingServiceWorkers(
 bool SchemeRegistry::ShouldTreatURLSchemeAsAllowingServiceWorkers(
     const String& scheme) {
   DCHECK_EQ(scheme, scheme.LowerASCII());
-  if (scheme.IsEmpty())
+  if (scheme.empty())
     return false;
   return GetURLSchemesRegistry().service_worker_schemes.Contains(scheme);
 }
@@ -284,7 +279,7 @@ void SchemeRegistry::RegisterURLSchemeAsSupportingFetchAPI(
 bool SchemeRegistry::ShouldTreatURLSchemeAsSupportingFetchAPI(
     const String& scheme) {
   DCHECK_EQ(scheme, scheme.LowerASCII());
-  if (scheme.IsEmpty())
+  if (scheme.empty())
     return false;
   return GetURLSchemesRegistry().fetch_api_schemes.Contains(scheme);
 }
@@ -313,7 +308,7 @@ void SchemeRegistry::RemoveURLSchemeAsFirstPartyWhenTopLevel(
 bool SchemeRegistry::ShouldTreatURLSchemeAsFirstPartyWhenTopLevel(
     const String& scheme) {
   DCHECK_EQ(scheme, scheme.LowerASCII());
-  if (scheme.IsEmpty())
+  if (scheme.empty())
     return false;
   return GetURLSchemesRegistry().first_party_when_top_level_schemes.Contains(
       scheme);
@@ -336,7 +331,7 @@ bool SchemeRegistry::
   // RenderFrameHostImpl::ComputeIsolationInfoInternal
   if (child_scheme != "https" && child_scheme != "wss")
     return false;
-  if (top_level_scheme.IsEmpty())
+  if (top_level_scheme.empty())
     return false;
   return GetURLSchemesRegistry()
       .first_party_when_top_level_with_secure_embedded_schemes.Contains(
@@ -356,7 +351,7 @@ void SchemeRegistry::RemoveURLSchemeAsAllowedForReferrer(const String& scheme) {
 bool SchemeRegistry::ShouldTreatURLSchemeAsAllowedForReferrer(
     const String& scheme) {
   DCHECK_EQ(scheme, scheme.LowerASCII());
-  if (scheme.IsEmpty())
+  if (scheme.empty())
     return false;
   return GetURLSchemesRegistry().allowed_in_referrer_schemes.Contains(scheme);
 }
@@ -368,7 +363,7 @@ void SchemeRegistry::RegisterURLSchemeAsError(const String& scheme) {
 
 bool SchemeRegistry::ShouldTreatURLSchemeAsError(const String& scheme) {
   DCHECK_EQ(scheme, scheme.LowerASCII());
-  if (scheme.IsEmpty())
+  if (scheme.empty())
     return false;
   return GetURLSchemesRegistry().error_schemes.Contains(scheme);
 }
@@ -383,7 +378,7 @@ void SchemeRegistry::RegisterURLSchemeAsAllowingSharedArrayBuffers(
 bool SchemeRegistry::ShouldTreatURLSchemeAsAllowingSharedArrayBuffers(
     const String& scheme) {
   DCHECK_EQ(scheme, scheme.LowerASCII());
-  if (scheme.IsEmpty())
+  if (scheme.empty())
     return false;
   return GetURLSchemesRegistry().allowing_shared_array_buffer_schemes.Contains(
       scheme);
@@ -408,7 +403,7 @@ bool SchemeRegistry::SchemeShouldBypassContentSecurityPolicy(
     const String& scheme,
     PolicyAreas policy_areas) {
   DCHECK_NE(policy_areas, kPolicyAreaNone);
-  if (scheme.IsEmpty() || policy_areas == kPolicyAreaNone)
+  if (scheme.empty() || policy_areas == kPolicyAreaNone)
     return false;
 
   const auto& bypassing_schemes =
@@ -428,7 +423,7 @@ void SchemeRegistry::RegisterURLSchemeBypassingSecureContextCheck(
 
 bool SchemeRegistry::SchemeShouldBypassSecureContextCheck(
     const String& scheme) {
-  if (scheme.IsEmpty())
+  if (scheme.empty())
     return false;
   DCHECK_EQ(scheme, scheme.LowerASCII());
   return GetURLSchemesRegistry().secure_context_bypassing_schemes.Contains(
@@ -442,7 +437,7 @@ void SchemeRegistry::RegisterURLSchemeAsAllowingWasmEvalCSP(
 }
 
 bool SchemeRegistry::SchemeSupportsWasmEvalCSP(const String& scheme) {
-  if (scheme.IsEmpty())
+  if (scheme.empty())
     return false;
   DCHECK_EQ(scheme, scheme.LowerASCII());
   return GetURLSchemesRegistry().wasm_eval_csp_schemes.Contains(scheme);
@@ -458,7 +453,7 @@ void SchemeRegistry::RemoveURLSchemeAsWebUI(const String& scheme) {
 }
 
 bool SchemeRegistry::IsWebUIScheme(const String& scheme) {
-  if (scheme.IsEmpty())
+  if (scheme.empty())
     return false;
   DCHECK_EQ(scheme, scheme.LowerASCII());
   return GetURLSchemesRegistry().web_ui_schemes.Contains(scheme);
@@ -485,7 +480,7 @@ void SchemeRegistry::RemoveURLSchemeAsCodeCacheWithHashing(
 }
 
 bool SchemeRegistry::SchemeSupportsCodeCacheWithHashing(const String& scheme) {
-  if (scheme.IsEmpty())
+  if (scheme.empty())
     return false;
   DCHECK_EQ(scheme, scheme.LowerASCII());
   return GetURLSchemesRegistry().code_cache_with_hashing_schemes.Contains(

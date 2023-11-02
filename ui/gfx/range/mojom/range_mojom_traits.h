@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,8 +13,12 @@ namespace mojo {
 
 template <>
 struct StructTraits<gfx::mojom::RangeDataView, gfx::Range> {
-  static uint32_t start(const gfx::Range& r) { return r.start(); }
-  static uint32_t end(const gfx::Range& r) { return r.end(); }
+  static uint32_t start(const gfx::Range& r) {
+    return static_cast<uint32_t>(r.start());
+  }
+  static uint32_t end(const gfx::Range& r) {
+    return static_cast<uint32_t>(r.end());
+  }
   static bool Read(gfx::mojom::RangeDataView data, gfx::Range* out) {
     out->set_start(data.start());
     out->set_end(data.end());

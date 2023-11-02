@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -58,6 +58,8 @@ class FakeClientSideDetectionService : public ClientSideDetectionService {
 
   void SetModel(const ClientSideModel& model) { model_ = model; }
 
+  CSDModelType GetModelType() override { return CSDModelType::kProtobuf; }
+
   const std::string& GetModelStr() override {
     client_side_model_ = model_.SerializeAsString();
     return client_side_model_;
@@ -67,6 +69,10 @@ class FakeClientSideDetectionService : public ClientSideDetectionService {
     request_callback_ = closure;
   }
 
+  base::WeakPtr<ClientSideDetectionService> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
  private:
   ClientPhishingRequest saved_request_;
   ClientReportPhishingRequestCallback saved_callback_;
@@ -74,6 +80,7 @@ class FakeClientSideDetectionService : public ClientSideDetectionService {
   std::string access_token_;
   std::string client_side_model_;
   base::RepeatingClosure request_callback_;
+  base::WeakPtrFactory<ClientSideDetectionService> weak_factory_{this};
 };
 
 class MockSafeBrowsingUIManager : public SafeBrowsingUIManager {
@@ -96,76 +103,8 @@ class MockSafeBrowsingUIManager : public SafeBrowsingUIManager {
 
 }  // namespace
 
-class ClientSideDetectionHostBrowserTest : public InProcessBrowserTest {
- public:
-  ClientSideDetectionHostBrowserTest() = default;
-  ~ClientSideDetectionHostBrowserTest() override = default;
-
-  void SetUpOnMainThread() override {
-    model_.set_version(123);
-    model_.set_max_words_per_term(1);
-    VisualTarget* target = model_.mutable_vision_model()->add_targets();
-    target->set_digest("target1_digest");
-    // Create a hash corresponding to a blank screen.
-    std::string hash = "\x30";
-    for (int i = 0; i < 288; i++)
-      hash += "\xff";
-    target->set_hash(hash);
-    target->set_dimension_size(48);
-    MatchRule* match_rule = target->mutable_match_config()->add_match_rule();
-    // The actual hash distance is 76, so set the distance to 200 for safety. A
-    // completely random bitstring would expect a Hamming distance of 1152.
-    match_rule->set_hash_distance(200);
-  }
-
-  ClientSideModel& client_side_model() { return model_; }
-
- private:
-  ClientSideModel model_;
-};
-
-IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostBrowserTest,
-                       VerifyVisualFeatureCollection) {
-  FakeClientSideDetectionService fake_csd_service;
-  fake_csd_service.SetModel(client_side_model());
-
-  scoped_refptr<StrictMock<MockSafeBrowsingUIManager>> mock_ui_manager =
-      new StrictMock<MockSafeBrowsingUIManager>();
-
-  ASSERT_TRUE(embedded_test_server()->Start());
-  std::unique_ptr<ClientSideDetectionHost> csd_host =
-      ChromeClientSideDetectionHostDelegate::CreateHost(
-          browser()->tab_strip_model()->GetActiveWebContents());
-  csd_host->set_client_side_detection_service(&fake_csd_service);
-  csd_host->SendModelToRenderFrame();
-  csd_host->set_ui_manager(mock_ui_manager.get());
-
-  GURL page_url(embedded_test_server()->GetURL("/safe_browsing/malware.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
-
-  base::RunLoop run_loop;
-  fake_csd_service.SetRequestCallback(run_loop.QuitClosure());
-
-  // Bypass the pre-classification checks
-  csd_host->OnPhishingPreClassificationDone(/*should_classify=*/true);
-
-  run_loop.Run();
-
-  ASSERT_FALSE(fake_csd_service.saved_callback_is_null());
-
-  EXPECT_EQ(fake_csd_service.saved_request().model_version(), 123);
-  ASSERT_EQ(fake_csd_service.saved_request().vision_match_size(), 1);
-  EXPECT_EQ(
-      fake_csd_service.saved_request().vision_match(0).matched_target_digest(),
-      "target1_digest");
-
-  // Expect an interstitial to be shown
-  EXPECT_CALL(*mock_ui_manager, DisplayBlockingPage(_));
-  std::move(fake_csd_service.saved_callback()).Run(page_url, true);
-}
-
 class ClientSideDetectionHostPrerenderBrowserTest
-    : public ClientSideDetectionHostBrowserTest {
+    : public InProcessBrowserTest {
  public:
   ClientSideDetectionHostPrerenderBrowserTest()
       : prerender_helper_(base::BindRepeating(
@@ -179,13 +118,16 @@ class ClientSideDetectionHostPrerenderBrowserTest
 
   void SetUp() override {
     prerender_helper_.SetUp(embedded_test_server());
-    ClientSideDetectionHostBrowserTest::SetUp();
+    InProcessBrowserTest::SetUp();
   }
 
   void SetUpOnMainThread() override {
+    model_.set_version(123);
+    model_.set_max_words_per_term(1);
+    // This model will always trigger.
+    model_.set_threshold_probability(-1);
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
-    ClientSideDetectionHostBrowserTest::SetUpOnMainThread();
   }
 
   content::test::PrerenderTestHelper& prerender_helper() {
@@ -196,12 +138,15 @@ class ClientSideDetectionHostPrerenderBrowserTest
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
+  ClientSideModel& client_side_model() { return model_; }
+
  private:
+  ClientSideModel model_;
   content::test::PrerenderTestHelper prerender_helper_;
 };
 
 IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostPrerenderBrowserTest,
-                       PrerenderShouldNotAffectClientSideDetection) {
+                       DISABLED_PrerenderShouldNotAffectClientSideDetection) {
   FakeClientSideDetectionService fake_csd_service;
   fake_csd_service.SetModel(client_side_model());
 
@@ -211,9 +156,10 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostPrerenderBrowserTest,
   std::unique_ptr<ClientSideDetectionHost> csd_host =
       ChromeClientSideDetectionHostDelegate::CreateHost(
           browser()->tab_strip_model()->GetActiveWebContents());
-  csd_host->set_client_side_detection_service(&fake_csd_service);
-  csd_host->SendModelToRenderFrame();
+  csd_host->set_client_side_detection_service(fake_csd_service.GetWeakPtr());
   csd_host->set_ui_manager(mock_ui_manager.get());
+
+  fake_csd_service.SendModelToRenderers();
 
   GURL page_url(embedded_test_server()->GetURL("/safe_browsing/malware.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
@@ -240,10 +186,6 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostPrerenderBrowserTest,
   ASSERT_FALSE(fake_csd_service.saved_callback_is_null());
 
   EXPECT_EQ(fake_csd_service.saved_request().model_version(), 123);
-  ASSERT_EQ(fake_csd_service.saved_request().vision_match_size(), 1);
-  EXPECT_EQ(
-      fake_csd_service.saved_request().vision_match(0).matched_target_digest(),
-      "target1_digest");
 
   // Expect an interstitial to be shown.
   EXPECT_CALL(*mock_ui_manager, DisplayBlockingPage(_));
@@ -251,7 +193,7 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostPrerenderBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostPrerenderBrowserTest,
-                       ClassifyPrerenderedPageAfterActivation) {
+                       DISABLED_ClassifyPrerenderedPageAfterActivation) {
   FakeClientSideDetectionService fake_csd_service;
   fake_csd_service.SetModel(client_side_model());
 
@@ -261,9 +203,10 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostPrerenderBrowserTest,
   std::unique_ptr<ClientSideDetectionHost> csd_host =
       ChromeClientSideDetectionHostDelegate::CreateHost(
           browser()->tab_strip_model()->GetActiveWebContents());
-  csd_host->set_client_side_detection_service(&fake_csd_service);
-  csd_host->SendModelToRenderFrame();
+  csd_host->set_client_side_detection_service(fake_csd_service.GetWeakPtr());
   csd_host->set_ui_manager(mock_ui_manager.get());
+
+  fake_csd_service.SendModelToRenderers();
 
   base::RunLoop run_loop;
   fake_csd_service.SetRequestCallback(run_loop.QuitClosure());
@@ -285,10 +228,6 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostPrerenderBrowserTest,
   ASSERT_FALSE(fake_csd_service.saved_callback_is_null());
 
   EXPECT_EQ(fake_csd_service.saved_request().model_version(), 123);
-  ASSERT_EQ(fake_csd_service.saved_request().vision_match_size(), 1);
-  EXPECT_EQ(
-      fake_csd_service.saved_request().vision_match(0).matched_target_digest(),
-      "target1_digest");
 
   // Expect an interstitial to be shown.
   EXPECT_CALL(*mock_ui_manager, DisplayBlockingPage(_));

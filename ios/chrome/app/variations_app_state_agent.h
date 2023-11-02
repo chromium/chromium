@@ -1,0 +1,15 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef IOS_CHROME_APP_VARIATIONS_APP_STATE_AGENT_H_
+#define IOS_CHROME_APP_VARIATIONS_APP_STATE_AGENT_H_
+
+#import "ios/chrome/app/application_delegate/observing_app_state_agent.h"
+
+// The agent that manages the init stage transition for InitStageVariationsSeed.
+// See comment for InitStageVariationsSeed for more information.
+@interface VariationsAppStateAgent : SceneObservingAppAgent
+@end
+
+#endif  // IOS_CHROME_APP_VARIATIONS_APP_STATE_AGENT_H_

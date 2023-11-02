@@ -1,28 +1,28 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/metrics/metrics_app_interface.h"
+#import "ios/chrome/browser/metrics/metrics_app_interface.h"
 
-#include <memory>
-#include <string>
+#import <memory>
+#import <string>
 
-#include "base/strings/sys_string_conversions.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#include "components/metrics/demographics/demographic_metrics_test_utils.h"
-#include "components/metrics/metrics_service.h"
-#include "components/metrics_services_manager/metrics_services_manager.h"
-#include "components/network_time/network_time_tracker.h"
-#include "components/ukm/ukm_service.h"
-#include "components/ukm/ukm_test_helper.h"
-#include "ios/chrome/browser/application_context.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state_manager.h"
-#include "ios/chrome/browser/metrics/ios_chrome_metrics_service_accessor.h"
+#import "components/metrics/demographics/demographic_metrics_test_utils.h"
+#import "components/metrics/metrics_service.h"
+#import "components/metrics_services_manager/metrics_services_manager.h"
+#import "components/network_time/network_time_tracker.h"
+#import "components/ukm/ukm_service.h"
+#import "components/ukm/ukm_test_helper.h"
+#import "ios/chrome/browser/application_context/application_context.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state_manager.h"
+#import "ios/chrome/browser/metrics/ios_chrome_metrics_service_accessor.h"
 #import "ios/chrome/test/app/histogram_test_util.h"
 #import "ios/testing/nserror_util.h"
-#include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
-#include "third_party/metrics_proto/ukm/report.pb.h"
+#import "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
+#import "third_party/metrics_proto/ukm/report.pb.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

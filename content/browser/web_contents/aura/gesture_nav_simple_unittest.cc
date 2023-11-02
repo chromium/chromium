@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,7 +38,8 @@ class GestureNavTestWebContents : public TestWebContents {
             browser_context, std::move(fake_native_view),
             std::move(fake_contents_window));
     web_contents->Init(
-        WebContents::CreateParams(browser_context, std::move(instance)));
+        WebContents::CreateParams(browser_context, std::move(instance)),
+        blink::FramePolicy());
     return web_contents;
   }
 

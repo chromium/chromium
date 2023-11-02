@@ -1,12 +1,14 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_SAFE_BROWSING_CHROME_CLIENT_SIDE_DETECTION_HOST_DELEGATE_H_
 #define CHROME_BROWSER_SAFE_BROWSING_CHROME_CLIENT_SIDE_DETECTION_HOST_DELEGATE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/safe_browsing/content/browser/client_side_detection_host.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
+#include "content/public/browser/global_routing_id.h"
 
 namespace safe_browsing {
 
@@ -34,9 +36,13 @@ class ChromeClientSideDetectionHostDelegate
   scoped_refptr<SafeBrowsingDatabaseManager> GetSafeBrowsingDBManager()
       override;
   scoped_refptr<BaseUIManager> GetSafeBrowsingUIManager() override;
-  ClientSideDetectionService* GetClientSideDetectionService() override;
+  base::WeakPtr<ClientSideDetectionService> GetClientSideDetectionService()
+      override;
   void AddReferrerChain(ClientPhishingRequest* verdict,
-                        GURL current_url) override;
+                        GURL current_url,
+                        const content::GlobalRenderFrameHostId&
+                            current_outermost_main_frame_id) override;
+  raw_ptr<VerdictCacheManager> GetCacheManager() override;
 
   void SetNavigationObserverManagerForTesting(
       SafeBrowsingNavigationObserverManager* navigation_observer_manager) {
@@ -50,8 +56,8 @@ class ChromeClientSideDetectionHostDelegate
       SafeBrowsingNavigationObserverManager::AttributionResult result);
 
  private:
-  content::WebContents* web_contents_;
-  SafeBrowsingNavigationObserverManager* observer_manager_for_testing_ =
+  raw_ptr<content::WebContents> web_contents_;
+  raw_ptr<SafeBrowsingNavigationObserverManager> observer_manager_for_testing_ =
       nullptr;
 };
 

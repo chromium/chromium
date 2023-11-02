@@ -1,11 +1,11 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
 import("//third_party/closure_compiler/js_unit_tests.gni")
 import("//tools/polymer/html_to_js.gni")
-import("//ui/file_manager/base/gn/js_test_gen_html.gni")
+import("//ui/file_manager/base/gn/js_test_type_check.gni")
 
 visibility = [ "//ui/file_manager/file_manager/foreground/*" ]
 
@@ -20,20 +20,20 @@ group("closure_compile") {
   visibility += [ "//ui/file_manager:closure_compile" ]
   deps = [
     ":closure_compile_jsmodules",
-    ":js_test_gen_html_modules_type_check_auto",
+    ":js_test_type_check",
   ]
 }
 
 js_type_check("closure_compile_jsmodules") {
   is_polymer3 = true
-  closure_flags = default_closure_args + [
-                    "js_module_root=gen/ui/file_manager/",
-                    "js_module_root=../../ui/file_manager/",
-                  ]
+  closure_flags =
+      default_closure_args + [
+        "language_in=ECMASCRIPT_2020",
+        "js_module_root=gen/ui/file_manager/",
+        "js_module_root=" + rebase_path("//ui/file_manager/", root_build_dir),
+      ]
   deps = [
     ":files_format_dialog",
-    ":files_icon_button",
-    ":files_message",
     ":files_metadata_box",
     ":files_metadata_entry",
     ":files_password_dialog",
@@ -55,8 +55,6 @@ html_to_js("web_components") {
   visibility += [ "//ui/file_manager/*" ]
   js_files = [
     "files_format_dialog.js",
-    "files_icon_button.js",
-    "files_message.js",
     "files_metadata_box.js",
     "files_metadata_entry.js",
     "files_password_dialog.js",
@@ -76,44 +74,20 @@ html_to_js("web_components") {
 }
 
 js_library("files_format_dialog") {
-  visibility += [ "//ui/file_manager/audio_player/*" ]
   deps = [
+    "//ash/webui/common/resources:i18n_behavior",
     "//third_party/polymer/v3_0/components-chromium/iron-icon:iron-icon",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/file_manager/file_manager/common/js:files_app_entry_types",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:volume_info",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
-    "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/file_manager/file_manager/foreground/js:file_rename",
   ]
-}
-
-js_library("files_icon_button") {
-  visibility += [ "//ui/file_manager/audio_player/*" ]
-  deps = [
-    ":files_toggle_ripple",
-    "//third_party/polymer/v3_0/components-chromium/iron-behaviors:iron-button-state",
-    "//third_party/polymer/v3_0/components-chromium/iron-behaviors:iron-control-state",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_unittest("files_message_unittest.m") {
-  deps = [
-    ":files_message",
-    "//chrome/test/data/webui:chai_assert",
-    "//ui/webui/resources/js:assert.m",
-  ]
-}
-
-js_library("files_message") {
-  deps = [
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
-    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
-    "//ui/webui/resources/js:assert.m",
+  externs_list = [
+    "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",
+    "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
+    "//ui/webui/resources/cr_elements/cr_input/cr_input_externs.js",
   ]
 }
 
@@ -129,33 +103,36 @@ js_library("files_metadata_entry") {
   ]
 }
 
-js_unittest("files_password_dialog_unittest.m") {
+js_unittest("files_password_dialog_unittest") {
   deps = [
     ":files_password_dialog",
     "//chrome/test/data/webui:chai_assert",
     "//ui/file_manager/file_manager/common/js:test_error_reporting",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
   ]
+  externs_list =
+      [ "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js" ]
 }
 
 js_library("files_password_dialog") {
   deps = [
     "//ui/file_manager/file_manager/common/js:async_util",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
-    "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
     "//ui/webui/resources/js:load_time_data.m",
+  ]
+  externs_list = [
+    "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",
+    "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
+    "//ui/webui/resources/cr_elements/cr_input/cr_input_externs.js",
   ]
 }
 
 js_library("files_quick_view") {
   deps = [
-    ":files_icon_button",
     ":files_metadata_box",
     ":files_safe_media",
     ":files_tooltip",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
   ]
   externs_list = [
     "$externs_path/chrome_extensions.js",
@@ -166,14 +143,14 @@ js_library("files_quick_view") {
 js_library("files_ripple") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
   ]
 }
 
 js_library("files_safe_media") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
   ]
   externs_list = [ "//ui/file_manager/file_manager/externs/quick_view.js" ]
 }
@@ -185,24 +162,22 @@ js_library("files_spinner") {
 js_library("files_toast") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
-    "//ui/webui/resources/cr_elements/cr_toast:cr_toast",
+  ]
+  externs_list = [
+    "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",
+    "//ui/webui/resources/cr_elements/cr_toast/cr_toast_externs.js",
   ]
 }
 
 # TODO(tapted): Move this to //ui/file_manager/base.
 js_library("files_toggle_ripple") {
-  visibility += [ "//ui/file_manager/audio_player/*" ]
-
-  #visibility += [ "//ui/file_manager/gallery/*" ]
-
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
 
 # TODO(tapted): Move this to //ui/file_manager/base.
-js_unittest("files_tooltip_unittest.m") {
+js_unittest("files_tooltip_unittest") {
   deps = [
     ":files_tooltip",
     "//chrome/test/data/webui:chai_assert",
@@ -216,19 +191,20 @@ js_library("files_tooltip") {
   ]
 }
 
-js_unittest("files_toast_unittest.m") {
+js_unittest("files_toast_unittest") {
   deps = [
     ":files_toast",
     "//chrome/test/data/webui:chai_assert",
   ]
 }
 
-js_unittest("files_xf_elements_unittest.m") {
+js_unittest("files_xf_elements_unittest") {
   deps = [
     ":xf_display_panel",
     "//chrome/test/data/webui:chai_assert",
+    "//ui/file_manager/file_manager/common/js:test_error_reporting",
     "//ui/file_manager/file_manager/common/js:util",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:load_time_data.m",
   ]
 
@@ -236,14 +212,12 @@ js_unittest("files_xf_elements_unittest.m") {
 }
 
 js_library("xf_button") {
-  deps = [
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
-    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
-  ]
+  externs_list =
+      [ "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js" ]
 }
 
 js_library("xf_circular_progress") {
-  deps = [ "//ui/webui/resources/js:assert.m" ]
+  deps = [ "//ui/webui/resources/js:assert" ]
 }
 
 js_library("xf_display_panel") {
@@ -253,22 +227,22 @@ js_library("xf_display_panel") {
   ]
 }
 
-js_test_gen_html("js_test_gen_html_modules") {
+js_test_type_check("js_test_type_check") {
   is_polymer3 = true
   deps = [
-    ":files_message_unittest.m",
-    ":files_password_dialog_unittest.m",
-    ":files_toast_unittest.m",
-    ":files_tooltip_unittest.m",
-    ":files_xf_elements_unittest.m",
+    ":files_password_dialog_unittest",
+    ":files_toast_unittest",
+    ":files_tooltip_unittest",
+    ":files_xf_elements_unittest",
   ]
 
   closure_flags =
       strict_error_checking_closure_args + [
+        "language_in=ECMASCRIPT_2020",
         "generate_exports=false",
         "js_module_root=./gen/ui",
-        "js_module_root=../../ui",
-        "browser_resolver_prefix_replacements=\"chrome://test/=./\"",
+        "js_module_root=" + rebase_path("//ui", root_build_dir),
+        "browser_resolver_prefix_replacements=\"chrome://webui-test/=./\"",
         "hide_warnings_for=third_party/",
       ]
 }
@@ -278,6 +252,6 @@ js_library("xf_panel_item") {
     ":xf_button",
     ":xf_circular_progress",
     "//ui/file_manager/file_manager/common/js:util",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
   ]
 }

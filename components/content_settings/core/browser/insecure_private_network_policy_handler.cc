@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,8 +31,9 @@ InsecurePrivateNetworkPolicyHandler::~InsecurePrivateNetworkPolicyHandler() =
 void InsecurePrivateNetworkPolicyHandler::ApplyPolicySettings(
     const policy::PolicyMap& policies,
     PrefValueMap* prefs) {
-  const base::Value* value = policies.GetValue(policy_name());
-  if (value && value->is_bool()) {
+  const base::Value* value =
+      policies.GetValue(policy_name(), base::Value::Type::BOOLEAN);
+  if (value) {
     prefs->SetValue(
         prefs::kManagedDefaultInsecurePrivateNetworkSetting,
         base::Value(ConvertBooleanToContentSetting(value->GetBool())));

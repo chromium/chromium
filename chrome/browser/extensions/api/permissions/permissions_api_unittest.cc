@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -124,7 +124,7 @@ class PermissionsAPIUnitTest : public ExtensionServiceTestWithInstall {
         function.get(), args_string, browser(), api_test_utils::NONE);
     EXPECT_TRUE(run_result) << function->GetError();
 
-    const auto args_list = function->GetResultList()->GetList();
+    const auto& args_list = *function->GetResultList();
     if (args_list.empty()) {
       ADD_FAILURE() << "Result unexpectedly empty.";
       return false;
@@ -233,7 +233,7 @@ TEST_F(PermissionsAPIUnitTest, ContainsAndGetAllWithRuntimeHostPermissions) {
       ADD_FAILURE() << "Running function failed: " << function->GetError();
     }
 
-    return function->GetResultList()->GetList()[0].GetBool();
+    return (*function->GetResultList())[0].GetBool();
   };
 
   auto get_all = [this, &extension]() {
@@ -247,14 +247,14 @@ TEST_F(PermissionsAPIUnitTest, ContainsAndGetAllWithRuntimeHostPermissions) {
       return origins;
     }
 
-    const base::Value* results = function->GetResultList();
-    if (results->GetList().size() != 1u || !results->GetList()[0].is_dict()) {
+    const base::Value::List* results = function->GetResultList();
+    if (results->size() != 1u || !(*results)[0].is_dict()) {
       ADD_FAILURE() << "Invalid result value";
       return origins;
     }
 
     const base::Value* origins_value =
-        results->GetList()[0].FindKeyOfType("origins", base::Value::Type::LIST);
+        (*results)[0].FindKeyOfType("origins", base::Value::Type::LIST);
     for (const auto& value : origins_value->GetList())
       origins.push_back(value.GetString());
 
@@ -310,6 +310,23 @@ TEST_F(PermissionsAPIUnitTest, ContainsAndGetAllWithRuntimeHostPermissions) {
   // sane behavior.
   EXPECT_FALSE(contains_origin(kExampleCom));
   EXPECT_THAT(get_all(), testing::ElementsAre(kExampleCom));
+}
+
+// Tests requesting permissions that are already granted with the
+// permissions.request() API.
+TEST_F(PermissionsAPIUnitTest, RequestingGrantedPermissions) {
+  // Create an extension with requires all urls, and grant the permission.
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("extension").AddPermissions({"<all_urls>"}).Build();
+  AddExtensionAndGrantPermissions(*extension);
+
+  // Request access to any host permissions. No permissions should be prompted,
+  // since permissions that are already granted are not taken into account.
+  std::unique_ptr<const PermissionSet> prompted_permissions;
+  EXPECT_TRUE(RunRequestFunction(*extension, browser(),
+                                 R"([{"origins": ["https://*/*"]}])",
+                                 &prompted_permissions));
+  EXPECT_EQ(prompted_permissions, nullptr);
 }
 
 // Tests requesting withheld permissions with the permissions.request() API.

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,6 +37,7 @@ import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.view.ViewCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.NumberRollView;
 import org.chromium.components.browser_ui.widget.R;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
@@ -188,8 +189,7 @@ public class SelectableListToolbar<E>
         mModernToolbarSearchIconOffsetPx = getResources().getDimensionPixelSize(
                 R.dimen.selectable_list_search_icon_end_padding);
 
-        mNormalBackgroundColor =
-                ApiCompatibilityUtils.getColor(getResources(), R.color.default_bg_color);
+        mNormalBackgroundColor = SemanticColorUtils.getDefaultBgColor(getContext());
         setBackgroundColor(mNormalBackgroundColor);
 
         mIconColorList = AppCompatResources.getColorStateList(
@@ -351,7 +351,7 @@ public class SelectableListToolbar<E>
     /**
      * Shows the search edit text box and related views.
      */
-    public void showSearchView() {
+    public void showSearchView(boolean showKeyboard) {
         assert mHasSearchView;
 
         mIsSearching = true;
@@ -360,7 +360,10 @@ public class SelectableListToolbar<E>
         showSearchViewInternal();
 
         mSearchEditText.requestFocus();
-        KeyboardVisibilityDelegate.getInstance().showKeyboard(mSearchEditText);
+        if (showKeyboard) {
+            KeyboardVisibilityDelegate.getInstance().showKeyboard(mSearchEditText);
+        }
+
         setTitle(null);
     }
 
@@ -405,7 +408,7 @@ public class SelectableListToolbar<E>
 
         if (mIsDestroyed) return;
 
-        mSelectionDelegate.clearSelection();
+        if (mSelectionDelegate != null) mSelectionDelegate.clearSelection();
         if (mIsSearching) hideSearchView();
     }
 

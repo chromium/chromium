@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,10 +29,10 @@
 #include "net/base/hash_value.h"
 #include "net/base/host_port_pair.h"
 #include "net/cert/asn1_util.h"
-#include "net/cert/internal/name_constraints.h"
-#include "net/cert/internal/parse_name.h"
-#include "net/cert/internal/parsed_certificate.h"
 #include "net/cert/known_roots.h"
+#include "net/cert/pki/name_constraints.h"
+#include "net/cert/pki/parse_name.h"
+#include "net/cert/pki/parsed_certificate.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 
@@ -75,7 +75,7 @@ class OrgAttributeFilter {
   void AdvanceIfNecessary() {
     while (sequence_head_ != sequence_end_) {
       while (rdn_it_ != sequence_head_->end()) {
-        if (rdn_it_->type == net::TypeOrganizationNameOid())
+        if (rdn_it_->type == net::der::Input(net::kTypeOrganizationNameOid))
           return;
         ++rdn_it_;
       }
@@ -100,8 +100,10 @@ bool ParseOrganizationBoundName(net::der::Input dn_without_sequence,
     return false;
   for (const auto& rdn : *out) {
     for (const auto& attribute_type_and_value : rdn) {
-      if (attribute_type_and_value.type == net::TypeOrganizationNameOid())
+      if (attribute_type_and_value.type ==
+          net::der::Input(net::kTypeOrganizationNameOid)) {
         return true;
+      }
     }
   }
   return false;
@@ -227,7 +229,7 @@ bool ChromeRequireCTDelegate::MatchHostname(const std::string& hostname,
   // Scheme and port are ignored by the policy, so it's OK to construct a
   // new GURL here. However, |hostname| is in network form, not URL form,
   // so it's necessary to wrap IPv6 addresses in brackets.
-  std::set<url_matcher::URLMatcherConditionSet::ID> matching_ids =
+  std::set<base::MatcherStringPattern::ID> matching_ids =
       url_matcher_->MatchURL(
           GURL("https://" + net::HostPortPair(hostname, 443).HostForURL()));
   if (matching_ids.empty())

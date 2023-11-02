@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,14 +6,12 @@
 
 #include <memory>
 
-#include "ash/constants/devicetype.h"
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/task/post_task.h"
 #include "base/task/task_runner_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -21,7 +19,9 @@
 #include "chrome/browser/ash/power/ml/recent_events_counter.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chromeos/constants/devicetype.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"
+#include "chromeos/dbus/power_manager/user_charging_event.pb.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/viz/host/host_frame_sink_manager.h"
@@ -33,6 +33,12 @@ namespace ash {
 namespace power {
 
 namespace {
+
+using PastEvent = power_manager::PastChargingEvents::Event;
+using PastChargingEvents = power_manager::PastChargingEvents;
+using EventReason = power_manager::UserChargingEvent::Event::Reason;
+using UserChargingEvent = power_manager::UserChargingEvent;
+
 constexpr int kBucketSize = 15;
 
 // Interval at which data should be logged.
@@ -44,6 +50,9 @@ constexpr auto kUserActivityDuration = base::Minutes(30);
 
 // Granularity of input events is per minute.
 constexpr int kNumUserInputEventsBuckets = kUserActivityDuration.InMinutes();
+
+// Amount of time to wait between each try.
+const base::TimeDelta kDelayBetweenTrials = base::Seconds(5);
 
 constexpr char kSavedFileName[] = "past_charging_events.pb";
 constexpr char kSavedDir[] = "smartcharging";
@@ -195,6 +204,10 @@ SmartChargingManager::SmartChargingManager(
   blocking_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
       {base::TaskPriority::BEST_EFFORT, base::MayBlock(),
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
+
+  UpdateChargeHistory();
+  charge_history_timer_->Start(FROM_HERE, kLoggingInterval, this,
+                               &SmartChargingManager::UpdateChargeHistory);
 }
 
 SmartChargingManager::~SmartChargingManager() = default;
@@ -203,14 +216,14 @@ std::unique_ptr<SmartChargingManager> SmartChargingManager::CreateInstance() {
   // TODO(crbug.com/1028853): we are collecting data from Chromebook only. Since
   // this action is discouraged, we will modify the condition latter using dbus
   // calls.
-  if (GetDeviceType() != DeviceType::kChromebook)
+  if (chromeos::GetDeviceType() != chromeos::DeviceType::kChromebook)
     return nullptr;
 
   ui::UserActivityDetector* const detector = ui::UserActivityDetector::Get();
   DCHECK(detector);
 
   mojo::PendingRemote<viz::mojom::VideoDetectorObserver> video_observer;
-  std::unique_ptr<SmartChargingManager> screen_brightness_manager =
+  std::unique_ptr<SmartChargingManager> smart_charging_manager =
       std::make_unique<SmartChargingManager>(
           detector, video_observer.InitWithNewPipeAndPassReceiver(),
           session_manager::SessionManager::Get(),
@@ -221,7 +234,7 @@ std::unique_ptr<SmartChargingManager> SmartChargingManager::CreateInstance() {
       ->GetHostFrameSinkManager()
       ->AddVideoDetectorObserver(std::move(video_observer));
 
-  return screen_brightness_manager;
+  return smart_charging_manager;
 }
 
 void SmartChargingManager::OnUserActivity(const ui::Event* event) {
@@ -387,7 +400,7 @@ void SmartChargingManager::PopulateUserChargingEventProto(
     features.set_screen_brightness_percent(
         static_cast<int>(screen_brightness_percent_.value()));
 
-  features.set_duration_recent_video_playing(
+  features.set_duration_recent_video_playing_minutes(
       ukm::GetExponentialBucketMinForUserTiming(
           DurationRecentVideoPlaying().InMinutes()));
 
@@ -396,7 +409,7 @@ void SmartChargingManager::PopulateUserChargingEventProto(
   base::Time::Exploded now_exploded;
   now.LocalExplode(&now_exploded);
 
-  features.set_time_of_the_day(ukm::GetLinearBucketMin(
+  features.set_time_of_the_day_minutes(ukm::GetLinearBucketMin(
       static_cast<int64_t>(now_exploded.hour * 60 + now_exploded.minute),
       kBucketSize));
   features.set_day_of_week(static_cast<UserChargingEvent::Features::DayOfWeek>(
@@ -434,22 +447,24 @@ void SmartChargingManager::PopulateUserChargingEventProto(
 
   if (!last_charge_plugged_in.has_time() || !last_charge_unplugged.has_time())
     return;
-  features.set_time_since_last_charge(ukm::GetExponentialBucketMinForCounts1000(
-      now.ToDeltaSinceWindowsEpoch().InMinutes() -
-      last_charge_unplugged.time()));
-  features.set_duration_of_last_charge(
+  features.set_time_since_last_charge_minutes(
+      ukm::GetExponentialBucketMinForCounts1000(
+          now.ToDeltaSinceWindowsEpoch().InMinutes() -
+          last_charge_unplugged.time()));
+  features.set_duration_of_last_charge_minutes(
       ukm::GetExponentialBucketMinForCounts1000(last_charge_unplugged.time() -
                                                 last_charge_plugged_in.time()));
   features.set_battery_percentage_before_last_charge(
       last_charge_plugged_in.battery_percent());
   features.set_battery_percentage_of_last_charge(
       last_charge_unplugged.battery_percent());
-  features.set_timezone_difference_from_last_charge(
+  features.set_timezone_difference_from_last_charge_hours(
       (now.UTCMidnight() - now.LocalMidnight()).InHours() -
       last_charge_unplugged.timezone());
 }
 
 void SmartChargingManager::LogEvent(const EventReason& reason) {
+  UpdateChargeHistory();
   UserChargingEvent proto;
   proto.mutable_event()->set_event_id(++event_id_);
   proto.mutable_event()->set_reason(reason);
@@ -459,7 +474,7 @@ void SmartChargingManager::LogEvent(const EventReason& reason) {
   // ukm logger is available.
   user_charging_event_for_test_ = proto;
 
-  ukm_logger_->LogEvent(proto);
+  ukm_logger_->LogEvent(proto, charge_history_, base::Time::Now());
 
   AddPastEvent(reason);
   // Calls |UpdatePastEvents()| after |AddPastEvent()| to keep the number of
@@ -473,7 +488,13 @@ void SmartChargingManager::LogEvent(const EventReason& reason) {
 }
 
 void SmartChargingManager::OnTimerFired() {
-  LogEvent(UserChargingEvent_Event::PERIODIC_LOG);
+  LogEvent(power_manager::UserChargingEvent_Event::PERIODIC_LOG);
+}
+
+void SmartChargingManager::UpdateChargeHistory() {
+  chromeos::PowerManagerClient::Get()->GetChargeHistoryForAdaptiveCharging(
+      base::BindOnce(&SmartChargingManager::OnChargeHistoryReceived,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void SmartChargingManager::OnReceiveScreenBrightnessPercent(
@@ -631,6 +652,21 @@ std::tuple<PastEvent, PastEvent> SmartChargingManager::GetLastChargeEvents() {
     }
   }
   return std::make_tuple(plugged_in, unplugged);
+}
+
+void SmartChargingManager::OnChargeHistoryReceived(
+    absl::optional<power_manager::ChargeHistoryState> proto) {
+  if (proto.has_value()) {
+    charge_history_ = proto.value();
+    return;
+  }
+  // Retry if not get the charge history successfully
+  if (num_trials_getting_charge_history_-- > 0) {
+    retry_getting_charge_history_timer_->Start(
+        FROM_HERE, kDelayBetweenTrials,
+        base::BindOnce(&SmartChargingManager::UpdateChargeHistory,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 }  // namespace power

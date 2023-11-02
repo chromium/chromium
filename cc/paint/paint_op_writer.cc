@@ -1,12 +1,14 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "cc/paint/paint_op_writer.h"
 
 #include <memory>
+#include <type_traits>
 
 #include "base/bits.h"
+#include "base/notreached.h"
 #include "cc/paint/draw_image.h"
 #include "cc/paint/image_provider.h"
 #include "cc/paint/image_transfer_cache_entry.h"
@@ -18,15 +20,28 @@
 #include "cc/paint/skottie_wrapper.h"
 #include "cc/paint/transfer_cache_serialize_helper.h"
 #include "gpu/command_buffer/common/mailbox.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
+#include "third_party/skia/include/core/SkData.h"
+#include "third_party/skia/include/core/SkFlattenable.h"
+#include "third_party/skia/include/core/SkM44.h"
+#include "third_party/skia/include/core/SkMatrix.h"
+#include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkRect.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
+#include "third_party/skia/include/core/SkRegion.h"
+#include "third_party/skia/include/core/SkSamplingOptions.h"
+#include "third_party/skia/include/core/SkScalar.h"
 #include "third_party/skia/include/core/SkSerialProcs.h"
-#include "third_party/skia/include/core/SkTextBlob.h"
-#include "third_party/skia/src/core/SkRemoteGlyphCache.h"
+#include "third_party/skia/include/core/SkSize.h"
+#include "third_party/skia/include/private/chromium/GrSlug.h"
+#include "third_party/skia/include/private/chromium/SkChromeRemoteGlyphCache.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
 namespace cc {
 namespace {
-constexpr size_t kSkiaAlignment = 4u;
 
 SkIRect MakeSrcRect(const PaintImage& image) {
   if (!image)
@@ -81,31 +96,31 @@ PaintOpWriter::PaintOpWriter(void* memory,
                              const PaintOp::SerializeOptions& options,
                              bool enable_security_constraints)
     : memory_(static_cast<char*>(memory) + HeaderBytes()),
-      size_(size),
-      remaining_bytes_(size - HeaderBytes()),
+      size_(base::bits::AlignDown(size, Alignment())),
+      remaining_bytes_(size_ - HeaderBytes()),
       options_(options),
       enable_security_constraints_(enable_security_constraints) {
   // Leave space for header of type/skip.
   DCHECK_GE(size, HeaderBytes());
+  DCHECK_EQ(memory_.get(), base::bits::AlignUp(memory_.get(), Alignment()));
 }
 
 PaintOpWriter::~PaintOpWriter() = default;
 
 template <typename T>
 void PaintOpWriter::WriteSimple(const T& val) {
-  static_assert(base::is_trivially_copyable<T>::value, "");
+  static_assert(std::is_trivially_copyable_v<T>);
 
   // Round up each write to 4 bytes.  This is not technically perfect alignment,
   // but it is about 30% faster to post-align each write to 4 bytes than it is
   // to pre-align memory to the correct alignment.
-  // TODO(enne): maybe we should do this correctly and DCHECK alignment.
-  static constexpr size_t kAlign = 4;
-  size_t size = base::bits::AlignUp(sizeof(T), kAlign);
+  DCHECK_EQ(memory_.get(), base::bits::AlignUp(memory_.get(), Alignment()));
+  static constexpr size_t size = base::bits::AlignUp(sizeof(T), Alignment());
   EnsureBytes(size);
   if (!valid_)
     return;
 
-  reinterpret_cast<T*>(memory_)[0] = val;
+  reinterpret_cast<T*>(memory_.get())[0] = val;
 
   memory_ += size;
   remaining_bytes_ -= size;
@@ -121,19 +136,18 @@ void PaintOpWriter::WriteFlattenable(const SkFlattenable* val) {
     return;
 
   size_t bytes_written = val->serialize(
-      memory_, base::bits::AlignDown(remaining_bytes_, kSkiaAlignment));
+      memory_, base::bits::AlignDown(remaining_bytes_, Alignment()));
   if (bytes_written == 0u) {
     valid_ = false;
     return;
   }
   *size_memory = bytes_written;
-  memory_ += bytes_written;
-  remaining_bytes_ -= bytes_written;
+  DidWrite(bytes_written);
 }
 
 uint64_t* PaintOpWriter::WriteSize(size_t size) {
   AlignMemory(8);
-  uint64_t* memory = reinterpret_cast<uint64_t*>(memory_);
+  uint64_t* memory = reinterpret_cast<uint64_t*>(memory_.get());
   WriteSimple<uint64_t>(size);
   return memory;
 }
@@ -168,6 +182,10 @@ void PaintOpWriter::Write(const SkIRect& rect) {
 
 void PaintOpWriter::Write(const SkRRect& rect) {
   WriteSimple(rect);
+}
+
+void PaintOpWriter::Write(const SkColor4f& color) {
+  WriteSimple(color);
 }
 
 void PaintOpWriter::Write(const SkPath& path, UsePaintCache use_paint_cache) {
@@ -209,8 +227,7 @@ void PaintOpWriter::Write(const SkPath& path, UsePaintCache use_paint_cache) {
     options_.paint_cache->Put(PaintCacheDataType::kPath, id, bytes_written);
   }
   *bytes_to_skip = bytes_written;
-  memory_ += bytes_written;
-  remaining_bytes_ -= bytes_written;
+  DidWrite(bytes_written);
 }
 
 void PaintOpWriter::Write(const PaintFlags& flags, const SkM44& current_ctm) {
@@ -300,8 +317,7 @@ void PaintOpWriter::Write(scoped_refptr<SkottieWrapper> skottie) {
 
   DCHECK_LE(bytes_written, remaining_bytes_);
   *bytes_to_skip = bytes_written;
-  memory_ += bytes_written;
-  remaining_bytes_ -= bytes_written;
+  DidWrite(bytes_written);
 }
 
 void PaintOpWriter::WriteImage(const DecodedDrawImage& decoded_draw_image) {
@@ -339,8 +355,7 @@ void PaintOpWriter::WriteImage(const gpu::Mailbox& mailbox) {
     return;
 
   memcpy(memory_, mailbox.name, sizeof(mailbox.name));
-  memory_ += sizeof(mailbox.name);
-  remaining_bytes_ -= sizeof(mailbox.name);
+  DidWrite(sizeof(mailbox.name));
 }
 
 void PaintOpWriter::Write(const sk_sp<SkData>& data) {
@@ -380,46 +395,32 @@ void PaintOpWriter::Write(const SkColorSpace* color_space) {
 
   size_t written = color_space->writeToMemory(memory_);
   CHECK_EQ(written, size);
-
-  memory_ += written;
-  remaining_bytes_ -= written;
+  DidWrite(written);
 }
 
-void PaintOpWriter::Write(const sk_sp<SkTextBlob>& blob) {
-  DCHECK(blob);
+void PaintOpWriter::Write(const sk_sp<GrSlug>& slug) {
   if (!valid_)
     return;
 
-  AlignMemory(4);
-  uint32_t blob_id = blob->uniqueID();
-  Write(blob_id);
+  AssertAlignment(Alignment());
   uint64_t* size_memory = WriteSize(0u);
   if (!valid_)
     return;
 
-  if (options_.paint_cache->Get(PaintCacheDataType::kTextBlob, blob_id))
-    return;
-
-  auto encodeTypeface = [](SkTypeface* tf, void* ctx) -> sk_sp<SkData> {
-    return static_cast<SkStrikeServer*>(ctx)->serializeTypeface(tf);
-  };
-  DCHECK(options_.strike_server);
-  SkSerialProcs procs;
-  procs.fTypefaceProc = encodeTypeface;
-  procs.fTypefaceCtx = options_.strike_server;
-
-  size_t bytes_written = blob->serialize(
-      procs, memory_, base::bits::AlignDown(remaining_bytes_, kSkiaAlignment));
-  if (bytes_written == 0u) {
-    valid_ = false;
-    return;
+  size_t bytes_written = 0;
+  if (slug) {
+    // TODO(penghuang): should we use a unique id to avoid sending the same
+    // slug?
+    bytes_written = slug->serialize(
+        memory_, base::bits::AlignDown(remaining_bytes_, Alignment()));
+    if (bytes_written == 0u) {
+      valid_ = false;
+      return;
+    }
   }
 
-  options_.paint_cache->Put(PaintCacheDataType::kTextBlob, blob_id,
-                            bytes_written);
   *size_memory = bytes_written;
-  memory_ += bytes_written;
-  remaining_bytes_ -= bytes_written;
+  DidWrite(bytes_written);
 }
 
 sk_sp<PaintShader> PaintOpWriter::TransformShaderIfNecessary(
@@ -543,7 +544,9 @@ void PaintOpWriter::Write(const PaintShader* shader,
   }
 
   WriteSize(shader->colors_.size());
-  WriteData(shader->colors_.size() * sizeof(SkColor), shader->colors_.data());
+  WriteData(shader->colors_.size() *
+                (shader->colors_.size() > 0 ? sizeof(shader->colors_[0]) : 0u),
+            shader->colors_.data());
 
   WriteSize(shader->positions_.size());
   WriteData(shader->positions_.size() * sizeof(SkScalar),
@@ -565,15 +568,18 @@ void PaintOpWriter::Write(SkYUVAInfo::Subsampling subsampling) {
 }
 
 void PaintOpWriter::WriteData(size_t bytes, const void* input) {
-  EnsureBytes(bytes);
-  if (!valid_)
-    return;
+  DCHECK_EQ(memory_.get(),
+            base::bits::AlignUp(memory_.get(), PaintOpWriter::Alignment()));
   if (bytes == 0)
     return;
 
+  EnsureBytes(bytes);
+
+  if (!valid_)
+    return;
+
   memcpy(memory_, input, bytes);
-  memory_ += bytes;
-  remaining_bytes_ -= bytes;
+  DidWrite(bytes);
 }
 
 void PaintOpWriter::AlignMemory(size_t alignment) {
@@ -581,7 +587,7 @@ void PaintOpWriter::AlignMemory(size_t alignment) {
   DCHECK_GT(alignment, 0u);
   DCHECK_EQ(alignment & (alignment - 1), 0u);
 
-  uintptr_t memory = reinterpret_cast<uintptr_t>(memory_);
+  uintptr_t memory = reinterpret_cast<uintptr_t>(memory_.get());
   // The following is equivalent to:
   //   padding = (alignment - memory % alignment) % alignment;
   // because alignment is a power of two. This doesn't use modulo operator
@@ -601,7 +607,7 @@ void PaintOpWriter::Write(const PaintFilter* filter, const SkM44& current_ctm) {
     return;
   }
   WriteEnum(filter->type());
-  auto* crop_rect = filter->crop_rect();
+  auto* crop_rect = filter->GetCropRect();
   WriteSimple(static_cast<uint32_t>(!!crop_rect));
   if (crop_rect) {
     WriteSimple(*crop_rect);
@@ -610,7 +616,7 @@ void PaintOpWriter::Write(const PaintFilter* filter, const SkM44& current_ctm) {
   if (!valid_)
     return;
 
-  AlignMemory(kSkiaAlignment);
+  AssertAlignment(Alignment());
   switch (filter->type()) {
     case PaintFilter::Type::kNullFilter:
       NOTREACHED();
@@ -711,7 +717,8 @@ void PaintOpWriter::Write(const DropShadowPaintFilter& filter,
   WriteSimple(filter.dy());
   WriteSimple(filter.sigma_x());
   WriteSimple(filter.sigma_y());
-  WriteSimple(filter.color());
+  // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
+  WriteSimple(filter.color().toSkColor());
   WriteEnum(filter.shadow_mode());
   Write(filter.input().get(), current_ctm);
 }
@@ -875,7 +882,8 @@ void PaintOpWriter::Write(const LightingDistantPaintFilter& filter,
                           const SkM44& current_ctm) {
   WriteEnum(filter.lighting_type());
   WriteSimple(filter.direction());
-  WriteSimple(filter.light_color());
+  // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
+  WriteSimple(filter.light_color().toSkColor());
   WriteSimple(filter.surface_scale());
   WriteSimple(filter.kconstant());
   WriteSimple(filter.shininess());
@@ -886,7 +894,8 @@ void PaintOpWriter::Write(const LightingPointPaintFilter& filter,
                           const SkM44& current_ctm) {
   WriteEnum(filter.lighting_type());
   WriteSimple(filter.location());
-  WriteSimple(filter.light_color());
+  // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
+  WriteSimple(filter.light_color().toSkColor());
   WriteSimple(filter.surface_scale());
   WriteSimple(filter.kconstant());
   WriteSimple(filter.shininess());
@@ -900,7 +909,8 @@ void PaintOpWriter::Write(const LightingSpotPaintFilter& filter,
   WriteSimple(filter.target());
   WriteSimple(filter.specular_exponent());
   WriteSimple(filter.cutoff_angle());
-  WriteSimple(filter.light_color());
+  // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
+  WriteSimple(filter.light_color().toSkColor());
   WriteSimple(filter.surface_scale());
   WriteSimple(filter.kconstant());
   WriteSimple(filter.shininess());
@@ -964,8 +974,7 @@ void PaintOpWriter::Write(const PaintRecord* record,
   // The serializer should have failed if it ran out of space. DCHECK to verify
   // that it wrote at most as many bytes as we had left.
   DCHECK_LE(serializer.written(), remaining_bytes_);
-  memory_ += serializer.written();
-  remaining_bytes_ -= serializer.written();
+  DidWrite(serializer.written());
 }
 
 void PaintOpWriter::Write(const SkRegion& region) {
@@ -976,6 +985,14 @@ void PaintOpWriter::Write(const SkRegion& region) {
 
   WriteSize(bytes_written);
   WriteData(bytes_written, data.get());
+}
+
+inline void PaintOpWriter::DidWrite(size_t bytes_written) {
+  // All data are aligned with PaintOpWriter::Alignment() at least.
+  size_t aligned_bytes = base::bits::AlignUp(bytes_written, Alignment());
+  memory_ += aligned_bytes;
+  DCHECK_LE(aligned_bytes, remaining_bytes_);
+  remaining_bytes_ -= aligned_bytes;
 }
 
 inline void PaintOpWriter::EnsureBytes(size_t required_bytes) {

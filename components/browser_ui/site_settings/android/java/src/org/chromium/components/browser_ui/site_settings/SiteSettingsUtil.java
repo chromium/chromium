@@ -1,10 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.components.browser_ui.site_settings;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.content_public.browser.ContentFeatureList;
@@ -14,7 +15,8 @@ import org.chromium.content_public.browser.ContentFeatureList;
  */
 public class SiteSettingsUtil {
     // Defining the order for content settings based on http://crbug.com/610358
-    static final int[] SETTINGS_ORDER = {
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public static final int[] SETTINGS_ORDER = {
             ContentSettingsType.COOKIES,
             ContentSettingsType.GEOLOCATION,
             ContentSettingsType.MEDIASTREAM_CAMERA,
@@ -34,6 +36,7 @@ public class SiteSettingsUtil {
             ContentSettingsType.VR,
             ContentSettingsType.AR,
             ContentSettingsType.IDLE_DETECTION,
+            ContentSettingsType.FEDERATED_IDENTITY_API,
             ContentSettingsType.SENSORS,
             ContentSettingsType.AUTO_DARK_WEB_CONTENT,
             ContentSettingsType.REQUEST_DESKTOP_SITE,

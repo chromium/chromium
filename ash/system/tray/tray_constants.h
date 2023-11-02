@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,6 +28,9 @@ constexpr int kTrayImageItemPadding = 3;
 
 // The width of the tray menu.
 constexpr int kTrayMenuWidth = 360;
+
+// The width of the revamped tray menu.
+constexpr int kRevampedTrayMenuWidth = 440;
 
 extern const int kTrayPopupAutoCloseDelayInSeconds;
 extern const int kTrayPopupAutoCloseDelayInSecondsWithSpokenFeedback;
@@ -102,30 +105,31 @@ constexpr float kAudioSliderIgnoreUpdateThreshold = 0.01;
 // Duration for the collapse / expand animation in ms.
 constexpr int kSystemMenuCollapseExpandAnimationDurationMs = 500;
 
-constexpr gfx::Insets kUnifiedMenuItemPadding(0, 16, 16, 16);
-constexpr gfx::Insets kUnifiedSystemInfoViewPadding(0, 16, 16, 16);
-constexpr gfx::Insets kUnifiedManagedDeviceViewPadding(0, 16, 11, 16);
-constexpr gfx::Insets kUnifiedSliderRowPadding(0, 12, 8, 16);
-constexpr gfx::Insets kUnifiedSliderBubblePadding(12, 0, 4, 0);
-constexpr gfx::Insets kUnifiedSliderPadding(0, 16);
-constexpr gfx::Insets kMicGainSliderViewPadding(0, 52, 8, 0);
-constexpr gfx::Insets kMicGainSliderPadding(0, 8, 0, 48);
+constexpr auto kUnifiedMenuItemPadding = gfx::Insets::TLBR(0, 16, 16, 16);
+constexpr auto kUnifiedSystemInfoViewPadding = gfx::Insets::TLBR(0, 16, 16, 16);
+constexpr auto kUnifiedManagedDeviceViewPadding =
+    gfx::Insets::TLBR(0, 16, 11, 16);
+constexpr auto kUnifiedSliderRowPadding = gfx::Insets::TLBR(0, 12, 8, 16);
+constexpr auto kUnifiedSliderBubblePadding = gfx::Insets::TLBR(12, 0, 4, 0);
+constexpr auto kUnifiedSliderPadding = gfx::Insets::VH(0, 16);
+constexpr auto kMicGainSliderViewPadding = gfx::Insets::TLBR(0, 52, 8, 0);
+constexpr auto kMicGainSliderPadding = gfx::Insets::TLBR(0, 8, 0, 48);
 constexpr int kMicGainSliderViewSpacing = 8;
 
 constexpr int kTrayRadioButtonInterSpacing = 20;
-constexpr gfx::Insets kTrayRadioButtonPadding(16, 20, 0, 0);
-constexpr gfx::Insets kTraySubLabelPadding(4, 56, 16, 16);
+constexpr auto kTrayRadioButtonPadding = gfx::Insets::TLBR(16, 20, 0, 0);
+constexpr auto kTraySubLabelPadding = gfx::Insets::TLBR(4, 56, 16, 16);
 
 constexpr int kMessageCenterCollapseThreshold = 175;
 constexpr int kStackedNotificationBarHeight = 32;
 constexpr int kStackedNotificationBarCollapsedHeight = 40;
 constexpr int kNotificationIconStackThreshold = 28;
 constexpr int kUnifiedSliderViewSpacing = 12;
-constexpr int kUnifiedMenuPadding = 8;
 constexpr int kUnifiedMessageCenterBubbleSpacing = 8;
 constexpr int kUnifiedNotificationCenterSpacing = 16;
 constexpr int kUnifiedTrayBatteryIconSize = 20;
 constexpr int kUnifiedTrayIconSize = 18;
+constexpr int kUnifiedTrayNonRoundedSideRadius = 4;
 constexpr int kUnifiedTraySubIconSize = 15;
 constexpr int kUnifiedTrayTextTopPadding = 1;
 constexpr int kUnifiedTrayTextRightPadding = 1;
@@ -133,17 +137,19 @@ constexpr int kUnifiedTrayTimeLeftPadding = 1;
 constexpr int kUnifiedTraySpacingBetweenIcons = 6;
 constexpr int kUnifiedTrayBatteryWidth = 12;
 constexpr int kUnifiedTrayBatteryBottomPadding = 1;
-constexpr int kUnifiedTrayCornerRadius = 16;
 constexpr int kUnifiedTrayContentPadding = 12;
 constexpr int kUnifiedTopShortcutSpacing = 16;
 constexpr int kUnifiedNotificationHiddenLineHeight = 20;
 constexpr int kUnifiedTopShortcutContainerTopPadding = 12;
 constexpr int kUnifiedNotificationMinimumHeight = 40;
 constexpr int kUnifiedBackButtonLeftPadding = 16;
-constexpr gfx::Insets kUnifiedTopShortcutPadding(0, 16);
-constexpr gfx::Insets kUnifiedNotificationHiddenPadding(6, 16);
+constexpr auto kUnifiedTopShortcutPadding = gfx::Insets::VH(0, 16);
+constexpr auto kUnifiedNotificationHiddenPadding = gfx::Insets::VH(6, 16);
+constexpr int kUnifiedNotificationSeparatorThickness = 1;
 constexpr gfx::Insets kUnifiedCircularButtonFocusPadding(4);
 constexpr gfx::Insets kTrayBackgroundFocusPadding(1);
+constexpr gfx::Insets kUnifiedSystemInfoBatteryIconPadding =
+    gfx::Insets::TLBR(2, 2, 2, 6);
 
 // Size of an icon drawn inside top shortcut buttons.
 // A dark disc with |kTrayItemSize| diameter is drawn in the background.
@@ -156,7 +162,8 @@ constexpr gfx::Insets kUnifiedSystemInfoDateViewPadding(3);
 
 // Constants used in StackedNotificationBar located on top of the message
 // center.
-constexpr gfx::Insets kStackedNotificationIconsContainerPadding(1, 16, 0, 8);
+constexpr auto kStackedNotificationIconsContainerPadding =
+    gfx::Insets::TLBR(1, 14, 0, 8);
 constexpr int kStackedNotificationBarMaxIcons = 3;
 constexpr int kStackedNotificationBarIconSpacing = 6;
 constexpr int kStackedNotificationIconSize = 18;
@@ -196,7 +203,14 @@ constexpr int kUnifiedFeaturePodMaxRows = 3;
 constexpr int kUnifiedFeaturePodMinRows = 1;
 constexpr int kUnifiedFeaturePodMaxItemsInCollapsed = 5;
 constexpr int kUnifiedFeaturePodsPageSpacing = 48;
-constexpr int kUnifiedNotificationSeparatorThickness = 1;
+
+// Constants used in FeatureTiles of QuickSettingsView.
+constexpr int kFeatureTileItemsInRow = 2;
+constexpr int kFeatureTileMaxRows = 4;
+constexpr int kFeatureTileMinRows = 1;
+constexpr int kFeatureTileHeight = 64;
+
+// Height of the page indicator view.
 constexpr int kPageIndicatorViewMaxHeight = 20;
 
 // Constants used in system tray page transition animations.
@@ -216,8 +230,8 @@ constexpr int kUnifiedTopShortcutButtonDefaultSpacing = 16;
 constexpr int kUnifiedTopShortcutButtonMinSpacing = 4;
 
 // Constants used in the detailed view in UnifiedSystemTray.
-constexpr gfx::Insets kUnifiedDetailedViewPadding(0, 0, 8, 0);
-constexpr gfx::Insets kUnifiedDetailedViewTitlePadding(0, 0, 0, 16);
+constexpr auto kUnifiedDetailedViewTitlePadding =
+    gfx::Insets::TLBR(0, 0, 0, 16);
 constexpr int kUnifiedDetailedViewTitleRowHeight = 64;
 
 // Constants used for the status area overflow button and state.
@@ -236,7 +250,7 @@ constexpr int kPrivacyScreenToastMaxWidth = 512;
 constexpr int kPrivacyScreenToastHeight = 64;
 constexpr int kPrivacyScreenToastMainLabelFontSize = 14;
 constexpr int kPrivacyScreenToastSubLabelFontSize = 13;
-constexpr gfx::Insets kPrivacyScreenToastInsets(10, 16);
+constexpr auto kPrivacyScreenToastInsets = gfx::Insets::VH(10, 16);
 constexpr int kPrivacyScreenToastSpacing = 16;
 
 // Constants used for media tray.
@@ -245,6 +259,13 @@ constexpr int kMediaTrayPadding = 8;
 // There is no active user session during oobe, which means it doesn't support
 // dark mode. Sets the icon color to be constant.
 constexpr SkColor kIconColorInOobe = gfx::kGoogleGrey700;
+
+// Constants used for the autozoom toast.
+constexpr int kAutozoomToastMinWidth = 160;
+constexpr int kAutozoomToastMaxWidth = 400;
+constexpr int kAutozoomToastMainLabelFontSize = 14;
+constexpr auto kAutozoomToastInsets = gfx::Insets::VH(10, 16);
+constexpr int kAutozoomToastSpacing = 16;
 
 }  // namespace ash
 

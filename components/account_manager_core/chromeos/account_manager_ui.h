@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,11 @@
 #include "base/callback.h"
 #include "base/callback_forward.h"
 #include "base/component_export.h"
+#include "components/account_manager_core/account_addition_options.h"
 
 namespace account_manager {
 
-// This interface is used by `AccountManagerFacadeImpl` to show system UI
+// This interface is used by `AccountManagerMojoService` to show system UI
 // (system dialogs, OS Settings etc.)
 class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerUI {
  public:
@@ -21,8 +22,10 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerUI {
   virtual ~AccountManagerUI();
 
   // Show system dialog for account addition.
+  // `options` are parameters that define the dialog UI.
   // `close_dialog_closure` callback will be called when dialog is closed.
-  virtual void ShowAddAccountDialog(base::OnceClosure close_dialog_closure) = 0;
+  virtual void ShowAddAccountDialog(const AccountAdditionOptions& options,
+                                    base::OnceClosure close_dialog_closure) = 0;
 
   // Show system dialog for account reauthentication.
   // `email` is the email of account that will be reauthenticated.

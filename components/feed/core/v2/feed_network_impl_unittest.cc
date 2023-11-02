@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,22 +7,31 @@
 #include <memory>
 #include <utility>
 
+#include "base/base64.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/chromeos_buildflags.h"
 #include "components/feed/core/common/pref_names.h"
+#include "components/feed/core/proto/v2/wire/client_info.pb.h"
+#include "components/feed/core/proto/v2/wire/feed_query.pb.h"
 #include "components/feed/core/proto/v2/wire/request.pb.h"
 #include "components/feed/core/proto/v2/wire/response.pb.h"
 #include "components/feed/core/proto/v2/wire/upload_actions_request.pb.h"
 #include "components/feed/core/proto/v2/wire/upload_actions_response.pb.h"
 #include "components/feed/core/proto/v2/wire/web_feeds.pb.h"
+#include "components/feed/core/v2/feed_network.h"
+#include "components/feed/core/v2/public/types.h"
 #include "components/feed/core/v2/test/callback_receiver.h"
+#include "components/feed/feed_feature_list.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "net/http/http_response_headers.h"
@@ -43,8 +52,32 @@
 namespace feed {
 namespace {
 
+constexpr char kEmail[] = "example@gmail.com";
+
+MATCHER_P(EqualsProto,
+          message,
+          "Match a proto Message equal to the matcher's argument.") {
+  return arg.ShortDebugString() == message.ShortDebugString();
+}
+
 using testing::ElementsAre;
 using QueryRequestResult = FeedNetwork::QueryRequestResult;
+
+feedwire::ClientInfo ExpectHasClientInfoHeader(
+    network::ResourceRequest request) {
+  EXPECT_TRUE(request.headers.HasHeader(feed::kClientInfoHeader));
+  std::string clientinfo;
+  EXPECT_TRUE(request.headers.GetHeader(feed::kClientInfoHeader, &clientinfo));
+  std::string decoded_clientinfo;
+  EXPECT_TRUE(base::Base64Decode(clientinfo, &decoded_clientinfo));
+  feedwire::ClientInfo clientinfo_proto;
+  EXPECT_TRUE(clientinfo_proto.ParseFromString(decoded_clientinfo));
+  return clientinfo_proto;
+}
+
+void ExpectNoClientInfoHeader(network::ResourceRequest request) {
+  EXPECT_FALSE(request.headers.HasHeader(feed::kClientInfoHeader));
+}
 
 feedwire::Request GetTestFeedRequest(feedwire::FeedQuery::RequestReason reason =
                                          feedwire::FeedQuery::MANUAL_REFRESH) {
@@ -72,28 +105,42 @@ feedwire::UploadActionsResponse GetTestActionResponse() {
   return response;
 }
 
+void SetConsentLevelNeededForFeedPersonalization(
+    base::test::ScopedFeatureList& feature_list,
+    signin::ConsentLevel consent_level) {
+  std::vector<base::test::FeatureRef> enable_features, disable_features;
+  switch (consent_level) {
+    case signin::ConsentLevel::kSignin:
+      enable_features.push_back(kPersonalizeFeedNonSyncUsers);
+      break;
+    case signin::ConsentLevel::kSync:
+      disable_features.push_back(kPersonalizeFeedNonSyncUsers);
+      break;
+  }
+  feature_list.InitWithFeatures(std::move(enable_features),
+                                std::move(disable_features));
+}
+
 class TestDelegate : public FeedNetworkImpl::Delegate {
  public:
   explicit TestDelegate(signin::IdentityTestEnvironment* identity_test_env)
       : identity_test_env_(identity_test_env) {}
 
   std::string GetLanguageTag() override { return "en"; }
-  std::string GetSyncSignedInGaia() override {
-    return identity_test_env_->identity_manager()
-        ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
-        .gaia;
+  AccountInfo GetAccountInfo() override {
+    return AccountInfo{
+        identity_test_env_->identity_manager()->GetPrimaryAccountInfo(
+            GetConsentLevelNeededForPersonalizedFeed())};
   }
+  bool IsOffline() override { return is_offline_; }
 
-  signin::IdentityTestEnvironment* identity_test_env_;
+  bool is_offline_ = false;
+  raw_ptr<signin::IdentityTestEnvironment> identity_test_env_;
 };
 
 class FeedNetworkTest : public testing::Test {
  public:
-  FeedNetworkTest() {
-    identity_test_env_.MakePrimaryAccountAvailable("example@gmail.com",
-                                                   signin::ConsentLevel::kSync);
-    identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
-  }
+  FeedNetworkTest() = default;
   FeedNetworkTest(FeedNetworkTest&) = delete;
   FeedNetworkTest& operator=(const FeedNetworkTest&) = delete;
   ~FeedNetworkTest() override = default;
@@ -107,6 +154,12 @@ class FeedNetworkTest : public testing::Test {
     feed_network_ = std::make_unique<FeedNetworkImpl>(
         &delegate_, identity_test_env_.identity_manager(), "dummy_api_key",
         shared_url_loader_factory_, &profile_prefs_);
+    SignIn(signin::ConsentLevel::kSync);
+  }
+
+  void SignIn(signin::ConsentLevel consent_level) {
+    identity_test_env_.MakePrimaryAccountAvailable(kEmail, consent_level);
+    identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
   }
 
   FeedNetwork* feed_network() { return feed_network_.get(); }
@@ -115,7 +168,20 @@ class FeedNetworkTest : public testing::Test {
     return &identity_test_env_;
   }
 
-  std::string gaia() { return delegate_.GetSyncSignedInGaia(); }
+  AccountInfo account_info() { return delegate_.GetAccountInfo(); }
+  RequestMetadata request_metadata() {
+    RequestMetadata request_metadata;
+    request_metadata.chrome_info.version = base::Version({1, 2, 3, 4});
+    request_metadata.chrome_info.channel = version_info::Channel::STABLE;
+    request_metadata.chrome_info.start_surface = false;
+    request_metadata.display_metrics.density = 1;
+    request_metadata.display_metrics.width_pixels = 2;
+    request_metadata.display_metrics.height_pixels = 3;
+    request_metadata.language_tag = "en-US";
+    request_metadata.client_instance_id = "client_instance_id";
+
+    return request_metadata;
+  }
 
   network::TestURLLoaderFactory* test_factory() { return &test_factory_; }
 
@@ -172,6 +238,9 @@ class FeedNetworkTest : public testing::Test {
         test_factory()->GetPendingRequest(0);
     CHECK(pending_request);
     network::ResourceRequest resource_request = pending_request->request;
+
+    ExpectNoClientInfoHeader(resource_request);
+
     Respond(pending_request->request.url,
             PrependResponseLength(response_string), code);
     task_environment_.FastForwardUntilNoTasksRemain();
@@ -204,18 +273,22 @@ class FeedNetworkTest : public testing::Test {
       net::HttpStatusCode code) {
     std::string binary_proto;
     response_message.SerializeToString(&binary_proto);
-    return RespondToDiscoverRequest(binary_proto, code);
+    network::ResourceRequest resource_request =
+        RespondToDiscoverRequest(binary_proto, code);
+    ExpectHasClientInfoHeader(resource_request);
+    return resource_request;
   }
 
  protected:
   scoped_refptr<net::HttpResponseHeaders> response_headers_;
 
- private:
+ protected:
   signin::IdentityTestEnvironment identity_test_env_;
   TestDelegate delegate_{&identity_test_env_};
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   std::unique_ptr<FeedNetwork> feed_network_;
+  RequestMetadata request_metadata_;
   network::TestURLLoaderFactory test_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
   TestingPrefServiceSimple profile_prefs_;
@@ -225,7 +298,7 @@ class FeedNetworkTest : public testing::Test {
 TEST_F(FeedNetworkTest, SendQueryRequestEmpty) {
   CallbackReceiver<QueryRequestResult> receiver;
   feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
-                                   feedwire::Request(), gaia(),
+                                   feedwire::Request(), account_info(),
                                    receiver.Bind());
 
   ASSERT_TRUE(receiver.GetResult());
@@ -237,7 +310,7 @@ TEST_F(FeedNetworkTest, SendQueryRequestEmpty) {
 TEST_F(FeedNetworkTest, SendQueryRequestSendsValidRequest) {
   CallbackReceiver<QueryRequestResult> receiver;
   feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
-                                   GetTestFeedRequest(), gaia(),
+                                   GetTestFeedRequest(), account_info(),
                                    receiver.Bind());
   network::ResourceRequest resource_request =
       RespondToQueryRequest("", net::HTTP_OK);
@@ -256,10 +329,56 @@ TEST_F(FeedNetworkTest, SendQueryRequestSendsValidRequest) {
       "ContentSuggestions.Feed.Network.ResponseStatus.FeedQuery", 200, 1);
 }
 
-TEST_F(FeedNetworkTest, SendQueryRequestForceSignedOut) {
+// These tests need ClearPrimaryAccount() which isn't supported by ChromeOS.
+// RevokeSyncConsent() sometimes clears the account rather than just changing
+// the consent level so we may as well sign out and sign back in ourselves.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(FeedNetworkTest, SendQueryRequestPersonalized_AccountSignin_NeedSignin) {
+  // Request should be signed in if account consent level is kSignin and consent
+  // level needed for personalization is kSignin.
+  identity_env()->ClearPrimaryAccount();
+  SignIn(signin::ConsentLevel::kSignin);
+  base::test::ScopedFeatureList feature_list;
+  SetConsentLevelNeededForFeedPersonalization(feature_list,
+                                              signin::ConsentLevel::kSignin);
+
+  CallbackReceiver<QueryRequestResult> receiver;
+
+  feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
+                                   GetTestFeedRequest(), account_info(),
+                                   receiver.Bind());
+  network::ResourceRequest resource_request =
+      RespondToQueryRequest(GetTestFeedResponse(), net::HTTP_OK);
+
+  EXPECT_EQ(
+      "https://www.google.com/httpservice/retry/TrellisClankService/"
+      "FeedQuery?reqpld=CAHCPgQSAggB&fmt=bin&hl=en",
+      resource_request.url);
+  EXPECT_EQ("GET", resource_request.method);
+  EXPECT_FALSE(resource_request.headers.HasHeader("content-encoding"));
+
+  // Verify that it's a signed-in request.
+  std::string authorization;
+  EXPECT_TRUE(
+      resource_request.headers.GetHeader("Authorization", &authorization));
+  EXPECT_EQ(authorization, "Bearer access_token");
+
+  histogram().ExpectBucketCount(
+      "ContentSuggestions.Feed.Network.ResponseStatus.FeedQuery", 200, 1);
+}
+
+TEST_F(FeedNetworkTest, SendQueryRequestPersonalized_AccountSignin_NeedSync) {
+  // Request should be "signed out" if account consent level is kSignin but
+  // consent level needed for personalization is kSync.
+  identity_env()->ClearPrimaryAccount();
+  SignIn(signin::ConsentLevel::kSignin);
+  base::test::ScopedFeatureList feature_list;
+  SetConsentLevelNeededForFeedPersonalization(feature_list,
+                                              signin::ConsentLevel::kSync);
+
   CallbackReceiver<QueryRequestResult> receiver;
   feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
-                                   GetTestFeedRequest(), /*gaia=*/"",
+                                   GetTestFeedRequest(), AccountInfo{},
                                    receiver.Bind());
   network::ResourceRequest resource_request =
       RespondToQueryRequest("", net::HTTP_OK);
@@ -268,13 +387,65 @@ TEST_F(FeedNetworkTest, SendQueryRequestForceSignedOut) {
       "https://www.google.com/httpservice/retry/TrellisClankService/"
       "FeedQuery?reqpld=CAHCPgQSAggB&fmt=bin&hl=en&key=dummy_api_key",
       resource_request.url);
+  EXPECT_EQ(AccountInfo{},
+            receiver.RunAndGetResult().response_info.account_info);
+  EXPECT_FALSE(resource_request.headers.HasHeader("Authorization"));
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
+TEST_F(FeedNetworkTest, SendQueryRequestPersonalized_AccountSync_NeedSignin) {
+  // Request should be signed in if account consent level is kSync and consent
+  // level needed for personalization is kSignin.
+  base::test::ScopedFeatureList feature_list;
+  SetConsentLevelNeededForFeedPersonalization(feature_list,
+                                              signin::ConsentLevel::kSignin);
+
+  CallbackReceiver<QueryRequestResult> receiver;
+
+  feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
+                                   GetTestFeedRequest(), account_info(),
+                                   receiver.Bind());
+  network::ResourceRequest resource_request =
+      RespondToQueryRequest(GetTestFeedResponse(), net::HTTP_OK);
+
+  EXPECT_EQ(
+      "https://www.google.com/httpservice/retry/TrellisClankService/"
+      "FeedQuery?reqpld=CAHCPgQSAggB&fmt=bin&hl=en",
+      resource_request.url);
+  EXPECT_EQ("GET", resource_request.method);
+  EXPECT_FALSE(resource_request.headers.HasHeader("content-encoding"));
+
+  // Verify that it's a signed-in request.
+  std::string authorization;
+  EXPECT_TRUE(
+      resource_request.headers.GetHeader("Authorization", &authorization));
+  EXPECT_EQ(authorization, "Bearer access_token");
+
+  histogram().ExpectBucketCount(
+      "ContentSuggestions.Feed.Network.ResponseStatus.FeedQuery", 200, 1);
+}
+
+TEST_F(FeedNetworkTest, SendQueryRequestForceSignedOut) {
+  CallbackReceiver<QueryRequestResult> receiver;
+  feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
+                                   GetTestFeedRequest(), AccountInfo{},
+                                   receiver.Bind());
+  network::ResourceRequest resource_request =
+      RespondToQueryRequest("", net::HTTP_OK);
+
+  EXPECT_EQ(
+      "https://www.google.com/httpservice/retry/TrellisClankService/"
+      "FeedQuery?reqpld=CAHCPgQSAggB&fmt=bin&hl=en&key=dummy_api_key",
+      resource_request.url);
+  EXPECT_EQ(AccountInfo{},
+            receiver.RunAndGetResult().response_info.account_info);
   EXPECT_FALSE(resource_request.headers.HasHeader("Authorization"));
 }
 
 TEST_F(FeedNetworkTest, SendQueryRequestInvalidResponse) {
   CallbackReceiver<QueryRequestResult> receiver;
   feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
-                                   GetTestFeedRequest(), gaia(),
+                                   GetTestFeedRequest(), account_info(),
                                    receiver.Bind());
   RespondToQueryRequest("invalid", net::HTTP_OK);
 
@@ -287,7 +458,7 @@ TEST_F(FeedNetworkTest, SendQueryRequestInvalidResponse) {
 TEST_F(FeedNetworkTest, SendQueryRequestReceivesResponse) {
   CallbackReceiver<QueryRequestResult> receiver;
   feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
-                                   GetTestFeedRequest(), gaia(),
+                                   GetTestFeedRequest(), account_info(),
                                    receiver.Bind());
   RespondToQueryRequest(GetTestFeedResponse(), net::HTTP_OK);
 
@@ -298,7 +469,7 @@ TEST_F(FeedNetworkTest, SendQueryRequestReceivesResponse) {
       "https://www.google.com/httpservice/retry/TrellisClankService/FeedQuery",
       result.response_info.base_request_url);
   EXPECT_NE(base::Time(), result.response_info.fetch_time);
-  EXPECT_TRUE(result.response_info.was_signed_in);
+  EXPECT_EQ(account_info(), result.response_info.account_info);
   EXPECT_EQ(GetTestFeedResponse().response_version(),
             result.response_body->response_version());
 }
@@ -306,7 +477,7 @@ TEST_F(FeedNetworkTest, SendQueryRequestReceivesResponse) {
 TEST_F(FeedNetworkTest, SendQueryRequestIgnoresBodyForNon200Response) {
   CallbackReceiver<QueryRequestResult> receiver;
   feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
-                                   GetTestFeedRequest(), gaia(),
+                                   GetTestFeedRequest(), account_info(),
                                    receiver.Bind());
   RespondToQueryRequest(GetTestFeedResponse(), net::HTTP_FORBIDDEN);
 
@@ -321,9 +492,9 @@ TEST_F(FeedNetworkTest, SendQueryRequestIgnoresBodyForNon200Response) {
 
 TEST_F(FeedNetworkTest, SendQueryRequestFailsForWrongUser) {
   CallbackReceiver<QueryRequestResult> receiver;
-  feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
-                                   GetTestFeedRequest(), "some_other_gaia",
-                                   receiver.Bind());
+  feed_network()->SendQueryRequest(
+      NetworkRequestType::kFeedQuery, GetTestFeedRequest(),
+      {"other-gaia", "other@foo.com"}, receiver.Bind());
   task_environment_.RunUntilIdle();
   network::TestURLLoaderFactory::PendingRequest* pending_request =
       test_factory()->GetPendingRequest(0);
@@ -332,6 +503,8 @@ TEST_F(FeedNetworkTest, SendQueryRequestFailsForWrongUser) {
   ASSERT_TRUE(receiver.GetResult());
   const QueryRequestResult& result = *receiver.GetResult();
   EXPECT_EQ(net::ERR_INVALID_ARGUMENT, result.response_info.status_code);
+  EXPECT_EQ(AccountTokenFetchStatus::kUnexpectedAccount,
+            result.response_info.account_token_fetch_status);
   EXPECT_FALSE(result.response_body);
   histogram().ExpectBucketCount(
       "ContentSuggestions.Feed.Network.ResponseStatus.FeedQuery",
@@ -341,7 +514,7 @@ TEST_F(FeedNetworkTest, SendQueryRequestFailsForWrongUser) {
 TEST_F(FeedNetworkTest, CancelRequest) {
   CallbackReceiver<QueryRequestResult> receiver;
   feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
-                                   GetTestFeedRequest(), gaia(),
+                                   GetTestFeedRequest(), account_info(),
                                    receiver.Bind());
   feed_network()->CancelRequests();
   task_environment_.FastForwardUntilNoTasksRemain();
@@ -353,7 +526,7 @@ TEST_F(FeedNetworkTest, RequestTimeout) {
   base::HistogramTester histogram_tester;
   CallbackReceiver<QueryRequestResult> receiver;
   feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
-                                   GetTestFeedRequest(), gaia(),
+                                   GetTestFeedRequest(), account_info(),
                                    receiver.Bind());
   task_environment_.FastForwardBy(base::Seconds(30));
 
@@ -364,16 +537,93 @@ TEST_F(FeedNetworkTest, RequestTimeout) {
       "ContentSuggestions.Feed.Network.Duration", base::Seconds(30), 1);
 }
 
+TEST_F(FeedNetworkTest, AccountTokenFetchTimeout) {
+  identity_test_env_.RemoveRefreshTokenForPrimaryAccount();
+  identity_test_env_.SetAutomaticIssueOfAccessTokens(false);
+
+  CallbackReceiver<QueryRequestResult> receiver;
+  feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
+                                   GetTestFeedRequest(), account_info(),
+                                   receiver.Bind());
+  task_environment_.FastForwardBy(kAccessTokenFetchTimeout - base::Seconds(1));
+  ASSERT_FALSE(receiver.GetResult());
+
+  task_environment_.FastForwardBy(base::Seconds(1));
+
+  ASSERT_TRUE(receiver.GetResult());
+  const QueryRequestResult& result = *receiver.GetResult();
+  EXPECT_EQ(AccountTokenFetchStatus::kTimedOut,
+            result.response_info.account_token_fetch_status);
+  EXPECT_EQ(net::ERR_TIMED_OUT, result.response_info.status_code);
+}
+
+TEST_F(FeedNetworkTest, AccountTokenRefreshCompleteAfterFetchTimeout) {
+  identity_test_env_.SetAutomaticIssueOfAccessTokens(false);
+
+  CallbackReceiver<QueryRequestResult> receiver;
+  feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
+                                   GetTestFeedRequest(), account_info(),
+                                   receiver.Bind());
+  // Time-out the token fetch and then complete it.
+  task_environment_.FastForwardBy(kAccessTokenFetchTimeout);
+  identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
+  identity_test_env_.SetRefreshTokenForPrimaryAccount();
+
+  // Ensure the fetch failed.
+  const QueryRequestResult& result = receiver.RunAndGetResult();
+  EXPECT_EQ(AccountTokenFetchStatus::kTimedOut,
+            result.response_info.account_token_fetch_status);
+  EXPECT_EQ(net::ERR_TIMED_OUT, result.response_info.status_code);
+}
+
+TEST_F(FeedNetworkTest, AccountTokenRefreshCompleteBeforeFetchTimeout) {
+  identity_test_env_.SetAutomaticIssueOfAccessTokens(false);
+
+  CallbackReceiver<QueryRequestResult> receiver;
+  feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
+                                   GetTestFeedRequest(), account_info(),
+                                   receiver.Bind());
+  // Time-out the token fetch just after it completes.
+  identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
+  identity_test_env_.SetRefreshTokenForPrimaryAccount();
+  task_environment_.FastForwardBy(kAccessTokenFetchTimeout);
+  RespondToQueryRequest(GetTestFeedResponse(), net::HTTP_OK);
+
+  // Ensure the fetch failed.
+  const QueryRequestResult& result = receiver.RunAndGetResult();
+  EXPECT_EQ(AccountTokenFetchStatus::kUnspecified,
+            result.response_info.account_token_fetch_status);
+  EXPECT_EQ(net::HTTP_OK, result.response_info.status_code);
+}
+
+TEST_F(FeedNetworkTest, FetchImmediatelyAbortsIfOffline) {
+  // Trying to fetch the token would timeout, but because the device is offline,
+  // the fetch quits immediately.
+  identity_test_env_.RemoveRefreshTokenForPrimaryAccount();
+  identity_test_env_.SetAutomaticIssueOfAccessTokens(false);
+  delegate_.is_offline_ = true;
+
+  CallbackReceiver<QueryRequestResult> receiver;
+  feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
+                                   GetTestFeedRequest(), account_info(),
+                                   receiver.Bind());
+  ASSERT_TRUE(receiver.GetResult());
+  const QueryRequestResult& result = *receiver.GetResult();
+  EXPECT_EQ(AccountTokenFetchStatus::kUnspecified,
+            result.response_info.account_token_fetch_status);
+  EXPECT_EQ(net::ERR_INTERNET_DISCONNECTED, result.response_info.status_code);
+}
+
 TEST_F(FeedNetworkTest, ParallelRequests) {
   CallbackReceiver<QueryRequestResult> receiver1, receiver2;
   feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
-                                   GetTestFeedRequest(), gaia(),
+                                   GetTestFeedRequest(), account_info(),
                                    receiver1.Bind());
   // Make another request with a different URL so Respond() won't affect both
   // requests.
   feed_network()->SendQueryRequest(
       NetworkRequestType::kFeedQuery,
-      GetTestFeedRequest(feedwire::FeedQuery::NEXT_PAGE_SCROLL), gaia(),
+      GetTestFeedRequest(feedwire::FeedQuery::NEXT_PAGE_SCROLL), account_info(),
       receiver2.Bind());
 
   // Respond to both requests, avoiding FastForwardUntilNoTasksRemain until
@@ -397,7 +647,7 @@ TEST_F(FeedNetworkTest, ShouldReportResponseStatusCode) {
   CallbackReceiver<QueryRequestResult> receiver;
   base::HistogramTester histogram_tester;
   feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
-                                   GetTestFeedRequest(), gaia(),
+                                   GetTestFeedRequest(), account_info(),
                                    receiver.Bind());
   RespondToQueryRequest(GetTestFeedResponse(), net::HTTP_FORBIDDEN);
 
@@ -413,7 +663,7 @@ TEST_F(FeedNetworkTest, ShouldIncludeAPIKeyForAuthError) {
   base::HistogramTester histogram_tester;
 
   feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
-                                   GetTestFeedRequest(), gaia(),
+                                   GetTestFeedRequest(), account_info(),
                                    receiver.Bind());
   identity_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
       GoogleServiceAuthError(
@@ -440,7 +690,7 @@ TEST_F(FeedNetworkTest, ShouldIncludeAPIKeyForNoSignedInUser) {
   identity_env()->ClearPrimaryAccount();
   CallbackReceiver<QueryRequestResult> receiver;
   feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
-                                   GetTestFeedRequest(), gaia(),
+                                   GetTestFeedRequest(), account_info(),
                                    receiver.Bind());
 
   network::ResourceRequest resource_request =
@@ -457,7 +707,7 @@ TEST_F(FeedNetworkTest, TestDurationHistogram) {
   const base::TimeDelta kDuration = base::Milliseconds(12345);
 
   feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
-                                   GetTestFeedRequest(), gaia(),
+                                   GetTestFeedRequest(), account_info(),
                                    receiver.Bind());
   task_environment_.FastForwardBy(kDuration);
   RespondToQueryRequest(GetTestFeedResponse(), net::HTTP_OK);
@@ -474,7 +724,7 @@ TEST_F(FeedNetworkTest, TestHostOverrideWithAuthHeader) {
   profile_prefs().SetString(feed::prefs::kHostOverrideHost,
                             "http://www.newhost.com/");
   feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
-                                   GetTestFeedRequest(), gaia(),
+                                   GetTestFeedRequest(), account_info(),
                                    receiver.Bind());
 
   ASSERT_EQ("www.newhost.com", GetPendingRequestURL().host());
@@ -495,7 +745,7 @@ TEST_F(FeedNetworkTest, TestHostOverrideWithPath) {
   profile_prefs().SetString(feed::prefs::kHostOverrideHost,
                             "http://www.newhost.com/testpath");
   feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
-                                   GetTestFeedRequest(), gaia(),
+                                   GetTestFeedRequest(), account_info(),
                                    receiver.Bind());
 
   ASSERT_EQ("www.newhost.com", GetPendingRequestURL().host());
@@ -508,7 +758,7 @@ TEST_F(FeedNetworkTest, TestHostOverrideWithPathTrailingSlash) {
   profile_prefs().SetString(feed::prefs::kHostOverrideHost,
                             "http://www.newhost.com/testpath/");
   feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
-                                   GetTestFeedRequest(), gaia(),
+                                   GetTestFeedRequest(), account_info(),
                                    receiver.Bind());
 
   ASSERT_EQ("www.newhost.com", GetPendingRequestURL().host());
@@ -520,23 +770,70 @@ TEST_F(FeedNetworkTest, SendApiRequest_UploadActions) {
   CallbackReceiver<FeedNetwork::ApiResult<feedwire::UploadActionsResponse>>
       receiver;
   feed_network()->SendApiRequest<UploadActionsDiscoverApi>(
-      GetTestActionRequest(), gaia(), receiver.Bind());
-  RespondToActionRequest(GetTestActionResponse(), net::HTTP_OK);
+      GetTestActionRequest(), account_info(), request_metadata(),
+      receiver.Bind());
+
+  network::ResourceRequest request =
+      RespondToActionRequest(GetTestActionResponse(), net::HTTP_OK);
 
   ASSERT_TRUE(receiver.GetResult());
   const FeedNetwork::ApiResult<feedwire::UploadActionsResponse>& result =
       *receiver.GetResult();
   EXPECT_EQ(net::HTTP_OK, result.response_info.status_code);
   EXPECT_TRUE(result.response_body);
+
   histogram().ExpectBucketCount(
       "ContentSuggestions.Feed.Network.ResponseStatus.UploadActions", 200, 1);
+}
+
+TEST_F(FeedNetworkTest, SendApiRequest_DecodesClientInfo_WithClientInstanceId) {
+  CallbackReceiver<FeedNetwork::ApiResult<feedwire::UploadActionsResponse>>
+      receiver;
+  feed_network()->SendApiRequest<UploadActionsDiscoverApi>(
+      GetTestActionRequest(), account_info(), request_metadata(),
+      receiver.Bind());
+
+  network::ResourceRequest request =
+      RespondToActionRequest(GetTestActionResponse(), net::HTTP_OK);
+  feedwire::ClientInfo client_info = ExpectHasClientInfoHeader(request);
+
+  EXPECT_EQ(feedwire::ClientInfo::CHROME_ANDROID, client_info.app_type());
+  EXPECT_EQ(feedwire::Version::RELEASE, client_info.app_version().build_type());
+  EXPECT_EQ(1, client_info.app_version().major());
+  EXPECT_EQ(2, client_info.app_version().minor());
+  EXPECT_EQ(3, client_info.app_version().build());
+  EXPECT_EQ(4, client_info.app_version().revision());
+  EXPECT_FALSE(client_info.chrome_client_info().start_surface());
+  EXPECT_EQ("client_instance_id", client_info.client_instance_id());
+}
+
+TEST_F(FeedNetworkTest, SendApiRequest_DecodesClientInfo_WithSessionId) {
+  RequestMetadata request_metadata_with_session = request_metadata();
+  request_metadata_with_session.session_id = "session_id";
+  request_metadata_with_session.client_instance_id = "";
+
+  CallbackReceiver<FeedNetwork::ApiResult<feedwire::UploadActionsResponse>>
+      receiver;
+  feed_network()->SendApiRequest<UploadActionsDiscoverApi>(
+      GetTestActionRequest(), account_info(),
+      std::move(request_metadata_with_session), receiver.Bind());
+  network::ResourceRequest request =
+      RespondToActionRequest(GetTestActionResponse(), net::HTTP_OK);
+  feedwire::ClientInfo client_info = ExpectHasClientInfoHeader(request);
+
+  EXPECT_EQ("session_id", client_info.chrome_client_info().session_id());
+  EXPECT_EQ("", client_info.client_instance_id());
 }
 
 TEST_F(FeedNetworkTest, SendApiRequest_UploadActionsFailsForWrongUser) {
   CallbackReceiver<FeedNetwork::ApiResult<feedwire::UploadActionsResponse>>
       receiver;
+  AccountInfo other_account;
+  other_account.gaia = "some_other_gaia";
+  other_account.email = "some@other.com";
   feed_network()->SendApiRequest<UploadActionsDiscoverApi>(
-      GetTestActionRequest(), "some_other_gaia", receiver.Bind());
+      GetTestActionRequest(), other_account, request_metadata(),
+      receiver.Bind());
   task_environment_.RunUntilIdle();
   network::TestURLLoaderFactory::PendingRequest* pending_request =
       test_factory()->GetPendingRequest(0);
@@ -546,6 +843,8 @@ TEST_F(FeedNetworkTest, SendApiRequest_UploadActionsFailsForWrongUser) {
   const FeedNetwork::ApiResult<feedwire::UploadActionsResponse>& result =
       *receiver.GetResult();
   EXPECT_EQ(net::ERR_INVALID_ARGUMENT, result.response_info.status_code);
+  EXPECT_EQ(AccountTokenFetchStatus::kUnexpectedAccount,
+            result.response_info.account_token_fetch_status);
   EXPECT_FALSE(result.response_body);
   histogram().ExpectBucketCount(
       "ContentSuggestions.Feed.Network.ResponseStatus.UploadActions",
@@ -556,7 +855,8 @@ TEST_F(FeedNetworkTest, SendApiRequestSendsValidRequest_UploadActions) {
   CallbackReceiver<FeedNetwork::ApiResult<feedwire::UploadActionsResponse>>
       receiver;
   feed_network()->SendApiRequest<UploadActionsDiscoverApi>(
-      GetTestActionRequest(), gaia(), receiver.Bind());
+      GetTestActionRequest(), account_info(), request_metadata(),
+      receiver.Bind());
   network::ResourceRequest resource_request =
       RespondToActionRequest(GetTestActionResponse(), net::HTTP_OK);
 
@@ -592,8 +892,8 @@ TEST_F(FeedNetworkTest, SendApiRequest_Unfollow) {
   CallbackReceiver<
       FeedNetwork::ApiResult<feedwire::webfeed::UnfollowWebFeedResponse>>
       receiver;
-  feed_network()->SendApiRequest<UnfollowWebFeedDiscoverApi>({}, gaia(),
-                                                             receiver.Bind());
+  feed_network()->SendApiRequest<UnfollowWebFeedDiscoverApi>(
+      {}, account_info(), request_metadata(), receiver.Bind());
   RespondToDiscoverRequest("", net::HTTP_OK);
 
   ASSERT_TRUE(receiver.GetResult());
@@ -606,8 +906,8 @@ TEST_F(FeedNetworkTest, SendApiRequest_Unfollow) {
 }
 
 TEST_F(FeedNetworkTest, SendApiRequest_ListWebFeedsSendsCorrectContentType) {
-  feed_network()->SendApiRequest<ListWebFeedsDiscoverApi>({}, gaia(),
-                                                          base::DoNothing());
+  feed_network()->SendApiRequest<ListWebFeedsDiscoverApi>(
+      {}, account_info(), request_metadata(), base::DoNothing());
   std::string requested_content_type;
   RespondToDiscoverRequest("", net::HTTP_OK)
       .headers.GetHeader("content-type", &requested_content_type);
@@ -615,11 +915,24 @@ TEST_F(FeedNetworkTest, SendApiRequest_ListWebFeedsSendsCorrectContentType) {
   EXPECT_EQ("application/x-protobuf", requested_content_type);
 }
 
+TEST_F(FeedNetworkTest,
+       SendApiRequest_DiscoFeedRequestsSendResponseEncodingHeader) {
+  feed_network()->SendApiRequest<QueryBackgroundFeedDiscoverApi>(
+      {}, account_info(), request_metadata(), base::DoNothing());
+
+  std::string requested_response_encoding;
+  RespondToDiscoverRequest("", net::HTTP_OK)
+      .headers.GetHeader("x-response-encoding", &requested_response_encoding);
+
+  EXPECT_EQ("gzip", requested_response_encoding);
+}
+
 TEST_F(FeedNetworkTest, TestOverrideHostDoesNotAffectDiscoverApis) {
   profile_prefs().SetString(feed::prefs::kHostOverrideHost,
                             "http://www.newhost.com/");
   feed_network()->SendApiRequest<UploadActionsDiscoverApi>(
-      GetTestActionRequest(), gaia(), base::DoNothing());
+      GetTestActionRequest(), account_info(), request_metadata(),
+      base::DoNothing());
 
   EXPECT_EQ(GURL("https://discover-pa.googleapis.com/v1/actions:upload"),
             GetPendingRequestURL());
@@ -629,10 +942,29 @@ TEST_F(FeedNetworkTest, TestOverrideDiscoverEndpoint) {
   profile_prefs().SetString(feed::prefs::kDiscoverAPIEndpointOverride,
                             "http://www.newhost.com/");
   feed_network()->SendApiRequest<UploadActionsDiscoverApi>(
-      GetTestActionRequest(), gaia(), base::DoNothing());
+      GetTestActionRequest(), account_info(), request_metadata(),
+      base::DoNothing());
 
   EXPECT_EQ(GURL("http://www.newhost.com/v1/actions:upload"),
             GetPendingRequestURL());
+}
+
+TEST_F(FeedNetworkTest, AppCloseRefreshRequestReasonHasUrl) {
+  CallbackReceiver<QueryRequestResult> receiver;
+  feedwire::Request request = GetTestFeedRequest();
+  request.mutable_feed_request()->mutable_feed_query()->set_reason(
+      feedwire::FeedQuery::APP_CLOSE_REFRESH);
+  feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery, request,
+                                   account_info(), receiver.Bind());
+  RespondToQueryRequest(GetTestFeedResponse(), net::HTTP_OK);
+
+  ASSERT_TRUE(receiver.GetResult());
+  const QueryRequestResult& result = *receiver.GetResult();
+  EXPECT_EQ(net::HTTP_OK, result.response_info.status_code);
+  EXPECT_EQ(
+      "https://www.google.com/httpservice/noretry/TrellisClankService/"
+      "FeedQuery",
+      result.response_info.base_request_url);
 }
 
 }  // namespace

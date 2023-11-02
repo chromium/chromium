@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,17 +8,20 @@
 
 #include <memory>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
+#include "base/bind.h"
 #include "base/check_op.h"
+#include "base/dcheck_is_on.h"
 #include "base/files/file_path.h"
 #include "base/format_macros.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/types/pass_key.h"
 #include "sql/database.h"
 #include "sql/recover_module/module.h"
 #include "sql/statement.h"
@@ -89,9 +92,17 @@ Recovery::~Recovery() {
 }
 
 bool Recovery::Init(const base::FilePath& db_path) {
-  // Prevent the possibility of re-entering this code due to errors
-  // which happen while executing this code.
-  DCHECK(!db_->has_error_callback());
+#if DCHECK_IS_ON()
+  // set_error_callback() will DCHECK if the database already has an error
+  // callback. The recovery process is likely to result in SQLite errors, and
+  // those shouldn't get surfaced to any callback.
+  db_->set_error_callback(base::BindRepeating(
+      [](int sqlite_error_code, sql::Statement* statement) {}));
+
+  // Undo the set_error_callback() above. We only used it for its DCHECK
+  // behavior.
+  db_->reset_error_callback();
+#endif  // DCHECK_IS_ON()
 
   // Break any outstanding transactions on the original database to
   // prevent deadlocks reading through the attached version.
@@ -111,15 +122,15 @@ bool Recovery::Init(const base::FilePath& db_path) {
   // TODO(shess): It would be better to just close the handle, but it
   // is necessary for the final backup which rewrites things.  It
   // might be reasonable to close then re-open the handle.
-  ignore_result(db_->Execute("PRAGMA writable_schema=1"));
-  ignore_result(db_->Execute("PRAGMA locking_mode=NORMAL"));
-  ignore_result(db_->Execute("SELECT COUNT(*) FROM sqlite_schema"));
+  std::ignore = db_->Execute("PRAGMA writable_schema=1");
+  std::ignore = db_->Execute("PRAGMA locking_mode=NORMAL");
+  std::ignore = db_->Execute("SELECT COUNT(*) FROM sqlite_schema");
 
   // TODO(shess): If this is a common failure case, it might be
   // possible to fall back to a memory database.  But it probably
   // implies that the SQLite tmpdir logic is busted, which could cause
   // a variety of other random issues in our code.
-  if (!recover_db_.OpenTemporary())
+  if (!recover_db_.OpenTemporary(base::PassKey<Recovery>()))
     return false;
 
   // Enable the recover virtual table for this connection.
@@ -359,7 +370,7 @@ bool Recovery::AutoRecoverTable(const char* table_name,
     return false;
 
   if (!db()->Execute(recover_insert.c_str())) {
-    ignore_result(db()->Execute(recover_drop.c_str()));
+    std::ignore = db()->Execute(recover_drop.c_str());
     return false;
   }
 
@@ -542,7 +553,7 @@ std::unique_ptr<Recovery> Recovery::BeginRecoverDatabase(
 
   // Overwrite any sequences created.
   if (recovery->db()->DoesTableExist("corrupt.sqlite_sequence")) {
-    ignore_result(recovery->db()->Execute("DELETE FROM main.sqlite_sequence"));
+    std::ignore = recovery->db()->Execute("DELETE FROM main.sqlite_sequence");
     size_t rows_recovered;
     if (!recovery->AutoRecoverTable("sqlite_sequence", &rows_recovered)) {
       Recovery::Rollback(std::move(recovery));
@@ -568,7 +579,7 @@ void Recovery::RecoverDatabase(Database* db, const base::FilePath& db_path) {
   std::unique_ptr<sql::Recovery> recovery = BeginRecoverDatabase(db, db_path);
 
   if (recovery)
-    ignore_result(Recovery::Recovered(std::move(recovery)));
+    std::ignore = Recovery::Recovered(std::move(recovery));
 }
 
 void Recovery::RecoverDatabaseWithMetaVersion(Database* db,
@@ -583,7 +594,7 @@ void Recovery::RecoverDatabaseWithMetaVersion(Database* db,
     return;
   }
 
-  ignore_result(Recovery::Recovered(std::move(recovery)));
+  std::ignore = Recovery::Recovered(std::move(recovery));
 }
 
 // static

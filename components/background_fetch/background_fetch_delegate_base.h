@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include <set>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/download/public/background_service/download_params.h"
 #include "content/public/browser/background_fetch_delegate.h"
@@ -58,7 +59,7 @@ class BackgroundFetchDelegateBase : public content::BackgroundFetchDelegate {
 
   // Abort all ongoing downloads and fail the fetch. Currently only used when
   // the bytes downloaded exceed the total download size, if specified.
-  void FailFetch(const std::string& job_id);
+  void FailFetch(const std::string& job_id, const std::string& download_guid);
 
   void OnDownloadStarted(
       const std::string& guid,
@@ -104,7 +105,10 @@ class BackgroundFetchDelegateBase : public content::BackgroundFetchDelegate {
 
   // Called when the UI has finished showing. If `activated` is true, it was
   // tapped, otherwise it was dismissed.
-  void OnUiFinished(const std::string& job_id, bool activated);
+  void OnUiFinished(const std::string& job_id);
+
+  // Called when the UI has been tapped.
+  void OnUiActivated(const std::string& job);
 
  protected:
   // Return the download service for `context_`.
@@ -146,7 +150,7 @@ class BackgroundFetchDelegateBase : public content::BackgroundFetchDelegate {
                         download::GetUploadDataCallback callback,
                         blink::mojom::SerializedBlobPtr blob);
 
-  content::BrowserContext* context_;
+  raw_ptr<content::BrowserContext> context_;
 
   // Map from individual download GUIDs to job unique ids.
   std::map<std::string, std::string> download_job_id_map_;

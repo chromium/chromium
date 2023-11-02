@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,8 @@
 #include <utility>
 #include <vector>
 
-#include "components/ui_devtools/DOM.h"
 #include "components/ui_devtools/devtools_export.h"
+#include "components/ui_devtools/dom.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
@@ -66,7 +66,6 @@ class UI_DEVTOOLS_EXPORT UIElement {
   const UIElements& children() const { return children_; }
   bool is_updating() const { return is_updating_; }
   void set_is_updating(bool is_updating) { is_updating_ = is_updating; }
-  void set_owns_children(bool owns_children) { owns_children_ = owns_children; }
   int GetBaseStylesheetId() const { return base_stylesheet_id_; }
   void SetBaseStylesheetId(int id) { base_stylesheet_id_ = id; }
 
@@ -88,8 +87,7 @@ class UI_DEVTOOLS_EXPORT UIElement {
                        ElementCompare compare,
                        bool notify_delegate = true);
 
-  // Removes all elements from |children_|. Caller is responsible for destroying
-  // children.
+  // Removes and deletes all elements from |children_|.
   void ClearChildren();
 
   // Removes |child| out of |children_| without destroying |child|. The caller
@@ -162,7 +160,6 @@ class UI_DEVTOOLS_EXPORT UIElement {
   UIElement* parent_;
   UIElementDelegate* delegate_;
   bool is_updating_ = false;
-  bool owns_children_ = true;
   int base_stylesheet_id_;
   bool header_sent_ = false;
   std::vector<Source> sources_;

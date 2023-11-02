@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,8 +33,8 @@ mojom::blink::PermissionDescriptorPtr CreateMidiPermissionDescriptor(
 
 mojom::blink::PermissionDescriptorPtr CreateClipboardPermissionDescriptor(
     mojom::blink::PermissionName,
-    bool allow_without_gesture,
-    bool allow_without_sanitization);
+    bool has_user_gesture,
+    bool will_be_sanitized);
 
 mojom::blink::PermissionDescriptorPtr CreateVideoCapturePermissionDescriptor(
     bool pan_tilt_zoom);

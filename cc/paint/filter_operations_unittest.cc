@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -54,7 +54,7 @@ TEST(FilterOperationsTest, MapRectDropShadowReferenceFilter) {
   ops.Append(
       FilterOperation::CreateReferenceFilter(sk_make_sp<DropShadowPaintFilter>(
           SkIntToScalar(3), SkIntToScalar(8), SkIntToScalar(4),
-          SkIntToScalar(9), SK_ColorBLACK,
+          SkIntToScalar(9), SkColors::kBlack,
           DropShadowPaintFilter::ShadowMode::kDrawShadowAndForeground,
           nullptr)));
   EXPECT_EQ(gfx::Rect(-9, -19, 34, 64),
@@ -70,7 +70,7 @@ TEST(FilterOperationsTest, MapRectReverseDropShadowReferenceFilter) {
   ops.Append(
       FilterOperation::CreateReferenceFilter(sk_make_sp<DropShadowPaintFilter>(
           SkIntToScalar(3), SkIntToScalar(8), SkIntToScalar(4),
-          SkIntToScalar(9), SK_ColorBLACK,
+          SkIntToScalar(9), SkColors::kBlack,
           DropShadowPaintFilter::ShadowMode::kDrawShadowAndForeground,
           nullptr)));
   EXPECT_EQ(gfx::Rect(-15, -35, 34, 64),
@@ -171,7 +171,8 @@ TEST(FilterOperationsTest, MapRectReverseNullReferenceFilter) {
 
 TEST(FilterOperationsTest, MapRectDropShadow) {
   FilterOperations ops;
-  ops.Append(FilterOperation::CreateDropShadowFilter(gfx::Point(3, 8), 20, 0));
+  ops.Append(FilterOperation::CreateDropShadowFilter(gfx::Point(3, 8), 20,
+                                                     SkColors::kTransparent));
   EXPECT_EQ(gfx::Rect(-57, -52, 130, 130),
             ops.MapRect(gfx::Rect(0, 0, 10, 10), SkMatrix::I()));
   EXPECT_EQ(gfx::Rect(-114, -104, 260, 260),
@@ -182,7 +183,8 @@ TEST(FilterOperationsTest, MapRectDropShadow) {
 
 TEST(FilterOperationsTest, MapRectReverseDropShadow) {
   FilterOperations ops;
-  ops.Append(FilterOperation::CreateDropShadowFilter(gfx::Point(3, 8), 20, 0));
+  ops.Append(FilterOperation::CreateDropShadowFilter(gfx::Point(3, 8), 20,
+                                                     SkColors::kTransparent));
   EXPECT_EQ(gfx::Rect(-63, -68, 130, 130),
             ops.MapRectReverse(gfx::Rect(0, 0, 10, 10), SkMatrix::I()));
   EXPECT_EQ(gfx::Rect(-126, -136, 260, 260),
@@ -196,7 +198,8 @@ TEST(FilterOperationsTest, MapRectDropShadowDoesNotContract) {
   // Even with a drop-shadow, the original content is still drawn. Thus the
   // content bounds are never contracted due to a drop-shadow.
   FilterOperations ops;
-  ops.Append(FilterOperation::CreateDropShadowFilter(gfx::Point(3, 8), 0, 0));
+  ops.Append(FilterOperation::CreateDropShadowFilter(gfx::Point(3, 8), 0,
+                                                     SkColors::kTransparent));
   EXPECT_EQ(gfx::Rect(0, 0, 13, 18),
             ops.MapRect(gfx::Rect(0, 0, 10, 10), SkMatrix::I()));
 }
@@ -205,7 +208,8 @@ TEST(FilterOperationsTest, MapRectReverseDropShadowDoesNotContract) {
   // Even with a drop-shadow, the original content is still drawn. Thus the
   // content bounds are never contracted due to a drop-shadow.
   FilterOperations ops;
-  ops.Append(FilterOperation::CreateDropShadowFilter(gfx::Point(3, 8), 0, 0));
+  ops.Append(FilterOperation::CreateDropShadowFilter(gfx::Point(3, 8), 0,
+                                                     SkColors::kTransparent));
   EXPECT_EQ(gfx::Rect(-3, -8, 13, 18),
             ops.MapRectReverse(gfx::Rect(0, 0, 10, 10), SkMatrix::I()));
 }
@@ -324,10 +328,10 @@ TEST(FilterOperationsTest, SaveAndRestore) {
   SAVE_RESTORE_AMOUNT(Blur, BLUR, 0.6f);
   SAVE_RESTORE_AMOUNT(SaturatingBrightness, SATURATING_BRIGHTNESS, 0.6f);
   SAVE_RESTORE_OFFSET_AMOUNT_COLOR(DropShadow, DROP_SHADOW, gfx::Point(3, 4),
-                                   0.4f, 0xffffff00);
+                                   0.4f, SkColors::kYellow);
 
-  SkScalar matrix[20] = {1,  2,  3,  4,  5,  6,  7,  8,  9,  10,
-                         11, 12, 13, 14, 15, 16, 17, 18, 19, 20};
+  FilterOperation::Matrix matrix = {1,  2,  3,  4,  5,  6,  7,  8,  9,  10,
+                                    11, 12, 13, 14, 15, 16, 17, 18, 19, 20};
   SAVE_RESTORE_MATRIX(ColorMatrix, COLOR_MATRIX, matrix);
 
   SAVE_RESTORE_AMOUNT_INSET(Zoom, ZOOM, 0.5f, 32);
@@ -596,43 +600,74 @@ TEST(FilterOperationsTest, BlendBlurWithNull) {
 
 TEST(FilterOperationsTest, BlendDropShadowFilters) {
   FilterOperation from = FilterOperation::CreateDropShadowFilter(
-      gfx::Point(0, 0), 2.f, SkColorSetARGB(15, 34, 68, 136));
+      gfx::Point(0, 0), 2.f, SkColor4f{0.13f, 0.27f, 0.53f, 0.06f});
   FilterOperation to = FilterOperation::CreateDropShadowFilter(
-      gfx::Point(3, 5), 6.f, SkColorSetARGB(51, 30, 60, 120));
+      gfx::Point(3, 5), 6.f, SkColor4f{0.12f, 0.24f, 0.47f, 0.2f});
 
+  // In the test below we have to use EXPECT_NEAR as the color contain float for
+  // the components. In order to properly test the filterOperation we are
+  // equalizing the color aftewards.
   FilterOperation blended = FilterOperation::Blend(&from, &to, -0.75);
   FilterOperation expected = FilterOperation::CreateDropShadowFilter(
-      gfx::Point(-2, -4), 0.f, SkColorSetARGB(0, 0, 0, 0));
+      gfx::Point(-2, -4), 0.f, SkColor4f{0.0f, 0.0f, 0.0f, 0.0f});
+  SkColor4f blended_color = blended.drop_shadow_color();
+  SkColor4f expected_color = expected.drop_shadow_color();
+  EXPECT_NEAR(blended_color.fR, expected_color.fR, 0.0001f);
+  EXPECT_NEAR(blended_color.fG, expected_color.fG, 0.0001f);
+  EXPECT_NEAR(blended_color.fB, expected_color.fB, 0.0001f);
+  EXPECT_NEAR(blended_color.fA, expected_color.fA, 0.0001f);
+  expected.set_drop_shadow_color(blended_color);
   EXPECT_EQ(expected, blended);
 
   blended = FilterOperation::Blend(&from, &to, 0.25);
   expected = FilterOperation::CreateDropShadowFilter(
-      gfx::Point(1, 1), 3.f, SkColorSetARGB(24, 32, 64, 128));
+      gfx::Point(1, 1), 3.f, SkColor4f{0.1247f, 0.2542f, 0.4984f, 0.095f});
+  blended_color = blended.drop_shadow_color();
+  expected_color = expected.drop_shadow_color();
+  EXPECT_NEAR(blended_color.fR, expected_color.fR, 0.0001f);
+  EXPECT_NEAR(blended_color.fG, expected_color.fG, 0.0001f);
+  EXPECT_NEAR(blended_color.fB, expected_color.fB, 0.0001f);
+  EXPECT_NEAR(blended_color.fA, expected_color.fA, 0.0001f);
+  expected.set_drop_shadow_color(blended_color);
   EXPECT_EQ(expected, blended);
 
   blended = FilterOperation::Blend(&from, &to, 0.75);
   expected = FilterOperation::CreateDropShadowFilter(
-      gfx::Point(2, 4), 5.f, SkColorSetARGB(42, 30, 61, 121));
+      gfx::Point(2, 4), 5.f, SkColor4f{0.1209f, 0.2427f, 0.4755f, 0.1649f});
+  blended_color = blended.drop_shadow_color();
+  expected_color = expected.drop_shadow_color();
+  EXPECT_NEAR(blended_color.fR, expected_color.fR, 0.0001f);
+  EXPECT_NEAR(blended_color.fG, expected_color.fG, 0.0001f);
+  EXPECT_NEAR(blended_color.fB, expected_color.fB, 0.0001f);
+  EXPECT_NEAR(blended_color.fA, expected_color.fA, 0.0001f);
+  expected.set_drop_shadow_color(blended_color);
   EXPECT_EQ(expected, blended);
 
   blended = FilterOperation::Blend(&from, &to, 1.5);
   expected = FilterOperation::CreateDropShadowFilter(
-      gfx::Point(5, 8), 8.f, SkColorSetARGB(69, 30, 59, 118));
+      gfx::Point(5, 8), 8.f, SkColor4f{0.1188f, 0.2366f, 0.4633f, 0.27});
+  blended_color = blended.drop_shadow_color();
+  expected_color = expected.drop_shadow_color();
+  EXPECT_NEAR(blended_color.fR, expected_color.fR, 0.0001f);
+  EXPECT_NEAR(blended_color.fG, expected_color.fG, 0.0001f);
+  EXPECT_NEAR(blended_color.fB, expected_color.fB, 0.0001f);
+  EXPECT_NEAR(blended_color.fA, expected_color.fA, 0.0001f);
+  expected.set_drop_shadow_color(blended_color);
   EXPECT_EQ(expected, blended);
 }
 
 TEST(FilterOperationsTest, BlendDropShadowWithNull) {
   FilterOperation filter = FilterOperation::CreateDropShadowFilter(
-      gfx::Point(4, 4), 4.f, SkColorSetARGB(255, 40, 0, 0));
+      gfx::Point(4, 4), 4.f, SkColor4f{0.16f, 0.0f, 0.0f, 1.0f});
 
   FilterOperation blended = FilterOperation::Blend(&filter, nullptr, 0.25);
   FilterOperation expected = FilterOperation::CreateDropShadowFilter(
-      gfx::Point(3, 3), 3.f, SkColorSetARGB(191, 40, 0, 0));
+      gfx::Point(3, 3), 3.f, SkColor4f{0.16f, 0.0f, 0.0f, 0.75f});
   EXPECT_EQ(expected, blended);
 
   blended = FilterOperation::Blend(nullptr, &filter, 0.25);
   expected = FilterOperation::CreateDropShadowFilter(
-      gfx::Point(1, 1), 1.f, SkColorSetARGB(64, 40, 0, 0));
+      gfx::Point(1, 1), 1.f, SkColor4f{0.16f, 0.0f, 0.0f, 0.25f});
   EXPECT_EQ(expected, blended);
 }
 
@@ -934,8 +969,8 @@ TEST(FilterOperationsTest, MaximumPixelMovement) {
   EXPECT_FLOAT_EQ(20.f * 3, filters.MaximumPixelMovement());
 
   filters.Clear();
-  filters.Append(
-      FilterOperation::CreateDropShadowFilter(gfx::Point(3, -8), 20, 0));
+  filters.Append(FilterOperation::CreateDropShadowFilter(
+      gfx::Point(3, -8), 20, SkColors::kTransparent));
   float max_movement = fmax(std::abs(3), std::abs(-8)) + 20.f * 3;
   EXPECT_FLOAT_EQ(max_movement, filters.MaximumPixelMovement());
 
@@ -953,8 +988,8 @@ TEST(FilterOperationsTest, MaximumPixelMovement) {
   // For filters that don't move pixels. HasFilterThatMovesPixels() = false.
   filters.Clear();
   filters.Append(FilterOperation::CreateOpacityFilter(0.25f));
-  SkScalar matrix[20] = {1,  2,  3,  4,  5,  6,  7,  8,  9,  10,
-                         11, 12, 13, 14, 15, 16, 17, 18, 19, 20};
+  FilterOperation::Matrix matrix = {1,  2,  3,  4,  5,  6,  7,  8,  9,  10,
+                                    11, 12, 13, 14, 15, 16, 17, 18, 19, 20};
   filters.Append(FilterOperation::CreateColorMatrixFilter(matrix));
   filters.Append(FilterOperation::CreateGrayscaleFilter(0.75f));
   filters.Append(FilterOperation::CreateSepiaFilter(0.625f));

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,6 @@
 #include "ui/gfx/color_palette.h"
 
 namespace ash {
-
-class ColorModeObserver;
 
 // An interface implemented by Ash that provides colors for the system UI.
 class ASH_PUBLIC_EXPORT ColorProvider {
@@ -41,6 +39,7 @@ class ASH_PUBLIC_EXPORT ColorProvider {
     kTransparent40,
     kTransparent60,
     kTransparent80,
+    kInvertedTransparent80,
     kTransparent90,
     kTransparent95,
 
@@ -58,9 +57,12 @@ class ASH_PUBLIC_EXPORT ColorProvider {
     kControlBackgroundColorPositive,
     kFocusAuraColor,
     kFocusRingColor,
-    // TODO(crbug/1224694): Rename these once naming in UX spec is finalized.
-    kHighlightBorderHighlightColor,
-    kHighlightBorderBorderColor,
+    kHighlightColor1,
+    kHighlightColor2,
+    kHighlightColor3,
+    kBorderColor1,
+    kBorderColor2,
+    kBorderColor3,
   };
 
   enum class ContentLayerType {
@@ -68,11 +70,14 @@ class ASH_PUBLIC_EXPORT ColorProvider {
     kSeparatorColor,
 
     kTextColorPrimary,
+    // Inverted `kTextColorPrimary` on current color mode.
+    kInvertedTextColorPrimary,
     kTextColorSecondary,
     kTextColorAlert,
     kTextColorWarning,
     kTextColorPositive,
     kTextColorURL,
+    kTextColorSuggestion,
 
     kIconColorPrimary,
     kIconColorSecondary,
@@ -88,6 +93,8 @@ class ASH_PUBLIC_EXPORT ColorProvider {
 
     // The default color for button labels.
     kButtonLabelColor,
+    // Inverted `kButtonLabelColor` on current color mode.
+    kInvertedButtonLabelColor,
     kButtonLabelColorPrimary,
 
     // Color for blue button labels, e.g, 'Retry' button of the system toast.
@@ -132,14 +139,22 @@ class ASH_PUBLIC_EXPORT ColorProvider {
     kProgressBarColorBackground,
 
     // Color used to highlight a hovered view.
-    kHighlightColorHover
+    kHighlightColorHover,
+
+    // Color for the background of battery system info view.
+    kBatterySystemInfoBackgroundColor,
+
+    // Color for the battery icon in the system info view.
+    kBatterySystemInfoIconColor,
+
+    // Color of the capture region in the capture session.
+    kCaptureRegionColor,
   };
 
   static ColorProvider* Get();
 
   // Gets the color of |type| of the corresponding layer based on the current
   // color mode.
-  virtual SkColor GetShieldLayerColor(ShieldLayerType type) const = 0;
   virtual SkColor GetBaseLayerColor(BaseLayerType type) const = 0;
   virtual SkColor GetControlsLayerColor(ControlsLayerType type) const = 0;
   virtual SkColor GetContentLayerColor(ContentLayerType type) const = 0;
@@ -147,22 +162,11 @@ class ASH_PUBLIC_EXPORT ColorProvider {
   // Gets the ink drop base color and opacity. Since the inkdrop ripple and
   // highlight have the same opacity, we are keeping only one opacity here. The
   // base color will be gotten based on current color mode, which will be WHITE
-  // on dark mode and BLACK on light mode. Please provide `background_color` if
+  // in dark mode and BLACK in light mode. Please provide `background_color` if
   // different base color needed on current color mode. See more details of
   // IsDarkModeEnabled for current color mode.
   virtual std::pair<SkColor, float> GetInkDropBaseColorAndOpacity(
       SkColor background_color = gfx::kPlaceholderColor) const = 0;
-
-  virtual void AddObserver(ColorModeObserver* observer) = 0;
-  virtual void RemoveObserver(ColorModeObserver* observer) = 0;
-
-  // True if the current color mode is DARK. The default color mode is LIGHT if
-  // the DarkLightMode feature is enabled. And it can be changed through pref
-  // `kDarkModeEnabled`. But the default color mode is DARK if the
-  // DarkLightMode feature is disabled. And it can be overridden by
-  // ScopedLightModeAsDefault. See `override_light_mode_as_default_` for more
-  // details.
-  virtual bool IsDarkModeEnabled() const = 0;
 
  protected:
   ColorProvider();

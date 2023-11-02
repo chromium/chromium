@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@
 #include "media/base/mime_util.h"
 #include "media/base/supported_types.h"
 #include "media/base/waiting.h"
-#include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_decoder_config.h"
@@ -25,7 +25,7 @@
 #include "third_party/blink/renderer/modules/webcodecs/allow_shared_buffer_source_util.h"
 #include "third_party/blink/renderer/modules/webcodecs/audio_data.h"
 #include "third_party/blink/renderer/modules/webcodecs/audio_decoder_broker.h"
-#include "third_party/blink/renderer/modules/webcodecs/codec_config_eval.h"
+#include "third_party/blink/renderer/modules/webcodecs/encoded_audio_chunk.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
@@ -33,38 +33,6 @@
 #include <vector>
 
 namespace blink {
-
-bool IsValidConfig(const AudioDecoderConfig& config,
-                   media::AudioType& out_audio_type,
-                   String& out_console_message) {
-  // Match codec strings from the codec registry:
-  // https://www.w3.org/TR/webcodecs-codec-registry/#audio-codec-registry
-  if (config.codec() == "ulaw") {
-    out_audio_type = {media::AudioCodec::kPCM_MULAW};
-    return true;
-  } else if (config.codec() == "alaw") {
-    out_audio_type = {media::AudioCodec::kPCM_ALAW};
-    return true;
-  }
-
-  media::AudioCodec codec = media::AudioCodec::kUnknown;
-  bool is_codec_ambiguous = true;
-  const bool parse_succeeded = ParseAudioCodecString(
-      "", config.codec().Utf8(), &is_codec_ambiguous, &codec);
-
-  if (!parse_succeeded) {
-    out_console_message = "Failed to parse codec string.";
-    return false;
-  }
-
-  if (is_codec_ambiguous) {
-    out_console_message = "Codec string is ambiguous.";
-    return false;
-  }
-
-  out_audio_type = {codec};
-  return true;
-}
 
 AudioDecoderConfig* CopyConfig(const AudioDecoderConfig& config) {
   AudioDecoderConfig* copy = AudioDecoderConfig::Create();
@@ -96,8 +64,6 @@ AudioDecoderTraits::CreateDecoder(
 void AudioDecoderTraits::UpdateDecoderLog(const MediaDecoderType& decoder,
                                           const MediaConfigType& media_config,
                                           media::MediaLog* media_log) {
-  media_log->SetProperty<media::MediaLogProperty::kFrameTitle>(
-      std::string("AudioDecoder(WebCodecs)"));
   media_log->SetProperty<media::MediaLogProperty::kAudioDecoderName>(
       decoder.GetDecoderType());
   media_log->SetProperty<media::MediaLogProperty::kIsPlatformAudioDecoder>(
@@ -108,36 +74,6 @@ void AudioDecoderTraits::UpdateDecoderLog(const MediaDecoderType& decoder,
       << "Initialized AudioDecoder: " << media_config.AsHumanReadableString();
   base::UmaHistogramEnumeration("Blink.WebCodecs.AudioDecoder.Codec",
                                 media_config.codec());
-}
-
-// static
-media::StatusOr<AudioDecoderTraits::OutputType*> AudioDecoderTraits::MakeOutput(
-    scoped_refptr<MediaOutputType> output,
-    ExecutionContext* context) {
-  if (!blink::audio_utilities::IsValidAudioBufferSampleRate(
-          output->sample_rate())) {
-    return media::Status(
-        media::StatusCode::kInvalidArgument,
-        String::Format("Invalid decoded audio output sample rate. Got %u, "
-                       "which is outside [%f, %f]",
-                       output->sample_rate(),
-                       blink::audio_utilities::MinAudioBufferSampleRate(),
-                       blink::audio_utilities::MaxAudioBufferSampleRate())
-            .Ascii());
-  }
-
-  if (static_cast<uint32_t>(output->channel_count()) >
-      BaseAudioContext::MaxNumberOfChannels()) {
-    return media::Status(media::StatusCode::kInvalidArgument,
-                         String::Format("Invalid decoded audio output channel "
-                                        "count. Got %u, which exceeds %u",
-                                        output->channel_count(),
-                                        BaseAudioContext::MaxNumberOfChannels())
-                             .Ascii());
-  }
-
-  return MakeGarbageCollected<AudioDecoderTraits::OutputType>(
-      std::move(output));
 }
 
 // static
@@ -174,16 +110,17 @@ AudioDecoder* AudioDecoder::Create(ScriptState* script_state,
 ScriptPromise AudioDecoder::isConfigSupported(ScriptState* script_state,
                                               const AudioDecoderConfig* config,
                                               ExceptionState& exception_state) {
-  media::AudioType audio_type;
-  String console_message;
+  String js_error_message;
+  absl::optional<media::AudioType> audio_type =
+      IsValidAudioDecoderConfig(*config, &js_error_message);
 
-  if (!IsValidConfig(*config, audio_type, console_message)) {
-    exception_state.ThrowTypeError(console_message);
+  if (!audio_type) {
+    exception_state.ThrowTypeError(js_error_message);
     return ScriptPromise();
   }
 
   AudioDecoderSupport* support = AudioDecoderSupport::Create();
-  support->setSupported(media::IsSupportedAudioType(audio_type));
+  support->setSupported(media::IsSupportedAudioType(*audio_type));
   support->setConfig(CopyConfig(*config));
 
   return ScriptPromise::Cast(
@@ -192,14 +129,59 @@ ScriptPromise AudioDecoder::isConfigSupported(ScriptState* script_state,
 }
 
 // static
-CodecConfigEval AudioDecoder::MakeMediaAudioDecoderConfig(
-    const ConfigType& config,
-    MediaConfigType& out_media_config,
-    String& out_console_message) {
+absl::optional<media::AudioType> AudioDecoder::IsValidAudioDecoderConfig(
+    const AudioDecoderConfig& config,
+    String* js_error_message) {
   media::AudioType audio_type;
 
-  if (!IsValidConfig(config, audio_type, out_console_message))
-    return CodecConfigEval::kInvalid;
+  // Match codec strings from the codec registry:
+  // https://www.w3.org/TR/webcodecs-codec-registry/#audio-codec-registry
+  if (config.codec() == "ulaw") {
+    audio_type = {media::AudioCodec::kPCM_MULAW};
+    return audio_type;
+  } else if (config.codec() == "alaw") {
+    audio_type = {media::AudioCodec::kPCM_ALAW};
+    return audio_type;
+  }
+
+  // https://www.w3.org/TR/webcodecs-flac-codec-registration
+  // https://www.w3.org/TR/webcodecs-vorbis-codec-registration
+  bool description_required = false;
+  if (config.codec() == "flac" || config.codec() == "vorbis")
+    description_required = true;
+
+  if (description_required && !config.hasDescription()) {
+    *js_error_message = "Description is required.";
+    return absl::nullopt;
+  }
+
+  media::AudioCodec codec = media::AudioCodec::kUnknown;
+  bool is_codec_ambiguous = true;
+  const bool parse_succeeded = ParseAudioCodecString(
+      "", config.codec().Utf8(), &is_codec_ambiguous, &codec);
+
+  if (!parse_succeeded) {
+    *js_error_message = "Failed to parse codec string.";
+    return absl::nullopt;
+  }
+
+  if (is_codec_ambiguous) {
+    *js_error_message = "Codec string is ambiguous.";
+    return absl::nullopt;
+  }
+
+  audio_type = {codec};
+  return audio_type;
+}
+
+// static
+absl::optional<media::AudioDecoderConfig>
+AudioDecoder::MakeMediaAudioDecoderConfig(const ConfigType& config,
+                                          String* js_error_message) {
+  absl::optional<media::AudioType> audio_type =
+      IsValidAudioDecoderConfig(config, js_error_message);
+  if (!audio_type)
+    return absl::nullopt;
 
   std::vector<uint8_t> extra_data;
   if (config.hasDescription()) {
@@ -219,12 +201,13 @@ CodecConfigEval AudioDecoder::MakeMediaAudioDecoderConfig(
           : media::GuessChannelLayout(config.numberOfChannels());
 
   // TODO(chcunningham): Add sample format to IDL.
-  out_media_config.Initialize(
-      audio_type.codec, media::kSampleFormatPlanarF32, channel_layout,
+  media::AudioDecoderConfig media_config;
+  media_config.Initialize(
+      audio_type->codec, media::kSampleFormatPlanarF32, channel_layout,
       config.sampleRate(), extra_data, media::EncryptionScheme::kUnencrypted,
       base::TimeDelta() /* seek preroll */, 0 /* codec delay */);
 
-  return CodecConfigEval::kSupported;
+  return media_config;
 }
 
 AudioDecoder::AudioDecoder(ScriptState* script_state,
@@ -235,21 +218,58 @@ AudioDecoder::AudioDecoder(ScriptState* script_state,
                     WebFeature::kWebCodecs);
 }
 
-CodecConfigEval AudioDecoder::MakeMediaConfig(const ConfigType& config,
-                                              MediaConfigType* out_media_config,
-                                              String* out_console_message) {
-  DCHECK(out_media_config);
-  DCHECK(out_console_message);
-  return MakeMediaAudioDecoderConfig(config, *out_media_config,
-                                     *out_console_message);
+bool AudioDecoder::IsValidConfig(const ConfigType& config,
+                                 String* js_error_message) {
+  return IsValidAudioDecoderConfig(config, js_error_message /* out */)
+      .has_value();
 }
 
-media::StatusOr<scoped_refptr<media::DecoderBuffer>>
-AudioDecoder::MakeDecoderBuffer(const InputType& chunk, bool verify_key_frame) {
-  if (verify_key_frame && !chunk.buffer()->is_key_frame())
-    return media::Status(media::StatusCode::kKeyFrameRequired);
+absl::optional<media::AudioDecoderConfig> AudioDecoder::MakeMediaConfig(
+    const ConfigType& config,
+    String* js_error_message) {
+  DCHECK(js_error_message);
+  return MakeMediaAudioDecoderConfig(config, js_error_message /* out */);
+}
 
+media::DecoderStatus::Or<scoped_refptr<media::DecoderBuffer>>
+AudioDecoder::MakeInput(const InputType& chunk, bool verify_key_frame) {
+  if (verify_key_frame && !chunk.buffer()->is_key_frame())
+    return media::DecoderStatus::Codes::kKeyFrameRequired;
   return chunk.buffer();
+}
+
+media::DecoderStatus::Or<AudioDecoder::OutputType*> AudioDecoder::MakeOutput(
+    scoped_refptr<MediaOutputType> output,
+    ExecutionContext* context) {
+  if (!blink::audio_utilities::IsValidAudioBufferSampleRate(
+          output->sample_rate())) {
+    return media::DecoderStatus(
+        media::DecoderStatus::Codes::kInvalidArgument,
+        String::Format("Invalid decoded audio output sample rate. Got %u, "
+                       "which is outside [%f, %f]",
+                       output->sample_rate(),
+                       blink::audio_utilities::MinAudioBufferSampleRate(),
+                       blink::audio_utilities::MaxAudioBufferSampleRate())
+            .Ascii());
+  }
+
+  if (static_cast<uint32_t>(output->channel_count()) >
+      BaseAudioContext::MaxNumberOfChannels()) {
+    return media::DecoderStatus(
+        media::DecoderStatus::Codes::kInvalidArgument,
+        String::Format("Invalid decoded audio output channel "
+                       "count. Got %u, which exceeds %u",
+                       output->channel_count(),
+                       BaseAudioContext::MaxNumberOfChannels())
+            .Ascii());
+  }
+
+  return MakeGarbageCollected<AudioDecoderTraits::OutputType>(
+      std::move(output));
+}
+
+const AtomicString& AudioDecoder::InterfaceName() const {
+  return event_target_names::kAudioDecoder;
 }
 
 }  // namespace blink

@@ -1,10 +1,9 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 module new_tab_page.mojom;
 
-import "chrome/browser/ui/webui/realbox/realbox.mojom";
 import "skia/public/mojom/skcolor.mojom";
 import "ui/webui/resources/cr_components/most_visited/most_visited.mojom";
 import "url/mojom/url.mojom";
@@ -46,14 +45,14 @@ struct BackgroundImage {
   string? repeat_y;
   string? position_x;
   string? position_y;
+  // The CSS styling property set on the background image's scrim.
+  string? scrim_display;
 };
 
 // A generic theme.
 struct Theme {
   skia.mojom.SkColor text_color;
   skia.mojom.SkColor background_color;
-  // True if the theme is default.
-  bool is_default;
   // True if the background is custom.
   bool is_custom_background;
   // True if the theme is dark (e.g. NTP background color is dark).
@@ -72,9 +71,6 @@ struct Theme {
 
   // Theme settings for the NTP MV tiles.
   most_visited.mojom.MostVisitedTheme most_visited;
-
-  // Theme settings for the NTP realbox. Matching those of the Omnibox.
-  realbox.mojom.SearchBoxTheme search_box;
 };
 
 // Specifies look of the doodle share button.
@@ -161,13 +157,11 @@ struct PromoImagePart {
 };
 
 struct PromoLinkPart {
-  string? color;
   string text;
   url.mojom.Url url;
 };
 
 struct PromoTextPart {
-  string? color;
   string text;
 };
 
@@ -202,6 +196,13 @@ enum CustomizeDialogAction {
   kShortcutsCustomLinksClicked,
   kShortcutsMostVisitedClicked,
   kShortcutsVisibilityToggleClicked,
+};
+
+// Opt in status. Used for metrics logging only.
+enum OptInStatus {
+  kExplicitOptIn,
+  kImplicitOptIn,
+  kOptOut,
 };
 
 // Used by the WebUI page to bootstrap bidirectional communication.
@@ -240,8 +241,12 @@ interface PageHandler {
   GetDoodle() => (Doodle? doodle);
   // Choose custom background from local file system.
   ChooseLocalCustomBackground() => (bool success);
-  // Get the middle slot promo if it exists.
-  GetPromo() => (Promo? promo);
+  // Updates middle slot promo data. Triggers a call to |SetPromo|.
+  UpdatePromoData();
+  // Marks a promo as blocked.
+  BlocklistPromo(string promo_id);
+  // Unmarks a promo as blocked.
+  UndoBlocklistPromo(string promo_id);
   // Called when a module the given id is dismissed.
   OnDismissModule(string module_id);
   // Called when a module the given id is restored.
@@ -253,12 +258,24 @@ interface PageHandler {
   // Triggers a call to |SetDisabledModules|.
   UpdateDisabledModules();
   // Called when at least one module has loaded with data.
-  OnModulesLoadedWithData();
+  // `module_ids` is an array of module descriptor ids that identifies the
+  // modules that loaded with data.
+  OnModulesLoadedWithData(array<string> module_ids);
   // Sets the order of modules.
   SetModulesOrder(array<string> module_ids);
   // Returns the order of modules or an empty array if the user has not
   // reordered them before.
   GetModulesOrder() => (array<string> module_ids);
+  // Increment the number of times the user has seen modules.
+  IncrementModulesShownCount();
+  // If |visible| Modular NTP Desktop v1 First Run Experience will be shown.
+  SetModulesFreVisible(bool visible);
+  // Triggers a call to |SetModulesFreVisibility|.
+  UpdateModulesFreVisibility();
+  // Log user's FRE |optInStatus|.
+  LogModulesFreOptInStatus(OptInStatus opt_in_status);
+  // Shows customize chrome in unified side panel.
+  ShowCustomizeChromeSidePanel();
 
   // ======= METRICS =======
   // Logs that the One Google Bar was added to the DOM / loaded in an iframe at
@@ -295,9 +312,15 @@ interface PageHandler {
 
 // WebUI-side handler for requests from the browser.
 interface Page {
+  // Called when the customize chrome side panel is shown/hidden.
+  CustomizeChromeSidePanelVisibilityChanged(bool visible);
   // Sets the current theme.
   SetTheme(Theme theme);
   // Disables the modules in |ids|. If |all|, disables all modules and passes an
   // empty list for |ids|.
   SetDisabledModules(bool all, array<string> ids);
+  // Sets Modular NTP Desktop v1 First Run Experience's visibility to |visible|.
+  SetModulesFreVisibility(bool visible);
+  // Sets NTP homepage promo.
+  SetPromo(Promo? promo);
 };

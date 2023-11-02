@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -142,26 +142,26 @@ constexpr char kAllSitePolicy[] = R"({
 })";
 
 std::set<std::string>* NormalMimeTypes() {
-  static base::NoDestructor<std::set<std::string>> mime_types(
-      {"text/plain", "image/png", "application/zip"});
+  static base::NoDestructor<std::set<std::string>> mime_types{
+      {"text/plain", "image/png", "application/zip"}};
   return mime_types.get();
 }
 
 std::set<std::string>* NoTextMimeTypes() {
-  static base::NoDestructor<std::set<std::string>> mime_types(
-      {"image/png", "application/zip"});
+  static base::NoDestructor<std::set<std::string>> mime_types{
+      {"image/png", "application/zip"}};
   return mime_types.get();
 }
 
 std::set<std::string>* NoImageMimeTypes() {
-  static base::NoDestructor<std::set<std::string>> mime_types(
-      {"text/plain", "application/zip"});
+  static base::NoDestructor<std::set<std::string>> mime_types{
+      {"text/plain", "application/zip"}};
   return mime_types.get();
 }
 
 std::set<std::string>* NoTextNoImageMimeTypes() {
-  static base::NoDestructor<std::set<std::string>> mime_types(
-      {"application/zip"});
+  static base::NoDestructor<std::set<std::string>> mime_types{
+      {"application/zip"}};
   return mime_types.get();
 }
 
@@ -204,37 +204,38 @@ TEST_P(FileSystemServiceSettingsTest, Test) {
                                          base::JSON_ALLOW_TRAILING_COMMAS);
   ASSERT_TRUE(settings.has_value());
 
-  ServiceProviderConfig config(kServiceProviderConfig);
-  FileSystemServiceSettings service_settings(settings.value(), config);
+  FileSystemServiceSettings service_settings(settings.value(),
+                                             *GetServiceProviderConfig());
 
   auto file_system_settings_opt = service_settings.GetSettings(url());
   bool has_expected_mime_types = expected_mime_types() != nullptr;
   ASSERT_EQ(has_expected_mime_types, file_system_settings_opt.has_value())
       << settings_value();
   if (file_system_settings_opt.has_value()) {
-    const ServiceProviderConfig::ServiceProvider* provider =
-        config.GetServiceProvider("box");
-    ASSERT_NE(nullptr, provider);
+    ASSERT_TRUE(GetServiceProviderConfig()->count("box"));
+    const ServiceProvider provider = GetServiceProviderConfig()->at("box");
 
     const auto& file_system_settings = file_system_settings_opt.value();
 
     ASSERT_EQ(file_system_settings.mime_types, *expected_mime_types());
-    ASSERT_EQ(file_system_settings.home, GURL(provider->fs_home_url()));
+    ASSERT_EQ(file_system_settings.home, GURL(provider.file_system->home));
     ASSERT_EQ(file_system_settings.authorization_endpoint,
-              GURL(provider->fs_authorization_endpoint()));
+              GURL(provider.file_system->authorization_endpoint));
     ASSERT_EQ(file_system_settings.token_endpoint,
-              GURL(provider->fs_token_endpoint()));
+              GURL(provider.file_system->token_endpoint));
     ASSERT_EQ(file_system_settings.enterprise_id, "1234567890");
     ASSERT_EQ(file_system_settings.max_direct_size,
-              provider->fs_max_direct_size());
-    ASSERT_EQ(file_system_settings.scopes, provider->fs_scopes());
+              provider.file_system->max_direct_size);
+    ASSERT_EQ(file_system_settings.scopes,
+              std::vector<std::string>(provider.file_system->scopes.begin(),
+                                       provider.file_system->scopes.end()));
 
     if (!file_system_settings.email_domain.empty())
       ASSERT_EQ(file_system_settings.email_domain, "example.com");
   }
 }
 
-INSTANTIATE_TEST_CASE_P(
+INSTANTIATE_TEST_SUITE_P(
     ,
     FileSystemServiceSettingsTest,
     testing::Values(
@@ -253,6 +254,16 @@ INSTANTIATE_TEST_CASE_P(
         TestParam(kNornmalURL, kNoEnablePolicy, nullptr),
 
         TestParam("https://box.com", kAllSitePolicy, nullptr),
-        TestParam("https://www.box.com", kAllSitePolicy, nullptr)));
+        TestParam("https://www.box.com", kAllSitePolicy, nullptr),
+
+        // Having no URL should never return settings since the patterns will
+        // never match.
+        TestParam("", kNormalPolicy, nullptr),
+        TestParam("", kSpecificSitesPolicy, nullptr),
+        TestParam("", kNoProviderSettings, nullptr),
+        TestParam("", kNoEnterpriseIdSettings, nullptr),
+        TestParam("", kNoDomainPolicy, nullptr),
+        TestParam("", kNoEnablePolicy, nullptr),
+        TestParam("", kAllSitePolicy, nullptr)));
 
 }  // namespace enterprise_connectors

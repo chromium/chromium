@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>cr-radio demo</title>
+    <link rel="stylesheet" href="demo.css">
+  </head>
+  <body>
+    <dom-bind>
+      <template>
+        <h1>cr-radio-group and cr-radio-button</h1>
+        <div class="demos">
+          <cr-radio-group selected="{{selectedOption_}}">
+            <cr-radio-button name="option1" label="Option 1"></cr-radio-button>
+            <cr-radio-button name="option2" label="Option 2"></cr-radio-button>
+            <cr-radio-button name="option3" label="Option 3">
+              <div>With slotted content</div>
+            </cr-radio-button>
+          </cr-radio-group>
+
+          Selected option: [[selectedOption_]]
+        </div>
+      </template>
+    </dom-bind>
+
+    <script src="//resources/cr_elements/cr_radio_group/cr_radio_group.js"
+        type="module"></script>
+    <script src="//resources/cr_elements/cr_radio_button/cr_radio_button.js"
+        type="module"></script>
+  </body>
+</html>

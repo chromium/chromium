@@ -1,44 +1,27 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.components.language;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Interface to get language profile data for device.
  */
 public interface LanguageProfileDelegate {
     /**
-     * Helper class to hold language preference values.
+     * @return True if ULP is currently supported.
      */
-    public static class LanguagePreference {
-        private final String mLanguageName;
-        private final float mPreference;
-
-        public LanguagePreference(String languageName, float preference) {
-            mLanguageName = languageName;
-            mPreference = preference;
-        }
-
-        public String getLanguage() {
-            return mLanguageName;
-        }
-
-        public float getPreference() {
-            return mPreference;
-        }
-    }
-
-    /**
-     * @return True if ULP is currently available.
-     */
-    public boolean isULPAvailable();
+    public boolean isULPSupported();
 
     /**
      * @param accountName Account to get profile or null if the default profile should be returned.
-     * @return A list of language preferences for |accountName|
+     * @param timeoutInSeconds Seconds to wait before timing out on call to device.
+     * @return A list of language tags ordered by preference for |accountName|
      */
-    public List<LanguagePreference> getLanguagePreferences(String accountName);
+    public List<String> getLanguagePreferences(String accountName, int timeoutInSeconds)
+            throws ExecutionException, InterruptedException, TimeoutException;
 }

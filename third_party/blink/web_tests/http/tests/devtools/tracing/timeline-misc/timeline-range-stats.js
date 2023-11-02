@@ -1,10 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 (async function() {
   TestRunner.addResult(`Tests that aggregated summary in Timeline is properly computed.\n`);
-  await TestRunner.loadModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
+  await TestRunner.loadLegacyModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
   await TestRunner.showPanel('timeline');
 
   var mainThread = 1;
@@ -106,7 +106,7 @@
     },
   ];
 
-  var timelineModel = PerformanceTestRunner.createPerformanceModelWithEvents(testData).timelineModel();
+  await PerformanceTestRunner.createPerformanceModelWithEvents(testData);
   for (var startTime = 100000; startTime <= 109000; startTime += 1000) {
     for (var endTime = startTime + 1000; endTime <= 109000; endTime += 1000) {
       dumpStats(

@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/download/download_shelf_context_menu.h"
 #include "ui/base/ui_base_types.h"
@@ -23,12 +23,16 @@ class MenuRunner;
 class Widget;
 }
 
+class DownloadBubbleUIController;
+
 class DownloadShelfContextMenuView : public DownloadShelfContextMenu {
  public:
   // TODO(crbug.com/1191555): Remove dependency on DownloadItemView.
   explicit DownloadShelfContextMenuView(DownloadItemView* download_item_view);
   explicit DownloadShelfContextMenuView(
       base::WeakPtr<DownloadUIModel> download_ui_model);
+  DownloadShelfContextMenuView(base::WeakPtr<DownloadUIModel> download_ui_model,
+                               DownloadBubbleUIController* bubble_controller);
   DownloadShelfContextMenuView(const DownloadShelfContextMenuView&) = delete;
   DownloadShelfContextMenuView& operator=(const DownloadShelfContextMenuView&) =
       delete;
@@ -54,7 +58,10 @@ class DownloadShelfContextMenuView : public DownloadShelfContextMenu {
 
   // Parent download item view.
   // TODO(crbug.com/1191555): Remove dependency on DownloadItemView.
-  DownloadItemView* download_item_view_ = nullptr;
+  raw_ptr<DownloadItemView> download_item_view_ = nullptr;
+
+  // Use this instead of DownloadItemView to submit download for feedback.
+  raw_ptr<DownloadBubbleUIController> bubble_controller_ = nullptr;
 
   base::OnceClosure on_menu_will_show_callback_;
 

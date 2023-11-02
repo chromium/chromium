@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <functional>
 #include <string>
 #include <utility>
@@ -16,13 +15,16 @@
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
@@ -110,7 +112,7 @@ class NoStatePrefetchManager::OnCloseWebContentsDeleter
     // |this| is deleted at this point.
   }
 
-  NoStatePrefetchManager* const manager_;
+  const raw_ptr<NoStatePrefetchManager> manager_;
   std::unique_ptr<WebContents> tab_;
 };
 
@@ -192,7 +194,7 @@ NoStatePrefetchManager::StartPrefetchingFromLinkRelPrerender(
     if (!source_web_contents)
       return nullptr;
     if (origin == ORIGIN_LINK_REL_PRERENDER_CROSSDOMAIN &&
-        source_web_contents->GetURL().host_piece() == url.host_piece()) {
+        source_web_contents->GetVisibleURL().host_piece() == url.host_piece()) {
       origin = ORIGIN_LINK_REL_PRERENDER_SAMEDOMAIN;
     }
     // TODO(ajwong): This does not correctly handle storage for isolated apps.
@@ -301,7 +303,7 @@ void NoStatePrefetchManager::MoveEntryToPendingDelete(
   PostCleanupTask();
 }
 
-bool NoStatePrefetchManager::IsWebContentsPrerendering(
+bool NoStatePrefetchManager::IsWebContentsPrefetching(
     const WebContents* web_contents) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return GetNoStatePrefetchContents(web_contents);
@@ -359,8 +361,8 @@ bool NoStatePrefetchManager::HasRecentlyBeenNavigatedTo(Origin origin,
 
   CleanUpOldNavigations(&navigations_,
                         base::Milliseconds(kNavigationRecordWindowMs));
-  for (auto it = navigations_.rbegin(); it != navigations_.rend(); ++it) {
-    if (it->url == url)
+  for (const NavigationRecord& navigation : base::Reversed(navigations_)) {
+    if (navigation.url == url)
       return true;
   }
 
@@ -372,17 +374,17 @@ std::unique_ptr<base::DictionaryValue> NoStatePrefetchManager::CopyAsValue()
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   auto dict_value = std::make_unique<base::DictionaryValue>();
-  dict_value->SetKey("history", base::Value::FromUniquePtrValue(
-                                    prerender_history_->CopyEntriesAsValue()));
+  dict_value->GetDict().Set("history",
+                            prerender_history_->CopyEntriesAsValue());
   dict_value->SetKey(
       "active", base::Value::FromUniquePtrValue(GetActivePrerendersAsValue()));
-  dict_value->SetBoolean("enabled",
+  dict_value->SetBoolKey("enabled",
                          delegate_->IsNetworkPredictionPreferenceEnabled());
-  dict_value->SetString("disabled_note",
-                        delegate_->GetReasonForDisablingPrediction());
+  dict_value->SetStringKey("disabled_note",
+                           delegate_->GetReasonForDisablingPrediction());
   // If prerender is disabled via a flag this method is not even called.
   std::string enabled_note;
-  dict_value->SetString("enabled_note", enabled_note);
+  dict_value->SetStringKey("enabled_note", enabled_note);
   return dict_value;
 }
 
@@ -496,11 +498,6 @@ bool NoStatePrefetchManager::IsPredictionEnabled(Origin origin) {
     return true;
   }
 
-  // TODO(crbug.com/1121970): Remove this check once we're no longer running the
-  // experiment "PredictivePrefetchingAllowedOnAllConnectionTypes".
-  if (delegate_->IsPredictionDisabledDueToNetwork(origin))
-    return false;
-
   return delegate_->IsNetworkPredictionPreferenceEnabled();
 }
 
@@ -556,10 +553,7 @@ NoStatePrefetchManager::StartPrefetchingWithPreconnectFallback(
   }
 
   if (!IsPredictionEnabled(origin)) {
-    FinalStatus final_status =
-        delegate_->IsPredictionDisabledDueToNetwork(origin)
-            ? FINAL_STATUS_CELLULAR_NETWORK
-            : FINAL_STATUS_PRERENDERING_DISABLED;
+    FinalStatus final_status = FINAL_STATUS_PRERENDERING_DISABLED;
     SkipNoStatePrefetchContentsAndMaybePreconnect(url, origin, final_status);
     return nullptr;
   }
@@ -848,14 +842,14 @@ bool NoStatePrefetchManager::GetPrefetchInformation(
   if (origin)
     *origin = ORIGIN_NONE;
 
-  for (auto it = prefetches_.crbegin(); it != prefetches_.crend(); ++it) {
-    if (it->url == url) {
+  for (const NavigationRecord& prefetch : base::Reversed(prefetches_)) {
+    if (prefetch.url == url) {
       if (prefetch_age)
-        *prefetch_age = GetCurrentTimeTicks() - it->time;
+        *prefetch_age = GetCurrentTimeTicks() - prefetch.time;
       if (final_status)
-        *final_status = it->final_status;
+        *final_status = prefetch.final_status;
       if (origin)
-        *origin = it->origin;
+        *origin = prefetch.origin;
       return true;
     }
   }
@@ -865,9 +859,9 @@ bool NoStatePrefetchManager::GetPrefetchInformation(
 void NoStatePrefetchManager::SetPrefetchFinalStatusForUrl(
     const GURL& url,
     FinalStatus final_status) {
-  for (auto it = prefetches_.rbegin(); it != prefetches_.rend(); ++it) {
-    if (it->url == url) {
-      it->final_status = final_status;
+  for (NavigationRecord& prefetch : base::Reversed(prefetches_)) {
+    if (prefetch.url == url) {
+      prefetch.final_status = final_status;
       break;
     }
   }
@@ -875,12 +869,10 @@ void NoStatePrefetchManager::SetPrefetchFinalStatusForUrl(
 
 bool NoStatePrefetchManager::HasRecentlyPrefetchedUrlForTesting(
     const GURL& url) {
-  return std::any_of(prefetches_.cbegin(), prefetches_.cend(),
-                     [url](const NavigationRecord& r) {
-                       return r.url == url &&
-                              r.final_status ==
-                                  FINAL_STATUS_NOSTATE_PREFETCH_FINISHED;
-                     });
+  return base::ranges::any_of(prefetches_, [url](const NavigationRecord& r) {
+    return r.url == url &&
+           r.final_status == FINAL_STATUS_NOSTATE_PREFETCH_FINISHED;
+  });
 }
 
 void NoStatePrefetchManager::OnPrefetchUsed(const GURL& url) {
@@ -937,7 +929,8 @@ NoStatePrefetchManager::GetActivePrerendersAsValue() const {
   for (const auto& prefetch : active_prefetches_) {
     auto prefetch_value = prefetch->contents()->GetAsValue();
     if (prefetch_value)
-      list_value->Append(std::move(prefetch_value));
+      list_value->GetList().Append(
+          base::Value::FromUniquePtrValue(std::move(prefetch_value)));
   }
   return list_value;
 }
@@ -962,7 +955,6 @@ void NoStatePrefetchManager::SkipNoStatePrefetchContentsAndMaybePreconnect(
     return;
 
   if (final_status == FINAL_STATUS_LOW_END_DEVICE ||
-      final_status == FINAL_STATUS_CELLULAR_NETWORK ||
       final_status == FINAL_STATUS_DUPLICATE ||
       final_status == FINAL_STATUS_TOO_MANY_PROCESSES) {
     MaybePreconnect(origin, url);

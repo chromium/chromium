@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_list_observer.h"
@@ -47,10 +48,10 @@ class TabGroupsEventRouter : public TabStripModelObserver,
 
   void DispatchEvent(events::HistogramValue histogram_value,
                      const std::string& event_name,
-                     std::vector<base::Value> args);
+                     base::Value::List args);
 
-  Profile* const profile_;
-  EventRouter* const event_router_ = nullptr;
+  const raw_ptr<Profile> profile_;
+  const raw_ptr<EventRouter> event_router_ = nullptr;
   BrowserTabStripTracker browser_tab_strip_tracker_;
 };
 

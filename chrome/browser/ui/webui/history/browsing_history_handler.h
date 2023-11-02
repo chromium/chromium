@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/clock.h"
 #include "base/values.h"
@@ -39,19 +40,19 @@ class BrowsingHistoryHandler : public content::WebUIMessageHandler,
   void StartQueryHistory();
 
   // Handler for the "queryHistory" message.
-  void HandleQueryHistory(const base::ListValue* args);
+  void HandleQueryHistory(const base::Value::List& args);
 
   // Handler for the "queryHistoryContinuation" message.
-  void HandleQueryHistoryContinuation(const base::ListValue* args);
+  void HandleQueryHistoryContinuation(const base::Value::List& args);
 
   // Handler for the "removeVisits" message.
-  void HandleRemoveVisits(const base::ListValue* args);
+  void HandleRemoveVisits(const base::Value::List& args);
 
   // Handler for "clearBrowsingData" message.
-  void HandleClearBrowsingData(const base::ListValue* args);
+  void HandleClearBrowsingData(const base::Value::List& args);
 
   // Handler for "removeBookmark" message.
-  void HandleRemoveBookmark(const base::ListValue* args);
+  void HandleRemoveBookmark(const base::Value::List& args);
 
   // BrowsingHistoryDriver implementation.
   void OnQueryComplete(
@@ -72,6 +73,11 @@ class BrowsingHistoryHandler : public content::WebUIMessageHandler,
   // outlive the BrowsingHistoryHandler instance.
   void set_clock(base::Clock* clock) { clock_ = clock; }
 
+  void set_browsing_history_service_for_testing(
+      std::unique_ptr<history::BrowsingHistoryService> service) {
+    browsing_history_service_ = std::move(service);
+  }
+
  protected:
   virtual void SendHistoryQuery(int count, const std::u16string& query);
 
@@ -81,13 +87,13 @@ class BrowsingHistoryHandler : public content::WebUIMessageHandler,
   FRIEND_TEST_ALL_PREFIXES(BrowsingHistoryHandlerTest, MdTruncatesTitles);
 
   // The clock used to vend times.
-  base::Clock* clock_;
+  raw_ptr<base::Clock> clock_;
 
   std::unique_ptr<history::BrowsingHistoryService> browsing_history_service_;
 
   std::vector<base::OnceClosure> deferred_callbacks_;
 
-  base::Value initial_results_;
+  absl::optional<base::Value::Dict> initial_results_;
 
   std::string query_history_callback_id_;
 

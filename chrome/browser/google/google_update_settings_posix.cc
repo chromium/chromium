@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -76,14 +76,8 @@ bool GoogleUpdateSettings::GetCollectStatsConsent() {
 
 // static
 bool GoogleUpdateSettings::SetCollectStatsConsent(bool consented) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   crash_reporter::SetUploadConsent(consented);
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (crash_reporter::IsCrashpadEnabled()) {
-    crash_reporter::SetUploadConsent(consented);
-  }
 #endif
 
   base::FilePath consent_dir;
@@ -115,7 +109,7 @@ bool GoogleUpdateSettings::SetCollectStatsConsent(bool consented) {
 // TODO(gab): Implement storing/loading for all ClientInfo fields on POSIX.
 std::unique_ptr<metrics::ClientInfo>
 GoogleUpdateSettings::LoadMetricsClientInfo() {
-  std::unique_ptr<metrics::ClientInfo> client_info(new metrics::ClientInfo);
+  auto client_info = std::make_unique<metrics::ClientInfo>();
 
   base::AutoLock lock(g_posix_client_id_lock.Get());
   if (g_posix_client_id.Get().empty())

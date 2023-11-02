@@ -1,19 +1,23 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/web/test/web_int_test.h"
 
 #import "base/ios/block_types.h"
-#include "base/memory/ptr_util.h"
-#include "base/scoped_observation.h"
-#include "base/strings/sys_string_conversions.h"
+#import "base/memory/ptr_util.h"
+#import "base/scoped_observation.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/web/common/uikit_ui_util.h"
 #import "ios/web/common/web_view_creation_util.h"
 #import "ios/web/public/test/js_test_util.h"
 #import "ios/web/public/test/web_view_interaction_test_util.h"
-#include "ios/web/public/web_state_observer.h"
+#import "ios/web/public/web_state_observer.h"
+
+#if DCHECK_IS_ON()
+#import "ui/display/screen_base.h"
+#endif
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -30,13 +34,13 @@ namespace web {
 // WebStateObserver class that is used to track when page loads finish.
 class IntTestWebStateObserver : public WebStateObserver {
  public:
-  // Instructs the observer to listen for page loads for |url|.
+  // Instructs the observer to listen for page loads for `url`.
   explicit IntTestWebStateObserver(const GURL& url) : expected_url_(url) {}
 
   IntTestWebStateObserver(const IntTestWebStateObserver&) = delete;
   IntTestWebStateObserver& operator=(const IntTestWebStateObserver&) = delete;
 
-  // Whether |expected_url_| has been loaded successfully.
+  // Whether `expected_url_` has been loaded successfully.
   bool IsExpectedPageLoaded() { return page_loaded_; }
 
   // WebStateObserver methods:
@@ -81,6 +85,15 @@ void WebIntTest::TearDown() {
                              [WKWebsiteDataStore allWebsiteDataTypes]);
 
   WebTest::TearDown();
+
+#if DCHECK_IS_ON()
+  // The same screen object is shared across multiple test runs on IOS build.
+  // Make sure that all display observers are removed at the end of each
+  // test.
+  display::ScreenBase* screen =
+      static_cast<display::ScreenBase*>(display::Screen::GetScreen());
+  DCHECK(!screen->HasDisplayObservers());
+#endif
 }
 
 bool WebIntTest::ExecuteBlockAndWaitForLoad(const GURL& url,
@@ -94,7 +107,7 @@ bool WebIntTest::ExecuteBlockAndWaitForLoad(const GURL& url,
 
   block();
 
-  // Need to use a pointer to |observer| as the block wants to capture it by
+  // Need to use a pointer to `observer` as the block wants to capture it by
   // value (even if marked with __block) which would not work.
   IntTestWebStateObserver* observer_ptr = &observer;
   return WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
@@ -132,7 +145,7 @@ void WebIntTest::RemoveWKWebViewCreatedData(WKWebsiteDataStore* data_store,
     // TODO(crbug.com/554225): This approach of creating a WKWebView and
     // executing JS to clear cookies is a workaround for
     // https://bugs.webkit.org/show_bug.cgi?id=149078.
-    // Remove this, when that bug is fixed. The |marker_web_view| will be
+    // Remove this, when that bug is fixed. The `marker_web_view` will be
     // released when cookies have been cleared.
     WKWebView* marker_web_view =
         web::BuildWKWebView(CGRectZero, GetBrowserState());

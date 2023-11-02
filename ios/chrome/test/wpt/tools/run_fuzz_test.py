@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -18,7 +18,7 @@ def GetChromiumSrcDir():
                                       os.pardir))
 
 def GetDefaultBuildDir():
-  return os.path.join(GetChromiumSrcDir(), 'out', 'Release-iphonesimulator')
+  return GetChromiumSrcDir()
 
 def StartServer(port, build_dir):
   cwt_chromedriver_path = os.path.join(os.path.dirname(__file__),

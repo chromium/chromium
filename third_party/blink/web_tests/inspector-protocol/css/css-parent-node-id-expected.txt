@@ -1,0 +1,5 @@
+The test verifies CSS.getMatchedStylesForNode returns the correct parentNodeId.
+Parent node id of the #wrapper: 4
+Parent node id of the #child when #wrapper has 'display: contents': 4
+Parent node id of the #child after #wrapper display was changed to 'block': 5
+

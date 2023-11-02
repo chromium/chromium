@@ -1,14 +1,7 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2022 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import os
-import sys
-
-from gpu_tests import path_util
-
-path_util.SetupTypPath()
-
-CHROMIUM_SRC_DIR = os.path.realpath(
-    os.path.join(os.path.dirname(__file__), '..', '..', '..', '..'))
-sys.path.append(os.path.join(CHROMIUM_SRC_DIR, 'testing'))
+from gpu_path_util import setup_telemetry_paths  # pylint: disable=unused-import
+from gpu_path_util import setup_testing_paths  # pylint: disable=unused-import
+from gpu_path_util import setup_typ_paths  # pylint: disable=unused-import

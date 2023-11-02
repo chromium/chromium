@@ -17,12 +17,14 @@
       "name": "HorizontalScrollbar",
       "position": [10, 105],
       "bounds": [95, 15],
+      "contentsOpaque": true,
       "transform": 1
     },
     {
       "name": "VerticalScrollbar",
       "position": [105, 10],
       "bounds": [15, 95],
+      "contentsOpaque": true,
       "transform": 1
     },
     {
@@ -61,6 +63,7 @@
       "name": "VerticalScrollbar",
       "position": [105, 10],
       "bounds": [15, 95],
+      "contentsOpaque": true,
       "transform": 2
     },
     {
@@ -84,12 +87,14 @@
       "name": "HorizontalScrollbar",
       "position": [10, 105],
       "bounds": [95, 15],
+      "contentsOpaque": true,
       "transform": 3
     },
     {
       "name": "VerticalScrollbar",
       "position": [105, 10],
       "bounds": [15, 95],
+      "contentsOpaque": true,
       "transform": 3
     },
     {
@@ -125,6 +130,7 @@
       "name": "VerticalScrollbar",
       "position": [10, 10],
       "bounds": [15, 95],
+      "contentsOpaque": true,
       "transform": 4
     },
     {
@@ -148,6 +154,7 @@
       "name": "HorizontalScrollbar",
       "position": [10, 105],
       "bounds": [95, 15],
+      "contentsOpaque": true,
       "transform": 5
     },
     {

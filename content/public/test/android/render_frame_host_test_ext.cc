@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -54,12 +54,18 @@ void RenderFrameHostTestExt::ExecuteJavaScript(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     const JavaParamRef<jstring>& jscript,
-    const JavaParamRef<jobject>& jcallback) {
+    const JavaParamRef<jobject>& jcallback,
+    jboolean with_user_gesture) {
   std::u16string script(ConvertJavaStringToUTF16(env, jscript));
   auto callback = base::BindOnce(
       &OnExecuteJavaScriptResult,
       base::android::ScopedJavaGlobalRef<jobject>(env, jcallback));
-  render_frame_host_->ExecuteJavaScriptForTests(script, std::move(callback));
+  if (with_user_gesture) {
+    render_frame_host_->ExecuteJavaScriptWithUserGestureForTests(
+        script, std::move(callback));
+  } else {
+    render_frame_host_->ExecuteJavaScriptForTests(script, std::move(callback));
+  }
 }
 
 void RenderFrameHostTestExt::UpdateVisualState(
@@ -81,7 +87,8 @@ void RenderFrameHostTestExt::NotifyVirtualKeyboardOverlayRect(
     jint height) {
   gfx::Size size(width, height);
   gfx::Point origin(x, y);
-  render_frame_host_->NotifyVirtualKeyboardOverlayRect(gfx::Rect(origin, size));
+  render_frame_host_->GetPage().NotifyVirtualKeyboardOverlayRect(
+      gfx::Rect(origin, size));
 }
 
 }  // namespace content

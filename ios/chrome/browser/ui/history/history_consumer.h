@@ -1,25 +1,26 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef IOS_CHROME_BROWSER_UI_HISTORY_HISTORY_CONSUMER_H_
 #define IOS_CHROME_BROWSER_UI_HISTORY_HISTORY_CONSUMER_H_
 
-#include <vector>
+#import <Foundation/Foundation.h>
 
 #include "components/history/core/browser/browsing_history_service.h"
 
 // Defines methods to manage history query results and deletion actions.
-@protocol HistoryConsumer
+@protocol HistoryConsumer <NSObject>
 
 // Tells the consumer that the result of a history query has been retrieved.
-// Entries in |result| are already sorted.
+// Entries in `result` are already sorted.
 - (void)
-historyQueryWasCompletedWithResults:
-    (const std::vector<history::BrowsingHistoryService::HistoryEntry>&)results
-                   queryResultsInfo:(const history::BrowsingHistoryService::
-                                         QueryResultsInfo&)queryResultsInfo
-                continuationClosure:(base::OnceClosure)continuationClosure;
+    historyQueryWasCompletedWithResults:
+        (const std::vector<history::BrowsingHistoryService::HistoryEntry>&)
+            results
+                       queryResultsInfo:(const history::BrowsingHistoryService::
+                                             QueryResultsInfo&)queryResultsInfo
+                    continuationClosure:(base::OnceClosure)continuationClosure;
 
 // Tells the consumer that history entries have been deleted by a different
 // client.

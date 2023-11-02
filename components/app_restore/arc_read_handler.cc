@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,14 +7,23 @@
 #include <memory>
 
 #include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "components/app_restore/app_launch_info.h"
+#include "components/app_restore/app_restore_info.h"
 #include "components/app_restore/app_restore_utils.h"
-#include "components/app_restore/full_restore_info.h"
 #include "components/app_restore/window_info.h"
 #include "components/app_restore/window_properties.h"
 #include "ui/aura/window.h"
 
 namespace app_restore {
+namespace {
+
+bool IsValidRestoreWindowId(int32_t restore_window_id) {
+  return restore_window_id != 0 &&
+         restore_window_id != kParentToHiddenContainer;
+}
+
+}  // namespace
 
 ArcReadHandler::ArcReadHandler(const base::FilePath& profile_path,
                                Delegate* delegate)
@@ -105,7 +114,7 @@ std::unique_ptr<AppLaunchInfo> ArcReadHandler::GetArcAppLaunchInfo(
 
 std::unique_ptr<WindowInfo> ArcReadHandler::GetWindowInfo(
     int32_t restore_window_id) {
-  if (restore_window_id == 0 || restore_window_id == kParentToHiddenContainer)
+  if (!IsValidRestoreWindowId(restore_window_id))
     return nullptr;
 
   auto it = window_id_to_app_id_.find(restore_window_id);
@@ -160,15 +169,6 @@ int32_t ArcReadHandler::GetArcRestoreWindowIdForSessionId(int32_t session_id) {
   return it == session_id_to_window_id_.end() ? 0 : it->second;
 }
 
-int32_t ArcReadHandler::GetArcSessionId() {
-  if (session_id_ < kArcSessionIdOffsetForRestoredLaunching) {
-    LOG(WARNING) << "ARC session id is overflow: " << session_id_;
-    session_id_ = kArcSessionIdOffsetForRestoredLaunching;
-  }
-
-  return ++session_id_;
-}
-
 void ArcReadHandler::SetArcSessionIdForWindowId(int32_t session_id,
                                                 int32_t window_id) {
   DCHECK_GT(session_id, kArcSessionIdOffsetForRestoredLaunching);
@@ -176,7 +176,7 @@ void ArcReadHandler::SetArcSessionIdForWindowId(int32_t session_id,
 }
 
 void ArcReadHandler::RemoveAppRestoreData(int32_t window_id) {
-  if (window_id == 0 || window_id == kParentToHiddenContainer)
+  if (!IsValidRestoreWindowId(window_id))
     return;
 
   auto it = window_id_to_app_id_.find(window_id);
@@ -191,17 +191,15 @@ void ArcReadHandler::RemoveAppRestoreData(int32_t window_id) {
 void ArcReadHandler::UpdateWindowCandidates(int32_t task_id,
                                             int32_t restore_window_id) {
   // Go through `arc_window_candidates_`.
-  auto window_it =
-      std::find_if(arc_window_candidates_.begin(), arc_window_candidates_.end(),
-                   [task_id](aura::Window* window) {
-                     return window->GetProperty(kWindowIdKey) == task_id;
-                   });
+  auto window_it = base::ranges::find(
+      arc_window_candidates_, task_id,
+      [](aura::Window* window) { return window->GetProperty(kWindowIdKey); });
   if (window_it == arc_window_candidates_.end())
     return;
 
   // If `restore_window_id` is valid, sets the window property
   // `kRestoreWindowIdKey` and `kWindowInfoKey`.
-  if (restore_window_id > 0) {
+  if (IsValidRestoreWindowId(restore_window_id)) {
     (*window_it)->SetProperty(kRestoreWindowIdKey, restore_window_id);
 
     // When the window was created, there was not any window info due to there
@@ -214,8 +212,8 @@ void ArcReadHandler::UpdateWindowCandidates(int32_t task_id,
 
   // Remove the window from the hidden container.
   if ((*window_it)->GetProperty(kParentToHiddenContainerKey)) {
-    full_restore::FullRestoreInfo::GetInstance()
-        ->OnARCTaskReadyForUnparentedWindow(*window_it);
+    app_restore::AppRestoreInfo::GetInstance()->OnParentWindowToValidContainer(
+        *window_it);
   }
 
   arc_window_candidates_.erase(*window_it);

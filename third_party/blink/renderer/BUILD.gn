@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -50,8 +50,6 @@ config("inside_blink") {
       "-Wno-implicit-int-conversion",
     ]
   }
-
-  configs = [ "//build/config/compiler:noshadowing" ]
 }
 
 # blink_pch --------------------------------------------------------------------
@@ -114,6 +112,10 @@ config("config") {
       "-add-plugin",
       "-Xclang",
       "blink-gc-plugin",
+      "-Xclang",
+      "-plugin-arg-blink-gc-plugin",
+      "-Xclang",
+      "fix-bugs-of-is-considered-abstract",
     ]
 
     # Add arguments for enabled GC plugin options:
@@ -136,6 +138,4 @@ config("non_test_config") {
   if (is_clang) {
     cflags += [ "-Wglobal-constructors" ]
   }
-
-  configs = [ "//build/config/compiler:noshadowing" ]
 }

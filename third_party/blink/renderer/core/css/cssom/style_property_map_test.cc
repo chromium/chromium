@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -53,8 +53,6 @@ TEST_F(StylePropertyMapTest, SetRevertWithFeatureEnabled) {
 }
 
 TEST_F(StylePropertyMapTest, SetOverflowClipString) {
-  ScopedOverflowClipForTest overflow_clip_feature_enabler(true);
-
   DummyExceptionStateForTesting exception_state;
 
   HeapVector<Member<V8UnionCSSStyleValueOrString>> clip_string;
@@ -77,8 +75,6 @@ TEST_F(StylePropertyMapTest, SetOverflowClipString) {
 }
 
 TEST_F(StylePropertyMapTest, SetOverflowClipStyleValue) {
-  ScopedOverflowClipForTest overflow_clip_feature_enabler(true);
-
   DummyExceptionStateForTesting exception_state;
 
   HeapVector<Member<V8UnionCSSStyleValueOrString>> clip_style_value;

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/task/post_task.h"
 #include "base/task/task_runner_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -66,8 +65,7 @@ void ArcAppInstallEventLogManager::Clear(
     Profile* profile) {
   ArcAppInstallEventLogger::Clear(profile);
   log_task_runner_wrapper->GetTaskRunner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(base::GetDeleteFileCallback(), GetLogFilePath(*profile)));
+      FROM_HERE, base::GetDeleteFileCallback(GetLogFilePath(*profile)));
 }
 
 void ArcAppInstallEventLogManager::Add(
@@ -79,7 +77,7 @@ void ArcAppInstallEventLogManager::Add(
   // If --arc-install-event-chrome-log-for-tests is present, write event logs to
   // Chrome log (/var/log/chrome). LOG(ERROR) ensures that logs are written.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::switches::kArcInstallEventChromeLogForTests)) {
+          ash::switches::kArcInstallEventChromeLogForTests)) {
     for (std::string package : packages)
       LOG(ERROR) << "Add ARC install event: " << package << ", "
                  << event.event_type();

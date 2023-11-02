@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,8 @@ import androidx.browser.customtabs.CustomTabsService;
 import org.chromium.base.Promise;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.ui.controller.Verifier;
-import org.chromium.chrome.browser.browserservices.verification.OriginVerifier;
-import org.chromium.chrome.browser.browserservices.verification.OriginVerifierFactory;
+import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifier;
+import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifierFactory;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -35,7 +35,7 @@ public class TwaVerifier implements Verifier, DestroyObserver {
     private static final int RELATIONSHIP = CustomTabsService.RELATION_HANDLE_ALL_URLS;
 
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
-    private final OriginVerifier mOriginVerifier;
+    private final ChromeOriginVerifier mOriginVerifier;
 
     /**
      * Origins that we have yet to call OriginVerifier#start on.
@@ -55,7 +55,8 @@ public class TwaVerifier implements Verifier, DestroyObserver {
     @Inject
     public TwaVerifier(ActivityLifecycleDispatcher lifecycleDispatcher,
             BrowserServicesIntentDataProvider intentDataProvider,
-            OriginVerifierFactory originVerifierFactory, CustomTabActivityTabProvider tabProvider,
+            ChromeOriginVerifierFactory originVerifierFactory,
+            CustomTabActivityTabProvider tabProvider,
             ClientPackageNameProvider clientPackageNameProvider,
             ExternalAuthUtils externalAuthUtils) {
         mIntentDataProvider = intentDataProvider;

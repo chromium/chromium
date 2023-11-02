@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
 #import "base/mac/foundation_util.h"
@@ -96,7 +95,7 @@ NSPoint GetCGSWindowScreenOrigin(NSWindow* window) {
 // Set the transparency of the window.
 void SetWindowAlpha(NSWindow* window, float alpha) {
   CGSConnection cid = _CGSDefaultConnection();
-  CGSSetWindowAlpha(cid, [window windowNumber], alpha);
+  CGSSetWindowAlpha(cid, static_cast<CGSWindow>([window windowNumber]), alpha);
 }
 
 // Scales the window and translates it so that it stays centered relative
@@ -118,7 +117,8 @@ void SetWindowScale(NSWindow* window, float scale) {
   transform = CGAffineTransformTranslate(transform, new_x, new_y);
 
   CGSConnection cid = _CGSDefaultConnection();
-  CGSSetWindowTransform(cid, [window windowNumber], transform);
+  CGSSetWindowTransform(cid, static_cast<CGSWindow>([window windowNumber]),
+                        transform);
 }
 
 // Unsets any window warp that may have been previously applied.
@@ -126,7 +126,8 @@ void SetWindowScale(NSWindow* window, float scale) {
 // being applied.
 void ClearWindowWarp(NSWindow* window) {
   CGSConnection cid = _CGSDefaultConnection();
-  CGSSetWindowWarp(cid, [window windowNumber], 0, 0, NULL);
+  CGSSetWindowWarp(cid, static_cast<CGSWindow>([window windowNumber]), 0, 0,
+                   NULL);
 }
 
 // Applies various transformations using a warp effect. The window is
@@ -183,7 +184,8 @@ void SetWindowWarp(NSWindow* window,
   };
 
   CGSConnection cid = _CGSDefaultConnection();
-  CGSSetWindowWarp(cid, [window windowNumber], 2, 2, &(mesh[0][0]));
+  CGSSetWindowWarp(cid, static_cast<CGSWindow>([window windowNumber]), 2, 2,
+                   &(mesh[0][0]));
 }
 
 // Sets the various effects that are a part of the Show/Hide animation.
@@ -338,7 +340,7 @@ bool AreWindowServerEffectsDisabled() {
   };
 
   CGFloat scale = 1;
-  for (int i = base::size(frames) - 1; i >= 0; --i) {
+  for (int i = std::size(frames) - 1; i >= 0; --i) {
     if (value >= frames[i].value) {
       CGFloat delta = frames[i + 1].value - frames[i].value;
       CGFloat frame_progress = (value - frames[i].value) / delta;

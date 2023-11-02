@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright 2019 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2019 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 
 <grit current_release="1" latest_public_release="0" output_all_resource_defines="false">
   <outputs>
@@ -86,6 +88,9 @@
     <output filename="values-zh-rHK/android_touch_to_fill_strings.xml" lang="zh-HK" type="android" />
     <output filename="values-zh-rTW/android_touch_to_fill_strings.xml" lang="zh-TW" type="android" />
     <output filename="values-zu/android_touch_to_fill_strings.xml" lang="zu" type="android" />
+    <!-- Pseudolocales -->
+    <output filename="values-ar-rXB/android_touch_to_fill_strings.xml" lang="ar-XB" type="android" />
+    <output filename="values-en-rXA/android_touch_to_fill_strings.xml" lang="en-XA" type="android" />
   </outputs>
   <translations>
     <file path="translations/android_touch_to_fill_strings_af.xtb" lang="af" />
@@ -99,6 +104,7 @@
     <file path="translations/android_touch_to_fill_strings_bs.xtb" lang="bs" />
     <file path="translations/android_touch_to_fill_strings_ca.xtb" lang="ca" />
     <file path="translations/android_touch_to_fill_strings_cs.xtb" lang="cs" />
+    <file path="translations/android_touch_to_fill_strings_cy.xtb" lang="cy" />
     <file path="translations/android_touch_to_fill_strings_da.xtb" lang="da" />
     <file path="translations/android_touch_to_fill_strings_de.xtb" lang="de" />
     <file path="translations/android_touch_to_fill_strings_el.xtb" lang="el" />
@@ -178,8 +184,17 @@
       <message name="IDS_TOUCH_TO_FILL_SHEET_TITLE" desc="Header for Touch To Fill sheet where users can pick a credential to fill into a form to.">
         Choose an account
       </message>
+      <message name="IDS_TOUCH_TO_FILL_SHEET_UNIFORM_TITLE" desc="Header for Touch To Fill sheet where users can pick a password credential to fill into a form. Will replace SHEET_TITLE_SINGLE and SHEET_TITLE.">
+        Use saved password?
+      </message>
       <message name="IDS_TOUCH_TO_FILL_SHEET_SUBTITLE_NOT_SECURE" desc="Subtitle for Touch To Fill sheet when the website is not secure. Note that similarly to the omnibox 'not secure' in this case primarily refers to HTTPS connection security. So prefer translations with a connotation of 'not private' (someone can intercept your communication with the site) rather than 'not trustworthy' (which would be a judgment of site reputation).">
         <ph name="SITE_NAME">%1$s<ex>airbnb.com</ex> (not secure)</ph>
+      </message>
+      <message name="IDS_TOUCH_TO_FILL_SHEET_SUBTITLE_SUBMISSION" desc="Subtitle for Touch To Fill sheet when a form is going to be submitted after filling">
+        You'll sign in to <ph name="SITE_NAME">%1$s<ex>airbnb.com</ex></ph>
+      </message>
+      <message name="IDS_TOUCH_TO_FILL_SHEET_SUBTITLE_INSECURE_SUBMISSION" desc="Subtitle for Touch To Fill sheet when a form is going to be submitted after filling and the website is not secure. This is a combination of SUBTITLE_SUBMISSION and SUBTITLE_NOT_SECURE">
+        You'll sign in to <ph name="SITE_NAME">%1$s<ex>airbnb.com</ex> (not secure)</ph>
       </message>
       <message name="IDS_TOUCH_TO_FILL_CONTENT_DESCRIPTION" desc="Accessibility string read when the Touch To Fill bottom sheet is opened. It describes the bottom sheet where a user can pick a credential to fill into a password form.">
         List of credentials to be filled on touch.
@@ -196,8 +211,26 @@
       <message name="IDS_MANAGE_PASSWORDS" desc="Title of the button at the end of a touch to fill sheet that will open the password preferences when tapped.">
         Manage passwords
       </message>
-      <message name="IDS_TOUCH_TO_FILL_CONTINUE" desc="Title of the button that continues filling with the only available set of credentials.">
+      <message name="IDS_MANAGE_PASSKEYS" desc="Title of the button at the end of a touch to fill sheet that will open the native password management screen when tapped. Used when only passkeys are present on the sheet.">
+        Manage passkeys
+      </message>
+      <message name="IDS_MANAGE_PASSWORDS_AND_PASSKEYS" desc="Title of the button at the end of a touch to fill sheet that will open the native password management screen when tapped. Used when passkeys and passwords are both present on the sheet.">
+        Manage passwords and passkeys
+      </message>
+      <message name="IDS_TOUCH_TO_FILL_CONTINUE" desc="Title of the button that continues filling with the only available credential.">
         Continue
+      </message>
+      <message name="IDS_TOUCH_TO_FILL_SIGNIN" desc="Title of the button that continues filling and submitting the only available credential.">
+        Sign in
+      </message>
+      <message name="IDS_TOUCH_TO_FILL_SHEET_TITLE_PASSKEY" desc="Header for Touch To Fill sheet where users can pick a Passkey credential to sign in to a website.">
+        Use saved passkey?
+      </message>
+      <message name="IDS_TOUCH_TO_FILL_SHEET_TITLE_PASSWORD_OR_PASSKEY" desc="Header for Touch To Fill sheet where users can pick a password or Passkey credential to sign in to a website.">
+        Use saved password or passkey?
+      </message>
+      <message name="IDS_TOUCH_TO_FILL_SHEET_WEBAUTHN_CREDENTIAL_CONTEXT" desc="Context string for second line of a Passkey on the Touch To Fill sheet, beneath the username.">
+        Use your screen lock
       </message>
     </messages>
   </release>

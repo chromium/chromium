@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 
 using content::BrowserContext;
 using content::OpenURLParams;
@@ -85,7 +86,7 @@ void ChromeWebContentsHandler::AddNewContents(
     std::unique_ptr<WebContents> new_contents,
     const GURL& target_url,
     WindowOpenDisposition disposition,
-    const gfx::Rect& initial_rect,
+    const blink::mojom::WindowFeatures& window_features,
     bool user_gesture) {
   if (!context)
     return;
@@ -107,7 +108,7 @@ void ChromeWebContentsHandler::AddNewContents(
   NavigateParams params(browser, std::move(new_contents));
   params.source_contents = source;
   params.disposition = disposition;
-  params.window_bounds = initial_rect;
+  params.window_bounds = window_features.bounds;
   params.window_action = NavigateParams::SHOW_WINDOW;
   params.user_gesture = user_gesture;
   Navigate(&params);

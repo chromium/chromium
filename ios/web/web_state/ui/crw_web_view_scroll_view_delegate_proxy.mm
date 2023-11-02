@@ -1,12 +1,12 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/web/web_state/ui/crw_web_view_scroll_view_delegate_proxy.h"
 
-#include <ostream>
+#import <ostream>
 
-#include "base/check_op.h"
+#import "base/check_op.h"
 #import "base/ios/crb_protocol_observers.h"
 #import "ios/web/web_state/ui/crw_web_view_scroll_view_proxy+internal.h"
 
@@ -63,13 +63,13 @@
   // Called when the method is not implemented in this class. Forwards the
   // method to the delegate of the scroll view proxy.
 
-  // Replaces the |sender| argument of the delegate method call with
-  // [self.scrollViewProxy asUIScrollView]. |sender| should be the first
+  // Replaces the `sender` argument of the delegate method call with
+  // [self.scrollViewProxy asUIScrollView]. `sender` should be the first
   // argument of every delegate method according to Apple's style guide:
   // https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/CodingGuidelines/Articles/NamingMethods.html#//apple_ref/doc/uid/20001282-BCIGIJJF
   // and it is true for all methods of UIScrollViewDelegate as of today. But
   // here performs a few safety checks to make sure that the first argument is
-  // |sender|:
+  // `sender`:
   //   - The method has at least one argument
   //   - The first argument is typed UIScrollView
   //   - The first argument is equal to the underlying scroll view

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,8 @@
 #include "cc/paint/display_item_list.h"
 #include "cc/paint/solid_color_analyzer.h"
 #include "cc/raster/raster_source.h"
+
+#include "base/record_replay.h"
 
 namespace {
 
@@ -50,7 +52,15 @@ void RecordingSource::FinishDisplayItemListUpdate() {
   display_list_->GenerateDiscardableImagesMetadata();
 }
 
-void RecordingSource::SetNeedsDisplayRect(const gfx::Rect& layer_rect) {
+void RecordingSource::SetNeedsDisplayRect(const gfx::Rect& base_layer_rect) {
+  // Sometimes there can be off-by-one differences in how invalidated rects
+  // are computed between recording and replaying. It's not clear how this
+  // happens, and for now we paper over this by forcing the rects to have
+  // the same contents when replaying.
+  gfx::Rect layer_rect = base_layer_rect;
+  recordreplay::RecordReplayBytes("RecordingSource::SetNeedsDisplayRect",
+                                  &layer_rect, sizeof(layer_rect));
+
   if (!layer_rect.IsEmpty()) {
     // Clamp invalidation to the layer bounds.
     invalidation_.Union(gfx::IntersectRects(layer_rect, gfx::Rect(size_)));
@@ -61,6 +71,10 @@ bool RecordingSource::UpdateAndExpandInvalidation(
     Region* invalidation,
     const gfx::Size& layer_size,
     const gfx::Rect& new_recorded_viewport) {
+  // https://linear.app/replay/issue/RUN-885
+  recordreplay::Assert("RecordingSource::UpdateAndExpandInvalidation %d %d",
+                       layer_size.width(), layer_size.height());
+
   bool updated = false;
 
   if (size_ != layer_size)
@@ -104,6 +118,9 @@ gfx::Size RecordingSource::GetSize() const {
 }
 
 void RecordingSource::SetEmptyBounds() {
+  // https://linear.app/replay/issue/RUN-885
+  recordreplay::Assert("RecordingSource::SetEmptyBounds");
+
   size_ = gfx::Size();
   is_solid_color_ = false;
 
@@ -115,7 +132,7 @@ void RecordingSource::SetSlowdownRasterScaleFactor(int factor) {
   slow_down_raster_scale_factor_for_debug_ = factor;
 }
 
-void RecordingSource::SetBackgroundColor(SkColor background_color) {
+void RecordingSource::SetBackgroundColor(SkColor4f background_color) {
   background_color_ = background_color;
 }
 
@@ -130,7 +147,7 @@ scoped_refptr<RasterSource> RecordingSource::CreateRasterSource() const {
 void RecordingSource::DetermineIfSolidColor() {
   DCHECK(display_list_);
   is_solid_color_ = false;
-  solid_color_ = SK_ColorTRANSPARENT;
+  solid_color_ = SkColors::kTransparent;
 
   if (display_list_->TotalOpCount() > kMaxOpsToAnalyzeForLayer)
     return;

@@ -1,4 +1,4 @@
-// Copyright (c) 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -65,7 +65,7 @@ class MODULES_EXPORT WebRtcMediaStreamTrackAdapter
   // TODO(hbos): Allow these methods to be called on any thread and make them
   // const. https://crbug.com/756436
   MediaStreamComponent* track();
-  webrtc::MediaStreamTrackInterface* webrtc_track();
+  rtc::scoped_refptr<webrtc::MediaStreamTrackInterface> webrtc_track();
   bool IsEqual(MediaStreamComponent* component);
 
   // For testing.
@@ -99,9 +99,11 @@ class MODULES_EXPORT WebRtcMediaStreamTrackAdapter
   // Initialization of remote tracks starts on the webrtc signaling thread and
   // finishes on the main thread.
   void InitializeRemoteAudioTrack(
-      const scoped_refptr<webrtc::AudioTrackInterface>& webrtc_audio_track);
+      const scoped_refptr<webrtc::AudioTrackInterface>& webrtc_audio_track,
+      ExecutionContext* execution_context);
   void InitializeRemoteVideoTrack(
-      const scoped_refptr<webrtc::VideoTrackInterface>& webrtc_video_track);
+      const scoped_refptr<webrtc::VideoTrackInterface>& webrtc_video_track,
+      ExecutionContext* execution_context);
   void FinalizeRemoteTrackInitializationOnMainThread();
   void EnsureTrackIsInitialized();
 

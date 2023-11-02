@@ -24,19 +24,28 @@
 
 #include <tuple>
 
+// Include these first so the default hash for Node can be determined.
+#include "third_party/blink/renderer/core/dom/node.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
+
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/layout/hit_test_request.h"
-#include "third_party/blink/renderer/platform/geometry/float_quad.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector_traits.h"
+#include "ui/gfx/geometry/quad_f.h"
+#include "ui/gfx/geometry/rect_f.h"
+
+namespace cc {
+class Region;
+}
 
 namespace blink {
 
@@ -46,10 +55,10 @@ class HTMLAreaElement;
 class HTMLMediaElement;
 class Image;
 class KURL;
+class MediaSourceHandle;
 class MediaStreamDescriptor;
 class NGPhysicalBoxFragment;
 class Node;
-class Region;
 class Scrollbar;
 struct PhysicalOffset;
 
@@ -85,7 +94,6 @@ class CORE_EXPORT HitTestResult {
   // FIXME: Make these less error-prone for rect-based hit tests (center point
   // or fail).
   Node* InnerNode() const { return inner_node_.Get(); }
-  Node* InertNode() const { return inert_node_.Get(); }
   Node* InnerPossiblyPseudoNode() const {
     return inner_possibly_pseudo_node_.Get();
   }
@@ -123,7 +131,7 @@ class CORE_EXPORT HitTestResult {
     SetInnerNode(node);
   }
   void SetNodeAndPosition(Node*,
-                          scoped_refptr<const NGPhysicalBoxFragment>,
+                          const NGPhysicalBoxFragment*,
                           const PhysicalOffset&);
 
   // Override an inner node previously set. The new node needs to be monolithic
@@ -141,7 +149,6 @@ class CORE_EXPORT HitTestResult {
   const HitTestRequest& GetHitTestRequest() const { return hit_test_request_; }
 
   void SetInnerNode(Node*);
-  void SetInertNode(Node*);
   HTMLAreaElement* ImageAreaForImage() const;
   void SetURLElement(Element*);
   void SetScrollbar(Scrollbar*);
@@ -154,11 +161,12 @@ class CORE_EXPORT HitTestResult {
   const AtomicString& AltDisplayString() const;
   static Image* GetImage(const Node* node);
   Image* GetImage() const;
-  IntRect ImageRect() const;
+  gfx::Rect ImageRect() const;
   static KURL AbsoluteImageURL(const Node* node);
   KURL AbsoluteImageURL() const;
   KURL AbsoluteMediaURL() const;
   MediaStreamDescriptor* GetMediaStreamDescriptor() const;
+  MediaSourceHandle* GetMediaSourceHandle() const;
   KURL AbsoluteLinkURL() const;
   String TextContent() const;
   bool IsLiveLink() const;
@@ -182,12 +190,16 @@ class CORE_EXPORT HitTestResult {
       const PhysicalRect& = PhysicalRect());
   ListBasedHitTestBehavior AddNodeToListBasedTestResult(Node*,
                                                         const HitTestLocation&,
-                                                        const FloatQuad& quad);
+                                                        const gfx::QuadF& quad);
   ListBasedHitTestBehavior AddNodeToListBasedTestResult(Node*,
                                                         const HitTestLocation&,
-                                                        const Region&);
+                                                        const cc::Region&);
 
   void Append(const HitTestResult&);
+
+  bool HasListBasedResult() const {
+    return GetHitTestRequest().ListBased() && InnerNode();
+  }
 
   // If m_listBasedTestResult is 0 then set it to a new NodeSet. Return
   // *m_listBasedTestResult. Lazy allocation makes sense because the NodeSet is
@@ -213,7 +225,6 @@ class CORE_EXPORT HitTestResult {
   bool cacheable_;
 
   Member<Node> inner_node_;
-  Member<Node> inert_node_;
   // This gets calculated in the first call to InnerElement function.
   Member<Element> inner_element_;
   Member<Node> inner_possibly_pseudo_node_;

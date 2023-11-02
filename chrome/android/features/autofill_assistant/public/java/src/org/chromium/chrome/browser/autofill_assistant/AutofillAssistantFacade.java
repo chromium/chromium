@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.View;
 
 import androidx.annotation.Nullable;
 
@@ -20,33 +20,22 @@ import org.chromium.base.Log;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.chrome.browser.autofill_assistant.metrics.DropOutReason;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.directactions.DirectActionHandler;
-import org.chromium.chrome.browser.flags.ActivityType;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.autofill_assistant.AssistantFeatures;
+import org.chromium.components.autofill_assistant.AutofillAssistantMetrics;
+import org.chromium.components.autofill_assistant.AutofillAssistantModuleEntryProvider;
+import org.chromium.components.autofill_assistant.TriggerContext;
+import org.chromium.components.autofill_assistant.metrics.DropOutReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.external_intents.ExternalNavigationDelegate.IntentToAutofillAllowingAppResult;
+import org.chromium.content_public.browser.WebContents;
 
 /** Facade for starting Autofill Assistant on a tab. */
 public class AutofillAssistantFacade {
     /** Used for logging. */
     private static final String TAG = "AutofillAssistant";
-
-    /**
-     * Synthetic field trial names and group names should match those specified in
-     * google3/analysis/uma/dashboards/
-     * .../variations/generate_server_hashes.py and
-     * .../website/components/variations_dash/variations_histogram_entry.js.
-     */
-    private static final String TRIGGERED_SYNTHETIC_TRIAL = "AutofillAssistantTriggered";
-    private static final String ENABLED_GROUP = "Enabled";
-
-    private static final String EXPERIMENTS_SYNTHETIC_TRIAL = "AutofillAssistantExperimentsTrial";
 
     /** Returns true if conditions are satisfied to attempt to start Autofill Assistant. */
     private static boolean isConfigured(TriggerContext arguments) {
@@ -97,16 +86,6 @@ public class AutofillAssistantFacade {
             Log.v(TAG, "Failed to retrieve ChromeActivity.");
             return;
         }
-        // Register synthetic trial as soon as possible.
-        UmaSessionStats.registerSyntheticFieldTrial(TRIGGERED_SYNTHETIC_TRIAL, ENABLED_GROUP);
-        // Synthetic trial for experiments.
-        String experimentIds = triggerContext.getExperimentIds();
-        if (!experimentIds.isEmpty()) {
-            for (String experimentId : experimentIds.split(",")) {
-                UmaSessionStats.registerSyntheticFieldTrial(
-                        EXPERIMENTS_SYNTHETIC_TRIAL, experimentId);
-            }
-        }
 
         String intent = triggerContext.getIntent();
         // Have an "attempted starts" baseline for the drop out histogram.
@@ -116,47 +95,20 @@ public class AutofillAssistantFacade {
     }
 
     /**
-     * Asks the feature module to create a container with the required dependencies.
-     * TODO(b/173103628): move this out of the facade once we inject our dependencies in a better
-     * way.
-     */
-    public static AssistantDependencies createDependencies(
-            Activity activity, AutofillAssistantModuleEntry module) {
-        assert activity instanceof ChromeActivity;
-        ChromeActivity chromeActivity = (ChromeActivity) activity;
-        Supplier<CompositorViewHolder> cvh = chromeActivity.getCompositorViewHolderSupplier();
-        return module.createDependencies(
-                BottomSheetControllerProvider.from(chromeActivity.getWindowAndroid()),
-                chromeActivity.getBrowserControlsManager(), cvh.get(), chromeActivity,
-                chromeActivity.getCurrentWebContents(),
-                chromeActivity.getWindowAndroid().getKeyboardDelegate(),
-                chromeActivity.getWindowAndroid().getApplicationBottomInsetProvider(),
-                chromeActivity.getActivityTabProvider());
-    }
-
-    /**
-     * Checks whether direct actions provided by Autofill Assistant should be available - assuming
-     * that direct actions are available at all.
-     */
-    public static boolean areDirectActionsAvailable(@ActivityType int activityType) {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
-                && (activityType == ActivityType.CUSTOM_TAB || activityType == ActivityType.TABBED)
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ASSISTANT_DIRECT_ACTIONS)
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ASSISTANT);
-    }
-
-    /**
      * Returns a {@link DirectActionHandler} for making dynamic actions available under Android Q.
      *
-     * <p>This should only be called if {@link #areDirectActionsAvailable} returns true. This method
-     * can also return null if autofill assistant is not available for some other reasons.
+     * <p>This should only be called if {@link
+     * AssistantDependencyUtilsChrome#areDirectActionsAvailable} returns true. This method can also
+     * return null if autofill assistant is not available for some other reasons.
      */
     public static DirectActionHandler createDirectActionHandler(Context context,
             BottomSheetController bottomSheetController,
-            BrowserControlsStateProvider browserControls, CompositorViewHolder compositorViewHolder,
+            BrowserControlsStateProvider browserControls, View rootView,
             ActivityTabProvider activityTabProvider) {
+        Supplier<WebContents> webContentsSupplier = () -> getWebContents(activityTabProvider);
+
         return new AutofillAssistantDirectActionHandler(context, bottomSheetController,
-                browserControls, compositorViewHolder, activityTabProvider,
+                browserControls, rootView, activityTabProvider, webContentsSupplier,
                 AutofillAssistantModuleEntryProvider.INSTANCE);
     }
 
@@ -179,14 +131,24 @@ public class AutofillAssistantFacade {
         });
     }
 
+    @Nullable
+    private static WebContents getWebContents(ActivityTabProvider activityTabProvider) {
+        Tab tab = activityTabProvider.get();
+        if (tab == null) {
+            return null;
+        }
+
+        return tab.getWebContents();
+    }
+
     public static boolean isAutofillAssistantEnabled(Intent intent) {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ASSISTANT)
+        return AssistantFeatures.AUTOFILL_ASSISTANT.isEnabled()
                 && AutofillAssistantFacade.isConfigured(
                         TriggerContext.newBuilder().fromBundle(intent.getExtras()).build());
     }
 
     public static boolean isAutofillAssistantByIntentTriggeringEnabled(Intent intent) {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ASSISTANT_CHROME_ENTRY)
+        return AssistantFeatures.AUTOFILL_ASSISTANT_CHROME_ENTRY.isEnabled()
                 && AutofillAssistantFacade.isAutofillAssistantEnabled(intent);
     }
 

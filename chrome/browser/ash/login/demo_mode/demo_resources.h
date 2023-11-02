@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -87,9 +87,6 @@ class DemoResources {
   void InstalledComponentLoaded(
       component_updater::CrOSComponentManager::Error error,
       const base::FilePath& path);
-
-  // Loads the preinstalled offline resources image.
-  void LoadPreinstalledOfflineResources();
 
   // Callback for the component or image loader request to load demo resources.
   // `mount_path` is the path at which the resources were loaded.

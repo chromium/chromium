@@ -1,10 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/viz/service/display_embedder/skia_output_device_x11.h"
 
 #include <utility>
+#include <vector>
 
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
@@ -69,17 +70,17 @@ SkiaOutputDeviceX11::~SkiaOutputDeviceX11() {
   connection_->FreeGC({gc_});
 }
 
-bool SkiaOutputDeviceX11::Reshape(const gfx::Size& size,
-                                  float device_scale_factor,
-                                  const gfx::ColorSpace& color_space,
-                                  gfx::BufferFormat format,
-                                  gfx::OverlayTransform transform) {
-  if (!SkiaOutputDeviceOffscreen::Reshape(size, device_scale_factor,
-                                          color_space, format, transform)) {
+bool SkiaOutputDeviceX11::Reshape(
+    const SkSurfaceCharacterization& characterization,
+    const gfx::ColorSpace& color_space,
+    float device_scale_factor,
+    gfx::OverlayTransform transform) {
+  if (!SkiaOutputDeviceOffscreen::Reshape(characterization, color_space,
+                                          device_scale_factor, transform)) {
     return false;
   }
-  auto ii =
-      SkImageInfo::MakeN32(size.width(), size.height(), kOpaque_SkAlphaType);
+  auto ii = SkImageInfo::MakeN32(
+      characterization.width(), characterization.height(), kOpaque_SkAlphaType);
   std::vector<uint8_t> mem(ii.computeMinByteSize());
   pixels_ = base::RefCountedBytes::TakeVector(&mem);
   return true;

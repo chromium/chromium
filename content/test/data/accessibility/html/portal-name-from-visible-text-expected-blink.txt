@@ -6,5 +6,7 @@ rootWebArea
 ++++++++++genericContainer ignored
 ++++++++++++genericContainer ignored
 ++++++++++++++genericContainer ignored
+++++++++++++++++staticText ignored name='visible text'
 ++++++++++++++genericContainer ignored
 ++++++++++++++genericContainer ignored
+++++++++++++++++staticText ignored name='hidden from viewport'

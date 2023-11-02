@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -27,6 +28,7 @@ import org.chromium.net.test.EmbeddedTestServer;
  * Tests for histograms emitted from org.chromium.base.library_loader.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 public class ChromiumAndroidLinkerMetricsTest {
     private static final String TAG = "ChromiumAndroidLinkerMetricsTest";
@@ -67,7 +69,7 @@ public class ChromiumAndroidLinkerMetricsTest {
         PageLoadMetricsTest.PageLoadMetricsTestObserver metricsObserver =
                 new PageLoadMetricsTest.PageLoadMetricsTestObserver();
         TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> PageLoadMetrics.addObserver(metricsObserver));
+                () -> PageLoadMetrics.addObserver(metricsObserver, false));
 
         mActivityTestRule.loadUrl(getNextLoadUrl());
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,13 +10,13 @@
 #include "base/check.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
+#include "base/time/time.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/renderer/pepper/host_globals.h"
 #include "content/renderer/pepper/pepper_file_ref_renderer_host.h"
 #include "content/renderer/pepper/pepper_plugin_instance_impl.h"
 #include "content/renderer/pepper/plugin_module.h"
 #include "content/renderer/pepper/renderer_ppapi_host_impl.h"
-#include "content/renderer/render_thread_impl.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/http/http_util.h"
 #include "ppapi/c/pp_bool.h"
@@ -27,7 +27,7 @@
 #include "ppapi/thunk/enter.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/filesystem/file_system.mojom.h"
-#include "third_party/blink/public/mojom/web_feature/web_feature.mojom.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "third_party/blink/public/platform/file_path_conversion.h"
 #include "third_party/blink/public/platform/web_data.h"
 #include "third_party/blink/public/platform/web_http_body.h"
@@ -221,7 +221,6 @@ bool CreateWebURLRequest(PP_Instance instance,
   if (!data->body.empty()) {
     WebHTTPBody http_body;
     http_body.Initialize();
-    int file_index = 0;
     for (size_t i = 0; i < data->body.size(); ++i) {
       const URLRequestInfoData::BodyItem& item = data->body[i];
       if (item.is_file) {
@@ -232,7 +231,6 @@ bool CreateWebURLRequest(PP_Instance instance,
                                  item.expected_last_modified_time,
                                  &http_body))
           return false;
-        file_index++;
       } else {
         DCHECK(!item.data.empty());
         http_body.AppendData(WebData(item.data));

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,6 +20,10 @@ const char kInvalidCharacterDeviceId[] = "123456789012345678901*==";
 // A base64 string should have a length of a multiple of 4.
 const char kInvalidLengthDeviceId[] = "123456789012345678901";
 
+const blink::WebBluetoothDeviceIdKey kValidArrDeviceId1 = {
+    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
+const blink::WebBluetoothDeviceIdKey kValidArrDeviceId2 = {
+    11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26};
 }  // namespace
 
 TEST(WebBluetoothDeviceIdTest, DefaultConstructor) {
@@ -59,6 +63,15 @@ TEST(WebBluetoothDeviceIdTest, StrConstructor) {
       [&]() { return WebBluetoothDeviceId(kInvalidCharacterDeviceId); }(), "");
   EXPECT_DEATH_IF_SUPPORTED(
       [&]() { return WebBluetoothDeviceId(kInvalidLengthDeviceId); }(), "");
+}
+
+TEST(WebBluetoothDeviceIdTest, ArrConstructor) {
+  WebBluetoothDeviceId valid1(kValidArrDeviceId1);
+  WebBluetoothDeviceId valid2(kValidArrDeviceId2);
+
+  EXPECT_TRUE(valid1 == valid1);
+  EXPECT_TRUE(valid2 == valid2);
+  EXPECT_TRUE(valid1 != valid2);
 }
 
 TEST(WebBluetoothDeviceIdTest, IsValid_Valid) {

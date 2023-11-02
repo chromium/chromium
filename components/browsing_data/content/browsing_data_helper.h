@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -76,6 +76,23 @@ void RemoveEmbedderCookieData(
 void RemoveSiteSettingsData(const base::Time& delete_begin,
                             const base::Time& delete_end,
                             HostContentSettingsMap* host_content_settings_map);
+
+// Removes persistent origin trial tokens.
+void RemovePersistentOriginTrials(PrefService* pref_service);
+
+// Remove site settings data related to federated sign in.
+// This clears:
+// - Consent for identity provider to share identity information with
+//   relying party.
+// - Permission for relying party to silently obtain id token from identity
+//   provider via the FedCM JavaScript API.
+// - The FedCM auto-sign-in permission.
+// - The FedCM front channel logout permission.
+void RemoveFederatedSiteSettingsData(
+    const base::Time& delete_begin,
+    const base::Time& delete_end,
+    HostContentSettingsMap::PatternSourcePredicate pattern_predicate,
+    HostContentSettingsMap* host_content_settings_map);
 
 }  // namespace browsing_data
 

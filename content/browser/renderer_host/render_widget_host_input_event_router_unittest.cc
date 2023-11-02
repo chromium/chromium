@@ -1,10 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/browser/renderer_host/render_widget_host_input_event_router.h"
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -19,6 +20,7 @@
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
 #include "content/browser/renderer_host/render_widget_targeter.h"
+#include "content/browser/site_instance_group.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_browser_context.h"
@@ -46,15 +48,12 @@ class MockFrameConnector : public CrossProcessFrameConnector {
  public:
   MockFrameConnector(RenderWidgetHostViewChildFrame* view,
                      RenderWidgetHostViewBase* parent_view,
-                     RenderWidgetHostViewBase* root_view,
-                     bool use_zoom_for_device_scale_factor)
+                     RenderWidgetHostViewBase* root_view)
       : CrossProcessFrameConnector(nullptr),
         parent_view_(parent_view),
         root_view_(root_view) {
     view_ = view;
     view_->SetFrameConnector(this);
-    set_use_zoom_for_device_scale_factor_for_testing(
-        use_zoom_for_device_scale_factor);
   }
 
   MockFrameConnector(const MockFrameConnector&) = delete;
@@ -76,47 +75,8 @@ class MockFrameConnector : public CrossProcessFrameConnector {
   }
 
  private:
-  RenderWidgetHostViewBase* parent_view_;
-  RenderWidgetHostViewBase* root_view_;
-};
-
-// Used as a target for the RenderWidgetHostInputEventRouter. We record what
-// events were forwarded to us in order to verify that the events are being
-// routed correctly.
-class TestRenderWidgetHostViewChildFrame
-    : public RenderWidgetHostViewChildFrame {
- public:
-  explicit TestRenderWidgetHostViewChildFrame(RenderWidgetHost* widget)
-      : RenderWidgetHostViewChildFrame(widget, display::ScreenInfos()) {
-    Init();
-  }
-  ~TestRenderWidgetHostViewChildFrame() override = default;
-
-  void ProcessGestureEvent(const blink::WebGestureEvent& event,
-                           const ui::LatencyInfo&) override {
-    last_gesture_seen_ = event.GetType();
-  }
-
-  void ProcessAckedTouchEvent(
-      const TouchEventWithLatencyInfo& touch,
-      blink::mojom::InputEventResultState ack_result) override {
-    unique_id_for_last_touch_ack_ = touch.event.unique_touch_event_id;
-  }
-
-  blink::WebInputEvent::Type last_gesture_seen() { return last_gesture_seen_; }
-  uint32_t last_id_for_touch_ack() { return unique_id_for_last_touch_ack_; }
-
-  void Reset() { last_gesture_seen_ = blink::WebInputEvent::Type::kUndefined; }
-
-  void SetCompositor(ui::Compositor* compositor) { compositor_ = compositor; }
-  ui::Compositor* GetCompositor() override { return compositor_; }
-
- private:
-  blink::WebInputEvent::Type last_gesture_seen_ =
-      blink::WebInputEvent::Type::kUndefined;
-  uint32_t unique_id_for_last_touch_ack_ = 0;
-
-  ui::Compositor* compositor_;
+  raw_ptr<RenderWidgetHostViewBase> parent_view_;
+  raw_ptr<RenderWidgetHostViewBase> root_view_;
 };
 
 class StubHitTestQuery : public viz::HitTestQuery {
@@ -139,7 +99,7 @@ class StubHitTestQuery : public viz::HitTestQuery {
   }
 
  private:
-  const RenderWidgetHostViewBase* hittest_result_;
+  raw_ptr<const RenderWidgetHostViewBase> hittest_result_;
   const bool query_renderer_;
 };
 
@@ -240,7 +200,7 @@ class RenderWidgetHostInputEventRouterTest : public testing::Test {
 
 // ImageTransportFactory doesn't exist on Android. This is needed to create
 // a RenderWidgetHostViewChildFrame in the test.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     ImageTransportFactory::SetFactory(
         std::make_unique<TestImageTransportFactory>());
 #endif
@@ -249,10 +209,11 @@ class RenderWidgetHostInputEventRouterTest : public testing::Test {
 
     process_host_root_ =
         std::make_unique<MockRenderProcessHost>(browser_context_.get());
-    agent_scheduling_group_host_root_ =
-        std::make_unique<AgentSchedulingGroupHost>(*process_host_root_);
+    site_instance_group_root_ = base::WrapRefCounted(new SiteInstanceGroup(
+        SiteInstanceImpl::NextBrowsingInstanceId(), process_host_root_.get()));
     widget_host_root_ = RenderWidgetHostImpl::Create(
-        /*frame_tree=*/nullptr, &delegate_, *agent_scheduling_group_host_root_,
+        /*frame_tree=*/nullptr, &delegate_,
+        site_instance_group_root_->GetSafeRef(),
         process_host_root_->GetNextRoutingID(),
         /*hidden=*/false, /*renderer_initiated_creation=*/false,
         std::make_unique<FrameTokenMessageQueue>());
@@ -292,7 +253,7 @@ class RenderWidgetHostInputEventRouterTest : public testing::Test {
 
   struct ChildViewState {
     std::unique_ptr<MockRenderProcessHost> process_host;
-    std::unique_ptr<AgentSchedulingGroupHost> agent_scheduling_group_host;
+    scoped_refptr<SiteInstanceGroup> site_instance_group;
     std::unique_ptr<RenderWidgetHostImpl> widget_host;
     std::unique_ptr<TestRenderWidgetHostViewChildFrame> view;
     std::unique_ptr<MockFrameConnector> frame_connector;
@@ -307,18 +268,19 @@ class RenderWidgetHostInputEventRouterTest : public testing::Test {
 
     child.process_host =
         std::make_unique<MockRenderProcessHost>(browser_context_.get());
-    child.agent_scheduling_group_host =
-        std::make_unique<AgentSchedulingGroupHost>(*child.process_host);
+    child.site_instance_group = base::WrapRefCounted(
+        new SiteInstanceGroup(site_instance_group_root_->browsing_instance_id(),
+                              child.process_host.get()));
     child.widget_host = RenderWidgetHostImpl::Create(
-        /*frame_tree=*/nullptr, &delegate_, *child.agent_scheduling_group_host,
+        /*frame_tree=*/nullptr, &delegate_,
+        child.site_instance_group->GetSafeRef(),
         child.process_host->GetNextRoutingID(),
         /*hidden=*/false, /*renderer_initiated_creation=*/false,
         std::make_unique<FrameTokenMessageQueue>());
     child.view = std::make_unique<TestRenderWidgetHostViewChildFrame>(
         child.widget_host.get());
     child.frame_connector = std::make_unique<MockFrameConnector>(
-        child.view.get(), parent_view, view_root_.get(),
-        false /* use_zoom_for_device_scale_factor */);
+        child.view.get(), parent_view, view_root_.get());
 
     EXPECT_EQ(child.view.get(),
               rwhier()->FindViewFromFrameSinkId(child.view->GetFrameSinkId()));
@@ -330,11 +292,11 @@ class RenderWidgetHostInputEventRouterTest : public testing::Test {
     view_root_.reset();
     widget_host_root_.reset();
     process_host_root_->Cleanup();
-    agent_scheduling_group_host_root_.reset();
+    site_instance_group_root_.reset();
     process_host_root_.reset();
     base::RunLoop().RunUntilIdle();
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     ImageTransportFactory::Terminate();
 #endif
   }
@@ -363,7 +325,7 @@ class RenderWidgetHostInputEventRouterTest : public testing::Test {
   std::unique_ptr<BrowserContext> browser_context_;
 
   std::unique_ptr<MockRenderProcessHost> process_host_root_;
-  std::unique_ptr<AgentSchedulingGroupHost> agent_scheduling_group_host_root_;
+  scoped_refptr<SiteInstanceGroup> site_instance_group_root_;
   std::unique_ptr<RenderWidgetHostImpl> widget_host_root_;
   std::unique_ptr<MockRootRenderWidgetHostView> view_root_;
   std::unique_ptr<MockInputTargetClient> input_target_client_root_;
@@ -1535,7 +1497,12 @@ TEST_P(DelegatedInkPointTest, IgnoreEnterAndExitEvents) {
 
 // This test confirms that points can be forwarded when using delegated ink in
 // a child frame, such as an OOPIF.
-TEST_P(DelegatedInkPointTest, ForwardPointsToChildFrame) {
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_ForwardPointsToChildFrame DISABLED_ForwardPointsToChildFrame
+#else
+#define MAYBE_ForwardPointsToChildFrame ForwardPointsToChildFrame
+#endif
+TEST_P(DelegatedInkPointTest, MAYBE_ForwardPointsToChildFrame) {
   // Make the child frame, set the delegated ink flag on it, give it a
   // compositor, and set it as the hit test result so that the input router
   // sends points to it.

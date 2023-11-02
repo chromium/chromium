@@ -1,614 +1,298 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-GEN_INCLUDE(['../../common/testing/e2e_test_base.js']);
-GEN_INCLUDE(['../../common/testing/mock_accessibility_private.js']);
-GEN_INCLUDE(['../../common/testing/mock_input_ime.js']);
-GEN_INCLUDE(['../../common/testing/mock_input_method_private.js']);
-GEN_INCLUDE(['../../common/testing/mock_language_settings_private.js']);
-GEN_INCLUDE(['../../common/testing/mock_speech_recognition_private.js']);
+GEN_INCLUDE(['dictation_test_base.js']);
 
-/**
- * Dictation feature using accessibility common extension browser tests.
- */
-DictationE2ETest = class extends E2ETestBase {
-  constructor() {
-    super();
-    this.mockAccessibilityPrivate = MockAccessibilityPrivate;
-    chrome.accessibilityPrivate = this.mockAccessibilityPrivate;
+/** Dictation feature using accessibility common extension browser tests. */
+DictationE2ETest = class extends DictationE2ETestDisallowConsole {};
 
-    this.mockInputIme = MockInputIme;
-    chrome.input.ime = this.mockInputIme;
-
-    this.mockInputMethodPrivate = MockInputMethodPrivate;
-    chrome.inputMethodPrivate = this.mockInputMethodPrivate;
-
-    this.mockLanguageSettingsPrivate = MockLanguageSettingsPrivate;
-    chrome.languageSettingsPrivate = this.mockLanguageSettingsPrivate;
-
-    this.mockSpeechRecognitionPrivate = new MockSpeechRecognitionPrivate();
-    chrome.speechRecognitionPrivate = this.mockSpeechRecognitionPrivate;
-
-    this.dictationEngineId =
-        '_ext_ime_egfdjlfmgnehecnclamagfafdccgfndpdictation';
-
-    this.commandStrings = {
-      DELETE_PREV_CHAR: 'delete',
-      NAV_PREV_CHAR: 'move to the previous character',
-      NAV_NEXT_CHAR: 'move to the next character',
-      NAV_PREV_LINE: 'move to the previous line',
-      NAV_NEXT_LINE: 'move to the next line',
-      COPY_SELECTED_TEXT: 'copy',
-      PASTE_TEXT: 'paste',
-      CUT_SELECTED_TEXT: 'cut',
-      UNDO_TEXT_EDIT: 'undo',
-      REDO_ACTION: 'redo',
-      SELECT_ALL_TEXT: 'select all',
-      UNSELECT_TEXT: 'unselect',
-      LIST_COMMANDS: 'help',
-      NEW_LINE: 'new line',
-    };
-
-    this.lastSetTimeoutCallback = null;
-    this.lastSetDelay = -1;
-
-    // Re-initialize AccessibilityCommon with mock APIs.
-    const reinit = module => {
-      accessibilityCommon = new module.AccessibilityCommon();
-    };
-import('/accessibility_common/accessibility_common_loader.js').then(reinit);
-  }
-
-  /** @override */
-  testGenCppIncludes() {
-    super.testGenCppIncludes();
-    GEN(`
-#include "ash/accessibility/accessibility_delegate.h"
-#include "ash/shell.h"
-#include "base/bind.h"
-#include "base/callback.h"
-#include "base/command_line.h"
-#include "chrome/browser/ash/accessibility/accessibility_manager.h"
-#include "chrome/common/extensions/extension_constants.h"
-#include "content/public/test/browser_test.h"
-#include "ui/accessibility/accessibility_features.h"
-#include "ui/accessibility/accessibility_switches.h"
-    `);
-  }
-
-  /** @override */
-  testGenPreamble() {
-    super.testGenPreamble();
-    GEN(`
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-    ::switches::kEnableExperimentalAccessibilityDictationExtension);
-  base::OnceClosure load_cb =
-    base::BindOnce(&ash::AccessibilityManager::SetDictationEnabled,
-        base::Unretained(ash::AccessibilityManager::Get()),
-        true);
-    `);
-    super.testGenPreambleCommon('kAccessibilityCommonExtensionId');
-  }
-
-  /** @override */
-  get featureList() {
-    return {enabled: ['features::kExperimentalAccessibilityDictationCommands']};
-  }
-
-  /**
-   * Waits for Dictation module to be loaded.
-   */
-  async waitForDictationModule() {
-    await importModule(
-        'Dictation', '/accessibility_common/dictation/dictation.js');
-    assertNotNullNorUndefined(Dictation);
-    // Enable Dictation.
-    await new Promise(resolve => {
-      chrome.accessibilityFeatures.dictation.set({value: true}, resolve);
-    });
-    return new Promise(resolve => {
-      resolve();
-    });
-  }
-
-  /**
-   * Async function to get a preference value from Settings.
-   * @param {string} name
-   */
-  async getPref(name) {
-    return new Promise(resolve => {
-      chrome.settingsPrivate.getPref(name, (ret) => {
-        resolve(ret);
-      });
-    });
-  }
-
-  /**
-   * Async function to set a preference value in Settings.
-   * @param {string} name
-   */
-  async setPref(name, value) {
-    return new Promise(resolve => {
-      chrome.settingsPrivate.setPref(name, value, undefined, () => {
-        resolve();
-      });
-    });
-  }
-
-  /** Checks that Dictation is the active IME. */
-  checkDictationImeActive() {
-    assertEquals(
-        this.dictationEngineId,
-        this.mockInputMethodPrivate.getCurrentInputMethodForTest());
-    assertTrue(this.mockLanguageSettingsPrivate.hasInputMethod(
-        this.dictationEngineId));
-  }
-
-  /*
-   * Checks that Dictation is not the active IME.
-   * @param {*} opt_activeImeId If we do not expect Dictation IME to be
-   *     activated, an optional IME ID that we do expect to be activated.
-   */
-  checkDictationImeInactive(opt_activeImeId) {
-    assertNotEquals(
-        this.dictationEngineId,
-        this.mockInputMethodPrivate.getCurrentInputMethodForTest());
-    assertFalse(this.mockLanguageSettingsPrivate.hasInputMethod(
-        this.dictationEngineId));
-    if (opt_activeImeId) {
-      assertEquals(
-          opt_activeImeId,
-          this.mockInputMethodPrivate.getCurrentInputMethodForTest());
-    }
-  }
-
-  /** Turns on Dictation and checks IME and Speech Recognition state. */
-  toggleDictationOn(contextId) {
-    this.mockAccessibilityPrivate.callOnToggleDictation(true);
-    assertTrue(this.mockAccessibilityPrivate.getDictationActive());
-    this.checkDictationImeActive();
-    this.mockInputIme.callOnFocus(contextId);
-    assertTrue(this.mockSpeechRecognitionPrivate.isStarted());
-  }
-
-  /**
-   * Turns Dictation off from AccessibilityPrivate and checks IME and Speech
-   * Recognition state. Note that Dictation can also be toggled off by blurring
-   * the current input context, SR errors, or timeouts.
-   */
-  toggleDictationOffFromA11yPrivate() {
-    this.mockAccessibilityPrivate.callOnToggleDictation(false);
-    assertFalse(
-        this.mockAccessibilityPrivate.getDictationActive(),
-        'Dictation should be inactive after toggling Dictation');
-    this.checkDictationImeInactive();
-    assertFalse(
-        this.mockSpeechRecognitionPrivate.isStarted(),
-        'Speech recognition should be off');
-  }
-
-  /**
-   * Waits for the Dictation module, starts Dictation from AccessibilityPrivate,
-   * focuses the given |contextID|, then starts Speech Recognition.
-   * @param {number} contextID
-   */
-  async toggleDictationAndStartListening(contextID) {
-    await this.waitForDictationModule();
-    this.mockAccessibilityPrivate.callOnToggleDictation(true);
-    this.mockInputIme.callOnFocus(contextID);
-  }
-
-  mockSetTimeoutMethod() {
-    setTimeout = (callback, delay) => {
-      this.lastSetTimeoutCallback = callback;
-      this.lastSetDelay = delay;
-    };
-  }
-
-  setCommandsEnabledForTest(enabled) {
-    this.mockAccessibilityPrivate.enableFeatureForTest(
-        this.mockAccessibilityPrivate.AccessibilityFeature.DICTATION_COMMANDS,
-        enabled);
-    accessibilityCommon.dictation_.initialize_();
-  }
-
-  /**
-   * Checks that the latest IME composition parameters match the expected
-   * values.
-   * @param {string} text
-   * @param {number} contextID
-   */
-  assertImeCompositionParameters(text, contextID) {
-    assertEquals(text, this.mockInputIme.getLastCompositionParameters().text);
-    assertEquals(
-        contextID, this.mockInputIme.getLastCompositionParameters().contextID);
-  }
-
-  /**
-   * Checks that the latest IME commit parameters match the expected
-   * values.
-   * @param {string} text
-   * @param {number} contextID
-   */
-  assertImeCommitParameters(text, contextID) {
-    assertEquals(text, this.mockInputIme.getLastCommittedParameters().text);
-    assertEquals(
-        contextID, this.mockInputIme.getLastCommittedParameters().contextID);
-  }
-};
-
-SYNC_TEST_F('DictationE2ETest', 'SanityCheck', async function() {
-  await this.waitForDictationModule();
-  assertFalse(this.mockAccessibilityPrivate.getDictationActive());
+AX_TEST_F('DictationE2ETest', 'ResetsImeAfterToggleOff', async function() {
+  // Set something as the active IME.
+  this.mockInputMethodPrivate.setCurrentInputMethod('keyboard_cat');
+  this.mockLanguageSettingsPrivate.addInputMethod('keyboard_cat');
+  this.toggleDictationOn();
+  this.toggleDictationOff();
+  this.checkDictationImeInactive('keyboard_cat');
 });
 
-SYNC_TEST_F(
-    'DictationE2ETest', 'LoadsAndUnloadsIMEAndSpeechRecognition',
-    async function() {
-      await this.waitForDictationModule();
-      this.checkDictationImeInactive();
-      this.toggleDictationOn(1);
-      this.toggleDictationOffFromA11yPrivate();
-    });
-
-SYNC_TEST_F(
-    'DictationE2ETest', 'TogglesDictationOffWhenIMEBlur', async function() {
-      await this.waitForDictationModule();
-      this.checkDictationImeInactive();
-      this.toggleDictationOn(1);
-
-      // Blur the input context. Dictation should get toggled off.
-      this.mockInputIme.callOnBlur(1);
-      assertFalse(this.mockAccessibilityPrivate.getDictationActive());
-      // Speech recognition remains active until Dictation is toggled off.
-      assertTrue(this.mockSpeechRecognitionPrivate.isStarted());
-      // Now that we've confirmed that Dictation JS tried to toggle Dictation,
-      // via AccessibilityPrivate, we can call the onToggleDictation
-      // callback as AccessibilityManager would do, to allow Dictation JS to
-      // clean up state.
-      this.toggleDictationOffFromA11yPrivate();
-      assertFalse(this.mockSpeechRecognitionPrivate.isStarted());
-    });
-
-SYNC_TEST_F(
-    'DictationE2ETest', 'ResetsPreviousIMEAfterDeactivate', async function() {
-      await this.waitForDictationModule();
-      // Set something as the active IME.
-      this.mockInputMethodPrivate.setCurrentInputMethod('keyboard_cat');
-      this.mockLanguageSettingsPrivate.addInputMethod('keyboard_cat');
-
-      this.toggleDictationOn(2);
-
-      // Deactivate Dictation.
-      this.mockAccessibilityPrivate.callOnToggleDictation(false);
-      this.checkDictationImeInactive('keyboard_cat');
-    });
-
-SYNC_TEST_F('DictationE2ETest', 'SetsUpSpeechRecognition', async function() {
-  await this.waitForDictationModule();
-  // Speech Recognition should be ready but not started yet.
-  assertFalse(this.mockSpeechRecognitionPrivate.isStarted());
-  assertEquals(undefined, this.mockSpeechRecognitionPrivate.locale());
-  assertEquals(undefined, this.mockSpeechRecognitionPrivate.interimResults());
+AX_TEST_F('DictationE2ETest', 'UpdateRecognitionProps', async function() {
+  assertFalse(this.getSpeechRecognitionActive());
+  assertEquals(undefined, this.getSpeechRecognitionLocale());
+  assertEquals(undefined, this.getSpeechRecognitionInterimResults());
 
   const locale = await this.getPref(Dictation.DICTATION_LOCALE_PREF);
-  this.mockSpeechRecognitionPrivate.updateProperties(
+  this.updateSpeechRecognitionProperties(
       {locale: locale.value, interimResults: true});
-  assertEquals(locale.value, this.mockSpeechRecognitionPrivate.locale());
-  assertTrue(this.mockSpeechRecognitionPrivate.interimResults());
+
+  assertEquals(locale.value, this.getSpeechRecognitionLocale());
+  assertTrue(this.getSpeechRecognitionInterimResults());
 });
 
-SYNC_TEST_F(
-    'DictationE2ETest', 'ChangesSpeechRecognitionLangOnLocaleChange',
+AX_TEST_F(
+    'DictationE2ETest', 'UpdatesSpeechRecognitionLangOnLocaleChange',
     async function() {
-      await this.waitForDictationModule();
       let locale = await this.getPref(Dictation.DICTATION_LOCALE_PREF);
-      this.mockSpeechRecognitionPrivate.updateProperties(
-          {locale: locale.value});
-      assertEquals(locale.value, this.mockSpeechRecognitionPrivate.locale());
+      this.updateSpeechRecognitionProperties({locale: locale.value});
+      assertEquals(locale.value, this.getSpeechRecognitionLocale());
       // Change the locale.
       await this.setPref(Dictation.DICTATION_LOCALE_PREF, 'es-ES');
       // Wait for the callbacks to Dictation.
       locale = await this.getPref(Dictation.DICTATION_LOCALE_PREF);
-      this.mockSpeechRecognitionPrivate.updateProperties(
-          {locale: locale.value});
-      assertEquals('es-ES', this.mockSpeechRecognitionPrivate.locale());
+      this.updateSpeechRecognitionProperties({locale: locale.value});
+      assertEquals('es-ES', this.getSpeechRecognitionLocale());
     });
 
-SYNC_TEST_F(
-    'DictationE2ETest', 'InterimResultsDependOnChromeVoxEnabled',
-    async function() {
-      await this.waitForDictationModule();
-      await this.toggleDictationAndStartListening(4);
+AX_TEST_F('DictationE2ETest', 'StopsOnRecognitionError', async function() {
+  this.toggleDictationOn();
+  this.sendSpeechRecognitionErrorEvent();
+  assertFalse(this.getDictationActive());
+  assertFalse(this.getSpeechRecognitionActive());
+});
 
-      // Interim results shown in composition.
-      this.mockSpeechRecognitionPrivate.fireMockOnResultEvent('one', false);
-      this.assertImeCompositionParameters('one', 4);
-      this.mockInputIme.clearLastParameters();
+AX_TEST_F('DictationE2ETest', 'StopsOnImeBlur', async function() {
+  this.toggleDictationOn();
+  this.blurInputContext();
+  assertFalse(this.getSpeechRecognitionActive());
+  assertFalse(this.getDictationActive());
+  assertFalse(Boolean(this.mockInputIme.getLastCommittedParameters()));
+});
 
-      // Toggle ChromeVox on.
-      await this.setPref(Dictation.SPOKEN_FEEDBACK_PREF, true);
-      await this.getPref(Dictation.SPOKEN_FEEDBACK_PREF);
-
-      // Composition is not changed.
-      this.mockSpeechRecognitionPrivate.fireMockOnResultEvent('two', false);
-      assertFalse(!!this.mockInputIme.getLastCompositionParameters());
-
-      // Toggle ChromeVox off.
-      await this.setPref(Dictation.SPOKEN_FEEDBACK_PREF, false);
-      await this.getPref(Dictation.SPOKEN_FEEDBACK_PREF);
-
-      // Interim results impact the composition again.
-      this.mockSpeechRecognitionPrivate.fireMockOnResultEvent('three', false);
-      this.assertImeCompositionParameters('three', 4);
-      this.mockInputIme.clearLastParameters();
-    });
-
-SYNC_TEST_F(
-    'DictationE2ETest', 'StopsDictationOnSpeechRecognitionError',
-    async function() {
-      await this.waitForDictationModule();
-      this.toggleDictationOn(1);
-
-      // An error is received.
-      this.mockSpeechRecognitionPrivate.fireMockOnErrorEvent();
-
-      // Check that a request to toggle dictation off was sent and that speech
-      // recognition has stopped.
-      assertFalse(this.mockAccessibilityPrivate.getDictationActive());
-      assertFalse(this.mockSpeechRecognitionPrivate.isStarted());
-    });
-
-SYNC_TEST_F(
-    'DictationE2ETest', 'StopsDictationOnIMEDeactivate', async function() {
-      await this.waitForDictationModule();
-      this.toggleDictationOn(1);
-
-      // Focus and blur an input context to cancel Dictation.
-      this.mockInputIme.callOnFocus(1);
-      this.mockInputIme.callOnBlur(1);
-
-      // Speech recognition remains active until Dictation is toggled off.
-      assertTrue(this.mockSpeechRecognitionPrivate.isStarted());
-      // Check that a request to toggle dictation off was sent.
-      assertFalse(this.mockAccessibilityPrivate.getDictationActive());
-
-      // Speech recognition is active, although shutdown is already in
-      // progress.
-      this.mockSpeechRecognitionPrivate.fireMockOnResultEvent('kitties', true);
-
-      // Complete toggle -- this is async so other things could have
-      // happened in the meantime.
-      this.mockAccessibilityPrivate.callOnToggleDictation(false);
-      assertFalse(this.mockSpeechRecognitionPrivate.isStarted());
-
-      // Nothing was committed.
-      assertFalse(!!this.mockInputIme.getLastCompositionParameters());
-      assertFalse(!!this.mockInputIme.getLastCommittedParameters());
-    });
-
-SYNC_TEST_F('DictationE2ETest', 'CommitsFinalizedText', async function() {
-  await this.toggleDictationAndStartListening(/*contextID=*/ 3);
-  this.mockSpeechRecognitionPrivate.fireMockOnResultEvent(
-      'kitties 4 eva', true);
-  this.assertImeCommitParameters('kitties 4 eva', 3);
-  assertFalse(!!this.mockInputIme.getLastCompositionParameters());
-  assertTrue(this.mockAccessibilityPrivate.getDictationActive());
+AX_TEST_F('DictationE2ETest', 'CommitsFinalResults', async function() {
+  this.toggleDictationOn();
+  this.sendInterimSpeechResult('kittens');
+  assertFalse(Boolean(this.mockInputIme.getLastCommittedParameters()));
+  assertTrue(this.getDictationActive());
 
   this.mockInputIme.clearLastParameters();
-  this.mockAccessibilityPrivate.callOnToggleDictation(false);
-  assertFalse(!!this.mockInputIme.getLastCommittedParameters());
+  this.sendFinalSpeechResult('kittens!');
+  await this.assertCommittedText('kittens!');
+  assertTrue(this.getDictationActive());
+
+  this.mockInputIme.clearLastParameters();
+  this.sendFinalSpeechResult('puppies!');
+  await this.assertCommittedText('puppies!');
+  assertTrue(this.getDictationActive());
+
+  this.mockInputIme.clearLastParameters();
+  this.toggleDictationOff();
+  assertFalse(this.getDictationActive());
+  assertFalse(Boolean(this.mockInputIme.getLastCommittedParameters()));
 });
 
-SYNC_TEST_F(
-    'DictationE2ETest', 'CommitsMultipleResultsOfFinalizedText',
+AX_TEST_F(
+    'DictationE2ETest', 'CommitsInterimResultsWhenRecognitionStops',
     async function() {
-      await this.toggleDictationAndStartListening(5);
-      this.mockSpeechRecognitionPrivate.fireMockOnResultEvent('kittens', false);
-      this.assertImeCompositionParameters('kittens', 5);
-      assertFalse(!!this.mockInputIme.getLastCommittedParameters());
-      assertTrue(this.mockAccessibilityPrivate.getDictationActive());
-
-      this.mockInputIme.clearLastParameters();
-      this.mockSpeechRecognitionPrivate.fireMockOnResultEvent('kittens!', true);
-      this.assertImeCommitParameters('kittens!', 5);
-      assertFalse(!!this.mockInputIme.getLastCompositionParameters());
-      assertTrue(this.mockAccessibilityPrivate.getDictationActive());
-
-      this.mockInputIme.clearLastParameters();
-      this.mockSpeechRecognitionPrivate.fireMockOnResultEvent('puppies!', true);
-      this.assertImeCommitParameters('puppies!', 5);
-      assertFalse(!!this.mockInputIme.getLastCompositionParameters());
-      assertTrue(this.mockAccessibilityPrivate.getDictationActive());
+      this.toggleDictationOn();
+      this.sendInterimSpeechResult('fish fly');
+      this.sendSpeechRecognitionStopEvent();
+      assertFalse(this.getDictationActive());
+      await this.assertCommittedText('fish fly');
     });
 
-SYNC_TEST_F(
-    'DictationE2ETest', 'SetsCompositionForInterimResults', async function() {
-      await this.toggleDictationAndStartListening(2);
-
-      // Send an interim result.
-      this.mockSpeechRecognitionPrivate.fireMockOnResultEvent(
-          'dogs drool', false);
-      this.assertImeCompositionParameters('dogs drool', 2);
-      assertFalse(!!this.mockInputIme.getLastCommittedParameters());
-    });
-
-SYNC_TEST_F(
-    'DictationE2ETest', 'CommitsCompositionOnToggleOff', async function() {
-      await this.toggleDictationAndStartListening(1);
-
-      // Send some interim result.
-      this.mockSpeechRecognitionPrivate.fireMockOnResultEvent(
-          'fish fly', false);
-      this.assertImeCompositionParameters('fish fly', 1);
-      this.mockInputIme.clearLastParameters();
-
-      // Dictation toggles off after speech recognition sends a stop
-      // event.
-      this.mockSpeechRecognitionPrivate.fireMockStopEvent();
-      assertFalse(this.mockAccessibilityPrivate.getDictationActive());
-      this.mockAccessibilityPrivate.callOnToggleDictation(false);
-
-      // The interim result should have been committed.
-      this.assertImeCommitParameters('fish fly', 1);
-      assertFalse(!!this.mockInputIme.getLastCompositionParameters());
-    });
-
-SYNC_TEST_F(
-    'DictationE2ETest', 'DoesNotCommitCompositionAfterIMEBlur',
+AX_TEST_F(
+    'DictationE2ETest', 'DoesNotCommitInterimResultsAfterImeBlur',
     async function() {
-      await this.toggleDictationAndStartListening(4);
-
-      // Send some interim result.
-      this.mockSpeechRecognitionPrivate.fireMockOnResultEvent(
-          'ducks dig', false);
-      this.assertImeCompositionParameters('ducks dig', 4);
-
-      // Dictation toggles off blur of the active context ID.
-      this.mockInputIme.callOnBlur(4);
-      assertFalse(this.mockAccessibilityPrivate.getDictationActive());
-      this.mockAccessibilityPrivate.callOnToggleDictation(false);
-
-      // The interim result should not have been committed.
-      assertFalse(!!this.mockInputIme.getLastCommittedParameters());
+      this.toggleDictationOn();
+      this.sendInterimSpeechResult('ducks dig');
+      this.blurInputContext();
+      assertFalse(this.getDictationActive());
+      assertFalse(Boolean(this.mockInputIme.getLastCommittedParameters()));
     });
 
-SYNC_TEST_F('DictationE2ETest', 'TimesOutWithNoIMEContext', async function() {
+AX_TEST_F('DictationE2ETest', 'TimesOutWithNoImeContext', async function() {
   this.mockSetTimeoutMethod();
-  await this.waitForDictationModule();
-  this.mockAccessibilityPrivate.callOnToggleDictation(true);
+  this.toggleDictationOn();
 
-  assertFalse(this.mockSpeechRecognitionPrivate.isStarted());
-  assertTrue(!!this.lastSetTimeoutCallback);
-  assertEquals(this.lastSetDelay, Dictation.Timeouts.NO_FOCUSED_IME_MS);
+  const callback =
+      this.getCallbackWithDelay(Dictation.Timeouts.NO_FOCUSED_IME_MS);
+  assertNotNullNorUndefined(callback);
 
   // Triggering the timeout should cause a request to toggle Dictation, but
   // nothing should be committed after AccessibilityPrivate toggle is received.
-  this.lastSetTimeoutCallback();
-  this.lastSetTimeoutCallback = null;
-  assertFalse(this.mockAccessibilityPrivate.getDictationActive());
-  this.mockAccessibilityPrivate.callOnToggleDictation(false);
-
-  // Nothing was committed.
-  assertFalse(!!this.mockInputIme.getLastCommittedParameters());
-  assertFalse(!!this.mockInputIme.getLastCompositionParameters());
+  callback();
+  this.clearSetTimeoutData();
+  assertFalse(this.getDictationActive());
+  assertFalse(Boolean(this.mockInputIme.getLastCommittedParameters()));
 });
 
-SYNC_TEST_F('DictationE2ETest', 'TimesOutWithNoSpeech', async function() {
+AX_TEST_F('DictationE2ETest', 'TimesOutWithNoSpeechNetwork', async function() {
+  this.mockSpeechRecognitionPrivate.setSpeechRecognitionType(
+      SpeechRecognitionType.NETWORK);
   this.mockSetTimeoutMethod();
-  await this.waitForDictationModule();
-  this.mockAccessibilityPrivate.callOnToggleDictation(true);
-  this.mockInputIme.callOnFocus(1);
+  this.toggleDictationOn();
 
-  assertTrue(!!this.lastSetTimeoutCallback);
-  assertEquals(this.lastSetDelay, Dictation.Timeouts.NO_SPEECH_MS);
+  const callback =
+      this.getCallbackWithDelay(Dictation.Timeouts.NO_SPEECH_NETWORK_MS);
+  assertNotNullNorUndefined(callback);
 
   // Triggering the timeout should cause a request to toggle Dictation, but
   // nothing should be committed after AccessibilityPrivate toggle is received.
-  this.lastSetTimeoutCallback();
-  this.lastSetTimeoutCallback = null;
-  assertFalse(this.mockAccessibilityPrivate.getDictationActive());
-  this.mockAccessibilityPrivate.callOnToggleDictation(false);
-
-  // Nothing was committed.
-  assertFalse(!!this.mockInputIme.getLastCommittedParameters());
-  assertFalse(!!this.mockInputIme.getLastCompositionParameters());
+  callback();
+  this.clearSetTimeoutData();
+  assertFalse(this.getDictationActive());
+  assertFalse(Boolean(this.mockInputIme.getLastCommittedParameters()));
 });
 
-SYNC_TEST_F(
+AX_TEST_F('DictationE2ETest', 'TimesOutWithNoSpeechOnDevice', async function() {
+  this.mockSpeechRecognitionPrivate.setSpeechRecognitionType(
+      SpeechRecognitionType.ON_DEVICE);
+  this.mockSetTimeoutMethod();
+  this.toggleDictationOn();
+
+  const callback =
+      this.getCallbackWithDelay(Dictation.Timeouts.NO_SPEECH_ONDEVICE_MS);
+  assertNotNullNorUndefined(callback);
+
+  // Triggering the timeout should cause a request to toggle Dictation, but
+  // nothing should be committed after AccessibilityPrivate toggle is received.
+  callback();
+  this.clearSetTimeoutData();
+  assertFalse(this.getDictationActive());
+  assertFalse(Boolean(this.mockInputIme.getLastCommittedParameters()));
+});
+
+AX_TEST_F(
     'DictationE2ETest', 'TimesOutAfterInterimResultsAndCommits',
     async function() {
       this.mockSetTimeoutMethod();
-      await this.toggleDictationAndStartListening(6);
-      // Send some interim result.
-      this.mockSpeechRecognitionPrivate.fireMockOnResultEvent(
-          'sheep sleep', false);
-      this.assertImeCompositionParameters('sheep sleep', 6);
+      this.toggleDictationOn();
+      this.sendInterimSpeechResult('sheep sleep');
       this.mockInputIme.clearLastParameters();
 
       // The timeout should be set based on the interim result.
-      assertTrue(!!this.lastSetTimeoutCallback);
-      assertEquals(this.lastSetDelay, Dictation.Timeouts.NO_NEW_SPEECH_MS);
+      const callback =
+          this.getCallbackWithDelay(Dictation.Timeouts.NO_NEW_SPEECH_MS);
+      assertNotNullNorUndefined(callback);
 
       // Triggering the timeout should cause a request to toggle Dictation, and
       // after AccessibilityPrivate calls toggleDictation, to commit the interim
       // text.
-      this.lastSetTimeoutCallback();
-      this.lastSetTimeoutCallback = null;
-      assertFalse(this.mockAccessibilityPrivate.getDictationActive());
-      this.mockAccessibilityPrivate.callOnToggleDictation(false);
-      this.assertImeCommitParameters('sheep sleep', 6);
-      assertFalse(!!this.mockInputIme.getLastCompositionParameters());
+      callback();
+      this.clearSetTimeoutData();
+      assertFalse(this.getDictationActive());
+      await this.assertCommittedText('sheep sleep');
     });
 
-SYNC_TEST_F('DictationE2ETest', 'TimesOutAfterFinalResults', async function() {
+AX_TEST_F('DictationE2ETest', 'TimesOutAfterFinalResults', async function() {
   this.mockSetTimeoutMethod();
-  await this.toggleDictationAndStartListening(7);
-  // Send some final result.
-  this.mockSpeechRecognitionPrivate.fireMockOnResultEvent('bats bounce', true);
-  this.assertImeCommitParameters('bats bounce', 7);
+  this.toggleDictationOn();
+  this.sendFinalSpeechResult('bats bounce');
+  await this.assertCommittedText('bats bounce');
   this.mockInputIme.clearLastParameters();
 
   // The timeout should be set based on the final result.
-  assertTrue(!!this.lastSetTimeoutCallback);
-  assertEquals(this.lastSetDelay, Dictation.Timeouts.NO_SPEECH_MS);
+  const callback =
+      this.getCallbackWithDelay(Dictation.Timeouts.NO_SPEECH_NETWORK_MS);
 
   // Triggering the timeout should stop listening.
-  this.lastSetTimeoutCallback();
-  this.lastSetTimeoutCallback = null;
-  assertFalse(this.mockAccessibilityPrivate.getDictationActive());
-  this.mockAccessibilityPrivate.callOnToggleDictation(false);
-
-  // Nothing new was committed.
-  assertFalse(!!this.mockInputIme.getLastCommittedParameters());
-  assertFalse(!!this.mockInputIme.getLastCompositionParameters());
+  callback();
+  this.clearSetTimeoutData();
+  assertFalse(this.getDictationActive());
+  assertFalse(Boolean(this.mockInputIme.getLastCommittedParameters()));
 });
 
-SYNC_TEST_F(
-    'DictationE2ETest', 'CommandsCommitWithoutFlagEnabled', async function() {
-      await this.toggleDictationAndStartListening(8);
+AX_TEST_F(
+    'DictationE2ETest', 'CommandsDoNotCommitThemselves', async function() {
+      this.toggleDictationOn();
       for (const command of Object.values(this.commandStrings)) {
-        this.mockSpeechRecognitionPrivate.fireMockOnResultEvent(command, false);
-        this.assertImeCompositionParameters(command, 8);
+        this.sendInterimSpeechResult(command);
+        if (command !== this.commandStrings.LIST_COMMANDS) {
+          // LIST_COMMANDS opens a new tab and ends Dictation. Skip this.
+          this.sendFinalSpeechResult(command);
+        }
+        if (command === this.commandStrings.NEW_LINE) {
+          await this.assertCommittedText('\n');
+          this.mockInputIme.clearLastParameters();
+        } else {
+          // On final result, nothing is committed; instead, an action is taken.
+          assertFalse(Boolean(this.mockInputIme.getLastCommittedParameters()));
+        }
 
-        // On final result, composition is committed as usual.
-        this.mockSpeechRecognitionPrivate.fireMockOnResultEvent(command, true);
-        this.assertImeCommitParameters(command, 8);
+        // Try to type the command e.g. "type delete".
+        // The command should be entered but not the word "type".
+        this.sendFinalSpeechResult(`type ${command}`);
+        await this.assertCommittedText(command);
+        this.mockInputIme.clearLastParameters();
       }
     });
 
-SYNC_TEST_F(
-    'DictationE2ETest', 'CommandsDoNotCommitThemselves', async function() {
-      await this.waitForDictationModule();
-      await this.getPref(Dictation.DICTATION_LOCALE_PREF);
-      this.setCommandsEnabledForTest(true);
-      await this.toggleDictationAndStartListening(8);
-      for (const command of Object.values(this.commandStrings)) {
-        this.mockSpeechRecognitionPrivate.fireMockOnResultEvent(command, false);
-        // Nothing is added to composition text when commands UI is enabled.
-        assertFalse(!!this.mockInputIme.getLastCompositionParameters());
-        // TODO(crbug.com/1252037): Check UI shows correct command info.
+AX_TEST_F(
+    'DictationE2ETest', 'TypePrefixWorksForNonCommands', async function() {
+      this.toggleDictationOn();
+      this.sendFinalSpeechResult('type this is a test');
+      await this.assertCommittedText('this is a test');
+    });
 
-        if (command !== this.commandStrings.LIST_COMMANDS) {
-          // LIST_COMMANDS opens a new tab and ends Dictation. Skip this.
-          this.mockSpeechRecognitionPrivate.fireMockOnResultEvent(
-              command, true);
-        }
-        if (command === this.commandStrings.NEW_LINE) {
-          this.assertImeCommitParameters('\n', 8);
-        } else {
-          // On final result, composition is cleared, nothing is committed
-          // (instead, an action is taken).
-          assertFalse(!!this.mockInputIme.getLastCommittedParameters());
-        }
+AX_TEST_F(
+    'DictationE2ETest', 'DontCommitAfterMacroSuccess', async function() {
+      this.toggleDictationOn();
+      this.sendInterimSpeechResult('move to the next line');
+      // Perform the next line command.
+      this.sendFinalSpeechResult('move to the next line');
+      // Wait for the UI to show macro success.
+      await this.waitForUIProperties({
+        visible: true,
+        icon: this.iconType.MACRO_SUCCESS,
+        text: this.commandStrings.NAV_NEXT_LINE,
+      });
+      this.toggleDictationOff();
+      // No text should be committed.
+      assertFalse(Boolean(this.mockInputIme.getLastCommittedParameters()));
+    });
 
-        // Try a command to "type delete", etc.
-        this.mockSpeechRecognitionPrivate.fireMockOnResultEvent(
-            'type ' + command, true);
-        // The command should be entered but not the word "type".
-        this.assertImeCommitParameters(command, 8);
 
-        this.mockInputIme.clearLastParameters();
-      }
+AX_TEST_F('DictationE2ETest', 'NoCommandsWhenNotSupported', async function() {
+  this.toggleDictationOn();
+  this.sendFinalSpeechResult('New line');
+  await this.assertCommittedText('\n');
+  this.mockInputIme.clearLastParameters();
+
+  // System language is en-US. If the Dictation locale doesn't match,
+  // commands should not work.
+  await this.setPref(Dictation.DICTATION_LOCALE_PREF, 'es-ES');
+  // Wait for the callbacks to Dictation.
+  await this.getPref(Dictation.DICTATION_LOCALE_PREF);
+
+  // Now this text should just get typed in instead of reinterpreted.
+  this.sendFinalSpeechResult('New line');
+  await this.assertCommittedText('New line');
+  this.mockInputIme.clearLastParameters();
+});
+
+AX_TEST_F(
+    'DictationE2ETest', 'SilencesSpokenFeedbackWhenStarting', async function() {
+      assertEquals(
+          0, this.mockAccessibilityPrivate.getSpokenFeedbackSilencedCount());
+
+      // Turn on ChromeVox
+      await this.setPref(Dictation.SPOKEN_FEEDBACK_PREF, true);
+      // Wait for the callbacks to Dictation.
+      await this.getPref(Dictation.SPOKEN_FEEDBACK_PREF);
+
+      // Now silenceSpokenFeedback should get called when toggling Dictation on.
+      this.toggleDictationOn();
+      assertEquals(
+          1, this.mockAccessibilityPrivate.getSpokenFeedbackSilencedCount());
+
+      // It should not be called when turning Dictation off.
+      this.toggleDictationOff();
+      assertEquals(
+          1, this.mockAccessibilityPrivate.getSpokenFeedbackSilencedCount());
+    });
+
+AX_TEST_F(
+    'DictationE2ETest', 'DoesNotSilenceSpokenFeedbackUnnecessarily',
+    async function() {
+      assertEquals(
+          0, this.mockAccessibilityPrivate.getSpokenFeedbackSilencedCount());
+
+      // Check that when ChromeVox is disabled we don't try to silence it when
+      // Dictation gets toggled.
+      this.toggleDictationOn();
+      assertEquals(
+          0, this.mockAccessibilityPrivate.getSpokenFeedbackSilencedCount());
+      this.toggleDictationOff();
+      assertEquals(
+          0, this.mockAccessibilityPrivate.getSpokenFeedbackSilencedCount());
     });

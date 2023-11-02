@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -54,6 +54,15 @@ struct DeviceCapabilities {
   // EVIOCGABS.
   const DeviceAbsoluteAxis* abs_axis;
   size_t abs_axis_count;
+
+  // (/sys/class/input/*/device/device/function_row_physmap)
+  // Device kernel attribute.
+  const char* kbd_function_row_physmap;
+
+  // (udevadm info -q property /sys/class/input/* | grep
+  // CROS_KEYBOARD_TOP_ROW_LAYOUT) Udev property, note that this comes from udev
+  // rules and only exists in user-space.
+  const char* kbd_top_row_layout;
 };
 
 bool CapabilitiesToDeviceInfo(const DeviceCapabilities& capabilities,
@@ -68,7 +77,9 @@ extern const DeviceCapabilities kLinkKeyboard;
 extern const DeviceCapabilities kLinkTouchscreen;
 extern const DeviceCapabilities kLinkWithToolTypeTouchscreen;
 extern const DeviceCapabilities kLinkTouchpad;
+extern const DeviceCapabilities kRedrixTouchpad;
 extern const DeviceCapabilities kMorphiusPointingStick;
+extern const DeviceCapabilities kMorphiusTabletModeSwitch;
 extern const DeviceCapabilities kHpUsbKeyboard;
 extern const DeviceCapabilities kHpUsbKeyboard_Extra;
 extern const DeviceCapabilities kLogitechUsbMouse;
@@ -91,6 +102,7 @@ extern const DeviceCapabilities kKohakuStylus;
 extern const DeviceCapabilities kXboxElite;
 extern const DeviceCapabilities kDrallionStylus;
 extern const DeviceCapabilities kDellActivePenButton;
+extern const DeviceCapabilities kDrallionKeyboard;
 extern const DeviceCapabilities kPuffMicrophoneMuteSwitch;
 extern const DeviceCapabilities kDrawciaStylusGarage;
 extern const DeviceCapabilities kEveKeyboard;
@@ -102,6 +114,8 @@ extern const DeviceCapabilities kLogitechKeyboardK120;
 extern const DeviceCapabilities kMicrosoftBluetoothNumberPad;
 extern const DeviceCapabilities kDellLatitudeE6510Touchpad;
 extern const DeviceCapabilities kHPProBook6560bTouchpad;
-}  // namspace ui
+extern const DeviceCapabilities kJinlonKeyboard;
+extern const DeviceCapabilities kSymbolTechBarcodeScanner;
+}  // namespace ui
 
 #endif  // UI_EVENTS_OZONE_EVDEV_EVENT_DEVICE_TEST_UTIL_H_

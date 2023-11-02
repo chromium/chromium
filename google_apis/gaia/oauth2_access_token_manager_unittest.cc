@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -535,8 +535,7 @@ TEST_F(OAuth2AccessTokenManagerTest, OnAccessTokenFetchedCancelsRequests) {
   std::unique_ptr<OAuth2AccessTokenManager::Request> request(
       token_manager_.StartRequest(
           account_id_, OAuth2AccessTokenManager::ScopeSet(), &consumer_));
-  SimulateOAuthTokenResponse(GetValidTokenResponse("token", 3600),
-                             net::HTTP_BAD_REQUEST);
+  SimulateOAuthTokenResponse("", net::HTTP_BAD_REQUEST);
   run_loop.Run();
 }
 

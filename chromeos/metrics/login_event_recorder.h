@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -141,6 +141,13 @@ class COMPONENT_EXPORT(CHROMEOS_METRICS) LoginEventRecorder {
                         const std::string uma_name,
                         const std::string uma_prefix);
 
+  // Stores a copy of the events to be retrieved by tests.
+  // Also all future events will have stored copies for testing.
+  void PrepareEventCollectionForTesting();
+
+  // Returns list of all events collected.
+  const std::vector<TimeMarker>& GetCollectedLoginEventsForTesting();
+
  private:
   void AddMarker(std::vector<TimeMarker>* vector, TimeMarker&& marker);
 
@@ -150,6 +157,11 @@ class COMPONENT_EXPORT(CHROMEOS_METRICS) LoginEventRecorder {
   std::vector<TimeMarker> logout_time_markers_;
   base::OnceCallback<void(std::vector<TimeMarker>)> callback_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
+
+  // This list is never cleared. It has copy of all the login events that
+  // login_time_markers_ had when PrepareEventCollectionForTesting() was
+  // called and all login avents since that moment.
+  absl::optional<std::vector<TimeMarker>> login_time_markers_for_testing_;
 
   base::WeakPtrFactory<LoginEventRecorder> weak_ptr_factory_{this};
 };

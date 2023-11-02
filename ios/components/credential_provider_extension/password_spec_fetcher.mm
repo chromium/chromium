@@ -1,11 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/components/credential_provider_extension/password_spec_fetcher.h"
 
-#include "base/base64.h"
-#include "components/autofill/core/browser/proto/password_requirements.pb.h"
+#import "base/base64.h"
+#import "components/autofill/core/browser/proto/password_requirements.pb.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -58,6 +58,10 @@ const NSTimeInterval kPasswordSpecTimeout = 10;
 - (instancetype)initWithHost:(NSString*)host APIKey:(NSString*)APIKey {
   self = [super init];
   if (self) {
+    // Replace a nil host with the empty string.
+    if (!host) {
+      host = @"";
+    }
     _host = [host stringByAddingPercentEncodingWithAllowedCharacters:
                       NSCharacterSet.URLQueryAllowedCharacterSet];
     _APIKey = APIKey;

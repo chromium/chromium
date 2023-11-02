@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -83,7 +83,7 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   void SetBounds(int64_t display_id, const gfx::Rect& bounds);
 
   // Set origin of bounds for surface while preserving the size.
-  void SetBoundsOrigin(const gfx::Point& origin);
+  void SetBoundsOrigin(int64_t display_id, const gfx::Point& origin);
 
   // Set size of bounds for surface while preserving the origin.
   void SetBoundsSize(const gfx::Size& size);
@@ -195,6 +195,7 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   bool CanMaximize() const override;
   std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
       views::Widget* widget) override;
+  bool ShouldSaveWindowPlacement() const override;
   void SaveWindowPlacement(const gfx::Rect& bounds,
                            ui::WindowShowState show_state) override;
   bool GetSavedWindowPlacement(const views::Widget* widget,
@@ -238,6 +239,9 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   // Update the resizability based on the resize lock type.
   void UpdateResizability() override;
 
+  // Overridden from exo::ShellSurfaceBase
+  void SetSystemModal(bool system_modal) override;
+
  protected:
   // Overridden from ShellSurfaceBase:
   float GetScale() const override;
@@ -249,7 +253,8 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   class ScopedLockedToRoot;
 
   // Overridden from ShellSurfaceBase:
-  void SetWidgetBounds(const gfx::Rect& bounds) override;
+  void SetWidgetBounds(const gfx::Rect& bounds,
+                       bool adjusted_by_server) override;
   gfx::Rect GetShadowBounds() const override;
   void InitializeWindowState(ash::WindowState* window_state) override;
   absl::optional<gfx::Rect> GetWidgetBounds() const override;
@@ -272,6 +277,8 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
 
   void UpdateFrameType() override;
 
+  bool GetCanResizeFromSizeConstraints() const override;
+
   void AttemptToStartDrag(int component, const gfx::PointF& location);
 
   // Lock the compositor if it's not already locked, or extends the
@@ -284,7 +291,7 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   ash::NonClientFrameViewAsh* GetFrameView();
   const ash::NonClientFrameViewAsh* GetFrameView() const;
 
-  void EnsurePendingScale();
+  void EnsurePendingScale(bool commit_immediately);
   float GetClientToDpPendingScale() const;
 
   gfx::Rect GetClientBoundsForWindowBoundsAndWindowState(

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,14 +8,12 @@
 
 #include <ostream>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/pattern.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/common/constants.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -29,27 +27,30 @@ namespace {
 
 // TODO(aa): What about more obscure schemes like javascript: ?
 // Note: keep this array in sync with kValidSchemeMasks.
-// TODO(https://crbug.com/1257045): Remove urn: scheme support.
 const char* const kValidSchemes[] = {
-    url::kHttpScheme,         url::kHttpsScheme,
-    url::kFileScheme,         url::kFtpScheme,
-    content::kChromeUIScheme, extensions::kExtensionScheme,
-    url::kFileSystemScheme,   url::kWsScheme,
-    url::kWssScheme,          url::kDataScheme,
-    url::kUrnScheme,          url::kUuidInPackageScheme,
+    url::kHttpScheme,          url::kHttpsScheme,
+    url::kFileScheme,          url::kFtpScheme,
+    content::kChromeUIScheme,  extensions::kExtensionScheme,
+    url::kFileSystemScheme,    url::kWsScheme,
+    url::kWssScheme,           url::kDataScheme,
+    url::kUuidInPackageScheme,
 };
 
-// TODO(https://crbug.com/1257045): Remove urn: scheme support.
 const int kValidSchemeMasks[] = {
-    URLPattern::SCHEME_HTTP,       URLPattern::SCHEME_HTTPS,
-    URLPattern::SCHEME_FILE,       URLPattern::SCHEME_FTP,
-    URLPattern::SCHEME_CHROMEUI,   URLPattern::SCHEME_EXTENSION,
-    URLPattern::SCHEME_FILESYSTEM, URLPattern::SCHEME_WS,
-    URLPattern::SCHEME_WSS,        URLPattern::SCHEME_DATA,
-    URLPattern::SCHEME_URN,        URLPattern::SCHEME_UUID_IN_PACKAGE,
+    URLPattern::SCHEME_HTTP,
+    URLPattern::SCHEME_HTTPS,
+    URLPattern::SCHEME_FILE,
+    URLPattern::SCHEME_FTP,
+    URLPattern::SCHEME_CHROMEUI,
+    URLPattern::SCHEME_EXTENSION,
+    URLPattern::SCHEME_FILESYSTEM,
+    URLPattern::SCHEME_WS,
+    URLPattern::SCHEME_WSS,
+    URLPattern::SCHEME_DATA,
+    URLPattern::SCHEME_UUID_IN_PACKAGE,
 };
 
-static_assert(base::size(kValidSchemes) == base::size(kValidSchemeMasks),
+static_assert(std::size(kValidSchemes) == std::size(kValidSchemeMasks),
               "must keep these arrays in sync");
 
 const char kParseSuccess[] = "Success.";
@@ -76,7 +77,7 @@ const char* const kParseResultMessages[] = {
 };
 
 static_assert(static_cast<int>(URLPattern::ParseResult::kNumParseResults) ==
-                  base::size(kParseResultMessages),
+                  std::size(kParseResultMessages),
               "must add message for each parse result");
 
 const char kPathSeparator[] = "/";
@@ -130,7 +131,7 @@ base::StringPiece CanonicalizeHostForMatching(base::StringPiece host_piece) {
 
 // static
 bool URLPattern::IsValidSchemeForExtensions(base::StringPiece scheme) {
-  for (size_t i = 0; i < base::size(kValidSchemes); ++i) {
+  for (size_t i = 0; i < std::size(kValidSchemes); ++i) {
     if (scheme == kValidSchemes[i])
       return true;
   }
@@ -140,7 +141,7 @@ bool URLPattern::IsValidSchemeForExtensions(base::StringPiece scheme) {
 // static
 int URLPattern::GetValidSchemeMaskForExtensions() {
   int result = 0;
-  for (size_t i = 0; i < base::size(kValidSchemeMasks); ++i)
+  for (size_t i = 0; i < std::size(kValidSchemeMasks); ++i)
     result |= kValidSchemeMasks[i];
   return result;
 }
@@ -387,7 +388,7 @@ bool URLPattern::IsValidScheme(base::StringPiece scheme) const {
   if (valid_schemes_ == SCHEME_ALL)
     return true;
 
-  for (size_t i = 0; i < base::size(kValidSchemes); ++i) {
+  for (size_t i = 0; i < std::size(kValidSchemes); ++i) {
     if (scheme == kValidSchemes[i] && (valid_schemes_ & kValidSchemeMasks[i]))
       return true;
   }
@@ -441,8 +442,7 @@ bool URLPattern::MatchesURL(const GURL& test) const {
 
   std::string path_for_request = test.PathForRequest();
   if (has_inner_url) {
-    path_for_request = base::StringPrintf("%s%s", test_url->path_piece().data(),
-                                          path_for_request.c_str());
+    path_for_request = base::StrCat({test_url->path_piece(), path_for_request});
   }
 
   return MatchesSecurityOriginHelper(*test_url) &&
@@ -451,7 +451,7 @@ bool URLPattern::MatchesURL(const GURL& test) const {
 
 bool URLPattern::MatchesSecurityOrigin(const GURL& test) const {
   const GURL* test_url = &test;
-  bool has_inner_url = test.inner_url() != NULL;
+  bool has_inner_url = test.inner_url() != nullptr;
 
   if (has_inner_url) {
     if (!test.SchemeIsFileSystem())
@@ -480,9 +480,8 @@ bool URLPattern::MatchesHost(base::StringPiece host) const {
   // important that we do this conversion to a GURL in order to canonicalize the
   // host (the pattern's host_ already is canonicalized from Parse()). We can't
   // just do string comparison.
-  return MatchesHost(
-      GURL(base::StringPrintf("%s%s%s/", url::kHttpScheme,
-                              url::kStandardSchemeSeparator, host.data())));
+  return MatchesHost(GURL(base::StrCat(
+      {url::kHttpScheme, url::kStandardSchemeSeparator, host, "/"})));
 }
 
 bool URLPattern::MatchesHost(const GURL& test) const {
@@ -774,7 +773,7 @@ std::vector<std::string> URLPattern::GetExplicitSchemes() const {
     return result;
   }
 
-  for (size_t i = 0; i < base::size(kValidSchemes); ++i) {
+  for (size_t i = 0; i < std::size(kValidSchemes); ++i) {
     if (MatchesScheme(kValidSchemes[i])) {
       result.push_back(kValidSchemes[i]);
     }

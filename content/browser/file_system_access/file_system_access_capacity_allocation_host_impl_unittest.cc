@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/types/pass_key.h"
 #include "content/browser/file_system_access/mock_file_system_access_permission_context.h"
 #include "content/public/test/browser_task_environment.h"
@@ -18,6 +19,7 @@
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/test/mock_quota_manager.h"
 #include "storage/browser/test/mock_quota_manager_proxy.h"
+#include "storage/browser/test/mock_special_storage_policy.h"
 #include "storage/browser/test/test_file_system_context.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -31,15 +33,9 @@ namespace {
 int64_t RequestCapacityChangeSync(
     FileSystemAccessCapacityAllocationHostImpl* allocation_host,
     int64_t capacity_delta) {
-  int64_t granted_capacity;
-  base::RunLoop run_loop;
-  allocation_host->RequestCapacityChange(
-      capacity_delta,
-      base::BindLambdaForTesting([&](int64_t returned_granted_capacity) {
-        granted_capacity = returned_granted_capacity;
-        run_loop.Quit();
-      }));
-  run_loop.Run();
+  base::test::TestFuture<int64_t> future;
+  allocation_host->RequestCapacityChange(capacity_delta, future.GetCallback());
+  int64_t granted_capacity = future.Get();
   return granted_capacity;
 }
 
@@ -48,15 +44,16 @@ int64_t RequestCapacityChangeSync(
 class FileSystemAccessCapacityAllocationHostImplTest : public testing::Test {
  public:
   FileSystemAccessCapacityAllocationHostImplTest()
-      : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {}
+      : special_storage_policy_(
+            base::MakeRefCounted<storage::MockSpecialStoragePolicy>()),
+        task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {}
 
   void SetUp() override {
     ASSERT_TRUE(data_dir_.CreateUniqueTempDir());
     ASSERT_TRUE(data_dir_.GetPath().IsAbsolute());
     quota_manager_ = base::MakeRefCounted<storage::MockQuotaManager>(
         /*is_incognito=*/false, data_dir_.GetPath(),
-        base::ThreadTaskRunnerHandle::Get().get(),
-        /*special storage policy=*/nullptr);
+        base::ThreadTaskRunnerHandle::Get(), special_storage_policy_);
     quota_manager_proxy_ = base::MakeRefCounted<storage::MockQuotaManagerProxy>(
         quota_manager(), base::ThreadTaskRunnerHandle::Get());
     file_system_context_ = storage::CreateFileSystemContextForTesting(
@@ -96,13 +93,16 @@ class FileSystemAccessCapacityAllocationHostImplTest : public testing::Test {
     return static_cast<storage::MockQuotaManagerProxy*>(
         quota_manager_proxy_.get());
   }
-  BrowserTaskEnvironment task_environment_;
   const blink::StorageKey kTestStorageKey =
       blink::StorageKey::CreateFromStringForTesting("https://example.com/test");
 
   testing::StrictMock<MockFileSystemAccessPermissionContext>
       permission_context_;
+  scoped_refptr<storage::MockSpecialStoragePolicy> special_storage_policy_;
+
   base::ScopedTempDir data_dir_;
+  BrowserTaskEnvironment task_environment_;
+
   scoped_refptr<storage::FileSystemContext> file_system_context_;
   scoped_refptr<ChromeBlobStorageContext> chrome_blob_context_;
   scoped_refptr<FileSystemAccessManagerImpl> manager_;

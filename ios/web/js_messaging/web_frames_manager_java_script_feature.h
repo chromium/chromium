@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,6 @@
 
 namespace web {
 class BrowserState;
-class WebState;
 
 // A feature which notifies the native application code of the creation and
 // destruction of webpage frames based on JavaScript messages from the webpage.
@@ -25,17 +24,13 @@ class WebFramesManagerJavaScriptFeature : public base::SupportsUserData::Data,
   ~WebFramesManagerJavaScriptFeature() override;
 
   // Returns the WebFramesManagerJavaScriptFeature associated with
-  // |browser_state|, creating one if necessary. |browser_state| must not be
+  // `browser_state`, creating one if necessary. `browser_state` must not be
   // null.
   static WebFramesManagerJavaScriptFeature* FromBrowserState(
       BrowserState* browser_state);
 
-  // Broadcasts a (not encrypted) JavaScript message to get the identifiers
-  // and keys of existing frames.
-  void RegisterExistingFrames(WebState* web_state);
-
   // Configures message handlers for the creation and destruction of frames.
-  // |user_content_controller| is used directly (instead of using the built-in
+  // `user_content_controller` is used directly (instead of using the built-in
   // JavaScriptFeature message handling) because constructing WebFrame instances
   // requires access to the WKScriptMessage's WKFrameInfo instance.
   void ConfigureHandlers(WKUserContentController* user_content_controller);

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,6 +19,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
@@ -52,6 +53,7 @@ class AppMenuHandlerImpl
     private final AppMenuDelegate mAppMenuDelegate;
     private final View mDecorView;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
+    private final Supplier<Rect> mAppRect;
 
     private Callback<Integer> mTestOptionsItemSelectedListener;
 
@@ -75,11 +77,12 @@ class AppMenuHandlerImpl
      *            activity.
      * @param hardwareButtonAnchorView The {@link View} used as an anchor for the menu when it is
      *            displayed using a hardware button.
+     * @param appRect Supplier of the app area in Window that the menu should fit in.
      */
     public AppMenuHandlerImpl(Context context, AppMenuPropertiesDelegate delegate,
             AppMenuDelegate appMenuDelegate, View decorView,
-            ActivityLifecycleDispatcher activityLifecycleDispatcher,
-            View hardwareButtonAnchorView) {
+            ActivityLifecycleDispatcher activityLifecycleDispatcher, View hardwareButtonAnchorView,
+            Supplier<Rect> appRect) {
         mContext = context;
         mAppMenuDelegate = appMenuDelegate;
         mDelegate = delegate;
@@ -87,6 +90,7 @@ class AppMenuHandlerImpl
         mBlockers = new ArrayList<>();
         mObservers = new ArrayList<>();
         mHardwareButtonMenuAnchor = hardwareButtonAnchorView;
+        mAppRect = appRect;
 
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mActivityLifecycleDispatcher.register(this);
@@ -195,9 +199,7 @@ class AppMenuHandlerImpl
         registerViewBinders(customViewBinders, customViewTypeOffsetMap, adapter,
                 mDelegate.shouldShowIconBeforeItem());
 
-        // Get the height and width of the display.
-        Rect appRect = new Rect();
-        mDecorView.getWindowVisibleDisplayFrame(appRect);
+        Rect appRect = mAppRect.get();
 
         // Use full size of window for abnormal appRect.
         if (appRect.left < 0 && appRect.top < 0) {
@@ -219,7 +221,7 @@ class AppMenuHandlerImpl
         }
         mAppMenu.show(wrapper, anchorView, isByPermanentButton, rotation, appRect, pt.y,
                 footerResourceId, headerResourceId, mDelegate.getGroupDividerId(), mHighlightMenuId,
-                customViewBinders);
+                customViewBinders, mDelegate.isMenuIconAtStart());
         mAppMenuDragHelper.onShow(startDragging);
         clearMenuHighlight();
         RecordUserAction.record("MobileMenuShow");
@@ -452,5 +454,10 @@ class AppMenuHandlerImpl
             }
         }
         return CustomViewBinder.NOT_HANDLED;
+    }
+
+    /** @param reporter A means of reporting an exception without crashing. */
+    static void setExceptionReporter(Callback<Throwable> reporter) {
+        AppMenu.setExceptionReporter(reporter);
     }
 }

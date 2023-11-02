@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,6 +19,10 @@ const char kRegexFilterKey[] = "regexFilter";
 const char kIsUrlFilterCaseSensitiveKey[] = "isUrlFilterCaseSensitive";
 const char kDomainsKey[] = "domains";
 const char kExcludedDomainsKey[] = "excludedDomains";
+const char kInitiatorDomainsKey[] = "initiatorDomains";
+const char kExcludedInitiatorDomainsKey[] = "excludedInitiatorDomains";
+const char kRequestDomainsKey[] = "requestDomains";
+const char kExcludedRequestDomainsKey[] = "excludedRequestDomains";
 const char kResourceTypesKey[] = "resourceTypes";
 const char kRequestMethodsKey[] = "requestMethods";
 const char kExcludedRequestMethodsKey[] = "excludedRequestMethods";

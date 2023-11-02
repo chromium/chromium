@@ -1,5 +1,6 @@
 include_rules = [
   "+content/public/browser",
+  "+components/contextual_search/core/browser",
   "+components/google/core/common",
   "+components/keyed_service/core",
   "+components/optimization_guide",

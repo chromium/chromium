@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,8 +17,7 @@
 #include "remoting/protocol/session_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 namespace {
 
@@ -124,9 +123,8 @@ TEST_F(AudioDecodeSchedulerTest, Shutdown) {
 
   audio_scheduler.reset();
   audio_consumer.reset();
-  // TODO(nicholss): This test does not really test anything. Add a way to get
-  // a count of the calls to AddAudioPacket.
+  // TODO(nicholss): This test does not really test anything. Add a way to get a
+  // count of the calls to AddAudioPacket.
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

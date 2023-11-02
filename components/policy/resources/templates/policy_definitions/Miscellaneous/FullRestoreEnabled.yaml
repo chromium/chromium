@@ -1,0 +1,24 @@
+caption: Enable the full restore feature
+default: true
+desc: |-
+  Setting the policy to enable the full restore feature.
+        If this policy is true, apps and app windows will be restored or not restored after a crash or reboot based on the restore app setting.
+        If this policy is false, only browser windows are automatcially launched.
+example_value: true
+features:
+  dynamic_refresh: false
+  per_profile: true
+items:
+- caption: Enable the full restore feature.
+  value: true
+- caption: Disable the full restore feature.
+  value: false
+owners:
+- nancylingwang@chromium.org
+- sammiequon@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome_os:96-
+tags: []
+type: main

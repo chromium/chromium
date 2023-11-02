@@ -1,14 +1,14 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/accuracy_tips/accuracy_service.h"
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -117,8 +117,8 @@ class AccuracyServiceTest : public content::RenderViewHostTestHarness {
   AccuracyServiceTest() = default;
 
   void SetUp() override {
-    content::RenderViewHostTestHarness::SetUp();
     SetUpFeatureList(feature_list_);
+    content::RenderViewHostTestHarness::SetUp();
 
     AccuracyService::RegisterProfilePrefs(prefs_.registry());
     unified_consent::UnifiedConsentService::RegisterPrefs(prefs_.registry());
@@ -165,7 +165,7 @@ class AccuracyServiceTest : public content::RenderViewHostTestHarness {
   sync_preferences::TestingPrefServiceSyncable prefs_;
   base::SimpleTestClock clock_;
 
-  MockAccuracyServiceDelegate* delegate_;
+  raw_ptr<MockAccuracyServiceDelegate> delegate_;
   scoped_refptr<MockSafeBrowsingDatabaseManager> sb_database_;
   std::unique_ptr<AccuracyService> service_;
 };

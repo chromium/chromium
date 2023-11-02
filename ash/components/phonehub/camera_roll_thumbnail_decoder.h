@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include "ash/components/phonehub/proto/phonehub_api.pb.h"
 #include "base/callback.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 class CameraRollItem;
@@ -20,12 +20,10 @@ class CameraRollThumbnailDecoder {
  public:
   // Result of a |BatchDecode| operation.
   enum class BatchDecodeResult {
-    // All items in the batch have been successfully decoded.
-    kSuccess = 0,
-    // Failed to decode at least one item in the batch.
-    kError = 1,
+    // All items in the batch have been completed.
+    kCompleted = 0,
     // The decode requests for this batch has been cancelled.
-    kCancelled = 2,
+    kCancelled = 1,
     kMaxValue = kCancelled
   };
 
@@ -52,6 +50,6 @@ class CameraRollThumbnailDecoder {
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_PHONEHUB_CAMERA_ROLL_THUMBNAIL_DECODER_H_

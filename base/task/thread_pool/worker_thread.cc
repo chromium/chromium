@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <atomic>
 #include <utility>
 
 #include "base/allocator/buildflags.h"
@@ -15,15 +16,23 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/debug/alias.h"
+#include "base/feature_list.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/task/thread_pool/environment_config.h"
 #include "base/task/thread_pool/task_tracker.h"
 #include "base/task/thread_pool/worker_thread_observer.h"
 #include "base/threading/hang_watcher.h"
+#include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "base/trace_event/base_tracing.h"
+#include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_APPLE)
+#if (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)) || BUILDFLAG(IS_FUCHSIA)
+#include "base/files/file_descriptor_watcher_posix.h"
+#endif
+
+#if BUILDFLAG(IS_APPLE)
 #include "base/mac/scoped_nsautorelease_pool.h"
 #endif
 
@@ -32,8 +41,44 @@
 #include "base/allocator/partition_allocator/thread_cache.h"
 #endif
 
-namespace base {
-namespace internal {
+#include "base/record_replay.h"
+
+namespace {
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
+    defined(PA_THREAD_CACHE_SUPPORTED)
+// Returns the desired sleep time before the worker has to wake up to purge
+// the cache thread or reclaim itself. |min_sleep_time| contains the minimal
+// acceptable amount of time to sleep.
+base::TimeDelta GetSleepTimeBeforePurge(base::TimeDelta min_sleep_time) {
+  const base::TimeTicks now = base::TimeTicks::Now();
+
+  // Do not wake up to purge within the first minute of process lifetime. In
+  // short lived processes this will avoid waking up to try and save memory
+  // for a heap that will be going away soon. For longer lived processes this
+  // should allow for better performance at process startup since even if a
+  // worker goes to sleep for kPurgeThreadCacheIdleDelay it's very likely it
+  // will be needed soon after because of heavy startup workloads.
+  constexpr base::TimeDelta kFirstSleepLength = base::Minutes(1);
+
+  // Use the first time a worker goes to sleep in this process as an
+  // approximation of the process creation time.
+  static const base::TimeTicks first_scheduled_wake = now + kFirstSleepLength;
+
+  // Align wakeups for purges to reduce the chances of taking the CPU out of
+  // sleep multiple times for these operations.
+  constexpr base::TimeDelta kPurgeThreadCacheIdleDelay = base::Seconds(1);
+  const base::TimeTicks snapped_wake =
+      (now + min_sleep_time)
+          .SnappedToNextTick(base::TimeTicks(), kPurgeThreadCacheIdleDelay);
+
+  // Avoid scheduling at |first_scheduled_wake| if it would result in a sleep
+  // that's too short.
+  return std::max(snapped_wake - now, first_scheduled_wake - now);
+}
+#endif
+}  // namespace
+
+namespace base::internal {
 
 constexpr TimeDelta WorkerThread::Delegate::kPurgeThreadCacheIdleDelay;
 
@@ -57,17 +102,32 @@ void WorkerThread::Delegate::WaitForWork(WaitableEvent* wake_up_event) {
   // many times.
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
     defined(PA_THREAD_CACHE_SUPPORTED)
-  bool was_signaled = wake_up_event->TimedWait(
-      std::min(sleep_time, kPurgeThreadCacheIdleDelay));
+  TimeDelta min_sleep_time = std::min(sleep_time, kPurgeThreadCacheIdleDelay);
+
+  static BASE_FEATURE(kDelayFirstWorkerWake, "DelayFirstWorkerWake",
+                      base::FEATURE_DISABLED_BY_DEFAULT);
+  // ThreadPoolInstance::Start() must always be after FeatureList
+  // initialization. This means this function has access to the feature state on
+  // first call. Cache the feature check to avoid the overhead of calling
+  // IsEnabled() every time.
+  static const bool is_delay_first_worker_sleep_enabled =
+      FeatureList::IsEnabled(kDelayFirstWorkerWake);
+
+  if (is_delay_first_worker_sleep_enabled)
+    min_sleep_time = GetSleepTimeBeforePurge(min_sleep_time);
+
+  const bool was_signaled = wake_up_event->TimedWait(min_sleep_time);
 
   // Timed out.
   if (!was_signaled) {
-    ThreadCache::PurgeCurrentThread();
+    partition_alloc::ThreadCache::PurgeCurrentThread();
 
-    if (sleep_time > kPurgeThreadCacheIdleDelay) {
+    // The thread woke up to purge before its standard reclaim time. Sleep for
+    // what's remaining until then.
+    if (sleep_time > min_sleep_time) {
       wake_up_event->TimedWait(sleep_time.is_max()
                                    ? base::TimeDelta::Max()
-                                   : sleep_time - kPurgeThreadCacheIdleDelay);
+                                   : sleep_time - min_sleep_time);
     }
   }
 #else
@@ -76,26 +136,34 @@ void WorkerThread::Delegate::WaitForWork(WaitableEvent* wake_up_event) {
         // defined(PA_THREAD_CACHE_SUPPORTED)
 }
 
-WorkerThread::WorkerThread(ThreadPriority priority_hint,
+WorkerThread::WorkerThread(ThreadType thread_type_hint,
                            std::unique_ptr<Delegate> delegate,
                            TrackedRef<TaskTracker> task_tracker,
                            const CheckedLock* predecessor_lock)
     : thread_lock_(predecessor_lock),
       delegate_(std::move(delegate)),
       task_tracker_(std::move(task_tracker)),
-      priority_hint_(priority_hint),
-      current_thread_priority_(GetDesiredThreadPriority()) {
+      thread_type_hint_(thread_type_hint),
+      current_thread_type_(GetDesiredThreadType()),
+      record_replay_unordered_(recordreplay::AreEventsDisallowed()) {
   DCHECK(delegate_);
   DCHECK(task_tracker_);
-  DCHECK(CanUseBackgroundPriorityForWorkerThread() ||
-         priority_hint_ != ThreadPriority::BACKGROUND);
+  DCHECK(CanUseBackgroundThreadTypeForWorkerThread() ||
+         thread_type_hint_ != ThreadType::kBackground);
   wake_up_event_.declare_only_used_while_idle();
 }
 
-bool WorkerThread::Start(WorkerThreadObserver* worker_thread_observer) {
+bool WorkerThread::Start(
+    scoped_refptr<SingleThreadTaskRunner> io_thread_task_runner,
+    WorkerThreadObserver* worker_thread_observer) {
   CheckedLock::AssertNoLockHeldOnCurrentThread();
   CheckedAutoLock auto_lock(thread_lock_);
   DCHECK(thread_handle_.is_null());
+
+#if (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)) || BUILDFLAG(IS_FUCHSIA)
+  DCHECK(io_thread_task_runner);
+  io_thread_task_runner_ = std::move(io_thread_task_runner);
+#endif
 
   if (should_exit_.IsSet() || join_called_for_testing_.IsSet())
     return true;
@@ -106,8 +174,8 @@ bool WorkerThread::Start(WorkerThreadObserver* worker_thread_observer) {
   self_ = this;
 
   constexpr size_t kDefaultStackSize = 0;
-  PlatformThread::CreateWithPriority(kDefaultStackSize, this, &thread_handle_,
-                                     current_thread_priority_);
+  PlatformThread::CreateWithType(kDefaultStackSize, this, &thread_handle_,
+                                 current_thread_type_);
 
   if (thread_handle_.is_null()) {
     self_ = nullptr;
@@ -171,8 +239,8 @@ void WorkerThread::Cleanup() {
   wake_up_event_.Signal();
 }
 
-void WorkerThread::MaybeUpdateThreadPriority() {
-  UpdateThreadPriority(GetDesiredThreadPriority());
+void WorkerThread::MaybeUpdateThreadType() {
+  UpdateThreadType(GetDesiredThreadType());
 }
 
 void WorkerThread::BeginUnusedPeriod() {
@@ -201,25 +269,33 @@ bool WorkerThread::ShouldExit() const {
          task_tracker_->IsShutdownComplete();
 }
 
-ThreadPriority WorkerThread::GetDesiredThreadPriority() const {
-  // To avoid shutdown hangs, disallow a priority below NORMAL during shutdown
+ThreadType WorkerThread::GetDesiredThreadType() const {
+  // To avoid shutdown hangs, disallow a type below kNormal during shutdown
   if (task_tracker_->HasShutdownStarted())
-    return ThreadPriority::NORMAL;
+    return ThreadType::kDefault;
 
-  return priority_hint_;
+  return thread_type_hint_;
 }
 
-void WorkerThread::UpdateThreadPriority(
-    ThreadPriority desired_thread_priority) {
-  if (desired_thread_priority == current_thread_priority_)
+void WorkerThread::UpdateThreadType(ThreadType desired_thread_type) {
+  if (desired_thread_type == current_thread_type_)
     return;
 
-  PlatformThread::SetCurrentThreadPriority(desired_thread_priority);
-  current_thread_priority_ = desired_thread_priority;
+  PlatformThread::SetCurrentThreadType(desired_thread_type);
+  current_thread_type_ = desired_thread_type;
 }
 
 void WorkerThread::ThreadMain() {
-  if (priority_hint_ == ThreadPriority::BACKGROUND) {
+  absl::optional<recordreplay::AutoDisallowEvents> disallow;
+  if (record_replay_unordered_)
+    disallow.emplace("WorkerThread::ThreadMain");
+
+#if (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)) || BUILDFLAG(IS_FUCHSIA)
+  DCHECK(io_thread_task_runner_);
+  FileDescriptorWatcher file_descriptor_watcher(io_thread_task_runner_);
+#endif
+
+  if (thread_type_hint_ == ThreadType::kBackground) {
     switch (delegate_->GetThreadLabel()) {
       case ThreadLabel::POOLED:
         RunBackgroundPooledWorker();
@@ -230,14 +306,14 @@ void WorkerThread::ThreadMain() {
       case ThreadLabel::DEDICATED:
         RunBackgroundDedicatedWorker();
         return;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       case ThreadLabel::SHARED_COM:
         RunBackgroundSharedCOMWorker();
         return;
       case ThreadLabel::DEDICATED_COM:
         RunBackgroundDedicatedCOMWorker();
         return;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
     }
   }
 
@@ -251,14 +327,14 @@ void WorkerThread::ThreadMain() {
     case ThreadLabel::DEDICATED:
       RunDedicatedWorker();
       return;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     case ThreadLabel::SHARED_COM:
       RunSharedCOMWorker();
       return;
     case ThreadLabel::DEDICATED_COM:
       RunDedicatedCOMWorker();
       return;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   }
 }
 
@@ -292,7 +368,7 @@ NOINLINE void WorkerThread::RunBackgroundDedicatedWorker() {
   NO_CODE_FOLDING();
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 NOINLINE void WorkerThread::RunSharedCOMWorker() {
   RunWorker();
   NO_CODE_FOLDING();
@@ -312,7 +388,7 @@ NOINLINE void WorkerThread::RunBackgroundDedicatedCOMWorker() {
   RunWorker();
   NO_CODE_FOLDING();
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 void WorkerThread::RunWorker() {
   DCHECK_EQ(self_, this);
@@ -328,7 +404,7 @@ void WorkerThread::RunWorker() {
   // watch them for hangs. Ignore priority boosting for now.
   const bool watch_for_hangs =
       base::HangWatcher::IsThreadPoolHangWatchingEnabled() &&
-      GetDesiredThreadPriority() != ThreadPriority::BACKGROUND;
+      GetDesiredThreadType() != ThreadType::kBackground;
 
   // If this process has a HangWatcher register this thread for watching.
   base::ScopedClosureRunner unregister_for_hang_watching;
@@ -347,17 +423,18 @@ void WorkerThread::RunWorker() {
   }
 
   while (!ShouldExit()) {
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
     mac::ScopedNSAutoreleasePool autorelease_pool;
 #endif
     absl::optional<WatchHangsInScope> hang_watch_scope;
     if (watch_for_hangs)
-      hang_watch_scope.emplace(base::WatchHangsInScope::kDefaultHangWatchTime);
+      hang_watch_scope.emplace();
 
-    UpdateThreadPriority(GetDesiredThreadPriority());
+    UpdateThreadType(GetDesiredThreadType());
 
     // Get the task source containing the next task to execute.
     RegisteredTaskSource task_source = delegate_->GetWork(this);
+
     if (!task_source) {
       // Exit immediately if GetWork() resulted in detaching this worker.
       if (ShouldExit())
@@ -415,5 +492,4 @@ void WorkerThread::RunWorker() {
   PERFETTO_INTERNAL_ADD_EMPTY_EVENT();
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

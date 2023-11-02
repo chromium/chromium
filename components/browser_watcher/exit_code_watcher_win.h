@@ -1,4 +1,4 @@
-// Copyright (c) 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #ifndef COMPONENTS_BROWSER_WATCHER_EXIT_CODE_WATCHER_WIN_H_
@@ -30,13 +30,10 @@ class ExitCodeWatcher {
   void StopWatching();
 
   const base::Process& process() const { return process_; }
-  int exit_code() const { return exit_code_; }
+  int ExitCodeForTesting() const { return exit_code_; }
 
  private:
-  // Writes |exit_code| to registry, returns true on success.
-  bool WriteProcessExitCode(int exit_code);
-
-  // Waits for the process to exit and records its exit code in registry.
+  // Waits for the process to exit and records its exit code in a histogram.
   // This is a blocking call.
   void WaitForExit();
 

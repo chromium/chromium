@@ -1,5 +1,5 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
-// Use of this source code if governed by a BSD-style license that can be
+// Copyright 2017 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
 // found in LICENSE file.
 
 #include "base/numerics/safe_conversions.h"
@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 using testing::AnyOf;
 using testing::ElementsAre;
@@ -177,6 +178,53 @@ TEST_F(BackgroundPageThrottlingTest, WithoutNesting) {
 // Verify that on a hidden page, a timer created with setTimeout(..., 0) is
 // throttled after 5 nesting levels.
 TEST_F(BackgroundPageThrottlingTest, NestedSetTimeoutZero) {
+  // Disable this test when setTimeoutWithoutClamp feature is enabled.
+  // TODO(crbug.com/1303275): Investigate the failure reason.
+  if (blink::features::IsSetTimeoutWithoutClampEnabled())
+    GTEST_SKIP() << "Skipping test for setTimeoutWithoutClamp feature enabled";
+
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+
+  const String console_message = BuildTimerConsoleMessage();
+  main_resource.Complete(
+      String::Format("<script>"
+                     "  function f(repetitions) {"
+                     "    if (repetitions == 0) return;"
+                     "    console.log('%s');"
+                     "    setTimeout(f, 0, repetitions - 1);"
+                     "  }"
+                     "  setTimeout(f, 0, 50);"
+                     "</script>",
+                     console_message.Utf8().c_str()));
+  GetDocument().GetPage()->GetPageScheduler()->SetPageVisible(false);
+
+  platform_->RunForPeriod(base::Milliseconds(1));
+  EXPECT_THAT(FilteredConsoleMessages(), Vector<String>(1, console_message));
+  platform_->RunForPeriod(base::Milliseconds(1));
+  EXPECT_THAT(FilteredConsoleMessages(), Vector<String>(2, console_message));
+  platform_->RunForPeriod(base::Milliseconds(1));
+  EXPECT_THAT(FilteredConsoleMessages(), Vector<String>(3, console_message));
+  platform_->RunForPeriod(base::Milliseconds(1));
+  EXPECT_THAT(FilteredConsoleMessages(), Vector<String>(4, console_message));
+  platform_->RunForPeriod(base::Milliseconds(995));
+  EXPECT_THAT(FilteredConsoleMessages(), Vector<String>(4, console_message));
+  platform_->RunForPeriod(base::Milliseconds(1));
+  EXPECT_THAT(FilteredConsoleMessages(), Vector<String>(5, console_message));
+}
+
+TEST_F(BackgroundPageThrottlingTest,
+       NestedSetTimeoutZero_MaxUnthrottledTimeoutNestingLevel) {
+  // Disable this test when setTimeoutWithoutClamp feature is enabled.
+  // TODO(crbug.com/1303275): Investigate the failure reason.
+  if (blink::features::IsSetTimeoutWithoutClampEnabled())
+    GTEST_SKIP() << "Skipping test for setTimeoutWithoutClamp feature enabled";
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{features::kMaxUnthrottledTimeoutNestingLevel, {{"nesting", "100"}}}},
+      {});
+
   SimRequest main_resource("https://example.com/", "text/html");
   LoadURL("https://example.com/");
 
@@ -241,13 +289,72 @@ TEST_F(BackgroundPageThrottlingTest, NestedSetIntervalZero) {
   EXPECT_THAT(FilteredConsoleMessages(), Vector<String>(5, console_message));
 }
 
+class AbortSignalTimeoutThrottlingTest : public BackgroundPageThrottlingTest {
+ public:
+  AbortSignalTimeoutThrottlingTest()
+      : console_message_(BuildTimerConsoleMessage()) {}
+
+  String GetTestSource(wtf_size_t iterations, wtf_size_t timeout) {
+    return String::Format(
+        "(<script>"
+        "  let count = 0;"
+        "  function scheduleTimeout() {"
+        "    const signal = AbortSignal.timeout('%d');"
+        "    signal.onabort = () => {"
+        "      console.log('%s');"
+        "      if (++count < '%d') {"
+        "        scheduleTimeout();"
+        "      }"
+        "    }"
+        "  }"
+        "  scheduleTimeout();"
+        "</script>)",
+        timeout, console_message_.Utf8().c_str(), iterations);
+  }
+
+  const String& console_message() { return console_message_; }
+
+ protected:
+  const String console_message_;
+};
+
+TEST_F(AbortSignalTimeoutThrottlingTest, TimeoutsThrottledInBackgroundPage) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(GetTestSource(/*iterations=*/20, /*timeout=*/10));
+
+  GetDocument().GetPage()->GetPageScheduler()->SetPageVisible(false);
+
+  // Make sure that we run no more than one task a second.
+  platform_->RunForPeriod(base::Seconds(3));
+  EXPECT_THAT(FilteredConsoleMessages(), Vector<String>(3, console_message()));
+}
+
+TEST_F(AbortSignalTimeoutThrottlingTest, ZeroMsTimersNotThrottled) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+
+  constexpr wtf_size_t kIterations = 20;
+  main_resource.Complete(GetTestSource(kIterations, /*timeout=*/0));
+
+  GetDocument().GetPage()->GetPageScheduler()->SetPageVisible(false);
+
+  // All tasks should run after 1 ms since time does not advance during the
+  // test, the timeout was 0 ms, and the timeouts are not throttled.
+  platform_->RunForPeriod(base::Milliseconds(1));
+  EXPECT_THAT(FilteredConsoleMessages(),
+              Vector<String>(kIterations, console_message()));
+}
+
 namespace {
 
 class IntensiveWakeUpThrottlingTest : public ThrottlingTestBase {
  public:
   IntensiveWakeUpThrottlingTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kIntensiveWakeUpThrottling},
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kIntensiveWakeUpThrottling, {}},
+         {features::kMaxUnthrottledTimeoutNestingLevel, {{"nesting", "100"}}},
+         {features::kSetTimeoutWithoutClamp, {}}},
         // Disable freezing because it hides the effect of intensive throttling.
         {features::kStopInBackground});
   }

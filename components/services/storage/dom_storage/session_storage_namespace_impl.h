@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "components/services/storage/dom_storage/session_storage_area_impl.h"
 #include "components/services/storage/dom_storage/session_storage_data_map.h"
@@ -199,11 +200,11 @@ class SessionStorageNamespaceImpl final
 
   const std::string namespace_id_;
   SessionStorageMetadata::NamespaceEntry namespace_entry_;
-  AsyncDomStorageDatabase* database_ = nullptr;
+  raw_ptr<AsyncDomStorageDatabase> database_ = nullptr;
 
-  SessionStorageDataMap::Listener* data_map_listener_;
+  raw_ptr<SessionStorageDataMap::Listener> data_map_listener_;
   SessionStorageAreaImpl::RegisterNewAreaMap register_new_map_callback_;
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
 
   State state_ = State::kNotPopulated;
   std::string pending_population_from_parent_namespace_;

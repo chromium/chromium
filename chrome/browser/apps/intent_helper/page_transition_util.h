@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,8 @@ namespace apps {
 // Returns true if ARC should ignore the navigation with the |page_transition|.
 bool ShouldIgnoreNavigation(ui::PageTransition page_transition,
                             bool allow_form_submit,
-                            bool allow_client_redirect);
+                            bool is_in_fenced_frame_tree,
+                            bool has_user_gesture);
 
 // Removes |mask| bits from |page_transition|.
 ui::PageTransition MaskOutPageTransition(ui::PageTransition page_transition,

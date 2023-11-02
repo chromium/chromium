@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,7 +19,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chromeos/login/login_state/login_state.h"
@@ -106,14 +105,12 @@ class TestEventRouter : public extensions::EventRouter {
         extensions::api::lock_screen_data::OnDataItemsAvailable::kEventName) {
       return;
     }
-    ASSERT_TRUE(event->event_args);
-    const base::Value* arg_value = nullptr;
-    ASSERT_TRUE(event->event_args->Get(0, &arg_value));
-    ASSERT_TRUE(arg_value);
+    ASSERT_TRUE(!event->event_args.empty());
+    const base::Value& arg_value = event->event_args[0];
 
     std::unique_ptr<extensions::api::lock_screen_data::DataItemsAvailableEvent>
         event_args = extensions::api::lock_screen_data::
-            DataItemsAvailableEvent::FromValue(*arg_value);
+            DataItemsAvailableEvent::FromValue(arg_value);
     ASSERT_TRUE(event_args);
     was_locked_values_.push_back(event_args->was_locked);
   }
@@ -607,15 +604,15 @@ class LockScreenItemStorageTest : public ExtensionsTest {
       ASSERT_TRUE(state.storage_version == 1 || state.storage_version == 2)
           << "Failed to init local state " << state.extension_id;
 
-      DictionaryPrefUpdate update(&local_state_, "lockScreenDataItems");
+      ScopedDictPrefUpdate update(&local_state_, "lockScreenDataItems");
+      base::Value::Dict* user_dict = update->EnsureDict(kTestUserIdHash);
       if (state.storage_version == 1) {
-        update->SetPath({kTestUserIdHash, state.extension_id},
-                        base::Value(state.item_count));
+        user_dict->Set(state.extension_id, state.item_count);
       } else {
-        base::Value info(base::Value::Type::DICTIONARY);
-        info.SetKey("item_count", base::Value(state.item_count));
-        info.SetKey("storage_version", base::Value(2));
-        update->SetPath({kTestUserIdHash, state.extension_id}, std::move(info));
+        base::Value::Dict info;
+        info.Set("item_count", state.item_count);
+        info.Set("storage_version", 2);
+        user_dict->Set(state.extension_id, std::move(info));
       }
     }
   }

@@ -1,10 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_PUBLIC_BROWSER_NATIVE_EVENT_PROCESSOR_OBSERVER_MAC_H_
 #define CONTENT_PUBLIC_BROWSER_NATIVE_EVENT_PROCESSOR_OBSERVER_MAC_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "content/common/content_export.h"
 
@@ -42,7 +43,8 @@ class CONTENT_EXPORT ScopedNotifyNativeEventProcessorObserver {
   ~ScopedNotifyNativeEventProcessorObserver();
 
  private:
-  base::ObserverList<NativeEventProcessorObserver>::Unchecked* observer_list_;
+  raw_ptr<base::ObserverList<NativeEventProcessorObserver>::Unchecked>
+      observer_list_;
   NSEvent* event_;
 };
 

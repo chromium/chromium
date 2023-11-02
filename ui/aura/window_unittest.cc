@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -145,7 +146,7 @@ class LayerTranslationAnimationNotifier : public ui::CompositorObserver {
 
  private:
   // The layer to be animated.
-  ui::Layer* const animation_layer_;
+  const raw_ptr<ui::Layer> animation_layer_;
 
   // The initial transform.
   gfx::Transform initial_transform_;
@@ -175,7 +176,7 @@ class DeletionTestProperty {
   ~DeletionTestProperty() { tracker_->PropertyDeleted(); }
 
  private:
-  DeletionTracker* tracker_;
+  raw_ptr<DeletionTracker> tracker_;
 };
 
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(DeletionTestProperty,
@@ -273,7 +274,7 @@ class ChildWindowDelegateImpl : public DestroyTrackingDelegateImpl {
   }
 
  private:
-  DestroyTrackingDelegateImpl* parent_delegate_;
+  raw_ptr<DestroyTrackingDelegateImpl> parent_delegate_;
 };
 
 // Used to verify that a Window is removed from its parent when
@@ -292,7 +293,7 @@ class DestroyOrphanDelegate : public TestWindowDelegate {
   }
 
  private:
-  Window* window_;
+  raw_ptr<Window> window_;
 };
 
 // Used in verifying mouse capture.
@@ -628,7 +629,7 @@ TEST_F(WindowTest, MoveCursorToWithTransformRootWindow) {
   transform.Scale(2.0, 5.0);
   host()->SetRootTransform(transform);
   host()->MoveCursorToLocationInDIP(gfx::Point(10, 10));
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
   // TODO(yoshiki): fix this to build on Windows. See crbug.com/133413.OD
   EXPECT_EQ("50,120", QueryLatestMousePositionRequestInHost(host()).ToString());
 #endif
@@ -708,7 +709,7 @@ TEST_F(WindowTest, MoveCursorToWithComplexTransform) {
 
   w1111->MoveCursorTo(gfx::Point(10, 10));
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
   // TODO(yoshiki): fix this to build on Windows. See crbug.com/133413.
   EXPECT_EQ("169,80", QueryLatestMousePositionRequestInHost(host()).ToString());
 #endif
@@ -1903,7 +1904,7 @@ class DeletionTestLayoutManager : public LayoutManager {
   void SetChildBounds(Window* child,
                       const gfx::Rect& requested_bounds) override {}
 
-  DeletionTracker* tracker_;
+  raw_ptr<DeletionTracker> tracker_;
 };
 
 TEST_F(WindowTest, DeleteLayoutManagerBeforeOwnedProps) {
@@ -1911,7 +1912,7 @@ TEST_F(WindowTest, DeleteLayoutManagerBeforeOwnedProps) {
   {
     Window w(nullptr);
     w.Init(ui::LAYER_NOT_DRAWN);
-    w.SetLayoutManager(new DeletionTestLayoutManager(&tracker));
+    w.SetLayoutManager(std::make_unique<DeletionTestLayoutManager>(&tracker));
     w.SetProperty(kDeletionTestPropertyKey,
                   std::make_unique<DeletionTestProperty>(&tracker));
   }
@@ -2148,7 +2149,7 @@ class WindowObserverTest : public WindowTest,
   int removed_count_ = 0;
   int destroyed_count_ = 0;
   std::unique_ptr<VisibilityInfo> visibility_info_;
-  const void* property_key_ = nullptr;
+  raw_ptr<const void> property_key_ = nullptr;
   intptr_t old_property_value_ = -3;
   std::vector<std::pair<int, int> > transform_notifications_;
   WindowBoundsInfo window_bounds_info_;
@@ -3005,8 +3006,8 @@ class DeleteOnVisibilityChangedObserver : public WindowObserver {
   }
 
  private:
-  Window* to_observe_;
-  Window* to_delete_;
+  raw_ptr<Window> to_observe_;
+  raw_ptr<Window> to_delete_;
 };
 
 TEST_F(WindowTest, DeleteParentWindowFromOnWindowVisibiltyChanged) {
@@ -3221,7 +3222,7 @@ class HierarchyObserver : public WindowObserver {
     EXPECT_EQ(p1.receiver, p2.receiver);
   }
 
-  Window* target_;
+  raw_ptr<Window> target_;
   std::vector<WindowObserver::HierarchyChangeParams> params_;
 };
 
@@ -3645,6 +3646,72 @@ TEST_F(WindowTest, CleanupGestureStateDeleteOtherWindows) {
   child2.reset();
 }
 
+class TestTouchWindowDelegate : public TestWindowDelegate {
+ public:
+  explicit TestTouchWindowDelegate() = default;
+  TestTouchWindowDelegate(const TestTouchWindowDelegate&) = delete;
+  TestTouchWindowDelegate& operator=(const TestTouchWindowDelegate&) = delete;
+  ~TestTouchWindowDelegate() override = default;
+
+  void OnTouchEvent(ui::TouchEvent* event) override {
+    if (event->type() == ui::ET_TOUCH_CANCELLED) {
+      if (on_touch_cancel_callback_) {
+        std::move(on_touch_cancel_callback_)
+            .Run(static_cast<Window*>(event->target()));
+      }
+    }
+  }
+
+  void SetOnTouchCancelCallback(base::OnceCallback<void(Window*)> callback) {
+    on_touch_cancel_callback_ = std::move(callback);
+  }
+
+ private:
+  base::OnceCallback<void(Window*)> on_touch_cancel_callback_;
+};
+
+// Test for use-after-free in crbug.com/1297643.
+TEST_F(WindowTest, DeleteWindowWhenCancellingTouch) {
+  TestTouchWindowDelegate window_delegate;
+  auto window = std::make_unique<Window>(&window_delegate);
+  window->Init(ui::LAYER_NOT_DRAWN);
+  root_window()->AddChild(window.get());
+  window->SetBounds(gfx::Rect(0, 0, 200, 200));
+  window->Show();
+
+  window_delegate.SetOnTouchCancelCallback(
+      base::BindLambdaForTesting([&window](Window* target) {
+        if (target == window.get()) {
+          window.reset();
+        }
+      }));
+
+  ui::test::EventGenerator event_generator(root_window(), window.get());
+  event_generator.PressTouch();
+  event_generator.MoveTouchBy(10, 10);
+
+  auto* gesture_recognizer = Env::GetInstance()->gesture_recognizer();
+  EXPECT_TRUE(gesture_recognizer->DoesConsumerHaveActiveTouch(window.get()));
+
+  // Hide window which should cancel touch.
+  window->Hide();
+  // Window should've been deleted.
+  EXPECT_FALSE(window);
+
+  // Create two new windows to transfer between.
+  Window window1(nullptr);
+  window1.Init(ui::LAYER_NOT_DRAWN);
+  root_window()->AddChild(&window1);
+
+  Window window2(nullptr);
+  window2.Init(ui::LAYER_NOT_DRAWN);
+  root_window()->AddChild(&window2);
+
+  // This should not cause use-after-free.
+  gesture_recognizer->TransferEventsTo(
+      &window1, &window2, ui::TransferTouchesBehavior::kDontCancel);
+}
+
 class WindowActualScreenBoundsTest
     : public WindowTest,
       public testing::WithParamInterface<
@@ -3685,9 +3752,7 @@ class WindowActualScreenBoundsTest
 
   void OnTranslationAnimationProgressed(const gfx::Rect& child_initial_bounds,
                                         const gfx::Transform& transform) const {
-    gfx::RectF current_screen_bounds(child_initial_bounds);
-    transform.TransformRect(&current_screen_bounds);
-    EXPECT_EQ(gfx::ToEnclosedRect(current_screen_bounds),
+    EXPECT_EQ(transform.MapRect(child_initial_bounds),
               child_->GetActualBoundsInScreen());
   }
 

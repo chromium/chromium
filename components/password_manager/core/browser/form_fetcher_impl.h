@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,11 @@
 #include <set>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/password_manager/core/browser/form_fetcher.h"
 #include "components/password_manager/core/browser/http_password_store_migrator.h"
-#include "components/password_manager/core/browser/insecure_credentials_table.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
 
@@ -31,7 +32,7 @@ class FormFetcherImpl : public FormFetcher,
   // |form_digest| describes what credentials need to be retrieved and
   // |client| serves the PasswordStore, the logging information etc.
   FormFetcherImpl(PasswordFormDigest form_digest,
-                  const PasswordManagerClient* client,
+                  PasswordManagerClient* client,
                   bool should_migrate_http_passwords);
 
   FormFetcherImpl(const FormFetcherImpl&) = delete;
@@ -45,7 +46,7 @@ class FormFetcherImpl : public FormFetcher,
   void Fetch() override;
   State GetState() const override;
   const std::vector<InteractionsStats>& GetInteractionsStats() const override;
-  base::span<const InsecureCredential> GetInsecureCredentials() const override;
+  std::vector<const PasswordForm*> GetInsecureCredentials() const override;
   std::vector<const PasswordForm*> GetNonFederatedMatches() const override;
   std::vector<const PasswordForm*> GetFederatedMatches() const override;
   bool IsBlocklisted() const override;
@@ -57,6 +58,8 @@ class FormFetcherImpl : public FormFetcher,
   const std::vector<const PasswordForm*>& GetBestMatches() const override;
   const PasswordForm* GetPreferredMatch() const override;
   std::unique_ptr<FormFetcher> Clone() override;
+  absl::optional<PasswordStoreBackendError> GetProfileStoreBackendError()
+      const override;
 
  protected:
   // Actually finds best matches and notifies consumers.
@@ -71,7 +74,7 @@ class FormFetcherImpl : public FormFetcher,
   const PasswordFormDigest form_digest_;
 
   // Client used to obtain a CredentialFilter.
-  const PasswordManagerClient* const client_;
+  const raw_ptr<PasswordManagerClient> client_;
 
   // State of the fetcher.
   State state_ = State::NOT_WAITING;
@@ -89,7 +92,7 @@ class FormFetcherImpl : public FormFetcher,
   std::vector<std::unique_ptr<PasswordForm>> federated_;
 
   // List of insecure credentials for the current domain.
-  std::vector<InsecureCredential> insecure_credentials_;
+  std::vector<std::unique_ptr<PasswordForm>> insecure_credentials_;
 
   // Indicates whether HTTP passwords should be migrated to HTTPS. This is
   // always false for non HTML forms.
@@ -103,6 +106,9 @@ class FormFetcherImpl : public FormFetcher,
       PasswordStoreInterface* store,
       std::vector<std::unique_ptr<PasswordForm>> results) override;
   void OnGetSiteStatistics(std::vector<InteractionsStats> stats) override;
+  void OnGetPasswordStoreResultsOrErrorFrom(
+      PasswordStoreInterface* store,
+      FormsOrError results_or_error) override;
 
   // HttpPasswordStoreMigrator::Consumer:
   void ProcessMigratedForms(
@@ -143,6 +149,10 @@ class FormFetcherImpl : public FormFetcher,
   // Consumers of the fetcher, all are assumed to either outlive |this| or
   // remove themselves from the list during their destruction.
   base::ObserverList<FormFetcher::Consumer> consumers_;
+
+  // Holds an error if it occurred during login retrieval from the
+  // PasswordStore.
+  absl::optional<PasswordStoreBackendError> profile_store_backend_error_;
 
   base::WeakPtrFactory<FormFetcherImpl> weak_ptr_factory_{this};
 };

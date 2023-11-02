@@ -30,7 +30,7 @@ outside of the quota system.
 
 ### PaddingKey
 Helpers for computing quota usage for opaque resources. Features that store
-opaque resources (AppCache, Cache Storage) should use these helpers to avoid
+opaque resources (e.g. Cache Storage) should use these helpers to avoid
 leaking cross-origin information via the quota usage they report.
 
 ### SpecialStoragePolicy
@@ -51,7 +51,7 @@ Storage Buckets. The currently stored information is a usage count,
 last-modified-time, and last-accessed-time for each origin (used to implement
 LRU eviction on storage pressure, and Clear Site Data with a time filter), and
 quota granted via the deprecated API
-webkitStorageInfo.requestQuota(PERSISTENT,...).
+navigator.webkitPersistentStorage.requestQuota(1000, ...).
 
 ### QuotaTemporaryStorageEvictor
 Handles eviction and records stats about eviction rounds.

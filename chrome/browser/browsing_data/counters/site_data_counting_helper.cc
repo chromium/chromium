@@ -1,10 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/browsing_data/counters/site_data_counting_helper.h"
 
 #include "base/bind.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -17,7 +18,6 @@
 #include "content/public/browser/session_storage_usage_info.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_usage_info.h"
-#include "media/media_buildflags.h"
 #include "net/cookies/cookie_util.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
@@ -27,7 +27,7 @@
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 #include "url/gurl.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/cdm/browser/media_drm_storage_impl.h"  // nogncheck crbug.com/1125897
 #endif
 
@@ -61,8 +61,8 @@ void SiteDataCountingHelper::CountAndDestroySelfWhenFinished() {
 
   storage::QuotaManager* quota_manager = partition->GetQuotaManager();
   if (quota_manager) {
-    // Count storage keys with filesystem, websql, appcache, indexeddb,
-    // serviceworkers and cachestorage using quota manager.
+    // Count storage keys with filesystem, websql, indexeddb, serviceworkers,
+    // cachestorage, and medialicense using quota manager.
     auto buckets_callback =
         base::BindRepeating(&SiteDataCountingHelper::GetQuotaBucketsCallback,
                             base::Unretained(this));
@@ -90,35 +90,18 @@ void SiteDataCountingHelper::CountAndDestroySelfWhenFinished() {
     // TODO(772337): Enable session storage counting when deletion is fixed.
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Count origins with media licenses on Android.
   tasks_ += 1;
   Done(cdm::MediaDrmStorageImpl::GetOriginsModifiedBetween(profile_->GetPrefs(),
                                                            begin_, end_));
-#endif  // defined(OS_ANDROID)
-
-#if BUILDFLAG(ENABLE_LIBRARY_CDMS)
-  // Count origins with media licenses.
-  storage::FileSystemContext* file_system_context =
-      profile_->GetDefaultStoragePartition()->GetFileSystemContext();
-  media_license_helper_ =
-      BrowsingDataMediaLicenseHelper::Create(file_system_context);
-  if (media_license_helper_) {
-    tasks_ += 1;
-    media_license_helper_->StartFetching(
-        base::BindOnce(&SiteDataCountingHelper::SitesWithMediaLicensesCallback,
-                       base::Unretained(this)));
-  }
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Counting site usage data and durable permissions.
   auto* hcsm = HostContentSettingsMapFactory::GetForProfile(profile_);
   const ContentSettingsType content_settings[] = {
     ContentSettingsType::DURABLE_STORAGE,
     ContentSettingsType::APP_BANNER,
-#if !defined(OS_ANDROID)
-    ContentSettingsType::INSTALLED_WEB_APP_METADATA,
-#endif
   };
   for (auto type : content_settings) {
     tasks_ += 1;
@@ -175,20 +158,10 @@ void SiteDataCountingHelper::GetLocalStorageUsageInfoCallback(
   std::vector<GURL> origins;
   for (const auto& info : infos) {
     if (info.last_modified >= begin_ && info.last_modified < end_ &&
-        (!policy || !policy->IsStorageProtected(info.origin.GetURL()))) {
-      origins.push_back(info.origin.GetURL());
+        (!policy ||
+         !policy->IsStorageProtected(info.storage_key.origin().GetURL()))) {
+      origins.push_back(info.storage_key.origin().GetURL());
     }
-  }
-  Done(origins);
-}
-
-void SiteDataCountingHelper::SitesWithMediaLicensesCallback(
-    const std::list<BrowsingDataMediaLicenseHelper::MediaLicenseInfo>&
-        media_license_info_list) {
-  std::vector<GURL> origins;
-  for (const auto& info : media_license_info_list) {
-    if (info.last_modified_time >= begin_ && info.last_modified_time < end_)
-      origins.push_back(info.origin);
   }
   Done(origins);
 }

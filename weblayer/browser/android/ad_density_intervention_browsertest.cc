@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,10 +40,10 @@ class AdDensityViolationBrowserTest : public SubresourceFilterBrowserTest {
   AdDensityViolationBrowserTest() = default;
 
   void SetUp() override {
-    std::vector<base::Feature> enabled = {
+    std::vector<base::test::FeatureRef> enabled = {
         subresource_filter::kAdTagging,
         subresource_filter::kAdsInterventionsEnforced};
-    std::vector<base::Feature> disabled = {};
+    std::vector<base::test::FeatureRef> disabled = {};
 
     feature_list_.InitWithFeatures(enabled, disabled);
     SubresourceFilterBrowserTest::SetUp();
@@ -94,7 +94,8 @@ IN_PROC_BROWSER_TEST_F(
 
   // blank_with_adiframe_writer loads a script tagged as an ad, verify it is not
   // loaded and the subresource filter UI for ad blocking is shown.
-  EXPECT_FALSE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
+  EXPECT_FALSE(
+      WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
   EXPECT_EQ(infobars::ContentInfoBarManager::FromWebContents(web_contents())
                 ->infobar_count(),
             1u);
@@ -146,7 +147,8 @@ IN_PROC_BROWSER_TEST_F(
   // blank_with_adiframe_writer loads a script tagged as an ad, verify it is
   // loaded as ads are not blocked and the subresource filter UI is not
   // shown.
-  EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
+  EXPECT_TRUE(
+      WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
 
   // No ads blocked infobar should be shown as we have not triggered the
   // intervention.
@@ -162,8 +164,9 @@ class AdDensityViolationBrowserTestWithoutEnforcement
   AdDensityViolationBrowserTestWithoutEnforcement() = default;
 
   void SetUp() override {
-    std::vector<base::Feature> enabled = {subresource_filter::kAdTagging};
-    std::vector<base::Feature> disabled = {
+    std::vector<base::test::FeatureRef> enabled = {
+        subresource_filter::kAdTagging};
+    std::vector<base::test::FeatureRef> disabled = {
         subresource_filter::kAdsInterventionsEnforced};
 
     feature_list_.InitWithFeatures(enabled, disabled);
@@ -215,7 +218,8 @@ IN_PROC_BROWSER_TEST_F(
 
   // We are not enforcing ad blocking on ads violations, site should load
   // as expected without subresource filter UI.
-  EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
+  EXPECT_TRUE(
+      WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
 
   // No ads blocked infobar should be shown as we have not triggered the
   // intervention.

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,10 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "ui/compositor/compositor_export.h"
 
 namespace cc {
@@ -109,7 +111,7 @@ class COMPOSITOR_EXPORT CompositorLock {
   // Causes the CompositorLock to end due to a timeout.
   void TimeoutLock();
 
-  CompositorLockClient* const client_;
+  const raw_ptr<CompositorLockClient> client_;
   std::unique_ptr<cc::ScopedDeferMainFrameUpdate>
       scoped_defer_main_frame_update_;
   base::WeakPtr<CompositorLockManager> manager_;

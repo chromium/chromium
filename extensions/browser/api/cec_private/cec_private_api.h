@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "chromeos/dbus/cec_service/cec_service_client.h"
+#include "chromeos/ash/components/dbus/cec_service/cec_service_client.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_histogram_value.h"
 
@@ -74,7 +74,7 @@ class CecPrivateQueryDisplayCecPowerStateFunction : public CecPrivateFunction {
 
  private:
   void HandlePowerStates(
-      const std::vector<chromeos::CecServiceClient::PowerState>& power_states);
+      const std::vector<ash::CecServiceClient::PowerState>& power_states);
 };
 
 }  // namespace api

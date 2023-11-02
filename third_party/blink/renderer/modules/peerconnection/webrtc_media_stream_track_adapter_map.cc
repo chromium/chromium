@@ -1,4 +1,4 @@
-// Copyright (c) 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,7 +44,8 @@ WebRtcMediaStreamTrackAdapterMap::AdapterRef::~AdapterRef() {
         map_->local_track_adapters_.EraseByPrimary(
             adapter->track()->UniqueId());
       } else {
-        map_->remote_track_adapters_.EraseByPrimary(adapter->webrtc_track());
+        map_->remote_track_adapters_.EraseByPrimary(
+            adapter->webrtc_track().get());
       }
     }
   }
@@ -67,7 +68,7 @@ void WebRtcMediaStreamTrackAdapterMap::AdapterRef::InitializeOnMainThread() {
   if (type_ == WebRtcMediaStreamTrackAdapterMap::AdapterRef::Type::kRemote) {
     base::AutoLock scoped_lock(map_->lock_);
     if (!map_->remote_track_adapters_.FindBySecondary(track()->UniqueId())) {
-      map_->remote_track_adapters_.SetSecondaryKey(webrtc_track(),
+      map_->remote_track_adapters_.SetSecondaryKey(webrtc_track().get(),
                                                    track()->UniqueId());
     }
   }
@@ -134,7 +135,7 @@ WebRtcMediaStreamTrackAdapterMap::GetOrCreateLocalTrackAdapter(
   DCHECK(new_adapter->is_initialized());
   local_track_adapters_.Insert(component->UniqueId(), new_adapter);
   local_track_adapters_.SetSecondaryKey(component->UniqueId(),
-                                        new_adapter->webrtc_track());
+                                        new_adapter->webrtc_track().get());
   return base::WrapUnique(
       new AdapterRef(this, AdapterRef::Type::kLocal, new_adapter));
 }

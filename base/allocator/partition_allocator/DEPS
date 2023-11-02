@@ -1,58 +1,79 @@
-# It's planned that PartitionAlloc will be a stand-alone third party library
-# and dependencies need to be strictly controlled and minimized.
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# PartitionAlloc is planned to be extracted into a standalone library, and
+# therefore dependencies need to be strictly controlled and minimized.
+
+# Only these hosts are allowed for dependencies in this DEPS file.
+# This is a subset of chromium/src/DEPS's allowed_hosts.
+allowed_hosts = [
+  'chromium.googlesource.com',
+]
+
+vars = {
+  'chromium_git': 'https://chromium.googlesource.com',
+}
+
+deps = {
+  'partition_allocator/buildtools/clang_format/script':
+      Var('chromium_git') + '/external/github.com/llvm/llvm-project/clang/tools/clang-format.git',
+  'partition_allocator/buildtools/linux64': {
+    'packages': [
+      {
+        'package': 'gn/gn/linux-${{arch}}',
+        'version': 'latest',
+      }
+    ],
+    'dep_type': 'cipd',
+    'condition': 'host_os == "linux"',
+  },
+  'partition_allocator/buildtools/mac': {
+    'packages': [
+      {
+        'package': 'gn/gn/mac-${{arch}}',
+        'version': 'latest',
+      }
+    ],
+    'dep_type': 'cipd',
+    'condition': 'host_os == "mac"',
+  },
+  'partition_allocator/buildtools/win': {
+    'packages': [
+      {
+        'package': 'gn/gn/windows-amd64',
+        'version': 'latest',
+      }
+    ],
+    'dep_type': 'cipd',
+    'condition': 'host_os == "win"',
+  },
+}
 
 noparent = True
 
 include_rules = [
-    "+base/allocator/allocator_shim_default_dispatch_to_partition_alloc.h",
-    "+base/allocator/buildflags.h",
-    "+base/base_export.h",
-    "+base/bind.h",
-    "+base/bits.h",
-    "+base/callback.h",
-    "+base/check.h",
-    "+base/check_op.h",
-    "+base/compiler_specific.h",
-    "+base/cpu.h",
-    "+base/cxx17_backports.h",
-    "+base/dcheck_is_on.h",
-    "+base/debug/alias.h",
-    "+base/debug/proc_maps_linux.h",
-    "+base/fuchsia/fuchsia_logging.h",
-    "+base/gtest_prod_util.h",
-    "+base/immediate_crash.h",
-    "+base/lazy_instance.h",
-    "+base/location.h",
-    "+base/logging.h",
-    "+base/logging_buildflags.h",
-    "+base/mac/foundation_util.h",
-    "+base/mac/mac_util.h",
-    "+base/mac/scoped_cftyperef.h",
-    "+base/memory/nonscannable_memory.h",
-    "+base/memory/ref_counted.h",
-    "+base/memory/scoped_refptr.h",
-    "+base/memory/tagging.h",
-    "+base/no_destructor.h",
-    "+base/numerics/ranges.h",
-    "+base/posix/eintr_wrapper.h",
-    "+base/process/memory.h",
-    "+base/rand_util.h",
-    "+base/strings/stringprintf.h",
-    "+base/sys_byteorder.h",
-    "+base/system/sys_info.h",
-    "+base/test/bind.h",
-    "+base/test/gtest_util.h",
-    "+base/thread_annotations.h",
-    "+base/threading/platform_thread.h",
-    "+base/time/time.h",
-    "+base/time/time_override.h",
-    "+base/timer/lap_timer.h",
-    "+base/trace_event/base_tracing.h",
-    "+base/win/windows_types.h",
-    "+base/win/windows_version.h",
     "+build/build_config.h",
     "+build/buildflag.h",
-    "+build/chromecast_buildflags.h",
+    "+third_party/lss/linux_syscall_support.h",
+]
+
+specific_include_rules = {
+  ".*_(perf|unit)test\.cc$": [
+    "+base/allocator/allocator_shim_default_dispatch_to_partition_alloc.h",
+    "+base/debug/proc_maps_linux.h",
+    "+base/system/sys_info.h",
+    "+base/test/gtest_util.h",
+    "+base/timer/lap_timer.h",
+    "+base/win/windows_version.h",
+    "+testing/gmock/include/gmock/gmock.h",
     "+testing/gtest/include/gtest/gtest.h",
     "+testing/perf/perf_result_reporter.h",
-]
+  ],
+  "extended_api\.cc$": [
+    "+base/allocator/allocator_shim_default_dispatch_to_partition_alloc.h",
+  ],
+  "gtest_prod_util\.h$": [
+    "+testing/gtest/include/gtest/gtest_prod.h",
+  ],
+}

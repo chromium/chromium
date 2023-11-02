@@ -180,7 +180,7 @@ TEST(HashMapTest, RefPtrAsKey) {
   map.erase(raw_ptr);
   EXPECT_EQ(1, DummyRefCounted::ref_invokes_count_);
   EXPECT_TRUE(is_deleted);
-  EXPECT_TRUE(map.IsEmpty());
+  EXPECT_TRUE(map.empty());
 }
 
 TEST(HashMaptest, RemoveAdd) {
@@ -205,7 +205,7 @@ TEST(HashMaptest, RemoveAdd) {
   map.erase(1);
   EXPECT_EQ(1, DummyRefCounted::ref_invokes_count_);
   EXPECT_TRUE(is_deleted);
-  EXPECT_TRUE(map.IsEmpty());
+  EXPECT_TRUE(map.empty());
 
   // Add and remove until the deleted slot is reused.
   for (int i = 1; i < 100; i++) {
@@ -582,7 +582,7 @@ HashMap<int, int> ReturnOneTwoThreeMap() {
 
 TEST(HashMapTest, InitializerList) {
   HashMap<int, int> empty({});
-  EXPECT_TRUE(empty.IsEmpty());
+  EXPECT_TRUE(empty.empty());
 
   HashMap<int, int> one({{1, 11}});
   EXPECT_EQ(one.size(), 1u);
@@ -604,7 +604,7 @@ TEST(HashMapTest, InitializerList) {
   one_two_three.insert(9999, 99999);
 
   empty = {};
-  EXPECT_TRUE(empty.IsEmpty());
+  EXPECT_TRUE(empty.empty());
 
   one = {{1, 11}};
   EXPECT_EQ(one.size(), 1u);

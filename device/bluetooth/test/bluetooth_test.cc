@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -429,7 +429,7 @@ void BluetoothTestBase::ReentrantStartNotifySessionErrorCallback(
 
   if (error_in_reentrant) {
     SimulateGattNotifySessionStartError(
-        characteristic, BluetoothGattService::GATT_ERROR_UNKNOWN);
+        characteristic, BluetoothGattService::GattErrorCode::kUnknown);
     characteristic->StartNotifySession(GetNotifyCallback(Call::NOT_EXPECTED),
                                        GetGattErrorCallback(Call::EXPECTED));
   } else {

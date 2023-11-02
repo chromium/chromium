@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <string>
 
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension_set.h"
@@ -39,7 +38,7 @@ em::Extension_InstallType GetExtensionInstallType(
       return em::Extension_InstallType_TYPE_ADMIN;
     default:
       NOTREACHED();
-      FALLTHROUGH;
+      [[fallthrough]];
     case ManifestLocation::kInvalidLocation:
     case ManifestLocation::kComponent:
     case ManifestLocation::kExternalComponent:
@@ -86,9 +85,7 @@ void AddExtensions(const extensions::ExtensionSet& extensions,
     AddPermission(extension.get(), extension_info);
     AddHostPermission(extension.get(), extension_info);
     extension_info->set_from_webstore(extension->from_webstore());
-    if (base::FeatureList::IsEnabled(
-            features::kEnterpriseReportingExtensionManifestVersion))
-      extension_info->set_manifest_version(extension->manifest_version());
+    extension_info->set_manifest_version(extension->manifest_version());
   }
 }
 

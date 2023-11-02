@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/time/time.h"
-#include "chromeos/network/geolocation_handler.h"
-#include "chromeos/network/network_handler.h"
+#include "chromeos/ash/components/network/geolocation_handler.h"
+#include "chromeos/ash/components/network/network_handler.h"
 #include "ui/base/clipboard/clipboard.h"
 
 namespace crosapi {
@@ -21,7 +21,7 @@ void DoWifiScanTaskOnNetworkHandlerThread(
   std::vector<mojom::AccessPointDataPtr> ap_data_vector;
 
   // If wifi isn't enabled, we've effectively completed the task.
-  chromeos::GeolocationHandler* const geolocation_handler =
+  ash::GeolocationHandler* const geolocation_handler =
       ash::NetworkHandler::Get()->geolocation_handler();
   if (!geolocation_handler || !geolocation_handler->wifi_enabled()) {
     std::move(callback).Run(true, true, base::TimeDelta(),
@@ -29,7 +29,7 @@ void DoWifiScanTaskOnNetworkHandlerThread(
     return;
   }
 
-  chromeos::WifiAccessPointVector access_points;
+  ash::WifiAccessPointVector access_points;
   int64_t age_ms = 0;
   if (!geolocation_handler->GetWifiAccessPoints(&access_points, &age_ms)) {
     std::move(callback).Run(true, false, base::TimeDelta(),

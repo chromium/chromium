@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -124,13 +124,13 @@ const struct wl_shell_surface_interface shell_surface_implementation = {
 
 uint32_t HandleShellSurfaceConfigureCallback(
     wl_resource* resource,
-    const gfx::Size& size,
+    const gfx::Rect& bounds,
     chromeos::WindowStateType state_type,
     bool resizing,
     bool activated,
     const gfx::Vector2d& origin_offset) {
   wl_shell_surface_send_configure(resource, WL_SHELL_SURFACE_RESIZE_NONE,
-                                  size.width(), size.height());
+                                  bounds.width(), bounds.height());
   wl_client_flush(wl_resource_get_client(resource));
   return 0;
 }
@@ -154,6 +154,8 @@ void shell_get_shell_surface(wl_client* client,
   // Shell surfaces are initially disabled and needs to be explicitly mapped
   // before they are enabled and can become visible.
   shell_surface->SetEnabled(false);
+
+  shell_surface->SetSecurityDelegate(GetSecurityDelegate(client));
 
   shell_surface->set_configure_callback(
       base::BindRepeating(&HandleShellSurfaceConfigureCallback,

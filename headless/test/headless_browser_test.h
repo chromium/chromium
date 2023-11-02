@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "content/public/test/browser_test_base.h"
 #include "headless/public/devtools/domains/network.h"
@@ -48,7 +49,7 @@ class LoadObserver : public page::Observer, public network::Observer {
 
  private:
   base::OnceClosure callback_;
-  HeadlessDevToolsClient* devtools_client_;  // Not owned.
+  raw_ptr<HeadlessDevToolsClient> devtools_client_;  // Not owned.
 
   bool navigation_succeeded_;
 };
@@ -71,7 +72,7 @@ class HeadlessBrowserTest : public content::BrowserTestBase {
   void SetUp() override;
   void PreRunTestOnMainThread() override;
   void PostRunTestOnMainThread() override;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   void CreatedBrowserMainParts(content::BrowserMainParts* parts) override;
 #endif
 
@@ -162,8 +163,8 @@ class HeadlessAsyncDevTooledBrowserTest : public HeadlessBrowserTest,
  protected:
   void RunTest();
 
-  HeadlessBrowserContext* browser_context_;  // Not owned.
-  HeadlessWebContents* web_contents_;
+  raw_ptr<HeadlessBrowserContext> browser_context_;  // Not owned.
+  raw_ptr<HeadlessWebContents> web_contents_;
   std::unique_ptr<HeadlessDevToolsClient> devtools_client_;
   std::unique_ptr<HeadlessDevToolsClient> browser_devtools_client_;
   bool render_process_exited_;

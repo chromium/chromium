@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
@@ -19,6 +20,7 @@
 #include "base/threading/simple_thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/clock.h"
+#include "base/time/time.h"
 #include "media/base/fake_text_track_stream.h"
 #include "media/base/media_util.h"
 #include "media/base/mock_filters.h"
@@ -188,6 +190,7 @@ class PipelineImplTest : public ::testing::Test {
   void SetRendererPostStartExpectations() {
     EXPECT_CALL(*renderer_, SetPlaybackRate(0.0));
     EXPECT_CALL(*renderer_, SetVolume(1.0f));
+    EXPECT_CALL(*renderer_, SetWasPlayedWithUserActivation(false));
     EXPECT_CALL(*renderer_, StartPlayingFrom(start_time_))
         .WillOnce(SetBufferingState(&renderer_client_, BUFFERING_HAVE_ENOUGH,
                                     BUFFERING_CHANGE_REASON_UNKNOWN));
@@ -208,7 +211,7 @@ class PipelineImplTest : public ::testing::Test {
       PipelineStatus start_status,
       Pipeline::StartType start_type = Pipeline::StartType::kNormal,
       PostStartStatus post_start_status = PostStartStatus::kNormal) {
-    EXPECT_CALL(callbacks_, OnStart(start_status));
+    EXPECT_CALL(callbacks_, OnStart(SameStatusCode(start_status)));
 
     if (start_status == PIPELINE_OK) {
       EXPECT_CALL(callbacks_, OnMetadata(_)).WillOnce(SaveArg<0>(&metadata_));
@@ -271,7 +274,7 @@ class PipelineImplTest : public ::testing::Test {
                                     BUFFERING_CHANGE_REASON_UNKNOWN));
 
     // We expect a successful seek callback followed by a buffering update.
-    EXPECT_CALL(callbacks_, OnSeek(PIPELINE_OK));
+    EXPECT_CALL(callbacks_, OnSeek(HasStatusCode(PIPELINE_OK)));
     EXPECT_CALL(callbacks_,
                 OnBufferingStateChange(BUFFERING_HAVE_ENOUGH,
                                        BUFFERING_CHANGE_REASON_UNKNOWN));
@@ -286,7 +289,7 @@ class PipelineImplTest : public ::testing::Test {
   void ExpectSuspend() {
     EXPECT_CALL(*demuxer_, AbortPendingReads());
     EXPECT_CALL(*renderer_, SetPlaybackRate(0));
-    EXPECT_CALL(callbacks_, OnSuspend(PIPELINE_OK));
+    EXPECT_CALL(callbacks_, OnSuspend(HasStatusCode(PIPELINE_OK)));
   }
 
   void DoSuspend() {
@@ -314,13 +317,14 @@ class PipelineImplTest : public ::testing::Test {
         .WillOnce(RunOnceCallback<1>(PIPELINE_OK));
     EXPECT_CALL(*renderer_, SetPlaybackRate(_));
     EXPECT_CALL(*renderer_, SetVolume(_));
+    EXPECT_CALL(*renderer_, SetWasPlayedWithUserActivation(false));
     EXPECT_CALL(*renderer_, StartPlayingFrom(seek_time))
         .WillOnce(SetBufferingState(&renderer_client_, BUFFERING_HAVE_ENOUGH,
                                     BUFFERING_CHANGE_REASON_UNKNOWN));
     EXPECT_CALL(callbacks_,
                 OnBufferingStateChange(BUFFERING_HAVE_ENOUGH,
                                        BUFFERING_CHANGE_REASON_UNKNOWN));
-    EXPECT_CALL(callbacks_, OnResume(PIPELINE_OK));
+    EXPECT_CALL(callbacks_, OnResume(HasStatusCode(PIPELINE_OK)));
   }
 
   void DoResume(const base::TimeDelta& seek_time) {
@@ -361,7 +365,7 @@ class PipelineImplTest : public ::testing::Test {
   std::unique_ptr<StrictMock<MockDemuxer>> demuxer_;
   DemuxerHost* demuxer_host_;
   std::unique_ptr<StrictMock<MockRenderer>> scoped_renderer_;
-  StrictMock<MockRenderer>* renderer_;
+  raw_ptr<StrictMock<MockRenderer>> renderer_;
   std::unique_ptr<StrictMock<MockDemuxerStream>> audio_stream_;
   std::unique_ptr<StrictMock<MockDemuxerStream>> video_stream_;
   std::vector<DemuxerStream*> streams_;
@@ -551,7 +555,7 @@ TEST_F(PipelineImplTest, EncryptedStream_SetCdmAfterStart) {
   run_loop.Run();
 
   ExpectRendererInitialization();
-  EXPECT_CALL(callbacks_, OnStart(PIPELINE_OK));
+  EXPECT_CALL(callbacks_, OnStart(HasStatusCode(PIPELINE_OK)));
   SetRendererPostStartExpectations();
   SetCdmAndExpect(true);
 }
@@ -582,7 +586,7 @@ TEST_F(PipelineImplTest, SeekAfterError) {
   OnDemuxerError();
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_CALL(callbacks_, OnSeek(PIPELINE_ERROR_INVALID_STATE));
+  EXPECT_CALL(callbacks_, OnSeek(HasStatusCode(PIPELINE_ERROR_INVALID_STATE)));
   pipeline_->Seek(
       base::Milliseconds(100),
       base::BindOnce(&CallbackHelper::OnSeek, base::Unretained(&callbacks_)));
@@ -645,7 +649,8 @@ TEST_F(PipelineImplTest, SetVolumeDuringStartup) {
   // The audio renderer should receive two calls to SetVolume().
   float expected = 0.5f;
   EXPECT_CALL(*renderer_, SetVolume(expected)).Times(2);
-  EXPECT_CALL(callbacks_, OnStart(PIPELINE_OK));
+  EXPECT_CALL(*renderer_, SetWasPlayedWithUserActivation(false));
+  EXPECT_CALL(callbacks_, OnStart(HasStatusCode(PIPELINE_OK)));
   EXPECT_CALL(callbacks_, OnMetadata(_))
       .WillOnce(RunOnceClosure(base::BindOnce(&PipelineImpl::SetVolume,
                                               base::Unretained(pipeline_.get()),
@@ -790,7 +795,7 @@ TEST_F(PipelineImplTest, DemuxerErrorDuringSeek) {
 
   pipeline_->Seek(seek_time, base::BindOnce(&CallbackHelper::OnSeek,
                                             base::Unretained(&callbacks_)));
-  EXPECT_CALL(callbacks_, OnSeek(PIPELINE_ERROR_READ))
+  EXPECT_CALL(callbacks_, OnSeek(HasStatusCode(PIPELINE_ERROR_READ)))
       .WillOnce(Stop(pipeline_.get()));
   base::RunLoop().RunUntilIdle();
 }
@@ -809,7 +814,7 @@ TEST_F(PipelineImplTest, PipelineErrorDuringSeek) {
   EXPECT_CALL(*demuxer_, AbortPendingReads());
   EXPECT_CALL(*demuxer_, OnSeek(seek_time, _))
       .WillOnce(RunOnceCallback<1>(PIPELINE_OK));
-  EXPECT_CALL(callbacks_, OnSeek(PIPELINE_ERROR_DECODE));
+  EXPECT_CALL(callbacks_, OnSeek(HasStatusCode(PIPELINE_ERROR_DECODE)));
 
   // Triggers pipeline error during pending seek.
   pipeline_->Seek(seek_time, base::BindOnce(&CallbackHelper::OnSeek,
@@ -826,7 +831,7 @@ TEST_F(PipelineImplTest, PipelineErrorDuringSuspend) {
   // Set expectations for suspend.
   EXPECT_CALL(*demuxer_, AbortPendingReads());
   EXPECT_CALL(*renderer_, SetPlaybackRate(0));
-  EXPECT_CALL(callbacks_, OnSuspend(PIPELINE_ERROR_DECODE));
+  EXPECT_CALL(callbacks_, OnSuspend(HasStatusCode(PIPELINE_ERROR_DECODE)));
 
   // Triggers pipeline error during pending suspend. The order matters for
   // reproducing crbug.com/1250636. Otherwise OnError() is ignored if already in
@@ -938,7 +943,7 @@ TEST_F(PipelineImplTest, RendererErrorsReset) {
   StartPipelineAndExpect(PIPELINE_OK);
 
   // Trigger two errors. The second error will be ignored.
-  EXPECT_CALL(callbacks_, OnError(PIPELINE_ERROR_READ)).Times(1);
+  EXPECT_CALL(callbacks_, OnError(HasStatusCode(PIPELINE_ERROR_READ))).Times(1);
   renderer_client_->OnError(PIPELINE_ERROR_READ);
   renderer_client_->OnError(PIPELINE_ERROR_READ);
 
@@ -955,7 +960,7 @@ TEST_F(PipelineImplTest, RendererErrorsReset) {
   StartPipelineAndExpect(PIPELINE_OK);
 
   // New errors should propagate and not be ignored.
-  EXPECT_CALL(callbacks_, OnError(PIPELINE_ERROR_READ)).Times(1);
+  EXPECT_CALL(callbacks_, OnError(HasStatusCode(PIPELINE_ERROR_READ))).Times(1);
   renderer_client_->OnError(PIPELINE_ERROR_READ);
 
   base::RunLoop().RunUntilIdle();
@@ -1035,7 +1040,8 @@ class PipelineTeardownTest : public PipelineImplTest {
       } else {
         EXPECT_CALL(*demuxer_, OnInitialize(_, _))
             .WillOnce(PostCallback<1>(DEMUXER_ERROR_COULD_NOT_OPEN));
-        EXPECT_CALL(callbacks_, OnStart(DEMUXER_ERROR_COULD_NOT_OPEN))
+        EXPECT_CALL(callbacks_,
+                    OnStart(HasStatusCode(DEMUXER_ERROR_COULD_NOT_OPEN)))
             .WillOnce(Stop(pipeline_.get()));
       }
 
@@ -1047,6 +1053,7 @@ class PipelineTeardownTest : public PipelineImplTest {
     CreateVideoStream();
     SetDemuxerExpectations(base::Seconds(3000));
     EXPECT_CALL(*renderer_, SetVolume(1.0f));
+    EXPECT_CALL(*renderer_, SetWasPlayedWithUserActivation(false));
 
     if (state == kInitRenderer) {
       if (stop_or_error == kStop) {
@@ -1057,7 +1064,9 @@ class PipelineTeardownTest : public PipelineImplTest {
       } else {
         EXPECT_CALL(*renderer_, OnInitialize(_, _, _))
             .WillOnce(PostCallback<2>(PIPELINE_ERROR_INITIALIZATION_FAILED));
-        EXPECT_CALL(callbacks_, OnStart(PIPELINE_ERROR_INITIALIZATION_FAILED))
+        EXPECT_CALL(
+            callbacks_,
+            OnStart(HasStatusCode(PIPELINE_ERROR_INITIALIZATION_FAILED)))
             .WillOnce(Stop(pipeline_.get()));
       }
 
@@ -1071,7 +1080,7 @@ class PipelineTeardownTest : public PipelineImplTest {
             DoAll(SaveArg<1>(&renderer_client_), PostCallback<2>(PIPELINE_OK)));
 
     // If we get here it's a successful initialization.
-    EXPECT_CALL(callbacks_, OnStart(PIPELINE_OK));
+    EXPECT_CALL(callbacks_, OnStart(HasStatusCode(PIPELINE_OK)));
     EXPECT_CALL(callbacks_, OnMetadata(_));
 
     EXPECT_CALL(*renderer_, SetPlaybackRate(0.0));
@@ -1107,7 +1116,7 @@ class PipelineTeardownTest : public PipelineImplTest {
         EXPECT_CALL(*renderer_, OnFlush(_))
             .WillOnce(DoAll(SetError(&renderer_client_, PIPELINE_ERROR_READ),
                             RunOnceClosure<0>()));
-        EXPECT_CALL(callbacks_, OnSeek(PIPELINE_ERROR_READ))
+        EXPECT_CALL(callbacks_, OnSeek(HasStatusCode(PIPELINE_ERROR_READ)))
             .WillOnce(Stop(pipeline_.get()));
       }
       return;
@@ -1124,7 +1133,7 @@ class PipelineTeardownTest : public PipelineImplTest {
       } else {
         EXPECT_CALL(*demuxer_, OnSeek(_, _))
             .WillOnce(RunOnceCallback<1>(PIPELINE_ERROR_READ));
-        EXPECT_CALL(callbacks_, OnSeek(PIPELINE_ERROR_READ))
+        EXPECT_CALL(callbacks_, OnSeek(HasStatusCode(PIPELINE_ERROR_READ)))
             .WillOnce(Stop(pipeline_.get()));
       }
       return;
@@ -1155,7 +1164,7 @@ class PipelineTeardownTest : public PipelineImplTest {
   void SetSuspendExpectations(TeardownState state, StopOrError stop_or_error) {
     EXPECT_CALL(*renderer_, SetPlaybackRate(0));
     EXPECT_CALL(*demuxer_, AbortPendingReads());
-    EXPECT_CALL(callbacks_, OnSuspend(PIPELINE_OK));
+    EXPECT_CALL(callbacks_, OnSuspend(HasStatusCode(PIPELINE_OK)));
     if (state == kResuming) {
       if (stop_or_error == kStop) {
         EXPECT_CALL(*demuxer_, OnSeek(_, _))
@@ -1165,7 +1174,7 @@ class PipelineTeardownTest : public PipelineImplTest {
       } else {
         EXPECT_CALL(*demuxer_, OnSeek(_, _))
             .WillOnce(RunOnceCallback<1>(PIPELINE_ERROR_READ));
-        EXPECT_CALL(callbacks_, OnResume(PIPELINE_ERROR_READ))
+        EXPECT_CALL(callbacks_, OnResume(HasStatusCode(PIPELINE_ERROR_READ)))
             .WillOnce(Stop(pipeline_.get()));
       }
     } else if (state != kSuspended && state != kSuspending) {
@@ -1183,7 +1192,7 @@ class PipelineTeardownTest : public PipelineImplTest {
       case kError:
         if (expect_errors) {
           EXPECT_CALL(*demuxer_, Stop());
-          EXPECT_CALL(callbacks_, OnError(PIPELINE_ERROR_READ))
+          EXPECT_CALL(callbacks_, OnError(HasStatusCode(PIPELINE_ERROR_READ)))
               .WillOnce(Stop(pipeline_.get()));
         }
         renderer_client_->OnError(PIPELINE_ERROR_READ);
@@ -1192,7 +1201,7 @@ class PipelineTeardownTest : public PipelineImplTest {
       case kErrorAndStop:
         EXPECT_CALL(*demuxer_, Stop());
         if (expect_errors)
-          EXPECT_CALL(callbacks_, OnError(PIPELINE_ERROR_READ));
+          EXPECT_CALL(callbacks_, OnError(HasStatusCode(PIPELINE_ERROR_READ)));
         renderer_client_->OnError(PIPELINE_ERROR_READ);
         base::RunLoop().RunUntilIdle();
         pipeline_->Stop();

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,9 @@
 #include "base/files/file_path.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
+#include "base/strings/string_piece.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/icu/source/common/unicode/uchar.h"
 #include "third_party/icu/source/common/unicode/utf16.h"
@@ -175,7 +177,7 @@ class FallbackFontEntry {
   FontRenderParams font_params_;
 
   // Font code points coverage.
-  FcCharSet* charset_;
+  raw_ptr<FcCharSet> charset_;
 };
 
 using FallbackFontEntries = std::vector<FallbackFontEntry>;
@@ -414,7 +416,7 @@ class CachedFont {
   FallbackFontData fallback_font_;
   // supported_characters_ is owned by the parent
   // FcFontSet and should never be freed.
-  FcCharSet* supported_characters_;
+  raw_ptr<FcCharSet> supported_characters_;
 };
 
 class CachedFontSet {
@@ -501,7 +503,7 @@ class CachedFontSet {
     }
   }
 
-  FcFontSet* font_set_;  // Owned by this object.
+  raw_ptr<FcFontSet> font_set_;  // Owned by this object.
   // CachedFont has a FcCharset* which points into the FcFontSet.
   // If the FcFontSet is ever destroyed, the fallback list
   // must be cleared first.

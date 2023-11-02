@@ -1,12 +1,13 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_WEBUI_CONNECTORS_INTERNALS_CONNECTORS_INTERNALS_PAGE_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_CONNECTORS_INTERNALS_CONNECTORS_INTERNALS_PAGE_HANDLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/enterprise/connectors/device_trust/attestation/common/signals_type.h"
+#include "base/values.h"
 #include "chrome/browser/ui/webui/connectors_internals/connectors_internals.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -32,14 +33,14 @@ class ConnectorsInternalsPageHandler
 
  private:
   // connectors_internals::mojom::ConnectorsInternalsPageHandler
-  void GetZeroTrustState(GetZeroTrustStateCallback callback) override;
+  void GetDeviceTrustState(GetDeviceTrustStateCallback callback) override;
 
-  void OnSignalsCollected(GetZeroTrustStateCallback callback,
+  void OnSignalsCollected(GetDeviceTrustStateCallback callback,
                           bool is_device_trust_enabled,
-                          std::unique_ptr<SignalsType> signals);
+                          const base::Value::Dict signals);
 
   mojo::Receiver<connectors_internals::mojom::PageHandler> receiver_;
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   base::WeakPtrFactory<ConnectorsInternalsPageHandler> weak_ptr_factory_{this};
 };

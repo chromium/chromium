@@ -26,7 +26,6 @@
 <translation id="225614027745146050">Вітаем</translation>
 <translation id="2320166752086256636">Схаваць клавіятуру</translation>
 <translation id="2329392777730037872">Не ўдалося адкрыць URL-адрас <ph name="URL" /> на кліенцкай прыладзе.</translation>
-<translation id="2333212046079545895">Аўтарскае права належыць Google LLC, 2021. Усе правы абаронены.</translation>
 <translation id="2359808026110333948">Працягнуць</translation>
 <translation id="2366718077645204424">Не ўдалося звязацца з хостам. Магчыма, праблема з канфігурацыяй сеткі, якой вы карыстаецеся.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" /> Апошні выхад у інтэрнэт: <ph name="RELATIVE_TIMESTAMP" />.</translation>
@@ -37,6 +36,7 @@
 <translation id="2599300881200251572">Гэты сэрвіс уключае ўваходныя падключэнні кліентаў Аддаленага працоўнага стала Chrome.</translation>
 <translation id="2647232381348739934">Сэрвіс Chromoting</translation>
 <translation id="2676780859508944670">Ідзе апрацоўка…</translation>
+<translation id="2692522824157224199">Аўтарскае права належыць Google LLC, 2022. Усе правы абаронены.</translation>
 <translation id="2699970397166997657">Chromoting</translation>
 <translation id="2758123043070977469">Падчас аўтэнтыфікацыі адбылася памылка, увайдзіце ва ўліковы запіс яшчэ раз.</translation>
 <translation id="2803375539583399270">Увядзіце PIN-код</translation>
@@ -73,10 +73,10 @@
 <translation id="4257751272692708833">Праграма для пераадрасацыі URL-адраса <ph name="PRODUCT_NAME" /></translation>
 <translation id="4277736576214464567">Несапраўдны код доступу. Паўтарыце спробу.</translation>
 <translation id="4281844954008187215">Умовы выкарыстання</translation>
+<translation id="4372650392690220936">Аўтарскае права: стваральнікі Chromium, 2022. Усе правы абаронены.</translation>
 <translation id="4405930547258349619">Асноўная бібліятэка</translation>
 <translation id="443560535555262820">Адкрыць параметры спецыяльных магчымасцей</translation>
 <translation id="4450893287417543264">Больш не паказваць</translation>
-<translation id="4512952200932940229">Аўтарскія правы: стваральнікі Chromium, 2021. Усе правы абаронены.</translation>
 <translation id="4513946894732546136">Водгук</translation>
 <translation id="4563926062592110512">Кліент адключаны: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> мае няправільную канфігурацыю. Выберыце іншы стандартны вэб-браўзер і яшчэ раз уключыце пераадрасацыю URL-адрасоў.</translation>

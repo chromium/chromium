@@ -47,7 +47,8 @@ CanvasRenderingContext::CanvasRenderingContext(
       canvas_rendering_type_(canvas_rendering_API) {}
 
 SkColorInfo CanvasRenderingContext::CanvasRenderingContextSkColorInfo() const {
-  return CanvasRenderingContextColorParams().GetSkColorInfo();
+  return SkColorInfo(kN32_SkColorType, kPremul_SkAlphaType,
+                     SkColorSpace::MakeSRGB());
 }
 
 void CanvasRenderingContext::Dispose() {
@@ -65,6 +66,10 @@ void CanvasRenderingContext::Dispose() {
   }
 }
 
+NoAllocDirectCallHost* CanvasRenderingContext::AsNoAllocDirectCallHost() {
+  return nullptr;
+}
+
 void CanvasRenderingContext::DidDraw(
     const SkIRect& dirty_rect,
     CanvasPerformanceMonitor::DrawType draw_type) {
@@ -77,6 +82,10 @@ void CanvasRenderingContext::DidDraw(
 
   monitor.CurrentTaskDrawsToContext(this);
   did_draw_in_current_task_ = true;
+  // We need to store whether the document is being printed because the
+  // document may exit printing state by the time DidProcessTast is called.
+  // This is an issue with beforeprint event listeners.
+  did_print_in_current_task_ = Host()->IsPrinting();
   Thread::Current()->AddTaskObserver(this);
 }
 
@@ -88,7 +97,8 @@ void CanvasRenderingContext::DidProcessTask(
   // at which the current frame may be considered complete.
   if (Host())
     Host()->PreFinalizeFrame();
-  FinalizeFrame();
+  FinalizeFrame(did_print_in_current_task_);
+  did_print_in_current_task_ = false;
   if (Host())
     Host()->PostFinalizeFrame();
 }

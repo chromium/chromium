@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,9 @@
 #include <algorithm>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/constants/tray_background_view_catalog.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
+#include "ash/metrics/user_metrics_recorder.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
@@ -37,15 +39,19 @@ gfx::ImageSkia GetIconImage() {
 
 }  // namespace
 
-VirtualKeyboardTray::VirtualKeyboardTray(Shelf* shelf)
-    : TrayBackgroundView(shelf), icon_(new views::ImageView), shelf_(shelf) {
+VirtualKeyboardTray::VirtualKeyboardTray(
+    Shelf* shelf,
+    TrayBackgroundViewCatalogName catalog_name)
+    : TrayBackgroundView(shelf, catalog_name),
+      icon_(new views::ImageView),
+      shelf_(shelf) {
   const gfx::ImageSkia image = GetIconImage();
   icon_->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_ASH_STATUS_TRAY_ACCESSIBILITY_VIRTUAL_KEYBOARD));
   const int vertical_padding = (kTrayItemSize - image.height()) / 2;
   const int horizontal_padding = (kTrayItemSize - image.width()) / 2;
   icon_->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets(vertical_padding, horizontal_padding)));
+      gfx::Insets::VH(vertical_padding, horizontal_padding)));
   tray_container()->AddChildView(icon_);
 
   // The Shell may not exist in some unit tests.

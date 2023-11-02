@@ -1,6 +1,10 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+import {Channel} from './channel.js';
+import {PostMessageChannel} from './post_message_channel.js';
+import {WebviewScrollShadowsHelper, WebviewScrollShadowsHelperConstructor} from './scroll_helper_injected.js';
 
 /**
  * @fileoverview
@@ -29,7 +33,7 @@ APICallForwarder.prototype = {
 
   /**
    * Initialize the API call forwarder.
-   * @param {!Object} channel Channel to which API calls should be forwarded.
+   * @param {!Channel} channel Channel to which API calls should be forwarded.
    */
   init(channel) {
     this.channel_ = channel;
@@ -40,9 +44,9 @@ APICallForwarder.prototype = {
   },
 
   onMessage_(event) {
-    if (event.source != window || typeof event.data != 'object' ||
+    if (event.source !== window || typeof event.data !== 'object' ||
         !event.data.hasOwnProperty('type') ||
-        event.data.type != 'gaia_saml_api') {
+        event.data.type !== 'gaia_saml_api') {
       return;
     }
     // Forward API calls to the background script.
@@ -53,7 +57,7 @@ APICallForwarder.prototype = {
     // Forward API responses to the SAML page.
     window.postMessage(
         {type: 'gaia_saml_api_reply', response: msg.response}, '/');
-  }
+  },
 };
 
 /**
@@ -99,7 +103,7 @@ PasswordInputScraper.prototype = {
     this.passwordFieldsObserver = new MutationObserver(function(mutations) {
       mutations.forEach(function(mutation) {
         Array.prototype.forEach.call(mutation.addedNodes, function(addedNode) {
-          if (addedNode.nodeType != Node.ELEMENT_NODE) {
+          if (addedNode.nodeType !== Node.ELEMENT_NODE) {
             return;
           }
 
@@ -135,7 +139,7 @@ PasswordInputScraper.prototype = {
     const existing = this.passwordFields_.filter(function(element) {
       return element === passwordField;
     });
-    if (existing.length != 0) {
+    if (existing.length !== 0) {
       return;
     }
 
@@ -153,7 +157,7 @@ PasswordInputScraper.prototype = {
    */
   maybeSendUpdatedPassword(index, fieldId) {
     const newValue = this.passwordFields_[index].value;
-    if (newValue == this.passwordValues_[index]) {
+    if (newValue === this.passwordValues_[index]) {
       return;
     }
 
@@ -176,7 +180,7 @@ PasswordInputScraper.prototype = {
    */
   onPasswordChanged_(index, fieldId) {
     this.maybeSendUpdatedPassword(index, fieldId);
-  }
+  },
 };
 
 function onGetSAMLFlag(channel, isSAMLPage) {
@@ -192,9 +196,9 @@ function onGetSAMLFlag(channel, isSAMLPage) {
     passwordScraper.init(channel, pageURL, document.documentElement);
   };
 
-  if (document.readyState == 'loading') {
+  if (document.readyState === 'loading') {
     window.addEventListener('readystatechange', function listener(event) {
-      if (document.readyState == 'loading') {
+      if (document.readyState === 'loading') {
         return;
       }
       initPasswordScraper();

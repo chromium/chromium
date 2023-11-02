@@ -28,9 +28,7 @@
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/fdlibm/ieee754.h"
 
-namespace blink {
-
-namespace audio_utilities {
+namespace blink::audio_utilities {
 
 float DecibelsToLinear(float decibels) {
   return powf(10, 0.05f * decibels);
@@ -134,6 +132,4 @@ bool IsPowerOfTwo(size_t x) {
   return x > 0 && ((x & (x - 1)) == 0);
 }
 
-}  // namespace audio_utilities
-
-}  // namespace blink
+}  // namespace blink::audio_utilities

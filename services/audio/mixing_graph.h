@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -82,9 +82,11 @@ class MixingGraph : public media::AudioOutputStream::AudioSourceCallback {
       const media::AudioParameters& params) = 0;
 
  protected:
-  // Adds input to the graph. To be called by Input::Start().
+  friend class SyncMixingGraphInput;
+
+  // Adds an input to the graph. To be called by Input::Start().
   virtual void AddInput(Input* node) = 0;
-  // Removes input from the graph. To be called by Input::Stop().
+  // Removes an input from the graph. To be called by Input::Stop().
   virtual void RemoveInput(Input* node) = 0;
 };
 

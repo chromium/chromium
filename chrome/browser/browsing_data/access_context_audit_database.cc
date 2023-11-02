@@ -1,12 +1,13 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/browsing_data/access_context_audit_database.h"
 
+#include <tuple>
+
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "components/browsing_data/core/features.h"
@@ -17,6 +18,7 @@
 #include "sql/meta_table.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace {
 
@@ -43,7 +45,7 @@ void DatabaseErrorCallback(sql::Database* db,
     // or hardware issues, not coding errors at the client level, so displaying
     // the error would probably lead to confusion.  The ignored call signals the
     // test-expectation framework that the error was handled.
-    ignore_result(sql::Database::IsExpectedSqliteError(extended_error));
+    std::ignore = sql::Database::IsExpectedSqliteError(extended_error);
     return;
   }
 
@@ -733,7 +735,7 @@ AccessContextAuditDatabase::GetAllRecords() {
 
 void AccessContextAuditDatabase::RemoveStorageApiRecords(
     const std::set<StorageAPIType>& storage_api_types,
-    base::RepeatingCallback<bool(const url::Origin&)> origin_matcher,
+    content::StoragePartition::StorageKeyMatcherFunction storage_key_matcher,
     base::Time begin,
     base::Time end) {
   sql::Transaction transaction(&db_);
@@ -762,7 +764,8 @@ void AccessContextAuditDatabase::RemoveStorageApiRecords(
     auto origin = url::Origin::Create(GURL(select_storage_api.ColumnString(0)));
     auto type = static_cast<StorageAPIType>(select_storage_api.ColumnInt(1));
     if (storage_api_types.count(type) &&
-        (!origin_matcher || origin_matcher.Run(origin))) {
+        (!storage_key_matcher ||
+         storage_key_matcher.Run(blink::StorageKey(origin)))) {
       origin_type_pairs_for_removal.emplace_back(origin, type);
     }
   }

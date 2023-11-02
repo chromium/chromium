@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,13 +11,18 @@
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/font_util.h"
 #include "ui/gfx/render_text.h"
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#include "third_party/test_fonts/fontconfig/fontconfig_util_linux.h"
+#endif
 
 namespace {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const char kFontDescription[] = "Segoe UI, 13px";
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
 const char kFontDescription[] = "serif, 13px";
 #else
 const char kFontDescription[] = "sans, 13px";
@@ -31,6 +36,11 @@ struct Environment {
     logging::SetMinLogLevel(logging::LOG_FATAL);
 
     CHECK(base::i18n::InitializeICU());
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+    test_fonts::SetUpFontconfig();
+#endif
+    gfx::InitializeFonts();
     gfx::FontList::SetDefaultFontDescription(kFontDescription);
   }
 

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,11 +42,13 @@ TEST_F(DummySegmentationPlatformServiceTest, GetSelectedSegment) {
   SegmentSelectionResult expected;
   base::RunLoop loop;
   segmentation_platform_service_->GetSelectedSegment(
-      "some_key",
+      "test_key",
       base::BindOnce(
           &DummySegmentationPlatformServiceTest::OnGetSelectedSegment,
           base::Unretained(this), loop.QuitClosure(), expected));
   loop.Run();
+  ASSERT_EQ(expected,
+            segmentation_platform_service_->GetCachedSegmentResult("test_key"));
 }
 
 }  // namespace segmentation_platform

@@ -1,8 +1,10 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-assert(is_chromeos, "Firmware Update App is Chrome OS only")
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "Firware update App is ash-chrome only")
 
 static_library("firmware_update_ui") {
   sources = [
@@ -13,10 +15,14 @@ static_library("firmware_update_ui") {
   ]
 
   deps = [
+    "//ash/components/fwupd:fwupd",
+    "//ash/webui/firmware_update_ui/mojom",
     "//ash/webui/resources:firmware_update_app_resources",
+    "//chromeos/strings/",
     "//content/public/browser",
+    "//dbus",
     "//ui/resources:webui_generated_resources_grd_grit",
-    "//ui/resources:webui_resources_grd_grit",
+    "//ui/web_dialogs:web_dialogs",
     "//ui/webui",
   ]
 }

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,8 +13,11 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_reauth_dialogs.h"
-#include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_start_reauth_ui.h"
+#include "chrome/browser/ui/webui/ash/in_session_password_change/lock_screen_captive_portal_dialog.h"
+#include "chrome/browser/ui/webui/ash/in_session_password_change/lock_screen_network_dialog.h"
+#include "chrome/browser/ui/webui/ash/in_session_password_change/lock_screen_network_ui.h"
+#include "chrome/browser/ui/webui/ash/in_session_password_change/lock_screen_reauth_dialogs.h"
+#include "chrome/browser/ui/webui/ash/in_session_password_change/lock_screen_start_reauth_ui.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/test/browser_test_utils.h"
@@ -23,11 +26,29 @@
 namespace ash {
 
 namespace {
+// Main dialog
 const test::UIPath kSamlContainer = {"main-element", "body"};
 const test::UIPath kMainVerifyButton = {"main-element",
                                         "nextButtonVerifyScreen"};
+const test::UIPath kMainCancelButton = {"main-element",
+                                        "cancelButtonVerifyScreen"};
+const test::UIPath kErrorCancelButton = {"main-element",
+                                         "cancelButtonErrorScreen"};
+const test::UIPath kSamlCancelButton = {"main-element", "saml-close-button"};
 const test::UIPath kMainScreen = {"main-element", "verifyAccountScreen"};
+const test::UIPath kErrorScreen = {"main-element", "errorScreen"};
+const test::UIPath kSamlConfirmPasswordScreen = {"main-element",
+                                                 "samlConfirmPasswordScreen"};
+const test::UIPath kPasswordInput = {"main-element", "passwordInput"};
+const test::UIPath kPasswordConfirmInput = {"main-element",
+                                            "confirmPasswordInput"};
+const test::UIPath kPasswordSubmit = {"main-element",
+                                      "nextButtonSamlConfirmPassword"};
 const char kSigninFrame[] = "signin-frame";
+
+// Network dialog
+const test::UIPath kNetworkDialog = {"network-ui", "dialog"};
+const test::UIPath kNetworkCancelButton = {"network-ui", "cancelButton"};
 }  // namespace
 
 LockScreenReauthDialogTestHelper::LockScreenReauthDialogTestHelper() = default;
@@ -46,6 +67,29 @@ LockScreenReauthDialogTestHelper::ShowDialogAndWait() {
   if (!dialog_test_helper.ShowDialogAndWaitImpl())
     return absl::nullopt;
   return dialog_test_helper;
+}
+
+// static
+absl::optional<LockScreenReauthDialogTestHelper>
+LockScreenReauthDialogTestHelper::StartSamlAndWaitForIdpPageLoad() {
+  absl::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
+      LockScreenReauthDialogTestHelper::ShowDialogAndWait();
+  if (!reauth_dialog_helper.has_value()) {
+    return absl::nullopt;
+  }
+
+  reauth_dialog_helper->ForceSamlRedirect();
+
+  // Expect the 'Verify Account' screen (the first screen the dialog shows) to
+  // be visible and proceed to the SAML page.
+  reauth_dialog_helper->WaitForVerifyAccountScreen();
+  reauth_dialog_helper->ClickVerifyButton();
+
+  reauth_dialog_helper->WaitForSamlScreen();
+  reauth_dialog_helper->ExpectVerifyAccountScreenHidden();
+
+  reauth_dialog_helper->WaitForIdpPageLoad();
+  return reauth_dialog_helper;
 }
 
 bool LockScreenReauthDialogTestHelper::ShowDialogAndWaitImpl() {
@@ -83,7 +127,7 @@ bool LockScreenReauthDialogTestHelper::ShowDialogAndWaitImpl() {
     ADD_FAILURE() << "Could not retrieve LockScreenStartReauthUI";
     return false;
   }
-  main_handler_ = reauth_webui_controller_->GetMainHandlerForTests();
+  main_handler_ = reauth_webui_controller_->GetMainHandler();
   if (!main_handler_) {
     ADD_FAILURE() << "Could not retrieve LockScreenReauthHandler";
     return false;
@@ -108,6 +152,21 @@ void LockScreenReauthDialogTestHelper::ClickVerifyButton() {
   DialogJS().TapOnPath(kMainVerifyButton);
 }
 
+void LockScreenReauthDialogTestHelper::ClickCancelButtonOnVerifyScreen() {
+  ExpectVerifyAccountScreenVisible();
+  DialogJS().TapOnPath(kMainCancelButton);
+}
+
+void LockScreenReauthDialogTestHelper::ClickCancelButtonOnErrorScreen() {
+  ExpectErrorScreenVisible();
+  DialogJS().TapOnPath(kErrorCancelButton);
+}
+
+void LockScreenReauthDialogTestHelper::ClickCancelButtonOnSamlScreen() {
+  ExpectSamlScreenVisible();
+  DialogJS().TapOnPath(kSamlCancelButton);
+}
+
 void LockScreenReauthDialogTestHelper::WaitForSamlScreen() {
   WaitForAuthenticatorToLoad();
   DialogJS().CreateVisibilityWaiter(true, kSamlContainer)->Wait();
@@ -122,12 +181,50 @@ void LockScreenReauthDialogTestHelper::ExpectVerifyAccountScreenHidden() {
   DialogJS().ExpectHiddenPath(kMainScreen);
 }
 
+void LockScreenReauthDialogTestHelper::ExpectErrorScreenVisible() {
+  DialogJS().CreateVisibilityWaiter(true, kErrorScreen)->Wait();
+  DialogJS().ExpectVisiblePath(kErrorScreen);
+}
+
 void LockScreenReauthDialogTestHelper::ExpectSamlScreenVisible() {
   DialogJS().ExpectVisiblePath(kSamlContainer);
 }
 
+void LockScreenReauthDialogTestHelper::ExpectSamlScreenHidden() {
+  DialogJS().ExpectHiddenPath(kSamlContainer);
+}
+
+void LockScreenReauthDialogTestHelper::ExpectSamlConfirmPasswordVisible() {
+  DialogJS().CreateVisibilityWaiter(true, kSamlConfirmPasswordScreen)->Wait();
+  DialogJS().ExpectVisiblePath(kSamlConfirmPasswordScreen);
+}
+
+void LockScreenReauthDialogTestHelper::ExpectPasswordConfirmInputHidden() {
+  DialogJS().CreateVisibilityWaiter(false, kPasswordConfirmInput)->Wait();
+  DialogJS().ExpectHiddenPath(kPasswordConfirmInput);
+}
+
+void LockScreenReauthDialogTestHelper::ExpectPasswordConfirmInputVisible() {
+  DialogJS().CreateVisibilityWaiter(true, kPasswordConfirmInput)->Wait();
+  DialogJS().ExpectVisiblePath(kPasswordConfirmInput);
+}
+
+void LockScreenReauthDialogTestHelper::SendConfirmPassword(
+    const std::string& password_to_confirm) {
+  DialogJS().TypeIntoPath(password_to_confirm, kPasswordInput);
+  DialogJS().TapOnPath(kPasswordSubmit);
+}
+
+void LockScreenReauthDialogTestHelper::SetManualPasswords(
+    const std::string& password,
+    const std::string& confirm_password) {
+  DialogJS().TypeIntoPath(password, kPasswordInput);
+  DialogJS().TypeIntoPath(confirm_password, kPasswordConfirmInput);
+  DialogJS().TapOnPath(kPasswordSubmit);
+}
+
 void LockScreenReauthDialogTestHelper::WaitForIdpPageLoad() {
-  content::DOMMessageQueue message_queue;
+  content::DOMMessageQueue message_queue(DialogWebContents());
   content::ExecuteScriptAsync(
       DialogWebContents(),
       R"($('main-element').authenticator_.addEventListener('authFlowChange',
@@ -151,6 +248,11 @@ test::JSChecker LockScreenReauthDialogTestHelper::DialogJS() {
   return test::JSChecker(DialogWebContents());
 }
 
+test::JSChecker LockScreenReauthDialogTestHelper::NetworkJS() {
+  CHECK(network_dialog_);
+  return test::JSChecker(network_dialog_->GetWebUIForTest()->GetWebContents());
+}
+
 test::JSChecker LockScreenReauthDialogTestHelper::SigninFrameJS() {
   content::RenderFrameHost* frame =
       signin::GetAuthFrame(DialogWebContents(), kSigninFrame);
@@ -166,12 +268,111 @@ void LockScreenReauthDialogTestHelper::WaitForAuthenticatorToLoad() {
   }
 }
 
+void LockScreenReauthDialogTestHelper::WaitForReauthDialogToClose() {
+  base::RunLoop run_loop;
+  if (!password_sync_manager_->IsReauthDialogClosedForTesting(
+          run_loop.QuitClosure())) {
+    run_loop.Run();
+  }
+}
+
 void LockScreenReauthDialogTestHelper::WaitForReauthDialogToLoad() {
   base::RunLoop run_loop;
   if (!password_sync_manager_->IsReauthDialogLoadedForTesting(
           run_loop.QuitClosure())) {
     run_loop.Run();
   }
+}
+
+void LockScreenReauthDialogTestHelper::WaitForNetworkDialogToLoad() {
+  CHECK(reauth_dialog_);
+  base::RunLoop run_loop;
+  if (!reauth_dialog_->IsNetworkDialogLoadedForTesting(
+          run_loop.QuitClosure())) {
+    run_loop.Run();
+  }
+}
+
+void LockScreenReauthDialogTestHelper::WaitForCaptivePortalDialogToLoad() {
+  base::RunLoop run_loop;
+  if (!reauth_dialog_->IsCaptivePortalDialogLoadedForTesting(
+          run_loop.QuitClosure())) {
+    run_loop.Run();
+  }
+
+  captive_portal_dialog_ =
+      reauth_dialog_->get_captive_portal_dialog_for_testing();
+}
+
+void LockScreenReauthDialogTestHelper::WaitForCaptivePortalDialogToShow() {
+  base::RunLoop run_loop;
+  if (!captive_portal_dialog_->IsDialogShownForTesting(
+          run_loop.QuitClosure())) {
+    run_loop.Run();
+  }
+}
+
+void LockScreenReauthDialogTestHelper::WaitForCaptivePortalDialogToClose() {
+  base::RunLoop run_loop;
+  if (!captive_portal_dialog_->IsDialogClosedForTesting(
+          run_loop.QuitClosure())) {
+    run_loop.Run();
+  }
+}
+
+void LockScreenReauthDialogTestHelper::WaitForNetworkDialogAndSetHandlers() {
+  WaitForNetworkDialogToLoad();
+
+  network_dialog_ = reauth_dialog_->get_network_dialog_for_testing();
+  if (!network_dialog_ || !network_dialog_->GetWebUIForTest()) {
+    ADD_FAILURE() << "Could not retrieve LockScreenNetworkDialog";
+  }
+  network_webui_controller_ = static_cast<LockScreenNetworkUI*>(
+      network_dialog_->GetWebUIForTest()->GetController());
+  if (!network_webui_controller_) {
+    ADD_FAILURE() << "Could not retrieve LockScreenNetworkUI";
+  }
+  network_handler_ = network_webui_controller_->GetMainHandlerForTests();
+  if (!network_handler_) {
+    ADD_FAILURE() << "Could not retrieve LockScreenNetworkHandler";
+  }
+}
+
+// Makes the main dialog show its inner 'network' dialog and fetches
+// pointers to the Dialog, WebUI Controller and Message Handler.
+void LockScreenReauthDialogTestHelper::ShowNetworkScreenAndWait() {
+  reauth_dialog_->ShowLockScreenNetworkDialog();
+  WaitForNetworkDialogAndSetHandlers();
+}
+
+void LockScreenReauthDialogTestHelper::CloseNetworkScreen() {
+  reauth_dialog_->DismissLockScreenNetworkDialog();
+}
+
+void LockScreenReauthDialogTestHelper::ExpectNetworkDialogVisible() {
+  NetworkJS().CreateVisibilityWaiter(true, kNetworkDialog)->Wait();
+  NetworkJS().ExpectVisiblePath(kNetworkDialog);
+}
+
+void LockScreenReauthDialogTestHelper::ExpectNetworkDialogHidden() {
+  EXPECT_FALSE(reauth_dialog_->is_network_dialog_visible_for_testing());
+}
+
+void LockScreenReauthDialogTestHelper::ClickCloseNetworkButton() {
+  NetworkJS().TapOnPath(kNetworkCancelButton);
+}
+
+void LockScreenReauthDialogTestHelper::ExpectCaptivePortalDialogVisible() {
+  EXPECT_TRUE(captive_portal_dialog_->IsRunning());
+}
+
+void LockScreenReauthDialogTestHelper::ExpectCaptivePortalDialogHidden() {
+  EXPECT_FALSE(captive_portal_dialog_->IsRunning());
+}
+
+void LockScreenReauthDialogTestHelper::CloseCaptivePortalDialogAndWait() {
+  captive_portal_dialog_->Close();
+  WaitForCaptivePortalDialogToClose();
 }
 
 }  // namespace ash

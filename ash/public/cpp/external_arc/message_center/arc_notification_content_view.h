@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,8 +15,6 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/message_center/views/notification_background_painter.h"
 #include "ui/message_center/views/notification_control_buttons_view.h"
-#include "ui/native_theme/native_theme.h"
-#include "ui/native_theme/overlay_scrollbar_constants_aura.h"
 #include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -49,16 +47,14 @@ class ArcNotificationContentView
  public:
   METADATA_HEADER(ArcNotificationContentView);
 
+  static int GetNotificationContentViewWidth();
+
   ArcNotificationContentView(ArcNotificationItem* item,
                              const message_center::Notification& notification,
                              message_center::MessageView* message_view);
   ArcNotificationContentView(const ArcNotificationContentView&) = delete;
   ArcNotificationContentView& operator=(const ArcNotificationContentView&) = delete;
   ~ArcNotificationContentView() override;
-
-  // Width of scrollbar, to reduce the notification content width.
-  constexpr static int kScrollBarWidth =
-      ui::kOverlayScrollbarThumbWidthPressed + ui::kOverlayScrollbarStrokeWidth;
 
   void Update(const message_center::Notification& notification);
   message_center::NotificationControlButtonsView* GetControlButtonsView();
@@ -70,6 +66,8 @@ class ArcNotificationContentView
   void ActivateWidget(bool activate);
 
   bool slide_in_progress() const { return slide_in_progress_; }
+
+  int notification_width() const { return notification_width_; }
 
  private:
   friend class ArcNotificationViewTest;
@@ -125,7 +123,7 @@ class ArcNotificationContentView
   void OnWindowDestroying(aura::Window* window) override;
 
   // views::WidgetObserver:
-  void OnWidgetClosing(views::Widget* widget) override;
+  void OnWidgetDestroying(views::Widget* widget) override;
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
 
   // ArcNotificationItem::Observer
@@ -210,6 +208,8 @@ class ArcNotificationContentView
   absl::optional<gfx::Insets> mask_insets_;
 
   std::unique_ptr<ui::LayerTreeOwner> surface_copy_;
+
+  const int notification_width_;
 };
 
 }  // namespace ash

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -65,8 +65,10 @@ class MediaKeyStatusMap::MapEntry final
 
 // Represents an Iterator that loops through the set of MapEntrys.
 class MapIterationSource final
-    : public PairIterable<Member<V8BufferSource>, String>::IterationSource
-{
+    : public PairIterable<Member<V8BufferSource>,
+                          V8BufferSource,
+                          String,
+                          IDLString>::IterationSource {
  public:
   MapIterationSource(MediaKeyStatusMap* map) : map_(map), current_(0) {}
 
@@ -87,8 +89,8 @@ class MapIterationSource final
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(map_);
-    PairIterable<Member<V8BufferSource>, String>::IterationSource::Trace(
-        visitor);
+    PairIterable<Member<V8BufferSource>, V8BufferSource, String,
+                 IDLString>::IterationSource::Trace(visitor);
   }
 
  private:

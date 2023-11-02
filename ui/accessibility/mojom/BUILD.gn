@@ -1,10 +1,11 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
+  generate_java = true
   sources = [
     "ax_action_data.mojom",
     "ax_event.mojom",
@@ -26,7 +27,27 @@ mojom("mojom") {
     "//url/mojom:url_mojom_gurl",
   ]
 
-  cpp_typemaps = [
+  common_typemaps = [
+    {
+      types = [
+        {
+          mojom = "ax.mojom.AXRelativeBounds"
+          cpp = "::ui::AXRelativeBounds"
+        },
+      ]
+      traits_headers = [ "ax_relative_bounds_mojom_traits.h" ]
+      traits_public_deps = [
+        ":mojom_traits",
+        "//ui/gfx",
+        "//ui/gfx/geometry/mojom",
+        "//ui/gfx/geometry/mojom:mojom_traits",
+        "//ui/gfx/mojom",
+      ]
+    },
+  ]
+
+  cpp_typemaps = common_typemaps
+  cpp_typemaps += [
     {
       types = [
         {
@@ -78,12 +99,10 @@ mojom("mojom") {
           cpp = "::ui::AXRelativeBounds"
         },
       ]
-      traits_sources = [ "ax_relative_bounds_mojom_traits.cc" ]
       traits_headers = [ "ax_relative_bounds_mojom_traits.h" ]
       traits_public_deps = [
-        "//ui/gfx",
+        "//ui/accessibility:ax_base",
         "//ui/gfx/geometry/mojom",
-        "//ui/gfx/geometry/mojom:mojom_traits",
         "//ui/gfx/mojom",
       ]
     },
@@ -121,7 +140,10 @@ mojom("mojom") {
       traits_public_deps = [ "//ui/accessibility:ax_base" ]
     },
   ]
+
+  blink_cpp_typemaps = common_typemaps
 }
+
 mojom("ax_assistant_mojom") {
   sources = [ "ax_assistant_structure.mojom" ]
 
@@ -158,5 +180,19 @@ mojom("ax_assistant_mojom") {
     "//ui/gfx/mojom",
     "//ui/gfx/range/mojom",
     "//url/mojom:url_mojom_gurl",
+  ]
+}
+
+source_set("mojom_traits") {
+  sources = [
+    "ax_relative_bounds_mojom_traits.cc",
+    "ax_relative_bounds_mojom_traits.h",
+  ]
+  public_deps = [
+    "//ui/accessibility:ax_base",
+    "//ui/accessibility/mojom:mojom_shared_cpp_sources",
+    "//ui/gfx",
+    "//ui/gfx/geometry/mojom:mojom_traits",
+    "//ui/gfx/mojom:mojom",
   ]
 }

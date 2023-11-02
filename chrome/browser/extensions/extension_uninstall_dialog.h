@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/threading/thread_checker.h"
@@ -153,13 +154,13 @@ class ExtensionUninstallDialog
   virtual void Close() = 0;
 
   // Resets to nullptr when the Profile is deleted.
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // The dialog's parent window.
   gfx::NativeWindow parent_;
 
   // The delegate we will call Accepted/Canceled on after confirmation dialog.
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
 
   // The extension we are showing the dialog for.
   scoped_refptr<const Extension> extension_;
@@ -178,9 +179,6 @@ class ExtensionUninstallDialog
 
   // True if a checkbox for reporting abuse is shown.
   bool show_report_abuse_checkbox_ = false;
-
-  // True if a checkbox for removing associated data is shown.
-  bool show_remove_data_checkbox_ = false;
 
   // Whether the extension was uninstalled before the user closed the dialog
   // (e.g. by another source).

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,6 +30,6 @@ SupervisedUserSyncModelTypeController::
 syncer::DataTypeController::PreconditionState
 SupervisedUserSyncModelTypeController::GetPreconditionState() const {
   DCHECK(CalledOnValidThread());
-  return profile_->IsSupervised() ? PreconditionState::kPreconditionsMet
-                                  : PreconditionState::kMustStopAndClearData;
+  return profile_->IsChild() ? PreconditionState::kPreconditionsMet
+                             : PreconditionState::kMustStopAndClearData;
 }

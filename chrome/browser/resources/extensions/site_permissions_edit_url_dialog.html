@@ -1,0 +1,23 @@
+<style include="cr-shared-style"></style>
+<cr-dialog id="dialog" show-on-attach>
+  <div slot="title">[[computeDialogTitle_(siteToEdit)]]</div>
+  <div slot="body">
+    <cr-input id="input" label="$i18n{sitePermissionsDialogInputLabel}"
+        placeholder="https://example.com"
+        value="{{site_}}" on-input="validate_"
+        invalid="[[!inputValid_]]"
+        error-message="$i18n{sitePermissionsDialogInputError}"
+        spellcheck="false"
+        autofocus>
+    </cr-input>
+  </div>
+  <div slot="button-container">
+    <cr-button class="cancel-button" on-click="onCancel_">
+      $i18n{cancel}
+    </cr-button>
+    <cr-button class="action-button" id="submit" on-click="onSubmit_"
+        disabled="[[computeSubmitButtonDisabled_(inputValid_, site_)]]">
+      [[computeSubmitButtonLabel_(siteToEdit)]]
+    </cr-button>
+  </div>
+</cr-dialog>

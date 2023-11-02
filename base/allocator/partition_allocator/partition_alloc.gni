@@ -1,0 +1,92 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/sanitizers/sanitizers.gni")
+import("//build_overrides/partition_alloc.gni")
+
+if (use_partition_alloc_as_malloc_default) {
+  _default_allocator = "partition"
+} else {
+  _default_allocator = "none"
+}
+
+declare_args() {
+  # Temporarily move |use_allocator| to partition_alloc.gni, because
+  # some bots use |use_allocator|="none" with
+  # |use_partition_alloc_as_malloc_default|=true. This causes PA_CHECK()
+  # failure at PartitionAllocator::init().
+  # TODO(1151236): Replace |use_allocator|="none" and |use_allocator|=
+  # "partition" with |use_partition_alloc_as_malloc|=false and
+  # |use_partition_alloc_as_malloc|=true, and remove |use_allocator| from
+  # args.gn of all trybots. //base/allocator will look at
+  # |use_partition_alloc_as_malloc| and will generate buildflags.
+  # Memory allocator to use. Set to "none" to use default allocator.
+  use_allocator = _default_allocator
+}
+
+declare_args() {
+  use_freeslot_bitmap = false
+}
+
+declare_args() {
+  # Set use_backup_ref_ptr true to use BackupRefPtr (BRP) as the implementation
+  # of raw_ptr<T>, and enable PartitionAlloc support for it.
+  enable_backup_ref_ptr_support =
+      enable_backup_ref_ptr_support_default && use_allocator == "partition"
+
+  enable_mte_checked_ptr_support =
+      enable_mte_checked_ptr_support_default && use_allocator == "partition"
+}
+
+assert(!(enable_backup_ref_ptr_support && enable_mte_checked_ptr_support),
+       "MTECheckedPtrSupport conflicts with BRPSupport.")
+
+declare_args() {
+  enable_partition_alloc_as_malloc_support =
+      use_partition_alloc_as_malloc_default && use_allocator == "partition"
+}
+
+declare_args() {
+  # - put_ref_count_in_previous_slot: place the ref-count at the end of the
+  #   previous slot (or in metadata if a slot starts on the page boundary), as
+  #   opposed to the beginning of the slot.
+  # - enable_backup_ref_ptr_slow_checks: enable additional safety checks that
+  #   are too expensive to have on by default.
+  # - enable_dangling_raw_ptr_checks: enable checking raw_ptr do not become
+  #   dangling during their lifetime.
+  put_ref_count_in_previous_slot =
+      put_ref_count_in_previous_slot_default && enable_backup_ref_ptr_support
+
+  enable_backup_ref_ptr_slow_checks =
+      enable_backup_ref_ptr_slow_checks_default && enable_backup_ref_ptr_support
+  enable_dangling_raw_ptr_checks =
+      enable_dangling_raw_ptr_checks_default && enable_backup_ref_ptr_support
+}
+
+declare_args() {
+  enable_shadow_metadata = false
+}
+
+# put_ref_count_in_previous_slot can only be used if
+# enable_backup_ref_ptr_support is true.
+assert(
+    enable_backup_ref_ptr_support || !put_ref_count_in_previous_slot,
+    "Can't put ref count in the previous slot if BackupRefPtr isn't enabled at all")
+
+# enable_backup_ref_ptr_slow_checks can only be used if enable_backup_ref_ptr_support
+# is true.
+assert(enable_backup_ref_ptr_support || !enable_backup_ref_ptr_slow_checks,
+       "Can't enable additional BackupRefPtr checks if it isn't enabled at all")
+
+# enable_dangling_raw_ptr_checks can only be used if enable_backup_ref_ptr_support
+# is true.
+assert(
+    enable_backup_ref_ptr_support || !enable_dangling_raw_ptr_checks,
+    "Can't enable dangling raw_ptr checks if BackupRefPtr isn't enabled at all")
+
+declare_args() {
+  enable_pkeys = is_linux && target_cpu == "x64"
+}
+assert(!enable_pkeys || (is_linux && target_cpu == "x64"),
+       "Pkeys are only supported on x64 linux")

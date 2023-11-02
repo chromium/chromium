@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -24,8 +24,6 @@ static_library("browser") {
     "account_reconcilor_throttler.h",
     "chrome_connected_header_helper.cc",
     "chrome_connected_header_helper.h",
-    "cookie_reminter.cc",
-    "cookie_reminter.h",
     "cookie_settings_util.cc",
     "cookie_settings_util.h",
     "dice_account_reconcilor_delegate.cc",
@@ -40,14 +38,8 @@ static_library("browser") {
     "signin_header_helper.h",
     "signin_internals_util.cc",
     "signin_internals_util.h",
-    "signin_investigator.cc",
-    "signin_investigator.h",
-    "signin_status_metrics_provider.cc",
-    "signin_status_metrics_provider.h",
-    "signin_status_metrics_provider_base.cc",
-    "signin_status_metrics_provider_base.h",
-    "signin_status_metrics_provider_delegate.cc",
-    "signin_status_metrics_provider_delegate.h",
+    "signin_status_metrics_provider_helpers.cc",
+    "signin_status_metrics_provider_helpers.h",
   ]
 
   public_deps = [
@@ -78,18 +70,18 @@ static_library("browser") {
     "//third_party/icu",
   ]
 
+  if (is_chromeos) {
+    deps += [ "//components/account_manager_core" ]
+  }
+
   if (is_chromeos_ash) {
     sources += [
       "active_directory_account_reconcilor_delegate.cc",
       "active_directory_account_reconcilor_delegate.h",
     ]
     deps += [
+      "//chromeos/ash/components/install_attributes",
       "//chromeos/crosapi/mojom",
-      "//chromeos/tpm:tpm",
-    ]
-    sources -= [
-      "signin_status_metrics_provider.cc",
-      "signin_status_metrics_provider_delegate.cc",
     ]
   }
 
@@ -97,6 +89,12 @@ static_library("browser") {
     deps += [
       "//chromeos/crosapi/mojom",
       "//chromeos/lacros",
+    ]
+    sources += [
+      "consistency_cookie_manager.cc",
+      "consistency_cookie_manager.h",
+      "mirror_landing_account_reconcilor_delegate.cc",
+      "mirror_landing_account_reconcilor_delegate.h",
     ]
   }
 
@@ -116,11 +114,9 @@ source_set("unit_tests") {
     "account_investigator_unittest.cc",
     "account_reconcilor_delegate_unittest.cc",
     "account_reconcilor_unittest.cc",
-    "dice_account_reconcilor_delegate_unittest.cc",
     "signin_error_controller_unittest.cc",
     "signin_header_helper_unittest.cc",
-    "signin_investigator_unittest.cc",
-    "signin_status_metrics_provider_unittest.cc",
+    "signin_status_metrics_provider_helpers_unittest.cc",
   ]
 
   deps = [
@@ -145,14 +141,18 @@ source_set("unit_tests") {
     "//url",
   ]
 
+  if (is_chromeos) {
+    deps += [ "//components/account_manager_core:test_support" ]
+  }
+
   if (is_chromeos_ash) {
     deps += [
+      "//chromeos/ash/components/install_attributes:test_support",
       "//chromeos/crosapi/mojom",
-      "//chromeos/tpm:test_support",
     ]
     sources -= [
       "account_investigator_unittest.cc",
-      "signin_status_metrics_provider_unittest.cc",
+      "signin_status_metrics_provider_helpers_unittest.cc",
     ]
   }
 
@@ -162,10 +162,10 @@ source_set("unit_tests") {
       "//chromeos/lacros",
       "//chromeos/lacros:test_support",
     ]
-  }
-
-  if (!enable_dice_support) {
-    sources -= [ "dice_account_reconcilor_delegate_unittest.cc" ]
+    sources += [
+      "consistency_cookie_manager_unittest.cc",
+      "mirror_landing_account_reconcilor_delegate_unittest.cc",
+    ]
   }
 }
 
@@ -176,10 +176,7 @@ if (is_android) {
   }
 
   java_cpp_enum("signin_enums_javagen") {
-    sources = [
-      "signin_header_helper.h",
-      "signin_investigator.h",
-    ]
+    sources = [ "signin_header_helper.h" ]
     visibility = [ ":*" ]  # Depend on through :signin_enums_java
   }
 }

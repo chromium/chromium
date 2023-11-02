@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@ namespace ash {
 
 class MockNetworkScreen : public NetworkScreen {
  public:
-  MockNetworkScreen(NetworkScreenView* view,
+  MockNetworkScreen(base::WeakPtr<NetworkScreenView> view,
                     const ScreenExitCallback& exit_callback);
 
   MockNetworkScreen(const MockNetworkScreen&) = delete;
@@ -36,19 +36,10 @@ class MockNetworkScreenView : public NetworkScreenView {
 
   ~MockNetworkScreenView() override;
 
-  void Bind(NetworkScreen* screen) override;
-  void Unbind() override;
-
-  MOCK_METHOD(void, MockBind, (NetworkScreen * screen));
-  MOCK_METHOD(void, MockUnbind, ());
   MOCK_METHOD(void, Show, ());
-  MOCK_METHOD(void, Hide, ());
   MOCK_METHOD(void, ShowError, (const std::u16string& message));
   MOCK_METHOD(void, ClearErrors, ());
   MOCK_METHOD(void, SetOfflineDemoModeEnabled, (bool enabled));
-
- private:
-  NetworkScreen* screen_ = nullptr;
 };
 
 }  // namespace ash

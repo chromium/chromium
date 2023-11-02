@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,6 @@
 #include "components/javascript_dialogs/app_modal_dialog_manager.h"
 #include "components/javascript_dialogs/tab_modal_dialog_view.h"
 #include "components/navigation_metrics/navigation_metrics.h"
-#include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -70,12 +69,12 @@ DialogOriginRelationship GetDialogOriginRelationship(
     content::WebContents* web_contents,
     content::RenderFrameHost* alerting_frame) {
   url::Origin main_frame_origin =
-      web_contents->GetMainFrame()->GetLastCommittedOrigin();
+      web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
 
   if (!main_frame_origin.GetURL().SchemeIsHTTPOrHTTPS())
     return DialogOriginRelationship::NON_HTTP_MAIN_FRAME;
 
-  if (alerting_frame == web_contents->GetMainFrame())
+  if (alerting_frame == web_contents->GetPrimaryMainFrame())
     return DialogOriginRelationship::HTTP_MAIN_FRAME;
 
   url::Origin alerting_frame_origin = alerting_frame->GetLastCommittedOrigin();
@@ -215,7 +214,7 @@ void TabModalDialogManager::RunJavaScriptDialog(
       }
       case content::JAVASCRIPT_DIALOG_TYPE_CONFIRM: {
         *did_suppress_message = true;
-        alerting_web_contents->GetMainFrame()->AddMessageToConsole(
+        render_frame_host->AddMessageToConsole(
             blink::mojom::ConsoleMessageLevel::kWarning,
             base::StringPrintf(kDialogSuppressedConsoleMessageFormat, "confirm",
                                "5140698722467840"));
@@ -223,7 +222,7 @@ void TabModalDialogManager::RunJavaScriptDialog(
       }
       case content::JAVASCRIPT_DIALOG_TYPE_PROMPT: {
         *did_suppress_message = true;
-        alerting_web_contents->GetMainFrame()->AddMessageToConsole(
+        render_frame_host->AddMessageToConsole(
             blink::mojom::ConsoleMessageLevel::kWarning,
             base::StringPrintf(kDialogSuppressedConsoleMessageFormat, "prompt",
                                "5637107137642496"));
@@ -365,6 +364,7 @@ TabModalDialogManager::TabModalDialogManager(
     content::WebContents* web_contents,
     std::unique_ptr<TabModalDialogManagerDelegate> delegate)
     : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<TabModalDialogManager>(*web_contents),
       delegate_(std::move(delegate)) {}
 
 void TabModalDialogManager::LogDialogDismissalCause(DismissalCause cause) {
@@ -377,8 +377,9 @@ void TabModalDialogManager::LogDialogDismissalCause(DismissalCause cause) {
   // WebContents that had the alert call in it. For 99.9999% of cases they're
   // the same, but for instances like the <webview> tag in extensions and PDF
   // files that alert they may differ.
-  ukm::SourceId source_id = ukm::GetSourceIdForWebContentsDocument(
-      WebContentsObserver::web_contents());
+  ukm::SourceId source_id = WebContentsObserver::web_contents()
+                                ->GetPrimaryMainFrame()
+                                ->GetPageUkmSourceId();
   if (source_id != ukm::kInvalidSourceId) {
     ukm::builders::AbusiveExperienceHeuristic_JavaScriptDialog(source_id)
         .SetDismissalCause(static_cast<int64_t>(cause))

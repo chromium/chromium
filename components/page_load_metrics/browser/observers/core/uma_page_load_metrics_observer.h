@@ -1,12 +1,14 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_CORE_UMA_PAGE_LOAD_METRICS_OBSERVER_H_
 #define COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_CORE_UMA_PAGE_LOAD_METRICS_OBSERVER_H_
 
+#include "base/time/time.h"
 #include "components/page_load_metrics/browser/observers/click_input_tracker.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
+#include "content/public/browser/navigation_handle_timing.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 
 namespace internal {
@@ -15,32 +17,17 @@ namespace internal {
 // specified by the ".Background" suffix. For these events, we put them into the
 // background histogram if the web contents was ever in the background from
 // navigation start to the event in question.
+extern const char kHistogramNumInteractions[];
 extern const char
     kHistogramAverageUserInteractionLatencyOverBudgetMaxEventDuration[];
-extern const char
-    kHistogramSlowUserInteractionLatencyOverBudgetHighPercentileMaxEventDuration
-        [];
 extern const char
     kHistogramSlowUserInteractionLatencyOverBudgetHighPercentile2MaxEventDuration
         [];
 extern const char
+    kHistogramUserInteractionLatencyHighPercentile2MaxEventDuration[];
+extern const char
     kHistogramSumOfUserInteractionLatencyOverBudgetMaxEventDuration[];
 extern const char kHistogramWorstUserInteractionLatencyMaxEventDuration[];
-extern const char
-    kHistogramWorstUserInteractionLatencyOverBudgetMaxEventDuration[];
-extern const char
-    kHistogramAverageUserInteractionLatencyOverBudgetTotalEventDuration[];
-extern const char
-    kHistogramSlowUserInteractionLatencyOverBudgetHighPercentileTotalEventDuration
-        [];
-extern const char
-    kHistogramSlowUserInteractionLatencyOverBudgetHighPercentile2TotalEventDuration
-        [];
-extern const char
-    kHistogramSumOfUserInteractionLatencyOverBudgetTotalEventDuration[];
-extern const char kHistogramWorstUserInteractionLatencyTotalEventDuration[];
-extern const char
-    kHistogramWorstUserInteractionLatencyOverBudgetTotalEventDuration[];
 extern const char kHistogramFirstInputDelay[];
 extern const char kHistogramFirstInputTimestamp[];
 extern const char kHistogramFirstInputDelay4[];
@@ -61,7 +48,6 @@ extern const char kHistogramLargestContentfulPaintCrossSiteSubFrame[];
 extern const char kHistogramParseDuration[];
 extern const char kHistogramParseBlockedOnScriptLoad[];
 extern const char kHistogramParseBlockedOnScriptExecution[];
-extern const char kHistogramParseStartToFirstMeaningfulPaint[];
 
 extern const char kBackgroundHistogramFirstImagePaint[];
 extern const char kBackgroundHistogramDomContentLoaded[];
@@ -75,8 +61,6 @@ extern const char kHistogramLoadTypeFirstContentfulPaintNewNavigation[];
 extern const char kHistogramLoadTypeParseStartReload[];
 extern const char kHistogramLoadTypeParseStartForwardBack[];
 extern const char kHistogramLoadTypeParseStartNewNavigation[];
-
-extern const char kHistogramFailedProvisionalLoad[];
 
 extern const char kHistogramUserGestureNavigationToForwardBack[];
 
@@ -116,10 +100,6 @@ extern const char kHistogramLoadTypeCacheBytesReload[];
 extern const char kHistogramLoadTypeTotalBytesNewNavigation[];
 extern const char kHistogramLoadTypeNetworkBytesNewNavigation[];
 extern const char kHistogramLoadTypeCacheBytesNewNavigation[];
-
-extern const char kHistogramTotalCompletedResources[];
-extern const char kHistogramNetworkCompletedResources[];
-extern const char kHistogramCacheCompletedResources[];
 
 extern const char kHistogramInputToNavigation[];
 extern const char kBackgroundHistogramInputToNavigation[];
@@ -199,10 +179,15 @@ class UmaPageLoadMetricsObserver
   ~UmaPageLoadMetricsObserver() override;
 
   // page_load_metrics::PageLoadMetricsObserver:
+  const char* GetObserverName() const override;
+  ObservePolicy OnFencedFramesStart(
+      content::NavigationHandle* navigation_handle,
+      const GURL& currently_committed_url) override;
+  ObservePolicy OnPrerenderStart(content::NavigationHandle* navigation_handle,
+                                 const GURL& currently_committed_url) override;
   ObservePolicy OnRedirect(
       content::NavigationHandle* navigation_handle) override;
-  ObservePolicy OnCommit(content::NavigationHandle* navigation_handle,
-                         ukm::SourceId source_id) override;
+  ObservePolicy OnCommit(content::NavigationHandle* navigation_handle) override;
   void OnDomContentLoadedEventStart(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
   void OnLoadEventStart(
@@ -278,10 +263,6 @@ class UmaPageLoadMetricsObserver
 
   ui::PageTransition transition_;
   bool was_no_store_main_resource_;
-
-  // Number of complete resources loaded by the page.
-  int num_cache_resources_;
-  int num_network_resources_;
 
   // The number of body (not header) prefilter bytes consumed by completed
   // requests for the page.

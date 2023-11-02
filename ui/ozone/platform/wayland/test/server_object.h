@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,8 @@
 #include <utility>
 
 #include <wayland-server-core.h>
+
+#include "base/memory/raw_ptr.h"
 
 struct wl_client;
 struct wl_resource;
@@ -31,7 +33,7 @@ class ServerObject {
   static void OnResourceDestroyed(wl_resource* resource);
 
  private:
-  wl_resource* resource_;
+  raw_ptr<wl_resource> resource_;
 };
 
 template <class T>

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,6 +27,9 @@ class WebContents;
 namespace sessions {
 struct SessionWindow;
 }  // namespace sessions
+
+struct StartupTab;
+using StartupTabs = std::vector<StartupTab>;
 
 // SessionService ------------------------------------------------------------
 
@@ -78,8 +81,7 @@ class SessionService : public SessionServiceBase {
   // not restored and the caller needs to create a new window.
   // Since RestoreIfNecessary can potentially trigger a restore, we need to
   // know whether the caller intends for us to restore apps or not.
-  bool RestoreIfNecessary(const std::vector<GURL>& urls_to_open,
-                          bool restore_apps);
+  bool RestoreIfNecessary(const StartupTabs& startup_tabs, bool restore_apps);
 
   // Moves the current session to the last session. This is useful when a
   // checkpoint occurs, such as when the user launches the app and no tabbed
@@ -106,6 +108,15 @@ class SessionService : public SessionServiceBase {
   void SetPinnedState(const SessionID& window_id,
                       const SessionID& tab_id,
                       bool is_pinned);
+
+  void AddTabExtraData(const SessionID& window_id,
+                       const SessionID& tab_id,
+                       const char* key,
+                       const std::string data);
+
+  void AddWindowExtraData(const SessionID& window_id,
+                          const char* key,
+                          const std::string data);
 
   void TabClosed(const SessionID& window_id, const SessionID& tab_id) override;
 
@@ -159,7 +170,7 @@ class SessionService : public SessionServiceBase {
   // Implementation of RestoreIfNecessary. If |browser| is non-null and we
   // need to restore, the tabs are added to it, otherwise a new browser is
   // created.
-  bool RestoreIfNecessary(const std::vector<GURL>& urls_to_open,
+  bool RestoreIfNecessary(const StartupTabs& startup_tabs,
                           Browser* browser,
                           bool restore_apps);
 

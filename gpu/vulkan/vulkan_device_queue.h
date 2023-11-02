@@ -1,4 +1,4 @@
-// Copyright (c) 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 #include "base/callback.h"
 #include "base/check_op.h"
 #include "base/component_export.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "gpu/vulkan/vma_wrapper.h"
 #include "gpu/vulkan/vulkan_instance.h"
@@ -50,7 +50,8 @@ class COMPONENT_EXPORT(VULKAN) VulkanDeviceQueue {
       const std::vector<const char*>& optional_extensions,
       bool allow_protected_memory,
       const GetPresentationSupportCallback& get_presentation_support,
-      uint32_t heap_memory_limit);
+      uint32_t heap_memory_limit,
+      const bool is_thread_safe = false);
 
   bool InitializeFromANGLE();
 
@@ -65,11 +66,14 @@ class COMPONENT_EXPORT(VULKAN) VulkanDeviceQueue {
   // have its own instance of VulkanFenceHelper and VmaAllocator. Also note that
   // this CompositorGpuThread does not own the |vk_device| and |vk_queue| and
   // hence will not destroy them.
-  bool InitializeForCompositorGpuThread(VkPhysicalDevice vk_physical_device,
-                                        VkDevice vk_device,
-                                        VkQueue vk_queue,
-                                        uint32_t vk_queue_index,
-                                        gfx::ExtensionSet enabled_extensions);
+  bool InitializeForCompositorGpuThread(
+      VkPhysicalDevice vk_physical_device,
+      VkDevice vk_device,
+      VkQueue vk_queue,
+      uint32_t vk_queue_index,
+      gfx::ExtensionSet enabled_extensions,
+      const VkPhysicalDeviceFeatures2& vk_physical_device_features2,
+      VmaAllocator vma_allocator);
 
   const gfx::ExtensionSet& enabled_extensions() const {
     return enabled_extensions_;
@@ -143,21 +147,22 @@ class COMPONENT_EXPORT(VULKAN) VulkanDeviceQueue {
   VkQueue vk_queue_ = VK_NULL_HANDLE;
   uint32_t vk_queue_index_ = 0;
   VkInstance vk_instance_ = VK_NULL_HANDLE;
-  VulkanInstance* instance_ = nullptr;
+  raw_ptr<VulkanInstance> instance_ = nullptr;
+  VmaAllocator owned_vma_allocator_ = VK_NULL_HANDLE;
   VmaAllocator vma_allocator_ = VK_NULL_HANDLE;
   std::unique_ptr<VulkanFenceHelper> cleanup_helper_;
   VkPhysicalDeviceFeatures2 enabled_device_features_2_{
       VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2};
-  const VkPhysicalDeviceFeatures2* enabled_device_features_2_from_angle_ =
-      nullptr;
+  raw_ptr<const VkPhysicalDeviceFeatures2>
+      enabled_device_features_2_from_angle_ = nullptr;
 
   bool allow_protected_memory_ = false;
 
-#if defined(OS_ANDROID) || defined(OS_FUCHSIA) || defined(OS_LINUX)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX)
   VkPhysicalDeviceSamplerYcbcrConversionFeatures
       sampler_ycbcr_conversion_features_{
           VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SAMPLER_YCBCR_CONVERSION_FEATURES};
-#endif  // defined(OS_ANDROID) || defined(OS_FUCHSIA) || defined(OS_LINUX)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX)
 
   VkPhysicalDeviceProtectedMemoryFeatures protected_memory_features_{
       VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SAMPLER_YCBCR_CONVERSION_FEATURES};

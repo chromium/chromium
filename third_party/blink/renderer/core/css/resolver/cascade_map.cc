@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -65,6 +65,10 @@ const CascadePriority* CascadeMap::Find(const CSSPropertyName& name,
   return find_origin(native_properties_.Buffer()[index], origin);
 }
 
+CascadePriority& CascadeMap::Top(CascadePriorityList& list) {
+  return list.Top(backing_vector_);
+}
+
 const CascadePriority* CascadeMap::FindRevertLayer(
     const CSSPropertyName& name,
     CascadePriority revert_from) const {
@@ -91,50 +95,60 @@ const CascadePriority* CascadeMap::FindRevertLayer(
 }
 
 void CascadeMap::Add(const CSSPropertyName& name, CascadePriority priority) {
-  auto compare_and_add = [this](CascadePriorityList& list,
-                                CascadePriority priority) {
-    if (list.IsEmpty()) {
-      list.Push(backing_vector_, priority);
-      return;
-    }
-    CascadePriority& top = list.Top(backing_vector_);
-    DCHECK(priority.ForLayerComparison() >= top.ForLayerComparison());
-    if (top >= priority)
-      return;
-    if (top.ForLayerComparison() < priority.ForLayerComparison())
-      list.Push(backing_vector_, priority);
-    else
-      top = priority;
-  };
-
+  CascadePriorityList* list;
   if (name.IsCustomProperty()) {
     auto result = custom_properties_.insert(name, CascadePriorityList());
-    compare_and_add(result.stored_value->value, priority);
+    list = &result.stored_value->value;
+  } else {
+    DCHECK(!CSSProperty::Get(name.Id()).IsSurrogate());
+
+    CSSPropertyID id = name.Id();
+    size_t index = static_cast<size_t>(id);
+    DCHECK_LT(index, static_cast<size_t>(kNumCSSProperties));
+
+    // Set bit in high_priority_, if appropriate.
+    static_assert(static_cast<int>(kLastHighPriorityCSSProperty) < 64,
+                  "CascadeMap supports at most 63 high-priority properties");
+    if (IsHighPriority(id))
+      high_priority_ |= (1ull << index);
+    has_important_ |= priority.IsImportant();
+
+    list = &native_properties_.Buffer()[index];
+    if (!native_properties_.Bits().Has(id)) {
+      native_properties_.Bits().Set(id);
+      new (list) CascadeMap::CascadePriorityList();
+    }
+  }
+
+  if (list->IsEmpty()) {
+    list->Push(backing_vector_, priority);
     return;
   }
-
-  DCHECK(!CSSProperty::Get(name.Id()).IsSurrogate());
-
-  CSSPropertyID id = name.Id();
-  size_t index = static_cast<size_t>(id);
-  DCHECK_LT(index, static_cast<size_t>(kNumCSSProperties));
-
-  // Set bit in high_priority_, if appropriate.
-  static_assert(static_cast<int>(kLastHighPriorityCSSProperty) < 64,
-                "CascadeMap supports at most 63 high-priority properties");
-  if (IsHighPriority(id))
-    high_priority_ |= (1ull << index);
-  has_important_ |= priority.IsImportant();
-
-  CascadeMap::CascadePriorityList& list = native_properties_.Buffer()[index];
-  if (!native_properties_.Bits().Has(id)) {
-    native_properties_.Bits().Set(id);
-    new (&list) CascadeMap::CascadePriorityList();
+  CascadePriority& top = list->Top(backing_vector_);
+  DCHECK(priority.ForLayerComparison() >= top.ForLayerComparison());
+  if (top >= priority) {
+    if (priority.IsInlineStyle()) {
+      inline_style_lost_ = true;
+    }
+    return;
   }
-  compare_and_add(list, priority);
+  if (top.IsInlineStyle()) {
+    // Something with a higher priority overrides something from the
+    // inline style, so we need to set the flag. But note that
+    // we _could_ have this layer be negated by “revert”; if so,
+    // this value will be a false positive. But since we only
+    // use it to disable an optimization (incremental inline
+    // style computation), false positives are fine.
+    inline_style_lost_ = true;
+  }
+  if (top.ForLayerComparison() < priority.ForLayerComparison())
+    list->Push(backing_vector_, priority);
+  else
+    top = priority;
 }
 
 void CascadeMap::Reset() {
+  inline_style_lost_ = false;
   high_priority_ = 0;
   has_important_ = false;
   native_properties_.Bits().Reset();

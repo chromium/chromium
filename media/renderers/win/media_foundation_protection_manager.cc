@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include "base/win/core_winrt_util.h"
 #include "base/win/scoped_hstring.h"
 #include "base/win/windows_types.h"
+#include "media/base/win/hresults.h"
 #include "media/base/win/mf_helpers.h"
 
 namespace media {
@@ -37,7 +38,7 @@ HRESULT MediaFoundationProtectionManager::RuntimeClassInitialize(
   waiting_cb_ = std::move(waiting_cb);
 
   if (!base::win::ScopedHString::ResolveCoreWinRTStringDelayload())
-    return E_FAIL;
+    return kErrorResolveCoreWinRTStringDelayload;
 
   // Init an empty |property_set_| as MFMediaEngine could access it via
   // |get_Properties| before we populate it within SetPMPServer.

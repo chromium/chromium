@@ -1,29 +1,30 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
-import 'chrome://resources/cr_elements/hidden_style_css.m.js';
-import 'chrome://resources/cr_elements/icons.m.js';
-import 'chrome://resources/cr_elements/shared_vars_css.m.js';
-import 'chrome://resources/js/util.m.js';
+import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
+import 'chrome://resources/cr_elements/icons.html.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+import 'chrome://resources/js/util.js';
 import 'chrome://resources/polymer/v3_0/paper-styles/color.js';
 import './strings.m.js';
 
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.js';
 import {CrToolbarElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxy} from './browser_proxy.js';
 import {MojomData} from './data.js';
 import {PageHandlerInterface} from './downloads.mojom-webui.js';
 import {SearchService} from './search_service.js';
+import {getTemplate} from './toolbar.html.js';
 
 export interface DownloadsToolbarElement {
   $: {
@@ -36,6 +37,10 @@ export interface DownloadsToolbarElement {
 export class DownloadsToolbarElement extends PolymerElement {
   static get is() {
     return 'downloads-toolbar';
+  }
+
+  static get template() {
+    return getTemplate();
   }
 
   static get properties() {
@@ -57,10 +62,10 @@ export class DownloadsToolbarElement extends PolymerElement {
   private mojoHandler_: PageHandlerInterface|null = null;
   hasClearableDownloads: boolean = false;
   spinnerActive: boolean;
-  items: Array<MojomData> = [];
+  items: MojomData[] = [];
 
   /** @override */
-  ready() {
+  override ready() {
     super.ready();
     this.mojoHandler_ = BrowserProxy.getInstance().handler;
   }
@@ -122,10 +127,6 @@ export class DownloadsToolbarElement extends PolymerElement {
   private updateClearAll_() {
     this.shadowRoot!.querySelector<HTMLButtonElement>('.clear-all')!.hidden =
         !this.canClearAll();
-  }
-
-  static get template() {
-    return html`{__html_template__}`;
   }
 }
 

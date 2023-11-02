@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,8 @@
 #include <utility>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "remoting/codec/audio_encoder.h"
@@ -21,12 +21,11 @@
 #include "remoting/protocol/fake_audio_source.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 namespace {
 
-// Creates a dummy packet with 1k data
+// Creates a dummy packet with 1k data.
 std::unique_ptr<AudioPacket> MakeAudioPacket(int channel_count = 2) {
   std::unique_ptr<AudioPacket> packet(new AudioPacket);
   packet->add_data()->resize(1024);
@@ -78,8 +77,8 @@ class AudioPumpTest : public testing::Test, public protocol::AudioStub {
   base::test::SingleThreadTaskEnvironment task_environment_;
 
   // |source_| and |encoder_| are owned by the |pump_|.
-  FakeAudioSource* source_;
-  FakeAudioEncoder* encoder_;
+  raw_ptr<FakeAudioSource> source_;
+  raw_ptr<FakeAudioEncoder> encoder_;
 
   std::unique_ptr<AudioPump> pump_;
 
@@ -91,8 +90,8 @@ void AudioPumpTest::SetUp() {
   source_ = new FakeAudioSource();
   encoder_ = new FakeAudioEncoder();
   pump_ = std::make_unique<AudioPump>(
-      task_environment_.GetMainThreadTaskRunner(), base::WrapUnique(source_),
-      base::WrapUnique(encoder_), this);
+      task_environment_.GetMainThreadTaskRunner(),
+      base::WrapUnique(source_.get()), base::WrapUnique(encoder_.get()), this);
 }
 
 void AudioPumpTest::TearDown() {
@@ -171,7 +170,7 @@ TEST_F(AudioPumpTest, DownmixAudioPacket) {
     AudioPacket::CHANNELS_MONO,
   };
 
-  for (size_t i = 0; i < base::size(kChannels); i++) {
+  for (size_t i = 0; i < std::size(kChannels); i++) {
     source_->callback().Run(MakeAudioPacket(kChannels[i]));
     // Run message loop to let the pump processes the audio packet and send it
     // to the encoder.
@@ -183,8 +182,7 @@ TEST_F(AudioPumpTest, DownmixAudioPacket) {
     base::RunLoop().RunUntilIdle();
   }
 
-  ASSERT_EQ(sent_packets_.size(), base::size(kChannels));
+  ASSERT_EQ(sent_packets_.size(), std::size(kChannels));
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

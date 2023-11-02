@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -98,7 +98,7 @@ bool IsValidExternalType(const String& input) {
   // As all characters in |input| is ASCII, limiting its length within 255 just
   // limits the length of its utf-8 encoded bytes we finally write into the
   // record payload.
-  if (input.IsEmpty() || input.length() > 255)
+  if (input.empty() || input.length() > 255)
     return false;
 
   // Finds the first occurrence of ':'.
@@ -108,13 +108,13 @@ bool IsValidExternalType(const String& input) {
 
   // Validates the domain (the part before ':').
   String domain = input.Left(colon_index);
-  if (domain.IsEmpty())
+  if (domain.empty())
     return false;
   // TODO(https://crbug.com/520391): Validate |domain|.
 
   // Validates the type (the part after ':').
   String type = input.Substring(colon_index + 1);
-  if (type.IsEmpty())
+  if (type.empty())
     return false;
   for (wtf_size_t i = 0; i < type.length(); i++) {
     if (!IsASCIIAlphanumeric(type[i]) &&
@@ -157,7 +157,7 @@ String getDocumentLanguage(const ExecutionContext* execution_context) {
     if (document_element) {
       document_language = document_element->getAttribute(html_names::kLangAttr);
     }
-    if (document_language.IsEmpty()) {
+    if (document_language.empty()) {
       document_language = "en";
     }
   }
@@ -274,7 +274,7 @@ NDEFRecord* CreateMimeRecord(const ScriptState* script_state,
 
   // ExtractMIMETypeFromMediaType() ignores parameters of the MIME type.
   String mime_type;
-  if (record.hasMediaType() && !record.mediaType().IsEmpty()) {
+  if (record.hasMediaType() && !record.mediaType().empty()) {
     mime_type = ExtractMIMETypeFromMediaType(AtomicString(record.mediaType()));
   } else {
     mime_type = "application/octet-stream";
@@ -587,7 +587,7 @@ const String& NDEFRecord::mediaType() const {
 DOMDataView* NDEFRecord::data() const {
   // Step 4 in https://w3c.github.io/web-nfc/#dfn-parse-an-ndef-record
   if (record_type_ == "empty") {
-    DCHECK(payload_data_.IsEmpty());
+    DCHECK(payload_data_.empty());
     return nullptr;
   }
   DOMArrayBuffer* dom_buffer =

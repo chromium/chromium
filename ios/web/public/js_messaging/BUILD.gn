@@ -1,6 +1,9 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+
+import("//ios/web/public/js_messaging/compile_ts.gni")
+import("//ios/web/public/js_messaging/optimize_js.gni")
 
 source_set("js_messaging") {
   deps = [
@@ -9,6 +12,8 @@ source_set("js_messaging") {
     "//url",
   ]
   public_deps = [ "//third_party/abseil-cpp:absl" ]
+
+  frameworks = [ "Foundation.framework" ]
 
   sources = [
     "java_script_feature.h",
@@ -21,4 +26,25 @@ source_set("js_messaging") {
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+compile_ts("util_scripts") {
+  allow_js = true
+  sources = [ "resources/utils.ts" ]
+}
+
+# `compile_ts` and `optimize_js` targets are defined separately here instead of
+# combined using `optimize_ts` because it allows `gcrweb` target's
+# compiled TypeScript to be used as a dependency by other TypeScript targets.
+compile_ts("gcrweb") {
+  sources = [ "resources/gcrweb.ts" ]
+}
+
+optimize_js("gcrweb_js") {
+  _script = filter_include(get_target_outputs(":gcrweb"), [ "*gcrweb.js" ])
+  primary_script = _script[0]
+  sources = _script
+  output_name = "gcrweb"
+
+  deps = [ ":gcrweb" ]
 }

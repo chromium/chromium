@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,13 @@
 
 #include "extensions/browser/api/execute_code_function.h"
 
-#include <algorithm>
 #include <utility>
 
 #include "base/bind.h"
+#include "base/ranges/algorithm.h"
 #include "extensions/browser/api/extension_types_utils.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/load_and_localize_file.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
@@ -84,16 +85,14 @@ bool ExecuteCodeFunction::Execute(const std::string& code_string,
   DCHECK(!(ShouldInsertCSS() && ShouldRemoveCSS()));
 
   ScriptExecutor::FrameScope frame_scope =
-      details_->all_frames.get() && *details_->all_frames
-          ? ScriptExecutor::INCLUDE_SUB_FRAMES
-          : ScriptExecutor::SPECIFIED_FRAMES;
+      details_->all_frames.value_or(false) ? ScriptExecutor::INCLUDE_SUB_FRAMES
+                                           : ScriptExecutor::SPECIFIED_FRAMES;
 
-  root_frame_id_ = details_->frame_id.get()
-                       ? *details_->frame_id
-                       : ExtensionApiFrameIdMap::kTopFrameId;
+  root_frame_id_ =
+      details_->frame_id.value_or(ExtensionApiFrameIdMap::kTopFrameId);
 
   ScriptExecutor::MatchAboutBlank match_about_blank =
-      details_->match_about_blank.get() && *details_->match_about_blank
+      details_->match_about_blank.value_or(false)
           ? ScriptExecutor::MATCH_ABOUT_BLANK
           : ScriptExecutor::DONT_MATCH_ABOUT_BLANK;
 
@@ -130,9 +129,15 @@ bool ExecuteCodeFunction::Execute(const std::string& code_string,
     bool wants_result = has_callback();
     std::vector<mojom::JSSourcePtr> sources;
     sources.push_back(mojom::JSSource::New(code_string, script_url_));
+    // tabs.executeScript does not support waiting for promises (only
+    // scripting.executeScript does).
     injection = mojom::CodeInjection::NewJs(mojom::JSInjection::New(
-        std::move(sources), mojom::ExecutionWorld::kIsolated, wants_result,
-        user_gesture()));
+        std::move(sources), mojom::ExecutionWorld::kIsolated,
+        wants_result ? blink::mojom::WantResultOption::kWantResult
+                     : blink::mojom::WantResultOption::kNoResult,
+        user_gesture() ? blink::mojom::UserActivationOption::kActivate
+                       : blink::mojom::UserActivationOption::kDoNotActivate,
+        blink::mojom::PromiseResultOption::kDoNotWait));
   }
 
   executor->ExecuteScript(
@@ -167,6 +172,11 @@ ExtensionFunction::ResponseAction ExecuteCodeFunction::Run() {
     return RespondNow(Error(std::move(error)));
 
   if (details_->code) {
+    if (!IsWebView() && extension()) {
+      ExtensionsBrowserClient::Get()->NotifyExtensionApiTabExecuteScript(
+          browser_context(), extension_id(), *details_->code);
+    }
+
     if (!Execute(*details_->code, &error))
       return RespondNow(Error(std::move(error)));
     return did_respond() ? AlreadyResponded() : RespondLater();
@@ -204,11 +214,8 @@ void ExecuteCodeFunction::OnExecuteCodeFinished(
     std::vector<ScriptExecutor::FrameResult> results) {
   DCHECK(!results.empty());
 
-  auto root_frame_result =
-      std::find_if(results.begin(), results.end(),
-                   [root_frame_id = root_frame_id_](const auto& frame_result) {
-                     return frame_result.frame_id == root_frame_id;
-                   });
+  auto root_frame_result = base::ranges::find(
+      results, root_frame_id_, &ScriptExecutor::FrameResult::frame_id);
 
   DCHECK(root_frame_result != results.end());
 

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,11 +10,11 @@
 #include <memory>
 #include <set>
 
+#include "base/callback.h"
 #include "base/callback_forward.h"
-#include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
-#include "ui/base/ime/ash/ime_input_context_handler_interface.h"
+#include "ui/base/ime/ash/text_input_target.h"
 #include "ui/base/ime/ash/typing_session_manager.h"
 #include "ui/base/ime/character_composer.h"
 #include "ui/base/ime/composition_text.h"
@@ -23,12 +23,16 @@
 
 namespace ui {
 
+namespace ime {
+enum class KeyEventHandledState;
+}
+
 // A `ui::InputMethod` implementation for Ash.
 class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodAsh
     : public InputMethodBase,
-      public IMEInputContextHandlerInterface {
+      public TextInputTarget {
  public:
-  explicit InputMethodAsh(internal::InputMethodDelegate* delegate);
+  explicit InputMethodAsh(ImeKeyEventDispatcher* ime_key_event_dispatcher);
 
   InputMethodAsh(const InputMethodAsh&) = delete;
   InputMethodAsh& operator=(const InputMethodAsh&) = delete;
@@ -37,7 +41,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodAsh
 
   // Overridden from InputMethod:
   ui::EventDispatchDetails DispatchKeyEvent(ui::KeyEvent* event) override;
-  void OnTextInputTypeChanged(const TextInputClient* client) override;
+  void OnTextInputTypeChanged(TextInputClient* client) override;
   void OnCaretBoundsChanged(const TextInputClient* client) override;
   void CancelComposition(const TextInputClient* client) override;
   bool IsCandidatePopupOpen() const override;
@@ -46,12 +50,13 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodAsh
   // Overridden from InputMethodBase:
   void OnFocus() override;
   void OnBlur() override;
+  void OnTouch(ui::EventPointerType pointerType) override;
   void OnWillChangeFocusedClient(TextInputClient* focused_before,
                                  TextInputClient* focused) override;
   void OnDidChangeFocusedClient(TextInputClient* focused_before,
                                 TextInputClient* focused) override;
 
-  // ui::IMEInputContextHandlerInterface overrides:
+  // ui::TextInputTarget overrides:
   void CommitText(
       const std::u16string& text,
       TextInputClient::InsertTextCursorBehavior cursor_behavior) override;
@@ -66,9 +71,9 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodAsh
   gfx::Range GetAutocorrectRange() override;
   gfx::Rect GetAutocorrectCharacterBounds() override;
   gfx::Rect GetTextFieldBounds() override;
-  bool SetAutocorrectRange(const gfx::Range& range) override;
-  absl::optional<GrammarFragment> GetGrammarFragment(
-      const gfx::Range& range) override;
+  void SetAutocorrectRange(const gfx::Range& range,
+                           SetAutocorrectRangeDoneCallback callback) override;
+  absl::optional<GrammarFragment> GetGrammarFragmentAtCursor() override;
   bool ClearGrammarFragments(const gfx::Range& range) override;
   bool AddGrammarFragments(
       const std::vector<GrammarFragment>& fragments) override;
@@ -82,6 +87,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodAsh
   InputMethod* GetInputMethod() override;
   void ConfirmCompositionText(bool reset_engine, bool keep_selection) override;
   bool HasCompositionText() override;
+  std::u16string GetCompositionText() override;
   ukm::SourceId GetClientSourceForMetrics() override;
 
  protected:
@@ -90,10 +96,10 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodAsh
                                          uint32_t cursor_position) const;
 
   // Process a key returned from the input method.
-  virtual ui::EventDispatchDetails ProcessKeyEventPostIME(
+  [[nodiscard]] virtual ui::EventDispatchDetails ProcessKeyEventPostIME(
       ui::KeyEvent* event,
-      bool handled,
-      bool stopped_propagation) WARN_UNUSED_RESULT;
+      ui::ime::KeyEventHandledState handled_state,
+      bool stopped_propagation);
 
   // Resets context and abandon all pending results and key events.
   // If |reset_engine| is true, a reset signal will be sent to the IME.
@@ -122,6 +128,15 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodAsh
     size_t cursor = 0;
   };
 
+  struct PendingAutocorrectRange {
+    PendingAutocorrectRange(const gfx::Range& range,
+                            SetAutocorrectRangeDoneCallback callback);
+    ~PendingAutocorrectRange();
+
+    gfx::Range range;
+    SetAutocorrectRangeDoneCallback callback;
+  };
+
   // Checks the availability of focused text input client and update focus
   // state.
   void UpdateContextFocusState();
@@ -130,12 +145,13 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodAsh
   // A VKEY_PROCESSKEY may be dispatched to the EventTargets.
   // It returns the result of whether the event has been stopped propagation
   // when dispatching post IME.
-  ui::EventDispatchDetails ProcessFilteredKeyPressEvent(ui::KeyEvent* event)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] ui::EventDispatchDetails ProcessFilteredKeyPressEvent(
+      ui::KeyEvent* event,
+      bool only_dispatch_vkey_processkey);
 
   // Processes a key event that was not filtered by the input method.
-  ui::EventDispatchDetails ProcessUnfilteredKeyPressEvent(ui::KeyEvent* event)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] ui::EventDispatchDetails ProcessUnfilteredKeyPressEvent(
+      ui::KeyEvent* event);
 
   // Processes any pending input method operations that issued while handling
   // the key event. Does not do anything if there were no pending operations.
@@ -171,12 +187,20 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodAsh
   TextInputMode GetTextInputMode() const;
 
   // Called from the engine when it completes processing.
-  void ProcessKeyEventDone(ui::KeyEvent* event, bool is_handled);
+  void ProcessKeyEventDone(ui::KeyEvent* event,
+                           ui::ime::KeyEventHandledState handled_state);
 
   bool IsPasswordOrNoneInputFieldFocused();
 
   // Gets the reason how the focused text input client was focused.
   TextInputClient::FocusReason GetClientFocusReason() const;
+
+  // Gets the bounds of the composition text or cursor in |client|.
+  std::vector<gfx::Rect> GetCompositionBounds(const TextInputClient* client);
+
+  // Sends a fake key event for IME composing without physical key events.
+  // Returns true if the faked key event is stopped propagation.
+  bool SendFakeProcessKeyEvent(bool pressed) const;
 
   // Pending composition text generated by the current pending key event.
   // It'll be sent to the focused text input client as soon as we receive the
@@ -200,7 +224,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodAsh
   // Indicates whether there is a pending SetCompositionRange operation.
   absl::optional<PendingSetCompositionRange> pending_composition_range_;
 
-  absl::optional<gfx::Range> pending_autocorrect_range_;
+  std::unique_ptr<PendingAutocorrectRange> pending_autocorrect_range_;
 
   // An object to compose a character from a sequence of key presses
   // including dead key etc.

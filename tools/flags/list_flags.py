@@ -1,5 +1,5 @@
-#!/usr/bin/env python3
-# Copyright 2019 The Chromium Authors. All rights reserved.
+#!/usr/bin/env vpython3
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -13,37 +13,13 @@ import os
 import re
 import sys
 
-ROOT_PATH = os.path.join(os.path.dirname(__file__), '..', '..')
-PYJSON5_PATH = os.path.join(ROOT_PATH, 'third_party', 'pyjson5', 'src')
-DEPOT_TOOLS_PATH = os.path.join(ROOT_PATH, 'third_party', 'depot_tools')
+import utils
 
-sys.path.append(PYJSON5_PATH)
+DEPOT_TOOLS_PATH = os.path.join(utils.ROOT_PATH, 'third_party', 'depot_tools')
+
 sys.path.append(DEPOT_TOOLS_PATH)
 
-import json5
-import owners
-
-
-def load_metadata():
-  flags_path = os.path.join(ROOT_PATH, 'chrome', 'browser',
-                            'flag-metadata.json')
-  return json5.load(open(flags_path))
-
-
-def keep_expired_by(flags, mstone):
-  """Filter flags to contain only flags that expire by mstone.
-
-  Only flags that either never expire or have an expiration milestone <= mstone
-  are in the returned list.
-
-  >>> keep_expired_by([{'expiry_milestone': 3}], 2)
-  []
-  >>> keep_expired_by([{'expiry_milestone': 3}], 3)
-  [{'expiry_milestone': 3}]
-  >>> keep_expired_by([{'expiry_milestone': -1}], 3)
-  []
-  """
-  return [f for f in flags if -1 != f['expiry_milestone'] <= mstone]
+import owners_client
 
 
 def keep_never_expires(flags):
@@ -66,20 +42,26 @@ def resolve_owners(flags):
   * Passing any other type of entry through unmodified
   """
 
-  owners_db = owners.Database(ROOT_PATH, open, os.path)
+  owners_db = owners_client.GetCodeOwnersClient(
+      root=utils.ROOT_PATH,
+      upstream="",
+      host="chromium-review.googlesource.com",
+      project="chromium/src",
+      branch="main")
 
   new_flags = []
   for f in flags:
     new_flag = f.copy()
-    new_owners = []
+    new_owners = set()
     for o in f['owners']:
-      if o.startswith('//') or '/' in o:
-        new_owners += owners_db.owners_rooted_at_file(re.sub('//', '', o))
+      # Assume any filepath is to an OWNERS file.
+      if '/' in o:
+        new_owners.update(set(owners_db.ListBestOwners(re.sub('//', '', o))))
       elif '@' not in o:
-        new_owners.append(o + '@chromium.org')
+        new_owners.add(o + '@chromium.org')
       else:
-        new_owners.append(o)
-    new_flag['resolved_owners'] = new_owners
+        new_owners.add(o)
+    new_flag['resolved_owners'] = sorted(new_owners)
     new_flags.append(new_flag)
   return new_flags
 
@@ -103,7 +85,9 @@ def print_flags(flags, verbose):
   """Prints the supplied list of flags.
 
   In verbose mode, prints name, expiry, and owner list; in non-verbose mode,
-  prints just the name.
+  prints just the name. Verbose mode is actually tab-separated values, with
+  commas used as separators within individual fields - this is the format the
+  rest of the flags automation consumes most readily.
 
   >>> f1 = {'name': 'foo', 'expiry_milestone': 73, 'owners': ['bar', 'baz']}
   >>> f1['resolved_owners'] = ['bar@c.org', 'baz@c.org']
@@ -111,17 +95,17 @@ def print_flags(flags, verbose):
   >>> f2['resolved_owners'] = ['quxx@c.org']
   >>> print_flags([f1], False)
   foo
-  >>> print_flags([f1], True)
-  foo,73,bar baz,bar@c.org baz@c.org
+  >>> print_flags([f1], True) # doctest: +NORMALIZE_WHITESPACE
+  foo 73 bar,baz bar@c.org,baz@c.org
   >>> print_flags([f2], False)
   bar
-  >>> print_flags([f2], True)
-  bar,74,//quxx/OWNERS,quxx@c.org
+  >>> print_flags([f2], True) # doctest: +NORMALIZE_WHITESPACE
+  bar 74 //quxx/OWNERS quxx@c.org
   """
   for f in flags:
     if verbose:
-      print('%s,%d,%s,%s' % (f['name'], f['expiry_milestone'], ' '.join(
-          f['owners']), ' '.join(f['resolved_owners'])))
+      print('%s\t%d\t%s\t%s' % (f['name'], f['expiry_milestone'], ','.join(
+          f['owners']), ','.join(f['resolved_owners'])))
     else:
       print(f['name'])
 
@@ -142,9 +126,9 @@ def main():
   if args.testonly:
     return
 
-  flags = load_metadata()
+  flags = utils.load_metadata()
   if args.expired_by:
-    flags = keep_expired_by(flags, args.expired_by)
+    flags = utils.keep_expired_by(flags, args.expired_by)
   if args.never_expires:
     flags = keep_never_expires(flags)
   if args.find_unused:

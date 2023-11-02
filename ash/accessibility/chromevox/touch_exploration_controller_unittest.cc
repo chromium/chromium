@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "ash/accessibility/chromevox/mock_touch_exploration_controller_delegate.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
@@ -26,6 +25,7 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/events/test/events_test_utils.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/test/gl_surface_test_support.h"
 
@@ -50,7 +50,7 @@ class EventCapturer : public ui::EventHandler {
   void OnEvent(ui::Event* event) override {
     if (event->IsMouseEvent() || event->IsTouchEvent() ||
         event->IsGestureEvent() || event->IsKeyEvent()) {
-      events_.push_back(ui::Event::Clone(*event));
+      events_.push_back(event->Clone());
     } else {
       return;
     }
@@ -1154,7 +1154,7 @@ TEST_F(TouchExplorationTest, GestureSwipe) {
   // detector test, since it seems to be about the right amount to get a swipe.
   const int kSteps = 15;
 
-  for (size_t i = 0; i < base::size(gestures_to_test); ++i) {
+  for (size_t i = 0; i < std::size(gestures_to_test); ++i) {
     const float distance = 2 * gesture_detector_config_.touch_slop + 1;
     int move_x = gestures_to_test[i].move_x * distance;
     int move_y = gestures_to_test[i].move_y * distance;
@@ -1184,9 +1184,9 @@ TEST_F(TouchExplorationTest, GestureSwipe) {
 
 TEST_F(TouchExplorationTest, GestureSwipePortrit) {
   // Rotate the window 90-degrees counter-clockwise.
-  root_window()->GetHost()->SetRootTransform(
-      gfx::Transform(0, 1, 0, 0, -1, 0, 0, root_window()->bounds().height(), 0,
-                     0, 0, 0, 0, 0, 0, 0));
+  root_window()->GetHost()->SetRootTransform(gfx::Transform::RowMajor(
+      0, 1, 0, 0, -1, 0, 0, root_window()->bounds().height(), 0, 0, 0, 0, 0, 0,
+      0, 0));
 
   SwitchTouchExplorationMode(true);
 
@@ -1215,7 +1215,7 @@ TEST_F(TouchExplorationTest, GestureSwipePortrit) {
   // detector test, since it seems to be about the right amount to get a swipe.
   const int kSteps = 15;
 
-  for (size_t i = 0; i < base::size(gestures_to_test); ++i) {
+  for (size_t i = 0; i < std::size(gestures_to_test); ++i) {
     const float distance = 2 * gesture_detector_config_.touch_slop + 1;
     int move_x = gestures_to_test[i].move_x * distance;
     int move_y = gestures_to_test[i].move_y * distance;
@@ -1726,7 +1726,7 @@ TEST_F(TouchExplorationTest, ExclusionArea) {
 
   gfx::Rect window = BoundsOfRootWindowInDIP();
   gfx::Rect exclude = window;
-  exclude.Inset(0, 0, 0, 30);
+  exclude.Inset(gfx::Insets::TLBR(0, 0, 30, 0));
   SetExcludeBounds(exclude);
 
   gfx::Point in_pt = exclude.CenterPoint();
@@ -1800,7 +1800,7 @@ TEST_F(TouchExplorationTest, SingleTapInLiftActivationArea) {
   SwitchTouchExplorationMode(true);
 
   gfx::Rect lift_activation = BoundsOfRootWindowInDIP();
-  lift_activation.Inset(0, 0, 0, 30);
+  lift_activation.Inset(gfx::Insets::TLBR(0, 0, 30, 0));
   SetLiftActivationBounds(lift_activation);
 
   // Tap at one location, and get tap and mouse move events.
@@ -1837,7 +1837,7 @@ TEST_F(TouchExplorationTest, TouchExploreLiftInLiftActivationArea) {
   SwitchTouchExplorationMode(true);
 
   gfx::Rect lift_activation = BoundsOfRootWindowInDIP();
-  lift_activation.Inset(0, 0, 0, 30);
+  lift_activation.Inset(gfx::Insets::TLBR(0, 0, 30, 0));
   SetLiftActivationBounds(lift_activation);
 
   // Explore at one location, and get tap and touch explore events.

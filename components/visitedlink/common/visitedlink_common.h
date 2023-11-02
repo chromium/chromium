@@ -1,4 +1,4 @@
-// Copyright (c) 2006-2008 The Chromium Authors. All rights reserved.
+// Copyright 2006-2008 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,8 @@
 #include <stdint.h>
 
 #include <vector>
+
+#include "base/memory/raw_ptr.h"
 
 class GURL;
 
@@ -127,7 +129,7 @@ class VisitedLinkCommon {
   }
 
   // pointer to the first item
-  VisitedLinkCommon::Fingerprint* hash_table_;
+  raw_ptr<VisitedLinkCommon::Fingerprint> hash_table_;
 
   // the number of items in the hash table
   int32_t table_length_;

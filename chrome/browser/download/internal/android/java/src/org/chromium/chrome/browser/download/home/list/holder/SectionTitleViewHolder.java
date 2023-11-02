@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -49,8 +49,6 @@ public class SectionTitleViewHolder extends ListItemViewHolder {
                 return StringUtils.dateToHeaderString(sectionItem.date);
             case SectionHeaderType.JUST_NOW:
                 return context.getResources().getString(R.string.download_manager_just_now);
-            case SectionHeaderType.SCHEDULED_LATER:
-                return context.getResources().getString(R.string.download_manager_scheduled_later);
         }
         assert false : "Unknown section header type.";
         return null;

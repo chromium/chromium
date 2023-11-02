@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,7 +44,7 @@ void SetWebRequestMonitor(WebRequestMonitor web_request_monitor) {
 void OnApiEventDispatched(content::BrowserContext* browser_context,
                           const std::string& extension_id,
                           const std::string& event_name,
-                          const base::ListValue& event_args) {
+                          const base::Value::List& event_args) {
   if (g_event_monitor)
     g_event_monitor(browser_context, extension_id, event_name, event_args);
 }
@@ -53,7 +53,7 @@ void OnApiEventDispatched(content::BrowserContext* browser_context,
 void OnApiFunctionCalled(content::BrowserContext* browser_context,
                          const std::string& extension_id,
                          const std::string& api_name,
-                         const base::ListValue& args) {
+                         const base::Value::List& args) {
   if (g_function_monitor)
     g_function_monitor(browser_context, extension_id, api_name, args);
 }

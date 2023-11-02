@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,39 +6,39 @@
 
 #include <type_traits>
 
+#include "base/allocator/partition_allocator/partition_alloc_base/rand_util.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/thread_annotations.h"
 #include "base/allocator/partition_allocator/partition_lock.h"
-#include "base/rand_util.h"
-
-namespace base {
 
 namespace partition_alloc {
+
 class RandomGenerator {
  public:
   constexpr RandomGenerator() {}
 
   uint32_t RandomValue() {
-    internal::ScopedGuard<true> guard(lock_);
+    ::partition_alloc::internal::ScopedGuard guard(lock_);
     return GetGenerator()->RandUint32();
   }
 
   void SeedForTesting(uint64_t seed) {
-    internal::ScopedGuard<true> guard(lock_);
+    ::partition_alloc::internal::ScopedGuard guard(lock_);
     GetGenerator()->ReseedForTesting(seed);
   }
 
  private:
-  internal::PartitionLock lock_ = {};
-  bool initialized_ GUARDED_BY(lock_) = false;
+  ::partition_alloc::internal::Lock lock_ = {};
+  bool initialized_ PA_GUARDED_BY(lock_) = false;
   union {
-    base::InsecureRandomGenerator instance_ GUARDED_BY(lock_);
-    uint8_t instance_buffer_[sizeof(base::InsecureRandomGenerator)] GUARDED_BY(
-        lock_) = {};
+    internal::base::InsecureRandomGenerator instance_ PA_GUARDED_BY(lock_);
+    uint8_t instance_buffer_[sizeof(
+        internal::base::InsecureRandomGenerator)] PA_GUARDED_BY(lock_) = {};
   };
 
-  base::InsecureRandomGenerator* GetGenerator()
-      EXCLUSIVE_LOCKS_REQUIRED(lock_) {
+  internal::base::InsecureRandomGenerator* GetGenerator()
+      PA_EXCLUSIVE_LOCKS_REQUIRED(lock_) {
     if (!initialized_) {
-      new (instance_buffer_) base::InsecureRandomGenerator();
+      new (instance_buffer_) internal::base::InsecureRandomGenerator();
       initialized_ = true;
     }
     return &instance_;
@@ -49,20 +49,22 @@ class RandomGenerator {
 // non-trivial default destructor. Not meant to be destructed anyway.
 static_assert(std::is_trivially_destructible<RandomGenerator>::value, "");
 
-}  // namespace partition_alloc
-
 namespace {
 
-partition_alloc::RandomGenerator g_generator = {};
+RandomGenerator g_generator = {};
 
 }  // namespace
+
+namespace internal {
 
 uint32_t RandomValue() {
   return g_generator.RandomValue();
 }
 
+}  // namespace internal
+
 void SetMmapSeedForTesting(uint64_t seed) {
   return g_generator.SeedForTesting(seed);
 }
 
-}  // namespace base
+}  // namespace partition_alloc

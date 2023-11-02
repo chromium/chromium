@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_REMOTE_APPS_REMOTE_APPS_MANAGER_H_
 
 #include <map>
+#include <string>
 #include <vector>
 
 #include "base/callback.h"
@@ -23,21 +24,30 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AppListModelUpdater;
 class ChromeAppListItem;
 class Profile;
 
+namespace apps {
+struct MenuItems;
+}  // namespace apps
+
 namespace gfx {
 class ImageSkia;
 }  // namespace gfx
+
+namespace extensions {
+class EventRouter;
+}  // namespace extensions
 
 namespace ash {
 
 class RemoteAppsImpl;
 
 // KeyedService which manages the logic for |AppType::kRemote| in AppService.
-// This service is only created for Managed Guest Sessions.
+// This service is created for Managed Guest Sessions and Regular User Sessions.
 // The IDs of the added apps and folders are GUIDs generated using
 // |base::GenerateGUID()|.
 // See crbug.com/1101208 for more details on Remote Apps.
@@ -46,7 +56,8 @@ class RemoteAppsManager
       public apps::RemoteApps::Delegate,
       public app_list::AppListSyncableService::Observer,
       public AppListModelUpdaterObserver,
-      public chromeos::remote_apps::mojom::RemoteAppsFactory {
+      public chromeos::remote_apps::mojom::RemoteAppsFactory,
+      public chromeos::remote_apps::mojom::RemoteAppsLacrosBridge {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -71,32 +82,51 @@ class RemoteAppsManager
 
   bool is_initialized() const { return is_initialized_; }
 
-  void BindInterface(
+  void BindFactoryInterface(
       mojo::PendingReceiver<chromeos::remote_apps::mojom::RemoteAppsFactory>
           pending_remote_apps_factory);
+
+  void BindLacrosBridgeInterface(
+      mojo::PendingReceiver<
+          chromeos::remote_apps::mojom::RemoteAppsLacrosBridge>
+          pending_remote_apps_lacros_bridge);
 
   using AddAppCallback =
       base::OnceCallback<void(const std::string& id, RemoteAppsError error)>;
 
-  // Adds a app with the given |name|. If |folder_id| is non-empty, the app is
+  // Adds a app with the given `name`. If `folder_id` is non-empty, the app is
   // added to the folder with the given ID. The icon of the app is an image
-  // retrieved from |icon_url| and is retrieved asynchronously. If the icon has
+  // retrieved from `icon_url` and is retrieved asynchronously. If the icon has
   // not been downloaded, or there is an error in downloading the icon, a
-  // placeholder icon will be used. If |add_to_front| is true and the app has
+  // placeholder icon will be used. If `add_to_front` is true and the app has
   // no parent folder, the app will be added to the front of the app item list.
+  // `source_id` is a string used to identify the caller of this method. This
+  // identifier is typically an extension or app ID.
   // The callback will be run with the ID of the added app, or an error if
   // there is one.
   // Adding to a non-existent folder will result in an error.
   // Adding an app before the manager is initialized will result in an error.
-  void AddApp(const std::string& name,
+  void AddApp(const std::string& source_id,
+              const std::string& name,
               const std::string& folder_id,
               const GURL& icon_url,
               bool add_to_front,
               AddAppCallback callback);
 
+  // Adds a folder if the specified folder is missing in `model_updater_`.
+  void MaybeAddFolder(const std::string& folder_id);
+
+  // Returns a const pointer to the info of the specified app. If the app does
+  // not exist, returns a nullptr.
+  const RemoteAppsModel::AppInfo* GetAppInfo(const std::string& app_id) const;
+
   // Deletes the app with id |id|.
   // Deleting a non-existent app will result in an error.
   RemoteAppsError DeleteApp(const std::string& id);
+
+  // Sorts the launcher items with the custom kAlphabeticalEphemeralAppFirst
+  // sort order which moves the remote apps to the front of the launcher.
+  void SortLauncherWithRemoteAppsFirst();
 
   // Adds a folder with |folder_name|. Note that empty folders are not shown in
   // the launcher. Returns the ID for the added folder. If |add_to_front| is
@@ -112,14 +142,19 @@ class RemoteAppsManager
   // of the app item list.
   bool ShouldAddToFront(const std::string& id) const;
 
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
-
   // KeyedService:
   void Shutdown() override;
 
-  // remote_apps::mojom::RemoteAppsFactory:
-  void Create(
+  // chromeos::remote_apps::mojom::RemoteAppsFactory:
+  void BindRemoteAppsAndAppLaunchObserver(
+      const std::string& source_id,
+      mojo::PendingReceiver<chromeos::remote_apps::mojom::RemoteApps>
+          pending_remote_apps,
+      mojo::PendingRemote<chromeos::remote_apps::mojom::RemoteAppLaunchObserver>
+          pending_observer) override;
+
+  // chromeos::remote_apps::mojom::RemoteAppsLacrosBridge:
+  void BindRemoteAppsAndAppLaunchObserverForLacros(
       mojo::PendingReceiver<chromeos::remote_apps::mojom::RemoteApps>
           pending_remote_apps,
       mojo::PendingRemote<chromeos::remote_apps::mojom::RemoteAppLaunchObserver>
@@ -127,11 +162,11 @@ class RemoteAppsManager
 
   // apps::RemoteApps::Delegate:
   const std::map<std::string, RemoteAppsModel::AppInfo>& GetApps() override;
-  void LaunchApp(const std::string& id) override;
+  void LaunchApp(const std::string& app_id) override;
   gfx::ImageSkia GetIcon(const std::string& id) override;
   gfx::ImageSkia GetPlaceholderIcon(const std::string& id,
                                     int32_t size_hint_in_dip) override;
-  apps::mojom::MenuItemsPtr GetMenuModel(const std::string& id) override;
+  apps::MenuItems GetMenuModel(const std::string& id) override;
 
   // app_list::AppListSyncableService::Observer:
   void OnSyncModelUpdated() override;
@@ -143,6 +178,8 @@ class RemoteAppsManager
       std::unique_ptr<ImageDownloader> image_downloader);
 
   RemoteAppsModel* GetModelForTesting();
+
+  RemoteAppsImpl& GetRemoteAppsImpl() { return remote_apps_impl_; }
 
   void SetIsInitializedForTesting(bool is_initialized);
 
@@ -161,15 +198,20 @@ class RemoteAppsManager
   bool is_initialized_ = false;
   app_list::AppListSyncableService* app_list_syncable_service_ = nullptr;
   AppListModelUpdater* model_updater_ = nullptr;
+  extensions::EventRouter* event_router_ = nullptr;
   std::unique_ptr<apps::RemoteApps> remote_apps_;
   RemoteAppsImpl remote_apps_impl_{this};
   std::unique_ptr<RemoteAppsModel> model_;
   std::unique_ptr<ImageDownloader> image_downloader_;
   base::ObserverList<Observer> observer_list_;
-  mojo::ReceiverSet<chromeos::remote_apps::mojom::RemoteAppsFactory> receivers_;
+  mojo::ReceiverSet<chromeos::remote_apps::mojom::RemoteAppsFactory>
+      factory_receivers_;
+  mojo::ReceiverSet<chromeos::remote_apps::mojom::RemoteAppsLacrosBridge>
+      bridge_receivers_;
   // Map from id to callback. The callback is run after |OnAppUpdate| for the
   // app has been observed.
   std::map<std::string, AddAppCallback> add_app_callback_map_;
+  std::map<std::string, std::string> app_id_to_source_id_map_;
   base::ScopedObservation<
       app_list::AppListSyncableService,
       app_list::AppListSyncableService::Observer,

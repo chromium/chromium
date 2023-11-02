@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,8 +34,6 @@ void InputMethodManager::Initialize(InputMethodManager* instance) {
 
 // static
 void InputMethodManager::Shutdown() {
-  DCHECK(g_input_method_manager)
-      << "InputMethodManager() is not initialized.";
   delete g_input_method_manager;
   g_input_method_manager = nullptr;
 }

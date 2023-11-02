@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -54,8 +54,8 @@ class BlobMemoryControllerTest : public base::test::WithFeatureOverride,
  protected:
   BlobMemoryControllerTest()
       : base::test::WithFeatureOverride(
-            BlobMemoryController::
-                kInhibitBlobMemoryControllerMemoryPressureResponse) {}
+
+            kInhibitBlobMemoryControllerMemoryPressureResponse) {}
 
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -1170,7 +1170,7 @@ TEST_P(BlobMemoryControllerTest, OnMemoryPressure) {
 
   // Tasks are only posted if the memory pressure response is active.
   const bool memory_pressure_response_active = !base::FeatureList::IsEnabled(
-      BlobMemoryController::kInhibitBlobMemoryControllerMemoryPressureResponse);
+      kInhibitBlobMemoryControllerMemoryPressureResponse);
   EXPECT_EQ(file_runner_->HasPendingTask(), memory_pressure_response_active);
 
   if (memory_pressure_response_active) {

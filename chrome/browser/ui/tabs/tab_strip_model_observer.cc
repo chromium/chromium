@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -153,10 +153,11 @@ TabStripSelectionChange& TabStripSelectionChange::operator=(
 ////////////////////////////////////////////////////////////////////////////////
 // TabGroupChange
 //
-TabGroupChange::TabGroupChange(tab_groups::TabGroupId group,
+TabGroupChange::TabGroupChange(TabStripModel* model,
+                               tab_groups::TabGroupId group,
                                Type type,
                                std::unique_ptr<Delta> deltap)
-    : group(group), type(type), delta(std::move(deltap)) {}
+    : group(group), model(model), type(type), delta(std::move(deltap)) {}
 
 TabGroupChange::~TabGroupChange() = default;
 
@@ -168,9 +169,11 @@ const TabGroupChange::VisualsChange* TabGroupChange::GetVisualsChange() const {
   return static_cast<const VisualsChange*>(delta.get());
 }
 
-TabGroupChange::TabGroupChange(tab_groups::TabGroupId group,
+TabGroupChange::TabGroupChange(TabStripModel* model,
+                               tab_groups::TabGroupId group,
                                VisualsChange deltap)
-    : TabGroupChange(group,
+    : TabGroupChange(model,
+                     group,
                      Type::kVisualsChanged,
                      std::make_unique<VisualsChange>(std::move(deltap))) {}
 
@@ -191,6 +194,11 @@ void TabStripModelObserver::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {}
+
+void TabStripModelObserver::OnTabWillBeAdded() {}
+
+void TabStripModelObserver::OnTabWillBeRemoved(content::WebContents* contents,
+                                               int index) {}
 
 void TabStripModelObserver::OnTabGroupChanged(const TabGroupChange& change) {}
 

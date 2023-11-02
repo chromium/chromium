@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,10 +14,11 @@ namespace blink {
 static const WTF::TextEncoding DefaultEncodingForUrlAndContentType(
     const char* url,
     const char* content_type) {
-  auto page_holder = std::make_unique<DummyPageHolder>(IntSize(0, 0));
+  auto page_holder = std::make_unique<DummyPageHolder>(gfx::Size(0, 0));
   Document& document = page_holder->GetDocument();
   document.SetURL(KURL(NullURL(), url));
-  return BuildTextResourceDecoderFor(&document, content_type, g_null_atom)
+  return BuildTextResourceDecoder(document.GetFrame(), document.Url(),
+                                  content_type, g_null_atom)
       ->Encoding();
 }
 

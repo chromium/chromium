@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -65,7 +65,7 @@ TEST_P(ConvertToWebRtcVideoFrameBufferParamTest, ToI420) {
   EXPECT_EQ(i420_frame->height(), kNaturalSize.height());
 }
 
-INSTANTIATE_TEST_CASE_P(
+INSTANTIATE_TEST_SUITE_P(
     ConvertToWebRtcVideoFrameBufferParamTest,
     ConvertToWebRtcVideoFrameBufferParamTest,
     ::testing::ValuesIn(TestParams()),
@@ -268,12 +268,13 @@ TEST(ConvertToWebRtcVideoFrameBufferTest,
                       media::VideoFrame::STORAGE_OWNED_MEMORY,
                       media::VideoPixelFormat::PIXEL_FORMAT_ARGB);
   // fill mock image with whilte color.
-  memset(memory_frame->data(media::VideoFrame::kARGBPlane), 0xFF,
+  memset(memory_frame->writable_data(media::VideoFrame::kARGBPlane), 0xFF,
          kCodedSize.GetArea() * 4);
 
   // Should call texture conversion.
   resources->ExpectCreateFrameWithRealImplementation();
-  resources->ExpectCreateTemporaryFrameWithRealImplementation();
+  resources->ExpectCreateTemporaryVectorBufferWithRealImplementation();
+  resources->ExpectReleaseTemporaryVectorBufferWithRealImplementation();
   EXPECT_CALL(*resources, ConstructVideoFrameFromTexture(_))
       .WillOnce(Return(memory_frame));
 

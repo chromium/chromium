@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/autofill/core/common/password_generation_util.h"
@@ -76,8 +77,7 @@ class PasswordManager : public PasswordManagerInterface {
       const std::vector<autofill::FormData>& forms_data) override;
   void OnPasswordFormsRendered(
       PasswordManagerDriver* driver,
-      const std::vector<autofill::FormData>& visible_forms_data,
-      bool did_stop_loading) override;
+      const std::vector<autofill::FormData>& visible_forms_data) override;
   void OnPasswordFormSubmitted(PasswordManagerDriver* driver,
                                const autofill::FormData& form_data) override;
   void OnPasswordFormCleared(PasswordManagerDriver* driver,
@@ -87,7 +87,9 @@ class PasswordManager : public PasswordManagerInterface {
       autofill::FormRendererId form_id,
       autofill::FieldRendererId generation_element,
       autofill::password_generation::PasswordGenerationType type) override;
-#if defined(OS_IOS)
+
+  PasswordManagerClient* GetClient() override;
+#if BUILDFLAG(IS_IOS)
   void OnSubframeFormSubmission(PasswordManagerDriver* driver,
                                 const autofill::FormData& form_data) override;
   void PresaveGeneratedPassword(
@@ -162,6 +164,12 @@ class PasswordManager : public PasswordManagerInterface {
   // Handles a request to hide manual fallback for password saving.
   void HideManualFallbackForSaving();
 
+  // Checks whether all |FormFetcher|s belonging to the |driver|-corresponding
+  // frame have finished fetching logins.
+  // Used to determine whether manual password generation can be offered
+  // Automatic password generation already waits for that signal.
+  bool HaveFormManagersReceivedData(const PasswordManagerDriver* driver);
+
   void ProcessAutofillPredictions(
       PasswordManagerDriver* driver,
       const std::vector<autofill::FormStructure*>& forms);
@@ -176,8 +184,6 @@ class PasswordManager : public PasswordManagerInterface {
 
   // Returns true if password element is detected on the current page.
   bool IsPasswordFieldDetectedOnPage();
-
-  PasswordManagerClient* client() { return client_; }
 
 #if defined(UNIT_TEST)
   const std::vector<std::unique_ptr<PasswordFormManager>>& form_managers()
@@ -194,14 +200,14 @@ class PasswordManager : public PasswordManagerInterface {
   }
 #endif  // defined(UNIT_TEST)
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   // Reports the success from the renderer's PasswordAutofillAgent to fill
   // credentials into a site. This may be called multiple times, but only
   // the first result will be recorded for each PasswordFormManager.
   void LogFirstFillingResult(PasswordManagerDriver* driver,
                              autofill::FormRendererId form_renderer_id,
                              int32_t result);
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 
   // Notifies that Credential Management API function store() is called.
   void NotifyStorePasswordCalled();
@@ -211,6 +217,17 @@ class PasswordManager : public PasswordManagerInterface {
 
   // Returns true if a form manager is processing a password update.
   bool IsFormManagerPendingPasswordUpdate() const;
+
+  // Returns true if password manager has recorded a submitted manager.
+  bool HasSubmittedManager() const;
+
+  // Returns true if the password manager has recorded a submitted form
+  // and the new password in that form is the same as the old one.
+  bool HasSubmittedManagerWithSamePassword() const;
+
+  // Returns the submitted PasswordForm if there exists one.
+  // TODO (crbug.com/1310169): Eliminate "HasSubmittedManager".
+  absl::optional<PasswordForm> GetSubmittedCredentials();
 
   // Saves the current submitted password to the disk. Password manager must
   // have a submitted manager.
@@ -302,10 +319,6 @@ class PasswordManager : public PasswordManagerInterface {
   PasswordFormManager* GetMatchedManager(PasswordManagerDriver* driver,
                                          autofill::FormRendererId form_id);
 
-  // Log a frame (main frame, iframe) of a submitted password form.
-  void ReportSubmittedFormFrameMetric(const PasswordManagerDriver* driver,
-                                      const PasswordForm& form);
-
   //  If |possible_username_.form_predictions| is missing, this functions tries
   //  to find predictions for the form which contains |possible_username_| in
   //  |predictions_|.
@@ -316,10 +329,15 @@ class PasswordManager : public PasswordManagerInterface {
   void ShowManualFallbackForSaving(PasswordFormManager* form_manager,
                                    const autofill::FormData& form_data);
 
+  // Returns true if |form_data| contains forms that are parsed for the first
+  // time and have no dedicated PasswordFormsManagers yet.
+  bool NewFormsParsed(PasswordManagerDriver* driver,
+                      const std::vector<autofill::FormData>& form_data);
+
   // Returns the timeout for the disabling Password Manager's prompts.
   base::TimeDelta GetTimeoutForDisablingPrompts();
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // Even though the formal submission might not happen, the manager
   // could still be provisionally saved on user input or have autofilled data,
   // in this case submission might be considered successful and a save prompt
@@ -357,7 +375,7 @@ class PasswordManager : public PasswordManagerInterface {
   std::unique_ptr<PasswordFormManager> owned_submitted_form_manager_;
 
   // The embedder-level client. Must outlive this class.
-  PasswordManagerClient* const client_;
+  const raw_ptr<PasswordManagerClient> client_;
 
   // Records all visible forms seen during a page load, in all frames of the
   // page. When the page stops loading, the password manager checks if one of

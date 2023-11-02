@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,9 @@ XDGOutput::XDGOutput(zxdg_output_v1* xdg_output) : xdg_output_(xdg_output) {
       &XDGOutput::OutputHandleName,
       &XDGOutput::OutputHandleDescription,
   };
-  zxdg_output_v1_add_listener(xdg_output_.get(), &listener, this);
+  // Can be nullptr in tests.
+  if (xdg_output_)
+    zxdg_output_v1_add_listener(xdg_output_.get(), &listener, this);
 }
 
 XDGOutput::~XDGOutput() = default;
@@ -28,7 +30,10 @@ void XDGOutput::OutputHandleLogicalPosition(
     void* data,
     struct zxdg_output_v1* zxdg_output_v1,
     int32_t x,
-    int32_t y) {}
+    int32_t y) {
+  if (XDGOutput* xdg_output = static_cast<XDGOutput*>(data))
+    xdg_output->logical_position_ = gfx::Point(x, y);
+}
 
 // static
 void XDGOutput::OutputHandleLogicalSize(void* data,
@@ -48,11 +53,20 @@ void XDGOutput::OutputHandleDone(void* data,
 // static
 void XDGOutput::OutputHandleName(void* data,
                                  struct zxdg_output_v1* zxdg_output_v1,
-                                 const char* name) {}
+                                 const char* name) {
+  if (XDGOutput* xdg_output = static_cast<XDGOutput*>(data)) {
+    xdg_output->name_ = name ? std::string(name) : std::string();
+  }
+}
 
 // static
 void XDGOutput::OutputHandleDescription(void* data,
                                         struct zxdg_output_v1* zxdg_output_v1,
-                                        const char* description) {}
+                                        const char* description) {
+  if (XDGOutput* xdg_output = static_cast<XDGOutput*>(data)) {
+    xdg_output->description_ =
+        description ? std::string(description) : std::string();
+  }
+}
 
 }  // namespace ui

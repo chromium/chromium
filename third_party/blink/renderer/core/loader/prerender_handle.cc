@@ -33,9 +33,10 @@
 #include "services/network/public/mojom/referrer_policy.mojom-blink.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 
 namespace blink {
@@ -60,8 +61,13 @@ PrerenderHandle* PrerenderHandle::Create(
   attributes->trigger_type = trigger_type;
   attributes->referrer = mojom::blink::Referrer::New(
       KURL(NullURL(), referrer.referrer), referrer.referrer_policy);
-  attributes->view_size =
-      ToGfxSize(document.GetFrame()->GetMainFrameViewportSize());
+  // TODO(bokan): This is the _frame_ size, which is affected by the viewport
+  // <meta> tag, and is likely not what we want to use here. For example, if a
+  // page sets <meta name="viewport" content="width=42"> the frame size will
+  // have width=42. The prerendered page is unlikely to share the same
+  // viewport. I think this wants the size of the outermost WebView but that's
+  // not currently plumbed into child renderers AFAICT.
+  attributes->view_size = document.GetFrame()->GetOutermostMainFrameSize();
 
   HeapMojoRemote<mojom::blink::NoStatePrefetchProcessor> prefetch_processor(
       context);

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -110,17 +110,17 @@ void GURL::InitializeFromCanonicalSpec() {
       // removed from a "foo:hello #ref" URL (see http://crbug.com/291747).
       GURL test_url(spec_, RETAIN_TRAILING_PATH_WHITEPACE);
 
-      DCHECK(test_url.is_valid_ == is_valid_);
-      DCHECK(test_url.spec_ == spec_);
+      DCHECK_EQ(test_url.is_valid_, is_valid_);
+      DCHECK_EQ(test_url.spec_, spec_);
 
-      DCHECK(test_url.parsed_.scheme == parsed_.scheme);
-      DCHECK(test_url.parsed_.username == parsed_.username);
-      DCHECK(test_url.parsed_.password == parsed_.password);
-      DCHECK(test_url.parsed_.host == parsed_.host);
-      DCHECK(test_url.parsed_.port == parsed_.port);
-      DCHECK(test_url.parsed_.path == parsed_.path);
-      DCHECK(test_url.parsed_.query == parsed_.query);
-      DCHECK(test_url.parsed_.ref == parsed_.ref);
+      DCHECK_EQ(test_url.parsed_.scheme, parsed_.scheme);
+      DCHECK_EQ(test_url.parsed_.username, parsed_.username);
+      DCHECK_EQ(test_url.parsed_.password, parsed_.password);
+      DCHECK_EQ(test_url.parsed_.host, parsed_.host);
+      DCHECK_EQ(test_url.parsed_.port, parsed_.port);
+      DCHECK_EQ(test_url.parsed_.path, parsed_.path);
+      DCHECK_EQ(test_url.parsed_.query, parsed_.query);
+      DCHECK_EQ(test_url.parsed_.ref, parsed_.ref);
     }
   }
 #endif
@@ -223,8 +223,7 @@ GURL GURL::Resolve(base::StringPiece16 relative) const {
 }
 
 // Note: code duplicated below (it's inconvenient to use a template here).
-GURL GURL::ReplaceComponents(
-    const url::Replacements<char>& replacements) const {
+GURL GURL::ReplaceComponents(const Replacements& replacements) const {
   GURL result;
 
   // Not allowed for invalid URLs.
@@ -243,8 +242,7 @@ GURL GURL::ReplaceComponents(
 }
 
 // Note: code duplicated above (it's inconvenient to use a template here).
-GURL GURL::ReplaceComponents(
-    const url::Replacements<char16_t>& replacements) const {
+GURL GURL::ReplaceComponents(const ReplacementsW& replacements) const {
   GURL result;
 
   // Not allowed for invalid URLs.
@@ -281,7 +279,7 @@ GURL GURL::DeprecatedGetOriginAsURL() const {
   if (SchemeIsFileSystem())
     return inner_url_->DeprecatedGetOriginAsURL();
 
-  url::Replacements<char> replacements;
+  Replacements replacements;
   replacements.ClearUsername();
   replacements.ClearPassword();
   replacements.ClearPath();
@@ -298,7 +296,7 @@ GURL GURL::GetAsReferrer() const {
   if (!has_ref() && !has_username() && !has_password())
     return GURL(*this);
 
-  url::Replacements<char> replacements;
+  Replacements replacements;
   replacements.ClearRef();
   replacements.ClearUsername();
   replacements.ClearPassword();
@@ -349,7 +347,7 @@ bool GURL::SchemeIs(base::StringPiece lower_ascii_scheme) const {
   DCHECK(base::IsStringASCII(lower_ascii_scheme));
   DCHECK(base::ToLowerASCII(lower_ascii_scheme) == lower_ascii_scheme);
 
-  if (parsed_.scheme.len <= 0)
+  if (!has_scheme())
     return lower_ascii_scheme.empty();
   return scheme_piece() == lower_ascii_scheme;
 }
@@ -363,7 +361,7 @@ bool GURL::SchemeIsWSOrWSS() const {
 }
 
 bool GURL::SchemeIsCryptographic() const {
-  if (parsed_.scheme.len <= 0)
+  if (!has_scheme())
     return false;
   return SchemeIsCryptographic(scheme_piece());
 }
@@ -374,6 +372,13 @@ bool GURL::SchemeIsCryptographic(base::StringPiece lower_ascii_scheme) {
 
   return lower_ascii_scheme == url::kHttpsScheme ||
          lower_ascii_scheme == url::kWssScheme;
+}
+
+bool GURL::SchemeIsLocal() const {
+  // The `filesystem:` scheme is not in the Fetch spec, but Chromium still
+  // supports it in large part. It should be treated as a local scheme too.
+  return SchemeIs(url::kAboutScheme) || SchemeIs(url::kBlobScheme) ||
+         SchemeIs(url::kDataScheme) || SchemeIs(url::kFileSystemScheme);
 }
 
 int GURL::IntPort() const {
@@ -434,12 +439,16 @@ base::StringPiece GURL::HostNoBracketsPiece() const {
 }
 
 std::string GURL::GetContent() const {
+  return std::string(GetContentPiece());
+}
+
+base::StringPiece GURL::GetContentPiece() const {
   if (!is_valid_)
-    return std::string();
-  std::string content = ComponentString(parsed_.GetContent());
+    return base::StringPiece();
+  url::Component content_component = parsed_.GetContent();
   if (!SchemeIs(url::kJavaScriptScheme) && parsed_.ref.len >= 0)
-    content.erase(content.size() - parsed_.ref.len - 1);
-  return content;
+    content_component.len -= parsed_.ref.len + 1;
+  return ComponentStringPiece(content_component);
 }
 
 bool GURL::HostIsIPAddress() const {
@@ -546,3 +555,15 @@ bool operator!=(const GURL& x, const base::StringPiece& spec) {
 bool operator!=(const base::StringPiece& spec, const GURL& x) {
   return !(x == spec);
 }
+
+namespace url::debug {
+
+ScopedUrlCrashKey::ScopedUrlCrashKey(base::debug::CrashKeyString* crash_key,
+                                     const GURL& url)
+    : scoped_string_value_(
+          crash_key,
+          url.is_empty() ? "<empty url>" : url.possibly_invalid_spec()) {}
+
+ScopedUrlCrashKey::~ScopedUrlCrashKey() = default;
+
+}  // namespace url::debug

@@ -1,0 +1,98 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+generate_jni("accessibility_jni_headers") {
+  sources = [ "java/src/org/chromium/components/browser_ui/accessibility/FontSizePrefs.java" ]
+}
+
+source_set("android") {
+  sources = [
+    "font_size_prefs_android.cc",
+    "font_size_prefs_android.h",
+  ]
+  deps = [
+    ":accessibility_jni_headers",
+    "//base",
+    "//components/prefs",
+    "//components/user_prefs",
+    "//content/public/browser",
+  ]
+}
+
+# Constants only target without dependencies to allow embedders to only include relevant code.
+android_library("constants_java") {
+  sources = [ "java/src/org/chromium/components/browser_ui/accessibility/AccessibilityConstants.java" ]
+}
+
+android_library("java") {
+  sources = [
+    "java/src/org/chromium/components/browser_ui/accessibility/AccessibilitySettings.java",
+    "java/src/org/chromium/components/browser_ui/accessibility/AccessibilitySettingsDelegate.java",
+    "java/src/org/chromium/components/browser_ui/accessibility/FontSizePrefs.java",
+    "java/src/org/chromium/components/browser_ui/accessibility/PageZoomCoordinator.java",
+    "java/src/org/chromium/components/browser_ui/accessibility/PageZoomMediator.java",
+    "java/src/org/chromium/components/browser_ui/accessibility/PageZoomPreference.java",
+    "java/src/org/chromium/components/browser_ui/accessibility/PageZoomProperties.java",
+    "java/src/org/chromium/components/browser_ui/accessibility/PageZoomUtils.java",
+    "java/src/org/chromium/components/browser_ui/accessibility/PageZoomViewBinder.java",
+    "java/src/org/chromium/components/browser_ui/accessibility/TextScalePreference.java",
+  ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+  deps = [
+    ":constants_java",
+    ":java_resources",
+    "//base:base_java",
+    "//base:jni_java",
+    "//build/android:build_java",
+    "//components/browser_ui/settings/android:java",
+    "//content/public/android:content_full_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_preference_preference_java",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+  resources_package = "org.chromium.components.browser_ui.accessibility"
+}
+
+android_resources("java_resources") {
+  sources = [
+    "java/res/anim/slide_out_child_bottom.xml",
+    "java/res/drawable/ic_zoom.xml",
+    "java/res/drawable/page_zoom_background.xml",
+    "java/res/layout/custom_preference.xml",
+    "java/res/layout/page_zoom_preference.xml",
+    "java/res/layout/page_zoom_slider.xml",
+    "java/res/layout/page_zoom_view.xml",
+    "java/res/layout/preference_text_scale.xml",
+    "java/res/values/dimens.xml",
+    "java/res/values/styles.xml",
+    "java/res/xml/accessibility_preferences.xml",
+  ]
+
+  deps = [
+    "//components/browser_ui/strings/android:browser_ui_strings_grd",
+    "//components/browser_ui/styles/android:java_resources",
+    "//third_party/androidx:androidx_preference_preference_java",
+  ]
+}
+
+robolectric_library("junit") {
+  sources = [
+    "java/src/org/chromium/components/browser_ui/accessibility/PageZoomMediatorUnitTest.java",
+    "java/src/org/chromium/components/browser_ui/accessibility/PageZoomUtilsUnitTest.java",
+  ]
+
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//content/public/android:content_full_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+}

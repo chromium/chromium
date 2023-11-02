@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,6 +20,11 @@ namespace testing {
 url_pattern_index::proto::UrlRule CreateSubstringRule(
     base::StringPiece substring);
 
+// Creates an allowlisted URL rule which targets subresources of any type with
+// a URL containing the given `substring`.
+url_pattern_index::proto::UrlRule CreateAllowlistSubstringRule(
+    base::StringPiece substring);
+
 // Creates a blocklisted URL rule which targets subresources of any type such
 // that the resource URL ends with |suffix|.
 url_pattern_index::proto::UrlRule CreateSuffixRule(base::StringPiece suffix);
@@ -32,23 +37,23 @@ url_pattern_index::proto::UrlRule CreateAllowlistSuffixRule(
 
 // Creates a blocklisted URL rule which targets subresources of the specified
 // `activation_types` and a URL containing the given `substring`. Additionally,
-// it is restricted to a set of `domains`, if provided.
+// it is restricted to a set of `initiator_domains`, if provided.
 url_pattern_index::proto::UrlRule CreateRuleForDocument(
     base::StringPiece substring,
     int32_t activation_types =
         url_pattern_index::proto::ACTIVATION_TYPE_DOCUMENT,
-    std::vector<std::string> domains = std::vector<std::string>());
+    std::vector<std::string> initiator_domains = std::vector<std::string>());
 
 // Creates an allowlisted URL rule which targets subresources of the specified
 // `activation_types` and a URL containing the given `substring`. Additionally,
-// it is restricted to a set of `domains`, if provided. Note that a URL must
-// match both an allowlist rule and a blocklist rule to be correctly considered
-// allowlisted.
+// it is restricted to a set of `initiator_domains`, if provided. Note that a
+// URL must match both an allowlist rule and a blocklist rule to be correctly
+// considered allowlisted.
 url_pattern_index::proto::UrlRule CreateAllowlistRuleForDocument(
     base::StringPiece substring,
     int32_t activation_types =
         url_pattern_index::proto::ACTIVATION_TYPE_DOCUMENT,
-    std::vector<std::string> domains = std::vector<std::string>());
+    std::vector<std::string> initiator_domains = std::vector<std::string>());
 
 }  // namespace testing
 }  // namespace subresource_filter

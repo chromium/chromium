@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,7 +33,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -41,7 +41,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Tests for {@link TabGroupUiViewBinder}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class TabGroupUiViewBinderTest extends DummyUiActivityTestCase {
+public class TabGroupUiViewBinderTest extends BlankUiTestActivityTestCase {
     private ImageView mLeftButton;
     private ImageView mRightButton;
     private ViewGroup mContainerView;

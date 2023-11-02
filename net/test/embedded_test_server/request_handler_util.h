@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/strings/string_split.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -20,8 +19,7 @@ namespace url {
 class GURL;
 }
 
-namespace net {
-namespace test_server {
+namespace net::test_server {
 struct HttpRequest;
 
 // The extension that is used to find a file containing mock headers to use
@@ -67,7 +65,6 @@ std::unique_ptr<HttpResponse> HandleFileRequest(
     const base::FilePath& server_root,
     const HttpRequest& request);
 
-}  // namespace test_server
-}  // namespace net
+}  // namespace net::test_server
 
 #endif  // NET_TEST_EMBEDDED_TEST_SERVER_REQUEST_HANDLER_UTIL_H_

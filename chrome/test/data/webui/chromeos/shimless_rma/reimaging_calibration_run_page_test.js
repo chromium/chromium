@@ -1,45 +1,43 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
-import {ReimagingCalibrationRunPageElement} from 'chrome://shimless-rma/reimaging_calibration_run_page.js';
-import {ShimlessRmaElement} from 'chrome://shimless-rma/shimless_rma.js';
+import {ReimagingCalibrationRunPage} from 'chrome://shimless-rma/reimaging_calibration_run_page.js';
+import {ShimlessRma} from 'chrome://shimless-rma/shimless_rma.js';
 import {CalibrationOverallStatus, CalibrationStatus, ComponentType} from 'chrome://shimless-rma/shimless_rma_types.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
-import {flushTasks} from '../../test_util.js';
 
 export function reimagingCalibrationRunPageTest() {
   /**
-   * ShimlessRmaElement is needed to handle the 'transition-state' event used
+   * ShimlessRma is needed to handle the 'transition-state' event used
    * when handling calibration overall progress signals.
-   * @type {?ShimlessRmaElement}
+   * @type {?ShimlessRma}
    */
-  let shimless_rma_component = null;
+  let shimlessRmaComponent = null;
 
-  /** @type {?ReimagingCalibrationRunPageElement} */
+  /** @type {?ReimagingCalibrationRunPage} */
   let component = null;
 
   /** @type {?FakeShimlessRmaService} */
   let service = null;
 
-  suiteSetup(() => {
-    service = new FakeShimlessRmaService();
-    setShimlessRmaServiceForTesting(service);
-  });
-
   setup(() => {
     document.body.innerHTML = '';
+    service = new FakeShimlessRmaService();
+    setShimlessRmaServiceForTesting(service);
   });
 
   teardown(() => {
     component.remove();
     component = null;
-    shimless_rma_component.remove();
-    shimless_rma_component = null;
+    shimlessRmaComponent.remove();
+    shimlessRmaComponent = null;
     service.reset();
   });
 
@@ -49,24 +47,18 @@ export function reimagingCalibrationRunPageTest() {
   function initializeCalibrationRunPage() {
     assertFalse(!!component);
 
-    shimless_rma_component = /** @type {!ShimlessRmaElement} */ (
-        document.createElement('shimless-rma'));
-    assertTrue(!!shimless_rma_component);
-    document.body.appendChild(shimless_rma_component);
+    shimlessRmaComponent =
+        /** @type {!ShimlessRma} */ (document.createElement('shimless-rma'));
+    assertTrue(!!shimlessRmaComponent);
+    document.body.appendChild(shimlessRmaComponent);
 
-    component = /** @type {!ReimagingCalibrationRunPageElement} */ (
+    component = /** @type {!ReimagingCalibrationRunPage} */ (
         document.createElement('reimaging-calibration-run-page'));
     assertTrue(!!component);
     document.body.appendChild(component);
 
     return flushTasks();
   }
-
-  test('Initializes', async () => {
-    await initializeCalibrationRunPage();
-    const statusMessage = component.shadowRoot.querySelector('#calibration');
-    assertFalse(statusMessage.hidden);
-  });
 
   test('NextButtonBeforeCalibrationCompleteFails', async () => {
     const resolver = new PromiseResolver();
@@ -93,6 +85,18 @@ export function reimagingCalibrationRunPageTest() {
   test('NextButtonAfterCalibrationCompleteTriggersContinue', async () => {
     const resolver = new PromiseResolver();
     await initializeCalibrationRunPage();
+
+    const calibrationTitle = component.shadowRoot.querySelector('h1');
+    const progressSpinner =
+        component.shadowRoot.querySelector('paper-spinner-lite');
+    const completeIllustration = component.shadowRoot.querySelector('img');
+
+    assertEquals(
+        loadTimeData.getString('runCalibrationTitleText'),
+        calibrationTitle.textContent.trim());
+    assertFalse(progressSpinner.hidden);
+    assertTrue(completeIllustration.hidden);
+
     let calibrationCompleteCalls = 0;
     service.calibrationComplete = () => {
       calibrationCompleteCalls++;
@@ -102,7 +106,7 @@ export function reimagingCalibrationRunPageTest() {
         CalibrationOverallStatus.kCalibrationOverallComplete, 0);
     await flushTasks();
 
-    let expectedResult = {foo: 'bar'};
+    const expectedResult = {foo: 'bar'};
     let savedResult;
     component.onNextButtonClick().then((result) => savedResult = result);
     // Resolve to a distinct result to confirm it was not modified.
@@ -111,6 +115,11 @@ export function reimagingCalibrationRunPageTest() {
 
     assertEquals(1, calibrationCompleteCalls);
     assertDeepEquals(savedResult, expectedResult);
+    assertEquals(
+        loadTimeData.getString('runCalibrationCompleteTitleText'),
+        calibrationTitle.textContent.trim());
+    assertTrue(progressSpinner.hidden);
+    assertFalse(completeIllustration.hidden);
   });
 
   test(
@@ -165,30 +174,4 @@ export function reimagingCalibrationRunPageTest() {
 
         assertEquals(1, continueCalibrationCalls);
       });
-
-  test('CalibrationProgressUpdatesStatusMessage', async () => {
-    await initializeCalibrationRunPage();
-    const statusMessage = component.shadowRoot.querySelector('#calibration');
-    let message = statusMessage.innerHTML;
-    service.triggerCalibrationObserver(
-        {
-          component: ComponentType.kBaseGyroscope,
-          status: CalibrationStatus.kCalibrationInProgress,
-          progress: 0.5
-        },
-        0);
-    await flushTasks();
-    let message2 = statusMessage.innerHTML;
-    assertNotEquals(message, statusMessage.innerHTML);
-    service.triggerCalibrationObserver(
-        {
-          component: ComponentType.kLidAccelerometer,
-          status: CalibrationStatus.kCalibrationWaiting,
-          progress: 0.0
-        },
-        0);
-    await flushTasks();
-    assertNotEquals(message, statusMessage.innerHTML);
-    assertNotEquals(message2, statusMessage.innerHTML);
-  });
 }

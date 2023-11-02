@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,7 +19,7 @@ namespace webapps {
 
 // Handles the logic of parsing the web app origin association file from a
 // string as described in the "PWAs as URL Handlers" explainer:
-// https://github.com/WICG/pwa-url-handler/blob/master/explainer.md
+// https://github.com/WICG/pwa-url-handler/blob/main/explainer.md
 class WebAppOriginAssociationParser {
  public:
   WebAppOriginAssociationParser();

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -56,7 +56,8 @@ std::unique_ptr<net::CanonicalCookie> CanonicalCookieFromSystemCookie(
       base::SysNSStringToUTF8([cookie domain]),
       base::SysNSStringToUTF8([cookie path]), ceation_time,
       base::Time::FromDoubleT([[cookie expiresDate] timeIntervalSince1970]),
-      base::Time(), [cookie isSecure], [cookie isHTTPOnly], same_site,
+      base::Time(), base::Time(), [cookie isSecure], [cookie isHTTPOnly],
+      same_site,
       // When iOS begins to support 'Priority' and 'SameParty' attributes, pass
       // them through here.
       net::COOKIE_PRIORITY_DEFAULT, false /* SameParty */,

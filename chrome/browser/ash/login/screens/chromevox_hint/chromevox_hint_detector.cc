@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,7 +38,7 @@ void ChromeVoxHintDetector::StartIdleDetection() {
   // This is done so that developers and testers don't repeatedly receive
   // the hint when flashing.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kSystemDevMode) &&
+          chromeos::switches::kSystemDevMode) &&
       !switches::IsOOBEChromeVoxHintEnabledForDevMode()) {
     return;
   }

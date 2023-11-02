@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -85,7 +85,7 @@ void PassthroughAbstractTextureImpl::BindStreamTextureImage(gl::GLImage* image,
   texture_passthrough_->SetStreamLevelImage(target, level, image, service_id);
 }
 
-gl::GLImage* PassthroughAbstractTextureImpl::GetImage() const {
+gl::GLImage* PassthroughAbstractTextureImpl::GetImageForTesting() const {
   if (!texture_passthrough_)
     return nullptr;
 

@@ -86,10 +86,34 @@
         <structure type="chrome_scaled_image" name="IDR_AURA_CURSOR_ZOOM_IN" file="common/pointers/zoom_in.png" />
         <structure type="chrome_scaled_image" name="IDR_AURA_CURSOR_ZOOM_OUT" file="common/pointers/zoom_out.png" />
       </if>
+      <if expr="is_macosx">
+        <structure type="chrome_scaled_image" name="IDR_ALIAS_CURSOR" file="alias_cursor.png" />
+        <structure type="chrome_scaled_image" name="IDR_CELL_CURSOR" file="cell_cursor.png" />
+        <structure type="chrome_scaled_image" name="IDR_EAST_RESIZE_CURSOR" file="east_resize_cursor.png" />
+        <structure type="chrome_scaled_image" name="IDR_EASTWEST_RESIZE_CURSOR" file="east_west_resize_cursor.png" />
+        <structure type="chrome_scaled_image" name="IDR_HELP_CURSOR" file="help_cursor.png" />
+        <structure type="chrome_scaled_image" name="IDR_LINK_CURSOR" file="link_cursor.png" />
+        <structure type="chrome_scaled_image" name="IDR_MOVE_CURSOR" file="move_cursor.png" />
+        <structure type="chrome_scaled_image" name="IDR_NONE_CURSOR" file="none_cursor.png" />
+        <structure type="chrome_scaled_image" name="IDR_NORTHEAST_RESIZE_CURSOR" file="north_east_resize_cursor.png" />
+        <structure type="chrome_scaled_image" name="IDR_NORTHEASTSOUTHWEST_RESIZE_CURSOR" file="north_east_south_west_resize_cursor.png" />
+        <structure type="chrome_scaled_image" name="IDR_NORTH_RESIZE_CURSOR" file="north_resize_cursor.png" />
+        <structure type="chrome_scaled_image" name="IDR_NORTHSOUTH_RESIZE_CURSOR" file="north_south_resize_cursor.png" />
+        <structure type="chrome_scaled_image" name="IDR_NORTHWEST_RESIZE_CURSOR" file="north_west_resize_cursor.png" />
+        <structure type="chrome_scaled_image" name="IDR_NORTHWESTSOUTHEAST_RESIZE_CURSOR" file="north_west_south_east_resize_cursor.png" />
+        <structure type="chrome_scaled_image" name="IDR_PROGRESS_CURSOR" file="progress_cursor.png" />
+        <structure type="chrome_scaled_image" name="IDR_SOUTHEAST_RESIZE_CURSOR" file="south_east_resize_cursor.png" />
+        <structure type="chrome_scaled_image" name="IDR_SOUTH_RESIZE_CURSOR" file="south_resize_cursor.png" />
+        <structure type="chrome_scaled_image" name="IDR_SOUTHWEST_RESIZE_CURSOR" file="south_west_resize_cursor.png" />
+        <structure type="chrome_scaled_image" name="IDR_VERTICALTEXT_CURSOR" file="vertical_text_cursor.png" />
+        <structure type="chrome_scaled_image" name="IDR_WAIT_CURSOR" file="wait_cursor.png" />
+        <structure type="chrome_scaled_image" name="IDR_WEST_RESIZE_CURSOR" file="west_resize_cursor.png" />
+        <structure type="chrome_scaled_image" name="IDR_ZOOMIN_CURSOR" file="zoom_in_cursor.png" />
+        <structure type="chrome_scaled_image" name="IDR_ZOOMOUT_CURSOR" file="zoom_out_cursor.png" />
+      </if>
       <if expr="not is_android">
         <structure type="chrome_scaled_image" name="IDR_CLOSE_2" file="close_2.png" />
         <structure type="chrome_scaled_image" name="IDR_CLOSE_2_H" file="close_2_hover.png" />
-        <structure type="chrome_scaled_image" name="IDR_CLOSE_2_MASK" file="close_2_mask.png" />
         <structure type="chrome_scaled_image" name="IDR_CLOSE_2_P" file="close_2_pressed.png" />
         <structure type="chrome_scaled_image" name="IDR_CLOSE_DIALOG" file="close_dialog.png" />
         <structure type="chrome_scaled_image" name="IDR_CLOSE_DIALOG_H" file="close_dialog_hover.png" />
@@ -105,26 +129,11 @@
         <structure type="chrome_scaled_image" name="IDR_DEFAULT_FAVICON_DARK_32" file="common/default_favicon_dark_32.png" />
         <structure type="chrome_scaled_image" name="IDR_DEFAULT_FAVICON_64" file="common/default_favicon_64.png" />
         <structure type="chrome_scaled_image" name="IDR_DEFAULT_FAVICON_DARK_64" file="common/default_favicon_dark_64.png" />
-        <structure type="chrome_scaled_image" name="IDR_EASY_UNLOCK_HARDLOCKED" file="common/easy_unlock_hardlocked.png" />
-        <structure type="chrome_scaled_image" name="IDR_EASY_UNLOCK_HARDLOCKED_HOVER" file="common/easy_unlock_hardlocked_hover.png" />
-        <structure type="chrome_scaled_image" name="IDR_EASY_UNLOCK_HARDLOCKED_PRESSED" file="common/easy_unlock_hardlocked_pressed.png" />
-        <structure type="chrome_scaled_image" name="IDR_EASY_UNLOCK_LOCKED" file="common/easy_unlock_locked.png" />
-        <structure type="chrome_scaled_image" name="IDR_EASY_UNLOCK_LOCKED_HOVER" file="common/easy_unlock_locked_hover.png" />
-        <structure type="chrome_scaled_image" name="IDR_EASY_UNLOCK_LOCKED_PRESSED" file="common/easy_unlock_locked_pressed.png" />
-        <structure type="chrome_scaled_image" name="IDR_EASY_UNLOCK_LOCKED_TO_BE_ACTIVATED" file="common/easy_unlock_locked_to_be_activated.png" />
-        <structure type="chrome_scaled_image" name="IDR_EASY_UNLOCK_LOCKED_TO_BE_ACTIVATED_HOVER" file="common/easy_unlock_locked_to_be_activated_hover.png" />
-        <structure type="chrome_scaled_image" name="IDR_EASY_UNLOCK_LOCKED_TO_BE_ACTIVATED_PRESSED" file="common/easy_unlock_locked_to_be_activated_pressed.png" />
-        <structure type="chrome_scaled_image" name="IDR_EASY_UNLOCK_LOCKED_WITH_PROXIMITY_HINT" file="common/easy_unlock_locked_with_proximity_hint.png" />
-        <structure type="chrome_scaled_image" name="IDR_EASY_UNLOCK_LOCKED_WITH_PROXIMITY_HINT_HOVER" file="common/easy_unlock_locked_with_proximity_hint_hover.png" />
-        <structure type="chrome_scaled_image" name="IDR_EASY_UNLOCK_LOCKED_WITH_PROXIMITY_HINT_PRESSED" file="common/easy_unlock_locked_with_proximity_hint_pressed.png" />
-        <structure type="chrome_scaled_image" name="IDR_EASY_UNLOCK_SPINNER" file="common/easy_unlock_spinner.png" />
-        <structure type="chrome_scaled_image" name="IDR_EASY_UNLOCK_UNLOCKED" file="common/easy_unlock_unlocked.png" />
-        <structure type="chrome_scaled_image" name="IDR_EASY_UNLOCK_UNLOCKED_HOVER" file="common/easy_unlock_unlocked_hover.png" />
-        <structure type="chrome_scaled_image" name="IDR_EASY_UNLOCK_UNLOCKED_PRESSED" file="common/easy_unlock_unlocked_pressed.png" />
         <if expr="not is_android">
-          <structure type="chrome_html" name="IDR_FINGERPRINT_COMPLETE_TICK" file="vector/common/tick.json" compress="gzip" />
-          <structure type="chrome_html" name="IDR_FINGERPRINT_COMPLETE_TICK_DARK" file="vector/common/tick_dark.json" compress="gzip" />
-          <structure type="chrome_html" name="IDR_FINGERPRINT_ICON_ANIMATION" file="vector/common/fingerprint_enrollment.json" compress="gzip" />
+          <structure type="chrome_html" name="IDR_FINGERPRINT_COMPLETE_CHECK_DARK" file="vector/common/check_dark.json" compress="gzip" />
+          <structure type="chrome_html" name="IDR_FINGERPRINT_COMPLETE_CHECK_LIGHT" file="vector/common/check_light.json" compress="gzip" />
+          <structure type="chrome_html" name="IDR_FINGERPRINT_ICON_ANIMATION_DARK" file="vector/common/fingerprint_enrollment_dark.json" compress="gzip" />
+          <structure type="chrome_html" name="IDR_FINGERPRINT_ICON_ANIMATION_LIGHT" file="vector/common/fingerprint_enrollment_light.json" compress="gzip" />
         </if>
         <if expr="is_macosx or is_ios">
           <structure type="chrome_scaled_image" name="IDR_FOLDER_CLOSED" file="mac/folder.png" />
@@ -140,28 +149,12 @@
           <structure type="chrome_scaled_image" name="IDR_FOLDER_OPEN" file="common/folder_open.png" />
         </if>
       </if>
-      <if expr="toolkit_views and not is_macosx">
-        <structure type="chrome_scaled_image" name="IDR_NOTIFICATION_SETTINGS" file="common/notification_settings.png"/>
-      </if>
-      <if expr="not is_android and not is_ios">
-        <structure type="chrome_scaled_image" name="IDR_NTP_DEFAULT_FAVICON" file="common/ntp_default_favicon.png" />
-      </if>
-      <if expr="not is_android and not is_ios">
-        <structure type="chrome_scaled_image" name="IDR_OOBE_ACTION_BOX_BUTTON_HOVER" file="cros/action_box_button_hover.png" />
-        <structure type="chrome_scaled_image" name="IDR_OOBE_ACTION_BOX_BUTTON_NORMAL" file="cros/action_box_button_normal.png" />
-        <structure type="chrome_scaled_image" name="IDR_OOBE_ACTION_BOX_BUTTON_PRESSED" file="cros/action_box_button_pressed.png" />
-      </if>
       <if expr="not is_android and not is_ios">
         <structure type="chrome_scaled_image" name="IDR_SIGNAL_0_BAR" file="common/signal_0_bar.png" />
         <structure type="chrome_scaled_image" name="IDR_SIGNAL_1_BAR" file="common/signal_1_bar.png" />
         <structure type="chrome_scaled_image" name="IDR_SIGNAL_2_BAR" file="common/signal_2_bar.png" />
         <structure type="chrome_scaled_image" name="IDR_SIGNAL_3_BAR" file="common/signal_3_bar.png" />
         <structure type="chrome_scaled_image" name="IDR_SIGNAL_4_BAR" file="common/signal_4_bar.png" />
-        <structure type="chrome_scaled_image" name="IDR_SIGNAL_0_BAR_SELECTED" file="common/signal_0_bar_selected.png" />
-        <structure type="chrome_scaled_image" name="IDR_SIGNAL_1_BAR_SELECTED" file="common/signal_1_bar_selected.png" />
-        <structure type="chrome_scaled_image" name="IDR_SIGNAL_2_BAR_SELECTED" file="common/signal_2_bar_selected.png" />
-        <structure type="chrome_scaled_image" name="IDR_SIGNAL_3_BAR_SELECTED" file="common/signal_3_bar_selected.png" />
-        <structure type="chrome_scaled_image" name="IDR_SIGNAL_4_BAR_SELECTED" file="common/signal_4_bar_selected.png" />
       </if>
       <if expr="use_aura">
         <structure type="chrome_scaled_image" name="IDR_TEXT_SELECTION_HANDLE_CENTER" file="common/text_selection_handle_center.png" />

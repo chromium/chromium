@@ -1,0 +1,21 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+import "mojo/public/mojom/base/file_path.mojom";
+
+// Represents a directory that, on platforms like Fuchsia, can be sent
+// over Mojo as a handle. On other platforms, the path will be used
+// directly on both ends.
+// Calling code should use the class network::TransferableDirectory instead
+// of directly manipulating this union.
+union TransferableDirectory {
+  // A handle to the directory, populated by the method
+  // network::TransferableDirectory::OpenForTransfer().
+  handle<platform> handle_for_ipc;
+
+  // The path to the directory.
+  mojo_base.mojom.FilePath path;
+};

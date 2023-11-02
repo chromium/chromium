@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -87,13 +87,13 @@ class TextFragmentAnchorBrowserTest : public ContentBrowserTest {
 
   void WaitForPageLoad(WebContents* contents) {
     EXPECT_TRUE(WaitForLoadStop(contents));
-    EXPECT_TRUE(WaitForRenderFrameReady(contents->GetMainFrame()));
+    EXPECT_TRUE(WaitForRenderFrameReady(contents->GetPrimaryMainFrame()));
   }
 
   RenderWidgetHostImpl* GetWidgetHost() {
     return RenderWidgetHostImpl::From(shell()
                                           ->web_contents()
-                                          ->GetMainFrame()
+                                          ->GetPrimaryMainFrame()
                                           ->GetRenderViewHost()
                                           ->GetWidget());
   }
@@ -282,7 +282,7 @@ IN_PROC_BROWSER_TEST_F(TextFragmentAnchorBrowserTest,
   // be recreated with did_scroll == false. Disable back/forward cache to ensure
   // that it doesn't get preserved in the cache.
   DisableBackForwardCacheForTesting(
-      main_contents, BackForwardCacheImpl::TEST_ASSUMES_NO_CACHING);
+      main_contents, BackForwardCacheImpl::TEST_REQUIRES_NO_CACHING);
 
   {
     // The RenderFrameSubmissionObserver destructor expects the RenderFrameHost
@@ -722,11 +722,13 @@ IN_PROC_BROWSER_TEST_F(TextFragmentAnchorBrowserTest,
   EXPECT_DID_SCROLL(false);
 }
 
-// Test that Tab key press puts focus from the start of selection.
+// Test that Tab key press puts focus from the start of the text directive that
+// was scrolled into view.
 IN_PROC_BROWSER_TEST_F(TextFragmentAnchorBrowserTest, TabFocus) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  GURL url(embedded_test_server()->GetURL(
-      "/scrollable_page_with_anchor.html#:~:text=text"));
+  GURL url(
+      embedded_test_server()->GetURL("/scrollable_page_with_anchor.html#:~:"
+                                     "text=nonexistent&text=text&text=more"));
   WebContents* main_contents = shell()->web_contents();
   RenderFrameSubmissionObserver frame_observer(main_contents);
   EXPECT_TRUE(NavigateToURL(shell(), url));
@@ -734,7 +736,7 @@ IN_PROC_BROWSER_TEST_F(TextFragmentAnchorBrowserTest, TabFocus) {
   frame_observer.WaitForScrollOffsetAtTop(
       /*expected_scroll_offset_at_top=*/false);
 
-  DOMMessageQueue msg_queue;
+  DOMMessageQueue msg_queue(main_contents);
   SimulateKeyPress(main_contents, ui::DomKey::TAB, ui::DomCode::TAB,
                    ui::VKEY_TAB, false, false, false, false);
 
@@ -820,7 +822,7 @@ IN_PROC_BROWSER_TEST_F(ForceLoadAtTopBrowserTest, ScrollRestorationDisabled) {
   // so that the document policy to force-load-at-top will run. This will not
   // happen if the document is back-forward cached, so we need to disable it.
   DisableBackForwardCacheForTesting(main_contents,
-                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   // Scroll down the page a bit
   EXPECT_TRUE(ExecJs(main_contents, "window.scrollTo(0, 1000)"));

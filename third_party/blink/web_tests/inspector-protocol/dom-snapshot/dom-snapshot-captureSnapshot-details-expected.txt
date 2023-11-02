@@ -259,6 +259,12 @@ Tests that DOMSnapshot.captureSnapshot fills document details: title, size, etc.
                     [18] : 17
                     [19] : 15
                 ]
+                pseudoIdentifier : {
+                    index : [
+                    ]
+                    value : [
+                    ]
+                }
                 pseudoType : {
                     index : [
                     ]

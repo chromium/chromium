@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -52,7 +52,7 @@ public class OtherFormsOfHistoryDialogFragment
         TextView textView = (TextView) view.findViewById(R.id.text);
         final SpannableString textWithLink = SpanApplier.applySpans(textView.getText().toString(),
                 new SpanApplier.SpanInfo("<link>", "</link>",
-                        new NoUnderlineClickableSpan(getResources(), (widget) -> {
+                        new NoUnderlineClickableSpan(getContext(), (widget) -> {
                             new TabDelegate(false /* incognito */)
                                     .launchUrl(UrlConstants.MY_ACTIVITY_URL_IN_CBD_NOTICE,
                                             TabLaunchType.FROM_CHROME_UI);
@@ -63,7 +63,7 @@ public class OtherFormsOfHistoryDialogFragment
 
         // Construct the dialog.
         AlertDialog dialog =
-                new AlertDialog.Builder(getActivity(), R.style.Theme_Chromium_AlertDialog)
+                new AlertDialog.Builder(getActivity(), R.style.ThemeOverlay_BrowserUI_AlertDialog)
                         .setView(view)
                         .setTitle(R.string.clear_browsing_data_history_dialog_title)
                         .setPositiveButton(R.string.ok_got_it, this)

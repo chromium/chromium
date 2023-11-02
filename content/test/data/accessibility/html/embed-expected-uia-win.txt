@@ -1,3 +1,3 @@
 Document
 ++Group IsControlElement=false
-++++Pane IsControlElement=false
+++++Pane IsEnabled=false IsControlElement=false

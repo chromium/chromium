@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,8 +13,8 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "components/permissions/features.h"
+#include "components/permissions/prediction_service/prediction_common.h"
 #include "components/permissions/prediction_service/prediction_request_features.h"
-#include "components/permissions/prediction_service/prediction_service_common.h"
 #include "components/permissions/prediction_service/prediction_service_messages.pb.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
@@ -30,45 +30,6 @@ namespace {
 
 constexpr base::TimeDelta kURLLookupTimeout = base::Seconds(2);
 
-constexpr float kRoundToMultiplesOf = 0.1f;
-
-constexpr int kCountBuckets[] = {20, 15, 12, 10, 9, 8, 7, 6, 5, 4};
-
-permissions::ClientFeatures_Gesture ConvertToProtoGesture(
-    const permissions::PermissionRequestGestureType type) {
-  switch (type) {
-    case permissions::PermissionRequestGestureType::GESTURE:
-      return permissions::ClientFeatures_Gesture_GESTURE;
-    case permissions::PermissionRequestGestureType::NO_GESTURE:
-      return permissions::ClientFeatures_Gesture_NO_GESTURE;
-    case permissions::PermissionRequestGestureType::UNKNOWN:
-      return permissions::ClientFeatures_Gesture_GESTURE_UNSPECIFIED;
-    case permissions::PermissionRequestGestureType::NUM:
-      break;
-  }
-
-  NOTREACHED();
-  return permissions::ClientFeatures_Gesture_GESTURE_UNSPECIFIED;
-}
-
-void FillInStatsFeatures(
-    const permissions::PredictionRequestFeatures::ActionCounts& counts,
-    permissions::StatsFeatures* features) {
-  using PredictionService = permissions::PredictionService;
-  int total_counts = counts.total();
-
-  // Round to only 2 decimal places to help prevent fingerprinting.
-  features->set_avg_deny_rate(
-      PredictionService::GetRoundedRatio(counts.denies, total_counts));
-  features->set_avg_dismiss_rate(
-      PredictionService::GetRoundedRatio(counts.dismissals, total_counts));
-  features->set_avg_grant_rate(
-      PredictionService::GetRoundedRatio(counts.grants, total_counts));
-  features->set_avg_ignore_rate(
-      PredictionService::GetRoundedRatio(counts.ignores, total_counts));
-  features->set_prompts_count(PredictionService::BucketizeValue(total_counts));
-}
-
 net::NetworkTrafficAnnotationTag GetTrafficAnnotationTag() {
   return net::DefineNetworkTrafficAnnotation("permission_predictions", R"(
     semantics {
@@ -80,7 +41,7 @@ net::NetworkTrafficAnnotationTag GetTrafficAnnotationTag() {
         "the user with a different UI; a less intrusive one."
       trigger:
         "A permission prompt is about to be shown to the user, and the user "
-        "has opted into Safe Browsing's Enhanced Protection."
+        "has opted into Safe Browsing."
       data:
         "User stats helpful for attempting to predict the user's likelihood "
         "of granting the permission: the permission type, the presence of a "
@@ -92,18 +53,14 @@ net::NetworkTrafficAnnotationTag GetTrafficAnnotationTag() {
     policy {
       cookies_allowed: NO
       setting:
-        "This can be disabled by disabling Enhanced Protection by going to "
+        "This can be disabled by disabling Safe Browsing by going to "
         "Settings and then to the Security sub-menu."
       chrome_policy {
         SafeBrowsingProtectionLevel {
-          SafeBrowsingProtectionLevel: 1
+          SafeBrowsingProtectionLevel: 0
         }
       }
     })");
-}
-
-bool ShouldUseJson() {
-  return permissions::feature_params::kPermissionPredictionServiceUseJson.Get();
 }
 
 }  // namespace
@@ -121,12 +78,8 @@ void PredictionService::StartLookup(const PredictionRequestFeatures& entity,
   auto request = GetResourceRequest();
   auto proto_request = GetPredictionRequestProto(entity);
   std::string request_data;
-  if (ShouldUseJson()) {
-    request_data =
-        GeneratePredictionsRequestMessageToJson(*proto_request.get());
-  } else {
-    proto_request->SerializeToString(&request_data);
-  }
+
+  proto_request->SerializeToString(&request_data);
 
   SendRequestInternal(std::move(request), request_data, entity,
                       std::move(response_callback));
@@ -180,37 +133,6 @@ PredictionService::GetResourceRequest() {
   return request;
 }
 
-std::unique_ptr<GeneratePredictionsRequest>
-PredictionService::GetPredictionRequestProto(
-    const PredictionRequestFeatures& entity) {
-  auto proto_request = std::make_unique<GeneratePredictionsRequest>();
-
-  ClientFeatures* client_features = proto_request->mutable_client_features();
-  client_features->set_platform(GetCurrentPlatformProto());
-  client_features->set_gesture(ConvertToProtoGesture(entity.gesture));
-  FillInStatsFeatures(entity.all_permission_counts,
-                      client_features->mutable_client_stats());
-
-  PermissionFeatures* permission_features =
-      proto_request->mutable_permission_features()->Add();
-  FillInStatsFeatures(entity.requested_permission_counts,
-                      permission_features->mutable_permission_stats());
-
-  switch (entity.type) {
-    case RequestType::kNotifications:
-      permission_features->mutable_notification_permission()->Clear();
-      break;
-    case RequestType::kGeolocation:
-      permission_features->mutable_geolocation_permission()->Clear();
-      break;
-    default:
-      NOTREACHED()
-          << "CPSS only supports notifications and geolocation at the moment.";
-  }
-
-  return proto_request;
-}
-
 void PredictionService::SendRequestInternal(
     std::unique_ptr<network::ResourceRequest> request,
     const std::string& request_data,
@@ -219,9 +141,7 @@ void PredictionService::SendRequestInternal(
   std::unique_ptr<network::SimpleURLLoader> owned_loader =
       network::SimpleURLLoader::Create(std::move(request),
                                        GetTrafficAnnotationTag());
-  owned_loader->AttachStringForUpload(
-      request_data,
-      ShouldUseJson() ? "application/json" : "application/x-protobuf");
+  owned_loader->AttachStringForUpload(request_data, "application/x-protobuf");
 
   owned_loader->SetTimeoutDuration(kURLLookupTimeout);
   owned_loader->DownloadToString(
@@ -245,10 +165,15 @@ void PredictionService::OnURLLoaderComplete(
           CreatePredictionsResponse(loader, response_body.get());
 
       if (request.second) {
+        absl::optional<GeneratePredictionsResponse> response;
+        if (prediction_response == nullptr) {
+          response = absl::nullopt;
+        } else {
+          response = *prediction_response;
+        }
         bool lookup_success = prediction_response != nullptr;
         std::move(request.second)
-            .Run(lookup_success, false /* Response from cache */,
-                 std::move(prediction_response));
+            .Run(lookup_success, /*Response from cache=*/false, response);
       }
 
       pending_requests_.erase(request.first);
@@ -267,40 +192,12 @@ PredictionService::CreatePredictionsResponse(network::SimpleURLLoader* loader,
     return nullptr;
   }
 
-  std::string mime_type;
-  if (loader->ResponseInfo()->headers->GetMimeType(&mime_type) &&
-      mime_type == "application/json") {
-    return GeneratePredictionsResponseJsonToMessage(*response_body);
-  }
-
   auto predictions_response = std::make_unique<GeneratePredictionsResponse>();
   if (!predictions_response->ParseFromString(*response_body)) {
     return nullptr;
   }
 
   return predictions_response;
-}
-
-// static
-float PredictionService::GetRoundedRatio(int numerator, int denominator) {
-  if (denominator == 0)
-    return 0;
-  return roundf(numerator / kRoundToMultiplesOf / denominator) *
-         kRoundToMultiplesOf;
-}
-
-// static
-int PredictionService::GetRoundedRatioForUkm(int numerator, int denominator) {
-  return GetRoundedRatio(numerator, denominator) * 100;
-}
-
-// static
-int PredictionService::BucketizeValue(int count) {
-  for (const int bucket : kCountBuckets) {
-    if (count >= bucket)
-      return bucket;
-  }
-  return 0;
 }
 
 }  // namespace permissions

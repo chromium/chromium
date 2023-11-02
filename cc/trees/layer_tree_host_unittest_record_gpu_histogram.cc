@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,18 +20,17 @@ TEST(LayerTreeHostRecordGpuHistogramTest, SingleThreaded) {
   std::unique_ptr<FakeLayerTreeHost> host = FakeLayerTreeHost::Create(
       &host_client, &task_graph_runner, animation_host.get(), settings,
       CompositorMode::SINGLE_THREADED);
-  EXPECT_FALSE(host->pending_commit_state()->needs_gpu_rasterization_histogram);
+  EXPECT_FALSE(
+      host->GetPendingCommitState()->needs_gpu_rasterization_histogram);
   host->CreateFakeLayerTreeHostImpl();
-  host->WillCommit(/*completion_event=*/nullptr, /*has_updates=*/true);
-  EXPECT_FALSE(host->pending_commit_state()->needs_gpu_rasterization_histogram);
-  {
-    DebugScopedSetImplThread impl(host->GetTaskRunnerProvider());
-    EXPECT_FALSE(
-        host->active_commit_state()->needs_gpu_rasterization_histogram);
-    host->RecordGpuRasterizationHistogram(host->host_impl());
-  }
-  host->CommitComplete();
-  EXPECT_FALSE(host->pending_commit_state()->needs_gpu_rasterization_histogram);
+  auto commit_state =
+      host->WillCommit(/*completion=*/nullptr, /*has_updates=*/true);
+  EXPECT_FALSE(commit_state->needs_gpu_rasterization_histogram);
+  EXPECT_FALSE(
+      host->GetPendingCommitState()->needs_gpu_rasterization_histogram);
+  host->CommitComplete({base::TimeTicks(), base::TimeTicks::Now()});
+  EXPECT_FALSE(
+      host->GetPendingCommitState()->needs_gpu_rasterization_histogram);
 }
 
 TEST(LayerTreeHostRecordGpuHistogramTest, Threaded) {
@@ -42,17 +41,21 @@ TEST(LayerTreeHostRecordGpuHistogramTest, Threaded) {
   std::unique_ptr<FakeLayerTreeHost> host = FakeLayerTreeHost::Create(
       &host_client, &task_graph_runner, animation_host.get(), settings,
       CompositorMode::THREADED);
-  EXPECT_TRUE(host->pending_commit_state()->needs_gpu_rasterization_histogram);
+  EXPECT_TRUE(host->GetPendingCommitState()->needs_gpu_rasterization_histogram);
   host->CreateFakeLayerTreeHostImpl();
-  host->WillCommit(/*completion_event=*/nullptr, /*has_updates=*/true);
-  EXPECT_FALSE(host->pending_commit_state()->needs_gpu_rasterization_histogram);
+  auto commit_state =
+      host->WillCommit(/*completion=*/nullptr, /*has_updates=*/true);
+  EXPECT_TRUE(commit_state->needs_gpu_rasterization_histogram);
+  EXPECT_FALSE(
+      host->GetPendingCommitState()->needs_gpu_rasterization_histogram);
   {
     DebugScopedSetImplThread impl(host->GetTaskRunnerProvider());
-    EXPECT_TRUE(host->active_commit_state()->needs_gpu_rasterization_histogram);
-    host->RecordGpuRasterizationHistogram(host->host_impl());
+    host->host_impl()->RecordGpuRasterizationHistogram();
   }
-  host->CommitComplete();
-  EXPECT_FALSE(host->pending_commit_state()->needs_gpu_rasterization_histogram);
+  commit_state.reset();
+  host->CommitComplete({base::TimeTicks(), base::TimeTicks::Now()});
+  EXPECT_FALSE(
+      host->GetPendingCommitState()->needs_gpu_rasterization_histogram);
 }
 
 }  // namespace

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -88,6 +88,9 @@ class ASH_EXPORT ShelfBackgroundAnimator : public ShelfObserver,
 
   // Gets the color corresponding with |background_type|.
   SkColor GetBackgroundColor(ShelfBackgroundType background_type) const;
+
+  // Drives the current animation to the end.
+  void CompleteAnimationForTesting();
 
  protected:
   // ShelfObserver:

@@ -1,0 +1,14 @@
+{
+  "sources": [
+    {
+      "timestamp": "1643235573000",
+      "source_origin": "https://s.test",
+      "reporting_origin": "https://r.test",
+      "source_type": "navigation",
+      "Attribution-Reporting-Register-Source": {
+        "destination": "https://d.test",
+        "source_event_id": "123"
+      }
+    }
+  ]
+}

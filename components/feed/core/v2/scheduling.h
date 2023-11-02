@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,10 @@
 #include <vector>
 
 #include "base/time/time.h"
+#include "base/values.h"
 #include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/public/stream_type.h"
 
-namespace base {
-class Value;
-}
 namespace feedstore {
 class Metadata;
 }
@@ -30,12 +28,19 @@ struct RequestSchedule {
   RequestSchedule(RequestSchedule&&);
   RequestSchedule& operator=(RequestSchedule&&);
 
+  enum class Type : int {
+    kScheduledRefresh = 0,
+    kFeedCloseRefresh = 1,
+    kMaxValue = kFeedCloseRefresh,
+  };
+
   base::Time anchor_time;
   std::vector<base::TimeDelta> refresh_offsets;
+  Type type = Type::kScheduledRefresh;
 };
 
-base::Value RequestScheduleToValue(const RequestSchedule&);
-RequestSchedule RequestScheduleFromValue(const base::Value&);
+base::Value::Dict RequestScheduleToDict(const RequestSchedule& schedule);
+RequestSchedule RequestScheduleFromDict(const base::Value::Dict& dict);
 // Given a schedule, returns the next time a request should be made.
 // Updates |schedule| accordingly. If |schedule| has no fetches remaining,
 // returns a scheduled time using |Config::default_background_refresh_interval|.
@@ -44,11 +49,13 @@ base::Time NextScheduledRequestTime(base::Time now, RequestSchedule* schedule);
 // Returns whether we should wait for new content before showing stream content.
 bool ShouldWaitForNewContent(const feedstore::Metadata& metadata,
                              const StreamType& stream_type,
-                             base::TimeDelta content_age);
+                             base::TimeDelta content_age,
+                             bool is_web_feed_subscriber);
 
 bool ContentInvalidFromAge(const feedstore::Metadata& metadata,
                            const StreamType& stream_type,
-                           base::TimeDelta content_age);
+                           base::TimeDelta content_age,
+                           bool is_web_feed_subscriber);
 }  // namespace feed
 
 #endif  // COMPONENTS_FEED_CORE_V2_SCHEDULING_H_

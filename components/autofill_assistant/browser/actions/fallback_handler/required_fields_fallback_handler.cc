@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/field_formatter.h"
 #include "components/autofill_assistant/browser/web/element_action_util.h"
-#include "components/autofill_assistant/browser/web/element_finder.h"
+#include "components/autofill_assistant/browser/web/element_finder_result.h"
 #include "components/autofill_assistant/browser/web/web_controller.h"
 #include "third_party/re2/src/re2/re2.h"
 
@@ -194,7 +194,8 @@ void RequiredFieldsFallbackHandler::OnGetRequiredFieldValue(
     const ClientStatus& element_status,
     const std::string& value) {
   required_fields_[required_fields_index].status =
-      value.empty() ? RequiredField::EMPTY : RequiredField::NOT_EMPTY;
+      value.empty() ? RequiredField::FieldValueStatus::kEmpty
+                    : RequiredField::FieldValueStatus::kNotEmpty;
 }
 
 void RequiredFieldsFallbackHandler::OnCheckRequiredFieldsDone(
@@ -317,7 +318,7 @@ void RequiredFieldsFallbackHandler::OnFindElement(
     const RequiredField& required_field,
     base::OnceCallback<void()> set_next_field,
     const ClientStatus& element_status,
-    std::unique_ptr<ElementFinder::Result> element_result) {
+    std::unique_ptr<ElementFinderResult> element_result) {
   if (!element_status.ok()) {
     FillStatusDetailsWithError(required_field, element_status.proto_status(),
                                &client_status_);
@@ -334,7 +335,7 @@ void RequiredFieldsFallbackHandler::OnFindElement(
     return;
   }
 
-  const ElementFinder::Result* element_result_ptr = element_result.get();
+  const ElementFinderResult* element_result_ptr = element_result.get();
   action_delegate_->GetWebController()->GetElementTag(
       *element_result_ptr,
       base::BindOnce(
@@ -347,14 +348,14 @@ void RequiredFieldsFallbackHandler::OnGetFallbackFieldElementTag(
     const std::string& value,
     const RequiredField& required_field,
     base::OnceCallback<void()> set_next_field,
-    std::unique_ptr<ElementFinder::Result> element,
+    std::unique_ptr<ElementFinderResult> element,
     const ClientStatus& element_tag_status,
     const std::string& element_tag) {
   if (!element_tag_status.ok()) {
     DVLOG(3) << "Status for element tag was "
              << element_tag_status.proto_status();
   }
-  const ElementFinder::Result* element_ptr = element.get();
+  const ElementFinderResult* element_ptr = element.get();
   base::OnceCallback<void(const ClientStatus&)> on_set_field_value =
       base::BindOnce(&RequiredFieldsFallbackHandler::OnSetFallbackFieldValue,
                      weak_ptr_factory_.GetWeakPtr(), required_field,
@@ -515,7 +516,7 @@ void RequiredFieldsFallbackHandler::OnShortWaitForElement(
 void RequiredFieldsFallbackHandler::OnSetFallbackFieldValue(
     const RequiredField& required_field,
     base::OnceCallback<void()> set_next_field,
-    std::unique_ptr<ElementFinder::Result> element,
+    std::unique_ptr<ElementFinderResult> element,
     const ClientStatus& set_field_status) {
   if (!set_field_status.ok()) {
     VLOG(1) << "Error setting value for required_field: "

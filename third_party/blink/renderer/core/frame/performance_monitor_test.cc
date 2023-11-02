@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -76,13 +76,13 @@ class PerformanceMonitorTest : public testing::Test {
 };
 
 void PerformanceMonitorTest::SetUp() {
-  page_holder_ = std::make_unique<DummyPageHolder>(IntSize(800, 600));
+  page_holder_ = std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
   page_holder_->GetDocument().SetURL(KURL("https://example.com/foo"));
   monitor_ = MakeGarbageCollected<PerformanceMonitor>(
-      GetFrame(), v8::Isolate::GetCurrent());
+      GetFrame(), GetExecutionContext()->GetIsolate());
 
   // Create another dummy page holder and pretend this is the iframe.
-  another_page_holder_ = std::make_unique<DummyPageHolder>(IntSize(400, 300));
+  another_page_holder_ = std::make_unique<DummyPageHolder>(gfx::Size(400, 300));
   another_page_holder_->GetDocument().SetURL(KURL("https://iframed.com/bar"));
 }
 

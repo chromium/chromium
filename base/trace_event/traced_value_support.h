@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_proto.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 
 // This file contains specialisations for trace serialisation for key
@@ -34,6 +35,16 @@ struct TraceFormatTraits<scoped_refptr<T>,
       return;
     }
     perfetto::WriteIntoTracedValue(std::move(context), *value);
+  }
+
+  template <class MessageType>
+  static void WriteIntoTrace(perfetto::TracedProto<MessageType> context,
+                             const scoped_refptr<T>& value) {
+    if (value) {
+      // Proto message without any fields is treated as nullptr.
+      return;
+    }
+    perfetto::WriteIntoTracedProto(std::move(context), *value);
   }
 };
 
@@ -85,7 +96,7 @@ template <>
 struct TraceFormatTraits<::base::TimeDelta> {
   static void WriteIntoTrace(perfetto::TracedValue context,
                              const ::base::TimeDelta& value) {
-    std::move(context).WriteUInt64(value.InMicroseconds());
+    std::move(context).WriteInt64(value.InMicroseconds());
   }
 };
 

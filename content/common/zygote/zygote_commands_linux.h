@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,7 +24,13 @@ static const char kZygoteHelloMessage[] = "ZYGOTE_OK";
 static const char kZygoteChildPingMessage[] = "CHILD_PING";
 
 // Maximum allowable length for messages sent to the zygote.
-const size_t kZygoteMaxMessageLength = 12288;
+const size_t kZygoteMaxMessageLength = 64 * 1024;
+static_assert(kZygoteMaxMessageLength < 200 * 1024,
+              "Raising kZygoteMaxMessageLength past the maximum single "
+              "datagram size for a Unix domain socket will cause long "
+              "messages to be silently truncated. See "
+              "https://crbug.com/1278226. Values as low as 212992 have "
+              "been observed in the wild.");
 
 // File descriptors initialized by the Zygote Host
 const int kZygoteSocketPairFd = base::GlobalDescriptors::kBaseDescriptor;
@@ -46,7 +52,11 @@ enum {
 
   // Not a real zygote command, but a subcommand used during the zygote fork
   // protocol.  Sends the child's PID as seen from the browser process.
-  kZygoteCommandForkRealPID = 4
+  kZygoteCommandForkRealPID = 4,
+
+  // Reinitialize logging. Needed on ChromeOS, which switches to a log file
+  // in the user's home directory once they log in.
+  kZygoteCommandReinitializeLogging = 5
 };
 
 }  // namespace content

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,11 @@
 #include <iterator>
 #include <memory>
 #include <string>
+#include <tuple>
 
 #include "base/base64.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
+#include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
@@ -19,6 +20,7 @@
 #include "base/values.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
+#include "net/http/http_util.h"
 #include "net/http/structured_headers.h"
 #include "net/url_request/url_request.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
@@ -142,8 +144,8 @@ GetHeadersToSignAndUpdateSignedHeadersHeader(
     net::URLRequest* request,
     const std::vector<std::string>& additional_headers) {
   std::string signed_headers_header;
-  ignore_result(request->extra_request_headers().GetHeader(
-      kTrustTokensRequestHeaderSignedHeaders, &signed_headers_header));
+  std::ignore = request->extra_request_headers().GetHeader(
+      kTrustTokensRequestHeaderSignedHeaders, &signed_headers_header);
 
   // Because of the characteristics of the protocol, there are expected to be
   // roughly 2-5 total headers to sign.
@@ -532,14 +534,14 @@ absl::optional<std::string> TrustTokenRequestSigningHelper::
     const SuitableTrustTokenOrigin& issuer = kv.first;
     const std::vector<uint8_t>& signature = kv.second;
 
-    keys_and_signatures.emplace_back(net::structured_headers::ParameterizedItem(
+    keys_and_signatures.emplace_back(
         net::structured_headers::Item(
             issuer.Serialize(),
             net::structured_headers::Item::ItemType::kStringType),
         // records_per_issuer is guaranteed to have all of the keys that
         // signatures_per_issuer does, so using |at| is safe:
         ConstructKeyAndSignaturePair(records_per_issuer.at(issuer), signature,
-                                     *signer_)));
+                                     *signer_));
   }
 
   header_items[kSignatureHeaderSignaturesKey] =

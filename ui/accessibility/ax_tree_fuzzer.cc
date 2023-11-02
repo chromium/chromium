@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,6 +42,7 @@ extern "C" int LLVMFuzzerTestOneInput(const unsigned char* data, size_t size) {
 
   EmptyAXTreeObserver observer;
   ui::AXTree tree;
+  tree.DisallowFailFastForFuzzing();
   tree.AddObserver(&observer);
   tree.Unserialize(initial_state);
   tree.RemoveObserver(&observer);

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,6 +21,8 @@ mojom::CommitNavigationParamsPtr CreateCommitNavigationParams() {
   auto commit_params = mojom::CommitNavigationParams::New();
   commit_params->navigation_token = base::UnguessableToken::Create();
   commit_params->navigation_timing = mojom::NavigationTiming::New();
+  commit_params->navigation_api_history_entry_arrays =
+      mojom::NavigationApiHistoryEntryArrays::New();
 
   return commit_params;
 }

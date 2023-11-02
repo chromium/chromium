@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,10 +12,6 @@
   [CallWith=ScriptState, RaisesException, MeasureAs=HandwritingRecognitionCreateRecognizer]
   Promise<HandwritingRecognizer>
       createHandwritingRecognizer(HandwritingModelConstraint constraint);
-
-  [CallWith=ScriptState, RaisesException, MeasureAs=HandwritingRecognitionQuerySupport]
-  Promise<HandwritingFeatureQueryResult>
-      queryHandwritingRecognizerSupport(HandwritingFeatureQuery query);
 
   [CallWith=ScriptState, RaisesException, MeasureAs=HandwritingRecognitionQueryRecognizer]
   Promise<HandwritingRecognizerQueryResult?>

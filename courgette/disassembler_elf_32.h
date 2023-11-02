@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "courgette/disassembler.h"
 #include "courgette/image_utils.h"
 #include "courgette/instruction_utils.h"
@@ -113,11 +113,11 @@ class DisassemblerElf32 : public Disassembler {
 
   virtual e_machine_values ElfEM() const = 0;
 
-  CheckBool IsValidTargetRVA(RVA rva) const WARN_UNUSED_RESULT;
+  [[nodiscard]] CheckBool IsValidTargetRVA(RVA rva) const;
 
   // Converts an ELF relocation instruction into an RVA.
-  virtual CheckBool RelToRVA(Elf32_Rel rel, RVA* result)
-    const WARN_UNUSED_RESULT = 0;
+  [[nodiscard]] virtual CheckBool RelToRVA(Elf32_Rel rel,
+                                           RVA* result) const = 0;
 
   // Public for unittests only
   std::vector<RVA>& Abs32Locations() { return abs32_locations_; }
@@ -182,17 +182,17 @@ class DisassemblerElf32 : public Disassembler {
 
   // Helpers for ParseFile().
 
-  virtual CheckBool ParseRelocationSection(const Elf32_Shdr* section_header,
-                                           InstructionReceptor* receptor) const
-      WARN_UNUSED_RESULT = 0;
+  [[nodiscard]] virtual CheckBool ParseRelocationSection(
+      const Elf32_Shdr* section_header,
+      InstructionReceptor* receptor) const = 0;
 
-  virtual CheckBool ParseRel32RelocsFromSection(const Elf32_Shdr* section)
-      WARN_UNUSED_RESULT = 0;
+  [[nodiscard]] virtual CheckBool ParseRel32RelocsFromSection(
+      const Elf32_Shdr* section) = 0;
 
-  CheckBool ParseAbs32Relocs() WARN_UNUSED_RESULT;
+  [[nodiscard]] CheckBool ParseAbs32Relocs();
 
   // Extracts all rel32 TypedRVAs. Does not sort the result.
-  CheckBool ParseRel32RelocsFromSections() WARN_UNUSED_RESULT;
+  [[nodiscard]] CheckBool ParseRel32RelocsFromSections();
 
   // Disassembler interfaces.
   bool ExtractAbs32Locations() override;
@@ -203,26 +203,26 @@ class DisassemblerElf32 : public Disassembler {
   InstructionGenerator GetInstructionGenerator(
       AssemblyProgram* program) override;
 
-  CheckBool ParseFile(AssemblyProgram* target,
-                      InstructionReceptor* receptor) const WARN_UNUSED_RESULT;
+  [[nodiscard]] CheckBool ParseFile(AssemblyProgram* target,
+                                    InstructionReceptor* receptor) const;
 
-  CheckBool ParseProgbitsSection(
+  [[nodiscard]] CheckBool ParseProgbitsSection(
       const Elf32_Shdr* section_header,
       std::vector<FileOffset>::iterator* current_abs_offset,
       std::vector<FileOffset>::iterator end_abs_offset,
       std::vector<std::unique_ptr<TypedRVA>>::iterator* current_rel,
       std::vector<std::unique_ptr<TypedRVA>>::iterator end_rel,
       AssemblyProgram* program,
-      InstructionReceptor* receptor) const WARN_UNUSED_RESULT;
+      InstructionReceptor* receptor) const;
 
-  CheckBool ParseSimpleRegion(FileOffset start_file_offset,
-                              FileOffset end_file_offset,
-                              InstructionReceptor* receptor) const
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] CheckBool ParseSimpleRegion(
+      FileOffset start_file_offset,
+      FileOffset end_file_offset,
+      InstructionReceptor* receptor) const;
 
-  CheckBool CheckSection(RVA rva) WARN_UNUSED_RESULT;
+  [[nodiscard]] CheckBool CheckSection(RVA rva);
 
-  const Elf32_Ehdr* header_;
+  raw_ptr<const Elf32_Ehdr> header_;
 
   Elf32_Half section_header_table_size_;
 
@@ -232,7 +232,7 @@ class DisassemblerElf32 : public Disassembler {
   // An ordering of |section_header_table_|, sorted by file offset.
   std::vector<Elf32_Half> section_header_file_offset_order_;
 
-  const Elf32_Phdr* program_header_table_;
+  raw_ptr<const Elf32_Phdr> program_header_table_;
   Elf32_Half program_header_table_size_;
 
   // Pointer to string table containing section names.

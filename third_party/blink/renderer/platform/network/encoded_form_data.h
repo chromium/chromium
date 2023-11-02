@@ -70,8 +70,6 @@ class PLATFORM_EXPORT FormDataElement final {
   FormDataElement& operator=(const FormDataElement&);
   FormDataElement& operator=(FormDataElement&&);
 
-  bool IsSafeToSendToAnotherThread() const;
-
   enum Type { kData, kEncodedFile, kEncodedBlob, kDataPipe } type_;
   Vector<char> data_;
   String filename_;
@@ -103,7 +101,6 @@ class PLATFORM_EXPORT EncodedFormData : public RefCounted<EncodedFormData> {
   static scoped_refptr<EncodedFormData> Create();
   static scoped_refptr<EncodedFormData> Create(const void*, wtf_size_t);
   static scoped_refptr<EncodedFormData> Create(base::span<const char>);
-  static scoped_refptr<EncodedFormData> Create(const Vector<char>&);
   scoped_refptr<EncodedFormData> Copy() const;
   scoped_refptr<EncodedFormData> DeepCopy() const;
   ~EncodedFormData();
@@ -123,7 +120,7 @@ class PLATFORM_EXPORT EncodedFormData : public RefCounted<EncodedFormData> {
   void Flatten(Vector<char>&) const;  // omits files
   String FlattenToString() const;     // omits files
 
-  bool IsEmpty() const { return elements_.IsEmpty(); }
+  bool IsEmpty() const { return elements_.empty(); }
   const Vector<FormDataElement>& Elements() const { return elements_; }
   Vector<FormDataElement>& MutableElements() { return elements_; }
 

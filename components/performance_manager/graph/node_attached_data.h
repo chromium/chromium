@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define COMPONENTS_PERFORMANCE_MANAGER_GRAPH_NODE_ATTACHED_DATA_H_
 
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "components/performance_manager/graph/node_base.h"
 #include "components/performance_manager/public/graph/node_attached_data.h"
 
@@ -59,7 +60,7 @@ class InternalNodeAttachedDataStorage {
   }
 
  private:
-  NodeAttachedData* data_ = nullptr;
+  raw_ptr<NodeAttachedData> data_ = nullptr;
   uint8_t buffer_[kDataSize];
 };
 

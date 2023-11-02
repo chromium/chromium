@@ -1,11 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/history/metrics/domain_diversity_reporter.h"
 
-#include "base/metrics/histogram_macros.h"
-#include "base/task/post_task.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/task_traits.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -58,8 +57,8 @@ void DomainDiversityReporter::MaybeComputeDomainMetrics() {
   }
   // Observe history service and start reporting as soon as
   // the former is ready.
-  DCHECK(!history_service_observer_.IsObservingSource(history_service_));
-  history_service_observer_.Observe(history_service_);
+  DCHECK(!history_service_observer_.IsObservingSource(history_service_.get()));
+  history_service_observer_.Observe(history_service_.get());
 }
 
 void DomainDiversityReporter::ComputeDomainMetrics() {
@@ -139,12 +138,12 @@ void DomainDiversityReporter::ReportDomainMetrics(
     return;
 
   for (auto& result_one_day : result) {
-    UMA_HISTOGRAM_COUNTS_1000("History.DomainCount1Day",
-                              result_one_day.one_day_metric.value().count);
-    UMA_HISTOGRAM_COUNTS_1000("History.DomainCount7Day",
-                              result_one_day.seven_day_metric.value().count);
-    UMA_HISTOGRAM_COUNTS_1000(
-        "History.DomainCount28Day",
+    base::UmaHistogramCounts1000("History.DomainCount1Day_V2",
+                                 result_one_day.one_day_metric.value().count);
+    base::UmaHistogramCounts1000("History.DomainCount7Day_V2",
+                                 result_one_day.seven_day_metric.value().count);
+    base::UmaHistogramCounts1000(
+        "History.DomainCount28Day_V2",
         result_one_day.twenty_eight_day_metric.value().count);
   }
 

@@ -1,7 +1,6 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import {assert} from 'chrome://resources/js/assert.m.js';
 import {dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
@@ -25,7 +24,7 @@ export const DarkModeMixin = dedupingMixin(
           };
         }
 
-        connectedCallback() {
+        override connectedCallback() {
           super.connectedCallback();
           if (!this.boundOnChange_) {
             this.boundOnChange_ = () => this.onChange_();
@@ -33,9 +32,9 @@ export const DarkModeMixin = dedupingMixin(
           prefersDark.addListener(this.boundOnChange_);
         }
 
-        disconnectedCallback() {
+        override disconnectedCallback() {
           super.disconnectedCallback();
-          prefersDark.removeListener(assert(this.boundOnChange_));
+          prefersDark.removeListener(this.boundOnChange_);
           this.boundOnChange_ = null;
         }
 

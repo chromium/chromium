@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -201,12 +201,12 @@ void SafariImporter::RecursiveReadBookmarksFolder(
 
   // Iterate over individual bookmarks.
   for (NSDictionary* bookmark in elements) {
-    NSString* type = bookmark[@"WebBookmarkType"];
-    if (!type)
+    NSString* element_type = bookmark[@"WebBookmarkType"];
+    if (!element_type)
       continue;
 
     // If this is a folder, recurse.
-    if ([type isEqualToString:@"WebBookmarkTypeList"]) {
+    if ([element_type isEqualToString:@"WebBookmarkTypeList"]) {
       RecursiveReadBookmarksFolder(bookmark,
                                    path_elements,
                                    is_in_toolbar,
@@ -216,21 +216,21 @@ void SafariImporter::RecursiveReadBookmarksFolder(
 
     // If we didn't see a bookmark folder, then we're expecting a bookmark
     // item.  If that's not what we got then ignore it.
-    if (![type isEqualToString:@"WebBookmarkTypeLeaf"])
+    if (![element_type isEqualToString:@"WebBookmarkTypeLeaf"])
       continue;
 
-    NSString* url = bookmark[@"URLString"];
-    NSString* title = bookmark[@"URIDictionary"][@"title"];
+    NSString* element_url = bookmark[@"URLString"];
+    NSString* element_title = bookmark[@"URIDictionary"][@"title"];
 
-    if (!url || !title)
+    if (!element_url || !element_title)
       continue;
 
     // Output Bookmark.
     ImportedBookmarkEntry entry;
     // Safari doesn't specify a creation time for the bookmark.
     entry.creation_time = base::Time::Now();
-    entry.title = base::SysNSStringToUTF16(title);
-    entry.url = GURL(base::SysNSStringToUTF8(url));
+    entry.title = base::SysNSStringToUTF16(element_title);
+    entry.url = GURL(base::SysNSStringToUTF8(element_url));
     entry.path = path_elements;
     entry.in_toolbar = is_in_toolbar;
 

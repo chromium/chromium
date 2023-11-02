@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -129,6 +129,9 @@ public class CafMediaRouteProvider extends CafBaseMediaRouteProvider {
             return;
         }
 
+        // Flush pending messages, if any, before sending the current message to ensure that the
+        // messages are delivered in order.
+        flushPendingMessagesToClient(clientRecord);
         Log.d(TAG, "Sending message to client %s: %s", clientId, message);
         mManager.onMessage(clientRecord.routeId, message);
     }

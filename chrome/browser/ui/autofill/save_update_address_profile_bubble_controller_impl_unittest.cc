@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include "base/callback_helpers.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
@@ -101,7 +102,7 @@ TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest,
   // Close controller tab.
   EXPECT_TRUE(browser()->tab_strip_model()->CloseWebContentsAt(
       tab_strip_model->GetIndexOfWebContents(controller_web_contents),
-      TabStripModel::CloseTypes::CLOSE_USER_GESTURE));
+      TabCloseTypes::CLOSE_USER_GESTURE));
   EXPECT_EQ(1, tab_strip_model->count());
 }
 

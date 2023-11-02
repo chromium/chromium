@@ -1,20 +1,21 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_APP_RESTORE_FULL_RESTORE_READ_HANDLER_H_
 #define COMPONENTS_APP_RESTORE_FULL_RESTORE_READ_HANDLER_H_
 
-#include <map>
 #include <memory>
 #include <utility>
 
 #include "base/callback.h"
 #include "base/component_export.h"
+#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "components/app_restore/app_restore_arc_info.h"
 #include "components/app_restore/arc_read_handler.h"
 #include "components/app_restore/full_restore_utils.h"
@@ -92,6 +93,8 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreReadHandler
                      int32_t session_id) override;
   void OnTaskDestroyed(int32_t task_id) override;
 
+  void SetPrimaryProfilePath(const base::FilePath& profile_path);
+
   void SetActiveProfilePath(const base::FilePath& profile_path);
 
   // Sets whether we should check the restore data for `profile_path`. If the
@@ -149,9 +152,9 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreReadHandler
   // Returns the restore window id for the ARC app's |session_id|.
   int32_t GetArcRestoreWindowIdForSessionId(int32_t session_id);
 
-  // Generates the ARC session id (1,000,000,001 - INT_MAX) for restored ARC
-  // apps.
-  int32_t GetArcSessionId();
+  // Returns the restore window id for the Lacros window with
+  // `lacros_window_id`.
+  int32_t GetLacrosRestoreWindowId(const std::string& lacros_window_id) const;
 
   // Sets |arc session id| for |window_id| to |arc_session_id_to_window_id_|.
   // |arc session id| is assigned when ARC apps are restored.
@@ -179,6 +182,14 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreReadHandler
   std::unique_ptr<app_restore::WindowInfo> GetWindowInfo(
       int32_t restore_window_id);
 
+  // Returns true if ARC restore launching is thought to be underway on
+  // `primary_profile_path_`.
+  bool IsArcRestoreRunning() const;
+
+  // Returns true if Lacros restore launching is thought to be underway on
+  // `primary_profile_path_`.
+  bool IsLacrosRestoreRunning() const;
+
   // Invoked when reading the restore data from |profile_path| is finished, and
   // calls |callback| to notify that the reading operation is done.
   void OnGetRestoreData(const base::FilePath& profile_path,
@@ -190,23 +201,27 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreReadHandler
 
   app_restore::RestoreData* GetRestoreData(const base::FilePath& profile_path);
 
+  // The primary user profile path.
+  base::FilePath primary_profile_path_;
+
   // The current active user profile path.
   base::FilePath active_profile_path_;
 
   // The restore data read from the full restore files.
-  std::map<base::FilePath, std::unique_ptr<app_restore::RestoreData>>
+  base::flat_map<base::FilePath, std::unique_ptr<app_restore::RestoreData>>
       profile_path_to_restore_data_;
 
   // The map from the window id to the full restore file path and the
   // app id. The window id is saved in the window property
   // |kRestoreWindowIdKey|. This map is used to find the file path and the app
   // id when get the window info. This map is not used for ARC app windows.
-  std::map<int32_t, std::pair<base::FilePath, std::string>>
+  base::flat_map<int32_t, std::pair<base::FilePath, std::string>>
       window_id_to_app_restore_info_;
 
   // The start time of full restore for each profile. There won't be an entry if
   // full restore hasn't started for the profile.
-  std::map<base::FilePath, base::TimeTicks> profile_path_to_start_time_data_;
+  base::flat_map<base::FilePath, base::TimeTicks>
+      profile_path_to_start_time_data_;
 
   std::unique_ptr<app_restore::ArcReadHandler> arc_read_handler_;
 

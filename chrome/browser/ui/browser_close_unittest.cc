@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/command_line.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -13,6 +14,7 @@
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -49,6 +51,11 @@ class TestingDownloadCoreService : public DownloadCoreService {
     return nullptr;
   }
 
+  DownloadUIController* GetDownloadUIController() override {
+    ADD_FAILURE();
+    return nullptr;
+  }
+
   DownloadHistory* GetDownloadHistory() override {
     ADD_FAILURE();
     return nullptr;
@@ -72,7 +79,9 @@ class TestingDownloadCoreService : public DownloadCoreService {
     ADD_FAILURE();
   }
 
-  bool IsShelfEnabled() override { return true; }
+  bool IsDownloadUiEnabled() override { return true; }
+
+  bool IsDownloadObservedByExtension() override { return false; }
 
   // KeyedService
   void Shutdown() override {}
@@ -89,7 +98,9 @@ static std::unique_ptr<KeyedService> CreateTestingDownloadCoreService(
 class BrowserCloseTest : public testing::Test {
  public:
   BrowserCloseTest()
-      : profile_manager_(TestingBrowserProcess::GetGlobal()), name_index_(0) {}
+      : profile_manager_(TestingBrowserProcess::GetGlobal()), name_index_(0) {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kNoFirstRun);
+  }
 
   ~BrowserCloseTest() override {}
 
@@ -274,7 +285,7 @@ TEST_F(BrowserCloseTest, LastRegular) {
   EXPECT_EQ(Browser::DownloadCloseType::kBrowserShutdown,
             browser->OkToCloseWithInProgressDownloads(&num_downloads_blocking));
   EXPECT_EQ(num_downloads_blocking, 1);
-#if defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_EQ(true, browser->CanCloseWithInProgressDownloads());
 #else
   EXPECT_EQ(false, browser->CanCloseWithInProgressDownloads());

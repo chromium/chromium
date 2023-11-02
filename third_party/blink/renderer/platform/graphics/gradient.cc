@@ -29,7 +29,6 @@
 
 #include <algorithm>
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_settings_builder.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_shader.h"
@@ -38,6 +37,7 @@
 #include "third_party/skia/include/core/SkMatrix.h"
 #include "third_party/skia/include/core/SkShader.h"
 #include "third_party/skia/include/effects/SkGradientShader.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 
@@ -59,7 +59,7 @@ static inline bool CompareStops(const Gradient::ColorStop& a,
 }
 
 void Gradient::AddColorStop(const Gradient::ColorStop& stop) {
-  if (stops_.IsEmpty()) {
+  if (stops_.empty()) {
     stops_sorted_ = true;
   } else {
     stops_sorted_ = stops_sorted_ && CompareStops(stops_.back(), stop);
@@ -92,7 +92,7 @@ void Gradient::SortStopsIfNecessary() const {
 // (making this logic redundant), but in practice there are rendering diffs;
 // investigate.
 void Gradient::FillSkiaStops(ColorBuffer& colors, OffsetBuffer& pos) const {
-  if (stops_.IsEmpty()) {
+  if (stops_.empty()) {
     // A gradient with no stops must be transparent black.
     pos.push_back(WebCoreDoubleToSkScalar(0));
     colors.push_back(SK_ColorTRANSPARENT);
@@ -103,24 +103,26 @@ void Gradient::FillSkiaStops(ColorBuffer& colors, OffsetBuffer& pos) const {
     // with a stop at (0 + epsilon).
     pos.push_back(WebCoreDoubleToSkScalar(0));
     if (color_filter_) {
-      colors.push_back(
-          color_filter_->filterColor(SkColor(stops_.front().color)));
+      colors.push_back(color_filter_->filterColor(
+          stops_.front().color.ToSkColorDeprecated()));
     } else {
-      colors.push_back(SkColor(stops_.front().color));
+      colors.push_back(stops_.front().color.ToSkColorDeprecated());
     }
   }
 
   for (const auto& stop : stops_) {
     pos.push_back(WebCoreDoubleToSkScalar(stop.stop));
-    if (color_filter_)
-      colors.push_back(color_filter_->filterColor(SkColor(stop.color)));
-    else
-      colors.push_back(SkColor(stop.color));
+    if (color_filter_) {
+      colors.push_back(
+          color_filter_->filterColor(stop.color.ToSkColorDeprecated()));
+    } else {
+      colors.push_back(stop.color.ToSkColorDeprecated());
+    }
   }
 
   // Copy the last stop to 1.0 if needed. See comment above about this float
   // comparison.
-  DCHECK(!pos.IsEmpty());
+  DCHECK(!pos.empty());
   if (pos.back() < 1) {
     pos.push_back(WebCoreDoubleToSkScalar(1));
     colors.push_back(colors.back());
@@ -133,9 +135,9 @@ sk_sp<PaintShader> Gradient::CreateShaderInternal(
   DCHECK(stops_sorted_);
 
   ColorBuffer colors;
-  colors.ReserveCapacity(stops_.size());
+  colors.reserve(stops_.size());
   OffsetBuffer pos;
-  pos.ReserveCapacity(stops_.size());
+  pos.reserve(stops_.size());
 
   FillSkiaStops(colors, pos);
   DCHECK_GE(colors.size(), 2ul);
@@ -171,7 +173,7 @@ sk_sp<PaintShader> Gradient::CreateShaderInternal(
   return shader;
 }
 
-void Gradient::ApplyToFlags(PaintFlags& flags,
+void Gradient::ApplyToFlags(cc::PaintFlags& flags,
                             const SkMatrix& local_matrix,
                             const ImageDrawOptions& draw_options) {
   if (is_dark_mode_enabled_ != draw_options.apply_dark_mode) {
@@ -203,8 +205,8 @@ namespace {
 
 class LinearGradient final : public Gradient {
  public:
-  LinearGradient(const FloatPoint& p0,
-                 const FloatPoint& p1,
+  LinearGradient(const gfx::PointF& p0,
+                 const gfx::PointF& p1,
                  GradientSpreadMethod spread_method,
                  ColorInterpolation interpolation,
                  DegenerateHandling degenerate_handling)
@@ -228,21 +230,27 @@ class LinearGradient final : public Gradient {
     }
 
     SkPoint pts[2] = {FloatPointToSkPoint(p0_), FloatPointToSkPoint(p1_)};
+    // TODO(crbug/1308932): Remove this helper vector colors4f and make all
+    // SkColor4f.
+    std::vector<SkColor4f> colors4f;
+    colors4f.reserve(colors.size());
+    for (auto& color : colors)
+      colors4f.push_back(SkColor4f::FromColor(color));
     return PaintShader::MakeLinearGradient(
-        pts, colors.data(), pos.data(), static_cast<int>(colors.size()),
-        tile_mode, flags, &local_matrix, fallback_color);
+        pts, colors4f.data(), pos.data(), static_cast<int>(colors4f.size()),
+        tile_mode, flags, &local_matrix, SkColor4f::FromColor(fallback_color));
   }
 
  private:
-  const FloatPoint p0_;
-  const FloatPoint p1_;
+  const gfx::PointF p0_;
+  const gfx::PointF p1_;
 };
 
 class RadialGradient final : public Gradient {
  public:
-  RadialGradient(const FloatPoint& p0,
+  RadialGradient(const gfx::PointF& p0,
                  float r0,
-                 const FloatPoint& p1,
+                 const gfx::PointF& p1,
                  float r1,
                  float aspect_ratio,
                  GradientSpreadMethod spread_method,
@@ -286,15 +294,21 @@ class RadialGradient final : public Gradient {
       return PaintShader::MakeEmpty();
     }
 
+    // TODO(crbug/1308932): Remove this helper vector colors4f and make all
+    // SkColor4f.
+    std::vector<SkColor4f> colors4f;
+    colors4f.reserve(colors.size());
+    for (auto& color : colors)
+      colors4f.push_back(SkColor4f::FromColor(color));
     return PaintShader::MakeTwoPointConicalGradient(
         FloatPointToSkPoint(p0_), radius0, FloatPointToSkPoint(p1_), radius1,
-        colors.data(), pos.data(), static_cast<int>(colors.size()), tile_mode,
-        flags, matrix, fallback_color);
+        colors4f.data(), pos.data(), static_cast<int>(colors4f.size()),
+        tile_mode, flags, matrix, SkColor4f::FromColor(fallback_color));
   }
 
  private:
-  const FloatPoint p0_;
-  const FloatPoint p1_;
+  const gfx::PointF p0_;
+  const gfx::PointF p1_;
   const float r0_;
   const float r1_;
   const float aspect_ratio_;  // For elliptical gradient, width / height.
@@ -302,7 +316,7 @@ class RadialGradient final : public Gradient {
 
 class ConicGradient final : public Gradient {
  public:
-  ConicGradient(const FloatPoint& position,
+  ConicGradient(const gfx::PointF& position,
                 float rotation,
                 float start_angle,
                 float end_angle,
@@ -341,14 +355,20 @@ class ConicGradient final : public Gradient {
       matrix = &*adjusted_local_matrix;
     }
 
+    // TODO(crbug/1308932): Remove this helper vector colors4f and make all
+    // SkColor4f.
+    std::vector<SkColor4f> colors4f;
+    colors4f.reserve(colors.size());
+    for (auto& color : colors)
+      colors4f.push_back(SkColor4f::FromColor(color));
     return PaintShader::MakeSweepGradient(
-        position_.x(), position_.y(), colors.data(), pos.data(),
-        static_cast<int>(colors.size()), tile_mode, start_angle_, end_angle_,
-        flags, matrix, fallback_color);
+        position_.x(), position_.y(), colors4f.data(), pos.data(),
+        static_cast<int>(colors4f.size()), tile_mode, start_angle_, end_angle_,
+        flags, matrix, SkColor4f::FromColor(fallback_color));
   }
 
  private:
-  const FloatPoint position_;  // center point
+  const gfx::PointF position_;  // center point
   const float rotation_;       // global rotation (deg)
   const float start_angle_;    // angle (deg) corresponding to color position 0
   const float end_angle_;      // angle (deg) corresponding to color position 1
@@ -357,8 +377,8 @@ class ConicGradient final : public Gradient {
 }  // namespace
 
 scoped_refptr<Gradient> Gradient::CreateLinear(
-    const FloatPoint& p0,
-    const FloatPoint& p1,
+    const gfx::PointF& p0,
+    const gfx::PointF& p1,
     GradientSpreadMethod spread_method,
     ColorInterpolation interpolation,
     DegenerateHandling degenerate_handling) {
@@ -367,9 +387,9 @@ scoped_refptr<Gradient> Gradient::CreateLinear(
 }
 
 scoped_refptr<Gradient> Gradient::CreateRadial(
-    const FloatPoint& p0,
+    const gfx::PointF& p0,
     float r0,
-    const FloatPoint& p1,
+    const gfx::PointF& p1,
     float r1,
     float aspect_ratio,
     GradientSpreadMethod spread_method,
@@ -381,7 +401,7 @@ scoped_refptr<Gradient> Gradient::CreateRadial(
 }
 
 scoped_refptr<Gradient> Gradient::CreateConic(
-    const FloatPoint& position,
+    const gfx::PointF& position,
     float rotation,
     float start_angle,
     float end_angle,

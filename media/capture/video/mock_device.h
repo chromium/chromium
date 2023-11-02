@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,8 +34,7 @@ class MockDevice : public media::VideoCaptureDevice {
                void(media::mojom::PhotoSettingsPtr* settings,
                     SetPhotoOptionsCallback* callback));
   MOCK_METHOD1(DoTakePhoto, void(TakePhotoCallback* callback));
-  MOCK_METHOD2(OnUtilizationReport,
-               void(int frame_feedback_id, media::VideoCaptureFeedback));
+  MOCK_METHOD1(OnUtilizationReport, void(media::VideoCaptureFeedback));
 
   void AllocateAndStart(const media::VideoCaptureParams& params,
                         std::unique_ptr<Client> client) override;

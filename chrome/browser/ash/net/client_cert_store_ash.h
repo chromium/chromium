@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,10 +10,12 @@
 #include <vector>
 
 #include "base/memory/ref_counted.h"
-// TODO(https://crbug.com/1164001): forward declare when moved to ash.
-#include "chrome/browser/ash/certificate_provider/certificate_provider.h"
 #include "chrome/browser/ash/net/client_cert_filter.h"
 #include "net/ssl/client_cert_store_nss.h"
+
+namespace chromeos {
+class CertificateProvider;
+}
 
 namespace ash {
 
@@ -27,10 +29,11 @@ class ClientCertStoreAsh : public net::ClientCertStore {
   // if |use_system_slot| is true. If |username_hash| is empty, no public and no
   // private slot will be used. It will additionally return certificates
   // provided by |cert_provider|.
-  ClientCertStoreAsh(std::unique_ptr<CertificateProvider> cert_provider,
-                     bool use_system_slot,
-                     const std::string& username_hash,
-                     const PasswordDelegateFactory& password_delegate_factory);
+  ClientCertStoreAsh(
+      std::unique_ptr<chromeos::CertificateProvider> cert_provider,
+      bool use_system_slot,
+      const std::string& username_hash,
+      const PasswordDelegateFactory& password_delegate_factory);
 
   ClientCertStoreAsh(const ClientCertStoreAsh&) = delete;
   ClientCertStoreAsh& operator=(const ClientCertStoreAsh&) = delete;
@@ -52,7 +55,7 @@ class ClientCertStoreAsh : public net::ClientCertStore {
       const net::SSLCertRequestInfo* request,
       net::ClientCertIdentityList additional_certs);
 
-  std::unique_ptr<CertificateProvider> cert_provider_;
+  std::unique_ptr<chromeos::CertificateProvider> cert_provider_;
   ClientCertFilter cert_filter_;
 
   // The factory for creating the delegate for requesting a password to a

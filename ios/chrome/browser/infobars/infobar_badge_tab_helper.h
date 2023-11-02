@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,9 @@
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "components/infobars/core/infobar_manager.h"
+#include "ios/chrome/browser/infobars/badge_state.h"
 #include "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/infobars/infobar_type.h"
-#import "ios/chrome/browser/ui/badges/badge_item.h"
 #import "ios/web/public/web_state_user_data.h"
 
 namespace web {
@@ -21,7 +21,6 @@ class WebState;
 
 @protocol InfobarBadgeTabHelperDelegate;
 @protocol LegacyInfobarBadgeTabHelperDelegate;
-@class InfobarBadgeModel;
 
 // TabHelper that observes InfoBarManager. It updates an InfobarBadge delegate
 // for relevant Infobar changes.
@@ -33,34 +32,39 @@ class InfobarBadgeTabHelper
 
   ~InfobarBadgeTabHelper() override;
 
-  // Sets the InfobarBadgeTabHelperDelegate to |delegate|.
+  // Sets the InfobarBadgeTabHelperDelegate to `delegate`.
   void SetDelegate(id<InfobarBadgeTabHelperDelegate> delegate);
-  // Updates Infobar badge for the case where an Infobar banner of
-  // |infobar_type| was presented.
+  // Updates Infobar for the case where the user is aware that they could access
+  // the infobar with `infobar_type` through a badge.
+  void UpdateBadgeForInfobarRead(InfobarType infobar_type);
+  // Updates Infobar for the case where an Infobar banner of
+  // `infobar_type` was presented.
   void UpdateBadgeForInfobarBannerPresented(InfobarType infobar_type);
-  // Updates Infobar badge for the case where an Infobar banner of
-  // |infobar_type| was dismissed.
+  // Updates Infobar for the case where an Infobar banner of
+  // `infobar_type` was dismissed.
   void UpdateBadgeForInfobarBannerDismissed(InfobarType infobar_type);
-
-  // Returns all BadgeItems for the TabHelper Webstate.
-  NSArray<id<BadgeItem>>* GetInfobarBadgeItems();
 
   // DEPRECATED: The accept state of an infobar is now stored directly in
   // InfoBarIOS, and should be updated there rather than using these functions.
   void UpdateBadgeForInfobarAccepted(InfobarType infobar_type);
   void UpdateBadgeForInfobarReverted(InfobarType infobar_type);
 
+  // Returns all BadgesStates for infobars.
+  std::map<InfobarType, BadgeState> GetInfobarBadgeStates() const;
+
  private:
   friend class web::WebStateUserData<InfobarBadgeTabHelper>;
   explicit InfobarBadgeTabHelper(web::WebState* web_state);
 
-  // Notifies the tab helper to reset state for added or removed infobars with
-  // |infobar_type|.  Only called for infobars that support badges.
-  void ResetStateForAddedInfobar(InfobarType infobar_type);
-  void ResetStateForRemovedInfobar(InfobarType infobar_type);
-  // Notifies the tab helper that an infobar with |type| was accepted or
+  // Registers/unregisters the infobar to the tab helper for observation of its
+  // activities.
+  void RegisterInfobar(infobars::InfoBar* infobar);
+  void UnregisterInfobar(infobars::InfoBar* infobar);
+  // Notifies the tab helper that an infobar with `type` was accepted or
   // reverted.
   void OnInfobarAcceptanceStateChanged(InfobarType infobar_type, bool accepted);
+  // Update the badges displayed in the location bar.
+  void UpdateBadgesShown();
 
   // Helper object that listens for accept and revert events for an InfoBarIOS.
   class InfobarAcceptanceObserver : public InfoBarIOS::Observer {
@@ -105,7 +109,7 @@ class InfobarBadgeTabHelper
 
     // The owning tab helper.
     InfobarBadgeTabHelper* tab_helper_ = nullptr;
-    // The infobar acceptance observer for |tab_helper_|.  Added to each infobar
+    // The infobar acceptance observer for `tab_helper_`.  Added to each infobar
     // in the observed manager.
     InfobarAcceptanceObserver* infobar_accept_observer_ = nullptr;
     // Scoped observer that facilitates observing an InfoBarManager.
@@ -122,8 +126,10 @@ class InfobarBadgeTabHelper
   InfobarManagerObserver infobar_manager_observer_;
   // The WebState this TabHelper is scoped to.
   web::WebState* web_state_;
-  // Map storing the badge models for each InfobarType.
-  std::map<InfobarType, InfobarBadgeModel*> infobar_badge_models_;
+  // Map storing the BadgeState for each InfobarType.
+  std::map<InfobarType, BadgeState> infobar_badge_states_;
+  // Vector storing infobars that are added when prerendering.
+  std::vector<infobars::InfoBar*> infobars_added_when_prerendering_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
 };

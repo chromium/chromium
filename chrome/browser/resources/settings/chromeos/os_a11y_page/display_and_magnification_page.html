@@ -1,0 +1,180 @@
+<style include="settings-shared">
+  :root {
+    --cr-section-indent-width: 60px;
+  }
+
+  .sub-item {
+    padding-inline-start: var(--cr-section-indent-width);
+  }
+
+  .settings-box {
+    padding-inline-start: 0;
+  }
+
+  .settings-box-row,
+  settings-toggle-button,
+  cr-link-row {
+    padding-inline-end: var(--cr-section-padding);
+    padding-inline-start: var(--cr-section-padding);
+  }
+
+  .settings-box.indented,
+  settings-toggle-button.indented {
+    margin-inline-start: calc(var(--cr-section-indent-padding) +
+                              var(--cr-section-indent-width));
+  }
+
+  #screenMagnifierZoomHintLabel {
+    white-space: pre-line;
+  }
+</style>
+<settings-toggle-button
+    icon="os-settings:contrast"
+    pref="{{prefs.settings.a11y.high_contrast_enabled}}"
+    label="$i18n{highContrastLabel}"
+    sub-label="$i18n{highContrastDescription}"
+    deep-link-focus-id$="[[Setting.kHighContrastMode]]">
+</settings-toggle-button>
+<settings-toggle-button
+    class="hr"
+    icon="os-settings:fullscreen-magnifier"
+    pref="{{prefs.settings.a11y.screen_magnifier}}"
+    label="$i18n{screenMagnifierLabel}"
+    sub-label="[[getScreenMagnifierDescription_(
+        prefs.settings.a11y.screen_magnifier.value)]]"
+    disabled="[[prefs.ash.docked_magnifier.enabled.value]]"
+    deep-link-focus-id$="[[Setting.kFullscreenMagnifier]]">
+</settings-toggle-button>
+<template is="dom-if" if="[[prefs.settings.a11y.screen_magnifier.value]]">
+  <div class="sub-item">
+    <div class="hr">
+      <settings-radio-group id="screenMagnifierMouseFollowingModeRadioGroup"
+          pref="{{prefs.settings.a11y.screen_magnifier_mouse_following_mode}}">
+        <controlled-radio-button
+            id="screenMagnifierMouseFollowingModeContinuous"
+            name="[[screenMagnifierMouseFollowingModePrefValues_.CONTINUOUS]]"
+            pref="[[prefs.settings.a11y.screen_magnifier_mouse_following_mode]]"
+            label="$i18n{screenMagnifierMouseFollowingModeContinuous}">
+        </controlled-radio-button>
+        <controlled-radio-button
+            id="screenMagnifierMouseFollowingModeCentered"
+            name="[[screenMagnifierMouseFollowingModePrefValues_.CENTERED]]"
+            pref="[[prefs.settings.a11y.screen_magnifier_mouse_following_mode]]"
+            label="$i18n{screenMagnifierMouseFollowingModeCentered}">
+        </controlled-radio-button>
+        <controlled-radio-button
+            id="screenMagnifierMouseFollowingModeEdge"
+            name="[[screenMagnifierMouseFollowingModePrefValues_.EDGE]]"
+            pref="[[prefs.settings.a11y.screen_magnifier_mouse_following_mode]]"
+            label="$i18n{screenMagnifierMouseFollowingModeEdge}">
+        </controlled-radio-button>
+      </settings-radio-group>
+    </div>
+    <settings-toggle-button
+        class="settings-box hr"
+        pref="{{prefs.settings.a11y.screen_magnifier_focus_following}}"
+        label="$i18n{screenMagnifierFocusFollowingLabel}"
+        deep-link-focus-id$=
+            "[[Setting.kFullscreenMagnifierFocusFollowing]]">
+    </settings-toggle-button>
+    <div class="settings-box">
+      <div class="flex start settings-box-text" id="labelWrapper">
+        <div class="label" aria-hidden="true">
+          $i18n{screenMagnifierZoomLabel}
+        </div>
+        <!-- Next line long because screenMagnifierZoomHintLabel uses pre-line -->
+        <div id="screenMagnifierZoomHintLabel" class="secondary label">$i18n{screenMagnifierZoomHintLabel}</div>
+      </div>
+      <settings-dropdown-menu label="$i18n{screenMagnifierZoomLabel}"
+          pref="{{prefs.settings.a11y.screen_magnifier_scale}}"
+          menu-options="[[screenMagnifierZoomOptions_]]"
+          disabled="[[!prefs.settings.a11y.screen_magnifier.value]]">
+      </settings-dropdown-menu>
+    </div>
+  </div>
+</template>
+<settings-toggle-button
+    class="hr"
+    icon="os-settings:docked-magnifier"
+    pref="{{prefs.ash.docked_magnifier.enabled}}"
+    label="$i18n{dockedMagnifierLabel}"
+    sub-label="$i18n{dockedMagnifierDescription}"
+    disabled="[[prefs.settings.a11y.screen_magnifier.value]]"
+    deep-link-focus-id$="[[Setting.kDockedMagnifier]]">
+</settings-toggle-button>
+<template is="dom-if" if="[[prefs.ash.docked_magnifier.enabled.value]]">
+  <div class="sub-item">
+    <div class="settings-box">
+      <div class="start settings-box-text" aria-hidden="true">
+        $i18n{dockedMagnifierZoomLabel}
+      </div>
+      <settings-dropdown-menu label="$i18n{dockedMagnifierZoomLabel}"
+          pref="{{prefs.ash.docked_magnifier.scale}}"
+          menu-options="[[screenMagnifierZoomOptions_]]"
+          disabled="[[!prefs.ash.docked_magnifier.enabled.value]]">
+      </settings-dropdown-menu>
+    </div>
+  </div>
+</template>
+<template is="dom-if" if="[[experimentalColorEnhancementSettingsEnabled_]]">
+  <div class="settings-box settings-box-row">
+    <div class="start settings-box-text" aria-hidden="true">
+      $i18n{greyscaleLabel}
+    </div>
+    <settings-slider
+        pref="{{prefs.settings.a11y.greyscale_amount}}"
+        min="0" max="100"
+        label-aria="$i18n{greyscaleLabel}"
+        label-min="$i18n{colorFilterMinLabel}"
+        label-max="$i18n{colorFilterMaxLabel}">
+    </settings-slider>
+  </div>
+  <div class="settings-box settings-box-row">
+    <div class="start settings-box-text" aria-hidden="true">
+      $i18n{saturationLabel}
+    </div>
+    <settings-slider
+      pref="{{prefs.settings.a11y.saturation_amount}}"
+      min="100" max="1000"
+      label-aria="$i18n{saturationLabel}"
+      label-min="$i18n{colorFilterMinLabel}"
+      label-max="$i18n{colorFilterMaxLabel}">
+    </settings-slider>
+  </div>
+  <div class="settings-box settings-box-row">
+    <div class="start settings-box-text" aria-hidden="true">
+      $i18n{sepiaLabel}
+    </div>
+    <settings-slider
+      pref="{{prefs.settings.a11y.sepia_amount}}"
+      min="0" max="100"
+      label-aria="$i18n{sepiaLabel}"
+      label-min="$i18n{colorFilterMinLabel}"
+      label-max="$i18n{colorFilterMaxLabel}">
+    </settings-slider>
+  </div>
+  <div class="settings-box settings-box-row">
+    <div class="start settings-box-text" aria-hidden="true">
+      $i18n{hueRotationLabel}
+    </div>
+    <settings-slider
+      pref="{{prefs.settings.a11y.hue_rotation_amount}}"
+      min="0" max="359"
+      label-aria="$i18n{hueRotationLabel}"
+      label-min="$i18n{colorFilterMinLabel}"
+      label-max="$i18n{colorFilterMaxLabel}">
+    </settings-slider>
+  </div>
+</template>
+<template is="dom-if" if="[[!isKioskModeActive_]]">
+  <cr-link-row id="displaySubpageButton" class="hr"
+      label="$i18n{displaySettingsTitle}" on-click="onDisplayTap_"
+      sub-label="$i18n{displaySettingsDescription}"
+      role-description="$i18n{subpageArrowRoleDescription}" embedded>
+  </cr-link-row>
+  <cr-link-row id="appearanceSubpageButton" class="hr"
+      label="$i18n{appearanceSettingsTitle}" on-click="onAppearanceTap_"
+      sub-label="$i18n{appearanceSettingsDescription}" external
+      embedded>
+  </cr-link-row>
+</template>

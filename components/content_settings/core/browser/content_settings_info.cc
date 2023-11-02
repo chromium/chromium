@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,9 +28,9 @@ ContentSettingsInfo::ContentSettingsInfo(
 ContentSettingsInfo::~ContentSettingsInfo() {}
 
 ContentSetting ContentSettingsInfo::GetInitialDefaultSetting() const {
-  const base::Value* initial_default =
+  const base::Value& initial_default =
       website_settings_info()->initial_default_value();
-  DCHECK(initial_default);
+  DCHECK(initial_default.is_int());
   return ValueToContentSetting(initial_default);
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,6 +22,7 @@
 #include "chrome/browser/sharing/sharing_constants.h"
 #include "chrome/browser/sharing/sharing_sync_preference.h"
 #include "chrome/browser/sync/test/integration/sessions_helper.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/hover_button.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/sharing/sharing_browsertest.h"
@@ -30,7 +31,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
-#include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/driver/sync_service_impl.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
@@ -203,14 +203,14 @@ IN_PROC_BROWSER_TEST_F(ClickToCallBrowserTest,
       IDC_CONTENT_CONTEXT_SHARING_CLICK_TO_CALL_MULTIPLE_DEVICES));
 
   ui::MenuModel* sub_menu_model = nullptr;
-  int device_id = -1;
+  size_t device_id = 0;
   ASSERT_TRUE(menu->GetMenuModelAndItemIndex(kSubMenuFirstDeviceCommandId,
                                              &sub_menu_model, &device_id));
-  EXPECT_EQ(2, sub_menu_model->GetItemCount());
-  EXPECT_EQ(0, device_id);
+  EXPECT_EQ(2u, sub_menu_model->GetItemCount());
+  EXPECT_EQ(0u, device_id);
 
   for (auto& device : devices) {
-    EXPECT_EQ(kSubMenuFirstDeviceCommandId + device_id,
+    EXPECT_EQ(kSubMenuFirstDeviceCommandId + static_cast<int>(device_id),
               sub_menu_model->GetCommandIdAt(device_id));
     sub_menu_model->ActivatedAt(device_id);
 
@@ -236,14 +236,14 @@ IN_PROC_BROWSER_TEST_F(ClickToCallBrowserTest,
       IDC_CONTENT_CONTEXT_SHARING_CLICK_TO_CALL_MULTIPLE_DEVICES));
 
   ui::MenuModel* sub_menu_model = nullptr;
-  int device_id = -1;
+  size_t device_id = 0;
   ASSERT_TRUE(menu->GetMenuModelAndItemIndex(kSubMenuFirstDeviceCommandId,
                                              &sub_menu_model, &device_id));
-  EXPECT_EQ(2, sub_menu_model->GetItemCount());
-  EXPECT_EQ(0, device_id);
+  EXPECT_EQ(2u, sub_menu_model->GetItemCount());
+  EXPECT_EQ(0u, device_id);
 
   for (auto& device : devices) {
-    EXPECT_EQ(kSubMenuFirstDeviceCommandId + device_id,
+    EXPECT_EQ(kSubMenuFirstDeviceCommandId + static_cast<int>(device_id),
               sub_menu_model->GetCommandIdAt(device_id));
     sub_menu_model->ActivatedAt(device_id);
 
@@ -380,7 +380,7 @@ IN_PROC_BROWSER_TEST_F(ClickToCallBrowserTest, CloseTabWithBubble) {
       ->set_on_dialog_shown_closure_for_testing(run_loop.QuitClosure());
 
   // Click on the tel link to trigger the bubble view.
-  web_contents()->GetMainFrame()->ExecuteJavaScriptForTests(
+  web_contents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
       u"document.querySelector('a').click();", base::NullCallback());
   // Wait until the bubble is visible.
   run_loop.Run();
@@ -409,7 +409,7 @@ IN_PROC_BROWSER_TEST_F(ClickToCallBrowserTest, LeftClick_ChooseDevice) {
   controller->set_on_dialog_shown_closure_for_testing(run_loop.QuitClosure());
 
   // Click on the tel link to trigger the bubble view.
-  web_contents()->GetMainFrame()->ExecuteJavaScriptForTests(
+  web_contents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
       u"document.querySelector('a').click();", base::NullCallback());
   // Wait until the bubble is visible.
   run_loop.Run();
@@ -479,7 +479,7 @@ IN_PROC_BROWSER_TEST_F(ClickToCallBrowserTest, NavigateDifferentOrigin) {
       ->set_on_dialog_shown_closure_for_testing(run_loop.QuitClosure());
 
   // Click on the tel link to trigger the bubble view.
-  web_contents()->GetMainFrame()->ExecuteJavaScriptForTests(
+  web_contents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
       u"document.querySelector('a').click();", base::NullCallback());
   // Wait until the bubble is visible.
   run_loop.Run();

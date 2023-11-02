@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <map>
 
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 
 #include "components/favicon/core/favicon_driver_observer.h"
@@ -19,7 +18,7 @@ class WebState;
 }  // namespace web
 
 @protocol WebStateFaviconDriverObserver
-// Forward the call from |driver| OnFaviconUpdated method.
+// Forward the call from `driver` OnFaviconUpdated method.
 - (void)faviconDriver:(favicon::FaviconDriver*)driver
     didUpdateFaviconForWebState:(web::WebState*)webState;
 @end
@@ -63,8 +62,8 @@ class WebStateListFaviconDriverObserver
                         const gfx::Image& image) override;
 
  private:
-  // Observes the FaviconDriver for |web_state| and updates the
-  // |driver_to_web_state_map_|.
+  // Observes the FaviconDriver for `web_state` and updates the
+  // `driver_to_web_state_map_`.
   void AddNewWebState(web::WebState* web_state);
 
   // The WebStateFaviconDriverObserver to which the FaviconDriver notification

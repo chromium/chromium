@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,12 @@
 #include <algorithm>
 
 #include "base/i18n/string_search.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/drive/drive_api_util.h"
 #include "components/drive/file_system_core_util.h"
-#include "net/base/escape.h"
 
 namespace drive {
 namespace internal {
@@ -28,7 +28,7 @@ void AppendStringWithHighlight(const std::u16string& original_text,
   if (highlight)
     highlighted_text->append("<b>");
 
-  highlighted_text->append(net::EscapeForHTML(
+  highlighted_text->append(base::EscapeForHTML(
       base::UTF16ToUTF8(original_text.substr(start, length))));
 
   if (highlight)

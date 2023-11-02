@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,7 +42,7 @@ void PermissionsBrowserTest::TearDownOnMainThread() {
 bool PermissionsBrowserTest::RunScriptReturnBool(const std::string& script) {
   bool result;
   EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents()->GetMainFrame(), script, &result));
+      GetWebContents()->GetPrimaryMainFrame(), script, &result));
   return result;
 }
 

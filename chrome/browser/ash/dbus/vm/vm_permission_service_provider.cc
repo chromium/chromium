@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,10 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "base/containers/adapters.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ash/borealis/borealis_prefs.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_pref_names.h"
@@ -19,7 +21,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/dbus/vm_permission_service/vm_permission_service.pb.h"
+#include "chromeos/ash/components/dbus/vm_permission_service/vm_permission_service.pb.h"
 #include "components/prefs/pref_service.h"
 #include "dbus/message.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
@@ -39,7 +41,7 @@ base::UnguessableToken TokenFromString(const std::string& str) {
 
   uint64_t high = 0, low = 0;
   int count = 0;
-  std::for_each(std::rbegin(bytes), std::rend(bytes), [&](auto byte) {
+  base::ranges::for_each(base::Reversed(bytes), [&](auto byte) {
     auto* p = count < kBytesPerUint64 ? &low : &high;
     int pos = count < kBytesPerUint64 ? count : count - kBytesPerUint64;
     *p += static_cast<uint64_t>(byte) << (pos * 8);
@@ -69,7 +71,7 @@ VmPermissionServiceProvider::~VmPermissionServiceProvider() = default;
 VmPermissionServiceProvider::VmMap::iterator
 VmPermissionServiceProvider::FindVm(const std::string& owner_id,
                                     const std::string& name) {
-  return std::find_if(vms_.begin(), vms_.end(), [&](const auto& vm) {
+  return base::ranges::find_if(vms_, [&](const auto& vm) {
     return vm.second->owner_id == owner_id && vm.second->name == name;
   });
 }
@@ -357,8 +359,8 @@ void VmPermissionServiceProvider::UpdatePluginVmPermissions(VmInfo* vm) {
 
 void VmPermissionServiceProvider::UpdateBorealisPermissions(VmInfo* vm) {
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
-  if (!profile || chromeos::ProfileHelper::GetUserIdHashFromProfile(profile) !=
-                      vm->owner_id) {
+  if (!profile ||
+      ProfileHelper::GetUserIdHashFromProfile(profile) != vm->owner_id) {
     return;
   }
 

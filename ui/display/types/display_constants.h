@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,6 +25,24 @@ constexpr int64_t kUnifiedDisplayId = -10;
 
 // Invalid year of manufacture of the display.
 constexpr int32_t kInvalidYearOfManufacture = -1;
+
+// The minimum HDR headroom for an HDR capable display. On macOS, when a
+// display's brightness is set to maximum, it can report that there is no
+// HDR headroom via maximumExtendedDynamicRangeColorComponentValue being 1.
+// On Windows, when the SDR slider is at its maximum, it is possible for the
+// reported SDR white level to be brighter than the maximum brightness of the
+// display. These situations can create appearance that a display is rapidly
+// fluctuating between being HDR capable and HDR incapable. To avoid this
+// confusion, set this as the minimum maximum relative luminance for HDR
+// capable displays.
+constexpr float kMinHDRCapableMaxLuminanceRelative = 1.0625;
+// Set SDR content to 75% of display brightness so SDR colors look good
+// and there is no perceived brightness change during SDR-HDR.
+constexpr float kSDRJoint = 0.75;
+
+// Set the HDR level multiplier to 4x so that the bright areas of the videos
+// are not overexposed, and maintain local contrast.
+constexpr float kHDRLevel = 4.0;
 
 // Used to describe the state of a multi-display configuration.
 enum MultipleDisplayState {
@@ -87,8 +105,43 @@ enum PanelOrientation {
 enum PrivacyScreenState {
   kDisabled = 0,
   kEnabled = 1,
-  kNotSupported = 2,
+  // |kDisabledLocked| and |kEnabledLocked| are states in which the hardware is
+  // force-disabled or forced-enabled by a physical external switch. When
+  // privacy screen is set to one of these states, an attempt to set it to a
+  // non-conforming state (e.g. enable it when it's Disabled-locked) should
+  // fail.
+  kDisabledLocked = 2,
+  kEnabledLocked = 3,
+  kNotSupported = 4,
+  kPrivacyScreenLegacyStateLast = kDisabledLocked,
   kPrivacyScreenStateLast = kNotSupported,
+};
+
+// The requested state for refresh rate throttling.
+enum RefreshRateThrottleState {
+  kRefreshRateThrottleEnabled,
+  kRefreshRateThrottleDisabled,
+};
+
+// Whether a configuration should be seamless or full. Full configuration may
+// result in visible artifacts such as blanking to achieve the specified
+// configuration. Seamless configuration requests will fail if the system cannot
+// achieve it without visible artifacts.
+enum ConfigurationType {
+  kConfigurationTypeFull,
+  kConfigurationTypeSeamless,
+};
+
+// A flag to allow ui/display and ozone to adjust the behavior of display
+// configurations.
+enum ModesetFlag {
+  // At least one of kTestModeset and kCommitModeset must be set.
+  kTestModeset = 1 << 0,
+  kCommitModeset = 1 << 1,
+  // When |kSeamlessModeset| is set, the commit (or test) will succeed only if
+  // the submitted configuration can be completed without visual artifacts such
+  // as blanking.
+  kSeamlessModeset = 1 << 2,
 };
 
 // Defines the float values closest to repeating decimal scale factors.

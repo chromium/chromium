@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -149,8 +150,13 @@ class ProfilePolicyConnector final {
   std::vector<std::unique_ptr<ConfigurationPolicyProvider>>
       wrapped_policy_providers_;
 
-  const ConfigurationPolicyProvider* configuration_policy_provider_ = nullptr;
-  const CloudPolicyStore* policy_store_ = nullptr;
+  raw_ptr<const ConfigurationPolicyProvider> configuration_policy_provider_ =
+      nullptr;
+  raw_ptr<const CloudPolicyStore> policy_store_ = nullptr;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  std::unique_ptr<ConfigurationPolicyProvider> restricted_mgs_policy_provider;
+#endif
 
   // |policy_providers_| contains a list of the policy providers available for
   // the PolicyService of this connector, in decreasing order of priority.
@@ -172,7 +178,7 @@ class ProfilePolicyConnector final {
   // The |browser_policy_connector_| is owned by the |BrowserProcess| whereas
   // the |ProfilePolicyConnector| is owned by the Profile - which gets deleted
   // first - so the lifetime of the pointer is guaranteed.
-  ChromeBrowserPolicyConnector* browser_policy_connector_ = nullptr;
+  raw_ptr<ChromeBrowserPolicyConnector> browser_policy_connector_ = nullptr;
 #endif
 };
 

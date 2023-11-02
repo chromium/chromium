@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,8 +24,8 @@
 namespace ash {
 
 constexpr int kPointRadius = 20;
-constexpr SkColor kProjectionFillColor = SkColorSetRGB(0xF5, 0xF5, 0xDC);
-constexpr SkColor kProjectionStrokeColor = SK_ColorGRAY;
+constexpr SkColor4f kProjectionFillColor{0.96f, 0.96f, 0.86f, 1.0f};
+constexpr SkColor4f kProjectionStrokeColor = SkColors::kGray;
 constexpr int kProjectionAlpha = 0xB0;
 constexpr base::TimeDelta kFadeoutDuration = base::Milliseconds(250);
 constexpr int kFadeoutFrameRate = 60;
@@ -78,15 +78,15 @@ class TouchPointView : public views::View,
     cc::PaintFlags fill_flags;
     fill_flags.setAlpha(alpha);
 
-    constexpr SkColor gradient_colors[2] = {kProjectionFillColor,
-                                            kProjectionStrokeColor};
+    constexpr SkColor4f gradient_colors[2] = {kProjectionFillColor,
+                                              kProjectionStrokeColor};
     constexpr SkScalar gradient_pos[2] = {SkFloatToScalar(0.9f),
                                           SkFloatToScalar(1.0f)};
     constexpr gfx::Point center(kPointRadius + 1, kPointRadius + 1);
 
     fill_flags.setShader(cc::PaintShader::MakeRadialGradient(
         gfx::PointToSkPoint(center), SkIntToScalar(kPointRadius),
-        gradient_colors, gradient_pos, base::size(gradient_colors),
+        gradient_colors, gradient_pos, std::size(gradient_colors),
         SkTileMode::kMirror));
     canvas->DrawCircle(center, SkIntToScalar(kPointRadius), fill_flags);
 

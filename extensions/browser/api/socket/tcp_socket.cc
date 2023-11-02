@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include "base/callback_helpers.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -357,7 +356,7 @@ void TCPSocket::OnListenComplete(
 
 content::StoragePartition* TCPSocket::GetStoragePartitionHelper() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  return storage_partition_ ? storage_partition_
+  return storage_partition_ ? storage_partition_.get()
                             : browser_context_->GetDefaultStoragePartition();
 }
 
@@ -453,18 +452,18 @@ void TCPSocket::UpgradeToTLS(api::socket::SecureOptions* options,
 
   mojo_socket_options->version_max = network::mojom::SSLVersion::kTLS13;
 
-  if (options && options->tls_version.get()) {
+  if (options && options->tls_version) {
     network::mojom::SSLVersion version_min, version_max;
     bool has_version_min = false;
     bool has_version_max = false;
-    api::socket::TLSVersionConstraints* versions = options->tls_version.get();
-    if (versions->min.get()) {
+    api::socket::TLSVersionConstraints& versions = *options->tls_version;
+    if (versions.min) {
       has_version_min =
-          SSLProtocolVersionFromString(*versions->min, &version_min);
+          SSLProtocolVersionFromString(*versions.min, &version_min);
     }
-    if (versions->max.get()) {
+    if (versions.max) {
       has_version_max =
-          SSLProtocolVersionFromString(*versions->max, &version_max);
+          SSLProtocolVersionFromString(*versions.max, &version_max);
     }
     if (has_version_min)
       mojo_socket_options->version_min = version_min;

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@ void CreateFakeApp(Profile* profile,
   vm_tools::apps::ApplicationList list;
   list.set_vm_name("borealis");
   list.set_container_name("penguin");
-  list.set_vm_type(vm_tools::apps::ApplicationList_VmType_BOREALIS);
+  list.set_vm_type(vm_tools::apps::BOREALIS);
   vm_tools::apps::App* app = list.add_apps();
   app->set_desktop_file_id(desktop_file_id);
   vm_tools::apps::App::LocaleString::Entry* entry =
@@ -36,9 +36,7 @@ std::string FakeAppId(std::string desktop_file_id) {
 }
 
 void CreateFakeMainApp(Profile* profile) {
-  std::string desktop_file_id;
-  ASSERT_TRUE(base::Base64Decode("c3RlYW0=", &desktop_file_id));
-  CreateFakeApp(profile, std::move(desktop_file_id), {});
+  CreateFakeApp(profile, "steam", {});
 }
 
 }  // namespace borealis

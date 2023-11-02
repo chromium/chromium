@@ -1,11 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_FEED_CORE_V2_PERSISTENT_KEY_VALUE_STORE_IMPL_H_
 #define COMPONENTS_FEED_CORE_V2_PERSISTENT_KEY_VALUE_STORE_IMPL_H_
 
-#include <list>
 #include <memory>
 #include <string>
 

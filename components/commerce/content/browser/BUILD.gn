@@ -1,0 +1,33 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("browser") {
+  sources = [
+    "commerce_tab_helper.cc",
+    "commerce_tab_helper.h",
+    "web_contents_wrapper.cc",
+    "web_contents_wrapper.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/commerce/core:shopping_service",
+    "//content/public/browser",
+  ]
+}
+
+if (!is_android) {
+  static_library("hint") {
+    sources = [
+      "hint/commerce_hint_tab_helper.cc",
+      "hint/commerce_hint_tab_helper.h",
+    ]
+
+    deps = [
+      "//base",
+      "//components/commerce/core:heuristics_provider",
+      "//content/public/browser",
+    ]
+  }
+}

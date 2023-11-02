@@ -1,8 +1,9 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "cc/trees/commit_state.h"
+#include "components/viz/common/frame_sinks/copy_output_request.h"
 
 namespace cc {
 
@@ -35,10 +36,12 @@ CommitState::CommitState(const CommitState& prev)
       selection(prev.selection),
       debug_state(prev.debug_state),
       overscroll_behavior(prev.overscroll_behavior),
-      root_layer(prev.root_layer),
       background_color(prev.background_color),
       viewport_property_ids(prev.viewport_property_ids),
-      local_surface_id_from_parent(prev.local_surface_id_from_parent) {
+      local_surface_id_from_parent(prev.local_surface_id_from_parent),
+      previous_surfaces_visual_update_duration(
+          prev.previous_surfaces_visual_update_duration),
+      visual_update_duration(prev.visual_update_duration) {
   memcpy(event_listener_properties, prev.event_listener_properties,
          sizeof(event_listener_properties));
 }
@@ -56,4 +59,12 @@ EventListenerProperties CommitState::GetEventListenerProperties(
   DCHECK(listener_class <= EventListenerClass::kTouchEndOrCancel);
   return event_listener_properties[static_cast<size_t>(listener_class)];
 }
+
+ThreadUnsafeCommitState::ThreadUnsafeCommitState(
+    MutatorHost* mh,
+    const ProtectedSequenceSynchronizer& synchronizer)
+    : mutator_host(mh), property_trees(synchronizer) {}
+
+ThreadUnsafeCommitState::~ThreadUnsafeCommitState() = default;
+
 }  // namespace cc

@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -11,8 +11,6 @@ stories as memory ones, only with fewer actions (no memory dumping).
 
 import collections
 import unittest
-
-import six
 
 from chrome_telemetry_build import chromium_config
 
@@ -112,6 +110,10 @@ _DISABLED_TESTS = frozenset({
 MAX_VALUES_PER_TEST_CASE = 1000
 
 
+class SystemHealthBenchmarkSmokeTest(unittest.TestCase):
+  pass
+
+
 def _GenerateSmokeTestCase(benchmark_class, story_to_smoke_test):
 
   # NOTE TO SHERIFFS: DO NOT DISABLE THIS TEST.
@@ -121,10 +123,10 @@ def _GenerateSmokeTestCase(benchmark_class, story_to_smoke_test):
   # wider swath of coverage  than is usally intended. Instead, if a test is
   # failing, disable it by putting it into the _DISABLED_TESTS list above.
   @decorators.Disabled('chromeos')  # crbug.com/351114
+  @decorators.Disabled('mac')  # crbug.com/1277277
   def RunTest(self):
     class SinglePageBenchmark(benchmark_class):  # pylint: disable=no-init
       def CreateStorySet(self, options):
-        # pylint: disable=super-on-old-class
         story_set = super(SinglePageBenchmark, self).CreateStorySet(options)
         stories_to_remove = [s for s in story_set.stories if s !=
                              story_to_smoke_test]
@@ -138,14 +140,8 @@ def _GenerateSmokeTestCase(benchmark_class, story_to_smoke_test):
       options = GenerateBenchmarkOptions(
           output_dir=temp_dir,
           benchmark_cls=SinglePageBenchmark)
-      # The ID signature changes based on Python version.
-      if six.PY2:
-        replacement_string = ('benchmarks.system_health_smoke_test.'
-                              'SystemHealthBenchmarkSmokeTest.')
-      else:
-        replacement_string = ('benchmarks.system_health_smoke_test.'
-                              '_GenerateSmokeTestCase.<locals>.'
-                              'SystemHealthBenchmarkSmokeTest.')
+      replacement_string = ('benchmarks.system_health_smoke_test.'
+                            'SystemHealthBenchmarkSmokeTest.')
       simplified_test_name = self.id().replace(replacement_string, '')
       # Sanity check to ensure that that substring removal was effective.
       assert len(simplified_test_name) < len(self.id())
@@ -173,8 +169,10 @@ def _GenerateSmokeTestCase(benchmark_class, story_to_smoke_test):
   test_method_name = '%s/%s' % (
       benchmark_class.Name(), story_to_smoke_test.name)
 
-  class SystemHealthBenchmarkSmokeTest(unittest.TestCase):
-    pass
+  # Set real_test_func as benchmark_class to make typ
+  # write benchmark_class source filepath to trace instead of
+  # path to this file
+  RunTest.real_test_func = benchmark_class
 
   setattr(SystemHealthBenchmarkSmokeTest, test_method_name, RunTest)
 
@@ -249,8 +247,6 @@ def validate_smoke_test_name_versions():
         'list or remove them to save CQ capacity (see crbug.com/893615)). '
         'You can use crbug.com/878390 for the disabling reference.'
         '[StoryName] : [StoryVersion1],[StoryVersion2]...\n%s' % (msg))
-
-  return
 
 
 def load_tests(loader, standard_tests, pattern):

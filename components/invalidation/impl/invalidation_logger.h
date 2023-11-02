@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,12 +10,9 @@
 
 #include "base/observer_list.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "components/invalidation/public/invalidation_util.h"
 #include "components/invalidation/public/invalidator_state.h"
-
-namespace base {
-class DictionaryValue;
-}  // namespace base
 
 namespace invalidation {
 
@@ -48,7 +45,7 @@ class InvalidationLogger {
   void OnStateChange(const InvalidatorState& new_state);
   void OnUpdatedTopics(
       std::map<std::string, Topics> handler_updated_topics_map);
-  void OnDebugMessage(const base::DictionaryValue& details);
+  void OnDebugMessage(const base::Value::Dict& details);
   void OnInvalidation(const TopicInvalidationMap& invalidations);
 
   // Triggers messages to be sent to the Observers to provide them with
@@ -90,9 +87,7 @@ class InvalidationLogger {
   // The name of all invalidatorHandler registered (note that this is not
   // necessarily the same as the keys of latest_topics_, because they might
   // have not registered any Topic).
-  // TODO(crbug.com/1049591): it should be std::set, once handlers names are
-  // unique.
-  std::multiset<std::string> registered_handlers_;
+  std::set<std::string> registered_handlers_;
 };
 
 }  // namespace invalidation

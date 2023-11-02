@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,12 +19,14 @@ class Directive : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  enum Type { kText, kUnknown };
+  enum Type { kUnknown, kText, kSelector };
 
   explicit Directive(Type type);
   ~Directive() override;
 
   Type GetType() const;
+  bool IsConsumed() { return consumed_; }
+  void SetConsumed(bool consumed) { consumed_ = consumed; }
   void Trace(Visitor*) const override;
 
   // Web-exposed Directive interface.
@@ -37,6 +39,7 @@ class Directive : public ScriptWrappable {
 
  private:
   Type type_;
+  bool consumed_ = false;
 };
 
 }  // namespace blink

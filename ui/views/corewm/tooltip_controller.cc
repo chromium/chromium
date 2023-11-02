@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,13 +17,11 @@
 #include "ui/aura/window.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
-#include "ui/views/corewm/tooltip.h"
 #include "ui/views/corewm/tooltip_state_manager.h"
 #include "ui/views/widget/tooltip_manager.h"
 #include "ui/wm/public/activation_client.h"
 
-namespace views {
-namespace corewm {
+namespace views::corewm {
 namespace {
 
 constexpr auto kDefaultHideTooltipTimeoutInMs = base::Seconds(10);
@@ -222,6 +220,10 @@ void TooltipController::OnMouseEvent(ui::MouseEvent* event) {
     case ui::ET_MOUSE_CAPTURE_CHANGED:
     case ui::ET_MOUSE_MOVED:
     case ui::ET_MOUSE_DRAGGED: {
+      // Synthesized mouse moves shouldn't cause us to show a tooltip. See
+      // https://crbug.com/1146981.
+      if (event->IsSynthesized())
+        break;
       last_mouse_loc_ = event->location();
       aura::Window* target = nullptr;
       // Avoid a call to display::Screen::GetWindowAtScreenPoint() since it can
@@ -356,7 +358,6 @@ void TooltipController::UpdateIfRequired(TooltipTrigger trigger) {
   // one, we should force tooltip update
   if (!state_manager_->IsVisible() || IsTooltipTextUpdateNeeded() ||
       IsTooltipIdUpdateNeeded()) {
-    state_manager_->StopWillHideTooltipTimer();
     state_manager_->Show(observed_window_, wm::GetTooltipText(observed_window_),
                          anchor_point_, trigger, GetHideTooltipTimeout());
   }
@@ -451,5 +452,4 @@ bool TooltipController::ShouldHideBecauseMouseWasOncePressed() {
          wm::GetTooltipText(observed_window_) == tooltip_text_at_mouse_press_;
 }
 
-}  // namespace corewm
-}  // namespace views
+}  // namespace views::corewm

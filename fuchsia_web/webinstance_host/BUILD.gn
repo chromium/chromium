@@ -1,0 +1,66 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_fuchsia)
+
+visibility = [ ":*" ]
+
+source_set("webinstance_host") {
+  assert_no_deps = [
+    "//content/public/common",
+    "//media",
+    "//third_party/blink/common",
+  ]
+
+  # Only WebInstance clients should use the host.
+  visibility += [
+    # WebEngine clients that instantiate WebInstances directly.
+    "//fuchsia_web/runners/*",
+    "//fuchsia_web/shell:*",
+    "//fuchsia_web/webengine:context_provider",
+  ]
+  sources = [
+    "fuchsia_web_debug_proxy.cc",
+    "fuchsia_web_debug_proxy.h",
+    "web_instance_host.cc",
+  ]
+  public = [ "web_instance_host.h" ]
+  deps = [
+    "//base",
+    "//base:base_static",
+    "//components/fuchsia_component_support",
+    "//fuchsia_web/common",
+    "//fuchsia_web/webengine:switches",
+    "//gpu/command_buffer/service",
+    "//gpu/config",
+    "//services/network/public/cpp",
+    "//third_party/fuchsia-sdk/sdk/pkg/async",
+    "//third_party/fuchsia-sdk/sdk/pkg/fdio",
+    "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
+    "//third_party/fuchsia-sdk/sdk/pkg/zx",
+    "//third_party/widevine/cdm:headers",
+    "//ui/ozone",
+  ]
+  public_deps = [
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.io",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sys",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
+    "//third_party/fuchsia-sdk/sdk/pkg/fidl",
+  ]
+}
+
+source_set("webinstance_host_integration_test") {
+  testonly = true
+  visibility += [ "//fuchsia_web/webengine/*" ]
+  sources = [ "web_instance_host_integration_test.cc" ]
+  deps = [
+    ":webinstance_host",
+    "//base",
+    "//fuchsia_web/common/test:test_support",
+    "//fuchsia_web/webengine:browsertest_core",
+    "//net:test_support",
+    "//testing/gtest",
+    "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
+  ]
+}

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,10 +10,11 @@
 #include <memory>
 
 #include "base/containers/lru_cache.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
-#include "gpu/ipc/service/gpu_memory_buffer_factory.h"
+#include "base/time/time.h"
 #include "media/base/video_decoder.h"
-#include "media/gpu/test/video_player/video_decoder_client.h"
+#include "media/gpu/test/video_player/decoder_wrapper.h"
 #include "media/media_buildflags.h"
 #include "media/video/video_decode_accelerator.h"
 
@@ -23,7 +24,7 @@ class VideoFrame;
 
 namespace test {
 
-class FrameRenderer;
+class FrameRendererDummy;
 
 // The test VDA video decoder translates between the media::VideoDecoder and the
 // media::VideoDecodeAccelerator interfaces. This makes it possible to run
@@ -31,11 +32,13 @@ class FrameRenderer;
 class TestVDAVideoDecoder : public media::VideoDecoder,
                             public VideoDecodeAccelerator::Client {
  public:
+  using OnProvidePictureBuffersCB = base::RepeatingCallback<bool(void)>;
   // Constructor for the TestVDAVideoDecoder.
   TestVDAVideoDecoder(bool use_vd_vda,
+                      OnProvidePictureBuffersCB on_provide_picture_buffers_cb,
                       const gfx::ColorSpace& target_color_space,
-                      FrameRenderer* const frame_renderer,
-                      gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory);
+                      FrameRendererDummy* const frame_renderer,
+                      bool linear_output = false);
 
   TestVDAVideoDecoder(const TestVDAVideoDecoder&) = delete;
   TestVDAVideoDecoder& operator=(const TestVDAVideoDecoder&) = delete;
@@ -59,7 +62,7 @@ class TestVDAVideoDecoder : public media::VideoDecoder,
 
  private:
   // media::VideoDecodeAccelerator::Client implementation
-  void NotifyInitializationComplete(Status status) override;
+  void NotifyInitializationComplete(DecoderStatus status) override;
   void ProvidePictureBuffers(uint32_t requested_num_of_buffers,
                              VideoPixelFormat format,
                              uint32_t textures_per_buffer,
@@ -103,15 +106,20 @@ class TestVDAVideoDecoder : public media::VideoDecoder,
   // Whether VdVideoDecodeAccelerator is used.
   bool use_vd_vda_;
 
+  // Called when the decoder requests buffers for decoding onto. The callback
+  // returns true if the request should be completed.
+  OnProvidePictureBuffersCB on_provide_picture_buffers_cb_;
+
   // Output color space, used as hint to decoder to avoid conversions.
   const gfx::ColorSpace target_color_space_;
 
   // Frame renderer used to manage GL context.
-  FrameRenderer* const frame_renderer_;
+  const raw_ptr<FrameRendererDummy> frame_renderer_;
 
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
-  // Owned by VideoDecoderClient.
-  gpu::GpuMemoryBufferFactory* const gpu_memory_buffer_factory_;
+  // Whether the decoder output buffers should be allocated with a linear
+  // layout.
+  const bool linear_output_;
 #endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 
   // Map of video frames the decoder uses as output, keyed on picture buffer id.

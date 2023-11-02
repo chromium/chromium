@@ -1,6 +1,13 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+// The Mojo interfaces and enums contained in this file use a file-global
+// versioning scheme, as opposed to individual interface / enum level
+// versioning. Bump this value before making a change to any of the following
+// interfaces / enums.
+//
+// Next MinVersion: 13
 
 module crosapi.mojom;
 
@@ -8,19 +15,23 @@ import "mojo/public/mojom/base/time.mojom";
 
 // Types of accounts which can be stored in Account Manager.
 // This must be kept in sync with
-// //ash/components/account_manager/tokens.proto
+// //components/account_manager_core/chromeos/tokens.proto.
+//
+// The enums values should match the aforementioned proto too.
 [Stable, Extensible]
 enum AccountType {
-  kUnspecified = 0,
+  [Default] kUnspecified = 0,
   kGaia = 1,
   kActiveDirectory = 2,
 };
 
 // Uniquely identifies an account in Account Manager.
+//
+// Next id: 2
 [Stable]
 struct AccountKey {
-  // |id| is obfuscated Gaia id for Gaia accounts.
-  // |id| is the object GUID for Microsoft Active Directory accounts.
+  // `id` is obfuscated Gaia id for Gaia accounts.
+  // `id` is the object GUID for Microsoft Active Directory accounts.
   string id@0;
 
   // Type of the account - such as Gaia, or Microsoft Active Directory.
@@ -28,6 +39,8 @@ struct AccountKey {
 };
 
 // Information about an account in Account Manager.
+//
+// Next id: 2
 [Stable]
 struct Account {
   // A unique identifier for this account.
@@ -39,10 +52,19 @@ struct Account {
 };
 
 // See google_apis/gaia/google_service_auth_error.h
-// Currently sent from ash to lacros.
-// Next value: 14.
+//
+// IMPORTANT: Do NOT send these values from Lacros to Ash without thinking about
+// version skew. Specifically, newer Lacros versions may send values which are
+// unknown to Ash. See the implementation of
+// `account_manager::FromMojoGoogleServiceAuthError`.
+// Note while fixing this - this enum needs to be trivially compatible with
+// google_apis/gaia/google_service_auth_error.h - which does not have an
+// "unknown" value.
+//
+// Next id: 4
 [Stable]
 struct GoogleServiceAuthError {
+  // Next value: 15
   [Stable, Extensible]
   enum State {
     kNone = 0,
@@ -59,12 +81,13 @@ struct GoogleServiceAuthError {
     kUnexpectedServiceResponse = 11,
     kServiceError = 12,
     // DEPRECATED kWebLoginRequired = 13,
+    [MinVersion=10] kScopeLimitedUnrecoverableError = 14,
   };
 
-  // Next value: 4.
+  // Next value: 4
   [Stable, Extensible]
   enum InvalidGaiaCredentialsReason {
-    kUnknown = 0,
+    [Default] kUnknown = 0,
     kCredentialsRejectedByServer = 1,
     kCredentialsRejectedByClient = 2,
     kCredentialsMissing = 3,
@@ -78,17 +101,31 @@ struct GoogleServiceAuthError {
   InvalidGaiaCredentialsReason invalid_gaia_credentials_reason@3;
 };
 
+// See components/account_manager_core/account_addition_options.h
+//
+// Next id: 2
+[Stable]
+struct AccountAdditionOptions {
+  bool is_available_in_arc@0;
+  bool show_arc_availability_picker@1;
+};
+
+// Next id: 3
 [Stable]
 struct AccountAdditionResult {
-  // The result of account addition request.
-  // Next value: 5.
+  // The result of account addition request, sent from Ash to Lacros.
+  // Note: The default value of this enum is `kUnexpectedResponse = 4`, not
+  // `kSuccess = 0`. This was changed in MinVersion 11.
+  //
+  // Next value: 6
   [Stable, Extensible]
   enum Status {
     kSuccess = 0,
     kAlreadyInProgress = 1,
     kCancelledByUser = 2,
     kNetworkError = 3,
-    kUnexpectedResponse = 4,
+    [Default] kUnexpectedResponse = 4,
+    [MinVersion = 9] kBlockedByPolicy = 5,
   };
 
   Status status@0;
@@ -98,7 +135,7 @@ struct AccountAdditionResult {
   GoogleServiceAuthError? error@2;
 };
 
-// Next ordinal value: 3
+// Next id: 3
 [Stable]
 struct AccessTokenInfo {
   // OAuth2 access token.
@@ -122,21 +159,42 @@ union AccessTokenResult {
 // Interface for observers of Chrome OS Account Manager.
 // This interface is implemented by lacros-chrome, and is used by ash-chrome to
 // send account update notifications.
+//
+// Next id: 4
 [Stable, Uuid="f75c4963-497b-411f-97ab-c53c7f6b46ed"]
 interface AccountManagerObserver {
-  // Called when the token for |account| is updated/inserted.
-  // Note: Observers which register with |AccountManager| before its
-  // initialization is complete will get notified when |AccountManager| is fully
+  // Called when the token for `account` is updated/inserted.
+  // Note: Observers which register with `AccountManager` before its
+  // initialization is complete will get notified when `AccountManager` is fully
   // initialized.
-  // Note: Observers which register with |AccountManager| after its
+  // Note: Observers which register with `AccountManager` after its
   // initialization is complete will not get an immediate
   // notification-on-registration.
   OnTokenUpserted@0(Account account);
 
   // Called when an account has been removed from Account Manager.
-  // Note: Observers that may have cached access tokens for |account| must clear
-  // their cache entry for this |account| on receiving this callback.
+  // Note: Observers that may have cached access tokens for `account` must clear
+  // their cache entry for this `account` on receiving this callback.
   OnAccountRemoved@1(Account account);
+
+  // Called when an `account`'s `error` status changes. See `ReportAuthError` in
+  // `AccountManager` interface for details.
+  // Note: Observers that may have cached access tokens for `account` must clear
+  // their cache entries for this `account` on receiving this callback. They may
+  // short-circuit future access token requests with an immediate `error` for a
+  // given `account` as appropriate (e.g. if the error is a non-transient
+  // error).
+  // Note: Observers must reset their cached error states (if any) for
+  // `account` - if the `state` of `error` is `kNone`.
+  [MinVersion = 1]
+  OnAuthErrorChanged@2(AccountKey account, GoogleServiceAuthError error);
+
+  // Called when Ash's signin dialog is closed, regardless of the reason, e.g.:
+  // - For account additions as well as re-authentication.
+  // - For successful completion of the flow, as well as cancellation by the
+  //   user. etc.
+  [MinVersion = 12]
+  OnSigninDialogClosed@3();
 };
 
 // Interface for Chrome OS Account Manager.
@@ -148,19 +206,18 @@ interface AccountManagerObserver {
 // ARC++ uses components/arc/mojom/auth.mojom to talk to the Chrome OS Account
 // Manager.
 //
-// Next version: 8
-// Next method id: 9
+// Next id: 9
 [Stable, Uuid="85b9a674-9d8e-497f-98d5-22c8dca6f2b8"]
 interface AccountManager {
-  // Returns |true| if Chrome OS Account Manager has been fully initialized, and
-  // |false| otherwise.
+  // Returns `true` if Chrome OS Account Manager has been fully initialized, and
+  // `false` otherwise.
   IsInitialized@0() => (bool is_initialized);
 
-  // Creates and returns a new receiver for |AccountManagerObserver|.
+  // Creates and returns a new receiver for `AccountManagerObserver`.
   // This API is supposed to be called by lacros-chrome, fairly early during its
   // initialization, to receive updates related to accounts stored in Account
   // Manager.
-  // The connection, and the corresponding remote, is destroyed when |receiver|
+  // The connection, and the corresponding remote, is destroyed when `receiver`
   // is destroyed. This will happen automatically when lacros is shut down.
   [MinVersion = 1]
   AddObserver@1() => (pending_receiver<AccountManagerObserver> receiver);
@@ -174,7 +231,9 @@ interface AccountManager {
   // Launches account addition dialog and returns `result` with the added
   // account.
   [MinVersion = 3]
-  ShowAddAccountDialog@3() => (AccountAdditionResult result);
+  ShowAddAccountDialog@3(
+    [MinVersion=8] AccountAdditionOptions? add_account_options) =>
+    (AccountAdditionResult result);
 
   // Launches account reauthentication dialog for provided `email`.
   [MinVersion = 3]
@@ -203,9 +262,26 @@ interface AccountManager {
   CreateAccessTokenFetcher@7(AccountKey account_key,
       string oauth_consumer_name) =>
           (pending_remote<AccessTokenFetcher> access_token_fetcher);
+
+  // Reports an `error` for `account`.
+  // The implementation uses a pubsub model to propagate errors for accounts.
+  // Any application can report (Publish) account errors. These errors will be
+  // fanned out to `AccountManagerObserver`s (Subscribers).
+  // A typical use-case is sharing of account error information between Ash and
+  // Lacros. Since these errors are OAuth errors, they can be discovered by any
+  // application (or the OS) - and must be communicated to other applications
+  // (or the OS).
+  // `account` must be a valid account known to Account Manager.
+  // Setting the error `state` as `kNone` resets the error state for `account`.
+  // Note: Transient errors (`GoogleServiceAuthError::IsTransientError()`)
+  // reported through this API will be silently ignored.
+  [MinVersion = 9]
+  ReportAuthError@8(AccountKey account, GoogleServiceAuthError error);
 };
 
 // Interface for fetching OAuth2 access tokens.
+//
+// Next id: 1
 [Stable, Uuid="71476f25-fb77-414f-848e-3e5368a9ee35"]
 interface AccessTokenFetcher {
   // Starts the request for fetching an access token with the provided `scopes`.

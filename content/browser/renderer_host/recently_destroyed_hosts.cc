@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "content/browser/child_process_security_policy_impl.h"
+#include "content/browser/process_lock.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_process_host.h"
 
@@ -70,8 +71,7 @@ void RecentlyDestroyedHosts::Add(
   if (time_spent_running_unload_handlers > kRecentlyDestroyedStorageTimeout)
     return;
 
-  auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
-  ProcessLock process_lock = policy->GetProcessLock(host->GetID());
+  ProcessLock process_lock = host->GetProcessLock();
 
   // Don't record sites with an empty process lock. This includes sites on
   // Android that are not isolated, and some special cases on desktop (e.g.,

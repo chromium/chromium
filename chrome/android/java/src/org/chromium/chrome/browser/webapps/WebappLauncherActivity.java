@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,7 +24,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
@@ -240,7 +239,7 @@ public class WebappLauncherActivity extends Activity {
 
         IntentUtils.safeStartActivity(launchingActivity, launchIntent);
         if (IntentUtils.isIntentForNewTaskOrNewDocument(launchIntent)) {
-            ApiCompatibilityUtils.finishAndRemoveTask(launchingActivity);
+            launchingActivity.finishAndRemoveTask();
         } else {
             launchingActivity.finish();
             launchingActivity.overridePendingTransition(0, R.anim.no_anim);
@@ -265,7 +264,7 @@ public class WebappLauncherActivity extends Activity {
                 sourceIntent, launchData.webApkPackageName, launchData.url);
         launchAfterDelay(
                 launchingActivity.getApplicationContext(), launchIntent, WEBAPK_LAUNCH_DELAY_MS);
-        ApiCompatibilityUtils.finishAndRemoveTask(launchingActivity);
+        launchingActivity.finishAndRemoveTask();
     }
 
     /** Extracts start URL from source intent and launches URL in Chrome tab. */
@@ -287,7 +286,7 @@ public class WebappLauncherActivity extends Activity {
         Log.e(TAG, "Shortcut (%s) opened in Chrome.", webappUrl);
 
         IntentUtils.safeStartActivity(appContext, launchIntent);
-        ApiCompatibilityUtils.finishAndRemoveTask(launchingActivity);
+        launchingActivity.finishAndRemoveTask();
     }
 
     /**

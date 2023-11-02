@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
-#include "ash/public/cpp/presentation_time_recorder.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -24,6 +23,7 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
+#include "ui/compositor/presentation_time_recorder.h"
 #include "ui/display/display_switches.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/widget/widget.h"
@@ -49,10 +49,11 @@ class SplitViewDragIndicatorsTest : public AshTestBase {
     base::RunLoop().RunUntilIdle();
     Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
     base::RunLoop().RunUntilIdle();
-    PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(true);
+    ui::PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(
+        true);
   }
   void TearDown() override {
-    PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(
+    ui::PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(
         false);
     AshTestBase::TearDown();
   }
@@ -87,7 +88,7 @@ class SplitViewDragIndicatorsTest : public AshTestBase {
 
   bool IsPreviewAreaShowing() {
     return SplitViewDragIndicators::GetSnapPosition(window_dragging_state()) !=
-           SplitViewController::NONE;
+           SplitViewController::SnapPosition::kNone;
   }
 
   float GetEdgeInset(int screen_width) const {
@@ -311,13 +312,13 @@ TEST_F(SplitViewDragIndicatorsTest,
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kFromOverview,
             window_dragging_state());
   overview_session_->Drag(item, gfx::PointF(edge_inset, y_position));
-  EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kToSnapLeft,
+  EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kToSnapPrimary,
             window_dragging_state());
 
   // Snap window to the left.
   overview_session_->CompleteDrag(item, gfx::PointF(edge_inset, y_position));
   ASSERT_TRUE(split_view_controller()->InSplitViewMode());
-  ASSERT_EQ(SplitViewController::State::kLeftSnapped,
+  ASSERT_EQ(SplitViewController::State::kPrimarySnapped,
             split_view_controller()->state());
 
   // Drag from overview and snap to the right.
@@ -328,7 +329,7 @@ TEST_F(SplitViewDragIndicatorsTest,
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kNoDrag,
             window_dragging_state());
   overview_session_->Drag(item, gfx::PointF(screen_width - 1, y_position));
-  EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kToSnapRight,
+  EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kToSnapSecondary,
             window_dragging_state());
   overview_session_->CompleteDrag(item, start_location);
 }
@@ -397,10 +398,10 @@ TEST_F(SplitViewDragIndicatorsTest, SplitViewDragIndicatorsVisibility) {
 
   // Verify that only one highlight shows up for the snap states.
   indicator->SetWindowDraggingState(
-      SplitViewDragIndicators::WindowDraggingState::kToSnapLeft);
+      SplitViewDragIndicators::WindowDraggingState::kToSnapPrimary);
   check_helper(indicator.get(), to_int(IndicatorType::kLeftHighlight));
   indicator->SetWindowDraggingState(
-      SplitViewDragIndicators::WindowDraggingState::kToSnapRight);
+      SplitViewDragIndicators::WindowDraggingState::kToSnapSecondary);
   check_helper(indicator.get(), to_int(IndicatorType::kRightHighlight));
 
   // Verify that only snap previews are shown for window dragging from shelf.
@@ -410,13 +411,13 @@ TEST_F(SplitViewDragIndicatorsTest, SplitViewDragIndicatorsVisibility) {
       SplitViewDragIndicators::WindowDraggingState::kFromShelf);
   check_helper(indicator.get(), 0);
   indicator->SetWindowDraggingState(
-      SplitViewDragIndicators::WindowDraggingState::kToSnapLeft);
+      SplitViewDragIndicators::WindowDraggingState::kToSnapPrimary);
   check_helper(indicator.get(), to_int(IndicatorType::kLeftHighlight));
   indicator->SetWindowDraggingState(
       SplitViewDragIndicators::WindowDraggingState::kFromShelf);
   check_helper(indicator.get(), 0);
   indicator->SetWindowDraggingState(
-      SplitViewDragIndicators::WindowDraggingState::kToSnapRight);
+      SplitViewDragIndicators::WindowDraggingState::kToSnapSecondary);
   check_helper(indicator.get(), to_int(IndicatorType::kRightHighlight));
   indicator->SetWindowDraggingState(
       SplitViewDragIndicators::WindowDraggingState::kFromShelf);
@@ -435,7 +436,7 @@ TEST_F(SplitViewDragIndicatorsTest, SplitViewDragIndicatorsVisibility) {
       SplitViewDragIndicators::WindowDraggingState::kFromTop);
   check_helper(indicator.get(), 0);
   indicator->SetWindowDraggingState(
-      SplitViewDragIndicators::WindowDraggingState::kToSnapRight);
+      SplitViewDragIndicators::WindowDraggingState::kToSnapSecondary);
   check_helper(indicator.get(), to_int(IndicatorType::kRightHighlight));
   indicator->SetWindowDraggingState(
       SplitViewDragIndicators::WindowDraggingState::kFromTop);
@@ -454,47 +455,33 @@ TEST_F(SplitViewDragIndicatorsTest, SplitViewDragIndicatorsVisibility) {
       SplitViewDragIndicators::WindowDraggingState::kFromTop);
   check_helper(indicator.get(), 0);
   indicator->SetWindowDraggingState(
-      SplitViewDragIndicators::WindowDraggingState::kToSnapRight);
+      SplitViewDragIndicators::WindowDraggingState::kToSnapSecondary);
   indicator->SetWindowDraggingState(
       SplitViewDragIndicators::WindowDraggingState::kFromTop);
   check_helper(indicator.get(), 0);
 }
 
 // Defines a test fixture to test behavior of SplitViewDragIndicators on
-// multi-display in clamshell mode, parameterized to run with the feature
-// |chromeos::wm::features::kVerticalSnap| enabled and disabled.
+// multi-display in clamshell mode.
 class ClamshellMultiDisplaySplitViewDragIndicatorsTest
-    : public SplitViewDragIndicatorsTest,
-      public ::testing::WithParamInterface<bool> {
+    : public SplitViewDragIndicatorsTest {
  public:
   ClamshellMultiDisplaySplitViewDragIndicatorsTest() = default;
   ~ClamshellMultiDisplaySplitViewDragIndicatorsTest() override = default;
 
   // SplitViewDragIndicatorsTest:
   void SetUp() override {
-    if (GetParam())
-      scoped_feature_list_.InitAndEnableFeature(
-          chromeos::wm::features::kVerticalSnap);
-    else
-      scoped_feature_list_.InitAndDisableFeature(
-          chromeos::wm::features::kVerticalSnap);
     SplitViewDragIndicatorsTest::SetUp();
     // Disable tablet mode that is enabled in
     // `SplitViewDragIndicatorsTest::SetUp()` to test clamshell mode.
     Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
     base::RunLoop().RunUntilIdle();
   }
-
-  bool IsVerticalSnapEnabled() const { return GetParam(); }
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that dragging a window to external portrait display will layout
-// split view drag indicators vertically instead of horizontally if
-// |chromeos::wm::features::kVerticalSnap| is enabled.
-TEST_P(ClamshellMultiDisplaySplitViewDragIndicatorsTest,
+// split view drag indicators vertically instead of horizontally.
+TEST_F(ClamshellMultiDisplaySplitViewDragIndicatorsTest,
        IndicatorsLayoutWhileDraggingWindowToPortraitDisplay) {
   UpdateDisplay("800x600,600x800");
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
@@ -557,20 +544,9 @@ TEST_P(ClamshellMultiDisplaySplitViewDragIndicatorsTest,
   // Otherwise, the left indicator should be on the left and its height span
   // the work area height.
   left_indicator_bounds = indicators->GetLeftHighlightViewBounds();
-  if (IsVerticalSnapEnabled()) {
-    EXPECT_EQ(left_indicator_bounds.width(),
-              portrait_display.work_area().width() -
-                  2 * kHighlightScreenEdgePaddingDp);
-  } else {
-    EXPECT_EQ(left_indicator_bounds.height(),
-              portrait_display.work_area().height() -
-                  2 * kHighlightScreenEdgePaddingDp);
-  }
+  EXPECT_EQ(
+      left_indicator_bounds.width(),
+      portrait_display.work_area().width() - 2 * kHighlightScreenEdgePaddingDp);
 }
 
-// Instantiate the Boolean which is used to toggle the feature
-// |chromeos::wm::features::kVerticalSnap| in the parameterized tests.
-INSTANTIATE_TEST_SUITE_P(All,
-                         ClamshellMultiDisplaySplitViewDragIndicatorsTest,
-                         ::testing::Bool());
 }  // namespace ash

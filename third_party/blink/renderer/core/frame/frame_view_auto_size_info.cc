@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,8 +23,8 @@ void FrameViewAutoSizeInfo::Trace(Visitor* visitor) const {
   visitor->Trace(frame_view_);
 }
 
-void FrameViewAutoSizeInfo::ConfigureAutoSizeMode(const IntSize& min_size,
-                                                  const IntSize& max_size) {
+void FrameViewAutoSizeInfo::ConfigureAutoSizeMode(const gfx::Size& min_size,
+                                                  const gfx::Size& max_size) {
   DCHECK(!min_size.IsEmpty());
   DCHECK_LE(min_size.width(), max_size.width());
   DCHECK_LE(min_size.height(), max_size.height());
@@ -51,7 +51,7 @@ bool FrameViewAutoSizeInfo::AutoSizeIfNeeded() {
 
   // If this is the first time we run autosize, start from small height and
   // allow it to grow.
-  IntSize size = frame_view_->Size();
+  gfx::Size size = frame_view_->Size();
   if (!did_run_autosize_) {
     running_first_autosize_ = true;
     did_run_autosize_ = true;
@@ -83,7 +83,7 @@ bool FrameViewAutoSizeInfo::AutoSizeIfNeeded() {
     return false;
 
   int height = document_layout_box->ScrollHeight().ToInt();
-  IntSize new_size(width, height);
+  gfx::Size new_size(width, height);
 
   // Check to see if a scrollbar is needed for a given dimension and
   // if so, increase the other dimension to account for the scrollbar.
@@ -105,7 +105,7 @@ bool FrameViewAutoSizeInfo::AutoSizeIfNeeded() {
   }
 
   // Ensure the size is at least the min bounds.
-  new_size = new_size.ExpandedTo(min_auto_size_);
+  new_size.SetToMax(min_auto_size_);
 
   // Bound the dimensions by the max bounds and determine what scrollbars to
   // show.
@@ -122,8 +122,7 @@ bool FrameViewAutoSizeInfo::AutoSizeIfNeeded() {
     vertical_scrollbar_mode = mojom::blink::ScrollbarMode::kAlwaysOn;
   }
 
-  if (new_size == size)
-    return false;
+  bool change_size = (new_size != size);
 
   // While loading only allow the size to increase (to avoid twitching during
   // intermediate smaller states) unless autoresize has just been turned on or
@@ -132,18 +131,23 @@ bool FrameViewAutoSizeInfo::AutoSizeIfNeeded() {
       size.width() <= max_auto_size_.width() &&
       !frame_view_->GetFrame().GetDocument()->LoadEventFinished() &&
       (new_size.height() < size.height() || new_size.width() < size.width())) {
-    return false;
+    change_size = false;
   }
 
-  frame_view_->Resize(new_size.width(), new_size.height());
+  if (change_size)
+    frame_view_->Resize(new_size.width(), new_size.height());
+
   // Force the scrollbar state to avoid the scrollbar code adding them and
   // causing them to be needed. For example, a vertical scrollbar may cause
   // text to wrap and thus increase the height (which is the only reason the
   // scollbar is needed).
+  //
+  // Note: since the overflow may have changed, we need to do this even if the
+  // size of the frame isn't changing.
   frame_view_->GetLayoutView()->SetAutosizeScrollbarModes(
       horizontal_scrollbar_mode, vertical_scrollbar_mode);
 
-  return true;
+  return change_size;
 }
 
 void FrameViewAutoSizeInfo::Clear() {

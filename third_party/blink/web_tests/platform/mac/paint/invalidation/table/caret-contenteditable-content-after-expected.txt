@@ -6,7 +6,27 @@
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
       "invalidations": [
-        [6, 42, 788, 22]
+        [8, 44, 23, 18],
+        [30, 44, 9, 18],
+        [23, 44, 9, 18]
+      ]
+    },
+    {
+      "name": "Caret",
+      "position": [30, 44],
+      "bounds": [1, 18],
+      "contentsOpaque": true,
+      "invalidations": [
+        [0, 0, 1, 18]
+      ]
+    },
+    {
+      "name": "LayoutNGBlockFlow HTML",
+      "position": [6, 42],
+      "bounds": [788, 22],
+      "contentsOpaqueForText": true,
+      "invalidations": [
+        [0, 0, 788, 22]
       ]
     }
   ]

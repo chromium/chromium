@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,6 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/values_util.h"
@@ -25,6 +24,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -37,6 +37,7 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/api/file_handlers/app_file_handler_util.h"
+#include "extensions/browser/api/file_system/consent_provider.h"
 #include "extensions/browser/api/file_system/file_system_delegate.h"
 #include "extensions/browser/api/file_system/saved_file_entry.h"
 #include "extensions/browser/api/file_system/saved_files_service_interface.h"
@@ -61,14 +62,14 @@
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "url/origin.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include <CoreFoundation/CoreFoundation.h>
 #include "base/mac/foundation_util.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "extensions/browser/api/file_handlers/non_native_file_system_delegate.h"
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using storage::IsolatedContext;
 
@@ -90,10 +91,10 @@ const char kRetainEntryError[] = "Could not retain file entry.";
 const char kRetainEntryIncognitoError[] =
     "Could not retain file entry in incognito mode";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 const char kNotSupportedOnNonKioskSessionError[] =
     "Operation only supported for kiosk apps running in a kiosk session.";
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace extensions {
 
@@ -128,13 +129,11 @@ bool GetFileTypesFromAcceptOption(
   std::set<base::FilePath::StringType> extension_set;
   int description_id = 0;
 
-  if (accept_option.mime_types.get()) {
-    std::vector<std::string>* list = accept_option.mime_types.get();
+  if (accept_option.mime_types) {
     bool valid_type = false;
-    for (std::vector<std::string>::const_iterator iter = list->begin();
-         iter != list->end(); ++iter) {
+    for (const auto& item : *accept_option.mime_types) {
       std::vector<base::FilePath::StringType> inner;
-      std::string accept_type = base::ToLowerASCII(*iter);
+      std::string accept_type = base::ToLowerASCII(item);
       net::GetExtensionsForMimeType(accept_type, &inner);
       if (inner.empty())
         continue;
@@ -154,15 +153,12 @@ bool GetFileTypesFromAcceptOption(
     }
   }
 
-  if (accept_option.extensions.get()) {
-    std::vector<std::string>* list = accept_option.extensions.get();
-    for (std::vector<std::string>::const_iterator iter = list->begin();
-         iter != list->end(); ++iter) {
-      std::string extension = base::ToLowerASCII(*iter);
-#if defined(OS_WIN)
-      extension_set.insert(base::UTF8ToWide(*iter));
+  if (accept_option.extensions) {
+    for (const auto& item : *accept_option.extensions) {
+#if BUILDFLAG(IS_WIN)
+      extension_set.insert(base::UTF8ToWide(item));
 #else
-      extension_set.insert(*iter);
+      extension_set.insert(item);
 #endif
     }
   }
@@ -171,7 +167,7 @@ bool GetFileTypesFromAcceptOption(
   if (extensions->empty())
     return false;
 
-  if (accept_option.description.get())
+  if (accept_option.description)
     *description = base::UTF8ToUTF16(*accept_option.description);
   else if (description_id)
     *description = l10n_util::GetStringUTF16(description_id);
@@ -185,8 +181,10 @@ const char kLastChooseEntryDirectory[] = "last_choose_file_directory";
 
 const int kGraylistedPaths[] = {
     base::DIR_HOME,
-#if defined(OS_WIN)
-    base::DIR_PROGRAM_FILES, base::DIR_PROGRAM_FILESX86, base::DIR_WINDOWS,
+#if BUILDFLAG(IS_WIN)
+    base::DIR_PROGRAM_FILES,
+    base::DIR_PROGRAM_FILESX86,
+    base::DIR_WINDOWS,
 #endif
 };
 
@@ -199,7 +197,7 @@ void PassFileInfoToUIThread(FileInfoOptCallback callback,
                             const base::File::Info& info) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   std::unique_ptr<base::File::Info> file_info(
-      result == base::File::FILE_OK ? new base::File::Info(info) : NULL);
+      result == base::File::FILE_OK ? new base::File::Info(info) : nullptr);
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(file_info)));
 }
@@ -344,7 +342,7 @@ void FileSystemEntryFunction::RegisterFileSystemsAndSendResponse(
 std::unique_ptr<base::DictionaryValue> FileSystemEntryFunction::CreateResult() {
   std::unique_ptr<base::DictionaryValue> result(new base::DictionaryValue());
   result->Set("entries", std::make_unique<base::ListValue>());
-  result->SetBoolean("multiple", multiple_);
+  result->SetBoolKey("multiple", multiple_);
   return result;
 }
 
@@ -357,15 +355,16 @@ void FileSystemEntryFunction::AddEntryToResult(const base::FilePath& path,
   bool success = result->GetList("entries", &entries);
   DCHECK(success);
 
-  std::unique_ptr<base::DictionaryValue> entry(new base::DictionaryValue());
-  entry->SetString("fileSystemId", file_entry.filesystem_id);
-  entry->SetString("baseName", file_entry.registered_name);
-  if (id_override.empty())
-    entry->SetString("id", file_entry.id);
-  else
-    entry->SetString("id", id_override);
-  entry->SetBoolean("isDirectory", is_directory_);
-  entries->Append(std::move(entry));
+  base::Value::Dict entry;
+  entry.Set("fileSystemId", file_entry.filesystem_id);
+  entry.Set("baseName", file_entry.registered_name);
+  if (id_override.empty()) {
+    entry.Set("id", file_entry.id);
+  } else {
+    entry.Set("id", id_override);
+  }
+  entry.Set("isDirectory", is_directory_);
+  entries->Append(base::Value(std::move(entry)));
 }
 
 void FileSystemEntryFunction::HandleWritableFileError(
@@ -610,7 +609,7 @@ void FileSystemChooseEntryFunction::ConfirmDirectoryAccessAsync(
     return;
   }
 
-  for (size_t i = 0; i < base::size(kGraylistedPaths); i++) {
+  for (size_t i = 0; i < std::size(kGraylistedPaths); i++) {
     base::FilePath graylisted_path;
     if (!base::PathService::Get(kGraylistedPaths[i], &graylisted_path))
       continue;
@@ -685,11 +684,9 @@ void FileSystemChooseEntryFunction::OnDirectoryAccessConfirmed(
 void FileSystemChooseEntryFunction::BuildFileTypeInfo(
     ui::SelectFileDialog::FileTypeInfo* file_type_info,
     const base::FilePath::StringType& suggested_extension,
-    const AcceptOptions* accepts,
-    const bool* accepts_all_types) {
-  file_type_info->include_all_files = true;
-  if (accepts_all_types)
-    file_type_info->include_all_files = *accepts_all_types;
+    const absl::optional<AcceptOptions>& accepts,
+    const absl::optional<bool>& accepts_all_types) {
+  file_type_info->include_all_files = accepts_all_types.value_or(true);
 
   bool need_suggestion =
       !file_type_info->include_all_files && !suggested_extension.empty();
@@ -720,11 +717,13 @@ void FileSystemChooseEntryFunction::BuildFileTypeInfo(
 }
 
 void FileSystemChooseEntryFunction::BuildSuggestion(
-    const std::string* opt_name,
+    const absl::optional<std::string>& opt_name,
     base::FilePath* suggested_name,
     base::FilePath::StringType* suggested_extension) {
   if (opt_name) {
-    *suggested_name = base::FilePath::FromUTF8Unsafe(*opt_name);
+    std::string name;
+    base::ReplaceChars(*opt_name, "%", "_", &name);
+    *suggested_name = base::FilePath::FromUTF8Unsafe(name);
 
     // Don't allow any path components; shorten to the base name. This should
     // result in a relative path, but in some cases may not. Clear the
@@ -784,17 +783,17 @@ ExtensionFunction::ResponseAction FileSystemChooseEntryFunction::Run() {
   ui::SelectFileDialog::Type picker_type =
       ui::SelectFileDialog::SELECT_OPEN_FILE;
 
-  file_system::ChooseEntryOptions* options = params->options.get();
-  if (options) {
-    multiple_ = options->accepts_multiple && *options->accepts_multiple;
+  if (params->options) {
+    const file_system::ChooseEntryOptions& options = *params->options;
+    multiple_ = options.accepts_multiple && *options.accepts_multiple;
     if (multiple_)
       picker_type = ui::SelectFileDialog::SELECT_OPEN_MULTI_FILE;
 
-    if (options->type == file_system::CHOOSE_ENTRY_TYPE_OPENWRITABLEFILE &&
+    if (options.type == file_system::CHOOSE_ENTRY_TYPE_OPENWRITABLEFILE &&
         !app_file_handler_util::HasFileSystemWritePermission(
             extension_.get())) {
       return RespondNow(Error(kRequiresFileSystemWriteError));
-    } else if (options->type == file_system::CHOOSE_ENTRY_TYPE_SAVEFILE) {
+    } else if (options.type == file_system::CHOOSE_ENTRY_TYPE_SAVEFILE) {
       if (!app_file_handler_util::HasFileSystemWritePermission(
               extension_.get())) {
         return RespondNow(Error(kRequiresFileSystemWriteError));
@@ -803,7 +802,7 @@ ExtensionFunction::ResponseAction FileSystemChooseEntryFunction::Run() {
         return RespondNow(Error(kMultipleUnsupportedError));
       }
       picker_type = ui::SelectFileDialog::SELECT_SAVEAS_FILE;
-    } else if (options->type == file_system::CHOOSE_ENTRY_TYPE_OPENDIRECTORY) {
+    } else if (options.type == file_system::CHOOSE_ENTRY_TYPE_OPENDIRECTORY) {
       is_directory_ = true;
       if (!extension_->permissions_data()->HasAPIPermission(
               mojom::APIPermissionID::kFileSystemDirectory)) {
@@ -816,11 +815,11 @@ ExtensionFunction::ResponseAction FileSystemChooseEntryFunction::Run() {
     }
 
     base::FilePath::StringType suggested_extension;
-    BuildSuggestion(options->suggested_name.get(), &suggested_name,
+    BuildSuggestion(options.suggested_name, &suggested_name,
                     &suggested_extension);
 
-    BuildFileTypeInfo(&file_type_info, suggested_extension,
-                      options->accepts.get(), options->accepts_all_types.get());
+    BuildFileTypeInfo(&file_type_info, suggested_extension, options.accepts,
+                      options.accepts_all_types);
   }
 
   file_type_info.allowed_paths = ui::SelectFileDialog::FileTypeInfo::ANY_PATH;
@@ -936,7 +935,7 @@ ExtensionFunction::ResponseAction FileSystemRetainEntryFunction::Run() {
 
     const storage::FileSystemURL url =
         file_system_context->CreateCrackedFileSystemURL(
-            blink::StorageKey(url::Origin::Create(extension()->url())),
+            blink::StorageKey(extension()->origin()),
             storage::kFileSystemTypeIsolated,
             storage::IsolatedContext::GetInstance()
                 ->CreateVirtualRootPath(filesystem_id)
@@ -1039,7 +1038,12 @@ ExtensionFunction::ResponseAction FileSystemRestoreEntryFunction::Run() {
   return RespondNow(NoArguments());
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
+/******** FileSystemRequestFileSystemFunction ********/
+
+FileSystemRequestFileSystemFunction::FileSystemRequestFileSystemFunction() =
+    default;
+
 FileSystemRequestFileSystemFunction::~FileSystemRequestFileSystemFunction() =
     default;
 
@@ -1048,41 +1052,21 @@ ExtensionFunction::ResponseAction FileSystemRequestFileSystemFunction::Run() {
   const std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  NOTIMPLEMENTED();
-  return RespondNow(Error(kNotSupportedOnCurrentPlatformError));
-}
-
-FileSystemGetVolumeListFunction::~FileSystemGetVolumeListFunction() = default;
-
-ExtensionFunction::ResponseAction FileSystemGetVolumeListFunction::Run() {
-  NOTIMPLEMENTED();
-  return RespondNow(Error(kNotSupportedOnCurrentPlatformError));
-}
-#else
-
-FileSystemRequestFileSystemFunction::FileSystemRequestFileSystemFunction() {}
-
-FileSystemRequestFileSystemFunction::~FileSystemRequestFileSystemFunction() {}
-
-ExtensionFunction::ResponseAction FileSystemRequestFileSystemFunction::Run() {
-  using file_system::RequestFileSystem::Params;
-  const std::unique_ptr<Params> params(Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params);
+  consent_provider_ =
+      ExtensionsAPIClient::Get()->CreateConsentProvider(browser_context());
 
   FileSystemDelegate* delegate =
       ExtensionsAPIClient::Get()->GetFileSystemDelegate();
   DCHECK(delegate);
   // Only kiosk apps in kiosk sessions can use this API.
-  // Additionally it is enabled for whitelisted component extensions and apps.
-  if (delegate->GetGrantVolumesMode(browser_context(), render_frame_host(),
-                                    *extension()) ==
-      FileSystemDelegate::kGrantNone) {
+  // Additionally it is enabled for allowlisted component extensions and apps.
+  if (!consent_provider_->IsGrantable(*extension())) {
     return RespondNow(Error(kNotSupportedOnNonKioskSessionError));
   }
 
   delegate->RequestFileSystem(
-      browser_context(), this, *extension(), params->options.volume_id,
-      params->options.writable.get() && *params->options.writable.get(),
+      browser_context(), this, consent_provider_.get(), *extension(),
+      params->options.volume_id, params->options.writable.value_or(false),
       base::BindOnce(&FileSystemRequestFileSystemFunction::OnGotFileSystem,
                      this),
       base::BindOnce(&FileSystemRequestFileSystemFunction::OnError, this));
@@ -1094,8 +1078,8 @@ void FileSystemRequestFileSystemFunction::OnGotFileSystem(
     const std::string& id,
     const std::string& path) {
   std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-  dict->SetString("file_system_id", id);
-  dict->SetString("file_system_path", path);
+  dict->SetStringKey("file_system_id", id);
+  dict->SetStringKey("file_system_path", path);
   Respond(OneArgument(base::Value::FromUniquePtrValue(std::move(dict))));
 }
 
@@ -1103,24 +1087,27 @@ void FileSystemRequestFileSystemFunction::OnError(const std::string& error) {
   Respond(Error(error));
 }
 
-FileSystemGetVolumeListFunction::FileSystemGetVolumeListFunction() {}
+/******** FileSystemGetVolumeListFunction ********/
 
-FileSystemGetVolumeListFunction::~FileSystemGetVolumeListFunction() {}
+FileSystemGetVolumeListFunction::FileSystemGetVolumeListFunction() = default;
+
+FileSystemGetVolumeListFunction::~FileSystemGetVolumeListFunction() = default;
 
 ExtensionFunction::ResponseAction FileSystemGetVolumeListFunction::Run() {
+  consent_provider_ =
+      ExtensionsAPIClient::Get()->CreateConsentProvider(browser_context());
+
   FileSystemDelegate* delegate =
       ExtensionsAPIClient::Get()->GetFileSystemDelegate();
   DCHECK(delegate);
   // Only kiosk apps in kiosk sessions can use this API.
-  // Additionally it is enabled for whitelisted component extensions and apps.
-  if (delegate->GetGrantVolumesMode(browser_context(), render_frame_host(),
-                                    *extension()) ==
-      FileSystemDelegate::kGrantNone) {
+  // Additionally it is enabled for allowlisted component extensions and apps.
+  if (!consent_provider_->IsGrantable(*extension())) {
     return RespondNow(Error(kNotSupportedOnNonKioskSessionError));
   }
 
   delegate->GetVolumeList(
-      browser_context(), *extension(),
+      browser_context(),
       base::BindOnce(&FileSystemGetVolumeListFunction::OnGotVolumeList, this),
       base::BindOnce(&FileSystemGetVolumeListFunction::OnError, this));
 
@@ -1135,6 +1122,29 @@ void FileSystemGetVolumeListFunction::OnGotVolumeList(
 void FileSystemGetVolumeListFunction::OnError(const std::string& error) {
   Respond(Error(error));
 }
-#endif
+#else   // BUILDFLAG(IS_CHROMEOS)
+/******** FileSystemRequestFileSystemFunction ********/
+
+FileSystemRequestFileSystemFunction::~FileSystemRequestFileSystemFunction() =
+    default;
+
+ExtensionFunction::ResponseAction FileSystemRequestFileSystemFunction::Run() {
+  using file_system::RequestFileSystem::Params;
+  const std::unique_ptr<Params> params(Params::Create(args()));
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  NOTIMPLEMENTED();
+  return RespondNow(Error(kNotSupportedOnCurrentPlatformError));
+}
+
+/******** FileSystemGetVolumeListFunction ********/
+
+FileSystemGetVolumeListFunction::~FileSystemGetVolumeListFunction() = default;
+
+ExtensionFunction::ResponseAction FileSystemGetVolumeListFunction::Run() {
+  NOTIMPLEMENTED();
+  return RespondNow(Error(kNotSupportedOnCurrentPlatformError));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace extensions

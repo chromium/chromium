@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -15,6 +15,8 @@ source_set("cpp") {
     sources = [
       "sandboxed_rar_analyzer.cc",
       "sandboxed_rar_analyzer.h",
+      "sandboxed_seven_zip_analyzer.cc",
+      "sandboxed_seven_zip_analyzer.h",
       "sandboxed_zip_analyzer.cc",
       "sandboxed_zip_analyzer.h",
     ]
@@ -53,6 +55,7 @@ if (safe_browsing_mode == 1) {
 
     sources = [
       "sandboxed_rar_analyzer_unittest.cc",
+      "sandboxed_seven_zip_analyzer_unittest.cc",
       "sandboxed_zip_analyzer_unittest.cc",
     ]
     if (is_mac) {
@@ -72,7 +75,6 @@ if (safe_browsing_mode == 1) {
       "//components/safe_browsing/content/common:file_type_policies",
       "//components/safe_browsing/core/common",
       "//content/test:test_support",
-      "//crypto:platform",
       "//skia",
       "//testing/gmock",
       "//testing/gtest",

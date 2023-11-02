@@ -1,12 +1,12 @@
 #!/usr/bin/env python
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 """Merge package entries from different package lists.
 """
 
-# This is used for replacing packages in eg. sid with those in experimental.
+# This is used for replacing packages in eg. bullseye with those in bookworm.
 # The updated packages are ABI compatible, but include security patches, so we
 # should use those instead in our sysroots.
 

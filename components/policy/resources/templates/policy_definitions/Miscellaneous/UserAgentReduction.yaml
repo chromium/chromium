@@ -1,0 +1,43 @@
+caption: Enable or disable the <ph name="USER_AGENT_REDUCTION_FEATURE_NAME">User-Agent
+  Reduction</ph>.
+default: 0
+desc: "The <ph name=\"USER_AGENT_HEADER_NAME\">User-Agent</ph> HTTP request header\
+  \ is scheduled to be reduced. In order to facilitate testing and compatibility,\
+  \ this policy can enable the reduction feature for all websites, or disable the\
+  \ ability for origin trials or field trials to enable the feature.\n\n      To learn\
+  \ more about the <ph name=\"USER_AGENT_REDUCTION_FEATURE_NAME\">User-Agent Reduction</ph>\
+  \ and its timeline, read here:\n\n      https://blog.chromium.org/2021/09/user-agent-reduction-origin-trial-and-dates.html\n\
+  \      "
+example_value: 0
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- fuchsia
+items:
+- caption: User Agent reduction will be controllable via Field-Trials and Origin-Trials.
+  name: Default
+  value: 0
+- caption: User Agent reduction disabled, and not enabled by Field-Trials or Origin-Trials.
+  name: ForceDisabled
+  value: 1
+- caption: User Agent reduction will be enabled for all origins.
+  name: ForceEnabled
+  value: 2
+owners:
+- abeyad@chromium.org
+- aarontag@chromium.org
+- miketaylr@chromium.org
+schema:
+  enum:
+  - 0
+  - 1
+  - 2
+  type: integer
+supported_on:
+- chrome_os:98-
+- chrome.*:98-
+- android:98-
+tags:
+- website-sharing
+type: int-enum

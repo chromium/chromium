@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -14,23 +14,21 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "net/base/request_priority.h"
-#include "net/third_party/quiche/src/quic/core/http/http_encoder.h"
-#include "net/third_party/quiche/src/quic/core/qpack/qpack_encoder.h"
-#include "net/third_party/quiche/src/quic/core/quic_clock.h"
-#include "net/third_party/quiche/src/quic/core/quic_packets.h"
-#include "net/third_party/quiche/src/quic/core/quic_stream_frame_data_producer.h"
-#include "net/third_party/quiche/src/quic/core/quic_utils.h"
-#include "net/third_party/quiche/src/quic/test_tools/mock_random.h"
-#include "net/third_party/quiche/src/quic/test_tools/qpack/qpack_encoder_test_utils.h"
-#include "net/third_party/quiche/src/quic/test_tools/qpack/qpack_test_utils.h"
-#include "net/third_party/quiche/src/quic/test_tools/simple_data_producer.h"
-#include "net/third_party/quiche/src/spdy/core/spdy_framer.h"
-#include "net/third_party/quiche/src/spdy/core/spdy_protocol.h"
+#include "net/third_party/quiche/src/quiche/quic/core/http/http_encoder.h"
+#include "net/third_party/quiche/src/quiche/quic/core/qpack/qpack_encoder.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_clock.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_packets.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_stream_frame_data_producer.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_utils.h"
+#include "net/third_party/quiche/src/quiche/quic/test_tools/mock_random.h"
+#include "net/third_party/quiche/src/quiche/quic/test_tools/qpack/qpack_test_utils.h"
+#include "net/third_party/quiche/src/quiche/quic/test_tools/simple_data_producer.h"
+#include "net/third_party/quiche/src/quiche/spdy/core/spdy_framer.h"
+#include "net/third_party/quiche/src/quiche/spdy/core/spdy_protocol.h"
 
-namespace net {
-namespace test {
+namespace net::test {
 
 class QuicTestPacketMaker {
  public:
@@ -594,18 +592,18 @@ class QuicTestPacketMaker {
   // Parameters used throughout the lifetime of the class.
   quic::ParsedQuicVersion version_;
   quic::QuicConnectionId connection_id_;
-  const quic::QuicClock* clock_;  // Not owned.
+  raw_ptr<const quic::QuicClock> clock_;  // Not owned.
   std::string host_;
   spdy::SpdyFramer spdy_request_framer_;
   spdy::SpdyFramer spdy_response_framer_;
-  quic::test::NoopDecoderStreamErrorDelegate decoder_stream_error_delegate_;
+  quic::NoopDecoderStreamErrorDelegate decoder_stream_error_delegate_;
   quic::test::NoopQpackStreamSenderDelegate encoder_stream_sender_delegate_;
   quic::QpackEncoder qpack_encoder_;
   quic::test::MockRandom random_generator_;
   std::map<quic::QuicStreamId, quic::QuicStreamOffset> stream_offsets_;
   quic::Perspective perspective_;
-  quic::EncryptionLevel encryption_level_;
-  quic::QuicLongHeaderType long_header_type_;
+  quic::EncryptionLevel encryption_level_ = quic::ENCRYPTION_FORWARD_SECURE;
+  quic::QuicLongHeaderType long_header_type_ = quic::INVALID_PACKET_TYPE;
   // If true, generated request headers will include non-default HTTP2 stream
   // dependency info.
   bool client_headers_include_h2_stream_dependency_;
@@ -614,7 +612,7 @@ class QuicTestPacketMaker {
   std::vector<std::unique_ptr<std::string>> saved_stream_data_;
   // If |save_packet_frames_| is true, save generated packets in
   // |saved_frames_|, allowing retransmission packets to be built.
-  bool save_packet_frames_;
+  bool save_packet_frames_ = false;
   std::map<quic::QuicPacketNumber, quic::QuicFrames> saved_frames_;
 
   // State necessary for building the current packet.
@@ -623,7 +621,6 @@ class QuicTestPacketMaker {
   std::unique_ptr<quic::test::SimpleDataProducer> data_producer_;
 };
 
-}  // namespace test
-}  // namespace net
+}  // namespace net::test
 
 #endif  // NET_QUIC_QUIC_TEST_PACKET_MAKER_H_

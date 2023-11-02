@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -118,7 +118,7 @@ void Watchdog::ThreadDelegate::ThreadMain() {
   SetThreadName();
   TimeDelta remaining_duration;
   StaticData* static_data = GetStaticData();
-  while (1) {
+  while (true) {
     AutoLock lock(watchdog_->lock_);
     while (DISARMED == watchdog_->state_)
       watchdog_->condition_variable_.Wait();

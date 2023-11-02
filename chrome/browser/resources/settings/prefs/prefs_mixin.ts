@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
  */
 
 // clang-format off
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // clang-format on
 
@@ -61,6 +61,19 @@ export const PrefsMixin = dedupingMixin(
         }
 
         /**
+         * Updates the item in the pref list to the new value. Asserts if the
+         * pref itself is not found or is not an Array type.
+         */
+        updatePrefListItem(key: string, item: any, newItem: any) {
+          const pref = this.getPref(key);
+          assert(pref && pref.type === chrome.settingsPrivate.PrefType.LIST);
+          const index = pref.value.indexOf(item);
+          if (index !== -1) {
+            this.set(`prefs.${key}.value.${index}`, newItem);
+          }
+        }
+
+        /**
          * Deletes the given item from the pref at the given key if the item is
          * found. Asserts if the pref itself is not found or is not an Array
          * type.
@@ -83,5 +96,6 @@ export interface PrefsMixinInterface {
   getPref(prefPath: string): chrome.settingsPrivate.PrefObject;
   setPrefValue(prefPath: string, value: any): void;
   appendPrefListItem(key: string, item: any): void;
+  updatePrefListItem(key: string, item: any, new_item: any): void;
   deletePrefListItem(key: string, item: any): void;
 }

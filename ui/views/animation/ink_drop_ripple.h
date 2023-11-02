@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/animation/ink_drop_ripple_observer.h"
@@ -120,7 +121,7 @@ class VIEWS_EXPORT InkDropRipple {
   // The target InkDropState.
   InkDropState target_ink_drop_state_ = InkDropState::HIDDEN;
 
-  InkDropRippleObserver* observer_ = nullptr;
+  raw_ptr<InkDropRippleObserver> observer_ = nullptr;
 
   std::unique_ptr<ui::CallbackLayerAnimationObserver> animation_observer_;
 };

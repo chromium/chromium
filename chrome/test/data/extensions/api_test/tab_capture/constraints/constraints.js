@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -48,7 +48,7 @@ chrome.test.runTests([
     });
   },
 
-  function rejectsInvalidConstraints() {
+  function ignoresInvalidConstraints() {
     chrome.tabCapture.capture({
       video: true,
       audio: true,
@@ -58,21 +58,10 @@ chrome.test.runTests([
         }
       }
     }, function(stream) {
-      assertBindingsPassedWebKitErrorMessage();
-      chrome.test.assertTrue(!stream);
-
-      chrome.tabCapture.capture({
-        audio: true,
-        audioConstraints: {
-          mandatory: {
-            notValid: '123'
-          }
-        }
-      }, function(stream) {
-        assertBindingsPassedWebKitErrorMessage();
-        chrome.test.assertTrue(!stream);
-        chrome.test.succeed();
-      });
+      chrome.test.assertTrue(!!stream);
+      stream.getVideoTracks()[0].stop();
+      stream.getAudioTracks()[0].stop();
+      chrome.test.succeed();
     });
   }
 ]);

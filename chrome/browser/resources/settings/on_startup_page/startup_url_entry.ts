@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,18 +9,19 @@
  */
 
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
-import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
-import 'chrome://resources/cr_elements/icons.m.js';
-import '../settings_shared_css.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
+import 'chrome://resources/cr_elements/icons.html.js';
+import '../settings_shared.css.js';
 import '../site_favicon.js';
 
 import {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
-import {FocusRowBehavior} from 'chrome://resources/js/cr/ui/focus_row_behavior.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
+import {FocusRowMixin} from 'chrome://resources/js/focus_row_mixin.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {getTemplate} from './startup_url_entry.html.js';
 import {StartupPageInfo, StartupUrlsPageBrowserProxyImpl} from './startup_urls_page_browser_proxy.js';
 
 /**
@@ -29,9 +30,7 @@ import {StartupPageInfo, StartupUrlsPageBrowserProxyImpl} from './startup_urls_p
  */
 export const EDIT_STARTUP_URL_EVENT: string = 'edit-startup-url';
 
-const SettingsStartupUrlEntryElementBase =
-    mixinBehaviors([FocusRowBehavior], PolymerElement) as
-    {new (): PolymerElement & FocusRowBehavior};
+const SettingsStartupUrlEntryElementBase = FocusRowMixin(PolymerElement);
 
 export class SettingsStartupUrlEntryElement extends
     SettingsStartupUrlEntryElementBase {
@@ -40,7 +39,7 @@ export class SettingsStartupUrlEntryElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -77,10 +76,13 @@ export class SettingsStartupUrlEntryElement extends
   }
 
   private onDotsTap_() {
-    const actionMenu = (this.shadowRoot!.querySelector('#menu') as
-                        CrLazyRenderElement<CrActionMenuElement>)
-                           .get();
-    actionMenu.showAt(assert(this.shadowRoot!.querySelector('#dots')!));
+    const actionMenu =
+        this.shadowRoot!
+            .querySelector<CrLazyRenderElement<CrActionMenuElement>>(
+                '#menu')!.get();
+    const dots = this.shadowRoot!.querySelector<HTMLElement>('#dots');
+    assert(dots);
+    actionMenu.showAt(dots);
   }
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -55,7 +55,7 @@ class KioskExternalUpdateNotificationView : public views::WidgetDelegateView {
 
   // Closes the widget immediately from |owner_|.
   void CloseByOwner() {
-    owner_ = NULL;
+    owner_ = nullptr;
     if (!widget_closed_) {
       widget_closed_ = true;
       GetWidget()->Close();
@@ -93,7 +93,7 @@ class KioskExternalUpdateNotificationView : public views::WidgetDelegateView {
     // Inform the |owner_| that we are going away.
     if (owner_) {
       KioskExternalUpdateNotification* owner = owner_;
-      owner_ = NULL;
+      owner_ = nullptr;
       owner->Dismiss();
     }
   }
@@ -154,7 +154,7 @@ void KioskExternalUpdateNotification::CreateAndShowNotificationView(
 void KioskExternalUpdateNotification::Dismiss() {
   if (view_) {
     KioskExternalUpdateNotificationView* view = view_;
-    view_ = NULL;
+    view_ = nullptr;
     view->CloseByOwner();
   }
 }

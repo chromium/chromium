@@ -1,58 +1,62 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/web/public/test/fakes/crw_fake_web_state_observer.h"
 
-#include <memory>
+#import <memory>
 
 #import "ios/web/navigation/navigation_context_impl.h"
 #import "ios/web/public/navigation/navigation_context.h"
-#include "net/http/http_response_headers.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import "ios/web/public/permissions/permissions.h"
+#import "net/http/http_response_headers.h"
+#import "testing/gtest/include/gtest/gtest.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
 @implementation CRWFakeWebStateObserver {
-  // Arguments passed to |webStateWasShown:|.
+  // Arguments passed to `webStateWasShown:`.
   std::unique_ptr<web::TestWasShownInfo> _wasShownInfo;
-  // Arguments passed to |webStateWasHidden:|.
+  // Arguments passed to `webStateWasHidden:`.
   std::unique_ptr<web::TestWasHiddenInfo> _wasHiddenInfo;
-  // Arguments passed to |webState:didStartNavigation:|.
+  // Arguments passed to `webState:didStartNavigation:`.
   std::unique_ptr<web::TestDidStartNavigationInfo> _didStartNavigationInfo;
-  // Arguments passed to |webState:didRedirectNavigation:|.
+  // Arguments passed to `webState:didRedirectNavigation:`.
   std::unique_ptr<web::TestDidRedirectNavigationInfo>
       _didRedirectNavigationInfo;
-  // Arguments passed to |webState:didFinishNavigationForURL:|.
+  // Arguments passed to `webState:didFinishNavigationForURL:`.
   std::unique_ptr<web::TestDidFinishNavigationInfo> _didFinishNavigationInfo;
-  // Arguments passed to |webStateDidStartLoading:|.
+  // Arguments passed to `webStateDidStartLoading:`.
   std::unique_ptr<web::TestStartLoadingInfo> _startLoadingInfo;
-  // Arguments passed to |webStateDidStopLoading:|.
+  // Arguments passed to `webStateDidStopLoading:`.
   std::unique_ptr<web::TestStopLoadingInfo> _stopLoadingInfo;
-  // Arguments passed to |webState:didLoadPageWithSuccess:|.
+  // Arguments passed to `webState:didLoadPageWithSuccess:`.
   std::unique_ptr<web::TestLoadPageInfo> _loadPageInfo;
-  // Arguments passed to |webState:didChangeLoadingProgress:|.
+  // Arguments passed to `webState:didChangeLoadingProgress:`.
   std::unique_ptr<web::TestChangeLoadingProgressInfo>
       _changeLoadingProgressInfo;
-  // Arguments passed to |webStateDidChangeBackForwardState:|.
+  // Arguments passed to `webStateDidChangeBackForwardState:`.
   std::unique_ptr<web::TestDidChangeBackForwardStateInfo>
       _changeBackForwardStateInfo;
-  // Arguments passed to |webStateDidChangeTitle:|.
+  // Arguments passed to `webStateDidChangeTitle:`.
   std::unique_ptr<web::TestTitleWasSetInfo> _titleWasSetInfo;
-  // Arguments passed to |webStateDidChangeVisibleSecurityState:|.
+  // Arguments passed to `webStateDidChangeVisibleSecurityState:`.
   std::unique_ptr<web::TestDidChangeVisibleSecurityStateInfo>
       _didChangeVisibleSecurityStateInfo;
-  // Arguments passed to |webState:didUpdateFaviconURLCandidates|.
+  // Arguments passed to `webState:didUpdateFaviconURLCandidates`.
   std::unique_ptr<web::TestUpdateFaviconUrlCandidatesInfo>
       _updateFaviconUrlCandidatesInfo;
-  // Arguments passed to |webState:renderProcessGoneForWebState:|.
+  // Arguments passed to `webState:renderProcessGoneForWebState:`.
   std::unique_ptr<web::TestRenderProcessGoneInfo> _renderProcessGoneInfo;
-  // Arguments passed to |webStateRealized:|.
+  // Arguments passed to `webStateRealized:`.
   std::unique_ptr<web::TestWebStateRealizedInfo> _webStateRealizedInfo;
-  // Arguments passed to |webStateDestroyed:|.
+  // Arguments passed to `webStateDestroyed:`.
   std::unique_ptr<web::TestWebStateDestroyedInfo> _webStateDestroyedInfo;
+  // Arguments passed to `webState:didChangeStateForPermission:`.
+  std::unique_ptr<web::TestWebStatePermissionStateChangedInfo>
+      _permissionStateChangedInfo;
 }
 
 - (web::TestWasShownInfo*)wasShownInfo {
@@ -118,6 +122,10 @@
 
 - (web::TestWebStateDestroyedInfo*)webStateDestroyedInfo {
   return _webStateDestroyedInfo.get();
+}
+
+- (web::TestWebStatePermissionStateChangedInfo*)permissionStateChangedInfo {
+  return _permissionStateChangedInfo.get();
 }
 
 #pragma mark CRWWebStateObserver methods -
@@ -227,6 +235,14 @@
       std::make_unique<web::TestUpdateFaviconUrlCandidatesInfo>();
   _updateFaviconUrlCandidatesInfo->web_state = webState;
   _updateFaviconUrlCandidatesInfo->candidates = candidates;
+}
+
+- (void)webState:(web::WebState*)webState
+    didChangeStateForPermission:(web::Permission)permission {
+  _permissionStateChangedInfo =
+      std::make_unique<web::TestWebStatePermissionStateChangedInfo>();
+  _permissionStateChangedInfo->web_state = webState;
+  _permissionStateChangedInfo->permission = permission;
 }
 
 - (void)renderProcessGoneForWebState:(web::WebState*)webState {

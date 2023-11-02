@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,57 +8,114 @@
 #include "ash/assistant/test/assistant_ash_test_base.h"
 #include "ash/assistant/ui/assistant_ui_constants.h"
 #include "ash/assistant/ui/assistant_view_ids.h"
+#include "ash/assistant/ui/base/assistant_button.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "ash/public/cpp/style/color_provider.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/constants/chromeos_features.h"
+#include "components/vector_icons/vector_icons.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/gfx/color_palette.h"
+#include "ui/gfx/image/image_unittest_util.h"
+#include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/textfield/textfield.h"
 
 namespace ash {
+namespace {
+
+constexpr int kIconDipSize = 24;
+
+}  // namespace
 
 using AssistantDialogPlateTest = AssistantAshTestBase;
 
 TEST_F(AssistantDialogPlateTest, DarkAndLightTheme) {
-  base::test::ScopedFeatureList scoped_feature_list(features::kDarkLightMode);
-  AshColorProvider::Get()->OnActiveUserPrefServiceChanged(
+  base::test::ScopedFeatureList scoped_feature_list(
+      chromeos::features::kDarkLightMode);
+  ASSERT_TRUE(chromeos::features::IsDarkLightModeEnabled());
+
+  auto* color_provider = AshColorProvider::Get();
+  auto* dark_light_mode_controller = DarkLightModeControllerImpl::Get();
+  dark_light_mode_controller->OnActiveUserPrefServiceChanged(
       Shell::Get()->session_controller()->GetActivePrefService());
-  ASSERT_TRUE(features::IsDarkLightModeEnabled());
-  ASSERT_FALSE(ColorProvider::Get()->IsDarkModeEnabled());
+  const bool initial_dark_mode_status =
+      dark_light_mode_controller->IsDarkModeEnabled();
 
   ShowAssistantUi();
 
   views::View* assistant_dialog_plate =
-      app_list_view()->GetViewByID(AssistantViewID::kDialogPlate);
+      page_view()->GetViewByID(AssistantViewID::kDialogPlate);
   views::Textfield* assistant_text_field = static_cast<views::Textfield*>(
       assistant_dialog_plate->GetViewByID(AssistantViewID::kTextQueryField));
+  AssistantButton* keyboard_input_toggle =
+      static_cast<AssistantButton*>(assistant_dialog_plate->GetViewByID(
+          AssistantViewID::kKeyboardInputToggle));
 
+  const SkBitmap light_keyboard_toggle =
+      *gfx::CreateVectorIcon(vector_icons::kKeyboardIcon, kIconDipSize,
+                             gfx::kGoogleGrey900)
+           .bitmap();
+  const SkBitmap dark_keyboard_toggle =
+      *gfx::CreateVectorIcon(vector_icons::kKeyboardIcon, kIconDipSize,
+                             gfx::kGoogleGrey200)
+           .bitmap();
   EXPECT_EQ(assistant_text_field->GetTextColor(),
-            ColorProvider::Get()->GetContentLayerColor(
+            color_provider->GetContentLayerColor(
                 ColorProvider::ContentLayerType::kTextColorPrimary));
 
-  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
-      prefs::kDarkModeEnabled, true);
-  ASSERT_TRUE(ColorProvider::Get()->IsDarkModeEnabled());
+  EXPECT_TRUE(gfx::test::AreBitmapsEqual(
+      initial_dark_mode_status ? dark_keyboard_toggle : light_keyboard_toggle,
+      *keyboard_input_toggle->GetImage(views::Button::STATE_NORMAL).bitmap()));
+
+  // Switch the color mode.
+  dark_light_mode_controller->ToggleColorMode();
+  ASSERT_NE(initial_dark_mode_status,
+            dark_light_mode_controller->IsDarkModeEnabled());
 
   EXPECT_EQ(assistant_text_field->GetTextColor(),
-            ColorProvider::Get()->GetContentLayerColor(
+            color_provider->GetContentLayerColor(
                 ColorProvider::ContentLayerType::kTextColorPrimary));
+  EXPECT_TRUE(gfx::test::AreBitmapsEqual(
+      !initial_dark_mode_status ? dark_keyboard_toggle : light_keyboard_toggle,
+      *keyboard_input_toggle->GetImage(views::Button::STATE_NORMAL).bitmap()));
 }
 
 TEST_F(AssistantDialogPlateTest, DarkAndLightModeFlagOff) {
-  ASSERT_FALSE(features::IsDarkLightModeEnabled());
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{}, /*disabled_features=*/{
+          chromeos::features::kDarkLightMode, features::kNotificationsRefresh});
 
   ShowAssistantUi();
 
   views::View* assistant_dialog_plate =
-      app_list_view()->GetViewByID(AssistantViewID::kDialogPlate);
+      page_view()->GetViewByID(AssistantViewID::kDialogPlate);
   views::Textfield* assistant_text_field = static_cast<views::Textfield*>(
       assistant_dialog_plate->GetViewByID(AssistantViewID::kTextQueryField));
+  AssistantButton* keyboard_input_toggle =
+      static_cast<AssistantButton*>(assistant_dialog_plate->GetViewByID(
+          AssistantViewID::kKeyboardInputToggle));
 
-  EXPECT_EQ(assistant_text_field->GetTextColor(), kTextColorPrimary);
+  EXPECT_EQ(assistant_text_field->GetTextColor(),
+            assistant_text_field->GetColorProvider()->GetColor(
+                cros_tokens::kColorPrimaryDark));
+
+  // When dark light mode is not on, the default color is dark.
+  EXPECT_TRUE(gfx::test::AreBitmapsEqual(
+      *gfx::CreateVectorIcon(vector_icons::kKeyboardIcon, kIconDipSize,
+                             gfx::kGoogleGrey200)
+           .bitmap(),
+      *keyboard_input_toggle->GetImage(views::Button::STATE_NORMAL).bitmap()));
+
+  // Avoid test teardown issues by explicitly closing the launcher.
+  CloseAssistantUi();
 }
+
 }  // namespace ash

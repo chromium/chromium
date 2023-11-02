@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,12 @@
 #include <memory>
 #include <utility>
 
+#include "base/no_destructor.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "services/preferences/public/cpp/dictionary_value_update.h"
-#include "services/preferences/public/cpp/scoped_pref_update.h"
+#include "components/prefs/scoped_user_pref_update.h"
 
 namespace {
 const char kAppShims[] = "app_shims";
@@ -59,15 +59,14 @@ void AppShimRegistry::GetProfilesSetForApp(
     const std::string& app_id,
     const std::string& profiles_key,
     std::set<base::FilePath>* profiles) const {
-  const base::DictionaryValue* cache =
-      GetPrefService()->GetDictionary(kAppShims);
-  const base::Value* app_info = cache->FindDictKey(app_id);
+  const base::Value::Dict& cache = GetPrefService()->GetDict(kAppShims);
+  const base::Value::Dict* app_info = cache.FindDict(app_id);
   if (!app_info)
     return;
-  const base::Value* profile_values = app_info->FindListKey(profiles_key);
+  const base::Value::List* profile_values = app_info->FindList(profiles_key);
   if (!profile_values)
     return;
-  for (const auto& profile_path_value : profile_values->GetList()) {
+  for (const auto& profile_path_value : *profile_values) {
     if (profile_path_value.is_string())
       profiles->insert(GetFullProfilePath(profile_path_value.GetString()));
   }
@@ -80,7 +79,13 @@ void AppShimRegistry::OnAppInstalledForProfile(const std::string& app_id,
   if (installed_profiles.count(profile))
     return;
   installed_profiles.insert(profile);
-  SetAppInfo(app_id, &installed_profiles, nullptr);
+  // Also add the profile to the last active profiles. This way the next time
+  // the app is launched, it will at least launch in the most recently
+  // installed profile.
+  std::set<base::FilePath> last_active_profiles =
+      GetLastActiveProfilesForApp(app_id);
+  last_active_profiles.insert(profile);
+  SetAppInfo(app_id, &installed_profiles, &last_active_profiles);
 }
 
 bool AppShimRegistry::OnAppUninstalledForProfile(
@@ -103,21 +108,18 @@ void AppShimRegistry::OnAppQuit(const std::string& app_id,
 std::set<std::string> AppShimRegistry::GetInstalledAppsForProfile(
     const base::FilePath& profile) const {
   std::set<std::string> result;
-  const base::DictionaryValue* app_shims =
-      GetPrefService()->GetDictionary(kAppShims);
-  if (!app_shims)
-    return result;
-  for (base::DictionaryValue::Iterator iter_app(*app_shims);
-       !iter_app.IsAtEnd(); iter_app.Advance()) {
+  const base::Value::Dict& app_shims = GetPrefService()->GetDict(kAppShims);
+  for (const auto iter_app : app_shims) {
     const base::Value* installed_profiles_list =
-        iter_app.value().FindListKey(kInstalledProfiles);
+        iter_app.second.FindListKey(kInstalledProfiles);
     if (!installed_profiles_list)
       continue;
-    for (const auto& profile_path_value : installed_profiles_list->GetList()) {
+    for (const auto& profile_path_value :
+         installed_profiles_list->GetListDeprecated()) {
       if (!profile_path_value.is_string())
         continue;
       if (profile == GetFullProfilePath(profile_path_value.GetString())) {
-        result.insert(iter_app.key());
+        result.insert(iter_app.first);
         break;
       }
     }
@@ -132,12 +134,10 @@ void AppShimRegistry::SetPrefServiceAndUserDataDirForTesting(
   override_user_data_dir_ = user_data_dir;
 }
 
-base::Value AppShimRegistry::AsDebugValue() const {
-  const base::Value* app_shims = GetPrefService()->GetDictionary(kAppShims);
-  if (!app_shims)
-    return base::Value(base::Value::Type::DICTIONARY);
+base::Value::Dict AppShimRegistry::AsDebugDict() const {
+  const base::Value::Dict& app_shims = GetPrefService()->GetDict(kAppShims);
 
-  return app_shims->Clone();
+  return app_shims.Clone();
 }
 
 PrefService* AppShimRegistry::GetPrefService() const {
@@ -159,7 +159,7 @@ void AppShimRegistry::SetAppInfo(
     const std::string& app_id,
     const std::set<base::FilePath>* installed_profiles,
     const std::set<base::FilePath>* last_active_profiles) {
-  prefs::ScopedDictionaryPrefUpdate update(GetPrefService(), kAppShims);
+  ScopedDictPrefUpdate update(GetPrefService(), kAppShims);
 
   // If there are no installed profiles, clear the app's key.
   if (installed_profiles && installed_profiles->empty()) {
@@ -168,27 +168,26 @@ void AppShimRegistry::SetAppInfo(
   }
 
   // Look up dictionary for the app.
-  std::unique_ptr<prefs::DictionaryValueUpdate> app_info;
-  if (!update->GetDictionaryWithoutPathExpansion(app_id, &app_info)) {
+  base::Value::Dict* app_info = update->FindDict(app_id);
+  if (!app_info) {
     // If the key for the app doesn't exist, don't add it unless we are
     // specifying a new |installed_profiles| (e.g, for when the app exits
     // during uninstall and tells us its last-used profile after we just
     // removed the entry for the app).
     if (!installed_profiles)
       return;
-    app_info = update->SetDictionaryWithoutPathExpansion(
-        app_id, std::make_unique<base::DictionaryValue>());
+    app_info = update->EnsureDict(app_id);
   }
   if (installed_profiles) {
-    auto values = std::make_unique<base::ListValue>();
+    base::Value::List values;
     for (const auto& profile : *installed_profiles)
-      values->Append(profile.BaseName().value());
+      values.Append(profile.BaseName().value());
     app_info->Set(kInstalledProfiles, std::move(values));
   }
   if (last_active_profiles) {
-    auto values = std::make_unique<base::ListValue>();
+    base::Value::List values;
     for (const auto& profile : *last_active_profiles)
-      values->Append(profile.BaseName().value());
+      values.Append(profile.BaseName().value());
     app_info->Set(kLastActiveProfiles, std::move(values));
   }
 }

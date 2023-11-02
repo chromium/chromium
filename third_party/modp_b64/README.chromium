@@ -13,4 +13,5 @@ basictypes.h could be possible.
 
 The modp_b64.cc and modp_b64.h files were then modified to make them safe on
 64-bit systems, avoid misaligned read/write on little-endian hardware, and
-remove unreachable code.
+remove unreachable code. The API was also extended so callers can avoid overflow
+when performing a base64 encode.

@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -21,13 +21,13 @@ shared_library("netty-tcnative-so") {
     "src/c/sslutils.c",
     "src/c/tcn.h",
   ]
-  include_dirs = [ "../apache-portable-runtime/src/include" ]
+  include_dirs = [ "//third_party/apache-portable-runtime/src/include" ]
   defines = [ "HAVE_OPENSSL" ]
   cflags = [ "-w" ]
   configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
   deps = [
-    "../apache-portable-runtime:apr",
-    "../boringssl:boringssl",
+    "//third_party/apache-portable-runtime:apr",
+    "//third_party/boringssl:boringssl",
   ]
 }
 
@@ -43,5 +43,9 @@ android_library("netty-tcnative_java") {
     "src/java/io/netty/internal/tcnative/SSLContext.java",
     "src/java/io/netty/internal/tcnative/SessionTicketKey.java",
   ]
-  deps = [ "//base:base_java" ]
+  deps = [
+    "//base:base_java",
+    "//base:jni_java",
+    "//build/android:build_java",
+  ]
 }

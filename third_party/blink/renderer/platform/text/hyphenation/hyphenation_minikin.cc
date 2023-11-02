@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -290,8 +290,7 @@ scoped_refptr<Hyphenation> Hyphenation::PlatformGetHyphenation(
   const AtomicString lower_ascii_locale = locale.LowerASCII();
   if (!hyphenation->OpenDictionary(lower_ascii_locale))
     return nullptr;
-  if (lower_ascii_locale.StartsWith("de"))
-    hyphenation->hyphenate_capitalized_word_ = true;
+  hyphenation->Initialize(lower_ascii_locale);
   return hyphenation;
 }
 
@@ -302,8 +301,7 @@ scoped_refptr<HyphenationMinikin> HyphenationMinikin::FromFileForTesting(
       base::AdoptRef(new HyphenationMinikin));
   if (!hyphenation->OpenDictionary(std::move(file)))
     return nullptr;
-  if (locale.StartsWithIgnoringASCIICase("de"))
-    hyphenation->hyphenate_capitalized_word_ = true;
+  hyphenation->Initialize(locale);
   return hyphenation;
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,8 @@
 
 #include "base/big_endian.h"
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/zlib/zlib.h"
@@ -209,8 +207,8 @@ class WebRtcRtpDumpWriter::FileWorker {
 
     output->resize(output->size() - stream_.avail_out);
 
-    stream_.next_in = NULL;
-    stream_.next_out = NULL;
+    stream_.next_in = nullptr;
+    stream_.next_out = nullptr;
     stream_.avail_out = 0;
     return true;
   }
@@ -222,7 +220,7 @@ class WebRtcRtpDumpWriter::FileWorker {
     std::vector<uint8_t> output_buffer;
     output_buffer.resize(kMinimumGzipOutputBufferSize);
 
-    stream_.next_in = NULL;
+    stream_.next_in = nullptr;
     stream_.avail_in = 0;
     stream_.next_out = &output_buffer[0];
     stream_.avail_out = output_buffer.size();
@@ -294,7 +292,7 @@ void WebRtcRtpDumpWriter::WriteRtpPacket(const uint8_t* packet_header,
 
     // Writes the dump file header.
     AppendToBuffer(kRtpDumpFileHeaderFirstLine,
-                   base::size(kRtpDumpFileHeaderFirstLine) - 1, dest_buffer);
+                   std::size(kRtpDumpFileHeaderFirstLine) - 1, dest_buffer);
     WriteRtpDumpFileHeaderBigEndian(start_time_, dest_buffer);
   }
 

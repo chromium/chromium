@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,7 @@
 #include "third_party/webrtc/api/video/video_frame_buffer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 // Adapter class to wrap a DesktopFrame produced by the capturer, and provide
 // it as a VideoFrame to the WebRTC video sink. The encoder will extract the
@@ -53,7 +52,6 @@ class WebrtcVideoFrameAdapter : public webrtc::VideoFrameBuffer {
   std::unique_ptr<WebrtcVideoEncoder::FrameStats> frame_stats_;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_WEBRTC_VIDEO_FRAME_ADAPTER_H_

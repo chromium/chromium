@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -70,6 +70,13 @@ class TestRenderFrame : public RenderFrameImpl {
   // void.
   static mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
   CreateStubBrowserInterfaceBrokerRemote();
+
+  // Returns a pending `AssociatedInterfaceProvider` remote that represents a
+  // connection to a non-existent browser, where all messages will go into the
+  // void.
+  static mojo::PendingAssociatedRemote<
+      blink::mojom::AssociatedInterfaceProvider>
+  CreateStubAssociatedInterfaceProviderRemote();
 
  protected:
   explicit TestRenderFrame(RenderFrameImpl::CreateParams params);

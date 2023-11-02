@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -87,17 +87,21 @@ void GLOzoneEglCast::TerminateDisplay() {
 }
 
 scoped_refptr<gl::GLSurface> GLOzoneEglCast::CreateViewGLSurface(
+    gl::GLDisplay* display,
     gfx::AcceleratedWidget widget) {
   // Verify requested widget dimensions match our current display size.
   DCHECK_EQ(static_cast<int>(widget >> 16), display_size_.width());
   DCHECK_EQ(static_cast<int>(widget & 0xffff), display_size_.height());
 
-  return gl::InitializeGLSurface(new GLSurfaceCast(widget, this));
+  return gl::InitializeGLSurface(
+      new GLSurfaceCast(display->GetAs<gl::GLDisplayEGL>(), widget, this));
 }
 
 scoped_refptr<gl::GLSurface> GLOzoneEglCast::CreateOffscreenGLSurface(
+    gl::GLDisplay* display,
     const gfx::Size& size) {
-  return gl::InitializeGLSurface(new gl::PbufferGLSurfaceEGL(size));
+  return gl::InitializeGLSurface(
+      new gl::PbufferGLSurfaceEGL(display->GetAs<gl::GLDisplayEGL>(), size));
 }
 
 gl::EGLDisplayPlatform GLOzoneEglCast::GetNativeDisplay() {

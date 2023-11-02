@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,6 +23,7 @@ TEST(ManifestUtilTest, DisplayModeConversions) {
       {blink::mojom::DisplayMode::kWindowControlsOverlay,
        "window-controls-overlay"},
       {blink::mojom::DisplayMode::kTabbed, "tabbed"},
+      {blink::mojom::DisplayMode::kBorderless, "borderless"},
   };
 
   for (const ReversibleConversion& conversion : reversible_conversions) {
@@ -99,35 +100,20 @@ TEST(ManifestUtilTest, CaptureLinksFromString) {
             CaptureLinksFromString("unknown-value"));
 }
 
-TEST(ManifestUtilTest, RouteToFromString) {
-  using RouteTo = Manifest::LaunchHandler::RouteTo;
-  EXPECT_EQ(absl::nullopt, RouteToFromString(""));
-  EXPECT_EQ(RouteTo::kAuto, RouteToFromString("auto"));
-  EXPECT_EQ(RouteTo::kNewClient, RouteToFromString("new-client"));
-  EXPECT_EQ(RouteTo::kExistingClient, RouteToFromString("existing-client"));
+TEST(ManifestUtilTest, LaunchHandlerClientModeFromString) {
+  using ClientMode = Manifest::LaunchHandler::ClientMode;
+  EXPECT_EQ(absl::nullopt, ClientModeFromString(""));
+  EXPECT_EQ(ClientMode::kAuto, ClientModeFromString("auto"));
+  EXPECT_EQ(ClientMode::kNavigateNew, ClientModeFromString("navigate-new"));
+  EXPECT_EQ(ClientMode::kNavigateExisting,
+            ClientModeFromString("navigate-existing"));
+  EXPECT_EQ(ClientMode::kFocusExisting, ClientModeFromString("focus-existing"));
 
   // Uppercase spelling.
-  EXPECT_EQ(RouteTo::kNewClient, RouteToFromString("NEW-CLIENT"));
+  EXPECT_EQ(ClientMode::kNavigateNew, ClientModeFromString("NAVIGATE-NEW"));
 
   // Unknown value.
-  EXPECT_EQ(absl::nullopt, RouteToFromString("unknown-value"));
-}
-
-TEST(ManifestUtilTest, NavigateExistingClientFromString) {
-  using NavigateExistingClient =
-      Manifest::LaunchHandler::NavigateExistingClient;
-  EXPECT_EQ(absl::nullopt, NavigateExistingClientFromString(""));
-  EXPECT_EQ(NavigateExistingClient::kAlways,
-            NavigateExistingClientFromString("always"));
-  EXPECT_EQ(NavigateExistingClient::kNever,
-            NavigateExistingClientFromString("never"));
-
-  // Uppercase spelling.
-  EXPECT_EQ(NavigateExistingClient::kNever,
-            NavigateExistingClientFromString("NEVER"));
-
-  // Unknown value.
-  EXPECT_EQ(absl::nullopt, NavigateExistingClientFromString("unknown-value"));
+  EXPECT_EQ(absl::nullopt, ClientModeFromString("unknown-value"));
 }
 
 }  // namespace blink

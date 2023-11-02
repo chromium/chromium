@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_app_list_helper.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
-#include "chrome/browser/sync/test/integration/sync_settings_categorization_sync_test.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service.h"
@@ -24,9 +23,7 @@
 #include "components/sync/driver/sync_user_settings.h"
 #include "content/public/test/browser_test.h"
 
-using syncer::UserSelectableOsType;
 using syncer::UserSelectableOsTypeSet;
-using syncer::UserSelectableType;
 using syncer::UserSelectableTypeSet;
 
 namespace {
@@ -37,8 +34,8 @@ bool AllProfilesHaveSameAppList() {
 
 // Returns true if sync items from |service| all have non-empty names.
 bool SyncItemsHaveNames(const app_list::AppListSyncableService* service) {
-  for (const auto& it : service->sync_items()) {
-    if (it.second->item_name.empty()) {
+  for (const auto& [item_id, item] : service->sync_items()) {
+    if (item->item_name.empty()) {
       return false;
     }
   }
@@ -48,15 +45,16 @@ bool SyncItemsHaveNames(const app_list::AppListSyncableService* service) {
 // Returns true if sync items from |service1| match to sync items in |service2|.
 bool SyncItemsMatch(const app_list::AppListSyncableService* service1,
                     const app_list::AppListSyncableService* service2) {
-  if (service1->sync_items().size() != service2->sync_items().size())
+  if (service1->sync_items().size() != service2->sync_items().size()) {
     return false;
+  }
 
-  for (const auto& it : service1->sync_items()) {
-    const app_list::AppListSyncableService::SyncItem* item1 = it.second.get();
+  for (const auto& [item_id, item1] : service1->sync_items()) {
     const app_list::AppListSyncableService::SyncItem* item2 =
-        service2->GetSyncItem(it.first);
-    if (!item2)
+        service2->GetSyncItem(item_id);
+    if (!item2) {
       return false;
+    }
     if (item1->item_id != item2->item_id ||
         item1->item_type != item2->item_type ||
         item1->item_name != item2->item_name ||
@@ -109,8 +107,9 @@ class SingleClientAppListSyncTest : public SyncTest {
 
   // SyncTest
   bool SetupClients() override {
-    if (!SyncTest::SetupClients())
+    if (!SyncTest::SetupClients()) {
       return false;
+    }
 
     // Init SyncAppListHelper to ensure that the extension system is initialized
     // for each Profile.
@@ -227,16 +226,11 @@ IN_PROC_BROWSER_TEST_F(SingleClientAppListSyncTest, LocalStorage) {
   ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
 
   // Disable app sync by disabling all user-selectable types.
-  if (chromeos::features::IsSyncSettingsCategorizationEnabled()) {
-    sync_service->GetUserSettings()->SetSelectedOsTypes(
-        /*sync_all_os_types=*/false, syncer::UserSelectableOsTypeSet());
-  } else {
-    sync_service->GetUserSettings()->SetSelectedTypes(
-        /*sync_everything=*/false, syncer::UserSelectableTypeSet());
-  }
+  sync_service->GetUserSettings()->SetSelectedOsTypes(
+      /*sync_all_os_types=*/false, syncer::UserSelectableOsTypeSet());
 
   // Change data when sync is off.
-  for (const auto& app_id : app_ids) {
+  for (const std::string& app_id : app_ids) {
     service->SetPinPosition(app_id, pin_position);
     pin_position = pin_position.CreateAfter();
   }
@@ -248,23 +242,16 @@ IN_PROC_BROWSER_TEST_F(SingleClientAppListSyncTest, LocalStorage) {
   EXPECT_FALSE(SyncItemsMatch(service, &compare_service));
 
   // Restore app sync and sync data should override local changes.
-  if (chromeos::features::IsSyncSettingsCategorizationEnabled()) {
-    sync_service->GetUserSettings()->SetSelectedOsTypes(
-        /*sync_all_os_types=*/true, syncer::UserSelectableOsTypeSet());
-  } else {
-    sync_service->GetUserSettings()->SetSelectedTypes(
-        /*sync_everything=*/true, syncer::UserSelectableTypeSet());
-  }
+  sync_service->GetUserSettings()->SetSelectedOsTypes(
+      /*sync_all_os_types=*/true, syncer::UserSelectableOsTypeSet());
   EXPECT_TRUE(AppListSyncUpdateWaiter(service).Wait());
   EXPECT_TRUE(SyncItemsMatch(service, &compare_service));
 }
 
 // Tests for SyncSettingsCategorization.
-class SingleClientAppListOsSyncTest
-    : public SyncSettingsCategorizationSyncTest {
+class SingleClientAppListOsSyncTest : public SyncTest {
  public:
-  SingleClientAppListOsSyncTest()
-      : SyncSettingsCategorizationSyncTest(SINGLE_CLIENT) {}
+  SingleClientAppListOsSyncTest() : SyncTest(SINGLE_CLIENT) {}
   ~SingleClientAppListOsSyncTest() override = default;
 };
 

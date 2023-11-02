@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/upgrade_detector/build_state.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 
 namespace {
 
@@ -24,14 +24,12 @@ enum class RollbackReason {
 
 InstalledVersionUpdater::InstalledVersionUpdater(BuildState* build_state)
     : build_state_(build_state) {
-  chromeos::DBusThreadManager::Get()->GetUpdateEngineClient()->AddObserver(
-      this);
+  ash::UpdateEngineClient::Get()->AddObserver(this);
 }
 
 InstalledVersionUpdater::~InstalledVersionUpdater() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  chromeos::DBusThreadManager::Get()->GetUpdateEngineClient()->RemoveObserver(
-      this);
+  ash::UpdateEngineClient::Get()->RemoveObserver(this);
 }
 
 void InstalledVersionUpdater::UpdateStatusChanged(

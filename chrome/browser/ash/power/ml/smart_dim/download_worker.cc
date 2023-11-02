@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -65,8 +65,7 @@ void DownloadWorker::InitializeFromComponent(
     const ComponentFileContents& contents) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  std::string metadata_json, preprocessor_proto, model_flatbuffer;
-  std::tie(metadata_json, preprocessor_proto, model_flatbuffer) = contents;
+  auto [metadata_json, preprocessor_proto, model_flatbuffer] = contents;
 
   preprocessor_config_ =
       std::make_unique<assist_ranker::ExamplePreprocessorConfig>();
@@ -89,8 +88,8 @@ void DownloadWorker::OnJsonParsed(
     const std::string& model_flatbuffer,
     const data_decoder::DataDecoder::ValueOrError result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!result.value || !result.value->is_dict() ||
-      !ParseMetaInfoFromJsonObject(result.value.value(), &metrics_model_name_,
+  if (!result.has_value() || !result->is_dict() ||
+      !ParseMetaInfoFromJsonObject(*result, &metrics_model_name_,
                                    &dim_threshold_, &expected_feature_size_,
                                    &inputs_, &outputs_)) {
     LogLoadComponentEvent(LoadComponentEvent::kLoadMetadataError);
@@ -118,6 +117,7 @@ void DownloadWorker::LoadModelAndCreateGraphExecutor(
           base::BindOnce(&DownloadWorker::LoadModelCallback,
                          base::Unretained(this)));
   model_->CreateGraphExecutor(
+      chromeos::machine_learning::mojom::GraphExecutorOptions::New(),
       executor_.BindNewPipeAndPassReceiver(),
       base::BindOnce(&DownloadWorker::CreateGraphExecutorCallback,
                      base::Unretained(this)));

@@ -1,34 +1,36 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.m.js';
-import 'chrome://resources/cr_elements/cr_icons_css.m.js';
-import 'chrome://resources/cr_elements/shared_vars_css.m.js';
-import '../shared_style.js';
-import '../shared_vars.js';
+import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
+import 'chrome://resources/cr_elements/cr_icons.css.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+import '../shared_style.css.js';
+import '../shared_vars.css.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-export type StreamItem = {
-  name?: string,
-  timestamp: number,
-  activityType: chrome.activityLogPrivate.ExtensionActivityType,
-  pageUrl?: string,
-  argUrl: string,
-  args: string,
-  webRequestInfo?: string,
-  expanded: boolean,
-};
+import {getTemplate} from './activity_log_stream_item.html.js';
+
+export interface StreamItem {
+  name?: string;
+  timestamp: number;
+  activityType: chrome.activityLogPrivate.ExtensionActivityType;
+  pageUrl?: string;
+  argUrl: string;
+  args: string;
+  webRequestInfo?: string;
+  expanded: boolean;
+}
 
 /**
  * A struct used to describe each argument for an activity (each item in
  * the parsed version of |data.args|). Contains the argument's value itself
  * and its index.
  */
-export type StreamArgItem = {
-  arg: string,
-  index: number,
+export interface StreamArgItem {
+  arg: string;
+  index: number;
 }
 
 /**
@@ -46,13 +48,13 @@ export const ARG_URL_PLACEHOLDER: string = '<arg_url>';
  */
 const ARG_URL_PLACEHOLDER_REGEX: RegExp = /"<arg_url>"/g;
 
-class ActivityLogStreamItemElement extends PolymerElement {
+export class ActivityLogStreamItemElement extends PolymerElement {
   static get is() {
     return 'activity-log-stream-item';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -76,7 +78,7 @@ class ActivityLogStreamItemElement extends PolymerElement {
   }
 
   data: StreamItem;
-  private argsList_: Array<StreamArgItem>;
+  private argsList_: StreamArgItem[];
   private isExpandable_: boolean;
 
   private computeIsExpandable_(): boolean {
@@ -110,7 +112,7 @@ class ActivityLogStreamItemElement extends PolymerElement {
     return !!this.data.webRequestInfo && this.data.webRequestInfo !== '{}';
   }
 
-  private computeArgsList_(): Array<StreamArgItem> {
+  private computeArgsList_(): StreamArgItem[] {
     const parsedArgs = JSON.parse(this.data.args);
     if (!Array.isArray(parsedArgs)) {
       return [];
@@ -133,6 +135,12 @@ class ActivityLogStreamItemElement extends PolymerElement {
       this.set('data.expanded', !this.data.expanded);
       this.dispatchEvent(new CustomEvent('resize-stream'));
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'activity-log-stream-item': ActivityLogStreamItemElement;
   }
 }
 

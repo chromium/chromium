@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,19 +22,20 @@ const NearbySharedV3Test = class extends PolymerTest {
     return {
       enabled: [
         'features::kNearbySharing',
-      ]
+      ],
     };
   }
 };
 
-[['DeviceIcon', 'nearby_device_icon_test.m.js'],
- ['Device', 'nearby_device_test.m.js'],
- ['OnboardingPage', 'nearby_onboarding_page_test.m.js'],
- ['PageTemplate', 'nearby_page_template_test.m.js'],
- ['Preview', 'nearby_preview_test.m.js'],
- ['Progress', 'nearby_progress_test.m.js'],
- ['VisibilityPage', 'nearby_visibility_page_test.m.js'],
- ['ContactVisibility', 'nearby_contact_visibility_test.m.js'],
+[['DeviceIcon', 'nearby_device_icon_test.js'],
+ ['Device', 'nearby_device_test.js'],
+ ['OnboardingOnePage', 'nearby_onboarding_one_page_test.js'],
+ ['OnboardingPage', 'nearby_onboarding_page_test.js'],
+ ['PageTemplate', 'nearby_page_template_test.js'],
+ ['Preview', 'nearby_preview_test.js'],
+ ['Progress', 'nearby_progress_test.js'],
+ ['VisibilityPage', 'nearby_visibility_page_test.js'],
+ ['ContactVisibility', 'nearby_contact_visibility_test.js'],
 ].forEach(test => registerTest(...test));
 
 function registerTest(testName, module, caseName) {
@@ -43,7 +44,7 @@ function registerTest(testName, module, caseName) {
     /** @override */
     get browsePreload() {
       return `chrome://nearby/test_loader.html?module=nearby_share/shared/${
-          module}`;
+          module}&host=test`;
     }
   };
 

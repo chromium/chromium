@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,15 +6,12 @@ package org.chromium.chrome.browser.browserservices.permissiondelegation;
 
 import android.content.ComponentName;
 
-import androidx.annotation.WorkerThread;
-
 import org.chromium.base.Log;
-import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClient;
 import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder;
+import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.Origin;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -31,12 +28,12 @@ public class LocationPermissionUpdater {
 
     private static final @ContentSettingsType int TYPE = ContentSettingsType.GEOLOCATION;
 
-    private final TrustedWebActivityPermissionManager mPermissionManager;
+    private final InstalledWebappPermissionManager mPermissionManager;
     private final TrustedWebActivityClient mTrustedWebActivityClient;
     private final TrustedWebActivityUmaRecorder mUmaRecorder;
 
     @Inject
-    public LocationPermissionUpdater(TrustedWebActivityPermissionManager permissionManager,
+    public LocationPermissionUpdater(InstalledWebappPermissionManager permissionManager,
             TrustedWebActivityClient trustedWebActivityClient,
             TrustedWebActivityUmaRecorder umaRecorder) {
         mPermissionManager = permissionManager;
@@ -58,15 +55,16 @@ public class LocationPermissionUpdater {
      * permission for that origin to client app's Android location permission if a
      * TrustedWebActivityService is found, and the TWAService supports location permission.
      */
-    void checkPermission(Origin origin, long callback) {
+    void checkPermission(Origin origin, String lastCommitedUrl, long callback) {
         mTrustedWebActivityClient.checkLocationPermission(
-                origin, new TrustedWebActivityClient.PermissionCheckCallback() {
+                lastCommitedUrl, new TrustedWebActivityClient.PermissionCallback() {
                     private boolean mCalled;
                     @Override
-                    public void onPermissionCheck(ComponentName answeringApp, boolean enabled) {
+                    public void onPermission(
+                            ComponentName app, @ContentSettingValues int settingValue) {
                         if (mCalled) return;
                         mCalled = true;
-                        updatePermission(origin, callback, answeringApp, enabled);
+                        updatePermission(origin, callback, app, settingValue);
                     }
 
                     @Override
@@ -74,22 +72,19 @@ public class LocationPermissionUpdater {
                         if (mCalled) return;
                         mCalled = true;
                         mPermissionManager.resetStoredPermission(origin, TYPE);
-                        InstalledWebappBridge.onGetPermissionResult(callback, false);
+                        InstalledWebappBridge.runPermissionCallback(
+                                callback, ContentSettingValues.BLOCK);
                     }
                 });
     }
 
-    @WorkerThread
-    private void updatePermission(
-            Origin origin, long callback, ComponentName app, boolean enabled) {
-        // This method will be called by the TrustedWebActivityClient on a background thread, so
-        // hop back over to the UI thread to deal with the result.
-        PostTask.postTask(UiThreadTaskTraits.USER_VISIBLE, () -> {
-            mPermissionManager.updatePermission(origin, app.getPackageName(), TYPE, enabled);
-            mUmaRecorder.recordLocationPermissionRequestResult(enabled);
-            Log.d(TAG, "Updating origin location permissions to: %b", enabled);
+    private void updatePermission(Origin origin, long callback, ComponentName app,
+            @ContentSettingValues int settingValue) {
+        boolean enabled = settingValue == ContentSettingValues.ALLOW;
+        mPermissionManager.updatePermission(origin, app.getPackageName(), TYPE, settingValue);
+        mUmaRecorder.recordLocationPermissionRequestResult(enabled);
+        Log.d(TAG, "Updating origin location permissions to: %b", enabled);
 
-            InstalledWebappBridge.onGetPermissionResult(callback, enabled);
-        });
+        InstalledWebappBridge.runPermissionCallback(callback, settingValue);
     }
 }

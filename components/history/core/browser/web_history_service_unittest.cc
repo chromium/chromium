@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
@@ -153,7 +154,7 @@ class TestRequest : public WebHistoryService::Request {
   }
 
  private:
-  TestingWebHistoryService* web_history_service_;
+  raw_ptr<TestingWebHistoryService> web_history_service_;
   GURL url_;
   WebHistoryService::CompletionCallback callback_;
   int response_code_;

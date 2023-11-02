@@ -1,21 +1,19 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/strings.m.js';
-// #import 'chrome://resources/cr_components/chromeos/network/network_apnlist.m.js';
+import 'chrome://os-settings/strings.m.js';
+import 'chrome://resources/ash/common/network/network_apnlist.js';
 
-// #import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// clang-format on
+import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 suite('NetworkNetworkApnlistTest', function() {
   /** @type {!NetworkApnlist|undefined} */
   let apnlist;
 
   function flushAsync() {
-    Polymer.dom.flush();
+    flush();
     // Use setTimeout to wait for the next macrotask.
     return new Promise(resolve => setTimeout(resolve));
   }
@@ -47,7 +45,7 @@ suite('NetworkNetworkApnlistTest', function() {
         },
       },
     });
-    Polymer.dom.flush();
+    flush();
   }
 
   /**
@@ -84,7 +82,7 @@ suite('NetworkNetworkApnlistTest', function() {
       },
     };
     document.body.appendChild(apnlist);
-    Polymer.dom.flush();
+    flush();
   });
 
   test('Last good APN option', function() {

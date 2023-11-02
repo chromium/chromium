@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "base/i18n/time_formatting.h"
 #include "base/timer/timer.h"
 #include "components/session_manager/session_manager_types.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/shadow_value.h"
 #include "ui/views/view.h"
@@ -22,17 +23,13 @@ class Time;
 }
 
 namespace views {
-
 class ImageView;
 class Label;
-
 }  // namespace views
 
 namespace ash {
 
 class ClockModel;
-
-namespace tray {
 
 // The Date view, which is a date in a calendar icon, for vertical time view.
 // For horizontal time view, there's no Date Icon View and it shows a text date.
@@ -54,23 +51,20 @@ class VerticalDateView : public views::View {
   views::Label* text_label_ = nullptr;
 };
 
-// Tray view used to display the current time.
-// Exported for tests.
+// Tray view used to display the current date or time based on the passed in
+// `Type`. Exported for tests.
 class ASH_EXPORT TimeView : public ActionableView, public ClockObserver {
  public:
-  // A callback which will be called in `PerformAction`.
-  using OnTimeViewActionPerformedCallback =
-      base::RepeatingCallback<void(const ui::Event& event)>;
+  METADATA_HEADER(TimeView);
 
   enum class ClockLayout {
     HORIZONTAL_CLOCK,
     VERTICAL_CLOCK,
   };
 
-  TimeView(ClockLayout clock_layout,
-           ClockModel* model,
-           absl::optional<OnTimeViewActionPerformedCallback>
-               perform_action_callback = absl::nullopt);
+  enum Type { kTime, kDate };
+
+  TimeView(ClockLayout clock_layout, ClockModel* model, Type type = kTime);
 
   TimeView(const TimeView&) = delete;
   TimeView& operator=(const TimeView&) = delete;
@@ -89,9 +83,6 @@ class ASH_EXPORT TimeView : public ActionableView, public ClockObserver {
   // Updates the time text shadow values.
   void SetTextShadowValues(const gfx::ShadowValues& shadows);
 
-  // Shows the date when `show_date` is true.
-  void SetShowDate(bool show_date);
-
   // ClockObserver:
   void OnDateFormatChanged() override;
   void OnSystemClockTimeUpdated() override;
@@ -100,14 +91,10 @@ class ASH_EXPORT TimeView : public ActionableView, public ClockObserver {
 
   base::HourClockType GetHourTypeForTesting() const;
 
-  // views::View:
-  const char* GetClassName() const override;
-
-  // If this time view should show date. If in the horizontal view it's today's
-  // date, and in the vertical view it's a calendar date view.
-  bool show_date() { return show_date_; }
-
   views::Label* horizontal_label_for_test() { return horizontal_label_; }
+  views::Label* horizontal_label_date_for_test() {
+    return horizontal_label_date_;
+  }
 
  private:
   friend class TimeViewTest;
@@ -131,7 +118,7 @@ class ASH_EXPORT TimeView : public ActionableView, public ClockObserver {
   // Updates labels to display the current time.
   void UpdateTextInternal(const base::Time& now);
 
-  void SetupVerticalSubViews();
+  void SetupDateviews(ClockLayout clock_layout);
   void SetupSubviews(ClockLayout clock_layout);
   void SetupLabel(views::Label* label);
 
@@ -145,28 +132,29 @@ class ASH_EXPORT TimeView : public ActionableView, public ClockObserver {
   std::unique_ptr<views::View> vertical_view_;
 
   // Label text used for the normal horizontal shelf.
-  views::Label* horizontal_label_;
+  views::Label* horizontal_label_ = nullptr;
+  views::Label* horizontal_label_date_ = nullptr;
+
+  // The horizontal and vertical date view for the `DateTray`.
+  std::unique_ptr<views::View> horizontal_date_view_;
+  std::unique_ptr<views::View> vertical_date_view_;
 
   // The time label is split into two lines for the vertical shelf.
-  views::Label* vertical_label_hours_;
-  views::Label* vertical_label_minutes_;
+  views::Label* vertical_label_hours_ = nullptr;
+  views::Label* vertical_label_minutes_ = nullptr;
 
   // The vertical date in a calendar icon view for the vertical shelf.
-  VerticalDateView* vertical_date_view_;
-
-  // Indicates if date should be show in horizontal view.
-  bool show_date_ = false;
+  VerticalDateView* date_view_ = nullptr;
 
   // Invokes UpdateText() when the displayed time should change.
   base::OneShotTimer timer_;
 
   ClockModel* const model_;
 
-  // The callback will be called in `PerformAction`.
-  absl::optional<OnTimeViewActionPerformedCallback> callback_;
+  // The type (kDate or kTime) of this time view.
+  const Type type_;
 };
 
-}  // namespace tray
 }  // namespace ash
 
 #endif  // ASH_SYSTEM_TIME_TIME_VIEW_H_

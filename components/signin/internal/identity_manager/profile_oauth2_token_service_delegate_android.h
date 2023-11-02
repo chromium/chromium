@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
@@ -43,17 +44,15 @@ class ProfileOAuth2TokenServiceDelegateAndroid
 
   // ProfileOAuth2TokenServiceDelegate overrides:
   bool RefreshTokenIsAvailable(const CoreAccountId& account_id) const override;
-  GoogleServiceAuthError GetAuthError(
-      const CoreAccountId& account_id) const override;
-  void UpdateAuthError(const CoreAccountId& account_id,
-                       const GoogleServiceAuthError& error) override;
+
   std::vector<CoreAccountId> GetAccounts() const override;
 
   // Overridden from ProfileOAuth2TokenService to complete signout of all
   // POA2TService aware accounts.
   void RevokeAllCredentials() override;
 
-  void LoadCredentials(const CoreAccountId& primary_account_id) override;
+  void LoadCredentials(const CoreAccountId& primary_account_id,
+                       bool is_syncing) override;
 
   void ReloadAllAccountsFromSystemWithPrimaryAccount(
       const absl::optional<CoreAccountId>& primary_account_id) override;
@@ -124,7 +123,7 @@ class ProfileOAuth2TokenServiceDelegateAndroid
   // Maps account_id to the last error for that account.
   std::map<CoreAccountId, GoogleServiceAuthError> errors_;
 
-  AccountTrackerService* account_tracker_service_;
+  raw_ptr<AccountTrackerService> account_tracker_service_;
   RefreshTokenLoadStatus fire_refresh_token_loaded_;
 };
 

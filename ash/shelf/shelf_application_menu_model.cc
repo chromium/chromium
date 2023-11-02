@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,27 +8,37 @@
 #include <limits>
 
 #include "ash/app_list/app_list_controller_impl.h"
+#include "ash/public/cpp/app_menu_constants.h"
 #include "ash/shell.h"
 #include "base/metrics/histogram_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/display/types/display_constants.h"
+#include "ui/gfx/favicon_size.h"
 
 namespace ash {
 
 ShelfApplicationMenuModel::ShelfApplicationMenuModel(
     const std::u16string& title,
-    Items items,
+    const Items& items,
     ShelfItemDelegate* delegate)
     : ui::SimpleMenuModel(this), delegate_(delegate) {
   AddTitle(title);
+  // Add an empty icon to the title for it to be aligned with the other menu
+  // item elements. See crbug/1117650.
+  SetIcon(0,
+          ui::ImageModel::FromImageGenerator(
+              base::BindRepeating([](const ui::ColorProvider* color_provider) {
+                return gfx::ImageSkia();
+              }),
+              gfx::Size(gfx::kFaviconSize, gfx::kFaviconSize)));
+
   for (const auto& item : items) {
     enabled_commands_.emplace(item.command_id);
     AddItemWithIcon(item.command_id, item.title,
                     ui::ImageModel::FromImageSkia(item.icon));
   }
   AddSeparator(ui::SPACING_SEPARATOR);
-  DCHECK_EQ(GetItemCount(), static_cast<int>(items.size() + 2))
-      << "Update metrics |- 2|";
+  DCHECK_EQ(GetItemCount(), items.size() + 2) << "Update metrics |- 2|";
 }
 
 ShelfApplicationMenuModel::~ShelfApplicationMenuModel() = default;
@@ -52,7 +62,8 @@ void ShelfApplicationMenuModel::ExecuteCommand(int command_id,
                               event_flags, display::kInvalidDisplayId);
   }
   // Subtract two to avoid counting the title and separator.
-  RecordMenuItemSelectedMetrics(command_id, std::max(GetItemCount() - 2, 0));
+  RecordMenuItemSelectedMetrics(command_id,
+                                std::max(GetItemCount(), size_t{2}) - 2);
 }
 
 void ShelfApplicationMenuModel::RecordMenuItemSelectedMetrics(

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include "ash/components/phonehub/find_my_device_controller.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 class FakeFindMyDeviceController : public FindMyDeviceController {
@@ -33,6 +33,6 @@ class FakeFindMyDeviceController : public FindMyDeviceController {
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_PHONEHUB_FAKE_FIND_MY_DEVICE_CONTROLLER_H_

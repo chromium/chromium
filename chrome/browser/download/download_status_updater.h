@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -60,6 +60,10 @@ class DownloadStatusUpdater
   // This prevents deleting the Profile* too early when there are still
   // in-progress downloads, and the browser is not tearing down yet.
   void UpdateProfileKeepAlive(content::DownloadManager* manager);
+
+  // Updates the download prefs when downloads are updated.
+  void UpdatePrefsOnDownloadUpdated(content::DownloadManager* manager,
+                                    download::DownloadItem* download);
 
  private:
   std::vector<std::unique_ptr<download::AllDownloadItemNotifier>> notifiers_;

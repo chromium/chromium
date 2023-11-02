@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,13 +25,17 @@ class FrameCaretTest : public EditingTestBase {
     return caret.ShouldShowCaret();
   }
 
+  static bool IsVisibleIfActive(const FrameCaret& caret) {
+    return caret.IsVisibleIfActive();
+  }
+
  private:
   // The caret blink timer doesn't work if IsRunningWebTest() because
   // LayoutTheme::CaretBlinkInterval() returns 0.
   ScopedWebTestMode web_test_mode_{false};
 };
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
 // https://crbug.com/1222649
 #define MAYBE_BlinkAfterTyping DISABLED_BlinkAfterTyping
 #else
@@ -42,37 +46,37 @@ TEST_F(FrameCaretTest, MAYBE_BlinkAfterTyping) {
   scoped_refptr<scheduler::FakeTaskRunner> task_runner =
       base::MakeRefCounted<scheduler::FakeTaskRunner>();
   task_runner->SetTime(0);
-  caret.RecreateCaretBlinkTimerForTesting(task_runner.get());
+  caret.RecreateCaretBlinkTimerForTesting(task_runner.get(),
+                                          task_runner->GetMockTickClock());
   const double kInterval = 10;
   LayoutTheme::GetTheme().SetCaretBlinkInterval(base::Seconds(kInterval));
   GetDocument().GetPage()->GetFocusController().SetActive(true);
   GetDocument().GetPage()->GetFocusController().SetFocused(true);
   GetDocument().body()->setInnerHTML("<textarea>");
   auto* editor = To<Element>(GetDocument().body()->firstChild());
-  editor->focus();
+  editor->Focus();
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_TRUE(caret.IsActive());
-  EXPECT_TRUE(caret.IsVisibleIfActiveForTesting())
+  EXPECT_TRUE(IsVisibleIfActive(caret))
       << "Initially a caret should be in visible cycle.";
 
   task_runner->AdvanceTimeAndRun(kInterval);
-  EXPECT_FALSE(caret.IsVisibleIfActiveForTesting())
-      << "The caret blinks normally.";
+  EXPECT_FALSE(IsVisibleIfActive(caret)) << "The caret blinks normally.";
 
   TypingCommand::InsertLineBreak(GetDocument());
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_TRUE(caret.IsVisibleIfActiveForTesting())
+  EXPECT_TRUE(IsVisibleIfActive(caret))
       << "The caret should be in visible cycle just after a typing command.";
 
   task_runner->AdvanceTimeAndRun(kInterval - 1);
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_TRUE(caret.IsVisibleIfActiveForTesting())
+  EXPECT_TRUE(IsVisibleIfActive(caret))
       << "The typing command reset the timer. The caret is still visible.";
 
   task_runner->AdvanceTimeAndRun(1);
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(caret.IsVisibleIfActiveForTesting())
+  EXPECT_FALSE(IsVisibleIfActive(caret))
       << "The caret should blink after the typing command.";
 }
 
@@ -85,9 +89,9 @@ TEST_F(FrameCaretTest, ShouldNotBlinkWhenSelectionLooseFocus) {
       "<div id='input' contenteditable>foo</div>"
       "</div>");
   Element* input = GetDocument().QuerySelector("#input");
-  input->focus();
+  input->Focus();
   Element* outer = GetDocument().QuerySelector("#outer");
-  outer->focus();
+  outer->Focus();
   UpdateAllLifecyclePhasesForTest();
   const SelectionInDOMTree& selection = Selection().GetSelectionInDOMTree();
   EXPECT_EQ(selection.Base(), Position::FirstPositionInNode(*input));

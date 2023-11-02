@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -79,7 +79,6 @@ void ChromeCleanerDialogControllerImpl::Accept(bool logs_enabled) {
   DCHECK(browser_);
 
   RecordPromptDialogResponseHistogram(PROMPT_DIALOG_RESPONSE_ACCEPTED);
-  RecordCleanupStartedHistogram(CLEANUP_STARTED_FROM_PROMPT_DIALOG);
   base::RecordAction(
       base::UserMetricsAction("SoftwareReporter.PromptDialog_Accepted"));
 
@@ -231,7 +230,8 @@ void ChromeCleanerDialogControllerImpl::ShowChromeCleanerPrompt() {
 
   // Don't show the prompt again if it's been shown before for this profile and
   // for the current variations seed.
-  const std::string incoming_seed = GetIncomingSRTSeed();
+  const std::string incoming_seed =
+      cleaner_controller_->GetIncomingPromptSeed();
   const std::string old_seed = prefs->GetString(prefs::kSwReporterPromptSeed);
   if (!incoming_seed.empty() && incoming_seed != old_seed)
     prefs->SetString(prefs::kSwReporterPromptSeed, incoming_seed);

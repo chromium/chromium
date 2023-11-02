@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,6 +35,8 @@ class FontUniqueNameLookupWin : public FontUniqueNameLookup {
   void PrepareFontUniqueNameLookup(
       NotifyFontUniqueNameLookupReady callback) override;
 
+  void Init() override;
+
  private:
   void EnsureServiceConnected();
 
@@ -44,6 +46,8 @@ class FontUniqueNameLookupWin : public FontUniqueNameLookup {
   sk_sp<SkTypeface> InstantiateFromPathAndTtcIndex(
       base::FilePath font_file_path,
       uint32_t ttc_index);
+
+  void InitWithLookupMode(blink::mojom::UniqueFontLookupMode lookup_mode);
 
   mojo::Remote<mojom::blink::DWriteFontProxy> service_;
   WTF::Deque<NotifyFontUniqueNameLookupReady> pending_callbacks_;

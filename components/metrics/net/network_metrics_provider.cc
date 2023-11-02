@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -26,7 +25,7 @@
 #include "net/nqe/effective_connection_type_observer.h"
 #include "net/nqe/network_quality_estimator.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "services/network/public/cpp/network_connection_tracker.h"
 #endif
 
@@ -109,7 +108,7 @@ void NetworkMetricsProvider::SetNetworkConnectionTracker(
 }
 
 void NetworkMetricsProvider::FinalizingMetricsLogRecord() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Metrics logged here will be included in every metrics log record.  It's not
   // yet clear if these metrics are generally useful enough to warrant being
   // added to the SystemProfile proto, so they are logged here as histograms for

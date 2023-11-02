@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -9,8 +9,7 @@
 #ifndef NET_SOCKET_CLIENT_SOCKET_POOL_MANAGER_H_
 #define NET_SOCKET_CLIENT_SOCKET_POOL_MANAGER_H_
 
-#include <string>
-
+#include "base/values.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
 #include "net/base/request_priority.h"
@@ -19,23 +18,17 @@
 #include "net/socket/client_socket_pool.h"
 #include "url/scheme_host_port.h"
 
-namespace base {
-class Value;
-}
-
 namespace net {
 
 class ClientSocketHandle;
 class NetLogWithSource;
-class NetworkIsolationKey;
+class NetworkAnonymizationKey;
 class ProxyInfo;
 class ProxyServer;
 
 struct SSLConfig;
 
-// This should rather be a simple constant but Windows shared libs doesn't
-// really offer much flexiblity in exporting contants.
-enum DefaultMaxValues { kDefaultMaxSocketsPerProxyServer = 32 };
+constexpr int kDefaultMaxSocketsPerProxyServer = 32;
 
 class NET_EXPORT_PRIVATE ClientSocketPoolManager {
  public:
@@ -76,7 +69,7 @@ class NET_EXPORT_PRIVATE ClientSocketPoolManager {
   virtual ClientSocketPool* GetSocketPool(const ProxyServer& proxy_server) = 0;
 
   // Creates a Value summary of the state of the socket pools.
-  virtual std::unique_ptr<base::Value> SocketPoolInfoToValue() const = 0;
+  virtual base::Value SocketPoolInfoToValue() const = 0;
 };
 
 // A helper method that uses the passed in proxy information to initialize a
@@ -95,7 +88,7 @@ int InitSocketHandleForHttpRequest(
     const SSLConfig& ssl_config_for_origin,
     const SSLConfig& ssl_config_for_proxy,
     PrivacyMode privacy_mode,
-    NetworkIsolationKey network_isolation_key,
+    NetworkAnonymizationKey network_anonymization_key,
     SecureDnsPolicy secure_dns_policy,
     const SocketTag& socket_tag,
     const NetLogWithSource& net_log,
@@ -121,7 +114,7 @@ int InitSocketHandleForWebSocketRequest(
     const SSLConfig& ssl_config_for_origin,
     const SSLConfig& ssl_config_for_proxy,
     PrivacyMode privacy_mode,
-    NetworkIsolationKey network_isolation_key,
+    NetworkAnonymizationKey network_anonymization_key,
     const NetLogWithSource& net_log,
     ClientSocketHandle* socket_handle,
     CompletionOnceCallback callback,
@@ -129,18 +122,20 @@ int InitSocketHandleForWebSocketRequest(
 
 // Similar to InitSocketHandleForHttpRequest except that it initiates the
 // desired number of preconnect streams from the relevant socket pool.
-int PreconnectSocketsForHttpRequest(url::SchemeHostPort endpoint,
-                                    int request_load_flags,
-                                    RequestPriority request_priority,
-                                    HttpNetworkSession* session,
-                                    const ProxyInfo& proxy_info,
-                                    const SSLConfig& ssl_config_for_origin,
-                                    const SSLConfig& ssl_config_for_proxy,
-                                    PrivacyMode privacy_mode,
-                                    NetworkIsolationKey network_isolation_key,
-                                    SecureDnsPolicy secure_dns_policy,
-                                    const NetLogWithSource& net_log,
-                                    int num_preconnect_streams);
+int PreconnectSocketsForHttpRequest(
+    url::SchemeHostPort endpoint,
+    int request_load_flags,
+    RequestPriority request_priority,
+    HttpNetworkSession* session,
+    const ProxyInfo& proxy_info,
+    const SSLConfig& ssl_config_for_origin,
+    const SSLConfig& ssl_config_for_proxy,
+    PrivacyMode privacy_mode,
+    NetworkAnonymizationKey network_anonymization_key,
+    SecureDnsPolicy secure_dns_policy,
+    const NetLogWithSource& net_log,
+    int num_preconnect_streams,
+    CompletionOnceCallback callback);
 
 }  // namespace net
 

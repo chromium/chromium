@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@ import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "third_party/blink/public/mojom/blob/blob.mojom";
-import "url/mojom/url.mojom";
 
 // A blob is built up of elements of various types.
 union DataElement {
@@ -16,8 +15,6 @@ union DataElement {
   DataElementBytes bytes;
   // A reference to a file on disk.
   DataElementFile file;
-  // A reference to a file as a filesystem URL.
-  DataElementFilesystemURL file_filesystem;
   // A reference to another blob.
   DataElementBlob blob;
 };
@@ -73,21 +70,6 @@ interface BytesProvider {
 struct DataElementFile {
   // Path of the file.
   mojo_base.mojom.FilePath path;
-  // Offset inside the file.
-  uint64 offset;
-  // Length of the slice. Can be uint64_max if the length is unknown. If this is
-  // the case the offset is always 0 and this DataElement should be the only
-  // element making up the blob.
-  uint64 length;
-  // Expected modification time of the file being referenced. Can be null if the
-  // modification time is unknown.
-  mojo_base.mojom.Time? expected_modification_time;
-};
-
-// A reference to a slice of a file as a filesystem URL.
-struct DataElementFilesystemURL {
-  // URL of the file.
-  url.mojom.Url url;
   // Offset inside the file.
   uint64 offset;
   // Length of the slice. Can be uint64_max if the length is unknown. If this is

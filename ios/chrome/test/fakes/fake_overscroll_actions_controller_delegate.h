@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@
     : NSObject <OverscrollActionsControllerDelegate>
 
 // The OverscrollAction parameter that was used to call
-// |overscrollActionsController:didTriggerAction:| with.
+// `overscrollActionsController:didTriggerAction:` with.
 @property(nonatomic, assign) OverscrollAction selectedAction;
 
 // The header view, acts as the superview for overscrollActionsView.

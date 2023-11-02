@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
@@ -104,7 +105,7 @@ class It2MeConfirmationDialogProxyTest : public testing::Test {
   base::Thread dialog_thread_;
 
   // |dialog_| is owned by |dialog_proxy_| but we keep an alias for testing.
-  StubIt2MeConfirmationDialog* dialog_ = nullptr;
+  raw_ptr<StubIt2MeConfirmationDialog> dialog_ = nullptr;
   std::unique_ptr<It2MeConfirmationDialogProxy> dialog_proxy_;
 };
 

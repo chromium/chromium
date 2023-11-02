@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,11 +23,6 @@ std::ostream& operator<<(std::ostream& out,
 
 std::ostream& operator<<(std::ostream& out, UserResponse response) {
   return out << "Resp" << static_cast<int>(response);
-}
-
-void RecordCleanupStartedHistogram(CleanupStartedHistogramValue value) {
-  UMA_HISTOGRAM_ENUMERATION("SoftwareReporter.CleanupStarted", value,
-                            CLEANUP_STARTED_MAX);
 }
 
 ChromeCleanerController::ChromeCleanerController() = default;

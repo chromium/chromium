@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,10 +19,8 @@ namespace vr {
 namespace {
 
 gfx::Vector3dF ComputeNormal(const gfx::Transform& transform) {
-  gfx::Vector3dF x_axis(1, 0, 0);
-  gfx::Vector3dF y_axis(0, 1, 0);
-  transform.TransformVector(&x_axis);
-  transform.TransformVector(&y_axis);
+  gfx::Vector3dF x_axis = transform.MapVector(gfx::Vector3dF(1, 0, 0));
+  gfx::Vector3dF y_axis = transform.MapVector(gfx::Vector3dF(0, 1, 0));
   gfx::Vector3dF normal = CrossProduct(x_axis, y_axis);
   normal.GetNormalized(&normal);
   return normal;
@@ -34,9 +32,8 @@ bool WillElementFaceCamera(const UiElement* element) {
   // Here we calculate the dot product of (origin - center) and normal. If the
   // result is greater than 0, it means the visible side of this element is
   // facing camera.
-  gfx::Point3F center;
   gfx::Transform transform = element->ComputeTargetWorldSpaceTransform();
-  transform.TransformPoint(&center);
+  gfx::Point3F center = transform.MapPoint(gfx::Point3F());
 
   gfx::Point3F origin;
   gfx::Vector3dF normal = ComputeNormal(transform);
@@ -214,9 +211,9 @@ void UiTest::GetBackgroundColor(SkColor* background_color) const {
 
 void UiTest::ClickElement(UiElement* element) {
   // Synthesize a controller vector targeting the element.
-  gfx::Point3F target;
-  element->ComputeTargetWorldSpaceTransform().TransformPoint(&target);
   gfx::Point3F origin;
+  gfx::Point3F target =
+      element->ComputeTargetWorldSpaceTransform().MapPoint(origin);
   gfx::Vector3dF direction(target - origin);
   direction.GetNormalized(&direction);
 

@@ -47,12 +47,12 @@ void LayoutSVGResourceFilter::RemoveAllClientsFromCache() {
   MarkAllClientsForInvalidation(kPaintInvalidation | kFilterCacheInvalidation);
 }
 
-FloatRect LayoutSVGResourceFilter::ResourceBoundingBox(
+gfx::RectF LayoutSVGResourceFilter::ResourceBoundingBox(
     const gfx::RectF& reference_box) const {
   NOT_DESTROYED();
   const auto* filter_element = To<SVGFilterElement>(GetElement());
   return SVGLengthContext::ResolveRectangle(filter_element, FilterUnits(),
-                                            FloatRect(reference_box));
+                                            reference_box);
 }
 
 SVGUnitTypes::SVGUnitType LayoutSVGResourceFilter::FilterUnits() const {

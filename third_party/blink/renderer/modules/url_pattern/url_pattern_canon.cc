@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -369,7 +369,7 @@ String CanonicalizePort(const String& input,
   }
 
   int default_port = url::PORT_UNSPECIFIED;
-  if (!input.IsEmpty()) {
+  if (!input.empty()) {
     StringUTF8Adaptor protocol_utf8(protocol);
     default_port =
         url::DefaultPortForScheme(protocol_utf8.data(), protocol_utf8.size());
@@ -411,7 +411,7 @@ String CanonicalizePathname(const String& protocol,
   // string in the URLPattern constructor results in the pathname pattern
   // getting "standard" URL canonicalization.
   bool standard = false;
-  if (protocol.IsEmpty()) {
+  if (protocol.empty()) {
     standard = true;
   } else if (protocol.Is8Bit()) {
     StringUTF8Adaptor utf8(protocol);

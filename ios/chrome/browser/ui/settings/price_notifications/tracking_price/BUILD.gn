@@ -1,0 +1,72 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("tracking_price") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "tracking_price_coordinator.h",
+    "tracking_price_coordinator.mm",
+    "tracking_price_mediator.h",
+    "tracking_price_mediator.mm",
+  ]
+  deps = [
+    ":constants",
+    ":tracking_price_ui",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/ui/list_model",
+    "//ios/chrome/browser/ui/table_view:utils",
+    "//ios/chrome/browser/ui/table_view/cells",
+    "//ui/base",
+  ]
+}
+
+source_set("tracking_price_ui") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "tracking_price_consumer.h",
+    "tracking_price_view_controller.h",
+    "tracking_price_view_controller.mm",
+    "tracking_price_view_controller_delegate.h",
+  ]
+  deps = [
+    ":constants",
+    "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ui/settings:settings_root",
+    "//ios/chrome/browser/ui/table_view",
+    "//ios/chrome/browser/ui/table_view:utils",
+    "//ui/base",
+  ]
+}
+
+source_set("constants") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "tracking_price_constants.h",
+    "tracking_price_constants.mm",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [ "tracking_price_egtest.mm" ]
+  deps = [
+    ":constants",
+    "//base",
+    "//base/test:test_support",
+    "//components/commerce/core:feature_list",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/third_party/earl_grey2:test_lib",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

@@ -1,8 +1,8 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {$} from 'chrome://resources/js/util.m.js';
+import {$} from 'chrome://resources/js/util.js';
 import {DeviceData} from './audio.mojom-webui.js';
 import {DeviceMap} from './device_page.js';
 
@@ -12,10 +12,10 @@ export class DeviceTable extends HTMLTableElement {
   constructor() {
     super();
     this.devices = {};
-    const clone = (<HTMLTemplateElement>$('deviceTable-template'))
+    const clone = ($('deviceTable-template') as HTMLTemplateElement)
                       .content.cloneNode(true);
-    const thead = (<HTMLTableElement>clone).querySelector('thead');
-    this.appendChild(<HTMLTableSectionElement>thead);
+    const thead = (clone as HTMLTableElement).querySelector('thead')!;
+    this.appendChild(thead);
     this.tbody = this.createTBody();
     this.appendChild(this.tbody);
   }
@@ -30,7 +30,7 @@ export class DeviceTable extends HTMLTableElement {
   setDeviceVolume(nodeId: number, volume: number) {
     if (nodeId in this.devices) {
       (this.devices[nodeId] as DeviceData).volumeGainPercent = volume;
-      const row = <HTMLTableRowElement>$(String(nodeId));
+      const row = $(String(nodeId)) as HTMLTableRowElement;
       if (row && row.cells[3]) {
         row.cells[3].textContent = String(volume) + '%';
       }
@@ -40,7 +40,7 @@ export class DeviceTable extends HTMLTableElement {
   setDeviceMuteState(nodeId: number, isMuted: boolean) {
     if (nodeId in this.devices) {
       (this.devices[nodeId] as DeviceData).isMuted = isMuted;
-      const row = <HTMLTableRowElement>$(String(nodeId));
+      const row = $(String(nodeId)) as HTMLTableRowElement;
       if (row && row.cells[4]) {
         row.cells[4].textContent = String(isMuted);
       }

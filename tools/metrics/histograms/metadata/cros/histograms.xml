@@ -1,5 +1,5 @@
 <!--
-Copyright 2020 The Chromium Authors. All rights reserved.
+Copyright 2020 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
@@ -35,224 +35,139 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CrosDisks.ArchiveType" enum="CrosDisksArchiveType"
-    expires_after="2022-04-03">
+    expires_after="2023-04-01">
   <owner>fdegros@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
-    The type of archive file that Chrome OS cros-disks daemon is requested to
-    mount.
+    Archive type that the ChromeOS cros-disks daemon is requested to mount.
   </summary>
 </histogram>
 
 <histogram name="CrosDisks.DeviceMediaType" enum="CrosDisksDeviceMediaType"
-    expires_after="2022-04-24">
+    expires_after="2023-04-01">
   <owner>fdegros@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
-    The media type of removable device that Chrome OS cros-disks daemon is
+    Media type of removable device that the ChromeOS cros-disks daemon is
     requested to mount.
   </summary>
 </histogram>
 
 <histogram name="CrosDisks.FilesystemType" enum="CrosDisksFilesystemType"
-    expires_after="2022-04-24">
+    expires_after="2023-04-01">
   <owner>fdegros@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
-    The type of file system that Chrome OS cros-disks daemon is requested to
-    mount.
-  </summary>
-</histogram>
-
-<histogram name="CrosDisks.Fuse.Archivemount" enum="ArchivemountError"
-    expires_after="2022-04-17">
-  <obsolete>
-    Deprecated 10/2021. This feature (using the older archivemount program
-    instead of newer fuse-archive) was never enabled-by-default, although some
-    people opted into the chrome://flags/#files-archivemount flag anyway.
-  </obsolete>
-  <owner>fdegros@chromium.org</owner>
-  <owner>src/ui/file_manager/OWNERS</owner>
-  <summary>
-    The error code returned by the archivemount program, which is called every
-    time a user opens various archive files in ChromeOS Files App.
+    File system type of external media that the ChromeOS cros-disks daemon is
+    requested to mount.
   </summary>
 </histogram>
 
 <histogram name="CrosDisks.Fuse.FuseArchive" enum="FuseArchiveError"
-    expires_after="2022-04-17">
+    expires_after="2023-04-01">
   <owner>fdegros@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
-    The error code returned by the fuse-archive program, which is called every
-    time a user opens various archive files in ChromeOS Files App.
+    Error returned by the fuse-archive program, which is called every time a
+    user opens various archive files in ChromeOS Files App.
   </summary>
 </histogram>
 
 <histogram name="CrosDisks.Fuse.FuseZip" enum="FuseZipError"
-    expires_after="2022-04-10">
+    expires_after="2023-04-01">
   <owner>fdegros@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
-    The error code returned by ZIP mounting program fuse-zip, which is called
-    every time a user opens a ZIP archive in ChromeOS Files App.
+    Error returned by the ZIP mounting program mount-zip, which is called every
+    time a user opens a ZIP archive in ChromeOS Files App.
   </summary>
 </histogram>
 
 <histogram name="CrosDisks.Fuse.Rar2fs" enum="Rar2fsError"
-    expires_after="2022-04-03">
+    expires_after="2023-04-01">
   <owner>fdegros@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
-    The error code returned by RAR mounting program rar2fs, which is called
-    every time a user opens a RAR archive in ChromeOS Files App.
+    Error returned by the RAR mounting program rar2fs, which is called every
+    time a user opens a RAR archive in ChromeOS Files App.
+  </summary>
+</histogram>
+
+<histogram name="CrosDisks.ReadOnlyFileSystemAfterError"
+    enum="CrosDisksFilesystemType" expires_after="2023-04-01">
+  <owner>fdegros@chromium.org</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    File system type of external media that the ChromeOS cros-disks daemon had
+    to mount in read-only mode because there was an error when trying to mount
+    them in read-write mode. See crbug.com/1366204.
   </summary>
 </histogram>
 
 <histogram name="CrosDisksClient.FormatCompletedError"
-    enum="CrosDisksClientFormatError" expires_after="2022-03-20">
+    enum="CrosDisksClientFormatError" expires_after="2023-04-09">
   <owner>austinct@chromium.org</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
-    The error code of disk format signals received from the Chrome OS cros-disks
-    daemon.
+    Error returned by the ChromeOS cros-disks daemon when formatting an external
+    drive.
   </summary>
 </histogram>
 
 <histogram name="CrosDisksClient.FormatTime" units="ms"
-    expires_after="2022-05-01">
+    expires_after="2023-03-19">
   <owner>austinct@chromium.org</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
-    Time taken for the Chrome OS cros-disks daemon to perform a format
-    operation.
+    Time taken by the ChromeOS cros-disks daemon to format an external drive.
   </summary>
 </histogram>
 
 <histogram name="CrosDisksClient.MountCompletedError"
-    enum="CrosDisksClientMountError" expires_after="2022-10-19">
+    enum="CrosDisksClientMountError" expires_after="2023-04-01">
   <owner>fdegros@chromium.org</owner>
-  <owner>chromeos-files-app@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
-    The error code of disk mount signals received from the Chrome OS cros-disks
-    daemon.
+    Error returned by the ChromeOS cros-disks daemon when mounting a file
+    system.
   </summary>
 </histogram>
 
 <histogram name="CrosDisksClient.MountErrorMountType"
-    enum="CrosDisksMountTypeError" expires_after="2022-10-19">
+    enum="CrosDisksMountTypeError" expires_after="2023-04-01">
   <owner>fdegros@chromium.org</owner>
-  <owner>chromeos-files-app@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
-    The {mount type}x{mount error code} received from the Chrome OS cros-disks
+    Combination of (mount type, mount error) returned by the ChromeOS cros-disks
     daemon.
   </summary>
 </histogram>
 
 <histogram name="CrosDisksClient.MountTime" units="ms"
-    expires_after="2022-10-19">
+    expires_after="2023-04-01">
   <owner>fdegros@chromium.org</owner>
-  <owner>chromeos-files-app@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
-    Time taken by the Chrome OS cros-disks daemon to perform a Mount operation.
+    Time taken by the ChromeOS cros-disks daemon to mount a file system.
   </summary>
 </histogram>
 
 <histogram name="CrosDisksClient.UnmountError" enum="CrosDisksClientMountError"
-    expires_after="2022-10-19">
+    expires_after="2023-04-01">
   <owner>fdegros@chromium.org</owner>
-  <owner>chromeos-files-app@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
-    The error code of disk unmount operations returned from the Chrome OS
-    cros-disks daemon.
+    Error returned by the ChromeOS cros-disks daemon when unmounting a file
+    system.
   </summary>
 </histogram>
 
 <histogram name="CrosDisksClient.UnmountTime" units="ms"
-    expires_after="2022-10-19">
+    expires_after="2023-04-01">
   <owner>fdegros@chromium.org</owner>
-  <owner>chromeos-files-app@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
-    Time taken by the Chrome OS cros-disks daemon to perform an Unmount
-    operation.
-  </summary>
-</histogram>
-
-<histogram name="CrosFirstRun.DialogShown" units="units"
-    expires_after="2020-12-01">
-  <obsolete>
-    Deprecated 01/2020 in Issue 1001460 when Welcome Tour was deleted.
-  </obsolete>
-  <owner>alemate@chromium.org</owner>
-  <owner>cros-oac@google.com</owner>
-  <summary>
-    Records the number of times when first-run dialog was shown.
-  </summary>
-</histogram>
-
-<histogram name="CrosFirstRun.FurthestStep" units="units"
-    expires_after="2020-12-01">
-  <obsolete>
-    Deprecated 01/2020 in Issue 1001460 when Welcome Tour was deleted.
-  </obsolete>
-  <owner>alemate@chromium.org</owner>
-  <owner>cros-oac@google.com</owner>
-  <summary>
-    Index of furthest step that was reached during tutorial. Since order of
-    steps could change eventially and new steps could apear we use index here
-    instead of step name.
-  </summary>
-</histogram>
-
-<histogram name="CrosFirstRun.TimeSpent" units="ms" expires_after="2020-12-01">
-  <obsolete>
-    Deprecated 01/2020 in Issue 1001460 when Welcome Tour was deleted.
-  </obsolete>
-  <owner>alemate@chromium.org</owner>
-  <owner>cros-oac@google.com</owner>
-  <summary>The total time that user spent on first-run tutorial.</summary>
-</histogram>
-
-<histogram name="CrosFirstRun.TimeSpentOnStep" units="ms"
-    expires_after="2020-12-01">
-  <obsolete>
-    Deprecated 01/2020 in Issue 1001460 when Welcome Tour was deleted.
-  </obsolete>
-  <owner>alemate@chromium.org</owner>
-  <owner>cros-oac@google.com</owner>
-  <summary>The time that user spent on some step of tutorial.</summary>
-</histogram>
-
-<histogram name="CrosFirstRun.TutorialCompletion"
-    enum="CrosFirstRunTutorialCompletionType" expires_after="2020-12-01">
-  <obsolete>
-    Deprecated 01/2020 in Issue 1001460 when Welcome Tour was deleted.
-  </obsolete>
-  <owner>alemate@chromium.org</owner>
-  <owner>cros-oac@google.com</owner>
-  <summary>Tracks the way how user left tutorial.</summary>
-</histogram>
-
-<histogram name="CrosFirstRun.TutorialLaunched" units="units"
-    expires_after="2020-12-01">
-  <obsolete>
-    Deprecated 01/2020 in Issue 1001460 when Welcome Tour was deleted.
-  </obsolete>
-  <owner>alemate@chromium.org</owner>
-  <owner>cros-oac@google.com</owner>
-  <summary>
-    Records the number of times when first-run tutorial has been launched.
-  </summary>
-</histogram>
-
-<histogram name="CrosUsb.NotificationClosed" enum="CrosUsbNotificationClosed"
-    expires_after="2021-01-31">
-  <obsolete>
-    Removed 01/2021. We haven't been making use of this.
-  </obsolete>
-  <owner>clumptini@google.com</owner>
-  <owner>tbuckley@chromium.org</owner>
-  <summary>
-    Records the reason why the &quot;Cros USB device detected&quot; notification
-    was dismissed. Recorded on notificiation close, after usb attached.
+    Time taken by the ChromeOS cros-disks daemon to unmount a file system.
   </summary>
 </histogram>
 

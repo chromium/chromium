@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/net_errors.h"
+#include "net/dns/public/host_resolver_results.h"
 #include "services/network/public/cpp/resolve_host_client_base.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "url/gurl.h"
@@ -21,15 +22,18 @@ namespace network_diagnostics {
 class HostResolver : public network::ResolveHostClientBase {
  public:
   struct ResolutionResult {
-    ResolutionResult(
-        int result,
-        const net::ResolveErrorInfo& resolve_error_info,
-        const absl::optional<net::AddressList>& resolved_addresses);
+    ResolutionResult(int result,
+                     const net::ResolveErrorInfo& resolve_error_info,
+                     const absl::optional<net::AddressList>& resolved_addresses,
+                     const absl::optional<net::HostResolverEndpointResults>&
+                         endpoint_results_with_metadata);
     ~ResolutionResult();
 
     int result;
     net::ResolveErrorInfo resolve_error_info;
     absl::optional<net::AddressList> resolved_addresses;
+    absl::optional<net::HostResolverEndpointResults>
+        endpoint_results_with_metadata;
   };
   using OnResolutionComplete = base::OnceCallback<void(ResolutionResult&)>;
 
@@ -44,10 +48,11 @@ class HostResolver : public network::ResolveHostClientBase {
   ~HostResolver() override;
 
   // network::mojom::ResolveHostClient:
-  void OnComplete(
-      int result,
-      const net::ResolveErrorInfo& resolve_error_info,
-      const absl::optional<net::AddressList>& resolved_addresses) override;
+  void OnComplete(int result,
+                  const net::ResolveErrorInfo& resolve_error_info,
+                  const absl::optional<net::AddressList>& resolved_addresses,
+                  const absl::optional<net::HostResolverEndpointResults>&
+                      endpoint_results_with_metadata) override;
 
  private:
   // Handles Mojo connection errors during host resolution.

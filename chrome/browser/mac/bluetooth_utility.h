@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,7 @@ enum BluetoothAvailability {
   // there is no further indication of whether Low Energy is supported.
   BLUETOOTH_AVAILABLE_LE_UNKNOWN = 4,
   BLUETOOTH_NOT_SUPPORTED = 5,
-  BLUETOOTH_AVAILABILITY_COUNT,
+  kMaxValue = BLUETOOTH_NOT_SUPPORTED
 };
 
 // Returns the bluetooth availability of the system's hardware.

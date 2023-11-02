@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,6 +24,7 @@ class FakeFastPairScanner final : public FastPairScanner {
 
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
+  void OnDevicePaired(scoped_refptr<Device> device) override;
   void NotifyDeviceFound(device::BluetoothDevice* device);
   void NotifyDeviceLost(device::BluetoothDevice* device);
 

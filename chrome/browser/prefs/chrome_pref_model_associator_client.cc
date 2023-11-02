@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,17 +37,15 @@ bool ChromePrefModelAssociatorClient::IsMergeableDictionaryPreference(
   return false;
 }
 
-std::unique_ptr<base::Value>
-ChromePrefModelAssociatorClient::MaybeMergePreferenceValues(
+base::Value ChromePrefModelAssociatorClient::MaybeMergePreferenceValues(
     const std::string& pref_name,
     const base::Value& local_value,
     const base::Value& server_value) const {
   if (pref_name == prefs::kNetworkEasterEggHighScore) {
     if (!local_value.is_int() || !server_value.is_int())
-      return nullptr;
-    return std::make_unique<base::Value>(
-        std::max(local_value.GetInt(), server_value.GetInt()));
+      return base::Value();
+    return base::Value(std::max(local_value.GetInt(), server_value.GetInt()));
   }
 
-  return nullptr;
+  return base::Value();
 }

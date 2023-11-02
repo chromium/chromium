@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
@@ -203,7 +204,7 @@ class D3D11VideoDecoderTest : public ::testing::Test {
             gpu_task_runner_, std::make_unique<NullMediaLog>(),
             gpu_preferences_, gpu_workarounds_, std::move(impl),
             base::RepeatingCallback<scoped_refptr<CommandBufferHelper>()>(),
-            get_device_cb, *supported_configs, is_hdr_supported_));
+            get_device_cb, *supported_configs, system_hdr_enabled_));
   }
 
   void InitializeDecoder(const VideoDecoderConfig& config, bool expectSuccess) {
@@ -223,19 +224,19 @@ class D3D11VideoDecoderTest : public ::testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  void CheckStatus(bool expectSuccess, Status actual) {
+  void CheckStatus(bool expectSuccess, DecoderStatus actual) {
     ASSERT_EQ(expectSuccess, actual.is_ok());
     MockInitCB(actual);
   }
 
-  MOCK_METHOD1(MockInitCB, void(Status));
+  MOCK_METHOD1(MockInitCB, void(DecoderStatus));
 
   base::test::TaskEnvironment task_environment_;
 
   scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner_;
 
   std::unique_ptr<VideoDecoder> decoder_;
-  D3D11VideoDecoder* d3d11_decoder_raw_ = nullptr;
+  raw_ptr<D3D11VideoDecoder> d3d11_decoder_raw_ = nullptr;
   gpu::GpuPreferences gpu_preferences_;
   gpu::GpuDriverBugWorkarounds gpu_workarounds_;
   MockD3D11VideoDecoderImpl* impl_ = nullptr;
@@ -249,8 +250,8 @@ class D3D11VideoDecoderTest : public ::testing::Test {
   Microsoft::WRL::ComPtr<DXGIDeviceMock> mock_dxgi_device_;
   Microsoft::WRL::ComPtr<DXGIAdapterMock> mock_dxgi_adapter_;
 
-  // Used by CreateDecoder() to tell D3D11VideoDecoder about HDR support.
-  bool is_hdr_supported_ = true;
+  // Used by CreateDecoder() to tell D3D11VideoDecoder about if HDR is enabled.
+  bool system_hdr_enabled_ = true;
 
   DXGI_ADAPTER_DESC mock_adapter_desc_;
 
@@ -270,16 +271,6 @@ TEST_F(D3D11VideoDecoderTest, SupportsVP9Profile0WithDecoderEnabled) {
   } else {
     InitializeDecoder(configuration, true);
   }
-}
-
-TEST_F(D3D11VideoDecoderTest, DoesNotSupportVP9WithLegacyGPU) {
-  SetGPUProfile(LegacyIntelGPU);
-  VideoDecoderConfig configuration = TestVideoConfig::NormalCodecProfile(
-      VideoCodec::kVP9, VP9PROFILE_PROFILE0);
-
-  EnableDecoder(D3D11_DECODER_PROFILE_VP9_VLD_PROFILE0);
-  CreateDecoder();
-  InitializeDecoder(configuration, false);
 }
 
 TEST_F(D3D11VideoDecoderTest, DoesNotSupportVP9WithGPUWorkaroundDisableVPX) {
@@ -344,17 +335,6 @@ TEST_F(D3D11VideoDecoderTest, DoesNotSupportEncryptedConfig) {
       TestVideoConfig::NormalCodecProfile(VideoCodec::kH264, H264PROFILE_MAIN);
   encrypted_config.SetIsEncrypted(true);
   InitializeDecoder(encrypted_config, false);
-}
-
-TEST_F(D3D11VideoDecoderTest, IgnoreWorkaroundsIgnoresWorkaround) {
-  // k...IgnoreWorkarounds should enable the decoder even if it's turned off
-  // for gpu workarounds.
-  EnableFeature(kD3D11VideoDecoderIgnoreWorkarounds);
-  gpu_workarounds_.disable_d3d11_video_decoder = true;
-  CreateDecoder();
-  InitializeDecoder(
-      TestVideoConfig::NormalCodecProfile(VideoCodec::kH264, H264PROFILE_MAIN),
-      true);
 }
 
 TEST_F(D3D11VideoDecoderTest, WorkaroundTurnsOffDecoder) {

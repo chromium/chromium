@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,13 +16,6 @@
 namespace gwp_asan {
 namespace internal {
 
-// TODO: Delete out-of-line constexpr defininitons once C++17 is in use.
-constexpr size_t AllocatorState::kMaxMetadata;
-constexpr size_t AllocatorState::kMaxSlots;
-constexpr AllocatorState::MetadataIdx AllocatorState::kInvalidMetadataIdx;
-constexpr size_t AllocatorState::kMaxStackFrames;
-constexpr size_t AllocatorState::kMaxPackedTraceLength;
-
 AllocatorState::AllocatorState() {}
 
 AllocatorState::GetMetadataReturnType AllocatorState::GetMetadataForAddress(
@@ -35,9 +28,9 @@ AllocatorState::GetMetadataReturnType AllocatorState::GetMetadataForAddress(
   CHECK(PointerIsMine(exception_address));
 
   AllocatorState::SlotIdx slot_idx = GetNearestSlot(exception_address);
-  if (slot_idx >= total_pages) {
-    *error =
-        base::StringPrintf("Bad slot index %u >= %zu", slot_idx, total_pages);
+  if (slot_idx >= total_reserved_pages) {
+    *error = base::StringPrintf("Bad slot index %u >= %zu", slot_idx,
+                                total_reserved_pages);
     return GetMetadataReturnType::kErrorBadSlot;
   }
 
@@ -66,10 +59,15 @@ bool AllocatorState::IsValid() const {
   if (!page_size || page_size != base::GetPageSize())
     return false;
 
-  if (total_pages == 0 || total_pages > kMaxSlots)
+  if (total_requested_pages == 0 || total_requested_pages > kMaxRequestedSlots)
     return false;
 
-  if (num_metadata == 0 || num_metadata > std::min(kMaxMetadata, total_pages))
+  if (total_reserved_pages == 0 || total_reserved_pages > kMaxReservedSlots ||
+      total_reserved_pages < total_requested_pages)
+    return false;
+
+  if (num_metadata == 0 ||
+      num_metadata > std::min(kMaxMetadata, total_requested_pages))
     return false;
 
   if (pages_base_addr % page_size != 0 || pages_end_addr % page_size != 0 ||
@@ -80,7 +78,8 @@ bool AllocatorState::IsValid() const {
     return false;
 
   if (first_page_addr != pages_base_addr + page_size ||
-      pages_end_addr - pages_base_addr != page_size * (total_pages * 2 + 1))
+      pages_end_addr - pages_base_addr !=
+          page_size * (total_reserved_pages * 2 + 1))
     return false;
 
   if (!metadata_addr || !slot_to_metadata_addr)
@@ -155,7 +154,7 @@ AllocatorState::ErrorType AllocatorState::GetErrorType(uintptr_t addr,
 }
 
 uintptr_t AllocatorState::SlotToAddr(AllocatorState::SlotIdx slot) const {
-  DCHECK_LT(slot, kMaxSlots);
+  DCHECK_LE(slot, kMaxReservedSlots);
   return first_page_addr + 2 * slot * page_size;
 }
 
@@ -164,7 +163,7 @@ AllocatorState::SlotIdx AllocatorState::AddrToSlot(uintptr_t addr) const {
   uintptr_t offset = addr - first_page_addr;
   DCHECK_EQ((offset >> base::bits::Log2Floor(page_size)) % 2, 0ULL);
   size_t slot = (offset >> base::bits::Log2Floor(page_size)) / 2;
-  DCHECK_LT(slot, kMaxSlots);
+  DCHECK_LE(slot, kMaxReservedSlots);
   return static_cast<SlotIdx>(slot);
 }
 

@@ -1,15 +1,15 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 module blink.mojom;
 
-import "mojo/public/mojom/base/file_path.mojom";
-import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
+import "services/network/public/mojom/ip_address_space.mojom";
 import "services/network/public/mojom/chunked_data_pipe_getter.mojom";
 import "services/network/public/mojom/fetch_api.mojom";
 import "services/network/public/mojom/request_priority.mojom";
+import "services/network/public/mojom/trust_tokens.mojom";
 import "services/network/public/mojom/url_request.mojom";
 import "third_party/blink/public/mojom/blob/serialized_blob.mojom";
 import "third_party/blink/public/mojom/loader/request_context_frame_type.mojom";
@@ -26,6 +26,7 @@ import "url/mojom/url.mojom";
 // than this one.
 enum RequestContextType {
   UNSPECIFIED,
+  ATTRIBUTION_SRC,
   AUDIO,
   BEACON,
   CSP_REPORT,
@@ -99,13 +100,12 @@ enum FetchCacheMode {
   kUnspecifiedForceCacheMiss,
 };
 
-// Corresponds to Fetch request's "importance mode"
-// Currently discussed at: https://github.com/WICG/priority-hints
-// TODO(domfarolino): add a spec link to this once specified.
-enum FetchImportanceMode {
-  kImportanceLow,
-  kImportanceAuto,
-  kImportanceHigh
+// Corresponds to Fetch request's "priority"
+// Spec: https://wicg.github.io/priority-hints/
+enum FetchPriorityHint {
+  kLow,
+  kAuto,
+  kHigh
 };
 
 // Request headers for FetchAPIRequest. This is typemapped to a container with a
@@ -202,4 +202,9 @@ struct FetchAPIRequest {
   // a process that later intercepts the request, e.g., in a service worker
   // fetch event handler.
   string? devtools_stack_id;
+
+  // Specifies a Trust Token protocol operation if the request has one.
+  network.mojom.TrustTokenParams? trust_token_params;
+
+  network.mojom.IPAddressSpace target_address_space = network.mojom.IPAddressSpace.kUnknown;
 };

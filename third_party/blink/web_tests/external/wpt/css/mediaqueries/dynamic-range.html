@@ -5,45 +5,29 @@
 <script type="text/javascript" src="resources/matchmedia-utils.js"></script>
 
 <script>
-query_should_be_css_parseable("(dynamic-range: standard)");
-query_should_be_css_parseable("(dynamic-range: high)");
-query_should_be_css_parseable("(video-dynamic-range: standard)");
-query_should_be_css_parseable("(video-dynamic-range: high)");
+query_should_be_known("(dynamic-range: standard)");
+query_should_be_known("(dynamic-range: high)");
+query_should_be_known("(video-dynamic-range: standard)");
+query_should_be_known("(video-dynamic-range: high)");
 
-query_should_not_be_css_parseable("(dynamic-range)");
-query_should_not_be_css_parseable("(dynamic-range: 0)");
-query_should_not_be_css_parseable("(dynamic-range: 10px)");
-query_should_not_be_css_parseable("(dynamic-range: invalid)");
-query_should_not_be_css_parseable("(video-dynamic-range)");
-query_should_not_be_css_parseable("(video-dynamic-range: 0)");
-query_should_not_be_css_parseable("(video-dynamic-range: 10px)");
-query_should_not_be_css_parseable("(video-dynamic-range: invalid)");
-
-query_should_be_js_parseable("(dynamic-range: standard)");
-query_should_be_js_parseable("(dynamic-range: high)");
-query_should_be_js_parseable("(video-dynamic-range: standard)");
-query_should_be_js_parseable("(video-dynamic-range: high)");
-
-query_should_not_be_js_parseable("(dynamic-range)");
-query_should_not_be_js_parseable("(dynamic-range: 0)");
-query_should_not_be_js_parseable("(dynamic-range: 10px)");
-query_should_not_be_js_parseable("(dynamic-range: invalid)");
-query_should_not_be_js_parseable("(video-dynamic-range)");
-query_should_not_be_js_parseable("(video-dynamic-range: 0)");
-query_should_not_be_js_parseable("(video-dynamic-range: 10px)");
-query_should_not_be_js_parseable("(video-dynamic-range: invalid)");
+query_should_be_unknown("(dynamic-range)");
+query_should_be_unknown("(dynamic-range: 0)");
+query_should_be_unknown("(dynamic-range: 10px)");
+query_should_be_unknown("(dynamic-range: invalid)");
+query_should_be_unknown("(video-dynamic-range)");
+query_should_be_unknown("(video-dynamic-range: 0)");
+query_should_be_unknown("(video-dynamic-range: 10px)");
+query_should_be_unknown("(video-dynamic-range: invalid)");
 
 test(() => {
   let match_standard = window.matchMedia("(dynamic-range: standard)");
-  let match_high = window.matchMedia("(dynamic-range: high)");
-  assert_not_equals(match_standard.matches, match_high.matches);
-}, "Check that dynamic-range is 'standard' or 'high', but not both");
+  assert_true(match_standard.matches);
+}, "Check that dynamic-range always matches 'standard'");
 
 test(() => {
   let match_standard = window.matchMedia("(video-dynamic-range: standard)");
-  let match_high = window.matchMedia("(video-dynamic-range: high)");
-  assert_not_equals(match_standard.matches, match_high.matches);
-}, "Check that video-dynamic-range is 'standard' or 'high', but not both");
+  assert_true(match_standard.matches);
+}, "Check that video-dynamic-range always matches 'standard'");
 
 test(() => {
   let match_invalid = window.matchMedia("(video-dynamic-range: invalid)");

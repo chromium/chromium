@@ -1,0 +1,14 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+executable("attribution_reporting_simulator") {
+  sources = [ "simulator_main.cc" ]
+  deps = [
+    "//base",
+    "//components/version_info",
+    "//content/public/browser",
+    "//content/test:test_support",
+  ]
+  testonly = true
+}

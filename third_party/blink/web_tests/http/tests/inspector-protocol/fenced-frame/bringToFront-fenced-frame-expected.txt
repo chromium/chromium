@@ -1,0 +1,6 @@
+Tests that Page.bringToFront() only works in a top level page.
+Page.bringToFront() from a fenced frame:
+PASS: Command can only be executed on top-level targets
+Page.bringToFront() from a top level page:
+PASS: no error
+

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/safe_browsing/download_protection/file_analyzer.h"
 #include "components/download/public/common/download_item.h"
 #include "components/history/core/browser/history_service.h"
@@ -73,7 +74,7 @@ class DownloadRequestMaker {
   // Callback when the history service has retrieved the tab redirects.
   void OnGotTabRedirects(history::RedirectList redirect_list);
 
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
   std::unique_ptr<ClientDownloadRequest> request_;
   const scoped_refptr<BinaryFeatureExtractor> binary_feature_extractor_;
   const std::unique_ptr<FileAnalyzer> file_analyzer_ =
@@ -91,6 +92,9 @@ class DownloadRequestMaker {
   const base::FilePath full_path_;
 
   Callback callback_;
+
+  // Start time of a given asynchronous task. Used for metrics.
+  base::Time start_time_;
 
   base::WeakPtrFactory<DownloadRequestMaker> weakptr_factory_{this};
 };

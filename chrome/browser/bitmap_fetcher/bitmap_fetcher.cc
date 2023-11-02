@@ -1,12 +1,11 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
 
 #include "base/bind.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/task/thread_pool.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
@@ -33,19 +32,19 @@ BitmapFetcher::BitmapFetcher(
 
 BitmapFetcher::~BitmapFetcher() = default;
 
-void BitmapFetcher::Init(const std::string& referrer,
-                         net::ReferrerPolicy referrer_policy,
+void BitmapFetcher::Init(net::ReferrerPolicy referrer_policy,
                          network::mojom::CredentialsMode credentials_mode,
-                         const net::HttpRequestHeaders& additional_headers) {
+                         const net::HttpRequestHeaders& additional_headers,
+                         const url::Origin& initiator) {
   if (simple_loader_ != nullptr)
     return;
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = url_;
-  resource_request->referrer = GURL(referrer);
   resource_request->referrer_policy = referrer_policy;
   resource_request->credentials_mode = credentials_mode;
   resource_request->headers.MergeFrom(additional_headers);
+  resource_request->request_initiator = initiator;
   simple_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                                     traffic_annotation_);
 }
@@ -61,17 +60,14 @@ void BitmapFetcher::Start(network::mojom::URLLoaderFactory* loader_factory) {
     if (net::DataURL::Parse(url_, &mime_type, &charset, &data))
       response_body = std::make_unique<std::string>(std::move(data));
 
-    // Set |start_time_| to null to exclude data URLs from the fetch histogram.
-    start_time_ = base::TimeTicks();
     // Post a task to maintain our guarantee that the delegate will only be
     // called asynchronously.
-    base::ThreadPool::PostTask(
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, BindOnce(std::move(callback), std::move(response_body)));
     return;
   }
 
   if (simple_loader_) {
-    start_time_ = base::TimeTicks::Now();
     simple_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
         loader_factory, std::move(callback));
   }
@@ -79,12 +75,6 @@ void BitmapFetcher::Start(network::mojom::URLLoaderFactory* loader_factory) {
 
 void BitmapFetcher::OnSimpleLoaderComplete(
     std::unique_ptr<std::string> response_body) {
-  auto now = base::TimeTicks::Now();
-  // |start_time_| will be null for data URLs. We don't want to include them in
-  // this fetch histogram as data URLs don't require fetching.
-  if (!start_time_.is_null())
-    UMA_HISTOGRAM_TIMES("Browser.BitmapFetcher.Fetch", now - start_time_);
-
   if (!response_body) {
     ReportFailure();
     return;
@@ -92,18 +82,12 @@ void BitmapFetcher::OnSimpleLoaderComplete(
 
   // Call start to begin decoding.  The ImageDecoder will call OnImageDecoded
   // with the data when it is done.
-  start_time_ = now;
   ImageDecoder::Start(this, std::move(*response_body));
 }
 
 // Methods inherited from ImageDecoder::ImageRequest.
 
 void BitmapFetcher::OnImageDecoded(const SkBitmap& decoded_image) {
-  // Report success.
-  auto now = base::TimeTicks::Now();
-  DCHECK(!start_time_.is_null());
-  UMA_HISTOGRAM_TIMES("Browser.BitmapFetcher.Decode", now - start_time_);
-
   delegate_->OnFetchComplete(url_, &decoded_image);
 }
 
@@ -113,8 +97,4 @@ void BitmapFetcher::OnDecodeImageFailed() {
 
 void BitmapFetcher::ReportFailure() {
   delegate_->OnFetchComplete(url_, nullptr);
-}
-
-void BitmapFetcher::SetStartTimeForTesting() {
-  start_time_ = base::TimeTicks::Now();
 }

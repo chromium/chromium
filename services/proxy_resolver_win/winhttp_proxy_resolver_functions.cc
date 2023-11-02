@@ -1,8 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "services/proxy_resolver_win/winhttp_proxy_resolver_functions.h"
+
+#include "base/no_destructor.h"
 
 namespace proxy_resolver_win {
 

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,19 +6,23 @@
 
 #import <Foundation/Foundation.h>
 
-#include <memory>
+#import <memory>
 
-#include "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
-#include "components/password_manager/core/browser/mock_password_store_interface.h"
-#include "components/password_manager/core/browser/password_form_manager.h"
-#include "components/password_manager/core/common/password_manager_pref_names.h"
-#include "components/prefs/testing_pref_service.h"
+#import "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
+#import "components/password_manager/core/browser/mock_password_store_interface.h"
+#import "components/password_manager/core/browser/password_form_manager.h"
+#import "components/password_manager/core/common/password_manager_pref_names.h"
+#import "components/prefs/testing_pref_service.h"
+#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/passwords/password_controller.h"
-#include "ios/chrome/browser/web/chrome_web_client.h"
-#import "ios/chrome/browser/web/chrome_web_test.h"
-#include "testing/gmock/include/gmock/gmock.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "url/gurl.h"
+#import "ios/chrome/browser/web/chrome_web_client.h"
+#import "ios/web/public/test/scoped_testing_web_client.h"
+#import "ios/web/public/test/web_state_test_util.h"
+#import "ios/web/public/test/web_task_environment.h"
+#import "testing/gmock/include/gmock/gmock.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/platform_test.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -31,19 +35,26 @@ using testing::Return;
 
 // TODO(crbug.com/958833): this file is initiated because of needing test for
 // ios policy. More unit test of the client should be added.
-class IOSChromePasswordManagerClientTest : public ChromeWebTest {
+class IOSChromePasswordManagerClientTest : public PlatformTest {
  public:
   IOSChromePasswordManagerClientTest()
-      : ChromeWebTest(std::make_unique<ChromeWebClient>()),
+      : web_client_(std::make_unique<ChromeWebClient>()),
         store_(new testing::NiceMock<
-               password_manager::MockPasswordStoreInterface>()) {}
+               password_manager::MockPasswordStoreInterface>()) {
+    browser_state_ = TestChromeBrowserState::Builder().Build();
+
+    web::WebState::CreateParams params(browser_state_.get());
+    web_state_ = web::WebState::Create(params);
+    web_state_->GetView();
+    web_state_->SetKeepRenderProcessAlive(true);
+  }
 
   ~IOSChromePasswordManagerClientTest() override {
     store_->ShutdownOnUIThread();
   }
 
   void SetUp() override {
-    ChromeWebTest::SetUp();
+    PlatformTest::SetUp();
     ON_CALL(*store_, IsAbleToSavePasswords).WillByDefault(Return(true));
 
     // When waiting for predictions is on, it makes tests more complicated.
@@ -56,6 +67,13 @@ class IOSChromePasswordManagerClientTest : public ChromeWebTest {
     passwordController_ =
         [[PasswordController alloc] initWithWebState:web_state()];
   }
+
+  web::WebState* web_state() { return web_state_.get(); }
+
+  web::ScopedTestingWebClient web_client_;
+  web::WebTaskEnvironment task_environment_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<web::WebState> web_state_;
 
   // PasswordController for testing.
   PasswordController* passwordController_;

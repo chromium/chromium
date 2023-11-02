@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,38 +20,60 @@ class TestPageContentAnnotator : public PageContentAnnotator {
   TestPageContentAnnotator();
   ~TestPageContentAnnotator() override;
 
-  // The given |status| is used in every BatchAnnotationResult. Only the success
-  // status will also populate any corresponding model output given below.
-  void UseExecutionStatus(ExecutionStatus status);
-
   // The given page topics are used for the matching BatchAnnotationResults by
   // input string. If the input is not found, the output is left as nullopt.
   void UsePageTopics(
-      const base::flat_map<std::string, std::vector<WeightedString>>&
+      const absl::optional<ModelInfo>& model_info,
+      const base::flat_map<std::string, std::vector<WeightedIdentifier>>&
           topics_by_input);
 
   // The given page entities are used for the matching BatchAnnotationResults by
   // input string. If the input is not found, the output is left as nullopt.
   void UsePageEntities(
+      const absl::optional<ModelInfo>& model_info,
       const base::flat_map<std::string, std::vector<ScoredEntityMetadata>>&
           entities_by_input);
 
   // The given visibility score is used for the matching BatchAnnotationResults
   // by input string. If the input is not found, the output is left as nullopt.
   void UseVisibilityScores(
+      const absl::optional<ModelInfo>& model_info,
       const base::flat_map<std::string, double>& visibility_scores_for_input);
+
+  // Returns true iff |RequestAndNotifyWhenModelAvailable| was called for
+  // |type|.
+  bool ModelRequestedForType(AnnotationType type) const;
+
+  using AnnotateInputsAndType =
+      std::pair<std::vector<std::string>, AnnotationType>;
+  const std::vector<AnnotateInputsAndType>& annotation_requests() const {
+    return annotation_requests_;
+  }
 
   // PageContentAnnotator:
   void Annotate(BatchAnnotationCallback callback,
                 const std::vector<std::string>& inputs,
                 AnnotationType annotation_type) override;
+  absl::optional<ModelInfo> GetModelInfoForType(
+      AnnotationType annotation_type) const override;
+  void RequestAndNotifyWhenModelAvailable(
+      AnnotationType type,
+      base::OnceCallback<void(bool)> callback) override;
 
  private:
-  ExecutionStatus status_ = ExecutionStatus::kUnknown;
-  base::flat_map<std::string, std::vector<WeightedString>> topics_by_input_;
+  absl::optional<ModelInfo> topics_model_info_;
+  base::flat_map<std::string, std::vector<WeightedIdentifier>> topics_by_input_;
+
+  absl::optional<ModelInfo> entities_model_info_;
   base::flat_map<std::string, std::vector<ScoredEntityMetadata>>
       entities_by_input_;
+
+  absl::optional<ModelInfo> visibility_scores_model_info_;
   base::flat_map<std::string, double> visibility_scores_for_input_;
+
+  std::vector<AnnotateInputsAndType> annotation_requests_;
+
+  base::flat_set<AnnotationType> model_requests_;
 };
 
 }  // namespace optimization_guide

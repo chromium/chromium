@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -46,7 +46,7 @@ TestV4Store::TestV4Store(
 
 TestV4Store::~TestV4Store() = default;
 
-bool TestV4Store::HasValidData() const {
+bool TestV4Store::HasValidData() {
   return true;
 }
 
@@ -95,11 +95,13 @@ TestV4DatabaseFactory::TestV4DatabaseFactory() = default;
 
 TestV4DatabaseFactory::~TestV4DatabaseFactory() = default;
 
-std::unique_ptr<V4Database> TestV4DatabaseFactory::Create(
+std::unique_ptr<V4Database, base::OnTaskRunnerDeleter>
+TestV4DatabaseFactory::Create(
     const scoped_refptr<base::SequencedTaskRunner>& db_task_runner,
     std::unique_ptr<StoreMap> store_map) {
-  auto v4_db =
-      std::make_unique<TestV4Database>(db_task_runner, std::move(store_map));
+  auto v4_db = std::unique_ptr<TestV4Database, base::OnTaskRunnerDeleter>(
+      new TestV4Database(db_task_runner, std::move(store_map)),
+      base::OnTaskRunnerDeleter(db_task_runner));
   v4_db_ = v4_db.get();
   return std::move(v4_db);
 }

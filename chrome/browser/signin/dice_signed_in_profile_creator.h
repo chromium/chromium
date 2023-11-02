@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "google_apis/gaia/core_account_id.h"
@@ -47,17 +48,13 @@ class DiceSignedInProfileCreator {
       delete;
 
  private:
-  // Callback invoked once a profile is created, so we can transfer the
-  // credentials.
-  void OnNewProfileCreated(Profile* new_profile, Profile::CreateStatus status);
-
   // Called when the profile is initialized.
-  void OnNewProfileInitialized(Profile* new_profile);
+  void OnNewProfileInitialized(Profile* profile);
 
   // Callback invoked once the token service is ready for the new profile.
   void OnNewProfileTokensLoaded(Profile* new_profile);
 
-  Profile* const source_profile_;
+  const raw_ptr<Profile> source_profile_;
   const CoreAccountId account_id_;
 
   base::OnceCallback<void(Profile*)> callback_;

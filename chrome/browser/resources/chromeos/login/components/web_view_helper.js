@@ -1,8 +1,8 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {assert, assertNotReached} from '//resources/js/assert.m.js';
+// #import {assert, assertNotReached} from '//resources/js/assert.js';
 
 /**
  * @fileoverview Web view helper.
@@ -50,8 +50,9 @@
     xhr.open('GET', url);
     xhr.setRequestHeader('Accept', contentType);
     xhr.onreadystatechange = function() {
-      if (xhr.readyState != XMLHttpRequest.DONE)
+      if (xhr.readyState != XMLHttpRequest.DONE) {
         return;
+      }
       if (xhr.status != 200) {
         onError();
         return;
@@ -62,7 +63,7 @@
         onError();
         return;
       }
-      let contents = /** @type {string} */ (xhr.response);
+      const contents = /** @type {string} */ (xhr.response);
       setContents(contents);
     };
 

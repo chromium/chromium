@@ -1,10 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_SECURITY_INTERSTITIALS_CORE_BASE_SAFE_BROWSING_ERROR_UI_H_
 #define COMPONENTS_SECURITY_INTERSTITIALS_CORE_BASE_SAFE_BROWSING_ERROR_UI_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/security_interstitials/core/controller_client.h"
@@ -187,7 +188,7 @@ class BaseSafeBrowsingErrorUI {
   GURL request_url() const { return request_url_; }
   GURL main_frame_url() const { return main_frame_url_; }
 
-  virtual void PopulateStringsForHtml(base::Value* load_time_data) = 0;
+  virtual void PopulateStringsForHtml(base::Value::Dict& load_time_data) = 0;
   virtual void HandleCommand(SecurityInterstitialCommand command) = 0;
 
   virtual int GetHTMLTemplateId() const = 0;
@@ -200,7 +201,7 @@ class BaseSafeBrowsingErrorUI {
   const std::string app_locale_;
   const base::Time time_triggered_;
 
-  ControllerClient* controller_;
+  raw_ptr<ControllerClient> controller_;
 };
 
 }  // security_interstitials

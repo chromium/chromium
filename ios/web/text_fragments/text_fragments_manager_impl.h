@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,22 +29,32 @@ class TextFragmentsManagerImpl : public TextFragmentsManager,
   explicit TextFragmentsManagerImpl(WebState* web_state);
   ~TextFragmentsManagerImpl() override;
 
-  // WebStateUserData methods:
+  // Need to overload TextFragmentsManager::CreateForWebState() as the default
+  // implementation inherited from WebStateUserData<TextFragmentsManager> would
+  // create a TextFragmentsManager which is a pure abstract class.
   static void CreateForWebState(WebState* web_state);
+
   static TextFragmentsManagerImpl* FromWebState(WebState* web_state);
 
   // TextFragmentsManager methods:
   void RemoveHighlights() override;
   void RegisterDelegate(id<TextFragmentsDelegate> delegate) override;
 
-  // Invokes post-processing hooks such as metrics logging. |fragment_count|
+  // Invokes post-processing hooks such as metrics logging. `fragment_count`
   // is the number of text fragments that were searched for in the page text;
-  // |success_count| is the number of these that were actually found and
+  // `success_count` is the number of these that were actually found and
   // highlighted.
   void OnProcessingComplete(int success_count, int fragment_count);
 
-  // Cleans up highlights on the page in response to user click.
+  // Event propagated when the user clicks anywhere on the page.
   void OnClick();
+
+  // Event propagated when the user clicks on a highlighted text fragment.
+  // CGRect indicates the coordinates of the text fragment sending the event.
+  void OnClickWithSender(
+      CGRect rect,
+      NSString* text,
+      std::vector<shared_highlighting::TextFragment> fragments);
 
   // WebStateObserver methods:
   void DidFinishNavigation(WebState* web_state,
@@ -58,7 +68,7 @@ class TextFragmentsManagerImpl : public TextFragmentsManager,
  private:
   friend class web::WebStateUserData<TextFragmentsManagerImpl>;
 
-  // Stores the params obtained by |ProcessTextFragments| for later execution,
+  // Stores the params obtained by `ProcessTextFragments` for later execution,
   // in case a main WebFrame is not immediately available.
   struct TextFragmentProcessingParams {
     base::Value parsed_fragments;
@@ -67,7 +77,7 @@ class TextFragmentsManagerImpl : public TextFragmentsManager,
   };
 
   // Checks the WebState's destination URL for Text Fragments. Uses the
-  // |context| and |referrer| to analyze the current navigation scenario.
+  // `context` and `referrer` to analyze the current navigation scenario.
   // If the URL and navigation state indicate that a highlight should occur,
   // returns the needed params to complete highlighting. Otherwise, returns
   // empty.

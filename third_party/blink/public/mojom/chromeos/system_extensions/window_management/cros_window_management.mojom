@@ -1,0 +1,175 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
+
+// WindowState reflects which of the mutually exclusive states of maximized,
+// minimized, or fullscreen that the CrosWindow is in.
+enum WindowState {
+  kNormal,      // The window is at the default size or user-selected size.
+  kFullscreen,  // The window is running as a full screen application.
+  kMaximized,   // The window fills the screen on which it is displayed not
+                // including any screen areas reserved by the operating system.
+  kMinimized,   // The window is only visible as an icon.
+};
+
+// VisibilityState reflects whether the CrosWindow is rendered.
+// This is intrinsic to the window and separate from occlusion state which
+// refers to visibility relative to other windows.
+enum VisibilityState {
+  kHidden,  // Window is not placed on any screens.
+  kShown,   // Window is placed on a screen.
+};
+
+// CrosWindowManagement methods return status in callback corresponding to
+// state of method call.
+enum CrosWindowManagementStatus {
+  kSuccess,             // Function call executed successfully.
+  kWindowNotFound,      // No window was found with the specified id.
+  kWindowNoWindowState, // Failed to acquire window state for
+                        // maximizing/minimizing. Either no window exists with
+                        // the specified id, or window is not a top level
+                        // window.
+  kWindowNoWidget,      // No widget could be found on window with specified id.
+};
+
+// Represents a Chrome OS window which can be manipulated by a Window Management
+// System Extension.
+struct CrosWindowInfo {
+  // A unique identifier for this window.
+  mojo_base.mojom.UnguessableToken id;
+  // The App ID of the App that this window is an instance of.
+  string app_id;
+
+  // Position of the window in screen coordinates.
+  gfx.mojom.Rect bounds;
+
+  string title;
+  WindowState window_state;
+  bool is_focused;
+  VisibilityState visibility_state;
+};
+
+// Represents a screen display.
+struct CrosScreenInfo {
+  // Display's area, minus permanent or semipermanent user interface features
+  // displayed by the operating system.
+  gfx.mojom.Rect work_area;
+
+  // Display's bounds.
+  gfx.mojom.Rect bounds;
+
+  // If this screen is designated as the 'primary' screen by the OS (otherwise
+  // it is 'secondary'). Useful for placing prominent vs peripheral windows.
+  bool is_primary;
+};
+
+// Interface to bind CrosWindowManagement and CrosWindowManagementObserver.
+// Implemented by CrosWindowManagementContext which is a keyed service.
+interface CrosWindowManagementFactory {
+  // Binds a CrosWindowManagement and a CrosWindowManagementObserver
+  // interfaces associated with CrosWindowManagementFactory. Their lifetimes are
+  // tied to that of the pipe.
+  Create(
+      pending_associated_receiver<CrosWindowManagement> receiver,
+      pending_associated_remote<CrosWindowManagementObserver> observer_remote);
+};
+
+// Chrome OS Window Management API for System Extensions.
+// Called by System Extensions Renderers and implemented by Ash Chrome.
+interface CrosWindowManagement {
+  // Returns all windows visible to a window manager.
+  GetAllWindows() => (array<CrosWindowInfo> result);
+
+  // Moves the window such that the window's top left corner is at coordinates
+  // (x, y) relative to the top left corner of the current screen. Measured in
+  // CSS pixels of the window.
+  MoveTo(mojo_base.mojom.UnguessableToken id, int32 x, int32 y)
+      => (CrosWindowManagementStatus value);
+
+  // Moves the current window by a specified amount. Positive deltas move right
+  // and down. Negative deltas move up and left.
+  MoveBy(mojo_base.mojom.UnguessableToken id, int32 delta_x, int32 delta_y)
+      => (CrosWindowManagementStatus value);
+
+  // Sets the window dimensions to `width` and `height`.
+  ResizeTo(mojo_base.mojom.UnguessableToken id, int32 width, int32 height)
+      => (CrosWindowManagementStatus value);
+
+  // Resizes the current window by a specified amount.
+  ResizeBy(mojo_base.mojom.UnguessableToken id, int32 delta_width,
+          int32 delta_height) => (CrosWindowManagementStatus value);
+
+  // Enable/disable fullscreen for window identified by id if one exists, else
+  // do nothing.
+  SetFullscreen(mojo_base.mojom.UnguessableToken id, bool fullscreen)
+      => (CrosWindowManagementStatus value);
+
+  // Maximizes the window identified by id if one exists, else do nothing.
+  Maximize(mojo_base.mojom.UnguessableToken id)
+      => (CrosWindowManagementStatus value);
+
+  // Minimizes the window identified by id if one exists, else do nothing.
+  Minimize(mojo_base.mojom.UnguessableToken id)
+      => (CrosWindowManagementStatus value);
+
+  // Restores the window state from the current state to `kNormal`. As an
+  // example, if the current state is minimized, `Restore()` will change the
+  // window's state to `kNormal`. If the state is already `kNormal` the state
+  // won't change.
+  Restore(mojo_base.mojom.UnguessableToken id)
+      => (CrosWindowManagementStatus value);
+
+  // Allocates focus to the CrosWindow identified by id and brings to front.
+  Focus(mojo_base.mojom.UnguessableToken id)
+      => (CrosWindowManagementStatus value);
+
+  // Closes the window identified by id if it exists, else do nothing.
+  Close(mojo_base.mojom.UnguessableToken id)
+      => (CrosWindowManagementStatus value);
+
+  // Returns all screens.
+  GetAllScreens() => (array<CrosScreenInfo> screens);
+};
+
+struct AcceleratorEvent {
+  // Whether the key is being pressed or released.
+  enum Type {
+    kDown,
+    kUp,
+  };
+
+  Type type;
+
+  // For now this is a concatenation of all pressed keys.
+  // TODO(b/238578914): Change to being the name of the accelerator.
+  string accelerator_name;
+
+  // True if the given key is being held down such that it is automatically
+  // repeating.
+  bool repeat;
+};
+
+// Interface used by the browser to send events to Window Management System
+// Extensions service workers. Bound using CrosWindowManagementFactory.Create.
+interface CrosWindowManagementObserver {
+  // Notify the renderer that it should dispatch the `start` event. Currently,
+  // start is only dispatched when the System Extension is installed.
+  DispatchStartEvent();
+
+  // Notify the renderer that an accelerator has been pressed.
+  // TODO(b/238578914): Eventually we will allow System Extensions to register
+  // their accelerators, but for prototyping, we just send any key press with a
+  // modifier.
+  DispatchAcceleratorEvent(AcceleratorEvent event);
+
+  // Notify the renderer that a window has been opened.
+  DispatchWindowOpenedEvent(CrosWindowInfo window);
+
+  // Notify the renderer that a window has been closed.
+  DispatchWindowClosedEvent(CrosWindowInfo window);
+};

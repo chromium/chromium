@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,12 +24,6 @@ class AppLaunchSplashScreenView {
    public:
     // Invoked when the configure network control is clicked.
     virtual void OnConfigureNetwork() {}
-
-    // Invoked when the app launch bailout shortcut key is pressed.
-    virtual void OnCancelAppLaunch() {}
-
-    // Invoked when the network config shortcut key is pressed.
-    virtual void OnNetworkConfigRequested() {}
 
     // Invoked when the network config did prepare network and is closed.
     virtual void OnNetworkConfigFinished() {}
@@ -59,7 +53,8 @@ class AppLaunchSplashScreenView {
     kShowingNetworkConfigureUI,
   };
 
-  constexpr static StaticOobeScreenId kScreenId{"app-launch-splash"};
+  inline constexpr static StaticOobeScreenId kScreenId{"app-launch-splash",
+                                                       "AppLaunchSplashScreen"};
 
   virtual ~AppLaunchSplashScreenView() {}
 
@@ -86,6 +81,9 @@ class AppLaunchSplashScreenView {
 
   // Returns true if the default network has Internet access.
   virtual bool IsNetworkReady() = 0;
+
+  // Continues app launch after error screen is shown.
+  virtual void ContinueAppLaunch() = 0;
 };
 
 // A class that handles the WebUI hooks for the app launch splash screen.
@@ -97,7 +95,6 @@ class AppLaunchSplashScreenHandler
   using TView = AppLaunchSplashScreenView;
 
   AppLaunchSplashScreenHandler(
-      JSCallsContainer* js_calls_container,
       const scoped_refptr<NetworkStateInformer>& network_state_informer,
       ErrorScreen* error_screen);
 
@@ -110,7 +107,6 @@ class AppLaunchSplashScreenHandler
   // BaseScreenHandler implementation:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void Initialize() override;
 
   // WebUIMessageHandler implementation:
   void RegisterMessages() override;
@@ -124,6 +120,7 @@ class AppLaunchSplashScreenHandler
   void ShowNetworkConfigureUI() override;
   void ShowErrorMessage(KioskAppLaunchError::Error error) override;
   bool IsNetworkReady() override;
+  void ContinueAppLaunch() override;
 
   // NetworkStateInformer::NetworkStateInformerObserver implementation:
   void OnNetworkReady() override;
@@ -134,14 +131,10 @@ class AppLaunchSplashScreenHandler
   void SetLaunchText(const std::string& text);
   int GetProgressMessageFromState(AppLaunchState state);
   void HandleConfigureNetwork();
-  void HandleCancelAppLaunch();
-  void HandleContinueAppLaunch();
-  void HandleNetworkConfigRequested();
   void DoToggleNetworkConfig(bool visible);
 
   Delegate* delegate_ = nullptr;
   bool is_shown_ = false;
-  bool show_on_init_ = false;
   AppLaunchState state_ = AppLaunchState::kPreparingProfile;
 
   scoped_refptr<NetworkStateInformer> network_state_informer_;

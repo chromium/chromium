@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #include <string>
 #include <tuple>
 
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/hash/md5.h"
@@ -34,7 +35,7 @@ namespace {
 const char* usage_msg =
     "usage: image_processor_test\n"
     "[--gtest_help] [--help] [-v=<level>] [--vmodule=<config>] "
-    "[--save_images]\n";
+    "[--save_images] [--source_directory=<dir>]\n";
 
 const char* help_msg =
     "Run the image processor tests.\n\n"
@@ -44,19 +45,23 @@ const char* help_msg =
     "   -v                   enable verbose mode, e.g. -v=2.\n"
     "  --vmodule             enable verbose mode for the specified module.\n"
     "  --save_images         write images processed by a image processor to\n"
-    "                        the \"<testname>\" folder.\n";
+    "                        the \"<testname>\" folder.\n"
+    "  --source_directory    specify the directory that contains test source\n"
+    "                        files. Defaults to the current directory.\n";
 
 bool g_save_images = false;
+base::FilePath g_source_directory =
+    base::FilePath(base::FilePath::kCurrentDirectory);
+
+base::FilePath BuildSourceFilePath(const base::FilePath& filename) {
+  return media::g_source_directory.Append(filename);
+}
 
 media::test::VideoTestEnvironment* g_env;
 
 // Files for pixel format conversion test.
 const base::FilePath::CharType* kNV12Image =
     FILE_PATH_LITERAL("bear_320x192.nv12.yuv");
-const base::FilePath::CharType* kRGBAImage =
-    FILE_PATH_LITERAL("bear_320x192.rgba");
-const base::FilePath::CharType* kBGRAImage =
-    FILE_PATH_LITERAL("bear_320x192.bgra");
 const base::FilePath::CharType* kYV12Image =
     FILE_PATH_LITERAL("bear_320x192.yv12.yuv");
 const base::FilePath::CharType* kI420Image =
@@ -118,8 +123,6 @@ YuvSubsampling ToYuvSubsampling(VideoPixelFormat format) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 bool IsFormatTestedForDmabufAndGbm(VideoPixelFormat format) {
   switch (format) {
-    case PIXEL_FORMAT_ABGR:
-    case PIXEL_FORMAT_ARGB:
     case PIXEL_FORMAT_NV12:
     case PIXEL_FORMAT_YV12:
       return true;
@@ -168,8 +171,9 @@ class ImageProcessorParamTest
     ImageProcessor::PortConfig output_config(
         output_fourcc, output_image->Size(), output_layout->planes(),
         output_image->VisibleRect(), output_storage_types);
-    int rotation =
-        ((output_image->Rotation() - input_image.Rotation() + 4) % 4) * 90;
+    int rotation = (output_image->Rotation() - input_image.Rotation()) % 360;
+    if (rotation < 0)
+      rotation += 360;
     VideoRotation relative_rotation = VIDEO_ROTATION_0;
     switch (rotation) {
       case 0:
@@ -252,8 +256,8 @@ class ImageProcessorParamTest
 TEST_P(ImageProcessorParamTest, ConvertOneTime_MemToMem) {
   // Load the test input image. We only need the output image's metadata so we
   // can compare checksums.
-  test::Image input_image(std::get<0>(GetParam()));
-  test::Image output_image(std::get<1>(GetParam()));
+  test::Image input_image(BuildSourceFilePath(std::get<0>(GetParam())));
+  test::Image output_image(BuildSourceFilePath(std::get<1>(GetParam())));
   ASSERT_TRUE(input_image.Load());
   ASSERT_TRUE(output_image.LoadMetadata());
   auto ip_client = CreateImageProcessorClient(
@@ -275,8 +279,8 @@ TEST_P(ImageProcessorParamTest, ConvertOneTime_MemToMem) {
 TEST_P(ImageProcessorParamTest, ConvertOneTime_DmabufToMem) {
   // Load the test input image. We only need the output image's metadata so we
   // can compare checksums.
-  test::Image input_image(std::get<0>(GetParam()));
-  test::Image output_image(std::get<1>(GetParam()));
+  test::Image input_image(BuildSourceFilePath(std::get<0>(GetParam())));
+  test::Image output_image(BuildSourceFilePath(std::get<1>(GetParam())));
   ASSERT_TRUE(input_image.Load());
   ASSERT_TRUE(output_image.LoadMetadata());
   if (!IsFormatTestedForDmabufAndGbm(input_image.PixelFormat()))
@@ -297,8 +301,8 @@ TEST_P(ImageProcessorParamTest, ConvertOneTime_DmabufToMem) {
 TEST_P(ImageProcessorParamTest, ConvertOneTime_DmabufToDmabuf) {
   // Load the test input image. We only need the output image's metadata so we
   // can compare checksums.
-  test::Image input_image(std::get<0>(GetParam()));
-  test::Image output_image(std::get<1>(GetParam()));
+  test::Image input_image(BuildSourceFilePath(std::get<0>(GetParam())));
+  test::Image output_image(BuildSourceFilePath(std::get<1>(GetParam())));
   ASSERT_TRUE(input_image.Load());
   ASSERT_TRUE(output_image.LoadMetadata());
   if (!IsFormatTestedForDmabufAndGbm(input_image.PixelFormat()))
@@ -323,8 +327,8 @@ TEST_P(ImageProcessorParamTest, ConvertOneTime_DmabufToDmabuf) {
 TEST_P(ImageProcessorParamTest, ConvertOneTime_GmbToGmb) {
   // Load the test input image. We only need the output image's metadata so we
   // can compare checksums.
-  test::Image input_image(std::get<0>(GetParam()));
-  test::Image output_image(std::get<1>(GetParam()));
+  test::Image input_image(BuildSourceFilePath(std::get<0>(GetParam())));
+  test::Image output_image(BuildSourceFilePath(std::get<1>(GetParam())));
   ASSERT_TRUE(input_image.Load());
   ASSERT_TRUE(output_image.LoadMetadata());
   if (!IsFormatTestedForDmabufAndGbm(input_image.PixelFormat())) {
@@ -352,9 +356,7 @@ TEST_P(ImageProcessorParamTest, ConvertOneTime_GmbToGmb) {
 INSTANTIATE_TEST_SUITE_P(
     PixelFormatConversionToNV12,
     ImageProcessorParamTest,
-    ::testing::Values(std::make_tuple(kBGRAImage, kNV12Image),
-                      std::make_tuple(kI420Image, kNV12Image),
-                      std::make_tuple(kRGBAImage, kNV12Image),
+    ::testing::Values(std::make_tuple(kI420Image, kNV12Image),
                       std::make_tuple(kYV12Image, kNV12Image),
                       std::make_tuple(kI422Image, kNV12Image),
                       std::make_tuple(kYUYVImage, kNV12Image)));
@@ -444,6 +446,8 @@ int main(int argc, char** argv) {
 
     if (it->first == "save_images") {
       media::g_save_images = true;
+    } else if (it->first == "source_directory") {
+      media::g_source_directory = base::FilePath(it->second);
     } else {
       std::cout << "unknown option: --" << it->first << "\n"
                 << media::usage_msg;

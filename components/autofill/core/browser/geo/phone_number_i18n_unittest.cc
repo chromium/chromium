@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -66,7 +66,7 @@ class ParseNumberTest : public testing::TestWithParam<ParseNumberTestCase> {};
 
 TEST_P(ParseNumberTest, ParsePhoneNumber) {
   auto test_case = GetParam();
-  SCOPED_TRACE(test_case.input.c_str());
+  SCOPED_TRACE(base::UTF16ToUTF8(test_case.input));
 
   std::u16string country_code, city_code, number;
   std::string deduced_region;
@@ -99,7 +99,7 @@ INSTANTIATE_TEST_SUITE_P(
         // unknown("ZZ") deduced region.
         ParseNumberTestCase{true, u"7134567", "US", u"7134567", u"", u"", "ZZ"},
         // Valid Canadian toll-free number.
-        ParseNumberTestCase{true, u"3101234", "CA", u"3101234", u"", u"", "ZZ"},
+        ParseNumberTestCase{true, u"3101234", "CA", u"1234", u"310", u"", "CA"},
         // Test for string with greater than 7 digits but less than 10 digits.
         // Should fail parsing in US.
         ParseNumberTestCase{false, u"123456789", "US"},

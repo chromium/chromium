@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -56,10 +56,8 @@ TEST_F(ExtensionGarbageCollectorUnitTest, CleanupOnStartup) {
 
   // Simulate that one of them got partially deleted by clearing its pref.
   {
-    DictionaryPrefUpdate update(profile_->GetPrefs(), pref_names::kExtensions);
-    base::DictionaryValue* dict = update.Get();
-    ASSERT_TRUE(dict != nullptr);
-    dict->RemoveKey(kExtensionId);
+    ScopedDictPrefUpdate update(profile_->GetPrefs(), pref_names::kExtensions);
+    update->Remove(kExtensionId);
   }
 
   service_->Init();
@@ -91,10 +89,8 @@ TEST_F(ExtensionGarbageCollectorUnitTest, NoCleanupDuringInstall) {
 
   // Simulate that one of them got partially deleted by clearing its pref.
   {
-    DictionaryPrefUpdate update(profile_->GetPrefs(), pref_names::kExtensions);
-    base::DictionaryValue* dict = update.Get();
-    ASSERT_TRUE(dict != nullptr);
-    dict->RemoveKey(kExtensionId);
+    ScopedDictPrefUpdate update(profile_->GetPrefs(), pref_names::kExtensions);
+    update->Remove(kExtensionId);
   }
 
   service_->Init();

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,9 @@
 #include <memory>
 #include <string>
 
-#include "ash/components/settings/cros_settings_names.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/printing/bulk_printers_calculator.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "components/policy/core/common/mock_policy_service.h"
 #include "components/policy/core/common/policy_namespace.h"
@@ -62,11 +62,10 @@ class DevicePrintersExternalDataHandlerTest : public testing::Test {
   // testing::Test
   void SetUp() override {
     testing::Test::SetUp();
-    EXPECT_CALL(policy_service_,
-                AddObserver(policy::POLICY_DOMAIN_CHROME, testing::_))
+    EXPECT_CALL(policy_service_, AddObserver(POLICY_DOMAIN_CHROME, testing::_))
         .Times(1);
     EXPECT_CALL(policy_service_,
-                RemoveObserver(policy::POLICY_DOMAIN_CHROME, testing::_))
+                RemoveObserver(POLICY_DOMAIN_CHROME, testing::_))
         .Times(1);
     external_printers_ = ash::BulkPrintersCalculator::Create();
     device_printers_external_data_handler_ =

@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,8 @@
 
 #include "base/bind.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/task/post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
@@ -97,7 +97,7 @@ class PrefMemberTestClass {
   int observe_cnt_;
 
  private:
-  PrefService* prefs_;
+  raw_ptr<PrefService> prefs_;
 };
 
 }  // anonymous namespace
@@ -207,13 +207,13 @@ TEST_F(PrefMemberTest, BasicGetAndSet) {
   EXPECT_FALSE(string.IsDefaultValue());
 
   // Test string list
-  base::Value expected_list(base::Value::Type::LIST);
+  base::Value::List expected_list;
   std::vector<std::string> expected_vector;
   StringListPrefMember string_list;
   string_list.Init(kStringListPref, &prefs);
 
   // Check the defaults
-  EXPECT_TRUE(expected_list.Equals(prefs.GetList(kStringListPref)));
+  EXPECT_EQ(expected_list, prefs.GetList(kStringListPref));
   EXPECT_EQ(expected_vector, string_list.GetValue());
   EXPECT_EQ(expected_vector, *string_list);
   EXPECT_TRUE(string_list.IsDefaultValue());
@@ -223,7 +223,7 @@ TEST_F(PrefMemberTest, BasicGetAndSet) {
   expected_vector.push_back("foo");
   string_list.SetValue(expected_vector);
 
-  EXPECT_TRUE(expected_list.Equals(prefs.GetList(kStringListPref)));
+  EXPECT_EQ(expected_list, prefs.GetList(kStringListPref));
   EXPECT_EQ(expected_vector, string_list.GetValue());
   EXPECT_EQ(expected_vector, *string_list);
   EXPECT_FALSE(string_list.IsDefaultValue());
@@ -231,19 +231,19 @@ TEST_F(PrefMemberTest, BasicGetAndSet) {
   // Try adding through the pref.
   expected_list.Append("bar");
   expected_vector.push_back("bar");
-  prefs.Set(kStringListPref, expected_list);
+  prefs.SetList(kStringListPref, expected_list.Clone());
 
-  EXPECT_TRUE(expected_list.Equals(prefs.GetList(kStringListPref)));
+  EXPECT_EQ(expected_list, prefs.GetList(kStringListPref));
   EXPECT_EQ(expected_vector, string_list.GetValue());
   EXPECT_EQ(expected_vector, *string_list);
   EXPECT_FALSE(string_list.IsDefaultValue());
 
   // Try removing through the pref.
-  EXPECT_TRUE(expected_list.EraseListIter(expected_list.GetList().begin()));
+  expected_list.erase(expected_list.begin());
   expected_vector.erase(expected_vector.begin());
-  prefs.Set(kStringListPref, expected_list);
+  prefs.SetList(kStringListPref, expected_list.Clone());
 
-  EXPECT_TRUE(expected_list.Equals(prefs.GetList(kStringListPref)));
+  EXPECT_EQ(expected_list, prefs.GetList(kStringListPref));
   EXPECT_EQ(expected_vector, string_list.GetValue());
   EXPECT_EQ(expected_vector, *string_list);
   EXPECT_FALSE(string_list.IsDefaultValue());

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,6 @@
 #include "media/base/media_switches.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/renderer/platform/mojo/mojo_helper.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -48,7 +47,7 @@ void SurfaceLayerBridge::CreateSolidColorLayer() {
   // TODO(lethalantidote): Remove this logic. It should be covered by setting
   // the layer's opacity to false.
   solid_color_layer_ = cc::SolidColorLayer::Create();
-  solid_color_layer_->SetBackgroundColor(SK_ColorTRANSPARENT);
+  solid_color_layer_->SetBackgroundColor(SkColors::kTransparent);
   if (observer_)
     observer_->RegisterContentsLayer(solid_color_layer_.get());
 }
@@ -89,6 +88,11 @@ void SurfaceLayerBridge::EmbedSurface(const viz::SurfaceId& surface_id) {
 
 void SurfaceLayerBridge::BindSurfaceEmbedder(
     mojo::PendingReceiver<mojom::blink::SurfaceEmbedder> receiver) {
+  if (surface_embedder_receiver_.is_bound()) {
+    // After recovering from a GPU context loss we have to re-bind to a new
+    // surface embedder.
+    std::ignore = surface_embedder_receiver_.Unbind();
+  }
   surface_embedder_receiver_.Bind(std::move(receiver));
 }
 

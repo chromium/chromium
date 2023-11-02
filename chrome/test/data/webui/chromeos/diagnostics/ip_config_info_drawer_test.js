@@ -1,15 +1,17 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import 'chrome://diagnostics/ip_config_info_drawer.js';
 
 import {DiagnosticsBrowserProxyImpl} from 'chrome://diagnostics/diagnostics_browser_proxy.js';
-import {Network} from 'chrome://diagnostics/diagnostics_types.js';
 import {fakeEthernetNetwork, fakeWifiNetwork, fakeWifiNetworkEmptyNameServers, fakeWifiNetworkMultipleNameServers, fakeWifiNetworkNoNameServers} from 'chrome://diagnostics/fake_data.js';
+import {IpConfigInfoDrawerElement} from 'chrome://diagnostics/ip_config_info_drawer.js';
+import {Network} from 'chrome://diagnostics/network_health_provider.mojom-webui.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks, isVisible} from '../../test_util.js';
+import {isVisible} from '../../test_util.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';
 import {TestDiagnosticsBrowserProxy} from './test_diagnostics_browser_proxy.js';
@@ -23,7 +25,7 @@ export function ipConfigInfoDrawerTestSuite() {
 
   suiteSetup(() => {
     DiagnosticsBrowserProxy = new TestDiagnosticsBrowserProxy();
-    DiagnosticsBrowserProxyImpl.instance_ = DiagnosticsBrowserProxy;
+    DiagnosticsBrowserProxyImpl.setInstance(DiagnosticsBrowserProxy);
   });
 
   setup(() => {
@@ -53,7 +55,8 @@ export function ipConfigInfoDrawerTestSuite() {
    */
   function getDrawerContentContainer() {
     return /** @type {!HTMLElement} */ (
-        ipConfigInfoDrawerElement.$$('#ipConfigInfoElement'));
+        ipConfigInfoDrawerElement.shadowRoot.querySelector(
+            '#ipConfigInfoElement'));
   }
 
   /**
@@ -61,7 +64,8 @@ export function ipConfigInfoDrawerTestSuite() {
    * @return {!HTMLElement}
    */
   function getDrawerToggle() {
-    const toggleButton = ipConfigInfoDrawerElement.$$('#drawerToggle');
+    const toggleButton =
+        ipConfigInfoDrawerElement.shadowRoot.querySelector('#drawerToggle');
     assertTrue(!!toggleButton);
     return /** @type {!HTMLElement} */ (toggleButton);
   }
@@ -72,12 +76,29 @@ export function ipConfigInfoDrawerTestSuite() {
         .header;
   }
 
+  /**
+   * @suppress {visibility}
+   * @param {number} prefix
+   * @return {!Promise}
+   */
+  function setRoutingPrefix(prefix) {
+    assertTrue(
+        !!ipConfigInfoDrawerElement.network &&
+        !!ipConfigInfoDrawerElement.network.ipConfig);
+
+    ipConfigInfoDrawerElement.network.ipConfig.routingPrefix = prefix;
+    ipConfigInfoDrawerElement.notifyPath('network.ipConfig.routingPrefix');
+
+    return flushTasks();
+  }
+
   test('IpConfigInfoDrawerInitialized', () => {
     return initializeIpConfigInfoDrawerElement().then(() => {
       assertTrue(isVisible(getDrawerToggle()));
       dx_utils.assertElementContainsText(
           /** @type {HTMLElement} */ (
-              ipConfigInfoDrawerElement.$$('#drawerTitle')),
+              ipConfigInfoDrawerElement.shadowRoot.querySelector(
+                  '#drawerTitle')),
           ipConfigInfoDrawerElement.i18n('ipConfigInfoDrawerTitle'));
     });
   });
@@ -109,7 +130,6 @@ export function ipConfigInfoDrawerTestSuite() {
   });
 
   test('ConfigDrawerOpenDisplaysSubnetMaskBasedOnNetwork', () => {
-    const expectedSubnetMask = '255.255.255.0';
     return initializeIpConfigInfoDrawerElement(fakeWifiNetwork)
         // Opening drawer to test visibility and content of data points.
         .then(() => getDrawerToggle().click())
@@ -117,7 +137,31 @@ export function ipConfigInfoDrawerTestSuite() {
           dx_utils.assertDataPointHasExpectedHeaderAndValue(
               ipConfigInfoDrawerElement, '#subnetMask',
               ipConfigInfoDrawerElement.i18n('ipConfigInfoDrawerSubnetMask'),
-              expectedSubnetMask);
+              '255.255.255.0');
+
+          return setRoutingPrefix(0);
+        })
+        .then(() => {
+          dx_utils.assertDataPointHasExpectedHeaderAndValue(
+              ipConfigInfoDrawerElement, '#subnetMask',
+              ipConfigInfoDrawerElement.i18n('ipConfigInfoDrawerSubnetMask'),
+              '');
+
+          return setRoutingPrefix(32);
+        })
+        .then(() => {
+          dx_utils.assertDataPointHasExpectedHeaderAndValue(
+              ipConfigInfoDrawerElement, '#subnetMask',
+              ipConfigInfoDrawerElement.i18n('ipConfigInfoDrawerSubnetMask'),
+              '255.255.255.255');
+
+          return setRoutingPrefix(33);
+        })
+        .then(() => {
+          dx_utils.assertDataPointHasExpectedHeaderAndValue(
+              ipConfigInfoDrawerElement, '#subnetMask',
+              ipConfigInfoDrawerElement.i18n('ipConfigInfoDrawerSubnetMask'),
+              '');
         });
   });
 

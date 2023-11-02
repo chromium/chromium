@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -267,15 +267,17 @@ bool SetPagesInfo(int pagecount_fd,
 void FillPFNMaps(const std::vector<ProcessMemory>& processes_memory,
                  std::vector<PFNMap>* pfn_maps) {
   int current_process_index = 0;
-  for (std::vector<ProcessMemory>::const_iterator it = processes_memory.begin();
-       it != processes_memory.end(); ++it, ++current_process_index) {
-    const std::vector<MemoryMap>& memory_maps = it->memory_maps;
-    for (std::vector<MemoryMap>::const_iterator it = memory_maps.begin();
-         it != memory_maps.end(); ++it) {
-      const std::vector<PageInfo>& pages = it->committed_pages;
-      for (std::vector<PageInfo>::const_iterator it = pages.begin();
-           it != pages.end(); ++it) {
-        const PageInfo& page_info = *it;
+  for (std::vector<ProcessMemory>::const_iterator memory_it =
+           processes_memory.begin();
+       memory_it != processes_memory.end();
+       ++memory_it, ++current_process_index) {
+    const std::vector<MemoryMap>& memory_maps = memory_it->memory_maps;
+    for (std::vector<MemoryMap>::const_iterator map_it = memory_maps.begin();
+         map_it != memory_maps.end(); ++map_it) {
+      const std::vector<PageInfo>& pages = map_it->committed_pages;
+      for (std::vector<PageInfo>::const_iterator page_it = pages.begin();
+           page_it != pages.end(); ++page_it) {
+        const PageInfo& page_info = *page_it;
         PFNMap* const pfn_map = &(*pfn_maps)[current_process_index];
         const std::pair<PFNMap::iterator, bool> result = pfn_map->insert(
             std::make_pair(page_info.page_frame_number, 0));
@@ -294,19 +296,20 @@ void ClassifyPages(std::vector<ProcessMemory>* processes_memory) {
   // that they can be counted only once.
   std::unordered_set<uint64_t> physical_pages_mapped_in_process;
 
-  for (std::vector<ProcessMemory>::iterator it = processes_memory->begin();
-       it != processes_memory->end(); ++it) {
-    std::vector<MemoryMap>* const memory_maps = &it->memory_maps;
+  for (std::vector<ProcessMemory>::iterator memory_it =
+           processes_memory->begin();
+       memory_it != processes_memory->end(); ++memory_it) {
+    std::vector<MemoryMap>* const memory_maps = &memory_it->memory_maps;
     physical_pages_mapped_in_process.clear();
-    for (std::vector<MemoryMap>::iterator it = memory_maps->begin();
-         it != memory_maps->end(); ++it) {
-      MemoryMap* const memory_map = &*it;
+    for (std::vector<MemoryMap>::iterator map_it = memory_maps->begin();
+         map_it != memory_maps->end(); ++map_it) {
+      MemoryMap* const memory_map = &*map_it;
       const size_t processes_count = processes_memory->size();
       memory_map->app_shared_pages.resize(processes_count - 1);
       const std::vector<PageInfo>& pages = memory_map->committed_pages;
-      for (std::vector<PageInfo>::const_iterator it = pages.begin();
-           it != pages.end(); ++it) {
-        const PageInfo& page_info = *it;
+      for (std::vector<PageInfo>::const_iterator page_it = pages.begin();
+           page_it != pages.end(); ++page_it) {
+        const PageInfo& page_info = *page_it;
         if (page_info.times_mapped == 1) {
           ++memory_map->private_pages.total_count;
           if (PageIsUnevictable(page_info))
@@ -326,9 +329,9 @@ void ClassifyPages(std::vector<ProcessMemory>* processes_memory) {
         // processes that are being analyzed.
         int times_mapped = 0;
         int mapped_in_processes_count = 0;
-        for (std::vector<PFNMap>::const_iterator it = pfn_maps.begin();
-             it != pfn_maps.end(); ++it) {
-          const PFNMap& pfn_map = *it;
+        for (std::vector<PFNMap>::const_iterator pfn_map_it = pfn_maps.begin();
+             pfn_map_it != pfn_maps.end(); ++pfn_map_it) {
+          const PFNMap& pfn_map = *pfn_map_it;
           const PFNMap::const_iterator found_it = pfn_map.find(
               page_frame_number);
           if (found_it == pfn_map.end())
@@ -379,15 +382,16 @@ void DumpProcessesMemoryMapsInShortFormat(
   std::vector<int> totals_app_shared(processes_memory.size());
   std::string buf;
   std::cout << "pid\tprivate\t\tshared_app\tshared_other (KB)\n";
-  for (std::vector<ProcessMemory>::const_iterator it = processes_memory.begin();
-       it != processes_memory.end(); ++it) {
-    const ProcessMemory& process_memory = *it;
+  for (std::vector<ProcessMemory>::const_iterator memory_it =
+           processes_memory.begin();
+       memory_it != processes_memory.end(); ++memory_it) {
+    const ProcessMemory& process_memory = *memory_it;
     std::fill(totals_app_shared.begin(), totals_app_shared.end(), 0);
     int total_private = 0, total_other_shared = 0;
     const std::vector<MemoryMap>& memory_maps = process_memory.memory_maps;
-    for (std::vector<MemoryMap>::const_iterator it = memory_maps.begin();
-         it != memory_maps.end(); ++it) {
-      const MemoryMap& memory_map = *it;
+    for (std::vector<MemoryMap>::const_iterator map_it = memory_maps.begin();
+         map_it != memory_maps.end(); ++map_it) {
+      const MemoryMap& memory_map = *map_it;
       total_private += memory_map.private_pages.total_count;
       for (size_t i = 0; i < memory_map.app_shared_pages.size(); ++i)
         totals_app_shared[i] += memory_map.app_shared_pages[i].total_count;
@@ -410,14 +414,15 @@ void DumpProcessesMemoryMapsInExtendedFormat(
     const std::vector<ProcessMemory>& processes_memory) {
   std::string buf;
   std::string app_shared_buf;
-  for (std::vector<ProcessMemory>::const_iterator it = processes_memory.begin();
-       it != processes_memory.end(); ++it) {
-    const ProcessMemory& process_memory = *it;
+  for (std::vector<ProcessMemory>::const_iterator memory_it =
+           processes_memory.begin();
+       memory_it != processes_memory.end(); ++memory_it) {
+    const ProcessMemory& process_memory = *memory_it;
     std::cout << "[ PID=" << process_memory.pid << "]" << '\n';
     const std::vector<MemoryMap>& memory_maps = process_memory.memory_maps;
-    for (std::vector<MemoryMap>::const_iterator it = memory_maps.begin();
-         it != memory_maps.end(); ++it) {
-      const MemoryMap& memory_map = *it;
+    for (std::vector<MemoryMap>::const_iterator map_it = memory_maps.begin();
+         map_it != memory_maps.end(); ++map_it) {
+      const MemoryMap& memory_map = *map_it;
       app_shared_buf.clear();
       AppendAppSharedField(memory_map.app_shared_pages, &app_shared_buf);
       base::SStringPrintf(

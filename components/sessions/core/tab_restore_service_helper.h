@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <set>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_dump_provider.h"
@@ -62,8 +63,8 @@ class SESSIONS_EXPORT TabRestoreServiceHelper
   };
 
   enum {
-    // Max number of entries we'll keep around.
-#if defined(OS_ANDROID)
+  // Max number of entries we'll keep around.
+#if BUILDFLAG(IS_ANDROID)
     // Android keeps at most 5 recent tabs.
     kMaxEntries = 5,
 #else
@@ -100,7 +101,7 @@ class SESSIONS_EXPORT TabRestoreServiceHelper
 
   const Entries& entries() const;
   std::vector<LiveTab*> RestoreMostRecentEntry(LiveTabContext* context);
-  std::unique_ptr<Tab> RemoveTabEntryById(SessionID id);
+  void RemoveTabEntryById(SessionID id);
   std::vector<LiveTab*> RestoreEntryById(LiveTabContext* context,
                                          SessionID id,
                                          WindowOpenDisposition disposition);
@@ -122,10 +123,10 @@ class SESSIONS_EXPORT TabRestoreServiceHelper
   // entries.
   void PruneEntries();
 
-  // Returns an iterator into |entries_| whose id matches |id|. If |id|
-  // identifies a Window, then its iterator position will be returned. If it
-  // identifies a tab, then the iterator position of the Window in which the Tab
-  // resides is returned.
+  // Returns an iterator into |entries_| whose id or original_id matches |id|.
+  // If |id| identifies a Window, then its iterator position will be returned.
+  // If it identifies a tab, then the iterator position of the Window in which
+  // the Tab resides is returned.
   Entries::iterator GetEntryIteratorById(SessionID id);
 
   // From base::trace_event::MemoryDumpProvider
@@ -200,11 +201,11 @@ class SESSIONS_EXPORT TabRestoreServiceHelper
   // Gets the current time. This uses the time_factory_ if there is one.
   base::Time TimeNow() const;
 
-  TabRestoreService* const tab_restore_service_;
+  const raw_ptr<TabRestoreService> tab_restore_service_;
 
-  Observer* observer_;
+  raw_ptr<Observer> observer_;
 
-  TabRestoreServiceClient* client_;
+  raw_ptr<TabRestoreServiceClient> client_;
 
   // Set of entries. They are ordered from most to least recent.
   Entries entries_;
@@ -225,7 +226,7 @@ class SESSIONS_EXPORT TabRestoreServiceHelper
   // creating historical tabs for them.
   std::set<tab_groups::TabGroupId> closing_groups_;
 
-  TimeFactory* const time_factory_;
+  const raw_ptr<TimeFactory> time_factory_;
 };
 
 }  // namespace sessions

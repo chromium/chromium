@@ -32,7 +32,7 @@ float CalculateTextAnchorShift(const ComputedStyle& style, float length) {
   switch (style.TextAnchor()) {
     default:
       NOTREACHED();
-      FALLTHROUGH;
+      [[fallthrough]];
     case ETextAnchor::kStart:
       return is_ltr ? 0 : -length;
     case ETextAnchor::kMiddle:
@@ -49,7 +49,7 @@ bool NeedsTextAnchorAdjustment(const ComputedStyle& style) {
   switch (style.TextAnchor()) {
     default:
       NOTREACHED();
-      FALLTHROUGH;
+      [[fallthrough]];
     case ETextAnchor::kStart:
       return !is_ltr;
     case ETextAnchor::kMiddle:
@@ -117,7 +117,7 @@ SVGTextChunkBuilder::SVGTextChunkBuilder() = default;
 
 void SVGTextChunkBuilder::ProcessTextChunks(
     const HeapVector<Member<SVGInlineTextBox>>& line_layout_boxes) {
-  if (line_layout_boxes.IsEmpty())
+  if (line_layout_boxes.empty())
     return;
 
   bool found_start = false;
@@ -212,7 +212,7 @@ void SVGTextChunkBuilder::HandleTextChunk(BoxListConstIterator box_start,
       unsigned at_character = 0;
       for (auto* box_iter = box_start; box_iter != box_end; ++box_iter) {
         Vector<SVGTextFragment>& fragments = (*box_iter)->TextFragments();
-        if (fragments.IsEmpty())
+        if (fragments.empty())
           continue;
         ProcessTextLengthSpacingCorrection(is_vertical_text, text_length_shift,
                                            fragments, at_character);
@@ -233,7 +233,7 @@ void SVGTextChunkBuilder::HandleTextChunk(BoxListConstIterator box_start,
       for (auto* box_iter = box_start; box_iter != box_end; ++box_iter) {
         SVGInlineTextBox* text_box = *box_iter;
         Vector<SVGTextFragment>& fragments = text_box->TextFragments();
-        if (fragments.IsEmpty())
+        if (fragments.empty())
           continue;
 
         if (!found_first_fragment) {
@@ -255,7 +255,7 @@ void SVGTextChunkBuilder::HandleTextChunk(BoxListConstIterator box_start,
       CalculateTextAnchorShift(style, length_accumulator.length());
   for (auto* box_iter = box_start; box_iter != box_end; ++box_iter) {
     Vector<SVGTextFragment>& fragments = (*box_iter)->TextFragments();
-    if (fragments.IsEmpty())
+    if (fragments.empty())
       continue;
     ProcessTextAnchorCorrection(is_vertical_text, text_anchor_shift, fragments);
   }

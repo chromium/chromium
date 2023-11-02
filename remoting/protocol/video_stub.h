@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 
 namespace remoting {
 
@@ -25,8 +24,8 @@ class VideoStub {
                                   base::OnceClosure done) = 0;
 
  protected:
-  VideoStub() {}
-  virtual ~VideoStub() {}
+  VideoStub() = default;
+  virtual ~VideoStub() = default;
 };
 
 }  // namespace protocol

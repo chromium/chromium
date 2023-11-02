@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_offset_string_conversions.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -45,11 +46,12 @@ class VectorIterator {
   explicit VectorIterator(std::vector<const BookmarkNode*>* nodes);
   VectorIterator(const VectorIterator& other) = delete;
   VectorIterator& operator=(const VectorIterator& other) = delete;
+  ~VectorIterator();
   bool has_next();
   const BookmarkNode* Next();
 
  private:
-  std::vector<const BookmarkNode*>* nodes_;
+  raw_ptr<std::vector<const BookmarkNode*>> nodes_;
   std::vector<const BookmarkNode*>::iterator current_;
 };
 
@@ -132,9 +134,9 @@ void DeleteBookmarkFolders(BookmarkModel* model,
                            const std::vector<int64_t>& ids);
 
 // If there are no user bookmarks for url, a bookmark is created.
-void AddIfNotBookmarked(BookmarkModel* model,
-                        const GURL& url,
-                        const std::u16string& title);
+const BookmarkNode* AddIfNotBookmarked(BookmarkModel* model,
+                                       const GURL& url,
+                                       const std::u16string& title);
 
 // Removes all bookmarks for the given |url|.
 void RemoveAllBookmarks(BookmarkModel* model, const GURL& url);
@@ -176,6 +178,10 @@ bool IsBookmarkedByUser(BookmarkModel* model, const GURL& url);
 
 // Returns the node with |id|, or NULL if there is no node with |id|.
 const BookmarkNode* GetBookmarkNodeByID(const BookmarkModel* model, int64_t id);
+
+// Returns the node with |guid|, or NULL if there is no node with |guid|.
+const BookmarkNode* GetBookmarkNodeByGUID(const BookmarkModel* model,
+                                          const base::GUID& guid);
 
 // Returns true if |node| is a descendant of |root|.
 bool IsDescendantOf(const BookmarkNode* node, const BookmarkNode* root);

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,10 +21,6 @@ namespace autofill {
 // code.
 class AccessorySheetField {
  public:
-  AccessorySheetField(std::u16string display_text,
-                      std::u16string a11y_description,
-                      bool is_obfuscated,
-                      bool selectable);
   AccessorySheetField(std::u16string display_text,
                       std::u16string text_to_fill,
                       std::u16string a11y_description,
@@ -159,7 +155,7 @@ std::ostream& operator<<(std::ostream& out,
 // Represents a command below the suggestions, such as "Manage password...".
 class FooterCommand {
  public:
-  FooterCommand(std::u16string display_text, autofill::AccessoryAction action);
+  FooterCommand(std::u16string display_text, AccessoryAction action);
   FooterCommand(const FooterCommand& footer_command);
   FooterCommand(FooterCommand&& footer_command);
 
@@ -170,9 +166,7 @@ class FooterCommand {
 
   const std::u16string& display_text() const { return display_text_; }
 
-  autofill::AccessoryAction accessory_action() const {
-    return accessory_action_;
-  }
+  AccessoryAction accessory_action() const { return accessory_action_; }
 
   bool operator==(const FooterCommand& fc) const;
 
@@ -184,7 +178,7 @@ class FooterCommand {
   // IMPORTANT(https://crbug.com/1169167): Add the size of newly added strings
   // to the memory estimation member!
   std::u16string display_text_;
-  autofill::AccessoryAction accessory_action_;
+  AccessoryAction accessory_action_;
   size_t estimated_memory_use_by_strings_ = 0;
 };
 
@@ -224,7 +218,7 @@ class OptionToggle {
   // to the memory estimation member!
   std::u16string display_text_;
   bool enabled_;
-  autofill::AccessoryAction accessory_action_;
+  AccessoryAction accessory_action_;
   size_t estimated_memory_use_by_strings_ = 0;
 };
 
@@ -328,10 +322,10 @@ class AccessorySheetData::Builder {
   // Sets the option toggle in the accessory sheet.
   Builder&& SetOptionToggle(std::u16string display_text,
                             bool enabled,
-                            autofill::AccessoryAction action) &&;
+                            AccessoryAction action) &&;
   Builder& SetOptionToggle(std::u16string display_text,
                            bool enabled,
-                           autofill::AccessoryAction action) &;
+                           AccessoryAction action) &;
 
   // Adds a new UserInfo object to |accessory_sheet_data_|.
   Builder&& AddUserInfo(
@@ -379,9 +373,9 @@ class AccessorySheetData::Builder {
 
   // Appends a new footer command to |accessory_sheet_data_|.
   Builder&& AppendFooterCommand(std::u16string display_text,
-                                autofill::AccessoryAction action) &&;
+                                AccessoryAction action) &&;
   Builder& AppendFooterCommand(std::u16string display_text,
-                               autofill::AccessoryAction action) &;
+                               AccessoryAction action) &;
 
   // This class returns the constructed AccessorySheetData object. Since this
   // would render the builder unusable, it's required to destroy the object

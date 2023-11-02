@@ -1,4 +1,4 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -46,7 +46,11 @@ declare_args() {
   # Prefix for CFBundleIdentifier property of iOS bundles (correspond to the
   # "Organization Identifier" in Xcode). Code signing will fail if no mobile
   # provisioning for the selected code signing identify support that prefix.
-  ios_app_bundle_id_prefix = "org.chromium"
+  ios_app_bundle_id_prefix = "org.chromium.ost"
+
+  # Paths to the mobileprovision files for the chosen code signing
+  # identity description and app bundle id prefix.
+  ios_mobileprovision_files = []
 
   # If non-empty, this list must contain valid cpu architecture, and the final
   # build will be a multi-architecture build (aka fat build) supporting the
@@ -64,17 +68,7 @@ declare_args() {
   additional_target_cpus = []
 
   # Set to true if all test apps should use the same bundle id.
-  ios_use_shared_bundle_id_for_test_apps = false
-
-  # Enabling this option makes clang compile to an intermediate
-  # representation ("bitcode"), and not to native code. This is preferred
-  # when including WebRTC in the apps that will be sent to Apple's App Store
-  # and mandatory for the apps that run on watchOS or tvOS.
-  #
-  # Mimicking how Xcode handles it, the production builds (is_debug = false)
-  # get real bitcode sections added, while the debug builds (is_debug = true)
-  # only get bitcode-section "markers" added in them.
-  enable_ios_bitcode = false
+  ios_use_shared_bundle_id_for_test_apps = true
 }
 
 declare_args() {
@@ -86,11 +80,6 @@ declare_args() {
   # toolchain for the fat build (could be current_toolchain).
   primary_fat_toolchain_name = ""
 }
-
-# Official builds may not use goma.
-assert(!((use_goma || use_remoteexec) && is_chrome_branded &&
-             is_official_build && target_cpu == "arm64"),
-       "goma/re-client use is forbidden for official iOS builds.")
 
 assert(custom_toolchain == "" || additional_target_cpus == [],
        "cannot define both custom_toolchain and additional_target_cpus")
@@ -156,6 +145,8 @@ if (ios_sdk_path == "") {
     ios_sdk_info_args += [
       "--create_symlink_at",
       "sdk/xcode_links",
+      "--root_build_dir",
+      root_build_dir,
     ]
   }
   script_name = "//build/config/apple/sdk_info.py"
@@ -195,4 +186,9 @@ if (target_environment == "device" && ios_enable_code_signing) {
                                             find_signing_identity_args,
                                             "trim string")
   }
+}
+
+if (ios_use_shared_bundle_id_for_test_apps) {
+  shared_bundle_id_for_test_apps =
+      "$ios_app_bundle_id_prefix.chrome.unittests.dev"
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include "base/callback_helpers.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -33,7 +34,7 @@ class WebDialogDelegateUserData : public base::SupportsUserData::Data {
   WebDialogDelegate* delegate() { return delegate_; }
 
  private:
-  WebDialogDelegate* delegate_;  // unowned
+  raw_ptr<WebDialogDelegate> delegate_;  // unowned
 };
 
 }  // namespace
@@ -58,7 +59,7 @@ WebDialogUIBase::WebDialogUIBase(content::WebUI* web_ui) : web_ui_(web_ui) {}
 // HTML dialogs won't swap WebUIs anyway since they don't navigate.
 WebDialogUIBase::~WebDialogUIBase() = default;
 
-void WebDialogUIBase::CloseDialog(const base::ListValue* args) {
+void WebDialogUIBase::CloseDialog(const base::Value::List& args) {
   OnDialogClosed(args);
 }
 
@@ -75,7 +76,7 @@ void WebDialogUIBase::HandleRenderFrameCreated(
     RenderFrameHost* render_frame_host) {
   // Hook up the javascript function calls, also known as chrome.send("foo")
   // calls in the HTML, to the actual C++ functions.
-  web_ui_->RegisterDeprecatedMessageCallback(
+  web_ui_->RegisterMessageCallback(
       "dialogClose", base::BindRepeating(&WebDialogUIBase::OnDialogClosed,
                                          base::Unretained(this)));
 
@@ -99,12 +100,16 @@ void WebDialogUIBase::HandleRenderFrameCreated(
     delegate->OnDialogShown(web_ui_);
 }
 
-void WebDialogUIBase::OnDialogClosed(const base::ListValue* args) {
+void WebDialogUIBase::OnDialogClosed(const base::Value::List& args) {
   WebDialogDelegate* delegate = GetDelegate(web_ui_->GetWebContents());
   if (delegate) {
     std::string json_retval;
-    if (args && !args->GetList().empty() && !args->GetString(0, &json_retval))
-      NOTREACHED() << "Could not read JSON argument";
+    if (!args.empty()) {
+      if (args[0].is_string())
+        json_retval = args[0].GetString();
+      else
+        NOTREACHED() << "Could not read JSON argument";
+    }
 
     delegate->OnDialogCloseFromWebUI(json_retval);
   }

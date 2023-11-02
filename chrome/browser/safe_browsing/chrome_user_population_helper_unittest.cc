@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,14 +7,16 @@
 #include "base/feature_list.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/driver/test_sync_service.h"
+#include "components/sync/test/test_sync_service.h"
 #include "components/unified_consent/pref_names.h"
 #include "components/version_info/version_info.h"
 #include "content/public/test/browser_task_environment.h"
@@ -91,7 +93,9 @@ TEST(GetUserPopulationForProfileTest, PopulatesSync) {
     sync_service->SetTransportState(
         syncer::SyncService::TransportState::ACTIVE);
     sync_service->SetLocalSyncEnabled(false);
-    sync_service->SetActiveDataTypes(syncer::ModelTypeSet::All());
+    sync_service->GetUserSettings()->SetSelectedTypes(
+        /*sync_everything=*/true,
+        /*types=*/syncer::UserSelectableTypeSet::All());
 
     ChromeUserPopulation population = GetUserPopulationForProfile(&profile);
     EXPECT_TRUE(population.is_history_sync_enabled());
@@ -101,7 +105,9 @@ TEST(GetUserPopulationForProfileTest, PopulatesSync) {
     sync_service->SetTransportState(
         syncer::SyncService::TransportState::DISABLED);
     sync_service->SetLocalSyncEnabled(false);
-    sync_service->SetActiveDataTypes(syncer::ModelTypeSet::All());
+    sync_service->GetUserSettings()->SetSelectedTypes(
+        /*sync_everything=*/true,
+        /*types=*/syncer::UserSelectableTypeSet::All());
 
     ChromeUserPopulation population = GetUserPopulationForProfile(&profile);
     EXPECT_FALSE(population.is_history_sync_enabled());
@@ -111,7 +117,9 @@ TEST(GetUserPopulationForProfileTest, PopulatesSync) {
     sync_service->SetTransportState(
         syncer::SyncService::TransportState::ACTIVE);
     sync_service->SetLocalSyncEnabled(true);
-    sync_service->SetActiveDataTypes(syncer::ModelTypeSet::All());
+    sync_service->GetUserSettings()->SetSelectedTypes(
+        /*sync_everything=*/true,
+        /*types=*/syncer::UserSelectableTypeSet::All());
 
     ChromeUserPopulation population = GetUserPopulationForProfile(&profile);
     EXPECT_FALSE(population.is_history_sync_enabled());
@@ -121,10 +129,31 @@ TEST(GetUserPopulationForProfileTest, PopulatesSync) {
     sync_service->SetTransportState(
         syncer::SyncService::TransportState::ACTIVE);
     sync_service->SetLocalSyncEnabled(false);
-    sync_service->SetActiveDataTypes(syncer::ModelTypeSet());
+    sync_service->GetUserSettings()->SetSelectedTypes(
+        /*sync_everything=*/false,
+        /*types=*/syncer::UserSelectableTypeSet());
 
     ChromeUserPopulation population = GetUserPopulationForProfile(&profile);
     EXPECT_FALSE(population.is_history_sync_enabled());
+  }
+}
+
+TEST(GetUserPopulationForProfileTest, PopulatesSignedIn) {
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+
+  {
+    ChromeUserPopulation population = GetUserPopulationForProfile(&profile);
+    EXPECT_FALSE(population.is_signed_in());
+  }
+
+  {
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(&profile);
+    signin::SetPrimaryAccount(identity_manager, "test@example.com",
+                              signin::ConsentLevel::kSignin);
+    ChromeUserPopulation population = GetUserPopulationForProfile(&profile);
+    EXPECT_TRUE(population.is_signed_in());
   }
 }
 

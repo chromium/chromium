@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,13 +14,13 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
+#include "chrome/browser/headless/headless_mode_util.h"
 #include "chrome/browser/themes/custom_theme_supplier.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window_state.h"
-#include "chrome/browser/ui/views/frame/browser_desktop_window_tree_host.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_root_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -38,7 +38,7 @@
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/widget/native_widget.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ui/wm/desks/desks_helper.h"
 #endif
 
@@ -46,22 +46,15 @@
 #include "components/user_manager/user_manager.h"
 #endif
 
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
 #include "ui/display/screen.h"
-#endif
-
-#if defined(OS_LINUX)
-#include "ui/views/linux_ui/linux_ui.h"
+#include "ui/linux/linux_ui.h"
 #endif
 
 namespace {
 
-bool IsUsingGtkTheme(Profile* profile) {
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+bool IsUsingLinuxSystemTheme(Profile* profile) {
+#if BUILDFLAG(IS_LINUX)
   return ThemeServiceFactory::GetForProfile(profile)->UsingSystemTheme();
 #else
   return false;
@@ -92,9 +85,19 @@ void BrowserFrame::InitBrowserFrame() {
   views::Widget::InitParams params = native_browser_frame_->GetWidgetParams();
   params.name = "BrowserFrame";
   params.delegate = browser_view_;
+  params.headless_mode = headless::IsChromeNativeHeadless();
+
+  Browser* browser = browser_view_->browser();
+  if (browser->is_type_picture_in_picture()) {
+    params.z_order = ui::ZOrderLevel::kFloatingWindow;
+  }
+
+#if defined(USE_OZONE)
+  params.inhibit_keyboard_shortcuts =
+      browser->is_type_app() || browser->is_type_app_popup();
+#endif
 
   if (native_browser_frame_->ShouldRestorePreviousBrowserWidgetState()) {
-    Browser* browser = browser_view_->browser();
     if (browser->is_type_normal() || browser->is_type_devtools() ||
         browser->is_type_app()) {
       // Typed panel/popup can only return a size once the widget has been
@@ -107,8 +110,10 @@ void BrowserFrame::InitBrowserFrame() {
                                                &params.show_state);
 
       params.workspace = browser->initial_workspace();
-      params.visible_on_all_workspaces =
-          browser->initial_visible_on_all_workspaces_state();
+      if (native_browser_frame_->ShouldUseInitialVisibleOnAllWorkspaces()) {
+        params.visible_on_all_workspaces =
+            browser->initial_visible_on_all_workspaces_state();
+      }
       const base::CommandLine& parsed_command_line =
           *base::CommandLine::ForCurrentProcess();
 
@@ -231,26 +236,29 @@ bool BrowserFrame::GetAccelerator(int command_id,
 const ui::ThemeProvider* BrowserFrame::GetThemeProvider() const {
   Browser* browser = browser_view_->browser();
   auto* app_controller = browser->app_controller();
-  // Ignore GTK+ for web apps with window-controls-overlay as the
+  // Ignore the system theme for web apps with window-controls-overlay as the
   // display_override so the web contents can blend with the overlay by using
   // the developer-provided theme color for a better experience. Context:
   // https://crbug.com/1219073.
-  if (app_controller && (!IsUsingGtkTheme(browser->profile()) ||
+  if (app_controller && (!IsUsingLinuxSystemTheme(browser->profile()) ||
                          app_controller->AppUsesWindowControlsOverlay())) {
     return app_controller->GetThemeProvider();
   }
   return &ThemeService::GetThemeProviderForProfile(browser->profile());
 }
 
-ui::ColorProviderManager::InitializerSupplier* BrowserFrame::GetCustomTheme()
-    const {
+ui::ColorProviderManager::ThemeInitializerSupplier*
+BrowserFrame::GetCustomTheme() const {
   Browser* browser = browser_view_->browser();
+  // If this is an incognito profile, there should never be a custom theme.
+  if (browser->profile()->IsIncognitoProfile())
+    return nullptr;
   auto* app_controller = browser->app_controller();
-  // Ignore GTK+ for web apps with window-controls-overlay as the
+  // Ignore the system theme for web apps with window-controls-overlay as the
   // display_override so the web contents can blend with the overlay by using
   // the developer-provided theme color for a better experience. Context:
   // https://crbug.com/1219073.
-  if (app_controller && (!IsUsingGtkTheme(browser->profile()) ||
+  if (app_controller && (!IsUsingLinuxSystemTheme(browser->profile()) ||
                          app_controller->AppUsesWindowControlsOverlay())) {
     return app_controller->GetThemeSupplier();
   }
@@ -261,9 +269,7 @@ void BrowserFrame::OnNativeWidgetWorkspaceChanged() {
   chrome::SaveWindowWorkspace(browser_view_->browser(), GetWorkspace());
   chrome::SaveWindowVisibleOnAllWorkspaces(browser_view_->browser(),
                                            IsVisibleOnAllWorkspaces());
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
   // If the window was sent to a different workspace, prioritize it if
   // it was sent to the current workspace and deprioritize it
   // otherwise.  This is done by MoveBrowsersInWorkspaceToFront()
@@ -312,7 +318,7 @@ ui::MenuModel* BrowserFrame::GetSystemMenuModel() {
     menu_model_builder_.reset();
   }
 #endif
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   auto* desks_helper = chromeos::DesksHelper::Get(GetNativeWindow());
   int current_num_desks = desks_helper ? desks_helper->GetNumberOfDesks() : -1;
   if (current_num_desks != num_desks_) {
@@ -345,6 +351,16 @@ void BrowserFrame::SetTabDragKind(TabDragKind tab_drag_kind) {
   tab_drag_kind_ = tab_drag_kind;
 }
 
+ui::ColorProviderManager::Key BrowserFrame::GetColorProviderKey() const {
+  auto key = Widget::GetColorProviderKey();
+  key.frame_type = UseCustomFrame()
+                       ? ui::ColorProviderManager::FrameType::kChromium
+                       : ui::ColorProviderManager::FrameType::kNative;
+  auto* app_controller = browser_view_->browser()->app_controller();
+  key.app_controller = app_controller;
+  return key;
+}
+
 void BrowserFrame::OnMenuClosed() {
   menu_runner_.reset();
 }
@@ -366,35 +382,25 @@ void BrowserFrame::OnTouchUiChanged() {
 }
 
 void BrowserFrame::SelectNativeTheme() {
-  // Select between regular, dark and GTK theme.
+  // Select between regular, dark and Linux toolkit themes.
   ui::NativeTheme* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
 
   if (browser_view_->browser()->profile()->IsIncognitoProfile()) {
-    // If the flag is enabled, then no matter if we are using the default theme
-    // or not we always use the dark ui instance.
-    if (base::FeatureList::IsEnabled(
-            features::kIncognitoBrandConsistencyForDesktop)) {
-      SetNativeTheme(ui::NativeTheme::GetInstanceForDarkUI());
-      return;
-    }
-
-    // Flag is disabled, fallback to using dark theme only if the incognito
-    // profile is using a default theme.
-    if (ThemeServiceFactory::GetForProfile(browser_view_->browser()->profile())
-            ->UsingDefaultTheme()) {
-      native_theme = ui::NativeTheme::GetInstanceForDarkUI();
-    }
+    // No matter if we are using the default theme or not we always use the dark
+    // ui instance.
+    SetNativeTheme(ui::NativeTheme::GetInstanceForDarkUI());
+    return;
   }
 
-#if defined(OS_LINUX)
-  const views::LinuxUI* linux_ui = views::LinuxUI::instance();
-  // Ignore GTK+ for web apps with window-controls-overlay as the
+#if BUILDFLAG(IS_LINUX)
+  const auto* linux_ui_theme =
+      ui::LinuxUiTheme::GetForWindow(GetNativeWindow());
+  // Ignore the system theme for web apps with window-controls-overlay as the
   // display_override so the web contents can blend with the overlay by using
   // the developer-provided theme color for a better experience. Context:
   // https://crbug.com/1219073.
-  if (linux_ui && !browser_view_->AppUsesWindowControlsOverlay()) {
-    native_theme = linux_ui->GetNativeTheme(GetNativeWindow());
-  }
+  if (linux_ui_theme && !browser_view_->AppUsesWindowControlsOverlay())
+    native_theme = linux_ui_theme->GetNativeTheme();
 #endif
 
   SetNativeTheme(native_theme);
@@ -403,15 +409,13 @@ void BrowserFrame::SelectNativeTheme() {
 bool BrowserFrame::RegenerateFrameOnThemeChange(
     BrowserThemeChangeType theme_change_type) {
   bool need_regenerate = false;
-  // TODO(crbug.com/1052397): Revisit the macro expression once build flag
-  // switch of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  // GTK and user theme changes can both change frame buttons, so the frame
+#if BUILDFLAG(IS_LINUX)
+  // System and user theme changes can both change frame buttons, so the frame
   // always needs to be regenerated on Linux.
   need_regenerate = true;
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On Windows, DWM transition does not performed for a frame regeneration in
   // fullscreen mode, so do a lighweight theme change to refresh a bookmark bar
   // on new tab. (see crbug/1002480)

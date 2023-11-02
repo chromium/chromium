@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,9 +12,9 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -41,8 +41,8 @@
 #include "third_party/blink/public/mojom/sms/webotp_service.mojom-shared.h"
 #include "third_party/blink/public/mojom/sms/webotp_service.mojom.h"
 
-using base::BindLambdaForTesting;
 using absl::optional;
+using base::BindLambdaForTesting;
 using blink::mojom::SmsStatus;
 using blink::mojom::WebOTPService;
 using std::string;
@@ -85,8 +85,13 @@ class Service {
     // cancels requests early if one does not exist.
     web_contents->SetDelegate(&contents_delegate_);
 
-    service_ = std::make_unique<WebOTPService>(
-        &fetcher_, OriginList{origin}, web_contents->GetMainFrame(),
+    // WebOTPService is a DocumentService and normally self-deletes. For the
+    // purposes of the test, `~Service` is responsible for manually cleaning
+    // up `service_`. A normal std::unique_ptr<T> is not allowed here, since a
+    // DocumentService implementation must be deleted by calling one of the
+    // `*AndDeleteThis()` methods.
+    service_ = &WebOTPService::CreateForTesting(
+        &fetcher_, OriginList{origin}, *web_contents->GetPrimaryMainFrame(),
         service_remote_.BindNewPipeAndPassReceiver());
     service_->SetConsentHandlerForTesting(consent_handler_.get());
   }
@@ -94,9 +99,17 @@ class Service {
  public:
   explicit Service(WebContents* web_contents)
       : Service(web_contents,
-                web_contents->GetMainFrame()->GetLastCommittedOrigin(),
+                web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
                 /* avoid showing user prompts */
                 std::make_unique<NoopUserConsentHandler>()) {}
+
+  ~Service() {
+    // WebOTPService sends IPCs in its destructor, so for the unit test, pretend
+    // that this works.
+    service_->WillBeDestroyed(
+        DocumentServiceDestructionReason::kEndOfDocumentLifetime);
+    service_->ResetAndDeleteThis();
+  }
 
   NiceMock<MockSmsProvider>* provider() { return &provider_; }
   SmsFetcher* fetcher() { return &fetcher_; }
@@ -128,7 +141,7 @@ class Service {
   SmsFetcherImpl fetcher_;
   std::unique_ptr<UserConsentHandler> consent_handler_;
   mojo::Remote<blink::mojom::WebOTPService> service_remote_;
-  std::unique_ptr<WebOTPService> service_;
+  raw_ptr<WebOTPService> service_;
 };
 
 class WebOTPServiceTest : public RenderViewHostTestHarness {
@@ -536,7 +549,7 @@ class ServiceWithPrompt : public Service {
  public:
   explicit ServiceWithPrompt(WebContents* web_contents)
       : Service(web_contents,
-                web_contents->GetMainFrame()->GetLastCommittedOrigin(),
+                web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
                 std::make_unique<NiceMock<MockUserConsentHandler>>()) {
     mock_handler_ =
         static_cast<NiceMock<MockUserConsentHandler>*>(consent_handler());
@@ -578,7 +591,7 @@ class ServiceWithPrompt : public Service {
   // The actual consent handler is owned by WebOTPService but we keep a ptr to
   // it so it can be used to set expectations for it. It is safe since the
   // sms service lifetime is the same as this object.
-  NiceMock<MockUserConsentHandler>* mock_handler_;
+  raw_ptr<NiceMock<MockUserConsentHandler>> mock_handler_;
   CompletionCallback on_complete_callback_;
 };
 
@@ -911,7 +924,7 @@ TEST_F(WebOTPServiceTest, RecordUserDismissPrompt) {
 
 TEST_F(WebOTPServiceTest, RecordUnhandledRequestOnNavigation) {
   web_contents()->GetController().GetBackForwardCache().DisableForTesting(
-      content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
   NavigateAndCommit(GURL(kTestUrl));
   NiceMock<MockSmsWebContentsDelegate> delegate;
   WebContentsImpl* web_contents_impl =

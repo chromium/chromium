@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,7 +30,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_variable_parser.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -92,7 +92,7 @@ CSSStyleValue* CreateStyleValueWithPropertyInternal(CSSPropertyID property_id,
       if (identifier_value &&
           identifier_value->GetValueID() == CSSValueID::kAuto)
         return CSSKeywordValue::Create("auto");
-      FALLTHROUGH;
+      [[fallthrough]];
     }
     case CSSPropertyID::kBackgroundColor:
     case CSSPropertyID::kBorderBottomColor:
@@ -106,7 +106,7 @@ CSSStyleValue* CreateStyleValueWithPropertyInternal(CSSPropertyID property_id,
     case CSSPropertyID::kOutlineColor:
     case CSSPropertyID::kStopColor:
     case CSSPropertyID::kTextDecorationColor:
-    case CSSPropertyID::kWebkitTextEmphasisColor: {
+    case CSSPropertyID::kTextEmphasisColor: {
       // Only 'currentcolor' is supported.
       auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
       if (identifier_value &&
@@ -115,7 +115,8 @@ CSSStyleValue* CreateStyleValueWithPropertyInternal(CSSPropertyID property_id,
       return MakeGarbageCollected<CSSUnsupportedStyleValue>(
           CSSPropertyName(property_id), value);
     }
-    case CSSPropertyID::kContain: {
+    case CSSPropertyID::kContain:
+    case CSSPropertyID::kContainerType: {
       if (value.IsIdentifierValue())
         return CreateStyleValue(value);
 
@@ -151,7 +152,7 @@ CSSStyleValue* CreateStyleValueWithPropertyInternal(CSSPropertyID property_id,
       // offset-anchor and offset-position can be 'auto'
       if (value.IsIdentifierValue())
         return CreateStyleValue(value);
-      FALLTHROUGH;
+      [[fallthrough]];
     case CSSPropertyID::kObjectPosition:
     case CSSPropertyID::kPerspectiveOrigin:
     case CSSPropertyID::kTransformOrigin:
@@ -229,6 +230,9 @@ CSSStyleValue* CreateStyleValueWithProperty(CSSPropertyID property_id,
                                             const CSSValue& value) {
   DCHECK_NE(property_id, CSSPropertyID::kInvalid);
 
+  if (UNLIKELY(value.IsPendingSubstitutionValue()))
+    return nullptr;
+
   if (CSSStyleValue* style_value = CreateStyleValueWithoutProperty(value))
     return style_value;
 
@@ -267,7 +271,7 @@ CSSStyleValueVector StyleValueFactory::FromString(
   const auto tokens = tokenizer.TokenizeToEOF();
   const CSSParserTokenRange range(tokens);
 
-  HeapVector<CSSPropertyValue, 256> parsed_properties;
+  HeapVector<CSSPropertyValue, 64> parsed_properties;
   if (property_id != CSSPropertyID::kVariable &&
       CSSPropertyParser::ParseValue(property_id, false, range, parser_context,
                                     parsed_properties,
@@ -290,12 +294,11 @@ CSSStyleValueVector StyleValueFactory::FromString(
     return result;
   }
 
-  if ((property_id == CSSPropertyID::kVariable && !tokens.IsEmpty()) ||
+  if ((property_id == CSSPropertyID::kVariable && !tokens.empty()) ||
       CSSVariableParser::ContainsValidVariableReferences(range)) {
     const auto variable_data = CSSVariableData::Create(
         {range, StringView(css_text)}, false /* is_animation_tainted */,
-        false /* needs variable resolution */, parser_context->BaseURL(),
-        parser_context->Charset());
+        false /* needs variable resolution */);
     CSSStyleValueVector values;
     values.push_back(CSSUnparsedValue::FromCSSVariableData(*variable_data));
     return values;
@@ -338,7 +341,7 @@ CSSStyleValueVector StyleValueFactory::CoerceStyleValuesOrStrings(
         const auto& subvalues = StyleValueFactory::FromString(
             property.PropertyID(), custom_property_name, value->GetAsString(),
             parser_context);
-        if (subvalues.IsEmpty())
+        if (subvalues.empty())
           return CSSStyleValueVector();
 
         DCHECK(!subvalues.Contains(nullptr));

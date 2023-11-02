@@ -1,4 +1,4 @@
-// Copyright 2018 The Crashpad Authors. All rights reserved.
+// Copyright 2018 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,13 +14,14 @@
 
 #include "snapshot/sanitized/sanitization_information.h"
 
-#include "base/cxx17_backports.h"
+#include <iterator>
+
 #include "build/build_config.h"
 #include "gtest/gtest.h"
 #include "util/misc/from_pointer_cast.h"
 #include "util/process/process_memory_linux.h"
 
-#if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "test/linux/fake_ptrace_connection.h"
 #endif
 
@@ -66,7 +67,7 @@ const char* const kNonEmptyAllowedAnnotations[] = {"string1",
 TEST_F(AllowedAnnotationsTest, NonEmptyAllowedAnnotations) {
   ASSERT_TRUE(DoReadAllowedAnnotations(kNonEmptyAllowedAnnotations));
   ASSERT_EQ(allowed_annotations_.size(),
-            base::size(kNonEmptyAllowedAnnotations) - 1);
+            std::size(kNonEmptyAllowedAnnotations) - 1);
   for (size_t index = 0; index < allowed_annotations_.size(); ++index) {
     EXPECT_EQ(allowed_annotations_[index], kNonEmptyAllowedAnnotations[index]);
   }

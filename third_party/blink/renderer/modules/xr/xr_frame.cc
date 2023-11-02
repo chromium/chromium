@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,9 +26,6 @@ const char kInvalidView[] =
     "XRView passed in to the method did not originate from current XRFrame.";
 
 const char kSessionMismatch[] = "XRSpace and XRFrame sessions do not match.";
-
-const char kCannotReportPoses[] =
-    "Poses cannot be given out for the current state.";
 
 const char kHitTestSourceUnavailable[] =
     "Unable to obtain hit test results for specified hit test source. Ensure "
@@ -86,7 +83,7 @@ XRViewerPose* XRFrame::getViewerPose(XRReferenceSpace* reference_space,
   }
 
   if (!session_->CanReportPoses()) {
-    exception_state.ThrowSecurityError(kCannotReportPoses);
+    exception_state.ThrowSecurityError(XRSession::kCannotReportPoses);
     return nullptr;
   }
 
@@ -101,7 +98,7 @@ XRViewerPose* XRFrame::getViewerPose(XRReferenceSpace* reference_space,
 
   TransformationMatrix ref_space_from_mojo =
       reference_space->OffsetFromNativeMatrix();
-  ref_space_from_mojo.Multiply(*native_from_mojo);
+  ref_space_from_mojo.PreConcat(*native_from_mojo);
 
   // Can only update an XRViewerPose's views with an invertible matrix.
   if (!ref_space_from_mojo.IsInvertible()) {
@@ -237,7 +234,7 @@ XRPose* XRFrame::getPose(XRSpace* space,
   }
 
   if (!session_->CanReportPoses()) {
-    exception_state.ThrowSecurityError(kCannotReportPoses);
+    exception_state.ThrowSecurityError(XRSession::kCannotReportPoses);
     return nullptr;
   }
 
@@ -455,7 +452,7 @@ XRJointPose* XRFrame::getJointPose(XRJointSpace* joint,
   }
 
   if (!session_->CanReportPoses()) {
-    exception_state.ThrowSecurityError(kCannotReportPoses);
+    exception_state.ThrowSecurityError(XRSession::kCannotReportPoses);
     return nullptr;
   }
 
@@ -533,7 +530,7 @@ bool XRFrame::fillPoses(HeapVector<Member<XRSpace>>& spaces,
   }
 
   if (!session_->CanReportPoses()) {
-    exception_state.ThrowSecurityError(kCannotReportPoses);
+    exception_state.ThrowSecurityError(XRSession::kCannotReportPoses);
     return false;
   }
 

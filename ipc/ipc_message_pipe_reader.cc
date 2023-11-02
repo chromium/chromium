@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@
 #include "base/containers/span.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
@@ -70,6 +69,8 @@ MessagePipeReader::MessagePipeReader(
     : delegate_(delegate),
       sender_(std::move(sender), task_runner),
       receiver_(this, std::move(receiver), task_runner) {
+  recordreplay::RegisterPointer("MessagePipeReader", this);
+
   thread_safe_sender_ =
       std::make_unique<mojo::ThreadSafeForwarder<mojom::Channel>>(
           base::MakeRefCounted<ThreadSafeProxy>(
@@ -82,6 +83,8 @@ MessagePipeReader::MessagePipeReader(
 }
 
 MessagePipeReader::~MessagePipeReader() {
+  recordreplay::UnregisterPointer(this);
+
   DCHECK(thread_checker_.CalledOnValidThread());
   // The pipe should be closed before deletion.
 }

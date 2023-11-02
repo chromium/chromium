@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/components/arc/mojom/app.mojom.h"
 #include "base/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
@@ -14,15 +15,14 @@
 #include "chrome/browser/ash/child_accounts/screen_time_controller.h"
 #include "chrome/browser/ash/child_accounts/screen_time_controller_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/supervised_user/supervised_user_constants.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/dbus/system_clock/system_clock_client.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
-#include "chromeos/dbus/system_clock/system_clock_client.h"
 #include "components/account_id/account_id.h"
-#include "components/arc/mojom/app.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/fake_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -98,18 +98,16 @@ class EventBasedStatusReportingServiceTest : public testing::Test {
   ~EventBasedStatusReportingServiceTest() override = default;
 
   void SetUp() override {
-    PowerManagerClient::InitializeFake();
+    chromeos::PowerManagerClient::InitializeFake();
     SystemClockClient::InitializeFake();
 
     profile_ = std::make_unique<TestingProfile>();
-    profile_.get()->SetSupervisedUserId(supervised_users::kChildAccountSUID);
+    profile_->SetIsSupervisedProfile();
     arc_test_.SetUp(profile());
 
     session_manager_.CreateSession(
         account_id(),
-        ProfileHelper::GetUserIdHashByUserIdForTesting(
-            account_id().GetUserEmail()),
-        true);
+        user_manager::FakeUserManager::GetFakeUsernameHash(account_id()), true);
     session_manager_.SetSessionState(
         session_manager::SessionState::LOGIN_PRIMARY);
 
@@ -137,7 +135,7 @@ class EventBasedStatusReportingServiceTest : public testing::Test {
     arc_test_.TearDown();
     profile_.reset();
     SystemClockClient::Shutdown();
-    PowerManagerClient::Shutdown();
+    chromeos::PowerManagerClient::Shutdown();
   }
 
   void SetConnectionType(network::mojom::ConnectionType type) {
@@ -148,8 +146,8 @@ class EventBasedStatusReportingServiceTest : public testing::Test {
 
   arc::mojom::AppHost* app_host() { return arc_test_.arc_app_list_prefs(); }
   Profile* profile() { return profile_.get(); }
-  FakePowerManagerClient* power_manager_client() {
-    return FakePowerManagerClient::Get();
+  chromeos::FakePowerManagerClient* power_manager_client() {
+    return chromeos::FakePowerManagerClient::Get();
   }
 
   TestingConsumerStatusReportingService*

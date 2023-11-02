@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,15 +7,12 @@
 
 #include <string>
 
-#include "chromeos/services/assistant/public/proto/settings_ui.pb.h"
+#include "base/values.h"
+#include "chromeos/ash/services/assistant/public/proto/settings_ui.pb.h"
 #include "components/sync/protocol/user_consent_types.pb.h"
 
 class PrefService;
 class Profile;
-
-namespace base {
-class Value;
-}  // namespace base
 
 namespace chromeos {
 
@@ -56,27 +53,28 @@ void RecordAssistantActivityControlOptInStatus(
     bool opted_in);
 
 // Construct SettingsUiSelector for the ConsentFlow UI.
-assistant::SettingsUiSelector GetSettingsUiSelector();
+ash::assistant::SettingsUiSelector GetSettingsUiSelector();
 
 // Construct SettingsUiUpdate for user opt-in.
-assistant::SettingsUiUpdate GetSettingsUiUpdate(
+ash::assistant::SettingsUiUpdate GetSettingsUiUpdate(
     const std::string& consent_token);
 
 using SettingZippyList = google::protobuf::RepeatedPtrField<
-    assistant::ClassicActivityControlUiTexts::SettingZippy>;
+    ash::assistant::ClassicActivityControlUiTexts::SettingZippy>;
 using ActivityControlUi =
-    assistant::ConsentFlowUi::ConsentUi::ActivityControlUi;
+    ash::assistant::ConsentFlowUi::ConsentUi::ActivityControlUi;
 // Helper method to create zippy data.
-base::Value CreateZippyData(const ActivityControlUi& activity_control_ui,
-                            bool is_minor_mode);
+base::Value::List CreateZippyData(const ActivityControlUi& activity_control_ui,
+                                  bool is_minor_mode);
 
 // Helper method to create disclosure data.
-base::Value CreateDisclosureData(const SettingZippyList& disclosure_list);
+base::Value::List CreateDisclosureData(const SettingZippyList& disclosure_list);
 
 // Get string constants for settings ui.
-base::Value GetSettingsUiStrings(const assistant::SettingsUi& settings_ui,
-                                 bool activity_control_needed,
-                                 bool equal_weight_buttons);
+base::Value::Dict GetSettingsUiStrings(
+    const ash::assistant::SettingsUi& settings_ui,
+    bool activity_control_needed,
+    bool equal_weight_buttons);
 
 void RecordActivityControlConsent(
     Profile* profile,

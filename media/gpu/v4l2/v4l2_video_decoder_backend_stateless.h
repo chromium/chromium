@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
-#include "media/base/decode_status.h"
+#include "base/time/time.h"
+#include "media/base/decoder_status.h"
 #include "media/base/video_decoder.h"
 #include "media/gpu/chromeos/dmabuf_video_frame_pool.h"
 #include "media/gpu/v4l2/v4l2_decode_surface_handler.h"
@@ -34,6 +35,7 @@ class V4L2StatelessVideoDecoderBackend : public V4L2VideoDecoderBackend,
       Client* const client,
       scoped_refptr<V4L2Device> device,
       VideoCodecProfile profile,
+      const VideoColorSpace& color_space,
       scoped_refptr<base::SequencedTaskRunner> task_runner);
 
   V4L2StatelessVideoDecoderBackend(const V4L2StatelessVideoDecoderBackend&) =
@@ -54,7 +56,7 @@ class V4L2StatelessVideoDecoderBackend : public V4L2VideoDecoderBackend,
                        const gfx::Rect& visible_rect,
                        const size_t num_output_frames) override;
   void OnChangeResolutionDone(CroStatus status) override;
-  void ClearPendingRequests(DecodeStatus status) override;
+  void ClearPendingRequests(DecoderStatus status) override;
   bool StopInputQueueOnResChange() const override;
 
   // V4L2DecodeSurfaceHandler implementation.
@@ -135,16 +137,19 @@ class V4L2StatelessVideoDecoderBackend : public V4L2VideoDecoderBackend,
   bool IsSupportedProfile(VideoCodecProfile profile);
 
   // Create codec-specific AcceleratedVideoDecoder and reset related variables.
-  bool CreateAvd();
+  bool CreateDecoder();
 
   // Video profile we are decoding.
   VideoCodecProfile profile_;
+
+  // Video color space we are decoding.
+  VideoColorSpace color_space_;
 
   // Video coded size we are decoding.
   gfx::Size pic_size_;
 
   // Video decoder used to parse stream headers by software.
-  std::unique_ptr<AcceleratedVideoDecoder> avd_;
+  std::unique_ptr<AcceleratedVideoDecoder> decoder_;
 
   // The decode request which is currently processed.
   absl::optional<DecodeRequest> current_decode_request_;
@@ -180,7 +185,10 @@ class V4L2StatelessVideoDecoderBackend : public V4L2VideoDecoderBackend,
   V4L2RequestsQueue* requests_queue_;
 
   // Map of enqueuing timestamps to wall clock, for histogramming purposes.
-  base::small_map<std::map<int64_t, base::TimeTicks>> encoding_timestamps_;
+  base::small_map<std::map<int64_t, base::TimeTicks>> enqueuing_timestamps_;
+  // Same but with ScopedDecodeTrace for chrome:tracing purposes.
+  base::small_map<std::map<base::TimeDelta, std::unique_ptr<ScopedDecodeTrace>>>
+      buffer_tracers_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::WeakPtr<V4L2StatelessVideoDecoderBackend> weak_this_;
   base::WeakPtrFactory<V4L2StatelessVideoDecoderBackend> weak_this_factory_{

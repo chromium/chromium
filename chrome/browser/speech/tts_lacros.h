@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,8 @@
 
 namespace content {
 class BrowserContext;
-}
+class TtsUtterance;
+}  // namespace content
 
 // Implements content::TtsPlatform.
 // Creates TtsClientLacros when user profile is loaded, and handles TTS
@@ -25,16 +26,20 @@ class TtsPlatformImplLacros : public content::TtsPlatform,
  public:
   static TtsPlatformImplLacros* GetInstance();
 
+  // Note: This is a temporary workaround for enabling Lacros tts support
+  // feature when running Lacros tts extension api lacros browser tests.
+  // TODO(crbug.com/1227543): Migrate to enable tts lacros support feature
+  // flag in Ash before running lacros browser test once the Lacros testing
+  // infrasture adds that support.
+  static void EnablePlatformSupportForTesting();
+
   TtsPlatformImplLacros(const TtsPlatformImplLacros&) = delete;
   TtsPlatformImplLacros& operator=(const TtsPlatformImplLacros&) = delete;
 
   // TtsPlatform :
   bool PlatformImplSupported() override;
   bool PlatformImplInitialized() override;
-  void GetVoicesForBrowserContext(
-      content::BrowserContext* browser_context,
-      const GURL& source_url,
-      std::vector<content::VoiceData>* out_voices) override;
+  content::ExternalPlatformDelegate* GetExternalPlatformDelegate() override;
 
   // Unimplemented.
   void LoadBuiltInTtsEngine(content::BrowserContext* browser_context) override {
@@ -51,13 +56,14 @@ class TtsPlatformImplLacros : public content::TtsPlatform,
   void ClearError() override {}
   void SetError(const std::string& error) override {}
   bool IsSpeaking() override;
-  bool PreferEngineDelegateVoices() override;
+  void FinalizeVoiceOrdering(std::vector<content::VoiceData>& voices) override;
   void Pause() override {}
   void Resume() override {}
   void WillSpeakUtteranceWithVoice(
       content::TtsUtterance* utterance,
       const content::VoiceData& voice_data) override {}
   void Shutdown() override {}
+  void RefreshVoices() override {}
 
  private:
   friend class base::NoDestructor<TtsPlatformImplLacros>;
@@ -67,6 +73,8 @@ class TtsPlatformImplLacros : public content::TtsPlatform,
   // ProfileManagerObserver:
   void OnProfileAdded(Profile* profile) override;
   void OnProfileManagerDestroying() override;
+
+  content::ExternalPlatformDelegate* external_platform_delegate_ = nullptr;
 
   base::ScopedObservation<ProfileManager, ProfileManagerObserver>
       profile_manager_observation_{this};

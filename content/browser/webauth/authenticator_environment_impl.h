@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -18,7 +19,7 @@
 
 namespace device {
 class FidoDiscoveryFactory;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 class WinWebAuthnApi;
 #endif
 }  // namespace device
@@ -45,7 +46,7 @@ class CONTENT_EXPORT AuthenticatorEnvironmentImpl
   // descendants.
   // Does not have any effect if the |node| already has the virtual environment
   // enabled.
-  void EnableVirtualAuthenticatorFor(FrameTreeNode* node);
+  void EnableVirtualAuthenticatorFor(FrameTreeNode* node, bool enable_ui);
 
   // Disables the scoped virtual authenticator environment for this |node|,
   // resetting the state. If the environment is set on one of the |node|'s
@@ -76,7 +77,7 @@ class CONTENT_EXPORT AuthenticatorEnvironmentImpl
   // ReplaceDefaultDiscoveryFactoryForTesting().
   device::FidoDiscoveryFactory* MaybeGetDiscoveryFactoryTestOverride();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // win_webauthn_api returns the WinWebAuthApi instance to be used for talking
   // to the Windows WebAuthn API. This is a testing seam that can be altered
   // with |SetWinWebAuthnApiForTesting|.
@@ -109,8 +110,8 @@ class CONTENT_EXPORT AuthenticatorEnvironmentImpl
   std::map<FrameTreeNode*, std::unique_ptr<VirtualAuthenticatorManagerImpl>>
       virtual_authenticator_managers_;
 
-#if defined(OS_WIN)
-  device::WinWebAuthnApi* win_webauthn_api_for_testing_ = nullptr;
+#if BUILDFLAG(IS_WIN)
+  raw_ptr<device::WinWebAuthnApi> win_webauthn_api_for_testing_ = nullptr;
 #endif
 };
 

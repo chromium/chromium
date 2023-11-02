@@ -1,20 +1,22 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/wm/overview/overview_highlight_controller.h"
 
+#include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
-#include "ash/style/button_style.h"
+#include "ash/style/close_button.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_name_view.h"
+#include "ash/wm/desks/desk_preview_view.h"
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/desks/expanded_desks_bar_button.h"
-#include "ash/wm/desks/templates/desks_templates_util.h"
+#include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -26,6 +28,7 @@
 #include "ash/wm/overview/scoped_overview_transform_window.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_util.h"
+#include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/aura/window.h"
 #include "ui/display/manager/display_manager.h"
@@ -36,9 +39,19 @@
 
 namespace ash {
 
+namespace {
+
+struct OverviewHighlightControllerTestParams {
+  bool desk_templates_enabled = false;
+  bool save_and_recall_enabled = false;
+};
+
+}  // namespace
+
 class OverviewHighlightControllerTest
     : public OverviewTestBase,
-      public testing::WithParamInterface<bool> {
+      public testing::WithParamInterface<
+          OverviewHighlightControllerTestParams> {
  public:
   OverviewHighlightControllerTest() = default;
   OverviewHighlightControllerTest(const OverviewHighlightControllerTest&) =
@@ -60,12 +73,26 @@ class OverviewHighlightControllerTest
   }
 
   // Helper to make tests more readable.
-  bool IsDesksTemplatesEnabled() const { return GetParam(); }
+  bool IsDesksTemplatesEnabled() const {
+    return GetParam().desk_templates_enabled;
+  }
+
+  bool IsDeskSaveAndRecallEnabled() const {
+    return GetParam().save_and_recall_enabled;
+  }
 
   // OverviewTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatureState(features::kDesksTemplates,
-                                              GetParam());
+    std::vector<base::test::FeatureRef> enabled_features, disabled_features;
+    if (IsDesksTemplatesEnabled())
+      enabled_features.push_back(features::kDesksTemplates);
+    else
+      disabled_features.push_back(features::kDesksTemplates);
+    if (IsDeskSaveAndRecallEnabled())
+      enabled_features.push_back(features::kEnableSavedDesks);
+    else
+      disabled_features.push_back(features::kEnableSavedDesks);
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 
     OverviewTestBase::SetUp();
     ScopedOverviewTransformWindow::SetImmediateCloseForTests(true);
@@ -148,7 +175,7 @@ TEST_P(OverviewHighlightControllerTest, BasicArrowKeyNavigation) {
       {9, 8, 7, 6, 5, 4, 3, 2, 1, 9}   // Up (same as Left)
   };
 
-  for (size_t key_index = 0; key_index < base::size(arrow_keys); ++key_index) {
+  for (size_t key_index = 0; key_index < std::size(arrow_keys); ++key_index) {
     ToggleOverview();
     const std::vector<std::unique_ptr<OverviewItem>>& overview_windows =
         GetOverviewItemsForRoot(0);
@@ -371,11 +398,15 @@ class DesksOverviewHighlightControllerTest
     auto* desk_controller = DesksController::Get();
     desk_controller->NewDesk(DesksCreationRemovalSource::kButton);
     ASSERT_EQ(2u, desk_controller->desks().size());
+
+    // Give the second desk a name. The desk name gets exposed as the accessible
+    // name. And the focusable views that are painted in these tests will fail
+    // the accessibility paint checker checks if they lack an accessible name.
+    desk_controller->desks()[1]->SetName(u"Desk 2", false);
   }
 
   OverviewHighlightableView* GetHighlightedView() {
-    return OverviewHighlightController::TestApi(GetHighlightController())
-        .GetHighlightView();
+    return GetHighlightController()->highlighted_view();
   }
 
   const DesksBarView* GetDesksBarViewForRoot(aura::Window* root_window) {
@@ -415,10 +446,11 @@ TEST_P(DesksOverviewHighlightControllerTest, TabbingBasic) {
   EXPECT_EQ(item2->overview_item_view(), GetHighlightedView());
   CheckDeskBarViewSize(desk_bar_view, "overview item");
 
-  // Tests that the first highlighted desk item is the first mini view.
+  // Tests that the first highlighted desk item is the first desk preview view.
   SendKey(ui::VKEY_TAB);
   SendKey(ui::VKEY_TAB);
-  EXPECT_EQ(desk_bar_view->mini_views()[0], GetHighlightedView());
+  EXPECT_EQ(desk_bar_view->mini_views()[0]->desk_preview(),
+            GetHighlightedView());
   CheckDeskBarViewSize(desk_bar_view, "first mini view");
 
   // Test that one more tab highlights the desks name view.
@@ -436,14 +468,18 @@ TEST_P(DesksOverviewHighlightControllerTest, TabbingBasic) {
             GetHighlightedView());
   CheckDeskBarViewSize(desk_bar_view, "new desk button");
 
-  // Tests that tabbing past the new desk button, we highlight the desks
-  // templates button.
+  // Tests that tabbing past the new desk button, we highlight the save to a new
+  // desk template. The templates button is not in the tab traversal since it is
+  // hidden when we have no templates.
   if (IsDesksTemplatesEnabled()) {
     SendKey(ui::VKEY_TAB);
-    EXPECT_EQ(
-        desk_bar_view->expanded_state_desks_templates_button()->inner_button(),
-        GetHighlightedView());
-    CheckDeskBarViewSize(desk_bar_view, "desks templates button");
+    EXPECT_EQ(desk_bar_view->overview_grid()->GetSaveDeskAsTemplateButton(),
+              GetHighlightedView());
+  }
+  if (IsDeskSaveAndRecallEnabled()) {
+    SendKey(ui::VKEY_TAB);
+    EXPECT_EQ(desk_bar_view->overview_grid()->GetSaveDeskForLaterButton(),
+              GetHighlightedView());
   }
 
   // Tests that after tabbing through the overview items, we go back to the
@@ -464,13 +500,18 @@ TEST_P(DesksOverviewHighlightControllerTest, TabbingReverse) {
       GetDesksBarViewForRoot(Shell::GetPrimaryRootWindow());
   EXPECT_EQ(2u, desk_bar_view->mini_views().size());
 
-  // Tests that the first highlight item when reversing is the desks templates
-  // button if the feature is enabled.
+  // Tests that the first two highlighted items when reversing are the save desk
+  // for later button and save desk as template button, if the feature is
+  // enabled.
+  if (IsDeskSaveAndRecallEnabled()) {
+    SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+    EXPECT_EQ(desk_bar_view->overview_grid()->GetSaveDeskForLaterButton(),
+              GetHighlightedView());
+  }
   if (IsDesksTemplatesEnabled()) {
     SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
-    EXPECT_EQ(
-        desk_bar_view->expanded_state_desks_templates_button()->inner_button(),
-        GetHighlightedView());
+    EXPECT_EQ(desk_bar_view->overview_grid()->GetSaveDeskAsTemplateButton(),
+              GetHighlightedView());
   }
 
   // Tests that after the desks templates button (if the feature was enabled),
@@ -479,18 +520,21 @@ TEST_P(DesksOverviewHighlightControllerTest, TabbingReverse) {
   EXPECT_EQ(desk_bar_view->expanded_state_new_desk_button()->inner_button(),
             GetHighlightedView());
 
-  // Tests that after the new desk button comes the mini views and their desk
+  // Tests that after the new desk button comes the preview views and the desk
   // name views in reverse order.
   SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
   EXPECT_EQ(desk_bar_view->mini_views()[1]->desk_name_view(),
             GetHighlightedView());
   SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
-  EXPECT_EQ(desk_bar_view->mini_views()[1], GetHighlightedView());
+  EXPECT_EQ(desk_bar_view->mini_views()[1]->desk_preview(),
+            GetHighlightedView());
+
   SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
   EXPECT_EQ(desk_bar_view->mini_views()[0]->desk_name_view(),
             GetHighlightedView());
   SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
-  EXPECT_EQ(desk_bar_view->mini_views()[0], GetHighlightedView());
+  EXPECT_EQ(desk_bar_view->mini_views()[0]->desk_preview(),
+            GetHighlightedView());
 
   // Tests that the next highlighted item when reversing is the last overview
   // item.
@@ -498,15 +542,51 @@ TEST_P(DesksOverviewHighlightControllerTest, TabbingReverse) {
   auto* item1 = GetOverviewItemForWindow(window1.get());
   EXPECT_EQ(item1->overview_item_view(), GetHighlightedView());
 
-  // Tests that we return to the desks templates button after reverse tabbing
-  // through the overview items if the feature was enabled.
+  // Tests that we return to the save desk for later button and save desk as
+  // template button after reverse tabbing through the overview items if the
+  // feature was enabled.
+  SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+  if (IsDeskSaveAndRecallEnabled()) {
+    SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+    EXPECT_EQ(desk_bar_view->overview_grid()->GetSaveDeskForLaterButton(),
+              GetHighlightedView());
+  }
   if (IsDesksTemplatesEnabled()) {
     SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
-    SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
-    EXPECT_EQ(
-        desk_bar_view->expanded_state_desks_templates_button()->inner_button(),
-        GetHighlightedView());
+    EXPECT_EQ(desk_bar_view->overview_grid()->GetSaveDeskAsTemplateButton(),
+              GetHighlightedView());
   }
+}
+
+// Tests that we can tab and chromevox interchangeably through the desk mini
+// views and new desk button in the correct order.
+TEST_P(DesksOverviewHighlightControllerTest, TabbingChromevox) {
+  Shell::Get()->accessibility_controller()->spoken_feedback().SetEnabled(true);
+  ToggleOverview();
+  const auto* desk_bar_view =
+      GetDesksBarViewForRoot(Shell::GetPrimaryRootWindow());
+  EXPECT_EQ(2u, desk_bar_view->mini_views().size());
+
+  // Alternate between tabbing and chromevoxing through the 2 desk preview views
+  // and name views.
+  SendKey(ui::VKEY_TAB);
+  EXPECT_EQ(desk_bar_view->mini_views()[0]->desk_preview(),
+            GetHighlightedView());
+  SendKey(ui::VKEY_RIGHT, ui::EF_COMMAND_DOWN);
+  EXPECT_EQ(desk_bar_view->mini_views()[0]->desk_name_view(),
+            GetHighlightedView());
+
+  SendKey(ui::VKEY_RIGHT, ui::EF_COMMAND_DOWN);
+  EXPECT_EQ(desk_bar_view->mini_views()[1]->desk_preview(),
+            GetHighlightedView());
+  SendKey(ui::VKEY_TAB);
+  EXPECT_EQ(desk_bar_view->mini_views()[1]->desk_name_view(),
+            GetHighlightedView());
+
+  // Check for the new desk button.
+  SendKey(ui::VKEY_RIGHT, ui::EF_COMMAND_DOWN);
+  EXPECT_EQ(desk_bar_view->expanded_state_new_desk_button()->inner_button(),
+            GetHighlightedView());
 }
 
 // Tests that tabbing with desk items and multiple displays works as expected.
@@ -541,27 +621,35 @@ TEST_P(DesksOverviewHighlightControllerTest, TabbingMultiDisplay) {
   auto* item1 = GetOverviewItemForWindow(window1.get());
   EXPECT_EQ(item1->overview_item_view(), GetHighlightedView());
 
-  // Tests that further tabbing will go through the desk mini views and their
-  // desk name views, the new desk button, and finally the desks templates
-  // button on the first display.
+  // Tests that further tabbing will go through the desk preview views,  desk
+  // name views, the new desk button, and finally the desks templates button on
+  // the first display.
   SendKey(ui::VKEY_TAB);
-  EXPECT_EQ(desk_bar_view1->mini_views()[0], GetHighlightedView());
+  EXPECT_EQ(desk_bar_view1->mini_views()[0]->desk_preview(),
+            GetHighlightedView());
   SendKey(ui::VKEY_TAB);
   EXPECT_EQ(desk_bar_view1->mini_views()[0]->desk_name_view(),
             GetHighlightedView());
+
   SendKey(ui::VKEY_TAB);
-  EXPECT_EQ(desk_bar_view1->mini_views()[1], GetHighlightedView());
+  EXPECT_EQ(desk_bar_view1->mini_views()[1]->desk_preview(),
+            GetHighlightedView());
   SendKey(ui::VKEY_TAB);
   EXPECT_EQ(desk_bar_view1->mini_views()[1]->desk_name_view(),
             GetHighlightedView());
   SendKey(ui::VKEY_TAB);
+
   EXPECT_EQ(desk_bar_view1->expanded_state_new_desk_button()->inner_button(),
             GetHighlightedView());
   if (IsDesksTemplatesEnabled()) {
     SendKey(ui::VKEY_TAB);
-    EXPECT_EQ(
-        desk_bar_view1->expanded_state_desks_templates_button()->inner_button(),
-        GetHighlightedView());
+    EXPECT_EQ(desk_bar_view1->overview_grid()->GetSaveDeskAsTemplateButton(),
+              GetHighlightedView());
+  }
+  if (IsDeskSaveAndRecallEnabled()) {
+    SendKey(ui::VKEY_TAB);
+    EXPECT_EQ(desk_bar_view1->overview_grid()->GetSaveDeskForLaterButton(),
+              GetHighlightedView());
   }
 
   // Tests that the next tab will bring us to the first overview item on the
@@ -572,7 +660,8 @@ TEST_P(DesksOverviewHighlightControllerTest, TabbingMultiDisplay) {
 
   SendKey(ui::VKEY_TAB);
   const auto* desk_bar_view2 = GetDesksBarViewForRoot(roots[1]);
-  EXPECT_EQ(desk_bar_view2->mini_views()[0], GetHighlightedView());
+  EXPECT_EQ(desk_bar_view2->mini_views()[0]->desk_preview(),
+            GetHighlightedView());
 
   // Tab through all items on the second display.
   SendKey(ui::VKEY_TAB);
@@ -583,9 +672,13 @@ TEST_P(DesksOverviewHighlightControllerTest, TabbingMultiDisplay) {
             GetHighlightedView());
   if (IsDesksTemplatesEnabled()) {
     SendKey(ui::VKEY_TAB);
-    EXPECT_EQ(
-        desk_bar_view2->expanded_state_desks_templates_button()->inner_button(),
-        GetHighlightedView());
+    EXPECT_EQ(desk_bar_view2->overview_grid()->GetSaveDeskAsTemplateButton(),
+              GetHighlightedView());
+  }
+  if (IsDeskSaveAndRecallEnabled()) {
+    SendKey(ui::VKEY_TAB);
+    EXPECT_EQ(desk_bar_view2->overview_grid()->GetSaveDeskForLaterButton(),
+              GetHighlightedView());
   }
 
   // Tests that after tabbing through the items on the second display, the
@@ -596,7 +689,8 @@ TEST_P(DesksOverviewHighlightControllerTest, TabbingMultiDisplay) {
 
   SendKey(ui::VKEY_TAB);
   const auto* desk_bar_view3 = GetDesksBarViewForRoot(roots[2]);
-  EXPECT_EQ(desk_bar_view3->mini_views()[0], GetHighlightedView());
+  EXPECT_EQ(desk_bar_view3->mini_views()[0]->desk_preview(),
+            GetHighlightedView());
 
   // Tab through all items on the third display.
   SendKey(ui::VKEY_TAB);
@@ -607,9 +701,13 @@ TEST_P(DesksOverviewHighlightControllerTest, TabbingMultiDisplay) {
             GetHighlightedView());
   if (IsDesksTemplatesEnabled()) {
     SendKey(ui::VKEY_TAB);
-    EXPECT_EQ(
-        desk_bar_view3->expanded_state_desks_templates_button()->inner_button(),
-        GetHighlightedView());
+    EXPECT_EQ(desk_bar_view3->overview_grid()->GetSaveDeskAsTemplateButton(),
+              GetHighlightedView());
+  }
+  if (IsDeskSaveAndRecallEnabled()) {
+    SendKey(ui::VKEY_TAB);
+    EXPECT_EQ(desk_bar_view3->overview_grid()->GetSaveDeskForLaterButton(),
+              GetHighlightedView());
   }
 
   // Tests that after tabbing through the items on the third display, the next
@@ -628,13 +726,14 @@ TEST_P(DesksOverviewHighlightControllerTest, ActivateHighlightOnMiniView) {
   const auto* desk_bar_view =
       GetDesksBarViewForRoot(Shell::GetPrimaryRootWindow());
 
-  // Use keyboard to navigate to the miniview associated with desk 2.
+  // Use keyboard to navigate to the preview view associated with desk 2.
   SendKey(ui::VKEY_TAB);
   SendKey(ui::VKEY_TAB);
   SendKey(ui::VKEY_TAB);
-  ASSERT_EQ(desk_bar_view->mini_views()[1], GetHighlightedView());
+  ASSERT_EQ(desk_bar_view->mini_views()[1]->desk_preview(),
+            GetHighlightedView());
 
-  // Tests that after hitting the return key on the highlighted mini view
+  // Tests that after hitting the return key on the highlighted preview view
   // associated with desk 2, we switch to desk 2.
   DeskSwitchAnimationWaiter waiter;
   SendKey(ui::VKEY_RETURN);
@@ -658,9 +757,9 @@ TEST_P(DesksOverviewHighlightControllerTest, CloseHighlightOnMiniView) {
   SendKey(ui::VKEY_TAB);
   SendKey(ui::VKEY_TAB);
   SendKey(ui::VKEY_TAB);
-  ASSERT_EQ(mini_view2, GetHighlightedView());
+  ASSERT_EQ(mini_view2->desk_preview(), GetHighlightedView());
 
-  // Tests that after hitting ctrl-w on the highlighted miniview associated
+  // Tests that after hitting ctrl-w on the highlighted preview view associated
   // with desk 2, desk 2 is destroyed.
   SendKey(ui::VKEY_W, ui::EF_CONTROL_DOWN);
   EXPECT_EQ(1u, desks_controller->desks().size());
@@ -714,7 +813,8 @@ TEST_P(DesksOverviewHighlightControllerTest, ActivateDeskNameView) {
   SendKey(ui::VKEY_TAB);
 
   EXPECT_FALSE(desk_name_view_1->HasFocus());
-  EXPECT_EQ(desk_bar_view->mini_views()[1], GetHighlightedView());
+  EXPECT_EQ(desk_bar_view->mini_views()[1]->desk_preview(),
+            GetHighlightedView());
   EXPECT_EQ(u"code", desk_1->name());
   EXPECT_TRUE(desk_1->is_name_set_by_user());
 }
@@ -725,7 +825,7 @@ TEST_P(DesksOverviewHighlightControllerTest, RemoveDeskWhileNameIsHighlighted) {
       GetDesksBarViewForRoot(Shell::GetPrimaryRootWindow());
   auto* desk_name_view_1 = desk_bar_view->mini_views()[0]->desk_name_view();
 
-  // Tab until the desk name view of the second desk is highlighted.
+  // Tab until the desk name view of the first desk is highlighted.
   SendKey(ui::VKEY_TAB);
   SendKey(ui::VKEY_TAB);
   EXPECT_EQ(desk_name_view_1, GetHighlightedView());
@@ -756,11 +856,13 @@ TEST_P(DesksOverviewHighlightControllerTest,
       desk_bar_view->expanded_state_new_desk_button()->inner_button();
   const auto* desks_controller = DesksController::Get();
 
-  auto check_name_view_at_index = [this](const auto* desk_bar_view, int index) {
+  auto check_name_view_at_index = [this, desks_controller](
+                                      const auto* desk_bar_view, int index) {
     const auto* desk_name_view =
         desk_bar_view->mini_views()[index]->desk_name_view();
     EXPECT_TRUE(desk_name_view->HasFocus());
-    EXPECT_EQ(GetHighlightedView(), desk_name_view);
+    if (desks_controller->CanCreateDesks())
+      EXPECT_EQ(GetHighlightedView(), desk_name_view);
     EXPECT_EQ(std::u16string(), desk_name_view->GetText());
   };
 
@@ -782,7 +884,8 @@ TEST_P(DesksOverviewHighlightControllerTest,
     SendKey(ui::VKEY_TAB);
   }
   EXPECT_FALSE(new_desk_button->GetEnabled());
-  EXPECT_EQ(desks_util::kMaxNumberOfDesks, desks_controller->desks().size());
+  EXPECT_EQ(desks_util::GetMaxNumberOfDesks(),
+            desks_controller->desks().size());
 }
 
 TEST_P(DesksOverviewHighlightControllerTest, ZeroStateOfDesksBar) {
@@ -795,9 +898,10 @@ TEST_P(DesksOverviewHighlightControllerTest, ZeroStateOfDesksBar) {
   auto* event_generator = GetEventGenerator();
   auto* mini_view = desks_bar_view->mini_views()[1];
   event_generator->MoveMouseTo(mini_view->GetBoundsInScreen().CenterPoint());
-  EXPECT_TRUE(mini_view->close_desk_button()->GetVisible());
-  event_generator->MoveMouseTo(
-      mini_view->close_desk_button()->GetBoundsInScreen().CenterPoint());
+  EXPECT_TRUE(GetDeskActionVisibilityForMiniView(mini_view));
+  event_generator->MoveMouseTo(GetCloseDeskButtonForMiniView(mini_view)
+                                   ->GetBoundsInScreen()
+                                   .CenterPoint());
   event_generator->ClickLeftButton();
   EXPECT_TRUE(desks_bar_view->IsZeroState());
 
@@ -808,11 +912,6 @@ TEST_P(DesksOverviewHighlightControllerTest, ZeroStateOfDesksBar) {
             GetHighlightedView());
   SendKey(ui::VKEY_TAB);
   EXPECT_EQ(desks_bar_view->zero_state_new_desk_button(), GetHighlightedView());
-  if (IsDesksTemplatesEnabled()) {
-    SendKey(ui::VKEY_TAB);
-    EXPECT_EQ(desks_bar_view->zero_state_desks_templates_button(),
-              GetHighlightedView());
-  }
 
   // Trigger the zero state default desk button will focus on the default desk's
   // name view.
@@ -848,9 +947,10 @@ TEST_P(DesksOverviewHighlightControllerTest, ActivateHighlightOnViewFocused) {
   CheckDeskBarViewSize(desk_bar_view, "initial");
   EXPECT_EQ(2u, desk_bar_view->mini_views().size());
 
-  // Tab to first mini desk view.
+  // Tab to first mini desk view's preview view.
   SendKey(ui::VKEY_TAB);
-  ASSERT_EQ(desk_bar_view->mini_views()[0], GetHighlightedView());
+  ASSERT_EQ(desk_bar_view->mini_views()[0]->desk_preview(),
+            GetHighlightedView());
   CheckDeskBarViewSize(desk_bar_view, "overview item");
 
   // Click on the second mini desk item's name view.
@@ -866,9 +966,48 @@ TEST_P(DesksOverviewHighlightControllerTest, ActivateHighlightOnViewFocused) {
   EXPECT_TRUE(desk_name_view_1->HasFocus());
 }
 
-INSTANTIATE_TEST_SUITE_P(All, OverviewHighlightControllerTest, testing::Bool());
-INSTANTIATE_TEST_SUITE_P(All,
-                         DesksOverviewHighlightControllerTest,
-                         testing::Bool());
+// Tests that there is no crash when tabbing after we switch to the zero state
+// desks bar. Regression test for https://crbug.com/1301134.
+TEST_P(DesksOverviewHighlightControllerTest, SwitchingToZeroStateWhileTabbing) {
+  ToggleOverview();
+  auto* desks_bar_view = GetDesksBarViewForRoot(Shell::GetPrimaryRootWindow());
+  ASSERT_FALSE(desks_bar_view->IsZeroState());
+  ASSERT_EQ(2u, desks_bar_view->mini_views().size());
+
+  // Tab to first mini desk view's preview view.
+  SendKey(ui::VKEY_TAB);
+  ASSERT_EQ(desks_bar_view->mini_views()[0]->desk_preview(),
+            GetHighlightedView());
+
+  // Remove one desk to enter zero state desks bar.
+  auto* event_generator = GetEventGenerator();
+  auto* mini_view = desks_bar_view->mini_views()[1];
+  event_generator->MoveMouseTo(mini_view->GetBoundsInScreen().CenterPoint());
+  ASSERT_TRUE(GetDeskActionVisibilityForMiniView(mini_view));
+  event_generator->MoveMouseTo(GetCloseDeskButtonForMiniView(mini_view)
+                                   ->GetBoundsInScreen()
+                                   .CenterPoint());
+  event_generator->ClickLeftButton();
+  ASSERT_TRUE(desks_bar_view->IsZeroState());
+
+  // Try tabbing after removing the second desk triggers us to transition to
+  // zero state desks bar. There should not be a crash.
+  SendKey(ui::VKEY_TAB);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    OverviewHighlightControllerTest,
+    testing::Values(OverviewHighlightControllerTestParams{true, true},
+                    OverviewHighlightControllerTestParams{true, false},
+                    OverviewHighlightControllerTestParams{false, true},
+                    OverviewHighlightControllerTestParams{false, false}));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    DesksOverviewHighlightControllerTest,
+    testing::Values(OverviewHighlightControllerTestParams{true, true},
+                    OverviewHighlightControllerTestParams{true, false},
+                    OverviewHighlightControllerTestParams{false, true},
+                    OverviewHighlightControllerTestParams{false, false}));
 
 }  // namespace ash

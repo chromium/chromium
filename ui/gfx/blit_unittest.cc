@@ -1,4 +1,4 @@
-// Copyright (c) 2010 The Chromium Authors. All rights reserved.
+// Copyright 2010 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -143,7 +143,7 @@ TEST(Blit, ScrollCanvas) {
   VerifyCanvasValues<5, 5>(canvas.get(), scroll_diagonal_expected);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 TEST(Blit, WithSharedMemory) {
   const int kCanvasWidth = 5;

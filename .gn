@@ -33,8 +33,6 @@ default_args = {
   # also needs to be defined to src/ios/BUILD.gn (respectively removed from both
   # location when it is removed).
 
-  v8_extra_library_files = []
-  v8_experimental_extra_library_files = []
   v8_enable_gdbjit = false
   v8_imminent_deprecation_warnings = false
 
@@ -57,9 +55,10 @@ default_args = {
   angle_vulkan_validation_layers_dir =
       "//third_party/vulkan-deps/vulkan-validation-layers/src"
 
-  # Overwrite default arg declared in the Fuchsia sdk
+  # Overwrite default args declared in the Fuchsia sdk
   fuchsia_sdk_readelf_exec =
       "//third_party/llvm-build/Release+Asserts/bin/llvm-readelf"
+  fuchsia_target_api_level = 9
 
   devtools_visibility = [ "*" ]
 }
@@ -69,28 +68,23 @@ default_args = {
 # their includes checked for proper dependencies when you run either
 # "gn check" or "gn gen --check".
 no_check_targets = [
-  "//extensions:chrome_extensions_browsertests",  # 26 errors
-  "//extensions:chrome_extensions_interactive_uitests",  # 2 errors
-
-  "//headless:headless_browsertests",  # 47 errors
-  "//headless:headless_browsertests__exec",
-  "//headless:headless_example",  # 3 errors
-  "//headless:headless_non_renderer",  # 9 errors
-  "//headless:headless_renderer",  # 13 errors
-  "//headless:headless_shared_sources",  # 4 errors
-  "//headless:headless_shell_browser_lib",  # 10 errors
-  "//headless:headless_shell_lib",  # 10 errors
-  "//headless:headless_unittests",  # 6 errors
-  "//headless:headless_unittests__exec",
-
-  "//third_party/libwebp:*",  # 7 errors, https://crbug.com/800762
+  # crbug.com/1158989
+  "//headless:headless_renderer",  # 12 errors
+  "//headless:headless_shared_sources",  # 2 errors
 
   # //v8, https://crbug.com/v8/7330
   "//v8/src/inspector:inspector",  # 20 errors
-  "//v8/test/cctest:cctest_sources",  # 2 errors
+  "//v8/test/cctest:cctest_sources",  # 15 errors
+  "//v8/test/unittests:inspector_unittests_sources",  # 2 errors
   "//v8:cppgc_base",  # 1 error
   "//v8:v8_internal_headers",  # 11 errors
   "//v8:v8_libplatform",  # 2 errors
+
+  # After making partition_alloc a standalone library, remove partition_alloc
+  # target from the skip list, because partition_aloc will depend on its own
+  # base.
+  # partition alloc standalone library bug is https://crbug.com/1151236.
+  "//base/allocator/partition_allocator:partition_alloc",  # 292 errors
 ]
 
 # These are the list of GN files that run exec_script. This whitelist exists
@@ -159,6 +153,7 @@ exec_script_whitelist =
       "//build_overrides/build.gni",
 
       "//chrome/android/webapk/shell_apk/prepare_upload_dir/BUILD.gn",
+      "//chrome/version.gni",
 
       # TODO(dgn): Layer violation but breaks the build otherwise, see
       # https://crbug.com/474506.

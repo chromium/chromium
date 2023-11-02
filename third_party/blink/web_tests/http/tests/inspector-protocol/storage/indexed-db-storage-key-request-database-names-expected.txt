@@ -1,0 +1,22 @@
+Tests that requesting database names works for IndexedDB with storageKey
+
+Open some databases
+databases created with following names[
+    [0] : test-database0
+    [1] : test-database1
+    [2] : test-database2
+    [3] : test-database3
+    [4] : test-database4
+]
+
+Request database names for storage key
+database names{
+    databaseNames : [
+        [0] : test-database0
+        [1] : test-database1
+        [2] : test-database2
+        [3] : test-database3
+        [4] : test-database4
+    ]
+}
+

@@ -1,0 +1,157 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+{
+  "tap": [
+    {
+      "id": 0,
+      "input_sources": [
+        "keyboard"
+      ],
+      "name": "left",
+      "key": "KeyA",
+      "location": [
+        {
+          "type": "dependent_position",
+          "anchor": [
+            0,
+            1
+          ],
+          "anchor_to_target": [
+            0.10555556,
+            -0.12757201
+          ],
+          "x_on_y": 1.4709678
+        }
+      ],
+      "radius": 0.06995885
+    },
+    {
+      "id": 1,
+      "input_sources": [
+        "keyboard"
+      ],
+      "name": "right",
+      "key": "KeyD",
+      "location": [
+        {
+          "type": "dependent_position",
+          "anchor": [
+            0,
+            1
+          ],
+          "anchor_to_target": [
+            0.21342592,
+            -0.12757201
+          ],
+          "x_on_y": 2.9741936
+        }
+      ],
+      "radius": 0.06995885
+    },
+    {
+      "id": 2,
+      "input_sources": [
+        "keyboard"
+      ],
+      "name": "jump",
+      "key": "Space",
+      "location": [
+        {
+          "type": "dependent_position",
+          "anchor": [
+            1,
+            1
+          ],
+          "anchor_to_target": [
+            -0.090277776,
+            -0.1563786
+          ],
+          "x_on_y": 1.0263158
+        }
+      ],
+      "radius": 0.06995885
+    },
+    {
+      "id": 3,
+      "input_sources": [
+        "keyboard"
+      ],
+      "name": "attack",
+      "key": "KeyU",
+      "location": [
+        {
+          "type": "dependent_position",
+          "anchor": [
+            1,
+            1
+          ],
+          "anchor_to_target": [
+            -0.22592592,
+            -0.15555556
+          ],
+          "x_on_y": 2.5820105
+        }
+      ],
+      "radius": 0.07901235
+    },
+    {
+      "id": 4,
+      "input_sources": [
+        "keyboard"
+      ],
+      "name": "dodge",
+      "key": "KeyO",
+      "location": [
+        {
+          "type": "dependent_position",
+          "anchor": [
+            1,
+            1
+          ],
+          "anchor_to_target": [
+            -0.072222225,
+            -0.34814814
+          ],
+          "x_on_y": 0.36879432
+        }
+      ],
+      "radius": 0.06584362
+    },
+    {
+      "id": 5,
+      "input_sources": [
+        "keyboard"
+      ],
+      "name": "pause",
+      "key": "Backspace",
+      "location": [
+        {
+          "type": "dependent_position",
+          "anchor": [
+            1,
+            0
+          ],
+          "anchor_to_target": [
+            -0.048148148,
+            0.065020576
+          ],
+          "x_on_y": 1.3164557
+        },
+        {
+          "type": "position",
+          "anchor": [
+            1,
+            0
+          ],
+          "anchor_to_target": [
+            -0.048148148,
+            0.065020576
+          ]
+        }
+      ],
+      "radius": 0.042798355
+    }
+  ]
+}

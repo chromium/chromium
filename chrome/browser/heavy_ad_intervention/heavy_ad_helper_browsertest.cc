@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -59,7 +59,7 @@ IN_PROC_BROWSER_TEST_F(HeavyAdHelperBrowserTest,
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::RenderFrameHost* child =
-      ChildFrameAt(web_contents->GetMainFrame(), 0);
+      ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
 
   content::WebContentsConsoleObserver console_observer(web_contents);
 
@@ -90,7 +90,7 @@ IN_PROC_BROWSER_TEST_F(HeavyAdHelperBrowserTest,
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::RenderFrameHost* child =
-      ChildFrameAt(web_contents->GetMainFrame(), 0);
+      ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
 
   content::TestNavigationObserver error_observer(web_contents);
   controller.LoadPostCommitErrorPage(
@@ -105,7 +105,7 @@ IN_PROC_BROWSER_TEST_F(HeavyAdHelperBrowserTest,
   // instance.
   if (content::SiteIsolationPolicy::IsErrorPageIsolationEnabled(
           /* in_main_frame = */ false)) {
-    child = ChildFrameAt(web_contents->GetMainFrame(), 0);
+    child = ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
   }
 
   EXPECT_TRUE(IsContentInDocument(

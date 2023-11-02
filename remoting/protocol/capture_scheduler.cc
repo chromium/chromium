@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,8 +40,7 @@ static const int kMaxUnacknowledgedFrames = 4;
 
 }  // namespace
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 // We assume that the number of available cores is constant.
 CaptureScheduler::CaptureScheduler(
@@ -62,17 +61,17 @@ CaptureScheduler::CaptureScheduler(
 }
 
 CaptureScheduler::~CaptureScheduler() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 }
 
 void CaptureScheduler::Start() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   ScheduleNextCapture();
 }
 
 void CaptureScheduler::Pause(bool pause) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (is_paused_ != pause) {
     is_paused_ = pause;
@@ -86,7 +85,7 @@ void CaptureScheduler::Pause(bool pause) {
 }
 
 void CaptureScheduler::OnCaptureCompleted() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   capture_pending_ = false;
   capture_time_.Record(
@@ -98,7 +97,7 @@ void CaptureScheduler::OnCaptureCompleted() {
 }
 
 void CaptureScheduler::OnFrameEncoded(VideoPacket* packet) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // Set packet_id for the outgoing packet.
   packet->set_frame_id(next_frame_id_);
@@ -114,13 +113,13 @@ void CaptureScheduler::OnFrameEncoded(VideoPacket* packet) {
 }
 
 void CaptureScheduler::OnFrameSent() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   ScheduleNextCapture();
 }
 
 void CaptureScheduler::ProcessVideoAck(std::unique_ptr<VideoAck> video_ack) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   --num_unacknowledged_frames_;
   DCHECK_GE(num_unacknowledged_frames_, 0);
@@ -142,7 +141,7 @@ void CaptureScheduler::SetNumOfProcessorsForTest(int num_of_processors) {
 }
 
 void CaptureScheduler::ScheduleNextCapture() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (is_paused_ || capture_pending_ ||
       num_encoding_frames_ >= kMaxFramesInEncodingQueue) {
@@ -172,7 +171,7 @@ void CaptureScheduler::ScheduleNextCapture() {
 }
 
 void CaptureScheduler::CaptureNextFrame() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!is_paused_);
   DCHECK(!capture_pending_);
 
@@ -181,5 +180,4 @@ void CaptureScheduler::CaptureNextFrame() {
   capture_closure_.Run();
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

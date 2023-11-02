@@ -1,7 +1,9 @@
 # This is a generated file.
 # Full coverage: 100%, with partial coverage: 100%
-state_change_a_Mode1🌕	check_a_Mode1🌕
-state_change_a_Mode1🌕	check_b_Mode1🌕
-state_change_b_Mode1🌕	check_a_Mode1🌕
-state_change_b_Mode1🌕	check_b_Mode1🌕
-state_change_a_Mode2🌕	check_b_Mode4🌕
+state_change_a_Chicken🌕	check_a_Chicken🌕
+state_change_a_Chicken🌕	check_b_Chicken_Green🌕
+state_change_b_Chicken_Green🌕	check_a_Chicken🌕
+state_change_b_Chicken_Green🌕	check_b_Chicken_Green🌕
+state_change_a_Dog🌕	check_b_Dog_Red🌕
+state_change_a_Dog🌕	check_a_Chicken🌕
+state_change_a_Dog🌕	check_a_Dog🌕

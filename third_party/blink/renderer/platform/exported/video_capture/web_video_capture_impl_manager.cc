@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -36,6 +36,7 @@
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/video_capture/video_capture_impl.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_media.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -101,11 +102,7 @@ base::OnceClosure WebVideoCaptureImplManager::UseDevice(
     devices_.emplace_back(DeviceEntry());
     it = devices_.end() - 1;
     it->session_id = id;
-    it->impl = CreateVideoCaptureImplForTesting(id);
-    if (!it->impl) {
-      it->impl = std::make_unique<VideoCaptureImpl>(
-          id, render_main_task_runner_, browser_interface_broker);
-    }
+    it->impl = CreateVideoCaptureImpl(id, browser_interface_broker);
   }
   ++it->client_count;
 
@@ -126,7 +123,8 @@ base::OnceClosure WebVideoCaptureImplManager::StartCapture(
     const media::VideoCaptureSessionId& id,
     const media::VideoCaptureParams& params,
     const VideoCaptureStateUpdateCB& state_update_cb,
-    const VideoCaptureDeliverFrameCB& deliver_frame_cb) {
+    const VideoCaptureDeliverFrameCB& deliver_frame_cb,
+    const VideoCaptureCropVersionCB& crop_version_cb) {
   DCHECK(render_main_task_runner_->BelongsToCurrentThread());
   const auto it = base::ranges::find(devices_, id, &DeviceEntry::session_id);
   if (it == devices_.end())
@@ -138,7 +136,8 @@ base::OnceClosure WebVideoCaptureImplManager::StartCapture(
   Platform::Current()->GetIOTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&VideoCaptureImpl::StartCapture, it->impl->GetWeakPtr(),
-                     client_id, params, state_update_cb, deliver_frame_cb));
+                     client_id, params, state_update_cb, deliver_frame_cb,
+                     crop_version_cb));
   return base::BindOnce(&WebVideoCaptureImplManager::StopCapture,
                         weak_factory_.GetWeakPtr(), client_id, id);
 }
@@ -188,19 +187,6 @@ void WebVideoCaptureImplManager::Resume(
                                 it->impl->GetWeakPtr(), false));
 }
 
-void WebVideoCaptureImplManager::Crop(
-    const media::VideoCaptureSessionId& id,
-    const base::Token& crop_id,
-    base::OnceCallback<void(media::mojom::CropRequestResult)> callback) {
-  DCHECK(render_main_task_runner_->BelongsToCurrentThread());
-  const auto it = base::ranges::find(devices_, id, &DeviceEntry::session_id);
-  if (it == devices_.end())
-    return;
-  Platform::Current()->GetIOTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&VideoCaptureImpl::Crop, it->impl->GetWeakPtr(),
-                                crop_id, std::move(callback)));
-}
-
 void WebVideoCaptureImplManager::GetDeviceSupportedFormats(
     const media::VideoCaptureSessionId& id,
     VideoCaptureDeviceFormatsCB callback) {
@@ -230,9 +216,11 @@ void WebVideoCaptureImplManager::GetDeviceFormatsInUse(
 }
 
 std::unique_ptr<VideoCaptureImpl>
-WebVideoCaptureImplManager::CreateVideoCaptureImplForTesting(
-    const media::VideoCaptureSessionId& session_id) const {
-  return nullptr;
+WebVideoCaptureImplManager::CreateVideoCaptureImpl(
+    const media::VideoCaptureSessionId& session_id,
+    BrowserInterfaceBrokerProxy* browser_interface_broker) const {
+  return std::make_unique<VideoCaptureImpl>(
+      session_id, render_main_task_runner_, browser_interface_broker);
 }
 
 void WebVideoCaptureImplManager::StopCapture(
@@ -317,7 +305,7 @@ VideoCaptureFeedbackCB WebVideoCaptureImplManager::GetFeedbackCallback(
       &WebVideoCaptureImplManager::ProcessFeedback,
       media::BindToCurrentLoop(base::BindRepeating(
           &WebVideoCaptureImplManager::ProcessFeedbackInternal,
-          weak_factory_.GetWeakPtr(), id)));
+          weak_factory_.GetMutableWeakPtr(), id)));
 }
 
 // static

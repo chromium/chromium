@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -48,6 +48,12 @@ source_set("input_monitor") {
     deps += [
       "//ui/events/devices/x11",
       "//ui/gfx/x",
+    ]
+  } else if (remoting_use_wayland && is_linux) {
+    sources += [
+      "local_hotkey_input_monitor_wayland.cc",
+      "local_keyboard_input_monitor_wayland.cc",
+      "local_mouse_input_monitor_wayland.cc",
     ]
   }
 

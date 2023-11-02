@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -102,14 +102,14 @@ class TextDecoderStream::Transformer final : public TransformStreamTransformer {
       return;
     }
 
-    if (outputChunk.IsEmpty())
+    if (outputChunk.empty())
       return;
 
     if (!ignore_bom_ && !bom_seen_) {
       bom_seen_ = true;
       if (encoding_has_bom_removal_ && outputChunk[0] == kBOM) {
         outputChunk.Remove(0);
-        if (outputChunk.IsEmpty())
+        if (outputChunk.empty())
           return;
       }
     }

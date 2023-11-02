@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,11 @@
 #include <utility>
 #include <vector>
 
+#include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/process_internals/process_internals.mojom.h"
+#include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/agent_scheduling_group_host.h"
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
@@ -28,7 +30,8 @@ namespace {
 
 using IsolatedOriginSource = ChildProcessSecurityPolicy::IsolatedOriginSource;
 
-::mojom::FrameInfoPtr RenderFrameHostToFrameInfo(
+// Creates FrameInfoPtr but does not populate subframes.
+::mojom::FrameInfoPtr RenderFrameHostToFrameInfoNoTraverse(
     RenderFrameHostImpl* frame,
     ::mojom::FrameInfo::Type type) {
   auto frame_info = ::mojom::FrameInfo::New();
@@ -47,16 +50,30 @@ using IsolatedOriginSource = ChildProcessSecurityPolicy::IsolatedOriginSource;
       static_cast<SiteInstanceImpl*>(frame->GetSiteInstance());
   frame_info->site_instance = ::mojom::SiteInstanceInfo::New();
   frame_info->site_instance->id = site_instance->GetId().value();
-
-  auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   frame_info->site_instance->locked =
-      policy->GetProcessLock(site_instance->GetProcess()->GetID())
-          .is_locked_to_site();
-
+      site_instance->GetProcess()->GetProcessLock().is_locked_to_site();
   frame_info->site_instance->site_url =
       site_instance->HasSite()
           ? absl::make_optional(site_instance->GetSiteInfo().site_url())
           : absl::nullopt;
+  frame_info->site_instance->is_guest = site_instance->IsGuest();
+  frame_info->site_instance->is_sandbox_for_iframes =
+      site_instance->GetSiteInfo().is_sandboxed();
+
+  // If the SiteInstance has a non-default StoragePartition, include a basic
+  // string representation of it.  Skip cases where the StoragePartition is
+  // already conveyed in the site URL to avoid redundancy.
+  const auto& partition = site_instance->GetStoragePartitionConfig();
+  if (!partition.is_default() &&
+      site_instance->GetSiteInfo().site_url().spec().find(
+          partition.partition_domain()) == std::string::npos) {
+    std::string partition_description =
+        base::StrCat({partition.partition_domain().c_str(), "/",
+                      partition.partition_name().c_str(),
+                      partition.in_memory() ? "" : "?persist"});
+    frame_info->site_instance->storage_partition =
+        absl::make_optional(partition_description);
+  }
 
   // Only send a process lock URL if it's different from the site URL.  In the
   // common case they are the same, so we avoid polluting the UI with two
@@ -69,27 +86,61 @@ using IsolatedOriginSource = ChildProcessSecurityPolicy::IsolatedOriginSource;
           ? absl::make_optional(site_instance->GetSiteInfo().process_lock_url())
           : absl::nullopt;
 
-  frame_info->site_instance->is_origin_keyed =
-      site_instance->GetSiteInfo().is_origin_keyed();
-
-  for (size_t i = 0; i < frame->child_count(); ++i) {
-    frame_info->subframes.push_back(RenderFrameHostToFrameInfo(
-        frame->child_at(i)->current_frame_host(), type));
-  }
+  frame_info->site_instance->requires_origin_keyed_process =
+      site_instance->GetSiteInfo().requires_origin_keyed_process();
 
   return frame_info;
 }
 
+// Traverses over all subframes for the given |frame|.
+::mojom::FrameInfoPtr RenderFrameHostToFrameInfo(
+    WebContentsImpl* web_contents,
+    RenderFrameHostImpl* frame,
+    ::mojom::FrameInfo::Type type) {
+  std::map<RenderFrameHostImpl*, ::mojom::FrameInfo*> all_frame_info;
+
+  // Store the outermost frame info because we will need to return it and
+  // |all_frame_info| does not retain ownership of the mojom::FrameInfo.
+  ::mojom::FrameInfoPtr outermost_frame_info =
+      RenderFrameHostToFrameInfoNoTraverse(frame, type);
+  all_frame_info[frame] = outermost_frame_info.get();
+
+  // Execute over all frames appending any frames encountered to the parent's
+  // subframe data.
+  frame->ForEachRenderFrameHostWithAction(
+      [web_contents, outermost_frame = frame, type,
+       &all_frame_info](RenderFrameHostImpl* rfh) {
+        // We've already handled the outermost frame outside of this.
+        if (rfh == outermost_frame)
+          return RenderFrameHost::FrameIterationAction::kContinue;
+
+        // If this is a nested WebContents skip it, it will be encountered
+        // by the GetAllWebContents iteration.
+        if (WebContents::FromRenderFrameHost(rfh) != web_contents)
+          return RenderFrameHost::FrameIterationAction::kSkipChildren;
+
+        ::mojom::FrameInfoPtr frame_info =
+            RenderFrameHostToFrameInfoNoTraverse(rfh, type);
+        all_frame_info[rfh] = frame_info.get();
+        RenderFrameHostImpl* parent = rfh->GetParentOrOuterDocument();
+        DCHECK(base::Contains(all_frame_info, parent));
+        all_frame_info[parent]->subframes.push_back(std::move(frame_info));
+        return RenderFrameHost::FrameIterationAction::kContinue;
+      });
+
+  return outermost_frame_info;
+}
+
 // Adds `host` to `out_frames` if it is a prerendered main frame.
 RenderFrameHost::FrameIterationAction CollectPrerenders(
-    std::vector<::mojom::FrameInfoPtr>& out_frames,
-    RenderFrameHost* host) {
+    WebContentsImpl* web_contents,
+    RenderFrameHostImpl* host,
+    std::vector<::mojom::FrameInfoPtr>& out_frames) {
   if (!host->GetParentOrOuterDocument()) {
     if (host->GetLifecycleState() ==
         RenderFrameHost::LifecycleState::kPrerendering) {
-      out_frames.push_back(
-          RenderFrameHostToFrameInfo(static_cast<RenderFrameHostImpl*>(host),
-                                     ::mojom::FrameInfo::Type::kPrerender));
+      out_frames.push_back(RenderFrameHostToFrameInfo(
+          web_contents, host, ::mojom::FrameInfo::Type::kPrerender));
     }
     return RenderFrameHost::FrameIterationAction::kSkipChildren;
   }
@@ -219,20 +270,24 @@ void ProcessInternalsHandlerImpl::GetAllWebContentsInfo(
     auto info = ::mojom::WebContentsInfo::New();
     info->title = base::UTF16ToUTF8(web_contents->GetTitle());
     info->root_frame = RenderFrameHostToFrameInfo(
-        web_contents->GetMainFrame(), ::mojom::FrameInfo::Type::kActive);
+        web_contents, web_contents->GetPrimaryMainFrame(),
+        ::mojom::FrameInfo::Type::kActive);
 
     // Retrieve all root frames from bfcache as well.
     NavigationControllerImpl& controller = web_contents->GetController();
     const auto& entries = controller.GetBackForwardCache().GetEntries();
     for (const auto& entry : entries) {
       info->bfcached_root_frames.push_back(RenderFrameHostToFrameInfo(
-          (*entry).render_frame_host(),
+          web_contents, (*entry).render_frame_host(),
           ::mojom::FrameInfo::Type::kBackForwardCache));
     }
 
     // Retrieve prerendering root frames.
-    web_contents->ForEachRenderFrameHost(base::BindRepeating(
-        &CollectPrerenders, std::ref(info->prerender_root_frames)));
+    web_contents->ForEachRenderFrameHost(
+        [web_contents, &prerender_root_frames = info->prerender_root_frames](
+            RenderFrameHostImpl* rfh) {
+          CollectPrerenders(web_contents, rfh, prerender_root_frames);
+        });
 
     infos.push_back(std::move(info));
   }

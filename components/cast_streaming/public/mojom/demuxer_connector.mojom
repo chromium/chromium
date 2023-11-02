@@ -1,0 +1,115 @@
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module cast_streaming.mojom;
+
+import "media/mojo/mojom/media_types.mojom";
+
+// Information about a Cast Streaming audio stream.
+struct AudioStreamInfo {
+  // Audio decoder configuration.
+  media.mojom.AudioDecoderConfig decoder_config;
+
+  // Mojo data pipe over which audio buffer data is sent.
+  handle<data_pipe_consumer> data_pipe;
+};
+
+// Information about a Cast Streaming video stream.
+struct VideoStreamInfo {
+  // Video decoder configuration.
+  media.mojom.VideoDecoderConfig decoder_config;
+
+  // Mojo data pipe over which video buffer data is sent.
+  handle<data_pipe_consumer> data_pipe;
+};
+
+// Response type for AudioBufferRequester::GetBuffer(). See this method for
+// further details.
+union GetAudioBufferResponse {
+  AudioStreamInfo stream_info;
+  media.mojom.DecoderBuffer buffer;
+};
+
+// Response type for VideoBufferRequester::GetBuffer(). See this method for
+// further details.
+union GetVideoBufferResponse {
+  VideoStreamInfo stream_info;
+  media.mojom.DecoderBuffer buffer;
+};
+
+// Provides a "pull" mechanism to request DecoderBuffer frames of audio data.
+// This will be used by the DemuxerStream within the renderer process to
+// request from the browser process a new frame of audio data to play out.
+interface AudioBufferRequester {
+  // Requests more information about the cast streaming session's data stream to
+  // the renderer process. This will be in the form of one |buffer| or one
+  // |stream_info|, as detailed in the GetAudioBufferResponse type.
+  //
+  // The |buffer| data itself is on the associated |data_pipe|, from the
+  // AudioStreamInfo most recently provided during this or a prior call to this
+  // method. This is called for every new buffer pushed in the associated
+  // |data_pipe|.
+  //
+  // |stream_info| is provided only when the audio configuration has changed.
+  // The new |decoder_config| and |data_pipe| provided in this instance should
+  // be used for all future calls of this method, until a new |stream_info| is
+  // provided.
+  //
+  // Only one call to this method may be in-flight at a time. Or, in other
+  // words, this method may not be called a second time until the prior call
+  // returns.
+  GetBuffer() => (GetAudioBufferResponse buffer_response);
+
+  // Requests that the data source providing audio buffers enable its bitstream
+  // converter. Returns whether the operation was successful.
+  EnableBitstreamConverter() => (bool success);
+};
+
+// Provides a "pull" mechanism to request DecoderBuffer frames of video data.
+// This will be used by the DemuxerStream within the renderer process to
+// request from the browser process a new frame of video data to display.
+interface VideoBufferRequester {
+  // As AudioBufferRequester::GetBuffer() above.
+  GetBuffer() => (GetVideoBufferResponse buffer_response);
+
+  // As AudioBufferRequester::EnableBitstreamConverter() above.
+  EnableBitstreamConverter() => (bool success);
+};
+
+// Initialization information for an audio DemuxerStream.
+struct AudioStreamInitializationInfo {
+  // The mojo pipe that should be used to request audio buffers.
+  pending_remote<AudioBufferRequester> buffer_requester;
+
+  // The initial config and data pipe that should be used for buffers received
+  // by renderer process.
+  AudioStreamInfo stream_initialization_info;
+};
+
+// Initialization information for a video DemuxerStream.
+struct VideoStreamInitializationInfo {
+  // The mojo pipe that should be used to request video buffers.
+  pending_remote<VideoBufferRequester> buffer_requester;
+
+  // The initial config and data pipe that should be used for buffers received
+  // by renderer process.
+  VideoStreamInfo stream_initialization_info;
+};
+
+// Implemented by the renderer, used to start the Cast Streaming Session.
+// Closure of the Mojo channel will trigger the end of the Cast Streaming
+// Session.
+interface DemuxerConnector {
+  // Used for synchronization between the browser and the renderer. The browser
+  // should invoke this after binding the interface, and wait for the reply
+  // callback to know when the renderer is ready to receive and render frames.
+  EnableReceiver() => ();
+
+  // Called when the streams have been successfully initialized. At least one of
+  // |audio_buffer_requester| or |video_buffer_requester| must be set. This will
+  // only be called once per the lifetime of DemuxerConnector.
+  OnStreamsInitialized(
+      AudioStreamInitializationInfo? audio_buffer_requester,
+      VideoStreamInitializationInfo? video_buffer_requester);
+};

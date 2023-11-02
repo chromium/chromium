@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "third_party/blink/public/mojom/page/display_cutout.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
@@ -32,7 +32,7 @@ class CORE_EXPORT DisplayCutoutClientImpl final
   DisplayCutoutClientImpl& operator=(const DisplayCutoutClientImpl&) = delete;
 
   // Notify the renderer that the safe areas have changed.
-  void SetSafeArea(mojom::blink::DisplayCutoutSafeAreaPtr safe_area) override;
+  void SetSafeArea(const gfx::Insets& safe_area) override;
 
   void Trace(Visitor*) const;
 

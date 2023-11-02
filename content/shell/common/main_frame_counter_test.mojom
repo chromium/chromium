@@ -1,0 +1,13 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module content.mojom;
+
+// This interface is only for the sake of browser test to query the number of
+// main frames in a remote child process.
+interface MainFrameCounterTest {
+    // Returns whether or not the renderer this is called on has a local main
+    // frame.
+    HasMainFrame() => (bool has_main_frame);
+};

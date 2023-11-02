@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,10 @@
 #include <memory>
 
 #include "base/base_export.h"
-#include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
 #include "base/gtest_prod_util.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 
 // -----------------------------------------------------------------------------
@@ -123,16 +121,21 @@ class AwFormDatabaseService;
 class CookieManager;
 class ScopedAllowInitGLBindings;
 class VizCompositorThreadRunnerWebView;
-}
+}  // namespace android_webview
 namespace ash {
 class MojoUtils;
 class BrowserDataMigrator;
-}
+bool CameraAppUIShouldEnableLocalOverride(const std::string&);
+}  // namespace ash
 namespace audio {
 class OutputDevice;
 }
 namespace blink {
+class CategorizedWorkerPoolImpl;
+class CategorizedWorkerPoolJob;
+class CategorizedWorkerPool;
 class DiskDataAllocator;
+class IdentifiabilityActiveSampler;
 class RTCVideoDecoderAdapter;
 class RTCVideoEncoder;
 class SourceStream;
@@ -141,13 +144,13 @@ class WebRtcVideoFrameAdapter;
 class LegacyWebRtcVideoFrameAdapter;
 class WorkerThread;
 namespace scheduler {
-class WorkerThread;
+class NonMainThreadImpl;
 }
 }  // namespace blink
 namespace cc {
 class CompletionEvent;
 class TileTaskManagerImpl;
-}
+}  // namespace cc
 namespace chromecast {
 class CrashUtil;
 }
@@ -157,27 +160,29 @@ namespace system {
 class StatisticsProviderImpl;
 bool IsCoreSchedulingAvailable();
 int NumberOfPhysicalCores();
-}
-}
+}  // namespace system
+}  // namespace chromeos
 namespace chrome_cleaner {
 class ResetShortcutsComponent;
 class SystemReportComponent;
-}
+}  // namespace chrome_cleaner
 namespace content {
 class BrowserGpuChannelHostFactory;
 class BrowserMainLoop;
 class BrowserProcessIOThread;
 class BrowserTestBase;
-class CategorizedWorkerPool;
 class DesktopCaptureDevice;
 class DWriteFontCollectionProxy;
+class DWriteFontProxyImpl;
 class EmergencyTraceFinalisationCoordinator;
 class InProcessUtilityThread;
 class NestedMessagePumpAndroid;
 class NetworkServiceInstancePrivate;
 class PepperPrintSettingsManagerImpl;
 class RenderProcessHostImpl;
+class RenderProcessHost;
 class RenderWidgetHostViewMac;
+class RendererBlinkPlatformImpl;
 class RTCVideoDecoder;
 class SandboxHostLinux;
 class ScopedAllowWaitForDebugURL;
@@ -187,15 +192,15 @@ class SynchronousCompositor;
 class SynchronousCompositorHost;
 class SynchronousCompositorSyncCallBridge;
 class TextInputClientMac;
-class WaitForProcessesToDumpProfilingInfo;
+class WebContentsImpl;
 class WebContentsViewMac;
 }  // namespace content
 namespace cronet {
 class CronetPrefsManager;
-class CronetURLRequestContext;
+class CronetContext;
 }  // namespace cronet
 namespace crosapi {
-class LacrosThreadPriorityDelegate;
+class LacrosThreadTypeDelegate;
 }  // namespace crosapi
 namespace dbus {
 class Bus;
@@ -203,10 +208,17 @@ class Bus;
 namespace device {
 class UsbContext;
 }
+namespace base {
+class FilePath;
+}
 namespace disk_cache {
 class BackendImpl;
 class InFlightIO;
-}
+bool CleanupDirectorySync(const base::FilePath&);
+}  // namespace disk_cache
+namespace enterprise_connectors {
+class LinuxKeyRotationCommand;
+}  // namespace enterprise_connectors
 namespace functions {
 class ExecScriptScopedAllowBaseSyncPrimitives;
 }
@@ -216,31 +228,27 @@ class HistoryReportJniBridge;
 namespace ios_web_view {
 class WebViewBrowserState;
 }
-namespace leveldb_env {
-class DBTracker;
-}
-namespace location {
-namespace nearby {
-namespace chrome {
+namespace leveldb::port {
+class ScopedAllowWait;
+}  // namespace leveldb::port
+namespace location::nearby::chrome {
 class ScheduledExecutor;
 class SubmittableExecutor;
-}  // namespace chrome
-}  // namespace nearby
-}  // namespace location
+}  // namespace location::nearby::chrome
 namespace media {
 class AudioInputDevice;
 class AudioOutputDevice;
 class BlockingUrlProtocol;
 class FileVideoCaptureDeviceFactory;
 class PaintCanvasVideoRenderer;
-}
+}  // namespace media
 namespace memory_instrumentation {
 class OSMetrics;
 }
 namespace metrics {
 class AndroidMetricsServiceClient;
 class CleanExitBeacon;
-}
+}  // namespace metrics
 namespace midi {
 class TaskService;  // https://crbug.com/796830
 }
@@ -253,37 +261,38 @@ class SyncCallRestrictions;
 namespace core {
 class ScopedIPCSupport;
 }
-}
-namespace nacl {
-namespace nonsfi {
-class PluginMainDelegate;
-}
-}  // namespace nacl
+}  // namespace mojo
 namespace printing {
 class LocalPrinterHandlerDefault;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 class PrintBackendServiceImpl;
 #endif
 class PrintBackendServiceManager;
 class PrintJobWorker;
 class PrinterQuery;
-}
+}  // namespace printing
 namespace rlz_lib {
 class FinancialPing;
+}
+namespace storage {
+class ObfuscatedFileUtil;
 }
 namespace syncer {
 class GetLocalChangesRequest;
 class HttpBridge;
-}
+}  // namespace syncer
 namespace ui {
 class DrmThreadProxy;
+}
+namespace value_store {
+class LeveldbValueStore;
 }
 namespace weblayer {
 class BrowserContextImpl;
 class ContentBrowserClientImpl;
 class ProfileImpl;
 class WebLayerPathProvider;
-}
+}  // namespace weblayer
 namespace net {
 class MultiThreadedCertVerifierScopedAllowBaseSyncPrimitives;
 class MultiThreadedProxyResolverScopedAllowJoinOnIO;
@@ -292,7 +301,7 @@ class NetworkConfigWatcherMacThread;
 namespace internal {
 class AddressTrackerLinux;
 }
-}
+}  // namespace net
 
 namespace proxy_resolver {
 class ScopedAllowThreadJoinForProxyResolverV8Tracing;
@@ -308,8 +317,8 @@ class ScopedBypassIOThreadRestrictions;
 namespace protocol {
 class ScopedAllowSyncPrimitivesForWebRtcTransport;
 class ScopedAllowThreadJoinForWebRtcTransport;
-}
-}
+}  // namespace protocol
+}  // namespace remoting
 
 namespace service_manager {
 class ServiceProcessLauncher;
@@ -317,6 +326,10 @@ class ServiceProcessLauncher;
 
 namespace shell_integration_linux {
 class LaunchXdgUtilityScopedAllowBaseSyncPrimitives;
+}
+
+namespace tracing {
+class FuchsiaPerfettoProducerConnector;
 }
 
 namespace ui {
@@ -334,7 +347,7 @@ class VrShell;
 namespace web {
 class WebMainLoop;
 class WebSubThread;
-}
+}  // namespace web
 
 namespace webrtc {
 class DesktopConfigurationMonitor;
@@ -348,11 +361,9 @@ bool HasWaylandDisplay(base::Environment* env);
 
 namespace base {
 
-namespace sequence_manager {
-namespace internal {
+namespace sequence_manager::internal {
 class TaskQueueImpl;
-}
-}  // namespace sequence_manager
+}  // namespace sequence_manager::internal
 
 namespace android {
 class JavaHandlerThread;
@@ -362,7 +373,7 @@ namespace internal {
 class GetAppOutputScopedAllowBaseSyncPrimitives;
 class JobTaskSource;
 class TaskTracker;
-}
+}  // namespace internal
 
 class AdjustOOMScoreHelper;
 class FileDescriptorWatcher;
@@ -449,15 +460,19 @@ class BASE_EXPORT ScopedAllowBlocking {
   friend class blink::DiskDataAllocator;
   friend class chromecast::CrashUtil;
   friend class content::BrowserProcessIOThread;
+  friend class content::DWriteFontProxyImpl;
   friend class content::NetworkServiceInstancePrivate;
   friend class content::PepperPrintSettingsManagerImpl;
   friend class content::RenderProcessHostImpl;
   friend class content::RenderWidgetHostViewMac;  // http://crbug.com/121917
   friend class content::ShellPathProvider;
+#if BUILDFLAG(IS_WIN)
+  friend class content::WebContentsImpl;  // http://crbug.com/1262162
+#endif
   friend class content::WebContentsViewMac;
   friend class cronet::CronetPrefsManager;
-  friend class cronet::CronetURLRequestContext;
-  friend class crosapi::LacrosThreadPriorityDelegate;
+  friend class cronet::CronetContext;
+  friend class crosapi::LacrosThreadTypeDelegate;
   friend class ios_web_view::WebViewBrowserState;
   friend class media::FileVideoCaptureDeviceFactory;
   friend class memory_instrumentation::OSMetrics;
@@ -466,7 +481,7 @@ class BASE_EXPORT ScopedAllowBlocking {
   friend class module_installer::ScopedAllowModulePakLoad;
   friend class mojo::CoreLibraryInitializer;
   friend class printing::LocalPrinterHandlerDefault;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   friend class printing::PrintBackendServiceImpl;
 #endif
   friend class printing::PrintBackendServiceManager;
@@ -481,11 +496,14 @@ class BASE_EXPORT ScopedAllowBlocking {
   friend class weblayer::ProfileImpl;
   friend class weblayer::WebLayerPathProvider;
 
+  // Sorting with function name (with namespace), ignoring the return type.
   friend Profile* ::GetLastProfileMac();  // crbug.com/1176734
+  friend bool ::HasWaylandDisplay(base::Environment* env);  // crbug.com/1246928
   friend bool PathProviderWin(int, FilePath*);
+  friend bool ash::CameraAppUIShouldEnableLocalOverride(const std::string&);
   friend bool chromeos::system::IsCoreSchedulingAvailable();
   friend int chromeos::system::NumberOfPhysicalCores();
-  friend bool ::HasWaylandDisplay(base::Environment* env);  // crbug.com/1246928
+  friend bool disk_cache::CleanupDirectorySync(const base::FilePath&);
 
   ScopedAllowBlocking(const Location& from_here = Location::Current());
   ~ScopedAllowBlocking();
@@ -553,20 +571,25 @@ class BASE_EXPORT ScopedAllowBaseSyncPrimitives {
   friend class ::ChromeNSSCryptoModuleDelegate;
   friend class base::internal::GetAppOutputScopedAllowBaseSyncPrimitives;
   friend class base::SimpleThread;
+  friend class blink::CategorizedWorkerPoolImpl;
+  friend class blink::CategorizedWorkerPoolJob;
+  friend class blink::IdentifiabilityActiveSampler;
   friend class blink::SourceStream;
   friend class blink::WorkerThread;
-  friend class blink::scheduler::WorkerThread;
+  friend class blink::scheduler::NonMainThreadImpl;
   friend class chrome_cleaner::ResetShortcutsComponent;
   friend class chrome_cleaner::SystemReportComponent;
   friend class content::BrowserMainLoop;
   friend class content::BrowserProcessIOThread;
+  friend class content::RendererBlinkPlatformImpl;
   friend class content::DWriteFontCollectionProxy;
   friend class content::ServiceWorkerContextClient;
   friend class device::UsbContext;
+  friend class enterprise_connectors::LinuxKeyRotationCommand;
   friend class functions::ExecScriptScopedAllowBaseSyncPrimitives;
   friend class history_report::HistoryReportJniBridge;
   friend class internal::TaskTracker;
-  friend class leveldb_env::DBTracker;
+  friend class leveldb::port::ScopedAllowWait;
   friend class location::nearby::chrome::ScheduledExecutor;
   friend class location::nearby::chrome::SubmittableExecutor;
   friend class media::BlockingUrlProtocol;
@@ -575,15 +598,18 @@ class BASE_EXPORT ScopedAllowBaseSyncPrimitives {
   friend class rlz_lib::FinancialPing;
   friend class shell_integration_linux::
       LaunchXdgUtilityScopedAllowBaseSyncPrimitives;
+  friend class storage::ObfuscatedFileUtil;
   friend class syncer::HttpBridge;
   friend class syncer::GetLocalChangesRequest;
   friend class webrtc::DesktopConfigurationMonitor;
+  friend class ::tracing::FuchsiaPerfettoProducerConnector;
 
   // Usage that should be fixed:
-  friend class ::NativeBackendKWallet;            // http://crbug.com/125331
+  friend class ::NativeBackendKWallet;  // http://crbug.com/125331
   friend class ::chromeos::system::
       StatisticsProviderImpl;                      // http://crbug.com/125385
   friend class blink::VideoFrameResourceProvider;  // http://crbug.com/878070
+  friend class value_store::LeveldbValueStore;     // http://crbug.com/1330845
 
   ScopedAllowBaseSyncPrimitives() EMPTY_BODY_IF_DCHECK_IS_OFF;
   ~ScopedAllowBaseSyncPrimitives() EMPTY_BODY_IF_DCHECK_IS_OFF;
@@ -625,12 +651,14 @@ class BASE_EXPORT ScopedAllowBaseSyncPrimitivesOutsideBlockingScope {
   friend class base::internal::JobTaskSource;
   friend class base::ScopedAllowThreadRecallForStackSamplingProfiler;
   friend class base::StackSamplingProfiler;
+  friend class blink::CategorizedWorkerPoolImpl;
+  friend class blink::CategorizedWorkerPoolJob;
+  friend class blink::CategorizedWorkerPool;
   friend class blink::RTCVideoDecoderAdapter;
   friend class blink::RTCVideoEncoder;
   friend class blink::WebRtcVideoFrameAdapter;
   friend class blink::LegacyWebRtcVideoFrameAdapter;
   friend class cc::TileTaskManagerImpl;
-  friend class content::CategorizedWorkerPool;
   friend class content::DesktopCaptureDevice;
   friend class content::EmergencyTraceFinalisationCoordinator;
   friend class content::InProcessUtilityThread;
@@ -640,7 +668,7 @@ class BASE_EXPORT ScopedAllowBaseSyncPrimitivesOutsideBlockingScope {
   friend class content::SynchronousCompositor;
   friend class content::SynchronousCompositorHost;
   friend class content::SynchronousCompositorSyncCallBridge;
-  friend class content::WaitForProcessesToDumpProfilingInfo;
+  friend class content::RenderProcessHost;
   friend class media::AudioInputDevice;
   friend class media::AudioOutputDevice;
   friend class media::PaintCanvasVideoRenderer;
@@ -664,7 +692,7 @@ class BASE_EXPORT ScopedAllowBaseSyncPrimitivesOutsideBlockingScope {
   friend class net::
       MultiThreadedProxyResolverScopedAllowJoinOnIO;  // http://crbug.com/69710
   friend class net::NetworkChangeNotifierMac;         // http://crbug.com/125097
-  friend class printing::PrinterQuery;                 // http://crbug.com/66082
+  friend class printing::PrinterQuery;                // http://crbug.com/66082
   friend class proxy_resolver::
       ScopedAllowThreadJoinForProxyResolverV8Tracing;  // http://crbug.com/69710
   friend class remoting::AutoThread;  // https://crbug.com/944316
@@ -674,7 +702,7 @@ class BASE_EXPORT ScopedAllowBaseSyncPrimitivesOutsideBlockingScope {
       ScopedAllowThreadJoinForWebRtcTransport;  // http://crbug.com/660081
   // Not used in production yet, https://crbug.com/844078.
   friend class service_manager::ServiceProcessLauncher;
-  friend class ui::WindowResizeHelperMac;  // http://crbug.com/902829
+  friend class ui::WindowResizeHelperMac;    // http://crbug.com/902829
   friend class content::TextInputClientMac;  // http://crbug.com/121917
 
   ScopedAllowBaseSyncPrimitivesOutsideBlockingScope(
@@ -829,8 +857,6 @@ class BASE_EXPORT PermanentSingletonAllowance {
   PermanentSingletonAllowance() = delete;
 
  private:
-  friend class nacl::nonsfi::PluginMainDelegate;
-
   // Re-allow singletons on this thread. Since //base APIs DisallowSingleton()
   // when they risk running past shutdown, this should only be called in rare
   // cases where the caller knows the process will be killed rather than

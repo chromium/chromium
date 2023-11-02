@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -202,11 +202,6 @@ FakeDownloadItem::GetDownloadCreationType() const {
   return download::DownloadItem::DownloadCreationType::TYPE_ACTIVE_DOWNLOAD;
 }
 
-const absl::optional<download::DownloadSchedule>&
-FakeDownloadItem::GetDownloadSchedule() const {
-  return download_schedule_;
-}
-
 ::network::mojom::CredentialsMode FakeDownloadItem::GetCredentialsMode() const {
   return ::network::mojom::CredentialsMode::kInclude;
 }
@@ -265,6 +260,15 @@ void FakeDownloadItem::SetIsMixedContent(bool is_mixed_content) {
   is_mixed_content_ = is_mixed_content;
 }
 
+void FakeDownloadItem::SetDangerType(download::DownloadDangerType danger_type) {
+  danger_type_ = danger_type;
+}
+
+void FakeDownloadItem::SetMixedContentStatus(
+    download::DownloadItem::MixedContentStatus mixed_content_status) {
+  mixed_content_status_ = mixed_content_status;
+}
+
 bool FakeDownloadItem::GetOpenWhenComplete() const {
   return open_when_complete_;
 }
@@ -279,10 +283,6 @@ void FakeDownloadItem::ValidateDangerousDownload() {
 }
 
 void FakeDownloadItem::ValidateMixedContentDownload() {
-  NOTREACHED();
-}
-
-void FakeDownloadItem::AcceptIncognitoWarning() {
   NOTREACHED();
 }
 
@@ -326,11 +326,6 @@ void FakeDownloadItem::OnAsyncScanningCompleted(
   NOTREACHED();
 }
 
-void FakeDownloadItem::OnDownloadScheduleChanged(
-    absl::optional<download::DownloadSchedule> schedule) {
-  NOTREACHED();
-}
-
 bool FakeDownloadItem::IsPaused() const {
   return false;
 }
@@ -341,6 +336,11 @@ bool FakeDownloadItem::AllowMetered() const {
 }
 
 bool FakeDownloadItem::IsTemporary() const {
+  NOTREACHED();
+  return false;
+}
+
+bool FakeDownloadItem::RequireSafetyChecks() const {
   NOTREACHED();
   return false;
 }
@@ -360,14 +360,19 @@ int32_t FakeDownloadItem::GetAutoResumeCount() const {
   return 0;
 }
 
+bool FakeDownloadItem::IsOffTheRecord() const {
+  NOTREACHED();
+  return false;
+}
+
 const GURL& FakeDownloadItem::GetReferrerUrl() const {
   NOTREACHED();
   return dummy_url;
 }
 
-const GURL& FakeDownloadItem::GetSiteUrl() const {
+const std::string& FakeDownloadItem::GetSerializedEmbedderDownloadData() const {
   NOTREACHED();
-  return dummy_url;
+  return serialized_embedder_download_data;
 }
 
 const GURL& FakeDownloadItem::GetTabUrl() const {
@@ -478,19 +483,13 @@ bool FakeDownloadItem::IsMixedContent() const {
   return is_mixed_content_;
 }
 
-bool FakeDownloadItem::ShouldShowIncognitoWarning() const {
-  return false;
-}
-
 download::DownloadDangerType FakeDownloadItem::GetDangerType() const {
-  NOTREACHED();
-  return download::DownloadDangerType();
+  return danger_type_;
 }
 
 download::DownloadItem::MixedContentStatus
 FakeDownloadItem::GetMixedContentStatus() const {
-  NOTREACHED();
-  return download::DownloadItem::MixedContentStatus();
+  return mixed_content_status_;
 }
 
 bool FakeDownloadItem::TimeRemaining(base::TimeDelta* remaining) const {

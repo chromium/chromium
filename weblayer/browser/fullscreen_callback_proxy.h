@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "weblayer/public/fullscreen_delegate.h"
 
 namespace weblayer {
@@ -36,7 +36,7 @@ class FullscreenCallbackProxy : public FullscreenDelegate {
   void DoExitFullscreen(JNIEnv* env);
 
  private:
-  Tab* tab_;
+  raw_ptr<Tab> tab_;
   base::android::ScopedJavaGlobalRef<jobject> java_delegate_;
   base::OnceClosure exit_fullscreen_closure_;
 };

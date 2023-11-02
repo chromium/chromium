@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -549,4 +549,64 @@ TEST_F(DriveServiceFakeDataTest, ReturnsFakeData) {
   task_environment_.RunUntilIdle();
 
   EXPECT_FALSE(fake_documents.empty());
+}
+
+class DriveServiceModulesRedesignedTest : public DriveServiceTest {
+ public:
+  DriveServiceModulesRedesignedTest() {
+    features_.InitAndEnableFeature(ntp_features::kNtpModulesRedesigned);
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+TEST_F(DriveServiceModulesRedesignedTest, IgnoresDismiss) {
+  bool passed_data = false;
+  base::MockCallback<DriveService::GetFilesCallback> callback;
+  EXPECT_CALL(callback, Run(testing::_))
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [&passed_data](std::vector<drive::mojom::FilePtr> suggestions) {
+            passed_data = !suggestions.empty();
+          }));
+  identity_test_env.SetAutomaticIssueOfAccessTokens(/*grant=*/true);
+  test_url_loader_factory_.AddResponse(
+      "https://appsitemsuggest-pa.googleapis.com/v1/items",
+      R"(
+        {
+          "item": [
+            {
+              "itemId":"123",
+              "url":"https://google.com/bar",
+              "driveItem": {
+                "title": "Bar",
+                "mimeType": "application/vnd.google-apps.document"
+              },
+              "justification": {
+                "displayText": {
+                  "textSegment": [
+                    {
+                      "text": "Foo "
+                    },
+                    {
+                      "text": "bar foo bar"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "driveItem": {
+              }
+            }
+          ]
+        }
+      )");
+
+  service_->DismissModule();
+  service_->GetDriveFiles(callback.Get());
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(passed_data);
 }

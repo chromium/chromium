@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define DEVICE_FIDO_CROS_DISCOVERY_H_
 
 #include <memory>
+#include <string>
 
 #include "base/callback.h"
 #include "base/component_export.h"
@@ -22,7 +23,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoChromeOSDiscovery
     : public FidoDiscoveryBase {
  public:
   FidoChromeOSDiscovery(
-      base::RepeatingCallback<uint32_t()> generate_request_id_callback,
+      base::RepeatingCallback<std::string()> generate_request_id_callback,
       absl::optional<CtapGetAssertionRequest> get_assertion_request_);
   ~FidoChromeOSDiscovery() override;
 
@@ -33,13 +34,18 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoChromeOSDiscovery
 
  private:
   void OnU2FServiceAvailable(bool u2f_service_available);
-  void CheckAuthenticators();
-  void CheckUVPlatformAuthenticatorAvailable(bool is_enabled);
-  void MaybeAddAuthenticator(bool power_button_enabled, bool uv_available);
-  void OnHasLegacyU2fCredential(bool has_credential);
+  void MaybeAddAuthenticator();
+  void OnPowerButtonEnabled(bool enabled);
+  void OnUvAvailable(bool available);
+  void OnLacrosSupported(bool supported);
+  void OnRequestComplete();
 
-  base::RepeatingCallback<uint32_t()> generate_request_id_callback_;
+  base::RepeatingCallback<std::string()> generate_request_id_callback_;
   bool require_power_button_mode_ = false;
+  bool power_button_enabled_ = false;
+  bool uv_available_ = false;
+  bool lacros_supported_ = false;
+  uint32_t pending_requests_ = 0;
   absl::optional<CtapGetAssertionRequest> get_assertion_request_;
   std::unique_ptr<ChromeOSAuthenticator> authenticator_;
   base::WeakPtrFactory<FidoChromeOSDiscovery> weak_factory_;

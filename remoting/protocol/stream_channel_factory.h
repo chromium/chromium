@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,9 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class P2PStreamSocket;
 
@@ -24,7 +22,7 @@ class StreamChannelFactory {
   typedef base::OnceCallback<void(std::unique_ptr<P2PStreamSocket>)>
       ChannelCreatedCallback;
 
-  StreamChannelFactory() {}
+  StreamChannelFactory() = default;
 
   StreamChannelFactory(const StreamChannelFactory&) = delete;
   StreamChannelFactory& operator=(const StreamChannelFactory&) = delete;
@@ -43,12 +41,11 @@ class StreamChannelFactory {
   virtual void CancelChannelCreation(const std::string& name) = 0;
 
  protected:
-  virtual ~StreamChannelFactory() {}
+  virtual ~StreamChannelFactory() = default;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_STREAM_CHANNEL_FACTORY_H_

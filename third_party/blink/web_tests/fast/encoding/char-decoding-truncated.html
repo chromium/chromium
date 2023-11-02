@@ -7,7 +7,7 @@
 
 // UTF-8 codec emits replacement characters
 testDecode('utf-8', '%E2%88%9A', 'U+221A');
-testDecode('utf-8', '%E2%88', 'U+FFFD/U+FFFD');
+testDecode('utf-8', '%E2%88', 'U+FFFD');
 testDecode('utf-8', '%E2', 'U+FFFD');
 
 // UTF-16 codec does not emit replacement characters

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,11 @@
 
 #include <cstdint>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/media/audio_muting_session.h"
-#include "content/browser/media/audio_stream_broker.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/audio_stream_broker.h"
 #include "media/base/audio_parameters.h"
 #include "media/mojo/mojom/audio_data_pipe.mojom.h"
 #include "media/mojo/mojom/audio_input_stream.mojom.h"
@@ -67,7 +68,7 @@ class CONTENT_EXPORT AudioLoopbackStreamBroker final
   void Cleanup();
 
   // Owner of the output streams to be looped back.
-  AudioStreamBroker::LoopbackSource* source_;
+  raw_ptr<AudioStreamBroker::LoopbackSource> source_;
 
   const media::AudioParameters params_;
   const uint32_t shared_memory_count_;

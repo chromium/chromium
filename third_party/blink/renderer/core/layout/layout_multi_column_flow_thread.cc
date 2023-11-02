@@ -110,10 +110,12 @@ static inline bool IsMultiColumnContainer(const LayoutObject& object) {
 // other formatting contexts in-between). We also require that there be no
 // transforms, since transforms insist on being in the containing block chain
 // for everything inside it, which conflicts with a spanners's need to have the
-// multicol container as its direct containing block. However, the containing
-// block chain goes directly from the column spanner to the multicol container
-// for an NG multicol, so it is safe to skip this rule in such cases. We may
-// also not put spanners inside objects that don't support fragmentation.
+// multicol container as its direct containing block. A transform is supposed to
+// be a containing block for everything inside, including fixed-positioned
+// elements. Letting spanners escape this containment seems strange. See
+// https://github.com/w3c/csswg-drafts/issues/6805
+// Finally, we may also not put spanners inside objects that don't support
+// fragmentation.
 bool LayoutMultiColumnFlowThread::CanContainSpannerInParentFragmentationContext(
     const LayoutObject& object) const {
   NOT_DESTROYED();
@@ -121,8 +123,7 @@ bool LayoutMultiColumnFlowThread::CanContainSpannerInParentFragmentationContext(
   if (!block_flow)
     return false;
   return !block_flow->CreatesNewFormattingContext() &&
-         (!block_flow->CanContainFixedPositionObjects() ||
-          MultiColumnBlockFlow()->IsLayoutNGObject()) &&
+         !block_flow->CanContainFixedPositionObjects() &&
          block_flow->GetPaginationBreakability(fragmentation_engine_) !=
              LayoutBox::kForbidBreaks &&
          !IsMultiColumnContainer(*block_flow);
@@ -222,6 +223,7 @@ static LayoutObject* FirstLayoutObjectInSet(
     return multicol_set->FlowThread()->FirstChild();
   // Adjacent column content sets should not occur. We would have no way of
   // figuring out what each of them contains then.
+  CHECK(sibling->IsLayoutMultiColumnSpannerPlaceholder());
   LayoutBox* spanner = To<LayoutMultiColumnSpannerPlaceholder>(sibling)
                            ->LayoutObjectInFlowThread();
   return NextInPreOrderAfterChildrenSkippingOutOfFlow(
@@ -236,6 +238,7 @@ static LayoutObject* LastLayoutObjectInSet(LayoutMultiColumnSet* multicol_set) {
     return nullptr;
   // Adjacent column content sets should not occur. We would have no way of
   // figuring out what each of them contains then.
+  CHECK(sibling->IsLayoutMultiColumnSpannerPlaceholder());
   LayoutBox* spanner = To<LayoutMultiColumnSpannerPlaceholder>(sibling)
                            ->LayoutObjectInFlowThread();
   return PreviousInPreOrderSkippingOutOfFlow(
@@ -500,7 +503,7 @@ LayoutMultiColumnSet* LayoutMultiColumnFlowThread::ColumnSetAtBlockOffset(
     }
   } else {
     DCHECK(!column_sets_invalidated_);
-    if (multi_column_set_list_.IsEmpty())
+    if (multi_column_set_list_.empty())
       return nullptr;
     if (offset < LayoutUnit()) {
       column_set = multi_column_set_list_.front();
@@ -510,7 +513,7 @@ LayoutMultiColumnSet* LayoutMultiColumnFlowThread::ColumnSetAtBlockOffset(
           .AllOverlapsWithAdapter<MultiColumnSetSearchAdapter>(adapter);
 
       // If no set was found, the offset is in the flow thread overflow.
-      if (!adapter.Result() && !multi_column_set_list_.IsEmpty())
+      if (!adapter.Result() && !multi_column_set_list_.empty())
         column_set = multi_column_set_list_.back();
       else
         column_set = adapter.Result();
@@ -751,7 +754,16 @@ LayoutMultiColumnSet* LayoutMultiColumnFlowThread::PendingColumnSetForNG()
 
 void LayoutMultiColumnFlowThread::AppendNewFragmentainerGroupFromNG() {
   NOT_DESTROYED();
-  DCHECK(last_set_worked_on_);
+  if (!last_set_worked_on_) {
+    // There may be no column sets at all (when there's no content inside the
+    // multicol container). Still the multicol container itself may take up
+    // space and become fragmented, due to its specified block-size, padding,
+    // etc. The NG code doesn't care about this when calling this method. Just
+    // bail. It may also be that we haven't gotten to the first column set yet.
+    // This may happen when NG lays out an empty column (before a spanner) where
+    // legacy doesn't think that there should be a column.
+    return;
+  }
   last_set_worked_on_->AppendNewFragmentainerGroup();
 }
 
@@ -1265,15 +1277,19 @@ void LayoutMultiColumnFlowThread::FlowThreadDescendantWillBeRemoved(
   // set from the spanner placeholders that we've already found.
   LayoutMultiColumnSet* column_set_to_remove;
   if (adjacent_next_spanner_placeholder) {
-    column_set_to_remove = To<LayoutMultiColumnSet>(
-        adjacent_next_spanner_placeholder->PreviousSiblingMultiColumnBox());
+    LayoutBox* sibling =
+        adjacent_next_spanner_placeholder->PreviousSiblingMultiColumnBox();
+    CHECK(sibling->IsLayoutMultiColumnSet());
+    column_set_to_remove = To<LayoutMultiColumnSet>(sibling);
     DCHECK(
         !adjacent_previous_spanner_placeholder ||
         column_set_to_remove ==
             adjacent_previous_spanner_placeholder->NextSiblingMultiColumnBox());
   } else if (adjacent_previous_spanner_placeholder) {
-    column_set_to_remove = To<LayoutMultiColumnSet>(
-        adjacent_previous_spanner_placeholder->NextSiblingMultiColumnBox());
+    LayoutBox* sibling =
+        adjacent_previous_spanner_placeholder->NextSiblingMultiColumnBox();
+    CHECK(sibling->IsLayoutMultiColumnSet());
+    column_set_to_remove = To<LayoutMultiColumnSet>(sibling);
   } else {
     // If there were no adjacent spanners, it has to mean that there's only one
     // column set, since it's only spanners that may cause creation of

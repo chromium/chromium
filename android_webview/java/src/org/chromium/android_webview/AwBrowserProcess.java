@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,6 +23,7 @@ import org.chromium.android_webview.common.AwSwitches;
 import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.android_webview.common.services.ICrashReceiverService;
 import org.chromium.android_webview.common.services.IMetricsBridgeService;
+import org.chromium.android_webview.common.services.ServiceHelper;
 import org.chromium.android_webview.common.services.ServiceNames;
 import org.chromium.android_webview.metrics.AwMetricsLogUploader;
 import org.chromium.android_webview.metrics.AwMetricsServiceClient;
@@ -157,7 +158,7 @@ public final class AwBrowserProcess {
                 // Check android settings but only when safebrowsing is enabled.
                 try (ScopedSysTraceEvent e2 =
                                 ScopedSysTraceEvent.scoped("AwBrowserProcess.maybeEnable")) {
-                    AwSafeBrowsingConfigHelper.maybeEnableSafeBrowsingFromManifest(appContext);
+                    AwSafeBrowsingConfigHelper.maybeEnableSafeBrowsingFromManifest();
                 }
 
                 TrustTokenFulfillerManager.setFactory(
@@ -232,8 +233,7 @@ public final class AwBrowserProcess {
                 ThreadUtils.assertOnUiThread();
                 boolean userApproved = Boolean.TRUE.equals(enabled);
                 if (updateMetricsConsent) {
-                    AwMetricsServiceClient.setConsentSetting(
-                            ContextUtils.getApplicationContext(), userApproved);
+                    AwMetricsServiceClient.setConsentSetting(userApproved);
                 }
 
                 if (!enableMinidumpUploadingForTesting) {
@@ -374,7 +374,8 @@ public final class AwBrowserProcess {
                     @Override
                     public void onServiceDisconnected(ComponentName className) {}
                 };
-                if (!appContext.bindService(intent, connection, Context.BIND_AUTO_CREATE)) {
+                if (!ServiceHelper.bindService(
+                            appContext, intent, connection, Context.BIND_AUTO_CREATE)) {
                     Log.w(TAG, "Could not bind to Minidump-copying Service " + intent);
                 }
             } catch (RuntimeException e) {
@@ -430,7 +431,7 @@ public final class AwBrowserProcess {
      */
     public static void collectNonembeddedMetrics() {
         final Context appContext = ContextUtils.getApplicationContext();
-        if (AwMetricsServiceClient.isAppOptedOut(appContext)) {
+        if (ManifestMetadataUtil.isAppOptedOutFromMetricsCollection()) {
             Log.d(TAG, "App opted out from metrics collection, not connecting to metrics service");
             return;
         }
@@ -486,7 +487,7 @@ public final class AwBrowserProcess {
             @Override
             public void onServiceDisconnected(ComponentName className) {}
         };
-        if (!appContext.bindService(intent, connection, Context.BIND_AUTO_CREATE)) {
+        if (!ServiceHelper.bindService(appContext, intent, connection, Context.BIND_AUTO_CREATE)) {
             Log.d(TAG, "Could not bind to MetricsBridgeService " + intent);
         }
     }

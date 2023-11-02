@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,7 @@ class WebState;
 // thumbnail given WebState.
 @interface ChromeActivityItemThumbnailGenerator : NSObject
 
-// Default initializer. |webState| must not be nullptr.
+// Default initializer. `webState` must not be nullptr.
 - (instancetype)initWithWebState:(web::WebState*)webState
     NS_DESIGNATED_INITIALIZER;
 

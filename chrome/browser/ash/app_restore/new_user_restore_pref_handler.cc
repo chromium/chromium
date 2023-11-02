@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,7 @@
 #include "chrome/browser/prefs/pref_service_syncable_util.h"
 #include "chrome/browser/profiles/profile.h"
 
-namespace ash {
-namespace full_restore {
+namespace ash::full_restore {
 
 NewUserRestorePrefHandler::NewUserRestorePrefHandler(Profile* profile)
     : profile_(profile) {
@@ -46,10 +45,7 @@ void NewUserRestorePrefHandler::OnStartedSyncing(const std::string& path) {
 void NewUserRestorePrefHandler::OnIsSyncingChanged() {
   // Wait until the initial sync happens.
   auto* pref_service = PrefServiceSyncableFromProfile(profile_);
-  bool is_syncing = features::IsSyncSettingsCategorizationEnabled()
-                        ? pref_service->AreOsPrefsSyncing()
-                        : pref_service->IsSyncing();
-  if (!is_syncing)
+  if (!pref_service->AreOsPrefsSyncing())
     return;
 
   // OnIsSyncingChanged could be called multiple times. We only check and modify
@@ -76,5 +72,4 @@ void NewUserRestorePrefHandler::OnPreferenceChanged(
   local_restore_pref_.reset();
 }
 
-}  // namespace full_restore
-}  // namespace ash
+}  // namespace ash::full_restore

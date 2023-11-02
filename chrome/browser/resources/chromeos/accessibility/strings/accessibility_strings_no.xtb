@@ -30,7 +30,9 @@
 <translation id="1189258430971676908">Øvelsesområde: rullegardinlister</translation>
 <translation id="1195238899008218998">Etterord</translation>
 <translation id="1197088940767939838">Oransje</translation>
+<translation id="1198865190323699001">Trykkebevegelser</translation>
 <translation id="1201402288615127009">Neste</translation>
+<translation id="1202112913213080585">avbryt</translation>
 <translation id="1206619573307042055">marquee</translation>
 <translation id="1207086294218137981">Det finnes ingen flere overskrifter på nivå 4</translation>
 <translation id="1212770441379271564">De neste hurtigtastene er ikke ChromeVox-spesifikke kommandoer, men er likevel nyttige for å få mest mulig ut av Chrome.
@@ -42,6 +44,7 @@ For å navigere mellom åpne faner, trykk på Control+Tab.
 For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="1213216066620407844">ChromeVox – gir Chrome en stemme</translation>
 <translation id="1225969361094801578">Mørk skifergrå</translation>
+<translation id="122928249241119550">gå til forrige setning</translation>
 <translation id="1230503547248836149">Starten av utvalget</translation>
 <translation id="1236794971743289975">Sluttnote</translation>
 <translation id="1237797094773582699">Tilsvarende kan du sveipe fra høyre til venstre med fire fingre for å gå til forrige del. Prøv nå!</translation>
@@ -53,7 +56,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="1273314450961659276">Innstillinger for tekst til tale</translation>
 <translation id="1275718070701477396">Valgt</translation>
 <translation id="1284576163386164372">Du kan alltid se veiledninger ved å trykke med fire fingre for å åpne menyene. Deretter aktiverer du veiledningen i «ChromeVox»-delen.</translation>
-<translation id="1291286136605998134">Av/på-knapp</translation>
+<translation id="1291286136605998134">Av og på-knapp</translation>
 <translation id="1299774449519412690">Lys himmelblå</translation>
 <translation id="1303806948938513162">Trykk med fire fingre for å åpne ChromeVox-menyene</translation>
 <translation id="1313373992684326101">Gå til forrige del. Eksempler på dette er statusfeltet og Appoversikt.</translation>
@@ -69,6 +72,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="1354356357730355833">kopiér</translation>
 <translation id="135978014023467274">ChromeVox er oppdatert til versjon 63!</translation>
 <translation id="1360699455582016846">Klikk på elementet under navigeringstasten <ph name="ROUTING_KEY_NUMBER" /></translation>
+<translation id="1376703628032300005">gå til neste tegn</translation>
 <translation id="1377925789329510816">Dette er den siste overskriften. Trykk på Søk+H for å gå til den første overskriften eller på Søk+Shift+H for å gå til den andre overskriften på denne siden.</translation>
 <translation id="138218114945450791">Lyseblå</translation>
 <translation id="1383876407941801731">Søk</translation>
@@ -134,9 +138,9 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="1812527064848182527">liggende</translation>
 <translation id="1829244130665387512">Finn på side</translation>
 <translation id="1834891354138622109">Kolonne</translation>
-<translation id="1845944666972354496">Dobbelttrykk for å aktivere</translation>
 <translation id="1846771122725914429">Bluetooth-leselist</translation>
 <translation id="1852018405765032699">Trykk på skjermen med fire fingre for å åpne og lukke ChromeVox-menyene. Disse menyene inneholder nyttig informasjon om kommandoer og snarveier. Når menyene er åpne, kan du sveipe med én finger for å navigere gjennom elementer og dobbelttrykke for å aktivere elementer. For å fortsette, trykk på skjermen med fire fingre.</translation>
+<translation id="1864430479908918647">Trykk på Søk + mellomrom</translation>
 <translation id="1865601187525349519">Slutt på teksten</translation>
 <translation id="1876229593313240038">doc</translation>
 <translation id="1902396333223336119">Rutenettcelle</translation>
@@ -179,7 +183,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="2203046366315513658">Reduser verdien</translation>
 <translation id="2216790501338699346">Nettadresse for link: <ph name="LINK_URL" /></translation>
 <translation id="2220205454259065436">Flytt bakover ett tegn</translation>
-<translation id="2220529011494928058">Rapportér et problem</translation>
+<translation id="2220529011494928058">Rapporter et problem</translation>
 <translation id="2243633977138166243">Trykk på venstre- eller høyrepilen for å navigere; trykk på Enter for å aktivere</translation>
 <translation id="224426591676115802">Tale er ikke tilgjengelig for dette språket: <ph name="LANGUAGE" /></translation>
 <translation id="2247700577781885251">Avslutter læremodus</translation>
@@ -211,8 +215,10 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="2435422727584637732">Sterk blå</translation>
 <translation id="2438712309510062123">Foreslå</translation>
 <translation id="2450814015951372393">Avmerkingsrute</translation>
+<translation id="2450992626945324272">gå til neste setning</translation>
 <translation id="2461822463642141190">Nåværende</translation>
 <translation id="2462626033734746142">Gruppe med alternativknapper</translation>
+<translation id="2467741090055146971">fjern merkingen</translation>
 <translation id="2471138580042810658">Overskrift 6</translation>
 <translation id="248982282205370495">{COUNT,plural, =1{asterisk}other{# asterisker}}</translation>
 <translation id="2490721194269245365">Rosebrun</translation>
@@ -232,6 +238,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="2619344480613750862">Du kan også bevege deg mellom deler av skjermen. Du kan for eksempel bevege deg mellom appoversikten, hyllen og Chrome-fanene dine. For å gå til neste del, sveip fra venstre til høyre med fire fingre. Prøv det nå for å fortsette.</translation>
 <translation id="2624431853467395961">Åpne læremodus</translation>
 <translation id="2626530649491650971">klikkbart</translation>
+<translation id="263637551280112393">Trykk på Søk + Shift + mellomrom</translation>
 <translation id="2637227747952042642">Matematikk</translation>
 <translation id="2638785836053527382">Nedlastingen av <ph name="FILE_NAME" /> ble gjenopptatt</translation>
 <translation id="2639750663247012216">ChromeVox-modifikator</translation>
@@ -387,7 +394,9 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="3492609944033322585">{COUNT,plural, =1{høyre hakeparentes}other{# høyre hakeparenteser}}</translation>
 <translation id="3494946239022273294">mnuitm</translation>
 <translation id="3497063866483065785">{COUNT,plural, =1{spørsmålstegn}other{# spørsmålstegn}}</translation>
+<translation id="3505359110822747654">Lukk ChromeVox-menyer</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{circumflekstegn}other{# circumflekstegn}}</translation>
+<translation id="3518600448524470129">{COUNT,plural, =1{hvitt punkttegn}other{# hvite punkttegn}}</translation>
 <translation id="352577523970648069">Et tekstfelt som kan endres</translation>
 <translation id="3538907380453898475">beskr.liste</translation>
 <translation id="3549141990712742152">klipp ut <ph name="TEXT" />.</translation>
@@ -484,11 +493,12 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="42164919740161077">Kadettblå</translation>
 <translation id="4217571870635786043">Diktering</translation>
 <translation id="4218529045364428769">{COUNT,plural, =1{tankestrek}other{# tankestreker}}</translation>
+<translation id="4220024144662591089">velg fra <ph name="START_PHRASE" /> til <ph name="END_PHRASE" /></translation>
 <translation id="4221012616705981690">Det finnes ingen tidligere lister</translation>
 <translation id="4225355998815256469">Skjemakontroller</translation>
 <translation id="4230834257931120629">Lys skifergrå</translation>
 <translation id="4231102694147661229">Slå på utvikleralternativene</translation>
-<translation id="423428485095722850">Trykk på Søk + mellomrom for å slå av/på</translation>
+<translation id="423428485095722850">Trykk på Søk + mellomrom for å slå av eller på</translation>
 <translation id="4243624244759495699"><ph name="LOCALE" />, klasse <ph name="GRADE" /></translation>
 <translation id="4246217262268234757">Blågrå</translation>
 <translation id="4253168017788158739">Merknad</translation>
@@ -502,6 +512,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="4300318234632215983">Kunngjør nettadressen bak en link</translation>
 <translation id="4322625298640984693">Sienna</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{punktum}=3{ellipse}other{# punktum}}</translation>
+<translation id="4352022650330571548">skriv <ph name="PHRASE" /></translation>
 <translation id="4372435075475052704">min.: <ph name="X" /></translation>
 <translation id="4372705107434148843">Stopp tale</translation>
 <translation id="4376316291247992553">Se grafikk som punktskrift</translation>
@@ -519,6 +530,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="4479068155583208887">Mursteinsrød</translation>
 <translation id="4482330759234983253">Forrige tabell</translation>
 <translation id="4491109536499578614">Bilde</translation>
+<translation id="4507332368061453500">Langt klikk på gjeldende element</translation>
 <translation id="4511186779140817916">Skåldet mandel</translation>
 <translation id="451510441928265982">Det finnes ingen tidligere overskrifter på nivå 2</translation>
 <translation id="4515799157838123044">Skyggelegg bakgrunnsinnhold</translation>
@@ -531,6 +543,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="4601367666219428522">tbl <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">Ignorerer neste tastetrykk</translation>
 <translation id="4623097797855662355">Kolofon</translation>
+<translation id="4624970070706497034">TalkBack er ikke lenger tilpasset for Chromebook. Du kan fremdeles bruke TalkBack, men da med standard hurtigtaster. Trykk på søketasten + A og deretter K for å se tilgjengelige hurtigtaster. Hvis du fremdeles vil bruke TalkBack, trykker du på kommandoen på nytt.</translation>
 <translation id="463135993322337640">Trykk på ChromeVox O, N for å finne ut hva som er nytt</translation>
 <translation id="4649220074413114917">Du kan trykke på skjermen med to fingre for å stoppe eventuell høytlesning som pågår. Dette er nyttig hvis det er noe du vil at ChromeVox ikke skal lese. For å fortsette, trykk på skjermen med to fingre.</translation>
 <translation id="4660783501463101648">Classic er fjernet. Tasten for å bytte tilbake til ChromeVox Classic er fjernet.</translation>
@@ -565,6 +578,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="4854380505292502090">Det finnes ingen tidligere mediemoduler</translation>
 <translation id="4855927945655956315">Essensielle taster: Ctrl</translation>
 <translation id="4862744964787595316">Ikke fet</translation>
+<translation id="4865995900839719272">flytt til forrige linje</translation>
 <translation id="4866956062845190338">rdmnuitm</translation>
 <translation id="4867316986324544967">Slå på TTS-loggføring</translation>
 <translation id="4886524826165775965"><ph name="INDEX" />/<ph name="TOTAL" /></translation>
@@ -585,7 +599,6 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="4993152509206108683">Hastighet – <ph name="PERCENT" /> prosent</translation>
 <translation id="4994420463726586413">Les opp gjeldende batteristatus</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, alternativknappen valgt</translation>
-<translation id="5011664330025416377">Trykk på Søk + mellomrom for å aktivere</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, menyelement med alternativknapp som er valgt</translation>
 <translation id="5020651427400641814">Slå på loggføring av tale</translation>
 <translation id="5041394372352067729">Flytt leselisten til toppen av siden</translation>
@@ -612,7 +625,6 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="5170206230005240598">Punktskrift-teksting er slått på</translation>
 <translation id="5183440668879371625">Punktskrift – forrige linje</translation>
 <translation id="5189244881767082992">Linje</translation>
-<translation id="5234747236692380506">skriv <ph name="TEXT" /></translation>
 <translation id="5263034204789987535">Lys maisgul</translation>
 <translation id="5263344797180442561">h2</translation>
 <translation id="528468243742722775">Avslutt</translation>
@@ -623,6 +635,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="5304943142864553931"><ph name="TITLE" />-fane</translation>
 <translation id="5308380583665731573">Koble til</translation>
 <translation id="5310788376443009632">fjernet:</translation>
+<translation id="5316825363044614340">flytt til neste linje</translation>
 <translation id="5320727453979144100">Trege taster er slått på</translation>
 <translation id="5321085947096604457">{COUNT,plural, =1{komma}other{# kommaer}}</translation>
 <translation id="532485153932049746">Tekstformatering
@@ -638,6 +651,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="5355014376930441909">Det finnes ingen flere deler</translation>
 <translation id="5368000168321181111">Lydsignaler er av</translation>
 <translation id="5368505757342402527">Nedlastingen av <ph name="FILE_NAME" /> er <ph name="PROGRESS" /> % fullført. Omtrent <ph name="TIME" /> <ph name="UNITS" /> gjenstår.</translation>
+<translation id="5381388086899614489">langt klikk</translation>
 <translation id="5400836586163650660">Grå</translation>
 <translation id="5402367795255837559">Punktskrift</translation>
 <translation id="5402791055281059602">Et modalt varsel</translation>
@@ -659,6 +673,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="5522423213731659107">Hurtigorienteringen er fullført!</translation>
 <translation id="5534303576632885660">hdr</translation>
 <translation id="5539820223028224601">Gainsboro</translation>
+<translation id="554893713779400387">Slå av/på diktering</translation>
 <translation id="5549179427201066174">Slå tilbakemelding via lydsignaler av eller på</translation>
 <translation id="556042886152191864">Knapp</translation>
 <translation id="5561345396546889625">Neste liste</translation>
@@ -669,6 +684,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="5597170376237141345">Neste avmerkingsrute</translation>
 <translation id="5598905979683743333">Alternativknappen <ph name="NAME" /> er ikke valgt</translation>
 <translation id="5601172225407283979">Utfør standardhandling</translation>
+<translation id="5604302400025591178">{COUNT,plural, =1{kvadratisk punkttegn}other{# kvadratiske punkttegn}}</translation>
 <translation id="5608798115546226984">Innebygd autofullføring</translation>
 <translation id="5616029807486814372">Neste leksjon</translation>
 <translation id="561939826962581046">time</translation>
@@ -676,6 +692,8 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="5623842676595125836">Logg</translation>
 <translation id="5628125749885014029">h4</translation>
 <translation id="5632083598315326067">Grafikksymbol</translation>
+<translation id="5648939288050772726">Gratulerer! Du har lært det grunnleggende som trengs for å bruke ChromeVox. Husk at du kan åpne kommandomenyen i ChromeVox når som helst ved å trykke på søketasten + punktum. For å finne ut enda mer om ChromeVox og ChromeOS, les artiklene nedenfor.
+    Hvis du er ferdig med veiledningen, kan du bruke ChromeVox til å navigere til Lukk-knappen og klikke på den.</translation>
 <translation id="5653397561111110475">Bruk tilgjengelighetsfunksjonene for berøringsskjermen på Chromebook</translation>
 <translation id="5655682562155942719">Gå til-kommandoer</translation>
 <translation id="56637627897541303">Tekstområde</translation>
@@ -697,7 +715,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="5761219715606611783">Bra! Du har lært det grunnleggende som trengs for å bruke ChromeVox-berøring. Du kan gå gjennom veiledningen på nytt eller avslutte denne veiledningen med knappene under.</translation>
 <translation id="5776001898637896684">Google Enhanced Network-utvidelse for tekst til tale</translation>
 <translation id="5805940204952508776">Trykk med to fingre</translation>
-<translation id="5819072574982403430">Treelementet</translation>
+<translation id="5819072574982403430">Treelement</translation>
 <translation id="5822819874379903994">Mørk turkis</translation>
 <translation id="5824976764713185207">Les siden automatisk når den er ferdig lastet inn</translation>
 <translation id="5826479389509458994">rad <ph name="ROW" /> kolonne <ph name="COL" /></translation>
@@ -740,13 +758,16 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="6034000775414344507">Lysegrå</translation>
 <translation id="6036135911048686884">Utforsk ved å trykke</translation>
 <translation id="6037602951055904232">Panorer frem</translation>
+<translation id="604240746417122825">grammatikkfeil</translation>
 <translation id="6082768461603900813">Grunnleggende navigering</translation>
 <translation id="609281021724813947">Det finnes ingen tidligere glidebrytere</translation>
 <translation id="6100239002225743044">Flytt opp én linje</translation>
 <translation id="6118126368611144850">Android-apper for Chrome. Hvis du har Play Butikk på enheten din, kan du ta en sniktitt på ChromeVox med Android-apper. Prøv den eksperimentelle støtten ved å laste ned Google Chrome Canary fra Play-butikken.</translation>
 <translation id="611827076493383239">vtd</translation>
+<translation id="6119846243427417423">aktiver</translation>
 <translation id="6122013438240733403">btn</translation>
 <translation id="6132506484792346370">En listeboks eller et kombinasjonsfelt</translation>
+<translation id="613344593214611552">slett forrige setning</translation>
 <translation id="6142308968191113180">Overskrift 4</translation>
 <translation id="6150023170003443621">Gulgrønn</translation>
 <translation id="6158882249329863701">rad <ph name="TABLECELLROWINDEX" /> kolonne <ph name="TABLECELLCOLUMNINDEX" /></translation>
@@ -756,9 +777,11 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="6186305613600865047">Gå til nederst på siden</translation>
 <translation id="6187190722927752226">Havblå</translation>
 <translation id="6197361807490522975">Mørk blå</translation>
+<translation id="6218813441317556731">erstatt <ph name="DELETE_PHRASE" /> med <ph name="INSERT_PHRASE" /></translation>
 <translation id="6236061028292614533">Neste overskrift</translation>
 <translation id="6254901459154107917">Neste redigerbare tekstområde</translation>
 <translation id="6259464875943891919">Avsluttet <ph name="TYPE" />.</translation>
+<translation id="6280088282605782512">Dobbelttrykk</translation>
 <translation id="6282062888058716985">nav</translation>
 <translation id="6295699829709583154">Essensielle taster: søketasten</translation>
 <translation id="6305702903308659374">Spill av med normalt volum selv når ChromeVox snakker</translation>
@@ -901,6 +924,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7308519659008003150">Det finnes ingen tidligere skjemafelter</translation>
 <translation id="731121099745151312">tritm</translation>
+<translation id="7313717760367325059">hjelp</translation>
 <translation id="7317017974771324508">delvis valgt</translation>
 <translation id="7322442671176251901">Berøringsutforskning</translation>
 <translation id="7344012264516629579">Det finnes andre hoppkommandoer, blant annet hopping etter link, knapp og avmerkingsboks, for å nevne noen. Du finner en fullstendig liste over hoppkommandoer i ChromeVox-menyene, som du kan åpne ved å trykke på søketasten + punktum.</translation>
@@ -928,6 +952,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="7533226154149229506">Lys gullris</translation>
 <translation id="7543255924852002459">Forkast-etiketten</translation>
 <translation id="7552432549459840808">Nyttige hurtigtaster i Chrome</translation>
+<translation id="7553679324939294712">sett inn <ph name="INSERT_PHRASE" /> før <ph name="BEFORE_PHRASE" /></translation>
 <translation id="7569983096843329377">Svart</translation>
 <translation id="7579911500627256166">punkt <ph name="DOT" /></translation>
 <translation id="7592060599656252486">Noe</translation>
@@ -951,16 +976,16 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="7684431668231950609">Rediger tekst – nettadresseoppføring</translation>
 <translation id="7685589220304187312">tlbar</translation>
 <translation id="7693840228159394336">Forrige alternativknapp</translation>
+<translation id="7696631298608145306">gå til neste ord</translation>
 <translation id="7701040980221191251">Ingen</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7713139339518499741">Naturlig stemme</translation>
 <translation id="7714340021005120797">Det finnes ingen flere kombinasjonsfelt</translation>
-<translation id="772146615414628379">Gratulerer! Du har lært det grunnleggende som trengs for å bruke ChromeVox. Husk at du kan åpne kommandomenyen i ChromeVox når som helst ved å trykke på Søk+punktum. For å finne ut enda mer om ChromeVox og Chrome OS, les artiklene nedenfor.
-    Hvis du er ferdig med veiledningen, kan du bruke ChromeVox til å navigere til Lukk-knappen og klikke på den.</translation>
 <translation id="7724603315864178912">Klipp ut</translation>
 <translation id="7731785449856576010">Det finnes ingen flere mediemoduler</translation>
 <translation id="7735498529470878067">Med berøringsutforskning kan du raskt få inntrykk av hva som er på skjermen.</translation>
 <translation id="773906353055481349">Trykk på Søk + Ctrl + Alt og piltastene for å navigere mellom cellene</translation>
+<translation id="7746976083433980639"><ph name="ACTION" /> for å <ph name="LABEL" /></translation>
 <translation id="7763537600611320912">Startet nedlasting av <ph name="FILE_NAME" /></translation>
 <translation id="7768784765476638775">Tekstopplesing</translation>
 <translation id="7776293189010177726">Åpne ChromeVox-menyene</translation>
@@ -1060,6 +1085,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="8455868257606149352">Maksimum <ph name="X" /></translation>
 <translation id="84575901236241018">har tilgangstast, <ph name="KEY" /></translation>
 <translation id="8463645336674919227">Forlater grammatikkfeilen</translation>
+<translation id="8465573210279050749">slett forrige ord</translation>
 <translation id="847040613207937740">Det finnes ingen flere avmerkingsbokser</translation>
 <translation id="8473540203671727883">Les opp teksten som er under musepekeren</translation>
 <translation id="8476408756881832830">Sett avspillingen på pause når ChromeVox snakker</translation>
@@ -1090,11 +1116,13 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="8659501358298941449">Rullegardinlister</translation>
 <translation id="8666733765751421568">Slutt på <ph name="TYPE" /></translation>
 <translation id="867187640362843212">Overskrift 5</translation>
+<translation id="8690400660839620419">{COUNT,plural, =1{}other{flettenivå #}}</translation>
 <translation id="8693391540059827073">Favorittsesongen min</translation>
 <translation id="8696284982970258155">Honningmelon</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{loddrett strek}other{# loddrette streker}}</translation>
 <translation id="8741370088760768424">Tips: Trykk på søketasten + mellomrom for å aktivere det gjeldende elementet.</translation>
 <translation id="8743786158317878347">åpne strukturert innhold, for eksempel tabeller</translation>
+<translation id="8746846427395705317">gå til forrige ord</translation>
 <translation id="8747966237988593539">Nummerert liste</translation>
 <translation id="8749988712346667988">Sølv</translation>
 <translation id="875769700429317857">Nedlastingen av <ph name="FILE_NAME" /> er fullført</translation>
@@ -1122,12 +1150,14 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="8970172509886453271">Det finnes ingen tidligere deler</translation>
 <translation id="89720367119469899">Escape</translation>
 <translation id="8978496506222343566">tltip</translation>
+<translation id="898089897833732740">slett <ph name="PHRASE" /></translation>
 <translation id="8986362086234534611">Glem</translation>
 <translation id="8989104346085848538">For å stoppe eventuell ChromeVox-høytlesning som pågår, trykk på Ctrl-tasten.</translation>
 <translation id="8993737615451556423">Gir deg kontroller for å sette lesestemmen på pause og gjøre den raskere eller tregere</translation>
 <translation id="9014206344398081366">ChromeVox-veiledning</translation>
 <translation id="9040132695316389094">Overskrift 1</translation>
 <translation id="9061884144798498064">Velg en tabell for 8-punkts punktskrift:</translation>
+<translation id="9063946545000394379">gå til forrige tegn</translation>
 <translation id="9065283790526219006">+forgrunnsvindu</translation>
 <translation id="9065912140022662363">Det finnes ingen flere alternativknapper</translation>
 <translation id="9067522039955793016">Sideskift</translation>
@@ -1156,6 +1186,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="9223032053830369045">Mørk rød</translation>
 <translation id="923331726185079994">ChromeVox er oppdatert</translation>
 <translation id="93384979447910801">Mørk sjøgrønn</translation>
+<translation id="937605981140327129">TalkBack er ikke installert for øyeblikket. Installer Android AccessibilitySuite gjennom Play-butikken, og prøv på nytt.</translation>
 <translation id="948171205378458592">Reduser talehastigheten</translation>
 <translation id="957570623732056069">Sveip til venstre eller høyre med én finger for å navigere i denne leksjonen</translation>
 <translation id="958854023026327378">Sveip én finger ned</translation>

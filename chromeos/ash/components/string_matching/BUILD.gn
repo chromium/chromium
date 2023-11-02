@@ -1,0 +1,70 @@
+# Copyright 2019 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
+
+assert(is_chromeos_ash)
+
+source_set("string_matching") {
+  sources = [
+    "acronym_matcher.cc",
+    "acronym_matcher.h",
+    "diacritic_utils.cc",
+    "diacritic_utils.h",
+    "fuzzy_tokenized_string_match.cc",
+    "fuzzy_tokenized_string_match.h",
+    "prefix_matcher.cc",
+    "prefix_matcher.h",
+    "sequence_matcher.cc",
+    "sequence_matcher.h",
+    "term_break_iterator.cc",
+    "term_break_iterator.h",
+    "tokenized_string.cc",
+    "tokenized_string.h",
+    "tokenized_string_char_iterator.cc",
+    "tokenized_string_char_iterator.h",
+    "tokenized_string_match.cc",
+    "tokenized_string_match.h",
+  ]
+
+  deps = [
+    "//base:i18n",
+    "//cc",
+  ]
+
+  public_deps = [
+    "//base",
+    "//ui/gfx",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "acronym_matcher_unittest.cc",
+    "diacritic_utils_unittest.cc",
+    "fuzzy_tokenized_string_match_unittest.cc",
+    "prefix_matcher_unittest.cc",
+    "sequence_matcher_unittest.cc",
+    "term_break_iterator_unittest.cc",
+    "tokenized_string_char_iterator_unittest.cc",
+    "tokenized_string_match_unittest.cc",
+    "tokenized_string_unittest.cc",
+  ]
+
+  deps = [
+    ":string_matching",
+    "//testing/gtest",
+  ]
+}
+
+fuzzer_test("tokenized_string_fuzzer") {
+  sources = [ "tokenized_string_fuzzer.cc" ]
+  deps = [
+    ":string_matching",
+    "//base",
+  ]
+}

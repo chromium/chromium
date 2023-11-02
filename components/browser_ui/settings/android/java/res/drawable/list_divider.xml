@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!-- The attributes we could use to change the color of Android's list_divider_material,
+     ?attr/colorListDivider and ?attr/opacityListDivider, are private. So, we use our own drawable
+     that mirrors the Android one. -->
+<shape
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:tint="@macro/divider_line_bg_color">
+    <solid android:color="@android:color/black" />
+    <size
+        android:height="1dp"
+        android:width="1dp" />
+</shape>

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include "ash/ash_export.h"
 #include "base/time/time.h"
-#include "base/unguessable_token.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
@@ -25,9 +24,9 @@ class MenuRunner;
 
 namespace ash {
 
-namespace ClipboardHistoryUtil {
+namespace clipboard_history_util {
 enum class Action;
-}  // namespace ClipboardHistoryUtil
+}  // namespace clipboard_history_util
 
 class ClipboardHistory;
 class ClipboardHistoryItem;
@@ -69,7 +68,7 @@ class ASH_EXPORT ClipboardHistoryMenuModelAdapter : views::MenuModelAdapter {
   const ClipboardHistoryItem& GetItemFromCommandId(int command_id) const;
 
   // Returns the count of menu items.
-  int GetMenuItemsCount() const;
+  size_t GetMenuItemsCount() const;
 
   // Selects the menu item specified by `command_id`.
   void SelectMenuItemWithCommandId(int command_id);
@@ -84,20 +83,18 @@ class ASH_EXPORT ClipboardHistoryMenuModelAdapter : views::MenuModelAdapter {
   void AdvancePseudoFocus(bool reverse);
 
   // Returns the action to take on the menu item specified by `command_id`.
-  ClipboardHistoryUtil::Action GetActionForCommandId(int command_id) const;
+  clipboard_history_util::Action GetActionForCommandId(int command_id) const;
 
   // Returns menu bounds in screen coordinates.
   gfx::Rect GetMenuBoundsInScreenForTest() const;
 
-  const views::MenuItemView* GetMenuItemViewAtForTest(int index) const;
-  views::MenuItemView* GetMenuItemViewAtForTest(int index);
-
-  void set_item_removal_callback_for_test(base::RepeatingClosure new_callback) {
-    item_removal_callback_for_test_ = std::move(new_callback);
-  }
+  const views::MenuItemView* GetMenuItemViewAtForTest(size_t index) const;
+  views::MenuItemView* GetMenuItemViewAtForTest(size_t index);
 
  private:
   class ScopedA11yIgnore;
+
+  using ItemViewsByCommandId = std::map<int, ClipboardHistoryItemView*>;
 
   ClipboardHistoryMenuModelAdapter(
       std::unique_ptr<ui::SimpleMenuModel> model,
@@ -119,7 +116,7 @@ class ASH_EXPORT ClipboardHistoryMenuModelAdapter : views::MenuModelAdapter {
   // views::MenuModelAdapter:
   views::MenuItemView* AppendMenuItem(views::MenuItemView* menu,
                                       ui::MenuModel* model,
-                                      int index) override;
+                                      size_t index) override;
   void OnMenuClosed(views::MenuItemView* menu) override;
 
   // The model which holds the contents of the menu.
@@ -143,7 +140,7 @@ class ASH_EXPORT ClipboardHistoryMenuModelAdapter : views::MenuModelAdapter {
 
   // Stores mappings between command ids and history item view pointers.
   // It updates synchronously when a item is removed.
-  std::map<int, ClipboardHistoryItemView*> item_views_by_command_id_;
+  ItemViewsByCommandId item_views_by_command_id_;
 
   const ClipboardHistory* const clipboard_history_;
 
@@ -159,9 +156,6 @@ class ASH_EXPORT ClipboardHistoryMenuModelAdapter : views::MenuModelAdapter {
 
   // Indicates whether `Run()` has been called before.
   bool run_before_ = false;
-
-  // Called when an item view is removed from the root menu.
-  base::RepeatingClosure item_removal_callback_for_test_;
 
   base::WeakPtrFactory<ClipboardHistoryMenuModelAdapter> weak_ptr_factory_{
       this};

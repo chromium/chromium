@@ -1,4 +1,5 @@
 <script type="text/javascript">
+
 function reportProgress(msg) {
   if (window.domAutomationController) {
     window.domAutomationController.send(msg);
@@ -25,20 +26,23 @@ async function requestDevice() {
 
 async function init() {
   const device = await requestDevice();
-
+  if (device == null) {
+    return;
+  }
   reportProgress('LOADED');
 
   // The test runner forces the GPU process to terminate normally. This should
   // NOT result in the domain being blocked.
   console.log('Waiting for GPU termination to cause device loss');
-  const {reason} = await device.lost;
-  if (reason !== undefined) {
+  const lost = await device.lost;
+  if (lost.reason !== undefined) {
     console.log('TEST FAILED - Expected undefined device lost reason');
     reportProgress('FAILED');
     return;
   }
 
   try {
+    // Check that we can acquire a new device successfully.
     const newDevice = await requestDevice();
     if (newDevice) {
       reportProgress('SUCCESS');
@@ -46,9 +50,6 @@ async function init() {
     }
   } catch {
   }
-
-  reportProgress('FAILED');
-  console.log('TEST FAILED - Could not get a new GPUDevice');
 }
 
 init();

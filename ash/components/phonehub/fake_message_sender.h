@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@
 
 #include "ash/components/phonehub/proto/phonehub_api.pb.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 class FakeMessageSender : public MessageSender {
@@ -38,6 +38,7 @@ class FakeMessageSender : public MessageSender {
       const proto::FetchCameraRollItemDataRequest& request) override;
   void SendInitiateCameraRollItemTransferRequest(
       const proto::InitiateCameraRollItemTransferRequest& request) override;
+  void SendFeatureSetupRequest(bool camera_roll, bool notifications) override;
 
   std::pair<bool, bool> GetRecentCrosState() const;
   bool GetRecentUpdateNotificationModeRequest() const;
@@ -52,6 +53,7 @@ class FakeMessageSender : public MessageSender {
   GetRecentFetchCameraRollItemDataRequest() const;
   const proto::InitiateCameraRollItemTransferRequest&
   GetRecentInitiateCameraRollItemTransferRequest() const;
+  std::pair<bool, bool> GetRecentFeatureSetupRequest() const;
 
   size_t GetCrosStateCallCount() const;
 
@@ -75,6 +77,8 @@ class FakeMessageSender : public MessageSender {
 
   size_t GetInitiateCameraRollItemTransferRequestCallCount() const;
 
+  size_t GetFeatureSetupRequestCallCount() const;
+
  private:
   std::vector<std::pair</*is_notifications_setting_enabled*/ bool,
                         /*is_camera_roll_setting_enabled*/ bool>>
@@ -92,9 +96,10 @@ class FakeMessageSender : public MessageSender {
   std::vector<proto::InitiateCameraRollItemTransferRequest>
       initiate_camera_roll_item_transfer_requests_;
   size_t show_notification_access_setup_count_ = 0;
+  std::vector<std::pair<bool, bool>> feature_setup_requests_;
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_PHONEHUB_FAKE_MESSAGE_SENDER_H_

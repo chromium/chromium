@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,8 +21,8 @@ class WebState;
 // Init the ImageCopier.
 - (instancetype)initWithBrowser:(Browser*)browser;
 
-// Copies the image at |url|. |web_state| is used for fetching image data by
-// JavaScript. |referrer| is used for download. |baseViewController| used to
+// Copies the image at `url`. `web_state` is used for fetching image data by
+// JavaScript. `referrer` is used for download. `baseViewController` used to
 // display alerts.
 - (void)copyImageAtURL:(const GURL&)url
               referrer:(const web::Referrer&)referrer

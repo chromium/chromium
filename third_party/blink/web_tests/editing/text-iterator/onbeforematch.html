@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<link rel=author href="mailto:jarhar@chromium.org">
+<link rel=help href="https://github.com/whatwg/html/pull/7475#issuecomment-1068519935">
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<div id=target hidden=until-found>hello</div>
+
+<script>
+test(() => {
+  let beforematchHandled = false;
+  target.onbeforematch = () => beforematchHandled = true;
+  testRunner.findString('hello', []);
+  assert_true(beforematchHandled);
+}, `Verifies that element.onbeforematch registers a beforematch event handler.`);
+</script>

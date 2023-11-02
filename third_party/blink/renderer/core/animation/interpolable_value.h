@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,6 +42,10 @@ class CORE_EXPORT InterpolableValue {
   virtual bool IsShadow() const { return false; }
   virtual bool IsFilter() const { return false; }
   virtual bool IsTransformList() const { return false; }
+  virtual bool IsGridLength() const { return false; }
+  virtual bool IsGridTrackList() const { return false; }
+  virtual bool IsGridTrackRepeater() const { return false; }
+  virtual bool IsGridTrackSize() const { return false; }
 
   // TODO(alancutter): Remove Equals().
   virtual bool Equals(const InterpolableValue&) const = 0;

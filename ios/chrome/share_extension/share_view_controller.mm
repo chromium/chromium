@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 
 #import "base/ios/block_types.h"
 #import "base/mac/foundation_util.h"
-#include "base/strings/sys_string_conversions.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/common/app_group/app_group_command.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/crash_report/crash_helper.h"
@@ -20,7 +20,7 @@
 #endif
 
 // Type for completion handler to fetch the components of the share items.
-// |idResponse| type depends on the element beeing fetched.
+// `idResponse` type depends on the element beeing fetched.
 using ItemBlock = void (^)(id idResponse, NSError* error);
 
 namespace {
@@ -51,9 +51,9 @@ const CGFloat kMediumAlpha = 0.5;
 @property(nonatomic, weak) ShareExtensionView* shareView;
 @property(nonatomic, assign) app_group::ShareExtensionItemType itemType;
 
-// Creates a files in |app_group::ShareExtensionItemsFolder()| containing a
+// Creates a files in `app_group::ShareExtensionItemsFolder()` containing a
 // serialized NSDictionary.
-// If |cancel| is true, |actionType| is ignored.
+// If `cancel` is true, `actionType` is ignored.
 - (void)queueActionItemURL:(NSURL*)URL
                      title:(NSString*)title
                     action:(app_group::ShareExtensionItemType)actionType
@@ -174,12 +174,16 @@ const CGFloat kMediumAlpha = 0.5;
       [UIAlertController alertControllerWithTitle:errorMessage
                                           message:[_shareURL absoluteString]
                                    preferredStyle:UIAlertControllerStyleAlert];
-  UIAlertAction* defaultAction =
-      [UIAlertAction actionWithTitle:okButton
-                               style:UIAlertActionStyleDefault
-                             handler:^(UIAlertAction* action) {
-                               [self dismissAndReturnItem:nil];
-                             }];
+  UIAlertAction* defaultAction = [UIAlertAction
+      actionWithTitle:okButton
+                style:UIAlertActionStyleDefault
+              handler:^(UIAlertAction* action) {
+                NSError* unsupportedURLError =
+                    [NSError errorWithDomain:NSURLErrorDomain
+                                        code:NSURLErrorUnsupportedURL
+                                    userInfo:nil];
+                [self dismissAndReturnItem:nil error:unsupportedURLError];
+              }];
   [alert addAction:defaultAction];
   [self presentViewController:alert animated:YES completion:nil];
 }
@@ -209,7 +213,7 @@ const CGFloat kMediumAlpha = 0.5;
                                                       views:views]];
   }
 
-  // |self.shareView| must be as large as possible and in the center of the
+  // `self.shareView` must be as large as possible and in the center of the
   // screen.
   [self.shareView
       setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh
@@ -264,7 +268,7 @@ const CGFloat kMediumAlpha = 0.5;
   }
 }
 
-- (void)dismissAndReturnItem:(NSExtensionItem*)item {
+- (void)dismissAndReturnItem:(NSExtensionItem*)item error:(NSError*)error {
   // Set the Y placement constraints so the whole extension slides out of the
   // screen.
   // The direction (up or down) is relative to the output (cancel or submit).
@@ -284,8 +288,12 @@ const CGFloat kMediumAlpha = 0.5;
       }
       completion:^(BOOL finished) {
         NSArray* returnItem = item ? @[ item ] : @[];
-        [self.extensionContext completeRequestReturningItems:returnItem
-                                           completionHandler:nil];
+        if (error) {
+          [self.extensionContext cancelRequestWithError:error];
+        } else {
+          [self.extensionContext completeRequestReturningItems:returnItem
+                                             completionHandler:nil];
+        }
       }];
 }
 
@@ -351,13 +359,20 @@ const CGFloat kMediumAlpha = 0.5;
 #pragma mark - ShareExtensionViewActionTarget
 
 - (void)shareExtensionViewDidSelectCancel:(id)sender {
-  [self queueActionItemURL:nil
-                     title:nil
-                    action:app_group::READING_LIST_ITEM  // Ignored
-                    cancel:YES
-                completion:^{
-                  [self dismissAndReturnItem:nil];
-                }];
+  [self
+      queueActionItemURL:nil
+                   title:nil
+                  action:app_group::READING_LIST_ITEM  // Ignored
+                  cancel:YES
+              completion:^{
+                [self
+                    dismissAndReturnItem:nil
+                                   error:
+                                       [NSError
+                                           errorWithDomain:NSCocoaErrorDomain
+                                                      code:NSUserCancelledError
+                                                  userInfo:nil]];
+              }];
 }
 
 - (void)shareExtensionViewDidSelectAddToReadingList:(id)sender {
@@ -366,7 +381,7 @@ const CGFloat kMediumAlpha = 0.5;
                     action:app_group::READING_LIST_ITEM
                     cancel:NO
                 completion:^{
-                  [self dismissAndReturnItem:self->_shareItem];
+                  [self dismissAndReturnItem:self->_shareItem error:nil];
                 }];
 }
 
@@ -376,7 +391,7 @@ const CGFloat kMediumAlpha = 0.5;
                     action:app_group::BOOKMARK_ITEM
                     cancel:NO
                 completion:^{
-                  [self dismissAndReturnItem:self->_shareItem];
+                  [self dismissAndReturnItem:self->_shareItem error:nil];
                 }];
 }
 
@@ -400,7 +415,7 @@ const CGFloat kMediumAlpha = 0.5;
                     action:app_group::OPEN_IN_CHROME_ITEM
                     cancel:NO
                 completion:^{
-                  [self dismissAndReturnItem:self->_shareItem];
+                  [self dismissAndReturnItem:self->_shareItem error:nil];
                 }];
 }
 

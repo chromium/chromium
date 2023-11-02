@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,16 +28,12 @@ void PostAnnouncementNotification(NSString* announcement,
       notification_info);
 }
 void NotifyMacEvent(AXPlatformNodeCocoa* target, ax::mojom::Event event_type) {
-  // When this is fired and VoiceOver is running, a blocking AppKit call will
-  // attempt to ascend the hierarchy. Don't fire AXMenuOpened if we don't yet
-  // have a window.
-  if (event_type == ax::mojom::Event::kMenuPopupStart) {
-    if (auto* node = ui::AXPlatformNode::FromNativeViewAccessible(target)) {
-      if (!node->GetDelegate()->GetNSWindow())
-        return;
-    }
+  if (![target AXWindow]) {
+    // A child tree is not attached to the window. Return early, otherwise
+    // AppKit will hang trying to reach the root, resulting in a bug where
+    // VoiceOver keeps repeating "[appname] is not responding".
+    return;
   }
-
   NSString* notification =
       [AXPlatformNodeCocoa nativeNotificationFromAXEvent:event_type];
   if (notification)

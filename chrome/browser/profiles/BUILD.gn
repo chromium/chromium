@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -25,7 +25,13 @@ source_set("profile") {
   sources = [
     "profile.cc",
     "profile.h",
+    "profile_keyed_service_factory.cc",
+    "profile_keyed_service_factory.h",
     "profile_observer.h",
+    "profile_selections.cc",
+    "profile_selections.h",
+    "refcounted_profile_keyed_service_factory.cc",
+    "refcounted_profile_keyed_service_factory.h",
   ]
 
   public_deps = [ "//base" ]
@@ -36,7 +42,6 @@ source_set("profile") {
     "//chrome/browser/browsing_data:constants",
     "//chrome/common:buildflags",
     "//chrome/common:constants",
-    "//components/data_reduction_proxy/core/browser",
     "//components/keyed_service/content",
     "//components/language/core/browser",
     "//components/live_caption:constants",
@@ -55,7 +60,10 @@ source_set("profile") {
     deps += [ "//ash/constants" ]
   }
   if (is_chromeos_lacros) {
-    deps += [ "//chromeos/lacros" ]
+    deps += [
+      "//chromeos/lacros",
+      "//chromeos/startup",
+    ]
   }
   if (is_android) {
     deps += [ "//chrome/browser/profiles/android:jni_headers" ]

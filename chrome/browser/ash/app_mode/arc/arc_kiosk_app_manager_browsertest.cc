@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/settings/cros_settings_names.h"
+#include "ash/components/arc/test/arc_util_test_support.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/values.h"
@@ -18,7 +18,7 @@
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "components/arc/test/arc_util_test_support.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -99,26 +99,25 @@ class ArcKioskAppManagerTest : public InProcessBrowserTest {
 
   void SetApps(const std::vector<policy::ArcKioskAppBasicInfo>& apps,
                const std::string& auto_login_account) {
-    base::ListValue device_local_accounts;
+    base::Value::List device_local_accounts;
     for (const policy::ArcKioskAppBasicInfo& app : apps) {
-      std::unique_ptr<base::DictionaryValue> entry(new base::DictionaryValue);
-      entry->SetKey(kAccountsPrefDeviceLocalAccountsKeyId,
-                    base::Value(GenerateAccountId(app.package_name())));
-      entry->SetKey(
-          kAccountsPrefDeviceLocalAccountsKeyType,
-          base::Value(policy::DeviceLocalAccount::TYPE_ARC_KIOSK_APP));
-      entry->SetKey(kAccountsPrefDeviceLocalAccountsKeyArcKioskPackage,
-                    base::Value(app.package_name()));
-      entry->SetKey(kAccountsPrefDeviceLocalAccountsKeyArcKioskClass,
-                    base::Value(app.class_name()));
-      entry->SetKey(kAccountsPrefDeviceLocalAccountsKeyArcKioskAction,
-                    base::Value(app.action()));
-      entry->SetKey(kAccountsPrefDeviceLocalAccountsKeyArcKioskDisplayName,
-                    base::Value(app.display_name()));
+      base::Value::Dict entry;
+      entry.Set(kAccountsPrefDeviceLocalAccountsKeyId,
+                GenerateAccountId(app.package_name()));
+      entry.Set(kAccountsPrefDeviceLocalAccountsKeyType,
+                policy::DeviceLocalAccount::TYPE_ARC_KIOSK_APP);
+      entry.Set(kAccountsPrefDeviceLocalAccountsKeyArcKioskPackage,
+                app.package_name());
+      entry.Set(kAccountsPrefDeviceLocalAccountsKeyArcKioskClass,
+                app.class_name());
+      entry.Set(kAccountsPrefDeviceLocalAccountsKeyArcKioskAction,
+                app.action());
+      entry.Set(kAccountsPrefDeviceLocalAccountsKeyArcKioskDisplayName,
+                app.display_name());
       device_local_accounts.Append(std::move(entry));
     }
     owner_settings_service_->Set(kAccountsPrefDeviceLocalAccounts,
-                                 device_local_accounts);
+                                 base::Value(std::move(device_local_accounts)));
 
     if (!auto_login_account.empty()) {
       owner_settings_service_->SetString(

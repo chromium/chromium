@@ -1,8 +1,8 @@
 Name: grpc
 URL: https://github.com/grpc/grpc
 License: Apache 2.0
-Version: v1.41.1+
-Revision: 1777ddf3c344f110323a625d75ff87c5ebc8d789
+Version: v1.49.0-dev
+Revision: dd77c67217b10ffeaf766e25eb8b46d2d59de4ff
 Security Critical: yes
 
 Please note that that the use of gRPC is not generally allowed within Chromium.
@@ -13,7 +13,8 @@ Steps to upgrade to a new version of GRPC, all relative to //third_party/grpc:
 1. Update ../../DEPS to pull origin/grpc/master.
    NOTE: Tagged "official releases" do not work on the buildbots. The master
    branch must be used.
-2. Update revision and version information in this file.
+2. Update revision and version information in this file. Version can be found
+   in the root BUILD file in gRPC repo.
 3. Checkout GRPC submodules by running from the src/ directory:
    git submodule update --init
 4. Copy template/BUILD.chromium.gn.template to src/templates.
@@ -27,3 +28,7 @@ Steps to upgrade to a new version of GRPC, all relative to //third_party/grpc:
 7. Run: gn format --in-place BUILD.gn
 
 We have a helper script `generate_gn.sh` does step (4), (5), (6), and (7).
+
+Note: Please also remember to check if `plugin_registry/grpc_plugin_registry.cc`
+needs update! Upstream sometimes introduces new plugins and we may need to update
+our custom `grpc_plugin_registry.cc`.

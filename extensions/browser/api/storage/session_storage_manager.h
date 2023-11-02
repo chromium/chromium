@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
 #include "extensions/browser/extension_registry.h"
@@ -43,7 +44,7 @@ class SessionStorageManager : public KeyedService,
 
     // Owned by the SessionStorageManager. Caller cannot rely on it after any
     // subsequent calls to SessionStorageManager methods.
-    const base::Value* new_value;
+    raw_ptr<const base::Value> new_value;
   };
 
   SessionStorageManager(size_t quota_bytes_per_extension,

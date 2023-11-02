@@ -1,11 +1,9 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_BASE_TEST_SCOPED_FAKE_NSWINDOW_FULLSCREEN_H_
 #define UI_BASE_TEST_SCOPED_FAKE_NSWINDOW_FULLSCREEN_H_
-
-#include <memory>
 
 namespace ui {
 namespace test {
@@ -27,11 +25,8 @@ class ScopedFakeNSWindowFullscreen {
 
   ~ScopedFakeNSWindowFullscreen();
 
-  // Wait for any transition in progress to complete.
-  void FinishTransition();
-
  private:
-  std::unique_ptr<Impl> impl_;
+  static int instance_count_;
 };
 
 }  // namespace test

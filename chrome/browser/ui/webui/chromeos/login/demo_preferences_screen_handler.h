@@ -1,4 +1,4 @@
-// Copyright (c) 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,29 +7,22 @@
 
 #include <string>
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
-
-namespace ash {
-class DemoPreferencesScreen;
-}
 
 namespace chromeos {
 
 // Interface of the demo mode preferences screen view.
-class DemoPreferencesScreenView {
+class DemoPreferencesScreenView
+    : public base::SupportsWeakPtr<DemoPreferencesScreenView> {
  public:
-  constexpr static StaticOobeScreenId kScreenId{"demo-preferences"};
+  inline constexpr static StaticOobeScreenId kScreenId{"demo-preferences",
+                                                       "DemoPreferencesScreen"};
 
   virtual ~DemoPreferencesScreenView();
 
   // Shows the contents of the screen.
   virtual void Show() = 0;
-
-  // Hides the contents of the screen.
-  virtual void Hide() = 0;
-
-  // Sets view and screen.
-  virtual void Bind(ash::DemoPreferencesScreen* screen) = 0;
 
   // Called to set the input method id on JS side.
   virtual void SetInputMethodId(const std::string& input_method) = 0;
@@ -41,7 +34,7 @@ class DemoPreferencesScreenHandler : public BaseScreenHandler,
  public:
   using TView = DemoPreferencesScreenView;
 
-  explicit DemoPreferencesScreenHandler(JSCallsContainer* js_calls_container);
+  DemoPreferencesScreenHandler();
 
   DemoPreferencesScreenHandler(const DemoPreferencesScreenHandler&) = delete;
   DemoPreferencesScreenHandler& operator=(const DemoPreferencesScreenHandler&) =
@@ -51,24 +44,11 @@ class DemoPreferencesScreenHandler : public BaseScreenHandler,
 
   // DemoPreferencesScreenView:
   void Show() override;
-  void Hide() override;
-  void Bind(ash::DemoPreferencesScreen* screen) override;
   void SetInputMethodId(const std::string& input_method) override;
 
   // BaseScreenHandler:
-  void Initialize() override;
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-
-  // content::WebUIMessageHandler:
-  void RegisterMessages() override;
-
- private:
-  void HandleSetLocaleId(const std::string& language_id);
-  void HandleSetInputMethodId(const std::string& language_id);
-  void HandleSetDemoModeCountry(const std::string& country_id);
-
-  ash::DemoPreferencesScreen* screen_ = nullptr;
 };
 
 }  // namespace chromeos

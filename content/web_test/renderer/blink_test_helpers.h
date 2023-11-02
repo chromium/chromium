@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,14 +23,22 @@ struct TestPreferences;
 void ExportWebTestSpecificPreferences(const TestPreferences& from,
                                       blink::web_pref::WebPreferences* to);
 
-// Replaces file:///tmp/web_tests/ with the actual path to the web_tests
-// directory, or rewrite URLs generated from absolute path links in
-// web-platform-tests.
+// Rewrites a URL requested from a web test. There are two rules:
+// 1. If the URL is an absolute file path requested from a WPT test like
+//    'file:///resources/testharness.js', then return a file URL to the file
+//    under WPT test directory. This is used only when the test is run manually
+//    with content_shell without a web server.
+// 2. If the URL starts with file:///tmp/web_tests/, then return a file URL
+//    to a temporary file under the web_tests directory.
+// 3. If the URL starts with file:///gen/, then return a file URL to the file
+//    under the gen/ directory of the build out.
 blink::WebURL RewriteWebTestsURL(base::StringPiece utf8_url, bool is_wpt_mode);
 
-// The same as RewriteWebTestsURL() unless the resource is a path starting
-// with /tmp/, then return a file URL to a temporary file.
+// Applies the rewrite rules except 1 of RewriteWebTestsURL().
 blink::WebURL RewriteFileURLToLocalResource(base::StringPiece resource);
+
+// Returns true if |test_url| points to a web platform test (WPT).
+bool IsWebPlatformTest(base::StringPiece test_url);
 
 }  // namespace content
 

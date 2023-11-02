@@ -1,0 +1,30 @@
+{%- import "method-macro.cc.j2" as method_macro %}
+
+{%- set class_name = union.name ~ "DataGenerator" -%}
+
+class {{class_name}}
+  : public ::ash::cros_healthd::connectivity::DataGeneratorInterface<{{
+      union.name}}Ptr> {
+ public:
+  {{class_name}}(const {{class_name}}&) = delete;
+  {{class_name}}& operator=(const {{class_name}}&) = delete;
+  virtual ~{{class_name}}() = default;
+
+  static std::unique_ptr<{{class_name}}> Create(
+    ::ash::cros_healthd::connectivity::Context* context);
+
+ public:
+  // DataGeneratorInterface overrides.
+  {{union.name}}Ptr Generate() override;
+  bool HasNext() override;
+
+ protected:
+  explicit {{class_name}}(
+    ::ash::cros_healthd::connectivity::Context* context, bool nullable);
+
+ private:
+  bool nullable_;
+  size_t union_field_counter_ = 0;
+
+  {{method_macro.declare_data_generator("", union.fields)}}
+};

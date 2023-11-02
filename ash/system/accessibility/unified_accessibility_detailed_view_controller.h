@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,10 +12,7 @@
 
 namespace ash {
 
-namespace tray {
 class AccessibilityDetailedView;
-}  // namespace tray
-
 class DetailedViewDelegate;
 class UnifiedSystemTrayController;
 
@@ -44,7 +41,7 @@ class UnifiedAccessibilityDetailedViewController
  private:
   const std::unique_ptr<DetailedViewDelegate> detailed_view_delegate_;
 
-  tray::AccessibilityDetailedView* view_ = nullptr;
+  AccessibilityDetailedView* view_ = nullptr;
 };
 
 }  // namespace ash

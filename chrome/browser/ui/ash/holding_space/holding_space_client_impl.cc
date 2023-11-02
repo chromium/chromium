@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,16 +19,22 @@
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/open_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ui/app_list/search/files/file_suggest_keyed_service.h"
+#include "chrome/browser/ui/app_list/search/files/file_suggest_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/clipboard_util.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
+#include "components/drive/drive_pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "net/base/mime_util.h"
 #include "storage/browser/file_system/file_system_context.h"
 
 namespace ash {
-
 namespace {
+
+using ItemFailureToLaunchReason =
+    holding_space_metrics::ItemFailureToLaunchReason;
 
 // Helpers ---------------------------------------------------------------------
 
@@ -59,6 +65,25 @@ void GetFileInfo(Profile* profile,
           std::move(callback)));
 }
 
+// Returns the reason for failing to launch a holding space item for the
+// specified open operation `result`. Returns `absl::nullopt` on success.
+absl::optional<ItemFailureToLaunchReason> ToItemFailureToLaunchReason(
+    platform_util::OpenOperationResult result) {
+  switch (result) {
+    case platform_util::OpenOperationResult::OPEN_SUCCEEDED:
+      return absl::nullopt;
+    case platform_util::OpenOperationResult::OPEN_FAILED_PATH_NOT_FOUND:
+      return ItemFailureToLaunchReason::kPathNotFound;
+    case platform_util::OpenOperationResult::OPEN_FAILED_INVALID_TYPE:
+      return ItemFailureToLaunchReason::kInvalidType;
+    case platform_util::OpenOperationResult::
+        OPEN_FAILED_NO_HANLDER_FOR_FILE_TYPE:
+      return ItemFailureToLaunchReason::kNoHandlerForFileType;
+    case platform_util::OpenOperationResult::OPEN_FAILED_FILE_ERROR:
+      return ItemFailureToLaunchReason::kFileError;
+  }
+}
+
 }  // namespace
 
 // HoldingSpaceClientImpl ------------------------------------------------------
@@ -80,13 +105,6 @@ void HoldingSpaceClientImpl::AddScreenshot(const base::FilePath& file_path) {
 void HoldingSpaceClientImpl::AddScreenRecording(
     const base::FilePath& file_path) {
   GetHoldingSpaceKeyedService(profile_)->AddScreenRecording(file_path);
-}
-
-void HoldingSpaceClientImpl::CancelItems(
-    const std::vector<const HoldingSpaceItem*>& items) {
-  auto* const service = GetHoldingSpaceKeyedService(profile_);
-  for (const HoldingSpaceItem* item : items)
-    service->CancelItem(item);
 }
 
 void HoldingSpaceClientImpl::CopyImageToClipboard(const HoldingSpaceItem& item,
@@ -124,6 +142,10 @@ base::FilePath HoldingSpaceClientImpl::CrackFileSystemUrl(
   return file_manager::util::GetFileManagerFileSystemContext(profile_)
       ->CrackURLInFirstPartyContext(file_system_url)
       .path();
+}
+
+bool HoldingSpaceClientImpl::IsDriveDisabled() const {
+  return profile_->GetPrefs()->GetBoolean(drive::prefs::kDisableDrive);
 }
 
 void HoldingSpaceClientImpl::OpenDownloads(SuccessCallback callback) {
@@ -167,20 +189,21 @@ void HoldingSpaceClientImpl::OpenItems(
 
   for (const HoldingSpaceItem* item : items) {
     if (item->file_path().empty()) {
-      holding_space_metrics::RecordItemFailureToLaunch(item->type(),
-                                                       item->file_path());
+      holding_space_metrics::RecordItemFailureToLaunch(
+          item->type(), item->file_path(),
+          ItemFailureToLaunchReason::kPathEmpty);
       *complete_success_ptr = false;
       barrier_closure.Run();
       continue;
     }
     if (!item->progress().IsComplete()) {
-      const bool success =
+      const absl::optional<ItemFailureToLaunchReason> failure_to_launch_reason =
           GetHoldingSpaceKeyedService(profile_)->OpenItemWhenComplete(item);
-      if (!success) {
-        holding_space_metrics::RecordItemFailureToLaunch(item->type(),
-                                                         item->file_path());
+      if (failure_to_launch_reason) {
+        holding_space_metrics::RecordItemFailureToLaunch(
+            item->type(), item->file_path(), failure_to_launch_reason.value());
       }
-      *complete_success_ptr &= success;
+      *complete_success_ptr &= !failure_to_launch_reason.has_value();
       barrier_closure.Run();
       continue;
     }
@@ -192,8 +215,10 @@ void HoldingSpaceClientImpl::OpenItems(
                const base::FilePath& file_path, HoldingSpaceItem::Type type,
                const absl::optional<base::File::Info>& info) {
               if (!weak_ptr || !info.has_value()) {
-                holding_space_metrics::RecordItemFailureToLaunch(type,
-                                                                 file_path);
+                holding_space_metrics::RecordItemFailureToLaunch(
+                    type, file_path,
+                    weak_ptr ? ItemFailureToLaunchReason::kFileInfoError
+                             : ItemFailureToLaunchReason::kShutdown);
                 *complete_success = false;
                 barrier_closure.Run();
                 return;
@@ -211,7 +236,8 @@ void HoldingSpaceClientImpl::OpenItems(
                             result == platform_util::OPEN_SUCCEEDED;
                         if (!success) {
                           holding_space_metrics::RecordItemFailureToLaunch(
-                              type, file_path);
+                              type, file_path,
+                              ToItemFailureToLaunchReason(result).value());
                           *complete_success = false;
                         }
                         barrier_closure.Run();
@@ -240,30 +266,21 @@ void HoldingSpaceClientImpl::OpenMyFiles(SuccessCallback callback) {
           std::move(callback)));
 }
 
-void HoldingSpaceClientImpl::PauseItems(
-    const std::vector<const HoldingSpaceItem*>& items) {
-  auto* const service = GetHoldingSpaceKeyedService(profile_);
-  for (const HoldingSpaceItem* item : items)
-    service->PauseItem(item);
-}
-
 void HoldingSpaceClientImpl::PinFiles(
     const std::vector<base::FilePath>& file_paths) {
   std::vector<storage::FileSystemURL> file_system_urls;
 
-  HoldingSpaceKeyedService* service = GetHoldingSpaceKeyedService(profile_);
   for (const base::FilePath& file_path : file_paths) {
     const GURL crack_url =
         holding_space_util::ResolveFileSystemUrl(profile_, file_path);
     const storage::FileSystemURL& file_system_url =
         file_manager::util::GetFileManagerFileSystemContext(profile_)
             ->CrackURLInFirstPartyContext(crack_url);
-    if (!service->ContainsPinnedFile(file_system_url))
-      file_system_urls.push_back(file_system_url);
+    file_system_urls.push_back(file_system_url);
   }
 
   if (!file_system_urls.empty())
-    service->AddPinnedFiles(file_system_urls);
+    GetHoldingSpaceKeyedService(profile_)->AddPinnedFiles(file_system_urls);
 }
 
 void HoldingSpaceClientImpl::PinItems(
@@ -287,11 +304,11 @@ void HoldingSpaceClientImpl::PinItems(
     service->AddPinnedFiles(file_system_urls);
 }
 
-void HoldingSpaceClientImpl::ResumeItems(
-    const std::vector<const HoldingSpaceItem*>& items) {
-  auto* const service = GetHoldingSpaceKeyedService(profile_);
-  for (const HoldingSpaceItem* item : items)
-    service->ResumeItem(item);
+void HoldingSpaceClientImpl::RemoveFileSuggestions(
+    const std::vector<base::FilePath>& absolute_file_paths) {
+  app_list::FileSuggestKeyedServiceFactory::GetInstance()
+      ->GetService(profile_)
+      ->RemoveSuggestionsAndNotify(absolute_file_paths);
 }
 
 void HoldingSpaceClientImpl::ShowItemInFolder(const HoldingSpaceItem& item,

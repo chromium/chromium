@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "net/base/net_export.h"
 #include "net/disk_cache/blockfile/disk_format.h"
 #include "net/disk_cache/blockfile/storage_block-inl.h"
@@ -65,7 +64,8 @@ class NET_EXPORT_PRIVATE EntryImpl
                     IOBuffer* buf,
                     int buf_len,
                     CompletionOnceCallback callback,
-                    bool truncate);
+                    bool truncate,
+                    bool* optimistic);
   int ReadSparseDataImpl(int64_t offset,
                          IOBuffer* buf,
                          int buf_len,
@@ -224,7 +224,8 @@ class NET_EXPORT_PRIVATE EntryImpl
                         IOBuffer* buf,
                         int buf_len,
                         CompletionOnceCallback callback,
-                        bool truncate);
+                        bool truncate,
+                        bool* optimistic);
 
   // Initializes the storage for an internal or external data block.
   bool CreateDataBlock(int index, int size);
@@ -292,7 +293,7 @@ class NET_EXPORT_PRIVATE EntryImpl
   // responsible for deleting the block (or file) from the backing store at some
   // point; there is no need to report any storage-size change, only to do the
   // actual cleanup.
-  void GetData(int index, char** buffer, Addr* address);
+  void GetData(int index, std::unique_ptr<char[]>* buffer, Addr* address);
 
   // |net_log_| should be early since some field destructors (at least
   // ~SparseControl) can touch it.
@@ -305,11 +306,13 @@ class NET_EXPORT_PRIVATE EntryImpl
   // Files to store external user data and key.
   scoped_refptr<File> files_[kNumStreams + 1];
   mutable std::string key_;           // Copy of the key.
-  int unreported_size_[kNumStreams];  // Bytes not reported yet to the backend.
-  bool doomed_;               // True if this entry was removed from the cache.
+  // Bytes not reported yet to the backend.
+  int unreported_size_[kNumStreams] = {};
+  bool doomed_ = false;       // True if this entry was removed from the cache.
   bool read_only_;            // True if not yet writing.
-  bool dirty_;                // True if we detected that this is a dirty entry.
+  bool dirty_ = false;        // True if we detected that this is a dirty entry.
   std::unique_ptr<SparseControl> sparse_;  // Support for sparse entries.
+  int io_count_ = 0;
 };
 
 }  // namespace disk_cache

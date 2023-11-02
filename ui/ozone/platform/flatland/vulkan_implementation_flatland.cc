@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,13 +6,13 @@
 
 #include <lib/zx/channel.h>
 #include <vulkan/vulkan.h>
+
 #include <memory>
+#include <tuple>
 
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/fuchsia/fuchsia_logging.h"
-#include "base/macros.h"
-#include "base/native_library.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info.h"
 #include "gpu/vulkan/fuchsia/vulkan_fuchsia_ext.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
@@ -34,35 +34,23 @@ namespace ui {
 VulkanImplementationFlatland::VulkanImplementationFlatland(
     FlatlandSurfaceFactory* flatland_surface_factory,
     FlatlandSysmemBufferManager* flatland_sysmem_buffer_manager,
+    bool use_swiftshader,
     bool allow_protected_memory)
-    : VulkanImplementation(false /* use_swiftshader */, allow_protected_memory),
+    : VulkanImplementation(use_swiftshader, allow_protected_memory),
       flatland_sysmem_buffer_manager_(flatland_sysmem_buffer_manager) {}
 
 VulkanImplementationFlatland::~VulkanImplementationFlatland() = default;
 
 bool VulkanImplementationFlatland::InitializeVulkanInstance(
     bool using_surface) {
-  DCHECK(using_surface);
-  base::NativeLibraryLoadError error;
-  base::NativeLibrary handle =
-      base::LoadNativeLibrary(base::FilePath("libvulkan.so"), &error);
-  if (!handle) {
-    LOG(ERROR) << "Failed to load vulkan: " << error.ToString();
-    return false;
-  }
+  DCHECK(!using_surface);
 
-  gpu::VulkanFunctionPointers* vulkan_function_pointers =
-      gpu::GetVulkanFunctionPointers();
-  vulkan_function_pointers->vulkan_loader_library = handle;
-
-  if (!vulkan_function_pointers->BindUnassociatedFunctionPointers())
-    return false;
-
-  std::vector<const char*> required_extensions = {
-      VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME,
-  };
+  base::FilePath path(use_swiftshader() ? "libvk_swiftshader.so"
+                                        : "libvulkan.so");
+  std::vector<const char*> required_extensions;
   std::vector<const char*> required_layers;
-  return vulkan_instance_.Initialize(required_extensions, required_layers);
+  return vulkan_instance_.Initialize(path, required_extensions,
+                                     required_layers);
 }
 
 gpu::VulkanInstance* VulkanImplementationFlatland::GetVulkanInstance() {
@@ -85,7 +73,7 @@ bool VulkanImplementationFlatland::GetPhysicalDevicePresentationSupport(
 std::vector<const char*>
 VulkanImplementationFlatland::GetRequiredDeviceExtensions() {
   std::vector<const char*> result = {
-      VK_FUCHSIA_BUFFER_COLLECTION_X_EXTENSION_NAME,
+      VK_FUCHSIA_BUFFER_COLLECTION_EXTENSION_NAME,
       VK_FUCHSIA_EXTERNAL_MEMORY_EXTENSION_NAME,
       VK_FUCHSIA_EXTERNAL_SEMAPHORE_EXTENSION_NAME,
       VK_KHR_BIND_MEMORY_2_EXTENSION_NAME,
@@ -127,60 +115,15 @@ VkSemaphore VulkanImplementationFlatland::CreateExternalSemaphore(
 VkSemaphore VulkanImplementationFlatland::ImportSemaphoreHandle(
     VkDevice vk_device,
     gpu::SemaphoreHandle handle) {
-  if (!handle.is_valid())
-    return VK_NULL_HANDLE;
-
-  if (handle.vk_handle_type() !=
-      VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_ZIRCON_EVENT_BIT_FUCHSIA) {
-    return VK_NULL_HANDLE;
-  }
-
-  VkSemaphore semaphore = VK_NULL_HANDLE;
-  VkSemaphoreCreateInfo info = {VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO};
-  VkResult result = vkCreateSemaphore(vk_device, &info, nullptr, &semaphore);
-  if (result != VK_SUCCESS)
-    return VK_NULL_HANDLE;
-
-  zx::event event = handle.TakeHandle();
-  VkImportSemaphoreZirconHandleInfoFUCHSIA import = {
-      VK_STRUCTURE_TYPE_IMPORT_SEMAPHORE_ZIRCON_HANDLE_INFO_FUCHSIA};
-  import.semaphore = semaphore;
-  import.handleType =
-      VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_ZIRCON_EVENT_BIT_FUCHSIA;
-  import.zirconHandle = event.get();
-
-  result = vkImportSemaphoreZirconHandleFUCHSIA(vk_device, &import);
-  if (result != VK_SUCCESS) {
-    vkDestroySemaphore(vk_device, semaphore, nullptr);
-    return VK_NULL_HANDLE;
-  }
-
-  // Vulkan took ownership of the handle.
-  ignore_result(event.release());
-
-  return semaphore;
+  return gpu::ImportVkSemaphoreHandle(vk_device, std::move(handle));
 }
 
 gpu::SemaphoreHandle VulkanImplementationFlatland::GetSemaphoreHandle(
     VkDevice vk_device,
     VkSemaphore vk_semaphore) {
-  // Create VkSemaphoreGetFdInfoKHR structure.
-  VkSemaphoreGetZirconHandleInfoFUCHSIA info = {
-      VK_STRUCTURE_TYPE_SEMAPHORE_GET_ZIRCON_HANDLE_INFO_FUCHSIA};
-  info.semaphore = vk_semaphore;
-  info.handleType = VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_ZIRCON_EVENT_BIT_FUCHSIA;
-
-  zx_handle_t handle;
-  VkResult result =
-      vkGetSemaphoreZirconHandleFUCHSIA(vk_device, &info, &handle);
-  if (result != VK_SUCCESS) {
-    LOG(ERROR) << "vkGetSemaphoreFuchsiaHandleKHR failed : " << result;
-    return gpu::SemaphoreHandle();
-  }
-
-  return gpu::SemaphoreHandle(
-      VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_ZIRCON_EVENT_BIT_FUCHSIA,
-      zx::event(handle));
+  return gpu::GetVkSemaphoreHandle(
+      vk_device, vk_semaphore,
+      VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_ZIRCON_EVENT_BIT_FUCHSIA);
 }
 
 VkExternalMemoryHandleTypeFlagBits
@@ -189,6 +132,7 @@ VulkanImplementationFlatland::GetExternalImageHandleType() {
 }
 
 bool VulkanImplementationFlatland::CanImportGpuMemoryBuffer(
+    gpu::VulkanDeviceQueue* device_queue,
     gfx::GpuMemoryBufferType memory_buffer_type) {
   return memory_buffer_type == gfx::NATIVE_PIXMAP;
 }
@@ -198,7 +142,8 @@ VulkanImplementationFlatland::CreateImageFromGpuMemoryHandle(
     gpu::VulkanDeviceQueue* device_queue,
     gfx::GpuMemoryBufferHandle gmb_handle,
     gfx::Size size,
-    VkFormat vk_format) {
+    VkFormat vk_format,
+    const gfx::ColorSpace& color_space) {
   if (gmb_handle.type != gfx::NATIVE_PIXMAP)
     return nullptr;
 
@@ -217,13 +162,30 @@ VulkanImplementationFlatland::CreateImageFromGpuMemoryHandle(
   VkImageCreateInfo vk_image_info = {VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO};
   VkDeviceMemory vk_device_memory = VK_NULL_HANDLE;
   VkDeviceSize vk_device_size = 0;
-  absl::optional<gpu::VulkanYCbCrInfo> ycbcr_info;
   if (!collection->CreateVkImage(gmb_handle.native_pixmap_handle.buffer_index,
                                  device_queue->GetVulkanDevice(), size,
                                  &vk_image, &vk_image_info, &vk_device_memory,
-                                 &vk_device_size, &ycbcr_info)) {
+                                 &vk_device_size)) {
     DLOG(ERROR) << "CreateVkImage failed.";
     return nullptr;
+  }
+
+  absl::optional<gpu::VulkanYCbCrInfo> ycbcr_info;
+  if (collection->format() == gfx::BufferFormat::YUV_420_BIPLANAR) {
+    VkSamplerYcbcrModelConversion ycbcr_conversion =
+        (color_space.GetMatrixID() == gfx::ColorSpace::MatrixID::BT709)
+            ? VK_SAMPLER_YCBCR_MODEL_CONVERSION_YCBCR_709
+            : VK_SAMPLER_YCBCR_MODEL_CONVERSION_YCBCR_601;
+
+    // Currently sysmem doesn't specify location of chroma samples relative to
+    // luma (see fxbug.dev/13677). Assume they are cosited with luma. Y'CbCr
+    // info here must match the values passed for the same buffer in
+    // FuchsiaVideoDecoder. |format_features| are resolved later in the GPU
+    // process before the ycbcr info is passed to Skia.
+    ycbcr_info = gpu::VulkanYCbCrInfo(
+        vk_image_info.format, /*external_format=*/0, ycbcr_conversion,
+        VK_SAMPLER_YCBCR_RANGE_ITU_NARROW, VK_CHROMA_LOCATION_COSITED_EVEN,
+        VK_CHROMA_LOCATION_COSITED_EVEN, /*format_features=*/0);
   }
 
   auto image = gpu::VulkanImage::Create(
@@ -238,8 +200,9 @@ VulkanImplementationFlatland::CreateImageFromGpuMemoryHandle(
     return nullptr;
   }
 
+  image->set_queue_family_index(VK_QUEUE_FAMILY_EXTERNAL);
   image->set_native_pixmap(collection->CreateNativePixmap(
-      gmb_handle.native_pixmap_handle.buffer_index));
+      gmb_handle.native_pixmap_handle.buffer_index, size));
   return image;
 }
 

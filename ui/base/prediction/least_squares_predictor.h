@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <deque>
 
 #include "base/component_export.h"
+#include "base/time/time.h"
 #include "ui/base/prediction/input_predictor.h"
 #include "ui/gfx/geometry/matrix3_f.h"
 

@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2018 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2018 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 <org.chromium.components.browser_ui.bottomsheet.BottomSheet
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
@@ -23,11 +25,14 @@
         android:background="@drawable/bottom_sheet_background" />
 
     <org.chromium.components.browser_ui.bottomsheet.TouchRestrictingFrameLayout
+        android:importantForAccessibility="yes"
         android:id="@+id/bottom_sheet_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
     <FrameLayout
+        android:importantForAccessibility="yes"
+        android:accessibilityTraversalBefore="@id/bottom_sheet_content"
         android:id="@+id/bottom_sheet_control_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >

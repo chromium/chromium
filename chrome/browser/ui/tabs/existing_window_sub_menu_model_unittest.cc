@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -155,7 +155,7 @@ void ExistingWindowSubMenuModelTest::CheckBrowserTitle(
                                  base::CompareCase::SENSITIVE));
 
     // Title should always have at least a few characters.
-    EXPECT_GE(tokens[0].size(), 3ull);
+    EXPECT_GE(tokens[0].size(), 3u);
   }
 }
 
@@ -233,7 +233,7 @@ TEST_F(ExistingWindowSubMenuModelTest, BuildSubmenuOrder) {
   auto menu1 = ExistingWindowSubMenuModel::Create(
       nullptr, browser()->tab_menu_model_delegate(),
       browser()->tab_strip_model(), 0);
-  ASSERT_EQ(5, menu1->GetItemCount());
+  ASSERT_EQ(5u, menu1->GetItemCount());
   CheckBrowserTitle(menu1->GetLabelAt(2), kLongTabTitleExample, 3);
   CheckBrowserTitle(menu1->GetLabelAt(3), "Browser 3 Tab 2", 2);
   CheckBrowserTitle(menu1->GetLabelAt(4), kLongTabTitleExample, 1);
@@ -242,7 +242,7 @@ TEST_F(ExistingWindowSubMenuModelTest, BuildSubmenuOrder) {
   auto menu2 = ExistingWindowSubMenuModel::Create(
       nullptr, browser_2->tab_menu_model_delegate(),
       browser_2->tab_strip_model(), 0);
-  ASSERT_EQ(5, menu2->GetItemCount());
+  ASSERT_EQ(5u, menu2->GetItemCount());
   CheckBrowserTitle(menu2->GetLabelAt(2), kLongTabTitleExample, 3);
   CheckBrowserTitle(menu2->GetLabelAt(3), "Browser 3 Tab 2", 2);
   CheckBrowserTitle(menu2->GetLabelAt(4), "Browser 1", 1);
@@ -254,7 +254,7 @@ TEST_F(ExistingWindowSubMenuModelTest, BuildSubmenuOrder) {
   auto menu3 = ExistingWindowSubMenuModel::Create(
       nullptr, browser_3->tab_menu_model_delegate(),
       browser_3->tab_strip_model(), 0);
-  ASSERT_EQ(5, menu3->GetItemCount());
+  ASSERT_EQ(5u, menu3->GetItemCount());
   CheckBrowserTitle(menu3->GetLabelAt(2), kLongTabTitleExample, 1);
   CheckBrowserTitle(menu3->GetLabelAt(3), "Browser 1", 1);
   CheckBrowserTitle(menu3->GetLabelAt(4), kLongTabTitleExample, 3);
@@ -291,7 +291,7 @@ TEST_F(ExistingWindowSubMenuModelTest, BuildSubmenuIncognito) {
   auto menu = ExistingWindowSubMenuModel::Create(
       nullptr, browser()->tab_menu_model_delegate(),
       browser()->tab_strip_model(), 0);
-  ASSERT_EQ(4, menu->GetItemCount());
+  ASSERT_EQ(4u, menu->GetItemCount());
   ASSERT_EQ(kBrowser3ExpectedTitle, menu->GetLabelAt(2));
   ASSERT_EQ(kBrowser2ExpectedTitle, menu->GetLabelAt(3));
 
@@ -299,7 +299,7 @@ TEST_F(ExistingWindowSubMenuModelTest, BuildSubmenuIncognito) {
   auto menu_incognito = ExistingWindowSubMenuModel::Create(
       nullptr, incognito_browser_1->tab_menu_model_delegate(),
       incognito_browser_1->tab_strip_model(), 0);
-  ASSERT_EQ(3, menu_incognito->GetItemCount());
+  ASSERT_EQ(3u, menu_incognito->GetItemCount());
   ASSERT_EQ(kIncognitoBrowser2ExpectedTitle, menu_incognito->GetLabelAt(2));
 
   // Clean up.
@@ -329,7 +329,7 @@ TEST_F(ExistingWindowSubMenuModelTest, BuildSubmenuPopups) {
   auto menu = ExistingWindowSubMenuModel::Create(
       nullptr, browser()->tab_menu_model_delegate(),
       browser()->tab_strip_model(), 0);
-  ASSERT_EQ(4, menu->GetItemCount());
+  ASSERT_EQ(4u, menu->GetItemCount());
   ASSERT_EQ(kBrowser3ExpectedTitle, menu->GetLabelAt(2));
   ASSERT_EQ(kBrowser2ExpectedTitle, menu->GetLabelAt(3));
 
@@ -397,8 +397,8 @@ TEST_F(ExistingWindowSubMenuModelTest, BuildSubmenuGroupedByDesks) {
   auto menu1 = ExistingWindowSubMenuModel::Create(
       nullptr, browser()->tab_menu_model_delegate(),
       browser()->tab_strip_model(), 0);
-  ASSERT_EQ(15, menu1->GetItemCount());
-  EXPECT_EQ(u"Desk 1", menu1->GetLabelAt(2));
+  ASSERT_EQ(15u, menu1->GetItemCount());
+  EXPECT_EQ(u"Desk 1 (Current)", menu1->GetLabelAt(2));
   CheckBrowserTitle(menu1->GetLabelAt(3), kBrowser2TabTitle, 1);
   EXPECT_EQ(ui::SPACING_SEPARATOR, menu1->GetSeparatorTypeAt(4));
   EXPECT_EQ(u"Desk 2", menu1->GetLabelAt(5));
@@ -462,7 +462,8 @@ TEST_F(ExistingWindowSubMenuModelTest, EnsureGroupedByDesksCommands) {
   const std::vector<std::pair<int, int>> kExpectedMappings{
       {1002, 1}, {1003, 0}, {1004, 2}, {1005, 3}};
   for (const auto& pair : kExpectedMappings) {
-    EXPECT_EQ(pair.second, command_id_to_target_index.at(pair.first));
+    EXPECT_EQ(pair.second,
+              static_cast<int>(command_id_to_target_index.at(pair.first)));
   }
 
   // Clean up.

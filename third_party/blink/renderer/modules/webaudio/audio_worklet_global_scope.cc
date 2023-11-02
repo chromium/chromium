@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,11 +15,14 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_worklet_processor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_blink_audio_worklet_process_callback.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_blink_audio_worklet_processor_constructor.h"
+#include "third_party/blink/renderer/core/workers/global_scope_creation_params.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet_object_proxy.h"
+#include "third_party/blink/renderer/modules/webaudio/audio_worklet_processor.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet_processor_definition.h"
 #include "third_party/blink/renderer/modules/webaudio/cross_thread_audio_worklet_processor_info.h"
 #include "third_party/blink/renderer/platform/bindings/callback_method_retriever.h"
+#include "third_party/blink/renderer/platform/scheduler/common/features.h"
 
 namespace blink {
 
@@ -28,7 +31,10 @@ AudioWorkletGlobalScope::AudioWorkletGlobalScope(
     WorkerThread* thread)
     : WorkletGlobalScope(std::move(creation_params),
                          thread->GetWorkerReportingProxy(),
-                         thread) {
+                         thread,
+                         /*create_microtask_queue=*/
+                         base::FeatureList::IsEnabled(
+                             scheduler::kMicrotaskQueuePerAudioWorklet)) {
   // Audio is prone to jank introduced by e.g. the garbage collector. Workers
   // are generally put in a background mode (as they are non-visible). Audio is
   // an exception here, requiring low-latency behavior similar to any visible
@@ -52,7 +58,7 @@ void AudioWorkletGlobalScope::registerProcessor(
   DCHECK(IsContextThread());
 
   // 1. If name is an empty string, throw a NotSupportedError.
-  if (name.IsEmpty()) {
+  if (name.empty()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       "The processor name cannot be empty.");
     return;
@@ -81,15 +87,17 @@ void AudioWorkletGlobalScope::registerProcessor(
   //    TypeError .
   CallbackMethodRetriever retriever(processor_ctor);
   retriever.GetPrototypeObject(exception_state);
-  if (exception_state.HadException())
+  if (exception_state.HadException()) {
     return;
+  }
 
   // TODO(crbug.com/1077911): Do not extract process() function at the
   // registration step.
   v8::Local<v8::Function> v8_process =
       retriever.GetMethodOrThrow("process", exception_state);
-  if (exception_state.HadException())
+  if (exception_state.HadException()) {
     return;
+  }
   V8BlinkAudioWorkletProcessCallback* process =
       V8BlinkAudioWorkletProcessCallback::Create(v8_process);
 
@@ -123,8 +131,9 @@ void AudioWorkletGlobalScope::registerProcessor(
     const HeapVector<Member<AudioParamDescriptor>>& given_param_descriptors =
         NativeValueTraits<IDLSequence<AudioParamDescriptor>>::NativeValue(
             isolate, v8_parameter_descriptors, exception_state);
-    if (exception_state.HadException())
+    if (exception_state.HadException()) {
       return;
+    }
 
     // 7.2. Let paramNames be an empty Array.
     HeapVector<Member<AudioParamDescriptor>> sanitized_param_descriptors;
@@ -158,7 +167,7 @@ void AudioWorkletGlobalScope::registerProcessor(
   // parameterDescriptorSequence to the node name to parameter descriptor map
   // of the associated BaseAudioContext.
   if (object_proxy_) {
-    // TODO(crbug.com/1223178): |object_proxy_| is designed to outlive the
+    // TODO(crbug.com/1223178): `object_proxy_` is designed to outlive the
     // global scope, so we don't need to null check but the unit test is not
     // able to replicate the cross-thread messaging logic yet, so we skip this
     // call in unit tests.
@@ -173,7 +182,7 @@ AudioWorkletProcessor* AudioWorkletGlobalScope::CreateProcessor(
   DCHECK(IsContextThread());
 
   // The registered definition is already checked by AudioWorkletNode
-  // construction process, so the |definition| here must be valid.
+  // construction process, so the `definition` here must be valid.
   AudioWorkletProcessorDefinition* definition = FindDefinition(name);
   DCHECK(definition);
 
@@ -189,7 +198,7 @@ AudioWorkletProcessor* AudioWorkletGlobalScope::CreateProcessor(
   DCHECK(!processor_creation_params_);
   // There is no way to pass additional constructor arguments that are not
   // described in Web IDL, the static constructor will look up
-  // |processor_creation_params_| in the global scope to perform the
+  // `processor_creation_params_` in the global scope to perform the
   // construction properly.
   base::AutoReset<std::unique_ptr<ProcessorCreationParams>>
       processor_creation_extra_param(
@@ -219,8 +228,9 @@ AudioWorkletProcessor* AudioWorkletGlobalScope::CreateProcessor(
 AudioWorkletProcessorDefinition* AudioWorkletGlobalScope::FindDefinition(
     const String& name) {
   const auto it = processor_definition_map_.find(name);
-  if (it == processor_definition_map_.end())
+  if (it == processor_definition_map_.end()) {
     return nullptr;
+  }
   return it->value.Get();
 }
 

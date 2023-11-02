@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <cctype>
 #include <limits>
 
-#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
@@ -236,7 +235,7 @@ bool BaseLogFileWriter::Init() {
 
   // Attempt to create the file.
   constexpr int file_flags = base::File::FLAG_CREATE | base::File::FLAG_WRITE |
-                             base::File::FLAG_EXCLUSIVE_WRITE;
+                             base::File::FLAG_WIN_EXCLUSIVE_WRITE;
   file_.Initialize(path_, file_flags);
   if (!file_.IsValid() || !file_.created()) {
     LOG(WARNING) << "Couldn't create remote-bound WebRTC event log file.";
@@ -928,7 +927,7 @@ base::FilePath WebRtcEventLogPath(
 bool IsValidRemoteBoundLogFilename(const std::string& filename) {
   // The -1 is because of the implict \0.
   const size_t kPrefixLength =
-      base::size(kRemoteBoundWebRtcEventLogFileNamePrefix) - 1;
+      std::size(kRemoteBoundWebRtcEventLogFileNamePrefix) - 1;
 
   // [prefix]_[web_app_id]_[log_id]
   const size_t expected_length =
@@ -1008,7 +1007,7 @@ size_t ExtractRemoteBoundWebRtcEventLogWebAppIdFromPath(
 
   // The -1 is because of the implict \0.
   const size_t kPrefixLength =
-      base::size(kRemoteBoundWebRtcEventLogFileNamePrefix) - 1;
+      std::size(kRemoteBoundWebRtcEventLogFileNamePrefix) - 1;
 
   // The +1 is for the underscore between the prefix and the web-app ID.
   // Length verified by above call to IsValidRemoteBoundLogFilename().
@@ -1022,7 +1021,7 @@ bool DoesProfileDefaultToLoggingEnabled(const Profile* const profile) {
 // For Chrome OS, exclude special profiles and users.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+      ash::ProfileHelper::Get()->GetUserByProfile(profile);
   // We do not log an error here since this can happen in several cases,
   // e.g. for signin profiles or lock screen app profiles.
   if (!user) {
@@ -1032,7 +1031,7 @@ bool DoesProfileDefaultToLoggingEnabled(const Profile* const profile) {
   if (user_type != user_manager::USER_TYPE_REGULAR) {
     return false;
   }
-  if (chromeos::ProfileHelper::IsEphemeralUserProfile(profile)) {
+  if (ash::ProfileHelper::IsEphemeralUserProfile(profile)) {
     return false;
   }
 #endif
@@ -1043,7 +1042,7 @@ bool DoesProfileDefaultToLoggingEnabled(const Profile* const profile) {
   // cases (e.g. on Chrome OS). Although currently this should be covered by the
   // other checks, let's explicitly check to anticipate edge cases and make the
   // requirement explicit.
-  if (profile->IsOffTheRecord() || profile->IsSupervised()) {
+  if (profile->IsOffTheRecord() || profile->IsChild()) {
     return false;
   }
 

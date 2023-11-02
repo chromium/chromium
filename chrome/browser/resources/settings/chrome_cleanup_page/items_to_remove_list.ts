@@ -1,24 +1,25 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/shared_vars_css.m.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/polymer/v3_0/paper-styles/color.js';
-import '../settings_shared_css.js';
+import '../settings_shared.css.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ChromeCleanupProxyImpl} from './chrome_cleanup_proxy.js';
+import {getTemplate} from './items_to_remove_list.html.js';
 
 /**
  * For each line in the item list, the text field will be shown in normal
  * style at front of the line. The highlightSuffix will be appended to the end
  * of line and emphasized with bold font.
  */
-export type ChromeCleanupRemovalListItem = {
-  text: string,
-  highlightSuffix: string|null,
-};
+export interface ChromeCleanupRemovalListItem {
+  text: string;
+  highlightSuffix: string|null;
+}
 
 /**
  * The default number of items to show for files, registry keys and extensions
@@ -45,13 +46,13 @@ export const CHROME_CLEANUP_DEFAULT_ITEMS_TO_SHOW: number = 4;
  *    </items-to-remove-list>
  */
 
-class ItemsToRemoveListElement extends PolymerElement {
+export class ItemsToRemoveListElement extends PolymerElement {
   static get is() {
     return 'items-to-remove-list';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -99,11 +100,11 @@ class ItemsToRemoveListElement extends PolymerElement {
     };
   }
 
-  title: string;
-  itemsToShow: Array<ChromeCleanupRemovalListItem>;
+  override title: string;
+  itemsToShow: ChromeCleanupRemovalListItem[];
   private expanded_: boolean;
-  private initialItems_: Array<ChromeCleanupRemovalListItem>|null;
-  private remainingItems_: Array<ChromeCleanupRemovalListItem>|null;
+  private initialItems_: ChromeCleanupRemovalListItem[]|null;
+  private remainingItems_: ChromeCleanupRemovalListItem[]|null;
   private moreItemsLinkText_: string;
 
   private expandList_() {
@@ -122,8 +123,7 @@ class ItemsToRemoveListElement extends PolymerElement {
    * to the user will contain exactly |CHROME_CLEANUP_DEFAULT_ITEMS_TO_SHOW|
    *    elements, and the last one will be the "show more" link.
    */
-  private updateVisibleState_(itemsToShow:
-                                  Array<ChromeCleanupRemovalListItem>) {
+  private updateVisibleState_(itemsToShow: ChromeCleanupRemovalListItem[]) {
     // Start expanded if there are less than
     // |CHROME_CLEANUP_DEFAULT_ITEMS_TO_SHOW| items to show.
     this.expanded_ = itemsToShow.length <= CHROME_CLEANUP_DEFAULT_ITEMS_TO_SHOW;

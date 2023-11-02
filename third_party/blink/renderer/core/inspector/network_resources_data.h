@@ -35,10 +35,10 @@
 #include "third_party/blink/renderer/core/inspector/inspector_page_agent.h"
 #include "third_party/blink/renderer/core/loader/resource/font_resource.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/network/http_header_map.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
-#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -111,7 +111,7 @@ class NetworkResourcesData final
 
     bool IsContentEvicted() const { return is_content_evicted_; }
     // Evicts the post data and the respone content.
-    WARN_UNUSED_RESULT size_t EvictContent();
+    [[nodiscard]] size_t EvictContent();
 
     InspectorPageAgent::ResourceType GetType() const { return type_; }
     void SetType(InspectorPageAgent::ResourceType type) { type_ = type; }
@@ -177,7 +177,7 @@ class NetworkResourcesData final
     bool HasData() const { return data_buffer_.get(); }
     void AppendData(const char* data, size_t data_length);
     // Removes just the response content.
-    WARN_UNUSED_RESULT size_t RemoveResponseContent();
+    [[nodiscard]] size_t RemoveResponseContent();
     size_t DecodeDataToContent();
     void ProcessCustomWeakness(const LivenessBroker&);
 
@@ -203,6 +203,7 @@ class NetworkResourcesData final
 
     // We use UntracedMember<> here to do custom weak processing.
     UntracedMember<const Resource> cached_resource_;
+    Member<const Resource> replay_cached_resource_strong_;
 
     scoped_refptr<BlobDataHandle> downloaded_file_blob_;
     scoped_refptr<net::X509Certificate> certificate_;

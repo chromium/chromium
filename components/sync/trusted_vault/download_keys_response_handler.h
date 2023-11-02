@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,6 +34,8 @@ class DownloadKeysResponseHandler {
     // Contains new keys (e.g. keys are stored by the server, excluding last
     // known key and keys that predate it).  Excludes first key if it's a
     // constant key.
+    // TODO(crbug.com/1267391): return all keys obtained from the server and
+    // update StandaloneTrustedVaultBackend to store them.
     std::vector<std::vector<uint8_t>> new_keys;
     int last_key_version;
   };

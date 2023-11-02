@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,7 +26,7 @@ constexpr gfx::Insets kButtonPadding{0};
 ProjectorButton::ProjectorButton(views::Button::PressedCallback callback,
                                  const std::u16string& name)
     : ToggleImageButton(callback), name_(name) {
-  SetPreferredSize({kProjectorButtonSize, kProjectorButtonSize});
+  SetPreferredSize(gfx::Size(kProjectorButtonSize, kProjectorButtonSize));
   SetBorder(views::CreateEmptyBorder(kButtonPadding));
 
   // Rounded background.
@@ -41,17 +41,29 @@ ProjectorButton::ProjectorButton(views::Button::PressedCallback callback,
 }
 
 void ProjectorButton::OnPaintBackground(gfx::Canvas* canvas) {
+  if (!GetToggled()) {
+    return;
+  }
   auto* color_provider = AshColorProvider::Get();
+  // Draw a filled background for the button.
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
   flags.setStyle(cc::PaintFlags::kFill_Style);
   flags.setColor(color_provider->GetControlsLayerColor(
-      GetToggled()
-          ? AshColorProvider::ControlsLayerType::kControlBackgroundColorActive
-          : AshColorProvider::ControlsLayerType::
-                kControlBackgroundColorInactive));
+      AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive));
   const gfx::RectF bounds(GetContentsBounds());
   canvas->DrawCircle(bounds.CenterPoint(), bounds.width() / 2, flags);
+
+  // Draw a border on the background circle.
+  cc::PaintFlags border_flags;
+  flags.setAntiAlias(true);
+  flags.setStyle(cc::PaintFlags::kStroke_Style);
+  flags.setColor(color_provider->GetControlsLayerColor(
+      AshColorProvider::ControlsLayerType::kHairlineBorderColor));
+  flags.setStrokeWidth(kProjectorButtonBorderSize);
+  canvas->DrawCircle(bounds.CenterPoint(),
+                     (bounds.width() - kProjectorButtonBorderSize * 2) / 2,
+                     flags);
 }
 
 void ProjectorButton::OnThemeChanged() {

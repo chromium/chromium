@@ -2,12 +2,14 @@ include_rules = [
   "+components/account_id/account_id.h",
   "+components/services/app_service/public/cpp",
   "+content/public",
+  "+ui/gfx/geometry",
   "+ui/gfx/image",
 ]
 
 specific_include_rules = {
   "instance_registry\.h": [
     "+ash/public/cpp/shelf_types.h",
+    "+ui/aura/window.h",
   ],
   "intent_util\.cc" : [
     "+third_party/blink/public/common/mime_util/mime_util.h",
@@ -22,6 +24,9 @@ specific_include_rules = {
   "instance_registry_unittest\.cc": [
     "+ui/aura/window.h",
     "+ui/aura/test/test_window_delegate.h",
+    "+chrome/test/base/testing_profile.h",
+  ],
+  "instance_unittest\.cc": [
     "+chrome/test/base/testing_profile.h",
   ],
   "instance_update_unittest\.cc": [

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "components/arc/mojom/tts.mojom.h"
+#include "ash/components/arc/mojom/tts.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {
@@ -39,10 +39,6 @@ class ArcTtsService : public KeyedService,
   ~ArcTtsService() override;
 
   // mojom::TtsHost overrides:
-  void OnTtsEventDeprecated(uint32_t id,
-                            mojom::TtsEventType event_type,
-                            uint32_t char_index,
-                            const std::string& error_msg) override;
   void OnTtsEvent(uint32_t id,
                   mojom::TtsEventType event_type,
                   uint32_t char_index,

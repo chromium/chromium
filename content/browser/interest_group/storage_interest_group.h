@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,9 @@
 #include "base/time/time.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-forward.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
+#include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -22,8 +24,6 @@ namespace content {
 // process.
 struct CONTENT_EXPORT StorageInterestGroup {
   StorageInterestGroup();
-  explicit StorageInterestGroup(
-      auction_worklet::mojom::BiddingInterestGroupPtr group);
   StorageInterestGroup(StorageInterestGroup&&);
   StorageInterestGroup& operator=(StorageInterestGroup&&) = default;
   ~StorageInterestGroup();
@@ -36,22 +36,31 @@ struct CONTENT_EXPORT StorageInterestGroup {
   // without a sufficiently large k.
   struct CONTENT_EXPORT KAnonymityData {
     bool operator==(const KAnonymityData& rhs) const {
-      return key == rhs.key && k == rhs.k && last_updated == rhs.last_updated;
+      return key == rhs.key && is_k_anonymous == rhs.is_k_anonymous &&
+             last_updated == rhs.last_updated;
     }
 
     // Unique identifier associated with the data being anonymized, usually a
     // URL.
-    GURL key;
-    // The (noised) count of unique users that reported this key.
-    int k;
+    std::string key;
+    // Whether the `key` was k-anonymous during the last update.
+    bool is_k_anonymous;
     // The last time the unique user count was updated.
     base::Time last_updated;
   };
 
-  auction_worklet::mojom::BiddingInterestGroupPtr bidding_group;
+  blink::InterestGroup interest_group;
+  auction_worklet::mojom::BiddingBrowserSignalsPtr bidding_browser_signals;
   absl::optional<KAnonymityData> name_kanon;
-  absl::optional<KAnonymityData> update_url_kanon;
+  absl::optional<KAnonymityData> daily_update_url_kanon;
   std::vector<KAnonymityData> ads_kanon;
+  // Top level page origin from when the interest group was joined.
+  url::Origin joining_origin;
+  // Most recent time the interset group was joined. Stored in database as
+  // `exact_join_time`.
+  base::Time join_time;
+  // The last time this interest group was updated.
+  base::Time last_updated;
 };
 
 // Stream operator so KAnonymityData can be used in assertion statements.

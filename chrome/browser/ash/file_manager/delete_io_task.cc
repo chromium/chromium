@@ -1,4 +1,4 @@
-// Copyright (c) 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "base/callback.h"
 #include "base/files/file.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "chrome/browser/ash/file_manager/io_task_util.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/common/task_util.h"
@@ -18,24 +19,11 @@
 namespace file_manager {
 namespace io_task {
 
-namespace {
-
-// Starts the delete operation via FileSystemOperationRunner.
-storage::FileSystemOperationRunner::OperationID StartDeleteOnIOThread(
-    scoped_refptr<storage::FileSystemContext> file_system_context,
-    const storage::FileSystemURL& file_url,
-    storage::FileSystemOperation::StatusCallback status_callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  return file_system_context->operation_runner()->Remove(
-      file_url, /*recursive=*/true, std::move(status_callback));
-}
-
-}  // namespace
-
 DeleteIOTask::DeleteIOTask(
     std::vector<storage::FileSystemURL> file_urls,
-    scoped_refptr<storage::FileSystemContext> file_system_context)
-    : file_system_context_(file_system_context) {
+    scoped_refptr<storage::FileSystemContext> file_system_context,
+    bool show_notification)
+    : IOTask(show_notification), file_system_context_(file_system_context) {
   progress_.state = State::kQueued;
   progress_.type = OperationType::kDelete;
   progress_.bytes_transferred = 0;

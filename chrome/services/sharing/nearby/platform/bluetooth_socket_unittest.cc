@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,10 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "base/task/thread_pool.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/threading/thread_restrictions.h"
 #include "chrome/services/sharing/nearby/platform/bluetooth_device.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -131,6 +134,33 @@ TEST_F(BluetoothSocketTest, Close) {
   // Ensure that calls to Close() succeed even after the underlying socket is
   // destroyed.
   EXPECT_TRUE(bluetooth_socket_->Close().Ok());
+}
+
+TEST_F(BluetoothSocketTest, Close_CalledFromMultipleThreads) {
+  base::RunLoop run_loop;
+  const size_t kNumThreads = 3;
+
+  // Quit the run loop after Close() returns on all threads.
+  size_t num_close_calls = 0;
+  auto quit_callback =
+      base::BindLambdaForTesting([&num_close_calls, &run_loop] {
+        ++num_close_calls;
+        if (num_close_calls == kNumThreads)
+          run_loop.Quit();
+      });
+
+  // Call Close() from different threads simultaneously to ensure the socket is
+  // shut down gracefully.
+  for (size_t thread = 0; thread < kNumThreads; ++thread) {
+    base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})
+        ->PostTaskAndReply(
+            FROM_HERE, base::BindLambdaForTesting([this] {
+              base::ScopedAllowBaseSyncPrimitivesForTesting allow;
+              EXPECT_EQ(Exception::kSuccess, bluetooth_socket_->Close().value);
+            }),
+            quit_callback);
+  }
+  run_loop.Run();
 }
 
 TEST_F(BluetoothSocketTest, Destroy) {

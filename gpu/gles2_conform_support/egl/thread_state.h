@@ -1,13 +1,13 @@
-// Copyright (c) 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef GPU_GLES2_CONFORM_SUPPORT_EGL_THREAD_STATE_H_
 #define GPU_GLES2_CONFORM_SUPPORT_EGL_THREAD_STATE_H_
 
-#include "base/macros.h"
-#include "base/memory/ref_counted.h"
 #include <EGL/egl.h>
+#include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
 
 namespace gles2_conform_support {
 namespace egl {
@@ -60,7 +60,7 @@ class ThreadState {
     void SetCurrent(Surface*, Context*);
 
    private:
-    ThreadState* thread_state_;
+    raw_ptr<ThreadState> thread_state_;
   };
 
  private:

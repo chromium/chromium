@@ -1,4 +1,4 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -8,23 +8,14 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 
 assert(!is_chromeos_ash && !is_android)
 
-generate_grd("build_grdp") {
-  grd_prefix = "webui_welcome"
-  out_grd = "$target_gen_dir/resources.grdp"
-
-  deps = [ ":build_ts" ]
-  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
-  resource_path_prefix = "welcome"
-}
-
 ts_library("build_ts") {
   root_dir = "./"
   out_dir = "$target_gen_dir/tsc"
   tsconfig_base = "tsconfig_base.json"
   path_mappings = [
-    "chrome://welcome/*|" + rebase_path(
-            "$root_gen_dir/chrome/browser/resources/welcome/preprocessed/*",
-            target_gen_dir),
+    "chrome://welcome/*|" +
+        rebase_path("$root_gen_dir/chrome/browser/resources/welcome/tsc/*",
+                    target_gen_dir),
     "chrome://webui-test/*|" +
         rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
                     target_gen_dir),
@@ -47,6 +38,18 @@ ts_library("build_ts") {
     "welcome_app_test.ts",
   ]
   definitions = [ "//tools/typescript/definitions/bookmarks.d.ts" ]
-  deps = [ "//chrome/browser/resources/welcome:build" ]
-  extra_deps = [ "..:generate_definitions" ]
+  deps = [
+    "..:build_ts",
+    "//chrome/browser/resources/welcome:build_ts",
+  ]
+}
+
+generate_grd("build_grdp") {
+  grd_prefix = "webui_welcome"
+  out_grd = "$target_gen_dir/resources.grdp"
+
+  deps = [ ":build_ts" ]
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+  resource_path_prefix = "welcome"
 }

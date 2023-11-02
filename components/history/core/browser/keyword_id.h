@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,13 @@
 
 #include <stdint.h>
 
+#include "components/search_engines/template_url_id.h"
+
 namespace history {
 
 // ID of a keyword associated with a URL and a search term.
-// 0 is the invalid value.
-typedef int64_t KeywordID;
+// 0 is the invalid value, i.e., kInvalidTemplateURLID.
+using KeywordID = TemplateURLID;
 
 }  // namespace history
 

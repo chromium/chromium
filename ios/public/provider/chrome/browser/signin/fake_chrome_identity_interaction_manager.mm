@@ -1,9 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_interaction_manager.h"
 
+#import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity_interaction_manager.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_interaction_manager_constants.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
@@ -93,16 +94,20 @@
 
 @end
 
-@implementation FakeChromeIdentityInteractionManager
+namespace {
 
-static ChromeIdentity* _identity = nil;
+id<SystemIdentity> gFakeChromeIdentityInteractionManagerIdentity = nil;
 
-+ (void)setIdentity:(ChromeIdentity*)identity {
-  _identity = identity;
 }
 
-+ (ChromeIdentity*)identity {
-  return _identity;
+@implementation FakeChromeIdentityInteractionManager
+
++ (void)setIdentity:(id<SystemIdentity>)identity {
+  gFakeChromeIdentityInteractionManagerIdentity = identity;
+}
+
++ (id<SystemIdentity>)identity {
+  return gFakeChromeIdentityInteractionManagerIdentity;
 }
 
 - (void)addAccountWithPresentingViewController:(UIViewController*)viewController
@@ -181,7 +186,7 @@ static ChromeIdentity* _identity = nil;
 - (void)runCompletionCallbackWithError:(NSError*)error
                             completion:(ProceduralBlock)completion {
   self.addAccountViewController = nil;
-  ChromeIdentity* identity =
+  id<SystemIdentity> identity =
       error ? nil : FakeChromeIdentityInteractionManager.identity;
   // Reset the identity for the next usage.
   FakeChromeIdentityInteractionManager.identity = nil;

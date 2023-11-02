@@ -1,10 +1,8 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
-// clang-format on
 
 /**
  * Information for an account managed by Chrome OS AccountManager.
@@ -14,10 +12,12 @@ import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
  *   isDeviceAccount: boolean,
  *   isSignedIn: boolean,
  *   unmigrated: boolean,
+ *   isManaged: boolean,
  *   fullName: string,
  *   email: string,
  *   pic: string,
  *   organization: (string|undefined),
+ *   isAvailableInArc: boolean,
  * }}
  */
 export let Account;
@@ -56,15 +56,30 @@ export class AccountManagerBrowserProxy {
   removeAccount(account) {}
 
   /**
-   * Displays the Account Manager welcome dialog if required.
+   * Changes ARC availability for |account|.
+   * @param {?Account} account
+   * @param {?boolean} isAvailableInArc new ARC availability value
    */
-  showWelcomeDialogIfRequired() {}
+  changeArcAvailability(account, isAvailableInArc) {}
 }
+
+/** @type {?AccountManagerBrowserProxy} */
+let instance = null;
 
 /**
  * @implements {AccountManagerBrowserProxy}
  */
 export class AccountManagerBrowserProxyImpl {
+  /** @return {!AccountManagerBrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new AccountManagerBrowserProxyImpl());
+  }
+
+  /** @param {!AccountManagerBrowserProxy} obj */
+  static setInstanceForTesting(obj) {
+    instance = obj;
+  }
+
   /** @override */
   getAccounts() {
     return sendWithPromise('getAccounts');
@@ -91,20 +106,7 @@ export class AccountManagerBrowserProxyImpl {
   }
 
   /** @override */
-  showWelcomeDialogIfRequired() {
-    chrome.send('showWelcomeDialogIfRequired');
-  }
-
-  /** @return {!AccountManagerBrowserProxy} */
-  static getInstance() {
-    return instance || (instance = new AccountManagerBrowserProxyImpl());
-  }
-
-  /** @param {!AccountManagerBrowserProxy} obj */
-  static setInstance(obj) {
-    instance = obj;
+  changeArcAvailability(account, isAvailableInArc) {
+    chrome.send('changeArcAvailability', [account, isAvailableInArc]);
   }
 }
-
-/** @type {?AccountManagerBrowserProxy} */
-let instance = null;

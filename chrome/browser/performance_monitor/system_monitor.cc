@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,14 +10,14 @@
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
-#include "base/task/post_task.h"
+#include "base/observer_list.h"
 #include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/browser/performance_monitor/metric_evaluator_helper_win.h"
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
 #include "chrome/browser/performance_monitor/metric_evaluator_helper_posix.h"
 #endif
 
@@ -241,11 +241,11 @@ void SystemMonitor::NotifyObservers(SystemMonitor::MetricVector metrics) {
 // static
 std::unique_ptr<MetricEvaluatorsHelper>
 SystemMonitor::CreateMetricEvaluatorsHelper() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return base::WrapUnique(new MetricEvaluatorsHelperWin());
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
   return std::make_unique<MetricEvaluatorsHelperPosix>();
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
   // TODO(crbug.com/1235293)
   NOTIMPLEMENTED_LOG_ONCE();
   return nullptr;

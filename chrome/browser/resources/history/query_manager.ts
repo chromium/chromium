@@ -1,18 +1,18 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
+import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {BrowserService} from './browser_service.js';
+import {BrowserServiceImpl} from './browser_service.js';
 import {HistoryEntry, HistoryQuery, QueryResult} from './externs.js';
 import {QueryState} from './externs.js';
 import {HistoryRouterElement} from './router.js';
 
 declare global {
   interface HTMLElementTagNameMap {
-    'history-query-manager': HistoryQueryManagerElement,
+    'history-query-manager': HistoryQueryManagerElement;
   }
 }
 
@@ -62,8 +62,7 @@ export class HistoryQueryManagerElement extends PolymerElement {
     };
   }
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     this.eventTracker_.add(
         document, 'change-query', this.onChangeQuery_.bind(this));
@@ -71,8 +70,7 @@ export class HistoryQueryManagerElement extends PolymerElement {
         document, 'query-history', this.onQueryHistory_.bind(this));
   }
 
-  /** @override */
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
     this.eventTracker_.removeAll();
   }
@@ -85,7 +83,7 @@ export class HistoryQueryManagerElement extends PolymerElement {
     this.set('queryState.querying', true);
     this.set('queryState.incremental', incremental);
 
-    const browserService = BrowserService.getInstance();
+    const browserService = BrowserServiceImpl.getInstance();
     const promise = incremental ?
         browserService.queryHistoryContinuation() :
         browserService.queryHistory(this.queryState.searchTerm);
@@ -119,8 +117,7 @@ export class HistoryQueryManagerElement extends PolymerElement {
   /**
    * @param results List of results with information about the query.
    */
-  private onQueryResult_(results:
-                             {info: HistoryQuery, value: Array<HistoryEntry>}) {
+  private onQueryResult_(results: {info: HistoryQuery, value: HistoryEntry[]}) {
     this.set('queryState.querying', false);
     this.set('queryResult.info', results.info);
     this.set('queryResult.results', results.value);
@@ -131,7 +128,7 @@ export class HistoryQueryManagerElement extends PolymerElement {
   private searchTermChanged_() {
     // TODO(tsergeant): Ignore incremental searches in this metric.
     if (this.queryState.searchTerm) {
-      BrowserService.getInstance().recordAction('Search');
+      BrowserServiceImpl.getInstance().recordAction('Search');
     }
   }
 }

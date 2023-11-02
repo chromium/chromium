@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/guid.h"
+#include "base/observer_list.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/background_fetch/background_fetch_cross_origin_filter.h"
 #include "content/browser/background_fetch/background_fetch_data_manager.h"
@@ -18,7 +19,7 @@
 #include "content/common/fetch/fetch_api_request_proto.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "services/network/public/cpp/cors/cors.h"
+#include "services/network/public/cpp/header_util.h"
 #include "storage/browser/blob/blob_impl.h"
 #include "third_party/blink/public/common/cache_storage/cache_storage_utils.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -54,7 +55,7 @@ blink::mojom::SerializedBlobPtr MakeBlob(
 // 2xx status per https://tools.ietf.org/html/rfc7231#section-6.3.
 bool IsOK(const BackgroundFetchRequestInfo& request) {
   int status = request.GetResponseCode();
-  return network::cors::IsOkStatus(status);
+  return network::IsSuccessfulStatus(status);
 }
 
 }  // namespace
@@ -103,6 +104,8 @@ void MarkRequestCompleteTask::StoreResponse(base::OnceClosure done_closure) {
   BackgroundFetchCrossOriginFilter filter(
       registration_id_.storage_key().origin(), *request_info_);
   if (!filter.CanPopulateBody()) {
+    // Don't expose the initial URL in case of cross-origin redirects.
+    response_->url_list.resize(1);
     failure_reason_ = proto::BackgroundFetchRegistration::FETCH_ERROR;
     // No point writing the response to the cache since it won't be exposed.
     CreateAndStoreCompletedRequest(std::move(done_closure));

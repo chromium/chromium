@@ -33,11 +33,10 @@
 
 #include <memory>
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
-#include "third_party/blink/renderer/bindings/core/v8/source_location.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/bindings/source_location.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
@@ -49,7 +48,7 @@ class KURL;
 class MODULES_EXPORT WebSocketChannel
     : public GarbageCollected<WebSocketChannel> {
  public:
-  enum class SendResult { SENT_SYNCHRONOUSLY, CALLBACK_WILL_BE_CALLED };
+  enum class SendResult { kSentSynchronously, kCallbackWillBeCalled };
 
   WebSocketChannel() = default;
 

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,10 @@
 #include "components/autofill_assistant/browser/selector.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/web/element_action_util.h"
-#include "components/autofill_assistant/browser/web/element_finder.h"
 
 namespace autofill_assistant {
+class ElementFinderResult;
+
 namespace action_delegate_util {
 
 // Finds the element given by the selector. If the resolution fails, it
@@ -32,10 +33,10 @@ void PerformWithTextValue(
     const ActionDelegate* delegate,
     const TextValue& text_value,
     base::OnceCallback<void(const std::string&,
-                            const ElementFinder::Result&,
+                            const ElementFinderResult&,
                             base::OnceCallback<void(const ClientStatus&)>)>
         perform,
-    const ElementFinder::Result& element,
+    const ElementFinderResult& element,
     base::OnceCallback<void(const ClientStatus&)> done);
 
 // Resolve the |client_id| and run the |perform| callback. Run the |done|
@@ -44,11 +45,11 @@ void PerformWithTextValue(
 void PerformWithElementValue(
     const ActionDelegate* delegate,
     const ClientIdProto& client_id,
-    base::OnceCallback<void(const ElementFinder::Result&,
-                            const ElementFinder::Result&,
+    base::OnceCallback<void(const ElementFinderResult&,
+                            const ElementFinderResult&,
                             base::OnceCallback<void(const ClientStatus&)>)>
         perform,
-    const ElementFinder::Result& element,
+    const ElementFinderResult& element,
     base::OnceCallback<void(const ClientStatus&)> done);
 
 // Adds an optional step to the |actions|. If the step is |SKIP_STEP|, it does
@@ -61,27 +62,27 @@ void AddOptionalStep(OptionalStep optional_step,
 // Adds a step to the |actions| and ignores its timing results.
 void AddStepIgnoreTiming(
     base::OnceCallback<void(
-        const ElementFinder::Result&,
+        const ElementFinderResult&,
         base::OnceCallback<void(const ClientStatus&, base::TimeDelta)>)> step,
     element_action_util::ElementActionVector* actions);
 
 // Adds a step to the |actions| that does not have a callback.
 void AddStepWithoutCallback(
-    base::OnceCallback<void(const ElementFinder::Result&)> step,
+    base::OnceCallback<void(const ElementFinderResult&)> step,
     element_action_util::ElementActionVector* actions);
 
 void PerformClickOrTapElement(
-    const ActionDelegate* delegate,
+    ActionDelegate* delegate,
     ClickType click_type,
-    const ElementFinder::Result& element,
+    const ElementFinderResult& element,
     base::OnceCallback<void(const ClientStatus&)> callback);
 
 void PerformSetFieldValue(
-    const ActionDelegate* delegate,
+    ActionDelegate* delegate,
     const std::string& value,
     KeyboardValueFillStrategy fill_strategy,
     int key_press_delay_in_millisecond,
-    const ElementFinder::Result& element,
+    const ElementFinderResult& element,
     base::OnceCallback<void(const ClientStatus&)> callback);
 
 }  // namespace action_delegate_util

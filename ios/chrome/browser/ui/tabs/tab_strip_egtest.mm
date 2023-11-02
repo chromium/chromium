@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,7 +37,7 @@ const char kDestinationHtml[] =
 const char kInitialPageUrl[] = "/scenarioDragURLToTabStrip";
 // HTML content of an initial page with a link to the destination page.
 // Note that this string contains substrings that must exactly match the next
-// two constants (|kInitialPageLinkId| and |kInitialPageDestinationLinkText|).
+// two constants (`kInitialPageLinkId` and `kInitialPageDestinationLinkText`).
 // If these were more complex or more liable to change, a sprintf template and
 // runtime composition should be used instead.
 const char kInitialPageHtml[] =
@@ -46,7 +46,7 @@ const char kInitialPageHtml[] =
     "style='margin-left:150px' href='/destination' id='link' aria-label='link'>"
     "link</a></body></html>";
 
-// Accessibility ID of the link on the initial page. The |aria-label| attribute
+// Accessibility ID of the link on the initial page. The `aria-label` attribute
 // makes this visible to UIKit as an accessibility ID.
 NSString* const kInitialPageLinkId = @"link";
 

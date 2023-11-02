@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/callback.h"
 #include "base/cancelable_callback.h"
+#include "base/memory/raw_ptr.h"
 #include "device/vr/android/gvr/gvr_delegate_provider.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "device/vr/vr_device.h"
@@ -60,18 +61,16 @@ class VrShellDelegate : public device::GvrDelegateProvider {
   // device::GvrDelegateProvider implementation.
   bool ShouldDisableGvrDevice() override;
   void StartWebXRPresentation(
-      device::mojom::VRDisplayInfoPtr display_info,
       device::mojom::XRRuntimeSessionOptionsPtr options,
       base::OnceCallback<void(device::mojom::XRSessionPtr)> callback) override;
 
   void OnPresentResult(
-      device::mojom::VRDisplayInfoPtr display_info,
       device::mojom::XRRuntimeSessionOptionsPtr options,
       base::OnceCallback<void(device::mojom::XRSessionPtr)> callback,
       bool success);
 
   base::android::ScopedJavaGlobalRef<jobject> j_vr_shell_delegate_;
-  VrShell* vr_shell_ = nullptr;
+  raw_ptr<VrShell> vr_shell_ = nullptr;
 
   // Deferred callback stored for later use in cases where vr_shell
   // wasn't ready yet. Used once SetDelegate is called.

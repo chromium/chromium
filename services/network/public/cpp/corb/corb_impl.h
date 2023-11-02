@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -72,7 +72,7 @@ class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginReadBlocking {
 
   // An instance for tracking the state of analyzing a single response
   // and deciding whether CORB should block the response.
-  class COMPONENT_EXPORT(NETWORK_CPP) CorbResponseAnalyzer
+  class COMPONENT_EXPORT(NETWORK_CPP) CorbResponseAnalyzer final
       : public network::corb::ResponseAnalyzer {
    public:
     // Categorizes the resource MIME type for CORB protection logging.
@@ -118,6 +118,26 @@ class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginReadBlocking {
     Decision Sniff(base::StringPiece data) override;
     Decision HandleEndOfSniffableResponseBody() override;
     bool ShouldReportBlockedResponse() const override;
+    BlockedResponseHandling ShouldHandleBlockedResponseAs() const override;
+
+    class ConfirmationSniffer;
+    class SimpleConfirmationSniffer;
+
+    // Returns true if the response has a nosniff header.
+    static bool HasNoSniff(const network::mojom::URLResponseHead& response);
+
+   private:
+    FRIEND_TEST_ALL_PREFIXES(CrossOriginReadBlockingTest,
+                             SeemsSensitiveFromCORSHeuristic);
+    FRIEND_TEST_ALL_PREFIXES(CrossOriginReadBlockingTest,
+                             SeemsSensitiveFromCacheHeuristic);
+    FRIEND_TEST_ALL_PREFIXES(CrossOriginReadBlockingTest,
+                             SeemsSensitiveWithBothHeuristics);
+    FRIEND_TEST_ALL_PREFIXES(CrossOriginReadBlockingTest,
+                             SupportsRangeRequests);
+    FRIEND_TEST_ALL_PREFIXES(content::CrossSiteDocumentResourceHandlerTest,
+                             CORBProtectionLogging);
+    FRIEND_TEST_ALL_PREFIXES(ResponseAnalyzerTest, CORBProtectionLogging);
 
     // true if either 1) ShouldBlockBasedOnHeaders decided to allow the response
     // based on headers alone or 2) ShouldBlockBasedOnHeaders decided to sniff
@@ -141,31 +161,6 @@ class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginReadBlocking {
       return should_block_based_on_headers_ == Decision::kSniffMore ||
              corb_protection_logging_needs_sniffing_;
     }
-
-    // The MIME type determined by ShouldBlockBasedOnHeaders.
-    const CrossOriginReadBlocking::MimeType& canonical_mime_type_for_testing()
-        const {
-      return canonical_mime_type_;
-    }
-
-    class ConfirmationSniffer;
-    class SimpleConfirmationSniffer;
-
-    // Returns true if the response has a nosniff header.
-    static bool HasNoSniff(const network::mojom::URLResponseHead& response);
-
-   private:
-    FRIEND_TEST_ALL_PREFIXES(CrossOriginReadBlockingTest,
-                             SeemsSensitiveFromCORSHeuristic);
-    FRIEND_TEST_ALL_PREFIXES(CrossOriginReadBlockingTest,
-                             SeemsSensitiveFromCacheHeuristic);
-    FRIEND_TEST_ALL_PREFIXES(CrossOriginReadBlockingTest,
-                             SeemsSensitiveWithBothHeuristics);
-    FRIEND_TEST_ALL_PREFIXES(CrossOriginReadBlockingTest,
-                             SupportsRangeRequests);
-    FRIEND_TEST_ALL_PREFIXES(content::CrossSiteDocumentResourceHandlerTest,
-                             CORBProtectionLogging);
-    FRIEND_TEST_ALL_PREFIXES(ResponseAnalyzerTest, CORBProtectionLogging);
 
     // Helper for translating ShouldAllow(), ShouldBlock() and needs_sniffing()
     // into corb::Decision.
@@ -313,20 +308,9 @@ class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginReadBlocking {
   // type families such as application/xml, application/rss+xml.
   static MimeType GetCanonicalMimeType(base::StringPiece mime_type);
 
- private:
-  // Returns whether this scheme is a target of the cross-origin read blocking
-  // (CORB) policy.  This returns true only for http://* and https://* urls.
-  static bool IsBlockableScheme(const GURL& frame_origin);
-  FRIEND_TEST_ALL_PREFIXES(CrossOriginReadBlockingTest, IsBlockableScheme);
-
   static SniffingResult SniffForHTML(base::StringPiece data);
   static SniffingResult SniffForXML(base::StringPiece data);
   static SniffingResult SniffForJSON(base::StringPiece data);
-  FRIEND_TEST_ALL_PREFIXES(CrossOriginReadBlockingTest, SniffForHTML);
-  FRIEND_TEST_ALL_PREFIXES(CrossOriginReadBlockingTest, SniffForXML);
-  FRIEND_TEST_ALL_PREFIXES(CrossOriginReadBlockingTest, SniffForJSON);
-  FRIEND_TEST_ALL_PREFIXES(content::CrossSiteDocumentResourceHandlerTest,
-                           ResponseBlocking);
 
   // Sniff for patterns that indicate |data| only ought to be consumed by XHR()
   // or fetch(). This detects Javascript parser-breaker and particular JS

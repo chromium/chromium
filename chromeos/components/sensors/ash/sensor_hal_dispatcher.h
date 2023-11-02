@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,10 @@
 #include "base/component_export.h"
 #include "base/sequence_checker.h"
 #include "base/unguessable_token.h"
+#include "chromeos/ash/components/mojo_service_manager/mojom/mojo_service_manager.mojom.h"
 #include "chromeos/components/sensors/mojom/cros_sensor_service.mojom.h"
 #include "chromeos/components/sensors/mojom/sensor.mojom.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
@@ -23,7 +25,8 @@ namespace sensors {
 // simpleclient and Chrome's components). It'll then establish mojo channels
 // between the server and clients.
 // SensorHalDispatcher should be only used on the UI thread.
-class COMPONENT_EXPORT(CHROMEOS_SENSORS) SensorHalDispatcher {
+class COMPONENT_EXPORT(CHROMEOS_SENSORS) SensorHalDispatcher
+    : public mojo_service_manager::mojom::ServiceObserver {
  public:
   // Creates the global SensorHalDispatcher instance.
   static void Initialize();
@@ -49,10 +52,23 @@ class COMPONENT_EXPORT(CHROMEOS_SENSORS) SensorHalDispatcher {
   // |RegisterClient|.
   bool AuthenticateClient(const base::UnguessableToken& token);
 
+  // Query IioSensor service via Mojo Service Manager to establish mojo
+  // channels between iioservice and sensor clients.
+  // Should only be called once after CrOS Mojo Service Manager is connected.
+  void TryToEstablishMojoChannelByServiceManager();
+
+  // mojo_service_manager::mojom::ServiceObserver overrides:
+  void OnServiceEvent(
+      mojo_service_manager::mojom::ServiceEventPtr event) override;
+
  private:
   SensorHalDispatcher();
-  ~SensorHalDispatcher();
+  ~SensorHalDispatcher() override;
 
+  void QueryCallback(
+      mojo_service_manager::mojom::ErrorOrServiceStatePtr result);
+
+  void OnIioSensorServiceRegistered();
   void EstablishMojoChannel(const mojo::Remote<mojom::SensorHalClient>& client);
 
   void OnSensorHalServerDisconnect();
@@ -62,6 +78,9 @@ class COMPONENT_EXPORT(CHROMEOS_SENSORS) SensorHalDispatcher {
   mojo::RemoteSet<mojom::SensorHalClient> sensor_hal_clients_;
 
   std::set<base::UnguessableToken> client_token_set_;
+
+  mojo::Receiver<mojo_service_manager::mojom::ServiceObserver> receiver_;
+  bool iio_sensor_available_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

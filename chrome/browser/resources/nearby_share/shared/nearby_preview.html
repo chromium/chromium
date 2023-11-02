@@ -1,51 +1,31 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
+<style>
+  iron-icon {
+    display: block;
+    height: 68px;
+    margin: 12px auto 24px auto;
+    width: 68px;
+  }
 
-<link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_icons_css.html">
-<link rel="import" href="chrome://resources/html/assert.html">
-<link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-<link rel="import" href="nearby_shared_icons.html">
-<link rel="import" href="nearby_shared_share_type_icons.html">
+  iron-icon.disabled {
+    --nearby-preview-color: var(--cros-color-disabled);
+    --nearby-preview-background-color: var(
+        --cros-shortcut-background-color);
+  }
 
-<script src="chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js"></script>
-<script src="chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-lite.js"></script>
-<script src="/mojo/nearby_share_target_types.mojom-lite.js"></script>
-<script src="/mojo/nearby_share_share_type.mojom-lite.js"></script>
-<script src="/mojo/nearby_share.mojom-lite.js"></script>
+  #title {
+    color: var(--cr-primary-text-color);
+    font-size: 13px;
+    height: 60px;
+    letter-spacing: 0.2px;
+    line-height: 20px;
+    overflow: hidden;
+    overflow-wrap: break-word;
+    text-align: center;
+    width: 116px;
+  }
+</style>
 
-<dom-module id="nearby-preview">
-  <template>
-    <style>
-      iron-icon {
-        display: block;
-        height: 68px;
-        margin: 12px auto 24px auto;
-        width: 68px;
-      }
-
-      iron-icon.disabled {
-        --nearby-preview-color: var(--google-grey-600);
-        --nearby-preview-background-color: var(--google-grey-200);
-      }
-
-      #title {
-        color: var(--cr-primary-text-color);
-        font-size: 13px;
-        height: 60px;
-        letter-spacing: 0.2px;
-        line-height: 20px;
-        overflow: hidden;
-        overflow-wrap: break-word;
-        text-align: center;
-        width: 116px;
-      }
-    </style>
-
-    <iron-icon class$="[[getIconClass_(disabled)]]"
-        icon="[[getIronIconName_(payloadPreview)]]">
-    </iron-icon>
-    <div id="title">[[getTitle_(payloadPreview)]]</div>
-  </template>
-  <script src="nearby_preview.js"></script>
-</dom-module>
+<iron-icon class$="[[getIconClass_(disabled)]]"
+    icon="[[getIronIconName_(payloadPreview)]]">
+</iron-icon>
+<div id="title">[[getTitle_(payloadPreview)]]</div>

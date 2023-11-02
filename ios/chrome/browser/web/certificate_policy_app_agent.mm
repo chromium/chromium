@@ -1,11 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/web/certificate_policy_app_agent.h"
 
 #import "base/task/cancelable_task_tracker.h"
-#import "base/task/post_task.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
@@ -24,19 +23,25 @@
 
 namespace {
 
-// Updates |policy_cache| by adding entries from the session policy cache in
-// |web_state|.
+// Updates `policy_cache` by adding entries from the session policy cache in
+// `web_state`.
 void UpdateCertificatePolicyCacheFromWebState(
     const scoped_refptr<web::CertificatePolicyCache>& policy_cache,
     const web::WebState* web_state) {
   DCHECK(web_state);
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
+
+  // The WebState install its certificate policy cache upon realization, so
+  // unrealized WebState can be skipped (to avoid forcing their realization).
+  if (!web_state->IsRealized())
+    return;
+
   web_state->GetSessionCertificatePolicyCache()->UpdateCertificatePolicyCache(
       policy_cache);
 }
 
 // Populates the certificate policy cache based on all of the WebStates in
-// the |incognito| browsers in |browser_list|. Because this is called
+// the `incognito` browsers in `browser_list`. Because this is called
 // asynchronously, it needs to be resilient to shutdown having happened before
 // it is invoked.
 void RestoreCertificatePolicyCacheFromBrowsers(
@@ -61,7 +66,7 @@ void RestoreCertificatePolicyCacheFromBrowsers(
 }
 
 // Scrubs the certificate policy cache of all certificates policies except
-// those for the current |incognito| browsers in |browser_list|.
+// those for the current `incognito` browsers in `browser_list`.
 // Clearing the cache is done on the IO thread, and then cache repopulation is
 // done on the UI thread.
 void CleanCertificatePolicyCache(
@@ -104,8 +109,7 @@ void CleanCertificatePolicyCache(
   // Evict all the certificate policies except for the current entries of the
   // active sessions, for the regular and incognito browsers.
   CleanCertificatePolicyCache(
-      &_clearPoliciesTaskTracker,
-      base::CreateSingleThreadTaskRunner({web::WebThread::IO}),
+      &_clearPoliciesTaskTracker, web::GetIOThreadTaskRunner({}),
       web::BrowserState::GetCertificatePolicyCache(browserState), browserList,
       /*incognito=*/false);
 
@@ -113,8 +117,7 @@ void CleanCertificatePolicyCache(
     ChromeBrowserState* incognitoBrowserState =
         browserState->GetOffTheRecordChromeBrowserState();
     CleanCertificatePolicyCache(
-        &_clearPoliciesTaskTracker,
-        base::CreateSingleThreadTaskRunner({web::WebThread::IO}),
+        &_clearPoliciesTaskTracker, web::GetIOThreadTaskRunner({}),
         web::BrowserState::GetCertificatePolicyCache(incognitoBrowserState),
         browserList, /*incognito=*/true);
   }

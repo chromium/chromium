@@ -1,14 +1,17 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_VIEWS_OVERLAY_TOGGLE_MICROPHONE_BUTTON_H_
 #define CHROME_BROWSER_UI_VIEWS_OVERLAY_TOGGLE_MICROPHONE_BUTTON_H_
 
-#include "ui/views/controls/button/image_button.h"
+#include "chrome/browser/ui/views/overlay/overlay_window_image_button.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
-class ToggleMicrophoneButton : public views::ImageButton {
+class ToggleMicrophoneButton : public OverlayWindowImageButton {
  public:
+  METADATA_HEADER(ToggleMicrophoneButton);
+
   explicit ToggleMicrophoneButton(PressedCallback callback);
   ToggleMicrophoneButton(const ToggleMicrophoneButton&) = delete;
   ToggleMicrophoneButton& operator=(const ToggleMicrophoneButton&) = delete;

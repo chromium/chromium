@@ -1,13 +1,11 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef SANDBOX_LINUX_SYSTEM_HEADERS_LINUX_FUTEX_H_
 #define SANDBOX_LINUX_SYSTEM_HEADERS_LINUX_FUTEX_H_
 
-#if !defined(__native_client_nonsfi__)
 #include <linux/futex.h>
-#endif  // !defined(__native_client_nonsfi__)
 
 #if !defined(FUTEX_WAIT)
 #define FUTEX_WAIT 0

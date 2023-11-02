@@ -48,15 +48,19 @@
 
 namespace blink {
 
+namespace {
+
 // The number of bands per octave.  Each octave will have this many entries in
 // the wave tables.
-const unsigned kNumberOfOctaveBands = 3;
+constexpr unsigned kNumberOfOctaveBands = 3;
 
 // The max length of a periodic wave. This must be a power of two greater than
 // or equal to 2048 and must be supported by the FFT routines.
-const unsigned kMaxPeriodicWaveSize = 16384;
+constexpr unsigned kMaxPeriodicWaveSize = 16384;
 
-const float kCentsPerRange = 1200 / kNumberOfOctaveBands;
+constexpr float kCentsPerRange = 1200 / kNumberOfOctaveBands;
+
+}  // namespace
 
 PeriodicWave* PeriodicWave::Create(BaseAudioContext& context,
                                    const Vector<float>& real,
@@ -107,16 +111,17 @@ PeriodicWave* PeriodicWave::Create(BaseAudioContext* context,
 
   if (options->hasReal()) {
     real_coef = options->real();
-    if (options->hasImag())
+    if (options->hasImag()) {
       imag_coef = options->imag();
-    else
+    } else {
       imag_coef.resize(real_coef.size());
+    }
   } else if (options->hasImag()) {
-    // |real| not given, but we have |imag|.
+    // `real()` not given, but we have `imag()`.
     imag_coef = options->imag();
     real_coef.resize(imag_coef.size());
   } else {
-    // Neither |real| nor |imag| given.  Return an object that would
+    // Neither `real()` nor `imag()` given.  Return an object that would
     // generate a sine wave, which means real = [0,0], and imag = [0, 1]
     real_coef.resize(2);
     imag_coef.resize(2);
@@ -160,9 +165,7 @@ void PeriodicWave::Trace(Visitor* visitor) const {
 }
 
 PeriodicWaveImpl::PeriodicWaveImpl(float sample_rate)
-    : v8_external_memory_(0),
-      sample_rate_(sample_rate),
-      cents_per_range_(kCentsPerRange) {
+    : sample_rate_(sample_rate), cents_per_range_(kCentsPerRange) {
   float nyquist = 0.5 * sample_rate_;
   lowest_fundamental_frequency_ = nyquist / MaxNumberOfPartials();
   rate_scale_ = PeriodicWaveSize() / sample_rate_;
@@ -413,7 +416,7 @@ void PeriodicWaveImpl::CreateBandLimitedTables(const float* real_data,
 
   number_of_components = std::min(number_of_components, half_size);
 
-  band_limited_tables_.ReserveCapacity(NumberOfRanges());
+  band_limited_tables_.reserve(NumberOfRanges());
 
   FFTFrame frame(fft_size);
   for (unsigned range_index = 0; range_index < NumberOfRanges();
@@ -468,8 +471,9 @@ void PeriodicWaveImpl::CreateBandLimitedTables(const float* real_data,
         float max_value;
         vector_math::Vmaxmgv(data, 1, &max_value, fft_size);
 
-        if (max_value)
+        if (max_value) {
           normalization_scale = 1.0f / max_value;
+        }
       }
     }
 

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -157,7 +157,7 @@ class KeyboardControllerWebContentTest : public InProcessBrowserTest {
     ui::InputMethod* input_method = GetInputMethod();
     ASSERT_TRUE(input_method);
     input_method->SetFocusedTextInputClient(client.get());
-    input_method->ShowVirtualKeyboardIfEnabled();
+    input_method->SetVirtualKeyboardVisibilityIfEnabled(true);
     // Mock window.resizeTo that is expected to be called after navigate to a
     // new virtual keyboard.
     auto* keyboard_controller = ChromeKeyboardControllerClient::Get();

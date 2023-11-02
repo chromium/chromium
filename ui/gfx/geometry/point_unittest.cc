@@ -1,25 +1,13 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <stddef.h>
-
-#include "base/cxx17_backports.h"
-#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/point.h"
-#include "ui/gfx/geometry/point_conversions.h"
-#include "ui/gfx/geometry/point_f.h"
+
+#include <stddef.h>
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace gfx {
-
-TEST(PointTest, ToPointF) {
-  // Check that explicit conversion from integer to float compiles.
-  Point a(10, 20);
-  PointF b = PointF(a);
-
-  EXPECT_EQ(static_cast<float>(a.x()), b.x());
-  EXPECT_EQ(static_cast<float>(a.y()), b.y());
-}
 
 TEST(PointTest, IsOrigin) {
   EXPECT_FALSE(Point(1, 0).IsOrigin());
@@ -29,14 +17,6 @@ TEST(PointTest, IsOrigin) {
   EXPECT_FALSE(Point(0, -1).IsOrigin());
   EXPECT_FALSE(Point(-1, -2).IsOrigin());
   EXPECT_TRUE(Point(0, 0).IsOrigin());
-
-  EXPECT_FALSE(PointF(0.1f, 0).IsOrigin());
-  EXPECT_FALSE(PointF(0, 0.1f).IsOrigin());
-  EXPECT_FALSE(PointF(0.1f, 2).IsOrigin());
-  EXPECT_FALSE(PointF(-0.1f, 0).IsOrigin());
-  EXPECT_FALSE(PointF(0, -0.1f).IsOrigin());
-  EXPECT_FALSE(PointF(-0.1f, -2).IsOrigin());
-  EXPECT_TRUE(PointF(0, 0).IsOrigin());
 }
 
 TEST(PointTest, VectorArithmetic) {
@@ -57,107 +37,40 @@ TEST(PointTest, VectorArithmetic) {
     { Point(-10, 9), a - v1 + v2 }
   };
 
-  for (size_t i = 0; i < base::size(tests); ++i)
-    EXPECT_EQ(tests[i].expected.ToString(), tests[i].actual.ToString());
+  for (auto& test : tests)
+    EXPECT_EQ(test.expected, test.actual);
 }
 
 TEST(PointTest, OffsetFromPoint) {
   Point a(1, 5);
   Point b(-20, 8);
-  EXPECT_EQ(Vector2d(-20 - 1, 8 - 5).ToString(), (b - a).ToString());
+  EXPECT_EQ(Vector2d(-20 - 1, 8 - 5), (b - a));
 }
 
-TEST(PointTest, ToRoundedPoint) {
-  EXPECT_EQ(Point(0, 0), ToRoundedPoint(PointF(0, 0)));
-  EXPECT_EQ(Point(0, 0), ToRoundedPoint(PointF(0.0001f, 0.0001f)));
-  EXPECT_EQ(Point(0, 0), ToRoundedPoint(PointF(0.4999f, 0.4999f)));
-  EXPECT_EQ(Point(1, 1), ToRoundedPoint(PointF(0.5f, 0.5f)));
-  EXPECT_EQ(Point(1, 1), ToRoundedPoint(PointF(0.9999f, 0.9999f)));
-
-  EXPECT_EQ(Point(10, 10), ToRoundedPoint(PointF(10, 10)));
-  EXPECT_EQ(Point(10, 10), ToRoundedPoint(PointF(10.0001f, 10.0001f)));
-  EXPECT_EQ(Point(10, 10), ToRoundedPoint(PointF(10.4999f, 10.4999f)));
-  EXPECT_EQ(Point(11, 11), ToRoundedPoint(PointF(10.5f, 10.5f)));
-  EXPECT_EQ(Point(11, 11), ToRoundedPoint(PointF(10.9999f, 10.9999f)));
-
-  EXPECT_EQ(Point(-10, -10), ToRoundedPoint(PointF(-10, -10)));
-  EXPECT_EQ(Point(-10, -10), ToRoundedPoint(PointF(-10.0001f, -10.0001f)));
-  EXPECT_EQ(Point(-10, -10), ToRoundedPoint(PointF(-10.4999f, -10.4999f)));
-  EXPECT_EQ(Point(-11, -11), ToRoundedPoint(PointF(-10.5f, -10.5f)));
-  EXPECT_EQ(Point(-11, -11), ToRoundedPoint(PointF(-10.9999f, -10.9999f)));
-}
-
-TEST(PointTest, Scale) {
-  EXPECT_EQ(PointF().ToString(), ScalePoint(PointF(), 2).ToString());
-  EXPECT_EQ(PointF().ToString(), ScalePoint(PointF(), 2, 2).ToString());
-
-  EXPECT_EQ(PointF(2, -2).ToString(), ScalePoint(PointF(1, -1), 2).ToString());
-  EXPECT_EQ(PointF(2, -2).ToString(),
-            ScalePoint(PointF(1, -1), 2, 2).ToString());
-
-  PointF zero;
-  PointF one(1, -1);
-
-  zero.Scale(2);
-  zero.Scale(3, 1.5);
-
-  one.Scale(2);
-  one.Scale(3, 1.5);
-
-  EXPECT_EQ(PointF().ToString(), zero.ToString());
-  EXPECT_EQ(PointF(6, -3).ToString(), one.ToString());
-}
-
-TEST(PointTest, ClampPoint) {
+TEST(PointTest, SetToMinMax) {
   Point a;
 
   a = Point(3, 5);
-  EXPECT_EQ(Point(3, 5).ToString(), a.ToString());
+  EXPECT_EQ(Point(3, 5), a);
   a.SetToMax(Point(2, 4));
-  EXPECT_EQ(Point(3, 5).ToString(), a.ToString());
+  EXPECT_EQ(Point(3, 5), a);
   a.SetToMax(Point(3, 5));
-  EXPECT_EQ(Point(3, 5).ToString(), a.ToString());
+  EXPECT_EQ(Point(3, 5), a);
   a.SetToMax(Point(4, 2));
-  EXPECT_EQ(Point(4, 5).ToString(), a.ToString());
+  EXPECT_EQ(Point(4, 5), a);
   a.SetToMax(Point(8, 10));
-  EXPECT_EQ(Point(8, 10).ToString(), a.ToString());
+  EXPECT_EQ(Point(8, 10), a);
 
   a.SetToMin(Point(9, 11));
-  EXPECT_EQ(Point(8, 10).ToString(), a.ToString());
+  EXPECT_EQ(Point(8, 10), a);
   a.SetToMin(Point(8, 10));
-  EXPECT_EQ(Point(8, 10).ToString(), a.ToString());
+  EXPECT_EQ(Point(8, 10), a);
   a.SetToMin(Point(11, 9));
-  EXPECT_EQ(Point(8, 9).ToString(), a.ToString());
+  EXPECT_EQ(Point(8, 9), a);
   a.SetToMin(Point(7, 11));
-  EXPECT_EQ(Point(7, 9).ToString(), a.ToString());
+  EXPECT_EQ(Point(7, 9), a);
   a.SetToMin(Point(3, 5));
-  EXPECT_EQ(Point(3, 5).ToString(), a.ToString());
-}
-
-TEST(PointTest, ClampPointF) {
-  PointF a;
-
-  a = PointF(3.5f, 5.5f);
-  EXPECT_EQ(PointF(3.5f, 5.5f).ToString(), a.ToString());
-  a.SetToMax(PointF(2.5f, 4.5f));
-  EXPECT_EQ(PointF(3.5f, 5.5f).ToString(), a.ToString());
-  a.SetToMax(PointF(3.5f, 5.5f));
-  EXPECT_EQ(PointF(3.5f, 5.5f).ToString(), a.ToString());
-  a.SetToMax(PointF(4.5f, 2.5f));
-  EXPECT_EQ(PointF(4.5f, 5.5f).ToString(), a.ToString());
-  a.SetToMax(PointF(8.5f, 10.5f));
-  EXPECT_EQ(PointF(8.5f, 10.5f).ToString(), a.ToString());
-
-  a.SetToMin(PointF(9.5f, 11.5f));
-  EXPECT_EQ(PointF(8.5f, 10.5f).ToString(), a.ToString());
-  a.SetToMin(PointF(8.5f, 10.5f));
-  EXPECT_EQ(PointF(8.5f, 10.5f).ToString(), a.ToString());
-  a.SetToMin(PointF(11.5f, 9.5f));
-  EXPECT_EQ(PointF(8.5f, 9.5f).ToString(), a.ToString());
-  a.SetToMin(PointF(7.5f, 11.5f));
-  EXPECT_EQ(PointF(7.5f, 9.5f).ToString(), a.ToString());
-  a.SetToMin(PointF(3.5f, 5.5f));
-  EXPECT_EQ(PointF(3.5f, 5.5f).ToString(), a.ToString());
+  EXPECT_EQ(Point(3, 5), a);
 }
 
 TEST(PointTest, Offset) {
@@ -233,23 +146,11 @@ TEST(PointTest, IntegerOverflow) {
   EXPECT_EQ(test, min_point);
 }
 
-TEST(PointTest, IsWithinDistance) {
-  PointF pt(10.f, 10.f);
-  EXPECT_TRUE(pt.IsWithinDistance(PointF(10.f, 10.f),
-                                  /*allowed_distance=*/0.0000000000001f));
-  EXPECT_FALSE(pt.IsWithinDistance(PointF(8.f, 8.f), /*allowed_distance=*/1.f));
-
-  pt = PointF(-10.f, -10.f);
-  EXPECT_FALSE(
-      pt.IsWithinDistance(PointF(10.f, 10.f), /*allowed_distance=*/10.f));
-  EXPECT_TRUE(pt.IsWithinDistance(PointF(-9.9988f, -10.0013f),
-                                  /*epsallowed_distanceilon=*/0.0017689f));
-
-  pt = PointF(std::numeric_limits<float>::max(),
-              std::numeric_limits<float>::max());
-  EXPECT_FALSE(pt.IsWithinDistance(PointF(std::numeric_limits<float>::min(),
-                                          std::numeric_limits<float>::min()),
-                                   /*allowed_distance=*/100.f));
+TEST(PointTest, Transpose) {
+  gfx::Point p(1, -2);
+  EXPECT_EQ(gfx::Point(-2, 1), TransposePoint(p));
+  p.Transpose();
+  EXPECT_EQ(gfx::Point(-2, 1), p);
 }
 
 }  // namespace gfx

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2017 The Chromium Authors. All rights reserved.
+ * Copyright 2017 The Chromium Authors
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file.
  */
@@ -10,7 +10,7 @@ chrome.runtime.onMessage.addListener(
     window.postMessage(request, "*");
 });
 
-window.addEventListener('message', function(message) {
+window.addEventListener('message', function(event) {
   if (event.source != window || !event.data) {
     return;
   }

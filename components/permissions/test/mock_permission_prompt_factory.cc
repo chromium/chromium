@@ -1,12 +1,14 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/request_type.h"
@@ -60,9 +62,8 @@ void MockPermissionPromptFactory::ResetCounts() {
   request_origins_seen_.clear();
 }
 
-void MockPermissionPromptFactory::DocumentOnLoadCompletedInMainFrame(
-    content::RenderFrameHost* render_frame_host) {
-  manager_->DocumentOnLoadCompletedInMainFrame(render_frame_host);
+void MockPermissionPromptFactory::DocumentOnLoadCompletedInPrimaryMainFrame() {
+  manager_->DocumentOnLoadCompletedInPrimaryMainFrame();
 }
 
 bool MockPermissionPromptFactory::is_visible() {
@@ -100,7 +101,7 @@ std::unique_ptr<PermissionPrompt> MockPermissionPromptFactory::DoNotCreate(
 }
 
 void MockPermissionPromptFactory::HideView(MockPermissionPrompt* prompt) {
-  auto it = std::find(prompts_.begin(), prompts_.end(), prompt);
+  auto it = base::ranges::find(prompts_, prompt);
   if (it != prompts_.end())
     prompts_.erase(it);
 }

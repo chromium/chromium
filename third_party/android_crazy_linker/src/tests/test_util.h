@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -381,11 +381,12 @@ struct RelroLibrary {
   crazy_library_t* library;
   RelroInfo relro;
 
-  void Init(const char* name, crazy_context_t* context) {
-    printf("Loading %s\n", name);
-    this->name = name;
-    if (!crazy_library_open(&this->library, name, context)) {
-      Panic("Could not open %s: %s\n", name, crazy_context_get_error(context));
+  void Init(const char* name_str, crazy_context_t* context) {
+    printf("Loading %s\n", name_str);
+    name = name_str;
+    if (!crazy_library_open(&this->library, name_str, context)) {
+      Panic("Could not open %s: %s\n", name_str,
+            crazy_context_get_error(context));
     }
   }
 

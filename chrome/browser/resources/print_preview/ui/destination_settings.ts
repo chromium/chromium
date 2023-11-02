@@ -1,73 +1,69 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
-import 'chrome://resources/cr_elements/hidden_style_css.m.js';
-import 'chrome://resources/cr_elements/shared_vars_css.m.js';
-// <if expr="not chromeos and not lacros">
+import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
+import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+// <if expr="not is_chromeos">
 import './destination_dialog.js';
 // </if>
-// <if expr="chromeos or lacros">
+// <if expr="is_chromeos">
 import './destination_dialog_cros.js';
 // </if>
-// <if expr="not chromeos and not lacros">
+// <if expr="not is_chromeos">
 import './destination_select.js';
 // </if>
-// <if expr="chromeos or lacros">
+// <if expr="is_chromeos">
 import './destination_select_cros.js';
 // </if>
-import './print_preview_shared_css.js';
-import './print_preview_vars_css.js';
-import './throbber_css.js';
+import './print_preview_shared.css.js';
+import './print_preview_vars.css.js';
+import './throbber.css.js';
 import './settings_section.js';
-import '../data/user_manager.js';
 import '../strings.m.js';
 
-import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
-import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
-import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
-import {beforeNextRender, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
+import {EventTracker} from 'chrome://resources/js/event_tracker.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {WebUIListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {beforeNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {CloudPrintInterfaceImpl} from '../cloud_print_interface_impl.js';
-import {CloudOrigins, createDestinationKey, createRecentDestinationKey, Destination, DestinationOrigin, GooglePromotedDestinationId, makeRecentDestination, RecentDestination} from '../data/destination.js';
-// <if expr="chromeos or lacros">
+import {createRecentDestinationKey, Destination, isPdfPrinter, makeRecentDestination, PrinterType, RecentDestination} from '../data/destination.js';
+// <if expr="is_chromeos">
 import {SAVE_TO_DRIVE_CROS_DESTINATION_KEY} from '../data/destination.js';
 // </if>
-import {getPrinterTypeForDestination, PrinterType} from '../data/destination_match.js';
 import {DestinationErrorType, DestinationStore, DestinationStoreEventType} from '../data/destination_store.js';
 import {Error, State} from '../data/state.js';
 
-// <if expr="not chromeos and not lacros">
+// <if expr="not is_chromeos">
 import {PrintPreviewDestinationDialogElement} from './destination_dialog.js';
 // </if>
-// <if expr="chromeos or lacros">
+// <if expr="is_chromeos">
 import {PrintPreviewDestinationDialogCrosElement} from './destination_dialog_cros.js';
 // </if>
-// <if expr="not chromeos and not lacros">
+// <if expr="not is_chromeos">
 import {PrintPreviewDestinationSelectElement} from './destination_select.js';
 // </if>
-// <if expr="chromeos or lacros">
+// <if expr="is_chromeos">
 import {PrintPreviewDestinationSelectCrosElement} from './destination_select_cros.js';
 // </if>
+import {getTemplate} from './destination_settings.html.js';
 import {SettingsMixin} from './settings_mixin.js';
 
 export enum DestinationState {
   INIT = 0,
-  SELECTED = 1,
-  SET = 2,
-  UPDATED = 3,
-  ERROR = 4,
+  SET = 1,
+  UPDATED = 2,
+  ERROR = 3,
 }
 
 /** Number of recent destinations to save. */
-// <if expr="not chromeos and not lacros">
+// <if expr="not is_chromeos">
 export const NUM_PERSISTED_DESTINATIONS: number = 5;
 // </if>
-// <if expr="chromeos or lacros">
+// <if expr="is_chromeos">
 export const NUM_PERSISTED_DESTINATIONS: number = 10;
 // </if>
 
@@ -79,12 +75,12 @@ const NUM_UNPINNED_DESTINATIONS: number = 3;
 
 export interface PrintPreviewDestinationSettingsElement {
   $: {
-    // <if expr="not chromeos and not lacros">
+    // <if expr="not is_chromeos">
     destinationDialog:
         CrLazyRenderElement<PrintPreviewDestinationDialogElement>,
     destinationSelect: PrintPreviewDestinationSelectElement,
     // </if>
-    // <if expr="chromeos or lacros">
+    // <if expr="is_chromeos">
     destinationDialog:
         CrLazyRenderElement<PrintPreviewDestinationDialogCrosElement>,
     destinationSelect: PrintPreviewDestinationSelectCrosElement,
@@ -102,7 +98,7 @@ export class PrintPreviewDestinationSettingsElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -134,16 +130,6 @@ export class PrintPreviewDestinationSettingsElement extends
 
       state: Number,
 
-      activeUser_: {
-        type: String,
-        observer: 'onActiveUserChanged_',
-      },
-
-      cloudPrintDisabled_: {
-        type: Boolean,
-        value: true,
-      },
-
       destinationStore_: {
         type: Object,
         value: null,
@@ -151,7 +137,7 @@ export class PrintPreviewDestinationSettingsElement extends
 
       displayedDestinations_: Array,
 
-      // <if expr="chromeos or lacros">
+      // <if expr="is_chromeos">
       driveDestinationKey_: {
         type: String,
         value: '',
@@ -180,8 +166,6 @@ export class PrintPreviewDestinationSettingsElement extends
         type: Boolean,
         computed: 'computeLoaded_(destinationState, destination)',
       },
-
-      users_: Array,
     };
   }
 
@@ -192,12 +176,10 @@ export class PrintPreviewDestinationSettingsElement extends
   error: Error;
   firstLoad: boolean;
   state: State;
-  private activeUser_: string;
-  private cloudPrintDisabled_: boolean;
   private destinationStore_: DestinationStore|null;
   private displayedDestinations_: Destination[];
 
-  // <if expr="chromeos or lacros">
+  // <if expr="is_chromeos">
   private driveDestinationKey_: string;
   private hasPinSetting_: boolean;
   // </if>
@@ -206,12 +188,11 @@ export class PrintPreviewDestinationSettingsElement extends
   private noDestinations_: boolean;
   private pdfPrinterDisabled_: boolean;
   private loaded_: boolean;
-  private users_: string[];
 
   private lastUser_: string = '';
   private tracker_: EventTracker = new EventTracker();
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.destinationStore_ =
@@ -232,11 +213,10 @@ export class PrintPreviewDestinationSettingsElement extends
     // but they should not be displayed in the dropdown until they have been
     // fetched by the DestinationStore, to ensure that they still exist.
     this.tracker_.add(
-        assert(this.destinationStore_),
-        DestinationStoreEventType.DESTINATIONS_INSERTED,
+        this.destinationStore_, DestinationStoreEventType.DESTINATIONS_INSERTED,
         this.updateDropdownDestinations_.bind(this));
 
-    // <if expr="chromeos or lacros">
+    // <if expr="is_chromeos">
     this.tracker_.add(
         this.destinationStore_,
         DestinationStoreEventType.DESTINATION_EULA_READY,
@@ -244,53 +224,11 @@ export class PrintPreviewDestinationSettingsElement extends
     // </if>
   }
 
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
 
     this.destinationStore_!.resetTracker();
     this.tracker_.removeAll();
-  }
-
-  private onActiveUserChanged_() {
-    this.updateDropdownDestinations_();
-
-    if (!this.destination ||
-        this.destination.origin !== DestinationOrigin.COOKIES) {
-      // Active user changing doesn't impact non-cookie based destinations.
-      return;
-    }
-
-    if (this.destination.account === this.activeUser_) {
-      // If the current destination belongs to the new account and the dialog
-      // was waiting for sign in, update the state.
-      if (this.destinationState === DestinationState.SELECTED) {
-        this.destinationState = this.destination.capabilities ?
-            DestinationState.UPDATED :
-            DestinationState.SET;
-      }
-      return;
-    }
-
-    if (this.isDialogOpen_) {
-      // Do not update the selected destination if the dialog is open, as this
-      // will change the destination settings UI behind the dialog, and the
-      // user may be selecting a new destination in the dialog anyway. Wait
-      // for the user to select a destination or cancel.
-      return;
-    }
-
-    // Destination belongs to a different account. Reset the destination to
-    // the most recent destination associated with the new account, or the
-    // default.
-    const recent = this.displayedDestinations_.find(d => {
-      return d.origin !== DestinationOrigin.COOKIES ||
-          d.account === this.activeUser_;
-    });
-    if (recent) {
-      this.destinationStore_!.selectDestination(recent);
-      return;
-    }
-    this.destinationStore_!.selectDefaultDestination();
   }
 
   /**
@@ -305,29 +243,13 @@ export class PrintPreviewDestinationSettingsElement extends
       defaultPrinter: string, pdfPrinterDisabled: boolean,
       isDriveMounted: boolean,
       serializedDefaultDestinationRulesStr: string|null) {
-    const cloudPrintInterface = CloudPrintInterfaceImpl.getInstance();
     this.pdfPrinterDisabled_ = pdfPrinterDisabled;
     let recentDestinations =
         this.getSettingValue('recentDestinations') as RecentDestination[];
-    // <if expr="chromeos or lacros">
+    // <if expr="is_chromeos">
     this.driveDestinationKey_ =
         isDriveMounted ? SAVE_TO_DRIVE_CROS_DESTINATION_KEY : '';
     // </if>
-
-    if (cloudPrintInterface.isConfigured()) {
-      this.cloudPrintDisabled_ = false;
-      this.destinationStore_!.setCloudPrintInterface(cloudPrintInterface);
-      beforeNextRender(this, () => {
-        this.shadowRoot!.querySelector(
-                            'print-preview-user-manager')!.initUserAccounts();
-        recentDestinations = recentDestinations.slice(
-            0, this.getRecentDestinationsDisplayCount_(recentDestinations));
-        this.destinationStore_!.init(
-            this.pdfPrinterDisabled_, isDriveMounted, defaultPrinter,
-            serializedDefaultDestinationRulesStr, recentDestinations);
-      });
-      return;
-    }
 
     recentDestinations = recentDestinations.slice(
         0, this.getRecentDestinationsDisplayCount_(recentDestinations));
@@ -355,7 +277,7 @@ export class PrintPreviewDestinationSettingsElement extends
         return numDestinationsToDisplay;
       }
       // If a destination is pinned, increment numDestinationsToDisplay.
-      if (this.destinationIsDriveOrPdf_(recentDestinations[i])) {
+      if (isPdfPrinter(recentDestinations[i].id)) {
         numDestinationsToDisplay++;
       }
     }
@@ -363,24 +285,13 @@ export class PrintPreviewDestinationSettingsElement extends
   }
 
   private onDestinationSelect_() {
-    // If the user selected a destination in the dialog after changing the
-    // active user, do the UI updates that were previously deferred.
-    if (this.isDialogOpen_ && this.lastUser_ !== this.activeUser_) {
-      this.updateDropdownDestinations_();
-    }
-
     if (this.state === State.FATAL_ERROR) {
       // Don't let anything reset if there is a fatal error.
       return;
     }
 
     const destination = this.destinationStore_!.selectedDestination!;
-    if (!!this.activeUser_ ||
-        destination.origin !== DestinationOrigin.COOKIES) {
-      this.destinationState = DestinationState.SET;
-    } else {
-      this.destinationState = DestinationState.SELECTED;
-    }
+    this.destinationState = DestinationState.SET;
 
     // Notify observers that the destination is set only after updating the
     // destinationState.
@@ -402,9 +313,6 @@ export class PrintPreviewDestinationSettingsElement extends
       case DestinationErrorType.INVALID:
         errorType = Error.INVALID_PRINTER;
         break;
-      case DestinationErrorType.UNSUPPORTED:
-        errorType = Error.UNSUPPORTED_PRINTER;
-        break;
       case DestinationErrorType.NO_DESTINATIONS:
         errorType = Error.NO_DESTINATIONS;
         this.noDestinations_ = true;
@@ -417,23 +325,9 @@ export class PrintPreviewDestinationSettingsElement extends
 
   private onErrorChanged_() {
     if (this.error === Error.INVALID_PRINTER ||
-        this.error === Error.UNSUPPORTED_PRINTER ||
         this.error === Error.NO_DESTINATIONS) {
       this.destinationState = DestinationState.ERROR;
     }
-  }
-
-  /**
-   * @return Whether the destination is Save as PDF or Save to Drive.
-   */
-  private destinationIsDriveOrPdf_(destination: RecentDestination): boolean {
-    // <if expr="chromeos or lacros">
-    if (destination.id === GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS) {
-      return true;
-    }
-    // </if>
-
-    return destination.id === GooglePromotedDestinationId.SAVE_AS_PDF;
   }
 
   private updateRecentDestinations_() {
@@ -443,7 +337,7 @@ export class PrintPreviewDestinationSettingsElement extends
 
     // Determine if this destination is already in the recent destinations,
     // where in the array it is located, and whether or not it is visible.
-    const newDestination = makeRecentDestination(assert(this.destination));
+    const newDestination = makeRecentDestination(this.destination);
     const recentDestinations =
         this.getSettingValue('recentDestinations') as RecentDestination[];
     let indexFound = -1;
@@ -462,7 +356,7 @@ export class PrintPreviewDestinationSettingsElement extends
         isVisible = numUnpinnedChecked < NUM_UNPINNED_DESTINATIONS;
         break;
       }
-      if (!this.destinationIsDriveOrPdf_(recent)) {
+      if (!isPdfPrinter(recent.id)) {
         numUnpinnedChecked++;
       }
     }
@@ -489,8 +383,7 @@ export class PrintPreviewDestinationSettingsElement extends
 
     // The dropdown needs to be updated if a new printer or one not currently
     // visible in the dropdown has been added.
-    if (!this.destinationIsDriveOrPdf_(newDestination) &&
-        (isNew || !isVisible)) {
+    if (!isPdfPrinter(newDestination.id) && (isNew || !isVisible)) {
       this.updateDropdownDestinations_();
     }
   }
@@ -501,14 +394,13 @@ export class PrintPreviewDestinationSettingsElement extends
     const updatedDestinations: Destination[] = [];
     let numDestinationsChecked = 0;
     for (const recent of recentDestinations) {
-      if (this.destinationIsDriveOrPdf_(recent)) {
+      if (isPdfPrinter(recent.id)) {
         continue;
       }
       numDestinationsChecked++;
       const key = createRecentDestinationKey(recent);
       const destination = this.destinationStore_!.getDestinationByKey(key);
-      if (destination &&
-          (!destination.account || destination.account === this.activeUser_)) {
+      if (destination) {
         updatedDestinations.push(destination);
       }
       if (numDestinationsChecked === NUM_UNPINNED_DESTINATIONS) {
@@ -533,11 +425,10 @@ export class PrintPreviewDestinationSettingsElement extends
         this.destinationState === DestinationState.UPDATED ||
         (this.destinationState === DestinationState.SET && !!this.destination &&
          (!!this.destination.capabilities ||
-          getPrinterTypeForDestination(this.destination) ===
-              PrinterType.PDF_PRINTER));
+          this.destination.type === PrinterType.PDF_PRINTER));
   }
 
-  // <if expr="chromeos or lacros">
+  // <if expr="is_chromeos">
   private computeHasPinSetting_(): boolean {
     return this.getSetting('pin').available;
   }
@@ -552,27 +443,13 @@ export class PrintPreviewDestinationSettingsElement extends
     if (value === 'seeMore') {
       this.destinationStore_!.startLoadAllDestinations();
       this.$.destinationDialog.get().show();
-      this.lastUser_ = this.activeUser_;
       this.isDialogOpen_ = true;
     } else {
       this.destinationStore_!.selectDestinationByKey(value);
     }
   }
 
-  /**
-   * @param e Event containing the new active user account.
-   */
-  private onAccountChange_(e: CustomEvent<string>) {
-    assert(!this.cloudPrintDisabled_);
-    this.shadowRoot!.querySelector('print-preview-user-manager')!
-        .updateActiveUser(e.detail);
-  }
-
   private onDialogClose_() {
-    if (this.lastUser_ !== this.activeUser_) {
-      this.updateDropdownDestinations_();
-    }
-
     // Reset the select value if the user dismissed the dialog without
     // selecting a new destination.
     this.updateDestinationSelect_();
@@ -584,8 +461,7 @@ export class PrintPreviewDestinationSettingsElement extends
       return;
     }
 
-    if (this.destinationState === DestinationState.INIT ||
-        this.destinationState === DestinationState.SELECTED) {
+    if (this.destinationState === DestinationState.INIT) {
       return;
     }
 
@@ -600,10 +476,11 @@ export class PrintPreviewDestinationSettingsElement extends
   }
 
   getDestinationStoreForTest(): DestinationStore {
-    return assert(this.destinationStore_!);
+    assert(this.destinationStore_);
+    return this.destinationStore_;
   }
 
-  // <if expr="chromeos or lacros">
+  // <if expr="is_chromeos">
   /**
    * @param e Event containing the current destination's EULA URL.
    */
@@ -616,6 +493,13 @@ export class PrintPreviewDestinationSettingsElement extends
     this.notifyPath('destination.eulaUrl');
   }
   // </if>
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'print-preview-destination-settings':
+        PrintPreviewDestinationSettingsElement;
+  }
 }
 
 customElements.define(

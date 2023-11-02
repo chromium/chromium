@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -197,35 +197,58 @@ class COMPONENT_EXPORT(X11) Render {
 
   struct PictFormatError : public x11::Error {
     uint16_t sequence{};
+    uint32_t bad_value{};
+    uint16_t minor_opcode{};
+    uint8_t major_opcode{};
 
     std::string ToString() const override;
   };
 
   struct PictureError : public x11::Error {
     uint16_t sequence{};
+    uint32_t bad_value{};
+    uint16_t minor_opcode{};
+    uint8_t major_opcode{};
 
     std::string ToString() const override;
   };
 
   struct PictOpError : public x11::Error {
     uint16_t sequence{};
+    uint32_t bad_value{};
+    uint16_t minor_opcode{};
+    uint8_t major_opcode{};
 
     std::string ToString() const override;
   };
 
   struct GlyphSetError : public x11::Error {
     uint16_t sequence{};
+    uint32_t bad_value{};
+    uint16_t minor_opcode{};
+    uint8_t major_opcode{};
 
     std::string ToString() const override;
   };
 
   struct GlyphError : public x11::Error {
     uint16_t sequence{};
+    uint32_t bad_value{};
+    uint16_t minor_opcode{};
+    uint8_t major_opcode{};
 
     std::string ToString() const override;
   };
 
   struct DirectFormat {
+    bool operator==(const DirectFormat& other) const {
+      return red_shift == other.red_shift && red_mask == other.red_mask &&
+             green_shift == other.green_shift &&
+             green_mask == other.green_mask && blue_shift == other.blue_shift &&
+             blue_mask == other.blue_mask && alpha_shift == other.alpha_shift &&
+             alpha_mask == other.alpha_mask;
+    }
+
     uint16_t red_shift{};
     uint16_t red_mask{};
     uint16_t green_shift{};
@@ -237,6 +260,11 @@ class COMPONENT_EXPORT(X11) Render {
   };
 
   struct PictFormInfo {
+    bool operator==(const PictFormInfo& other) const {
+      return id == other.id && type == other.type && depth == other.depth &&
+             direct == other.direct && colormap == other.colormap;
+    }
+
     PictFormat id{};
     PictType type{};
     uint8_t depth{};
@@ -245,21 +273,38 @@ class COMPONENT_EXPORT(X11) Render {
   };
 
   struct PictVisual {
+    bool operator==(const PictVisual& other) const {
+      return visual == other.visual && format == other.format;
+    }
+
     VisualId visual{};
     PictFormat format{};
   };
 
   struct PictDepth {
+    bool operator==(const PictDepth& other) const {
+      return depth == other.depth && visuals == other.visuals;
+    }
+
     uint8_t depth{};
     std::vector<PictVisual> visuals{};
   };
 
   struct PictScreen {
+    bool operator==(const PictScreen& other) const {
+      return fallback == other.fallback && depths == other.depths;
+    }
+
     PictFormat fallback{};
     std::vector<PictDepth> depths{};
   };
 
   struct IndexValue {
+    bool operator==(const IndexValue& other) const {
+      return pixel == other.pixel && red == other.red && green == other.green &&
+             blue == other.blue && alpha == other.alpha;
+    }
+
     uint32_t pixel{};
     uint16_t red{};
     uint16_t green{};
@@ -268,6 +313,11 @@ class COMPONENT_EXPORT(X11) Render {
   };
 
   struct Color {
+    bool operator==(const Color& other) const {
+      return red == other.red && green == other.green && blue == other.blue &&
+             alpha == other.alpha;
+    }
+
     uint16_t red{};
     uint16_t green{};
     uint16_t blue{};
@@ -275,22 +325,39 @@ class COMPONENT_EXPORT(X11) Render {
   };
 
   struct PointFix {
+    bool operator==(const PointFix& other) const {
+      return x == other.x && y == other.y;
+    }
+
     Fixed x{};
     Fixed y{};
   };
 
   struct LineFix {
+    bool operator==(const LineFix& other) const {
+      return p1 == other.p1 && p2 == other.p2;
+    }
+
     PointFix p1{};
     PointFix p2{};
   };
 
   struct Triangle {
+    bool operator==(const Triangle& other) const {
+      return p1 == other.p1 && p2 == other.p2 && p3 == other.p3;
+    }
+
     PointFix p1{};
     PointFix p2{};
     PointFix p3{};
   };
 
   struct Trapezoid {
+    bool operator==(const Trapezoid& other) const {
+      return top == other.top && bottom == other.bottom && left == other.left &&
+             right == other.right;
+    }
+
     Fixed top{};
     Fixed bottom{};
     LineFix left{};
@@ -298,6 +365,11 @@ class COMPONENT_EXPORT(X11) Render {
   };
 
   struct GlyphInfo {
+    bool operator==(const GlyphInfo& other) const {
+      return width == other.width && height == other.height && x == other.x &&
+             y == other.y && x_off == other.x_off && y_off == other.y_off;
+    }
+
     uint16_t width{};
     uint16_t height{};
     int16_t x{};
@@ -307,6 +379,14 @@ class COMPONENT_EXPORT(X11) Render {
   };
 
   struct Transform {
+    bool operator==(const Transform& other) const {
+      return matrix11 == other.matrix11 && matrix12 == other.matrix12 &&
+             matrix13 == other.matrix13 && matrix21 == other.matrix21 &&
+             matrix22 == other.matrix22 && matrix23 == other.matrix23 &&
+             matrix31 == other.matrix31 && matrix32 == other.matrix32 &&
+             matrix33 == other.matrix33;
+    }
+
     Fixed matrix11{};
     Fixed matrix12{};
     Fixed matrix13{};
@@ -319,17 +399,29 @@ class COMPONENT_EXPORT(X11) Render {
   };
 
   struct AnimationCursorElement {
+    bool operator==(const AnimationCursorElement& other) const {
+      return cursor == other.cursor && delay == other.delay;
+    }
+
     Cursor cursor{};
     uint32_t delay{};
   };
 
   struct SpanFix {
+    bool operator==(const SpanFix& other) const {
+      return l == other.l && r == other.r && y == other.y;
+    }
+
     Fixed l{};
     Fixed r{};
     Fixed y{};
   };
 
   struct Trap {
+    bool operator==(const Trap& other) const {
+      return top == other.top && bot == other.bot;
+    }
+
     SpanFix top{};
     SpanFix bot{};
   };

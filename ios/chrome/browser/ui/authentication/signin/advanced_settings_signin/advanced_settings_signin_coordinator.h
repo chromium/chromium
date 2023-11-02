@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@
                                    browser:(Browser*)browser NS_UNAVAILABLE;
 
 // Designated initializer.
-// |signinState| provides the original user sign-in state before starting the
+// `signinState` provides the original user sign-in state before starting the
 // sign-in flow.
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/sharing/buildflags.h"
-#include "chrome/browser/sharing/shared_clipboard/feature_flags.h"
 #include "chrome/browser/sharing/sharing_constants.h"
 #include "chrome/browser/sharing/sharing_device_registration_result.h"
 #include "chrome/browser/sharing/sharing_sync_preference.h"
@@ -29,7 +28,7 @@
 #include "components/sync_device_info/device_info.h"
 #include "crypto/ec_private_key.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/android/chrome_jni_headers/SharingJNIBridge_jni.h"
 #endif
 
@@ -300,7 +299,7 @@ SharingDeviceRegistration::GetEnabledFeatures(bool supports_vapid) const {
 }
 
 bool SharingDeviceRegistration::IsClickToCallSupported() const {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   JNIEnv* env = base::android::AttachCurrentThread();
   return Java_SharingJNIBridge_isTelephonySupported(env);
 #else
@@ -318,7 +317,7 @@ bool SharingDeviceRegistration::IsSharedClipboardSupported() const {
 }
 
 bool SharingDeviceRegistration::IsSmsFetcherSupported() const {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return base::FeatureList::IsEnabled(kWebOTPCrossDevice);
 #else
   return false;
@@ -326,8 +325,8 @@ bool SharingDeviceRegistration::IsSmsFetcherSupported() const {
 }
 
 bool SharingDeviceRegistration::IsRemoteCopySupported() const {
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
-    defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
   return true;
 #else
   return false;
@@ -336,12 +335,8 @@ bool SharingDeviceRegistration::IsRemoteCopySupported() const {
 
 bool SharingDeviceRegistration::IsOptimizationGuidePushNotificationSupported()
     const {
-#if defined(OS_ANDROID)
   return optimization_guide::features::IsOptimizationHintsEnabled() &&
          optimization_guide::features::IsPushNotificationsEnabled();
-#else
-  return false;
-#endif
 }
 
 void SharingDeviceRegistration::SetEnabledFeaturesForTesting(

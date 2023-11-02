@@ -1,5 +1,5 @@
-#!/usr/bin/env vpython
-# Copyright 2016 The Chromium Authors. All rights reserved.
+#!/usr/bin/env vpython3
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -42,12 +42,22 @@ class TestCase(unittest.TestCase):
         member, getattr(obj, member))
     setattr(obj, member, mock)
 
+  def unmock(self, obj, member):
+    """Uninstalls the mock from the named member of given obj.
+
+    Args:
+      obj: An obj who's member has been mocked
+      member: String naming the attribute of the object to unmock
+    """
+    if self._mocks[obj][member]:
+      setattr(obj, member, self._mocks[obj][member])
+
   def tearDown(self, *args, **kwargs):
     """Uninstalls mocks."""
     super(TestCase, self).tearDown(*args, **kwargs)
 
     for obj in self._mocks:
-      for member, original_value in self._mocks[obj].iteritems():
+      for member, original_value in self._mocks[obj].items():
         setattr(obj, member, original_value)
 
 
@@ -214,7 +224,7 @@ class SimulatorTestRunnerTest(TestCase):
     tr.launch()
     self.assertEquals(len(mock_run.mock_calls), 5)
     self.assertTrue(tr.test_results['interrupted'])
-    self.assertIn('BUILD_INTERRUPTED', tr.test_results['tests'])
+    self.assertIn('test suite crash', tr.logs)
     self.assertTrue(tr.logs)
 
   @mock.patch('test_runner.SimulatorTestRunner.tear_down')
@@ -281,8 +291,8 @@ class DeviceTestRunnerTest(TestCase):
     self.mock(test_runner, 'get_current_xcode_info', lambda: {
         'version': 'test version', 'build': 'test build', 'path': 'test/path'})
     self.mock(test_runner, 'install_xcode', install_xcode)
-    self.mock(test_runner.subprocess, 'check_output',
-              lambda _: 'fake-bundle-id')
+    self.mock(test_runner.subprocess,
+              'check_output', lambda _: b'fake-bundle-id')
     self.mock(os.path, 'abspath', lambda path: '/abs/path/to/%s' % path)
     self.mock(os.path, 'exists', lambda _: True)
     self.mock(os, 'listdir', lambda _: [])

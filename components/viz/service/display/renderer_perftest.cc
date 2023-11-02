@@ -1,15 +1,14 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 // This perf test measures the time from when the display compositor starts
 // drawing on the compositor thread to when a swap buffers occurs on the
-// GPU main thread. It tests both GLRenderer and SkiaRenderer under
-// simple work loads.
+// GPU main thread.
 //
 // Example usage:
 //
-// $ out/release/viz_perftests --gtest_filter="*RendererPerfTest*" \
+// $ out/release/viz_perftests --gtest_filter="RendererPerfTest*" \
 //    --use-gpu-in-tests --test-launcher-timeout=300000 \
 //    --perf-test-time-ms=240000 --disable_discard_framebuffer=1 \
 //    --use_virtualized_gl_contexts=1
@@ -26,24 +25,22 @@
 #include "components/viz/client/client_resource_provider.h"
 #include "components/viz/common/display/renderer_settings.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
+#include "components/viz/common/quads/yuv_video_draw_quad.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "components/viz/service/display/display.h"
-#include "components/viz/service/display/gl_renderer.h"
 #include "components/viz/service/display/output_surface_client.h"
 #include "components/viz/service/display/overlay_processor_stub.h"
 #include "components/viz/service/display/skia_renderer.h"
 #include "components/viz/service/display/viz_perftest.h"
-#include "components/viz/service/display_embedder/gl_output_surface_offscreen.h"
-#include "components/viz/service/display_embedder/in_process_gpu_memory_buffer_manager.h"
 #include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
 #include "components/viz/service/display_embedder/skia_output_surface_dependency_impl.h"
 #include "components/viz/service/display_embedder/skia_output_surface_impl.h"
-#include "components/viz/service/display_embedder/viz_process_context_provider.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "components/viz/service/gl/gpu_service_impl.h"
 #include "components/viz/test/compositor_frame_helpers.h"
 #include "components/viz/test/test_gpu_service_holder.h"
+#include "components/viz/test/test_in_process_context_provider.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -156,32 +153,31 @@ void DeleteSharedImage(scoped_refptr<ContextProvider> context_provider,
 
 TransferableResource CreateTestTexture(
     const gfx::Size& size,
-    SkColor texel_color,
+    SkColor4f texel_color,
     bool premultiplied_alpha,
     ClientResourceProvider* child_resource_provider,
     scoped_refptr<ContextProvider> child_context_provider) {
-  SkPMColor pixel_color = premultiplied_alpha
-                              ? SkPreMultiplyColor(texel_color)
-                              : SkPackARGB32NoCheck(SkColorGetA(texel_color),
-                                                    SkColorGetR(texel_color),
-                                                    SkColorGetG(texel_color),
-                                                    SkColorGetB(texel_color));
+  using SkPMColor4f = SkRGBA4f<kPremul_SkAlphaType>;
+  const SkPMColor4f pixel_color =
+      premultiplied_alpha ? texel_color.premul()
+                          : SkPMColor4f{texel_color.fR, texel_color.fG,
+                                        texel_color.fB, texel_color.fA};
+
   size_t num_pixels = static_cast<size_t>(size.width()) * size.height();
-  std::vector<uint32_t> pixels(num_pixels, pixel_color);
+  std::vector<SkPMColor4f> pixels(num_pixels, pixel_color);
 
   gpu::SharedImageInterface* sii =
       child_context_provider->SharedImageInterface();
   DCHECK(sii);
   gpu::Mailbox mailbox = sii->CreateSharedImage(
       RGBA_8888, size, gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
-      kPremul_SkAlphaType, gpu::SHARED_IMAGE_USAGE_DISPLAY,
+      kPremul_SkAlphaType, gpu::SHARED_IMAGE_USAGE_DISPLAY_READ,
       MakePixelSpan(pixels));
   gpu::SyncToken sync_token = sii->GenVerifiedSyncToken();
 
-  TransferableResource gl_resource = TransferableResource::MakeGL(
-      mailbox, GL_LINEAR, GL_TEXTURE_2D, sync_token, size,
+  TransferableResource gl_resource = TransferableResource::MakeGpu(
+      mailbox, GL_LINEAR, GL_TEXTURE_2D, sync_token, size, RGBA_8888,
       false /* is_overlay_candidate */);
-  gl_resource.format = RGBA_8888;
   gl_resource.color_space = gfx::ColorSpace();
   auto release_callback = base::BindOnce(
       &DeleteSharedImage, std::move(child_context_provider), mailbox);
@@ -192,7 +188,7 @@ TransferableResource CreateTestTexture(
 
 void CreateTestTextureDrawQuad(ResourceId resource_id,
                                const gfx::Rect& rect,
-                               SkColor background_color,
+                               SkColor4f background_color,
                                bool premultiplied_alpha,
                                const SharedQuadState* shared_state,
                                CompositorRenderPass* render_pass) {
@@ -203,10 +199,11 @@ void CreateTestTextureDrawQuad(ResourceId resource_id,
   const bool nearest_neighbor = false;
   const float vertex_opacity[4] = {1.0f, 1.0f, 1.0f, 1.0f};
   auto* quad = render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
+
   quad->SetNew(shared_state, rect, rect, needs_blending, resource_id,
                premultiplied_alpha, uv_top_left, uv_bottom_right,
                background_color, vertex_opacity, flipped, nearest_neighbor,
-               /*secure_output_only=*/false, gfx::ProtectedVideoType::kClear);
+               /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
 }
 
 void CreateTestTileDrawQuad(ResourceId resource_id,
@@ -229,7 +226,6 @@ void CreateTestTileDrawQuad(ResourceId resource_id,
 
 }  // namespace
 
-template <typename RendererType>
 class RendererPerfTest : public VizPerfTest {
  public:
   RendererPerfTest()
@@ -243,63 +239,35 @@ class RendererPerfTest : public VizPerfTest {
   RendererPerfTest(const RendererPerfTest&) = delete;
   RendererPerfTest& operator=(const RendererPerfTest&) = delete;
 
-  // Overloaded for concrete RendererType below.
-  std::unique_ptr<OutputSurface> CreateOutputSurface(
+  std::unique_ptr<SkiaOutputSurface> CreateOutputSurface(
       GpuServiceImpl* gpu_service,
-      DisplayCompositorMemoryAndTaskController* display_controller);
+      DisplayCompositorMemoryAndTaskController* display_controller) {
+    return SkiaOutputSurfaceImpl::Create(display_controller, renderer_settings_,
+                                         &debug_settings_);
+  }
 
   void SetUp() override {
     enable_pixel_output_ = std::make_unique<gl::DisableNullDrawGLBindings>();
-    renderer_settings_.use_skia_renderer =
-        std::is_base_of<SkiaRenderer, RendererType>::value;
-    if (renderer_settings_.use_skia_renderer)
-      printf("Using SkiaRenderer\n");
-    else
-      printf("Using GLRenderer\n");
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     renderer_settings_.color_space = gfx::ColorSpace::CreateSRGB();
     renderer_settings_.initial_screen_size = kSurfaceSize;
 #endif
 
     auto* gpu_service = TestGpuServiceHolder::GetInstance()->gpu_service();
 
-    gpu_memory_buffer_manager_ =
-        std::make_unique<InProcessGpuMemoryBufferManager>(
-            gpu_service->gpu_memory_buffer_factory(),
-            gpu_service->sync_point_manager());
-    gpu::ImageFactory* image_factory = gpu_service->gpu_image_factory();
-    auto* gpu_channel_manager_delegate =
-        gpu_service->gpu_channel_manager()->delegate();
-    auto child_task_scheduler = std::make_unique<gpu::GpuTaskSchedulerHelper>(
-        TestGpuServiceHolder::GetInstance()->task_executor());
-    child_gpu_dependency_ =
-        std::make_unique<DisplayCompositorMemoryAndTaskController>(
-            TestGpuServiceHolder::GetInstance()->task_executor(),
-            image_factory);
-    child_context_provider_ = base::MakeRefCounted<VizProcessContextProvider>(
-        TestGpuServiceHolder::GetInstance()->task_executor(),
-        gpu::kNullSurfaceHandle, gpu_memory_buffer_manager_.get(),
-        image_factory, gpu_channel_manager_delegate,
-        child_gpu_dependency_.get(), renderer_settings_);
+    child_context_provider_ =
+        base::MakeRefCounted<TestInProcessContextProvider>(
+            TestContextType::kGLES2, /*support_locking=*/false);
     child_context_provider_->BindToCurrentThread();
     child_resource_provider_ = std::make_unique<ClientResourceProvider>();
 
-    std::unique_ptr<DisplayCompositorMemoryAndTaskController>
-        display_controller;
-    if (renderer_settings_.use_skia_renderer) {
-      auto skia_deps = std::make_unique<SkiaOutputSurfaceDependencyImpl>(
-          gpu_service, gpu::kNullSurfaceHandle);
-      display_controller =
-          std::make_unique<DisplayCompositorMemoryAndTaskController>(
-              std::move(skia_deps));
-    } else {
-      auto* task_executor =
-          TestGpuServiceHolder::GetInstance()->task_executor();
-      display_controller =
-          std::make_unique<DisplayCompositorMemoryAndTaskController>(
-              task_executor, image_factory);
-    }
+    auto skia_deps = std::make_unique<SkiaOutputSurfaceDependencyImpl>(
+        gpu_service, gpu::kNullSurfaceHandle);
+    auto display_controller =
+        std::make_unique<DisplayCompositorMemoryAndTaskController>(
+            std::move(skia_deps));
+
     auto output_surface =
         CreateOutputSurface(gpu_service, display_controller.get());
     // WaitForSwapDisplayClient depends on this.
@@ -320,8 +288,7 @@ class RendererPerfTest : public VizPerfTest {
 
   void TearDown() override {
     std::string story =
-        renderer_settings_.use_skia_renderer ? "SkiaRenderer_" : "GLRenderer_";
-    story += ::testing::UnitTest::GetInstance()->current_test_info()->name();
+        ::testing::UnitTest::GetInstance()->current_test_info()->name();
     auto reporter = SetUpRendererReporter(story);
     reporter.AddResult(kMetricFps, timer_.LapsPerSecond());
 
@@ -358,8 +325,6 @@ class RendererPerfTest : public VizPerfTest {
     child_resource_provider_->ShutdownAndReleaseAllResources();
     child_resource_provider_.reset();
     child_context_provider_.reset();
-    child_gpu_dependency_.reset();
-    gpu_memory_buffer_manager_.reset();
 
     display_.reset();
   }
@@ -371,13 +336,14 @@ class RendererPerfTest : public VizPerfTest {
                                 .Build();
     support_->SubmitCompositorFrame(id_allocator_.GetCurrentLocalSurfaceId(),
                                     std::move(frame));
-    ASSERT_TRUE(display_->DrawAndSwap(base::TimeTicks::Now()));
+    ASSERT_TRUE(display_->DrawAndSwap(
+        {base::TimeTicks::Now(), base::TimeTicks::Now()}));
   }
 
   ResourceId MapResourceId(base::flat_map<ResourceId, ResourceId>* resource_map,
                            ResourceId recorded_id,
                            const gfx::Size& texture_size,
-                           SkColor texel_color,
+                           SkColor4f texel_color,
                            bool premultiplied_alpha) {
     DCHECK(resource_map);
     ResourceId actual_id;
@@ -406,7 +372,7 @@ class RendererPerfTest : public VizPerfTest {
             ResourceId recorded_id = tile_quad->resource_id();
             ResourceId actual_id = this->MapResourceId(
                 &resource_map, recorded_id, tile_quad->texture_size,
-                SkColorSetARGB(128, 0, 255, 0), tile_quad->is_premultiplied);
+                SkColor4f{0.0f, 1.0f, 0.0f, 0.5f}, tile_quad->is_premultiplied);
             tile_quad->resources.ids[TileDrawQuad::kResourceIdIndex] =
                 actual_id;
           } break;
@@ -416,7 +382,7 @@ class RendererPerfTest : public VizPerfTest {
             ResourceId recorded_id = texture_quad->resource_id();
             ResourceId actual_id = this->MapResourceId(
                 &resource_map, recorded_id, texture_quad->rect.size(),
-                SkColorSetARGB(128, 0, 255, 0),
+                SkColor4f{0.0f, 1.0f, 0.0f, 0.5f},
                 texture_quad->premultiplied_alpha);
             texture_quad->resources.ids[TextureDrawQuad::kResourceIdIndex] =
                 actual_id;
@@ -431,16 +397,16 @@ class RendererPerfTest : public VizPerfTest {
                 YUVVideoDrawQuad::kAPlaneResourceIdIndex,
             };
             const gfx::Size kSize[] = {
-                yuv_quad->ya_tex_size,
-                yuv_quad->uv_tex_size,
-                yuv_quad->uv_tex_size,
-                yuv_quad->ya_tex_size,
+                yuv_quad->ya_tex_size(),
+                yuv_quad->uv_tex_size(),
+                yuv_quad->uv_tex_size(),
+                yuv_quad->ya_tex_size(),
             };
             for (size_t ii = 0; ii < yuv_quad->resources.count; ++ii) {
               ResourceId recorded_id = yuv_quad->resources.ids[kIndex[ii]];
               ResourceId actual_id =
                   this->MapResourceId(&resource_map, recorded_id, kSize[ii],
-                                      SkColorSetARGB(128, 0, 255, 0), false);
+                                      SkColor4f{0.0f, 1.0f, 0.0f, 0.5f}, false);
               yuv_quad->resources.ids[kIndex[ii]] = actual_id;
             }
           } break;
@@ -454,7 +420,7 @@ class RendererPerfTest : public VizPerfTest {
   void RunSingleTextureQuad() {
     resource_list_.push_back(CreateTestTexture(
         kSurfaceSize,
-        /*texel_color=*/SkColorSetARGB(128, 0, 255, 0),
+        /*texel_color=*/SkColor4f{0.0f, 1.0f, 0.0f, 0.5f},
         /*premultiplied_alpha=*/false, child_resource_provider_.get(),
         child_context_provider_));
 
@@ -466,7 +432,7 @@ class RendererPerfTest : public VizPerfTest {
           gfx::Transform(), kSurfaceRect, pass.get(), gfx::MaskFilterInfo());
 
       CreateTestTextureDrawQuad(resource_list_.back().id, kSurfaceRect,
-                                /*background_color=*/SK_ColorTRANSPARENT,
+                                /*background_color=*/SkColors::kTransparent,
                                 /*premultiplied_alpha=*/false, shared_state,
                                 pass.get());
 
@@ -487,7 +453,7 @@ class RendererPerfTest : public VizPerfTest {
       for (int j = 0; j < 5; j++) {
         resource_list_.push_back(CreateTestTexture(
             kTextureSize,
-            /*texel_color=*/SkColorSetARGB(128, 0, 255, 0),
+            /*texel_color=*/SkColor4f{0.0f, 1.0f, 0.0f, 0.5f},
             /*premultiplied_alpha=*/false, child_resource_provider_.get(),
             child_context_provider_));
         resource_ids[i][j] = resource_list_.back().id;
@@ -506,7 +472,7 @@ class RendererPerfTest : public VizPerfTest {
               resource_ids[i][j],
               gfx::Rect(i * kTextureSize.width(), j * kTextureSize.height(),
                         kTextureSize.width(), kTextureSize.height()),
-              /*background_color=*/SK_ColorTRANSPARENT,
+              /*background_color=*/SkColors::kTransparent,
               /*premultiplied_alpha=*/false, shared_state, pass.get());
         }
       }
@@ -526,7 +492,7 @@ class RendererPerfTest : public VizPerfTest {
     ResourceId resource_id;
     resource_list_.push_back(CreateTestTexture(
         kTextureSize,
-        /*texel_color=*/SkColorSetARGB(128, 0, 255, 0),
+        /*texel_color=*/SkColor4f{0.0f, 1.0f, 0.0f, 0.5f},
         /*premultiplied_alpha=*/false, child_resource_provider_.get(),
         child_context_provider_));
     resource_id = resource_list_.back().id;
@@ -543,7 +509,7 @@ class RendererPerfTest : public VizPerfTest {
               resource_id,
               gfx::Rect(i * kTextureSize.width(), j * kTextureSize.height(),
                         kTextureSize.width(), kTextureSize.height()),
-              /*background_color=*/SK_ColorTRANSPARENT,
+              /*background_color=*/SkColors::kTransparent,
               /*premultiplied_alpha=*/false, shared_state, pass.get());
         }
       }
@@ -571,7 +537,7 @@ class RendererPerfTest : public VizPerfTest {
       // A single tiled resource referenced by each TileDrawQuad
       resource_list_.push_back(CreateTestTexture(
           kTextureSize,
-          /*texel_color=*/SkColorSetARGB(128, 0, 255, 0),
+          /*texel_color=*/SkColor4f{0.0f, 1.0f, 0.0f, 0.5f},
           /*premultiplied_alpha=*/false, child_resource_provider_.get(),
           child_context_provider_));
     } else {
@@ -579,7 +545,7 @@ class RendererPerfTest : public VizPerfTest {
       for (int i = 0; i < tile_count; ++i) {
         resource_list_.push_back(CreateTestTexture(
             kTextureSize,
-            /*texel_color=*/SkColorSetARGB(128, 0, 255, 0),
+            /*texel_color=*/SkColor4f{0.0f, 1.0f, 0.0f, 0.5f},
             /*premultiplied_alpha=*/false, child_resource_provider_.get(),
             child_context_provider_));
       }
@@ -601,7 +567,7 @@ class RendererPerfTest : public VizPerfTest {
                                /*premultiplied_alpha=*/false, shared_state,
                                pass.get());
 
-        current_transform.ConcatTransform(transform_step);
+        current_transform.PostConcat(transform_step);
       }
 
       CompositorRenderPassList pass_list;
@@ -660,69 +626,37 @@ class RendererPerfTest : public VizPerfTest {
   ServerSharedBitmapManager shared_bitmap_manager_;
   FrameSinkManagerImpl manager_;
   std::unique_ptr<CompositorFrameSinkSupport> support_;
-  std::unique_ptr<gpu::GpuMemoryBufferManager> gpu_memory_buffer_manager_;
   RendererSettings renderer_settings_;
   DebugRendererSettings debug_settings_;
   std::unique_ptr<Display> display_;
-  std::unique_ptr<DisplayCompositorMemoryAndTaskController>
-      child_gpu_dependency_;
   scoped_refptr<ContextProvider> child_context_provider_;
   std::unique_ptr<ClientResourceProvider> child_resource_provider_;
   std::vector<TransferableResource> resource_list_;
   std::unique_ptr<gl::DisableNullDrawGLBindings> enable_pixel_output_;
 };
 
-template <>
-std::unique_ptr<OutputSurface>
-RendererPerfTest<SkiaRenderer>::CreateOutputSurface(
-    GpuServiceImpl* gpu_service,
-    DisplayCompositorMemoryAndTaskController* display_controller) {
-  return SkiaOutputSurfaceImpl::Create(
-      display_controller, renderer_settings_, &debug_settings_);
-}
-
-template <>
-std::unique_ptr<OutputSurface>
-RendererPerfTest<GLRenderer>::CreateOutputSurface(
-    GpuServiceImpl* gpu_service,
-    DisplayCompositorMemoryAndTaskController* display_controller) {
-  gpu::ImageFactory* image_factory = gpu_service->gpu_image_factory();
-  auto* gpu_channel_manager_delegate =
-      gpu_service->gpu_channel_manager()->delegate();
-  auto context_provider = base::MakeRefCounted<VizProcessContextProvider>(
-      TestGpuServiceHolder::GetInstance()->task_executor(),
-      gpu::kNullSurfaceHandle, gpu_memory_buffer_manager_.get(), image_factory,
-      gpu_channel_manager_delegate, display_controller, renderer_settings_);
-  context_provider->BindToCurrentThread();
-  return std::make_unique<GLOutputSurfaceOffscreen>(
-      std::move(context_provider));
-}
-
-using RendererTypes = ::testing::Types<GLRenderer, SkiaRenderer>;
-TYPED_TEST_SUITE(RendererPerfTest, RendererTypes);
-
-TYPED_TEST(RendererPerfTest, SingleTextureQuad) {
+TEST_F(RendererPerfTest, SingleTextureQuad) {
   this->RunSingleTextureQuad();
 }
 
-TYPED_TEST(RendererPerfTest, TextureQuads5x5) {
+TEST_F(RendererPerfTest, TextureQuads5x5) {
   this->RunTextureQuads5x5();
 }
 
-TYPED_TEST(RendererPerfTest, TextureQuads5x5SameTex) {
+TEST_F(RendererPerfTest, TextureQuads5x5SameTex) {
   this->RunTextureQuads5x5SameTex();
 }
 
-TYPED_TEST(RendererPerfTest, RotatedTileQuadsShared) {
+TEST_F(RendererPerfTest, RotatedTileQuadsShared) {
   this->RunRotatedTileQuadsShared();
 }
 
-TYPED_TEST(RendererPerfTest, RotatedTileQuads) {
+TEST_F(RendererPerfTest, RotatedTileQuads) {
   this->RunRotatedTileQuads();
 }
 
 #define TOP_REAL_WORLD_DESKTOP_RENDERER_PERF_TEST(SITE, FRAME)              \
-  TYPED_TEST(RendererPerfTest, SITE) {                                      \
+  TEST_F(RendererPerfTest, SITE) {                                          \
     this->RunSingleRenderPassListFromJSON(/*tag=*/"top_real_world_desktop", \
                                           /*site=*/#SITE, /*year=*/2018,    \
                                           /*frame_index=*/FRAME);           \

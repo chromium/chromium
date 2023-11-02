@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_samples.h"
+#include "base/metrics/metrics_hashes.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
@@ -31,7 +32,10 @@ namespace RecordUserAction = api::metrics_private::RecordUserAction;
 namespace RecordValue = api::metrics_private::RecordValue;
 namespace RecordBoolean = api::metrics_private::RecordBoolean;
 namespace RecordEnumerationValue = api::metrics_private::RecordEnumerationValue;
-namespace RecordSparseHashable = api::metrics_private::RecordSparseHashable;
+namespace RecordSparseValueWithHashMetricName =
+    api::metrics_private::RecordSparseValueWithHashMetricName;
+namespace RecordSparseValueWithPersistentHash =
+    api::metrics_private::RecordSparseValueWithPersistentHash;
 namespace RecordSparseValue = api::metrics_private::RecordSparseValue;
 namespace RecordPercentage = api::metrics_private::RecordPercentage;
 namespace RecordCount = api::metrics_private::RecordCount;
@@ -77,14 +81,11 @@ MetricsPrivateGetVariationParamsFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   GetVariationParams::Results::Params result;
-  std::unique_ptr<base::DictionaryValue> dict;
   if (variations::GetVariationParams(params->name,
                                      &result.additional_properties)) {
-    dict = result.ToValue();
+    return RespondNow(OneArgument(base::Value(result.ToValue())));
   }
-  return RespondNow(
-      dict ? OneArgument(base::Value::FromUniquePtrValue(std::move(dict)))
-           : NoArguments());
+  return RespondNow(NoArguments());
 }
 
 ExtensionFunction::ResponseAction
@@ -149,8 +150,17 @@ ExtensionFunction::ResponseAction MetricsPrivateRecordValueFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction
-MetricsPrivateRecordSparseHashableFunction::Run() {
-  auto params = RecordSparseHashable::Params::Create(args());
+MetricsPrivateRecordSparseValueWithHashMetricNameFunction::Run() {
+  auto params = RecordSparseValueWithHashMetricName::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+  base::UmaHistogramSparse(params->metric_name,
+                           base::HashMetricName(params->value));
+  return RespondNow(NoArguments());
+}
+
+ExtensionFunction::ResponseAction
+MetricsPrivateRecordSparseValueWithPersistentHashFunction::Run() {
+  auto params = RecordSparseValueWithPersistentHash::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   base::UmaHistogramSparse(params->metric_name,
                            base::PersistentHash(params->value));
@@ -307,7 +317,7 @@ MetricsPrivateGetHistogramFunction::GetHistogram(const std::string& name) {
     result.buckets.push_back(std::move(bucket));
   }
 
-  return OneArgument(base::Value::FromUniquePtrValue(result.ToValue()));
+  return OneArgument(base::Value(result.ToValue()));
 }
 
 }  // namespace extensions

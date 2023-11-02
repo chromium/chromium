@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/flags/android/chrome_session_state.h"
 #include "chrome/browser/ui/android/tab_model/android_live_tab_context.h"
 #include "components/omnibox/browser/location_bar_model.h"
@@ -95,6 +96,15 @@ class TabModel {
     FROM_LONGPRESS_BACKGROUND_IN_GROUP,
     // Opened from an app widget.
     FROM_APP_WIDGET,
+    // Open from the long press context menu item 'Open in Incognito Tab'.
+    FROM_LONGPRESS_INCOGNITO,
+    // Opened in background from Recent Tabs. This is a non-link launch with no
+    // parent/child relationship. The tab is added to the end of the TabModel.
+    // This does not include opening in the current tab.
+    FROM_RECENT_TABS,
+    // Opened from a Reading list. When going "back" on Android, the Reading
+    // list should be reopened.
+    FROM_READING_LIST,
     // Must be last.
     SIZE
   };
@@ -115,6 +125,25 @@ class TabModel {
     // User-originated switch to existing tab from Omnibox tab switch
     // suggestions.
     FROM_OMNIBOX,
+    // Selection of a previously closed tab when closure is undone.
+    FROM_UNDO,
+    // Must be last.
+    SIZE
+  };
+
+  // Various types of user agent.
+  // Values must be numbered from 0 and can't have gaps.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.tab
+  enum class TabUserAgent {
+    // Choose user agent based on default setting.
+    DEFAULT,
+    // Use mobile user agent.
+    MOBILE,
+    // Use desktop user agent.
+    DESKTOP,
+    // User agent not set, due to an earlier version not having the user agent
+    // bit.
+    UNSET,
     // Must be last.
     SIZE
   };
@@ -176,7 +205,7 @@ class TabModel {
   LocationBarModel* GetLocationBarModel();
 
  private:
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   chrome::android::ActivityType activity_type_;
 

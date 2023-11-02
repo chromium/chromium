@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -141,6 +141,14 @@ void MediaSessionControllersManager::OnAudioOutputSinkChangingDisabled(
 
   MediaSessionController* const controller = FindOrCreateController(id);
   controller->OnAudioOutputSinkChangingDisabled();
+}
+
+void MediaSessionControllersManager::OnRemotePlaybackMetadataChange(
+    const MediaPlayerId& id,
+    media_session::mojom::RemotePlaybackMetadataPtr remote_playback_metadata) {
+  MediaSessionController* const controller = FindOrCreateController(id);
+  controller->OnRemotePlaybackMetadataChanged(
+      std::move(remote_playback_metadata));
 }
 
 MediaSessionController* MediaSessionControllersManager::FindOrCreateController(

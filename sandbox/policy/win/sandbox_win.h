@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,6 +26,7 @@ class Value;
 
 namespace sandbox {
 class BrokerServices;
+class TargetConfig;
 class TargetPolicy;
 class TargetServices;
 
@@ -65,33 +66,33 @@ class SANDBOX_POLICY_EXPORT SandboxWin {
       const std::string& process_type,
       const base::HandlesToInheritVector& handles_to_inherit,
       SandboxDelegate* delegate,
-      const scoped_refptr<TargetPolicy>& policy);
+      TargetPolicy* policy);
 
   // Wrapper around TargetPolicy::SetJobLevel that checks if the
   // sandbox should be let to run without a job object assigned.
-  static ResultCode SetJobLevel(const base::CommandLine& cmd_line,
+  static ResultCode SetJobLevel(sandbox::mojom::Sandbox sandbox_type,
                                 JobLevel job_level,
                                 uint32_t ui_exceptions,
-                                TargetPolicy* policy);
+                                TargetConfig* config);
 
   // Closes handles that are opened at process creation and initialization.
-  static ResultCode AddBaseHandleClosePolicy(TargetPolicy* policy);
+  static ResultCode AddBaseHandleClosePolicy(TargetConfig* config);
 
   // Add AppContainer policy for |sid| on supported OS.
-  static ResultCode AddAppContainerPolicy(TargetPolicy* policy,
+  static ResultCode AddAppContainerPolicy(TargetConfig* config,
                                           const wchar_t* sid);
 
   // Add the win32k lockdown policy on supported OS.
-  static ResultCode AddWin32kLockdownPolicy(TargetPolicy* policy);
+  static ResultCode AddWin32kLockdownPolicy(TargetConfig* config);
 
-  // Add the AppContainer sandbox profile to the policy. |sandbox_type|
-  // determines what policy is enabled. |appcontainer_id| is used to create
+  // Add the AppContainer sandbox profile to the config. `sandbox_type`
+  // determines what policy is enabled. `appcontainer_id` is used to create
   // a unique package SID, it can be anything the caller wants.
-  static ResultCode AddAppContainerProfileToPolicy(
+  static ResultCode AddAppContainerProfileToConfig(
       const base::CommandLine& command_line,
       sandbox::mojom::Sandbox sandbox_type,
       const std::string& appcontainer_id,
-      TargetPolicy* policy);
+      TargetConfig* config);
 
   // Returns whether the AppContainer sandbox is enabled or not for a specific
   // sandbox type from |command_line| and |sandbox_type|.
@@ -113,12 +114,17 @@ class SANDBOX_POLICY_EXPORT SandboxWin {
   // Provides a friendly name for the sandbox for chrome://sandbox and tracing.
   static std::string GetSandboxTypeInEnglish(
       sandbox::mojom::Sandbox sandbox_type);
+
+  // Helper for sandbox delegates to generate a SandboxTag
+  static std::string GetSandboxTagForDelegate(
+      base::StringPiece prefix,
+      sandbox::mojom::Sandbox sandbox_type);
 };
 
 SANDBOX_POLICY_EXPORT
 void BlocklistAddOneDllForTesting(const wchar_t* module_name,
                                   bool check_in_browser,
-                                  TargetPolicy* policy);
+                                  TargetConfig* config);
 
 }  // namespace policy
 }  // namespace sandbox

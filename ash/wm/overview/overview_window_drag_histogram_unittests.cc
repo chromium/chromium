@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -57,6 +57,16 @@ class OverviewWindowDragHistogramTest : public AshTestBase {
     AshTestBase::TearDown();
   }
 
+  void AddSecondDesk() {
+    DesksController::Get()->NewDesk(DesksCreationRemovalSource::kButton);
+    ASSERT_EQ(2u, DesksController::Get()->desks().size());
+
+    // Give the second desk a name. The desk name gets exposed as the accessible
+    // name. And the focusable views that are painted in these tests will fail
+    // the accessibility paint checker checks if they lack an accessible name.
+    DesksController::Get()->desks()[1]->SetName(u"Desk 2", false);
+  }
+
  protected:
   void EnterTablet() {
     TabletModeControllerTestApi().DetachAllMice();
@@ -84,9 +94,12 @@ class OverviewWindowDragHistogramTest : public AshTestBase {
         ui::GestureConfiguration::GetInstance();
     const int old_long_press_time_in_ms =
         gesture_config->long_press_time_in_ms();
+    const base::TimeDelta old_short_press_time =
+        gesture_config->short_press_time();
     const int old_show_press_delay_in_ms =
         gesture_config->show_press_delay_in_ms();
     gesture_config->set_long_press_time_in_ms(1);
+    gesture_config->set_short_press_time(base::Milliseconds(1));
     gesture_config->set_show_press_delay_in_ms(1);
 
     EnterTablet();
@@ -100,6 +113,7 @@ class OverviewWindowDragHistogramTest : public AshTestBase {
     run_loop.Run();
 
     gesture_config->set_long_press_time_in_ms(old_long_press_time_in_ms);
+    gesture_config->set_short_press_time(old_short_press_time);
     gesture_config->set_show_press_delay_in_ms(old_show_press_delay_in_ms);
   }
 
@@ -150,7 +164,7 @@ TEST_F(OverviewWindowDragHistogramTest, ToGridSameDisplayClamshellTouch) {
 }
 
 TEST_F(OverviewWindowDragHistogramTest, ToDeskSameDisplayClamshellMouse) {
-  DesksController::Get()->NewDesk(DesksCreationRemovalSource::kButton);
+  AddSecondDesk();
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->MoveMouseTo(EnterOverviewAndGetItemCenterPoint());
   generator->DragMouseTo(GetSecondDeskMiniViewCenterPoint(/*grid_index=*/0u));
@@ -158,7 +172,7 @@ TEST_F(OverviewWindowDragHistogramTest, ToDeskSameDisplayClamshellMouse) {
 }
 
 TEST_F(OverviewWindowDragHistogramTest, ToDeskSameDisplayClamshellTouch) {
-  DesksController::Get()->NewDesk(DesksCreationRemovalSource::kButton);
+  AddSecondDesk();
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->set_current_screen_location(EnterOverviewAndGetItemCenterPoint());
   generator->PressMoveAndReleaseTouchTo(
@@ -222,7 +236,7 @@ TEST_F(OverviewWindowDragHistogramTest, ToGridSameDisplayTabletTouch) {
 }
 
 TEST_F(OverviewWindowDragHistogramTest, ToDeskSameDisplayTabletTouch) {
-  DesksController::Get()->NewDesk(DesksCreationRemovalSource::kButton);
+  AddSecondDesk();
   EnterTabletAndOverviewAndLongPressItem();
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->MoveTouch(GetSecondDeskMiniViewCenterPoint(/*grid_index=*/0u));
@@ -247,7 +261,7 @@ TEST_F(OverviewWindowDragHistogramTest, ToGridSameDisplayTabletMouse) {
 }
 
 TEST_F(OverviewWindowDragHistogramTest, ToDeskSameDisplayTabletMouse) {
-  DesksController::Get()->NewDesk(DesksCreationRemovalSource::kButton);
+  AddSecondDesk();
   EnterTablet();
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->MoveMouseTo(EnterOverviewAndGetItemCenterPoint());
@@ -281,7 +295,7 @@ TEST_F(OverviewWindowDragHistogramTestMultiDisplayOnly,
 TEST_F(OverviewWindowDragHistogramTestMultiDisplayOnly,
        ToDeskOtherDisplayClamshellMouse) {
   UpdateDisplay("800x600,800x600");
-  DesksController::Get()->NewDesk(DesksCreationRemovalSource::kButton);
+  AddSecondDesk();
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->MoveMouseTo(EnterOverviewAndGetItemCenterPoint());
   generator->PressLeftButton();

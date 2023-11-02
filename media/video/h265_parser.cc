@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,11 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstring>
 
 #include "base/bits.h"
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/base/decrypt_config.h"
 #include "media/base/video_codecs.h"
@@ -41,7 +42,7 @@ constexpr int kTableSarWidth[] = {0,  1,  12, 10, 16,  40, 24, 20, 32,
                                   80, 18, 15, 64, 160, 4,  3,  2};
 constexpr int kTableSarHeight[] = {0,  1,  11, 11, 11, 33, 11, 11, 11,
                                    33, 11, 11, 33, 99, 3,  2,  1};
-static_assert(base::size(kTableSarWidth) == base::size(kTableSarHeight),
+static_assert(std::size(kTableSarWidth) == std::size(kTableSarHeight),
               "sar tables must have the same size");
 
 void FillInDefaultScalingListData(H265ScalingListData* scaling_list_data,
@@ -185,6 +186,10 @@ H265PPS::H265PPS() {
   memset(reinterpret_cast<void*>(this), 0, sizeof(*this));
 }
 
+H265VPS::H265VPS() {
+  memset(reinterpret_cast<void*>(this), 0, sizeof(*this));
+}
+
 H265RefPicListsModifications::H265RefPicListsModifications() {
   memset(reinterpret_cast<void*>(this), 0, sizeof(*this));
 }
@@ -194,6 +199,10 @@ H265PredWeightTable::H265PredWeightTable() {
 }
 
 H265SliceHeader::H265SliceHeader() {
+  memset(reinterpret_cast<void*>(this), 0, sizeof(*this));
+}
+
+H265SEIMessage::H265SEIMessage() {
   memset(reinterpret_cast<void*>(this), 0, sizeof(*this));
 }
 
@@ -265,6 +274,22 @@ VideoColorSpace H265SPS::GetColorSpace() const {
                                            : gfx::ColorSpace::RangeID::LIMITED);
 }
 
+VideoChromaSampling H265SPS::GetChromaSampling() const {
+  switch (chroma_format_idc) {
+    case 0:
+      return VideoChromaSampling::k400;
+    case 1:
+      return VideoChromaSampling::k420;
+    case 2:
+      return VideoChromaSampling::k422;
+    case 3:
+      return VideoChromaSampling::k444;
+    default:
+      NOTREACHED();
+      return VideoChromaSampling::kUnknown;
+  }
+}
+
 bool H265SliceHeader::IsISlice() const {
   return slice_type == kSliceTypeI;
 }
@@ -325,6 +350,74 @@ H265Parser::Result H265Parser::ReadSE(int* val) {
   return kOk;
 }
 
+H265Parser::Result H265Parser::ParseVPS(int* vps_id) {
+  DVLOG(4) << "Parsing VPS";
+  Result res = kOk;
+
+  DCHECK(vps_id);
+  *vps_id = -1;
+
+  std::unique_ptr<H265VPS> vps = std::make_unique<H265VPS>();
+
+  READ_BITS_OR_RETURN(4, &vps->vps_video_parameter_set_id);
+  IN_RANGE_OR_RETURN(vps->vps_video_parameter_set_id, 0, 16);
+  READ_BOOL_OR_RETURN(&vps->vps_base_layer_internal_flag);
+  READ_BOOL_OR_RETURN(&vps->vps_base_layer_available_flag);
+  READ_BITS_OR_RETURN(6, &vps->vps_max_layers_minus1);
+  IN_RANGE_OR_RETURN(vps->vps_max_layers_minus1, 0, 62);
+  READ_BITS_OR_RETURN(3, &vps->vps_max_sub_layers_minus1);
+  IN_RANGE_OR_RETURN(vps->vps_max_sub_layers_minus1, 0, 7);
+  READ_BOOL_OR_RETURN(&vps->vps_temporal_id_nesting_flag);
+  SKIP_BITS_OR_RETURN(16);  // vps_reserved_0xffff_16bits
+  res = ParseProfileTierLevel(true, vps->vps_max_sub_layers_minus1,
+                              &vps->profile_tier_level);
+  if (res != kOk) {
+    return res;
+  }
+
+  bool vps_sub_layer_ordering_info_present_flag;
+  READ_BOOL_OR_RETURN(&vps_sub_layer_ordering_info_present_flag);
+
+  for (int i = vps_sub_layer_ordering_info_present_flag
+                   ? 0
+                   : vps->vps_max_sub_layers_minus1;
+       i <= vps->vps_max_sub_layers_minus1; ++i) {
+    READ_UE_OR_RETURN(&vps->vps_max_dec_pic_buffering_minus1[i]);
+    IN_RANGE_OR_RETURN(vps->vps_max_dec_pic_buffering_minus1[i], 0, 15);
+    READ_UE_OR_RETURN(&vps->vps_max_num_reorder_pics[i]);
+    IN_RANGE_OR_RETURN(vps->vps_max_num_reorder_pics[i], 0,
+                       vps->vps_max_dec_pic_buffering_minus1[i]);
+    if (i > 0) {
+      TRUE_OR_RETURN(vps->vps_max_dec_pic_buffering_minus1[i] >=
+                     vps->vps_max_dec_pic_buffering_minus1[i - 1]);
+      TRUE_OR_RETURN(vps->vps_max_num_reorder_pics[i] >=
+                     vps->vps_max_num_reorder_pics[i - 1]);
+    }
+    READ_UE_OR_RETURN(&vps->vps_max_latency_increase_plus1[i]);
+  }
+  if (!vps_sub_layer_ordering_info_present_flag) {
+    for (int i = 0; i < vps->vps_max_sub_layers_minus1; ++i) {
+      vps->vps_max_dec_pic_buffering_minus1[i] =
+          vps->vps_max_dec_pic_buffering_minus1[vps->vps_max_sub_layers_minus1];
+      vps->vps_max_num_reorder_pics[i] =
+          vps->vps_max_num_reorder_pics[vps->vps_max_sub_layers_minus1];
+      vps->vps_max_latency_increase_plus1[i] =
+          vps->vps_max_latency_increase_plus1[vps->vps_max_sub_layers_minus1];
+    }
+  }
+
+  READ_BITS_OR_RETURN(6, &vps->vps_max_layer_id);
+  IN_RANGE_OR_RETURN(vps->vps_max_layer_id, 0, 62);
+  READ_UE_OR_RETURN(&vps->vps_num_layer_sets_minus1);
+  IN_RANGE_OR_RETURN(vps->vps_num_layer_sets_minus1, 0, 1023);
+
+  // If an VPS with the same id already exists, replace it.
+  *vps_id = vps->vps_video_parameter_set_id;
+  active_vps_[*vps_id] = std::move(vps);
+
+  return res;
+}
+
 H265Parser::Result H265Parser::ParseSPS(int* sps_id) {
   // 7.4.3.2
   DVLOG(4) << "Parsing SPS";
@@ -334,7 +427,8 @@ H265Parser::Result H265Parser::ParseSPS(int* sps_id) {
   *sps_id = -1;
 
   std::unique_ptr<H265SPS> sps = std::make_unique<H265SPS>();
-  SKIP_BITS_OR_RETURN(4);  // sps_video_parameter_set_id
+  READ_BITS_OR_RETURN(4, &sps->sps_video_parameter_set_id);
+  IN_RANGE_OR_RETURN(sps->sps_video_parameter_set_id, 0, 15);
   READ_BITS_OR_RETURN(3, &sps->sps_max_sub_layers_minus1);
   IN_RANGE_OR_RETURN(sps->sps_max_sub_layers_minus1, 0, 6);
   SKIP_BITS_OR_RETURN(1);  // sps_temporal_id_nesting_flag
@@ -492,6 +586,8 @@ H265Parser::Result H265Parser::ParseSPS(int* sps_id) {
   READ_BOOL_OR_RETURN(&sps->scaling_list_enabled_flag);
   if (sps->scaling_list_enabled_flag) {
     READ_BOOL_OR_RETURN(&sps->sps_scaling_list_data_present_flag);
+  }
+  if (sps->sps_scaling_list_data_present_flag) {
     res = ParseScalingListData(&sps->scaling_list_data);
     if (res != kOk)
       return res;
@@ -575,40 +671,44 @@ H265Parser::Result H265Parser::ParseSPS(int* sps_id) {
                    sps->pic_height_in_luma_samples);
   }
 
-  bool sps_extension_present_flag;
-  bool sps_range_extension_flag = false;
-  bool sps_multilayer_extension_flag = false;
-  bool sps_3d_extension_flag = false;
-  bool sps_scc_extension_flag = false;
-  READ_BOOL_OR_RETURN(&sps_extension_present_flag);
-  if (sps_extension_present_flag) {
-    READ_BOOL_OR_RETURN(&sps_range_extension_flag);
-    READ_BOOL_OR_RETURN(&sps_multilayer_extension_flag);
-    READ_BOOL_OR_RETURN(&sps_3d_extension_flag);
-    READ_BOOL_OR_RETURN(&sps_scc_extension_flag);
+  READ_BOOL_OR_RETURN(&sps->sps_extension_present_flag);
+  if (sps->sps_extension_present_flag) {
+    READ_BOOL_OR_RETURN(&sps->sps_range_extension_flag);
+    READ_BOOL_OR_RETURN(&sps->sps_multilayer_extension_flag);
+    READ_BOOL_OR_RETURN(&sps->sps_3d_extension_flag);
+    READ_BOOL_OR_RETURN(&sps->sps_scc_extension_flag);
     SKIP_BITS_OR_RETURN(4);  // sps_extension_4bits
   }
-  if (sps_range_extension_flag) {
-    DVLOG(1) << "HEVC range extension not supported";
-    return kInvalidStream;
+  if (sps->sps_range_extension_flag) {
+    READ_BOOL_OR_RETURN(&sps->transform_skip_rotation_enabled_flag);
+    READ_BOOL_OR_RETURN(&sps->transform_skip_context_enabled_flag);
+    READ_BOOL_OR_RETURN(&sps->implicit_rdpcm_enabled_flag);
+    READ_BOOL_OR_RETURN(&sps->explicit_rdpcm_enabled_flag);
+    READ_BOOL_OR_RETURN(&sps->extended_precision_processing_flag);
+    READ_BOOL_OR_RETURN(&sps->intra_smoothing_disabled_flag);
+    READ_BOOL_OR_RETURN(&sps->high_precision_offsets_enabled_flag);
+    READ_BOOL_OR_RETURN(&sps->persistent_rice_adaptation_enabled_flag);
+    READ_BOOL_OR_RETURN(&sps->cabac_bypass_alignment_enabled_flag);
   }
-  if (sps_multilayer_extension_flag) {
+  if (sps->sps_multilayer_extension_flag) {
     DVLOG(1) << "HEVC multilayer extension not supported";
     return kInvalidStream;
   }
-  if (sps_3d_extension_flag) {
+  if (sps->sps_3d_extension_flag) {
     DVLOG(1) << "HEVC 3D extension not supported";
     return kInvalidStream;
   }
-  if (sps_scc_extension_flag) {
+  if (sps->sps_scc_extension_flag) {
     DVLOG(1) << "HEVC SCC extension not supported";
     return kInvalidStream;
   }
 
-  // NOTE: The below 2 values are dependent upon the range extension if that is
-  // ever implemented.
-  sps->wp_offset_half_range_y = 1 << 7;
-  sps->wp_offset_half_range_c = 1 << 7;
+  sps->wp_offset_half_range_y = 1 << (sps->high_precision_offsets_enabled_flag
+                                          ? sps->bit_depth_luma_minus8 + 7
+                                          : 7);
+  sps->wp_offset_half_range_c = 1 << (sps->high_precision_offsets_enabled_flag
+                                          ? sps->bit_depth_chroma_minus8 + 7
+                                          : 7);
 
   // If an SPS with the same id already exists, replace it.
   *sps_id = sps->sps_seq_parameter_set_id;
@@ -733,33 +833,51 @@ H265Parser::Result H265Parser::ParsePPS(const H265NALU& nalu, int* pps_id) {
   IN_RANGE_OR_RETURN(pps->log2_parallel_merge_level_minus2, 0,
                      sps->ctb_log2_size_y - 2);
   READ_BOOL_OR_RETURN(&pps->slice_segment_header_extension_present_flag);
-  bool pps_extension_present_flag;
-  READ_BOOL_OR_RETURN(&pps_extension_present_flag);
-  bool pps_range_extension_flag = false;
-  bool pps_multilayer_extension_flag = false;
-  bool pps_3d_extension_flag = false;
-  bool pps_scc_extension_flag = false;
-  if (pps_extension_present_flag) {
-    READ_BOOL_OR_RETURN(&pps_range_extension_flag);
-    READ_BOOL_OR_RETURN(&pps_multilayer_extension_flag);
-    READ_BOOL_OR_RETURN(&pps_3d_extension_flag);
-    READ_BOOL_OR_RETURN(&pps_scc_extension_flag);
+  READ_BOOL_OR_RETURN(&pps->pps_extension_present_flag);
+  if (pps->pps_extension_present_flag) {
+    READ_BOOL_OR_RETURN(&pps->pps_range_extension_flag);
+    READ_BOOL_OR_RETURN(&pps->pps_multilayer_extension_flag);
+    READ_BOOL_OR_RETURN(&pps->pps_3d_extension_flag);
+    READ_BOOL_OR_RETURN(&pps->pps_scc_extension_flag);
     SKIP_BITS_OR_RETURN(4);  // pps_extension_4bits
   }
 
-  if (pps_range_extension_flag) {
-    DVLOG(1) << "HEVC range extension not supported";
-    return kInvalidStream;
+  if (pps->pps_range_extension_flag) {
+    if (pps->transform_skip_enabled_flag) {
+      READ_UE_OR_RETURN(&pps->log2_max_transform_skip_block_size_minus2);
+      IN_RANGE_OR_RETURN(pps->log2_max_transform_skip_block_size_minus2, 0, 3);
+    }
+    READ_BOOL_OR_RETURN(&pps->cross_component_prediction_enabled_flag);
+    READ_BOOL_OR_RETURN(&pps->chroma_qp_offset_list_enabled_flag);
+    if (pps->chroma_qp_offset_list_enabled_flag) {
+      READ_UE_OR_RETURN(&pps->diff_cu_chroma_qp_offset_depth);
+      IN_RANGE_OR_RETURN(pps->diff_cu_chroma_qp_offset_depth, 0,
+                         sps->log2_diff_max_min_luma_coding_block_size);
+      READ_UE_OR_RETURN(&pps->chroma_qp_offset_list_len_minus1);
+      IN_RANGE_OR_RETURN(pps->chroma_qp_offset_list_len_minus1, 0, 5);
+      for (int i = 0; i <= pps->chroma_qp_offset_list_len_minus1; i++) {
+        READ_SE_OR_RETURN(&pps->cb_qp_offset_list[i]);
+        IN_RANGE_OR_RETURN(pps->cb_qp_offset_list[i], -12, 12);
+        READ_SE_OR_RETURN(&pps->cr_qp_offset_list[i]);
+        IN_RANGE_OR_RETURN(pps->cr_qp_offset_list[i], -12, 12);
+      }
+    }
+    READ_UE_OR_RETURN(&pps->log2_sao_offset_scale_luma);
+    IN_RANGE_OR_RETURN(pps->log2_sao_offset_scale_luma, 0,
+                       std::max(sps->bit_depth_luma_minus8 - 2, 0));
+    READ_UE_OR_RETURN(&pps->log2_sao_offset_scale_chroma);
+    IN_RANGE_OR_RETURN(pps->log2_sao_offset_scale_chroma, 0,
+                       std::max(sps->bit_depth_chroma_minus8 - 2, 0));
   }
-  if (pps_multilayer_extension_flag) {
+  if (pps->pps_multilayer_extension_flag) {
     DVLOG(1) << "HEVC multilayer extension not supported";
     return kInvalidStream;
   }
-  if (pps_3d_extension_flag) {
+  if (pps->pps_3d_extension_flag) {
     DVLOG(1) << "HEVC 3D extension not supported";
     return kInvalidStream;
   }
-  if (pps_scc_extension_flag) {
+  if (pps->pps_scc_extension_flag) {
     DVLOG(1) << "HEVC SCC extension not supported";
     return kInvalidStream;
   }
@@ -769,6 +887,16 @@ H265Parser::Result H265Parser::ParsePPS(const H265NALU& nalu, int* pps_id) {
   active_pps_[*pps_id] = std::move(pps);
 
   return res;
+}
+
+const H265VPS* H265Parser::GetVPS(int vps_id) const {
+  auto it = active_vps_.find(vps_id);
+  if (it == active_vps_.end()) {
+    DVLOG(1) << "Requested a nonexistent VPS id " << vps_id;
+    return nullptr;
+  }
+
+  return it->second.get();
 }
 
 const H265SPS* H265Parser::GetSPS(int sps_id) const {
@@ -888,7 +1016,7 @@ H265Parser::Result H265Parser::ParseSliceHeader(const H265NALU& nalu,
         off_t bits_left_prior = br_.NumBitsLeft();
         size_t num_epb_prior = br_.NumEmulationPreventionBytesRead();
         res = ParseStRefPicSet(sps->num_short_term_ref_pic_sets, *sps,
-                               &shdr->st_ref_pic_set);
+                               &shdr->st_ref_pic_set, true);
         if (res != kOk)
           return res;
         shdr->st_rps_bits =
@@ -1051,8 +1179,8 @@ H265Parser::Result H265Parser::ParseSliceHeader(const H265NALU& nalu,
 
     // pps_slice_act_qp_offsets_present_flag is zero, we don't support SCC ext.
 
-    // chroma_qp_offset_list_enabled_flag is zero, we don't support range ext.
-
+    if (pps->chroma_qp_offset_list_enabled_flag)
+      SKIP_BITS_OR_RETURN(1);  // cu_chroma_qp_offset_enabled_flag
     bool deblocking_filter_override_flag = false;
     if (pps->deblocking_filter_override_enabled_flag)
       READ_BOOL_OR_RETURN(&deblocking_filter_override_flag);
@@ -1103,7 +1231,7 @@ H265Parser::Result H265Parser::ParseSliceHeader(const H265NALU& nalu,
     SKIP_BITS_OR_RETURN(slice_segment_header_extension_length * 8);
   }
 
-  if (prior_shdr) {
+  if (prior_shdr && !shdr->first_slice_segment_in_pic_flag) {
     // Validate the fields that must match between slice headers for the same
     // picture.
     EQ_OR_RETURN(shdr, prior_shdr, slice_pic_parameter_set_id);
@@ -1144,6 +1272,22 @@ VideoCodecProfile H265Parser::ProfileIDCToVideoCodecProfile(int profile_idc) {
       return HEVCPROFILE_MAIN10;
     case H265ProfileTierLevel::kProfileIdcMainStill:
       return HEVCPROFILE_MAIN_STILL_PICTURE;
+    case H265ProfileTierLevel::kProfileIdcRangeExtensions:
+      return HEVCPROFILE_REXT;
+    case H265ProfileTierLevel::kProfileIdcHighThroughput:
+      return HEVCPROFILE_HIGH_THROUGHPUT;
+    case H265ProfileTierLevel::kProfileIdcMultiviewMain:
+      return HEVCPROFILE_MULTIVIEW_MAIN;
+    case H265ProfileTierLevel::kProfileIdcScalableMain:
+      return HEVCPROFILE_SCALABLE_MAIN;
+    case H265ProfileTierLevel::kProfileIdc3dMain:
+      return HEVCPROFILE_3D_MAIN;
+    case H265ProfileTierLevel::kProfileIdcScreenContentCoding:
+      return HEVCPROFILE_SCREEN_EXTENDED;
+    case H265ProfileTierLevel::kProfileIdcScalableRangeExtensions:
+      return HEVCPROFILE_SCALABLE_REXT;
+    case H265ProfileTierLevel::kProfileIdcHighThroughputScreenContentCoding:
+      return HEVCPROFILE_HIGH_THROUGHPUT_SCREEN_EXTENDED;
     default:
       DVLOG(1) << "unknown video profile: " << profile_idc;
       return VIDEO_CODEC_PROFILE_UNKNOWN;
@@ -1319,10 +1463,10 @@ H265Parser::Result H265Parser::ParseScalingListData(
   return kOk;
 }
 
-H265Parser::Result H265Parser::ParseStRefPicSet(
-    int st_rps_idx,
-    const H265SPS& sps,
-    H265StRefPicSet* st_ref_pic_set) {
+H265Parser::Result H265Parser::ParseStRefPicSet(int st_rps_idx,
+                                                const H265SPS& sps,
+                                                H265StRefPicSet* st_ref_pic_set,
+                                                bool is_slice_hdr) {
   // 7.4.8
   bool inter_ref_pic_set_prediction_flag = false;
   if (st_rps_idx != 0) {
@@ -1342,6 +1486,9 @@ H265Parser::Result H265Parser::ParseStRefPicSet(
     IN_RANGE_OR_RETURN(abs_delta_rps_minus1, 0, 0x7FFF);
     int delta_rps = (1 - 2 * delta_rps_sign) * (abs_delta_rps_minus1 + 1);
     const H265StRefPicSet& ref_set = sps.st_ref_pic_set[ref_rps_idx];
+    if (is_slice_hdr) {
+      st_ref_pic_set->rps_idx_num_delta_pocs = ref_set.num_delta_pocs;
+    }
     bool used_by_curr_pic_flag[kMaxShortTermRefPicSets];
     bool use_delta_flag[kMaxShortTermRefPicSets];
     // 7.4.8 - use_delta_flag defaults to 1 if not present.
@@ -1462,7 +1609,7 @@ H265Parser::Result H265Parser::ParseVuiParameters(const H265SPS& sps,
       READ_BITS_OR_RETURN(16, &vui->sar_width);
       READ_BITS_OR_RETURN(16, &vui->sar_height);
     } else {
-      const int max_aspect_ratio_idc = base::size(kTableSarWidth) - 1;
+      const int max_aspect_ratio_idc = std::size(kTableSarWidth) - 1;
       IN_RANGE_OR_RETURN(aspect_ratio_idc, 0, max_aspect_ratio_idc);
       vui->sar_width = kTableSarWidth[aspect_ratio_idc];
       vui->sar_height = kTableSarHeight[aspect_ratio_idc];
@@ -1730,6 +1877,86 @@ H265Parser::Result H265Parser::ParsePredWeightTable(
       }
     }
     TRUE_OR_RETURN(sum_weight_l0_flags + sum_weight_l1_flags <= 24);
+  }
+
+  return kOk;
+}
+
+H265Parser::Result H265Parser::ParseSEI(H265SEIMessage* sei_msg) {
+  int byte;
+
+  memset(sei_msg, 0, sizeof(*sei_msg));
+
+  READ_BITS_OR_RETURN(8, &byte);
+  while (byte == 0xff) {
+    sei_msg->type += 255;
+    READ_BITS_OR_RETURN(8, &byte);
+  }
+  sei_msg->type += byte;
+
+  READ_BITS_OR_RETURN(8, &byte);
+  while (byte == 0xff) {
+    sei_msg->payload_size += 255;
+    READ_BITS_OR_RETURN(8, &byte);
+  }
+  sei_msg->payload_size += byte;
+
+  DVLOG(4) << "Found SEI message type: " << sei_msg->type
+           << " payload size: " << sei_msg->payload_size;
+
+  switch (sei_msg->type) {
+    case H265SEIMessage::kSEIAlphaChannelInfo:
+      READ_BOOL_OR_RETURN(
+          &sei_msg->alpha_channel_info.alpha_channel_cancel_flag);
+      if (!sei_msg->alpha_channel_info.alpha_channel_cancel_flag) {
+        READ_BITS_OR_RETURN(3,
+                            &sei_msg->alpha_channel_info.alpha_channel_use_idc);
+        READ_BITS_OR_RETURN(
+            3, &sei_msg->alpha_channel_info.alpha_channel_bit_depth_minus8);
+        READ_BITS_OR_RETURN(
+            sei_msg->alpha_channel_info.alpha_channel_bit_depth_minus8 + 9,
+            &sei_msg->alpha_channel_info.alpha_transparent_value);
+        READ_BITS_OR_RETURN(
+            sei_msg->alpha_channel_info.alpha_channel_bit_depth_minus8 + 9,
+            &sei_msg->alpha_channel_info.alpha_opaque_value);
+        READ_BOOL_OR_RETURN(
+            &sei_msg->alpha_channel_info.alpha_channel_incr_flag);
+        READ_BOOL_OR_RETURN(
+            &sei_msg->alpha_channel_info.alpha_channel_clip_flag);
+        if (sei_msg->alpha_channel_info.alpha_channel_clip_flag) {
+          READ_BOOL_OR_RETURN(
+              &sei_msg->alpha_channel_info.alpha_channel_clip_type_flag);
+        }
+      }
+      break;
+    case H265SEIMessage::kSEIContentLightLevelInfo:
+      READ_BITS_OR_RETURN(
+          16, &sei_msg->content_light_level_info.max_content_light_level);
+      READ_BITS_OR_RETURN(
+          16,
+          &sei_msg->content_light_level_info.max_picture_average_light_level);
+      break;
+    case H265SEIMessage::kSEIMasteringDisplayInfo:
+      for (auto& primary : sei_msg->mastering_display_info.display_primaries) {
+        for (auto& component : primary) {
+          READ_BITS_OR_RETURN(16, &component);
+        }
+      }
+      READ_BITS_OR_RETURN(16, &sei_msg->mastering_display_info.white_points[0]);
+      READ_BITS_OR_RETURN(16, &sei_msg->mastering_display_info.white_points[1]);
+      uint32_t luminace_high_31bits, luminance_low_1bit;
+      READ_BITS_OR_RETURN(31, &luminace_high_31bits);
+      READ_BITS_OR_RETURN(1, &luminance_low_1bit);
+      sei_msg->mastering_display_info.max_luminance =
+          (luminace_high_31bits << 1) + (luminance_low_1bit & 0x1);
+      READ_BITS_OR_RETURN(31, &luminace_high_31bits);
+      READ_BITS_OR_RETURN(1, &luminance_low_1bit);
+      sei_msg->mastering_display_info.min_luminance =
+          (luminace_high_31bits << 1) + (luminance_low_1bit & 0x1);
+      break;
+    default:
+      DVLOG(4) << "Unsupported SEI message";
+      break;
   }
 
   return kOk;

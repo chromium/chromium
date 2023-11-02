@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -260,6 +260,14 @@ v8::Local<v8::Object> ModuleSystemTestEnvironment::CreateGlobal(
             object)
       .ToChecked();
   return handle_scope.Escape(object);
+}
+
+void ModuleSystemTestEnvironment::SetLazyField(
+    v8::Local<v8::Object> object,
+    const std::string& field,
+    const std::string& module_name,
+    const std::string& module_field) {
+  module_system()->SetLazyField(object, field, module_name, module_field);
 }
 
 ModuleSystemTest::ModuleSystemTest()

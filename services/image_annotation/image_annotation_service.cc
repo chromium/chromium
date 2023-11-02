@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,9 +13,10 @@
 
 namespace image_annotation {
 
-// static
-const base::Feature ImageAnnotationService::kExperiment{
-    "ImageAnnotationServiceExperimental", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kImageAnnotationServiceExperimental,
+             "ImageAnnotationServiceExperimental",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 constexpr base::FeatureParam<std::string>
     ImageAnnotationService::kPixelsServerUrl;
 constexpr base::FeatureParam<std::string>

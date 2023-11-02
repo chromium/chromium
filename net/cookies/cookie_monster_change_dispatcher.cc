@@ -1,13 +1,16 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "net/cookies/cookie_monster_change_dispatcher.h"
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/strings/string_piece.h"
 #include "base/task/task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "net/base/features.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_access_delegate.h"
@@ -34,6 +37,7 @@ CookieMonsterChangeDispatcher::Subscription::Subscription(
     std::string name_key,
     GURL url,
     absl::optional<CookiePartitionKey> cookie_partition_key,
+    bool same_party_attribute_enabled,
     net::CookieChangeCallback callback)
     : change_dispatcher_(std::move(change_dispatcher)),
       domain_key_(std::move(domain_key)),
@@ -41,6 +45,7 @@ CookieMonsterChangeDispatcher::Subscription::Subscription(
       url_(std::move(url)),
       cookie_partition_key_(std::move(cookie_partition_key)),
       callback_(std::move(callback)),
+      same_party_attribute_enabled_(same_party_attribute_enabled),
       task_runner_(base::ThreadTaskRunnerHandle::Get()) {
   DCHECK(url_.is_valid() || url_.is_empty());
   DCHECK_EQ(url_.is_empty(), domain_key_ == kGlobalDomainKey);
@@ -69,8 +74,8 @@ void CookieMonsterChangeDispatcher::Subscription::DispatchChange(
         cookie_access_delegate &&
         cookie_access_delegate->ShouldTreatUrlAsTrustworthy(url_);
     CookieOptions options = CookieOptions::MakeAllInclusive();
-    CookieSamePartyStatus same_party_status =
-        cookie_util::GetSamePartyStatus(cookie, options);
+    CookieSamePartyStatus same_party_status = cookie_util::GetSamePartyStatus(
+        cookie, options, same_party_attribute_enabled_);
     if (!cookie
              .IncludeForRequestURL(
                  url_, options,
@@ -80,6 +85,11 @@ void CookieMonsterChangeDispatcher::Subscription::DispatchChange(
              .status.IsInclude()) {
       return;
     }
+  }
+
+  if (!change.cookie.IsPartitioned() &&
+      net::CookiePartitionKey::HasNonce(cookie_partition_key_)) {
+    return;
   }
 
   if (change.cookie.IsPartitioned() &&
@@ -101,8 +111,10 @@ void CookieMonsterChangeDispatcher::Subscription::DoDispatchChange(
 }
 
 CookieMonsterChangeDispatcher::CookieMonsterChangeDispatcher(
-    const CookieMonster* cookie_monster)
-    : cookie_monster_(cookie_monster) {}
+    const CookieMonster* cookie_monster,
+    bool same_party_attribute_enabled)
+    : cookie_monster_(cookie_monster),
+      same_party_attribute_enabled_(same_party_attribute_enabled) {}
 
 CookieMonsterChangeDispatcher::~CookieMonsterChangeDispatcher() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -143,7 +155,7 @@ CookieMonsterChangeDispatcher::AddCallbackForCookie(
 
   std::unique_ptr<Subscription> subscription = std::make_unique<Subscription>(
       weak_ptr_factory_.GetWeakPtr(), DomainKey(url), NameKey(name), url,
-      cookie_partition_key, std::move(callback));
+      cookie_partition_key, same_party_attribute_enabled_, std::move(callback));
 
   LinkSubscription(subscription.get());
   return subscription;
@@ -159,7 +171,7 @@ CookieMonsterChangeDispatcher::AddCallbackForUrl(
   std::unique_ptr<Subscription> subscription = std::make_unique<Subscription>(
       weak_ptr_factory_.GetWeakPtr(), DomainKey(url),
       std::string(kGlobalNameKey), url, cookie_partition_key,
-      std::move(callback));
+      same_party_attribute_enabled_, std::move(callback));
 
   LinkSubscription(subscription.get());
   return subscription;
@@ -172,8 +184,8 @@ CookieMonsterChangeDispatcher::AddCallbackForAllChanges(
 
   std::unique_ptr<Subscription> subscription = std::make_unique<Subscription>(
       weak_ptr_factory_.GetWeakPtr(), std::string(kGlobalDomainKey),
-      std::string(kGlobalNameKey), GURL(""), CookiePartitionKey::Todo(),
-      std::move(callback));
+      std::string(kGlobalNameKey), GURL(""), absl::nullopt,
+      same_party_attribute_enabled_, std::move(callback));
 
   LinkSubscription(subscription.get());
   return subscription;

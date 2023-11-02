@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include "base/component_export.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "storage/browser/file_system/quota/quota_reservation_manager.h"
@@ -93,7 +92,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaReservation
 
   scoped_refptr<QuotaReservationBuffer> reservation_buffer_;
 
-  base::SequenceChecker sequence_checker_;
+  SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<QuotaReservation> weak_ptr_factory_{this};
 };
 

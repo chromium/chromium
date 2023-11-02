@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -56,7 +56,7 @@ void ApplyMargin(
     const Vector<Length>& margin,
     float zoom,
     const absl::optional<PhysicalRect>& resolution_rect = absl::nullopt) {
-  if (margin.IsEmpty())
+  if (margin.empty())
     return;
 
   // TODO(szager): Make sure the spec is clear that left/right margins are
@@ -75,10 +75,10 @@ void ApplyMargin(
 //   https://w3c.github.io/IntersectionObserver/#intersectionobserver-root-intersection-rectangle
 PhysicalRect InitializeRootRect(const LayoutObject* root,
                                 const Vector<Length>& margin) {
-  DCHECK(margin.IsEmpty() || margin.size() == 4);
+  DCHECK(margin.empty() || margin.size() == 4);
   PhysicalRect result;
   auto* layout_view = DynamicTo<LayoutView>(root);
-  if (layout_view && root->GetDocument().IsInMainFrame()) {
+  if (layout_view && root->GetDocument().GetFrame()->IsOutermostMainFrame()) {
     // The main frame is a bit special as the scrolling viewport can differ in
     // size from the LayoutView itself. There's two situations this occurs in:
     // 1) The ForceZeroLayoutHeight quirk setting is used in Android WebView for
@@ -90,10 +90,10 @@ PhysicalRect InitializeRootRect(const LayoutObject* root,
     result = layout_view->OverflowClipRect(PhysicalOffset());
   } else if (root->IsBox() && root->IsScrollContainer()) {
     result = To<LayoutBox>(root)->PhysicalContentBoxRect();
+  } else if (root->IsBox()) {
+    result = To<LayoutBox>(root)->PhysicalBorderBoxRect();
   } else {
-    // TODO(pdr, crbug.com/1020466): BorderBoundingBox is snapped. Should this
-    // use an unsnapped value such as PhysicalBorderBoxRect?
-    result = PhysicalRect(To<LayoutBoxModelObject>(root)->BorderBoundingBox());
+    result = To<LayoutInline>(root)->PhysicalLinesBoundingBox();
   }
   ApplyMargin(result, margin, root->StyleRef().EffectiveZoom());
   return result;
@@ -101,9 +101,10 @@ PhysicalRect InitializeRootRect(const LayoutObject* root,
 
 PhysicalRect GetBoxBounds(const LayoutBox* box, bool use_overflow_clip_edge) {
   PhysicalRect bounds(box->PhysicalBorderBoxRect());
-  // OverflowClipMargin() should only apply if clipping occurs on both axis.
-  if (use_overflow_clip_edge && box->ShouldClipOverflowAlongBothAxis() &&
-      box->StyleRef().OverflowClipMargin() != LayoutUnit()) {
+  // Only use overflow clip rect if we need to use overflow clip edge and
+  // overflow clip margin may have an effect, meaning we clip to the overflow
+  // clip edge and not something else.
+  if (use_overflow_clip_edge && box->ShouldApplyOverflowClipMargin()) {
     // OverflowClipRect() may be smaller than PhysicalBorderBoxRect().
     bounds.Unite(box->OverflowClipRect(PhysicalOffset()));
   }
@@ -124,11 +125,10 @@ std::pair<PhysicalRect, bool> InitializeTargetRect(const LayoutObject* target,
   } else if (target->IsBox()) {
     result.first =
         GetBoxBounds(To<LayoutBox>(target),
-                     (flags & IntersectionGeometry::kUseOverflowClipEdge) ==
-                         IntersectionGeometry::kUseOverflowClipEdge);
+                     flags & IntersectionGeometry::kUseOverflowClipEdge);
   } else if (target->IsLayoutInline()) {
     result.first = PhysicalRect::EnclosingRect(
-        To<LayoutBoxModelObject>(target)->LocalBoundingBoxFloatRect());
+        To<LayoutBoxModelObject>(target)->LocalBoundingBoxRectF());
   } else {
     result.first = To<LayoutText>(target)->PhysicalLinesBoundingBox();
   }
@@ -150,8 +150,9 @@ LayoutView* LocalRootView(const LayoutObject& object) {
 //
 //   https://w3c.github.io/IntersectionObserver/v2/#calculate-visibility-algo
 bool ComputeIsVisible(const LayoutObject* target, const PhysicalRect& rect) {
-  if (target->GetDocument().GetFrame()->LocalFrameRoot().GetOcclusionState() !=
-      mojom::blink::FrameOcclusionState::kGuaranteedNotOccluded) {
+  if (!target->GetDocument().GetFrame() ||
+      target->GetDocument().GetFrame()->LocalFrameRoot().GetOcclusionState() !=
+          mojom::blink::FrameOcclusionState::kGuaranteedNotOccluded) {
     return false;
   }
   if (target->HasDistortingVisualEffects())
@@ -236,9 +237,7 @@ const LayoutObject* IntersectionGeometry::GetRootLayoutObjectForTarget(
     return nullptr;
 
   LayoutObject* root = nullptr;
-  if (RuntimeEnabledFeatures::
-          IntersectionObserverDocumentScrollingElementRootEnabled() &&
-      root_node->IsDocumentNode()) {
+  if (root_node->IsDocumentNode()) {
     root = To<Document>(root_node)->GetLayoutView();
   } else {
     root = root_node->GetLayoutObject();
@@ -261,7 +260,7 @@ IntersectionGeometry::IntersectionGeometry(const Node* root_node,
       intersection_ratio_(0),
       threshold_index_(0) {
   // Only one of root_margin or target_margin can be specified.
-  DCHECK(root_margin.IsEmpty() || target_margin.IsEmpty());
+  DCHECK(root_margin.empty() || target_margin.empty());
 
   if (cached_rects)
     cached_rects->valid = false;
@@ -382,9 +381,11 @@ void IntersectionGeometry::ComputeGeometry(const RootGeometry& root_geometry,
           implicit_root_to_target_document_transform.AccumulatedTransform()
               .Inverse();
       intersection_rect_ = PhysicalRect::EnclosingRect(
-          matrix.ProjectQuad(FloatRect(intersection_rect_)).BoundingBox());
+          matrix.ProjectQuad(gfx::QuadF(gfx::RectF(intersection_rect_)))
+              .BoundingBox());
       unclipped_intersection_rect_ = PhysicalRect::EnclosingRect(
-          matrix.ProjectQuad(FloatRect(unclipped_intersection_rect_))
+          matrix
+              .ProjectQuad(gfx::QuadF(gfx::RectF(unclipped_intersection_rect_)))
               .BoundingBox());
       // intersection_rect_ is in the coordinate system of the implicit root;
       // map it down the to absolute coordinates for the target's document.
@@ -394,21 +395,21 @@ void IntersectionGeometry::ComputeGeometry(const RootGeometry& root_geometry,
       // same as root's document).
       intersection_rect_ = PhysicalRect::EnclosingRect(
           root_geometry.root_to_document_transform
-              .MapQuad(FloatQuad(FloatRect(intersection_rect_)))
+              .MapQuad(gfx::QuadF(gfx::RectF(intersection_rect_)))
               .BoundingBox());
       unclipped_intersection_rect_ = PhysicalRect::EnclosingRect(
           root_geometry.root_to_document_transform
-              .MapQuad(FloatQuad(FloatRect(unclipped_intersection_rect_)))
+              .MapQuad(gfx::QuadF(gfx::RectF(unclipped_intersection_rect_)))
               .BoundingBox());
     }
   } else {
     intersection_rect_ = PhysicalRect();
   }
   // Map root_rect_ from root's coordinate system to absolute coordinates.
-  root_rect_ =
-      PhysicalRect::EnclosingRect(root_geometry.root_to_document_transform
-                                      .MapQuad(FloatQuad(FloatRect(root_rect_)))
-                                      .BoundingBox());
+  root_rect_ = PhysicalRect::EnclosingRect(
+      root_geometry.root_to_document_transform
+          .MapQuad(gfx::QuadF(gfx::RectF(root_rect_)))
+          .BoundingBox());
 
   // Some corner cases for threshold index:
   //   - If target rect is zero area, because it has zero width and/or zero
@@ -462,14 +463,14 @@ void IntersectionGeometry::ComputeGeometry(const RootGeometry& root_geometry,
   }
 
   if (flags_ & kShouldConvertToCSSPixels) {
-    FloatRect target_float_rect(target_rect_);
-    AdjustForAbsoluteZoom::AdjustFloatRect(target_float_rect, *target);
+    gfx::RectF target_float_rect(target_rect_);
+    AdjustForAbsoluteZoom::AdjustRectF(target_float_rect, *target);
     target_rect_ = PhysicalRect::EnclosingRect(target_float_rect);
-    FloatRect intersection_float_rect(intersection_rect_);
-    AdjustForAbsoluteZoom::AdjustFloatRect(intersection_float_rect, *target);
+    gfx::RectF intersection_float_rect(intersection_rect_);
+    AdjustForAbsoluteZoom::AdjustRectF(intersection_float_rect, *target);
     intersection_rect_ = PhysicalRect::EnclosingRect(intersection_float_rect);
-    FloatRect root_float_rect(root_rect_);
-    AdjustForAbsoluteZoom::AdjustFloatRect(root_float_rect, *root);
+    gfx::RectF root_float_rect(root_rect_);
+    AdjustForAbsoluteZoom::AdjustRectF(root_float_rect, *root);
     root_rect_ = PhysicalRect::EnclosingRect(root_float_rect);
   }
 
@@ -486,7 +487,8 @@ bool IntersectionGeometry::ClipToRoot(const LayoutObject* root,
   // Map and clip rect into root element coordinates.
   // TODO(szager): the writing mode flipping needs a test.
   const LayoutBox* local_ancestor = nullptr;
-  if (!RootIsImplicit() || root->GetDocument().IsInMainFrame())
+  if (!RootIsImplicit() ||
+      root->GetDocument().GetFrame()->IsOutermostMainFrame())
     local_ancestor = To<LayoutBox>(root);
 
   unsigned flags = kDefaultVisualRectFlags | kEdgeInclusive |
@@ -539,14 +541,14 @@ bool IntersectionGeometry::ClipToRoot(const LayoutObject* root,
       // kDontApplyMainFrameOverflowClip flag above, means it hasn't been
       // done yet.
       LocalFrame* local_root_frame = root->GetDocument().GetFrame();
-      IntRect clip_rect(local_root_frame->RemoteViewportIntersection());
+      gfx::Rect clip_rect(local_root_frame->RemoteViewportIntersection());
       if (clip_rect.IsEmpty()) {
         intersection_rect = PhysicalRect();
         does_intersect = false;
       } else {
         // Map clip_rect from the coordinate system of the local root frame to
         // the coordinate system of the remote main frame.
-        clip_rect = PixelSnappedIntRect(
+        clip_rect = ToPixelSnappedRect(
             local_root_frame->ContentLayoutObject()->LocalToAncestorRect(
                 PhysicalRect(clip_rect), nullptr,
                 kTraverseDocumentBoundaries | kApplyRemoteMainFrameTransform));

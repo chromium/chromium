@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,12 +6,12 @@
  * @fileoverview Global state for prefs initialization status.
  */
 
-import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 
 class CrSettingsPrefsInternal {
   isInitialized: boolean = false;
   deferInitialization: boolean;
-  initializedResolver_: PromiseResolver<void> = new PromiseResolver();
+  private initializedResolver_: PromiseResolver<void> = new PromiseResolver();
 
   constructor() {
     /**

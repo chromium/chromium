@@ -67,6 +67,7 @@
 ../../third_party/catapult/devil/devil/android/sdk/shared_prefs.py
 ../../third_party/catapult/devil/devil/android/sdk/split_select.py
 ../../third_party/catapult/devil/devil/android/sdk/version_codes.py
+../../third_party/catapult/devil/devil/android/settings.py
 ../../third_party/catapult/devil/devil/android/tools/__init__.py
 ../../third_party/catapult/devil/devil/android/tools/device_recovery.py
 ../../third_party/catapult/devil/devil/android/tools/device_status.py
@@ -104,6 +105,7 @@
 ../../third_party/colorama/src/colorama/winterm.py
 ../../third_party/jinja2/__init__.py
 ../../third_party/jinja2/_compat.py
+../../third_party/jinja2/_identifier.py
 ../../third_party/jinja2/bccache.py
 ../../third_party/jinja2/compiler.py
 ../../third_party/jinja2/defaults.py
@@ -140,7 +142,6 @@
 ../util/lib/results/__init__.py
 ../util/lib/results/result_sink.py
 ../util/lib/results/result_types.py
-convert_dex_profile.py
 devil_chromium.py
 gyp/dex.py
 gyp/util/__init__.py
@@ -219,7 +220,6 @@ pylib/utils/instrumentation_tracing.py
 pylib/utils/local_utils.py
 pylib/utils/logdog_helper.py
 pylib/utils/logging_utils.py
-pylib/utils/proguard.py
 pylib/utils/repo_utils.py
 pylib/utils/shared_preference_utils.py
 pylib/utils/test_filter.py

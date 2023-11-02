@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
+#include "ash/components/arc/session/arc_bridge_service.h"
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
@@ -15,8 +17,6 @@
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_bridge.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/arc/arc_browser_context_keyed_service_factory_base.h"
-#include "components/arc/session/arc_bridge_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -155,26 +155,6 @@ void ArcFileSystemOperationRunner::GetMimeType(const GURL& url,
   file_system_instance->GetMimeType(url.spec(), std::move(callback));
 }
 
-void ArcFileSystemOperationRunner::OpenFileToRead(
-    const GURL& url,
-    OpenFileToReadCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (should_defer_) {
-    deferred_operations_.emplace_back(base::BindOnce(
-        &ArcFileSystemOperationRunner::OpenFileToRead,
-        weak_ptr_factory_.GetWeakPtr(), url, std::move(callback)));
-    return;
-  }
-  auto* file_system_instance = ARC_GET_INSTANCE_FOR_METHOD(
-      arc_bridge_service_->file_system(), OpenFileToRead);
-  if (!file_system_instance) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), mojo::ScopedHandle()));
-    return;
-  }
-  file_system_instance->OpenFileToRead(url.spec(), std::move(callback));
-}
-
 void ArcFileSystemOperationRunner::OpenThumbnail(
     const GURL& url,
     const gfx::Size& size,
@@ -196,24 +176,65 @@ void ArcFileSystemOperationRunner::OpenThumbnail(
   file_system_instance->OpenThumbnail(url.spec(), size, std::move(callback));
 }
 
-void ArcFileSystemOperationRunner::OpenFileToWrite(
+void ArcFileSystemOperationRunner::CloseFileSession(
+    const std::string& url_id,
+    const std::string& error_message) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (should_defer_) {
+    deferred_operations_.emplace_back(
+        base::BindOnce(&ArcFileSystemOperationRunner::CloseFileSession,
+                       weak_ptr_factory_.GetWeakPtr(), url_id, error_message));
+    return;
+  }
+  auto* file_system_instance = ARC_GET_INSTANCE_FOR_METHOD(
+      arc_bridge_service_->file_system(), CloseFileSession);
+  if (!file_system_instance) {
+    LOG(WARNING) << "Failed to call CloseFileSession.";
+    return;
+  }
+  file_system_instance->CloseFileSession(url_id, error_message);
+}
+
+void ArcFileSystemOperationRunner::OpenFileSessionToWrite(
     const GURL& url,
-    OpenFileToWriteCallback callback) {
+    OpenFileSessionToWriteCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (should_defer_) {
     deferred_operations_.emplace_back(base::BindOnce(
-        &ArcFileSystemOperationRunner::OpenFileToWrite,
+        &ArcFileSystemOperationRunner::OpenFileSessionToWrite,
         weak_ptr_factory_.GetWeakPtr(), url, std::move(callback)));
     return;
   }
   auto* file_system_instance = ARC_GET_INSTANCE_FOR_METHOD(
-      arc_bridge_service_->file_system(), OpenFileToWrite);
+      arc_bridge_service_->file_system(), OpenFileSessionToWrite);
   if (!file_system_instance) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), mojo::ScopedHandle()));
+        FROM_HERE,
+        base::BindOnce(std::move(callback), mojom::FileSessionPtr()));
     return;
   }
-  file_system_instance->OpenFileToWrite(url.spec(), std::move(callback));
+  file_system_instance->OpenFileSessionToWrite(url, std::move(callback));
+}
+
+void ArcFileSystemOperationRunner::OpenFileSessionToRead(
+    const GURL& url,
+    OpenFileSessionToReadCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (should_defer_) {
+    deferred_operations_.emplace_back(base::BindOnce(
+        &ArcFileSystemOperationRunner::OpenFileSessionToRead,
+        weak_ptr_factory_.GetWeakPtr(), url, std::move(callback)));
+    return;
+  }
+  auto* file_system_instance = ARC_GET_INSTANCE_FOR_METHOD(
+      arc_bridge_service_->file_system(), OpenFileSessionToRead);
+  if (!file_system_instance) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), mojom::FileSessionPtr()));
+    return;
+  }
+  file_system_instance->OpenFileSessionToRead(url, std::move(callback));
 }
 
 void ArcFileSystemOperationRunner::GetDocument(const std::string& authority,

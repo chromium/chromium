@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,7 +21,7 @@ namespace ash {
 
 // PowerMetricsReporter reports power-management-related metrics.
 // Prefs are used to retain metrics across Chrome restarts and system reboots.
-class PowerMetricsReporter : public PowerManagerClient::Observer {
+class PowerMetricsReporter : public chromeos::PowerManagerClient::Observer {
  public:
   // Histogram names.
   static const char kDailyEventIntervalName[];
@@ -34,7 +34,7 @@ class PowerMetricsReporter : public PowerManagerClient::Observer {
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
   // RegisterLocalStatePrefs() must be called before instantiating this class.
-  PowerMetricsReporter(PowerManagerClient* power_manager_client,
+  PowerMetricsReporter(chromeos::PowerManagerClient* power_manager_client,
                        PrefService* local_state_pref_service);
 
   PowerMetricsReporter(const PowerMetricsReporter&) = delete;
@@ -61,7 +61,7 @@ class PowerMetricsReporter : public PowerManagerClient::Observer {
   // corresponding pref.
   void AddToCount(const std::string& pref_name, int num);
 
-  PowerManagerClient* power_manager_client_;  // Not owned.
+  chromeos::PowerManagerClient* power_manager_client_;  // Not owned.
   PrefService* pref_service_;                 // Not owned.
 
   std::unique_ptr<metrics::DailyEvent> daily_event_;

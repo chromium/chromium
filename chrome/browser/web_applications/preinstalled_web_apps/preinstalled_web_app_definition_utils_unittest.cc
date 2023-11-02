@@ -1,4 +1,4 @@
-// Copyright (c) 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,8 +19,9 @@ class PreinstalledWebAppUtilsTest : public testing::Test {
   ~PreinstalledWebAppUtilsTest() override = default;
 };
 
-// https://crbug.com/1198780 tracks test failures on Linux and ChromeOS.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+// https://crbug.com/1198780 tracks test failures due to memory smashing on
+// Linux, ChromeOS, and the Mac.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 #define MAYBE_GetTranslatedName DISABLED_GetTranslatedName
 #else
 #define MAYBE_GetTranslatedName GetTranslatedName

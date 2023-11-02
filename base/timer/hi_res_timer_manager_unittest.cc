@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,7 +19,7 @@
 
 namespace base {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST(HiResTimerManagerTest, ToggleOnOff) {
   test::TaskEnvironment task_environment;
   base::test::ScopedPowerMonitorTestSource power_monitor_source;
@@ -80,6 +80,6 @@ TEST(HiResTimerManagerTest, DisableFromCommandLine) {
   // Re-enable the high-resolution timer for testing.
   Time::EnableHighResolutionTimer(true);
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace base

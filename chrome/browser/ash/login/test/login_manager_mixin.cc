@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,17 +16,19 @@
 #include "chrome/browser/ash/login/session/user_session_manager_test_api.h"
 #include "chrome/browser/ash/login/signin_specifics.h"
 #include "chrome/browser/ash/login/startup_utils.h"
+#include "chrome/browser/ash/login/test/cryptohome_mixin.h"
 #include "chrome/browser/ash/login/test/local_state_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_screens_utils.h"
 #include "chrome/browser/ash/login/test/profile_prepared_waiter.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
+#include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
-#include "chromeos/login/auth/auth_status_consumer.h"
-#include "chromeos/login/auth/key.h"
-#include "chromeos/login/auth/stub_authenticator_builder.h"
-#include "chromeos/login/auth/user_context.h"
+#include "chromeos/ash/components/login/auth/auth_status_consumer.h"
+#include "chromeos/ash/components/login/auth/public/key.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "chromeos/ash/components/login/auth/stub_authenticator_builder.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/user_manager/known_user.h"
@@ -43,13 +45,18 @@ constexpr char kManagedDomain[] = "@example.com";
 
 void AppendUsers(LoginManagerMixin::UserList* users,
                  const std::string& domain,
-                 int n) {
+                 int n,
+                 CryptohomeMixin* cryptohome_mixin) {
   int num = users->size();
   for (int i = 0; i < n; ++i, ++num) {
     const std::string email = "test_user_" + base::NumberToString(num) + domain;
     const std::string gaia_id = base::NumberToString(num) + "111111111";
-    users->push_back(LoginManagerMixin::TestUserInfo(
-        AccountId::FromUserEmailGaiaId(email, gaia_id)));
+    const AccountId account_id = AccountId::FromUserEmailGaiaId(email, gaia_id);
+    users->push_back(LoginManagerMixin::TestUserInfo(account_id));
+
+    if (cryptohome_mixin != nullptr) {
+      cryptohome_mixin->MarkUserAsExisting(account_id);
+    }
   }
 }
 
@@ -64,11 +71,11 @@ UserContext LoginManagerMixin::CreateDefaultUserContext(
 }
 
 void LoginManagerMixin::AppendRegularUsers(int n) {
-  AppendUsers(&initial_users_, kGmailDomain, n);
+  AppendUsers(&initial_users_, kGmailDomain, n, cryptohome_mixin_);
 }
 
 void LoginManagerMixin::AppendManagedUsers(int n) {
-  AppendUsers(&initial_users_, kManagedDomain, n);
+  AppendUsers(&initial_users_, kManagedDomain, n, cryptohome_mixin_);
 }
 
 LoginManagerMixin::LoginManagerMixin(InProcessBrowserTestMixinHost* host)
@@ -81,12 +88,25 @@ LoginManagerMixin::LoginManagerMixin(InProcessBrowserTestMixinHost* host,
 LoginManagerMixin::LoginManagerMixin(InProcessBrowserTestMixinHost* host,
                                      const UserList& initial_users,
                                      FakeGaiaMixin* gaia_mixin)
+    : LoginManagerMixin(host, initial_users, gaia_mixin, nullptr) {}
+
+LoginManagerMixin::LoginManagerMixin(InProcessBrowserTestMixinHost* host,
+                                     const UserList& initial_users,
+                                     FakeGaiaMixin* gaia_mixin,
+                                     CryptohomeMixin* cryptohome_mixin)
     : InProcessBrowserTestMixin(host),
       initial_users_(initial_users),
       local_state_mixin_(host, this),
-      fake_gaia_mixin_(gaia_mixin) {
+      fake_gaia_mixin_(gaia_mixin),
+      cryptohome_mixin_(cryptohome_mixin) {
   DCHECK(!g_instance_created);
   g_instance_created = true;
+
+  if (cryptohome_mixin != nullptr) {
+    for (const auto& user : initial_users_) {
+      cryptohome_mixin_->MarkUserAsExisting(user.account_id);
+    }
+  }
 }
 
 LoginManagerMixin::~LoginManagerMixin() {
@@ -108,33 +128,34 @@ bool LoginManagerMixin::SetUpUserDataDirectory() {
 
 void LoginManagerMixin::SetUpLocalState() {
   for (const auto& user : initial_users_) {
-    ListPrefUpdate users_pref(g_browser_process->local_state(),
-                              "LoggedInUsers");
+    ScopedListPrefUpdate users_pref(g_browser_process->local_state(),
+                                    "LoggedInUsers");
     base::Value email_value(user.account_id.GetUserEmail());
-    if (!base::Contains(users_pref->GetList(), email_value))
+    if (!base::Contains(users_pref.Get(), email_value))
       users_pref->Append(std::move(email_value));
 
-    DictionaryPrefUpdate user_type_update(g_browser_process->local_state(),
+    ScopedDictPrefUpdate user_type_update(g_browser_process->local_state(),
                                           "UserType");
-    user_type_update->SetKey(user.account_id.GetAccountIdKey(),
-                             base::Value(static_cast<int>(user.user_type)));
+    user_type_update->Set(user.account_id.GetAccountIdKey(),
+                          static_cast<int>(user.user_type));
 
-    DictionaryPrefUpdate user_token_update(g_browser_process->local_state(),
+    ScopedDictPrefUpdate user_token_update(g_browser_process->local_state(),
                                            "OAuthTokenStatus");
-    user_token_update->SetKey(user.account_id.GetUserEmail(),
-                              base::Value(static_cast<int>(user.token_status)));
+    user_token_update->Set(user.account_id.GetUserEmail(),
+                           static_cast<int>(user.token_status));
 
-    user_manager::known_user::UpdateId(user.account_id);
+    user_manager::KnownUser known_user(g_browser_process->local_state());
+    known_user.UpdateId(user.account_id);
 
     if (user.user_type == user_manager::USER_TYPE_CHILD) {
-      user_manager::known_user::SetProfileRequiresPolicy(
+      known_user.SetProfileRequiresPolicy(
           user.account_id,
           user_manager::ProfileRequiresPolicy::kPolicyRequired);
     }
 
     if (base::EndsWith(kManagedDomain, gaia::ExtractDomainName(
                                            user.account_id.GetUserEmail()))) {
-      user_manager::known_user::SetIsEnterpriseManaged(user.account_id, true);
+      known_user.SetIsEnterpriseManaged(user.account_id, true);
     }
   }
 
@@ -161,6 +182,9 @@ void LoginManagerMixin::AttemptLoginUsingAuthenticator(
       .InjectAuthenticatorBuilder(std::move(authenticator_builder));
   ExistingUserController::current_controller()->Login(user_context,
                                                       SigninSpecifics());
+  if (skip_post_login_screens_ && ash::WizardController::default_controller())
+    ash::WizardController::default_controller()
+        ->SkipPostLoginScreensForTesting();
 }
 
 void LoginManagerMixin::WaitForActiveSession() {
@@ -221,6 +245,13 @@ void LoginManagerMixin::LoginAsNewChildUser() {
   AttemptLoginUsingAuthenticator(
       user_context, std::make_unique<StubAuthenticatorBuilder>(user_context));
   profile_prepared.Wait();
+}
+
+void LoginManagerMixin::SkipPostLoginScreens() {
+  skip_post_login_screens_ = true;
+  if (WizardController::default_controller()) {
+    WizardController::default_controller()->SkipPostLoginScreensForTesting();
+  }
 }
 
 }  // namespace ash

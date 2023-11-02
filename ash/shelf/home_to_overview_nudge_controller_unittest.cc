@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,9 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/controls/contextual_nudge.h"
+#include "ash/controls/contextual_tooltip.h"
 #include "ash/session/session_controller_impl.h"
-#include "ash/shelf/contextual_nudge.h"
-#include "ash/shelf/contextual_tooltip.h"
 #include "ash/shelf/hotseat_widget.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_layout_manager.h"
@@ -19,44 +19,33 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_state.h"
 #include "base/bind.h"
+#include "base/memory/weak_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/views/widget/widget.h"
-#include "ui/views/widget/widget_observer.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
 
-class WidgetCloseObserver : public views::WidgetObserver {
+class WidgetCloseObserver {
  public:
-  WidgetCloseObserver(views::Widget* widget) : widget_(widget) {
-    if (widget_)
-      widget_->AddObserver(this);
-  }
+  explicit WidgetCloseObserver(views::Widget* widget)
+      : widget_(widget->GetWeakPtr()) {}
 
-  ~WidgetCloseObserver() override { CleanupWidget(); }
+  ~WidgetCloseObserver() = default;
 
-  bool WidgetClosed() const { return !widget_; }
-
-  // views::WidgetObserver:
-  void OnWidgetClosing(views::Widget* widget) override { CleanupWidget(); }
-
-  void CleanupWidget() {
-    if (widget_) {
-      widget_->RemoveObserver(this);
-      widget_ = nullptr;
-    }
-  }
+  bool WidgetClosed() const { return !widget_ || widget_->IsClosed(); }
 
  private:
-  views::Widget* widget_;
+  base::WeakPtr<views::Widget> widget_;
 };
 
 class HomeToOverviewNudgeControllerWithNudgesDisabledTest : public AshTestBase {
@@ -141,16 +130,14 @@ class HomeToOverviewNudgeControllerTest : public AshTestBase {
     ASSERT_TRUE(nudge_widget);
     EXPECT_TRUE(nudge_widget->IsVisible());
 
-    gfx::RectF nudge_bounds_f(
-        nudge_widget->GetNativeWindow()->GetTargetBounds());
-    nudge_widget->GetLayer()->transform().TransformRect(&nudge_bounds_f);
-    const gfx::Rect nudge_bounds = gfx::ToEnclosingRect(nudge_bounds_f);
+    const gfx::Rect nudge_bounds =
+        nudge_widget->GetLayer()->transform().MapRect(
+            nudge_widget->GetNativeWindow()->GetTargetBounds());
 
     HotseatWidget* const hotseat = GetHotseatWidget();
-    gfx::RectF hotseat_bounds_f(hotseat->GetNativeWindow()->GetTargetBounds());
-    hotseat->GetLayerForNudgeAnimation()->transform().TransformRect(
-        &hotseat_bounds_f);
-    const gfx::Rect hotseat_bounds = gfx::ToEnclosingRect(hotseat_bounds_f);
+    const gfx::Rect hotseat_bounds =
+        hotseat->GetLayerForNudgeAnimation()->transform().MapRect(
+            hotseat->GetNativeWindow()->GetTargetBounds());
 
     // Nudge and hotseat should have the same transform.
     EXPECT_EQ(hotseat->GetLayerForNudgeAnimation()->transform(),
@@ -295,9 +282,6 @@ TEST_F(HomeToOverviewNudgeControllerTest, ShownOnHomeScreen) {
   EXPECT_FALSE(GetNudgeController()->nudge_for_testing());
   EXPECT_EQ(gfx::Transform(),
             GetHotseatWidget()->GetLayerForNudgeAnimation()->transform());
-  histogram_tester.ExpectBucketCount(
-      "Ash.ContextualNudgeDismissContext.HomeToOverview",
-      contextual_tooltip::DismissNudgeReason::kTimeout, 1);
 }
 
 // Tests that the nudge eventually stops showing.
@@ -347,10 +331,6 @@ TEST_F(HomeToOverviewNudgeControllerTest, HiddenOnTabletModeExit) {
   EXPECT_EQ(
       gfx::Transform(),
       GetHotseatWidget()->GetLayerForNudgeAnimation()->GetTargetTransform());
-
-  histogram_tester.ExpectBucketCount(
-      "Ash.ContextualNudgeDismissContext.HomeToOverview",
-      contextual_tooltip::DismissNudgeReason::kOther, 1);
 }
 
 // Tests that the nudge show is canceled when tablet mode exits.
@@ -546,10 +526,6 @@ TEST_F(HomeToOverviewNudgeControllerTest, TapOnTheNudgeClosesTheNudge) {
   EXPECT_EQ(
       gfx::Transform(),
       GetHotseatWidget()->GetLayerForNudgeAnimation()->GetTargetTransform());
-
-  histogram_tester.ExpectBucketCount(
-      "Ash.ContextualNudgeDismissContext.HomeToOverview",
-      contextual_tooltip::DismissNudgeReason::kTap, 1);
 }
 
 TEST_F(HomeToOverviewNudgeControllerTest, TapOnTheNudgeDuringShowAnimation) {

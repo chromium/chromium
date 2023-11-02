@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,7 @@
 namespace ui {
 
 class AXPlatformNodeBase;
+class AXPlatformNodeDelegate;
 
 struct AXAnnouncementSpec {
   AXAnnouncementSpec();
@@ -34,6 +35,20 @@ AX_EXPORT
 // Determines if this object is alive, i.e. it hasn't been detached.
 - (BOOL)instanceActive;
 
+// Returns true if this accessible element should be included into the ax tree.
+- (BOOL)isIncludedInPlatformTree;
+
+// Returns true if this object should expose its accessible name using
+// accessibilityLabel (legacy AXDescription attribute).
+- (BOOL)isNameFromLabel;
+
+// Returns an accessible element serving as a title UI element, an element
+// representing the accessible name of the object and which is exposed via
+// accessibilityTitleUIElement (or AXTitleUIElement legacy attribute) not via
+// accessibilityTitle (or legacy AXTitle attribute) or accessibilityLabel
+// (legacy AXDescription attribute).
+- (id)titleUIElement;
+
 // Maps AX roles to native roles. Returns NSAccessibilityUnknownRole if not
 // found.
 + (NSString*)nativeRoleFromAXRole:(ax::mojom::Role)role;
@@ -49,6 +64,7 @@ AX_EXPORT
 
 @property(nonatomic, readonly) NSRect boundsInScreen;
 @property(nonatomic, readonly) ui::AXPlatformNodeBase* node;
+@property(nonatomic, readonly) ui::AXPlatformNodeDelegate* nodeDelegate;
 
 // Returns the data necessary to queue an NSAccessibility announcement if
 // |eventType| should be announced, or nullptr otherwise.

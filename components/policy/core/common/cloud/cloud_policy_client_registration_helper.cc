@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -117,12 +117,14 @@ void CloudPolicyClientRegistrationHelper::StartRegistrationWithEnrollmentToken(
     const std::string& token,
     const std::string& client_id,
     const ClientDataDelegate& client_data_delegate,
+    bool is_mandatory,
     base::OnceClosure callback) {
   DVLOG(1) << "Starting registration process with enrollment token";
   DCHECK(!client_->is_registered());
   callback_ = std::move(callback);
   client_->AddObserver(this);
-  client_->RegisterWithToken(token, client_id, client_data_delegate);
+  client_->RegisterWithToken(token, client_id, client_data_delegate,
+                             is_mandatory);
 }
 
 void CloudPolicyClientRegistrationHelper::OnTokenFetched(
@@ -154,9 +156,9 @@ void CloudPolicyClientRegistrationHelper::OnGetUserInfoFailure(
 }
 
 void CloudPolicyClientRegistrationHelper::OnGetUserInfoSuccess(
-    const base::DictionaryValue* data) {
+    const base::Value::Dict& data) {
   user_info_fetcher_.reset();
-  if (!data->HasKey(kGetHostedDomainKey)) {
+  if (!data.Find(kGetHostedDomainKey)) {
     DVLOG(1) << "User not from a hosted domain - skipping registration";
     RequestCompleted();
     return;

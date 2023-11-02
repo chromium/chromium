@@ -1,10 +1,12 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_SYSTEM_OBSERVER_H_
 #define CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_SYSTEM_OBSERVER_H_
 
+#include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
@@ -30,6 +32,8 @@ class NotificationSystemObserver : public content::NotificationObserver,
   ~NotificationSystemObserver() override;
 
  protected:
+  void OnAppTerminating();
+
   // content::NotificationObserver override.
   void Observe(int type,
                const content::NotificationSource& source,
@@ -44,7 +48,8 @@ class NotificationSystemObserver : public content::NotificationObserver,
  private:
   // Registrar for the other kind of notifications (event signaling).
   content::NotificationRegistrar registrar_;
-  NotificationUIManager* ui_manager_;
+  base::CallbackListSubscription on_app_terminating_subscription_;
+  raw_ptr<NotificationUIManager> ui_manager_;
 
   base::ScopedMultiSourceObservation<extensions::ExtensionRegistry,
                                      extensions::ExtensionRegistryObserver>

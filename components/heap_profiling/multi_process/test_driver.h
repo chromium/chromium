@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -131,7 +131,7 @@ class TestDriver {
   size_t total_variadic_allocations_ = 0;
 
   // Use to make PA allocations, which should also be shimmed.
-  base::PartitionAllocator partition_allocator_;
+  partition_alloc::PartitionAllocator partition_allocator_;
 
   // Contains nothing until |CollectResults| has been called.
   std::string serialized_trace_;

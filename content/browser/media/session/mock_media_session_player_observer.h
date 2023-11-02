@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,10 @@
 #include <stddef.h>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "content/browser/media/session/media_session_player_observer.h"
+#include "content/public/browser/global_routing_id.h"
 #include "media/audio/audio_device_description.h"
 #include "services/media_session/public/cpp/media_position.h"
 
@@ -99,7 +101,7 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
   // player_id. The value of the vector is the playing status and volume.
   std::vector<MockPlayer> players_;
 
-  RenderFrameHost* render_frame_host_;
+  absl::optional<GlobalRenderFrameHostId> render_frame_host_global_id_;
 
   int received_resume_calls_ = 0;
   int received_suspend_calls_ = 0;

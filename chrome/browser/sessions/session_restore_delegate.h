@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/token.h"
 #include "components/sessions/core/session_id.h"
@@ -31,6 +32,8 @@ class SessionRestoreDelegate {
     RestoredTab(const RestoredTab&);
     RestoredTab& operator=(const RestoredTab&);
 
+    ~RestoredTab();
+
     bool operator<(const RestoredTab& right) const;
 
     content::WebContents* contents() const { return contents_; }
@@ -43,7 +46,7 @@ class SessionRestoreDelegate {
     }
 
    private:
-    content::WebContents* contents_;
+    raw_ptr<content::WebContents> contents_;
     bool is_active_;
     bool is_app_;            // Browser window is an app.
     bool is_internal_page_;  // Internal web UI page, like NTP or Settings.

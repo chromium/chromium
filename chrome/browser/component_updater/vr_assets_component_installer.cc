@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,12 +10,10 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/path_service.h"
-#include "base/task/post_task.h"
 #include "base/version.h"
 #include "build/build_config.h"
 #include "chrome/browser/vr/assets_loader.h"
@@ -24,10 +22,10 @@
 #include "components/component_updater/component_updater_service.h"
 #include "components/crx_file/id_util.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
 #include "chrome/android/chrome_jni_headers/VrAssetsComponentInstaller_jni.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 using component_updater::ComponentUpdateService;
 
@@ -55,12 +53,12 @@ bool VrAssetsComponentInstallerPolicy::ondemand_update_pending_ = false;
 // static
 bool VrAssetsComponentInstallerPolicy::
     ShouldRegisterVrAssetsComponentOnStartup() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return Java_VrAssetsComponentInstaller_shouldRegisterOnStartup(
       base::android::AttachCurrentThread());
-#else   // defined(OS_ANDROID)
+#else   // BUILDFLAG(IS_ANDROID)
   return false;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 // static
@@ -173,7 +171,7 @@ base::FilePath VrAssetsComponentInstallerPolicy::GetRelativeInstallDir() const {
 void VrAssetsComponentInstallerPolicy::GetHash(
     std::vector<uint8_t>* hash) const {
   hash->assign(kVrAssetsPublicKeySHA256,
-               kVrAssetsPublicKeySHA256 + base::size(kVrAssetsPublicKeySHA256));
+               kVrAssetsPublicKeySHA256 + std::size(kVrAssetsPublicKeySHA256));
 }
 
 std::string VrAssetsComponentInstallerPolicy::GetName() const {

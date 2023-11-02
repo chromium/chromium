@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,13 +11,12 @@
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ui/app_list/chrome_app_list_item.h"
-#include "chrome/browser/ui/app_list/reorder/app_list_reorder_delegate.h"
 #include "extensions/common/constants.h"
 
 FakeAppListModelUpdater::FakeAppListModelUpdater(
     Profile* profile,
-    app_list::AppListReorderDelegate* order_delegate)
-    : profile_(profile), order_delegate_(order_delegate) {}
+    app_list::reorder::AppListReorderDelegate* order_delegate)
+    : profile_(profile) {}
 
 FakeAppListModelUpdater::~FakeAppListModelUpdater() = default;
 
@@ -25,15 +24,17 @@ void FakeAppListModelUpdater::AddItem(std::unique_ptr<ChromeAppListItem> item) {
   items_.push_back(std::move(item));
 }
 
-void FakeAppListModelUpdater::AddItemToFolder(
+void FakeAppListModelUpdater::AddAppItemToFolder(
     std::unique_ptr<ChromeAppListItem> item,
-    const std::string& folder_id) {
+    const std::string& folder_id,
+    bool add_from_local) {
   ChromeAppListItem::TestApi test_api(item.get());
   test_api.SetFolderId(folder_id);
   items_.push_back(std::move(item));
 }
 
-void FakeAppListModelUpdater::RemoveItem(const std::string& id) {
+void FakeAppListModelUpdater::RemoveItem(const std::string& id,
+                                         bool is_uninstall) {
   size_t index;
   if (FindItemIndexForTest(id, &index)) {
     const std::string folder_id = items_[index]->folder_id();
@@ -49,16 +50,14 @@ void FakeAppListModelUpdater::RemoveItem(const std::string& id) {
         ++folder_item_count;
     }
     if (!folder_item_count)
-      RemoveItem(folder_id);
+      RemoveItem(folder_id, is_uninstall);
   }
 }
 
-void FakeAppListModelUpdater::RemoveUninstalledItem(const std::string& id) {
-  RemoveItem(id);
-}
-
-void FakeAppListModelUpdater::SetItemIcon(const std::string& id,
-                                          const gfx::ImageSkia& icon) {
+void FakeAppListModelUpdater::SetItemIconAndColor(
+    const std::string& id,
+    const gfx::ImageSkia& icon,
+    const ash::IconColor& icon_color) {
   ++update_image_count_;
   if (update_image_count_ == expected_update_image_count_ &&
       !icon_updated_callback_.is_null()) {
@@ -132,6 +131,15 @@ std::vector<ChromeAppListItem*> FakeAppListModelUpdater::GetTopLevelItems()
   return top_level_items;
 }
 
+std::set<std::string> FakeAppListModelUpdater::GetTopLevelItemIds() const {
+  std::set<std::string> item_ids;
+  for (auto& item : items_) {
+    if (item->folder_id().empty())
+      item_ids.insert(item->id());
+  }
+  return item_ids;
+}
+
 ChromeAppListItem* FakeAppListModelUpdater::ItemAtForTest(size_t index) {
   return index < items_.size() ? items_[index].get() : nullptr;
 }
@@ -168,18 +176,9 @@ syncer::StringOrdinal FakeAppListModelUpdater::GetPositionBeforeFirstItem()
 
 void FakeAppListModelUpdater::GetContextMenuModel(
     const std::string& id,
+    ash::AppListItemContext item_context,
     GetMenuModelCallback callback) {
   std::move(callback).Run(nullptr);
-}
-
-syncer::StringOrdinal FakeAppListModelUpdater::CalculatePositionForNewItem(
-    const ChromeAppListItem& new_item) {
-  // TODO(https://crbug.com/1260875): handle the case that `new_item` is a
-  // folder.
-  if (!ash::features::IsLauncherAppSortEnabled() || new_item.is_folder())
-    return GetFirstAvailablePosition();
-
-  return order_delegate_->CalculatePositionForNewItem(new_item, GetItems());
 }
 
 void FakeAppListModelUpdater::ActivateChromeItem(const std::string& id,
@@ -204,6 +203,10 @@ void FakeAppListModelUpdater::PublishSearchResults(
     const std::vector<ChromeSearchResult*>& results,
     const std::vector<ash::AppListSearchResultCategory>& categories) {
   search_results_ = results;
+}
+
+void FakeAppListModelUpdater::ClearSearchResults() {
+  search_results_.clear();
 }
 
 void FakeAppListModelUpdater::UpdateAppItemFromSyncItem(

@@ -1,8 +1,10 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/accessibility/autoclick/autoclick_controller.h"
+
+#include <tuple>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/accessibility/autoclick/autoclick_drag_event_rewriter.h"
@@ -18,7 +20,6 @@
 #include "ash/wm/fullscreen_window_finder.h"
 #include "ash/wm/window_util.h"
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/timer/timer.h"
@@ -252,7 +253,7 @@ void AutoclickController::DoScrollAction(ScrollPadAction action) {
                          0 /* x_offset_ordinal */, 0 /* y_offset_ordinal */,
                          2 /* finger_count */);
   ui::MouseWheelEvent wheel(scroll);
-  ignore_result(host->GetEventSink()->OnEventFromSource(&wheel));
+  std::ignore = host->GetEventSink()->OnEventFromSource(&wheel);
 }
 
 void AutoclickController::OnEnteredScrollButton() {
@@ -451,8 +452,9 @@ void AutoclickController::OnActionCompleted(
   // No need to change to left click if the setting is not enabled or the
   // event that just executed already was a left click.
   if (!revert_to_left_click_ || event_type_ == AutoclickEventType::kLeftClick ||
-      completed_event_type == AutoclickEventType::kLeftClick)
+      completed_event_type == AutoclickEventType::kLeftClick) {
     return;
+  }
   // Change the preference, but set it locally so we do not reset any state when
   // AutoclickController::SetAutoclickEventType is called.
   event_type_ = AutoclickEventType::kLeftClick;
@@ -651,9 +653,9 @@ void AutoclickController::OnScrollEvent(ui::ScrollEvent* event) {
   // A single tap can create a scroll event, so ignore scroll starts and
   // cancels but cancel autoclicks when scrolls actually occur.
   if (event->type() == ui::EventType::ET_SCROLL_FLING_START ||
-      event->type() == ui::EventType::ET_SCROLL_FLING_CANCEL)
+      event->type() == ui::EventType::ET_SCROLL_FLING_CANCEL) {
     return;
-
+  }
   CancelAutoclickAction();
 }
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,7 +28,7 @@
 #include "url/origin.h"
 
 // TODO(crbug.com/722453): Use a dedicated build flag for GuestView.
-#if !defined(OS_ANDROID) && !defined(OS_IOS) && !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA)
 #include "components/guest_view/browser/guest_view_base.h"  // nogncheck
 #endif
 
@@ -89,17 +89,16 @@ NoStatePrefetchLinkManager::~NoStatePrefetchLinkManager() {
 absl::optional<int> NoStatePrefetchLinkManager::OnStartLinkTrigger(
     int launcher_render_process_id,
     int launcher_render_view_id,
+    int launcher_render_frame_id,
     blink::mojom::PrerenderAttributesPtr attributes,
     const url::Origin& initiator_origin) {
 // TODO(crbug.com/722453): Use a dedicated build flag for GuestView.
-#if !defined(OS_ANDROID) && !defined(OS_IOS) && !defined(OS_FUCHSIA)
-  content::RenderViewHost* rvh = content::RenderViewHost::FromID(
-      launcher_render_process_id, launcher_render_view_id);
-  content::WebContents* web_contents =
-      rvh ? content::WebContents::FromRenderViewHost(rvh) : nullptr;
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA)
+  content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
+      launcher_render_process_id, launcher_render_frame_id);
   // Guests inside <webview> do not support cross-process navigation and so we
   // do not allow guests to prerender content.
-  if (guest_view::GuestViewBase::IsGuest(web_contents))
+  if (guest_view::GuestViewBase::IsGuest(rfh))
     return absl::nullopt;
 #endif
 

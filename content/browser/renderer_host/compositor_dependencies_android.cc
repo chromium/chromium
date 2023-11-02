@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/no_destructor.h"
 #include "base/system/sys_info.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -40,7 +41,7 @@ void BrowserGpuChannelHostFactorySetApplicationVisible(bool is_visible) {
 // These functions are called based on application visibility status.
 void SendOnBackgroundedToGpuService() {
   content::GpuProcessHost::CallOnIO(
-      content::GPU_PROCESS_KIND_SANDBOXED, false /* force_create */,
+      FROM_HERE, content::GPU_PROCESS_KIND_SANDBOXED, false /* force_create */,
       base::BindOnce([](content::GpuProcessHost* host) {
         if (host) {
           host->gpu_service()->OnBackgrounded();
@@ -50,7 +51,7 @@ void SendOnBackgroundedToGpuService() {
 
 void SendOnForegroundedToGpuService() {
   content::GpuProcessHost::CallOnIO(
-      content::GPU_PROCESS_KIND_SANDBOXED, false /* force_create */,
+      FROM_HERE, content::GPU_PROCESS_KIND_SANDBOXED, false /* force_create */,
       base::BindOnce([](content::GpuProcessHost* host) {
         if (host) {
           host->gpu_service()->OnForegrounded();
@@ -168,7 +169,7 @@ void CompositorDependenciesAndroid::DoLowEndBackgroundCleanup() {
   // Next, notify the GPU process to do background processing, which will
   // lose all renderer contexts.
   content::GpuProcessHost::CallOnIO(
-      content::GPU_PROCESS_KIND_SANDBOXED, false /* force_create */,
+      FROM_HERE, content::GPU_PROCESS_KIND_SANDBOXED, false /* force_create */,
       base::BindOnce([](content::GpuProcessHost* host) {
         if (host) {
           host->gpu_service()->OnBackgroundCleanup();

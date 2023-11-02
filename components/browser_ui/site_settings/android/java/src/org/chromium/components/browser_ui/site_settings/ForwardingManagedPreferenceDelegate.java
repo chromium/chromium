@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,7 @@ import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
  * will forward to the base implementation, which will typically be the embedder-provided
  * ManagedPreferenceDelegate instance.
  */
-class ForwardingManagedPreferenceDelegate implements ManagedPreferenceDelegate {
+public class ForwardingManagedPreferenceDelegate implements ManagedPreferenceDelegate {
     private final ManagedPreferenceDelegate mBase;
 
     public ForwardingManagedPreferenceDelegate(ManagedPreferenceDelegate base) {

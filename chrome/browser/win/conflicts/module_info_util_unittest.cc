@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/base_paths.h"
-#include "base/cxx17_backports.h"
 #include "base/environment.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -115,7 +114,7 @@ TEST(ModuleInfoUtilTest, CollapseMatchingPrefixInPath) {
       std::make_pair(u"c:\\foo\\bar", u"%x%"),
   };
 
-  for (size_t i = 0; i < base::size(kCollapsePathList); ++i) {
+  for (size_t i = 0; i < std::size(kCollapsePathList); ++i) {
     std::u16string test_case = kCollapsePathList[i].test_case;
     CollapseMatchingPrefixInPath(string_mapping, &test_case);
     EXPECT_EQ(kCollapsePathList[i].expected_result, test_case);

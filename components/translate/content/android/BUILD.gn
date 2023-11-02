@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -30,6 +30,9 @@ android_library("java") {
     "java/src/org/chromium/components/translate/TranslateFeatureList.java",
     "java/src/org/chromium/components/translate/TranslateMenu.java",
     "java/src/org/chromium/components/translate/TranslateMenuHelper.java",
+    "java/src/org/chromium/components/translate/TranslateMessage.java",
+    "java/src/org/chromium/components/translate/TranslateMessageSecondaryMenu.java",
+    "java/src/org/chromium/components/translate/TranslateMessageSecondaryMenuAdapter.java",
     "java/src/org/chromium/components/translate/TranslateOptions.java",
     "java/src/org/chromium/components/translate/TranslateTabContent.java",
     "java/src/org/chromium/components/translate/TranslateTabLayout.java",
@@ -38,11 +41,16 @@ android_library("java") {
   deps = [
     ":java_resources",
     "//base:base_java",
+    "//base:jni_java",
+    "//build/android:build_java",
     "//components/browser_ui/widget/android:java",
+    "//components/messages/android:java",
+    "//content/public/android:content_java",
     "//third_party/android_deps:material_design_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_core_core_java",
+    "//ui/android:ui_java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
@@ -50,6 +58,8 @@ android_library("java") {
 static_library("android") {
   sources = [
     "translate_feature_list.cc",
+    "translate_message.cc",
+    "translate_message.h",
     "translate_utils.cc",
     "translate_utils.h",
   ]
@@ -58,14 +68,21 @@ static_library("android") {
     ":jni_headers",
     "//base",
     "//components/language/core/common",
+    "//components/messages/android",
     "//components/metrics",
+    "//components/strings:components_strings_grit",
     "//components/translate/core/browser",
+    "//components/translate/core/common",
+    "//content/public/browser",
+    "//ui/base",
   ]
 }
 
 generate_jni("jni_headers") {
-  sources =
-      [ "java/src/org/chromium/components/translate/TranslateFeatureList.java" ]
+  sources = [
+    "java/src/org/chromium/components/translate/TranslateFeatureList.java",
+    "java/src/org/chromium/components/translate/TranslateMessage.java",
+  ]
 }
 
 java_cpp_enum("translate_android_enums") {
@@ -78,33 +95,55 @@ android_library("translate_android_enums_java") {
   srcjar_deps = [ ":translate_android_enums" ]
 }
 
-android_library("javatests") {
-  testonly = true
-  sources =
-      [ "java/src/org/chromium/components/translate/TranslateOptionsTest.java" ]
+robolectric_library("junit") {
+  sources = [
+    "java/src/org/chromium/components/translate/TranslateMessageTest.java",
+    "java/src/org/chromium/components/translate/TranslateOptionsTest.java",
+  ]
   deps = [
     ":java",
     "//base:base_java",
     "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//components/browser_ui/widget/android:java",
+    "//components/messages/android:java",
+    "//content/public/android:content_java",
+    "//third_party/android_deps:robolectric_all_java",
     "//third_party/android_support_test_runner:rules_java",
     "//third_party/android_support_test_runner:runner_java",
-    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "translate_utils_unittest.cc" ]
+  sources = [
+    "translate_message_unittest.cc",
+    "translate_utils_unittest.cc",
+  ]
   deps = [
     ":android",
     "//base",
+    "//base/test:test_support",
     "//components/infobars/core",
-    "//components/metrics:metrics",
+    "//components/language/core/browser",
+    "//components/language/core/browser:test_support",
+    "//components/language/core/common",
+    "//components/messages/android",
+    "//components/metrics",
+    "//components/pref_registry:pref_registry",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//components/sync_preferences:test_support",
+    "//components/translate/core/browser",
     "//components/translate/core/browser:test_support",
+    "//components/translate/core/common",
     "//testing/gmock",
     "//testing/gtest",
+    "//url",
   ]
 }

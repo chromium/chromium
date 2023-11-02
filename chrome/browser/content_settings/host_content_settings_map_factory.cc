@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,6 @@
 #include "chrome/common/buildflags.h"
 #include "components/content_settings/core/browser/content_settings_pref_provider.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/permissions/features.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/buildflags/buildflags.h"
@@ -25,8 +24,8 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "base/trace_event/trace_event.h"
-#include "chrome/browser/extensions/api/content_settings/content_settings_custom_extension_provider.h"
-#include "chrome/browser/extensions/api/content_settings/content_settings_service.h"
+#include "extensions/browser/api/content_settings/content_settings_custom_extension_provider.h"
+#include "extensions/browser/api/content_settings/content_settings_service.h"
 #endif
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
@@ -36,20 +35,20 @@
 #include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/installable/installed_webapp_provider.h"
 #include "chrome/browser/notifications/notification_channels_provider_android.h"
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
 #include "chrome/browser/sessions/exit_type_service_factory.h"
 #endif
 
 HostContentSettingsMapFactory::HostContentSettingsMapFactory()
-    : RefcountedBrowserContextKeyedServiceFactory(
-        "HostContentSettingsMap",
-        BrowserContextDependencyManager::GetInstance()) {
+    : RefcountedProfileKeyedServiceFactory(
+          "HostContentSettingsMap",
+          ProfileSelections::BuildForRegularAndIncognito()) {
   DependsOn(LastTabStandingTrackerFactory::GetInstance());
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   DependsOn(SupervisedUserSettingsServiceFactory::GetInstance());
@@ -144,7 +143,7 @@ scoped_refptr<RefcountedKeyedService>
   }
 #endif // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (!profile->IsOffTheRecord()) {
     auto channels_provider =
         std::make_unique<NotificationChannelsProviderAndroid>();
@@ -168,9 +167,4 @@ scoped_refptr<RefcountedKeyedService>
   }
 #endif  // defined (OS_ANDROID)
   return settings_map;
-}
-
-content::BrowserContext* HostContentSettingsMapFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return context;
 }

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,6 +17,10 @@ namespace rollback_network_config {
 // Returns the value of the given key. This will crash if string value can not
 // be found.
 std::string GetStringValue(const base::Value& network, const std::string& key);
+
+// Returns the value of the given key. This will crash if bool value can not be
+// found.
+bool GetBoolValue(const base::Value& network, const std::string& key);
 
 // Managed ONC
 
@@ -67,6 +71,7 @@ bool OncIsEapWithoutClientCertificate(const base::Value& network);
 std::string OncGetEapIdentity(const base::Value& network);
 std::string OncGetEapInner(const base::Value& network);
 std::string OncGetEapOuter(const base::Value& network);
+bool OncGetEapSaveCredentials(const base::Value& network);
 std::string OncGetEapPassword(const base::Value& network);
 std::string OncGetEapClientCertType(const base::Value& network);
 std::string OncGetEapClientCertPKCS11Id(const base::Value& network);

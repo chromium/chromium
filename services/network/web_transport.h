@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/containers/queue.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -22,7 +22,7 @@ class Origin;
 }  // namespace url
 
 namespace net {
-class NetworkIsolationKey;
+class NetworkAnonymizationKey;
 }  // namespace net
 
 namespace network {
@@ -46,7 +46,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebTransport final
   WebTransport(
       const GURL& url,
       const url::Origin& origin,
-      const net::NetworkIsolationKey& key,
+      const net::NetworkAnonymizationKey& key,
       const std::vector<mojom::WebTransportCertificateFingerprintPtr>&
           fingerprints,
       NetworkContext* context,
@@ -90,7 +90,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebTransport final
   void Dispose();
 
   const std::unique_ptr<net::WebTransportClient> transport_;
-  NetworkContext* const context_;  // outlives |this|.
+  const raw_ptr<NetworkContext> context_;  // outlives |this|.
 
   std::map<uint32_t, std::unique_ptr<Stream>> streams_;
 

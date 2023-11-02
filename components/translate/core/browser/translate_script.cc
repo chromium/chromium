@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include "base/command_line.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -21,7 +22,6 @@
 #include "components/translate/core/common/translate_util.h"
 #include "components/variations/variations_associated_data.h"
 #include "google_apis/google_api_keys.h"
-#include "net/base/escape.h"
 #include "net/base/url_util.h"
 #include "ui/base/resource/resource_bundle.h"
 
@@ -144,14 +144,14 @@ void TranslateScript::OnScriptFetchComplete(bool success,
     data_.append(ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
         IDR_TRANSLATE_JS));
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
     // Append snippet to install callbacks on translate.js if available.
     const char* install_callbacks =
         "try {"
         "  __gCrWeb.translate.installCallbacks();"
         "} catch (error) {};";
     data_.append(install_callbacks);
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 
     // Wrap |data| in try/catch block to handle unexpected script errors.
     const char* format =

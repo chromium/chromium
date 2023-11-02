@@ -1,8 +1,9 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/loader/interactive_detector.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/profiler/sample_metadata.h"
 #include "base/time/default_tick_clock.h"
@@ -36,10 +37,6 @@ constexpr base::TimeDelta kFirstInputDelayTraceEventThreshold =
 
 }  // namespace
 
-// A fix for FID computation.
-const base::Feature kFixFirstInputDelayForDesktop{
-    "FixFirstInputDelayForDesktop", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Required length of main thread and network quiet window for determining
 // Time to Interactive.
 constexpr auto kTimeToInteractiveWindow = base::Seconds(5);
@@ -50,6 +47,10 @@ constexpr int kNetworkQuietMaximumConnections = 2;
 const char kHistogramInputDelay[] = "PageLoad.InteractiveTiming.InputDelay3";
 const char kHistogramInputTimestamp[] =
     "PageLoad.InteractiveTiming.InputTimestamp3";
+const char kHistogramProcessingTime[] =
+    "PageLoad.InteractiveTiming.ProcessingTime";
+const char kHistogramTimeToNextPaint[] =
+    "PageLoad.InteractiveTiming.TimeToNextPaint";
 
 // static
 const char InteractiveDetector::kSupplementName[] = "InteractiveDetector";
@@ -135,7 +136,11 @@ void InteractiveDetector::StartOrPostponeCITimer(
     // the API contract. nullptr should work fine.
     TimeToInteractiveTimerFired(nullptr);
   } else {
-    time_to_interactive_timer_.StartOneShot(delay, FROM_HERE);
+    // The interactive timer can behave non-deterministically when replaying,
+    // for an unknown reason but which may be related to the use of weak pointers
+    // in the timer. Avoid this problem by not setting the timer at all.
+    if (!recordreplay::IsRecordingOrReplaying("no-interactive-detector"))
+      time_to_interactive_timer_.StartOneShot(delay, FROM_HERE);
   }
 }
 
@@ -218,10 +223,6 @@ void InteractiveDetector::HandleForInputDelay(
   if (event_platform_timestamp.is_null())
     return;
 
-  if (event.type() == event_type_names::kMouseup &&
-      !base::FeatureList::IsEnabled(kFixFirstInputDelayForDesktop))
-    return;
-
   // These variables track the values which will be reported to histograms.
   base::TimeDelta delay;
   base::TimeTicks event_timestamp;
@@ -244,24 +245,19 @@ void InteractiveDetector::HandleForInputDelay(
     delay = pending_pointerdown_delay_;
     event_timestamp = pending_pointerdown_timestamp_;
   } else {
-    if (base::FeatureList::IsEnabled(kFixFirstInputDelayForDesktop)) {
-      if (event.type() == event_type_names::kMousedown) {
-        pending_mousedown_delay_ = processing_start - event_platform_timestamp;
-        pending_mousedown_timestamp_ = event_platform_timestamp;
+    if (event.type() == event_type_names::kMousedown) {
+      pending_mousedown_delay_ = processing_start - event_platform_timestamp;
+      pending_mousedown_timestamp_ = event_platform_timestamp;
+      return;
+    } else if (event.type() == event_type_names::kMouseup) {
+      if (pending_mousedown_timestamp_.is_null())
         return;
-      } else if (event.type() == event_type_names::kMouseup) {
-        if (pending_mousedown_timestamp_.is_null())
-          return;
-        delay = pending_mousedown_delay_;
-        event_timestamp = pending_mousedown_timestamp_;
-        pending_mousedown_delay_ = base::TimeDelta();
-        pending_mousedown_timestamp_ = base::TimeTicks();
-      } else {
-        // Record delays for click, keydown.
-        delay = processing_start - event_platform_timestamp;
-        event_timestamp = event_platform_timestamp;
-      }
+      delay = pending_mousedown_delay_;
+      event_timestamp = pending_mousedown_timestamp_;
+      pending_mousedown_delay_ = base::TimeDelta();
+      pending_mousedown_timestamp_ = base::TimeTicks();
     } else {
+      // Record delays for click, keydown.
       delay = processing_start - event_platform_timestamp;
       event_timestamp = event_platform_timestamp;
     }
@@ -303,8 +299,8 @@ void InteractiveDetector::HandleForInputDelay(
     // Apply metadata on stack samples.
     base::ApplyMetadataToPastSamples(
         event_timestamp, event_timestamp + delay,
-        "PageLoad.InteractiveTiming.LongInputDelay", g_num_long_input_events,
-        1);
+        "PageLoad.InteractiveTiming.LongInputDelay", g_num_long_input_events, 1,
+        base::SampleMetadataScope::kProcess);
     g_num_long_input_events++;
   }
 
@@ -313,7 +309,7 @@ void InteractiveDetector::HandleForInputDelay(
   // last element exists and this is nullopt value, the first input has not come
   // yet after the last time when the page is restored from the cache.
   if (!page_event_times_.first_input_delays_after_back_forward_cache_restore
-           .IsEmpty() &&
+           .empty() &&
       !page_event_times_.first_input_delays_after_back_forward_cache_restore
            .back()
            .has_value()) {
@@ -419,8 +415,10 @@ void InteractiveDetector::OnLongTaskDetected(base::TimeTicks start_time,
 
 void InteractiveDetector::OnFirstContentfulPaint(
     base::TimeTicks first_contentful_paint) {
-  // Should not set FCP twice.
-  DCHECK(page_event_times_.first_contentful_paint.is_null());
+  // https://linear.app/replay/issue/RUN-852
+  recordreplay::Assert("InteractiveDetector::OnFirstContentfulPaint");
+
+  // TODO(yoav): figure out what we should do when FCP is set multiple times!
   page_event_times_.first_contentful_paint = first_contentful_paint;
   if (clock_->NowTicks() - first_contentful_paint >= kTimeToInteractiveWindow) {
     // We may have reached TTI already. Check right away.
@@ -432,6 +430,9 @@ void InteractiveDetector::OnFirstContentfulPaint(
 }
 
 void InteractiveDetector::OnDomContentLoadedEnd(base::TimeTicks dcl_end_time) {
+  // https://linear.app/replay/issue/RUN-852
+  recordreplay::Assert("InteractiveDetector::OnDomContentLoadedEnd");
+
   // InteractiveDetector should only receive the first DCL event.
   DCHECK(page_event_times_.dom_content_loaded_end.is_null());
   page_event_times_.dom_content_loaded_end = dcl_end_time;
@@ -460,6 +461,9 @@ void InteractiveDetector::OnPageHiddenChanged(bool is_hidden) {
 }
 
 void InteractiveDetector::TimeToInteractiveTimerFired(TimerBase*) {
+  // https://linear.app/replay/issue/RUN-852
+  recordreplay::Assert("InteractiveDetector::TimeToInteractiveTimerFired");
+
   if (!GetSupplementable() || !interactive_time_.is_null())
     return;
 
@@ -481,7 +485,7 @@ void InteractiveDetector::AddCurrentlyActiveNetworkQuietInterval(
 }
 
 void InteractiveDetector::RemoveCurrentlyActiveNetworkQuietInterval() {
-  if (!network_quiet_windows_.IsEmpty() &&
+  if (!network_quiet_windows_.empty() &&
       network_quiet_windows_.back().Low() ==
           active_network_quiet_window_start_) {
     network_quiet_windows_.pop_back();
@@ -561,6 +565,9 @@ base::TimeTicks InteractiveDetector::FindInteractiveCandidate(
 }
 
 void InteractiveDetector::CheckTimeToInteractiveReached() {
+  // https://linear.app/replay/issue/RUN-852
+  recordreplay::Assert("InteractiveDetector::CheckTimeToInteractiveReached");
+
   // Already detected Time to Interactive.
   if (!interactive_time_.is_null())
     return;
@@ -569,6 +576,9 @@ void InteractiveDetector::CheckTimeToInteractiveReached() {
   if (page_event_times_.first_contentful_paint.is_null() ||
       page_event_times_.dom_content_loaded_end.is_null())
     return;
+
+  // https://linear.app/replay/issue/RUN-852
+  recordreplay::Assert("InteractiveDetector::CheckTimeToInteractiveReached #1");
 
   const base::TimeTicks current_time = clock_->NowTicks();
   if (current_time - page_event_times_.first_contentful_paint <
@@ -692,6 +702,10 @@ void InteractiveDetector::RecordInputEventTimingUKM(
           time_to_next_paint.InMilliseconds())
       .Record(GetUkmRecorder());
 
+  UmaHistogramCustomTimes(kHistogramProcessingTime, processing_time,
+                          base::Milliseconds(1), base::Seconds(60), 50);
+  UmaHistogramCustomTimes(kHistogramTimeToNextPaint, time_to_next_paint,
+                          base::Milliseconds(1), base::Seconds(60), 50);
   if (!page_event_times_.first_input_processing_time) {
     page_event_times_.first_input_processing_time = processing_time;
     if (GetSupplementable()->Loader()) {

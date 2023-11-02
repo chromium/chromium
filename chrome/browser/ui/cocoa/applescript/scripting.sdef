@@ -32,6 +32,11 @@
       <element description="The tabs contained within the window." type="tab">
         <cocoa key="tabs"/>
       </element>
+      <!-- "given name" is the user title as set by Window: Name Window... -->
+      <property name="given name" code="GNam" description="The given name of the window." type="text">
+        <cocoa key="givenName"/>
+      </property>
+      <!-- "name" is an alias for "title" -->
       <property name="name" code="pnam" description="The full title of the window." type="text" access="r">
         <cocoa key="title"/>
       </property>
@@ -265,7 +270,9 @@
         <cocoa key="uniqueID"/>
       </property>
       <property name="title" code="pnam" description="The title of the folder." type="text"/>
-      <property name="index" code="indx" description="Returns the index with respect to its parent bookmark folder" type="number" access="r"/>
+      <property name="index" code="pidx" description="Returns the index with respect to its parent bookmark folder." type="number" access="r">
+        <cocoa key="index"/>
+      </property>
     </class>
 
     <class name="bookmark item" code="CrBI" description="An item consists of an URL and the title of a bookmark">
@@ -275,7 +282,9 @@
       </property>
       <property name="title" code="pnam" description="The title of the bookmark item." type="text"/>
       <property name="URL" code="URL " description="The URL of the bookmark." type="text"/>
-      <property name="index" code="indx" description="Returns the index with respect to its parent bookmark folder" type="number" access="r"/>
+      <property name="index" code="pidx" description="Returns the index with respect to its parent bookmark folder." type="number" access="r">
+        <cocoa key="index"/>
+      </property>
     </class>
 
     <command name="reload" code="CrSuRlod" description="Reload a tab.">

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,10 @@
 
 #include <memory>
 
+#include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "base/files/file_path.h"
 #include "ui/aura/client/aura_constants.h"
@@ -50,8 +52,11 @@ FolderSelectionDialogController::FolderSelectionDialogController(
     Delegate* delegate,
     aura::Window* root)
     : delegate_(delegate),
+      // The SettingBubbleContainer was chosen since it's below the virtual
+      // keyboard container, and therefore users can use the VK to interact with
+      // this dialog e.g. to rename a folder.
       dialog_background_dimmer_(
-          root->GetChildById(kShellWindowId_OverlayContainer)),
+          root->GetChildById(kShellWindowId_SettingBubbleContainer)),
       select_folder_dialog_(ui::SelectFileDialog::Create(
           /*listener=*/this,
           std::make_unique<NullSelectFolderPolicy>())) {
@@ -63,9 +68,7 @@ FolderSelectionDialogController::FolderSelectionDialogController(
   owner->SetId(kShellWindowId_CaptureModeFolderSelectionDialogOwner);
   window_observation_.Observe(wm::TransientWindowManager::GetOrCreate(owner));
 
-  dialog_background_dimmer_.SetDimColor(
-      AshColorProvider::Get()->GetShieldLayerColor(
-          AshColorProvider::ShieldLayerType::kShield40));
+  dialog_background_dimmer_.SetDimColor(kColorAshShieldAndBase40);
   owner->Show();
 
   select_folder_dialog_->SelectFile(
@@ -89,7 +92,24 @@ bool FolderSelectionDialogController::ShouldConsumeEvent(
   if (!dialog_window_)
     return true;
 
-  return !IsEventTargetingWindowInSubtree(event, dialog_window_);
+  if (IsEventTargetingWindowInSubtree(event, dialog_window_))
+    return false;
+
+  // The event maybe targeting a virtual keyboard window that is being used to
+  // interact with the dialog. In this case the event should not be consumed.
+  auto* keyboard_ui_controller = keyboard::KeyboardUIController::Get();
+  DCHECK(keyboard_ui_controller);
+
+  if (!keyboard_ui_controller->IsKeyboardVisible())
+    return true;
+
+  auto* keyboard_window = keyboard_ui_controller->GetKeyboardWindow();
+  if (!keyboard_window ||
+      keyboard_window->GetRootWindow() != dialog_window_->GetRootWindow()) {
+    return true;
+  }
+
+  return !IsEventTargetingWindowInSubtree(event, keyboard_window);
 }
 
 void FolderSelectionDialogController::FileSelected(const base::FilePath& path,
@@ -115,6 +135,8 @@ void FolderSelectionDialogController::OnTransientChildAdded(
   widget_delegate->SetCanResize(false);
   widget_delegate->SetCanMinimize(false);
   widget_delegate->SetCanMaximize(false);
+
+  delegate_->OnSelectionWindowAdded();
 
   if (on_dialog_window_added_callback_for_test_)
     std::move(on_dialog_window_added_callback_for_test_).Run();

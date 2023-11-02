@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,6 @@
 #include "third_party/blink/renderer/modules/indexeddb/indexed_db_dispatcher.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
-
 namespace blink {
 
 WebIDBDatabase::WebIDBDatabase(
@@ -68,8 +67,8 @@ void WebIDBDatabase::Get(int64_t transaction_id,
   callbacks->SetState(nullptr, transaction_id);
   database_->Get(transaction_id, object_store_id, index_id,
                  std::move(key_range_ptr), key_only,
-                 WTF::Bind(&WebIDBDatabase::GetCallback, WTF::Unretained(this),
-                           std::move(callbacks)));
+                 WTF::BindOnce(&WebIDBDatabase::GetCallback,
+                               WTF::Unretained(this), std::move(callbacks)));
 }
 
 void WebIDBDatabase::GetCallback(std::unique_ptr<WebIDBCallbacks> callbacks,
@@ -100,6 +99,41 @@ void WebIDBDatabase::GetCallback(std::unique_ptr<WebIDBCallbacks> callbacks,
   }
 }
 
+void WebIDBDatabase::BatchGetAll(
+    int64_t transaction_id,
+    int64_t object_store_id,
+    int64_t index_id,
+    Vector<mojom::blink::IDBKeyRangePtr> key_range_ptrs,
+    uint32_t max_count,
+    WebIDBCallbacks* callbacks_ptr) {
+  std::unique_ptr<WebIDBCallbacks> callbacks(callbacks_ptr);
+  IndexedDBDispatcher::ResetCursorPrefetchCaches(transaction_id, nullptr);
+
+  callbacks->SetState(nullptr, transaction_id);
+  database_->BatchGetAll(
+      transaction_id, object_store_id, index_id, std::move(key_range_ptrs),
+      max_count,
+      WTF::BindOnce(&WebIDBDatabase::BatchGetAllCallback, WTF::Unretained(this),
+                    std::move(callbacks)));
+}
+
+void WebIDBDatabase::BatchGetAllCallback(
+    std::unique_ptr<WebIDBCallbacks> callbacks,
+    mojom::blink::IDBDatabaseBatchGetAllResultPtr result) {
+  if (result->is_error_result()) {
+    callbacks->Error(result->get_error_result()->error_code,
+                     std::move(result->get_error_result()->error_message));
+    callbacks.reset();
+    return;
+  }
+
+  if (result->is_values()) {
+    callbacks->SuccessArrayArray(std::move(result->get_values()));
+    callbacks.reset();
+    return;
+  }
+}
+
 void WebIDBDatabase::GetAll(int64_t transaction_id,
                             int64_t object_store_id,
                             int64_t index_id,
@@ -116,8 +150,8 @@ void WebIDBDatabase::GetAll(int64_t transaction_id,
   database_->GetAll(
       transaction_id, object_store_id, index_id, std::move(key_range_ptr),
       key_only, max_count,
-      WTF::Bind(&WebIDBDatabase::GetAllCallback, WTF::Unretained(this),
-                std::move(callbacks), key_only));
+      WTF::BindOnce(&WebIDBDatabase::GetAllCallback, WTF::Unretained(this),
+                    std::move(callbacks), key_only));
 }
 
 void WebIDBDatabase::GetAllCallback(
@@ -156,11 +190,11 @@ void WebIDBDatabase::OpenCursor(int64_t transaction_id,
   mojom::blink::IDBKeyRangePtr key_range_ptr =
       mojom::blink::IDBKeyRange::From(key_range);
   callbacks->SetState(nullptr, transaction_id);
-  database_->OpenCursor(transaction_id, object_store_id, index_id,
-                        std::move(key_range_ptr), direction, key_only,
-                        task_type,
-                        WTF::Bind(&WebIDBDatabase::OpenCursorCallback,
-                                  WTF::Unretained(this), std::move(callbacks)));
+  database_->OpenCursor(
+      transaction_id, object_store_id, index_id, std::move(key_range_ptr),
+      direction, key_only, task_type,
+      WTF::BindOnce(&WebIDBDatabase::OpenCursorCallback, WTF::Unretained(this),
+                    std::move(callbacks)));
 }
 
 void WebIDBDatabase::OpenCursorCallback(

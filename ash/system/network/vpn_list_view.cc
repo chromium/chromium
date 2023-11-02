@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,13 +8,13 @@
 #include <vector>
 
 #include "ash/constants/ash_pref_names.h"
-#include "ash/metrics/user_metrics_recorder.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/color_util.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/network/network_icon.h"
 #include "ash/system/network/network_icon_animation.h"
@@ -29,8 +29,9 @@
 #include "ash/system/tray/view_click_listener.h"
 #include "ash/system/unified/unified_system_tray_view.h"
 #include "base/bind.h"
+#include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chromeos/network/network_connect.h"
+#include "chromeos/ash/components/network/network_connect.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "components/onc/onc_constants.h"
@@ -61,7 +62,6 @@ using chromeos::network_config::mojom::VPNStatePropertiesPtr;
 using chromeos::network_config::mojom::VpnType;
 
 namespace ash {
-namespace tray {
 namespace {
 
 struct CompareArcVpnProviderByLastLaunchTime {
@@ -87,6 +87,14 @@ bool VpnProviderMatchesNetwork(const VpnProvider* provider,
 
   // Internal provider types all match the default internal provider.
   return provider->type == VpnType::kOpenVPN;
+}
+
+// crbug/1303306: 'Add VPN' button should be disabled on a locked user session
+// or before user login.
+bool CanAddVpnButtonBeEnabled(LoginStatus login_status) {
+  return login_status != LoginStatus::NOT_LOGGED_IN &&
+         login_status != LoginStatus::LOCKED &&
+         login_status != LoginStatus::KIOSK_APP;
 }
 
 // Returns the PrefService that should be used for kVpnConfigAllowed, which is
@@ -129,7 +137,7 @@ class VPNListProviderEntry : public views::View {
         AshColorProvider::ContentLayerType::kTextColorPrimary));
     TrayPopupUtils::SetLabelFontList(label,
                                      TrayPopupUtils::FontStyle::kSubHeader);
-    label->SetText(base::ASCIIToUTF16(name));
+    label->SetText(base::UTF8ToUTF16(name));
     tri_view->AddView(TriView::Container::CENTER, label);
 
     // Add the VPN policy indicator if using this |vpn_provider| is disabled.
@@ -144,21 +152,18 @@ class VPNListProviderEntry : public views::View {
 
     const gfx::ImageSkia enabled_icon =
         gfx::CreateVectorIcon(kSystemMenuAddConnectionIcon, image_color);
-    const gfx::ImageSkia disabled_icon =
-        gfx::CreateVectorIcon(kSystemMenuAddConnectionIcon,
-                              AshColorProvider::GetDisabledColor(image_color));
+    const gfx::ImageSkia disabled_icon = gfx::CreateVectorIcon(
+        kSystemMenuAddConnectionIcon, ColorUtil::GetDisabledColor(image_color));
 
     SystemMenuButton* add_vpn_button = new SystemMenuButton(
         base::BindRepeating(&VPNListProviderEntry::AddVpnButtonPressed,
                             base::Unretained(this)),
         enabled_icon, disabled_icon, button_accessible_name_id);
 
-    // 'Add VPN' is disabled in the login screen since user configured
-    // device-wide VPNs are unsupported.
     LoginStatus login_status =
         Shell::Get()->session_controller()->login_status();
     add_vpn_button->SetEnabled(enabled &&
-                               login_status != LoginStatus::NOT_LOGGED_IN);
+                               CanAddVpnButtonBeEnabled(login_status));
     tri_view->AddView(TriView::Container::END, add_vpn_button);
   }
 
@@ -186,8 +191,8 @@ class VPNListProviderEntry : public views::View {
     // If the user clicks on a provider entry, request that the "add network"
     // dialog for this provider be shown.
     if (vpn_provider_->type == VpnType::kExtension) {
-      Shell::Get()->metrics()->RecordUserMetricsAction(
-          UMA_STATUS_AREA_VPN_ADD_THIRD_PARTY_CLICKED);
+      base::RecordAction(
+          base::UserMetricsAction("StatusArea_VPN_AddThirdParty"));
       Shell::Get()->system_tray_model()->client()->ShowThirdPartyVpnCreate(
           vpn_provider_->app_id);
     } else if (vpn_provider_->type == VpnType::kArc) {
@@ -195,8 +200,7 @@ class VPNListProviderEntry : public views::View {
       Shell::Get()->system_tray_model()->client()->ShowArcVpnCreate(
           vpn_provider_->app_id);
     } else {
-      Shell::Get()->metrics()->RecordUserMetricsAction(
-          UMA_STATUS_AREA_VPN_ADD_BUILT_IN_CLICKED);
+      base::RecordAction(base::UserMetricsAction("StatusArea_VPN_AddBuiltIn"));
       Shell::Get()->system_tray_model()->client()->ShowNetworkCreate(
           ::onc::network_type::kVPN);
     }
@@ -242,9 +246,7 @@ class VPNListNetworkEntry : public HoverHighlightView,
 VPNListNetworkEntry::VPNListNetworkEntry(VPNListView* owner,
                                          TrayNetworkStateModel* model,
                                          const NetworkStateProperties* network)
-    : HoverHighlightView(owner),
-      model_(model),
-      guid_(network->guid) {
+    : HoverHighlightView(owner), model_(model), guid_(network->guid) {
   UpdateFromNetworkState(network);
 }
 
@@ -286,9 +288,8 @@ void VPNListNetworkEntry::UpdateFromNetworkState(
     if (IsVpnConfigAllowed()) {
       disconnect_button_ = TrayPopupUtils::CreateTrayPopupButton(
           // TODO(stevenjb): Replace with mojo API. https://crbug.com/862420.
-          base::BindRepeating(
-              &chromeos::NetworkConnect::DisconnectFromNetworkId,
-              base::Unretained(chromeos::NetworkConnect::Get()), guid_),
+          base::BindRepeating(&NetworkConnect::DisconnectFromNetworkId,
+                              base::Unretained(NetworkConnect::Get()), guid_),
           l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_VPN_DISCONNECT));
       disconnect_button_->SetAccessibleName(l10n_util::GetStringFUTF16(
           IDS_ASH_STATUS_TRAY_NETWORK_DISCONNECT_BUTTON_A11Y_LABEL, label));
@@ -296,9 +297,9 @@ void VPNListNetworkEntry::UpdateFromNetworkState(
     }
     tri_view()->SetContainerBorder(
         TriView::Container::END,
-        views::CreateEmptyBorder(
+        views::CreateEmptyBorder(gfx::Insets::TLBR(
             0, kTrayPopupButtonEndMargin - kTrayPopupLabelHorizontalPadding, 0,
-            kTrayPopupButtonEndMargin));
+            kTrayPopupButtonEndMargin)));
     SetAccessibleName(l10n_util::GetStringFUTF16(
         IDS_ASH_STATUS_TRAY_NETWORK_A11Y_LABEL_OPEN_WITH_CONNECTION_STATUS,
         label,
@@ -530,5 +531,4 @@ void VPNListView::AddProvidersAndNetworks(const NetworkStateList& networks) {
   }
 }
 
-}  // namespace tray
 }  // namespace ash

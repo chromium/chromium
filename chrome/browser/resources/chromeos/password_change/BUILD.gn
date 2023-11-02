@@ -1,4 +1,4 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -9,33 +9,112 @@ import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
-preprocess_folder = "preprocessed"
-preprocess_gen_manifest = "preprocessed_gen_manifest.json"
+src_files_manifest = "$target_gen_dir/src_files_manifest.json"
+gen_files_manifest = "$target_gen_dir/gen_files_manifest.json"
+preprocess_folder = "$target_gen_dir/preprocessed"
+grd_filename = "$target_gen_dir/resources.grd"
 
-preprocess_if_expr("preprocess_generated") {
+grit("resources") {
+  defines = chrome_grit_defines
+
+  # This is necessary since the GRD is generated during build time.
+  enable_input_discovery_for_gn_analyze = false
+
+  source = grd_filename
+  deps = [ ":build_grd" ]
+  outputs = [
+    "grit/password_change_resources.h",
+    "grit/password_change_resources_map.h",
+    "grit/password_change_resources_map.cc",
+    "password_change_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chrome"
+}
+
+generate_grd("build_grd") {
+  grd_prefix = "password_change"
+  out_grd = grd_filename
+  deps = [
+    ":preprocess_gen",
+    ":preprocess_src",
+  ]
+  manifest_files = [
+    src_files_manifest,
+    gen_files_manifest,
+  ]
+}
+
+preprocess_if_expr("preprocess_src") {
+  out_folder = preprocess_folder
+  out_manifest = src_files_manifest
+  in_files = [
+    "confirm_password_change.html",
+    "confirm_password_change.js",
+    "lock_screen_network.html",
+    "lock_screen_network.js",
+    "lock_screen_reauth_app.html",
+    "lock_screen_reauth_app.js",
+    "password_change_app.html",
+    "password_change_app.js",
+    "urgent_password_expiry_notification.html",
+  ]
+}
+
+web_component_files = [
+  "lock_screen_reauth.js",
+  "password_change.js",
+  "urgent_password_expiry_notification_app.js",
+]
+
+preprocess_if_expr("preprocess_gen") {
   deps = [ ":web_components" ]
   in_folder = target_gen_dir
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
-  in_files = [ "lock_screen_network.js" ]
+  out_folder = preprocess_folder
+  out_manifest = gen_files_manifest
+  in_files = web_component_files
+}
+
+html_to_js("web_components") {
+  js_files = web_component_files
 }
 
 js_type_check("closure_compile") {
   is_polymer3 = true
-  deps = [ ":lock_screen_network" ]
+  closure_flags =
+      default_closure_args + mojom_js_args + [
+        "js_module_root=" +
+            rebase_path("//chrome/browser/resources/gaia_auth_host/",
+                        root_build_dir),
+        "js_module_root=./gen/chrome/browser/resources/gaia_auth_host/",
+      ]
+  deps = [
+    ":lock_screen_network",
+    ":password_change",
+  ]
+}
+
+js_library("password_change") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/password_change/password_change.js" ]
+  deps = [
+    "//ash/webui/common/resources:i18n_behavior",
+    "//chrome/browser/resources/gaia_auth_host:password_change_authenticator",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
+  externs_list = [ "$externs_path/webview_tag.js" ]
+
+  extra_deps = [ ":web_components" ]
 }
 
 js_library("lock_screen_network") {
   deps = [
-    "//ui/webui/resources/cr_components/chromeos/network:network_select.m",
-    "//ui/webui/resources/cr_components/chromeos/network:onc_mojo.m",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ash/webui/common/resources:i18n_behavior",
+    "//ash/webui/common/resources/network:network_select",
+    "//ash/webui/common/resources/network:onc_mojo",
     "//ui/webui/resources/js:load_time_data.m",
   ]
-}
-
-html_to_js("web_components") {
-  js_files = [ "lock_screen_network.js" ]
+  externs_list = [
+    "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",
+    "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
+  ]
 }

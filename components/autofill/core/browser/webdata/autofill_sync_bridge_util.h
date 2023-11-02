@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,12 +12,14 @@
 
 namespace autofill {
 
-struct AutofillOfferData;
+class AutofillOfferData;
+class AutofillWalletUsageData;
 class AutofillProfile;
 class AutofillTable;
 class CreditCard;
 struct CreditCardCloudTokenData;
 struct PaymentsCustomerData;
+struct VirtualCardUsageData;
 
 // Returns the specified |id| encoded in / decoded from base 64.
 std::string GetBase64EncodedId(const std::string& id);
@@ -55,6 +57,12 @@ void SetAutofillWalletSpecificsFromCreditCardCloudTokenData(
     const CreditCardCloudTokenData& cloud_token_data,
     sync_pb::AutofillWalletSpecifics* wallet_specifics,
     bool enforce_utf8 = false);
+
+// Sets the field of the `wallet_usage_specifics` based on the specified
+// `wallet_usage_data`.
+void SetAutofillWalletUsageSpecificsFromAutofillWalletUsageData(
+    const AutofillWalletUsageData& wallet_usage_data,
+    sync_pb::AutofillWalletUsageSpecifics* wallet_usage_specifics);
 
 // Sets the fields of the |offer_specifics| based on the specified |offer_data|.
 void SetAutofillOfferSpecificsFromOfferData(
@@ -99,6 +107,11 @@ bool AreAnyItemsDifferent(const std::vector<std::unique_ptr<Item>>& old_data,
 
 // Returns whether the Wallet Offer |specifics| is valid data.
 bool IsOfferSpecificsValid(const sync_pb::AutofillOfferSpecifics specifics);
+
+// Returns whether the fields of VirtualCardUsageData `virtual_card_usage_data`
+// were initialized and set.
+bool IsVirtualCardUsageDataSet(
+    const VirtualCardUsageData& virtual_card_usage_data);
 
 }  // namespace autofill
 

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 #include "ash/components/phonehub/notification.h"
 #include "base/logging.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 NotificationInteractionHandlerImpl::NotificationInteractionHandlerImpl() {}
@@ -21,4 +21,4 @@ void NotificationInteractionHandlerImpl::HandleNotificationClicked(
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

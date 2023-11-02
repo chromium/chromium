@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunk.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/testing/fake_display_item_client.h"
 #include "third_party/blink/renderer/platform/testing/paint_property_test_helpers.h"
 
@@ -30,9 +31,8 @@ class ChunkToLayerMapperTest : public testing::Test {
   // if the state is used as a layer state.
   PropertyTreeState LayerState() {
     if (!layer_transform_) {
-      layer_transform_ =
-          CreateTransform(t0(), TransformationMatrix().Translate(123, 456),
-                          FloatPoint3D(1, 2, 3));
+      layer_transform_ = CreateTransform(t0(), MakeTranslationMatrix(123, 456),
+                                         gfx::Point3F(1, 2, 3));
       layer_clip_ =
           CreateClip(c0(), *layer_transform_, FloatRoundedRect(12, 34, 56, 78));
       layer_effect_ = EffectPaintPropertyNode::Create(
@@ -88,8 +88,8 @@ TEST_F(ChunkToLayerMapperTest, TwoChunkUsingLayerState) {
 
 TEST_F(ChunkToLayerMapperTest, TwoChunkSameState) {
   ChunkToLayerMapper mapper(LayerState(), gfx::Vector2dF(10, 20));
-  auto transform = CreateTransform(LayerState().Transform(),
-                                   TransformationMatrix().Scale(2));
+  auto transform =
+      CreateTransform(LayerState().Transform(), MakeScaleMatrix(2));
   auto clip = CreateClip(LayerState().Clip(), LayerState().Transform(),
                          FloatRoundedRect(10, 10, 100, 100));
   auto& effect = LayerState().Effect();
@@ -119,8 +119,8 @@ TEST_F(ChunkToLayerMapperTest, TwoChunkSameState) {
 
 TEST_F(ChunkToLayerMapperTest, TwoChunkDifferentState) {
   ChunkToLayerMapper mapper(LayerState(), gfx::Vector2dF(10, 20));
-  auto transform1 = CreateTransform(LayerState().Transform(),
-                                    TransformationMatrix().Scale(2));
+  auto transform1 =
+      CreateTransform(LayerState().Transform(), MakeScaleMatrix(2));
   auto clip1 = CreateClip(LayerState().Clip(), LayerState().Transform(),
                           FloatRoundedRect(10, 10, 100, 100));
   auto& effect = LayerState().Effect();
@@ -161,14 +161,16 @@ TEST_F(ChunkToLayerMapperTest, SlowPath) {
   CompositorFilterOperations filter2;
   filter2.AppendBlurFilter(20);
   auto effect2 = CreateFilterEffect(LayerState().Effect(), std::move(filter2));
-  auto chunk2 = Chunk(PropertyTreeState(LayerState().Transform(),
-                                        LayerState().Clip(), *effect2));
+  auto clip_expander =
+      CreatePixelMovingFilterClipExpander(LayerState().Clip(), *effect2);
+  auto chunk2 = Chunk(
+      PropertyTreeState(LayerState().Transform(), *clip_expander, *effect2));
 
   // Chunk3 has a different effect which inherits from chunk2's effect.
   // Should use the slow path.
   auto effect3 = CreateOpacityEffect(*effect2, 1.f);
-  auto chunk3 = Chunk(PropertyTreeState(LayerState().Transform(),
-                                        LayerState().Clip(), *effect3));
+  auto chunk3 = Chunk(
+      PropertyTreeState(LayerState().Transform(), *clip_expander, *effect3));
 
   // Chunk4 has an opacity filter effect which inherits from the layer's effect.
   // Should use the fast path.

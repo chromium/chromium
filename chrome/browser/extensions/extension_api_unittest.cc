@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,8 +29,7 @@ std::unique_ptr<base::Value> ExtensionApiUnittest::RunFunctionAndReturnValue(
     ExtensionFunction* function,
     const std::string& args) {
   function->set_extension(extension());
-  return std::unique_ptr<base::Value>(
-      utils::RunFunctionAndReturnSingleResult(function, args, browser()));
+  return utils::RunFunctionAndReturnSingleResult(function, args, browser());
 }
 
 std::unique_ptr<base::DictionaryValue>
@@ -38,7 +37,7 @@ ExtensionApiUnittest::RunFunctionAndReturnDictionary(
     ExtensionFunction* function,
     const std::string& args) {
   base::Value* value = RunFunctionAndReturnValue(function, args).release();
-  base::DictionaryValue* dict = NULL;
+  base::DictionaryValue* dict = nullptr;
 
   if (value && !value->GetAsDictionary(&dict))
     delete value;
@@ -49,7 +48,7 @@ ExtensionApiUnittest::RunFunctionAndReturnDictionary(
   return std::unique_ptr<base::DictionaryValue>(dict);
 }
 
-std::unique_ptr<base::ListValue> ExtensionApiUnittest::RunFunctionAndReturnList(
+std::unique_ptr<base::Value> ExtensionApiUnittest::RunFunctionAndReturnList(
     ExtensionFunction* function,
     const std::string& args) {
   base::Value* value = RunFunctionAndReturnValue(function, args).release();
@@ -58,8 +57,8 @@ std::unique_ptr<base::ListValue> ExtensionApiUnittest::RunFunctionAndReturnList(
     delete value;
 
   // We expect to have successfully retrieved a list from the value.
-  EXPECT_TRUE(value);
-  return base::ListValue::From(std::unique_ptr<base::Value>(value));
+  EXPECT_TRUE(value && value->is_list());
+  return std::unique_ptr<base::Value>(value);
 }
 
 std::string ExtensionApiUnittest::RunFunctionAndReturnError(

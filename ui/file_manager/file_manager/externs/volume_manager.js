@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,6 +21,22 @@ export class VolumeManager {
      */
     this.volumeInfoList;
   }
+
+  /**
+   * Gets the 'fusebox-only' filter state: true if enabled, false if disabled.
+   * The filter is only enabled by the SelectFileAsh (Lacros) file picker, and
+   * implemented by {FilteredVolumeManager} override.
+   * @return {boolean}
+   */
+  getFuseBoxOnlyFilterEnabled() {}
+
+  /**
+   * Gets the 'media-store-files-only' filter state: true if enabled, false if
+   * disabled. The filter is only enabled by the Android (ARC) file picker, and
+   * implemented by {FilteredVolumeManager} override.
+   * @return {boolean}
+   */
+  getMediaStoreFilesOnlyFilterEnabled() {}
 
   /**
    * Disposes the instance. After the invocation of this method, any other
@@ -49,6 +65,14 @@ export class VolumeManager {
    *     with a VolumeManagerCommon.VolumeError.
    */
   mountArchive(fileUrl, password) {}
+
+  /**
+   * Cancels mounting an archive.
+   * @param {string} fileUrl File url to the archive file.
+   * @return {!Promise<void>} Fulfilled on success, otherwise rejected
+   *     with a VolumeManagerCommon.VolumeError.
+   */
+  cancelMounting(fileUrl) {}
 
   /**
    * Unmounts a volume.
@@ -111,7 +135,7 @@ export class VolumeManager {
    * Searches the information of the volume that exists on the given device
    * path.
    * @param {string} devicePath Path of the device to search.
-   * @return {VolumeInfo} The volume's information, or null if not found.
+   * @return {?VolumeInfo} The volume's information, or null if not found.
    */
   findByDevicePath(devicePath) {}
 

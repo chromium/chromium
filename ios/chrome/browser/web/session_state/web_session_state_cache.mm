@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,27 +6,25 @@
 
 #import <UIKit/UIKit.h>
 
-#include "base/base_paths.h"
-#include "base/bind.h"
-#include "base/containers/contains.h"
-#include "base/files/file_enumerator.h"
-#include "base/files/file_path.h"
-#include "base/files/file_util.h"
-#include "base/logging.h"
-#include "base/observer_list.h"
-#include "base/path_service.h"
-#include "base/sequence_checker.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/task/post_task.h"
-#include "base/task/sequenced_task_runner.h"
-#include "base/task/thread_pool.h"
-#include "base/threading/scoped_blocking_call.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "base/base_paths.h"
+#import "base/bind.h"
+#import "base/containers/contains.h"
+#import "base/files/file_enumerator.h"
+#import "base/files/file_path.h"
+#import "base/files/file_util.h"
+#import "base/logging.h"
+#import "base/observer_list.h"
+#import "base/path_service.h"
+#import "base/sequence_checker.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/task/sequenced_task_runner.h"
+#import "base/task/thread_pool.h"
+#import "base/threading/scoped_blocking_call.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/browser_list.h"
 #import "ios/chrome/browser/main/browser_list_factory.h"
 #import "ios/chrome/browser/web/session_state/web_session_state_tab_helper.h"
-#import "ios/chrome/browser/web/tab_id_tab_helper.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -39,11 +37,11 @@ const base::FilePath::CharType kWebSessionCacheDirectoryName[] =
 namespace {
 
 // The delay, in seconds, for cleaning up any unassociated session state files
-// when -removeSessionStateDataForWebState is called while |_delayRemove| is
+// when -removeSessionStateDataForWebState is called while `_delayRemove` is
 // true.
 const int kRemoveSessionStateDataDelay = 10;
 
-// Writes |sessionData| to |cacheDirectory|.  If -writeToFile fails, deletes
+// Writes `sessionData` to `cacheDirectory`.  If -writeToFile fails, deletes
 // the old (now stale) data.
 void WriteSessionData(NSData* sessionData,
                       base::FilePath cacheDirectory,
@@ -61,7 +59,8 @@ void WriteSessionData(NSData* sessionData,
   }
 
   NSDataWritingOptions options =
-      NSDataWritingAtomic | NSDataWritingFileProtectionComplete;
+      NSDataWritingAtomic |
+      NSDataWritingFileProtectionCompleteUntilFirstUserAuthentication;
 
   base::FilePath filePath =
       cacheDirectory.Append(base::SysNSStringToUTF8(sessionID));
@@ -139,11 +138,11 @@ void PurgeCacheOnBackgroundSequenceExcept(
 - (void)persistSessionStateData:(NSData*)data
                     forWebState:(const web::WebState*)webState {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  NSString* sessionID = TabIdTabHelper::FromWebState(webState)->tab_id();
+  NSString* sessionID = webState->GetStableIdentifier();
   if (!data || !sessionID || !_taskRunner)
     return;
 
-  // Copy ivars used by the block so that it does not reference |self|.
+  // Copy ivars used by the block so that it does not reference `self`.
   const base::FilePath cacheDirectory = _cacheDirectory;
 
   // Save the session to disk.
@@ -153,7 +152,7 @@ void PurgeCacheOnBackgroundSequenceExcept(
 }
 
 - (NSData*)sessionStateDataForWebState:(const web::WebState*)webState {
-  NSString* sessionID = TabIdTabHelper::FromWebState(webState)->tab_id();
+  NSString* sessionID = webState->GetStableIdentifier();
   base::FilePath filePath =
       _cacheDirectory.Append(base::SysNSStringToUTF8(sessionID));
   NSString* filePathString = base::SysUTF8ToNSString(filePath.AsUTF8Unsafe());
@@ -180,7 +179,7 @@ void PurgeCacheOnBackgroundSequenceExcept(
     return;
   }
 
-  NSString* sessionID = TabIdTabHelper::FromWebState(webState)->tab_id();
+  NSString* sessionID = webState->GetStableIdentifier();
 
   base::FilePath filePath =
       _cacheDirectory.Append(base::SysNSStringToUTF8(sessionID));
@@ -211,8 +210,7 @@ void PurgeCacheOnBackgroundSequenceExcept(
     WebStateList* webStateList = browser->GetWebStateList();
     for (int index = 0; index < webStateList->count(); ++index) {
       web::WebState* webState = webStateList->GetWebStateAt(index);
-      [liveSessionIDs
-          addObject:TabIdTabHelper::FromWebState(webState)->tab_id()];
+      [liveSessionIDs addObject:webState->GetStableIdentifier()];
     }
   }
 
@@ -220,15 +218,14 @@ void PurgeCacheOnBackgroundSequenceExcept(
     WebStateList* webStateList = browser->GetWebStateList();
     for (int index = 0; index < webStateList->count(); ++index) {
       web::WebState* webState = webStateList->GetWebStateAt(index);
-      [liveSessionIDs
-          addObject:TabIdTabHelper::FromWebState(webState)->tab_id()];
+      [liveSessionIDs addObject:webState->GetStableIdentifier()];
     }
   }
   return liveSessionIDs;
 }
 
 // Deletes any files from the session cache directory that don't exist in
-// |liveSessionIDs|.
+// `liveSessionIDs`.
 - (void)purgeCacheExcept:(NSSet*)liveSessionIDs {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
 

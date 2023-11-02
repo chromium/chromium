@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,8 +15,7 @@
 #include "remoting/protocol/stream_message_pipe_adapter.h"
 #include "remoting/protocol/transport_context.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 // Delay after candidate creation before sending transport-info message to
 // accumulate multiple candidates. This is an optimization to reduce number of
@@ -53,7 +52,8 @@ void IceTransport::Start(
                               weak_factory_.GetWeakPtr()));
 }
 
-bool IceTransport::ProcessTransportInfo(jingle_xmpp::XmlElement* transport_info_xml) {
+bool IceTransport::ProcessTransportInfo(
+    jingle_xmpp::XmlElement* transport_info_xml) {
   IceTransportInfo transport_info;
   if (!transport_info.ParseXml(transport_info_xml))
     return false;
@@ -204,5 +204,4 @@ void IceTransport::OnChannelError(int error) {
   event_handler_->OnIceTransportError(error ? CHANNEL_CONNECTION_ERROR : OK);
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

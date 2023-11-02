@@ -1,14 +1,17 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_PUBLIC_BROWSER_FILE_SYSTEM_ACCESS_PERMISSION_CONTEXT_H_
 #define CONTENT_PUBLIC_BROWSER_FILE_SYSTEM_ACCESS_PERMISSION_CONTEXT_H_
 
+#include <string>
+
 #include "base/files/file_path.h"
 #include "content/public/browser/file_system_access_permission_grant.h"
 #include "content/public/browser/file_system_access_write_item.h"
 #include "content/public/browser/global_routing_id.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-forward.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-shared.h"
 #include "url/origin.h"
 
@@ -87,24 +90,26 @@ class FileSystemAccessPermissionContext {
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
-  enum class SensitiveDirectoryResult {
-    kAllowed = 0,   // Access to directory is okay.
-    kTryAgain = 1,  // User should pick a different directory.
+  enum class SensitiveEntryResult {
+    kAllowed = 0,   // Access to entry is okay.
+    kTryAgain = 1,  // User should pick a different entry.
     kAbort = 2,     // Abandon entirely, as if picking was cancelled.
     kMaxValue = kAbort
   };
-  // Checks if access to the given |path| should be allowed or blocked. This is
+  // Checks if access to the given `path` should be allowed or blocked. This is
   // used to implement blocks for certain sensitive directories such as the
   // "Windows" system directory, as well as the root of the "home" directory.
-  // Calls |callback| with the result of the check, after potentially showing
-  // some UI to the user if the path should not be accessed.
-  virtual void ConfirmSensitiveDirectoryAccess(
+  // For downloads ("Save as") it also checks the file extension. Calls
+  // `callback` with the result of the check, after potentially showing some UI
+  // to the user if the path is dangerous or should not be accessed.
+  virtual void ConfirmSensitiveEntryAccess(
       const url::Origin& origin,
       PathType path_type,
       const base::FilePath& path,
       HandleType handle_type,
+      UserAction user_action,
       GlobalRenderFrameHostId frame_id,
-      base::OnceCallback<void(SensitiveDirectoryResult)> callback) = 0;
+      base::OnceCallback<void(SensitiveEntryResult)> callback) = 0;
 
   enum class AfterWriteCheckResult { kAllow, kBlock };
   // Runs a recently finished write operation through checks such as malware
@@ -138,9 +143,16 @@ class FileSystemAccessPermissionContext {
 
   // Return the path associated with well-known directories such as "desktop"
   // and "music", or a default path if the |directory| cannot be matched to a
-  // well-known directory.
+  // well-known directory. When |directory| is WellKnownDirectory.DIR_DOWNLOADS,
+  // |origin| is used to determine if browser-specified download directory
+  // should be returned instead of OS default download directory.
   virtual base::FilePath GetWellKnownDirectoryPath(
-      blink::mojom::WellKnownDirectory directory) = 0;
+      blink::mojom::WellKnownDirectory directory,
+      const url::Origin& origin) = 0;
+
+  // Return the desired title of the file picker for the given `options`.
+  virtual std::u16string GetPickerTitle(
+      const blink::mojom::FilePickerOptionsPtr& options) = 0;
 
  protected:
   virtual ~FileSystemAccessPermissionContext() = default;

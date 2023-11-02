@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,8 @@
 #include "base/time/default_tick_clock.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
+#include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
+#include "third_party/blink/renderer/platform/scheduler/public/main_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 
 namespace blink {
@@ -69,21 +69,15 @@ base::TimeDelta MinimumIntervalSeconds() {
 }
 
 double MemoryThresholdParam() {
-  int64_t physical_memory = base::SysInfo::AmountOfPhysicalMemory();
-  double memory_threshold_mb = kDefaultMemoryThresholdMB;
-
-  if (physical_memory > 3.1 * 1024 * 1024 * 1024)
-    memory_threshold_mb = MemoryThresholdParamOf4GbDevices();
-  else if (physical_memory > 2.1 * 1024 * 1024 * 1024)
-    memory_threshold_mb = MemoryThresholdParamOf3GbDevices();
-  else if (physical_memory > 1.1 * 1024 * 1024 * 1024)
-    memory_threshold_mb = MemoryThresholdParamOf2GbDevices();
-  else if (physical_memory > 600 * 1024 * 1024)
-    memory_threshold_mb = MemoryThresholdParamOf1GbDevices();
-  else
-    memory_threshold_mb = MemoryThresholdParamOf512MbDevices();
-
-  return memory_threshold_mb;
+  int physical_memory_mb = base::SysInfo::AmountOfPhysicalMemoryMB();
+  if (physical_memory_mb > 3.1 * 1024)
+    return MemoryThresholdParamOf4GbDevices();
+  if (physical_memory_mb > 2.1 * 1024)
+    return MemoryThresholdParamOf3GbDevices();
+  if (physical_memory_mb > 1.1 * 1024)
+    return MemoryThresholdParamOf2GbDevices();
+  return (physical_memory_mb > 600) ? MemoryThresholdParamOf1GbDevices()
+                                    : MemoryThresholdParamOf512MbDevices();
 }
 
 }  // namespace
@@ -110,7 +104,7 @@ UserLevelMemoryPressureSignalGenerator::UserLevelMemoryPressureSignalGenerator()
     : memory_threshold_mb_(MemoryThresholdParam()),
       minimum_interval_(MinimumIntervalSeconds()),
       delayed_report_timer_(
-          Thread::MainThread()->GetTaskRunner(),
+          Thread::MainThread()->GetDeprecatedTaskRunner(),
           this,
           &UserLevelMemoryPressureSignalGenerator::OnTimerFired),
       clock_(base::DefaultTickClock::GetInstance()) {
@@ -119,13 +113,15 @@ UserLevelMemoryPressureSignalGenerator::UserLevelMemoryPressureSignalGenerator()
   DCHECK(!std::isinf(memory_threshold_mb_));
 
   MemoryUsageMonitor::Instance().AddObserver(this);
-  ThreadScheduler::Current()->AddRAILModeObserver(this);
+  ThreadScheduler::Current()->ToMainThreadScheduler()->AddRAILModeObserver(
+      this);
 }
 
 UserLevelMemoryPressureSignalGenerator::
     ~UserLevelMemoryPressureSignalGenerator() {
   MemoryUsageMonitor::Instance().RemoveObserver(this);
-  ThreadScheduler::Current()->RemoveRAILModeObserver(this);
+  ThreadScheduler::Current()->ToMainThreadScheduler()->RemoveRAILModeObserver(
+      this);
 }
 
 void UserLevelMemoryPressureSignalGenerator::SetTickClockForTesting(

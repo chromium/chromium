@@ -1,10 +1,11 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 
 #include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/status_bubble_views.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
@@ -12,6 +13,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/theme_provider.h"
+#include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/views/background.h"
@@ -41,10 +43,10 @@ StatusBubbleViews* ContentsWebView::GetStatusBubble() const {
   return status_bubble_;
 }
 
-void ContentsWebView::SetBackgroundColorOverride(
-    absl::optional<SkColor> background_color) {
-  background_color_override_ = background_color;
-  UpdateBackgroundColor();
+void ContentsWebView::SetBackgroundVisible(bool background_visible) {
+  background_visible_ = background_visible;
+  if (GetWidget())
+    UpdateBackgroundColor();
 }
 
 bool ContentsWebView::GetNeedsNotificationWhenVisibleBoundsChange() const {
@@ -56,65 +58,30 @@ void ContentsWebView::OnVisibleBoundsChanged() {
     status_bubble_->Reposition();
 }
 
-void ContentsWebView::ViewHierarchyChanged(
-    const views::ViewHierarchyChangedDetails& details) {
-  WebView::ViewHierarchyChanged(details);
-  if (details.is_add)
-    UpdateBackgroundColor();
-}
-
 void ContentsWebView::OnThemeChanged() {
   views::WebView::OnThemeChanged();
   UpdateBackgroundColor();
 }
 
 void ContentsWebView::OnLetterboxingChanged() {
-  UpdateBackgroundColor();
-}
-
-absl::optional<SkColor> ContentsWebView::GetBackgroundColor() {
-  if (background_color_override_.has_value())
-    return background_color_override_;
-
-  const ui::ThemeProvider* const theme = GetThemeProvider();
-  if (!theme)
-    return absl::nullopt;
-
-  return color_utils::GetResultingPaintColor(
-      theme->GetColor(ThemeProperties::COLOR_NTP_BACKGROUND), SK_ColorWHITE);
+  if (GetWidget())
+    UpdateBackgroundColor();
 }
 
 void ContentsWebView::UpdateBackgroundColor() {
-  const absl::optional<SkColor> background_color = GetBackgroundColor();
-  if (!background_color.has_value())
-    return;
-
-  const SkColor ntp_background = background_color.value();
-  if (is_letterboxing()) {
-    // Set the background color to a dark tint of the new tab page's background
-    // color.  This is the color filled within the WebView's bounds when its
-    // child view is sized specially for fullscreen tab capture.  See WebView
-    // header file comments for more details.
-    const int kBackgroundBrightness = 0x33;  // 20%
-    // Make sure the background is opaque.
-    const SkColor dimmed_ntp_background = SkColorSetARGB(
-        SkColorGetA(ntp_background),
-        SkColorGetR(ntp_background) * kBackgroundBrightness / 0xFF,
-        SkColorGetG(ntp_background) * kBackgroundBrightness / 0xFF,
-        SkColorGetB(ntp_background) * kBackgroundBrightness / 0xFF);
-    SetBackground(views::CreateSolidBackground(dimmed_ntp_background));
-  } else {
-    SetBackground(views::CreateSolidBackground(ntp_background));
-  }
-  // Changing a view's background does not necessarily schedule the view to be
-  // redrawn.
-  SchedulePaint();
+  SkColor color = GetColorProvider()->GetColor(
+      is_letterboxing() ? kColorWebContentsBackgroundLetterboxing
+                        : kColorWebContentsBackground);
+  SetBackground(background_visible_ ? views::CreateSolidBackground(color)
+                                    : nullptr);
 
   if (web_contents()) {
     content::RenderWidgetHostView* rwhv =
         web_contents()->GetRenderWidgetHostView();
-    if (rwhv)
-      rwhv->SetBackgroundColor(ntp_background);
+    if (rwhv) {
+      rwhv->SetBackgroundColor(background_visible_ ? color
+                                                   : SK_ColorTRANSPARENT);
+    }
   }
 }
 
@@ -171,7 +138,8 @@ void ContentsWebView::DestroyClonedLayer() {
 
 void ContentsWebView::RenderViewReady() {
   // Set the background color to be the theme's ntp background on startup.
-  UpdateBackgroundColor();
+  if (GetWidget())
+    UpdateBackgroundColor();
   WebView::RenderViewReady();
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -69,7 +69,7 @@ public class PreviewTabTest {
                     ((TabbedRootUiCoordinator) mActivityTestRule.getActivity()
                                     .getRootUiCoordinatorForTesting());
             mEphemeralTabCoordinator =
-                    tabbedRootUiCoordinator.getEphemeralTabCoordinatorForTesting();
+                    tabbedRootUiCoordinator.getEphemeralTabCoordinatorSupplier().get();
         });
         mSheetTestSupport = new BottomSheetTestSupport(mActivityTestRule.getActivity()
                                                                .getRootUiCoordinatorForTesting()
@@ -158,7 +158,8 @@ public class PreviewTabTest {
     @Feature({"PreviewTab"})
     public void testSuppressContextualSearch() throws Throwable {
         ChromeActivity activity = mActivityTestRule.getActivity();
-        ContextualSearchManager csManager = activity.getContextualSearchManager();
+        ContextualSearchManager csManager =
+                (ContextualSearchManager) activity.getContextualSearchManagerSupplier().get();
         Assert.assertFalse("Contextual Search should be active", csManager.isSuppressed());
 
         TestThreadUtils.runOnUiThreadBlocking(

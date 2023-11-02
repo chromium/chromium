@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/sharing/proto/sharing_message.pb.h"
@@ -21,7 +22,6 @@
 #include "components/sync/protocol/device_info_specifics.pb.h"
 #include "components/sync_device_info/device_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/views/controls/styled_label.h"
 #include "url/origin.h"
 
 class SharingDialog;
@@ -56,6 +56,13 @@ class SharingUiController {
   // If true, shows a loading icon on omnibox when sending out the message.
   virtual bool ShouldShowLoadingIcon() const;
   virtual std::u16string GetTextForTooltipAndAccessibleName() const = 0;
+
+  // If false, any UI associated will be excluded from the accessibility tree,
+  // making it completely undiscoverable and unusable to (at least) screen
+  // reader users. If you override this function, please seek the review of
+  // an accessibility OWNER and clearly document the use case in your code.
+  virtual bool HasAccessibleUi() const;
+
   // Get the name of the feature to be used as a prefix for the metric name.
   virtual SharingFeatureName GetFeatureMetricsPrefix() const = 0;
   // Describes the content type of shared data.
@@ -110,9 +117,10 @@ class SharingUiController {
       chrome_browser_sharing::SharingMessage sharing_message,
       absl::optional<SharingMessageSender::ResponseCallback> callback);
 
- private:
   // Updates the omnibox icon if available.
   void UpdateIcon();
+
+ private:
   // Closes the current dialog if there is one.
   void CloseDialog();
   // Shows a new SharingDialog and closes the old one.
@@ -133,9 +141,9 @@ class SharingUiController {
                       const absl::optional<url::Origin>& initiating_origin,
                       std::vector<SharingApp> apps);
 
-  SharingDialog* dialog_ = nullptr;
-  content::WebContents* web_contents_ = nullptr;
-  SharingService* sharing_service_ = nullptr;
+  raw_ptr<SharingDialog> dialog_ = nullptr;
+  raw_ptr<content::WebContents> web_contents_ = nullptr;
+  raw_ptr<SharingService> sharing_service_ = nullptr;
 
   bool is_loading_ = false;
   SharingSendMessageResult send_result_ = SharingSendMessageResult::kSuccessful;

@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/bluetooth_config_service.h"
 #include "base/check.h"
 #include "base/json/json_writer.h"
@@ -19,6 +18,7 @@
 #include "chrome/grit/bluetooth_pairing_dialog_resources.h"
 #include "chrome/grit/bluetooth_pairing_dialog_resources_map.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -32,15 +32,13 @@ namespace chromeos {
 
 namespace {
 
-constexpr int kBluetoothPairingDialogHeight = 375;
-constexpr int kBluetoothPairingDialogHeightWithFlag = 408;
+constexpr int kBluetoothPairingDialogHeight = 424;
 
 void AddBluetoothStrings(content::WebUIDataSource* html_source) {
   struct {
     const char* name;
     int id;
   } localized_strings[] = {
-      {"bluetoothPairDeviceTitle", IDS_SETTINGS_BLUETOOTH_PAIR_DEVICE_TITLE},
       {"ok", IDS_OK},
       {"cancel", IDS_CANCEL},
       {"close", IDS_CLOSE},
@@ -92,11 +90,13 @@ BluetoothPairingDialog::BluetoothPairingDialog(
     : SystemWebDialogDelegate(GURL(chrome::kChromeUIBluetoothPairingURL),
                               /*title=*/std::u16string()),
       dialog_id_(dialog_id) {
-  if (canonical_device_address.has_value()) {
-    device_data_.SetString("address", canonical_device_address.value());
-  } else {
-    CHECK(ash::features::IsBluetoothRevampEnabled());
-  }
+  if (canonical_device_address.has_value())
+    device_data_.SetStringKey("address", canonical_device_address.value());
+
+  device_data_.SetBoolKey(
+      "shouldOmitLinks",
+      session_manager::SessionManager::Get()->session_state() !=
+          session_manager::SessionState::ACTIVE);
 }
 
 BluetoothPairingDialog::~BluetoothPairingDialog() = default;
@@ -107,21 +107,12 @@ const std::string& BluetoothPairingDialog::Id() {
 
 void BluetoothPairingDialog::AdjustWidgetInitParams(
     views::Widget::InitParams* params) {
-  if (!chromeos::features::IsBluetoothRevampEnabled()) {
-    return;
-  }
-
   params->type = views::Widget::InitParams::Type::TYPE_WINDOW_FRAMELESS;
   params->shadow_type = views::Widget::InitParams::ShadowType::kDrop;
   params->shadow_elevation = wm::kShadowElevationActiveWindow;
 }
 
 void BluetoothPairingDialog::GetDialogSize(gfx::Size* size) const {
-  if (chromeos::features::IsBluetoothRevampEnabled()) {
-    size->SetSize(SystemWebDialogDelegate::kDialogWidth,
-                  kBluetoothPairingDialogHeightWithFlag);
-    return;
-  }
   size->SetSize(SystemWebDialogDelegate::kDialogWidth,
                 kBluetoothPairingDialogHeight);
 }
@@ -140,7 +131,8 @@ BluetoothPairingDialogUI::BluetoothPairingDialogUI(content::WebUI* web_ui)
       content::WebUIDataSource::Create(chrome::kChromeUIBluetoothPairingHost);
 
   AddBluetoothStrings(source);
-  source->AddLocalizedString("title", IDS_SETTINGS_BLUETOOTH_PAIR_DEVICE_TITLE);
+  source->AddLocalizedString("title", IDS_BLUETOOTH_PAIRING_PAIR_NEW_DEVICES);
+
   webui::SetupWebUIDataSource(
       source,
       base::make_span(kBluetoothPairingDialogResources,
@@ -155,9 +147,8 @@ BluetoothPairingDialogUI::BluetoothPairingDialogUI(content::WebUI* web_ui)
 BluetoothPairingDialogUI::~BluetoothPairingDialogUI() = default;
 
 void BluetoothPairingDialogUI::BindInterface(
-    mojo::PendingReceiver<
-        chromeos::bluetooth_config::mojom::CrosBluetoothConfig> receiver) {
-  DCHECK(features::IsBluetoothRevampEnabled());
+    mojo::PendingReceiver<ash::bluetooth_config::mojom::CrosBluetoothConfig>
+        receiver) {
   ash::GetBluetoothConfigService(std::move(receiver));
 }
 

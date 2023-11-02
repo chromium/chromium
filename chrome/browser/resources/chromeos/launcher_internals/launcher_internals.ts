@@ -1,12 +1,13 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import './results_table.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxy} from './browser_proxy.js';
+import {getTemplate} from './launcher_internals.html.js';
 import {PageCallbackRouter, Result} from './launcher_internals.mojom-webui.js';
 import {LauncherResultsTableElement} from './results_table.js';
 
@@ -23,7 +24,7 @@ class LauncherInternalsElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -33,7 +34,7 @@ class LauncherInternalsElement extends PolymerElement {
   }
 
   private query: string;
-  private listenerIds: Array<number>;
+  private listenerIds: number[];
   private router: PageCallbackRouter;
 
   constructor() {
@@ -43,18 +44,18 @@ class LauncherInternalsElement extends PolymerElement {
     this.router = BrowserProxy.getInstance().callbackRouter;
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     this.listenerIds.push(
         this.router.updateResults.addListener(this.updateResults.bind(this)));
   }
 
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
     this.listenerIds.forEach(id => this.router.removeListener(id));
   }
 
-  private updateResults(query: string, results: Array<Result>) {
+  private updateResults(query: string, results: Result[]) {
     if (query === '') {
       this.$.zeroStateResults.clearResults();
       this.$.zeroStateResults.addResults(results);

@@ -31,6 +31,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/events/message_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -46,8 +47,9 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/scheduling_policy.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 
 namespace WTF {
@@ -138,12 +140,12 @@ void RecordMessageSent(const webrtc::DataChannelInterface& channel,
 
   if (channel.reliable()) {
     UMA_HISTOGRAM_CUSTOM_COUNTS("WebRTC.ReliableDataChannelMessageSize",
-                                SafeCast<int>(num_bytes), 1, kMaxBucketSize,
-                                kNumBuckets);
+                                base::checked_cast<int>(num_bytes), 1,
+                                kMaxBucketSize, kNumBuckets);
   } else {
     UMA_HISTOGRAM_CUSTOM_COUNTS("WebRTC.UnreliableDataChannelMessageSize",
-                                SafeCast<int>(num_bytes), 1, kMaxBucketSize,
-                                kNumBuckets);
+                                base::checked_cast<int>(num_bytes), 1,
+                                kMaxBucketSize, kNumBuckets);
   }
 }
 
@@ -226,7 +228,13 @@ RTCDataChannel::Observer::Observer(
     scoped_refptr<webrtc::DataChannelInterface> channel)
     : main_thread_(main_thread),
       blink_channel_(blink_channel),
-      webrtc_channel_(channel) {}
+      webrtc_channel_(channel) {
+  // Because we avoid unregistering this observer non-deterministically,
+  // we also leak a reference to the observer to ensure it isn't destroyed
+  // without having been unregistered first.
+  if (recordreplay::IsRecordingOrReplaying("leak-references", "RTCDataChannel::Observer::Observer"))
+    AddRef();
+}
 
 RTCDataChannel::Observer::~Observer() {
   DCHECK(!blink_channel_) << "Reference to blink channel hasn't been released.";
@@ -241,6 +249,11 @@ RTCDataChannel::Observer::channel() const {
 void RTCDataChannel::Observer::Unregister() {
   DCHECK(main_thread_->BelongsToCurrentThread());
   blink_channel_ = nullptr;
+
+  // Avoid changing channel observers non-deterministically.
+  if (recordreplay::AreEventsDisallowed("RTCDataChannel::Observer::Unregister"))
+    (void)webrtc_channel_.release();
+
   if (webrtc_channel_.get()) {
     webrtc_channel_->UnregisterObserver();
     // Now that we're guaranteed to not get further OnStateChange callbacks,
@@ -262,7 +275,7 @@ void RTCDataChannel::Observer::OnBufferedAmountChange(uint64_t sent_data_size) {
       *main_thread_, FROM_HERE,
       CrossThreadBindOnce(&RTCDataChannel::Observer::OnBufferedAmountChangeImpl,
                           scoped_refptr<Observer>(this),
-                          SafeCast<unsigned>(sent_data_size)));
+                          base::checked_cast<unsigned>(sent_data_size)));
 }
 
 void RTCDataChannel::Observer::OnMessage(const webrtc::DataBuffer& buffer) {
@@ -556,11 +569,11 @@ bool RTCDataChannel::HasPendingActivity() const {
   switch (state_) {
     case webrtc::DataChannelInterface::kConnecting:
       has_valid_listeners |= HasEventListeners(event_type_names::kOpen);
-      FALLTHROUGH;
+      [[fallthrough]];
     case webrtc::DataChannelInterface::kOpen:
       has_valid_listeners |= HasEventListeners(event_type_names::kMessage) ||
                              HasEventListeners(event_type_names::kClosing);
-      FALLTHROUGH;
+      [[fallthrough]];
     case webrtc::DataChannelInterface::kClosing:
       has_valid_listeners |= HasEventListeners(event_type_names::kError) ||
                              HasEventListeners(event_type_names::kClose);
@@ -591,7 +604,7 @@ void RTCDataChannel::SetStateToOpenWithoutEvent() {
 }
 
 void RTCDataChannel::DispatchOpenEvent() {
-  DispatchEvent(*Event::Create(event_type_names::kOpen));
+  DispatchEvent(*Event::Create(event_type_names::kOpen), "RTCDataChannel::DispatchOpenEvent");
 }
 
 void RTCDataChannel::OnStateChange(
@@ -616,11 +629,11 @@ void RTCDataChannel::OnStateChange(
     case webrtc::DataChannelInterface::kOpen:
       IncrementCounter(DataChannelCounters::kOpened);
       CreateFeatureHandleForScheduler();
-      DispatchEvent(*Event::Create(event_type_names::kOpen));
+      DispatchEvent(*Event::Create(event_type_names::kOpen), "RTCDataChannel::OnStateChange #1");
       break;
     case webrtc::DataChannelInterface::kClosing:
       if (!closed_from_owner_) {
-        DispatchEvent(*Event::Create(event_type_names::kClosing));
+        DispatchEvent(*Event::Create(event_type_names::kClosing), "RTCDataChannel::OnStateChange #2");
       }
       break;
     case webrtc::DataChannelInterface::kClosed: {
@@ -631,9 +644,9 @@ void RTCDataChannel::OnStateChange(
                    << ", code: " << error.sctp_cause_code().value_or(-1);
         IncrementErrorCounter(error);
         DispatchEvent(*MakeGarbageCollected<RTCErrorEvent>(
-            event_type_names::kError, error));
+            event_type_names::kError, error), "RTCDataChannel::OnStateChange");
       }
-      DispatchEvent(*Event::Create(event_type_names::kClose));
+      DispatchEvent(*Event::Create(event_type_names::kClose), "RTCDataChannel::OnStateChange #4");
       break;
     }
     default:
@@ -664,7 +677,8 @@ void RTCDataChannel::OnMessage(std::unique_ptr<webrtc::DataBuffer> buffer) {
     }
     if (binary_type_ == kBinaryTypeArrayBuffer) {
       DOMArrayBuffer* dom_buffer = DOMArrayBuffer::Create(
-          buffer->data.cdata(), SafeCast<unsigned>(buffer->data.size()));
+          buffer->data.cdata(),
+          base::checked_cast<unsigned>(buffer->data.size()));
       ScheduleDispatchEvent(MessageEvent::Create(dom_buffer));
       return;
     }
@@ -704,7 +718,7 @@ void RTCDataChannel::ScheduledEventTimerFired(TimerBase*) {
 
   HeapVector<Member<Event>>::iterator it = events.begin();
   for (; it != events.end(); ++it)
-    DispatchEvent(*it->Release());
+    DispatchEvent(*it->Release(), "RTCDataChannel::ScheduledEventTimerFired");
 
   events.clear();
 }
@@ -743,7 +757,8 @@ void RTCDataChannel::CreateFeatureHandleForScheduler() {
   feature_handle_for_scheduler_ =
       window->GetFrame()->GetFrameScheduler()->RegisterFeature(
           SchedulingPolicy::Feature::kWebRTC,
-          SchedulingPolicy::DisableAggressiveThrottling());
+          {SchedulingPolicy::DisableAggressiveThrottling(),
+           SchedulingPolicy::DisableAlignWakeUps()});
 }
 
 }  // namespace blink

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,15 +10,15 @@
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/dbus/shill/shill_device_client.h"
+#include "chromeos/ash/components/dbus/shill/shill_profile_client.h"
+#include "chromeos/ash/components/dbus/shill/shill_property_changed_observer.h"
+#include "chromeos/ash/components/dbus/shill/shill_service_client.h"
+#include "chromeos/ash/components/network/device_state.h"
+#include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_handler_test_helper.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/crosapi/mojom/networking_attributes.mojom.h"
-#include "chromeos/dbus/shill/shill_device_client.h"
-#include "chromeos/dbus/shill/shill_profile_client.h"
-#include "chromeos/dbus/shill/shill_property_changed_observer.h"
-#include "chromeos/dbus/shill/shill_service_client.h"
-#include "chromeos/network/device_state.h"
-#include "chromeos/network/network_handler.h"
-#include "chromeos/network/network_handler_test_helper.h"
-#include "chromeos/network/network_state_handler.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -53,7 +53,7 @@ void EvaluateGetNetworkDetailsResult(base::OnceClosure closure,
                                      mojom::GetNetworkDetailsResultPtr expected,
                                      mojom::GetNetworkDetailsResultPtr found) {
   ASSERT_EQ(expected->which(), found->which());
-  if (expected->which() == mojom::GetNetworkDetailsResult::Tag::ERROR_MESSAGE) {
+  if (expected->which() == mojom::GetNetworkDetailsResult::Tag::kErrorMessage) {
     ASSERT_EQ(expected->get_error_message(), found->get_error_message());
   } else {
     ASSERT_EQ(expected->get_network_details()->mac_address,
@@ -74,11 +74,10 @@ void ShillErrorCallbackFunction(const std::string& error_name,
 
 class NetworkingAttributesAshTest : public testing::Test {
  public:
-  class MockPropertyChangeObserver
-      : public chromeos::ShillPropertyChangedObserver {
+  class MockPropertyChangeObserver : public ash::ShillPropertyChangedObserver {
    public:
     MockPropertyChangeObserver() = default;
-    ~MockPropertyChangeObserver() = default;
+    ~MockPropertyChangeObserver() override = default;
     MOCK_METHOD2(OnPropertyChanged,
                  void(const std::string& name, const base::Value& value));
   };
@@ -107,8 +106,9 @@ class NetworkingAttributesAshTest : public testing::Test {
         user_manager->AddUserWithAffiliation(account_id, is_affiliated);
     user_manager->UserLoggedIn(account_id, user->username_hash(),
                                /*browser_restart=*/false, /*is_child=*/false);
-    chromeos::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
-        user, &profile_);
+    user_manager->SimulateUserProfileLoad(account_id);
+    ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
+                                                                 &profile_);
   }
 
   void SetUpShillState() {
@@ -146,8 +146,7 @@ class NetworkingAttributesAshTest : public testing::Test {
               shill::kStateOnline);
 
     base::RunLoop device_client_mac_address_run_loop;
-    chromeos::ShillDeviceClient* shill_device_client =
-        chromeos::ShillDeviceClient::Get();
+    ash::ShillDeviceClient* shill_device_client = ash::ShillDeviceClient::Get();
     shill_device_client->SetProperty(
         dbus::ObjectPath(kWifiDevicePath), shill::kAddressProperty,
         base::Value(kFormattedMacAddress),
@@ -163,8 +162,8 @@ class NetworkingAttributesAshTest : public testing::Test {
     device_client_ip_config_run_loop.Run();
 
     testing::StrictMock<MockPropertyChangeObserver> observer;
-    chromeos::ShillServiceClient* shill_service_client =
-        chromeos::ShillServiceClient::Get();
+    ash::ShillServiceClient* shill_service_client =
+        ash::ShillServiceClient::Get();
     shill_service_client->AddPropertyChangedObserver(
         dbus::ObjectPath(kWifiServicePath), &observer);
 
@@ -181,10 +180,9 @@ class NetworkingAttributesAshTest : public testing::Test {
     service_client_run_loop.Run();
     testing::Mock::VerifyAndClearExpectations(&observer);
 
-    const chromeos::DeviceState* device_state =
-        chromeos::NetworkHandler::Get()
-            ->network_state_handler()
-            ->GetDeviceState(kWifiDevicePath);
+    const ash::DeviceState* device_state =
+        ash::NetworkHandler::Get()->network_state_handler()->GetDeviceState(
+            kWifiDevicePath);
     EXPECT_EQ(device_state->mac_address(), kFormattedMacAddress);
     EXPECT_EQ(device_state->GetIpAddressByType(shill::kTypeIPv4), kIpv4Address);
     EXPECT_EQ(device_state->GetIpAddressByType(shill::kTypeIPv6), kIpv6Address);
@@ -196,7 +194,7 @@ class NetworkingAttributesAshTest : public testing::Test {
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   mojo::Remote<mojom::NetworkingAttributes> networking_attributes_remote_;
   std::unique_ptr<NetworkingAttributesAsh> networking_attributes_ash_;
-  chromeos::NetworkHandlerTestHelper network_handler_test_helper_;
+  ash::NetworkHandlerTestHelper network_handler_test_helper_;
 
   ScopedTestingLocalState local_state_;
 };
@@ -205,8 +203,7 @@ TEST_F(NetworkingAttributesAshTest, GetNetworkDetailsUserNotAffiliated) {
   AddUser(/*is_affiliated=*/false);
 
   mojom::GetNetworkDetailsResultPtr expected_result_ptr =
-      mojom::GetNetworkDetailsResult::New();
-  expected_result_ptr->set_error_message(kErrorUserNotAffiliated);
+      mojom::GetNetworkDetailsResult::NewErrorMessage(kErrorUserNotAffiliated);
 
   base::RunLoop run_loop;
   networking_attributes_remote_->GetNetworkDetails(
@@ -219,8 +216,8 @@ TEST_F(NetworkingAttributesAshTest, GetNetworkDetailsNetworkNotConnected) {
   AddUser();
 
   mojom::GetNetworkDetailsResultPtr expected_result_ptr =
-      mojom::GetNetworkDetailsResult::New();
-  expected_result_ptr->set_error_message(kErrorNetworkNotConnected);
+      mojom::GetNetworkDetailsResult::NewErrorMessage(
+          kErrorNetworkNotConnected);
 
   base::RunLoop run_loop;
   networking_attributes_remote_->GetNetworkDetails(
@@ -244,8 +241,8 @@ TEST_F(NetworkingAttributesAshTest, GetNetworkDetailsSuccess) {
   expected_network_details->ipv4_address = ipv4_expected;
   expected_network_details->ipv6_address = ipv6_expected;
   mojom::GetNetworkDetailsResultPtr expected_result_ptr =
-      mojom::GetNetworkDetailsResult::New();
-  expected_result_ptr->set_network_details(std::move(expected_network_details));
+      mojom::GetNetworkDetailsResult::NewNetworkDetails(
+          std::move(expected_network_details));
 
   base::RunLoop run_loop;
   networking_attributes_remote_->GetNetworkDetails(

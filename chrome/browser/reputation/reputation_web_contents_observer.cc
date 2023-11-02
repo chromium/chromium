@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,9 +18,7 @@
 #include "chrome/browser/reputation/safety_tip_ui.h"
 #include "components/lookalikes/core/features.h"
 #include "components/lookalikes/core/lookalike_url_util.h"
-#include "components/security_state/core/features.h"
 #include "components/security_state/core/security_state.h"
-#include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/common/page_visibility_state.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -28,15 +26,11 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/messages/android/messages_feature.h"
 #endif
 
 namespace {
-
-// Whether to show tips on server-side-flagged sites included in the component.
-const base::FeatureParam<bool> kEnableSuspiciousSiteChecks{
-    &security_state::features::kSafetyTipUI, "suspicioussites", true};
 
 void RecordHeuristicsUKMData(ReputationCheckResult result,
                              ukm::SourceId navigation_source_id,
@@ -65,91 +59,30 @@ void RecordHeuristicsUKMData(ReputationCheckResult result,
 }
 
 void OnSafetyTipClosed(ReputationCheckResult result,
-                       base::Time start_time,
                        ukm::SourceId navigation_source_id,
                        Profile* profile,
                        const GURL& url,
                        security_state::SafetyTipStatus status,
                        base::OnceClosure safety_tip_close_callback_for_testing,
                        SafetyTipInteraction action) {
-  std::string action_suffix;
-  bool warning_dismissed = false;
-  switch (action) {
-    case SafetyTipInteraction::kNoAction:
-      action_suffix = "NoAction";
-      break;
-    case SafetyTipInteraction::kLeaveSite:
-      action_suffix = "LeaveSite";
-      break;
-    case SafetyTipInteraction::kDismiss:
-      NOTREACHED();
-      // Do nothing because the dismissal action passed to this method should
-      // be the more specific version (esc, close, or ignore).
-      break;
-    case SafetyTipInteraction::kDismissWithEsc:
-      action_suffix = "DismissWithEsc";
-      warning_dismissed = true;
-      break;
-    case SafetyTipInteraction::kDismissWithClose:
-      action_suffix = "DismissWithClose";
-      warning_dismissed = true;
-      break;
-    case SafetyTipInteraction::kDismissWithIgnore:
-      action_suffix = "DismissWithIgnore";
-      warning_dismissed = true;
-      break;
-    case SafetyTipInteraction::kLearnMore:
-      action_suffix = "LearnMore";
-      break;
-    case SafetyTipInteraction::kNotShown:
-      NOTREACHED();
-      // Do nothing because the OnSafetyTipClosed should never be called if the
-      // safety tip is not shown.
-      break;
-    case SafetyTipInteraction::kCloseTab:
-      action_suffix = "CloseTab";
-      break;
-    case SafetyTipInteraction::kSwitchTab:
-      action_suffix = "SwitchTab";
-      break;
-    case SafetyTipInteraction::kStartNewNavigation:
-      NOTREACHED();
-      // Do nothing because the safety tip is no longer listening directly
-      // with navigation start.
-      break;
-    case SafetyTipInteraction::kChangePrimaryPage:
-      action_suffix = "ChangePrimaryPage";
-      break;
-  }
-  if (warning_dismissed) {
+  if (action == SafetyTipInteraction::kDismissWithEsc ||
+      action == SafetyTipInteraction::kDismissWithClose ||
+      action == SafetyTipInteraction::kDismissWithIgnore) {
     ReputationService::Get(profile)->SetUserIgnore(url);
 
     // Record that the user dismissed the safety tip. kDismiss is recorded in
     // all dismiss-like cases, which makes it easier to track overall dismissals
     // without having to re-constitute from each bucket on how the user
-    // dismissed the safety tip. We additionally record a more specific action
+    // dismissed the safety tip. We  also record a more specific action
     // below (e.g. kDismissWithEsc).
     base::UmaHistogramEnumeration(
         security_state::GetSafetyTipHistogramName(
             "Security.SafetyTips.Interaction", status),
         SafetyTipInteraction::kDismiss);
-    base::UmaHistogramCustomTimes(
-        security_state::GetSafetyTipHistogramName(
-            std::string("Security.SafetyTips.OpenTime.Dismiss"),
-            result.safety_tip_status),
-        base::Time::Now() - start_time, base::Milliseconds(1), base::Hours(1),
-        100);
   }
   base::UmaHistogramEnumeration(security_state::GetSafetyTipHistogramName(
                                     "Security.SafetyTips.Interaction", status),
                                 action);
-  base::UmaHistogramCustomTimes(
-      security_state::GetSafetyTipHistogramName(
-          std::string("Security.SafetyTips.OpenTime.") + action_suffix,
-          result.safety_tip_status),
-      base::Time::Now() - start_time, base::Milliseconds(1), base::Hours(1),
-      100);
-
   RecordHeuristicsUKMData(result, navigation_source_id, action);
 
   if (!safety_tip_close_callback_for_testing.is_null()) {
@@ -208,29 +141,6 @@ void RecordSafetyTipStatusWithInitiatorOriginInfo(
       "Security.SafetyTips.StatusWithInitiator." + suffix, status);
 }
 
-// Returns whether a safety tip should be shown, according to finch.
-bool IsSafetyTipEnabled(security_state::SafetyTipStatus status) {
-  if (!security_state::IsSafetyTipUIFeatureEnabled()) {
-    return false;
-  }
-
-  if (status != security_state::SafetyTipStatus::kBadReputation) {
-    return true;
-  }
-
-  // Safety Tips can be enabled with a few different features that have slightly
-  // different behavior. "Suspicious site" Safety Tips are enabled for the main
-  // Safety Tip feature, |kSafetyTipUI|, by a parameter, and they are always
-  // enabled for the delayed warnings Safety Tip feature (which uses "Suspicious
-  // site" Safety Tips on phishing pages blocking by Safe Browsing.)
-  if (base::FeatureList::IsEnabled(security_state::features::kSafetyTipUI)) {
-    return kEnableSuspiciousSiteChecks.Get();
-  }
-
-  return base::FeatureList::IsEnabled(
-      security_state::features::kSafetyTipUIOnDelayedWarning);
-}
-
 }  // namespace
 
 ReputationWebContentsObserver::~ReputationWebContentsObserver() = default;
@@ -267,9 +177,10 @@ void ReputationWebContentsObserver::DidFinishNavigation(
 
 void ReputationWebContentsObserver::OnVisibilityChanged(
     content::Visibility visibility) {
-  MaybeShowSafetyTip(ukm::GetSourceIdForWebContentsDocument(web_contents()),
-                     /*called_from_visibility_check=*/true,
-                     /*record_ukm_if_tip_not_shown=*/false);
+  MaybeShowSafetyTip(
+      web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId(),
+      /*called_from_visibility_check=*/true,
+      /*record_ukm_if_tip_not_shown=*/false);
 }
 
 security_state::SafetyTipInfo
@@ -297,6 +208,8 @@ void ReputationWebContentsObserver::RegisterSafetyTipCloseCallbackForTesting(
 ReputationWebContentsObserver::ReputationWebContentsObserver(
     content::WebContents* web_contents)
     : WebContentsObserver(web_contents),
+      content::WebContentsUserData<ReputationWebContentsObserver>(
+          *web_contents),
       profile_(Profile::FromBrowserContext(web_contents->GetBrowserContext())),
       reputation_check_pending_for_testing_(true),
       weak_factory_(this) {
@@ -308,7 +221,7 @@ void ReputationWebContentsObserver::MaybeShowSafetyTip(
     ukm::SourceId navigation_source_id,
     bool called_from_visibility_check,
     bool record_ukm_if_tip_not_shown) {
-  if (web_contents()->GetMainFrame()->GetVisibilityState() !=
+  if (web_contents()->GetPrimaryMainFrame()->GetVisibilityState() !=
       content::PageVisibilityState::kVisible) {
     MaybeCallReputationCheckCallback(false);
     return;
@@ -393,31 +306,10 @@ void ReputationWebContentsObserver::HandleReputationCheckResult(
   // Log a console message if it's the first time we're going to open the Safety
   // Tip. (Otherwise, we'd print the message each time the tab became visible.)
   if (!called_from_visibility_check) {
-    web_contents()->GetMainFrame()->AddMessageToConsole(
+    web_contents()->GetPrimaryMainFrame()->AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kWarning,
-        base::StringPrintf(
-            "Chrome has determined that %s could be fake or fraudulent.\n\n"
-            "If you believe this is shown in error please visit "
-            "https://g.co/chrome/lookalike-warnings",
-            result.url.host().c_str()));
-  }
-
-  if (!IsSafetyTipEnabled(result.safety_tip_status)) {
-    // When the feature isn't enabled, we 'ignore' the UI after the first visit
-    // to make it easier to disambiguate the control groups' first visit from
-    // subsequent navigations to the flagged page in metrics. Since the user
-    // never sees the UI, this is a no-op from their perspective.
-    if (result.safety_tip_status ==
-            security_state::SafetyTipStatus::kLookalike ||
-        result.safety_tip_status ==
-            security_state::SafetyTipStatus::kBadReputation) {
-      ReputationService::Get(profile_)->OnUIDisabledFirstVisit(result.url);
-    }
-
-    RecordPostFlagCheckHistogram(result.safety_tip_status);
-    FinalizeReputationCheckWhenTipNotShown(record_ukm_if_tip_not_shown, result,
-                                           navigation_source_id);
-    return;
+        lookalikes::GetConsoleMessage(result.url,
+                                      /*is_new_heuristic=*/false));
   }
 
   if (!base::FeatureList::IsEnabled(
@@ -427,11 +319,10 @@ void ReputationWebContentsObserver::HandleReputationCheckResult(
 
     bool should_call_safety_tip_dialog = true;
     base::OnceCallback<void(SafetyTipInteraction)> close_callback =
-        base::BindOnce(OnSafetyTipClosed, result, base::Time::Now(),
-                       navigation_source_id, profile_, result.url,
-                       result.safety_tip_status,
+        base::BindOnce(OnSafetyTipClosed, result, navigation_source_id,
+                       profile_, result.url, result.safety_tip_status,
                        std::move(safety_tip_close_callback_for_testing_));
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     if (messages::IsSafetyTipMessagesUiEnabled()) {
       should_call_safety_tip_dialog = false;
       delegate_.DisplaySafetyTipPrompt(result.safety_tip_status,
@@ -481,11 +372,10 @@ void ReputationWebContentsObserver::OnDigitalAssetLinkValidationResult(
 
   bool should_call_safety_tip_dialog = true;
   base::OnceCallback<void(SafetyTipInteraction)> close_callback =
-      base::BindOnce(OnSafetyTipClosed, result, base::Time::Now(),
-                     navigation_source_id, profile_, result.url,
-                     result.safety_tip_status,
+      base::BindOnce(OnSafetyTipClosed, result, navigation_source_id, profile_,
+                     result.url, result.safety_tip_status,
                      std::move(safety_tip_close_callback_for_testing_));
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (messages::IsSafetyTipMessagesUiEnabled()) {
     should_call_safety_tip_dialog = false;
     delegate_.DisplaySafetyTipPrompt(result.safety_tip_status,

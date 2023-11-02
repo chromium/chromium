@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/cxx17_backports.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -30,18 +29,20 @@
 #include "ui/base/ime/ash/component_extension_ime_manager.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/ime/ash/ime_bridge.h"
-#include "ui/base/ime/ash/ime_engine_handler_interface.h"
 #include "ui/base/ime/ash/input_method_descriptor.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ime/ash/mock_ime_candidate_window_handler.h"
 #include "ui/base/ime/ash/mock_ime_input_context_handler.h"
+#include "ui/base/ime/ash/text_input_method.h"
 #include "ui/base/ime/composition_text.h"
 #include "ui/base/ime/dummy_text_input_client.h"
+#include "ui/base/ime/fake_text_input_client.h"
 #include "ui/base/ime/text_input_flags.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/views/test/widget_test.h"
 
 namespace ash {
 namespace input_method {
@@ -74,11 +75,11 @@ class InputMethodEngineBrowserTest
 
   virtual ~InputMethodEngineBrowserTest() = default;
 
-  void TearDownInProcessBrowserTestFixture() override { extension_ = NULL; }
+  void TearDownInProcessBrowserTestFixture() override { extension_ = nullptr; }
 
-  ui::IMEEngineHandlerInterface::InputContext CreateInputContextWithInputType(
+  ui::TextInputMethod::InputContext CreateInputContextWithInputType(
       ui::TextInputType type) {
-    return ui::IMEEngineHandlerInterface::InputContext(
+    return ui::TextInputMethod::InputContext(
         type, ui::TEXT_INPUT_MODE_DEFAULT, ui::TEXT_INPUT_FLAG_NONE,
         ui::TextInputClient::FOCUS_REASON_OTHER,
         false /* should_do_learning */);
@@ -87,8 +88,7 @@ class InputMethodEngineBrowserTest
  protected:
   void LoadTestInputMethod() {
     // This will load "chrome/test/data/extensions/input_ime"
-    ExtensionTestMessageListener ime_ready_listener("ReadyToUseImeEvent",
-                                                    false);
+    ExtensionTestMessageListener ime_ready_listener("ReadyToUseImeEvent");
     extension_ = LoadExtensionWithType("input_ime", GetParam());
     ASSERT_TRUE(extension_);
     ASSERT_TRUE(ime_ready_listener.WaitUntilSatisfied());
@@ -116,7 +116,8 @@ class InputMethodEngineBrowserTest
   }
 
   const extensions::Extension* LoadExtensionWithType(
-      const std::string& extension_name, TestType type) {
+      const std::string& extension_name,
+      TestType type) {
     switch (type) {
       case kTestTypeNormal:
         return LoadExtension(test_data_dir_.AppendASCII(extension_name));
@@ -128,7 +129,7 @@ class InputMethodEngineBrowserTest
             test_data_dir_.AppendASCII(extension_name));
     }
     NOTREACHED();
-    return NULL;
+    return nullptr;
   }
 
   const extensions::Extension* extension_;
@@ -136,7 +137,7 @@ class InputMethodEngineBrowserTest
 
 class KeyEventDoneCallback {
  public:
-  explicit KeyEventDoneCallback(bool expected_argument)
+  explicit KeyEventDoneCallback(ui::ime::KeyEventHandledState expected_argument)
       : expected_argument_(expected_argument) {}
 
   KeyEventDoneCallback(const KeyEventDoneCallback&) = delete;
@@ -144,7 +145,7 @@ class KeyEventDoneCallback {
 
   ~KeyEventDoneCallback() = default;
 
-  void Run(bool consumed) {
+  void Run(ui::ime::KeyEventHandledState consumed) {
     if (consumed == expected_argument_)
       run_loop_.Quit();
   }
@@ -152,7 +153,7 @@ class KeyEventDoneCallback {
   void WaitUntilCalled() { run_loop_.Run(); }
 
  private:
-  bool expected_argument_;
+  ui::ime::KeyEventHandledState expected_argument_;
   base::RunLoop run_loop_;
 };
 
@@ -193,8 +194,7 @@ INSTANTIATE_TEST_SUITE_P(InputMethodEngineComponentExtensionBrowserTest,
                          InputMethodEngineBrowserTest,
                          ::testing::Values(kTestTypeComponent));
 
-IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest,
-                       BasicScenarioTest) {
+IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, BasicScenarioTest) {
   LoadTestInputMethod();
 
   InputMethodManager::Get()->GetActiveIMEState()->ChangeInputMethod(
@@ -208,19 +208,19 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest,
   ui::IMEBridge::Get()->SetInputContextHandler(mock_input_context.get());
   ui::IMEBridge::Get()->SetCandidateWindowHandler(mock_candidate_window.get());
 
-  ui::IMEEngineHandlerInterface* engine_handler =
+  ui::TextInputMethod* engine_handler =
       ui::IMEBridge::Get()->GetCurrentEngineHandler();
   ASSERT_TRUE(engine_handler);
 
   // onActivate event should be fired if Enable function is called.
-  ExtensionTestMessageListener activated_listener("onActivate", false);
+  ExtensionTestMessageListener activated_listener("onActivate");
   engine_handler->Enable("IdentityIME");
   ASSERT_TRUE(activated_listener.WaitUntilSatisfied());
   ASSERT_TRUE(activated_listener.was_satisfied());
 
   // onFocus event should be fired if FocusIn function is called.
   ExtensionTestMessageListener focus_listener(
-      "onFocus:text:true:true:true:false", false);
+      "onFocus:text:true:true:true:false");
   const auto context =
       CreateInputContextWithInputType(ui::TEXT_INPUT_TYPE_TEXT);
   engine_handler->FocusIn(context);
@@ -228,10 +228,12 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest,
   ASSERT_TRUE(focus_listener.was_satisfied());
 
   // onKeyEvent should be fired if ProcessKeyEvent is called.
-  KeyEventDoneCallback callback(false);  // EchoBackIME doesn't consume keys.
-  ExtensionTestMessageListener keyevent_listener("onKeyEvent", false);
+  KeyEventDoneCallback callback(
+      ui::ime::KeyEventHandledState::kNotHandled);  // EchoBackIME doesn't
+                                                    // consume keys.
+  ExtensionTestMessageListener keyevent_listener("onKeyEvent");
   ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::EF_NONE);
-  ui::IMEEngineHandlerInterface::KeyEventDoneCallback keyevent_callback =
+  ui::TextInputMethod::KeyEventDoneCallback keyevent_callback =
       base::BindOnce(&KeyEventDoneCallback::Run, base::Unretained(&callback));
   engine_handler->ProcessKeyEvent(key_event, std::move(keyevent_callback));
   ASSERT_TRUE(keyevent_listener.WaitUntilSatisfied());
@@ -240,7 +242,7 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest,
 
   // onSurroundingTextChange should be fired if SetSurroundingText is called.
   ExtensionTestMessageListener surrounding_text_listener(
-      "onSurroundingTextChanged", false);
+      "onSurroundingTextChanged");
   engine_handler->SetSurroundingText(u"text",  // Surrounding text.
                                      0,        // focused position.
                                      1,        // anchor position.
@@ -249,25 +251,25 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest,
   ASSERT_TRUE(surrounding_text_listener.was_satisfied());
 
   // onMenuItemActivated should be fired if PropertyActivate is called.
-  ExtensionTestMessageListener property_listener("onMenuItemActivated", false);
+  ExtensionTestMessageListener property_listener("onMenuItemActivated");
   engine_handler->PropertyActivate("property_name");
   ASSERT_TRUE(property_listener.WaitUntilSatisfied());
   ASSERT_TRUE(property_listener.was_satisfied());
 
   // onReset should be fired if Reset is called.
-  ExtensionTestMessageListener reset_listener("onReset", false);
+  ExtensionTestMessageListener reset_listener("onReset");
   engine_handler->Reset();
   ASSERT_TRUE(reset_listener.WaitUntilSatisfied());
   ASSERT_TRUE(reset_listener.was_satisfied());
 
   // onBlur should be fired if FocusOut is called.
-  ExtensionTestMessageListener blur_listener("onBlur", false);
+  ExtensionTestMessageListener blur_listener("onBlur");
   engine_handler->FocusOut();
   ASSERT_TRUE(blur_listener.WaitUntilSatisfied());
   ASSERT_TRUE(blur_listener.was_satisfied());
 
   // onDeactivated should be fired if Disable is called.
-  ExtensionTestMessageListener disabled_listener("onDeactivated", false);
+  ExtensionTestMessageListener disabled_listener("onDeactivated");
   engine_handler->Disable();
   ASSERT_TRUE(disabled_listener.WaitUntilSatisfied());
   ASSERT_TRUE(disabled_listener.was_satisfied());
@@ -276,8 +278,7 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest,
   ui::IMEBridge::Get()->SetCandidateWindowHandler(nullptr);
 }
 
-IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest,
-                       APIArgumentTest) {
+IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, APIArgumentTest) {
   // TODO(crbug.com/956825): Makes real end to end test without mocking the
   // input context handler. The test should mock the TextInputClient instance
   // hooked up with `InputMethodAsh`, or even using the real `TextInputClient`
@@ -295,30 +296,29 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest,
   ui::IMEBridge::Get()->SetInputContextHandler(mock_input_context.get());
   ui::IMEBridge::Get()->SetCandidateWindowHandler(mock_candidate_window.get());
 
-  ui::IMEEngineHandlerInterface* engine_handler =
+  ui::TextInputMethod* engine_handler =
       ui::IMEBridge::Get()->GetCurrentEngineHandler();
   ASSERT_TRUE(engine_handler);
 
   extensions::ExtensionHost* host =
-      extensions::ProcessManager::Get(profile())
-          ->GetBackgroundHostForExtension(extension_->id());
+      extensions::ProcessManager::Get(profile())->GetBackgroundHostForExtension(
+          extension_->id());
   ASSERT_TRUE(host);
 
   engine_handler->Enable("APIArgumentIME");
-  const auto context =
-      CreateInputContextWithInputType(ui::TEXT_INPUT_TYPE_TEXT);
-  engine_handler->FocusIn(context);
+  engine_handler->FocusIn(
+      CreateInputContextWithInputType(ui::TEXT_INPUT_TYPE_TEXT));
 
   {
     SCOPED_TRACE("KeyDown, Ctrl:No, Alt:No, AltGr:No, Shift:No, Caps:No");
-    KeyEventDoneCallback callback(false);
+    KeyEventDoneCallback callback(ui::ime::KeyEventHandledState::kNotHandled);
     const std::string expected_value =
         "onKeyEvent::true:keydown:a:KeyA:false:false:false:false:false";
-    ExtensionTestMessageListener keyevent_listener(expected_value, false);
+    ExtensionTestMessageListener keyevent_listener(expected_value);
 
-    ui::KeyEvent key_event(
-        ui::ET_KEY_PRESSED, ui::VKEY_A, ui::DomCode::US_A, ui::EF_NONE);
-    ui::IMEEngineHandlerInterface::KeyEventDoneCallback keyevent_callback =
+    ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::DomCode::US_A,
+                           ui::EF_NONE);
+    ui::TextInputMethod::KeyEventDoneCallback keyevent_callback =
         base::BindOnce(&KeyEventDoneCallback::Run, base::Unretained(&callback));
     engine_handler->ProcessKeyEvent(key_event, std::move(keyevent_callback));
     ASSERT_TRUE(keyevent_listener.WaitUntilSatisfied());
@@ -327,16 +327,14 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest,
   }
   {
     SCOPED_TRACE("KeyDown, Ctrl:Yes, Alt:No, AltGr:No, Shift:No, Caps:No");
-    KeyEventDoneCallback callback(false);
+    KeyEventDoneCallback callback(ui::ime::KeyEventHandledState::kNotHandled);
     const std::string expected_value =
         "onKeyEvent::true:keydown:a:KeyA:true:false:false:false:false";
-    ExtensionTestMessageListener keyevent_listener(expected_value, false);
+    ExtensionTestMessageListener keyevent_listener(expected_value);
 
-    ui::KeyEvent key_event(ui::ET_KEY_PRESSED,
-                           ui::VKEY_A,
-                           ui::DomCode::US_A,
+    ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::DomCode::US_A,
                            ui::EF_CONTROL_DOWN);
-    ui::IMEEngineHandlerInterface::KeyEventDoneCallback keyevent_callback =
+    ui::TextInputMethod::KeyEventDoneCallback keyevent_callback =
         base::BindOnce(&KeyEventDoneCallback::Run, base::Unretained(&callback));
     engine_handler->ProcessKeyEvent(key_event, std::move(keyevent_callback));
     ASSERT_TRUE(keyevent_listener.WaitUntilSatisfied());
@@ -345,16 +343,14 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest,
   }
   {
     SCOPED_TRACE("KeyDown, Ctrl:No, Alt:Yes, AltGr:No, Shift:No, Caps:No");
-    KeyEventDoneCallback callback(false);
+    KeyEventDoneCallback callback(ui::ime::KeyEventHandledState::kNotHandled);
     const std::string expected_value =
         "onKeyEvent::true:keydown:a:KeyA:false:true:false:false:false";
-    ExtensionTestMessageListener keyevent_listener(expected_value, false);
+    ExtensionTestMessageListener keyevent_listener(expected_value);
 
-    ui::KeyEvent key_event(ui::ET_KEY_PRESSED,
-                           ui::VKEY_A,
-                           ui::DomCode::US_A,
+    ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::DomCode::US_A,
                            ui::EF_ALT_DOWN);
-    ui::IMEEngineHandlerInterface::KeyEventDoneCallback keyevent_callback =
+    ui::TextInputMethod::KeyEventDoneCallback keyevent_callback =
         base::BindOnce(&KeyEventDoneCallback::Run, base::Unretained(&callback));
     engine_handler->ProcessKeyEvent(key_event, std::move(keyevent_callback));
     ASSERT_TRUE(keyevent_listener.WaitUntilSatisfied());
@@ -363,16 +359,14 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest,
   }
   {
     SCOPED_TRACE("KeyDown, Ctrl:No, Alt:No, AltGr:No, Shift:Yes, Caps:No");
-    KeyEventDoneCallback callback(false);
+    KeyEventDoneCallback callback(ui::ime::KeyEventHandledState::kNotHandled);
     const std::string expected_value =
         "onKeyEvent::true:keydown:A:KeyA:false:false:false:true:false";
-    ExtensionTestMessageListener keyevent_listener(expected_value, false);
+    ExtensionTestMessageListener keyevent_listener(expected_value);
 
-    ui::KeyEvent key_event(ui::ET_KEY_PRESSED,
-                           ui::VKEY_A,
-                           ui::DomCode::US_A,
+    ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::DomCode::US_A,
                            ui::EF_SHIFT_DOWN);
-    ui::IMEEngineHandlerInterface::KeyEventDoneCallback keyevent_callback =
+    ui::TextInputMethod::KeyEventDoneCallback keyevent_callback =
         base::BindOnce(&KeyEventDoneCallback::Run, base::Unretained(&callback));
     engine_handler->ProcessKeyEvent(key_event, std::move(keyevent_callback));
     ASSERT_TRUE(keyevent_listener.WaitUntilSatisfied());
@@ -381,14 +375,14 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest,
   }
   {
     SCOPED_TRACE("KeyDown, Ctrl:No, Alt:No, AltGr:No, Shift:No, Caps:Yes");
-    KeyEventDoneCallback callback(false);
+    KeyEventDoneCallback callback(ui::ime::KeyEventHandledState::kNotHandled);
     const std::string expected_value =
         "onKeyEvent::true:keydown:A:KeyA:false:false:false:false:true";
-    ExtensionTestMessageListener keyevent_listener(expected_value, false);
+    ExtensionTestMessageListener keyevent_listener(expected_value);
 
     ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::DomCode::US_A,
                            ui::EF_CAPS_LOCK_ON);
-    ui::IMEEngineHandlerInterface::KeyEventDoneCallback keyevent_callback =
+    ui::TextInputMethod::KeyEventDoneCallback keyevent_callback =
         base::BindOnce(&KeyEventDoneCallback::Run, base::Unretained(&callback));
     engine_handler->ProcessKeyEvent(key_event, std::move(keyevent_callback));
     ASSERT_TRUE(keyevent_listener.WaitUntilSatisfied());
@@ -397,16 +391,14 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest,
   }
   {
     SCOPED_TRACE("KeyDown, Ctrl:Yes, Alt:Yes, AltGr:No, Shift:No, Caps:No");
-    KeyEventDoneCallback callback(false);
+    KeyEventDoneCallback callback(ui::ime::KeyEventHandledState::kNotHandled);
     const std::string expected_value =
         "onKeyEvent::true:keydown:a:KeyA:true:true:false:false:false";
-    ExtensionTestMessageListener keyevent_listener(expected_value, false);
+    ExtensionTestMessageListener keyevent_listener(expected_value);
 
-    ui::KeyEvent key_event(ui::ET_KEY_PRESSED,
-                           ui::VKEY_A,
-                           ui::DomCode::US_A,
+    ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::DomCode::US_A,
                            ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN);
-    ui::IMEEngineHandlerInterface::KeyEventDoneCallback keyevent_callback =
+    ui::TextInputMethod::KeyEventDoneCallback keyevent_callback =
         base::BindOnce(&KeyEventDoneCallback::Run, base::Unretained(&callback));
     engine_handler->ProcessKeyEvent(key_event, std::move(keyevent_callback));
     ASSERT_TRUE(keyevent_listener.WaitUntilSatisfied());
@@ -415,14 +407,14 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest,
   }
   {
     SCOPED_TRACE("KeyDown, Ctrl:No, Alt:No, AltGr:No, Shift:Yes, Caps:Yes");
-    KeyEventDoneCallback callback(false);
+    KeyEventDoneCallback callback(ui::ime::KeyEventHandledState::kNotHandled);
     const std::string expected_value =
         "onKeyEvent::true:keydown:a:KeyA:false:false:false:true:true";
-    ExtensionTestMessageListener keyevent_listener(expected_value, false);
+    ExtensionTestMessageListener keyevent_listener(expected_value);
 
     ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::DomCode::US_A,
                            ui::EF_SHIFT_DOWN | ui::EF_CAPS_LOCK_ON);
-    ui::IMEEngineHandlerInterface::KeyEventDoneCallback keyevent_callback =
+    ui::TextInputMethod::KeyEventDoneCallback keyevent_callback =
         base::BindOnce(&KeyEventDoneCallback::Run, base::Unretained(&callback));
     engine_handler->ProcessKeyEvent(key_event, std::move(keyevent_callback));
     ASSERT_TRUE(keyevent_listener.WaitUntilSatisfied());
@@ -431,14 +423,14 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest,
   }
   {
     SCOPED_TRACE("KeyDown, Ctrl:No, Alt:No, AltGr:Yes, Shift:No, Caps:No");
-    KeyEventDoneCallback callback(false);
+    KeyEventDoneCallback callback(ui::ime::KeyEventHandledState::kNotHandled);
     const std::string expected_value =
         "onKeyEvent::true:keydown:a:KeyA:false:false:true:false:false";
-    ExtensionTestMessageListener keyevent_listener(expected_value, false);
+    ExtensionTestMessageListener keyevent_listener(expected_value);
 
     ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::DomCode::US_A,
                            ui::EF_ALTGR_DOWN);
-    ui::IMEEngineHandlerInterface::KeyEventDoneCallback keyevent_callback =
+    ui::TextInputMethod::KeyEventDoneCallback keyevent_callback =
         base::BindOnce(&KeyEventDoneCallback::Run, base::Unretained(&callback));
     engine_handler->ProcessKeyEvent(key_event, std::move(keyevent_callback));
     ASSERT_TRUE(keyevent_listener.WaitUntilSatisfied());
@@ -474,20 +466,19 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest,
       {ui::VKEY_F10, "F10", "AudioVolumeUp"},
   };
 
-  for (size_t i = 0; i < base::size(kMediaKeyCases); ++i) {
+  for (size_t i = 0; i < std::size(kMediaKeyCases); ++i) {
     SCOPED_TRACE(std::string("KeyDown, ") + kMediaKeyCases[i].code);
-    KeyEventDoneCallback callback(false);
+    KeyEventDoneCallback callback(ui::ime::KeyEventHandledState::kNotHandled);
     const std::string expected_value = base::StringPrintf(
         "onKeyEvent::true:keydown:%s:%s:false:false:false:false:false",
         kMediaKeyCases[i].key, kMediaKeyCases[i].code);
-    ExtensionTestMessageListener keyevent_listener(expected_value, false);
+    ExtensionTestMessageListener keyevent_listener(expected_value);
 
     ui::KeyEvent key_event(
-        ui::ET_KEY_PRESSED,
-        kMediaKeyCases[i].keycode,
+        ui::ET_KEY_PRESSED, kMediaKeyCases[i].keycode,
         ui::KeycodeConverter::CodeStringToDomCode(kMediaKeyCases[i].code),
         ui::EF_NONE);
-    ui::IMEEngineHandlerInterface::KeyEventDoneCallback keyevent_callback =
+    ui::TextInputMethod::KeyEventDoneCallback keyevent_callback =
         base::BindOnce(&KeyEventDoneCallback::Run, base::Unretained(&callback));
     engine_handler->ProcessKeyEvent(key_event, std::move(keyevent_callback));
     ASSERT_TRUE(keyevent_listener.WaitUntilSatisfied());
@@ -506,8 +497,8 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest,
         "  text:'COMMIT_TEXT'"
         "});";
 
-    ASSERT_TRUE(content::ExecuteScript(host->host_contents(),
-                                       commit_text_test_script));
+    ASSERT_TRUE(
+        content::ExecuteScript(host->host_contents(), commit_text_test_script));
     EXPECT_EQ(1, mock_input_context->commit_text_call_count());
     EXPECT_EQ(u"COMMIT_TEXT", mock_input_context->last_commit_text());
   }
@@ -658,8 +649,7 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest,
     ASSERT_TRUE(content::ExecuteScript(host->host_contents(),
                                        commite_text_test_script));
     EXPECT_EQ(1, mock_input_context->update_preedit_text_call_count());
-    EXPECT_FALSE(
-        mock_input_context->last_update_composition_arg().is_visible);
+    EXPECT_FALSE(mock_input_context->last_update_composition_arg().is_visible);
     const ui::CompositionText& composition_text =
         mock_input_context->last_update_composition_arg().composition_text;
     EXPECT_TRUE(composition_text.text.empty());
@@ -703,11 +693,13 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest,
         }
       });
     )";
-    ASSERT_TRUE(content::ExecuteScript(host->host_contents(),
-                                       set_assistive_window_test_script));
     auto* assistive_window_controller = static_cast<AssistiveWindowController*>(
         ui::IMEBridge::Get()->GetAssistiveWindowHandler());
-
+    views::test::WidgetDestroyedWaiter waiter(
+        assistive_window_controller->GetUndoWindowForTesting()->GetWidget());
+    ASSERT_TRUE(content::ExecuteScript(host->host_contents(),
+                                       set_assistive_window_test_script));
+    waiter.Wait();
     ui::ime::UndoWindow* undo_window =
         assistive_window_controller->GetUndoWindowForTesting();
     EXPECT_FALSE(undo_window);
@@ -734,7 +726,7 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest,
         assistive_window_controller->GetUndoWindowForTesting();
     ASSERT_TRUE(undo_window);
     ExtensionTestMessageListener button_listener(
-        "undo button in undo window clicked", false);
+        "undo button in undo window clicked");
 
     aura::Window* window = browser()->window()->GetNativeWindow();
     ui::test::EventGenerator event_generator(window->GetRootWindow());
@@ -834,8 +826,7 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest,
         "  }"
         "});";
     ASSERT_TRUE(content::ExecuteScript(
-        host->host_contents(),
-        set_candidate_window_properties_test_script));
+        host->host_contents(), set_candidate_window_properties_test_script));
     EXPECT_EQ(1, mock_candidate_window->update_lookup_table_call_count());
     EXPECT_TRUE(
         mock_candidate_window->last_update_lookup_table_arg().is_visible);
@@ -853,8 +844,7 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest,
         "  }"
         "});";
     ASSERT_TRUE(content::ExecuteScript(
-        host->host_contents(),
-        set_candidate_window_properties_test_script));
+        host->host_contents(), set_candidate_window_properties_test_script));
     EXPECT_EQ(1, mock_candidate_window->update_lookup_table_call_count());
 
     // window visibility is kept as before.
@@ -878,8 +868,7 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest,
         "  }"
         "});";
     ASSERT_TRUE(content::ExecuteScript(
-        host->host_contents(),
-        set_candidate_window_properties_test_script));
+        host->host_contents(), set_candidate_window_properties_test_script));
     EXPECT_EQ(1, mock_candidate_window->update_lookup_table_call_count());
 
     // window visibility is kept as before.
@@ -907,8 +896,7 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest,
         "  }"
         "});";
     ASSERT_TRUE(content::ExecuteScript(
-        host->host_contents(),
-        set_candidate_window_properties_test_script));
+        host->host_contents(), set_candidate_window_properties_test_script));
     EXPECT_EQ(1, mock_candidate_window->update_lookup_table_call_count());
 
     // window visibility is kept as before.
@@ -939,8 +927,7 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest,
         "  }"
         "});";
     ASSERT_TRUE(content::ExecuteScript(
-        host->host_contents(),
-        set_candidate_window_properties_test_script));
+        host->host_contents(), set_candidate_window_properties_test_script));
     EXPECT_EQ(1, mock_candidate_window->update_lookup_table_call_count());
 
     const ui::CandidateWindow& table =
@@ -960,8 +947,7 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest,
         "  }"
         "});";
     ASSERT_TRUE(content::ExecuteScript(
-        host->host_contents(),
-        set_candidate_window_properties_test_script));
+        host->host_contents(), set_candidate_window_properties_test_script));
     EXPECT_EQ(1, mock_candidate_window->update_lookup_table_call_count());
 
     // aux text visibility is kept as before.
@@ -1087,8 +1073,8 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest,
         "  contextID: engineBridge.getFocusedContextID().contextID,"
         "  candidateID: 2"
         "});";
-    ASSERT_TRUE(content::ExecuteScript(
-        host->host_contents(), set_cursor_position_test_script));
+    ASSERT_TRUE(content::ExecuteScript(host->host_contents(),
+                                       set_cursor_position_test_script));
     EXPECT_EQ(1, mock_candidate_window->update_lookup_table_call_count());
 
     // window visibility is kept as before.
@@ -1143,12 +1129,12 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest,
         "    checked: true"
         "  }]"
         "});";
-    ASSERT_TRUE(content::ExecuteScript(
-        host->host_contents(), set_menu_item_test_script));
+    ASSERT_TRUE(content::ExecuteScript(host->host_contents(),
+                                       set_menu_item_test_script));
 
     const ui::ime::InputMethodMenuItemList& props =
-        ui::ime::InputMethodMenuManager::GetInstance()->
-        GetCurrentInputMethodMenuItemList();
+        ui::ime::InputMethodMenuManager::GetInstance()
+            ->GetCurrentInputMethodMenuItemList();
     ASSERT_EQ(5U, props.size());
 
     EXPECT_EQ("ID0", props[0].key);
@@ -1161,10 +1147,6 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest,
     EXPECT_EQ("LABEL2", props[2].label);
     EXPECT_EQ("LABEL3", props[3].label);
     EXPECT_EQ("LABEL4", props[4].label);
-
-    EXPECT_TRUE(props[2].is_selection_item);
-    // TODO(nona): Add tests for style: ["toggle" and "separator"]
-    // and visible:, when implement them.
 
     EXPECT_TRUE(props[4].is_selection_item_checked);
   }
@@ -1180,8 +1162,8 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest,
         "  offset: 5,"
         "  length: 3"
         "});";
-    ASSERT_TRUE(content::ExecuteScript(
-        host->host_contents(), delete_surrounding_text_test_script));
+    ASSERT_TRUE(content::ExecuteScript(host->host_contents(),
+                                       delete_surrounding_text_test_script));
 
     EXPECT_EQ(1, mock_input_context->delete_surrounding_text_call_count());
     EXPECT_EQ(5, mock_input_context->last_delete_surrounding_text_arg().offset);
@@ -1195,55 +1177,49 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest,
 
     {
       ExtensionTestMessageListener focus_listener(
-          "onFocus:text:true:true:true:false", false);
-      const auto context =
-          CreateInputContextWithInputType(ui::TEXT_INPUT_TYPE_TEXT);
-      engine_handler->FocusIn(context);
+          "onFocus:text:true:true:true:false");
+      engine_handler->FocusIn(
+          CreateInputContextWithInputType(ui::TEXT_INPUT_TYPE_TEXT));
       ASSERT_TRUE(focus_listener.WaitUntilSatisfied());
       ASSERT_TRUE(focus_listener.was_satisfied());
     }
     {
       ExtensionTestMessageListener focus_listener(
-          "onFocus:search:true:true:true:false", false);
-      const auto context =
-          CreateInputContextWithInputType(ui::TEXT_INPUT_TYPE_SEARCH);
-      engine_handler->FocusIn(context);
+          "onFocus:search:true:true:true:false");
+      engine_handler->FocusIn(
+          CreateInputContextWithInputType(ui::TEXT_INPUT_TYPE_SEARCH));
       ASSERT_TRUE(focus_listener.WaitUntilSatisfied());
       ASSERT_TRUE(focus_listener.was_satisfied());
     }
     {
       ExtensionTestMessageListener focus_listener(
-          "onFocus:tel:true:true:true:false", false);
-      const auto context =
-          CreateInputContextWithInputType(ui::TEXT_INPUT_TYPE_TELEPHONE);
-      engine_handler->FocusIn(context);
+          "onFocus:tel:true:true:true:false");
+      engine_handler->FocusIn(
+          CreateInputContextWithInputType(ui::TEXT_INPUT_TYPE_TELEPHONE));
       ASSERT_TRUE(focus_listener.WaitUntilSatisfied());
       ASSERT_TRUE(focus_listener.was_satisfied());
     }
     {
       ExtensionTestMessageListener focus_listener(
-          "onFocus:url:true:true:true:false", false);
-      const auto context =
-          CreateInputContextWithInputType(ui::TEXT_INPUT_TYPE_URL);
-      engine_handler->FocusIn(context);
+          "onFocus:url:true:true:true:false");
+      engine_handler->FocusIn(
+          CreateInputContextWithInputType(ui::TEXT_INPUT_TYPE_URL));
       ASSERT_TRUE(focus_listener.WaitUntilSatisfied());
       ASSERT_TRUE(focus_listener.was_satisfied());
     }
     {
       ExtensionTestMessageListener focus_listener(
-          "onFocus:email:true:true:true:false", false);
-      const auto context =
-          CreateInputContextWithInputType(ui::TEXT_INPUT_TYPE_EMAIL);
-      engine_handler->FocusIn(context);
+          "onFocus:email:true:true:true:false");
+      engine_handler->FocusIn(
+          CreateInputContextWithInputType(ui::TEXT_INPUT_TYPE_EMAIL));
       ASSERT_TRUE(focus_listener.WaitUntilSatisfied());
       ASSERT_TRUE(focus_listener.was_satisfied());
     }
     {
       ExtensionTestMessageListener focus_listener(
-          "onFocus:number:true:true:true:false", false);
-      const auto context =
-          CreateInputContextWithInputType(ui::TEXT_INPUT_TYPE_NUMBER);
-      engine_handler->FocusIn(context);
+          "onFocus:number:true:true:true:false");
+      engine_handler->FocusIn(
+          CreateInputContextWithInputType(ui::TEXT_INPUT_TYPE_NUMBER));
       ASSERT_TRUE(focus_listener.WaitUntilSatisfied());
       ASSERT_TRUE(focus_listener.was_satisfied());
     }
@@ -1326,7 +1302,7 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, RestrictedKeyboard) {
   ui::IMEBridge::Get()->SetInputContextHandler(mock_input_context.get());
   ui::IMEBridge::Get()->SetCandidateWindowHandler(mock_candidate_window.get());
 
-  ui::IMEEngineHandlerInterface* engine_handler =
+  ui::TextInputMethod* engine_handler =
       ui::IMEBridge::Get()->GetCurrentEngineHandler();
   ASSERT_TRUE(engine_handler);
 
@@ -1349,7 +1325,7 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, RestrictedKeyboard) {
     SCOPED_TRACE("Text");
 
     ExtensionTestMessageListener focus_listener(
-        "onFocus:text:false:false:false:false", false);
+        "onFocus:text:false:false:false:false");
     const auto context =
         CreateInputContextWithInputType(ui::TEXT_INPUT_TYPE_TEXT);
     engine_handler->FocusIn(context);
@@ -1360,7 +1336,7 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, RestrictedKeyboard) {
     SCOPED_TRACE("Password");
 
     ExtensionTestMessageListener focus_listener(
-        "onFocus:password:false:false:false:false", false);
+        "onFocus:password:false:false:false:false");
     const auto context =
         CreateInputContextWithInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
     engine_handler->FocusIn(context);
@@ -1371,7 +1347,7 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, RestrictedKeyboard) {
     SCOPED_TRACE("URL");
 
     ExtensionTestMessageListener focus_listener(
-        "onFocus:url:false:false:false:false", false);
+        "onFocus:url:false:false:false:false");
     const auto context =
         CreateInputContextWithInputType(ui::TEXT_INPUT_TYPE_URL);
     engine_handler->FocusIn(context);
@@ -1382,7 +1358,7 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, RestrictedKeyboard) {
     SCOPED_TRACE("Search");
 
     ExtensionTestMessageListener focus_listener(
-        "onFocus:search:false:false:false:false", false);
+        "onFocus:search:false:false:false:false");
     const auto context =
         CreateInputContextWithInputType(ui::TEXT_INPUT_TYPE_SEARCH);
     engine_handler->FocusIn(context);
@@ -1393,7 +1369,7 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, RestrictedKeyboard) {
     SCOPED_TRACE("Email");
 
     ExtensionTestMessageListener focus_listener(
-        "onFocus:email:false:false:false:false", false);
+        "onFocus:email:false:false:false:false");
     const auto context =
         CreateInputContextWithInputType(ui::TEXT_INPUT_TYPE_EMAIL);
     engine_handler->FocusIn(context);
@@ -1404,7 +1380,7 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, RestrictedKeyboard) {
     SCOPED_TRACE("Number");
 
     ExtensionTestMessageListener focus_listener(
-        "onFocus:number:false:false:false:false", false);
+        "onFocus:number:false:false:false:false");
     const auto context =
         CreateInputContextWithInputType(ui::TEXT_INPUT_TYPE_NUMBER);
     engine_handler->FocusIn(context);
@@ -1415,7 +1391,7 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, RestrictedKeyboard) {
     SCOPED_TRACE("Telephone");
 
     ExtensionTestMessageListener focus_listener(
-        "onFocus:tel:false:false:false:false", false);
+        "onFocus:tel:false:false:false:false");
     const auto context =
         CreateInputContextWithInputType(ui::TEXT_INPUT_TYPE_TELEPHONE);
     engine_handler->FocusIn(context);
@@ -1441,14 +1417,14 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, ShouldDoLearning) {
   ui::IMEBridge::Get()->SetInputContextHandler(mock_input_context.get());
   ui::IMEBridge::Get()->SetCandidateWindowHandler(mock_candidate_window.get());
 
-  ui::IMEEngineHandlerInterface* engine_handler =
+  ui::TextInputMethod* engine_handler =
       ui::IMEBridge::Get()->GetCurrentEngineHandler();
   ASSERT_TRUE(engine_handler);
   engine_handler->Enable("IdentityIME");
 
   // onFocus event should be fired if FocusIn function is called.
   ExtensionTestMessageListener focus_listener(
-      "onFocus:text:true:true:true:true", false);
+      "onFocus:text:true:true:true:true");
   auto context = CreateInputContextWithInputType(ui::TEXT_INPUT_TYPE_TEXT);
   context.should_do_learning = true;
   engine_handler->FocusIn(context);
@@ -1472,7 +1448,7 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, MojoInteractionTest) {
   {
     SCOPED_TRACE("Verifies onFocus event.");
     ExtensionTestMessageListener focus_listener(
-        "onFocus:text:true:true:true:true", false);
+        "onFocus:text:true:true:true:true");
 
     im->SetFocusedTextInputClient(&tic);
 
@@ -1483,7 +1459,7 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, MojoInteractionTest) {
   {
     SCOPED_TRACE("Verifies onKeyEvent event.");
     ExtensionTestMessageListener keydown_listener(
-        "onKeyEvent::true:keydown:a:KeyA:false:false:false:false:false", false);
+        "onKeyEvent::true:keydown:a:KeyA:false:false:false:false:false");
 
     EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_A, false,
                                                 false, false, false));
@@ -1510,9 +1486,9 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, MojoInteractionTest) {
 
   {
     SCOPED_TRACE("Verifies onBlur event");
-    ExtensionTestMessageListener blur_listener("onBlur", false);
+    ExtensionTestMessageListener blur_listener("onBlur");
 
-    ui::DummyTextInputClient dtic;
+    ui::FakeTextInputClient dtic(ui::TEXT_INPUT_TYPE_TEXT);
     im->SetFocusedTextInputClient(&dtic);
 
     ASSERT_TRUE(blur_listener.WaitUntilSatisfied());

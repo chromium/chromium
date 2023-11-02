@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -69,7 +69,7 @@ export class MockTimer {
    */
   uninstall() {
     if (this.originals_) {
-      for (var key in this.originals_) {
+      for (const key in this.originals_) {
         window[key] = this.originals_[key];
       }
     }
@@ -95,8 +95,8 @@ export class MockTimer {
    * @private
    */
   createTimer_(callback, delayInMs, repeats) {
-    var key = this.nextTimerKey_++;
-    var task =
+    const key = this.nextTimerKey_++;
+    const task =
         {callback: callback, delay: delayInMs, key: key, repeats: repeats};
     this.timers_[key] = task;
     this.scheduleTask_(task);
@@ -114,9 +114,9 @@ export class MockTimer {
    * @private
    */
   scheduleTask_(details) {
-    var key = details.key;
-    var when = this.now_ + details.delay;
-    var index = this.schedule_.length;
+    const key = details.key;
+    const when = this.now_ + details.delay;
+    let index = this.schedule_.length;
     while (index > 0 && this.schedule_[index - 1].when < when) {
       index--;
     }
@@ -180,13 +180,13 @@ export class MockTimer {
    */
   fireElapsedCallbacks_() {
     while (this.schedule_.length > 0) {
-      var when = this.schedule_[this.schedule_.length - 1].when;
+      const when = this.schedule_[this.schedule_.length - 1].when;
       if (when > this.until_) {
         break;
       }
 
-      var task = this.schedule_.pop();
-      var details = this.timers_[task.key];
+      const task = this.schedule_.pop();
+      const details = this.timers_[task.key];
       if (!details) {
         continue;
       }  // Cancelled task.

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,12 +9,11 @@
 #include <vector>
 
 #include "ash/ash_export.h"
-#include "chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
+#include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 
 namespace ash {
-namespace tray {
+
 class BluetoothDetailedView;
-}  // namespace tray
 
 // This class defines the interface used to add, modify, and remove devices from
 // the device list of the detailed Bluetooth device page within the quick
@@ -22,8 +21,8 @@ class BluetoothDetailedView;
 // instances of implementations of this class.
 class ASH_EXPORT BluetoothDeviceListController {
  public:
-  using PairedBluetoothDevicePropertiesPtrs = std::vector<
-      chromeos::bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr>;
+  using PairedBluetoothDevicePropertiesPtrs =
+      std::vector<bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr>;
 
   class Factory {
    public:
@@ -32,7 +31,7 @@ class ASH_EXPORT BluetoothDeviceListController {
     virtual ~Factory() = default;
 
     static std::unique_ptr<BluetoothDeviceListController> Create(
-        tray::BluetoothDetailedView* bluetooth_detailed_view);
+        BluetoothDetailedView* bluetooth_detailed_view);
     static void SetFactoryForTesting(Factory* test_factory);
 
    protected:

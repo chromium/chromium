@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -208,7 +209,7 @@ class NotificationScheduleServiceTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
   base::ScopedTempDir tmp_dir_;
   std::unique_ptr<KeyedService> service_;
-  TestBackgroundTaskScheduler* task_scheduler_;
+  raw_ptr<TestBackgroundTaskScheduler> task_scheduler_;
   std::map<SchedulerClientType, TestClient*> clients_;
 };
 

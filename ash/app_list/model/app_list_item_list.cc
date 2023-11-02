@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,9 @@
 #include <utility>
 
 #include "ash/app_list/model/app_list_item.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_model_delegate.h"
+#include "base/containers/contains.h"
 #include "base/guid.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -153,6 +155,8 @@ bool AppListItemList::SetItemPosition(AppListItem* item,
 
 AppListItem* AppListItemList::AddPageBreakItemAfter(
     const AppListItem* previous_item) {
+  DCHECK(!features::IsProductivityLauncherEnabled());
+
   size_t previous_index;
   CHECK(FindItemIndex(previous_item->id(), &previous_index));
   CHECK(!previous_item->IsInFolder());
@@ -227,10 +231,8 @@ syncer::StringOrdinal AppListItemList::CreatePositionBefore(
 
 AppListItem* AppListItemList::AddItem(std::unique_ptr<AppListItem> item_ptr) {
   AppListItem* item = item_ptr.get();
-  CHECK(std::find_if(app_list_items_.cbegin(), app_list_items_.cend(),
-                     [item](const std::unique_ptr<AppListItem>& item_p) {
-                       return item_p.get() == item;
-                     }) == app_list_items_.cend());
+  CHECK(!base::Contains(app_list_items_, item,
+                        &std::unique_ptr<AppListItem>::get));
   EnsureValidItemPosition(item);
   size_t index = GetItemSortOrderIndex(item->position(), item->id());
   app_list_items_.insert(app_list_items_.begin() + index, std::move(item_ptr));

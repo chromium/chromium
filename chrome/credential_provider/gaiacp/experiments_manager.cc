@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -87,7 +87,7 @@ bool ExperimentsManager::ReloadExperiments(const std::wstring& sid) {
   }
 
   if (experiments_value->is_list()) {
-    for (const auto& item : experiments_value->GetList()) {
+    for (const auto& item : experiments_value->GetListDeprecated()) {
       auto* f = item.FindStringKey(kResponseFeatureKeyName);
       auto* v = item.FindStringKey(kResponseValueKeyName);
       if (!f || !v) {

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "base/files/file_util.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/observer_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/share/core/share_targets_observer.h"
 #include "chrome/browser/share/proto/share_target.pb.h"
@@ -19,8 +20,6 @@
 #include "ui/base/resource/resource_bundle.h"
 
 namespace sharing {
-
-using base::AutoLock;
 
 static const char GLOBAL[] = "GLOBAL";
 
@@ -43,13 +42,10 @@ ShareTargets* ShareTargets::GetInstance() {
 }
 
 ShareTargets::ShareTargets() = default;
-
-ShareTargets::~ShareTargets() {
-  AutoLock lock(lock_);  // DCHECK fail if the lock is held.
-}
+ShareTargets::~ShareTargets() = default;
 
 void ShareTargets::RecordUpdateMetrics(UpdateResult result, UpdateOrigin src) {
-  lock_.AssertAcquired();
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // src_name should be "ResourceBundle" or "DynamicUpdate".
   if (src == UpdateOrigin::DYNAMIC_UPDATE) {
@@ -67,13 +63,14 @@ void ShareTargets::RecordUpdateMetrics(UpdateResult result, UpdateOrigin src) {
 }
 
 void ShareTargets::PopulateFromDynamicUpdate(const std::string& binary_pb) {
-  AutoLock lock(lock_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   UpdateResult result = PopulateFromBinaryPb(binary_pb);
   RecordUpdateMetrics(result, UpdateOrigin::DYNAMIC_UPDATE);
 }
 
 void ShareTargets::PopulateFromResourceBundle() {
-  AutoLock lock(lock_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
   std::string binary_pb =
@@ -84,8 +81,6 @@ void ShareTargets::PopulateFromResourceBundle() {
 
 ShareTargets::UpdateResult ShareTargets::PopulateFromBinaryPb(
     const std::string& binary_pb) {
-  lock_.AssertAcquired();
-
   // Parse the proto and do some validation on it.
   if (binary_pb.empty()) {
     return UpdateResult::FAILED_EMPTY;
@@ -111,14 +106,13 @@ ShareTargets::UpdateResult ShareTargets::PopulateFromBinaryPb(
   }
 
   // Looks good. Update our internal list.
-  SwapTargetsLocked(new_targets);
+  SwapTargets(new_targets);
   NotifyShareTargetUpdated();
   return UpdateResult::SUCCESS;
 }
 
-void ShareTargets::SwapTargetsLocked(
+void ShareTargets::SwapTargets(
     std::unique_ptr<mojom::MapLocaleTargets>& new_targets) {
-  lock_.AssertAcquired();
   targets_.swap(new_targets);
 }
 
@@ -143,6 +137,7 @@ std::string ShareTargets::GetCountryStringFromID(int countryID) {
 }
 
 void ShareTargets::NotifyObserver(ShareTargetsObserver* observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::string locale =
       GetCountryStringFromID(country_codes::GetCurrentCountryID());
 

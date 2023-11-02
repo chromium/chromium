@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,8 @@
 namespace weblayer {
 
 TrustedCDNObserver::TrustedCDNObserver(content::WebContents* web_contents)
-    : WebContentsObserver(web_contents) {}
+    : WebContentsObserver(web_contents),
+      content::WebContentsUserData<TrustedCDNObserver>(*web_contents) {}
 
 TrustedCDNObserver::~TrustedCDNObserver() = default;
 

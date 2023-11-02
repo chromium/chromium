@@ -1,5 +1,5 @@
 #!/usr/bin/env vpython3
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -445,8 +445,8 @@ def _RunDiskUsage(devices, package_name):
       code_path = re.search(r'codePath=(.*)', package_output).group(1)
       lib_path = re.search(r'(?:legacyN|n)ativeLibrary(?:Dir|Path)=(.*)',
                            package_output).group(1)
-    except AttributeError:
-      raise Exception('Error parsing dumpsys output: ' + package_output)
+    except AttributeError as e:
+      raise Exception('Error parsing dumpsys output: ' + package_output) from e
 
     if code_path.startswith('/system'):
       logging.warning('Measurement of system image apks can be innacurate')
@@ -536,12 +536,12 @@ def _RunDiskUsage(devices, package_name):
     print('Total: %s KiB (%.1f MiB)' % (total, total / 1024.0))
 
 
-class _LogcatProcessor(object):
+class _LogcatProcessor:
   ParsedLine = collections.namedtuple(
       'ParsedLine',
       ['date', 'invokation_time', 'pid', 'tid', 'priority', 'tag', 'message'])
 
-  class NativeStackSymbolizer(object):
+  class NativeStackSymbolizer:
     """Buffers lines from native stacks and symbolizes them when done."""
     # E.g.: #06 pc 0x0000d519 /apex/com.android.runtime/lib/libart.so
     # E.g.: #01 pc 00180c8d  /data/data/.../lib/libbase.cr.so
@@ -555,6 +555,9 @@ class _LogcatProcessor(object):
 
     def _FlushLines(self):
       """Prints queued lines after sending them through stack.py."""
+      if self._crash_lines_buffer is None:
+        return
+
       crash_lines = self._crash_lines_buffer
       self._crash_lines_buffer = None
       with tempfile.NamedTemporaryFile(mode='w') as f:
@@ -585,8 +588,7 @@ class _LogcatProcessor(object):
         self._crash_lines_buffer.append((parsed_line, dim))
         return
 
-      if self._crash_lines_buffer is not None:
-        self._FlushLines()
+      self._FlushLines()
 
       self._print_func(parsed_line, dim)
 
@@ -597,6 +599,7 @@ class _LogcatProcessor(object):
       'ActivityManager',  # Shows activity lifecycle messages.
       'ActivityTaskManager',  # More activity lifecycle messages.
       'AndroidRuntime',  # Java crash dumps
+      'AppZygoteInit',  # Android's native application zygote support.
       'DEBUG',  # Native crash dump.
   }
 
@@ -620,11 +623,19 @@ class _LogcatProcessor(object):
                package_name,
                stack_script_context,
                deobfuscate=None,
-               verbose=False):
+               verbose=False,
+               exit_on_match=None,
+               extra_package_names=None):
     self._device = device
     self._package_name = package_name
+    self._extra_package_names = extra_package_names or []
     self._verbose = verbose
     self._deobfuscator = deobfuscate
+    if exit_on_match is not None:
+      self._exit_on_match = re.compile(exit_on_match)
+    else:
+      self._exit_on_match = None
+    self._found_exit_match = False
     self._native_stack_symbolizer = _LogcatProcessor.NativeStackSymbolizer(
         stack_script_context, self._PrintParsedLine)
     # Process ID for the app's main process (with no :name suffix).
@@ -647,7 +658,7 @@ class _LogcatProcessor(object):
     # Give preference to PID reported by "ps" over those found from
     # _start_pattern. There can be multiple "Start proc" messages from prior
     # runs of the app.
-    self._found_initial_pid = self._primary_pid != None
+    self._found_initial_pid = self._primary_pid is not None
     # Retrieve any additional patterns that are relevant for the User.
     self._user_defined_highlight = None
     user_regex = os.environ.get('CHROMIUM_LOGCAT_HIGHLIGHT')
@@ -663,20 +674,21 @@ class _LogcatProcessor(object):
     # ProcessLine method below also includes lines from processes which may
     # have already exited.
     self._primary_pid = None
-    for process in _GetPackageProcesses(self._device, self._package_name):
-      # We take only the first "main" process found in order to account for
-      # possibly forked() processes.
-      if ':' not in process.name and self._primary_pid is None:
-        self._primary_pid = process.pid
-      self._my_pids.add(process.pid)
+    for package_name in [self._package_name] + self._extra_package_names:
+      for process in _GetPackageProcesses(self._device, package_name):
+        # We take only the first "main" process found in order to account for
+        # possibly forked() processes.
+        if ':' not in process.name and self._primary_pid is None:
+          self._primary_pid = process.pid
+        self._my_pids.add(process.pid)
 
   def _GetPidStyle(self, pid, dim=False):
     if pid == self._primary_pid:
       return colorama.Fore.WHITE
-    elif pid in self._my_pids:
+    if pid in self._my_pids:
       # TODO(wnwen): Use one separate persistent color per process, pop LRU
       return colorama.Fore.YELLOW
-    elif dim:
+    if dim:
       return colorama.Style.DIM
     return ''
 
@@ -685,7 +697,7 @@ class _LogcatProcessor(object):
     if dim:
       return ''
     style = colorama.Fore.BLACK
-    if priority == 'E' or priority == 'F':
+    if priority in ('E', 'F'):
       style += colorama.Back.RED
     elif priority == 'W':
       style += colorama.Back.YELLOW
@@ -731,6 +743,9 @@ class _LogcatProcessor(object):
         date, invokation_time, pid, tid, priority, tag, original_message)
 
   def _PrintParsedLine(self, parsed_line, dim=False):
+    if self._exit_on_match and self._exit_on_match.search(parsed_line.message):
+      self._found_exit_match = True
+
     tid_style = colorama.Style.NORMAL
     user_match = self._user_defined_highlight and (
         re.search(self._user_defined_highlight, parsed_line.tag)
@@ -766,6 +781,9 @@ class _LogcatProcessor(object):
         self._native_stack_symbolizer.AddLine(*args)
     self._initial_buffered_lines = None
     self.nonce = None
+
+  def FoundExitMatch(self):
+    return self._found_exit_match
 
   def ProcessLine(self, line):
     if not line or line.startswith('------'):
@@ -815,14 +833,26 @@ class _LogcatProcessor(object):
         self._initial_buffered_lines.append((log, not owned_pid))
 
 
-def _RunLogcat(device, package_name, stack_script_context, deobfuscate,
-               verbose):
-  logcat_processor = _LogcatProcessor(
-      device, package_name, stack_script_context, deobfuscate, verbose)
+def _RunLogcat(device,
+               package_name,
+               stack_script_context,
+               deobfuscate,
+               verbose,
+               exit_on_match=None,
+               extra_package_names=None):
+  logcat_processor = _LogcatProcessor(device,
+                                      package_name,
+                                      stack_script_context,
+                                      deobfuscate,
+                                      verbose,
+                                      exit_on_match=exit_on_match,
+                                      extra_package_names=extra_package_names)
   device.RunShellCommand(['log', logcat_processor.nonce])
   for line in device.adb.Logcat(logcat_format='threadtime'):
     try:
       logcat_processor.ProcessLine(line)
+      if logcat_processor.FoundExitMatch():
+        return
     except:
       sys.stderr.write('Failed to process line: ' + line + '\n')
       # Skip stack trace for the common case of the adb server being
@@ -833,9 +863,11 @@ def _RunLogcat(device, package_name, stack_script_context, deobfuscate,
 
 
 def _GetPackageProcesses(device, package_name):
+  my_names = (package_name, package_name + '_zygote')
   return [
       p for p in device.ListProcesses(package_name)
-      if p.name == package_name or p.name.startswith(package_name + ':')]
+      if p.name in my_names or p.name.startswith(package_name + ':')
+  ]
 
 
 def _RunPs(devices, package_name):
@@ -894,10 +926,9 @@ def _RunProfile(device, package_name, host_build_directory, pprof_out_path,
     with simpleperf.RunSimpleperf(device, device_simpleperf_path, package_name,
                                   process_specifier, thread_specifier,
                                   extra_args, host_simpleperf_out_path):
-      sys.stdout.write('Profiler is running; press Enter to stop...')
+      sys.stdout.write('Profiler is running; press Enter to stop...\n')
       sys.stdin.read(1)
-      sys.stdout.write('Post-processing data...')
-      sys.stdout.flush()
+      sys.stdout.write('Post-processing data...\n')
 
     simpleperf.ConvertSimpleperfToPprof(host_simpleperf_out_path,
                                         host_build_directory, pprof_out_path)
@@ -914,7 +945,7 @@ def _RunProfile(device, package_name, host_build_directory, pprof_out_path,
         """ % {'s': pprof_out_path}))
 
 
-class _StackScriptContext(object):
+class _StackScriptContext:
   """Maintains temporary files needed by stack.py."""
 
   def __init__(self,
@@ -1036,7 +1067,7 @@ def _SaveDeviceCaches(devices, output_directory):
       logging.info('Wrote device cache: %s', cache_path)
 
 
-class _Command(object):
+class _Command:
   name = None
   description = None
   long_description = None
@@ -1051,7 +1082,7 @@ class _Command(object):
   calls_exec = False
   supports_multiple_devices = True
 
-  def __init__(self, from_wrapper_script, is_bundle):
+  def __init__(self, from_wrapper_script, is_bundle, is_test_apk):
     self._parser = None
     self._from_wrapper_script = from_wrapper_script
     self.args = None
@@ -1060,6 +1091,7 @@ class _Command(object):
     self.install_dict = None
     self.devices = None
     self.is_bundle = is_bundle
+    self.is_test_apk = is_test_apk
     self.bundle_generation_info = None
     # Only support  incremental install from APK wrapper scripts.
     if is_bundle or not from_wrapper_script:
@@ -1068,7 +1100,7 @@ class _Command(object):
   def RegisterBundleGenerationInfo(self, bundle_generation_info):
     self.bundle_generation_info = bundle_generation_info
 
-  def _RegisterExtraArgs(self, subp):
+  def _RegisterExtraArgs(self, group):
     pass
 
   def RegisterArgs(self, parser):
@@ -1365,6 +1397,8 @@ class _LaunchCommand(_Command):
     group.add_argument('url', nargs='?', help='A URL to launch with.')
 
   def Run(self):
+    if self.is_test_apk:
+      raise Exception('Use the bin/run_* scripts to run test apks.')
     if self.args.url and self.is_bundle:
       # TODO(digit): Support this, maybe by using 'dumpsys' as described
       # in the _LaunchUrl() comment.
@@ -1483,9 +1517,20 @@ To disable filtering, (but keep coloring), use --verbose.
         self.args.apk_path,
         self.bundle_generation_info,
         quiet=True)
+
+    extra_package_names = []
+    if self.is_test_apk and self.additional_apk_helpers:
+      for additional_apk_helper in self.additional_apk_helpers:
+        extra_package_names.append(additional_apk_helper.GetPackageName())
+
     try:
-      _RunLogcat(self.devices[0], self.args.package_name, stack_script_context,
-                 deobfuscate, bool(self.args.verbose_count))
+      _RunLogcat(self.devices[0],
+                 self.args.package_name,
+                 stack_script_context,
+                 deobfuscate,
+                 bool(self.args.verbose_count),
+                 self.args.exit_on_match,
+                 extra_package_names=extra_package_names)
     except KeyboardInterrupt:
       pass  # Don't show stack trace upon Ctrl-C
     finally:
@@ -1501,6 +1546,8 @@ To disable filtering, (but keep coloring), use --verbose.
       group.set_defaults(no_deobfuscate=False)
       group.add_argument('--proguard-mapping-path',
           help='Path to ProGuard map (enables deobfuscation)')
+    group.add_argument('--exit-on-match',
+                       help='Exits logcat when a message matches this regex.')
 
 
 class _PsCommand(_Command):
@@ -1600,6 +1647,8 @@ class _PrintCertsCommand(_Command):
 
   def Run(self):
     keytool = os.path.join(_JAVA_HOME, 'bin', 'keytool')
+    pem_certificate_pattern = re.compile(
+        r'-+BEGIN CERTIFICATE-+([\r\n0-9A-Za-z+/=]+)-+END CERTIFICATE-+[\r\n]*')
     if self.is_bundle:
       # Bundles are not signed until converted to .apks. The wrapper scripts
       # record which key will be used to sign though.
@@ -1619,36 +1668,72 @@ class _PrintCertsCommand(_Command):
         if self.args.full_cert:
           # Redirect stderr to hide a keytool warning about using non-standard
           # keystore format.
-          full_output = subprocess.check_output(
-              cmd + ['-rfc'], stderr=subprocess.STDOUT)
+          pem_encoded_certificate = subprocess.check_output(
+              cmd + ['-rfc'], stderr=subprocess.STDOUT).decode()
     else:
-      cmd = [
-          build_tools.GetPath('apksigner'), 'verify', '--print-certs',
-          '--verbose', self.apk_helper.path
-      ]
-      logging.warning('Running: %s', ' '.join(cmd))
-      env = os.environ.copy()
-      env['PATH'] = os.path.pathsep.join(
-          [os.path.join(_JAVA_HOME, 'bin'),
-           env.get('PATH')])
-      stdout = subprocess.check_output(cmd, env=env)
-      print(stdout)
-      if self.args.full_cert:
-        if 'v1 scheme (JAR signing): true' not in stdout:
-          raise Exception(
-              'Cannot print full certificate because apk is not V1 signed.')
 
-        cmd = [keytool, '-printcert', '-jarfile', self.apk_helper.path, '-rfc']
-        # Redirect stderr to hide a keytool warning about using non-standard
-        # keystore format.
-        full_output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+      def run_apksigner(min_sdk_version):
+        cmd = [
+            build_tools.GetPath('apksigner'), 'verify', '--min-sdk-version',
+            str(min_sdk_version), '--print-certs-pem', '--verbose',
+            self.apk_helper.path
+        ]
+        logging.warning('Running: %s', ' '.join(cmd))
+        env = os.environ.copy()
+        env['PATH'] = os.path.pathsep.join(
+            [os.path.join(_JAVA_HOME, 'bin'),
+             env.get('PATH')])
+        # Redirect stderr to hide verification failures (see explanation below).
+        return subprocess.check_output(cmd,
+                                       env=env,
+                                       universal_newlines=True,
+                                       stderr=subprocess.STDOUT)
+
+      # apksigner's default behavior is nonintuitive: it will print "Verified
+      # using <scheme number>...: false" for any scheme which is obsolete for
+      # the APK's minSdkVersion even if it actually was signed with that scheme
+      # (ex. it prints "Verified using v1 scheme: false" for Monochrome because
+      # v1 was obsolete by N). To workaround this, we force apksigner to use the
+      # lowest possible minSdkVersion. We need to fallback to higher
+      # minSdkVersions in case the APK fails to verify for that minSdkVersion
+      # (which means the APK is genuinely not signed with that scheme). These
+      # SDK values are the highest SDK version before the next scheme is
+      # available:
+      versions = [
+          version_codes.MARSHMALLOW,  # before v2 launched in N
+          version_codes.OREO_MR1,  # before v3 launched in P
+          version_codes.Q,  # before v4 launched in R
+          version_codes.R,
+      ]
+      stdout = None
+      for min_sdk_version in versions:
+        try:
+          stdout = run_apksigner(min_sdk_version)
+          break
+        except subprocess.CalledProcessError:
+          # Doesn't verify with this min-sdk-version, so try again with a higher
+          # one
+          continue
+      if not stdout:
+        raise RuntimeError('apksigner was not able to verify APK')
+
+      # Separate what the '--print-certs' flag would output vs. the additional
+      # signature output included by '--print-certs-pem'. The additional PEM
+      # output is only printed when self.args.full_cert is specified.
+      verification_hash_info = pem_certificate_pattern.sub('', stdout)
+      print(verification_hash_info)
+      if self.args.full_cert:
+        m = pem_certificate_pattern.search(stdout)
+        if not m:
+          raise Exception('apksigner did not print a certificate')
+        pem_encoded_certificate = m.group(0)
+
 
     if self.args.full_cert:
-      m = re.search(
-          r'-+BEGIN CERTIFICATE-+([\r\n0-9A-Za-z+/=]+)-+END CERTIFICATE-+',
-          full_output, re.MULTILINE)
+      m = pem_certificate_pattern.search(pem_encoded_certificate)
       if not m:
-        raise Exception('Unable to parse certificate:\n{}'.format(full_output))
+        raise Exception(
+            'Unable to parse certificate:\n{}'.format(pem_encoded_certificate))
       signature = re.sub(r'[\r\n]+', '', m.group(1))
       print()
       print('Full Signature:')
@@ -1707,6 +1792,8 @@ class _RunCommand(_InstallCommand, _LaunchCommand, _LogcatCommand):
                        help='Install and launch, but do not enter logcat.')
 
   def Run(self):
+    if self.is_test_apk:
+      raise Exception('Use the bin/run_* scripts to run test apks.')
     logging.warning('Installing...')
     _InstallCommand.Run(self)
     logging.warning('Sending launch intent...')
@@ -1757,15 +1844,23 @@ class _BuildBundleApks(_Command):
 
 class _ManifestCommand(_Command):
   name = 'dump-manifest'
-  description = 'Dump the android manifest from this bundle, as XML, to stdout.'
+  description = 'Dump the android manifest as XML, to stdout.'
   need_device_args = False
+  needs_apk_helper = True
 
   def Run(self):
-    sys.stdout.write(
-        bundletool.RunBundleTool([
-            'dump', 'manifest', '--bundle',
-            self.bundle_generation_info.bundle_path
-        ]))
+    if self.is_bundle:
+      sys.stdout.write(
+          bundletool.RunBundleTool([
+              'dump', 'manifest', '--bundle',
+              self.bundle_generation_info.bundle_path
+          ]))
+    else:
+      apkanalyzer = os.path.join(_DIR_SOURCE_ROOT, 'third_party', 'android_sdk',
+                                 'public', 'cmdline-tools', 'latest', 'bin',
+                                 'apkanalyzer')
+      subprocess.check_call(
+          [apkanalyzer, 'manifest', 'print', self.apk_helper.path])
 
 
 class _StackCommand(_Command):
@@ -1813,19 +1908,22 @@ _COMMANDS = [
     _ProfileCommand,
     _RunCommand,
     _StackCommand,
+    _ManifestCommand,
 ]
 
 # Commands specific to app bundles.
 _BUNDLE_COMMANDS = [
     _BuildBundleApks,
-    _ManifestCommand,
 ]
 
 
-def _ParseArgs(parser, from_wrapper_script, is_bundle):
+def _ParseArgs(parser, from_wrapper_script, is_bundle, is_test_apk):
   subparsers = parser.add_subparsers()
   command_list = _COMMANDS + (_BUNDLE_COMMANDS if is_bundle else [])
-  commands = [clazz(from_wrapper_script, is_bundle) for clazz in command_list]
+  commands = [
+      clazz(from_wrapper_script, is_bundle, is_test_apk)
+      for clazz in command_list
+  ]
 
   for command in commands:
     if from_wrapper_script or not command.needs_output_directory:
@@ -1842,13 +1940,17 @@ def _ParseArgs(parser, from_wrapper_script, is_bundle):
 def _RunInternal(parser,
                  output_directory=None,
                  additional_apk_paths=None,
-                 bundle_generation_info=None):
+                 bundle_generation_info=None,
+                 is_test_apk=False):
   colorama.init()
   parser.set_defaults(
       additional_apk_paths=additional_apk_paths,
       output_directory=output_directory)
   from_wrapper_script = bool(output_directory)
-  args = _ParseArgs(parser, from_wrapper_script, bool(bundle_generation_info))
+  args = _ParseArgs(parser,
+                    from_wrapper_script,
+                    is_bundle=bool(bundle_generation_info),
+                    is_test_apk=is_test_apk)
   run_tests_helper.SetLogLevel(args.verbose_count)
   if bundle_generation_info:
     args.command.RegisterBundleGenerationInfo(bundle_generation_info)
@@ -1933,6 +2035,39 @@ def RunForBundle(output_directory, bundle_path, bundle_apks_path,
       output_directory=output_directory,
       additional_apk_paths=additional_apk_paths,
       bundle_generation_info=bundle_generation_info)
+
+
+def RunForTestApk(*, output_directory, package_name, test_apk_path,
+                  test_apk_json, proguard_mapping_path, additional_apk_paths):
+  """Entry point for generated test apk wrapper scripts.
+
+  This is intended to make commands like logcat (with proguard deobfuscation)
+  available. The run_* scripts should be used to actually run tests.
+
+  Args:
+    output_dir: Chromium output directory path.
+    package_name: The package name for the test apk.
+    test_apk_path: The test apk to install.
+    test_apk_json: The incremental json dict for the test apk.
+    proguard_mapping_path: Input path to the Proguard mapping file, used to
+      deobfuscate Java stack traces.
+    additional_apk_paths: Additional APKs to install.
+  """
+  constants.SetOutputDirectory(output_directory)
+  devil_chromium.Initialize(output_directory=output_directory)
+
+  parser = argparse.ArgumentParser()
+  exists_or_none = lambda p: p if p and os.path.exists(p) else None
+
+  parser.set_defaults(apk_path=exists_or_none(test_apk_path),
+                      incremental_json=exists_or_none(test_apk_json),
+                      package_name=package_name,
+                      proguard_mapping_path=proguard_mapping_path)
+
+  _RunInternal(parser,
+               output_directory=output_directory,
+               additional_apk_paths=additional_apk_paths,
+               is_test_apk=True)
 
 
 def main():

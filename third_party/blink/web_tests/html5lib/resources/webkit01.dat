@@ -281,6 +281,30 @@ console.log("FOO<span>BAR</span>BAZ");
 | <!--  Again  -->
 
 #data
+<html><body></body>
+   <!-- Hi there --></html>
+#errors
+#document
+| <html>
+|   <head>
+|   <body>
+|     "
+   "
+|   <!--  Hi there  -->
+
+#data
+<html><body></body></html>
+   <!-- Hi there -->
+#errors
+#document
+| <html>
+|   <head>
+|   <body>
+|     "
+   "
+| <!--  Hi there  -->
+
+#data
 <html><body><ruby><div><rp>xx</rp></div></ruby></body></html>
 #errors
 #document

@@ -1,6 +1,6 @@
 #!/bin/zsh
 
-# Copyright (c) 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -66,14 +66,6 @@ function CheckEnv()
   # Validate display setup.
   CheckDisplayValue "Automatically adjust brightness" "No"\
     "Disable automatic brightness adjustments and unplug external monitors"
-
-  # Use Amphetamine.app to avoid sleeping during the tests.
-  if ! pgrep -x "Amphetamine" > /dev/null; then
-    echo "Use Amphetamine to prevent sleep."
-    exit 127
-  fi
-  CompareValue $(defaults read com.if.Amphetamine "Default Duration") "0"\
-    "Default session length in Amphetamine should be unlimited";
 
   # Verify that no terminals are running.
   # They introduce too much overhead. (As measured with powermetrics)

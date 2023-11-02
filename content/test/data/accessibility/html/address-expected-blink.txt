@@ -1,6 +1,6 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++genericContainer
+++++++group
 ++++++++staticText name='Please contact John Citizen for more information.'
 ++++++++++inlineTextBox name='Please contact John Citizen for more information.'

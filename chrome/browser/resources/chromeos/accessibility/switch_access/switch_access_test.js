@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,17 +7,13 @@ GEN_INCLUDE(['switch_access_e2e_test_base.js']);
 /** Test fixture for the SwitchAccess class. */
 SwitchAccessSwitchAccessTest = class extends SwitchAccessE2ETest {
   /** @override */
-  setUp() {
-    var runTest = this.deferRunTest(WhenTestDone.EXPECT);
-    (async () => {
-      await importModule('SwitchAccess', '/switch_access/switch_access.js');
-
-      runTest();
-    })();
+  async setUpDeferred() {
+    await super.setUpDeferred();
+    await importModule('SwitchAccess', '/switch_access/switch_access.js');
   }
 };
 
-SYNC_TEST_F('SwitchAccessSwitchAccessTest', 'NoFocusDefersInit', function() {
+AX_TEST_F('SwitchAccessSwitchAccessTest', 'NoFocusDefersInit', function() {
   // Build a new SwitchAccess instance with hooks.
   let initCount = 0;
   SwitchAccess.finishInit_ = () => initCount++;

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <map>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -15,12 +16,19 @@
 #include "ui/gfx/geometry/point.h"
 
 namespace base {
+
 class TimeTicks;
-}
+
+}  // namespace base
+
+namespace ui {
+
+class AXPlatformTreeManager;
+
+}  // namespace ui
 
 namespace content {
 
-class BrowserAccessibilityManager;
 class RenderFrameHostImpl;
 class SyntheticGestureController;
 class SyntheticGestureTarget;
@@ -74,8 +82,8 @@ class CONTENT_EXPORT TouchPassthroughManager {
   // These are virtual protected for unit-testing.
   virtual void SendHitTest(
       const gfx::Point& point_in_frame_pixels,
-      base::OnceCallback<void(BrowserAccessibilityManager* hit_manager,
-                              int hit_node_id)> callback);
+      base::OnceCallback<void(ui::AXPlatformTreeManager* hit_manager,
+                              ui::AXNodeID hit_node_id)> callback);
   virtual void CancelTouchesAndDestroyTouchDriver();
   virtual void SimulatePress(const gfx::Point& point,
                              const base::TimeTicks& time);
@@ -86,11 +94,11 @@ class CONTENT_EXPORT TouchPassthroughManager {
  private:
   // The main frame where touch events should be sent. Touch events
   // that target an iframe will be automatically forwarded.
-  RenderFrameHostImpl* rfh_;
+  raw_ptr<RenderFrameHostImpl> rfh_;
 
   // Classes needed to generate touch events.
   std::unique_ptr<SyntheticGestureController> gesture_controller_;
-  SyntheticGestureTarget* gesture_target_ = nullptr;
+  raw_ptr<SyntheticGestureTarget> gesture_target_ = nullptr;
   std::unique_ptr<SyntheticTouchDriver> touch_driver_;
 
   // Keeps track of whether or not touch is down, regardless of whether or
@@ -109,10 +117,10 @@ class CONTENT_EXPORT TouchPassthroughManager {
   void OnHitTestResult(int event_id,
                        base::TimeTicks event_time,
                        gfx::Point location,
-                       BrowserAccessibilityManager* hit_manager,
-                       int hit_node_id);
-  bool IsTouchPassthroughNode(BrowserAccessibilityManager* hit_manager,
-                              int hit_node_id);
+                       ui::AXPlatformTreeManager* hit_manager,
+                       ui::AXNodeID hit_node_id);
+  bool IsTouchPassthroughNode(ui::AXPlatformTreeManager* hit_manager,
+                              ui::AXNodeID hit_node_id);
   gfx::Point ToCSSPoint(gfx::Point point_in_frame_pixels);
 
   base::WeakPtrFactory<TouchPassthroughManager> weak_ptr_factory_{this};

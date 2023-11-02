@@ -1,11 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/settings/autofill/autofill_credit_card_util.h"
 
-#include "base/strings/sys_string_conversions.h"
-#include "components/autofill/core/browser/autofill_type.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/autofill/core/browser/autofill_type.h"
 #import "ios/chrome/browser/ui/autofill/autofill_ui_type.h"
 #import "ios/chrome/browser/ui/autofill/autofill_ui_type_util.h"
 
@@ -109,8 +109,8 @@
 
 #pragma mark - Private
 
-// Updates the |AutofillUIType| of the |creditCard| with the value of
-// |cardProperty|.
+// Updates the `AutofillUIType` of the `creditCard` with the value of
+// `cardProperty`.
 + (void)updateCreditCard:(autofill::CreditCard*)creditCard
             cardProperty:(NSString*)cardValue
           autofillUIType:(AutofillUIType)fieldType

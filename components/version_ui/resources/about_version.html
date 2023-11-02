@@ -21,11 +21,27 @@ about:version template page
 <if expr="is_android or is_ios">
     <link rel="stylesheet" href="about_version_mobile.css">
 </if>
+<if expr="chromeos_lacros or chromeos_ash">
+    <link rel="stylesheet" href="chrome://resources/css/os_header.css">
+</if>
 
     <script type ="module" src="about_version.js"></script>
   </head>
 
   <body>
+<if expr="chromeos_lacros or chromeos_ash">
+    <div class="os-link-container-container" id="os-link-container" hidden>
+      <div class="os-link-container">
+        <span class="os-link-icon"></span>
+        <span aria-hidden="true" id="os-link-desc">$i18n{os-version-text1}</span>
+        <a href="#" id="os-link-href" aria-describedby="os-link-desc">
+          $i18n{os-version-link}
+        </a>
+        <span aria-hidden="true">$i18n{os-version-text2}</span>
+      </div>
+    </div>
+  </if>
+
     <div id="outer">
       <div id="logo">
 <if expr="not is_android and not is_ios">
@@ -53,13 +69,18 @@ about:version template page
       <table id="inner" cellpadding="0" cellspacing="0" border="0">
         <tr><td class="label">$i18n{application_label}</td>
           <td class="version" id="version">
-            <span>$i18n{version}</span>
-            (<span>$i18n{official}</span>)
-            <span>$i18n{version_modifier}</span>
-            <span>$i18n{version_processor_variation}</span>
-<if expr="is_win">
-            <span>$i18n{update_cohort_name}</span>
-</if>
+            <span id="copy-content">
+              <span>$i18n{version}</span>
+              (<span>$i18n{official}</span>)
+              <span>$i18n{version_modifier}</span>
+              <span>$i18n{version_processor_variation}</span>
+  <if expr="is_win">
+              <span>$i18n{update_cohort_name}</span>
+  </if>
+            </span>
+            <button id="copy-to-clipboard" aria-label="$i18n{copy_label}">
+              <div id="copy-to-clipboard-icon"></div>
+            </button>
           </td>
         </tr>
         <tr>
@@ -68,7 +89,7 @@ about:version template page
             <span>$i18n{cl}</span>
           </td>
         </tr>
-<if expr="not chromeos">
+<if expr="not chromeos_ash and not chromeos_lacros">
         <tr>
           <td class="label">$i18n{os_name}</td>
           <td class="version" id="os_type">
@@ -90,7 +111,8 @@ about:version template page
           </td>
         </tr>
 </if>
-<if expr="chromeos">
+<!-- TODO(crbug.com/1339120): Unify and reuse between Ash and Lacros -->
+<if expr="chromeos_ash">
         <tr>
           <td class="label">$i18n{platform}</td>
           <td class="version" id="os_type">
@@ -111,7 +133,21 @@ about:version template page
         </tr>
         <tr id="arc_holder"><td class="label">$i18n{arc_label}</td>
           <td class="version">
-            <span id="arc_version"></span>
+            <span id="arc_and_arc_android_sdk_versions"></span>
+          </td>
+        </tr>
+</if>
+<if expr="chromeos_lacros">
+        <tr>
+          <td class="label">$i18n{os_name}</td>
+          <td class="version" id="os_type">
+            <span id="copy-os-content">
+              <span>$i18n{os_type}</span>
+              (Ash <span>$i18n{ash_chrome_version}</span>)
+            </span>
+            <button id="copy-os-content-to-clipboard" aria-label="$i18n{copy_label}">
+              <div id="copy-to-clipboard-icon"></div>
+            </button>
           </td>
         </tr>
 </if>

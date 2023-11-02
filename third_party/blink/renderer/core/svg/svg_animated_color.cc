@@ -121,9 +121,9 @@ void SVGColorProperty::CalculateAnimatedValue(
     animated_alpha += animated_color.Alpha();
   }
 
-  style_color_ =
-      StyleColor(MakeRGBA(roundf(animated_red), roundf(animated_green),
-                          roundf(animated_blue), roundf(animated_alpha)));
+  style_color_ = StyleColor(
+      Color::FromRGBA(roundf(animated_red), roundf(animated_green),
+                      roundf(animated_blue), roundf(animated_alpha)));
 }
 
 float SVGColorProperty::CalculateDistance(

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,20 @@ const char kAnyShareStarted[] = "Sharing.AnyShareStartedDesktop";
 
 void LogShareSourceDesktop(ShareSourceDesktop source) {
   UMA_HISTOGRAM_ENUMERATION(kAnyShareStarted, source);
+}
+
+void RecordSharingHubTimeToShow(base::TimeDelta time) {
+  UMA_HISTOGRAM_TIMES("Sharing.SharingHubDesktop.TimeToShow", time);
+}
+
+void RecordSharingHubTimeToFetchHQPreviewImage(base::TimeDelta time) {
+  UMA_HISTOGRAM_MEDIUM_TIMES(
+      "Sharing.SharingHubDesktop.TimeToFetchHQPreviewImage", time);
+}
+
+void RecordSharingHubTimeToFetchFaviconPreviewImage(base::TimeDelta time) {
+  UMA_HISTOGRAM_MEDIUM_TIMES(
+      "Sharing.SharingHubDesktop.TimeToFetchFaviconPreviewImage", time);
 }
 
 }  // namespace share

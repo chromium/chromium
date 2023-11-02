@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,10 @@
 #include <memory>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
+#include "components/custom_handlers/protocol_handler_registry.h"
 #include "extensions/buildflags/buildflags.h"
 #include "url/gurl.h"
 
@@ -52,6 +54,12 @@ class TestRenderViewContextMenu : public RenderViewContextMenu {
       const GURL& link_url,
       const GURL& frame_url);
 
+  static std::unique_ptr<TestRenderViewContextMenu> Create(
+      content::RenderFrameHost* render_frame_host,
+      const GURL& page_url,
+      const GURL& link_url,
+      const GURL& frame_url);
+
   // Returns true if the command specified by |command_id| is present
   // in the menu.
   // A list of command ids can be found in chrome/app/chrome_command_ids.h.
@@ -71,7 +79,7 @@ class TestRenderViewContextMenu : public RenderViewContextMenu {
   // returned in |found_model| and |found_index|. Otherwise returns false.
   bool GetMenuModelAndItemIndex(int command_id,
                                 ui::MenuModel** found_model,
-                                int* found_index);
+                                size_t* found_index);
 
   // Returns the command id of the menu item with the specified |path|.
   int GetCommandIDByProfilePath(const base::FilePath& path) const;
@@ -80,7 +88,8 @@ class TestRenderViewContextMenu : public RenderViewContextMenu {
   extensions::ContextMenuMatcher& extension_items() { return extension_items_; }
 #endif
 
-  void set_protocol_handler_registry(ProtocolHandlerRegistry* registry) {
+  void set_protocol_handler_registry(
+      custom_handlers::ProtocolHandlerRegistry* registry) {
     protocol_handler_registry_ = registry;
   }
 
@@ -90,16 +99,30 @@ class TestRenderViewContextMenu : public RenderViewContextMenu {
 
   using RenderViewContextMenu::AppendImageItems;
 
+  // RenderViewContextMenu:
   void Show() override;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   const policy::DlpRulesManager* GetDlpRulesManager() const override;
+#endif
 
+#if BUILDFLAG(IS_CHROMEOS)
   void set_dlp_rules_manager(policy::DlpRulesManager* dlp_rules_manager);
 #endif
 
+  // If `browser` is not null, sets it as the return value of GetBrowser(),
+  // overriding the base class behavior. If the Browser object is destroyed
+  // before this class is, then SetBrowser(nullptr) should be called. If
+  // `browser` is null, restores the base class behavior of GetBrowser().
+  void SetBrowser(Browser* browser);
+
+ protected:
+  // RenderViewContextMenu:
+  Browser* GetBrowser() const override;
+
  private:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+  raw_ptr<Browser> browser_ = nullptr;
+
+#if BUILDFLAG(IS_CHROMEOS)
   policy::DlpRulesManager* dlp_rules_manager_ = nullptr;
 #endif
 };

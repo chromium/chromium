@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -102,7 +102,6 @@ public class PlayerManager {
     private long mNativeAxTree;
     private PlayerAccessibilityDelegate mAccessibilityDelegate;
     private WebContentsAccessibilityImpl mWebContentsAccessibility;
-    private final boolean mShouldCompressBitmaps;
 
     // The minimum ratio value of a sub-frame's area to its parent, for the sub-frame to be
     // considered 'large'.
@@ -122,17 +121,15 @@ public class PlayerManager {
      * @param listener                          Interface that includes a number of callbacks.
      * @param ignoreInitialScrollOffset         If true the initial scroll state that is recorded at
      *                                          capture time is ignored.
-     * @param shouldCompressBitmaps             If true bitmaps outside the viewport are compressed.
      */
     public PlayerManager(GURL url, Context context,
             NativePaintPreviewServiceProvider nativePaintPreviewServiceProvider,
             String directoryKey, @NonNull Listener listener, int backgroundColor,
-            boolean ignoreInitialScrollOffset, boolean shouldCompressBitmaps) {
+            boolean ignoreInitialScrollOffset) {
         TraceEvent.begin("PlayerManager");
         TraceEvent.startAsync(sInitEvent, hashCode());
         mContext = context;
         mListener = listener;
-        mShouldCompressBitmaps = shouldCompressBitmaps;
         mIgnoreInitialScrollOffset = ignoreInitialScrollOffset;
 
         // This calls into native to set up the compositor.
@@ -178,24 +175,36 @@ public class PlayerManager {
     }
 
     /**
+     * @return Current scale. 0 if the player is not initialized.
+     */
+    public float getScale() {
+        if (mRootFrameCoordinator == null) return 0f;
+
+        return mRootFrameCoordinator.getScale();
+    }
+
+    /**
      * Called by {@link PlayerCompositorDelegateImpl} when the compositor is initialized. This
      * method initializes a sub-component for each frame and adds the view for the root frame to
      * {@link #mHostView}.
      */
     private void onCompositorReady(UnguessableToken rootFrameGuid, UnguessableToken[] frameGuids,
             int[] frameContentSize, int[] scrollOffsets, int[] subFramesCount,
-            UnguessableToken[] subFrameGuids, int[] subFrameClipRects, long nativeAxTree) {
+            UnguessableToken[] subFrameGuids, int[] subFrameClipRects, float pageScaleFactor,
+            long nativeAxTree) {
         TraceEvent.begin("PlayerManager.onCompositorReady");
         mRootFrameData = buildFrameTreeHierarchy(rootFrameGuid, frameGuids, frameContentSize,
                 scrollOffsets, subFramesCount, subFrameGuids, subFrameClipRects,
                 mIgnoreInitialScrollOffset);
 
+        float initialScaleFactor = Math.max(
+                pageScaleFactor, mHostView.getWidth() / ((float) mRootFrameData.getContentWidth()));
         mRootFrameCoordinator = new PlayerFrameCoordinator(mContext, mDelegate,
                 mRootFrameData.getGuid(), mRootFrameData.getContentWidth(),
                 mRootFrameData.getContentHeight(), mRootFrameData.getInitialScrollX(),
-                mRootFrameData.getInitialScrollY(), true, mPlayerSwipeRefreshHandler,
-                mPlayerGestureListener, mListener::onFirstPaint, mListener::isAccessibilityEnabled,
-                this::initializeAccessibility, mShouldCompressBitmaps);
+                mRootFrameData.getInitialScrollY(), initialScaleFactor, true,
+                mPlayerSwipeRefreshHandler, mPlayerGestureListener, mListener::onFirstPaint,
+                mListener::isAccessibilityEnabled, this::initializeAccessibility);
         buildSubFrameCoordinators(mRootFrameCoordinator, mRootFrameData);
         mHostView.addView(mRootFrameCoordinator.getView(),
                 new FrameLayout.LayoutParams(
@@ -224,6 +233,13 @@ public class PlayerManager {
      * - In any other case, we can't add accessibility support.
      */
     private void initializeAccessibility() {
+        // Early exit if already closed.
+        if (mRootFrameCoordinator == null
+                || mRootFrameCoordinator.getViewportForAccessibility() == null) {
+            mListener.onAccessibilityNotSupported();
+            return;
+        }
+
         if (mNativeAxTree == 0) {
             mListener.onAccessibilityNotSupported();
             return;
@@ -375,11 +391,15 @@ public class PlayerManager {
             PlayerFrameCoordinator childCoordinator =
                     new PlayerFrameCoordinator(mContext, mDelegate, childFrame.getGuid(),
                             childFrame.getContentWidth(), childFrame.getContentHeight(),
-                            childFrame.getInitialScrollX(), childFrame.getInitialScrollY(), false,
-                            null, mPlayerGestureListener, null, null, null, mShouldCompressBitmaps);
+                            childFrame.getInitialScrollX(), childFrame.getInitialScrollY(), 0f,
+                            false, null, mPlayerGestureListener, null, null, null);
             buildSubFrameCoordinators(childCoordinator, childFrame);
             frameCoordinator.addSubFrame(childCoordinator, frame.getSubFrameClips()[i]);
         }
+    }
+
+    public boolean supportsAccessibility() {
+        return mWebContentsAccessibility != null;
     }
 
     public void setCompressOnClose(boolean compressOnClose) {

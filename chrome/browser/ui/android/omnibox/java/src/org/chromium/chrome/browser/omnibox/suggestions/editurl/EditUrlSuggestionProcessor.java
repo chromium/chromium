@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersTabHelper;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.suggestions.FaviconFetcher;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.UrlBarDelegate;
@@ -23,8 +24,8 @@ import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.omnibox.AutocompleteMatch;
+import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -41,9 +42,6 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
     /** The delegate for accessing the location bar for observation and modification. */
     private final UrlBarDelegate mUrlBarDelegate;
 
-    /** Supplies site favicons. */
-    private final Supplier<LargeIconBridge> mIconBridgeSupplier;
-
     /** The delegate for accessing the sharing feature. */
     private final Supplier<ShareDelegate> mShareDelegateSupplier;
 
@@ -57,13 +55,12 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
      * @param locationBarDelegate A means of modifying the location bar.
      */
     public EditUrlSuggestionProcessor(Context context, SuggestionHost suggestionHost,
-            UrlBarDelegate locationBarDelegate, Supplier<LargeIconBridge> iconBridgeSupplier,
+            UrlBarDelegate locationBarDelegate, FaviconFetcher faviconFetcher,
             Supplier<Tab> tabSupplier, Supplier<ShareDelegate> shareDelegateSupplier) {
-        super(context, suggestionHost);
+        super(context, suggestionHost, faviconFetcher);
 
         mContext = context;
         mUrlBarDelegate = locationBarDelegate;
-        mIconBridgeSupplier = iconBridgeSupplier;
         mTabSupplier = tabSupplier;
         mShareDelegateSupplier = shareDelegateSupplier;
     }
@@ -144,7 +141,7 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
                                         .build(),
                                 R.string.bookmark_item_edit, () -> onEditLink(suggestion))));
 
-        fetchSuggestionFavicon(model, suggestion.getUrl(), mIconBridgeSupplier.get(), null);
+        fetchSuggestionFavicon(model, suggestion.getUrl());
     }
 
     @Override
@@ -162,6 +159,12 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
     /** Invoked when user interacts with Share action button. */
     private void onShareLink() {
         RecordUserAction.record("Omnibox.EditUrlSuggestion.Share");
+        Tab tab = mTabSupplier.get();
+        if (tab != null && tab.getWebContents() != null) {
+            new UkmRecorder.Bridge().recordEventWithBooleanMetric(
+                    mTabSupplier.get().getWebContents(), "Omnibox.EditUrlSuggestion.Share",
+                    "HasOccurred");
+        }
         mUrlBarDelegate.clearOmniboxFocus();
         // TODO(mdjones): This should only share the displayed URL instead of the background tab.
         mShareDelegateSupplier.get().share(mTabSupplier.get(), false, ShareOrigin.EDIT_URL);

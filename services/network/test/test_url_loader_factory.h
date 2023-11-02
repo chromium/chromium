@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -19,7 +18,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
-#include "services/network/public/mojom/url_response_head.mojom-forward.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace network {
 class WeakWrapperSharedURLLoaderFactory;
@@ -172,6 +171,10 @@ class TestURLLoaderFactory : public mojom::URLLoaderFactory {
   scoped_refptr<network::WeakWrapperSharedURLLoaderFactory>
   GetSafeWeakWrapper();
 
+  // Returns the total number of requests received during the lifetime of
+  // `this`, pending and completed. Useful for catching duplicate requests.
+  size_t total_requests() const { return total_requests_; }
+
  private:
   bool CreateLoaderAndStartInternal(const GURL& url,
                                     mojom::URLLoaderClient* client);
@@ -203,6 +206,7 @@ class TestURLLoaderFactory : public mojom::URLLoaderFactory {
 
   Interceptor interceptor_;
   mojo::ReceiverSet<network::mojom::URLLoaderFactory> receivers_;
+  size_t total_requests_ = 0;
 };
 
 }  // namespace network

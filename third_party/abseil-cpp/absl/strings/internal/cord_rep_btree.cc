@@ -17,11 +17,13 @@
 #include <cassert>
 #include <cstdint>
 #include <iostream>
+#include <ostream>
 #include <string>
 
 #include "absl/base/attributes.h"
 #include "absl/base/config.h"
 #include "absl/base/internal/raw_logging.h"
+#include "absl/strings/internal/cord_data_edge.h"
 #include "absl/strings/internal/cord_internal.h"
 #include "absl/strings/internal/cord_rep_consume.h"
 #include "absl/strings/internal/cord_rep_flat.h"
@@ -32,7 +34,9 @@ namespace absl {
 ABSL_NAMESPACE_BEGIN
 namespace cord_internal {
 
-constexpr size_t CordRepBtree::kMaxCapacity;  // NOLINT: needed for c++ < c++17
+#ifdef ABSL_INTERNAL_NEED_REDUNDANT_CONSTEXPR_DECL
+constexpr size_t CordRepBtree::kMaxCapacity;
+#endif
 
 namespace {
 
@@ -52,8 +56,10 @@ inline bool exhaustive_validation() {
 // Prints the entire tree structure or 'rep'. External callers should
 // not specify 'depth' and leave it to its default (0) value.
 // Rep may be a CordRepBtree tree, or a SUBSTRING / EXTERNAL / FLAT node.
-void DumpAll(const CordRep* rep, bool include_contents, std::ostream& stream,
-             int depth = 0) {
+void DumpAll(const CordRep* rep,
+             bool include_contents,
+             std::ostream& stream,
+             size_t depth = 0) {
   // Allow for full height trees + substring -> flat / external nodes.
   assert(depth <= CordRepBtree::kMaxDepth + 2);
   std::string sharing = const_cast<CordRep*>(rep)->refcount.IsOne()
@@ -69,7 +75,7 @@ void DumpAll(const CordRep* rep, bool include_contents, std::ostream& stream,
       // indentation and prefix / labels keeps us within roughly 80-100 wide.
       constexpr size_t kMaxDataLength = 60;
       stream << ", data = \""
-             << CordRepBtree::EdgeData(r).substr(0, kMaxDataLength)
+             << EdgeData(r).substr(0, kMaxDataLength)
              << (r->length > kMaxDataLength ? "\"..." : "\"");
     }
     stream << '\n';
@@ -119,6 +125,7 @@ CordRepSubstring* CreateSubstring(CordRep* rep, size_t offset, size_t n) {
     rep = CordRep::Ref(substring->child);
     CordRep::Unref(substring);
   }
+  assert(rep->IsExternal() || rep->IsFlat());
   CordRepSubstring* substring = new CordRepSubstring();
   substring->length = n;
   substring->tag = SUBSTRING;
@@ -149,7 +156,7 @@ inline CordRep* MakeSubstring(CordRep* rep, size_t offset) {
 CordRep* ResizeEdge(CordRep* edge, size_t length, bool is_mutable) {
   assert(length > 0);
   assert(length <= edge->length);
-  assert(CordRepBtree::IsDataEdge(edge));
+  assert(IsDataEdge(edge));
   if (length >= edge->length) return edge;
 
   if (is_mutable && (edge->tag >= FLAT || edge->tag == SUBSTRING)) {
@@ -190,24 +197,29 @@ inline void FastUnref(R* r, Fn&& fn) {
   }
 }
 
-// Deletes a leaf node data edge. Requires `rep` to be an EXTERNAL or FLAT
-// node, or a SUBSTRING of an EXTERNAL or FLAT node.
-void DeleteLeafEdge(CordRep* rep) {
-  for (;;) {
+
+void DeleteSubstring(CordRepSubstring* substring) {
+  CordRep* rep = substring->child;
+  if (!rep->refcount.Decrement()) {
     if (rep->tag >= FLAT) {
       CordRepFlat::Delete(rep->flat());
-      return;
-    }
-    if (rep->tag == EXTERNAL) {
+    } else {
+      assert(rep->tag == EXTERNAL);
       CordRepExternal::Delete(rep->external());
-      return;
     }
-    assert(rep->tag == SUBSTRING);
-    CordRepSubstring* substring = rep->substring();
-    rep = substring->child;
-    assert(rep->tag == EXTERNAL || rep->tag >= FLAT);
-    delete substring;
-    if (rep->refcount.Decrement()) return;
+  }
+  delete substring;
+}
+
+// Deletes a leaf node data edge. Requires `IsDataEdge(rep)`.
+void DeleteLeafEdge(CordRep* rep) {
+  assert(IsDataEdge(rep));
+  if (rep->tag >= FLAT) {
+    CordRepFlat::Delete(rep->flat());
+  } else if (rep->tag == EXTERNAL) {
+    CordRepExternal::Delete(rep->external());
+  } else {
+    DeleteSubstring(rep->substring());
   }
 }
 
@@ -372,19 +384,37 @@ void CordRepBtree::Dump(const CordRep* rep, std::ostream& stream) {
   Dump(rep, absl::string_view(), false, stream);
 }
 
-void CordRepBtree::DestroyLeaf(CordRepBtree* tree, size_t begin, size_t end) {
-  for (CordRep* edge : tree->Edges(begin, end)) {
-    FastUnref(edge, DeleteLeafEdge);
+template <size_t size>
+static void DestroyTree(CordRepBtree* tree) {
+  for (CordRep* node : tree->Edges()) {
+    if (node->refcount.Decrement()) continue;
+    for (CordRep* edge : node->btree()->Edges()) {
+      if (edge->refcount.Decrement()) continue;
+      if (size == 1) {
+        DeleteLeafEdge(edge);
+      } else {
+        CordRepBtree::Destroy(edge->btree());
+      }
+    }
+    CordRepBtree::Delete(node->btree());
   }
-  Delete(tree);
+  CordRepBtree::Delete(tree);
 }
 
-void CordRepBtree::DestroyNonLeaf(CordRepBtree* tree, size_t begin,
-                                  size_t end) {
-  for (CordRep* edge : tree->Edges(begin, end)) {
-    FastUnref(edge->btree(), Destroy);
+void CordRepBtree::Destroy(CordRepBtree* tree) {
+  switch (tree->height()) {
+    case 0:
+      for (CordRep* edge : tree->Edges()) {
+        if (!edge->refcount.Decrement()) {
+          DeleteLeafEdge(edge);
+        }
+      }
+      return CordRepBtree::Delete(tree);
+    case 1:
+      return DestroyTree<1>(tree);
+    default:
+      return DestroyTree<2>(tree);
   }
-  Delete(tree);
 }
 
 bool CordRepBtree::IsValid(const CordRepBtree* tree, bool shallow) {

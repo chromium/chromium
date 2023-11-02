@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -46,12 +46,12 @@ namespace {
 // while the following are invalid:
 // A.com -> B.com -> A.com (calls WebOTP API)
 // A.com -> B.com -> C.com (calls WebOTP API)
-bool ValidateAndCollectUniqueOrigins(RenderFrameHost* rfh,
+bool ValidateAndCollectUniqueOrigins(RenderFrameHost& rfh,
                                      OriginList& origin_list) {
-  url::Origin current_origin = rfh->GetLastCommittedOrigin();
+  url::Origin current_origin = rfh.GetLastCommittedOrigin();
   origin_list.push_back(current_origin);
 
-  RenderFrameHost* parent = rfh->GetParent();
+  RenderFrameHost* parent = rfh.GetParent();
   while (parent) {
     url::Origin parent_origin = parent->GetLastCommittedOrigin();
     if (!parent_origin.IsSameOriginWith(current_origin)) {
@@ -65,11 +65,11 @@ bool ValidateAndCollectUniqueOrigins(RenderFrameHost* rfh,
   return true;
 }
 
-bool IsCrossOriginFrame(RenderFrameHost* rfh) {
-  if (!rfh->GetParent())
+bool IsCrossOriginFrame(RenderFrameHost& rfh) {
+  if (!rfh.GetParent())
     return false;
-  url::Origin current_origin = rfh->GetLastCommittedOrigin();
-  RenderFrameHost* parent = rfh->GetParent();
+  url::Origin current_origin = rfh.GetLastCommittedOrigin();
+  RenderFrameHost* parent = rfh.GetParent();
   while (parent) {
     url::Origin parent_origin = parent->GetLastCommittedOrigin();
     if (!parent_origin.IsSameOriginWith(current_origin))
@@ -121,7 +121,7 @@ Outcome SmsStatusToOutcome(SmsStatus status) {
 WebOTPService::WebOTPService(
     SmsFetcher* fetcher,
     const OriginList& origin_list,
-    RenderFrameHost* host,
+    RenderFrameHost& host,
     mojo::PendingReceiver<blink::mojom::WebOTPService> receiver)
     : DocumentService(host, std::move(receiver)),
       fetcher_(fetcher),
@@ -134,10 +134,6 @@ WebOTPService::WebOTPService(
 }
 
 WebOTPService::~WebOTPService() {
-  // Resolve any pending callback and invoke clean up to unsubscribe this
-  // service from fetcher.
-  CompleteRequest(SmsStatus::kUnhandledRequest);
-
   DCHECK(!callback_);
 }
 
@@ -146,20 +142,45 @@ bool WebOTPService::Create(
     SmsFetcher* fetcher,
     RenderFrameHost* host,
     mojo::PendingReceiver<blink::mojom::WebOTPService> receiver) {
-  DCHECK(host);
+  CHECK(host);
 
   OriginList origin_list;
-  if (!ValidateAndCollectUniqueOrigins(host, origin_list))
+  if (!ValidateAndCollectUniqueOrigins(*host, origin_list))
     return false;
 
   // WebOTPService owns itself. It will self-destruct when a mojo interface
   // error occurs, the render frame host is deleted, or the render frame host
   // navigates to a new document.
-  new WebOTPService(fetcher, origin_list, host, std::move(receiver));
+  new WebOTPService(fetcher, origin_list, *host, std::move(receiver));
   static_cast<RenderFrameHostImpl*>(host)
       ->OnBackForwardCacheDisablingStickyFeatureUsed(
           blink::scheduler::WebSchedulerTrackedFeature::kWebOTPService);
   return true;
+}
+
+// static
+WebOTPService& WebOTPService::CreateForTesting(
+    SmsFetcher* fetcher,
+    const OriginList& origins,
+    RenderFrameHost& frame_host,
+    mojo::PendingReceiver<blink::mojom::WebOTPService> receiver) {
+  return *new WebOTPService(fetcher, origins, frame_host, std::move(receiver));
+}
+
+void WebOTPService::WillBeDestroyed(DocumentServiceDestructionReason) {
+  // Resolve any pending callback and invoke clean up to unsubscribe this
+  // service from fetcher.
+  //
+  // TODO(https://crbug.com/1317531): Previously, running the callbacks in the
+  // destructor was required to avoid triggering DCHECKs since the
+  // mojo::Receiver was (incorrectly) not yet reset in the destructor.
+  //
+  // The destruction order is fixed so running the reply callbacks should no
+  // longer be necessary; however, there are now unit test-only dependencies on
+  // this behavior. Remove those test dependencies and migrate any remaining
+  // cleanup logic that is still needed to the destructor and delete this
+  // `WillBeDestroyed()` override.
+  CompleteRequest(SmsStatus::kUnhandledRequest);
 }
 
 void WebOTPService::Receive(ReceiveCallback callback) {
@@ -184,7 +205,7 @@ void WebOTPService::Receive(ReceiveCallback callback) {
   if (consent_handler && consent_handler->is_active())
     return;
 
-  fetcher_->Subscribe(origin_list_, this, render_frame_host());
+  fetcher_->Subscribe(origin_list_, *this, render_frame_host());
 }
 
 void WebOTPService::OnReceive(const OriginList& origin_list,
@@ -197,9 +218,9 @@ void WebOTPService::OnReceive(const OriginList& origin_list,
 
   receive_time_ = base::TimeTicks::Now();
   RecordSmsReceiveTime(receive_time_ - start_time_,
-                       render_frame_host()->GetPageUkmSourceId());
+                       render_frame_host().GetPageUkmSourceId());
   RecordSmsParsingStatus(SmsParsingStatus::kParsed,
-                         render_frame_host()->GetPageUkmSourceId());
+                         render_frame_host().GetPageUkmSourceId());
 
   one_time_code_ = one_time_code;
   // This function cannot get called during prerendering because WebOTPService
@@ -207,10 +228,10 @@ void WebOTPService::OnReceive(const OriginList& origin_list,
   // proves we don't have to worry about prerendering when using
   // WebContents::FromRenderFrameHost() below (see function comments for
   // WebContents::FromRenderFrameHost() for more details).
-  DCHECK_NE(render_frame_host()->GetLifecycleState(),
+  DCHECK_NE(render_frame_host().GetLifecycleState(),
             RenderFrameHost::LifecycleState::kPrerendering);
   WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(render_frame_host());
+      content::WebContents::FromRenderFrameHost(&render_frame_host());
   // With UserConsent API, users can see and interact with the permission prompt
   // when they are on the different page other than the one that calls WebOTP.
   // This is considered as a bad UX and we should measure how many successful
@@ -270,7 +291,7 @@ void WebOTPService::OnFailure(FailureType failure_type) {
 
   // Records Sms parsing failures.
   DCHECK(status != SmsParsingStatus::kParsed);
-  RecordSmsParsingStatus(status, render_frame_host()->GetPageUkmSourceId());
+  RecordSmsParsingStatus(status, render_frame_host().GetPageUkmSourceId());
 }
 
 void WebOTPService::Abort() {
@@ -360,7 +381,7 @@ void WebOTPService::RecordMetrics(blink::mojom::SmsStatus status) {
     }
   }
 
-  ukm::SourceId source_id = render_frame_host()->GetPageUkmSourceId();
+  ukm::SourceId source_id = render_frame_host().GetPageUkmSourceId();
   ukm::UkmRecorder* recorder = ukm::UkmRecorder::Get();
 
   // For privacy, metrics from inner frames are recorded with the top frame's

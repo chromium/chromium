@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,10 +15,15 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/components/arc/arc_util.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
-#include "components/arc/arc_util.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/mojom/crosapi.mojom.h"
+#include "chromeos/startup/browser_init_params.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace web_app {
 
@@ -57,17 +62,17 @@ class PreinstalledWebAppUtilsTest : public testing::Test {
     return absl::nullopt;
   }
 
-  absl::optional<WebApplicationInfoFactory> ParseOfflineManifest(
+  absl::optional<WebAppInstallInfoFactory> ParseOfflineManifest(
       const char* offline_manifest_string) {
     absl::optional<base::Value> offline_manifest =
         base::JSONReader::Read(offline_manifest_string);
     DCHECK(offline_manifest);
-    WebApplicationInfoFactoryOrError result = ::web_app::ParseOfflineManifest(
+    WebAppInstallInfoFactoryOrError result = ::web_app::ParseOfflineManifest(
         *file_utils_, base::FilePath(FILE_PATH_LITERAL("test_dir")),
         base::FilePath(FILE_PATH_LITERAL("test_dir/test.json")),
         *offline_manifest);
-    if (WebApplicationInfoFactory* factory =
-            absl::get_if<WebApplicationInfoFactory>(&result)) {
+    if (WebAppInstallInfoFactory* factory =
+            absl::get_if<WebAppInstallInfoFactory>(&result)) {
       return std::move(*factory);
     }
     return absl::nullopt;
@@ -79,7 +84,7 @@ class PreinstalledWebAppUtilsTest : public testing::Test {
 
 // ParseConfig() is also tested by PreinstalledWebAppManagerTest.
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -99,8 +104,16 @@ class PreinstalledWebAppUtilsTabletTest
  public:
   PreinstalledWebAppUtilsTabletTest() {
     if (GetParam()) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
       base::CommandLine::ForCurrentProcess()->AppendSwitch(
-          chromeos::switches::kEnableTabletFormFactor);
+          ash::switches::kEnableTabletFormFactor);
+#else
+      auto init_params = crosapi::mojom::BrowserInitParams::New();
+      init_params->device_properties = crosapi::mojom::DeviceProperties::New();
+      init_params->device_properties->is_tablet_form_factor = true;
+      chromeos::BrowserInitParams::SetInitParamsForTests(
+          std::move(init_params));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     }
   }
   ~PreinstalledWebAppUtilsTabletTest() override = default;
@@ -141,8 +154,16 @@ class PreinstalledWebAppUtilsArcTest
  public:
   PreinstalledWebAppUtilsArcTest() {
     if (GetParam()) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
       base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-          chromeos::switches::kArcAvailability, "officially-supported");
+          ash::switches::kArcAvailability, "officially-supported");
+#else
+      auto init_params = crosapi::mojom::BrowserInitParams::New();
+      init_params->device_properties = crosapi::mojom::DeviceProperties::New();
+      init_params->device_properties->is_arc_available = true;
+      chromeos::BrowserInitParams::SetInitParamsForTests(
+          std::move(init_params));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     }
   }
   ~PreinstalledWebAppUtilsArcTest() override = default;
@@ -177,27 +198,28 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ::testing::Values(true, false),
                          BoolParamToString);
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // TODO(crbug.com/1119710): Loading icon.png is flaky on Windows.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_OfflineManifestValid DISABLED_OfflineManifestValid
 #else
 #define MAYBE_OfflineManifestValid OfflineManifestValid
 #endif
 TEST_F(PreinstalledWebAppUtilsTest, MAYBE_OfflineManifestValid) {
-  std::unique_ptr<WebApplicationInfo> app_info = ParseOfflineManifest(R"(
+  std::unique_ptr<WebAppInstallInfo> app_info = ParseOfflineManifest(R"(
     {
       "name": "Test App",
       "start_url": "https://test.org/start.html",
       "scope": "https://test.org/",
       "display": "standalone",
       "icon_any_pngs": ["icon.png"],
+      "icon_maskable_pngs": ["icon.png"],
       "theme_color_argb_hex": "AABBCCDD"
     }
   )")
-                                                     .value()
-                                                     .Run();
+                                                    .value()
+                                                    .Run();
   EXPECT_TRUE(app_info);
   EXPECT_EQ(app_info->title, u"Test App");
   EXPECT_EQ(app_info->start_url, GURL("https://test.org/start.html"));
@@ -205,6 +227,9 @@ TEST_F(PreinstalledWebAppUtilsTest, MAYBE_OfflineManifestValid) {
   EXPECT_EQ(app_info->display_mode, DisplayMode::kStandalone);
   EXPECT_EQ(app_info->icon_bitmaps.any.size(), 1u);
   EXPECT_EQ(app_info->icon_bitmaps.any.at(192).getColor(0, 0), SK_ColorBLUE);
+  EXPECT_EQ(app_info->icon_bitmaps.maskable.size(), 1u);
+  EXPECT_EQ(app_info->icon_bitmaps.maskable.at(192).getColor(0, 0),
+            SK_ColorBLUE);
   EXPECT_EQ(app_info->theme_color, SkColorSetARGB(0xFF, 0xBB, 0xCC, 0xDD));
 }
 
@@ -292,7 +317,7 @@ TEST_F(PreinstalledWebAppUtilsTest, OfflineManifestScope) {
 }
 
 // TODO(crbug.com/1119710): Loading icon.png is flaky on Windows.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_OfflineManifestDisplay DISABLED_OfflineManifestDisplay
 #else
 #define MAYBE_OfflineManifestDisplay OfflineManifestDisplay
@@ -408,6 +433,47 @@ TEST_F(PreinstalledWebAppUtilsTest, OfflineManifestIconAnyPngs) {
       "icon_any_pngs": ["basic.html"]
     }
   )")) << "icon_any_pngs is a PNG";
+}
+
+TEST_F(PreinstalledWebAppUtilsTest, OfflineManifestIconMaskablePngs) {
+  EXPECT_FALSE(ParseOfflineManifest(R"(
+    {
+      "name": "Test App",
+      "start_url": "https://test.org/start.html",
+      "scope": "https://test.org/",
+      "display": "standalone"
+    }
+  )")) << "icon_any_pngs or icon_maskable_pngs is required";
+
+  EXPECT_FALSE(ParseOfflineManifest(R"(
+    {
+      "name": "Test App",
+      "start_url": "https://test.org/start.html",
+      "scope": "https://test.org/",
+      "display": "standalone",
+      "icon_maskable_pngs": "icon.png"
+    }
+  )")) << "icon_maskable_pngs is valid";
+
+  EXPECT_FALSE(ParseOfflineManifest(R"(
+    {
+      "name": "Test App",
+      "start_url": "https://test.org/start.html",
+      "scope": "https://test.org/",
+      "display": "standalone",
+      "icon_maskable_pngs": ["does-not-exist.png"]
+    }
+  )")) << "icon_maskable_pngs exists";
+
+  EXPECT_FALSE(ParseOfflineManifest(R"(
+    {
+      "name": "Test App",
+      "start_url": "https://test.org/start.html",
+      "scope": "https://test.org/",
+      "display": "standalone",
+      "icon_maskable_pngs": ["basic.html"]
+    }
+  )")) << "icon_maskable_pngs is a PNG";
 }
 
 TEST_F(PreinstalledWebAppUtilsTest, OfflineManifestThemeColorArgbHex) {
@@ -555,6 +621,37 @@ TEST_F(PreinstalledWebAppUtilsTest,
     )");
   EXPECT_TRUE(
       touchscreen_set->disable_if_touchscreen_with_stylus_not_supported);
+}
+
+TEST_F(PreinstalledWebAppUtilsTest, GateOnFeatureNameOrInstalled) {
+  absl::optional<ExternalInstallOptions> feature_name_set = ParseConfig(R"(
+        {
+          "app_url": "https://www.test.org",
+          "launch_container": "window",
+          "feature_name_or_installed": "foobar",
+          "user_type": ["test"]
+        }
+    )");
+  EXPECT_EQ("foobar", feature_name_set->gate_on_feature_or_installed);
+
+  absl::optional<ExternalInstallOptions> no_feature_name = ParseConfig(R"(
+        {
+          "app_url": "https://www.test.org",
+          "launch_container": "window",
+          "user_type": ["test"]
+        }
+    )");
+  EXPECT_FALSE(no_feature_name->gate_on_feature_or_installed.has_value());
+
+  absl::optional<ExternalInstallOptions> non_string_feature = ParseConfig(R"(
+        {
+          "app_url": "https://www.test.org",
+          "launch_container": "window",
+          "feature_name_or_installed": true,
+          "user_type": ["test"]
+        }
+    )");
+  EXPECT_FALSE(non_string_feature->gate_on_feature_or_installed.has_value());
 }
 
 }  // namespace web_app

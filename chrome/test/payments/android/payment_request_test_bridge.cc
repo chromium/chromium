@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,16 +13,13 @@
 namespace payments {
 
 void SetUseDelegateOnPaymentRequestForTesting(
-    bool use_delegate,
     bool is_incognito,
     bool is_valid_ssl,
     bool prefs_can_make_payment,
-    bool skip_ui_for_basic_card,
     const std::string& twa_package_name) {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_PaymentRequestTestBridge_setUseDelegateForTest(
-      env, use_delegate, is_incognito, is_valid_ssl, prefs_can_make_payment,
-      skip_ui_for_basic_card,
+      env, is_incognito, is_valid_ssl, prefs_can_make_payment,
       base::android::ConvertUTF8ToJavaString(env, twa_package_name));
 }
 
@@ -56,6 +53,12 @@ bool CloseDialogForTest() {
 bool IsAndroidMarshmallowOrLollipopForTest() {
   return Java_PaymentRequestTestBridge_isAndroidMarshmallowOrLollipopForTest(
       base::android::AttachCurrentThread());
+}
+
+bool ClickSecurePaymentConfirmationOptOutForTest() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return Java_PaymentRequestTestBridge_clickSecurePaymentConfirmationOptOutForTest(
+      env);
 }
 
 struct NativeObserverCallbacks {

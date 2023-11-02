@@ -1,8 +1,8 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/public/platform/media/power_status_helper.h"
+#include "third_party/blink/renderer/platform/media/power_status_helper.h"
 
 #include <utility>
 
@@ -10,12 +10,10 @@
 #include "base/check_op.h"
 #include "base/metrics/histogram_macros.h"
 #include "media/base/pipeline_metadata.h"
-#include "services/device/public/mojom/battery_status.mojom.h"
+#include "services/device/public/mojom/battery_status.mojom-blink.h"
 
 namespace blink {
 namespace {
-
-using ::device::mojom::BatteryStatusPtr;
 
 static constexpr const char* kBatteryDeltaHistogram =
     "Media.PlaybackPower.BatteryDelta";
@@ -207,7 +205,7 @@ void PowerStatusHelper::OnAnyStateChange() {
 }
 
 void PowerStatusHelper::OnBatteryStatus(
-    device::mojom::BatteryStatusPtr battery_status) {
+    device::mojom::blink::BatteryStatusPtr battery_status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   QueryNextStatus();
@@ -249,7 +247,7 @@ void PowerStatusHelper::OnBatteryStatus(
   // converted to int.  We can only record ints in UMA.
   const int delta_int = static_cast<int>(delta);
   const base::TimeDelta elapsed = now - last_update_;
-  const int elapsed_msec = elapsed.InMilliseconds();
+  const int64_t elapsed_msec = elapsed.InMilliseconds();
   if (delta_int > 0 && elapsed_msec > 0) {
     // Record that we consumed |delta_int| battery percent in |elapsed_msec|.
     base::LinearHistogram::FactoryGet(
@@ -260,7 +258,7 @@ void PowerStatusHelper::OnBatteryStatus(
     base::LinearHistogram::FactoryGet(
         ElapsedTimeHistogram(), kMinUmaValue, kMaxUmaValue, kNumUmaBuckets,
         base::HistogramBase::kUmaTargetedHistogramFlag)
-        ->AddCount(*current_bucket_, elapsed_msec);
+        ->AddCount(*current_bucket_, static_cast<int>(elapsed_msec));
 
     // Update the baseline to |current_level|, but include any fractional
     // unrecorded amount so that we can record it later.

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -169,11 +169,11 @@ public class TrustedWebActivityDisclosureControllerTest {
     }
 
     private void enterVerifiedOrigin() {
-        setVerificationState(new VerificationState(SCOPE, VerificationStatus.SUCCESS));
+        setVerificationState(new VerificationState(SCOPE, SCOPE, VerificationStatus.SUCCESS));
     }
 
     private void exitVerifiedOrigin() {
-        setVerificationState(new VerificationState(SCOPE, VerificationStatus.FAILURE));
+        setVerificationState(new VerificationState(SCOPE, SCOPE, VerificationStatus.FAILURE));
     }
 
     private void setVerificationState(VerificationState state) {

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -83,6 +83,7 @@ public class AutofillAssistantKeyboardIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1272997, https://crbug.com/1273143")
     public void keyboardDoesNotShowOnElementClick() throws Exception {
         ArrayList<ActionProto> list = new ArrayList<>();
 
@@ -131,6 +132,7 @@ public class AutofillAssistantKeyboardIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1272863")
     public void keyboardDoesNotShowOnKeyStrokes() throws Exception {
         ArrayList<ActionProto> list = new ArrayList<>();
 
@@ -194,6 +196,7 @@ public class AutofillAssistantKeyboardIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1272997")
     public void keyboardDoesNotShowOnElementClickInIFrame() throws Exception {
         ArrayList<ActionProto> list = new ArrayList<>();
 

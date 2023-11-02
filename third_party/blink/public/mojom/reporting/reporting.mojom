@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,7 @@ interface ReportingServiceProxy {
 
   // Attempts to queue a Deprecation report using the Reporting API.
   //
-  // (See //third_party/blink/renderer/core/frame/deprecation_report_body.h.)
+  // (See //third_party/blink/renderer/core/frame/deprecation/deprecation_report_body.h.)
   QueueDeprecationReport(url.mojom.Url url,
                          string id,
                          mojo_base.mojom.Time? anticipatedRemoval,

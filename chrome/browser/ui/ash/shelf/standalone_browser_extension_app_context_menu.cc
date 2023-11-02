@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/extension_apps_utils.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
@@ -22,9 +23,10 @@
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
 #include "chrome/browser/ui/ash/shelf/standalone_browser_extension_app_shelf_item_controller.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/webui/settings/chromeos/app_management/app_management_uma.h"
+#include "chrome/browser/ui/webui/settings/ash/app_management/app_management_uma.h"
 #include "chrome/grit/generated_resources.h"
-#include "net/base/escape.h"
+#include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/features.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/vector_icons.h"
@@ -33,9 +35,9 @@ namespace {
 
 // Create an appropriately sized ImageModel for a menu item icon.
 ui::ImageModel GetMenuItemIcon(const gfx::VectorIcon& icon) {
-  return ui::ImageModel::FromVectorIcon(icon,
-                                        /*color_id=*/ui::kColorMenuIcon,
-                                        ash::kAppContextMenuIconSize);
+  return ui::ImageModel::FromVectorIcon(
+      icon,
+      /*color_id=*/ui::kColorAshSystemUIMenuIcon, ash::kAppContextMenuIconSize);
 }
 
 }  // namespace
@@ -90,9 +92,9 @@ void StandaloneBrowserExtensionAppContextMenu::ExecuteCommand(int command_id,
     }
 
     case ash::UNINSTALL: {
-      apps::mojom::UninstallSource uninstall_source =
-          (source_ == Source::kShelf) ? apps::mojom::UninstallSource::kShelf
-                                      : apps::mojom::UninstallSource::kAppList;
+      apps::UninstallSource uninstall_source =
+          (source_ == Source::kShelf) ? apps::UninstallSource::kShelf
+                                      : apps::UninstallSource::kAppList;
       aura::Window* window =
           (source_ == Source::kShelf)
               ? AppListClientImpl::GetInstance()->GetAppListWindow()
@@ -100,20 +102,28 @@ void StandaloneBrowserExtensionAppContextMenu::ExecuteCommand(int command_id,
       apps::AppServiceProxy* proxy =
           apps::AppServiceProxyFactory::GetForProfile(
               ProfileManager::GetPrimaryUserProfile());
-      proxy->Uninstall(app_id_, uninstall_source, /*parent_window=*/window);
+      if (base::FeatureList::IsEnabled(
+              apps::kAppServiceUninstallWithoutMojom)) {
+        proxy->Uninstall(app_id_, uninstall_source, /*parent_window=*/window);
+      } else {
+        proxy->Uninstall(app_id_,
+                         apps::ConvertUninstallSourceToMojomUninstallSource(
+                             uninstall_source),
+                         /*parent_window=*/window);
+      }
       return;
     }
     case ash::SHOW_APP_INFO: {
-      AppManagementEntryPoint entry =
-          (source_ == Source::kShelf)
-              ? AppManagementEntryPoint::kShelfContextMenuAppInfoChromeApp
-              : AppManagementEntryPoint::kAppListContextMenuAppInfoChromeApp;
-
-      // Normally app ids would only contain alphanumerics, but Lacros uses '#'
-      // as a delimiter.
-      std::string escaped_id = net::EscapeAllExceptUnreserved(app_id_);
-      chrome::ShowAppManagementPage(ProfileManager::GetPrimaryUserProfile(),
-                                    escaped_id, entry);
+      ash::settings::AppManagementEntryPoint entry =
+          (source_ == Source::kShelf) ? ash::settings::AppManagementEntryPoint::
+                                            kShelfContextMenuAppInfoChromeApp
+                                      : ash::settings::AppManagementEntryPoint::
+                                            kAppListContextMenuAppInfoChromeApp;
+      chrome::ShowAppManagementPage(
+          ProfileManager::GetPrimaryUserProfile(),
+          apps::GetEscapedAppId(app_id_,
+                                apps::AppType::kStandaloneBrowserChromeApp),
+          entry);
       return;
     }
     default:
@@ -130,10 +140,8 @@ void StandaloneBrowserExtensionAppContextMenu::OnGetMenuModel(
   proxy->AppRegistryCache().ForOneApp(
       app_id_,
       [&allow_app_info, &allow_uninstall](const apps::AppUpdate& update) {
-        allow_app_info =
-            update.ShowInManagement() == apps::mojom::OptionalBool::kTrue;
-        allow_uninstall =
-            update.AllowUninstall() == apps::mojom::OptionalBool::kTrue;
+        allow_app_info = update.ShowInManagement().value_or(false);
+        allow_uninstall = update.AllowUninstall().value_or(false);
       });
 
   std::string sync_id =

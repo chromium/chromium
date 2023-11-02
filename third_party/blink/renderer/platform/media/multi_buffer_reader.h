@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -114,7 +114,8 @@ class PLATFORM_EXPORT MultiBufferReader : public MultiBuffer::Reader {
 
   // Returns the block for a particular byte position.
   MultiBufferBlockId block(int64_t byte_pos) const {
-    return byte_pos >> multibuffer_->block_size_shift();
+    return static_cast<MultiBufferBlockId>(byte_pos >>
+                                           multibuffer_->block_size_shift());
   }
 
   // Returns the block for a particular byte position, rounding up.

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,6 +22,7 @@ import android.os.Bundle;
 
 import androidx.test.filters.MediumTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -29,25 +30,32 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.Supplier;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.chrome.autofill_assistant.R;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.directactions.DirectActionHandler;
 import org.chromium.chrome.browser.directactions.DirectActionReporter;
 import org.chromium.chrome.browser.directactions.DirectActionReporter.Type;
 import org.chromium.chrome.browser.directactions.FakeDirectActionReporter;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.components.autofill_assistant.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /** Tests the direct actions exposed by AA. */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 public class AutofillAssistantDirectActionHandlerTest {
     @Rule
@@ -57,8 +65,6 @@ public class AutofillAssistantDirectActionHandlerTest {
     private BottomSheetController mBottomSheetController;
     private DirectActionHandler mHandler;
     private TestingAutofillAssistantModuleEntryProvider mModuleEntryProvider;
-    private final SharedPreferencesManager mSharedPreferencesManager =
-            SharedPreferencesManager.getInstance();
 
     @Before
     public void setUp() throws Exception {
@@ -70,15 +76,28 @@ public class AutofillAssistantDirectActionHandlerTest {
         mModuleEntryProvider = new TestingAutofillAssistantModuleEntryProvider();
         mModuleEntryProvider.setCannotInstall();
 
+        Supplier<WebContents> webContentsSupplier =
+                () -> mActivity.getActivityTabProvider().get().getWebContents();
+
         mHandler = new AutofillAssistantDirectActionHandler(mActivity, mBottomSheetController,
                 mActivity.getBrowserControlsManager(),
                 mActivity.getCompositorViewHolderForTesting(), mActivity.getActivityTabProvider(),
-                mModuleEntryProvider);
+                webContentsSupplier, mModuleEntryProvider);
 
-        mSharedPreferencesManager.removeKey(
-                ChromePreferenceKeys.AUTOFILL_ASSISTANT_ONBOARDING_ACCEPTED);
-        mSharedPreferencesManager.removeKey(
-                ChromePreferenceKeys.AUTOFILL_ASSISTANT_SKIP_INIT_SCREEN);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+            prefService.clearPref(Pref.AUTOFILL_ASSISTANT_CONSENT);
+            prefService.clearPref(Pref.AUTOFILL_ASSISTANT_ENABLED);
+        });
+    }
+
+    @After
+    public void tearDown() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+            prefService.clearPref(Pref.AUTOFILL_ASSISTANT_CONSENT);
+            prefService.clearPref(Pref.AUTOFILL_ASSISTANT_ENABLED);
+        });
     }
 
     @Test
@@ -107,9 +126,14 @@ public class AutofillAssistantDirectActionHandlerTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1296764")
     public void testReportAvailableDirectActions() throws Exception {
         mModuleEntryProvider.setInstalled();
-        AutofillAssistantPreferencesUtil.setInitialPreferences(true);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+            prefService.setBoolean(Pref.AUTOFILL_ASSISTANT_CONSENT, true);
+            prefService.setBoolean(Pref.AUTOFILL_ASSISTANT_ENABLED, true);
+        });
 
         // Start the autofill assistant stack.
 
@@ -185,7 +209,11 @@ public class AutofillAssistantDirectActionHandlerTest {
     @MediumTest
     public void testReportAvailableAutofillAssistantActions() throws Exception {
         mModuleEntryProvider.setInstalled();
-        AutofillAssistantPreferencesUtil.setInitialPreferences(true);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+            prefService.setBoolean(Pref.AUTOFILL_ASSISTANT_CONSENT, true);
+            prefService.setBoolean(Pref.AUTOFILL_ASSISTANT_ENABLED, true);
+        });
 
         FakeDirectActionReporter reporter = new FakeDirectActionReporter();
         reportAvailableDirectActions(mHandler, reporter);
@@ -216,7 +244,10 @@ public class AutofillAssistantDirectActionHandlerTest {
         assertThat(isActionReported("onboarding"), is(true));
         acceptOnboarding();
 
-        assertTrue(AutofillAssistantPreferencesUtil.isAutofillOnboardingAccepted());
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+            assertTrue(prefService.getBoolean(Pref.AUTOFILL_ASSISTANT_CONSENT));
+        });
     }
 
     @Test

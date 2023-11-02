@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,9 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/otp_unmask_delegate.h"
@@ -55,7 +57,7 @@ class CreditCardOtpAuthenticator : public OtpUnmaskDelegate {
       return *this;
     }
     Result result = kUnknown;
-    const CreditCard* card;
+    raw_ptr<const CreditCard> card;
     std::u16string cvc;
   };
 
@@ -113,6 +115,9 @@ class CreditCardOtpAuthenticator : public OtpUnmaskDelegate {
       AutofillClient::PaymentsRpcResult result,
       payments::PaymentsClient::UnmaskResponseDetails& response_details);
 
+  // Reset the authenticator to initial states.
+  virtual void Reset();
+
  private:
   friend class CreditCardOtpAuthenticatorTest;
 
@@ -129,11 +134,8 @@ class CreditCardOtpAuthenticator : public OtpUnmaskDelegate {
   // callback function is |OnDidGetRealPan()|.
   void SendUnmaskCardRequest();
 
-  // Reset the authenticator to initial states.
-  void Reset();
-
   // Card being unmasked.
-  const CreditCard* card_;
+  raw_ptr<const CreditCard> card_;
 
   // User-entered OTP value.
   std::u16string otp_;
@@ -153,10 +155,10 @@ class CreditCardOtpAuthenticator : public OtpUnmaskDelegate {
   bool selected_challenge_option_request_ongoing_ = false;
 
   // The associated autofill client.
-  AutofillClient* autofill_client_;
+  raw_ptr<AutofillClient> autofill_client_;
 
   // The associated payments client.
-  payments::PaymentsClient* payments_client_;
+  raw_ptr<payments::PaymentsClient> payments_client_;
 
   // Weak pointer to object that is requesting authentication.
   base::WeakPtr<Requester> requester_;

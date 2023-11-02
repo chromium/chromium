@@ -66,29 +66,45 @@
               <span id="cookies" hidden$="[[!siteGroup.numCookies]]">
                 &middot; [[cookieString_]]
               </span>
+              <span id="fpsMembership"
+                  hidden$="[[!isFpsMember_(siteGroup.fpsOwner)]]">
+                &middot; [[fpsMembershipLabel_]]
+              </span>
             </div>
           </div>
+          <template is="dom-if" restamp if="[[shouldShowPolicyPrefIndicator_(
+                            siteGroup.fpsEnterpriseManaged)]]">
+            <cr-policy-pref-indicator
+                id="fpsPolicy" pref="[[fpsEnterprisePref_]]"
+                icon-aria-label="[[label]]"
+                focus-row-control focus-type="policy">
+            </cr-policy-pref-indicator>
+          </template>
           <cr-icon-button id="expandIcon" class="icon-expand-more"
               hidden$="[[!grouped_(siteGroup)]]" aria-label$="[[displayName_]]"
-              aria-describedby="displayName" focus-row-control
-              focus-type="expand"></cr-icon-button>
+              aria-describedby="displayName" aria-expanded="false"
+              focus-row-control focus-type="expand"></cr-icon-button>
           <cr-icon-button class="subpage-arrow"
               hidden$="[[grouped_(siteGroup)]]" aria-label$="[[displayName_]]"
               aria-describedby="displayName"
               focus-row-control focus-type="show-detail"></cr-icon-button>
         </div>
         <div class="row-aligned">
-          <template is="dom-if"
-              if="[[!enableConsolidatedSiteStorageControls_]]">
+          <template is="dom-if" if="[[isFpsMember_(siteGroup.fpsOwner)]]">
             <div class="separator"></div>
-            <cr-icon-button class="icon-more-vert" id="overflowMenuButton"
-                title="$i18n{moreActions}" on-click="showOverflowMenu_"
-                focus-row-control focus-type="more-actions"></cr-icon-button>
+            <cr-icon-button class="icon-more-vert"
+                id="fpsOverflowMenuButton"
+                title="$i18n{moreActions}"
+                on-click="showOverflowMenu_"
+                focus-row-control focus-type="more-actions"
+                aria-label$="[[getMoreActionsLabel_(siteGroup)]]">
+            </cr-icon-button>
           </template>
-          <template is="dom-if" if="[[enableConsolidatedSiteStorageControls_]]">
+          <template is="dom-if" if="[[!isFpsMember_(siteGroup.fpsOwner)]]">
             <div class="separator"></div>
             <cr-icon-button class="icon-delete-gray" id="removeSiteButton"
-                title$="[[i18n('siteSettingsCookieRemoveSite', displayName_)]]"
+                title$=
+                  "[[i18n('siteSettingsCookieRemoveSite', displayName_)]]"
                 on-click="onRemove_" focus-row-control focus-type="remove">
             </cr-icon-button>
           </template>
@@ -102,7 +118,8 @@
               <template is="dom-repeat" items="[[siteGroup.origins]]">
                 <div class="list-item hr">
                   <div class="start row-aligned list-item origin-link"
-                       on-click="onOriginTap_" actionable>
+                       on-click="onOriginTap_"
+                       actionable$="[[!item.isPartitioned]]">
                     <site-favicon url="[[item.origin]]"></site-favicon>
                     <div class="site-representation middle text-elide">
                       <span id="originSiteRepresentation"
@@ -133,8 +150,13 @@
                           &nbsp;&middot;
                           [[originCookiesItem_(cookiesNum_.*, index)]]
                       </span>
+                      <span class="secondary" hidden$="[[!item.isPartitioned]]">
+                          &nbsp;&middot;
+                          $i18n{siteSettingsSiteEntryPartitionedLabel}
+                      </span>
                     </div>
                     <cr-icon-button class="subpage-arrow"
+                        hidden$="[[item.isPartitioned]]"
                         aria-labelledby$="originSiteRepresentation"
                         aria-roledescription=
                             "$i18n{subpageArrowRoleDescription}"
@@ -142,28 +164,15 @@
                     </cr-icon-button>
                   </div>
                   <div class="row-aligned">
-                    <template is="dom-if"
-                        if="[[!enableConsolidatedSiteStorageControls_]]">
-                      <div class="separator"></div>
-                      <cr-icon-button class="icon-more-vert"
-                          id="originOverflowMenuButton"
-                          data-origin$="[[item.origin]]" data-context="origin"
-                          title="$i18n{moreActions}"
-                          on-click="showOverflowMenu_"
-                          focus-row-control focus-type="more-actions">
-                      </cr-icon-button>
-                    </template>
-                    <template is="dom-if"
-                        if="[[enableConsolidatedSiteStorageControls_]]">
-                      <div class="separator"></div>
-                      <cr-icon-button class="icon-delete-gray"
-                          id="removeOriginButton"
-                          title$="[[getRemoveOriginButtonTitle_(item.origin)]]"
-                          data-origin$="[[item.origin]]" data-context="origin"
-                          on-click="onRemove_" focus-row-control
-                          focus-type="remove">
-                      </cr-icon-button>
-                    </template>
+                    <div class="separator"></div>
+                    <cr-icon-button class="icon-delete-gray"
+                        id="removeOriginButton"
+                        title$="[[getRemoveOriginButtonTitle_(item.origin)]]"
+                        data-origin$="[[item.origin]]" data-context="origin"
+                        data-partitioned$="[[item.isPartitioned]]"
+                        on-click="onRemove_" focus-row-control
+                        focus-type="remove">
+                    </cr-icon-button>
                   </div>
                 </div>
               </template>

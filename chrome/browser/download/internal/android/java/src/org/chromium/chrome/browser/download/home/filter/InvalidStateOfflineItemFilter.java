@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,8 +30,6 @@ public class InvalidStateOfflineItemFilter extends OfflineItemFilter {
         boolean inPrimaryDirectory =
                 InvalidStateOfflineItemFilter.isInPrimaryStorageDownloadDirectory(item.filePath);
         if ((item.externallyRemoved && inPrimaryDirectory) || item.isTransient) return true;
-
-        if (item.schedule != null) return false;
 
         switch (item.state) {
             case OfflineItemState.CANCELLED:

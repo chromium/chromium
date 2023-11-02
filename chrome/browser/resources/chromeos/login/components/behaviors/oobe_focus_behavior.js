@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,8 +38,9 @@
     var focusedElements = root.getElementsByClassName('focus-on-show');
     var focused = false;
     for (var i = 0; i < focusedElements.length; ++i) {
-      if (focusedElements[i].hidden)
+      if (focusedElements[i].hidden) {
         continue;
+      }
 
       focused = true;
       Polymer.RenderStatus.afterNextRender(

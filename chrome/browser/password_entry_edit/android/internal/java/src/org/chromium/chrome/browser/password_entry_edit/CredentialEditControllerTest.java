@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.password_entry_edit;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -39,6 +40,8 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.res.Resources;
+import android.os.Build;
+import android.os.PersistableBundle;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -51,20 +54,21 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.password_entry_edit.CredentialEditCoordinator.CredentialActionDelegate;
 import org.chromium.chrome.browser.password_entry_edit.CredentialEditMediator.CredentialEntryAction;
 import org.chromium.chrome.browser.password_manager.ConfirmationDialogHelper;
 import org.chromium.chrome.browser.password_manager.settings.PasswordAccessReauthenticationHelper;
 import org.chromium.chrome.browser.password_manager.settings.PasswordAccessReauthenticationHelper.ReauthReason;
+import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
  * Tests verifying that the credential edit mediator modifies the model correctly.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class})
+@Config(manifest = Config.NONE)
 public class CredentialEditControllerTest {
     private static final String TEST_URL = "https://m.a.xyz/signin";
     private static final String TEST_USERNAME = "TestUsername";
@@ -87,9 +91,18 @@ public class CredentialEditControllerTest {
     CredentialEditMediator mMediator;
     PropertyModel mModel;
 
+    private void verifyTheClipdataContainSensitiveExtra(ClipData clipData) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            PersistableBundle extras = clipData.getDescription().getExtras();
+            assertTrue(extras.getBoolean("android.content.extra.IS_SENSITIVE"));
+        }
+    }
+
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        UmaRecorderHolder.resetForTesting();
+        Clipboard.resetForTesting();
         mMediator = new CredentialEditMediator(mReauthenticationHelper, mDeleteDialogHelper,
                 mCredentialActionDelegate, mHelpLauncher, false);
         mModel = new PropertyModel.Builder(ALL_KEYS)
@@ -203,8 +216,9 @@ public class CredentialEditControllerTest {
 
         ClipboardManager clipboard =
                 (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
-        ClipData expectedClip = ClipData.newPlainText("password", TEST_PASSWORD);
-        assertEquals(expectedClip.toString(), clipboard.getPrimaryClip().toString());
+        assertNotNull(clipboard.getPrimaryClip());
+        assertEquals(TEST_PASSWORD, clipboard.getPrimaryClip().getItemAt(0).getText());
+        verifyTheClipdataContainSensitiveExtra(clipboard.getPrimaryClip());
     }
 
     @Test

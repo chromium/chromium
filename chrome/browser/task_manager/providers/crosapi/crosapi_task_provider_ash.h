@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,9 +40,12 @@ class CrosapiTaskProviderAsh : public TaskProvider,
   const TaskIdList& GetSortedTaskIds();
 
  private:
+  friend class CrosapiTaskProviderAshTest;
+  FRIEND_TEST_ALL_PREFIXES(CrosapiTaskProviderAshTest, OnGetTaskManagerTasks);
+
   using UuidTaskMap =
       std::unordered_map<std::string, std::unique_ptr<CrosapiTask>>;
-  using PidToTaksGroupMap =
+  using PidToTaskGroupMap =
       std::unordered_map<base::ProcessId, crosapi::mojom::TaskGroupPtr>;
 
   // task_manager::TaskProvider:
@@ -70,7 +73,7 @@ class CrosapiTaskProviderAsh : public TaskProvider,
   std::vector<TaskId> sorted_task_ids_;
 
   // Cached task group data received from crosapi.
-  PidToTaksGroupMap pid_to_task_groups_;
+  PidToTaskGroupMap pid_to_task_groups_;
 
   base::WeakPtrFactory<CrosapiTaskProviderAsh> weak_ptr_factory_{this};
 };

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,12 +15,9 @@
 #include "components/google/core/common/google_util.h"
 #include "components/optimization_guide/core/hint_cache.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/push_notification_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-
-#if defined(OS_ANDROID)
-#include "chrome/browser/optimization_guide/android/android_push_notification_manager.h"
-#endif
 
 namespace {
 
@@ -52,13 +49,13 @@ namespace optimization_guide {
 ChromeHintsManager::ChromeHintsManager(
     Profile* profile,
     PrefService* pref_service,
-    optimization_guide::OptimizationGuideStore* hint_store,
+    base::WeakPtr<optimization_guide::OptimizationGuideStore> hint_store,
     optimization_guide::TopHostProvider* top_host_provider,
     optimization_guide::TabUrlProvider* tab_url_provider,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    network::NetworkConnectionTracker* network_connection_tracker,
     std::unique_ptr<optimization_guide::PushNotificationManager>
-        push_notification_manager)
+        push_notification_manager,
+    OptimizationGuideLogger* optimization_guide_logger)
     : HintsManager(profile->IsOffTheRecord(),
                    g_browser_process->GetApplicationLocale(),
                    pref_service,
@@ -66,8 +63,8 @@ ChromeHintsManager::ChromeHintsManager(
                    top_host_provider,
                    tab_url_provider,
                    url_loader_factory,
-                   network_connection_tracker,
-                   std::move(push_notification_manager)),
+                   std::move(push_notification_manager),
+                   optimization_guide_logger),
       profile_(profile) {
   NavigationPredictorKeyedService* navigation_predictor_service =
       NavigationPredictorKeyedServiceFactory::GetForProfile(profile);

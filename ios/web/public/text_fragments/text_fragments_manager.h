@@ -1,17 +1,29 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef IOS_WEB_PUBLIC_TEXT_FRAGMENTS_TEXT_FRAGMENTS_MANAGER_H_
 #define IOS_WEB_PUBLIC_TEXT_FRAGMENTS_TEXT_FRAGMENTS_MANAGER_H_
 
+#import <UIKit/UIKit.h>
+
+#import "components/shared_highlighting/core/common/text_fragment.h"
 #import "ios/web/public/web_state_user_data.h"
 
 // Protocol for clients which handle text fragments-related events.
 @protocol TextFragmentsDelegate <NSObject>
 
-// Invoked on user tap. Default behavior is to remove highlights on tap.
+// Invoked on user tap anywhere in the page. Default behavior is to remove
+// highlights on tap.
 - (void)userTappedTextFragmentInWebState:(web::WebState*)webState;
+
+// Invoked on user tap in a particular text fragment. Default behavior is no-op.
+- (void)userTappedTextFragmentInWebState:(web::WebState*)webState
+                              withSender:(CGRect)rect
+                                withText:(NSString*)text
+                           withFragments:
+                               (std::vector<shared_highlighting::TextFragment>)
+                                   fragments;
 
 @end
 

@@ -1,27 +1,28 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/tracing/perfetto_task_runner.h"
-
-#if defined(OS_POSIX) && !defined(OS_NACL)
-#include <sys/socket.h>
-#include <sys/types.h>
-#include "base/posix/eintr_wrapper.h"
-#endif
 
 #include <memory>
 #include <utility>
 #include <vector>
 
 #include "base/files/scoped_file.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/threading/simple_thread.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
+#include <sys/socket.h>
+#include <sys/types.h>
+#include "base/posix/eintr_wrapper.h"
+#endif
 
 namespace base {
 namespace tracing {
@@ -90,7 +91,7 @@ class PosterThread : public base::SimpleThread {
   }
 
  private:
-  PerfettoTaskRunner* task_runner_;
+  raw_ptr<PerfettoTaskRunner> task_runner_;
   base::WeakPtr<TaskDestination> weak_ptr_;
   const int n_;
   const size_t sequence_number_;
@@ -148,7 +149,7 @@ TEST_F(PerfettoTaskRunnerTest, SequentialTasks) {
   wait_for_tasks.Run();
 }
 
-#if defined(OS_POSIX) && !defined(OS_NACL)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
 // Tests file descriptor reuse that causes crashes.
 TEST_F(PerfettoTaskRunnerTest, FileDescriptorReuse) {
   int sockets[2];

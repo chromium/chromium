@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,10 +37,9 @@ class MockManualFillingController
   MOCK_CONST_METHOD2(OnToggleChanged,
                      void(autofill::AccessoryAction toggled_action,
                           bool enabled));
-  MOCK_METHOD2(
-      RequestAccessorySheet,
-      void(autofill::AccessoryTabType,
-           base::OnceCallback<void(const autofill::AccessorySheetData&)>));
+  MOCK_METHOD2(RequestAccessorySheet,
+               void(autofill::AccessoryTabType,
+                    base::OnceCallback<void(autofill::AccessorySheetData)>));
   MOCK_CONST_METHOD0(container_view, gfx::NativeView());
 };
 

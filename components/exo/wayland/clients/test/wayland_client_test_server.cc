@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,12 +38,19 @@ int WaylandClientTestSuiteServer::Run() {
   base::Thread client_thread("ClientThread");
   client_thread.Start();
 
+  // |task_environment_| main thread will be ClientThread while running tests.
+  task_environment_->DetachFromThread();
+
   base::RunLoop run_loop;
   client_thread.task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(&WaylandClientTestSuiteServer::RunTestsOnClientThread,
                      base::Unretained(this), run_loop.QuitWhenIdleClosure()));
   run_loop.Run();
+
+  // |task_environment_| destruction will be performed on the test suite's main
+  // thread, detach from the ClientThread.
+  task_environment_->DetachFromThread();
 
   Shutdown();
   return result_;

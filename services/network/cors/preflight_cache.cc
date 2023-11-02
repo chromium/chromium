@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,9 +15,7 @@
 #include "net/log/net_log_with_source.h"
 #include "url/gurl.h"
 
-namespace network {
-
-namespace cors {
+namespace network::cors {
 
 namespace {
 
@@ -73,15 +71,17 @@ void PreflightCache::AppendEntry(
     const url::Origin& origin,
     const GURL& url,
     const net::NetworkIsolationKey& network_isolation_key,
+    mojom::IPAddressSpace target_ip_address_space,
     std::unique_ptr<PreflightResult> preflight_result) {
   DCHECK(preflight_result);
 
-  // Do not cache |preflight_result| if |url| is too long.
+  // Do not cache `preflight_result` if `url` is too long.
   const std::string url_spec = url.spec();
   if (url_spec.length() >= kMaxKeyLength)
     return;
 
-  auto key = std::make_tuple(origin, url_spec, network_isolation_key);
+  auto key = std::make_tuple(origin, url_spec, network_isolation_key,
+                             target_ip_address_space);
   const auto existing_entry = cache_.find(key);
   if (existing_entry == cache_.end()) {
     // Since one new entry is always added below, let's purge one cache entry
@@ -99,13 +99,15 @@ bool PreflightCache::CheckIfRequestCanSkipPreflight(
     const url::Origin& origin,
     const GURL& url,
     const net::NetworkIsolationKey& network_isolation_key,
+    mojom::IPAddressSpace target_ip_address_space,
     mojom::CredentialsMode credentials_mode,
     const std::string& method,
     const net::HttpRequestHeaders& request_headers,
     bool is_revalidating,
     const net::NetLogWithSource& net_log) {
   // Check if the entry exists in the cache.
-  auto key = std::make_tuple(origin, url.spec(), network_isolation_key);
+  auto key = std::make_tuple(origin, url.spec(), network_isolation_key,
+                             target_ip_address_space);
   auto cache_entry = cache_.find(key);
   if (cache_entry == cache_.end()) {
     ReportCacheMetricAndRecordNetLog(CacheMetric::kMiss, net_log);
@@ -114,7 +116,7 @@ bool PreflightCache::CheckIfRequestCanSkipPreflight(
 
   // Check if the entry is still valid.
   if (!cache_entry->second->IsExpired()) {
-    // Both |origin| and |url| are in cache. Check if the entry is sufficient to
+    // Both `origin` and `url` are in cache. Check if the entry is sufficient to
     // skip CORS-preflight.
     if (cache_entry->second->EnsureAllowedRequest(
             credentials_mode, method, request_headers, is_revalidating,
@@ -158,6 +160,4 @@ void PreflightCache::MayPurge(size_t max_entries, size_t purge_unit) {
   cache_.erase(purge_begin_entry, purge_end_entry);
 }
 
-}  // namespace cors
-
-}  // namespace network
+}  // namespace network::cors

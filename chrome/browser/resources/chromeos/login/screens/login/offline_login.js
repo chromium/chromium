@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,24 @@
  * @fileoverview Polymer element for displaying material design offline login.
  */
 
-/* #js_imports_placeholder */
+import '//resources/cr_elements/cr_shared_style.css.js';
+import '//resources/cr_elements/cr_button/cr_button.js';
+import '//resources/cr_elements/cr_dialog/cr_dialog.js';
+import '//resources/cr_elements/cr_input/cr_input.js';
+import '../../components/gaia_header.js';
+import '../../components/gaia_input_form.js';
+import '../../components/gaia_button.js';
+import '../../components/common_styles/oobe_dialog_host_styles.m.js';
+import '../../components/dialogs/oobe_content_dialog.m.js';
+import '../../components/buttons/oobe_back_button.m.js';
+import '../../components/buttons/oobe_next_button.m.js';
+
+import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.m.js';
+import {OobeDialogHostBehavior} from '../../components/behaviors/oobe_dialog_host_behavior.m.js';
+import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.m.js';
+
 
 const DEFAULT_EMAIL_DOMAIN = '@gmail.com';
 const INPUT_EMAIL_PATTERN = '^[a-zA-Z0-9.!#$%&\'*+=?^_`{|}~-]+(@[^\\s@]+)?$';
@@ -22,9 +39,9 @@ const LOGIN_SECTION = {
  * @implements {LoginScreenBehaviorInterface}
  * @implements {OobeI18nBehaviorInterface}
  */
-const OfflineLoginBase = Polymer.mixinBehaviors(
+const OfflineLoginBase = mixinBehaviors(
     [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
-    Polymer.Element);
+    PolymerElement);
 
 /**
  * @typedef {{
@@ -45,7 +62,9 @@ class OfflineLogin extends OfflineLoginBase {
     return 'offline-login-element';
   }
 
-  /* #html_template_placeholder */
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
   static get properties() {
     return {
@@ -83,17 +102,26 @@ class OfflineLogin extends OfflineLoginBase {
       /**
        * Current value of e-mail input field.
        */
-      email_: String,
+      email_: {
+        type: String,
+        value: '',
+      },
 
       /**
        * Current value of password input field.
        */
-      password_: String,
+      password_: {
+        type: String,
+        value: '',
+      },
 
       /**
        * Proper e-mail with domain, displayed on password page.
        */
-      fullEmail_: String,
+      fullEmail_: {
+        type: String,
+        value: '',
+      },
 
       activeSection: {
         type: String,
@@ -107,18 +135,10 @@ class OfflineLogin extends OfflineLoginBase {
     };
   }
 
-  constructor() {
-    super();
-    this.email_ = '';
-    this.password_ = '';
-    this.fullEmail_ = '';
-  }
-
   /** Overridden from LoginScreenBehavior. */
   // clang-format off
   get EXTERNAL_API() {
-    return ['loadParams',
-            'reset',
+    return ['reset',
             'proceedToPasswordPage',
             'showOnlineRequiredDialog',
             'showPasswordMismatchMessage',
@@ -129,15 +149,14 @@ class OfflineLogin extends OfflineLoginBase {
   /** @override */
   ready() {
     super.ready();
-    this.initializeLoginScreen('OfflineLoginScreen', {
-      resetAllowed: true,
-    });
+    this.initializeLoginScreen('OfflineLoginScreen');
   }
 
   attached() {
     super.attached();
-    if (this.isRTL_())
+    if (this.isRTL_()) {
       this.setAttribute('rtl', '');
+    }
   }
 
   focus() {
@@ -152,14 +171,33 @@ class OfflineLogin extends OfflineLoginBase {
     this.switchToEmailCard(true /* animated */);
   }
 
-  onBeforeShow() {
-    this.$.dialog.onBeforeShow();
+  cancel() {
+    if (this.disabled) {
+      return;
+    }
+    this.onBackButtonClicked_();
+  }
+
+  /**
+   *
+   * @param {Object} params
+   */
+  onBeforeShow(params) {
+    this.reset();
+    if ('enterpriseDomainManager' in params) {
+      this.manager = params['enterpriseDomainManager'];
+    }
+    if ('emailDomain' in params) {
+      this.emailDomain = '@' + params['emailDomain'];
+    }
     this.$.emailInput.pattern = INPUT_EMAIL_PATTERN;
-    if (!this.email_)
+    if (!this.email_) {
       this.switchToEmailCard(false /* animated */);
+    }
   }
 
   reset() {
+    this.animationInProgress = false;
     this.disabled = false;
     this.emailDomain = '';
     this.manager = '';
@@ -170,19 +208,8 @@ class OfflineLogin extends OfflineLoginBase {
     this.activeSection = LOGIN_SECTION.EMAIL;
   }
 
-  /**
-   * @param {!Object} params parameters bag.
-   */
-  loadParams(params) {
-    this.reset();
-    if ('enterpriseDomainManager' in params)
-      this.manager = params['enterpriseDomainManager'];
-    if ('emailDomain' in params)
-      this.emailDomain = '@' + params['emailDomain'];
-  }
-
   proceedToPasswordPage() {
-    this.switchToPasswordCard(this.email_, true /* animated */);
+    this.switchToPasswordCard(true /* animated */);
   }
 
   showOnlineRequiredDialog() {
@@ -223,53 +250,50 @@ class OfflineLogin extends OfflineLoginBase {
     this.$.emailInput.invalid = false;
     this.$.passwordInput.invalid = false;
     this.password_ = '';
-    if (this.isEmailSectionActive_())
+    if (this.isEmailSectionActive_()) {
       return;
+    }
 
     this.animationInProgress = animated;
+    this.disabled = animated;
     this.activeSection = LOGIN_SECTION.EMAIL;
   }
 
   /**
-   * @param {string} email
    * @param {boolean} animated
    */
-  switchToPasswordCard(email, animated) {
-    this.email_ = email;
-    if (email.indexOf('@') === -1) {
-      if (this.emailDomain)
-        email = email + this.emailDomain;
-      else
-        email = email + DEFAULT_EMAIL_DOMAIN;
-    }
-    this.fullEmail_ = email;
-
-    if (!this.isEmailSectionActive_())
+  switchToPasswordCard(animated) {
+    if (!this.isEmailSectionActive_()) {
       return;
+    }
 
     this.animationInProgress = animated;
+    this.disabled = animated;
     this.activeSection = LOGIN_SECTION.PASSWORD;
   }
 
   onSlideAnimationEnd_() {
     this.animationInProgress = false;
+    this.disabled = false;
     this.focus();
   }
 
   onEmailSubmitted_() {
     if (this.$.emailInput.validate()) {
-      chrome.send('OfflineLogin.onEmailSubmitted', [this.email_]);
+      this.fullEmail_ = this.computeFullEmail_(this.email_);
+      this.userActed(['email-submitted', this.fullEmail_]);
     } else {
       this.$.emailInput.focusInput();
     }
   }
 
   onPasswordSubmitted_() {
-    if (!this.$.passwordInput.validate())
+    if (!this.$.passwordInput.validate()) {
       return;
+    }
     this.email_ = this.fullEmail_;
-    chrome.send('completeOfflineAuthentication', [this.email_, this.password_]);
-    this.password_ = '';
+    this.userActed(['complete-authentication', this.email_, this.password_]);
+    this.disabled = true;
   }
 
   onBackButtonClicked_() {
@@ -293,13 +317,30 @@ class OfflineLogin extends OfflineLoginBase {
    * @param {string} email
    */
   computeDomain_(domain, email) {
-    if (email && email.indexOf('@') !== -1)
+    if (email && email.indexOf('@') !== -1) {
       return '';
+    }
     return domain;
+  }
+
+  /**
+   * @param {string} email
+   */
+  computeFullEmail_(email) {
+    if (email.indexOf('@') === -1) {
+      if (this.emailDomain) {
+        email = email + this.emailDomain;
+      } else {
+        email = email + DEFAULT_EMAIL_DOMAIN;
+      }
+    }
+    return email;
   }
 
   showPasswordMismatchMessage() {
     this.$.passwordInput.invalid = true;
+    this.disabled = false;
+    this.$.passwordInput.focusInput();
   }
 
   /**

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 
 #include "ash/components/phonehub/browser_tabs_model.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 class FakeBrowserTabsModelProvider : public BrowserTabsModelProvider {
@@ -27,6 +27,6 @@ class FakeBrowserTabsModelProvider : public BrowserTabsModelProvider {
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_PHONEHUB_FAKE_BROWSER_TABS_MODEL_PROVIDER_H_

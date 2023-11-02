@@ -1,14 +1,21 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_UPDATER_UTIL_H_
 #define CHROME_UPDATER_UTIL_H_
 
+#include <string>
+#include <utility>
+
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
+#include "base/task/bind_post_task.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
+#include "chrome/updater/tag.h"
 #include "chrome/updater/updater_scope.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -39,39 +46,43 @@ struct TagArgs;
 
 enum class UpdaterScope;
 
-// Returns the base directory common to all versions of the updater. For
+// Returns the base data directory common to all versions of the updater. For
 // instance, this function may return %localappdata%\Chromium\ChromiumUpdater
-// for a user install.
-absl::optional<base::FilePath> GetBaseDirectory(UpdaterScope scope);
+// for a user install. Creates the directory if it does not exist.
+absl::optional<base::FilePath> GetBaseDataDirectory(UpdaterScope scope);
 
-// Returns a versioned directory under which the running version of the updater
-// stores its files and data. For instance, this function may return
-// %localappdata%\Chromium\ChromiumUpdater\1.2.3.4 for a user install.
-absl::optional<base::FilePath> GetVersionedDirectory(UpdaterScope scope);
+// Returns the versioned data directory under which the running version of the
+// updater stores its data. For instance, this function may return
+// %localappdata%\Chromium\ChromiumUpdater\1.2.3.4 for a user install. Creates
+// the directory if it does not exit.
+absl::optional<base::FilePath> GetVersionedDataDirectory(UpdaterScope scope);
 
-// For user installations:
-// ~/Library/Google/GoogleUpdater/88.0.4293.0
-// For system installations:
-// /Library/Google/GoogleUpdater/88.0.4293.0
-absl::optional<base::FilePath> GetVersionedUpdaterFolderPathForVersion(
+// Returns the versioned install directory under which the program stores its
+// executables. For example, on macOS this function may return
+// ~/Library/Google/GoogleUpdater/88.0.4293.0 (/Library for system). Does not
+// create the directory if it does not exist.
+absl::optional<base::FilePath> GetVersionedInstallDirectory(
     UpdaterScope scope,
     const base::Version& version);
 
-// The same as GetVersionedUpdaterFolderPathForVersion, where the version is
-// kUpdaterVersion.
-absl::optional<base::FilePath> GetVersionedUpdaterFolderPath(
-    UpdaterScope scope);
+// Simpler form of GetVersionedInstallDirectory for the currently running
+// version of the updater.
+absl::optional<base::FilePath> GetVersionedInstallDirectory(UpdaterScope scope);
 
-// For user installations:
-// ~/Library/Google/GoogleUpdater
-// For system installations:
-// /Library/Google/GoogleUpdater
-absl::optional<base::FilePath> GetUpdaterFolderPath(UpdaterScope scope);
+// Returns the base install directory common to all versions of the updater.
+// Does not create the directory if it does not exist.
+absl::optional<base::FilePath> GetBaseInstallDirectory(UpdaterScope scope);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_WIN)
+// Returns the program files directory for system scope or the local application
+// data directory for user scope.
+absl::optional<base::FilePath> GetApplicationDataDirectory(UpdaterScope scope);
+#endif
+
+#if BUILDFLAG(IS_MAC)
 // For example: ~/Library/Google/GoogleUpdater/88.0.4293.0/GoogleUpdater.app
 absl::optional<base::FilePath> GetUpdaterAppBundlePath(UpdaterScope scope);
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 // For user installations:
 // ~/Library/Google/GoogleUpdater/88.0.4293.0/GoogleUpdater.app/Contents/
@@ -94,17 +105,45 @@ absl::optional<base::FilePath> GetExecutableFolderPathForVersion(
 // "updater.exe" on Win.
 base::FilePath GetExecutableRelativePath();
 
-// Returns the parsed values from --tag command line argument. The function
-// implementation uses lazy initialization and caching to avoid reparsing
-// the tag.
-absl::optional<tagging::TagArgs> GetTagArgs();
+// Return the parsed values from --tag command line argument. The functions
+// return {} if there was no tag at all. An error is set if the tag fails to
+// parse.
+struct TagParsingResult {
+  TagParsingResult();
+  TagParsingResult(absl::optional<tagging::TagArgs> tag_args,
+                   tagging::ErrorCode error);
+  ~TagParsingResult();
+  TagParsingResult(const TagParsingResult&);
+  TagParsingResult& operator=(const TagParsingResult&);
+  absl::optional<tagging::TagArgs> tag_args;
+  tagging::ErrorCode error = tagging::ErrorCode::kSuccess;
+};
+
+TagParsingResult GetTagArgsForCommandLine(
+    const base::CommandLine& command_line);
+TagParsingResult GetTagArgs();
+
+// Returns the arguments corresponding to `app_id` from the command line tag.
+absl::optional<tagging::AppArgs> GetAppArgsForCommandLine(
+    const base::CommandLine& command_line,
+    const std::string& app_id);
+absl::optional<tagging::AppArgs> GetAppArgs(const std::string& app_id);
+
+std::string GetDecodedInstallDataFromAppArgsForCommandLine(
+    const base::CommandLine& command_line,
+    const std::string& app_id);
+std::string GetDecodedInstallDataFromAppArgs(const std::string& app_id);
+
+std::string GetInstallDataIndexFromAppArgsForCommandLine(
+    const base::CommandLine& command_line,
+    const std::string& app_id);
+std::string GetInstallDataIndexFromAppArgs(const std::string& app_id);
 
 // Returns true if the user running the updater also owns the `path`.
 bool PathOwnedByUser(const base::FilePath& path);
 
 // Initializes logging for an executable.
-void InitLogging(UpdaterScope updater_scope,
-                 const base::FilePath::StringType& filename);
+void InitLogging(UpdaterScope updater_scope);
 
 // Wraps the 'command_line' to be executed in an elevated context.
 // On macOS this is done with 'sudo'.
@@ -134,7 +173,7 @@ GURL AppendQueryParameter(const GURL& url,
                           const std::string& name,
                           const std::string& value);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // Uses the builtin unzip utility within macOS /usr/bin/unzip to unzip instead
 // of using the configurator's UnzipperFactory. The UnzipperFactory utilizes the
 // //third_party/zlib/google, which has a bug that does not preserve the
@@ -149,7 +188,48 @@ absl::optional<base::FilePath> GetKeystoneFolderPath(UpdaterScope scope);
 // permissions as the given permissions mask.
 bool ConfirmFilePermissions(const base::FilePath& root_path,
                             int kPermissionsMask);
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
+
+#if BUILDFLAG(IS_WIN)
+
+// Returns the versioned task name prefix in the following format:
+// "{ProductName}Task{System/User}{UpdaterVersion}".
+// For instance: "ChromiumUpdaterTaskSystem92.0.0.1".
+std::wstring GetTaskNamePrefix(UpdaterScope scope);
+
+// Returns the versioned task display name in the following format:
+// "{ProductName} Task {System/User} {UpdaterVersion}".
+// For instance: "ChromiumUpdater Task System 92.0.0.1".
+std::wstring GetTaskDisplayName(UpdaterScope scope);
+
+// Parses the command line string in legacy format into `base::CommandLine`.
+// The string must be in format like:
+//   program.exe /switch1 value1 /switch2 /switch3 value3
+// Returns empty if a Chromium style switch is found.
+absl::optional<base::CommandLine> CommandLineForLegacyFormat(
+    const std::wstring& cmd_string);
+
+#endif  // BUILDFLAG(IS_WIN)
+
+// Returns the command line for current process, either in legacy style, or
+// in Chromium style.
+base::CommandLine GetCommandLineLegacyCompatible();
+
+// Writes the provided string prefixed with the UTF8 byte order mark to a
+// temporary file. The temporary file is created in the specified `directory`.
+absl::optional<base::FilePath> WriteInstallerDataToTempFile(
+    const base::FilePath& directory,
+    const std::string& installer_data);
+
+// Creates and starts a thread pool for this process.
+void InitializeThreadPool(const char* name);
+
+// Adapts `callback` so that the callback is posted on the current sequence.
+template <typename CallbackT>
+CallbackT OnCurrentSequence(CallbackT callback) {
+  return base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
+                            std::move(callback));
+}
 
 }  // namespace updater
 

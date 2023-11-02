@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 
 namespace skia {
@@ -83,6 +84,13 @@ TEST(SkiaUtilsBase, ConvertWeirdFormatToN32) {
     EXPECT_EQ(out.rowBytes(), width * 4u);
     EXPECT_EQ(out.info().colorType(), kN32_SkColorType);
   }
+}
+
+TEST(SkiaUtilsBase, ConvertSkColorToHexString) {
+  EXPECT_EQ(SkColorToHexString(SK_ColorBLUE), "#0000FF");
+  EXPECT_EQ(SkColorToHexString(SK_ColorRED), "#FF0000");
+  EXPECT_EQ(SkColorToHexString(SK_ColorGREEN), "#00FF00");
+  EXPECT_EQ(SkColorToHexString(SK_ColorWHITE), "#FFFFFF");
 }
 
 }  // namespace

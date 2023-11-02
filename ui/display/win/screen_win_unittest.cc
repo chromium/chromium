@@ -1,4 +1,4 @@
-﻿// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/display.h"
@@ -31,7 +32,7 @@ namespace {
 
 class TestScreenWin : public ScreenWin {
  public:
-  TestScreenWin(const std::vector<DisplayInfo>& display_infos,
+  TestScreenWin(const std::vector<internal::DisplayInfo>& display_infos,
                 const std::vector<MONITORINFOEX>& monitor_infos,
                 const std::unordered_map<HWND, gfx::Rect>& hwnd_map)
       : ScreenWin(false), monitor_infos_(monitor_infos), hwnd_map_(hwnd_map) {
@@ -124,7 +125,7 @@ class TestScreenWin : public ScreenWin {
     return metric;
   }
 
-  Screen* old_screen_ = Screen::SetScreenInstance(this);
+  raw_ptr<Screen> old_screen_ = Screen::SetScreenInstance(this);
   std::vector<MONITORINFOEX> monitor_infos_;
   std::unordered_map<HWND, gfx::Rect> hwnd_map_;
 };
@@ -164,9 +165,9 @@ class TestScreenWinManager final : public TestScreenWinInitializer {
     MONITORINFOEX monitor_info =
         win::test::CreateMonitorInfo(pixel_bounds, pixel_work, device_name);
     monitor_infos_.push_back(monitor_info);
-    display_infos_.push_back(DisplayInfo(monitor_info, device_scale_factor,
-                                         1.0f, Display::ROTATE_0, 60,
-                                         gfx::Vector2dF(), tech));
+    display_infos_.push_back(internal::DisplayInfo(
+        monitor_info, device_scale_factor, 1.0f, Display::ROTATE_0, 60,
+        gfx::Vector2dF(), tech, std::string()));
   }
 
   HWND CreateFakeHwnd(const gfx::Rect& bounds) override {
@@ -189,7 +190,7 @@ class TestScreenWinManager final : public TestScreenWinInitializer {
   HWND hwndLast_ = nullptr;
   std::unique_ptr<ScreenWin> screen_win_;
   std::vector<MONITORINFOEX> monitor_infos_;
-  std::vector<DisplayInfo> display_infos_;
+  std::vector<internal::DisplayInfo> display_infos_;
   std::unordered_map<HWND, gfx::Rect> hwnd_map_;
 };
 

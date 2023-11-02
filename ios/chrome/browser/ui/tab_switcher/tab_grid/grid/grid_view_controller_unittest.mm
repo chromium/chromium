@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/chrome/test/root_view_controller_test.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -213,7 +213,7 @@ TEST_F(GridViewControllerTest, MoveUnselectedItem) {
   EXPECT_EQ(2U, delegate_.itemCount);
 }
 
-// Tests that |-replaceItemID:withItem:| does not crash when updating an item
+// Tests that `-replaceItemID:withItem:` does not crash when updating an item
 // that is scrolled offscreen.
 // TODO(crbug.com/1104872): On iOS 14 iPhone X, visibleCellsCount is always
 // equal to the total number of cells, so the while loop below never

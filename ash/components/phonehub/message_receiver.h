@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,10 @@
 #include "ash/components/phonehub/proto/phonehub_api.pb.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "chromeos/components/multidevice/logging/logging.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 
 // Responsible for receiving message updates from the remote phone device.
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 class MessageReceiver {
@@ -29,6 +29,10 @@ class MessageReceiver {
     // properties, updated notifications, and removed notifications.
     virtual void OnPhoneStatusUpdateReceived(
         proto::PhoneStatusUpdate phone_status_update) {}
+
+    // Called when the remote feature setup is finished on the remote pohone.
+    virtual void OnFeatureSetupResponseReceived(
+        proto::FeatureSetupResponse feature_setup_response) {}
 
     // Called when the remote phone sends the list of camera roll items that
     // should be displayed via FetchCameraRollItemsResponse.
@@ -55,6 +59,7 @@ class MessageReceiver {
       proto::PhoneStatusSnapshot phone_status_snapshot);
   void NotifyPhoneStatusUpdateReceived(
       proto::PhoneStatusUpdate phone_status_update);
+  void NotifyFeatureSetupResponseReceived(proto::FeatureSetupResponse response);
   void NotifyFetchCameraRollItemsResponseReceived(
       const proto::FetchCameraRollItemsResponse& response);
   void NotifyFetchCameraRollItemDataResponseReceived(
@@ -65,6 +70,6 @@ class MessageReceiver {
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_PHONEHUB_MESSAGE_RECEIVER_H_

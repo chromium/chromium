@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -55,7 +55,7 @@ void BluetoothInternalsHandler::GetDebugLogsChangeHandler(
       break;
     case DebugLogsManager::DebugLogsState::kSupportedAndEnabled:
       initial_toggle_value = true;
-      FALLTHROUGH;
+      [[fallthrough]];
     case DebugLogsManager::DebugLogsState::kSupportedButDisabled:
       handler_remote = debug_logs_manager_->GenerateRemote();
       break;

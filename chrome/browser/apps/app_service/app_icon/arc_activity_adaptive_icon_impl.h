@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,8 @@
 
 #include <vector>
 
-#include "components/arc/intent_helper/adaptive_icon_delegate.h"
-#include "components/arc/mojom/intent_helper.mojom.h"
+#include "ash/components/arc/mojom/intent_helper.mojom.h"
+#include "components/arc/common/intent_helper/adaptive_icon_delegate.h"
 
 namespace arc {
 class AdaptiveIconDelegate;

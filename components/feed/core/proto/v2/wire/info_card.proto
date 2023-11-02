@@ -1,0 +1,29 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+package feedwire;
+
+option optimize_for = LITE_RUNTIME;
+
+enum InfoCardType {
+  INFO_CARD_NONE = 0;
+  INFO_CARD_MAIN_PRIVACY_NOTICE = 1;
+  INFO_CARD_YOUTUBE_PRIVACY_NOTICE = 2;
+  INFO_CARD_FOLLOWING_FEED_ONBOARDING_INTRO = 3;
+  INFO_CARD_FOLLOWING_FEED_FOLLOW_FROM_PAGE_EDUCATION = 4;
+}
+message InfoCardTrackingState {
+  optional int32 type = 1;
+  optional int32 explicitly_dismissed_count = 2;
+  optional int32 view_count = 3;
+  optional int32 click_count = 4;
+  optional int64 first_view_timestamp = 5;
+  optional int64 last_view_timestamp = 6;
+}
+message InfoCardServingInfo {
+  repeated int32 fulfilled_info_card_types = 1;
+  repeated int64 known_info_card_types = 2;
+}

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_list_controller.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_source_view.h"
@@ -44,6 +45,7 @@ class DesktopMediaListView
   absl::optional<content::DesktopMediaID> GetSelection() override;
   DesktopMediaListController::SourceListListener* GetSourceListListener()
       override;
+  void ClearSelection() override;
 
   // DesktopMediaListController::SourceListListener:
   void OnSourceAdded(size_t index) override;
@@ -52,6 +54,7 @@ class DesktopMediaListView
   void OnSourceNameChanged(size_t index) override;
   void OnSourceThumbnailChanged(size_t index) override;
   void OnSourcePreviewChanged(size_t index) override;
+  void OnDelegatedSourceListSelection() override;
 
  private:
   // Change the source style of this list on the fly.
@@ -59,11 +62,11 @@ class DesktopMediaListView
 
   DesktopMediaSourceView* GetSelectedView();
 
-  DesktopMediaListController* controller_;
+  raw_ptr<DesktopMediaListController> controller_;
 
   DesktopMediaSourceViewStyle single_style_;
   DesktopMediaSourceViewStyle generic_style_;
-  DesktopMediaSourceViewStyle* active_style_;
+  raw_ptr<DesktopMediaSourceViewStyle> active_style_;
 
   const std::u16string accessible_name_;
 };

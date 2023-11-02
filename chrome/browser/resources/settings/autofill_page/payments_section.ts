@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,145 +8,34 @@
  */
 
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import 'chrome://resources/cr_elements/shared_style_css.m.js';
-import 'chrome://resources/cr_elements/shared_vars_css.m.js';
+import 'chrome://resources/cr_elements/cr_shared_style.css.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
-import '../settings_shared_css.js';
+import '../settings_shared.css.js';
 import '../controls/settings_toggle_button.js';
 import '../prefs/prefs.js';
 import './credit_card_edit_dialog.js';
-import './passwords_shared_css.js';
+import './passwords_shared.css.js';
 import './payments_list.js';
+import './virtual_card_unenroll_dialog.js';
 
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
-import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
-import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
+import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {MetricsBrowserProxyImpl, PrivacyElementInteractions} from '../metrics_browser_proxy.js';
 
-type PersonalDataChangedListener =
-    (addresses: Array<chrome.autofillPrivate.AddressEntry>,
-     creditCards: Array<chrome.autofillPrivate.CreditCardEntry>) => void;
+import {PersonalDataChangedListener} from './autofill_manager_proxy.js';
+import {PaymentsManagerImpl, PaymentsManagerProxy} from './payments_manager_proxy.js';
+import {getTemplate} from './payments_section.html.js';
 
-/**
- * Interface for all callbacks to the payments autofill API.
- */
-export interface PaymentsManager {
-  /**
-   * Add an observer to the list of personal data.
-   */
-  setPersonalDataManagerListener(listener: PersonalDataChangedListener): void;
-
-  /**
-   * Remove an observer from the list of personal data.
-   */
-  removePersonalDataManagerListener(listener: PersonalDataChangedListener):
-      void;
-
-  /**
-   * Request the list of credit cards.
-   */
-  getCreditCardList(
-      callback:
-          (entries: Array<chrome.autofillPrivate.CreditCardEntry>) => void):
-      void;
-
-  /** @param guid The GUID of the credit card to remove. */
-  removeCreditCard(guid: string): void;
-
-  /**
-   * @param guid The GUID to credit card to remove from the cache.
-   */
-  clearCachedCreditCard(guid: string): void;
-
-  /**
-   * Saves the given credit card.
-   */
-  saveCreditCard(creditCard: chrome.autofillPrivate.CreditCardEntry): void;
-
-  /**
-   * Migrate the local credit cards.
-   */
-  migrateCreditCards(): void;
-
-  /**
-   * Logs that the server cards edit link was clicked.
-   */
-  logServerCardLinkClicked(): void;
-
-  /**
-   * Enables FIDO authentication for card unmasking.
-   */
-  setCreditCardFIDOAuthEnabledState(enabled: boolean): void;
-
-  /**
-   * Requests the list of UPI IDs from personal data.
-   */
-  getUpiIdList(callback: (entries: Array<string>) => void): void;
-}
-
-/**
- * Implementation that accesses the private API.
- */
-export class PaymentsManagerImpl implements PaymentsManager {
-  setPersonalDataManagerListener(listener: PersonalDataChangedListener) {
-    chrome.autofillPrivate.onPersonalDataChanged.addListener(listener);
-  }
-
-  removePersonalDataManagerListener(listener: PersonalDataChangedListener) {
-    chrome.autofillPrivate.onPersonalDataChanged.removeListener(listener);
-  }
-
-  getCreditCardList(
-      callback:
-          (entries: Array<chrome.autofillPrivate.CreditCardEntry>) => void) {
-    chrome.autofillPrivate.getCreditCardList(callback);
-  }
-
-  removeCreditCard(guid: string) {
-    chrome.autofillPrivate.removeEntry(assert(guid));
-  }
-
-  clearCachedCreditCard(guid: string) {
-    chrome.autofillPrivate.maskCreditCard(assert(guid));
-  }
-
-  saveCreditCard(creditCard: chrome.autofillPrivate.CreditCardEntry) {
-    chrome.autofillPrivate.saveCreditCard(creditCard);
-  }
-
-  migrateCreditCards() {
-    chrome.autofillPrivate.migrateCreditCards();
-  }
-
-  logServerCardLinkClicked() {
-    chrome.autofillPrivate.logServerCardLinkClicked();
-  }
-
-  setCreditCardFIDOAuthEnabledState(enabled: boolean) {
-    chrome.autofillPrivate.setCreditCardFIDOAuthEnabledState(enabled);
-  }
-
-  getUpiIdList(callback: (entries: Array<string>) => void) {
-    chrome.autofillPrivate.getUpiIdList(callback);
-  }
-
-  static getInstance(): PaymentsManager {
-    return instance || (instance = new PaymentsManagerImpl());
-  }
-
-  static setInstance(obj: PaymentsManager) {
-    instance = obj;
-  }
-}
-
-let instance: PaymentsManager|null = null;
 
 type DotsCardMenuiClickEvent = CustomEvent<{
   creditCard: chrome.autofillPrivate.CreditCardEntry,
@@ -159,27 +48,38 @@ declare global {
   }
 }
 
-interface SettingsPaymentsSectionElement {
+export interface SettingsPaymentsSectionElement {
   $: {
+    addCreditCard: CrButtonElement,
+    autofillCreditCardToggle: SettingsToggleButtonElement,
+    canMakePaymentToggle: SettingsToggleButtonElement,
     creditCardSharedMenu: CrActionMenuElement,
-    addCreditCard: HTMLElement,
+    menuClearCreditCard: HTMLElement,
+    menuEditCreditCard: HTMLElement,
+    menuRemoveCreditCard: HTMLElement,
+    menuAddVirtualCard: HTMLElement,
+    menuRemoveVirtualCard: HTMLElement,
+    migrateCreditCards: HTMLElement,
+    paymentsList: HTMLElement,
   };
 }
 
 const SettingsPaymentsSectionElementBase = I18nMixin(PolymerElement);
 
-class SettingsPaymentsSectionElement extends
+export class SettingsPaymentsSectionElement extends
     SettingsPaymentsSectionElementBase {
   static get is() {
     return 'settings-payments-section';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
     return {
+      prefs: Object,
+
       /**
        * An array of all saved credit cards.
        */
@@ -213,6 +113,7 @@ class SettingsPaymentsSectionElement extends
       activeCreditCard_: Object,
 
       showCreditCardDialog_: Boolean,
+      showVirtualCardUnenrollDialog_: Boolean,
       migratableCreditCardsInfo_: String,
 
       /**
@@ -225,18 +126,33 @@ class SettingsPaymentsSectionElement extends
         },
         readOnly: true,
       },
+
+      /**
+       * Whether virtual card enroll management on settings page is enabled.
+       */
+      virtualCardEnrollmentEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('virtualCardEnrollmentEnabled');
+        },
+        readOnly: true,
+      },
     };
   }
 
-  creditCards: Array<chrome.autofillPrivate.CreditCardEntry>;
-  upiIds: Array<string>;
+  prefs: {[key: string]: any};
+  creditCards: chrome.autofillPrivate.CreditCardEntry[];
+  upiIds: string[];
   private userIsFidoVerifiable_: boolean;
   private activeCreditCard_: chrome.autofillPrivate.CreditCardEntry|null;
   private showCreditCardDialog_: boolean;
+  private showVirtualCardUnenrollDialog_: boolean;
   private migratableCreditCardsInfo_: string;
   private migrationEnabled_: boolean;
+  private virtualCardEnrollmentEnabled_: boolean;
   private activeDialogAnchor_: HTMLElement|null;
-  private paymentsManager_: PaymentsManager = PaymentsManagerImpl.getInstance();
+  private paymentsManager_: PaymentsManagerProxy =
+      PaymentsManagerImpl.getInstance();
   private setPersonalDataListener_: PersonalDataChangedListener|null = null;
 
   constructor() {
@@ -249,40 +165,43 @@ class SettingsPaymentsSectionElement extends
     this.activeDialogAnchor_ = null;
   }
 
-  ready() {
+  override ready() {
     super.ready();
 
     this.addEventListener('save-credit-card', this.saveCreditCard_);
     this.addEventListener(
-        'dots-card-menu-click', this.onCreditCardDotsMenuTap_);
+        'dots-card-menu-click', this.onCreditCardDotsMenuClick_);
     this.addEventListener(
-        'remote-card-menu-click', this.onRemoteEditCreditCardTap_);
+        'remote-card-menu-click', this.onRemoteEditCreditCardClick_);
+    this.addEventListener('unenroll-virtual-card', this.unenrollVirtualCard_);
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     // Create listener function.
     const setCreditCardsListener =
-        (cardList: Array<chrome.autofillPrivate.CreditCardEntry>) => {
+        (cardList: chrome.autofillPrivate.CreditCardEntry[]) => {
           this.creditCards = cardList;
         };
 
     // Update |userIsFidoVerifiable_| based on the availability of a platform
     // authenticator.
-    if (window.PublicKeyCredential) {
-      window.PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()
-          .then(r => {
-            this.userIsFidoVerifiable_ = this.userIsFidoVerifiable_ && r;
-          });
-    }
+    this.paymentsManager_.isUserVerifyingPlatformAuthenticatorAvailable().then(
+        r => {
+          if (r === null) {
+            return;
+          }
+
+          this.userIsFidoVerifiable_ = this.userIsFidoVerifiable_ && r;
+        });
 
     const setPersonalDataListener: PersonalDataChangedListener =
         (_addressList, cardList) => {
           this.creditCards = cardList;
         };
 
-    const setUpiIdsListener = (upiIdList: Array<string>) => {
+    const setUpiIdsListener = (upiIdList: string[]) => {
       this.upiIds = upiIdList;
     };
 
@@ -301,7 +220,7 @@ class SettingsPaymentsSectionElement extends
     chrome.metricsPrivate.recordUserAction('AutofillCreditCardsViewed');
   }
 
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
 
     this.paymentsManager_.removePersonalDataManagerListener(
@@ -312,7 +231,7 @@ class SettingsPaymentsSectionElement extends
   /**
    * Opens the credit card action menu.
    */
-  private onCreditCardDotsMenuTap_(e: DotsCardMenuiClickEvent) {
+  private onCreditCardDotsMenuClick_(e: DotsCardMenuiClickEvent) {
     // Copy item so dialog won't update model on cancel.
     this.activeCreditCard_ = e.detail.creditCard;
 
@@ -321,9 +240,9 @@ class SettingsPaymentsSectionElement extends
   }
 
   /**
-   * Handles tapping on the "Add credit card" button.
+   * Handles clicking on the "Add credit card" button.
    */
-  private onAddCreditCardTap_(e: Event) {
+  private onAddCreditCardClick_(e: Event) {
     e.preventDefault();
     const date = new Date();  // Default to current month/year.
     const expirationMonth = date.getMonth() + 1;  // Months are 0 based.
@@ -337,46 +256,67 @@ class SettingsPaymentsSectionElement extends
 
   private onCreditCardDialogClose_() {
     this.showCreditCardDialog_ = false;
-    focusWithoutInk(assert(this.activeDialogAnchor_!));
+    assert(this.activeDialogAnchor_);
+    focusWithoutInk(this.activeDialogAnchor_);
     this.activeDialogAnchor_ = null;
     this.activeCreditCard_ = null;
   }
 
   /**
-   * Handles tapping on the "Edit" credit card button.
+   * Handles clicking on the "Edit" credit card button.
    */
-  private onMenuEditCreditCardTap_(e: Event) {
+  private onMenuEditCreditCardClick_(e: Event) {
     e.preventDefault();
 
     if (this.activeCreditCard_!.metadata!.isLocal) {
       this.showCreditCardDialog_ = true;
     } else {
-      this.onRemoteEditCreditCardTap_();
+      this.onRemoteEditCreditCardClick_();
     }
 
     this.$.creditCardSharedMenu.close();
   }
 
-  private onRemoteEditCreditCardTap_() {
+  private onRemoteEditCreditCardClick_() {
     this.paymentsManager_.logServerCardLinkClicked();
     window.open(loadTimeData.getString('manageCreditCardsUrl'));
   }
 
   /**
-   * Handles tapping on the "Remove" credit card button.
+   * Handles clicking on the "Remove" credit card button.
    */
-  private onMenuRemoveCreditCardTap_() {
+  private onMenuRemoveCreditCardClick_() {
     this.paymentsManager_.removeCreditCard(this.activeCreditCard_!.guid!);
     this.$.creditCardSharedMenu.close();
     this.activeCreditCard_ = null;
   }
 
   /**
-   * Handles tapping on the "Clear copy" button for cached credit cards.
+   * Handles clicking on the "Clear copy" button for cached credit cards.
    */
-  private onMenuClearCreditCardTap_() {
+  private onMenuClearCreditCardClick_() {
     this.paymentsManager_.clearCachedCreditCard(this.activeCreditCard_!.guid!);
     this.$.creditCardSharedMenu.close();
+    this.activeCreditCard_ = null;
+  }
+
+
+  private onMenuAddVirtualCardClick_() {
+    this.paymentsManager_.addVirtualCard(this.activeCreditCard_!.guid!);
+    this.$.creditCardSharedMenu.close();
+    this.activeCreditCard_ = null;
+  }
+
+  private onMenuRemoveVirtualCardClick_() {
+    this.showVirtualCardUnenrollDialog_ = true;
+    this.$.creditCardSharedMenu.close();
+  }
+
+  private onVirtualCardUnenrollDialogClose_() {
+    this.showVirtualCardUnenrollDialog_ = false;
+    assert(this.activeDialogAnchor_);
+    focusWithoutInk(this.activeDialogAnchor_);
+    this.activeDialogAnchor_ = null;
     this.activeCreditCard_ = null;
   }
 
@@ -427,7 +367,7 @@ class SettingsPaymentsSectionElement extends
    * @return Whether to show the migration button.
    */
   private checkIfMigratable_(
-      creditCards: Array<chrome.autofillPrivate.CreditCardEntry>,
+      creditCards: chrome.autofillPrivate.CreditCardEntry[],
       creditCardEnabled: boolean): boolean {
     // If migration prerequisites are not met, return false.
     if (!this.migrationEnabled_) {
@@ -453,6 +393,43 @@ class SettingsPaymentsSectionElement extends
         this.i18n('migratableCardsInfoMultiple');
 
     return true;
+  }
+
+  private getMenuEditCardText_(isLocalCard: boolean): string {
+    return this.i18n(isLocalCard ? 'edit' : 'editServerCard');
+  }
+
+  private shouldShowAddVirtualCardButton_(): boolean {
+    if (!this.virtualCardEnrollmentEnabled_ ||
+        this.activeCreditCard_ === null || !this.activeCreditCard_!.metadata) {
+      return false;
+    }
+    return !!this.activeCreditCard_!.metadata!
+                 .isVirtualCardEnrollmentEligible &&
+        !this.activeCreditCard_!.metadata!.isVirtualCardEnrolled;
+  }
+
+  private shouldShowRemoveVirtualCardButton_(): boolean {
+    if (!this.virtualCardEnrollmentEnabled_ ||
+        this.activeCreditCard_ === null || !this.activeCreditCard_!.metadata) {
+      return false;
+    }
+    return !!this.activeCreditCard_!.metadata!
+                 .isVirtualCardEnrollmentEligible &&
+        !!this.activeCreditCard_!.metadata!.isVirtualCardEnrolled;
+  }
+
+  /**
+   * Listens for the unenroll-virtual-card event, and calls the private API.
+   */
+  private unenrollVirtualCard_(event: CustomEvent<string>) {
+    this.paymentsManager_.removeVirtualCard(event.detail);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-payments-section': SettingsPaymentsSectionElement;
   }
 }
 

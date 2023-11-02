@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
 #include "extensions/common/mojom/host_id.mojom-forward.h"
@@ -109,7 +109,7 @@ class WebViewContentScriptManager : public base::SupportsUserData::Data {
   // Caches callbacks and resumes them when all the scripts are loaded.
   std::vector<base::OnceClosure> pending_scripts_loading_callbacks_;
 
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
 
   base::WeakPtrFactory<WebViewContentScriptManager> weak_factory_{this};
 };

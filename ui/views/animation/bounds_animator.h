@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <map>
 #include <memory>
 
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "ui/gfx/animation/animation_container.h"
@@ -86,6 +86,10 @@ class VIEWS_EXPORT BoundsAnimator : public AnimationDelegateViews {
 
   // Returns true if BoundsAnimator is animating any view.
   bool IsAnimating() const;
+
+  // Finishes all animations, teleporting the views to their target bounds. Any
+  // views marked for deletion are deleted.
+  void Complete();
 
   // Cancels all animations, leaving the views at their current location and
   // size. Any views marked for deletion are deleted.
@@ -169,7 +173,7 @@ class VIEWS_EXPORT BoundsAnimator : public AnimationDelegateViews {
   base::TimeDelta GetAnimationDurationForReporting() const override;
 
   // Parent of all views being animated.
-  View* parent_;
+  raw_ptr<View> parent_;
 
   // A more performant version of the bounds animations which updates the
   // transform of the views and therefore skips repainting and relayouting until

@@ -1,0 +1,67 @@
+import("//build/config/linux/pkg_config.gni")
+import("//build/shim_headers.gni")
+
+pkg_config("system_absl_base") {
+  packages = [ "absl_base" ]
+}
+
+pkg_config("system_absl_config") {
+  packages = [ "absl_config" ]
+}
+
+pkg_config("system_absl_core_headers") {
+  packages = [ "absl_core_headers" ]
+}
+
+shim_headers("base_shim") {
+  root_path = "."
+  prefix = "absl/base/"
+  headers = [
+    "call_once.h",
+    "casts.h",
+  ]
+}
+
+source_set("base") {
+  deps = [ ":base_shim" ]
+  public_configs = [ ":system_absl_base" ]
+}
+
+shim_headers("config_shim") {
+  root_path = "."
+  prefix = "absl/base/"
+  headers = [
+    "config.h",
+    "options.h",
+    "policy_checks.h",
+  ]
+}
+
+source_set("config") {
+  deps = [ ":config_shim" ]
+  public_configs = [ ":system_absl_config" ]
+}
+
+shim_headers("core_headers_shim") {
+  root_path = "."
+  prefix = "absl/base/"
+  headers = [
+    "attributes.h",
+    "const_init.h",
+    "macros.h",
+    "optimization.h",
+    "port.h",
+    "thread_annotations.h",
+  ]
+}
+
+source_set("core_headers") {
+  deps = [ ":core_headers_shim" ]
+  public_configs = [ ":system_absl_core_headers" ]
+}
+
+source_set("config_test") {
+}
+
+source_set("prefetch_test") {
+}

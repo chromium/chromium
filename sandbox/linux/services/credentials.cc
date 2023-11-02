@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,6 @@
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -100,7 +99,10 @@ bool ChrootToSafeEmptyDir() {
   // TODO(crbug.com/1247458) Broken in MSan builds after LLVM f1bb30a4956f.
   clone_flags |= CLONE_VM | CLONE_VFORK | CLONE_SETTLS;
 
-  char tls_buf[PTHREAD_STACK_MIN] = {0};
+  // PTHREAD_STACK_MIN can be dynamic in glibc2.34+, so it is not possible to
+  // zeroify tls_buf assigning { 0 }
+  char tls_buf[PTHREAD_STACK_MIN];
+  memset(tls_buf, 0, PTHREAD_STACK_MIN);
   tls = tls_buf;
 #endif
 
@@ -233,7 +235,7 @@ bool Credentials::HasAnyCapability() {
 
   PCHECK(sys_capget(&hdr, data) == 0);
 
-  for (size_t i = 0; i < base::size(data); ++i) {
+  for (size_t i = 0; i < std::size(data); ++i) {
     if (data[i].effective || data[i].permitted || data[i].inheritable) {
       return true;
     }

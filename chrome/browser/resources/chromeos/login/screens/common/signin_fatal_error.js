@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,7 @@ const SigninFatalErrorBase = Polymer.mixinBehaviors(
 
 /**
  * @typedef {{
- *   actionButton:  OobeTextButtonElement,
+ *   actionButton:  OobeTextButton,
  * }}
  */
 SigninFatalErrorBase.$;
@@ -43,7 +43,7 @@ class SigninFatalScreen extends SigninFatalErrorBase {
        */
       errorSubtitle_: {
         type: String,
-        computed: 'computeSubtitle_(locale, errorState_, params_)'
+        computed: 'computeSubtitle_(locale, errorState_, params_)',
       },
 
       /**
@@ -84,9 +84,12 @@ class SigninFatalScreen extends SigninFatalErrorBase {
 
   ready() {
     super.ready();
-    this.initializeLoginScreen('SignInFatalErrorScreen', {
-      resetAllowed: true,
-    });
+    this.initializeLoginScreen('SignInFatalErrorScreen');
+  }
+
+  /** Initial UI State for screen */
+  getOobeUIInitialState() {
+    return OOBE_UI_STATE.BLOCKING;
   }
 
   /**

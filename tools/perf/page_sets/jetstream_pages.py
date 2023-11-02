@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 import json
@@ -12,8 +12,8 @@ class JetstreamStory(press_story.PressStory):
   URL = 'http://browserbench.org/JetStream/'
   NAME = 'JetStream'
 
-  def __init__(self, ps):
-    super(JetstreamStory, self).__init__(ps)
+  def __init__(self, page_set):
+    super(JetstreamStory, self).__init__(page_set)
     self.script_to_evaluate_on_commit = """
         var __results = [];
         var __real_log = window.console.log;

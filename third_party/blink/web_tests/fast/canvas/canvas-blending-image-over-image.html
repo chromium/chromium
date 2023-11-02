@@ -54,7 +54,7 @@
             var sigma = 5;
             canvas.width = 10;
             canvas.height = 10;
-            context = canvas.getContext("2d");
+            context = canvas.getContext("2d", {willReadFrequently: true});
             drawElement(context, 0);
         }
 

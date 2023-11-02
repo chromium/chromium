@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
@@ -201,9 +202,9 @@ class LocalChangeProcessor : public SyncChangeProcessor {
   const ModelType type_;
   const base::RepeatingCallback<void(const absl::optional<ModelError>&)>
       error_callback_;
-  ModelTypeStore* const store_;
-  SyncableServiceBasedBridge::InMemoryStore* const in_memory_store_;
-  ModelTypeChangeProcessor* const other_;
+  const raw_ptr<ModelTypeStore> store_;
+  const raw_ptr<SyncableServiceBasedBridge::InMemoryStore> in_memory_store_;
+  const raw_ptr<ModelTypeChangeProcessor> other_;
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
@@ -486,11 +487,10 @@ absl::optional<ModelError> SyncableServiceBasedBridge::StartSyncableService() {
   // this function is reached only if sync is starting already.
   SyncDataList initial_sync_data;
   initial_sync_data.reserve(in_memory_store_.size());
-  for (const std::pair<const std::string, sync_pb::EntitySpecifics>& record :
-       in_memory_store_) {
+  for (const auto& [storage_key, specifics] : in_memory_store_) {
     // Note that client tag hash is used as storage key too.
     initial_sync_data.push_back(SyncData::CreateRemoteData(
-        std::move(record.second), ClientTagHash::FromHashed(record.first)));
+        std::move(specifics), ClientTagHash::FromHashed(storage_key)));
   }
 
   auto error_callback =
@@ -527,7 +527,7 @@ SyncChangeList SyncableServiceBasedBridge::StoreAndConvertRemoteChanges(
       case EntityChange::ACTION_DELETE: {
         const std::string& storage_key = change->storage_key();
         DCHECK_NE(0U, in_memory_store_.count(storage_key));
-        DVLOG(1) << ModelTypeToString(type_)
+        DVLOG(1) << ModelTypeToDebugString(type_)
                  << ": Processing deletion with storage key: " << storage_key;
         output_sync_change_list.emplace_back(
             FROM_HERE, SyncChange::ACTION_DELETE,
@@ -549,11 +549,11 @@ SyncChangeList SyncableServiceBasedBridge::StoreAndConvertRemoteChanges(
             change->data(),
             /*storage_key=*/change->data().client_tag_hash.value(),
             batch->GetMetadataChangeList());
-        FALLTHROUGH;
+        [[fallthrough]];
 
       case EntityChange::ACTION_UPDATE: {
         const std::string& storage_key = change->data().client_tag_hash.value();
-        DVLOG(1) << ModelTypeToString(type_)
+        DVLOG(1) << ModelTypeToDebugString(type_)
                  << ": Processing add/update with key: " << storage_key;
 
         output_sync_change_list.emplace_back(

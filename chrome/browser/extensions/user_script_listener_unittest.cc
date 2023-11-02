@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/threading/thread.h"
@@ -29,7 +30,10 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/web_contents_tester.h"
+#include "extensions/browser/api/scripting/scripting_utils.h"
+#include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/common/url_pattern_set.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -44,7 +48,9 @@ namespace extensions {
 namespace {
 
 const char kMatchingUrl[] = "http://google.com/";
+const char kMatchingPrefsUrl[] = "http://prefs.com/";
 const char kNotMatchingUrl[] = "http://example.com/";
+const ExtensionId kTestExtensionId = "behllobkkfkfnphdnhnkndlbkcpglgmj";
 
 // Yoinked from extension_manifest_unittest.cc.
 std::unique_ptr<base::DictionaryValue> LoadManifestFile(
@@ -104,12 +110,11 @@ class UserScriptListenerTest : public testing::Test {
   void LoadTestExtension() {
     base::FilePath test_dir;
     ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_dir));
-    base::FilePath extension_path = test_dir
-        .AppendASCII("extensions")
-        .AppendASCII("good")
-        .AppendASCII("Extensions")
-        .AppendASCII("behllobkkfkfnphdnhnkndlbkcpglgmj")
-        .AppendASCII("1.0.0.0");
+    base::FilePath extension_path = test_dir.AppendASCII("extensions")
+                                        .AppendASCII("good")
+                                        .AppendASCII("Extensions")
+                                        .AppendASCII(kTestExtensionId)
+                                        .AppendASCII("1.0.0.0");
     UnpackedInstaller::Create(service_)->Load(extension_path);
     content::RunAllTasksUntilIdle();
   }
@@ -132,12 +137,20 @@ class UserScriptListenerTest : public testing::Test {
     return throttle;
   }
 
+  void AddPersistentScriptingURLPatternToPrefs() {
+    URLPatternSet persistent_urls;
+    persistent_urls.AddPattern(
+        URLPattern(URLPattern::SCHEME_HTTP, kMatchingPrefsUrl));
+    scripting::SetPersistentScriptURLPatterns(profile_, kTestExtensionId,
+                                              persistent_urls);
+  }
+
   content::BrowserTaskEnvironment task_environment_;
   content::RenderViewHostTestEnabler rvh_test_enabler_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   UserScriptListener listener_;
-  TestingProfile* profile_ = nullptr;
-  ExtensionService* service_ = nullptr;
+  raw_ptr<TestingProfile> profile_ = nullptr;
+  raw_ptr<ExtensionService> service_ = nullptr;
   bool was_navigation_resumed_ = false;
   std::unique_ptr<content::WebContents> web_contents_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -151,7 +164,25 @@ TEST_F(UserScriptListenerTest, DelayAndUpdate) {
   LoadTestExtension();
 
   content::MockNavigationHandle handle(GURL(kMatchingUrl),
-                                       web_contents_->GetMainFrame());
+                                       web_contents_->GetPrimaryMainFrame());
+  std::unique_ptr<NavigationThrottle> throttle =
+      CreateListenerNavigationThrottle(&handle);
+  EXPECT_EQ(NavigationThrottle::DEFER, throttle->WillStartRequest());
+
+  listener_.TriggerUserScriptsReadyForTesting(profile_);
+  EXPECT_TRUE(was_navigation_resumed_);
+}
+
+// Test that requests matching URL patterns from persistent dynamic content
+// scripts registered from previous sessions (stored inside prefs) are
+// throttled.
+TEST_F(UserScriptListenerTest, DelayForPersistentScriptPatterns) {
+  AddPersistentScriptingURLPatternToPrefs();
+  LoadTestExtension();
+
+  content::MockNavigationHandle handle(GURL(kMatchingPrefsUrl),
+                                       web_contents_->GetPrimaryMainFrame());
+
   std::unique_ptr<NavigationThrottle> throttle =
       CreateListenerNavigationThrottle(&handle);
   EXPECT_EQ(NavigationThrottle::DEFER, throttle->WillStartRequest());
@@ -164,7 +195,7 @@ TEST_F(UserScriptListenerTest, DelayAndUnload) {
   LoadTestExtension();
 
   content::MockNavigationHandle handle(GURL(kMatchingUrl),
-                                       web_contents_->GetMainFrame());
+                                       web_contents_->GetPrimaryMainFrame());
   std::unique_ptr<NavigationThrottle> throttle =
       CreateListenerNavigationThrottle(&handle);
   EXPECT_EQ(NavigationThrottle::DEFER, throttle->WillStartRequest());
@@ -182,17 +213,18 @@ TEST_F(UserScriptListenerTest, DelayAndUnload) {
 
 TEST_F(UserScriptListenerTest, NoDelayNoExtension) {
   content::MockNavigationHandle handle(GURL(kMatchingUrl),
-                                       web_contents_->GetMainFrame());
+                                       web_contents_->GetPrimaryMainFrame());
   std::unique_ptr<NavigationThrottle> throttle =
       listener_.CreateNavigationThrottle(&handle);
   EXPECT_EQ(nullptr, throttle);
 }
 
 TEST_F(UserScriptListenerTest, NoDelayNotMatching) {
+  AddPersistentScriptingURLPatternToPrefs();
   LoadTestExtension();
 
   content::MockNavigationHandle handle(GURL(kNotMatchingUrl),
-                                       web_contents_->GetMainFrame());
+                                       web_contents_->GetPrimaryMainFrame());
   std::unique_ptr<NavigationThrottle> throttle =
       listener_.CreateNavigationThrottle(&handle);
   EXPECT_EQ(nullptr, throttle);
@@ -216,7 +248,7 @@ TEST_F(UserScriptListenerTest, MultiProfile) {
   registry->TriggerOnLoaded(extension.get());
 
   content::MockNavigationHandle handle(GURL(kMatchingUrl),
-                                       web_contents_->GetMainFrame());
+                                       web_contents_->GetPrimaryMainFrame());
   std::unique_ptr<NavigationThrottle> throttle =
       CreateListenerNavigationThrottle(&handle);
   EXPECT_EQ(NavigationThrottle::DEFER, throttle->WillStartRequest());
@@ -237,7 +269,7 @@ TEST_F(UserScriptListenerTest, MultiProfile) {
 TEST_F(UserScriptListenerTest, ResumeBeforeStart) {
   LoadTestExtension();
   content::MockNavigationHandle handle(GURL(kMatchingUrl),
-                                       web_contents_->GetMainFrame());
+                                       web_contents_->GetPrimaryMainFrame());
   std::unique_ptr<NavigationThrottle> throttle =
       listener_.CreateNavigationThrottle(&handle);
   ASSERT_TRUE(throttle);

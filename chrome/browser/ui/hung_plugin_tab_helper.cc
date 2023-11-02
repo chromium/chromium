@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,9 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/process/process.h"
+#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "chrome/browser/hang_monitor/hang_crash_dump.h"
 #include "chrome/browser/plugins/hung_plugin_infobar_delegate.h"
@@ -44,7 +46,7 @@ struct HungPluginTabHelper::PluginState {
   std::u16string name;
 
   // Possibly-null if we're not showing an infobar right now.
-  infobars::InfoBar* infobar = nullptr;
+  raw_ptr<infobars::InfoBar> infobar = nullptr;
 
   // Time to delay before re-showing the infobar for a hung plugin. This is
   // increased each time the user cancels it.
@@ -66,10 +68,9 @@ void HungPluginTabHelper::PluginCrashed(const base::FilePath& plugin_path,
                                         base::ProcessId plugin_pid) {
   // For now, just do a brute-force search to see if we have this plugin. Since
   // we'll normally have 0 or 1, this is fast.
-  const auto i = std::find_if(hung_plugins_.begin(), hung_plugins_.end(),
-                              [plugin_path](const auto& elem) {
-                                return elem.second->path == plugin_path;
-                              });
+  const auto i =
+      base::ranges::find(hung_plugins_, plugin_path,
+                         [](const auto& elem) { return elem.second->path; });
   if (i != hung_plugins_.end()) {
     if (i->second->infobar) {
       infobars::ContentInfoBarManager* infobar_manager =
@@ -114,9 +115,9 @@ void HungPluginTabHelper::PluginHungStatusChanged(
 
 void HungPluginTabHelper::OnInfoBarRemoved(infobars::InfoBar* infobar,
                                            bool animate) {
-  const auto i = std::find_if(
-      hung_plugins_.begin(), hung_plugins_.end(),
-      [infobar](const auto& elem) { return elem.second->infobar == infobar; });
+  const auto i =
+      base::ranges::find(hung_plugins_, infobar,
+                         [](const auto& elem) { return elem.second->infobar; });
   if (i != hung_plugins_.end()) {
     PluginState* state = i->second.get();
     state->infobar = nullptr;
@@ -156,7 +157,8 @@ void HungPluginTabHelper::KillPlugin(int child_id) {
 }
 
 HungPluginTabHelper::HungPluginTabHelper(content::WebContents* contents)
-    : content::WebContentsObserver(contents) {}
+    : content::WebContentsObserver(contents),
+      content::WebContentsUserData<HungPluginTabHelper>(*contents) {}
 
 void HungPluginTabHelper::OnReshowTimer(int child_id) {
   // The timer should have been cancelled if the record isn't in our map

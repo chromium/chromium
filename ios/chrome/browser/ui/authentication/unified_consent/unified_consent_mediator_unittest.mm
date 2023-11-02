@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/unified_consent_view_controller.h"
 #import "ios/chrome/browser/unified_consent/unified_consent_service_factory.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -48,8 +49,8 @@ class UnifiedConsentMediatorTest : public PlatformTest {
         base::BindRepeating(
             &AuthenticationServiceFake::CreateAuthenticationService));
     browser_state_ = builder.Build();
-
-    view_controller_ = [[UnifiedConsentViewController alloc] init];
+    view_controller_ = [[UnifiedConsentViewController alloc]
+        initWithPostRestoreSigninPromo:NO];
     pref_service_ = new TestingPrefServiceSimple();
 
     mediator_delegate_mock_ =
@@ -92,6 +93,7 @@ class UnifiedConsentMediatorTest : public PlatformTest {
  protected:
   // Needed for test browser state created by TestChromeBrowserState().
   web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
 
   FakeChromeIdentity* identity1_ = nullptr;
@@ -179,7 +181,7 @@ TEST_F(UnifiedConsentMediatorTest, SelectIdentity) {
   ASSERT_EQ(identity2_, mediator_.selectedIdentity);
 }
 
-// Tests that |start| will not override the selected identity with a
+// Tests that `start` will not override the selected identity with a
 // pre-determined default identity based on the accounts on the device and user
 // sign-in state.
 TEST_F(UnifiedConsentMediatorTest, DontOverrideIdentityForSignedInUser) {

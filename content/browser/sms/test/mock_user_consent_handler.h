@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@ namespace content {
 class MockUserConsentHandler : public UserConsentHandler {
  public:
   MockUserConsentHandler();
-  ~MockUserConsentHandler();
+  ~MockUserConsentHandler() override;
   MOCK_METHOD(void,
               RequestUserConsent,
               (const std::string& one_time_code,

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -102,10 +102,13 @@ int GetInitialDegrees(display::Display::Rotation initial_rotation,
   return (Is180DegreeFlip(initial_rotation, new_rotation) ? 180 : 90);
 }
 
-void AddLayerAtTopOfWindowLayers(aura::Window* root_window, ui::Layer* layer) {
+void AddLayerAboveWindowLayer(aura::Window* root_window,
+                              ui::Layer* container_layer,
+                              ui::Layer* layer) {
   // Add the cloned/copied layer tree into the root, so it will be rendered.
+  DCHECK_EQ(container_layer->parent(), root_window->layer());
   root_window->layer()->Add(layer);
-  root_window->layer()->StackAtTop(layer);
+  root_window->layer()->StackAbove(layer, container_layer);
 }
 
 void AddLayerBelowWindowLayer(aura::Window* root_window,
@@ -306,7 +309,9 @@ void ScreenRotationAnimator::OnScreenRotationContainerLayerCopiedBeforeRotation(
   }
 
   old_layer_tree_owner_ = CopyLayerTree(std::move(result));
-  AddLayerAtTopOfWindowLayers(root_window_, old_layer_tree_owner_->root());
+  AddLayerAboveWindowLayer(root_window_,
+                           GetScreenRotationContainer(root_window_)->layer(),
+                           old_layer_tree_owner_->root());
 
   // TODO(oshima): We need a better way to control animation and other
   // activities during system wide animation.
@@ -357,7 +362,9 @@ void ScreenRotationAnimator::OnScreenRotationContainerLayerCopiedAfterRotation(
 
 void ScreenRotationAnimator::CreateOldLayerTreeForSlowAnimation() {
   old_layer_tree_owner_ = ::wm::RecreateLayers(root_window_);
-  AddLayerAtTopOfWindowLayers(root_window_, old_layer_tree_owner_->root());
+  AddLayerAboveWindowLayer(root_window_,
+                           GetScreenRotationContainer(root_window_)->layer(),
+                           old_layer_tree_owner_->root());
 }
 
 std::unique_ptr<ui::LayerTreeOwner> ScreenRotationAnimator::CopyLayerTree(
@@ -492,7 +499,7 @@ void ScreenRotationAnimator::Rotate(
   switch (screen_rotation_state_) {
     case IDLE:
       DCHECK(!current_async_rotation_request_);
-      FALLTHROUGH;
+      [[fallthrough]];
     case COPY_REQUESTED:
       if (current_async_rotation_request_ &&
           !RootWindowChangedForDisplayId(

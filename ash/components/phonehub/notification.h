@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,10 +12,14 @@
 
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image.h"
 
-namespace chromeos {
+// Serves the same purpose as a forward declare to avoid an extra include.
+typedef uint32_t SkColor;
+
+namespace ash {
 namespace phonehub {
 
 // A notification generated on the phone, whose contents are transferred to
@@ -28,6 +32,8 @@ class Notification {
     AppMetadata(const std::u16string& visible_app_name,
                 const std::string& package_name,
                 const gfx::Image& icon,
+                const absl::optional<SkColor> icon_color,
+                bool icon_is_monochrome,
                 int64_t user_id);
     AppMetadata(const AppMetadata& other);
     AppMetadata& operator=(const AppMetadata& other);
@@ -35,9 +41,16 @@ class Notification {
     bool operator==(const AppMetadata& other) const;
     bool operator!=(const AppMetadata& other) const;
 
+    static AppMetadata FromValue(const base::Value& value);
+    base::Value ToValue() const;
+
     std::u16string visible_app_name;
     std::string package_name;
     gfx::Image icon;
+    // Color for a monochrome icon. Leave empty to use the system theme default.
+    absl::optional<SkColor> icon_color;
+    // Whether the icon image is just a mask used to generate a monochrome icon.
+    bool icon_is_monochrome;
     int64_t user_id;
   };
 
@@ -182,13 +195,13 @@ std::ostream& operator<<(std::ostream& stream,
 std::ostream& operator<<(std::ostream& stream,
                          const Notification::Category category);
 }  // namespace phonehub
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash {
-namespace phonehub {
-using ::chromeos::phonehub::Notification;
-}  // namespace phonehub
 }  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace chromeos {
+namespace phonehub {
+using ::ash::phonehub::Notification;
+}
+}  // namespace chromeos
 
 #endif  // ASH_COMPONENTS_PHONEHUB_NOTIFICATION_H_

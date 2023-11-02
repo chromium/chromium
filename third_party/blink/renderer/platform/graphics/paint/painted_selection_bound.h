@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,6 +22,8 @@ struct PLATFORM_EXPORT PaintedSelectionBound {
   // Whether this bound is hidden (clipped out/occluded) within the painted
   // content of the layer (as opposed to being outside of the layer's bounds).
   bool hidden;
+
+  DISALLOW_NEW();
 };
 
 }  // namespace blink

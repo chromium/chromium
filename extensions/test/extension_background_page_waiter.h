@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef EXTENSIONS_TEST_EXTENSION_BACKGROUND_PAGE_WAITER_H_
 #define EXTENSIONS_TEST_EXTENSION_BACKGROUND_PAGE_WAITER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "extensions/common/extension.h"
 
 namespace content {
@@ -22,8 +23,8 @@ namespace extensions {
 //   _event_ - such as host destruction.
 // See also
 // https://chromium.googlesource.com/chromium/src/+/main/docs/patterns/synchronous-runloop.md#events-vs-states
-// Note: This does not (yet) accommodate ServiceWorker-based extensions.
-// TODO(devlin): Combine this and BackgroundPageWatcher.
+// TODO(devlin): Rename this to ExtensionBackgroundContextWaiter? It supports
+// service workers in addition to background (and event) pages.
 class ExtensionBackgroundPageWaiter {
  public:
   ExtensionBackgroundPageWaiter(content::BrowserContext* browser_context,
@@ -49,13 +50,18 @@ class ExtensionBackgroundPageWaiter {
   void WaitForBackgroundInitialized();
 
   // Waits for the extension background context to currently be open and active.
+  // Note: this does not (yet) support worker-based extensions.
   void WaitForBackgroundOpen();
 
   // Waits for the extension background context to be closed.
+  // Note: this does not (yet) support worker-based extensions.
   void WaitForBackgroundClosed();
 
  private:
-  content::BrowserContext* const browser_context_;
+  void WaitForBackgroundWorkerInitialized();
+  void WaitForBackgroundPageInitialized();
+
+  const raw_ptr<content::BrowserContext> browser_context_;
   scoped_refptr<const Extension> extension_;
 };
 

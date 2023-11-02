@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
@@ -27,9 +28,10 @@ class COMPONENT_EXPORT(COLOR) ColorProvider {
   using ColorMap = base::flat_map<ColorId, SkColor>;
 
   ColorProvider();
-  // There should be no reason to copy or move a ColorProvider.
   ColorProvider(const ColorProvider&) = delete;
   ColorProvider& operator=(const ColorProvider&) = delete;
+  ColorProvider(ColorProvider&&);
+  ColorProvider& operator=(ColorProvider&&);
   ~ColorProvider();
 
   // Adds a mixer to the current color pipeline after all other
@@ -53,6 +55,9 @@ class COMPONENT_EXPORT(COLOR) ColorProvider {
   // provider after this has been called.
   void GenerateColorMap();
 
+  void SetColorForTesting(ColorId id, SkColor color);
+  const ColorMap& color_map_for_testing() { return *color_map_; }
+
  private:
   using Mixers = std::forward_list<ColorMixer>;
 
@@ -69,7 +74,7 @@ class COMPONENT_EXPORT(COLOR) ColorProvider {
 
   // A cached map of ColorId => SkColor mappings for this provider. This will be
   // generated in the call to `GenerateColorMap()`.
-  std::unique_ptr<ColorMap> color_map_;
+  absl::optional<ColorMap> color_map_;
 };
 
 }  // namespace ui

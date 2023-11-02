@@ -1,0 +1,49 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package app_list;
+
+// The storage proto for the ScoreNormalizer class, see its header comment for
+// more information.
+message ScoreNormalizerProto {
+  // Versioning information for the ScoreNormalizer itself, which is used to
+  // discard on-disk state if an incompatible change is made to the score
+  // normalizer's algorithm.
+  optional int32 model_version = 1;
+
+  // Versioning information for the user-settable parameters of each instance
+  // of a ScoreNormalizer. This is set with the |version| member of the Params
+  // passed to a ScoreNormalizer. On initialization, if the versions don't
+  // match, the on-disk state is wiped.
+  optional int32 parameter_version = 2;
+
+  // A bin is a portion of the real line which stores how many scores have been
+  // seen within its limits. |lower_divider| represents the left side of the
+  // bin, and the right side is implicitly defined by the lower_divider of the
+  // next bin. The top bin covers to infinity.
+  message Bin {
+    // The lower bound on this bin - all scores considered part of this bin
+    // will be >= lower_divider.
+    optional double lower_divider = 1;
+    // How many scores we've seen in this bin. It may be non-integral due to
+    // bin-splits.
+    optional double count = 2;
+  };
+
+  // A normalizer is a collection of bins that together partition [-infinity,
+  // infinity].
+  message Normalizer {
+    repeated Bin bins = 1;
+    optional double total = 2;
+  }
+
+  // A normalizer for each |name| passed to ScoreNormalizer::Update. The
+  // intention is that one ScoreNormalizer instance, backed by one
+  // ScoreNormalizerProto, can learn many distributions at once.
+  map<string, Normalizer> normalizers = 3;
+}

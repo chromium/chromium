@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define COMPONENTS_QUERY_TILES_ANDROID_TILE_PROVIDER_BRIDGE_H_
 
 #include "base/android/jni_android.h"
+#include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 #include "components/query_tiles/tile_service.h"
 
@@ -46,7 +47,7 @@ class TileProviderBridge : public base::SupportsUserData::Data {
   ScopedJavaGlobalRef<jobject> java_obj_;
 
   // Not owned.
-  TileService* tile_service_;
+  raw_ptr<TileService> tile_service_;
 };
 
 }  // namespace query_tiles

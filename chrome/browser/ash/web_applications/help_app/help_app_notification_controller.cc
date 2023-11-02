@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -134,10 +134,6 @@ HelpAppNotificationController::~HelpAppNotificationController() = default;
 // Checks profile type and when the last notification was shown to determine
 // whether we should show the Discover tab notification to the user.
 bool HelpAppNotificationController::ShouldShowDiscoverNotification() {
-  if (!base::FeatureList::IsEnabled(features::kHelpAppDiscoverTab)) {
-    return false;
-  }
-
   bool should_show_for_current_channel =
       chrome::GetChannel() == version_info::Channel::STABLE ||
       base::FeatureList::IsEnabled(

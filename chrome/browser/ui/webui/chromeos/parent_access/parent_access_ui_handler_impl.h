@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_callback.pb.h"
 #include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_ui.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -41,8 +42,20 @@ class ParentAccessUIHandlerImpl
 
   // parent_access_ui::mojom::ParentAccessUIHandler overrides:
   void GetOAuthToken(GetOAuthTokenCallback callback) override;
-  void OnParentAccessResult(const std::string& parent_access_result,
-                            OnParentAccessResultCallback callback) override;
+  // Called when the message from the parent access server app was received.
+  // encoded_parent_access_callback is a base64 encoded protocol buffer with
+  // the received message. 'callback' is a mojo callback used to pass the
+  // parsed message back to the WebUI.
+  void OnParentAccessCallbackReceived(
+      const std::string& encoded_parent_access_callback_proto,
+      OnParentAccessCallbackReceivedCallback callback) override;
+  void GetParentAccessParams(GetParentAccessParamsCallback callback) override;
+  void OnParentAccessDone(parent_access_ui::mojom::ParentAccessResult result,
+                          OnParentAccessDoneCallback callback) override;
+
+  // Returns nullptr if the parent was not verified.
+  const kids::platform::parentaccess::client::proto::ParentAccessToken*
+  GetParentAccessTokenForTest();
 
  private:
   void OnAccessTokenFetchComplete(GetOAuthTokenCallback callback,
@@ -54,6 +67,11 @@ class ParentAccessUIHandlerImpl
   std::unique_ptr<signin::AccessTokenFetcher> oauth2_access_token_fetcher_;
 
   mojo::Receiver<parent_access_ui::mojom::ParentAccessUIHandler> receiver_;
+
+  // The Parent Access Token.  Only set if the parent was verified.
+  std::unique_ptr<
+      kids::platform::parentaccess::client::proto::ParentAccessToken>
+      parent_access_token_;
 
   base::WeakPtrFactory<ParentAccessUIHandlerImpl> weak_ptr_factory_{this};
 };

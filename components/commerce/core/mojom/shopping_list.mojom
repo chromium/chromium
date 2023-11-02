@@ -1,0 +1,76 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+module shopping_list.mojom;
+
+import "url/mojom/url.mojom";
+
+// This is a specialized version of shopping_specifics proto. The
+// struct here has most of the same information with the proto but
+// focuses more on UI needs.
+struct ProductInfo {
+  // The title of the product.
+  string title;
+
+  // The eTLD+1 domain of the merchant website where the
+  // product was originally tracked on. This should only be used
+  // for showing this information directly on the UI.
+  string domain;
+
+  // Direct link to the product image.
+  url.mojom.Url image_url;
+
+  // Direct link to the product page. Right now this is
+  // only used to fetch site favicon in case image_url
+  // is not available.
+  url.mojom.Url product_url;
+
+  // Price as shown in the page. This should include
+  // both the amount and the currency symbol.
+  string current_price;
+
+  // Previous price if there has been a price drop.
+  // This should include both the amount and the currency
+  // symbol.
+  string previous_price;
+};
+
+struct BookmarkProductInfo {
+    // The ID of the bookmark that owns this product info.
+    int64 bookmark_id;
+
+    // The product information associated with 'bookmark_id'.
+    ProductInfo info;
+};
+
+// Used by the price tracking section in side panel to bootstrap
+// bidirectional communication.
+interface ShoppingListHandlerFactory {
+  // The WebUI calls this method when the page is first initialized.
+  CreateShoppingListHandler(pending_remote<Page> page,
+                            pending_receiver<ShoppingListHandler> handler);
+};
+
+// Browser-side handler for requests from WebUI page.
+interface ShoppingListHandler {
+  // Returns all the tracked product info from bookmarks.
+  GetAllPriceTrackedBookmarkProductInfo()
+      => (array<BookmarkProductInfo> productInfos);
+
+  // Track price for bookmark with 'bookmark_id'.
+  TrackPriceForBookmark(int64 bookmark_id);
+
+  // Untrack price for bookmark with 'bookmark_id'.
+  UntrackPriceForBookmark(int64 bookmark_id);
+};
+
+// WebUI-side handler for requests from the browser.
+interface Page {
+  // Callback when a bookmark is observed to start being price tracked and
+  // pass along the `BookmarkProductInfo` constructed from it.
+  PriceTrackedForBookmark(BookmarkProductInfo bookmark_product);
+
+  // Callback when a bookmark with `bookmark_id` is observed to stop being
+  // price tracked.
+  PriceUntrackedForBookmark(int64 bookmark_id);
+};

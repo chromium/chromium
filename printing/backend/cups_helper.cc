@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -591,8 +591,16 @@ bool ParsePpdCapabilities(cups_dest_t* dest,
   base::FilePath ppd_file_path;
   base::ScopedFD ppd_fd =
       base::CreateAndOpenFdForTemporaryFileInDir(temp_dir, &ppd_file_path);
-  if (!ppd_fd.is_valid() ||
-      !base::WriteFileDescriptor(ppd_fd.get(), printer_capabilities) ||
+  if (!ppd_fd.is_valid())
+    return false;
+
+  // Unlike Windows, POSIX platforms do not have the ability to mark files as
+  // "delete on close". So just delete `ppd_file_path` here. The file is still
+  // accessible via `ppd_fd`.
+  if (!base::DeleteFile(ppd_file_path))
+    return false;
+
+  if (!base::WriteFileDescriptor(ppd_fd.get(), printer_capabilities) ||
       lseek(ppd_fd.get(), 0, SEEK_SET) == -1) {
     return false;
   }

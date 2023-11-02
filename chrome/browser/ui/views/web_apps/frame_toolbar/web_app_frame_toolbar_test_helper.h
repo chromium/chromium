@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,12 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
+#include "base/values.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "content/public/browser/web_contents.h"
 
-struct WebApplicationInfo;
+struct WebAppInstallInfo;
 class Browser;
 class BrowserNonClientFrameView;
 class BrowserView;
@@ -18,7 +20,6 @@ class GURL;
 class WebAppFrameToolbarView;
 
 namespace base {
-class ListValue;
 class ScopedTempDir;
 }  // namespace base
 
@@ -27,6 +28,10 @@ namespace test_server {
 class EmbeddedTestServer;
 }
 }  // namespace net
+
+namespace views {
+class View;
+}  // namespace views
 
 // Mixin for setting up and launching a web app in a browser test.
 class WebAppFrameToolbarTestHelper {
@@ -41,40 +46,53 @@ class WebAppFrameToolbarTestHelper {
                                         const GURL& start_url);
   web_app::AppId InstallAndLaunchCustomWebApp(
       Browser* browser,
-      std::unique_ptr<WebApplicationInfo> web_app_info,
+      std::unique_ptr<WebAppInstallInfo> web_app_info,
       const GURL& start_url);
 
   GURL LoadWindowControlsOverlayTestPageWithDataAndGetURL(
       net::test_server::EmbeddedTestServer* embedded_test_server,
       base::ScopedTempDir* temp_dir);
 
-  // WebContents is used to run JS to parse rectangle values into a list.
-  static base::ListValue GetXYWidthHeightListValue(
+  GURL LoadBorderlessTestPageWithDataAndGetURL(
+      net::test_server::EmbeddedTestServer* embedded_test_server,
+      base::ScopedTempDir* temp_dir);
+
+  // WebContents is used to run JS to parse rectangle values into a list value.
+  static base::Value::List GetXYWidthHeightListValue(
       content::WebContents* web_contents,
-      std::string rect_value_list,
-      std::string rect_var_name);
+      const std::string& rect_value_list,
+      const std::string& rect_var_name);
 
   // WebContents is used to run JS to parse rectangle values into a rectangle
   // object.
   static gfx::Rect GetXYWidthHeightRect(content::WebContents* web_contents,
-                                        std::string rect_value_list,
-                                        std::string rect_var_name);
+                                        const std::string& rect_value_list,
+                                        const std::string& rect_var_name);
 
   // Add window-controls-overlay's ongeometrychange callback into the document.
   void SetupGeometryChangeCallback(content::WebContents* web_contents);
 
+  void TestDraggableRegions();
+
   Browser* app_browser() { return app_browser_; }
   BrowserView* browser_view() { return browser_view_; }
   BrowserNonClientFrameView* frame_view() { return frame_view_; }
+  views::View* root_view() { return root_view_; }
   WebAppFrameToolbarView* web_app_frame_toolbar() {
     return web_app_frame_toolbar_;
   }
 
  private:
-  Browser* app_browser_ = nullptr;
-  BrowserView* browser_view_ = nullptr;
-  BrowserNonClientFrameView* frame_view_ = nullptr;
-  WebAppFrameToolbarView* web_app_frame_toolbar_ = nullptr;
+  raw_ptr<Browser> app_browser_ = nullptr;
+  raw_ptr<BrowserView> browser_view_ = nullptr;
+  raw_ptr<BrowserNonClientFrameView> frame_view_ = nullptr;
+  raw_ptr<views::View> root_view_ = nullptr;
+  raw_ptr<WebAppFrameToolbarView> web_app_frame_toolbar_ = nullptr;
+
+  GURL LoadTestPageWithDataAndGetURL(
+      net::test_server::EmbeddedTestServer* embedded_test_server,
+      base::ScopedTempDir* temp_dir,
+      const char kTestHTML[]);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEB_APPS_FRAME_TOOLBAR_WEB_APP_FRAME_TOOLBAR_TEST_HELPER_H_

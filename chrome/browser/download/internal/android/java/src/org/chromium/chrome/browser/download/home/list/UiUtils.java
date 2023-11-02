@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,6 +35,10 @@ import java.util.Date;
 /** A set of helper utility methods for the UI. */
 public final class UiUtils {
     private UiUtils() {}
+
+    static {
+        CalendarFactory.warmUp();
+    }
 
     /**
      * Builds the accessibility text to be used for a given chip on the chips row.

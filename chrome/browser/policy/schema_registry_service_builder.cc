@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,7 @@
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part_chromeos.h"
+#include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -36,25 +36,25 @@ namespace {
 DeviceLocalAccountPolicyBroker* GetBroker(content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
 
-  if (chromeos::ProfileHelper::IsSigninProfile(profile))
-    return NULL;
+  if (ash::ProfileHelper::IsSigninProfile(profile))
+    return nullptr;
 
   if (!user_manager::UserManager::IsInitialized()) {
     // Bail out in unit tests that don't have a UserManager.
-    return NULL;
+    return nullptr;
   }
 
   const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+      ash::ProfileHelper::Get()->GetUserByProfile(profile);
   if (!user)
-    return NULL;
+    return nullptr;
 
   BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
   DeviceLocalAccountPolicyService* service =
       connector->GetDeviceLocalAccountPolicyService();
   if (!service)
-    return NULL;
+    return nullptr;
 
   return service->GetBrokerForUser(user->GetAccountId().GetUserEmail());
 }
@@ -87,7 +87,7 @@ std::unique_ptr<SchemaRegistryService> BuildSchemaRegistryServiceForProfile(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   Profile* const profile = Profile::FromBrowserContext(context);
-  if (chromeos::ProfileHelper::IsSigninProfile(profile)) {
+  if (ash::ProfileHelper::IsSigninProfile(profile)) {
     // Pass the SchemaRegistry of the signin profile to the device policy
     // managers, for being used for fetching the component policies.
     BrowserPolicyConnectorAsh* connector =

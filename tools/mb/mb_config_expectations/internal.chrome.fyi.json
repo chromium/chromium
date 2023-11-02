@@ -3,8 +3,6 @@
     "args_file": "//build/args/chromeos/amd64-generic-crostoolchain.gni",
     "gn_args": {
       "chromeos_is_browser_only": true,
-      "cros_host_sysroot": "//build/linux/debian_sid_amd64-sysroot",
-      "cros_v8_snapshot_sysroot": "//build/linux/debian_sid_amd64-sysroot",
       "dcheck_always_on": false,
       "is_chromeos_device": true,
       "is_debug": false,
@@ -13,11 +11,50 @@
       "use_goma": true
     }
   },
+  "chromeos-arm-generic-cfi-thin-lto-chrome-reclient": {
+    "args_file": "//build/args/chromeos/arm-generic.gni",
+    "gn_args": {
+      "dcheck_always_on": false,
+      "is_cfi": true,
+      "is_chrome_branded": true,
+      "is_chromeos_device": true,
+      "is_official_build": true,
+      "ozone_platform_headless": true,
+      "symbol_level": 2,
+      "use_cfi_cast": true,
+      "use_remoteexec": true,
+      "use_thin_lto": true
+    }
+  },
+  "lacros-arm-generic-chrome-fyi-reclient": {
+    "args_file": "//build/args/chromeos/arm-generic-crostoolchain.gni",
+    "gn_args": {
+      "chromeos_is_browser_only": true,
+      "dcheck_always_on": false,
+      "is_cfi": true,
+      "is_chrome_branded": true,
+      "is_chromeos_device": true,
+      "is_official_build": true,
+      "is_skylab": true,
+      "ozone_platform_headless": true,
+      "symbol_level": 1,
+      "target_os": "chromeos",
+      "use_remoteexec": true,
+      "use_thin_lto": true
+    }
+  },
   "linux-autofill-captured-sites-rel": {
     "gn_args": {
       "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
+      "use_goma": true
+    }
+  },
+  "linux-finch-smoke-chrome": {
+    "gn_args": {
+      "is_chrome_branded": true,
+      "is_official_build": true,
       "use_goma": true
     }
   },
@@ -31,6 +68,7 @@
   },
   "lorenz-graph-dbg": {
     "gn_args": {
+      "debuggable_apks": false,
       "enable_chrome_android_internal": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
@@ -41,12 +79,120 @@
       "use_goma": true
     }
   },
+  "mac-arm64-finch-smoke-chrome": {
+    "gn_args": {
+      "ignore_missing_widevine_signing_cert": true,
+      "is_chrome_branded": true,
+      "is_official_build": true,
+      "target_cpu": "arm64",
+      "use_goma": true
+    }
+  },
   "mac-autofill-captured-sites-rel": {
     "gn_args": {
       "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "use_goma": true
+    }
+  },
+  "siso-comparison-android": {
+    "reclient": {
+      "gn_args": {
+        "android_static_analysis": "off",
+        "dcheck_always_on": true,
+        "debuggable_apks": false,
+        "fail_on_android_expectations": true,
+        "ffmpeg_branding": "Chrome",
+        "is_component_build": false,
+        "is_debug": false,
+        "proprietary_codecs": true,
+        "skip_secondary_abi_for_cq": true,
+        "strip_debug_info": true,
+        "symbol_level": 0,
+        "system_webview_package_name": "com.google.android.apps.chrome",
+        "target_cpu": "arm64",
+        "target_os": "android",
+        "use_remoteexec": true
+      }
+    },
+    "siso": {
+      "gn_args": {
+        "android_static_analysis": "off",
+        "dcheck_always_on": true,
+        "debuggable_apks": false,
+        "fail_on_android_expectations": true,
+        "ffmpeg_branding": "Chrome",
+        "is_component_build": false,
+        "is_debug": false,
+        "proprietary_codecs": true,
+        "skip_secondary_abi_for_cq": true,
+        "strip_debug_info": true,
+        "symbol_level": 0,
+        "system_webview_package_name": "com.google.android.apps.chrome",
+        "target_cpu": "arm64",
+        "target_os": "android",
+        "use_goma": false,
+        "use_remoteexec": false
+      }
+    }
+  },
+  "siso-comparison-linux": {
+    "reclient": {
+      "gn_args": {
+        "dcheck_always_on": true,
+        "devtools_skip_typecheck": false,
+        "ffmpeg_branding": "Chrome",
+        "is_component_build": false,
+        "is_debug": false,
+        "proprietary_codecs": true,
+        "symbol_level": 0,
+        "use_dummy_lastchange": true,
+        "use_remoteexec": true
+      }
+    },
+    "siso": {
+      "gn_args": {
+        "dcheck_always_on": true,
+        "devtools_skip_typecheck": false,
+        "ffmpeg_branding": "Chrome",
+        "is_component_build": false,
+        "is_debug": false,
+        "proprietary_codecs": true,
+        "symbol_level": 0,
+        "use_dummy_lastchange": true,
+        "use_goma": false,
+        "use_remoteexec": false
+      }
+    }
+  },
+  "siso-comparison-win10": {
+    "reclent": {
+      "gn_args": {
+        "dcheck_always_on": true,
+        "enable_precompiled_headers": false,
+        "enable_resource_allowlist_generation": false,
+        "ffmpeg_branding": "Chrome",
+        "is_component_build": false,
+        "is_debug": false,
+        "proprietary_codecs": true,
+        "symbol_level": 0,
+        "use_remoteexec": true
+      }
+    },
+    "siso": {
+      "gn_args": {
+        "dcheck_always_on": true,
+        "enable_precompiled_headers": false,
+        "enable_resource_allowlist_generation": false,
+        "ffmpeg_branding": "Chrome",
+        "is_component_build": false,
+        "is_debug": false,
+        "proprietary_codecs": true,
+        "symbol_level": 0,
+        "use_goma": false,
+        "use_remoteexec": false
+      }
     }
   },
   "win-autofill-captured-sites-rel": {
@@ -65,6 +211,13 @@
       "is_debug": false,
       "is_official_build": true,
       "symbol_level": 1,
+      "use_goma": true
+    }
+  },
+  "win-finch-smoke-chrome": {
+    "gn_args": {
+      "is_chrome_branded": true,
+      "is_official_build": true,
       "use_goma": true
     }
   },

@@ -1,12 +1,19 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//tools/grit/grit_defines.gni")
+import("//tools/grit/grit_args.gni")
 
 template("preprocess_if_expr") {
   action(target_name) {
     script = "//tools/grit/preprocess_if_expr.py"
+
+    # Declare deps of preprocess_if_expr.py as inputs as well, to re-trigger
+    # preprocess_if_expr() targets whenever those change.
+    inputs = [
+      "//tools/grit/grit/node/base.py",
+      "//tools/grit/grit/format/html_inline.py",
+    ]
 
     forward_variables_from(invoker,
                            [
@@ -15,20 +22,30 @@ template("preprocess_if_expr") {
                              "visibility",
                            ])
 
-    inputs = []
     outputs = []
+
+    in_folder = "."
+    if (defined(invoker.in_folder)) {
+      in_folder = invoker.in_folder
+    }
+
+    out_folder = target_gen_dir
+    if (defined(invoker.out_folder)) {
+      out_folder = invoker.out_folder
+    }
+
     foreach(in_file, invoker.in_files) {
-      inputs += [ invoker.in_folder + "/" + in_file ]
-      outputs += [ invoker.out_folder + "/" + in_file ]
+      inputs += [ "$in_folder/" + in_file ]
+      outputs += [ "$out_folder/" + in_file ]
     }
 
     args = [
              "--in-folder",
-             rebase_path(invoker.in_folder, root_build_dir),
+             rebase_path(in_folder, root_build_dir),
              "--out-folder",
-             rebase_path(invoker.out_folder, root_build_dir),
+             rebase_path(out_folder, root_build_dir),
              "--in-files",
-           ] + invoker.in_files + grit_defines
+           ] + invoker.in_files + grit_args
 
     if (defined(invoker.defines)) {
       foreach(define, invoker.defines) {
@@ -45,6 +62,11 @@ template("preprocess_if_expr") {
         rebase_path(invoker.out_manifest, root_build_dir),
       ]
       outputs += [ invoker.out_manifest ]
+    }
+
+    if (defined(invoker.enable_removal_comments) &&
+        invoker.enable_removal_comments) {
+      args += [ "--enable_removal_comments" ]
     }
   }
 }

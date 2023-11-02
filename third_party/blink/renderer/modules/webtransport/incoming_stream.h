@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,14 +18,13 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
-#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 
 namespace blink {
 
 class ScriptState;
 class ReadableStream;
-class ReadableStreamDefaultControllerWithScriptScope;
+class ReadableByteStreamController;
 
 // Implementation of the IncomingStream mixin from the standard:
 // https://wicg.github.io/web-transport/#incoming-stream. ReceiveStream and
@@ -78,13 +77,10 @@ class MODULES_EXPORT IncomingStream final
   void Trace(Visitor*) const;
 
  private:
-  class UnderlyingSource;
+  class UnderlyingByteSource;
 
-  // Called when |data_pipe_| becomes readable or errored.
+  // Called when |data_pipe_| becomes readable, closed or errored.
   void OnHandleReady(MojoResult, const mojo::HandleSignalsState&);
-
-  // Called when |data_pipe_| is closed.
-  void OnPeerClosed(MojoResult, const mojo::HandleSignalsState&);
 
   // Rejects any unfinished read() calls and resets |data_pipe_|.
   void HandlePipeClosed();
@@ -95,13 +91,13 @@ class MODULES_EXPORT IncomingStream final
   // Reads all the data currently in the pipe and enqueues it. If no data is
   // currently available, triggers the |read_watcher_| and enqueues when data
   // becomes available.
-  void ReadFromPipeAndEnqueue();
+  void ReadFromPipeAndEnqueue(ExceptionState&);
 
   // Copies a sequence of bytes into an ArrayBuffer and enqueues it.
-  void EnqueueBytes(const void* source, uint32_t byte_length);
+  void EnqueueBytes(const void* source, uint32_t byte_length, ExceptionState&);
 
   // Closes |readable_|, and resets |data_pipe_|.
-  void CloseAbortAndReset();
+  void CloseAbortAndReset(ExceptionState&);
 
   // Errors |readable_|, and resets |data_pipe_|.
   // |exception| will be set as the error on |readable_|.
@@ -126,11 +122,8 @@ class MODULES_EXPORT IncomingStream final
   // Only armed when we need to read something.
   mojo::SimpleWatcher read_watcher_;
 
-  // Always armed to detect close.
-  mojo::SimpleWatcher close_watcher_;
-
   Member<ReadableStream> readable_;
-  Member<ReadableStreamDefaultControllerWithScriptScope> controller_;
+  Member<ReadableByteStreamController> controller_;
 
   State state_ = State::kOpen;
 

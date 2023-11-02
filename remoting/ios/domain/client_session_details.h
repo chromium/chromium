@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -50,7 +50,7 @@ typedef NS_ENUM(NSInteger, SessionErrorCode) {
 @property(nonatomic) HostInfo* hostInfo;
 // The current state of the session.
 @property(nonatomic, assign) SessionState state;
-// The error assoiciated to the current state.
+// The error associated to the current state.
 @property(nonatomic, assign) SessionErrorCode error;
 
 @end

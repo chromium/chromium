@@ -1,0 +1,26 @@
+<style include="network-shared">
+  #container {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+  }
+
+  cr-input {
+    width: 100%;
+  }
+
+  cr-policy-network-indicator-mojo {
+    --cr-tooltip-icon-margin-start: var(--cr-controlled-by-spacing);
+  }
+</style>
+
+<div id="container">
+  <cr-input label="[[label]]" value="{{value}}"
+      hidden="[[hidden]]" readonly="[[readonly]]"
+      disabled="[[getDisabled_(disabled, property)]]"
+      on-keypress="onKeypress_">
+  </cr-input>
+  <cr-policy-network-indicator-mojo
+      property="[[property]]" tooltip-position="left">
+  </cr-policy-network-indicator>
+</div>

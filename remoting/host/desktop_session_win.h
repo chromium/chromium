@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -96,7 +96,6 @@ class DesktopSessionWin : public DesktopSession,
 
   // WorkerProcessIpcDelegate implementation.
   void OnChannelConnected(int32_t peer_pid) override;
-  bool OnMessageReceived(const IPC::Message& message) override;
   void OnPermanentError(int exit_code) override;
   void OnWorkerProcessStopped() override;
   void OnAssociatedInterfaceRequest(
@@ -133,7 +132,7 @@ class DesktopSessionWin : public DesktopSession,
   std::unique_ptr<WorkerProcessLauncher> launcher_;
 
   // Used to unsubscribe from session attach and detach events.
-  WtsTerminalMonitor* monitor_;
+  raw_ptr<WtsTerminalMonitor> monitor_;
 
   // Indicates whether session attach/detach notifications are subscribed to.
   bool monitoring_notifications_;

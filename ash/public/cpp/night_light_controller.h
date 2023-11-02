@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@ class ASH_PUBLIC_EXPORT NightLightController {
  public:
   // These values are written to logs. New enum values can be added, but
   // existing enums must never be renumbered or deleted and reused.
-  enum ScheduleType {
+  enum class ScheduleType {
     // Automatic toggling of NightLight is turned off.
     kNone = 0,
 

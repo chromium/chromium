@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,16 +9,14 @@
 #include <memory>
 #include <string>
 
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_types.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/components/multidevice/remote_device_cache.h"
-#include "chromeos/components/proximity_auth/screenlock_bridge.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/services/secure_channel/public/cpp/client/secure_channel_client.h"
+#include "chromeos/ash/components/proximity_auth/screenlock_bridge.h"
 
 namespace proximity_auth {
 class ProximityAuthLocalStatePrefManager;
@@ -27,10 +25,12 @@ class ProximityAuthLocalStatePrefManager;
 namespace ash {
 class EasyUnlockChallengeWrapper;
 
+namespace multidevice {
+class RemoteDeviceCache;
+}
+
 // EasyUnlockService instance that should be used for signin profile.
-class EasyUnlockServiceSignin
-    : public EasyUnlockService,
-      public proximity_auth::ScreenlockBridge::Observer {
+class EasyUnlockServiceSignin : public EasyUnlockService {
  public:
   EasyUnlockServiceSignin(
       Profile* profile,
@@ -81,7 +81,7 @@ class EasyUnlockServiceSignin
 
     // The list of remote device dictionaries understood by Easy unlock app.
     // This will be returned by `GetRemoteDevices` method.
-    base::ListValue remote_devices_value;
+    base::Value::List remote_devices_value;
   };
 
   // EasyUnlockService implementation:
@@ -89,7 +89,7 @@ class EasyUnlockServiceSignin
       override;
   EasyUnlockService::Type GetType() const override;
   AccountId GetAccountId() const override;
-  const base::ListValue* GetRemoteDevices() const override;
+  const base::Value::List* GetRemoteDevices() const override;
   std::string GetChallenge() const override;
   std::string GetWrappedSecret() const override;
   void RecordEasySignInOutcome(const AccountId& account_id,
@@ -98,12 +98,12 @@ class EasyUnlockServiceSignin
   void InitializeInternal() override;
   void ShutdownInternal() override;
   bool IsAllowedInternal() const override;
-  bool IsEligible() const override;
   bool IsEnabled() const override;
   bool IsChromeOSLoginEnabled() const override;
+  SmartLockState GetInitialSmartLockState() const override;
   void OnSuspendDoneInternal() override;
 
-  // proximity_auth::ScreenlockBridge::Observer implementation:
+  // EasyUnlockService:
   void OnScreenDidLock(proximity_auth::ScreenlockBridge::LockHandler::ScreenType
                            screen_type) override;
   void OnScreenDidUnlock(

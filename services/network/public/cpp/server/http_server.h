@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -143,7 +143,7 @@ class COMPONENT_EXPORT(NETWORK_CPP) HttpServer {
   bool HasClosedConnection(HttpConnection* connection);
 
   const mojo::Remote<mojom::TCPServerSocket> server_socket_;
-  HttpServer::Delegate* const delegate_;
+  const raw_ptr<HttpServer::Delegate> delegate_;
 
   int last_id_;
   std::map<int, std::unique_ptr<HttpConnection>> id_to_connection_;

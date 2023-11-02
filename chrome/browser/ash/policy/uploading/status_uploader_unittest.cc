@@ -1,4 +1,4 @@
-// Copyright (c) 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "ash/components/settings/cros_settings_names.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
@@ -19,7 +18,7 @@
 #include "chrome/browser/ash/policy/status_collector/device_status_collector.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
@@ -36,12 +35,7 @@
 #include "ui/events/platform/platform_event_source.h"
 #include "ui/events/platform_event.h"
 
-using ::testing::_;
-using ::testing::Invoke;
-using ::testing::Return;
-using ::testing::WithArgs;
-
-namespace em = enterprise_management;
+namespace policy {
 
 namespace {
 
@@ -50,27 +44,26 @@ constexpr base::TimeDelta kMinImmediateUploadInterval = base::Seconds(10);
 
 // Using a DeviceStatusCollector to have a concrete StatusCollector, but the
 // exact type doesn't really matter, as it is being mocked.
-class MockDeviceStatusCollector : public policy::DeviceStatusCollector {
+class MockDeviceStatusCollector : public DeviceStatusCollector {
  public:
   explicit MockDeviceStatusCollector(PrefService* local_state)
-      : DeviceStatusCollector(local_state, nullptr) {}
-  MOCK_METHOD1(GetStatusAsync, void(policy::StatusCollectorCallback));
+      : DeviceStatusCollector(local_state, nullptr, nullptr) {}
+  MOCK_METHOD1(GetStatusAsync, void(StatusCollectorCallback));
 
   MOCK_METHOD0(OnSubmittedSuccessfully, void());
 
   // Explicit mock implementation declared here, since gmock::Invoke can't
   // handle returning non-moveable types like scoped_ptr.
-  std::unique_ptr<policy::DeviceLocalAccount> GetAutoLaunchedKioskSessionInfo()
+  std::unique_ptr<DeviceLocalAccount> GetAutoLaunchedKioskSessionInfo()
       override {
-    return std::make_unique<policy::DeviceLocalAccount>(
-        policy::DeviceLocalAccount::TYPE_KIOSK_APP, "account_id", "app_id",
+    return std::make_unique<DeviceLocalAccount>(
+        DeviceLocalAccount::TYPE_KIOSK_APP, "account_id", "app_id",
         "update_url");
   }
 };
 
 }  // namespace
 
-namespace policy {
 class StatusUploaderTest : public testing::Test {
  public:
   StatusUploaderTest() : task_runner_(new base::TestSimpleTaskRunner()) {
@@ -78,9 +71,7 @@ class StatusUploaderTest : public testing::Test {
   }
 
   void SetUp() override {
-    // Required for policy::DeviceStatusCollector
-    chromeos::DBusThreadManager::Initialize();
-
+    // Required for `DeviceStatusCollector`.
     chromeos::PowerManagerClient::InitializeFake();
     chromeos::TpmManagerClient::InitializeFake();
     client_.SetDMToken("dm_token");
@@ -95,7 +86,6 @@ class StatusUploaderTest : public testing::Test {
     content::RunAllTasksUntilIdle();
     chromeos::TpmManagerClient::Shutdown();
     chromeos::PowerManagerClient::Shutdown();
-    chromeos::DBusThreadManager::Shutdown();
   }
 
   // Given a pending task to upload status, runs the task and returns the

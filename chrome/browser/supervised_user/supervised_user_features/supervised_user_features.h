@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,13 @@
 
 namespace supervised_users {
 
-extern const base::Feature kWebFilterInterstitialRefresh;
+BASE_DECLARE_FEATURE(kWebFilterInterstitialRefresh);
 
-extern const base::Feature kLocalWebApprovals;
+BASE_DECLARE_FEATURE(kLocalWebApprovals);
+extern const char kLocalWebApprovalsPreferredButtonLocal[];
+extern const char kLocalWebApprovalsPreferredButtonRemote[];
+
+BASE_DECLARE_FEATURE(kAllowHistoryDeletionForChildAccounts);
 
 // Returns whether refreshed version of the website filter interstitial is
 // enabled.
@@ -22,6 +26,11 @@ bool IsWebFilterInterstitialRefreshEnabled();
 // Local web approvals are only available when refreshed version of web
 // filter interstitial is enabled.
 bool IsLocalWebApprovalsEnabled();
+
+// Returns whether the local parent approval should be displayed as the
+// preferred option.
+// This should only be called if IsLocalWebApprovalsEnabled() returns true.
+bool IsLocalWebApprovalThePreferredButton();
 
 }  // namespace supervised_users
 

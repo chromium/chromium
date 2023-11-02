@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,20 +8,22 @@
 #import <Foundation/Foundation.h>
 
 @protocol ApplicationCommands;
-@protocol BrowserCommands;
+@protocol ActivityServiceCommands;
+@protocol PopupMenuCommands;
 @protocol FindInPageCommands;
 @protocol OmniboxCommands;
+
 class WebNavigationBrowserAgent;
 
 // Handler for the actions associated with the different toolbar buttons.
 @interface ToolbarButtonActionsHandler : NSObject
 
-// Dispatcher for the actions.
-@property(nonatomic, weak) id<ApplicationCommands,
-                              BrowserCommands,
-                              FindInPageCommands,
-                              OmniboxCommands>
-    dispatcher;
+// Action Handlers
+@property(nonatomic, weak) id<ApplicationCommands> applicationHandler;
+@property(nonatomic, weak) id<ActivityServiceCommands> activityHandler;
+@property(nonatomic, weak) id<PopupMenuCommands> menuHandler;
+@property(nonatomic, weak) id<FindInPageCommands> findHandler;
+@property(nonatomic, weak) id<OmniboxCommands> omniboxHandler;
 
 @property(nonatomic, assign) WebNavigationBrowserAgent* navigationAgent;
 
@@ -52,8 +54,8 @@ class WebNavigationBrowserAgent;
 // Action when the stop button is tapped.
 - (void)stopAction;
 
-// Action when the search button is tapped.
-- (void)searchAction:(id)sender;
+// Action when the new tab button is tapped.
+- (void)newTabAction:(id)sender;
 
 // Action when the button to cancel the omnibox focus is tapped.
 - (void)cancelOmniboxFocusAction;

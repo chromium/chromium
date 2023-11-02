@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,20 +24,20 @@
 #include "content/browser/service_worker/embedded_worker_status.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/storage_partition_impl.h"
-#include "content/common/service_worker/service_worker_utils.h"
 #include "content/public/browser/background_sync_controller.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/permission_controller.h"
-#include "content/public/browser/permission_type.h"
+#include "content/public/browser/render_process_host.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/common/service_worker/service_worker_type_converters.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_event_status.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "content/browser/android/background_sync_network_observer_android.h"
 #include "content/browser/background_sync/background_sync_launcher.h"
 #endif
@@ -121,6 +121,7 @@ BackgroundSyncController* GetBackgroundSyncController(
 SyncAndNotificationPermissions GetBackgroundSyncPermission(
     scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
     const url::Origin& origin,
+    RenderProcessHost* render_process_host,
     BackgroundSyncType sync_type) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -134,14 +135,14 @@ SyncAndNotificationPermissions GetBackgroundSyncPermission(
   DCHECK(permission_controller);
 
   // The requesting origin always matches the embedding origin.
-  GURL origin_url = origin.GetURL();
-  auto sync_permission = permission_controller->GetPermissionStatus(
+  auto sync_permission = permission_controller->GetPermissionStatusForWorker(
       sync_type == BackgroundSyncType::ONE_SHOT
-          ? PermissionType::BACKGROUND_SYNC
-          : PermissionType::PERIODIC_BACKGROUND_SYNC,
-      origin_url, origin_url);
-  auto notification_permission = permission_controller->GetPermissionStatus(
-      PermissionType::NOTIFICATIONS, origin_url, origin_url);
+          ? blink::PermissionType::BACKGROUND_SYNC
+          : blink::PermissionType::PERIODIC_BACKGROUND_SYNC,
+      render_process_host, origin);
+  auto notification_permission =
+      permission_controller->GetPermissionStatusForWorker(
+          blink::PermissionType::NOTIFICATIONS, render_process_host, origin);
   return {sync_permission, notification_permission};
 }
 
@@ -391,6 +392,7 @@ BackgroundSyncManager::~BackgroundSyncManager() {
 
 void BackgroundSyncManager::Register(
     int64_t sw_registration_id,
+    int render_process_host_id,
     blink::mojom::SyncRegistrationOptions options,
     StatusAndRegistrationCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -405,10 +407,11 @@ void BackgroundSyncManager::Register(
   DCHECK(options.min_interval >= 0 ||
          options.min_interval == kMinIntervalForOneShotSync);
 
-  op_scheduler_.ScheduleOperation(base::BindOnce(
-      &BackgroundSyncManager::RegisterCheckIfHasMainFrame,
-      weak_ptr_factory_.GetWeakPtr(), sw_registration_id, std::move(options),
-      op_scheduler_.WrapCallbackToRunNext(std::move(callback))));
+  op_scheduler_.ScheduleOperation(
+      base::BindOnce(&BackgroundSyncManager::RegisterCheckIfHasMainFrame,
+                     weak_ptr_factory_.GetWeakPtr(), sw_registration_id,
+                     render_process_host_id, std::move(options),
+                     op_scheduler_.WrapCallbackToRunNext(std::move(callback))));
 }
 
 void BackgroundSyncManager::UnregisterPeriodicSync(
@@ -542,6 +545,18 @@ void BackgroundSyncManager::GetRegistrations(
     StatusAndRegistrationsCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  // The renderer should have checked and disallowed the request for fenced
+  // frames and thrown an exception in blink::SyncManager or
+  // blink::PeriodicSyncManager. Return a not allowed error if the renderer side
+  // check didn't happen for some reason.
+  scoped_refptr<ServiceWorkerRegistration> sw_registration =
+      service_worker_context_->GetLiveRegistration(sw_registration_id);
+  if (sw_registration && sw_registration->ancestor_frame_type() ==
+                             blink::mojom::AncestorFrameType::kFencedFrame) {
+    mojo::ReportBadMessage("Background Sync is not allowed in a fenced frame");
+    return;
+  }
+
   if (disabled_) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
@@ -649,7 +664,7 @@ BackgroundSyncManager::BackgroundSyncManager(
 
   service_worker_context_->AddObserver(this);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   network_observer_ = std::make_unique<BackgroundSyncNetworkObserverAndroid>(
       base::BindRepeating(&BackgroundSyncManager::OnNetworkChanged,
                           weak_ptr_factory_.GetWeakPtr()));
@@ -782,6 +797,7 @@ void BackgroundSyncManager::InitDidGetDataFromBackend(
 
 void BackgroundSyncManager::RegisterCheckIfHasMainFrame(
     int64_t sw_registration_id,
+    int render_process_host_id,
     blink::mojom::SyncRegistrationOptions options,
     StatusAndRegistrationCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -795,15 +811,27 @@ void BackgroundSyncManager::RegisterCheckIfHasMainFrame(
     return;
   }
 
+  // The renderer should have checked and disallowed the request for fenced
+  // frames and thrown an exception in blink::SyncManager or
+  // blink::PeriodicSyncManager. Return a not allowed error if the renderer side
+  // check didn't happen for some reason.
+  if (sw_registration->ancestor_frame_type() ==
+      blink::mojom::AncestorFrameType::kFencedFrame) {
+    mojo::ReportBadMessage("Background Sync is not allowed in a fenced frame");
+    return;
+  }
+
   HasMainFrameWindowClient(
-      url::Origin::Create(sw_registration->scope().DeprecatedGetOriginAsURL()),
+      sw_registration->key(),
       base::BindOnce(&BackgroundSyncManager::RegisterDidCheckIfMainFrame,
                      weak_ptr_factory_.GetWeakPtr(), sw_registration_id,
-                     std::move(options), std::move(callback)));
+                     render_process_host_id, std::move(options),
+                     std::move(callback)));
 }
 
 void BackgroundSyncManager::RegisterDidCheckIfMainFrame(
     int64_t sw_registration_id,
+    int render_process_host_id,
     blink::mojom::SyncRegistrationOptions options,
     StatusAndRegistrationCallback callback,
     bool has_main_frame_client) {
@@ -815,11 +843,13 @@ void BackgroundSyncManager::RegisterDidCheckIfMainFrame(
                               std::move(callback));
     return;
   }
-  RegisterImpl(sw_registration_id, std::move(options), std::move(callback));
+  RegisterImpl(sw_registration_id, render_process_host_id, std::move(options),
+               std::move(callback));
 }
 
 void BackgroundSyncManager::RegisterImpl(
     int64_t sw_registration_id,
+    int render_process_host_id,
     blink::mojom::SyncRegistrationOptions options,
     StatusAndRegistrationCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -847,6 +877,15 @@ void BackgroundSyncManager::RegisterImpl(
     return;
   }
 
+  RenderProcessHost* render_process_host =
+      RenderProcessHost::FromID(render_process_host_id);
+  if (!render_process_host) {
+    RecordFailureAndPostError(GetBackgroundSyncType(options),
+                              BACKGROUND_SYNC_STATUS_NO_SERVICE_WORKER,
+                              std::move(callback));
+    return;
+  }
+
   BackgroundSyncType sync_type = GetBackgroundSyncType(options);
 
   if (parameters_->skip_permissions_check_for_testing) {
@@ -857,9 +896,8 @@ void BackgroundSyncManager::RegisterImpl(
   }
 
   SyncAndNotificationPermissions permission = GetBackgroundSyncPermission(
-      service_worker_context_,
-      url::Origin::Create(sw_registration->scope().DeprecatedGetOriginAsURL()),
-      sync_type);
+      service_worker_context_, sw_registration->key().origin(),
+      render_process_host, sync_type);
   RegisterDidAskForPermission(sw_registration_id, std::move(options),
                               std::move(callback), permission);
 }
@@ -893,8 +931,7 @@ void BackgroundSyncManager::RegisterDidAskForPermission(
       LookupActiveRegistration(blink::mojom::BackgroundSyncRegistrationInfo(
           sw_registration_id, options.tag, GetBackgroundSyncType(options)));
 
-  url::Origin origin =
-      url::Origin::Create(sw_registration->scope().DeprecatedGetOriginAsURL());
+  const url::Origin& origin = sw_registration->key().origin();
 
   if (GetBackgroundSyncType(options) ==
       blink::mojom::BackgroundSyncType::ONE_SHOT) {
@@ -1002,10 +1039,8 @@ void BackgroundSyncManager::RegisterDidGetDelay(
           GetDelayAsString(registration.delay_until() - clock_->Now())}});
   }
 
-  AddOrUpdateActiveRegistration(
-      sw_registration_id,
-      url::Origin::Create(sw_registration->scope().DeprecatedGetOriginAsURL()),
-      registration);
+  AddOrUpdateActiveRegistration(sw_registration_id,
+                                sw_registration->key().origin(), registration);
 
   StoreRegistrations(
       sw_registration_id,
@@ -1416,10 +1451,10 @@ void BackgroundSyncManager::DispatchPeriodicSyncEvent(
   }
 }
 
-void BackgroundSyncManager::HasMainFrameWindowClient(const url::Origin& origin,
-                                                     BoolCallback callback) {
-  service_worker_context_->HasMainFrameWindowClient(blink::StorageKey(origin),
-                                                    std::move(callback));
+void BackgroundSyncManager::HasMainFrameWindowClient(
+    const blink::StorageKey& key,
+    BoolCallback callback) {
+  service_worker_context_->HasMainFrameWindowClient(key, std::move(callback));
 }
 
 void BackgroundSyncManager::GetRegistrationsImpl(
@@ -2012,8 +2047,7 @@ void BackgroundSyncManager::FireReadyEventsDidFindRegistration(
       registration->num_attempts() == registration->max_attempts() - 1;
 
   HasMainFrameWindowClient(
-      url::Origin::Create(
-          service_worker_registration->scope().DeprecatedGetOriginAsURL()),
+      service_worker_registration->key(),
       base::BindOnce(&BackgroundSyncMetrics::RecordEventStarted, sync_type));
 
   if (sync_type == BackgroundSyncType::ONE_SHOT) {
@@ -2070,18 +2104,16 @@ void BackgroundSyncManager::EventComplete(
 
   // The event ran to completion, we should count it, no matter what happens
   // from here.
-  url::Origin origin = url::Origin::Create(
-      service_worker_registration->scope().DeprecatedGetOriginAsURL());
+  const blink::StorageKey& key = service_worker_registration->key();
   HasMainFrameWindowClient(
-      origin,
-      base::BindOnce(&BackgroundSyncMetrics::RecordEventResult,
-                     registration_info->sync_type,
-                     status_code == blink::ServiceWorkerStatusCode::kOk));
+      key, base::BindOnce(&BackgroundSyncMetrics::RecordEventResult,
+                          registration_info->sync_type,
+                          status_code == blink::ServiceWorkerStatusCode::kOk));
 
   op_scheduler_.ScheduleOperation(base::BindOnce(
       &BackgroundSyncManager::EventCompleteImpl, weak_ptr_factory_.GetWeakPtr(),
-      std::move(registration_info), std::move(keepalive), status_code, origin,
-      op_scheduler_.WrapCallbackToRunNext(std::move(callback))));
+      std::move(registration_info), std::move(keepalive), status_code,
+      key.origin(), op_scheduler_.WrapCallbackToRunNext(std::move(callback))));
 }
 
 void BackgroundSyncManager::EventCompleteImpl(
@@ -2292,7 +2324,7 @@ void BackgroundSyncManager::OnStorageWipedImpl(base::OnceClosure callback) {
 void BackgroundSyncManager::OnNetworkChanged() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (parameters_->rely_on_android_network_detection)
     return;
 #endif

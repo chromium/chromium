@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,8 +26,8 @@
 // User tapped on "Generate Strong Password" button.
 - (void)userDidRequestGeneratedPassword;
 
-// Asks the handler to save a credential with the given |username| and
-// |password|. If |shouldReplace| is true, then the user has already been warned
+// Asks the handler to save a credential with the given `username` and
+// `password`. If `shouldReplace` is true, then the user has already been warned
 // that they may be replacing an existing credential. Otherwise, the handler
 // should not replace an existing credential.
 - (void)saveCredentialWithUsername:(NSString*)username

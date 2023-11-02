@@ -1,8 +1,0 @@
-include_rules = [
-  "+net/base/network_interfaces.h",
-  "+third_party/skia/include",
-  "+ui/base",
-  "+ui/events",
-  "+ui/gfx",
-  "+ui/display",
-]

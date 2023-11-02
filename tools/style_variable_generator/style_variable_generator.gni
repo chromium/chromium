@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors.  All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -42,17 +42,15 @@ template("style_variable_generator") {
 
     inputs = common_inputs + [
                "//tools/style_variable_generator/css_generator.py",
-               "//tools/style_variable_generator/css_generator.tmpl",
+               "//tools/style_variable_generator/templates/css_generator.tmpl",
              ]
     out_file = "$target_gen_dir/${original_target_name}.css"
     outputs = [ out_file ]
 
     args = [
              "--generator=CSS",
-             "--generator-option",
-             "debug_placeholder=\$i18n{crosColorsDebugOverrides}",
              "--out-file",
-             rebase_path("$out_file", root_build_dir),
+             rebase_path(out_file, root_build_dir),
            ] + rebase_path(sources, root_build_dir)
   }
 
@@ -62,27 +60,97 @@ template("style_variable_generator") {
                            [
                              "deps",
                              "sources",
+                             "cpp_namespace",
                            ])
 
-    inputs = common_inputs + [
-               "//tools/style_variable_generator/views_generator.py",
-               "//tools/style_variable_generator/views_generator_h.tmpl",
-             ]
-    out_file = "$target_gen_dir/${original_target_name}.h"
-    outputs = [ out_file ]
+    inputs =
+        common_inputs + [
+          "//tools/style_variable_generator/views_generator.py",
+          "//tools/style_variable_generator/templates/views_generator_cc.tmpl",
+          "//tools/style_variable_generator/templates/views_generator_h.tmpl",
+        ]
+    out_file_cc = "$target_gen_dir/${original_target_name}.cc"
+    out_file_h = "$target_gen_dir/${original_target_name}.h"
+    outputs = [
+      out_file_cc,
+      out_file_h,
+    ]
     args = [
-             "--generator=Views",
+             "--generator=ViewsCC",
+             "--generator-option",
+             "cpp_namespace=$cpp_namespace",
              "--out-file",
-             rebase_path("$out_file", root_build_dir),
+             rebase_path(out_file_cc, root_build_dir),
+             "--generator=ViewsH",
+             "--out-file",
+             rebase_path(out_file_h, root_build_dir),
            ] + rebase_path(sources, root_build_dir)
   }
 
-  source_set("${target_name}_views") {
-    sources = [ "$target_gen_dir/${original_target_name}.h" ]
-    deps = [ ":${original_target_name}_views_generator" ]
+  component("${target_name}_views") {
+    sources = [
+      "$target_gen_dir/${original_target_name}.cc",
+      "$target_gen_dir/${original_target_name}.h",
+    ]
+    deps = [
+      ":${original_target_name}_views_generator",
+      "//base",
+      "//skia",
+    ]
+    defines = [ "IS_${original_target_name}_IMPL" ]
   }
 
-  action("${target_name}_proto") {
+  if (defined(invoker.color_id_start_value)) {
+    action("${target_name}_color_mappings_generator") {
+      script = script_file
+      forward_variables_from(invoker,
+                             [
+                               "deps",
+                               "sources",
+                               "cpp_namespace",
+                               "color_id_start_value",
+                             ])
+      inputs = common_inputs + [
+                 "//tools/style_variable_generator/color_mappings_generator.py",
+                 "//tools/style_variable_generator/templates/color_mappings_generator_cc.tmpl",
+                 "//tools/style_variable_generator/templates/color_mappings_generator_h.tmpl",
+               ]
+      out_file_cc = "$target_gen_dir/${original_target_name}_color_mappings.cc"
+      out_file_h = "$target_gen_dir/${original_target_name}_color_mappings.h"
+      outputs = [
+        out_file_cc,
+        out_file_h,
+      ]
+      args = [
+               "--generator-option",
+               "cpp_namespace=$cpp_namespace",
+               "--generator-option",
+               "color_id_start_value=$color_id_start_value",
+               "--generator=ColorMappingsCC",
+               "--out-file",
+               rebase_path(out_file_cc, root_build_dir),
+               "--generator=ColorMappingsH",
+               "--out-file",
+               rebase_path(out_file_h, root_build_dir),
+             ] + rebase_path(sources, root_build_dir)
+    }
+
+    component("${target_name}_color_mappings") {
+      sources = [
+        "$target_gen_dir/${original_target_name}_color_mappings.cc",
+        "$target_gen_dir/${original_target_name}_color_mappings.h",
+      ]
+      deps = [
+        ":${original_target_name}_color_mappings_generator",
+        "//base",
+        "//skia",
+        "//ui/color",
+      ]
+      defines = [ "IS_${original_target_name}_COLOR_MAPPINGS_IMPL" ]
+    }
+  }
+
+  action("${target_name}_json") {
     script = script_file
     forward_variables_from(invoker,
                            [
@@ -92,37 +160,15 @@ template("style_variable_generator") {
 
     inputs = common_inputs + [
                "//tools/style_variable_generator/proto_generator.py",
-               "//tools/style_variable_generator/proto_generator.tmpl",
+               "//tools/style_variable_generator/templates/json_generator.tmpl",
              ]
-    out_file = "$target_gen_dir/${original_target_name}.proto"
+    out_file = "$target_gen_dir/${original_target_name}.json"
     outputs = [ out_file ]
 
     args = [
-             "--generator=proto",
+             "--generator=json",
              "--out-file",
-             rebase_path("$out_file", root_build_dir),
-           ] + rebase_path(sources, root_build_dir)
-  }
-
-  action("${target_name}_protojson") {
-    script = script_file
-    forward_variables_from(invoker,
-                           [
-                             "deps",
-                             "sources",
-                           ])
-
-    inputs = common_inputs + [
-               "//tools/style_variable_generator/proto_generator.py",
-               "//tools/style_variable_generator/proto_json_generator.tmpl",
-             ]
-    out_file = "$target_gen_dir/${original_target_name}.protojson"
-    outputs = [ out_file ]
-
-    args = [
-             "--generator=proto",
-             "--out-file",
-             rebase_path("$out_file", root_build_dir),
+             rebase_path(out_file, root_build_dir),
            ] + rebase_path(sources, root_build_dir)
   }
 }

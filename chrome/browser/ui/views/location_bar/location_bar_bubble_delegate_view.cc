@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,7 +39,7 @@ ax::mojom::Role GetAccessibleRoleForReason(
   // appears spontaneously over the course of the user's interaction with
   // Chrome and doesn't get focused. We need an alert-like role so the
   // corresponding event is triggered and ATs announce the bubble.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // crbug.com/1125118: Windows ATs only announce these bubbles if the alert
   // role is used, despite it not being the most appropriate choice.
   // TODO(accessibility): review the role mappings for alerts and dialogs,
@@ -86,9 +86,13 @@ LocationBarBubbleDelegateView::LocationBarBubbleDelegateView(
   if (web_contents) {
     Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
     // |browser| can be null in tests.
-    if (browser)
+    if (browser) {
       fullscreen_observation_.Observe(
           browser->exclusive_access_manager()->fullscreen_controller());
+      fullscreen_controller_ = browser->exclusive_access_manager()
+                                   ->fullscreen_controller()
+                                   ->GetWeakPtr();
+    }
   }
   // TODO(pbos): Removing this seems to crash on linux-ozone-rel which seems
   // really wrong. If we need the accessible role before ShowForReason() we
@@ -97,7 +101,9 @@ LocationBarBubbleDelegateView::LocationBarBubbleDelegateView(
   SetAccessibleRole(GetAccessibleRoleForReason(display_reason_));
 }
 
-LocationBarBubbleDelegateView::~LocationBarBubbleDelegateView() = default;
+LocationBarBubbleDelegateView::~LocationBarBubbleDelegateView() {
+  CHECK(!fullscreen_controller_.WasInvalidated());
+}
 
 void LocationBarBubbleDelegateView::ShowForReason(DisplayReason reason,
                                                   bool allow_refocus_alert) {
@@ -149,9 +155,6 @@ void LocationBarBubbleDelegateView::WebContentsDestroyed() {
 
 void LocationBarBubbleDelegateView::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
   if (!close_on_main_frame_origin_navigation_ ||
       !navigation_handle->IsInPrimaryMainFrame() ||
       !navigation_handle->HasCommitted()) {
@@ -159,15 +162,16 @@ void LocationBarBubbleDelegateView::DidFinishNavigation(
   }
 
   // Close dialog when navigating to a different domain.
-  if (!url::IsSameOriginWith(navigation_handle->GetPreviousMainFrameURL(),
-                             navigation_handle->GetURL())) {
+  if (!url::IsSameOriginWith(
+          navigation_handle->GetPreviousPrimaryMainFrameURL(),
+          navigation_handle->GetURL())) {
     CloseBubble();
   }
 }
 
 gfx::Rect LocationBarBubbleDelegateView::GetAnchorBoundsInScreen() const {
   gfx::Rect bounds = GetBoundsInScreen();
-  bounds.Inset(gfx::Insets(
+  bounds.Inset(gfx::Insets::VH(
       GetLayoutConstant(LOCATION_BAR_BUBBLE_ANCHOR_VERTICAL_INSET), 0));
   return bounds;
 }

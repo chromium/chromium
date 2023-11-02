@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -52,6 +52,24 @@ TEST(ServerUrlFetcherTest, GetTriggerScriptsEndpoint) {
   EXPECT_THAT(ServerUrlFetcher(GURL("https://www.example.com"))
                   .GetTriggerScriptsEndpoint(),
               Eq(GURL("https://www.example.com/v1/triggers")));
+}
+
+TEST(ServerUrlFetcherTest, GetCapabilitiesByHashEndpoint) {
+  EXPECT_THAT(ServerUrlFetcher(GURL("https://www.example.com"))
+                  .GetCapabilitiesByHashEndpoint(),
+              Eq(GURL("https://www.example.com/v1/capabilitiesByHashPrefix2")));
+}
+
+TEST(ServerUrlFetcherTest, GetUserDataEndpoint) {
+  EXPECT_THAT(
+      ServerUrlFetcher(GURL("https://www.example.com")).GetUserDataEndpoint(),
+      Eq(GURL("https://www.example.com/v1/userData")));
+}
+
+TEST(ServerUrlFetcherTest, GetReportProgressEndpoint) {
+  EXPECT_THAT(ServerUrlFetcher(GURL("https://www.example.com"))
+                  .GetReportProgressEndpoint(),
+              Eq(GURL("https://www.example.com/v1/reportProgress")));
 }
 
 }  // namespace

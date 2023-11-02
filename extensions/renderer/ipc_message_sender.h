@@ -1,11 +1,9 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef EXTENSIONS_RENDERER_IPC_MESSAGE_SENDER_H_
 #define EXTENSIONS_RENDERER_IPC_MESSAGE_SENDER_H_
-
-#include "base/macros.h"
 
 #include <memory>
 #include <string>
@@ -89,6 +87,11 @@ class IPCMessageSender {
                                     bool close_channel) = 0;
   virtual void SendPostMessageToPort(const PortId& port_id,
                                      const Message& message) = 0;
+
+  // Sends a message indicating that a receiver of a message indicated that it
+  // plans to send a response later.
+  virtual void SendMessageResponsePending(int routing_id,
+                                          const PortId& port_id) = 0;
 
   // Sends activityLog IPC to the browser process.
   virtual void SendActivityLogIPC(

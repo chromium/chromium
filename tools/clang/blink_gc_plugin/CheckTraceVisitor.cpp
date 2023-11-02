@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -151,6 +151,19 @@ void CheckTraceVisitor::CheckCXXDependentScopeMemberExpr(
                    fn_name == kRegisterWeakMembersName) {
           MarkAllWeakMembersTraced();
         }
+      }
+    }
+  }
+
+  // Check for T::Trace(visitor).
+  if (NestedNameSpecifier* qual = expr->getQualifier()) {
+    if (const Type* type = qual->getAsType()) {
+      if (const TemplateTypeParmType* tmpl_parm_type =
+              type->getAs<TemplateTypeParmType>()) {
+        const unsigned param_index = tmpl_parm_type->getIndex();
+        if (param_index >= info_->GetBases().size())
+          return;
+        info_->GetBases()[param_index].second.MarkTraced();
       }
     }
   }

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "extensions/common/mojom/host_id.mojom-forward.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
@@ -94,8 +93,8 @@ class ScriptInjection {
 
   // Called when JS injection for the given frame has been completed or
   // cancelled.
-  void OnJsInjectionCompleted(const std::vector<v8::Local<v8::Value>>& results,
-                              absl::optional<base::TimeDelta> elapsed);
+  void OnJsInjectionCompleted(absl::optional<base::Value> value,
+                              base::TimeTicks start_time);
 
  private:
   class FrameWatcher;
@@ -155,7 +154,7 @@ class ScriptInjection {
   bool log_activity_;
 
   // Results storage.
-  std::unique_ptr<base::Value> execution_result_;
+  absl::optional<base::Value> execution_result_;
 
   // The callback to run upon the status updated asynchronously. It's used for
   // the reply of the permission handling or script injection completion.

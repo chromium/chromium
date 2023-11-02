@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/heap_allocator.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -74,6 +74,13 @@ class CORE_EXPORT TrustedTypePolicyFactory final
   const AtomicString& InterfaceName() const override;
   ExecutionContext* GetExecutionContext() const override;
   void Trace(Visitor*) const override;
+
+  // Check whether a given attribute is considered an event handler.
+  //
+  // This function is largely unrelated to the TrustedTypePolicyFactory, but
+  // it reuses the data from getTypeMapping, which is why we have defined it
+  // here.
+  static bool IsEventHandlerAttributeName(const AtomicString& attributeName);
 
  private:
   const WrapperTypeInfo* GetWrapperTypeInfoFromScriptValue(ScriptState*,

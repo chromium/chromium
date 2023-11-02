@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "components/page_load_metrics/common/test/page_load_metrics_test_util.h"
 #include "content/public/common/content_features.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 
 namespace {
@@ -23,17 +24,14 @@ class UseCounterPageLoadMetricsObserverBrowserTest
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     feature_list_.InitWithFeaturesAndParameters(
-        {{features::kBackForwardCache,
-          {{"TimeToLiveInBackForwardCacheInSeconds", "3600"}}}},
-        // Allow BackForwardCache for all devices regardless of their memory.
-        {features::kBackForwardCacheMemoryControls});
-
+        content::DefaultEnabledBackForwardCacheParametersForTests(),
+        content::DefaultDisabledBackForwardCacheParametersForTests());
     MetricIntegrationTest::SetUpCommandLine(command_line);
   }
 
  protected:
   content::RenderFrameHost* top_frame_host() {
-    return web_contents()->GetMainFrame();
+    return web_contents()->GetPrimaryMainFrame();
   }
 
   std::unique_ptr<page_load_metrics::PageLoadMetricsTestWaiter>
@@ -47,7 +45,7 @@ class UseCounterPageLoadMetricsObserverBrowserTest
 
 }  // namespace
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
 // https://crbug.com/1224355
 #define MAYBE_RecordFeatures DISABLED_RecordFeatures
 #else
@@ -102,18 +100,18 @@ IN_PROC_BROWSER_TEST_F(UseCounterPageLoadMetricsObserverBrowserTest,
 
   for (auto feature : features_0) {
     histogram_tester().ExpectBucketCount(
-        internal::kFeaturesHistogramName,
+        "Blink.UseCounter.Features",
         static_cast<base::Histogram::Sample>(feature), 1);
     histogram_tester().ExpectBucketCount(
-        internal::kFeaturesHistogramMainFrameName,
+        "Blink.UseCounter.MainFrame.Features",
         static_cast<base::Histogram::Sample>(feature), 1);
   }
   for (auto feature : features_1) {
     histogram_tester().ExpectBucketCount(
-        internal::kFeaturesHistogramName,
+        "Blink.UseCounter.Features",
         static_cast<base::Histogram::Sample>(feature), 1);
     histogram_tester().ExpectBucketCount(
-        internal::kFeaturesHistogramMainFrameName,
+        "Blink.UseCounter.MainFrame.Features",
         static_cast<base::Histogram::Sample>(feature), 1);
   }
 }

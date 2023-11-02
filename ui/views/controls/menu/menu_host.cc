@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include "base/auto_reset.h"
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -84,9 +85,9 @@ class PreMenuEventDispatchHandler : public ui::EventHandler,
     window_ = nullptr;
   }
 
-  MenuController* menu_controller_;
-  SubmenuView* submenu_;
-  aura::Window* window_;
+  raw_ptr<MenuController> menu_controller_;
+  raw_ptr<SubmenuView> submenu_;
+  raw_ptr<aura::Window> window_;
 };
 #endif  // USE_AURA
 
@@ -157,7 +158,7 @@ void MenuHost::InitMenuHost(const InitParams& init_params) {
   if (init_params.parent == nullptr)
     params.activatable = Widget::InitParams::Activatable::kYes;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On Windows use the software compositor to ensure that we don't block
   // the UI thread blocking issue during command buffer creation. We can
   // revert this change once http://crbug.com/125248 is fixed.

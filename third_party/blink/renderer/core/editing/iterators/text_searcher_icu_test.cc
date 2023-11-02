@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -101,7 +101,7 @@ TEST(TextSearcherICUTest, FindSubstringWithOffset) {
 
 TEST(TextSearcherICUTest, FindControlCharacter) {
   TextSearcherICU searcher;
-  const String& pattern = MakeUTF16(u8"\u0080");
+  const String& pattern = MakeUTF16("\u0080");
   searcher.SetPattern(pattern, 0);
 
   const String& text = MakeUTF16("some text");

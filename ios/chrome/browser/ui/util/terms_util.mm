@@ -1,13 +1,17 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/ui/util/terms_util.h"
+#import "ios/chrome/browser/ui/util/terms_util.h"
 
-#include "base/mac/bundle_locations.h"
-#include "base/mac/foundation_util.h"
-#include "base/strings/sys_string_conversions.h"
-#include "ios/chrome/browser/application_context.h"
+#import "base/mac/bundle_locations.h"
+#import "base/mac/foundation_util.h"
+#import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/application_context/application_context.h"
+#import "ios/chrome/browser/url/chrome_url_constants.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -54,12 +58,12 @@ std::string GetIOSLocaleMapping(const std::string& locale) {
 
 // Returns a filename based on the base file name and file extension and
 // localized for the given locale. Checks the existence of the file based on
-// |locale| as follows:
+// `locale` as follows:
 //   * if there is a file for file_<locale>.<ext>
 //   * if not, check the language part as follows file_<locale[0..]>.<ext>
 //   * when all else fails, use the English locale, e.g. file_en.<ext>, which
 //     must exist.
-// |locale| must be a valid Chrome locale as defined in file
+// `locale` must be a valid Chrome locale as defined in file
 // ui/base/l10n/l10n_util.cc. This corresponds to a language or a country code,
 // e.g. "en", "en-US", "fr", etc.
 std::string GetLocalizedFileName(const std::string& base_name,
@@ -88,4 +92,11 @@ std::string GetLocalizedFileName(const std::string& base_name,
 std::string GetTermsOfServicePath() {
   const std::string& locale = GetApplicationContext()->GetApplicationLocale();
   return GetLocalizedFileName(kChromeTosFilePrefix, locale, kHtmlFileExtension);
+}
+
+GURL GetUnifiedTermsOfServiceURL(bool embbed) {
+  if (embbed) {
+    return GURL(kEmbeddedTermsOfServiceURL);
+  }
+  return GURL(kTermsOfServiceURL);
 }

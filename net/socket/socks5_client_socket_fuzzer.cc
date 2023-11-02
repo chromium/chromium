@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,8 +33,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   FuzzedDataProvider data_provider(data, size);
 
   net::TestCompletionCallback callback;
-  std::unique_ptr<net::FuzzedSocket> fuzzed_socket(
-      new net::FuzzedSocket(&data_provider, net::NetLog::Get()));
+  auto fuzzed_socket =
+      std::make_unique<net::FuzzedSocket>(&data_provider, net::NetLog::Get());
   CHECK_EQ(net::OK, fuzzed_socket->Connect(callback.callback()));
 
   net::SOCKS5ClientSocket socket(std::move(fuzzed_socket),

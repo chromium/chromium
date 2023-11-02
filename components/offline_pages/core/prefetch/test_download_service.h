@@ -1,14 +1,14 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_OFFLINE_PAGES_CORE_PREFETCH_TEST_DOWNLOAD_SERVICE_H_
 #define COMPONENTS_OFFLINE_PAGES_CORE_PREFETCH_TEST_DOWNLOAD_SERVICE_H_
 
-#include <list>
 #include <string>
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "components/download/public/background_service/background_download_service.h"
 #include "components/download/public/background_service/client.h"
 #include "components/download/public/background_service/download_params.h"
@@ -49,7 +49,7 @@ class TestDownloadService : public download::BackgroundDownloadService {
   void FinishDownload(const std::string& guid);
 
   base::ScopedTempDir download_dir_;
-  TestDownloadClient* client_ = nullptr;
+  raw_ptr<TestDownloadClient> client_ = nullptr;
   int next_file_id_ = 0;
   std::string test_file_data_;
 };

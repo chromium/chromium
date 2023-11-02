@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,23 +39,6 @@ void DestroySharedImages(scoped_refptr<viz::ContextProvider> context_provider,
   std::move(callback).Run();
 }
 
-// Upload pixels to a shared image using GL.
-void UploadPixels(gpu::gles2::GLES2Interface* gl,
-                  const gpu::Mailbox& mailbox,
-                  const gfx::Size& size,
-                  GLenum format,
-                  GLenum type,
-                  const uint8_t* data) {
-  GLuint texture = gl->CreateAndTexStorage2DSharedImageCHROMIUM(mailbox.name);
-  gl->BeginSharedImageAccessDirectCHROMIUM(
-      texture, GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM);
-  gl->BindTexture(GL_TEXTURE_2D, texture);
-  gl->TexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, size.width(), size.height(), format,
-                    type, data);
-  gl->EndSharedImageAccessDirectCHROMIUM(texture);
-  gl->DeleteTextures(1, &texture);
-}
-
 }  // namespace
 
 scoped_refptr<VideoFrame> CreateSharedImageFrame(
@@ -91,7 +74,7 @@ scoped_refptr<VideoFrame> CreateSharedImageRGBAFrame(
   DCHECK_EQ(coded_size.width() % 4, 0);
   DCHECK_EQ(coded_size.height() % 2, 0);
   size_t pixels_size = coded_size.GetArea() * 4;
-  auto pixels = std::make_unique<uint8_t[]>(pixels_size);
+  std::vector<uint8_t> pixels(pixels_size);
   size_t i = 0;
   for (size_t block_y = 0; block_y < 2u; ++block_y) {
     for (int y = 0; y < coded_size.height() / 2; ++y) {
@@ -111,17 +94,11 @@ scoped_refptr<VideoFrame> CreateSharedImageRGBAFrame(
   gpu::Mailbox mailbox = sii->CreateSharedImage(
       viz::ResourceFormat::RGBA_8888, coded_size, gfx::ColorSpace(),
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-      gpu::SHARED_IMAGE_USAGE_GLES2, gpu::kNullSurfaceHandle);
-  auto* gl = context_provider->ContextGL();
-  gl->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
-  UploadPixels(gl, mailbox, coded_size, GL_RGBA, GL_UNSIGNED_BYTE,
-               pixels.get());
-  gpu::SyncToken sync_token;
-  gl->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
+      gpu::SHARED_IMAGE_USAGE_GLES2, pixels);
 
   return CreateSharedImageFrame(
       std::move(context_provider), VideoPixelFormat::PIXEL_FORMAT_ABGR,
-      {mailbox}, sync_token, GL_TEXTURE_2D, coded_size, visible_rect,
+      {mailbox}, {}, GL_TEXTURE_2D, coded_size, visible_rect,
       visible_rect.size(), base::Seconds(1), std::move(destroyed_callback));
 }
 
@@ -135,9 +112,9 @@ scoped_refptr<VideoFrame> CreateSharedImageI420Frame(
   gfx::Size uv_size(coded_size.width() / 2, coded_size.height() / 2);
   size_t y_pixels_size = coded_size.GetArea();
   size_t uv_pixels_size = uv_size.GetArea();
-  auto y_pixels = std::make_unique<uint8_t[]>(y_pixels_size);
-  auto u_pixels = std::make_unique<uint8_t[]>(uv_pixels_size);
-  auto v_pixels = std::make_unique<uint8_t[]>(uv_pixels_size);
+  std::vector<uint8_t> y_pixels(y_pixels_size);
+  std::vector<uint8_t> u_pixels(uv_pixels_size);
+  std::vector<uint8_t> v_pixels(uv_pixels_size);
   size_t y_i = 0;
   size_t uv_i = 0;
   for (size_t block_y = 0; block_y < 2u; ++block_y) {
@@ -162,29 +139,19 @@ scoped_refptr<VideoFrame> CreateSharedImageI420Frame(
   gpu::Mailbox y_mailbox = sii->CreateSharedImage(
       viz::ResourceFormat::LUMINANCE_8, coded_size, gfx::ColorSpace(),
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-      gpu::SHARED_IMAGE_USAGE_GLES2, gpu::kNullSurfaceHandle);
+      gpu::SHARED_IMAGE_USAGE_GLES2, y_pixels);
   gpu::Mailbox u_mailbox = sii->CreateSharedImage(
       viz::ResourceFormat::LUMINANCE_8, uv_size, gfx::ColorSpace(),
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-      gpu::SHARED_IMAGE_USAGE_GLES2, gpu::kNullSurfaceHandle);
+      gpu::SHARED_IMAGE_USAGE_GLES2, u_pixels);
   gpu::Mailbox v_mailbox = sii->CreateSharedImage(
       viz::ResourceFormat::LUMINANCE_8, uv_size, gfx::ColorSpace(),
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-      gpu::SHARED_IMAGE_USAGE_GLES2, gpu::kNullSurfaceHandle);
-  auto* gl = context_provider->ContextGL();
-  gl->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
-  UploadPixels(gl, y_mailbox, coded_size, GL_LUMINANCE, GL_UNSIGNED_BYTE,
-               y_pixels.get());
-  UploadPixels(gl, u_mailbox, uv_size, GL_LUMINANCE, GL_UNSIGNED_BYTE,
-               u_pixels.get());
-  UploadPixels(gl, v_mailbox, uv_size, GL_LUMINANCE, GL_UNSIGNED_BYTE,
-               v_pixels.get());
-  gpu::SyncToken sync_token;
-  gl->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
+      gpu::SHARED_IMAGE_USAGE_GLES2, v_pixels);
 
   return CreateSharedImageFrame(
       std::move(context_provider), VideoPixelFormat::PIXEL_FORMAT_I420,
-      {y_mailbox, u_mailbox, v_mailbox}, sync_token, GL_TEXTURE_2D, coded_size,
+      {y_mailbox, u_mailbox, v_mailbox}, {}, GL_TEXTURE_2D, coded_size,
       visible_rect, visible_rect.size(), base::Seconds(1),
       std::move(destroyed_callback));
 }
@@ -203,8 +170,8 @@ scoped_refptr<VideoFrame> CreateSharedImageNV12Frame(
   gfx::Size uv_size(coded_size.width() / 2, coded_size.height() / 2);
   size_t y_pixels_size = coded_size.GetArea();
   size_t uv_pixels_size = uv_size.GetArea() * 2;
-  auto y_pixels = std::make_unique<uint8_t[]>(y_pixels_size);
-  auto uv_pixels = std::make_unique<uint8_t[]>(uv_pixels_size);
+  std::vector<uint8_t> y_pixels(y_pixels_size);
+  std::vector<uint8_t> uv_pixels(uv_pixels_size);
   size_t y_i = 0;
   size_t uv_i = 0;
   for (size_t block_y = 0; block_y < 2u; ++block_y) {
@@ -229,25 +196,15 @@ scoped_refptr<VideoFrame> CreateSharedImageNV12Frame(
   gpu::Mailbox y_mailbox = sii->CreateSharedImage(
       viz::ResourceFormat::LUMINANCE_8, coded_size, gfx::ColorSpace(),
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-      gpu::SHARED_IMAGE_USAGE_GLES2, gpu::kNullSurfaceHandle);
+      gpu::SHARED_IMAGE_USAGE_GLES2, y_pixels);
   gpu::Mailbox uv_mailbox = sii->CreateSharedImage(
       viz::ResourceFormat::RG_88, uv_size, gfx::ColorSpace(),
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-      gpu::SHARED_IMAGE_USAGE_GLES2, gpu::kNullSurfaceHandle);
-  auto* gl = context_provider->ContextGL();
-  gl->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
-  UploadPixels(gl, y_mailbox, coded_size, GL_LUMINANCE, GL_UNSIGNED_BYTE,
-               y_pixels.get());
-  UploadPixels(gl, uv_mailbox, uv_size, GL_RG, GL_UNSIGNED_BYTE,
-               uv_pixels.get());
-  gpu::SyncToken sync_token;
-  gl->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
-
+      gpu::SHARED_IMAGE_USAGE_GLES2, uv_pixels);
   return CreateSharedImageFrame(
       std::move(context_provider), VideoPixelFormat::PIXEL_FORMAT_NV12,
-      {y_mailbox, uv_mailbox}, sync_token, GL_TEXTURE_2D, coded_size,
-      visible_rect, visible_rect.size(), base::Seconds(1),
-      std::move(destroyed_callback));
+      {y_mailbox, uv_mailbox}, {}, GL_TEXTURE_2D, coded_size, visible_rect,
+      visible_rect.size(), base::Seconds(1), std::move(destroyed_callback));
 }
 
 }  // namespace media

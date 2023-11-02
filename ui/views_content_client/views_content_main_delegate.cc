@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,14 +19,14 @@
 #include "ui/views_content_client/views_content_client.h"
 #include "ui/views_content_client/views_content_client_main_parts.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/logging_win.h"
 #endif
 
 namespace ui {
 namespace {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // {83FAC8EE-7A0E-4dbb-A3F6-6F500D7CAB1A}
 const GUID kViewsContentClientProviderName =
     { 0x83fac8ee, 0x7a0e, 0x4dbb,
@@ -43,7 +43,7 @@ ViewsContentMainDelegate::ViewsContentMainDelegate(
 ViewsContentMainDelegate::~ViewsContentMainDelegate() {
 }
 
-bool ViewsContentMainDelegate::BasicStartupComplete(int* exit_code) {
+absl::optional<int> ViewsContentMainDelegate::BasicStartupComplete() {
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
   std::string process_type =
@@ -54,13 +54,13 @@ bool ViewsContentMainDelegate::BasicStartupComplete(int* exit_code) {
       logging::LOG_TO_SYSTEM_DEBUG_LOG | logging::LOG_TO_STDERR;
   bool success = logging::InitLogging(settings);
   CHECK(success);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   logging::LogEventProvider::Initialize(kViewsContentClientProviderName);
 #endif
 
   content::RegisterShellPathProvider();
 
-  return false;
+  return absl::nullopt;
 }
 
 void ViewsContentMainDelegate::PreSandboxStartup() {
@@ -70,7 +70,7 @@ void ViewsContentMainDelegate::PreSandboxStartup() {
 
   // Load content resources to provide, e.g., sandbox configuration data on Mac.
   base::FilePath content_resources_pak_path;
-  base::PathService::Get(base::DIR_MODULE, &content_resources_pak_path);
+  base::PathService::Get(base::DIR_ASSETS, &content_resources_pak_path);
   ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
       content_resources_pak_path.AppendASCII("content_resources.pak"),
       ui::k100Percent);
@@ -85,9 +85,14 @@ void ViewsContentMainDelegate::PreSandboxStartup() {
   views_content_client_->OnResourcesLoaded();
 }
 
-void ViewsContentMainDelegate::PreBrowserMain() {
-  content::ContentMainDelegate::PreBrowserMain();
+absl::optional<int> ViewsContentMainDelegate::PreBrowserMain() {
+  absl::optional<int> exit_code =
+      content::ContentMainDelegate::PreBrowserMain();
+  if (exit_code.has_value())
+    return exit_code;
+
   ViewsContentClientMainParts::PreBrowserMain();
+  return absl::nullopt;
 }
 
 content::ContentClient* ViewsContentMainDelegate::CreateContentClient() {

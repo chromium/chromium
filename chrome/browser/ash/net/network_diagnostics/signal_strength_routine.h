@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,7 +25,7 @@ class SignalStrengthRoutine : public NetworkDiagnosticsRoutine {
 
   // NetworkDiagnosticRoutine:
   bool CanRun() override;
-  mojom::RoutineType Type() override;
+  chromeos::network_diagnostics::mojom::RoutineType Type() override;
   void Run() override;
   void AnalyzeResultsAndExecuteCallback() override;
 
@@ -40,7 +40,8 @@ class SignalStrengthRoutine : public NetworkDiagnosticsRoutine {
   // Represents the strength of an unknown signal.
   static constexpr int kUnknownSignalStrength = 0;
   int signal_strength_ = kUnknownSignalStrength;
-  std::vector<mojom::SignalStrengthProblem> problems_;
+  std::vector<chromeos::network_diagnostics::mojom::SignalStrengthProblem>
+      problems_;
 };
 
 }  // namespace network_diagnostics

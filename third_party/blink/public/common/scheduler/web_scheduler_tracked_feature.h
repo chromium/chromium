@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,6 +17,12 @@ namespace scheduler {
 // A list of features which influence scheduling behaviour (throttling /
 // freezing / back-forward cache) and which might be sent to the browser process
 // for metrics-related purposes.
+// When you add a feature, be sure to add it in the lists either to
+// kDisallowedFeatures or kAllowedFeatures in BackForwardCacheImpl.
+// When you remove a feature
+// - add its index in removed_features in
+//   BackForwardCacheMetricsTest.AllFeaturesCovered.
+// - add it to the list in IsRemovedFeature if it appear in finch configs.
 enum class WebSchedulerTrackedFeature : uint32_t {
   kMinValue = 0,
   kWebSocket = 0,
@@ -127,9 +133,15 @@ static_assert(static_cast<uint32_t>(WebSchedulerTrackedFeature::kMaxValue) < 64,
 
 BLINK_COMMON_EXPORT std::string FeatureToHumanReadableString(
     WebSchedulerTrackedFeature feature);
+BLINK_COMMON_EXPORT std::string FeatureToShortString(
+    WebSchedulerTrackedFeature feature);
 
 BLINK_COMMON_EXPORT absl::optional<WebSchedulerTrackedFeature> StringToFeature(
     const std::string& str);
+// Returns true if there was previously a feature by this name.
+// It is not comprehensive, just enough to cover what was used in finch,
+// in order to stop warnings at startup. See https://crbug.com/1363846.
+BLINK_COMMON_EXPORT bool IsRemovedFeature(const std::string& feature);
 
 // Converts a WebSchedulerTrackedFeature to a bit for use in a bitmask.
 BLINK_COMMON_EXPORT constexpr uint64_t FeatureToBit(
@@ -143,6 +155,11 @@ BLINK_COMMON_EXPORT bool IsFeatureSticky(WebSchedulerTrackedFeature feature);
 
 // All the sticky features.
 BLINK_COMMON_EXPORT WebSchedulerTrackedFeatures StickyFeatures();
+
+// Disables wake up alignment permanently for the process. This is called when a
+// feature that is incompatible with wake up alignment is used. Thread-safe.
+BLINK_COMMON_EXPORT void DisableAlignWakeUpsForProcess();
+BLINK_COMMON_EXPORT bool IsAlignWakeUpsDisabledForProcess();
 
 }  // namespace scheduler
 }  // namespace blink

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -48,11 +48,12 @@ constexpr char kValidJsonResponse[] = R"(
         {
           "itemId": "item id 2",
           "displayText": "display text 2",
-          "predictionReason": "unused field"
+          "predictionReason": "prediction reason 2"
         },
         {
           "itemId": "item id 3",
-          "displayText": "display text 3"
+          "displayText": "display text 3",
+          "predictionReason": "prediction reason 3"
         }
       ],
       "suggestionSessionId": "suggestion id 1"
@@ -65,9 +66,6 @@ constexpr char kResponseSizeHistogramName[] =
 namespace app_list {
 using base::test::ScopedFeatureList;
 
-// TODO(crbug.com/1034842): Add test checking we make no requests when disabled
-// by experiment or policy.
-
 class ItemSuggestCacheTest : public testing::Test {
  protected:
   ItemSuggestCacheTest() = default;
@@ -79,21 +77,26 @@ class ItemSuggestCacheTest : public testing::Test {
 
   void ResultMatches(const ItemSuggestCache::Result& actual,
                      const std::string& id,
-                     const std::string& title) {
+                     const std::string& title,
+                     const absl::optional<std::string>& prediction_reason) {
     EXPECT_EQ(actual.id, id);
     EXPECT_EQ(actual.title, title);
+    EXPECT_EQ(actual.prediction_reason, prediction_reason);
   }
 
   void ResultsMatch(
       const absl::optional<ItemSuggestCache::Results>& actual,
       const std::string& suggestion_id,
-      const std::vector<std::pair<std::string, std::string>>& results) {
+      const std::vector<
+          std::tuple<std::string, std::string, absl::optional<std::string>>>&
+          results) {
     EXPECT_TRUE(actual.has_value());
 
     EXPECT_EQ(actual->suggestion_id, suggestion_id);
     ASSERT_EQ(actual->results.size(), results.size());
-    for (int i = 0; i < results.size(); ++i) {
-      ResultMatches(actual->results[i], results[i].first, results[i].second);
+    for (size_t i = 0; i < results.size(); ++i) {
+      ResultMatches(actual->results[i], std::get<0>(results[i]),
+                    std::get<1>(results[i]), std::get<2>(results[i]));
     }
   }
 
@@ -108,9 +111,9 @@ class ItemSuggestCacheTest : public testing::Test {
         {ChromeSigninClientFactory::GetInstance(),
          base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
                              &url_loader_factory_)});
-    profile_ = profile_manager_->CreateTestingProfile(
-        kEmail, /*prefs=*/{}, kEmail16,
-        /*avatar_id=*/0, /*supervised_user_id=*/{}, factories);
+    profile_ =
+        profile_manager_->CreateTestingProfile(kEmail, /*prefs=*/{}, kEmail16,
+                                               /*avatar_id=*/0, factories);
 
     identity_test_env_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_);
@@ -135,7 +138,7 @@ class ItemSuggestCacheTest : public testing::Test {
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
 
   ScopedFeatureList scoped_feature_list_;
-  base::Feature feature_ = ItemSuggestCache::kExperiment;
+  const base::Feature& feature_ = kLauncherItemSuggest;
 
   const base::HistogramTester histogram_tester_;
 };
@@ -143,9 +146,9 @@ class ItemSuggestCacheTest : public testing::Test {
 TEST_F(ItemSuggestCacheTest, ConvertJsonSuccess) {
   const base::Value full = Parse(kValidJsonResponse);
   ResultsMatch(ItemSuggestCache::ConvertJsonForTest(&full), "suggestion id 1",
-               {{"item id 1", "display text 1"},
-                {"item id 2", "display text 2"},
-                {"item id 3", "display text 3"}});
+               {{"item id 1", "display text 1", absl::nullopt},
+                {"item id 2", "display text 2", "prediction reason 2"},
+                {"item id 3", "display text 3", "prediction reason 3"}});
 
   const base::Value empty_items = Parse(R"(
     {
@@ -205,7 +208,7 @@ TEST_F(ItemSuggestCacheTest, UpdateCacheDisabledByExperiment) {
       feature_, {{"enabled", "false"}});
   std::unique_ptr<ItemSuggestCache> itemSuggestCache =
       std::make_unique<ItemSuggestCache>(profile_, shared_url_loader_factory_);
-  itemSuggestCache->UpdateCache();
+  itemSuggestCache->MaybeUpdateCache();
   task_environment_.RunUntilIdle();
   histogram_tester_.ExpectUniqueSample(
       kStatusHistogramName, ItemSuggestCache::Status::kDisabledByExperiment, 1);
@@ -215,7 +218,7 @@ TEST_F(ItemSuggestCacheTest, UpdateCacheDisabledByPolicy) {
   profile_->GetPrefs()->SetBoolean(drive::prefs::kDisableDrive, true);
   std::unique_ptr<ItemSuggestCache> itemSuggestCache =
       std::make_unique<ItemSuggestCache>(profile_, shared_url_loader_factory_);
-  itemSuggestCache->UpdateCache();
+  itemSuggestCache->MaybeUpdateCache();
   task_environment_.RunUntilIdle();
   histogram_tester_.ExpectUniqueSample(
       kStatusHistogramName, ItemSuggestCache::Status::kDisabledByPolicy, 1);
@@ -227,7 +230,7 @@ TEST_F(ItemSuggestCacheTest, UpdateCacheServerUrlIsNotHttps) {
       {{"server_url", "http://appsitemsuggest-pa.googleapis.com/v1/items"}});
   std::unique_ptr<ItemSuggestCache> itemSuggestCache =
       std::make_unique<ItemSuggestCache>(profile_, shared_url_loader_factory_);
-  itemSuggestCache->UpdateCache();
+  itemSuggestCache->MaybeUpdateCache();
   task_environment_.RunUntilIdle();
   histogram_tester_.ExpectUniqueSample(
       kStatusHistogramName, ItemSuggestCache::Status::kInvalidServerUrl, 1);
@@ -238,7 +241,7 @@ TEST_F(ItemSuggestCacheTest, UpdateCacheServerUrlIsNotGoogleDomain) {
       feature_, {{"server_url", "https://foo.com"}});
   std::unique_ptr<ItemSuggestCache> itemSuggestCache =
       std::make_unique<ItemSuggestCache>(profile_, shared_url_loader_factory_);
-  itemSuggestCache->UpdateCache();
+  itemSuggestCache->MaybeUpdateCache();
   task_environment_.RunUntilIdle();
   histogram_tester_.ExpectUniqueSample(
       kStatusHistogramName, ItemSuggestCache::Status::kInvalidServerUrl, 1);
@@ -247,7 +250,7 @@ TEST_F(ItemSuggestCacheTest, UpdateCacheServerUrlIsNotGoogleDomain) {
 TEST_F(ItemSuggestCacheTest, UpdateCacheServerNoAuthToken) {
   std::unique_ptr<ItemSuggestCache> itemSuggestCache =
       std::make_unique<ItemSuggestCache>(profile_, shared_url_loader_factory_);
-  itemSuggestCache->UpdateCache();
+  itemSuggestCache->MaybeUpdateCache();
   task_environment_.RunUntilIdle();
   histogram_tester_.ExpectUniqueSample(
       kStatusHistogramName, ItemSuggestCache::Status::kGoogleAuthError, 1);
@@ -264,7 +267,7 @@ TEST_F(ItemSuggestCacheTest, UpdateCacheInsufficientResourcesError) {
   network::URLLoaderCompletionStatus status(net::ERR_INSUFFICIENT_RESOURCES);
   url_loader_factory_.AddResponse(GURL(kRequestUrl), std::move(head), "content",
                                   status);
-  itemSuggestCache->UpdateCache();
+  itemSuggestCache->MaybeUpdateCache();
 
   task_environment_.RunUntilIdle();
   histogram_tester_.ExpectUniqueSample(
@@ -282,7 +285,7 @@ TEST_F(ItemSuggestCacheTest, UpdateCacheNetError) {
   network::URLLoaderCompletionStatus status(net::ERR_FAILED);
   url_loader_factory_.AddResponse(GURL(kRequestUrl), std::move(head), "content",
                                   status);
-  itemSuggestCache->UpdateCache();
+  itemSuggestCache->MaybeUpdateCache();
 
   task_environment_.RunUntilIdle();
   histogram_tester_.ExpectUniqueSample(kStatusHistogramName,
@@ -304,7 +307,7 @@ TEST_F(ItemSuggestCacheTest, UpdateCache5kkError) {
   url_loader_factory_.AddResponse(GURL(kRequestUrl), std::move(head),
                                   /* content= */ "",
                                   network::URLLoaderCompletionStatus(net::OK));
-  itemSuggestCache->UpdateCache();
+  itemSuggestCache->MaybeUpdateCache();
 
   task_environment_.RunUntilIdle();
   histogram_tester_.ExpectUniqueSample(kStatusHistogramName,
@@ -326,7 +329,7 @@ TEST_F(ItemSuggestCacheTest, UpdateCache4kkError) {
   url_loader_factory_.AddResponse(GURL(kRequestUrl), std::move(head),
                                   /* content= */ "",
                                   network::URLLoaderCompletionStatus(net::OK));
-  itemSuggestCache->UpdateCache();
+  itemSuggestCache->MaybeUpdateCache();
 
   task_environment_.RunUntilIdle();
   histogram_tester_.ExpectUniqueSample(kStatusHistogramName,
@@ -348,7 +351,7 @@ TEST_F(ItemSuggestCacheTest, UpdateCache3kkError) {
   url_loader_factory_.AddResponse(GURL(kRequestUrl), std::move(head),
                                   /* content= */ "",
                                   network::URLLoaderCompletionStatus(net::OK));
-  itemSuggestCache->UpdateCache();
+  itemSuggestCache->MaybeUpdateCache();
 
   task_environment_.RunUntilIdle();
   histogram_tester_.ExpectUniqueSample(kStatusHistogramName,
@@ -364,7 +367,7 @@ TEST_F(ItemSuggestCacheTest, UpdateCacheEmptyResponse) {
   url_loader_factory_.AddResponse(kRequestUrl,
                                   /* content= */ "", net::HTTP_OK);
 
-  itemSuggestCache->UpdateCache();
+  itemSuggestCache->MaybeUpdateCache();
 
   task_environment_.RunUntilIdle();
   histogram_tester_.ExpectUniqueSample(
@@ -379,7 +382,7 @@ TEST_F(ItemSuggestCacheTest, UpdateCacheInvalidResponse) {
   identity_test_env_->SetAutomaticIssueOfAccessTokens(true);
   url_loader_factory_.AddResponse(kRequestUrl, "invalid = json", net::HTTP_OK);
 
-  itemSuggestCache->UpdateCache();
+  itemSuggestCache->MaybeUpdateCache();
 
   task_environment_.RunUntilIdle();
   histogram_tester_.ExpectUniqueSample(kResponseSizeHistogramName,
@@ -403,7 +406,7 @@ TEST_F(ItemSuggestCacheTest, UpdateCacheConversionFailure) {
       )",
                                   net::HTTP_OK);
 
-  itemSuggestCache->UpdateCache();
+  itemSuggestCache->MaybeUpdateCache();
 
   task_environment_.RunUntilIdle();
   histogram_tester_.ExpectUniqueSample(kResponseSizeHistogramName, 45, 1);
@@ -426,7 +429,7 @@ TEST_F(ItemSuggestCacheTest, UpdateCacheConversionEmptyResults) {
     })",
                                   net::HTTP_OK);
 
-  itemSuggestCache->UpdateCache();
+  itemSuggestCache->MaybeUpdateCache();
 
   task_environment_.RunUntilIdle();
   histogram_tester_.ExpectUniqueSample(kResponseSizeHistogramName,
@@ -445,16 +448,16 @@ TEST_F(ItemSuggestCacheTest, UpdateCacheSavesResults) {
   url_loader_factory_.AddResponse(kRequestUrl, kValidJsonResponse,
                                   net::HTTP_OK);
 
-  itemSuggestCache->UpdateCache();
+  itemSuggestCache->MaybeUpdateCache();
 
   task_environment_.RunUntilIdle();
   histogram_tester_.ExpectUniqueSample(kResponseSizeHistogramName,
-                                       /* sample= */ 419,
+                                       /* sample= */ 477,
                                        /* expected_count= */ 1);
   ResultsMatch(itemSuggestCache->GetResults(), "suggestion id 1",
-               {{"item id 1", "display text 1"},
-                {"item id 2", "display text 2"},
-                {"item id 3", "display text 3"}});
+               {{"item id 1", "display text 1", absl::nullopt},
+                {"item id 2", "display text 2", "prediction reason 2"},
+                {"item id 3", "display text 3", "prediction reason 3"}});
   histogram_tester_.ExpectUniqueSample(kStatusHistogramName,
                                        ItemSuggestCache::Status::kOk, 1);
 }
@@ -478,10 +481,10 @@ TEST_F(ItemSuggestCacheTest, UpdateCacheSmallTimeBetweenUpdates) {
     })",
                                   net::HTTP_OK);
 
-  itemSuggestCache->UpdateCache();
+  itemSuggestCache->MaybeUpdateCache();
   task_environment_.RunUntilIdle();
   ResultsMatch(itemSuggestCache->GetResults(), "suggestion id 1",
-               {{"item id 1", "display text 1"}});
+               {{"item id 1", "display text 1", absl::nullopt}});
 
   task_environment_.AdvanceClock(base::Minutes(2));
 
@@ -497,12 +500,12 @@ TEST_F(ItemSuggestCacheTest, UpdateCacheSmallTimeBetweenUpdates) {
       "suggestionSessionId": "suggestion id 2"
     })",
                                   net::HTTP_OK);
-  itemSuggestCache->UpdateCache();
+  itemSuggestCache->MaybeUpdateCache();
   task_environment_.RunUntilIdle();
   // The first set of results are in the cache since the second update occurred
   // before the minimum time between updates.
   ResultsMatch(itemSuggestCache->GetResults(), "suggestion id 1",
-               {{"item id 1", "display text 1"}});
+               {{"item id 1", "display text 1", absl::nullopt}});
 }
 
 }  // namespace app_list

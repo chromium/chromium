@@ -1,13 +1,17 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <memory>
 
+#include "ash/components/arc/arc_features_parser.h"
+#include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/components/arc/session/arc_service_manager.h"
+#include "ash/components/arc/test/arc_util_test_support.h"
+#include "ash/components/arc/test/fake_webapk_instance.h"
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/webapk/webapk_prefs.h"
 #include "chrome/browser/apps/app_service/webapk/webapk_test_server.h"
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -16,11 +20,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "components/arc/arc_features_parser.h"
-#include "components/arc/session/arc_bridge_service.h"
-#include "components/arc/session/arc_service_manager.h"
-#include "components/arc/test/arc_util_test_support.h"
-#include "components/arc/test/fake_webapk_instance.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/test/browser_test.h"
@@ -42,7 +41,6 @@ absl::optional<arc::ArcFeatures> GetArcFeatures() {
 class WebApkPolicyBrowserTest : public policy::PolicyTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    scoped_feature_list_.InitAndEnableFeature(ash::features::kWebApkGenerator);
     arc::SetArcAvailableCommandLineForTesting(command_line);
   }
 
@@ -77,7 +75,6 @@ class WebApkPolicyBrowserTest : public policy::PolicyTest {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<arc::FakeWebApkInstance> fake_webapk_instance_;
   base::RepeatingCallback<absl::optional<arc::ArcFeatures>()>
       arc_features_getter_;

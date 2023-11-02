@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,15 +25,16 @@ namespace {
 
 // Shows a Windows certificate viewer dialog on a background thread to avoid
 // nested run loops.
-class CertificateViewerDialog : public ui::BaseShellDialogImpl {
+class CertificateViewerDialogWin : public ui::BaseShellDialogImpl {
  public:
-  CertificateViewerDialog() {}
+  CertificateViewerDialogWin() {}
 
-  CertificateViewerDialog(const CertificateViewerDialog&) = delete;
-  CertificateViewerDialog& operator=(const CertificateViewerDialog&) = delete;
+  CertificateViewerDialogWin(const CertificateViewerDialogWin&) = delete;
+  CertificateViewerDialogWin& operator=(const CertificateViewerDialogWin&) =
+      delete;
 
   // Shows the dialog and calls |callback| when the dialog closes. The caller
-  // must ensure the CertificateViewerDialog remains valid until then.
+  // must ensure the CertificateViewerDialogWin remains valid until then.
   void Show(HWND parent,
             net::X509Certificate* cert,
             base::RepeatingClosure callback) {
@@ -48,12 +49,14 @@ class CertificateViewerDialog : public ui::BaseShellDialogImpl {
         run_state->dialog_task_runner;
     task_runner->PostTaskAndReply(
         FROM_HERE,
-        base::BindOnce(&CertificateViewerDialog::ShowOnDialogThread,
+        base::BindOnce(&CertificateViewerDialogWin::ShowOnDialogThread,
                        base::Unretained(this), parent,
                        base::WrapRefCounted(cert)),
-        base::BindOnce(&CertificateViewerDialog::OnDialogClosed,
+        base::BindOnce(&CertificateViewerDialogWin::OnDialogClosed,
                        base::Unretained(this), std::move(run_state), callback));
   }
+
+  static bool mock_certificate_viewer_for_testing;
 
  private:
   void ShowOnDialogThread(HWND owner,
@@ -78,6 +81,9 @@ class CertificateViewerDialog : public ui::BaseShellDialogImpl {
     view_info.cStores = 1;
     view_info.rghStores = &cert_store;
 
+    if (mock_certificate_viewer_for_testing)
+      return;
+
     BOOL properties_changed;
     ::CryptUIDlgViewCertificate(&view_info, &properties_changed);
   }
@@ -90,13 +96,20 @@ class CertificateViewerDialog : public ui::BaseShellDialogImpl {
   }
 };
 
+// static
+bool CertificateViewerDialogWin::mock_certificate_viewer_for_testing = false;
+
 }  // namespace
 
-void ShowCertificateViewer(content::WebContents* web_contents,
-                           gfx::NativeWindow parent,
-                           net::X509Certificate* cert) {
-  CertificateViewerDialog* dialog = new CertificateViewerDialog;
+void ShowCertificateViewerForClientAuth(content::WebContents* web_contents,
+                                        gfx::NativeWindow parent,
+                                        net::X509Certificate* cert) {
+  CertificateViewerDialogWin* dialog = new CertificateViewerDialogWin;
   dialog->Show(parent->GetHost()->GetAcceleratedWidget(), cert,
                base::BindRepeating(
-                   &base::DeletePointer<CertificateViewerDialog>, dialog));
+                   &base::DeletePointer<CertificateViewerDialogWin>, dialog));
+}
+
+void MockCertificateViewerForTesting() {
+  CertificateViewerDialogWin::mock_certificate_viewer_for_testing = true;
 }

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@ import 'chrome://settings/settings.js';
 
 import {SettingsDropdownMenuElement} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
+import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 /** @fileoverview Suite of tests for settings-dropdown-menu. */
 suite('SettingsDropdownMenu', function() {
@@ -33,7 +33,8 @@ suite('SettingsDropdownMenu', function() {
   }
 
   setup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     dropdown = document.createElement('settings-dropdown-menu');
     document.body.appendChild(dropdown);
     selectElement = dropdown.shadowRoot!.querySelector('select')!;
@@ -50,8 +51,10 @@ suite('SettingsDropdownMenu', function() {
       value: 100,
     };
     dropdown.menuOptions = [
-      {value: 100, name: 'Option 100'}, {value: 200, name: 'Option 200'},
-      {value: 300, name: 'Option 300'}, {value: 400, name: 'Option 400'}
+      {value: 100, name: 'Option 100'},
+      {value: 200, name: 'Option 200'},
+      {value: 300, name: 'Option 300'},
+      {value: 400, name: 'Option 400'},
     ];
 
     return waitUntilDropdownUpdated()
@@ -83,8 +86,10 @@ suite('SettingsDropdownMenu', function() {
       value: 'c',
     };
     dropdown.menuOptions = [
-      {value: 'a', name: 'AAA'}, {value: 'b', name: 'BBB'},
-      {value: 'c', name: 'CCC'}, {value: 'd', name: 'DDD'}
+      {value: 'a', name: 'AAA'},
+      {value: 'b', name: 'BBB'},
+      {value: 'c', name: 'CCC'},
+      {value: 'd', name: 'DDD'},
     ];
 
     return waitUntilDropdownUpdated()
@@ -117,8 +122,10 @@ suite('SettingsDropdownMenu', function() {
       value: 'f',
     };
     dropdown.menuOptions = [
-      {value: 'a', name: 'AAA'}, {value: 'b', name: 'BBB'},
-      {value: 'c', name: 'CCC'}, {value: 'd', name: 'DDD'}
+      {value: 'a', name: 'AAA'},
+      {value: 'b', name: 'BBB'},
+      {value: 'c', name: 'CCC'},
+      {value: 'd', name: 'DDD'},
     ];
     dropdown.addEventListener('settings-control-change', () => {
       // Failure, custom value shouldn't ever call this.
@@ -159,8 +166,10 @@ suite('SettingsDropdownMenu', function() {
           assertEquals('SETTINGS_DROPDOWN_NOT_FOUND_ITEM', selectElement.value);
 
           dropdown.menuOptions = [
-            {value: 100, name: 'Option 100'}, {value: 200, name: 'Option 200'},
-            {value: 300, name: 'Option 300'}, {value: 400, name: 'Option 400'}
+            {value: 100, name: 'Option 100'},
+            {value: 200, name: 'Option 200'},
+            {value: 300, name: 'Option 300'},
+            {value: 400, name: 'Option 400'},
           ];
           return waitUntilDropdownUpdated();
         })

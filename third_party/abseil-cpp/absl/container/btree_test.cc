@@ -14,14 +14,20 @@
 
 #include "absl/container/btree_test.h"
 
+#include <algorithm>
+#include <array>
 #include <cstdint>
+#include <functional>
+#include <iterator>
 #include <limits>
 #include <map>
 #include <memory>
+#include <numeric>
 #include <stdexcept>
 #include <string>
 #include <type_traits>
 #include <utility>
+#include <vector>
 
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
@@ -34,7 +40,6 @@
 #include "absl/flags/flag.h"
 #include "absl/hash/hash_testing.h"
 #include "absl/memory/memory.h"
-#include "absl/meta/type_traits.h"
 #include "absl/strings/str_cat.h"
 #include "absl/strings/str_split.h"
 #include "absl/strings/string_view.h"
@@ -1212,6 +1217,11 @@ class BtreeNodePeer {
   constexpr static bool UsesLinearNodeSearch() {
     return btree_node<typename Btree::params_type>::use_linear_search::value;
   }
+
+  template <typename Btree>
+  constexpr static bool UsesGenerations() {
+    return Btree::params_type::kEnableGenerations;
+  }
 };
 
 namespace {
@@ -1285,7 +1295,7 @@ TEST(Btree, BtreeMapCanHoldMoveOnlyTypes) {
 
   std::unique_ptr<std::string> &v = m["A"];
   EXPECT_TRUE(v == nullptr);
-  v.reset(new std::string("X"));
+  v = absl::make_unique<std::string>("X");
 
   auto iter = m.find("A");
   EXPECT_EQ("X", *iter->second);
@@ -1344,38 +1354,34 @@ TEST(Btree, InitializerListInsert) {
   EXPECT_EQ(++it, range.second);
 }
 
-template <typename Compare, typename K>
-void AssertKeyCompareToAdapted() {
-  using Adapted = typename key_compare_to_adapter<Compare>::type;
-  static_assert(!std::is_same<Adapted, Compare>::value,
-                "key_compare_to_adapter should have adapted this comparator.");
+template <typename Compare, typename Key>
+void AssertKeyCompareStringAdapted() {
+  using Adapted = typename key_compare_adapter<Compare, Key>::type;
   static_assert(
-      std::is_same<absl::weak_ordering,
-                   absl::result_of_t<Adapted(const K &, const K &)>>::value,
-      "Adapted comparator should be a key-compare-to comparator.");
+      std::is_same<Adapted, StringBtreeDefaultLess>::value ||
+          std::is_same<Adapted, StringBtreeDefaultGreater>::value,
+      "key_compare_adapter should have string-adapted this comparator.");
 }
-template <typename Compare, typename K>
-void AssertKeyCompareToNotAdapted() {
-  using Unadapted = typename key_compare_to_adapter<Compare>::type;
+template <typename Compare, typename Key>
+void AssertKeyCompareNotStringAdapted() {
+  using Adapted = typename key_compare_adapter<Compare, Key>::type;
   static_assert(
-      std::is_same<Unadapted, Compare>::value,
-      "key_compare_to_adapter shouldn't have adapted this comparator.");
-  static_assert(
-      std::is_same<bool,
-                   absl::result_of_t<Unadapted(const K &, const K &)>>::value,
-      "Un-adapted comparator should return bool.");
+      !std::is_same<Adapted, StringBtreeDefaultLess>::value &&
+          !std::is_same<Adapted, StringBtreeDefaultGreater>::value,
+      "key_compare_adapter shouldn't have string-adapted this comparator.");
 }
 
-TEST(Btree, KeyCompareToAdapter) {
-  AssertKeyCompareToAdapted<std::less<std::string>, std::string>();
-  AssertKeyCompareToAdapted<std::greater<std::string>, std::string>();
-  AssertKeyCompareToAdapted<std::less<absl::string_view>, absl::string_view>();
-  AssertKeyCompareToAdapted<std::greater<absl::string_view>,
-                            absl::string_view>();
-  AssertKeyCompareToAdapted<std::less<absl::Cord>, absl::Cord>();
-  AssertKeyCompareToAdapted<std::greater<absl::Cord>, absl::Cord>();
-  AssertKeyCompareToNotAdapted<std::less<int>, int>();
-  AssertKeyCompareToNotAdapted<std::greater<int>, int>();
+TEST(Btree, KeyCompareAdapter) {
+  AssertKeyCompareStringAdapted<std::less<std::string>, std::string>();
+  AssertKeyCompareStringAdapted<std::greater<std::string>, std::string>();
+  AssertKeyCompareStringAdapted<std::less<absl::string_view>,
+                                absl::string_view>();
+  AssertKeyCompareStringAdapted<std::greater<absl::string_view>,
+                                absl::string_view>();
+  AssertKeyCompareStringAdapted<std::less<absl::Cord>, absl::Cord>();
+  AssertKeyCompareStringAdapted<std::greater<absl::Cord>, absl::Cord>();
+  AssertKeyCompareNotStringAdapted<std::less<int>, int>();
+  AssertKeyCompareNotStringAdapted<std::greater<int>, int>();
 }
 
 TEST(Btree, RValueInsert) {
@@ -1425,11 +1431,19 @@ TEST(Btree, RValueInsert) {
   EXPECT_EQ(tracker.swaps(), 0);
 }
 
-// A btree set with a specific number of values per node.
+template <typename Cmp>
+struct CheckedCompareOptedOutCmp : Cmp, BtreeTestOnlyCheckedCompareOptOutBase {
+  using Cmp::Cmp;
+  CheckedCompareOptedOutCmp() {}
+  CheckedCompareOptedOutCmp(Cmp cmp) : Cmp(std::move(cmp)) {}  // NOLINT
+};
+
+// A btree set with a specific number of values per node. Opt out of
+// checked_compare so that we can expect exact numbers of comparisons.
 template <typename Key, int TargetValuesPerNode, typename Cmp = std::less<Key>>
 class SizedBtreeSet
     : public btree_set_container<btree<
-          set_params<Key, Cmp, std::allocator<Key>,
+          set_params<Key, CheckedCompareOptedOutCmp<Cmp>, std::allocator<Key>,
                      BtreeNodePeer::GetTargetNodeSize<Key>(TargetValuesPerNode),
                      /*Multi=*/false>>> {
   using Base = typename SizedBtreeSet::btree_set_container;
@@ -1473,8 +1487,10 @@ TEST(Btree, MovesComparisonsCopiesSwapsTracking) {
   EXPECT_EQ(BtreeNodePeer::GetNumSlotsPerNode<decltype(set61)>(), 61);
   EXPECT_EQ(BtreeNodePeer::GetNumSlotsPerNode<decltype(set100)>(), 100);
   if (sizeof(void *) == 8) {
-    EXPECT_EQ(BtreeNodePeer::GetNumSlotsPerNode<absl::btree_set<int32_t>>(),
-              BtreeNodePeer::GetNumSlotsPerNode<decltype(set61)>());
+    EXPECT_EQ(
+        BtreeNodePeer::GetNumSlotsPerNode<absl::btree_set<int32_t>>(),
+        // When we have generations, there is one fewer slot.
+        BtreeNodePeer::UsesGenerations<absl::btree_set<int32_t>>() ? 60 : 61);
   }
 
   // Test key insertion/deletion in random order.
@@ -1528,8 +1544,10 @@ TEST(Btree, MovesComparisonsCopiesSwapsTrackingThreeWayCompare) {
   EXPECT_EQ(BtreeNodePeer::GetNumSlotsPerNode<decltype(set61)>(), 61);
   EXPECT_EQ(BtreeNodePeer::GetNumSlotsPerNode<decltype(set100)>(), 100);
   if (sizeof(void *) == 8) {
-    EXPECT_EQ(BtreeNodePeer::GetNumSlotsPerNode<absl::btree_set<int32_t>>(),
-              BtreeNodePeer::GetNumSlotsPerNode<decltype(set61)>());
+    EXPECT_EQ(
+        BtreeNodePeer::GetNumSlotsPerNode<absl::btree_set<int32_t>>(),
+        // When we have generations, there is one fewer slot.
+        BtreeNodePeer::UsesGenerations<absl::btree_set<int32_t>>() ? 60 : 61);
   }
 
   // Test key insertion/deletion in random order.
@@ -1746,6 +1764,22 @@ TEST(Btree, ValueComp) {
   EXPECT_TRUE(m2.value_comp()(std::make_pair("a", 0), std::make_pair("b", 0)));
   EXPECT_FALSE(m2.value_comp()(std::make_pair("b", 0), std::make_pair("b", 0)));
   EXPECT_FALSE(m2.value_comp()(std::make_pair("b", 0), std::make_pair("a", 0)));
+}
+
+// Test that we have the protected members from the std::map::value_compare API.
+// See https://en.cppreference.com/w/cpp/container/map/value_compare.
+TEST(Btree, MapValueCompProtected) {
+  struct key_compare {
+    bool operator()(int l, int r) const { return l < r; }
+    int id;
+  };
+  using value_compare = absl::btree_map<int, int, key_compare>::value_compare;
+  struct value_comp_child : public value_compare {
+    explicit value_comp_child(key_compare kc) : value_compare(kc) {}
+    int GetId() const { return comp.id; }
+  };
+  value_comp_child c(key_compare{10});
+  EXPECT_EQ(c.GetId(), 10);
 }
 
 TEST(Btree, DefaultConstruction) {
@@ -2297,7 +2331,9 @@ TEST(Btree, TryEmplaceWithHintWorks) {
   };
   using Cmp = decltype(cmp);
 
-  absl::btree_map<int, int, Cmp> m(cmp);
+  // Use a map that is opted out of key_compare being adapted so we can expect
+  // strict comparison call limits.
+  absl::btree_map<int, int, CheckedCompareOptedOutCmp<Cmp>> m(cmp);
   for (int i = 0; i < 128; ++i) {
     m.emplace(i, i);
   }
@@ -2452,23 +2488,28 @@ TEST(Btree, EraseIf) {
   // Test that erase_if works with all the container types and supports lambdas.
   {
     absl::btree_set<int> s = {1, 3, 5, 6, 100};
-    erase_if(s, [](int k) { return k > 3; });
+    EXPECT_EQ(erase_if(s, [](int k) { return k > 3; }), 3);
     EXPECT_THAT(s, ElementsAre(1, 3));
   }
   {
     absl::btree_multiset<int> s = {1, 3, 3, 5, 6, 6, 100};
-    erase_if(s, [](int k) { return k <= 3; });
+    EXPECT_EQ(erase_if(s, [](int k) { return k <= 3; }), 3);
     EXPECT_THAT(s, ElementsAre(5, 6, 6, 100));
   }
   {
     absl::btree_map<int, int> m = {{1, 1}, {3, 3}, {6, 6}, {100, 100}};
-    erase_if(m, [](std::pair<const int, int> kv) { return kv.first > 3; });
+    EXPECT_EQ(
+        erase_if(m, [](std::pair<const int, int> kv) { return kv.first > 3; }),
+        2);
     EXPECT_THAT(m, ElementsAre(Pair(1, 1), Pair(3, 3)));
   }
   {
     absl::btree_multimap<int, int> m = {{1, 1}, {3, 3}, {3, 6},
                                         {6, 6}, {6, 7}, {100, 6}};
-    erase_if(m, [](std::pair<const int, int> kv) { return kv.second == 6; });
+    EXPECT_EQ(
+        erase_if(m,
+                 [](std::pair<const int, int> kv) { return kv.second == 6; }),
+        3);
     EXPECT_THAT(m, ElementsAre(Pair(1, 1), Pair(3, 3), Pair(6, 7)));
   }
   // Test that erasing all elements from a large set works and test support for
@@ -2476,14 +2517,28 @@ TEST(Btree, EraseIf) {
   {
     absl::btree_set<int> s;
     for (int i = 0; i < 1000; ++i) s.insert(2 * i);
-    erase_if(s, IsEven);
+    EXPECT_EQ(erase_if(s, IsEven), 1000);
     EXPECT_THAT(s, IsEmpty());
   }
   // Test that erase_if supports other format of function pointers.
   {
     absl::btree_set<int> s = {1, 3, 5, 6, 100};
-    erase_if(s, &IsEven);
+    EXPECT_EQ(erase_if(s, &IsEven), 2);
     EXPECT_THAT(s, ElementsAre(1, 3, 5));
+  }
+  // Test that erase_if invokes the predicate once per element.
+  {
+    absl::btree_set<int> s;
+    for (int i = 0; i < 1000; ++i) s.insert(i);
+    int pred_calls = 0;
+    EXPECT_EQ(erase_if(s,
+                       [&pred_calls](int k) {
+                         ++pred_calls;
+                         return k % 2;
+                       }),
+              500);
+    EXPECT_THAT(s, SizeIs(500));
+    EXPECT_EQ(pred_calls, 1000);
   }
 }
 
@@ -2946,6 +3001,323 @@ TEST(Btree,
 
 TEST(Btree, ConstructImplicitlyWithUnadaptedComparator) {
   absl::btree_set<MultiKey, MultiKeyComp> set = {{}, MultiKeyComp{}};
+}
+
+#ifndef NDEBUG
+TEST(Btree, InvalidComparatorsCaught) {
+  {
+    struct ZeroAlwaysLessCmp {
+      bool operator()(int lhs, int rhs) const {
+        if (lhs == 0) return true;
+        return lhs < rhs;
+      }
+    };
+    absl::btree_set<int, ZeroAlwaysLessCmp> set;
+    EXPECT_DEATH(set.insert({0, 1, 2}), "is_self_equivalent");
+  }
+  {
+    struct ThreeWayAlwaysLessCmp {
+      absl::weak_ordering operator()(int, int) const {
+        return absl::weak_ordering::less;
+      }
+    };
+    absl::btree_set<int, ThreeWayAlwaysLessCmp> set;
+    EXPECT_DEATH(set.insert({0, 1, 2}), "is_self_equivalent");
+  }
+  {
+    struct SumGreaterZeroCmp {
+      bool operator()(int lhs, int rhs) const {
+        // First, do equivalence correctly - so we can test later condition.
+        if (lhs == rhs) return false;
+        return lhs + rhs > 0;
+      }
+    };
+    absl::btree_set<int, SumGreaterZeroCmp> set;
+    // Note: '!' only needs to be escaped when it's the first character.
+    EXPECT_DEATH(set.insert({0, 1, 2}),
+                 R"regex(\!lhs_comp_rhs \|\| !comp\(\)\(rhs, lhs\))regex");
+  }
+  {
+    struct ThreeWaySumGreaterZeroCmp {
+      absl::weak_ordering operator()(int lhs, int rhs) const {
+        // First, do equivalence correctly - so we can test later condition.
+        if (lhs == rhs) return absl::weak_ordering::equivalent;
+
+        if (lhs + rhs > 0) return absl::weak_ordering::less;
+        if (lhs + rhs == 0) return absl::weak_ordering::equivalent;
+        return absl::weak_ordering::greater;
+      }
+    };
+    absl::btree_set<int, ThreeWaySumGreaterZeroCmp> set;
+    EXPECT_DEATH(set.insert({0, 1, 2}), "lhs_comp_rhs < 0 -> rhs_comp_lhs > 0");
+  }
+}
+#endif
+
+#ifndef _MSC_VER
+// This test crashes on MSVC.
+TEST(Btree, InvalidIteratorUse) {
+  if (!BtreeNodePeer::UsesGenerations<absl::btree_set<int>>())
+    GTEST_SKIP() << "Generation validation for iterators is disabled.";
+
+  {
+    absl::btree_set<int> set;
+    for (int i = 0; i < 10; ++i) set.insert(i);
+    auto it = set.begin();
+    set.erase(it++);
+    EXPECT_DEATH(set.erase(it++), "invalidated iterator");
+  }
+  {
+    absl::btree_set<int> set;
+    for (int i = 0; i < 10; ++i) set.insert(i);
+    auto it = set.insert(20).first;
+    set.insert(30);
+    EXPECT_DEATH(*it, "invalidated iterator");
+  }
+  {
+    absl::btree_set<int> set;
+    for (int i = 0; i < 10000; ++i) set.insert(i);
+    auto it = set.find(5000);
+    ASSERT_NE(it, set.end());
+    set.erase(1);
+    EXPECT_DEATH(*it, "invalidated iterator");
+  }
+}
+#endif
+
+class OnlyConstructibleByAllocator {
+  explicit OnlyConstructibleByAllocator(int i) : i_(i) {}
+
+ public:
+  OnlyConstructibleByAllocator(const OnlyConstructibleByAllocator &other)
+      : i_(other.i_) {}
+  OnlyConstructibleByAllocator &operator=(
+      const OnlyConstructibleByAllocator &other) {
+    i_ = other.i_;
+    return *this;
+  }
+  int Get() const { return i_; }
+  bool operator==(int i) const { return i_ == i; }
+
+ private:
+  template <typename T>
+  friend class OnlyConstructibleAllocator;
+
+  int i_;
+};
+
+template <typename T = OnlyConstructibleByAllocator>
+class OnlyConstructibleAllocator : public std::allocator<T> {
+ public:
+  OnlyConstructibleAllocator() = default;
+  template <class U>
+  explicit OnlyConstructibleAllocator(const OnlyConstructibleAllocator<U> &) {}
+
+  void construct(OnlyConstructibleByAllocator *p, int i) {
+    new (p) OnlyConstructibleByAllocator(i);
+  }
+  template <typename Pair>
+  void construct(Pair *p, const int i) {
+    OnlyConstructibleByAllocator only(i);
+    new (p) Pair(std::move(only), i);
+  }
+
+  template <class U>
+  struct rebind {
+    using other = OnlyConstructibleAllocator<U>;
+  };
+};
+
+struct OnlyConstructibleByAllocatorComp {
+  using is_transparent = void;
+  bool operator()(OnlyConstructibleByAllocator a,
+                  OnlyConstructibleByAllocator b) const {
+    return a.Get() < b.Get();
+  }
+  bool operator()(int a, OnlyConstructibleByAllocator b) const {
+    return a < b.Get();
+  }
+  bool operator()(OnlyConstructibleByAllocator a, int b) const {
+    return a.Get() < b;
+  }
+};
+
+TEST(Btree, OnlyConstructibleByAllocatorType) {
+  const std::array<int, 2> arr = {3, 4};
+  {
+    absl::btree_set<OnlyConstructibleByAllocator,
+                    OnlyConstructibleByAllocatorComp,
+                    OnlyConstructibleAllocator<>>
+        set;
+    set.emplace(1);
+    set.emplace_hint(set.end(), 2);
+    set.insert(arr.begin(), arr.end());
+    EXPECT_THAT(set, ElementsAre(1, 2, 3, 4));
+  }
+  {
+    absl::btree_multiset<OnlyConstructibleByAllocator,
+                         OnlyConstructibleByAllocatorComp,
+                         OnlyConstructibleAllocator<>>
+        set;
+    set.emplace(1);
+    set.emplace_hint(set.end(), 2);
+    // TODO(ezb): fix insert_multi to allow this to compile.
+    // set.insert(arr.begin(), arr.end());
+    EXPECT_THAT(set, ElementsAre(1, 2));
+  }
+  {
+    absl::btree_map<OnlyConstructibleByAllocator, int,
+                    OnlyConstructibleByAllocatorComp,
+                    OnlyConstructibleAllocator<>>
+        map;
+    map.emplace(1);
+    map.emplace_hint(map.end(), 2);
+    map.insert(arr.begin(), arr.end());
+    EXPECT_THAT(map,
+                ElementsAre(Pair(1, 1), Pair(2, 2), Pair(3, 3), Pair(4, 4)));
+  }
+  {
+    absl::btree_multimap<OnlyConstructibleByAllocator, int,
+                         OnlyConstructibleByAllocatorComp,
+                         OnlyConstructibleAllocator<>>
+        map;
+    map.emplace(1);
+    map.emplace_hint(map.end(), 2);
+    // TODO(ezb): fix insert_multi to allow this to compile.
+    // map.insert(arr.begin(), arr.end());
+    EXPECT_THAT(map, ElementsAre(Pair(1, 1), Pair(2, 2)));
+  }
+}
+
+class NotAssignable {
+ public:
+  explicit NotAssignable(int i) : i_(i) {}
+  NotAssignable(const NotAssignable &other) : i_(other.i_) {}
+  NotAssignable &operator=(NotAssignable &&other) = delete;
+  int Get() const { return i_; }
+  bool operator==(int i) const { return i_ == i; }
+  friend bool operator<(NotAssignable a, NotAssignable b) {
+    return a.i_ < b.i_;
+  }
+
+ private:
+  int i_;
+};
+
+TEST(Btree, NotAssignableType) {
+  {
+    absl::btree_set<NotAssignable> set;
+    set.emplace(1);
+    set.emplace_hint(set.end(), 2);
+    set.insert(NotAssignable(3));
+    set.insert(set.end(), NotAssignable(4));
+    EXPECT_THAT(set, ElementsAre(1, 2, 3, 4));
+    set.erase(set.begin());
+    EXPECT_THAT(set, ElementsAre(2, 3, 4));
+  }
+  {
+    absl::btree_multiset<NotAssignable> set;
+    set.emplace(1);
+    set.emplace_hint(set.end(), 2);
+    set.insert(NotAssignable(2));
+    set.insert(set.end(), NotAssignable(3));
+    EXPECT_THAT(set, ElementsAre(1, 2, 2, 3));
+    set.erase(set.begin());
+    EXPECT_THAT(set, ElementsAre(2, 2, 3));
+  }
+  {
+    absl::btree_map<NotAssignable, int> map;
+    map.emplace(NotAssignable(1), 1);
+    map.emplace_hint(map.end(), NotAssignable(2), 2);
+    map.insert({NotAssignable(3), 3});
+    map.insert(map.end(), {NotAssignable(4), 4});
+    EXPECT_THAT(map,
+                ElementsAre(Pair(1, 1), Pair(2, 2), Pair(3, 3), Pair(4, 4)));
+    map.erase(map.begin());
+    EXPECT_THAT(map, ElementsAre(Pair(2, 2), Pair(3, 3), Pair(4, 4)));
+  }
+  {
+    absl::btree_multimap<NotAssignable, int> map;
+    map.emplace(NotAssignable(1), 1);
+    map.emplace_hint(map.end(), NotAssignable(2), 2);
+    map.insert({NotAssignable(2), 3});
+    map.insert(map.end(), {NotAssignable(3), 3});
+    EXPECT_THAT(map,
+                ElementsAre(Pair(1, 1), Pair(2, 2), Pair(2, 3), Pair(3, 3)));
+    map.erase(map.begin());
+    EXPECT_THAT(map, ElementsAre(Pair(2, 2), Pair(2, 3), Pair(3, 3)));
+  }
+}
+
+struct ArenaLike {
+  void* recycled = nullptr;
+  size_t recycled_size = 0;
+};
+
+// A very simple implementation of arena allocation.
+template <typename T>
+class ArenaLikeAllocator : public std::allocator<T> {
+ public:
+  // Standard library containers require the ability to allocate objects of
+  // different types which they can do so via rebind.other.
+  template <typename U>
+  struct rebind {
+    using other = ArenaLikeAllocator<U>;
+  };
+
+  explicit ArenaLikeAllocator(ArenaLike* arena) noexcept : arena_(arena) {}
+
+  ~ArenaLikeAllocator() {
+    if (arena_->recycled != nullptr) {
+      delete [] static_cast<T*>(arena_->recycled);
+      arena_->recycled = nullptr;
+    }
+  }
+
+  template<typename U>
+  explicit ArenaLikeAllocator(const ArenaLikeAllocator<U>& other) noexcept
+      : arena_(other.arena_) {}
+
+  T* allocate(size_t num_objects, const void* = nullptr) {
+    size_t size = num_objects * sizeof(T);
+    if (arena_->recycled != nullptr && arena_->recycled_size == size) {
+      T* result = static_cast<T*>(arena_->recycled);
+      arena_->recycled = nullptr;
+      return result;
+    }
+    return new T[num_objects];
+  }
+
+  void deallocate(T* p, size_t num_objects) {
+    size_t size = num_objects * sizeof(T);
+
+    // Simulate writing to the freed memory as an actual arena allocator might
+    // do. This triggers an error report if the memory is poisoned.
+    memset(p, 0xde, size);
+
+    if (arena_->recycled == nullptr) {
+      arena_->recycled = p;
+      arena_->recycled_size = size;
+    } else {
+      delete [] p;
+    }
+  }
+
+  ArenaLike* arena_;
+};
+
+// This test verifies that an arena allocator that reuses memory will not be
+// asked to free poisoned BTree memory.
+TEST(Btree, ReusePoisonMemory) {
+  using Alloc = ArenaLikeAllocator<int64_t>;
+  using Set = absl::btree_set<int64_t, std::less<int64_t>, Alloc>;
+  ArenaLike arena;
+  Alloc alloc(&arena);
+  Set set(alloc);
+
+  set.insert(0);
+  set.erase(0);
+  set.insert(0);
 }
 
 }  // namespace

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,16 +8,19 @@
 #include "third_party/blink/renderer/bindings/core/v8/iterable.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/abstract_range.h"
-#include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/heap_allocator.h"
+#include "third_party/blink/renderer/core/dom/events/event_target.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
 
-using HighlightSetIterable = SetlikeIterable<Member<AbstractRange>>;
+using HighlightSetIterable =
+    SetlikeIterable<Member<AbstractRange>, AbstractRange>;
 class HighlightRegistry;
 
-class CORE_EXPORT Highlight : public ScriptWrappable,
+class CORE_EXPORT Highlight : public EventTargetWithInlineData,
                               public HighlightSetIterable {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -43,6 +46,11 @@ class CORE_EXPORT Highlight : public ScriptWrappable,
 
   bool Contains(AbstractRange*) const;
 
+  // EventTarget
+  const AtomicString& InterfaceName() const override;
+  ExecutionContext* GetExecutionContext() const override;
+
+  // HighlightSetIterable
   class IterationSource final : public HighlightSetIterable::IterationSource {
    public:
     explicit IterationSource(const Highlight& highlight);

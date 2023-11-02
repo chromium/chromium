@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,8 +13,8 @@
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
-#include "components/sync/engine/entity_data.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
+#include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 namespace autofill {
@@ -122,8 +122,11 @@ AutofillProfile ConstructCompleteProfile() {
   profile.SetRawInfoWithVerificationStatus(
       ADDRESS_HOME_PREMISE_NAME, u"Premise", VerificationStatus::kFormatted);
   profile.set_language_code("en");
-  profile.SetClientValidityFromBitfieldValue(1984);
-  profile.set_is_client_validity_states_updated(true);
+
+  // Set testing values for the birthdate.
+  profile.SetRawInfoAsInt(BIRTHDATE_DAY, 14);
+  profile.SetRawInfoAsInt(BIRTHDATE_MONTH, 3);
+  profile.SetRawInfoAsInt(BIRTHDATE_4_DIGIT_YEAR, 1997);
 
   return profile;
 }
@@ -256,8 +259,11 @@ AutofillProfileSpecifics ConstructCompleteSpecifics() {
       sync_pb::AutofillProfileSpecifics_VerificationStatus_OBSERVED);
 
   specifics.set_address_home_language_code("en");
-  specifics.set_validity_state_bitfield(1984);
-  specifics.set_is_client_validity_states_updated(true);
+
+  // Set values for the birthdate.
+  specifics.set_birthdate_day(14);
+  specifics.set_birthdate_month(3);
+  specifics.set_birthdate_year(1997);
 
   return specifics;
 }
@@ -278,16 +284,13 @@ class AutofillProfileSyncUtilTest : public testing::Test {
 // the server.
 TEST_F(AutofillProfileSyncUtilTest, CreateEntityDataFromAutofillProfile) {
   base::test::ScopedFeatureList structured_names_feature;
-  // With those three features enabled, the AutofillProfile supports all tokens
-  // and statuses assignable in the specifics. If one of those features is
+  // With this feature enabled, the AutofillProfile supports all tokens
+  // and statuses assignable in the specifics. If this feature is
   // disabled, for some tokens
   // AutofillProfile::GetRawInfo(AutofillProfile::SetRawInfo()) is not the
   // identify function. The same is true for the verification status.
-  structured_names_feature.InitWithFeatures(
-      {features::kAutofillEnableSupportForMoreStructureInAddresses,
-       features::kAutofillEnableSupportForMoreStructureInNames,
-       features::kAutofillEnableSupportForHonorificPrefixes},
-      {});
+  structured_names_feature.InitAndEnableFeature(
+      features::kAutofillEnableSupportForHonorificPrefixes);
 
   AutofillProfile profile = ConstructCompleteProfile();
   AutofillProfileSpecifics specifics = ConstructCompleteSpecifics();
@@ -303,17 +306,6 @@ TEST_F(AutofillProfileSyncUtilTest, CreateEntityDataFromAutofillProfile) {
 
 // Test that fields not set for the input are empty in the output.
 TEST_F(AutofillProfileSyncUtilTest, CreateEntityDataFromAutofillProfile_Empty) {
-  base::test::ScopedFeatureList structured_names_feature;
-  // With those two features enabled, the AutofillProfile supports all tokens
-  // and statuses assignable in the specifics. If one of those features is
-  // disabled, for some tokens
-  // AutofillProfile::GetRawInfo(AutofillProfile::SetRawInfo()) is not the
-  // identify function. The same is true for the verification status.
-  structured_names_feature.InitWithFeatures(
-      {features::kAutofillEnableSupportForMoreStructureInAddresses,
-       features::kAutofillEnableSupportForMoreStructureInNames},
-      {});
-
   AutofillProfile profile(kGuid, std::string());
   ASSERT_FALSE(profile.HasRawInfo(NAME_FULL));
   ASSERT_FALSE(profile.HasRawInfo(COMPANY_NAME));

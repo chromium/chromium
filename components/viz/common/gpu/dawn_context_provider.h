@@ -1,4 +1,4 @@
-// Copyright (c) 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "components/viz/common/viz_dawn_context_provider_export.h"
-#include "third_party/dawn/src/include/dawn_native/DawnNative.h"
+#include "third_party/dawn/include/dawn/native/DawnNative.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/dawn/GrDawnTypes.h"
 
@@ -31,9 +31,9 @@ class VIZ_DAWN_CONTEXT_PROVIDER_EXPORT DawnContextProvider {
  private:
   DawnContextProvider();
 
-  wgpu::Device CreateDevice(dawn_native::BackendType type);
+  wgpu::Device CreateDevice(wgpu::BackendType type);
 
-  dawn_native::Instance instance_;
+  dawn::native::Instance instance_;
   wgpu::Device device_;
   sk_sp<GrDirectContext> gr_context_;
 };

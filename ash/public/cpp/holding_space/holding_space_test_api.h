@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,6 +19,7 @@ class FilePath;
 }  // namespace base
 
 namespace views {
+class ImageView;
 class View;
 }  // namespace views
 
@@ -70,6 +71,12 @@ class ASH_EXPORT HoldingSpaceTestApi {
   // mirrored for RTL).
   std::vector<views::View*> GetHoldingSpaceItemViews();
 
+  // Returns the container of the suggestions section in holding space UI.
+  views::View* GetSuggestionsSectionContainer();
+
+  // Returns the header of the suggestions section in holding space UI.
+  views::View* GetSuggestionsSectionHeader();
+
   // Returns the header of the downloads section in holding space UI.
   views::View* GetDownloadsSectionHeader();
 
@@ -85,6 +92,10 @@ class ASH_EXPORT HoldingSpaceTestApi {
   // If holding space UI is not visible, an empty collection is returned.
   std::vector<views::View*> GetScreenCaptureViews();
 
+  // Returns the collection of suggestion chips in holding space UI.
+  // If holding space UI is not visible, an empty collection is returned.
+  std::vector<views::View*> GetSuggestionChips();
+
   // Returns the holding space tray in the shelf.
   views::View* GetTray();
 
@@ -94,11 +105,18 @@ class ASH_EXPORT HoldingSpaceTestApi {
 
   // Returns the holding space tray icon view for the default, non content
   // forward  icon.
-  views::View* GetDefaultTrayIcon();
+  views::ImageView* GetDefaultTrayIcon();
 
   // Returns the holding space tray icon view for the content forward icon,
   // which displays previews of most recent items added to holding space.
   views::View* GetPreviewsTrayIcon();
+
+  // Returns the view of the icon used for toggling the suggestions section's
+  // expanded state.
+  views::ImageView* GetSuggestionsSectionChevronIcon();
+
+  // Returns the top-level bubble.
+  views::View* GetBubble();
 
   // Returns the pinned files bubble.
   views::View* GetPinnedFilesBubble();
@@ -106,8 +124,14 @@ class ASH_EXPORT HoldingSpaceTestApi {
   // Returns whether the pinned files bubble is shown.
   bool PinnedFilesBubbleShown() const;
 
+  // Returns the recent files bubble.
+  views::View* GetRecentFilesBubble();
+
   // Returns whether the recent files bubble is shown.
   bool RecentFilesBubbleShown() const;
+
+  // Returns whether the recent files placeholder is shown.
+  bool RecentFilesPlaceholderShown() const;
 
  private:
   HoldingSpaceTray* holding_space_tray_ = nullptr;

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,11 +31,9 @@ class PaintAndRasterInvalidationTest : public PaintControllerPaintTest {
   void SetUp() override {
     PaintControllerPaintTest::SetUp();
 
-    if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-      layer_tree_ = std::make_unique<LayerTreeHostEmbedder>();
-      layer_tree_->layer_tree_host()->SetRootLayer(
-          GetDocument().View()->GetPaintArtifactCompositor()->RootLayer());
-    }
+    layer_tree_ = std::make_unique<LayerTreeHostEmbedder>();
+    layer_tree_->layer_tree_host()->SetRootLayer(
+        GetDocument().View()->GetPaintArtifactCompositor()->RootLayer());
   }
 
   void SetPreferCompositingToLCDText(bool enable) {

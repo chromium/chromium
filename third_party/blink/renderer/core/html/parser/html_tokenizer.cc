@@ -27,6 +27,7 @@
 
 #include "third_party/blink/renderer/core/html/parser/html_tokenizer.h"
 
+#include "base/record_replay.h"
 #include "third_party/blink/renderer/core/html/parser/html_entity_parser.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html/parser/html_tree_builder.h"
@@ -119,7 +120,7 @@ static inline UChar ToLowerCaseIfAlpha(UChar cc) {
   return cc | (IsASCIIUpper(cc) ? 0x20 : 0);
 }
 
-static inline bool VectorEqualsString(const LiteralBuffer<LChar, 32>& vector,
+static inline bool VectorEqualsString(const LCharLiteralBuffer<32>& vector,
                                       const String& string) {
   if (vector.size() != string.length())
     return false;
@@ -144,10 +145,13 @@ static inline bool VectorEqualsString(const LiteralBuffer<LChar, 32>& vector,
 
 HTMLTokenizer::HTMLTokenizer(const HTMLParserOptions& options)
     : input_stream_preprocessor_(this), options_(options) {
+  recordreplay::RegisterPointer("HTMLTokenizer", this);
   Reset();
 }
 
-HTMLTokenizer::~HTMLTokenizer() = default;
+HTMLTokenizer::~HTMLTokenizer() {
+  recordreplay::UnregisterPointer(this);
+}
 
 void HTMLTokenizer::Reset() {
   state_ = HTMLTokenizer::kDataState;
@@ -202,6 +206,20 @@ bool HTMLTokenizer::FlushEmitAndResumeIn(SegmentedString& source,
   state_ = state;
   FlushBufferedEndTag(source);
   return true;
+}
+
+void HTMLTokenizer::GetSnapshot(HTMLTokenizerSnapshot& snapshot) const {
+  snapshot.state = state_;
+  snapshot.appropriate_end_tag_name = appropriate_end_tag_name_.AsString();
+  snapshot.buffered_end_tag_name = buffered_end_tag_name_.AsString();
+}
+
+void HTMLTokenizer::RestoreSnapshot(const HTMLTokenizerSnapshot& snapshot) {
+  state_ = snapshot.state;
+  appropriate_end_tag_name_.clear();
+  appropriate_end_tag_name_.Append(snapshot.appropriate_end_tag_name);
+  buffered_end_tag_name_.clear();
+  buffered_end_tag_name_.Append(snapshot.buffered_end_tag_name.Span8());
 }
 
 bool HTMLTokenizer::NextToken(SegmentedString& source, HTMLToken& token) {
@@ -311,13 +329,13 @@ bool HTMLTokenizer::NextToken(SegmentedString& source, HTMLToken& token) {
     END_STATE()
 
     HTML_BEGIN_STATE(kTagOpenState) {
-      if (cc == '!') {
+      if (IsASCIIAlpha(cc)) {
+        token_->BeginStartTag(ToLowerCase(cc));
+        HTML_ADVANCE_PAST_NON_NEWLINE_TO(kTagNameState);
+      } else if (cc == '!') {
         HTML_ADVANCE_PAST_NON_NEWLINE_TO(kMarkupDeclarationOpenState);
       } else if (cc == '/') {
         HTML_ADVANCE_PAST_NON_NEWLINE_TO(kEndTagOpenState);
-      } else if (IsASCIIAlpha(cc)) {
-        token_->BeginStartTag(ToLowerCase(cc));
-        HTML_ADVANCE_PAST_NON_NEWLINE_TO(kTagNameState);
       } else if (cc == '?') {
         ParseError();
         // The spec consumes the current character before switching
@@ -1667,22 +1685,42 @@ String HTMLTokenizer::BufferedCharacters() const {
   return characters.ToString();
 }
 
-void HTMLTokenizer::UpdateStateFor(const String& tag_name) {
-  if (ThreadSafeMatch(tag_name, html_names::kTextareaTag) ||
-      ThreadSafeMatch(tag_name, html_names::kTitleTag))
-    SetState(HTMLTokenizer::kRCDATAState);
-  else if (ThreadSafeMatch(tag_name, html_names::kPlaintextTag))
-    SetState(HTMLTokenizer::kPLAINTEXTState);
-  else if (ThreadSafeMatch(tag_name, html_names::kScriptTag))
-    SetState(HTMLTokenizer::kScriptDataState);
-  else if (ThreadSafeMatch(tag_name, html_names::kStyleTag) ||
-           ThreadSafeMatch(tag_name, html_names::kIFrameTag) ||
-           ThreadSafeMatch(tag_name, html_names::kXmpTag) ||
-           ThreadSafeMatch(tag_name, html_names::kNoembedTag) ||
-           ThreadSafeMatch(tag_name, html_names::kNoframesTag) ||
-           (ThreadSafeMatch(tag_name, html_names::kNoscriptTag) &&
-            options_.scripting_flag))
-    SetState(HTMLTokenizer::kRAWTEXTState);
+void HTMLTokenizer::UpdateStateFor(const HTMLToken& token) {
+  if (!token.GetName().IsEmpty()) {
+    UpdateStateFor(
+        lookupHTMLTag(token.GetName().data(), token.GetName().size()));
+  }
+}
+
+void HTMLTokenizer::UpdateStateFor(html_names::HTMLTag tag) {
+  auto state = SpeculativeStateForTag(tag);
+  if (state)
+    SetState(*state);
+}
+
+absl::optional<HTMLTokenizer::State> HTMLTokenizer::SpeculativeStateForTag(
+    html_names::HTMLTag tag) const {
+  switch (tag) {
+    case html_names::HTMLTag::kTextarea:
+    case html_names::HTMLTag::kTitle:
+      return HTMLTokenizer::kRCDATAState;
+    case html_names::HTMLTag::kPlaintext:
+      return HTMLTokenizer::kPLAINTEXTState;
+    case html_names::HTMLTag::kScript:
+      return HTMLTokenizer::kScriptDataState;
+    case html_names::HTMLTag::kStyle:
+    case html_names::HTMLTag::kIFrame:
+    case html_names::HTMLTag::kXmp:
+    case html_names::HTMLTag::kNoembed:
+    case html_names::HTMLTag::kNoframes:
+      return HTMLTokenizer::kRAWTEXTState;
+    case html_names::HTMLTag::kNoscript:
+      if (options_.scripting_flag)
+        return HTMLTokenizer::kRAWTEXTState;
+      return absl::nullopt;
+    default:
+      return absl::nullopt;
+  }
 }
 
 inline bool HTMLTokenizer::TemporaryBufferIs(const String& expected_string) {

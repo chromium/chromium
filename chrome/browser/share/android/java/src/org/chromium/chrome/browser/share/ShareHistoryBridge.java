@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,8 +17,14 @@ public class ShareHistoryBridge {
         ShareHistoryBridgeJni.get().addShareEntry(profile, target);
     }
 
+    public static void clear(Profile profile) {
+        assert profile != null;
+        ShareHistoryBridgeJni.get().clear(profile);
+    }
+
     @NativeMethods
     public interface Natives {
         void addShareEntry(Profile profile, String string);
+        void clear(Profile profile);
     }
 }

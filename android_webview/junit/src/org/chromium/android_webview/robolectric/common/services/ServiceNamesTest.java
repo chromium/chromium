@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,11 +21,11 @@ import org.chromium.android_webview.services.DeveloperUiService;
 import org.chromium.android_webview.services.MetricsBridgeService;
 import org.chromium.android_webview.services.MetricsUploadService;
 import org.chromium.android_webview.services.VariationsSeedServer;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.component_updater.EmbeddedComponentLoader;
-import org.chromium.testing.local.LocalRobolectricTestRunner;
 
 /** Tests the constants in ServiceNames. */
-@RunWith(LocalRobolectricTestRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ServiceNamesTest {
     @Test

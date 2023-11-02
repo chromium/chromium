@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,7 +37,8 @@ MessagePayloadParser::MessagePayloadParser(base::StringPiece message) {
   salt_ = std::string(message.substr(0, kSaltSize));
   message.remove_prefix(kSaltSize);
 
-  base::ReadBigEndian(message.data(), &record_size_);
+  base::ReadBigEndian(reinterpret_cast<const uint8_t*>(message.data()),
+                      &record_size_);
   message.remove_prefix(sizeof(record_size_));
 
   if (record_size_ < kMinimumRecordSize) {
@@ -46,7 +47,8 @@ MessagePayloadParser::MessagePayloadParser(base::StringPiece message) {
   }
 
   uint8_t public_key_length;
-  base::ReadBigEndian(message.data(), &public_key_length);
+  base::ReadBigEndian(reinterpret_cast<const uint8_t*>(message.data()),
+                      &public_key_length);
   message.remove_prefix(sizeof(public_key_length));
 
   if (public_key_length != kUncompressedPointSize) {

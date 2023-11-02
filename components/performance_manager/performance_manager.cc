@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -95,8 +95,8 @@ base::WeakPtr<FrameNode> PerformanceManager::GetFrameNodeForRenderFrameHost(
   auto* frame_node = helper->GetFrameNode(rfh);
   if (!frame_node) {
     // This should only happen if GetFrameNodeForRenderFrameHost is called
-    // before the RenderFrameCreate notification is dispatched.
-    DCHECK(!rfh->IsRenderFrameCreated());
+    // before the RenderFrameCreated notification is dispatched.
+    DCHECK(!rfh->IsRenderFrameLive());
     return nullptr;
   }
   return frame_node->GetWeakPtrOnUIThread();

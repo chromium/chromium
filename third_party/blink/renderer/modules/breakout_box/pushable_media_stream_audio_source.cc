@@ -1,11 +1,13 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/breakout_box/pushable_media_stream_audio_source.h"
 
+#include "base/synchronization/lock.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
@@ -18,7 +20,7 @@ PushableMediaStreamAudioSource::Broker::Broker(
 }
 
 void PushableMediaStreamAudioSource::Broker::OnClientStarted() {
-  WTF::MutexLocker locker(mutex_);
+  base::AutoLock locker(lock_);
   DCHECK_GE(num_clients_, 0);
   ++num_clients_;
 }
@@ -26,7 +28,7 @@ void PushableMediaStreamAudioSource::Broker::OnClientStarted() {
 void PushableMediaStreamAudioSource::Broker::OnClientStopped() {
   bool should_stop = false;
   {
-    WTF::MutexLocker locker(mutex_);
+    base::AutoLock locker(lock_);
     should_stop = --num_clients_ == 0;
     DCHECK_GE(num_clients_, 0);
   }
@@ -35,13 +37,13 @@ void PushableMediaStreamAudioSource::Broker::OnClientStopped() {
 }
 
 bool PushableMediaStreamAudioSource::Broker::IsRunning() {
-  WTF::MutexLocker locker(mutex_);
+  base::AutoLock locker(lock_);
   return is_running_;
 }
 
 void PushableMediaStreamAudioSource::Broker::PushAudioData(
     scoped_refptr<media::AudioBuffer> data) {
-  WTF::MutexLocker locker(mutex_);
+  base::AutoLock locker(lock_);
   if (!source_)
     return;
 
@@ -62,7 +64,7 @@ void PushableMediaStreamAudioSource::Broker::StopSource() {
 
 void PushableMediaStreamAudioSource::Broker::DeliverData(
     scoped_refptr<media::AudioBuffer> data) {
-  WTF::MutexLocker locker(mutex_);
+  base::AutoLock locker(lock_);
   if (!source_)
     return;
 
@@ -74,13 +76,13 @@ void PushableMediaStreamAudioSource::Broker::OnSourceStarted() {
   if (!source_)
     return;
 
-  WTF::MutexLocker locker(mutex_);
+  base::AutoLock locker(lock_);
   is_running_ = true;
 }
 
 void PushableMediaStreamAudioSource::Broker::OnSourceDestroyedOrStopped() {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
-  WTF::MutexLocker locker(mutex_);
+  base::AutoLock locker(lock_);
   source_ = nullptr;
   is_running_ = false;
 }
@@ -133,9 +135,10 @@ void PushableMediaStreamAudioSource::DeliverData(
       params.format() != media::AudioParameters::AUDIO_PCM_LOW_LATENCY ||
       last_channels_ != channel_count || last_sample_rate_ != sample_rate ||
       last_frames_ != frame_count) {
-    SetFormat(media::AudioParameters(
-        media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-        media::GuessChannelLayout(channel_count), sample_rate, frame_count));
+    SetFormat(
+        media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                               media::ChannelLayoutConfig::Guess(channel_count),
+                               sample_rate, frame_count));
     last_channels_ = channel_count;
     last_sample_rate_ = sample_rate;
     last_frames_ = frame_count;

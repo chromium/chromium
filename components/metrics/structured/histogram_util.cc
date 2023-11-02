@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,14 +26,14 @@ void LogKeyValidation(KeyValidationState state) {
   UMA_HISTOGRAM_ENUMERATION("UMA.StructuredMetrics.KeyValidationState", state);
 }
 
-void LogClientInitializationSuccessful(bool success) {
-  UMA_HISTOGRAM_BOOLEAN("UMA.StructuredMetrics.ClientInitializationSuccessful",
-                        success);
-}
-
 void LogIsEventRecordedUsingMojo(bool used_mojo_api) {
   UMA_HISTOGRAM_BOOLEAN("UMA.StructuredMetrics.EventsRecordedUsingMojo",
                         used_mojo_api);
+}
+
+void LogNumEventsRecordedBeforeInit(int num_events) {
+  UMA_HISTOGRAM_COUNTS_100("UMA.StructuredMetrics.EventsRecordedBeforeInit",
+                           num_events);
 }
 
 }  // namespace structured

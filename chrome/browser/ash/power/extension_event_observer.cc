@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -62,7 +62,7 @@ struct ExtensionEventObserver::KeepaliveSources {
 };
 
 ExtensionEventObserver::ExtensionEventObserver() {
-  PowerManagerClient::Get()->AddObserver(this);
+  chromeos::PowerManagerClient::Get()->AddObserver(this);
   g_browser_process->profile_manager()->AddObserver(this);
 }
 
@@ -74,7 +74,7 @@ ExtensionEventObserver::~ExtensionEventObserver() {
   }
 
   g_browser_process->profile_manager()->RemoveObserver(this);
-  PowerManagerClient::Get()->RemoveObserver(this);
+  chromeos::PowerManagerClient::Get()->RemoveObserver(this);
 }
 
 std::unique_ptr<ExtensionEventObserver::TestApi>
@@ -88,7 +88,7 @@ void ExtensionEventObserver::SetShouldDelaySuspend(bool should_delay) {
   if (!should_delay_suspend_ && block_suspend_token_) {
     // There is a suspend attempt pending but this class should no longer be
     // delaying it.  Immediately report readiness.
-    PowerManagerClient::Get()->UnblockSuspend(block_suspend_token_);
+    chromeos::PowerManagerClient::Get()->UnblockSuspend(block_suspend_token_);
     block_suspend_token_ = {};
     suspend_readiness_callback_.Cancel();
   }
@@ -211,8 +211,8 @@ void ExtensionEventObserver::OnSuspendImminent(bool dark_suspend) {
       << "is still pending.";
 
   block_suspend_token_ = base::UnguessableToken::Create();
-  PowerManagerClient::Get()->BlockSuspend(block_suspend_token_,
-                                          "ExtensionEventObserver");
+  chromeos::PowerManagerClient::Get()->BlockSuspend(block_suspend_token_,
+                                                    "ExtensionEventObserver");
 
   suspend_readiness_callback_.Reset(
       base::BindOnce(&ExtensionEventObserver::MaybeReportSuspendReadiness,
@@ -235,7 +235,7 @@ void ExtensionEventObserver::MaybeReportSuspendReadiness() {
   if (suspend_keepalive_count_ > 0 || block_suspend_token_.is_empty())
     return;
 
-  PowerManagerClient::Get()->UnblockSuspend(block_suspend_token_);
+  chromeos::PowerManagerClient::Get()->UnblockSuspend(block_suspend_token_);
   block_suspend_token_ = {};
 }
 

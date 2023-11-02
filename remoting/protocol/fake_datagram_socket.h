@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/completion_repeating_callback.h"
 #include "remoting/protocol/datagram_channel_factory.h"
@@ -20,8 +19,7 @@ namespace base {
 class SingleThreadTaskRunner;
 }
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 // FakeDatagramSocket implement P2PStreamSocket interface. All data written to
 // FakeDatagramSocket is stored in a buffer returned by written_packets().
@@ -148,7 +146,6 @@ class FakeDatagramChannelFactory : public DatagramChannelFactory {
   base::WeakPtrFactory<FakeDatagramChannelFactory> weak_factory_{this};
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_FAKE_DATAGRAM_SOCKET_H_

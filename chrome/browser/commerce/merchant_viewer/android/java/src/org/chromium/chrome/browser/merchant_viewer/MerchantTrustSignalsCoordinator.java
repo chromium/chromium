@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,12 +18,12 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustMetrics.BottomSheetOpenedSource;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustMetrics.MessageClearReason;
-import org.chromium.chrome.browser.merchant_viewer.proto.MerchantTrustSignalsOuterClass.MerchantTrustSignalsV2;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.commerce.core.ShoppingService.MerchantInfo;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.messages.DismissReason;
@@ -71,6 +71,7 @@ public class MerchantTrustSignalsCoordinator
     private final MerchantTrustSignalsStorageFactory mStorageFactory;
     private final ObservableSupplier<Profile> mProfileSupplier;
     private final WindowAndroid mWindowAndroid;
+    private final ObservableSupplier<Tab> mTabSupplier;
     private OmniboxIconController mOmniboxIconController;
 
     /** Creates a new instance. */
@@ -101,8 +102,10 @@ public class MerchantTrustSignalsCoordinator
         mStorageFactory = storageFactory;
         mProfileSupplier = profileSupplier;
         mWindowAndroid = windowAndroid;
+        mTabSupplier = tabSupplier;
 
-        mMediator = new MerchantTrustSignalsMediator(tabSupplier, this::onFinishEligibleNavigation);
+        mMediator = new MerchantTrustSignalsMediator(
+                tabSupplier, this::onFinishEligibleNavigation, metrics);
         mMessageScheduler = messageScheduler;
         mDetailsTabCoordinator = detailsTabCoordinator;
     }
@@ -142,21 +145,22 @@ public class MerchantTrustSignalsCoordinator
             mMessageScheduler.clear(MessageClearReason.NAVIGATE_TO_DIFFERENT_DOMAIN);
             shouldExpediteMessage = false;
         }
-        mDataProvider.getDataForNavigationHandle(navigationHandle,
-                (trustSignal) -> maybeDisplayMessage(trustSignal, item, shouldExpediteMessage));
+        mDataProvider.getDataForUrl(mProfileSupplier.get(), navigationHandle.getUrl(),
+                (merchantInfo) -> maybeDisplayMessage(merchantInfo, item, shouldExpediteMessage));
     }
 
     @VisibleForTesting
-    void maybeDisplayMessage(MerchantTrustSignalsV2 trustSignals, MerchantTrustMessageContext item,
+    void maybeDisplayMessage(MerchantInfo merchantInfo, MerchantTrustMessageContext item,
             boolean shouldExpediteMessage) {
-        if (trustSignals == null) return;
+        if (merchantInfo == null) return;
+        mMetrics.recordUkmOnDataAvailable(item.getWebContents());
         NavigationHandle navigationHandle = item.getNavigationHandle();
         MerchantTrustSignalsEventStorage storage = mStorageFactory.getForLastUsedProfile();
         if (navigationHandle == null || navigationHandle.getUrl() == null || storage == null
                 || MerchantViewerConfig.isTrustSignalsMessageDisabled()
-                || trustSignals.getProactiveMessageDisabled()
-                || isMerchantRatingBelowThreshold(trustSignals)
-                || isNonPersonalizedFamiliarMerchant(trustSignals)
+                || merchantInfo.proactiveMessageDisabled
+                || isMerchantRatingBelowThreshold(merchantInfo)
+                || isNonPersonalizedFamiliarMerchant(merchantInfo)
                 || isFamiliarMerchant(navigationHandle.getUrl().getSpec())
                 || hasReachedMaxAllowedMessageNumberInGivenTime()
                 || !isOnSecureWebsite(item.getWebContents())) {
@@ -165,21 +169,21 @@ public class MerchantTrustSignalsCoordinator
 
         storage.load(navigationHandle.getUrl().getHost(), (event) -> {
             if (event == null) {
-                scheduleMessage(trustSignals, item, shouldExpediteMessage);
+                scheduleMessage(merchantInfo, item, shouldExpediteMessage);
             } else if (System.currentTimeMillis() - event.getTimestamp()
                     > MerchantViewerConfig.getTrustSignalsMessageWindowDurationMilliSeconds()) {
                 storage.delete(event);
-                scheduleMessage(trustSignals, item, shouldExpediteMessage);
+                scheduleMessage(merchantInfo, item, shouldExpediteMessage);
             }
         });
     }
 
-    private void scheduleMessage(MerchantTrustSignalsV2 trustSignals,
-            MerchantTrustMessageContext item, boolean shouldExpediteMessage) {
-        assert (trustSignals != null) && (item != null);
+    private void scheduleMessage(MerchantInfo merchantInfo, MerchantTrustMessageContext item,
+            boolean shouldExpediteMessage) {
+        assert (merchantInfo != null) && (item != null);
         mMessageScheduler.schedule(
-                MerchantTrustMessageViewModel.create(mContext, trustSignals, item.getUrl(), this),
-                item,
+                MerchantTrustMessageViewModel.create(mContext, merchantInfo, item.getUrl(), this),
+                merchantInfo.starRating, item,
                 shouldExpediteMessage ? MerchantTrustMessageScheduler.MESSAGE_ENQUEUE_NO_DELAY
                                       : MerchantViewerConfig.getDefaultTrustSignalsMessageDelay(),
                 this::onMessageEnqueued);
@@ -208,13 +212,13 @@ public class MerchantTrustSignalsCoordinator
                 == ConnectionSecurityLevel.SECURE;
     }
 
-    private boolean isMerchantRatingBelowThreshold(MerchantTrustSignalsV2 trustSignals) {
-        return trustSignals.getMerchantStarRating()
+    private boolean isMerchantRatingBelowThreshold(MerchantInfo merchantInfo) {
+        return merchantInfo.starRating
                 < MerchantViewerConfig.getTrustSignalsMessageRatingThreshold();
     }
 
-    private boolean isNonPersonalizedFamiliarMerchant(MerchantTrustSignalsV2 trustSignals) {
-        return trustSignals.getNonPersonalizedFamiliarityScore()
+    private boolean isNonPersonalizedFamiliarMerchant(MerchantInfo merchantInfo) {
+        return merchantInfo.nonPersonalizedFamiliarityScore
                 > MerchantViewerConfig.getTrustSignalsNonPersonalizedFamiliarityScoreThreshold();
     }
 
@@ -229,6 +233,7 @@ public class MerchantTrustSignalsCoordinator
             return;
         }
 
+        mMetrics.recordUkmOnMessageSeen(messageContext.getWebContents());
         updateShownMessagesTimestamp();
         storage.save(new MerchantTrustSignalsEvent(
                 messageContext.getHostName(), System.currentTimeMillis()));
@@ -244,18 +249,23 @@ public class MerchantTrustSignalsCoordinator
     }
 
     @Override
-    public void onMessagePrimaryAction(
-            MerchantTrustSignalsV2 trustSignals, String messageAssociatedUrl) {
+    public void onMessagePrimaryAction(MerchantInfo merchantInfo, String messageAssociatedUrl) {
         mMetrics.recordMetricsForMessageTapped();
-        launchDetailsPage(new GURL(trustSignals.getMerchantDetailsPageUrl()),
-                BottomSheetOpenedSource.FROM_MESSAGE, messageAssociatedUrl);
+
+        // TODO(crbug.com/1300971): Pass webContents directly to this method instead of using
+        // mTabSupplier.
+        if (mTabSupplier.hasValue()) {
+            mMetrics.recordUkmOnMessageClicked(mTabSupplier.get().getWebContents());
+        }
+        launchDetailsPage(merchantInfo.detailsPageUrl, BottomSheetOpenedSource.FROM_MESSAGE,
+                messageAssociatedUrl);
     }
 
     // PageInfoStoreInfoController.StoreInfoActionHandler implementation.
     @Override
-    public void onStoreInfoClicked(MerchantTrustSignalsV2 trustSignals) {
-        launchDetailsPage(new GURL(trustSignals.getMerchantDetailsPageUrl()),
-                BottomSheetOpenedSource.FROM_PAGE_INFO, null);
+    public void onStoreInfoClicked(MerchantInfo merchantInfo) {
+        launchDetailsPage(
+                merchantInfo.detailsPageUrl, BottomSheetOpenedSource.FROM_PAGE_INFO, null);
         // If user has clicked the "Store info" row, send a signal to disable {@link
         // FeatureConstants.PAGE_INFO_STORE_INFO_FEATURE}.
         final Tracker tracker = TrackerFactory.getTrackerForProfile(mProfileSupplier.get());

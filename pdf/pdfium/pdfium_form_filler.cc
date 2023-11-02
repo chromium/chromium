@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
@@ -21,6 +22,7 @@
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/pdfium/public/fpdf_annot.h"
+#include "ui/base/window_open_disposition_utils.h"
 #include "ui/gfx/geometry/rect.h"
 #include "v8/include/v8-isolate.h"
 
@@ -308,6 +310,9 @@ void PDFiumFormFiller::Form_OnFocusChange(FPDF_FORMFILLINFO* param,
   PDFiumEngine* engine = engine_scope.engine();
   if (!engine->PageIndexInBounds(page_index))
     return;
+
+  base::AutoReset<bool> defer_page_unload_guard(&engine->defer_page_unload_,
+                                                true);
 
   // Maintain viewport if we are updating focus. This is to ensure that we don't
   // scroll the focused annotation into view when focus is regained.

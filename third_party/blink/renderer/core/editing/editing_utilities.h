@@ -31,10 +31,10 @@
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/core/events/input_event.h"
 #include "third_party/blink/renderer/core/html/html_br_element.h"
-#include "third_party/blink/renderer/platform/geometry/float_quad.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
+#include "ui/gfx/geometry/quad_f.h"
 
 namespace blink {
 
@@ -76,8 +76,9 @@ bool IsUserSelectContain(const Node& /* node */);
 // Returns true if element is input element or has editable style.
 CORE_EXPORT bool IsEditableElement(const Node&);
 
-CORE_EXPORT bool HasEditableStyle(const Node&);
-CORE_EXPORT bool HasRichlyEditableStyle(const Node&);
+CORE_EXPORT bool IsEditable(const Node&);
+CORE_EXPORT bool IsRichlyEditable(const Node&);
+
 CORE_EXPORT bool IsRootEditableElement(const Node&);
 CORE_EXPORT Element* RootEditableElement(const Node&);
 Element* RootEditableElementOf(const Position&);
@@ -368,7 +369,7 @@ wtf_size_t ComputeDistanceToRightGraphemeBoundary(const Position&);
 // LocalCaretRect conversions
 // -------------------------------------------------------------------------
 
-FloatQuad LocalToAbsoluteQuadOf(const LocalCaretRect&);
+gfx::QuadF LocalToAbsoluteQuadOf(const LocalCaretRect&);
 
 // -------------------------------------------------------------------------
 // Events

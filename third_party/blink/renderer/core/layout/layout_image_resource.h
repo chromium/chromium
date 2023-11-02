@@ -54,8 +54,8 @@ class CORE_EXPORT LayoutImageResource
   void ResetAnimation();
   bool MaybeAnimated() const;
 
-  virtual scoped_refptr<Image> GetImage(const FloatSize&) const;
-  scoped_refptr<Image> GetImage(const IntSize&) const;
+  virtual scoped_refptr<Image> GetImage(const gfx::SizeF&) const;
+  scoped_refptr<Image> GetImage(const gfx::Size&) const;
   virtual bool ErrorOccurred() const {
     return cached_image_ && cached_image_->ErrorOccurred();
   }
@@ -66,18 +66,19 @@ class CORE_EXPORT LayoutImageResource
 
   virtual bool HasIntrinsicSize() const;
 
-  virtual FloatSize ImageSize(float multiplier) const;
+  virtual gfx::SizeF ImageSize(float multiplier) const;
   // Default size is effective when this is LayoutImageResourceStyleImage.
-  virtual FloatSize ImageSizeWithDefaultSize(float multiplier,
-                                             const FloatSize&) const;
+  virtual gfx::SizeF ImageSizeWithDefaultSize(float multiplier,
+                                              const gfx::SizeF&) const;
   virtual RespectImageOrientationEnum ImageOrientation() const;
   virtual WrappedImagePtr ImagePtr() const { return cached_image_.Get(); }
 
  protected:
-  // Device scale factor for the associated LayoutObject.
-  float DeviceScaleFactor() const;
   // Returns an image based on the passed device scale factor.
-  static Image* BrokenImage(float device_scale_factor);
+  static Image* BrokenImage(double device_pixel_ratio);
+  double DevicePixelRatio() const;
+
+  FRIEND_TEST_ALL_PREFIXES(LayoutImageResourceTest, BrokenImageHighRes);
 
   Member<LayoutObject> layout_object_;
   Member<ImageResourceContent> cached_image_;

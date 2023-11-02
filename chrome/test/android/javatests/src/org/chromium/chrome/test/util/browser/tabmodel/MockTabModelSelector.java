@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,6 +22,7 @@ public class MockTabModelSelector extends TabModelSelectorBase {
     public static final int ID_OFFSET = 100000;
     public static final int INCOGNITO_ID_OFFSET = 200000;
     private static int sCurTabOffset;
+    private int mTabCount;
 
     public MockTabModelSelector(
             int tabCount, int incognitoTabCount, MockTabModel.MockTabModelDelegate delegate) {
@@ -30,12 +31,13 @@ public class MockTabModelSelector extends TabModelSelectorBase {
         for (int i = 0; i < tabCount; i++) {
             addMockTab();
         }
-        if (tabCount > 0) TabModelUtils.setIndex(getModel(false), 0);
+        if (tabCount > 0) TabModelUtils.setIndex(getModel(false), 0, false);
 
         for (int i = 0; i < incognitoTabCount; i++) {
             addMockIncognitoTab();
         }
-        if (incognitoTabCount > 0) TabModelUtils.setIndex(getModel(true), 0);
+        if (incognitoTabCount > 0) TabModelUtils.setIndex(getModel(true), 0, false);
+        mTabCount = tabCount;
     }
 
     /**
@@ -74,16 +76,11 @@ public class MockTabModelSelector extends TabModelSelectorBase {
 
     @Override
     public int getTotalTabCount() {
-        throw new UnsupportedOperationException();
+        return mTabCount;
     }
 
     @Override
     public void requestToShowTab(Tab tab, int type) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean closeAllTabsRequest(boolean incognito) {
         throw new UnsupportedOperationException();
     }
 

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -67,10 +67,18 @@ message ShapeDrawableProto {
   optional ColorProto stroke_color = 4;
 }
 
+message ConfigBasedUrlProto {
+  map<string, string> url = 1;
+}
+
 message BitmapDrawableProto {
-  optional string url = 1;
+  oneof image_url {
+    string url = 1;
+    ConfigBasedUrlProto config_based_url = 4;
+  }
   optional ClientDimensionProto width = 2;
   optional ClientDimensionProto height = 3;
+  optional bool use_instrinsic_dimensions = 5;
 }
 
 message FaviconDrawableProto {
@@ -101,6 +109,7 @@ message DrawableProto {
     GROCERY = 13;
     VISIBILITY_ON = 14;
     VISIBILITY_OFF = 15;
+    INFO = 16;
   }
 
   oneof drawable {
@@ -112,8 +121,10 @@ message DrawableProto {
     ShapeDrawableProto shape = 3;
     // An icon from a predefined set of known icons.
     Icon icon = 4;
-    // A Base64 encoded image string.
-    bytes base64 = 5;
+    // Image data.
+    bytes image_data = 5;
+    // Image data encoded as a base64 string.
+    string image_data_base64 = 7;
     // The favicon for a given URL.
     FaviconDrawableProto favicon = 6;
   }
@@ -256,12 +267,15 @@ message DividerViewProto {}
 
 message ImageViewProto {
   optional DrawableProto image = 1;
+  // Setting this will apply default icon color accent1 tint
+  // to the image. Exact tint is specified in |SemanticColorUtils|.
+  optional bool use_icon_semantic_tinting = 2;
 }
 
 // A text input widget. Note: View identifier is mandatory!
 message TextInputViewProto {
   // This mirrors the type hints specified in
-  // https://cs.chromium.org/chromium/src/chrome/android/java/src/org/chromium/chrome/browser/autofill/prefeditor/EditorFieldModel.java
+  // https://cs.chromium.org/chromium/src/components/autofill/android/java/src/org/chromium/components/autofill/prefeditor/EditorFieldModel.java
   enum InputTypeHint {
     // No special formatting rules.
     NONE = 0;
@@ -273,6 +287,9 @@ message TextInputViewProto {
     // A region or administrative area, e.g., a state or a province.
     REGION = 5;
     ALPHA_NUMERIC = 6;
+    CREDIT_CARD = 7;
+    NUMERIC = 8;
+    PASSWORD = 9;
   }
 
   // The hint to display when the input is empty.
@@ -284,6 +301,8 @@ message TextInputViewProto {
   // Both input and output. The model identifier containing this view's text.
   // Should point to a single string value.
   optional string model_identifier = 3;
+  // A flag to autofocus the input text box and show keyboard.
+  optional bool focus_and_show_keyboard = 4;
 }
 
 // A generic read-only popup message.

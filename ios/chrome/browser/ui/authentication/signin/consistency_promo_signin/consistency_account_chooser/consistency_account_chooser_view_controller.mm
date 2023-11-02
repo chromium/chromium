@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -99,7 +99,7 @@ constexpr CGFloat kContentMargin = 16.;
   CGFloat screenHeight =
       self.navigationController.view.window.bounds.size.height;
   CGFloat rowHeight = self.tableViewController.tableView.contentSize.height;
-  // If |screenHeight| is undefined during a transition, use |rowHeight|.
+  // If `screenHeight` is undefined during a transition, use `rowHeight`.
   CGFloat height =
       screenHeight == 0 ? rowHeight : MIN(screenHeight / 2, rowHeight);
   CGFloat safeAreaInsetsHeight = 0;

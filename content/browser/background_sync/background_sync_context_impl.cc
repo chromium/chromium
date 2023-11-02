@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,8 @@
 
 #include "base/bind.h"
 #include "base/task/task_traits.h"
+#include "base/threading/thread_task_runner_handle.h"
+#include "build/build_config.h"
 #include "content/browser/background_sync/background_sync_launcher.h"
 #include "content/browser/background_sync/background_sync_manager.h"
 #include "content/browser/background_sync/one_shot_background_sync_service_impl.h"
@@ -39,7 +41,7 @@ BackgroundSyncContextImpl::~BackgroundSyncContextImpl() {
 }
 
 // static
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void BackgroundSyncContext::FireBackgroundSyncEventsAcrossPartitions(
     BrowserContext* browser_context,
     blink::mojom::BackgroundSyncType sync_type,
@@ -69,24 +71,26 @@ void BackgroundSyncContextImpl::Shutdown() {
 
 void BackgroundSyncContextImpl::CreateOneShotSyncService(
     const url::Origin& origin,
+    RenderProcessHost* render_process_host,
     mojo::PendingReceiver<blink::mojom::OneShotBackgroundSyncService>
         receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(background_sync_manager_);
   one_shot_sync_services_.insert(
-      std::make_unique<OneShotBackgroundSyncServiceImpl>(this, origin,
-                                                         std::move(receiver)));
+      std::make_unique<OneShotBackgroundSyncServiceImpl>(
+          this, origin, render_process_host, std::move(receiver)));
 }
 
 void BackgroundSyncContextImpl::CreatePeriodicSyncService(
     const url::Origin& origin,
+    RenderProcessHost* render_process_host,
     mojo::PendingReceiver<blink::mojom::PeriodicBackgroundSyncService>
         receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(background_sync_manager_);
   periodic_sync_services_.insert(
-      std::make_unique<PeriodicBackgroundSyncServiceImpl>(this, origin,
-                                                          std::move(receiver)));
+      std::make_unique<PeriodicBackgroundSyncServiceImpl>(
+          this, origin, render_process_host, std::move(receiver)));
 }
 
 void BackgroundSyncContextImpl::OneShotSyncServiceHadConnectionError(

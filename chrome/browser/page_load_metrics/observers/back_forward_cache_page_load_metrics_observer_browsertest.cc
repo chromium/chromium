@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,9 +38,7 @@ class BackForwardCachePageLoadMetricsObserverBrowserTest
         {{features::kBackForwardCache,
           {{"TimeToLiveInBackForwardCacheInSeconds", "3600"},
            {"ignore_outstanding_network_request_for_testing", "true"}}},
-         {internal::kBackForwardCacheEmitZeroSamplesForKeyMetrics, {{}}},
-         // Send all user interaction latencies to the browser process.
-         {blink::features::kSendAllUserInteractionLatencies, {{}}}},
+         {internal::kBackForwardCacheEmitZeroSamplesForKeyMetrics, {{}}}},
         // Allow BackForwardCache for all devices regardless of their memory.
         {features::kBackForwardCacheMemoryControls});
 
@@ -49,7 +47,7 @@ class BackForwardCachePageLoadMetricsObserverBrowserTest
 
  protected:
   content::RenderFrameHost* top_frame_host() {
-    return web_contents()->GetMainFrame();
+    return web_contents()->GetPrimaryMainFrame();
   }
 
   std::unique_ptr<page_load_metrics::PageLoadMetricsTestWaiter>
@@ -380,8 +378,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
     EXPECT_NE(rfh_a->GetLifecycleState(),
               content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
-    base::ListValue expectations =
-        EvalJs(web_contents(), "cls_run_tests").ExtractList();
     next_score = EvalJs(web_contents(),
                         R"((async() => {
 const shifter = document.querySelector('#shifter');
@@ -558,8 +554,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
     EXPECT_NE(rfh_a->GetLifecycleState(),
               content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
-    base::ListValue expectations =
-        EvalJs(web_contents(), "cls_run_tests").ExtractList();
     next_score = EvalJs(web_contents(),
                         R"((async() => {
 const shifter = document.querySelector('#shifter');
@@ -684,17 +678,9 @@ IN_PROC_BROWSER_TEST_F(
   VerifyHistoryNavPageEndReasons(expected_reasons_b, url_b);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// TODO(crbug.com/1261828): Flaky on linux-chromeos.
-#define MAYBE_ResponsivenessMetricsNormalizationWithSendingAllLatencies \
-  DISABLED_ResponsivenessMetricsNormalizationWithSendingAllLatencies
-#else
-#define MAYBE_ResponsivenessMetricsNormalizationWithSendingAllLatencies \
-  ResponsivenessMetricsNormalizationWithSendingAllLatencies
-#endif
 IN_PROC_BROWSER_TEST_F(
     BackForwardCachePageLoadMetricsObserverBrowserTest,
-    MAYBE_ResponsivenessMetricsNormalizationWithSendingAllLatencies) {
+    ResponsivenessMetricsNormalizationWithSendingAllLatencies) {
   Start();
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
@@ -740,29 +726,16 @@ IN_PROC_BROWSER_TEST_F(
 
   std::vector<std::string> ukm_list = {
       "WorstUserInteractionLatencyAfterBackForwardCacheRestore."
-      "MaxEventduration",
-      "WorstUserInteractionLatencyAfterBackForwardCacheRestore."
-      "TotalEventduration",
-      "WorstUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore."
-      "MaxEventduration",
-      "WorstUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore."
-      "TotalEventduration",
+      "MaxEventDuration2",
       "SumOfUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore."
-      "TotalEventduration",
-      "SumOfUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore."
-      "MaxEventduration",
+      "MaxEventDuration2",
       "SlowUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore."
-      "HighPercentile2.TotalEventduration",
-      "SlowUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore."
-      "HighPercentile2.MaxEventduration",
-      "SlowUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore."
-      "HighPercentile.TotalEventduration",
-      "SlowUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore."
-      "HighPercentile.MaxEventduration",
+      "HighPercentile2.MaxEventDuration2",
       "AverageUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore."
-      "MaxEventduration",
-      "AverageUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore."
-      "TotalEventduration"};
+      "MaxEventDuration2",
+      "UserInteractionLatencyAfterBackForwardCacheRestore."
+      "HighPercentile2.MaxEventDuration",
+      "NumInteractionsAfterBackForwardCacheRestore"};
 
   for (auto& ukm : ukm_list) {
     ExpectMetricCountForUrl(url_a, ukm.c_str(), 1);
@@ -773,27 +746,13 @@ IN_PROC_BROWSER_TEST_F(
       internal::
           kAverageUserInteractionLatencyOverBudget_MaxEventDuration_AfterBackForwardCacheRestore,
       internal::
-          kSlowUserInteractionLatencyOverBudgetHighPercentile_MaxEventDuration_AfterBackForwardCacheRestore,
-      internal::
           kSlowUserInteractionLatencyOverBudgetHighPercentile2_MaxEventDuration_AfterBackForwardCacheRestore,
+      internal::
+          kUserInteractionLatencyHighPercentile2_MaxEventDuration_AfterBackForwardCacheRestore,
       internal::
           kSumOfUserInteractionLatencyOverBudget_MaxEventDuration_AfterBackForwardCacheRestore,
       internal::
-          kWorstUserInteractionLatency_MaxEventDuration_AfterBackForwardCacheRestore,
-      internal::
-          kWorstUserInteractionLatencyOverBudget_MaxEventDuration_AfterBackForwardCacheRestore,
-      internal::
-          kAverageUserInteractionLatencyOverBudget_TotalEventDuration_AfterBackForwardCacheRestore,
-      internal::
-          kSlowUserInteractionLatencyOverBudgetHighPercentile_TotalEventDuration_AfterBackForwardCacheRestore,
-      internal::
-          kSlowUserInteractionLatencyOverBudgetHighPercentile2_TotalEventDuration_AfterBackForwardCacheRestore,
-      internal::
-          kSumOfUserInteractionLatencyOverBudget_TotalEventDuration_AfterBackForwardCacheRestore,
-      internal::
-          kWorstUserInteractionLatency_TotalEventDuration_AfterBackForwardCacheRestore,
-      internal::
-          kWorstUserInteractionLatencyOverBudget_TotalEventDuration_AfterBackForwardCacheRestore};
+          kWorstUserInteractionLatency_MaxEventDuration_AfterBackForwardCacheRestore};
 
   for (auto& uma : uma_list) {
     histogram_tester().ExpectTotalCount(uma, 1);

@@ -1,4 +1,4 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -12,6 +12,14 @@ def _CheckSemanticColors(input_api, output_api):
     first attempt is made to ensure lines affected have a var() occurrence which
     indicates we need to verify the variable.
     """
+    file_filter = lambda f: input_api.FilterSourceFile(
+        f, files_to_check=(r'.+\.css', r'.+\.htm(l){1,}$', r'.+\.js$'),
+        files_to_skip=[r'.*test.*'])
+    affected_files = input_api.AffectedFiles(include_deletes=False,
+                                             file_filter=file_filter)
+    if not affected_files:
+        return []
+
     # Ensure the tools/ path is available to import style_variable_generator.
     input_api.sys.path.append(
         input_api.os_path.join(input_api.change.RepositoryRoot(), 'tools'))
@@ -21,7 +29,10 @@ def _CheckSemanticColors(input_api, output_api):
     ]
     cros_styles = [
         input_api.os_path.join(*style_root, 'cros_colors.json5'),
+        input_api.os_path.join(*style_root, 'cros_palette.json5'),
+        input_api.os_path.join(*style_root, 'cros_ref_colors.json5'),
         input_api.os_path.join(*style_root, 'cros_shadows.json5'),
+        input_api.os_path.join(*style_root, 'cros_sys_colors.json5'),
         input_api.os_path.join(*style_root, 'cros_typography.json5'),
     ]
 
@@ -29,8 +40,8 @@ def _CheckSemanticColors(input_api, output_api):
     # stylesheets.
     css_prefixes = set()
     style_generator = CSSStyleGenerator()
+    style_generator.AddJSONFilesToModel(cros_styles)
     for file_path in cros_styles:
-        style_generator.AddJSONFileToModel(file_path)
         context = style_generator.in_file_to_context.get(file_path,
                                                          {}).get('CSS')
         if (not context or 'prefix' not in context):
@@ -60,12 +71,9 @@ def _CheckSemanticColors(input_api, output_api):
         return invalid_matches
 
     valid_css_variables = style_generator.GetCSSVarNames()
-    file_filter = lambda f: input_api.FilterSourceFile(
-        f, files_to_check=(r'.+\.css', r'.+\.htm(l){1,}$', r'.+\.js$'))
 
     invalid_variables = []
-    for f in input_api.AffectedFiles(include_deletes=False,
-                                     file_filter=file_filter):
+    for f in affected_files:
         for line_num, line in f.ChangedContents():
             if any(prefix in line for prefix in css_prefixes):
                 invalid_variables.extend(

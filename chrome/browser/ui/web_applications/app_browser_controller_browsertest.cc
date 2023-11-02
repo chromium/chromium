@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,13 +6,16 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h"
 #include "chrome/browser/devtools/protocol/browser_handler.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/themes/custom_theme_supplier.h"
 #include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -20,15 +23,12 @@
 #include "chrome/browser/ui/extensions/application_launch.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
-#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
-#include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_installation.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
-#include "chrome/browser/web_applications/web_application_info.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -37,6 +37,7 @@
 #include "content/public/test/test_utils.h"
 #include "content/public/test/theme_change_waiter.h"
 #include "extensions/browser/extension_registry.h"
+#include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "ui/display/types/display_constants.h"
 
 namespace {
@@ -63,7 +64,7 @@ class LoadFinishedWaiter : public TabStripModelObserver,
 
   void Wait() { run_loop_.Run(); }
 
-  SkColor GetColorAtNavigation() { return color_at_navigation_; }
+  SkColor GetColorAtNavigation() const { return color_at_navigation_; }
 
   // TabStripModelObserver:
   void OnTabStripModelChanged(
@@ -84,7 +85,7 @@ class LoadFinishedWaiter : public TabStripModelObserver,
   }
 
  private:
-  Browser* browser_;
+  raw_ptr<Browser> browser_;
   SkColor color_at_navigation_;
   base::RunLoop run_loop_;
 };
@@ -93,11 +94,7 @@ class AppBrowserControllerBrowserTest : public InProcessBrowserTest {
  public:
   AppBrowserControllerBrowserTest()
       : test_system_web_app_installation_(
-            TestSystemWebAppInstallation::SetUpTabbedMultiWindowApp()) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    EnableSystemWebAppsInLacrosForTesting();
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-  }
+            ash::TestSystemWebAppInstallation::SetUpTabbedMultiWindowApp()) {}
   AppBrowserControllerBrowserTest(const AppBrowserControllerBrowserTest&) =
       delete;
   AppBrowserControllerBrowserTest& operator=(
@@ -124,25 +121,25 @@ class AppBrowserControllerBrowserTest : public InProcessBrowserTest {
   }
 
   void LaunchMockPopup() {
-    auto params = web_app::CreateSystemWebAppLaunchParams(
+    auto params = ash::CreateSystemWebAppLaunchParams(
         profile(), test_system_web_app_installation_->GetType(),
         display::kInvalidDisplayId);
     EXPECT_TRUE(params.has_value());
     params->disposition = WindowOpenDisposition::NEW_POPUP;
 
-    app_browser_ = web_app::LaunchSystemWebAppImpl(
+    app_browser_ = ash::LaunchSystemWebAppImpl(
         profile(), test_system_web_app_installation_->GetType(),
         test_system_web_app_installation_->GetAppUrl(), *params);
   }
 
   Browser* LaunchMockSWA() {
-    auto params = web_app::CreateSystemWebAppLaunchParams(
+    auto params = ash::CreateSystemWebAppLaunchParams(
         profile(), test_system_web_app_installation_->GetType(),
         display::kInvalidDisplayId);
     EXPECT_TRUE(params.has_value());
     params->disposition = WindowOpenDisposition::NEW_WINDOW;
 
-    return web_app::LaunchSystemWebAppImpl(
+    return ash::LaunchSystemWebAppImpl(
         profile(), test_system_web_app_installation_->GetType(),
         test_system_web_app_installation_->GetAppUrl(), *params);
   }
@@ -168,12 +165,12 @@ class AppBrowserControllerBrowserTest : public InProcessBrowserTest {
         ->GetVisibleURL();
   }
 
-  Profile* profile_ = nullptr;
-  Browser* app_browser_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
+  raw_ptr<Browser> app_browser_ = nullptr;
   GURL tabbed_app_url_;
 
  private:
-  std::unique_ptr<TestSystemWebAppInstallation>
+  std::unique_ptr<ash::TestSystemWebAppInstallation>
       test_system_web_app_installation_;
 };
 
@@ -182,7 +179,7 @@ IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTest, TabsTest) {
 
   EXPECT_TRUE(app_browser_->SupportsWindowFeature(Browser::FEATURE_TABSTRIP));
 
-  // No favicons shown for system apps.
+  // No favicons shown for web apps.
   EXPECT_FALSE(
       app_browser_->tab_strip_model()->delegate()->ShouldDisplayFavicon(
           app_browser_->tab_strip_model()->GetActiveWebContents()));
@@ -220,6 +217,14 @@ IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTest, TabsTest) {
   chrome::CloseTab(app_browser_);
   EXPECT_EQ(app_browser_->tab_strip_model()->count(), 1);
   EXPECT_EQ(GetActiveTabURL(), tabbed_app_url_);
+
+  // Enter tab fullscreen, check tab strip not supported.
+  static_cast<content::WebContentsDelegate*>(app_browser_)
+      ->EnterFullscreenModeForTab(app_browser_->tab_strip_model()
+                                      ->GetActiveWebContents()
+                                      ->GetPrimaryMainFrame(),
+                                  {});
+  EXPECT_FALSE(app_browser_->SupportsWindowFeature(Browser::FEATURE_TABSTRIP));
 }
 
 IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTest, NonAppUrl) {
@@ -359,11 +364,7 @@ class AppBrowserControllerChromeUntrustedBrowserTest
  public:
   AppBrowserControllerChromeUntrustedBrowserTest()
       : test_system_web_app_installation_(
-            TestSystemWebAppInstallation::SetUpChromeUntrustedApp()) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    EnableSystemWebAppsInLacrosForTesting();
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-  }
+            ash::TestSystemWebAppInstallation::SetUpChromeUntrustedApp()) {}
 
  protected:
   Browser* InstallAndLaunchMockApp() {
@@ -377,7 +378,7 @@ class AppBrowserControllerChromeUntrustedBrowserTest
   }
 
  private:
-  std::unique_ptr<TestSystemWebAppInstallation>
+  std::unique_ptr<ash::TestSystemWebAppInstallation>
       test_system_web_app_installation_;
 };
 

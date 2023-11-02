@@ -13,7 +13,8 @@
     {
       "name": "HorizontalScrollbar",
       "position": [0, 235],
-      "bounds": [600, 15]
+      "bounds": [600, 15],
+      "contentsOpaque": true
     }
   ],
   "transforms": [
@@ -43,7 +44,8 @@
     {
       "name": "HorizontalScrollbar",
       "position": [0, 235],
-      "bounds": [400, 15]
+      "bounds": [400, 15],
+      "contentsOpaque": true
     }
   ],
   "transforms": [

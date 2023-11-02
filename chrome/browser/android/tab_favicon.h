@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ANDROID_TAB_FAVICON_H_
 
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "components/favicon/core/favicon_driver_observer.h"
 
 namespace favicon {
@@ -39,7 +40,7 @@ class TabFavicon : public favicon::FaviconDriverObserver {
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> jobj_;
-  favicon::FaviconDriver* favicon_driver_;
+  raw_ptr<favicon::FaviconDriver> favicon_driver_;
 };
 
 #endif  // CHROME_BROWSER_ANDROID_TAB_FAVICON_H_

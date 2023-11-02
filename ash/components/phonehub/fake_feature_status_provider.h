@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include "ash/components/phonehub/feature_status_provider.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 class FakeFeatureStatusProvider : public FeatureStatusProvider {
@@ -27,6 +27,6 @@ class FakeFeatureStatusProvider : public FeatureStatusProvider {
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_PHONEHUB_FAKE_FEATURE_STATUS_PROVIDER_H_

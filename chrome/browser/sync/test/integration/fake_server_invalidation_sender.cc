@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,7 +43,7 @@ void FakeServerInvalidationSender::OnCommit(
     DLOG(WARNING) << "Received invalidations for the following data types in "
                      "invalidation sender "
                   << this << " will be dropped:"
-                  << ModelTypeSetToString(committed_model_types);
+                  << ModelTypeSetToDebugString(committed_model_types);
     return;
   }
   // For each of the committed model types, pass a message to the FCM Network

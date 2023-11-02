@@ -38,3 +38,8 @@ target and give the `segmentation_platform` filter file as an argument:
 ```
 ./out/Default/components_unittests --test-launcher-filter-file=components/segmentation_platform/components_unittests.filter
 ```
+
+To update the list of tests, you can run the following command:
+```
+components/segmentation_platform/tools/testing/launcher_filter_file.py
+```

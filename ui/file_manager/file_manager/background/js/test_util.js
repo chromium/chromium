@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@ import {FilesAppState} from '../../common/js/files_app_state.js';
 import {ProgressCenterItem} from '../../common/js/progress_center_common.js';
 import {util} from '../../common/js/util.js';
 
-import {background} from './background.js';
+import {background} from './file_manager_base.js';
 import {launcher} from './launcher.js';
 import {test} from './test_util_base.js';
 
@@ -64,7 +64,7 @@ test.util.sync.getFileList = contentWindow => {
       row.querySelector('.filename-label').textContent,
       row.querySelector('.size').textContent,
       row.querySelector('.type').textContent,
-      row.querySelector('.date').textContent
+      row.querySelector('.date').textContent,
     ]);
   }
   return fileList;
@@ -109,7 +109,7 @@ test.util.sync.selectFile = (contentWindow, filename) => {
     test.util.sync.fakeKeyDown(
         contentWindow, '#file-list', 'ArrowDown', false, false, false);
   }
-  console.error('Failed to select file "' + filename + '"');
+  console.warn('Failed to select file "' + filename + '"');
   return false;
 };
 
@@ -185,7 +185,7 @@ test.util.async.selectInDirectoryTree =
           callback(
               test.util.sync.fakeMouseDown(contentWindow, query) &&
               test.util.sync.fakeMouseClick(contentWindow, query));
-        }
+        },
       };
       steps.checkQuery();
     };
@@ -289,6 +289,15 @@ test.util.sync.getLastVisitedURL = contentWindow => {
 };
 
 /**
+ * Returns a string translation from its translation ID.
+ * @param {string} id The id of the translated string.
+ * @return {string}
+ */
+test.util.sync.getTranslatedString = (contentWindow, id) => {
+  return contentWindow.fileManager.getTranslatedString(id);
+};
+
+/**
  * Executes Javascript code on a webview and returns the result.
  *
  * @param {Window} contentWindow Window to be tested.
@@ -350,7 +359,7 @@ test.util.sync.deleteFile = (contentWindow, filename) => {
  */
 test.util.sync.execCommand = (contentWindow, command) => {
   const ret = contentWindow.document.execCommand(command);
-  if (!ret && contentWindow.isSWA) {
+  if (!ret) {
     // TODO(b/191831968): Fix execCommand for SWA.
     console.warn(
         `execCommand(${command}) returned false for SWA, forcing ` +
@@ -372,7 +381,7 @@ test.util.sync.overrideTasks = (contentWindow, taskList) => {
   const getFileTasks = (entries, onTasks) => {
     // Call onTask asynchronously (same with original getFileTasks).
     setTimeout(() => {
-      onTasks(taskList);
+      onTasks({tasks: taskList});
     }, 0);
   };
 
@@ -420,7 +429,8 @@ test.util.sync.taskWasExecuted = (contentWindow, descriptor) => {
     console.error('Please call overrideTasks() first.');
     return null;
   }
-  return !!test.util.executedTasks_.find(util.descriptorEqual.bind(descriptor));
+  return !!test.util.executedTasks_.find(
+      task => util.descriptorEqual(task.descriptor, descriptor));
 };
 
 /**
@@ -456,26 +466,20 @@ test.util.sync.unload = contentWindow => {
 };
 
 /**
- * Returns the path shown in the location line breadcrumb.
+ * Returns the path shown in the breadcrumb.
  *
  * @param {Window} contentWindow Window to be tested.
  * @return {string} The breadcrumb path.
  */
 test.util.sync.getBreadcrumbPath = contentWindow => {
-  const breadcrumb =
-      contentWindow.document.querySelector('#location-breadcrumbs');
+  const doc = contentWindow.document;
+  const breadcrumb = doc.querySelector('#location-breadcrumbs xf-breadcrumb');
+
   if (!breadcrumb) {
     return '';
   }
 
-  let path = '';
-
-  const crumbs = breadcrumb.querySelector('bread-crumb');
-  if (crumbs) {
-    path = '/' + crumbs.path;
-  }
-
-  return path;
+  return '/' + breadcrumb.path;
 };
 
 /**
@@ -654,6 +658,12 @@ test.util.PrepareFake = class {
      * @private {number}
      */
     this.callCounter_ = 0;
+
+    /**
+     * List to record the arguments provided to the static fake calls.
+     * @private {!Array}
+     */
+    this.calledArgs_ = [];
   }
 
   /**
@@ -691,6 +701,7 @@ test.util.PrepareFake = class {
     this.parentObject_[this.leafAttrName_] = (...args) => {
       this.fake_(...args);
       this.callCounter_++;
+      this.calledArgs_.push([...args]);
     };
   }
 
@@ -873,6 +884,19 @@ test.util.sync.staticFakeCounter = (contentWindow, fakedApi) => {
 };
 
 /**
+ * Obtains the list of arguments with which the static fake api was called.
+ * @param {Window} contentWindow Window to be tested.
+ * @param {string} fakedApi Path of the method that is faked.
+ * @param {!Array<!Array<*>>} An array with all calls to this fake, each item is
+ *     an array with all args passed in when the fake was called.
+ */
+test.util.sync.staticFakeCalledArgs = (contentWindow, fakedApi) => {
+  const fake =
+      test.util.foregroundReplacedObjects_[contentWindow.appID][fakedApi];
+  return fake.calledArgs_;
+};
+
+/**
  * Send progress item to Foreground page to display.
  * @param {string} id Progress item id.
  * @param {ProgressItemType} type Type of progress item.
@@ -899,8 +923,3 @@ test.util.sync.sendProgressItem =
       background.progressCenter.updateItem(item);
       return true;
     };
-
-// Register the test utils, however the SWA uses a different util.
-if (!window.isSWA) {
-  test.util.registerRemoteTestUtils();
-}

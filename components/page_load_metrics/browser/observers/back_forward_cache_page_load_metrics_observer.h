@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,9 +18,7 @@ namespace internal {
 extern const char
     kAverageUserInteractionLatencyOverBudget_MaxEventDuration_AfterBackForwardCacheRestore
         [];
-extern const char
-    kSlowUserInteractionLatencyOverBudgetHighPercentile_MaxEventDuration_AfterBackForwardCacheRestore
-        [];
+extern const char kNumInteractions_AfterBackForwardCacheRestore[];
 extern const char
     kSlowUserInteractionLatencyOverBudgetHighPercentile2_MaxEventDuration_AfterBackForwardCacheRestore
         [];
@@ -28,28 +26,10 @@ extern const char
     kSumOfUserInteractionLatencyOverBudget_MaxEventDuration_AfterBackForwardCacheRestore
         [];
 extern const char
+    kUserInteractionLatencyHighPercentile2_MaxEventDuration_AfterBackForwardCacheRestore
+        [];
+extern const char
     kWorstUserInteractionLatency_MaxEventDuration_AfterBackForwardCacheRestore
-        [];
-extern const char
-    kWorstUserInteractionLatencyOverBudget_MaxEventDuration_AfterBackForwardCacheRestore
-        [];
-extern const char
-    kAverageUserInteractionLatencyOverBudget_TotalEventDuration_AfterBackForwardCacheRestore
-        [];
-extern const char
-    kSlowUserInteractionLatencyOverBudgetHighPercentile_TotalEventDuration_AfterBackForwardCacheRestore
-        [];
-extern const char
-    kSlowUserInteractionLatencyOverBudgetHighPercentile2_TotalEventDuration_AfterBackForwardCacheRestore
-        [];
-extern const char
-    kSumOfUserInteractionLatencyOverBudget_TotalEventDuration_AfterBackForwardCacheRestore
-        [];
-extern const char
-    kWorstUserInteractionLatency_TotalEventDuration_AfterBackForwardCacheRestore
-        [];
-extern const char
-    kWorstUserInteractionLatencyOverBudget_TotalEventDuration_AfterBackForwardCacheRestore
         [];
 
 extern const char kHistogramFirstPaintAfterBackForwardCacheRestore[];
@@ -64,7 +44,7 @@ extern const char kHistogramCumulativeShiftScoreAfterBackForwardCacheRestore[];
 extern const char
     kHistogramCumulativeShiftScoreMainFrameAfterBackForwardCacheRestore[];
 extern const char kHistogramCumulativeShiftScoreAfterBackForwardCacheRestore[];
-extern const base::Feature kBackForwardCacheEmitZeroSamplesForKeyMetrics;
+BASE_DECLARE_FEATURE(kBackForwardCacheEmitZeroSamplesForKeyMetrics);
 
 }  // namespace internal
 
@@ -85,6 +65,12 @@ class BackForwardCachePageLoadMetricsObserver
       content::NavigationHandle* navigation_handle,
       const GURL& currently_committed_url,
       bool started_in_foreground) override;
+  page_load_metrics::PageLoadMetricsObserver::ObservePolicy OnFencedFramesStart(
+      content::NavigationHandle* navigation_handle,
+      const GURL& currently_committed_url) override;
+  page_load_metrics::PageLoadMetricsObserver::ObservePolicy OnPrerenderStart(
+      content::NavigationHandle* navigation_handle,
+      const GURL& currently_committed_url) override;
   page_load_metrics::PageLoadMetricsObserver::ObservePolicy OnHidden(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
   page_load_metrics::PageLoadMetricsObserver::ObservePolicy
@@ -93,6 +79,8 @@ class BackForwardCachePageLoadMetricsObserver
   void OnRestoreFromBackForwardCache(
       const page_load_metrics::mojom::PageLoadTiming& timing,
       content::NavigationHandle* navigation_handle) override;
+  page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+  ShouldObserveMimeType(const std::string& mime_type) const override;
   void OnFirstPaintAfterBackForwardCacheRestoreInPage(
       const page_load_metrics::mojom::BackForwardCacheTiming& timing,
       size_t index) override;
@@ -170,10 +158,14 @@ class BackForwardCachePageLoadMetricsObserver
   // from the BFCache.
   bool page_metrics_logged_due_to_backgrounding_ = false;
 
-  // The layout shift score. These are recorded when the page is navigated away.
-  // These serve as "deliminators" between back-forward cache navigations.
-  absl::optional<double> last_main_frame_layout_shift_score_;
-  absl::optional<double> last_layout_shift_score_;
+  // TODO(crbug.com/1265307): Remove this when removing the DCHECK for lack of
+  // page end metrics logging from the back forward page load metrics observer.
+  bool logged_page_end_metrics_ = false;
+
+  // The layout shift score. These are updated whenever the page is restored
+  // from the back-forward cache.
+  absl::optional<double> restored_main_frame_layout_shift_score_;
+  absl::optional<double> restored_layout_shift_score_;
 
   // IDs for the navigations when the page is restored from the back-forward
   // cache.

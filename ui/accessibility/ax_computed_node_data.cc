@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,22 +25,59 @@ AXComputedNodeData::AXComputedNodeData(const AXNode& node) : owner_(&node) {}
 AXComputedNodeData::~AXComputedNodeData() = default;
 
 int AXComputedNodeData::GetOrComputeUnignoredIndexInParent() const {
-  DCHECK(!owner_->IsIgnored());
+  DCHECK(!owner_->IsIgnored())
+      << "Ignored nodes cannot have an `unignored index in parent`.\n"
+      << *owner_;
   if (unignored_index_in_parent_)
     return *unignored_index_in_parent_;
 
-  if (const AXNode* unignored_parent = owner_->GetUnignoredParent()) {
+  if (const AXNode* unignored_parent = SlowGetUnignoredParent()) {
+    DCHECK_NE(unignored_parent->id(), kInvalidAXNodeID)
+        << "All nodes should have a valid ID.\n"
+        << *owner_;
     unignored_parent->GetComputedNodeData().ComputeUnignoredValues();
   } else {
     // This should be the root node and, by convention, we assign it an
     // index-in-parent of 0.
     unignored_index_in_parent_ = 0;
+    unignored_parent_id_ = kInvalidAXNodeID;
   }
   return *unignored_index_in_parent_;
 }
 
+AXNodeID AXComputedNodeData::GetOrComputeUnignoredParentID() const {
+  if (unignored_parent_id_)
+    return *unignored_parent_id_;
+
+  if (const AXNode* unignored_parent = SlowGetUnignoredParent()) {
+    DCHECK_NE(unignored_parent->id(), kInvalidAXNodeID)
+        << "All nodes should have a valid ID.\n"
+        << *owner_;
+    unignored_parent_id_ = unignored_parent->id();
+  } else {
+    // This should be the root node and, by convention, we assign it an
+    // index-in-parent of 0.
+    DCHECK(!owner_->GetParent())
+        << "If `unignored_parent` is nullptr, then this should be the "
+           "rootnode, since in all trees the rootnode should be unignored.\n"
+        << *owner_;
+    unignored_index_in_parent_ = 0;
+    unignored_parent_id_ = kInvalidAXNodeID;
+  }
+  return *unignored_parent_id_;
+}
+
+AXNode* AXComputedNodeData::GetOrComputeUnignoredParent() const {
+  DCHECK(owner_->tree())
+      << "All nodes should be owned by an accessibility tree.\n"
+      << *owner_;
+  return owner_->tree()->GetFromId(GetOrComputeUnignoredParentID());
+}
+
 int AXComputedNodeData::GetOrComputeUnignoredChildCount() const {
-  DCHECK(!owner_->IsIgnored());
+  DCHECK(!owner_->IsIgnored())
+      << "Ignored nodes cannot have an `unignored child count`.\n"
+      << *owner_;
   if (!unignored_child_count_)
     ComputeUnignoredValues();
   return *unignored_child_count_;
@@ -48,10 +85,18 @@ int AXComputedNodeData::GetOrComputeUnignoredChildCount() const {
 
 const std::vector<AXNodeID>& AXComputedNodeData::GetOrComputeUnignoredChildIDs()
     const {
-  DCHECK(!owner_->IsIgnored());
+  DCHECK(!owner_->IsIgnored())
+      << "Ignored nodes cannot have `unignored child IDs`.\n"
+      << *owner_;
   if (!unignored_child_ids_)
     ComputeUnignoredValues();
   return *unignored_child_ids_;
+}
+
+bool AXComputedNodeData::GetOrComputeIsDescendantOfPlatformLeaf() const {
+  if (!is_descendant_of_leaf_)
+    ComputeIsDescendantOfPlatformLeaf();
+  return *is_descendant_of_leaf_;
 }
 
 bool AXComputedNodeData::HasOrCanComputeAttribute(
@@ -98,8 +143,12 @@ const std::string& AXComputedNodeData::GetOrComputeAttributeUTF8(
         DCHECK(HasOrCanComputeAttribute(attribute))
             << "Code in `HasOrCanComputeAttribute` should be in sync with "
                "'GetOrComputeAttributeUTF8`";
-        return GetOrComputeInnerTextUTF8();
+        return GetOrComputeTextContentWithParagraphBreaksUTF8();
       }
+      // If an atomic text field has no value attribute sent from the renderer,
+      // then it means that it is empty, since we do not compute the values of
+      // such controls on the browser. The same for all other controls, other
+      // than non-atomic text fields.
       return base::EmptyString();
     default:
       // This is a special case: for performance reasons do not use
@@ -110,7 +159,25 @@ const std::string& AXComputedNodeData::GetOrComputeAttributeUTF8(
 
 std::u16string AXComputedNodeData::GetOrComputeAttributeUTF16(
     const ax::mojom::StringAttribute attribute) const {
-  return base::UTF8ToUTF16(GetOrComputeAttributeUTF8(attribute));
+  if (owner_->data().HasStringAttribute(attribute))
+    return owner_->data().GetString16Attribute(attribute);
+
+  switch (attribute) {
+    case ax::mojom::StringAttribute::kValue:
+      if (owner_->data().IsNonAtomicTextField()) {
+        DCHECK(HasOrCanComputeAttribute(attribute))
+            << "Code in `HasOrCanComputeAttribute` should be in sync with "
+               "'GetOrComputeAttributeUTF16`";
+        return GetOrComputeTextContentWithParagraphBreaksUTF16();
+      }
+      // If an atomic text field has no value attribute sent from the renderer,
+      // then it means that it is empty, since we do not compute the values of
+      // such controls on the browser. The same for all other controls, other
+      // than non-atomic text fields.
+      return std::u16string();
+    default:
+      return std::u16string();
+  }
 }
 
 const std::vector<int32_t>& AXComputedNodeData::GetOrComputeAttribute(
@@ -156,28 +223,34 @@ const std::vector<int32_t>& AXComputedNodeData::GetOrComputeAttribute(
   return *result;
 }
 
-const std::string& AXComputedNodeData::GetOrComputeInnerTextUTF8() const {
-  if (!inner_text_utf8_) {
-    VLOG_IF(1, inner_text_utf16_)
-        << "Only a single encoding of inner text should be cached.";
+const std::string&
+AXComputedNodeData::GetOrComputeTextContentWithParagraphBreaksUTF8() const {
+  if (!text_content_with_paragraph_breaks_utf8_) {
+    VLOG_IF(1, text_content_with_paragraph_breaks_utf16_)
+        << "Only a single encoding of text content with paragraph breaks "
+           "should be cached.";
     auto range =
         AXRange<AXPosition<AXNodePosition, AXNode>>::RangeOfContents(*owner_);
-    inner_text_utf8_ = base::UTF16ToUTF8(
-        range.GetText(AXTextConcatenationBehavior::kAsInnerText));
+    text_content_with_paragraph_breaks_utf8_ = base::UTF16ToUTF8(
+        range.GetText(AXTextConcatenationBehavior::kWithParagraphBreaks,
+                      AXEmbeddedObjectBehavior::kSuppressCharacter));
   }
-  return *inner_text_utf8_;
+  return *text_content_with_paragraph_breaks_utf8_;
 }
 
-const std::u16string& AXComputedNodeData::GetOrComputeInnerTextUTF16() const {
-  if (!inner_text_utf16_) {
-    VLOG_IF(1, inner_text_utf8_)
-        << "Only a single encoding of inner text should be cached.";
+const std::u16string&
+AXComputedNodeData::GetOrComputeTextContentWithParagraphBreaksUTF16() const {
+  if (!text_content_with_paragraph_breaks_utf16_) {
+    VLOG_IF(1, text_content_with_paragraph_breaks_utf8_)
+        << "Only a single encoding of text content with paragraph breaks "
+           "should be cached.";
     auto range =
         AXRange<AXPosition<AXNodePosition, AXNode>>::RangeOfContents(*owner_);
-    inner_text_utf16_ =
-        range.GetText(AXTextConcatenationBehavior::kAsInnerText);
+    text_content_with_paragraph_breaks_utf16_ =
+        range.GetText(AXTextConcatenationBehavior::kWithParagraphBreaks,
+                      AXEmbeddedObjectBehavior::kSuppressCharacter);
   }
-  return *inner_text_utf16_;
+  return *text_content_with_paragraph_breaks_utf16_;
 }
 
 const std::string& AXComputedNodeData::GetOrComputeTextContentUTF8() const {
@@ -207,12 +280,18 @@ int AXComputedNodeData::GetOrComputeTextContentLengthUTF16() const {
 }
 
 void AXComputedNodeData::ComputeUnignoredValues(
+    AXNodeID unignored_parent_id,
     int starting_index_in_parent) const {
+  DCHECK_GE(starting_index_in_parent, 0);
   // Reset any previously computed values.
   unignored_index_in_parent_ = absl::nullopt;
+  unignored_parent_id_ = absl::nullopt;
   unignored_child_count_ = absl::nullopt;
   unignored_child_ids_ = absl::nullopt;
 
+  AXNodeID unignored_parent_id_for_child = unignored_parent_id;
+  if (!owner_->IsIgnored())
+    unignored_parent_id_for_child = owner_->id();
   int unignored_child_count = 0;
   std::vector<AXNodeID> unignored_child_ids;
   for (auto iter = owner_->AllChildrenBegin(); iter != owner_->AllChildrenEnd();
@@ -222,7 +301,8 @@ void AXComputedNodeData::ComputeUnignoredValues(
 
     if (iter->IsIgnored()) {
       // Skip the ignored node and recursively look at its children.
-      computed_data.ComputeUnignoredValues(new_index_in_parent);
+      computed_data.ComputeUnignoredValues(unignored_parent_id_for_child,
+                                           new_index_in_parent);
       DCHECK(computed_data.unignored_child_count_);
       unignored_child_count += *computed_data.unignored_child_count_;
       DCHECK(computed_data.unignored_child_ids_);
@@ -230,16 +310,48 @@ void AXComputedNodeData::ComputeUnignoredValues(
                                  computed_data.unignored_child_ids_->begin(),
                                  computed_data.unignored_child_ids_->end());
     } else {
+      // Setting `unignored_index_in_parent_` and `unignored_parent_id_` is the
+      // responsibility of the parent node, since only the parent node can
+      // calculate these values. This is in contrast to `unignored_child_count_`
+      // and `unignored_child_ids_` that are only set if this method is called
+      // on the node itself.
+      computed_data.unignored_index_in_parent_ = new_index_in_parent;
+      if (unignored_parent_id_for_child != kInvalidAXNodeID)
+        computed_data.unignored_parent_id_ = unignored_parent_id_for_child;
+
       ++unignored_child_count;
       unignored_child_ids.push_back(iter->id());
-      computed_data.unignored_index_in_parent_ = new_index_in_parent;
     }
   }
 
+  if (unignored_parent_id != kInvalidAXNodeID)
+    unignored_parent_id_ = unignored_parent_id;
   // Ignored nodes store unignored child information in order to propagate it to
-  // their parents, but do not expose it directly.
+  // their parents, but do not expose it directly. The latter is guarded via a
+  // DCHECK.
   unignored_child_count_ = unignored_child_count;
   unignored_child_ids_ = unignored_child_ids;
+}
+
+AXNode* AXComputedNodeData::SlowGetUnignoredParent() const {
+  AXNode* unignored_parent = owner_->GetParent();
+  while (unignored_parent && unignored_parent->IsIgnored())
+    unignored_parent = unignored_parent->GetParent();
+  return unignored_parent;
+}
+
+void AXComputedNodeData::ComputeIsDescendantOfPlatformLeaf() const {
+  is_descendant_of_leaf_ = false;
+  for (const AXNode* ancestor = GetOrComputeUnignoredParent(); ancestor;
+       ancestor =
+           ancestor->GetComputedNodeData().GetOrComputeUnignoredParent()) {
+    if (ancestor->GetComputedNodeData().is_descendant_of_leaf_.value_or(
+            false) ||
+        ancestor->IsLeaf()) {
+      is_descendant_of_leaf_ = true;
+      return;
+    }
+  }
 }
 
 void AXComputedNodeData::ComputeLineOffsetsIfNeeded() const {
@@ -276,9 +388,13 @@ void AXComputedNodeData::ComputeSentenceOffsetsIfNeeded() const {
 
   sentence_starts_ = std::vector<int32_t>();
   sentence_ends_ = std::vector<int32_t>();
-  const std::u16string& text_content = GetOrComputeTextContentUTF16();
-  if (text_content.empty())
+  if (owner_->IsLineBreak())
     return;
+  const std::u16string& text_content = GetOrComputeTextContentUTF16();
+  if (text_content.empty() ||
+      base::ContainsOnlyChars(text_content, base::kWhitespaceUTF16)) {
+    return;
+  }
 
   // Unlike in ICU, a sentence boundary is not valid in Blink if it falls within
   // some whitespace that is used to separate sentences. We therefore need to
@@ -360,7 +476,6 @@ std::string AXComputedNodeData::ComputeTextContentUTF8() const {
   if (owner_->IsLeaf() && !is_atomic_text_field_with_descendants) {
     switch (owner_->data().GetNameFrom()) {
       case ax::mojom::NameFrom::kNone:
-      case ax::mojom::NameFrom::kUninitialized:
       // The accessible name is not displayed on screen, e.g. aria-label, or is
       // not displayed directly inside the node, e.g. an associated label
       // element.
@@ -391,7 +506,7 @@ std::string AXComputedNodeData::ComputeTextContentUTF8() const {
   std::string text_content;
   for (auto it = owner_->UnignoredChildrenCrossingTreeBoundaryBegin();
        it != owner_->UnignoredChildrenCrossingTreeBoundaryEnd(); ++it) {
-    text_content += it->GetInnerText();
+    text_content += it->GetTextContentUTF8();
   }
   return text_content;
 }

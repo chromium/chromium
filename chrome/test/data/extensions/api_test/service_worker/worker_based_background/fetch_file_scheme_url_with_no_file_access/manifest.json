@@ -1,0 +1,7 @@
+{
+  "name": "Service Worker-based background script",
+  "description": "Test that fetching a file scheme with no file access fails",
+  "version": "1",
+  "manifest_version": 3,
+  "background": {"service_worker": "service_worker_background.js"}
+}

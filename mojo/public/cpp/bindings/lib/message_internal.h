@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,10 @@
 
 #include <stdint.h>
 
-#include <string>
-
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
+#include "base/strings/string_piece.h"
 #include "mojo/public/cpp/bindings/lib/bindings_internal.h"
 
 namespace mojo {
@@ -68,11 +67,11 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) MessageDispatchContext {
 
   static MessageDispatchContext* current();
 
-  base::OnceCallback<void(const std::string&)> GetBadMessageCallback();
+  base::OnceCallback<void(base::StringPiece)> GetBadMessageCallback();
 
  private:
-  MessageDispatchContext* outer_context_;
-  Message* message_;
+  raw_ptr<MessageDispatchContext> outer_context_;
+  raw_ptr<Message> message_;
 };
 
 COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)

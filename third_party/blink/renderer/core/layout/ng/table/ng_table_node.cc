@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -54,8 +54,9 @@ LayoutUnit NGTableNode::ComputeTableInlineSize(
 
 LayoutUnit NGTableNode::ComputeCaptionBlockSize(
     const NGConstraintSpace& space) const {
-  LayoutUnit table_inline_size = CalculateInitialFragmentGeometry(space, *this)
-                                     .border_box_size.inline_size;
+  LayoutUnit table_inline_size =
+      CalculateInitialFragmentGeometry(space, *this, /* break_token */ nullptr)
+          .border_box_size.inline_size;
   return NGTableLayoutAlgorithm::ComputeCaptionBlockSize(*this, space,
                                                          table_inline_size);
 }

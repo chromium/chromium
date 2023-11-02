@@ -13,7 +13,7 @@
         --page-selector-spacing: 4px;
       }
 
-      #pageselector::selection {
+      #pageSelector::selection {
         background-color: var(--viewer-text-input-selection-color);
       }
 
@@ -41,7 +41,7 @@
       }
     </style>
     <div id="content">
-      <input part="input" type="text" id="pageselector" value="[[pageNo]]"
+      <input part="input" type="text" id="pageSelector" value="[[pageNo]]"
           on-pointerup="select" on-input="onInput_" on-change="pageNoCommitted"
           aria-label="$i18n{labelPageNumber}">
       <span id="divider">/</span>

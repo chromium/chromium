@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -8,6 +8,9 @@
 USE_PYTHON3 = True
 
 def CheckVersionUpdatedInDownloadFileTypeList(input_api, output_api):
+    # Don't report errors for "git cl presubmit --all/--files"
+    if input_api.no_diffs:
+        return []
 
     download_file_type_names = [
         'download_file_types.asciipb', 'download_file_types_experiment.asciipb'

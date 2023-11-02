@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,10 +17,6 @@ namespace ash {
 
 class AppListFolderItem;
 class FolderHeaderViewDelegate;
-
-namespace test {
-class FolderHeaderViewTest;
-}
 
 // FolderHeaderView contains an editable folder name field.
 class ASH_EXPORT FolderHeaderView : public views::View,
@@ -52,8 +48,8 @@ class ASH_EXPORT FolderHeaderView : public views::View,
 
  private:
   class FolderNameView;
-  friend class test::FolderHeaderViewTest;
-  friend class PopulatedAppListTest;
+  friend class FolderHeaderViewTest;
+  friend class PopulatedAppListTestBase;
 
   // Updates UI.
   void Update();
@@ -86,24 +82,9 @@ class ASH_EXPORT FolderHeaderView : public views::View,
                        const std::u16string& new_contents) override;
   bool HandleKeyEvent(views::Textfield* sender,
                       const ui::KeyEvent& key_event) override;
-  void OnBeforeUserAction(views::Textfield* sender) override;
 
   // AppListItemObserver overrides:
   void ItemNameChanged() override;
-
-  // Sets the |previous_cursor_position_|, only for testing use
-  void SetPreviousCursorPositionForTest(const size_t cursor_position);
-
-  // Sets the |previous_folder_name_|, only for testing use
-  void SetPreviousFolderNameForTest(const std::u16string& previous_name);
-
-  // Used to restore the folder name if the new folder name is longer than the
-  // max chars folder length allowed
-  absl::optional<std::u16string> previous_folder_name_;
-
-  // Used to restore the cursor position to its last known location when
-  // resetting the folder name in textfield
-  absl::optional<size_t> previous_cursor_position_;
 
   AppListFolderItem* folder_item_;  // Not owned.
 
@@ -116,6 +97,9 @@ class ASH_EXPORT FolderHeaderView : public views::View,
   bool folder_name_visible_;
 
   bool is_tablet_mode_;
+
+  // Used to restore the folder name when the user presses the escape key.
+  std::u16string previous_folder_name_;
 };
 
 }  // namespace ash

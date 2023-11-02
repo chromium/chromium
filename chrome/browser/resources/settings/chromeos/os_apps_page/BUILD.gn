@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -13,8 +13,6 @@ js_type_check("closure_compile_module") {
     ":android_apps_browser_proxy",
     ":android_apps_subpage",
     ":os_apps_page",
-    ":permission_constants",
-    ":permission_util",
   ]
 }
 
@@ -25,15 +23,15 @@ js_library("android_apps_browser_proxy") {
 js_library("android_apps_subpage") {
   deps = [
     ":android_apps_browser_proxy",
-    "..:deep_linking_behavior.m",
-    "..:os_route.m",
+    "..:deep_linking_behavior",
+    "..:os_route",
     "..:prefs_behavior",
     "..:route_observer_behavior",
     "../..:router",
+    "//ash/webui/common/resources:focus_without_ink_js",
+    "//ash/webui/common/resources:i18n_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
-    "//ui/webui/resources/js/cr/ui:focus_without_ink.m",
+    "//ui/webui/resources/js:assert",
   ]
 }
 
@@ -41,34 +39,20 @@ js_library("os_apps_page") {
   deps = [
     ":android_apps_browser_proxy",
     ":android_apps_subpage",
-    "..:deep_linking_behavior.m",
-    "..:os_route.m",
+    "..:deep_linking_behavior",
+    "..:os_route",
     "..:prefs_behavior",
     "../../:router",
-    "./app_management_page:constants",
     "./app_management_page:store_client",
     "./app_notifications_page:mojo_interface_provider",
-    "//chrome/browser/ui/webui/settings/chromeos/os_apps_page/mojom:mojom_js_library_for_compile",
-    "//ui/webui/resources/cr_components/chromeos/localized_link:localized_link",
-    "//ui/webui/resources/cr_components/chromeos/localized_link:localized_link",
+    "//ash/webui/common/resources:i18n_behavior",
+    "//chrome/browser/ui/webui/settings/ash/os_apps_page/mojom:mojom_js_library_for_compile",
     "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
   ]
   externs_list = [
     "$externs_path/metrics_private.js",
     "../settings_controls_types.js",
   ]
-}
-
-js_library("permission_util") {
-  deps = [
-    ":permission_constants",
-    "//ui/webui/resources/js:assert.m",
-  ]
-}
-
-js_library("permission_constants") {
-  deps = [ "//chrome/browser/ui/webui/app_management:mojo_bindings_js_library_for_compile" ]
 }
 
 html_to_js("web_components") {

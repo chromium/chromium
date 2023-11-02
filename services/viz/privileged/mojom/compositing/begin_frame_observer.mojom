@@ -1,0 +1,15 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module viz.mojom;
+
+import "services/viz/public/mojom/compositing/begin_frame_args.mojom";
+
+// Standalone BeginFrameObserver separate from CompositorFrameSink.
+interface BeginFrameObserver {
+  // Notification of begin frame. Unlike
+  // CompositorFrameSinkClient::OnBeginFrame, the observer is not required to
+  // respond to this call.
+  OnStandaloneBeginFrame(BeginFrameArgs args);
+};

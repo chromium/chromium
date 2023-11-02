@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "net/base/net_export.h"
 #include "net/disk_cache/blockfile/file.h"
@@ -28,7 +28,7 @@ namespace disk_cache {
 // time).
 class NET_EXPORT_PRIVATE MappedFile : public File {
  public:
-  MappedFile() : File(true), init_(false) {}
+  MappedFile() : File(true) {}
 
   MappedFile(const MappedFile&) = delete;
   MappedFile& operator=(const MappedFile&) = delete;
@@ -56,14 +56,15 @@ class NET_EXPORT_PRIVATE MappedFile : public File {
  private:
   ~MappedFile() override;
 
-  bool init_;
-#if defined(OS_WIN)
+  bool init_ = false;
+#if BUILDFLAG(IS_WIN)
   HANDLE section_;
 #endif
   void* buffer_;  // Address of the memory mapped buffer.
   size_t view_size_;  // Size of the memory pointed by buffer_.
-#if BUILDFLAG(POSIX_AVOID_MMAP)
-  void* snapshot_;  // Copy of the buffer taken when it was last flushed.
+#if BUILDFLAG(POSIX_BYPASS_MMAP)
+  raw_ptr<void>
+      snapshot_;  // Copy of the buffer taken when it was last flushed.
 #endif
 };
 
@@ -75,7 +76,7 @@ class ScopedFlush {
     file_->Flush();
   }
  private:
-  MappedFile* file_;
+  raw_ptr<MappedFile> file_;
 };
 
 }  // namespace disk_cache

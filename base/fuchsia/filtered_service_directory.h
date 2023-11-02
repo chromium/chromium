@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,19 +10,10 @@
 #include <lib/sys/cpp/outgoing_directory.h>
 #include <lib/sys/cpp/service_directory.h>
 #include <lib/zx/channel.h>
+#include <memory>
 
 #include "base/base_export.h"
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
-
-// TODO(crbug.com/1196525): Remove once Chromecast calls are checking results.
-#include "build/chromecast_buildflags.h"
-#if BUILDFLAG(IS_CHROMECAST)
-#define MAYBE_WARN_UNUSED_RESULT
-#else
-#define MAYBE_WARN_UNUSED_RESULT WARN_UNUSED_RESULT
-#endif
 
 namespace base {
 
@@ -32,7 +23,8 @@ class BASE_EXPORT FilteredServiceDirectory {
  public:
   // Creates a directory that proxies requests to the specified service
   // |directory|.
-  explicit FilteredServiceDirectory(sys::ServiceDirectory* directory);
+  explicit FilteredServiceDirectory(
+      std::shared_ptr<sys::ServiceDirectory> directory);
 
   FilteredServiceDirectory(const FilteredServiceDirectory&) = delete;
   FilteredServiceDirectory& operator=(const FilteredServiceDirectory&) = delete;
@@ -40,20 +32,21 @@ class BASE_EXPORT FilteredServiceDirectory {
   ~FilteredServiceDirectory();
 
   // Adds the specified service to the list of allowed services.
-  zx_status_t AddService(base::StringPiece service_name)
-      MAYBE_WARN_UNUSED_RESULT;
+  // Returns a status other than ZX_OK if the service cannot be added, e.g.
+  // because it is already in the list of allowed services.
+  [[nodiscard]] zx_status_t AddService(StringPiece service_name);
 
   // Connects a directory client. The directory can be passed to a sandboxed
   // process to be used for /svc namespace.
-  zx_status_t ConnectClient(fidl::InterfaceRequest<::fuchsia::io::Directory>
-                                dir_request) MAYBE_WARN_UNUSED_RESULT;
+  [[nodiscard]] zx_status_t ConnectClient(
+      fidl::InterfaceRequest<::fuchsia::io::Directory> dir_request);
 
   // Accessor for the OutgoingDirectory, used to add handlers for services
   // in addition to those provided from |directory| via AddService().
   sys::OutgoingDirectory* outgoing_directory() { return &outgoing_directory_; }
 
  private:
-  const sys::ServiceDirectory* const directory_;
+  const std::shared_ptr<sys::ServiceDirectory> directory_;
   sys::OutgoingDirectory outgoing_directory_;
 };
 

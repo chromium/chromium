@@ -1,0 +1,3 @@
+HTTP/1.1 301 Yo
+Attribution-Reporting-Register-Source:{{"source_event_id":"5","destination":"https://d.test"}}
+Location: /register_source_headers.html

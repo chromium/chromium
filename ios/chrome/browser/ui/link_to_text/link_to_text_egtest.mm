@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,8 @@
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "components/shared_highlighting/core/common/fragment_directives_utils.h"
 #import "components/shared_highlighting/core/common/text_fragment.h"
-#import "components/shared_highlighting/core/common/text_fragments_utils.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_actions_app_interface.h"
@@ -97,7 +97,18 @@ NSArray<NSString*>* GetMarkedText() {
                   "  }"
                   "  return markedText;"
                   "})();";
-  return [ChromeEarlGrey executeJavaScript:js];
+  auto result = [ChromeEarlGrey evaluateJavaScript:js];
+  GREYAssertTrue(result.is_list(), @"Result is not iterable.");
+
+  NSMutableArray<NSString*>* marked_texts = [NSMutableArray array];
+  for (const auto& element : result.GetListDeprecated()) {
+    if (element.is_string()) {
+      NSString* ns_element = base::SysUTF8ToNSString(element.GetString());
+      [marked_texts addObject:ns_element];
+    }
+  }
+
+  return [marked_texts copy];
 }
 
 NSString* GetFirstVisibleMarkedText() {
@@ -114,7 +125,9 @@ NSString* GetFirstVisibleMarkedText() {
        "    rect.right <= window.innerWidth;"
        "  return isVisible ? firstMark.innerText : '';"
        "})();";
-  return [ChromeEarlGrey executeJavaScript:js];
+  auto result = [ChromeEarlGrey evaluateJavaScript:js];
+  GREYAssertTrue(result.is_string(), @"Result is not a string.");
+  return base::SysUTF8ToNSString(result.GetString());
 }
 
 std::unique_ptr<net::test_server::HttpResponse> LoadHtml(
@@ -196,7 +209,8 @@ std::unique_ptr<net::test_server::HttpResponse> LoadHtml(
                   }];
 
   GREYAssert([scrolledToText
-                 waitWithTimeout:base::test::ios::kWaitForJSCompletionTimeout],
+                 waitWithTimeout:base::test::ios::kWaitForJSCompletionTimeout
+                                     .InSecondsF()],
              @"Could not find visible marked element.");
 
   GREYAssertEqual(kFirstFragmentText, base::SysNSStringToUTF8(firstVisibleMark),
@@ -268,9 +282,10 @@ std::unique_ptr<net::test_server::HttpResponse> LoadHtml(
                     return expectedGURL == [ChromeEarlGrey pasteboardURL];
                   }];
 
-  GREYAssert([getPasteboardValue
-                 waitWithTimeout:base::test::ios::kWaitForActionTimeout],
-             @"Could not get expected URL from pasteboard.");
+  GREYAssert(
+      [getPasteboardValue
+          waitWithTimeout:base::test::ios::kWaitForActionTimeout.InSecondsF()],
+      @"Could not get expected URL from pasteboard.");
 }
 
 - (void)testBadSelectionDisablesGenerateLink {
@@ -299,7 +314,7 @@ std::unique_ptr<net::test_server::HttpResponse> LoadHtml(
       assertWithMatcher:grey_notVisible()];
 
   // TODO(crbug.com/1233056): Tap to dismiss the system selection callout
-  // buttons so tearDown doesn't hang when |disabler| goes out of scope.
+  // buttons so tearDown doesn't hang when `disabler` goes out of scope.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:grey_tap()];
 }
@@ -340,7 +355,7 @@ std::unique_ptr<net::test_server::HttpResponse> LoadHtml(
       assertWithMatcher:grey_notVisible()];
 
   // TODO(crbug.com/1233056): Tap to dismiss the system selection callout
-  // buttons so tearDown doesn't hang when |disabler| goes out of scope.
+  // buttons so tearDown doesn't hang when `disabler` goes out of scope.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:grey_tap()];
 }

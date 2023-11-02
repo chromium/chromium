@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -75,6 +75,7 @@ class EmptyOverrideGeneratorClassAdapter extends ClassVisitor {
      */
     private void writeOverrideCode(
             MethodVisitor mv, final int access, final String name, final String descriptor) {
+        assert access != 0;
         Type[] argTypes = Type.getArgumentTypes(descriptor);
         Type returnType = Type.getReturnType(descriptor);
 

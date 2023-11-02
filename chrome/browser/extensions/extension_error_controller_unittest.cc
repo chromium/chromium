@@ -1,9 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/extension_error_controller.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/extensions/extension_error_ui.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -44,14 +45,14 @@ class MockExtensionErrorUI : public ExtensionErrorUI {
   void Close() override;
 
   // Keep a copy of the delegate around for ourselves.
-  ExtensionErrorUI::Delegate* delegate_;
+  raw_ptr<ExtensionErrorUI::Delegate> delegate_;
 };
 
 // We use this as a slight hack to get the created Error UI, if any. We should
 // only ever have one (since this is a single-profile test), and this avoids
 // the need for any kind of accessor to the ErrorController from
 // ExtensionService.
-MockExtensionErrorUI* g_error_ui = NULL;
+MockExtensionErrorUI* g_error_ui = nullptr;
 
 MockExtensionErrorUI::MockExtensionErrorUI(ExtensionErrorUI::Delegate* delegate)
     : delegate_(delegate) {
@@ -61,7 +62,7 @@ MockExtensionErrorUI::MockExtensionErrorUI(ExtensionErrorUI::Delegate* delegate)
 }
 
 MockExtensionErrorUI::~MockExtensionErrorUI() {
-  g_error_ui = NULL;
+  g_error_ui = nullptr;
 }
 
 void MockExtensionErrorUI::CloseUI() {

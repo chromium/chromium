@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,8 @@
 #include "frontend_channel.h"
 #include "protocol_core.h"
 
+#include "base/record_replay.h"
+
 namespace crdtp {
 // =============================================================================
 // DispatchResponse - Error status and chaining / fall through
@@ -18,6 +20,7 @@ namespace crdtp {
 
 // static
 DispatchResponse DispatchResponse::Success() {
+  recordreplay::Assert("[RUN-2194-2193] DispatchResponse::Success");
   DispatchResponse result;
   result.code_ = DispatchCode::SUCCESS;
   return result;
@@ -25,6 +28,7 @@ DispatchResponse DispatchResponse::Success() {
 
 // static
 DispatchResponse DispatchResponse::FallThrough() {
+  recordreplay::Assert("[RUN-2194-2193] DispatchResponse::FallThrough");
   DispatchResponse result;
   result.code_ = DispatchCode::FALL_THROUGH;
   return result;
@@ -32,6 +36,8 @@ DispatchResponse DispatchResponse::FallThrough() {
 
 // static
 DispatchResponse DispatchResponse::ParseError(std::string message) {
+  recordreplay::Assert("[RUN-2194-2193] DispatchResponse::ParseError %s",
+                       message.c_str());
   DispatchResponse result;
   result.code_ = DispatchCode::PARSE_ERROR;
   result.message_ = std::move(message);
@@ -40,6 +46,7 @@ DispatchResponse DispatchResponse::ParseError(std::string message) {
 
 // static
 DispatchResponse DispatchResponse::InvalidRequest(std::string message) {
+  recordreplay::Assert("[RUN-2194-2193] DispatchResponse::InvalidRequest %s", message.c_str());
   DispatchResponse result;
   result.code_ = DispatchCode::INVALID_REQUEST;
   result.message_ = std::move(message);
@@ -48,6 +55,7 @@ DispatchResponse DispatchResponse::InvalidRequest(std::string message) {
 
 // static
 DispatchResponse DispatchResponse::MethodNotFound(std::string message) {
+  recordreplay::Assert("[RUN-2194-2193] DispatchResponse::MethodNotFound %s", message.c_str());
   DispatchResponse result;
   result.code_ = DispatchCode::METHOD_NOT_FOUND;
   result.message_ = std::move(message);
@@ -56,6 +64,7 @@ DispatchResponse DispatchResponse::MethodNotFound(std::string message) {
 
 // static
 DispatchResponse DispatchResponse::InvalidParams(std::string message) {
+  recordreplay::Assert("[RUN-2194-2193] DispatchResponse::InvalidParams %s", message.c_str());
   DispatchResponse result;
   result.code_ = DispatchCode::INVALID_PARAMS;
   result.message_ = std::move(message);
@@ -64,6 +73,7 @@ DispatchResponse DispatchResponse::InvalidParams(std::string message) {
 
 // static
 DispatchResponse DispatchResponse::InternalError() {
+  recordreplay::Assert("[RUN-2194-2193] DispatchResponse::InternalError");
   DispatchResponse result;
   result.code_ = DispatchCode::INTERNAL_ERROR;
   result.message_ = "Internal error";
@@ -72,8 +82,20 @@ DispatchResponse DispatchResponse::InternalError() {
 
 // static
 DispatchResponse DispatchResponse::ServerError(std::string message) {
+  recordreplay::Assert("[RUN-2194-2193] DispatchResponse::SeverError %s",
+                       message.c_str());
   DispatchResponse result;
   result.code_ = DispatchCode::SERVER_ERROR;
+  result.message_ = std::move(message);
+  return result;
+}
+
+// static
+DispatchResponse DispatchResponse::SessionNotFound(std::string message) {
+  recordreplay::Assert("[RUN-2194-2193] DispatchResponse::SessionNotFound %s",
+                       message.c_str());
+  DispatchResponse result;
+  result.code_ = DispatchCode::SESSION_NOT_FOUND;
   result.message_ = std::move(message);
   return result;
 }
@@ -81,10 +103,6 @@ DispatchResponse DispatchResponse::ServerError(std::string message) {
 // =============================================================================
 // Dispatchable - a shallow parser for CBOR encoded DevTools messages
 // =============================================================================
-namespace {
-constexpr size_t kEncodedEnvelopeHeaderSize = 1 + 1 + sizeof(uint32_t);
-}  // namespace
-
 Dispatchable::Dispatchable(span<uint8_t> serialized) : serialized_(serialized) {
   Status s = cbor::CheckCBORMessage(serialized);
   if (!s.ok()) {
@@ -105,9 +123,8 @@ Dispatchable::Dispatchable(span<uint8_t> serialized) : serialized_(serialized) {
   // expect to see after we're done parsing the envelope contents.
   // This way we can compare and produce an error if the contents
   // didn't fit exactly into the envelope length.
-  const size_t pos_past_envelope = tokenizer.Status().pos +
-                                   kEncodedEnvelopeHeaderSize +
-                                   tokenizer.GetEnvelopeContents().size();
+  const size_t pos_past_envelope =
+      tokenizer.Status().pos + tokenizer.GetEnvelopeHeader().outer_size();
   tokenizer.EnterEnvelope();
   if (tokenizer.TokenTag() == cbor::CBORTokenTag::ERROR_VALUE) {
     status_ = tokenizer.Status();
@@ -310,15 +327,10 @@ class ProtocolError : public Serializable {
 
 std::unique_ptr<Serializable> CreateErrorResponse(
     int call_id,
-    DispatchResponse dispatch_response,
-    const ErrorSupport* errors) {
+    DispatchResponse dispatch_response) {
   auto protocol_error =
       std::make_unique<ProtocolError>(std::move(dispatch_response));
   protocol_error->SetCallId(call_id);
-  if (errors && !errors->Errors().empty()) {
-    protocol_error->SetData(
-        std::string(errors->Errors().begin(), errors->Errors().end()));
-  }
   return protocol_error;
 }
 
@@ -473,26 +485,9 @@ void DomainDispatcher::sendResponse(int call_id,
   frontend_channel_->SendProtocolResponse(call_id, std::move(serializable));
 }
 
-bool DomainDispatcher::MaybeReportInvalidParams(
-    const Dispatchable& dispatchable,
-    const ErrorSupport& errors) {
-  if (errors.Errors().empty())
-    return false;
-  if (frontend_channel_) {
-    frontend_channel_->SendProtocolResponse(
-        dispatchable.CallId(),
-        CreateErrorResponse(
-            dispatchable.CallId(),
-            DispatchResponse::InvalidParams("Invalid parameters"), &errors));
-  }
-  return true;
-}
-
-bool DomainDispatcher::MaybeReportInvalidParams(
-    const Dispatchable& dispatchable,
-    const DeserializerState& state) {
-  if (state.status().ok())
-    return false;
+void DomainDispatcher::ReportInvalidParams(const Dispatchable& dispatchable,
+                                           const DeserializerState& state) {
+  assert(!state.status().ok());
   if (frontend_channel_) {
     frontend_channel_->SendProtocolResponse(
         dispatchable.CallId(),
@@ -500,7 +495,6 @@ bool DomainDispatcher::MaybeReportInvalidParams(
             dispatchable.CallId(),
             DispatchResponse::InvalidParams("Invalid parameters"), state));
   }
-  return true;
 }
 
 void DomainDispatcher::clearFrontend() {

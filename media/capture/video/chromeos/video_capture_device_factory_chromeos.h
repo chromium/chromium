@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,7 +33,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryChromeOS final
   ~VideoCaptureDeviceFactoryChromeOS() override;
 
   // VideoCaptureDeviceFactory interface implementations.
-  std::unique_ptr<VideoCaptureDevice> CreateDevice(
+  VideoCaptureErrorOrDevice CreateDevice(
       const VideoCaptureDeviceDescriptor& device_descriptor) final;
   void GetDevicesInfo(GetDevicesInfoCallback callback) override;
 
@@ -48,15 +48,8 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryChromeOS final
   const scoped_refptr<base::SingleThreadTaskRunner>
       task_runner_for_screen_observer_;
 
-  // The thread that all the Mojo operations of |camera_hal_delegate_| take
-  // place.  Started in Init and stopped when the class instance is destroyed.
-  base::Thread camera_hal_ipc_thread_;
-
-  // Communication interface to the camera HAL.  |camera_hal_delegate_| is
-  // created on the thread on which Init is called.  All the Mojo communication
-  // that |camera_hal_delegate_| issues and receives must be sequenced through
-  // |camera_hal_ipc_thread_|.
-  scoped_refptr<CameraHalDelegate> camera_hal_delegate_;
+  // Communication interface to the camera HAL.
+  std::unique_ptr<CameraHalDelegate> camera_hal_delegate_;
 
   bool initialized_;
 

@@ -1,10 +1,12 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/config/chromecast_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
+import("//media/gpu/args.gni")
 import("//media/media_options.gni")
+import("//mojo/public/tools/fuzzers/mojolpm.gni")
 import("//testing/test.gni")
 
 component("services") {
@@ -68,9 +70,13 @@ component("services") {
     "video_decode_stats_recorder.h",
     "watch_time_recorder.cc",
     "watch_time_recorder.h",
+    "webrtc_video_perf_history.cc",
+    "webrtc_video_perf_history.h",
+    "webrtc_video_perf_recorder.cc",
+    "webrtc_video_perf_recorder.h",
   ]
 
-  defines = [ "MEDIA_MOJO_IMPLEMENTATION" ]
+  defines = [ "IS_MEDIA_MOJO_IMPL" ]
 
   public_deps = [
     "//base",
@@ -96,7 +102,6 @@ component("services") {
     "//media/learning/impl",
     "//media/learning/mojo:impl",
     "//media/mojo/common",
-    "//media/mojo/common:mojo_shared_buffer_video_frame",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
     "//services/service_manager/public/mojom",
@@ -110,13 +115,13 @@ component("services") {
     sources += [ "gpu_mojo_media_client_win.cc" ]
   } else if (use_vaapi || use_v4l2_codec) {
     sources += [ "gpu_mojo_media_client_cros.cc" ]
-
-    if (is_chromeos) {
-      deps +=
-          [ "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_gpu" ]
-    }
   } else {
     sources += [ "gpu_mojo_media_client_stubs.cc" ]
+  }
+
+  if (is_chromeos) {
+    deps +=
+        [ "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_gpu" ]
   }
 
   if (is_android) {
@@ -164,6 +169,8 @@ component("services") {
 
   if (is_win) {
     sources += [
+      "media_foundation_gpu_info_monitor.cc",
+      "media_foundation_gpu_info_monitor.h",
       "media_foundation_mojo_media_client.cc",
       "media_foundation_mojo_media_client.h",
       "media_foundation_renderer_wrapper.cc",
@@ -173,17 +180,26 @@ component("services") {
       "media_foundation_service_broker.cc",
       "media_foundation_service_broker.h",
     ]
-    deps += [ "//media/base/win:media_foundation_util" ]
+    deps += [
+      "//media/base/win:media_foundation_util",
+      "//ui/gfx/mojom:dxgi_info",
+    ]
   }
 
-  if (is_chromeos_ash || is_linux) {
+  if ((is_chromeos_ash || is_linux) && (use_vaapi || use_v4l2_codec)) {
     sources += [
       "stable_video_decoder_factory_service.cc",
       "stable_video_decoder_factory_service.h",
+      "stable_video_decoder_service.cc",
+      "stable_video_decoder_service.h",
     ]
 
-    public_deps +=
-        [ "//media/mojo/mojom/stable:stable_video_decoder_cpp_sources" ]
+    public_deps += [ "//media/mojo/mojom/stable:stable_video_decoder" ]
+
+    deps += [
+      "//media/gpu/chromeos",
+      "//ui/ozone:ozone_switches",
+    ]
   }
 }
 
@@ -204,6 +220,8 @@ source_set("unit_tests") {
     "video_decode_perf_history_unittest.cc",
     "video_decode_stats_recorder_unittest.cc",
     "watch_time_recorder_unittest.cc",
+    "webrtc_video_perf_history_unittest.cc",
+    "webrtc_video_perf_recorder_unittest.cc",
   ]
 
   deps = [
@@ -212,7 +230,6 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/ukm:test_support",
     "//media:test_support",
-    "//media/cdm:cdm_paths",
     "//media/learning/common",
     "//media/mojo:test_support",
     "//media/mojo/clients",
@@ -236,7 +253,10 @@ source_set("unit_tests") {
       "mojo_cdm_helper_unittest.cc",
     ]
 
-    deps += [ "//media/cdm:cdm_api" ]
+    deps += [
+      "//media/cdm:cdm_api",
+      "//media/cdm:cdm_paths",
+    ]
   }
 
   if (is_chromeos_ash) {
@@ -244,4 +264,32 @@ source_set("unit_tests") {
       "//components/chromeos_camera:mjpeg_decode_accelerator_service_unittest",
     ]
   }
+
+  if ((is_chromeos_ash || is_linux) && (use_vaapi || use_v4l2_codec)) {
+    sources += [ "stable_video_decoder_service_unittest.cc" ]
+  }
+}
+
+mojolpm_fuzzer_test("webrtc_video_perf_mojolpm_fuzzer") {
+  sources = [ "webrtc_video_perf_mojolpm_fuzzer.cc" ]
+
+  proto_source = "webrtc_video_perf_mojolpm_fuzzer.proto"
+  testcase_proto_kind = "media.fuzzing.webrtc_video_perf.proto.Testcase"
+
+  seed_corpus_sources = [
+    "webrtc_video_perf_fuzzer_seed_corpus/update_record_and_get_perf.textproto",
+  ]
+
+  proto_deps = [ "//third_party/blink/public/mojom:mojom_platform_mojolpm" ]
+
+  deps = [
+    ":services",
+    "//base",
+    "//base/test:test_support",
+    "//components/leveldb_proto:test_support",
+    "//content/public/browser",
+    "//media",
+    "//media/capabilities:webrtc_video_stats_proto",
+    "//third_party/libprotobuf-mutator",
+  ]
 }

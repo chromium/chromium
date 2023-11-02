@@ -1,8 +1,8 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//ios/web/js_compile.gni")
+import("//ios/web/public/js_messaging/optimize_js.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
 source_set("image_fetch") {
@@ -24,13 +24,13 @@ source_set("image_fetch") {
   ]
 }
 
-js_compile_bundle("image_fetch_js") {
+optimize_js("image_fetch_js") {
   visibility = [
     ":image_fetch",
     ":unit_tests",
   ]
-  closure_entry_point = "__crWeb.imageFetch"
 
+  primary_script = "resources/image_fetch.js"
   sources = [ "resources/image_fetch.js" ]
 }
 
@@ -47,15 +47,20 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//ios/chrome/browser/browser_state:test_support",
-    "//ios/chrome/browser/web:test_support",
+    "//ios/web/js_messaging:java_script_feature",
+    "//ios/web/public/js_messaging:js_messaging",
     "//ios/web/public/test",
+    "//ios/web/test:js_test_util_internal",
     "//net:test_support",
     "//services/network:test_support",
   ]
 }
 
 fuzzer_test("image_fetch_java_script_feature_fuzzer") {
-  additional_configs = [ "//build/config/compiler:enable_arc" ]
+  additional_configs = [
+    "//build/config/compiler:enable_arc",
+    "//testing/libfuzzer:build_for_ios_clusterfuzz_job",
+  ]
 
   sources = [ "image_fetch_java_script_feature_fuzzer.mm" ]
   deps = [

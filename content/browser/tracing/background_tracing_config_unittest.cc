@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -48,7 +48,8 @@ std::unique_ptr<BackgroundTracingConfigImpl> ReadFromJSONString(
 
   std::unique_ptr<BackgroundTracingConfigImpl> config(
       static_cast<BackgroundTracingConfigImpl*>(
-          BackgroundTracingConfig::FromDict(std::move(*json_value)).release()));
+          BackgroundTracingConfig::FromDict(std::move(*json_value).TakeDict())
+              .release()));
   return config;
 }
 
@@ -133,19 +134,6 @@ TEST_F(BackgroundTracingConfigTest, PreemptiveConfigFromInvalidString) {
       "\"MONITOR_AND_DUMP_WHEN_SPECIFIC_HISTOGRAM_AND_VALUE\", "
       "\"histogram_name\":\"foo\", \"histogram_lower_value\": 1,"
       "\"histogram_upper_value\": 1}]}"));
-  // `units` must be an int from the HistogramRule::Units enum.
-  EXPECT_FALSE(ReadFromJSONString(
-      "{\"mode\":\"preemptive\", \"category\": \"benchmark\","
-      "\"configs\": [{\"rule\": "
-      "\"MONITOR_AND_DUMP_WHEN_SPECIFIC_HISTOGRAM_AND_VALUE\", "
-      "\"histogram_name\":\"foo\", \"histogram_lower_value\": 1,"
-      "\"histogram_upper_value\": 2, \"histogram_units\": \"bar\"}]}"));
-  EXPECT_FALSE(ReadFromJSONString(
-      "{\"mode\":\"preemptive\", \"category\": \"benchmark\","
-      "\"configs\": [{\"rule\": "
-      "\"MONITOR_AND_DUMP_WHEN_SPECIFIC_HISTOGRAM_AND_VALUE\", "
-      "\"histogram_name\":\"foo\", \"histogram_lower_value\": 1,"
-      "\"histogram_upper_value\": 2, \"histogram_units\": 100}]}"));
 }
 
 TEST_F(BackgroundTracingConfigTest, ReactiveConfigFromInvalidString) {
@@ -287,8 +275,7 @@ TEST_F(BackgroundTracingConfigTest, PreemptiveConfigFromValidString) {
       "{\"mode\":\"PREEMPTIVE_TRACING_MODE\", \"category\": "
       "\"BENCHMARK_STARTUP\",\"configs\": [{\"rule\": "
       "\"MONITOR_AND_DUMP_WHEN_SPECIFIC_HISTOGRAM_AND_VALUE\", "
-      "\"histogram_name\":\"foo\", \"histogram_value\": 1, "
-      "\"histogram_units\": 0}]}");
+      "\"histogram_name\":\"foo\", \"histogram_value\": 1}]}");
   EXPECT_TRUE(config);
   EXPECT_EQ(config->tracing_mode(), BackgroundTracingConfig::PREEMPTIVE);
   EXPECT_EQ(config->category_preset(),
@@ -297,23 +284,6 @@ TEST_F(BackgroundTracingConfigTest, PreemptiveConfigFromValidString) {
   EXPECT_EQ(RuleToString(config->rules()[0]),
             "{\"histogram_lower_value\":1,\"histogram_name\":\"foo\","
             "\"histogram_repeat\":true,\"histogram_upper_value\":2147483647,"
-            "\"rule\":\"MONITOR_AND_DUMP_WHEN_SPECIFIC_HISTOGRAM_AND_VALUE\"}");
-
-  config = ReadFromJSONString(
-      "{\"mode\":\"PREEMPTIVE_TRACING_MODE\", \"category\": "
-      "\"BENCHMARK_STARTUP\",\"configs\": [{\"rule\": "
-      "\"MONITOR_AND_DUMP_WHEN_SPECIFIC_HISTOGRAM_AND_VALUE\", "
-      "\"histogram_name\":\"foo\", \"histogram_value\": 1, "
-      "\"histogram_units\": 1}]}");
-  EXPECT_TRUE(config);
-  EXPECT_EQ(config->tracing_mode(), BackgroundTracingConfig::PREEMPTIVE);
-  EXPECT_EQ(config->category_preset(),
-            BackgroundTracingConfigImpl::BENCHMARK_STARTUP);
-  EXPECT_EQ(config->rules().size(), 1u);
-  EXPECT_EQ(RuleToString(config->rules()[0]),
-            "{\"histogram_lower_value\":1,\"histogram_name\":\"foo\","
-            "\"histogram_repeat\":true,\"histogram_units\":1,"
-            "\"histogram_upper_value\":2147483647,"
             "\"rule\":\"MONITOR_AND_DUMP_WHEN_SPECIFIC_HISTOGRAM_AND_VALUE\"}");
 
   config = ReadFromJSONString(
@@ -488,9 +458,9 @@ TEST_F(BackgroundTracingConfigTest, ValidPreemptiveConfigToString) {
         BackgroundTracingConfig::PREEMPTIVE);
     config->set_category_preset(BackgroundTracingConfigImpl::BENCHMARK_STARTUP);
 
-    base::Value dict(base::Value::Type::DICTIONARY);
-    dict.SetStringKey("rule", "MONITOR_AND_DUMP_WHEN_TRIGGER_NAMED");
-    dict.SetStringKey("trigger_name", "foo");
+    base::Value::Dict dict;
+    dict.Set("rule", "MONITOR_AND_DUMP_WHEN_TRIGGER_NAMED");
+    dict.Set("trigger_name", "foo");
     config->AddPreemptiveRule(dict);
 
     EXPECT_EQ(ConfigToString(config.get()),
@@ -504,10 +474,10 @@ TEST_F(BackgroundTracingConfigTest, ValidPreemptiveConfigToString) {
         BackgroundTracingConfig::PREEMPTIVE);
     config->set_category_preset(BackgroundTracingConfigImpl::BENCHMARK_STARTUP);
 
-    base::Value dict(base::Value::Type::DICTIONARY);
-    dict.SetStringKey("rule", "MONITOR_AND_DUMP_WHEN_TRIGGER_NAMED");
-    dict.SetStringKey("trigger_name", "foo");
-    dict.SetDoubleKey("trigger_chance", 0.5);
+    base::Value::Dict dict;
+    dict.Set("rule", "MONITOR_AND_DUMP_WHEN_TRIGGER_NAMED");
+    dict.Set("trigger_name", "foo");
+    dict.Set("trigger_chance", 0.5);
     config->AddPreemptiveRule(dict);
 
     EXPECT_EQ(
@@ -522,12 +492,12 @@ TEST_F(BackgroundTracingConfigTest, ValidPreemptiveConfigToString) {
         BackgroundTracingConfig::PREEMPTIVE);
     config->set_category_preset(BackgroundTracingConfigImpl::BENCHMARK_STARTUP);
 
-    base::Value dict(base::Value::Type::DICTIONARY);
-    dict.SetStringKey("rule", "MONITOR_AND_DUMP_WHEN_TRIGGER_NAMED");
-    dict.SetStringKey("trigger_name", "foo1");
+    base::Value::Dict dict;
+    dict.Set("rule", "MONITOR_AND_DUMP_WHEN_TRIGGER_NAMED");
+    dict.Set("trigger_name", "foo1");
     config->AddPreemptiveRule(dict);
 
-    dict.SetStringKey("trigger_name", "foo2");
+    dict.Set("trigger_name", "foo2");
     config->AddPreemptiveRule(dict);
 
     EXPECT_EQ(ConfigToString(config.get()),
@@ -542,12 +512,12 @@ TEST_F(BackgroundTracingConfigTest, ValidPreemptiveConfigToString) {
     config = std::make_unique<BackgroundTracingConfigImpl>(
         BackgroundTracingConfig::PREEMPTIVE);
 
-    base::Value second_dict(base::Value::Type::DICTIONARY);
-    second_dict.SetStringKey(
-        "rule", "MONITOR_AND_DUMP_WHEN_SPECIFIC_HISTOGRAM_AND_VALUE");
-    second_dict.SetStringKey("histogram_name", "foo");
-    second_dict.SetIntKey("histogram_lower_value", 1);
-    second_dict.SetIntKey("histogram_upper_value", 2);
+    base::Value::Dict second_dict;
+    second_dict.Set("rule",
+                    "MONITOR_AND_DUMP_WHEN_SPECIFIC_HISTOGRAM_AND_VALUE");
+    second_dict.Set("histogram_name", "foo");
+    second_dict.Set("histogram_lower_value", 1);
+    second_dict.Set("histogram_upper_value", 2);
     config->AddPreemptiveRule(second_dict);
 
     EXPECT_EQ(
@@ -563,13 +533,13 @@ TEST_F(BackgroundTracingConfigTest, ValidPreemptiveConfigToString) {
     config = std::make_unique<BackgroundTracingConfigImpl>(
         BackgroundTracingConfig::PREEMPTIVE);
 
-    base::Value second_dict(base::Value::Type::DICTIONARY);
-    second_dict.SetStringKey(
-        "rule", "MONITOR_AND_DUMP_WHEN_SPECIFIC_HISTOGRAM_AND_VALUE");
-    second_dict.SetStringKey("histogram_name", "foo");
-    second_dict.SetIntKey("histogram_lower_value", 1);
-    second_dict.SetIntKey("histogram_upper_value", 2);
-    second_dict.SetIntKey("trigger_delay", 10);
+    base::Value::Dict second_dict;
+    second_dict.Set("rule",
+                    "MONITOR_AND_DUMP_WHEN_SPECIFIC_HISTOGRAM_AND_VALUE");
+    second_dict.Set("histogram_name", "foo");
+    second_dict.Set("histogram_lower_value", 1);
+    second_dict.Set("histogram_upper_value", 2);
+    second_dict.Set("trigger_delay", 10);
     config->AddPreemptiveRule(second_dict);
 
     EXPECT_EQ(
@@ -579,50 +549,6 @@ TEST_F(BackgroundTracingConfigTest, ValidPreemptiveConfigToString) {
         "\"histogram_upper_value\":2,\"rule\":\"MONITOR_AND_DUMP_WHEN_"
         "SPECIFIC_HISTOGRAM_AND_VALUE\",\"trigger_delay\":10}],\"mode\":"
         "\"PREEMPTIVE_TRACING_MODE\"}");
-  }
-
-  {
-    config = std::make_unique<BackgroundTracingConfigImpl>(
-        BackgroundTracingConfig::PREEMPTIVE);
-
-    base::Value second_dict(base::Value::Type::DICTIONARY);
-    second_dict.SetStringKey(
-        "rule", "MONITOR_AND_DUMP_WHEN_SPECIFIC_HISTOGRAM_AND_VALUE");
-    second_dict.SetStringKey("histogram_name", "foo");
-    second_dict.SetIntKey("histogram_lower_value", 1);
-    second_dict.SetIntKey("histogram_upper_value", 2);
-    second_dict.SetIntKey("trigger_delay", 10);
-    config->AddPreemptiveRule(second_dict);
-
-    EXPECT_EQ(
-        ConfigToString(config.get()),
-        "{\"category\":\"BENCHMARK_STARTUP\",\"configs\":[{\"histogram_lower_"
-        "value\":1,\"histogram_name\":\"foo\",\"histogram_repeat\":true,"
-        "\"histogram_upper_value\":2,\"rule\":\"MONITOR_AND_DUMP_WHEN_"
-        "SPECIFIC_HISTOGRAM_AND_VALUE\",\"trigger_delay\":10}],\"mode\":"
-        "\"PREEMPTIVE_TRACING_MODE\"}");
-  }
-
-  {
-    config = std::make_unique<BackgroundTracingConfigImpl>(
-        BackgroundTracingConfig::PREEMPTIVE);
-
-    base::Value second_dict(base::Value::Type::DICTIONARY);
-    second_dict.SetStringKey(
-        "rule", "MONITOR_AND_DUMP_WHEN_SPECIFIC_HISTOGRAM_AND_VALUE");
-    second_dict.SetStringKey("histogram_name", "foo");
-    second_dict.SetIntKey("histogram_lower_value", 1);
-    second_dict.SetIntKey("histogram_upper_value", 2);
-    second_dict.SetIntKey("histogram_units", 1);
-    config->AddPreemptiveRule(second_dict);
-
-    EXPECT_EQ(
-        ConfigToString(config.get()),
-        "{\"category\":\"BENCHMARK_STARTUP\",\"configs\":[{\"histogram_lower_"
-        "value\":1,\"histogram_name\":\"foo\",\"histogram_repeat\":true,"
-        "\"histogram_units\":1,\"histogram_upper_value\":2,"
-        "\"rule\":\"MONITOR_AND_DUMP_WHEN_SPECIFIC_HISTOGRAM_AND_VALUE\"}],"
-        "\"mode\":\"PREEMPTIVE_TRACING_MODE\"}");
   }
 }
 
@@ -633,8 +559,8 @@ TEST_F(BackgroundTracingConfigTest, InvalidPreemptiveConfigToString) {
     config = std::make_unique<BackgroundTracingConfigImpl>(
         BackgroundTracingConfig::PREEMPTIVE);
 
-    base::Value dict(base::Value::Type::DICTIONARY);
-    dict.SetStringKey("rule", "MONITOR_AND_DUMP_WHEN_BROWSER_STARTUP_COMPLETE");
+    base::Value::Dict dict;
+    dict.Set("rule", "MONITOR_AND_DUMP_WHEN_BROWSER_STARTUP_COMPLETE");
     config->AddPreemptiveRule(dict);
 
     EXPECT_EQ(ConfigToString(config.get()),
@@ -647,11 +573,11 @@ TEST_F(BackgroundTracingConfigTest, InvalidPreemptiveConfigToString) {
         BackgroundTracingConfig::PREEMPTIVE);
 
     // TODO(crbug.com/1247459): |second_dict| is not used.
-    base::Value second_dict(base::Value::Type::DICTIONARY);
-    second_dict.SetStringKey(
-        "rule", "MONITOR_AND_DUMP_WHEN_SPECIFIC_HISTOGRAM_AND_VALUE");
-    second_dict.SetStringKey("histogram_name", "foo");
-    second_dict.SetIntKey("histogram_lower_value", 1);
+    base::Value::Dict second_dict;
+    second_dict.Set("rule",
+                    "MONITOR_AND_DUMP_WHEN_SPECIFIC_HISTOGRAM_AND_VALUE");
+    second_dict.Set("histogram_name", "foo");
+    second_dict.Set("histogram_lower_value", 1);
 
     EXPECT_EQ(ConfigToString(config.get()),
               "{\"category\":\"BENCHMARK_STARTUP\",\"configs\":[],\"mode\":"
@@ -663,12 +589,12 @@ TEST_F(BackgroundTracingConfigTest, InvalidPreemptiveConfigToString) {
         BackgroundTracingConfig::PREEMPTIVE);
 
     // TODO(crbug.com/1247459): |second_dict| is not used.
-    base::Value second_dict(base::Value::Type::DICTIONARY);
-    second_dict.SetStringKey(
-        "rule", "MONITOR_AND_DUMP_WHEN_SPECIFIC_HISTOGRAM_AND_VALUE");
-    second_dict.SetStringKey("histogram_name", "foo");
-    second_dict.SetIntKey("histogram_lower_value", 1);
-    second_dict.SetIntKey("histogram_upper_value", 1);
+    base::Value::Dict second_dict;
+    second_dict.Set("rule",
+                    "MONITOR_AND_DUMP_WHEN_SPECIFIC_HISTOGRAM_AND_VALUE");
+    second_dict.Set("histogram_name", "foo");
+    second_dict.Set("histogram_lower_value", 1);
+    second_dict.Set("histogram_upper_value", 1);
 
     EXPECT_EQ(ConfigToString(config.get()),
               "{\"category\":\"BENCHMARK_STARTUP\",\"configs\":[],\"mode\":"
@@ -688,9 +614,9 @@ TEST_F(BackgroundTracingConfigTest, ValidReactiveConfigToString) {
     config = std::make_unique<BackgroundTracingConfigImpl>(
         BackgroundTracingConfig::REACTIVE);
 
-    base::Value dict(base::Value::Type::DICTIONARY);
-    dict.SetStringKey("rule", "TRACE_ON_NAVIGATION_UNTIL_TRIGGER_OR_FULL");
-    dict.SetStringKey("trigger_name", "foo");
+    base::Value::Dict dict;
+    dict.Set("rule", "TRACE_ON_NAVIGATION_UNTIL_TRIGGER_OR_FULL");
+    dict.Set("trigger_name", "foo");
     config->AddReactiveRule(dict,
                             BackgroundTracingConfigImpl::BENCHMARK_STARTUP);
 
@@ -705,13 +631,13 @@ TEST_F(BackgroundTracingConfigTest, ValidReactiveConfigToString) {
     config = std::make_unique<BackgroundTracingConfigImpl>(
         BackgroundTracingConfig::REACTIVE);
 
-    base::Value dict(base::Value::Type::DICTIONARY);
-    dict.SetStringKey("rule", "TRACE_ON_NAVIGATION_UNTIL_TRIGGER_OR_FULL");
-    dict.SetStringKey("trigger_name", "foo1");
+    base::Value::Dict dict;
+    dict.Set("rule", "TRACE_ON_NAVIGATION_UNTIL_TRIGGER_OR_FULL");
+    dict.Set("trigger_name", "foo1");
     config->AddReactiveRule(dict,
                             BackgroundTracingConfigImpl::BENCHMARK_STARTUP);
 
-    dict.SetStringKey("trigger_name", "foo2");
+    dict.Set("trigger_name", "foo2");
     config->AddReactiveRule(dict,
                             BackgroundTracingConfigImpl::BENCHMARK_STARTUP);
 
@@ -744,7 +670,7 @@ TEST_F(BackgroundTracingConfigTest, BufferLimitConfig) {
   EXPECT_EQ(config->rules().size(), 1u);
 
   notifier.set_type(net::NetworkChangeNotifier::CONNECTION_2G);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   int64_t ram_mb = base::SysInfo::AmountOfPhysicalMemoryMB();
   size_t expected_trace_buffer_size =
       (ram_mb > 0 && ram_mb <= 1024) ? 800u : 300u;

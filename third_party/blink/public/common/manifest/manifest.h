@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-shared.h"
 #include "ui/gfx/geometry/size.h"
@@ -134,16 +135,60 @@ class BLINK_COMMON_EXPORT Manifest {
   // when it can support copy/move.
   // See ManifestLaunchHandler for class comments.
   struct BLINK_COMMON_EXPORT LaunchHandler {
-    using RouteTo = mojom::ManifestLaunchHandler_RouteTo;
-    using NavigateExistingClient =
-        mojom::ManifestLaunchHandler_NavigateExistingClient;
+    using ClientMode = mojom::ManifestLaunchHandler_ClientMode;
 
     bool operator==(const LaunchHandler& other) const;
     bool operator!=(const LaunchHandler& other) const;
 
-    RouteTo route_to = RouteTo::kAuto;
-    NavigateExistingClient navigate_existing_client =
-        NavigateExistingClient::kAlways;
+    ClientMode client_mode = ClientMode::kAuto;
+  };
+
+  // Structure containing translations for the translatable manifest fields.
+  struct BLINK_COMMON_EXPORT TranslationItem {
+    TranslationItem();
+    ~TranslationItem();
+
+    bool operator==(const TranslationItem& other) const;
+
+    absl::optional<std::string> name;
+    absl::optional<std::string> short_name;
+    absl::optional<std::string> description;
+  };
+
+  // Parameters for the home tab customisation to the tab strip.
+  struct BLINK_COMMON_EXPORT HomeTabParams {
+    HomeTabParams();
+    ~HomeTabParams();
+
+    bool operator==(const HomeTabParams& other) const;
+
+    std::vector<ImageResource> icons;
+  };
+
+  // Parameters for the new tab button customisation to the tab strip.
+  struct BLINK_COMMON_EXPORT NewTabButtonParams {
+    NewTabButtonParams();
+    ~NewTabButtonParams();
+
+    bool operator==(const NewTabButtonParams& other) const;
+
+    absl::optional<GURL> url;
+  };
+
+  // Structure containing customisations for the tab strip.
+  struct BLINK_COMMON_EXPORT TabStrip {
+    TabStrip();
+    ~TabStrip();
+
+    bool operator==(const TabStrip& other) const;
+
+    using Visibility = blink::mojom::TabStripMemberVisibility;
+    using HomeTab = absl::variant<Visibility, blink::Manifest::HomeTabParams>;
+    using NewTabButton =
+        absl::variant<Visibility, blink::Manifest::NewTabButtonParams>;
+
+    HomeTab home_tab;
+    NewTabButton new_tab_button;
   };
 };
 

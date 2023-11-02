@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/window_observer.h"
 
 namespace aura {
@@ -33,7 +34,7 @@ class AURA_EXPORT ScopedWindowTargeter : public WindowObserver {
   // WindowObserver:
   void OnWindowDestroyed(Window* window) override;
 
-  Window* window_;
+  raw_ptr<Window> window_;
   std::unique_ptr<WindowTargeter> old_targeter_;
 };
 

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,7 +21,10 @@ class IdGeneratorCustomBindings : public ObjectBackedNativeHandler {
   void AddRoutes() override;
 
  private:
+  // Generate a unique ID global to the renderer.
   void GetNextId(const v8::FunctionCallbackInfo<v8::Value>& args);
+  // Generate a unique ID scoped to the ScriptContext.
+  void GetNextScopedId(const v8::FunctionCallbackInfo<v8::Value>& args);
 };
 
 }  // namespace extensions

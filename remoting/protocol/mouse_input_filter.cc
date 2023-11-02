@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,7 @@
 #include "remoting/base/logging.h"
 #include "remoting/proto/event.pb.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 MouseInputFilter::MouseInputFilter() = default;
 
@@ -79,5 +78,4 @@ int32_t MouseInputFilter::GetScaledY(int32_t y) {
   return base::clamp(y, 0, output_bounds_.y());
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

@@ -1,0 +1,36 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+[Stable]
+union LoginScreenStorageRetrieveResult {
+  // Implies failure.
+  string error_message;
+
+  // Implies success.
+  string data;
+};
+
+// Copy of LoginScreenStorageMetadata from login_screen_storage.proto.
+[Stable]
+struct LoginScreenStorageMetadata {
+  // Whether the saved key/value pair should be deleted on session exit.
+  bool clear_on_session_exit@0;
+};
+
+// This API allows Lacros to store and retrieve data from the login screen
+// storage.
+[Stable, Uuid="ba85caf8-08f2-4404-add7-2343ea9ac943"]
+interface LoginScreenStorage {
+  // Stores data to the login screen storage that needs to be accessible from
+  // multiple extensions. Each key should contain the calling extension's ID and
+  // the ID of the extension the data should be available from.
+  Store@0(array<string> keys,
+          LoginScreenStorageMetadata metadata,
+          string data) => (string? error_message);
+
+  // Retrieves the data that was previously stored for the given key.
+  Retrieve@1(string key) => (LoginScreenStorageRetrieveResult result);
+};

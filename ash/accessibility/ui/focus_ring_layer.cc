@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -62,7 +62,7 @@ void FocusRingLayer::OnPaintLayer(const ui::PaintContext& context) {
     // Fade out alpha quadratically.
     flags.setAlpha((kShadowAlpha * (r - i) * (r - i)) / (r * r));
     gfx::Rect outsetRect = bounds;
-    outsetRect.Inset(-i, -i, -i, -i);
+    outsetRect.Inset(-i);
     recorder.canvas()->DrawRect(outsetRect, flags);
   }
 }

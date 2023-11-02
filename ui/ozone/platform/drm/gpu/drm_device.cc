@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <unistd.h>
 #include <xf86drm.h>
 #include <xf86drmMode.h>
+
 #include <memory>
 #include <utility>
 
@@ -16,11 +17,13 @@
 #include "base/logging.h"
 #include "base/memory/free_deleter.h"
 #include "base/message_loop/message_pump_for_io.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/current_thread.h"
 #include "base/task/task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "ui/display/types/gamma_ramp_rgb_entry.h"
 #include "ui/ozone/platform/drm/common/drm_util.h"
@@ -153,8 +156,7 @@ class DrmDevice::PageFlipManager {
   ~PageFlipManager() = default;
 
   void OnPageFlip(uint32_t frame, base::TimeTicks timestamp, uint64_t id) {
-    auto it =
-        std::find_if(callbacks_.begin(), callbacks_.end(), FindCallback(id));
+    auto it = base::ranges::find(callbacks_, id, &PageFlip::id);
     if (it == callbacks_.end()) {
       LOG(WARNING) << "Could not find callback for page flip id=" << id;
       return;
@@ -183,14 +185,6 @@ class DrmDevice::PageFlipManager {
     uint64_t id;
     uint32_t pending_calls;
     DrmDevice::PageFlipCallback callback;
-  };
-
-  struct FindCallback {
-    explicit FindCallback(uint64_t id) : id(id) {}
-
-    bool operator()(const PageFlip& flip) const { return flip.id == id; }
-
-    const uint64_t id;
   };
 
   uint64_t next_id_;
@@ -618,15 +612,11 @@ bool DrmDevice::DropMaster() {
   return (drmDropMaster(file_.GetPlatformFile()) == 0);
 }
 
-void DrmDevice::AsValueInto(base::trace_event::TracedValue* value) const {
-  value->SetString("device_path", device_path_.value());
-  {
-    auto scoped_array = value->BeginArrayScoped("planes");
-    for (const auto& plane : plane_manager_->planes()) {
-      auto scoped_dict = value->AppendDictionaryScoped();
-      plane->AsValueInto(value);
-    }
-  }
+void DrmDevice::WriteIntoTrace(perfetto::TracedValue context) const {
+  auto dict = std::move(context).WriteDictionary();
+
+  dict.Add("device_path", device_path_.value());
+  dict.Add("planes", plane_manager_->planes());
 }
 
 bool DrmDevice::SetGammaRamp(
@@ -676,6 +666,10 @@ bool DrmDevice::SetGammaRamp(
   TRACE_EVENT0("drm", "DrmDevice::SetGamma");
   return (drmModeCrtcSetGamma(file_.GetPlatformFile(), crtc_id, r.size(), &r[0],
                               &g[0], &b[0]) == 0);
+}
+
+absl::optional<std::string> DrmDevice::GetDriverName() const {
+  return GetDrmDriverNameFromFd(file_.GetPlatformFile());
 }
 
 }  // namespace ui

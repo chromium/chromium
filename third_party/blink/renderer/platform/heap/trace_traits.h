@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,8 @@
 
 #include <tuple>
 
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "base/notreached.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/wtf/hash_table.h"
@@ -140,16 +141,20 @@ struct TraceInCollectionTrait<kWeakHandling, blink::WeakMember<T>, Traits> {
 
 namespace cppgc {
 
-// This trace trait for std::pair will null weak members if their referent is
+// This trace trait for std::pair will clear WeakMember if their referent is
 // collected. If you have a collection that contain weakness it does not remove
-// entries from the collection that contain nulled weak members.
+// entries from the collection that contain nulled WeakMember.
 template <typename T, typename U>
 struct TraceTrait<std::pair<T, U>> {
   STATIC_ONLY(TraceTrait);
 
  public:
   static TraceDescriptor GetTraceDescriptor(const void* self) {
-    return {self, Trace};
+    // The following code should never be reached as tracing through std::pair
+    // should always happen eagerly by directly invoking `Trace()` below. This
+    // happens e.g. when being used in HeapVector<std::pair<...>>.
+    NOTREACHED();
+    return {nullptr, Trace};
   }
 
   static void Trace(Visitor* visitor, const std::pair<T, U>* pair) {

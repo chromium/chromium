@@ -25,7 +25,6 @@
 <translation id="225614027745146050">ସ୍ଵାଗତ</translation>
 <translation id="2320166752086256636">କୀବୋର୍ଡ୍ ଲୁଚାନ୍ତୁ</translation>
 <translation id="2329392777730037872">କ୍ଲାଏଣ୍ଟରେ <ph name="URL" /> ଖୋଲିବା ବିଫଳ ହୋଇଛି।</translation>
-<translation id="2333212046079545895">କପିରାଇଟ୍ 2021 Google LLC। ସମସ୍ତ ଅଧିକାର ସଂରକ୍ଷିତ ଅଛି।</translation>
 <translation id="2359808026110333948">ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="2366718077645204424">ହୋଷ୍ଟ ପାଖରେ ପହଞ୍ଚି ପାରିଲା ନାହିଁ। ଏହା ସମ୍ଭବତଃ ଆପଣ ବ୍ୟବହାର କରୁଥିବା ନେଟ୍‍ୱାର୍କର କନଫିଗ୍‌ରେସନ୍ କାରଣରୁ ହୋଇଛି।</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" /> ଶେଷଥର<ph name="RELATIVE_TIMESTAMP" /> ଅନ୍‌ଲାଇନ୍‌ରେ ଦେଖାଯାଇଥିଲେ।</translation>
@@ -36,6 +35,7 @@
 <translation id="2599300881200251572">ଏହି ସେବା Chrome ରିମୋଟ୍ ଡେସ୍କଟପ୍ କ୍ଲାଏଣ୍ଟମାନଙ୍କ ଠାରୁ ଇନ୍‍କମିଂ ସଂଯୋଗକୁ ସକ୍ଷମ କରେ।</translation>
 <translation id="2647232381348739934">Chromoting ସେବା</translation>
 <translation id="2676780859508944670">କାର୍ଯ୍ୟରତ…</translation>
+<translation id="2692522824157224199">କପିରାଇଟ 2022 Google LLC। ସମସ୍ତ ଅଧିକାର ସଂରକ୍ଷିତ ଅଛି।</translation>
 <translation id="2699970397166997657">Chromoting</translation>
 <translation id="2758123043070977469">ପ୍ରମାଣିକରଣ ସମୟରେ ଏକ ସମସ୍ୟା ହୋଇଛି, ଦୟାକରି ପୁଣି ଲଗ୍‍ଇନ୍‍ କରନ୍ତୁ।</translation>
 <translation id="2803375539583399270">PIN ଲେଖନ୍ତୁ</translation>
@@ -72,10 +72,10 @@
 <translation id="4257751272692708833"><ph name="PRODUCT_NAME" /> URL Forwarder</translation>
 <translation id="4277736576214464567">ଆକ୍ସେସ୍ କୋଡ୍ ଅବୈଧ ଅଟେ। ଦୟାକରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="4281844954008187215">ସେବାର ସର୍ତ୍ତାବଳୀ</translation>
+<translation id="4372650392690220936">କପିରାଇଟ 2022 The Chromium Authors। ସମସ୍ତ ଅଧିକାର ସଂରକ୍ଷିତ ଅଛି।</translation>
 <translation id="4405930547258349619">କୋର୍ ଲାଇବ୍ରେରୀ</translation>
 <translation id="443560535555262820">ଆକ୍ସେସିବିଲିଟୀ ପସନ୍ଦଗୁଡ଼ିକୁ ଖୋଲନ୍ତୁ</translation>
 <translation id="4450893287417543264">ଆଉ ଦେଖାନ୍ତୁ ନାହିଁ</translation>
-<translation id="4512952200932940229">Copyright 2021 The Chromium Authors. ସମସ୍ତ ଅଧିକାର ସଂରକ୍ଷିତ ଅଛି।</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="4563926062592110512">କ୍ଲାଏଣ୍ଟ ବିଚ୍ଛିନ୍ନ ହୋଇଛନ୍ତି: <ph name="CLIENT_USERNAME" />।</translation>
 <translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" />କୁ ସଠିକ୍ ଭାବରେ କନଫିଗର୍ କରାଯାଇନାହିଁ। ଦୟାକରି ଏକ ଭିନ୍ନ ଡିଫଲ୍ଟ ୱେବ୍ ବ୍ରାଉଜର୍ ବାଛି, URL ଫରୱାର୍ଡିଂକୁ ପୁଣି ସକ୍ଷମ କରନ୍ତୁ।</translation>

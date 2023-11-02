@@ -1,15 +1,15 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/base64.h"
-#include "base/rand_util.h"
+#import "base/base64.h"
+#import "base/rand_util.h"
 #import "ios/chrome/browser/web/image_fetch/image_fetch_java_script_feature.h"
 #import "ios/web/public/js_messaging/fuzzer_support/fuzzer_env_with_java_script_feature.h"
-#include "ios/web/public/js_messaging/fuzzer_support/fuzzer_util.h"
-#include "ios/web/public/js_messaging/fuzzer_support/js_message.pb.h"
-#include "ios/web/public/js_messaging/script_message.h"
-#include "testing/libfuzzer/proto/lpm_interface.h"
+#import "ios/web/public/js_messaging/fuzzer_support/fuzzer_util.h"
+#import "ios/web/public/js_messaging/fuzzer_support/js_message.pb.h"
+#import "ios/web/public/js_messaging/script_message.h"
+#import "testing/libfuzzer/proto/lpm_interface.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/privacy_sandbox_bottom_sheet"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
+
+    <org.chromium.components.browser_ui.widget.BoundedLinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/promo_dialog_padding"
+        android:orientation="vertical"
+        app:maxWidthLandscape="@dimen/privacy_sandbox_dialog_max_width"
+        app:maxWidthPortrait="@dimen/privacy_sandbox_dialog_max_width">
+
+        <ImageView
+            android:layout_marginBottom="@dimen/privacy_sandbox_dialog_illustration_margin_bottom"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_gravity="center"
+            app:srcCompat="@drawable/privacy_sandbox_dialog_illustration"
+            android:importantForAccessibility="no" />
+
+        <TextView
+            android:id="@+id/privacy_sandbox_notice_sheet_title"
+            android:layout_marginBottom="@dimen/list_item_default_margin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/privacy_sandbox_notice_sheet_title"
+            android:gravity="center"
+            style="@style/TextAppearance.Headline.Primary" />
+
+        <TextView
+            android:id="@+id/privacy_sandbox_notice_sheet_description"
+            android:layout_marginBottom="@dimen/list_item_default_margin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/TextAppearance.TextLarge.Secondary" />
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <org.chromium.ui.widget.ButtonCompat
+                android:id="@+id/ack_button"
+                android:focusable="true"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/privacy_sandbox_notice_button_margin_between"
+                android:text="@string/privacy_sandbox_dialog_acknowledge_button"
+                style="@style/FilledButton.Flat" />
+
+            <org.chromium.ui.widget.ButtonCompat
+                android:id="@+id/settings_button"
+                android:focusable="true"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="@string/privacy_sandbox_dialog_settings_button"
+                style="@style/TextButton" />
+        </LinearLayout>
+
+    </org.chromium.components.browser_ui.widget.BoundedLinearLayout>
+
+</ScrollView>

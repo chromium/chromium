@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,10 +10,10 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
-#include "base/task/post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -53,7 +53,7 @@ class WrappedObserver {
 
  private:
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  SystemDnsConfigChangeNotifier::Observer* const observer_;
+  const raw_ptr<SystemDnsConfigChangeNotifier::Observer> observer_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<WrappedObserver> weak_ptr_factory_{this};

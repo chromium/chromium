@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,7 +19,7 @@
 #include "ui/events/platform/platform_event_source.h"
 #include "url/gurl.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #endif
 
@@ -37,13 +37,6 @@ class OSExchangeDataTest : public PlatformTest {
 };
 
 TEST_F(OSExchangeDataTest, StringDataGetAndSet) {
-#if defined(OS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // OS_MAC
-
   OSExchangeData data;
   std::u16string input = u"I can has cheezburger?";
   EXPECT_FALSE(data.HasString());
@@ -66,13 +59,6 @@ TEST_F(OSExchangeDataTest, StringDataGetAndSet) {
 }
 
 TEST_F(OSExchangeDataTest, TestURLExchangeFormats) {
-#if defined(OS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // OS_MAC
-
   OSExchangeData data;
   std::string url_spec = "http://www.google.com/";
   GURL url(url_spec);
@@ -100,15 +86,9 @@ TEST_F(OSExchangeDataTest, TestURLExchangeFormats) {
   EXPECT_EQ(url_spec, base::UTF16ToUTF8(output_string));
 }
 
-// Test that setting the URL does not overwrite a previously set custom string.
-TEST_F(OSExchangeDataTest, URLAndString) {
-#if defined(OS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // OS_MAC
-
+// Test that setting the URL does not overwrite a previously set custom string
+// and that the synthesized URL shortcut file is ignored by GetFileContents().
+TEST_F(OSExchangeDataTest, URLStringFileContents) {
   OSExchangeData data;
   std::u16string string = u"I can has cheezburger?";
   data.SetString(string);
@@ -127,16 +107,18 @@ TEST_F(OSExchangeDataTest, URLAndString) {
                                   &output_url, &output_title));
   EXPECT_EQ(url_spec, output_url.spec());
   EXPECT_EQ(url_title, output_title);
+
+  // HasFileContents() should be false, and GetFileContents() should be empty
+  // (https://crbug.com/1274395).
+  EXPECT_FALSE(data.HasFileContents());
+  base::FilePath filename;
+  std::string contents;
+  EXPECT_FALSE(data.GetFileContents(&filename, &contents));
+  EXPECT_TRUE(filename.empty());
+  EXPECT_TRUE(contents.empty());
 }
 
 TEST_F(OSExchangeDataTest, TestFileToURLConversion) {
-#if defined(OS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // OS_MAC
-
   OSExchangeData data;
   EXPECT_FALSE(data.HasURL(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES));
   EXPECT_FALSE(data.HasURL(FilenameToURLPolicy::CONVERT_FILENAMES));
@@ -177,13 +159,6 @@ TEST_F(OSExchangeDataTest, TestFileToURLConversion) {
 }
 
 TEST_F(OSExchangeDataTest, TestPickledData) {
-#if defined(OS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // OS_MAC
-
   const ClipboardFormatType kTestFormat =
       ClipboardFormatType::GetType("application/vnd.chromium.test");
 
@@ -208,14 +183,7 @@ TEST_F(OSExchangeDataTest, TestPickledData) {
 }
 
 TEST_F(OSExchangeDataTest, TestFilenames) {
-#if defined(OS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // OS_MAC
-
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   const std::vector<FileInfo> kTestFilenames = {
       {base::FilePath(FILE_PATH_LITERAL("C:\\tmp\\test_file1")),
        base::FilePath()},

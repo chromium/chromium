@@ -1,18 +1,14 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {DiagnosticsBrowserProxy} from 'chrome://diagnostics/diagnostics_browser_proxy.js';
 import {NavigationView} from 'chrome://diagnostics/diagnostics_types.js';
 import {getNavigationViewForPageId} from 'chrome://diagnostics/diagnostics_utils.js';
 
 import {assertEquals} from '../../chai_assert.js';
 import {TestBrowserProxy} from '../../test_browser_proxy.js';
 
-/**
- * Test version of DiagnosticsBrowserProxy.
- * @implements {DiagnosticsBrowserProxy}
- */
+/** Test version of DiagnosticsBrowserProxy. */
 export class TestDiagnosticsBrowserProxy extends TestBrowserProxy {
   constructor() {
     super([

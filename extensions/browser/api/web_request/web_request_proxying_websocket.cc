@@ -1,10 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "extensions/browser/api/web_request/web_request_proxying_websocket.h"
 
 #include "base/bind.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "components/keyed_service/content/browser_context_keyed_service_shutdown_notifier_factory.h"
@@ -69,7 +70,6 @@ WebRequestProxyingWebSocket::WebRequestProxyingWebSocket(
           process_id,
           render_frame_id,
           nullptr,
-          MSG_ROUTING_NONE,
           request,
           /*is_download=*/false,
           /*is_async=*/true,

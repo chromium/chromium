@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,25 +6,25 @@
 
 #import <UIKit/UIKit.h>
 
-#include "base/containers/adapters.h"
-#include "base/metrics/user_metrics.h"
-#include "base/metrics/user_metrics_action.h"
-#include "base/strings/stringprintf.h"
+#import "base/containers/adapters.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
+#import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/values.h"
-#include "components/google/core/common/google_util.h"
-#include "components/pref_registry/pref_registry_syncable.h"
-#include "components/prefs/pref_service.h"
-#include "components/prefs/scoped_user_pref_update.h"
-#include "components/ukm/ios/ukm_url_recorder.h"
-#include "ios/chrome/browser/application_context.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/pref_names.h"
-#include "ios/chrome/browser/web/features.h"
-#include "ios/components/ui_util/dynamic_type_util.h"
-#import "ios/public/provider/chrome/browser/font_size_java_script_feature.h"
+#import "components/google/core/common/google_util.h"
+#import "components/pref_registry/pref_registry_syncable.h"
+#import "components/prefs/pref_service.h"
+#import "components/prefs/scoped_user_pref_update.h"
+#import "components/ukm/ios/ukm_url_recorder.h"
+#import "ios/chrome/browser/application_context/application_context.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/prefs/pref_names.h"
+#import "ios/chrome/browser/web/features.h"
+#import "ios/chrome/browser/web/font_size/font_size_java_script_feature.h"
+#import "ios/components/ui_util/dynamic_type_util.h"
 #import "ios/public/provider/chrome/browser/text_zoom/text_zoom_api.h"
-#include "services/metrics/public/cpp/ukm_builders.h"
+#import "services/metrics/public/cpp/ukm_builders.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -103,7 +103,7 @@ IOSContentSizeCategory IOSContentSizeCategoryForCurrentUIContentSizeCategory() {
 }  // namespace
 
 FontSizeTabHelper::~FontSizeTabHelper() {
-  // Remove observer in destructor because |this| is captured by the usingBlock
+  // Remove observer in destructor because `this` is captured by the usingBlock
   // in calling [NSNotificationCenter.defaultCenter
   // addObserverForName:object:queue:usingBlock] in constructor.
   [NSNotificationCenter.defaultCenter
@@ -316,20 +316,21 @@ std::string FontSizeTabHelper::GetUserZoomMultiplierKeyUrlPart() const {
 }
 
 double FontSizeTabHelper::GetCurrentUserZoomMultiplier() const {
-  const base::Value* pref =
-      GetPrefService()->Get(prefs::kIosUserZoomMultipliers);
+  const base::Value::Dict& pref =
+      GetPrefService()->GetDict(prefs::kIosUserZoomMultipliers);
 
-  return pref->FindDoublePath(GetCurrentUserZoomMultiplierKey()).value_or(1);
+  return pref.FindDoubleByDottedPath(GetCurrentUserZoomMultiplierKey())
+      .value_or(1);
 }
 
 void FontSizeTabHelper::StoreCurrentUserZoomMultiplier(double multiplier) {
-  DictionaryPrefUpdate update(GetPrefService(), prefs::kIosUserZoomMultipliers);
+  ScopedDictPrefUpdate update(GetPrefService(), prefs::kIosUserZoomMultipliers);
 
   // Don't bother to store all the ones. This helps keep the pref dict clean.
   if (multiplier == 1) {
-    update->RemovePath(GetCurrentUserZoomMultiplierKey());
+    update->RemoveByDottedPath(GetCurrentUserZoomMultiplierKey());
   } else {
-    update->SetDoublePath(GetCurrentUserZoomMultiplierKey(), multiplier);
+    update->SetByDottedPath(GetCurrentUserZoomMultiplierKey(), multiplier);
   }
 }
 

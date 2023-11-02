@@ -1,9 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "services/network/throttling/throttling_controller.h"
 
+#include "base/no_destructor.h"
 #include "net/http/http_request_info.h"
 #include "services/network/throttling/network_conditions.h"
 #include "services/network/throttling/scoped_throttling_token.h"
@@ -43,15 +44,6 @@ void ThrottlingController::RegisterProfileIDForNetLogSource(
 // static
 void ThrottlingController::UnregisterNetLogSource(uint32_t net_log_source_id) {
   instance().Unregister(net_log_source_id);
-}
-
-// static
-bool ThrottlingController::HasInterceptor(
-    const base::UnguessableToken& throttling_profile_id) {
-  DCHECK_CALLED_ON_VALID_THREAD(instance().thread_checker_);
-
-  return instance().interceptors_.find(throttling_profile_id) !=
-         instance().interceptors_.end();
 }
 
 void ThrottlingController::Register(

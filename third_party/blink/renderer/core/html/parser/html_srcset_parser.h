@@ -32,6 +32,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_SRCSET_PARSER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_SRCSET_PARSER_H_
 
+#include "base/check_op.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
@@ -124,7 +125,7 @@ class ImageCandidate {
 
   bool SrcOrigin() const { return (origin_attribute_ == kSrcOrigin); }
 
-  inline bool IsEmpty() const { return string_.IsEmpty(); }
+  inline bool IsEmpty() const { return string_.empty(); }
 
  private:
   String source_;  // Keep the StringView buffer alive.

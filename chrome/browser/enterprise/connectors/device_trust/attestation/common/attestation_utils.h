@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,14 +7,10 @@
 
 #include <string>
 
-namespace enterprise_connectors {
+#include "base/values.h"
+#include "chrome/browser/enterprise/connectors/device_trust/attestation/common/signals_type.h"
 
-// Take the challenge that comes from the Idp in json format and generate a
-// SignedData proto.
-// The expected format of the challenge is the following:
-// {
-//    "challenge": base64 encoded SignedData
-std::string JsonChallengeToProtobufChallenge(const std::string& challenge);
+namespace enterprise_connectors {
 
 // Take a challenge_response proto and return the json version of it.
 // The format follows Vaapi v2 definition:
@@ -23,6 +19,11 @@ std::string JsonChallengeToProtobufChallenge(const std::string& challenge);
 // }
 std::string ProtobufChallengeToJsonChallenge(
     const std::string& challenge_response);
+
+// Takes the dictionary of signals `signals_dict` and converts it to a
+// signals proto.
+std::unique_ptr<SignalsType> DictionarySignalsToProtobufSignals(
+    const base::Value::Dict& signals_dict);
 
 }  // namespace enterprise_connectors
 

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -224,7 +224,7 @@ class DriveBackendSyncTest : public testing::Test,
       CannedSyncableFileSystem* file_system = new CannedSyncableFileSystem(
           origin, in_memory_env_.get(), io_task_runner_.get(),
           file_task_runner_.get());
-      file_system->SetUp(CannedSyncableFileSystem::QUOTA_DISABLED);
+      file_system->SetUp();
 
       SyncStatusCode status = SYNC_STATUS_UNKNOWN;
       base::RunLoop run_loop;

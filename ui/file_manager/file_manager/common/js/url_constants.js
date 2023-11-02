@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,7 +38,7 @@ export const FILES_APP_ICON_PATH = 'common/images/icon96.png';
  * @return {!URL} The absolute URL for a path within the Files app.
  */
 export function toFilesAppURL(path = '') {
-  return new URL(path, window.isSWA ? SWA_FILES_APP_URL : LEGACY_FILES_APP_URL);
+  return new URL(path, SWA_FILES_APP_URL);
 }
 
 /**
@@ -46,9 +46,7 @@ export function toFilesAppURL(path = '') {
  * @return {!URL} The absolute URL.
  */
 export function toSandboxedURL(path = '') {
-  const SANDBOXED_URL = window.isSWA ?
-      new URL(`chrome-untrusted://${SWA_FILES_APP_HOST}`) :
-      LEGACY_FILES_APP_URL;
+  const SANDBOXED_URL = new URL(`chrome-untrusted://${SWA_FILES_APP_HOST}`);
   return new URL(path, SANDBOXED_URL);
 }
 

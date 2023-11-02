@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,28 +6,30 @@
 
 #import <utility>
 
-#include "base/check.h"
+#import "base/check.h"
 #import "base/feature_list.h"
-#include "base/mac/foundation_util.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/sys_string_conversions.h"
-#include "components/send_tab_to_self/features.h"
-#include "components/send_tab_to_self/metrics_util.h"
-#include "components/send_tab_to_self/send_tab_to_self_model.h"
-#include "components/send_tab_to_self/target_device_info.h"
+#import "base/mac/foundation_util.h"
+#import "base/strings/string_number_conversions.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/send_tab_to_self/features.h"
+#import "components/send_tab_to_self/send_tab_to_self_model.h"
+#import "components/send_tab_to_self/target_device_info.h"
+#import "components/sync_device_info/device_info.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #import "ios/chrome/browser/ui/send_tab_to_self/send_tab_to_self_image_detail_text_item.h"
 #import "ios/chrome/browser/ui/send_tab_to_self/send_tab_to_self_manage_devices_item.h"
 #import "ios/chrome/browser/ui/send_tab_to_self/send_tab_to_self_modal_delegate.h"
-#import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_button_item.h"
-#include "ios/chrome/browser/ui/table_view/cells/table_view_url_item.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_url_item.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ui/base/l10n/l10n_util.h"
+#import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -42,11 +44,14 @@ NSString* const kSendTabToSelfModalCancelButton =
 NSString* const kSendTabToSelfModalSendButton =
     @"kSendTabToSelfModalSendButton";
 
+CGFloat kSymbolSize = 22;
+
 }  // namespace
 
 typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeSend = kItemTypeEnumZero,
   ItemTypeDevice,
+  ItemTypeNoTargetDevice,
   ItemTypeManageDevices,
 };
 
@@ -121,54 +126,34 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   TableViewModel* model = self.tableViewModel;
   [model addSectionWithIdentifier:kSectionIdentifierEnumZero];
-  for (auto iter = _targetDeviceList.begin(); iter != _targetDeviceList.end();
-       ++iter) {
-    int daysSinceLastUpdate =
-        (base::Time::Now() - iter->last_updated_timestamp).InDays();
 
-    SendTabToSelfImageDetailTextItem* deviceItem =
-        [[SendTabToSelfImageDetailTextItem alloc] initWithType:ItemTypeDevice];
-    deviceItem.text = base::SysUTF8ToNSString(iter->device_name);
-    deviceItem.detailText =
-        [self sendTabToSelfdaysSinceLastUpdate:daysSinceLastUpdate];
-    switch (iter->device_type) {
-      case sync_pb::SyncEnums::TYPE_TABLET:
-        deviceItem.iconImageName = @"send_tab_to_self_tablet";
-        break;
-      case sync_pb::SyncEnums::TYPE_PHONE:
-        deviceItem.iconImageName = @"send_tab_to_self_smartphone";
-        break;
-      case sync_pb::SyncEnums::TYPE_WIN:
-      case sync_pb::SyncEnums::TYPE_MAC:
-      case sync_pb::SyncEnums::TYPE_LINUX:
-      case sync_pb::SyncEnums::TYPE_CROS:
-        deviceItem.iconImageName = @"send_tab_to_self_laptop";
-        break;
-      default:
-        deviceItem.iconImageName = @"send_tab_to_self_devices";
-    }
-
-    if (iter == _targetDeviceList.begin()) {
-      deviceItem.selected = YES;
-      self.selectedItem = deviceItem;
-    }
-
-    deviceItem.cacheGuid = base::SysUTF8ToNSString(iter->cache_guid);
-
-    [model addItem:deviceItem
+  if (_targetDeviceList.empty()) {
+    TableViewTextItem* noTargetDeviceItem =
+        [[TableViewTextItem alloc] initWithType:ItemTypeNoTargetDevice];
+    noTargetDeviceItem.text =
+        l10n_util::GetNSString(IDS_SEND_TAB_TO_SELF_NO_TARGET_DEVICE_LABEL);
+    noTargetDeviceItem.textAlignment = NSTextAlignmentLeft;
+    noTargetDeviceItem.textFont =
+        [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+    [model addItem:noTargetDeviceItem
         toSectionWithIdentifier:kSectionIdentifierEnumZero];
+  } else {
+    [self addDeviceItems];
   }
 
-  if (base::FeatureList::IsEnabled(
-          send_tab_to_self::kSendTabToSelfManageDevicesLink)) {
-    SendTabToSelfManageDevicesItem* manageDevicesItem =
-        [[SendTabToSelfManageDevicesItem alloc]
-            initWithType:ItemTypeManageDevices];
-    manageDevicesItem.accountAvatar = self.accountAvatar;
-    manageDevicesItem.accountEmail = self.accountEmail;
-    manageDevicesItem.delegate = self.delegate;
-    [model addItem:manageDevicesItem
-        toSectionWithIdentifier:kSectionIdentifierEnumZero];
+  SendTabToSelfManageDevicesItem* manageDevicesItem =
+      [[SendTabToSelfManageDevicesItem alloc]
+          initWithType:ItemTypeManageDevices];
+  manageDevicesItem.accountAvatar = self.accountAvatar;
+  manageDevicesItem.accountEmail = self.accountEmail;
+  manageDevicesItem.showManageDevicesLink = !_targetDeviceList.empty();
+  manageDevicesItem.delegate = self.delegate;
+  [model addItem:manageDevicesItem
+      toSectionWithIdentifier:kSectionIdentifierEnumZero];
+
+  if (_targetDeviceList.empty()) {
+    // No need for the send button if there are no devices.
+    return;
   }
 
   self.sendToDevice =
@@ -234,15 +219,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
 #pragma mark - Helpers
 
 - (void)sendTabWhenPressed:(UIButton*)sender {
-  send_tab_to_self::RecordDeviceClicked(
-      send_tab_to_self::ShareEntryPoint::kShareMenu);
   [self.delegate sendTabToTargetDeviceCacheGUID:self.selectedItem.cacheGuid
                                targetDeviceName:self.selectedItem.text];
-  [self.delegate dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)dismiss:(UIButton*)sender {
-  [self.delegate dismissViewControllerAnimated:YES completion:nil];
+  [self.delegate dismissViewControllerAnimated];
 }
 
 - (NSString*)sendTabToSelfdaysSinceLastUpdate:(int)days {
@@ -259,6 +241,68 @@ typedef NS_ENUM(NSInteger, ItemType) {
         base::NumberToString16(days));
   }
   return active_time;
+}
+
+- (void)addDeviceItems {
+  for (auto iter = _targetDeviceList.begin(); iter != _targetDeviceList.end();
+       ++iter) {
+    int daysSinceLastUpdate =
+        (base::Time::Now() - iter->last_updated_timestamp).InDays();
+
+    SendTabToSelfImageDetailTextItem* deviceItem =
+        [[SendTabToSelfImageDetailTextItem alloc] initWithType:ItemTypeDevice];
+    deviceItem.text = base::SysUTF8ToNSString(iter->device_name);
+    deviceItem.detailText =
+        [self sendTabToSelfdaysSinceLastUpdate:daysSinceLastUpdate];
+    switch (iter->form_factor) {
+      case syncer::DeviceInfo::FormFactor::kTablet:
+        if (UseSymbols()) {
+          deviceItem.iconImage =
+              DefaultSymbolWithPointSize(kIPadSymbol, kSymbolSize);
+        } else {
+          deviceItem.iconImage =
+              [UIImage imageNamed:@"send_tab_to_self_tablet"];
+        }
+        break;
+      case syncer::DeviceInfo::FormFactor::kPhone:
+        if (UseSymbols()) {
+          deviceItem.iconImage =
+              DefaultSymbolWithPointSize(kIPhoneSymbol, kSymbolSize);
+        } else {
+          deviceItem.iconImage =
+              [UIImage imageNamed:@"send_tab_to_self_smartphone"];
+        }
+        break;
+      case syncer::DeviceInfo::FormFactor::kDesktop:
+        if (UseSymbols()) {
+          deviceItem.iconImage =
+              DefaultSymbolWithPointSize(kLaptopSymbol, kSymbolSize);
+        } else {
+          deviceItem.iconImage =
+              [UIImage imageNamed:@"send_tab_to_self_laptop"];
+        }
+        break;
+      default:
+        if (UseSymbols()) {
+          // TODO(crbug.com/1315544): Use correct symbol
+          deviceItem.iconImage =
+              DefaultSymbolWithPointSize(kLaptopSymbol, kSymbolSize);
+        } else {
+          deviceItem.iconImage =
+              [UIImage imageNamed:@"send_tab_to_self_devices"];
+        }
+    }
+
+    if (iter == _targetDeviceList.begin()) {
+      deviceItem.selected = YES;
+      self.selectedItem = deviceItem;
+    }
+
+    deviceItem.cacheGuid = base::SysUTF8ToNSString(iter->cache_guid);
+
+    [self.tableViewModel addItem:deviceItem
+         toSectionWithIdentifier:kSectionIdentifierEnumZero];
+  }
 }
 
 @end

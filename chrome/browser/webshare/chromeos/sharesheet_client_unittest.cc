@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,11 +10,12 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/files/safe_base_name.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "chrome/browser/ash/file_manager/path_util.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "chrome/browser/webshare/prepare_directory_task.h"
@@ -24,6 +25,14 @@
 #include "content/public/test/web_contents_tester.h"
 #include "third_party/blink/public/mojom/webshare/webshare.mojom.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/file_manager/path_util.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/common/chrome_paths_lacros.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace webshare {
 
@@ -127,21 +136,31 @@ TEST_F(SharesheetClientUnitTest, TestWithoutFilesInIncognito) {
 TEST_F(SharesheetClientUnitTest, DeleteAfterShare) {
   SetGuest();
   SharesheetClient sharesheet_client(web_contents());
-  const base::FilePath my_files =
-      file_manager::util::GetMyFilesFolderForProfile(profile());
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  base::FilePath share_cache_dir;
+  ASSERT_TRUE(chrome::GetShareCachePath(&share_cache_dir));
   const base::FilePath first_file =
-      my_files.AppendASCII(".WebShare/share1.txt");
+      share_cache_dir.AppendASCII(".web_share/share1/first.txt");
   const base::FilePath second_file =
-      my_files.AppendASCII(".WebShare/share2.txt");
-
+      share_cache_dir.AppendASCII(".web_share/share2/second.txt");
+#else
+  const base::FilePath share_cache_dir =
+      file_manager::util::GetShareCacheFilePath(profile());
+  const base::FilePath first_file =
+      share_cache_dir.AppendASCII(".WebShare/share1/first.txt");
+  const base::FilePath second_file =
+      share_cache_dir.AppendASCII(".WebShare/share2/second.txt");
+#endif
   const std::string title = "Subject";
   const std::string text = "Message";
   const GURL share_url("https://example.com/");
   std::vector<blink::mojom::SharedFilePtr> files;
-  files.push_back(blink::mojom::SharedFile::New(
-      first_file.AsUTF8Unsafe(), blink::mojom::SerializedBlob::New()));
-  files.push_back(blink::mojom::SharedFile::New(
-      second_file.AsUTF8Unsafe(), blink::mojom::SerializedBlob::New()));
+  files.push_back(
+      blink::mojom::SharedFile::New(*base::SafeBaseName::Create(first_file),
+                                    blink::mojom::SerializedBlob::New()));
+  files.push_back(
+      blink::mojom::SharedFile::New(*base::SafeBaseName::Create(second_file),
+                                    blink::mojom::SerializedBlob::New()));
 
   base::RunLoop run_loop;
   blink::mojom::ShareError error = blink::mojom::ShareError::INTERNAL_ERROR;

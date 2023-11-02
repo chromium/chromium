@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,7 +32,9 @@ class CrosapiNewWindowDelegate : public ash::NewWindowDelegate {
       aura::Window* source_window,
       const ui::OSExchangeData& drop_data,
       NewWindowForDetachingTabCallback closure) override;
-  void OpenUrl(const GURL& url, bool from_user_interaction) override;
+  void OpenUrl(const GURL& url,
+               OpenUrlFrom from,
+               Disposition disposition) override;
   void OpenCalculator() override;
   void OpenFileManager() override;
   void OpenDownloadsFolder() override;
@@ -44,6 +46,7 @@ class CrosapiNewWindowDelegate : public ash::NewWindowDelegate {
   void OpenDiagnostics() override;
   void OpenFeedbackPage(FeedbackSource source,
                         const std::string& description_template) override;
+  void OpenPersonalizationHub() override;
 
  private:
   // Observes the aura::Window instances created after the webui tab-drop

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -62,7 +62,7 @@ CSSSyntaxStringParser::CSSSyntaxStringParser(const String& string)
     : string_(string.StripWhiteSpace()), input_(string_) {}
 
 absl::optional<CSSSyntaxDefinition> CSSSyntaxStringParser::Parse() {
-  if (string_.IsEmpty())
+  if (string_.empty())
     return absl::nullopt;
   if (string_.length() == 1 && string_[0] == '*')
     return CSSSyntaxDefinition::CreateUniversal();
@@ -150,9 +150,7 @@ bool CSSSyntaxStringParser::ConsumeDataTypeName(CSSSyntaxType& type) {
 
 bool CSSSyntaxStringParser::ConsumeIdent(String& ident) {
   ident = ConsumeName(input_);
-  // TODO(crbug.com/882285): Make 'default' invalid as <custom-ident>.
   return !css_parsing_utils::IsCSSWideKeyword(ident) &&
-         !css_parsing_utils::IsRevertKeyword(ident) &&
          !css_parsing_utils::IsDefaultKeyword(ident);
 }
 

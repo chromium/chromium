@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,7 +29,10 @@ public final class TrackerFactory {
      */
     public static Tracker getTrackerForProfile(Profile profile) {
         if (sTestTracker != null) return sTestTracker;
-
+        if (profile == null) {
+            throw new IllegalArgumentException("Profile is required for retrieving tracker.");
+        }
+        profile.ensureNativeInitialized();
         return TrackerFactoryJni.get().getTrackerForProfile(profile);
     }
 

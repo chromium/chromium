@@ -9,8 +9,9 @@ This file cannot be upstreamed to WPT until:
 <title>Service Worker should not focus on prerendered window clients</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="resources/utils.js"></script>
+<script src="/common/utils.js"></script>
 <script src="/service-workers/service-worker/resources/test-helpers.sub.js"></script>
+<script src="/speculation-rules/prerender/resources/utils.js"></script>
 <meta name="timeout" content="long">
 <body>
 <script>
@@ -24,9 +25,10 @@ testRunner.setPermission('notifications',
                          location.origin);
 
 promise_test(async t => {
-  const workerUrl = 'resources/focus-on-prerendered-window-client.js';
+  const uid = token();
+  const workerUrl = `resources/focus-on-prerendered-window-client.js?uid=${uid}`;
   const scope = 'resources/';
-  const pageUrl = 'resources/prerendered-page.html';
+  const pageUrl = `resources/prerendered-page.html?uid=${uid}`;
 
   // Register a service worker.
   const registration =
@@ -35,7 +37,7 @@ promise_test(async t => {
   await wait_for_state(t, registration.installing, 'activated');
 
   // Observe the message from a prerendered page.
-  const prerenderBc = new BroadcastChannel('prerender-channel');
+  const prerenderBc = new PrerenderChannel('prerender-channel', uid);
   t.add_cleanup(_ => prerenderBc.close());
   const prerenderBcQueue = new BroadcastMessageQueue(prerenderBc);
 
@@ -50,7 +52,7 @@ promise_test(async t => {
   });
   assert_equals(messageFromServiceWorker.data.type, 'notification was shown');
 
-  const resultBc = new BroadcastChannel('result-channel');
+  const resultBc = new PrerenderChannel('result-channel', uid);
   t.add_cleanup(_ => resultBc.close());
   const resultBcQueue = new BroadcastMessageQueue(resultBc);
 

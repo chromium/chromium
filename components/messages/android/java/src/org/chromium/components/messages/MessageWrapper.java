@@ -1,26 +1,33 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.components.messages;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 
 import androidx.annotation.DrawableRes;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.components.browser_ui.widget.listmenu.ListMenu;
+import org.chromium.components.browser_ui.widget.listmenu.ListMenuItemProperties;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
  * Java side of native MessageWrapper class that represents a message for native features.
  */
 @JNINamespace("messages")
-public final class MessageWrapper {
+public final class MessageWrapper implements ListMenu.Delegate {
     private long mNativeMessageWrapper;
     private final PropertyModel mMessageProperties;
+    private MessageSecondaryMenuItems mMessageSecondaryMenuItems;
 
     /**
      * Creates an instance of MessageWrapper and links it with native MessageWrapper object.
@@ -102,6 +109,42 @@ public final class MessageWrapper {
     }
 
     @CalledByNative
+    void initializeSecondaryMenu(WindowAndroid windowAndroid, @SecondaryMenuMaxSize int maxSize) {
+        Context context = windowAndroid.getActivity().get();
+        assert context != null;
+        if (mMessageSecondaryMenuItems != null) {
+            mMessageProperties.set(MessageBannerProperties.SECONDARY_MENU_MAX_SIZE, maxSize);
+            mMessageProperties.set(MessageBannerProperties.SECONDARY_MENU_BUTTON_DELEGATE,
+                    () -> mMessageSecondaryMenuItems.createListMenu(context, this));
+        }
+    }
+
+    @CalledByNative
+    PropertyModel addSecondaryMenuItem(int itemId, int resourceId, String itemText) {
+        if (mMessageSecondaryMenuItems == null) {
+            mMessageSecondaryMenuItems = new MessageSecondaryMenuItems();
+        }
+        return mMessageSecondaryMenuItems.addMenuItem(itemId, resourceId, itemText);
+    }
+
+    @VisibleForTesting
+    MessageSecondaryMenuItems getMessageSecondaryMenuItemsForTesting() {
+        return mMessageSecondaryMenuItems;
+    }
+
+    @CalledByNative
+    void clearSecondaryMenuItems() {
+        if (mMessageSecondaryMenuItems == null) return;
+        mMessageSecondaryMenuItems.clearMenuItems();
+    }
+
+    @CalledByNative
+    void addSecondaryMenuItemDivider() {
+        if (mMessageSecondaryMenuItems == null) return;
+        mMessageSecondaryMenuItems.addMenuDivider();
+    }
+
+    @CalledByNative
     @DrawableRes
     int getIconResourceId() {
         return mMessageProperties.get(MessageBannerProperties.ICON_RESOURCE_ID);
@@ -120,6 +163,16 @@ public final class MessageWrapper {
     @CalledByNative
     void setIcon(Bitmap iconBitmap) {
         mMessageProperties.set(MessageBannerProperties.ICON, new BitmapDrawable(iconBitmap));
+    }
+
+    @CalledByNative
+    void setLargeIcon(boolean enabled) {
+        mMessageProperties.set(MessageBannerProperties.LARGE_ICON, enabled);
+    }
+
+    @CalledByNative
+    void setIconRoundedCornerRadius(int radius) {
+        mMessageProperties.set(MessageBannerProperties.ICON_ROUNDED_CORNER_RADIUS_PX, radius);
     }
 
     @CalledByNative
@@ -149,9 +202,18 @@ public final class MessageWrapper {
         mNativeMessageWrapper = 0;
     }
 
-    private void handleActionClick() {
-        if (mNativeMessageWrapper == 0) return;
-        MessageWrapperJni.get().handleActionClick(mNativeMessageWrapper);
+    @CalledByNative
+    Bitmap getIconBitmap() {
+        Drawable drawable = mMessageProperties.get(MessageBannerProperties.ICON);
+        assert drawable instanceof BitmapDrawable;
+        return ((BitmapDrawable) drawable).getBitmap();
+    }
+
+    private @PrimaryActionClickBehavior int handleActionClick() {
+        if (mNativeMessageWrapper != 0) {
+            MessageWrapperJni.get().handleActionClick(mNativeMessageWrapper);
+        }
+        return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
     }
 
     private void handleSecondaryActionClick() {
@@ -166,10 +228,18 @@ public final class MessageWrapper {
         MessageWrapperJni.get().handleDismissCallback(mNativeMessageWrapper, dismissReason);
     }
 
+    @Override
+    public void onItemSelected(PropertyModel item) {
+        assert item.getAllSetProperties().contains(ListMenuItemProperties.MENU_ITEM_ID);
+        int itemId = item.get(ListMenuItemProperties.MENU_ITEM_ID);
+        MessageWrapperJni.get().handleSecondaryMenuItemSelected(mNativeMessageWrapper, itemId);
+    }
+
     @NativeMethods
     interface Natives {
         void handleActionClick(long nativeMessageWrapper);
         void handleSecondaryActionClick(long nativeMessageWrapper);
+        void handleSecondaryMenuItemSelected(long nativeMessageWrapper, int itemId);
         void handleDismissCallback(long nativeMessageWrapper, @DismissReason int dismissReason);
     }
 }

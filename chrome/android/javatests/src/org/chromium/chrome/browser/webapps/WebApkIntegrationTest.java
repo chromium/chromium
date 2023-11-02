@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,12 @@ package org.chromium.chrome.browser.webapps;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.net.Uri;
+import android.os.Build;
 import android.os.IBinder;
 import android.support.test.InstrumentationRegistry;
 
@@ -28,7 +30,8 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.FlakyTest;
+import org.chromium.base.test.util.MinAndroidSdkLevel;
+import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
@@ -93,12 +96,43 @@ public class WebApkIntegrationTest {
     }
 
     /**
+     * Tests that Chrome will trampoline out to WebAPKs if they exist but are not verified.
+     * See https://crbug.com/1232514
+     */
+    @Test
+    @LargeTest
+    @Feature({"Webapps"})
+    @MinAndroidSdkLevel(Build.VERSION_CODES.S)
+    public void testWebApkTrampoline() {
+        Context targetContext = InstrumentationRegistry.getTargetContext();
+        String pageUrl = "https://pwa-directory.appspot.com/defaultresponse";
+
+        // Make a standard browsable Intent to a page within the WebAPK's scope.
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(pageUrl));
+        intent.addCategory(Intent.CATEGORY_BROWSABLE);
+
+        // FLAG_ACTIVITY_NEW_TASK required because we're launching from a non-Activity context.
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        // We need to set the component name to make sure the Intent ends up in the Chrome build
+        // that we're testing. We can't set the package name, because our launch code has special
+        // handling if the package name is set and is equal to Chrome
+        // (see RedirectHandler#updateIntent).
+        intent.setComponent(new ComponentName(targetContext, ChromeLauncherActivity.class));
+
+        targetContext.startActivity(intent);
+
+        // Check we end up in the WebAPK.
+        ChromeActivityTestRule.waitFor(WebappActivity.class, STARTUP_TIMEOUT);
+    }
+
+    /**
      * Tests launching WebAPK via POST share intent.
      */
     @Test
     @LargeTest
     @Feature({"Webapps"})
-    @FlakyTest(message = "https://crbug.com/1112352")
+    @DisabledTest(message = "https://crbug.com/1112352")
     public void testShare() throws TimeoutException {
         final String sharedSubject = "Fun tea parties";
         final String sharedText = "Boston";

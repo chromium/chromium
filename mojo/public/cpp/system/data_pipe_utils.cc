@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -67,7 +67,7 @@ BlockingCopyFromString(const std::string& source,
   auto it = source.begin();
   for (;;) {
     void* buffer = nullptr;
-    uint32_t buffer_num_bytes = 0;
+    uint32_t buffer_num_bytes = static_cast<uint32_t>(source.end() - it);
     MojoResult result = destination->BeginWriteData(&buffer, &buffer_num_bytes,
                                                     MOJO_WRITE_DATA_FLAG_NONE);
     if (result == MOJO_RESULT_OK) {

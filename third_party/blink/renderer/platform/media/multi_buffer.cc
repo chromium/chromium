@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/record_replay.h"
 
 namespace blink {
 
@@ -48,6 +49,15 @@ static MultiBuffer::BlockId ClosestNextEntry(
   return i->first;
 }
 
+MultiBuffer::Reader::Reader() {
+  // Registration is needed for sorting in NotifyAvailableRange.
+  recordreplay::RegisterPointer("MultiBuffer::Reader", this);
+}
+
+MultiBuffer::Reader::~Reader() {
+  recordreplay::UnregisterPointer(this);
+}
+
 //
 // MultiBuffer::GlobalLRU
 //
@@ -56,40 +66,41 @@ MultiBuffer::GlobalLRU::GlobalLRU(
     : max_size_(0),
       data_size_(0),
       background_pruning_pending_(false),
+      lru_(lru_.NO_AUTO_EVICT),
       task_runner_(std::move(task_runner)) {}
 
 MultiBuffer::GlobalLRU::~GlobalLRU() {
   // By the time we're freed, all blocks should have been removed,
   // and our sums should be zero.
-  DCHECK(lru_.Empty());
+  DCHECK(lru_.empty());
   DCHECK_EQ(max_size_, 0);
   DCHECK_EQ(data_size_, 0);
 }
 
 void MultiBuffer::GlobalLRU::Use(MultiBuffer* multibuffer,
                                  MultiBufferBlockId block_id) {
-  GlobalBlockId id(multibuffer, block_id);
-  lru_.Use(id);
+  lru_.Put(GlobalBlockId{multibuffer, block_id});
   SchedulePrune();
 }
 
 void MultiBuffer::GlobalLRU::Insert(MultiBuffer* multibuffer,
                                     MultiBufferBlockId block_id) {
-  GlobalBlockId id(multibuffer, block_id);
-  lru_.Insert(id);
+  lru_.Put(GlobalBlockId{multibuffer, block_id});
   SchedulePrune();
 }
 
 void MultiBuffer::GlobalLRU::Remove(MultiBuffer* multibuffer,
                                     MultiBufferBlockId block_id) {
   GlobalBlockId id(multibuffer, block_id);
-  lru_.Remove(id);
+  auto iter = lru_.Peek(id);
+  if (iter != lru_.end()) {
+    lru_.Erase(iter);
+  }
 }
 
 bool MultiBuffer::GlobalLRU::Contains(MultiBuffer* multibuffer,
                                       MultiBufferBlockId block_id) {
-  GlobalBlockId id(multibuffer, block_id);
-  return lru_.Contains(id);
+  return lru_.Peek(GlobalBlockId{multibuffer, block_id}) != lru_.end();
 }
 
 void MultiBuffer::GlobalLRU::IncrementDataSize(int64_t blocks) {
@@ -105,7 +116,7 @@ void MultiBuffer::GlobalLRU::IncrementMaxSize(int64_t blocks) {
 }
 
 bool MultiBuffer::GlobalLRU::Pruneable() const {
-  return data_size_ > max_size_ && !lru_.Empty();
+  return data_size_ > max_size_ && !lru_.empty();
 }
 
 void MultiBuffer::GlobalLRU::SchedulePrune() {
@@ -129,9 +140,11 @@ void MultiBuffer::GlobalLRU::TryFree(int64_t max_to_free) {
   // when their available ranges change.
   std::map<MultiBuffer*, std::vector<MultiBufferBlockId>> to_free;
   int64_t freed = 0;
-  while (!lru_.Empty() && freed < max_to_free) {
-    GlobalBlockId block_id = lru_.Pop();
+  auto lru_iter = lru_.rbegin();
+  while (lru_iter != lru_.rend() && freed < max_to_free) {
+    GlobalBlockId block_id = *lru_iter;
     to_free[block_id.first].push_back(block_id.second);
+    lru_iter = lru_.Erase(lru_iter);
     freed++;
   }
   for (const auto& to_free_pair : to_free) {
@@ -157,15 +170,17 @@ void MultiBuffer::GlobalLRU::Prune(int64_t max_to_free) {
 }
 
 int64_t MultiBuffer::GlobalLRU::Size() const {
-  return lru_.Size();
+  return lru_.size();
 }
 
 //
 // MultiBuffer
 //
 MultiBuffer::MultiBuffer(int32_t block_size_shift,
-                         const scoped_refptr<GlobalLRU>& global_lru)
-    : max_size_(0), block_size_shift_(block_size_shift), lru_(global_lru) {}
+                         scoped_refptr<GlobalLRU> global_lru)
+    : max_size_(0),
+      block_size_shift_(block_size_shift),
+      lru_(std::move(global_lru)) {}
 
 MultiBuffer::~MultiBuffer() {
   CHECK(pinned_.empty());
@@ -257,7 +272,7 @@ MultiBufferBlockId MultiBuffer::FindNextUnavailable(const BlockId& pos) const {
 void MultiBuffer::NotifyAvailableRange(
     const Interval<MultiBufferBlockId>& observer_range,
     const Interval<MultiBufferBlockId>& new_range) {
-  std::set<Reader*> tmp;
+  std::set<Reader*, recordreplay::CompareByPointerId> tmp;
   for (auto i = readers_.lower_bound(observer_range.begin);
        i != readers_.end() && i->first < observer_range.end; ++i) {
     tmp.insert(i->second.begin(), i->second.end());
@@ -413,7 +428,7 @@ void MultiBuffer::OnDataProviderEvent(DataProvider* provider_tmp) {
     Interval<BlockId> expanded_range = present_.find(start_pos).interval();
     NotifyAvailableRange(expanded_range, expanded_range);
     lru_->IncrementDataSize(blocks_added);
-    Prune(blocks_added * kMaxFreesPerAdd + 1);
+    Prune(static_cast<size_t>(blocks_added) * kMaxFreesPerAdd + 1);
   } else {
     // Make sure to give progress reports even when there
     // aren't any new blocks yet.
@@ -507,7 +522,7 @@ void MultiBuffer::PinRange(const BlockId& from,
     return;
 
   auto range = pinned_.find(to - 1);
-  while (1) {
+  while (true) {
     DCHECK_GE(range.value(), 0);
     if (range.value() == 0 || range.value() == how_much) {
       bool pin = range.value() == how_much;
@@ -555,7 +570,7 @@ void MultiBuffer::PinRanges(const IntervalMap<BlockId, int32_t>& ranges) {
   }
 }
 
-void MultiBuffer::IncrementMaxSize(int32_t size) {
+void MultiBuffer::IncrementMaxSize(int64_t size) {
   max_size_ += size;
   lru_->IncrementMaxSize(size);
   DCHECK_GE(max_size_, 0);

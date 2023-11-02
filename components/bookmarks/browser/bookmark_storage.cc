@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,7 @@
 #include "components/bookmarks/browser/bookmark_codec.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
-#include "components/bookmarks/common/bookmark_constants.h"
+#include "components/bookmarks/common/bookmark_metrics.h"
 
 namespace bookmarks {
 
@@ -42,15 +42,13 @@ void BackupCallback(const base::FilePath& path) {
 constexpr base::TimeDelta BookmarkStorage::kSaveDelay;
 
 BookmarkStorage::BookmarkStorage(BookmarkModel* model,
-                                 const base::FilePath& profile_path)
+                                 const base::FilePath& file_path)
     : model_(model),
       backend_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
-      writer_(profile_path.Append(kBookmarksFileName),
-              backend_task_runner_,
-              kSaveDelay,
-              "BookmarkStorage") {}
+      writer_(file_path, backend_task_runner_, kSaveDelay, "BookmarkStorage"),
+      last_scheduled_save_(base::TimeTicks::Now()) {}
 
 BookmarkStorage::~BookmarkStorage() {
   if (writer_.HasPendingWrite())
@@ -67,6 +65,11 @@ void BookmarkStorage::ScheduleSave() {
   }
 
   writer_.ScheduleWriteWithBackgroundDataSerializer(this);
+
+  const base::TimeDelta schedule_delta =
+      base::TimeTicks::Now() - last_scheduled_save_;
+  metrics::RecordTimeSinceLastScheduledSave(schedule_delta);
+  last_scheduled_save_ = base::TimeTicks::Now();
 }
 
 void BookmarkStorage::BookmarkModelDeleted() {

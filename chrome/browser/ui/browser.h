@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,8 +14,10 @@
 
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/supports_user_data.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
@@ -30,6 +32,7 @@
 #include "chrome/browser/ui/unload_controller.h"
 #include "components/paint_preview/buildflags/buildflags.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/services/screen_ai/buildflags/buildflags.h"
 #include "components/sessions/core/session_id.h"
 #include "components/translate/content/browser/content_translate_driver.h"
 #include "components/zoom/zoom_observer.h"
@@ -44,11 +47,12 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #error This file should only be included on desktop.
 #endif
 
 class BackgroundContents;
+class BreadcrumbManagerBrowserAgent;
 class BrowserContentSettingBubbleModelDelegate;
 class BrowserInstantController;
 class BrowserSyncedWindowDelegate;
@@ -91,10 +95,6 @@ namespace ui {
 struct SelectedFileInfo;
 }
 
-namespace viz {
-class SurfaceId;
-}
-
 namespace web_app {
 class AppBrowserController;
 }
@@ -106,6 +106,7 @@ class WebContentsModalDialogHost;
 class Browser : public TabStripModelObserver,
                 public content::WebContentsDelegate,
                 public ChromeWebModalDialogManagerDelegate,
+                public base::SupportsUserData,
                 public BookmarkTabHelperObserver,
                 public zoom::ZoomObserver,
                 public content::PageNavigator,
@@ -143,6 +144,10 @@ class Browser : public TabStripModelObserver,
     // CustomTabToolbarview.
     TYPE_CUSTOM_TAB,
 #endif
+    // Document picture-in-picture browser.  It's mostly the same as a
+    // TYPE_POPUP, except that it floats above other windows.  It also has some
+    // additional restrictions, like it cannot navigated, to prevent misuse.
+    TYPE_PICTURE_IN_PICTURE,
     // If you add a new type, consider updating the test
     // BrowserTest.StartMaximized.
   };
@@ -197,6 +202,7 @@ class Browser : public TabStripModelObserver,
     kUnknown,
     kSessionRestore,
     kStartupCreator,
+    kLastAndUrlsStartupPref,
   };
 
   // The default value for a browser's `restore_id` param.
@@ -213,6 +219,7 @@ class Browser : public TabStripModelObserver,
     CreateParams(Type type, Profile* profile, bool user_gesture);
     CreateParams(const CreateParams& other);
     CreateParams& operator=(const CreateParams& other);
+    ~CreateParams();
 
     static CreateParams CreateForApp(const std::string& app_name,
                                      bool trusted_source,
@@ -232,7 +239,7 @@ class Browser : public TabStripModelObserver,
     Type type;
 
     // The associated profile.
-    Profile* profile;
+    raw_ptr<Profile> profile;
 
     // Specifies the browser `is_trusted_source_` value.
     bool trusted_source = false;
@@ -257,13 +264,23 @@ class Browser : public TabStripModelObserver,
     // platform supports it.
     bool initial_visible_on_all_workspaces_state = false;
 
+    // Whether to enable the tab group feature in the tab strip.
+    bool are_tab_groups_enabled = true;
+
     ui::WindowShowState initial_show_state = ui::SHOW_STATE_DEFAULT;
 
     CreationSource creation_source = CreationSource::kUnknown;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // The id from the restore data to restore the browser window.
     int32_t restore_id = kDefaultRestoreId;
+#endif
+
+#if BUILDFLAG(IS_LINUX)
+    // When the browser window is shown, the desktop environment is notified
+    // using this ID.  In response, the desktop will stop playing the "waiting
+    // for startup" animation (if any).
+    std::string startup_id;
 #endif
 
     // Whether this browser was created by a user gesture. We track this
@@ -277,7 +294,7 @@ class Browser : public TabStripModelObserver,
 
     // Supply a custom BrowserWindow implementation, to be used instead of the
     // default. Intended for testing.
-    BrowserWindow* window = nullptr;
+    raw_ptr<BrowserWindow> window = nullptr;
 
     // User-set title of this browser window, if there is one.
     std::string user_title;
@@ -289,6 +306,10 @@ class Browser : public TabStripModelObserver,
     // Only applied when not in forced app mode. True if the browser can be
     // maximizable.
     bool can_maximize = true;
+
+    // Aspect ratio parameters specific to TYPE_PICTURE_IN_PICTURE.
+    float initial_aspect_ratio = 1.0f;
+    bool lock_aspect_ratio = false;
 
    private:
     friend class Browser;
@@ -355,6 +376,14 @@ class Browser : public TabStripModelObserver,
   }
   bool is_session_restore() const {
     return creation_source_ == CreationSource::kSessionRestore;
+  }
+
+  // Tells the browser whether it should skip showing any dialogs that ask the
+  // user to confirm that they want to close the browser when it is being
+  // closed.
+  void set_force_skip_warning_user_on_close(
+      bool force_skip_warning_user_on_close) {
+    force_skip_warning_user_on_close_ = force_skip_warning_user_on_close;
   }
 
   // Accessors ////////////////////////////////////////////////////////////////
@@ -625,6 +654,7 @@ class Browser : public TabStripModelObserver,
   void TabStripEmpty() override;
 
   // Overridden from content::WebContentsDelegate:
+  void ActivateContents(content::WebContents* contents) override;
   void SetTopControlsShownRatio(content::WebContents* web_contents,
                                 float ratio) override;
   int GetTopControlsHeight() override;
@@ -650,7 +680,6 @@ class Browser : public TabStripModelObserver,
                        const std::string& one_time_code,
                        base::OnceClosure on_confirm,
                        base::OnceClosure on_cancel) override;
-  void PassiveInsecureContentFound(const GURL& resource_url) override;
   bool ShouldAllowRunningInsecureContent(content::WebContents* web_contents,
                                          bool allowed_per_prefs,
                                          const url::Origin& origin,
@@ -661,12 +690,10 @@ class Browser : public TabStripModelObserver,
       const GURL& initiator_url,
       blink::mojom::NavigationBlockedReason reason) override;
   content::PictureInPictureResult EnterPictureInPicture(
-      content::WebContents* web_contents,
-      const viz::SurfaceId&,
-      const gfx::Size&) override;
+      content::WebContents* web_contents) override;
   void ExitPictureInPicture() override;
   bool IsBackForwardCacheSupported() override;
-  bool IsPrerender2Supported() override;
+  bool IsPrerender2Supported(content::WebContents& web_contents) override;
   std::unique_ptr<content::WebContents> ActivatePortalWebContents(
       content::WebContents* predecessor_contents,
       std::unique_ptr<content::WebContents> portal_contents) override;
@@ -690,6 +717,9 @@ class Browser : public TabStripModelObserver,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   bool is_type_custom_tab() const { return type_ == TYPE_CUSTOM_TAB; }
 #endif
+  bool is_type_picture_in_picture() const {
+    return type_ == TYPE_PICTURE_IN_PICTURE;
+  }
 
   // True when the mouse cursor is locked.
   bool IsMouseLocked() const;
@@ -718,6 +748,10 @@ class Browser : public TabStripModelObserver,
   void SetWindowUserTitle(const std::string& user_title);
 
   StatusBubble* GetStatusBubbleForTesting();
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  void RunScreenAIAnnotator();
+#endif
 
  private:
   friend class BrowserTest;
@@ -785,12 +819,11 @@ class Browser : public TabStripModelObserver,
                       std::unique_ptr<content::WebContents> new_contents,
                       const GURL& target_url,
                       WindowOpenDisposition disposition,
-                      const gfx::Rect& initial_rect,
+                      const blink::mojom::WindowFeatures& window_features,
                       bool user_gesture,
                       bool* was_blocked) override;
-  void ActivateContents(content::WebContents* contents) override;
   void LoadingStateChanged(content::WebContents* source,
-                           bool to_different_document) override;
+                           bool should_show_loading_ui) override;
   void CloseContents(content::WebContents* source) override;
   void SetContentsBounds(content::WebContents* source,
                          const gfx::Rect& bounds) override;
@@ -818,7 +851,7 @@ class Browser : public TabStripModelObserver,
       const GURL& opener_url,
       const std::string& frame_name,
       const GURL& target_url,
-      const content::StoragePartitionId& partition_id,
+      const content::StoragePartitionConfig& partition_config,
       content::SessionStorageNamespace* session_storage_namespace) override;
   void WebContentsCreated(content::WebContents* source_contents,
                           int opener_render_process_id,
@@ -842,18 +875,30 @@ class Browser : public TabStripModelObserver,
   content::JavaScriptDialogManager* GetJavaScriptDialogManager(
       content::WebContents* source) override;
   bool GuestSaveFrame(content::WebContents* guest_web_contents) override;
+#if BUILDFLAG(IS_MAC)
+  std::unique_ptr<content::ColorChooser> OpenColorChooser(
+      content::WebContents* web_contents,
+      SkColor color,
+      const std::vector<blink::mojom::ColorSuggestionPtr>& suggestions)
+      override;
+#endif  // BUILDFLAG(IS_MAC)
   void RunFileChooser(content::RenderFrameHost* render_frame_host,
                       scoped_refptr<content::FileSelectListener> listener,
                       const blink::mojom::FileChooserParams& params) override;
   void EnumerateDirectory(content::WebContents* web_contents,
                           scoped_refptr<content::FileSelectListener> listener,
                           const base::FilePath& path) override;
+  bool CanEnterFullscreenModeForTab(
+      content::RenderFrameHost* requesting_frame,
+      const blink::mojom::FullscreenOptions& options) override;
   void EnterFullscreenModeForTab(
       content::RenderFrameHost* requesting_frame,
       const blink::mojom::FullscreenOptions& options) override;
   void ExitFullscreenModeForTab(content::WebContents* web_contents) override;
   bool IsFullscreenForTabOrPending(
       const content::WebContents* web_contents) override;
+  bool IsFullscreenForTabOrPending(const content::WebContents* web_contents,
+                                   int64_t* display_id) override;
   blink::mojom::DisplayMode GetDisplayMode(
       const content::WebContents* web_contents) override;
   blink::ProtocolHandlerSecurityLevel GetProtocolHandlerSecurityLevel(
@@ -983,11 +1028,6 @@ class Browser : public TabStripModelObserver,
 
   // Getters for UI ///////////////////////////////////////////////////////////
 
-  // TODO(beng): remove, and provide AutomationProvider a better way to access
-  //             the LocationBarView's edit.
-  friend class AutomationProvider;
-  friend class BrowserProxy;
-
   // Returns the StatusBubble from the current toolbar. It is possible for
   // this to return NULL if called before the toolbar has initialized.
   // TODO(beng): remove this.
@@ -1036,7 +1076,7 @@ class Browser : public TabStripModelObserver,
 
   // Updates the loading state for the window and tabstrip.
   void UpdateWindowForLoadingStateChanged(content::WebContents* source,
-                                          bool to_different_document);
+                                          bool should_show_loading_ui);
 
   // Shared code between Reload() and ReloadBypassingCache().
   void ReloadInternal(WindowOpenDisposition disposition, bool bypass_cache);
@@ -1056,6 +1096,10 @@ class Browser : public TabStripModelObserver,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   bool CustomTabBrowserSupportsWindowFeature(WindowFeature feature) const;
 #endif
+
+  bool PictureInPictureBrowserSupportsWindowFeature(
+      WindowFeature feature,
+      bool check_can_support) const;
 
   // Implementation of SupportsWindowFeature and CanSupportWindowFeature. If
   // |check_fullscreen| is true, the set of features reflect the actual state of
@@ -1096,7 +1140,7 @@ class Browser : public TabStripModelObserver,
       bool is_new_browsing_instance,
       const std::string& frame_name,
       const GURL& target_url,
-      const content::StoragePartitionId& partition_id,
+      const content::StoragePartitionConfig& partition_config,
       content::SessionStorageNamespace* session_storage_namespace);
 
   // Data members /////////////////////////////////////////////////////////////
@@ -1110,13 +1154,16 @@ class Browser : public TabStripModelObserver,
   const Type type_;
 
   // This Browser's profile.
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
 
   // Prevent Profile deletion until this browser window is closed.
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
 
   // This Browser's window.
-  BrowserWindow* window_;
+  //
+  // TODO(crbug.com/1298696): pixel_browser_tests breaks with MTECheckedPtr
+  // enabled. Triage.
+  raw_ptr<BrowserWindow, DegradeToNoOpWhenMTE> window_;
 
   std::unique_ptr<TabStripModelDelegate> const tab_strip_model_delegate_;
   std::unique_ptr<TabStripModel> const tab_strip_model_;
@@ -1235,9 +1282,16 @@ class Browser : public TabStripModelObserver,
   // Controls both signin and sync consent.
   SigninViewController signin_view_controller_;
 
+  // Listens for browser-related breadcrumb events to be added to crash reports.
+  std::unique_ptr<BreadcrumbManagerBrowserAgent>
+      breadcrumb_manager_browser_agent_;
+
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
 
   WarnBeforeClosingCallback warn_before_closing_callback_;
+
+  // Tells if the browser should skip warning the user when closing the window.
+  bool force_skip_warning_user_on_close_ = false;
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   std::unique_ptr<extensions::ExtensionBrowserWindowHelper>

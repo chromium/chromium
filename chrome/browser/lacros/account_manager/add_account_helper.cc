@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,9 +18,13 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 AddAccountHelper::AddAccountHelper(
+    IsAccountInCacheCallback is_account_in_cache_callback,
     account_manager::AccountManagerFacade* facade,
     ProfileAttributesStorage* storage)
-    : account_manager_facade_(facade), profile_attributes_storage_(storage) {
+    : is_account_in_cache_callback_(std::move(is_account_in_cache_callback)),
+      account_manager_facade_(facade),
+      profile_attributes_storage_(storage) {
+  DCHECK(is_account_in_cache_callback_);
   DCHECK(account_manager_facade_);
   DCHECK(profile_attributes_storage_);
 }
@@ -39,6 +43,9 @@ void AddAccountHelper::Start(
 
   if (const account_manager::Account* account =
           absl::get_if<account_manager::Account>(&source_or_account)) {
+    DCHECK(is_account_in_cache_callback_.Run(*account))
+        << "Cannot add an unknown account " << account->raw_email
+        << " to profile " << profile_path;
     OnShowAddAccountDialogCompleted(
         profile_path,
         account_manager::AccountAdditionResult::FromAccount(*account));
@@ -51,9 +58,38 @@ void AddAccountHelper::Start(
   }
 }
 
+void AddAccountHelper::UpsertAccountForTesting(
+    const base::FilePath& profile_path,
+    const account_manager::Account& account,
+    const std::string& token_value,
+    AccountProfileMapper::AddAccountCallback callback) {
+  DCHECK(!callback_)
+      << "UpsertAccountForTesting() must be called only once.";  // IN-TEST
+  callback_ = std::move(callback);
+  DCHECK(callback_);
+
+  account_manager_facade_->UpsertAccountForTesting(  // IN-TEST
+      account, token_value);
+  OnShowAddAccountDialogCompleted(
+      profile_path,
+      account_manager::AccountAdditionResult::FromAccount(account));
+}
+
+void AddAccountHelper::OnAccountCacheUpdated() {
+  if (!account_ || is_account_in_cache_)
+    return;
+
+  is_account_in_cache_ = is_account_in_cache_callback_.Run(*account_);
+
+  MaybeCompleteAddAccount();
+  // `this` may be deleted.
+}
+
 void AddAccountHelper::OnShowAddAccountDialogCompleted(
     const base::FilePath& profile_path,
     const account_manager::AccountAdditionResult& result) {
+  DCHECK(!account_);
+
   bool add_account_failure =
       result.status() !=
           account_manager::AccountAdditionResult::Status::kSuccess ||
@@ -65,6 +101,9 @@ void AddAccountHelper::OnShowAddAccountDialogCompleted(
     return;
   }
 
+  account_ = result.account().value();
+  is_account_in_cache_ = is_account_in_cache_callback_.Run(*account_);
+
   if (profile_path.empty()) {
     // If the profile does not exist, create it first.
     size_t icon_index = profiles::GetPlaceholderAvatarIndex();
@@ -72,61 +111,62 @@ void AddAccountHelper::OnShowAddAccountDialogCompleted(
         profile_attributes_storage_->ChooseNameForNewProfile(icon_index),
         icon_index,
         /*is_hidden=*/true,
-        base::BindRepeating(&AddAccountHelper::OnNewProfileCreated,
-                            weak_factory_.GetWeakPtr(),
-                            result.account().value()));
+        base::BindOnce(&AddAccountHelper::OnNewProfileInitialized,
+                       weak_factory_.GetWeakPtr()));
   } else {
-    OnShowAddAccountDialogCompletedWithProfilePath(profile_path,
-                                                   result.account().value());
+    OnShowAddAccountDialogCompletedWithProfilePath(profile_path);
   }
 }
 
-void AddAccountHelper::OnNewProfileCreated(
-    const account_manager::Account& account,
-    Profile* new_profile,
-    Profile::CreateStatus status) {
-  switch (status) {
-    case Profile::CREATE_STATUS_CREATED:
-      // Ignore this, wait for profile to be initialized.
-      return;
-    case Profile::CREATE_STATUS_INITIALIZED:
-      OnShowAddAccountDialogCompletedWithProfilePath(new_profile->GetPath(),
-                                                     account);
-      return;
-    case Profile::CREATE_STATUS_LOCAL_FAIL:
-      NOTREACHED() << "Error creating new profile";
-      std::move(callback_).Run(
-          AccountProfileMapper::AddAccountResult{base::FilePath(), account});
-      // `this` may be deleted.
-      return;
+void AddAccountHelper::OnNewProfileInitialized(Profile* new_profile) {
+  DCHECK(account_);
+  if (!new_profile) {
+    NOTREACHED() << "Error creating new profile";
+    profile_path_ = base::FilePath();
+    MaybeCompleteAddAccount();
+    // `this` may be deleted.
+    return;
   }
+
+  OnShowAddAccountDialogCompletedWithProfilePath(new_profile->GetPath());
 }
 
 void AddAccountHelper::OnShowAddAccountDialogCompletedWithProfilePath(
-    const base::FilePath& profile_path,
-    const account_manager::Account& account) {
+    const base::FilePath& profile_path) {
+  DCHECK(account_);
   DCHECK(!profile_path.empty());
-  DCHECK_EQ(account.key.account_type(), account_manager::AccountType::kGaia);
-  const std::string& gaia_id = account.key.id();
+  profile_path_ = profile_path;
+
+  MaybeCompleteAddAccount();
+  // `this` may be deleted.
+}
+
+void AddAccountHelper::MaybeCompleteAddAccount() {
+  if (!account_ || !profile_path_ || !is_account_in_cache_)
+    return;
+
+  DCHECK_EQ(account_->key.account_type(), account_manager::AccountType::kGaia);
+  const std::string& gaia_id = account_->key.id();
   DCHECK(!gaia_id.empty());
   absl::optional<AccountProfileMapper::AddAccountResult> result;
 
   ProfileAttributesEntry* entry =
-      profile_attributes_storage_->GetProfileAttributesWithPath(profile_path);
+      profile_attributes_storage_->GetProfileAttributesWithPath(
+          profile_path_.value_or(base::FilePath()));
   if (entry) {
     base::flat_set<std::string> profile_accounts = entry->GetGaiaIds();
     auto inserted = profile_accounts.insert(gaia_id);
     if (inserted.second) {
       entry->SetGaiaIds(profile_accounts);
-      result = {profile_path, account};
+      result = {*profile_path_, *account_};
     } else {
       // Duplicate account, this was a no-op.
-      LOG(ERROR) << "Account " << account.raw_email
-                 << " already exists in profile " << profile_path;
+      LOG(ERROR) << "Account " << account_->raw_email
+                 << " already exists in profile " << *profile_path_;
     }
   } else {
     // If the profile does not exist, the account is left unassigned.
-    result = {base::FilePath(), account};
+    result = {base::FilePath(), *account_};
   }
   std::move(callback_).Run(result);
   // `this` may be deleted.

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,15 +11,21 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill_assistant/browser/model.pb.h"
-#include "components/autofill_assistant/browser/user_data.h"
 #include "components/autofill_assistant/browser/value_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
+namespace autofill {
+class AutofillProfile;
+class CreditCard;
+}  // namespace autofill
+
 namespace autofill_assistant {
+
+class UserData;
+struct LoginChoice;
+struct CollectUserDataOptions;
 
 // Manages a map of |ValueProto| instances and notifies observers of changes.
 //
@@ -42,7 +48,7 @@ class UserModel {
   UserModel(const UserModel&) = delete;
   UserModel& operator=(const UserModel&) = delete;
 
-  ~UserModel();
+  virtual ~UserModel();
 
   base::WeakPtr<UserModel> GetWeakPtr();
 
@@ -80,6 +86,10 @@ class UserModel {
     return values;
   }
 
+  void SetPhoneNumbers(
+      std::unique_ptr<std::vector<std::unique_ptr<autofill::AutofillProfile>>>
+          profiles);
+
   // Replaces the set of available autofill credit cards.
   void SetAutofillCreditCards(
       std::unique_ptr<std::vector<std::unique_ptr<autofill::CreditCard>>>
@@ -88,8 +98,8 @@ class UserModel {
   // Sets the selected credit card. A nullptr |card| will clear the selected
   // card. This also sets it to |user_data|.
   // TODO(b/187286050) complete the migration to UserModel and remove UserData.
-  void SetSelectedCreditCard(std::unique_ptr<autofill::CreditCard> card,
-                             UserData* user_data);
+  virtual void SetSelectedCreditCard(std::unique_ptr<autofill::CreditCard> card,
+                                     UserData* user_data);
 
   // Sets the selected login choice. A nullptr |login_choice| will clear the
   // selected login choice. This sets it to |user_data|.
@@ -113,7 +123,7 @@ class UserModel {
   // Sets the selected autofill profile for |profile_name|. A nullptr |profile|
   // will clear the entry. The profile is also set in |user_data|.
   // TODO(b/187286050) complete the migration to UserModel and remove UserData.
-  void SetSelectedAutofillProfile(
+  virtual void SetSelectedAutofillProfile(
       const std::string& profile_name,
       std::unique_ptr<autofill::AutofillProfile> profile,
       UserData* user_data);
@@ -168,7 +178,8 @@ class UserModel {
   // Profile name to profile map.
   base::flat_map<std::string, std::unique_ptr<autofill::AutofillProfile>>
       selected_profiles_;
-
+  std::unique_ptr<std::vector<std::unique_ptr<autofill::AutofillProfile>>>
+      phone_numbers_;
   GURL current_url_;
   base::ObserverList<Observer> observers_;
   base::WeakPtrFactory<UserModel> weak_ptr_factory_{this};

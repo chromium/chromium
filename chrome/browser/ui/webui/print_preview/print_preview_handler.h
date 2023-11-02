@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,8 +13,11 @@
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/buildflags.h"
 #include "components/prefs/pref_service.h"
@@ -25,8 +28,9 @@
 #include "printing/buildflags/buildflags.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/print_job_constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 namespace crosapi {
 namespace mojom {
 class DriveIntegrationService;
@@ -37,7 +41,6 @@ class LocalPrinter;
 
 namespace base {
 class DictionaryValue;
-class RefCountedMemory;
 }
 
 namespace content {
@@ -113,9 +116,6 @@ class PrintPreviewHandler : public content::WebUIMessageHandler {
   virtual PrinterHandler* GetPrinterHandler(mojom::PrinterType printer_type);
 
  protected:
-  // Protected so unit tests can override.
-  virtual bool IsCloudPrintEnabled();
-
   // Shuts down the initiator renderer. Called when a bad IPC message is
   // received.
   virtual void BadMessageReceived();
@@ -167,65 +167,58 @@ class PrintPreviewHandler : public content::WebUIMessageHandler {
 
   // Gets the list of printers. First element of |args| is the Javascript
   // callback, second element of |args| is the printer type to fetch.
-  void HandleGetPrinters(const base::ListValue* args);
+  void HandleGetPrinters(const base::Value::List& args);
 
   // Asks the initiator renderer to generate a preview.  First element of |args|
   // is a job settings JSON string.
-  void HandleGetPreview(const base::ListValue* args);
+  void HandleGetPreview(const base::Value::List& args);
 
   // Gets the job settings from Web UI and initiate printing. First element of
   // |args| is a job settings JSON string.
-  void HandlePrint(const base::ListValue* args);
+  void HandlePrint(const base::Value::List& args);
 
   // Handles the request to hide the preview dialog for printing.
   // |args| is unused.
-  void HandleHidePreview(const base::ListValue* args);
+  void HandleHidePreview(const base::Value::List& args);
 
   // Handles the request to cancel the pending print request. |args| is unused.
-  void HandleCancelPendingPrintRequest(const base::ListValue* args);
+  void HandleCancelPendingPrintRequest(const base::Value::List& args);
 
   // Handles a request to store data that the web ui wishes to persist.
   // First element of |args| is the data to persist.
-  void HandleSaveAppState(const base::ListValue* args);
+  void HandleSaveAppState(const base::Value::List& args);
 
   // Gets the printer capabilities. Fist element of |args| is the Javascript
   // callback, second element is the printer ID of the printer whose
   // capabilities are requested, and the third element is the type of the
   // printer whose capabilities are requested.
-  void HandleGetPrinterCapabilities(const base::ListValue* args);
+  void HandleGetPrinterCapabilities(const base::Value::List& args);
 
 #if BUILDFLAG(ENABLE_BASIC_PRINT_DIALOG)
   // Asks the initiator renderer to show the native print system dialog. |args|
   // is unused.
-  void HandleShowSystemDialog(const base::ListValue* args);
+  void HandleShowSystemDialog(const base::Value::List& args);
 #endif
-
-  // Opens a new tab to allow the user to add an account to sign into cloud
-  // print. |args| is unused.
-  void HandleSignin(const base::ListValue* args);
-
-  // Called when the tab opened by HandleSignIn() is closed.
-  void OnSignInTabClosed();
 
   // Gathers UMA stats when the print preview dialog is about to close.
   // |args| is unused.
-  void HandleClosePreviewDialog(const base::ListValue* args);
+  void HandleClosePreviewDialog(const base::Value::List& args);
 
   // Asks the browser for several settings that are needed before the first
   // preview is displayed.
-  void HandleGetInitialSettings(const base::ListValue* args);
+  void HandleGetInitialSettings(const base::Value::List& args);
 
   // Opens printer settings in the Chrome OS Settings App or OS's printer manger
   // dialog. |args| is unused.
-  void HandleManagePrinters(const base::ListValue* args);
+  void HandleManagePrinters(const base::Value::List& args);
 
   void SendInitialSettings(const std::string& callback_id,
-                           base::Value policies,
+                           base::Value::Dict policies,
                            const std::string& default_printer);
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Sets |kIsDriveMounted| for Lacros chrome then returns the initial settings.
-  void OnDrivePathReady(base::Value initial_settings,
+  void OnDrivePathReady(base::Value::Dict initial_settings,
                         const std::string& callback_id,
                         const base::FilePath& drive_path);
 #endif
@@ -234,12 +227,7 @@ class PrintPreviewHandler : public content::WebUIMessageHandler {
   // printer capabilities information. If |settings_info| is empty, sends
   // error notification to the Web UI instead.
   void SendPrinterCapabilities(const std::string& callback_id,
-                               base::Value settings_info);
-
-  // Send the PDF data to Print Preview so that it can be sent to the cloud
-  // print server to print.
-  void SendCloudPrintJob(const std::string& callback_id,
-                         const base::RefCountedMemory* data);
+                               base::Value::Dict settings_info);
 
   // Closes the preview dialog.
   void ClosePreviewDialog();
@@ -248,10 +236,10 @@ class PrintPreviewHandler : public content::WebUIMessageHandler {
   void ClearInitiatorDetails();
 
   // Populates |settings| according to the current locale.
-  void GetLocaleInformation(base::Value* settings);
+  void GetLocaleInformation(base::Value::Dict* settings);
 
   // Populates |settings| with the list of logged in accounts.
-  void GetUserAccountList(base::Value* settings);
+  void GetUserAccountList(base::Value::Dict* settings);
 
   PdfPrinterHandler* GetPdfPrinterHandler();
 
@@ -260,7 +248,7 @@ class PrintPreviewHandler : public content::WebUIMessageHandler {
   // |printers|: A non-empty list containing information about the printer or
   //     printers that have been added.
   void OnAddedPrinters(mojom::PrinterType printer_type,
-                       const base::ListValue& printers);
+                       base::Value::List printers);
 
   // Called when printer search is done for some destination type.
   // |callback_id|: The javascript callback to call.
@@ -284,7 +272,7 @@ class PrintPreviewHandler : public content::WebUIMessageHandler {
   bool has_logged_printers_count_ = false;
 
   // The settings used for the most recent preview request.
-  base::Value last_preview_settings_;
+  absl::optional<base::Value::Dict> last_preview_settings_;
 
   // Handles requests for extension printers. Created lazily by calling
   // GetPrinterHandler().
@@ -310,13 +298,13 @@ class PrintPreviewHandler : public content::WebUIMessageHandler {
   // Used to transmit mojo interface method calls to the associated receiver.
   mojo::AssociatedRemote<mojom::PrintRenderFrame> print_render_frame_;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   // Used to transmit mojo interface method calls to ash chrome.
   // Null if the interface is unavailable.
   // Note that this is not propagated to LocalPrinterHandlerLacros.
   // The pointer is constant - if ash crashes and the mojo connection is lost,
   // lacros will automatically be restarted.
-  crosapi::mojom::LocalPrinter* local_printer_ = nullptr;
+  raw_ptr<crosapi::mojom::LocalPrinter> local_printer_ = nullptr;
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -327,7 +315,8 @@ class PrintPreviewHandler : public content::WebUIMessageHandler {
   // Null if the interface is unavailable.
   // The pointer is constant - if ash crashes and the mojo connection is lost,
   // lacros will automatically be restarted.
-  crosapi::mojom::DriveIntegrationService* drive_integration_service_ = nullptr;
+  raw_ptr<crosapi::mojom::DriveIntegrationService> drive_integration_service_ =
+      nullptr;
 #endif
 
   base::WeakPtrFactory<PrintPreviewHandler> weak_factory_{this};

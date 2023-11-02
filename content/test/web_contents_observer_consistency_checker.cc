@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/common/task_annotator.h"
 #include "build/build_config.h"
+#include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/renderer_host/page_impl.h"
@@ -66,9 +67,6 @@ void WebContentsObserverConsistencyChecker::RenderFrameCreated(
                  << Format(render_frame_host);
   }
 
-  CHECK(render_frame_host->IsRenderFrameCreated())
-      << "RenderFrameCreated was called for a RenderFrameHost that has not been"
-         "marked created.";
   CHECK(render_frame_host->GetProcess()->IsInitializedAndNotDead())
       << "RenderFrameCreated was called for a RenderFrameHost whose render "
          "process is not currently live, so there's no way for the RenderFrame "
@@ -95,9 +93,6 @@ void WebContentsObserverConsistencyChecker::RenderFrameCreated(
 void WebContentsObserverConsistencyChecker::RenderFrameDeleted(
     RenderFrameHost* render_frame_host) {
   CHECK(!web_contents_destroyed_);
-  CHECK(!render_frame_host->IsRenderFrameCreated())
-      << "RenderFrameDeleted was called for a RenderFrameHost that is"
-         "(still) marked as created.";
   CHECK(!render_frame_host->IsRenderFrameLive())
       << "RenderFrameDeleted was called for a RenderFrameHost that is"
          "still live.";
@@ -330,14 +325,14 @@ void WebContentsObserverConsistencyChecker::DidFinishNavigation(
   ongoing_navigations_.erase(navigation_handle);
 }
 
-void WebContentsObserverConsistencyChecker::DocumentAvailableInMainFrame(
-    RenderFrameHost* render_frame_host) {
+void WebContentsObserverConsistencyChecker::
+    PrimaryMainDocumentElementAvailable() {
   AssertMainFrameExists();
 }
 
-void WebContentsObserverConsistencyChecker::DocumentOnLoadCompletedInMainFrame(
-    RenderFrameHost* render_frame_host) {
-  CHECK(static_cast<PageImpl&>(render_frame_host->GetPage())
+void WebContentsObserverConsistencyChecker::
+    DocumentOnLoadCompletedInPrimaryMainFrame() {
+  CHECK(static_cast<PageImpl&>(web_contents()->GetPrimaryPage())
             .is_on_load_completed_in_main_document());
   AssertMainFrameExists();
 }
@@ -454,7 +449,7 @@ void WebContentsObserverConsistencyChecker::AssertRenderFrameExists(
 }
 
 void WebContentsObserverConsistencyChecker::AssertMainFrameExists() {
-  AssertRenderFrameExists(web_contents()->GetMainFrame());
+  AssertRenderFrameExists(web_contents()->GetPrimaryMainFrame());
 }
 
 std::string WebContentsObserverConsistencyChecker::Format(

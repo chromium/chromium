@@ -1,0 +1,170 @@
+<style include="multidevice-setup-shared">
+  #multidevice-summary-message a {
+    display: inline-block;
+  }
+
+  #singleDeviceName {
+    color: var(--cros-text-color-primary);
+  }
+
+  .offline-device-name {
+    color: var(--cros-text-color-secondary);
+  }
+
+  #animation-container {
+    padding-top: 16px;
+  }
+
+  :host-context([orientation=horizontal]) #animation-container {
+    height: 172px;
+    transform: translateX(-20px);
+  }
+
+  :host-context([orientation=vertical]) #animation-container {
+    margin-bottom: -20px;
+  }
+
+  .footnote {
+    padding-top: 16px;
+  }
+
+  #deviceSelectionContainer {
+    display: flex;
+    flex-direction: column;
+  }
+
+  #deviceDropdown {
+    margin-top: 8px;
+  }
+
+  #singleDeviceName {
+    margin-top: 8px;
+  }
+
+  .feature-detail {
+    align-items: center;
+    box-sizing: border-box;
+    display: flex;
+    min-height: 48px;
+    padding: 12px 0;
+  }
+
+  #feature-details-container-header {
+    margin-bottom: 16px;
+  }
+
+  :host-context([orientation=horizontal]) #additional-content-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  #feature-details-container {
+    color: var(--cros-text-color-primary);
+    padding-top: 40px;
+  }
+
+  .feature-detail:not(:last-child) {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  }
+
+  .feature-detail iron-icon {
+    --iron-icon-fill-color: var(--cros-icon-color-prominent);
+    --iron-icon-height: 20px;
+    --iron-icon-width: 20px;
+    min-width: 20px;
+    padding: 0 20px;
+  }
+
+  /* Hide the animation when not enough space in vertical mode. */
+  @media screen and (max-height: 1048px) {
+    :host-context([orientation=vertical][screen=oobe])
+        #animation-container {
+      display: none;
+    }
+  }
+
+  @media screen and (max-height: 832px) {
+    :host-context([orientation=vertical][screen=gaia-signin])
+        #animation-container {
+      display: none;
+    }
+  }
+</style>
+
+<ui-page header-text="[[i18nDynamic(locale, 'startSetupPageHeader')]]"
+    icon-name="google-g">
+  <span slot="message" id="multidevice-summary-message" inner-h-t-m-l=
+      "[[i18nAdvancedDynamic_(locale, 'startSetupPageMessage')]]">
+  </span>
+  <span slot="message">
+    <div id="animation-container">
+      <iron-media-query query="(prefers-color-scheme: dark)"
+          query-matches="{{isDarkModeActive_}}">
+      </iron-media-query>
+      <cr-lottie id="multideviceSetupAnimation"
+          animation-url="[[getAnimationUrl_(isDarkModeActive_)]]">
+      </cr-lottie>
+    </div>
+  </span>
+  <div id="additional-content-container" slot="additional-content"
+      class="flex">
+    <div id="selector-and-details-container">
+      <div id="deviceSelectionContainer" class="flex">
+        <div id="device-selection-header" aria-hidden="true">
+          [[getDeviceSelectionHeader_(devices)]]
+        </div>
+        <div id="singleDeviceName"
+            hidden$="[[!doesDeviceListHaveOneElement_(devices)]]">
+          [[getFirstDeviceNameInList_(devices)]]
+        </div>
+        <div hidden$="[[!doesDeviceListHaveMultipleElements_(devices)]]">
+          <select id="deviceDropdown"
+              class="md-select"
+              on-change="onDeviceDropdownSelectionChanged_"
+              aria-labelledby="device-selection-header">
+            <template is="dom-repeat" items="[[devices]]">
+              <option
+                  class$="[[getDeviceOptionClass_(item.connectivityStatus)]]"
+                  value$="[[getInstanceIdOrLegacyDeviceId_(item)]]">
+                [[getDeviceNameWithConnectivityStatus_(item)]]
+              </option>
+            </template>
+          </select>
+        </div>
+      </div>
+      <div id="feature-details-container" class="flex">
+        <div id="feature-details-container-header">
+          [[i18nDynamic(locale, 'startSetupPageFeatureListHeader')]]
+        </div>
+        <template is="dom-if" if="[[wifiSyncEnabled_]]">
+          <div class="feature-detail">
+            <iron-icon icon="multidevice-setup-icons-20:wifi">
+            </iron-icon>
+            <span>
+              [[i18nDynamic(locale, 'startSetupPageFeatureWifiSync')]]
+            </span>
+          </div>
+        </template>
+        <template is="dom-if" if="[[phoneHubCameraRollEnabled_]]">
+          <div class="feature-detail">
+            <iron-icon icon="multidevice-setup-icons-20:image">
+            </iron-icon>
+            <span>
+              [[i18nDynamic(locale, 'startSetupPageFeatureCameraRoll')]]
+            </span>
+          </div>
+        </template>
+        <div class="feature-detail">
+          <iron-icon icon="multidevice-setup-icons-20:features"></iron-icon>
+          <span>
+            [[i18nDynamic(locale, 'startSetupPageFeatureListAddFeatures')]]
+          </span>
+        </div>
+      </div>
+      <div class="footnote">
+        [[i18nAdvancedDynamic_(locale, 'startSetupPageFootnote')]]
+      </div>
+    </div>
+  </div>
+</ui-page>

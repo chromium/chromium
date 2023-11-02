@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/types/optional_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/socket_permission_request.h"
@@ -59,20 +60,19 @@ sockets_udp::SocketInfo CreateSocketInfo(int socket_id,
   // to the system.
   socket_info.socket_id = socket_id;
   if (!socket->name().empty()) {
-    socket_info.name = std::make_unique<std::string>(socket->name());
+    socket_info.name = socket->name();
   }
   socket_info.persistent = socket->persistent();
   if (socket->buffer_size() > 0) {
-    socket_info.buffer_size = std::make_unique<int>(socket->buffer_size());
+    socket_info.buffer_size = socket->buffer_size();
   }
   socket_info.paused = socket->paused();
 
   // Grab the local address as known by the OS.
   net::IPEndPoint localAddress;
   if (socket->GetLocalAddress(&localAddress)) {
-    socket_info.local_address =
-        std::make_unique<std::string>(localAddress.ToStringWithoutPort());
-    socket_info.local_port = std::make_unique<int>(localAddress.port());
+    socket_info.local_address = localAddress.ToStringWithoutPort();
+    socket_info.local_port = localAddress.port();
   }
 
   return socket_info;
@@ -80,13 +80,13 @@ sockets_udp::SocketInfo CreateSocketInfo(int socket_id,
 
 void SetSocketProperties(ResumableUDPSocket* socket,
                          sockets_udp::SocketProperties* properties) {
-  if (properties->name.get()) {
+  if (properties->name) {
     socket->set_name(*properties->name);
   }
-  if (properties->persistent.get()) {
+  if (properties->persistent) {
     socket->set_persistent(*properties->persistent);
   }
-  if (properties->buffer_size.get()) {
+  if (properties->buffer_size) {
     socket->set_buffer_size(*properties->buffer_size);
   }
 }
@@ -113,9 +113,10 @@ ExtensionFunction::ResponseAction SocketsUdpCreateFunction::Work() {
 
   ResumableUDPSocket* socket = new ResumableUDPSocket(
       std::move(udp_socket), std::move(socket_listener_receiver),
-      extension_->id());
+      GetOriginId());
 
-  sockets_udp::SocketProperties* properties = params->properties.get();
+  sockets_udp::SocketProperties* properties =
+      base::OptionalToPtr(params->properties);
   if (properties) {
     SetSocketProperties(socket, properties);
   }
@@ -169,8 +170,7 @@ ExtensionFunction::ResponseAction SocketsUdpSetPausedFunction::Work() {
   if (socket->paused() != params->paused) {
     socket->set_paused(params->paused);
     if (socket->IsConnected() && !params->paused) {
-      socket_event_dispatcher->OnSocketResume(extension_->id(),
-                                              params->socket_id);
+      socket_event_dispatcher->OnSocketResume(GetOriginId(), params->socket_id);
     }
   }
 
@@ -199,7 +199,7 @@ ExtensionFunction::ResponseAction SocketsUdpBindFunction::Work() {
 
   content::SocketPermissionRequest param(
       SocketPermissionRequest::UDP_BIND, params_->address, params_->port);
-  if (!SocketsManifestData::CheckRequest(extension(), param)) {
+  if (!CheckRequest(param)) {
     return RespondNow(Error(kPermissionError));
   }
   socket->Bind(params_->address, params_->port,
@@ -214,8 +214,7 @@ void SocketsUdpBindFunction::OnCompleted(int net_result) {
     return;
   }
   if (net_result == net::OK) {
-    socket_event_dispatcher_->OnSocketBind(extension_->id(),
-                                           params_->socket_id);
+    socket_event_dispatcher_->OnSocketBind(GetOriginId(), params_->socket_id);
   } else {
     Respond(ErrorWithCode(net_result, net::ErrorToString(net_result)));
     return;
@@ -244,13 +243,28 @@ ExtensionFunction::ResponseAction SocketsUdpSendFunction::Work() {
     return RespondNow(Error(kSocketNotFoundError));
   }
 
+  net::DnsQueryType dns_query_type;
+  switch (params_->dns_query_type) {
+    case extensions::api::sockets_udp::DNS_QUERY_TYPE_NONE:
+    case extensions::api::sockets_udp::DNS_QUERY_TYPE_ANY:
+      dns_query_type = net::DnsQueryType::UNSPECIFIED;
+      break;
+    case extensions::api::sockets_udp::DNS_QUERY_TYPE_IPV4:
+      dns_query_type = net::DnsQueryType::A;
+      break;
+    case extensions::api::sockets_udp::DNS_QUERY_TYPE_IPV6:
+      dns_query_type = net::DnsQueryType::AAAA;
+      break;
+  }
+
   content::SocketPermissionRequest param(
       SocketPermissionRequest::UDP_SEND_TO, params_->address, params_->port);
-  if (!SocketsManifestData::CheckRequest(extension(), param)) {
+  if (!CheckRequest(param)) {
     return RespondNow(Error(kPermissionError));
   }
 
-  StartDnsLookup(net::HostPortPair(params_->address, params_->port));
+  StartDnsLookup(net::HostPortPair(params_->address, params_->port),
+                 dns_query_type);
   return RespondLater();
 }
 
@@ -287,7 +301,7 @@ void SocketsUdpSendFunction::SetSendResult(int net_result, int bytes_sent) {
   sockets_udp::SendInfo send_info;
   send_info.result_code = net_result;
   if (net_result == net::OK) {
-    send_info.bytes_sent = std::make_unique<int>(bytes_sent);
+    send_info.bytes_sent = bytes_sent;
   }
 
   auto args = sockets_udp::Send::Results::Create(send_info);
@@ -375,7 +389,7 @@ ExtensionFunction::ResponseAction SocketsUdpJoinGroupFunction::Work() {
       SocketPermissionRequest::UDP_MULTICAST_MEMBERSHIP,
       kWildcardAddress,
       kWildcardPort);
-  if (!SocketsManifestData::CheckRequest(extension(), param)) {
+  if (!CheckRequest(param)) {
     return RespondNow(Error(kPermissionError));
   }
 
@@ -411,7 +425,7 @@ ExtensionFunction::ResponseAction SocketsUdpLeaveGroupFunction::Work() {
       SocketPermissionRequest::UDP_MULTICAST_MEMBERSHIP,
       kWildcardAddress,
       kWildcardPort);
-  if (!SocketsManifestData::CheckRequest(extension(), param)) {
+  if (!CheckRequest(param)) {
     return RespondNow(Error(kPermissionError));
   }
   socket->LeaveGroup(
@@ -496,7 +510,7 @@ ExtensionFunction::ResponseAction SocketsUdpGetJoinedGroupsFunction::Work() {
       SocketPermissionRequest::UDP_MULTICAST_MEMBERSHIP,
       kWildcardAddress,
       kWildcardPort);
-  if (!SocketsManifestData::CheckRequest(extension(), param)) {
+  if (!CheckRequest(param)) {
     return RespondNow(Error(kPermissionError));
   }
 

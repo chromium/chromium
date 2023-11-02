@@ -1,17 +1,17 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/chrome_browser_main_extra_parts_linux.h"
 
 #include "base/command_line.h"
+#include "base/environment.h"
 #include "base/logging.h"
 #include "build/build_config.h"
 #include "ui/ozone/buildflags.h"
 #include "ui/ozone/public/ozone_switches.h"
 
 #if BUILDFLAG(OZONE_PLATFORM_WAYLAND)
-#include "base/environment.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/nix/xdg_util.h"
@@ -120,7 +120,7 @@ ChromeBrowserMainExtraPartsLinux::ChromeBrowserMainExtraPartsLinux() = default;
 ChromeBrowserMainExtraPartsLinux::~ChromeBrowserMainExtraPartsLinux() = default;
 
 void ChromeBrowserMainExtraPartsLinux::PreEarlyInitialization() {
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
   // On the desktop, we fix the platform name if necessary.
   // See https://crbug.com/1246928.
   auto* const command_line = base::CommandLine::ForCurrentProcess();
@@ -132,7 +132,12 @@ void ChromeBrowserMainExtraPartsLinux::PreEarlyInitialization() {
           switches::kOzonePlatform, MaybeFixPlatformName(ozone_platform_hint));
     }
   }
-#endif  // defined(OS_LINUX)
+
+  auto env = base::Environment::Create();
+  std::string desktop_startup_id;
+  if (env->GetVar("DESKTOP_STARTUP_ID", &desktop_startup_id))
+    command_line->AppendSwitchASCII("desktop-startup-id", desktop_startup_id);
+#endif  // BUILDFLAG(IS_LINUX)
 
   ChromeBrowserMainExtraPartsOzone::PreEarlyInitialization();
 }

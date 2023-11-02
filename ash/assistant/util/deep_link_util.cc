@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,11 @@
 
 #include "ash/assistant/util/i18n_util.h"
 #include "base/containers/contains.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "chromeos/services/assistant/public/cpp/assistant_service.h"
-#include "net/base/escape.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
 #include "net/base/url_util.h"
 #include "url/gurl.h"
 
@@ -21,9 +21,6 @@ namespace assistant {
 namespace util {
 
 namespace {
-
-using chromeos::assistant::AssistantEntryPoint;
-using chromeos::assistant::AssistantQuerySource;
 
 // Supported deep link param keys. These values must be kept in sync with the
 // server. See more details at go/cros-assistant-deeplink.
@@ -68,8 +65,6 @@ constexpr char kAssistantScreenshotPrefix[] =
     "googleassistant://take-screenshot";
 constexpr char kAssistantSettingsPrefix[] = "googleassistant://settings";
 constexpr char kAssistantTaskManagerPrefix[] = "googleassistant://task-manager";
-constexpr char kAssistantWhatsOnMyScreenPrefix[] =
-    "googleassistant://whats-on-my-screen";
 
 // Helpers ---------------------------------------------------------------------
 
@@ -197,10 +192,6 @@ GURL CreateAssistantSettingsDeepLink() {
   return GURL(kAssistantSettingsPrefix);
 }
 
-GURL CreateWhatsOnMyScreenDeepLink() {
-  return GURL(kAssistantWhatsOnMyScreenPrefix);
-}
-
 std::map<std::string, std::string> GetDeepLinkParams(const GURL& deep_link) {
   std::map<std::string, std::string> params;
 
@@ -230,8 +221,8 @@ absl::optional<std::string> GetDeepLinkParam(
   const std::string key = GetDeepLinkParamKey(param);
   const auto it = params.find(key);
   return it != params.end()
-             ? absl::optional<std::string>(net::UnescapeBinaryURLComponent(
-                   it->second, net::UnescapeRule::REPLACE_PLUS_WITH_SPACE))
+             ? absl::optional<std::string>(base::UnescapeBinaryURLComponent(
+                   it->second, base::UnescapeRule::REPLACE_PLUS_WITH_SPACE))
              : absl::nullopt;
 }
 
@@ -366,7 +357,7 @@ DeepLinkType GetDeepLinkType(const GURL& url) {
       {DeepLinkType::kScreenshot, kAssistantScreenshotPrefix},
       {DeepLinkType::kSettings, kAssistantSettingsPrefix},
       {DeepLinkType::kTaskManager, kAssistantTaskManagerPrefix},
-      {DeepLinkType::kWhatsOnMyScreen, kAssistantWhatsOnMyScreenPrefix}};
+  };
 
   for (const auto& supported_deep_link : kSupportedDeepLinks) {
     if (base::StartsWith(url.spec(), supported_deep_link.second,
@@ -393,10 +384,10 @@ absl::optional<GURL> GetAssistantUrl(
 
   switch (type) {
     case DeepLinkType::kLists: {
-      const auto& type = GetDeepLinkParam(params, DeepLinkParam::kType);
+      const auto& type_param = GetDeepLinkParam(params, DeepLinkParam::kType);
       top_level_url =
           std::string("https://assistant.google.com/lists/mainview");
-      by_id_url = (type && type.value().compare("shopping") == 0)
+      by_id_url = (type_param && type_param.value().compare("shopping") == 0)
                       ? std::string("https://shoppinglist.google.com/lists/")
                       : std::string("https://assistant.google.com/lists/list/");
       break;
@@ -480,7 +471,6 @@ absl::optional<GURL> GetWebUrl(
     case DeepLinkType::kQuery:
     case DeepLinkType::kScreenshot:
     case DeepLinkType::kTaskManager:
-    case DeepLinkType::kWhatsOnMyScreen:
       NOTREACHED();
       return absl::nullopt;
   }

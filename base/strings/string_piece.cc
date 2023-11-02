@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -129,7 +129,7 @@ size_t find_first_ofT(T self, T s, size_t pos) {
                                          s.begin(), s.end());
   if (found == self.end())
     return BasicStringPiece<CharT>::npos;
-  return found - self.begin();
+  return static_cast<size_t>(found - self.begin());
 }
 
 size_t find_first_of(StringPiece16 self, StringPiece16 s, size_t pos) {

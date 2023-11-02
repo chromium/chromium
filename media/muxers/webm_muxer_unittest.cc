@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -134,7 +134,8 @@ TEST_P(WebmMuxerTest,
   const std::string encoded_data("abcdefghijklmnopqrstuvwxyz");
   media::AudioParameters audio_params(
       media::AudioParameters::Format::AUDIO_PCM_LOW_LATENCY,
-      media::CHANNEL_LAYOUT_MONO, /*sample_rate=*/48000,
+      ChannelLayoutConfig::Mono(),
+      /*sample_rate=*/48000,
       /*frames_per_buffer=*/480);
   // Force an error in libwebm and expect OnEncodedVideo to fail.
   webm_muxer_->ForceOneLibWebmErrorForTesting();
@@ -157,7 +158,8 @@ TEST_P(WebmMuxerTest,
   const std::string encoded_data("abcdefghijklmnopqrstuvwxyz");
   media::AudioParameters audio_params(
       media::AudioParameters::Format::AUDIO_PCM_LOW_LATENCY,
-      media::CHANNEL_LAYOUT_MONO, /*sample_rate=*/48000,
+      ChannelLayoutConfig::Mono(),
+      /*sample_rate=*/48000,
       /*frames_per_buffer=*/480);
   // Force an error in libwebm and expect OnEncodedVideo to fail.
   webm_muxer_->ForceOneLibWebmErrorForTesting();
@@ -272,7 +274,7 @@ TEST_P(WebmMuxerTest, OnEncodedAudioTwoFrames) {
   const int frames_per_buffer = 480;
   media::AudioParameters audio_params(
       media::AudioParameters::Format::AUDIO_PCM_LOW_LATENCY,
-      media::CHANNEL_LAYOUT_MONO, sample_rate, frames_per_buffer);
+      ChannelLayoutConfig::Mono(), sample_rate, frames_per_buffer);
 
   const std::string encoded_data("abcdefghijklmnopqrstuvwxyz");
 
@@ -323,10 +325,9 @@ TEST_P(WebmMuxerTest, ColorSpaceREC709IsPropagatedToTrack) {
 TEST_P(WebmMuxerTest, ColorSpaceExtendedSRGBIsPropagatedToTrack) {
   WebmMuxer::VideoParameters params(
       gfx::Size(1, 1), 0, media::VideoCodec::kVP9,
-      gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT709,
-                      gfx::ColorSpace::TransferID::IEC61966_2_1,
-                      gfx::ColorSpace::MatrixID::BT709,
-                      gfx::ColorSpace::RangeID::LIMITED));
+      gfx::ColorSpace(
+          gfx::ColorSpace::PrimaryID::BT709, gfx::ColorSpace::TransferID::SRGB,
+          gfx::ColorSpace::MatrixID::BT709, gfx::ColorSpace::RangeID::LIMITED));
   webm_muxer_->OnEncodedVideo(params, "banana", {}, base::TimeTicks::Now(),
                               true /* keyframe */);
   mkvmuxer::Colour* colour = GetVideoTrackColor();
@@ -340,7 +341,7 @@ TEST_P(WebmMuxerTest, ColorSpaceHDR10IsPropagatedToTrack) {
   WebmMuxer::VideoParameters params(
       gfx::Size(1, 1), 0, media::VideoCodec::kVP9,
       gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT2020,
-                      gfx::ColorSpace::TransferID::SMPTEST2084,
+                      gfx::ColorSpace::TransferID::PQ,
                       gfx::ColorSpace::MatrixID::BT2020_NCL,
                       gfx::ColorSpace::RangeID::LIMITED));
   webm_muxer_->OnEncodedVideo(params, "cafebabe", {}, base::TimeTicks::Now(),
@@ -357,7 +358,7 @@ TEST_P(WebmMuxerTest, ColorSpaceFullRangeHDR10IsPropagatedToTrack) {
   WebmMuxer::VideoParameters params(
       gfx::Size(1, 1), 0, media::VideoCodec::kVP9,
       gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT2020,
-                      gfx::ColorSpace::TransferID::SMPTEST2084,
+                      gfx::ColorSpace::TransferID::PQ,
                       gfx::ColorSpace::MatrixID::BT2020_NCL,
                       gfx::ColorSpace::RangeID::FULL));
   webm_muxer_->OnEncodedVideo(params, "beatles", {}, base::TimeTicks::Now(),
@@ -398,7 +399,7 @@ TEST_P(WebmMuxerTest, VideoIsStoredWhileWaitingForAudio) {
   const int frames_per_buffer = 480;
   media::AudioParameters audio_params(
       media::AudioParameters::Format::AUDIO_PCM_LOW_LATENCY,
-      media::CHANNEL_LAYOUT_MONO, sample_rate, frames_per_buffer);
+      ChannelLayoutConfig::Mono(), sample_rate, frames_per_buffer);
   const std::string encoded_audio("thisisanencodedaudiopacket");
 
   // Timestamped frames should come as:
@@ -496,7 +497,7 @@ class WebmMuxerTestUnparametrized : public testing::Test {
     int frames_per_buffer = frame_rate_hz * duration_ms / 1000;
     media::AudioParameters audio_params(
         media::AudioParameters::Format::AUDIO_PCM_LOW_LATENCY,
-        media::CHANNEL_LAYOUT_MONO, frame_rate_hz, frames_per_buffer);
+        ChannelLayoutConfig::Mono(), frame_rate_hz, frames_per_buffer);
     webm_muxer_->OnEncodedAudio(
         audio_params, "audio_at_offset",
         base::TimeTicks() + base::Milliseconds(system_timestamp_offset_ms));
@@ -516,9 +517,7 @@ class WebmMuxerTestUnparametrized : public testing::Test {
     return true;
   }
   bool OnNewBuffers(const media::StreamParser::BufferQueueMap& map) {
-    for (const auto& kv : map) {
-      int track_id = kv.first;
-      const media::StreamParser::BufferQueue& queue = kv.second;
+    for (const auto& [track_id, queue] : map) {
       for (const auto& stream_parser_buffer : queue) {
         buffer_timestamps_ms_[track_id].push_back(
             stream_parser_buffer->timestamp().InMilliseconds());

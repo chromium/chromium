@@ -1,0 +1,234 @@
+<style include="common wallpaper">
+  :host {
+    margin: 12px 0;
+  }
+
+  .photo-inner-container.photo-loading-failure {
+    cursor: default;
+    filter: grayscale(100%);
+    opacity: 0.3;
+  }
+
+  .photo-inner-container.google-photos-empty:not([selectable]),
+  .photo-inner-container.photo-empty:not([selectable]) {
+    cursor: default;
+  }
+
+  .photo-images-container.photo-images-container-0 {
+    align-items: flex-start;
+    background-color: var(--cros-highlight-color);
+    justify-content: center;
+  }
+
+  .google-photos-empty .photo-images-container.photo-images-container-0 {
+    /* Background color should stay light even in dark mode. */
+    background-color: white;
+  }
+
+  .google-photos-empty[managed] .photo-images-container.photo-images-container-0 {
+    /* Background color should stay light even in dark mode. */
+    background-color: var(--google-grey-200);
+  }
+
+  .photo-images-container.photo-images-container-0 img {
+    flex: none;
+    height: 64px;
+    margin: 12px;
+    min-width: initial;
+    width: initial;
+  }
+
+  .google-photos-empty[managed] .photo-images-container.photo-images-container-0 img {
+    /* Background color should stay light even in dark mode. */
+    background-color: white;
+    border-radius: 100%;
+    box-sizing: border-box;
+    filter: grayscale(100%);
+    height: 54px;
+    padding: 4px;
+  }
+
+  .photo-images-container.photo-images-container-3 img,
+  .photo-images-container.photo-images-container-4 img {
+    height: 50%;
+  }
+
+  .photo-text-container {
+    bottom: 8px;
+    box-sizing: border-box;
+    position: absolute;
+    width: 100%;
+    z-index: 2;
+  }
+
+  .photo-text-container div {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  .photo-text-container iron-icon[icon='personalization:managed'] {
+    --iron-icon-fill-color: var(--cros-icon-color-secondary);
+    --iron-icon-height: 16px;
+    --iron-icon-width: 16px;
+    display: none;
+    flex: 0 0 auto;
+    margin-inline-end: 8px;
+  }
+
+  .google-photos-empty[managed] iron-icon[icon='personalization:managed'] {
+    /* Icon color should stay light even in dark mode. */
+    --iron-icon-fill-color: var(--cros-icon-color-secondary-light);
+  }
+
+  .photo-inner-container[managed] iron-icon[icon='personalization:managed'] {
+    display: block;
+  }
+
+  .photo-text-container p {
+    color: white;
+    font: var(--cros-annotation-2-font);
+    margin: 0;
+    max-width: 100%;
+    overflow: hidden;
+    text-align: center;
+    text-overflow: ellipsis;
+    text-shadow: var(--personalization-app-text-shadow-elevation-1);
+    white-space: nowrap;
+  }
+
+  .photo-text-container p:empty {
+    /* Take layout space but be otherwise hidden to the user and ChromeVox. */
+    display: inline-block;
+    visibility: hidden;
+  }
+
+  .photo-text-container iron-icon[icon='personalization:managed']+p,
+  .photo-text-container p:first-child {
+    font: var(--cros-headline-1-font);
+  }
+
+  .google-photos-empty[managed] .photo-text-container p {
+    /* Text color should stay light even in dark mode. */
+    color: var(--cros-text-color-secondary-light);
+    text-shadow: none;
+  }
+
+  .photo-empty .photo-text-container p {
+    color: var(--cros-button-label-color-secondary);
+    text-shadow: none;
+  }
+
+  .photo-gradient-mask {
+    background: linear-gradient(
+      rgba(var(--google-grey-900-rgb), 0),
+      rgba(var(--google-grey-900-rgb), 55%));
+    border-radius: 0 0 12px 12px;
+    height: 50%;
+    left: 0;
+    position: absolute;
+    top: 50%;
+    width: 100%;
+    z-index: 1;
+  }
+
+  .google-photos-empty[managed] .photo-gradient-mask,
+  .photo-empty .photo-gradient-mask {
+    display: none;
+  }
+</style>
+<iron-list items="[[tiles_]]"
+    grid
+    role="listbox"
+    aria-setsize$="[[tiles_.length]]">
+  <template>
+    <div class="photo-container">
+      <template is="dom-if" if="[[isLoadingTile_(item)]]">
+        <div tabindex$="[[tabIndex]]"
+            role="option"
+            class="photo-inner-container placeholder"
+            style$="[[getLoadingPlaceholderAnimationDelay(index)]]"
+            aria-posinset$="[[getAriaIndex_(index)]]"
+            aria-label$="[[geti18n_('ariaLabelLoading')]]"
+            aria-disabled="true">
+        </div>
+      </template>
+      <template is="dom-if" if="[[isFailureTile_(item)]]">
+        <div tabindex$="[[tabIndex]]"
+            role="button"
+            aria-posinset$="[[getAriaIndex_(index)]]"
+            aria-disabled="true"
+            class="photo-inner-container photo-loading-failure">
+          <div class$="[[getClassForImagesContainer_(item)]]">
+            <div class="photo-images-border"></div>
+            <template is="dom-repeat" items="[[item.preview]]" as="preview">
+              <img is="cr-auto-img" auto-src="[[preview.url]]"
+                  aria-hidden="true" clear-src>
+            </template>
+          </div>
+          <div class="photo-text-container">
+            <p title$="[[item.name]]">[[item.name]]</p>
+            <p title$="[[geti18n_('zeroImages')]]">
+              [[geti18n_('zeroImages')]]
+            </p>
+          </div>
+      </div>
+      </template>
+      <template is="dom-if" if="[[isEmptyTile_(item)]]">
+        <div tabindex$="[[tabIndex]]"
+            role="option"
+            aria-posinset$="[[getAriaIndex_(index)]]"
+            aria-disabled$="[[getTileAriaDisabled_(item)]]"
+            class$="[[getClassForEmptyTile_(item)]]"
+            managed$="[[isManagedTile_(item)]]"
+            selectable$="[[isSelectableTile_(item)]]"
+            on-click="onCollectionSelected_"
+            on-keypress="onCollectionSelected_">
+          <div class$="[[getClassForImagesContainer_(item)]]">
+            <div class="photo-images-border"></div>
+            <img is="cr-auto-img" auto-src="[[getImageUrlForEmptyTile_(item)]]"
+                aria-hidden="true" clear-src>
+          </div>
+          <div class="photo-text-container">
+            <div>
+              <iron-icon icon="personalization:managed"
+                title$="[[geti18n_('managedSetting')]]">
+              </iron-icon>
+              <p title$="[[item.name]]">[[item.name]]</p>
+            </div>
+            <p title$="[[item.count]]">[[item.count]]</p>
+          </div>
+          <div class="photo-gradient-mask"></div>
+        </div>
+      </template>
+      <template is="dom-if" if="[[isImageTile_(item)]]">
+        <div class="photo-inner-container"
+            role="option"
+            aria-posinset$="[[getAriaIndex_(index)]]"
+            on-click="onCollectionSelected_"
+            on-keypress="onCollectionSelected_"
+            tabindex$="[[tabIndex]]">
+          <div class$="[[getClassForImagesContainer_(item)]]">
+            <div class="photo-images-border"></div>
+            <template is="dom-repeat" items="[[item.preview]]" as="preview">
+              <img is="cr-auto-img" auto-src="[[preview.url]]"
+                  data-collection-id$="[[item.id]]"
+                  class$="[[getClassForImg_(index, item)]]"
+                  aria-hidden="true" on-load="onImgLoad_" on-error="onImgLoad_"
+                  is-google-photos="[[isGooglePhotosTile_(item)]]" clear-src>
+            </template>
+          </div>
+          <div class="photo-text-container"
+              hidden$="[[isPhotoTextHidden_(item, loadedCollectionIdPhotos_)]]">
+            <p title$="[[item.name]]">[[item.name]]</p>
+            <p title$="[[item.count]]">[[item.count]]</p>
+          </div>
+          <div class="photo-gradient-mask"
+              hidden$="[[isPhotoTextHidden_(item, loadedCollectionIdPhotos_)]]">
+          </div>
+        </div>
+      </template>
+    </div>
+  </template>
+</iron-list>

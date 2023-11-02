@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -109,7 +110,7 @@ class TabGroup {
   void UnsaveGroup();
 
  private:
-  TabGroupController* controller_;
+  raw_ptr<TabGroupController> controller_;
 
   tab_groups::TabGroupId id_;
   std::unique_ptr<tab_groups::TabGroupVisualData> visual_data_;

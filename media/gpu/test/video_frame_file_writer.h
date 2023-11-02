@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -62,6 +62,8 @@ class VideoFrameFileWriter : public VideoFrameProcessor {
 
   // Initialize the video frame file writer.
   bool Initialize();
+
+  void CleanUpOnWriterThread();
 
   // Writes the specified video frame to file on the |file_writer_thread_|.
   void ProcessVideoFrameTask(scoped_refptr<const VideoFrame> video_frame,

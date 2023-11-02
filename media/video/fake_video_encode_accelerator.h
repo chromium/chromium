@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,9 @@
 #include <list>
 #include <vector>
 
+#include "base/callback.h"
 #include "base/containers/queue.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/bitrate.h"
 #include "media/base/bitstream_buffer.h"
@@ -39,7 +41,9 @@ class FakeVideoEncodeAccelerator : public VideoEncodeAccelerator {
   ~FakeVideoEncodeAccelerator() override;
 
   VideoEncodeAccelerator::SupportedProfiles GetSupportedProfiles() override;
-  bool Initialize(const Config& config, Client* client) override;
+  bool Initialize(const Config& config,
+                  Client* client,
+                  std::unique_ptr<MediaLog> media_log = nullptr) override;
   void Encode(scoped_refptr<VideoFrame> frame, bool force_keyframe) override;
   void UseOutputBitstreamBuffer(BitstreamBuffer buffer) override;
   void RequestEncodingParametersChange(const Bitrate& bitrate,
@@ -57,6 +61,7 @@ class FakeVideoEncodeAccelerator : public VideoEncodeAccelerator {
     return stored_bitrate_allocations_;
   }
   void SetWillInitializationSucceed(bool will_initialization_succeed);
+  void SetWillEncodingSucceed(bool will_encoding_succeed);
 
   size_t minimum_output_buffer_size() const { return kMinimumOutputBufferSize; }
 
@@ -92,9 +97,10 @@ class FakeVideoEncodeAccelerator : public VideoEncodeAccelerator {
   std::vector<Bitrate> stored_bitrates_;
   std::vector<VideoBitrateAllocation> stored_bitrate_allocations_;
   bool will_initialization_succeed_;
+  bool will_encoding_succeed_;
   bool resize_supported_ = false;
 
-  VideoEncodeAccelerator::Client* client_;
+  raw_ptr<VideoEncodeAccelerator::Client> client_;
 
   // Keeps track of if the current frame is the first encoded frame. This
   // is used to force a fake key frame for the first encoded frame.

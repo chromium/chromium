@@ -32,12 +32,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_LAYOUT_POINT_H_
 
 #include <iosfwd>
-#include "third_party/blink/renderer/platform/geometry/double_point.h"
-#include "third_party/blink/renderer/platform/geometry/float_point.h"
 #include "third_party/blink/renderer/platform/geometry/layout_size.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/vector2d.h"
 
 namespace blink {
 
@@ -48,26 +48,21 @@ class PLATFORM_EXPORT LayoutPoint {
   constexpr LayoutPoint() = default;
   constexpr LayoutPoint(LayoutUnit x, LayoutUnit y) : x_(x), y_(y) {}
   constexpr LayoutPoint(int x, int y) : x_(LayoutUnit(x)), y_(LayoutUnit(y)) {}
-  constexpr LayoutPoint(const gfx::Point& point)
-      : x_(point.x()), y_(point.y()) {}
-  constexpr explicit LayoutPoint(const FloatPoint& point)
+  constexpr explicit LayoutPoint(const gfx::Point& point)
       : x_(point.x()), y_(point.y()) {}
   constexpr explicit LayoutPoint(const gfx::PointF& point)
       : x_(point.x()), y_(point.y()) {}
-  constexpr explicit LayoutPoint(const DoublePoint& point)
-      : x_(point.X()), y_(point.Y()) {}
   constexpr explicit LayoutPoint(const LayoutSize& size)
       : x_(size.Width()), y_(size.Height()) {}
 
-  constexpr explicit operator FloatPoint() const {
-    return FloatPoint(x_.ToFloat(), y_.ToFloat());
-  }
   constexpr explicit operator gfx::PointF() const {
     return gfx::PointF(x_.ToFloat(), y_.ToFloat());
   }
-  constexpr explicit operator DoublePoint() const {
-    return DoublePoint(x_.ToDouble(), y_.ToDouble());
-  }
+
+  // This is deleted to avoid unwanted lossy conversion from float or double to
+  // LayoutUnit or int. Use explicit LayoutUnit constructor for each parameter
+  // instead.
+  LayoutPoint(double, double) = delete;
 
   static constexpr LayoutPoint Zero() { return LayoutPoint(); }
 
@@ -78,7 +73,7 @@ class PLATFORM_EXPORT LayoutPoint {
   void SetY(LayoutUnit y) { y_ = y; }
 
   void Move(const LayoutSize& s) { Move(s.Width(), s.Height()); }
-  void Move(const IntSize& s) { Move(s.width(), s.height()); }
+  void Move(const gfx::Vector2d& s) { Move(s.x(), s.y()); }
   void MoveBy(const LayoutPoint& offset) { Move(offset.X(), offset.Y()); }
   void Move(int dx, int dy) { Move(LayoutUnit(dx), LayoutUnit(dy)); }
   void Move(LayoutUnit dx, LayoutUnit dy) {
@@ -113,8 +108,8 @@ ALWAYS_INLINE LayoutPoint& operator+=(LayoutPoint& a, const LayoutPoint& b) {
   return a;
 }
 
-inline LayoutPoint& operator+=(LayoutPoint& a, const IntSize& b) {
-  a.Move(b.width(), b.height());
+inline LayoutPoint& operator+=(LayoutPoint& a, const gfx::Vector2d& b) {
+  a.Move(b.x(), b.y());
   return a;
 }
 
@@ -128,8 +123,8 @@ ALWAYS_INLINE LayoutPoint& operator-=(LayoutPoint& a, const LayoutSize& b) {
   return a;
 }
 
-inline LayoutPoint& operator-=(LayoutPoint& a, const IntSize& b) {
-  a.Move(-b.width(), -b.height());
+inline LayoutPoint& operator-=(LayoutPoint& a, const gfx::Vector2d& b) {
+  a.Move(-b.x(), -b.y());
   return a;
 }
 
@@ -154,8 +149,8 @@ inline LayoutPoint operator-(const LayoutPoint& a, const LayoutSize& b) {
   return LayoutPoint(a.X() - b.Width(), a.Y() - b.Height());
 }
 
-inline LayoutPoint operator-(const LayoutPoint& a, const IntSize& b) {
-  return LayoutPoint(a.X() - b.width(), a.Y() - b.height());
+inline LayoutPoint operator-(const LayoutPoint& a, const gfx::Vector2d& b) {
+  return LayoutPoint(a.X() - b.x(), a.Y() - b.y());
 }
 
 inline LayoutPoint operator-(const LayoutPoint& point) {
@@ -195,36 +190,37 @@ inline gfx::Point ToCeiledPoint(const LayoutPoint& point) {
   return gfx::Point(point.X().Ceil(), point.Y().Ceil());
 }
 
-inline LayoutPoint FlooredLayoutPoint(const FloatPoint& p) {
+inline LayoutPoint FlooredLayoutPoint(const gfx::PointF& p) {
   return LayoutPoint(LayoutUnit::FromFloatFloor(p.x()),
                      LayoutUnit::FromFloatFloor(p.y()));
 }
 
-inline LayoutPoint CeiledLayoutPoint(const FloatPoint& p) {
+inline LayoutPoint CeiledLayoutPoint(const gfx::PointF& p) {
   return LayoutPoint(LayoutUnit::FromFloatCeil(p.x()),
                      LayoutUnit::FromFloatCeil(p.y()));
 }
 
-inline IntSize PixelSnappedIntSize(const LayoutSize& s, const LayoutPoint& p) {
-  return IntSize(SnapSizeToPixel(s.Width(), p.X()),
-                 SnapSizeToPixel(s.Height(), p.Y()));
+inline gfx::Size ToPixelSnappedSize(const LayoutSize& s, const LayoutPoint& p) {
+  return gfx::Size(SnapSizeToPixel(s.Width(), p.X()),
+                   SnapSizeToPixel(s.Height(), p.Y()));
 }
 
-inline IntSize RoundedIntSize(const LayoutPoint& p) {
-  return IntSize(p.X().Round(), p.Y().Round());
+inline gfx::Vector2d ToRoundedVector2d(const LayoutPoint& p) {
+  return gfx::Vector2d(p.X().Round(), p.Y().Round());
+}
+inline gfx::Size ToRoundedSize(const LayoutPoint& p) {
+  return gfx::Size(p.X().Round(), p.Y().Round());
 }
 
 inline LayoutSize ToLayoutSize(const LayoutPoint& p) {
   return LayoutSize(p.X(), p.Y());
 }
 
-inline LayoutPoint FlooredLayoutPoint(const FloatSize& s) {
-  return FlooredLayoutPoint(FloatPoint(s));
+inline LayoutPoint FlooredLayoutPoint(const gfx::SizeF& s) {
+  return FlooredLayoutPoint(gfx::PointF(s.width(), s.height()));
 }
 
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const LayoutPoint&);
-PLATFORM_EXPORT WTF::TextStream& operator<<(WTF::TextStream&,
-                                            const LayoutPoint&);
 
 }  // namespace blink
 

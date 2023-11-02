@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,15 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -30,7 +34,7 @@
 #include "net/ssl/client_cert_identity.h"
 #include "url/gurl.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include <jni.h>
 
 #include "base/android/jni_string.h"
@@ -38,7 +42,7 @@
 #include "chrome/browser/enterprise/util/jni_headers/ManagedBrowserUtils_jni.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/ui/managed_ui.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
@@ -56,21 +60,18 @@ namespace {
 // URL in |ContentSettingsType::AUTO_SELECT_CERTIFICATE| content setting. The
 // format of the returned filters corresponds to the "filter" property of the
 // AutoSelectCertificateForUrls policy as documented at policy_templates.json.
-std::vector<base::Value> GetCertAutoSelectionFilters(
-    Profile* profile,
-    const GURL& requesting_url) {
+base::Value::List GetCertAutoSelectionFilters(Profile* profile,
+                                              const GURL& requesting_url) {
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile);
-  std::unique_ptr<base::Value> setting =
-      host_content_settings_map->GetWebsiteSetting(
-          requesting_url, requesting_url,
-          ContentSettingsType::AUTO_SELECT_CERTIFICATE, nullptr);
+  base::Value setting = host_content_settings_map->GetWebsiteSetting(
+      requesting_url, requesting_url,
+      ContentSettingsType::AUTO_SELECT_CERTIFICATE, nullptr);
 
-  if (!setting || !setting->is_dict())
+  if (!setting.is_dict())
     return {};
 
-  base::Value* filters =
-      setting->FindKeyOfType("filters", base::Value::Type::LIST);
+  base::Value::List* filters = setting.GetDict().FindList("filters");
   if (!filters) {
     // |setting_dict| has the wrong format (e.g. single filter instead of a
     // list of filters). This content setting is only provided by
@@ -78,17 +79,17 @@ std::vector<base::Value> GetCertAutoSelectionFilters(
     // Therefore, delete the invalid value.
     host_content_settings_map->SetWebsiteSettingDefaultScope(
         requesting_url, requesting_url,
-        ContentSettingsType::AUTO_SELECT_CERTIFICATE, nullptr);
+        ContentSettingsType::AUTO_SELECT_CERTIFICATE, base::Value());
     return {};
   }
-  return std::move(*filters).TakeList();
+  return std::move(*filters);
 }
 
 // Returns whether the client certificate matches any of the auto-selection
 // filters. Returns false when there's no valid filter.
 bool CertMatchesSelectionFilters(
     const net::ClientCertIdentity& client_cert,
-    const std::vector<base::Value>& auto_selection_filters) {
+    const base::Value::List& auto_selection_filters) {
   for (const auto& filter : auto_selection_filters) {
     if (!filter.is_dict()) {
       // The filter has a wrong format, so ignore it. Note that reporting of
@@ -96,15 +97,12 @@ bool CertMatchesSelectionFilters(
       // policy handler - see configuration_policy_handler_list_factory.cc.
       continue;
     }
-
     auto issuer_pattern = certificate_matching::CertificatePrincipalPattern::
-        ParseFromOptionalDict(
-            filter.FindKeyOfType("ISSUER", base::Value::Type::DICTIONARY), "CN",
-            "L", "O", "OU");
+        ParseFromOptionalDict(filter.GetDict().FindDict("ISSUER"), "CN", "L",
+                              "O", "OU");
     auto subject_pattern = certificate_matching::CertificatePrincipalPattern::
-        ParseFromOptionalDict(
-            filter.FindKeyOfType("SUBJECT", base::Value::Type::DICTIONARY),
-            "CN", "L", "O", "OU");
+        ParseFromOptionalDict(filter.GetDict().FindDict("SUBJECT"), "CN", "L",
+                              "O", "OU");
 
     if (issuer_pattern.Matches(client_cert.certificate()->issuer()) &&
         subject_pattern.Matches(client_cert.certificate()->subject())) {
@@ -118,7 +116,11 @@ bool CertMatchesSelectionFilters(
 
 bool IsBrowserManaged(Profile* profile) {
   DCHECK(profile);
-  DCHECK(profile->GetProfilePolicyConnector());
+
+  if (base::FeatureList::IsEnabled(features::kUseManagementService)) {
+    return policy::ManagementServiceFactory::GetForProfile(profile)
+        ->IsManaged();
+  }
 
   // This profile may have policies configured.
   auto* profile_connector = profile->GetProfilePolicyConnector();
@@ -131,7 +133,7 @@ bool IsBrowserManaged(Profile* profile) {
   auto* primary_user = user_manager::UserManager::Get()->GetPrimaryUser();
   if (primary_user) {
     auto* primary_profile =
-        chromeos::ProfileHelper::Get()->GetProfileByUser(primary_user);
+        ash::ProfileHelper::Get()->GetProfileByUser(primary_user);
     if (primary_profile) {
       auto* primary_profile_connector =
           primary_profile->GetProfilePolicyConnector();
@@ -171,7 +173,7 @@ void AutoSelectCertificates(
     net::ClientCertIdentityList* nonmatching_client_certs) {
   matching_client_certs->clear();
   nonmatching_client_certs->clear();
-  const std::vector<base::Value> auto_selection_filters =
+  const base::Value::List auto_selection_filters =
       GetCertAutoSelectionFilters(profile, requesting_url);
   for (auto& client_cert : client_certs) {
     if (CertMatchesSelectionFilters(*client_cert, auto_selection_filters))
@@ -226,14 +228,19 @@ bool ProfileCanBeManaged(Profile* profile) {
   return entry && entry->CanBeManaged();
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 
-std::string GetAccountManagerName(Profile* profile) {
+std::string GetBrowserManagerName(Profile* profile) {
   DCHECK(profile);
 
   // @TODO(https://crbug.com/1227786): There are some use-cases where the
   // expected behavior of chrome://management is to show more than one domain.
-  return GetAccountManagerIdentity(profile).value_or(std::string());
+  absl::optional<std::string> manager = GetAccountManagerIdentity(profile);
+  if (!manager &&
+      base::FeatureList::IsEnabled(features::kFlexOrgManagementDisclosure)) {
+    manager = GetDeviceManagerIdentity();
+  }
+  return manager.value_or(std::string());
 }
 
 // static
@@ -245,14 +252,14 @@ jboolean JNI_ManagedBrowserUtils_IsBrowserManaged(
 
 // static
 base::android::ScopedJavaLocalRef<jstring>
-JNI_ManagedBrowserUtils_GetAccountManagerName(
+JNI_ManagedBrowserUtils_GetBrowserManagerName(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& profile) {
   return base::android::ConvertUTF8ToJavaString(
-      env, GetAccountManagerName(ProfileAndroid::FromProfileAndroid(profile)));
+      env, GetBrowserManagerName(ProfileAndroid::FromProfileAndroid(profile)));
 }
 
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace enterprise_util
 }  // namespace chrome

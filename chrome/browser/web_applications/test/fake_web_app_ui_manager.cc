@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -70,6 +70,10 @@ bool FakeWebAppUiManager::CanAddAppToQuickLaunchBar() const {
 
 void FakeWebAppUiManager::AddAppToQuickLaunchBar(const AppId& app_id) {}
 
+bool FakeWebAppUiManager::IsAppInQuickLaunchBar(const AppId& app_id) const {
+  return false;
+}
+
 bool FakeWebAppUiManager::IsInAppWindow(content::WebContents* web_contents,
                                         const AppId* app_id) const {
   return false;
@@ -78,17 +82,13 @@ bool FakeWebAppUiManager::IsInAppWindow(content::WebContents* web_contents,
 bool FakeWebAppUiManager::CanReparentAppTabToWindow(
     const AppId& app_id,
     bool shortcut_created) const {
-  return false;
+  return true;
 }
 
 void FakeWebAppUiManager::ReparentAppTabToWindow(content::WebContents* contents,
                                                  const AppId& app_id,
-                                                 bool shortcut_created) {}
-
-content::WebContents* FakeWebAppUiManager::NavigateExistingWindow(
-    const AppId& app_id,
-    const GURL& url) {
-  return nullptr;
+                                                 bool shortcut_created) {
+  ++num_reparent_tab_calls_;
 }
 
 }  // namespace web_app

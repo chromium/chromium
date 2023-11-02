@@ -25,6 +25,7 @@
 #include <limits>
 #include <type_traits>
 
+#include "base/check_op.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
@@ -50,7 +51,7 @@ class IntegerToStringConverter {
     // We need to switch to the unsigned type when negating the value since
     // abs(INT_MIN) == INT_MAX + 1.
     bool is_negative = base::IsValueNegative(input);
-    UnsignedIntegerType value = is_negative ? 0u - input : input;
+    UnsignedIntegerType value = is_negative ? 0u - static_cast<UnsignedIntegerType>(input) : input;
 
     do {
       --begin_;

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,6 +35,7 @@ class NaClBrokerListener : public content::SandboxedProcessLauncherDelegate,
 
   // content::SandboxedProcessLauncherDelegate implementation:
   sandbox::mojom::Sandbox GetSandboxType() override;
+  std::string GetSandboxTag() override;
 
   // IPC::Listener implementation.
   void OnChannelConnected(int32_t peer_pid) override;

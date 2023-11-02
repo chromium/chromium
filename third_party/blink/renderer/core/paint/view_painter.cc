@@ -1,10 +1,11 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/paint/view_painter.h"
 
 #include "base/containers/adapters.h"
+#include "third_party/blink/renderer/core/document_transition/document_transition_supplement.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -15,7 +16,6 @@
 #include "third_party/blink/renderer/core/paint/box_decoration_data.h"
 #include "third_party/blink/renderer/core/paint/box_model_object_painter.h"
 #include "third_party/blink/renderer/core/paint/box_painter.h"
-#include "third_party/blink/renderer/core/paint/compositing/composited_layer_mapping.h"
 #include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
@@ -41,18 +41,25 @@ void ViewPainter::Paint(const PaintInfo& paint_info) {
 // BaseBackgroundColor on the LocalFrameView.
 // https://drafts.fxtf.org/compositing/#rootgroup
 void ViewPainter::PaintRootGroup(const PaintInfo& paint_info,
-                                 const IntRect& pixel_snapped_background_rect,
+                                 const gfx::Rect& pixel_snapped_background_rect,
                                  const Document& document,
                                  const DisplayItemClient& client,
                                  const PropertyTreeStateOrAlias& state) {
   if (!layout_view_.GetFrameView()->ShouldPaintBaseBackgroundColor())
     return;
-  bool should_clear_canvas =
-      document.GetSettings() &&
-      document.GetSettings()->GetShouldClearDocumentBackground();
 
   Color base_background_color =
       layout_view_.GetFrameView()->BaseBackgroundColor();
+  if (document.Printing() && base_background_color == Color::kWhite) {
+    // Leave a transparent background, assuming the paper or the PDF viewer
+    // background is white by default. This allows further customization of the
+    // background, e.g. in the case of https://crbug.com/498892.
+    return;
+  }
+
+  bool should_clear_canvas =
+      document.GetSettings() &&
+      document.GetSettings()->GetShouldClearDocumentBackground();
 
   ScopedPaintChunkProperties frame_view_background_state(
       paint_info.context.GetPaintController(), state, client,
@@ -62,7 +69,7 @@ void ViewPainter::PaintRootGroup(const PaintInfo& paint_info,
           context, client, DisplayItem::kDocumentRootBackdrop)) {
     DrawingRecorder recorder(context, client,
                              DisplayItem::kDocumentRootBackdrop,
-                             ToGfxRect(pixel_snapped_background_rect));
+                             pixel_snapped_background_rect);
     context.FillRect(
         pixel_snapped_background_rect, base_background_color,
         PaintAutoDarkMode(layout_view_.StyleRef(),
@@ -78,33 +85,26 @@ void ViewPainter::PaintBoxDecorationBackground(const PaintInfo& paint_info) {
   bool has_hit_test_data = layout_view_.HasEffectiveAllowedTouchAction() ||
                            layout_view_.InsideBlockingWheelEventHandler();
   bool painting_background_in_contents_space =
-      BoxDecorationData::IsPaintingBackgroundInContentsSpace(paint_info,
-                                                             layout_view_);
+      paint_info.IsPaintingBackgroundInContentsSpace();
 
   Element* element = DynamicTo<Element>(layout_view_.GetNode());
   bool has_region_capture_data = element && element->GetRegionCaptureCropId();
   bool paints_scroll_hit_test =
       !painting_background_in_contents_space &&
       layout_view_.FirstFragment().PaintProperties()->Scroll();
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    // Pre-CompositeAfterPaint, there is no need to emit scroll hit test
-    // display items for composited scrollers because these display items are
-    // only used to create non-fast scrollable regions for non-composited
-    // scrollers. With CompositeAfterPaint, we always paint the scroll hit
-    // test display items but ignore the non-fast region if the scroll was
-    // composited in PaintArtifactCompositor::UpdateNonFastScrollableRegions.
-    if (layout_view_.HasLayer() &&
-        layout_view_.Layer()->GetCompositedLayerMapping() &&
-        layout_view_.Layer()
-            ->GetCompositedLayerMapping()
-            ->ScrollingContentsLayer()) {
-      paints_scroll_hit_test = false;
+  bool is_represented_via_pseudo_elements = [this]() {
+    if (auto* supplement = DocumentTransitionSupplement::FromIfExists(
+            layout_view_.GetDocument())) {
+      return supplement->GetTransition()->IsRepresentedViaPseudoElements(
+          layout_view_);
     }
-  }
-
+    return false;
+  }();
   if (!layout_view_.HasBoxDecorationBackground() && !has_hit_test_data &&
-      !paints_scroll_hit_test && !has_region_capture_data)
+      !paints_scroll_hit_test && !has_region_capture_data &&
+      !is_represented_via_pseudo_elements) {
     return;
+  }
 
   // The background rect always includes at least the visible content size.
   PhysicalRect background_rect(layout_view_.BackgroundRect());
@@ -132,7 +132,7 @@ void ViewPainter::PaintBoxDecorationBackground(const PaintInfo& paint_info) {
                              ->GetScrollingBackgroundDisplayItemClient();
   }
 
-  IntRect pixel_snapped_background_rect(PixelSnappedIntRect(background_rect));
+  gfx::Rect pixel_snapped_background_rect = ToPixelSnappedRect(background_rect);
 
   auto root_element_background_painting_state =
       layout_view_.FirstFragment().ContentsProperties();
@@ -145,8 +145,9 @@ void ViewPainter::PaintBoxDecorationBackground(const PaintInfo& paint_info) {
   bool should_apply_root_background_behavior =
       document.IsHTMLDocument() || document.IsXHTMLDocument();
 
-  bool should_paint_background = !paint_info.SkipRootBackground() &&
-                                 layout_view_.HasBoxDecorationBackground();
+  bool should_paint_background = !paint_info.ShouldSkipBackground() &&
+                                 (layout_view_.HasBoxDecorationBackground() ||
+                                  is_represented_via_pseudo_elements);
 
   LayoutObject* root_object = nullptr;
   if (auto* document_element = document.documentElement())
@@ -241,7 +242,7 @@ void ViewPainter::PaintBoxDecorationBackground(const PaintInfo& paint_info) {
 //    possible.
 void ViewPainter::PaintRootElementGroup(
     const PaintInfo& paint_info,
-    const IntRect& pixel_snapped_background_rect,
+    const gfx::Rect& pixel_snapped_background_rect,
     const PropertyTreeStateOrAlias& background_paint_state,
     const DisplayItemClient& background_client,
     bool painted_separate_backdrop,
@@ -253,7 +254,7 @@ void ViewPainter::PaintRootElementGroup(
   }
   DrawingRecorder recorder(context, background_client,
                            DisplayItem::kDocumentBackground,
-                           ToGfxRect(pixel_snapped_background_rect));
+                           pixel_snapped_background_rect);
 
   const Document& document = layout_view_.GetDocument();
   const LocalFrameView& frame_view = *layout_view_.GetFrameView();
@@ -261,9 +262,18 @@ void ViewPainter::PaintRootElementGroup(
                                 (frame_view.BaseBackgroundColor().Alpha() > 0);
   Color base_background_color =
       paints_base_background ? frame_view.BaseBackgroundColor() : Color();
+  if (document.Printing() && base_background_color == Color::kWhite) {
+    // Leave a transparent background, assuming the paper or the PDF viewer
+    // background is white by default. This allows further customization of the
+    // background, e.g. in the case of https://crbug.com/498892.
+    base_background_color = Color();
+    paints_base_background = false;
+  }
+
   Color root_element_background_color =
       layout_view_.StyleRef().VisitedDependentColor(
           GetCSSPropertyBackgroundColor());
+
   const LayoutObject* root_object =
       document.documentElement() ? document.documentElement()->GetLayoutObject()
                                  : nullptr;
@@ -273,13 +283,9 @@ void ViewPainter::PaintRootElementGroup(
       BoxModelObjectPainter::ShouldForceWhiteBackgroundForPrintEconomy(
           document, layout_view_.StyleRef());
   if (force_background_to_white) {
-    // If for any reason the view background is not transparent, paint white
-    // instead, otherwise keep transparent as is.
-    if (paints_base_background || root_element_background_color.Alpha() ||
-        layout_view_.StyleRef().BackgroundLayers().AnyLayerHasImage()) {
-      context.FillRect(pixel_snapped_background_rect, Color::kWhite,
-                       AutoDarkMode::Disabled(), SkBlendMode::kSrc);
-    }
+    // Leave a transparent background, assuming the paper or the PDF viewer
+    // background is white by default. This allows further customization of the
+    // background, e.g. in the case of https://crbug.com/498892.
     return;
   }
 
@@ -293,7 +299,7 @@ void ViewPainter::PaintRootElementGroup(
   // transforms apply. The strategy is to issue draw commands in the root
   // element's local space, which requires mapping the document background rect.
   bool background_renderable = true;
-  IntRect paint_rect = pixel_snapped_background_rect;
+  gfx::Rect paint_rect = pixel_snapped_background_rect;
   // Offset for BackgroundImageGeometry to offset the image's origin. This makes
   // background tiling start at the root element's origin instead of the view.
   // This is different from the offset for painting, which is in |paint_rect|.
@@ -338,7 +344,7 @@ void ViewPainter::PaintRootElementGroup(
     return;
   }
 
-  recorder.UniteVisualRect(ToGfxRect(paint_rect));
+  recorder.UniteVisualRect(paint_rect);
 
   BoxPainterBase::FillLayerOcclusionOutputList reversed_paint_list;
   bool should_draw_background_in_separate_buffer =
@@ -351,8 +357,7 @@ void ViewPainter::PaintRootElementGroup(
     should_draw_background_in_separate_buffer = true;
   } else {
     // If the root background color is opaque, isolation group can be skipped
-    // because the canvas
-    // will be cleared by root background color.
+    // because the canvas will be cleared by root background color.
     if (!root_element_background_color.HasAlpha())
       should_draw_background_in_separate_buffer = false;
 

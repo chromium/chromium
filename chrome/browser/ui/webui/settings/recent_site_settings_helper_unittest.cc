@@ -1,9 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webui/settings/recent_site_settings_helper.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/simple_test_clock.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
@@ -27,6 +28,15 @@ ContentSettingsType kImages = ContentSettingsType::IMAGES;
 ContentSettingsType kPopups = ContentSettingsType::POPUPS;
 ContentSettingsType kLocation = ContentSettingsType::GEOLOCATION;
 
+base::Time GetSettingLastModifiedDate(HostContentSettingsMap* map,
+                                      GURL primary_url,
+                                      GURL secondary_url,
+                                      ContentSettingsType type) {
+  content_settings::SettingInfo info;
+  map->GetWebsiteSetting(primary_url, secondary_url, type, &info);
+  return info.metadata.last_modified;
+}
+
 }  // namespace
 
 class RecentSiteSettingsHelperTest : public testing::Test {
@@ -44,7 +54,7 @@ class RecentSiteSettingsHelperTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   base::SimpleTestClock clock_;
   TestingProfile profile_;
-  TestingProfile* incognito_profile_;
+  raw_ptr<TestingProfile> incognito_profile_;
 };
 
 TEST_F(RecentSiteSettingsHelperTest, IncognitoPermissionTimestamps) {
@@ -53,21 +63,15 @@ TEST_F(RecentSiteSettingsHelperTest, IncognitoPermissionTimestamps) {
   HostContentSettingsMap* map =
       HostContentSettingsMapFactory::GetForProfile(profile());
   const GURL url("http://example.com");
-  const ContentSettingsPattern primary_pattern =
-      ContentSettingsPattern::FromURLNoWildcard(url);
-  const ContentSettingsPattern wildcard_pattern =
-      ContentSettingsPattern::Wildcard();
   map->SetContentSettingDefaultScope(url, url, kNotifications, kBlocked);
 
   CreateIncognitoProfile();
   HostContentSettingsMap* incognito_map =
       HostContentSettingsMapFactory::GetForProfile(incognito_profile());
   EXPECT_NE(base::Time(),
-            map->GetSettingLastModifiedDate(primary_pattern, wildcard_pattern,
-                                            kNotifications));
-  EXPECT_EQ(base::Time(),
-            incognito_map->GetSettingLastModifiedDate(
-                primary_pattern, wildcard_pattern, kNotifications));
+            GetSettingLastModifiedDate(map, url, url, kNotifications));
+  EXPECT_EQ(base::Time(), GetSettingLastModifiedDate(incognito_map, url, url,
+                                                     kNotifications));
 }
 
 TEST_F(RecentSiteSettingsHelperTest, CheckRecentSitePermissions) {

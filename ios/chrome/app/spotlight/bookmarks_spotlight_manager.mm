@@ -1,20 +1,22 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/app/spotlight/bookmarks_spotlight_manager.h"
 
-#include <memory>
+#import <memory>
 
 #import <CoreSpotlight/CoreSpotlight.h>
 
-#include "base/metrics/histogram_macros.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/version.h"
-#include "components/bookmarks/browser/base_bookmark_model_observer.h"
-#include "components/bookmarks/browser/bookmark_model.h"
-#include "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
-#include "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
+#import "base/mac/foundation_util.h"
+#import "base/metrics/histogram_macros.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/time/time.h"
+#import "base/version.h"
+#import "components/bookmarks/browser/base_bookmark_model_observer.h"
+#import "components/bookmarks/browser/bookmark_model.h"
+#import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
+#import "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -26,7 +28,7 @@ namespace {
 const int kMaxInitialIndexSize = 1000;
 
 // Minimum delay between two global indexing of bookmarks.
-const int kDelayBetweenTwoIndexingInSeconds = 7 * 86400;  // One week.
+const base::TimeDelta kDelayBetweenTwoIndexing = base::Days(7);
 
 }  // namespace
 
@@ -41,7 +43,7 @@ class SpotlightBookmarkModelBridge;
 
   // Keep a reference to detach before deallocing. Life cycle of _bookmarkModel
   // is longer than life cycle of a SpotlightManager as
-  // |BookmarkModelBeingDeleted| will cause deletion of SpotlightManager.
+  // `BookmarkModelBeingDeleted` will cause deletion of SpotlightManager.
   bookmarks::BookmarkModel* _bookmarkModel;  // weak
 
   // Number of nodes indexed in initial scan.
@@ -51,7 +53,7 @@ class SpotlightBookmarkModelBridge;
   BOOL _initialIndexDone;
 }
 
-// Detaches the |SpotlightBookmarkModelBridge| from the bookmark model. The
+// Detaches the `SpotlightBookmarkModelBridge` from the bookmark model. The
 // manager must not be used after calling this method.
 - (void)detachBookmarkModel;
 
@@ -63,7 +65,7 @@ class SpotlightBookmarkModelBridge;
 - (void)clearAndReindexModel;
 
 // Refreshes all nodes in the subtree of node.
-// If |initial| is YES, limit the number of nodes to kMaxInitialIndexSize.
+// If `initial` is YES, limit the number of nodes to kMaxInitialIndexSize.
 - (void)refreshNodeInIndex:(const bookmarks::BookmarkNode*)node
                    initial:(BOOL)initial;
 
@@ -105,7 +107,8 @@ class SpotlightBookmarkModelBridge : public bookmarks::BookmarkModelObserver {
 
   void BookmarkNodeAdded(bookmarks::BookmarkModel* model,
                          const bookmarks::BookmarkNode* parent,
-                         size_t index) override {
+                         size_t index,
+                         bool added_by_user) override {
     [owner_ refreshNodeInIndex:parent->children()[index].get() initial:NO];
   }
 
@@ -229,23 +232,25 @@ initWithLargeIconService:(favicon::LargeIconService*)largeIconService
 }
 
 - (BOOL)shouldReindex {
-  NSDate* date = [[NSUserDefaults standardUserDefaults]
-      objectForKey:@(spotlight::kSpotlightLastIndexingDateKey)];
+  NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
+
+  NSDate* date = base::mac::ObjCCast<NSDate>(
+      [userDefaults objectForKey:@(spotlight::kSpotlightLastIndexingDateKey)]);
   if (!date) {
     return YES;
   }
-  NSDate* expirationDate =
-      [date dateByAddingTimeInterval:kDelayBetweenTwoIndexingInSeconds];
-  if ([expirationDate compare:[NSDate date]] == NSOrderedAscending) {
+  const base::TimeDelta timeSinceLastIndexing =
+      base::Time::Now() - base::Time::FromNSDate(date);
+  if (timeSinceLastIndexing >= kDelayBetweenTwoIndexing) {
     return YES;
   }
-  NSNumber* lastIndexedVersionString = [[NSUserDefaults standardUserDefaults]
-      objectForKey:@(spotlight::kSpotlightLastIndexingVersionKey)];
-  if (!lastIndexedVersionString) {
+  NSNumber* lastIndexedVersion = base::mac::ObjCCast<NSNumber>([userDefaults
+      objectForKey:@(spotlight::kSpotlightLastIndexingVersionKey)]);
+  if (!lastIndexedVersion) {
     return YES;
   }
 
-  if ([lastIndexedVersionString integerValue] <
+  if ([lastIndexedVersion integerValue] <
       spotlight::kCurrentSpotlightIndexVersion) {
     return YES;
   }
@@ -327,18 +332,18 @@ initWithLargeIconService:(favicon::LargeIconService*)largeIconService
 }
 
 - (void)completedClearAllSpotlightItems {
-  NSDate* startOfReindexing = [NSDate date];
+  const base::Time startOfReindexing = base::Time::Now();
   _nodesIndexed = 0;
   [self refreshNodeInIndex:_bookmarkModel->root_node() initial:YES];
-  NSDate* endOfReindexing = [NSDate date];
-  NSTimeInterval indexingDuration =
-      [endOfReindexing timeIntervalSinceDate:startOfReindexing];
+  const base::Time endOfReindexing = base::Time::Now();
+
   UMA_HISTOGRAM_TIMES("IOS.Spotlight.BookmarksIndexingDuration",
-                      base::Milliseconds(1000 * indexingDuration));
+                      endOfReindexing - startOfReindexing);
   UMA_HISTOGRAM_COUNTS_1000("IOS.Spotlight.BookmarksInitialIndexSize",
                             [self pendingLargeIconTasksCount]);
+
   [[NSUserDefaults standardUserDefaults]
-      setObject:endOfReindexing
+      setObject:endOfReindexing.ToNSDate()
          forKey:@(spotlight::kSpotlightLastIndexingDateKey)];
 
   [[NSUserDefaults standardUserDefaults]

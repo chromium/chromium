@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -96,12 +96,12 @@ class CONTENT_EXPORT ClipboardHostImpl
   static const base::TimeDelta kIsPasteContentAllowedRequestTooOld;
 
   explicit ClipboardHostImpl(
-      RenderFrameHost* render_frame_host,
+      RenderFrameHost& render_frame_host,
       mojo::PendingReceiver<blink::mojom::ClipboardHost> receiver);
 
   // Performs a check to see if pasting `data` is allowed by data transfer
   // policies and invokes PasteIfPolicyAllowedCallback upon completion.
-  // PerformPasteIfContentAllowed maybe be invoked immediately if the policy
+  // PerformPasteIfContentAllowed may be invoked immediately if the policy
   // controller doesn't exist.
   void PasteIfPolicyAllowed(ui::ClipboardBuffer clipboard_buffer,
                             const ui::ClipboardFormatType& data_type,
@@ -191,7 +191,7 @@ class CONTENT_EXPORT ClipboardHostImpl
                      const std::u16string& title) override;
   void WriteImage(const SkBitmap& unsafe_bitmap) override;
   void CommitWrite() override;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   void WriteStringToFindPboard(const std::u16string& text) override;
 #endif
 
@@ -215,6 +215,9 @@ class CONTENT_EXPORT ClipboardHostImpl
       std::string data,
       IsClipboardPasteContentAllowedCallback callback,
       bool is_allowed);
+
+  using CopyAllowedCallback = base::OnceCallback<void()>;
+  void CopyIfAllowed(size_t data_size_in_bytes, CopyAllowedCallback callback);
 
   void OnReadPng(ui::ClipboardBuffer clipboard_buffer,
                  ReadPngCallback callback,

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/common/extensions/api/tabs.h"
@@ -72,17 +72,6 @@ class WindowsGetAllFunction : public ExtensionFunction {
 class WindowsCreateFunction : public ExtensionFunction {
   ~WindowsCreateFunction() override {}
   ResponseAction Run() override;
-  // Returns whether the window should be created in incognito mode.
-  // |create_data| are the options passed by the extension. It may be NULL.
-  // |urls| is the list of urls to open. If we are creating an incognito window,
-  // the function will remove these urls which may not be opened in incognito
-  // mode.  If window creation leads the browser into an erroneous state,
-  // |is_error| is set to true (also, error_ member variable is assigned
-  // the proper error message).
-  bool ShouldOpenIncognitoWindow(
-      const api::windows::Create::Params::CreateData* create_data,
-      std::vector<GURL>* urls,
-      std::string* error);
   DECLARE_EXTENSION_FUNCTION("windows.create", WINDOWS_CREATE)
 };
 class WindowsUpdateFunction : public ExtensionFunction {
@@ -137,7 +126,7 @@ class TabsHighlightFunction : public ExtensionFunction {
   ResponseAction Run() override;
   bool HighlightTab(TabStripModel* tabstrip,
                     ui::ListSelectionModel* selection,
-                    int* active_index,
+                    absl::optional<size_t>* active_index,
                     int index,
                     std::string* error);
   DECLARE_EXTENSION_FUNCTION("tabs.highlight", TABS_HIGHLIGHT)
@@ -153,7 +142,7 @@ class TabsUpdateFunction : public ExtensionFunction {
                  std::string* error);
   ResponseValue GetResult();
 
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 
  private:
   ResponseAction Run() override;
@@ -169,7 +158,7 @@ class TabsMoveFunction : public ExtensionFunction {
   bool MoveTab(int tab_id,
                int* new_index,
                base::ListValue* tab_values,
-               int* window_id,
+               const absl::optional<int>& window_id,
                std::string* error);
   DECLARE_EXTENSION_FUNCTION("tabs.move", TABS_MOVE)
 };

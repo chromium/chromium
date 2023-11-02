@@ -1,16 +1,21 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/fancy_ui/primary_action_button.h"
 
-#import "ios/chrome/browser/ui/colors/MDCPalette+CrAdditions.h"
+#import <MaterialComponents/MaterialButtons.h>
+#import <UIKit/UIKit.h>
+
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+@interface PrimaryActionButton : MDCFlatButton
+@end
 
 @implementation PrimaryActionButton
 
@@ -34,6 +39,9 @@
 }
 
 - (void)updateStyling {
+  // Disable the default MDC behavior of supporting separate fonts per
+  // button state.
+  self.enableTitleFontForState = NO;
   self.hasOpaqueBackground = YES;
   self.pointerInteractionEnabled = YES;
   self.pointerStyleProvider = CreateOpaqueButtonPointerStyleProvider();
@@ -74,3 +82,7 @@
   }
 }
 @end
+
+UIButton* CreatePrimaryActionButton() {
+  return [[PrimaryActionButton alloc] init];
+}

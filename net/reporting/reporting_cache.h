@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,8 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "base/values.h"
@@ -34,7 +34,7 @@ class IsolationInfo;
 //
 // Each Reporting "endpoint" represents a report collector at some specified
 // URL. Endpoints are organized into named "endpoint groups", each of which
-// additionally specifes some properties such as expiration time.
+// additionally specifies some properties such as expiration time.
 // A "client" represents the entire endpoint configuration set by an origin via
 // a Report-To header, which consists of multiple endpoint groups, each of which
 // consists of multiple endpoints. An endpoint group is keyed by its name.  An
@@ -47,7 +47,7 @@ class IsolationInfo;
 //
 // The cache implementation has the notion of "pending" reports. These are
 // reports that are part of an active delivery attempt, so they won't be
-// actually deallocated. Any attempt to remove a pending report wil mark it
+// actually deallocated. Any attempt to remove a pending report will mark it
 // "doomed", which will cause it to be deallocated once it is no longer pending.
 class NET_EXPORT ReportingCache {
  public:
@@ -59,7 +59,7 @@ class NET_EXPORT ReportingCache {
 
   // Adds a report to the cache.
   //
-  // |reporting_source| and |network_isolation_key| will be used when the
+  // |reporting_source| and |network_anonymization_key| will be used when the
   // report is delivered, to determine which endpoints are eligible to receive
   // this report, and which other reports this report can be batched with.
   //
@@ -67,12 +67,12 @@ class NET_EXPORT ReportingCache {
   // fields in ReportingReport.
   virtual void AddReport(
       const absl::optional<base::UnguessableToken>& reporting_source,
-      const NetworkIsolationKey& network_isolation_key,
+      const NetworkAnonymizationKey& network_anonymization_key,
       const GURL& url,
       const std::string& user_agent,
       const std::string& group_name,
       const std::string& type,
-      std::unique_ptr<const base::Value> body,
+      base::Value::Dict body,
       int depth,
       base::TimeTicks queued,
       int attempts) = 0;
@@ -166,7 +166,7 @@ class NET_EXPORT ReportingCache {
   // to match the new header. All values are assumed to be valid as they have
   // passed through the ReportingHeaderParser.
   virtual void OnParsedHeader(
-      const NetworkIsolationKey& network_isolation_key,
+      const NetworkAnonymizationKey& network_anonymization_key,
       const url::Origin& origin,
       std::vector<ReportingEndpointGroup> parsed_header) = 0;
 
@@ -186,8 +186,9 @@ class NET_EXPORT ReportingCache {
 
   // Remove client for the given (NIK, origin) pair, if it exists in the cache.
   // All endpoint groups and endpoints for that client are also removed.
-  virtual void RemoveClient(const NetworkIsolationKey& network_isolation_key,
-                            const url::Origin& origin) = 0;
+  virtual void RemoveClient(
+      const NetworkAnonymizationKey& network_anonymization_key,
+      const url::Origin& origin) = 0;
 
   // Remove all clients for the given |origin|, if any exists in the cache.
   // All endpoint groups and endpoints for |origin| are also removed.
@@ -255,6 +256,10 @@ class NET_EXPORT ReportingCache {
   // Flush the contents of the cache to disk, if applicable.
   virtual void Flush() = 0;
 
+  // Returns all V1 endpoints keyed by origin.
+  virtual base::flat_map<url::Origin, std::vector<ReportingEndpoint>>
+  GetV1ReportingEndpointsByOrigin() const = 0;
+
   // Returns the endpoint named |endpoint_name| for the reporting source, if it
   // was configured with the Reporting-Endpoints header, otherwise returns an
   // invalid ReportingEndpoint.
@@ -278,7 +283,7 @@ class NET_EXPORT ReportingCache {
 
   // Returns whether a client for the given (NIK, Origin) exists.
   virtual bool ClientExistsForTesting(
-      const NetworkIsolationKey& network_isolation_key,
+      const NetworkAnonymizationKey& network_anonymization_key,
       const url::Origin& origin) const = 0;
 
   // Returns number of endpoint groups.

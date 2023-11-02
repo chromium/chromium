@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,23 +28,33 @@ class WebTestRuntimeFlags {
 
   TrackedDictionary& tracked_dictionary() { return dict_; }
 
-#define DEFINE_BOOL_WEB_TEST_RUNTIME_FLAG(name)                               \
-  bool name() const {                                                         \
-    absl::optional<bool> result = dict_.current_values().FindBoolPath(#name); \
-    DCHECK(result);                                                           \
-    return *result;                                                           \
-  }                                                                           \
+#define DEFINE_BOOL_WEB_TEST_RUNTIME_FLAG(name)             \
+  bool name() const {                                       \
+    absl::optional<bool> result =                           \
+        dict_.current_values().FindBoolByDottedPath(#name); \
+    DCHECK(result);                                         \
+    return *result;                                         \
+  }                                                         \
   void set_##name(bool new_value) { dict_.SetBoolean(#name, new_value); }
 
-#define DEFINE_STRING_WEB_TEST_RUNTIME_FLAG(name)                  \
-  std::string name() const {                                       \
-    std::string result;                                            \
-    bool found = dict_.current_values().GetString(#name, &result); \
-    DCHECK(found);                                                 \
-    return result;                                                 \
-  }                                                                \
-  void set_##name(const std::string& new_value) {                  \
-    dict_.SetString(#name, new_value);                             \
+#define DEFINE_INT_WEB_TEST_RUNTIME_FLAG(name)             \
+  int name() const {                                       \
+    absl::optional<int> result =                           \
+        dict_.current_values().FindIntByDottedPath(#name); \
+    DCHECK(result);                                        \
+    return *result;                                        \
+  }                                                        \
+  void set_##name(int new_value) { dict_.SetInteger(#name, new_value); }
+
+#define DEFINE_STRING_WEB_TEST_RUNTIME_FLAG(name)             \
+  std::string name() const {                                  \
+    const std::string* result =                               \
+        dict_.current_values().FindStringByDottedPath(#name); \
+    DCHECK(result);                                           \
+    return *result;                                           \
+  }                                                           \
+  void set_##name(const std::string& new_value) {             \
+    dict_.SetString(#name, new_value);                        \
   }
 
   // If true, the test runner will generate pixel results.
@@ -73,6 +83,11 @@ class WebTestRuntimeFlags {
   // named frame printed.
   DEFINE_STRING_WEB_TEST_RUNTIME_FLAG(printing_frame)
 
+  // Width and height of the pages to print to. Set both to 0 in order to use
+  // the frame width / height.
+  DEFINE_INT_WEB_TEST_RUNTIME_FLAG(printing_width)
+  DEFINE_INT_WEB_TEST_RUNTIME_FLAG(printing_height)
+
   // If true, don't dump output until notifyDone is called.
   DEFINE_BOOL_WEB_TEST_RUNTIME_FLAG(wait_until_done)
 
@@ -98,9 +113,6 @@ class WebTestRuntimeFlags {
 
   // If true, the test runner will dump the drag image as pixel results.
   DEFINE_BOOL_WEB_TEST_RUNTIME_FLAG(dump_drag_image)
-
-  // Contents of Accept-Language HTTP header requested by the test.
-  DEFINE_STRING_WEB_TEST_RUNTIME_FLAG(accept_languages)
 
   // Flags influencing behavior of WebTestContentSettingsClient.
   DEFINE_BOOL_WEB_TEST_RUNTIME_FLAG(images_allowed)

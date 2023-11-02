@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,13 +11,11 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 
-namespace chromeos {
+namespace ash {
+
 namespace assistant {
 struct AssistantTimer;
-}  // namespace assistant
-}  // namespace chromeos
-
-namespace ash {
+}
 
 class AssistantAlarmTimerModel;
 
@@ -40,7 +38,7 @@ class ASH_PUBLIC_EXPORT AssistantAlarmTimerController {
 
   // Invoked when timer state has changed. Note that |timers| may be empty.
   virtual void OnTimerStateChanged(
-      const std::vector<::chromeos::assistant::AssistantTimer>& timers) = 0;
+      const std::vector<assistant::AssistantTimer>& timers) = 0;
 };
 
 }  // namespace ash

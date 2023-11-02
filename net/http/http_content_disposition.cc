@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,12 +6,12 @@
 
 #include "base/base64.h"
 #include "base/check_op.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "net/base/escape.h"
 #include "net/base/net_string_util.h"
 #include "net/http/http_util.h"
 
@@ -189,8 +189,8 @@ bool DecodeWord(base::StringPiece encoded_word,
   // web browser.
 
   // What IE6/7 does: %-escaped UTF-8.
-  decoded_word =
-      base::UnescapeBinaryURLComponent(encoded_word, UnescapeRule::NORMAL);
+  decoded_word = base::UnescapeBinaryURLComponent(encoded_word,
+                                                  base::UnescapeRule::NORMAL);
   if (decoded_word != encoded_word)
     *parse_result_flags |= HttpContentDisposition::HAS_PERCENT_ENCODED_STRINGS;
   if (base::IsStringUTF8(decoded_word)) {
@@ -326,7 +326,7 @@ bool DecodeExtValue(const std::string& param_value, std::string* decoded) {
   }
 
   std::string unescaped =
-      base::UnescapeBinaryURLComponent(value, UnescapeRule::NORMAL);
+      base::UnescapeBinaryURLComponent(value, base::UnescapeRule::NORMAL);
 
   return ConvertToUtf8AndNormalize(unescaped, charset.c_str(), decoded);
 }
@@ -334,9 +334,8 @@ bool DecodeExtValue(const std::string& param_value, std::string* decoded) {
 } // namespace
 
 HttpContentDisposition::HttpContentDisposition(
-    const std::string& header, const std::string& referrer_charset)
-  : type_(INLINE),
-    parse_result_flags_(INVALID) {
+    const std::string& header,
+    const std::string& referrer_charset) {
   Parse(header, referrer_charset);
 }
 
@@ -360,9 +359,9 @@ std::string::const_iterator HttpContentDisposition::ConsumeDispositionType(
 
   DCHECK(type.find('=') == base::StringPiece::npos);
 
-  if (base::LowerCaseEqualsASCII(type, "inline")) {
+  if (base::EqualsCaseInsensitiveASCII(type, "inline")) {
     type_ = INLINE;
-  } else if (base::LowerCaseEqualsASCII(type, "attachment")) {
+  } else if (base::EqualsCaseInsensitiveASCII(type, "attachment")) {
     type_ = ATTACHMENT;
   } else {
     parse_result_flags_ |= HAS_UNKNOWN_DISPOSITION_TYPE;
@@ -404,7 +403,7 @@ void HttpContentDisposition::Parse(const std::string& header,
   HttpUtil::NameValuePairsIterator iter(pos, end, ';');
   while (iter.GetNext()) {
     if (filename.empty() &&
-        base::LowerCaseEqualsASCII(iter.name_piece(), "filename")) {
+        base::EqualsCaseInsensitiveASCII(iter.name_piece(), "filename")) {
       DecodeFilenameValue(iter.value(), referrer_charset, &filename,
                           &parse_result_flags_);
       if (!filename.empty()) {
@@ -412,8 +411,8 @@ void HttpContentDisposition::Parse(const std::string& header,
         if (filename[0] == '\'')
           parse_result_flags_ |= HAS_SINGLE_QUOTED_FILENAME;
       }
-    } else if (ext_filename.empty() &&
-               base::LowerCaseEqualsASCII(iter.name_piece(), "filename*")) {
+    } else if (ext_filename.empty() && base::EqualsCaseInsensitiveASCII(
+                                           iter.name_piece(), "filename*")) {
       DecodeExtValue(iter.raw_value(), &ext_filename);
       if (!ext_filename.empty())
         parse_result_flags_ |= HAS_EXT_FILENAME;

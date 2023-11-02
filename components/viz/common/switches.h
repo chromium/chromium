@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "components/viz/common/viz_common_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -17,17 +17,9 @@ namespace switches {
 VIZ_COMMON_EXPORT extern const char kDeJellyScreenWidth[];
 VIZ_COMMON_EXPORT extern const char kDeadlineToSynchronizeSurfaces[];
 VIZ_COMMON_EXPORT extern const char kDisableFrameRateLimit[];
-VIZ_COMMON_EXPORT extern const char kDocumentTransitionSlowdownFactor[];
 VIZ_COMMON_EXPORT extern const char kDoubleBufferCompositing[];
 VIZ_COMMON_EXPORT extern const char kEnableDeJelly[];
 VIZ_COMMON_EXPORT extern const char kEnableHardwareOverlays[];
-VIZ_COMMON_EXPORT extern const char kEnableVizHitTestDebug[];
-
-#if defined(OS_CHROMEOS)
-VIZ_COMMON_EXPORT extern const char
-    kPlatformDisallowsChromeOSDirectVideoDecoder[];
-#endif
-
 VIZ_COMMON_EXPORT extern const char kRunAllCompositorStagesBeforeDraw[];
 VIZ_COMMON_EXPORT extern const char kShowAggregatedDamage[];
 VIZ_COMMON_EXPORT extern const char kTintCompositedContentModulate[];
@@ -40,7 +32,6 @@ VIZ_COMMON_EXPORT extern const char kTintCompositedContentModulate[];
 VIZ_COMMON_EXPORT extern const char kShowDCLayerDebugBorders[];
 
 VIZ_COMMON_EXPORT absl::optional<uint32_t> GetDeadlineToSynchronizeSurfaces();
-VIZ_COMMON_EXPORT int GetDocumentTransitionSlowDownFactor();
 
 }  // namespace switches
 

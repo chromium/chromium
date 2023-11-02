@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,7 +19,7 @@
 #include "third_party/blink/renderer/modules/service_worker/wait_until_observer.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -71,7 +71,7 @@ ScriptPromise BackgroundFetchUpdateUIEvent::updateUI(
     return ScriptPromise();
   }
 
-  if (!ui_options->hasTitle() && ui_options->icons().IsEmpty()) {
+  if (!ui_options->hasTitle() && ui_options->icons().empty()) {
     // Nothing to update, just return a resolved promise.
     return ScriptPromise::CastUndefined(script_state);
   }
@@ -79,7 +79,7 @@ ScriptPromise BackgroundFetchUpdateUIEvent::updateUI(
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
-  if (ui_options->icons().IsEmpty()) {
+  if (ui_options->icons().empty()) {
     DidGetIcon(resolver, ui_options->title(), SkBitmap(),
                -1 /* ideal_to_chosen_icon_size */);
   } else {
@@ -88,9 +88,9 @@ ScriptPromise BackgroundFetchUpdateUIEvent::updateUI(
     DCHECK(loader_);
     loader_->Start(BackgroundFetchBridge::From(service_worker_registration_),
                    ExecutionContext::From(script_state), ui_options->icons(),
-                   WTF::Bind(&BackgroundFetchUpdateUIEvent::DidGetIcon,
-                             WrapPersistent(this), WrapPersistent(resolver),
-                             ui_options->title()));
+                   WTF::BindOnce(&BackgroundFetchUpdateUIEvent::DidGetIcon,
+                                 WrapPersistent(this), WrapPersistent(resolver),
+                                 ui_options->title()));
   }
 
   return promise;
@@ -103,8 +103,8 @@ void BackgroundFetchUpdateUIEvent::DidGetIcon(
     int64_t ideal_to_chosen_icon_size) {
   registration()->UpdateUI(
       title, icon,
-      WTF::Bind(&BackgroundFetchUpdateUIEvent::DidUpdateUI,
-                WrapPersistent(this), WrapPersistent(resolver)));
+      WTF::BindOnce(&BackgroundFetchUpdateUIEvent::DidUpdateUI,
+                    WrapPersistent(this), WrapPersistent(resolver)));
 }
 
 void BackgroundFetchUpdateUIEvent::DidUpdateUI(

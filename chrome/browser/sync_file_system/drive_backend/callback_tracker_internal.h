@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 
 namespace sync_file_system {
@@ -32,7 +33,7 @@ class AbortHelper {
       const base::WeakPtr<AbortHelper>& abort_helper);
 
  private:
-  CallbackTracker* tracker_;  // Not owned.
+  raw_ptr<CallbackTracker> tracker_;  // Not owned.
   base::WeakPtrFactory<AbortHelper> weak_ptr_factory_{this};
 };
 

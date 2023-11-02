@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/mac/foundation_util.h"
 #include "base/pickle.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -23,7 +24,6 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/drop_data.h"
-#include "net/base/escape.h"
 #include "net/base/filename_util.h"
 #include "net/base/mime_util.h"
 #include "ui/base/clipboard/clipboard_constants.h"
@@ -118,9 +118,9 @@ using content::DropData;
     // Strip out any existing escapes and then re-escape uniformly.
     if (!url && _dropData->url.SchemeIs(url::kJavaScriptScheme)) {
       std::string unescapedUrlString =
-          net::UnescapeBinaryURLComponent(_dropData->url.spec());
+          base::UnescapeBinaryURLComponent(_dropData->url.spec());
       std::string escapedUrlString =
-          net::EscapeUrlEncodedData(unescapedUrlString, false);
+          base::EscapeUrlEncodedData(unescapedUrlString, false);
       url = [NSURL URLWithString:SysUTF8ToNSString(escapedUrlString)];
     }
     [url writeToPasteboard:pboard];
@@ -179,7 +179,7 @@ using content::DropData;
   NSWindow* window = [_contentsView window];
   NSPoint position = [window mouseLocationOutsideOfEventStream];
   NSTimeInterval eventTime = [currentEvent timestamp];
-  NSEvent* dragEvent = [NSEvent mouseEventWithType:NSLeftMouseDragged
+  NSEvent* dragEvent = [NSEvent mouseEventWithType:NSEventTypeLeftMouseDragged
                                           location:position
                                      modifierFlags:0
                                          timestamp:eventTime

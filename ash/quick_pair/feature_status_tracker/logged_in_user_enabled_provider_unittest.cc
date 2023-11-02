@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -71,7 +71,7 @@ TEST_F(LoggedInUserEnabledProviderTest, GuestLoggedIn) {
 
 TEST_F(LoggedInUserEnabledProviderTest, PublicAccountLoggedIn) {
   Login(user_manager::UserType::USER_TYPE_PUBLIC_ACCOUNT);
-  EXPECT_TRUE(provider_->is_enabled());
+  EXPECT_FALSE(provider_->is_enabled());
 }
 
 TEST_F(LoggedInUserEnabledProviderTest, ChildLoggedIn) {

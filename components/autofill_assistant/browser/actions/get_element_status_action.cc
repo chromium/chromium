@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/user_data_util.h"
+#include "components/autofill_assistant/browser/web/element_finder_result.h"
 #include "components/autofill_assistant/browser/web/element_store.h"
 #include "components/autofill_assistant/browser/web/web_controller.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -27,7 +28,7 @@ struct MaybeRe2 {
 
 std::string RemoveWhitespace(const std::string& value) {
   std::string copy = value;
-  base::EraseIf(copy, base::IsUnicodeWhitespace);
+  base::EraseIf(copy, base::IsAsciiWhitespace<char>);
   return copy;
 }
 
@@ -155,7 +156,7 @@ void GetElementStatusAction::OnWaitForElement(
 
 void GetElementStatusAction::GetElementByClientId(
     const ClientIdProto& client_id) {
-  auto element = std::make_unique<ElementFinder::Result>();
+  auto element = std::make_unique<ElementFinderResult>();
   auto* element_ptr = element.get();
   OnGetElement(delegate_->GetElementStore()->GetElement(client_id.identifier(),
                                                         element_ptr),
@@ -164,7 +165,7 @@ void GetElementStatusAction::GetElementByClientId(
 
 void GetElementStatusAction::OnGetElement(
     const ClientStatus& status,
-    std::unique_ptr<ElementFinder::Result> element) {
+    std::unique_ptr<ElementFinderResult> element) {
   if (!status.ok()) {
     EndAction(status);
     return;

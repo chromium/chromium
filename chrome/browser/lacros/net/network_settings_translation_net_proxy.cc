@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,28 @@
 
 namespace {
 
+crosapi::mojom::ProxyLocation::Scheme NetSchemeToCrosapiScheme(
+    net::ProxyServer::Scheme in) {
+  switch (in) {
+    case net::ProxyServer::Scheme::SCHEME_INVALID:
+      return crosapi::mojom::ProxyLocation::Scheme::kInvalid;
+    case net::ProxyServer::Scheme::SCHEME_DIRECT:
+      return crosapi::mojom::ProxyLocation::Scheme::kDirect;
+    case net::ProxyServer::Scheme::SCHEME_HTTP:
+      return crosapi::mojom::ProxyLocation::Scheme::kHttp;
+    case net::ProxyServer::Scheme::SCHEME_SOCKS4:
+      return crosapi::mojom::ProxyLocation::Scheme::kSocks4;
+    case net::ProxyServer::Scheme::SCHEME_SOCKS5:
+      return crosapi::mojom::ProxyLocation::Scheme::kSocks5;
+    case net::ProxyServer::Scheme::SCHEME_HTTPS:
+      return crosapi::mojom::ProxyLocation::Scheme::kHttps;
+    case net::ProxyServer::Scheme::SCHEME_QUIC:
+      return crosapi::mojom::ProxyLocation::Scheme::kQuic;
+  }
+
+  return crosapi::mojom::ProxyLocation::Scheme::kUnknown;
+}
+
 std::vector<crosapi::mojom::ProxyLocationPtr> TranslateProxyLocations(
     const net::ProxyList& proxy_list) {
   std::vector<net::ProxyServer> proxies = proxy_list.GetAll();
@@ -25,6 +47,7 @@ std::vector<crosapi::mojom::ProxyLocationPtr> TranslateProxyLocations(
     ptr = crosapi::mojom::ProxyLocation::New();
     ptr->host = proxy.host_port_pair().host();
     ptr->port = proxy.host_port_pair().port();
+    ptr->scheme = NetSchemeToCrosapiScheme(proxy.scheme());
     ptr_list.push_back(std::move(ptr));
   }
   return ptr_list;
@@ -59,34 +82,31 @@ crosapi::mojom::ProxySettingsManualPtr TranslateManualProxySettings(
 crosapi::mojom::ProxySettingsPtr NetProxyToProxySettings(
     const net::ProxyConfigWithAnnotation& net_proxy) {
   net::ProxyConfig proxy_config = net_proxy.value();
-  auto proxy_settings = crosapi::mojom::ProxySettings::New();
   if (proxy_config.proxy_rules().empty() &&
       !proxy_config.HasAutomaticSettings()) {
-    proxy_settings->set_direct(crosapi::mojom::ProxySettingsDirect::New());
-    return proxy_settings;
+    return crosapi::mojom::ProxySettings::NewDirect(
+        crosapi::mojom::ProxySettingsDirect::New());
   }
 
   if (proxy_config.has_pac_url()) {
     auto pac = crosapi::mojom::ProxySettingsPac::New();
     pac->pac_url = proxy_config.pac_url();
     pac->pac_mandatory = proxy_config.pac_mandatory();
-    proxy_settings->set_pac(std::move(pac));
-    return proxy_settings;
+    return crosapi::mojom::ProxySettings::NewPac(std::move(pac));
   }
 
   if (proxy_config.auto_detect()) {
-    proxy_settings->set_wpad(crosapi::mojom::ProxySettingsWpad::New());
-    return proxy_settings;
+    return crosapi::mojom::ProxySettings::NewWpad(
+        crosapi::mojom::ProxySettingsWpad::New());
   }
 
   crosapi::mojom::ProxySettingsManualPtr manual =
       TranslateManualProxySettings(proxy_config.proxy_rules());
   if (!manual) {
-    proxy_settings->set_direct(crosapi::mojom::ProxySettingsDirect::New());
-    return proxy_settings;
+    return crosapi::mojom::ProxySettings::NewDirect(
+        crosapi::mojom::ProxySettingsDirect::New());
   }
-  proxy_settings->set_manual(std::move(manual));
-  return proxy_settings;
+  return crosapi::mojom::ProxySettings::NewManual(std::move(manual));
 }
 
 }  // namespace

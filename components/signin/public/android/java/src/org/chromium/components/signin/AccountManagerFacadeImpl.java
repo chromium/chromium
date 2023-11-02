@@ -1,4 +1,4 @@
-// Copyright 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,8 +16,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import com.google.common.base.Optional;
-
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.Promise;
@@ -25,9 +23,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.AsyncTask;
-import org.chromium.base.task.PostTask;
-import org.chromium.base.task.TaskTraits;
 import org.chromium.components.signin.AccountManagerDelegate.CapabilityResponse;
+import org.chromium.components.signin.base.AccountCapabilities;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,20 +40,14 @@ import java.util.concurrent.atomic.AtomicReference;
 public class AccountManagerFacadeImpl implements AccountManagerFacade {
     /**
      * An account feature (corresponding to a Gaia service flag) that specifies whether the account
-     * is a child account.
-     */
-    @VisibleForTesting
-    public static final String FEATURE_IS_CHILD_ACCOUNT_KEY = "service_uca";
-
-    /**
-     * An account feature (corresponding to a Gaia service flag) that specifies whether the account
      * is a USM account.
      */
     @VisibleForTesting
     public static final String FEATURE_IS_USM_ACCOUNT_KEY = "service_usm";
 
-    @VisibleForTesting
-    static final String CAN_OFFER_EXTENDED_CHROME_SYNC_PROMOS = "gi2tklldmfya";
+    // Prefix used to define the capability name for querying Identity services. This
+    // prefix is not required for Android queries to GmsCore.
+    private static final String ACCOUNT_CAPABILITY_NAME_PREFIX = "accountcapabilities/";
 
     private final AccountManagerDelegate mDelegate;
 
@@ -65,10 +56,6 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     private final AtomicReference<List<Account>> mAllAccounts = new AtomicReference<>();
     private final AtomicReference<List<PatternMatcher>> mAccountRestrictionPatterns =
             new AtomicReference<>();
-
-    // The map stores the boolean for whether an account can offer extended chrome sync promos
-    private final AtomicReference<Map<String, Boolean>> mCanOfferExtendedSyncPromos =
-            new AtomicReference<>(new HashMap<>());
 
     private @NonNull Promise<List<Account>> mAccountsPromise = new Promise<>();
 
@@ -160,30 +147,18 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     @Override
     public void checkChildAccountStatus(Account account, ChildAccountStatusListener listener) {
         ThreadUtils.assertOnUiThread();
-        new AsyncTask<Integer>() {
+        new AsyncTask<Boolean>() {
             @Override
-            public @ChildAccountStatus.Status Integer doInBackground() {
-                if (mDelegate.hasFeature(account, FEATURE_IS_CHILD_ACCOUNT_KEY)) {
-                    return ChildAccountStatus.REGULAR_CHILD;
-                } else if (mDelegate.hasFeature(account, FEATURE_IS_USM_ACCOUNT_KEY)) {
-                    return ChildAccountStatus.USM_CHILD;
-                } else {
-                    return ChildAccountStatus.NOT_CHILD;
-                }
+            public Boolean doInBackground() {
+                return mDelegate.hasFeature(account, FEATURE_IS_USM_ACCOUNT_KEY);
             }
 
             @Override
-            public void onPostExecute(@ChildAccountStatus.Status Integer status) {
+            protected void onPostExecute(Boolean isChild) {
                 // TODO(crbug.com/1258563): rework this interface to avoid passing a null account.
-                listener.onStatusReady(status, ChildAccountStatus.isChild(status) ? account : null);
+                listener.onStatusReady(isChild, isChild ? account : null);
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-    }
-
-    @Override
-    public Optional<Boolean> canOfferExtendedSyncPromos(Account account) {
-        return Optional.fromNullable(
-                mCanOfferExtendedSyncPromos.get().get(AccountUtils.canonicalizeName(account.name)));
     }
 
     /**
@@ -222,16 +197,34 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
         return mDelegate.getAccountGaiaId(accountEmail);
     }
 
-    private void updateCanOfferExtendedSyncPromos(List<Account> accounts) {
-        PostTask.postTask(TaskTraits.USER_VISIBLE, () -> {
-            final Map<String, Boolean> canOfferExtendedSyncPromos = new HashMap<>();
-            for (Account account : accounts) {
-                canOfferExtendedSyncPromos.put(AccountUtils.canonicalizeName(account.name),
-                        mDelegate.hasCapability(account, CAN_OFFER_EXTENDED_CHROME_SYNC_PROMOS)
-                                == CapabilityResponse.YES);
+    /**
+     * @param account The account used to look up capabilities.
+     * @return Set of supported account capability values.
+     */
+    @Override
+    public Promise<AccountCapabilities> getAccountCapabilities(Account account) {
+        Promise<AccountCapabilities> accountCapabilitiesPromise = new Promise<>();
+        ThreadUtils.assertOnUiThread();
+        new AsyncTask<AccountCapabilities>() {
+            @Override
+            public AccountCapabilities doInBackground() {
+                Map<String, Integer> capabilitiesResponse = new HashMap<>();
+                for (String capabilityName :
+                        AccountCapabilitiesConstants.SUPPORTED_ACCOUNT_CAPABILITY_NAMES) {
+                    @CapabilityResponse
+                    int capability = mDelegate.hasCapability(
+                            account, getAndroidCapabilityName(capabilityName));
+                    capabilitiesResponse.put(capabilityName, capability);
+                }
+                return AccountCapabilities.parseFromCapabilitiesResponse(capabilitiesResponse);
             }
-            mCanOfferExtendedSyncPromos.set(canOfferExtendedSyncPromos);
-        });
+
+            @Override
+            protected void onPostExecute(AccountCapabilities result) {
+                accountCapabilitiesPromise.fulfill(result);
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        return accountCapabilitiesPromise;
     }
 
     private void onAccountsUpdated() {
@@ -261,7 +254,6 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
             return;
         }
         final List<Account> newAccounts = getFilteredAccounts();
-        updateCanOfferExtendedSyncPromos(newAccounts);
         if (mAccountsPromise.isFulfilled()) {
             mAccountsPromise = Promise.fulfilled(newAccounts);
         } else {
@@ -286,5 +278,16 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
             }
         }
         return Collections.unmodifiableList(filteredAccounts);
+    }
+
+    /**
+     * @param capabilityName the name of the capability used to query Identity services.
+     * @return the name of the capability used to query GmsCore.
+     */
+    static String getAndroidCapabilityName(@NonNull String capabilityName) {
+        if (capabilityName.startsWith(ACCOUNT_CAPABILITY_NAME_PREFIX)) {
+            return capabilityName.substring(ACCOUNT_CAPABILITY_NAME_PREFIX.length());
+        }
+        return capabilityName;
     }
 }

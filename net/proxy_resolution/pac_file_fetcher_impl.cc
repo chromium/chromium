@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,12 @@
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"
-#include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -50,15 +51,14 @@ const int kDefaultMaxResponseBytes = 1048576;  // 1 megabyte
 constexpr base::TimeDelta kDefaultMaxDuration = base::Seconds(30);
 
 // Returns true if |mime_type| is one of the known PAC mime type.
-bool IsPacMimeType(const std::string& mime_type) {
-  static const char* const kSupportedPacMimeTypes[] = {
-      "application/x-ns-proxy-autoconfig", "application/x-javascript-config",
+constexpr bool IsPacMimeType(base::StringPiece mime_type) {
+  constexpr base::StringPiece kSupportedPacMimeTypes[] = {
+      "application/x-ns-proxy-autoconfig",
+      "application/x-javascript-config",
   };
-  for (size_t i = 0; i < base::size(kSupportedPacMimeTypes); ++i) {
-    if (base::LowerCaseEqualsASCII(mime_type, kSupportedPacMimeTypes[i]))
-      return true;
-  }
-  return false;
+  return base::ranges::any_of(kSupportedPacMimeTypes, [&](auto pac_mime_type) {
+    return base::EqualsCaseInsensitiveASCII(pac_mime_type, mime_type);
+  });
 }
 
 struct BomMapping {
@@ -318,10 +318,6 @@ void PacFileFetcherImpl::OnReadCompleted(URLRequest* request, int num_bytes) {
 PacFileFetcherImpl::PacFileFetcherImpl(URLRequestContext* url_request_context)
     : url_request_context_(url_request_context),
       buf_(base::MakeRefCounted<IOBuffer>(kBufSize)),
-      next_id_(0),
-      cur_request_id_(0),
-      result_code_(OK),
-      result_text_(nullptr),
       max_response_bytes_(kDefaultMaxResponseBytes),
       max_duration_(kDefaultMaxDuration) {
   DCHECK(url_request_context);

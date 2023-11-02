@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,13 +12,16 @@
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "components/payments/content/payment_event_response_util.h"
 #include "components/payments/content/payment_handler_host.h"
 #include "components/payments/content/payment_request_converter.h"
 #include "components/payments/core/features.h"
 #include "components/payments/core/method_strings.h"
+#include "components/payments/core/pre_purchase_query.h"
 #include "content/public/browser/payment_app_provider.h"
 #include "content/public/browser/payment_app_provider_util.h"
 #include "content/public/browser/web_contents.h"
@@ -137,6 +140,8 @@ void ServiceWorkerPaymentApp::ValidateCanMakePayment(
   if (!payment_app_provider)
     return;
 
+  base::UmaHistogramEnumeration("PaymentRequest.PrePurchaseQuery",
+                                PrePurchaseQuery::kServiceWorkerEvent);
   payment_app_provider->CanMakePayment(
       stored_payment_app_info_->registration_id,
       url::Origin::Create(stored_payment_app_info_->scope),
@@ -204,6 +209,8 @@ void ServiceWorkerPaymentApp::OnCanMakePaymentEventResponded(
   // |can_make_payment| is true as long as there is a matching payment handler.
   can_make_payment_result_ = true;
   has_enrolled_instrument_result_ = response->can_make_payment;
+  base::UmaHistogramBoolean("PaymentRequest.EventResponse.CanMakePayment",
+                            response->can_make_payment);
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), this, can_make_payment_result_));
@@ -376,12 +383,6 @@ bool ServiceWorkerPaymentApp::IsCompleteForPayment() const {
   return true;
 }
 
-uint32_t ServiceWorkerPaymentApp::GetCompletenessScore() const {
-  // Return max value to ensure that SW payment app always score higher than
-  // autofill.
-  return std::numeric_limits<uint32_t>::max();
-}
-
 bool ServiceWorkerPaymentApp::CanPreselect() const {
   // Do not preselect the payment app when the name and/or icon is missing.
   return !GetLabel().empty() && icon_bitmap() && !icon_bitmap()->drawsNothing();
@@ -429,9 +430,7 @@ std::u16string ServiceWorkerPaymentApp::GetSublabel() const {
 }
 
 bool ServiceWorkerPaymentApp::IsValidForModifier(
-    const std::string& method,
-    bool supported_networks_specified,
-    const std::set<std::string>& supported_networks) const {
+    const std::string& method) const {
   // Payment app that needs installation only supports url based payment
   // methods.
   if (needs_installation_)
@@ -439,49 +438,7 @@ bool ServiceWorkerPaymentApp::IsValidForModifier(
 
   bool is_valid = false;
   IsValidForPaymentMethodIdentifier(method, &is_valid);
-  if (!is_valid)
-    return false;
-
-  // Return true if 'basic-card' is not the only matched payment method. This
-  // assumes that there is no duplicated payment methods.
-  if (method != methods::kBasicCard)
-    return true;
-
-  if (!base::FeatureList::IsEnabled(::features::kPaymentRequestBasicCard))
-    return true;
-
-  // Checking the capabilities of this app against the modifier.
-  // Return true if card networks are not specified in the  modifier.
-  if (!supported_networks_specified)
-    return true;
-
-  // Return false if no capabilities for this app.
-  if (stored_payment_app_info_->capabilities.empty())
-    return false;
-
-  uint32_t i = 0;
-  for (; i < stored_payment_app_info_->capabilities.size(); i++) {
-    if (supported_networks_specified) {
-      std::set<std::string> app_supported_networks;
-      for (const auto& network :
-           stored_payment_app_info_->capabilities[i].supported_card_networks) {
-        app_supported_networks.insert(GetBasicCardNetworkName(
-            static_cast<mojom::BasicCardNetwork>(network)));
-      }
-
-      if (base::STLSetIntersection<std::set<std::string>>(
-              app_supported_networks, supported_networks)
-              .empty()) {
-        continue;
-      }
-    }
-
-    break;
-  }
-
-  // i >= stored_payment_app_info_->capabilities.size() indicates no matched
-  // capabilities.
-  return i < stored_payment_app_info_->capabilities.size();
+  return is_valid;
 }
 
 base::WeakPtr<PaymentApp> ServiceWorkerPaymentApp::AsWeakPtr() {

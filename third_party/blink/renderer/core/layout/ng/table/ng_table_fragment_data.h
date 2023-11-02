@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,6 +31,7 @@ class NGTableFragmentData {
           inline_offset(inline_offset),
           inline_size(inline_size),
           node(node) {}
+    void Trace(Visitor* visitor) const { visitor->Trace(node); }
     wtf_size_t start_column;
     wtf_size_t span;
     LayoutUnit inline_offset;
@@ -38,22 +39,19 @@ class NGTableFragmentData {
     NGLayoutInputNode node;
   };
 
-  using ColumnGeometries = Vector<ColumnGeometry>;
+  using ColumnGeometries = HeapVector<ColumnGeometry>;
 
-  // Column/row location is used for collapsed border painting.
-  // Only present if borders are collapsed.
+  // Column locations are used for collapsed-border painting.
   struct CollapsedBordersGeometry {
     USING_FAST_MALLOC(CollapsedBordersGeometry);
 
    public:
-    Vector<LayoutUnit> columns;  // Column offsets from table grid border.
-    Vector<LayoutUnit> rows;     // Row offsets from table grid border.
+    Vector<LayoutUnit> columns;
 
 #if DCHECK_IS_ON()
     void CheckSameForSimplifiedLayout(
         const CollapsedBordersGeometry& other) const {
       DCHECK(columns == other.columns);
-      DCHECK(rows == other.rows);
     }
 #endif
   };

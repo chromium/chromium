@@ -1,22 +1,18 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 /**
  * @fileoverview Provides a push parser for Output format rules.
  */
-
-goog.provide('OutputFormatParser');
-goog.provide('OutputFormatParserObserver');
-
-goog.require('OutputFormatTree');
+import {OutputFormatTree} from './output_format_tree.js';
 
 /**
  * Implemented by objects that wish to observe tokens from parsing Output format
  * rules.
  * @interface
  */
-OutputFormatParserObserver = class {
+export class OutputFormatParserObserver {
   /**
    * Indicates the parse start of a new token.
    * @param {string} token
@@ -56,9 +52,9 @@ OutputFormatParserObserver = class {
    * @return {boolean|undefined} True to skip to the next token.
    */
   onTokenEnd() {}
-};
+}
 
-OutputFormatParser = class {
+export class OutputFormatParser {
   /** @param {!OutputFormatParserObserver} observer */
   constructor(observer) {
     /** @private {!OutputFormatParserObserver} observer */
@@ -71,7 +67,7 @@ OutputFormatParser = class {
    */
   parse(format) {
     const formatTrees = OutputFormatTree.parseFormat(format);
-    formatTrees.forEach((tree) => {
+    formatTrees.forEach(tree => {
       // Obtain the operator token.
       let token = tree.value;
 
@@ -110,4 +106,4 @@ OutputFormatParser = class {
       this.observer_.onTokenEnd();
     });
   }
-};
+}

@@ -1,6 +1,7 @@
-<!-- Copyright 2016 The Chromium Authors. All rights reserved.
-  -- Use of this source code is governed by a BSD-style license that can be
-  -- found in the LICENSE file.
+<!--
+Copyright 2016 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
 -->
 
 <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
@@ -23,9 +24,6 @@
       <cr-button id="delete-button" on-click="onDeleteButtonTap" hidden$="[[!shouldShowDeleteButton_(canDelete, isModal)]]" aria-label="$i18n{QUICK_VIEW_DELETE_BUTTON_LABEL}" has-tooltip invert-tooltip>
         <span class="icon"></span>
       </cr-button>
-      <!-- TODO(files-ng): this fancy Polymer icon toggle button is not used in files-ng. Remove it. -->
-      <files-icon-button toggles id="metadata-button" on-tap="onMetadataButtonTap_" active="{{metadataBoxActive}}" aria-label="$i18n{QUICK_VIEW_TOGGLE_METADATA_BOX_BUTTON_LABEL}" tabindex="0" has-tooltip invert-tooltip>
-      </files-icon-button>
       <cr-button id="info-button" on-click="onMetadataButtonTap_" aria-pressed="{{metadataBoxActive}}" aria-label="$i18n{QUICK_VIEW_TOGGLE_METADATA_BOX_BUTTON_LABEL}" has-tooltip invert-tooltip>
         <span class="icon"></span>
       </cr-button>
@@ -36,12 +34,7 @@
       <div id="innerContentPanel" type$="[[type]]">
         <!-- PDF, Text -->
         <template is="dom-if" if="[[browsable]]">
-          <template is="dom-if" if="[[isLegacy]]">
-            <webview style="color: transparent; background: transparent;" on-contentload='applyTextCss' class="content text-content" src="[[generateBrowsableUrl_(sourceContent, subtype)]]"></webview>
-          </template>
-          <template is="dom-if" if="[[!isLegacy]]">
-            <iframe id="untrusted" style="color: transparent; background: transparent; width: 100%; height: 100%; border: 0px;" on-load="refreshUntrustedIframe_" class="content text-content" src="chrome-untrusted://file-manager/untrusted_resources/files_browsable_content.html"></iframe>
-          </template>
+          <iframe id="untrusted" style="color: transparent; background: transparent; width: 100%; height: 100%; border: 0px;" on-load="refreshUntrustedIframe_" class="content text-content" src="chrome-untrusted://file-manager/untrusted_resources/files_browsable_content.html"></iframe>
         </template>
         <!-- document/HTML -->
         <template is="dom-if" if="[[isHtml_(type, subtype)]]">

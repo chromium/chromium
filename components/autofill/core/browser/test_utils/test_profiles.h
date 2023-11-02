@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,11 +10,7 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_test_utils.h"
 
-namespace autofill {
-
-using structured_address::VerificationStatus;
-
-namespace test {
+namespace autofill::test {
 
 // Defines the |value| and |verification_status| for a specific Autofill
 // |field_type|
@@ -58,8 +54,6 @@ AutofillProfile SubsetOfStandardProfile();
 // This profile that is not similar to the standard profile.
 AutofillProfile DifferentFromStandardProfile();
 
-}  // namespace test
-
-}  // namespace autofill
+}  // namespace autofill::test
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_UTILS_TEST_PROFILES_H_

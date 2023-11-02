@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,8 +14,8 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
@@ -62,13 +62,13 @@ RenderFrameHost* ConvertToRenderFrameHost(FrameTreeNode* frame_tree_node);
 // browser-initiated navigations swap BrowsingInstances, but some tests need a
 // navigation to swap processes for cross-site URLs (even outside of
 // --site-per-process) while staying in the same BrowsingInstance.
-WARN_UNUSED_RESULT bool NavigateToURLInSameBrowsingInstance(Shell* window,
-                                                            const GURL& url);
+[[nodiscard]] bool NavigateToURLInSameBrowsingInstance(Shell* window,
+                                                       const GURL& url);
 
 // Helper function to checks for a subframe navigation starting  in
 // `start_site_instance` and results in an error page correctly transitions to
 // `end_site_instance` based on whether error page isolation is enabled or not.
-WARN_UNUSED_RESULT bool IsExpectedSubframeErrorTransition(
+[[nodiscard]] bool IsExpectedSubframeErrorTransition(
     SiteInstance* start_site_instance,
     SiteInstance* end_site_instance);
 
@@ -97,7 +97,7 @@ std::vector<RenderFrameHostImpl*>
 CollectAllRenderFrameHostsIncludingSpeculative(WebContentsImpl* web_contents);
 
 // Open a new popup passing no URL to window.open, which results in a blank page
-// and no last committed entry. Returns the newly created shell. Also saves the
+// and only the initial entry. Returns the newly created shell. Also saves the
 // reference to the opened window in the "last_opened_window" variable in JS.
 Shell* OpenBlankWindow(WebContentsImpl* web_contents);
 
@@ -176,9 +176,11 @@ Shell* OpenPopup(const ToRenderFrameHost& opener,
 class FileChooserDelegate : public WebContentsDelegate {
  public:
   // Constructs a WebContentsDelegate that mocks a file dialog.
-  // The mocked file dialog will always reply that the user selected |file|.
-  // |callback| is invoked when RunFileChooser() is called.
+  // The mocked file dialog will always reply that the user selected |file| or
+  // |files|. |callback| is invoked when RunFileChooser() is called.
   FileChooserDelegate(const base::FilePath& file, base::OnceClosure callback);
+  FileChooserDelegate(std::vector<base::FilePath> files,
+                      base::OnceClosure callback);
   ~FileChooserDelegate() override;
 
   // Implementation of WebContentsDelegate::RunFileChooser.
@@ -190,7 +192,7 @@ class FileChooserDelegate : public WebContentsDelegate {
   const blink::mojom::FileChooserParams& params() const { return *params_; }
 
  private:
-  base::FilePath file_;
+  std::vector<base::FilePath> files_;
   base::OnceClosure callback_;
   blink::mojom::FileChooserParamsPtr params_;
 };
@@ -267,7 +269,7 @@ class RenderProcessHostBadIpcMessageWaiter {
   // Waits until the renderer process exits.  Returns the bad message that made
   // //content kill the renderer.  |absl::nullopt| is returned if the renderer
   // was killed outside of //content or exited normally.
-  absl::optional<bad_message::BadMessageReason> Wait() WARN_UNUSED_RESULT;
+  [[nodiscard]] absl::optional<bad_message::BadMessageReason> Wait();
 
  private:
   RenderProcessHostKillWaiter internal_waiter_;
@@ -295,7 +297,7 @@ class ShowPopupWidgetWaiter
   void Stop();
 
  private:
-#if defined(OS_MAC) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
   void ShowPopupMenu(const gfx::Rect& bounds);
 #endif
 
@@ -312,13 +314,13 @@ class ShowPopupWidgetWaiter
   gfx::Rect initial_rect_;
   int32_t routing_id_ = MSG_ROUTING_NONE;
   int32_t process_id_ = 0;
-  RenderFrameHostImpl* frame_host_;
-#if defined(OS_MAC) || defined(OS_ANDROID)
-  WebContentsImpl* web_contents_;
+  raw_ptr<RenderFrameHostImpl> frame_host_;
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
+  raw_ptr<WebContentsImpl> web_contents_;
 #endif
 };
 
-// A BrowserMessageFilter that drops a blacklisted message.
+// A BrowserMessageFilter that drops a pre-specified message.
 class DropMessageFilter : public BrowserMessageFilter {
  public:
   DropMessageFilter(uint32_t message_class, uint32_t drop_message_id);
@@ -382,7 +384,7 @@ class UnresponsiveRendererObserver : public WebContentsObserver {
   // WebContentsObserver:
   void OnRendererUnresponsive(RenderProcessHost* render_process_host) override;
 
-  RenderProcessHost* captured_render_process_host_ = nullptr;
+  raw_ptr<RenderProcessHost> captured_render_process_host_ = nullptr;
   base::RunLoop run_loop_;
 };
 
@@ -427,7 +429,7 @@ class BeforeUnloadBlockingDelegate : public JavaScriptDialogManager,
   void CancelDialogs(WebContents* web_contents, bool reset_state) override {}
 
  private:
-  WebContentsImpl* web_contents_;
+  raw_ptr<WebContentsImpl> web_contents_;
 
   DialogClosedCallback callback_;
 
@@ -456,12 +458,14 @@ class DevToolsInspectorLogWatcher : public DevToolsAgentHostClient {
 };
 
 // Captures various properties of the NavigationHandle on DidFinishNavigation.
-// By default, captures the next navigation and waits until the navigation
-// completely loads. Can be configured to not wait for load to finish, and also
-// to capture properties for multiple navigations, as we save the values in
-// arrays.
+// By default, captures the next navigation (either for a specific frame or
+// any frame in the WebContents) and waits until the navigation completely
+// loads. Can be configured to not wait for load to finish, and also to capture
+// properties for multiple navigations, as we save the values in arrays.
 class FrameNavigateParamsCapturer : public WebContentsObserver {
  public:
+  // Observes navigation for any node in `contents`.
+  explicit FrameNavigateParamsCapturer(WebContents* contents);
   // Observes navigation for the specified |node|.
   explicit FrameNavigateParamsCapturer(FrameTreeNode* node);
   ~FrameNavigateParamsCapturer() override;
@@ -536,8 +540,10 @@ class FrameNavigateParamsCapturer : public WebContentsObserver {
 
   void DidStopLoading() override;
 
-  // The id of the FrameTreeNode whose navigations to observe.
-  int frame_tree_node_id_;
+  // The id of the FrameTreeNode whose navigations to observe. If this is not
+  // set, then this FrameNavigateParamsCapturer observes all navigations that
+  // happen in the observed WebContents.
+  absl::optional<int> frame_tree_node_id_;
 
   // How many navigations remain to capture.
   int navigations_remaining_ = 1;
@@ -598,7 +604,7 @@ class RenderFrameHostCreatedObserver : public WebContentsObserver {
   base::RunLoop run_loop_;
 
   // The last RenderFrameHost created.
-  RenderFrameHost* last_rfh_ = nullptr;
+  raw_ptr<RenderFrameHost, DanglingUntriaged> last_rfh_ = nullptr;
 
   // The callback to call when a RenderFrameCreated call is observed.
   OnRenderFrameHostCreatedCallback on_rfh_created_;

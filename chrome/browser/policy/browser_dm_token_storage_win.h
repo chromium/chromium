@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,6 +33,8 @@ class BrowserDMTokenStorageWin : public BrowserDMTokenStorage::Delegate {
   bool InitEnrollmentErrorOption() override;
   BrowserDMTokenStorage::StoreTask SaveDMTokenTask(
       const std::string& token,
+      const std::string& client_id) override;
+  BrowserDMTokenStorage::StoreTask DeleteDMTokenTask(
       const std::string& client_id) override;
   scoped_refptr<base::TaskRunner> SaveDMTokenTaskRunner() override;
 

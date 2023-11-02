@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -65,6 +65,9 @@ const int32 kEventFlagForwardMouseButton = 0x08000;
 const int32 kMouseEventFlagIsDoubleClick = 0x10000;
 const int32 kMouseEventFlagIsTripleClick = 0x20000;
 const int32 kMouseEventFlagIsNonClient   = 0x40000;
+
+const int32 kKeyEventFlagIMEFabricatedKey = 0x10000;
+const int32 kKeyEventFlagIsRepeat         = 0x20000;
 
 // TODO(erg): Move accessibility flags and maybe synthetic touch events here.
 [Native]

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -50,7 +50,6 @@ void SendTabToSelfToolbarIconController::DisplayNewEntries(
       new_entry_pending_notification->GetURL(),
       new_entry_pending_notification->GetTitle(),
       new_entry_pending_notification->GetSharedTime(),
-      new_entry_pending_notification->GetOriginalNavigationTime(),
       new_entry_pending_notification->GetDeviceName(),
       new_entry_pending_notification->GetTargetDeviceSyncCacheGuid());
 

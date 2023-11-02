@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 
-namespace chromeos {
+namespace ash {
 namespace ime {
 
 namespace {
@@ -45,7 +45,7 @@ uint8_t GenerateModifierValue(const mojom::ModifierStatePtr& modifier_state,
 
 mojom::KeyEventResult HandleEngineResult(
     const rulebased::ProcessKeyResult& result,
-    mojo::Remote<mojom::InputMethodHost>& host) {
+    mojo::AssociatedRemote<mojom::InputMethodHost>& host) {
   if (!result.commit_text.empty()) {
     host->CommitText(ConvertToUtf16AndNormalize(result.commit_text),
                      mojom::CommitTextCursorBehavior::kMoveCursorAfterText);
@@ -60,7 +60,9 @@ mojom::KeyEventResult HandleEngineResult(
     std::vector<mojom::CompositionSpanPtr> spans;
     spans.push_back(mojom::CompositionSpan::New(
         0, text.length(), mojom::CompositionSpanStyle::kDefault));
-    host->SetComposition(std::move(text), std::move(spans));
+    const int new_cursor_position = text.length();
+    host->SetComposition(std::move(text), std::move(spans),
+                         new_cursor_position);
   }
   return result.key_handled ? mojom::KeyEventResult::kConsumedByIme
                             : mojom::KeyEventResult::kNeedsHandlingBySystem;
@@ -90,8 +92,8 @@ bool IsImeSupportedByRulebased(const std::string& ime_spec) {
 
 std::unique_ptr<RuleBasedEngine> RuleBasedEngine::Create(
     const std::string& ime_spec,
-    mojo::PendingReceiver<mojom::InputMethod> receiver,
-    mojo::PendingRemote<mojom::InputMethodHost> host) {
+    mojo::PendingAssociatedReceiver<mojom::InputMethod> receiver,
+    mojo::PendingAssociatedRemote<mojom::InputMethodHost> host) {
   // RuleBasedEngine constructor is private, so have to use WrapUnique here.
   return IsImeSupportedByRulebased(ime_spec)
              ? base::WrapUnique(new RuleBasedEngine(
@@ -100,6 +102,12 @@ std::unique_ptr<RuleBasedEngine> RuleBasedEngine::Create(
 }
 
 RuleBasedEngine::~RuleBasedEngine() = default;
+
+void RuleBasedEngine::OnFocus(mojom::InputFieldInfoPtr input_field_info,
+                              mojom::InputMethodSettingsPtr settings,
+                              OnFocusCallback callback) {
+  std::move(callback).Run(false);
+}
 
 bool RuleBasedEngine::IsConnected() {
   // `receiver_` will reset upon disconnection, so bound state is equivalent to
@@ -152,19 +160,30 @@ void RuleBasedEngine::OnCandidateSelected(uint32_t selected_candidate_index) {
   NOTREACHED();
 }
 
+void RuleBasedEngine::OnQuickSettingsUpdated(
+    mojom::InputMethodQuickSettingsPtr quick_settings) {
+  // Rule-based engines don't use quick settings.
+  NOTREACHED();
+}
+
+void RuleBasedEngine::IsReadyForTesting(IsReadyForTestingCallback callback) {
+  // Rule-based engines load instantly, so they are always ready.
+  std::move(callback).Run(true);
+}
+
 RuleBasedEngine::RuleBasedEngine(
     const std::string& ime_spec,
-    mojo::PendingReceiver<mojom::InputMethod> receiver,
-    mojo::PendingRemote<mojom::InputMethodHost> host)
+    mojo::PendingAssociatedReceiver<mojom::InputMethod> receiver,
+    mojo::PendingAssociatedRemote<mojom::InputMethodHost> host)
     : receiver_(this, std::move(receiver)), host_(std::move(host)) {
   DCHECK(IsImeSupportedByRulebased(ime_spec));
 
   engine_.Activate(GetIdFromImeSpec(ime_spec));
 
   receiver_.set_disconnect_handler(
-      base::BindOnce(&mojo::Receiver<mojom::InputMethod>::reset,
+      base::BindOnce(&mojo::AssociatedReceiver<mojom::InputMethod>::reset,
                      base::Unretained(&receiver_)));
 }
 
 }  // namespace ime
-}  // namespace chromeos
+}  // namespace ash

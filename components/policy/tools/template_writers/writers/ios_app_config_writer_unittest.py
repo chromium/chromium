@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -229,8 +229,11 @@ class IOSAppConfigWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
         'desc':
         'string-enum-list description',
         'schema': {
-          'type': 'string',
-          'enum': ['0', '1'],
+            'type': 'array',
+            'items': {
+                'type': 'string',
+                'enum': ['0', '1'],
+            },
         },
         'items': [{
             'name': 'item0',

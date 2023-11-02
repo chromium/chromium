@@ -1,13 +1,13 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef NET_SOCKET_TRANSPORT_CLIENT_SOCKET_H_
 #define NET_SOCKET_TRANSPORT_CLIENT_SOCKET_H_
 
-#include "base/macros.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_export.h"
+#include "net/socket/connection_attempts.h"
 #include "net/socket/stream_socket.h"
 
 namespace net {

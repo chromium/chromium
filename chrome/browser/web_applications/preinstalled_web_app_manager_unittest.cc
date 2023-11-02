@@ -1,4 +1,4 @@
-// Copyright (c) 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/path_service.h"
@@ -19,15 +20,19 @@
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_management_test_util.h"
-#include "chrome/browser/supervised_user/supervised_user_constants.h"
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
+#include "chrome/browser/web_applications/preinstalled_web_app_config_utils.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_apps.h"
+#include "chrome/browser/web_applications/test/fake_web_app_provider.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/account_id/account_id.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -35,7 +40,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/policy/profile_policy_connector.h"
 #endif
 
@@ -46,35 +51,34 @@
 #include "components/user_manager/scoped_user_manager.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/common/chrome_paths_lacros.h"
+#include "chromeos/crosapi/mojom/crosapi.mojom.h"
+#endif
+
 namespace web_app {
 
 namespace {
 
 constexpr char kUserTypesTestDir[] = "user_types";
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 constexpr char kGoodJsonTestDir[] = "good_json";
 
 constexpr char kAppAllUrl[] = "https://www.google.com/all";
 constexpr char kAppGuestUrl[] = "https://www.google.com/guest";
 constexpr char kAppManagedUrl[] = "https://www.google.com/managed";
 constexpr char kAppUnmanagedUrl[] = "https://www.google.com/unmanaged";
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr char kAppChildUrl[] = "https://www.google.com/child";
 #endif
 
 }  // namespace
 
-class PreinstalledWebAppManagerTest : public testing::Test {
+class PreinstalledWebAppManagerTest : public testing::Test,
+                                      public testing::WithParamInterface<bool> {
  public:
-  PreinstalledWebAppManagerTest() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    scoped_feature_list_.InitWithFeatures(
-        {}, {features::kWebAppsCrosapi, chromeos::features::kLacrosPrimary});
-#endif
-  }
+  PreinstalledWebAppManagerTest() { BuildAndInitFeatureList(); }
+
   PreinstalledWebAppManagerTest(const PreinstalledWebAppManagerTest&) = delete;
   PreinstalledWebAppManagerTest& operator=(
       const PreinstalledWebAppManagerTest&) = delete;
@@ -97,11 +101,27 @@ class PreinstalledWebAppManagerTest : public testing::Test {
   }
 
  protected:
-  std::vector<ExternalInstallOptions> LoadApps(const char* test_dir,
-                                               Profile* profile = nullptr) {
+  void BuildAndInitFeatureList() {
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (GetParam())
+      enabled_features.push_back(features::kUseWebAppDBInsteadOfExternalPrefs);
+    else
+      disabled_features.push_back(features::kUseWebAppDBInsteadOfExternalPrefs);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    disabled_features.push_back(features::kWebAppsCrosapi);
+    disabled_features.push_back(chromeos::features::kLacrosPrimary);
+#endif
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
+  std::vector<ExternalInstallOptions> LoadApps(
+      base::StringPiece test_dir,
+      Profile* profile = nullptr,
+      bool disable_default_apps = false) {
     std::unique_ptr<TestingProfile> testing_profile;
     if (!profile) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
       testing_profile = CreateProfileAndLogin();
       profile = testing_profile.get();
 #else
@@ -109,36 +129,32 @@ class PreinstalledWebAppManagerTest : public testing::Test {
 #endif
     }
 
-    // Uses the chrome/test/data/web_app_default_apps/test_dir directory
-    // that holds the *.json data files from which tests should parse as app
-    // configs.
-    base::FilePath config_dir;
-    if (!base::PathService::Get(chrome::DIR_TEST_DATA, &config_dir)) {
-      ADD_FAILURE()
-          << "base::PathService::Get could not resolve chrome::DIR_TEST_DATA";
+    base::FilePath config_dir = GetConfigDir(test_dir);
+    SetPreinstalledWebAppConfigDirForTesting(&config_dir);
+
+    if (profile_ != profile) {
+      provider_ = FakeWebAppProvider::Get(profile);
+      provider_->SetDefaultFakeSubsystems();
+      test::AwaitStartWebAppProviderAndSubsystems(profile);
+      profile_ = profile;
     }
-    config_dir =
-        config_dir.AppendASCII("web_app_default_apps").AppendASCII(test_dir);
-    PreinstalledWebAppManager::SetConfigDirForTesting(&config_dir);
 
-    auto preinstalled_web_app_manager =
-        std::make_unique<PreinstalledWebAppManager>(profile);
-
-    auto* provider = WebAppProvider::GetForWebApps(profile);
-    DCHECK(provider);
-    preinstalled_web_app_manager->SetSubsystems(
-        &provider->registrar(), &provider->externally_managed_app_manager());
+    if (!disable_default_apps) {
+      base::CommandLine::ForCurrentProcess()->RemoveSwitch(
+          switches::kDisableDefaultApps);
+    }
 
     std::vector<ExternalInstallOptions> result;
     base::RunLoop run_loop;
-    preinstalled_web_app_manager->LoadForTesting(base::BindLambdaForTesting(
-        [&](std::vector<ExternalInstallOptions> install_options_list) {
-          result = install_options_list;
-          run_loop.Quit();
-        }));
+    provider_->preinstalled_web_app_manager().LoadForTesting(
+        base::BindLambdaForTesting(
+            [&](std::vector<ExternalInstallOptions> install_options_list) {
+              result = std::move(install_options_list);
+              run_loop.Quit();
+            }));
     run_loop.Run();
 
-    PreinstalledWebAppManager::SetConfigDirForTesting(nullptr);
+    SetPreinstalledWebAppConfigDirForTesting(nullptr);
 
     return result;
   }
@@ -146,18 +162,17 @@ class PreinstalledWebAppManagerTest : public testing::Test {
   // Helper that creates simple test profile.
   std::unique_ptr<TestingProfile> CreateProfile(bool is_guest = false) {
     TestingProfile::Builder profile_builder;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    profile_builder.SetIsMainProfile(true);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
     if (is_guest) {
       profile_builder.SetGuestSession();
     }
 
-    std::unique_ptr<TestingProfile> profile = profile_builder.Build();
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    profile->SetIsMainProfile(true);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-    return profile;
+    return profile_builder.Build();
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   // Helper that creates simple test guest profile.
   std::unique_ptr<TestingProfile> CreateGuestProfile() {
     return CreateProfile(/*is_guest=*/true);
@@ -187,13 +202,32 @@ class PreinstalledWebAppManagerTest : public testing::Test {
     return profile;
   }
 
+  void SetExtraWebAppsDir(base::StringPiece test_dir,
+                          base::StringPiece extra_web_apps_dir) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    command_line_.GetProcessCommandLine()->AppendSwitchASCII(
+        ash::switches::kExtraWebAppsDir, extra_web_apps_dir);
+#else
+    base::FilePath config_dir = GetConfigDir(test_dir);
+    auto default_paths = crosapi::mojom::DefaultPaths::New();
+    default_paths->documents =
+        base::PathService::CheckedGet(chrome::DIR_USER_DOCUMENTS);
+    default_paths->downloads =
+        base::PathService::CheckedGet(chrome::DIR_DEFAULT_DOWNLOADS);
+    default_paths->preinstalled_web_app_config = config_dir;
+    default_paths->preinstalled_web_app_extra_config =
+        config_dir.AppendASCII(extra_web_apps_dir);
+    chrome::SetLacrosDefaultPathsFromInitParams(default_paths.get());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  }
+
   void VerifySetOfApps(Profile* profile, const std::set<GURL>& expectations) {
     const auto install_options_list = LoadApps(kUserTypesTestDir, profile);
     ASSERT_EQ(expectations.size(), install_options_list.size());
     for (const auto& install_options : install_options_list)
       ASSERT_EQ(1u, expectations.count(install_options.install_url));
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   void ExpectHistograms(int enabled, int disabled, int errors) {
     histograms_.ExpectUniqueSample(
@@ -209,23 +243,38 @@ class PreinstalledWebAppManagerTest : public testing::Test {
   ScopedTestingPreinstalledAppData preinstalled_web_app_override_;
 
  private:
+  base::FilePath GetConfigDir(base::StringPiece test_dir) {
+    // Uses the chrome/test/data/web_app_default_apps/test_dir directory
+    // that holds the *.json data files from which tests should parse as app
+    // configs.
+    base::FilePath config_dir;
+    if (!base::PathService::Get(chrome::DIR_TEST_DATA, &config_dir)) {
+      ADD_FAILURE()
+          << "base::PathService::Get could not resolve chrome::DIR_TEST_DATA";
+    }
+    return config_dir.AppendASCII("web_app_default_apps").AppendASCII(test_dir);
+  }
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::FakeChromeUserManager* user_manager() {
     return static_cast<ash::FakeChromeUserManager*>(
         user_manager::UserManager::Get());
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
-
   // To support primary/non-primary users.
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
-#endif
 
+  base::test::ScopedCommandLine command_line_;
+#endif
+  raw_ptr<FakeWebAppProvider> provider_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
   // To support context of browser threads.
   content::BrowserTaskEnvironment task_environment_;
 };
 
-TEST_F(PreinstalledWebAppManagerTest, ReplacementExtensionBlockedByPolicy) {
+TEST_P(PreinstalledWebAppManagerTest, ReplacementExtensionBlockedByPolicy) {
   using PolicyUpdater = extensions::ExtensionManagementPrefUpdater<
       sync_preferences::TestingPrefServiceSyncable>;
   auto test_profile = CreateProfile();
@@ -234,13 +283,13 @@ TEST_F(PreinstalledWebAppManagerTest, ReplacementExtensionBlockedByPolicy) {
 
   GURL install_url("https://test.app");
   constexpr char kExtensionId[] = "abcdefghijklmnopabcdefghijklmnop";
-  ExternalInstallOptions options(install_url, DisplayMode::kBrowser,
+  ExternalInstallOptions options(install_url, UserDisplayMode::kBrowser,
                                  ExternalInstallSource::kExternalDefault);
   options.user_type_allowlist = {"unmanaged"};
   options.uninstall_and_replace = {kExtensionId};
   options.only_use_app_info_factory = true;
   options.app_info_factory = base::BindRepeating(
-      []() { return std::make_unique<WebApplicationInfo>(); });
+      []() { return std::make_unique<WebAppInstallInfo>(); });
   preinstalled_web_app_override_.apps.push_back(std::move(options));
 
   auto expect_present = [&]() {
@@ -281,8 +330,8 @@ TEST_F(PreinstalledWebAppManagerTest, ReplacementExtensionBlockedByPolicy) {
 }
 
 // Only Chrome OS parses config files.
-#if defined(OS_CHROMEOS)
-TEST_F(PreinstalledWebAppManagerTest, GoodJson) {
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_P(PreinstalledWebAppManagerTest, GoodJson) {
   const auto install_options_list = LoadApps(kGoodJsonTestDir);
 
   // The good_json directory contains two good JSON files:
@@ -292,8 +341,8 @@ TEST_F(PreinstalledWebAppManagerTest, GoodJson) {
   std::vector<ExternalInstallOptions> test_install_options_list;
   {
     ExternalInstallOptions install_options(
-        GURL("https://www.chromestatus.com/features"), DisplayMode::kBrowser,
-        ExternalInstallSource::kExternalDefault);
+        GURL("https://www.chromestatus.com/features"),
+        UserDisplayMode::kBrowser, ExternalInstallSource::kExternalDefault);
     install_options.user_type_allowlist = {"unmanaged"};
     install_options.add_to_applications_menu = true;
     install_options.add_to_search = true;
@@ -307,7 +356,7 @@ TEST_F(PreinstalledWebAppManagerTest, GoodJson) {
   {
     ExternalInstallOptions install_options(
         GURL("https://events.google.com/io2016/?utm_source=web_app_manifest"),
-        DisplayMode::kStandalone, ExternalInstallSource::kExternalDefault);
+        UserDisplayMode::kStandalone, ExternalInstallSource::kExternalDefault);
     install_options.user_type_allowlist = {"unmanaged"};
     install_options.add_to_applications_menu = true;
     install_options.add_to_search = true;
@@ -327,7 +376,7 @@ TEST_F(PreinstalledWebAppManagerTest, GoodJson) {
   ExpectHistograms(/*enabled=*/2, /*disabled=*/0, /*errors=*/0);
 }
 
-TEST_F(PreinstalledWebAppManagerTest, BadJson) {
+TEST_P(PreinstalledWebAppManagerTest, BadJson) {
   const auto app_infos = LoadApps("bad_json");
 
   // The bad_json directory contains one (malformed) JSON file.
@@ -335,7 +384,7 @@ TEST_F(PreinstalledWebAppManagerTest, BadJson) {
   ExpectHistograms(/*enabled=*/0, /*disabled=*/0, /*errors=*/1);
 }
 
-TEST_F(PreinstalledWebAppManagerTest, TxtButNoJson) {
+TEST_P(PreinstalledWebAppManagerTest, TxtButNoJson) {
   const auto app_infos = LoadApps("txt_but_no_json");
 
   // The txt_but_no_json directory contains one file, and the contents of that
@@ -344,7 +393,7 @@ TEST_F(PreinstalledWebAppManagerTest, TxtButNoJson) {
   ExpectHistograms(/*enabled=*/0, /*disabled=*/0, /*errors=*/0);
 }
 
-TEST_F(PreinstalledWebAppManagerTest, MixedJson) {
+TEST_P(PreinstalledWebAppManagerTest, MixedJson) {
   const auto app_infos = LoadApps("mixed_json");
 
   // The mixed_json directory contains one empty JSON file, one malformed JSON
@@ -358,7 +407,7 @@ TEST_F(PreinstalledWebAppManagerTest, MixedJson) {
   ExpectHistograms(/*enabled=*/1, /*disabled=*/0, /*errors=*/2);
 }
 
-TEST_F(PreinstalledWebAppManagerTest, MissingAppUrl) {
+TEST_P(PreinstalledWebAppManagerTest, MissingAppUrl) {
   const auto app_infos = LoadApps("missing_app_url");
 
   // The missing_app_url directory contains one JSON file which is correct
@@ -367,7 +416,7 @@ TEST_F(PreinstalledWebAppManagerTest, MissingAppUrl) {
   ExpectHistograms(/*enabled=*/0, /*disabled=*/0, /*errors=*/1);
 }
 
-TEST_F(PreinstalledWebAppManagerTest, EmptyAppUrl) {
+TEST_P(PreinstalledWebAppManagerTest, EmptyAppUrl) {
   const auto app_infos = LoadApps("empty_app_url");
 
   // The empty_app_url directory contains one JSON file which is correct
@@ -376,7 +425,7 @@ TEST_F(PreinstalledWebAppManagerTest, EmptyAppUrl) {
   ExpectHistograms(/*enabled=*/0, /*disabled=*/0, /*errors=*/1);
 }
 
-TEST_F(PreinstalledWebAppManagerTest, InvalidAppUrl) {
+TEST_P(PreinstalledWebAppManagerTest, InvalidAppUrl) {
   const auto app_infos = LoadApps("invalid_app_url");
 
   // The invalid_app_url directory contains one JSON file which is correct
@@ -385,7 +434,7 @@ TEST_F(PreinstalledWebAppManagerTest, InvalidAppUrl) {
   ExpectHistograms(/*enabled=*/0, /*disabled=*/0, /*errors=*/1);
 }
 
-TEST_F(PreinstalledWebAppManagerTest, TrueHideFromUser) {
+TEST_P(PreinstalledWebAppManagerTest, TrueHideFromUser) {
   const auto app_infos = LoadApps("true_hide_from_user");
 
   EXPECT_EQ(1u, app_infos.size());
@@ -396,7 +445,7 @@ TEST_F(PreinstalledWebAppManagerTest, TrueHideFromUser) {
   ExpectHistograms(/*enabled=*/1, /*disabled=*/0, /*errors=*/0);
 }
 
-TEST_F(PreinstalledWebAppManagerTest, InvalidHideFromUser) {
+TEST_P(PreinstalledWebAppManagerTest, InvalidHideFromUser) {
   const auto app_infos = LoadApps("invalid_hide_from_user");
 
   // The invalid_hide_from_user directory contains on JSON file which is correct
@@ -405,7 +454,7 @@ TEST_F(PreinstalledWebAppManagerTest, InvalidHideFromUser) {
   ExpectHistograms(/*enabled=*/0, /*disabled=*/0, /*errors=*/1);
 }
 
-TEST_F(PreinstalledWebAppManagerTest, InvalidCreateShortcuts) {
+TEST_P(PreinstalledWebAppManagerTest, InvalidCreateShortcuts) {
   const auto app_infos = LoadApps("invalid_create_shortcuts");
 
   // The invalid_create_shortcuts directory contains one JSON file which is
@@ -414,7 +463,7 @@ TEST_F(PreinstalledWebAppManagerTest, InvalidCreateShortcuts) {
   ExpectHistograms(/*enabled=*/0, /*disabled=*/0, /*errors=*/1);
 }
 
-TEST_F(PreinstalledWebAppManagerTest, MissingLaunchContainer) {
+TEST_P(PreinstalledWebAppManagerTest, MissingLaunchContainer) {
   const auto app_infos = LoadApps("missing_launch_container");
 
   // The missing_launch_container directory contains one JSON file which is
@@ -423,7 +472,7 @@ TEST_F(PreinstalledWebAppManagerTest, MissingLaunchContainer) {
   ExpectHistograms(/*enabled=*/0, /*disabled=*/0, /*errors=*/1);
 }
 
-TEST_F(PreinstalledWebAppManagerTest, InvalidLaunchContainer) {
+TEST_P(PreinstalledWebAppManagerTest, InvalidLaunchContainer) {
   const auto app_infos = LoadApps("invalid_launch_container");
 
   // The invalid_launch_container directory contains one JSON file which is
@@ -432,7 +481,7 @@ TEST_F(PreinstalledWebAppManagerTest, InvalidLaunchContainer) {
   ExpectHistograms(/*enabled=*/0, /*disabled=*/0, /*errors=*/1);
 }
 
-TEST_F(PreinstalledWebAppManagerTest, InvalidUninstallAndReplace) {
+TEST_P(PreinstalledWebAppManagerTest, InvalidUninstallAndReplace) {
   const auto app_infos = LoadApps("invalid_uninstall_and_replace");
 
   // The invalid_uninstall_and_replace directory contains 2 JSON files which are
@@ -441,7 +490,7 @@ TEST_F(PreinstalledWebAppManagerTest, InvalidUninstallAndReplace) {
   ExpectHistograms(/*enabled=*/0, /*disabled=*/0, /*errors=*/2);
 }
 
-TEST_F(PreinstalledWebAppManagerTest, PreinstalledWebAppInstallDisabled) {
+TEST_P(PreinstalledWebAppManagerTest, PreinstalledWebAppInstallDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
       features::kPreinstalledWebAppInstallation);
@@ -456,7 +505,7 @@ TEST_F(PreinstalledWebAppManagerTest, PreinstalledWebAppInstallDisabled) {
       PreinstalledWebAppManager::kHistogramDisabledCount, 0);
 }
 
-TEST_F(PreinstalledWebAppManagerTest, EnabledByFinch) {
+TEST_P(PreinstalledWebAppManagerTest, EnabledByFinch) {
   base::AutoReset<bool> testing_scope =
       SetPreinstalledAppInstallFeatureAlwaysEnabledForTesting();
 
@@ -469,7 +518,7 @@ TEST_F(PreinstalledWebAppManagerTest, EnabledByFinch) {
   ExpectHistograms(/*enabled=*/2, /*disabled=*/0, /*errors=*/0);
 }
 
-TEST_F(PreinstalledWebAppManagerTest, NotEnabledByFinch) {
+TEST_P(PreinstalledWebAppManagerTest, NotEnabledByFinch) {
   const auto app_infos = LoadApps("enabled_by_finch");
 
   // The enabled_by_finch directory contains two JSON file containing apps
@@ -479,64 +528,91 @@ TEST_F(PreinstalledWebAppManagerTest, NotEnabledByFinch) {
   ExpectHistograms(/*enabled=*/0, /*disabled=*/2, /*errors=*/0);
 }
 
-TEST_F(PreinstalledWebAppManagerTest, GuestUser) {
+TEST_P(PreinstalledWebAppManagerTest, GuestUser) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // App service is available for OTR profile in Guest mode.
+  auto primary_profile = CreateGuestProfileAndLogin();
+  auto* otr_profile =
+      primary_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  VerifySetOfApps(otr_profile, {GURL(kAppAllUrl), GURL(kAppGuestUrl)});
+#else
   VerifySetOfApps(CreateGuestProfileAndLogin().get(),
                   {GURL(kAppAllUrl), GURL(kAppGuestUrl)});
+#endif
 }
 
-TEST_F(PreinstalledWebAppManagerTest, UnmanagedUser) {
+TEST_P(PreinstalledWebAppManagerTest, UnmanagedUser) {
   VerifySetOfApps(CreateProfileAndLogin().get(),
                   {GURL(kAppAllUrl), GURL(kAppUnmanagedUrl)});
 }
 
-TEST_F(PreinstalledWebAppManagerTest, ManagedUser) {
+TEST_P(PreinstalledWebAppManagerTest, ManagedUser) {
   const auto profile = CreateProfileAndLogin();
   profile->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
   VerifySetOfApps(profile.get(), {GURL(kAppAllUrl), GURL(kAppManagedUrl)});
 }
-#else
-// No app is expected for non-ChromeOS builds.
-TEST_F(PreinstalledWebAppManagerTest, NoApp) {
-  EXPECT_TRUE(LoadApps(kUserTypesTestDir, CreateProfile().get()).empty());
-}
-#endif  // defined(OS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// TODO(crbug.com/1252273): Enable test for Lacros.
-TEST_F(PreinstalledWebAppManagerTest, ChildUser) {
+TEST_P(PreinstalledWebAppManagerTest, ChildUser) {
   const auto profile = CreateProfileAndLogin();
-  profile->SetSupervisedUserId(supervised_users::kChildAccountSUID);
+  profile->SetIsSupervisedProfile();
+  EXPECT_TRUE(profile->IsChild());
   VerifySetOfApps(profile.get(), {GURL(kAppAllUrl), GURL(kAppChildUrl)});
 }
 
-TEST_F(PreinstalledWebAppManagerTest, NonPrimaryProfile) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_P(PreinstalledWebAppManagerTest, NonPrimaryProfile) {
   VerifySetOfApps(CreateProfile().get(),
                   {GURL(kAppAllUrl), GURL(kAppUnmanagedUrl)});
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-// TODO(crbug.com/1252272): Enable extra web apps tests for Lacros.
-TEST_F(PreinstalledWebAppManagerTest, ExtraWebApps) {
+TEST_P(PreinstalledWebAppManagerTest, ExtraWebApps) {
   // The extra_web_apps directory contains two JSON files in different named
   // subdirectories. The --extra-web-apps-dir switch should control which
   // directory apps are loaded from.
-  base::test::ScopedCommandLine command_line;
-  command_line.GetProcessCommandLine()->AppendSwitchASCII(
-      chromeos::switches::kExtraWebAppsDir, "model1");
+  SetExtraWebAppsDir("extra_web_apps", "model1");
 
   const auto app_infos = LoadApps("extra_web_apps");
   EXPECT_EQ(1u, app_infos.size());
   ExpectHistograms(/*enabled=*/1, /*disabled=*/0, /*errors=*/0);
 }
 
-TEST_F(PreinstalledWebAppManagerTest, ExtraWebAppsNoMatchingDirectory) {
-  base::test::ScopedCommandLine command_line;
-  command_line.GetProcessCommandLine()->AppendSwitchASCII(
-      chromeos::switches::kExtraWebAppsDir, "model3");
+TEST_P(PreinstalledWebAppManagerTest, ExtraWebAppsNoMatchingDirectory) {
+  SetExtraWebAppsDir("extra_web_apps", "model3");
 
   const auto app_infos = LoadApps("extra_web_apps");
   EXPECT_EQ(0u, app_infos.size());
   ExpectHistograms(/*enabled=*/0, /*disabled=*/0, /*errors=*/0);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#else
+// No app is expected for non-ChromeOS builds.
+TEST_P(PreinstalledWebAppManagerTest, NoApp) {
+  EXPECT_TRUE(LoadApps(kUserTypesTestDir, CreateProfile().get()).empty());
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_CHROMEOS)
+class DisabledPreinstalledWebAppManagerTest
+    : public PreinstalledWebAppManagerTest {
+ public:
+  DisabledPreinstalledWebAppManagerTest() {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kDisableDefaultApps);
+  }
+};
+
+TEST_P(DisabledPreinstalledWebAppManagerTest, LoadConfigsWhileDisabled) {
+  EXPECT_EQ(LoadApps(kGoodJsonTestDir, /*profile=*/nullptr,
+                     /*disable_default_apps=*/true)
+                .size(),
+            0u);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         DisabledPreinstalledWebAppManagerTest,
+                         ::testing::Bool());
+#endif  // #if BUILDFLAG(IS_CHROMEOS)
+
+INSTANTIATE_TEST_SUITE_P(All, PreinstalledWebAppManagerTest, ::testing::Bool());
 
 }  // namespace web_app

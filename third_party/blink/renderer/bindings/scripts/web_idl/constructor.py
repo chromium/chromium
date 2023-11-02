@@ -1,10 +1,9 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import functools
 
-from .code_generator_info import CodeGeneratorInfo
 from .composition_parts import Identifier
 from .composition_parts import WithCodeGeneratorInfo
 from .composition_parts import WithComponent
@@ -13,7 +12,6 @@ from .composition_parts import WithExposure
 from .composition_parts import WithExtendedAttributes
 from .composition_parts import WithOwner
 from .composition_parts import WithOwnerMixin
-from .exposure import Exposure
 from .function_like import FunctionLike
 from .function_like import OverloadGroup
 from .make_copy import make_copy

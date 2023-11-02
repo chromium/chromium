@@ -1,16 +1,15 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "media/video/fake_gpu_memory_buffer.h"
 
 #include "base/atomic_sequence_num.h"
-#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "media/base/format_utils.h"
 #include "media/base/video_frame.h"
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -48,7 +47,7 @@ class FakeGpuMemoryBufferImpl : public gpu::GpuMemoryBufferImpl {
 
 }  // namespace
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 base::ScopedFD GetDummyFD() {
   base::ScopedFD fd(open("/dev/zero", O_RDWR));
   DCHECK(fd.is_valid());
@@ -78,7 +77,7 @@ FakeGpuMemoryBuffer::FakeGpuMemoryBuffer(const gfx::Size& size,
   static base::AtomicSequenceNumber buffer_id_generator;
   handle_.id = gfx::GpuMemoryBufferId(buffer_id_generator.GetNext());
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   for (size_t i = 0; i < VideoFrame::NumPlanes(video_pixel_format_); i++) {
     const gfx::Size plane_size_in_bytes =
         VideoFrame::PlaneSize(video_pixel_format_, i, size_);
@@ -87,7 +86,7 @@ FakeGpuMemoryBuffer::FakeGpuMemoryBuffer(const gfx::Size& size,
         GetDummyFD());
   }
   handle_.native_pixmap_handle.modifier = modifier;
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 }
 
 FakeGpuMemoryBuffer::~FakeGpuMemoryBuffer() = default;
@@ -135,16 +134,11 @@ gfx::GpuMemoryBufferHandle FakeGpuMemoryBuffer::CloneHandle() const {
   gfx::GpuMemoryBufferHandle handle;
   handle.type = gfx::NATIVE_PIXMAP;
   handle.id = handle_.id;
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   handle.native_pixmap_handle =
       gfx::CloneHandleForIPC(handle_.native_pixmap_handle);
 #endif
   return handle;
-}
-
-ClientBuffer FakeGpuMemoryBuffer::AsClientBuffer() {
-  NOTREACHED();
-  return ClientBuffer();
 }
 
 void FakeGpuMemoryBuffer::OnMemoryDump(
@@ -161,7 +155,8 @@ FakeGpuMemoryBufferSupport::CreateGpuMemoryBufferImplFromHandle(
     gfx::BufferUsage usage,
     gpu::GpuMemoryBufferImpl::DestructionCallback callback,
     gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
-    scoped_refptr<base::UnsafeSharedMemoryPool> pool) {
+    scoped_refptr<base::UnsafeSharedMemoryPool> pool,
+    base::span<uint8_t> premapped_memory) {
   return std::make_unique<FakeGpuMemoryBufferImpl>(size, format);
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_display_service_impl.h"
 #include "chrome/common/notifications/notification_operation.h"
@@ -136,7 +137,7 @@ class StubNotificationDisplayService : public NotificationDisplayServiceImpl {
   base::RepeatingClosure notification_added_closure_;
   base::RepeatingClosure notification_closed_closure_;
   std::vector<NotificationData> notifications_;
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   ProcessNotificationOperationCallback process_notification_operation_delegate_;
 };

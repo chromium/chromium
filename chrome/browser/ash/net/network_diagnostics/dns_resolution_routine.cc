@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/values.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -15,13 +16,16 @@
 #include "content/public/browser/storage_partition.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/net_errors.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace network_diagnostics {
 namespace {
+
+// TODO(https://crbug.com/1164001): remove when migrated to namespace ash.
+namespace mojom = ::chromeos::network_diagnostics::mojom;
 
 constexpr char kHostname[] = "ccd-testing-v4.gstatic.com";
 constexpr int kHttpPort = 80;
@@ -81,7 +85,8 @@ void DnsResolutionRoutine::CreateHostResolver() {
 void DnsResolutionRoutine::OnMojoConnectionError() {
   CreateHostResolver();
   OnComplete(net::ERR_NAME_NOT_RESOLVED, net::ResolveErrorInfo(net::ERR_FAILED),
-             absl::nullopt);
+             /*resolved_addresses=*/absl::nullopt,
+             /*endpoint_results_with_metadata=*/absl::nullopt);
 }
 
 void DnsResolutionRoutine::AttemptResolution() {
@@ -95,8 +100,12 @@ void DnsResolutionRoutine::AttemptResolution() {
   parameters->cache_usage =
       network::mojom::ResolveHostParameters::CacheUsage::DISALLOWED;
 
-  host_resolver_->ResolveHost(net::HostPortPair(kHostname, kHttpPort),
-                              net::NetworkIsolationKey::CreateTransient(),
+  // Intentionally using a HostPortPair not to trigger ERR_DNS_NAME_HTTPS_ONLY
+  // error while resolving http:// scheme host when a HTTPS resource record
+  // exists.
+  host_resolver_->ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
+                                  net::HostPortPair(kHostname, kHttpPort)),
+                              net::NetworkAnonymizationKey::CreateTransient(),
                               std::move(parameters),
                               receiver_.BindNewPipeAndPassRemote());
   // The host resolver is part of the network service, which may be run inside
@@ -110,21 +119,18 @@ void DnsResolutionRoutine::AttemptResolution() {
 void DnsResolutionRoutine::OnComplete(
     int result,
     const net::ResolveErrorInfo& resolve_error_info,
-    const absl::optional<net::AddressList>& resolved_addresses) {
+    const absl::optional<net::AddressList>& resolved_addresses,
+    const absl::optional<net::HostResolverEndpointResults>&
+        endpoint_results_with_metadata) {
   receiver_.reset();
 
-  bool success = result == net::OK && !resolved_addresses->empty() &&
-                 resolved_addresses.has_value();
-  if (success) {
+  if (result == net::OK && !resolved_addresses->empty() &&
+      resolved_addresses.has_value()) {
     resolved_address_received_ = true;
     AnalyzeResultsAndExecuteCallback();
     return;
   }
-  bool retry =
-      std::find(std::begin(kRetryResponseCodes), std::end(kRetryResponseCodes),
-                result) != std::end(kRetryResponseCodes) &&
-      num_retries_ > 0;
-  if (retry) {
+  if (base::Contains(kRetryResponseCodes, result) && num_retries_ > 0) {
     num_retries_--;
     AttemptResolution();
   } else {

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,14 +24,14 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.library_loader.Linker.PreferAddress;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /**
  *  Tests for {@link Linker}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class})
+@Config(manifest = Config.NONE)
 @SuppressWarnings("GuardedBy") // doNothing().when(...).methodLocked() cannot resolve |mLock|.
 public class LinkerTest {
     @Mock
@@ -45,6 +45,7 @@ public class LinkerTest {
 
     @Before
     public void setUp() {
+        UmaRecorderHolder.resetForTesting();
         Linker.setNativesForTesting(mNativeMock);
         ModernLinker.setModernLinkerNativesForTesting(mModernLinkerNativeMock);
     }
@@ -72,7 +73,7 @@ public class LinkerTest {
                 /* asRelroProducer= */ false, PreferAddress.RESERVE_HINT, someAddress);
 
         // Verify.
-        Assert.assertEquals(false, linker.mRelroProducer);
+        Assert.assertFalse(linker.mRelroProducer);
         Mockito.verify(linker).keepMemoryReservationUntilLoad();
         Mockito.verify(mNativeMock).reserveMemoryForLibrary(anyLibInfo());
         Assert.assertNotEquals(null, linker.mLocalLibInfo);
@@ -92,7 +93,7 @@ public class LinkerTest {
                 /* asRelroProducer= */ false, PreferAddress.RESERVE_HINT, someAddress);
 
         // Verify.
-        Assert.assertEquals(false, linker.mRelroProducer);
+        Assert.assertFalse(linker.mRelroProducer);
         Mockito.verify(linker).keepMemoryReservationUntilLoad();
         Mockito.verify(mNativeMock, Mockito.never()).reserveMemoryForLibrary(anyLibInfo());
     }
@@ -108,7 +109,7 @@ public class LinkerTest {
         linker.ensureInitialized(/* asRelroProducer= */ true, PreferAddress.RESERVE_RANDOM, 0);
 
         // Verify.
-        Assert.assertEquals(true, linker.mRelroProducer);
+        Assert.assertTrue(linker.mRelroProducer);
         Mockito.verify(linker).keepMemoryReservationUntilLoad();
         Mockito.verify(mNativeMock)
                 .findMemoryRegionAtRandomAddress(anyLibInfo(), ArgumentMatchers.eq(true));
@@ -200,8 +201,6 @@ public class LinkerTest {
         // Set a fake RELRO FD so that it is not silently ignored when taking the LibInfo from the
         // (simulated) outside.
         libInfo.mRelroFd = 1023;
-        // Ignore closing the fake FD.
-        Mockito.doNothing().when(libInfo).close();
         // Create the bundle following the _internal_ format of the Linker. Not great, but shorter
         // than factoring out this logic from the Linker only for testing.
         Bundle relros = libInfo.toBundle();
@@ -304,7 +303,7 @@ public class LinkerTest {
         // Verify.
         Assert.assertNotNull(linker.mWebviewReservationSearchResult);
         Assert.assertEquals(1,
-                ShadowRecordHistogram.getHistogramTotalCountForTesting(
+                RecordHistogram.getHistogramTotalCountForTesting(
                         "ChromiumAndroidLinker.TimeToFindWebViewReservation.NotFound.Child"));
     }
 }

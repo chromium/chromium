@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,7 @@ void ShowChooserBubble(
     Browser* browser,
     std::unique_ptr<permissions::ChooserController> controller) {
   auto* contents = browser->tab_strip_model()->GetActiveWebContents();
-  chrome::ShowDeviceChooserDialog(contents->GetMainFrame(),
+  chrome::ShowDeviceChooserDialog(contents->GetPrimaryMainFrame(),
                                   std::move(controller));
 }
 

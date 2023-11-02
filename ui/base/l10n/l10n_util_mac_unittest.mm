@@ -1,15 +1,15 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+#include "ui/base/l10n/l10n_util_mac.h"
 
 #import <Foundation/Foundation.h>
 #include <stddef.h>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/sys_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
-#include "ui/base/l10n/l10n_util_mac.h"
 
 typedef PlatformTest L10nUtilMacTest;
 
@@ -38,7 +38,7 @@ TEST_F(L10nUtilMacTest, FixUpWindowsStyleLabel) {
     { @"foo(&b)...", @"foo\u2026" },
     { @"(&b)foo", @"foo" },
   };
-  for (size_t idx = 0; idx < base::size(data); ++idx) {
+  for (size_t idx = 0; idx < std::size(data); ++idx) {
     std::u16string input16(base::SysNSStringToUTF16(data[idx].input));
 
     NSString* result = l10n_util::FixUpWindowsStyleLabel(input16);
@@ -48,25 +48,4 @@ TEST_F(L10nUtilMacTest, FixUpWindowsStyleLabel) {
         << "For idx " << idx << ", expected '" << [data[idx].output UTF8String]
         << "', got '" << [result UTF8String] << "'";
   }
-}
-
-TEST_F(L10nUtilMacTest, GetDisplayNameForLocale) {
-  // Test documented error cases and return values of GetDisplayNameForLocale.
-  std::u16string result = l10n_util::GetDisplayNameForLocale("xyz", "en");
-  EXPECT_EQ(base::SysNSStringToUTF16(@"xyz"), result);
-
-  result = l10n_util::GetDisplayNameForLocale("Xyz", "en");
-  EXPECT_EQ(base::SysNSStringToUTF16(@"xyz"), result);
-
-  result = l10n_util::GetDisplayNameForLocale("Xyz-Xyz", "en");
-  EXPECT_EQ(base::SysNSStringToUTF16(@"xyz (XYZ)"), result);
-
-  result = l10n_util::GetDisplayNameForLocale("Xyz-", "en");
-  EXPECT_EQ(base::SysNSStringToUTF16(@"xyz"), result);
-
-  result = l10n_util::GetDisplayNameForLocale("xyz-xyz-xyz", "en");
-  EXPECT_EQ(base::SysNSStringToUTF16(@"xyz-xyz (XYZ)"), result);
-
-  result = l10n_util::GetDisplayNameForLocale("", "en");
-  EXPECT_EQ(base::SysNSStringToUTF16(@""), result);
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <map>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -14,9 +15,11 @@
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
+#include "build/build_config.h"
 #include "cc/paint/paint_record.h"
 #include "cc/paint/paint_recorder.h"
 #include "cc/paint/skia_paint_canvas.h"
@@ -31,19 +34,23 @@
 #include "third_party/skia/src/utils/SkMultiPictureDocument.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "printing/pdf_metafile_cg_mac.h"
 #endif
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include "base/file_descriptor_posix.h"
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/files/file_util.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace {
+
+// `InitFromData()` should make a copy of data for the safety of all operations
+// which would then operate upon that.
+constexpr bool kInitFromDataCopyData = true;
 
 bool WriteAssetToBuffer(const SkStreamAsset* asset, void* buffer, size_t size) {
   // Calling duplicate() keeps original asset state unchanged.
@@ -79,7 +86,7 @@ struct MetafileSkiaData {
   ContentToProxyTokenMap subframe_content_info;
   std::map<uint32_t, sk_sp<SkPicture>> subframe_pics;
   int document_cookie = 0;
-  ContentProxySet* typeface_content_info = nullptr;
+  raw_ptr<ContentProxySet> typeface_content_info = nullptr;
 
   // The scale factor is used because Blink occasionally calls
   // PaintCanvas::getTotalMatrix() even though the total matrix is not as
@@ -88,7 +95,7 @@ struct MetafileSkiaData {
   SkSize size;
   mojom::SkiaDocumentType type;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   PdfMetafileCg pdf_cg;
 #endif
 };
@@ -119,7 +126,7 @@ void MetafileSkia::UtilizeTypefaceContext(
 // MetafileSkia does.
 bool MetafileSkia::InitFromData(base::span<const uint8_t> data) {
   data_->data_stream = std::make_unique<SkMemoryStream>(
-      data.data(), data.size(), /*copy_data=*/true);
+      data.data(), data.size(), kInitFromDataCopyData);
   return true;
 }
 
@@ -265,6 +272,11 @@ bool MetafileSkia::GetData(void* dst_buffer, uint32_t dst_buffer_size) const {
                             base::checked_cast<size_t>(dst_buffer_size));
 }
 
+bool MetafileSkia::ShouldCopySharedMemoryRegionData() const {
+  // When `InitFromData()` copies the data, the caller doesn't have to.
+  return !kInitFromDataCopyData;
+}
+
 mojom::MetafileDataType MetafileSkia::GetDataType() const {
   return mojom::MetafileDataType::kPDF;
 }
@@ -287,7 +299,7 @@ printing::NativeDrawingContext MetafileSkia::context() const {
   return nullptr;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 bool MetafileSkia::Playback(printing::NativeDrawingContext hdc,
                             const RECT* rect) const {
   NOTREACHED();
@@ -299,7 +311,7 @@ bool MetafileSkia::SafePlayback(printing::NativeDrawingContext hdc) const {
   return false;
 }
 
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 /* TODO(caryclark): The set up of PluginInstance::PrintPDFOutput may result in
    rasterized output.  Even if that flow uses PdfMetafileCg::RenderPage,
    the drawing of the PDF into the canvas may result in a rasterized output.
@@ -318,7 +330,8 @@ bool MetafileSkia::RenderPage(unsigned int page_number,
       return false;
     size_t length = data_->data_stream->getLength();
     std::vector<uint8_t> buffer(length);
-    (void)WriteAssetToBuffer(data_->data_stream.get(), &buffer[0], length);
+    std::ignore =
+        WriteAssetToBuffer(data_->data_stream.get(), &buffer[0], length);
     data_->pdf_cg.InitFromData(buffer);
   }
   return data_->pdf_cg.RenderPage(page_number, context, rect, autorotate,
@@ -326,7 +339,7 @@ bool MetafileSkia::RenderPage(unsigned int page_number,
 }
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 bool MetafileSkia::SaveToFileDescriptor(int fd) const {
   if (GetDataSize() == 0u)
     return false;
@@ -370,7 +383,7 @@ bool MetafileSkia::SaveTo(base::File* file) const {
 
   return true;
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 std::unique_ptr<MetafileSkia> MetafileSkia::GetMetafileForCurrentPage(
     mojom::SkiaDocumentType type) {

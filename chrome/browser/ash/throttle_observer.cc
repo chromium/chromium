@@ -1,32 +1,12 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/throttle_observer.h"
 
 namespace ash {
-namespace {
 
-std::string LevelToString(ThrottleObserver::PriorityLevel level) {
-  switch (level) {
-    case ThrottleObserver::PriorityLevel::LOW:
-      return "PriorityLevel::LOW";
-    case ThrottleObserver::PriorityLevel::NORMAL:
-      return "PriorityLevel::NORMAL";
-    case ThrottleObserver::PriorityLevel::IMPORTANT:
-      return "PriorityLevel::IMPORTANT";
-    case ThrottleObserver::PriorityLevel::CRITICAL:
-      return "PriorityLevel::CRITICAL";
-    case ThrottleObserver::PriorityLevel::UNKNOWN:
-      return "PriorityLevel::UNKNOWN";
-  }
-}
-
-}  // namespace
-
-ThrottleObserver::ThrottleObserver(ThrottleObserver::PriorityLevel level,
-                                   const std::string& name)
-    : level_(level), name_(name) {}
+ThrottleObserver::ThrottleObserver(const std::string& name) : name_(name) {}
 
 ThrottleObserver::~ThrottleObserver() = default;
 
@@ -46,21 +26,15 @@ void ThrottleObserver::StopObserving() {
 }
 
 void ThrottleObserver::SetActive(bool active) {
-  if (active_ == active)
-    return;
   active_ = active;
   if (callback_)
-    callback_.Run();
+    callback_.Run(this);
 }
 
-std::string ThrottleObserver::GetDebugDescription() const {
-  return ("ThrottleObserver(" + name() + ", " + LevelToString(level()) + ", " +
-          (active() ? "active" : "inactive") + ")");
-}
-
-std::ostream& operator<<(std::ostream& os,
-                         const ThrottleObserver::PriorityLevel& level) {
-  return os << LevelToString(level);
+void ThrottleObserver::SetEnforced(bool enforced) {
+  enforced_ = enforced;
+  if (callback_)
+    callback_.Run(this);
 }
 
 }  // namespace ash

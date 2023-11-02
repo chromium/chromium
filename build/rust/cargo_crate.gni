@@ -1,4 +1,4 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -11,7 +11,7 @@ import("//build/rust/rust_target.gni")
 # is none too efficient. (It will stall the build pipeline whilst
 # it runs build scripts to work out what flags are needed). First
 # party code should directly use first-class gn targets, such as
-# //build/rust/rust_source_set.gni or similar.
+# //build/rust/rust_static_library.gni or similar.
 #
 # Because it's intended for third-party code, it automatically
 # defaults to //build/config/compiler:no_chromium_code which
@@ -25,15 +25,15 @@ import("//build/rust/rust_target.gni")
 #  epoch
 #  deps
 #  features
-#  skip_unit_tests
+#  build_native_rust_unit_tests
 #  edition
 #  crate_name
-#    All just as in rust_source_set.gni
+#    All just as in rust_static_library.gni
 #  library_configs/executable_configs
 #    All just as in rust_target.gni
 #
 #  dev_deps
-#    Same meaning as test_deps in rust_source_set.gni, but called
+#    Same meaning as test_deps in rust_static_library.gni, but called
 #    dev_deps to match Cargo.toml better.
 #
 #  build_root (optional)
@@ -64,22 +64,66 @@ import("//build/rust/rust_target.gni")
 #  crate_type "bin", "proc-macro" or "rlib" (optional)
 #    Whether to build an executable. The default is "rlib".
 #    At present others are not supported.
+#
+#  cargo_pkg_authors
+#  cargo_pkg_version
+#  cargo_pkg_name
+#  cargo_pkg_description
+#    Strings as found within 'version' and similar fields within Cargo.toml.
+#    Converted to environment variables passed to rustc, in case the crate
+#    uses clap `crate_version!` or `crate_authors!` macros (fairly common in
+#    command line tool help)
 
 template("cargo_crate") {
   orig_target_name = target_name
 
+  _crate_name = orig_target_name
+  if (defined(invoker.crate_name)) {
+    _crate_name = invoker.crate_name
+  }
+
+  # Executables need to have unique names. Work out a prefix.
   if (defined(invoker.build_root)) {
-    # Executables need to have unique names. Work out a prefix.
-    _cratelabel = orig_target_name
-    if (defined(invoker.crate_name)) {
-      _cratelabel = invoker.crate_name
-    }
     _epochlabel = "vunknown"
     if (defined(invoker.epoch)) {
-      _tempepoch = string_replace(invoker.epoch, ".", "")
+      _tempepoch = string_replace(invoker.epoch, ".", "_")
       _epochlabel = "v${_tempepoch}"
     }
-    build_script_name = "${_cratelabel}_${_epochlabel}_build_script"
+    build_script_name =
+        "${_crate_name}_${target_name}_${_epochlabel}_build_script"
+  }
+
+  _rustenv = []
+  if (defined(invoker.rustenv)) {
+    _rustenv = invoker.rustenv
+  }
+  if (defined(invoker.cargo_pkg_authors)) {
+    _rustenv += [ string_join("=",
+                              [
+                                "CARGO_PKG_AUTHORS",
+                                invoker.cargo_pkg_authors,
+                              ]) ]
+  }
+  if (defined(invoker.cargo_pkg_version)) {
+    _rustenv += [ string_join("=",
+                              [
+                                "CARGO_PKG_VERSION",
+                                invoker.cargo_pkg_version,
+                              ]) ]
+  }
+  if (defined(invoker.cargo_pkg_name)) {
+    _rustenv += [ string_join("=",
+                              [
+                                "CARGO_PKG_NAME",
+                                invoker.cargo_pkg_name,
+                              ]) ]
+  }
+  if (defined(invoker.cargo_pkg_description)) {
+    _rustenv += [ string_join("=",
+                              [
+                                "CARGO_PKG_DESCRIPTION",
+                                invoker.cargo_pkg_description,
+                              ]) ]
   }
 
   # The main target, either a Rust source set or an executable
@@ -89,6 +133,10 @@ template("cargo_crate") {
     if (defined(invoker.crate_type)) {
       crate_type = invoker.crate_type
     }
+    if (!defined(rustflags)) {
+      rustflags = []
+    }
+    rustenv = _rustenv
     if (crate_type == "bin") {
       target_type = "executable"
       assert(!defined(invoker.epoch))
@@ -99,8 +147,20 @@ template("cargo_crate") {
       target_type = "rust_library"
     }
 
-    # C++ should never bind directly to a third party crate.
-    create_cpp_groups = false
+    if (!defined(build_native_rust_unit_tests)) {
+      build_native_rust_unit_tests = true
+    }
+
+    # We may generate multiple build rules for the same Cargo crate, as they may
+    # have multiple build configurations: for use from deps, build-deps or
+    # dev-deps. But that would try to build multiple crates with the same name,
+    # colliding on the libcratename.rlib outputs. So we specify an output_dir
+    # for Cargo crates which includes the GN target name to disambiguate them.
+    output_dir = "${target_out_dir}/${orig_target_name}"
+
+    # The unit tests for each target, if generated, should be unique as well,
+    # and needs to be unique within the name of the binary itself.
+    unit_test_target = "${_crate_name}_${orig_target_name}_unittests"
 
     forward_variables_from(invoker,
                            "*",
@@ -108,6 +168,10 @@ template("cargo_crate") {
                              "build_root",
                              "build_deps",
                              "build_sources",
+                             "build_script_inputs",
+                             "build_script_outputs",
+                             "output_dir",
+                             "unit_test_target",
                              "target_type",
                              "visibility",
                              "testonly",
@@ -122,12 +186,15 @@ template("cargo_crate") {
       if (!defined(sources)) {
         sources = []
       }
-      if (!defined(rustflags)) {
-        rustflags = []
-      }
       if (defined(invoker.dev_deps)) {
         test_deps = invoker.dev_deps
       }
+
+      # Re-compute the directory the build script used as its `--out-dir`. This
+      # logic needs to match that in `action("${build_script_name}_output")`.
+      _build_script_target_out_dir =
+          get_label_info(":${build_script_name}_output", "target_out_dir")
+      _build_script_out_dir = "$_build_script_target_out_dir/$orig_target_name"
 
       # This... is a bit weird. We generate a file called cargo_flags.rs which
       # does not actually contain Rust code, but instead some flags to add
@@ -135,10 +202,24 @@ template("cargo_crate") {
       # we can include it in the 'sources' line and thus have dependency
       # calculation done correctly. data_deps won't work because targets don't
       # require them to be present until runtime.
-      flags_file = get_label_info(":${orig_target_name}_build_script_output",
-                                  "target_out_dir") + "/cargo_flags.rs"
-      rustflags += [ "@" + rebase_path(flags_file) ]
+      flags_file = "$_build_script_out_dir/cargo_flags.rs"
+      rustflags += [ "@" + rebase_path(flags_file, root_build_dir) ]
       sources += [ flags_file ]
+      if (defined(invoker.build_script_outputs)) {
+        # Build scripts may output arbitrary files. They are usually included in
+        # the main Rust target using include! or include_str! and therefore the
+        # filename may be .rs or may be arbitrary. We want to educate ninja
+        # about the dependency either way.
+        foreach(extra_source,
+                filter_include(invoker.build_script_outputs, [ "*.rs" ])) {
+          sources += [ "$_build_script_out_dir/$extra_source" ]
+        }
+        inputs = []
+        foreach(extra_source,
+                filter_exclude(invoker.build_script_outputs, [ "*.rs" ])) {
+          inputs += [ "$_build_script_out_dir/$extra_source" ]
+        }
+      }
       deps += [ ":${build_script_name}_output" ]
     } else {
       not_needed([ "orig_target_name" ])
@@ -151,21 +232,30 @@ template("cargo_crate") {
       script = rebase_path("//build/rust/run_build_script.py")
       build_script_target = ":${build_script_name}($host_toolchain)"
       deps = [ build_script_target ]
-      flags_file = "$target_out_dir/cargo_flags.rs"
-      build_script_out_dir = get_label_info(build_script_target, "root_out_dir")
-      build_script = "$build_script_out_dir/${build_script_name}"
+
+      _build_script_exe_dir =
+          get_label_info(build_script_target, "root_out_dir")
+      build_script = "$_build_script_exe_dir/${build_script_name}"
       if (is_win) {
         build_script = "${build_script}.exe"
       }
+
+      _build_script_out_dir = "$target_out_dir/$orig_target_name"
+      flags_file = "$_build_script_out_dir/cargo_flags.rs"
+
+      inputs = [ build_script ]
+      outputs = [ flags_file ]
       args = [
         "--build-script",
-        rebase_path(build_script),
+        rebase_path(build_script, root_build_dir),
         "--output",
-        rebase_path(flags_file),
+        rebase_path(flags_file, root_build_dir),
         "--rust-prefix",
-        rust_prefix,
+        rebase_path("${rust_sysroot}/bin"),
         "--out-dir",
-        target_out_dir,
+        rebase_path(_build_script_out_dir, root_build_dir),
+        "--src-dir",
+        rebase_path(get_path_info(invoker.build_root, "dir"), root_build_dir),
       ]
       if (defined(rust_abi_target) && rust_abi_target != "") {
         args += [
@@ -173,10 +263,20 @@ template("cargo_crate") {
           rust_abi_target,
         ]
       }
-      inputs = [ build_script ]
-      outputs = [ flags_file ]
+      if (defined(invoker.features)) {
+        args += [ "--features" ]
+        args += invoker.features
+      }
       if (defined(invoker.build_script_outputs)) {
-        outputs += invoker.build_script_outputs
+        args += [ "--generated-files" ]
+        args += invoker.build_script_outputs
+        foreach(generated_file, invoker.build_script_outputs) {
+          outputs += [ "$_build_script_out_dir/$generated_file" ]
+        }
+      }
+      if (_rustenv != []) {
+        args += [ "--env" ]
+        args += _rustenv
       }
       if (defined(invoker.build_script_inputs)) {
         inputs += invoker.build_script_inputs
@@ -186,13 +286,12 @@ template("cargo_crate") {
     if (current_toolchain == host_toolchain) {
       rust_target(build_script_name) {
         target_type = "executable"
-        create_cpp_groups = false
-        skip_unit_tests = true
         sources = invoker.build_sources
         crate_root = invoker.build_root
         if (defined(invoker.build_deps)) {
           deps = invoker.build_deps
         }
+        rustenv = _rustenv
         forward_variables_from(invoker,
                                [
                                  "features",
@@ -208,6 +307,8 @@ template("cargo_crate") {
                    "build_sources",
                    "build_deps",
                    "build_root",
+                   "build_script_inputs",
+                   "build_script_outputs",
                  ])
     }
   }

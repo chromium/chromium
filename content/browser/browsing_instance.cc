@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,10 +25,14 @@ int BrowsingInstance::next_browsing_instance_id_ = 1;
 
 BrowsingInstance::BrowsingInstance(
     BrowserContext* browser_context,
-    const WebExposedIsolationInfo& web_exposed_isolation_info)
+    const WebExposedIsolationInfo& web_exposed_isolation_info,
+    bool is_guest,
+    bool is_fenced)
     : isolation_context_(
           BrowsingInstanceId::FromUnsafeValue(next_browsing_instance_id_++),
-          BrowserOrResourceContext(browser_context)),
+          BrowserOrResourceContext(browser_context),
+          is_guest,
+          is_fenced),
       active_contents_count_(0u),
       default_site_instance_(nullptr),
       web_exposed_isolation_info_(web_exposed_isolation_info) {
@@ -55,9 +59,12 @@ scoped_refptr<SiteInstanceImpl> BrowsingInstance::GetSiteInstanceForURL(
   // No current SiteInstance for this site, so let's create one.
   scoped_refptr<SiteInstanceImpl> instance = new SiteInstanceImpl(this);
 
-  // Set the site of this new SiteInstance, which will register it with us,
-  // unless this URL should leave the SiteInstance's site unassigned.
-  if (SiteInstance::ShouldAssignSiteForURL(url_info.url))
+  // Set the site of this new SiteInstance, which will register it with us.
+  // Some URLs should leave the SiteInstance's site unassigned, though if
+  // `instance` is for a guest, we should always set the site to ensure that it
+  // carries guest information contained within SiteInfo.
+  if (SiteInstance::ShouldAssignSiteForURL(url_info.url) ||
+      isolation_context_.is_guest())
     instance->SetSite(url_info);
   return instance;
 }
@@ -73,6 +80,17 @@ SiteInfo BrowsingInstance::GetSiteInfoForURL(const UrlInfo& url_info,
   return ComputeSiteInfoForURL(url_info);
 }
 
+scoped_refptr<SiteInstanceImpl> BrowsingInstance::GetSiteInstanceForSiteInfo(
+    const SiteInfo& site_info) {
+  auto i = site_instance_map_.find(site_info);
+  if (i != site_instance_map_.end())
+    return i->second;
+
+  scoped_refptr<SiteInstanceImpl> instance = new SiteInstanceImpl(this);
+  instance->SetSite(site_info);
+  return instance;
+}
+
 scoped_refptr<SiteInstanceImpl> BrowsingInstance::GetSiteInstanceForURLHelper(
     const UrlInfo& url_info,
     bool allow_default_instance) {
@@ -86,7 +104,8 @@ scoped_refptr<SiteInstanceImpl> BrowsingInstance::GetSiteInstanceForURLHelper(
   if (allow_default_instance &&
       SiteInstanceImpl::CanBePlacedInDefaultSiteInstance(
           isolation_context_, url_info.url, site_info)) {
-    scoped_refptr<SiteInstanceImpl> site_instance = default_site_instance_;
+    scoped_refptr<SiteInstanceImpl> site_instance =
+        default_site_instance_.get();
     if (!site_instance) {
       site_instance = new SiteInstanceImpl(this);
 
@@ -116,8 +135,10 @@ void BrowsingInstance::RegisterSiteInstance(SiteInstanceImpl* site_instance) {
   if (storage_partition_config_.has_value()) {
     // We should only use a single StoragePartition within a BrowsingInstance.
     // If we're attempting to use multiple, something has gone wrong with the
-    // logic at upper layers.
+    // logic at upper layers.  Similarly, whether this StoragePartition is for
+    // a guest should remain constant over a BrowsingInstance's lifetime.
     CHECK_EQ(storage_partition_config_.value(), storage_partition_config);
+    CHECK_EQ(isolation_context_.is_guest(), site_instance->IsGuest());
   } else {
     storage_partition_config_ = storage_partition_config;
   }
@@ -199,9 +220,62 @@ SiteInfo BrowsingInstance::ComputeSiteInfoForURL(
           : UrlInfo(UrlInfoInit(url_info).WithStoragePartitionConfig(
                 storage_partition_config_));
 
+  // The WebExposedIsolationInfos must be compatible for this function to make
+  // sense.
+  DCHECK(WebExposedIsolationInfo::AreCompatible(
+      url_info.web_exposed_isolation_info, web_exposed_isolation_info_));
+
+  // If the passed in UrlInfo has a null WebExposedIsolationInfo, meaning that
+  // it is compatible with any isolation state, we reuse the isolation state of
+  // the BrowsingInstance.
   url_info_with_partition.web_exposed_isolation_info =
-      web_exposed_isolation_info_;
+      url_info.web_exposed_isolation_info.value_or(web_exposed_isolation_info_);
   return SiteInfo::Create(isolation_context_, url_info_with_partition);
+}
+
+int BrowsingInstance::EstimateOriginAgentClusterOverhead() {
+  DCHECK(SiteIsolationPolicy::IsProcessIsolationForOriginAgentClusterEnabled());
+
+  std::set<SiteInfo> site_info_set;
+  std::set<SiteInfo> site_info_set_no_oac;
+
+  // The following computes an estimate of how many additional processes have
+  // been created to deal with OriginAgentCluster (OAC) headers. When OAC
+  // headers forces an additional process, that corresponds to the SiteInfo's
+  // is_origin_keyed_ flag being set. To compute the estimate, we use the set of
+  // unique SiteInstances (each represented by a unique SiteInfo) in each
+  // BrowsingInstance as a proxy for the set of different RenderProcesses. We
+  // start with the total count of SiteInfos, then we create a new set of
+  // SiteInfos created by resetting the is_origin_keyed_ flag on each of the
+  // SiteInfos (along with any corresponding adjustments to the site_url_ and
+  // process_lock_url_ to reflect the possible conversion from origin to site).
+  // The assumption here is that SiteInfos that forced a new process due to OAC
+  // may no longer be unique once these values are reset, and as such the new
+  // set will have less elements than the original set, with the difference
+  // being the count of extra SiteInstances due to OAC. There are cases where
+  // ignoring the OAC header would still result in an extra process, e.g. when
+  // the SiteInfo's origin appears in the command-line origin isolation list.
+  //
+  // The estimate is computed using several simplifying assumptions:
+  // 1) We only consider HTTPS SiteInfos to compute the additional SiteInfos.
+  // This assumption should generally be valid, since we don't apply
+  // is_origin_keyed_ to non-HTTPS schemes.
+  // 2) We assume that SiteInfos from multiple BrowsingInstances aren't
+  // coalesced into a single RenderProcess.  While this isn't true in general,
+  // it is difficult in practice to account for, so we don't try to.
+  for (auto& entry : site_instance_map_) {
+    const SiteInfo& site_info = entry.first;
+    GURL process_lock_url = site_info.process_lock_url();
+    if (!process_lock_url.SchemeIs(url::kHttpsScheme))
+      continue;
+
+    site_info_set.insert(site_info);
+    site_info_set_no_oac.insert(
+        site_info.GetNonOriginKeyedEquivalentForMetrics(isolation_context_));
+  }
+  DCHECK_GE(site_info_set.size(), site_info_set_no_oac.size());
+  int result = site_info_set.size() - site_info_set_no_oac.size();
+  return result;
 }
 
 }  // namespace content

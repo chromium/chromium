@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,10 @@ import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 /**
  * An object describing the profile.
  */
-export type ProfileInfo = {
-  name: string,
-  iconUrl: string,
-};
+export interface ProfileInfo {
+  name: string;
+  iconUrl: string;
+}
 
 export interface ProfileInfoBrowserProxy {
   /**

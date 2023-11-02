@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,11 +23,13 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/test/fake_externally_managed_app_manager.h"
-#include "chrome/browser/web_applications/test/fake_web_app_registry_controller.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/test/fake_web_app_provider.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/webapps/browser/install_result_code.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/network/test/test_cookie_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -44,7 +46,7 @@ const char kTestUrl2[] = "https://test-url-2.com/";
 
 web_app::ExternalInstallOptions GetInstallOptionsForUrl(const GURL& url) {
   web_app::ExternalInstallOptions options(
-      url, blink::mojom::DisplayMode::kStandalone,
+      url, web_app::UserDisplayMode::kStandalone,
       web_app::ExternalInstallSource::kInternalDefault);
   options.override_previous_user_uninstall = true;
   options.bypass_service_worker_check = true;
@@ -202,23 +204,19 @@ class AndroidSmsAppSetupControllerImplTest : public testing::Test {
         std::make_unique<TestPwaDelegate>(fake_cookie_manager_.get());
     test_pwa_delegate_ = test_pwa_delegate.get();
 
-    fake_registry_controller_ =
-        std::make_unique<web_app::FakeWebAppRegistryController>();
-    controller().SetUp(&profile_);
+    provider_ = web_app::FakeWebAppProvider::Get(&profile_);
+    provider_->SetDefaultFakeSubsystems();
+    web_app::test::AwaitStartWebAppProviderAndSubsystems(&profile_);
 
-    fake_externally_managed_app_manager_ =
-        std::make_unique<web_app::FakeExternallyManagedAppManager>(&profile_);
-    fake_externally_managed_app_manager_->SetSubsystems(
-        &controller().registrar(), nullptr, nullptr, nullptr, nullptr);
-    fake_externally_managed_app_manager_->SetHandleInstallRequestCallback(
+    fake_externally_managed_app_manager().SetHandleInstallRequestCallback(
         base::BindLambdaForTesting(
-            [this](const web_app::ExternalInstallOptions& install_options)
-                -> web_app::ExternallyManagedAppManager::InstallResult {
-              return {.code = install_result_code_};
+            [this](const web_app::ExternalInstallOptions& install_options) {
+              return web_app::ExternallyManagedAppManager::InstallResult(
+                  install_result_code_);
             }));
 
     setup_controller_ = base::WrapUnique(new AndroidSmsAppSetupControllerImpl(
-        &profile_, fake_externally_managed_app_manager_.get(),
+        &profile_, &fake_externally_managed_app_manager(),
         host_content_settings_map_));
 
     std::unique_ptr<AndroidSmsAppSetupControllerImpl::PwaDelegate>
@@ -226,8 +224,6 @@ class AndroidSmsAppSetupControllerImplTest : public testing::Test {
 
     static_cast<AndroidSmsAppSetupControllerImpl*>(setup_controller_.get())
         ->SetPwaDelegateForTesting(std::move(base_delegate));
-
-    controller().Init();
   }
 
   void CallSetUpAppWithRetries(const GURL& app_url,
@@ -235,14 +231,14 @@ class AndroidSmsAppSetupControllerImplTest : public testing::Test {
                                size_t num_failure_tries,
                                bool expected_setup_result) {
     const auto& install_requests =
-        fake_externally_managed_app_manager_->install_requests();
+        fake_externally_managed_app_manager().install_requests();
     size_t num_install_requests_before_call = install_requests.size();
 
     base::RunLoop run_loop;
     base::HistogramTester histogram_tester;
 
     SetInstallResultCode(
-        web_app::InstallResultCode::kGetWebApplicationInfoFailed);
+        webapps::InstallResultCode::kGetWebAppInstallInfoFailed);
 
     setup_controller_->SetUpApp(
         app_url, install_url,
@@ -278,7 +274,7 @@ class AndroidSmsAppSetupControllerImplTest : public testing::Test {
     }
 
     // Send success code for last attempt.
-    SetInstallResultCode(web_app::InstallResultCode::kSuccessNewInstall);
+    SetInstallResultCode(webapps::InstallResultCode::kSuccessNewInstall);
     task_environment_.FastForwardBy(
         AndroidSmsAppSetupControllerImpl::kInstallRetryDelay *
         (1 << (num_failure_tries - 1)));
@@ -299,7 +295,7 @@ class AndroidSmsAppSetupControllerImplTest : public testing::Test {
                     const GURL& install_url,
                     size_t num_expected_app_installs) {
     const auto& install_requests =
-        fake_externally_managed_app_manager_->install_requests();
+        fake_externally_managed_app_manager().install_requests();
     size_t num_install_requests_before_call = install_requests.size();
 
     base::RunLoop run_loop;
@@ -336,7 +332,7 @@ class AndroidSmsAppSetupControllerImplTest : public testing::Test {
     if (num_expected_app_installs) {
       histogram_tester.ExpectBucketCount(
           "AndroidSms.PWAInstallationResult",
-          web_app::InstallResultCode::kSuccessNewInstall,
+          webapps::InstallResultCode::kSuccessNewInstall,
           num_expected_app_installs);
       histogram_tester.ExpectBucketCount(
           "AndroidSms.EffectivePWAInstallationSuccess", true, 1);
@@ -411,21 +407,20 @@ class AndroidSmsAppSetupControllerImplTest : public testing::Test {
 
   TestPwaDelegate* test_pwa_delegate() { return test_pwa_delegate_; }
 
-  web_app::FakeWebAppRegistryController& controller() {
-    return *fake_registry_controller_;
+  void SetInstallResultCode(webapps::InstallResultCode result_code) {
+    install_result_code_ = result_code;
   }
 
-  void SetInstallResultCode(web_app::InstallResultCode result_code) {
-    install_result_code_ = result_code;
+  web_app::FakeExternallyManagedAppManager&
+  fake_externally_managed_app_manager() {
+    return static_cast<web_app::FakeExternallyManagedAppManager&>(
+        provider_->externally_managed_app_manager());
   }
 
  private:
   ContentSetting GetNotificationSetting(const GURL& url) {
-    std::unique_ptr<base::Value> notification_settings_value =
-        host_content_settings_map_->GetWebsiteSetting(
-            url, GURL() /* top_level_url */, ContentSettingsType::NOTIFICATIONS,
-            nullptr);
-    return static_cast<ContentSetting>(notification_settings_value->GetInt());
+    return host_content_settings_map_->GetContentSetting(
+        url, GURL() /* top_level_url */, ContentSettingsType::NOTIFICATIONS);
   }
 
   void OnSetUpAppResult(base::OnceClosure quit_closure, bool success) {
@@ -448,8 +443,8 @@ class AndroidSmsAppSetupControllerImplTest : public testing::Test {
     std::move(quit_closure).Run();
   }
 
-  web_app::InstallResultCode install_result_code_ =
-      web_app::InstallResultCode::kSuccessNewInstall;
+  webapps::InstallResultCode install_result_code_ =
+      webapps::InstallResultCode::kSuccessNewInstall;
 
   content::BrowserTaskEnvironment task_environment_;
 
@@ -457,13 +452,11 @@ class AndroidSmsAppSetupControllerImplTest : public testing::Test {
   absl::optional<bool> last_delete_cookie_result_;
   absl::optional<bool> last_remove_app_result_;
 
+  raw_ptr<web_app::FakeWebAppProvider> provider_;
+
   TestingProfile profile_;
   HostContentSettingsMap* host_content_settings_map_;
   std::unique_ptr<FakeCookieManager> fake_cookie_manager_;
-  std::unique_ptr<web_app::FakeWebAppRegistryController>
-      fake_registry_controller_;
-  std::unique_ptr<web_app::FakeExternallyManagedAppManager>
-      fake_externally_managed_app_manager_;
   TestPwaDelegate* test_pwa_delegate_;
   std::unique_ptr<AndroidSmsAppSetupController> setup_controller_;
 };

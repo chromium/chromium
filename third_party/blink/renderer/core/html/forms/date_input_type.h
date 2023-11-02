@@ -63,6 +63,13 @@ class DateInputType final : public BaseTemporalInputType {
   String AriaLabelForPickerIndicator() const override;
 };
 
+template <>
+struct DowncastTraits<DateInputType> {
+  static bool AllowFrom(const InputType& type) {
+    return type.IsDateInputType();
+  }
+};
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_DATE_INPUT_TYPE_H_

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -44,7 +43,7 @@ DeviceChooserContentView::DeviceChooserContentView(
     : chooser_controller_(std::move(chooser_controller)) {
   chooser_controller_->set_view(this);
 
-  SetPreferredSize({402, 320});
+  SetPreferredSize(gfx::Size(402, 320));
 
   if (chooser_controller_->ShouldShowSelectAllCheckbox()) {
     SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -92,7 +91,7 @@ DeviceChooserContentView::DeviceChooserContentView(
         views::BoxLayout::MainAxisAlignment::kCenter);
     layout->set_cross_axis_alignment(
         views::BoxLayout::CrossAxisAlignment::kCenter);
-    layout->set_inside_border_insets(gfx::Insets(0, 6));
+    layout->set_inside_border_insets(gfx::Insets::VH(0, 6));
     container->AddChildView(std::move(view));
     return container;
   };
@@ -150,15 +149,13 @@ gfx::Size DeviceChooserContentView::GetMinimumSize() const {
   return gfx::Size();
 }
 
-int DeviceChooserContentView::RowCount() {
-  return base::checked_cast<int>(chooser_controller_->NumOptions());
+size_t DeviceChooserContentView::RowCount() {
+  return chooser_controller_->NumOptions();
 }
 
-std::u16string DeviceChooserContentView::GetText(int row, int column_id) {
-  DCHECK_GE(row, 0);
+std::u16string DeviceChooserContentView::GetText(size_t row, int column_id) {
   DCHECK_LT(row, RowCount());
-  std::u16string text =
-      chooser_controller_->GetOption(static_cast<size_t>(row));
+  std::u16string text = chooser_controller_->GetOption(row);
   return chooser_controller_->IsPaired(row)
              ? l10n_util::GetStringFUTF16(
                    IDS_DEVICE_CHOOSER_DEVICE_NAME_AND_PAIRED_STATUS_TEXT, text)
@@ -167,14 +164,13 @@ std::u16string DeviceChooserContentView::GetText(int row, int column_id) {
 
 void DeviceChooserContentView::SetObserver(ui::TableModelObserver* observer) {}
 
-ui::ImageModel DeviceChooserContentView::GetIcon(int row) {
+ui::ImageModel DeviceChooserContentView::GetIcon(size_t row) {
   DCHECK(chooser_controller_->ShouldShowIconBeforeText());
-  DCHECK_GE(row, 0);
   DCHECK_LT(row, RowCount());
 
   if (chooser_controller_->IsConnected(row)) {
     return ui::ImageModel::FromVectorIcon(vector_icons::kBluetoothConnectedIcon,
-                                          gfx::kChromeIconGrey,
+                                          ui::kColorIcon,
                                           TableModel::kIconSize);
   }
 
@@ -187,7 +183,7 @@ ui::ImageModel DeviceChooserContentView::GetIcon(int row) {
       IDR_SIGNAL_4_BAR};
   DCHECK_GE(level, 0);
   DCHECK_LT(static_cast<size_t>(level),
-            base::size(kSignalStrengthLevelImageIds));
+            std::size(kSignalStrengthLevelImageIds));
   return ui::ImageModel::FromImageSkia(
       *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
           kSignalStrengthLevelImageIds[level]));
@@ -202,17 +198,17 @@ void DeviceChooserContentView::OnOptionsInitialized() {
 
 void DeviceChooserContentView::OnOptionAdded(size_t index) {
   is_initialized_ = true;
-  table_view_->OnItemsAdded(base::checked_cast<int>(index), 1);
+  table_view_->OnItemsAdded(index, 1);
   UpdateTableView();
 }
 
 void DeviceChooserContentView::OnOptionRemoved(size_t index) {
-  table_view_->OnItemsRemoved(base::checked_cast<int>(index), 1);
+  table_view_->OnItemsRemoved(index, 1);
   UpdateTableView();
 }
 
 void DeviceChooserContentView::OnOptionUpdated(size_t index) {
-  table_view_->OnItemsChanged(base::checked_cast<int>(index), 1);
+  table_view_->OnItemsChanged(index, 1);
   UpdateTableView();
 }
 
@@ -220,7 +216,7 @@ void DeviceChooserContentView::OnAdapterEnabledChanged(bool enabled) {
   // No row is selected since the adapter status has changed.
   // This will also disable the OK button if it was enabled because
   // of a previously selected row.
-  table_view_->Select(-1);
+  table_view_->Select(absl::nullopt);
   adapter_enabled_ = enabled;
   UpdateTableView();
 
@@ -232,7 +228,7 @@ void DeviceChooserContentView::OnAdapterEnabledChanged(bool enabled) {
 
 void DeviceChooserContentView::OnAdapterAuthorizationChanged(bool authorized) {
   // No row is selected since we are not authorized to get device info anyway.
-  table_view_->Select(-1);
+  table_view_->Select(absl::nullopt);
   adapter_authorized_ = authorized;
   UpdateTableView();
 
@@ -244,7 +240,7 @@ void DeviceChooserContentView::OnRefreshStateChanged(bool refreshing) {
     // No row is selected since the chooser is refreshing. This will also
     // disable the OK button if it was enabled because of a previously
     // selected row.
-    table_view_->Select(-1);
+    table_view_->Select(absl::nullopt);
     UpdateTableView();
   }
 

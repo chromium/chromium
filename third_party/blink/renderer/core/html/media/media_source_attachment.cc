@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/html/media/media_source_attachment.h"
 
 #include "third_party/blink/renderer/core/html/media/media_source_registry.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
 
@@ -24,7 +25,7 @@ scoped_refptr<MediaSourceAttachment> MediaSourceAttachment::LookupMediaSource(
   // The only expected caller is an HTMLMediaElement on the main thread.
   DCHECK(IsMainThread());
 
-  if (!registry_ || url.IsEmpty())
+  if (!registry_ || url.empty())
     return nullptr;
 
   // This cast is safe because the only setter of |registry_| is SetRegistry().

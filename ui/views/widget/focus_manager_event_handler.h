@@ -1,10 +1,11 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_VIEWS_WIDGET_FOCUS_MANAGER_EVENT_HANDLER_H_
 #define UI_VIEWS_WIDGET_FOCUS_MANAGER_EVENT_HANDLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "ui/events/event_handler.h"
 
@@ -32,10 +33,10 @@ class FocusManagerEventHandler : public ui::EventHandler {
   base::StringPiece GetLogContext() const override;
 
  private:
-  Widget* widget_;
+  raw_ptr<Widget> widget_;
 
   // |window_| is the event target that is associated with this class.
-  aura::Window* window_;
+  raw_ptr<aura::Window> window_;
 };
 
 }  // namespace views

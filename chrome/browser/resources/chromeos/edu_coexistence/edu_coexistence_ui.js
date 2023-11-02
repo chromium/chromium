@@ -1,17 +1,18 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import './edu_coexistence_css.js';
 import './edu_coexistence_template.js';
 import './edu_coexistence_button.js';
-import './gaia_action_buttons.js';
+import './gaia_action_buttons/gaia_action_buttons.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {WebUIListenerBehavior} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {AuthParams} from '../../gaia_auth_host/authenticator.m.js';
+import {AuthParams} from '../../gaia_auth_host/authenticator.js';
+
 import {EduCoexistenceBrowserProxyImpl} from './edu_coexistence_browser_proxy.js';
 import {EduCoexistenceController, EduCoexistenceParams} from './edu_coexistence_controller.js';
 
@@ -97,7 +98,7 @@ Polymer({
 
   handleGaiaLoginGoBack_(e) {
     e.stopPropagation();
-    let backButton = this.root.getElementById('gaia-back-button');
+    const backButton = this.root.getElementById('gaia-back-button');
     if (backButton.disabled) {
       // This is a safeguard against this method getting called somehow
       // despite the button being disabled.

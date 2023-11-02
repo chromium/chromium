@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,10 +12,10 @@
 
 import '../../prefs/prefs.js';
 
-import {assert} from '//resources/js/assert.m.js';
-import {loadTimeData} from '//resources/js/load_time_data.m.js';
-import {PromiseResolver} from '//resources/js/promise_resolver.m.js';
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CrSettingsPrefs} from '../../prefs/prefs_types.js';
 import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
@@ -177,7 +177,7 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
         type: Object,
         value() {
           return new Set();
-        }
+        },
       },
 
       /** @private Prospective UI language when the page was loaded. */
@@ -522,7 +522,7 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
           isManaged: blockedCodesSet.has(language.code),
           spellCheckEnabled: false,
           downloadDictionaryStatus: null,
-          downloadDictionaryFailureCount: 0
+          downloadDictionaryFailureCount: 0,
         });
       }
     }

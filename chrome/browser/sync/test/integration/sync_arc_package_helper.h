@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,8 @@
 #include <string>
 #include <unordered_map>
 
+#include "ash/components/arc/mojom/app.mojom-forward.h"
 #include "base/memory/singleton.h"
-#include "components/arc/mojom/app.mojom-forward.h"
 
 class Profile;
 class SyncTest;
@@ -69,8 +69,8 @@ class SyncArcPackageHelper {
   // informaton as |profile2|.
   bool ArcPackageDetailsMatch(Profile* profile1, Profile* profile2);
 
-  SyncTest* test_;
-  bool setup_completed_;
+  SyncTest* test_ = nullptr;
+  bool setup_completed_ = false;
 
   std::unordered_map<Profile*, std::unique_ptr<FakeAppInstance>> instance_map_;
 };

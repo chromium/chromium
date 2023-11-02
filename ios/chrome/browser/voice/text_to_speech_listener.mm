@@ -1,19 +1,19 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/voice/text_to_speech_listener.h"
 
-#include <memory>
+#import <memory>
 
-#include "base/check_op.h"
+#import "base/check_op.h"
 #import "ios/chrome/browser/voice/text_to_speech_parser.h"
 #import "ios/chrome/browser/voice/voice_search_url_rewriter.h"
-#include "ios/web/public/navigation/navigation_manager.h"
+#import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
-#include "ios/web/public/web_state_observer.h"
+#import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_observer_bridge.h"
-#include "url/gurl.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

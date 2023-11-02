@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #import "base/containers/flat_set.h"
@@ -93,7 +93,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleGetHintsRequest(
 @property optimization_guide::HintsFetcherRemoteResponseType response_type;
 
 // Count of hints requests received so far by the hints server
-// |self.testServer|.
+// `self.testServer`.
 @property size_t count_hints_requests_received;
 
 // Set of hosts and URLs for which a hints request is
@@ -140,7 +140,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleGetHintsRequest(
   GREYAssertTrue(origin_server->Start(),
                  @"Origin test server failed to start.");
 
-  // The tests use |self.testServer| as the optimization guide hints server.
+  // The tests use `self.testServer` as the optimization guide hints server.
   self.testServer->RegisterRequestHandler(base::BindRepeating(
       &HandleGetHintsRequest, origin_server->base_url().host(),
       std::cref(_response_type), std::ref(_count_hints_requests_received)));

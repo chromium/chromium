@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,15 +21,17 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowUserManager;
 
-import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.PayloadCallbackHelper;
 import org.chromium.components.policy.PolicySwitches;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -41,8 +43,8 @@ import java.util.List;
  * Unit test for {@link FirstRunAppRestrictionInfo}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE,
-        shadows = {ShadowRecordHistogram.class, ShadowPostTask.class, ShadowUserManager.class})
+@Config(manifest = Config.NONE, shadows = {ShadowPostTask.class, ShadowUserManager.class})
+@LooperMode(LooperMode.Mode.LEGACY)
 public class FirstRunAppRestrictionInfoTest {
     private static final List<String> HISTOGRAM_NAMES =
             Arrays.asList("Enterprise.FirstRun.AppRestrictionLoadTime",
@@ -50,8 +52,6 @@ public class FirstRunAppRestrictionInfoTest {
 
     @Mock
     private Bundle mMockBundle;
-    @Mock
-    private CommandLine mCommandLine;
 
     private boolean mPauseDuringPostTask;
     private Runnable mPendingPostTask;
@@ -59,7 +59,7 @@ public class FirstRunAppRestrictionInfoTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
         ShadowPostTask.setTestImpl(new ShadowPostTask.TestImpl() {
             @Override
             public void postDelayedTask(TaskTraits taskTraits, Runnable task, long delay) {
@@ -80,13 +80,12 @@ public class FirstRunAppRestrictionInfoTest {
     @After
     public void tearDown() {
         FirstRunAppRestrictionInfo.setInitializedInstanceForTest(null);
-        CommandLine.reset();
     }
 
     private void verifyHistograms(int expectedCallCount) {
         for (String name : HISTOGRAM_NAMES) {
             Assert.assertEquals("Histogram record count doesn't match.", expectedCallCount,
-                    ShadowRecordHistogram.getHistogramTotalCountForTesting(name));
+                    RecordHistogram.getHistogramTotalCountForTesting(name));
         }
     }
 
@@ -199,12 +198,8 @@ public class FirstRunAppRestrictionInfoTest {
 
     @Test
     @SmallTest
+    @CommandLineFlags.Add({PolicySwitches.CHROME_POLICY})
     public void testCommandLine() {
-        // TODO(https://crbug.com/1119410): Switch to @CommandLineFlag once supported for junit.
-        CommandLine.setInstanceForTesting(mCommandLine);
-        Mockito.when(mCommandLine.hasSwitch(Mockito.eq(PolicySwitches.CHROME_POLICY)))
-                .thenReturn(true);
-
         final PayloadCallbackHelper<Boolean> appResCallbackHelper = new PayloadCallbackHelper<>();
         TestThreadUtils.runOnUiThreadBlocking(
                 ()

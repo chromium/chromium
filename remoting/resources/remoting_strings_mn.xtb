@@ -26,7 +26,6 @@
 <translation id="225614027745146050">Тавтай морилно уу</translation>
 <translation id="2320166752086256636">Компьютерийн гарыг нуух</translation>
 <translation id="2329392777730037872"><ph name="URL" />-г клиент дээр нээж чадсангүй.</translation>
-<translation id="2333212046079545895">Зохиогчийн эрх 2021 Google LLC. Бүх эрхийг хуулиар хамгаалсан.</translation>
 <translation id="2359808026110333948">Цааш</translation>
 <translation id="2366718077645204424">Толгой компьютер луу хүрэх боломжгүй байна. Энэ нь магадгүй таны ашиглаж байгаа сүлжээний тохиргоотой холбоотой байх.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  Хамгийн сүүлд онлайн байсан <ph name="RELATIVE_TIMESTAMP" />.</translation>
@@ -37,6 +36,7 @@
 <translation id="2599300881200251572">Энэхүү үйлчилгээ нь Chrome Remote Desktop-н хэрэглэгч нараас ирж буй холболтыг идэвхжүүлдэг.</translation>
 <translation id="2647232381348739934">Алсын зайнаас удирдах үйлчилгээ</translation>
 <translation id="2676780859508944670">Ажиллаж байна...</translation>
+<translation id="2692522824157224199">Зохиогчийн эрх 2022 Google LLC. Бүх эрхийг хуулиар хамгаалсан.</translation>
 <translation id="2699970397166997657">Chromoting</translation>
 <translation id="2758123043070977469">Баталгаажуулалтын асуудал гарлаа, дахин нэвтэрнэ үү.</translation>
 <translation id="2803375539583399270">ПИН оруулна уу</translation>
@@ -73,10 +73,10 @@
 <translation id="4257751272692708833"><ph name="PRODUCT_NAME" /> URL дамжуулагч</translation>
 <translation id="4277736576214464567">Хандалтын код хүчингүй байна. Дахин оролдоно уу.</translation>
 <translation id="4281844954008187215">Үйлчилгээний нөхцөл</translation>
+<translation id="4372650392690220936">Зохиогчийн эрх 2022 Chromium-н зохиогчид. Бүх эрхийг хуулиар хамгаалсан.</translation>
 <translation id="4405930547258349619">Эх код бүхий гол программуудын багц</translation>
 <translation id="443560535555262820">Хандалтын тохиргоог нээх</translation>
 <translation id="4450893287417543264">Дахиж бүү харуул</translation>
-<translation id="4512952200932940229">Зохиогчийн эрх 2011 Chromium-н зохиогчид. Бүх эрхийг хуулиар хамгаалсан.</translation>
 <translation id="4513946894732546136">Санал дүгнэлт</translation>
 <translation id="4563926062592110512">Захиалагч салгагдсан: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" />-г зөв тохируулаагүй байна. Өөр өгөгдмөл веб хөтөч сонгоод, дараа нь URL дамжуулахыг дахин идэвхжүүлнэ үү.</translation>

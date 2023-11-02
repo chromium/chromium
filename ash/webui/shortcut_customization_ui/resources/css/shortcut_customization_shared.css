@@ -1,0 +1,20 @@
+/* Copyright 2022 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #css_wrapper_metadata_end */
+
+html {
+  background-color: var(--cros-bg-color);
+}
+
+:host {
+  --shortcuts-font-weight-regular: 400;
+  --shortcuts-font-weight-medium: 500;
+
+  --shortcuts-default-font-family: "Google Sans", Roboto, sans-serif;
+  --shortcuts-default-font-size: 13px;
+}

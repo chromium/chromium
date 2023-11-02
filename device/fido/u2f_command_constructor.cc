@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "components/apdu/apdu_command.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
@@ -19,14 +20,10 @@ bool IsConvertibleToU2fRegisterCommand(
       request.resident_key_required)
     return false;
 
-  const auto& public_key_credential_info =
-      request.public_key_credential_params.public_key_credential_params();
-  return std::any_of(
-      public_key_credential_info.begin(), public_key_credential_info.end(),
-      [](const auto& credential_info) {
-        return credential_info.algorithm ==
-               base::strict_cast<int>(CoseAlgorithmIdentifier::kEs256);
-      });
+  return base::Contains(
+      request.public_key_credential_params.public_key_credential_params(),
+      static_cast<int32_t>(CoseAlgorithmIdentifier::kEs256),
+      &PublicKeyCredentialParams::CredentialInfo::algorithm);
 }
 
 bool ShouldPreferCTAP2EvenIfItNeedsAPIN(

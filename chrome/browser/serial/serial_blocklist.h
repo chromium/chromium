@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@
 
 // Feature used to configure entries in the Web Serial API blocklist which can
 // be deployed using a server configuration.
-extern const base::Feature kWebSerialBlocklist;
+BASE_DECLARE_FEATURE(kWebSerialBlocklist);
 
 // Dynamic additions to the Web Serial API device blocklist.
 //

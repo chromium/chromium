@@ -1,0 +1,23 @@
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<style include="support-tool-shared cr-shared-style">
+    .data-collector-list {
+      /* Using negative margin to cancel out the padding of the top-most item if
+      the list to set the spacing between items to 8px.*/
+      margin-top: -8px;
+    }
+</style>
+
+<h1 tabindex="0">Step 2 of 4: Select diagnostics data to export</h1>
+<iron-list class="data-collector-list" items="[[dataCollectors_]]">
+  <template>
+    <cr-checkbox class="data-collector-checkbox" checked="{{item.isIncluded}}"
+        tabindex="0">
+      [[item.name]]
+    </cr-checkbox>
+  </template>
+</iron-list>

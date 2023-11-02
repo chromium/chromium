@@ -1,27 +1,27 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import './searched_label.js';
-import './shared_style.js';
+import './shared_style.css.js';
 import './strings.m.js';
-import 'chrome://resources/cr_elements/cr_icons_css.m.js';
-import 'chrome://resources/cr_elements/shared_vars_css.m.js';
+import 'chrome://resources/cr_elements/cr_icons.css.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/js/icon.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
-import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
-import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
-import {FocusRowBehavior} from 'chrome://resources/js/cr/ui/focus_row_behavior.m.js';
-import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
-import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
+import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
+import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import {FocusRowMixin} from 'chrome://resources/js/focus_row_mixin.js';
+import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
+import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {BrowserService} from './browser_service.js';
-import {UMA_MAX_BUCKET_VALUE, UMA_MAX_SUBSET_BUCKET_VALUE} from './constants.js';
+import {BrowserServiceImpl} from './browser_service.js';
 import {HistoryEntry} from './externs.js';
+import {getTemplate} from './history_item.html.js';
 
 export interface HistoryItemElement {
   $: {
@@ -33,13 +33,15 @@ export interface HistoryItemElement {
   };
 }
 
-const HistoryItemElementBase =
-    mixinBehaviors([FocusRowBehavior], PolymerElement) as
-    {new (): PolymerElement & FocusRowBehavior};
+const HistoryItemElementBase = FocusRowMixin(PolymerElement);
 
 export class HistoryItemElement extends HistoryItemElementBase {
   static get is() {
     return 'history-item';
+  }
+
+  static get template() {
+    return getTemplate();
   }
 
   static get properties() {
@@ -110,14 +112,15 @@ export class HistoryItemElement extends HistoryItemElementBase {
   private eventTracker_: EventTracker = new EventTracker();
 
   item: HistoryEntry;
+  hasTimeGap: boolean;
   index: number;
   searchTerm: string;
   isCardStart: boolean;
   isCardEnd: boolean;
   numberOfItems: number;
+  selected: boolean;
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     afterNextRender(this, () => {
@@ -125,12 +128,11 @@ export class HistoryItemElement extends HistoryItemElementBase {
       // history items are items in a potentially long list.
       this.eventTracker_.add(
           this.$.checkbox, 'keydown',
-          e => this.onCheckboxKeydown_(e as KeyboardEvent));
+          (e: Event) => this.onCheckboxKeydown_(e as KeyboardEvent));
     });
   }
 
-  /** @override */
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
     this.eventTracker_.remove(this.$.checkbox, 'keydown');
   }
@@ -248,7 +250,7 @@ export class HistoryItemElement extends HistoryItemElementBase {
       focusWithoutInk(this.$['menu-button']);
     }
 
-    const browserService = BrowserService.getInstance();
+    const browserService = BrowserServiceImpl.getInstance();
     browserService.removeBookmark(this.item.url);
     browserService.recordAction('BookmarkStarClicked');
 
@@ -270,48 +272,31 @@ export class HistoryItemElement extends HistoryItemElementBase {
     e.stopPropagation();
   }
 
+  private onMenuButtonKeydown_(e: KeyboardEvent) {
+    if (this.item.starred && e.shiftKey && e.key === 'Tab') {
+      // If this item has a bookmark star, pressing shift + Tab from the more
+      // actions menu should move focus to the star. FocusRow will try to
+      // instead move focus to the previous focus row control, and since the
+      // star is not a focus row control, stop immediate propagation here to
+      // instead allow default browser behavior.
+      e.stopImmediatePropagation();
+    }
+  }
+
   /**
    * Record metrics when a result is clicked.
    */
   private onLinkClick_() {
-    const browserService = BrowserService.getInstance();
+    const browserService = BrowserServiceImpl.getInstance();
     browserService.recordAction('EntryLinkClick');
 
     if (this.searchTerm) {
       browserService.recordAction('SearchResultClick');
     }
-
-    if (this.index === undefined) {
-      return;
-    }
-
-    const ageInDays = Math.ceil(
-        (new Date().getTime() - new Date(this.item.time).getTime()) /
-        1000 /* s/ms */ / 60 /* m/s */ / 60 /* h/m */ / 24 /* d/h */);
-
-    browserService.recordHistogram(
-        'HistoryPage.ClickPosition', Math.min(this.index, UMA_MAX_BUCKET_VALUE),
-        UMA_MAX_BUCKET_VALUE);
-
-    browserService.recordHistogram(
-        'HistoryPage.ClickAgeInDays', Math.min(ageInDays, UMA_MAX_BUCKET_VALUE),
-        UMA_MAX_BUCKET_VALUE);
-
-    if (this.index <= UMA_MAX_SUBSET_BUCKET_VALUE) {
-      browserService.recordHistogram(
-          'HistoryPage.ClickPositionSubset', this.index,
-          UMA_MAX_SUBSET_BUCKET_VALUE);
-    }
-
-    if (ageInDays <= UMA_MAX_SUBSET_BUCKET_VALUE) {
-      browserService.recordHistogram(
-          'HistoryPage.ClickAgeInDaysSubset', ageInDays,
-          UMA_MAX_SUBSET_BUCKET_VALUE);
-    }
   }
 
-  onLinkRightClick_() {
-    BrowserService.getInstance().recordAction('EntryLinkRightClick');
+  private onLinkRightClick_() {
+    BrowserServiceImpl.getInstance().recordAction('EntryLinkRightClick');
   }
 
   /**
@@ -352,13 +337,15 @@ export class HistoryItemElement extends HistoryItemElementBase {
    * @return An equivalent element to focus, or null to use the
    *     default element.
    */
-  getCustomEquivalent(sampleElement: Element): Element|null {
+  override getCustomEquivalent(sampleElement: HTMLElement): HTMLElement|null {
     return sampleElement.getAttribute('focus-type') === 'star' ? this.$.link :
                                                                  null;
   }
+}
 
-  static get template() {
-    return html`{__html_template__}`;
+declare global {
+  interface HTMLElementTagNameMap {
+    'history-item': HistoryItemElement;
   }
 }
 

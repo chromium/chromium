@@ -1,31 +1,30 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/webui/diagnostics_ui/backend/network_health_provider.h"
 
 #include "ash/constants/ash_features.h"
-#include "ash/webui/diagnostics_ui/backend/networking_log.h"
-#include "base/containers/contains.h"
+#include "ash/system/diagnostics/networking_log.h"
+#include "ash/webui/diagnostics_ui/backend/histogram_util.h"
 #include "base/feature_list.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ptr_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
-#include "chromeos/dbus/shill/shill_ipconfig_client.h"
+#include "chromeos/ash/components/dbus/shill/shill_ipconfig_client.h"
+#include "chromeos/ash/components/network/managed_network_configuration_handler.h"
+#include "chromeos/ash/components/network/network_cert_loader.h"
+#include "chromeos/ash/components/network/network_device_handler.h"
+#include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_handler_test_helper.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/ash/components/network/network_type_pattern.h"
+#include "chromeos/ash/components/network/onc/network_onc_utils.h"
+#include "chromeos/ash/components/network/system_token_cert_db_storage.h"
 #include "chromeos/login/login_state/login_state.h"
-#include "chromeos/network/cellular_esim_profile_handler_impl.h"
-#include "chromeos/network/managed_network_configuration_handler.h"
-#include "chromeos/network/network_cert_loader.h"
-#include "chromeos/network/network_device_handler.h"
-#include "chromeos/network/network_handler.h"
-#include "chromeos/network/network_handler_test_helper.h"
-#include "chromeos/network/network_metadata_store.h"
-#include "chromeos/network/network_state_handler.h"
-#include "chromeos/network/network_type_pattern.h"
-#include "chromeos/network/onc/onc_utils.h"
-#include "chromeos/network/system_token_cert_db_storage.h"
 #include "chromeos/services/network_config/cros_network_config.h"
 #include "chromeos/services/network_config/in_process_instance.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
@@ -55,6 +54,11 @@ constexpr char kCellular0Name[] = "cellular0_name";
 constexpr char kCellular0NetworkGuid[] = "cellular0_network_guid";
 constexpr char kFormattedMacAddress[] = "01:23:45:67:89:AB";
 constexpr char kTestIPConfigPath[] = "test_ip_config_path";
+constexpr char kNetworkDataError[] = "ChromeOS.DiagnosticsUi.Error.Network";
+
+// Due to how CrosNetworkConfig notifies observers of changes, the
+// expectation_not_met_error will be triggered 4 times for every change.
+constexpr int kExpectationNotMetErrorCount = 4;
 
 // TODO(https://crbug.com/1164001): remove when network_config is moved to ash.
 namespace network_config = ::chromeos::network_config;
@@ -131,6 +135,20 @@ void ExpectStateObserverFired(const FakeNetworkStateObserver& observer,
   *prior_call_count = current_call_count;
 }
 
+void VerifyNetworkDataErrorBucketCounts(
+    const base::HistogramTester& tester,
+    size_t expected_no_data_error,
+    size_t expected_not_a_number_error,
+    size_t expected_expectation_not_met_error) {
+  tester.ExpectBucketCount(kNetworkDataError, metrics::DataError::kNoData,
+                           expected_no_data_error);
+  tester.ExpectBucketCount(kNetworkDataError, metrics::DataError::kNotANumber,
+                           expected_not_a_number_error);
+  tester.ExpectBucketCount(kNetworkDataError,
+                           metrics::DataError::kExpectationNotMet,
+                           expected_expectation_not_met_error);
+}
+
 }  // namespace
 
 class NetworkHealthProviderTest : public testing::Test {
@@ -146,16 +164,13 @@ class NetworkHealthProviderTest : public testing::Test {
     NetworkCertLoader::Initialize();
     network_handler_test_helper_ = std::make_unique<NetworkHandlerTestHelper>();
     network_handler_test_helper_->AddDefaultProfiles();
-    ClearDevicesAndServices();
+    network_handler_test_helper_->RegisterPrefs(user_prefs_.registry(),
+                                                local_state_.registry());
     PrefProxyConfigTrackerImpl::RegisterProfilePrefs(user_prefs_.registry());
     PrefProxyConfigTrackerImpl::RegisterPrefs(local_state_.registry());
-    ::onc::RegisterProfilePrefs(user_prefs_.registry());
-    ::onc::RegisterPrefs(local_state_.registry());
-    chromeos::NetworkMetadataStore::RegisterPrefs(user_prefs_.registry());
-    chromeos::NetworkMetadataStore::RegisterPrefs(local_state_.registry());
-    chromeos::CellularESimProfileHandlerImpl::RegisterLocalStatePrefs(
-        local_state_.registry());
-    NetworkHandler::Get()->InitializePrefServices(&user_prefs_, &local_state_);
+
+    network_handler_test_helper_->InitializePrefs(&user_prefs_, &local_state_);
+    ClearDevicesAndServices();
 
     cros_network_config_ =
         std::make_unique<network_config::CrosNetworkConfig>();
@@ -177,6 +192,9 @@ class NetworkHealthProviderTest : public testing::Test {
   }
 
   ~NetworkHealthProviderTest() override {
+    // Clear in process instance prior to destroying cros_network_config_ to
+    // avoid UaF errors.
+    network_config::OverrideInProcessInstanceForTesting(nullptr);
     // Ordering here is based on dependencies between classes,
     // CrosNetworkConfig depends on NetworkHandler and NetworkHandler
     // indirectly depends on NetworkCertLoader.
@@ -280,9 +298,9 @@ class NetworkHealthProviderTest : public testing::Test {
   }
 
   void SetDeviceState(const std::string& type, bool enabled) {
-    chromeos::NetworkTypePattern pattern = type == shill::kTypeEthernet
-                                               ? NetworkTypePattern::Ethernet()
-                                               : NetworkTypePattern::WiFi();
+    NetworkTypePattern pattern = type == shill::kTypeEthernet
+                                     ? NetworkTypePattern::Ethernet()
+                                     : NetworkTypePattern::WiFi();
     NetworkHandler::Get()->network_state_handler()->SetTechnologyEnabled(
         pattern, enabled, network_handler::ErrorCallback());
     base::RunLoop().RunUntilIdle();
@@ -310,7 +328,7 @@ class NetworkHealthProviderTest : public testing::Test {
   }
 
   void SetWifiPortal() {
-    SetNetworkState(kWlan0DevicePath, shill::kStatePortal);
+    SetNetworkState(kWlan0DevicePath, shill::kStateRedirectFound);
   }
 
   void SetCellularConnected() {
@@ -420,28 +438,28 @@ class NetworkHealthProviderTest : public testing::Test {
   }
 
   void SetGatewayForIPConfig(const std::string& gateway) {
-    chromeos::ShillIPConfigClient::Get()->SetProperty(
+    ShillIPConfigClient::Get()->SetProperty(
         dbus::ObjectPath(kTestIPConfigPath), shill::kGatewayProperty,
         base::Value(gateway), base::DoNothing());
     base::RunLoop().RunUntilIdle();
   }
 
   void SetIPAddressForIPConfig(const std::string& ip_address) {
-    chromeos::ShillIPConfigClient::Get()->SetProperty(
+    ShillIPConfigClient::Get()->SetProperty(
         dbus::ObjectPath(kTestIPConfigPath), shill::kAddressProperty,
         base::Value(ip_address), base::DoNothing());
     base::RunLoop().RunUntilIdle();
   }
 
   void SetNameServersForIPConfig(const base::ListValue& dns_servers) {
-    chromeos::ShillIPConfigClient::Get()->SetProperty(
-        dbus::ObjectPath(kTestIPConfigPath), shill::kNameServersProperty,
-        dns_servers, base::DoNothing());
+    ShillIPConfigClient::Get()->SetProperty(dbus::ObjectPath(kTestIPConfigPath),
+                                            shill::kNameServersProperty,
+                                            dns_servers, base::DoNothing());
     base::RunLoop().RunUntilIdle();
   }
 
   void SetRoutingPrefixForIPConfig(int routing_prefix) {
-    chromeos::ShillIPConfigClient::Get()->SetProperty(
+    ShillIPConfigClient::Get()->SetProperty(
         dbus::ObjectPath(kTestIPConfigPath), shill::kPrefixlenProperty,
         base::Value(routing_prefix), base::DoNothing());
     base::RunLoop().RunUntilIdle();
@@ -475,6 +493,33 @@ class NetworkHealthProviderTest : public testing::Test {
     network_handler_test_helper_->ClearDevices();
     network_handler_test_helper_->ClearServices();
     task_environment_.RunUntilIdle();
+  }
+
+  mojom::IPConfigPropertiesPtr SetupRoutingPrefixToTestDataError(
+      int routing_prefix) {
+    // Observe the network list.
+    FakeNetworkListObserver list_observer;
+    SetupObserver(&list_observer);
+
+    // Create a wifi device.
+    CreateWifiDevice();
+    AssociateIPConfigWithWifiDevice();
+
+    const std::string guid = list_observer.observer_guids()[0];
+
+    // Observe the network.
+    FakeNetworkStateObserver observer;
+    SetupObserver(&observer, guid);
+
+    // Set IP Config properties.
+    SetRoutingPrefixForIPConfig(routing_prefix);
+
+    AssociateWifiWithIPConfig();
+    SetWifiOnline();
+
+    auto ip_config = observer.GetLatestState()->ip_config.Clone();
+
+    return ip_config;
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -879,7 +924,7 @@ TEST_F(NetworkHealthProviderTest, ChangingWifiProperties) {
 
   // Enable security as WEP_8021x.
   mojom::SecurityType security_2 = mojom::SecurityType::kWep8021x;
-  SetWifiSecurity(shill::kSecurityWep, shill::kKeyManagementIEEE8021X);
+  SetWifiSecurity(shill::kSecurityClassWep, shill::kKeyManagementIEEE8021X);
   EXPECT_EQ(observer.GetLatestState()->type_properties->get_wifi()->security,
             security_2);
 
@@ -1232,6 +1277,41 @@ TEST_F(NetworkHealthProviderTest, IPConfig) {
   EXPECT_EQ(name_servers[1], dns_server_2);
 }
 
+TEST_F(NetworkHealthProviderTest, IPConfigRoutingPrefixExpectationNotMet) {
+  base::HistogramTester histogram_tester;
+  VerifyNetworkDataErrorBucketCounts(histogram_tester,
+                                     /*expected_no_data_error=*/0,
+                                     /*expected_not_a_number_error=*/0,
+                                     /*expected_expectation_not_met_error=*/0);
+
+  auto ip_config = SetupRoutingPrefixToTestDataError(33);
+
+  // routing_prefix should be default to 0.
+  EXPECT_EQ(ip_config->routing_prefix, 0);
+  VerifyNetworkDataErrorBucketCounts(histogram_tester,
+                                     /*expected_no_data_error=*/0,
+                                     /*expected_not_a_number_error=*/0,
+                                     kExpectationNotMetErrorCount);
+}
+
+TEST_F(NetworkHealthProviderTest,
+       IPConfigRoutingPrefixExpectationNotMetAsNegative) {
+  base::HistogramTester histogram_tester;
+  VerifyNetworkDataErrorBucketCounts(histogram_tester,
+                                     /*expected_no_data_error=*/0,
+                                     /*expected_not_a_number_error=*/0,
+                                     /*expected_expectation_not_met_error=*/0);
+
+  auto ip_config = SetupRoutingPrefixToTestDataError(-1);
+
+  // routing_prefix should be default to 0.
+  EXPECT_EQ(ip_config->routing_prefix, 0);
+  VerifyNetworkDataErrorBucketCounts(histogram_tester,
+                                     /*expected_no_data_error=*/0,
+                                     /*expected_not_a_number_error=*/0,
+                                     kExpectationNotMetErrorCount);
+}
+
 TEST_F(NetworkHealthProviderTest, SetupWifiNetworkWithSecurity) {
   // Create a wifi device.
   FakeNetworkListObserver list_observer;
@@ -1259,31 +1339,31 @@ TEST_F(NetworkHealthProviderTest, SetupWifiNetworkWithSecurity) {
             mojom::SecurityType::kNone);
 
   // Enable security as WEP_8021x.
-  SetWifiSecurity(shill::kSecurityWep, shill::kKeyManagementIEEE8021X);
+  SetWifiSecurity(shill::kSecurityClassWep, shill::kKeyManagementIEEE8021X);
   EXPECT_EQ(observer.GetLatestState()->type_properties->get_wifi()->security,
             mojom::SecurityType::kWep8021x);
   ExpectStateObserverFired(observer, &state_call_count);
 
   // Enable security as WEP_PSK.
-  SetWifiSecurity(shill::kSecurityWep, std::string());
+  SetWifiSecurity(shill::kSecurityClassWep, std::string());
   EXPECT_EQ(observer.GetLatestState()->type_properties->get_wifi()->security,
             mojom::SecurityType::kWepPsk);
   ExpectStateObserverFired(observer, &state_call_count);
 
   // Enable security as WPA_EAP.
-  SetWifiSecurity(shill::kSecurity8021x);
+  SetWifiSecurity(shill::kSecurityClass8021x);
   EXPECT_EQ(observer.GetLatestState()->type_properties->get_wifi()->security,
             mojom::SecurityType::kWpaEap);
   ExpectStateObserverFired(observer, &state_call_count);
 
   // Enable security as WPA_PSK.
-  SetWifiSecurity(shill::kSecurityPsk);
+  SetWifiSecurity(shill::kSecurityClassPsk);
   EXPECT_EQ(observer.GetLatestState()->type_properties->get_wifi()->security,
             mojom::SecurityType::kWpaPsk);
   ExpectStateObserverFired(observer, &state_call_count);
 
   // Enable security as NONE.
-  SetWifiSecurity(shill::kSecurityNone);
+  SetWifiSecurity(shill::kSecurityClassNone);
   EXPECT_EQ(observer.GetLatestState()->type_properties->get_wifi()->security,
             mojom::SecurityType::kNone);
   ExpectStateObserverFired(observer, &state_call_count);
@@ -1393,29 +1473,20 @@ TEST_F(NetworkHealthProviderTest, NetworkingLog) {
   EXPECT_FALSE(log.GetNetworkInfo().empty());
 }
 
-TEST_F(NetworkHealthProviderTest, ResetReceiverOnDisconnect) {
-  // Ensure required features are enabled before binding to avoid DCHECK.
+TEST_F(NetworkHealthProviderTest, ResetReceiverOnBindInterface) {
+  // This test simulates a user refreshing the WebUI page. The receiver should
+  // be reset before binding the new receiver. Otherwise we would get a DCHECK
+  // error from mojo::Receiver
   base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      std::vector<base::Feature>{features::kDiagnosticsAppNavigation,
-                                 features::kEnableNetworkingInDiagnosticsApp,
-                                 features::kDiagnosticsApp},
-      std::vector<base::Feature>{});
-  ASSERT_FALSE(network_health_provider_->ReceiverIsBound());
+  features.InitAndEnableFeature(features::kEnableNetworkingInDiagnosticsApp);
   mojo::Remote<mojom::NetworkHealthProvider> remote;
   network_health_provider_->BindInterface(remote.BindNewPipeAndPassReceiver());
-  ASSERT_TRUE(network_health_provider_->ReceiverIsBound());
-
-  // Unbind remote to trigger disconnect and disconnect handler.
-  remote.reset();
   base::RunLoop().RunUntilIdle();
-  ASSERT_FALSE(network_health_provider_->ReceiverIsBound());
 
-  // Test intent is to ensure interface can be rebound when application is
-  // reloaded using |CTRL + R|.  A disconnect should be signaled in which we
-  // will reset the receiver to its unbound state.
+  remote.reset();
+
   network_health_provider_->BindInterface(remote.BindNewPipeAndPassReceiver());
-  ASSERT_TRUE(network_health_provider_->ReceiverIsBound());
+  base::RunLoop().RunUntilIdle();
 }
 
 }  // namespace diagnostics

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,7 +21,7 @@ class WatchTimeInterceptor : public media::mojom::WatchTimeRecorder {
   MOCK_METHOD2(RecordWatchTime, void(media::WatchTimeKey, base::TimeDelta));
   MOCK_METHOD1(FinalizeWatchTime,
                void(const std::vector<media::WatchTimeKey>&));
-  MOCK_METHOD1(OnError, void(media::PipelineStatus));
+  MOCK_METHOD1(OnError, void(const media::PipelineStatus&));
   MOCK_METHOD1(SetAutoplayInitiated, void(bool));
   MOCK_METHOD1(OnDurationChanged, void(base::TimeDelta));
   MOCK_METHOD2(UpdateVideoDecodeStats, void(uint32_t, uint32_t));

@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -21,6 +21,7 @@ static_library("android") {
     "//components/content_settings/core/browser",
     "//components/page_info",
     "//components/page_info/android:jni_headers",
+    "//components/page_info/core",
     "//components/security_state/core:core",
     "//components/strings:components_strings_grit",
     "//content/public/browser:browser",
@@ -32,16 +33,19 @@ static_library("android") {
 
 android_resources("java_resources") {
   sources = [
-    "java/res/drawable/page_info_bg.xml",
+    "java/res/drawable-v23/page_info_bg.xml",
+    "java/res/drawable-v31/page_info_bg.xml",
+    "java/res/layout/button_preference_text_button.xml",
     "java/res/layout/connection_info.xml",
     "java/res/layout/page_info.xml",
     "java/res/layout/page_info_container.xml",
     "java/res/layout/page_info_row.xml",
     "java/res/layout/page_info_summary.xml",
-    "java/res/layout/page_zoom_view.xml",
+    "java/res/values-night/dimens.xml",
     "java/res/values/colors.xml",
     "java/res/values/dimens.xml",
     "java/res/values/ids.xml",
+    "java/res/xml/page_info_ad_personalization_preference.xml",
     "java/res/xml/page_info_cookie_preference.xml",
   ]
   deps = [
@@ -58,6 +62,8 @@ android_library("java") {
     "java/src/org/chromium/components/page_info/CertificateViewer.java",
     "java/src/org/chromium/components/page_info/ConnectionInfoView.java",
     "java/src/org/chromium/components/page_info/ElidedUrlTextView.java",
+    "java/src/org/chromium/components/page_info/PageInfoAdPersonalizationController.java",
+    "java/src/org/chromium/components/page_info/PageInfoAdPersonalizationPreference.java",
     "java/src/org/chromium/components/page_info/PageInfoConnectionController.java",
     "java/src/org/chromium/components/page_info/PageInfoContainer.java",
     "java/src/org/chromium/components/page_info/PageInfoController.java",
@@ -69,9 +75,8 @@ android_library("java") {
     "java/src/org/chromium/components/page_info/PageInfoFeatures.java",
     "java/src/org/chromium/components/page_info/PageInfoHighlight.java",
     "java/src/org/chromium/components/page_info/PageInfoMainController.java",
-    "java/src/org/chromium/components/page_info/PageInfoPageZoomController.java",
-    "java/src/org/chromium/components/page_info/PageInfoPageZoomView.java",
     "java/src/org/chromium/components/page_info/PageInfoPermissionsController.java",
+    "java/src/org/chromium/components/page_info/PageInfoPreferenceSubpageController.java",
     "java/src/org/chromium/components/page_info/PageInfoRowView.java",
     "java/src/org/chromium/components/page_info/PageInfoSubpageController.java",
     "java/src/org/chromium/components/page_info/PageInfoView.java",
@@ -84,9 +89,11 @@ android_library("java") {
     ":java_resources",
     ":page_info_action_enum_java",
     "//base:base_java",
+    "//base:jni_java",
+    "//build/android:build_java",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/site_settings/android:java",
-    "//components/browser_ui/styles/android:java_resources",
+    "//components/browser_ui/styles/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/content_settings/android:content_settings_enums_java",
     "//components/content_settings/android:java",
@@ -102,8 +109,11 @@ android_library("java") {
     "//components/url_formatter/android:url_formatter_java",
     "//content/public/android:content_java",
     "//services/device/public/java:device_feature_list_java",
-    "//third_party/android_deps:android_support_v7_appcompat_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_preference_preference_java",
     "//ui/android:ui_java",
     "//url:gurl_java",

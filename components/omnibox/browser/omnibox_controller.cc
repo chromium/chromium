@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -58,7 +58,7 @@ void OmniboxController::OnResultChanged(AutocompleteController* controller,
       omnibox_edit_model_->OnPopupResultChanged();
       omnibox_edit_model_->OnPopupDataChanged(
           std::u16string(),
-          /*is_temporary_text=*/false, std::u16string(), std::u16string(), {},
+          /*is_temporary_text=*/false, std::u16string(), std::u16string(),
           std::u16string(), false, std::u16string());
     }
   } else {
@@ -80,8 +80,11 @@ void OmniboxController::OnResultChanged(AutocompleteController* controller,
 
   // Note: The client outlives |this|, so bind a weak pointer to the callback
   // passed in to eliminate the potential for crashes on shutdown.
+  // `should_prerender` is set to `controller->done()` as prerender may only
+  // want to start prerendering a result after all Autocomplete results are
+  // ready.
   client_->OnResultChanged(
-      result(), default_match_changed,
+      result(), default_match_changed, /*should_prerender=*/controller->done(),
       base::BindRepeating(&OmniboxController::SetRichSuggestionBitmap,
                           weak_ptr_factory_.GetWeakPtr()));
 }

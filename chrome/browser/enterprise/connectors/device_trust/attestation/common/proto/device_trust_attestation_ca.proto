@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -102,7 +102,13 @@ message KeyInfo {
   // DeviceIdentity policy.
   optional string signing_scheme = 8;
   // Device Trust Signals
-  optional DeviceTrustSignals device_trust_signals = 9;
+  // Deprecated due to signals collection change to store signals in a dictionary
+  // and converting them to a JSON string. Use `device_trust_signals_json` instead.
+  optional DeviceTrustSignals device_trust_signals = 9 [deprecated = true];
+  // Device Trust Signals
+  optional string device_trust_signals_json = 10;
+  // DM token to be used for this request.
+  optional string dm_token = 11;
 }
 
 // Device Trust Signals

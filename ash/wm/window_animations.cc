@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -222,10 +222,9 @@ class CrossFadeUpdateTransformObserver
     // Apply the transform on the bounds to get the location of |window_|.
     // Transforms are calculated in a way where scale does not affect position,
     // so use the same logic here.
-    gfx::RectF effective_bounds(new_bounds.size());
-    new_transform.TransformRect(&effective_bounds);
-    effective_bounds.set_x(effective_bounds.x() + new_bounds.x());
-    effective_bounds.set_y(effective_bounds.y() + new_bounds.y());
+    gfx::RectF effective_bounds =
+        new_transform.MapRect(gfx::RectF(new_bounds.size()));
+    effective_bounds.Offset(new_bounds.OffsetFromOrigin());
 
     const gfx::Transform old_transform =
         gfx::TransformBetweenRects(old_bounds, effective_bounds);
@@ -256,15 +255,15 @@ void CrossFadeAnimationInternal(
   ui::Layer* new_layer = window->layer();
 
   DCHECK(old_layer);
-  const gfx::Rect old_bounds(old_layer_owner->root()->bounds());
+  const gfx::Rect old_bounds(old_layer->bounds());
 
-  gfx::RectF old_transformed_bounds(old_bounds);
-  gfx::Transform old_transform(old_layer_owner->root()->transform());
+  gfx::Transform old_transform(old_layer->transform());
   gfx::Transform old_transform_in_root;
   old_transform_in_root.Translate(old_bounds.x(), old_bounds.y());
-  old_transform_in_root.PreconcatTransform(old_transform);
+  old_transform_in_root.PreConcat(old_transform);
   old_transform_in_root.Translate(-old_bounds.x(), -old_bounds.y());
-  old_transform_in_root.TransformRect(&old_transformed_bounds);
+  gfx::RectF old_transformed_bounds =
+      old_transform_in_root.MapRect(gfx::RectF(old_bounds));
   const gfx::Rect new_bounds(window->bounds());
   const bool old_on_top = (old_bounds.width() > new_bounds.width());
 
@@ -282,8 +281,17 @@ void CrossFadeAnimationInternal(
 
   // Scale up the old layer while translating to new position.
   {
-    ui::Layer* old_layer = old_layer_owner->root();
     old_layer->GetAnimator()->StopAnimating();
+    // If Overview exit animation is in the sequence, stopping animation may
+    // trigger `OverviewController::OnEndingAnimationComplete` which may finally
+    // start the frame animation.
+    // 'FrameHeader::FrameAnimatorView::StartAnimation' recreates the window
+    // layer such that the `new_layer` is no longer the window's current layer.
+    // Therefore, we should update the `new_layer`. Refer to
+    // https://crbug.com/1313977.
+    // TODO(zxdan): find a way to change the window state after exiting Overview
+    // or avoid frame animation when setting bounds.
+    new_layer = window->layer();
     old_layer->SetTransform(old_transform);
     ui::ScopedLayerAnimationSettings settings(old_layer->GetAnimator());
     settings.SetTransitionDuration(animation_duration);
@@ -446,6 +454,12 @@ void AddLayerAnimationsForMinimize(aura::Window* window, bool show) {
 void AnimateShowWindow_Minimize(aura::Window* window) {
   window->layer()->SetOpacity(kWindowAnimation_HideOpacity);
   ui::ScopedLayerAnimationSettings settings(window->layer()->GetAnimator());
+  ui::AnimationThroughputReporter reporter(
+      settings.GetAnimator(),
+      metrics_util::ForSmoothness(
+          base::BindRepeating(static_cast<void (*)(const char*, int)>(
+                                  &base::UmaHistogramPercentage),
+                              "Ash.Window.AnimationSmoothness.Unminimize")));
   base::TimeDelta duration =
       base::Milliseconds(kLayerAnimationsForMinimizeDurationMS);
   settings.SetTransitionDuration(duration);
@@ -460,6 +474,14 @@ void AnimateShowWindow_Minimize(aura::Window* window) {
 void AnimateHideWindow_Minimize(aura::Window* window) {
   // Property sets within this scope will be implicitly animated.
   ::wm::ScopedHidingAnimationSettings hiding_settings(window);
+  // Report animation smoothness for animations created within this scope.
+  ui::AnimationThroughputReporter reporter(
+      hiding_settings.layer_animation_settings()->GetAnimator(),
+      metrics_util::ForSmoothness(
+          base::BindRepeating(static_cast<void (*)(const char*, int)>(
+                                  &base::UmaHistogramPercentage),
+                              "Ash.Window.AnimationSmoothness.Minimize")));
+
   base::TimeDelta duration =
       base::Milliseconds(kLayerAnimationsForMinimizeDurationMS);
   hiding_settings.layer_animation_settings()->SetTransitionDuration(duration);

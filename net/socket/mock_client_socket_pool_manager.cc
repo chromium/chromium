@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,10 +39,9 @@ ClientSocketPool* MockClientSocketPoolManager::GetSocketPool(
   return nullptr;
 }
 
-std::unique_ptr<base::Value>
-MockClientSocketPoolManager::SocketPoolInfoToValue() const {
+base::Value MockClientSocketPoolManager::SocketPoolInfoToValue() const {
   NOTIMPLEMENTED();
-  return std::unique_ptr<base::Value>(nullptr);
+  return base::Value();
 }
 
 }  // namespace net

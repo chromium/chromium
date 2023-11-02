@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,13 +11,10 @@
 #include <string>
 
 #include "ash/components/phonehub/proto/phonehub_api.pb.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/services/secure_channel/public/cpp/client/connection_manager.h"
 
-namespace chromeos {
-
-namespace secure_channel {
-class ConnectionManager;
-}  // namespace secure_channel
-
+namespace ash {
 namespace phonehub {
 
 class MessageSenderImpl : public MessageSender {
@@ -36,6 +33,7 @@ class MessageSenderImpl : public MessageSender {
       int64_t notification_id,
       const std::u16string& reply_text) override;
   void SendShowNotificationAccessSetupRequest() override;
+  void SendFeatureSetupRequest(bool camera_roll, bool notifications) override;
   void SendRingDeviceRequest(bool device_ringing_enabled) override;
   void SendFetchCameraRollItemsRequest(
       const proto::FetchCameraRollItemsRequest& request) override;
@@ -52,6 +50,6 @@ class MessageSenderImpl : public MessageSender {
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_PHONEHUB_MESSAGE_SENDER_IMPL_H_

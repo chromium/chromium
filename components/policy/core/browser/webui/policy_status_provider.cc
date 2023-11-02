@@ -1,10 +1,18 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/policy/core/browser/webui/policy_status_provider.h"
 
+#include <memory>
+
+#include "base/bind.h"
+#include "base/callback_helpers.h"
+#include "base/no_destructor.h"
+#include "base/time/clock.h"
+#include "base/time/default_clock.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "components/policy/core/browser/cloud/message_util.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
@@ -17,6 +25,17 @@
 namespace em = enterprise_management;
 
 namespace policy {
+
+const char kPolicyDescriptionKey[] = "policyDescriptionKey";
+
+const char kAssetIdKey[] = "assetId";
+const char kLocationKey[] = "location";
+const char kDirectoryApiIdKey[] = "directoryApiId";
+const char kGaiaIdKey[] = "gaiaId";
+const char kClientIdKey[] = "clientId";
+const char kUsernameKey[] = "username";
+const char kEnterpriseDomainManagerKey[] = "enterpriseDomainManager";
+const char kDomainKey[] = "domain";
 
 namespace {
 
@@ -41,30 +60,42 @@ std::u16string FormatAssociationState(const em::PolicyData* data) {
   return l10n_util::GetStringUTF16(IDS_POLICY_ASSOCIATION_STATE_UNMANAGED);
 }
 
+base::Clock* clock_for_testing_ = nullptr;
+
+const base::Clock* GetClock() {
+  if (clock_for_testing_)
+    return clock_for_testing_;
+  return base::DefaultClock::GetInstance();
+}
+
 }  // namespace
 
 PolicyStatusProvider::PolicyStatusProvider() = default;
 
 PolicyStatusProvider::~PolicyStatusProvider() = default;
 
-void PolicyStatusProvider::SetStatusChangeCallback(
-    const base::RepeatingClosure& callback) {
-  callback_ = callback;
+void PolicyStatusProvider::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
 }
 
-// static
-void PolicyStatusProvider::GetStatus(base::DictionaryValue* dict) {
+void PolicyStatusProvider::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
+base::Value::Dict PolicyStatusProvider::GetStatus() {
   // This method is called when the client is not enrolled.
-  // Thus leaving the dict without any changes.
+  // Thus return an empty dictionary.
+  return base::Value::Dict();
 }
 
 void PolicyStatusProvider::NotifyStatusChange() {
-  if (callback_)
-    callback_.Run();
+  for (auto& observer : observers_)
+    observer.OnPolicyStatusChanged();
 }
 
-void PolicyStatusProvider::GetStatusFromCore(const CloudPolicyCore* core,
-                                             base::DictionaryValue* dict) {
+// static
+base::Value::Dict PolicyStatusProvider::GetStatusFromCore(
+    const CloudPolicyCore* core) {
   const CloudPolicyStore* store = core->store();
   const CloudPolicyClient* client = core->client();
   const CloudPolicyRefreshScheduler* refresh_scheduler =
@@ -73,45 +104,73 @@ void PolicyStatusProvider::GetStatusFromCore(const CloudPolicyCore* core,
   const std::u16string status = GetPolicyStatusFromStore(store, client);
 
   const em::PolicyData* policy = store->policy();
-  std::string client_id = policy ? policy->device_id() : std::string();
-  std::string username = policy ? policy->username() : std::string();
-
-  if (policy && policy->has_annotated_asset_id())
-    dict->SetString("assetId", policy->annotated_asset_id());
-  if (policy && policy->has_annotated_location())
-    dict->SetString("location", policy->annotated_location());
-  if (policy && policy->has_directory_api_id())
-    dict->SetString("directoryApiId", policy->directory_api_id());
-  if (policy && policy->has_gaia_id())
-    dict->SetString("gaiaId", policy->gaia_id());
+  base::Value::Dict dict = GetStatusFromPolicyData(policy);
 
   base::TimeDelta refresh_interval = base::Milliseconds(
       refresh_scheduler ? refresh_scheduler->GetActualRefreshDelay()
                         : CloudPolicyRefreshScheduler::kDefaultRefreshDelayMs);
 
-  // In case state_keys aren't available, we have no scheduler. See also
-  // DeviceCloudPolicyInitializer::TryToCreateClient and b/181140445
-  base::Time last_refresh_time =
-      refresh_scheduler ? refresh_scheduler->last_refresh()
-                        : policy && policy->has_timestamp()
-                              ? base::Time::FromJavaTime(policy->timestamp())
-                              : base::Time();
+  const bool is_push_available =
+      refresh_scheduler && refresh_scheduler->invalidations_available();
 
   bool no_error = store->status() == CloudPolicyStore::STATUS_OK && client &&
                   client->status() == DM_STATUS_SUCCESS;
-  dict->SetBoolean("error", !no_error);
-  dict->SetBoolean(
-      "policiesPushAvailable",
-      refresh_scheduler ? refresh_scheduler->invalidations_available() : false);
-  dict->SetString("status", status);
-  dict->SetString("clientId", client_id);
-  dict->SetString("username", username);
-  dict->SetString(
-      "refreshInterval",
-      ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_DURATION,
-                             ui::TimeFormat::LENGTH_SHORT, refresh_interval));
-  dict->SetString("timeSinceLastRefresh",
-                  GetTimeSinceLastRefreshString(last_refresh_time));
+  dict.Set("error", !no_error);
+  dict.Set("policiesPushAvailable", is_push_available);
+  dict.Set("status", status);
+  // If push is on, policy update will be done via push. Hide policy fetch
+  // interval label to prevent users from misunderstanding.
+  if (!is_push_available) {
+    dict.Set(
+        "refreshInterval",
+        ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_DURATION,
+                               ui::TimeFormat::LENGTH_SHORT, refresh_interval));
+  }
+  base::Time last_refresh_time =
+      policy && policy->has_timestamp()
+          ? base::Time::FromJavaTime(policy->timestamp())
+          : base::Time();
+  dict.Set("timeSinceLastRefresh",
+           GetTimeSinceLastActionString(last_refresh_time));
+
+  // In case state_keys aren't available, we have no scheduler. See also
+  // DeviceCloudPolicyInitializer::TryToCreateClient and b/181140445.
+  base::Time last_fetch_attempted_time =
+      refresh_scheduler ? refresh_scheduler->last_refresh() : base::Time();
+  dict.Set("timeSinceLastFetchAttempt",
+           GetTimeSinceLastActionString(last_fetch_attempted_time));
+  return dict;
+}
+
+// static
+base::Value::Dict PolicyStatusProvider::GetStatusFromPolicyData(
+    const em::PolicyData* policy) {
+  std::string client_id = policy ? policy->device_id() : std::string();
+  std::string username = policy ? policy->username() : std::string();
+
+  base::Value::Dict dict;
+  if (policy && policy->has_annotated_asset_id())
+    dict.Set(kAssetIdKey, policy->annotated_asset_id());
+  if (policy && policy->has_annotated_location())
+    dict.Set(kLocationKey, policy->annotated_location());
+  if (policy && policy->has_directory_api_id())
+    dict.Set(kDirectoryApiIdKey, policy->directory_api_id());
+  if (policy && policy->has_gaia_id())
+    dict.Set(kGaiaIdKey, policy->gaia_id());
+
+  dict.Set(kClientIdKey, client_id);
+  dict.Set(kUsernameKey, username);
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Include the "Managed by:" attribute for the user policy legend.
+  if (policy->state() == enterprise_management::PolicyData::ACTIVE) {
+    if (policy->has_managed_by())
+      dict.Set(kEnterpriseDomainManagerKey, policy->managed_by());
+    else if (policy->has_display_domain())
+      dict.Set(kEnterpriseDomainManagerKey, policy->display_domain());
+  }
+#endif
+  return dict;
 }
 
 // CloudPolicyStore errors take precedence to show in the status message.
@@ -132,16 +191,25 @@ std::u16string PolicyStatusProvider::GetPolicyStatusFromStore(
 }
 
 // static
-std::u16string PolicyStatusProvider::GetTimeSinceLastRefreshString(
-    base::Time last_refresh_time) {
-  if (last_refresh_time.is_null())
+std::u16string PolicyStatusProvider::GetTimeSinceLastActionString(
+    base::Time last_action_time) {
+  if (last_action_time.is_null())
     return l10n_util::GetStringUTF16(IDS_POLICY_NEVER_FETCHED);
-  base::Time now = base::Time::NowFromSystemTime();
+  base::Time now = GetClock()->Now();
   base::TimeDelta elapsed_time;
-  if (now > last_refresh_time)
-    elapsed_time = now - last_refresh_time;
+  if (now > last_action_time)
+    elapsed_time = now - last_action_time;
   return ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_ELAPSED,
                                 ui::TimeFormat::LENGTH_SHORT, elapsed_time);
+}
+
+// static
+base::ScopedClosureRunner PolicyStatusProvider::OverrideClockForTesting(
+    base::Clock* clock_for_testing) {
+  CHECK(!clock_for_testing_);
+  clock_for_testing_ = clock_for_testing;
+  return base::ScopedClosureRunner(
+      base::BindOnce([]() { clock_for_testing_ = nullptr; }));
 }
 
 }  // namespace policy

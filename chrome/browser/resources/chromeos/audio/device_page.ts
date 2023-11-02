@@ -1,4 +1,8 @@
-import {$} from 'chrome://resources/js/util.m.js';
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {$} from 'chrome://resources/js/util.js';
 
 import {DeviceData, PageCallbackRouter, PageHandlerRemote} from './audio.mojom-webui.js';
 import {AudioBroker} from './audio_broker.js';

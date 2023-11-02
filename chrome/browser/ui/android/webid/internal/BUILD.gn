@@ -1,4 +1,4 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -12,6 +12,7 @@ android_library("java") {
     ":java_resources",
     "//base:base_java",
     "//base:jni_java",
+    "//build/android:build_java",
     "//chrome/android:chrome_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/profiles/android:java",
@@ -51,7 +52,6 @@ android_resources("java_resources") {
   deps = [
     "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//components/browser_ui/widget/android:java_resources",
-    "//third_party/android_deps:android_support_v7_appcompat_java",
     "//ui/android:ui_java_resources",
   ]
   sources = [
@@ -65,13 +65,11 @@ android_resources("java_resources") {
   ]
 }
 
-java_library("junit") {
-  # Skip platform checks since Robolectric depends on requires_android targets.
-  bypass_platform_checks = true
-
-  testonly = true
-
-  sources = [ "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionControllerTest.java" ]
+robolectric_library("junit") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionControllerTest.java",
+    "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionViewTest.java",
+  ]
 
   deps = [
     ":java",
@@ -85,12 +83,16 @@ java_library("junit") {
     "//components/favicon/android:java",
     "//components/image_fetcher:java",
     "//components/url_formatter/android:url_formatter_java",
-    "//third_party/android_deps:robolectric_all_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//third_party/androidx:androidx_test_core_java",
+    "//third_party/androidx:androidx_test_ext_junit_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_full_java",
+    "//ui/android:ui_java_test_support",
     "//url:gurl_java",
+    "//url:gurl_junit_shadows",
     "//url:gurl_junit_test_support",
   ]
 }
@@ -98,10 +100,7 @@ java_library("junit") {
 android_library("javatests") {
   testonly = true
 
-  sources = [
-    "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionIntegrationTest.java",
-    "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionViewTest.java",
-  ]
+  sources = [ "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionIntegrationTest.java" ]
 
   deps = [
     ":java",
@@ -114,11 +113,13 @@ android_library("javatests") {
     "//chrome/browser/flags:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/ui/android/webid:public_java",
-    "//chrome/test/android:chrome_java_test_support",
+    "//chrome/test/android:chrome_java_integration_test_support",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/bottomsheet/android/test:java",
     "//content/public/test/android:content_java_test_support",
+    "//net/android:net_java_test_support",
     "//third_party/android_deps:espresso_java",
+    "//third_party/android_support_test_runner:runner_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",

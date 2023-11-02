@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,12 +6,12 @@
 
 #include <memory>
 
+#include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/components/arc/session/arc_service_manager.h"
+#include "ash/components/arc/test/fake_arc_session.h"
 #include "base/threading/platform_thread.h"
 #include "chrome/browser/speech/tts_chromeos.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/arc/session/arc_bridge_service.h"
-#include "components/arc/session/arc_service_manager.h"
-#include "components/arc/test/fake_arc_session.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "content/public/browser/tts_controller.h"
 #include "content/public/test/browser_task_environment.h"
@@ -64,6 +64,7 @@ class TestableTtsController : public content::TtsController {
   content::TtsEngineDelegate* GetTtsEngineDelegate() override {
     return nullptr;
   }
+  void RefreshVoices() override {}
   void SetRemoteTtsEngineDelegate(
       content::RemoteTtsEngineDelegate* delegate) override {}
   void SetTtsPlatform(content::TtsPlatform* tts_platform) override {}
@@ -71,6 +72,7 @@ class TestableTtsController : public content::TtsController {
   void StripSSML(
       const std::string& utterance,
       base::OnceCallback<void(const std::string&)> callback) override {}
+  void OnTtsUtteranceBecameInvalid(int utterance_id) override {}
 
   int last_utterance_id_;
   content::TtsEventType last_event_type_;

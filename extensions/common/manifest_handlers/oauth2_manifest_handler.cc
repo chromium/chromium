@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,7 +43,8 @@ const OAuth2Info& OAuth2ManifestHandler::GetOAuth2Info(
 bool OAuth2ManifestHandler::Parse(Extension* extension, std::u16string* error) {
   OAuth2ManifestKeys manifest_keys;
   if (!OAuth2ManifestKeys::ParseFromDictionary(
-          extension->manifest()->available_values(), &manifest_keys, error)) {
+          extension->manifest()->available_values().GetDict(), &manifest_keys,
+          error)) {
     return false;
   }
 
@@ -57,7 +58,7 @@ bool OAuth2ManifestHandler::Parse(Extension* extension, std::u16string* error) {
       info.auto_approve && *info.auto_approve;
 
   if ((!info.client_id || info.client_id->empty()) && !can_omit_client_id) {
-    *error = base::ASCIIToUTF16(errors::kInvalidOAuth2ClientId);
+    *error = errors::kInvalidOAuth2ClientId;
     return false;
   }
 

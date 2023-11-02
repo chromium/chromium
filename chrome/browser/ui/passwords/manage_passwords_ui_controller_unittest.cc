@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/passwords/password_dialog_prompts.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/device_reauth/biometric_authenticator.h"
 #include "components/password_manager/core/browser/mock_password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
@@ -41,15 +42,16 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/ukm/test_ukm_recorder.h"
-#include "content/public/browser/navigation_handle.h"
-#include "content/public/test/mock_navigation_handle.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_utils.h"
-#include "content/public/test/web_contents_tester.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using password_manager::InsecureCredential;
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#include "components/device_reauth/mock_biometric_authenticator.h"
+#endif
+
 using password_manager::MockPasswordFormManagerForUI;
 using password_manager::MockPasswordStoreInterface;
 using password_manager::PasswordForm;
@@ -84,6 +86,7 @@ MATCHER_P3(MatchesLoginAndURL,
 
 // A random URL.
 constexpr char kExampleUrl[] = "http://example.com";
+constexpr char16_t kExampleUsername[] = u"Bob";
 
 // Number of dismissals that for sure suppresses the bubble.
 constexpr int kGreatDissmisalCount = 10;
@@ -123,12 +126,27 @@ class TestPasswordManagerClient
                base::OnceCallback<void(ReauthSucceeded)>),
               (override));
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  scoped_refptr<device_reauth::BiometricAuthenticator>
+  GetBiometricAuthenticator() override {
+    return mock_authenticator_.get();
+  }
+
+  void SetAuthenticator(scoped_refptr<device_reauth::MockBiometricAuthenticator>
+                            mock_authenticator) {
+    mock_authenticator_ = mock_authenticator;
+  }
+#endif
+
   MockPasswordStoreInterface* GetProfilePasswordStore() const override {
     return mock_profile_store_.get();
   }
 
  private:
   scoped_refptr<MockPasswordStoreInterface> mock_profile_store_;
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  scoped_refptr<device_reauth::MockBiometricAuthenticator> mock_authenticator_;
+#endif
 };
 
 // This subclass is used to disable some code paths which are not essential for
@@ -145,15 +163,20 @@ class TestManagePasswordsUIController : public ManagePasswordsUIController {
     return are_passwords_revealed_in_opened_bubble_;
   }
 
-  MOCK_METHOD1(CreateAccountChooser,
-               AccountChooserPrompt*(CredentialManagerDialogController*));
-  MOCK_METHOD1(CreateAutoSigninPrompt,
-               AutoSigninFirstRunPrompt*(CredentialManagerDialogController*));
-  MOCK_METHOD1(CreateCredentialLeakPrompt,
-               CredentialLeakPrompt*(CredentialLeakDialogController*));
-  MOCK_CONST_METHOD0(HasBrowserWindow, bool());
-  MOCK_METHOD0(OnUpdateBubbleAndIconVisibility, void());
-  using ManagePasswordsUIController::DidFinishNavigation;
+  MOCK_METHOD(AccountChooserPrompt*,
+              CreateAccountChooser,
+              (CredentialManagerDialogController*),
+              (override));
+  MOCK_METHOD(AutoSigninFirstRunPrompt*,
+              CreateAutoSigninPrompt,
+              (CredentialManagerDialogController*),
+              (override));
+  MOCK_METHOD(CredentialLeakPrompt*,
+              CreateCredentialLeakPrompt,
+              (CredentialLeakDialogController*),
+              (override));
+  MOCK_METHOD(bool, HasBrowserWindow, (), (override, const));
+  MOCK_METHOD(void, OnUpdateBubbleAndIconVisibility, (), ());
 
  private:
   void UpdateBubbleAndIconVisibility() override;
@@ -211,11 +234,11 @@ password_manager::PasswordForm BuildFormFromLoginAndURL(
   return form;
 }
 
-InsecureCredential CreateInsecureCredential(const PasswordForm& form) {
-  return InsecureCredential(form.signon_realm, form.username_value,
-                            base::Time(),
-                            password_manager::InsecureType::kLeaked,
-                            password_manager::IsMuted(false));
+password_manager::PasswordForm CreateInsecureCredential(PasswordForm form) {
+  form.password_issues.insert(
+      {InsecureType::kLeaked,
+       InsecurityMetadata(base::Time(), password_manager::IsMuted(false))});
+  return form;
 }
 
 }  // namespace
@@ -275,8 +298,6 @@ void ManagePasswordsUIControllerTest::SetUp() {
   test_local_form_.username_element = u"username_element";
   test_local_form_.password_value = u"12345";
   test_local_form_.password_element = u"password_element";
-  test_local_form_.password_issues =
-      base::flat_map<InsecureType, InsecurityMetadata>();
 
   test_federated_form_.url = GURL("http://example.com/login");
   test_federated_form_.signon_realm =
@@ -284,19 +305,14 @@ void ManagePasswordsUIControllerTest::SetUp() {
   test_federated_form_.username_value = u"username";
   test_federated_form_.federation_origin =
       url::Origin::Create(GURL("https://federation.test/"));
-  // TODO(crbug.com/1223022): Once all places that operate changes on forms
-  // via UpdateLogin properly set |password_issues|, setting them to an empty
-  // map should be part of the default constructor.
-  test_federated_form_.password_issues =
-      base::flat_map<InsecureType, InsecurityMetadata>();
 
   submitted_form_ = test_local_form_;
   submitted_form_.username_value = u"submitted_username";
   submitted_form_.password_value = u"pass12345";
 
   // We need to be on a "webby" URL for most tests.
-  content::WebContentsTester::For(web_contents())
-      ->NavigateAndCommit(GURL(kExampleUrl));
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
+                                                             GURL(kExampleUrl));
 }
 
 void ManagePasswordsUIControllerTest::ExpectIconStateIs(
@@ -336,7 +352,7 @@ ManagePasswordsUIControllerTest::CreateFormManagerWithBestMatches(
           Return(base::span<const password_manager::InteractionsStats>()));
   EXPECT_CALL(*form_manager, GetInsecureCredentials())
       .Times(AtMost(1))
-      .WillOnce(Return(base::span<const InsecureCredential>()));
+      .WillOnce(Return(std::vector<const password_manager::PasswordForm*>()));
   EXPECT_CALL(*form_manager, GetPendingCredentials())
       .WillRepeatedly(ReturnRef(submitted_form_));
   EXPECT_CALL(*form_manager, GetMetricsRecorder())
@@ -463,8 +479,8 @@ TEST_F(ManagePasswordsUIControllerTest, PasswordSubmittedBubbleNotSuppressed) {
 TEST_F(ManagePasswordsUIControllerTest, PasswordSubmittedBubbleCancelled) {
   // Test on the real controller.
   std::unique_ptr<content::WebContents> web_content(CreateTestWebContents());
-  content::WebContentsTester::For(web_content.get())
-      ->NavigateAndCommit(GURL(kExampleUrl));
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(web_content.get(),
+                                                             GURL(kExampleUrl));
   ManagePasswordsUIController::CreateForWebContents(web_content.get());
   ManagePasswordsUIController* controller =
       ManagePasswordsUIController::FromWebContents(web_content.get());
@@ -479,8 +495,8 @@ TEST_F(ManagePasswordsUIControllerTest, PasswordSubmittedBubbleCancelled) {
 
   // The tab navigated in background. Because the controller's state has changed
   // the bubble shouldn't pop up anymore.
-  content::WebContentsTester::For(web_content.get())
-      ->NavigateAndCommit(GURL("http://google.com"));
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_content.get(), GURL("http://google.com"));
   EXPECT_FALSE(controller->IsAutomaticallyOpeningBubble());
 }
 
@@ -556,9 +572,8 @@ TEST_F(ManagePasswordsUIControllerTest, PasswordSavedUKMRecording) {
     EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
     controller()->OnBubbleHidden();
     EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
-    content::MockNavigationHandle test_handle(web_contents());
-    test_handle.set_has_committed(true);
-    controller()->DidFinishNavigation(&test_handle);
+    content::NavigationSimulator::NavigateAndCommitFromBrowser(
+        web_contents(), GURL(kExampleUrl));
 
     recorder = nullptr;
     ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(controller()));
@@ -701,9 +716,8 @@ TEST_F(ManagePasswordsUIControllerTest, NormalNavigations) {
   // Fake-navigate. We expect the bubble's state to persist so a user reasonably
   // has been able to interact with the bubble. This happens on
   // `accounts.google.com`, for instance.
-  content::MockNavigationHandle test_handle(web_contents());
-  test_handle.set_has_committed(true);
-  controller()->DidFinishNavigation(&test_handle);
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
+                                                             GURL(kExampleUrl));
   ExpectIconAndControllerStateIs(password_manager::ui::PENDING_PASSWORD_STATE);
 }
 
@@ -721,17 +735,16 @@ TEST_F(ManagePasswordsUIControllerTest, NormalNavigationsClosedBubble) {
 
   // Fake-navigate. There is no bubble, reset the state.
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
-  content::MockNavigationHandle test_handle(web_contents());
-  test_handle.set_has_committed(true);
-  controller()->DidFinishNavigation(&test_handle);
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
+                                                             GURL(kExampleUrl));
   ExpectIconAndControllerStateIs(password_manager::ui::INACTIVE_STATE);
 }
 
 TEST_F(ManagePasswordsUIControllerTest, PasswordSubmittedToNonWebbyURL) {
   // Navigate to a non-webby URL, then see what happens!
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
-  content::WebContentsTester::For(web_contents())
-      ->NavigateAndCommit(GURL("chrome://sign-in"));
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("chrome://sign-in"));
 
   std::vector<const PasswordForm*> best_matches;
   auto test_form_manager = CreateFormManagerWithBestMatches(&best_matches);
@@ -970,9 +983,8 @@ TEST_F(ManagePasswordsUIControllerTest, AutoSigninFirstRunAfterNavigation) {
   // The dialog should survive any navigation.
   EXPECT_CALL(dialog_prompt(), ControllerGone()).Times(0);
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
-  content::MockNavigationHandle test_handle(web_contents());
-  test_handle.set_has_committed(true);
-  controller()->DidFinishNavigation(&test_handle);
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
+                                                             GURL(kExampleUrl));
   ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(&dialog_prompt()));
   EXPECT_CALL(dialog_prompt(), ControllerGone());
 }
@@ -1104,9 +1116,8 @@ TEST_F(ManagePasswordsUIControllerTest, ManualFallbackForSaving_UseFallback) {
     // state is retained on navigation, and the PasswordFormManager is not
     // destroyed.
     controller()->OnBubbleHidden();
-    content::MockNavigationHandle test_handle(web_contents());
-    test_handle.set_has_committed(true);
-    controller()->DidFinishNavigation(&test_handle);
+    content::NavigationSimulator::NavigateAndCommitFromBrowser(
+        web_contents(), GURL(kExampleUrl));
 
     recorder = nullptr;
     EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(controller()));
@@ -1195,9 +1206,8 @@ TEST_F(ManagePasswordsUIControllerTest,
     testing::Mock::VerifyAndClearExpectations(controller());
     if (enforce_navigation) {
       // Fake-navigate. The fallback should persist.
-      content::MockNavigationHandle test_handle(web_contents());
-      test_handle.set_has_committed(true);
-      controller()->DidFinishNavigation(&test_handle);
+      content::NavigationSimulator::NavigateAndCommitFromBrowser(
+          web_contents(), GURL(kExampleUrl));
       ExpectIconAndControllerStateIs(
           password_manager::ui::PENDING_PASSWORD_STATE);
     }
@@ -1250,9 +1260,8 @@ TEST_F(ManagePasswordsUIControllerTest,
       // navigation.
       controller()->OnBubbleHidden();
       EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
-      content::MockNavigationHandle test_handle(web_contents());
-      test_handle.set_has_committed(true);
-      controller()->DidFinishNavigation(&test_handle);
+      content::NavigationSimulator::NavigateAndCommitFromBrowser(
+          web_contents(), GURL(kExampleUrl));
       ExpectIconAndControllerStateIs(password_manager::ui::INACTIVE_STATE);
     }
     testing::Mock::VerifyAndClearExpectations(controller());
@@ -1384,7 +1393,7 @@ TEST_F(ManagePasswordsUIControllerTest, AuthenticateUserToRevealPasswords) {
 
   // Simulate that re-auth is need to reveal passwords in the bubble.
   bool success = controller()->AuthenticateUser();
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   EXPECT_FALSE(success);
   // Let the task posted in AuthenticateUser re-open the bubble.
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
@@ -1422,7 +1431,7 @@ TEST_F(ManagePasswordsUIControllerTest, SaveBubbleAfterLeakCheck) {
           password_manager::IsSaved(false), password_manager::IsReused(false),
           password_manager::IsSyncing(false),
           password_manager::HasChangeScript(false)),
-      GURL(kExampleUrl));
+      GURL(kExampleUrl), kExampleUsername);
   // The bubble is gone.
   EXPECT_FALSE(controller()->opened_bubble());
 
@@ -1454,7 +1463,7 @@ TEST_F(ManagePasswordsUIControllerTest, UpdateBubbleAfterLeakCheck) {
           password_manager::IsSaved(true), password_manager::IsReused(false),
           password_manager::IsSyncing(false),
           password_manager::HasChangeScript(false)),
-      GURL(kExampleUrl));
+      GURL(kExampleUrl), kExampleUsername);
   // The bubble is gone.
   EXPECT_FALSE(controller()->opened_bubble());
 
@@ -1497,11 +1506,13 @@ TEST_F(ManagePasswordsUIControllerTest, SaveUnsyncedCredentialsInProfileStore) {
   EXPECT_CALL(*profile_store,
               AddLogin(MatchesLoginAndURL(credentials[0].username_value,
                                           credentials[0].password_value,
-                                          credentials[0].url)));
+                                          credentials[0].url),
+                       _));
   EXPECT_CALL(*profile_store,
               AddLogin(MatchesLoginAndURL(credentials[1].username_value,
                                           credentials[1].password_value,
-                                          credentials[1].url)));
+                                          credentials[1].url),
+                       _));
 
   // Save.
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
@@ -1574,18 +1585,16 @@ TEST_F(ManagePasswordsUIControllerTest, OpenSafeStateBubble) {
   controller()->OnPasswordSubmitted(std::move(test_form_manager));
 
   EXPECT_CALL(*test_form_manager_raw, Save());
-  std::vector<InsecureCredential> saved = {
-      CreateInsecureCredential(test_local_form())};
+  PasswordForm credential = CreateInsecureCredential(test_local_form());
   // Pretend that the current credential was insecure but with the updated
   // password not anymore.
   EXPECT_CALL(*test_form_manager_raw, GetInsecureCredentials())
-      .WillOnce(Return(saved));
-  password_manager::PasswordStoreConsumer* post_save_helper = nullptr;
+      .WillOnce(Return(std::vector<const PasswordForm*>{&credential}));
+  base::WeakPtr<password_manager::PasswordStoreConsumer> post_save_helper;
 
   EXPECT_CALL(*client().GetProfilePasswordStore(), GetAutofillableLogins)
-      .WillOnce(testing::WithArg<0>([&post_save_helper](auto* consumer) {
-        post_save_helper = consumer;
-      }));
+      .WillOnce(testing::WithArg<0>(
+          [&post_save_helper](auto consumer) { post_save_helper = consumer; }));
   controller()->SavePassword(submitted_form().username_value,
                              submitted_form().password_value);
   // The bubble gets hidden after the user clicks on save.
@@ -1595,7 +1604,8 @@ TEST_F(ManagePasswordsUIControllerTest, OpenSafeStateBubble) {
   std::vector<std::unique_ptr<PasswordForm>> results;
   results.push_back(std::make_unique<PasswordForm>(submitted_form()));
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
-  post_save_helper->OnGetPasswordStoreResults(std::move(results));
+  post_save_helper->OnGetPasswordStoreResultsOrErrorFrom(
+      client().GetProfilePasswordStore(), std::move(results));
   WaitForPasswordStore();
 
   EXPECT_TRUE(controller()->opened_automatic_bubble());
@@ -1618,17 +1628,15 @@ TEST_F(ManagePasswordsUIControllerTest, OpenMoreToFixBubble) {
 
   EXPECT_CALL(*test_form_manager_raw, Save());
   // Pretend that the current credential was insecure.
-  std::vector<InsecureCredential> saved = {
-      CreateInsecureCredential(test_local_form())};
+  PasswordForm credential = CreateInsecureCredential(test_local_form());
   EXPECT_CALL(*test_form_manager_raw, GetInsecureCredentials())
-      .WillOnce(Return(saved));
+      .WillOnce(Return(std::vector<const PasswordForm*>{&credential}));
 
-  password_manager::PasswordStoreConsumer* post_save_helper = nullptr;
+  base::WeakPtr<password_manager::PasswordStoreConsumer> post_save_helper;
 
   EXPECT_CALL(*client().GetProfilePasswordStore(), GetAutofillableLogins)
-      .WillOnce(testing::WithArg<0>([&post_save_helper](auto* consumer) {
-        post_save_helper = consumer;
-      }));
+      .WillOnce(testing::WithArg<0>(
+          [&post_save_helper](auto consumer) { post_save_helper = consumer; }));
   controller()->SavePassword(submitted_form().username_value,
                              submitted_form().password_value);
   // There are more insecure credentials to fix.
@@ -1646,7 +1654,8 @@ TEST_F(ManagePasswordsUIControllerTest, OpenMoreToFixBubble) {
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
   controller()->OnBubbleHidden();
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
-  post_save_helper->OnGetPasswordStoreResults(std::move(results));
+  post_save_helper->OnGetPasswordStoreResultsOrErrorFrom(
+      client().GetProfilePasswordStore(), std::move(results));
   WaitForPasswordStore();
 
   EXPECT_TRUE(controller()->opened_automatic_bubble());
@@ -1668,11 +1677,10 @@ TEST_F(ManagePasswordsUIControllerTest, NoMoreToFixBubbleIfPromoStillOpen) {
   controller()->OnPasswordSubmitted(std::move(test_form_manager));
 
   EXPECT_CALL(*test_form_manager_raw, Save());
-  std::vector<InsecureCredential> saved = {
-      CreateInsecureCredential(test_local_form())};
+  PasswordForm credential = CreateInsecureCredential(test_local_form());
   // Pretend that the current credential was insecure.
   EXPECT_CALL(*test_form_manager_raw, GetInsecureCredentials())
-      .WillOnce(Return(saved));
+      .WillOnce(Return(std::vector<const PasswordForm*>{&credential}));
   controller()->SavePassword(submitted_form().username_value,
                              submitted_form().password_value);
   // The sign-in promo bubble stays open, the warning isn't shown.
@@ -1737,3 +1745,183 @@ TEST_F(ManagePasswordsUIControllerTest, ReauthenticateFailsBeforeMove) {
   ExpectIconAndControllerStateIs(
       password_manager::ui::CAN_MOVE_PASSWORD_TO_ACCOUNT_STATE);
 }
+
+TEST_F(ManagePasswordsUIControllerTest, IsBiometricAuthenticatorObtained) {
+  base::MockCallback<base::OnceCallback<void(bool)>> result_callback;
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
+  EXPECT_CALL(result_callback, Run(/*success=*/true));
+#else
+  scoped_refptr<device_reauth::MockBiometricAuthenticator> mock_authenticator =
+      base::MakeRefCounted<device_reauth::MockBiometricAuthenticator>();
+  client().SetAuthenticator(mock_authenticator);
+  EXPECT_CALL(*mock_authenticator.get(), AuthenticateWithMessage);
+#endif
+  controller()->AuthenticateUserWithMessage(
+      /*message=*/u"Do you want to enable this feature", result_callback.Get());
+}
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+TEST_F(ManagePasswordsUIControllerTest,
+       ShouldShowBiometricAuthenticationForFillingPromo) {
+  std::vector<const PasswordForm*> best_matches;
+  auto test_form_manager = CreateFormManagerWithBestMatches(&best_matches);
+  controller()->OnPasswordSubmitted(std::move(test_form_manager));
+
+  profile()->GetPrefs()->SetBoolean(
+      password_manager::prefs::kHasUserInteractedWithBiometricAuthPromo, false);
+  profile()->GetPrefs()->SetInteger(
+      password_manager::prefs::kBiometricAuthBeforeFillingPromoShownCounter, 0);
+  profile()->GetPrefs()->SetBoolean(
+      password_manager::prefs::kBiometricAuthenticationBeforeFilling, false);
+
+  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
+  controller()->OnBiometricAuthenticationForFilling(profile()->GetPrefs());
+  EXPECT_EQ(1, profile()->GetPrefs()->GetInteger(
+                   password_manager::prefs::
+                       kBiometricAuthBeforeFillingPromoShownCounter));
+  ExpectIconAndControllerStateIs(
+      password_manager::ui::BIOMETRIC_AUTHENTICATION_FOR_FILLING_STATE);
+}
+
+// Test if BiometricAuthForFilling promo is not shown if user interacted with
+// the promo earlier.
+TEST_F(ManagePasswordsUIControllerTest,
+       ShouldNotShowBiometricAuthenticationForFillingPromoUserInteracted) {
+  profile()->GetPrefs()->SetBoolean(
+      password_manager::prefs::kHasUserInteractedWithBiometricAuthPromo, true);
+  profile()->GetPrefs()->SetInteger(
+      password_manager::prefs::kBiometricAuthBeforeFillingPromoShownCounter, 1);
+  profile()->GetPrefs()->SetBoolean(
+      password_manager::prefs::kBiometricAuthenticationBeforeFilling, false);
+
+  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility()).Times(0);
+  controller()->OnBiometricAuthenticationForFilling(profile()->GetPrefs());
+  EXPECT_EQ(1, profile()->GetPrefs()->GetInteger(
+                   password_manager::prefs::
+                       kBiometricAuthBeforeFillingPromoShownCounter));
+}
+
+// Test if BiometricAuthForFilling promo is not shown if User turned on the
+// feature manually in settings.
+TEST_F(ManagePasswordsUIControllerTest,
+       ShouldNotShowBiometricAuthenticationForFillingPromoUserTurnedOnManualy) {
+  profile()->GetPrefs()->SetBoolean(
+      password_manager::prefs::kHasUserInteractedWithBiometricAuthPromo, false);
+  profile()->GetPrefs()->SetInteger(
+      password_manager::prefs::kBiometricAuthBeforeFillingPromoShownCounter, 0);
+  profile()->GetPrefs()->SetBoolean(
+      password_manager::prefs::kBiometricAuthenticationBeforeFilling, true);
+
+  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility()).Times(0);
+  controller()->OnBiometricAuthenticationForFilling(profile()->GetPrefs());
+  EXPECT_EQ(0, profile()->GetPrefs()->GetInteger(
+                   password_manager::prefs::
+                       kBiometricAuthBeforeFillingPromoShownCounter));
+}
+
+// Test if BiometricAuthForFilling promo is not shown if User turned on the
+// feature through promo.
+TEST_F(
+    ManagePasswordsUIControllerTest,
+    ShouldNotShowBiometricAuthenticationForFillingPromoUserTurnedOnViaPromo) {
+  profile()->GetPrefs()->SetBoolean(
+      password_manager::prefs::kHasUserInteractedWithBiometricAuthPromo, true);
+  profile()->GetPrefs()->SetInteger(
+      password_manager::prefs::kBiometricAuthBeforeFillingPromoShownCounter, 1);
+  profile()->GetPrefs()->SetBoolean(
+      password_manager::prefs::kBiometricAuthenticationBeforeFilling, true);
+
+  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility()).Times(0);
+  controller()->OnBiometricAuthenticationForFilling(profile()->GetPrefs());
+  EXPECT_EQ(1, profile()->GetPrefs()->GetInteger(
+                   password_manager::prefs::
+                       kBiometricAuthBeforeFillingPromoShownCounter));
+}
+
+// Test if BiometricAuthForFilling promo is not shown if User have seen promo
+// more than
+// `kMaxNumberOfTimesBiometricAuthForFillingPromoWillBeShown` times.
+TEST_F(ManagePasswordsUIControllerTest,
+       ShouldNotShowBiometricAuthenticationForFillingPromoCounterLimit) {
+  profile()->GetPrefs()->SetBoolean(
+      password_manager::prefs::kHasUserInteractedWithBiometricAuthPromo, false);
+  profile()->GetPrefs()->SetInteger(
+      password_manager::prefs::kBiometricAuthBeforeFillingPromoShownCounter,
+      kMaxNumberOfTimesBiometricAuthForFillingPromoWillBeShown + 1);
+  profile()->GetPrefs()->SetBoolean(
+      password_manager::prefs::kBiometricAuthenticationBeforeFilling, false);
+
+  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility()).Times(0);
+  controller()->OnBiometricAuthenticationForFilling(profile()->GetPrefs());
+  EXPECT_EQ(kMaxNumberOfTimesBiometricAuthForFillingPromoWillBeShown + 1,
+            profile()->GetPrefs()->GetInteger(
+                password_manager::prefs::
+                    kBiometricAuthBeforeFillingPromoShownCounter));
+}
+
+// On one specific tab BiometricAuthForFilling promo should be shown no more
+// than once.
+TEST_F(ManagePasswordsUIControllerTest,
+       ShouldNotShowBiometricAuthenticationForFillingPromoTwiceOnTheSameTab) {
+  std::vector<const PasswordForm*> best_matches;
+  auto test_form_manager = CreateFormManagerWithBestMatches(&best_matches);
+  controller()->OnPasswordSubmitted(std::move(test_form_manager));
+
+  profile()->GetPrefs()->SetBoolean(
+      password_manager::prefs::kHasUserInteractedWithBiometricAuthPromo, false);
+  profile()->GetPrefs()->SetInteger(
+      password_manager::prefs::kBiometricAuthBeforeFillingPromoShownCounter, 0);
+  profile()->GetPrefs()->SetBoolean(
+      password_manager::prefs::kBiometricAuthenticationBeforeFilling, false);
+
+  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
+  controller()->OnBiometricAuthenticationForFilling(profile()->GetPrefs());
+  ExpectIconAndControllerStateIs(
+      password_manager::ui::BIOMETRIC_AUTHENTICATION_FOR_FILLING_STATE);
+
+  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility()).Times(0);
+  controller()->OnBiometricAuthenticationForFilling(profile()->GetPrefs());
+}
+
+TEST_F(ManagePasswordsUIControllerTest, BiometricActivationConfirmation) {
+  std::vector<const PasswordForm*> best_matches;
+  auto test_form_manager = CreateFormManagerWithBestMatches(&best_matches);
+  controller()->OnPasswordSubmitted(std::move(test_form_manager));
+  controller()->ShowBiometricActivationConfirmation();
+  EXPECT_EQ(password_manager::ui::BIOMETRIC_AUTHENTICATION_CONFIRMATION_STATE,
+            controller()->GetState());
+
+  // After closing buble state switches automatically to MANAGE_STATE.
+  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
+  controller()->OnBubbleHidden();
+  ExpectIconAndControllerStateIs(password_manager::ui::MANAGE_STATE);
+}
+
+TEST_F(ManagePasswordsUIControllerTest,
+       AuthenticateWithMessageTwiceCancelsFirstCall) {
+  scoped_refptr<device_reauth::MockBiometricAuthenticator> mock_authenticator =
+      base::MakeRefCounted<device_reauth::MockBiometricAuthenticator>();
+  client().SetAuthenticator(mock_authenticator);
+  EXPECT_CALL(*mock_authenticator.get(), AuthenticateWithMessage);
+  controller()->AuthenticateUserWithMessage(/*message=*/u"", base::DoNothing());
+
+  EXPECT_CALL(*mock_authenticator.get(), Cancel);
+  EXPECT_CALL(*mock_authenticator.get(), AuthenticateWithMessage);
+  controller()->AuthenticateUserWithMessage(/*message=*/u"", base::DoNothing());
+}
+
+TEST_F(ManagePasswordsUIControllerTest, AuthenticationCancledOnPageChange) {
+  base::MockCallback<base::OnceCallback<void(bool)>> result_callback;
+  scoped_refptr<device_reauth::MockBiometricAuthenticator> mock_authenticator =
+      base::MakeRefCounted<device_reauth::MockBiometricAuthenticator>();
+  client().SetAuthenticator(mock_authenticator);
+  EXPECT_CALL(*mock_authenticator.get(), AuthenticateWithMessage);
+  controller()->AuthenticateUserWithMessage(/*message=*/u"", base::DoNothing());
+
+  EXPECT_CALL(*mock_authenticator.get(), Cancel);
+
+  static_cast<content::WebContentsObserver*>(controller())
+      ->PrimaryPageChanged(controller()->GetWebContents()->GetPrimaryPage());
+}
+
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

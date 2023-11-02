@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,6 +28,7 @@ class Window;
 
 namespace ash {
 class TabletModeController;
+class TabletModeMultitaskMenuEventHandler;
 class TabletModeToggleFullscreenEventHandler;
 class TabletModeWindowState;
 
@@ -105,6 +106,11 @@ class ASH_EXPORT TabletModeWindowManager : public aura::WindowObserver,
 
   // SessionObserver:
   void OnActiveUserSessionChanged(const AccountId& account_id) override;
+
+  TabletModeMultitaskMenuEventHandler*
+  tablet_mode_multitask_menu_event_handler_for_testing() {
+    return tablet_mode_multitask_menu_event_handler_.get();
+  }
 
  private:
   using WindowToState = std::map<aura::Window*, TabletModeWindowState*>;
@@ -190,6 +196,10 @@ class ASH_EXPORT TabletModeWindowManager : public aura::WindowObserver,
   base::flat_set<AccountId> accounts_since_entering_tablet_;
 
   std::unique_ptr<TabletModeToggleFullscreenEventHandler> event_handler_;
+
+  // Handles gestures that may show or hide the multitask menu.
+  std::unique_ptr<TabletModeMultitaskMenuEventHandler>
+      tablet_mode_multitask_menu_event_handler_;
 
   absl::optional<display::ScopedDisplayObserver> display_observer_;
 

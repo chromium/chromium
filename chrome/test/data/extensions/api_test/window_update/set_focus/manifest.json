@@ -1,0 +1,10 @@
+{
+  "name": "chrome.windows.update set focus",
+  "version": "0.1",
+  "manifest_version": 2,
+  "description": "Tests the chrome.windows.update focus parameter.",
+  "background": {
+    "scripts": ["test.js"],
+    "persistent": false
+  }
+}

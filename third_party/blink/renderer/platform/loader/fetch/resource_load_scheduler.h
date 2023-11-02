@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,8 @@
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
 #include "net/http/http_response_info.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/heap/heap_allocator.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
@@ -91,8 +91,7 @@ class PLATFORM_EXPORT ResourceLoadSchedulerClient
 //     and the milestones being experimented with are first paint and first
 //     contentful paint so far.
 class PLATFORM_EXPORT ResourceLoadScheduler final
-    : public GarbageCollected<ResourceLoadScheduler>,
-      public FrameOrWorkerScheduler::Observer {
+    : public GarbageCollected<ResourceLoadScheduler> {
  public:
   // An option to use in calling Request(). If kCanNotBeStoppedOrThrottled is
   // specified, the request should be granted and Run() should be called
@@ -180,7 +179,7 @@ class PLATFORM_EXPORT ResourceLoadScheduler final
                         LoadingBehaviorObserver* loading_behavior_observer);
   ResourceLoadScheduler(const ResourceLoadScheduler&) = delete;
   ResourceLoadScheduler& operator=(const ResourceLoadScheduler&) = delete;
-  ~ResourceLoadScheduler() override;
+  ~ResourceLoadScheduler();
 
   void Trace(Visitor*) const;
 
@@ -225,8 +224,8 @@ class PLATFORM_EXPORT ResourceLoadScheduler final
   }
   void SetOutstandingLimitForTesting(size_t tight_limit, size_t normal_limit);
 
-  // FrameOrWorkerScheduler::Observer overrides:
-  void OnLifecycleStateChanged(scheduler::SchedulingLifecycleState) override;
+  // FrameOrWorkerScheduler lifecycle observer callback.
+  void OnLifecycleStateChanged(scheduler::SchedulingLifecycleState);
 
   // The caller is the owner of the |clock|. The |clock| must outlive the
   // ResourceLoadScheduler.
@@ -241,6 +240,15 @@ class PLATFORM_EXPORT ResourceLoadScheduler final
   // a new resource loading.
   void SetConnectionInfo(ClientId id,
                          net::HttpResponseInfo::ConnectionInfo connection_info);
+
+  // Start accumulating delayable fetches as part of a batch operation. If
+  // multiple batch operations are nested, they will be ref-counted and only
+  // released once all of the batches have ended.
+  void StartBatch();
+
+  // End the collection of delayable fetches as part of a batch operation. This
+  // function may initiate new resources loading.
+  void EndBatch();
 
   // Sets the HTTP RTT for testing.
   void SetHttpRttForTesting(base::TimeDelta http_rtt) {
@@ -303,9 +311,6 @@ class PLATFORM_EXPORT ResourceLoadScheduler final
 
   // Gets the highest priority pending request that is allowed to be run.
   bool GetNextPendingRequest(ClientId* id);
-
-  // Determines whether or not a low-priority request should be delayed.
-  bool ShouldDelay(PendingRequestMap::iterator found) const;
 
   // Returns whether we can throttle a request with the given option based
   // on life cycle state.
@@ -395,6 +400,9 @@ class PLATFORM_EXPORT ResourceLoadScheduler final
 
   absl::optional<base::TimeDelta> http_rtt_ = absl::nullopt;
   absl::optional<base::TimeDelta> http_rtt_for_testing_ = absl::nullopt;
+
+  // The ref count of batch operations to accumulate fetches.
+  uint32_t pending_batch_operations_ = 0u;
 };
 
 }  // namespace blink

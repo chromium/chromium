@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -69,9 +69,10 @@ TEST_F(UserChooserDetailedViewControllerTest,
   ASSERT_TRUE(tray_test_api()->IsTrayBubbleOpen());
 
   // Click on user avatar button to start user adding.
-  ASSERT_TRUE(tray_test_api()->IsBubbleViewVisible(VIEW_ID_USER_AVATAR_BUTTON,
-                                                   /*open_tray=*/false));
-  tray_test_api()->ClickBubbleView(VIEW_ID_USER_AVATAR_BUTTON);
+  ASSERT_TRUE(
+      tray_test_api()->IsBubbleViewVisible(VIEW_ID_QS_USER_AVATAR_BUTTON,
+                                           /*open_tray=*/false));
+  tray_test_api()->ClickBubbleView(VIEW_ID_QS_USER_AVATAR_BUTTON);
 
   // Click on add user button to show multi profile login window.
   ASSERT_TRUE(tray_test_api()->IsBubbleViewVisible(VIEW_ID_ADD_USER_BUTTON,
@@ -98,9 +99,10 @@ TEST_F(UserChooserDetailedViewControllerTest, SwitchUserWithOverview) {
   ASSERT_TRUE(tray_test_api()->IsTrayBubbleOpen());
 
   // Click on user avatar button to select user.
-  ASSERT_TRUE(tray_test_api()->IsBubbleViewVisible(VIEW_ID_USER_AVATAR_BUTTON,
-                                                   /*open_tray=*/false));
-  tray_test_api()->ClickBubbleView(VIEW_ID_USER_AVATAR_BUTTON);
+  ASSERT_TRUE(
+      tray_test_api()->IsBubbleViewVisible(VIEW_ID_QS_USER_AVATAR_BUTTON,
+                                           /*open_tray=*/false));
+  tray_test_api()->ClickBubbleView(VIEW_ID_QS_USER_AVATAR_BUTTON);
 
   const int secondary_user_button_id = VIEW_ID_USER_ITEM_BUTTON_START + 1;
   ASSERT_TRUE(tray_test_api()->IsBubbleViewVisible(secondary_user_button_id,

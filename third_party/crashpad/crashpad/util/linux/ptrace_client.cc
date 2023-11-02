@@ -1,4 +1,4 @@
-// Copyright 2017 The Crashpad Authors. All rights reserved.
+// Copyright 2017 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,9 +18,9 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <iterator>
 #include <string>
 
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "util/file/file_io.h"
@@ -265,7 +265,7 @@ bool PtraceClient::Threads(std::vector<pid_t>* threads) {
   threads->push_back(pid_);
 
   char path[32];
-  snprintf(path, base::size(path), "/proc/%d/task", pid_);
+  snprintf(path, std::size(path), "/proc/%d/task", pid_);
 
   PtraceBroker::Request request = {};
   request.type = PtraceBroker::Request::kTypeListDirectory;

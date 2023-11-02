@@ -1,5 +1,5 @@
 <!--
-Copyright 2020 The Chromium Authors. All rights reserved.
+Copyright 2020 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
@@ -21,16 +21,6 @@ chromium-metrics-reviews@google.com.
 <histogram-configuration>
 
 <histograms>
-
-<histogram name="WebLayer.MainFrameNavigationStart.ConsentDetermined"
-    enum="Boolean" expires_after="M94">
-  <owner>sky@chromium.org</owner>
-  <owner>src/weblayer/OWNERS</owner>
-  <summary>
-    Tracks whether user consent to metrics reporting has been determined when a
-    navigation starts.
-  </summary>
-</histogram>
 
 <histogram name="WebLayer.Startup.{Component}CreationTime" units="ms"
     expires_after="2022-10-13">

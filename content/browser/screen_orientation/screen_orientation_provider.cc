@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
-#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/screen_orientation_delegate.h"
 #include "content/public/browser/web_contents.h"
@@ -51,7 +50,7 @@ void ScreenOrientationProvider::LockOrientation(
 
   if (delegate_->FullScreenRequired(web_contents())) {
     RenderViewHostImpl* rvhi = static_cast<RenderViewHostImpl*>(
-        web_contents()->GetMainFrame()->GetRenderViewHost());
+        web_contents()->GetPrimaryMainFrame()->GetRenderViewHost());
     if (!rvhi) {
       NotifyLockResult(ScreenOrientationLockResult::
                            SCREEN_ORIENTATION_LOCK_RESULT_ERROR_CANCELED);
@@ -145,20 +144,14 @@ void ScreenOrientationProvider::DidToggleFullscreenModeForTab(
   UnlockOrientation();
 }
 
-void ScreenOrientationProvider::DidFinishNavigation(
-    NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInPrimaryMainFrame() ||
-      !navigation_handle->HasCommitted() ||
-      navigation_handle->IsSameDocument()) {
-    return;
-  }
+void ScreenOrientationProvider::PrimaryPageChanged(Page& page) {
   UnlockOrientation();
 }
 
 device::mojom::ScreenOrientationLockType
 ScreenOrientationProvider::GetNaturalLockType() const {
   RenderWidgetHost* rwh =
-      web_contents()->GetMainFrame()->GetRenderViewHost()->GetWidget();
+      web_contents()->GetPrimaryMainFrame()->GetRenderViewHost()->GetWidget();
   if (!rwh)
     return device::mojom::ScreenOrientationLockType::DEFAULT;
 
@@ -190,7 +183,7 @@ ScreenOrientationProvider::GetNaturalLockType() const {
 bool ScreenOrientationProvider::LockMatchesCurrentOrientation(
     device::mojom::ScreenOrientationLockType lock) {
   RenderWidgetHost* rwh =
-      web_contents()->GetMainFrame()->GetRenderViewHost()->GetWidget();
+      web_contents()->GetPrimaryMainFrame()->GetRenderViewHost()->GetWidget();
   if (!rwh)
     return false;
 

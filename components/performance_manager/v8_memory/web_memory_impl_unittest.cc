@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -136,7 +136,7 @@ TEST_F(WebMemoryImplPMTest, WebMeasureMemory) {
         run_loop.Quit();
       });
   auto bad_message_callback =
-      base::BindLambdaForTesting([&](const std::string& error) {
+      base::BindLambdaForTesting([&](base::StringPiece error) {
         ADD_FAILURE() << error;
         run_loop.Quit();
       });
@@ -180,7 +180,7 @@ TEST_F(WebMemoryImplPMTest, MeasurementInterrupted) {
         FAIL() << "Measurement callback ran unexpectedly";
       });
   auto bad_message_callback =
-      base::BindOnce([](const std::string& error) { FAIL() << error; });
+      base::BindOnce([](base::StringPiece error) { FAIL() << error; });
 
   base::WeakPtr<FrameNode> frame_node_wrapper =
       PerformanceManager::GetFrameNodeForRenderFrameHost(child_frame());
@@ -227,7 +227,7 @@ TEST_F(WebMemoryImplPMTest, MeasurementDisallowed) {
         run_loop.Quit();
       });
   auto bad_message_callback =
-      base::BindLambdaForTesting([&](const std::string& error) {
+      base::BindLambdaForTesting([&](base::StringPiece error) {
         SUCCEED() << error;
         run_loop.Quit();
       });

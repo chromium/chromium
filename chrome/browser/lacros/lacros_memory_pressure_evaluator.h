@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_LACROS_LACROS_MEMORY_PRESSURE_EVALUATOR_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "chromeos/crosapi/mojom/resource_manager.mojom.h"
 #include "components/memory_pressure/memory_pressure_voter.h"
 #include "components/memory_pressure/system_memory_pressure_evaluator.h"

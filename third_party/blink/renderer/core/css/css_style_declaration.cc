@@ -32,12 +32,14 @@
 
 #include <algorithm>
 
+#include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_style_declaration.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
@@ -155,6 +157,19 @@ void CSSStyleDeclaration::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
 }
 
+CSSStyleDeclaration::CSSStyleDeclaration(ExecutionContext* context)
+    : ExecutionContextClient(context) {}
+
+CSSStyleDeclaration::~CSSStyleDeclaration() = default;
+
+void CSSStyleDeclaration::setCSSFloat(const ExecutionContext* execution_context,
+                                      const String& value,
+                                      ExceptionState& exception_state) {
+  SetPropertyInternal(CSSPropertyID::kFloat, String(), value, false,
+                      execution_context->GetSecureContextMode(),
+                      exception_state);
+}
+
 String CSSStyleDeclaration::AnonymousNamedGetter(const AtomicString& name) {
   // Search the style declaration.
   CSSPropertyID unresolved_property =
@@ -170,7 +185,7 @@ String CSSStyleDeclaration::AnonymousNamedGetter(const AtomicString& name) {
 NamedPropertySetterResult CSSStyleDeclaration::AnonymousNamedSetter(
     ScriptState* script_state,
     const AtomicString& name,
-    const String& value) {
+    const ScriptValue& value) {
   const ExecutionContext* execution_context =
       ExecutionContext::From(script_state);
   if (!execution_context)
@@ -187,7 +202,15 @@ NamedPropertySetterResult CSSStyleDeclaration::AnonymousNamedSetter(
       "CSSStyleDeclaration",
       CSSProperty::Get(ResolveCSSPropertyID(unresolved_property))
           .GetPropertyName());
-  SetPropertyInternal(unresolved_property, String(), value, false,
+  // Perform a type conversion from ES value to
+  // IDL [LegacyNullToEmptyString] DOMString only after we've confirmed that
+  // the property name is a valid CSS attribute name (see bug 1310062).
+  auto&& string_value =
+      NativeValueTraits<IDLStringTreatNullAsEmptyString>::NativeValue(
+          script_state->GetIsolate(), value.V8Value(), exception_state);
+  if (UNLIKELY(exception_state.HadException()))
+    return NamedPropertySetterResult::kIntercepted;
+  SetPropertyInternal(unresolved_property, String(), string_value, false,
                       execution_context->GetSecureContextMode(),
                       exception_state);
   if (exception_state.HadException())
@@ -209,7 +232,7 @@ void CSSStyleDeclaration::NamedPropertyEnumerator(Vector<String>& names,
 
   const ExecutionContext* execution_context = GetExecutionContext();
 
-  if (property_names.IsEmpty()) {
+  if (property_names.empty()) {
     for (CSSPropertyID property_id : CSSPropertyIDList()) {
       const CSSProperty& property_class =
           CSSProperty::Get(ResolveCSSPropertyID(property_id));

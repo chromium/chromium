@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.download.home.list;
 
 import android.content.Intent;
 import android.net.Uri;
-import android.text.TextUtils;
 
 import androidx.core.util.Pair;
 
@@ -49,9 +48,9 @@ public class ShareUtils {
             Uri uri = item.second == null ? null : item.second.uri;
             if (uri != null && uri.compareTo(Uri.EMPTY) != 0) {
                 uris.add(uri);
-            } else if (!TextUtils.isEmpty(item.first.url)) {
+            } else if (item.first.url != null && !item.first.url.isEmpty()) {
                 if (urls.length() > 0) urls.append("\n");
-                urls.append(item.first.url);
+                urls.append(item.first.url.getSpec());
             }
         }
 

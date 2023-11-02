@@ -1,8 +1,9 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/frame/wide_frame_view.h"
+#include <memory>
 
 #include "ash/frame/header_view.h"
 #include "ash/frame/non_client_frame_view_ash.h"
@@ -100,8 +101,9 @@ WideFrameView::WideFrameView(views::Widget* target)
   target_window->AddObserver(this);
   // Use the HeaderView itself as a frame view because WideFrameView is
   // is the frame only.
-  header_view_ = new HeaderView(target, /*frame view=*/nullptr);
-  AddChildView(header_view_);
+  header_view_ = AddChildView(
+      std::make_unique<HeaderView>(target, /*frame view=*/nullptr));
+  header_view_->Init();
   GetTargetHeaderView()->SetShouldPaintHeader(false);
   header_view_->set_context_menu_controller(
       frame_context_menu_controller_.get());
@@ -178,6 +180,15 @@ void WideFrameView::OnWindowDestroying(aura::Window* window) {
 
 void WideFrameView::OnDisplayMetricsChanged(const display::Display& display,
                                             uint32_t changed_metrics) {
+  aura::Window* target_window = target_->GetNativeWindow();
+  // The target window is detached from the tree when the window is being moved
+  // to another desks, or another display, and it may trigger the display
+  // metrics change if the target window is in fullscreen. Do not try to layout
+  // in this case. The it'll be layout when the window is added back.
+  // (crbug.com/1267128)
+  if (!target_window->GetRootWindow())
+    return;
+
   display::Screen* screen = display::Screen::GetScreen();
   if (screen->GetDisplayNearestWindow(target_->GetNativeWindow()).id() !=
           display.id() ||
@@ -189,8 +200,7 @@ void WideFrameView::OnDisplayMetricsChanged(const display::Display& display,
   // Ignore if this is called when the targe window state is nor proper
   // state. This can happen when switching the state to other states, in which
   // case, the wide frame will be removed.
-  if (!WindowState::Get(target_->GetNativeWindow())
-           ->IsMaximizedOrFullscreenOrPinned()) {
+  if (!WindowState::Get(target_window)->IsMaximizedOrFullscreenOrPinned()) {
     return;
   }
 

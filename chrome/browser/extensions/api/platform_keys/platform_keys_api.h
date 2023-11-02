@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,6 +33,14 @@ absl::optional<chromeos::platform_keys::TokenId> ApiIdToPlatformKeysTokenId(
 
 class PlatformKeysInternalSelectClientCertificatesFunction
     : public ExtensionFunction {
+ public:
+  // Interactive selection of certs requires a dialog box, which isn't
+  // possible from an extension's background context. However, during
+  // tests, a delegate performs the actual cert selection without using a
+  // dialog box, so this allows skipping the check for the sake of
+  // simplifying automated testing.
+  static void SetSkipInteractiveCheckForTest(bool skip_interactive_check);
+
  private:
   ~PlatformKeysInternalSelectClientCertificatesFunction() override;
   ResponseAction Run() override;

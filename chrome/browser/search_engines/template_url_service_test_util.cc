@@ -1,8 +1,9 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/search_engines/template_url_service_test_util.h"
+#include "base/memory/raw_ptr.h"
 
 #include <memory>
 #include <utility>
@@ -46,7 +47,7 @@ class TestingTemplateURLServiceClient : public ChromeTemplateURLServiceClient {
   }
 
  private:
-  std::u16string* search_term_;
+  raw_ptr<std::u16string> search_term_;
 };
 
 }  // namespace
@@ -65,6 +66,17 @@ void SetManagedDefaultSearchPreferences(const TemplateURLData& managed_data,
 void RemoveManagedDefaultSearchPreferences(TestingProfile* profile) {
   profile->GetTestingPrefService()->RemoveManagedPref(
       DefaultSearchManager::kDefaultSearchProviderDataPrefName);
+}
+
+void SetRecommendedDefaultSearchPreferences(const TemplateURLData& data,
+                                            bool enabled,
+                                            TestingProfile* profile) {
+  auto dict = TemplateURLDataToDictionary(data);
+  dict->SetBoolean(DefaultSearchManager::kDisabledByPolicy, !enabled);
+
+  profile->GetTestingPrefService()->SetRecommendedPref(
+      DefaultSearchManager::kDefaultSearchProviderDataPrefName,
+      std::move(dict));
 }
 
 std::unique_ptr<TemplateURL> CreateTestTemplateURL(

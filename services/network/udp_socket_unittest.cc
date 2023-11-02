@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include "services/network/udp_socket.h"
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
@@ -23,6 +22,8 @@
 #include "net/socket/udp_socket.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "net/url_request/url_request_context.h"
+#include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
 #include "services/network/public/mojom/udp_socket.mojom.h"
 #include "services/network/socket_factory.h"
@@ -193,7 +194,9 @@ class UDPSocketTest : public testing::Test {
  public:
   UDPSocketTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO),
-        factory_(nullptr /*netlog*/, &url_request_context_) {}
+        url_request_context_(
+            net::CreateTestURLRequestContextBuilder()->Build()),
+        factory_(nullptr /*netlog*/, url_request_context_.get()) {}
 
   UDPSocketTest(const UDPSocketTest&) = delete;
   UDPSocketTest& operator=(const UDPSocketTest&) = delete;
@@ -214,7 +217,7 @@ class UDPSocketTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  net::TestURLRequestContext url_request_context_;
+  std::unique_ptr<net::URLRequestContext> url_request_context_;
   SocketFactory factory_;
 };
 
@@ -284,7 +287,7 @@ TEST_F(UDPSocketTest, TestSendToWithConnect) {
 }
 
 // TODO(crbug.com/1014916): These two tests are very flaky on Fuchsia.
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_TestReadSendTo DISABLED_TestReadSendTo
 #define MAYBE_TestUnexpectedSequences DISABLED_TestUnexpectedSequences
 #else
@@ -670,18 +673,15 @@ TEST_F(UDPSocketTest, TestReadZeroByte) {
   EXPECT_EQ(std::vector<uint8_t>(), result.data.value());
 }
 
-#if defined(OS_ANDROID) || defined(OS_IOS) || defined(OS_MAC) || \
-    defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
 // Some Android devices do not support multicast socket.
 // The ones supporting multicast need WifiManager.MulticastLock to enable it.
 // https://developer.android.com/reference/android/net/wifi/WifiManager.MulticastLock.html
-// TODO(crbug.com/1215667): Fails on iOS running on Mac 11 machines. Flaky on
-// Mac 11 machines.
 // TODO(crbug.com/1255191): Fails on Fuchsia running with run-test-component.
 #define MAYBE_JoinMulticastGroup DISABLED_JoinMulticastGroup
 #else
 #define MAYBE_JoinMulticastGroup JoinMulticastGroup
-#endif  // defined(OS_ANDROID) || defined(OS_IOS) || defined(OS_MAC)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
 TEST_F(UDPSocketTest, MAYBE_JoinMulticastGroup) {
   const char kGroup[] = "237.132.100.17";
 

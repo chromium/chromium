@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/subresource_filter/content/browser/verified_ruleset_dealer.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
@@ -18,14 +19,15 @@ namespace subresource_filter {
 class AsyncDocumentSubresourceFilter;
 
 // NavigationThrottle responsible for determining the activation state of
-// subresource filtering for a given navigation (either in the main frame or in
-// a subframe); and for deferring that navigation at WillProcessResponse until
-// the activation state computation on the ruleset's task runner is complete.
+// subresource filtering for a given navigation (either in the root frame or in
+// a child frame); and for deferring that navigation at WillProcessResponse
+// until the activation state computation on the ruleset's task runner is
+// complete.
 //
 // Interested parties can retrieve the activation state after this point (most
 // likely in ReadyToCommitNavigation).
 //
-// Note: for performance, activation computation for subframes is done
+// Note: for performance, activation computation for child frames is done
 // speculatively at navigation start and at every redirect. This is to reduce
 // the wait time (most likely to 0) by WillProcessResponse time. For main
 // frames, speculation will be done at the next navigation stage after
@@ -33,20 +35,21 @@ class AsyncDocumentSubresourceFilter;
 class ActivationStateComputingNavigationThrottle
     : public content::NavigationThrottle {
  public:
-  // For main frames, a verified ruleset handle is not readily available at
-  // construction time. Since it is expensive to "warm up" the ruleset, the
-  // ruleset handle will be injected in NotifyPageActivationWithRuleset once it
-  // has been established that activation computation is needed.
+  // For subresource filter root frames, a verified ruleset handle is not
+  // readily available at construction time. Since it is expensive to "warm up"
+  // the ruleset, the ruleset handle will be injected in
+  // NotifyPageActivationWithRuleset once it has been established that
+  // activation computation is needed.
   static std::unique_ptr<ActivationStateComputingNavigationThrottle>
-  CreateForMainFrame(content::NavigationHandle* navigation_handle);
+  CreateForRoot(content::NavigationHandle* navigation_handle);
 
-  // It is illegal to create an activation computing throttle for subframes
+  // It is illegal to create an activation computing throttle for frames
   // whose parents are not activated. Similarly, |ruleset_handle| should be
   // non-null.
   static std::unique_ptr<ActivationStateComputingNavigationThrottle>
-  CreateForSubframe(content::NavigationHandle* navigation_handle,
-                    VerifiedRuleset::Handle* ruleset_handle,
-                    const mojom::ActivationState& parent_activation_state);
+  CreateForChild(content::NavigationHandle* navigation_handle,
+                 VerifiedRuleset::Handle* ruleset_handle,
+                 const mojom::ActivationState& parent_activation_state);
 
   ActivationStateComputingNavigationThrottle(
       const ActivationStateComputingNavigationThrottle&) = delete;
@@ -55,10 +58,10 @@ class ActivationStateComputingNavigationThrottle
 
   ~ActivationStateComputingNavigationThrottle() override;
 
-  // Notification for main frames when the page level activation is computed.
+  // Notification for root frames when the page level activation is computed.
   // Must be called at most once before WillProcessResponse is called on this
   // throttle. If it is never called, this object will never delay the
-  // navigation for main frames.
+  // navigation for root frames.
   //
   // Should never be called with DISABLED activation.
   //
@@ -79,8 +82,8 @@ class ActivationStateComputingNavigationThrottle
 
   // After the navigation is finished, the client may optionally choose to
   // continue using the DocumentSubresourceFilter that was used to compute the
-  // activation state for this frame. The transfered filter can be cached and
-  // used to calculate load policy for subframe navigations occuring in this
+  // activation state for this frame. The transferred filter can be cached and
+  // used to calculate load policy for child frame navigations occurring in this
   // frame.
   std::unique_ptr<AsyncDocumentSubresourceFilter> ReleaseFilter();
 
@@ -92,7 +95,7 @@ class ActivationStateComputingNavigationThrottle
   void CheckActivationState();
   void OnActivationStateComputed(mojom::ActivationState state);
 
-  // In the case when main frame navigations get notified of
+  // In the case when root frame navigations get notified of
   // mojom::ActivationState multiple times, a method is needed for overriding
   // previously computed results with a more accurate mojom::ActivationState.
   //
@@ -109,9 +112,9 @@ class ActivationStateComputingNavigationThrottle
 
   std::unique_ptr<AsyncDocumentSubresourceFilter> async_filter_;
 
-  // Must outlive this class. For main frame navigations, this member will be
+  // Must outlive this class. For root frame navigations, this member will be
   // nullptr until NotifyPageActivationWithRuleset is called.
-  VerifiedRuleset::Handle* ruleset_handle_;
+  raw_ptr<VerifiedRuleset::Handle, DanglingUntriaged> ruleset_handle_;
 
   // Will be set to true when DEFER is called in WillProcessResponse.
   bool deferred_ = false;

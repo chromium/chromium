@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_observer.h"
@@ -17,7 +18,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
-class NetworkIsolationKey;
+class IsolationInfo;
+class NetworkAnonymizationKey;
 }  // namespace net
 
 namespace content {
@@ -26,6 +28,20 @@ class FrameTreeNode;
 class NavigationRequest;
 class StoragePartition;
 struct ChildProcessTerminationInfo;
+
+enum class CoopSwapResult { kNoSwap, kSwapWithReference, kSwap };
+
+// Helper function that returns whether the BrowsingInstance should change
+// following COOP rules defined in:
+//
+// https://gist.github.com/annevk/6f2dd8c79c77123f39797f6bdac43f3e#changes-to-navigation
+CONTENT_EXPORT CoopSwapResult
+ShouldSwapBrowsingInstanceForCrossOriginOpenerPolicy(
+    network::mojom::CrossOriginOpenerPolicyValue initiator_coop,
+    const url::Origin& initiator_origin,
+    bool is_navigation_from_initial_empty_document,
+    network::mojom::CrossOriginOpenerPolicyValue destination_coop,
+    const url::Origin& destination_origin);
 
 // Groups information used to apply COOP during navigations. This class will be
 // used to trigger a number of mechanisms such as BrowsingInstance switch or
@@ -36,14 +52,23 @@ class CrossOriginOpenerPolicyStatus : public RenderProcessHostObserver {
   ~CrossOriginOpenerPolicyStatus() override;
 
   // Sanitize the COOP header from the `response`.
-  // Return an error when COOP is used on sandboxed popups.
+  // Return an error, and swap browsing context group when COOP is used on
+  // sandboxed popups.
   absl::optional<network::mojom::BlockedByResponseReason> SanitizeResponse(
-      network::mojom::URLResponseHead* response) const;
+      network::mojom::URLResponseHead* response);
 
   // Called when receiving a redirect or the final response.
   void EnforceCOOP(const network::CrossOriginOpenerPolicy& response_coop,
                    const url::Origin& response_origin,
-                   const net::NetworkIsolationKey& network_isolation_key);
+                   const net::NetworkAnonymizationKey& network_isolation_key);
+
+  // Force a browsing instance swap, even if the COOP rules do not require it.
+  // Calling this function is safe because it can only tighten security.
+  // This is used by _unfencedTop in fenced frames to ensure that navigations
+  // leaving the fenced context create a new browsing instance.
+  void ForceBrowsingInstanceSwap() {
+    require_browsing_instance_swap_ = CoopSwapResult::kSwap;
+  }
 
   // Set to true whenever the Cross-Origin-Opener-Policy spec requires a
   // "BrowsingContext group" swap:
@@ -54,7 +79,7 @@ class CrossOriginOpenerPolicyStatus : public RenderProcessHostObserver {
   // those references will be broken; window.name will also be reset to an empty
   // string.
   bool require_browsing_instance_swap() const {
-    return require_browsing_instance_swap_;
+    return require_browsing_instance_swap_ > CoopSwapResult::kNoSwap;
   }
 
   // The virtual browsing context group of the document to commit. Initially,
@@ -112,19 +137,19 @@ class CrossOriginOpenerPolicyStatus : public RenderProcessHostObserver {
       network::mojom::URLResponseHead* response_head) const;
 
   // The NavigationRequest which owns this object.
-  NavigationRequest* const navigation_request_;
+  const raw_ptr<NavigationRequest> navigation_request_;
 
   // Tracks the FrameTreeNode in which this navigation is taking place.
-  const FrameTreeNode* frame_tree_node_;
+  raw_ptr<const FrameTreeNode> frame_tree_node_;
 
   // Track the previous document's RenderProcessHost. This instance acquires
   // reporting endpoints from it, and will use it to release them in its
   // destructor.
-  RenderProcessHost* previous_document_rph_;
+  raw_ptr<RenderProcessHost> previous_document_rph_;
   base::ScopedObservation<RenderProcessHost, RenderProcessHostObserver>
       previous_document_rph_observation_{this};
 
-  bool require_browsing_instance_swap_ = false;
+  CoopSwapResult require_browsing_instance_swap_ = CoopSwapResult::kNoSwap;
 
   int virtual_browsing_context_group_;
 

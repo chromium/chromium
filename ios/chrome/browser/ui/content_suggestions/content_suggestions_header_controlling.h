@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,19 +17,19 @@
 @property(nonatomic, weak) id<ContentSuggestionsCollectionSynchronizing>
     collectionSynchronizer;
 
-// |YES| if its view is visible.  When set to |NO| various UI updates are
+// `YES` if its view is visible.  When set to `NO` various UI updates are
 // ignored.
 @property(nonatomic, assign, getter=isShowing) BOOL showing;
 
-// Updates the iPhone fakebox's frame based on the current scroll view |offset|
-// and |width|. |width| is the width of the screen, including the space outside
-// the safe area. The |safeAreaInsets| is relative to the view used to calculate
-// the |width|.
+// Updates the iPhone fakebox's frame based on the current scroll view `offset`
+// and `width`. `width` is the width of the screen, including the space outside
+// the safe area. The `safeAreaInsets` is relative to the view used to calculate
+// the `width`.
 - (void)updateFakeOmniboxForOffset:(CGFloat)offset
                        screenWidth:(CGFloat)screenWidth
                     safeAreaInsets:(UIEdgeInsets)safeAreaInsets;
 
-// Updates the fakeomnibox's width in order to be adapted to the new |width|,
+// Updates the fakeomnibox's width in order to be adapted to the new `width`,
 // without taking the y-position into account.
 - (void)updateFakeOmniboxForWidth:(CGFloat)width;
 

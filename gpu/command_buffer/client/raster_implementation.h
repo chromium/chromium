@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,9 +13,10 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "cc/paint/paint_cache.h"
+#include "cc/paint/skottie_serialization_history.h"
 #include "gpu/command_buffer/client/client_font_manager.h"
 #include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/client/gpu_control_client.h"
@@ -136,6 +137,7 @@ class RASTER_EXPORT RasterImplementation : public RasterInterface,
   void ConvertYUVAMailboxesToRGB(
       const gpu::Mailbox& dest_mailbox,
       SkYUVColorSpace planes_yuv_color_space,
+      const SkColorSpace* planes_rgb_color_space,
       SkYUVAInfo::PlaneConfig plane_config,
       SkYUVAInfo::Subsampling subsampling,
       const gpu::Mailbox yuva_plane_mailboxes[]) override;
@@ -146,11 +148,12 @@ class RASTER_EXPORT RasterImplementation : public RasterInterface,
                                   const gpu::Mailbox yuva_plane_mailboxes[],
                                   const gpu::Mailbox& source_mailbox) override;
 
-  void BeginRasterCHROMIUM(GLuint sk_color,
+  void BeginRasterCHROMIUM(SkColor4f sk_color_4f,
                            GLboolean needs_clear,
                            GLuint msaa_sample_count,
                            MsaaMode msaa_mode,
                            GLboolean can_use_lcd_text,
+                           GLboolean visible,
                            const gfx::ColorSpace& color_space,
                            const GLbyte* mailbox) override;
   void RasterCHROMIUM(const cc::DisplayItemList* list,
@@ -175,7 +178,8 @@ class RASTER_EXPORT RasterImplementation : public RasterInterface,
       const SkImageInfo& dst_info,
       GLuint dst_row_bytes,
       unsigned char* out,
-      base::OnceCallback<void(GrSurfaceOrigin, bool)> readback_done) override;
+      base::OnceCallback<void(bool)> readback_done) override;
+
   void ReadbackYUVPixelsAsync(
       const gpu::Mailbox& source_mailbox,
       GLenum source_target,
@@ -211,27 +215,6 @@ class RASTER_EXPORT RasterImplementation : public RasterInterface,
 
   // ContextSupport implementation.
   void SetAggressivelyFreeResources(bool aggressively_free_resources) override;
-  void Swap(uint32_t flags,
-            SwapCompletedCallback swap_completed,
-            PresentationCallback present_callback) override;
-  void SwapWithBounds(const std::vector<gfx::Rect>& rects,
-                      uint32_t flags,
-                      SwapCompletedCallback swap_completed,
-                      PresentationCallback present_callback) override;
-  void PartialSwapBuffers(const gfx::Rect& sub_buffer,
-                          uint32_t flags,
-                          SwapCompletedCallback swap_completed,
-                          PresentationCallback present_callback) override;
-  void CommitOverlayPlanes(uint32_t flags,
-                           SwapCompletedCallback swap_completed,
-                           PresentationCallback present_callback) override;
-  void ScheduleOverlayPlane(int plane_z_order,
-                            gfx::OverlayTransform plane_transform,
-                            unsigned overlay_texture_id,
-                            const gfx::Rect& display_bounds,
-                            const gfx::RectF& uv_rect,
-                            bool enable_blend,
-                            unsigned gpu_fence_id) override;
   uint64_t ShareGroupTracingGUID() const override;
   void SetErrorMessageCallback(
       base::RepeatingCallback<void(const char*, int32_t)> callback) override;
@@ -295,7 +278,7 @@ class RASTER_EXPORT RasterImplementation : public RasterInterface,
     ~SingleThreadChecker();
 
    private:
-    RasterImplementation* raster_implementation_;
+    raw_ptr<RasterImplementation> raster_implementation_;
   };
 
   // ImplementationBase implementation.
@@ -305,11 +288,6 @@ class RASTER_EXPORT RasterImplementation : public RasterInterface,
   void OnGpuControlLostContext() final;
   void OnGpuControlLostContextMaybeReentrant() final;
   void OnGpuControlErrorMessage(const char* message, int32_t id) final;
-  void OnGpuControlSwapBuffersCompleted(
-      const SwapBuffersCompleteParams& params,
-      gfx::GpuFenceHandle release_fence) final;
-  void OnSwapBufferPresented(uint64_t swap_id,
-                             const gfx::PresentationFeedback& feedback) final;
   void OnGpuControlReturnData(base::span<const uint8_t> data) final;
 
   // Gets the GLError through our wrapper.
@@ -361,14 +339,13 @@ class RASTER_EXPORT RasterImplementation : public RasterInterface,
       SyncToken* decode_sync_token,
       ClientDiscardableHandle handle);
 
-  void ReadbackImagePixelsINTERNAL(
-      const gpu::Mailbox& source_mailbox,
-      const SkImageInfo& dst_info,
-      GLuint dst_row_bytes,
-      int src_x,
-      int src_y,
-      base::OnceCallback<void(GrSurfaceOrigin, bool)> readback_done,
-      void* dst_pixels);
+  void ReadbackImagePixelsINTERNAL(const gpu::Mailbox& source_mailbox,
+                                   const SkImageInfo& dst_info,
+                                   GLuint dst_row_bytes,
+                                   int src_x,
+                                   int src_y,
+                                   base::OnceCallback<void(bool)> readback_done,
+                                   void* dst_pixels);
 
   struct AsyncARGBReadbackRequest;
   void OnAsyncARGBReadbackDone(AsyncARGBReadbackRequest* request);
@@ -396,7 +373,7 @@ class RASTER_EXPORT RasterImplementation : public RasterInterface,
   void FailGLError(GLenum /* error */) {}
 #endif
 
-  RasterCmdHelper* helper_;
+  raw_ptr<RasterCmdHelper> helper_;
   std::string last_error_;
   gles2::DebugMarkerManager debug_marker_manager_;
   std::string this_in_hex_;
@@ -436,11 +413,11 @@ class RASTER_EXPORT RasterImplementation : public RasterInterface,
   std::vector<size_t> temp_raster_offsets_;
 
   struct RasterProperties {
-    RasterProperties(SkColor background_color,
+    RasterProperties(SkColor4f background_color,
                      bool can_use_lcd_text,
                      sk_sp<SkColorSpace> color_space);
     ~RasterProperties();
-    SkColor background_color = SK_ColorWHITE;
+    SkColor4f background_color = SkColors::kWhite;
     bool can_use_lcd_text = false;
     sk_sp<SkColorSpace> color_space;
   };
@@ -453,7 +430,9 @@ class RASTER_EXPORT RasterImplementation : public RasterInterface,
   cc::ClientPaintCache::PurgedData temp_paint_cache_purged_data_;
   std::unique_ptr<cc::ClientPaintCache> paint_cache_;
 
-  ImageDecodeAcceleratorInterface* image_decode_accelerator_;
+  cc::SkottieSerializationHistory skottie_serialization_history_;
+
+  raw_ptr<ImageDecodeAcceleratorInterface> image_decode_accelerator_;
 
   // Tracing helpers.
   int raster_chromium_id_ = 0;

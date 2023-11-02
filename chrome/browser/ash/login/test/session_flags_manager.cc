@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,8 +20,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chrome/common/chrome_paths.h"
-#include "chromeos/cryptohome/cryptohome_parameters.h"
-#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
+#include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "components/user_manager/user_names.h"
 #include "third_party/cros_system_api/switches/chrome_switches.h"
 
@@ -61,11 +61,11 @@ void SessionFlagsManager::SetUpSessionRestore() {
 
 void SessionFlagsManager::SetDefaultLoginSwitches(
     const std::vector<Switch>& switches) {
-  default_switches_ = {{switches::kPolicySwitchesBegin, ""}};
+  default_switches_ = {{chromeos::switches::kPolicySwitchesBegin, ""}};
   default_switches_.insert(default_switches_.end(), switches.begin(),
                            switches.end());
   default_switches_.emplace_back(
-      std::make_pair(switches::kPolicySwitchesEnd, ""));
+      std::make_pair(chromeos::switches::kPolicySwitchesEnd, ""));
 }
 
 void SessionFlagsManager::AppendSwitchesToCommandLine(

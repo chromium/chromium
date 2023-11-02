@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/css/css_image_value.h"
 #include "third_party/blink/renderer/core/css/css_paint_value.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
+#include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/css/css_uri_value.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -54,32 +55,44 @@
 #include "third_party/blink/renderer/platform/loader/fetch/cross_origin_attribute_value.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
 namespace {
 
+bool IsUsingContainerRelativeUnits(const CSSValue& value) {
+  const auto* image_generator_value = DynamicTo<CSSImageGeneratorValue>(value);
+  return image_generator_value &&
+         image_generator_value->IsUsingContainerRelativeUnits();
+}
+
 class StyleImageLoader {
   STACK_ALLOCATED();
 
  public:
+  using ContainerSizes = CSSToLengthConversionData::ContainerSizes;
+
   StyleImageLoader(Document& document,
                    ComputedStyle& style,
+                   const PreCachedContainerSizes& pre_cached_container_sizes,
                    float device_scale_factor)
       : document_(document),
         style_(style),
+        pre_cached_container_sizes_(pre_cached_container_sizes),
         device_scale_factor_(device_scale_factor) {}
 
-  StyleImage* Load(
-      CSSValue&,
-      FetchParameters::ImageRequestBehavior = FetchParameters::kNone,
-      CrossOriginAttributeValue = kCrossOriginAttributeNotSet);
+  StyleImage* Load(CSSValue&,
+                   FetchParameters::ImageRequestBehavior =
+                       FetchParameters::ImageRequestBehavior::kNone,
+                   CrossOriginAttributeValue = kCrossOriginAttributeNotSet);
 
  private:
   StyleImage* CrossfadeArgument(CSSValue&, CrossOriginAttributeValue);
 
   Document& document_;
   ComputedStyle& style_;
+  const PreCachedContainerSizes& pre_cached_container_sizes_;
   const float device_scale_factor_;
 };
 
@@ -87,13 +100,18 @@ StyleImage* StyleImageLoader::Load(
     CSSValue& value,
     FetchParameters::ImageRequestBehavior image_request_behavior,
     CrossOriginAttributeValue cross_origin) {
+  const ContainerSizes& container_sizes =
+      IsUsingContainerRelativeUnits(value) ? pre_cached_container_sizes_.Get()
+                                           : ContainerSizes();
+
   if (auto* image_value = DynamicTo<CSSImageValue>(value)) {
     return image_value->CacheImage(document_, image_request_behavior,
                                    cross_origin);
   }
 
   if (auto* paint_value = DynamicTo<CSSPaintValue>(value)) {
-    auto* image = MakeGarbageCollected<StyleGeneratedImage>(*paint_value);
+    auto* image = MakeGarbageCollected<StyleGeneratedImage>(*paint_value,
+                                                            container_sizes);
     style_.AddPaintImage(image);
     return image;
   }
@@ -107,7 +125,8 @@ StyleImage* StyleImageLoader::Load(
 
   if (auto* image_gradient_value =
           DynamicTo<cssvalue::CSSGradientValue>(value)) {
-    return MakeGarbageCollected<StyleGeneratedImage>(*image_gradient_value);
+    return MakeGarbageCollected<StyleGeneratedImage>(*image_gradient_value,
+                                                     container_sizes);
   }
 
   if (auto* image_set_value = DynamicTo<CSSImageSetValue>(value)) {
@@ -133,10 +152,24 @@ StyleImage* StyleImageLoader::CrossfadeArgument(
   // a LayoutObject) that we can't meet with the current implementation.
   if (IsA<CSSPaintValue>(value))
     return nullptr;
-  return Load(value, FetchParameters::kNone, cross_origin);
+  return Load(value, FetchParameters::ImageRequestBehavior::kNone,
+              cross_origin);
 }
 
 }  // namespace
+
+const PreCachedContainerSizes::ContainerSizes& PreCachedContainerSizes::Get()
+    const {
+  DCHECK(RuntimeEnabledFeatures::CSSContainerRelativeUnitsEnabled());
+  if (!cache_) {
+    if (conversion_data_) {
+      cache_ = conversion_data_->PreCachedContainerSizesCopy();
+    } else {
+      cache_ = ContainerSizes();
+    }
+  }
+  return *cache_;
+}
 
 ElementStyleResources::ElementStyleResources(Element& element,
                                              float device_scale_factor,
@@ -179,8 +212,14 @@ StyleImage* ElementStyleResources::CachedStyleImage(
   }
 
   // Gradient functions are never pending (but don't cache StyleImages).
-  if (auto* gradient_value = DynamicTo<cssvalue::CSSGradientValue>(value))
-    return MakeGarbageCollected<StyleGeneratedImage>(*gradient_value);
+  if (auto* gradient_value = DynamicTo<cssvalue::CSSGradientValue>(value)) {
+    using ContainerSizes = CSSToLengthConversionData::ContainerSizes;
+    const ContainerSizes& container_sizes =
+        IsUsingContainerRelativeUnits(value) ? pre_cached_container_sizes_.Get()
+                                             : ContainerSizes();
+    return MakeGarbageCollected<StyleGeneratedImage>(*gradient_value,
+                                                     container_sizes);
+  }
 
   if (auto* img_set_value = DynamicTo<CSSImageSetValue>(value))
     return img_set_value->CachedImage(device_scale_factor_);
@@ -254,16 +293,6 @@ void ElementStyleResources::LoadPendingSVGResources(ComputedStyle& style) {
   }
 }
 
-static bool BackgroundLayerMayBeSprite(const FillLayer& background_layer) {
-  // Simple heuristic to guess if a CSS background image layer is used to
-  // create CSS sprites. For a legit background image it's very likely the X
-  // and the Y position will not be explicitly specifed. For CSS sprite image,
-  // background X or Y position will probably be specified.
-  DCHECK(background_layer.GetImage());
-  return background_layer.PositionX().IsFixed() ||
-         background_layer.PositionY().IsFixed();
-}
-
 static CSSValue* PendingCssValue(StyleImage* style_image) {
   if (auto* pending_image = DynamicTo<StylePendingImage>(style_image))
     return pending_image->CssValue();
@@ -288,7 +317,8 @@ void ElementStyleResources::LoadPendingImages(ComputedStyle& style) {
   // If we eagerly loaded the images we'd fetch a.png, even though it's not
   // used. If we didn't null check below we'd crash since the none actually
   // removed all background images.
-  StyleImageLoader loader(element_.GetDocument(), style, device_scale_factor_);
+  StyleImageLoader loader(element_.GetDocument(), style,
+                          pre_cached_container_sizes_, device_scale_factor_);
   for (CSSPropertyID property : pending_image_properties_) {
     switch (property) {
       case CSSPropertyID::kBackgroundImage: {
@@ -297,15 +327,7 @@ void ElementStyleResources::LoadPendingImages(ComputedStyle& style) {
           if (auto* pending_value =
                   PendingCssValue(background_layer->GetImage())) {
             FetchParameters::ImageRequestBehavior image_request_behavior =
-                FetchParameters::kNone;
-            if (!BackgroundLayerMayBeSprite(*background_layer)) {
-              if (element_.GetDocument()
-                      .GetFrame()
-                      ->GetLazyLoadImageSetting() ==
-                  LocalFrame::LazyLoadImageSetting::kEnabledAutomatic) {
-                image_request_behavior = FetchParameters::kDeferImageLoad;
-              }
-            }
+                FetchParameters::ImageRequestBehavior::kNone;
             StyleImage* new_image =
                 loader.Load(*pending_value, image_request_behavior);
             if (new_image && new_image->IsLazyloadPossiblyDeferred()) {
@@ -372,9 +394,9 @@ void ElementStyleResources::LoadPendingImages(ComputedStyle& style) {
         for (FillLayer* mask_layer = &style.AccessMaskLayers(); mask_layer;
              mask_layer = mask_layer->Next()) {
           if (auto* pending_value = PendingCssValue(mask_layer->GetImage())) {
-            mask_layer->SetImage(loader.Load(*pending_value,
-                                             FetchParameters::kNone,
-                                             kCrossOriginAttributeAnonymous));
+            mask_layer->SetImage(loader.Load(
+                *pending_value, FetchParameters::ImageRequestBehavior::kNone,
+                kCrossOriginAttributeAnonymous));
           }
         }
         break;
@@ -382,9 +404,9 @@ void ElementStyleResources::LoadPendingImages(ComputedStyle& style) {
       case CSSPropertyID::kShapeOutside:
         if (ShapeValue* shape_value = style.ShapeOutside()) {
           if (auto* pending_value = PendingCssValue(shape_value->GetImage())) {
-            shape_value->SetImage(loader.Load(*pending_value,
-                                              FetchParameters::kNone,
-                                              kCrossOriginAttributeAnonymous));
+            shape_value->SetImage(loader.Load(
+                *pending_value, FetchParameters::ImageRequestBehavior::kNone,
+                kCrossOriginAttributeAnonymous));
           }
         }
         break;
@@ -398,6 +420,11 @@ void ElementStyleResources::LoadPendingResources(
     ComputedStyle& computed_style) {
   LoadPendingImages(computed_style);
   LoadPendingSVGResources(computed_style);
+}
+
+void ElementStyleResources::UpdateLengthConversionData(
+    const CSSToLengthConversionData* conversion_data) {
+  pre_cached_container_sizes_ = PreCachedContainerSizes(conversion_data);
 }
 
 }  // namespace blink

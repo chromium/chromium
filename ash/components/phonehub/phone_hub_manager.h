@@ -1,13 +1,15 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef ASH_COMPONENTS_PHONEHUB_PHONE_HUB_MANAGER_H_
 #define ASH_COMPONENTS_PHONEHUB_PHONE_HUB_MANAGER_H_
 
-#include <stdint.h>
+#include "base/callback.h"
+#include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 class BrowserTabsModelProvider;
@@ -16,9 +18,9 @@ class ConnectionScheduler;
 class DoNotDisturbController;
 class FeatureStatusProvider;
 class FindMyDeviceController;
-class NotificationAccessManager;
-class NotificationManager;
+class MultideviceFeatureAccessManager;
 class NotificationInteractionHandler;
+class NotificationManager;
 class OnboardingUiTracker;
 class PhoneModel;
 class RecentAppsInteractionHandler;
@@ -42,7 +44,8 @@ class PhoneHubManager {
   virtual DoNotDisturbController* GetDoNotDisturbController() = 0;
   virtual FeatureStatusProvider* GetFeatureStatusProvider() = 0;
   virtual FindMyDeviceController* GetFindMyDeviceController() = 0;
-  virtual NotificationAccessManager* GetNotificationAccessManager() = 0;
+  virtual MultideviceFeatureAccessManager*
+  GetMultideviceFeatureAccessManager() = 0;
   virtual NotificationInteractionHandler*
   GetNotificationInteractionHandler() = 0;
   virtual NotificationManager* GetNotificationManager() = 0;
@@ -53,18 +56,23 @@ class PhoneHubManager {
   virtual TetherController* GetTetherController() = 0;
   virtual UserActionRecorder* GetUserActionRecorder() = 0;
 
+  // Retrieves the timestamp of the last successful discovery for active host,
+  // or nullopt if it hasn't been seen in the current Chrome session.
+  virtual void GetHostLastSeenTimestamp(
+      base::OnceCallback<void(absl::optional<base::Time>)> callback) = 0;
+
  protected:
   PhoneHubManager() = default;
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash {
+namespace chromeos {
 namespace phonehub {
-using ::chromeos::phonehub::PhoneHubManager;
+using ::ash::phonehub::PhoneHubManager;
 }
-}  // namespace ash
+}  // namespace chromeos
 
 #endif  // ASH_COMPONENTS_PHONEHUB_PHONE_HUB_MANAGER_H_

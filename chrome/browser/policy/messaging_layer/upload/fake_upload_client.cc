@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,9 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/values.h"
 #include "chrome/browser/policy/messaging_layer/upload/record_upload_request_builder.h"
+#include "chrome/browser/policy/messaging_layer/util/reporting_server_connector.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/util/status.h"
@@ -21,9 +23,9 @@ namespace reporting {
 namespace {
 
 absl::optional<Priority> GetPriorityFromSequenceInformationValue(
-    const base::Value& sequence_information) {
+    const base::Value::Dict& sequence_information) {
   const absl::optional<int> priority_result =
-      sequence_information.FindIntKey("priority");
+      sequence_information.FindInt("priority");
   if (!priority_result.has_value() ||
       !Priority_IsValid(priority_result.value())) {
     return absl::nullopt;
@@ -32,9 +34,9 @@ absl::optional<Priority> GetPriorityFromSequenceInformationValue(
 }
 
 StatusOr<SequenceInformation> SequenceInformationValueToProto(
-    const base::Value& value) {
-  const std::string* const sequencing_id = value.FindStringKey("sequencingId");
-  const std::string* const generation_id = value.FindStringKey("generationId");
+    const base::Value::Dict& value) {
+  const std::string* const sequencing_id = value.FindString("sequencingId");
+  const std::string* const generation_id = value.FindString("generationId");
   const auto priority_result = GetPriorityFromSequenceInformationValue(value);
 
   // If any of the previous values don't exist, or are malformed, return error.
@@ -78,27 +80,24 @@ StatusOr<SequenceInformation> SequenceInformationValueToProto(
 
 }  // namespace
 
-FakeUploadClient::FakeUploadClient(
-    policy::CloudPolicyClient* cloud_policy_client)
-    : cloud_policy_client_(cloud_policy_client) {}
+FakeUploadClient::FakeUploadClient() = default;
 
 FakeUploadClient::~FakeUploadClient() = default;
 
-void FakeUploadClient::Create(policy::CloudPolicyClient* cloud_policy_client,
-                              CreatedCallback created_cb) {
+void FakeUploadClient::Create(CreatedCallback created_cb) {
   std::move(created_cb)
-      .Run(base::WrapUnique<UploadClient>(
-          new FakeUploadClient(cloud_policy_client)));
+      .Run(base::WrapUnique<UploadClient>(new FakeUploadClient()));
 }
 
 Status FakeUploadClient::EnqueueUpload(
     bool need_encryption_key,
-    std::unique_ptr<std::vector<EncryptedRecord>> records,
+    std::vector<EncryptedRecord> records,
+    ScopedReservation scoped_reservation,
     ReportSuccessfulUploadCallback report_upload_success_cb,
     EncryptionKeyAttachedCallback encryption_key_attached_cb) {
   UploadEncryptedReportingRequestBuilder builder;
-  for (auto record : *records) {
-    builder.AddRecord((std::move(record)));
+  for (auto record : records) {
+    builder.AddRecord(std::move(record), scoped_reservation);
   }
   auto request_result = builder.Build();
   if (!request_result.has_value()) {
@@ -108,28 +107,29 @@ Status FakeUploadClient::EnqueueUpload(
     return Status::StatusOK();
   }
 
-  auto response_cb = base::BindOnce(&FakeUploadClient::OnUploadComplete,
-                                    base::Unretained(this),
-                                    std::move(report_upload_success_cb),
-                                    std::move(encryption_key_attached_cb));
+  auto response_cb = base::BindOnce(
+      &FakeUploadClient::OnUploadComplete, base::Unretained(this),
+      std::move(scoped_reservation), std::move(report_upload_success_cb),
+      std::move(encryption_key_attached_cb));
 
-  cloud_policy_client_->UploadEncryptedReport(
-      std::move(request_result.value()),
-      base::Value(base::Value::Type::DICTIONARY), std::move(response_cb));
+  ReportingServerConnector::UploadEncryptedReport(
+      std::move(request_result.value()), base::Value::Dict(),
+      std::move(response_cb));
   return Status::StatusOK();
 }
 
 void FakeUploadClient::OnUploadComplete(
+    ScopedReservation scoped_reservation,
     ReportSuccessfulUploadCallback report_upload_success_cb,
     EncryptionKeyAttachedCallback encryption_key_attached_cb,
-    absl::optional<base::Value> response) {
-  if (!response.has_value()) {
+    StatusOr<base::Value::Dict> response) {
+  if (!response.ok()) {
     return;
   }
-  const base::Value* last_success =
-      response->FindDictKey("lastSucceedUploadedRecord");
+  const base::Value::Dict* last_success =
+      response.ValueOrDie().FindDict("lastSucceedUploadedRecord");
   if (last_success != nullptr) {
-    const auto force_confirm_flag = last_success->FindBoolKey("forceConfirm");
+    const auto force_confirm_flag = last_success->FindBool("forceConfirm");
     bool force_confirm =
         force_confirm_flag.has_value() && force_confirm_flag.value();
     auto seq_info_result = SequenceInformationValueToProto(*last_success);
@@ -139,15 +139,15 @@ void FakeUploadClient::OnUploadComplete(
     }
   }
 
-  const base::Value* signed_encryption_key_record =
-      response->FindDictKey("encryptionSettings");
+  const base::Value::Dict* signed_encryption_key_record =
+      response.ValueOrDie().FindDict("encryptionSettings");
   if (signed_encryption_key_record != nullptr) {
     const std::string* public_key_str =
-        signed_encryption_key_record->FindStringKey("publicKey");
+        signed_encryption_key_record->FindString("publicKey");
     const auto public_key_id_result =
-        signed_encryption_key_record->FindIntKey("publicKeyId");
+        signed_encryption_key_record->FindInt("publicKeyId");
     const std::string* public_key_signature_str =
-        signed_encryption_key_record->FindStringKey("publicKeySignature");
+        signed_encryption_key_record->FindString("publicKeySignature");
     std::string public_key;
     std::string public_key_signature;
     if (public_key_str != nullptr &&

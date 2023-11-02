@@ -3,4 +3,8 @@ specific_include_rules = {
     "+components/remote_cocoa",
     "+content/app_shim_remote_cocoa",
   ],
+  "web_contents_view_aura_unittest.cc": [
+    "+ui/ozone/buildflags.h",
+    "+ui/ozone/public/ozone_platform.h",
+  ],
 }

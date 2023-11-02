@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,9 @@
 
 #include <stddef.h>
 
-#include "base/logging.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/strings/grit/components_strings.h"
 
 using bookmarks::BookmarkModel;
@@ -35,7 +35,7 @@ const BookmarkNode* CreateNewNode(BookmarkModel* model,
           : child_count;
   switch (details.type) {
     case BookmarkEditor::EditDetails::NEW_URL:
-      node = model->AddURL(parent, insert_index, new_title, new_url);
+      node = model->AddNewURL(parent, insert_index, new_title, new_url);
       break;
     case BookmarkEditor::EditDetails::NEW_FOLDER: {
       node = model->AddFolder(parent, insert_index, new_title);
@@ -167,8 +167,9 @@ const BookmarkNode* BookmarkEditor::ApplyEditsWithNoFolderChange(
   DCHECK(node);
 
   if (node->is_url())
-    model->SetURL(node, new_url);
-  model->SetTitle(node, new_title);
+    model->SetURL(node, new_url, bookmarks::metrics::BookmarkEditSource::kUser);
+  model->SetTitle(node, new_title,
+                  bookmarks::metrics::BookmarkEditSource::kUser);
 
   return node;
 }
@@ -191,8 +192,9 @@ const BookmarkNode* BookmarkEditor::ApplyEditsWithPossibleFolderChange(
   if (new_parent != node->parent())
     model->Move(node, new_parent, new_parent->children().size());
   if (node->is_url())
-    model->SetURL(node, new_url);
-  model->SetTitle(node, new_title);
+    model->SetURL(node, new_url, bookmarks::metrics::BookmarkEditSource::kUser);
+  model->SetTitle(node, new_title,
+                  bookmarks::metrics::BookmarkEditSource::kUser);
 
   return node;
 }

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -223,6 +223,7 @@ int EventModelImpl::GetEventCountOrSnooze(const std::string& event_name,
 }
 
 Event& EventModelImpl::GetNonConstEvent(const std::string& event_name) {
+  DCHECK_NE("", event_name);
   if (events_.find(event_name) == events_.end()) {
     // Event does not exist yet, so create it.
     events_[event_name].set_name(event_name);

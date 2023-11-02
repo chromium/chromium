@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,15 +22,19 @@ public class BookmarkSaveFlowProperties {
             new WritableBooleanPropertyKey();
     public static final WritableObjectPropertyKey<View.OnClickListener>
             FOLDER_SELECT_ONCLICK_LISTENER = new WritableObjectPropertyKey<>();
-    public static final WritableObjectPropertyKey<Drawable> NOTIFICATION_SWITCH_START_ICON =
+    public static final WritableObjectPropertyKey<Integer> NOTIFICATION_SWITCH_START_ICON_RES =
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<CharSequence> NOTIFICATION_SWITCH_SUBTITLE =
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<CharSequence> NOTIFICATION_SWITCH_TITLE =
             new WritableObjectPropertyKey<>();
+    public static final WritableBooleanPropertyKey NOTIFICATION_SWITCH_TOGGLED =
+            new WritableBooleanPropertyKey();
     public static final WritableObjectPropertyKey<CompoundButton.OnCheckedChangeListener>
             NOTIFICATION_SWITCH_TOGGLE_LISTENER = new WritableObjectPropertyKey<>();
     public static final WritableBooleanPropertyKey NOTIFICATION_SWITCH_VISIBLE =
+            new WritableBooleanPropertyKey();
+    public static final WritableBooleanPropertyKey NOTIFICATION_UI_ENABLED =
             new WritableBooleanPropertyKey();
     public static final WritableObjectPropertyKey<CharSequence> SUBTITLE_TEXT =
             new WritableObjectPropertyKey<>();
@@ -39,6 +43,8 @@ public class BookmarkSaveFlowProperties {
 
     public static final PropertyKey[] ALL_PROPERTIES = {EDIT_ONCLICK_LISTENER, FOLDER_SELECT_ICON,
             FOLDER_SELECT_ICON_ENABLED, FOLDER_SELECT_ONCLICK_LISTENER, NOTIFICATION_SWITCH_VISIBLE,
-            NOTIFICATION_SWITCH_START_ICON, NOTIFICATION_SWITCH_TITLE, NOTIFICATION_SWITCH_SUBTITLE,
-            NOTIFICATION_SWITCH_TOGGLE_LISTENER, SUBTITLE_TEXT, TITLE_TEXT};
+            NOTIFICATION_SWITCH_START_ICON_RES, NOTIFICATION_SWITCH_TITLE,
+            NOTIFICATION_SWITCH_SUBTITLE, NOTIFICATION_SWITCH_TOGGLED,
+            NOTIFICATION_SWITCH_TOGGLE_LISTENER, NOTIFICATION_UI_ENABLED, SUBTITLE_TEXT,
+            TITLE_TEXT};
 }

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -18,9 +19,9 @@
 #include "chrome/browser/ui/views/apps/app_info_dialog/app_info_header_panel.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/app_constants/constants.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
-#include "extensions/common/constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/test/scoped_views_test_helper.h"
@@ -71,7 +72,7 @@ class AppInfoDialogTestApi {
   }
 
  private:
-  AppInfoDialog* dialog_;
+  raw_ptr<AppInfoDialog> dialog_;
 };
 
 }  // namespace test
@@ -95,8 +96,14 @@ class AppInfoDialogViewsTest : public BrowserWithTestWindowTest,
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    // Sets up a fake user manager over |BrowserWithTestWindowTest| user
+    // manager.
+    arc_test_ = std::make_unique<ArcAppTest>();
+    arc_test_->SetUp(extension_environment_.profile());
+
     shelf_model_ = std::make_unique<ash::ShelfModel>();
     chrome_shelf_item_factory_ = std::make_unique<ChromeShelfItemFactory>();
+    shelf_model_->SetShelfItemFactory(chrome_shelf_item_factory_.get());
     chrome_shelf_controller_ = std::make_unique<ChromeShelfController>(
         extension_environment_.profile(), shelf_model_.get(),
         chrome_shelf_item_factory_.get());
@@ -106,11 +113,10 @@ class AppInfoDialogViewsTest : public BrowserWithTestWindowTest,
         std::make_unique<ShelfControllerHelper>(
             extension_environment_.profile()));
     chrome_shelf_controller_->Init();
-    arc_test_.SetUp(extension_environment_.profile());
 #endif
     extension_ = extension_environment_.MakePackagedApp(kTestExtensionId, true);
     chrome_app_ = extension_environment_.MakePackagedApp(
-        extension_misc::kChromeAppId, true);
+        app_constants::kChromeAppId, true);
   }
 
   void TearDown() override {
@@ -118,9 +124,12 @@ class AppInfoDialogViewsTest : public BrowserWithTestWindowTest,
     extension_ = nullptr;
     chrome_app_ = nullptr;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    arc_test_.TearDown();
     chrome_shelf_controller_.reset();
     shelf_model_.reset();
+    if (arc_test_) {
+      arc_test_->TearDown();
+      arc_test_.reset();
+    }
 #endif
 
     // The Browser class had dependencies on LocalState, which is owned by
@@ -185,9 +194,9 @@ class AppInfoDialogViewsTest : public BrowserWithTestWindowTest,
             nullptr);
   }
 
- protected:
-  views::Widget* widget_ = nullptr;
-  AppInfoDialog* dialog_ = nullptr;  // Owned by |widget_|'s views hierarchy.
+  raw_ptr<views::Widget> widget_ = nullptr;
+  raw_ptr<AppInfoDialog> dialog_ =
+      nullptr;  // Owned by |widget_|'s views hierarchy.
   scoped_refptr<const extensions::Extension> extension_;
   scoped_refptr<const extensions::Extension> chrome_app_;
   extensions::TestExtensionEnvironment extension_environment_{
@@ -197,7 +206,7 @@ class AppInfoDialogViewsTest : public BrowserWithTestWindowTest,
   std::unique_ptr<ash::ShelfModel> shelf_model_;
   std::unique_ptr<ChromeShelfItemFactory> chrome_shelf_item_factory_;
   std::unique_ptr<ChromeShelfController> chrome_shelf_controller_;
-  ArcAppTest arc_test_;
+  std::unique_ptr<ArcAppTest> arc_test_;
 #endif
 };
 
@@ -235,15 +244,20 @@ TEST_F(AppInfoDialogViewsTest, DestroyedProfileClosesDialog) {
   browser_window->Close();
   browser_window.reset();
 
+  // The following serves two purposes:
+  // it ensures the Widget close is being triggered by the DeleteProfile() call
+  // rather than the code above. And prevents a race condition while tearing
+  // down arc_test user_manager.
+  base::RunLoop().RunUntilIdle();
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Avoid a race condition when tearing down arc_test_ and deleting the user
+  // manager.
   chrome_shelf_controller_.reset();
   shelf_model_.reset();
-  arc_test_.TearDown();
+  arc_test_->TearDown();
+  arc_test_.reset();
 #endif
-
-  // The following does nothing: it just ensures the Widget close is being
-  // triggered by the DeleteProfile() call rather than the code above.
-  base::RunLoop().RunUntilIdle();
 
   ASSERT_TRUE(widget_);
   EXPECT_FALSE(widget_->IsClosed());
@@ -302,7 +316,7 @@ TEST_F(AppInfoDialogViewsTest, ViewInStore) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(AppInfoDialogViewsTest, ArcAppInfoLinks) {
-  ShowAppInfo(extension_misc::kChromeAppId);
+  ShowAppInfo(app_constants::kChromeAppId);
   EXPECT_FALSE(widget_->IsClosed());
   // App Info should not have ARC App info links section because ARC Settings
   // app is not available yet.
@@ -316,7 +330,7 @@ TEST_F(AppInfoDialogViewsTest, ArcAppInfoLinks) {
   arc::mojom::AppHost* app_host = arc_prefs;
   app_host->OnAppListRefreshed(GetArcSettingsAppInfo());
   EXPECT_TRUE(arc_prefs->IsRegistered(arc::kSettingsAppId));
-  ShowAppInfo(extension_misc::kChromeAppId);
+  ShowAppInfo(app_constants::kChromeAppId);
   EXPECT_FALSE(widget_->IsClosed());
   EXPECT_TRUE(dialog_->arc_app_info_links_for_test());
 
@@ -325,13 +339,16 @@ TEST_F(AppInfoDialogViewsTest, ArcAppInfoLinks) {
   std::unique_ptr<TestingProfile> other_profile =
       std::make_unique<TestingProfile>();
   extension_environment_.CreateExtensionServiceForProfile(other_profile.get());
+  // We're adding the extension to the second profile, so don't install it
+  // automatically in the profile from `extension_environment_`.
+  const bool install = false;
   scoped_refptr<const extensions::Extension> other_app =
-      extension_environment_.MakePackagedApp(extension_misc::kChromeAppId,
-                                             true);
+      extension_environment_.MakePackagedApp(app_constants::kChromeAppId,
+                                             install);
   extensions::ExtensionSystem::Get(other_profile.get())
       ->extension_service()
       ->AddExtension(other_app.get());
-  ShowAppInfoForProfile(extension_misc::kChromeAppId, other_profile.get());
+  ShowAppInfoForProfile(app_constants::kChromeAppId, other_profile.get());
   EXPECT_FALSE(widget_->IsClosed());
   // The ARC App info links are not available if ARC is not allowed for
   // secondary profile.

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,7 +35,7 @@ class TextDetectionImplMacTest : public ::testing::Test {
   }
   MOCK_METHOD1(Detection, void(size_t));
 
-  API_AVAILABLE(macosx(10.11)) std::unique_ptr<TextDetectionImplMac> impl_;
+  std::unique_ptr<TextDetectionImplMac> impl_;
   base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
@@ -58,7 +58,7 @@ TEST_F(TextDetectionImplMacTest, ScanOnce) {
   base::ScopedCFTypeRef<CGContextRef> context(CGBitmapContextCreate(
       nullptr, width, height, 8 /* bitsPerComponent */,
       width * 4 /* rowBytes */, rgb_colorspace,
-      kCGImageAlphaPremultipliedFirst | kCGBitmapByteOrder32Host));
+      uint32_t{kCGImageAlphaPremultipliedFirst} | kCGBitmapByteOrder32Host));
 
   // Draw a white background.
   CGContextSetRGBFillColor(context, 1.0, 1.0, 1.0, 1.0);

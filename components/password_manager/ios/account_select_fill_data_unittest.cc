@@ -1,10 +1,9 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/password_manager/ios/account_select_fill_data.h"
 
-#include "base/cxx17_backports.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/password_manager/ios/test_helpers.h"
@@ -37,12 +36,12 @@ const char* kAdditionalPasswords[] = {"secret", nullptr};
 class AccountSelectFillDataTest : public PlatformTest {
  public:
   AccountSelectFillDataTest() {
-    for (size_t i = 0; i < base::size(form_data_); ++i) {
+    for (size_t i = 0; i < std::size(form_data_); ++i) {
       SetPasswordFormFillData(
           kUrl, kFormNames[i], kFormUniqueIDs[i], kUsernameElements[i],
           kUsernameUniqueIDs[i], kUsernames[i], kPasswordElements[i],
           kPasswordUniqueIDs[i], kPasswords[i], kAdditionalUsernames[i],
-          kAdditionalPasswords[i], false, &form_data_[i]);
+          kAdditionalPasswords[i], &form_data_[i]);
     }
   }
 
@@ -54,7 +53,7 @@ TEST_F(AccountSelectFillDataTest, EmptyReset) {
   AccountSelectFillData account_select_fill_data;
   EXPECT_TRUE(account_select_fill_data.Empty());
 
-  account_select_fill_data.Add(form_data_[0]);
+  account_select_fill_data.Add(form_data_[0], /*is_cross_origin_iframe=*/false);
   EXPECT_FALSE(account_select_fill_data.Empty());
 
   account_select_fill_data.Reset();
@@ -63,7 +62,7 @@ TEST_F(AccountSelectFillDataTest, EmptyReset) {
 
 TEST_F(AccountSelectFillDataTest, IsSuggestionsAvailableOneForm) {
   AccountSelectFillData account_select_fill_data;
-  account_select_fill_data.Add(form_data_[0]);
+  account_select_fill_data.Add(form_data_[0], /*is_cross_origin_iframe=*/false);
 
   // Suggestions are available for the correct form and field ids.
   EXPECT_TRUE(account_select_fill_data.IsSuggestionsAvailable(
@@ -88,8 +87,8 @@ TEST_F(AccountSelectFillDataTest, IsSuggestionsAvailableOneForm) {
 
 TEST_F(AccountSelectFillDataTest, IsSuggestionsAvailableTwoForms) {
   AccountSelectFillData account_select_fill_data;
-  account_select_fill_data.Add(form_data_[0]);
-  account_select_fill_data.Add(form_data_[1]);
+  account_select_fill_data.Add(form_data_[0], /*is_cross_origin_iframe=*/false);
+  account_select_fill_data.Add(form_data_[1], /*is_cross_origin_iframe=*/false);
 
   // Suggestions are available for the correct form and field names.
   EXPECT_TRUE(account_select_fill_data.IsSuggestionsAvailable(
@@ -107,7 +106,7 @@ TEST_F(AccountSelectFillDataTest, IsSuggestionsAvailableTwoForms) {
 
 TEST_F(AccountSelectFillDataTest, RetrieveSuggestionsOneForm) {
   AccountSelectFillData account_select_fill_data;
-  account_select_fill_data.Add(form_data_[0]);
+  account_select_fill_data.Add(form_data_[0], /*is_cross_origin_iframe=*/false);
 
   for (bool is_password_field : {false, true}) {
     const FieldRendererId field_id =
@@ -131,8 +130,8 @@ TEST_F(AccountSelectFillDataTest, RetrieveSuggestionsTwoForm) {
   // emulates the case when credentials in the Password Store were changed
   // between load the first and the second forms.
   AccountSelectFillData account_select_fill_data;
-  account_select_fill_data.Add(form_data_[0]);
-  account_select_fill_data.Add(form_data_[1]);
+  account_select_fill_data.Add(form_data_[0], /*is_cross_origin_iframe=*/false);
+  account_select_fill_data.Add(form_data_[1], /*is_cross_origin_iframe=*/false);
 
   std::vector<UsernameAndRealm> suggestions =
       account_select_fill_data.RetrieveSuggestions(
@@ -157,7 +156,7 @@ TEST_F(AccountSelectFillDataTest, RetrievePSLMatchedSuggestions) {
   form_data_[0].preferred_realm = kRealm;
   form_data_[0].additional_logins.begin()->realm = kAdditionalRealm;
 
-  account_select_fill_data.Add(form_data_[0]);
+  account_select_fill_data.Add(form_data_[0], /*is_cross_origin_iframe=*/false);
   std::vector<UsernameAndRealm> suggestions =
       account_select_fill_data.RetrieveSuggestions(
           form_data_[0].form_renderer_id,
@@ -172,11 +171,11 @@ TEST_F(AccountSelectFillDataTest, RetrievePSLMatchedSuggestions) {
 
 TEST_F(AccountSelectFillDataTest, GetFillData) {
   AccountSelectFillData account_select_fill_data;
-  account_select_fill_data.Add(form_data_[0]);
-  account_select_fill_data.Add(form_data_[1]);
+  account_select_fill_data.Add(form_data_[0], /*is_cross_origin_iframe=*/false);
+  account_select_fill_data.Add(form_data_[1], /*is_cross_origin_iframe=*/false);
 
   for (bool is_password_field : {false, true}) {
-    for (size_t form_i = 0; form_i < base::size(form_data_); ++form_i) {
+    for (size_t form_i = 0; form_i < std::size(form_data_); ++form_i) {
       const auto& form_data = form_data_[form_i];
       // Suggestions should be shown on any password field on the form. So in
       // case of clicking on a password field it is taken an id different from
@@ -210,8 +209,8 @@ TEST_F(AccountSelectFillDataTest, GetFillData) {
 
 TEST_F(AccountSelectFillDataTest, GetFillDataOldCredentials) {
   AccountSelectFillData account_select_fill_data;
-  account_select_fill_data.Add(form_data_[0]);
-  account_select_fill_data.Add(form_data_[1]);
+  account_select_fill_data.Add(form_data_[0], /*is_cross_origin_iframe=*/false);
+  account_select_fill_data.Add(form_data_[1], /*is_cross_origin_iframe=*/false);
 
   // GetFillData() doesn't have form identifier in arguments, it should be
   // provided in RetrieveSuggestions().
@@ -224,6 +223,23 @@ TEST_F(AccountSelectFillDataTest, GetFillDataOldCredentials) {
   std::unique_ptr<FillData> fill_data =
       account_select_fill_data.GetFillData(base::ASCIIToUTF16(kUsernames[0]));
   EXPECT_FALSE(fill_data);
+}
+
+TEST_F(AccountSelectFillDataTest, CrossOriginSuggestionHasRealm) {
+  AccountSelectFillData account_select_fill_data;
+  account_select_fill_data.Add(form_data_[0], /*is_cross_origin_iframe=*/true);
+
+  for (bool is_password_field : {false, true}) {
+    const FieldRendererId field_id =
+        is_password_field ? form_data_[0].password_field.unique_renderer_id
+                          : form_data_[0].username_field.unique_renderer_id;
+    std::vector<UsernameAndRealm> suggestions =
+        account_select_fill_data.RetrieveSuggestions(
+            form_data_[0].form_renderer_id, field_id, is_password_field);
+    EXPECT_EQ(2u, suggestions.size());
+    EXPECT_EQ(kUrl, suggestions[0].realm);
+    EXPECT_EQ(kUrl, suggestions[1].realm);
+  }
 }
 
 }  // namespace

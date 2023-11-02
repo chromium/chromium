@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,15 +10,16 @@
 #include "ash/assistant/util/test_support/macros.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "ash/public/cpp/style/color_provider.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/test/pixel_comparator.h"
-#include "chromeos/services/assistant/public/cpp/assistant_service.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -33,13 +34,14 @@
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
 
 namespace {
 
-using chromeos::assistant::AssistantSuggestion;
+using assistant::AssistantSuggestion;
 
 constexpr gfx::Size kSuggestionChipViewSize = gfx::Size(120, 32);
 
@@ -124,11 +126,15 @@ TEST_F(SuggestionChipViewTest, ShouldHandleRemoteIcons) {
 }
 
 TEST_F(SuggestionChipViewTest, DarkAndLightTheme) {
-  base::test::ScopedFeatureList scoped_feature_list(features::kDarkLightMode);
-  AshColorProvider::Get()->OnActiveUserPrefServiceChanged(
+  base::test::ScopedFeatureList scoped_feature_list(
+      chromeos::features::kDarkLightMode);
+  ASSERT_TRUE(chromeos::features::IsDarkLightModeEnabled());
+
+  auto* dark_light_mode_controller = DarkLightModeControllerImpl::Get();
+  dark_light_mode_controller->OnActiveUserPrefServiceChanged(
       Shell::Get()->session_controller()->GetActivePrefService());
-  ASSERT_TRUE(features::IsDarkLightModeEnabled());
-  ASSERT_FALSE(ColorProvider::Get()->IsDarkModeEnabled());
+  const bool initial_dark_mode_status =
+      dark_light_mode_controller->IsDarkModeEnabled();
 
   auto widget = CreateFramelessTestWidget();
   auto* suggestion_chip_view =
@@ -140,8 +146,7 @@ TEST_F(SuggestionChipViewTest, DarkAndLightTheme) {
   views::Label* label = static_cast<views::Label*>(
       suggestion_chip_view->GetViewByID(kSuggestionChipViewLabel));
 
-  suggestion_chip_view->SetSize(kSuggestionChipViewSize);
-  views::FocusRing::Get(suggestion_chip_view)->Layout();
+  widget->SetSize(kSuggestionChipViewSize);
 
   // No background if dark and light theme is on.
   EXPECT_EQ(suggestion_chip_view->GetBackground(), nullptr);
@@ -159,6 +164,7 @@ TEST_F(SuggestionChipViewTest, DarkAndLightTheme) {
 
   // Focus the chip view and confirm that focus ring is rendered.
   suggestion_chip_view->RequestFocus();
+  views::test::RunScheduledLayout(views::FocusRing::Get(suggestion_chip_view));
   EXPECT_TRUE(
       cc::ExactPixelComparator(/*discard_alpha=*/false)
           .Compare(
@@ -170,10 +176,10 @@ TEST_F(SuggestionChipViewTest, DarkAndLightTheme) {
 
   suggestion_chip_view->GetFocusManager()->ClearFocus();
 
-  // Change it to dark mode.
-  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
-      prefs::kDarkModeEnabled, true);
-  ASSERT_TRUE(ColorProvider::Get()->IsDarkModeEnabled());
+  // Switch the color mode.
+  dark_light_mode_controller->ToggleColorMode();
+  ASSERT_NE(initial_dark_mode_status,
+            dark_light_mode_controller->IsDarkModeEnabled());
 
   EXPECT_EQ(label->GetEnabledColor(),
             ColorProvider::Get()->GetContentLayerColor(
@@ -198,9 +204,7 @@ TEST_F(SuggestionChipViewTest, DarkAndLightTheme) {
                       ColorProvider::ControlsLayerType::kFocusRingColor))));
 }
 
-TEST_F(SuggestionChipViewTest, DarkAndLightModeFlagOff) {
-  ASSERT_FALSE(features::IsDarkLightModeEnabled());
-
+TEST_F(SuggestionChipViewTest, FontWeight) {
   auto widget = CreateFramelessTestWidget();
   auto* suggestion_chip_view =
       widget->SetContentsView(std::make_unique<SuggestionChipView>(
@@ -210,22 +214,8 @@ TEST_F(SuggestionChipViewTest, DarkAndLightModeFlagOff) {
 
   views::Label* label = static_cast<views::Label*>(
       suggestion_chip_view->GetViewByID(kSuggestionChipViewLabel));
-  EXPECT_EQ(label->GetEnabledColor(), kTextColorSecondary);
 
-  suggestion_chip_view->SetSize(kSuggestionChipViewSize);
-
-  EXPECT_EQ(suggestion_chip_view->GetBackground()->get_color(),
-            SK_ColorTRANSPARENT);
-  EXPECT_TRUE(cc::ExactPixelComparator(/*discard_alpha=*/false)
-                  .Compare(GetSuggestionChipViewBitmap(suggestion_chip_view),
-                           GetBitmapWithInnerRoundedRect(
-                               kSuggestionChipViewSize, /*stroke_width=*/1,
-                               SkColorSetA(gfx::kGoogleGrey900, 0x24))));
-
-  // Background color will change when it's get focused.
-  suggestion_chip_view->RequestFocus();
-  EXPECT_EQ(suggestion_chip_view->GetBackground()->get_color(),
-            SkColorSetA(gfx::kGoogleGrey900, 0x14));
+  EXPECT_EQ(label->font_list().GetFontWeight(), gfx::Font::Weight::MEDIUM);
 }
 
 }  // namespace ash

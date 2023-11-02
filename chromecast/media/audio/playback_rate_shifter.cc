@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/time/time.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
@@ -61,11 +62,9 @@ void PlaybackRateShifter::SetPlaybackRate(double rate) {
       rate_shifter_ =
           std::make_unique<::media::AudioRendererAlgorithm>(&media_log_);
       ::media::AudioParameters parameters(
-          ::media::AudioParameters::AUDIO_PCM_LINEAR, channel_layout_,
-          sample_rate_, request_size_);
-      if (channel_layout_ == ::media::CHANNEL_LAYOUT_DISCRETE) {
-        parameters.set_channels_for_discrete(num_channels_);
-      }
+          ::media::AudioParameters::AUDIO_PCM_LINEAR,
+          {channel_layout_, static_cast<int>(num_channels_)}, sample_rate_,
+          request_size_);
       rate_shifter_->Initialize(parameters, false /* is_encrypted */);
     }
 

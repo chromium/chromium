@@ -1,0 +1,14 @@
+Name: pyyaml
+Short Name: pyyaml
+URL: https://github.com/yaml/pyyaml
+Version: 8cdff2c80573b8be8e8ad28929264a913a63aa33
+CPEPrefix: unknown
+Security Critical: no
+License: MIT
+License File: NOT_SHIPPED
+
+Description:
+A full-featured YAML processing framework for Python
+
+Retrieved by downloading https://github.com/yaml/pyyaml/tree/release/6.0 at revision 8cdff2c80573b8be8e8ad28929264a913a63aa33.
+Only the content of https://github.com/yaml/pyyaml/tree/release/6.0/lib/yaml is found in this directory.

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "base/test/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_compositor.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
@@ -137,7 +138,7 @@ TEST_F(V8DetailedMemoryReporterImplTest, GetV8MemoryUsage) {
   MemoryUsageChecker checker(expected_isolate_count, expected_context_count);
   reporter.GetV8MemoryUsage(
       V8DetailedMemoryReporterImpl::Mode::EAGER,
-      WTF::Bind(&MemoryUsageChecker::Callback, WTF::Unretained(&checker)));
+      WTF::BindOnce(&MemoryUsageChecker::Callback, WTF::Unretained(&checker)));
 
   test::EnterRunLoop();
 
@@ -161,7 +162,7 @@ TEST_F(V8DetailedMemoryReporterImplWorkerTest, GetV8MemoryUsage) {
   MemoryUsageChecker checker(expected_isolate_count, expected_context_count);
   reporter.GetV8MemoryUsage(
       V8DetailedMemoryReporterImpl::Mode::EAGER,
-      WTF::Bind(&MemoryUsageChecker::Callback, WTF::Unretained(&checker)));
+      WTF::BindOnce(&MemoryUsageChecker::Callback, WTF::Unretained(&checker)));
   test::EnterRunLoop();
   EXPECT_TRUE(checker.IsCalled());
 }
@@ -175,9 +176,10 @@ TEST_F(V8DetailedMemoryReporterImplTest, CanvasMemoryUsage) {
   // JS below expects to be run from a task as it adds itself to as a
   // TaskTimeObserver that is cleared when the task is finished. Not doing so
   // violates CanvasPerformanceMonitor consistency.
-  Thread::Current()->GetTaskRunner()->PostTask(
-      FROM_HERE, base::BindLambdaForTesting([&main_resource] {
-        main_resource.Complete(R"HTML(
+  Window()
+      .GetTaskRunner(TaskType::kNetworking)
+      ->PostTask(FROM_HERE, base::BindLambdaForTesting([&main_resource] {
+                   main_resource.Complete(R"HTML(
       <script>
         window.onload = function () {
           let canvas = document.getElementById('test');
@@ -191,7 +193,7 @@ TEST_F(V8DetailedMemoryReporterImplTest, CanvasMemoryUsage) {
       <body>
         <canvas id="test" width="10" height="10"></canvas>
       </body>)HTML");
-      }));
+                 }));
 
   test::RunPendingTasks();
 
@@ -202,8 +204,8 @@ TEST_F(V8DetailedMemoryReporterImplTest, CanvasMemoryUsage) {
   V8DetailedMemoryReporterImpl reporter;
   CanvasMemoryUsageChecker checker(10, 10);
   reporter.GetV8MemoryUsage(V8DetailedMemoryReporterImpl::Mode::EAGER,
-                            WTF::Bind(&CanvasMemoryUsageChecker::Callback,
-                                      WTF::Unretained(&checker)));
+                            WTF::BindOnce(&CanvasMemoryUsageChecker::Callback,
+                                          WTF::Unretained(&checker)));
 
   test::EnterRunLoop();
 

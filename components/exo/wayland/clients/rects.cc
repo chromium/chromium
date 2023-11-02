@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,9 +20,9 @@
 #include "base/at_exit.h"
 #include "base/command_line.h"
 #include "base/containers/circular_deque.h"
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/ranges/algorithm.h"
 #include "base/scoped_generic.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_executor.h"
@@ -200,12 +200,9 @@ void FeedbackDiscarded(void* data,
                        struct wp_presentation_feedback* presentation_feedback) {
   Presentation* presentation = static_cast<Presentation*>(data);
   DCHECK_GT(presentation->scheduled_frames.size(), 0u);
-  auto it =
-      std::find_if(presentation->scheduled_frames.begin(),
-                   presentation->scheduled_frames.end(),
-                   [presentation_feedback](std::unique_ptr<Frame>& frame) {
-                     return frame->feedback.get() == presentation_feedback;
-                   });
+  auto it = base::ranges::find(
+      presentation->scheduled_frames, presentation_feedback,
+      [](std::unique_ptr<Frame>& frame) { return frame->feedback.get(); });
   DCHECK(it != presentation->scheduled_frames.end());
   presentation->scheduled_frames.erase(it);
   LOG(WARNING) << "Frame discarded";
@@ -423,7 +420,7 @@ int RectsClient::Run(const ClientBase::InitParams& params,
                                    SK_ColorRED,  SK_ColorYELLOW,
                                    SK_ColorCYAN, SK_ColorMAGENTA};
         SkPaint paint;
-        paint.setColor(SkColorSetA(kColors[i % base::size(kColors)], 0xA0));
+        paint.setColor(SkColorSetA(kColors[i % std::size(kColors)], 0xA0));
         canvas->rotate(rotation / num_rects);
         canvas->drawIRect(rect, paint);
       }

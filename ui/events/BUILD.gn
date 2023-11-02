@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -19,7 +19,7 @@ if (is_ios) {
 static_library("dom_keycode_converter") {
   public = [
     "keycodes/dom/dom_code.h",
-    "keycodes/dom/dom_codes.h",
+    "keycodes/dom/dom_codes_array.h",
     "keycodes/dom/dom_key.h",
     "keycodes/dom/keycode_converter.h",
   ]
@@ -101,8 +101,6 @@ component("events_base") {
     "event_switches.cc",
     "event_switches.h",
     "events_base_export.h",
-    "fraction_of_time_without_user_input_recorder.cc",
-    "fraction_of_time_without_user_input_recorder.h",
     "gesture_curve.h",
     "gesture_event_details.cc",
     "gesture_event_details.h",
@@ -373,9 +371,16 @@ component("events") {
     public += [
       "fuchsia/input_event_dispatcher.h",
       "fuchsia/input_event_sink.h",
+      "fuchsia/pointer_events_handler.h",
     ]
-    sources += [ "fuchsia/input_event_dispatcher.cc" ]
-    public_deps += [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.input" ]
+    sources += [
+      "fuchsia/input_event_dispatcher.cc",
+      "fuchsia/pointer_events_handler.cc",
+    ]
+    public_deps += [
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.input",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.pointer",
+    ]
   }
 }
 
@@ -490,7 +495,7 @@ component("gesture_detection") {
 
   if (is_android) {
     sources += [ "gesture_detection/gesture_configuration_android.cc" ]
-  } else if (is_chromecast) {
+  } else if (is_castos) {
     sources += [ "gesture_detection/gesture_configuration_cast.cc" ]
   } else if (use_aura) {
     sources += [ "gesture_detection/gesture_configuration_aura.cc" ]
@@ -511,6 +516,8 @@ static_library("test_support") {
     "test/motion_event_test_utils.h",
     "test/platform_event_source_test_api.cc",
     "test/platform_event_source_test_api.h",
+    "test/test_event.cc",
+    "test/test_event.h",
     "test/test_event_handler.cc",
     "test/test_event_handler.h",
     "test/test_event_processor.cc",
@@ -585,6 +592,19 @@ static_library("test_support") {
       "//ui/events/ozone/layout",
     ]
   }
+
+  if (is_fuchsia) {
+    sources += [
+      "fuchsia/fakes/fake_mouse_source.cc",
+      "fuchsia/fakes/fake_mouse_source.h",
+      "fuchsia/fakes/fake_touch_source.cc",
+      "fuchsia/fakes/fake_touch_source.h",
+      "fuchsia/fakes/pointer_event_utility.cc",
+      "fuchsia/fakes/pointer_event_utility.h",
+    ]
+
+    deps += [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.pointer" ]
+  }
 }
 
 if (!is_ios) {
@@ -601,7 +621,6 @@ if (!is_ios) {
       "event_rewriter_unittest.cc",
       "event_target_unittest.cc",
       "event_unittest.cc",
-      "fraction_of_time_without_user_input_recorder_unittest.cc",
       "gesture_detection/bitset_32_unittest.cc",
       "gesture_detection/filtered_gesture_provider_unittest.cc",
       "gesture_detection/gesture_event_data_packet_unittest.cc",
@@ -695,19 +714,21 @@ if (!is_ios) {
       deps += [ "//ui/events:keyboard_hook" ]
     }
 
-    if (is_chromecast && !is_android) {
+    if (is_castos) {
       sources += [ "chromecast/scroller_unittest.cc" ]
     }
 
     if (is_fuchsia) {
       sources += [
         "fuchsia/input_event_dispatcher_unittest.cc",
+        "fuchsia/pointer_events_handler_unittest.cc",
         "keycodes/keyboard_code_conversion_fuchsia_unittest.cc",
       ]
 
       deps += [
         "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.input",
         "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.input3",
+        "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.pointer",
       ]
     }
 

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,8 @@
 
 #include <stdint.h>
 #include <string>
-#include <vector>
 
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "components/url_pattern_index/flat/url_pattern_index_generated.h"
 #include "extensions/common/api/declarative_net_request.h"
 #include "extensions/common/api/declarative_net_request/constants.h"
@@ -62,8 +60,10 @@ struct IndexedRule {
   std::string url_pattern;
 
   // Lower-cased and sorted as required by the url_pattern_index component.
-  std::vector<std::string> domains;
-  std::vector<std::string> excluded_domains;
+  std::vector<std::string> initiator_domains;
+  std::vector<std::string> excluded_initiator_domains;
+  std::vector<std::string> request_domains;
+  std::vector<std::string> excluded_request_domains;
 
   // Note: For redirect rules, exactly one of |redirect_url|,
   // |regex_substitution| or |url_transform|  will be set.
@@ -72,7 +72,7 @@ struct IndexedRule {
   // The regex substitution for this rule.
   absl::optional<std::string> regex_substitution;
   // UrlTransform for this rule.
-  std::unique_ptr<api::declarative_net_request::URLTransform> url_transform;
+  absl::optional<api::declarative_net_request::URLTransform> url_transform;
 
   // List of request headers to modify. Valid iff this is a modify headers rule.
   std::vector<api::declarative_net_request::ModifyHeaderInfo> request_headers;

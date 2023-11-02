@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "components/language/core/browser/language_prefs.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -78,7 +79,7 @@ class TranslateMetricsLoggerImplTest : public ::testing::Test {
   void SimulateAndCheckManualTranslation(
       bool is_context_menu_initiated_translation,
       bool was_translation_successful,
-      TranslateErrors::Type translate_error_type,
+      TranslateErrors translate_error_type,
       TranslationType expected_translation_type,
       TranslationStatus expected_translation_status) {
     if (was_translation_successful)
@@ -196,7 +197,7 @@ class TranslateMetricsLoggerImplTest : public ::testing::Test {
                                            expected_num_reversions, 1);
   }
 
-  void CheckTranslateErrors(TranslateErrors::Type first_translate_error_type,
+  void CheckTranslateErrors(TranslateErrors first_translate_error_type,
                             int num_translate_errors) {
     EXPECT_EQ(translate_metrics_logger_->first_translate_error_type_,
               first_translate_error_type);
@@ -398,7 +399,7 @@ class TranslateMetricsLoggerImplTest : public ::testing::Test {
 
   void CheckUkmEntryFirstTranslateError(
       const ukm::TestUkmRecorder::HumanReadableUkmEntry& ukm_entry,
-      TranslateErrors::Type expected_first_translate_error) {
+      TranslateErrors expected_first_translate_error) {
     EXPECT_EQ(ukm_entry.metrics.at(
                   ukm::builders::TranslatePageLoad::kFirstTranslateErrorName),
               int(expected_first_translate_error));
@@ -1190,7 +1191,7 @@ TEST_F(TranslateMetricsLoggerImplTest, LogTranslateErrors) {
   // Sets the sequences of errors to supply.
   const struct {
     bool was_translation_successful;
-    TranslateErrors::Type error_type;
+    TranslateErrors error_type;
   } kTests[] = {{true, TranslateErrors::NONE},
                 {false, TranslateErrors::NETWORK},
                 {false, TranslateErrors::INITIALIZATION_ERROR},
@@ -1489,7 +1490,7 @@ TEST_F(TranslateMetricsLoggerImplTest, LogMaxTimeToTranslate) {
   // translate should only be from translations without an error.i
   const struct {
     base::TimeDelta time_to_translate;
-    TranslateErrors::Type translate_error_type;
+    TranslateErrors translate_error_type;
   } kTests[] = {
       {base::Seconds(100), TranslateErrors::NONE},
       {base::Seconds(200), TranslateErrors::NETWORK},

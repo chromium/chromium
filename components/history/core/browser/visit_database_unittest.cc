@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,7 +32,10 @@ bool IsVisitInfoEqual(const VisitRow& a, const VisitRow& b) {
          a.visit_time == b.visit_time &&
          a.referring_visit == b.referring_visit &&
          ui::PageTransitionTypeIncludingQualifiersIs(a.transition,
-                                                     b.transition);
+                                                     b.transition) &&
+         a.originator_cache_guid == b.originator_cache_guid &&
+         a.originator_visit_id == b.originator_visit_id &&
+         a.is_known_to_sync == b.is_known_to_sync;
 }
 
 }  // namespace
@@ -76,6 +79,9 @@ TEST_F(VisitDatabaseTest, Add) {
   VisitRow visit_info2(visit_info1.url_id,
                        visit_info1.visit_time + base::Seconds(1), 1,
                        ui::PAGE_TRANSITION_TYPED, 0, true, 0);
+  // Verify we can fetch originator data too.
+  visit_info2.originator_cache_guid = "foobar_client";
+  visit_info2.originator_visit_id = 42;
   EXPECT_TRUE(AddVisit(&visit_info2, SOURCE_BROWSED));
 
   // Add third visit for a different page.
@@ -145,6 +151,8 @@ TEST_F(VisitDatabaseTest, Update) {
   modification.transition = ui::PAGE_TRANSITION_TYPED;
   modification.visit_time = Time::Now() + base::Days(1);
   modification.referring_visit = 9292;
+  modification.originator_cache_guid = "foobar_client";
+  modification.originator_visit_id = 42;
   UpdateVisitRow(modification);
 
   // Check that the mutated version was written.
@@ -327,7 +335,7 @@ TEST_F(VisitDatabaseTest, GetVisibleVisitsInRange) {
   ASSERT_EQ(static_cast<size_t>(1), results.size());
   EXPECT_TRUE(IsVisitInfoEqual(results[0], test_visit_rows[0]));
 
-  options = QueryOptions();  // Reset to options to default.
+  options = QueryOptions();  // Reset options to default.
 
   // Query for a max count and make sure we get only that number.
   options.max_count = 1;
@@ -343,6 +351,13 @@ TEST_F(VisitDatabaseTest, GetVisibleVisitsInRange) {
   GetVisibleVisitsInRange(options, &results);
   ASSERT_EQ(static_cast<size_t>(1), results.size());
   EXPECT_TRUE(IsVisitInfoEqual(results[0], test_visit_rows[1]));
+
+  // Query oldest visits in a time range and make sure beginning is exclusive
+  // and ending is inclusive.
+  options.visit_order = QueryOptions::OLDEST_FIRST;
+  GetVisibleVisitsInRange(options, &results);
+  ASSERT_EQ(static_cast<size_t>(1), results.size());
+  EXPECT_TRUE(IsVisitInfoEqual(results[0], test_visit_rows[3]));
 }
 
 TEST_F(VisitDatabaseTest, GetAllURLIDsForTransition) {
@@ -424,6 +439,40 @@ TEST_F(VisitDatabaseTest, GetVisibleVisitsForURL) {
   EXPECT_TRUE(IsVisitInfoEqual(results[0], test_visit_rows[5]));
   EXPECT_TRUE(IsVisitInfoEqual(results[1], test_visit_rows[1]));
   EXPECT_TRUE(IsVisitInfoEqual(results[2], test_visit_rows[0]));
+
+  // Now try with a `max_count` limit to get the newest 2 visits only.
+  options.max_count = 2;
+  GetVisibleVisitsForURL(url_id, options, &results);
+  ASSERT_EQ(static_cast<size_t>(2), results.size());
+  EXPECT_TRUE(IsVisitInfoEqual(results[0], test_visit_rows[5]));
+  EXPECT_TRUE(IsVisitInfoEqual(results[1], test_visit_rows[1]));
+
+  // Now try getting the oldest 2 visits and make sure they're ordered oldest
+  // first.
+  options.visit_order = QueryOptions::OLDEST_FIRST;
+  GetVisibleVisitsForURL(url_id, options, &results);
+  ASSERT_EQ(static_cast<size_t>(2), results.size());
+  EXPECT_TRUE(IsVisitInfoEqual(results[0], test_visit_rows[0]));
+  EXPECT_TRUE(IsVisitInfoEqual(results[1], test_visit_rows[1]));
+
+  // Query a time range and make sure beginning is inclusive and ending is
+  // exclusive.
+  options.begin_time = test_visit_rows[0].visit_time;
+  options.end_time = test_visit_rows[5].visit_time;
+  options.visit_order = QueryOptions::RECENT_FIRST;
+  options.max_count = 0;
+  GetVisibleVisitsForURL(url_id, options, &results);
+  ASSERT_EQ(static_cast<size_t>(2), results.size());
+  EXPECT_TRUE(IsVisitInfoEqual(results[0], test_visit_rows[1]));
+  EXPECT_TRUE(IsVisitInfoEqual(results[1], test_visit_rows[0]));
+
+  // Query oldest visits in a time range and make sure beginning is exclusive
+  // and ending is inclusive.
+  options.visit_order = QueryOptions::OLDEST_FIRST;
+  GetVisibleVisitsForURL(url_id, options, &results);
+  ASSERT_EQ(static_cast<size_t>(2), results.size());
+  EXPECT_TRUE(IsVisitInfoEqual(results[0], test_visit_rows[1]));
+  EXPECT_TRUE(IsVisitInfoEqual(results[1], test_visit_rows[5]));
 }
 
 TEST_F(VisitDatabaseTest, GetHistoryCount) {
@@ -1034,6 +1083,67 @@ TEST_F(VisitDatabaseTest,
   EXPECT_THAT(GetGoogleDomainVisitsFromSearchesInRange(
                   begin_time, begin_time + base::Days(1)),
               IsEmpty());
+}
+
+TEST_F(VisitDatabaseTest, GetLastRowForVisitByVisitTime) {
+  const base::Time kVisitTime1 = base::Time::Now();
+  const base::Time kVisitTime2 = base::Time::Now() - base::Minutes(2);
+  const base::Time kVisitTime3 = base::Time::Now() + base::Minutes(3);
+
+  // Add some visits including redirect chains. Within a redirect chain, all
+  // visits have the same timestamp.
+  URLID url_id = 0;
+
+  VisitRow visit1(++url_id, kVisitTime1, /*arg_referring_visit=*/0,
+                  ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK |
+                                            ui::PAGE_TRANSITION_CHAIN_START |
+                                            ui::PAGE_TRANSITION_CHAIN_END),
+                  0, false, 0);
+  EXPECT_TRUE(AddVisit(&visit1, SOURCE_BROWSED));
+
+  VisitRow visit2a(++url_id, kVisitTime2, /*arg_referring_visit=*/0,
+                   ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK |
+                                             ui::PAGE_TRANSITION_CHAIN_START),
+                   0, false, 0);
+  EXPECT_TRUE(AddVisit(&visit2a, SOURCE_BROWSED));
+  VisitRow visit2b(
+      ++url_id, kVisitTime2, /*arg_referring_visit=*/visit2a.visit_id,
+      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK |
+                                ui::PAGE_TRANSITION_SERVER_REDIRECT |
+                                ui::PAGE_TRANSITION_CHAIN_END),
+      0, false, 0);
+  EXPECT_TRUE(AddVisit(&visit2b, SOURCE_BROWSED));
+
+  VisitRow visit3a(++url_id, kVisitTime3, /*arg_referring_visit=*/0,
+                   ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK |
+                                             ui::PAGE_TRANSITION_CHAIN_START),
+                   0, false, 0);
+  EXPECT_TRUE(AddVisit(&visit3a, SOURCE_BROWSED));
+  VisitRow visit3b(
+      ++url_id, kVisitTime3, /*arg_referring_visit=*/visit3a.visit_id,
+      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK |
+                                ui::PAGE_TRANSITION_CLIENT_REDIRECT),
+      0, false, 0);
+  EXPECT_TRUE(AddVisit(&visit3b, SOURCE_BROWSED));
+  VisitRow visit3c(
+      ++url_id, kVisitTime3, /*arg_referring_visit=*/visit3b.visit_id,
+      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK |
+                                ui::PAGE_TRANSITION_SERVER_REDIRECT |
+                                ui::PAGE_TRANSITION_CHAIN_END),
+      0, false, 0);
+  EXPECT_TRUE(AddVisit(&visit3c, SOURCE_BROWSED));
+
+  // In all cases, GetLastRowForVisitByVisitTime should return the last entry of
+  // the chain (because that one was added last).
+  VisitRow result1;
+  GetLastRowForVisitByVisitTime(kVisitTime1, &result1);
+  EXPECT_TRUE(IsVisitInfoEqual(result1, visit1));
+  VisitRow result2;
+  GetLastRowForVisitByVisitTime(kVisitTime2, &result2);
+  EXPECT_TRUE(IsVisitInfoEqual(result2, visit2b));
+  VisitRow result3;
+  GetLastRowForVisitByVisitTime(kVisitTime3, &result3);
+  EXPECT_TRUE(IsVisitInfoEqual(result3, visit3c));
 }
 
 }  // namespace history

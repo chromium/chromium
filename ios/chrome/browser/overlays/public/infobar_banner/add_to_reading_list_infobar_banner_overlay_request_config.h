@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,9 +32,6 @@ class ReadingListBannerRequestConfig
   // The button text.
   NSString* button_text() const { return button_text_; }
 
-  // The name of the banner's icon image.
-  NSString* icon_image_name() const { return icon_image_name_; }
-
  private:
   OVERLAY_USER_DATA_SETUP(ReadingListBannerRequestConfig);
   explicit ReadingListBannerRequestConfig(infobars::InfoBar* infobar);
@@ -45,7 +42,6 @@ class ReadingListBannerRequestConfig
   NSString* title_text_;
   NSString* message_text_;
   NSString* button_text_;
-  NSString* icon_image_name_ = nil;
 
   // The InfoBar causing this banner.
   infobars::InfoBar* infobar_ = nullptr;

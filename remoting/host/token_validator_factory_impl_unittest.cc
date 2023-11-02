@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -132,18 +132,18 @@ class TokenValidatorFactoryImplTest : public testing::Test {
   }
 
   static std::string CreateResponse(const std::string& scope) {
-    base::DictionaryValue response_dict;
-    response_dict.SetString("access_token", kSharedSecret);
-    response_dict.SetString("token_type", "shared_secret");
-    response_dict.SetString("scope", scope);
+    base::Value::Dict response_dict;
+    response_dict.Set("access_token", kSharedSecret);
+    response_dict.Set("token_type", "shared_secret");
+    response_dict.Set("scope", scope);
     std::string response;
     base::JSONWriter::Write(response_dict, &response);
     return response;
   }
 
   static std::string CreateErrorResponse(const std::string& error) {
-    base::DictionaryValue response_dict;
-    response_dict.SetString("error", error);
+    base::Value::Dict response_dict;
+    response_dict.Set("error", error);
     std::string response;
     base::JSONWriter::Write(response_dict, &response);
     return response;

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,13 +14,13 @@
 #include "base/location.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/observer_list.h"
 #include "base/one_shot_event.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_message_bubble_controller.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -33,17 +33,16 @@
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model_factory.h"
 #include "components/prefs/pref_service.h"
-#include "content/public/browser/notification_details.h"
-#include "content/public/browser/notification_source.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_action_manager.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
-#include "extensions/browser/notification_types.h"
+#include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/browser/unloaded_extension_reason.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/manifest_constants.h"
+#include "extensions/common/permissions/permissions_data.h"
 
 ToolbarActionsModel::ToolbarActionsModel(
     Profile* profile,
@@ -67,10 +66,6 @@ ToolbarActionsModel::ToolbarActionsModel(
       extensions::pref_names::kPinnedExtensions,
       base::BindRepeating(&ToolbarActionsModel::UpdatePinnedActionIds,
                           base::Unretained(this)));
-
-  notification_registrar_.Add(
-      this, extensions::NOTIFICATION_EXTENSION_PERMISSIONS_UPDATED,
-      content::Source<Profile>(profile_));
 }
 
 ToolbarActionsModel::~ToolbarActionsModel() {}
@@ -134,19 +129,18 @@ void ToolbarActionsModel::OnExtensionManagementSettingsChanged() {
   UpdatePinnedActionIds();
 }
 
-void ToolbarActionsModel::Observe(int type,
-                                  const content::NotificationSource& source,
-                                  const content::NotificationDetails& details) {
-  DCHECK_EQ(extensions::NOTIFICATION_EXTENSION_PERMISSIONS_UPDATED, type);
-
-  const extensions::ExtensionId& extension_id =
-      content::Details<extensions::UpdatedExtensionPermissionsInfo>(details)
-          ->extension->id();
-
-  if (HasAction(extension_id)) {
+void ToolbarActionsModel::OnExtensionPermissionsUpdated(
+    const extensions::Extension& extension,
+    const extensions::PermissionSet& permissions,
+    extensions::PermissionsManager::UpdateReason reason) {
+  if (HasAction(extension.id())) {
     for (Observer& observer : observers_)
-      observer.OnToolbarActionUpdated(extension_id);
+      observer.OnToolbarActionUpdated(extension.id());
   }
+}
+
+void ToolbarActionsModel::Shutdown() {
+  permissions_manager_observation_.Reset();
 }
 
 void ToolbarActionsModel::RemovePref(const ActionId& action_id) {
@@ -154,8 +148,7 @@ void ToolbarActionsModel::RemovePref(const ActionId& action_id) {
   // the active pinned set.
   DCHECK(!IsActionPinned(action_id));
   auto stored_pinned_actions = extension_prefs_->GetPinnedExtensions();
-  auto iter = std::find(stored_pinned_actions.begin(),
-                        stored_pinned_actions.end(), action_id);
+  auto iter = base::ranges::find(stored_pinned_actions, action_id);
   if (iter != stored_pinned_actions.end()) {
     stored_pinned_actions.erase(iter);
     extension_prefs_->SetPinnedExtensions(stored_pinned_actions);
@@ -168,8 +161,10 @@ void ToolbarActionsModel::OnReady() {
   // Wait until the extension system is ready before observing any further
   // changes so that the toolbar buttons can be shown in their stable ordering
   // taken from prefs.
-  extension_registry_observation_.Observe(extension_registry_);
-  extension_action_observation_.Observe(extension_action_api_);
+  extension_registry_observation_.Observe(extension_registry_.get());
+  extension_action_observation_.Observe(extension_action_api_.get());
+  permissions_manager_observation_.Observe(
+      extensions::PermissionsManager::Get(profile_));
 
   auto* management =
       extensions::ExtensionManagementFactory::GetForBrowserContext(profile_);
@@ -227,6 +222,27 @@ ToolbarActionsModel::GetExtensionMessageBubbleController(Browser* browser) {
   return controller;
 }
 
+const std::u16string ToolbarActionsModel::GetExtensionName(
+    const ActionId& action_id) const {
+  return base::UTF8ToUTF16(
+      extension_registry_->enabled_extensions().GetByID(action_id)->name());
+}
+
+bool ToolbarActionsModel::IsRestrictedUrl(const GURL& url) const {
+  // We consider a site to be restricted if it's restricted for every
+  // extension in the toolbar. This can vary based on the extensions
+  // installed - if the user has an extension that can execute script
+  // everywhere and has an icon in the toolbar (like the non-ChromeOS version
+  // of ChromeVox), then otherwise-restricted sites may not be.
+  // If nay extension has access, we want to properly message that (since
+  // saying "No extensions can run..." is inaccurate). Other extensions
+  // will still be properly attributed in UI.
+  return base::ranges::all_of(action_ids(), [this, url](ActionId id) {
+    return GetExtensionById(id)->permissions_data()->IsRestrictedUrl(
+        url, /*error=*/nullptr);
+  });
+}
+
 bool ToolbarActionsModel::IsActionPinned(const ActionId& action_id) const {
   return base::Contains(pinned_action_ids_, action_id);
 }
@@ -239,15 +255,21 @@ bool ToolbarActionsModel::IsActionForcePinned(const ActionId& action_id) const {
 
 void ToolbarActionsModel::MovePinnedAction(const ActionId& action_id,
                                            size_t target_index) {
+  // TODO(crbug.com/1266952): This code assumes all actions are in
+  // stored_pinned_actions, which force-pinned actions aren't; so, always keep
+  // them 'to the right' of other actions. Remove this guard if we ever add
+  // force-pinned actions to the pref.
+  if (IsActionForcePinned(action_id))
+    return;
+
   // If pinned actions are empty, we're going to have a real bad time (with
-  // out-of-bounds access, size_t wraps, etc). Keep this a hard CHECK (not a
-  // DCHECK).
+  // out Keep this a hard CHECK (not a DCHECK).
   CHECK(!pinned_action_ids_.empty());
   DCHECK(!profile_->IsOffTheRecord())
       << "Changing action position is disallowed in incognito.";
 
-  auto current_position_on_toolbar = std::find(
-      pinned_action_ids_.begin(), pinned_action_ids_.end(), action_id);
+  auto current_position_on_toolbar =
+      base::ranges::find(pinned_action_ids_, action_id);
   DCHECK(current_position_on_toolbar != pinned_action_ids_.end());
   size_t current_index_on_toolbar =
       current_position_on_toolbar - pinned_action_ids_.begin();
@@ -256,9 +278,6 @@ void ToolbarActionsModel::MovePinnedAction(const ActionId& action_id,
     return;
 
   bool is_left_to_right_move = target_index > current_index_on_toolbar;
-
-  auto stored_pinned_actions = extension_prefs_->GetPinnedExtensions();
-  auto target_position = stored_pinned_actions.end();
 
   // Moving pinned actions is a bit tricky (unless we move it to the end - in
   // which case it's trivial). We need to store the updated state in prefs, but
@@ -270,6 +289,11 @@ void ToolbarActionsModel::MovePinnedAction(const ActionId& action_id,
   // find the ID of the action to its right (if any). Then in the stored prefs,
   // find that action, and insert the moved action to its left.
   //
+  // To further complicate things, force-pinned actions are stored in
+  // |pinned_action_ids_| but not in the pref (crbug.com/1266952). So we have to
+  // find the ID not just of the action to its right, but the first action to
+  // its right that is *not* force-pinned.
+  //
   // For example:
   // Consider the pinned extension order in prefs is "A [B C] D E", where
   // B and C are unloaded extensions. Assume we want to A to index 1 on the
@@ -277,20 +301,47 @@ void ToolbarActionsModel::MovePinnedAction(const ActionId& action_id,
   // right (E), and insert it in prefs to the left of it. Thus, the new pref
   // order would be "[B C] D A E".
 
-  const bool move_to_end = target_index >= pinned_action_ids_.size() - 1;
-  if (!move_to_end) {
-    size_t new_index_to_right =
-        is_left_to_right_move ? target_index + 1 : target_index;
-    DCHECK_LT(new_index_to_right, pinned_action_ids_.size());
+  // Force-pinned neighbors aren't saved in the pref, so find the preceding,
+  // non-force-pinned neighbor. This basically keeps force-pinned actions on the
+  // right at all times.
+  //
+  // TODO(crbug.com/1266952): Simplify this logic when force-pinned extensions
+  // are saved in the pref.
+  std::vector<ActionId>::iterator non_force_pinned_neighbor =
+      pinned_action_ids_.end();
+  if (is_left_to_right_move) {
+    // LTR move. Starting with the extension to the right of the desired
+    // location, do an RTL search for the first non-force-pinned extension.
+    // Note: there's always an extension that matches these criteria (this
+    // one!).
 
-    target_position =
-        std::find(stored_pinned_actions.begin(), stored_pinned_actions.end(),
-                  pinned_action_ids_[new_index_to_right]);
-    DCHECK(target_position != stored_pinned_actions.end());
+    // Avoid array bounds shenanigans when target_index >= n.
+    auto search_start = std::max(pinned_action_ids_.rend() - target_index - 1,
+                                 pinned_action_ids_.rbegin());
+    auto reverse_iter = std::find_if(
+        search_start, pinned_action_ids_.rend(),
+        [this](const ActionId& id) { return !this->IsActionForcePinned(id); });
+    non_force_pinned_neighbor = reverse_iter.base();
+  } else {
+    // RTL move. Starting with the extension to the left of the desired
+    // location, do an LTR search for the first non-force-pinned extension.
+    // Note: there's always an extension that matches these criteria (this
+    // one!).
+    non_force_pinned_neighbor = std::find_if(
+        pinned_action_ids_.begin() + target_index, pinned_action_ids_.end(),
+        [this](const ActionId& id) { return !this->IsActionForcePinned(id); });
   }
 
-  auto current_position_in_prefs = std::find(
-      stored_pinned_actions.begin(), stored_pinned_actions.end(), action_id);
+  auto stored_pinned_actions = extension_prefs_->GetPinnedExtensions();
+  const bool move_to_end =
+      non_force_pinned_neighbor == pinned_action_ids_.end();
+  auto target_position = move_to_end
+                             ? stored_pinned_actions.end()
+                             : base::ranges::find(stored_pinned_actions,
+                                                  *non_force_pinned_neighbor);
+
+  auto current_position_in_prefs =
+      base::ranges::find(stored_pinned_actions, action_id);
   DCHECK(current_position_in_prefs != stored_pinned_actions.end());
 
   // Rotate |action_id| to be in the target position.
@@ -327,14 +378,21 @@ void ToolbarActionsModel::InitializeActionList() {
   // have changed even though they haven't.
   pinned_action_ids_ = GetFilteredPinnedActionIds();
 
-  if (!profile_->IsOffTheRecord() && !action_ids_.empty()) {
-    base::UmaHistogramCounts100("Extensions.Toolbar.PinnedExtensionCount2",
-                                pinned_action_ids_.size());
-    double percentage_double = static_cast<double>(pinned_action_ids_.size()) /
-                               action_ids_.size() * 100.0;
-    base::UmaHistogramPercentageObsoleteDoNotUse(
-        "Extensions.Toolbar.PinnedExtensionPercentage3",
-        base::ClampRound(percentage_double));
+  if (!profile_->IsOffTheRecord()) {
+    // Prefixed with "ExtensionToolbarModel" rather than
+    // "Extensions.Toolbar" for historical reasons.
+    base::UmaHistogramCounts100("ExtensionToolbarModel.BrowserActionsCount",
+                                action_ids_.size());
+    if (!action_ids_.empty()) {
+      base::UmaHistogramCounts100("Extensions.Toolbar.PinnedExtensionCount2",
+                                  pinned_action_ids_.size());
+      double percentage_double =
+          static_cast<double>(pinned_action_ids_.size()) / action_ids_.size() *
+          100.0;
+      base::UmaHistogramPercentageObsoleteDoNotUse(
+          "Extensions.Toolbar.PinnedExtensionPercentage3",
+          base::ClampRound(percentage_double));
+    }
   }
 }
 
@@ -349,19 +407,6 @@ void ToolbarActionsModel::Populate() {
     if (!ShouldAddExtension(extension.get()))
       continue;
     action_ids_.insert(extension->id());
-  }
-
-  // Histogram names are prefixed with "ExtensionToolbarModel" rather than
-  // "ToolbarActionsModel" for historical reasons.
-  UMA_HISTOGRAM_COUNTS_100("ExtensionToolbarModel.BrowserActionsCount",
-                           action_ids_.size());
-
-  if (!action_ids_.empty()) {
-    // If all actions are pinned, report kSampleType_MAX.
-    UMA_HISTOGRAM_COUNTS_100("ExtensionToolbarModel.BrowserActionsVisible",
-                             pinned_action_ids_.size() == action_ids_.size()
-                                 ? base::HistogramBase::kSampleType_MAX
-                                 : pinned_action_ids_.size());
   }
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,10 +17,10 @@
 namespace internal {
 
 const char kHistogramLoadingPredictorFirstContentfulPaintPreconnectable[] =
-    "PageLoad.Clients.LoadingPredictor.PaintTiming."
+    "PageLoad.Clients.LoadingPredictor2.PaintTiming."
     "NavigationToFirstContentfulPaint.Preconnectable";
 const char kHistogramLoadingPredictorFirstMeaningfulPaintPreconnectable[] =
-    "PageLoad.Clients.LoadingPredictor.Experimental.PaintTiming."
+    "PageLoad.Clients.LoadingPredictor2.Experimental.PaintTiming."
     "NavigationToFirstMeaningfulPaint.Preconnectable";
 
 }  // namespace internal
@@ -67,6 +67,32 @@ LoadingPredictorPageLoadMetricsObserver::OnStart(
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+LoadingPredictorPageLoadMetricsObserver::OnFencedFramesStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url) {
+  // This class is interested only in events that are preprocessed and
+  // dispatched also to the outermost page at PageLoadTracker. So, this class
+  // doesn't need to forward events for FencedFrames.
+  return STOP_OBSERVING;
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+LoadingPredictorPageLoadMetricsObserver::OnPrerenderStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url) {
+  // This class is interested in the events after activation.
+  // Works as same as non prerendering case except for metrics correction.
+  return CONTINUE_OBSERVING;
+}
+
+void LoadingPredictorPageLoadMetricsObserver::DidActivatePrerenderedPage(
+    content::NavigationHandle* navigation_handle) {
+  record_histogram_preconnectable_ =
+      GetDelegate().GetVisibilityTracker().currently_in_foreground() &&
+      predictor_->IsUrlPreconnectable(navigation_handle->GetURL());
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 LoadingPredictorPageLoadMetricsObserver::OnHidden(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   record_histogram_preconnectable_ = false;
@@ -78,15 +104,19 @@ void LoadingPredictorPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
   // TODO(https://crbug.com/1190112): The code uses the primary FrameTree, but
   // this event may have been dispatched for a non-primary FrameTree.
   auto* web_contents = GetDelegate().GetWebContents();
-  auto* frame = web_contents->GetMainFrame();
+  auto* frame = web_contents->GetPrimaryMainFrame();
 
   predictor_tab_helper_->RecordFirstContentfulPaint(
       frame, GetDelegate().GetNavigationStart() +
                  timing.paint_timing->first_contentful_paint.value());
   if (record_histogram_preconnectable_) {
+    base::TimeDelta corrected =
+        page_load_metrics::CorrectEventAsNavigationOrActivationOrigined(
+            GetDelegate(), timing,
+            timing.paint_timing->first_contentful_paint.value());
     PAGE_LOAD_HISTOGRAM(
         internal::kHistogramLoadingPredictorFirstContentfulPaintPreconnectable,
-        timing.paint_timing->first_contentful_paint.value());
+        corrected);
   }
 }
 
@@ -94,8 +124,12 @@ void LoadingPredictorPageLoadMetricsObserver::
     OnFirstMeaningfulPaintInMainFrameDocument(
         const page_load_metrics::mojom::PageLoadTiming& timing) {
   if (record_histogram_preconnectable_) {
+    base::TimeDelta corrected =
+        page_load_metrics::CorrectEventAsNavigationOrActivationOrigined(
+            GetDelegate(), timing,
+            timing.paint_timing->first_meaningful_paint.value());
     PAGE_LOAD_HISTOGRAM(
         internal::kHistogramLoadingPredictorFirstMeaningfulPaintPreconnectable,
-        timing.paint_timing->first_meaningful_paint.value());
+        corrected);
   }
 }

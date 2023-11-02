@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_metrics.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/components/proximity_auth/proximity_auth_pref_manager.h"
+#include "chromeos/ash/components/proximity_auth/proximity_auth_pref_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
 
@@ -34,7 +34,7 @@ proximity_auth::ScreenlockBridge::UserPodCustomIcon GetIconForState(
         return proximity_auth::ScreenlockBridge::
             USER_POD_CUSTOM_ICON_LOCKED_TO_BE_ACTIVATED;
       }
-      FALLTHROUGH;
+      [[fallthrough]];
     case SmartLockState::kBluetoothDisabled:
     case SmartLockState::kPhoneNotFound:
     case SmartLockState::kPhoneNotAuthenticated:

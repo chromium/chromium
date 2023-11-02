@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -85,7 +85,9 @@ class COMPONENT_EXPORT(X11) Xevie {
     Modified = 1,
   };
 
-  struct Event {};
+  struct Event {
+    bool operator==(const Event& other) const { return true; }
+  };
 
   struct QueryVersionRequest {
     uint16_t client_major_version{};

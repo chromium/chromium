@@ -1,15 +1,19 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/password_manager/core/browser/sync/password_proto_utils.h"
 
 #include "base/containers/flat_map.h"
+#include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/password_manager/core/browser/password_form.h"
-#include "components/sync/protocol/list_passwords_result.pb.h"
+#include "components/password_manager/core/common/password_manager_features.h"
+#include "components/sync/base/features.h"
 #include "components/sync/protocol/password_specifics.pb.h"
-#include "components/sync/protocol/password_with_local_data.pb.h"
+
+using autofill::FormData;
+using autofill::FormFieldData;
 
 namespace password_manager {
 
@@ -22,19 +26,59 @@ base::Time ConvertToBaseTime(uint64_t time) {
       base::Microseconds(time));
 }
 
+// Trims the notes field in the sync_pb::PasswordSpecificsData proto. If neither
+// the high level notes field nor any of the individual notes contains populated
+// fields, the high level field is cleared.
+void TrimPasswordSpecificsDataNotesForCaching(
+    sync_pb::PasswordSpecificsData& trimmed_password_data) {
+  // `notes` field should be cleared if all notes are empty.
+  bool non_empty_note_exists = false;
+  // Iterate over all notes and clear all supported fields.
+  for (sync_pb::PasswordSpecificsData_Notes_Note& note :
+       *trimmed_password_data.mutable_notes()->mutable_note()) {
+    // Remember the `unique_display_name` such that if this note needs to be
+    // cached, the `unique_display_name` is required to be able reconcile cached
+    // notes during commit.
+    std::string unique_display_name = note.unique_display_name();
+    note.clear_unique_display_name();
+    note.clear_value();
+    note.clear_date_created_windows_epoch_micros();
+    note.clear_hide_by_default();
+    if (note.ByteSizeLong() != 0) {
+      non_empty_note_exists = true;
+      // Set the `unique_display_name` since it's required during the
+      // reconciliation step in PasswordNotesToProto().
+      note.set_unique_display_name(unique_display_name);
+    }
+  }
+  if (non_empty_note_exists) {
+    // Since some of the notes contain populated fields, no more trimming is
+    // possible.
+    return;
+  } else {
+    trimmed_password_data.mutable_notes()->clear_note();
+  }
+  // None of the individual notes contains populated fields. If the high level
+  // Notes proto doesn't contain unknown fields either, we should clear the
+  // notes field when trimming.
+  if (trimmed_password_data.notes().unknown_fields().empty()) {
+    trimmed_password_data.clear_notes();
+  }
+}
+
 }  // namespace
 
 sync_pb::PasswordSpecificsData_PasswordIssues PasswordIssuesMapToProto(
     const base::flat_map<InsecureType, InsecurityMetadata>&
         form_password_issues) {
   sync_pb::PasswordSpecificsData::PasswordIssues password_issues;
-  for (const auto& form_issue : form_password_issues) {
+  for (const auto& [insecure_type, insecure_metadata] : form_password_issues) {
     sync_pb::PasswordSpecificsData::PasswordIssues::PasswordIssue issue;
     issue.set_date_first_detection_microseconds(
-        form_issue.second.create_time.ToDeltaSinceWindowsEpoch()
+        insecure_metadata.create_time.ToDeltaSinceWindowsEpoch()
             .InMicroseconds());
-    issue.set_is_muted(form_issue.second.is_muted.value());
-    switch (form_issue.first) {
+    issue.set_is_muted(insecure_metadata.is_muted.value());
+    switch (insecure_type) {
       case InsecureType::kLeaked:
         DCHECK(!password_issues.has_leaked_password_issue());
         *password_issues.mutable_leaked_password_issue() = std::move(issue);
@@ -87,18 +131,104 @@ base::flat_map<InsecureType, InsecurityMetadata> PasswordIssuesMapFromProto(
   return form_issues;
 }
 
+std::vector<PasswordNote> PasswordNotesFromProto(
+    const sync_pb::PasswordSpecificsData_Notes& notes_proto) {
+  std::vector<PasswordNote> notes;
+  for (const sync_pb::PasswordSpecificsData_Notes_Note& note :
+       notes_proto.note()) {
+    notes.emplace_back(
+        base::UTF8ToUTF16(note.unique_display_name()),
+        base::UTF8ToUTF16(note.value()),
+        ConvertToBaseTime(note.date_created_windows_epoch_micros()),
+        note.hide_by_default());
+  }
+  return notes;
+}
+
+sync_pb::PasswordSpecificsData_Notes PasswordNotesToProto(
+    const std::vector<PasswordNote>& notes,
+    const sync_pb::PasswordSpecificsData_Notes& base_notes) {
+  sync_pb::PasswordSpecificsData_Notes notes_proto = base_notes;
+  for (const PasswordNote& note : notes) {
+    sync_pb::PasswordSpecificsData_Notes_Note* note_proto = nullptr;
+    // Try to find a corresponding cached note. Since `unique_display_name` is
+    // unique per password, and immutable, it can be used to reconcile notes.
+    // `unique_display_name` is cached in TrimPasswordSpecificsDataForCaching().
+    for (sync_pb::PasswordSpecificsData_Notes_Note& cached_note :
+         *notes_proto.mutable_note()) {
+      if (cached_note.unique_display_name() ==
+          base::UTF16ToUTF8(note.unique_display_name)) {
+        note_proto = &cached_note;
+        break;
+      }
+    }
+    // If no corresponding cached note is found, add a new one.
+    if (!note_proto) {
+      note_proto = notes_proto.add_note();
+      note_proto->set_unique_display_name(
+          base::UTF16ToUTF8(note.unique_display_name));
+    }
+
+    note_proto->set_value(base::UTF16ToUTF8(note.value));
+    note_proto->set_date_created_windows_epoch_micros(
+        note.date_created.ToDeltaSinceWindowsEpoch().InMicroseconds());
+    note_proto->set_hide_by_default(note.hide_by_default);
+  }
+  return notes_proto;
+}
+
+sync_pb::PasswordSpecificsData TrimPasswordSpecificsDataForCaching(
+    const sync_pb::PasswordSpecificsData& password_specifics_data) {
+  sync_pb::PasswordSpecificsData trimmed_password_data =
+      sync_pb::PasswordSpecificsData(password_specifics_data);
+  trimmed_password_data.clear_scheme();
+  trimmed_password_data.clear_signon_realm();
+  trimmed_password_data.clear_origin();
+  trimmed_password_data.clear_action();
+  trimmed_password_data.clear_username_element();
+  trimmed_password_data.clear_username_value();
+  trimmed_password_data.clear_password_element();
+  trimmed_password_data.clear_password_value();
+  trimmed_password_data.clear_date_created();
+  trimmed_password_data.clear_blacklisted();
+  trimmed_password_data.clear_type();
+  trimmed_password_data.clear_times_used();
+  trimmed_password_data.clear_display_name();
+  trimmed_password_data.clear_avatar_url();
+  trimmed_password_data.clear_federation_url();
+  trimmed_password_data.clear_date_last_used();
+  trimmed_password_data.clear_password_issues();
+  trimmed_password_data.clear_date_password_modified_windows_epoch_micros();
+
+  TrimPasswordSpecificsDataNotesForCaching(trimmed_password_data);
+
+  return trimmed_password_data;
+}
+
 sync_pb::PasswordSpecifics SpecificsFromPassword(
-    const PasswordForm& password_form) {
+    const PasswordForm& password_form,
+    const sync_pb::PasswordSpecificsData& base_password_data) {
+  // WARNING: if you are adding support for new `PasswordSpecificsData` fields,
+  // you need to update the following functions accordingly:
+  // `TrimPasswordSpecificsDataForCaching`
+  // `TrimRemoteSpecificsForCachingPreservesOnlyUnknownFields`
+  DCHECK_EQ(0u, TrimPasswordSpecificsDataForCaching(
+                    SpecificsDataFromPassword(password_form,
+                                              /*base_password_data=*/{}))
+                    .ByteSizeLong());
+
   sync_pb::PasswordSpecifics specifics;
   *specifics.mutable_client_only_encrypted_data() =
-      SpecificsDataFromPassword(password_form);
-
+      SpecificsDataFromPassword(password_form, base_password_data);
   return specifics;
 }
 
 sync_pb::PasswordSpecificsData SpecificsDataFromPassword(
-    const PasswordForm& password_form) {
-  sync_pb::PasswordSpecificsData password_data;
+    const PasswordForm& password_form,
+    const sync_pb::PasswordSpecificsData& base_password_data) {
+  // Repeated fields in base_password_data might need to be cleared
+  // before adding entries from password_form to avoid duplicates.
+  sync_pb::PasswordSpecificsData password_data = base_password_data;
   password_data.set_scheme(static_cast<int>(password_form.scheme));
   password_data.set_signon_realm(password_form.signon_realm);
   password_data.set_origin(password_form.url.spec());
@@ -129,18 +259,11 @@ sync_pb::PasswordSpecificsData SpecificsDataFromPassword(
           : password_form.federation_origin.Serialize());
   *password_data.mutable_password_issues() =
       PasswordIssuesMapToProto(password_form.password_issues);
-
+  if (base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup)) {
+    *password_data.mutable_notes() =
+        PasswordNotesToProto(password_form.notes, base_password_data.notes());
+  }
   return password_data;
-}
-
-sync_pb::PasswordWithLocalData PasswordWithLocalDataFromPassword(
-    const PasswordForm& password_form) {
-  sync_pb::PasswordWithLocalData password_with_local_data;
-  *password_with_local_data.mutable_password_specifics_data() =
-      SpecificsDataFromPassword(password_form);
-  // TODO(crbug.com/1229655): Check if password_form.local_chrome_data() is
-  // needed by GMS Core and either pass it additionally or clean up this method.
-  return password_with_local_data;
 }
 
 PasswordForm PasswordFromSpecifics(
@@ -178,25 +301,10 @@ PasswordForm PasswordFromSpecifics(
   password.federation_origin =
       url::Origin::Create(GURL(password_data.federation_url()));
   password.password_issues = PasswordIssuesMapFromProto(password_data);
-
-  return password;
-}
-
-PasswordForm PasswordFromProtoWithLocalData(
-    const sync_pb::PasswordWithLocalData& password) {
-  PasswordForm form = PasswordFromSpecifics(password.password_specifics_data());
-  // TODO(crbug.com/1229654): Consider password.local_chrome_data().
-  return form;
-}
-
-std::vector<PasswordForm> PasswordVectorFromListResult(
-    const sync_pb::ListPasswordsResult& list_result) {
-  std::vector<PasswordForm> forms;
-  for (const sync_pb::PasswordWithLocalData& password :
-       list_result.password_data()) {
-    forms.push_back(PasswordFromProtoWithLocalData(password));
+  if (base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup)) {
+    password.notes = PasswordNotesFromProto(password_data.notes());
   }
-  return forms;
+  return password;
 }
 
 }  // namespace password_manager

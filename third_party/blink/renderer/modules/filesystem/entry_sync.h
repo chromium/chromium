@@ -33,7 +33,7 @@
 
 #include "third_party/blink/renderer/modules/filesystem/dom_file_system_sync.h"
 #include "third_party/blink/renderer/modules/filesystem/entry_base.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {

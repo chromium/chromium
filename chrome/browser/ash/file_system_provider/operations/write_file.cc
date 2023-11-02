@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -50,14 +50,13 @@ bool WriteFile::Execute(int request_id) {
   // Set the data directly on base::Value() to avoid an extra string copy.
   DCHECK(buffer_.get());
 
-  base::Value options_as_value =
-      base::Value::FromUniquePtrValue(options.ToValue());
-  options_as_value.SetKey(
+  base::Value::Dict options_as_value = options.ToValue();
+  options_as_value.Set(
       "data",
       base::Value(base::as_bytes(base::make_span(buffer_->data(), length_))));
 
-  std::vector<base::Value> event_args;
-  event_args.push_back(std::move(options_as_value));
+  base::Value::List event_args;
+  event_args.Append(std::move(options_as_value));
 
   return SendEvent(
       request_id,

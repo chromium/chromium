@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,8 +18,7 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/lacros/lacros_service.h"
 #include "ui/aura/window.h"
-#include "ui/platform_window/platform_window.h"  // nogncheck
-#include "ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h"
+#include "ui/aura/window_tree_host.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace {
@@ -44,11 +43,8 @@ absl::optional<std::string> GetWindowId(int render_process_id,
 
   aura::WindowTreeHost* window_tree_host = root_window->GetHost();
   DCHECK(window_tree_host);
-  // Lacros is based on Ozone/Wayland, which uses PlatformWindow and
-  // aura::WindowTreeHostPlatform.
-  auto* desktop_window_tree_host_linux =
-      views::DesktopWindowTreeHostLinux::From(window_tree_host);
-  return desktop_window_tree_host_linux->platform_window()->GetWindowUniqueId();
+
+  return window_tree_host->GetUniqueId();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 

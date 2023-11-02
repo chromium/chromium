@@ -34,6 +34,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/modules/quota/deprecated_storage_quota.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -93,30 +94,22 @@ void DeprecatedStorageInfo::requestQuota(
 DeprecatedStorageQuota* DeprecatedStorageInfo::GetStorageQuota(
     int storage_type,
     ExecutionContext* execution_context) {
-  switch (storage_type) {
-    case kTemporary:
-      if (!temporary_storage_) {
-        temporary_storage_ = MakeGarbageCollected<DeprecatedStorageQuota>(
-            DeprecatedStorageQuota::kTemporary, execution_context);
-      }
-      return temporary_storage_.Get();
-    case kPersistent:
-      if (base::FeatureList::IsEnabled(
-              blink::features::kPersistentQuotaIsTemporaryQuota)) {
-        return GetStorageQuota(kTemporary, execution_context);
-      }
-      if (!persistent_storage_) {
-        persistent_storage_ = MakeGarbageCollected<DeprecatedStorageQuota>(
-            DeprecatedStorageQuota::kPersistent, execution_context);
-      }
-      return persistent_storage_.Get();
+  if (storage_type == kPersistent) {
+    // Show deprecation message and record usage for persistent storage type.
+    Deprecation::CountDeprecation(execution_context,
+                                  WebFeature::kPersistentQuotaType);
   }
-  return nullptr;
+  // As of crbug.com/1233525 kPersistent quota type is deprecated.
+  // Ignore `storage_type` and always return `temporary_storage_`.
+  if (!temporary_storage_) {
+    temporary_storage_ =
+        MakeGarbageCollected<DeprecatedStorageQuota>(execution_context);
+  }
+  return temporary_storage_.Get();
 }
 
 void DeprecatedStorageInfo::Trace(Visitor* visitor) const {
   visitor->Trace(temporary_storage_);
-  visitor->Trace(persistent_storage_);
   ScriptWrappable::Trace(visitor);
 }
 

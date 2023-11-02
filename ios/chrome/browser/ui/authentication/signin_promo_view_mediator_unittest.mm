@@ -1,26 +1,27 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/authentication/signin_promo_view_mediator.h"
 
-#include "base/run_loop.h"
-#include "base/strings/sys_string_conversions.h"
+#import "base/run_loop.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/pref_registry/pref_registry_syncable.h"
-#include "components/prefs/pref_service.h"
-#include "components/signin/public/base/signin_metrics.h"
-#import "components/sync/driver/mock_sync_service.h"
+#import "components/prefs/pref_service.h"
+#import "components/signin/public/base/signin_metrics.h"
+#import "components/sync/test/mock_sync_service.h"
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/policy/policy_util.h"
-#include "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/prefs/browser_prefs.h"
+#import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_fake.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
+#import "ios/chrome/browser/sync/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service_mock.h"
@@ -28,16 +29,16 @@
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_configurator.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_constants.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_consumer.h"
-#include "ios/chrome/grit/ios_chromium_strings.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
-#include "third_party/ocmock/gtest_support.h"
-#include "ui/base/l10n/l10n_util.h"
+#import "third_party/ocmock/gtest_support.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -54,9 +55,6 @@ using user_prefs::PrefRegistrySyncable;
 using web::WebTaskEnvironment;
 
 namespace {
-std::unique_ptr<KeyedService> BuildMockSyncService(web::BrowserState* context) {
-  return std::make_unique<syncer::MockSyncService>();
-}
 
 class SigninPromoViewMediatorTest : public PlatformTest {
  protected:
@@ -66,7 +64,7 @@ class SigninPromoViewMediatorTest : public PlatformTest {
 
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&BuildMockSyncService));
+                              base::BindRepeating(&CreateMockSyncService));
     builder.AddTestingFactory(
         SyncSetupServiceFactory::GetInstance(),
         base::BindRepeating(&SyncSetupServiceMock::CreateKeyedService));
@@ -94,6 +92,7 @@ class SigninPromoViewMediatorTest : public PlatformTest {
     EXPECT_OCMOCK_VERIFY((id)primary_button_);
     EXPECT_OCMOCK_VERIFY((id)secondary_button_);
     EXPECT_OCMOCK_VERIFY((id)close_button_);
+    EXPECT_OCMOCK_VERIFY((id)title_label_);
   }
 
   void CreateMediator(signin_metrics::AccessPoint accessPoint) {
@@ -115,6 +114,8 @@ class SigninPromoViewMediatorTest : public PlatformTest {
     OCMStub([signin_promo_view_ secondaryButton]).andReturn(secondary_button_);
     close_button_ = OCMStrictClassMock([UIButton class]);
     OCMStub([signin_promo_view_ closeButton]).andReturn(close_button_);
+    title_label_ = OCMStrictClassMock([UILabel class]);
+    OCMStub([signin_promo_view_ titleLabel]).andReturn(title_label_);
   }
 
   std::unique_ptr<PrefServiceSyncable> CreatePrefService() {
@@ -145,22 +146,22 @@ class SigninPromoViewMediatorTest : public PlatformTest {
 
   // Tests the mediator with a new created configurator when no accounts are on
   // the device.
-  void TestSigninPromoWithNoAccounts() {
+  void TestSigninPromoWithNoAccounts(SigninPromoViewStyle style) {
     EXPECT_EQ(nil, mediator_.identity);
-    CheckNoAccountsConfigurator([mediator_ createConfigurator]);
+    CheckNoAccountsConfigurator([mediator_ createConfigurator], style);
   }
 
   // Adds an identity and tests the mediator.
-  void TestSigninPromoWithAccount() {
+  void TestSigninPromoWithAccount(SigninPromoViewStyle style) {
     // Expect to receive an update to the consumer with a configurator.
     ExpectConfiguratorNotification(YES /* identity changed */);
     AddDefaultIdentity();
     // Check the configurator received by the consumer.
-    CheckSigninWithAccountConfigurator(configurator_);
+    CheckSigninWithAccountConfigurator(configurator_, style);
     // Check a new created configurator.
-    CheckSigninWithAccountConfigurator([mediator_ createConfigurator]);
+    CheckSigninWithAccountConfigurator([mediator_ createConfigurator], style);
     // The consumer should receive a notification related to the image.
-    CheckForImageNotification();
+    CheckForImageNotification(style);
   }
 
   // Expects a notification on the consumer for an identity update, and stores
@@ -179,57 +180,83 @@ class SigninPromoViewMediatorTest : public PlatformTest {
 
   // Expects the signin promo view to be configured with no accounts on the
   // device.
-  void ExpectNoAccountsConfiguration() {
+  void ExpectNoAccountsConfiguration(SigninPromoViewStyle style) {
     OCMExpect([signin_promo_view_ setMode:SigninPromoViewModeNoAccounts]);
-    NSString* title = GetNSString(IDS_IOS_SYNC_PROMO_TURN_ON_SYNC);
-    OCMExpect([signin_promo_view_ setAccessibilityLabel:title]);
+    NSString* title = nil;
+    if (style != SigninPromoViewStyleStandard) {
+      title = GetNSString(IDS_IOS_NTP_FEED_SIGNIN_PROMO_CONTINUE);
+    } else {
+      title = GetNSString(IDS_IOS_SYNC_PROMO_TURN_ON_SYNC);
+    }
     OCMExpect([primary_button_ setTitle:title forState:UIControlStateNormal]);
     image_view_profile_image_ = nil;
   }
 
   // Checks a configurator with no accounts on the device.
-  void CheckNoAccountsConfigurator(SigninPromoViewConfigurator* configurator) {
+  void CheckNoAccountsConfigurator(SigninPromoViewConfigurator* configurator,
+                                   SigninPromoViewStyle style) {
     EXPECT_NE(nil, configurator);
-    ExpectNoAccountsConfiguration();
+    ExpectNoAccountsConfiguration(style);
     OCMExpect([close_button_ setHidden:close_button_hidden_]);
-    [configurator configureSigninPromoView:signin_promo_view_];
+    OCMExpect([title_label_ setHidden:(style == SigninPromoViewStyleStandard)]);
+    OCMExpect([signin_promo_view_ setPromoViewStyle:style]);
+    [configurator configureSigninPromoView:signin_promo_view_ withStyle:style];
     EXPECT_EQ(nil, image_view_profile_image_);
   }
 
   // Expects the signin promo view to be configured when accounts are on the
   // device.
-  void ExpectSigninWithAccountConfiguration() {
+  void ExpectSigninWithAccountConfiguration(SigninPromoViewStyle style) {
     EXPECT_EQ(expected_default_identity_, mediator_.identity);
     OCMExpect(
         [signin_promo_view_ setMode:SigninPromoViewModeSigninWithAccount]);
-    OCMExpect([signin_promo_view_
-        setProfileImage:[OCMArg checkWithBlock:^BOOL(id value) {
-          image_view_profile_image_ = value;
-          return YES;
-        }]]);
-    NSString* name = expected_default_identity_.userGivenName.length
-                         ? expected_default_identity_.userGivenName
-                         : expected_default_identity_.userEmail;
-    std::u16string name16 = SysNSStringToUTF16(name);
-    NSString* accessibilityLabel =
-        GetNSStringF(IDS_IOS_SIGNIN_PROMO_ACCESSIBILITY_LABEL, name16);
-    OCMExpect([signin_promo_view_ setAccessibilityLabel:accessibilityLabel]);
-    OCMExpect([primary_button_
-        setTitle:GetNSStringF(IDS_IOS_SIGNIN_PROMO_CONTINUE_AS, name16)
-        forState:UIControlStateNormal]);
-    OCMExpect([secondary_button_
-        setTitle:GetNSString(IDS_IOS_SIGNIN_PROMO_CHANGE_ACCOUNT)
-        forState:UIControlStateNormal]);
+    switch (style) {
+      case SigninPromoViewStyleStandard: {
+        OCMExpect([signin_promo_view_
+            setProfileImage:[OCMArg checkWithBlock:^BOOL(id value) {
+              image_view_profile_image_ = value;
+              return YES;
+            }]]);
+        NSString* name = expected_default_identity_.userGivenName.length
+                             ? expected_default_identity_.userGivenName
+                             : expected_default_identity_.userEmail;
+        std::u16string name16 = SysNSStringToUTF16(name);
+        OCMExpect([primary_button_
+            setTitle:GetNSStringF(IDS_IOS_SIGNIN_PROMO_CONTINUE_AS, name16)
+            forState:UIControlStateNormal]);
+        OCMExpect([secondary_button_
+            setTitle:GetNSString(IDS_IOS_SIGNIN_PROMO_CHANGE_ACCOUNT)
+            forState:UIControlStateNormal]);
+        break;
+      }
+      case SigninPromoViewStyleTitled:
+      case SigninPromoViewStyleTitledCompact: {
+        OCMExpect([primary_button_
+            setTitle:GetNSString(IDS_IOS_NTP_FEED_SIGNIN_PROMO_CONTINUE)
+            forState:UIControlStateNormal]);
+        break;
+      }
+    }
   }
 
   // Checks a configurator with accounts on the device.
   void CheckSigninWithAccountConfigurator(
-      SigninPromoViewConfigurator* configurator) {
+      SigninPromoViewConfigurator* configurator,
+      SigninPromoViewStyle style) {
     EXPECT_NE(nil, configurator);
-    ExpectSigninWithAccountConfiguration();
+    ExpectSigninWithAccountConfiguration(style);
     OCMExpect([close_button_ setHidden:close_button_hidden_]);
-    [configurator configureSigninPromoView:signin_promo_view_];
-    EXPECT_NE(nil, image_view_profile_image_);
+    OCMExpect([title_label_ setHidden:(style == SigninPromoViewStyleStandard)]);
+    OCMExpect([signin_promo_view_ setPromoViewStyle:style]);
+    [configurator configureSigninPromoView:signin_promo_view_ withStyle:style];
+    switch (style) {
+      case SigninPromoViewStyleStandard:
+        EXPECT_NE(nil, image_view_profile_image_);
+        break;
+      case SigninPromoViewStyleTitled:
+      case SigninPromoViewStyleTitledCompact:
+        EXPECT_EQ(nil, image_view_profile_image_);
+    }
   }
 
   // Expects the sync promo view to be configured
@@ -245,9 +272,6 @@ class SigninPromoViewMediatorTest : public PlatformTest {
                          ? expected_default_identity_.userGivenName
                          : expected_default_identity_.userEmail;
     std::u16string name16 = SysNSStringToUTF16(name);
-    NSString* accessibilityLabel =
-        GetNSStringF(IDS_IOS_SIGNIN_PROMO_ACCESSIBILITY_LABEL, name16);
-    OCMExpect([signin_promo_view_ setAccessibilityLabel:accessibilityLabel]);
     OCMExpect([primary_button_
         setTitle:GetNSString(IDS_IOS_SYNC_PROMO_TURN_ON_SYNC)
         forState:UIControlStateNormal]);
@@ -256,23 +280,26 @@ class SigninPromoViewMediatorTest : public PlatformTest {
 
   // Checks a configurator with accounts on the device.
   void CheckSyncPromoWithAccountConfigurator(
-      SigninPromoViewConfigurator* configurator) {
+      SigninPromoViewConfigurator* configurator,
+      SigninPromoViewStyle style) {
     EXPECT_NE(nil, configurator);
     ExpectSyncPromoConfiguration();
     OCMExpect([close_button_ setHidden:close_button_hidden_]);
-    [configurator configureSigninPromoView:signin_promo_view_];
+    OCMExpect([title_label_ setHidden:(style == SigninPromoViewStyleStandard)]);
+    OCMExpect([signin_promo_view_ setPromoViewStyle:style]);
+    [configurator configureSigninPromoView:signin_promo_view_ withStyle:style];
     EXPECT_NE(nil, image_view_profile_image_);
   }
 
   // Checks to receive a notification for the image upate of the current
   // identity.
-  void CheckForImageNotification() {
+  void CheckForImageNotification(SigninPromoViewStyle style) {
     configurator_ = nil;
     ExpectConfiguratorNotification(NO /* identity changed */);
     EXPECT_TRUE(ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()
                     ->WaitForServiceCallbacksToComplete());
     // Check the configurator received by the consumer.
-    CheckSigninWithAccountConfigurator(configurator_);
+    CheckSigninWithAccountConfigurator(configurator_, style);
   }
 
   // Task environment.
@@ -299,6 +326,7 @@ class SigninPromoViewMediatorTest : public PlatformTest {
   UIButton* primary_button_;
   UIButton* secondary_button_;
   UIButton* close_button_;
+  UILabel* title_label_;
 
   // Value set by -[SigninPromoView setProfileImage:].
   UIImage* image_view_profile_image_;
@@ -309,7 +337,7 @@ class SigninPromoViewMediatorTest : public PlatformTest {
 // Tests signin promo view and its configurator with no accounts on the device.
 TEST_F(SigninPromoViewMediatorTest, NoAccountsConfigureSigninPromoView) {
   CreateMediator(signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS);
-  TestSigninPromoWithNoAccounts();
+  TestSigninPromoWithNoAccounts(SigninPromoViewStyleStandard);
 }
 
 // Tests signin promo view and its configurator settings view with no accounts
@@ -318,13 +346,13 @@ TEST_F(SigninPromoViewMediatorTest,
        NoAccountsConfigureSigninPromoViewFromSettings) {
   close_button_hidden_ = NO;
   CreateMediator(signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
-  TestSigninPromoWithNoAccounts();
+  TestSigninPromoWithNoAccounts(SigninPromoViewStyleStandard);
 }
 
 // Tests signin promo view and its configurator with accounts on the device.
 TEST_F(SigninPromoViewMediatorTest, SigninWithAccountConfigureSigninPromoView) {
   CreateMediator(signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS);
-  TestSigninPromoWithAccount();
+  TestSigninPromoWithAccount(SigninPromoViewStyleStandard);
 }
 
 // Tests signin promo view and its configurator with an identity
@@ -333,22 +361,42 @@ TEST_F(SigninPromoViewMediatorTest,
        SigninWithAccountConfigureSigninPromoViewWithoutName) {
   user_full_name_ = nil;
   CreateMediator(signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS);
-  TestSigninPromoWithAccount();
+  TestSigninPromoWithAccount(SigninPromoViewStyleStandard);
 }
 
 // Tests the scenario with the sign-in promo when no accounts on the device, and
 // then add an identity to update the view.
 TEST_F(SigninPromoViewMediatorTest, ConfigureSigninPromoViewWithColdAndWarm) {
   CreateMediator(signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS);
-  TestSigninPromoWithNoAccounts();
-  TestSigninPromoWithAccount();
+  TestSigninPromoWithNoAccounts(SigninPromoViewStyleStandard);
+  TestSigninPromoWithAccount(SigninPromoViewStyleStandard);
+}
+
+// Tests the sign-in promo with and without account when the promo style is
+// titled.
+TEST_F(SigninPromoViewMediatorTest,
+       ConfigureTitledSigninPromoViewWithColdAndWarm) {
+  close_button_hidden_ = NO;
+  CreateMediator(signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO);
+  TestSigninPromoWithNoAccounts(SigninPromoViewStyleTitled);
+  TestSigninPromoWithAccount(SigninPromoViewStyleTitled);
+}
+
+// Tests the sign-in promo with and without account when the promo style is
+// titled compact.
+TEST_F(SigninPromoViewMediatorTest,
+       ConfigureCompactTitledSigninPromoViewWithColdAndWarm) {
+  close_button_hidden_ = NO;
+  CreateMediator(signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO);
+  TestSigninPromoWithNoAccounts(SigninPromoViewStyleTitledCompact);
+  TestSigninPromoWithAccount(SigninPromoViewStyleTitledCompact);
 }
 
 // Tests the scenario with the sign-in promo with accounts on the device, and
 // then removing the identity to update the view.
 TEST_F(SigninPromoViewMediatorTest, ConfigureSigninPromoViewWithWarmAndCold) {
   CreateMediator(signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS);
-  TestSigninPromoWithAccount();
+  TestSigninPromoWithAccount(SigninPromoViewStyleStandard);
   // Expect to receive a new configuration from -[Consumer
   // configureSigninPromoWithConfigurator:identityChanged:].
   ExpectConfiguratorNotification(YES /* identity changed */);
@@ -356,7 +404,7 @@ TEST_F(SigninPromoViewMediatorTest, ConfigureSigninPromoViewWithWarmAndCold) {
       ->ForgetIdentity(expected_default_identity_, nil);
   expected_default_identity_ = nil;
   // Check the received configurator.
-  CheckNoAccountsConfigurator(configurator_);
+  CheckNoAccountsConfigurator(configurator_, SigninPromoViewStyleStandard);
 }
 
 // Tests the view state before and after calling -[SigninPromoViewMediator
@@ -479,6 +527,7 @@ TEST_F(SigninPromoViewMediatorTest,
   EXPECT_FALSE([SigninPromoViewMediator
       shouldDisplaySigninPromoViewWithAccessPoint:signin_metrics::AccessPoint::
                                                       ACCESS_POINT_RECENT_TABS
+                            authenticationService:GetAuthenticationService()
                                       prefService:browser_state->GetPrefs()]);
 }
 
@@ -499,7 +548,8 @@ TEST_F(SigninPromoViewMediatorTest, SigninPromoWhileSignedIn) {
   EXPECT_EQ(expected_default_identity_, mediator_.identity);
   EXPECT_TRUE(ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()
                   ->WaitForServiceCallbacksToComplete());
-  CheckSyncPromoWithAccountConfigurator(configurator_);
+  CheckSyncPromoWithAccountConfigurator(configurator_,
+                                        SigninPromoViewStyleStandard);
 }
 
 // Tests that the sign-in promo view being removed and the mediator being

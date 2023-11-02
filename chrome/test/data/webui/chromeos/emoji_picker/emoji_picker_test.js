@@ -7,31 +7,13 @@ import {EmojiButton} from 'chrome://emoji-picker/emoji_button.js';
 import {EmojiPicker} from 'chrome://emoji-picker/emoji_picker.js';
 import {EmojiPickerApiProxyImpl} from 'chrome://emoji-picker/emoji_picker_api_proxy.js';
 import {EmojiVariants} from 'chrome://emoji-picker/emoji_variants.js';
-import {EMOJI_DATA_LOADED, EMOJI_VARIANTS_SHOWN} from 'chrome://emoji-picker/events.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {EMOJI_PICKER_READY, EMOJI_VARIANTS_SHOWN} from 'chrome://emoji-picker/events.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertEquals, assertFalse, assertGT, assertLT, assertTrue} from '../../chai_assert.js';
 
-import {deepQuerySelector, dispatchMouseEvent, timeout, waitForCondition, waitForEvent, waitWithTimeout} from './emoji_picker_test_util.js';
-
-const ACTIVE_CLASS = 'emoji-group-active';
-
-/**
- * Checks if the given emoji-group-button element is activated.
- * @param {?Element} element element to check.
- * @return {boolean} true if active, false otherwise.
- */
-function isGroupButtonActive(element) {
-  assert(element, 'group button element should not be null');
-  return element.classList.contains(ACTIVE_CLASS);
-}
-
-function assertCloseTo(actual, expected) {
-  assertTrue(
-      Math.abs(1 - actual / expected) <= 0.001,
-      `expected ${expected} to be close to ${actual}`);
-}
+import {assertCloseTo, deepQuerySelector, dispatchMouseEvent, isGroupButtonActive, timeout, waitForCondition, waitForEvent, waitWithTimeout} from './emoji_picker_test_util.js';
 
 
 suite('<emoji-picker>', () => {
@@ -39,21 +21,42 @@ suite('<emoji-picker>', () => {
   let emojiPicker;
   /** @type {function(...!string): ?HTMLElement} */
   let findInEmojiPicker;
+  /** @type {function(...!string): ?HTMLElement} */
+  let findEmojiFirstButton;
 
   setup(() => {
     // Reset DOM state.
     document.body.innerHTML = '';
     window.localStorage.clear();
 
+    // Set default incognito state to False.
+    EmojiPickerApiProxyImpl.getInstance().isIncognitoTextField = () =>
+            new Promise((resolve) => resolve({incognito: false}));
+    EmojiPicker.configs = () => ({
+      'dataUrls': {
+        'emoji': [
+          '/emoji_test_ordering_start.json',
+          '/emoji_test_ordering_remaining.json',
+        ],
+      },
+    });
+
     emojiPicker =
         /** @type {!EmojiPicker} */ (document.createElement('emoji-picker'));
-    emojiPicker.emojiDataUrl = '/emoji_test_ordering.json';
 
     findInEmojiPicker = (...path) => deepQuerySelector(emojiPicker, path);
 
+    findEmojiFirstButton = (...path) => {
+      const emojiElement = deepQuerySelector(emojiPicker, path);
+      if (emojiElement) {
+          return emojiElement.firstEmojiButton();
+      }
+      return null;
+    };
+
     // Wait until emoji data is loaded before executing tests.
     return new Promise((resolve) => {
-      emojiPicker.addEventListener(EMOJI_DATA_LOADED, resolve);
+      emojiPicker.addEventListener(EMOJI_PICKER_READY, resolve);
       document.body.appendChild(emojiPicker);
       flush();
     });
@@ -65,7 +68,7 @@ suite('<emoji-picker>', () => {
 
   test('first non-chevron, tab should be active by default', async () => {
     const button = findInEmojiPicker(
-        'emoji-group-button[data-group="history"]', 'cr-icon-button');
+        'emoji-group-button[data-group="emoji-history"]', 'cr-icon-button');
     assertFalse(isGroupButtonActive(button));
   });
 
@@ -90,14 +93,14 @@ suite('<emoji-picker>', () => {
     // the first non-history group (0) may not trigger a scroll, so scroll to
     // group (1).
     const firstButton = findInEmojiPicker(
-        'emoji-group-button[data-group="history"]', 'cr-icon-button');
+        'emoji-group-button[data-group="emoji-history"]', 'cr-icon-button');
     const thirdButton = findInEmojiPicker(
         'emoji-group-button[data-group="1"]', 'cr-icon-button');
 
     // wait so emoji-groups render and we have something to scroll to.
     await waitForCondition(
-        () => findInEmojiPicker(
-            '[data-group="2"] > emoji-group', 'emoji-button', 'button'));
+        () => findEmojiFirstButton(
+            '[data-group="2"] > emoji-group'));
     thirdButton.click();
 
     // wait while waiting for scroll to happen and update buttons.
@@ -115,26 +118,24 @@ suite('<emoji-picker>', () => {
 
   test('recently used should be hidden when empty', () => {
     const recentlyUsed =
-        findInEmojiPicker('[data-group=history] > emoji-group');
-    assert(!recentlyUsed);
+        findInEmojiPicker('[data-group="emoji-history"] > emoji-group');
+    assert(recentlyUsed.classList.contains('hidden'));
   });
 
   test(
       'recently used should be populated after emoji is clicked normally',
       async () => {
-        EmojiPickerApiProxyImpl.getInstance().isIncognitoTextField = () =>
-            new Promise((resolve) => resolve({incognito: false}));
+        emojiPicker.updateIncognitoState(false);
         // yield to allow emoji-group and emoji buttons to render.
         const emojiButton = await waitForCondition(
-            () => findInEmojiPicker(
-                '[data-group="0"] > emoji-group', 'emoji-button', 'button'));
+            () => findEmojiFirstButton(
+                '[data-group="0"] > emoji-group'));
         emojiButton.click();
 
         // wait until emoji exists in recently used section.
         const recentlyUsed = await waitForCondition(
-            () => findInEmojiPicker(
-                '[data-group=history] > emoji-group', 'emoji-button',
-                'button'));
+          () => findEmojiFirstButton(
+            '[data-group="emoji-history"] > emoji-group'));
 
         // check text is correct.
         const recentText = recentlyUsed.innerText;
@@ -144,45 +145,39 @@ suite('<emoji-picker>', () => {
   test(
       'clicking an emoji with no text field should copy it to the clipboard',
       async () => {
-        // Note: this whole test has no text field, so we should always copy to
-        // the clipboard.
-        EmojiPickerApiProxyImpl.getInstance().isIncognitoTextField = () =>
-            new Promise((resolve) => resolve({incognito: false}));
+        emojiPicker.updateIncognitoState(false);
         // yield to allow emoji-group and emoji buttons to render.
         const emojiButton = await waitForCondition(
-            () => findInEmojiPicker(
-                '[data-group="0"] > emoji-group', 'emoji-button', 'button'));
+            () => findEmojiFirstButton(
+                '[data-group="0"] > emoji-group'));
         emojiButton.click();
 
         // wait until emoji exists in recently used section.
         const recentlyUsed = await waitForCondition(
-            () => findInEmojiPicker(
-                '[data-group=history] > emoji-group', 'emoji-button',
-                'button'));
+            () => findEmojiFirstButton(
+              '[data-group="emoji-history"] > emoji-group'));
 
         // check text is correct.
-        const recentText = recentlyUsed.innerText;
-        await navigator.clipboard.readText().then(
-            text => assertEquals(String.fromCodePoint(128512), text));
+        await (waitForCondition(async () => {
+          const clipboardtext = await navigator.clipboard.readText();
+          return clipboardtext === String.fromCodePoint(128512);
+        }));
       });
 
   test('recently-used should have variants for variant emoji', async () => {
-    EmojiPickerApiProxyImpl.getInstance().isIncognitoTextField = () =>
-        new Promise((resolve) => resolve({incognito: false}));
+    emojiPicker.updateIncognitoState(false);
     // yield to allow emoji-group and emoji buttons to render.
     const emojiButton = (await waitForCondition(
                              () => findInEmojiPicker(
-                                 '[data-group="0"] > emoji-group',
-                                 'emoji-button:nth-child(3)')))
-                            .shadowRoot.querySelector('button');
+                               '[data-group="0"] > emoji-group',
+                               'button[data-index="2"]')));
     emojiButton.click();
 
     // wait until emoji exists in recently used section.
     const recentlyUsed =
         (await waitForCondition(
-             () => findInEmojiPicker(
-                 '[data-group=history] > emoji-group', 'emoji-button')))
-            .shadowRoot.querySelector('button');
+             () => findEmojiFirstButton(
+                 '[data-group="emoji-history"] > emoji-group')));
 
     // check variants class is applied
     assertTrue(recentlyUsed.classList.contains('has-variants'));
@@ -191,22 +186,19 @@ suite('<emoji-picker>', () => {
   test(
       'recently-used should have no variants for non-variant emoji',
       async () => {
-        EmojiPickerApiProxyImpl.getInstance().isIncognitoTextField = () =>
-            new Promise((resolve) => resolve({incognito: false}));
+        emojiPicker.updateIncognitoState(false);
         // yield to allow emoji-group and emoji buttons to render.
         const emojiButton = (await waitForCondition(
                                  () => findInEmojiPicker(
                                      '[data-group="0"] > emoji-group',
-                                     'emoji-button:nth-child(2)')))
-                                .shadowRoot.querySelector('button');
+                                     'button[data-index="0"]')));
         emojiButton.click();
 
         // wait until emoji exists in recently used section.
         const recentlyUsed =
             (await waitForCondition(
-                 () => findInEmojiPicker(
-                     '[data-group=history] > emoji-group', 'emoji-button')))
-                .shadowRoot.querySelector('button');
+                 () => findEmojiFirstButton(
+                     '[data-group="emoji-history"] > emoji-group')));
 
         // check variants class is not applied
         assertFalse(recentlyUsed.classList.contains('has-variants'));
@@ -215,21 +207,49 @@ suite('<emoji-picker>', () => {
   test(
       'recently-used should be empty after emoji is clicked in incognito mode',
       async () => {
-        EmojiPickerApiProxyImpl.getInstance().isIncognitoTextField = () =>
-            new Promise((resolve) => resolve({incognito: true}));
+        emojiPicker.updateIncognitoState(true);
         // yield to allow emoji-group and emoji buttons to render.
         const emojiButton = await waitForCondition(
-            () => findInEmojiPicker(
-                '[data-group="0"] > emoji-group', 'emoji-button', 'button'));
+            () => findEmojiFirstButton('[data-group="0"] > emoji-group'));
         emojiButton.click();
 
         // Wait to ensure recents has a chance to render if we have a bug.
         await timeout(1000);
 
         const recentlyUsed =
-            findInEmojiPicker('[data-group=history] > emoji-group');
-        assert(!recentlyUsed);
+            findInEmojiPicker('[data-group="emoji-history"] > emoji-group');
+        assert(recentlyUsed.classList.contains('hidden'));
       });
+
+  test('recently used should be empty after clearing', async () => {
+    emojiPicker.updateIncognitoState(false);
+    // yield to allow emoji-group and emoji buttons to render.
+    const emojiButton = (await waitForCondition(
+                             () => findInEmojiPicker(
+                                 '[data-group="0"] > emoji-group',
+                                 'button[data-index="1"]')));
+    emojiButton.click();
+
+    // wait until emoji exists in recently used section.
+    const recentlyUsed =
+        (await waitForCondition(
+             () => findEmojiFirstButton(
+                 '[data-group="emoji-history"] > emoji-group')));
+
+    // click show clear button
+    findInEmojiPicker('.group', '#show-clear').click();
+    await waitForCondition(() => findInEmojiPicker('.group', '#clear-recents'));
+
+    // click clear button
+    findInEmojiPicker('.group', '#clear-recents').click();
+
+    // Expect no more history.
+    await waitForCondition(
+        () => findInEmojiPicker(
+          '[data-group="emoji-history"] > emoji-group')
+                  .classList.contains('hidden'),
+        'history failed to disappear');
+  });
 
 
   suite('<emoji-variants>', () => {
@@ -247,9 +267,7 @@ suite('<emoji-picker>', () => {
       firstEmojiButton = (await waitForCondition(
                               () => findInEmojiPicker(
                                   '[data-group="0"] > emoji-group',
-                                  'emoji-button:nth-child(3)')))
-                             .shadowRoot;
-
+                                  '.emoji-button-container:nth-child(3)')));
 
       // right click and wait for variants to appear.
       const variantsPromise = waitForEvent(emojiPicker, EMOJI_VARIANTS_SHOWN);
@@ -283,8 +301,8 @@ suite('<emoji-picker>', () => {
       const emojiButton2 = await waitForCondition(
           () =>
               findInEmojiPicker(
-                  '[data-group="0"] > emoji-group', 'emoji-button:nth-child(4)')
-                  .shadowRoot);
+                '[data-group="0"] > emoji-group',
+                '.emoji-button-container:nth-child(4)'));
 
       // right click on second emoji button
       dispatchMouseEvent(emojiButton2.querySelector('button'), 2);
@@ -311,8 +329,8 @@ suite('<emoji-picker>', () => {
       const coupleEmojiButton = await waitForCondition(
           () =>
               findInEmojiPicker(
-                  '[data-group="0"] > emoji-group', 'emoji-button:nth-child(5)')
-                  .shadowRoot);
+                  '[data-group="0"] > emoji-group',
+                  '.emoji-button-container:nth-child(5)'));
 
       // listen for emoji variants event.
       const variantsPromise = waitForEvent(emojiPicker, EMOJI_VARIANTS_SHOWN);
@@ -354,12 +372,29 @@ suite('<emoji-picker>', () => {
   });
 
   suite('<emoji-search>', () => {
-    test('works when there are no results', async () => {
+    test('works when there are no results', () => {
       // This test just ensures that no errors are thrown.
       const enterEvent = new KeyboardEvent(
           'keydown', {cancelable: true, key: 'Enter', keyCode: 13});
       const search = findInEmojiPicker('emoji-search');
-      search.onKeyDown(enterEvent);
+      search.onSearchKeyDown(enterEvent);
+    });
+    test('finds results in the second group', async () => {
+      const search = findInEmojiPicker('emoji-search');
+      // This particular emoji only appears in the third tab of the test
+      // ordering
+      search.setSearchQuery('face with tears of joy');
+
+      await waitForCondition(() => search.searchResults);
+      assertGT(search.getNumSearchResults(), 0);
+    });
+    test('finds no results for garbage search', async () => {
+      const search = findInEmojiPicker('emoji-search');
+      search.setSearchQuery('THIS string should not match anything');
+
+      await waitForCondition(
+          () => findInEmojiPicker('emoji-search', '.no-result'));
+      assertEquals(search.getNumSearchResults(), 0);
     });
   });
 });

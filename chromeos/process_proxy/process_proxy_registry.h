@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -54,14 +54,16 @@ class COMPONENT_EXPORT(CHROMEOS_PROCESS_PROXY) ProcessProxyRegistry {
   static scoped_refptr<base::SequencedTaskRunner> GetTaskRunner();
 
   // Starts new ProcessProxy (which starts new process).
-  // Returns true if the process is created sucessfully, false otherwise.
+  // Returns true if the process is created successfully, false otherwise.
   // The unique process id is passed back via |id|.
   bool OpenProcess(const base::CommandLine& cmdline,
                    const std::string& user_id_hash,
                    const OutputCallback& callback,
                    std::string* id);
   // Sends data to the process identified by |id|.
-  bool SendInput(const std::string& id, const std::string& data);
+  void SendInput(const std::string& id,
+                 const std::string& data,
+                 base::OnceCallback<void(bool)> callback);
   // Stops the process identified by |id|.
   bool CloseProcess(const std::string& id);
   // Reports terminal resize to process proxy.

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,10 +26,15 @@ ASSERT_SIZE(NGPhysicalLineBoxFragment, SameSizeAsNGPhysicalLineBoxFragment);
 
 }  // namespace
 
-scoped_refptr<const NGPhysicalLineBoxFragment>
-NGPhysicalLineBoxFragment::Create(NGLineBoxFragmentBuilder* builder) {
+const NGPhysicalLineBoxFragment* NGPhysicalLineBoxFragment::Create(
+    NGLineBoxFragmentBuilder* builder) {
   DCHECK_EQ(builder->children_.size(), 0u);
-  return base::MakeRefCounted<NGPhysicalLineBoxFragment>(PassKey(), builder);
+  return MakeGarbageCollected<NGPhysicalLineBoxFragment>(PassKey(), builder);
+}
+
+const NGPhysicalLineBoxFragment* NGPhysicalLineBoxFragment::Clone(
+    const NGPhysicalLineBoxFragment& other) {
+  return MakeGarbageCollected<NGPhysicalLineBoxFragment>(PassKey(), other);
 }
 
 NGPhysicalLineBoxFragment::NGPhysicalLineBoxFragment(
@@ -48,6 +53,19 @@ NGPhysicalLineBoxFragment::NGPhysicalLineBoxFragment(
                                 HasOutOfFlowPositionedDescendants() ||
                                 builder->unpositioned_list_marker_;
 }
+
+NGPhysicalLineBoxFragment::NGPhysicalLineBoxFragment(
+    PassKey key,
+    const NGPhysicalLineBoxFragment& other)
+    : NGPhysicalFragment(other), metrics_(other.metrics_) {
+  base_direction_ = other.base_direction_;
+  has_hanging_ = other.has_hanging_;
+  has_propagated_descendants_ = other.has_propagated_descendants_;
+}
+
+NGPhysicalLineBoxFragment::~NGPhysicalLineBoxFragment() = default;
+
+void NGPhysicalLineBoxFragment::Dispose() {}
 
 FontHeight NGPhysicalLineBoxFragment::BaselineMetrics() const {
   // TODO(kojii): Computing other baseline types than the used one is not
@@ -118,4 +136,9 @@ bool NGPhysicalLineBoxFragment::HasSoftWrapToNextLine() const {
   const auto* break_token = To<NGInlineBreakToken>(BreakToken());
   return break_token && !break_token->IsForcedBreak();
 }
+
+void NGPhysicalLineBoxFragment::TraceAfterDispatch(Visitor* visitor) const {
+  NGPhysicalFragment::TraceAfterDispatch(visitor);
+}
+
 }  // namespace blink

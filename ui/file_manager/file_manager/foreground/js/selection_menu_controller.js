@@ -1,12 +1,12 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import '../elements/files_toggle_ripple.js';
 
-import {Menu} from 'chrome://resources/js/cr/ui/menu.m.js';
-import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
+import {Menu} from './ui/menu.js';
 
+import {util} from '../../common/js/util.js';
 import {FilesTooltip} from '../elements/files_tooltip.js';
 
 import {MultiMenuButton} from './ui/multi_menu_button.js';
@@ -23,8 +23,8 @@ export class SelectionMenuController {
      * @private
      */
     this.toggleRipple_ =
-        /** @type {!FilesToggleRippleElement} */ (
-            queryRequiredElement('files-toggle-ripple', selectionMenuButton));
+        /** @type {!FilesToggleRippleElement} */ (util.queryRequiredElement(
+            'files-toggle-ripple', selectionMenuButton));
 
     /**
      * @type {!Menu}

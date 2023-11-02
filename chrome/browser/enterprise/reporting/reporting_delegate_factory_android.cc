@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,6 +37,11 @@ ReportingDelegateFactoryAndroid::GetRealTimeReportGeneratorDelegate() {
   // TODO(crbug.com/1228845) Implement RealTimeReportGenerator::Delegate for
   // Android
   return nullptr;
+}
+
+std::unique_ptr<ReportScheduler::Delegate>
+ReportingDelegateFactoryAndroid::GetReportSchedulerDelegate(Profile* profile) {
+  return std::make_unique<ReportSchedulerAndroid>(profile);
 }
 
 }  // namespace enterprise_reporting

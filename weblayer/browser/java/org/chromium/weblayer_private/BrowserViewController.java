@@ -1,9 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.weblayer_private;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.RemoteException;
@@ -11,7 +12,6 @@ import android.util.AndroidRuntimeException;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
-import android.webkit.ValueCallback;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
@@ -31,6 +31,8 @@ import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator.SystemUi
 import org.chromium.components.content_capture.ContentCaptureConsumer;
 import org.chromium.components.content_capture.OnscreenContentProvider;
 import org.chromium.components.embedder_support.view.ContentView;
+import org.chromium.components.webapps.bottomsheet.PwaBottomSheetController;
+import org.chromium.components.webapps.bottomsheet.PwaBottomSheetControllerFactory;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -40,7 +42,6 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.SimpleModalDialogController;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.TokenHolder;
-import org.chromium.weblayer_private.interfaces.BrowserEmbeddabilityMode;
 
 /**
  * BrowserViewController controls the set of Views needed to show the WebContents.
@@ -87,6 +88,8 @@ public final class BrowserViewController
     private final ManagedBottomSheetController mBottomSheetController;
     private final BottomSheetObserver mBottomSheetObserver;
 
+    private PwaBottomSheetController mPwaBottomSheetController;
+
     private TabImpl mTab;
 
     private WebContentsGestureStateTracker mGestureStateTracker;
@@ -112,8 +115,7 @@ public final class BrowserViewController
         mContentViewRenderView = new ContentViewRenderView(context, recreateForConfigurationChange);
         mContentViewRenderView.addOnAttachStateChangeListener(listener);
 
-        mContentViewRenderView.onNativeLibraryLoaded(
-                mWindowAndroid, BrowserEmbeddabilityMode.UNSUPPORTED);
+        mContentViewRenderView.onNativeLibraryLoaded(mWindowAndroid);
         mTopControlsContainerView =
                 new BrowserControlsContainerView(context, mContentViewRenderView, this, true,
                         (savedState == null) ? null : savedState.mTopControlsState);
@@ -184,11 +186,23 @@ public final class BrowserViewController
         });
         mContentViewRenderView.addView(mBottomSheetContainer);
 
+        Activity activity = ContextUtils.activityFromContext(context);
+        if (activity == null) {
+            // TODO(rayankans): Remove assumptions about Activity from BottomSheetController.
+            mBottomSheetController = null;
+            mPwaBottomSheetController = null;
+            mBottomSheetObserver = null;
+            return;
+        }
         mBottomSheetController = BottomSheetControllerFactory.createBottomSheetController(
-                () -> mScrim, (v) -> {}, ContextUtils.activityFromContext(context).getWindow(),
-                KeyboardVisibilityDelegate.getInstance(), () -> mBottomSheetContainer);
+                () -> mScrim, (v) -> {}, activity.getWindow(),
+                KeyboardVisibilityDelegate.getInstance(), () -> mBottomSheetContainer,
+                () -> mContentViewRenderView.getHeight());
         BottomSheetControllerFactory.attach(mWindowAndroid, mBottomSheetController);
 
+        mPwaBottomSheetController = PwaBottomSheetControllerFactory.createPwaBottomSheetController(
+                mWindowAndroid.getContext().get());
+        PwaBottomSheetControllerFactory.attach(mWindowAndroid, mPwaBottomSheetController);
         mBottomSheetObserver = new EmptyBottomSheetObserver() {
             /** A token for suppressing app modal dialogs. */
             private int mAppModalToken = TokenHolder.INVALID_TOKEN;
@@ -223,11 +237,15 @@ public final class BrowserViewController
             }
         };
         mBottomSheetController.addObserver(mBottomSheetObserver);
+        mBottomSheetController.setAccessibilityUtil(WebLayerAccessibilityUtil.get());
     }
 
     public void destroy() {
-        BottomSheetControllerFactory.detach(mBottomSheetController);
-        mBottomSheetController.removeObserver(mBottomSheetObserver);
+        if (mBottomSheetController != null) {
+            BottomSheetControllerFactory.detach(mBottomSheetController);
+            mBottomSheetController.removeObserver(mBottomSheetObserver);
+            PwaBottomSheetControllerFactory.detach(mPwaBottomSheetController);
+        }
         mWindowAndroid.setModalDialogManager(null);
         setActiveTab(null);
         if (mOnscreenContentProvider != null) mOnscreenContentProvider.destroy();
@@ -443,11 +461,6 @@ public final class BrowserViewController
                 + mBottomControlsContainerView.getContentHeightDelta());
     }
 
-    public void setEmbeddabilityMode(
-            @BrowserEmbeddabilityMode int mode, ValueCallback<Boolean> callback) {
-        mContentViewRenderView.requestMode(mode, callback);
-    }
-
     public void setMinimumSurfaceSize(int width, int height) {
         mContentViewRenderView.setMinimumSurfaceSize(width, height);
     }
@@ -512,7 +525,7 @@ public final class BrowserViewController
                         .with(ModalDialogProperties.CONTROLLER, dialogController)
                         .with(ModalDialogProperties.TITLE, resources,
                                 R.string.http_post_warning_title)
-                        .with(ModalDialogProperties.MESSAGE,
+                        .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1,
                                 resources.getString(R.string.http_post_warning))
                         .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, resources,
                                 R.string.http_post_warning_resend)

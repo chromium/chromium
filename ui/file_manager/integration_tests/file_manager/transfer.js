@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -144,6 +144,7 @@ async function transferBetweenVolumes(transferInfo) {
       BASIC_DRIVE_ENTRY_SET.concat([
         ENTRIES.sharedDirectory,
         ENTRIES.sharedDirectoryFile,
+        ENTRIES.docxFile,
       ]);
 
   // Open files app.
@@ -170,8 +171,8 @@ async function transferBetweenVolumes(transferInfo) {
       'focus', appId, ['#file-list:not([hidden])']);
 
   // Select the source file.
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'selectFile', appId, [transferInfo.fileToTransfer.nameText]));
+  await remoteCall.waitUntilSelected(
+      appId, transferInfo.fileToTransfer.nameText);
 
   // Copy the file.
   const transferCommand = transferInfo.isMove ? 'cut' : 'copy';
@@ -245,25 +246,26 @@ const TRANSFER_LOCATIONS = {
     volumeName: 'drive',
     initialEntries: BASIC_DRIVE_ENTRY_SET.concat([
       ENTRIES.sharedDirectory,
-    ])
+      ENTRIES.docxFile,
+    ]),
   }),
 
   driveWithTeamDriveEntries: new TransferLocationInfo({
     breadcrumbsPath: '/My Drive',
     volumeName: 'drive',
-    initialEntries: SHARED_DRIVE_ENTRY_SET
+    initialEntries: SHARED_DRIVE_ENTRY_SET,
   }),
 
   driveSharedDirectory: new TransferLocationInfo({
     breadcrumbsPath: '/My Drive/Shared',
     volumeName: 'drive',
-    initialEntries: [ENTRIES.sharedDirectoryFile]
+    initialEntries: [ENTRIES.sharedDirectoryFile],
   }),
 
   downloads: new TransferLocationInfo({
     breadcrumbsPath: '/My files/Downloads',
     volumeName: 'downloads',
-    initialEntries: BASIC_LOCAL_ENTRY_SET
+    initialEntries: BASIC_LOCAL_ENTRY_SET,
   }),
 
   sharedWithMe: new TransferLocationInfo({
@@ -272,27 +274,27 @@ const TRANSFER_LOCATIONS = {
     initialEntries: SHARED_WITH_ME_ENTRY_SET.concat([
       ENTRIES.sharedDirectory,
       ENTRIES.sharedDirectoryFile,
-    ])
+    ]),
   }),
 
   driveOffline: new TransferLocationInfo({
     breadcrumbsPath: '/Offline',
     volumeName: 'drive_offline',
-    initialEntries: OFFLINE_ENTRY_SET
+    initialEntries: OFFLINE_ENTRY_SET,
   }),
 
   driveTeamDriveA: new TransferLocationInfo({
     breadcrumbsPath: '/Shared drives/Team Drive A',
     volumeName: 'Team Drive A',
     isTeamDrive: true,
-    initialEntries: SHARED_DRIVE_ENTRY_SET
+    initialEntries: SHARED_DRIVE_ENTRY_SET,
   }),
 
   driveTeamDriveB: new TransferLocationInfo({
     breadcrumbsPath: '/Shared drives/Team Drive B',
     volumeName: 'Team Drive B',
     isTeamDrive: true,
-    initialEntries: SHARED_DRIVE_ENTRY_SET
+    initialEntries: SHARED_DRIVE_ENTRY_SET,
   }),
 
   my_files: new TransferLocationInfo({
@@ -305,7 +307,7 @@ const TRANSFER_LOCATIONS = {
         nameText: 'Play files',
         lastModifiedTime: 'Jan 1, 1980, 11:59 PM',
         sizeText: '--',
-        typeText: 'Folder'
+        typeText: 'Folder',
       }),
       new TestEntryInfo({
         type: EntryType.DIRECTORY,
@@ -313,7 +315,7 @@ const TRANSFER_LOCATIONS = {
         nameText: 'Downloads',
         lastModifiedTime: 'Jan 1, 1980, 11:59 PM',
         sizeText: '--',
-        typeText: 'Folder'
+        typeText: 'Folder',
       }),
       new TestEntryInfo({
         type: EntryType.DIRECTORY,
@@ -321,7 +323,7 @@ const TRANSFER_LOCATIONS = {
         nameText: 'Linux files',
         lastModifiedTime: '...',
         sizeText: '--',
-        typeText: 'Folder'
+        typeText: 'Folder',
       }),
       new TestEntryInfo({
         type: EntryType.DIRECTORY,
@@ -329,9 +331,9 @@ const TRANSFER_LOCATIONS = {
         nameText: 'Trash',
         lastModifiedTime: '...',
         sizeText: '--',
-        typeText: 'Folder'
+        typeText: 'Folder',
       }),
-    ]
+    ],
   }),
 };
 Object.freeze(TRANSFER_LOCATIONS);
@@ -342,6 +344,17 @@ Object.freeze(TRANSFER_LOCATIONS);
 testcase.transferFromDriveToDownloads = () => {
   return transferBetweenVolumes(new TransferInfo({
     fileToTransfer: ENTRIES.hello,
+    source: TRANSFER_LOCATIONS.drive,
+    destination: TRANSFER_LOCATIONS.downloads,
+  }));
+};
+
+/**
+ * Tests copying an office file from Drive to Downloads.
+ */
+testcase.transferOfficeFileFromDriveToDownloads = () => {
+  return transferBetweenVolumes(new TransferInfo({
+    fileToTransfer: ENTRIES.docxFile,
     source: TRANSFER_LOCATIONS.drive,
     destination: TRANSFER_LOCATIONS.downloads,
   }));
@@ -925,6 +938,47 @@ testcase.transferDragAndDrop = async () => {
       {ignoreLastModifiedTime: true});
 };
 
+/**
+ * Tests that dropping a folder on a directory tree item (folder) copies the
+ * folder and also updates the directory tree.
+ */
+testcase.transferDragAndDropFolder = async () => {
+  // Note that directoryB is a child of directoryA.
+  const entries = [ENTRIES.directoryA, ENTRIES.directoryB, ENTRIES.directoryD];
+
+  // Open files app.
+  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, entries, []);
+
+  // Expand Downloads to display folder "D" in the directory tree.
+  await expandTreeItem(appId, '#directory-tree [entry-label="Downloads"]');
+
+  // The drag has to start in the file list column "name" text, otherwise it
+  // starts a drag-selection instead of a drag operation.
+  const source =
+      `#file-list li[file-name="${ENTRIES.directoryA.nameText}"] .entry-name`;
+
+  // Wait for the source.
+  await remoteCall.waitForElement(appId, source);
+
+  // Wait for the directory tree target.
+  const target =
+      `#directory-tree [entry-label="${ENTRIES.directoryD.nameText}"]`;
+  await remoteCall.waitForElement(appId, target);
+
+  // Drag the source and drop it on the target.
+  const skipDrop = false;
+  chrome.test.assertTrue(
+      await remoteCall.callRemoteTestUtil(
+          'fakeDragAndDrop', appId, [source, target, skipDrop]),
+      'fakeDragAndDrop failed');
+
+  // Check: the dropped folder "A" should appear in the directory tree under
+  // the target folder "D" and be expandable (as folder "A" contains "B").
+  await expandTreeItem(appId, target);
+  await expandTreeItem(
+      appId, target + ` [entry-label="${ENTRIES.directoryA.nameText}"]`);
+};
+
 /*
  * Tests that dragging a file over a directory tree item (folder) navigates
  * the file list to that folder.
@@ -988,8 +1042,7 @@ testcase.transferDeletedFile = async () => {
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
 
   // Select the file.
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'selectFile', appId, [entry.nameText]));
+  await remoteCall.waitUntilSelected(appId, entry.nameText);
 
   // Copy the file.
   chrome.test.assertTrue(
@@ -1044,8 +1097,7 @@ testcase.transferInfoIsRemembered = async () => {
   let appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
 
   // Select the file.
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'selectFile', appId, [entry.nameText]));
+  await remoteCall.waitUntilSelected(appId, entry.nameText);
 
   // Copy the file.
   chrome.test.assertTrue(
@@ -1064,9 +1116,6 @@ testcase.transferInfoIsRemembered = async () => {
       appId, ['#progress-panel', 'xf-panel-item']);
   const primaryText = panel.attributes['primary-text'];
   const secondaryText = panel.attributes['secondary-text'];
-
-  // Close the Files app window.
-  await remoteCall.closeWindowAndWait(appId);
 
   // Open a Files app window again.
   appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
@@ -1095,8 +1144,7 @@ testcase.transferToUsbHasDestinationText = async () => {
   await remoteCall.waitForElement(appId, USB_VOLUME_QUERY);
 
   // Select the file.
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'selectFile', appId, [entry.nameText]));
+  await remoteCall.waitUntilSelected(appId, entry.nameText);
 
   // Copy the file.
   chrome.test.assertTrue(
@@ -1138,8 +1186,7 @@ testcase.transferDismissedErrorIsRemembered = async () => {
   let appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
 
   // Select a file to copy.
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'selectFile', appId, [entry.nameText]));
+  await remoteCall.waitUntilSelected(appId, entry.nameText);
 
   // Copy the file.
   chrome.test.assertTrue(
@@ -1175,9 +1222,6 @@ testcase.transferDismissedErrorIsRemembered = async () => {
       'fakeMouseClick', appId,
       [['#progress-panel', 'xf-panel-item', 'xf-button#secondary-action']]));
 
-  // Close the Files app window.
-  await remoteCall.closeWindowAndWait(appId);
-
   // Open a Files app window again.
   appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
 
@@ -1210,7 +1254,8 @@ testcase.transferNotSupportedOperationHasNoRemainingTimeText = async () => {
   await remoteCall.callRemoteTestUtil('sendProgressItem', null, [
     'item-id-1',
     /* ProgressItemType.FORMAT */ 'format',
-    /* ProgressItemState.PROGRESSING */ 'progressing', 'Formatting'
+    /* ProgressItemState.PROGRESSING */ 'progressing',
+    'Formatting',
   ]);
 
   // Check the progress panel is open.
@@ -1222,8 +1267,10 @@ testcase.transferNotSupportedOperationHasNoRemainingTimeText = async () => {
 
   // Show a |format| error panel.
   await remoteCall.callRemoteTestUtil('sendProgressItem', null, [
-    'item-id-2', /* ProgressItemType.FORMAT */ 'format',
-    /* ProgressItemState.ERROR */ 'error', 'Failed'
+    'item-id-2',
+    /* ProgressItemType.FORMAT */ 'format',
+    /* ProgressItemState.ERROR */ 'error',
+    'Failed',
   ]);
 
   // Check the progress panel is open.
@@ -1243,8 +1290,10 @@ testcase.transferUpdateSamePanelItem = async () => {
 
   // Show a |format| error in feedback panel.
   await remoteCall.callRemoteTestUtil('sendProgressItem', null, [
-    'item-id', /* ProgressItemType.FORMAT */ 'format',
-    /* ProgressItemState.ERROR */ 'error', 'Failed'
+    'item-id',
+    /* ProgressItemType.FORMAT */ 'format',
+    /* ProgressItemState.ERROR */ 'error',
+    'Failed',
   ]);
 
   // Check the error panel is open.
@@ -1253,8 +1302,10 @@ testcase.transferUpdateSamePanelItem = async () => {
 
   // Dispatch another |format| feedback panel with the same id and panel type.
   await remoteCall.callRemoteTestUtil('sendProgressItem', null, [
-    'item-id', /* ProgressItemType.FORMAT */ 'format',
-    /* ProgressItemState.ERROR */ 'error', 'Failed new message'
+    'item-id',
+    /* ProgressItemType.FORMAT */ 'format',
+    /* ProgressItemState.ERROR */ 'error',
+    'Failed new message',
   ]);
 
   // Check the progress panel is open.
@@ -1266,23 +1317,24 @@ testcase.transferUpdateSamePanelItem = async () => {
 };
 
 /**
- * Tests pending message shown when the remaining time is zero.
+ * Tests prepraring message shown when the remaining time is zero.
  */
-testcase.transferShowPendingMessageForZeroRemainingTime = async () => {
+testcase.transferShowPreparingMessageForZeroRemainingTime = async () => {
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
   // Show a |copy| progress in feedback panel.
   await remoteCall.callRemoteTestUtil('sendProgressItem', null, [
-    'item-id', /* ProgressItemType.COPY */ 'copy',
+    'item-id',
+    /* ProgressItemType.COPY */ 'copy',
     /* ProgressItemState.PROGRESSING */ 'progressing',
     'Copying File1.txt to Downloads',
-    /* remainingTime*/ 0
+    /* remainingTime*/ 0,
   ]);
 
   // Check the error panel is open.
   const panel = await remoteCall.waitForElement(
       appId, ['#progress-panel', 'xf-panel-item']);
 
-  // Check secondary text is pending message.
-  chrome.test.assertEq('Pending', panel.attributes['secondary-text']);
+  // Check secondary text is preparing message.
+  chrome.test.assertEq('Preparing', panel.attributes['secondary-text']);
 };

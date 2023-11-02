@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,10 @@
 namespace send_tab_to_self {
 
 // Static free function declared and called directly from Java.
-static void JNI_MetricsRecorder_RecordDeviceClickedInShareSheet(JNIEnv* env) {
-  RecordDeviceClicked(ShareEntryPoint::kShareSheet);
+static void JNI_MetricsRecorder_RecordSendingEvent(JNIEnv* env,
+                                                   int sending_event) {
+  RecordSendingEvent(ShareEntryPoint::kShareSheet,
+                     static_cast<SendingEvent>(sending_event));
 }
 
 // Static free function declared and called directly from Java.

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,8 @@ namespace feature_engagement {
 namespace events {
 
 // Desktop
-#if defined(OS_WIN) || defined(OS_APPLE) || defined(OS_LINUX) || \
-    defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
 // The user has explicitly opened a new tab via an entry point from inside of
 // Chrome.
 extern const char kNewTabOpened[];
@@ -51,8 +51,12 @@ extern const char kFocusModeOpened[];
 // All conditions for show Focus Mode IPH were met.
 extern const char kFocusModeConditionsMet[];
 
-// The Side search panel was opened by the user.
+// The side search panel was automatically triggered.
+extern const char kSideSearchAutoTriggered[];
+// The side search panel was opened by the user.
 extern const char kSideSearchOpened[];
+// The side search page action icon label was shown.
+extern const char kSideSearchPageActionLabelShown[];
 
 // Tab Search tab strip was opened by the user.
 extern const char kTabSearchOpened[];
@@ -65,9 +69,6 @@ extern const char kWebUITabStripOpened[];
 // The PWA was installed by the user.
 extern const char kDesktopPwaInstalled[];
 
-// Omnibox displayed the updated connection security indicator.
-extern const char kUpdatedConnectionSecurityIndicatorDisplayed[];
-
 // The user entered the special "focus help bubble" accelerator.
 extern const char kFocusHelpBubbleAcceleratorPressed[];
 
@@ -75,10 +76,19 @@ extern const char kFocusHelpBubbleAcceleratorPressed[];
 // the user.
 extern const char kFocusHelpBubbleAcceleratorPromoRead[];
 
-#endif  // defined(OS_WIN) || defined(OS_APPLE) || defined(OS_LINUX) ||
-        // defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
+// The user has opened the battery saver bubble dialog
+extern const char kBatterySaverDialogShown[];
 
-#if defined(OS_IOS)
+// The user has opened the high efficiency page action chip
+extern const char kHighEfficiencyDialogShown[];
+
+// The user clicked on the performance menu item
+extern const char kPerformanceMenuItemActivated[];
+
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
+
+#if BUILDFLAG(IS_IOS)
 // The user has opened Chrome (cold start or from background).
 extern const char kChromeOpened[];
 
@@ -94,18 +104,35 @@ extern const char kViewedReadingList[];
 // The user has triggered the translate infobar manually.
 extern const char kTriggeredTranslateInfobar[];
 
-// The user has viewed the the BottomToolbar tip.
+// The user has viewed the BottomToolbar tip.
 extern const char kBottomToolbarOpened[];
 
 // The Discover feed has loaded content in the NTP.
 extern const char kDiscoverFeedLoaded[];
-#endif  // defined(OS_IOS)
+
+// The user has requested the desktop version of a page.
+extern const char kDesktopVersionRequested[];
+
+// The default site view mode has been used.
+extern const char kDefaultSiteViewUsed[];
+
+// Autofill displayed password suggestions.
+extern const char kPasswordSuggestionsShown[];
+
+// The user has selected an Autofill password suggestion.
+extern const char kPasswordSuggestionSelected[];
+
+// The user has exited the overflow menu without scrolling horizontally and
+// without taking an action.
+extern const char kOverflowMenuNoHorizontalScrollOrAction[];
+
+#endif  // BUILDFLAG(IS_IOS)
 
 // Android.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // The user has explicitly used the Install menu item under the App Menu.
 extern const char kPwaInstallMenuSelected[];
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace events
 

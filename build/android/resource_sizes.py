@@ -1,5 +1,5 @@
 #!/usr/bin/env vpython3
-# Copyright (c) 2011 The Chromium Authors. All rights reserved.
+# Copyright 2011 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -35,7 +35,7 @@ from pylib.constants import host_paths
 _AAPT_PATH = lazy.WeakConstant(lambda: build_tools.GetPath('aapt'))
 _ANDROID_UTILS_PATH = os.path.join(host_paths.DIR_SOURCE_ROOT, 'build',
                                    'android', 'gyp')
-_BUILD_UTILS_PATH = os.path.join(host_paths.BUILD_PATH, 'util')
+_BUILD_UTILS_PATH = os.path.join(host_paths.DIR_SOURCE_ROOT, 'build', 'util')
 _READOBJ_PATH = os.path.join(constants.ANDROID_NDK_ROOT, 'toolchains', 'llvm',
                              'prebuilt', 'linux-x86_64', 'bin', 'llvm-readobj')
 
@@ -47,13 +47,10 @@ with host_paths.SysPath(host_paths.TRACING_PATH):
 
 with host_paths.SysPath(_ANDROID_UTILS_PATH, 0):
   from util import build_utils  # pylint: disable=import-error
-  from util import zipalign  # pylint: disable=import-error
 
 with host_paths.SysPath(_BUILD_UTILS_PATH, 0):
-  from lib.results import result_sink
-  from lib.results import result_types
-
-zipalign.ApplyZipFileZipAlignFix()
+  from lib.results import result_sink  # pylint: disable=import-error
+  from lib.results import result_types  # pylint: disable=import-error
 
 # Captures an entire config from aapt output.
 _AAPT_CONFIG_PATTERN = r'config %s:(.*?)config [a-zA-Z-]+:'
@@ -92,7 +89,7 @@ _READELF_SIZES_METRICS = {
 }
 
 
-class _AccumulatingReporter(object):
+class _AccumulatingReporter:
   def __init__(self):
     self._combined_metrics = collections.defaultdict(int)
 
@@ -107,13 +104,12 @@ class _AccumulatingReporter(object):
 
 class _ChartJsonReporter(_AccumulatingReporter):
   def __init__(self, chartjson):
-    super(_ChartJsonReporter, self).__init__()
+    super().__init__()
     self._chartjson = chartjson
     self.trace_title_prefix = ''
 
   def __call__(self, graph_title, trace_title, value, units):
-    super(_ChartJsonReporter, self).__call__(graph_title, trace_title, value,
-                                             units)
+    super().__call__(graph_title, trace_title, value, units)
 
     perf_tests_results_helper.ReportPerfResult(
         self._chartjson, graph_title, self.trace_title_prefix + trace_title,
@@ -296,7 +292,7 @@ def _RunAaptDumpResources(apk_path):
   return output
 
 
-class _FileGroup(object):
+class _FileGroup:
   """Represents a category that apk files can fall into."""
 
   def __init__(self, name):
@@ -401,8 +397,13 @@ def _AnalyzeInternal(apk_path,
   is_webview = 'WebView' in orig_filename
   is_monochrome = 'Monochrome' in orig_filename
   is_library = 'Library' in orig_filename
+  is_trichrome = 'TrichromeChrome' in orig_filename
+  # WebView is always a shared APK since other apps load it.
+  # Library is always shared since it's used by chrome and webview
+  # Chrome is always shared since renderers can't access dex otherwise
+  # (see DexFixer).
   is_shared_apk = sdk_version >= 24 and (is_monochrome or is_webview
-                                         or is_library)
+                                         or is_library or is_trichrome)
   # Dex decompression overhead varies by Android version.
   if sdk_version < 21:
     # JellyBean & KitKat
@@ -427,8 +428,14 @@ def _AnalyzeInternal(apk_path,
       should_extract_lib = not skip_extract_lib and basename.startswith('lib')
       native_code.AddZipInfo(
           member, extracted_multiplier=int(should_extract_lib))
-    elif filename.endswith('.dex'):
-      java_code.AddZipInfo(member, extracted_multiplier=dex_multiplier)
+    elif filename.startswith('classes') and filename.endswith('.dex'):
+      # Android P+, uncompressed dex does not need to be extracted.
+      compressed = member.compress_type != zipfile.ZIP_STORED
+      multiplier = dex_multiplier
+      if not compressed and sdk_version >= 28:
+        multiplier -= 1
+
+      java_code.AddZipInfo(member, extracted_multiplier=multiplier)
     elif re.search(_RE_NON_LANGUAGE_PAK, filename):
       native_resources_no_translations.AddZipInfo(member)
     elif filename.endswith('.pak') or filename.endswith('.lpak'):
@@ -493,9 +500,15 @@ def _AnalyzeInternal(apk_path,
       report_func('Uncompressed', group.name + ' size', uncompressed_size,
                   'bytes')
 
-    if group is java_code and is_shared_apk:
+    if group is java_code:
       # Updates are compiled using quicken, but system image uses speed-profile.
-      extracted_size = int(uncompressed_size * speed_profile_dex_multiplier)
+      multiplier = speed_profile_dex_multiplier
+
+      # Android P+, uncompressed dex does not need to be extracted.
+      compressed = uncompressed_size != actual_size
+      if not compressed and sdk_version >= 28:
+        multiplier -= 1
+      extracted_size = int(uncompressed_size * multiplier)
       total_install_size_android_go += extracted_size
       report_func('InstallBreakdownGo', group.name + ' size',
                   actual_size + extracted_size, 'bytes')
@@ -513,9 +526,8 @@ def _AnalyzeInternal(apk_path,
   report_func('InstallSize', 'APK size', total_apk_size, 'bytes')
   report_func('InstallSize', 'Estimated installed size',
               int(total_install_size), 'bytes')
-  if is_shared_apk:
-    report_func('InstallSize', 'Estimated installed size (Android Go)',
-                int(total_install_size_android_go), 'bytes')
+  report_func('InstallSize', 'Estimated installed size (Android Go)',
+              int(total_install_size_android_go), 'bytes')
   transfer_size = _CalculateCompressedSize(apk_path)
   report_func('TransferSize', 'Transfer size (deflate)', transfer_size, 'bytes')
 
@@ -810,7 +822,7 @@ def _DumpChartJson(args, chartjson):
 
     histogram_path = os.path.join(args.output_dir, 'perf_results.json')
     logging.critical('Dumping histograms to %s', histogram_path)
-    with open(histogram_path, 'w') as json_file:
+    with open(histogram_path, 'wb') as json_file:
       json_file.write(histogram_result.stdout)
 
 

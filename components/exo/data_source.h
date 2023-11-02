@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -86,6 +86,8 @@ class DataSource {
                               const std::vector<uint8_t>&)>;
   using ReadWebCustomDataCallback =
       base::OnceCallback<void(const std::string&, const std::vector<uint8_t>&)>;
+  void ReadDataTransferEndpoint(ReadTextDataCallback dte_reader,
+                                base::RepeatingClosure failure_callback);
   void GetDataForPreferredMimeTypes(
       ReadTextDataCallback text_reader,
       ReadDataCallback rtf_reader,

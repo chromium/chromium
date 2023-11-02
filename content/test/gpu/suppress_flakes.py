@@ -1,5 +1,5 @@
 #!/usr/bin/env vpython3
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Script for finding and suppressing flaky GPU tests.
@@ -16,55 +16,57 @@ suppress_flakes.py \
   --project chrome-unexpected-pass-data \
   --sample-period 5
 """
+import os
+import sys
 
-import argparse
+CHROMIUM_SRC_DIR = os.path.join(os.path.dirname(__file__), '..', '..', '..')
+sys.path.append(os.path.join(CHROMIUM_SRC_DIR, 'testing'))
 
-from flake_suppressor import expectations
-from flake_suppressor import queries
-from flake_suppressor import result_output
-from flake_suppressor import results as results_module
-
-
-def ParseArgs():
-  # TODO(crbug.com/1192733): Add flaky and failure thresholds, likely in the
-  # form of % of failures out of the total runs for a (test, tags) combination.
-  # <1% can be ignored, > 50% can be treated as a failure instead of a flake.
-  parser = argparse.ArgumentParser(
-      description=('Script for automatically suppressing flaky/failing GPU '
-                   'Telemetry-based tests.'))
-  parser.add_argument('--project',
-                      required=True,
-                      help=('The billing project to use for BigQuery queries. '
-                            'Must have access to the ResultDB BQ tables, e.g. '
-                            '"chrome-luci-data.chromium.gpu_ci_test_results".'))
-  parser.add_argument('--sample-period',
-                      type=int,
-                      default=1,
-                      help=('The number of days to sample data from.'))
-  parser.add_argument('--no-group-by-tags',
-                      action='store_false',
-                      default=True,
-                      dest='group_by_tags',
-                      help=('Append added expectations to the end of the file '
-                            'instead of attempting to automatically group with '
-                            'similar expectations.'))
-  args = parser.parse_args()
-
-  return args
+# pylint: disable=wrong-import-position
+from flake_suppressor_common import argument_parsing
+from flake_suppressor_common import result_output
+from flake_suppressor_common import tag_utils as common_tag_utils
+from flake_suppressor import gpu_expectations
+from flake_suppressor import gpu_queries
+from flake_suppressor import gpu_tag_utils as tag_utils
+from flake_suppressor import gpu_results as results_module
+# pylint: enable=wrong-import-position
 
 
 def main():
-  args = ParseArgs()
-  expectations.AssertCheckoutIsUpToDate()
-  results = queries.GetFlakyOrFailingTests(args.sample_period, args.project)
-  aggregated_results = results_module.AggregateResults(results)
-  result_output.GenerateHtmlOutputFile(aggregated_results)
+  args = argument_parsing.ParseArgs()
+  common_tag_utils.SetTagUtilsImplementation(tag_utils.GpuTagUtils)
+  expectations_processor = gpu_expectations.GpuExpectationProcessor()
+  if not args.bypass_up_to_date_check:
+    expectations_processor.AssertCheckoutIsUpToDate()
+
+  results_processor = results_module.GpuResultProcessor(expectations_processor)
+  querier_instance = gpu_queries.GpuBigQueryQuerier(args.sample_period,
+                                                    args.project,
+                                                    results_processor)
+
+  results = querier_instance.GetFlakyOrFailingCiTests()
+  results.extend(querier_instance.GetFlakyOrFailingTryTests())
+  aggregated_results = results_processor.AggregateResults(results)
+  if args.result_output_file:
+    with open(args.result_output_file, 'w') as outfile:
+      result_output.GenerateHtmlOutputFile(aggregated_results, outfile)
+  else:
+    result_output.GenerateHtmlOutputFile(aggregated_results)
   print('If there are many instances of failed tests, that may be indicative '
         'of an issue that should be handled in some other way, e.g. reverting '
         'a bad CL.')
-  input('\nBeginning of user input section - press any key to continue')
-  expectations.IterateThroughResultsForUser(aggregated_results,
-                                            args.group_by_tags)
+  if args.prompt_for_user_input:
+    input('\nBeginning of user input section - press any key to continue')
+    expectations_processor.IterateThroughResultsForUser(aggregated_results,
+                                                        args.group_by_tags,
+                                                        args.include_all_tags)
+  else:
+    result_counts = querier_instance.GetResultCounts()
+    expectations_processor.IterateThroughResultsWithThresholds(
+        aggregated_results, args.group_by_tags, result_counts,
+        args.ignore_threshold, args.flaky_threshold, args.include_all_tags)
+    print('\nGenerated expectations will need to have bugs manually added.')
   print('\nGenerated expectations likely contain conflicting tags that need to '
         'be removed.')
 

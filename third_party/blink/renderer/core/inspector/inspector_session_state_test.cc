@@ -1,4 +1,4 @@
-// Copyright (c) 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -215,7 +215,7 @@ TEST(InspectorSessionStateTest, MapFields) {
 
   // The cookie should be empty since everything is cleared.
   DevToolsSessionStatePtr cookie = dev_tools_session.CloneCookie();
-  EXPECT_TRUE(cookie->entries.IsEmpty());
+  EXPECT_TRUE(cookie->entries.empty());
 }
 
 TEST(InspectorSessionStateTest, MultipleAgents) {
@@ -253,7 +253,7 @@ TEST(InspectorSessionStateTest, MultipleAgents) {
 
     EXPECT_TRUE(maps_agent.doubles_.IsEmpty());
     EXPECT_TRUE(maps_agent.strings_.IsEmpty());
-    EXPECT_FALSE(simple_agent.message_.Get().IsEmpty());  // other agent.
+    EXPECT_FALSE(simple_agent.message_.Get().empty());  // other agent.
 
     dev_tools_session.ApplyUpdates(session_state.TakeUpdates());
   }
@@ -267,6 +267,6 @@ TEST(InspectorSessionStateTest, MultipleAgents) {
 
     dev_tools_session.ApplyUpdates(session_state.TakeUpdates());
   }
-  EXPECT_TRUE(dev_tools_session.CloneCookie()->entries.IsEmpty());
+  EXPECT_TRUE(dev_tools_session.CloneCookie()->entries.empty());
 }
 }  // namespace blink

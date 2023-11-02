@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -75,6 +75,11 @@ class ASH_PUBLIC_EXPORT AppListNotifier {
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
 
+  // Called when visibility of a container within the launcher continue section
+  // (continue task suggestions, or recent apps) changes.
+  virtual void NotifyContinueSectionVisibilityChanged(Location location,
+                                                      bool visible) = 0;
+
   // Called to indicate a search |result| has been launched at the UI surface
   // |location|.
   virtual void NotifyLaunched(Location location, const Result& result) = 0;
@@ -87,8 +92,10 @@ class ASH_PUBLIC_EXPORT AppListNotifier {
   // Called to indicate the user has updated the search query to |query|.
   virtual void NotifySearchQueryChanged(const std::u16string& query) = 0;
 
-  // Called to indicate the UI state is now |view|.
-  virtual void NotifyUIStateChanged(AppListViewState view) = 0;
+  // Fires a timer to report search result impression for the provided
+  // location, if an impression update was scheduled. Returns whether a timer
+  // was fired.
+  virtual bool FireImpressionTimerForTesting(Location location) = 0;
 };
 
 }  // namespace ash

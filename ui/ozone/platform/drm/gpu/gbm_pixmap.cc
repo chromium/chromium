@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -50,6 +50,10 @@ size_t GbmPixmap::GetDmaBufPlaneSize(size_t plane) const {
 
 size_t GbmPixmap::GetNumberOfPlanes() const {
   return buffer_->GetNumPlanes();
+}
+
+bool GbmPixmap::SupportsZeroCopyWebGPUImport() const {
+  return buffer_->SupportsZeroCopyWebGPUImport();
 }
 
 uint64_t GbmPixmap::GetBufferFormatModifier() const {

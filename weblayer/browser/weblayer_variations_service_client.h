@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/variations/service/variations_service_client.h"
 
@@ -39,7 +39,7 @@ class WebLayerVariationsServiceClient
   bool OverridesRestrictParameter(std::string* parameter) override;
   bool IsEnterprise() override;
 
-  SystemNetworkContextManager* network_context_manager_;
+  raw_ptr<SystemNetworkContextManager> network_context_manager_;
 };
 
 }  // namespace weblayer

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,10 +41,11 @@
 #include "chrome/browser/nearby_sharing/power_client.h"
 #include "chrome/browser/nearby_sharing/share_target.h"
 #include "chrome/browser/nearby_sharing/transfer_metadata.h"
+#include "chrome/browser/nearby_sharing/wifi_network_configuration/wifi_network_configuration_handler.h"
 #include "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom.h"
 #include "chrome/services/sharing/public/proto/wire_format.pb.h"
-#include "chromeos/services/nearby/public/cpp/nearby_process_manager.h"
-#include "chromeos/services/nearby/public/mojom/nearby_decoder_types.mojom.h"
+#include "chromeos/ash/services/nearby/public/cpp/nearby_process_manager.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_decoder_types.mojom.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "net/base/network_change_notifier.h"
@@ -61,7 +62,7 @@ class PrefService;
 class Profile;
 
 namespace NearbySharingServiceUnitTests {
-class NearbySharingServiceImplTest;
+class NearbySharingServiceImplTestBase;
 }
 
 // All methods should be called from the same sequence that created the service.
@@ -85,8 +86,9 @@ class NearbySharingServiceImpl
       NotificationDisplayService* notification_display_service,
       Profile* profile,
       std::unique_ptr<NearbyConnectionsManager> nearby_connections_manager,
-      chromeos::nearby::NearbyProcessManager* process_manager,
-      std::unique_ptr<PowerClient> power_client);
+      ash::nearby::NearbyProcessManager* process_manager,
+      std::unique_ptr<PowerClient> power_client,
+      std::unique_ptr<WifiNetworkConfigurationHandler> wifi_network_handler);
   ~NearbySharingServiceImpl() override;
 
   // NearbySharingService:
@@ -150,9 +152,13 @@ class NearbySharingServiceImpl
   void set_free_disk_space_for_testing(int64_t free_disk_space) {
     free_disk_space_for_testing_ = free_disk_space;
   }
+  void set_visibility_reminder_timer_delay_for_testing(base::TimeDelta delay) {
+    visibility_reminder_timer_delay_ = delay;
+    UpdateVisibilityReminderTimer(true);
+  }
 
  private:
-  friend class NearbySharingServiceUnitTests::NearbySharingServiceImplTest;
+  friend class NearbySharingServiceUnitTests::NearbySharingServiceImplTestBase;
 
   // nearby_share::mojom::NearbyShareSettingsObserver:
   void OnEnabledChanged(bool enabled) override;
@@ -183,6 +189,9 @@ class NearbySharingServiceImpl
                              bool present) override;
   void AdapterPoweredChanged(device::BluetoothAdapter* adapter,
                              bool powered) override;
+  void LowEnergyScanSessionHardwareOffloadingStatusChanged(
+      device::BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus
+          status) override;
 
   // PowerClient::Observer:
   void SuspendImminent() override;
@@ -344,14 +353,14 @@ class NearbySharingServiceImpl
   void OnOutgoingMutualAcceptanceTimeout(const ShareTarget& share_target);
 
   void OnNearbyProcessStopped(
-      chromeos::nearby::NearbyProcessManager::NearbyProcessShutdownReason
+      ash::nearby::NearbyProcessManager::NearbyProcessShutdownReason
           shutdown_reason);
   void CleanupAfterNearbyProcessStopped();
   void RestartNearbyProcessIfAppropriate(
-      chromeos::nearby::NearbyProcessManager::NearbyProcessShutdownReason
+      ash::nearby::NearbyProcessManager::NearbyProcessShutdownReason
           shutdown_reason);
   bool ShouldRestartNearbyProcess(
-      chromeos::nearby::NearbyProcessManager::NearbyProcessShutdownReason
+      ash::nearby::NearbyProcessManager::NearbyProcessShutdownReason
           shutdown_reason);
   void ClearRecentNearbyProcessUnexpectedShutdownCount();
   void BindToNearbyProcess();
@@ -409,14 +418,23 @@ class NearbySharingServiceImpl
   void AbortAndCloseConnectionIfNecessary(const TransferMetadata::Status status,
                                           const ShareTarget& share_target);
 
+  // The method is responsible for updating visibility reminder timer:
+  // 1) Stops the timer if the feature flag is disabled OR Nearby Share is
+  // disabled OR visibility is changed to 'Hidden"; 2) Restart the timer and
+  // update the timestamp if we force it to update OR it's past 180 days since
+  // last time we updated it.
+  void UpdateVisibilityReminderTimer(bool reset_timestamp);
+  void OnVisibilityReminderTimerFired();
+  base::TimeDelta GetTimeUntilNextVisibilityReminder();
+
   PrefService* prefs_ = nullptr;
   Profile* profile_;
   std::unique_ptr<NearbyConnectionsManager> nearby_connections_manager_;
-  chromeos::nearby::NearbyProcessManager* process_manager_;
-  std::unique_ptr<
-      chromeos::nearby::NearbyProcessManager::NearbyProcessReference>
+  ash::nearby::NearbyProcessManager* process_manager_;
+  std::unique_ptr<ash::nearby::NearbyProcessManager::NearbyProcessReference>
       process_reference_;
   std::unique_ptr<PowerClient> power_client_;
+  std::unique_ptr<WifiNetworkConfigurationHandler> wifi_network_handler_;
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
   // Advertiser which is non-null when we are attempting to share and
   // broadcasting Fast Initiation advertisements.
@@ -542,6 +560,17 @@ class NearbySharingServiceImpl
 
   // Used to debounce OnNetworkChanged processing.
   base::RetainingOneShotTimer on_network_changed_delay_timer_;
+
+  // Used to prevent the "Device nearby is sharing" notification from appearing
+  // immediately after a completed share.
+  base::OneShotTimer fast_initiation_scanner_cooldown_timer_;
+
+  // The duration of reminder timer. In production, this is 180 days.
+  // Can be shorten for testing efficiency purpose.
+  base::TimeDelta visibility_reminder_timer_delay_;
+
+  // Used to control when to show visibility reminder notification to users.
+  base::OneShotTimer visibility_reminder_timer_;
 
   // Available free disk space for testing. Using real disk space can introduce
   // flakiness in tests.

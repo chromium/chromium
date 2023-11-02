@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,8 +17,8 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/handle.h"
 #include "ui/ozone/platform/flatland/flatland_sysmem_buffer_manager.h"
+#include "ui/ozone/platform/scenic/mojom/scenic_gpu_host.mojom.h"
 #include "ui/ozone/public/gl_ozone.h"
-#include "ui/ozone/public/mojom/scenic_gpu_host.mojom.h"
 #include "ui/ozone/public/surface_factory_ozone.h"
 
 namespace ui {
@@ -60,6 +60,11 @@ class FlatlandSurfaceFactory : public SurfaceFactoryOzone {
                                gfx::BufferFormat format,
                                gfx::BufferUsage usage,
                                NativePixmapCallback callback) override;
+  scoped_refptr<gfx::NativePixmap> CreateNativePixmapFromHandle(
+      gfx::AcceleratedWidget widget,
+      gfx::Size size,
+      gfx::BufferFormat format,
+      gfx::NativePixmapHandle handle) override;
 #if BUILDFLAG(ENABLE_VULKAN)
   std::unique_ptr<gpu::VulkanImplementation> CreateVulkanImplementation(
       bool use_swiftshader,
@@ -69,13 +74,14 @@ class FlatlandSurfaceFactory : public SurfaceFactoryOzone {
   // Registers a surface for a |widget|.
   //
   // Must be called on the thread that owns the surface.
-  void AddSurface(gfx::AcceleratedWidget widget, FlatlandSurface* surface)
+  virtual void AddSurface(gfx::AcceleratedWidget widget,
+                          FlatlandSurface* surface)
       LOCKS_EXCLUDED(surface_lock_);
 
   // Removes a surface for a |widget|.
   //
   // Must be called on the thread that owns the surface.
-  void RemoveSurface(gfx::AcceleratedWidget widget)
+  virtual void RemoveSurface(gfx::AcceleratedWidget widget)
       LOCKS_EXCLUDED(surface_lock_);
 
   // Returns the surface for a |widget|.

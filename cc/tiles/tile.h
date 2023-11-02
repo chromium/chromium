@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "cc/paint/draw_image.h"
 #include "cc/raster/tile_task.h"
@@ -28,7 +29,7 @@ class TileManager;
 class CC_EXPORT Tile {
  public:
   struct CreateInfo {
-    const PictureLayerTiling* tiling = nullptr;
+    raw_ptr<const PictureLayerTiling> tiling = nullptr;
     int tiling_i_index = 0;
     int tiling_j_index = 0;
     gfx::Rect enclosing_layer_rect;
@@ -111,6 +112,8 @@ class CC_EXPORT Tile {
 
   bool HasRasterTask() const { return !!raster_task_.get(); }
 
+  bool HasMissingLCPCandidateImages() const;
+
   void set_solid_color_analysis_performed(bool performed) {
     is_solid_color_analysis_performed_ = performed;
   }
@@ -143,8 +146,8 @@ class CC_EXPORT Tile {
        int source_frame_number,
        int flags);
 
-  TileManager* const tile_manager_;
-  const PictureLayerTiling* tiling_;
+  const raw_ptr<TileManager> tile_manager_;
+  raw_ptr<const PictureLayerTiling> tiling_;
   const gfx::Rect content_rect_;
   const gfx::Rect enclosing_layer_rect_;
   const gfx::AxisTransform2d raster_transform_;

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -59,6 +59,7 @@ class OmniboxPedalProvider {
   // Befriending this test base class prevents duplication of a long exhaustive
   // unit test (specifically the TestLiteralConceptExpressions method).
   friend class OmniboxPedalImplementationsTest;
+  FRIEND_TEST_ALL_PREFIXES(OmniboxPedalProviderTest, QueriesTriggerPedals);
   FRIEND_TEST_ALL_PREFIXES(OmniboxPedalImplementationsTest,
                            ProviderFiltersPedalUpdateChrome);
   FRIEND_TEST_ALL_PREFIXES(
@@ -80,11 +81,9 @@ class OmniboxPedalProvider {
   void TokenizeAndExpandDictionary(OmniboxPedal::TokenSequence& out_tokens,
                                    const std::u16string& token_sequence_string);
 
+  // Loads all pedals groups, building the dictionary as needed from
+  // translation strings.
   void LoadPedalConcepts();
-
-  // Load a synonym group from a JSON sourced Value.
-  OmniboxPedal::SynonymGroup LoadSynonymGroupValue(
-      const base::Value& group_value) const;
 
   // Load a synonym group from a localization sourced string with comma
   // separated synonyms.
@@ -118,10 +117,6 @@ class OmniboxPedalProvider {
 
   // This holds the tokens currently being matched against.
   OmniboxPedal::TokenSequence match_tokens_;
-
-  // This serves as an upper bound on the number of tokens we will accept from
-  // text before giving up and treating it as non-match for all Pedals.
-  size_t max_tokens_ = 0;
 
   // Whether a field trial has triggered for this query and this session
   bool field_trial_triggered_ = false;

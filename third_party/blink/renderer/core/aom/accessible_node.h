@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,6 @@
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/wtf/hash_map.h"
-#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
 
@@ -26,6 +24,8 @@ class QualifiedName;
 // All of the properties of AccessibleNode that have type "string".
 enum class AOMStringProperty {
   kAutocomplete,
+  kAriaBrailleLabel,
+  kAriaBrailleRoleDescription,
   kChecked,
   kCurrent,
   kDescription,
@@ -105,7 +105,7 @@ class CORE_EXPORT AOMPropertyClient {
 };
 
 // Accessibility Object Model node
-// Explainer: https://github.com/WICG/aom/blob/master/explainer.md
+// Explainer: https://github.com/WICG/aom/blob/gh-pages/explainer.md
 // Spec: https://wicg.github.io/aom/spec/
 class CORE_EXPORT AccessibleNode : public EventTargetWithInlineData {
   DEFINE_WRAPPERTYPEINFO();
@@ -209,6 +209,12 @@ class CORE_EXPORT AccessibleNode : public EventTargetWithInlineData {
 
   absl::optional<bool> busy() const;
   void setBusy(absl::optional<bool>);
+
+  AtomicString brailleLabel() const;
+  void setBrailleLabel(const AtomicString&);
+
+  AtomicString brailleRoleDescription() const;
+  void setBrailleRoleDescription(const AtomicString&);
 
   AtomicString checked() const;
   void setChecked(const AtomicString&);
@@ -399,7 +405,7 @@ class CORE_EXPORT AccessibleNode : public EventTargetWithInlineData {
       relation_list_properties_;
 
   // This object's owner Element, if it corresponds to an Element.
-  Member<Element> element_;
+  const Member<Element> element_;
 
   // The object's owner Document. Only set if |element_| is nullptr.
   Member<Document> document_;

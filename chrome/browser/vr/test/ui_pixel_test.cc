@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,14 +15,14 @@
 #include "third_party/skia/include/core/SkImageEncoder.h"
 #include "third_party/skia/include/core/SkStream.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #endif
 
 namespace vr {
 
 UiPixelTest::UiPixelTest() : frame_buffer_size_(kPixelHalfScreen) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // VR is not supported on Windows 7.
   os_supported_ = base::win::GetVersion() > base::win::Version::WIN7;
 #endif

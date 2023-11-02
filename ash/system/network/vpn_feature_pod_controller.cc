@@ -1,9 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/system/network/vpn_feature_pod_controller.h"
 
+#include "ash/constants/quick_settings_catalogs.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -65,12 +66,13 @@ FeaturePodButton* VPNFeaturePodController::CreateButton() {
   return button_;
 }
 
-void VPNFeaturePodController::OnIconPressed() {
-  tray_controller_->ShowVPNDetailedView();
+QsFeatureCatalogName VPNFeaturePodController::GetCatalogName() {
+  return QsFeatureCatalogName::kVPN;
 }
 
-SystemTrayItemUmaType VPNFeaturePodController::GetUmaType() const {
-  return SystemTrayItemUmaType::UMA_VPN;
+void VPNFeaturePodController::OnIconPressed() {
+  TrackDiveInUMA();
+  tray_controller_->ShowVPNDetailedView();
 }
 
 void VPNFeaturePodController::ActiveNetworkStateChanged() {

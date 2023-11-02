@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/platform/image-decoders/segment_reader.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 
@@ -70,7 +71,7 @@ DecodingImageGenerator::CreateAsSkImageGenerator(sk_sp<SkData> data) {
   if (!decoder || !decoder->IsSizeAvailable())
     return nullptr;
 
-  const IntSize size = decoder->Size();
+  const gfx::Size size = decoder->Size();
   const SkImageInfo info =
       SkImageInfo::MakeN32(size.width(), size.height(), kPremul_SkAlphaType,
                            decoder->ColorSpaceForSkImages());
@@ -250,9 +251,11 @@ bool DecodingImageGenerator::QueryYUVA(
                                        yuva_pixmap_info);
 }
 
-bool DecodingImageGenerator::GetYUVAPlanes(const SkYUVAPixmaps& pixmaps,
-                                           size_t frame_index,
-                                           uint32_t lazy_pixel_ref) {
+bool DecodingImageGenerator::GetYUVAPlanes(
+    const SkYUVAPixmaps& pixmaps,
+    size_t frame_index,
+    uint32_t lazy_pixel_ref,
+    PaintImage::GeneratorClientId client_id) {
   // TODO(crbug.com/943519): YUV decoding does not currently support incremental
   // decoding. See comment in image_frame_generator.h.
   DCHECK(can_yuv_decode_);
@@ -284,7 +287,8 @@ bool DecodingImageGenerator::GetYUVAPlanes(const SkYUVAPixmaps& pixmaps,
   ScopedSegmentReaderDataLocker lock_data(data_.get());
   return frame_generator_->DecodeToYUV(
       data_.get(), static_cast<wtf_size_t>(frame_index),
-      pixmaps.plane(0).colorType(), plane_sizes, plane_addrs, plane_row_bytes);
+      pixmaps.plane(0).colorType(), plane_sizes, plane_addrs, plane_row_bytes,
+      client_id);
 }
 
 SkISize DecodingImageGenerator::GetSupportedDecodeSize(

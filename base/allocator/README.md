@@ -26,11 +26,6 @@ layer wrapping malloc/new, which is controlled by `use_allocator_shim`.
 The shim layer provides extra security features, such as preventing large
 allocations that can hit signed vs. unsigned bugs in third_party code.
 
-**Linux Desktop / CrOS**
-`use_allocator: tcmalloc`, a forked copy of tcmalloc which resides in
-`third_party/tcmalloc/chromium`. Setting `use_allocator: none` causes the build
-to fall back to the system (Glibc) symbols.
-
 **Android**
 `use_allocator: none`, always use the allocator symbols coming from Android's
 libc (Bionic). As it is developed as part of the OS, it is considered to be
@@ -44,17 +39,17 @@ config and can vary (typically *dlmalloc* or *jemalloc* on most Nexus devices).
 In addition, when building for `asan` / `msan` both the allocator and the shim
 layer are disabled.
 
+
 Layering and build deps
 -----------------------
-The `allocator` target provides both the source files for tcmalloc (where
-applicable) and the linker flags required for the Windows shim layer.
-The `base` target is (almost) the only one depending on `allocator`. No other
-targets should depend on it, with the exception of the very few executables /
-dynamic libraries that don't depend, either directly or indirectly, on `base`
-within the scope of a linker unit.
+The `allocator` target provides the linker flags required for the Windows shim
+layer. The `base` target is (almost) the only one depending on `allocator`. No
+other targets should depend on it, with the exception of the very few
+executables / dynamic libraries that don't depend, either directly or
+indirectly, on `base` within the scope of a linker unit.
 
 More importantly, **no other place outside of `/base` should depend on the
-specific allocator** (e.g., directly include `third_party/tcmalloc`).
+specific allocator**.
 If such a functional dependency is required that should be achieved using
 abstractions in `base` (see `/base/allocator/allocator_extension.h` and
 `/base/memory/`)
@@ -67,22 +62,14 @@ inconsistent mess.
 See the [allocator cleanup doc][url-allocator-cleanup] for more context.
 
 Linker unit targets (executables and shared libraries) that depend in some way
-on `base` (most of the targets in the codebase) get automatically the correct
-set of linker flags to pull in tcmalloc or the Windows shim-layer.
+on `base` (most of the targets in the codebase) automatically get the correct
+set of linker flags to pull in the Windows shim-layer (if needed).
 
 
 Source code
 -----------
 This directory contains just the allocator (i.e. shim) layer that switches
 between the different underlying memory allocation implementations.
-
-The tcmalloc library originates outside of Chromium and exists in
-`../../third_party/tcmalloc` (currently, the actual location is defined in the
-allocator.gyp file). The third party sources use a vendor-branch SCM pattern to
-track Chromium-specific changes independently from upstream changes.
-
-The general intent is to push local changes upstream so that over
-time we no longer need any forked files.
 
 
 Unified allocator shim
@@ -109,13 +96,13 @@ The allocator shim consists of three stages:
 |     malloc & friends    | -> |       shim layer      | -> |   Routing to   |
 |    symbols definition   |    |     implementation    |    |    allocator   |
 +-------------------------+    +-----------------------+    +----------------+
-| - libc symbols (malloc, |    | - Security checks     |    | - tcmalloc     |
-|   calloc, free, ...)    |    | - Chain of dispatchers|    | - glibc        |
-| - C++ symbols (operator |    |   that can intercept  |    | - Android      |
-|   new, delete, ...)     |    |   and override        |    |   bionic       |
-| - glibc weak symbols    |    |   allocations         |    | - WinHeap      |
-|   (__libc_malloc, ...)  |    +-----------------------+    +----------------+
-+-------------------------+
+| - libc symbols (malloc, |    | - Security checks     |    | - glibc        |
+|   calloc, free, ...)    |    | - Chain of dispatchers|    | - Android      |
+| - C++ symbols (operator |    |   that can intercept  |    |   bionic       |
+|   new, delete, ...)     |    |   and override        |    | - WinHeap      |
+| - glibc weak symbols    |    |   allocations         |    | - Partition    |
+|   (__libc_malloc, ...)  |    +-----------------------+    |   Alloc        |
++-------------------------+                                 +----------------+
 ```
 
 **1. malloc symbols definition**
@@ -134,9 +121,6 @@ and in `allocator_shim_override_cpp_symbols.h` (for `operator new`,
 This enables proper interposition of malloc symbols referenced by the main
 executable and any third party libraries. Symbol resolution on Linux is a breadth first search that starts from the root link unit, that is the executable
 (see EXECUTABLE AND LINKABLE FORMAT (ELF) - Portable Formats Specification).
-Additionally, when tcmalloc is the default allocator, some extra glibc symbols
-are also defined in `allocator_shim_override_glibc_weak_symbols.h`, for subtle
-reasons explained in that file.
 The Linux/CrOS shim was introduced by
 [crrev.com/1675143004](https://crrev.com/1675143004).
 

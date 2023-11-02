@@ -1,8 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/reporting/client/empty_dm_token_retriever.h"
+
+#include <string>
 
 #include "base/bind.h"
 #include "base/test/task_environment.h"

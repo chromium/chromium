@@ -31,12 +31,19 @@
 #include <utility>
 
 #include "base/task/single_thread_task_runner.h"
+#include "base/unguessable_token.h"
+#include "services/metrics/public/cpp/mojo_ukm_recorder.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/blob/blob_registry.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/service_worker/controller_service_worker_mode.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/web_url_loader.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
+#include "third_party/blink/renderer/platform/loader/fetch/early_hints_preload_entry.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/loader_freeze_mode.h"
 #include "third_party/blink/renderer/platform/loader/fetch/preload_key.h"
@@ -47,7 +54,6 @@
 #include "third_party/blink/renderer/platform/mojo/mojo_binding_context.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/timer.h"
-#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 
@@ -66,6 +72,7 @@ class Resource;
 class ResourceError;
 class ResourceLoadObserver;
 class ResourceTimingInfo;
+class SubresourceWebBundle;
 class SubresourceWebBundleList;
 class WebBackForwardCacheLoaderHelper;
 class WebCodeCacheLoader;
@@ -247,10 +254,18 @@ class PLATFORM_EXPORT ResourceFetcher
 
   String GetCacheIdentifier(const KURL& url) const;
 
+  // If `url` exists as a resource in a subresource bundle in this frame,
+  // returns its UnguessableToken; otherwise, returns absl::nullopt.
+  absl::optional<base::UnguessableToken> GetSubresourceBundleToken(
+      const KURL& url) const;
+
+  absl::optional<KURL> GetSubresourceBundleSourceUrl(const KURL& url) const;
+
   enum IsImageSet { kImageNotImageSet, kImageIsImageSet };
 
-  WARN_UNUSED_RESULT static mojom::blink::RequestContextType
-      DetermineRequestContext(ResourceType, IsImageSet);
+  [[nodiscard]] static mojom::blink::RequestContextType DetermineRequestContext(
+      ResourceType,
+      IsImageSet);
 
   static network::mojom::RequestDestination DetermineRequestDestination(
       ResourceType);
@@ -263,6 +278,9 @@ class PLATFORM_EXPORT ResourceFetcher
   void RemovePreload(Resource*);
 
   void LoosenLoadThrottlingPolicy() { scheduler_->LoosenThrottlingPolicy(); }
+
+  void StartBatch() { scheduler_->StartBatch(); }
+  void EndBatch() { scheduler_->EndBatch(); }
 
   // Workaround for https://crbug.com/666214.
   // TODO(hiroshige): Remove this hack.
@@ -290,9 +308,11 @@ class PLATFORM_EXPORT ResourceFetcher
       ResourcePriority::VisibilityStatus visibility_statue,
       FetchParameters::DeferOption defer_option,
       FetchParameters::SpeculativePreloadType speculative_preload_type,
+      RenderBlockingBehavior render_blocking_behavior,
       bool is_link_preload) {
     return ComputeLoadPriority(type, request, visibility_statue, defer_option,
-                               speculative_preload_type, is_link_preload);
+                               speculative_preload_type,
+                               render_blocking_behavior, is_link_preload);
   }
 
   void SetThrottleOptionOverride(
@@ -307,9 +327,16 @@ class PLATFORM_EXPORT ResourceFetcher
     return back_forward_cache_loader_helper_;
   }
 
-  void SetEarlyHintsPreloadedResources(HashSet<KURL> preloaded) {
-    early_hints_preloaded_resources_ = std::move(preloaded);
+  void SetEarlyHintsPreloadedResources(
+      HashMap<KURL, EarlyHintsPreloadEntry> resources) {
+    early_hints_preloaded_resources_ = std::move(resources);
   }
+
+  // Access the UKMRecorder.
+  ukm::MojoUkmRecorder* UkmRecorder();
+
+  void CancelWebBundleSubresourceLoadersFor(
+      const base::UnguessableToken& web_bundle_token);
 
  private:
   friend class ResourceCacheValidationSuppressor;
@@ -326,7 +353,8 @@ class PLATFORM_EXPORT ResourceFetcher
   void AddToMemoryCacheIfNeeded(const FetchParameters&, Resource*);
   Resource* CreateResourceForLoading(const FetchParameters&,
                                      const ResourceFactory&);
-  void StorePerformanceTimingInitiatorInformation(Resource*);
+  void StorePerformanceTimingInitiatorInformation(Resource*,
+                                                  RenderBlockingBehavior);
   ResourceLoadPriority ComputeLoadPriority(
       ResourceType,
       const ResourceRequestHead&,
@@ -334,6 +362,7 @@ class PLATFORM_EXPORT ResourceFetcher
       FetchParameters::DeferOption = FetchParameters::DeferOption::kNoDefer,
       FetchParameters::SpeculativePreloadType =
           FetchParameters::SpeculativePreloadType::kNotSpeculative,
+      RenderBlockingBehavior = RenderBlockingBehavior::kNonBlocking,
       bool is_link_preload = false);
 
   // |virtual_time_pauser| is an output parameter. PrepareRequest may
@@ -352,7 +381,7 @@ class PLATFORM_EXPORT ResourceFetcher
                                       ResourceClient*);
 
   Resource* MatchPreload(const FetchParameters& params, ResourceType);
-  void PrintPreloadWarning(Resource*, Resource::MatchStatus);
+  void PrintPreloadMismatch(Resource*, Resource::MatchStatus);
   void InsertAsPreloadIfNecessary(Resource*,
                                   const FetchParameters& params,
                                   ResourceType);
@@ -421,6 +450,7 @@ class PLATFORM_EXPORT ResourceFetcher
   void PopulateAndAddResourceTimingInfo(Resource* resource,
                                         scoped_refptr<ResourceTimingInfo> info,
                                         base::TimeTicks response_end);
+  SubresourceWebBundle* GetMatchingBundle(const KURL& url) const;
 
   Member<DetachableResourceFetcherProperties> properties_;
   Member<ResourceLoadObserver> resource_load_observer_;
@@ -436,12 +466,12 @@ class PLATFORM_EXPORT ResourceFetcher
   DocumentResourceMap cached_resources_map_;
 
   // |image_resources_| is the subset of all image resources for the document.
-  HeapHashSet<WeakMember<Resource>> image_resources_;
+  HeapHashSet<WeakMember<Resource>,  WTF::MemberHashRecordReplayRegisteredPointerId<Resource>> image_resources_;
 
   // |not_loaded_image_resources_| is a subset of |image_resources_| where
   // |Resource::IsLoaded| might be false. The is used for performance
   // optimizations and might still contain images which are actually loaded.
-  HeapHashSet<WeakMember<Resource>> not_loaded_image_resources_;
+  HeapHashSet<WeakMember<Resource>, WTF::MemberHashRecordReplayRegisteredPointerId<Resource>> not_loaded_image_resources_;
 
   HeapHashMap<PreloadKey, Member<Resource>> preloads_;
   HeapVector<Member<Resource>> matched_preloads_;
@@ -452,15 +482,15 @@ class PLATFORM_EXPORT ResourceFetcher
   TaskHandle unused_preloads_timer_;
 
   using ResourceTimingInfoMap =
-      HeapHashMap<Member<Resource>, scoped_refptr<ResourceTimingInfo>>;
+      HeapHashMap<Member<Resource>, scoped_refptr<ResourceTimingInfo>, WTF::MemberHashRecordReplayRegisteredPointerId<Resource>>;
   ResourceTimingInfoMap resource_timing_info_map_;
 
   Vector<scoped_refptr<ResourceTimingInfo>> scheduled_resource_timing_reports_;
 
-  HeapHashSet<Member<ResourceLoader>> loaders_;
-  HeapHashSet<Member<ResourceLoader>> non_blocking_loaders_;
+  HeapHashSet<Member<ResourceLoader>, WTF::MemberHashRecordReplayRegisteredPointerId<ResourceLoader>> loaders_;
+  HeapHashSet<Member<ResourceLoader>, WTF::MemberHashRecordReplayRegisteredPointerId<ResourceLoader>> non_blocking_loaders_;
 
-  HashSet<KURL> early_hints_preloaded_resources_;
+  HashMap<KURL, EarlyHintsPreloadEntry> early_hints_preloaded_resources_;
 
   std::unique_ptr<HashSet<String>> preloaded_urls_for_test_;
 
@@ -474,7 +504,7 @@ class PLATFORM_EXPORT ResourceFetcher
 
   HeapMojoRemote<mojom::blink::BlobRegistry> blob_registry_remote_;
 
-  // Lazily initialized when the first <link rel=webbundle> is inserted.
+  // Lazily initialized when the first <script type=webbundle> is inserted.
   Member<SubresourceWebBundleList> subresource_web_bundles_;
 
   // This is not in the bit field below because we want to use AutoReset.
@@ -488,6 +518,8 @@ class PLATFORM_EXPORT ResourceFetcher
   bool stale_while_revalidate_enabled_ : 1;
 
   static constexpr uint32_t kKeepaliveInflightBytesQuota = 64 * 1024;
+
+  std::unique_ptr<ukm::MojoUkmRecorder> ukm_recorder_;
 
   // NOTE: This must be the last member.
   base::WeakPtrFactory<ResourceFetcher> weak_ptr_factory_{this};

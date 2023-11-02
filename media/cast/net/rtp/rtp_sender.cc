@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "base/big_endian.h"
 #include "base/logging.h"
 #include "base/rand_util.h"
+#include "media/cast/common/encoded_frame.h"
 #include "media/cast/constants.h"
 
 namespace media {
@@ -144,9 +145,7 @@ void RtpSender::ResendFrameForKickstart(FrameId frame_id,
 }
 
 void RtpSender::UpdateSequenceNumber(Packet* packet) {
-  // TODO(miu): This is an abstraction violation.  This needs to be a part of
-  // the overall packet (de)serialization consolidation.
-  static const int kByteOffsetToSequenceNumber = 2;
+  constexpr int kByteOffsetToSequenceNumber = 2;
   base::BigEndianWriter big_endian_writer(
       reinterpret_cast<char*>((&packet->front()) + kByteOffsetToSequenceNumber),
       sizeof(uint16_t));

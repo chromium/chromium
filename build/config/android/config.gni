@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -51,12 +51,31 @@ if (is_android || is_chromeos) {
     # not explicitly set it.
     default_min_sdk_version = 23
 
-    # [WIP] Allows devs to achieve much faster edit-build-install cycles.
-    # Currently only works for ChromeModern apks due to incremental install.
-    # This needs to be in a separate declare_args as it determines some of the
-    # args in the main declare_args block below.
-    android_fast_local_dev = false
+    # Static analysis can be either "on" or "off" or "build_server". This
+    # controls how android lint, error-prone, bytecode checks are run. This
+    # needs to be in a separate declare_args as it determines some of the args
+    # in the main declare_args block below.
+    # "on" is the default.
+    # "off" avoids running any static analysis. This is the default for
+    #     official builds to reduce build times. Failures in static analysis
+    #     would have been caught by other bots.
+    # "build_server" ensures that fast_local_dev_server.py is running and
+    #     offloads analysis tasks to it to be run after the build completes.
+    #     This is the recommended setting for local development.
+    if (is_official_build) {
+      android_static_analysis = "off"
+    } else {
+      android_static_analysis = "on"
+    }
   }
+
+  # Avoid typos when setting android_static_analysis in args.gn.
+  assert(android_static_analysis == "on" || android_static_analysis == "off" ||
+         android_static_analysis == "build_server")
+
+  # This configuration has not bot coverage and has broken multiple times.
+  # Warn against it.
+  assert(!(enable_chrome_android_internal && skip_secondary_abi_for_cq))
 
   declare_args() {
     # Android API level for 32 bits platforms
@@ -82,18 +101,21 @@ if (is_android || is_chromeos) {
 
   if (!defined(default_android_ndk_root)) {
     default_android_ndk_root = "//third_party/android_ndk"
-    default_android_ndk_version = "r22"
-    default_android_ndk_major_version = 22
+    default_android_ndk_version = "r23"
+    default_android_ndk_major_version = 23
   } else {
     assert(defined(default_android_ndk_version))
     assert(defined(default_android_ndk_major_version))
   }
 
   public_android_sdk_root = "//third_party/android_sdk/public"
-  if (android_sdk_release == "s") {
+  public_android_sdk_build_tools =
+      "${public_android_sdk_root}/build-tools/33.0.0"
+  public_android_sdk_version = "33"
+  if (android_sdk_release == "t") {
     default_android_sdk_root = public_android_sdk_root
-    default_android_sdk_version = "31"
-    default_android_sdk_build_tools_version = "31.0.0"
+    default_android_sdk_version = public_android_sdk_version
+    default_android_sdk_build_tools_version = "33.0.0"
     public_android_sdk = true
   }
 
@@ -106,7 +128,7 @@ if (is_android || is_chromeos) {
     # Purposefully repeated so that downstream can change
     # default_android_sdk_root without changing lint version.
     default_lint_android_sdk_root = public_android_sdk_root
-    default_lint_android_sdk_version = 31
+    default_lint_android_sdk_version = 33
   }
 
   if (!defined(default_extras_android_sdk_root)) {
@@ -125,11 +147,7 @@ if (is_android || is_chromeos) {
   # google_play_services_package contains the path where individual client
   # targets (e.g. google_play_services_base_java) are located.
   if (!defined(google_play_services_package)) {
-    if (is_chromecast && chromecast_branding != "public") {
-      google_play_services_package = "//chromecast/internal/android/prebuilt/google-play-services-first-party"
-    } else {
-      google_play_services_package = "//third_party/android_deps"
-    }
+    google_play_services_package = "//third_party/android_deps"
   }
 
   if (!defined(dagger_java_target)) {
@@ -211,24 +229,18 @@ if (is_android || is_chromeos) {
     debuggable_apks = !is_official_build
 
     # Set to false to disable the Errorprone compiler.
-    # Defaults to false for official builds to reduce build times.
-    # Static analysis failures should have been already caught by normal bots.
-    # Disabled when fast_local_dev is turned on.
-    use_errorprone_java_compiler = !is_official_build && !android_fast_local_dev
+    use_errorprone_java_compiler = android_static_analysis != "off"
 
     # Build incremental targets whenever possible.
     # See //build/android/incremental_install/README.md for more details.
-    incremental_install = android_fast_local_dev
+    incremental_install = false
 
     # When true, updates all android_aar_prebuilt() .info files during gn gen.
     # Refer to android_aar_prebuilt() for more details.
     update_android_aar_prebuilts = false
 
-    # Turns off android lint. Useful for prototyping or for faster local builds.
-    # Defaults to true for official builds to reduce build times.
-    # Static analysis failures should have been already caught by normal bots.
-    # Disabled when fast_local_dev is turned on.
-    disable_android_lint = is_official_build || android_fast_local_dev
+    # Turns off android lint.
+    disable_android_lint = android_static_analysis == "off"
 
     # Location of aapt2 used for app bundles. For now, a more recent version
     # than the one distributed with the Android SDK is required.
@@ -269,13 +281,16 @@ if (is_android || is_chromeos) {
     }
 
     # Whether java assertions and Preconditions checks are enabled.
-    enable_java_asserts = is_java_debug || dcheck_always_on
+    enable_java_asserts = dcheck_always_on || !is_official_build
 
     # Reduce build time by using d8 incremental build.
     enable_incremental_d8 = true
 
     # Use hashed symbol names to reduce JNI symbol overhead.
     use_hashed_jni_names = !is_java_debug
+
+    # Enables JNI multiplexing to reduce JNI native methods overhead.
+    enable_jni_multiplexing = false
 
     # Enables Java library desugaring.
     # This will cause an extra classes.dex file to appear in every apk.
@@ -286,6 +301,10 @@ if (is_android || is_chromeos) {
     # adds trace events to some methods in android.view.View subclasses.
     enable_trace_event_bytecode_rewriting =
         !is_java_debug && android_channel != "stable"
+  }
+
+  if (enable_jni_multiplexing) {
+    use_hashed_jni_names = false
   }
 
   # Host stuff -----------------------------------------------------------------

@@ -1,4 +1,4 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -55,7 +55,8 @@ PLATFORM_ACCELERATOR = COMMAND_DOWN if IsMac() else CONTROL_DOWN
 
 
 def ClickOn(ui_devtools,
-            class_name,
+            class_name=None,
+            element_id=None,
             index=0,
             x=0,
             y=0,
@@ -65,7 +66,13 @@ def ClickOn(ui_devtools,
   Send mouse pressed and release events to an UI element.
   '''
   # "" means exact search for UI Devtools.
-  node_id = ui_devtools.QueryNodes('"%s"' % class_name)[index]
+  if class_name is not None:
+    node_id = ui_devtools.QueryNodes('"%s"' % class_name)[index]
+  elif element_id is not None:
+    node_id = ui_devtools.QueryNodes('id:%s' % element_id)[index]
+  else:
+    raise ValueError('Invalid class_name or element_id!')
+
   ui_devtools.DispatchMouseEvent(node_id, MOUSE_EVENT_TYPE_MOUSE_PRESSED, x, y,
                                  button)
   time.sleep(click_interval)

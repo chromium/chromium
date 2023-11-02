@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,6 @@
 #include "media/base/media_serializers_base.h"
 #include "media/base/renderer_factory_selector.h"
 #include "media/base/status.h"
-#include "media/base/status_codes.h"
 #include "media/base/text_track_config.h"
 #include "media/base/video_decoder_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -157,6 +156,16 @@ struct MediaSerializer<base::TimeDelta> {
   }
 };
 
+// enum (simple)
+template <>
+struct MediaSerializer<base::Time> {
+  static inline base::Value Serialize(const base::Time value) {
+    std::stringstream formatted;
+    formatted << value;
+    return MediaSerializer<std::string>::Serialize(formatted.str());
+  }
+};
+
 // Enum (simple)
 template <>
 struct MediaSerializer<RendererType> {
@@ -254,7 +263,12 @@ struct MediaSerializer<VideoTransformation> {
 template <>
 struct MediaSerializer<VideoColorSpace> {
   static inline base::Value Serialize(const VideoColorSpace& value) {
-    return base::Value(value.ToGfxColorSpace().ToString());
+    base::Value result(base::Value::Type::DICTIONARY);
+    FIELD_SERIALIZE("primaries", value.primaries);
+    FIELD_SERIALIZE("transfer", value.transfer);
+    FIELD_SERIALIZE("matrix", value.matrix);
+    FIELD_SERIALIZE("range", value.range);
+    return result;
   }
 };
 
@@ -351,8 +365,9 @@ struct MediaSerializer<TextTrackConfig> {
     base::Value result(base::Value::Type::DICTIONARY);
     FIELD_SERIALIZE("kind", value.kind());
     FIELD_SERIALIZE("language", value.language());
-    if (value.label().length())
+    if (value.label().length()) {
       FIELD_SERIALIZE("label", value.label());
+    }
     return result;
   }
 };
@@ -431,14 +446,6 @@ struct MediaSerializer<SerializableBufferingState<T>> {
   }
 };
 
-// enum (simple)
-template <>
-struct MediaSerializer<StatusCode> {
-  static inline base::Value Serialize(StatusCode code) {
-    return base::Value(static_cast<int>(code));
-  }
-};
-
 // Class (complex)
 template <typename T>
 struct MediaSerializer<TypedStatus<T>> {
@@ -458,12 +465,13 @@ struct MediaSerializer<StatusData> {
     base::Value result(base::Value::Type::DICTIONARY);
     // TODO: replace code with a stringified version, since
     // this representation will only go to medialog anyway.
-    FIELD_SERIALIZE("code", status.code);
-    FIELD_SERIALIZE("group", status.group);
-    FIELD_SERIALIZE("message", status.message);
-    FIELD_SERIALIZE("stack", status.frames);
-    FIELD_SERIALIZE("data", status.data);
-    FIELD_SERIALIZE("causes", status.causes);
+    FIELD_SERIALIZE(StatusConstants::kCodeKey, status.code);
+    FIELD_SERIALIZE(StatusConstants::kGroupKey, status.group);
+    FIELD_SERIALIZE(StatusConstants::kMsgKey, status.message);
+    FIELD_SERIALIZE(StatusConstants::kStackKey, status.frames);
+    FIELD_SERIALIZE(StatusConstants::kDataKey, status.data);
+    if (status.cause)
+      FIELD_SERIALIZE(StatusConstants::kCauseKey, *status.cause);
     return result;
   }
 };
@@ -473,9 +481,101 @@ template <>
 struct MediaSerializer<base::Location> {
   static base::Value Serialize(const base::Location& value) {
     base::Value result(base::Value::Type::DICTIONARY);
-    FIELD_SERIALIZE("file", value.file_name() ? value.file_name() : "unknown");
-    FIELD_SERIALIZE("line", value.line_number());
+    FIELD_SERIALIZE(StatusConstants::kFileKey,
+                    value.file_name() ? value.file_name() : "unknown");
+    FIELD_SERIALIZE(StatusConstants::kLineKey, value.line_number());
     return result;
+  }
+};
+
+#define ENUM_CASE_TO_STRING(ENUM_NAME) \
+  case ENUM_NAME:                      \
+    return base::Value(##ENUM_NAME);
+
+#define ENUM_CLASS_CASE_TO_STRING(ENUM_CLASS, ENUM_NAME) \
+  case ENUM_CLASS::ENUM_NAME:                            \
+    return base::Value(#ENUM_NAME);
+
+// Enum (simple)
+template <>
+struct MediaSerializer<VideoColorSpace::PrimaryID> {
+  static inline base::Value Serialize(VideoColorSpace::PrimaryID value) {
+    switch (value) {
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::PrimaryID, INVALID);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::PrimaryID, BT709);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::PrimaryID, UNSPECIFIED);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::PrimaryID, BT470M);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::PrimaryID, BT470BG);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::PrimaryID, SMPTE170M);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::PrimaryID, SMPTE240M);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::PrimaryID, FILM);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::PrimaryID, BT2020);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::PrimaryID, SMPTEST428_1);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::PrimaryID, SMPTEST431_2);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::PrimaryID, SMPTEST432_1);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::PrimaryID, EBU_3213_E);
+    }
+  }
+};
+
+// Enum (simple)
+template <>
+struct MediaSerializer<VideoColorSpace::TransferID> {
+  static inline base::Value Serialize(VideoColorSpace::TransferID value) {
+    switch (value) {
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::TransferID, INVALID);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::TransferID, BT709);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::TransferID, UNSPECIFIED);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::TransferID, GAMMA22);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::TransferID, GAMMA28);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::TransferID, SMPTE170M);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::TransferID, SMPTE240M);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::TransferID, LINEAR);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::TransferID, LOG);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::TransferID, LOG_SQRT);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::TransferID, IEC61966_2_4);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::TransferID, BT1361_ECG);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::TransferID, IEC61966_2_1);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::TransferID, BT2020_10);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::TransferID, BT2020_12);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::TransferID, SMPTEST2084);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::TransferID, SMPTEST428_1);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::TransferID, ARIB_STD_B67);
+    }
+  }
+};
+
+// Enum (simple)
+template <>
+struct MediaSerializer<VideoColorSpace::MatrixID> {
+  static inline base::Value Serialize(VideoColorSpace::MatrixID value) {
+    switch (value) {
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::MatrixID, RGB);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::MatrixID, BT709);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::MatrixID, UNSPECIFIED);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::MatrixID, FCC);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::MatrixID, BT470BG);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::MatrixID, SMPTE170M);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::MatrixID, SMPTE240M);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::MatrixID, YCOCG);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::MatrixID, BT2020_NCL);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::MatrixID, BT2020_CL);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::MatrixID, YDZDX);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::MatrixID, INVALID);
+    }
+  }
+};
+
+// Enum (simple)
+template <>
+struct MediaSerializer<gfx::ColorSpace::RangeID> {
+  static inline base::Value Serialize(gfx::ColorSpace::RangeID value) {
+    switch (value) {
+      ENUM_CLASS_CASE_TO_STRING(gfx::ColorSpace::RangeID, INVALID);
+      ENUM_CLASS_CASE_TO_STRING(gfx::ColorSpace::RangeID, LIMITED);
+      ENUM_CLASS_CASE_TO_STRING(gfx::ColorSpace::RangeID, FULL);
+      ENUM_CLASS_CASE_TO_STRING(gfx::ColorSpace::RangeID, DERIVED);
+    }
   }
 };
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,13 +35,13 @@
 #include "ui/gfx/icc_profile.h"
 #include "v8/include/v8.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "third_party/blink/public/web/win/web_font_rendering.h"
 #include "third_party/skia/include/core/SkFontMgr.h"
 #include "third_party/skia/include/ports/SkTypeface_win.h"
 #endif
 
-#if defined(OS_FUCHSIA) || defined(OS_MAC)
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_MAC)
 #include "skia/ext/test_fonts.h"
 #endif
 
@@ -70,12 +70,13 @@ blink::WebFrameWidget* CreateWebTestWebFrameWidget(
     bool hidden,
     bool never_composited,
     bool is_for_child_local_root,
-    bool is_for_nested_main_frame) {
+    bool is_for_nested_main_frame,
+    bool is_for_scalable_page) {
   return blink::FrameWidgetTestHelper::CreateTestWebFrameWidget(
       std::move(pass_key), std::move(frame_widget_host),
       std::move(frame_widget), std::move(widget_host), std::move(widget),
       std::move(task_runner), frame_sink_id, hidden, never_composited,
-      is_for_child_local_root, is_for_nested_main_frame,
+      is_for_child_local_root, is_for_nested_main_frame, is_for_scalable_page,
       WebTestRenderThreadObserver::GetInstance()->test_runner());
 }
 
@@ -102,12 +103,12 @@ void WebTestContentRendererClient::RenderThreadStarted() {
 
   render_thread_observer_ = std::make_unique<WebTestRenderThreadObserver>();
 
-#if defined(OS_FUCHSIA) || defined(OS_MAC)
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_MAC)
   // On these platforms, fonts are set up in the renderer process. Other
   // platforms set up fonts as part of WebTestBrowserMainRunner in the
   // browser process, via WebTestBrowserPlatformInitialize().
-  skia::ConfigureTestFont();
-#elif defined(OS_WIN)
+  skia::InitializeSkFontMgrForTest();
+#elif BUILDFLAG(IS_WIN)
   // DirectWrite only has access to %WINDIR%\Fonts by default. For developer
   // side-loading, support kRegisterFontFiles to allow access to additional
   // fonts. The browser process sets these files and punches a hole in the

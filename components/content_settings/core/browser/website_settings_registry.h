@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -71,7 +71,7 @@ class WebsiteSettingsRegistry {
   const WebsiteSettingsInfo* Register(
       ContentSettingsType type,
       const std::string& name,
-      std::unique_ptr<base::Value> initial_default_value,
+      base::Value initial_default_value,
       WebsiteSettingsInfo::SyncStatus sync_status,
       WebsiteSettingsInfo::LossyStatus lossy_status,
       WebsiteSettingsInfo::ScopingType scoping_type,

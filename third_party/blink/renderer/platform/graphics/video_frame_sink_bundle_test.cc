@@ -1,10 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/graphics/video_frame_sink_bundle.h"
 
-#include "base/macros.h"
+#include <tuple>
+
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -192,7 +193,7 @@ TEST_F(VideoFrameSinkBundleTest, BatchSubmissionsDuringOnBeginFrame) {
       &mock_client2};
   mojo::Receiver<viz::mojom::blink::CompositorFrameSinkClient> receiver3{
       &mock_client3};
-  ignore_result(provider.BindNewPipeAndPassReceiver());
+  std::ignore = provider.BindNewPipeAndPassReceiver();
   bundle.AddClient(kTestVideoSinkId1, &mock_client1, provider, receiver1,
                    sink1);
   bundle.AddClient(kTestVideoSinkId2, &mock_client2, provider, receiver2,

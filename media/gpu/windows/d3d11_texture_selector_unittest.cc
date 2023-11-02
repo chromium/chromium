@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,7 +25,7 @@ class D3D11TextureSelectorUnittest : public ::testing::Test {
   class MockFormatSupportChecker : public FormatSupportChecker {
    public:
     MockFormatSupportChecker() : FormatSupportChecker(nullptr) {}
-    ~MockFormatSupportChecker() = default;
+    ~MockFormatSupportChecker() override = default;
     bool Initialize() override { return true; }
 
     MOCK_CONST_METHOD1(CheckOutputFormatSupport, bool(DXGI_FORMAT));
@@ -62,7 +62,7 @@ class D3D11TextureSelectorUnittest : public ::testing::Test {
     auto media_log = std::make_unique<NullMediaLog>();
     return TextureSelector::Create(prefs, workarounds, decoder_output_format,
                                    hdr_mode, &format_checker_, nullptr, nullptr,
-                                   media_log.get());
+                                   media_log.get(), gfx::ColorSpace());
   }
 
   // Set the format checker to succeed any check, except for |disallowed|.

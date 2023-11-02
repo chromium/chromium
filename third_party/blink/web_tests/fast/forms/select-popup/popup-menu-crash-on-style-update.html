@@ -2,12 +2,14 @@
 <body>
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
 <script src="../resources/picker-common.js"></script>
 <select><option>option</option></select>
 <script>
 var test = async_test('Do not crash in InternalPopupMenu::update');
 var select = document.querySelector('select');
-openPicker(select, function() {
+openPickerDeprecatedJsTest(select, function() {
     setTimeout(function() {
         select.setAttribute('style', 'font-size: larger;');
         select.offsetWidth;

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include "ash/webui/help_app_ui/search/search_metadata.h"
 #include "base/bind.h"
 #include "base/strings/string_number_conversions.h"
-#include "chromeos/components/local_search_service/public/cpp/local_search_service_proxy.h"
+#include "chromeos/ash/components/local_search_service/public/cpp/local_search_service_proxy.h"
 
 namespace ash {
 namespace help_app {
@@ -20,20 +20,20 @@ std::vector<local_search_service::Data> ConceptVectorToDataVector(
     const std::vector<mojom::SearchConceptPtr>& search_tags) {
   std::vector<local_search_service::Data> data_list;
 
-  for (const auto& concept : search_tags) {
+  for (const auto& search_concept : search_tags) {
     // Create a list of Content objects, which use the stringified version of
     // the tag list index as identifiers.
     std::vector<local_search_service::Content> content_list;
     int tag_num = 0;
-    for (const std::u16string& tag : concept->tags) {
+    for (const std::u16string& tag : search_concept->tags) {
       content_list.emplace_back(
           /*id=*/base::NumberToString(tag_num),
           /*content=*/tag);
       ++tag_num;
     }
 
-    data_list.emplace_back(concept->id, std::move(content_list),
-                           concept->tag_locale);
+    data_list.emplace_back(search_concept->id, std::move(content_list),
+                           search_concept->tag_locale);
   }
   return data_list;
 }
@@ -64,11 +64,11 @@ void SearchTagRegistry::RemoveObserver(Observer* observer) {
 void SearchTagRegistry::Update(
     const std::vector<mojom::SearchConceptPtr>& search_tags,
     base::OnceCallback<void()> callback) {
-  for (const auto& concept : search_tags) {
+  for (const auto& search_concept : search_tags) {
     // This replaces the value if the key already exists.
-    result_id_to_metadata_list_map_[concept->id] =
-        SearchMetadata(concept->title, concept->main_category,
-                       concept->url_path_with_parameters);
+    result_id_to_metadata_list_map_[search_concept->id] =
+        SearchMetadata(search_concept->title, search_concept->main_category,
+                       search_concept->url_path_with_parameters);
   }
 
   index_remote_->AddOrUpdate(

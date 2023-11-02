@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/weak_ptr.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/frame_deadline.h"
@@ -15,9 +16,12 @@
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/service/display/aggregated_frame.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/skia/include/core/SkBlendMode.h"
 #include "ui/latency/latency_info.h"
 
 namespace viz {
+
+class CopyOutputRequest;
 
 // Note that QuadParam structs should not have a user defined constructor to
 // allow the use designated initializers.
@@ -27,8 +31,9 @@ struct SolidColorQuadParms {
 };
 
 struct SurfaceQuadParams {
-  SkColor default_background_color = SK_ColorWHITE;
+  SkColor4f default_background_color = SkColors::kWhite;
   bool stretch_content_to_fill_bounds = false;
+  bool is_reflection = false;
   bool allow_merge = true;
 };
 
@@ -41,15 +46,15 @@ struct RenderPassQuadParams {
 struct TextureQuadParams {
   bool needs_blending = false;
   bool premultiplied_alpha = false;
-  SkColor background_color = SK_ColorGREEN;
-  float vertex_opacity[4] = {0.f, 0.f, 1.f, 1.f};
+  SkColor4f background_color = SkColors::kGreen;
+  float vertex_opacity[4] = {1.0f, 1.0f, 1.0f, 1.0f};
   bool flipped = false;
   bool nearest_neighbor = false;
   bool secure_output_only = false;
 };
 
 // Helper to build a CompositorRenderPass and add quads to it. By default the
-// CompositoRenderPass will have full damage. Functionality is broken down into
+// CompositorRenderPass will have full damage. Functionality is broken down into
 // methods to modify render pass attributes, methods to add new quads and
 // methods to modify SharedQuadState for the last quad added.
 class RenderPassBuilder {
@@ -57,9 +62,18 @@ class RenderPassBuilder {
   RenderPassBuilder(CompositorRenderPassId id, const gfx::Size& output_size);
   RenderPassBuilder(CompositorRenderPassId id, const gfx::Rect& output_rect);
 
+  // Constructors for use with CompositorFrameBuilder when the specific render
+  // pass id doesn't matter. CompositorFrameBuilder will auto assign valid ids.
+  explicit RenderPassBuilder(const gfx::Size& output_size);
+  explicit RenderPassBuilder(const gfx::Rect& output_rect);
+
   RenderPassBuilder(const RenderPassBuilder& other) = delete;
   RenderPassBuilder& operator=(const RenderPassBuilder& other) = delete;
   ~RenderPassBuilder();
+
+  // Checks basic validity, like the render pass hasn't already been built and
+  // there is at least one quad.
+  bool IsValid() const;
 
   // Returns the CompositorRenderPass and leaves |this| in an invalid state.
   std::unique_ptr<CompositorRenderPass> Build();
@@ -71,17 +85,27 @@ class RenderPassBuilder {
   RenderPassBuilder& AddFilter(const cc::FilterOperation& filter);
   RenderPassBuilder& AddBackdropFilter(const cc::FilterOperation& filter);
 
+  // Creates a new stub CopyOutputRequest and adds it to the render pass. If
+  // |request_out| is not null the pointer will set to the newly created
+  // request.
+  //
+  // Note that |request_out| is a WeakPtr because the CopyOutputRequest lifetime
+  // is difficult to reason about as ownership can be transferred in many
+  // places.
+  RenderPassBuilder& AddStubCopyOutputRequest(
+      base::WeakPtr<CopyOutputRequest>* request_out = nullptr);
+
   // Methods to add DrawQuads start here. The methods are structured so that the
   // most important attributes on the quad are function parameters. Less
   // important attributes are stored in an optional struct parameter. The
   // optional params struct is POD so that designated initializers can be used
   // to construct a new object with specified parameters overridden.
   RenderPassBuilder& AddSolidColorQuad(const gfx::Rect& rect,
-                                       SkColor color,
+                                       SkColor4f color,
                                        SolidColorQuadParms params = {});
   RenderPassBuilder& AddSolidColorQuad(const gfx::Rect& rect,
                                        const gfx::Rect& visible_rect,
-                                       SkColor color,
+                                       SkColor4f color,
                                        SolidColorQuadParms params = {});
 
   RenderPassBuilder& AddSurfaceQuad(const gfx::Rect& rect,
@@ -126,6 +150,18 @@ class RenderPassBuilder {
   // Sets SharedQuadState::clip_rect for the last quad.
   RenderPassBuilder& SetQuadClipRect(absl::optional<gfx::Rect> clip_rect);
 
+  // Sets the damage_rect for the last quad. This is only valid to call if the
+  // last quad has a `damage_rect` member.
+  RenderPassBuilder& SetQuadDamageRect(const gfx::Rect& damage_rect);
+
+  // Sets SharedQuadState::blend_mode for the last quad.
+  RenderPassBuilder& SetBlendMode(SkBlendMode blend_mode);
+
+  // Sets SharedQuadState::mask_filter_info and
+  // SharedQuadState::is_fast_rounded_corner for the last quad.
+  RenderPassBuilder& SetMaskFilter(const gfx::MaskFilterInfo& mask_filter_info,
+                                   bool is_fast_rounded_corner);
+
  private:
   // Appends and returns a new SharedQuadState for quad.
   SharedQuadState* AppendDefaultSharedQuadState(const gfx::Rect rect,
@@ -156,8 +192,16 @@ class CompositorFrameBuilder {
   // Adds a render pass with specified |output_rect| and |damage_rect|.
   CompositorFrameBuilder& AddRenderPass(const gfx::Rect& output_rect,
                                         const gfx::Rect& damage_rect);
+
+  // Add a new render pass. If the render pass has an invalid id then a new id
+  // will be assigned.
+  //
+  // This also populates CompositorFrameMetadata::referenced_surfaces if the
+  // render pass contains any SurfaceDrawQuads.
   CompositorFrameBuilder& AddRenderPass(
       std::unique_ptr<CompositorRenderPass> render_pass);
+  CompositorFrameBuilder& AddRenderPass(RenderPassBuilder& builder);
+
   // Sets list of render passes. The list of render passes must be empty when
   // this is called.
   CompositorFrameBuilder& SetRenderPassList(
@@ -203,6 +247,10 @@ CompositorRenderPassList CopyRenderPasses(
 // Creates a CompositorFrame that has a render pass with 20x20 output_rect and
 // empty damage_rect. This CompositorFrame is valid and can be sent over IPC.
 CompositorFrame MakeDefaultCompositorFrame();
+
+// Creates a CompositorFrame with provided render pass.
+CompositorFrame MakeCompositorFrame(
+    std::unique_ptr<CompositorRenderPass> render_pass);
 
 // Creates a CompositorFrame with provided list of render passes.
 CompositorFrame MakeCompositorFrame(CompositorRenderPassList render_pass_list);

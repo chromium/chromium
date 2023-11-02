@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,7 @@ class OSExchangeData;
 class COMPONENT_EXPORT(WM) WmDropHandler {
  public:
   // Notifies that drag has entered the window.
-  // |point| is in the coordinate space of the PlatformWindow.
+  // |point| is in the coordinate space of the PlatformWindow in DIP.
   // |operation| contains bitmask of ui::DragDropTypes suggested by the source.
   // |modifiers| contains bitmask of ui::EventFlags that accompany the event.
   virtual void OnDragEnter(const gfx::PointF& point,
@@ -29,7 +29,7 @@ class COMPONENT_EXPORT(WM) WmDropHandler {
                            int modifiers) = 0;
 
   // Notifies that drag location has changed.
-  // |point| is in the coordinate space of the PlatformWindow.
+  // |point| is in the coordinate space of the PlatformWindow in DIP.
   // |operation| contains bitmask of ui::DragDropTypes suggested by the source.
   // |modifiers| contains bitmask of ui::EventFlags that accompany the event.
   // Returns one of ui::DragDropTypes values selected by the client.

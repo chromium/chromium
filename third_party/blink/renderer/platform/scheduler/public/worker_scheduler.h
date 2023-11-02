@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,8 @@
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
+
+#include "base/record_replay.h"
 
 namespace blink {
 namespace scheduler {
@@ -55,7 +57,7 @@ class PLATFORM_EXPORT WorkerScheduler : public FrameOrWorkerScheduler {
       SchedulingLifecycleState lifecycle_state) = 0;
 
   // Pauses the scheduler. The scheduler is paused as long as PauseHandle lives.
-  virtual std::unique_ptr<PauseHandle> Pause() WARN_UNUSED_RESULT = 0;
+  [[nodiscard]] virtual std::unique_ptr<PauseHandle> Pause() = 0;
 
   // Initializes this on a worker thread. This must not be called twice or more.
   // `delegate` must outlive this.

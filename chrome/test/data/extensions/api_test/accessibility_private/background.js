@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -104,6 +104,136 @@ var availableTests = [
     chrome.test.notifyPass();
   },
 
+  function testUpdateDictationBubble() {
+    const update = chrome.accessibilityPrivate.updateDictationBubble;
+    const IconType = chrome.accessibilityPrivate.DictationBubbleIconType;
+
+    // The typical flow for this API is as follows:
+    // 1. Show the UI with the standby icon.
+    // 2. Update the UI with some speech results and hide all icons.
+    // 3. If the speech results match a Dictation macro (and the macro ran
+    // successfully), then show the macro succeeded icon along with the
+    // recognized text.
+    // 4. Reset the UI and show the standby icon.
+    // 5. Hide the UI.
+    update({visible: true, icon: IconType.STANDBY});
+    chrome.test.sendMessage('Standby', (proceed) => {
+      update({visible: true, icon: IconType.HIDDEN, text: 'Hello'});
+      chrome.test.sendMessage('Show text', (proceed) => {
+        update({visible: true, icon: IconType.MACRO_SUCCESS, text: 'Hello'});
+        chrome.test.sendMessage('Show macro success', (proceed) => {
+          update({visible: true, icon: IconType.STANDBY});
+          chrome.test.sendMessage('Reset', (proceed) => {
+            update({visible: false, icon: IconType.HIDDEN});
+            chrome.test.sendMessage('Hide');
+            chrome.test.succeed();
+          });
+        });
+      });
+    });
+
+    chrome.test.notifyPass();
+  },
+
+  function testUpdateDictationBubbleWithHints() {
+    const update = chrome.accessibilityPrivate.updateDictationBubble;
+    const IconType = chrome.accessibilityPrivate.DictationBubbleIconType;
+    const HintType = chrome.accessibilityPrivate.DictationBubbleHintType;
+    update({
+      visible: true,
+      icon: IconType.STANDBY,
+      hints: [HintType.TRY_SAYING, HintType.TYPE, HintType.HELP]
+    });
+    chrome.test.sendMessage('Some hints', (proceed) => {
+      update({visible: true, icon: IconType.STANDBY});
+      chrome.test.sendMessage('No hints');
+      chrome.test.succeed();
+    });
+
+    chrome.test.notifyPass();
+  },
+
+  function testInstallPumpkinForDictationFail() {
+    const error = `Couldn't retrieve Pumpkin data.`;
+    chrome.accessibilityPrivate.installPumpkinForDictation((data) => {
+      chrome.test.assertLastError(error);
+      chrome.test.succeed();
+    });
+  },
+
+  function testInstallPumpkinForDictationSuccess() {
+    chrome.accessibilityPrivate.installPumpkinForDictation((data) => {
+      chrome.test.assertTrue(Boolean(data));
+      chrome.test.assertTrue(Object.keys(data).length === 13);
+      for (const [key, value] of Object.entries(data)) {
+        const fileContents = new TextDecoder().decode(value);
+        switch (key) {
+          case 'js_pumpkin_tagger_bin_js':
+            chrome.test.assertEq('Fake js pumpkin tagger', fileContents);
+            break;
+          case 'tagger_wasm_main_js':
+            chrome.test.assertEq('Fake tagger wasm js', fileContents);
+            break;
+          case 'tagger_wasm_main_wasm':
+            chrome.test.assertEq('Fake tagger wasm wasm', fileContents);
+            break;
+          case 'en_us_action_config_binarypb':
+            chrome.test.assertEq('Fake en_us action config', fileContents);
+            break;
+          case 'en_us_pumpkin_config_binarypb':
+            chrome.test.assertEq('Fake en_us pumpkin config', fileContents);
+            break;
+          case 'fr_fr_action_config_binarypb':
+            chrome.test.assertEq('Fake fr_fr action config', fileContents);
+            break;
+          case 'fr_fr_pumpkin_config_binarypb':
+            chrome.test.assertEq('Fake fr_fr pumpkin config', fileContents);
+            break;
+          case 'it_it_action_config_binarypb':
+            chrome.test.assertEq('Fake it_it action config', fileContents);
+            break;
+          case 'it_it_pumpkin_config_binarypb':
+            chrome.test.assertEq('Fake it_it pumpkin config', fileContents);
+            break;
+          case 'de_de_action_config_binarypb':
+            chrome.test.assertEq('Fake de_de action config', fileContents);
+            break;
+          case 'de_de_pumpkin_config_binarypb':
+            chrome.test.assertEq('Fake de_de pumpkin config', fileContents);
+            break;
+          case 'es_es_action_config_binarypb':
+            chrome.test.assertEq('Fake es_es action config', fileContents);
+            break;
+          case 'es_es_pumpkin_config_binarypb':
+            chrome.test.assertEq('Fake es_es pumpkin config', fileContents);
+            break;
+          default:
+            chrome.test.fail();
+        }
+      }
+      chrome.test.succeed();
+    });
+  },
+
+  function testGetDlcContentsDlcNotOnDevice() {
+    const ttsDlc = chrome.accessibilityPrivate.DlcType.TTS_ES_US;
+    const error = 'Error: DLC file does not exist on-device: ' +
+        '/run/imageloader/tts-es-us/package/root/voice.zvoice';
+    chrome.accessibilityPrivate.getDlcContents(ttsDlc, (contents) => {
+      chrome.test.assertLastError(error);
+      chrome.test.succeed();
+    });
+  },
+
+  function testGetDlcContentsSuccess() {
+    const ttsDlc = chrome.accessibilityPrivate.DlcType.TTS_ES_US;
+    chrome.accessibilityPrivate.getDlcContents(ttsDlc, (contents) => {
+      chrome.test.assertNoLastError();
+      chrome.test.assertEq(
+          'Fake DLC file content', new TextDecoder().decode(contents));
+      chrome.test.succeed();
+    });
+  }
 ];
 
 chrome.test.getConfig(function(config) {

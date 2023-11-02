@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -142,6 +142,25 @@ void InputDeviceFactoryEvdevProxy::StopVibration(int id) {
   task_runner_->PostTask(FROM_HERE,
                          base::BindOnce(&InputDeviceFactoryEvdev::StopVibration,
                                         input_device_factory_, id));
+}
+
+void InputDeviceFactoryEvdevProxy::PlayHapticTouchpadEffect(
+    ui::HapticTouchpadEffect effect,
+    ui::HapticTouchpadEffectStrength strength) {
+  task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&InputDeviceFactoryEvdev::PlayHapticTouchpadEffect,
+                     input_device_factory_, effect, strength));
+}
+
+void InputDeviceFactoryEvdevProxy::SetHapticTouchpadEffectForNextButtonRelease(
+    ui::HapticTouchpadEffect effect,
+    ui::HapticTouchpadEffectStrength strength) {
+  task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &InputDeviceFactoryEvdev::SetHapticTouchpadEffectForNextButtonRelease,
+          input_device_factory_, effect, strength));
 }
 
 }  // namespace ui

@@ -1,11 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/system/bluetooth/bluetooth_device_list_item_battery_view.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_utils.h"
@@ -14,6 +14,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_provider.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -35,13 +36,11 @@ constexpr int kActualBatteryIconWidth = 9;
 
 // The padding between the battery icon and the sub-label, and the sub-label and
 // the end of the container view.
-constexpr int kSpacingBetweenIconAndLabel = 4;
+constexpr int kSpacingBetweenIconAndLabel = 6;
 
 }  // namespace
 
 BluetoothDeviceListItemBatteryView::BluetoothDeviceListItemBatteryView() {
-  DCHECK(ash::features::IsBluetoothRevampEnabled());
-
   auto box_layout = std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal);
   box_layout->set_cross_axis_alignment(
@@ -53,10 +52,8 @@ BluetoothDeviceListItemBatteryView::~BluetoothDeviceListItemBatteryView() =
     default;
 
 void BluetoothDeviceListItemBatteryView::UpdateBatteryInfo(
-    const chromeos::bluetooth_config::mojom::BatteryPropertiesPtr&
-        battery_properties) {
-  battery_properties_ = mojo::Clone(battery_properties);
-
+    const uint8_t new_battery_percentage,
+    const int message_id) {
   if (!icon_) {
     icon_ = AddChildView(std::make_unique<views::ImageView>());
 
@@ -66,23 +63,20 @@ void BluetoothDeviceListItemBatteryView::UpdateBatteryInfo(
     icon_->SetPreferredSize(gfx::Size(/*width=*/kActualBatteryIconWidth,
                                       /*height=*/kUnifiedTraySubIconSize));
   }
+
   if (!label_) {
     label_ = AddChildView(TrayPopupUtils::CreateUnfocusableLabel());
-    label_->SetBorder(views::CreateEmptyBorder(
-        gfx::Insets(/*top=*/0, /*left=*/kSpacingBetweenIconAndLabel,
-                    /*bottom=*/0, /*right=*/kSpacingBetweenIconAndLabel)));
+    label_->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
+        0, kSpacingBetweenIconAndLabel, 0, kSpacingBetweenIconAndLabel)));
   }
 
-  const uint8_t new_battery_percentage =
-      battery_properties_->battery_percentage;
   const AshColorProvider::ContentLayerType content_layer_type =
       new_battery_percentage >= kPositiveBatteryPercentageCutoff
           ? AshColorProvider::ContentLayerType::kTextColorSecondary
           : AshColorProvider::ContentLayerType::kTextColorAlert;
 
   label_->SetText(l10n_util::GetStringFUTF16(
-      IDS_ASH_STATUS_TRAY_BLUETOOTH_DEVICE_BATTERY_PERCENTAGE_ONLY_LABEL,
-      base::NumberToString16(new_battery_percentage)));
+      message_id, base::NumberToString16(new_battery_percentage)));
   label_->SetAutoColorReadabilityEnabled(false);
   label_->SetEnabledColor(
       AshColorProvider::Get()->GetContentLayerColor(content_layer_type));
@@ -100,7 +94,7 @@ void BluetoothDeviceListItemBatteryView::UpdateBatteryInfo(
 
   icon_->SetImage(PowerStatus::GetBatteryImage(
       battery_image_info, kUnifiedTraySubIconSize,
-      AshColorProvider::Get()->GetBackgroundColor(),
+      GetColorProvider()->GetColor(kColorAshShieldAndBaseOpaque),
       AshColorProvider::Get()->GetContentLayerColor(content_layer_type)));
 }
 

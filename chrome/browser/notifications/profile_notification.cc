@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,16 @@
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/profiles/profile_keep_alive_types.h"
-#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
-#include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/account_id/account_id.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
+#endif
 
 // static
 std::string ProfileNotification::GetProfileNotificationId(
@@ -62,7 +66,10 @@ ProfileNotification::ProfileNotification(
   // the process or delete the Profile.
   keep_alive_ = std::make_unique<ScopedKeepAlive>(
       KeepAliveOrigin::NOTIFICATION, KeepAliveRestartOption::DISABLED);
-  if (profile_) {
+  if (profile_ && !profile_->IsOffTheRecord()) {
+    // No need to create a keepalive for Incognito profiles. Incognito
+    // notifications are cleaned up in
+    // NotificationUIManagerImpl::OnProfileWillBeDestroyed().
     profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
         profile, ProfileKeepAliveOrigin::kNotification);
   }

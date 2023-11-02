@@ -1,8 +1,9 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
+import("//components/signin/features.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
@@ -11,7 +12,6 @@ assert(!is_chromeos_ash)
 
 # Test files that contain // <if expr> and therefore require preprocessing.
 preprocessed_files = [
-  "local_profile_customization_focus_test.ts",
   "profile_card_menu_test.ts",
   "profile_picker_app_test.ts",
   "profile_picker_main_view_test.ts",
@@ -22,19 +22,25 @@ preprocessed_files = [
 # Test files that do not require preprocessing. If adding // <if expr> to any
 # file below, move it to the list above.
 non_preprocessed_files = [
-  "dice_web_signin_intercept_test.ts",
   "enterprise_profile_welcome_test.ts",
+  "local_profile_customization_focus_test.ts",
   "local_profile_customization_test.ts",
   "profile_customization_test.ts",
   "profile_switch_test.ts",
   "profile_type_choice_test.ts",
-  "signin_reauth_test.ts",
-  "test_dice_web_signin_intercept_browser_proxy.ts",
   "test_enterprise_profile_welcome_browser_proxy.ts",
   "test_profile_customization_browser_proxy.ts",
-  "test_signin_reauth_browser_proxy.ts",
   "test_sync_confirmation_browser_proxy.ts",
 ]
+
+if (enable_dice_support) {
+  non_preprocessed_files += [
+    "dice_web_signin_intercept_test.ts",
+    "signin_reauth_test.ts",
+    "test_dice_web_signin_intercept_browser_proxy.ts",
+    "test_signin_reauth_browser_proxy.ts",
+  ]
+}
 
 if (is_chromeos_lacros) {
   non_preprocessed_files += [ "account_selection_lacros_test.ts" ]
@@ -51,14 +57,6 @@ preprocess_if_expr("preprocess") {
 copy("copy") {
   sources = non_preprocessed_files
   outputs = [ "$preprocessed_folder/{{source_target_relative}}" ]
-}
-
-generate_grd("build_grdp") {
-  grd_prefix = "webui_signin"
-  out_grd = "$target_gen_dir/resources.grdp"
-  deps = [ ":build_ts" ]
-  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
-  resource_path_prefix = "signin"
 }
 
 ts_library("build_ts") {
@@ -90,12 +88,21 @@ ts_library("build_ts") {
   ]
   in_files = preprocessed_files + non_preprocessed_files
   deps = [
+    "..:build_ts",
     "//chrome/browser/resources/signin:build_ts",
     "//chrome/browser/resources/signin/profile_picker:build_ts",
   ]
   extra_deps = [
     ":copy",
     ":preprocess",
-    "..:generate_definitions",
   ]
+}
+
+generate_grd("build_grdp") {
+  grd_prefix = "webui_signin"
+  out_grd = "$target_gen_dir/resources.grdp"
+  deps = [ ":build_ts" ]
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+  resource_path_prefix = "signin"
 }

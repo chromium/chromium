@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,8 +41,8 @@ class ASH_PUBLIC_EXPORT AccessibilityControllerClient {
 
   // Plays an earcon. Earcons are brief and distinctive sounds that indicate
   // that their mapped event has occurred. The |sound_key| enums can be found in
-  // ash/components/audio/sounds.h. This method exists because the browser owns
-  // all media playback.
+  // chromeos/ash/components/audio/sounds.h. This method exists because the
+  // browser owns all media playback.
   virtual void PlayEarcon(Sound sound_key) = 0;
 
   // Initiates play of shutdown sound and returns sound duration. This method

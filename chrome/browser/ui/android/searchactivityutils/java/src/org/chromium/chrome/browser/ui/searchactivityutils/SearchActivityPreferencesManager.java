@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,8 +34,8 @@ import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.LoadListener;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
-import org.chromium.ui.base.AndroidPermissionDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.permissions.AndroidPermissionDelegate;
 import org.chromium.url.GURL;
 
 import java.util.Arrays;
@@ -48,7 +48,10 @@ public class SearchActivityPreferencesManager implements LoadListener, TemplateU
     public static final class SearchActivityPreferences {
         /** Name of the Default Search Engine. */
         public final @Nullable String searchEngineName;
-        /** URL of the Default Search Engine. */
+        /**
+         * URL of the Default Search Engine.
+         * TODO(https://crbug.com/1370563): migrate this to GURL.
+         */
         public final @Nullable String searchEngineUrl;
         /** Whether Voice Search functionality is available. */
         public final boolean voiceSearchAvailable;

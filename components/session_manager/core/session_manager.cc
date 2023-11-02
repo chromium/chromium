@@ -1,11 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/session_manager/core/session_manager.h"
 
-#include <algorithm>
-
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "build/build_config.h"
 #include "components/session_manager/core/session_manager_observer.h"
@@ -76,10 +75,7 @@ void SessionManager::SessionStarted() {
 
 bool SessionManager::HasSessionForAccountId(
     const AccountId& user_account_id) const {
-  return std::find_if(sessions_.begin(), sessions_.end(),
-                      [user_account_id](const Session& session) {
-                        return session.user_account_id == user_account_id;
-                      }) != sessions_.end();
+  return base::Contains(sessions_, user_account_id, &Session::user_account_id);
 }
 
 bool SessionManager::IsInSecondaryLoginScreen() const {
@@ -116,6 +112,12 @@ void SessionManager::NotifyLoginOrLockScreenVisible() {
   login_or_lock_screen_shown_for_test_ = true;
   for (auto& observer : observers_)
     observer.OnLoginOrLockScreenVisible();
+}
+
+void SessionManager::NotifyUnlockAttempt(const bool success,
+                                         const UnlockType unlock_type) {
+  for (auto& observer : observers_)
+    observer.OnUnlockScreenAttempt(success, unlock_type);
 }
 
 void SessionManager::NotifyUserLoggedIn(const AccountId& user_account_id,

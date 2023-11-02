@@ -1,15 +1,12 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
-#include "v4l2_video_decoder_delegate_vp8_legacy.h"
-
-#include <type_traits>
 
 #include <linux/media/vp8-ctrls-legacy.h>
 #include <linux/videodev2.h>
 
-#include "base/cxx17_backports.h"
+#include <type_traits>
+
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/gpu/macros.h"
@@ -18,6 +15,7 @@
 #include "media/gpu/v4l2/v4l2_device.h"
 #include "media/gpu/vp8_picture.h"
 #include "media/parsers/vp8_parser.h"
+#include "v4l2_video_decoder_delegate_vp8_legacy.h"
 
 namespace media {
 namespace {
@@ -176,7 +174,7 @@ bool V4L2VideoDecoderDelegateVP8Legacy::SubmitDecode(
                     std::extent<decltype(frame_hdr->dct_partition_sizes)>(),
                 "DCT partition size arrays must have equal number of elements");
   for (size_t i = 0; i < frame_hdr->num_of_dct_partitions &&
-                     i < base::size(v4l2_frame_hdr.dct_part_sizes);
+                     i < std::size(v4l2_frame_hdr.dct_part_sizes);
        ++i)
     v4l2_frame_hdr.dct_part_sizes[i] = frame_hdr->dct_partition_sizes[i];
 
@@ -245,10 +243,9 @@ bool V4L2VideoDecoderDelegateVP8Legacy::SubmitDecode(
 
 bool V4L2VideoDecoderDelegateVP8Legacy::OutputPicture(
     scoped_refptr<VP8Picture> pic) {
-  // TODO(crbug.com/647725): Insert correct color space.
   surface_handler_->SurfaceReady(VP8PictureToV4L2DecodeSurface(pic.get()),
                                  pic->bitstream_id(), pic->visible_rect(),
-                                 VideoColorSpace());
+                                 pic->get_colorspace());
   return true;
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,6 +44,7 @@ class HEADLESS_EXPORT HeadlessModePolicy {
   static bool IsHeadlessDisabled(const PrefService* pref_service);
 };
 
+#if defined(HEADLESS_MODE_POLICY_SUPPORTED)
 // Handles the HeadlessMode policy. Controls the managed values of the
 // |kHeadlessMode| pref.
 class HeadlessModePolicyHandler : public IntRangePolicyHandler {
@@ -55,6 +56,7 @@ class HeadlessModePolicyHandler : public IntRangePolicyHandler {
   HeadlessModePolicyHandler& operator=(const HeadlessModePolicyHandler&) =
       delete;
 };
+#endif
 
 }  // namespace policy
 

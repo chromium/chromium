@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "base/strings/escape.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
@@ -18,7 +19,6 @@
 #include "components/safe_browsing/core/browser/db/safebrowsing.pb.h"
 #include "components/safe_browsing/core/browser/db/util.h"
 #include "components/safe_browsing/core/browser/db/v4_test_util.h"
-#include "net/base/escape.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -230,6 +230,56 @@ TEST_F(V4GetHashProtocolManagerTest, TestGetHashErrorHandlingResponseCode) {
   EXPECT_EQ(1ul, pm->gethash_error_count_);
   EXPECT_EQ(1ul, pm->gethash_back_off_mult_);
   EXPECT_TRUE(callback_called());
+}
+
+TEST_F(V4GetHashProtocolManagerTest, TestBackoffErrorHistogramCount) {
+  std::unique_ptr<V4GetHashProtocolManager> pm(CreateProtocolManager());
+  base::HistogramTester histogram_tester;
+
+  FullHashToStoreAndHashPrefixesMap matched_locally;
+  matched_locally[FullHash("AHashFull")].emplace_back(GetUrlSocEngId(),
+                                                       HashPrefix("AHash"));
+
+  std::vector<FullHashInfo> expected_results;
+  pm->GetFullHashes(
+      matched_locally, {},
+      base::BindRepeating(&V4GetHashProtocolManagerTest::ValidateGetV4HashResults,
+                     base::Unretained(this), expected_results));
+
+  FullHashToStoreAndHashPrefixesMap matched_locally2;
+  matched_locally2[FullHash("AHash2Full")].emplace_back(GetUrlSocEngId(),
+                                                        HashPrefix("AHash2"));
+
+  pm->GetFullHashes(matched_locally2, {},
+                    base::BindRepeating(
+                        &V4GetHashProtocolManagerTest::ValidateGetV4HashResults,
+                        base::Unretained(this), expected_results));
+
+  // Failed request status should result in error.
+  SetupFullHashFetcherToReturnResponse(pm.get(), FullHash("AHashFull"),
+                                       net::ERR_CONNECTION_RESET, 200,
+                                       GetStockV4HashResponse());
+
+  EXPECT_EQ(1ul, pm->gethash_error_count_);
+  EXPECT_EQ(1ul, pm->gethash_back_off_mult_);
+
+  EXPECT_TRUE(callback_called());
+
+  reset_callback_called();
+
+  pm->GetFullHashes(matched_locally2, {},
+                    base::BindRepeating(
+                        &V4GetHashProtocolManagerTest::ValidateGetV4HashResults,
+                        base::Unretained(this), expected_results));
+
+  EXPECT_EQ(1ul, pm->backoff_error_count_);
+
+  SetupFullHashFetcherToReturnResponse(pm.get(), FullHash("AHash2Full"),
+                                       net::OK, 200, GetStockV4HashResponse());
+
+  histogram_tester.ExpectTotalCount(
+      "SafeBrowsing.V4GetHash.Result.BackoffErrorCount",
+      1);
 }
 
 TEST_F(V4GetHashProtocolManagerTest, TestGetHashErrorHandlingParallelRequests) {
@@ -672,7 +722,7 @@ TEST_F(V4GetHashProtocolManagerTest,
   m->set_threat_type(API_ABUSE);
   // TODO(crbug.com/1030487): This special case for Android will no longer be
   // needed once GetCurrentPlatformType() returns ANDROID_PLATFORM on Android.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   m->set_platform_type(ANDROID_PLATFORM);
 #else
   m->set_platform_type(GetCurrentPlatformType());

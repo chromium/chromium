@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,7 @@ var ErrorCodes = {
   'BAD_REQUEST': 2,
   'CONFIGURATION_UNSUPPORTED': 3,
   'DEVICE_INELIGIBLE': 4,
-  'TIMEOUT': 5
+  'TIMEOUT': 5,
 };
 
 /**

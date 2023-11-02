@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,8 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/callback_forward.h"
-#include "chrome/browser/ui/passwords/settings/password_manager_presenter.h"
-#include "components/password_manager/core/browser/password_form.h"
+#include "base/memory/raw_ptr.h"
+#include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/browser/ui/insecure_credentials_manager.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 
@@ -24,11 +24,10 @@ class CredentialEditBridge {
   // null, since that means the edit UI is already open and it should not be
   // shared.
   static std::unique_ptr<CredentialEditBridge> MaybeCreate(
-      const password_manager::PasswordForm credential,
+      const password_manager::CredentialUIEntry credential,
       IsInsecureCredential is_insecure_credential,
       std::vector<std::u16string> existing_usernames,
       password_manager::SavedPasswordsPresenter* saved_passwords_presenter,
-      PasswordManagerPresenter* password_manager_presenter,
       base::OnceClosure dismissal_callback,
       const base::android::JavaRef<jobject>& context,
       const base::android::JavaRef<jobject>& settings_launcher);
@@ -56,11 +55,10 @@ class CredentialEditBridge {
 
  private:
   CredentialEditBridge(
-      const password_manager::PasswordForm credential,
+      const password_manager::CredentialUIEntry credential,
       IsInsecureCredential is_insecure_credential,
       std::vector<std::u16string> existing_usernames,
       password_manager::SavedPasswordsPresenter* saved_passwords_presenter,
-      PasswordManagerPresenter* password_manager_presenter,
       base::OnceClosure dismissal_callback,
       const base::android::JavaRef<jobject>& context,
       const base::android::JavaRef<jobject>& settings_launcher,
@@ -76,7 +74,7 @@ class CredentialEditBridge {
   std::u16string GetDisplayFederationOrigin();
 
   // The credential to be edited.
-  const password_manager::PasswordForm credential_;
+  const password_manager::CredentialUIEntry credential_;
 
   // Whether the credential being edited is an insecure credential. Used to
   // customize the deletion confirmation dialog string.
@@ -87,14 +85,8 @@ class CredentialEditBridge {
 
   // The backend to route the edit event to. Should be owned by the the owner of
   // the bridge.
-  password_manager::SavedPasswordsPresenter* saved_passwords_presenter_ =
-      nullptr;
-
-  // The backend to ask for blocked and federated credentials removal.
-  // Should be owned by the the owner of the bridge.
-  // TODO(crbug.com/1188678): Replace this once `SavedPasswordsPresnter`
-  // supports blocked and federated credentials.
-  PasswordManagerPresenter* password_manager_presenter_ = nullptr;
+  raw_ptr<password_manager::SavedPasswordsPresenter>
+      saved_passwords_presenter_ = nullptr;
 
   // Callback invoked when the UI is being dismissed from the Java side.
   base::OnceClosure dismissal_callback_;

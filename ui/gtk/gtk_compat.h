@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,6 @@
 #include <gio/gio.h>
 #include <gtk/gtk.h>
 #include <gtk/gtkunixprint.h>
-
-#include <string>
-#include <vector>
 
 #include "base/files/file_path.h"
 #include "base/version.h"
@@ -50,7 +47,7 @@ bool GtkCheckVersion(uint32_t major, uint32_t minor = 0, uint32_t micro = 0);
 // The below functions replace GTK functions whose interface has
 // changed across versions, but whose (symbol) names have not.
 
-void GtkInit(const std::vector<std::string>& args);
+[[nodiscard]] bool GtkInitCheck(int* argc, char** argv);
 
 gfx::Insets GtkStyleContextGetPadding(GtkStyleContext* context);
 
@@ -87,10 +84,12 @@ void GtkCssProviderLoadFromData(GtkCssProvider* css_provider,
 
 ScopedGObject<GListModel> Gtk4FileChooserGetFiles(GtkFileChooser* dialog);
 
-ScopedGObject<GtkIconInfo> Gtk3IconThemeLookupByGicon(GtkIconTheme* theme,
-                                                      GIcon* icon,
-                                                      int size,
-                                                      GtkIconLookupFlags flags);
+ScopedGObject<GtkIconInfo> Gtk3IconThemeLookupByGiconForScale(
+    GtkIconTheme* theme,
+    GIcon* icon,
+    int size,
+    int scale,
+    GtkIconLookupFlags flags);
 
 ScopedGObject<GtkIconPaintable> Gtk4IconThemeLookupByGicon(
     GtkIconTheme* theme,

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,21 +24,20 @@ namespace prefs {
 // Do not get/set the value of this pref directly. Use provided getter/setter.
 extern const char kAutofillCreditCardEnabled[];
 extern const char kAutofillCreditCardFidoAuthEnabled[];
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 extern const char kAutofillCreditCardFidoAuthOfferCheckboxState[];
 #endif
 extern const char kAutofillCreditCardSigninPromoImpressionCount[];
-// Please use kAutofillCreditCardEnabled and kAutofillProfileEnabled instead.
+// Please use kAutofillCreditCardEnabled, kAutofillIBANEnabled and
+// kAutofillProfileEnabled instead.
 extern const char kAutofillEnabledDeprecated[];
-extern const char kAutofillJapanCityFieldMigratedDeprecated[];
+extern const char kAutofillIBANEnabled[];
 extern const char kAutofillLastVersionDeduped[];
-extern const char kAutofillLastVersionValidated[];
 extern const char kAutofillLastVersionDisusedAddressesDeleted[];
 extern const char kAutofillLastVersionDisusedCreditCardsDeleted[];
 extern const char kAutofillOrphanRowsRemoved[];
 // Do not get/set the value of this pref directly. Use provided getter/setter.
 extern const char kAutofillProfileEnabled[];
-extern const char kAutofillProfileValidity[];
 extern const char kAutofillSyncTransportOptIn[];
 extern const char kAutofillStatesDataDir[];
 extern const char kAutofillUploadEncodingSeed[];
@@ -70,6 +69,10 @@ bool IsAutofillCreditCardEnabled(const PrefService* prefs);
 
 void SetAutofillCreditCardEnabled(PrefService* prefs, bool enabled);
 
+bool IsAutofillIBANEnabled(const PrefService* prefs);
+
+void SetAutofillIBANEnabled(PrefService* prefs, bool enabled);
+
 bool IsAutofillManaged(const PrefService* prefs);
 
 bool IsAutofillProfileManaged(const PrefService* prefs);
@@ -83,8 +86,6 @@ void SetAutofillProfileEnabled(PrefService* prefs, bool enabled);
 bool IsPaymentsIntegrationEnabled(const PrefService* prefs);
 
 void SetPaymentsIntegrationEnabled(PrefService* prefs, bool enabled);
-
-std::string GetAllProfilesValidityMapsEncodedString(const PrefService* prefs);
 
 void SetUserOptedInWalletSyncTransport(PrefService* prefs,
                                        const CoreAccountId& account_id,

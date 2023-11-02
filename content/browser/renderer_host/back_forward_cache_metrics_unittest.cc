@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "content/browser/renderer_host/back_forward_cache_impl.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/test/navigation_simulator_impl.h"
 #include "content/test/test_render_frame_host.h"
@@ -13,6 +15,7 @@
 #include "content/test/test_web_contents.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 
 namespace content {
 
@@ -216,6 +219,51 @@ TEST_F(BackForwardCacheMetricsTest, DISABLED_TimeRecordedWhenRendererIsKilled) {
   // when the renderer is killed.
   EXPECT_THAT(histogram_tester.GetAllSamples(kTimeUntilProcessKilled),
               testing::ElementsAre(base::Bucket(0b10, 1)));
+}
+
+// Test that |GetDisallowedFeatures()| and |GetAllowedFeatures()| cover all the
+// blocklisted features.
+TEST_F(BackForwardCacheMetricsTest, AllFeaturesCovered) {
+  // Features that were removed from the enum must have their int value listed
+  // here because ::All() will still include them.
+  std::vector<uint64_t> removed_features{
+      /* WebSchedulerTrackedFeature::kPageShowEventListener =*/6,
+      /* WebSchedulerTrackedFeature::kPageHideEventListener =*/7,
+      /* WebSchedulerTrackedFeature::kBeforeUnloadEventListener =*/8,
+      /* WebSchedulerTrackedFeature::kUnloadEventListener =*/9,
+      /* WebSchedulerTrackedFeature::kFreezeEventListener =*/10,
+      /* WebSchedulerTrackedFeature::kResumeEventListener =*/11,
+      /* WebSchedulerTrackedFeature::kServiceWorkerControlledPage =*/16,
+      /* WebSchedulerTrackedFeature::kHasScriptableFramesInMultipleTabs =*/18,
+      /* WebSchedulerTrackedFeature::kRequestedGeolocationPermission  =*/19,
+      /* Never existed =*/25,
+      /* WebSchedulerTrackedFeature::kWebGL =*/29,
+      /* WebSchedulerTrackedFeature::kWebVR =*/30,
+      /* WebSchedulerTrackedFeature::kWakeLock =*/35,
+      /* WebSchedulerTrackedFeature::kWebFileSystem =*/39,
+      /* WebSchedulerTrackedFeature::kMediaSessionImplOnServiceCreated =*/56};
+
+  // Combine the result of |GetDisallowedFeatures()| and |GetAllowedFeatures()|.
+  std::vector<uint64_t> combined_features;
+  auto disallowed_features = BackForwardCacheImpl::GetDisallowedFeatures(
+      BackForwardCacheImpl::RequestedFeatures::kAll);
+  auto allowed_features = BackForwardCacheImpl::GetAllowedFeatures(
+      BackForwardCacheImpl::RequestedFeatures::kAll);
+  EXPECT_TRUE(Intersection(disallowed_features, allowed_features).Empty());
+
+  for (auto feature : Union(disallowed_features, allowed_features)) {
+    combined_features.push_back(static_cast<uint64_t>(feature));
+  }
+  // Add the removed features to the list.
+  combined_features.insert(combined_features.begin(), removed_features.begin(),
+                           removed_features.end());
+  // Make a list of all the WebSchedulerTrackedFeatures indices.
+  std::vector<uint64_t> all_features;
+  for (auto feature : blink::scheduler::WebSchedulerTrackedFeatures::All()) {
+    all_features.push_back(static_cast<uint64_t>(feature));
+  }
+  EXPECT_THAT(combined_features, testing::UnorderedElementsAreArray(
+                                     all_features.begin(), all_features.end()));
 }
 
 }  // namespace content

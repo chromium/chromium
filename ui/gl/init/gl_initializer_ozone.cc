@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_gl_api_implementation.h"
 #include "ui/gl/gl_surface.h"
+#include "ui/gl/gl_utils.h"
 
 #if defined(USE_OZONE)
 #include "ui/gl/init/gl_display_egl_util_ozone.h"
@@ -19,20 +20,20 @@
 namespace gl {
 namespace init {
 
-bool InitializeGLOneOffPlatform() {
+GLDisplay* InitializeGLOneOffPlatform(uint64_t system_device_id) {
   if (HasGLOzone()) {
     gl::GLDisplayEglUtil::SetInstance(gl::GLDisplayEglUtilOzone::GetInstance());
-    return GetGLOzone()->InitializeGLOneOffPlatform();
+    return GetGLOzone()->InitializeGLOneOffPlatform(system_device_id);
   }
 
   switch (GetGLImplementation()) {
     case kGLImplementationMockGL:
     case kGLImplementationStubGL:
-      return true;
+      return GetDisplayEGL(system_device_id);
     default:
       NOTREACHED();
   }
-  return false;
+  return nullptr;
 }
 
 bool InitializeStaticGLBindings(GLImplementationParts implementation) {
@@ -58,9 +59,9 @@ bool InitializeStaticGLBindings(GLImplementationParts implementation) {
   return false;
 }
 
-void ShutdownGLPlatform() {
+void ShutdownGLPlatform(GLDisplay* display) {
   if (HasGLOzone()) {
-    GetGLOzone()->ShutdownGL();
+    GetGLOzone()->ShutdownGL(display);
     return;
   }
 

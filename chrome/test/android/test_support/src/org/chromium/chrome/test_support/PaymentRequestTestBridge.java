@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,6 +19,7 @@ import org.chromium.components.payments.PaymentApp;
 import org.chromium.components.payments.PaymentRequestService;
 import org.chromium.components.payments.PaymentRequestService.NativeObserverForTest;
 import org.chromium.components.payments.PaymentUiServiceTestInterface;
+import org.chromium.components.payments.secure_payment_confirmation.SecurePaymentConfirmationAuthnController;
 import org.chromium.components.payments.secure_payment_confirmation.SecurePaymentConfirmationNoMatchingCredController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.payments.mojom.PaymentItem;
@@ -39,17 +40,9 @@ public class PaymentRequestTestBridge {
      */
     private static class ChromePaymentRequestDelegateForTest
             extends PaymentRequestDelegateForTest implements ChromePaymentRequestService.Delegate {
-        private final boolean mSkipUiForBasicCard;
-
         ChromePaymentRequestDelegateForTest(boolean isOffTheRecord, boolean isValidSsl,
-                boolean prefsCanMakePayment, String twaPackageName, boolean skipUiForBasicCard) {
+                boolean prefsCanMakePayment, String twaPackageName) {
             super(isOffTheRecord, isValidSsl, prefsCanMakePayment, twaPackageName);
-            mSkipUiForBasicCard = skipUiForBasicCard;
-        }
-
-        @Override
-        public boolean skipUiForBasicCard() {
-            return mSkipUiForBasicCard;
         }
 
         @Override
@@ -225,16 +218,10 @@ public class PaymentRequestTestBridge {
     private static final String TAG = "PaymentRequestTestBridge";
 
     @CalledByNative
-    private static void setUseDelegateForTest(boolean useDelegate, boolean isOffTheRecord,
-            boolean isValidSsl, boolean prefsCanMakePayment, boolean skipUiForBasicCard,
-            String twaPackageName) {
-        if (useDelegate) {
-            ChromePaymentRequestFactory.sDelegateForTest =
-                    new ChromePaymentRequestDelegateForTest(isOffTheRecord, isValidSsl,
-                            prefsCanMakePayment, twaPackageName, skipUiForBasicCard);
-        } else {
-            ChromePaymentRequestFactory.sDelegateForTest = null;
-        }
+    private static void setUseDelegateForTest(boolean isOffTheRecord, boolean isValidSsl,
+            boolean prefsCanMakePayment, String twaPackageName) {
+        ChromePaymentRequestFactory.sDelegateForTest = new ChromePaymentRequestDelegateForTest(
+                isOffTheRecord, isValidSsl, prefsCanMakePayment, twaPackageName);
     }
 
     @CalledByNative
@@ -271,8 +258,19 @@ public class PaymentRequestTestBridge {
     private static boolean closeDialogForTest() {
         SecurePaymentConfirmationNoMatchingCredController noMatchingUi =
                 PaymentRequestService.getSecurePaymentConfirmationNoMatchingCredUiForTesting();
-        if (noMatchingUi != null) noMatchingUi.hide();
+        if (noMatchingUi != null) noMatchingUi.close();
         return sUiService == null || sUiService.closeDialogForTest();
+    }
+
+    @CalledByNative
+    private static boolean clickSecurePaymentConfirmationOptOutForTest() {
+        SecurePaymentConfirmationAuthnController authnUi =
+                PaymentRequestService.getSecurePaymentConfirmationAuthnUiForTesting();
+        if (authnUi != null) return authnUi.optOutForTest();
+        SecurePaymentConfirmationNoMatchingCredController noMatchingUi =
+                PaymentRequestService.getSecurePaymentConfirmationNoMatchingCredUiForTesting();
+        if (noMatchingUi != null) return noMatchingUi.optOutForTest();
+        return false;
     }
 
     @CalledByNative

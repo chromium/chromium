@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -56,10 +56,10 @@ struct WebUiResource {
 };
 
 constexpr WebUiResource kResources[] = {
-    {"ethernet.svg", IDR_CR_COMPONENTS_CHROMEOS_NETWORK_ETHERNET_SVG},
-    {"vpn.svg", IDR_CR_COMPONENTS_CHROMEOS_NETWORK_VPN_SVG},
-    {"wifi_0.svg", IDR_CR_COMPONENTS_CHROMEOS_NETWORK_WIFI_0_SVG},
-    {"cellular_0.svg", IDR_CR_COMPONENTS_CHROMEOS_NETWORK_CELLULAR_0_SVG},
+    {"ethernet.svg", IDR_ASH_COMMON_NETWORK_ETHERNET_SVG},
+    {"vpn.svg", IDR_ASH_COMMON_NETWORK_VPN_SVG},
+    {"wifi_0.svg", IDR_ASH_COMMON_NETWORK_WIFI_0_SVG},
+    {"cellular_0.svg", IDR_ASH_COMMON_NETWORK_CELLULAR_0_SVG},
 };
 
 }  // namespace

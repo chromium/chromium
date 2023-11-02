@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,14 @@
 
 #include <cstdint>
 
-#include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
-#include "base/check.h"
-#include "base/debug/alias.h"
-#include "base/immediate_crash.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/check.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/debug/alias.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/debug/debugging_buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/immediate_crash.h"
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
+#include "build/build_config.h"
 
 #define PA_STRINGIFY_IMPL(s) #s
 #define PA_STRINGIFY(s) PA_STRINGIFY_IMPL(s)
@@ -25,46 +28,54 @@
 // As a consequence:
 // - When PartitionAlloc is not malloc(), use the regular macros
 // - Otherwise, crash immediately. This provides worse error messages though.
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if BUILDFLAG(ENABLE_PARTITION_ALLOC_AS_MALLOC_SUPPORT)
 // For official build discard log strings to reduce binary bloat.
-#if defined(OFFICIAL_BUILD) && defined(NDEBUG)
+#if !CHECK_WILL_STREAM()
 // See base/check.h for implementation details.
-#define PA_CHECK(condition) \
-  UNLIKELY(!(condition)) ? IMMEDIATE_CRASH() : EAT_CHECK_STREAM_PARAMS()
+#define PA_CHECK(condition)                        \
+  PA_UNLIKELY(!(condition)) ? PA_IMMEDIATE_CRASH() \
+                            : PA_EAT_CHECK_STREAM_PARAMS()
 #else
 // PartitionAlloc uses async-signal-safe RawCheck() for error reporting.
 // Async-signal-safe functions are guaranteed to not allocate as otherwise they
 // could operate with inconsistent allocator state.
 #define PA_CHECK(condition)                                                \
-  UNLIKELY(!(condition))                                                   \
-  ? logging::RawCheck(                                                     \
+  PA_UNLIKELY(!(condition))                                                \
+  ? ::partition_alloc::internal::logging::RawCheck(                        \
         __FILE__ "(" PA_STRINGIFY(__LINE__) ") Check failed: " #condition) \
-  : EAT_CHECK_STREAM_PARAMS()
-#endif  // defined(OFFICIAL_BUILD) && defined(NDEBUG)
+  : PA_EAT_CHECK_STREAM_PARAMS()
+#endif  // !CHECK_WILL_STREAM()
 
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
 #define PA_DCHECK(condition) PA_CHECK(condition)
 #else
-#define PA_DCHECK(condition) EAT_CHECK_STREAM_PARAMS(!(condition))
-#endif  // DCHECK_IS_ON()
+#define PA_DCHECK(condition) PA_EAT_CHECK_STREAM_PARAMS(!(condition))
+#endif  // BUILDFLAG(PA_DCHECK_IS_ON)
 
-#define PA_PCHECK(condition)    \
-  if (!(condition)) {           \
-    int error = errno;          \
-    base::debug::Alias(&error); \
-    IMMEDIATE_CRASH();          \
+#define PA_PCHECK(condition)                                 \
+  if (!(condition)) {                                        \
+    int error = errno;                                       \
+    ::partition_alloc::internal::base::debug::Alias(&error); \
+    PA_IMMEDIATE_CRASH();                                    \
   }
 
+#if BUILDFLAG(PA_DCHECK_IS_ON)
+#define PA_DPCHECK(condition) PA_PCHECK(condition)
 #else
-#define PA_CHECK(condition) CHECK(condition)
-#define PA_DCHECK(condition) DCHECK(condition)
-#define PA_PCHECK(condition) PCHECK(condition)
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#define PA_DPCHECK(condition) PA_EAT_CHECK_STREAM_PARAMS(!(condition))
+#endif  // BUILDFLAG(PA_DCHECK_IS_ON)
+
+#else
+#define PA_CHECK(condition) PA_BASE_CHECK(condition)
+#define PA_DCHECK(condition) PA_BASE_DCHECK(condition)
+#define PA_PCHECK(condition) PA_BASE_PCHECK(condition)
+#define PA_DPCHECK(condition) PA_BASE_DPCHECK(condition)
+#endif  // BUILDFLAG(ENABLE_PARTITION_ALLOC_AS_MALLOC_SUPPORT)
 
 // Expensive dchecks that run within *Scan. These checks are only enabled in
 // debug builds with dchecks enabled.
 #if !defined(NDEBUG)
-#define PA_SCAN_DCHECK_IS_ON() DCHECK_IS_ON()
+#define PA_SCAN_DCHECK_IS_ON() BUILDFLAG(PA_DCHECK_IS_ON)
 #else
 #define PA_SCAN_DCHECK_IS_ON() 0
 #endif
@@ -72,7 +83,7 @@
 #if PA_SCAN_DCHECK_IS_ON()
 #define PA_SCAN_DCHECK(expr) PA_DCHECK(expr)
 #else
-#define PA_SCAN_DCHECK(expr) EAT_CHECK_STREAM_PARAMS(!(expr))
+#define PA_SCAN_DCHECK(expr) PA_EAT_CHECK_STREAM_PARAMS(!(expr))
 #endif
 
 #if defined(PAGE_ALLOCATOR_CONSTANTS_ARE_CONSTEXPR)
@@ -96,16 +107,25 @@
 
 #endif
 
-namespace pa {
+// alignas(16) DebugKv causes breakpad_unittests and sandbox_linux_unittests
+// failures on android-marshmallow-x86-rel because of SIGSEGV.
+#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_X86_FAMILY) && \
+    defined(ARCH_CPU_32_BITS)
+#define PA_DEBUGKV_ALIGN alignas(8)
+#else
+#define PA_DEBUGKV_ALIGN alignas(16)
+#endif
+
+namespace partition_alloc::internal {
 
 // Used for PA_DEBUG_DATA_ON_STACK, below.
-struct alignas(16) DebugKv {
+struct PA_DEBUGKV_ALIGN DebugKv {
   // 16 bytes object aligned on 16 bytes, to make it easier to see in crash
   // reports.
   char k[8] = {};  // Not necessarily 0-terminated.
   uint64_t v = 0;
 
-  DebugKv(const char* key, size_t value) {
+  DebugKv(const char* key, uint64_t value) : v(value) {
     // Fill with ' ', so that the stack dump is nicer to read.  Not using
     // memset() on purpose, this header is included from *many* places.
     for (int index = 0; index < 8; index++) {
@@ -117,10 +137,10 @@ struct alignas(16) DebugKv {
       if (key[index] == '\0')
         break;
     }
-    v = value;
   }
 };
-}  // namespace pa
+
+}  // namespace partition_alloc::internal
 
 #define PA_CONCAT(x, y) x##y
 #define PA_CONCAT2(x, y) PA_CONCAT(x, y)
@@ -144,8 +164,8 @@ struct alignas(16) DebugKv {
 // With gdb, one can use:
 // x/8g <STACK_POINTER>
 // to see the data. With lldb, "x <STACK_POINTER> <FRAME_POJNTER>" can be used.
-#define PA_DEBUG_DATA_ON_STACK(name, value)      \
-  pa::DebugKv PA_DEBUG_UNIQUE_NAME{name, value}; \
-  base::debug::Alias(&PA_DEBUG_UNIQUE_NAME);
+#define PA_DEBUG_DATA_ON_STACK(name, value)                               \
+  ::partition_alloc::internal::DebugKv PA_DEBUG_UNIQUE_NAME{name, value}; \
+  ::partition_alloc::internal::base::debug::Alias(&PA_DEBUG_UNIQUE_NAME);
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_CHECK_H_

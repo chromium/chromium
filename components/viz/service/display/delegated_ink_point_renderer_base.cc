@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,6 +34,12 @@ void DelegatedInkPointRendererBase::SetDelegatedInkMetadata(
   // at time of creation, so confirm that it was actually set.
   DCHECK_NE(metadata->frame_time(), base::TimeTicks());
   metadata_ = std::move(metadata);
+
+  TRACE_EVENT_WITH_FLOW1(
+      "delegated_ink_trails",
+      "DelegatedInkPointRendererBase::SetDelegatedInkMetadata",
+      TRACE_ID_GLOBAL(metadata_->trace_id()), TRACE_EVENT_FLAG_FLOW_IN,
+      "metadata", metadata_->ToString());
 
   // If we already have a cached pointer ID, check if the same pointer ID
   // matches the new metadata.
@@ -101,8 +107,13 @@ DelegatedInkPointRendererBase::FilterPoints() {
   // Any remaining points must be the points that should be part of the
   // delegated ink trail
   std::vector<gfx::DelegatedInkPoint> points_to_draw;
-  for (auto it : trail_data.GetPoints())
-    points_to_draw.emplace_back(it.second, it.first, pointer_id_.value());
+  for (auto it : trail_data.GetPoints()) {
+    gfx::DelegatedInkPoint point{it.second, it.first, pointer_id_.value()};
+    points_to_draw.emplace_back(point);
+    TRACE_EVENT_WITH_FLOW1("delegated_ink_trails", "Filtering to draw point",
+                           TRACE_ID_GLOBAL(point.trace_id()),
+                           TRACE_EVENT_FLAG_FLOW_IN, "point", point.ToString());
+  }
 
   DCHECK(points_to_draw.front().MatchesDelegatedInkMetadata(metadata_.get()));
 
@@ -124,15 +135,19 @@ void DelegatedInkPointRendererBase::PredictPoints(
 void DelegatedInkPointRendererBase::ResetPrediction() {
   for (auto& it : pointer_ids_)
     it.second.Reset();
-  TRACE_EVENT_INSTANT0("viz", "Delegated ink prediction reset.",
+  TRACE_EVENT_INSTANT0("delegated_ink_trails",
+                       "Delegated ink prediction reset.",
                        TRACE_EVENT_SCOPE_THREAD);
 }
 
 void DelegatedInkPointRendererBase::StoreDelegatedInkPoint(
     const gfx::DelegatedInkPoint& point) {
-  TRACE_EVENT_INSTANT1("viz",
-                       "DelegatedInkPointRendererImpl::StoreDelegatedInkPoint",
-                       TRACE_EVENT_SCOPE_THREAD, "point", point.ToString());
+  TRACE_EVENT_WITH_FLOW1(
+      "delegated_ink_trails",
+      "DelegatedInkPointRendererImpl::StoreDelegatedInkPoint",
+      TRACE_ID_GLOBAL(point.trace_id()),
+      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "point",
+      point.ToString());
 
   pointer_ids_[point.pointer_id()].AddPoint(point);
 }

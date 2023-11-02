@@ -1,10 +1,11 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_VIEWS_ANIMATION_SLIDE_OUT_CONTROLLER_H_
 #define UI_VIEWS_ANIMATION_SLIDE_OUT_CONTROLLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/events/scoped_target_handler.h"
 #include "ui/views/view.h"
@@ -18,11 +19,13 @@ class SlideOutControllerDelegate;
 // swipes, i.e. gesture scroll events.
 class VIEWS_EXPORT SlideOutController : public ui::EventHandler {
  public:
-  // Indicates how much the target layer is allowed to slide.
+  // Indicates how much the target layer is allowed to slide. See
+  // |OnGestureEvent()| for details.
   enum class SlideMode {
-    kFull,
-    kPartial,
-    kNone,
+    kFull,     // Fully allow sliding until it's swiped out.
+    kPartial,  // Partially allow sliding until the slide amount reaches the
+               // swipe-out threshold.
+    kNone,     // Don't allow sliding at all.
   };
 
   SlideOutController(ui::EventTarget* target,
@@ -86,7 +89,7 @@ class VIEWS_EXPORT SlideOutController : public ui::EventHandler {
   ui::ScopedTargetHandler target_handling_;
 
   // Unowned and outlives this object.
-  SlideOutControllerDelegate* delegate_;
+  raw_ptr<SlideOutControllerDelegate> delegate_;
 
   // Cumulative scroll amount since the beginning of current slide gesture.
   // Includes the initial shift when swipe control was open at gesture start.
@@ -96,7 +99,7 @@ class VIEWS_EXPORT SlideOutController : public ui::EventHandler {
   SlideMode mode_ = SlideMode::kFull;
 
   // Whether the swipe control is enabled. See |SetSwipeControlWidth()|.
-  // Effective only when |mode_| is FULL.
+  // Effective only when |mode_| is FULL or PARTIAL.
   bool has_swipe_control_ = false;
 
   // The horizontal position offset to for swipe control.
@@ -104,7 +107,8 @@ class VIEWS_EXPORT SlideOutController : public ui::EventHandler {
   int swipe_control_width_ = 0;
 
   // The position where the slided view stays after the touch released.
-  // Changed only when |mode_| is FULL and |has_swipe_control_| is true.
+  // Changed only when |mode_| is FULL or PARTIAL and |has_swipe_control_| is
+  // true.
   SwipeControlOpenState control_open_state_ = SwipeControlOpenState::kClosed;
 
   // If false, it doesn't update the opacity.

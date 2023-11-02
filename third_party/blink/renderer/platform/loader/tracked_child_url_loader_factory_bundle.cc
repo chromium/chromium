@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -105,7 +105,7 @@ void TrackedChildURLLoaderFactoryBundle::AddObserverOnMainThread() {
       FROM_HERE,
       base::BindOnce(
           &HostChildURLLoaderFactoryBundle::AddObserver,
-          main_thread_host_bundle_->first, base::Unretained(this),
+          main_thread_host_bundle_->first, base::UnsafeDanglingUntriaged(this),
           std::make_unique<
               HostChildURLLoaderFactoryBundle::ObserverPtrAndTaskRunner>(
               AsWeakPtr(), base::SequencedTaskRunnerHandle::Get())));
@@ -117,7 +117,8 @@ void TrackedChildURLLoaderFactoryBundle::RemoveObserverOnMainThread() {
   main_thread_host_bundle_->second->PostTask(
       FROM_HERE,
       base::BindOnce(&HostChildURLLoaderFactoryBundle::RemoveObserver,
-                     main_thread_host_bundle_->first, base::Unretained(this)));
+                     main_thread_host_bundle_->first,
+                     base::UnsafeDanglingUntriaged(this)));
 }
 
 void TrackedChildURLLoaderFactoryBundle::OnUpdate(
@@ -136,7 +137,7 @@ HostChildURLLoaderFactoryBundle::HostChildURLLoaderFactoryBundle(
                             "on the main renderer thread";
 }
 
-HostChildURLLoaderFactoryBundle::~HostChildURLLoaderFactoryBundle() = default;
+HostChildURLLoaderFactoryBundle::~HostChildURLLoaderFactoryBundle() {}
 
 std::unique_ptr<network::PendingSharedURLLoaderFactory>
 HostChildURLLoaderFactoryBundle::Clone() {

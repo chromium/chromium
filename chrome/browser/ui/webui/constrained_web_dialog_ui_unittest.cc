@@ -1,4 +1,4 @@
-// Copyright (c) 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -107,7 +107,7 @@ class ConstrainedWebDialogUITest : public ::testing::Test {
 
     dialog_delegate_ = std::make_unique<TestConstrainedWebDialogDelegate>();
     dialog_ = std::make_unique<ConstrainedWebDialogUI>(web_ui_.get());
-    dialog_->WebUIRenderFrameCreated(web_contents_->GetMainFrame());
+    dialog_->WebUIRenderFrameCreated(web_contents_->GetPrimaryMainFrame());
 
     ConstrainedWebDialogUI::SetConstrainedDelegate(web_contents_.get(),
                                                    dialog_delegate_.get());
@@ -138,9 +138,8 @@ TEST_F(ConstrainedWebDialogUITest, DialogCloseWithEmptyArgs) {
         ASSERT_EQ(json_retval, "");
         run_loop.Quit();
       }));
-  base::Value args(base::Value::Type::LIST);
-  web_ui()->HandleReceivedMessage("dialogClose",
-                                  &base::Value::AsListValue(args));
+  base::Value::List args;
+  web_ui()->HandleReceivedMessage("dialogClose", args);
   run_loop.Run();
 }
 
@@ -153,10 +152,9 @@ TEST_F(ConstrainedWebDialogUITest, DialogCloseWithJsonInArgs) {
         json_retval = cb_json_retval;
         run_loop.Quit();
       }));
-  base::Value args(base::Value::Type::LIST);
+  base::Value::List args;
   args.Append(kJsonRetval);
-  web_ui()->HandleReceivedMessage("dialogClose",
-                                  &base::Value::AsListValue(args));
+  web_ui()->HandleReceivedMessage("dialogClose", args);
   run_loop.Run();
   ASSERT_EQ(json_retval, kJsonRetval);
 }

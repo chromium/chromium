@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define IOS_CHROME_BROWSER_BROWSER_STATE_CHROME_BROWSER_STATE_IMPL_IO_DATA_H_
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/prefs/pref_store.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state_io_data.h"
@@ -52,9 +51,9 @@ class ChromeBrowserStateImplIOData : public ChromeBrowserStateIOData {
 
     ChromeBrowserStateIOData* io_data() const;
 
-    // Deletes all network related data since |time|. It deletes transport
-    // security state since |time| and also deletes HttpServerProperties data.
-    // Works asynchronously, however if the |completion| callback is non-null,
+    // Deletes all network related data since `time`. It deletes transport
+    // security state since `time` and also deletes HttpServerProperties data.
+    // Works asynchronously, however if the `completion` callback is non-null,
     // it will be posted on the UI thread once the removal process completes.
     void ClearNetworkingHistorySince(base::Time time,
                                      base::OnceClosure completion);
@@ -72,7 +71,7 @@ class ChromeBrowserStateImplIOData : public ChromeBrowserStateIOData {
     void LazyInitialize() const;
 
     // Collect references to context getters in reverse order, i.e. last item
-    // will be main request getter. This list is passed to |io_data_|
+    // will be main request getter. This list is passed to `io_data_`
     // for invalidation on IO thread.
     std::unique_ptr<IOSChromeURLRequestContextGetterVector>
     GetAllContextGetters();
@@ -109,19 +108,15 @@ class ChromeBrowserStateImplIOData : public ChromeBrowserStateIOData {
   ChromeBrowserStateImplIOData();
   ~ChromeBrowserStateImplIOData() override;
 
-  void InitializeInternal(
-      std::unique_ptr<IOSChromeNetworkDelegate> chrome_network_delegate,
-      ProfileParams* profile_params,
-      ProtocolHandlerMap* protocol_handlers) const override;
+  void InitializeInternal(net::URLRequestContextBuilder* context_builder,
+                          ProfileParams* profile_params) const override;
 
-  // Deletes all network related data since |time|. It deletes transport
-  // security state since |time| and also deletes HttpServerProperties data.
-  // Works asynchronously, however if the |completion| callback is non-null,
+  // Deletes all network related data since `time`. It deletes transport
+  // security state since `time` and also deletes HttpServerProperties data.
+  // Works asynchronously, however if the `completion` callback is non-null,
   // it will be posted on the UI thread once the removal process completes.
   void ClearNetworkingHistorySinceOnIOThread(base::Time time,
                                              base::OnceClosure completion);
-
-  mutable std::unique_ptr<IOSChromeNetworkDelegate> network_delegate_;
 
   // Lazy initialization params.
   mutable std::unique_ptr<LazyParams> lazy_params_;

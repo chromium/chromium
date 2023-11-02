@@ -1,5 +1,0 @@
-monorail {
-  component: "Build"
-}
-
-team_email: "build@chromium.org"

@@ -1,52 +1,48 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/omaha/omaha_service.h"
+#import "ios/chrome/browser/omaha/omaha_service.h"
 
 #import <Foundation/Foundation.h>
 
-#include <memory>
-#include <utility>
+#import <memory>
+#import <utility>
 
-#include "base/bind.h"
-#include "base/i18n/time_formatting.h"
-#include "base/ios/device_util.h"
-#include "base/logging.h"
-#include "base/metrics/field_trial.h"
-#include "base/rand_util.h"
-#include "base/strings/stringprintf.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/system/sys_info.h"
-#include "base/task/post_task.h"
-#include "base/time/time.h"
-#include "base/values.h"
-#include "build/branding_buildflags.h"
-#include "components/metrics/metrics_pref_names.h"
-#include "components/prefs/pref_service.h"
-#include "components/version_info/version_info.h"
-#include "ios/chrome/app/tests_hook.h"
-#include "ios/chrome/browser/application_context.h"
-#include "ios/chrome/browser/arch_util.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state_manager.h"
-#include "ios/chrome/browser/browser_state_metrics/browser_state_metrics.h"
-#include "ios/chrome/browser/install_time_util.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
+#import "base/bind.h"
+#import "base/i18n/time_formatting.h"
+#import "base/ios/device_util.h"
+#import "base/logging.h"
+#import "base/metrics/field_trial.h"
+#import "base/no_destructor.h"
+#import "base/rand_util.h"
+#import "base/strings/stringprintf.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
+#import "base/system/sys_info.h"
+#import "base/time/time.h"
+#import "base/values.h"
+#import "build/branding_buildflags.h"
+#import "components/metrics/metrics_pref_names.h"
+#import "components/prefs/pref_service.h"
+#import "components/version_info/version_info.h"
+#import "ios/chrome/app/tests_hook.h"
+#import "ios/chrome/browser/application_context/application_context.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state_manager.h"
+#import "ios/chrome/browser/browser_state_metrics/browser_state_metrics.h"
 #import "ios/chrome/browser/upgrade/upgrade_constants.h"
-#include "ios/chrome/browser/upgrade/upgrade_recommended_details.h"
-#include "ios/chrome/common/channel_info.h"
-#include "ios/public/provider/chrome/browser/omaha/omaha_api.h"
-#include "ios/web/public/thread/web_task_traits.h"
-#include "ios/web/public/thread/web_thread.h"
-#include "net/base/backoff_entry.h"
-#include "net/base/load_flags.h"
-#include "net/url_request/url_fetcher.h"
-#include "services/network/public/cpp/resource_request.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "services/network/public/cpp/simple_url_loader.h"
-#include "third_party/libxml/chromium/xml_writer.h"
-#include "url/gurl.h"
+#import "ios/chrome/browser/upgrade/upgrade_recommended_details.h"
+#import "ios/chrome/common/channel_info.h"
+#import "ios/public/provider/chrome/browser/omaha/omaha_api.h"
+#import "ios/web/public/thread/web_task_traits.h"
+#import "ios/web/public/thread/web_thread.h"
+#import "net/base/backoff_entry.h"
+#import "net/base/load_flags.h"
+#import "services/network/public/cpp/resource_request.h"
+#import "services/network/public/cpp/shared_url_loader_factory.h"
+#import "services/network/public/cpp/simple_url_loader.h"
+#import "third_party/libxml/chromium/xml_writer.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -59,6 +55,12 @@ const int kHoursBetweenRequests = 5;
 const int kPostRetryBaseSeconds = 3600;
 // Maximal time to wait between retry requests.
 const int64_t kPostRetryMaxSeconds = 6 * kPostRetryBaseSeconds;
+
+const char kCurrentArch[] = "arm64";
+
+// 2 is used because 0 is a magic value for Time, and 1 was the pre-M29 value
+// which was migrated to a specific date (crbug.com/270124).
+const int64_t kUnknownInstallDate = 2;
 
 // Default last sent application version when none has been sent yet.
 const char kDefaultLastSentVersion[] = "0.0.0.0";
@@ -160,7 +162,7 @@ class XmlWrapper {
   std::unique_ptr<UpgradeRecommendedDetails> _updateInformation;
 }
 
-// Initialization method. |appId| is the application id one expects to find in
+// Initialization method. `appId` is the application id one expects to find in
 // the response message.
 - (instancetype)initWithAppId:(NSString*)appId;
 
@@ -369,8 +371,8 @@ void OmahaService::Start(std::unique_ptr<network::PendingSharedURLLoaderFactory>
          !service->url_loader_factory_);
   service->pending_url_loader_factory_ = std::move(pending_url_loader_factory);
   service->locale_lang_ = GetApplicationContext()->GetApplicationLocale();
-  base::PostTask(FROM_HERE, {web::WebThread::IO},
-                 base::BindOnce(&OmahaService::SendOrScheduleNextPing,
+  web::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&OmahaService::SendOrScheduleNextPing,
                                 base::Unretained(service)));
 }
 
@@ -437,16 +439,10 @@ void OmahaService::StartInternal() {
   }
   last_server_date_ = [defaults integerForKey:kLastServerDateKey];
   if (last_server_date_ == 0) {
-    if (lastSentVersion) {
-      // If there is a record of the last sent version but no record of the
-      // last server date, this client has upgraded from a version of Chrome
-      // that did not support saving the last server date. Send -2 ("unknown").
-      last_server_date_ = -2;
-    } else {
-      // If there is neither a last server date nor last sent version, this is
-      // a fresh install. Send -1 ("first active").
-      last_server_date_ = -1;
-    }
+    // If there is no last server date, this is a first active. However, it
+    // may be following a reinstall. To avoid overcounting from neutrinos,
+    // transmit -2 ("unknown").
+    last_server_date_ = -2;
   }
 
   application_install_date_ =
@@ -458,14 +454,14 @@ void OmahaService::StartInternal() {
   bool persist_again = false;
 
   base::Time now = base::Time::Now();
-  // If |last_sent_time_| is in the future, the clock has been tampered with.
-  // Reset |last_sent_time_| to now.
+  // If `last_sent_time_` is in the future, the clock has been tampered with.
+  // Reset `last_sent_time_` to now.
   if (last_sent_time_ > now) {
     last_sent_time_ = now;
     persist_again = true;
   }
 
-  // If the |next_tries_time_| is more than kHoursBetweenRequests hours away,
+  // If the `next_tries_time_` is more than kHoursBetweenRequests hours away,
   // there is a possibility that the clock has been tampered with. Reschedule
   // the ping to be the usual interval after the last successful one.
   if (next_tries_time_ - now > base::Hours(kHoursBetweenRequests)) {
@@ -493,20 +489,18 @@ void OmahaService::StopInternal() {
 
 // static
 void OmahaService::GetDebugInformation(
-    base::OnceCallback<void(base::DictionaryValue*)> callback) {
+    base::OnceCallback<void(base::Value::Dict)> callback) {
   if (OmahaService::IsEnabled()) {
     OmahaService* service = GetInstance();
-    base::PostTask(
-        FROM_HERE, {web::WebThread::IO},
+    web::GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE,
         base::BindOnce(&OmahaService::GetDebugInformationOnIOThread,
                        base::Unretained(service), std::move(callback)));
 
   } else {
-    auto result = std::make_unique<base::DictionaryValue>();
     // Invoke the callback with an empty response.
-    base::PostTask(
-        FROM_HERE, {web::WebThread::UI},
-        base::BindOnce(std::move(callback), base::Owned(result.release())));
+    web::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), base::Value::Dict()));
   }
 }
 
@@ -558,7 +552,7 @@ std::string OmahaService::GetPingContent(const std::string& requestId,
       os_element.AddAttribute("platform", "ios");
       os_element.AddAttribute("version",
                               base::SysInfo::OperatingSystemVersion());
-      os_element.AddAttribute("arch", arch_util::kCurrentArch);
+      os_element.AddAttribute("arch", kCurrentArch);
     }
 
     const bool is_first_install =
@@ -585,8 +579,7 @@ std::string OmahaService::GetPingContent(const std::string& requestId,
       if (is_first_install) {
         install_age = "-1";
       } else if (!installationTime.is_null() &&
-                 installationTime.ToTimeT() !=
-                     install_time_util::kUnknownInstallDate) {
+                 installationTime.ToTimeT() != kUnknownInstallDate) {
         install_age = base::StringPrintf(
             "%d", (base::Time::Now() - installationTime).InDays());
       }
@@ -656,8 +649,8 @@ void OmahaService::SendPing() {
   }
 
   // There are 2 situations here:
-  // 1) production code, where |pending_url_loader_factory_| is used.
-  // 2) testing code, where the |url_loader_factory_| creation is triggered by
+  // 1) production code, where `pending_url_loader_factory_` is used.
+  // 2) testing code, where the `url_loader_factory_` creation is triggered by
   // the test.
   if (pending_url_loader_factory_) {
     DCHECK(!url_loader_factory_);
@@ -709,21 +702,24 @@ void OmahaService::SendOrScheduleNextPing() {
 }
 
 void OmahaService::PersistStates() {
-  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+  // As a workaround to crbug.com/1247282, dispatch back to the main thread.
+  dispatch_async(dispatch_get_main_queue(), ^{
+    NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
 
-  [defaults setDouble:next_tries_time_.ToCFAbsoluteTime()
-               forKey:kNextTriesTimesKey];
-  [defaults setDouble:current_ping_time_.ToCFAbsoluteTime()
-               forKey:kCurrentPingKey];
-  [defaults setDouble:last_sent_time_.ToCFAbsoluteTime()
-               forKey:kLastSentTimeKey];
-  [defaults setInteger:number_of_tries_ forKey:kNumberTriesKey];
-  [defaults setObject:base::SysUTF8ToNSString(last_sent_version_.GetString())
-               forKey:kLastSentVersionKey];
-  [defaults setInteger:last_server_date_ forKey:kLastServerDateKey];
+    [defaults setDouble:next_tries_time_.ToCFAbsoluteTime()
+                 forKey:kNextTriesTimesKey];
+    [defaults setDouble:current_ping_time_.ToCFAbsoluteTime()
+                 forKey:kCurrentPingKey];
+    [defaults setDouble:last_sent_time_.ToCFAbsoluteTime()
+                 forKey:kLastSentTimeKey];
+    [defaults setInteger:number_of_tries_ forKey:kNumberTriesKey];
+    [defaults setObject:base::SysUTF8ToNSString(last_sent_version_.GetString())
+                 forKey:kLastSentVersionKey];
+    [defaults setInteger:last_server_date_ forKey:kLastServerDateKey];
 
-  // Save critical state information for usage reporting.
-  [defaults synchronize];
+    // Save critical state information for usage reporting.
+    [defaults synchronize];
+  });
 }
 
 void OmahaService::OnURLLoadComplete(
@@ -772,16 +768,16 @@ void OmahaService::OnURLLoadComplete(
   if (details) {
     // Use the correct callback based on if a one-off check is ongoing.
     if (!one_off_check_callback_.is_null()) {
-      base::PostTask(
-          FROM_HERE, {web::WebThread::UI},
+      web::GetUIThreadTaskRunner({})->PostTask(
+          FROM_HERE,
           base::BindOnce(std::move(one_off_check_callback_), *details));
       // Do not schedule another ping for one-off checks, unless
       // it canceled a scheduled ping.
       need_to_schedule_ping = scheduled_ping_canceled_;
       scheduled_ping_canceled_ = false;
     } else if (!details->is_up_to_date) {
-      base::PostTask(FROM_HERE, {web::WebThread::UI},
-                     base::BindOnce(upgrade_recommended_callback_, *details));
+      web::GetUIThreadTaskRunner({})->PostTask(
+          FROM_HERE, base::BindOnce(upgrade_recommended_callback_, *details));
     }
   }
 
@@ -792,33 +788,29 @@ void OmahaService::OnURLLoadComplete(
 }
 
 void OmahaService::GetDebugInformationOnIOThread(
-    base::OnceCallback<void(base::DictionaryValue*)> callback) {
-  auto result = std::make_unique<base::DictionaryValue>();
+    base::OnceCallback<void(base::Value::Dict)> callback) {
+  base::Value::Dict result;
 
-  result->SetString("message", GetCurrentPingContent());
-  result->SetString("last_sent_time",
-                    base::TimeFormatShortDateAndTime(last_sent_time_));
-  result->SetString("next_tries_time",
-                    base::TimeFormatShortDateAndTime(next_tries_time_));
-  result->SetString("current_ping_time",
-                    base::TimeFormatShortDateAndTime(current_ping_time_));
-  result->SetString("last_sent_version", last_sent_version_.GetString());
-  result->SetString("number_of_tries",
-                    base::StringPrintf("%d", number_of_tries_));
-  result->SetString("timer_running",
-                    base::StringPrintf("%d", timer_.IsRunning()));
-  result->SetString(
-      "timer_current_delay",
-      base::StringPrintf("%llds", timer_.GetCurrentDelay().InSeconds()));
-  result->SetString("timer_desired_run_time",
-                    base::TimeFormatShortDateAndTime(
-                        base::Time::Now() +
-                        (timer_.desired_run_time() - base::TimeTicks::Now())));
+  result.Set("message", GetCurrentPingContent());
+  result.Set("last_sent_time",
+             base::TimeFormatShortDateAndTime(last_sent_time_));
+  result.Set("next_tries_time",
+             base::TimeFormatShortDateAndTime(next_tries_time_));
+  result.Set("current_ping_time",
+             base::TimeFormatShortDateAndTime(current_ping_time_));
+  result.Set("last_sent_version", last_sent_version_.GetString());
+  result.Set("number_of_tries", base::StringPrintf("%d", number_of_tries_));
+  result.Set("timer_running", base::StringPrintf("%d", timer_.IsRunning()));
+  result.Set("timer_current_delay",
+             base::StringPrintf("%llds", timer_.GetCurrentDelay().InSeconds()));
+  result.Set("timer_desired_run_time",
+             base::TimeFormatShortDateAndTime(
+                 base::Time::Now() +
+                 (timer_.desired_run_time() - base::TimeTicks::Now())));
 
   // Sending the value to the callback.
-  base::PostTask(
-      FROM_HERE, {web::WebThread::UI},
-      base::BindOnce(std::move(callback), base::Owned(result.release())));
+  web::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
 }
 
 bool OmahaService::IsNextPingInstallRetry() {

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,6 +25,7 @@
 #include "components/reporting/encryption/primitives.h"
 #include "components/reporting/encryption/testing_primitives.h"
 #include "components/reporting/proto/synced/record.pb.h"
+#include "components/reporting/resources/resource_interface.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/status_macros.h"
 #include "components/reporting/util/statusor.h"
@@ -128,9 +129,6 @@ class EncryptionModuleTest : public ::testing::Test {
 
   scoped_refptr<EncryptionModuleInterface> encryption_module_;
   scoped_refptr<test::Decryptor> decryptor_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(EncryptionModuleTest, EncryptAndDecrypt) {
@@ -163,8 +161,7 @@ TEST_F(EncryptionModuleTest, EncryptionDisabled) {
 
   // Disable encryption for this test.
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitFromCommandLine(
-      {}, {EncryptionModuleInterface::kEncryptedReporting});
+  scoped_feature_list.InitAndDisableFeature(kEncryptedReportingFeature);
 
   // Encrypt the test string.
   const auto encrypted_result = EncryptSync(kTestString);

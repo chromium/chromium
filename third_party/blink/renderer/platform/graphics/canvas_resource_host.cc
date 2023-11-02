@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,6 +20,7 @@ CanvasResourceHost::ReplaceResourceProvider(
   resource_provider_ = std::move(new_resource_provider);
   UpdateMemoryUsage();
   if (resource_provider_) {
+    resource_provider_->SetCanvasResourceHost(this);
     resource_provider_->Canvas()->restoreToCount(1);
     InitializeForRecording(resource_provider_->Canvas());
     // Using unretained here since CanvasResourceHost owns |resource_provider_|
@@ -28,6 +29,7 @@ CanvasResourceHost::ReplaceResourceProvider(
         &CanvasResourceHost::InitializeForRecording, base::Unretained(this)));
   }
   if (old_resource_provider) {
+    old_resource_provider->SetCanvasResourceHost(nullptr);
     old_resource_provider->SetRestoreClipStackCallback(
         CanvasResourceProvider::RestoreMatrixClipStackCb());
   }

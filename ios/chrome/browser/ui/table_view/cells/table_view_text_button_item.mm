@@ -1,14 +1,14 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_button_item.h"
 
-#include "base/mac/foundation_util.h"
-#import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
+#import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -143,6 +143,9 @@ const NSTextAlignment kDefaultTextAlignment = NSTextAlignmentCenter;
     self.button.translatesAutoresizingMaskIntoConstraints = NO;
     [self.button.titleLabel
         setFont:[UIFont boldSystemFontOfSize:kButtonTitleFontSize]];
+    self.button.titleLabel.numberOfLines = 0;
+    self.button.titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
+    self.button.titleLabel.textAlignment = NSTextAlignmentCenter;
     self.button.layer.cornerRadius = kButtonCornerRadius;
     self.button.clipsToBounds = YES;
     self.button.contentEdgeInsets = UIEdgeInsetsMake(

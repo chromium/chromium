@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,15 @@
 #include "base/android/jni_android.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "gpu/command_buffer/service/mock_texture_owner.h"
+#include "gpu/command_buffer/service/ref_counted_lock_for_test.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_preferences.h"
 #include "media/base/android/media_codec_util.h"
 #include "media/base/android/mock_android_overlay.h"
@@ -152,7 +155,10 @@ class MediaCodecVideoDecoderTest : public testing::TestWithParam<VideoCodec> {
         base::BindRepeating(&CreateAndroidOverlayCb),
         base::BindRepeating(&MediaCodecVideoDecoderTest::RequestOverlayInfoCb,
                             base::Unretained(this)),
-        std::move(video_frame_factory), /*lock=*/nullptr);
+        std::move(video_frame_factory),
+        features::NeedThreadSafeAndroidMedia()
+            ? base::MakeRefCounted<gpu::RefCountedLockForTest>()
+            : nullptr);
     mcvd_ = std::make_unique<AsyncDestroyVideoDecoder<MediaCodecVideoDecoder>>(
         base::WrapUnique(mcvd));
     mcvd_raw_ = mcvd;
@@ -184,7 +190,7 @@ class MediaCodecVideoDecoderTest : public testing::TestWithParam<VideoCodec> {
     if (!mcvd_)
       CreateMcvd();
     bool result = false;
-    auto init_cb = [](bool* result_out, Status result) {
+    auto init_cb = [](bool* result_out, DecoderStatus result) {
       *result_out = result.is_ok();
     };
     mcvd_->Initialize(
@@ -282,9 +288,9 @@ class MediaCodecVideoDecoderTest : public testing::TestWithParam<VideoCodec> {
   scoped_refptr<DecoderBuffer> fake_decoder_buffer_;
   std::unique_ptr<MockDeviceInfo> device_info_;
   std::unique_ptr<FakeCodecAllocator> codec_allocator_;
-  MockAndroidVideoSurfaceChooser* surface_chooser_;
-  gpu::MockTextureOwner* texture_owner_;
-  MockVideoFrameFactory* video_frame_factory_;
+  raw_ptr<MockAndroidVideoSurfaceChooser> surface_chooser_;
+  raw_ptr<gpu::MockTextureOwner> texture_owner_;
+  raw_ptr<MockVideoFrameFactory> video_frame_factory_;
   NiceMock<base::MockCallback<VideoDecoder::DecodeCB>> decode_cb_;
   ProvideOverlayInfoCB provide_overlay_info_cb_;
   bool restart_for_transitions_;
@@ -301,7 +307,7 @@ class MediaCodecVideoDecoderTest : public testing::TestWithParam<VideoCodec> {
 
   // |mcvd_raw_| lets us call PumpCodec() even after |mcvd_| is dropped, for
   // testing the teardown path.
-  MediaCodecVideoDecoder* mcvd_raw_;
+  raw_ptr<MediaCodecVideoDecoder> mcvd_raw_;
   std::unique_ptr<VideoDecoder> mcvd_;
 };
 
@@ -601,7 +607,7 @@ TEST_P(MediaCodecVideoDecoderTest,
 
 TEST_P(MediaCodecVideoDecoderTest, ResetAbortsPendingDecodes) {
   InitializeWithTextureOwner_OneDecodePending(TestVideoConfig::Large(codec_));
-  EXPECT_CALL(decode_cb_, Run(HasStatusCode(StatusCode::kAborted)));
+  EXPECT_CALL(decode_cb_, Run(HasStatusCode(DecoderStatus::Codes::kAborted)));
   DoReset();
   testing::Mock::VerifyAndClearExpectations(&decode_cb_);
 }
@@ -619,7 +625,8 @@ TEST_P(MediaCodecVideoDecoderTest, ResetAbortsPendingEosDecode) {
   codec->AcceptOneInput(MockMediaCodecBridge::kEos);
   PumpCodec();
 
-  EXPECT_CALL(eos_decode_cb, Run(HasStatusCode(StatusCode::kAborted)));
+  EXPECT_CALL(eos_decode_cb,
+              Run(HasStatusCode(DecoderStatus::Codes::kAborted)));
   DoReset();
   // Should be run before |mcvd_| is destroyed.
   testing::Mock::VerifyAndClearExpectations(&eos_decode_cb);
@@ -990,8 +997,7 @@ static std::vector<VideoCodec> GetTestList() {
   std::vector<VideoCodec> test_codecs;
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-  if (MediaCodecUtil::IsMediaCodecAvailable())
-    test_codecs.push_back(VideoCodec::kH264);
+  test_codecs.push_back(VideoCodec::kH264);
 #endif
 
   if (MediaCodecUtil::IsVp8DecoderAvailable())
@@ -1004,10 +1010,8 @@ static std::vector<VideoCodec> GetTestList() {
 }
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-static std::vector<VideoCodec> GetH264IfAvailable() {
-  return MediaCodecUtil::IsMediaCodecAvailable()
-             ? std::vector<VideoCodec>(1, VideoCodec::kH264)
-             : std::vector<VideoCodec>();
+static std::vector<VideoCodec> GetH264() {
+  return std::vector<VideoCodec>(1, VideoCodec::kH264);
 }
 #endif
 
@@ -1038,7 +1042,7 @@ INSTANTIATE_TEST_SUITE_P(MediaCodecVideoDecoderTest,
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
 INSTANTIATE_TEST_SUITE_P(MediaCodecVideoDecoderH264Test,
                          MediaCodecVideoDecoderH264Test,
-                         testing::ValuesIn(GetH264IfAvailable()));
+                         testing::ValuesIn(GetH264()));
 #endif
 
 INSTANTIATE_TEST_SUITE_P(MediaCodecVideoDecoderVp8Test,

@@ -3,7 +3,7 @@ AXWebArea
 ++++AXButton AXExpanded=1 AXTitle='Accordion Section #1'
 ++++++AXGroup
 ++++++++AXStaticText AXValue='Accordion Section #1'
-++AXGroup AXTitle='Accordion Section #1'
+++AXGroup AXSubrole=AXLandmarkRegion AXTitle='Accordion Section #1'
 ++++AXGroup
 ++++++AXStaticText AXValue='Content for first section of accordion element.'
 ++AXHeading AXTitle='Accordion Section #2' AXValue=3
@@ -18,6 +18,6 @@ AXWebArea
 ++++AXButton AXExpanded=1 AXTitle='Accordion Section #4'
 ++++++AXGroup
 ++++++++AXStaticText AXValue='Accordion Section #4'
-++AXGroup AXTitle='Accordion Section #4'
+++AXGroup AXSubrole=AXLandmarkRegion AXTitle='Accordion Section #4'
 ++++AXGroup
 ++++++AXStaticText AXValue='Content for forth section of accordion element. This section will always be visible but disabled.'

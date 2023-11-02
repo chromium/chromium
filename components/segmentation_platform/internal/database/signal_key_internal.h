@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,6 @@
 #include <ostream>
 #include <string>
 #include <type_traits>
-
-#include "base/compiler_specific.h"
 
 namespace segmentation_platform {
 
@@ -101,8 +99,8 @@ static_assert(sizeof(SignalKeyInternal) ==
 std::string SignalKeyInternalToBinary(const SignalKeyInternal& input);
 // Parses a machine readable representation of a SignalKeyInternal into
 // a SignalKeyInternal. Returns whether the conversion succeeded.
-bool SignalKeyInternalFromBinary(const std::string& input,
-                                 SignalKeyInternal* output) WARN_UNUSED_RESULT;
+[[nodiscard]] bool SignalKeyInternalFromBinary(const std::string& input,
+                                               SignalKeyInternal* output);
 // Returns a human readable representation of the SignalKeyInternal.
 std::string SignalKeyInternalToDebugString(const SignalKeyInternal& input);
 
@@ -113,9 +111,9 @@ std::string SignalKeyInternalPrefixToBinary(
     const SignalKeyInternal::Prefix& input);
 // Parses a machine readable representation of a SignalKeyInternal::Prefix into
 // a SignalKeyInternal::Prefix. Returns whether the conversion succeeded.
-bool SignalKeyInternalPrefixFromBinary(const std::string& input,
-                                       SignalKeyInternal::Prefix* output)
-    WARN_UNUSED_RESULT;
+[[nodiscard]] bool SignalKeyInternalPrefixFromBinary(
+    const std::string& input,
+    SignalKeyInternal::Prefix* output);
 // Returns a human readable representation of the SignalKeyInternal::Prefix.
 std::string SignalKeyInternalPrefixToDebugString(
     const SignalKeyInternal::Prefix& input);

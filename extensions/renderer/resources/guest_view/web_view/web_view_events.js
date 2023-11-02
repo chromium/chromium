@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,6 +27,8 @@ function WebViewEvents(webViewImpl) {
 }
 
 function createOnMessageEvent(name, schema, options, webviewId) {
+  // There is a dependency on these IDs between the renderer and
+  // the browser, so this cannot use GetNextScopedId.
   var subEventName = name + '/' + IdGenerator.GetNextId();
   var newEvent = bindingUtil.createCustomEvent(
       subEventName, false /* supports filters */,

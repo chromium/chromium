@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,6 +41,7 @@ static const struct TestOsWithFamily {
     {{"CATALINA", GPUTestConfig::kOsMacCatalina}, kOsFamilyMac},
     {{"BIGSUR", GPUTestConfig::kOsMacBigSur}, kOsFamilyMac},
     {{"MONTEREY", GPUTestConfig::kOsMacMonterey}, kOsFamilyMac},
+    {{"VENTURA", GPUTestConfig::kOsMacVentura}, kOsFamilyMac},
     {{"LINUX", GPUTestConfig::kOsLinux}, {"LINUX", GPUTestConfig::kOsLinux}},
     {{"CHROMEOS", GPUTestConfig::kOsChromeOS},
      {"CHROMEOS", GPUTestConfig::kOsChromeOS}},

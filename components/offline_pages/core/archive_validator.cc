@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,11 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "build/build_config.h"
 #include "crypto/secure_hash.h"
 #include "crypto/sha2.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/content_uri_utils.h"
 #endif
 
@@ -44,15 +45,15 @@ std::string ArchiveValidator::ComputeDigest(const base::FilePath& file_path) {
 std::pair<int64_t, std::string> ArchiveValidator::GetSizeAndComputeDigest(
     const base::FilePath& file_path) {
   base::File file;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (file_path.IsContentUri()) {
     file = base::OpenContentUriForRead(file_path);
   } else {
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
     file.Initialize(file_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
   if (!file.IsValid())
     return std::make_pair(0LL, std::string());
 

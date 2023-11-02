@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -65,12 +65,12 @@ class HistogramsMessageHandler : public WebUIMessageHandler {
   void RegisterMessages() override;
 
  private:
-  void HandleRequestHistograms(const base::ListValue* args);
-  void HandleStartMoninoring(const base::ListValue* args);
-  void HandleFetchDiff(const base::ListValue* args);
+  void HandleRequestHistograms(const base::Value::List& args);
+  void HandleStartMoninoring(const base::Value::List& args);
+  void HandleFetchDiff(const base::Value::List& args);
 
   // Calls AllowJavascript() and unpacks the passed params.
-  JsParams AllowJavascriptAndUnpackParams(const base::ListValue& args);
+  JsParams AllowJavascriptAndUnpackParams(const base::Value::List& args);
 
   HistogramsMonitor histogram_monitor_;
 };
@@ -80,43 +80,44 @@ HistogramsMessageHandler::HistogramsMessageHandler() {}
 HistogramsMessageHandler::~HistogramsMessageHandler() {}
 
 JsParams HistogramsMessageHandler::AllowJavascriptAndUnpackParams(
-    const base::ListValue& args) {
+    const base::Value::List& args_list) {
   AllowJavascript();
   JsParams params;
-  args.GetString(0, &params.callback_id);
-  args.GetString(1, &params.query);
+  if (args_list.size() > 0u && args_list[0].is_string())
+    params.callback_id = args_list[0].GetString();
+  if (args_list.size() > 1u && args_list[1].is_string())
+    params.query = args_list[1].GetString();
   return params;
 }
 
 void HistogramsMessageHandler::HandleRequestHistograms(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   base::StatisticsRecorder::ImportProvidedHistograms();
   HistogramSynchronizer::FetchHistograms();
-  JsParams params = AllowJavascriptAndUnpackParams(*args);
-  base::ListValue histograms_list;
+  JsParams params = AllowJavascriptAndUnpackParams(args);
+  base::Value::List histograms_list;
   for (base::HistogramBase* histogram :
        base::StatisticsRecorder::Sort(base::StatisticsRecorder::WithName(
            base::StatisticsRecorder::GetHistograms(), params.query))) {
-    base::Value histogram_dict = histogram->ToGraphDict();
-    if (!histogram_dict.DictEmpty())
+    base::Value::Dict histogram_dict = histogram->ToGraphDict();
+    if (!histogram_dict.empty())
       histograms_list.Append(std::move(histogram_dict));
   }
 
-  ResolveJavascriptCallback(base::Value(params.callback_id),
-                            std::move(histograms_list));
+  ResolveJavascriptCallback(base::Value(params.callback_id), histograms_list);
 }
 
 void HistogramsMessageHandler::HandleStartMoninoring(
-    const base::ListValue* args) {
-  JsParams params = AllowJavascriptAndUnpackParams(*args);
+    const base::Value::List& args) {
+  JsParams params = AllowJavascriptAndUnpackParams(args);
   histogram_monitor_.StartMonitoring(params.query);
   ResolveJavascriptCallback(base::Value(params.callback_id),
                             base::Value("Success"));
 }
 
-void HistogramsMessageHandler::HandleFetchDiff(const base::ListValue* args) {
-  JsParams params = AllowJavascriptAndUnpackParams(*args);
-  base::ListValue histograms_list = histogram_monitor_.GetDiff();
+void HistogramsMessageHandler::HandleFetchDiff(const base::Value::List& args) {
+  JsParams params = AllowJavascriptAndUnpackParams(args);
+  base::Value::List histograms_list = histogram_monitor_.GetDiff();
   ResolveJavascriptCallback(base::Value(params.callback_id),
                             std::move(histograms_list));
 }
@@ -126,17 +127,17 @@ void HistogramsMessageHandler::RegisterMessages() {
 
   // We can use base::Unretained() here, as both the callback and this class are
   // owned by HistogramsInternalsUI.
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       kHistogramsUIRequestHistograms,
       base::BindRepeating(&HistogramsMessageHandler::HandleRequestHistograms,
                           base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       kHistogramsUIStartMonitoring,
       base::BindRepeating(&HistogramsMessageHandler::HandleStartMoninoring,
                           base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       kHistogramsUIFetchDiff,
       base::BindRepeating(&HistogramsMessageHandler::HandleFetchDiff,
                           base::Unretained(this)));

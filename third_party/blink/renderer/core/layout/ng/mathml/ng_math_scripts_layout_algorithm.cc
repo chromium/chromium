@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -94,7 +94,7 @@ NGMathScriptsLayoutAlgorithm::NGMathScriptsLayoutAlgorithm(
 
 void NGMathScriptsLayoutAlgorithm::GatherChildren(
     NGBlockNode* base,
-    Vector<SubSupPair>* sub_sup_pairs,
+    HeapVector<SubSupPair>* sub_sup_pairs,
     NGBlockNode* prescripts,
     unsigned* first_prescript_index,
     NGBoxFragmentBuilder* container_builder) const {
@@ -279,7 +279,7 @@ NGMathScriptsLayoutAlgorithm::LayoutAndGetMetrics(NGBlockNode child) const {
   child_and_metrics.margins =
       ComputeMarginsFor(constraint_space, child.Style(), ConstraintSpace());
   child_and_metrics.ascent =
-      fragment.BaselineOrSynthesize(Style().GetFontBaseline());
+      fragment.FirstBaselineOrSynthesize(Style().GetFontBaseline());
   child_and_metrics.descent = fragment.BlockSize() - child_and_metrics.ascent +
                               child_and_metrics.margins.block_end;
   child_and_metrics.ascent += child_and_metrics.margins.block_start;
@@ -287,13 +287,16 @@ NGMathScriptsLayoutAlgorithm::LayoutAndGetMetrics(NGBlockNode child) const {
   return child_and_metrics;
 }
 
-scoped_refptr<const NGLayoutResult> NGMathScriptsLayoutAlgorithm::Layout() {
+const NGLayoutResult* NGMathScriptsLayoutAlgorithm::Layout() {
   DCHECK(!BreakToken());
 
   NGBlockNode base = nullptr;
   NGBlockNode prescripts = nullptr;
-  Vector<SubSupPair> sub_sup_pairs;
   wtf_size_t first_prescript_index = 0;
+
+  HeapVector<SubSupPair> sub_sup_pairs;
+  ClearCollectionScope<HeapVector<SubSupPair>> scope(&sub_sup_pairs);
+
   GatherChildren(&base, &sub_sup_pairs, &prescripts, &first_prescript_index,
                  &container_builder_);
   ChildrenAndMetrics sub_metrics, sup_metrics;
@@ -311,17 +314,18 @@ scoped_refptr<const NGLayoutResult> NGMathScriptsLayoutAlgorithm::Layout() {
   VerticalMetrics metrics =
       GetVerticalMetrics(base_metrics, sub_metrics, sup_metrics);
 
-  const LogicalOffset content_start_offset =
-      BorderScrollbarPadding().StartOffset();
+  const LayoutUnit ascent =
+      std::max(base_metrics.ascent, metrics.ascent + metrics.sup_shift)
+          .ClampNegativeToZero() +
+      BorderScrollbarPadding().block_start;
+  const LayoutUnit descent =
+      std::max(base_metrics.descent, metrics.descent + metrics.sub_shift)
+          .ClampNegativeToZero() +
+      BorderScrollbarPadding().block_end;
 
-  LayoutUnit ascent =
-      std::max(base_metrics.ascent, metrics.ascent + metrics.sup_shift) +
-      content_start_offset.block_offset;
-  LayoutUnit descent =
-      std::max(base_metrics.descent, metrics.descent + metrics.sub_shift);
   LayoutUnit base_italic_correction = std::min(
       base_metrics.inline_size, base_metrics.result->MathItalicCorrection());
-  LayoutUnit inline_offset = content_start_offset.inline_offset;
+  LayoutUnit inline_offset = BorderScrollbarPadding().inline_start;
 
   LayoutUnit space = GetSpaceAfterScript(Style());
   // Position pre scripts if needed.
@@ -394,10 +398,9 @@ scoped_refptr<const NGLayoutResult> NGMathScriptsLayoutAlgorithm::Layout() {
     inline_offset += space + sub_sup_pair_inline_size;
   }
 
-  container_builder_.SetBaseline(ascent);
+  container_builder_.SetBaselines(ascent);
 
-  LayoutUnit intrinsic_block_size =
-      ascent + descent + BorderScrollbarPadding().block_end;
+  LayoutUnit intrinsic_block_size = ascent + descent;
 
   LayoutUnit block_size = ComputeBlockSizeForFragment(
       ConstraintSpace(), Style(), BorderPadding(), intrinsic_block_size,
@@ -419,8 +422,11 @@ MinMaxSizesResult NGMathScriptsLayoutAlgorithm::ComputeMinMaxSizes(
 
   NGBlockNode base = nullptr;
   NGBlockNode prescripts = nullptr;
-  Vector<SubSupPair> sub_sup_pairs;
   unsigned first_prescript_index = 0;
+
+  HeapVector<SubSupPair> sub_sup_pairs;
+  ClearCollectionScope<HeapVector<SubSupPair>> scope(&sub_sup_pairs);
+
   GatherChildren(&base, &sub_sup_pairs, &prescripts, &first_prescript_index);
   DCHECK_GE(sub_sup_pairs.size(), 1ul);
 

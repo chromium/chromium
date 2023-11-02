@@ -1,8 +1,9 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/constrained_window/constrained_window_views.h"
+#include "base/memory/raw_ptr.h"
 
 #include <algorithm>
 #include <memory>
@@ -11,6 +12,7 @@
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "components/constrained_window/constrained_window_views_client.h"
+#include "components/guest_view/browser/guest_view_base.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
@@ -20,6 +22,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 #include "ui/views/window/dialog_delegate.h"
+#include "url/gurl.h"
 
 #if defined(USE_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
@@ -86,8 +89,8 @@ class WidgetModalDialogHostObserverViews : public views::WidgetObserver,
   }
 
  private:
-  ModalDialogHost* host_;
-  views::Widget* target_widget_;
+  raw_ptr<ModalDialogHost> host_;
+  raw_ptr<views::Widget> target_widget_;
   const char* const native_window_property_;
 };
 
@@ -172,7 +175,14 @@ void UpdateWidgetModalDialogPosition(views::Widget* widget,
 
 content::WebContents* GetTopLevelWebContents(
     content::WebContents* initiator_web_contents) {
-  return initiator_web_contents->GetResponsibleWebContents();
+  // TODO(mcnee): While calling both `GetResponsibleWebContents` and
+  // `GetTopLevelWebContents` appears redundant, there appears to still be cases
+  // where users of guest view are not initializing the guest WebContents
+  // properly, causing GetResponsibleWebContents to break. See
+  // https://crbug.com/1325850
+  // The order of composing these methods is arbitrary.
+  return guest_view::GuestViewBase::GetTopLevelWebContents(
+      initiator_web_contents->GetResponsibleWebContents());
 }
 
 views::Widget* ShowWebModalDialogViews(
@@ -193,7 +203,16 @@ views::Widget* CreateWebModalDialogViews(views::WidgetDelegate* dialog,
   DCHECK_EQ(ui::MODAL_TYPE_CHILD, dialog->GetModalType());
   web_modal::WebContentsModalDialogManager* manager =
       web_modal::WebContentsModalDialogManager::FromWebContents(web_contents);
-  CHECK(manager);
+
+  // TODO(http://crbug/1273287): Drop "if" and DEBUG_ALIAS_FOR_GURL after fix.
+  if (!manager) {
+    const GURL& url = web_contents->GetLastCommittedURL();
+    DEBUG_ALIAS_FOR_GURL(url_alias, url);
+    LOG_IF(FATAL, !manager)
+        << "CreateWebModalDialogViews without a manager"
+        << ", scheme=" << url.scheme_piece() << ", host=" << url.host_piece();
+  }
+
   return views::DialogDelegate::CreateDialogWidget(
       dialog, nullptr,
       manager->delegate()->GetWebContentsModalDialogHost()->GetHostView());
@@ -218,7 +237,7 @@ views::Widget* CreateBrowserModalDialogViews(views::DialogDelegate* dialog,
 
   bool requires_positioning = dialog->use_custom_frame();
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   // On Mac, window modal dialogs are displayed as sheets, so their position is
   // managed by the parent window.
   requires_positioning = false;
@@ -246,6 +265,15 @@ void ShowBrowserModal(std::unique_ptr<ui::DialogModel> dialog_model,
   dialog->SetOwnedByWidget(true);
   constrained_window::CreateBrowserModalDialogViews(std::move(dialog), parent)
       ->Show();
+}
+
+views::Widget* ShowWebModal(std::unique_ptr<ui::DialogModel> dialog_model,
+                            content::WebContents* web_contents) {
+  return constrained_window::ShowWebModalDialogViews(
+      views::BubbleDialogModelHost::CreateModal(std::move(dialog_model),
+                                                ui::MODAL_TYPE_CHILD)
+          .release(),
+      web_contents);
 }
 
 }  // namespace constrained_window

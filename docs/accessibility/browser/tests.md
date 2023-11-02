@@ -44,7 +44,7 @@ out/release/content_shell \
 ```
 
 For information on modifying or adding web tests, see the main
-[web tests documentation](https://chromium.googlesource.com/chromium/src/+/main/docs/testing/web_tests.md).
+[web tests documentation](../../testing/web_tests.md).
 
 ## DumpAccessibilityTree tests
 
@@ -54,7 +54,7 @@ you're interested in, and one or more expectation files to enable checking
 whether the resulting accessibility tree is correct or not. In particular,
 almost no test code is required.
 
-[More documentation on DumpAccessibilityTree](../../content/test/data/accessibility/readme.md)
+[More documentation on DumpAccessibilityTree](../../../content/test/data/accessibility/readme.md)
 
 Test files:
 [content/test/data/accessibility](https://source.chromium.org/chromium/chromium/src/+/main:content/test/data/accessibility/)
@@ -126,7 +126,7 @@ autoninja -C out/Default unit_tests browser_tests && \
 
 ## Performance tests
 
-We also have a page on [Performance Tests](perf.md).
+We also have a page on [Performance Tests](./perf.md).
 
 ## Other locations of accessibility tests:
 

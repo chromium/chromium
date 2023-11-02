@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,12 +10,12 @@
 #include <memory>
 
 #import "components/autofill/ios/browser/form_suggestion_provider.h"
+#import "components/password_manager/ios/ios_password_manager_driver.h"
 #import "components/password_manager/ios/password_form_helper.h"
 #import "components/password_manager/ios/password_generation_provider.h"
 #import "components/password_manager/ios/password_manager_client_bridge.h"
 #import "components/password_manager/ios/password_manager_driver_bridge.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_manager_client.h"
-#import "ios/chrome/browser/passwords/ios_chrome_password_manager_driver.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 
 @protocol ApplicationCommands;
@@ -31,9 +31,11 @@ class PasswordManagerClient;
 
 // Delegate for registering view controller and displaying its view. Used to
 // add views to BVC.
+// TODO(crbug.com/1272487): Refactor this API to not be coupled to the BVC and
+// to use the UI command patterns.
 @protocol PasswordControllerDelegate
 
-// Adds |viewController| as child controller in order to display auto sign-in
+// Adds `viewController` as child controller in order to display auto sign-in
 // notification. Returns YES if view was displayed, NO otherwise.
 - (BOOL)displaySignInNotification:(UIViewController*)viewController
                         fromTabId:(NSString*)tabId;
@@ -44,6 +46,8 @@ class PasswordManagerClient;
 @end
 
 // Per-tab password controller. Handles password autofill and saving.
+// TODO(crbug.com/1272487): Refactor this into an appropriately-scoped object,
+// such as a browser agent.
 @interface PasswordController
     : NSObject <CRWWebStateObserver, IOSChromePasswordManagerClientBridge>
 
@@ -76,7 +80,7 @@ class PasswordManagerClient;
 @property(nonatomic, readonly)
     SharedPasswordController* sharedPasswordController;
 
-// |webState| should not be nil.
+// `webState` should not be nil.
 - (instancetype)initWithWebState:(web::WebState*)webState;
 
 // This is just for testing.

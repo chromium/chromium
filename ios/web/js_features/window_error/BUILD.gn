@@ -1,9 +1,9 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//ios/build/config.gni")
-import("//ios/web/js_compile.gni")
+import("//ios/web/public/js_messaging/optimize_ts.gni")
 
 source_set("window_error") {
   configs += [ "//build/config/compiler:enable_arc" ]
@@ -21,11 +21,11 @@ source_set("window_error") {
   ]
 }
 
-js_compile_bundle("error_js") {
+optimize_ts("error_js") {
   visibility = [ ":window_error" ]
-  closure_entry_point = "__crWeb.error"
 
-  sources = [ "resources/error.js" ]
+  sources = [ "resources/error.ts" ]
+  deps = [ "//ios/web/public/js_messaging:util_scripts" ]
 }
 
 source_set("unittests") {
@@ -37,6 +37,7 @@ source_set("unittests") {
     "//base/test:test_support",
     "//ios/web/js_messaging:java_script_feature",
     "//ios/web/public/test",
+    "//ios/web/public/test:test_fixture",
     "//testing/gtest",
   ]
 

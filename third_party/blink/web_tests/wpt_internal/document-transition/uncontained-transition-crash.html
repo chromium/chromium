@@ -31,13 +31,20 @@ function rafAnimation() {
 async function runTest() {
   await waitForAtLeastOneFrame();
   // Prepare with a shared element
-  let promise = document.documentTransition.prepare({ sharedElements: [first] });
-  // Force a hit test, which will determine compositing reasons.
+  let t = document.createDocumentTransition();
+  first.style.pageTransitionTag = "shared";
+  let promise = t.start(() => {
+    first.style.pageTransitionTag = "";
+    second.style.pageTransitionTag = "shared";
+  });
+
+  // The start() call above starts the capture. Force a hit test, which will
+  // determine compositing reasons.
   document.elementFromPoint(0, 0);
-  // Now wait for the prepare to happen. This will note that we don't have
+
+  // Wait for the transition to finish. This will note that we don't have
   // paint containment and should de-composite the element.
   await promise;
-  document.documentTransition.start({ sharedElements: [second] });
 
   takeScreenshot();
 }

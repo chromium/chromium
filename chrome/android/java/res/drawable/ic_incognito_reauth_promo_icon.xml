@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--TODO(crbug.com/1227656): Remove UnusedResource warning when in production -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="UnusedResources"
+    android:width="52dp"
+    android:height="52dp"
+    android:viewportWidth="52"
+    android:viewportHeight="52">
+  <path
+      android:pathData="M21,26m21,0a21,21 0,1 0,-42 0a21,21 0,1 0,42 0"
+      android:fillColor="@color/baseline_neutral_variant_500"/>
+  <path
+      android:pathData="M43,26C40.817,26 39,27.828 39,30.143V36H47V30.143C47,27.828 45.183,26 43,26Z"
+      android:strokeWidth="2"
+      android:fillColor="#00000000"
+      android:strokeColor="@color/baseline_primary_200"/>
+  <path
+      android:pathData="M50,33C51.105,33 52,33.895 52,35V45C52,46.105 51.105,47 50,47H36C34.895,47 34,46.105 34,45V35C34,33.895 34.895,33 36,33H50ZM43,42C41.895,42 41,41.105 41,40C41,38.895 41.895,38 43,38C44.105,38 45,38.895 45,40C45,41.105 44.105,42 43,42Z"
+      android:fillColor="@color/baseline_primary_200"
+      android:fillType="evenOdd"/>
+  <path
+      android:pathData="M8.25,24.584H33.75V26.001H8.25V24.584Z"
+      android:fillColor="@color/baseline_neutral_900_with_neutral_200_alpha_5_with_primary_200_alpha_2"/>
+  <path
+      android:pathData="M13.038,23.167L16.282,14.526C16.552,13.817 17.331,13.435 18.053,13.676L21,14.667L23.961,13.676C24.683,13.435 25.462,13.817 25.732,14.526L28.962,23.167H13.038Z"
+      android:fillColor="@color/baseline_neutral_900_with_neutral_200_alpha_5_with_primary_200_alpha_2"/>
+  <path
+      android:pathData="M14.625,27.417C16.977,27.417 18.932,29.061 19.442,31.256C20.632,30.746 21.737,30.888 22.558,31.242C23.083,29.046 25.038,27.417 27.375,27.417C30.109,27.417 32.333,29.641 32.333,32.376C32.333,35.11 30.109,37.334 27.375,37.334C24.768,37.334 22.657,35.322 22.459,32.772C22.034,32.475 20.915,31.922 19.541,32.801C19.314,35.336 17.218,37.334 14.625,37.334C11.891,37.334 9.667,35.11 9.667,32.376C9.667,29.641 11.891,27.417 14.625,27.417ZM27.375,35.917C29.33,35.917 30.917,34.331 30.917,32.376C30.917,30.421 29.33,28.834 27.375,28.834C25.42,28.834 23.833,30.421 23.833,32.376C23.833,34.331 25.42,35.917 27.375,35.917ZM14.625,35.917C16.58,35.917 18.167,34.331 18.167,32.376C18.167,30.421 16.58,28.834 14.625,28.834C12.67,28.834 11.083,30.421 11.083,32.376C11.083,34.331 12.67,35.917 14.625,35.917Z"
+      android:fillColor="@color/baseline_neutral_900_with_neutral_200_alpha_5_with_primary_200_alpha_2"/>
+</vector>

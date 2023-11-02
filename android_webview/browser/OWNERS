@@ -1,5 +1,5 @@
-per-file aw_content_browser_receiver_bindings.cc=set noparent
-per-file aw_content_browser_receiver_bindings.cc=file://ipc/SECURITY_OWNERS
+per-file aw_content_browser_client_receiver_bindings.cc=set noparent
+per-file aw_content_browser_client_receiver_bindings.cc=file://ipc/SECURITY_OWNERS
 
 per-file aw_browser_policy_connector.h=file://chrome/browser/policy/OWNERS
 per-file aw_browser_policy_connector.cc=file://chrome/browser/policy/OWNERS

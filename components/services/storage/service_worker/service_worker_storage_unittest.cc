@@ -1,17 +1,17 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/services/storage/service_worker/service_worker_storage.h"
 
 #include <stdint.h>
+
 #include <memory>
 #include <string>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
@@ -310,6 +310,22 @@ class ServiceWorkerStorageTest : public testing::Test {
     return result;
   }
 
+  ServiceWorkerDatabase::Status UpdateFetchHandlerType(
+      int64_t registration_id,
+      const blink::StorageKey& key,
+      blink::mojom::ServiceWorkerFetchHandlerType fetch_handler_type) {
+    ServiceWorkerDatabase::Status result;
+    base::RunLoop loop;
+    storage()->UpdateFetchHandlerType(
+        registration_id, key, fetch_handler_type,
+        base::BindLambdaForTesting([&](ServiceWorkerDatabase::Status status) {
+          result = status;
+          loop.Quit();
+        }));
+    loop.Run();
+    return result;
+  }
+
   ServiceWorkerDatabase::Status FindRegistrationForClientUrl(
       const GURL& document_url,
       const blink::StorageKey& key) {
@@ -438,7 +454,7 @@ class ServiceWorkerStorageTest : public testing::Test {
         "HTTP/1.0 200 HONKYDORY\0Content-Length: 5\0\0";
     const std::string kHttpBody = "Hello";
 
-    std::string headers(kHttpHeaders, base::size(kHttpHeaders));
+    std::string headers(kHttpHeaders, std::size(kHttpHeaders));
     mojo_base::BigBuffer body(
         base::as_bytes(base::make_span(kHttpBody.data(), kHttpBody.length())));
 
@@ -568,6 +584,11 @@ TEST_F(ServiceWorkerStorageTest, DisabledStorage) {
       ServiceWorkerDatabase::Status::kErrorDisabled);
 
   EXPECT_EQ(UpdateToActiveState(kRegistrationId, kKey),
+            ServiceWorkerDatabase::Status::kErrorDisabled);
+
+  EXPECT_EQ(UpdateFetchHandlerType(
+                kRegistrationId, kKey,
+                blink::mojom::ServiceWorkerFetchHandlerType::kNotSkippable),
             ServiceWorkerDatabase::Status::kErrorDisabled);
 
   EXPECT_EQ(DeleteRegistration(kRegistrationId, kKey),
@@ -913,7 +934,7 @@ TEST_F(ServiceWorkerStorageDiskTest, DeleteAndStartOver_OpenedFileExists) {
       base::BindOnce(&DatabaseStatusCallback, run_loop.QuitClosure(), &status));
   run_loop.Run();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On Windows, deleting the directory containing an opened file should fail.
   EXPECT_EQ(ServiceWorkerDatabase::Status::kErrorIOError, *status);
   EXPECT_TRUE(storage()->IsDisabled());

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/constants/quick_settings_catalogs.h"
 #include "ash/display/privacy_screen_controller.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
@@ -31,16 +32,15 @@ FeaturePodButton* PrivacyScreenFeaturePodController::CreateButton() {
   return button_;
 }
 
+QsFeatureCatalogName PrivacyScreenFeaturePodController::GetCatalogName() {
+  return QsFeatureCatalogName::kPrivacyScreen;
+}
+
 void PrivacyScreenFeaturePodController::OnIconPressed() {
+  TrackToggleUMA(/*target_toggle_state=*/!Shell::Get()
+                     ->privacy_screen_controller()
+                     ->GetEnabled());
   TogglePrivacyScreen();
-}
-
-void PrivacyScreenFeaturePodController::OnLabelPressed() {
-  TogglePrivacyScreen();
-}
-
-SystemTrayItemUmaType PrivacyScreenFeaturePodController::GetUmaType() const {
-  return SystemTrayItemUmaType::UMA_PRIVACY_SCREEN;
 }
 
 void PrivacyScreenFeaturePodController::TogglePrivacyScreen() {

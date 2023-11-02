@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,68 +8,39 @@
 #include <wrl/client.h>
 #include <wrl/implements.h>
 
+#include <ios>
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/bind_post_task.h"
-#include "base/task/sequenced_task_runner.h"
-#include "base/task/single_thread_task_runner.h"
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
 #include "base/threading/platform_thread.h"
-#include "base/threading/sequenced_task_runner_handle.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "base/version.h"
 #include "base/win/scoped_bstr.h"
 #include "chrome/updater/app/server/win/updater_idl.h"
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util.h"
+#include "chrome/updater/win/proxy_impl_base.h"
 #include "chrome/updater/win/win_constants.h"
 #include "chrome/updater/win/wrl_module_initializer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace updater {
 namespace {
 
 using IUpdateStatePtr = ::Microsoft::WRL::ComPtr<IUpdateState>;
 using ICompleteStatusPtr = ::Microsoft::WRL::ComPtr<ICompleteStatus>;
-
-static constexpr base::TaskTraits kComClientTraits = {
-    base::TaskPriority::USER_VISIBLE,
-    base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN};
-
-// Creates an instance of IUpdater in the COM STA apartment.
-HRESULT CreateUpdater(UpdaterScope scope,
-                      Microsoft::WRL::ComPtr<IUpdater>& updater) {
-  ::Sleep(kCreateUpdaterInstanceDelayMs);
-  Microsoft::WRL::ComPtr<IUnknown> server;
-  HRESULT hr = ::CoCreateInstance(
-      scope == UpdaterScope::kSystem ? __uuidof(UpdaterSystemClass)
-                                     : __uuidof(UpdaterUserClass),
-      nullptr, CLSCTX_LOCAL_SERVER, IID_PPV_ARGS(&server));
-  if (FAILED(hr)) {
-    DVLOG(2) << "Failed to instantiate the update server: " << std::hex << hr;
-    return hr;
-  }
-
-  Microsoft::WRL::ComPtr<IUpdater> updater_local;
-  hr = server.As(&updater_local);
-  if (FAILED(hr)) {
-    DVLOG(2) << "Failed to query the updater interface: " << std::hex << hr;
-    return hr;
-  }
-
-  updater = updater_local;
-  return S_OK;
-}
 
 // This class implements the IUpdaterObserver interface and exposes it as a COM
 // object. The class has thread-affinity for the STA thread.
@@ -78,11 +49,9 @@ class UpdaterObserver
           Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
           IUpdaterObserver> {
  public:
-  UpdaterObserver(Microsoft::WRL::ComPtr<IUpdater> updater,
-                  UpdateService::StateChangeCallback state_update_callback,
+  UpdaterObserver(UpdateService::StateChangeCallback state_update_callback,
                   UpdateService::Callback callback)
-      : updater_(updater),
-        state_update_callback_(state_update_callback),
+      : state_update_callback_(state_update_callback),
         callback_(std::move(callback)) {}
   UpdaterObserver(const UpdaterObserver&) = delete;
   UpdaterObserver& operator=(const UpdaterObserver&) = delete;
@@ -90,11 +59,11 @@ class UpdaterObserver
   // Overrides for IUpdaterObserver. These functions are called on the STA
   // thread directly by the COM RPC runtime.
   IFACEMETHODIMP OnStateChange(IUpdateState* update_state) override {
-    DCHECK_EQ(base::PlatformThreadRef(), com_thread_ref_);
-    DCHECK(update_state);
+    CHECK_EQ(base::PlatformThreadRef(), com_thread_ref_);
+    CHECK(update_state);
 
     if (!state_update_callback_) {
-      DVLOG(2) << "Skipping posting the update state callback.";
+      VLOG(2) << "Skipping posting the update state callback.";
       return S_OK;
     }
 
@@ -103,8 +72,8 @@ class UpdaterObserver
   }
 
   IFACEMETHODIMP OnComplete(ICompleteStatus* complete_status) override {
-    DCHECK_EQ(base::PlatformThreadRef(), com_thread_ref_);
-    DCHECK(complete_status);
+    CHECK_EQ(base::PlatformThreadRef(), com_thread_ref_);
+    CHECK(complete_status);
     result_ = QueryResult(complete_status);
     return S_OK;
   }
@@ -113,23 +82,22 @@ class UpdaterObserver
   // not posted after this function is called. Returns the completion callback
   // so that the owner of this object can take back the callback ownership.
   UpdateService::Callback Disconnect() {
-    DCHECK_EQ(base::PlatformThreadRef(), com_thread_ref_);
-    DVLOG(2) << __func__;
-    updater_ = nullptr;
+    CHECK_EQ(base::PlatformThreadRef(), com_thread_ref_);
+    VLOG(2) << __func__;
     state_update_callback_.Reset();
     return std::move(callback_);
   }
 
  private:
   ~UpdaterObserver() override {
-    DCHECK_EQ(base::PlatformThreadRef(), com_thread_ref_);
+    CHECK_EQ(base::PlatformThreadRef(), com_thread_ref_);
     if (callback_)
       std::move(callback_).Run(result_);
   }
 
   UpdateService::UpdateState QueryUpdateState(IUpdateState* update_state) {
-    DCHECK_EQ(base::PlatformThreadRef(), com_thread_ref_);
-    DCHECK(update_state);
+    CHECK_EQ(base::PlatformThreadRef(), com_thread_ref_);
+    CHECK(update_state);
 
     UpdateService::UpdateState update_service_state;
     {
@@ -197,29 +165,42 @@ class UpdaterObserver
       if (SUCCEEDED(hr))
         update_service_state.extra_code1 = extra_code1;
     }
+    {
+      base::win::ScopedBstr installer_text;
+      HRESULT hr = update_state->get_installerText(installer_text.Receive());
+      if (SUCCEEDED(hr)) {
+        update_service_state.installer_text =
+            base::WideToUTF8(installer_text.Get());
+      }
+    }
+    {
+      base::win::ScopedBstr installer_cmd_line;
+      HRESULT hr =
+          update_state->get_installerCommandLine(installer_cmd_line.Receive());
+      if (SUCCEEDED(hr)) {
+        update_service_state.installer_cmd_line =
+            base::WideToUTF8(installer_cmd_line.Get());
+      }
+    }
 
-    DVLOG(4) << update_service_state;
+    VLOG(4) << update_service_state;
     return update_service_state;
   }
 
   UpdateService::Result QueryResult(ICompleteStatus* complete_status) {
-    DCHECK_EQ(base::PlatformThreadRef(), com_thread_ref_);
-    DCHECK(complete_status);
+    CHECK_EQ(base::PlatformThreadRef(), com_thread_ref_);
+    CHECK(complete_status);
 
     LONG code = 0;
     base::win::ScopedBstr message;
     CHECK(SUCCEEDED(complete_status->get_statusCode(&code)));
 
-    DVLOG(2) << "ICompleteStatus::OnComplete(" << code << ")";
+    VLOG(2) << "ICompleteStatus::OnComplete(" << code << ")";
     return static_cast<UpdateService::Result>(code);
   }
 
   // The reference of the thread this object is bound to.
   base::PlatformThreadRef com_thread_ref_;
-
-  // Keeps a reference of the updater object alive, while this object is
-  // owned by the COM RPC runtime.
-  Microsoft::WRL::ComPtr<IUpdater> updater_;
 
   // Called by IUpdaterObserver::OnStateChange when update state changes occur.
   UpdateService::StateChangeCallback state_update_callback_;
@@ -230,59 +211,6 @@ class UpdaterObserver
   UpdateService::Result result_ = UpdateService::Result::kSuccess;
 };
 
-// This class implements the IUpdaterRegisterAppCallback interface and exposes
-// it as a COM object. The class has thread-affinity for the STA thread.
-class UpdaterRegisterAppCallback
-    : public Microsoft::WRL::RuntimeClass<
-          Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
-          IUpdaterRegisterAppCallback> {
- public:
-  UpdaterRegisterAppCallback(Microsoft::WRL::ComPtr<IUpdater> updater,
-                             UpdateService::RegisterAppCallback callback)
-      : updater_(updater), callback_(std::move(callback)) {}
-  UpdaterRegisterAppCallback(const UpdaterRegisterAppCallback&) = delete;
-  UpdaterRegisterAppCallback& operator=(const UpdaterRegisterAppCallback&) =
-      delete;
-
-  // Overrides for IUpdaterRegisterAppCallback. This function is called on
-  // the STA thread directly by the COM RPC runtime.
-  IFACEMETHODIMP Run(LONG status_code) override {
-    DCHECK_EQ(base::PlatformThreadRef(), com_thread_ref_);
-    DVLOG(2) << __func__;
-    status_code_ = status_code;
-    return S_OK;
-  }
-
-  // Disconnects this observer from its subject and ensures the callbacks are
-  // not posted after this function is called. Returns the completion callback
-  // so that the owner of this object can take back the callback ownership.
-  UpdateService::RegisterAppCallback Disconnect() {
-    DCHECK_EQ(base::PlatformThreadRef(), com_thread_ref_);
-    DVLOG(2) << __func__;
-    updater_ = nullptr;
-    return std::move(callback_);
-  }
-
- private:
-  ~UpdaterRegisterAppCallback() override {
-    DCHECK_EQ(base::PlatformThreadRef(), com_thread_ref_);
-    if (callback_)
-      std::move(callback_).Run(RegistrationResponse(status_code_));
-  }
-
-  // The reference of the thread this object is bound to.
-  base::PlatformThreadRef com_thread_ref_;
-
-  // Keeps a reference of the updater object alive, while this object is
-  // owned by the COM RPC runtime.
-  Microsoft::WRL::ComPtr<IUpdater> updater_;
-
-  // Called by IUpdaterObserver::OnComplete when the COM RPC call is done.
-  UpdateService::RegisterAppCallback callback_;
-
-  LONG status_code_ = 0;
-};
-
 // This class implements the IUpdaterCallback interface and exposes it as a COM
 // object. The class has thread-affinity for the STA thread.
 class UpdaterCallback
@@ -290,9 +218,8 @@ class UpdaterCallback
           Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
           IUpdaterCallback> {
  public:
-  UpdaterCallback(Microsoft::WRL::ComPtr<IUpdater> updater,
-                  base::OnceCallback<void(LONG)> callback)
-      : updater_(updater), callback_(std::move(callback)) {}
+  explicit UpdaterCallback(base::OnceCallback<void(LONG)> callback)
+      : callback_(std::move(callback)) {}
   UpdaterCallback(const UpdaterCallback&) = delete;
   UpdaterCallback& operator=(const UpdaterCallback&) = delete;
 
@@ -300,8 +227,8 @@ class UpdaterCallback
   // thread directly by the COM RPC runtime, and must be sequenced through
   // the task runner.
   IFACEMETHODIMP Run(LONG status_code) override {
-    DCHECK_EQ(base::PlatformThreadRef(), com_thread_ref_);
-    DVLOG(2) << __func__;
+    CHECK_EQ(base::PlatformThreadRef(), com_thread_ref_);
+    VLOG(2) << __func__;
     status_code_ = status_code;
     return S_OK;
   }
@@ -310,25 +237,20 @@ class UpdaterCallback
   // not posted after this function is called. Returns the completion callback
   // so that the owner of this object can take back the callback ownership.
   base::OnceCallback<void(LONG)> Disconnect() {
-    DCHECK_EQ(base::PlatformThreadRef(), com_thread_ref_);
-    DVLOG(2) << __func__;
-    updater_ = nullptr;
+    CHECK_EQ(base::PlatformThreadRef(), com_thread_ref_);
+    VLOG(2) << __func__;
     return std::move(callback_);
   }
 
  private:
   ~UpdaterCallback() override {
-    DCHECK_EQ(base::PlatformThreadRef(), com_thread_ref_);
+    CHECK_EQ(base::PlatformThreadRef(), com_thread_ref_);
     if (callback_)
       std::move(callback_).Run(status_code_);
   }
 
   // The reference of the thread this object is bound to.
   base::PlatformThreadRef com_thread_ref_;
-
-  // Keeps a reference of the updater object alive, while this object is
-  // owned by the COM RPC runtime.
-  Microsoft::WRL::ComPtr<IUpdater> updater_;
 
   base::OnceCallback<void(LONG)> callback_;
 
@@ -337,241 +259,517 @@ class UpdaterCallback
 
 }  // namespace
 
-scoped_refptr<UpdateService> CreateUpdateServiceProxy(
-    UpdaterScope updater_scope) {
-  return base::MakeRefCounted<UpdateServiceProxy>(updater_scope);
-}
+class UpdateServiceProxyImpl
+    : public base::RefCountedThreadSafe<UpdateServiceProxyImpl>,
+      public ProxyImplBase<UpdateServiceProxyImpl, IUpdater> {
+ public:
+  explicit UpdateServiceProxyImpl(UpdaterScope scope) : ProxyImplBase(scope) {}
+
+  static auto GetClassGuid(UpdaterScope scope) {
+    return scope == UpdaterScope::kSystem ? __uuidof(UpdaterSystemClass)
+                                          : __uuidof(UpdaterUserClass);
+  }
+
+  void GetVersion(base::OnceCallback<void(const base::Version&)> callback) {
+    PostRPCTask(base::BindOnce(&UpdateServiceProxyImpl::GetVersionOnSTA, this,
+                               std::move(callback)));
+  }
+
+  void FetchPolicies(base::OnceCallback<void(int)> callback) {
+    PostRPCTask(base::BindOnce(&UpdateServiceProxyImpl::FetchPoliciesOnSTA,
+                               this, std::move(callback)));
+  }
+
+  void RegisterApp(const RegistrationRequest& request,
+                   base::OnceCallback<void(int)> callback) {
+    PostRPCTask(base::BindOnce(&UpdateServiceProxyImpl::RegisterAppOnSTA, this,
+                               request, std::move(callback)));
+  }
+
+  void GetAppStates(
+      base::OnceCallback<void(const std::vector<UpdateService::AppState>&)>
+          callback) {
+    PostRPCTask(base::BindOnce(&UpdateServiceProxyImpl::GetAppStatesOnSTA, this,
+                               std::move(callback)));
+  }
+
+  void RunPeriodicTasks(base::OnceClosure callback) {
+    PostRPCTask(base::BindOnce(&UpdateServiceProxyImpl::RunPeriodicTasksOnSTA,
+                               this, std::move(callback)));
+  }
+
+  void UpdateAll(UpdateService::StateChangeCallback state_update,
+                 UpdateService::Callback callback) {
+    PostRPCTask(base::BindOnce(&UpdateServiceProxyImpl::UpdateAllOnSTA, this,
+                               state_update, std::move(callback)));
+  }
+
+  void Update(const std::string& app_id,
+              const std::string& install_data_index,
+              UpdateService::Priority priority,
+              UpdateService::PolicySameVersionUpdate policy_same_version_update,
+              UpdateService::StateChangeCallback state_update,
+              UpdateService::Callback callback) {
+    PostRPCTask(base::BindOnce(&UpdateServiceProxyImpl::UpdateOnSTA, this,
+                               app_id, install_data_index, priority,
+                               policy_same_version_update, state_update,
+                               std::move(callback)));
+  }
+
+  void Install(const RegistrationRequest& registration,
+               const std::string& client_install_data,
+               const std::string& install_data_index,
+               UpdateService::Priority priority,
+               UpdateService::StateChangeCallback state_update,
+               UpdateService::Callback callback) {
+    PostRPCTask(base::BindOnce(&UpdateServiceProxyImpl::InstallOnSTA, this,
+                               registration, client_install_data,
+                               install_data_index, priority, state_update,
+                               std::move(callback)));
+  }
+
+  void CancelInstalls(const std::string& app_id) {
+    PostRPCTask(base::BindOnce(&UpdateServiceProxyImpl::CancelInstallsOnSTA,
+                               this, app_id));
+  }
+
+  void RunInstaller(const std::string& app_id,
+                    const base::FilePath& installer_path,
+                    const std::string& install_args,
+                    const std::string& install_data,
+                    const std::string& install_settings,
+                    UpdateService::StateChangeCallback state_update,
+                    UpdateService::Callback callback) {
+    PostRPCTask(base::BindOnce(&UpdateServiceProxyImpl::RunInstallerOnSTA, this,
+                               app_id, installer_path, install_args,
+                               install_data, install_settings, state_update,
+                               std::move(callback)));
+  }
+
+ private:
+  friend class base::RefCountedThreadSafe<UpdateServiceProxyImpl>;
+  virtual ~UpdateServiceProxyImpl() = default;
+
+  void GetVersionOnSTA(
+      base::OnceCallback<void(const base::Version&)> callback) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (!ConnectToServer()) {
+      std::move(callback).Run(base::Version());
+      return;
+    }
+    base::win::ScopedBstr version;
+    if (HRESULT hr = get_interface()->GetVersion(version.Receive());
+        FAILED(hr)) {
+      VLOG(2) << "IUpdater::GetVersion failed: " << std::hex << hr;
+      std::move(callback).Run(base::Version());
+      return;
+    }
+    std::move(callback).Run(base::Version(base::WideToUTF8(version.Get())));
+  }
+
+  void FetchPoliciesOnSTA(base::OnceCallback<void(int)> callback) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (!ConnectToServer()) {
+      std::move(callback).Run(hresult());
+      return;
+    }
+    auto callback_wrapper =
+        Microsoft::WRL::Make<UpdaterCallback>(base::BindOnce(
+            [](base::OnceCallback<void(int)> callback, LONG status_code) {
+              std::move(callback).Run(status_code);
+            },
+            std::move(callback)));
+    if (HRESULT hr = get_interface()->FetchPolicies(callback_wrapper.Get());
+        FAILED(hr)) {
+      VLOG(2) << "Failed to call IUpdater::FetchPolicies, " << std::hex << hr;
+      callback_wrapper->Disconnect().Run(hr);
+      return;
+    }
+  }
+
+  void RegisterAppOnSTA(const RegistrationRequest& request,
+                        base::OnceCallback<void(int)> callback) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (!ConnectToServer()) {
+      std::move(callback).Run(hresult());
+      return;
+    }
+    std::wstring app_id_w;
+    std::wstring brand_code_w;
+    std::wstring brand_path_w;
+    std::wstring ap_w;
+    std::wstring version_w;
+    std::wstring existence_checker_path_w;
+    if (![&]() {
+          if (!base::UTF8ToWide(request.app_id.c_str(), request.app_id.size(),
+                                &app_id_w)) {
+            return false;
+          }
+          if (!base::UTF8ToWide(request.brand_code.c_str(),
+                                request.brand_code.size(), &brand_code_w)) {
+            return false;
+          }
+          brand_path_w = request.brand_path.value();
+          if (!base::UTF8ToWide(request.ap.c_str(), request.ap.size(), &ap_w)) {
+            return false;
+          }
+          std::string version_str = request.version.GetString();
+          if (!base::UTF8ToWide(version_str.c_str(), version_str.size(),
+                                &version_w)) {
+            return false;
+          }
+          existence_checker_path_w = request.existence_checker_path.value();
+          return true;
+        }()) {
+      std::move(callback).Run(E_INVALIDARG);
+      return;
+    }
+
+    auto callback_wrapper =
+        Microsoft::WRL::Make<UpdaterCallback>(base::BindOnce(
+            [](base::OnceCallback<void(int)> callback, LONG status_code) {
+              std::move(callback).Run(status_code);
+            },
+            std::move(callback)));
+    if (HRESULT hr = get_interface()->RegisterApp(
+            app_id_w.c_str(), brand_code_w.c_str(), brand_path_w.c_str(),
+            ap_w.c_str(), version_w.c_str(), existence_checker_path_w.c_str(),
+            callback_wrapper.Get());
+        FAILED(hr)) {
+      VLOG(2) << "Failed to call IUpdater::RegisterApp" << std::hex << hr;
+      callback_wrapper->Disconnect().Run(hr);
+      return;
+    }
+  }
+
+  void GetAppStatesOnSTA(
+      base::OnceCallback<void(const std::vector<UpdateService::AppState>&)>
+          callback) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    // TODO(crbug.com/1094024): implement this feature in the COM server and
+    // then replace this stub code with the actual call.
+    std::move(callback).Run(std::vector<UpdateService::AppState>());
+  }
+
+  void RunPeriodicTasksOnSTA(base::OnceClosure callback) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (!ConnectToServer()) {
+      std::move(callback).Run();
+      return;
+    }
+    auto callback_wrapper = Microsoft::WRL::Make<UpdaterCallback>(
+        base::BindOnce([](base::OnceClosure callback,
+                          LONG /*status_code*/) { std::move(callback).Run(); },
+                       std::move(callback)));
+    if (HRESULT hr = get_interface()->RunPeriodicTasks(callback_wrapper.Get());
+        FAILED(hr)) {
+      VLOG(2) << "Failed to call IUpdater::RunPeriodicTasks" << std::hex << hr;
+      callback_wrapper->Disconnect().Run(hr);
+      return;
+    }
+  }
+
+  void UpdateAllOnSTA(UpdateService::StateChangeCallback state_update,
+                      UpdateService::Callback callback) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (!ConnectToServer()) {
+      std::move(callback).Run(UpdateService::Result::kServiceFailed);
+      return;
+    }
+    auto observer = Microsoft::WRL::Make<UpdaterObserver>(state_update,
+                                                          std::move(callback));
+    if (HRESULT hr = get_interface()->UpdateAll(observer.Get()); FAILED(hr)) {
+      VLOG(2) << "Failed to call IUpdater::UpdateAll" << std::hex << hr;
+      observer->Disconnect().Run(UpdateService::Result::kServiceFailed);
+      return;
+    }
+  }
+
+  void UpdateOnSTA(
+      const std::string& app_id,
+      const std::string& install_data_index,
+      UpdateService::Priority priority,
+      UpdateService::PolicySameVersionUpdate policy_same_version_update,
+      UpdateService::StateChangeCallback state_update,
+      UpdateService::Callback callback) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (!ConnectToServer()) {
+      std::move(callback).Run(UpdateService::Result::kServiceFailed);
+      return;
+    }
+    std::wstring app_id_w;
+    std::wstring install_data_index_w;
+    if (![&]() {
+          if (!base::UTF8ToWide(app_id.c_str(), app_id.size(), &app_id_w)) {
+            return false;
+          }
+          if (!base::UTF8ToWide(install_data_index.c_str(),
+                                install_data_index.size(),
+                                &install_data_index_w)) {
+            return false;
+          }
+          return true;
+        }()) {
+      std::move(callback).Run(UpdateService::Result::kServiceFailed);
+      return;
+    }
+
+    auto observer = Microsoft::WRL::Make<UpdaterObserver>(state_update,
+                                                          std::move(callback));
+    HRESULT hr = get_interface()->Update(
+        app_id_w.c_str(), install_data_index_w.c_str(),
+        static_cast<int>(priority),
+        policy_same_version_update ==
+            UpdateService::PolicySameVersionUpdate::kAllowed,
+        observer.Get());
+    if (FAILED(hr)) {
+      VLOG(2) << "Failed to call IUpdater::UpdateAll: " << std::hex << hr;
+      observer->Disconnect().Run(UpdateService::Result::kServiceFailed);
+      return;
+    }
+  }
+
+  void InstallOnSTA(const RegistrationRequest& request,
+                    const std::string& client_install_data,
+                    const std::string& install_data_index,
+                    UpdateService::Priority priority,
+                    UpdateService::StateChangeCallback state_update,
+                    UpdateService::Callback callback) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (!ConnectToServer()) {
+      std::move(callback).Run(UpdateService::Result::kServiceFailed);
+      return;
+    }
+    std::wstring app_id_w;
+    std::wstring brand_code_w;
+    std::wstring brand_path_w;
+    std::wstring ap_w;
+    std::wstring version_w;
+    std::wstring existence_checker_path_w;
+    std::wstring client_install_data_w;
+    std::wstring install_data_index_w;
+    if (![&]() {
+          if (!base::UTF8ToWide(request.app_id.c_str(), request.app_id.size(),
+                                &app_id_w)) {
+            return false;
+          }
+          if (!base::UTF8ToWide(request.brand_code.c_str(),
+                                request.brand_code.size(), &brand_code_w)) {
+            return false;
+          }
+          brand_path_w = request.brand_path.value();
+          if (!base::UTF8ToWide(request.ap.c_str(), request.ap.size(), &ap_w)) {
+            return false;
+          }
+          std::string version_str = request.version.GetString();
+          if (!base::UTF8ToWide(version_str.c_str(), version_str.size(),
+                                &version_w)) {
+            return false;
+          }
+          existence_checker_path_w = request.existence_checker_path.value();
+          if (!base::UTF8ToWide(client_install_data.c_str(),
+                                client_install_data.size(),
+                                &client_install_data_w)) {
+            return false;
+          }
+          if (!base::UTF8ToWide(install_data_index.c_str(),
+                                install_data_index.size(),
+                                &install_data_index_w)) {
+            return false;
+          }
+          return true;
+        }()) {
+      std::move(callback).Run(UpdateService::Result::kServiceFailed);
+      return;
+    }
+    auto observer = Microsoft::WRL::Make<UpdaterObserver>(state_update,
+                                                          std::move(callback));
+    HRESULT hr = get_interface()->Install(
+        app_id_w.c_str(), brand_code_w.c_str(), brand_path_w.c_str(),
+        ap_w.c_str(), version_w.c_str(), existence_checker_path_w.c_str(),
+        client_install_data_w.c_str(), install_data_index_w.c_str(),
+        static_cast<int>(priority), observer.Get());
+    if (FAILED(hr)) {
+      VLOG(2) << "Failed to call IUpdater::Install: " << std::hex << hr;
+      observer->Disconnect().Run(UpdateService::Result::kServiceFailed);
+      return;
+    }
+  }
+
+  void CancelInstallsOnSTA(const std::string& app_id) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (!ConnectToServer()) {
+      return;
+    }
+    if (HRESULT hr =
+            get_interface()->CancelInstalls(base::UTF8ToWide(app_id).c_str());
+        FAILED(hr)) {
+      VLOG(2) << "Failed to call IUpdater::CancelInstalls: " << std::hex << hr;
+    }
+  }
+
+  void RunInstallerOnSTA(const std::string& app_id,
+                         const base::FilePath& installer_path,
+                         const std::string& install_args,
+                         const std::string& install_data,
+                         const std::string& install_settings,
+                         UpdateService::StateChangeCallback state_update,
+                         UpdateService::Callback callback) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    VLOG(1) << __func__;
+    if (!ConnectToServer()) {
+      std::move(callback).Run(UpdateService::Result::kServiceFailed);
+      return;
+    }
+    std::wstring app_id_w;
+    std::wstring install_args_w;
+    std::wstring install_data_w;
+    std::wstring install_settings_w;
+    if (![&]() {
+          if (!base::UTF8ToWide(app_id.c_str(), app_id.size(), &app_id_w)) {
+            return false;
+          }
+          if (!base::UTF8ToWide(install_args.c_str(), install_args.size(),
+                                &install_args_w)) {
+            return false;
+          }
+          if (!base::UTF8ToWide(install_data.c_str(), install_data.size(),
+                                &install_data_w)) {
+            return false;
+          }
+          if (!base::UTF8ToWide(install_settings.c_str(),
+                                install_settings.size(), &install_settings_w)) {
+            return false;
+          }
+          return true;
+        }()) {
+      std::move(callback).Run(UpdateService::Result::kServiceFailed);
+      return;
+    }
+
+    auto observer = Microsoft::WRL::Make<UpdaterObserver>(state_update,
+                                                          std::move(callback));
+    HRESULT hr = get_interface()->RunInstaller(
+        app_id_w.c_str(), installer_path.value().c_str(),
+        install_args_w.c_str(), install_data_w.c_str(),
+        install_settings_w.c_str(), observer.Get());
+    if (SUCCEEDED(hr)) {
+      VLOG(2) << "IUpdater::OfflineInstall completed successfully.";
+    } else {
+      VLOG(2) << "Failed to call IUpdater::OfflineInstall: " << std::hex << hr;
+      observer->Disconnect().Run(UpdateService::Result::kServiceFailed);
+    }
+  }
+};
 
 UpdateServiceProxy::UpdateServiceProxy(UpdaterScope updater_scope)
-    : scope_(updater_scope),
-      main_task_runner_(base::SequencedTaskRunnerHandle::Get()),
-      com_task_runner_(
-          base::ThreadPool::CreateCOMSTATaskRunner(kComClientTraits)) {
-  WRLModuleInitializer::Get();
+    : impl_(base::MakeRefCounted<UpdateServiceProxyImpl>(updater_scope)) {}
+
+UpdateServiceProxy::~UpdateServiceProxy() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(1) << __func__;
+  UpdateServiceProxyImpl::Destroy(impl_);
+  CHECK_EQ(impl_, nullptr);
 }
 
-UpdateServiceProxy::~UpdateServiceProxy() = default;
-
 void UpdateServiceProxy::GetVersion(
-    base::OnceCallback<void(const base::Version&)> callback) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_main_);
-  com_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&UpdateServiceProxy::GetVersionOnSTA, this,
-                                base::BindPostTask(main_task_runner_,
-                                                   std::move(callback))));
+    base::OnceCallback<void(const base::Version&)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(1) << __func__;
+  impl_->GetVersion(OnCurrentSequence(std::move(callback)));
+}
+
+void UpdateServiceProxy::FetchPolicies(base::OnceCallback<void(int)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(1) << __func__;
+  impl_->FetchPolicies(OnCurrentSequence(std::move(callback)));
 }
 
 void UpdateServiceProxy::RegisterApp(const RegistrationRequest& request,
-                                     RegisterAppCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_main_);
-  com_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &UpdateServiceProxy::RegisterAppOnSTA, this, request,
-          base::BindPostTask(main_task_runner_, std::move(callback))));
+                                     base::OnceCallback<void(int)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(1) << __func__;
+  impl_->RegisterApp(request, OnCurrentSequence(std::move(callback)));
+}
+
+void UpdateServiceProxy::GetAppStates(
+    base::OnceCallback<void(const std::vector<AppState>&)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(1) << __func__;
+  impl_->GetAppStates(OnCurrentSequence(std::move(callback)));
 }
 
 void UpdateServiceProxy::RunPeriodicTasks(base::OnceClosure callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_main_);
-  com_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &UpdateServiceProxy::RunPeriodicTasksOnSTA, this,
-          base::BindPostTask(main_task_runner_, std::move(callback))));
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(1) << __func__;
+  impl_->RunPeriodicTasks(OnCurrentSequence(std::move(callback)));
 }
 
 void UpdateServiceProxy::UpdateAll(StateChangeCallback state_update,
                                    Callback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_main_);
-
-  // Reposts the call to the COM task runner. Adapts `callback` so that
-  // the callback runs on the main sequence.
-  com_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &UpdateServiceProxy::UpdateAllOnSTA, this,
-          base::BindPostTask(main_task_runner_, state_update),
-          base::BindPostTask(main_task_runner_, std::move(callback))));
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(1) << __func__;
+  impl_->UpdateAll(OnCurrentSequence(state_update),
+                   OnCurrentSequence(std::move(callback)));
 }
 
-void UpdateServiceProxy::Update(const std::string& app_id,
-                                UpdateService::Priority /*priority*/,
-                                StateChangeCallback state_update,
-                                Callback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_main_);
-
-  // Reposts the call to the COM task runner. Adapts `callback` so that
-  // the callback runs on the main sequence.
-  com_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &UpdateServiceProxy::UpdateOnSTA, this, app_id,
-          base::BindPostTask(main_task_runner_, state_update),
-          base::BindPostTask(main_task_runner_, std::move(callback))));
+void UpdateServiceProxy::Update(
+    const std::string& app_id,
+    const std::string& install_data_index,
+    UpdateService::Priority priority,
+    PolicySameVersionUpdate policy_same_version_update,
+    StateChangeCallback state_update,
+    Callback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(1) << __func__;
+  impl_->Update(app_id, install_data_index, priority,
+                policy_same_version_update, OnCurrentSequence(state_update),
+                OnCurrentSequence(std::move(callback)));
 }
 
+void UpdateServiceProxy::Install(const RegistrationRequest& registration,
+                                 const std::string& client_install_data,
+                                 const std::string& install_data_index,
+                                 Priority priority,
+                                 StateChangeCallback state_update,
+                                 Callback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(1) << __func__;
+  impl_->Install(registration, client_install_data, install_data_index,
+                 priority, OnCurrentSequence(state_update),
+                 OnCurrentSequence(std::move(callback)));
+}
+
+void UpdateServiceProxy::CancelInstalls(const std::string& app_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(1) << __func__;
+  impl_->CancelInstalls(app_id);
+}
+
+void UpdateServiceProxy::RunInstaller(const std::string& app_id,
+                                      const base::FilePath& installer_path,
+                                      const std::string& install_args,
+                                      const std::string& install_data,
+                                      const std::string& install_settings,
+                                      StateChangeCallback state_update,
+                                      Callback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(1) << __func__;
+  impl_->RunInstaller(app_id, installer_path, install_args, install_data,
+                      install_settings, OnCurrentSequence(state_update),
+                      OnCurrentSequence(std::move(callback)));
+}
+
+// TODO(crbug.com/1363829) - remove the function.
 void UpdateServiceProxy::Uninitialize() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_main_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void UpdateServiceProxy::GetVersionOnSTA(
-    base::OnceCallback<void(const base::Version&)> callback) const {
-  DCHECK(com_task_runner_->BelongsToCurrentThread());
-
-  Microsoft::WRL::ComPtr<IUpdater> updater;
-  HRESULT hr = CreateUpdater(scope_, updater);
-  if (FAILED(hr)) {
-    DVLOG(2) << "Failed to create the updater interface: " << std::hex << hr;
-    std::move(callback).Run(base::Version());
-    return;
-  }
-
-  base::win::ScopedBstr version;
-  hr = updater->GetVersion(version.Receive());
-  if (FAILED(hr)) {
-    DVLOG(2) << "IUpdater::GetVersion failed: " << std::hex << hr;
-    std::move(callback).Run(base::Version());
-    return;
-  }
-
-  std::move(callback).Run(base::Version(base::WideToUTF8(version.Get())));
-}
-
-void UpdateServiceProxy::RegisterAppOnSTA(
-    const RegistrationRequest& request,
-    base::OnceCallback<void(const RegistrationResponse&)> callback) {
-  DCHECK(com_task_runner_->BelongsToCurrentThread());
-
-  Microsoft::WRL::ComPtr<IUpdater> updater;
-  HRESULT hr = CreateUpdater(scope_, updater);
-  if (FAILED(hr)) {
-    DVLOG(2) << "Failed to create the updater interface: " << std::hex << hr;
-    std::move(callback).Run(RegistrationResponse(hr));
-    return;
-  }
-
-  std::wstring app_id;
-  std::wstring brand_code;
-  std::wstring ap;
-  std::wstring version;
-  std::wstring existence_checker_path;
-  if (![&]() {
-        if (!base::UTF8ToWide(request.app_id.c_str(), request.app_id.size(),
-                              &app_id)) {
-          return false;
-        }
-        if (!base::UTF8ToWide(request.brand_code.c_str(),
-                              request.brand_code.size(), &brand_code)) {
-          return false;
-        }
-        if (!base::UTF8ToWide(request.ap.c_str(), request.ap.size(), &ap)) {
-          return false;
-        }
-        std::string version_str = request.version.GetString();
-        if (!base::UTF8ToWide(version_str.c_str(), version_str.size(),
-                              &version)) {
-          return false;
-        }
-        existence_checker_path = request.existence_checker_path.value();
-        return true;
-      }()) {
-    std::move(callback).Run(RegistrationResponse(-1));
-    return;
-  }
-
-  auto callback_wrapper = Microsoft::WRL::Make<UpdaterRegisterAppCallback>(
-      updater, std::move(callback));
-  hr = updater->RegisterApp(app_id.c_str(), brand_code.c_str(), ap.c_str(),
-                            version.c_str(), existence_checker_path.c_str(),
-                            callback_wrapper.Get());
-  if (FAILED(hr)) {
-    DVLOG(2) << "Failed to call IUpdater::RegisterApp" << std::hex << hr;
-    callback_wrapper->Disconnect().Run(RegistrationResponse(hr));
-    return;
-  }
-}
-
-void UpdateServiceProxy::RunPeriodicTasksOnSTA(base::OnceClosure callback) {
-  DCHECK(com_task_runner_->BelongsToCurrentThread());
-  Microsoft::WRL::ComPtr<IUpdater> updater;
-  HRESULT hr = CreateUpdater(scope_, updater);
-  if (FAILED(hr)) {
-    DVLOG(2) << "Failed to create the updater interface: " << std::hex << hr;
-    std::move(callback).Run();
-    return;
-  }
-
-  auto callback_wrapper = Microsoft::WRL::Make<UpdaterCallback>(
-      updater,
-      base::BindOnce([](base::OnceClosure callback,
-                        LONG /*status_code*/) { std::move(callback).Run(); },
-                     std::move(callback)));
-  hr = updater->RunPeriodicTasks(callback_wrapper.Get());
-  if (FAILED(hr)) {
-    DVLOG(2) << "Failed to call IUpdater::RunPeriodicTasks" << std::hex << hr;
-    callback_wrapper->Disconnect().Run(hr);
-    return;
-  }
-}
-
-void UpdateServiceProxy::UpdateAllOnSTA(StateChangeCallback state_update,
-                                        Callback callback) {
-  DCHECK(com_task_runner_->BelongsToCurrentThread());
-
-  Microsoft::WRL::ComPtr<IUpdater> updater;
-  HRESULT hr = CreateUpdater(scope_, updater);
-  if (FAILED(hr)) {
-    DVLOG(2) << "Failed to create the updater interface: " << std::hex << hr;
-    std::move(callback).Run(Result::kServiceFailed);
-    return;
-  }
-
-  // The COM RPC takes ownership of the `observer` and owns a reference to
-  // the `updater` object as well. As long as the `observer` retains this
-  // reference to the `updater` object, then the object is going to stay alive.
-  // Once the server has notified, then released its last reference to the
-  // `observer` object, the `observer` is destroyed, and as a result, the
-  // last reference to `updater` is released as well, which causes the
-  // destruction of the `updater` object.
-  auto observer = Microsoft::WRL::Make<UpdaterObserver>(updater, state_update,
-                                                        std::move(callback));
-  hr = updater->UpdateAll(observer.Get());
-  if (FAILED(hr)) {
-    DVLOG(2) << "Failed to call IUpdater::UpdateAll" << std::hex << hr;
-
-    // Since the RPC call returned an error, it can't be determined what the
-    // state of the update server is. The observer may or may not post any
-    // callback. Disconnecting the observer resolves this ambiguity and
-    // transfers the ownership of the callback back to the owner of the
-    // observer.
-    observer->Disconnect().Run(Result::kServiceFailed);
-    return;
-  }
-}
-
-void UpdateServiceProxy::UpdateOnSTA(const std::string& app_id,
-                                     StateChangeCallback state_update,
-                                     Callback callback) {
-  DCHECK(com_task_runner_->BelongsToCurrentThread());
-
-  Microsoft::WRL::ComPtr<IUpdater> updater;
-  HRESULT hr = CreateUpdater(scope_, updater);
-  if (FAILED(hr)) {
-    DVLOG(2) << "Failed to create the updater interface: " << std::hex << hr;
-    std::move(callback).Run(Result::kServiceFailed);
-    return;
-  }
-
-  auto observer = Microsoft::WRL::Make<UpdaterObserver>(updater, state_update,
-                                                        std::move(callback));
-  hr = updater->Update(base::UTF8ToWide(app_id).c_str(), observer.Get());
-  if (FAILED(hr)) {
-    DVLOG(2) << "Failed to call IUpdater::UpdateAll: " << std::hex << hr;
-
-    // See the comment in the implementation of `UpdateAllOnSTA`.
-    observer->Disconnect().Run(Result::kServiceFailed);
-    return;
-  }
+scoped_refptr<UpdateService> CreateUpdateServiceProxy(
+    UpdaterScope updater_scope,
+    const base::TimeDelta& /*get_version_timeout*/) {
+  return base::MakeRefCounted<UpdateServiceProxy>(updater_scope);
 }
 
 }  // namespace updater

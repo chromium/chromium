@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,12 +6,11 @@
 #define REMOTING_PROTOCOL_CLIPBOARD_FILTER_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "remoting/protocol/clipboard_stub.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 // Forwards clipboard events to |clipboard_stub|, if configured.  Event
 // forwarding may also be disabled independently of the configured
@@ -41,12 +40,11 @@ class ClipboardFilter : public ClipboardStub {
   void InjectClipboardEvent(const ClipboardEvent& event) override;
 
  private:
-  ClipboardStub* clipboard_stub_ = nullptr;
+  raw_ptr<ClipboardStub> clipboard_stub_ = nullptr;
   bool enabled_ = true;
   absl::optional<size_t> max_size_;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_CLIPBOARD_FILTER_H_

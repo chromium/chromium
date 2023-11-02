@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,10 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "components/messages/android/message_wrapper.h"
+#endif
 
 class GURL;
 class HostContentSettingsMap;
@@ -40,13 +44,19 @@ namespace permissions {
 class ObjectPermissionContextBase;
 class PermissionActionsHistory;
 class PermissionDecisionAutoBlocker;
-class PermissionManager;
 class PermissionPromptAndroid;
 
 // Interface to be implemented by permissions embedder to access embedder
 // specific logic.
 class PermissionsClient {
  public:
+#if BUILDFLAG(IS_ANDROID)
+  class PermissionMessageDelegate {
+   public:
+    virtual ~PermissionMessageDelegate() = default;
+  };
+#endif
+
   PermissionsClient(const PermissionsClient&) = delete;
   PermissionsClient& operator=(const PermissionsClient&) = delete;
 
@@ -77,11 +87,6 @@ class PermissionsClient {
   virtual PermissionDecisionAutoBlocker* GetPermissionDecisionAutoBlocker(
       content::BrowserContext* browser_context) = 0;
 
-  // Retrieves the PermissionManager for this context. The returned
-  // pointer has the same lifetime as |browser_context|.
-  virtual PermissionManager* GetPermissionManager(
-      content::BrowserContext* browser_context) = 0;
-
   // Gets the ObjectPermissionContextBase for the given type and context, which
   // must be a
   // *_CHOOSER_DATA value. May return null if the context does not exist.
@@ -102,7 +107,7 @@ class PermissionsClient {
       content::BrowserContext* browser_context,
       std::vector<std::pair<url::Origin, bool>>* origins);
 
-#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
   // Returns whether cookie deletion is allowed for |browser_context| and
   // |origin|.
   // TODO(crbug.com/1081944): Remove this method and all code depending on it
@@ -119,7 +124,7 @@ class PermissionsClient {
   using GetUkmSourceIdCallback =
       base::OnceCallback<void(absl::optional<ukm::SourceId>)>;
   virtual void GetUkmSourceId(content::BrowserContext* browser_context,
-                              const content::WebContents* web_contents,
+                              content::WebContents* web_contents,
                               const GURL& requesting_origin,
                               GetUkmSourceIdCallback callback);
 
@@ -139,12 +144,15 @@ class PermissionsClient {
 
   using QuietUiReason = PermissionUiSelector::QuietUiReason;
   // Called for each request type when a permission prompt is resolved.
-  virtual void OnPromptResolved(content::BrowserContext* browser_context,
-                                RequestType request_type,
-                                PermissionAction action,
-                                const GURL& origin,
-                                PermissionPromptDisposition prompt_disposition,
-                                absl::optional<QuietUiReason> quiet_ui_reason);
+  virtual void OnPromptResolved(
+      content::BrowserContext* browser_context,
+      RequestType request_type,
+      PermissionAction action,
+      const GURL& origin,
+      PermissionPromptDisposition prompt_disposition,
+      PermissionPromptDispositionReason prompt_disposition_reason,
+      PermissionRequestGestureType gesture_type,
+      absl::optional<QuietUiReason> quiet_ui_reason);
 
   // Returns true if user has 3 consecutive notifications permission denies,
   // returns false otherwise.
@@ -182,29 +190,14 @@ class PermissionsClient {
 
   // Checks if `requesting_origin` and `embedding_origin` are the new tab page
   // origins.
-  virtual bool DoOriginsMatchNewTabPage(const GURL& requesting_origin,
-                                        const GURL& embedding_origin);
+  virtual bool DoURLsMatchNewTabPage(const GURL& requesting_origin,
+                                     const GURL& embedding_origin);
 
-#if defined(OS_ANDROID)
-  // Returns whether the permission is controlled by the default search
-  // engine (DSE). For example, in Chrome, making a search engine default
-  // automatically grants notification permissions for the associated origin.
-  virtual bool IsPermissionControlledByDse(
-      content::BrowserContext* browser_context,
-      ContentSettingsType type,
-      const url::Origin& origin);
-
+#if BUILDFLAG(IS_ANDROID)
   // Returns whether the given origin matches the default search engine (DSE)
   // origin.
   virtual bool IsDseOrigin(content::BrowserContext* browser_context,
                            const url::Origin& origin);
-
-  // Resets the permission if it's controlled by the default search
-  // engine (DSE). The return value is true if the permission was reset.
-  virtual bool ResetPermissionIfControlledByDse(
-      content::BrowserContext* browser_context,
-      ContentSettingsType type,
-      const url::Origin& origin);
 
   // Retrieves the InfoBarManager for the web contents. The returned
   // pointer has the same lifetime as |web_contents|.
@@ -216,6 +209,15 @@ class PermissionsClient {
   // infobar permission prompts). The returned infobar is owned by the info bar
   // manager.
   virtual infobars::InfoBar* MaybeCreateInfoBar(
+      content::WebContents* web_contents,
+      ContentSettingsType type,
+      base::WeakPtr<PermissionPromptAndroid> prompt);
+
+  // Allows the embedder to create a message UI to use as the permission prompt.
+  // Returns the pointer to the message UI if the message UI is successfully
+  // created, nullptr otherwise, e.g. if the messages-prompt is not
+  // supported for `type`.
+  virtual std::unique_ptr<PermissionMessageDelegate> MaybeCreateMessageUI(
       content::WebContents* web_contents,
       ContentSettingsType type,
       base::WeakPtr<PermissionPromptAndroid> prompt);

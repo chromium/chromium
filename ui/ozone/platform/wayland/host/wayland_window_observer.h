@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,6 +23,9 @@ class WaylandWindowObserver : public base::CheckedObserver {
 
   // Called when |window| has been ack configured.
   virtual void OnWindowConfigured(WaylandWindow* window);
+
+  // Called when |window| has been assigned a role.
+  virtual void OnWindowRoleAssigned(WaylandWindow* window);
 
   // Called when |window| adds |subsurface|.
   virtual void OnSubsurfaceAdded(WaylandWindow* window,

@@ -1,28 +1,36 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "net/dns/host_cache.h"
 
 #include <algorithm>
+#include <iterator>
+#include <map>
+#include <ostream>
 #include <string>
+#include <type_traits>
+#include <unordered_set>
+#include <utility>
 #include <vector>
 
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/trace_event.h"
+#include "base/types/optional_util.h"
 #include "base/value_iterators.h"
 #include "net/base/address_family.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/trace_constants.h"
 #include "net/dns/host_resolver.h"
+#include "net/dns/https_record_rdata.h"
+#include "net/dns/public/dns_protocol.h"
 #include "net/dns/public/host_resolver_source.h"
 #include "net/log/net_log.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -50,32 +58,97 @@ const char kDnsQueryTypeKey[] = "dns_query_type";
 const char kFlagsKey[] = "flags";
 const char kHostResolverSourceKey[] = "host_resolver_source";
 const char kSecureKey[] = "secure";
-const char kNetworkIsolationKeyKey[] = "network_isolation_key";
+const char kNetworkAnonymizationKey[] = "network_anonymization_key";
 const char kExpirationKey[] = "expiration";
 const char kTtlKey[] = "ttl";
 const char kPinnedKey[] = "pinned";
 const char kNetworkChangesKey[] = "network_changes";
 const char kNetErrorKey[] = "net_error";
+const char kIpEndpointsKey[] = "ip_endpoints";
+const char kEndpointAddressKey[] = "endpoint_address";
+const char kEndpointPortKey[] = "endpoint_port";
+const char kEndpointMetadatasKey[] = "endpoint_metadatas";
+const char kEndpointMetadataWeightKey[] = "endpoint_metadata_weight";
+const char kEndpointMetadataValueKey[] = "endpoint_metadata_value";
+const char kAliasesKey[] = "aliases";
 const char kAddressesKey[] = "addresses";
 const char kTextRecordsKey[] = "text_records";
 const char kHostnameResultsKey[] = "hostname_results";
 const char kHostPortsKey[] = "host_ports";
+const char kCanonicalNamesKey[] = "canonical_names";
 
-bool AddressListFromListValue(const base::Value* value,
-                              absl::optional<AddressList>* out_list) {
-  if (!value) {
-    out_list->reset();
-    return true;
+base::Value IpEndpointToValue(const IPEndPoint& endpoint) {
+  base::Value::Dict dictionary;
+  dictionary.Set(kEndpointAddressKey, endpoint.ToStringWithoutPort());
+  dictionary.Set(kEndpointPortKey, endpoint.port());
+  return base::Value(std::move(dictionary));
+}
+
+absl::optional<IPEndPoint> IpEndpointFromValue(const base::Value& value) {
+  if (!value.is_dict())
+    return absl::nullopt;
+
+  const base::Value::Dict& dict = value.GetDict();
+  const std::string* ip_str = dict.FindString(kEndpointAddressKey);
+  absl::optional<int> port = dict.FindInt(kEndpointPortKey);
+
+  if (!ip_str || !port ||
+      !base::IsValueInRangeForNumericType<uint16_t>(port.value())) {
+    return absl::nullopt;
   }
 
-  out_list->emplace();
-  for (const auto& it : value->GetList()) {
+  IPAddress ip;
+  if (!ip.AssignFromIPLiteral(*ip_str))
+    return absl::nullopt;
+
+  return IPEndPoint(ip, base::checked_cast<uint16_t>(port.value()));
+}
+
+base::Value EndpointMetadataPairToValue(
+    const std::pair<HttpsRecordPriority, ConnectionEndpointMetadata>& pair) {
+  base::Value::Dict dictionary;
+  dictionary.Set(kEndpointMetadataWeightKey, pair.first);
+  dictionary.Set(kEndpointMetadataValueKey, pair.second.ToValue());
+  return base::Value(std::move(dictionary));
+}
+
+absl::optional<std::pair<HttpsRecordPriority, ConnectionEndpointMetadata>>
+EndpointMetadataPairFromValue(const base::Value& value) {
+  if (!value.is_dict())
+    return absl::nullopt;
+
+  const base::Value::Dict& dict = value.GetDict();
+  absl::optional<int> priority = dict.FindInt(kEndpointMetadataWeightKey);
+  const base::Value* metadata_value = dict.Find(kEndpointMetadataValueKey);
+
+  if (!priority || !base::IsValueInRangeForNumericType<HttpsRecordPriority>(
+                       priority.value())) {
+    return absl::nullopt;
+  }
+
+  if (!metadata_value)
+    return absl::nullopt;
+  absl::optional<ConnectionEndpointMetadata> metadata =
+      ConnectionEndpointMetadata::FromValue(*metadata_value);
+  if (!metadata)
+    return absl::nullopt;
+
+  return std::make_pair(
+      base::checked_cast<HttpsRecordPriority>(priority.value()),
+      std::move(metadata).value());
+}
+
+bool IPEndPointsFromLegacyAddressListValue(
+    const base::Value::List& value,
+    absl::optional<std::vector<IPEndPoint>>* ip_endpoints) {
+  ip_endpoints->emplace();
+  for (const auto& it : value) {
     IPAddress address;
     const std::string* addr_string = it.GetIfString();
     if (!addr_string || !address.AssignFromIPLiteral(*addr_string)) {
       return false;
     }
-    out_list->value().push_back(IPEndPoint(address, 0));
+    ip_endpoints->value().emplace_back(address, 0);
   }
   return true;
 }
@@ -87,6 +160,16 @@ void MergeLists(absl::optional<T>* target, const absl::optional<T>& source) {
                            source.value().end());
   } else if (source) {
     *target = source;
+  }
+}
+
+template <typename T>
+void MergeContainers(absl::optional<T>& target,
+                     const absl::optional<T>& source) {
+  if (target.has_value() && source.has_value()) {
+    target->insert(source->begin(), source->end());
+  } else if (source) {
+    target = source;
   }
 }
 
@@ -117,6 +200,14 @@ const std::string& GetHostname(
 
   DCHECK(IsValidHostname(*hostname));
   return *hostname;
+}
+
+absl::optional<DnsQueryType> GetDnsQueryType(int dns_query_type) {
+  for (const auto& type : kDnsQueryTypes) {
+    if (base::strict_cast<int>(type.first) == dns_query_type)
+      return type.first;
+  }
+  return absl::nullopt;
 }
 
 }  // namespace
@@ -150,12 +241,12 @@ HostCache::Key::Key(absl::variant<url::SchemeHostPort, std::string> host,
                     DnsQueryType dns_query_type,
                     HostResolverFlags host_resolver_flags,
                     HostResolverSource host_resolver_source,
-                    const NetworkIsolationKey& network_isolation_key)
+                    const NetworkAnonymizationKey& network_anonymization_key)
     : host(std::move(host)),
       dns_query_type(dns_query_type),
       host_resolver_flags(host_resolver_flags),
       host_resolver_source(host_resolver_source),
-      network_isolation_key(network_isolation_key) {
+      network_anonymization_key(network_anonymization_key) {
   DCHECK(IsValidHostname(GetHostname(this->host)));
   if (absl::holds_alternative<url::SchemeHostPort>(this->host))
     DCHECK(absl::get<url::SchemeHostPort>(this->host).IsValid());
@@ -174,6 +265,14 @@ HostCache::Entry::Entry(int error,
   // If |ttl| has a value, must not be negative.
   DCHECK_GE(ttl.value_or(base::TimeDelta()), base::TimeDelta());
   DCHECK_NE(OK, error_);
+
+  // host_cache.h defines its own `HttpsRecordPriority` due to
+  // https_record_rdata.h not being allowed in the same places, but the types
+  // should still be the same thing.
+  static_assert(std::is_same<net::HttpsRecordPriority,
+                             HostCache::Entry::HttpsRecordPriority>::value,
+                "`net::HttpsRecordPriority` and "
+                "`HostCache::Entry::HttpsRecordPriority` must be same type");
 }
 
 HostCache::Entry::Entry(const Entry& entry) = default;
@@ -181,6 +280,58 @@ HostCache::Entry::Entry(const Entry& entry) = default;
 HostCache::Entry::Entry(Entry&& entry) = default;
 
 HostCache::Entry::~Entry() = default;
+
+absl::optional<std::vector<HostResolverEndpointResult>>
+HostCache::Entry::GetEndpoints() const {
+  if (!ip_endpoints_.has_value())
+    return absl::nullopt;
+
+  std::vector<HostResolverEndpointResult> endpoints;
+
+  if (ip_endpoints_.value().empty())
+    return endpoints;
+  absl::optional<std::vector<ConnectionEndpointMetadata>> metadatas =
+      GetMetadatas();
+
+  if (metadatas.has_value() && canonical_names_ &&
+      (canonical_names_->size() == 1)) {
+    // Currently Chrome uses HTTPS records only when A and AAAA records are at
+    // the same canonical name and that matches the HTTPS target name.
+    for (ConnectionEndpointMetadata& metadata : metadatas.value()) {
+      if (canonical_names_->find(metadata.target_name) ==
+          canonical_names_->end()) {
+        continue;
+      }
+      endpoints.emplace_back();
+      endpoints.back().ip_endpoints = ip_endpoints_.value();
+      endpoints.back().metadata = std::move(metadata);
+    }
+  }
+
+  // Add a final non-protocol endpoint at the end.
+  endpoints.emplace_back();
+  endpoints.back().ip_endpoints = ip_endpoints_.value();
+
+  return endpoints;
+}
+
+absl::optional<std::vector<ConnectionEndpointMetadata>>
+HostCache::Entry::GetMetadatas() const {
+  if (!endpoint_metadatas_.has_value())
+    return absl::nullopt;
+
+  std::vector<ConnectionEndpointMetadata> metadatas;
+  HttpsRecordPriority last_priority = 0;
+  for (const auto& metadata : endpoint_metadatas_.value()) {
+    // Ensure metadatas are iterated in priority order.
+    DCHECK_GE(metadata.first, last_priority);
+    last_priority = metadata.first;
+
+    metadatas.push_back(metadata.second);
+  }
+
+  return metadatas;
+}
 
 absl::optional<base::TimeDelta> HostCache::Entry::GetOptionalTtl() const {
   if (has_ttl())
@@ -200,16 +351,14 @@ HostCache::Entry HostCache::Entry::MergeEntries(Entry front, Entry back) {
   front.error_ =
       front.error() == OK || back.error() == OK ? OK : ERR_NAME_NOT_RESOLVED;
 
-  front.MergeAddressesFrom(back);
+  MergeLists(&front.ip_endpoints_, back.ip_endpoints_);
+  MergeContainers(front.endpoint_metadatas_, back.endpoint_metadatas_);
+  MergeContainers(front.aliases_, back.aliases_);
   MergeLists(&front.text_records_, back.text_records());
   MergeLists(&front.hostnames_, back.hostnames());
-  MergeLists(&front.experimental_results_, back.experimental_results());
-
-  // The DNS aliases include the canonical name(s), if any, each as the
-  // first entry in the field, which is an optional vector. If |front| has
-  // a canonical name, it will be used. Otherwise, if |back| has a
-  // canonical name, it will be in the first slot in the merged alias field.
-  front.MergeDnsAliasesFrom(back);
+  MergeLists(&front.https_record_compatibility_,
+             back.https_record_compatibility_);
+  MergeContainers(front.canonical_names_, back.canonical_names_);
 
   // Only expected to merge entries from same source.
   DCHECK_EQ(front.source(), back.source());
@@ -233,31 +382,18 @@ HostCache::Entry HostCache::Entry::MergeEntries(Entry front, Entry back) {
 HostCache::Entry HostCache::Entry::CopyWithDefaultPort(uint16_t port) const {
   Entry copy(*this);
 
-  if (addresses() &&
-      std::any_of(addresses().value().begin(), addresses().value().end(),
-                  [](const IPEndPoint& e) { return e.port() == 0; })) {
-    AddressList addresses_with_port;
-    addresses_with_port.SetDnsAliases(addresses()->dns_aliases());
-    for (const IPEndPoint& endpoint : addresses().value()) {
+  if (copy.ip_endpoints_) {
+    for (IPEndPoint& endpoint : copy.ip_endpoints_.value()) {
       if (endpoint.port() == 0)
-        addresses_with_port.push_back(IPEndPoint(endpoint.address(), port));
-      else
-        addresses_with_port.push_back(endpoint);
+        endpoint = IPEndPoint(endpoint.address(), port);
     }
-    copy.set_addresses(addresses_with_port);
   }
 
-  if (hostnames() &&
-      std::any_of(hostnames().value().begin(), hostnames().value().end(),
-                  [](const HostPortPair& h) { return h.port() == 0; })) {
-    std::vector<HostPortPair> hostnames_with_port;
-    for (const HostPortPair& hostname : hostnames().value()) {
+  if (copy.hostnames_) {
+    for (HostPortPair& hostname : copy.hostnames_.value()) {
       if (hostname.port() == 0)
-        hostnames_with_port.push_back(HostPortPair(hostname.host(), port));
-      else
-        hostnames_with_port.push_back(hostname);
+        hostname = HostPortPair(hostname.host(), port);
     }
-    copy.set_hostnames(std::move(hostnames_with_port));
   }
 
   return copy;
@@ -267,41 +403,63 @@ HostCache::Entry& HostCache::Entry::operator=(const Entry& entry) = default;
 
 HostCache::Entry& HostCache::Entry::operator=(Entry&& entry) = default;
 
+HostCache::Entry::Entry(int error,
+                        std::vector<IPEndPoint> ip_endpoints,
+                        std::set<std::string> aliases,
+                        Source source,
+                        absl::optional<base::TimeDelta> ttl)
+    : error_(error),
+      ip_endpoints_(std::move(ip_endpoints)),
+      aliases_(std::move(aliases)),
+      source_(source),
+      ttl_(ttl ? ttl.value() : base::Seconds(-1)) {
+  DCHECK(!ttl || ttl.value() >= base::TimeDelta());
+}
+
 HostCache::Entry::Entry(const HostCache::Entry& entry,
                         base::TimeTicks now,
                         base::TimeDelta ttl,
                         int network_changes)
     : error_(entry.error()),
-      addresses_(entry.addresses()),
+      ip_endpoints_(entry.ip_endpoints_),
+      endpoint_metadatas_(entry.endpoint_metadatas_),
+      aliases_(base::OptionalFromPtr(entry.aliases())),
       text_records_(entry.text_records()),
       hostnames_(entry.hostnames()),
-      experimental_results_(entry.experimental_results()),
+      https_record_compatibility_(entry.https_record_compatibility_),
       source_(entry.source()),
       pinning_(entry.pinning()),
+      canonical_names_(entry.canonical_names()),
       ttl_(entry.ttl()),
       expires_(now + ttl),
       network_changes_(network_changes) {}
 
 HostCache::Entry::Entry(
     int error,
-    const absl::optional<AddressList>& addresses,
+    absl::optional<std::vector<IPEndPoint>> ip_endpoints,
+    absl::optional<
+        std::multimap<HttpsRecordPriority, ConnectionEndpointMetadata>>
+        endpoint_metadatas,
+    absl::optional<std::set<std::string>> aliases,
     absl::optional<std::vector<std::string>>&& text_records,
     absl::optional<std::vector<HostPortPair>>&& hostnames,
-    absl::optional<std::vector<bool>>&& experimental_results,
+    absl::optional<std::vector<bool>>&& https_record_compatibility,
     Source source,
     base::TimeTicks expires,
     int network_changes)
     : error_(error),
-      addresses_(addresses),
+      ip_endpoints_(std::move(ip_endpoints)),
+      endpoint_metadatas_(std::move(endpoint_metadatas)),
+      aliases_(std::move(aliases)),
       text_records_(std::move(text_records)),
       hostnames_(std::move(hostnames)),
-      experimental_results_(std::move(experimental_results)),
+      https_record_compatibility_(std::move(https_record_compatibility)),
       source_(source),
       expires_(expires),
       network_changes_(network_changes) {}
 
 void HostCache::Entry::PrepareForCacheInsertion() {
-  experimental_results_.reset();
+  https_record_compatibility_.reset();
 }
 
 bool HostCache::Entry::IsStale(base::TimeTicks now, int network_changes) const {
@@ -328,124 +486,86 @@ void HostCache::Entry::GetStaleness(base::TimeTicks now,
 }
 
 base::Value HostCache::Entry::NetLogParams() const {
-  return GetAsValue(false /* include_staleness */);
+  return base::Value(GetAsValue(false /* include_staleness */));
 }
 
-void HostCache::Entry::MergeAddressesFrom(const HostCache::Entry& source) {
-  MergeLists(&addresses_, source.addresses());
-  if (!addresses_ || addresses_->size() <= 1)
-    return;  // Nothing to do.
-
-  addresses_->Deduplicate();
-
-  std::stable_sort(addresses_->begin(), addresses_->end(),
-                   [](const IPEndPoint& lhs, const IPEndPoint& rhs) {
-                     // Return true iff |lhs < rhs|.
-                     return lhs.GetFamily() == ADDRESS_FAMILY_IPV6 &&
-                            rhs.GetFamily() == ADDRESS_FAMILY_IPV4;
-                   });
-}
-
-void HostCache::Entry::MergeDnsAliasesFrom(const HostCache::Entry& source) {
-  // No aliases to merge if source has no AddressList.
-  if (!source.addresses())
-    return;
-
-  // We expect this to be true because the address merging should have already
-  // created the AddressList if the source had one but the target didn't.
-  DCHECK(addresses());
-
-  // Nothing to merge.
-  if (source.addresses()->dns_aliases().empty())
-    return;
-
-  // No aliases pre-existing in target, so simply set target's aliases to
-  // source's. This takes care of the case where target does not have a usable
-  // canonical name, but source does.
-  if (addresses()->dns_aliases().empty()) {
-    addresses_->SetDnsAliases(source.addresses()->dns_aliases());
-    return;
-  }
-
-  DCHECK(addresses()->dns_aliases() != std::vector<std::string>({""}));
-  DCHECK(source.addresses()->dns_aliases() != std::vector<std::string>({""}));
-
-  // We need to check for possible blanks and duplicates in the source's
-  // aliases.
-  std::unordered_set<std::string> aliases_seen;
-  std::vector<std::string> deduplicated_source_aliases;
-
-  aliases_seen.insert(addresses()->dns_aliases().begin(),
-                      addresses()->dns_aliases().end());
-
-  for (const auto& alias : source.addresses()->dns_aliases()) {
-    if (alias != "" && aliases_seen.find(alias) == aliases_seen.end()) {
-      aliases_seen.insert(alias);
-      deduplicated_source_aliases.push_back(alias);
-    }
-  }
-
-  // The first entry of target's aliases must remain in place,
-  // as it's the canonical name, so we append source's aliases to the back.
-  addresses_->AppendDnsAliases(std::move(deduplicated_source_aliases));
-}
-
-base::Value HostCache::Entry::GetAsValue(bool include_staleness) const {
-  base::Value entry_dict(base::Value::Type::DICTIONARY);
+base::Value::Dict HostCache::Entry::GetAsValue(bool include_staleness) const {
+  base::Value::Dict entry_dict;
 
   if (include_staleness) {
     // The kExpirationKey value is using TimeTicks instead of Time used if
     // |include_staleness| is false, so it cannot be used to deserialize.
     // This is ok as it is used only for netlog.
-    entry_dict.SetStringKey(kExpirationKey,
-                            NetLog::TickCountToString(expires()));
-    entry_dict.SetIntKey(kTtlKey, ttl().InMilliseconds());
-    entry_dict.SetIntKey(kNetworkChangesKey, network_changes());
+    entry_dict.Set(kExpirationKey, NetLog::TickCountToString(expires()));
+    entry_dict.Set(kTtlKey, base::saturated_cast<int>(ttl().InMilliseconds()));
+    entry_dict.Set(kNetworkChangesKey, network_changes());
     // The "pinned" status is meaningful only if "network_changes" is also
     // preserved.
     if (pinning())
-      entry_dict.SetBoolKey(kPinnedKey, *pinning());
+      entry_dict.Set(kPinnedKey, *pinning());
   } else {
     // Convert expiration time in TimeTicks to Time for serialization, using a
     // string because base::Value doesn't handle 64-bit integers.
     base::Time expiration_time =
         base::Time::Now() - (base::TimeTicks::Now() - expires());
-    entry_dict.SetStringKey(
-        kExpirationKey,
-        base::NumberToString(expiration_time.ToInternalValue()));
+    entry_dict.Set(kExpirationKey,
+                   base::NumberToString(expiration_time.ToInternalValue()));
   }
 
   if (error() != OK) {
-    entry_dict.SetIntKey(kNetErrorKey, error());
+    entry_dict.Set(kNetErrorKey, error());
   } else {
-    if (addresses()) {
-      // Append all of the resolved addresses.
-      base::ListValue addresses_value;
-      for (const IPEndPoint& address : addresses().value()) {
-        addresses_value.Append(address.ToStringWithoutPort());
+    if (ip_endpoints_) {
+      base::Value::List ip_endpoints_list;
+      for (const IPEndPoint& ip_endpoint : ip_endpoints_.value()) {
+        ip_endpoints_list.Append(IpEndpointToValue(ip_endpoint));
       }
-      entry_dict.SetKey(kAddressesKey, std::move(addresses_value));
+      entry_dict.Set(kIpEndpointsKey, std::move(ip_endpoints_list));
+    }
+
+    if (endpoint_metadatas_) {
+      base::Value::List endpoint_metadatas_list;
+      for (const auto& endpoint_metadata_pair : endpoint_metadatas_.value()) {
+        endpoint_metadatas_list.Append(
+            EndpointMetadataPairToValue(endpoint_metadata_pair));
+      }
+      entry_dict.Set(kEndpointMetadatasKey, std::move(endpoint_metadatas_list));
+    }
+
+    if (aliases()) {
+      base::Value::List alias_list;
+      for (const std::string& alias : *aliases()) {
+        alias_list.Append(alias);
+      }
+      entry_dict.Set(kAliasesKey, std::move(alias_list));
     }
 
     if (text_records()) {
       // Append all resolved text records.
-      base::ListValue text_list_value;
+      base::Value::List text_list_value;
       for (const std::string& text_record : text_records().value()) {
         text_list_value.Append(text_record);
       }
-      entry_dict.SetKey(kTextRecordsKey, std::move(text_list_value));
+      entry_dict.Set(kTextRecordsKey, std::move(text_list_value));
     }
 
     if (hostnames()) {
       // Append all the resolved hostnames.
-      base::ListValue hostnames_value;
-      base::ListValue host_ports_value;
+      base::Value::List hostnames_value;
+      base::Value::List host_ports_value;
       for (const HostPortPair& hostname : hostnames().value()) {
         hostnames_value.Append(hostname.host());
         host_ports_value.Append(hostname.port());
       }
-      entry_dict.SetKey(kHostnameResultsKey, std::move(hostnames_value));
-      entry_dict.SetKey(kHostPortsKey, std::move(host_ports_value));
+      entry_dict.Set(kHostnameResultsKey, std::move(hostnames_value));
+      entry_dict.Set(kHostPortsKey, std::move(host_ports_value));
+    }
+    if (canonical_names()) {
+      base::Value::List canonical_names_list;
+      for (const std::string& canonical_name : canonical_names().value()) {
+        canonical_names_list.Append(canonical_name);
+      }
+      entry_dict.Set(kCanonicalNamesKey, std::move(canonical_names_list));
     }
   }
 
@@ -458,9 +578,6 @@ const HostCache::EntryStaleness HostCache::kNotStale = {base::Seconds(-1), 0,
 
 HostCache::HostCache(size_t max_entries)
     : max_entries_(max_entries),
-      network_changes_(0),
-      restore_size_(0),
-      delegate_(nullptr),
       tick_clock_(base::DefaultTickClock::GetInstance()) {}
 
 HostCache::~HostCache() {
@@ -584,60 +701,9 @@ void HostCache::Set(const Key& key,
   if (it != entries_.end()) {
     has_active_pin = HasActivePin(it->second);
 
-    absl::optional<AddressListDeltaType> addresses_delta;
-    if (entry.addresses() || it->second.addresses()) {
-      if (entry.addresses() && it->second.addresses()) {
-        addresses_delta = FindAddressListDeltaType(
-            it->second.addresses().value(), entry.addresses().value());
-      } else {
-        addresses_delta = DELTA_DISJOINT;
-      }
-    }  // Else no addresses in old or new, so nullopt delta.
-
-    // For non-address results, delta is only considered for whole-list
-    // equality. The meaning of partial list equality varies too much depending
-    // on the context of a DNS record.
-    absl::optional<AddressListDeltaType> nonaddress_delta;
-    if (entry.text_records() || it->second.text_records() ||
-        entry.hostnames() || it->second.hostnames()) {
-      if (entry.text_records() == it->second.text_records() &&
-          entry.hostnames() == it->second.hostnames()) {
-        nonaddress_delta = DELTA_IDENTICAL;
-      } else if (entry.text_records() == it->second.text_records() ||
-                 entry.hostnames() == it->second.hostnames()) {
-        nonaddress_delta = DELTA_OVERLAP;
-      } else {
-        nonaddress_delta = DELTA_DISJOINT;
-      }
-    }  // Else no nonaddress results in old or new, so nullopt delta.
-
-    AddressListDeltaType overall_delta;
-    if (!addresses_delta && !nonaddress_delta) {
-      // No results in old or new is IDENTICAL.
-      overall_delta = DELTA_IDENTICAL;
-    } else if (!addresses_delta) {
-      overall_delta = nonaddress_delta.value();
-    } else if (!nonaddress_delta) {
-      overall_delta = addresses_delta.value();
-    } else if (addresses_delta == DELTA_DISJOINT &&
-               nonaddress_delta == DELTA_DISJOINT) {
-      overall_delta = DELTA_DISJOINT;
-    } else if (addresses_delta == DELTA_DISJOINT ||
-               nonaddress_delta == DELTA_DISJOINT) {
-      // If only some result types are DISJOINT, some match and we have OVERLAP.
-      overall_delta = DELTA_OVERLAP;
-    } else {
-      // No DISJOINT result types, so we have at least partial match.  Take the
-      // least matching amount (highest enum value).
-      overall_delta =
-          std::max(addresses_delta.value(), nonaddress_delta.value());
-    }
-
     // TODO(juliatuttle): Remember some old metadata (hit count or frequency or
     // something like that) if it's useful for better eviction algorithms?
-    result_changed =
-        entry.error() == OK && (it->second.error() != entry.error() ||
-                                overall_delta != DELTA_IDENTICAL);
+    result_changed = entry.error() == OK && !it->second.ContentsEqual(entry);
     entries_.erase(it);
   } else {
     result_changed = true;
@@ -731,77 +797,78 @@ void HostCache::ClearForHosts(
     delegate_->ScheduleWrite();
 }
 
-void HostCache::GetAsListValue(base::ListValue* entry_list,
-                               bool include_staleness,
-                               SerializationType serialization_type) const {
-  DCHECK(entry_list);
-  entry_list->ClearList();
+void HostCache::GetList(base::Value::List& entry_list,
+                        bool include_staleness,
+                        SerializationType serialization_type) const {
+  entry_list.clear();
 
   for (const auto& pair : entries_) {
     const Key& key = pair.first;
     const Entry& entry = pair.second;
 
-    base::Value network_isolation_key_value;
+    base::Value network_anonymization_key_value;
     if (serialization_type == SerializationType::kRestorable) {
-      // Don't save entries associated with ephemeral NetworkIsolationKeys.
-      if (!key.network_isolation_key.ToValue(&network_isolation_key_value))
+      // Don't save entries associated with ephemeral NetworkAnonymizationKeys.
+      if (!key.network_anonymization_key.ToValue(
+              &network_anonymization_key_value)) {
         continue;
+      }
     } else {
       // ToValue() fails for transient NIKs, since they should never be
       // serialized to disk in a restorable format, so use ToDebugString() when
       // serializing for debugging instead of for restoring from disk.
-      network_isolation_key_value =
-          base::Value(key.network_isolation_key.ToDebugString());
+      network_anonymization_key_value =
+          base::Value(key.network_anonymization_key.ToDebugString());
     }
 
-    auto entry_dict =
-        std::make_unique<base::Value>(entry.GetAsValue(include_staleness));
+    base::Value::Dict entry_dict = entry.GetAsValue(include_staleness);
 
     const auto* host = absl::get_if<url::SchemeHostPort>(&key.host);
     if (host) {
-      entry_dict->SetStringKey(kSchemeKey, host->scheme());
-      entry_dict->SetStringKey(kHostnameKey, host->host());
-      entry_dict->SetIntKey(kPortKey, host->port());
+      entry_dict.Set(kSchemeKey, host->scheme());
+      entry_dict.Set(kHostnameKey, host->host());
+      entry_dict.Set(kPortKey, host->port());
     } else {
-      entry_dict->SetStringKey(kHostnameKey, absl::get<std::string>(key.host));
+      entry_dict.Set(kHostnameKey, absl::get<std::string>(key.host));
     }
 
-    entry_dict->SetIntKey(kDnsQueryTypeKey,
-                          static_cast<int>(key.dns_query_type));
-    entry_dict->SetIntKey(kFlagsKey, key.host_resolver_flags);
-    entry_dict->SetIntKey(kHostResolverSourceKey,
-                          static_cast<int>(key.host_resolver_source));
-    entry_dict->SetKey(kNetworkIsolationKeyKey,
-                       std::move(network_isolation_key_value));
-    entry_dict->SetBoolKey(kSecureKey, static_cast<bool>(key.secure));
+    entry_dict.Set(kDnsQueryTypeKey,
+                   base::strict_cast<int>(key.dns_query_type));
+    entry_dict.Set(kFlagsKey, key.host_resolver_flags);
+    entry_dict.Set(kHostResolverSourceKey,
+                   base::strict_cast<int>(key.host_resolver_source));
+    entry_dict.Set(kNetworkAnonymizationKey,
+                   std::move(network_anonymization_key_value));
+    entry_dict.Set(kSecureKey, key.secure);
 
-    entry_list->Append(std::move(entry_dict));
+    entry_list.Append(std::move(entry_dict));
   }
 }
 
-bool HostCache::RestoreFromListValue(const base::ListValue& old_cache) {
+bool HostCache::RestoreFromListValue(const base::Value::List& old_cache) {
   // Reset the restore size to 0.
   restore_size_ = 0;
 
-  for (const auto& entry_dict : old_cache.GetList()) {
+  for (const auto& entry : old_cache) {
     // If the cache is already full, don't bother prioritizing what to evict,
     // just stop restoring.
     if (size() == max_entries_)
       break;
 
-    if (!entry_dict.is_dict())
+    if (!entry.is_dict())
       return false;
 
-    const std::string* hostname_ptr = entry_dict.FindStringKey(kHostnameKey);
+    const base::Value::Dict& entry_dict = entry.GetDict();
+    const std::string* hostname_ptr = entry_dict.FindString(kHostnameKey);
     if (!hostname_ptr || !IsValidHostname(*hostname_ptr)) {
       return false;
     }
 
     // Use presence of scheme to determine host type.
-    const std::string* scheme_ptr = entry_dict.FindStringKey(kSchemeKey);
+    const std::string* scheme_ptr = entry_dict.FindString(kSchemeKey);
     absl::variant<url::SchemeHostPort, std::string> host;
     if (scheme_ptr) {
-      absl::optional<int> port = entry_dict.FindIntKey(kPortKey);
+      absl::optional<int> port = entry_dict.FindInt(kPortKey);
       if (!port || !base::IsValueInRangeForNumericType<uint16_t>(port.value()))
         return false;
 
@@ -814,55 +881,63 @@ bool HostCache::RestoreFromListValue(const base::ListValue& old_cache) {
       host = *hostname_ptr;
     }
 
-    const std::string* expiration_ptr =
-        entry_dict.FindStringKey(kExpirationKey);
-    absl::optional<int> maybe_flags = entry_dict.FindIntKey(kFlagsKey);
+    const std::string* expiration_ptr = entry_dict.FindString(kExpirationKey);
+    absl::optional<int> maybe_flags = entry_dict.FindInt(kFlagsKey);
     if (expiration_ptr == nullptr || !maybe_flags.has_value())
       return false;
     std::string expiration(*expiration_ptr);
     HostResolverFlags flags = maybe_flags.value();
 
     absl::optional<int> maybe_dns_query_type =
-        entry_dict.FindIntKey(kDnsQueryTypeKey);
+        entry_dict.FindInt(kDnsQueryTypeKey);
     if (!maybe_dns_query_type.has_value())
       return false;
-    DnsQueryType dns_query_type =
-        static_cast<DnsQueryType>(maybe_dns_query_type.value());
-
+    absl::optional<DnsQueryType> dns_query_type =
+        GetDnsQueryType(maybe_dns_query_type.value());
+    if (!dns_query_type.has_value())
+      return false;
     // HostResolverSource is optional.
     int host_resolver_source =
-        entry_dict.FindIntKey(kHostResolverSourceKey)
-            .value_or(static_cast<int>(HostResolverSource::ANY));
+        entry_dict.FindInt(kHostResolverSourceKey)
+            .value_or(base::strict_cast<int>(HostResolverSource::ANY));
 
-    const base::Value* network_isolation_key_value =
-        entry_dict.FindKey(kNetworkIsolationKeyKey);
-    NetworkIsolationKey network_isolation_key;
-    if (!network_isolation_key_value ||
-        network_isolation_key_value->type() == base::Value::Type::STRING ||
-        !NetworkIsolationKey::FromValue(*network_isolation_key_value,
-                                        &network_isolation_key)) {
+    const base::Value* network_anonymization_key_value =
+        entry_dict.Find(kNetworkAnonymizationKey);
+    NetworkAnonymizationKey network_anonymization_key;
+    if (!network_anonymization_key_value ||
+        network_anonymization_key_value->type() == base::Value::Type::STRING ||
+        !NetworkAnonymizationKey::FromValue(*network_anonymization_key_value,
+                                            &network_anonymization_key)) {
       return false;
     }
 
-    bool secure = entry_dict.FindBoolKey(kSecureKey).value_or(false);
+    bool secure = entry_dict.FindBool(kSecureKey).value_or(false);
 
     int error = OK;
-    const base::Value* addresses_value = nullptr;
-    const base::Value* text_records_value = nullptr;
-    const base::Value* hostname_records_value = nullptr;
-    const base::Value* host_ports_value = nullptr;
-    absl::optional<int> maybe_error = entry_dict.FindIntKey(kNetErrorKey);
-    absl::optional<bool> maybe_pinned = entry_dict.FindBoolKey(kPinnedKey);
+    const base::Value::List* ip_endpoints_list = nullptr;
+    const base::Value::List* endpoint_metadatas_list = nullptr;
+    const base::Value::List* aliases_list = nullptr;
+    const base::Value::List* legacy_addresses_list = nullptr;
+    const base::Value::List* text_records_list = nullptr;
+    const base::Value::List* hostname_records_list = nullptr;
+    const base::Value::List* host_ports_list = nullptr;
+    const base::Value::List* canonical_names_list = nullptr;
+    absl::optional<int> maybe_error = entry_dict.FindInt(kNetErrorKey);
+    absl::optional<bool> maybe_pinned = entry_dict.FindBool(kPinnedKey);
     if (maybe_error.has_value()) {
       error = maybe_error.value();
     } else {
-      addresses_value = entry_dict.FindListKey(kAddressesKey);
-      text_records_value = entry_dict.FindListKey(kTextRecordsKey);
-      hostname_records_value = entry_dict.FindListKey(kHostnameResultsKey);
-      host_ports_value = entry_dict.FindListKey(kHostPortsKey);
+      ip_endpoints_list = entry_dict.FindList(kIpEndpointsKey);
+      endpoint_metadatas_list = entry_dict.FindList(kEndpointMetadatasKey);
+      aliases_list = entry_dict.FindList(kAliasesKey);
+      legacy_addresses_list = entry_dict.FindList(kAddressesKey);
+      text_records_list = entry_dict.FindList(kTextRecordsKey);
+      hostname_records_list = entry_dict.FindList(kHostnameResultsKey);
+      host_ports_list = entry_dict.FindList(kHostPortsKey);
+      canonical_names_list = entry_dict.FindList(kCanonicalNamesKey);
 
-      if ((hostname_records_value == nullptr && host_ports_value != nullptr) ||
-          (hostname_records_value != nullptr && host_ports_value == nullptr)) {
+      if ((hostname_records_list == nullptr && host_ports_list != nullptr) ||
+          (hostname_records_list != nullptr && host_ports_list == nullptr)) {
         return false;
       }
     }
@@ -875,15 +950,59 @@ bool HostCache::RestoreFromListValue(const base::ListValue& old_cache) {
         tick_clock_->NowTicks() -
         (base::Time::Now() - base::Time::FromInternalValue(time_internal));
 
-    absl::optional<AddressList> address_list;
-    if (!AddressListFromListValue(addresses_value, &address_list)) {
-      return false;
+    absl::optional<std::vector<IPEndPoint>> ip_endpoints;
+    if (ip_endpoints_list) {
+      ip_endpoints.emplace();
+      for (const base::Value& ip_endpoint_value : *ip_endpoints_list) {
+        absl::optional<IPEndPoint> ip_endpoint =
+            IpEndpointFromValue(ip_endpoint_value);
+        if (!ip_endpoint)
+          return false;
+        ip_endpoints->push_back(std::move(ip_endpoint).value());
+      }
+    }
+
+    absl::optional<
+        std::multimap<HttpsRecordPriority, ConnectionEndpointMetadata>>
+        endpoint_metadatas;
+    if (endpoint_metadatas_list) {
+      endpoint_metadatas.emplace();
+      for (const base::Value& endpoint_metadata_value :
+           *endpoint_metadatas_list) {
+        absl::optional<
+            std::pair<HttpsRecordPriority, ConnectionEndpointMetadata>>
+            pair = EndpointMetadataPairFromValue(endpoint_metadata_value);
+        if (!pair)
+          return false;
+        endpoint_metadatas->insert(std::move(pair).value());
+      }
+    }
+
+    absl::optional<std::set<std::string>> aliases;
+    if (aliases_list) {
+      aliases.emplace();
+      for (const base::Value& alias_value : *aliases_list) {
+        if (!alias_value.is_string())
+          return false;
+        aliases->insert(alias_value.GetString());
+      }
+    }
+
+    // `addresses` field was supported until M105. We keep reading this field
+    // for backward compatibility for several milestones.
+    if (legacy_addresses_list) {
+      if (ip_endpoints)
+        return false;
+      if (!IPEndPointsFromLegacyAddressListValue(*legacy_addresses_list,
+                                                 &ip_endpoints)) {
+        return false;
+      }
     }
 
     absl::optional<std::vector<std::string>> text_records;
-    if (text_records_value) {
+    if (text_records_list) {
       text_records.emplace();
-      for (const base::Value& value : text_records_value->GetList()) {
+      for (const base::Value& value : *text_records_list) {
         if (!value.is_string())
           return false;
         text_records.value().push_back(value.GetString());
@@ -891,51 +1010,68 @@ bool HostCache::RestoreFromListValue(const base::ListValue& old_cache) {
     }
 
     absl::optional<std::vector<HostPortPair>> hostname_records;
-    if (hostname_records_value) {
-      DCHECK(host_ports_value);
-      if (hostname_records_value->GetList().size() !=
-          host_ports_value->GetList().size()) {
+    if (hostname_records_list) {
+      DCHECK(host_ports_list);
+      if (hostname_records_list->size() != host_ports_list->size()) {
         return false;
       }
 
       hostname_records.emplace();
-      for (size_t i = 0; i < hostname_records_value->GetList().size(); ++i) {
-        if (!hostname_records_value->GetList()[i].is_string() ||
-            !host_ports_value->GetList()[i].is_int() ||
+      for (size_t i = 0; i < hostname_records_list->size(); ++i) {
+        if (!(*hostname_records_list)[i].is_string() ||
+            !(*host_ports_list)[i].is_int() ||
             !base::IsValueInRangeForNumericType<uint16_t>(
-                host_ports_value->GetList()[i].GetInt())) {
+                (*host_ports_list)[i].GetInt())) {
           return false;
         }
-        hostname_records.value().push_back(
-            HostPortPair(hostname_records_value->GetList()[i].GetString(),
-                         base::checked_cast<uint16_t>(
-                             host_ports_value->GetList()[i].GetInt())));
+        hostname_records.value().emplace_back(
+            (*hostname_records_list)[i].GetString(),
+            base::checked_cast<uint16_t>((*host_ports_list)[i].GetInt()));
+      }
+    }
+
+    absl::optional<std::set<std::string>> canonical_names;
+    if (canonical_names_list) {
+      canonical_names = std::set<std::string>();
+      for (const auto& item : *canonical_names_list) {
+        const std::string* name = item.GetIfString();
+        if (!name)
+          return false;
+        canonical_names->insert(*name);
       }
     }
 
     // We do not intend to serialize experimental results with the host cache.
     absl::optional<std::vector<bool>> experimental_results;
 
-    // Assume an empty address list if we have an address type and no results.
-    if (IsAddressType(dns_query_type) && !address_list && !text_records &&
+    // Assume an empty endpoints list and an empty aliases if we have an address
+    // type and no results.
+    if (IsAddressType(dns_query_type.value()) && !text_records &&
         !hostname_records) {
-      address_list.emplace();
+      if (!ip_endpoints) {
+        ip_endpoints.emplace();
+      }
+      if (!aliases) {
+        aliases.emplace();
+      }
     }
-
-    Key key(std::move(host), dns_query_type, flags,
+    Key key(std::move(host), dns_query_type.value(), flags,
             static_cast<HostResolverSource>(host_resolver_source),
-            network_isolation_key);
+            network_anonymization_key);
     key.secure = secure;
 
     // If the key is already in the cache, assume it's more recent and don't
     // replace the entry.
     auto found = entries_.find(key);
     if (found == entries_.end()) {
-      Entry entry(error, address_list, std::move(text_records),
-                  std::move(hostname_records), std::move(experimental_results),
-                  Entry::SOURCE_UNKNOWN, expiration_time, network_changes_ - 1);
-      entry.set_pinning(maybe_pinned.value_or(false));
-      AddEntry(key, std::move(entry));
+      Entry new_entry(error, std::move(ip_endpoints),
+                      std::move(endpoint_metadatas), std::move(aliases),
+                      std::move(text_records), std::move(hostname_records),
+                      std::move(experimental_results), Entry::SOURCE_UNKNOWN,
+                      expiration_time, network_changes_ - 1);
+      new_entry.set_pinning(maybe_pinned.value_or(false));
+      new_entry.set_canonical_names(std::move(canonical_names));
+      AddEntry(key, std::move(new_entry));
       restore_size_++;
     }
   }
@@ -998,3 +1134,10 @@ bool HostCache::HasActivePin(const Entry& entry) {
 }
 
 }  // namespace net
+
+// Debug logging support
+std::ostream& operator<<(std::ostream& out,
+                         const net::HostCache::EntryStaleness& s) {
+  return out << "EntryStaleness{" << s.expired_by << ", " << s.network_changes
+             << ", " << s.stale_hits << "}";
+}

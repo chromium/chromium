@@ -1,10 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_MATH_FUNCTION_VALUE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_MATH_FUNCTION_VALUE_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_math_expression_node.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 
@@ -25,7 +26,7 @@ class CORE_EXPORT CSSMathFunctionValue : public CSSPrimitiveValue {
   const CSSMathExpressionNode* ExpressionNode() const { return expression_; }
 
   scoped_refptr<const CalculationValue> ToCalcValue(
-      const CSSToLengthConversionData& conversion_data) const;
+      const CSSLengthResolver&) const;
 
   bool MayHaveRelativeUnit() const;
 
@@ -71,13 +72,11 @@ class CORE_EXPORT CSSMathFunctionValue : public CSSPrimitiveValue {
 
   double ComputeSeconds() const;
   double ComputeDegrees() const;
-  double ComputeLengthPx(
-      const CSSToLengthConversionData& conversion_data) const;
+  double ComputeLengthPx(const CSSLengthResolver&) const;
 
   bool AccumulateLengthArray(CSSLengthArray& length_array,
                              double multiplier) const;
-  Length ConvertToLength(
-      const CSSToLengthConversionData& conversion_data) const;
+  Length ConvertToLength(const CSSLengthResolver&) const;
 
   void AccumulateLengthUnitTypes(LengthTypeFlags& types) const {
     expression_->AccumulateLengthUnitTypes(types);

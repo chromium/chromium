@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -196,8 +196,7 @@ class PaintOpHelper {
         const auto* op = static_cast<const SaveLayerAlphaOp*>(base_op);
         str << "SaveLayerAlphaOp(bounds="
             << PaintOpHelper::SkiaTypeToString(op->bounds)
-            << ", alpha=" << static_cast<uint32_t>(op->alpha)
-            << ")";
+            << ", alpha=" << static_cast<uint32_t>(op->alpha * 255) << ")";
         break;
       }
       case PaintOpType::Scale: {
@@ -270,6 +269,11 @@ class PaintOpHelper {
     return base::StringPrintf("rgba(%d, %d, %d, %d)", SkColorGetR(color),
                               SkColorGetG(color), SkColorGetB(color),
                               SkColorGetA(color));
+  }
+
+  static std::string SkiaTypeToString(const SkColor4f& color) {
+    return base::StringPrintf("rgba(%f, %f, %f, %f)", color.fR, color.fG,
+                              color.fB, color.fA);
   }
 
   static std::string SkiaTypeToString(const SkBlendMode& mode) {
@@ -525,7 +529,8 @@ class PaintOpHelper {
     str << ", start_radius=" << shader->start_radius_;
     str << ", tx=" << static_cast<unsigned>(shader->tx_);
     str << ", ty=" << static_cast<unsigned>(shader->ty_);
-    str << ", fallback_color=" << shader->fallback_color_;
+    str << ", fallback_color="
+        << PaintOpHelper::SkiaTypeToString(shader->fallback_color_);
     str << ", scaling_behavior=" << EnumToString(shader->scaling_behavior_);
     if (shader->local_matrix_.has_value()) {
       str << ", local_matrix=" << SkiaTypeToString(*shader->local_matrix_);
@@ -551,9 +556,10 @@ class PaintOpHelper {
       str << "(nil)";
     }
     if (shader->colors_.size() > 0) {
-      str << ", colors=[" << shader->colors_[0];
+      str << ", colors=["
+          << PaintOpHelper::SkiaTypeToString(shader->colors_[0]);
       for (size_t i = 1; i < shader->colors_.size(); ++i) {
-        str << ", " << shader->colors_[i];
+        str << ", " << PaintOpHelper::SkiaTypeToString(shader->colors_[i]);
       }
       str << "]";
     } else {

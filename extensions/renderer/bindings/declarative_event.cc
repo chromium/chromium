@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -201,10 +201,10 @@ void DeclarativeEvent::HandleFunction(const std::string& signature_name,
   // We don't currently support promise based requests through DeclarativeEvent.
   DCHECK_NE(binding::AsyncResponseType::kPromise, parse_result.async_type);
 
-  request_handler_->StartRequest(context, request_name,
-                                 std::move(parse_result.arguments_list),
-                                 parse_result.async_type, parse_result.callback,
-                                 v8::Local<v8::Function>());
+  request_handler_->StartRequest(
+      context, request_name, std::move(parse_result.arguments_list),
+      parse_result.async_type, parse_result.callback, v8::Local<v8::Function>(),
+      binding::ResultModifierFunction());
 }
 
 }  // namespace extensions

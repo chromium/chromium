@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,10 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
 #include "components/captive_portal/core/captive_portal_export.h"
 #include "components/captive_portal/core/captive_portal_types.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -20,16 +20,14 @@
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "base/memory/weak_ptr.h"
-#endif
-
 class GURL;
 
 namespace captive_portal {
 
 class CAPTIVE_PORTAL_EXPORT CaptivePortalDetector {
  public:
+  enum class State { kUnknown, kInit, kProbe, kCompleted, kCancelled };
+
   struct Results {
     captive_portal::CaptivePortalResult result =
         captive_portal::RESULT_NO_RESPONSE;
@@ -108,7 +106,7 @@ class CAPTIVE_PORTAL_EXPORT CaptivePortalDetector {
 
   DetectionCallback detection_callback_;
 
-  network::mojom::URLLoaderFactory* loader_factory_ = nullptr;
+  raw_ptr<network::mojom::URLLoaderFactory> loader_factory_ = nullptr;
   std::unique_ptr<network::SimpleURLLoader> simple_loader_;
 
   // Test time used by unit tests.
@@ -117,11 +115,9 @@ class CAPTIVE_PORTAL_EXPORT CaptivePortalDetector {
   // Probe URL accessed by tests.
   GURL probe_url_;
 
-  SEQUENCE_CHECKER(sequence_checker_);
+  State state_ = State::kInit;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  base::WeakPtrFactory<CaptivePortalDetector> weak_factory_;
-#endif
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace captive_portal

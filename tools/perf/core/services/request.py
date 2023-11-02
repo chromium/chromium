@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -69,12 +69,10 @@ class RequestError(OSError):
 
 class ClientError(RequestError):
   """Exception for 4xx HTTP client errors."""
-  pass
 
 
 class ServerError(RequestError):
   """Exception for 5xx HTTP server errors."""
-  pass
 
 
 def BuildRequestError(request, response, content):

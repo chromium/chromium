@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -133,9 +133,11 @@ TEST(MockMessagePumpTest, StoresNextWakeUpTimeInScheduleDelayedWork) {
   SimpleTestTickClock mock_clock;
   StrictMock<MockMessagePumpDelegate> delegate;
   MockTimeMessagePump pump(&mock_clock);
-  const auto kNextDelayedWorkTime = mock_clock.NowTicks() + Seconds(2);
+  const auto kStartTime = mock_clock.NowTicks();
+  const auto kNextDelayedWorkTime = kStartTime + Seconds(2);
 
-  pump.ScheduleDelayedWork(kNextDelayedWorkTime);
+  pump.ScheduleDelayedWork(
+      MessagePump::Delegate::NextWorkInfo{kNextDelayedWorkTime, kStartTime});
 
   EXPECT_THAT(pump.next_wake_up_time(), Eq(kNextDelayedWorkTime));
 }

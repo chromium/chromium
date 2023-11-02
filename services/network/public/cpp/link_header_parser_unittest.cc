@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -103,6 +103,17 @@ TEST(LinkHeaderParserTest, RelAttributeModulePreload) {
       ParseLinkHeaders(*headers, kBaseUrl);
   ASSERT_EQ(parsed_headers.size(), 1UL);
   EXPECT_EQ(parsed_headers[0]->rel, mojom::LinkRelAttribute::kModulePreload);
+}
+
+TEST(LinkHeaderParserTest, RelAttributeDnsPrefetch) {
+  auto headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK\n");
+  headers->AddHeader("link", "<https://cdn.example.com>; rel=dns-prefetch");
+  std::vector<mojom::LinkHeaderPtr> parsed_headers =
+      ParseLinkHeaders(*headers, kBaseUrl);
+  ASSERT_EQ(parsed_headers.size(), 1UL);
+  EXPECT_EQ(parsed_headers[0]->href, GURL("https://cdn.example.com"));
+  EXPECT_EQ(parsed_headers[0]->rel, mojom::LinkRelAttribute::kDnsPrefetch);
 }
 
 TEST(LinkHeaderParserTest, RelAttributePreconnect) {

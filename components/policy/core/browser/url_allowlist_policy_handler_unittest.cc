@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,13 +10,13 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "components/policy/core/browser/policy_error_map.h"
-#include "components/policy/core/browser/url_util.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_value_map.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/url_matcher/url_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -48,9 +48,9 @@ class URLAllowlistPolicyHandlerTest : public testing::Test {
     return handler_->ValidatePolicy(policy);
   }
   base::Value GetURLAllowlistPolicyValueWithEntries(size_t len) {
-    std::vector<base::Value> allowlist(len);
-    for (auto& entry : allowlist)
-      entry = base::Value(kTestAllowlistValue);
+    base::Value::List allowlist;
+    for (size_t i = 0; i < len; ++i)
+      allowlist.Append(kTestAllowlistValue);
     return base::Value(std::move(allowlist));
   }
 
@@ -122,7 +122,7 @@ TEST_F(URLAllowlistPolicyHandlerTest, ApplyPolicySettings_Successful) {
 
 TEST_F(URLAllowlistPolicyHandlerTest,
        ApplyPolicySettings_CheckPolicySettingsMaxFiltersLimitOK) {
-  size_t max_filters_per_policy = url_util::GetMaxFiltersPerPolicy();
+  size_t max_filters_per_policy = policy::kMaxUrlFiltersPerPolicy;
   base::Value urls =
       GetURLAllowlistPolicyValueWithEntries(max_filters_per_policy);
 
@@ -142,7 +142,7 @@ TEST_F(URLAllowlistPolicyHandlerTest,
 // |errors_| when URLAllowlist entries exceed the max filters per policy limit.
 TEST_F(URLAllowlistPolicyHandlerTest,
        ApplyPolicySettings_CheckPolicySettingsMaxFiltersLimitExceeded) {
-  size_t max_filters_per_policy = url_util::GetMaxFiltersPerPolicy();
+  size_t max_filters_per_policy = policy::kMaxUrlFiltersPerPolicy;
   base::Value urls =
       GetURLAllowlistPolicyValueWithEntries(max_filters_per_policy + 1);
 
@@ -151,7 +151,7 @@ TEST_F(URLAllowlistPolicyHandlerTest,
 
   ApplyPolicies();
 
-  auto error_str = errors_.GetErrors(key::kURLAllowlist);
+  auto error_str = errors_.GetErrorMessages(key::kURLAllowlist);
   auto expected_str = l10n_util::GetStringFUTF16(
       IDS_POLICY_URL_ALLOW_BLOCK_LIST_MAX_FILTERS_LIMIT_WARNING,
       base::NumberToString16(max_filters_per_policy));

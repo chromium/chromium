@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <map>
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
@@ -52,6 +53,15 @@ class ForceInstalledTracker : public ExtensionRegistryObserver,
     // IsReady() to know if it has already been called. If there are no
     // force-installed extensions configured, this method still gets called.
     virtual void OnForceInstalledExtensionsReady() {}
+
+    // Called when a force-installed extension with id |extension_id| fails to
+    // install with failure reason |reason|.
+    //
+    // Can be called multiple times, one for each failed extension install.
+    virtual void OnForceInstalledExtensionFailed(
+        const ExtensionId& extension_id,
+        InstallStageTracker::FailureReason reason,
+        bool is_from_store) {}
 
     // Called when cache status is retrieved from InstallationStageTracker.
     virtual void OnExtensionDownloadCacheStatusRetrieved(
@@ -167,12 +177,12 @@ class ForceInstalledTracker : public ExtensionRegistryObserver,
 
   void OnInstallForcelistChanged();
 
-  const ExtensionManagement* extension_management_;
+  raw_ptr<const ExtensionManagement> extension_management_;
 
   // Unowned, but guaranteed to outlive this object.
-  ExtensionRegistry* registry_;
-  Profile* profile_;
-  PrefService* pref_service_;
+  raw_ptr<ExtensionRegistry> registry_;
+  raw_ptr<Profile> profile_;
+  raw_ptr<PrefService> pref_service_;
 
   // Collection of all extensions we are interested in here. Don't update
   // directly, use AddExtensionInfo/RemoveExtensionInfo/ChangeExtensionStatus

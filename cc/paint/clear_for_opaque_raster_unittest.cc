@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -170,6 +170,20 @@ TEST(ClearForOpaqueRasterTest, WithTranslationAndScale) {
       gfx::Rect(50, 50, 50, 50), outer_rect, inner_rect));
   EXPECT_EQ(gfx::Rect(25, 25, 51, 51), outer_rect);
   EXPECT_EQ(gfx::Rect(25, 25, 49, 49), inner_rect);
+}
+
+TEST(ClearForOpaqueRasterTest, PlaybackRectBelowContentRect) {
+  const gfx::Vector2dF translation(0.0f, 0.1f);
+  const gfx::Vector2dF scale(1.0f, 1.0f);
+  const gfx::Size content_size(100, 100);
+  const gfx::Rect bitmap_rect(50, 50, 100, 100);
+  const gfx::Rect playback_rect(50, 100, 100, 3);
+  gfx::Rect inner_rect;
+  gfx::Rect outer_rect;
+
+  EXPECT_FALSE(CalculateClearForOpaqueRasterRects(
+      translation, scale, content_size, bitmap_rect, playback_rect, outer_rect,
+      inner_rect));
 }
 
 }  // namespace cc

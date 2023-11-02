@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,7 +21,7 @@ COMPONENT_EXPORT(UI_BASE)
 // Called as each item is created during menu or submenu creation.
 - (void)controllerWillAddItem:(NSMenuItem*)menuItem
                     fromModel:(ui::MenuModel*)model
-                      atIndex:(NSInteger)index
+                      atIndex:(size_t)index
             withColorProvider:(const ui::ColorProvider*)colorProvider;
 // Called after all menu items in a menu or submenu are created.
 - (void)controllerWillAddMenu:(NSMenu*)menu fromModel:(ui::MenuModel*)model;

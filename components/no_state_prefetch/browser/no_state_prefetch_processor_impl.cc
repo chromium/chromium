@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -78,7 +78,7 @@ void NoStatePrefetchProcessorImpl::Start(
   DCHECK(!link_trigger_id_);
   link_trigger_id_ = link_manager->OnStartLinkTrigger(
       render_process_id_,
-      render_frame_host->GetRenderViewHost()->GetRoutingID(),
+      render_frame_host->GetRenderViewHost()->GetRoutingID(), render_frame_id_,
       std::move(attributes), initiator_origin_);
 }
 

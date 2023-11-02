@@ -1,27 +1,28 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <iterator>
 
-#include "base/macros.h"
+#include "base/ranges/algorithm.h"
 #include "device/gamepad/gamepad_id_list.h"
 #include "device/gamepad/gamepad_standard_mappings.h"
 
 namespace device {
 
 namespace {
-// The hid-sony driver in newer kernels uses an alternate mapping for Sony
-// Playstation 3 and Playstation 4 gamepads than in older kernels. To allow
-// applications to distinguish between the old mapping and the new mapping,
-// hid-sony sets the high bit of the bcdHID value.
+// The Linux kernel has been updated to improve the mapping exposed by Sony
+// Playstation controllers. If the high bit of the bcdHID value is set it
+// indicates that an improved mapping is used, otherwise the default mapping
+// is used.
 // Dualshock 4 devices are patched in 4.10:
 // https://github.com/torvalds/linux/commit/9131f8cc2b4eaf7c08d402243429e0bfba9aa0d6
 // Dualshock 3 and SIXAXIS devices are patched in 4.12:
 // https://github.com/torvalds/linux/commit/e19a267b9987135c00155a51e683e434b9abb56b
+// Dualsense devices are patched in 5.12:
+// https://github.com/torvalds/linux/commit/bc2e15a9a0228b10fece576d4f6a974c002ff07b
 const uint16_t kDualshockPatchedBcdHidMask = 0x8000;
 
 // Older versions of the Stadia Controller firmware use an alternate mapping
@@ -59,7 +60,7 @@ void MapperXInputStyleGamepad(const Gamepad& input, Gamepad* mapped) {
   mapped->axes_length = AXIS_INDEX_COUNT;
 }
 
-void MapperXboxSeriesXBluetooth(const Gamepad& input, Gamepad* mapped) {
+void MapperXboxBluetooth(const Gamepad& input, Gamepad* mapped) {
   *mapped = input;
   mapped->buttons[BUTTON_INDEX_TERTIARY] = input.buttons[3];
   mapped->buttons[BUTTON_INDEX_QUATERNARY] = input.buttons[4];
@@ -77,9 +78,16 @@ void MapperXboxSeriesXBluetooth(const Gamepad& input, Gamepad* mapped) {
   mapped->buttons[BUTTON_INDEX_DPAD_RIGHT] =
       AxisPositiveAsButton(input.axes[6]);
   mapped->buttons[BUTTON_INDEX_META] = input.buttons[12];
+  mapped->buttons_length = BUTTON_INDEX_COUNT;
+  mapped->axes_length = AXIS_INDEX_COUNT;
+}
+
+void MapperXboxSeriesXBluetooth(const Gamepad& input, Gamepad* mapped) {
+  MapperXboxBluetooth(input, mapped);
+  // Xbox Wireless Controller Model 1914 has an extra Share button not present
+  // on other Xbox controllers. Map Share to the next button index after Meta.
   mapped->buttons[kSeriesXGamepadButtonShare] = input.buttons[15];
   mapped->buttons_length = kSeriesXGamepadButtonCount;
-  mapped->axes_length = AXIS_INDEX_COUNT;
 }
 
 void MapperXboxOneS(const Gamepad& input, Gamepad* mapped) {
@@ -291,7 +299,9 @@ void MapperDualshock4(const Gamepad& input, Gamepad* mapped) {
   mapped->axes_length = AXIS_INDEX_COUNT;
 }
 
-void MapperDualshock4New(const Gamepad& input, Gamepad* mapped) {
+// This mapping function is intended for Playstation 4 and 5 gamepads handled
+// by hid-sony (kernel 4.10+) and hid-playstation (kernel 5.12+).
+void MapperPs4Ps5(const Gamepad& input, Gamepad* mapped) {
   *mapped = input;
   mapped->buttons[BUTTON_INDEX_PRIMARY] = input.buttons[0];
   mapped->buttons[BUTTON_INDEX_SECONDARY] = input.buttons[1];
@@ -666,7 +676,7 @@ void MapperSteelSeriesStratusBt(const Gamepad& input, Gamepad* mapped) {
   mapped->axes_length = AXIS_INDEX_COUNT;
 }
 
-void MapperSteelSeriesProtonBt(const Gamepad& input, Gamepad* mapped) {
+void MapperSteelSeriesStratusPlusBt(const Gamepad& input, Gamepad* mapped) {
   MapperSteelSeriesStratusBt(input, mapped);
   mapped->buttons[BUTTON_INDEX_META] = input.buttons[12];
   mapped->buttons_length = BUTTON_INDEX_COUNT;
@@ -878,10 +888,58 @@ void MapperElecomWirelessDirectInput(const Gamepad& input, Gamepad* mapped) {
   mapped->axes[AXIS_INDEX_RIGHT_STICK_Y] = input.axes[2];
 }
 
+void MapperDjiFpv(const Gamepad& input, Gamepad* mapped) {
+  enum DjiFpvAxis {
+    kDjiFpvAxisGimbalDial = AXIS_INDEX_COUNT,
+    kDjiFpvAxisFlightModeSwitch,
+    kDjiFpvAxisC2Switch,
+    kDjiFpvAxisCount,
+  };
+
+  double flight_mode_axis;
+  if (input.buttons[6].pressed)
+    flight_mode_axis = -1.0;
+  else if (input.buttons[7].pressed)
+    flight_mode_axis = 1.0;
+  else
+    flight_mode_axis = 0.0;
+
+  double c2_axis;
+  if (input.buttons[4].pressed)
+    c2_axis = 0.0;
+  else if (input.buttons[5].pressed)
+    c2_axis = -1.0;
+  else
+    c2_axis = 1.0;
+
+  *mapped = input;
+  mapped->buttons[BUTTON_INDEX_PRIMARY] = NullButton();
+  mapped->buttons[BUTTON_INDEX_SECONDARY] = NullButton();
+  mapped->buttons[BUTTON_INDEX_TERTIARY] = NullButton();
+  mapped->buttons[BUTTON_INDEX_QUATERNARY] = NullButton();
+  mapped->buttons[BUTTON_INDEX_LEFT_SHOULDER] =
+      input.buttons[2];  // Flight Pause/RTH
+  mapped->buttons[BUTTON_INDEX_RIGHT_SHOULDER] =
+      input.buttons[3];  // Shutter/Record
+  mapped->buttons[BUTTON_INDEX_LEFT_TRIGGER] = NullButton();
+  mapped->buttons[BUTTON_INDEX_RIGHT_TRIGGER] = input.buttons[1];  // Start/Stop
+  mapped->buttons[BUTTON_INDEX_BACK_SELECT] = input.buttons[0];    // C1
+  mapped->axes[AXIS_INDEX_LEFT_STICK_X] = input.axes[3];
+  mapped->axes[AXIS_INDEX_LEFT_STICK_Y] = -input.axes[2];
+  mapped->axes[AXIS_INDEX_RIGHT_STICK_X] = input.axes[0];
+  mapped->axes[AXIS_INDEX_RIGHT_STICK_Y] = -input.axes[1];
+  mapped->axes[kDjiFpvAxisGimbalDial] = input.axes[4];
+  mapped->axes[kDjiFpvAxisFlightModeSwitch] = flight_mode_axis;
+  mapped->axes[kDjiFpvAxisC2Switch] = c2_axis;
+
+  mapped->buttons_length = 9;
+  mapped->axes_length = kDjiFpvAxisCount;
+}
+
 constexpr struct MappingData {
   GamepadId gamepad_id;
   GamepadStandardMappingFunction function;
-} AvailableMappings[] = {
+} kAvailableMappings[] = {
     // PowerA Wireless Controller - Nintendo GameCube style
     {GamepadId::kPowerALicPro, MapperSwitchPro},
     // DragonRise Generic USB
@@ -896,6 +954,12 @@ constexpr struct MappingData {
     {GamepadId::kMicrosoftProduct0b05, MapperXboxElite2Bluetooth},
     // Xbox Series X (Bluetooth)
     {GamepadId::kMicrosoftProduct0b13, MapperXboxSeriesXBluetooth},
+    // Xbox One S (Bluetooth)
+    {GamepadId::kMicrosoftProduct0b20, MapperXboxBluetooth},
+    // Xbox Adaptive (Bluetooth)
+    {GamepadId::kMicrosoftProduct0b21, MapperXboxBluetooth},
+    // Xbox Elite Series 2 (Bluetooth)
+    {GamepadId::kMicrosoftProduct0b22, MapperXboxBluetooth},
     // Logitech F310 D-mode
     {GamepadId::kLogitechProductc216, MapperLogitechDInput},
     // Logitech F510 D-mode
@@ -946,8 +1010,8 @@ constexpr struct MappingData {
     {GamepadId::kSteelSeriesBtProduct1419, MapperSteelSeriesStratusBt},
     // SteelSeries Stratus Duo Bluetooth
     {GamepadId::kSteelSeriesBtProduct1431, MapperSteelSeriesStratusBt},
-    // SteelSeries "Proton" Bluetooth
-    {GamepadId::kSteelSeriesBtProduct1434, MapperSteelSeriesProtonBt},
+    // SteelSeries Stratus+ Bluetooth
+    {GamepadId::kSteelSeriesBtProduct1434, MapperSteelSeriesStratusPlusBt},
     // Razer Serval Controller
     {GamepadId::kRazer1532Product0900, MapperRazerServal},
     // ADT-1 Controller
@@ -964,6 +1028,8 @@ constexpr struct MappingData {
     {GamepadId::kOnLiveProduct100a, MapperOnLiveWireless},
     // OUYA Controller
     {GamepadId::kOuyaProduct0001, MapperOUYA},
+    // DJI FPV Remote Controller 2
+    {GamepadId::kDjiProduct1020, MapperDjiFpv},
     // SCUF Vantage, SCUF Vantage 2
     {GamepadId::kScufProduct7725, MapperDualshock4},
     // boom PSX+N64 USB Converter
@@ -989,23 +1055,23 @@ GamepadStandardMappingFunction GetGamepadStandardMappingFunction(
     GamepadBusType bus_type) {
   GamepadId gamepad_id =
       GamepadIdList::Get().GetGamepadId(product_name, vendor_id, product_id);
-  const MappingData* begin = std::begin(AvailableMappings);
-  const MappingData* end = std::end(AvailableMappings);
-  const auto* find_it = std::find_if(begin, end, [=](const MappingData& item) {
-    return gamepad_id == item.gamepad_id;
-  });
+  const auto* find_it = base::ranges::find(kAvailableMappings, gamepad_id,
+                                           &MappingData::gamepad_id);
   GamepadStandardMappingFunction mapper =
-      (find_it == end) ? nullptr : find_it->function;
+      (find_it == std::end(kAvailableMappings)) ? nullptr : find_it->function;
 
   // The Linux kernel was updated in version 4.10 to better support Dualshock 4
   // and Dualshock 3/SIXAXIS gamepads. The driver patches the bcdHID value when
   // using the new mapping to allow downstream users to distinguish them.
   if (mapper == MapperDualshock4 &&
       (hid_specification_version & kDualshockPatchedBcdHidMask)) {
-    mapper = MapperDualshock4New;
+    mapper = MapperPs4Ps5;
   } else if (mapper == MapperDualshock3SixAxis &&
              (hid_specification_version & kDualshockPatchedBcdHidMask)) {
     mapper = MapperDualshock3SixAxisNew;
+  } else if (mapper == MapperDualSense &&
+             (hid_specification_version & kDualshockPatchedBcdHidMask)) {
+    mapper = MapperPs4Ps5;
   }
 
   // The Switch Joy-Con Charging Grip allows a pair of Joy-Cons to be docked

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,11 +35,11 @@ GamepadPlatformDataFetcherLinux::Factory::CreateDataFetcher() {
 }
 
 GamepadSource GamepadPlatformDataFetcherLinux::Factory::source() {
-  return GAMEPAD_SOURCE_LINUX_UDEV;
+  return GamepadSource::kLinuxUdev;
 }
 
 GamepadSource GamepadPlatformDataFetcherLinux::Factory::static_source() {
-  return GAMEPAD_SOURCE_LINUX_UDEV;
+  return GamepadSource::kLinuxUdev;
 }
 
 GamepadPlatformDataFetcherLinux::GamepadPlatformDataFetcherLinux(

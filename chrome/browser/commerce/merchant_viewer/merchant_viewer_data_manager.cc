@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,14 +9,14 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_macros_local.h"
-#include "chrome/browser/commerce/commerce_feature_list.h"
-#include "chrome/browser/persisted_state_db/profile_proto_db.h"
-#include "chrome/browser/persisted_state_db/profile_proto_db_factory.h"
+#include "chrome/browser/persisted_state_db/session_proto_db_factory.h"
+#include "components/commerce/core/commerce_feature_list.h"
+#include "components/session_proto_db/session_proto_db.h"
 #include "content/public/browser/android/browser_context_handle.h"
 
 MerchantViewerDataManager::MerchantViewerDataManager(
     content::BrowserContext* browser_context)
-    : proto_db_(ProfileProtoDBFactory<MerchantSignalProto>::GetInstance()
+    : proto_db_(SessionProtoDBFactory<MerchantSignalProto>::GetInstance()
                     ->GetForProfile(browser_context)) {}
 
 MerchantViewerDataManager::~MerchantViewerDataManager() = default;
@@ -139,7 +139,7 @@ bool MerchantViewerDataManager::HasValidDB() {
   return proto_db_ != nullptr;
 }
 
-ProfileProtoDB<merchant_signal_db::MerchantSignalContentProto>*
+SessionProtoDB<merchant_signal_db::MerchantSignalContentProto>*
 MerchantViewerDataManager::GetDB() {
   return proto_db_;
 }

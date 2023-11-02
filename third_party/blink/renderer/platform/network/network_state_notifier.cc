@@ -27,11 +27,13 @@
 
 #include <memory>
 
+#include "base/synchronization/lock.h"
 #include "net/nqe/effective_connection_type.h"
 #include "net/nqe/network_quality_estimator_params.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
@@ -116,7 +118,7 @@ void NetworkStateNotifier::SetOnLine(bool on_line) {
   DCHECK(IsMainThread());
   ScopedNotifier notifier(*this);
   {
-    MutexLocker locker(mutex_);
+    base::AutoLock locker(lock_);
     state_.on_line_initialized = true;
     state_.on_line = on_line;
   }
@@ -127,7 +129,7 @@ void NetworkStateNotifier::SetWebConnection(WebConnectionType type,
   DCHECK(IsMainThread());
   ScopedNotifier notifier(*this);
   {
-    MutexLocker locker(mutex_);
+    base::AutoLock locker(lock_);
     state_.connection_initialized = true;
     state_.type = type;
     state_.max_bandwidth_mbps = max_bandwidth_mbps;
@@ -141,7 +143,7 @@ void NetworkStateNotifier::SetNetworkQuality(WebEffectiveConnectionType type,
   DCHECK(IsMainThread());
   ScopedNotifier notifier(*this);
   {
-    MutexLocker locker(mutex_);
+    base::AutoLock locker(lock_);
 
     state_.effective_type = type;
     state_.http_rtt = absl::nullopt;
@@ -168,7 +170,7 @@ void NetworkStateNotifier::SetNetworkQualityWebHoldback(
     return;
   ScopedNotifier notifier(*this);
   {
-    MutexLocker locker(mutex_);
+    base::AutoLock locker(lock_);
 
     state_.network_quality_web_holdback = type;
   }
@@ -187,7 +189,7 @@ void NetworkStateNotifier::SetSaveDataEnabled(bool enabled) {
   DCHECK(IsMainThread());
   ScopedNotifier notifier(*this);
   {
-    MutexLocker locker(mutex_);
+    base::AutoLock locker(lock_);
     state_.save_data = enabled;
   }
 }
@@ -210,7 +212,7 @@ void NetworkStateNotifier::SetNetworkConnectionInfoOverride(
   DCHECK(IsMainThread());
   ScopedNotifier notifier(*this);
   {
-    MutexLocker locker(mutex_);
+    base::AutoLock locker(lock_);
     has_override_ = true;
     override_.on_line_initialized = true;
     override_.on_line = on_line;
@@ -252,7 +254,7 @@ void NetworkStateNotifier::SetSaveDataEnabledOverride(bool enabled) {
   DCHECK(IsMainThread());
   ScopedNotifier notifier(*this);
   {
-    MutexLocker locker(mutex_);
+    base::AutoLock locker(lock_);
     has_override_ = true;
     override_.on_line_initialized = true;
     override_.connection_initialized = true;
@@ -264,7 +266,7 @@ void NetworkStateNotifier::ClearOverride() {
   DCHECK(IsMainThread());
   ScopedNotifier notifier(*this);
   {
-    MutexLocker locker(mutex_);
+    base::AutoLock locker(lock_);
     has_override_ = false;
   }
 }
@@ -273,9 +275,15 @@ void NetworkStateNotifier::NotifyObservers(ObserverListMap& map,
                                            ObserverType type,
                                            const NetworkState& state) {
   DCHECK(IsMainThread());
-  MutexLocker locker(mutex_);
-  for (const auto& entry : map) {
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner = entry.key;
+  base::AutoLock locker(lock_);
+
+  std::vector<scoped_refptr<base::SingleThreadTaskRunner>> observers;
+  for (const auto& entry : map)
+    observers.push_back(entry.key);
+  std::sort(observers.begin(), observers.end(),
+            recordreplay::CompareRefptrByPointerId<scoped_refptr<base::SingleThreadTaskRunner>>());
+
+  for (const auto& task_runner : observers) {
     PostCrossThreadTask(
         *task_runner, FROM_HERE,
         CrossThreadBindOnce(&NetworkStateNotifier::NotifyObserversOnTaskRunner,
@@ -321,7 +329,7 @@ void NetworkStateNotifier::NotifyObserversOnTaskRunner(
 
   observer_list->iterating = false;
 
-  if (!observer_list->zeroed_observers.IsEmpty())
+  if (!observer_list->zeroed_observers.empty())
     CollectZeroedObservers(*map, observer_list, std::move(task_runner));
 }
 
@@ -332,7 +340,7 @@ void NetworkStateNotifier::AddObserverToMap(
   DCHECK(task_runner->RunsTasksInCurrentSequence());
   DCHECK(observer);
 
-  MutexLocker locker(mutex_);
+  base::AutoLock locker(lock_);
   ObserverListMap::AddResult result =
       map.insert(std::move(task_runner), nullptr);
   if (result.is_new_entry)
@@ -376,7 +384,7 @@ void NetworkStateNotifier::RemoveObserverFromMap(
     observer_list->zeroed_observers.push_back(index);
   }
 
-  if (!observer_list->iterating && !observer_list->zeroed_observers.IsEmpty())
+  if (!observer_list->iterating && !observer_list->zeroed_observers.empty())
     CollectZeroedObservers(map, observer_list, std::move(task_runner));
 }
 
@@ -384,7 +392,7 @@ NetworkStateNotifier::ObserverList*
 NetworkStateNotifier::LockAndFindObserverList(
     ObserverListMap& map,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  MutexLocker locker(mutex_);
+  base::AutoLock locker(lock_);
   ObserverListMap::iterator it = map.find(task_runner);
   return it == map.end() ? nullptr : it->value.get();
 }
@@ -409,8 +417,8 @@ void NetworkStateNotifier::CollectZeroedObservers(
 
   list->zeroed_observers.clear();
 
-  if (list->observers.IsEmpty()) {
-    MutexLocker locker(mutex_);
+  if (list->observers.empty()) {
+    base::AutoLock locker(lock_);
     map.erase(task_runner);  // deletes list
   }
 }
@@ -488,7 +496,7 @@ double NetworkStateNotifier::RoundMbps(
 
 absl::optional<WebEffectiveConnectionType>
 NetworkStateNotifier::GetWebHoldbackEffectiveType() const {
-  MutexLocker locker(mutex_);
+  base::AutoLock locker(lock_);
 
   const NetworkState& state = has_override_ ? override_ : state_;
   // TODO (tbansal): Add a DCHECK to check that |state.on_line_initialized| is
@@ -527,7 +535,7 @@ void NetworkStateNotifier::GetMetricsWithWebHoldback(
     absl::optional<base::TimeDelta>* http_rtt,
     absl::optional<double>* downlink_mbps,
     bool* save_data) const {
-  MutexLocker locker(mutex_);
+  base::AutoLock locker(lock_);
   const NetworkState& state = has_override_ ? override_ : state_;
 
   *type = state.type;

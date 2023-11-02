@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,16 +10,14 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/values.h"
 #include "chrome/browser/ash/base/locale_util.h"
-
-namespace base {
-class ListValue;
-}
+#include "ui/base/ime/ash/input_method_manager.h"
 
 namespace chromeos {
 
 typedef base::OnceCallback<void(
-    std::unique_ptr<base::ListValue> /* new_language_list */,
+    base::Value::List /* new_language_list */,
     const std::string& /* new_language_list_locale */,
     const std::string& /* new_selected_language */)>
     UILanguageListResolvedCallback;
@@ -39,9 +37,10 @@ extern const char kMostRelevantLanguagesDivider[];
 // `most_relevant_language_codes` is NULL, the most relevant languages are read
 // from initial_locale in VPD. If `selected` matches the locale code of any
 // entry in the resulting list, that entry will be marked as selected.
-std::unique_ptr<base::ListValue> GetUILanguageList(
+base::Value::List GetUILanguageList(
     const std::vector<std::string>* most_relevant_language_codes,
-    const std::string& selected);
+    const std::string& selected,
+    input_method::InputMethodManager* input_method_manager);
 
 // Must be called on UI thread. Runs GetUILanguageList(), on Blocking Pool,
 // and calls `callback` on UI thread with result.
@@ -49,19 +48,20 @@ std::unique_ptr<base::ListValue> GetUILanguageList(
 // correct and has been successfully loaded.
 void ResolveUILanguageList(
     std::unique_ptr<locale_util::LanguageSwitchResult> language_switch_result,
+    input_method::InputMethodManager* input_method_manager,
     UILanguageListResolvedCallback callback);
 
 // Returns a minimal list of UI languages, which consists of active language
 // only. It is used as a placeholder until ResolveUILanguageList() finishes
 // on BlockingPool.
-std::unique_ptr<base::ListValue> GetMinimalUILanguageList();
+base::Value::List GetMinimalUILanguageList();
 
 // Returns the most first entry of `most_relevant_language_codes` that is
 // actually available (present in `available_locales`). If none of the entries
 // are present in `available_locales`, returns the `fallback_locale`.
 std::string FindMostRelevantLocale(
     const std::vector<std::string>& most_relevant_language_codes,
-    const base::ListValue& available_locales,
+    const base::Value::List& available_locales,
     const std::string& fallback_locale);
 
 // Return a list of keyboard layouts that can be used for `locale` on the login
@@ -73,8 +73,10 @@ std::string FindMostRelevantLocale(
 // In addition to returning the list of keyboard layouts, this function also
 // activates them, so that they can be selected by the user (e.g. by cycling
 // through keyboard layouts via keyboard shortcuts).
-base::ListValue GetAndActivateLoginKeyboardLayouts(const std::string& locale,
-                                                   const std::string& selected);
+base::Value::List GetAndActivateLoginKeyboardLayouts(
+    const std::string& locale,
+    const std::string& selected,
+    input_method::InputMethodManager* input_method_manager);
 
 // Invokes `callback` with a list of keyboard layouts that can be used for
 // `locale`. Each list entry is a dictionary that contains data such as an ID
@@ -82,10 +84,12 @@ base::ListValue GetAndActivateLoginKeyboardLayouts(const std::string& locale,
 // followed by a divider and locale-specific keyboard layouts, if any. All
 // layouts supported for `locale` are returned, including those that produce
 // non-Latin characters by default.
-typedef base::OnceCallback<void(std::unique_ptr<base::ListValue>)>
+typedef base::OnceCallback<void(base::Value::List)>
     GetKeyboardLayoutsForLocaleCallback;
-void GetKeyboardLayoutsForLocale(GetKeyboardLayoutsForLocaleCallback callback,
-                                 const std::string& locale);
+void GetKeyboardLayoutsForLocale(
+    GetKeyboardLayoutsForLocaleCallback callback,
+    const std::string& locale,
+    input_method::InputMethodManager* input_method_manager);
 
 }  // namespace chromeos
 

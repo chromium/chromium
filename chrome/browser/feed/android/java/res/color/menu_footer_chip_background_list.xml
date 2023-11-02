@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:color="@color/menu_footer_chip_background_color_disabled" android:state_enabled="false" />
+    <item android:color="@macro/menu_footer_chip_background_color" android:alpha="@dimen/menu_footer_chip_background_alpha"/>
+</selector>

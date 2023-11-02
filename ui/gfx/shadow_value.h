@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <tuple>
 #include <vector>
 
+#include "build/chromeos_buildflags.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/gfx_export.h"
@@ -66,6 +67,13 @@ class GFX_EXPORT ShadowValue {
   // Makes ShadowValues for MD shadows. This style is deprecated.
   static ShadowValues MakeMdShadowValues(int elevation,
                                          SkColor color = SK_ColorBLACK);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Makes ShadowValues for Chrome OS UI components.
+  static ShadowValues MakeChromeOSSystemUIShadowValues(
+      int elevation,
+      SkColor color = SK_ColorBLACK);
+#endif
 
  private:
   gfx::Vector2d offset_;

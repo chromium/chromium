@@ -1,12 +1,24 @@
-<style include="app-management-shared-css settings-shared">
-  #explanation-text {
+<style include="app-management-cros-shared-css settings-shared">
+  #disabled-explanation-text {
     align-items: center;
     display: flex;
     flex-direction: row;
+    height: var(--info-text-row-height);
   }
 
-  #info-icon {
-    padding-inline-end: var(--help-icon-padding);
+  #supported-links-option {
+    height: 48px;
+  }
+
+  .info-icon {
+    height: var(--help-icon-size);
+    width: var(--help-icon-size);
+  }
+
+  #overlap-warning {
+    color: var(--secondary-text-color);
+    margin-block-start: -12px;
+    margin-inline-start: 36px;
   }
 </style>
 <div class="permission-section-header">
@@ -16,23 +28,33 @@
   </localized-link>
 </div>
 <template is="dom-if" if="[[disabled_]]">
-  <div id="explanation-text">
-    <iron-icon id="info-icon" icon="cr:info-outline"></iron-icon>
-    <localized-link localized-string="[[getDisabledExplanation_(app)]]">
+  <span class="info-text-row" id="disabled-explanation-text">
+    <iron-icon id="info-icon" icon="app-management:info"></iron-icon>
+    <localized-link id="info-string"
+      localized-string="[[getDisabledExplanation_(app)]]">
     </localized-link>
-  </div>
+  </span>
 </template>
 <div class="list-frame">
   <cr-radio-group id="radio-group"
       selected="[[getCurrentPref_(app)]]"
       on-selected-changed="onSupportedLinkPrefChanged_"
       disabled="[[disabled_]]">
-    <cr-radio-button id="preferred" name="preferred">
-      [[getPreferredLabel_(app)]]
+    <cr-radio-button
+        id="preferred"
+        name="preferred"
+        label="[[getPreferredLabel_(app)]]">
     </cr-radio-button>
-    <cr-radio-button id="browser" name="browser">
-      $i18n{appManagementIntentSharingOpenBrowserLabel}
+    <cr-radio-button
+        id="browser"
+        name="browser"
+        label="$i18n{appManagementIntentSharingOpenBrowserLabel}">
     </cr-radio-button>
+    <template is="dom-if" if="[[showOverlappingAppsWarning_]]">
+      <div id="overlap-warning">
+        [[overlappingAppsWarning_]]
+      </div>
+    </template>
   </cr-radio-group>
 </div>
 <template is="dom-if" if="[[showSupportedLinksDialog_]]" restamp>

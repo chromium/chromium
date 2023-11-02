@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,9 @@
 #include "chrome/browser/hid/hid_chooser_context.h"
 #include "components/permissions/chooser_controller.h"
 #include "content/public/browser/hid_chooser.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "services/device/public/mojom/hid.mojom-forward.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "third_party/blink/public/mojom/hid/hid.mojom.h"
 #include "url/origin.h"
 
@@ -34,9 +36,11 @@ class HidChooserController : public permissions::ChooserController,
   // is closed, either by selecting an item or by dismissing the chooser dialog.
   // The callback is called with the selected device, or nullptr if no device is
   // selected.
-  HidChooserController(content::RenderFrameHost* render_frame_host,
-                       std::vector<blink::mojom::HidDeviceFilterPtr> filters,
-                       content::HidChooser::Callback callback);
+  HidChooserController(
+      content::RenderFrameHost* render_frame_host,
+      std::vector<blink::mojom::HidDeviceFilterPtr> filters,
+      std::vector<blink::mojom::HidDeviceFilterPtr> exclusion_filters,
+      content::HidChooser::Callback callback);
   HidChooserController(HidChooserController&) = delete;
   HidChooserController& operator=(HidChooserController&) = delete;
   ~HidChooserController() override;
@@ -68,6 +72,9 @@ class HidChooserController : public permissions::ChooserController,
   void OnGotDevices(std::vector<device::mojom::HidDeviceInfoPtr> devices);
   bool DisplayDevice(const device::mojom::HidDeviceInfo& device) const;
   bool FilterMatchesAny(const device::mojom::HidDeviceInfo& device) const;
+  bool IsExcluded(const device::mojom::HidDeviceInfo& device) const;
+  void AddMessageToConsole(blink::mojom::ConsoleMessageLevel level,
+                           const std::string& message) const;
 
   // Add |device_info| to |device_map_|. The device is added to the chooser item
   // representing the physical device. If the chooser item does not yet exist, a
@@ -85,9 +92,10 @@ class HidChooserController : public permissions::ChooserController,
   void UpdateDeviceInfo(const device::mojom::HidDeviceInfo& device_info);
 
   std::vector<blink::mojom::HidDeviceFilterPtr> filters_;
+  std::vector<blink::mojom::HidDeviceFilterPtr> exclusion_filters_;
   content::HidChooser::Callback callback_;
+  content::WeakDocumentPtr initiator_document_;
   const url::Origin origin_;
-  const int frame_tree_node_id_;
 
   // The lifetime of the chooser context is tied to the browser context used to
   // create it, and may be destroyed while the chooser is still active.

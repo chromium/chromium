@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,13 +9,16 @@
  */
 
 // clang-format off
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CrPolicyPrefMixin, CrPolicyPrefMixinInterface} from './cr_policy_pref_mixin.js';
 import {PrefControlMixin, PrefControlMixinInterface} from './pref_control_mixin.js';
 
 // clang-format on
+
+export const DEFAULT_UNCHECKED_VALUE = 0;
+export const DEFAULT_CHECKED_VALUE = 1;
 
 type Constructor<T> = new (...args: any[]) => T;
 
@@ -80,7 +83,19 @@ export const SettingsBooleanControlMixin = dedupingMixin(
              */
             numericUncheckedValue: {
               type: Number,
-              value: 0,
+              value: DEFAULT_UNCHECKED_VALUE,
+              reflectToAttribute: true,
+            },
+
+            /**
+             * For numeric prefs only, the integer value equivalent to the
+             * checked state. This is the value sent to prefs if the user
+             * checked the control.
+             */
+            numericCheckedValue: {
+              type: Number,
+              value: DEFAULT_CHECKED_VALUE,
+              reflectToAttribute: true,
             },
           };
         }
@@ -96,6 +111,7 @@ export const SettingsBooleanControlMixin = dedupingMixin(
         label: string;
         subLabel: string;
         numericUncheckedValue: number;
+        numericCheckedValue: number;
 
         notifyChangedByUserInteraction() {
           this.dispatchEvent(new CustomEvent(
@@ -120,7 +136,9 @@ export const SettingsBooleanControlMixin = dedupingMixin(
           if (this.pref!.type === chrome.settingsPrivate.PrefType.NUMBER) {
             assert(!this.inverted);
             this.set(
-                'pref.value', this.checked ? 1 : this.numericUncheckedValue);
+                'pref.value',
+                this.checked ? this.numericCheckedValue :
+                               this.numericUncheckedValue);
             return;
           }
           this.set('pref.value', this.inverted ? !this.checked : this.checked);
@@ -161,6 +179,7 @@ export interface SettingsBooleanControlMixinInterface extends
   label: string;
   subLabel: string;
   numericUncheckedValue: number;
+  numericCheckedValue: number;
   controlDisabled(): boolean;
   notifyChangedByUserInteraction(): void;
   resetToPrefValue(): void;

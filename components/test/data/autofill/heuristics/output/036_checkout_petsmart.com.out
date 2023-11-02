@@ -1,15 +1,15 @@
-ADDRESS_HOME_COUNTRY | billCountry | • Country: | US | billCountry_1-default
-NAME_FIRST | billFname | • First Name: |  | billCountry_1-default
-NAME_LAST | billLname | • Last Name: |  | billCountry_1-default
-ADDRESS_HOME_LINE1 | billAddr1 | • Address: |  | billCountry_1-default
-ADDRESS_HOME_LINE2 | billAddr2 | Apt / Suite |  | billCountry_1-default
-ADDRESS_HOME_CITY | billCity | • City or APO/FPO: |  | billCountry_1-default
-ADDRESS_HOME_STATE | billState | • State/Province: |  | billCountry_1-default
-UNKNOWN_TYPE | altBillState | • Other State/Province: |  | billCountry_1-default
-ADDRESS_HOME_ZIP | billZip | • Zip/Postal Code: |  | billCountry_1-default
-PHONE_HOME_WHOLE_NUMBER | billPhone | • Telephone: |  | billCountry_1-default
-EMAIL_ADDRESS | guestEmail | • Email Address: |  | billCountry_1-default
-UNKNOWN_TYPE | shipOptions | Ship to the above billing address | useShip | billCountry_1-default
-UNKNOWN_TYPE | shipOptions | Ship to a different address | provideNew | billCountry_1-default
-UNKNOWN_TYPE | mail_id | User Name: |  | mail_id_1-default
-UNKNOWN_TYPE | password | Password: |  | mail_id_1-default
+ADDRESS_HOME_COUNTRY | billCountry | • Country: | US | billCountry_1
+NAME_FIRST | billFname | • First Name: |  | billCountry_1
+NAME_LAST | billLname | • Last Name: |  | billCountry_1
+ADDRESS_HOME_LINE1 | billAddr1 | • Address: |  | billCountry_1
+ADDRESS_HOME_LINE2 | billAddr2 | Apt / Suite |  | billCountry_1
+ADDRESS_HOME_CITY | billCity | • City or APO/FPO: |  | billCountry_1
+ADDRESS_HOME_STATE | billState | • State/Province: |  | billCountry_1
+UNKNOWN_TYPE | altBillState | • Other State/Province: |  | billCountry_1
+ADDRESS_HOME_ZIP | billZip | • Zip/Postal Code: |  | billCountry_1
+PHONE_HOME_WHOLE_NUMBER | billPhone | • Telephone: |  | billCountry_1
+EMAIL_ADDRESS | guestEmail | • Email Address: |  | billCountry_1
+UNKNOWN_TYPE | shipOptions | Ship to the above billing address | useShip | billCountry_1
+UNKNOWN_TYPE | shipOptions | Ship to a different address | provideNew | billCountry_1
+UNKNOWN_TYPE | mail_id | User Name: |  | mail_id_1
+UNKNOWN_TYPE | password | Password: |  | mail_id_1

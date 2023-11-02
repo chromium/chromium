@@ -43,7 +43,6 @@ import six
 import sre_compile
 import unicodedata
 
-from blinkpy.common.memoized import memoized
 from blinkpy.common.system.filesystem import FileSystem
 
 from functools import total_ordering
@@ -2121,7 +2120,7 @@ def check_identifier_name_in_declaration(filename, line_number, line,
     type_regexp = r'\w([\w]|\s*[*&]\s*|::)+'
     identifier_regexp = r'(?P<identifier>[\w:]+)'
     maybe_bitfield_regexp = r'(:\s*\d+\s*)?'
-    character_after_identifier_regexp = r'(?P<character_after_identifier>[[;()=,])(?!=)'
+    character_after_identifier_regexp = r'(?P<character_after_identifier>[\[;()=,])(?!=)'
     declaration_without_type_regexp = r'\s*' + identifier_regexp + \
         r'\s*' + maybe_bitfield_regexp + character_after_identifier_regexp
     declaration_with_type_regexp = r'\s*' + type_regexp + r'\s' + declaration_without_type_regexp
@@ -2443,8 +2442,8 @@ _RE_PATTERN_STRING = re.compile(r'\bstring\b')
 _re_pattern_algorithm_header = []
 for _template in ('copy', 'max', 'min', 'min_element', 'sort', 'swap',
                   'transform'):
-    # Match max<type>(..., ...), max(..., ...), but not foo->max, foo.max or
-    # type::max().
+    # Match max<type>(..., ...), max(..., ...), but not foo->max, foo.max,
+    # or type::max().
     _re_pattern_algorithm_header.append(
         (re.compile(r'[^>.]\b' + _template + r'(<.*?>)?\([^\)]'), _template,
          '<algorithm>'))

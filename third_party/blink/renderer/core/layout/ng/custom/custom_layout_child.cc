@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -92,6 +92,7 @@ ScriptPromise CustomLayoutChild::layoutNextFragment(
 }
 
 void CustomLayoutChild::Trace(Visitor* visitor) const {
+  visitor->Trace(node_);
   visitor->Trace(style_map_);
   visitor->Trace(token_);
   ScriptWrappable::Trace(visitor);

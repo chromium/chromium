@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "device/bluetooth/bluetooth_classic_device_mac.h"
 #include "device/bluetooth/bluetooth_socket_mac.h"
 
@@ -15,7 +16,7 @@
 @interface BluetoothRfcommChannelDelegate
     : NSObject <IOBluetoothRFCOMMChannelDelegate> {
  @private
-  device::BluetoothRfcommChannelMac* _channel;  // weak
+  raw_ptr<device::BluetoothRfcommChannelMac> _channel;  // weak
 }
 
 - (instancetype)initWithChannel:(device::BluetoothRfcommChannelMac*)channel;

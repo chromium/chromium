@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -70,7 +71,7 @@ class SessionDataService : public BrowserListObserver, public KeyedService {
   void OnCleanupAtStartupFinished(base::TimeTicks time_started);
   void OnCleanupAtSessionEndFinished(base::TimeTicks time_started);
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   std::unique_ptr<SessionDataDeleter> deleter_;
   // A flag that is set to skip session data deletion on restarts.
   bool force_keep_session_state_ = false;

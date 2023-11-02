@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -167,29 +167,46 @@ class COMPONENT_EXPORT(X11) RandR {
 
   struct BadOutputError : public x11::Error {
     uint16_t sequence{};
+    uint32_t bad_value{};
+    uint16_t minor_opcode{};
+    uint8_t major_opcode{};
 
     std::string ToString() const override;
   };
 
   struct BadCrtcError : public x11::Error {
     uint16_t sequence{};
+    uint32_t bad_value{};
+    uint16_t minor_opcode{};
+    uint8_t major_opcode{};
 
     std::string ToString() const override;
   };
 
   struct BadModeError : public x11::Error {
     uint16_t sequence{};
+    uint32_t bad_value{};
+    uint16_t minor_opcode{};
+    uint8_t major_opcode{};
 
     std::string ToString() const override;
   };
 
   struct BadProviderError : public x11::Error {
     uint16_t sequence{};
+    uint32_t bad_value{};
+    uint16_t minor_opcode{};
+    uint8_t major_opcode{};
 
     std::string ToString() const override;
   };
 
   struct ScreenSize {
+    bool operator==(const ScreenSize& other) const {
+      return width == other.width && height == other.height &&
+             mwidth == other.mwidth && mheight == other.mheight;
+    }
+
     uint16_t width{};
     uint16_t height{};
     uint16_t mwidth{};
@@ -197,10 +214,23 @@ class COMPONENT_EXPORT(X11) RandR {
   };
 
   struct RefreshRates {
+    bool operator==(const RefreshRates& other) const {
+      return rates == other.rates;
+    }
+
     std::vector<uint16_t> rates{};
   };
 
   struct ModeInfo {
+    bool operator==(const ModeInfo& other) const {
+      return id == other.id && width == other.width && height == other.height &&
+             dot_clock == other.dot_clock && hsync_start == other.hsync_start &&
+             hsync_end == other.hsync_end && htotal == other.htotal &&
+             hskew == other.hskew && vsync_start == other.vsync_start &&
+             vsync_end == other.vsync_end && vtotal == other.vtotal &&
+             name_len == other.name_len && mode_flags == other.mode_flags;
+    }
+
     uint32_t id{};
     uint16_t width{};
     uint16_t height{};
@@ -219,7 +249,6 @@ class COMPONENT_EXPORT(X11) RandR {
   struct ScreenChangeNotifyEvent {
     static constexpr int type_id = 11;
     static constexpr uint8_t opcode = 0;
-    bool send_event{};
     Rotation rotation{};
     uint16_t sequence{};
     Time timestamp{};
@@ -239,6 +268,15 @@ class COMPONENT_EXPORT(X11) RandR {
   };
 
   struct MonitorInfo {
+    bool operator==(const MonitorInfo& other) const {
+      return name == other.name && primary == other.primary &&
+             automatic == other.automatic && x == other.x && y == other.y &&
+             width == other.width && height == other.height &&
+             width_in_millimeters == other.width_in_millimeters &&
+             height_in_millimeters == other.height_in_millimeters &&
+             outputs == other.outputs;
+    }
+
     Atom name{};
     uint8_t primary{};
     uint8_t automatic{};
@@ -254,7 +292,6 @@ class COMPONENT_EXPORT(X11) RandR {
   struct NotifyEvent {
     static constexpr int type_id = 12;
     static constexpr uint8_t opcode = 1;
-    bool send_event{};
     uint16_t sequence{};
     struct Cc {
       Time timestamp{};

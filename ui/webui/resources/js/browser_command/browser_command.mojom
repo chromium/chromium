@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,6 +19,10 @@ enum Command {
   kOpenSafetyCheck = 1,
   kOpenSafeBrowsingEnhancedProtectionSettings = 2,
   kOpenFeedbackForm = 3,
+  kOpenPrivacyGuide = 4,
+  kStartTabGroupTutorial = 5,
+  kOpenPasswordManager = 6,
+  kNoOpCommand = 7,
 };
 
 // Click information needed to determine user's desired window disposition using

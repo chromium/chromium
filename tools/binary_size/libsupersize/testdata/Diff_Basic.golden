@@ -2,8 +2,7 @@ Common Metadata:
     baz=yes
     foo=1
     gn_args=var1=true var2="foo"
-    linker_name=gold
-    tool_prefix=tools/binary_size/libsupersize/testdata/mock_toolchain/
+    out_directory=out/Release
 Old Metadata:
     bar=[1, 2, 3]
     git_revision=abc123
@@ -16,6 +15,7 @@ Section Sizes (Total=0 bytes (0 bytes)):
     .data: 0 bytes (0 bytes) (0.0%)
     .data.rel.ro: 0 bytes (0 bytes) (0.0%)
     .data.rel.ro.local: 0 bytes (0 bytes) (0.0%)
+    .other: 0 bytes (0 bytes) (0.0%)
     .pak.nontranslated: 0 bytes (0 bytes) (0.0%)
     .pak.translations: 0 bytes (0 bytes) (0.0%)
     .rel.dyn: 0 bytes (0 bytes) (0.0%) (counted in .other)
@@ -45,10 +45,10 @@ Other section sizes:
     .strtab: 0 bytes (0 bytes) (counted in .other)
     .symtab: 0 bytes (0 bytes) (counted in .other)
 
-2 symbols added (+), 1 changed (~), 3 removed (-), 243 unchanged (not shown)
+2 symbols added (+), 1 changed (~), 3 removed (-), 269 unchanged (not shown)
 Added/Removed by section: .data: +2 .pak.translations: -3
 Of changed symbols, 3 grew, 3 shrank
-Number of unique symbols 251 -> 250 (-1)
+Number of unique symbols 277 -> 276 (-1)
 0 paths added, 0 removed, 1 changed
 Changed files:
   third_party/container/container.c
@@ -56,11 +56,11 @@ Changed files:
 Showing 6 symbols (4 -> 3 unique) with total pss: -94 bytes
 Histogram of symbols based on PSS:
     (-128,-64]: 1   (-32,-16]: 1   (-16,-8]: 1   [4,8): 2   [8,16): 1
-Sizes: .text=0 bytes    .rodata=10 bytes   .data.rel.ro=0 bytes    .data=8 bytes    .bss=0 bytes    .pak.translations=-112 bytes .pak.nontranslated=0 bytes    total=-94 bytes
-Counts: .text=0 .rodata=1 .data.rel.ro=0 .data=2 .bss=0 .pak.translations=3 .pak.nontranslated=0
+Sizes: .text=0 bytes    .rodata=10 bytes   .data.rel.ro=0 bytes    .data=8 bytes    .bss=0 bytes    .pak.translations=-112 bytes .pak.nontranslated=0 bytes    .other=0 bytes    total=-94 bytes
+Counts: .text=0 .rodata=1 .data.rel.ro=0 .data=2 .bss=0 .pak.translations=3 .pak.nontranslated=0 .other=0
 Number of unique paths: 3
 
-Section Legend: t=.text, r=.rodata, R=.data.rel.ro, d=.data, b=.bss, p=.pak.translations, P=.pak.nontranslated
+Section Legend: t=.text, r=.rodata, R=.data.rel.ro, d=.data, b=.bss, p=.pak.translations, P=.pak.nontranslated, o=.other
 Index | Running Total | Section@Address | ...
 ------------------------------------------------------------
 - 0)        -80 (85.1%) p@0x0        -80 (80->0)  num_aliases=1

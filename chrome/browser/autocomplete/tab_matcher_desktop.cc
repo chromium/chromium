@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "components/omnibox/browser/autocomplete_match.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace {
@@ -46,7 +47,9 @@ class AutocompleteClientWebContentsUserData
 };
 
 AutocompleteClientWebContentsUserData::AutocompleteClientWebContentsUserData(
-    content::WebContents*) {}
+    content::WebContents* web_contents)
+    : content::WebContentsUserData<AutocompleteClientWebContentsUserData>(
+          *web_contents) {}
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(AutocompleteClientWebContentsUserData);
 }  // namespace
@@ -57,25 +60,33 @@ bool TabMatcherDesktop::IsTabOpenWithURL(const GURL& url,
   if (!input)
     input = &empty_input;
   const GURL stripped_url = AutocompleteMatch::GURLToStrippedGURL(
-      url, *input, client_.GetTemplateURLService(), std::u16string());
+      url, *input, template_url_service_, std::u16string());
+  for (auto* web_contents : GetOpenTabs()) {
+    if (IsStrippedURLEqualToWebContentsURL(stripped_url, web_contents))
+      return true;
+  }
+  return false;
+}
+
+std::vector<content::WebContents*> TabMatcherDesktop::GetOpenTabs() const {
   Browser* active_browser = BrowserList::GetInstance()->GetLastActive();
   content::WebContents* active_tab = nullptr;
   if (active_browser)
     active_tab = active_browser->tab_strip_model()->GetActiveWebContents();
+
+  std::vector<content::WebContents*> all_tabs;
   for (auto* browser : *BrowserList::GetInstance()) {
-    // Only look at same profile (and anonymity level).
-    if (profile_ == browser->profile()) {
-      for (int i = 0; i < browser->tab_strip_model()->count(); ++i) {
-        content::WebContents* web_contents =
-            browser->tab_strip_model()->GetWebContentsAt(i);
-        if (web_contents != active_tab &&
-            IsStrippedURLEqualToWebContentsURL(stripped_url, web_contents))
-          return true;
-      }
+    if (profile_ != browser->profile()) {
+      // Only look at the same profile (and anonymity level).
+      continue;
+    }
+    for (int i = 0; i < browser->tab_strip_model()->count(); ++i) {
+      auto* web_contents = browser->tab_strip_model()->GetWebContentsAt(i);
+      if (web_contents != active_tab)
+        all_tabs.push_back(web_contents);
     }
   }
-
-  return false;
+  return all_tabs;
 }
 
 bool TabMatcherDesktop::IsStrippedURLEqualToWebContentsURL(
@@ -89,7 +100,7 @@ bool TabMatcherDesktop::IsStrippedURLEqualToWebContentsURL(
       web_contents->GetController().GetLastCommittedEntryIndex()) {
     user_data->UpdateLastCommittedStrippedURL(
         web_contents->GetController().GetLastCommittedEntryIndex(),
-        web_contents->GetLastCommittedURL(), client_.GetTemplateURLService());
+        web_contents->GetLastCommittedURL(), template_url_service_);
   }
   return stripped_url == user_data->GetLastCommittedStrippedURL();
 }

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -146,9 +146,9 @@ public class RenderFrameHostImpl implements RenderFrameHost {
     }
 
     @Override
-    public boolean isRenderFrameCreated() {
+    public boolean isRenderFrameLive() {
         if (mNativeRenderFrameHostAndroid == 0) return false;
-        return RenderFrameHostImplJni.get().isRenderFrameCreated(
+        return RenderFrameHostImplJni.get().isRenderFrameLive(
                 mNativeRenderFrameHostAndroid, RenderFrameHostImpl.this);
     }
 
@@ -244,9 +244,9 @@ public class RenderFrameHostImpl implements RenderFrameHost {
         void notifyUserActivation(long nativeRenderFrameHostAndroid, RenderFrameHostImpl caller);
         boolean signalCloseWatcherIfActive(
                 long nativeRenderFrameHostAndroid, RenderFrameHostImpl caller);
-        boolean isRenderFrameCreated(long nativeRenderFrameHostAndroid, RenderFrameHostImpl caller);
+        boolean isRenderFrameLive(long nativeRenderFrameHostAndroid, RenderFrameHostImpl caller);
         void getInterfaceToRendererFrame(long nativeRenderFrameHostAndroid,
-                RenderFrameHostImpl caller, String interfacename, int messagePipeRawHandle);
+                RenderFrameHostImpl caller, String interfacename, long messagePipeRawHandle);
         void terminateRendererDueToBadMessage(
                 long nativeRenderFrameHostAndroid, RenderFrameHostImpl caller, int reason);
         boolean isProcessBlocked(long nativeRenderFrameHostAndroid, RenderFrameHostImpl caller);

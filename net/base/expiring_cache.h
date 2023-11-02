@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -120,7 +120,7 @@ class ExpiringCache {
 
   // Constructs an ExpiringCache that stores up to |max_entries|.
   explicit ExpiringCache(size_t max_entries) : max_entries_(max_entries) {}
-  ~ExpiringCache() {}
+  ~ExpiringCache() = default;
 
   // Returns the value matching |key|, which must be valid at the time |now|.
   // Returns NULL if the item is not found or has expired. If the item has

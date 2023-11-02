@@ -2,5 +2,3 @@
 # If you need to disable a tests for version skew, use
 # linux-lacros.lacros_chrome_browsertests.skew.filter.
 
-# TODO(crbug.com/1252114) Flaky. Re-enable the test.
--LacrosExtensionAppsControllerTest.LaunchPinnedApp

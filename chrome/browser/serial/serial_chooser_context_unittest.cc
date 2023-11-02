@@ -1,14 +1,15 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/serial/serial_chooser_context.h"
 
-#include "base/json/json_reader.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/values_test_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -30,15 +31,16 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/scoped_user_manager.h"
 #endif
 
-using testing::NiceMock;
-
 namespace {
+
+using ::base::test::ParseJson;
+using ::testing::NiceMock;
 
 constexpr char kTestUserEmail[] = "user@example.com";
 
@@ -52,6 +54,7 @@ class MockPortObserver : public SerialChooserContext::PortObserver {
   MOCK_METHOD1(OnPortAdded, void(const device::mojom::SerialPortInfo&));
   MOCK_METHOD1(OnPortRemoved, void(const device::mojom::SerialPortInfo&));
   MOCK_METHOD0(OnPortManagerConnectionError, void());
+  MOCK_METHOD1(OnPermissionRevoked, void(const url::Origin&));
 };
 
 device::mojom::SerialPortInfoPtr CreatePersistentPort(
@@ -60,7 +63,7 @@ device::mojom::SerialPortInfoPtr CreatePersistentPort(
   auto port = device::mojom::SerialPortInfo::New();
   port->token = base::UnguessableToken::Create();
   port->display_name = std::move(name);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   port->device_instance_id = persistent_id;
 #else
   port->has_vendor_id = true;
@@ -68,19 +71,11 @@ device::mojom::SerialPortInfoPtr CreatePersistentPort(
   port->has_product_id = true;
   port->product_id = 0;
   port->serial_number = persistent_id;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   port->usb_driver_name = "AppleUSBCDC";
 #endif
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   return port;
-}
-
-std::unique_ptr<base::Value> ReadJson(base::StringPiece json) {
-  base::JSONReader::ValueWithError result =
-      base::JSONReader::ReadAndReturnValueWithError(json);
-  EXPECT_TRUE(result.value) << result.error_message;
-  return result.value ? base::Value::ToUniquePtrValue(std::move(*result.value))
-                      : nullptr;
 }
 
 class SerialChooserContextTestBase {
@@ -118,8 +113,8 @@ class SerialChooserContextTestBase {
 
     context_ = SerialChooserContextFactory::GetForProfile(profile_);
     context_->SetPortManagerForTesting(std::move(port_manager));
-    scoped_permission_observation_.Observe(context_);
-    scoped_port_observation_.Observe(context_);
+    scoped_permission_observation_.Observe(context_.get());
+    scoped_port_observation_.Observe(context_.get());
 
     // Ensure |context_| is ready to receive SerialPortManagerClient messages.
     context_->FlushPortManagerConnectionForTesting();
@@ -159,13 +154,13 @@ class SerialChooserContextTestBase {
   base::test::ScopedFeatureList feature_list_;
   device::FakeSerialPortManager port_manager_;
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
-  TestingProfile* profile_ = nullptr;
+  raw_ptr<TestingProfile> profile_ = nullptr;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 #endif
 
-  SerialChooserContext* context_;
+  raw_ptr<SerialChooserContext> context_;
   NiceMock<permissions::MockPermissionObserver> permission_observer_;
   base::ScopedObservation<
       permissions::ObjectPermissionContextBase,
@@ -256,6 +251,60 @@ TEST_F(SerialChooserContextTest, GrantAndRevokeEphemeralPermission) {
                                       1);
 }
 
+TEST_F(SerialChooserContextTest, RevokeEphemeralPermissionByWebsite) {
+  base::HistogramTester histogram_tester;
+
+  const auto origin = url::Origin::Create(GURL("https://google.com"));
+
+  auto port_1 = device::mojom::SerialPortInfo::New();
+  port_1->token = base::UnguessableToken::Create();
+
+  auto port_2 = CreatePersistentPort("Persistent Port", "ABC123");
+
+  EXPECT_FALSE(context()->HasPortPermission(origin, *port_1));
+  EXPECT_FALSE(context()->HasPortPermission(origin, *port_2));
+
+  EXPECT_CALL(permission_observer(),
+              OnObjectPermissionChanged(
+                  absl::make_optional(ContentSettingsType::SERIAL_GUARD),
+                  ContentSettingsType::SERIAL_CHOOSER_DATA));
+
+  context()->GrantPortPermission(origin, *port_1);
+  EXPECT_TRUE(context()->HasPortPermission(origin, *port_1));
+  EXPECT_FALSE(context()->HasPortPermission(origin, *port_2));
+
+  std::vector<std::unique_ptr<SerialChooserContext::Object>> origin_objects =
+      context()->GetGrantedObjects(origin);
+  ASSERT_EQ(1u, origin_objects.size());
+
+  std::vector<std::unique_ptr<SerialChooserContext::Object>> objects =
+      context()->GetAllGrantedObjects();
+  ASSERT_EQ(1u, objects.size());
+  EXPECT_EQ(origin.GetURL(), objects[0]->origin);
+  EXPECT_EQ(origin_objects[0]->value, objects[0]->value);
+  EXPECT_EQ(content_settings::SettingSource::SETTING_SOURCE_USER,
+            objects[0]->source);
+  EXPECT_FALSE(objects[0]->incognito);
+
+  EXPECT_CALL(permission_observer(),
+              OnObjectPermissionChanged(
+                  absl::make_optional(ContentSettingsType::SERIAL_GUARD),
+                  ContentSettingsType::SERIAL_CHOOSER_DATA));
+  EXPECT_CALL(permission_observer(), OnPermissionRevoked(origin));
+
+  context()->RevokePortPermissionWebInitiated(origin, port_1->token);
+  EXPECT_FALSE(context()->HasPortPermission(origin, *port_1));
+  EXPECT_FALSE(context()->HasPortPermission(origin, *port_2));
+  origin_objects = context()->GetGrantedObjects(origin);
+  EXPECT_EQ(0u, origin_objects.size());
+  objects = context()->GetAllGrantedObjects();
+  EXPECT_EQ(0u, objects.size());
+
+  histogram_tester.ExpectUniqueSample(
+      "Permissions.Serial.Revoked",
+      SerialPermissionRevoked::kEphemeralByWebsite, 1);
+}
+
 TEST_F(SerialChooserContextTest, GrantAndRevokePersistentPermission) {
   base::HistogramTester histogram_tester;
 
@@ -306,8 +355,64 @@ TEST_F(SerialChooserContextTest, GrantAndRevokePersistentPermission) {
   objects = context()->GetAllGrantedObjects();
   EXPECT_EQ(0u, objects.size());
 
-  histogram_tester.ExpectUniqueSample("Permissions.Serial.Revoked",
-                                      SerialPermissionRevoked::kPersistent, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Permissions.Serial.Revoked", SerialPermissionRevoked::kPersistentByUser,
+      1);
+}
+
+TEST_F(SerialChooserContextTest, RevokePersistentPermissionByWebsite) {
+  base::HistogramTester histogram_tester;
+
+  const auto origin = url::Origin::Create(GURL("https://google.com"));
+
+  device::mojom::SerialPortInfoPtr port_1 =
+      CreatePersistentPort("Persistent Port", "ABC123");
+
+  auto port_2 = device::mojom::SerialPortInfo::New();
+  port_2->token = base::UnguessableToken::Create();
+
+  EXPECT_FALSE(context()->HasPortPermission(origin, *port_1));
+  EXPECT_FALSE(context()->HasPortPermission(origin, *port_2));
+
+  EXPECT_CALL(permission_observer(),
+              OnObjectPermissionChanged(
+                  absl::make_optional(ContentSettingsType::SERIAL_GUARD),
+                  ContentSettingsType::SERIAL_CHOOSER_DATA));
+
+  context()->GrantPortPermission(origin, *port_1);
+  EXPECT_TRUE(context()->HasPortPermission(origin, *port_1));
+  EXPECT_FALSE(context()->HasPortPermission(origin, *port_2));
+
+  std::vector<std::unique_ptr<SerialChooserContext::Object>> origin_objects =
+      context()->GetGrantedObjects(origin);
+  ASSERT_EQ(1u, origin_objects.size());
+
+  std::vector<std::unique_ptr<SerialChooserContext::Object>> objects =
+      context()->GetAllGrantedObjects();
+  ASSERT_EQ(1u, objects.size());
+  EXPECT_EQ(origin.GetURL(), objects[0]->origin);
+  EXPECT_EQ(origin_objects[0]->value, objects[0]->value);
+  EXPECT_EQ(content_settings::SettingSource::SETTING_SOURCE_USER,
+            objects[0]->source);
+  EXPECT_FALSE(objects[0]->incognito);
+
+  EXPECT_CALL(permission_observer(),
+              OnObjectPermissionChanged(
+                  absl::make_optional(ContentSettingsType::SERIAL_GUARD),
+                  ContentSettingsType::SERIAL_CHOOSER_DATA));
+  EXPECT_CALL(permission_observer(), OnPermissionRevoked(origin));
+
+  context()->RevokePortPermissionWebInitiated(origin, port_1->token);
+  EXPECT_FALSE(context()->HasPortPermission(origin, *port_1));
+  EXPECT_FALSE(context()->HasPortPermission(origin, *port_2));
+  origin_objects = context()->GetGrantedObjects(origin);
+  EXPECT_EQ(0u, origin_objects.size());
+  objects = context()->GetAllGrantedObjects();
+  EXPECT_EQ(0u, objects.size());
+
+  histogram_tester.ExpectUniqueSample(
+      "Permissions.Serial.Revoked",
+      SerialPermissionRevoked::kPersistentByWebsite, 1);
 }
 
 TEST_F(SerialChooserContextTest, EphemeralPermissionRevokedOnDisconnect) {
@@ -497,7 +602,7 @@ TEST_F(SerialChooserContextTest, PolicyAskForUrls) {
       prefs::kManagedDefaultSerialGuardSetting,
       std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
   profile_prefs->SetManagedPref(prefs::kManagedSerialAskForUrls,
-                                ReadJson(R"([ "https://foo.origin" ])"));
+                                ParseJson(R"([ "https://foo.origin" ])"));
 
   EXPECT_TRUE(context()->CanRequestObjectPermission(kFooOrigin));
   EXPECT_TRUE(context()->HasPortPermission(kFooOrigin, *port));
@@ -526,7 +631,7 @@ TEST_F(SerialChooserContextTest, PolicyBlockedForUrls) {
 
   auto* profile_prefs = profile()->GetTestingPrefService();
   profile_prefs->SetManagedPref(prefs::kManagedSerialBlockedForUrls,
-                                ReadJson(R"([ "https://foo.origin" ])"));
+                                ParseJson(R"([ "https://foo.origin" ])"));
 
   EXPECT_FALSE(context()->CanRequestObjectPermission(kFooOrigin));
   EXPECT_FALSE(context()->HasPortPermission(kFooOrigin, *port));
@@ -549,9 +654,9 @@ TEST_P(SerialChooserContextAffiliatedTest, PolicyAllowForUrls) {
   const auto kBarOrigin = url::Origin::Create(GURL("https://bar.origin"));
 
   local_state()->SetManagedPref(prefs::kManagedSerialAllowAllPortsForUrls,
-                                ReadJson(R"([ "https://foo.origin" ])"));
+                                ParseJson(R"([ "https://foo.origin" ])"));
   local_state()->SetManagedPref(prefs::kManagedSerialAllowUsbDevicesForUrls,
-                                ReadJson(R"([
+                                ParseJson(R"([
                {
                  "devices": [{ "vendor_id": 6353, "product_id": 19985 }],
                  "urls": [ "https://bar.origin" ]
@@ -650,7 +755,7 @@ TEST_P(SerialChooserContextAffiliatedTest,
   const auto kBarOrigin = url::Origin::Create(GURL("https://bar.origin"));
 
   local_state()->SetManagedPref(prefs::kManagedSerialAllowUsbDevicesForUrls,
-                                ReadJson(R"([
+                                ParseJson(R"([
                {
                  "devices": [{ "vendor_id": 6353 }],
                  "urls": [ "https://google.com" ]
@@ -727,7 +832,7 @@ TEST_P(SerialChooserContextAffiliatedTest, PolicyAllowOverridesGuard) {
       prefs::kManagedDefaultSerialGuardSetting,
       std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
   local_state()->SetManagedPref(prefs::kManagedSerialAllowAllPortsForUrls,
-                                ReadJson(R"([ "https://foo.origin" ])"));
+                                ParseJson(R"([ "https://foo.origin" ])"));
 
   auto port = device::mojom::SerialPortInfo::New();
   port->token = base::UnguessableToken::Create();
@@ -752,9 +857,9 @@ TEST_P(SerialChooserContextAffiliatedTest, PolicyAllowOverridesBlocked) {
   auto* profile_prefs = profile()->GetTestingPrefService();
   profile_prefs->SetManagedPref(
       prefs::kManagedSerialBlockedForUrls,
-      ReadJson(R"([ "https://foo.origin", "https://bar.origin" ])"));
+      ParseJson(R"([ "https://foo.origin", "https://bar.origin" ])"));
   local_state()->SetManagedPref(prefs::kManagedSerialAllowAllPortsForUrls,
-                                ReadJson(R"([ "https://foo.origin" ])"));
+                                ParseJson(R"([ "https://foo.origin" ])"));
 
   auto port = device::mojom::SerialPortInfo::New();
   port->token = base::UnguessableToken::Create();
@@ -806,7 +911,7 @@ TEST_P(SerialChooserContextAffiliatedTest, BlocklistOverridesPolicy) {
   const auto origin = url::Origin::Create(GURL("https://google.com"));
 
   local_state()->SetManagedPref(prefs::kManagedSerialAllowUsbDevicesForUrls,
-                                ReadJson(R"([
+                                ParseJson(R"([
                {
                  "devices": [{ "vendor_id": 6353, "product_id": 22768 }],
                  "urls": [ "https://google.com" ]

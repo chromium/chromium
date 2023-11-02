@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -21,16 +21,21 @@ component("system") {
     "cpu_temperature_reader.h",
   ]
 
+  if (is_chromeos) {
+    deps += [ "//chromeos:chromeos_export" ]
+    sources += [
+      "core_scheduling.cc",
+      "core_scheduling.h",
+    ]
+  }
+
   if (is_chromeos_ash) {
     deps += [
       "//ash/constants",
       "//base",
-      "//chromeos:chromeos_export",
       "//ui/ozone:ozone_base",
     ]
     sources += [
-      "core_scheduling.cc",
-      "core_scheduling.h",
       "devicemode.cc",
       "devicemode.h",
       "factory_ping_embargo_check.cc",
@@ -47,6 +52,8 @@ component("system") {
       "scheduler_configuration_manager_base.h",
       "statistics_provider.cc",
       "statistics_provider.h",
+      "statistics_provider_impl.cc",
+      "statistics_provider_impl.h",
     ]
   }
 }
@@ -62,6 +69,7 @@ source_set("unit_tests") {
 
   if (is_chromeos_ash) {
     deps += [
+      "//ash/constants",
       "//base/test:test_support",
       "//chromeos:test_utils",
     ]
@@ -69,6 +77,7 @@ source_set("unit_tests") {
       "factory_ping_embargo_check_unittest.cc",
       "kiosk_oem_manifest_parser_unittest.cc",
       "name_value_pairs_parser_unittest.cc",
+      "statistics_provider_impl_unittest.cc",
     ]
   }
 }

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,38 +22,35 @@ LensInternalsUIMessageHandler::LensInternalsUIMessageHandler(Profile* profile) {
 LensInternalsUIMessageHandler::~LensInternalsUIMessageHandler() = default;
 
 void LensInternalsUIMessageHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "startDebugMode",
       base::BindRepeating(&LensInternalsUIMessageHandler::HandleStartDebugMode,
                           base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "refreshDebugData",
       base::BindRepeating(
           &LensInternalsUIMessageHandler::HandleRefreshDebugData,
           base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "stopDebugMode",
       base::BindRepeating(&LensInternalsUIMessageHandler::HandleStopDebugMode,
                           base::Unretained(this)));
 }
 
 void LensInternalsUIMessageHandler::HandleStartDebugMode(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   JNIEnv* env = base::android::AttachCurrentThread();
 
   Java_LensDebugBridge_startProactiveDebugMode(env);
 
-  const base::Value* callback_id;
-  auto result = args->Get(0, &callback_id);
-  DCHECK(result);
-
-  ResolveJavascriptCallback(*callback_id, base::Value());
+  const base::Value& callback_id = args[0];
+  ResolveJavascriptCallback(callback_id, base::Value());
 }
 
 void LensInternalsUIMessageHandler::HandleRefreshDebugData(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   // Only needs to be called once.
   AllowJavascript();
   JNIEnv* env = base::android::AttachCurrentThread();
@@ -64,34 +61,26 @@ void LensInternalsUIMessageHandler::HandleRefreshDebugData(
   base::android::Java2dStringArrayTo2dStringVector(env, j_debug_data,
                                                    &debug_data);
 
-  std::vector<base::Value> debug_data_as_vector_of_values;
+  base::Value::List debug_data_as_vector_of_values;
   for (auto const& row : debug_data) {
-    std::vector<base::Value> row_as_list_storage;
+    base::Value::List row_as_list_storage;
     // Convert to base::Value array.
     for (std::u16string const& cell_string : row) {
-      row_as_list_storage.emplace_back(base::Value(cell_string));
+      row_as_list_storage.Append(cell_string);
     }
-    debug_data_as_vector_of_values.emplace_back(
-        base::Value(row_as_list_storage));
+    debug_data_as_vector_of_values.Append(std::move(row_as_list_storage));
   }
 
-  const base::Value* callback_id;
-  auto result = args->Get(0, &callback_id);
-  DCHECK(result);
-
-  ResolveJavascriptCallback(*callback_id,
-                            base::Value(debug_data_as_vector_of_values));
+  const base::Value& callback_id = args[0];
+  ResolveJavascriptCallback(callback_id, debug_data_as_vector_of_values);
 }
 
 void LensInternalsUIMessageHandler::HandleStopDebugMode(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   JNIEnv* env = base::android::AttachCurrentThread();
 
   Java_LensDebugBridge_stopProactiveDebugMode(env);
 
-  const base::Value* callback_id;
-  auto result = args->Get(0, &callback_id);
-  DCHECK(result);
-
-  ResolveJavascriptCallback(*callback_id, base::Value());
+  const base::Value& callback_id = args[0];
+  ResolveJavascriptCallback(callback_id, base::Value());
 }

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/views/controls/menu/menu_controller.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "ui/views/controls/menu/menu_closure_animation_mac.h"
 #endif
 
@@ -41,16 +41,6 @@ void TestMenuDelegate::OnMenuClosed(MenuItemView* menu) {
   on_menu_closed_menu_ = menu;
 }
 
-ui::mojom::DragOperation TestMenuDelegate::OnPerformDrop(
-    MenuItemView* menu,
-    DropPosition position,
-    const ui::DropTargetEvent& event) {
-  auto drop_cb = GetDropCallback(menu, position, event);
-  ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
-  std::move(drop_cb).Run(event, output_drag_op);
-  return output_drag_op;
-}
-
 views::View::DropCallback TestMenuDelegate::GetDropCallback(
     MenuItemView* menu,
     DropPosition position,
@@ -68,6 +58,12 @@ void TestMenuDelegate::WriteDragData(MenuItemView* sender,
 void TestMenuDelegate::WillHideMenu(MenuItemView* menu) {
   will_hide_menu_count_++;
   will_hide_menu_ = menu;
+}
+
+bool TestMenuDelegate::ShouldExecuteCommandWithoutClosingMenu(
+    int id,
+    const ui::Event& e) {
+  return should_execute_command_without_closing_menu_;
 }
 
 void TestMenuDelegate::PerformDrop(const ui::DropTargetEvent& event,
@@ -96,13 +92,13 @@ void MenuControllerTestApi::SetShowing(bool showing) {
 }
 
 void DisableMenuClosureAnimations() {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   MenuClosureAnimationMac::DisableAnimationsForTesting();
 #endif
 }
 
 void WaitForMenuClosureAnimation() {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // TODO(https://crbug.com/982815): Replace this with Quit+Run.
   base::RunLoop().RunUntilIdle();
 #endif

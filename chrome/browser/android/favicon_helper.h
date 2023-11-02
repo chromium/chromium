@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -72,7 +72,7 @@ class FaviconHelper {
       const base::android::JavaRef<jobject>& j_favicon_image_callback,
       const favicon_base::FaviconRawBitmapResult& result);
 
-  void OnFaviconBitmapResultsAvailable(
+  void OnComposedFaviconBitmapResultsAvailable(
       const base::android::JavaRef<jobject>& j_favicon_image_callback,
       const int desired_size_in_pixel,
       const std::vector<favicon_base::FaviconRawBitmapResult>& result);

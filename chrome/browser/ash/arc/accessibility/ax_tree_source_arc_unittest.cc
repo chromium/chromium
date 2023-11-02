@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,11 @@
 
 #include <utility>
 
+#include "ash/components/arc/mojom/accessibility_helper.mojom.h"
 #include "chrome/browser/ash/arc/accessibility/accessibility_node_info_data_wrapper.h"
 #include "chrome/browser/ash/arc/accessibility/accessibility_window_info_data_wrapper.h"
 #include "chrome/browser/ash/arc/accessibility/arc_accessibility_test_util.h"
 #include "chrome/browser/ash/arc/accessibility/arc_accessibility_util.h"
-#include "components/arc/mojom/accessibility_helper.mojom.h"
 #include "extensions/browser/api/automation_internal/automation_event_router.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -34,7 +34,6 @@ using AXIntListProperty = mojom::AccessibilityIntListProperty;
 using AXIntProperty = mojom::AccessibilityIntProperty;
 using AXNodeInfoData = mojom::AccessibilityNodeInfoData;
 using AXRangeInfoData = mojom::AccessibilityRangeInfoData;
-using AXStringListProperty = mojom::AccessibilityStringListProperty;
 using AXStringProperty = mojom::AccessibilityStringProperty;
 using AXWindowBooleanProperty = mojom::AccessibilityWindowBooleanProperty;
 using AXWindowInfoData = mojom::AccessibilityWindowInfoData;
@@ -168,6 +167,8 @@ class AXTreeSourceArcTest : public testing::Test,
 };
 
 TEST_F(AXTreeSourceArcTest, ReorderChildrenByLayout) {
+  set_full_focus_mode(true);
+
   auto event = AXEventData::New();
   event->source_id = 0;
   event->task_id = 1;
@@ -184,9 +185,16 @@ TEST_F(AXTreeSourceArcTest, ReorderChildrenByLayout) {
   root->id = 10;
   SetProperty(root, AXBooleanProperty::IMPORTANCE, true);
   SetProperty(root, AXIntListProperty::CHILD_NODE_IDS,
-              std::vector<int>({1, 2}));
+              std::vector<int>({11, 12}));
 
-  // Add child button.
+  // Add child button and its wrapper.
+  event->node_data.push_back(AXNodeInfoData::New());
+  AXNodeInfoData* wrapper1 = event->node_data.back().get();
+  wrapper1->id = 11;
+  SetProperty(wrapper1, AXIntListProperty::CHILD_NODE_IDS,
+              std::vector<int>({1}));
+  SetProperty(wrapper1, AXBooleanProperty::VISIBLE_TO_USER, true);
+
   event->node_data.push_back(AXNodeInfoData::New());
   AXNodeInfoData* button1 = event->node_data.back().get();
   button1->id = 1;
@@ -196,7 +204,14 @@ TEST_F(AXTreeSourceArcTest, ReorderChildrenByLayout) {
   SetProperty(button1, AXBooleanProperty::IMPORTANCE, true);
   SetProperty(button1, AXStringProperty::CONTENT_DESCRIPTION, "button1");
 
-  // Add another child button.
+  // Add another child button and its wrapper.
+  event->node_data.push_back(AXNodeInfoData::New());
+  AXNodeInfoData* wrapper2 = event->node_data.back().get();
+  wrapper2->id = 12;
+  SetProperty(wrapper2, AXIntListProperty::CHILD_NODE_IDS,
+              std::vector<int>({2}));
+  SetProperty(wrapper2, AXBooleanProperty::VISIBLE_TO_USER, true);
+
   event->node_data.push_back(AXNodeInfoData::New());
   AXNodeInfoData* button2 = event->node_data.back().get();
   button2->id = 2;
@@ -215,8 +230,8 @@ TEST_F(AXTreeSourceArcTest, ReorderChildrenByLayout) {
   std::vector<ui::AXNode*> top_to_bottom;
   top_to_bottom = GetChildren(root->id);
   ASSERT_EQ(2U, top_to_bottom.size());
-  EXPECT_EQ(2, top_to_bottom[0]->id());
-  EXPECT_EQ(1, top_to_bottom[1]->id());
+  EXPECT_EQ(12, top_to_bottom[0]->id());
+  EXPECT_EQ(11, top_to_bottom[1]->id());
 
   // Non-overlapping, top to bottom.
   button1->bounds_in_screen = gfx::Rect(0, 0, 50, 50);
@@ -224,8 +239,8 @@ TEST_F(AXTreeSourceArcTest, ReorderChildrenByLayout) {
   CallNotifyAccessibilityEvent(event.get());
   top_to_bottom = GetChildren(event->node_data[0].get()->id);
   ASSERT_EQ(2U, top_to_bottom.size());
-  EXPECT_EQ(1, top_to_bottom[0]->id());
-  EXPECT_EQ(2, top_to_bottom[1]->id());
+  EXPECT_EQ(11, top_to_bottom[0]->id());
+  EXPECT_EQ(12, top_to_bottom[1]->id());
 
   // Overlapping; right to left.
   button1->bounds_in_screen = gfx::Rect(101, 100, 99, 100);
@@ -234,8 +249,8 @@ TEST_F(AXTreeSourceArcTest, ReorderChildrenByLayout) {
   std::vector<ui::AXNode*> left_to_right;
   left_to_right = GetChildren(root->id);
   ASSERT_EQ(2U, left_to_right.size());
-  EXPECT_EQ(2, left_to_right[0]->id());
-  EXPECT_EQ(1, left_to_right[1]->id());
+  EXPECT_EQ(12, left_to_right[0]->id());
+  EXPECT_EQ(11, left_to_right[1]->id());
 
   // Overlapping; left to right.
   button1->bounds_in_screen = gfx::Rect(100, 100, 100, 100);
@@ -243,8 +258,8 @@ TEST_F(AXTreeSourceArcTest, ReorderChildrenByLayout) {
   CallNotifyAccessibilityEvent(event.get());
   left_to_right = GetChildren(event->node_data[0].get()->id);
   ASSERT_EQ(2U, left_to_right.size());
-  EXPECT_EQ(1, left_to_right[0]->id());
-  EXPECT_EQ(2, left_to_right[1]->id());
+  EXPECT_EQ(11, left_to_right[0]->id());
+  EXPECT_EQ(12, left_to_right[1]->id());
 
   // Overlapping, bottom to top.
   button1->bounds_in_screen = gfx::Rect(100, 100, 100, 100);
@@ -252,8 +267,8 @@ TEST_F(AXTreeSourceArcTest, ReorderChildrenByLayout) {
   CallNotifyAccessibilityEvent(event.get());
   top_to_bottom = GetChildren(event->node_data[0].get()->id);
   ASSERT_EQ(2U, top_to_bottom.size());
-  EXPECT_EQ(2, top_to_bottom[0]->id());
-  EXPECT_EQ(1, top_to_bottom[1]->id());
+  EXPECT_EQ(12, top_to_bottom[0]->id());
+  EXPECT_EQ(11, top_to_bottom[1]->id());
 
   // Overlapping, top to bottom.
   button1->bounds_in_screen = gfx::Rect(100, 99, 100, 100);
@@ -261,8 +276,8 @@ TEST_F(AXTreeSourceArcTest, ReorderChildrenByLayout) {
   CallNotifyAccessibilityEvent(event.get());
   top_to_bottom = GetChildren(event->node_data[0].get()->id);
   ASSERT_EQ(2U, top_to_bottom.size());
-  EXPECT_EQ(1, top_to_bottom[0]->id());
-  EXPECT_EQ(2, top_to_bottom[1]->id());
+  EXPECT_EQ(11, top_to_bottom[0]->id());
+  EXPECT_EQ(12, top_to_bottom[1]->id());
 
   // Identical. smaller to larger.
   button1->bounds_in_screen = gfx::Rect(100, 100, 100, 10);
@@ -271,16 +286,16 @@ TEST_F(AXTreeSourceArcTest, ReorderChildrenByLayout) {
   std::vector<ui::AXNode*> dimension;
   dimension = GetChildren(event->node_data[0].get()->id);
   ASSERT_EQ(2U, dimension.size());
-  EXPECT_EQ(2, dimension[0]->id());
-  EXPECT_EQ(1, dimension[1]->id());
+  EXPECT_EQ(12, dimension[0]->id());
+  EXPECT_EQ(11, dimension[1]->id());
 
   button1->bounds_in_screen = gfx::Rect(100, 100, 10, 100);
   button2->bounds_in_screen = gfx::Rect(100, 100, 100, 100);
   CallNotifyAccessibilityEvent(event.get());
   dimension = GetChildren(event->node_data[0].get()->id);
   ASSERT_EQ(2U, dimension.size());
-  EXPECT_EQ(2, dimension[0]->id());
-  EXPECT_EQ(1, dimension[1]->id());
+  EXPECT_EQ(12, dimension[0]->id());
+  EXPECT_EQ(11, dimension[1]->id());
 
   // Identical. Larger to smaller.
   button1->bounds_in_screen = gfx::Rect(100, 100, 100, 100);
@@ -288,28 +303,52 @@ TEST_F(AXTreeSourceArcTest, ReorderChildrenByLayout) {
   CallNotifyAccessibilityEvent(event.get());
   dimension = GetChildren(event->node_data[0].get()->id);
   ASSERT_EQ(2U, dimension.size());
-  EXPECT_EQ(1, dimension[0]->id());
-  EXPECT_EQ(2, dimension[1]->id());
+  EXPECT_EQ(11, dimension[0]->id());
+  EXPECT_EQ(12, dimension[1]->id());
 
-  button1->bounds_in_screen = gfx::Rect(100, 100, 100, 100);
-  button2->bounds_in_screen = gfx::Rect(100, 100, 10, 100);
+  button1->bounds_in_screen = gfx::Rect(100, 100, 10, 100);
+  button2->bounds_in_screen = gfx::Rect(100, 100, 100, 100);
   CallNotifyAccessibilityEvent(event.get());
   dimension = GetChildren(event->node_data[0].get()->id);
   ASSERT_EQ(2U, dimension.size());
-  EXPECT_EQ(1, dimension[0]->id());
-  EXPECT_EQ(2, dimension[1]->id());
+  EXPECT_EQ(12, dimension[0]->id());
+  EXPECT_EQ(11, dimension[1]->id());
 
-  EXPECT_EQ(10, GetDispatchedEventCount(ax::mojom::Event::kFocus));
+  // When bounds_in_screen is the same as the (enclosing bounds of) child one,
+  // Then, do not sort.
+  wrapper1->bounds_in_screen = button1->bounds_in_screen;
+  wrapper2->bounds_in_screen = button2->bounds_in_screen;
+  CallNotifyAccessibilityEvent(event.get());
+  dimension = GetChildren(event->node_data[0].get()->id);
+  ASSERT_EQ(2U, dimension.size());
+  EXPECT_EQ(11, dimension[0]->id());
+  EXPECT_EQ(12, dimension[1]->id());
+
+  // Bounds of buttons requires reordering. Comparison of wrapper bounds also
+  // requires reordering. This won't be reordered.
+  wrapper1->bounds_in_screen = gfx::Rect(100, 100, 50, 100);
+  button1->bounds_in_screen = gfx::Rect(100, 100, 10, 100);
+  wrapper2->bounds_in_screen = gfx::Rect(100, 100, 500, 100);
+  button2->bounds_in_screen = gfx::Rect(100, 100, 100, 100);
+  CallNotifyAccessibilityEvent(event.get());
+  dimension = GetChildren(event->node_data[0].get()->id);
+  ASSERT_EQ(2U, dimension.size());
+  EXPECT_EQ(11, dimension[0]->id());
+  EXPECT_EQ(12, dimension[1]->id());
 
   // Check completeness of tree output.
   ExpectTree(
       "id=100 window FOCUSABLE (0, 0)-(0, 0) modal=true child_ids=10\n"
-      "  id=10 genericContainer INVISIBLE (0, 0)-(0, 0) restriction=disabled "
-      "child_ids=1,2\n"
-      "    id=1 button FOCUSABLE (100, 100)-(100, 100) name_from=attribute "
-      "restriction=disabled class_name=android.widget.Button name=button1\n"
-      "    id=2 button FOCUSABLE (100, 100)-(10, 100) name_from=attribute "
-      "restriction=disabled class_name=android.widget.Button name=button2\n");
+      "  id=10 genericContainer INVISIBLE (0, 0)-(0, 0) restriction=disabled"
+      " child_ids=11,12\n"
+      "    id=11 genericContainer IGNORED (100, 100)-(50, 100)"
+      " restriction=disabled child_ids=1\n"
+      "      id=1 button FOCUSABLE (100, 100)-(10, 100) name_from=attribute"
+      " restriction=disabled class_name=android.widget.Button name=button1\n"
+      "    id=12 genericContainer IGNORED (100, 100)-(500, 100)"
+      " restriction=disabled child_ids=2\n"
+      "      id=2 button FOCUSABLE (100, 100)-(100, 100) name_from=attribute"
+      " restriction=disabled class_name=android.widget.Button name=button2\n");
 }
 
 TEST_F(AXTreeSourceArcTest, AccessibleNameComputationWindow) {
@@ -533,9 +572,9 @@ TEST_F(AXTreeSourceArcTest, ComplexTreeStructure) {
 
 TEST_F(AXTreeSourceArcTest, GetTreeDataAppliesFocus) {
   auto event = AXEventData::New();
-  event->source_id = 5;
+  event->source_id = 2;
   event->task_id = 1;
-  event->event_type = AXEventType::WINDOW_CONTENT_CHANGED;
+  event->event_type = AXEventType::VIEW_FOCUSED;
   event->window_data = std::vector<mojom::AccessibilityWindowInfoDataPtr>();
   event->window_data->push_back(AXWindowInfoData::New());
   AXWindowInfoData* root = event->window_data->back().get();
@@ -553,15 +592,19 @@ TEST_F(AXTreeSourceArcTest, GetTreeDataAppliesFocus) {
   event->node_data.push_back(AXNodeInfoData::New());
   AXNodeInfoData* node = event->node_data.back().get();
   node->id = 2;
+  node->window_id = 5;
   SetProperty(node, AXBooleanProperty::FOCUSED, true);
+  SetProperty(node, AXBooleanProperty::FOCUSABLE, true);
+  SetProperty(node, AXBooleanProperty::IMPORTANCE, true);
+  SetProperty(node, AXBooleanProperty::VISIBLE_TO_USER, true);
 
   CallNotifyAccessibilityEvent(event.get());
 
   ui::AXTreeData data;
   EXPECT_TRUE(CallGetTreeData(&data));
-  EXPECT_EQ(root->window_id, data.focus_id);
+  EXPECT_EQ(node->id, data.focus_id);
 
-  EXPECT_EQ(1, GetDispatchedEventCount(ax::mojom::Event::kLayoutComplete));
+  EXPECT_EQ(1, GetDispatchedEventCount(ax::mojom::Event::kFocus));
 }
 
 TEST_F(AXTreeSourceArcTest, OnViewSelectedEvent) {
@@ -852,6 +895,71 @@ TEST_F(AXTreeSourceArcTest, OnFocusEvent) {
   EXPECT_EQ(3, GetDispatchedEventCount(ax::mojom::Event::kFocus));
 }
 
+TEST_F(AXTreeSourceArcTest, OnClearA11yFocusEvent) {
+  set_full_focus_mode(true);
+
+  auto event = AXEventData::New();
+  event->task_id = 1;
+  event->event_type = AXEventType::VIEW_ACCESSIBILITY_FOCUSED;
+
+  event->window_data = std::vector<mojom::AccessibilityWindowInfoDataPtr>();
+  event->window_data->push_back(AXWindowInfoData::New());
+  AXWindowInfoData* root_window = event->window_data->back().get();
+  root_window->window_id = 100;
+  root_window->root_node_id = 10;
+  SetProperty(root_window, mojom::AccessibilityWindowBooleanProperty::FOCUSED,
+              true);
+
+  event->node_data.push_back(AXNodeInfoData::New());
+  AXNodeInfoData* root = event->node_data.back().get();
+  root->id = 10;
+  root->window_id = 100;
+  SetProperty(root, AXIntListProperty::CHILD_NODE_IDS, std::vector<int>({1}));
+  SetProperty(root, AXBooleanProperty::IMPORTANCE, true);
+  SetProperty(root, AXBooleanProperty::VISIBLE_TO_USER, true);
+
+  event->node_data.push_back(AXNodeInfoData::New());
+  AXNodeInfoData* node = event->node_data.back().get();
+  node->id = 1;
+  node->window_id = 100;
+  SetProperty(node, AXBooleanProperty::IMPORTANCE, true);
+  SetProperty(node, AXBooleanProperty::ACCESSIBILITY_FOCUSED, true);
+  SetProperty(node, AXBooleanProperty::VISIBLE_TO_USER, true);
+  SetProperty(node, AXStringProperty::TEXT, "hello world");
+
+  // VIEW_ACCESSIBILITY_FOCUSED should sync focused node id in full focus mode.
+  event->source_id = node->id;
+  CallNotifyAccessibilityEvent(event.get());
+
+  ui::AXTreeData data;
+  EXPECT_TRUE(CallGetTreeData(&data));
+  EXPECT_EQ(node->id, data.focus_id);
+
+  // Then, clear the a11y focus with an event from action property.
+  // This shouldn't update the focused node.
+  SetProperty(node, AXBooleanProperty::ACCESSIBILITY_FOCUSED, false);
+  event->event_type = AXEventType::VIEW_ACCESSIBILITY_FOCUS_CLEARED;
+  SetProperty(event.get(), AXEventIntProperty::ACTION,
+              static_cast<int32_t>(AXActionType::ACCESSIBILITY_FOCUS));
+
+  CallNotifyAccessibilityEvent(event.get());
+
+  data = ui::AXTreeData();
+  EXPECT_TRUE(CallGetTreeData(&data));
+  EXPECT_EQ(node->id, data.focus_id);
+
+  // An a11y focus cleared event from an action unrelated to focus (e.g. scroll)
+  // should clear the focus, and moves the focus up to the root.
+  SetProperty(event.get(), AXEventIntProperty::ACTION,
+              static_cast<int32_t>(AXActionType::SCROLL_FORWARD));
+
+  CallNotifyAccessibilityEvent(event.get());
+
+  data = ui::AXTreeData();
+  EXPECT_TRUE(CallGetTreeData(&data));
+  EXPECT_EQ(root_window->window_id, data.focus_id);
+}
+
 TEST_F(AXTreeSourceArcTest, OnDrawerOpened) {
   auto event = AXEventData::New();
   event->source_id = 10;  // root
@@ -1026,10 +1134,8 @@ TEST_F(AXTreeSourceArcTest, SerializeVirtualNode) {
   button1->is_virtual_node = true;
   SetProperty(button1, AXStringProperty::CLASS_NAME, ui::kAXButtonClassname);
   SetProperty(button1, AXBooleanProperty::VISIBLE_TO_USER, true);
-  SetProperty(
-      button1, AXIntListProperty::STANDARD_ACTION_IDS,
-      std::vector<int>({static_cast<int>(AXActionType::NEXT_HTML_ELEMENT),
-                        static_cast<int>(AXActionType::FOCUS)}));
+  AddStandardAction(button1, AXActionType::NEXT_HTML_ELEMENT);
+  AddStandardAction(button1, AXActionType::FOCUS);
   SetProperty(button1, AXStringProperty::CONTENT_DESCRIPTION, "button1");
 
   event->node_data.push_back(AXNodeInfoData::New());
@@ -1039,10 +1145,8 @@ TEST_F(AXTreeSourceArcTest, SerializeVirtualNode) {
   button2->is_virtual_node = true;
   SetProperty(button2, AXStringProperty::CLASS_NAME, ui::kAXButtonClassname);
   SetProperty(button2, AXBooleanProperty::VISIBLE_TO_USER, true);
-  SetProperty(
-      button2, AXIntListProperty::STANDARD_ACTION_IDS,
-      std::vector<int>({static_cast<int>(AXActionType::NEXT_HTML_ELEMENT),
-                        static_cast<int>(AXActionType::FOCUS)}));
+  AddStandardAction(button2, AXActionType::NEXT_HTML_ELEMENT);
+  AddStandardAction(button2, AXActionType::FOCUS);
   SetProperty(button2, AXStringProperty::CONTENT_DESCRIPTION, "button2");
 
   CallNotifyAccessibilityEvent(event.get());
@@ -1126,6 +1230,7 @@ TEST_F(AXTreeSourceArcTest, SyncFocus) {
   event->event_type = AXEventType::VIEW_FOCUSED;
   CallNotifyAccessibilityEvent(event.get());
 
+  data = ui::AXTreeData();
   EXPECT_TRUE(CallGetTreeData(&data));
   EXPECT_EQ(node1->id, data.focus_id);
 
@@ -1134,10 +1239,11 @@ TEST_F(AXTreeSourceArcTest, SyncFocus) {
   event->event_type = AXEventType::VIEW_FOCUSED;
   CallNotifyAccessibilityEvent(event.get());
 
+  data = ui::AXTreeData();
   EXPECT_TRUE(CallGetTreeData(&data));
   EXPECT_EQ(node1->id, data.focus_id);
 
-  // When the focused node disappeared from the tree, move the focus to the
+  // When the focused node disappeared from the tree, reset the focus to the
   // root.
   root->int_list_properties->clear();
   event->node_data.resize(1);
@@ -1145,6 +1251,7 @@ TEST_F(AXTreeSourceArcTest, SyncFocus) {
   event->event_type = AXEventType::WINDOW_CONTENT_CHANGED;
   CallNotifyAccessibilityEvent(event.get());
 
+  data = ui::AXTreeData();
   EXPECT_TRUE(CallGetTreeData(&data));
   EXPECT_EQ(root_window->window_id, data.focus_id);
 }

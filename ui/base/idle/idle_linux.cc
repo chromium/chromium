@@ -1,8 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
+#include "base/time/time.h"
 #include "ui/base/idle/idle.h"
 #include "ui/base/idle/idle_internal.h"
 #include "ui/display/screen.h"
@@ -44,11 +46,12 @@ struct {
     {"org.cinnamon.ScreenSaver", "/org/cinnamon/ScreenSaver",
      "org.cinnamon.ScreenSaver"},
     // gnome-screensaver
-    {"org.gnome.ScreenSaver", "/", "org.gnome.ScreenSaver"},
+    {"org.gnome.ScreenSaver", "/org/gnome/ScreenSaver",
+     "org.gnome.ScreenSaver"},
     // mate-screensaver
-    {"org.mate.ScreenSaver", "/", "org.mate.ScreenSaver"},
+    {"org.mate.ScreenSaver", "/org/mate/ScreenSaver", "org.mate.ScreenSaver"},
     // xfce4-screensaver
-    {"org.xfce.ScreenSaver", "/", "org.xfce.ScreenSaver"},
+    {"org.xfce.ScreenSaver", "/org/xfce/ScreenSaver", "org.xfce.ScreenSaver"},
 };
 
 constexpr size_t kServiceCount = sizeof(kServices) / sizeof(kServices[0]);
@@ -200,7 +203,7 @@ class DBusScreenSaverWatcher {
 
   scoped_refptr<dbus::Bus> bus_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  dbus::ObjectProxy* proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy> proxy_ = nullptr;
 
   base::WeakPtrFactory<DBusScreenSaverWatcher> weak_factory_{this};
 };

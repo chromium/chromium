@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,10 @@ namespace chrome_checker {
 
 struct Options {
   bool check_base_classes = false;
+  bool check_blink_data_member_type = false;
   bool check_ipc = false;
-  bool check_gmock_objects = false;
   bool check_layout_object_methods = false;
-  bool checked_ptr_as_trivial_member = false;
-  bool raw_ptr_template_as_trivial_member = false;
+  bool raw_ref_template_as_trivial_member = false;
 };
 
 }  // namespace chrome_checker

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,23 +15,16 @@
 #include "ash/services/ime/decoder/system_engine.h"
 #include "ash/services/ime/rule_based_engine.h"
 #include "base/bind.h"
-#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "mojo/public/c/system/thunks.h"
 
-namespace chromeos {
+namespace ash {
 namespace ime {
 
 namespace {
-
-enum SimpleDownloadError {
-  SIMPLE_DOWNLOAD_ERROR_OK = 0,
-  SIMPLE_DOWNLOAD_ERROR_FAILED = -1,
-  SIMPLE_DOWNLOAD_ERROR_ABORTED = -2,
-};
 
 // Compose a relative FilePath beased on a C-string path.
 base::FilePath RelativePathFromCStr(const char* path) {
@@ -49,16 +42,22 @@ std::string ResolveDownloadPath(const base::FilePath& file) {
   return target.MaybeAsASCII();
 }
 
-bool IsRuleBasedInputMethod(const std::string& engine_id) {
-  return base::StartsWith(engine_id, "m17n:", base::CompareCase::SENSITIVE);
-}
-
 }  // namespace
 
-ImeService::ImeService(mojo::PendingReceiver<mojom::ImeService> receiver)
-    : receiver_(this, std::move(receiver)),
-      main_task_runner_(base::SequencedTaskRunnerHandle::Get()) {
+std::string FieldTrialParamsRetrieverImpl::GetFieldTrialParamValueByFeature(
+    const base::Feature& feature,
+    const std::string& param_name) {
+  return base::GetFieldTrialParamValueByFeature(feature, param_name);
 }
+
+ImeService::ImeService(
+    mojo::PendingReceiver<mojom::ImeService> receiver,
+    ImeDecoder* ime_decoder,
+    std::unique_ptr<FieldTrialParamsRetriever> field_trial_params_retriever)
+    : receiver_(this, std::move(receiver)),
+      main_task_runner_(base::SequencedTaskRunnerHandle::Get()),
+      ime_decoder_(ime_decoder),
+      field_trial_params_retriever_(std::move(field_trial_params_retriever)) {}
 
 ImeService::~ImeService() = default;
 
@@ -70,6 +69,12 @@ void ImeService::SetPlatformAccessProvider(
 void ImeService::BindInputEngineManager(
     mojo::PendingReceiver<mojom::InputEngineManager> receiver) {
   manager_receivers_.Add(this, std::move(receiver));
+}
+
+void ImeService::ResetAllBackendConnections() {
+  decoder_engine_.reset();
+  system_engine_.reset();
+  connection_factory_.reset();
 }
 
 void ImeService::ConnectToImeEngine(
@@ -87,13 +92,16 @@ void ImeService::ConnectToImeEngine(
   //
   // The extension will only use ConnectToImeEngine, and NativeInputMethodEngine
   // will only use ConnectToInputMethod.
-  if (input_engine_ && input_engine_->IsConnected()) {
+  if ((connection_factory_ && connection_factory_->IsConnected()) ||
+      (system_engine_ && system_engine_->IsConnected())) {
     std::move(callback).Run(/*bound=*/false);
     return;
   }
 
-  input_engine_.reset();
-  decoder_engine_ = std::make_unique<DecoderEngine>(this);
+  ResetAllBackendConnections();
+
+  decoder_engine_ = std::make_unique<DecoderEngine>(
+      this, ime_decoder_->MaybeLoadThenReturnEntryPoints());
   bool bound = decoder_engine_->BindRequest(
       ime_spec, std::move(to_engine_request), std::move(from_engine), extra);
   std::move(callback).Run(bound);
@@ -104,28 +112,43 @@ void ImeService::ConnectToInputMethod(
     mojo::PendingReceiver<mojom::InputMethod> input_method,
     mojo::PendingRemote<mojom::InputMethodHost> input_method_host,
     ConnectToInputMethodCallback callback) {
-  decoder_engine_.reset();
+  // This method is now deprecated and should not be used to connect to an
+  // input method.
+  std::move(callback).Run(/*bound=*/false);
+}
 
-  if (IsRuleBasedInputMethod(ime_spec)) {
-    input_engine_ = RuleBasedEngine::Create(ime_spec, std::move(input_method),
-                                            std::move(input_method_host));
-    std::move(callback).Run(/*bound=*/input_engine_ != nullptr);
-    return;
+void ImeService::InitializeConnectionFactory(
+    mojo::PendingReceiver<mojom::ConnectionFactory> connection_factory,
+    mojom::ConnectionTarget connection_target,
+    InitializeConnectionFactoryCallback callback) {
+  ResetAllBackendConnections();
+
+  switch (connection_target) {
+    case mojom::ConnectionTarget::kImeService: {
+      connection_factory_ =
+          std::make_unique<ConnectionFactory>(std::move(connection_factory));
+      std::move(callback).Run(/*success=*/true);
+      break;
+    }
+    case mojom::ConnectionTarget::kDecoder: {
+      system_engine_ = std::make_unique<SystemEngine>(
+          this, ime_decoder_->MaybeLoadThenReturnEntryPoints());
+      bool bound =
+          system_engine_->BindConnectionFactory(std::move(connection_factory));
+      std::move(callback).Run(bound);
+      break;
+    }
+    default:
+      break;
   }
-
-  auto system_engine = std::make_unique<SystemEngine>(this);
-  bool bound = system_engine->BindRequest(ime_spec, std::move(input_method),
-                                          std::move(input_method_host));
-  input_engine_ = std::move(system_engine);
-  std::move(callback).Run(bound);
 }
 
 const char* ImeService::GetImeBundleDir() {
   return kBundledInputMethodsDirPath;
 }
 
-const char* ImeService::GetImeGlobalDir() {
-  return "";
+void ImeService::Unused3() {
+  NOTIMPLEMENTED();
 }
 
 const char* ImeService::GetImeUserHomeDir() {
@@ -140,6 +163,9 @@ void ImeService::RunInMainSequence(ImeSequencedTask task, int task_id) {
   main_task_runner_->PostTask(FROM_HERE, base::BindOnce(task, task_id));
 }
 
+// TODO(b/218815885): Use consistent feature flag names as in CrOS
+// base::Feature::name (instead of slightly-different bespoke names), and always
+// wire 1:1 to CrOS feature flags (instead of having any extra logic).
 bool ImeService::IsFeatureEnabled(const char* feature_name) {
   if (strcmp(feature_name, "AssistiveEmojiEnhanced") == 0) {
     return base::FeatureList::IsEnabled(
@@ -149,59 +175,61 @@ bool ImeService::IsFeatureEnabled(const char* feature_name) {
     return chromeos::features::IsAssistiveMultiWordEnabled();
   }
   if (strcmp(feature_name, "AssistiveMultiWordLacrosSupport") == 0) {
+    return true;
+  }
+  if (strcmp(feature_name, chromeos::features::kAutocorrectParamsTuning.name) ==
+      0) {
     return base::FeatureList::IsEnabled(
-               chromeos::features::kAssistMultiWordLacrosSupport) &&
-           chromeos::features::IsAssistiveMultiWordEnabled();
+        chromeos::features::kAutocorrectParamsTuning);
   }
   if (strcmp(feature_name, "LacrosSupport") == 0) {
     return base::FeatureList::IsEnabled(chromeos::features::kLacrosSupport);
   }
   if (strcmp(feature_name, "SystemChinesePhysicalTyping") == 0) {
-    return features::IsSystemChinesePhysicalTypingEnabled();
+    return base::FeatureList::IsEnabled(
+        chromeos::features::kSystemChinesePhysicalTyping);
   }
   if (strcmp(feature_name, "SystemJapanesePhysicalTyping") == 0) {
-    return features::IsSystemJapanesePhysicalTypingEnabled();
+    return base::FeatureList::IsEnabled(
+        chromeos::features::kSystemJapanesePhysicalTyping);
   }
-  if (strcmp(feature_name, "SystemKoreanPhysicalTyping") == 0) {
-    return features::IsSystemKoreanPhysicalTypingEnabled();
-  }
-  if (strcmp(feature_name, "SystemLatinPhysicalTyping") == 0) {
-    return true;
+  if (strcmp(feature_name, "SystemTransliterationPhysicalTyping") == 0) {
+    return base::FeatureList::IsEnabled(
+        chromeos::features::kSystemTransliterationPhysicalTyping);
   }
   return false;
 }
 
-int ImeService::SimpleDownloadToFile(const char* url,
-                                     const char* file_path,
-                                     SimpleDownloadCallback callback) {
-  if (!platform_access_.is_bound()) {
-    callback(SIMPLE_DOWNLOAD_ERROR_ABORTED, "");
-    LOG(ERROR) << "Failed to download due to missing binding.";
+const char* ImeService::GetFieldTrialParamValueByFeature(
+    const char* feature_name,
+    const char* param_name) {
+  char* c_string_value;
+
+  if (strcmp(feature_name, chromeos::features::kAutocorrectParamsTuning.name) ==
+      0) {
+    std::string string_value =
+        field_trial_params_retriever_->GetFieldTrialParamValueByFeature(
+            chromeos::features::kAutocorrectParamsTuning, param_name);
+    c_string_value =
+        new char[string_value.length() + 1];  // extra slot for NULL '\0' char
+    strcpy(c_string_value, string_value.c_str());
   } else {
-    platform_access_->DownloadImeFileTo(
-        GURL(url), RelativePathFromCStr(file_path),
-        base::BindOnce(&ImeService::SimpleDownloadFinished,
-                       base::Unretained(this), std::move(callback)));
+    c_string_value = new char[1];
+    c_string_value[0] = '\0';
   }
 
-  // For |SimpleDownloadToFile|, always returns 0.
-  return 0;
+  return c_string_value;
 }
 
-void ImeService::SimpleDownloadFinished(SimpleDownloadCallback callback,
-                                        const base::FilePath& file) {
-  if (file.empty()) {
-    callback(SIMPLE_DOWNLOAD_ERROR_FAILED, "");
-  } else {
-    callback(SIMPLE_DOWNLOAD_ERROR_OK, ResolveDownloadPath(file).c_str());
-  }
+void ImeService::Unused2() {
+  NOTIMPLEMENTED();
 }
 
 int ImeService::SimpleDownloadToFileV2(const char* url,
                                        const char* file_path,
                                        SimpleDownloadCallbackV2 callback) {
   if (!platform_access_.is_bound()) {
-    callback(SIMPLE_DOWNLOAD_ERROR_ABORTED, url, "");
+    callback(SIMPLE_DOWNLOAD_STATUS_ABORTED, url, "");
     LOG(ERROR) << "Failed to download due to missing binding.";
   } else {
     platform_access_->DownloadImeFileTo(
@@ -219,23 +247,20 @@ void ImeService::SimpleDownloadFinishedV2(SimpleDownloadCallbackV2 callback,
                                           const std::string& url_str,
                                           const base::FilePath& file) {
   if (file.empty()) {
-    callback(SIMPLE_DOWNLOAD_ERROR_FAILED, url_str.c_str(), "");
+    callback(SIMPLE_DOWNLOAD_STATUS_INVALID_ARGUMENT, url_str.c_str(), "");
   } else {
-    callback(SIMPLE_DOWNLOAD_ERROR_OK, url_str.c_str(),
+    callback(SIMPLE_DOWNLOAD_STATUS_OK, url_str.c_str(),
              ResolveDownloadPath(file).c_str());
   }
 }
 
 const MojoSystemThunks* ImeService::GetMojoSystemThunks() {
-  return MojoEmbedderGetSystemThunks();
+  return MojoEmbedderGetSystemThunks32();
 }
 
-ImeCrosDownloader* ImeService::GetDownloader() {
-  // TODO(https://crbug.com/837156): Create an ImeCrosDownloader based on its
-  // specification defined in interfaces. The caller should free it after use.
+void ImeService::Unused1() {
   NOTIMPLEMENTED();
-  return nullptr;
 }
 
 }  // namespace ime
-}  // namespace chromeos
+}  // namespace ash

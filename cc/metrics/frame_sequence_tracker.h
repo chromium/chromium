@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_set.h"
+#include "base/time/time.h"
 #include "cc/cc_export.h"
 #include "cc/metrics/frame_sequence_metrics.h"
 
@@ -107,6 +108,9 @@ class CC_EXPORT FrameSequenceTracker {
   // Called by the destructor of FrameSequenceTrackerCollection, asking its
   // |metrics_| to report.
   void CleanUp();
+
+  void AddSortedFrame(const viz::BeginFrameArgs& args,
+                      const FrameInfo& frame_info);
 
  private:
   friend class FrameSequenceTrackerCollection;

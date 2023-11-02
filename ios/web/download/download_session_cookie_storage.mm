@@ -1,27 +1,38 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/web/download/download_session_cookie_storage.h"
 
-#include "base/notreached.h"
-#include "ios/net/cookies/system_cookie_util.h"
+#import "base/notreached.h"
+#import "ios/net/cookies/system_cookie_util.h"
 #import "net/base/mac/url_conversions.h"
-#include "net/cookies/canonical_cookie.h"
-#include "net/cookies/cookie_constants.h"
+#import "net/cookies/canonical_cookie.h"
+#import "net/cookies/cookie_constants.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-@implementation DownloadSessionCookieStorage
-
-@synthesize cookies = _cookies;
-@synthesize cookieAcceptPolicy = _cookieAcceptPolicy;
+@implementation DownloadSessionCookieStorage {
+  __strong NSMutableArray<NSHTTPCookie*>* _cookies;
+  NSHTTPCookieAcceptPolicy _cookieAcceptPolicy;
+}
 
 - (instancetype)init {
-  if (self = [super init]) {
-    _cookies = [[NSMutableArray alloc] init];
+  return [self initWithCookies:nil
+            cookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
+}
+
+- (instancetype)initWithCookies:(NSArray<NSHTTPCookie*>*)cookies
+             cookieAcceptPolicy:(NSHTTPCookieAcceptPolicy)cookieAcceptPolicy {
+  if ((self = [super init])) {
+    _cookieAcceptPolicy = cookieAcceptPolicy;
+    if (cookies && _cookieAcceptPolicy != NSHTTPCookieAcceptPolicyNever) {
+      _cookies = [cookies mutableCopy];
+    } else {
+      _cookies = [[NSMutableArray alloc] init];
+    }
   }
   return self;
 }
@@ -39,18 +50,18 @@
   NOTREACHED();
 }
 
-- (nullable NSArray<NSHTTPCookie*>*)cookiesForURL:(NSURL*)URL {
+- (NSArray<NSHTTPCookie*>*)cookiesForURL:(NSURL*)URL {
   NSMutableArray<NSHTTPCookie*>* result = [NSMutableArray array];
   GURL gURL = net::GURLWithNSURL(URL);
   // TODO(crbug.com/1018272): Compute the cookie access semantic, and update
-  // |options| with it.
+  // `options` with it.
   net::CookieOptions options = net::CookieOptions::MakeAllInclusive();
   net::CookieAccessSemantics cookieAccessSemantics =
       net::CookieAccessSemantics::LEGACY;
   // No extra trustworthy URLs.
   bool delegate_treats_url_as_trustworthy = false;
 
-  // Using |UNKNOWN| semantics to allow the experiment to switch between non
+  // Using `UNKNOWN` semantics to allow the experiment to switch between non
   // legacy (where cookies that don't have a specific same-site access policy
   // and not secure will not be included), and legacy mode.
   cookieAccessSemantics = net::CookieAccessSemantics::UNKNOWN;
@@ -68,13 +79,9 @@
   return [result copy];
 }
 
-- (nullable NSArray<NSHTTPCookie*>*)cookies {
-  return [_cookies copy];
-}
-
 - (void)setCookies:(NSArray<NSHTTPCookie*>*)cookies
-             forURL:(nullable NSURL*)URL
-    mainDocumentURL:(nullable NSURL*)mainDocumentURL {
+             forURL:(NSURL*)URL
+    mainDocumentURL:(NSURL*)mainDocumentURL {
   if (self.cookieAcceptPolicy == NSHTTPCookieAcceptPolicyNever) {
     return;
   }
@@ -101,6 +108,20 @@
                               completionHandler {
   if (completionHandler)
     completionHandler([self cookiesForURL:task.currentRequest.URL]);
+}
+
+#pragma mark - NSHTTPCookieStorage Properties
+
+- (NSArray<NSHTTPCookie*>*)cookies {
+  return [_cookies copy];
+}
+
+- (NSHTTPCookieAcceptPolicy)cookieAcceptPolicy {
+  return _cookieAcceptPolicy;
+}
+
+- (void)setCookieAcceptPolicy:(NSHTTPCookieAcceptPolicy)cookieAcceptPolicy {
+  _cookieAcceptPolicy = cookieAcceptPolicy;
 }
 
 @end

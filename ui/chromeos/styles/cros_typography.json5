@@ -1,4 +1,4 @@
-/* Copyright 2021 The Chromium Authors. All rights reserved.
+/* Copyright 2021 The Chromium Authors
  * Use of this source code is governed by a BSD_style license that can be
  * found in the LICENSE file. */
 
@@ -14,7 +14,7 @@
   typography: {
     font_families: {
       font_family_google_sans: "'Google Sans', 'Noto Sans', sans-serif",
-      font_family_roboto: "Roboto, 'Noto Sans', sans-serif",
+      font_family_roboto: "Roboto, 'Roboto', 'Noto Sans', sans-serif",
     },
     typefaces: {
       headline_1: {
@@ -40,6 +40,12 @@
         font_size: 22,
         font_weight: 500,
         line_height: 28,
+      },
+      display_7: {
+        font_family: '$font_family_google_sans',
+        font_size: 18,
+        font_weight: 500,
+        line_height: 24,
       },
       annotation_2: {
         font_family: '$font_family_google_sans',

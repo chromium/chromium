@@ -1,4 +1,4 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """
@@ -71,8 +71,11 @@ class _Generator(object):
     """
     return (self._js_util.GetLicense() + '\n' +
             self._js_util.GetInfo(tool) + (NOTE % namespace) + '\n' +
-            ('/** @fileoverview Externs generated from namespace: %s */' %
-             namespace))
+            '/**\n' +
+            (' * @fileoverview Externs generated from namespace: %s\n' %
+             namespace) +
+            ' * @externs\n' +
+            ' */')
 
   def _AppendType(self, c, js_type):
     """Given a Type object, generates the Code for this type's definition.

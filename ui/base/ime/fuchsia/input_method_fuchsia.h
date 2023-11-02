@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,8 @@
 #include "base/component_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/fuchsia/virtual_keyboard_controller_fuchsia.h"
+#include "ui/base/ime/ime_key_event_dispatcher.h"
 #include "ui/base/ime/input_method_base.h"
-#include "ui/base/ime/input_method_delegate.h"
 #include "ui/events/fuchsia/input_event_dispatcher.h"
 #include "ui/events/fuchsia/input_event_sink.h"
 #include "ui/gfx/native_widget_types.h"
@@ -25,7 +25,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_FUCHSIA) InputMethodFuchsia
     : public InputMethodBase {
  public:
   InputMethodFuchsia(bool enable_virtual_keyboard,
-                     internal::InputMethodDelegate* delegate,
+                     ImeKeyEventDispatcher* ime_key_event_dispatcher,
                      fuchsia::ui::views::ViewRef view_ref);
   ~InputMethodFuchsia() override;
 
@@ -36,7 +36,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_FUCHSIA) InputMethodFuchsia
   VirtualKeyboardController* GetVirtualKeyboardController() final;
   ui::EventDispatchDetails DispatchKeyEvent(ui::KeyEvent* event) final;
   void CancelComposition(const TextInputClient* client) final;
-  void OnTextInputTypeChanged(const TextInputClient* client) final;
+  void OnTextInputTypeChanged(TextInputClient* client) final;
   void OnCaretBoundsChanged(const TextInputClient* client) final;
   bool IsCandidatePopupOpen() const final;
 

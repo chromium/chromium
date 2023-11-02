@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,18 +9,23 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/files/file_path.h"
+#include "base/supports_user_data.h"
 #include "build/build_config.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "ui/base/cursor/cursor.h"
+#include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_delegate.h"
 #include "ui/events/event.h"
 #include "ui/events/event_handler.h"
+#include "ui/events/event_target.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/browser/image_editor/event_capture_mac.h"
+#else
+#include "base/scoped_observation.h"
 #endif
 
 namespace content {
@@ -37,6 +42,19 @@ class Layer;
 }
 
 namespace image_editor {
+
+// Class to associate screenshot capture data with Profile across navigation.
+class ScreenshotCapturedData : public base::SupportsUserData::Data {
+ public:
+  ScreenshotCapturedData();
+  ~ScreenshotCapturedData() override;
+  ScreenshotCapturedData(const ScreenshotCapturedData&) = delete;
+  ScreenshotCapturedData& operator=(const ScreenshotCapturedData&) = delete;
+
+  static constexpr char kDataKey[] = "share_hub_screenshot_data";
+
+  base::FilePath screenshot_filepath;
+};
 
 // Result codes to distinguish between how the capture mode was closed.
 enum class ScreenshotCaptureResultCode {
@@ -113,6 +131,7 @@ class ScreenshotFlow : public content::WebContentsObserver,
   // ui:EventHandler:
   void OnKeyEvent(ui::KeyEvent* event) override;
   void OnMouseEvent(ui::MouseEvent* event) override;
+  void OnScrollEvent(ui::ScrollEvent* event) override;
 
   // ui::LayerDelegate:
   void OnPaintLayer(const ui::PaintContext& context) override;
@@ -126,6 +145,13 @@ class ScreenshotFlow : public content::WebContentsObserver,
   // Creates and adds the overlay over the webcontnts to handle selection.
   // Adds mouse listeners.
   void CreateAndAddUIOverlay();
+
+  // Checks whether the UI overlay is visible.
+  bool IsUIOverlayShown();
+
+  // Resizes the UI overlay. It's used to make the UI overlay responsive to
+  // the frame size changes.
+  void ResetUIOverlayBounds();
 
   // Removes the UI overlay and any listeners.
   void RemoveUIOverlay();
@@ -157,6 +183,10 @@ class ScreenshotFlow : public content::WebContentsObserver,
   // Requests to set the cursor type.
   void SetCursor(ui::mojom::CursorType cursor_type);
 
+  // Attempts to capture the region defined by |drag_start_| and |drag_end_|
+  // while also making sure the points are within the web contents view bounds.
+  void AttemptRegionCapture(gfx::Rect view_bounds);
+
   base::WeakPtr<ScreenshotFlow> weak_this_;
 
   // Whether we are in drag mode on this layer.
@@ -173,13 +203,22 @@ class ScreenshotFlow : public content::WebContentsObserver,
   ScreenshotCaptureCallback flow_callback_;
 
   // Mac-specific
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   std::unique_ptr<EventCaptureMac> event_capture_mac_;
+#else
+  base::ScopedObservation<ui::EventTarget,
+                          ui::EventHandler,
+                          &ui::EventTarget::AddPreTargetHandler,
+                          &ui::EventTarget::RemovePreTargetHandler>
+      event_capture_{this};
 #endif
 
   // Selection rectangle coordinates.
   gfx::Point drag_start_;
   gfx::Point drag_end_;
+
+  // Whether the user is currently dragging on the capture UI.
+  bool is_dragging_ = false;
 
   // Invalidation area; empty for entire region.
   gfx::Rect paint_invalidation_;

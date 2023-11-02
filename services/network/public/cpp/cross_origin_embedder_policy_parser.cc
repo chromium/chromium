@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,6 +20,7 @@ constexpr char kHeaderName[] = "cross-origin-embedder-policy";
 constexpr char kReportOnlyHeaderName[] =
     "cross-origin-embedder-policy-report-only";
 
+// [spec]: https://html.spec.whatwg.org/C/#obtain-an-embedder-policy
 std::pair<mojom::CrossOriginEmbedderPolicyValue, absl::optional<std::string>>
 Parse(base::StringPiece header_value) {
   using Item = net::structured_headers::Item;

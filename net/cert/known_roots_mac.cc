@@ -1,4 +1,4 @@
-// Copyright (c) 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "crypto/mac_security_services_lock.h"
-#include "net/cert/x509_util_mac.h"
+#include "net/cert/x509_util_apple.h"
 
 using base::ScopedCFTypeRef;
 
@@ -53,7 +53,7 @@ class OSXKnownRootHelper {
   OSXKnownRootHelper() {
     crypto::GetMacSecurityServicesLock().AssertAcquired();
 
-    CFArrayRef cert_array = NULL;
+    CFArrayRef cert_array = nullptr;
     OSStatus rv = SecTrustSettingsCopyCertificates(
         kSecTrustSettingsDomainSystem, &cert_array);
     if (rv != noErr) {
@@ -72,7 +72,7 @@ class OSXKnownRootHelper {
     std::sort(known_roots_.begin(), known_roots_.end());
   }
 
-  ~OSXKnownRootHelper() {}
+  ~OSXKnownRootHelper() = default;
 
   std::vector<SHA256HashValue> known_roots_;
 };

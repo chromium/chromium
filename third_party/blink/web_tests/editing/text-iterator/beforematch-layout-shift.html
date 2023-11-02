@@ -6,12 +6,10 @@
 .spacer {
   height: 200px;
 }
-.hidden-matchable {
-  content-visibility: hidden-matchable;
-}
 </style>
 
-<div id=hiddendiv class="hidden-matchable">
+<div id=futurespacer></div>
+<div id=hiddendiv hidden=until-found>
   <div class="spacer"></div>
   <div id=hiddentext>hiddentext</div>
 </div>
@@ -20,9 +18,7 @@
 
 <script>
 hiddendiv.addEventListener('beforematch', () => {
-  requestAnimationFrame(() => {
-    hiddendiv.classList.remove('hidden-matchable');
-  });
+  futurespacer.classList.add('spacer');
 });
 
 async_test(t => {

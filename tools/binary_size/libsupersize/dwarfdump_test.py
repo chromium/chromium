@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -167,7 +167,7 @@ class DwarfDumpTest(unittest.TestCase):
     ]
     source_mapper = dwarfdump.CreateAddressSourceMapperForTest(lines)
     # Address is before first range.
-    self.assertIsNone(source_mapper.FindSourceForTextAddress(0x0))
+    self.assertEqual('', source_mapper.FindSourceForTextAddress(0x0))
     # Address matches start of first range.
     self.assertEqual('foo.cc', source_mapper.FindSourceForTextAddress(0x1))
     # Address is in the middle of middle range.
@@ -175,7 +175,7 @@ class DwarfDumpTest(unittest.TestCase):
     # Address matches end of last range.
     self.assertEqual('baz.cc', source_mapper.FindSourceForTextAddress(0x4f))
     # Address is after lange range.
-    self.assertIsNone(source_mapper.FindSourceForTextAddress(0x50))
+    self.assertEqual('', source_mapper.FindSourceForTextAddress(0x50))
 
 
 if __name__ == '__main__':

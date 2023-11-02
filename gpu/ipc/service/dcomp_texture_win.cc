@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,15 +7,19 @@
 #include <string.h>
 
 #include "base/bind.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "base/win/windows_types.h"
+#include "components/viz/common/resources/resource_format.h"
 #include "components/viz/common/resources/resource_sizes.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/scheduler_task_runner.h"
-#include "gpu/command_buffer/service/shared_image_backing.h"
-#include "gpu/command_buffer/service/shared_image_backing_gl_image.h"
-#include "gpu/command_buffer/service/shared_image_factory.h"
+#include "gpu/command_buffer/service/shared_image/gl_image_backing.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/ipc/common/gpu_channel.mojom.h"
 #include "gpu/ipc/service/gpu_channel.h"
 #include "gpu/ipc/service/gpu_channel_manager.h"
@@ -32,20 +36,65 @@ namespace {
 constexpr base::TimeDelta kParentWindowPosPollingPeriod =
     base::Milliseconds(1000);
 
-std::unique_ptr<ui::ScopedMakeCurrent> MakeCurrent(
-    SharedContextState* context_state) {
-  std::unique_ptr<ui::ScopedMakeCurrent> scoped_make_current;
-  bool needs_make_current = !context_state->IsCurrent(nullptr);
-  if (needs_make_current) {
-    scoped_make_current = std::make_unique<ui::ScopedMakeCurrent>(
-        context_state->context(), context_state->surface());
-  }
-  return scoped_make_current;
-}
+class DCOMPTextureRepresentation : public OverlayImageRepresentation {
+ public:
+  DCOMPTextureRepresentation(
+      SharedImageManager* manager,
+      SharedImageBacking* backing,
+      MemoryTypeTracker* tracker,
+      scoped_refptr<gl::DCOMPSurfaceProxy> dcomp_surface_proxy)
+      : OverlayImageRepresentation(manager, backing, tracker),
+        dcomp_surface_proxy_(std::move(dcomp_surface_proxy)) {}
 
-using InitializeGLTextureParams =
-    SharedImageBackingGLCommon::InitializeGLTextureParams;
-using UnpackStateAttribs = SharedImageBackingGLCommon::UnpackStateAttribs;
+  scoped_refptr<gl::DCOMPSurfaceProxy> GetDCOMPSurfaceProxy() override {
+    return dcomp_surface_proxy_;
+  }
+
+  bool BeginReadAccess(gfx::GpuFenceHandle& acquire_fence) override {
+    return true;
+  }
+
+  void EndReadAccess(gfx::GpuFenceHandle release_fence) override {}
+
+  gl::GLImage* GetGLImage() override { return nullptr; }
+
+ private:
+  scoped_refptr<gl::DCOMPSurfaceProxy> dcomp_surface_proxy_;
+};
+
+class DCOMPTextureBacking : public ClearTrackingSharedImageBacking {
+ public:
+  DCOMPTextureBacking(scoped_refptr<gl::DCOMPSurfaceProxy> dcomp_surface_proxy,
+                      const Mailbox& mailbox,
+                      const gfx::Size& size)
+      : ClearTrackingSharedImageBacking(
+            mailbox,
+            viz::SharedImageFormat::SinglePlane(viz::BGRA_8888),
+            size,
+            gfx::ColorSpace::CreateSRGB(),
+            kTopLeft_GrSurfaceOrigin,
+            kPremul_SkAlphaType,
+            gpu::SHARED_IMAGE_USAGE_SCANOUT,
+            /*estimated_size=*/0,
+            /*is_thread_safe=*/false),
+        dcomp_surface_proxy_(std::move(dcomp_surface_proxy)) {
+    SetCleared();
+  }
+
+  SharedImageBackingType GetType() const override {
+    return SharedImageBackingType::kDCOMPSurfaceProxy;
+  }
+
+  std::unique_ptr<OverlayImageRepresentation> ProduceOverlay(
+      SharedImageManager* manager,
+      MemoryTypeTracker* tracker) override {
+    return std::make_unique<DCOMPTextureRepresentation>(manager, this, tracker,
+                                                        dcomp_surface_proxy_);
+  }
+
+ private:
+  scoped_refptr<gl::DCOMPSurfaceProxy> dcomp_surface_proxy_;
+};
 
 }  // namespace
 
@@ -61,8 +110,6 @@ scoped_refptr<DCOMPTexture> DCOMPTexture::Create(
     DLOG(ERROR) << "GetSharedContextState() failed.";
     return nullptr;
   }
-
-  auto scoped_make_current = MakeCurrent(context_state.get());
   return base::WrapRefCounted(new DCOMPTexture(
       channel, route_id, std::move(receiver), std::move(context_state)));
 }
@@ -72,10 +119,7 @@ DCOMPTexture::DCOMPTexture(
     int32_t route_id,
     mojo::PendingAssociatedReceiver<mojom::DCOMPTexture> receiver,
     scoped_refptr<SharedContextState> context_state)
-    // Size of {1, 1} to signify the Media Foundation rendering pipeline is not
-    // ready to setup DCOMP video yet.
-    : GLImageDCOMPSurface({1, 1}, INVALID_HANDLE_VALUE),
-      channel_(channel),
+    : channel_(channel),
       route_id_(route_id),
       context_state_(std::move(context_state)),
       sequence_(channel_->scheduler()->CreateSequence(SchedulingPriority::kLow,
@@ -114,17 +158,13 @@ void DCOMPTexture::OnContextLost() {
   context_lost_ = true;
 }
 
-bool DCOMPTexture::IsContextValid() const {
-  return !context_lost_;
-}
-
 void DCOMPTexture::StartListening(
     mojo::PendingAssociatedRemote<mojom::DCOMPTextureClient> client) {
   client_.Bind(std::move(client));
 }
 
 void DCOMPTexture::SetTextureSize(const gfx::Size& size) {
-  SetSize(size);
+  size_ = size;
   if (!shared_image_mailbox_created_) {
     if (client_) {
       shared_image_mailbox_created_ = true;
@@ -133,6 +173,14 @@ void DCOMPTexture::SetTextureSize(const gfx::Size& size) {
     } else
       DLOG(ERROR) << "Unable to call client_->OnSharedImageMailboxBound";
   }
+}
+
+const gfx::Size& DCOMPTexture::GetSize() const {
+  return size_;
+}
+
+HANDLE DCOMPTexture::GetSurfaceHandle() {
+  return surface_handle_.get();
 }
 
 void DCOMPTexture::SetDCOMPSurfaceHandle(
@@ -155,30 +203,16 @@ void DCOMPTexture::SetDCOMPSurfaceHandle(
 gpu::Mailbox DCOMPTexture::CreateSharedImage() {
   DCHECK(channel_);
 
-  auto scoped_make_current = MakeCurrent(context_state_.get());
   auto mailbox = gpu::Mailbox::GenerateForSharedImage();
 
-  // Use SharedImageBackingGLImage as the backing to hold GLImageDCOMPSurface
+  // Use DCOMPTextureBacking as the backing to hold DCOMPSurfaceProxy i.e. this,
   // and be able to retrieve it later via ProduceOverlay.
-  // Use some reasonable defaults for params to create SharedImageBackingGLImage
-  // since params are only used when the backing is accessed for GL.
-  // Note: this backing shouldn't be accessed via GL at all.
-  InitializeGLTextureParams params;
-  params.target = GL_TEXTURE_2D;
-  params.internal_format = GL_RGBA;
-  params.format = GL_RGBA;
-  params.is_cleared = true;
-  params.is_rgb_emulation = false;
-  params.framebuffer_attachment_angle = false;
-  UnpackStateAttribs attribs;
-  auto shared_image = std::make_unique<SharedImageBackingGLImage>(
-      this, mailbox, viz::BGRA_8888, GetSize(), gfx::ColorSpace::CreateSRGB(),
-      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-      /*usage=*/SHARED_IMAGE_USAGE_DISPLAY, params, attribs,
-      /*use_passthrough=*/true);
+  // Note: DCOMPTextureBacking shouldn't be accessed via GL at all.
+  auto shared_image =
+      std::make_unique<DCOMPTextureBacking>(this, mailbox, size_);
 
   channel_->shared_image_stub()->factory()->RegisterBacking(
-      std::move(shared_image), /*allow_legacy_mailbox=*/false);
+      std::move(shared_image));
 
   return mailbox;
 }
@@ -198,11 +232,13 @@ void DCOMPTexture::OnUpdateParentWindowRect() {
 }
 
 void DCOMPTexture::SetParentWindow(HWND parent) {
-  GLImageDCOMPSurface::SetParentWindow(parent);
-  OnUpdateParentWindowRect();
-  if (!window_pos_timer_.IsRunning()) {
-    window_pos_timer_.Start(FROM_HERE, kParentWindowPosPollingPeriod, this,
-                            &DCOMPTexture::OnUpdateParentWindowRect);
+  if (last_parent_ != parent) {
+    last_parent_ = parent;
+    OnUpdateParentWindowRect();
+    if (!window_pos_timer_.IsRunning()) {
+      window_pos_timer_.Start(FROM_HERE, kParentWindowPosPollingPeriod, this,
+                              &DCOMPTexture::OnUpdateParentWindowRect);
+    }
   }
 }
 
@@ -231,7 +267,15 @@ void DCOMPTexture::SendOutputRect() {
   output_rect.set_x(window_relative_rect_.x() + parent_window_rect_.x());
   output_rect.set_y(window_relative_rect_.y() + parent_window_rect_.y());
   if (last_output_rect_ != output_rect) {
-    client_->OnOutputRectChange(output_rect);
+    if (!output_rect.IsEmpty()) {
+      // The initial `OnUpdateParentWindowRect()` call can cause an empty
+      // `output_rect`.
+      // Set MFMediaEngine's `UpdateVideoStream()` with an non-empty destination
+      // rectangle. Otherwise, the next `EnableWindowlessSwapchainMode()` call
+      // to MFMediaEngine will skip the creation of the DCOMP surface handle.
+      // Then, the next `GetVideoSwapchainHandle()` call returns S_FALSE.
+      client_->OnOutputRectChange(output_rect);
+    }
     last_output_rect_ = output_rect;
   }
 }

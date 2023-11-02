@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,13 +10,15 @@
 
 namespace ash {
 
+// Class to observe the current color mode, which can be changed through the
+// "Dark theme" feature pod button inside quick settings, personalization hub
+// etc. Note, please override views::View::OnThemeChanged() function to update
+// colors on color mode changes directly instead of overriding
+// OnColorModeChanged() here if possible.
 class ASH_PUBLIC_EXPORT ColorModeObserver : public base::CheckedObserver {
  public:
   // Called when the color mode changes.
   virtual void OnColorModeChanged(bool dark_mode_enabled) {}
-
-  // Called when the themed state of the color mode is changed.
-  virtual void OnColorModeThemed(bool is_themed) {}
 
  protected:
   ~ColorModeObserver() override = default;

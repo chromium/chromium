@@ -1,13 +1,17 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/system/status_area_widget.h"
 
+#include <memory>
+#include <string>
+
 #include "ash/capture_mode/stop_recording_button_tray.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
+#include "ash/projector/projector_annotation_tray.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
@@ -16,32 +20,38 @@
 #include "ash/shell.h"
 #include "ash/system/accessibility/dictation_button_tray.h"
 #include "ash/system/accessibility/select_to_speak/select_to_speak_tray.h"
+#include "ash/system/eche/eche_tray.h"
 #include "ash/system/holding_space/holding_space_tray.h"
 #include "ash/system/ime_menu/ime_menu_tray.h"
 #include "ash/system/media/media_tray.h"
 #include "ash/system/model/clock_model.h"
 #include "ash/system/model/system_tray_model.h"
+#include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/overview/overview_button_tray.h"
 #include "ash/system/palette/palette_tray.h"
 #include "ash/system/phonehub/phone_hub_tray.h"
 #include "ash/system/session/logout_button_tray.h"
 #include "ash/system/status_area_widget_delegate.h"
 #include "ash/system/tray/status_area_overflow_button_tray.h"
+#include "ash/system/tray/tray_background_view.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_container.h"
+#include "ash/system/unified/date_tray.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/virtual_keyboard/virtual_keyboard_tray.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm_mode/wm_mode_button_tray.h"
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
 #include "base/i18n/time_formatting.h"
 #include "base/metrics/histogram_macros.h"
-#include "chromeos/services/assistant/public/cpp/features.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "media/base/media_switches.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/display.h"
-#include "ui/views/layout/grid_layout.h"
+#include "ui/message_center/message_center.h"
+#include "ui/message_center/message_center_types.h"
 
 namespace ash {
 
@@ -98,63 +108,62 @@ void StatusAreaWidget::Initialize() {
   DCHECK(!initialized_);
 
   // Create the child views, left to right.
-  auto overflow_button_tray =
-      std::make_unique<StatusAreaOverflowButtonTray>(shelf_);
-  overflow_button_tray_ = overflow_button_tray.get();
-  AddTrayButton(std::move(overflow_button_tray));
+  overflow_button_tray_ =
+      AddTrayButton(std::make_unique<StatusAreaOverflowButtonTray>(shelf_));
+  holding_space_tray_ =
+      AddTrayButton(std::make_unique<HoldingSpaceTray>(shelf_));
+  logout_button_tray_ =
+      AddTrayButton(std::make_unique<LogoutButtonTray>(shelf_));
+  dictation_button_tray_ = AddTrayButton(std::make_unique<DictationButtonTray>(
+      shelf_, TrayBackgroundViewCatalogName::kDictationStatusArea));
+  select_to_speak_tray_ = AddTrayButton(std::make_unique<SelectToSpeakTray>(
+      shelf_, TrayBackgroundViewCatalogName::kSelectToSpeakStatusArea));
+  ime_menu_tray_ = AddTrayButton(std::make_unique<ImeMenuTray>(shelf_));
+  virtual_keyboard_tray_ = AddTrayButton(std::make_unique<VirtualKeyboardTray>(
+      shelf_, TrayBackgroundViewCatalogName::kVirtualKeyboardStatusArea));
+  stop_recording_button_tray_ =
+      AddTrayButton(std::make_unique<StopRecordingButtonTray>(shelf_));
 
-  auto holding_space_tray = std::make_unique<HoldingSpaceTray>(shelf_);
-  holding_space_tray_ = holding_space_tray.get();
-  AddTrayButton(std::move(holding_space_tray));
+  if (features::IsProjectorAnnotatorEnabled()) {
+    projector_annotation_tray_ =
+        AddTrayButton(std::make_unique<ProjectorAnnotationTray>(shelf_));
+  }
 
-  auto logout_button_tray = std::make_unique<LogoutButtonTray>(shelf_);
-  logout_button_tray_ = logout_button_tray.get();
-  AddTrayButton(std::move(logout_button_tray));
-
-  auto dictation_button_tray = std::make_unique<DictationButtonTray>(shelf_);
-  dictation_button_tray_ = dictation_button_tray.get();
-  AddTrayButton(std::move(dictation_button_tray));
-
-  auto select_to_speak_tray = std::make_unique<SelectToSpeakTray>(shelf_);
-  select_to_speak_tray_ = select_to_speak_tray.get();
-  AddTrayButton(std::move(select_to_speak_tray));
-
-  auto ime_menu_tray = std::make_unique<ImeMenuTray>(shelf_);
-  ime_menu_tray_ = ime_menu_tray.get();
-  AddTrayButton(std::move(ime_menu_tray));
-
-  auto virtual_keyboard_tray = std::make_unique<VirtualKeyboardTray>(shelf_);
-  virtual_keyboard_tray_ = virtual_keyboard_tray.get();
-  AddTrayButton(std::move(virtual_keyboard_tray));
-
-  auto stop_recording_button_tray =
-      std::make_unique<StopRecordingButtonTray>(shelf_);
-  stop_recording_button_tray_ = stop_recording_button_tray.get();
-  AddTrayButton(std::move(stop_recording_button_tray));
-
-  auto palette_tray = std::make_unique<PaletteTray>(shelf_);
-  palette_tray_ = palette_tray.get();
-  AddTrayButton(std::move(palette_tray));
+  palette_tray_ = AddTrayButton(std::make_unique<PaletteTray>(shelf_));
 
   if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsForChromeOS)) {
-    auto media_tray = std::make_unique<MediaTray>(shelf_);
-    media_tray_ = media_tray.get();
-    AddTrayButton(std::move(media_tray));
+    media_tray_ = AddTrayButton(std::make_unique<MediaTray>(shelf_));
+  }
+
+  if (chromeos::features::IsEcheSWAEnabled()) {
+    eche_tray_ = AddTrayButton(std::make_unique<EcheTray>(shelf_));
   }
 
   if (chromeos::features::IsPhoneHubEnabled()) {
-    auto phone_hub_tray = std::make_unique<PhoneHubTray>(shelf_);
-    phone_hub_tray_ = phone_hub_tray.get();
-    AddTrayButton(std::move(phone_hub_tray));
+    phone_hub_tray_ = AddTrayButton(std::make_unique<PhoneHubTray>(shelf_));
+  }
+
+  if (features::IsWmModeEnabled()) {
+    wm_mode_button_tray_ =
+        AddTrayButton(std::make_unique<WmModeButtonTray>(shelf_));
+  }
+
+  if (chromeos::features::IsQsRevampEnabled()) {
+    notification_center_tray_ =
+        AddTrayButton(std::make_unique<NotificationCenterTray>(shelf_));
+    notification_center_tray_->AddObserver(this);
   }
 
   auto unified_system_tray = std::make_unique<UnifiedSystemTray>(shelf_);
   unified_system_tray_ = unified_system_tray.get();
+  if (features::IsCalendarViewEnabled()) {
+    date_tray_ =
+        AddTrayButton(std::make_unique<DateTray>(shelf_, unified_system_tray_));
+  }
   AddTrayButton(std::move(unified_system_tray));
 
-  auto overview_button_tray = std::make_unique<OverviewButtonTray>(shelf_);
-  overview_button_tray_ = overview_button_tray.get();
-  AddTrayButton(std::move(overview_button_tray));
+  overview_button_tray_ =
+      AddTrayButton(std::make_unique<OverviewButtonTray>(shelf_));
 
   // Each tray_button's animation will be disabled for the life time of this
   // local `animation_disablers`, which means the closures to enable the
@@ -184,6 +193,8 @@ void StatusAreaWidget::Initialize() {
 
 StatusAreaWidget::~StatusAreaWidget() {
   Shell::Get()->session_controller()->RemoveObserver(this);
+  if (features::IsQsRevampEnabled())
+    notification_center_tray_->RemoveObserver(this);
   status_area_widget_delegate_->Shutdown();
 }
 
@@ -202,12 +213,18 @@ void StatusAreaWidget::UpdateAfterLoginStatusChange(LoginStatus login_status) {
 }
 
 void StatusAreaWidget::SetSystemTrayVisibility(bool visible) {
-  TrayBackgroundView* tray = unified_system_tray_;
-  tray->SetVisiblePreferred(visible);
+  unified_system_tray_->SetVisiblePreferred(visible);
+
+  if (features::IsCalendarViewEnabled())
+    date_tray_->SetVisiblePreferred(visible);
+
+  if (features::IsQsRevampEnabled())
+    notification_center_tray_->OnSystemTrayVisibilityChanged(visible);
+
   if (visible) {
     Show();
   } else {
-    tray->CloseBubble();
+    unified_system_tray_->CloseBubble();
     Hide();
   }
 }
@@ -242,12 +259,40 @@ void StatusAreaWidget::UpdateCollapseState() {
 void StatusAreaWidget::LogVisiblePodCountMetric() {
   int visible_pod_count = 0;
   for (auto* tray_button : tray_buttons_) {
-    if (tray_button == overflow_button_tray_ ||
-        tray_button == overview_button_tray_ ||
-        tray_button == unified_system_tray_ || !tray_button->GetVisible())
-      continue;
+    switch (tray_button->catalog_name()) {
+      case TrayBackgroundViewCatalogName::kUnifiedSystem:
+      case TrayBackgroundViewCatalogName::kStatusAreaOverflowButton:
+      case TrayBackgroundViewCatalogName::kDateTray:
+      case TrayBackgroundViewCatalogName::kNotificationCenter:
+        // These pods always show, ignore them.
+        continue;
 
-    visible_pod_count += 1;
+      case TrayBackgroundViewCatalogName::kSelectToSpeakAccessibilityWindow:
+      case TrayBackgroundViewCatalogName::kDictationAccesibilityWindow:
+      case TrayBackgroundViewCatalogName::kVirtualKeyboardAccessibilityWindow:
+        // These pods show in an unrelated menu.
+        continue;
+
+      case TrayBackgroundViewCatalogName::kOverview:
+      case TrayBackgroundViewCatalogName::kTestCatalogName:
+      case TrayBackgroundViewCatalogName::kImeMenu:
+      case TrayBackgroundViewCatalogName::kHoldingSpace:
+      case TrayBackgroundViewCatalogName::kScreenCaptureStopRecording:
+      case TrayBackgroundViewCatalogName::kProjectorAnnotation:
+      case TrayBackgroundViewCatalogName::kDictationStatusArea:
+      case TrayBackgroundViewCatalogName::kSelectToSpeakStatusArea:
+      case TrayBackgroundViewCatalogName::kEche:
+      case TrayBackgroundViewCatalogName::kMediaPlayer:
+      case TrayBackgroundViewCatalogName::kPalette:
+      case TrayBackgroundViewCatalogName::kPhoneHub:
+      case TrayBackgroundViewCatalogName::kLogoutButton:
+      case TrayBackgroundViewCatalogName::kVirtualKeyboardStatusArea:
+      case TrayBackgroundViewCatalogName::kWmMode:
+        if (!tray_button->GetVisible())
+          continue;
+        visible_pod_count += 1;
+        break;
+    }
   }
 
   if (Shell::Get()->tablet_mode_controller()->InTabletMode()) {
@@ -329,43 +374,23 @@ void StatusAreaWidget::UpdateTargetBoundsForGesture(int shelf_position) {
 }
 
 void StatusAreaWidget::HandleLocaleChange() {
-  if (!shelf_->IsHorizontalAlignment()) {
-    for (auto* tray_button : tray_buttons_)
-      tray_button->HandleLocaleChange();
-    return;
-  }
-
-  // During adding child views in this 'for' loop, `CalculateTargetBounds` might
-  // be called which can create a new layout manager. So
-  // `CreateScopedPauseCalculatingTargetBounds` here to disable creating layout
-  // managers.
-  auto pause =
-      status_area_widget_delegate_->CreateScopedPauseCalculatingTargetBounds();
-  // If the layout is horizontal, each child's position should be recalculated
-  // when there is a RTL change. The layer's bounds could to be updated (if
-  // needed) by re-adding the children, since the bounds updating is done in the
-  // `AddChildView` method.
+  // Here we force the layer's bounds to be updated for text direction (if
+  // needed).
   status_area_widget_delegate_->RemoveAllChildViewsWithoutDeleting();
 
-  // Gets the layout manger and inits the starting point to (0.0).
-  views::GridLayout* layout_manager = static_cast<views::GridLayout*>(
-      status_area_widget_delegate_->GetLayoutManager());
-  views::ColumnSet* columns = layout_manager->GetColumnSet(0);
-  layout_manager->StartRow(0, 0);
-
-  // It doesn't matter that the visible or invisible views are all added to the
-  // layout manager, since `CalculateTargetBounds` is called after all the views
-  // are added.
   for (auto* tray_button : tray_buttons_) {
-    columns->AddColumn(
-        views::GridLayout::CENTER, views::GridLayout::FILL, 0,
-        /*resize_percent=*/views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-    std::unique_ptr<TrayBackgroundView> tray_button_uptr(tray_button);
-    layout_manager->AddView(std::move(tray_button_uptr));
     tray_button->HandleLocaleChange();
+    status_area_widget_delegate_->AddChildView(tray_button);
   }
   EnsureTrayOrder();
-  status_area_widget_delegate_->CalculateTargetBounds();
+}
+
+void StatusAreaWidget::NotifyAnyBubbleVisibilityChanged(
+    views::Widget* bubble_widget,
+    bool visible) {
+  for (auto* tray_button : tray_buttons_) {
+    tray_button->OnAnyBubbleVisibilityChanged(bubble_widget, visible);
+  }
 }
 
 void StatusAreaWidget::CalculateButtonVisibilityForCollapsedState() {
@@ -385,13 +410,8 @@ void StatusAreaWidget::CalculateButtonVisibilityForCollapsedState() {
           : 0;
 
   // We update visibility of each tray button based on the available width.
-  const int shelf_width =
-      shelf_->shelf_widget()->GetClientAreaBoundsInScreen().width();
-  const int available_width =
-      (force_collapsible
-           ? kStatusAreaForceCollapseAvailableWidth
-           : shelf_width / 2 - kStatusAreaLeftPaddingForOverflow) -
-      stop_recording_button_width;
+  const int available_width = GetCollapseAvailableWidth(force_collapsible) -
+                              stop_recording_button_width;
 
   // First, reset all tray button to be hidden.
   overflow_button_tray_->ResetStateToCollapsed();
@@ -416,7 +436,7 @@ void StatusAreaWidget::CalculateButtonVisibilityForCollapsedState() {
     if (used_width + tray_width > available_width) {
       show_overflow_button = true;
 
-      // Maybe remove the last tray button to make rooom for the overflow tray.
+      // Maybe remove the last tray button to make room for the overflow tray.
       int overflow_button_width =
           overflow_button_tray_->GetPreferredSize().width();
       if (previous_tray && used_width + overflow_button_width > available_width)
@@ -440,8 +460,12 @@ void StatusAreaWidget::CalculateButtonVisibilityForCollapsedState() {
 }
 
 void StatusAreaWidget::EnsureTrayOrder() {
-  status_area_widget_delegate_->ReorderChildView(stop_recording_button_tray_,
-                                                 1);
+  if (projector_annotation_tray_) {
+    status_area_widget_delegate_->ReorderChildView(projector_annotation_tray_,
+                                                   1);
+  }
+  status_area_widget_delegate_->ReorderChildView(
+      stop_recording_button_tray_, projector_annotation_tray_ ? 2 : 1);
 }
 
 StatusAreaWidget::CollapseState StatusAreaWidget::CalculateCollapseState()
@@ -477,11 +501,8 @@ StatusAreaWidget::CollapseState StatusAreaWidget::CalculateCollapseState()
   if (state == CollapseState::COLLAPSED) {
     // We might not need to be collapsed, if there is enough space for all the
     // buttons.
-    const int shelf_width =
-        shelf_->shelf_widget()->GetClientAreaBoundsInScreen().width();
-    const int available_width =
-        force_collapsible ? kStatusAreaForceCollapseAvailableWidth
-                          : shelf_width / 2 - kStatusAreaLeftPaddingForOverflow;
+    const int available_width = GetCollapseAvailableWidth(force_collapsible);
+
     int used_width = 0;
     for (TrayBackgroundView* tray : base::Reversed(tray_buttons_)) {
       // If we reach the final overflow tray button, then all the tray buttons
@@ -580,9 +601,30 @@ bool StatusAreaWidget::ShouldShowShelf() const {
   if (unified_system_tray_->IsSliderBubbleShown())
     return false;
 
-  // All other tray bubbles on the same display with status area widget will
-  // force the shelf to be visible.
-  return tray_bubble_count_ > 0;
+  // Some TrayBackgroundViews' cache their bubble, the shelf should only be
+  // forced to show if the bubble is visible, and we should not show the shelf
+  // for cached, hidden bubbles.
+  if (tray_bubble_count_ > 0) {
+    for (TrayBackgroundView* tray_button : tray_buttons_) {
+      if (!tray_button->GetBubbleView())
+        continue;
+
+      // Any tray bubble is showing, show shelf.
+      if (tray_button->GetBubbleView()->GetVisible())
+        return true;
+
+      // Tray bubble view is not null and not visible, tray bubble is cached
+      // for hidden case. If the tray caches the view for hidden, we should
+      // hide self otherwise show shelf.
+      if (!tray_button->GetBubbleView()->GetVisible() &&
+          !tray_button->CacheBubbleViewForHide()) {
+        return true;
+      }
+    }
+  }
+
+  // No cases to show shelf, returns false to hide shelf.
+  return false;
 }
 
 bool StatusAreaWidget::IsMessageBubbleShown() const {
@@ -600,6 +642,14 @@ bool StatusAreaWidget::OnNativeWidgetActivationChanged(bool active) {
   if (active)
     status_area_widget_delegate_->SetPaneFocusAndFocusDefault();
   return true;
+}
+
+void StatusAreaWidget::OnViewVisibilityChanged(views::View* observed_view,
+                                               views::View* starting_view) {
+  if (observed_view != notification_center_tray_)
+    return;
+
+  UpdateDateTrayRoundedCorners();
 }
 
 void StatusAreaWidget::OnMouseEvent(ui::MouseEvent* event) {
@@ -638,11 +688,15 @@ void StatusAreaWidget::OnScrollEvent(ui::ScrollEvent* event) {
     views::Widget::OnScrollEvent(event);
 }
 
-void StatusAreaWidget::AddTrayButton(
-    std::unique_ptr<TrayBackgroundView> tray_button) {
+template <typename TrayButtonT>
+TrayButtonT* StatusAreaWidget::AddTrayButton(
+    std::unique_ptr<TrayButtonT> tray_button) {
   tray_buttons_.push_back(tray_button.get());
-  status_area_widget_delegate_->AddChildView(std::move(tray_button));
+  return status_area_widget_delegate_->AddChildView(std::move(tray_button));
 }
+// Specialization declared here for use in tests.
+template TrayBackgroundView* StatusAreaWidget::AddTrayButton<
+    TrayBackgroundView>(std::unique_ptr<TrayBackgroundView> tray_button);
 
 StatusAreaWidget::LayoutInputs StatusAreaWidget::GetLayoutInputs() const {
   unsigned int child_visibility_bitmask = 0;
@@ -671,6 +725,33 @@ StatusAreaWidget::LayoutInputs StatusAreaWidget::GetLayoutInputs() const {
   return {target_bounds_, CalculateCollapseState(),
           shelf_->shelf_layout_manager()->GetOpacity(),
           child_visibility_bitmask, should_animate};
+}
+
+void StatusAreaWidget::UpdateDateTrayRoundedCorners() {
+  if (!features::IsQsRevampEnabled() || !date_tray_)
+    return;
+
+  date_tray_->SetRoundedCornerBehavior(
+      notification_center_tray_->GetVisible()
+          ? TrayBackgroundView::RoundedCornerBehavior::kNotRounded
+          : TrayBackgroundView::RoundedCornerBehavior::kStartRounded);
+}
+
+int StatusAreaWidget::GetCollapseAvailableWidth(bool force_collapsible) const {
+  const int shelf_width =
+      shelf_->shelf_widget()->GetClientAreaBoundsInScreen().width();
+
+  if (!force_collapsible)
+    return shelf_width / 2 - kStatusAreaLeftPaddingForOverflow;
+
+  int available_width = kStatusAreaForceCollapseAvailableWidth;
+  // If calendar view is enabled, add the date tray width to the collapse
+  // available width.
+  if (features::IsCalendarViewEnabled()) {
+    DCHECK(date_tray_);
+    available_width += date_tray_->tray_container()->GetPreferredSize().width();
+  }
+  return available_width;
 }
 
 }  // namespace ash

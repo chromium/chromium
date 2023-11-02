@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,14 +6,11 @@
 #define UI_BASE_UI_BASE_TYPES_H_
 
 #include <cstdint>
-#include <type_traits>
 
-#include "base/component_export.h"
-#include "ui/gfx/geometry/rect.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 namespace ui {
-
-class Event;
 
 // This enum must be version-skew tolerant. It is persisted to disk by ChromeOS
 // full restore, and read from disk by a possibly newer version of chrome. This
@@ -21,6 +18,9 @@ class Event;
 // changed or removed.
 //
 // Window "show" state.
+// TODO: Add snapped window state to immersive fullscreen state to
+// WindowShowState. Those are ChromeOS specific window states but we should make
+// it available here as well as Lacros also needs to know those states.
 enum WindowShowState {
   // A default un-set state.
   SHOW_STATE_DEFAULT = 0,
@@ -31,6 +31,30 @@ enum WindowShowState {
   SHOW_STATE_FULLSCREEN = 5,
   SHOW_STATE_END = 6  // The end of show state enum.
 };
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+// Specifies which edges of the window are tiled.
+//
+// Wayland can notify the application if certain edge of the window is
+// "tiled": https://wayland.app/protocols/xdg-shell#xdg_toplevel:enum:state.
+// Chromium should not draw frame decorations for the tiled edges.
+struct WindowTiledEdges {
+  bool left{false};
+  bool right{false};
+  bool top{false};
+  bool bottom{false};
+
+  bool operator==(const WindowTiledEdges& other) const {
+    return left == other.left && right == other.right && top == other.top &&
+           bottom == other.bottom;
+  }
+
+  bool operator!=(const WindowTiledEdges& other) const {
+    return left != other.left || right != other.right || top != other.top ||
+           bottom != other.bottom;
+  }
+};
+#endif  // IS_LINUX || IS_CHROMEOS_LACROS
 
 // Dialog button identifiers used to specify which buttons to show the user.
 enum DialogButton {
@@ -43,16 +67,18 @@ enum DialogButton {
 // Specifies the type of modality applied to a window. Different modal
 // treatments may be handled differently by the window manager.
 enum ModalType {
-  MODAL_TYPE_NONE   = 0,  // Window is not modal.
+  MODAL_TYPE_NONE = 0,    // Window is not modal.
   MODAL_TYPE_WINDOW = 1,  // Window is modal to its transient parent.
-  MODAL_TYPE_CHILD  = 2,  // Window is modal to a child of its transient parent.
+  MODAL_TYPE_CHILD = 2,   // Window is modal to a child of its transient parent.
   MODAL_TYPE_SYSTEM = 3   // Window is modal to all other windows.
 };
 
-// The class of window and its overall z-order. Not all platforms provide this
-// level of z-order granularity. For such platforms, which only provide a
+// The class of window and its overall z-order. Only the Mac provides this
+// level of z-order granularity. For other platforms, which only provide a
 // distinction between "normal" and "always on top" windows, any of the values
-// here that aren't |kNormal| are treated equally as "always on top".
+// here that aren't `kNormal` are treated equally as "always on top".
+// TODO(crbug.com/1358586): For non-desktop widgets on Linux and Windows,
+// this z-order currently does not have any effect.
 enum class ZOrderLevel {
   // The default level for windows.
   kNormal = 0,
@@ -158,38 +184,6 @@ enum class OwnedWindowConstraintAdjustment : uint32_t {
   kAdjustmentRezizeY = 1 << 5,
 };
 
-// Structure that describes anchor for an owned window. Owned windows are the
-// windows that must be owned by their context (for example, menus, tooltips),
-// and they must be positioned in such a way that a system compositor can
-// reposition them using provided anchor. Ozone/Wayland is an example user of
-// this.
-struct OwnedWindowAnchor {
-  gfx::Rect anchor_rect;
-  OwnedWindowAnchorPosition anchor_position = OwnedWindowAnchorPosition::kNone;
-  OwnedWindowAnchorGravity anchor_gravity = OwnedWindowAnchorGravity::kNone;
-  OwnedWindowConstraintAdjustment constraint_adjustment =
-      OwnedWindowConstraintAdjustment::kAdjustmentNone;
-};
-
-COMPONENT_EXPORT(UI_BASE)
-MenuSourceType GetMenuSourceTypeForEvent(const ui::Event& event);
-
 }  // namespace ui
-
-inline constexpr ui::OwnedWindowConstraintAdjustment operator|(
-    ui::OwnedWindowConstraintAdjustment l,
-    ui::OwnedWindowConstraintAdjustment r) {
-  using T = std::underlying_type_t<ui::OwnedWindowConstraintAdjustment>;
-  return static_cast<ui::OwnedWindowConstraintAdjustment>(static_cast<T>(l) |
-                                                          static_cast<T>(r));
-}
-
-inline constexpr ui::OwnedWindowConstraintAdjustment operator&(
-    ui::OwnedWindowConstraintAdjustment l,
-    ui::OwnedWindowConstraintAdjustment r) {
-  using T = std::underlying_type_t<ui::OwnedWindowConstraintAdjustment>;
-  return static_cast<ui::OwnedWindowConstraintAdjustment>(static_cast<T>(l) &
-                                                          static_cast<T>(r));
-}
 
 #endif  // UI_BASE_UI_BASE_TYPES_H_

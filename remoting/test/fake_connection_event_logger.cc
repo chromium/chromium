@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 
 #include "base/atomicops.h"
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "remoting/proto/audio.pb.h"
 #include "remoting/proto/control.pb.h"
@@ -83,32 +83,44 @@ class NoBarrierAtomicInt64 {
 
 int64_t NoBarrierAtomicInt64::operator++() {
   AutoLock l(lock_);
-  return i_++;
+  const int64_t old_i = i_;
+  i_ = old_i + 1;
+  return old_i;
 }
 
 int64_t NoBarrierAtomicInt64::operator++(int) {
   AutoLock l(lock_);
-  return ++i_;
+  const int64_t new_i = i_ + 1;
+  i_ = new_i;
+  return new_i;
 }
 
 int64_t NoBarrierAtomicInt64::operator--() {
   AutoLock l(lock_);
-  return i_--;
+  const int64_t old_i = i_;
+  i_ = old_i - 1;
+  return old_i;
 }
 
 int64_t NoBarrierAtomicInt64::operator--(int) {
   AutoLock l(lock_);
-  return --i_;
+  const int64_t new_i = i_ - 1;
+  i_ = new_i;
+  return new_i;
 }
 
 int64_t NoBarrierAtomicInt64::operator+=(int64_t other) {
   AutoLock l(lock_);
-  return (i_ += other);
+  const int64_t new_i = i_ + other;
+  i_ = new_i;
+  return new_i;
 }
 
 int64_t NoBarrierAtomicInt64::operator-=(int64_t other) {
   AutoLock l(lock_);
-  return (i_ -= other);
+  const int64_t new_i = i_ - other;
+  i_ = new_i;
+  return new_i;
 }
 
 int64_t NoBarrierAtomicInt64::operator*() const {
@@ -238,6 +250,7 @@ class FakeConnectionEventLogger::CounterHostStub
   void SetCapabilities(const protocol::Capabilities& capabilities) override {}
   void SelectDesktopDisplay(
       const protocol::SelectDesktopDisplayRequest& select_display) override {}
+  void SetVideoLayout(const protocol::VideoLayout& video_layout) override {}
 };
 
 FakeConnectionEventLogger::CounterHostStub::CounterHostStub()
@@ -283,7 +296,7 @@ class FakeConnectionEventLogger::CounterVideoStub
   void ProcessVideoPacket(std::unique_ptr<VideoPacket> video_packet,
                           base::OnceClosure done) override;
 
-  protocol::FakeConnectionToClient* connection_ = nullptr;
+  raw_ptr<protocol::FakeConnectionToClient> connection_ = nullptr;
   MessageCounter video_data_;
   MessageCounter capture_time_;
   MessageCounter encode_time_;

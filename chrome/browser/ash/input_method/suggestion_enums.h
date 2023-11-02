@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,7 +25,8 @@ enum class AssistiveType {
   kAutocorrectReverted = 12,
   kMultiWordPrediction = 13,
   kMultiWordCompletion = 14,
-  kMaxValue = kMultiWordCompletion,
+  kLongpressDiacritics = 15,
+  kMaxValue = kLongpressDiacritics,
 };
 
 enum class SuggestionStatus {
@@ -44,6 +45,28 @@ enum class DisabledReason {
   kUserSettingsOff = 3,
   kUrlOrAppNotAllowed = 4,
   kMaxValue = kUrlOrAppNotAllowed,
+};
+
+// Must match with IMEAssistiveTextInputState in enums.xml
+enum class AssistiveTextInputState {
+  kNone = 0,
+  kFeatureBlockedByDenylist = 1,
+  kFeatureBlockedByPreference = 2,
+  kUnsupportedClient = 3,
+  kUnsupportedLanguage = 4,
+  kFeatureEnabled = 5,
+  kMaxValue = kFeatureEnabled,
+};
+
+// Must match with IMEAssistiveMultiWordSuggestionType in enums.xml
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class MultiWordSuggestionType {
+  kUnknown = 0,
+  kPrediction = 1,
+  kCompletion = 2,
+  kMaxValue = kCompletion,
 };
 
 }  // namespace input_method

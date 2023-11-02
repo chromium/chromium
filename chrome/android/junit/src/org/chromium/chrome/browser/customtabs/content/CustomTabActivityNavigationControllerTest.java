@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -26,12 +27,15 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.task.test.ShadowPostTask;
+import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.MetricsUtils.HistogramDelta;
+import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHandler;
+import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHandler.MinimizeAppAndCloseTabType;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController.FinishHandler;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController.FinishReason;
 import org.chromium.chrome.browser.customtabs.shadows.ShadowExternalNavigationDelegateImpl;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.testing.local.LocalRobolectricTestRunner;
 import org.chromium.url.GURL;
 
 /**
@@ -40,11 +44,10 @@ import org.chromium.url.GURL;
  * {@link CustomTabActivityNavigationController#navigate} is tested in integration with other
  * classes in {@link CustomTabActivityUrlLoadingTest}.
  */
-@RunWith(LocalRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {
-    ShadowExternalNavigationDelegateImpl.class, ShadowPostTask.class})
+@RunWith(BaseRobolectricTestRunner.class)
+@Config(manifest = Config.NONE,
+        shadows = {ShadowExternalNavigationDelegateImpl.class, ShadowPostTask.class})
 public class CustomTabActivityNavigationControllerTest {
-
     @Rule
     public final CustomTabActivityContentTestEnvironment env =
             new CustomTabActivityContentTestEnvironment();
@@ -70,20 +73,28 @@ public class CustomTabActivityNavigationControllerTest {
 
     @Test
     public void finishes_IfBackNavigationClosesTheOnlyTab() {
+        HistogramDelta d1 = new HistogramDelta(
+                MinimizeAppAndCloseTabBackPressHandler.getHistogramNameForTesting(),
+                MinimizeAppAndCloseTabType.MINIMIZE_APP);
         when(mTabController.onlyOneTabRemaining()).thenReturn(true);
 
         mNavigationController.navigateOnBack();
+        Assert.assertEquals(1, d1.getDelta());
         verify(mFinishHandler).onFinish(eq(FinishReason.USER_NAVIGATION));
     }
 
     @Test
     public void doesntFinish_IfBackNavigationReplacesTabWithPreviousOne() {
+        HistogramDelta d1 = new HistogramDelta(
+                MinimizeAppAndCloseTabBackPressHandler.getHistogramNameForTesting(),
+                MinimizeAppAndCloseTabType.CLOSE_TAB);
         doAnswer((Answer<Void>) invocation -> {
             env.tabProvider.swapTab(env.prepareTab());
             return null;
         }).when(mTabController).closeTab();
 
         mNavigationController.navigateOnBack();
+        Assert.assertEquals(1, d1.getDelta());
         verify(mFinishHandler, never()).onFinish(anyInt());
     }
 

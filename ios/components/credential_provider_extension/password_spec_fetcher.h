@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,8 +18,8 @@ using FetchSpecCompletionBlock =
 // Can fetch a password specification for the given host.
 @interface PasswordSpecFetcher : NSObject
 
-// |host| indicates which spec should be fetched from the service.
-// |APIKey| is the API key used to fetch the service.
+// `host` indicates which spec should be fetched from the service.
+// `APIKey` is the API key used to fetch the service.
 - (instancetype)initWithHost:(NSString*)host APIKey:(NSString*)APIKey;
 
 // Indicates if the spec has been fetched already.
@@ -28,7 +28,7 @@ using FetchSpecCompletionBlock =
 // The spec if ready or an empty one if fetch hasn't happened.
 @property(nonatomic, readonly) autofill::PasswordRequirementsSpec spec;
 
-// Fetches the spec and executes |completion| in the main thread. If called
+// Fetches the spec and executes `completion` in the main thread. If called
 // multiple times only the last completion is executed. An empty spec is
 // returned in case there is any error or it is not found.
 - (void)fetchSpecWithCompletion:(FetchSpecCompletionBlock)completion;

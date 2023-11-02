@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,7 @@ bool WebLayerCameraPanTiltZoomPermissionContextDelegate::
     GetPermissionStatusInternal(const GURL& requesting_origin,
                                 const GURL& embedding_origin,
                                 ContentSetting* content_setting_result) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // The PTZ permission is automatically granted on Android. It is safe to do so
   // because pan and tilt are not supported on Android.
   *content_setting_result = CONTENT_SETTING_ALLOW;

@@ -17,17 +17,14 @@
         height: 100%;
         justify-content: center;
         opacity: .8;
+        outline: none;
         padding: 0 var(--cr-tabs-tab-inline-padding, 0);
         position: relative;
         transition: opacity 100ms cubic-bezier(.4, 0, 1, 1);
       }
 
-      .tab:focus-visible:focus {
+      :host-context(.focus-outline-visible) .tab:focus {
         outline: var(--cr-tabs-focus-outline, auto);
-      }
-
-      :host(:not(.keyboard-focus)) .tab {
-        outline: none;
       }
 
       .selected {
@@ -37,7 +34,7 @@
 
       @media (prefers-color-scheme: dark) {
         .selected {
-          color: var(--cr-tabs-selected-color, var(--google-blue-refresh-300));
+          color: var(--cr-tabs-selected-color, var(--google-blue-300));
         }
       }
 
@@ -62,7 +59,7 @@
 
       @media (prefers-color-scheme: dark) {
         .selected .tab-icon {
-          background-color: var(--cr-tabs-selected-color, var(--google-blue-refresh-300));
+          background-color: var(--cr-tabs-selected-color, var(--google-blue-300));
         }
       }
 
@@ -96,7 +93,13 @@
 
       @media (prefers-color-scheme: dark) {
         .tab-indicator {
-          background: var(--cr-tabs-selected-color, var(--google-blue-refresh-300));
+          background: var(--cr-tabs-selected-color, var(--google-blue-300));
+        }
+      }
+
+      @media (forced-colors: active) {
+        .tab-indicator {
+          background: SelectedItem;
         }
       }
     </style>

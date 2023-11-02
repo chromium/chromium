@@ -1,9 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/share/share_ranking.h"
 
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -15,7 +16,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/callback_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
@@ -92,8 +93,8 @@ void SwapRankingElement(std::vector<std::string>& ranking,
   DCHECK(RankingContains(ranking, from));
   DCHECK(RankingContains(ranking, to));
 
-  auto from_loc = std::find(ranking.begin(), ranking.end(), from);
-  auto to_loc = std::find(ranking.begin(), ranking.end(), to);
+  auto from_loc = base::ranges::find(ranking, from);
+  auto to_loc = base::ranges::find(ranking, to);
   *from_loc = to;
   *to_loc = from;
 }
@@ -204,7 +205,7 @@ ShareRanking::Ranking AppendUpToLength(
   return result;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void RunJniRankCallback(base::android::ScopedJavaGlobalRef<jobject> callback,
                         JNIEnv* env,
                         absl::optional<ShareRanking::Ranking> ranking) {
@@ -248,16 +249,6 @@ bool AtMostOneSlotChanged(const std::vector<std::string>& old_ranking,
   return true;
 }
 
-bool NoEmptySlots(const std::vector<std::string>& display_ranking,
-                  unsigned int length) {
-  if (display_ranking.size() < length)
-    return false;
-  for (unsigned int i = 0; i < length; i++) {
-    if (display_ranking[i] == "")
-      return false;
-  }
-  return true;
-}
 #endif  // DCHECK_IS_ON()
 
 std::map<std::string, int> BuildHistoryMap(
@@ -390,7 +381,6 @@ void ShareRanking::ComputeRanking(
   // Preconditions:
   DCHECK_LE(fold, length);
   DCHECK_GE(old_ranking.size(), length - 1);
-  DCHECK_GE(available_on_system.size(), length - 1);
 
   Ranking augmented_old_ranking = AddMissingItemsFromHistory(
       AddMissingItemsFromHistory(old_ranking, all_share_history),
@@ -431,7 +421,6 @@ void ShareRanking::ComputeRanking(
     DCHECK(EveryElementInList(*display_ranking, available));
     DCHECK(ElementIndexesAreUnchanged(*display_ranking, old_ranking, fold - 1));
     DCHECK(AtMostOneSlotChanged(old_ranking, *persisted_ranking, fold - 1));
-    DCHECK(NoEmptySlots(*display_ranking, length));
 
     DCHECK(RankingContains(*display_ranking, kMoreTarget));
 
@@ -529,7 +518,7 @@ void ShareRanking::OnRankGetOldRankingDone(
 
 ShareRanking::Ranking ShareRanking::GetDefaultInitialRankingForType(
     const std::string& type) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // On Android, just use the app's default locale string - we don't have a pref
   // locale to consult regardless, and l10n_util::GetApplicationLocale can do
   // blocking disk IO (!) while it checks whether we have a string pack for the
@@ -545,7 +534,7 @@ ShareRanking::Ranking ShareRanking::GetDefaultInitialRankingForType(
 
 }  // namespace sharing
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 
 void JNI_ShareRankingBridge_Rank(JNIEnv* env,
                                  const JavaParamRef<jobject>& jprofile,
@@ -586,4 +575,4 @@ void JNI_ShareRankingBridge_Rank(JNIEnv* env,
                      base::Unretained(env)));
 }
 
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)

@@ -1,41 +1,43 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.m.js';
-import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
-import 'chrome://resources/cr_elements/cr_icons_css.m.js';
-import 'chrome://resources/cr_elements/shared_vars_css.m.js';
-import '../shared_style.js';
-import '../shared_vars.js';
+import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/cr_elements/cr_icons.css.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+import '../shared_style.css.js';
+import '../shared_vars.css.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-export type ActivityGroup = {
-  activityIds: Set<string>,
-  key: string,
-  count: number,
-  activityType: chrome.activityLogPrivate.ExtensionActivityFilter,
-  countsByUrl: Map<string, number>,
-  expanded: boolean,
-};
+import {getTemplate} from './activity_log_history_item.html.js';
+
+export interface ActivityGroup {
+  activityIds: Set<string>;
+  key: string;
+  count: number;
+  activityType: chrome.activityLogPrivate.ExtensionActivityFilter;
+  countsByUrl: Map<string, number>;
+  expanded: boolean;
+}
 
 /**
  * A struct used to describe each url and its associated counts. The id is
  * unique for each item in the list of URLs and is used for the tooltip.
  */
-export type PageUrlItem = {
-  page: string,
-  count: number,
-};
+export interface PageUrlItem {
+  page: string;
+  count: number;
+}
 
-class ActivityLogHistoryItemElement extends PolymerElement {
+export class ActivityLogHistoryItemElement extends PolymerElement {
   static get is() {
     return 'activity-log-history-item';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -65,7 +67,7 @@ class ActivityLogHistoryItemElement extends PolymerElement {
    * for this ActivityGroup (API call or content script invocation.) Resolve
    * ties by the alphabetical order of the page URL.
    */
-  private getPageUrls_(): Array<PageUrlItem> {
+  private getPageUrls_(): PageUrlItem[] {
     return Array.from(this.data.countsByUrl.entries())
         .map(e => ({page: e[0], count: e[1]}))
         .sort(function(a, b) {
@@ -81,7 +83,7 @@ class ActivityLogHistoryItemElement extends PolymerElement {
     this.dispatchEvent(new CustomEvent('delete-activity-log-item', {
       bubbles: true,
       composed: true,
-      detail: Array.from(this.data.activityIds.values())
+      detail: Array.from(this.data.activityIds.values()),
     }));
   }
 
@@ -97,6 +99,12 @@ class ActivityLogHistoryItemElement extends PolymerElement {
    */
   private shouldShowPageUrlCount_(): boolean {
     return this.data.countsByUrl.size > 1;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'activity-log-history-item': ActivityLogHistoryItemElement;
   }
 }
 

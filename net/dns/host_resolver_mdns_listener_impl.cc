@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -73,17 +73,15 @@ void HostResolverMdnsListenerImpl::OnRecordUpdate(
 
   switch (query_type_) {
     case DnsQueryType::UNSPECIFIED:
-    case DnsQueryType::INTEGRITY:
     case DnsQueryType::HTTPS:
-    case DnsQueryType::HTTPS_EXPERIMENTAL:
       NOTREACHED();
       break;
     case DnsQueryType::A:
     case DnsQueryType::AAAA:
-      DCHECK(parsed_entry.addresses());
-      DCHECK_EQ(1u, parsed_entry.addresses().value().size());
+      DCHECK(parsed_entry.ip_endpoints());
+      DCHECK_EQ(1u, parsed_entry.ip_endpoints()->size());
       delegate_->OnAddressResult(ConvertUpdateType(update), query_type_,
-                                 parsed_entry.addresses().value().front());
+                                 parsed_entry.ip_endpoints()->front());
       break;
     case DnsQueryType::TXT:
       DCHECK(parsed_entry.text_records());

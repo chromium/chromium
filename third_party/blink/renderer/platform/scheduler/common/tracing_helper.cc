@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,26 +10,6 @@ namespace blink {
 namespace scheduler {
 
 using perfetto::protos::pbzero::RendererMainThreadTaskExecution;
-
-constexpr const char TracingCategoryName::kTopLevel[];
-constexpr const char TracingCategoryName::kDefault[];
-constexpr const char TracingCategoryName::kInfo[];
-constexpr const char TracingCategoryName::kDebug[];
-
-namespace internal {
-
-void ValidateTracingCategory(const char* category) {
-  // Category must be a constant defined in tracing helper because there's no
-  // portable way to use string literals as a template argument.
-  // Unfortunately, static_assert won't work with templates either because
-  // inequality (!=) of linker symbols is undefined in compile-time.
-  DCHECK(category == TracingCategoryName::kTopLevel ||
-         category == TracingCategoryName::kDefault ||
-         category == TracingCategoryName::kInfo ||
-         category == TracingCategoryName::kDebug);
-}
-
-}  // namespace internal
 
 double TimeDeltaToMilliseconds(const base::TimeDelta& value) {
   return value.InMillisecondsF();
@@ -55,6 +35,9 @@ RendererMainThreadTaskExecution::TaskType TaskTypeToProto(TaskType task_type) {
       return RendererMainThreadTaskExecution::TASK_TYPE_NETWORKING;
     case TaskType::kNetworkingControl:
       return RendererMainThreadTaskExecution::TASK_TYPE_NETWORKING_CONTROL;
+    case TaskType::kLowPriorityScriptExecution:
+      return RendererMainThreadTaskExecution::
+          TASK_TYPE_LOW_PRIORITY_SCRIPT_EXECUTION;
     case TaskType::kHistoryTraversal:
       return RendererMainThreadTaskExecution::TASK_TYPE_HISTORY_TRAVERSAL;
     case TaskType::kEmbed:
@@ -146,9 +129,6 @@ RendererMainThreadTaskExecution::TaskType TaskTypeToProto(TaskType task_type) {
     case TaskType::kCompositorThreadTaskQueueInput:
       return RendererMainThreadTaskExecution::
           TASK_TYPE_COMPOSITOR_THREAD_TASK_QUEUE_INPUT;
-    case TaskType::kNetworkingWithURLLoaderAnnotation:
-      return RendererMainThreadTaskExecution::
-          TASK_TYPE_NETWORKING_WITH_URL_LOADER_ANNOTATION;
     case TaskType::kWorkerAnimation:
       return RendererMainThreadTaskExecution::TASK_TYPE_WORKER_ANIMATION;
     case TaskType::kInternalTranslation:
@@ -176,6 +156,9 @@ RendererMainThreadTaskExecution::TaskType TaskTypeToProto(TaskType task_type) {
     case TaskType::kInternalNavigationAssociatedUnfreezable:
       return RendererMainThreadTaskExecution::
           TASK_TYPE_INTERNAL_NAVIGATION_ASSOCIATED_UNFREEZABLE;
+    case TaskType::kInternalNavigationCancellation:
+      return RendererMainThreadTaskExecution::
+          TASK_TYPE_INTERNAL_NAVIGATION_CANCELLATION;
     case TaskType::kInternalContinueScriptLoading:
       return RendererMainThreadTaskExecution::
           TASK_TYPE_INTERNAL_CONTINUE_SCRIPT_LOADING;

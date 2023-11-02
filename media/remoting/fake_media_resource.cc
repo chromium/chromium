@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -63,8 +63,8 @@ DemuxerStream::Type FakeDemuxerStream::type() const {
   return type_;
 }
 
-DemuxerStream::Liveness FakeDemuxerStream::liveness() const {
-  return LIVENESS_UNKNOWN;
+StreamLiveness FakeDemuxerStream::liveness() const {
+  return StreamLiveness::kUnknown;
 }
 
 bool FakeDemuxerStream::SupportsConfigChanges() {

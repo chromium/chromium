@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -60,13 +60,6 @@ base::Value* OncGetEap(base::Value* network) {
   return const_cast<base::Value*>(OncGetEap(*network));
 }
 
-bool OncEapHasClientCertType(const base::Value& network) {
-  const base::Value* eap = OncGetEap(network);
-  const std::string* client_cert_type =
-      eap->FindStringKey(onc::client_cert::kClientCertType);
-  return client_cert_type != nullptr;
-}
-
 base::Value ManagedOncCreatePasswordDict(const base::Value& network,
                                          const std::string& password) {
   std::string source = onc::kAugmentationDevicePolicy;
@@ -86,6 +79,12 @@ base::Value ManagedOncCreatePasswordDict(const base::Value& network,
 
 std::string GetStringValue(const base::Value& network, const std::string& key) {
   const std::string* value = network.FindStringKey(key);
+  DCHECK(value);
+  return *value;
+}
+
+bool GetBoolValue(const base::Value& network, const std::string& key) {
+  absl::optional<bool> value = network.FindBoolKey(key);
   DCHECK(value);
   return *value;
 }
@@ -233,6 +232,11 @@ std::string OncGetEapInner(const base::Value& network) {
 std::string OncGetEapOuter(const base::Value& network) {
   const base::Value* eap = OncGetEap(network);
   return GetStringValue(*eap, onc::eap::kOuter);
+}
+
+bool OncGetEapSaveCredentials(const base::Value& network) {
+  const base::Value* eap = OncGetEap(network);
+  return GetBoolValue(*eap, onc::eap::kSaveCredentials);
 }
 
 std::string OncGetEapPassword(const base::Value& network) {

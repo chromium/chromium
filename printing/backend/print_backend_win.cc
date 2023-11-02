@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <wrl/client.h>
 
 #include <memory>
+#include <utility>
 
 #include "base/logging.h"
 #include "base/memory/free_deleter.h"
@@ -19,6 +20,8 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "base/types/expected.h"
+#include "base/values.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_hglobal.h"
 #include "base/win/windows_types.h"
@@ -30,6 +33,22 @@
 namespace printing {
 
 namespace {
+
+// Wrapper class to close provider automatically.
+class ScopedProvider {
+ public:
+  explicit ScopedProvider(HPTPROVIDER provider) : provider_(provider) {}
+
+  // Once the object is destroyed, it automatically closes the provider by
+  // calling the XPSModule API.
+  ~ScopedProvider() {
+    if (provider_)
+      XPSModule::CloseProvider(provider_);
+  }
+
+ private:
+  HPTPROVIDER provider_;
+};
 
 // `GetResultCodeFromSystemErrorCode()` is only ever invoked when something has
 // gone wrong while interacting with the OS printing system.  If the cause of
@@ -182,10 +201,10 @@ void LoadDpi(const wchar_t* printer,
 
 class PrintBackendWin : public PrintBackend {
  public:
-  explicit PrintBackendWin(const std::string& locale) : PrintBackend(locale) {}
+  PrintBackendWin() = default;
 
   // PrintBackend implementation.
-  mojom::ResultCode EnumeratePrinters(PrinterList* printer_list) override;
+  mojom::ResultCode EnumeratePrinters(PrinterList& printer_list) override;
   mojom::ResultCode GetDefaultPrinterName(
       std::string& default_printer) override;
   mojom::ResultCode GetPrinterBasicInfo(
@@ -205,29 +224,32 @@ class PrintBackendWin : public PrintBackend {
 };
 
 mojom::ResultCode PrintBackendWin::EnumeratePrinters(
-    PrinterList* printer_list) {
-  DCHECK(printer_list);
+    PrinterList& printer_list) {
+  DCHECK(printer_list.empty());
   DWORD bytes_needed = 0;
   DWORD count_returned = 0;
+  constexpr DWORD kFlags = PRINTER_ENUM_LOCAL | PRINTER_ENUM_CONNECTIONS;
   const DWORD kLevel = 4;
-  EnumPrinters(PRINTER_ENUM_LOCAL | PRINTER_ENUM_CONNECTIONS, nullptr, kLevel,
-               nullptr, 0, &bytes_needed, &count_returned);
-  if (!bytes_needed) {
-    // No bytes needed could mean the operation failed or that there are simply
-    // no printer drivers installed.  Rely upon system error code to
-    // distinguish between these.
-    logging::SystemErrorCode code = logging::GetLastSystemErrorCode();
-    if (code != ERROR_SUCCESS) {
-      LOG(ERROR) << "Error enumerating printers: "
-                 << logging::SystemErrorCodeToString(code);
-    }
+  EnumPrinters(kFlags, nullptr, kLevel, nullptr, 0, &bytes_needed,
+               &count_returned);
+  logging::SystemErrorCode code = logging::GetLastSystemErrorCode();
+  if (code == ERROR_SUCCESS) {
+    // If EnumPrinters() succeeded, that means there are no printer drivers
+    // installed because 0 bytes was sufficient.
+    DCHECK_EQ(bytes_needed, 0u);
+    VLOG(1) << "Found no printers";
+    return mojom::ResultCode::kSuccess;
+  }
+
+  if (code != ERROR_INSUFFICIENT_BUFFER) {
+    LOG(ERROR) << "Error enumerating printers: "
+               << logging::SystemErrorCodeToString(code);
     return GetResultCodeFromSystemErrorCode(code);
   }
 
   auto printer_info_buffer = std::make_unique<BYTE[]>(bytes_needed);
-  if (!EnumPrinters(PRINTER_ENUM_LOCAL | PRINTER_ENUM_CONNECTIONS, nullptr,
-                    kLevel, printer_info_buffer.get(), bytes_needed,
-                    &bytes_needed, &count_returned)) {
+  if (!EnumPrinters(kFlags, nullptr, kLevel, printer_info_buffer.get(),
+                    bytes_needed, &bytes_needed, &count_returned)) {
     NOTREACHED();
     return GetResultCodeFromSystemErrorCode(logging::GetLastSystemErrorCode());
   }
@@ -245,9 +267,11 @@ mojom::ResultCode PrintBackendWin::EnumeratePrinters(
     if (printer.OpenPrinterWithName(printer_info[index].pPrinterName) &&
         InitBasicPrinterInfo(printer.Get(), &info)) {
       info.is_default = (info.printer_name == default_printer);
-      printer_list->push_back(info);
+      printer_list.push_back(info);
     }
   }
+
+  VLOG(1) << "Found " << count_returned << " printers";
   return mojom::ResultCode::kSuccess;
 }
 
@@ -446,10 +470,60 @@ bool PrintBackendWin::IsValidPrinter(const std::string& printer_name) {
 
 // static
 scoped_refptr<PrintBackend> PrintBackend::CreateInstanceImpl(
-    const base::DictionaryValue* print_backend_settings,
-    const std::string& locale,
-    bool /*for_cloud_print*/) {
-  return base::MakeRefCounted<PrintBackendWin>(locale);
+    const base::Value::Dict* print_backend_settings,
+    const std::string& /*locale*/) {
+  return base::MakeRefCounted<PrintBackendWin>();
+}
+
+base::expected<std::string, mojom::ResultCode>
+PrintBackend::GetXmlPrinterCapabilitiesForXpsDriver(
+    const std::string& printer_name) {
+  ScopedXPSInitializer xps_initializer;
+  CHECK(xps_initializer.initialized());
+
+  if (!IsValidPrinter(printer_name)) {
+    return base::unexpected(
+        GetResultCodeFromSystemErrorCode(logging::GetLastSystemErrorCode()));
+  }
+
+  HPTPROVIDER provider = nullptr;
+  std::wstring wide_printer_name = base::UTF8ToWide(printer_name);
+  HRESULT hr =
+      XPSModule::OpenProvider(wide_printer_name, /*version=*/1, &provider);
+  ScopedProvider scoped_provider(provider);
+  if (FAILED(hr) || !provider) {
+    LOG(ERROR) << "Failed to open provider";
+    return base::unexpected(mojom::ResultCode::kFailed);
+  }
+  Microsoft::WRL::ComPtr<IStream> print_capabilities_stream;
+  hr = CreateStreamOnHGlobal(/*hGlobal=*/nullptr, /*fDeleteOnRelease=*/TRUE,
+                             &print_capabilities_stream);
+  if (FAILED(hr) || !print_capabilities_stream.Get()) {
+    LOG(ERROR) << "Failed to create stream";
+    return base::unexpected(mojom::ResultCode::kFailed);
+  }
+  base::win::ScopedBstr error;
+  hr = XPSModule::GetPrintCapabilities(provider, /*print_ticket=*/nullptr,
+                                       print_capabilities_stream.Get(),
+                                       error.Receive());
+  if (FAILED(hr)) {
+    LOG(ERROR) << "Failed to get print capabilities";
+
+    // Failures from getting print capabilities don't give a system error,
+    // so just indicate general failure.
+    return base::unexpected(mojom::ResultCode::kFailed);
+  }
+  std::string capabilities_xml;
+  hr = StreamOnHGlobalToString(print_capabilities_stream.Get(),
+                               &capabilities_xml);
+
+  if (FAILED(hr)) {
+    LOG(ERROR) << "Failed to convert stream to string";
+    return base::unexpected(mojom::ResultCode::kFailed);
+  }
+  DVLOG(2) << "Printer capabilities info: Name = " << printer_name
+           << ", capabilities = " << capabilities_xml;
+  return capabilities_xml;
 }
 
 }  // namespace printing

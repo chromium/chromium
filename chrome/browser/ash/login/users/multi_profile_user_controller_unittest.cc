@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,16 +9,15 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/multi_profile_user_controller_delegate.h"
-#include "chrome/browser/ash/policy/networking/policy_cert_service.h"
-#include "chrome/browser/ash/policy/networking/policy_cert_service_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/policy/networking/policy_cert_service.h"
+#include "chrome/browser/policy/networking/policy_cert_service_factory.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
@@ -122,7 +121,7 @@ class MultiProfileUserControllerTest
       : fake_user_manager_(new FakeChromeUserManager),
         user_manager_enabler_(base::WrapUnique(fake_user_manager_)),
         user_not_allowed_count_(0) {
-    for (size_t i = 0; i < base::size(kUsers); ++i) {
+    for (size_t i = 0; i < std::size(kUsers); ++i) {
       test_users_.push_back(AccountId::FromUserEmail(kUsers[i]));
     }
   }
@@ -141,19 +140,14 @@ class MultiProfileUserControllerTest
     controller_ = std::make_unique<MultiProfileUserController>(
         this, TestingBrowserProcess::GetGlobal()->local_state());
 
-    for (size_t i = 0; i < test_users_.size(); ++i) {
-      const AccountId account_id(test_users_[i]);
-      const user_manager::User* user =
-          fake_user_manager_->AddUser(test_users_[i]);
+    for (const auto& account_id : test_users_) {
+      fake_user_manager_->AddUser(account_id);
 
       // Note that user profiles are created after user login in reality.
       TestingProfile* user_profile =
           profile_manager_->CreateTestingProfile(account_id.GetUserEmail());
       user_profile->set_profile_name(account_id.GetUserEmail());
       user_profiles_.push_back(user_profile);
-
-      ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
-                                                              user_profile);
     }
   }
 
@@ -230,7 +224,7 @@ TEST_F(MultiProfileUserControllerTest, AllAllowedBeforeLogin) {
       MultiProfileUserController::kBehaviorPrimaryOnly,
       MultiProfileUserController::kBehaviorNotAllowed,
   };
-  for (size_t i = 0; i < base::size(kTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kTestCases); ++i) {
     SetCachedBehavior(0, kTestCases[i]);
     MultiProfileUserController::UserAllowedInSessionReason reason;
     EXPECT_TRUE(controller()->IsUserAllowedInSession(
@@ -261,7 +255,7 @@ TEST_F(MultiProfileUserControllerTest, CachedBehaviorUpdate) {
       MultiProfileUserController::kBehaviorNotAllowed,
       MultiProfileUserController::kBehaviorUnrestricted,
   };
-  for (size_t i = 0; i < base::size(kTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kTestCases); ++i) {
     SetPrefBehavior(0, kTestCases[i]);
     EXPECT_EQ(kTestCases[i], GetCachedBehavior(0));
   }
@@ -293,7 +287,7 @@ TEST_F(MultiProfileUserControllerTest, CompromisedCacheFixedOnLogin) {
 TEST_F(MultiProfileUserControllerTest, IsSecondaryAllowed) {
   LoginUser(0);
 
-  for (size_t i = 0; i < base::size(kBehaviorTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kBehaviorTestCases); ++i) {
     SetPrefBehavior(0, kBehaviorTestCases[i].primary);
     SetCachedBehavior(1, kBehaviorTestCases[i].secondary);
     EXPECT_EQ(kBehaviorTestCases[i].expected_primary_policy,
@@ -312,7 +306,7 @@ TEST_F(MultiProfileUserControllerTest, PrimaryBehaviorChange) {
   LoginUser(0);
   LoginUser(1);
 
-  for (size_t i = 0; i < base::size(kBehaviorTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kBehaviorTestCases); ++i) {
     SetPrefBehavior(0, MultiProfileUserController::kBehaviorUnrestricted);
     SetPrefBehavior(1, MultiProfileUserController::kBehaviorUnrestricted);
     ResetCounts();

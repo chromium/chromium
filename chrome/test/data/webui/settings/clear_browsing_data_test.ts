@@ -1,18 +1,23 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 // clang-format off
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
-import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import { ClearBrowsingDataBrowserProxyImpl, ClearBrowsingDataResult,InstalledApp, SettingsCheckboxElement, SettingsClearBrowsingDataDialogElement, SettingsHistoryDeletionDialogElement, SettingsPasswordsDeletionDialogElement} from 'chrome://settings/lazy_load.js';
-import {CrButtonElement, loadTimeData, Router, routes, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {ClearBrowsingDataBrowserProxyImpl, ClearBrowsingDataResult,InstalledApp, SettingsCheckboxElement, SettingsClearBrowsingDataDialogElement, SettingsHistoryDeletionDialogElement, SettingsPasswordsDeletionDialogElement} from 'chrome://settings/lazy_load.js';
+import {CrButtonElement, loadTimeData, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise, isChildVisible, isVisible, whenAttributeIs} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible, whenAttributeIs} from 'chrome://webui-test/test_util.js';
 
 import {TestClearBrowsingDataBrowserProxy} from './test_clear_browsing_data_browser_proxy.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
+
+// <if expr="not is_chromeos">
+import {Router, routes} from 'chrome://settings/settings.js';
+import {isChildVisible} from 'chrome://webui-test/test_util.js';
+// </if>
 
 // clang-format on
 
@@ -91,7 +96,7 @@ function getClearBrowsingDataPrefs() {
         type: chrome.settingsPrivate.PrefType.NUMBER,
         value: 0,
       },
-    }
+    },
   };
 }
 
@@ -105,7 +110,8 @@ suite('ClearBrowsingDataDesktop', function() {
     ClearBrowsingDataBrowserProxyImpl.setInstance(testBrowserProxy);
     testSyncBrowserProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.setInstance(testSyncBrowserProxy);
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     element = document.createElement('settings-clear-browsing-data-dialog');
     element.set('prefs', getClearBrowsingDataPrefs());
     document.body.appendChild(element);
@@ -128,6 +134,8 @@ suite('ClearBrowsingDataDesktop', function() {
     assertFalse(!!element.shadowRoot!.querySelector(
         '#clearBrowsingDataDialog [slot=footer]'));
 
+    // The footer is never shown on Lacros.
+    // <if expr="not is_chromeos">
     // Syncing: the footer is shown, with the normal sync info.
     webUIListenerCallback('sync-status-changed', {
       signedIn: true,
@@ -176,8 +184,11 @@ suite('ClearBrowsingDataDesktop', function() {
     assertFalse(isChildVisible(element, '#sync-paused-info'));
     assertFalse(isChildVisible(element, '#sync-passphrase-error-info'));
     assertTrue(isChildVisible(element, '#sync-other-error-info'));
+    // </if>
   });
 
+  // The footer is never shown on Lacros.
+  // <if expr="not is_chromeos">
   test('ClearBrowsingDataPauseSyncDesktop', function() {
     webUIListenerCallback('sync-status-changed', {
       signedIn: true,
@@ -230,6 +241,7 @@ suite('ClearBrowsingDataDesktop', function() {
     passphraseLink!.click();
     assertEquals(routes.SYNC, Router.getInstance().getCurrentRoute());
   });
+  // </if>
 
   test('ClearBrowsingDataSearchLabelVisibility', function() {
     for (const signedIn of [false, true]) {
@@ -282,7 +294,8 @@ suite('ClearBrowsingDataAllPlatforms', function() {
   setup(function() {
     testBrowserProxy = new TestClearBrowsingDataBrowserProxy();
     ClearBrowsingDataBrowserProxyImpl.setInstance(testBrowserProxy);
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     element = document.createElement('settings-clear-browsing-data-dialog');
     element.set('prefs', getClearBrowsingDataPrefs());
     document.body.appendChild(element);
@@ -593,7 +606,7 @@ suite('ClearBrowsingDataAllPlatforms', function() {
   });
 
   test('history rows are hidden for supervised users', function() {
-    assertFalse(loadTimeData.getBoolean('isSupervised'));
+    assertFalse(loadTimeData.getBoolean('isChildAccount'));
     assertFalse(element.shadowRoot!
                     .querySelector<SettingsCheckboxElement>(
                         '#browsingCheckbox')!.hidden);
@@ -606,7 +619,7 @@ suite('ClearBrowsingDataAllPlatforms', function() {
 
     element.remove();
     testBrowserProxy.reset();
-    loadTimeData.overrideValues({isSupervised: true});
+    loadTimeData.overrideValues({isChildAccount: true});
 
     element = document.createElement('settings-clear-browsing-data-dialog');
     document.body.appendChild(element);
@@ -625,7 +638,7 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     });
   });
 
-  // <if expr="chromeos">
+  // <if expr="is_chromeos">
   // On ChromeOS the footer is never shown.
   test('ClearBrowsingDataSyncAccountInfo', function() {
     assertTrue(element.$.clearBrowsingDataDialog.open);
@@ -701,7 +714,8 @@ suite('InstalledApps', function() {
     testBrowserProxy = new TestClearBrowsingDataBrowserProxy();
     testBrowserProxy.setInstalledApps(installedApps);
     ClearBrowsingDataBrowserProxyImpl.setInstance(testBrowserProxy);
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     element = document.createElement('settings-clear-browsing-data-dialog');
     element.set('prefs', getClearBrowsingDataPrefs());
     document.body.appendChild(element);

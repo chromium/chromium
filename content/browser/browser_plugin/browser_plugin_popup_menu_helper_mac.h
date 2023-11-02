@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,18 +12,18 @@
 namespace content {
 
 class RenderFrameHost;
-class RenderFrameHostImpl;
 
 // This class is similiar to PopupMenuHelperMac but positions the popup relative
 // to the embedder, and issues a reply to the guest.
+// TODO(533069): This class no longer appears to serve a purpose. The base
+// PopupMenuHelper already handles the coordinate transformations correctly.
 class BrowserPluginPopupMenuHelper : public PopupMenuHelper,
                                      public PopupMenuHelper::Delegate {
  public:
   // Creates a BrowserPluginPopupMenuHelper that positions popups relative to
-  // |embedder_rfh| and will notify |guest_rfh| when a user selects or cancels
-  // the popup.
+  // the embedder of `guest_rfh` and will notify `guest_rfh` when a user
+  // selects or cancels the popup.
   BrowserPluginPopupMenuHelper(
-      RenderFrameHostImpl* embedder_rfh,
       RenderFrameHost* guest_rfh,
       mojo::PendingRemote<blink::mojom::PopupMenuClient> popup_client);
 
@@ -32,13 +32,8 @@ class BrowserPluginPopupMenuHelper : public PopupMenuHelper,
       delete;
 
  private:
-  // PopupMenuHelper:
-  RenderWidgetHostViewMac* GetRenderWidgetHostView() const override;
-
   // PopupMenuHelper:Delegate:
   void OnMenuClosed() override;
-
-  RenderFrameHostImpl* embedder_rfh_;
 };
 
 }  // namespace content

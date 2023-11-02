@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,16 +9,18 @@ enum URLPatternComponent { "protocol", "username", "password", "hostname",
 
 // https://wicg.github.io/urlpattern/
 [
-  Exposed=(Window,Worker),
-  RuntimeEnabled=URLPattern
+  Exposed=(Window,Worker)
 ] interface URLPattern {
   [RaisesException, Measure]
-  constructor(optional URLPatternInput input = {}, optional USVString baseURL);
+  constructor(URLPatternInput input, USVString baseURL, optional URLPatternOptions options = {});
 
   [RaisesException, Measure]
+  constructor(optional URLPatternInput input = {}, optional URLPatternOptions options = {});
+
+  [RaisesException, CallWith=ScriptState, Measure]
   boolean test(optional URLPatternInput input = {}, optional USVString baseURL);
 
-  [RaisesException, Measure]
+  [RaisesException, CallWith=ScriptState, Measure]
   URLPatternResult? exec(optional URLPatternInput input = {}, optional USVString baseURL);
 
   readonly attribute USVString protocol;

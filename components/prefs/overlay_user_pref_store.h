@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,10 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
+#include "base/strings/string_piece.h"
+#include "base/values.h"
 #include "components/prefs/persistent_pref_store.h"
+#include "components/prefs/pref_name_set.h"
 #include "components/prefs/pref_value_map.h"
 #include "components/prefs/prefs_export.h"
 
@@ -42,17 +45,17 @@ class COMPONENTS_PREFS_EXPORT OverlayUserPrefStore
   void RemoveObserver(PrefStore::Observer* observer) override;
   bool HasObservers() const override;
   bool IsInitializationComplete() const override;
-  bool GetValue(const std::string& key,
+  bool GetValue(base::StringPiece key,
                 const base::Value** result) const override;
-  std::unique_ptr<base::DictionaryValue> GetValues() const override;
+  base::Value::Dict GetValues() const override;
 
   // Methods of PersistentPrefStore.
   bool GetMutableValue(const std::string& key, base::Value** result) override;
   void SetValue(const std::string& key,
-                std::unique_ptr<base::Value> value,
+                base::Value value,
                 uint32_t flags) override;
   void SetValueSilently(const std::string& key,
-                        std::unique_ptr<base::Value> value,
+                        base::Value value,
                         uint32_t flags) override;
   void RemoveValue(const std::string& key, uint32_t flags) override;
   void RemoveValuesByPrefixSilently(const std::string& prefix) override;
@@ -76,7 +79,6 @@ class COMPONENTS_PREFS_EXPORT OverlayUserPrefStore
   ~OverlayUserPrefStore() override;
 
  private:
-  typedef std::set<std::string> NamesSet;
   class ObserverAdapter;
 
   void OnPrefValueChanged(bool ephemeral, const std::string& key);
@@ -84,15 +86,15 @@ class COMPONENTS_PREFS_EXPORT OverlayUserPrefStore
 
   // Returns true if |key| corresponds to a preference that shall be stored in
   // persistent PrefStore.
-  bool ShallBeStoredInPersistent(const std::string& key) const;
+  bool ShallBeStoredInPersistent(base::StringPiece key) const;
 
   base::ObserverList<PrefStore::Observer, true>::Unchecked observers_;
   std::unique_ptr<ObserverAdapter> ephemeral_pref_store_observer_;
   std::unique_ptr<ObserverAdapter> persistent_pref_store_observer_;
   scoped_refptr<PersistentPrefStore> ephemeral_user_pref_store_;
   scoped_refptr<PersistentPrefStore> persistent_user_pref_store_;
-  NamesSet persistent_names_set_;
-  NamesSet written_ephemeral_names_;
+  PrefNameSet persistent_names_set_;
+  PrefNameSet written_ephemeral_names_;
 };
 
 #endif  // COMPONENTS_PREFS_OVERLAY_USER_PREF_STORE_H_

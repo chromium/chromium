@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,14 +34,14 @@ namespace {
 // This is provided in feature_util because for some reason features are prone
 // to mysterious crashes in named map lookups. For example see crbug.com/365192
 // and crbug.com/461915.
-#define CRASH_WITH_MINIDUMP(message)                                  \
-  {                                                                   \
-    std::string message_copy(message);                                \
-    char minidump[BUFSIZ];                                            \
-    base::debug::Alias(&minidump);                                    \
-    base::snprintf(minidump, base::size(minidump), "e::%s:%d:\"%s\"", \
-                   __FILE__, __LINE__, message_copy.c_str());         \
-    LOG(FATAL) << message_copy;                                       \
+#define CRASH_WITH_MINIDUMP(message)                                           \
+  {                                                                            \
+    std::string message_copy(message);                                         \
+    char minidump[BUFSIZ];                                                     \
+    base::debug::Alias(&minidump);                                             \
+    base::snprintf(minidump, std::size(minidump), "e::%s:%d:\"%s\"", __FILE__, \
+                   __LINE__, message_copy.c_str());                            \
+    LOG(FATAL) << message_copy;                                                \
   }
 
 class FeatureProviderStatic {
@@ -153,10 +153,7 @@ const Feature* FeatureProvider::GetBehaviorFeature(const std::string& name) {
 
 const Feature* FeatureProvider::GetFeature(const std::string& name) const {
   auto iter = features_.find(name);
-  if (iter != features_.end())
-    return iter->second.get();
-  else
-    return nullptr;
+  return iter != features_.end() ? iter->second.get() : nullptr;
 }
 
 const Feature* FeatureProvider::GetParent(const Feature& feature) const {

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,15 +6,17 @@
 
 #include <utility>
 
-#include "ash/components/settings/cros_settings_names.h"
 #include "base/bind.h"
+#include "base/no_destructor.h"
+#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
-#include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/cleanup_manager.h"
-#include "chrome/browser/chromeos/extensions/login_screen/login/login_api.h"
+#include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/cleanup_manager_ash.h"
+#include "chrome/browser/chromeos/extensions/login_screen/login/errors.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/login_api_lock_handler.h"
 #include "chrome/browser/ui/ash/session_controller_client_impl.h"
-#include "chromeos/login/auth/user_context.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/session_manager_types.h"
 #include "components/user_manager/user.h"
@@ -66,10 +68,10 @@ SharedSessionHandler::~SharedSessionHandler() = default;
 
 absl::optional<std::string>
 SharedSessionHandler::LaunchSharedManagedGuestSession(
-    const std::string& extension_id,
     const std::string& password) {
   if (!IsDeviceRestrictedManagedGuestSessionEnabled()) {
-    return extensions::login_api_errors::kNoPermissionToUseApi;
+    return extensions::login_api_errors::
+        kDeviceRestrictedManagedGuestSessionNotEnabled;
   }
 
   if (session_manager::SessionManager::Get()->session_state() !=
@@ -95,10 +97,10 @@ SharedSessionHandler::LaunchSharedManagedGuestSession(
 
   session_secret_ = GenerateRandomString(kSessionSecretLength);
 
-  chromeos::UserContext context(user_manager::USER_TYPE_PUBLIC_ACCOUNT,
-                                user->GetAccountId());
-  context.SetKey(chromeos::Key(session_secret_));
-  context.SetManagedGuestSessionLaunchExtensionId(extension_id);
+  ash::UserContext context(user_manager::USER_TYPE_PUBLIC_ACCOUNT,
+                           user->GetAccountId());
+  context.SetKey(ash::Key(session_secret_));
+  context.SetCanLockManagedGuestSession(true);
   existing_user_controller->Login(context, chromeos::SigninSpecifics());
 
   return absl::nullopt;
@@ -108,8 +110,8 @@ void SharedSessionHandler::EnterSharedSession(
     const std::string& password,
     CallbackWithOptionalError callback) {
   if (!IsDeviceRestrictedManagedGuestSessionEnabled()) {
-    std::move(callback).Run(
-        extensions::login_api_errors::kNoPermissionToUseApi);
+    std::move(callback).Run(extensions::login_api_errors::
+                                kDeviceRestrictedManagedGuestSessionNotEnabled);
     return;
   }
 
@@ -132,7 +134,7 @@ void SharedSessionHandler::EnterSharedSession(
 
   CHECK(user_secret_salt_.empty());
 
-  if (chromeos::CleanupManager::Get()->is_cleanup_in_progress()) {
+  if (chromeos::CleanupManagerAsh::Get()->is_cleanup_in_progress()) {
     std::move(callback).Run(extensions::login_api_errors::kCleanupInProgress);
     return;
   }
@@ -175,7 +177,7 @@ void SharedSessionHandler::UnlockSharedSession(
 
   CHECK(!user_secret_salt_.empty());
 
-  if (chromeos::CleanupManager::Get()->is_cleanup_in_progress()) {
+  if (chromeos::CleanupManagerAsh::Get()->is_cleanup_in_progress()) {
     std::move(callback).Run(extensions::login_api_errors::kCleanupInProgress);
     return;
   }
@@ -223,7 +225,8 @@ void SharedSessionHandler::EndSharedSession(
     return;
   }
 
-  chromeos::CleanupManager* cleanup_manager = chromeos::CleanupManager::Get();
+  chromeos::CleanupManagerAsh* cleanup_manager =
+      chromeos::CleanupManagerAsh::Get();
   if (cleanup_manager->is_cleanup_in_progress()) {
     std::move(callback).Run(extensions::login_api_errors::kCleanupInProgress);
     return;
@@ -286,9 +289,9 @@ void SharedSessionHandler::UnlockWithSessionSecret(
   const user_manager::User* active_user =
       user_manager::UserManager::Get()->GetActiveUser();
 
-  UserContext user_context(user_manager::USER_TYPE_PUBLIC_ACCOUNT,
-                           active_user->GetAccountId());
-  user_context.SetKey(chromeos::Key(session_secret_));
+  ash::UserContext user_context(user_manager::USER_TYPE_PUBLIC_ACCOUNT,
+                                active_user->GetAccountId());
+  user_context.SetKey(ash::Key(session_secret_));
   LoginApiLockHandler::Get()->Authenticate(user_context, std::move(callback));
 }
 
@@ -317,8 +320,9 @@ void SharedSessionHandler::OnAuthenticateDone(
   std::move(callback).Run(absl::nullopt);
 }
 
-void SharedSessionHandler::OnCleanupDone(CallbackWithOptionalError callback,
-                                         absl::optional<std::string> errors) {
+void SharedSessionHandler::OnCleanupDone(
+    CallbackWithOptionalError callback,
+    const absl::optional<std::string>& errors) {
   if (errors) {
     std::move(callback).Run(*errors);
     return;

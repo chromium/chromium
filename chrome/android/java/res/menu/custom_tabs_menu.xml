@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2015 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2015 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
         <item android:id="@+id/icon_row_menu_id"
@@ -25,6 +27,9 @@
                 android:icon="@drawable/btn_reload_stop"/>
             </menu>
         </item>
+        <item android:id="@+id/divider_line_id"
+            android:title="@null"
+            android:orderInCategory="2"/>
         <item android:id="@+id/share_row_menu_id"
             android:title="@null"
             android:orderInCategory="2">

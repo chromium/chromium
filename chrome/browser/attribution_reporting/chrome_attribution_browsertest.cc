@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,6 +31,7 @@ class ChromeAttributionBrowserTest : public InProcessBrowserTest {
     // Sets up the blink runtime feature for ConversionMeasurement.
     command_line->AppendSwitch(
         switches::kEnableExperimentalWebPlatformFeatures);
+    command_line->AppendSwitch(switches::kEnableBlinkTestFeatures);
   }
 
   void SetUpOnMainThread() override {
@@ -47,100 +48,10 @@ class ChromeAttributionBrowserTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(ChromeAttributionBrowserTest,
-                       ImpressionClicked_FeatureRecorded) {
-  base::HistogramTester histogram_tester;
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-
-  page_load_metrics::PageLoadMetricsTestWaiter waiter(web_contents);
-  waiter.AddWebFeatureExpectation(blink::mojom::WebFeature::kConversionAPIAll);
-
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
-      server_.GetURL(
-          "a.test",
-          "/attribution_reporting/page_with_impression_creator.html")));
-
-  // Create an anchor tag with impression attributes which opens a link in a
-  // new window.
-  GURL link_url = server_.GetURL(
-      "b.test", "/attribution_reporting/page_with_conversion_redirect.html");
-  EXPECT_TRUE(ExecJs(web_contents, content::JsReplace(R"(
-    createImpressionTag({id: 'link',
-                        url: $1,
-                        data: '1',
-                        destination: 'https://b.test',
-                        target: '_blank'});)",
-                                                      link_url)));
-
-  // Click the impression, and wait for the new window to open. Then switch to
-  // the tab with the impression.
-  content::WebContentsAddedObserver window_observer;
-  EXPECT_TRUE(ExecJs(web_contents, "simulateClick('link');"));
-  content::WebContents* new_contents = window_observer.GetWebContents();
-  WaitForLoadStop(new_contents);
-  browser()->tab_strip_model()->ActivateTabAt(0);
-  waiter.Wait();
-
-  // Navigate to a new page to flush metrics.
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
-
-  histogram_tester.ExpectBucketCount(
-      "Blink.UseCounter.Features",
-      blink::mojom::WebFeature::kImpressionRegistration, 1);
-  histogram_tester.ExpectBucketCount(
-      "Blink.UseCounter.Features", blink::mojom::WebFeature::kConversionAPIAll,
-      1);
-}
-
-IN_PROC_BROWSER_TEST_F(ChromeAttributionBrowserTest,
-                       ConversionPing_FeatureRecorded) {
-  // The test assumes the previous page gets deleted after navigation,
-  // triggering histogram recording. Disable back/forward cache to ensure that
-  // it doesn't get preserved in the cache.
-  content::DisableBackForwardCacheForTesting(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
-  base::HistogramTester histogram_tester;
-
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
-      server_.GetURL(
-          "a.test",
-          "/attribution_reporting/page_with_conversion_redirect.html")));
-
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-
-  // Register a conversion with the original page as the reporting origin.
-  EXPECT_TRUE(ExecJs(web_contents, "registerConversion({data: 7})"));
-
-  // Wait for the conversion redirect to be intercepted. This is indicated by
-  // window title changing when the img element for the conversion request fires
-  // an onerror event.
-  const std::u16string kConvertTitle = u"converted";
-  content::TitleWatcher watcher(web_contents, kConvertTitle);
-  EXPECT_EQ(kConvertTitle, watcher.WaitAndGetTitle());
-
-  // Navigate to a new page to flush metrics.
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
-
-  histogram_tester.ExpectBucketCount(
-      "Blink.UseCounter.Features",
-      blink::mojom::WebFeature::kConversionRegistration, 1);
-  histogram_tester.ExpectBucketCount(
-      "Blink.UseCounter.Features", blink::mojom::WebFeature::kConversionAPIAll,
-      1);
-}
-
-IN_PROC_BROWSER_TEST_F(ChromeAttributionBrowserTest,
                        WindowOpenWithOnlyAttributionFeatures_LinkOpenedInTab) {
   base::HistogramTester histogram_tester;
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  page_load_metrics::PageLoadMetricsTestWaiter waiter(web_contents);
-  waiter.AddWebFeatureExpectation(
-    blink::mojom::WebFeature::kImpressionRegistration);
 
   EXPECT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
@@ -151,21 +62,18 @@ IN_PROC_BROWSER_TEST_F(ChromeAttributionBrowserTest,
   // Create an observer to catch the opened WebContents.
   content::WebContentsAddedObserver window_observer;
 
+  GURL register_url = server_.GetURL(
+      "a.test", "/attribution_reporting/register_source_headers.html");
+
   GURL link_url = server_.GetURL(
-      "b.test", "/attribution_reporting/page_with_conversion_redirect.html");
+      "d.test", "/attribution_reporting/page_with_conversion_redirect.html");
   // Navigate the page using window.open and set an attribution source.
   EXPECT_TRUE(ExecJs(web_contents, content::JsReplace(R"(
-    window.open($1, "_blank",
-    "attributionsourceeventid=1,attributiondestination=https://b.test,\
-    attributionreportto=https://report.com,attributionexpiry=1000,\
-    attributionsourcepriority=10");)",
-                                                      link_url)));
+    window.open($1, "_blank", "attributionsrc="+$2);)",
+                                                      link_url, register_url)));
 
   content::WebContents* new_contents = window_observer.GetWebContents();
   WaitForLoadStop(new_contents);
-
-  // Verify that the impression registration is observed.
-  waiter.Wait();
 
   // Ensure the window was opened in a new tab. If the window is in a new popup
   // the web contents would not belong to the tab strip.

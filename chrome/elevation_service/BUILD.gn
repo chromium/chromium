@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -59,14 +59,23 @@ executable("elevation_service") {
   ]
 }
 
+source_set("public_headers") {
+  sources = [ "elevator.h" ]
+
+  deps = [ "//base" ]
+
+  public_deps = [ ":elevation_service_idl" ]
+}
+
 source_set("lib") {
   visibility = [ ":*" ]
 
   sources = [
+    "caller_validation.cc",
+    "caller_validation.h",
     "elevated_recovery_impl.cc",
     "elevated_recovery_impl.h",
     "elevator.cc",
-    "elevator.h",
     "service_main.cc",
     "service_main.h",
   ]
@@ -76,11 +85,17 @@ source_set("lib") {
   configs += [ ":winver" ]
 
   deps = [
-    ":elevation_service_idl",
     "//base",
     "//chrome/install_static:install_static_util",
     "//components/crx_file:crx_file",
     "//third_party/zlib/google:zip",
+  ]
+
+  public_deps = [ ":public_headers" ]
+
+  libs = [
+    "crypt32.lib",
+    "rpcrt4.lib",
   ]
 }
 
@@ -102,7 +117,9 @@ test("elevation_service_unittests") {
   use_xvfb = use_xvfb_in_this_config
 
   sources = [
+    "caller_validation_unittest.cc",
     "elevated_recovery_unittest.cc",
+    "elevator_unittest.cc",
     "run_all_unittests.cc",
     "scoped_mock_context.cc",
     "scoped_mock_context.h",

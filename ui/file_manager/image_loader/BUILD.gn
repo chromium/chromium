@@ -1,24 +1,27 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//chrome/browser/resources/tools/optimize_webui.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//third_party/closure_compiler/js_unit_tests.gni")
-import("//ui/file_manager/base/gn/js_test_gen_html.gni")
+import("//ui/file_manager/base/gn/js_test_type_check.gni")
 
 js_type_check("closure_compile_jsmodules") {
   closure_flags = default_closure_args + [
+                    "language_in=ECMASCRIPT_2020",
                     "jscomp_error=strictCheckTypes",
                     "js_module_root=gen/ui/file_manager/",
-                    "js_module_root=../../ui/file_manager/",
-                    "browser_resolver_prefix_replacements=\"chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/=./file_manager/\"",
+                    "js_module_root=" +
+                        rebase_path("//ui/file_manager/", root_build_dir),
+                    "browser_resolver_prefix_replacements=\"chrome://file-manager/=./file_manager/\"",
                   ]
   deps = [
-    ":background.m",
+    ":background",
     ":cache",
     ":image_loader_client",
     ":image_loader_util",
+    ":image_orientation",
     ":image_request_task",
     ":load_image_request",
     ":piex_loader",
@@ -26,13 +29,13 @@ js_type_check("closure_compile_jsmodules") {
   ]
 }
 
-js_library("background.m") {
+js_library("background") {
 }
 
 js_library("cache") {
 }
 
-js_unittest("cache_unittest.m") {
+js_unittest("cache_unittest") {
   deps = [
     ":load_image_request",
     "//chrome/test/data/webui:chai_assert",
@@ -41,17 +44,8 @@ js_unittest("cache_unittest.m") {
 
 # TODO(b/199451464): Remove this and dependencies.
 copy("copy_from_filesapp") {
-  sources = [
-    "../file_manager/common/js/lru_cache.js",
-    "../file_manager/foreground/js/metadata/image_orientation.js",
-  ]
+  sources = [ "../file_manager/common/js/lru_cache.js" ]
   outputs = [ "$target_gen_dir/{{source_file_part}}" ]
-}
-
-js_library("image_orientation") {
-  sources =
-      [ "$root_gen_dir/ui/file_manager/image_loader/image_orientation.js" ]
-  extra_deps = [ ":copy_from_filesapp" ]
 }
 
 js_library("lru_cache") {
@@ -66,11 +60,11 @@ js_library("image_loader") {
     ":image_request_task",
     ":load_image_request",
     ":scheduler",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
   ]
 }
 
-js_unittest("image_loader_unittest.m") {
+js_unittest("image_loader_unittest") {
   deps = [
     ":image_loader_util",
     ":image_orientation",
@@ -83,14 +77,14 @@ js_unittest("image_loader_unittest.m") {
 js_library("image_loader_util") {
   deps = [
     ":load_image_request",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
   ]
 }
 
 js_library("load_image_request") {
   deps = [
     ":image_orientation",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
   ]
 }
 
@@ -106,12 +100,22 @@ js_library("image_loader_client") {
   ]
 }
 
-js_unittest("image_loader_client_unittest.m") {
+js_unittest("image_loader_client_unittest") {
   deps = [
     ":image_loader_client",
     ":load_image_request",
     "//chrome/test/data/webui:chai_assert",
     "//ui/file_manager/file_manager/common/js:test_error_reporting",
+  ]
+}
+
+js_library("image_orientation") {
+}
+
+js_unittest("image_orientation_unittest") {
+  deps = [
+    ":image_orientation",
+    "//chrome/test/data/webui:chai_assert",
   ]
 }
 
@@ -127,7 +131,7 @@ js_library("image_request_task") {
     ":load_image_request",
     ":piex_loader",
     "//ui/file_manager/file_manager/common/js:file_type",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
   ]
   externs_list = [
     "$externs_path/file_manager_private.js",
@@ -141,7 +145,7 @@ js_library("scheduler") {
   deps = [ ":image_request_task" ]
 }
 
-js_unittest("scheduler_unittest.m") {
+js_unittest("scheduler_unittest") {
   deps = [
     ":image_request_task",
     ":scheduler",
@@ -149,20 +153,23 @@ js_unittest("scheduler_unittest.m") {
   ]
 }
 
-js_test_gen_html("js_test_gen_html_modules") {
+js_test_type_check("js_test_type_check") {
   deps = [
-    ":cache_unittest.m",
-    ":image_loader_client_unittest.m",
-    ":image_loader_unittest.m",
-    ":scheduler_unittest.m",
+    ":cache_unittest",
+    ":image_loader_client_unittest",
+    ":image_loader_unittest",
+    ":image_orientation_unittest",
+    ":scheduler_unittest",
   ]
 
   closure_flags = strict_error_checking_closure_args + [
+                    "language_in=ECMASCRIPT_2020",
                     "js_module_root=./gen/ui",
-                    "js_module_root=../../ui/file_manager/",
+                    "js_module_root=" +
+                        rebase_path("//ui/file_manager/", root_build_dir),
                     "js_module_root=./gen/ui/file_manager/",
-                    "browser_resolver_prefix_replacements=\"chrome://test/=./\"",
-                    "browser_resolver_prefix_replacements=\"chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/=./file_manager/\"",
+                    "browser_resolver_prefix_replacements=\"chrome://webui-test/=./\"",
+                    "browser_resolver_prefix_replacements=\"chrome://file-manager/=./file_manager/\"",
                   ]
 }
 
@@ -170,7 +177,7 @@ group("closure_compile") {
   testonly = true
   deps = [
     ":closure_compile_jsmodules",
-    ":js_test_gen_html_modules_type_check_auto",
+    ":js_test_type_check",
   ]
 }
 
@@ -203,19 +210,21 @@ optimize_webui("build") {
   host = "image_loader"
 
   input = preprocess_folder
-  js_module_in_files = [ "background.m.js" ]
+  js_module_in_files = [ "background.js" ]
 
-  js_out_files = [ "background.m.rollup.js" ]
+  js_out_files = [ "background.rollup.js" ]
 
   external_paths = [
-    "chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj|$files_app_path",
+    "chrome://file-manager|$files_app_path",
     "chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp|$image_loader_path",
   ]
 
   deps = [
-    ":background.m",
+    ":background",
     "//ui/file_manager:preprocess_generated",
+    "//ui/file_manager:preprocess_generated_image_loader",
     "//ui/file_manager:preprocess_static",
+    "//ui/file_manager:preprocess_static_image_loader",
     "//ui/webui/resources:preprocess",
   ]
 }

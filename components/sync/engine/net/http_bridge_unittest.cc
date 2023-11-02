@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -43,11 +44,11 @@ const base::FilePath::CharType kDocRoot[] =
 
 const char kUserAgent[] = "user-agent";
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_SyncHttpBridgeTest DISABLED_SyncHttpBridgeTest
 #else
 #define MAYBE_SyncHttpBridgeTest SyncHttpBridgeTest
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 class MAYBE_SyncHttpBridgeTest : public testing::Test {
  public:
   MAYBE_SyncHttpBridgeTest() : io_thread_("IO thread") {
@@ -105,7 +106,7 @@ class MAYBE_SyncHttpBridgeTest : public testing::Test {
     }
   };
 
-  HttpBridge* bridge_for_race_test_ = nullptr;
+  raw_ptr<HttpBridge> bridge_for_race_test_ = nullptr;
 
   base::test::TaskEnvironment task_environment_;
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
@@ -330,7 +331,7 @@ TEST_F(MAYBE_SyncHttpBridgeTest, HttpErrors) {
       net::HTTP_SERVICE_UNAVAILABLE,
       net::HTTP_GATEWAY_TIMEOUT,
   };
-  for (auto error : http_errors) {
+  for (net::HttpStatusCode error : http_errors) {
     function.Run(error);
   }
 }

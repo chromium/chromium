@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/notreached.h"
 #include "media/base/video_transformation.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -76,23 +77,19 @@ crosapi::mojom::GpuMemoryBufferHandlePtr ToCrosapiGpuMemoryBufferHandle(
   crosapi_gpu_handle->stride = buffer_handle.stride;
 
   if (buffer_handle.type == gfx::GpuMemoryBufferType::SHARED_MEMORY_BUFFER) {
-    auto crosapi_platform_handle =
-        crosapi::mojom::GpuMemoryBufferPlatformHandle::New();
-    crosapi_platform_handle->set_shared_memory_handle(
-        std::move(buffer_handle.region));
-    crosapi_gpu_handle->platform_handle = std::move(crosapi_platform_handle);
+    crosapi_gpu_handle->platform_handle =
+        crosapi::mojom::GpuMemoryBufferPlatformHandle::NewSharedMemoryHandle(
+            std::move(buffer_handle.region));
   } else if (buffer_handle.type == gfx::GpuMemoryBufferType::NATIVE_PIXMAP) {
-    auto crosapi_platform_handle =
-        crosapi::mojom::GpuMemoryBufferPlatformHandle::New();
     auto crosapi_native_pixmap_handle =
         crosapi::mojom::NativePixmapHandle::New();
     crosapi_native_pixmap_handle->planes =
         std::move(buffer_handle.native_pixmap_handle.planes);
     crosapi_native_pixmap_handle->modifier =
         buffer_handle.native_pixmap_handle.modifier;
-    crosapi_platform_handle->set_native_pixmap_handle(
-        std::move(crosapi_native_pixmap_handle));
-    crosapi_gpu_handle->platform_handle = std::move(crosapi_platform_handle);
+    crosapi_gpu_handle->platform_handle =
+        crosapi::mojom::GpuMemoryBufferPlatformHandle::NewNativePixmapHandle(
+            std::move(crosapi_native_pixmap_handle));
   }
   return crosapi_gpu_handle;
 }
@@ -125,16 +122,23 @@ VideoFrameHandlerAsh::ScopedFrameAccessHandlerNotifier::
 void VideoFrameHandlerAsh::OnNewBuffer(
     int buffer_id,
     media::mojom::VideoBufferHandlePtr buffer_handle) {
-  crosapi::mojom::VideoBufferHandlePtr crosapi_handle =
-      crosapi::mojom::VideoBufferHandle::New();
+  crosapi::mojom::VideoBufferHandlePtr crosapi_handle;
 
-  if (buffer_handle->is_shared_buffer_handle()) {
-    crosapi_handle->set_shared_buffer_handle(
-        buffer_handle->get_shared_buffer_handle()->Clone(
-            mojo::SharedBufferHandle::AccessMode::READ_WRITE));
+  if (buffer_handle->is_unsafe_shmem_region()) {
+    crosapi_handle = crosapi::mojom::VideoBufferHandle::NewSharedBufferHandle(
+        mojo::WrapPlatformSharedMemoryRegion(
+            base::UnsafeSharedMemoryRegion::TakeHandleForSerialization(
+                std::move(buffer_handle->get_unsafe_shmem_region()))));
   } else if (buffer_handle->is_gpu_memory_buffer_handle()) {
-    crosapi_handle->set_gpu_memory_buffer_handle(ToCrosapiGpuMemoryBufferHandle(
-        std::move(buffer_handle->get_gpu_memory_buffer_handle())));
+    crosapi_handle =
+        crosapi::mojom::VideoBufferHandle::NewGpuMemoryBufferHandle(
+            ToCrosapiGpuMemoryBufferHandle(
+                std::move(buffer_handle->get_gpu_memory_buffer_handle())));
+  } else if (buffer_handle->is_read_only_shmem_region()) {
+    // Lacros is guaranteed to be newer than us so it's okay to skip the version
+    // check here.
+    crosapi_handle = crosapi::mojom::VideoBufferHandle::NewReadOnlyShmemRegion(
+        std::move(buffer_handle->get_read_only_shmem_region()));
   } else {
     NOTREACHED() << "Unexpected new buffer type";
   }
@@ -158,6 +162,7 @@ void VideoFrameHandlerAsh::OnFrameReadyInBuffer(
   crosapi::mojom::ReadyFrameInBufferPtr crosapi_buffer =
       ToCrosapiBuffer(std::move(buffer), frame_access_handler_remote_);
   std::vector<crosapi::mojom::ReadyFrameInBufferPtr> crosapi_scaled_buffers;
+  crosapi_scaled_buffers.reserve(scaled_buffers.size());
   for (auto& b : scaled_buffers) {
     crosapi_scaled_buffers.push_back(
         ToCrosapiBuffer(std::move(b), frame_access_handler_remote_));
@@ -178,6 +183,14 @@ void VideoFrameHandlerAsh::OnError(media::VideoCaptureError error) {
 void VideoFrameHandlerAsh::OnFrameDropped(
     media::VideoCaptureFrameDropReason reason) {
   proxy_->OnFrameDropped(reason);
+}
+
+void VideoFrameHandlerAsh::OnNewCropVersion(uint32_t crop_version) {
+  proxy_->OnNewCropVersion(crop_version);
+}
+
+void VideoFrameHandlerAsh::OnFrameWithEmptyRegionCapture() {
+  proxy_->OnFrameWithEmptyRegionCapture();
 }
 
 void VideoFrameHandlerAsh::OnLog(const std::string& message) {

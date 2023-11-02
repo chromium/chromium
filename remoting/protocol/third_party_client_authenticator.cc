@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,8 +15,7 @@
 #include "remoting/protocol/channel_authenticator.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 ThirdPartyClientAuthenticator::ThirdPartyClientAuthenticator(
     const CreateBaseAuthenticatorCallback& create_base_authenticator_callback,
@@ -37,7 +36,7 @@ void ThirdPartyClientAuthenticator::ProcessTokenMessage(
     LOG(ERROR) << "Third-party authentication protocol error: "
         "missing token verification URL or scope.";
     token_state_ = REJECTED;
-    rejection_reason_ = PROTOCOL_ERROR;
+    rejection_reason_ = RejectionReason::PROTOCOL_ERROR;
     std::move(resume_callback).Run();
     return;
   }
@@ -70,8 +69,9 @@ void ThirdPartyClientAuthenticator::OnThirdPartyTokenFetched(
   token_ = third_party_token;
   if (token_.empty() || validation_result.is_error()) {
     token_state_ = REJECTED;
-    rejection_reason_ = validation_result.is_error() ? validation_result.error()
-                                                     : INVALID_CREDENTIALS;
+    rejection_reason_ = validation_result.is_error()
+                            ? validation_result.error()
+                            : RejectionReason::INVALID_CREDENTIALS;
   } else {
     DCHECK(!validation_result.success().empty());
     token_state_ = MESSAGE_READY;
@@ -81,5 +81,4 @@ void ThirdPartyClientAuthenticator::OnThirdPartyTokenFetched(
   std::move(resume_callback).Run();
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

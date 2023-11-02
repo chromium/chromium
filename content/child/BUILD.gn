@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -74,11 +74,9 @@ target(link_target_type, "child") {
     "//components/tracing:startup_tracing",
     "//components/variations",
     "//components/webcrypto",
-    "//content/app/resources",
     "//content/common",
     "//content/common:mojo_bindings",
     "//content/public/common:common_sources",
-    "//crypto:platform",
     "//device/base",
     "//device/gamepad/public/cpp:switches",
     "//gpu/command_buffer/client",
@@ -149,7 +147,7 @@ target(link_target_type, "child") {
     ]
   }
 
-  if (enable_plugins) {
+  if (enable_ppapi) {
     deps += [
       "//ppapi/proxy",
       "//ppapi/shared_impl",
@@ -160,9 +158,7 @@ target(link_target_type, "child") {
     ]
   }
 
-  configs += [
-    "//content:content_implementation",
-  ]
+  configs += [ "//content:content_implementation" ]
 }
 
 # See comment at the top of //content/BUILD.gn for how this works.

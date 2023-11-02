@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -62,7 +62,7 @@ TEST_F(ServiceWorkerNewScriptFetcherTest, Basic) {
   EXPECT_EQ(
       blink::mojom::kInvalidServiceWorkerResourceId,
       version->script_cache_map()->LookupResourceId(version->script_url()));
-  EXPECT_FALSE(version->cross_origin_embedder_policy().has_value());
+  EXPECT_FALSE(version->client_security_state());
 
   const std::string kBody = "/* body */";
   FakeNetworkURLLoaderFactory fake_factory{
@@ -97,7 +97,7 @@ TEST_F(ServiceWorkerNewScriptFetcherTest, Basic) {
   EXPECT_NE(
       blink::mojom::kInvalidServiceWorkerResourceId,
       version->script_cache_map()->LookupResourceId(version->script_url()));
-  EXPECT_TRUE(version->cross_origin_embedder_policy().has_value());
+  EXPECT_TRUE(version->client_security_state());
 
   // Wait until the network request for the main script completes.
   network::TestURLLoaderClient client;

@@ -55,9 +55,9 @@ Overlay rendered:
     "currentWidth": 400,
     "currentHeight": 500,
     "isolationModeHighlightConfig": {
-      "resizerColor": "#000000",
-      "resizerHandleColor": "#000000",
-      "maskColor": "#000000"
+      "resizerColor": "rgb(0, 0, 0)",
+      "resizerHandleColor": "rgb(0, 0, 0)",
+      "maskColor": "rgb(0, 0, 0)"
     },
     "highlightIndex": 0
   }

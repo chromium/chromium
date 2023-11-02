@@ -1,4 +1,4 @@
-// Copyright (c) 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -83,6 +83,16 @@ TestAutofillBubbleHandler::ShowVirtualCardManualFallbackBubble(
         std::make_unique<TestAutofillBubble>();
   }
   return virtual_card_manual_fallback_bubble_view_.get();
+}
+
+AutofillBubbleBase* TestAutofillBubbleHandler::ShowVirtualCardEnrollBubble(
+    content::WebContents* web_contents,
+    VirtualCardEnrollBubbleController* controller,
+    bool is_user_gesture) {
+  if (!virtual_card_enroll_bubble_view_) {
+    virtual_card_enroll_bubble_view_ = std::make_unique<TestAutofillBubble>();
+  }
+  return virtual_card_enroll_bubble_view_.get();
 }
 
 void TestAutofillBubbleHandler::OnPasswordSaved() {}

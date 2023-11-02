@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -47,7 +47,7 @@
       {
         "id": "GenericFamily",
         "type": "string",
-        "enum": ["standard", "sansserif", "serif", "fixed", "cursive", "fantasy"],
+        "enum": ["standard", "sansserif", "serif", "fixed", "cursive", "fantasy", "math"],
         "description": "A CSS generic font family."
       },
       {

@@ -1,10 +1,9 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/sync_bookmarks/bookmark_local_changes_builder.h"
 
-#include <limits>
 #include <memory>
 #include <string>
 #include <utility>
@@ -18,6 +17,7 @@
 #include "components/sync_bookmarks/bookmark_specifics_conversions.h"
 #include "components/sync_bookmarks/switches.h"
 #include "components/sync_bookmarks/synced_bookmark_tracker.h"
+#include "components/sync_bookmarks/synced_bookmark_tracker_entity.h"
 
 namespace sync_bookmarks {
 
@@ -33,16 +33,12 @@ syncer::CommitRequestDataList BookmarkLocalChangesBuilder::BuildCommitRequests(
     size_t max_entries) const {
   DCHECK(bookmark_tracker_);
 
-  const std::vector<const SyncedBookmarkTracker::Entity*>
+  const std::vector<const SyncedBookmarkTrackerEntity*>
       entities_with_local_changes =
-          bookmark_tracker_->GetEntitiesWithLocalChanges(
-              base::FeatureList::IsEnabled(
-                  switches::kSyncBookmarksEnforceLateMaxEntriesToCommit)
-                  ? std::numeric_limits<int>::max()
-                  : max_entries);
+          bookmark_tracker_->GetEntitiesWithLocalChanges();
 
   syncer::CommitRequestDataList commit_requests;
-  for (const SyncedBookmarkTracker::Entity* entity :
+  for (const SyncedBookmarkTrackerEntity* entity :
        entities_with_local_changes) {
     if (commit_requests.size() >= max_entries) {
       break;
@@ -50,26 +46,24 @@ syncer::CommitRequestDataList BookmarkLocalChangesBuilder::BuildCommitRequests(
 
     DCHECK(entity);
     DCHECK(entity->IsUnsynced());
-    const sync_pb::EntityMetadata* metadata = entity->metadata();
+    const sync_pb::EntityMetadata& metadata = entity->metadata();
 
     auto data = std::make_unique<syncer::EntityData>();
-    data->id = metadata->server_id();
-    data->creation_time = syncer::ProtoTimeToTime(metadata->creation_time());
+    data->id = metadata.server_id();
+    data->creation_time = syncer::ProtoTimeToTime(metadata.creation_time());
     data->modification_time =
-        syncer::ProtoTimeToTime(metadata->modification_time());
+        syncer::ProtoTimeToTime(metadata.modification_time());
 
-    if (bookmark_tracker_->bookmark_client_tags_in_protocol_enabled()) {
-      DCHECK(!metadata->client_tag_hash().empty());
-      data->client_tag_hash =
-          syncer::ClientTagHash::FromHashed(metadata->client_tag_hash());
-      DCHECK(metadata->is_deleted() ||
-             data->client_tag_hash ==
-                 syncer::ClientTagHash::FromUnhashed(
-                     syncer::BOOKMARKS,
-                     entity->bookmark_node()->guid().AsLowercaseString()));
-    }
+    DCHECK(!metadata.client_tag_hash().empty());
+    data->client_tag_hash =
+        syncer::ClientTagHash::FromHashed(metadata.client_tag_hash());
+    DCHECK(metadata.is_deleted() ||
+           data->client_tag_hash ==
+               syncer::ClientTagHash::FromUnhashed(
+                   syncer::BOOKMARKS,
+                   entity->bookmark_node()->guid().AsLowercaseString()));
 
-    if (!metadata->is_deleted()) {
+    if (!metadata.is_deleted()) {
       const bookmarks::BookmarkNode* node = entity->bookmark_node();
       DCHECK(!node->is_permanent_node());
 
@@ -87,17 +81,17 @@ syncer::CommitRequestDataList BookmarkLocalChangesBuilder::BuildCommitRequests(
       DCHECK(node);
       DCHECK_EQ(syncer::ClientTagHash::FromUnhashed(
                     syncer::BOOKMARKS, node->guid().AsLowercaseString()),
-                syncer::ClientTagHash::FromHashed(metadata->client_tag_hash()));
+                syncer::ClientTagHash::FromHashed(metadata.client_tag_hash()));
 
       const bookmarks::BookmarkNode* parent = node->parent();
-      const SyncedBookmarkTracker::Entity* parent_entity =
+      const SyncedBookmarkTrackerEntity* parent_entity =
           bookmark_tracker_->GetEntityForBookmarkNode(parent);
       DCHECK(parent_entity);
-      data->parent_id = parent_entity->metadata()->server_id();
+      data->legacy_parent_id = parent_entity->metadata().server_id();
       // Assign specifics only for the non-deletion case. In case of deletion,
       // EntityData should contain empty specifics to indicate deletion.
       data->specifics = CreateSpecificsFromBookmarkNode(
-          node, bookmark_model_, metadata->unique_position(),
+          node, bookmark_model_, metadata.unique_position(),
           /*force_favicon_load=*/true);
       // TODO(crbug.com/1058376): check after finishing if we need to use full
       // title instead of legacy canonicalized one.
@@ -106,11 +100,11 @@ syncer::CommitRequestDataList BookmarkLocalChangesBuilder::BuildCommitRequests(
 
     auto request = std::make_unique<syncer::CommitRequestData>();
     request->entity = std::move(data);
-    request->sequence_number = metadata->sequence_number();
-    request->base_version = metadata->server_version();
+    request->sequence_number = metadata.sequence_number();
+    request->base_version = metadata.server_version();
     // Specifics hash has been computed in the tracker when this entity has been
     // added/updated.
-    request->specifics_hash = metadata->specifics_hash();
+    request->specifics_hash = metadata.specifics_hash();
 
     bookmark_tracker_->MarkCommitMayHaveStarted(entity);
 

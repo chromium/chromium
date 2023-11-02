@@ -1,12 +1,15 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/test/media_router/media_router_cast_ui_for_test.h"
 
+#include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
+#include "base/run_loop.h"
 #include "chrome/browser/media/router/media_router_feature.h"
-#include "chrome/browser/ui/media_router/media_router_file_dialog.h"
 #include "chrome/browser/ui/media_router/media_router_ui.h"
+#include "chrome/browser/ui/views/media_router/cast_dialog_coordinator.h"
 #include "chrome/browser/ui/views/media_router/cast_dialog_sink_button.h"
 #include "chrome/browser/ui/views/media_router/media_router_dialog_controller_views.h"
 #include "ui/events/base_event_utils.h"
@@ -25,41 +28,6 @@ ui::MouseEvent CreateMousePressedEvent() {
                         gfx::Point(0, 0), ui::EventTimeForNow(),
                         ui::EF_LEFT_MOUSE_BUTTON, 0);
 }
-
-// File dialog with a preset file URL.
-class TestMediaRouterFileDialog : public MediaRouterFileDialog {
- public:
-  TestMediaRouterFileDialog(MediaRouterFileDialogDelegate* delegate, GURL url)
-      : MediaRouterFileDialog(nullptr), delegate_(delegate), file_url_(url) {}
-  ~TestMediaRouterFileDialog() override = default;
-
-  GURL GetLastSelectedFileUrl() override { return file_url_; }
-
-  void OpenFileDialog(Browser* browser) override {
-    delegate_->FileDialogFileSelected(ui::SelectedFileInfo());
-  }
-
- private:
-  MediaRouterFileDialogDelegate* delegate_;
-  GURL file_url_;
-};
-
-// File dialog which fails on open.
-class TestFailMediaRouterFileDialog : public MediaRouterFileDialog {
- public:
-  TestFailMediaRouterFileDialog(MediaRouterFileDialogDelegate* delegate,
-                                const IssueInfo& issue)
-      : MediaRouterFileDialog(nullptr), delegate_(delegate), issue_(issue) {}
-  ~TestFailMediaRouterFileDialog() override = default;
-
-  void OpenFileDialog(Browser* browser) override {
-    delegate_->FileDialogSelectionFailed(issue_);
-  }
-
- private:
-  MediaRouterFileDialogDelegate* delegate_;
-  const IssueInfo issue_;
-};
 
 }  // namespace
 
@@ -81,7 +49,7 @@ void MediaRouterCastUiForTest::SetUp() {
 
 void MediaRouterCastUiForTest::ShowDialog() {
   dialog_controller_->ShowMediaRouterDialog(
-      MediaRouterDialogOpenOrigin::TOOLBAR);
+      MediaRouterDialogActivationLocation::TOOLBAR);
   base::RunLoop().RunUntilIdle();
 }
 
@@ -96,7 +64,7 @@ void MediaRouterCastUiForTest::HideDialog() {
 
 void MediaRouterCastUiForTest::ChooseSourceType(
     CastDialogView::SourceType source_type) {
-  CastDialogView* dialog_view = CastDialogView::GetInstance();
+  CastDialogView* dialog_view = GetDialogView();
   CHECK(dialog_view);
 
   views::test::ButtonTestApi(dialog_view->sources_button_for_test())
@@ -109,16 +77,13 @@ void MediaRouterCastUiForTest::ChooseSourceType(
     case CastDialogView::kDesktop:
       source_index = 1;
       break;
-    case CastDialogView::kLocalFile:
-      source_index = 2;
-      break;
   }
   dialog_view->sources_menu_model_for_test()->ActivatedAt(source_index);
 }
 
 CastDialogView::SourceType MediaRouterCastUiForTest::GetChosenSourceType()
     const {
-  CastDialogView* dialog_view = CastDialogView::GetInstance();
+  const CastDialogView* dialog_view = GetDialogView();
   CHECK(dialog_view);
   return dialog_view->selected_source_;
 }
@@ -156,27 +121,15 @@ void MediaRouterCastUiForTest::WaitForDialogHidden() {
   ObserveDialog(WatchType::kDialogHidden);
 }
 
-void MediaRouterCastUiForTest::SetLocalFile(const GURL& file_url) {
-  dialog_controller_->ui()->set_media_router_file_dialog_for_test(
-      std::make_unique<TestMediaRouterFileDialog>(dialog_controller_->ui(),
-                                                  file_url));
-}
-
-void MediaRouterCastUiForTest::SetLocalFileSelectionIssue(
-    const IssueInfo& issue) {
-  dialog_controller_->ui()->set_media_router_file_dialog_for_test(
-      std::make_unique<TestFailMediaRouterFileDialog>(dialog_controller_->ui(),
-                                                      issue));
-}
-
 void MediaRouterCastUiForTest::OnDialogCreated() {
   MediaRouterUiForTestBase::OnDialogCreated();
-  CastDialogView::GetInstance()->KeepShownForTesting();
+  GetDialogView()->KeepShownForTesting();
 }
 
 MediaRouterCastUiForTest::MediaRouterCastUiForTest(
     content::WebContents* web_contents)
-    : MediaRouterUiForTestBase(web_contents) {}
+    : MediaRouterUiForTestBase(web_contents),
+      content::WebContentsUserData<MediaRouterCastUiForTest>(*web_contents) {}
 
 void MediaRouterCastUiForTest::OnDialogModelUpdated(
     CastDialogView* dialog_view) {
@@ -187,29 +140,29 @@ void MediaRouterCastUiForTest::OnDialogModelUpdated(
 
   const std::vector<CastDialogSinkButton*>& sink_buttons =
       dialog_view->sink_buttons_for_test();
-  if (std::find_if(sink_buttons.begin(), sink_buttons.end(),
-                   [&, this](CastDialogSinkButton* sink_button) {
-                     switch (watch_type_) {
-                       case WatchType::kSink:
-                         return sink_button->sink().friendly_name ==
-                                base::UTF8ToUTF16(*watch_sink_name_);
-                       case WatchType::kSinkAvailable:
-                         return sink_button->sink().friendly_name ==
-                                    base::UTF8ToUTF16(*watch_sink_name_) &&
-                                sink_button->sink().state ==
-                                    UIMediaSinkState::AVAILABLE &&
-                                sink_button->GetEnabled();
-                       case WatchType::kAnyIssue:
-                         return sink_button->sink().issue.has_value();
-                       case WatchType::kAnyRoute:
-                         return sink_button->sink().route.has_value();
-                       case WatchType::kNone:
-                       case WatchType::kDialogShown:
-                       case WatchType::kDialogHidden:
-                         NOTREACHED() << "Invalid WatchType";
-                         return false;
-                     }
-                   }) != sink_buttons.end()) {
+  if (base::ranges::any_of(
+          sink_buttons, [&, this](CastDialogSinkButton* sink_button) {
+            switch (watch_type_) {
+              case WatchType::kSink:
+                return sink_button->sink().friendly_name ==
+                       base::UTF8ToUTF16(*watch_sink_name_);
+              case WatchType::kSinkAvailable:
+                return sink_button->sink().friendly_name ==
+                           base::UTF8ToUTF16(*watch_sink_name_) &&
+                       sink_button->sink().state ==
+                           UIMediaSinkState::AVAILABLE &&
+                       sink_button->GetEnabled();
+              case WatchType::kAnyIssue:
+                return sink_button->sink().issue.has_value();
+              case WatchType::kAnyRoute:
+                return sink_button->sink().route.has_value();
+              case WatchType::kNone:
+              case WatchType::kDialogShown:
+              case WatchType::kDialogHidden:
+                NOTREACHED() << "Invalid WatchType";
+                return false;
+            }
+          })) {
     std::move(*watch_callback_).Run();
     watch_callback_.reset();
     watch_sink_name_.reset();
@@ -231,7 +184,7 @@ void MediaRouterCastUiForTest::OnDialogWillClose(CastDialogView* dialog_view) {
 
 CastDialogSinkButton* MediaRouterCastUiForTest::GetSinkButton(
     const std::string& sink_name) const {
-  CastDialogView* dialog_view = CastDialogView::GetInstance();
+  const CastDialogView* dialog_view = GetDialogView();
   CHECK(dialog_view);
   const std::vector<CastDialogSinkButton*>& sink_buttons =
       dialog_view->sink_buttons_for_test();
@@ -249,7 +202,7 @@ void MediaRouterCastUiForTest::ObserveDialog(
   watch_callback_ = run_loop.QuitClosure();
   watch_type_ = watch_type;
 
-  CastDialogView* dialog_view = CastDialogView::GetInstance();
+  CastDialogView* dialog_view = GetDialogView();
   CHECK(dialog_view);
   dialog_view->AddObserver(this);
   // Check if the current dialog state already meets the condition that we are
@@ -257,6 +210,16 @@ void MediaRouterCastUiForTest::ObserveDialog(
   OnDialogModelUpdated(dialog_view);
 
   run_loop.Run();
+}
+
+const CastDialogView* MediaRouterCastUiForTest::GetDialogView() const {
+  return dialog_controller_->GetCastDialogCoordinatorForTesting()
+      .GetCastDialogView();
+}
+
+CastDialogView* MediaRouterCastUiForTest::GetDialogView() {
+  return dialog_controller_->GetCastDialogCoordinatorForTesting()
+      .GetCastDialogView();
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(MediaRouterCastUiForTest);

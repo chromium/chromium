@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,43 +6,37 @@
 
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/sharing_hub/sharing_hub_model.h"
-#include "chrome/browser/ui/views/hover_button.h"
 #include "chrome/browser/ui/views/sharing_hub/sharing_hub_bubble_view_impl.h"
 #include "chrome/grit/generated_resources.h"
-#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
-#include "ui/views/animation/ink_drop.h"
-#include "ui/views/border.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
-#include "ui/views/controls/styled_label.h"
+#include "ui/views/controls/label.h"
+#include "ui/views/layout/flex_layout.h"
 
 namespace sharing_hub {
 
 namespace {
 
-static constexpr int kPrimaryIconSize = 20;
-constexpr auto kPrimaryIconBorder = gfx::Insets(6);
+// These values values come directly from the Figma redlines. See
+// https://crbug.com/1314486 and https://crbug.com/1343564.
+static constexpr gfx::Insets kInteriorMargin = gfx::Insets::VH(10, 16);
+static constexpr gfx::Insets kDefaultMargin = gfx::Insets::VH(0, 16);
+static constexpr gfx::Size kPrimaryIconSize{16, 16};
 
-std::unique_ptr<views::ImageView> CreateIconFromVector(
-    const gfx::VectorIcon& vector_icon) {
-  auto icon = std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-      vector_icon, ui::kColorMenuIcon, kPrimaryIconSize));
-  icon->SetBorder(views::CreateEmptyBorder(kPrimaryIconBorder));
-  return icon;
-}
+// The layout will break if this icon isn't square - you may need to adjust the
+// vector icon creation below.
+static_assert(kPrimaryIconSize.width() == kPrimaryIconSize.height());
 
-std::unique_ptr<views::ImageView> CreateIconFromImageSkia(
-    const gfx::ImageSkia& png_icon) {
-  // The icon size has to be defined later if the image will be visible.
-  auto icon = std::make_unique<views::ImageView>();
-  icon->SetImageSize(gfx::Size(kPrimaryIconSize, kPrimaryIconSize));
-  icon->SetImage(png_icon);
-  icon->SetBorder(views::CreateEmptyBorder(kPrimaryIconBorder));
-  return icon;
+ui::ImageModel ImageForAction(const SharingHubAction& action_info) {
+  if (!action_info.third_party_icon.isNull())
+    return ui::ImageModel::FromImageSkia(action_info.third_party_icon);
+  return ui::ImageModel::FromVectorIcon(*action_info.icon, ui::kColorMenuIcon,
+                                        kPrimaryIconSize.width());
 }
 
 }  // namespace
@@ -50,67 +44,81 @@ std::unique_ptr<views::ImageView> CreateIconFromImageSkia(
 SharingHubBubbleActionButton::SharingHubBubbleActionButton(
     SharingHubBubbleViewImpl* bubble,
     const SharingHubAction& action_info)
-    : HoverButton(
-          base::BindRepeating(&SharingHubBubbleViewImpl::OnActionSelected,
-                              base::Unretained(bubble),
-                              base::Unretained(this)),
-
-          action_info.third_party_icon.isNull()
-              ? CreateIconFromVector(*action_info.icon)
-              : CreateIconFromImageSkia(action_info.third_party_icon),
-          action_info.title),
-      action_command_id_(action_info.command_id),
+    : action_command_id_(action_info.command_id),
       action_is_first_party_(action_info.is_first_party),
       action_name_for_metrics_(action_info.feature_name_for_metrics) {
-  SetEnabled(true);
+  auto* layout = SetLayoutManager(std::make_unique<views::FlexLayout>());
+  layout->SetOrientation(views::LayoutOrientation::kHorizontal)
+      .SetMainAxisAlignment(views::LayoutAlignment::kStart)
+      .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
+      .SetInteriorMargin(kInteriorMargin)
+      .SetDefault(views::kMarginsKey, kDefaultMargin)
+      .SetCollapseMargins(true);
 
-  title()->SetTextContext(views::style::CONTEXT_MENU);
-  SetBackground(
-      views::CreateThemedSolidBackground(this, ui::kColorMenuBackground));
+  SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
+  SetEnabled(true);
+  SetBackground(views::CreateThemedSolidBackground(ui::kColorMenuBackground));
+  SetCallback(base::BindRepeating(&SharingHubBubbleViewImpl::OnActionSelected,
+                                  base::Unretained(bubble),
+                                  base::Unretained(this)));
+
+  image_ = AddChildView(
+      std::make_unique<views::ImageView>(ImageForAction(action_info)));
+  image_->SetImageSize(kPrimaryIconSize);
+  image_->SetCanProcessEventsWithinSubtree(false);
+
+  title_ = AddChildView(std::make_unique<views::Label>(
+      action_info.title, views::style::CONTEXT_MENU));
+  title_->SetCanProcessEventsWithinSubtree(false);
+
+  if (action_is_first_party_) {
+    GetViewAccessibility().OverrideName(title_->GetText());
+  } else {
+    GetViewAccessibility().OverrideName(l10n_util::GetStringFUTF16(
+        IDS_SHARING_HUB_SHARE_LABEL_ACCESSIBILITY, title_->GetText()));
+  }
 }
 
 SharingHubBubbleActionButton::~SharingHubBubbleActionButton() = default;
 
-void SharingHubBubbleActionButton::UpdateBackgroundColor() {
+void SharingHubBubbleActionButton::OnThemeChanged() {
+  views::Button::OnThemeChanged();
+  UpdateColors();
+}
+
+void SharingHubBubbleActionButton::OnFocus() {
+  views::Button::OnFocus();
+  UpdateColors();
+}
+
+void SharingHubBubbleActionButton::OnBlur() {
+  views::Button::OnBlur();
+  UpdateColors();
+}
+
+void SharingHubBubbleActionButton::StateChanged(
+    views::Button::ButtonState old_state) {
+  views::Button::StateChanged(old_state);
+  UpdateColors();
+}
+
+void SharingHubBubbleActionButton::UpdateColors() {
+  bool draw_focus = GetState() == STATE_HOVERED || HasFocus();
   // Pretend to be a menu item:
   SkColor bg_color = GetColorProvider()->GetColor(
-      GetVisualState() == STATE_HOVERED ? ui::kColorMenuItemBackgroundSelected
-                                        : ui::kColorMenuBackground);
+      // Note: selected vs highlighted seems strange here; highlighted is more
+      // in line with what's happening. The two colors are almost the same but
+      // selected gives better behavior in high contrast.
+      draw_focus ? ui::kColorMenuItemBackgroundSelected
+                 : ui::kColorMenuBackground);
 
   SetBackground(views::CreateSolidBackground(bg_color));
-  SetTitleTextStyle(
-      // Give the hovered element the "selected" menu styling - otherwise the
-      // text color won't change appropriately to keep up with the background
-      // color changing in high contrast mode.
-      GetVisualState() == STATE_HOVERED ? views::style::STYLE_SELECTED
-                                        : views::style::STYLE_PRIMARY,
-      bg_color);
+  title_->SetBackgroundColor(bg_color);
+  title_->SetTextStyle(draw_focus ? views::style::STYLE_SELECTED
+                                  : views::style::STYLE_PRIMARY);
 }
 
-void SharingHubBubbleActionButton::GetAccessibleNodeData(
-    ui::AXNodeData* node_data) {
-  HoverButton::GetAccessibleNodeData(node_data);
-
-  // TODO(ellyjones): Yikes!
-  // This hack works around https://crbug.com/1245744, which is a design flaw in
-  // HoverButton. In particular, HoverButton overwrites the accessible name its
-  // client configured on it whenever it bounds change (!) with the plain
-  // concatenation of its title and subtitle, which makes it impossible to set
-  // an accessible name with extra context, as needed for
-  // https://crbug.com/1230178.
-  // TODO(https://crbug.com/1245744): Remove this.
-  if (!action_is_first_party_) {
-    node_data->SetName(l10n_util::GetStringFUTF16(
-        IDS_SHARING_HUB_SHARE_LABEL_ACCESSIBILITY, title()->GetText()));
-  }
-}
-
-void SharingHubBubbleActionButton::OnThemeChanged() {
-  HoverButton::OnThemeChanged();
-  UpdateBackgroundColor();
-}
-
-BEGIN_METADATA(SharingHubBubbleActionButton, HoverButton)
+BEGIN_METADATA(SharingHubBubbleActionButton, Button)
 END_METADATA
 
 }  // namespace sharing_hub

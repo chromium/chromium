@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -68,8 +68,9 @@ AXInspectScenario AXInspectScenario::From(
   Directive directive = kNone;
   // Directives have format of @directive:value[..value], value per line.
   for (const std::string& line : lines) {
-    // Treat empty line the multiline directive end.
-    if (line.empty()) {
+    // Treat empty line the multiline directive end with exception of script
+    // directives which spans until a next directive.
+    if (line.empty() && directive != kScript) {
       directive = kNone;
     }
 
@@ -106,21 +107,23 @@ AXInspectScenario::Directive AXInspectScenario::ParseDirective(
     const std::string& directive) {
   if (directive == "@NO-LOAD-EXPECTED")
     return kNoLoadExpected;
-  if (directive == "@WAIT-FOR")
+  if (directive == "@WAIT-FOR" || directive == directive_prefix + "WAIT-FOR")
     return kWaitFor;
   if (directive == "@EXECUTE-AND-WAIT-FOR")
     return kExecuteAndWaitFor;
   if (directive == "@DEFAULT-ACTION-ON")
     return kDefaultActionOn;
-  if (directive == directive_prefix + "ALLOW")
+  if (directive == directive_prefix + "ALLOW" || directive == "@ALLOW")
     return kPropertyFilterAllow;
-  if (directive == directive_prefix + "ALLOW-EMPTY")
+  if (directive == directive_prefix + "ALLOW-EMPTY" ||
+      directive == "@ALLOW-EMPTY") {
     return kPropertyFilterAllowEmpty;
-  if (directive == directive_prefix + "DENY")
+  }
+  if (directive == directive_prefix + "DENY" || directive == "@DENY")
     return kPropertyFilterDeny;
-  if (directive == directive_prefix + "SCRIPT")
+  if (directive == directive_prefix + "SCRIPT" || directive == "@SCRIPT")
     return kScript;
-  if (directive == directive_prefix + "DENY-NODE")
+  if (directive == directive_prefix + "DENY-NODE" || directive == "@DENY-NODE")
     return kNodeFilter;
 
   return kNone;

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,6 +24,7 @@ class WebThemeEngineMac : public WebThemeEngineDefault {
   static bool IsScrollbarPart(WebThemeEngine::Part part);
   static void PaintMacScrollBarParts(
       cc::PaintCanvas* canvas,
+      const ui::ColorProvider* color_provider,
       WebThemeEngine::Part part,
       WebThemeEngine::State state,
       const gfx::Rect& rect,

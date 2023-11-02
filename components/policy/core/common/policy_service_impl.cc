@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@
 #include "base/feature_list.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "base/observer_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/values.h"
@@ -31,89 +32,17 @@
 #include "components/strings/grit/components_strings.h"
 #include "extensions/buildflags/buildflags.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/policy/core/common/android/policy_service_android.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "components/policy/core/common/default_chrome_apps_migrator.h"
 #endif
 
 namespace policy {
 
 namespace {
-
-// Maps the separate renamed policies into a single Dictionary policy. This
-// allows to keep the logic of merging policies from different sources simple,
-// as all separate renamed policies should be considered as a single whole
-// during merging.
-void RemapRenamedPolicies(PolicyMap* policies) {
-  // For all renamed policies we need to explicitly merge the value of the
-  // old policy with the new one or else merging will not be carried over
-  // if desired.
-  base::Value* merge_list =
-      policies->GetMutableValue(key::kPolicyListMultipleSourceMergeList);
-  base::flat_set<std::string> policy_lists_to_merge =
-      policy::ValueToStringSet(merge_list);
-  const std::vector<std::pair<const char*, const char*>> renamed_policies = {{
-      {policy::key::kSafeBrowsingWhitelistDomains,
-       policy::key::kSafeBrowsingAllowlistDomains},
-      {policy::key::kSpellcheckLanguageBlacklist,
-       policy::key::kSpellcheckLanguageBlocklist},
-      {policy::key::kURLBlacklist, policy::key::kURLBlocklist},
-      {policy::key::kURLWhitelist, policy::key::kURLAllowlist},
-#if !defined(OS_ANDROID)
-      {policy::key::kAutoplayWhitelist, policy::key::kAutoplayAllowlist},
-#endif  // !defined(OS_ANDROID)
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-      {policy::key::kExtensionInstallBlacklist,
-       policy::key::kExtensionInstallBlocklist},
-      {policy::key::kExtensionInstallWhitelist,
-       policy::key::kExtensionInstallAllowlist},
-      {policy::key::kNativeMessagingBlacklist,
-       policy::key::kNativeMessagingBlocklist},
-      {policy::key::kNativeMessagingWhitelist,
-       policy::key::kNativeMessagingAllowlist},
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-#if defined(OS_CHROMEOS)
-      {policy::key::kAttestationExtensionWhitelist,
-       policy::key::kAttestationExtensionAllowlist},
-#endif  // defined(OS_CHROMEOS)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      {policy::key::kExternalPrintServersWhitelist,
-       policy::key::kExternalPrintServersAllowlist},
-      {policy::key::kNativePrintersBulkBlacklist,
-       policy::key::kPrintersBulkBlocklist},
-      {policy::key::kNativePrintersBulkWhitelist,
-       policy::key::kPrintersBulkAllowlist},
-      {policy::key::kPerAppTimeLimitsWhitelist,
-       policy::key::kPerAppTimeLimitsAllowlist},
-      {policy::key::kQuickUnlockModeWhitelist,
-       policy::key::kQuickUnlockModeAllowlist},
-      {policy::key::kNoteTakingAppsLockScreenWhitelist,
-       policy::key::kNoteTakingAppsLockScreenAllowlist},
-#if defined(USE_CUPS)
-      {policy::key::kPrintingAPIExtensionsWhitelist,
-       policy::key::kPrintingAPIExtensionsAllowlist},
-#endif  // defined(USE_CUPS)
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  }};
-  for (const auto& policy_pair : renamed_policies) {
-    PolicyMap::Entry* old_policy = policies->GetMutable(policy_pair.first);
-    const PolicyMap::Entry* new_policy = policies->Get(policy_pair.second);
-    if (old_policy && (!new_policy || policies->EntryHasHigherPriority(
-                                          *old_policy, *new_policy))) {
-      PolicyMap::Entry policy_entry = old_policy->DeepCopy();
-      policy_entry.AddMessage(PolicyMap::MessageType::kWarning,
-                              IDS_POLICY_MIGRATED_NEW_POLICY,
-                              {base::UTF8ToUTF16(policy_pair.first)});
-      old_policy->AddMessage(PolicyMap::MessageType::kError,
-                             IDS_POLICY_MIGRATED_OLD_POLICY,
-                             {base::UTF8ToUTF16(policy_pair.second)});
-      policies->Set(policy_pair.second, std::move(policy_entry));
-    }
-    if (policy_lists_to_merge.contains(policy_pair.first) &&
-        !policy_lists_to_merge.contains(policy_pair.second)) {
-      merge_list->Append(base::Value(policy_pair.second));
-    }
-  }
-}
 
 // Precedence policies cannot be set at the user cloud level regardless of
 // affiliation status. This is done to prevent cloud users from potentially
@@ -137,13 +66,17 @@ void IgnoreUserCloudPrecedencePolicies(PolicyMap* policies) {
 void DowngradeMetricsReportingToRecommendedPolicy(PolicyMap* policies) {
   // Capture both the Chrome-only and device-level policies on Chrome OS.
   const std::vector<const char*> metrics_keys = {
-      policy::key::kMetricsReportingEnabled,
-      policy::key::kDeviceMetricsReportingEnabled};
+#if BUILDFLAG(IS_CHROMEOS)
+    policy::key::kDeviceMetricsReportingEnabled,
+#else
+    policy::key::kMetricsReportingEnabled,
+#endif
+  };
   for (const char* policy_key : metrics_keys) {
     PolicyMap::Entry* policy = policies->GetMutable(policy_key);
     if (policy && policy->level != POLICY_LEVEL_RECOMMENDED &&
-        policy->value() && policy->value()->is_bool() &&
-        policy->value()->GetBool()) {
+        policy->value(base::Value::Type::BOOLEAN) &&
+        policy->value(base::Value::Type::BOOLEAN)->GetBool()) {
       policy->level = POLICY_LEVEL_RECOMMENDED;
       policy->AddMessage(PolicyMap::MessageType::kInfo,
                          IDS_POLICY_IGNORED_MANDATORY_REPORTING_POLICY);
@@ -157,7 +90,44 @@ base::flat_set<std::string> GetStringListPolicyItems(
     const PolicyBundle& bundle,
     const PolicyNamespace& space,
     const std::string& policy) {
-  return ValueToStringSet(bundle.Get(space).GetValue(policy));
+  return ValueToStringSet(
+      bundle.Get(space).GetValue(policy, base::Value::Type::LIST));
+}
+
+bool IsUserCloudMergingAllowed(const PolicyMap& policies) {
+#if BUILDFLAG(IS_CHROMEOS)
+  return false;
+#else
+  const base::Value* cloud_user_policy_merge_value =
+      policies.GetValue(key::kCloudUserPolicyMerge, base::Value::Type::BOOLEAN);
+  return cloud_user_policy_merge_value &&
+         cloud_user_policy_merge_value->GetBool();
+#endif
+}
+
+void AddPolicyMessages(PolicyMap& policies) {
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_IOS)
+  // Add warning to inform users that these policies are ignored when the user
+  // is unaffiliated.
+  if (policies.IsUserAffiliated())
+    return;
+
+  auto* cloud_user_precedence_entry =
+      policies.GetMutable(key::kCloudUserPolicyOverridesCloudMachinePolicy);
+  if (cloud_user_precedence_entry &&
+      cloud_user_precedence_entry->value(base::Value::Type::BOOLEAN) &&
+      cloud_user_precedence_entry->value(base::Value::Type::BOOLEAN)
+          ->GetBool()) {
+    cloud_user_precedence_entry->AddMessage(PolicyMap::MessageType::kError,
+                                            IDS_POLICY_IGNORED_UNAFFILIATED);
+  }
+
+  if (IsUserCloudMergingAllowed(policies)) {
+    policies.GetMutable(key::kCloudUserPolicyMerge)
+        ->AddMessage(PolicyMap::MessageType::kError,
+                     IDS_POLICY_IGNORED_UNAFFILIATED);
+  }
+#endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_IOS)
 }
 
 }  // namespace
@@ -281,7 +251,7 @@ void PolicyServiceImpl::RefreshPolicies(base::OnceClosure callback) {
   }
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 android::PolicyServiceAndroid* PolicyServiceImpl::GetPolicyServiceAndroid() {
   if (!policy_service_android_)
     policy_service_android_ =
@@ -321,10 +291,9 @@ void PolicyServiceImpl::OnUpdatePolicy(ConfigurationPolicyProvider* provider) {
                                 update_task_ptr_factory_.GetWeakPtr()));
 }
 
-void PolicyServiceImpl::NotifyNamespaceUpdated(
-    const PolicyNamespace& ns,
-    const PolicyMap& previous,
-    const PolicyMap& current) {
+void PolicyServiceImpl::NotifyNamespaceUpdated(const PolicyNamespace& ns,
+                                               const PolicyMap& previous,
+                                               const PolicyMap& current) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto iterator = observers_.find(ns.domain);
   if (iterator != observers_.end()) {
@@ -349,13 +318,21 @@ void PolicyServiceImpl::MergeAndTriggerUpdates() {
   // Merge from each provider in their order of priority.
   const PolicyNamespace chrome_namespace(POLICY_DOMAIN_CHROME, std::string());
   PolicyBundle bundle;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  DefaultChromeAppsMigrator chrome_apps_migrator;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   for (auto* provider : providers_) {
     PolicyBundle provided_bundle;
     provided_bundle.CopyFrom(provider->policies());
-    RemapRenamedPolicies(&provided_bundle.Get(chrome_namespace));
     IgnoreUserCloudPrecedencePolicies(&provided_bundle.Get(chrome_namespace));
     DowngradeMetricsReportingToRecommendedPolicy(
         &provided_bundle.Get(chrome_namespace));
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    if (base::FeatureList::IsEnabled(
+            policy::features::kDefaultChromeAppsMigration)) {
+      chrome_apps_migrator.Migrate(&provided_bundle.Get(chrome_namespace));
+    }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     bundle.MergeFrom(provided_bundle);
   }
 
@@ -370,16 +347,17 @@ void PolicyServiceImpl::MergeAndTriggerUpdates() {
 
   // This has to be done after setting enterprise default values since it is
   // enabled by default for enterprise users.
-  auto* atomic_policy_group_enabled_policy_value =
+  auto* atomic_policy_group_enabled_entry =
       chrome_policies.Get(key::kPolicyAtomicGroupsEnabled);
 
   // This policy has to be ignored if it comes from a user signed-in profile.
   bool atomic_policy_group_enabled =
-      atomic_policy_group_enabled_policy_value &&
-      atomic_policy_group_enabled_policy_value->value()->GetBool() &&
-      !(atomic_policy_group_enabled_policy_value->source ==
-            POLICY_SOURCE_CLOUD &&
-        atomic_policy_group_enabled_policy_value->scope == POLICY_SCOPE_USER);
+      atomic_policy_group_enabled_entry &&
+      atomic_policy_group_enabled_entry->value(base::Value::Type::BOOLEAN) &&
+      atomic_policy_group_enabled_entry->value(base::Value::Type::BOOLEAN)
+          ->GetBool() &&
+      !(atomic_policy_group_enabled_entry->source == POLICY_SOURCE_CLOUD &&
+        atomic_policy_group_enabled_entry->scope == POLICY_SCOPE_USER);
 
   PolicyListMerger policy_list_merger(std::move(policy_lists_to_merge));
   PolicyDictionaryMerger policy_dictionary_merger(
@@ -388,8 +366,7 @@ void PolicyServiceImpl::MergeAndTriggerUpdates() {
   // Pass affiliation and CloudUserPolicyMerge values to both mergers.
   const bool is_user_affiliated = chrome_policies.IsUserAffiliated();
   const bool is_user_cloud_merging_enabled =
-      chrome_policies.GetValue(key::kCloudUserPolicyMerge) &&
-      chrome_policies.GetValue(key::kCloudUserPolicyMerge)->GetBool();
+      IsUserCloudMergingAllowed(chrome_policies);
   policy_list_merger.SetAllowUserCloudPolicyMerging(
       is_user_affiliated && is_user_cloud_merging_enabled);
   policy_dictionary_merger.SetAllowUserCloudPolicyMerging(
@@ -407,6 +384,9 @@ void PolicyServiceImpl::MergeAndTriggerUpdates() {
 
   for (auto& migrator : migrators_)
     migrator->Migrate(&bundle);
+
+  // Add informational messages to specific policies.
+  AddPolicyMessages(chrome_policies);
 
   // Swap first, so that observers that call GetPolicies() see the current
   // values.

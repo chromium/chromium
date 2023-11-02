@@ -1,11 +1,11 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import {RootPath} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
-import {remoteCall, setupAndWaitUntilReady} from './background.js';
+import {navigateWithDirectoryTree, remoteCall, setupAndWaitUntilReady} from './background.js';
 import {BASIC_DRIVE_ENTRY_SET, SHARED_DRIVE_ENTRY_SET} from './test_data.js';
 
 /**
@@ -23,18 +23,16 @@ async function shareWithOthersExpectBrowserURL(
 
   // Navigate to the specified team drive if one is specified.
   if (teamDrive !== undefined) {
-    await remoteCall.navigateWithDirectoryTree(
-        appId, teamDrive === '' ? '/team_drives' : `/team_drives/${teamDrive}`,
-        'Shared drives', 'drive');
+    await navigateWithDirectoryTree(
+        appId,
+        teamDrive === '' ? '/Shared drives' : `/Shared drives/${teamDrive}`);
 
     // Wait for the file list to update.
     await remoteCall.waitForFileListChange(appId, BASIC_DRIVE_ENTRY_SET.length);
   }
 
   // Select the given |path|.
-  chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil('selectFile', appId, [path]),
-      'selectFile failed');
+  await remoteCall.waitUntilSelected(appId, path);
 
   // Right-click to show the context menu.
   chrome.test.assertTrue(
@@ -70,18 +68,16 @@ async function manageWithDriveExpectBrowserURL(
 
   // Navigate to the specified team drive if one is specified.
   if (teamDrive !== undefined) {
-    await remoteCall.navigateWithDirectoryTree(
-        appId, teamDrive === '' ? '/team_drives' : `/team_drives/${teamDrive}`,
-        'Shared drives', 'drive');
+    await navigateWithDirectoryTree(
+        appId,
+        teamDrive === '' ? '/Shared drives' : `/Shared drives/${teamDrive}`);
 
     // Wait for the file list to update.
     await remoteCall.waitForFileListChange(appId, BASIC_DRIVE_ENTRY_SET.length);
   }
 
   // Select the given |path|.
-  chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil('selectFile', appId, [path]),
-      'selectFile failed');
+  await remoteCall.waitUntilSelected(appId, path);
 
   // Wait for the entry to be selected.
   chrome.test.assertTrue(
@@ -181,16 +177,13 @@ testcase.shareDirectoryTeamDrive = async () => {
       RootPath.DRIVE, [], BASIC_DRIVE_ENTRY_SET.concat(SHARED_DRIVE_ENTRY_SET));
 
   // Navigate to the team drive.
-  await remoteCall.navigateWithDirectoryTree(
-      appId, `/team_drives/${teamDrive}`, 'Shared drives', 'drive');
+  await navigateWithDirectoryTree(appId, `/Shared drives/${teamDrive}`);
 
   // Wait for the file list to update.
   await remoteCall.waitForFileListChange(appId, BASIC_DRIVE_ENTRY_SET.length);
 
   // Select the given |path|.
-  chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil('selectFile', appId, [path]),
-      'selectFile failed');
+  await remoteCall.waitUntilSelected(appId, path);
 
   // Wait for the entry to be selected.
   chrome.test.assertTrue(

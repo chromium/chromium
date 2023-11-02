@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright (c) 2013 The Chromium Authors. All rights reserved.
+# Copyright 2013 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -20,7 +20,7 @@
 
 # This script looks at sysroots.json next to it to find the name of a .tar.xz
 # to download and the location to extract it to. The extracted sysroot could for
-# example be in build/linux/debian_sid_amd64-sysroot/.
+# example be in build/linux/debian_bullseye_amd64-sysroot/.
 
 from __future__ import print_function
 
@@ -54,7 +54,8 @@ ARCH_TRANSLATIONS = {
     'mips64': 'mips64el',
 }
 
-DEFAULT_TARGET_PLATFORM = 'sid'
+DEFAULT_TARGET_PLATFORM = 'bullseye'
+
 
 class Error(Exception):
   pass
@@ -79,14 +80,15 @@ def main(args):
   parser.add_option('--all', action='store_true',
                     help='Install all sysroot images (useful when updating the'
                          ' images)')
-  parser.add_option('--print-hash',
+  parser.add_option('--print-key',
                     help='Print the hash of the sysroot for the given arch.')
   options, _ = parser.parse_args(args)
 
-  if options.print_hash:
-    arch = options.print_hash
-    print(GetSysrootDict(DEFAULT_TARGET_PLATFORM,
-                         ARCH_TRANSLATIONS.get(arch, arch))['Sha1Sum'])
+  if options.print_key:
+    arch = options.print_key
+    print(
+        GetSysrootDict(DEFAULT_TARGET_PLATFORM,
+                       ARCH_TRANSLATIONS.get(arch, arch))['Key'])
     return 0
   if options.arch:
     InstallSysroot(DEFAULT_TARGET_PLATFORM,
@@ -154,7 +156,7 @@ def InstallSysroot(target_platform, target_arch):
   if sha1sum != tarball_sha1sum:
     raise Error('Tarball sha1sum is wrong.'
                 'Expected %s, actual: %s' % (tarball_sha1sum, sha1sum))
-  subprocess.check_call(['tar', 'xf', tarball, '-C', sysroot])
+  subprocess.check_call(['tar', 'mxf', tarball, '-C', sysroot])
   os.remove(tarball)
 
   with open(stamp, 'w') as s:

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,12 +14,13 @@ namespace {
 
 constexpr char kPacUrl[] = "http://pac.pac/";
 
-base::Value GetPacProxyConfig(const std::string& pac_url, bool pac_mandatory) {
+base::Value::Dict GetPacProxyConfig(const std::string& pac_url,
+                                    bool pac_mandatory) {
   return ProxyConfigDictionary::CreatePacScript(pac_url, pac_mandatory);
 }
 
-base::Value GetManualProxyConfig(const std::string& proxy_servers,
-                                 const std::string& bypass_list) {
+base::Value::Dict GetManualProxyConfig(const std::string& proxy_servers,
+                                       const std::string& bypass_list) {
   return ProxyConfigDictionary::CreateFixedServers(proxy_servers, bypass_list);
 }
 
@@ -118,11 +119,8 @@ TEST(NetworkSettingsTranslationTest, ProxyConfigToCrosapiProxyManual) {
 
 TEST(NetworkSettingsTranslationTest, CrosapiProxyToProxyConfigDirect) {
   crosapi::mojom::ProxyConfigPtr ptr = crosapi::mojom::ProxyConfig::New();
-  crosapi::mojom::ProxySettingsPtr proxy = crosapi::mojom::ProxySettings::New();
-  crosapi::mojom::ProxySettingsDirectPtr direct =
-      crosapi::mojom::ProxySettingsDirect::New();
-  proxy->set_direct(std::move(direct));
-  ptr->proxy_settings = std::move(proxy);
+  ptr->proxy_settings = crosapi::mojom::ProxySettings::NewDirect(
+      crosapi::mojom::ProxySettingsDirect::New());
 
   EXPECT_EQ(CrosapiProxyToProxyConfig(std::move(ptr)).GetDictionary(),
             ProxyConfigDictionary::CreateDirect());
@@ -130,12 +128,10 @@ TEST(NetworkSettingsTranslationTest, CrosapiProxyToProxyConfigDirect) {
 
 TEST(NetworkSettingsTranslationTest, CrosapiProxyToProxyConfigWpad) {
   crosapi::mojom::ProxyConfigPtr ptr = crosapi::mojom::ProxyConfig::New();
-  crosapi::mojom::ProxySettingsPtr proxy = crosapi::mojom::ProxySettings::New();
   crosapi::mojom::ProxySettingsWpadPtr wpad =
       crosapi::mojom::ProxySettingsWpad::New();
   wpad->pac_url = GURL("pac.pac");
-  proxy->set_wpad(std::move(wpad));
-  ptr->proxy_settings = std::move(proxy);
+  ptr->proxy_settings = crosapi::mojom::ProxySettings::NewWpad(std::move(wpad));
 
   EXPECT_EQ(CrosapiProxyToProxyConfig(std::move(ptr)).GetDictionary(),
             ProxyConfigDictionary::CreateAutoDetect());
@@ -143,49 +139,75 @@ TEST(NetworkSettingsTranslationTest, CrosapiProxyToProxyConfigWpad) {
 
 TEST(NetworkSettingsTranslationTest, CrosapiProxyToProxyConfigPac) {
   crosapi::mojom::ProxyConfigPtr ptr = crosapi::mojom::ProxyConfig::New();
-  crosapi::mojom::ProxySettingsPtr proxy = crosapi::mojom::ProxySettings::New();
   crosapi::mojom::ProxySettingsPacPtr pac =
       crosapi::mojom::ProxySettingsPac::New();
   pac->pac_url = GURL(kPacUrl);
   pac->pac_mandatory = true;
-  proxy->set_pac(pac.Clone());
-  ptr->proxy_settings = proxy.Clone();
+  ptr->proxy_settings = crosapi::mojom::ProxySettings::NewPac(pac.Clone());
   EXPECT_EQ(CrosapiProxyToProxyConfig(ptr.Clone()).GetDictionary(),
             GetPacProxyConfig(kPacUrl, true));
 
   pac->pac_mandatory = false;
-  proxy->set_pac(pac.Clone());
-  ptr->proxy_settings = std::move(proxy);
+  ptr->proxy_settings = crosapi::mojom::ProxySettings::NewPac(pac.Clone());
   EXPECT_EQ(CrosapiProxyToProxyConfig(std::move(ptr)).GetDictionary(),
             GetPacProxyConfig(kPacUrl, false));
 }
 
 TEST(NetworkSettingsTranslationTest, CrosapiProxyToProxyConfigManual) {
   crosapi::mojom::ProxyConfigPtr ptr = crosapi::mojom::ProxyConfig::New();
-  crosapi::mojom::ProxySettingsPtr proxy = crosapi::mojom::ProxySettings::New();
   crosapi::mojom::ProxySettingsManualPtr manual =
       crosapi::mojom::ProxySettingsManual::New();
   crosapi::mojom::ProxyLocationPtr location =
       crosapi::mojom::ProxyLocation::New();
   location->host = "proxy1";
   location->port = 80;
+  location->scheme = crosapi::mojom::ProxyLocation::Scheme::kHttp;
   manual->http_proxies.push_back(location.Clone());
   location->host = "proxy2";
   location->port = 80;
+  location->scheme = crosapi::mojom::ProxyLocation::Scheme::kHttps;
+  manual->http_proxies.push_back(location.Clone());
+  location->host = "proxy3";
+  location->port = 83;
+  location->scheme = crosapi::mojom::ProxyLocation::Scheme::kUnknown;
+  manual->http_proxies.push_back(location.Clone());
+  location->host = "proxy4";
+  location->port = 84;
+  location->scheme = crosapi::mojom::ProxyLocation::Scheme::kInvalid;
+  manual->http_proxies.push_back(location.Clone());
+  location->host = "proxy5";
+  location->port = 85;
+  location->scheme = crosapi::mojom::ProxyLocation::Scheme::kDirect;
+  manual->http_proxies.push_back(location.Clone());
+  location->host = "proxy6";
+  location->port = 86;
+  location->scheme = crosapi::mojom::ProxyLocation::Scheme::kSocks5;
+  manual->http_proxies.push_back(location.Clone());
+  location->host = "proxy7";
+  location->port = 87;
+  location->scheme = crosapi::mojom::ProxyLocation::Scheme::kQuic;
   manual->http_proxies.push_back(location.Clone());
   location->host = "secure_proxy";
   location->port = 81;
+  location->scheme = crosapi::mojom::ProxyLocation::Scheme::kHttps;
   manual->secure_http_proxies.push_back(location.Clone());
   location->host = "socks_proxy";
   location->port = 82;
+  location->scheme = crosapi::mojom::ProxyLocation::Scheme::kSocks4;
   manual->socks_proxies.push_back(std::move(location));
   manual->exclude_domains = {"localhost", "google.com"};
-  proxy->set_manual(std::move(manual));
-  ptr->proxy_settings = std::move(proxy);
-  EXPECT_EQ(CrosapiProxyToProxyConfig(std::move(ptr)).GetDictionary(),
-            GetManualProxyConfig("http=proxy1:80;http=proxy2:80;https=secure_"
-                                 "proxy:81;socks=socks_proxy:82",
-                                 /*bypass_list=*/"localhost;google.com"));
+
+  ptr->proxy_settings =
+      crosapi::mojom::ProxySettings::NewManual(std::move(manual));
+  EXPECT_EQ(
+      CrosapiProxyToProxyConfig(std::move(ptr)).GetDictionary(),
+      GetManualProxyConfig("http=http://proxy1:80;http=https://proxy2:80;"
+                           "http=http://proxy3:83;http=invalid://proxy4:84;"
+                           "http=direct://proxy5:85;http=socks5://proxy6:86;"
+                           "http=quic-transport://proxy7:87;"
+                           "https=https://secure_proxy:81;"
+                           "socks=socks://socks_proxy:82",
+                           /*bypass_list=*/"localhost;google.com"));
 }
 
 }  // namespace crosapi

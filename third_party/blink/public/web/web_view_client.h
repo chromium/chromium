@@ -31,50 +31,14 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_VIEW_CLIENT_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_VIEW_CLIENT_H_
 
-#include "base/strings/string_piece.h"
-#include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy_features.h"
-#include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
-#include "third_party/blink/public/mojom/page/page_visibility_state.mojom-forward.h"
-#include "third_party/blink/public/platform/web_impression.h"
-#include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/public/web/web_ax_enums.h"
-#include "third_party/blink/public/web/web_frame.h"
-#include "third_party/blink/public/web/web_navigation_policy.h"
-#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace blink {
-
-class WebURLRequest;
-class WebView;
-struct WebWindowFeatures;
 
 class WebViewClient {
  public:
   virtual ~WebViewClient() = default;
   // Factory methods -----------------------------------------------------
-
-  // Create a new related WebView.  This method must clone its session storage
-  // so any subsequent calls to createSessionStorageNamespace conform to the
-  // WebStorage specification.
-  // The request parameter is only for the client to check if the request
-  // could be fulfilled.  The client should not load the request.
-  // The policy parameter indicates how the new view will be displayed in
-  // LocalMainFrameHost::ShowCreatedWidget.
-  virtual WebView* CreateView(
-      WebLocalFrame* creator,
-      const WebURLRequest& request,
-      const WebWindowFeatures& features,
-      const WebString& name,
-      WebNavigationPolicy policy,
-      network::mojom::WebSandboxFlags,
-      const SessionStorageNamespaceId& session_storage_namespace_id,
-      bool& consumed_user_gesture,
-      const absl::optional<WebImpression>&) {
-    return nullptr;
-  }
 
   // Misc ----------------------------------------------------------------
 
@@ -92,6 +56,8 @@ class WebViewClient {
   // Called when the View acquires focus.
   virtual void DidFocus() {}
 
+  // Called when the WebView is destroying itself.
+  virtual void OnDestruct() {}
 };
 
 }  // namespace blink

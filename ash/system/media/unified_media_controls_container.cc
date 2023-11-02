@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@ namespace ash {
 
 namespace {
 constexpr int kContainerHeight = 72;
-constexpr gfx::Insets kContainerInsets = gfx::Insets(0, 16, 16, 16);
+constexpr auto kContainerInsets = gfx::Insets::TLBR(0, 16, 16, 16);
 }  // namespace
 
 UnifiedMediaControlsContainer::UnifiedMediaControlsContainer()

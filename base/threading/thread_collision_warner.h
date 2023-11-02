@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include "base/atomicops.h"
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 
 // A helper class alongside macros to be used to verify assumptions about thread
 // safety of a class.
@@ -157,9 +157,7 @@ class BASE_EXPORT ThreadCollisionWarner {
   ThreadCollisionWarner(const ThreadCollisionWarner&) = delete;
   ThreadCollisionWarner& operator=(const ThreadCollisionWarner&) = delete;
 
-  ~ThreadCollisionWarner() {
-    delete asserter_;
-  }
+  ~ThreadCollisionWarner() { asserter_.ClearAndDelete(); }
 
   // This class is meant to be used through the macro
   // DFAKE_SCOPED_LOCK_THREAD_LOCKED
@@ -179,7 +177,7 @@ class BASE_EXPORT ThreadCollisionWarner {
     ~Check() = default;
 
    private:
-    ThreadCollisionWarner* warner_;
+    raw_ptr<ThreadCollisionWarner> warner_;
   };
 
   // This class is meant to be used through the macro
@@ -199,7 +197,7 @@ class BASE_EXPORT ThreadCollisionWarner {
     }
 
    private:
-    ThreadCollisionWarner* warner_;
+    raw_ptr<ThreadCollisionWarner> warner_;
   };
 
   // This class is meant to be used through the macro
@@ -219,7 +217,7 @@ class BASE_EXPORT ThreadCollisionWarner {
     }
 
    private:
-    ThreadCollisionWarner* warner_;
+    raw_ptr<ThreadCollisionWarner> warner_;
   };
 
  private:
@@ -245,7 +243,7 @@ class BASE_EXPORT ThreadCollisionWarner {
 
   // Here only for class unit tests purpose, during the test I need to not
   // DCHECK but notify the collision with something else.
-  AsserterBase* asserter_;
+  raw_ptr<AsserterBase> asserter_;
 };
 
 }  // namespace base

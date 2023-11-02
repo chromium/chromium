@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -83,7 +84,7 @@ class API_AVAILABLE(macos(10.15)) AuthSessionRequest
   bool perform_cancellation_callback_ = true;
 
   // The browser containing the WebContents being used to service the request.
-  Browser* browser_ = nullptr;
+  raw_ptr<Browser> browser_ = nullptr;
 
   // The request being serviced.
   base::scoped_nsobject<ASWebAuthenticationSessionRequest> request_;

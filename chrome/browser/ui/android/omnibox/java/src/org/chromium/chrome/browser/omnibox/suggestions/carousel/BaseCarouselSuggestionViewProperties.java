@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,12 +11,12 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
-import java.util.Collection;
+import java.util.List;
 
 /** The base set of properties for the Carousel suggestions. */
 public class BaseCarouselSuggestionViewProperties {
     /** Action Icons description. */
-    public static final WritableObjectPropertyKey<Collection<ListItem>> TILES =
+    public static final WritableObjectPropertyKey<List<ListItem>> TILES =
             new WritableObjectPropertyKey<>();
 
     /** The header title to be applied to the suggestion. */
@@ -26,8 +26,12 @@ public class BaseCarouselSuggestionViewProperties {
     /** Controls whether the Header should be shown. */
     public static final WritableBooleanPropertyKey SHOW_TITLE = new WritableBooleanPropertyKey();
 
+    /** Controls whether the carousel should have horizontal fade effect. */
+    public static final WritableBooleanPropertyKey HORIZONTAL_FADE =
+            new WritableBooleanPropertyKey();
+
     public static final PropertyKey[] ALL_UNIQUE_KEYS =
-            new PropertyKey[] {TITLE, SHOW_TITLE, TILES};
+            new PropertyKey[] {TITLE, SHOW_TITLE, TILES, HORIZONTAL_FADE};
 
     public static final PropertyKey[] ALL_KEYS =
             PropertyModel.concatKeys(ALL_UNIQUE_KEYS, SuggestionCommonProperties.ALL_KEYS);

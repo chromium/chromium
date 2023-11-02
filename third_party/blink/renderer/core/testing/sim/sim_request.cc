@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -60,7 +60,7 @@ void SimRequestBase::UsedForNavigation(
 
 void SimRequestBase::StartInternal() {
   DCHECK(!started_);
-  DCHECK(redirect_url_.IsEmpty());  // client_ is nullptr on redirects
+  DCHECK(redirect_url_.empty());  // client_ is nullptr on redirects
   DCHECK(client_);
   started_ = true;
   client_->DidReceiveResponse(response_);
@@ -113,7 +113,7 @@ void SimRequestBase::Complete(const String& data) {
     ServePending();
   if (!started_)
     StartInternal();
-  if (!data.IsEmpty())
+  if (!data.empty())
     Write(data);
   Finish();
 }
@@ -123,7 +123,7 @@ void SimRequestBase::Complete(const Vector<char>& data) {
     ServePending();
   if (!started_)
     StartInternal();
-  if (!data.IsEmpty())
+  if (!data.empty())
     Write(data);
   Finish();
 }

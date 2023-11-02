@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,36 +33,30 @@ class OfflineLoginScreen
   static std::string GetResultString(Result result);
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
-  OfflineLoginScreen(OfflineLoginView* view,
+  OfflineLoginScreen(base::WeakPtr<OfflineLoginView> view,
                      const ScreenExitCallback& exit_callback);
   ~OfflineLoginScreen() override;
-
-  // Called when the associated View is being destroyed. This screen should call
-  // Unbind() on the associated View if this class is destroyed before that.
-  void OnViewDestroyed(OfflineLoginView* view);
-
-  void LoadOffline();
-
-  void HandleCompleteAuth(const std::string& username,
-                          const std::string& password);
-
-  void HandleEmailSubmitted(const std::string& username);
 
   // NetworkStateInformer::NetworkStateInformerObserver:
   void OnNetworkReady() override;
   void UpdateState(NetworkError::ErrorReason reason) override;
 
+  void ShowPasswordMismatchMessage();
+
  private:
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserAction(const std::string& action_id) override;
+  void OnUserAction(const base::Value::List& args) override;
 
   void StartIdleDetection();
   void OnIdle();
 
   void HandleTryLoadOnlineLogin();
+  void HandleCompleteAuth(const std::string& username,
+                          const std::string& password);
+  void HandleEmailSubmitted(const std::string& username);
 
-  OfflineLoginView* view_ = nullptr;
+  base::WeakPtr<OfflineLoginView> view_;
 
   // True when network is available.
   bool is_network_available_ = false;

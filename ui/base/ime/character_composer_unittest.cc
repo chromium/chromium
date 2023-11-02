@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -308,6 +308,26 @@ TEST_F(CharacterComposerTest, CompositionStateIsClearedAfterReset) {
   ExpectUnicodeKeyNotFiltered(VKEY_A, DomCode::US_A, EF_NONE, 'a');
 }
 
+TEST_F(CharacterComposerTest, KeySequenceCompositionPreedit) {
+  // LATIN SMALL LETTER A WITH ACUTE
+  // preedit_string() is always empty in key sequence composition mode.
+  ExpectDeadKeyFiltered(kCombiningAcute);
+  EXPECT_TRUE(character_composer_.preedit_string().empty());
+  ExpectUnicodeKeyComposed(VKEY_A, DomCode::US_A, EF_NONE, 'a',
+                           std::u16string(1, 0x00E1));
+  EXPECT_TRUE(character_composer_.preedit_string().empty());
+
+  // LATIN SMALL LETTER A WITH ACUTE (via Compose key)
+  // preedit_string() is always empty in key sequence composition mode.
+  ExpectComposeKeyFiltered();
+  EXPECT_TRUE(character_composer_.preedit_string().empty());
+  ExpectUnicodeKeyFiltered(VKEY_OEM_7, DomCode::QUOTE, 0, '\'');
+  EXPECT_TRUE(character_composer_.preedit_string().empty());
+  ExpectUnicodeKeyComposed(VKEY_A, DomCode::US_A, EF_NONE, 'a',
+                           std::u16string(1, 0x00E1));
+  EXPECT_TRUE(character_composer_.preedit_string().empty());
+}
+
 // Verify the structure of the primary |TreeComposeChecker| table.
 TEST_F(CharacterComposerTest, MainTableIsCorrectlyOrdered) {
 // This file is included here intentionally, instead of the top of the file,
@@ -392,7 +412,7 @@ TEST_F(CharacterComposerTest, HexadecimalComposition) {
   ExpectUnicodeKeyComposed(
       VKEY_RETURN, DomCode::ENTER, EF_NONE, '\r',
       std::u16string(kMusicalKeyboard,
-                     kMusicalKeyboard + base::size(kMusicalKeyboard)));
+                     kMusicalKeyboard + std::size(kMusicalKeyboard)));
 }
 
 TEST_F(CharacterComposerTest, HexadecimalCompositionPreedit) {

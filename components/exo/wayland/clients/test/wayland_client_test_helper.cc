@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -89,7 +89,12 @@ void WaylandClientTestHelper::SetUpOnUIThread(base::WaitableEvent* event) {
   display_ = std::make_unique<Display>(nullptr, nullptr, nullptr, nullptr);
   wayland_server_ = exo::wayland::Server::Create(display_.get());
   DCHECK(wayland_server_);
-  event->Signal();
+  wayland_server_->StartWithDefaultPath(base::BindOnce(
+      [](base::WaitableEvent* event, bool success, const base::FilePath& path) {
+        DCHECK(success);
+        event->Signal();
+      },
+      event));
 }
 
 void WaylandClientTestHelper::TearDownOnUIThread(base::WaitableEvent* event) {

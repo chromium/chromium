@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@ class UserEventReporterHelperTesting : public UserEventReporterHelper {
   UserEventReporterHelperTesting(
       bool reporting_enabled,
       bool should_report_user,
+      bool is_kiosk_user,
       std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter> report_queue);
   ~UserEventReporterHelperTesting() override;
 
@@ -21,9 +22,12 @@ class UserEventReporterHelperTesting : public UserEventReporterHelper {
 
   bool ShouldReportUser(const std::string&) const override;
 
+  bool IsKioskUser() const override;
+
  private:
   const bool reporting_enabled_;
   const bool should_report_user_;
+  const bool is_kiosk_user_;
 };
 }  // namespace reporting
 

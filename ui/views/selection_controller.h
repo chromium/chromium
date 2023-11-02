@@ -1,10 +1,11 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_VIEWS_SELECTION_CONTROLLER_H_
 #define UI_VIEWS_SELECTION_CONTROLLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/gfx/geometry/point.h"
@@ -66,7 +67,7 @@ class VIEWS_EXPORT SelectionController {
   // Offsets the double-clicked word's range. This is only used in the unusual
   // case where the text changes on the second mousedown of a double-click.
   // This is harmless if there is not a currently double-clicked word.
-  void OffsetDoubleClickWord(int offset);
+  void OffsetDoubleClickWord(size_t offset);
 
  private:
   // Tracks the mouse clicks for single/double/triple clicks.
@@ -108,7 +109,7 @@ class VIEWS_EXPORT SelectionController {
   gfx::Range double_click_word_;
 
   // Weak pointer.
-  SelectionControllerDelegate* delegate_;
+  raw_ptr<SelectionControllerDelegate> delegate_;
 
   // Whether the selection clipboard is handled.
   bool handles_selection_clipboard_;

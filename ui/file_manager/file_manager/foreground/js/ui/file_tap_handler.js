@@ -1,8 +1,8 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert.js';
 
 /**
  * Processes touch events and calls back to the class user when tap events
@@ -282,5 +282,5 @@ FileTapHandler.TapEvent = {
   TAP: 'tap',
   LONG_PRESS: 'longpress',
   LONG_TAP: 'longtap',
-  TWO_FINGER_TAP: 'twofingertap'
+  TWO_FINGER_TAP: 'twofingertap',
 };

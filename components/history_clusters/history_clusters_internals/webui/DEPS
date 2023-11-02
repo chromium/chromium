@@ -1,0 +1,8 @@
+include_rules = [
+  "+components/grit/history_clusters_internals_resources.h",
+  "+components/grit/history_clusters_internals_resources_map.h",
+  "+components/history/core/browser",
+  "+mojo/public/cpp/bindings",
+  "+ui/base/webui/resource_path.h",
+  "+ui/webui/mojo_web_ui_controller.h",
+]

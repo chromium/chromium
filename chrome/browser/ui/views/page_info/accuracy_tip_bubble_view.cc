@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -63,7 +63,8 @@ std::unique_ptr<views::View> CreateRow(const std::u16string& text,
   auto icon_view = std::make_unique<NonAccessibleImageView>();
   icon_view->SetImage(
       ui::ImageModel::FromVectorIcon(icon, ui::kColorIcon, kVectorIconSize));
-  icon_view->SetProperty(views::kMarginsKey, gfx::Insets(0, 0, 0, icon_margin));
+  icon_view->SetProperty(views::kMarginsKey,
+                         gfx::Insets::TLBR(0, 0, 0, icon_margin));
   icon_view->SetProperty(views::kCrossAxisAlignmentKey,
                          views::LayoutAlignment::kStart);
   line->AddChildView(std::move(icon_view));
@@ -130,8 +131,8 @@ AccuracyTipBubbleView::AccuracyTipBubbleView(
   auto header_view = std::make_unique<ThemeTrackingNonAccessibleImageView>(
       *bundle.GetImageSkiaNamed(IDR_ACCURACY_TIP_ILLUSTRATION_LIGHT),
       *bundle.GetImageSkiaNamed(IDR_ACCURACY_TIP_ILLUSTRATION_DARK),
-      base::BindRepeating(&views::BubbleFrameView::GetBackgroundColor,
-                          base::Unretained(GetBubbleFrameView())));
+      base::BindRepeating(&views::BubbleDialogDelegate::GetBackgroundColor,
+                          base::Unretained(this)));
   set_fixed_width(header_view->GetPreferredSize().width());
   GetBubbleFrameView()->SetHeaderView(std::move(header_view));
 
@@ -142,7 +143,7 @@ AccuracyTipBubbleView::AccuracyTipBubbleView(
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical)
       .SetCollapseMargins(true)
-      .SetDefault(views::kMarginsKey, gfx::Insets(vertical_margin, 0))
+      .SetDefault(views::kMarginsKey, gfx::Insets::VH(vertical_margin, 0))
       .SetDefault(
           views::kFlexBehaviorKey,
           views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
@@ -162,11 +163,25 @@ AccuracyTipBubbleView::AccuracyTipBubbleView(
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_ACCURACY_TIP_BODY_LINE_3),
       vector_icons::kFeedIcon));
 
+  permissions::PermissionRequestManager* permission_request_manager =
+      permissions::PermissionRequestManager::FromWebContents(web_contents);
+  if (permission_request_manager) {
+    permission_request_manager->AddObserver(this);
+  }
+
   Layout();
   SizeToContents();
 }
 
-AccuracyTipBubbleView::~AccuracyTipBubbleView() = default;
+AccuracyTipBubbleView::~AccuracyTipBubbleView() {
+  if (web_contents()) {
+    permissions::PermissionRequestManager* permission_request_manager =
+        permissions::PermissionRequestManager::FromWebContents(web_contents());
+    if (permission_request_manager) {
+      permission_request_manager->RemoveObserver(this);
+    }
+  }
+}
 
 void AccuracyTipBubbleView::OnWidgetDestroying(views::Widget* widget) {
   PageInfoBubbleViewBase::OnWidgetDestroying(widget);
@@ -194,6 +209,13 @@ void AccuracyTipBubbleView::OnWidgetDestroying(views::Widget* widget) {
       break;
   }
   std::move(close_callback_).Run(action_taken_);
+}
+
+void AccuracyTipBubbleView::OnPromptAdded() {
+  // The page requested a permission that triggered a permission prompt.
+  // Accuracy tips have lower priority and have to be closed.
+  action_taken_ = AccuracyTipInteraction::kPermissionRequested;
+  GetWidget()->Close();
 }
 
 void AccuracyTipBubbleView::OpenHelpCenter() {

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/components/arc/arc_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -14,7 +15,6 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
-#include "base/task/post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -31,11 +31,10 @@
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/policy/schema_registry_service.h"
 #include "chrome/common/chrome_features.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/dbus/userdataauth/cryptohome_misc_client.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/dbus/constants/dbus_paths.h"
-#include "chromeos/dbus/session_manager/session_manager_client.h"
-#include "chromeos/dbus/userdataauth/cryptohome_misc_client.h"
-#include "chromeos/tpm/install_attributes.h"
-#include "components/arc/arc_features.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/cloud/cloud_external_data_manager.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
@@ -46,11 +45,12 @@
 #include "components/user_manager/user_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-using user_manager::ProfileRequiresPolicy;
 namespace policy {
 
-using PolicyEnforcement = UserCloudPolicyManagerAsh::PolicyEnforcement;
 namespace {
+
+using ::user_manager::ProfileRequiresPolicy;
+using PolicyEnforcement = UserCloudPolicyManagerAsh::PolicyEnforcement;
 
 // Directory under the profile directory where policy-related resources are
 // stored, see the following constants for details.
@@ -92,7 +92,7 @@ void CreateConfigurationPolicyProvider(
   *active_directory_policy_manager_out = nullptr;
 
   // Don't initialize cloud policy for the signin and the lock screen profile.
-  if (!chromeos::ProfileHelper::IsRegularProfile(profile)) {
+  if (!ash::ProfileHelper::IsRegularProfile(profile)) {
     return;
   }
 
@@ -101,9 +101,10 @@ void CreateConfigurationPolicyProvider(
   // happens right after sign-in. The just-signed-in User is the active user
   // during that time.
   const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+      ash::ProfileHelper::Get()->GetUserByProfile(profile);
   CHECK(user);
 
+  user_manager::KnownUser known_user(g_browser_process->local_state());
   // User policy exists for enterprise accounts:
   // - For regular cloud-managed users (those who have a GAIA account), a
   //   |UserCloudPolicyManagerAsh| is created here.
@@ -119,12 +120,12 @@ void CreateConfigurationPolicyProvider(
       BrowserPolicyConnector::IsNonEnterpriseUser(account_id.GetUserEmail())) {
     DLOG(WARNING) << "No policy loaded for known non-enterprise user";
     // Mark this profile as not requiring policy.
-    user_manager::known_user::SetProfileRequiresPolicy(
+    known_user.SetProfileRequiresPolicy(
         account_id, ProfileRequiresPolicy::kNoPolicyRequired);
     return;
   }
 
-  policy::BrowserPolicyConnectorAsh* connector =
+  BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
   bool is_active_directory = false;
   switch (account_id.GetAccountType()) {
@@ -147,7 +148,7 @@ void CreateConfigurationPolicyProvider(
   }
 
   const ProfileRequiresPolicy requires_policy_user_property =
-      user_manager::known_user::GetProfileRequiresPolicy(account_id);
+      known_user.GetProfileRequiresPolicy(account_id);
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();
   const bool is_stub_user =
@@ -160,9 +161,8 @@ void CreateConfigurationPolicyProvider(
   const bool policy_check_required =
       (requires_policy_user_property == ProfileRequiresPolicy::kUnknown) &&
       !is_stub_user && !is_active_directory &&
-      !command_line->HasSwitch(chromeos::switches::kProfileRequiresPolicy) &&
-      !command_line->HasSwitch(
-          chromeos::switches::kAllowFailedPolicyFetchForTest);
+      !command_line->HasSwitch(ash::switches::kProfileRequiresPolicy) &&
+      !command_line->HasSwitch(ash::switches::kAllowFailedPolicyFetchForTest);
 
   // |force_immediate_load| is true during Chrome restart, or during
   // initialization of stub user profiles when running tests. If we ever get
@@ -183,13 +183,12 @@ void CreateConfigurationPolicyProvider(
   // command-line flag (required for ephemeral users who are not persisted
   // in the known_user database).
   const bool policy_required =
-      !command_line->HasSwitch(
-          chromeos::switches::kAllowFailedPolicyFetchForTest) &&
+      !command_line->HasSwitch(ash::switches::kAllowFailedPolicyFetchForTest) &&
       (is_active_directory ||
        (requires_policy_user_property ==
         ProfileRequiresPolicy::kPolicyRequired) ||
        (command_line->GetSwitchValueASCII(
-            chromeos::switches::kProfileRequiresPolicy) == "true"));
+            ash::switches::kProfileRequiresPolicy) == "true"));
 
   // We should never have |policy_required| and |policy_check_required| both
   // set, since the |policy_required| implies that we already know that
@@ -250,9 +249,9 @@ void CreateConfigurationPolicyProvider(
 
   std::unique_ptr<UserCloudPolicyStoreAsh> store =
       std::make_unique<UserCloudPolicyStoreAsh>(
-          chromeos::CryptohomeMiscClient::Get(),
-          chromeos::SessionManagerClient::Get(), background_task_runner,
-          account_id, policy_key_dir, is_active_directory);
+          ash::CryptohomeMiscClient::Get(), ash::SessionManagerClient::Get(),
+          background_task_runner, account_id, policy_key_dir,
+          is_active_directory);
 
   scoped_refptr<base::SequencedTaskRunner> backend_task_runner =
       base::ThreadPool::CreateSequencedTaskRunner(
@@ -277,7 +276,7 @@ void CreateConfigurationPolicyProvider(
         std::make_unique<UserCloudPolicyManagerAsh>(
             profile, std::move(store), std::move(external_data_manager),
             component_policy_cache_dir, enforcement_type,
-            policy_refresh_timeout,
+            g_browser_process->local_state(), policy_refresh_timeout,
             base::BindOnce(&OnUserPolicyFatalError, account_id), account_id,
             base::ThreadTaskRunnerHandle::Get());
 
@@ -291,8 +290,7 @@ void CreateConfigurationPolicyProvider(
     }
 
     manager->Init(profile->GetPolicySchemaRegistryService()->registry());
-    manager->Connect(g_browser_process->local_state(),
-                     device_management_service,
+    manager->Connect(device_management_service,
                      g_browser_process->shared_url_loader_factory());
     *user_cloud_policy_manager_ash_out = std::move(manager);
   }

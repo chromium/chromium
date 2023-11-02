@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,9 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/command_line.h"
 #include "base/strings/string_util.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/media/router/mojo/media_router_mojo_metrics.h"
@@ -15,28 +17,35 @@
 #include "chrome/browser/media/router/providers/wired_display/wired_display_media_route_provider.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/cast_channel/cast_socket_service.h"
+#include "components/media_router/browser/media_router.h"
 #include "components/media_router/browser/media_router_factory.h"
 #include "components/media_router/common/media_source.h"
+#include "components/media_router/common/providers/cast/channel/cast_socket_service.h"
 #include "components/openscreen_platform/network_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/browser/media/router/mojo/media_route_provider_util_win.h"
 #endif
 
 namespace media_router {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 constexpr char kLoggerComponent[] = "MediaRouterDesktop";
 #endif
 
-MediaRouterDesktop::~MediaRouterDesktop() = default;
+MediaRouterDesktop::~MediaRouterDesktop() {
+  if (media_sink_service_)
+    media_sink_service_->RemoveLogger(GetLogger());
+}
 
 void MediaRouterDesktop::OnUserGesture() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   MediaRouterMojoImpl::OnUserGesture();
+  if (!media_sink_service_)
+    return;
+
   // Allow MRPM to intelligently update sinks and observers by passing in a
   // media source.
   UpdateMediaSinks(MediaSource::ForUnchosenDesktop().id());
@@ -49,7 +58,7 @@ void MediaRouterDesktop::OnUserGesture() {
                                 media_sink_service_status_.GetWeakPtr()));
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (!media_sink_service_->MdnsDiscoveryStarted()) {
     GetLogger()->LogInfo(
         mojom::LogCategory::kDiscovery, kLoggerComponent,
@@ -59,7 +68,7 @@ void MediaRouterDesktop::OnUserGesture() {
 #endif
 }
 
-base::Value MediaRouterDesktop::GetState() const {
+base::Value::Dict MediaRouterDesktop::GetState() const {
   return media_sink_service_status_.GetStatusAsValue();
 }
 
@@ -87,23 +96,13 @@ MediaRouterDesktop::GetProviderIdForPresentation(
 }
 
 MediaRouterDesktop::MediaRouterDesktop(content::BrowserContext* context)
-    : MediaRouterDesktop(context, DualMediaSinkService::GetInstance()) {
-#if defined(OS_WIN)
-  CanFirewallUseLocalPorts(
-      base::BindOnce(&MediaRouterDesktop::OnFirewallCheckComplete,
-                     weak_factory_.GetWeakPtr()));
-#endif
-}
-
-MediaRouterDesktop::MediaRouterDesktop(content::BrowserContext* context,
-                                       DualMediaSinkService* media_sink_service)
     : MediaRouterMojoImpl(context),
       cast_provider_(nullptr, base::OnTaskRunnerDeleter(nullptr)),
       dial_provider_(nullptr, base::OnTaskRunnerDeleter(nullptr)),
-      media_sink_service_(media_sink_service) {
-  media_sink_service_->BindLogger(GetLogger());
-  InitializeMediaRouteProviders();
-}
+      media_sink_service_(base::CommandLine::ForCurrentProcess()->HasSwitch(
+                              kDisableMediaRouteProvidersForTestSwitch)
+                              ? nullptr
+                              : DualMediaSinkService::GetInstance()) {}
 
 void MediaRouterDesktop::RegisterMediaRouteProvider(
     mojom::MediaRouteProviderId provider_id,
@@ -135,7 +134,23 @@ void MediaRouterDesktop::GetMediaSinkServiceStatus(
   std::move(callback).Run(media_sink_service_status_.GetStatusAsJSONString());
 }
 
+void MediaRouterDesktop::Initialize() {
+  MediaRouterMojoImpl::Initialize();
+  if (media_sink_service_) {
+    media_sink_service_->AddLogger(GetLogger());
+    InitializeMediaRouteProviders();
+#if BUILDFLAG(IS_WIN)
+    CanFirewallUseLocalPorts(
+        base::BindOnce(&MediaRouterDesktop::OnFirewallCheckComplete,
+                       weak_factory_.GetWeakPtr()));
+#endif
+  }
+}
+
 void MediaRouterDesktop::InitializeMediaRouteProviders() {
+  DCHECK(!base::CommandLine::ForCurrentProcess()->HasSwitch(
+      kDisableMediaRouteProvidersForTestSwitch));
+
   if (!openscreen_platform::HasNetworkContextGetter()) {
     openscreen_platform::SetNetworkContextGetter(base::BindRepeating([] {
       DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -168,6 +183,7 @@ std::string MediaRouterDesktop::GetHashToken() {
 }
 
 void MediaRouterDesktop::InitializeCastMediaRouteProvider() {
+  DCHECK(media_sink_service_);
   auto task_runner =
       cast_channel::CastSocketService::GetInstance()->task_runner();
   mojo::PendingRemote<mojom::MediaRouter> media_router_remote;
@@ -179,7 +195,7 @@ void MediaRouterDesktop::InitializeCastMediaRouteProvider() {
           new CastMediaRouteProvider(
               cast_provider_remote.InitWithNewPipeAndPassReceiver(),
               std::move(media_router_remote),
-              media_sink_service_->GetCastMediaSinkServiceImpl(),
+              media_sink_service_->GetCastMediaSinkServiceBase(),
               media_sink_service_->cast_app_discovery_service(),
               GetCastMessageHandler(), GetHashToken(), task_runner),
           base::OnTaskRunnerDeleter(task_runner));
@@ -188,6 +204,7 @@ void MediaRouterDesktop::InitializeCastMediaRouteProvider() {
 }
 
 void MediaRouterDesktop::InitializeDialMediaRouteProvider() {
+  DCHECK(media_sink_service_);
   mojo::PendingRemote<mojom::MediaRouter> media_router_remote;
   MediaRouterMojoImpl::BindToMojoReceiver(
       media_router_remote.InitWithNewPipeAndPassReceiver());
@@ -208,8 +225,9 @@ void MediaRouterDesktop::InitializeDialMediaRouteProvider() {
                              std::move(dial_provider_remote));
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void MediaRouterDesktop::EnsureMdnsDiscoveryEnabled() {
+  DCHECK(media_sink_service_);
   media_sink_service_->StartMdnsDiscovery();
 }
 

@@ -1,10 +1,9 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/subresource_filter/subresource_filter_browser_test_harness.h"
 
-#include "build/build_config.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/subresource_filter/content/browser/ad_tagging_browser_test_utils.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
@@ -29,6 +28,10 @@ using testing::_;
 using testing::Mock;
 
 namespace subresource_filter {
+
+// TODO(bokan): These tests don't run on Android but it'd be good to test there
+// as well as the UI differs. In particular, testing that prerender activation
+// hides infobars.
 
 // Tests -----------------------------------------------------------------------
 
@@ -138,7 +141,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
 
   // Now dynamically try to load `included_script.js` in the primary frame.
   // Ensure it is not filtered.
-  EXPECT_TRUE(IsDynamicScriptElementLoaded(web_contents()->GetMainFrame()));
+  EXPECT_TRUE(
+      IsDynamicScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
 }
 
 // Test that we don't start filtering an unactivated prerendering page when the
@@ -234,11 +238,9 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
 
     // But ensure we haven't shown the notification UI yet since the page is
     // still prerendering.
-    EXPECT_FALSE(AdsBlockedInContentSettings(web_contents()->GetMainFrame()));
+    EXPECT_FALSE(
+        AdsBlockedInContentSettings(web_contents()->GetPrimaryMainFrame()));
     EXPECT_FALSE(AdsBlockedInContentSettings(prerender_rfh));
-#if defined(OS_ANDROID)
-    EXPECT_FALSE(PresentingAdsBlockedInfobar());
-#endif
   }
 
   // Makes the prerendering page primary (i.e. the user clicked on a link to
@@ -248,11 +250,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
     EXPECT_CALL(observer, OnPageActivationComputed(_, _)).Times(0);
     prerender_helper_.NavigatePrimaryPage(kPrerenderingUrl);
 
-    EXPECT_TRUE(AdsBlockedInContentSettings(web_contents()->GetMainFrame()));
+    ASSERT_EQ(web_contents()->GetPrimaryMainFrame(), prerender_rfh);
     EXPECT_TRUE(AdsBlockedInContentSettings(prerender_rfh));
-#if defined(OS_ANDROID)
-    EXPECT_TRUE(PresentingAdsBlockedInfobar());
-#endif
   }
 }
 
@@ -273,7 +272,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
   console_activation_observer.SetPattern(kActivationConsoleMessage);
   WebContentsConsoleObserver console_blocked_observer(web_contents());
   console_blocked_observer.SetPattern(
-      base::StringPrintf(kDisallowSubframeConsoleMessageFormat, "*"));
+      base::StringPrintf(kDisallowChildFrameConsoleMessageFormat, "*"));
 
   // Configure filtering of `included_script.js` only on the prerendering URL.
   {
@@ -367,7 +366,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
   // filtered.
   {
     prerender_helper_.NavigatePrimaryPage(kPrerenderingUrl);
-    EXPECT_FALSE(IsDynamicScriptElementLoaded(web_contents()->GetMainFrame()));
+    EXPECT_FALSE(
+        IsDynamicScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
   }
 }
 
@@ -416,7 +416,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
   {
     prerender_helper_.NavigatePrimaryPage(kPrerenderingUrl);
     ASSERT_EQ(kPrerenderingUrl, web_contents()->GetLastCommittedURL());
-    EXPECT_TRUE(IsDynamicScriptElementLoaded(web_contents()->GetMainFrame()));
+    EXPECT_TRUE(
+        IsDynamicScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
   }
 }
 
@@ -452,7 +453,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
   {
     ad_rfh = CreateSrcFrameFromAdScript(prerender_rfh, kAdUrl);
     ASSERT_NE(ad_rfh, nullptr);
-    EXPECT_TRUE(observer.GetIsAdSubframe(ad_rfh->GetFrameTreeNodeId()));
+    EXPECT_TRUE(observer.GetIsAdFrame(ad_rfh->GetFrameTreeNodeId()));
     EXPECT_TRUE(EvidenceForFrameComprises(
         ad_rfh, /*parent_is_ad=*/false,
         blink::mojom::FilterListResult::kMatchedNoRules,
@@ -465,7 +466,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
   {
     prerender_helper_.NavigatePrimaryPage(kPrerenderingUrl);
     ASSERT_EQ(kPrerenderingUrl, web_contents()->GetLastCommittedURL());
-    EXPECT_TRUE(observer.GetIsAdSubframe(ad_rfh->GetFrameTreeNodeId()));
+    EXPECT_TRUE(observer.GetIsAdFrame(ad_rfh->GetFrameTreeNodeId()));
     EXPECT_TRUE(EvidenceForFrameComprises(
         ad_rfh, /*parent_is_ad=*/false,
         blink::mojom::FilterListResult::kMatchedNoRules,
@@ -521,7 +522,5 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
               console_observer.GetMessageAt(0u));
   }
 }
-
-// TODO - test that prerender activation hides infobars.
 
 }  // namespace subresource_filter

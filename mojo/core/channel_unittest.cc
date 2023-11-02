@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -49,6 +49,8 @@ class TestChannel : public Channel {
                     size_t extra_header_size,
                     std::vector<PlatformHandle>* handles,
                     bool* deferred));
+  MOCK_METHOD2(GetReadPlatformHandlesForIpcz,
+               bool(size_t, std::vector<PlatformHandle>&));
   MOCK_METHOD0(Start, void());
   MOCK_METHOD0(ShutDownImpl, void());
   MOCK_METHOD0(LeakHandle, void());
@@ -379,7 +381,8 @@ TEST(ChannelTest, DeserializeMessage_BadExtraHeaderSize) {
                                           base::kNullProcessHandle));
 }
 
-#if !defined(OS_WIN) && !defined(OS_APPLE) && !defined(OS_FUCHSIA)
+// This test is only enabled for Linux-based platforms.
+#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_FUCHSIA)
 TEST(ChannelTest, DeserializeMessage_NonZeroExtraHeaderSize) {
   // Verifies that a message payload is rejected when the extra header chunk
   // size anything but zero on Linux, even if it's aligned.
@@ -605,7 +608,7 @@ TEST(ChannelTest, MessageSizeTest) {
   }
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 TEST(ChannelTest, SendToDeadMachPortName) {
   base::test::SingleThreadTaskEnvironment task_environment(
       base::test::TaskEnvironment::MainThreadType::IO);
@@ -709,7 +712,7 @@ TEST(ChannelTest, SendToDeadMachPortName) {
   EXPECT_EQ(0u, send);
   EXPECT_EQ(1u, dead);
 }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace
 }  // namespace core

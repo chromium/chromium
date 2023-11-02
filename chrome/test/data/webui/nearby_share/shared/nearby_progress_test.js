@@ -1,18 +1,18 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
 // So that mojo is defined.
-// #import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-// #import 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-lite.js';
-// #import 'chrome://resources/mojo/url/mojom/url.mojom-lite.js';
-// #import 'chrome://nearby/mojo/nearby_share_target_types.mojom-lite.js';
-// #import 'chrome://nearby/mojo/nearby_share_share_type.mojom-lite.js';
-// #import 'chrome://nearby/mojo/nearby_share.mojom-lite.js';
-// #import 'chrome://nearby/shared/nearby_progress.m.js';
-// #import {assertEquals} from '../../chai_assert.js';
-// clang-format on
+import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+import 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-lite.js';
+import 'chrome://resources/mojo/url/mojom/url.mojom-lite.js';
+import 'chrome://nearby/mojo/nearby_share_target_types.mojom-lite.js';
+import 'chrome://nearby/mojo/nearby_share_share_type.mojom-lite.js';
+import 'chrome://nearby/mojo/nearby_share.mojom-lite.js';
+
+import {NearbyProgressElement} from 'chrome://nearby/shared/nearby_progress.js';
+
+import {assertEquals} from '../../chai_assert.js';
 
 suite('ProgressTest', function() {
   /** @type {!NearbyProgressElement} */
@@ -50,14 +50,16 @@ suite('ProgressTest', function() {
     shareTarget.name = name;
     progressElement.shareTarget = shareTarget;
 
-    const renderedName = progressElement.$$('#device-name').innerText;
+    const renderedName =
+        progressElement.shadowRoot.querySelector('#device-name').innerText;
     assertEquals(name, renderedName);
   });
 
   test('renders target image', function() {
     progressElement.shareTarget = getDefaultShareTarget();
 
-    const renderedSource = progressElement.$$('#share-target-image').src;
+    const renderedSource =
+        progressElement.shadowRoot.querySelector('#share-target-image').src;
     assertEquals('chrome://image/?http://google.com/image=s68', renderedSource);
   });
 
@@ -66,7 +68,8 @@ suite('ProgressTest', function() {
     shareTarget.imageUrl.url = '';
     progressElement.shareTarget = shareTarget;
 
-    const renderedSource = progressElement.$$('#share-target-image').src;
+    const renderedSource =
+        progressElement.shadowRoot.querySelector('#share-target-image').src;
     assertEquals('', renderedSource);
   });
 });

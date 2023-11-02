@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,10 +37,9 @@ class MainThreadPerfTest : public testing::Test {
         base::sequence_manager::CreateSequenceManagerOnCurrentThreadWithPump(
             base::MessagePump::Create(base::MessagePumpType::DEFAULT),
             base::sequence_manager::SequenceManager::Settings::Builder()
-                .Build()),
-        absl::nullopt);
-    scheduler_overrider_ =
-        std::make_unique<ScopedSchedulerOverrider>(scheduler_.get());
+                .Build()));
+    scheduler_overrider_ = std::make_unique<ScopedSchedulerOverrider>(
+        scheduler_.get(), scheduler_->DefaultTaskRunner());
   }
 
   void TearDown() override { scheduler_->Shutdown(); }

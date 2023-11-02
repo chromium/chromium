@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,7 +23,7 @@
 #include "third_party/blink/renderer/modules/peerconnection/rtc_ice_candidate.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_peer_connection.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_peer_connection_ice_event.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/webrtc/api/ice_transport_factory.h"
 #include "third_party/webrtc/api/ice_transport_interface.h"
@@ -293,12 +293,10 @@ void RTCIceTransport::gather(RTCIceGatherOptions* options,
   }
   cricket::ServerAddresses stun_servers;
   std::vector<cricket::RelayServerConfig> turn_servers;
-  webrtc::RTCErrorType error_type = webrtc::ParseIceServers(
+  webrtc::RTCError error = webrtc::ParseIceServersOrError(
       ice_servers.ReleaseVector(), &stun_servers, &turn_servers);
-  if (error_type != webrtc::RTCErrorType::NONE) {
-    ThrowExceptionFromRTCError(
-        webrtc::RTCError(error_type, "Invalid ICE server URL(s)."),
-        exception_state);
+  if (!error.ok()) {
+    ThrowExceptionFromRTCError(error, exception_state);
     return;
   }
   gathering_state_ = cricket::kIceGatheringGathering;
@@ -418,10 +416,10 @@ void RTCIceTransport::OnGatheringStateChanged(
   }
   if (new_state == cricket::kIceGatheringComplete) {
     // Generate a null ICE candidate to signal the end of candidates.
-    DispatchEvent(*RTCPeerConnectionIceEvent::Create(nullptr));
+    DispatchEvent(*RTCPeerConnectionIceEvent::Create(nullptr), "RTCIceTransport::OnGatheringStateChanged #1");
   }
   gathering_state_ = new_state;
-  DispatchEvent(*Event::Create(event_type_names::kGatheringstatechange));
+  DispatchEvent(*Event::Create(event_type_names::kGatheringstatechange), "RTCIceTransport::OnGatheringStateChanged #2");
 }
 
 void RTCIceTransport::OnCandidateGathered(
@@ -432,7 +430,7 @@ void RTCIceTransport::OnCandidateGathered(
       RTCPeerConnectionIceEventInit::Create();
   event_init->setCandidate(candidate);
   DispatchEvent(*RTCPeerConnectionIceEvent::Create(
-      event_type_names::kIcecandidate, event_init));
+      event_type_names::kIcecandidate, event_init), "RTCIceTransport::OnCandidateGathered");
 }
 
 void RTCIceTransport::OnStateChanged(webrtc::IceTransportState new_state) {
@@ -454,7 +452,7 @@ void RTCIceTransport::OnStateChanged(webrtc::IceTransportState new_state) {
   if (peer_connection_) {
     peer_connection_->UpdateIceConnectionState();
   }
-  DispatchEvent(*Event::Create(event_type_names::kStatechange));
+  DispatchEvent(*Event::Create(event_type_names::kStatechange), "RTCIceTransport::OnStateChanged");
   if (state_ == webrtc::IceTransportState::kClosed ||
       state_ == webrtc::IceTransportState::kFailed) {
     stop();
@@ -471,7 +469,7 @@ void RTCIceTransport::OnSelectedCandidatePairChanged(
   selected_candidate_pair_ = RTCIceCandidatePair::Create();
   selected_candidate_pair_->setLocal(local);
   selected_candidate_pair_->setRemote(remote);
-  DispatchEvent(*Event::Create(event_type_names::kSelectedcandidatepairchange));
+  DispatchEvent(*Event::Create(event_type_names::kSelectedcandidatepairchange), "RTCIceTransport::OnSelectedCandidatePairChanged");
 }
 
 void RTCIceTransport::Close(CloseReason reason) {

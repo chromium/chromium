@@ -1,0 +1,5 @@
+specific_include_rules = {
+  "mac_scrollbar_animator_impl.h": [
+    "+ui/native_theme/scrollbar_animator_mac.h",
+  ],
+}

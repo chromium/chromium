@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/version.h"
@@ -75,7 +76,7 @@ class ExtensionActivityDataService final
  private:
   // This member is not owned by this class, it's owned by a profile keyed
   // service.
-  ExtensionPrefs* extension_prefs_;
+  raw_ptr<ExtensionPrefs> extension_prefs_;
 };
 
 // Calculates the value to use for the ping days parameter.
@@ -144,6 +145,8 @@ ChromeUpdateClientConfig::ChromeUpdateClientConfig(
   DCHECK(pref_service_);
 }
 
+ChromeUpdateClientConfig::~ChromeUpdateClientConfig() = default;
+
 double ChromeUpdateClientConfig::InitialDelay() const {
   return impl_.InitialDelay();
 }
@@ -183,12 +186,6 @@ base::Version ChromeUpdateClientConfig::GetBrowserVersion() const {
 
 std::string ChromeUpdateClientConfig::GetChannel() const {
   return chrome::GetChannelName(chrome::WithExtendedStable(true));
-}
-
-std::string ChromeUpdateClientConfig::GetBrand() const {
-  std::string brand;
-  google_brand::GetBrand(&brand);
-  return brand;
 }
 
 std::string ChromeUpdateClientConfig::GetLang() const {
@@ -258,10 +255,6 @@ bool ChromeUpdateClientConfig::EnabledDeltas() const {
   return impl_.EnabledDeltas();
 }
 
-bool ChromeUpdateClientConfig::EnabledComponentUpdates() const {
-  return impl_.EnabledComponentUpdates();
-}
-
 bool ChromeUpdateClientConfig::EnabledBackgroundDownloader() const {
   return impl_.EnabledBackgroundDownloader();
 }
@@ -290,7 +283,15 @@ ChromeUpdateClientConfig::GetProtocolHandlerFactory() const {
   return impl_.GetProtocolHandlerFactory();
 }
 
-ChromeUpdateClientConfig::~ChromeUpdateClientConfig() = default;
+absl::optional<bool> ChromeUpdateClientConfig::IsMachineExternallyManaged()
+    const {
+  return impl_.IsMachineExternallyManaged();
+}
+
+update_client::UpdaterStateProvider
+ChromeUpdateClientConfig::GetUpdaterStateProvider() const {
+  return impl_.GetUpdaterStateProvider();
+}
 
 // static
 scoped_refptr<ChromeUpdateClientConfig> ChromeUpdateClientConfig::Create(

@@ -22,10 +22,15 @@
 
   function getResourceNumber() {
       setInterval(function() {
-          if (resourcesNumber != -1) {
+        if (resourcesNumber != -1) {
               sendValueToTest(resourcesNumber);
-          }
+        }
       }, 300);
+  }
+
+  function getResources() {
+    return window.performance.getEntriesByType("resource")
+      .map(e => JSON.stringify(e.toJSON())).join('|');;
   }
   </script>
 

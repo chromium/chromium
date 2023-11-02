@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/device/public/mojom/usb_manager_test.mojom.h"
@@ -43,7 +43,7 @@ class DeviceManagerTest : public mojom::UsbDeviceManagerTest {
 
  private:
   mojo::ReceiverSet<mojom::UsbDeviceManagerTest> receivers_;
-  UsbService* usb_service_;
+  raw_ptr<UsbService> usb_service_;
 };
 
 }  // namespace usb

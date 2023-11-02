@@ -1,4 +1,4 @@
-// Copyright (c) 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "ui/accessibility/ax_enum_localization_util.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/platform/ax_platform_node_auralinux.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
@@ -115,120 +116,6 @@ static void AXPlatformAtkHyperlinkClassInit(AtkHyperlinkClass* klass) {
   klass->get_end_index = AXPlatformAtkHyperlinkGetEndIndex;
 }
 
-//
-// AtkAction interface.
-//
-
-static AXPlatformNodeAuraLinux* ToAXPlatformNodeAuraLinuxFromHyperlinkAction(
-    AtkAction* atk_action) {
-  if (!IS_AX_PLATFORM_ATK_HYPERLINK(atk_action))
-    return nullptr;
-
-  return ToAXPlatformNodeAuraLinux(AX_PLATFORM_ATK_HYPERLINK(atk_action));
-}
-
-static gboolean ax_platform_atk_hyperlink_do_action(AtkAction* action,
-                                                    gint index) {
-  g_return_val_if_fail(ATK_IS_ACTION(action), FALSE);
-  g_return_val_if_fail(!index, FALSE);
-
-  AXPlatformNodeAuraLinux* obj =
-      ToAXPlatformNodeAuraLinuxFromHyperlinkAction(action);
-  if (!obj)
-    return FALSE;
-
-  obj->DoDefaultAction();
-
-  return TRUE;
-}
-
-static gint ax_platform_atk_hyperlink_get_n_actions(AtkAction* action) {
-  g_return_val_if_fail(ATK_IS_ACTION(action), FALSE);
-
-  AXPlatformNodeAuraLinux* obj =
-      ToAXPlatformNodeAuraLinuxFromHyperlinkAction(action);
-  if (!obj)
-    return 0;
-
-  return 1;
-}
-
-static const gchar* ax_platform_atk_hyperlink_get_description(AtkAction* action,
-                                                              gint index) {
-  g_return_val_if_fail(ATK_IS_ACTION(action), FALSE);
-  g_return_val_if_fail(!index, FALSE);
-
-  AXPlatformNodeAuraLinux* obj =
-      ToAXPlatformNodeAuraLinuxFromHyperlinkAction(action);
-  if (!obj)
-    return nullptr;
-
-  // Not implemented
-  return nullptr;
-}
-
-static const gchar* ax_platform_atk_hyperlink_get_keybinding(AtkAction* action,
-                                                             gint index) {
-  g_return_val_if_fail(ATK_IS_ACTION(action), FALSE);
-  g_return_val_if_fail(!index, FALSE);
-
-  AXPlatformNodeAuraLinux* obj =
-      ToAXPlatformNodeAuraLinuxFromHyperlinkAction(action);
-  if (!obj)
-    return nullptr;
-
-  return obj->GetStringAttribute(ax::mojom::StringAttribute::kAccessKey)
-      .c_str();
-}
-
-static const gchar* ax_platform_atk_hyperlink_get_name(AtkAction* atk_action,
-                                                       gint index) {
-  g_return_val_if_fail(ATK_IS_ACTION(atk_action), FALSE);
-  g_return_val_if_fail(!index, FALSE);
-
-  AXPlatformNodeAuraLinux* obj =
-      ToAXPlatformNodeAuraLinuxFromHyperlinkAction(atk_action);
-  if (!obj)
-    return nullptr;
-
-  int action;
-  if (!obj->GetIntAttribute(ax::mojom::IntAttribute::kDefaultActionVerb,
-                            &action))
-    return nullptr;
-  std::string action_verb =
-      ui::ToString(static_cast<ax::mojom::DefaultActionVerb>(action));
-  ATK_AURALINUX_RETURN_STRING(action_verb);
-}
-
-static const gchar* ax_platform_atk_hyperlink_get_localized_name(
-    AtkAction* atk_action,
-    gint index) {
-  g_return_val_if_fail(ATK_IS_ACTION(atk_action), FALSE);
-  g_return_val_if_fail(!index, FALSE);
-
-  AXPlatformNodeAuraLinux* obj =
-      ToAXPlatformNodeAuraLinuxFromHyperlinkAction(atk_action);
-  if (!obj)
-    return nullptr;
-
-  int action;
-  if (!obj->GetIntAttribute(ax::mojom::IntAttribute::kDefaultActionVerb,
-                            &action))
-    return nullptr;
-  std::string action_verb =
-      ui::ToLocalizedString(static_cast<ax::mojom::DefaultActionVerb>(action));
-  ATK_AURALINUX_RETURN_STRING(action_verb);
-}
-
-static void atk_action_interface_init(AtkActionIface* iface) {
-  iface->do_action = ax_platform_atk_hyperlink_do_action;
-  iface->get_n_actions = ax_platform_atk_hyperlink_get_n_actions;
-  iface->get_description = ax_platform_atk_hyperlink_get_description;
-  iface->get_keybinding = ax_platform_atk_hyperlink_get_keybinding;
-  iface->get_name = ax_platform_atk_hyperlink_get_name;
-  iface->get_localized_name = ax_platform_atk_hyperlink_get_localized_name;
-}
-
 void ax_platform_atk_hyperlink_set_object(
     AXPlatformAtkHyperlink* atk_hyperlink,
     AXPlatformNodeAuraLinux* platform_node) {
@@ -263,13 +150,8 @@ GType ax_platform_atk_hyperlink_get_type() {
         nullptr /* value table */
     };
 
-    static const GInterfaceInfo actionInfo = {
-        (GInterfaceInitFunc)(GInterfaceInitFunc)atk_action_interface_init,
-        (GInterfaceFinalizeFunc)0, 0};
-
     GType type = g_type_register_static(
         ATK_TYPE_HYPERLINK, "AXPlatformAtkHyperlink", &tinfo, GTypeFlags(0));
-    g_type_add_interface_static(type, ATK_TYPE_ACTION, &actionInfo);
     g_once_init_leave(&type_volatile, type);
   }
 

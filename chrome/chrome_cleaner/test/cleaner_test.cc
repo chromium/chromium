@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/task_traits.h"
@@ -132,10 +133,10 @@ std::vector<std::wstring> GetUnsanitizedPaths() {
 
 bool ContainsAnyOf(const std::wstring& main_string,
                    const std::vector<std::wstring>& substrings) {
-  return std::any_of(substrings.begin(), substrings.end(),
-                     [&main_string](const std::wstring& path) -> bool {
-                       return main_string.find(path) != std::wstring::npos;
-                     });
+  return base::ranges::any_of(
+      substrings, [&main_string](const std::wstring& path) {
+        return main_string.find(path) != std::wstring::npos;
+      });
 }
 
 template <typename RepeatedTypeWithFileInformation>

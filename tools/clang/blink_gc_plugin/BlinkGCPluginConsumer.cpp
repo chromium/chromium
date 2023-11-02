@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -140,7 +140,7 @@ void BlinkGCPluginConsumer::HandleTranslationUnit(ASTContext& context) {
     json_ = 0;
   }
 
-  FindBadPatterns(context, reporter_);
+  FindBadPatterns(context, reporter_, options_);
 }
 
 void BlinkGCPluginConsumer::ParseFunctionTemplates(TranslationUnitDecl* decl) {
@@ -253,13 +253,17 @@ void BlinkGCPluginConsumer::CheckClass(RecordInfo* info) {
     if (!info->IsGCMixin()) {
       CheckLeftMostDerived(info);
       CheckDispatch(info);
-      if (CXXMethodDecl* newop = info->DeclaresNewOperator())
-        if (!Config::IsIgnoreAnnotated(newop))
+      if (CXXMethodDecl* newop = info->DeclaresNewOperator()) {
+        if (!info->IsStackAllocated() &&
+            !Config::IsGCBase(newop->getParent()->getName()) &&
+            !Config::IsIgnoreAnnotated(newop)) {
           reporter_.ClassOverridesNew(info, newop);
+        }
+      }
     }
 
     {
-      CheckGCRootsVisitor visitor;
+      CheckGCRootsVisitor visitor(options_);
       if (visitor.ContainsGCRoots(info))
         reporter_.ClassContainsGCRoots(info, visitor.gc_roots());
     }
@@ -564,17 +568,12 @@ void BlinkGCPluginConsumer::DumpClass(RecordInfo* info) {
       // The liveness kind of a path from the point to this value
       // is given by the innermost place that is non-strong.
       Edge::LivenessKind kind = Edge::kStrong;
-      if (Config::IsIgnoreCycleAnnotated(point_->field())) {
-        kind = Edge::kWeak;
-      } else {
-        for (Context::iterator it = context().begin();
-             it != context().end();
-             ++it) {
-          Edge::LivenessKind pointer_kind = (*it)->Kind();
-          if (pointer_kind != Edge::kStrong) {
-            kind = pointer_kind;
-            break;
-          }
+      for (Context::iterator it = context().begin(); it != context().end();
+           ++it) {
+        Edge::LivenessKind pointer_kind = (*it)->Kind();
+        if (pointer_kind != Edge::kStrong) {
+          kind = pointer_kind;
+          break;
         }
       }
       DumpEdge(

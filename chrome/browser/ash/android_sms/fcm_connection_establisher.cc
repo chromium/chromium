@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chromeos/components/multidevice/logging/logging.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/blink/public/common/messaging/string_message_codec.h"
@@ -135,10 +135,8 @@ void FcmConnectionEstablisher::ProcessMessageQueue() {
 
 void FcmConnectionEstablisher::SendInFlightMessage() {
   const PendingServiceWorkerMessage& message = in_flight_message_->message;
-  blink::TransferableMessage msg;
-  msg.owned_encoded_message = blink::EncodeStringMessage(
+  blink::TransferableMessage msg = blink::EncodeWebMessagePayload(
       base::UTF8ToUTF16(GetMessageStringForType(message.message_type)));
-  msg.encoded_message = msg.owned_encoded_message;
 
   PA_LOG(VERBOSE) << "Dispatching message " << message.message_type;
   message.service_worker_context->StartServiceWorkerAndDispatchMessage(

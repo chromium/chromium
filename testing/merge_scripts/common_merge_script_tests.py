@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -10,10 +10,11 @@ import unittest
 
 
 class CommandLineTest(unittest.TestCase):
-
+  # pylint: disable=super-with-arguments
   def __init__(self, methodName, module):
     super(CommandLineTest, self).__init__(methodName)
     self._module = module
+  # pylint: disable=super-with-arguments
 
   def setUp(self):
     self.temp_dir = tempfile.mkdtemp(prefix='common_merge_script_tests')
@@ -48,4 +49,4 @@ class CommandLineTest(unittest.TestCase):
       '--output-json', output_json,
       shard0_json,
     ]
-    self.assertEquals(0, self._module.main(raw_args))
+    self.assertEqual(0, self._module.main(raw_args))

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@
   [RuntimeEnabled=WebXRLightEstimation, RaisesException, MeasureAs=XRWebGLBindingGetReflectionCubeMap]
   WebGLTexture? getReflectionCubeMap(XRLightProbe lightProbe);
 
-  [RuntimeEnabled=WebXRCameraAccess, RaisesException]
+  [RuntimeEnabled=WebXRCameraAccess, RaisesException, MeasureAs=XRWebGLBindingGetCameraImage]
   WebGLTexture? getCameraImage(XRCamera camera);
 
   [RuntimeEnabled=WebXRDepth, RaisesException, MeasureAs=XRWebGLBindingGetDepthInformation]

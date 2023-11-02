@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,14 +9,19 @@
 #include <string>
 #include <vector>
 
-#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
+#include "base/memory/raw_ptr.h"
+#include "base/values.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "extensions/common/api/feedback_private.h"
 #include "ui/views/widget/widget.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
 
+class Profile;
+
 class FeedbackDialog : public ui::WebDialogDelegate {
  public:
   static void CreateOrShow(
+      Profile* profile,
       const extensions::api::feedback_private::FeedbackInfo& info);
 
   FeedbackDialog(const FeedbackDialog&) = delete;
@@ -55,11 +60,13 @@ class FeedbackDialog : public ui::WebDialogDelegate {
                                   const GURL& security_origin,
                                   blink::mojom::MediaStreamType type) override;
 
-  std::unique_ptr<base::DictionaryValue> feedback_info_;
+  base::Value::Dict feedback_info_;
   extensions::api::feedback_private::FeedbackFlow feedback_flow_;
   // Widget for the Feedback WebUI.
-  views::Widget* widget_;
+  raw_ptr<views::Widget> widget_;
   static FeedbackDialog* current_instance_;
+  // Whether `this` should correspond to `current_instance_`.
+  bool attached_to_current_instance_ = true;
 
   // Prevent Profile destruction until the dialog is closed, to prevent a
   // dangling RenderProcessHost crash.

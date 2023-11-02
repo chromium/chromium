@@ -35,8 +35,6 @@
 #include "absl/debugging/internal/vdso_support.h"  // a no-op on non-elf or non-glibc systems
 #include "absl/debugging/stacktrace.h"
 
-#include "absl/base/internal/raw_logging.h"
-
 using absl::debugging_internal::AddressIsReadable;
 
 #if defined(__linux__) && defined(__i386__)
@@ -140,13 +138,14 @@ static uintptr_t GetFP(const void *vuc) {
     // TODO(bcmills): -momit-leaf-frame-pointer is currently the default
     // behavior when building with clang.  Talk to the C++ toolchain team about
     // fixing that.
-    if (bp >= sp && bp - sp <= kMaxFrameBytes) return bp;
+    if (bp >= sp && bp - sp <= kMaxFrameBytes)
+      return static_cast<uintptr_t>(bp);
 
     // If bp isn't a plausible frame pointer, return the stack pointer instead.
     // If we're lucky, it points to the start of a stack frame; otherwise, we'll
     // get one frame of garbage in the stack trace and fail the sanity check on
     // the next iteration.
-    return sp;
+    return static_cast<uintptr_t>(sp);
   }
 #endif
   return 0;
@@ -310,7 +309,8 @@ static int UnwindImpl(void **result, int *sizes, int max_depth, int skip_count,
   int n = 0;
   void **fp = reinterpret_cast<void **>(__builtin_frame_address(0));
 
-  size_t stack_low = getpagesize();  // Assume that the first page is not stack.
+  // Assume that the first page is not stack.
+  size_t stack_low = static_cast<size_t>(getpagesize());
   size_t stack_high = std::numeric_limits<size_t>::max() - sizeof(void *);
 
   while (fp && n < max_depth) {
@@ -327,7 +327,9 @@ static int UnwindImpl(void **result, int *sizes, int max_depth, int skip_count,
       result[n] = *(fp + 1);
       if (IS_STACK_FRAMES) {
         if (next_fp > fp) {
-          sizes[n] = (uintptr_t)next_fp - (uintptr_t)fp;
+          sizes[n] = static_cast<int>(
+              reinterpret_cast<uintptr_t>(next_fp) -
+              reinterpret_cast<uintptr_t>(fp));
         } else {
           // A frame-size of 0 is used to indicate unknown frame size.
           sizes[n] = 0;
@@ -341,12 +343,17 @@ static int UnwindImpl(void **result, int *sizes, int max_depth, int skip_count,
     // Implementation detail: we clamp the max of frames we are willing to
     // count, so as not to spend too much time in the loop below.
     const int kMaxUnwind = 1000;
-    int j = 0;
-    for (; fp != nullptr && j < kMaxUnwind; j++) {
+    int num_dropped_frames = 0;
+    for (int j = 0; fp != nullptr && j < kMaxUnwind; j++) {
+      if (skip_count > 0) {
+        skip_count--;
+      } else {
+        num_dropped_frames++;
+      }
       fp = NextStackFrame<!IS_STACK_FRAMES, IS_WITH_CONTEXT>(fp, ucp, stack_low,
                                                              stack_high);
     }
-    *min_dropped_frames = j;
+    *min_dropped_frames = num_dropped_frames;
   }
   return n;
 }

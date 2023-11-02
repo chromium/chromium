@@ -1,17 +1,19 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_SERVICES_SHARED_STORAGE_WORKLET_SHARED_STORAGE_WORKLET_SERVICE_IMPL_H_
 #define CONTENT_SERVICES_SHARED_STORAGE_WORKLET_SHARED_STORAGE_WORKLET_SERVICE_IMPL_H_
 
-#include "content/services/shared_storage_worklet/public/mojom/shared_storage_worklet_service.mojom.h"
+#include "content/common/private_aggregation_host.mojom.h"
+#include "content/common/shared_storage_worklet_service.mojom.h"
 #include "content/services/shared_storage_worklet/shared_storage_worklet_global_scope.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 
 namespace shared_storage_worklet {
@@ -28,21 +30,19 @@ class SharedStorageWorkletServiceImpl
   ~SharedStorageWorkletServiceImpl() override;
 
   // mojom::SharedStorageWorkletService implementation:
-  void BindSharedStorageWorkletServiceClient(
-      mojo::PendingAssociatedRemote<mojom::SharedStorageWorkletServiceClient>
-          client) override;
-
+  void Initialize(mojo::PendingAssociatedRemote<
+                      mojom::SharedStorageWorkletServiceClient> client,
+                  mojo::PendingRemote<content::mojom::PrivateAggregationHost>
+                      private_aggregation_host) override;
   void AddModule(mojo::PendingRemote<network::mojom::URLLoaderFactory>
                      pending_url_loader_factory,
                  const GURL& script_source_url,
                  AddModuleCallback callback) override;
-
   void RunURLSelectionOperation(
       const std::string& name,
-      const std::vector<std::string>& urls,
+      const std::vector<GURL>& urls,
       const std::vector<uint8_t>& serialized_data,
       RunURLSelectionOperationCallback callback) override;
-
   void RunOperation(const std::string& name,
                     const std::vector<uint8_t>& serialized_data,
                     RunOperationCallback callback) override;
@@ -68,6 +68,11 @@ class SharedStorageWorkletServiceImpl
   // standalone service, so the starting of a worklet operation doesn't have to
   // depend on / preserve the order with messages of other types.
   mojo::AssociatedRemote<mojom::SharedStorageWorkletServiceClient> client_;
+
+  // No need to be associated as message ordering (relative to shared storage
+  // operations) is unimportant.
+  mojo::Remote<content::mojom::PrivateAggregationHost>
+      private_aggregation_host_;
 
   std::unique_ptr<SharedStorageWorkletGlobalScope> global_scope_;
 };

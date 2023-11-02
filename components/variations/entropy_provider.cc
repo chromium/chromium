@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,8 +13,8 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/sys_byteorder.h"
-#include "components/variations/hashing.h"
 #include "components/variations/variations_murmur_hash.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace variations {
 
@@ -55,12 +55,11 @@ double SHA1EntropyProvider::GetEntropyForTrial(
 }
 
 NormalizedMurmurHashEntropyProvider::NormalizedMurmurHashEntropyProvider(
-    uint16_t low_entropy_source,
-    size_t low_entropy_source_max)
-    : low_entropy_source_(low_entropy_source),
-      low_entropy_source_max_(low_entropy_source_max) {
-  DCHECK_LT(low_entropy_source, low_entropy_source_max);
-  DCHECK_LE(low_entropy_source_max, std::numeric_limits<uint16_t>::max());
+    uint16_t entropy_value,
+    size_t entropy_domain)
+    : entropy_value_(entropy_value), entropy_domain_(entropy_domain) {
+  DCHECK_LT(entropy_value, entropy_domain);
+  DCHECK_LE(entropy_domain, std::numeric_limits<uint16_t>::max());
 }
 
 NormalizedMurmurHashEntropyProvider::~NormalizedMurmurHashEntropyProvider() {}
@@ -73,22 +72,42 @@ double NormalizedMurmurHashEntropyProvider::GetEntropyForTrial(
         internal::VariationsMurmurHash::StringToLE32(trial_name),
         trial_name.length());
   }
-
   uint32_t x = internal::VariationsMurmurHash::Hash16(randomization_seed,
-                                                      low_entropy_source_);
+                                                      entropy_value_);
   int x_ordinal = 0;
-  for (uint32_t i = 0; i < low_entropy_source_max_; i++) {
+  for (uint32_t i = 0; i < entropy_domain_; i++) {
     uint32_t y = internal::VariationsMurmurHash::Hash16(randomization_seed, i);
     x_ordinal += (y < x);
   }
 
   DCHECK_GE(x_ordinal, 0);
   // There must have been at least one iteration where |x| == |y|, because
-  // |i| == |low_entropy_source_|, and |x_ordinal| was not incremented in that
-  // iteration, so |x_ordinal| < |low_entropy_source_max_|.
-  DCHECK_LT(static_cast<size_t>(x_ordinal), low_entropy_source_max_);
+  // |i| == |entropy_value_|, and |x_ordinal| was not incremented in that
+  // iteration, so |x_ordinal| < |entropy_domain_|.
+  DCHECK_LT(static_cast<size_t>(x_ordinal), entropy_domain_);
+  return static_cast<double>(x_ordinal) / entropy_domain_;
+}
 
-  return static_cast<double>(x_ordinal) / low_entropy_source_max_;
+EntropyProviders::EntropyProviders(const std::string& high_entropy_value,
+                                   uint16_t low_entropy_value,
+                                   size_t low_entropy_domain)
+    : low_entropy_(low_entropy_value, low_entropy_domain) {
+  if (!high_entropy_value.empty()) {
+    high_entropy_.emplace(high_entropy_value);
+  }
+}
+
+EntropyProviders::~EntropyProviders() = default;
+
+const base::FieldTrial::EntropyProvider& EntropyProviders::default_entropy()
+    const {
+  if (high_entropy_.has_value())
+    return high_entropy_.value();
+  return low_entropy_;
+}
+
+const base::FieldTrial::EntropyProvider& EntropyProviders::low_entropy() const {
+  return low_entropy_;
 }
 
 }  // namespace variations

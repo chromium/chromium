@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,8 @@
  */
 
 /* #js_imports_placeholder */
+import {StartConnectResult} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {ConnectionStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 
 /**
  * Custom data that is stored with network element to trigger action.
@@ -14,7 +16,7 @@
  */
 let networkCustomItemCustomData;
 
-class NetworkSelectLogin extends Polymer.Element {
+/* #export */ class NetworkSelectLogin extends Polymer.Element {
   static get is() {
     return 'network-select-login';
   }
@@ -23,15 +25,6 @@ class NetworkSelectLogin extends Polymer.Element {
 
   static get properties() {
     return {
-      /**
-         Whether network selection is shown as a part of offline demo mode setup
-         flow.
-       */
-      isOfflineDemoModeSetup: {
-        type: Boolean,
-        observer: 'onIsOfflineDemoModeSetupChanged_',
-      },
-
       /**
        * True when connected to a network.
        * @private
@@ -65,14 +58,13 @@ class NetworkSelectLogin extends Polymer.Element {
        */
       showTechnologyBadge_: {
         type: Boolean,
-      }
+      },
     };
   }
 
   constructor() {
     super();
     // Properties
-    this.isOfflineDemoModeSetup = false;
     this.isNetworkConnected = false;
     this.configureConnected = false;
     this.enableWifiScans = true;
@@ -125,18 +117,7 @@ class NetworkSelectLogin extends Polymer.Element {
    * @private
    */
   getNetworkCustomItems_() {
-    let items = [];
-    if (this.isOfflineDemoModeSetup) {
-      items.push({
-        customItemType: NetworkList.CustomItemType.OOBE,
-        customItemName: 'offlineDemoSetupListItemName',
-        polymerIcon: 'oobe-network-20:offline-demo-setup',
-        showBeforeNetworksList: true,
-        customData: {
-          onTap: () => this.onOfflineDemoSetupClicked_(),
-        },
-      });
-    }
+    const items = [];
     if (this.isNetworkConnected) {
       items.push({
         customItemType: NetworkList.CustomItemType.OOBE,
@@ -165,7 +146,7 @@ class NetworkSelectLogin extends Polymer.Element {
    *
    * @private
    */
-  openInternetDetailDialog_(item) {
+  openInternetDetailDialog_() {
     chrome.send('launchInternetDetailDialog');
   }
 
@@ -174,16 +155,8 @@ class NetworkSelectLogin extends Polymer.Element {
    *
    * @private
    */
-  openAddWiFiNetworkDialog_(item) {
+  openAddWiFiNetworkDialog_() {
     chrome.send('launchAddWiFiNetworkDialog');
-  }
-
-  /**
-   * Offline demo setup button handler.
-   * @private
-   */
-  onOfflineDemoSetupClicked_(item) {
-    chrome.send('login.NetworkScreen.userActed', ['offline-demo-setup']);
   }
 
   /**
@@ -207,8 +180,9 @@ class NetworkSelectLogin extends Polymer.Element {
     const networkState = event.detail.type ? event.detail : undefined;
     this.isNetworkConnected = !!networkState &&
         OncMojo.connectionStateIsConnected(networkState.connectionState);
-    if (!this.isNetworkConnected || !this.is_shown_)
+    if (!this.isNetworkConnected || !this.is_shown_) {
       return;
+    }
     this.attemptApplyConfiguration_();
   }
 
@@ -231,8 +205,9 @@ class NetworkSelectLogin extends Polymer.Element {
    * @private
    */
   onNetworkListChanged_(event) {
-    if (!this.is_shown_)
+    if (!this.is_shown_) {
       return;
+    }
     this.attemptApplyConfiguration_();
   }
 
@@ -241,14 +216,11 @@ class NetworkSelectLogin extends Polymer.Element {
    * @private
    */
   attemptApplyConfiguration_() {
-    if (this.configuration_applied_)
+    if (this.configuration_applied_) {
       return;
+    }
     const configuration = Oobe.getInstance().getOobeConfiguration();
-    if (!configuration)
-      return;
-    if (configuration.networkOfflineDemo && this.isOfflineDemoModeSetup) {
-      window.setTimeout(() => this.onOfflineDemoSetupClicked_(), 0);
-      this.configuration_applied_ = true;
+    if (!configuration) {
       return;
     }
     const defaultNetwork = this.$.networkSelect.getDefaultNetwork();
@@ -306,12 +278,10 @@ class NetworkSelectLogin extends Polymer.Element {
     const guid = networkState.guid;
 
     let shouldShowNetworkDetails = isNetworkConnected ||
-        networkState.connectionState ===
-            chromeos.networkConfig.mojom.ConnectionStateType.kConnecting;
+        networkState.connectionState === ConnectionStateType.kConnecting;
     // Cellular should normally auto connect. If it is selected, show the
     // details UI since there is no configuration UI for Cellular.
-    shouldShowNetworkDetails |= networkState.type ===
-        chromeos.networkConfig.mojom.NetworkType.kCellular;
+    shouldShowNetworkDetails |= networkState.type === NetworkType.kCellular;
 
     if (shouldShowNetworkDetails) {
       chrome.send('showNetworkDetails', [oncType, guid]);
@@ -327,24 +297,23 @@ class NetworkSelectLogin extends Polymer.Element {
                               .getMojoServiceRemote();
 
     networkConfig.startConnect(guid).then(response => {
-      const mojom = chromeos.networkConfig.mojom;
       switch (response.result) {
-        case mojom.StartConnectResult.kSuccess:
+        case StartConnectResult.kSuccess:
           return;
-        case mojom.StartConnectResult.kInvalidGuid:
-        case mojom.StartConnectResult.kInvalidState:
-        case mojom.StartConnectResult.kCanceled:
+        case StartConnectResult.kInvalidGuid:
+        case StartConnectResult.kInvalidState:
+        case StartConnectResult.kCanceled:
           // TODO(stevenjb/khorimoto): Consider handling these cases.
           return;
-        case mojom.StartConnectResult.kNotConfigured:
+        case StartConnectResult.kNotConfigured:
           if (!OncMojo.networkTypeIsMobile(networkState.type)) {
             chrome.send('showNetworkConfig', [guid]);
           } else {
             console.error('Cellular network is not configured: ' + guid);
           }
           return;
-        case mojom.StartConnectResult.kBlocked:
-        case mojom.StartConnectResult.kUnknown:
+        case StartConnectResult.kBlocked:
+        case StartConnectResult.kUnknown:
           console.error(
               'startConnect failed for: ' + guid + ': ' + response.message);
           return;
@@ -359,15 +328,6 @@ class NetworkSelectLogin extends Polymer.Element {
   onNetworkListCustomItemSelected_(event) {
     const itemState = event.detail;
     itemState.customData.onTap();
-  }
-
-  /**
-   * Updates custom items when property that indicates if dialog is shown as a
-   * part of offline demo mode setup changes.
-   * @private
-   */
-  onIsOfflineDemoModeSetupChanged_() {
-    this.$.networkSelect.customItems = this.getNetworkCustomItems_();
   }
 }
 

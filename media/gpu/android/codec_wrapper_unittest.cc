@@ -1,16 +1,18 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <memory>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "media/base/android/media_codec_bridge.h"
 #include "media/base/android/mock_media_codec_bridge.h"
 #include "media/base/encryption_scheme.h"
@@ -19,14 +21,16 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using testing::_;
 using testing::DoAll;
 using testing::Invoke;
 using testing::NiceMock;
 using testing::Return;
 using testing::SetArgPointee;
-using testing::_;
 
 namespace media {
+
+constexpr gfx::Size kInitialCodedSize(640, 480);
 
 class CodecWrapperTest : public testing::Test {
  public:
@@ -38,7 +42,7 @@ class CodecWrapperTest : public testing::Test {
         CodecSurfacePair(std::move(codec), surface_bundle_),
         output_buffer_release_cb_.Get(),
         // Unrendered output buffers are released on our thread.
-        base::SequencedTaskRunnerHandle::Get());
+        base::SequencedTaskRunnerHandle::Get(), kInitialCodedSize);
     ON_CALL(*codec_, DequeueOutputBuffer(_, _, _, _, _, _, _))
         .WillByDefault(Return(MEDIA_CODEC_OK));
     ON_CALL(*codec_, DequeueInputBuffer(_, _))
@@ -67,7 +71,7 @@ class CodecWrapperTest : public testing::Test {
   // So that we can get the thread's task runner.
   base::test::TaskEnvironment task_environment_;
 
-  NiceMock<MockMediaCodecBridge>* codec_;
+  raw_ptr<NiceMock<MockMediaCodecBridge>> codec_;
   std::unique_ptr<CodecWrapper> wrapper_;
   scoped_refptr<CodecSurfaceBundle> surface_bundle_;
   NiceMock<base::MockCallback<CodecWrapper::OutputReleasedCB>>
@@ -396,6 +400,25 @@ TEST_F(CodecWrapperTest, CodecWrapperDefaultsToSRGB) {
       .WillOnce(Return(MEDIA_CODEC_ERROR));
   auto codec_buffer = DequeueCodecOutputBuffer();
   ASSERT_EQ(codec_buffer->color_space(), gfx::ColorSpace::CreateSRGB());
+}
+
+TEST_F(CodecWrapperTest, CodecOutputsIgnoreZeroSize) {
+  EXPECT_CALL(*codec_, DequeueOutputBuffer(_, _, _, _, _, _, _))
+      .WillOnce(Return(MEDIA_CODEC_OUTPUT_FORMAT_CHANGED))
+      .WillOnce(Return(MEDIA_CODEC_OK))
+      .WillOnce(Return(MEDIA_CODEC_OUTPUT_FORMAT_CHANGED))
+      .WillOnce(Return(MEDIA_CODEC_OK));
+
+  constexpr gfx::Size kNewSize(1280, 720);
+  EXPECT_CALL(*codec_, GetOutputSize(_))
+      .WillOnce(DoAll(SetArgPointee<0>(gfx::Size()), Return(MEDIA_CODEC_OK)))
+      .WillOnce(DoAll(SetArgPointee<0>(kNewSize), Return(MEDIA_CODEC_OK)));
+
+  auto codec_buffer = DequeueCodecOutputBuffer();
+  ASSERT_EQ(codec_buffer->size(), kInitialCodedSize);
+
+  codec_buffer = DequeueCodecOutputBuffer();
+  ASSERT_EQ(codec_buffer->size(), kNewSize);
 }
 
 }  // namespace media

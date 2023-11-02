@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,14 +11,16 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "device/fido/attestation_object.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_transport_protocol.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
+
+struct DevicePublicKeyOutput;
 
 // Attestation object which includes attestation format, authentication
 // data, and attestation statement returned by the authenticator as a response
@@ -49,37 +51,13 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorMakeCredentialResponse {
 
   std::vector<uint8_t> GetCBOREncodedAttestationObject() const;
 
-  // Replaces the attestation statement with a “none” attestation, and removes
-  // AAGUID from authenticator data section unless |preserve_aaguid| is true.
-  // https://w3c.github.io/webauthn/#createCredential
-  void EraseAttestationStatement(AttestationObject::AAGUID erase_aaguid);
-
-  // Returns true if the attestation is a "self" attestation, i.e. is just the
-  // private key signing itself to show that it is fresh and the AAGUID is zero.
-  bool IsSelfAttestation();
-
-  // Returns true if the attestation certificate is known to be inappropriately
-  // identifying. Some tokens return unique attestation certificates even when
-  // the bit to request that is not set. (Normal attestation certificates are
-  // not intended to be trackable.)
-  bool IsAttestationCertificateInappropriatelyIdentifying();
+  // Returns the output the the devicePubKey extension, if any.
+  absl::optional<device::DevicePublicKeyOutput> GetDevicePublicKeyResponse()
+      const;
 
   const std::array<uint8_t, kRpIdHashLength>& GetRpIdHash() const;
 
-  const AttestationObject& attestation_object() const {
-    return attestation_object_;
-  }
-
-  absl::optional<FidoTransportProtocol> transport_used() const {
-    return transport_used_;
-  }
-
-  absl::optional<std::array<uint8_t, kLargeBlobKeyLength>> large_blob_key()
-      const {
-    return large_blob_key_;
-  }
-  void set_large_blob_key(
-      const base::span<const uint8_t, kLargeBlobKeyLength> large_blob_key);
+  AttestationObject attestation_object;
 
   // enterprise_attestation_returned is true if the authenticator indicated that
   // it returned an enterprise attestation. Note: U2F authenticators can
@@ -97,17 +75,23 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorMakeCredentialResponse {
   // |AuthenticatorCommon| based on enterprise policy.
   bool attestation_should_be_filtered = false;
 
- private:
-  AttestationObject attestation_object_;
+  // transports contains the full set of transports supported by the
+  // authenticator, if known.
+  absl::optional<base::flat_set<FidoTransportProtocol>> transports;
+
+  // device_public_key_signature contains the optional signature from the
+  // device-bound key. See
+  // https://github.com/fido-alliance/fido-2-specs/pull/1346
+  absl::optional<std::vector<uint8_t>> device_public_key_signature;
 
   // Contains the transport used to register the credential in this case. It is
   // nullopt for cases where we cannot determine the transport (Windows).
-  absl::optional<FidoTransportProtocol> transport_used_;
+  absl::optional<FidoTransportProtocol> transport_used;
 
   // The large blob key associated to the credential. This value is only
   // returned if the credential is created with the largeBlobKey extension on a
   // capable authenticator.
-  absl::optional<std::array<uint8_t, kLargeBlobKeyLength>> large_blob_key_;
+  absl::optional<std::array<uint8_t, kLargeBlobKeyLength>> large_blob_key;
 };
 
 // Through cbor::Writer, produces a CTAP style CBOR-encoded byte array

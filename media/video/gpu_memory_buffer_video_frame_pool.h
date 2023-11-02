@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -48,11 +48,10 @@ class MEDIA_EXPORT GpuMemoryBufferVideoFramePool {
   // after it has been copied to GpuMemoryBuffers.
   using FrameReadyCB = base::OnceCallback<void(scoped_refptr<VideoFrame>)>;
 
-  // Calls |cb| on |media_worker_pool| with a new VideoFrame containing only
-  // mailboxes to native resources. |cb| will be destroyed on
-  // |media_worker_pool|.
-  // The content of the new object is copied from the software-allocated
-  // |video_frame|.
+  // Calls |cb| with a new VideoFrame containing only mailboxes to native
+  // resources. The content of the new object is copied from the
+  // software-allocated |video_frame|.
+  //
   // If it's not possible to create a new hardware VideoFrame, |video_frame|
   // itself will passed to |cb|.
   virtual void MaybeCreateHardwareFrame(scoped_refptr<VideoFrame> video_frame,

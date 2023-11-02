@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,11 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/stringprintf.h"
 #include "mojo/public/cpp/bindings/array_traits_wtf_vector.h"
+#include "mojo/public/cpp/bindings/map_traits_wtf_hash_map.h"
 #include "mojo/public/cpp/bindings/message.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-blink.h"
@@ -44,7 +47,12 @@ class ValidateBlinkInterestGroupTest : public testing::Test {
     EXPECT_TRUE(error_field_value.IsNull());
     EXPECT_TRUE(error.IsNull());
 
-    EXPECT_TRUE(CanSerializeAndDeserialize(blink_interest_group));
+    blink::InterestGroup interest_group;
+    EXPECT_TRUE(
+        mojo::test::SerializeAndDeserialize<mojom::blink::InterestGroup>(
+            blink_interest_group, interest_group));
+    EXPECT_EQ(EstimateBlinkInterestGroupSize(*blink_interest_group),
+              interest_group.EstimateSize());
   }
 
   // Check that `blink_interest_group` is valid, if added from `blink_origin`,
@@ -63,26 +71,11 @@ class ValidateBlinkInterestGroupTest : public testing::Test {
     EXPECT_EQ(String::FromUTF8(expected_error_field_value), error_field_value);
     EXPECT_EQ(String::FromUTF8(expected_error), error);
 
-    EXPECT_FALSE(CanSerializeAndDeserialize(blink_interest_group));
-  }
-
-  // Tries to Converts a mojom::blink::InterestGroupPtr to a
-  // blink::InterestGroup by using Mojo to serialize and deserialize it. Returns
-  // true on success, false on failure. Failure indicates the traits conversion
-  // logic refused to serialize the InterestGroup, since it was invalid. Based
-  // off of mojo::test::SerializeAndDeserialize(), which can't convert between
-  // blink and non-blink types.
-  bool CanSerializeAndDeserialize(
-      const mojom::blink::InterestGroupPtr& blink_interest_group) {
-    mojo::Message message =
-        mojom::blink::InterestGroup::SerializeAsMessage(&blink_interest_group);
-    mojo::ScopedMessageHandle handle = message.TakeMojoMessage();
-    message = mojo::Message::CreateFromMessageHandle(&handle);
-    DCHECK(!message.IsNull());
-
-    auto interest_group = std::make_unique<blink::InterestGroup>();
-    return mojom::InterestGroup::DeserializeFromMessage(std::move(message),
-                                                        interest_group.get());
+    blink::InterestGroup interest_group;
+    // mojo deserialization will call InterestGroup::IsValid.
+    EXPECT_FALSE(
+        mojo::test::SerializeAndDeserialize<mojom::blink::InterestGroup>(
+            blink_interest_group, interest_group));
   }
 
   // Creates and returns a minimally populated mojom::blink::InterestGroup.
@@ -104,7 +97,8 @@ class ValidateBlinkInterestGroupTest : public testing::Test {
     const KURL kAllowedUrl =
         KURL(String::FromUTF8("https://origin.test/foo?bar"));
     blink_interest_group->bidding_url = kAllowedUrl;
-    blink_interest_group->update_url = kAllowedUrl;
+    blink_interest_group->daily_update_url = kAllowedUrl;
+    blink_interest_group->bidding_wasm_helper_url = kAllowedUrl;
 
     // `trusted_bidding_signals_url` doesn't allow query strings, unlike the
     // above ones.
@@ -196,8 +190,8 @@ TEST_F(ValidateBlinkInterestGroupTest, NonHttpsOriginRejected) {
       "owner origin must be HTTPS." /* expected_error */);
 }
 
-// Check that `bidding_url`, `update_url`, and `trusted_bidding_signals_url`
-// must be same-origin and HTTPS.
+// Check that `bidding_url`, `bidding_wasm_helper_url`, `daily_update_url`, and
+// `trusted_bidding_signals_url` must be same-origin and HTTPS.
 //
 // Ad URLs do not have to be same origin, so they're checked in a different
 // test.
@@ -206,6 +200,9 @@ TEST_F(ValidateBlinkInterestGroupTest, RejectedUrls) {
   const char kBadBiddingUrlError[] =
       "biddingUrl must have the same origin as the InterestGroup owner "
       "and have no fragment identifier or embedded credentials.";
+  const char kBadBiddingWasmHelperUrlError[] =
+      "biddingWasmHelperUrl must have the same origin as the InterestGroup "
+      "owner and have no fragment identifier or embedded credentials.";
   const char kBadUpdateUrlError[] =
       "updateUrl must have the same origin as the InterestGroup owner "
       "and have no fragment identifier or embedded credentials.";
@@ -263,9 +260,18 @@ TEST_F(ValidateBlinkInterestGroupTest, RejectedUrls) {
         rejected_url.GetString().Utf8() /* expected_error_field_value */,
         kBadBiddingUrlError /* expected_error */);
 
-    // Test `update_url`.
+    // Test `bidding_wasm_helper_url`
     blink_interest_group = CreateMinimalInterestGroup();
-    blink_interest_group->update_url = rejected_url;
+    blink_interest_group->bidding_wasm_helper_url = rejected_url;
+    ExpectInterestGroupIsNotValid(
+        blink_interest_group,
+        "biddingWasmHelperUrl" /* expected_error_field_name */,
+        rejected_url.GetString().Utf8() /* expected_error_field_value */,
+        kBadBiddingWasmHelperUrlError /* expected_error */);
+
+    // Test `daily_update_url`.
+    blink_interest_group = CreateMinimalInterestGroup();
+    blink_interest_group->daily_update_url = rejected_url;
     ExpectInterestGroupIsNotValid(
         blink_interest_group, "updateUrl" /* expected_error_field_name */,
         rejected_url.GetString().Utf8() /* expected_error_field_value */,
@@ -314,6 +320,11 @@ TEST_F(ValidateBlinkInterestGroupTest, AdRenderUrlValidation) {
       {false, "http://a.test/"},
       {false, "data://text/html,payload"},
       {false, "filesystem:https://a.test/foo"},
+      {false, "blob:https://a.test:/2987fb0b-034b-4c79-85ae-cc6d3ef9c56e"},
+      {false, "about:blank"},
+      {false, "about:srcdoc"},
+      {false, "about:newtab"},
+      {false, "chrome:hang"},
 
       // URLs with user/ports are rejected.
       {false, "https://user:pass@a.test/"},
@@ -384,6 +395,11 @@ TEST_F(ValidateBlinkInterestGroupTest, AdComponentRenderUrlValidation) {
       {false, "http://a.test/"},
       {false, "data://text/html,payload"},
       {false, "filesystem:https://a.test/foo"},
+      {false, "blob:https://a.test:/2987fb0b-034b-4c79-85ae-cc6d3ef9c56e"},
+      {false, "about:blank"},
+      {false, "about:srcdoc"},
+      {false, "about:newtab"},
+      {false, "chrome:hang"},
 
       // URLs with user/ports are rejected.
       {false, "https://user:pass@a.test/"},
@@ -482,21 +498,173 @@ TEST_F(ValidateBlinkInterestGroupTest, MalformedUrl) {
 TEST_F(ValidateBlinkInterestGroupTest, TooLarge) {
   mojom::blink::InterestGroupPtr blink_interest_group =
       CreateMinimalInterestGroup();
-  std::string long_string(51200, 'n');
+
+  // Name length that will result in a `blink_interest_group` having an
+  // estimated size of exactly `kMaxInterestGroupSize`, which is 51200 bytes.
+  // Note that kMaxInterestGroupSize is actually one greater than the maximum
+  // size, so no need to add 1 to exceed it.
+  blink_interest_group->name = "";
+  const size_t kTooLongNameLength =
+      mojom::blink::kMaxInterestGroupSize -
+      EstimateBlinkInterestGroupSize(*blink_interest_group);
+
+  std::string long_string(kTooLongNameLength, 'n');
   blink_interest_group->name = String(long_string);
   ExpectInterestGroupIsNotValid(
-      blink_interest_group, "size" /* expected_error_field_name */,
-      "51219" /* expected_error_field_value */,
-      "interest groups must be less than 51200 bytes" /* expected_error */);
+      blink_interest_group, /*expected_error_field_name=*/"size",
+      /*expected_error_field_value=*/"51200",
+      /*expected_error=*/"interest groups must be less than 51200 bytes");
 
-  EXPECT_FALSE(CanSerializeAndDeserialize(blink_interest_group));
-
-  // Almost too big enough should still work.
-  long_string = std::string(51200 - 20, 'n');
+  // Almost too long should still work.
+  long_string = std::string(kTooLongNameLength - 1, 'n');
   blink_interest_group->name = String(long_string);
+  ExpectInterestGroupIsValid(blink_interest_group);
+}
+
+TEST_F(ValidateBlinkInterestGroupTest, TooLargePriorityVector) {
+  mojom::blink::InterestGroupPtr blink_interest_group =
+      CreateMinimalInterestGroup();
+  blink_interest_group->name = "";
+
+  size_t initial_estimate =
+      EstimateBlinkInterestGroupSize(*blink_interest_group);
+  blink_interest_group->priority_vector.emplace();
+  // Set 510 entries with 92-byte keys.  Adding in the 8 byte double values,
+  // this should be estimated to be 51000 bytes.
+  for (int i = 0; i < 510; ++i) {
+    // Use a unique 92-byte value for each key.
+    String key = String::FromUTF8(base::StringPrintf("%92i", i));
+    blink_interest_group->priority_vector->Set(key, i);
+  }
+  size_t current_estimate =
+      EstimateBlinkInterestGroupSize(*blink_interest_group);
+  EXPECT_EQ(51000 + initial_estimate, current_estimate);
+
+  // Name that should cause the group to exactly exceed the maximum name length.
+  // Need to call into ExpectInterestGroupIsNotValid() to make sure name length
+  // estimate for mojom::blink::InterestGroupPtr and blink::InterestGroup
+  // equivalent values exactly match.
+  const size_t kTooLongNameLength =
+      mojom::blink::kMaxInterestGroupSize -
+      EstimateBlinkInterestGroupSize(*blink_interest_group);
+  std::string too_long_name(kTooLongNameLength, 'n');
+  blink_interest_group->name = String(too_long_name);
+
+  ExpectInterestGroupIsNotValid(
+      blink_interest_group, /*expected_error_field_name=*/"size",
+      /*expected_error_field_value=*/"51200",
+      /*expected_error=*/"interest groups must be less than 51200 bytes");
+
+  // Almost too long should still work.
+  too_long_name = std::string(kTooLongNameLength - 1, 'n');
+  blink_interest_group->name = String(too_long_name);
+  ExpectInterestGroupIsValid(blink_interest_group);
+}
+
+TEST_F(ValidateBlinkInterestGroupTest, TooLargePrioritySignalsOverride) {
+  mojom::blink::InterestGroupPtr blink_interest_group =
+      CreateMinimalInterestGroup();
+  blink_interest_group->name = "";
+
+  size_t initial_estimate =
+      EstimateBlinkInterestGroupSize(*blink_interest_group);
+  blink_interest_group->priority_signals_overrides.emplace();
+  // Set 510 entries with 92-byte keys.  Adding in the 8 byte double values,
+  // this should be estimated to be 51000 bytes.
+  for (int i = 0; i < 510; ++i) {
+    // Use a unique 92-byte value for each key.
+    String key = String::FromUTF8(base::StringPrintf("%92i", i));
+    blink_interest_group->priority_signals_overrides->Set(key, i);
+  }
+  size_t current_estimate =
+      EstimateBlinkInterestGroupSize(*blink_interest_group);
+  EXPECT_EQ(51000 + initial_estimate, current_estimate);
+
+  // Name that should cause the group to exactly exceed the maximum name length.
+  // Need to call into ExpectInterestGroupIsNotValid() to make sure name length
+  // estimate for mojom::blink::InterestGroupPtr and blink::InterestGroup
+  // equivalent values exactly match.
+  const size_t kTooLongNameLength =
+      mojom::blink::kMaxInterestGroupSize -
+      EstimateBlinkInterestGroupSize(*blink_interest_group);
+  std::string too_long_name(kTooLongNameLength, 'n');
+  blink_interest_group->name = String(too_long_name);
+
+  ExpectInterestGroupIsNotValid(
+      blink_interest_group, /*expected_error_field_name=*/"size",
+      /*expected_error_field_value=*/"51200",
+      /*expected_error=*/"interest groups must be less than 51200 bytes");
+
+  // Almost too long should still work.
+  too_long_name = std::string(kTooLongNameLength - 1, 'n');
+  blink_interest_group->name = String(too_long_name);
+  ExpectInterestGroupIsValid(blink_interest_group);
+}
+
+TEST_F(ValidateBlinkInterestGroupTest, TooLargeAds) {
+  mojom::blink::InterestGroupPtr blink_interest_group =
+      CreateMinimalInterestGroup();
+  blink_interest_group->name = "padding to 51200..";
+  blink_interest_group->ad_components.emplace();
+  for (int i = 0; i < 682; ++i) {
+    // Each ad component is 75 bytes.
+    auto mojo_ad_component1 = mojom::blink::InterestGroupAd::New();
+    mojo_ad_component1->render_url =
+        KURL(String::FromUTF8("https://origin.test/components?bar#baz"));
+    mojo_ad_component1->metadata =
+        String::FromUTF8("\"This field isn't actually validated\"");
+    blink_interest_group->ad_components->push_back(
+        std::move(mojo_ad_component1));
+  }
+  ExpectInterestGroupIsNotValid(
+      blink_interest_group, /*expected_error_field_name=*/"size",
+      /*expected_error_field_value=*/"51200",
+      /*expected_error=*/"interest groups must be less than 51200 bytes");
+
+  // Almost too big should still work.
+  blink_interest_group->ad_components->resize(681);
 
   ExpectInterestGroupIsValid(blink_interest_group);
-  EXPECT_TRUE(CanSerializeAndDeserialize(blink_interest_group));
+}
+
+TEST_F(ValidateBlinkInterestGroupTest, InvalidPriority) {
+  struct {
+    double priority;
+    const char* priority_text;
+  } test_cases[] = {
+      {std::numeric_limits<double>::quiet_NaN(), "NaN"},
+      {std::numeric_limits<double>::signaling_NaN(), "NaN"},
+      {std::numeric_limits<double>::infinity(), "Infinity"},
+      {-std::numeric_limits<double>::infinity(), "-Infinity"},
+  };
+  for (const auto& test_case : test_cases) {
+    mojom::blink::InterestGroupPtr blink_interest_group =
+        CreateMinimalInterestGroup();
+    blink_interest_group->priority = test_case.priority;
+    ExpectInterestGroupIsNotValid(
+        blink_interest_group, "priority" /* expected_error_field_name */,
+        test_case.priority_text, /*expected_error_field_value */
+        "priority must be finite." /* expected_error */);
+  }
+}
+
+TEST_F(ValidateBlinkInterestGroupTest, InvalidExecutionMode) {
+  struct {
+    blink::InterestGroup::ExecutionMode execution_mode;
+    const char* execution_mode_text;
+  } test_cases[] = {
+      {blink::InterestGroup::ExecutionMode::kFrozenContext, "2"},
+      {static_cast<blink::InterestGroup::ExecutionMode>(-1), "-1"},
+  };
+  for (const auto& test_case : test_cases) {
+    mojom::blink::InterestGroupPtr blink_interest_group =
+        CreateMinimalInterestGroup();
+    blink_interest_group->execution_mode = test_case.execution_mode;
+    ExpectInterestGroupIsNotValid(
+        blink_interest_group, "executionMode" /* expected_error_field_name */,
+        test_case.execution_mode_text, /*expected_error_field_value */
+        "execution mode is not valid." /* expected_error */);
+  }
 }
 
 }  // namespace blink

@@ -1,11 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import 'chrome://signin-reauth/signin_reauth_app.js';
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
-import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {SigninReauthAppElement} from 'chrome://signin-reauth/signin_reauth_app.js';
 import {SigninReauthBrowserProxyImpl} from 'chrome://signin-reauth/signin_reauth_browser_proxy.js';
@@ -21,7 +20,8 @@ suite('SigninReauthTest', function() {
   setup(function() {
     browserProxy = new TestSigninReauthBrowserProxy();
     SigninReauthBrowserProxyImpl.setInstance(browserProxy);
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     app = document.createElement('signin-reauth-app');
     document.body.append(app);
   });
@@ -52,7 +52,7 @@ suite('SigninReauthTest', function() {
     return browserProxy.whenCalled('cancel');
   });
 
-  test('ButtonsVisibilityAndFocus', async () => {
+  test('ButtonsVisibility', async () => {
     await browserProxy.whenCalled('initialize');
     assertFalse(isVisible(app.$.confirmButton));
     assertFalse(isVisible(app.$.cancelButton));
@@ -64,8 +64,6 @@ suite('SigninReauthTest', function() {
     assertTrue(isVisible(app.$.confirmButton));
     assertTrue(isVisible(app.$.cancelButton));
     assertFalse(isVisible(app.shadowRoot!.querySelector('paper-spinner-lite')));
-
-    assertEquals(getDeepActiveElement(), app.$.confirmButton);
 
     assertDefaultLocale();
     assertEquals('Yes', app.$.confirmButton.textContent!.trim());

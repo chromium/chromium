@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,8 @@
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "mojo/core/core.h"
+#include "mojo/core/embedder/embedder.h"
+#include "mojo/core/ipcz_driver/shared_buffer.h"
 #include "mojo/core/shared_buffer_dispatcher.h"
 #include "mojo/core/test/mojo_test_base.h"
 #include "mojo/public/c/system/types.h"
@@ -27,6 +29,7 @@ TEST_F(SharedBufferTest, CreateSharedBuffer) {
   MojoHandle h = CreateBuffer(message.size());
   WriteToBuffer(h, 0, message);
   ExpectBufferContents(h, 0, message);
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h));
 }
 
 TEST_F(SharedBufferTest, DuplicateSharedBuffer) {
@@ -36,6 +39,8 @@ TEST_F(SharedBufferTest, DuplicateSharedBuffer) {
 
   MojoHandle dupe = DuplicateBuffer(h, false);
   ExpectBufferContents(dupe, 0, message);
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h));
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(dupe));
 }
 
 TEST_F(SharedBufferTest, PassSharedBufferLocal) {
@@ -51,9 +56,13 @@ TEST_F(SharedBufferTest, PassSharedBufferLocal) {
   EXPECT_EQ("...", ReadMessageWithHandles(p1, &dupe, 1));
 
   ExpectBufferContents(dupe, 0, message);
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h));
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(dupe));
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(p0));
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(p1));
 }
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 
 // Reads a single message with a shared buffer handle, maps the buffer, copies
 // the message contents into it, then exits.
@@ -63,6 +72,8 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(CopyToBufferClient, SharedBufferTest, h) {
   WriteToBuffer(b, 0, message);
 
   EXPECT_EQ("quit", ReadMessage(h));
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h));
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(b));
 }
 
 TEST_F(SharedBufferTest, PassSharedBufferCrossProcess) {
@@ -76,6 +87,7 @@ TEST_F(SharedBufferTest, PassSharedBufferCrossProcess) {
   });
 
   ExpectBufferContents(b, 0, message);
+  MojoClose(b);
 }
 
 // Creates a new buffer, maps it, writes a message contents to it, unmaps it,
@@ -87,6 +99,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(CreateBufferClient, SharedBufferTest, h) {
   WriteMessageWithHandles(h, "have a buffer", &b, 1);
 
   EXPECT_EQ("quit", ReadMessage(h));
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h));
 }
 
 TEST_F(SharedBufferTest, PassSharedBufferFromChild) {
@@ -99,6 +112,7 @@ TEST_F(SharedBufferTest, PassSharedBufferFromChild) {
   });
 
   ExpectBufferContents(b, 0, message);
+  MojoClose(b);
 }
 
 DEFINE_TEST_CLIENT_TEST_WITH_PIPE(CreateAndPassBuffer, SharedBufferTest, h) {
@@ -116,6 +130,8 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(CreateAndPassBuffer, SharedBufferTest, h) {
   WriteMessageWithHandles(other_child, "", &dupe, 1);
 
   EXPECT_EQ("quit", ReadMessage(h));
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h));
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(other_child));
 }
 
 DEFINE_TEST_CLIENT_TEST_WITH_PIPE(ReceiveAndEditBuffer, SharedBufferTest, h) {
@@ -132,6 +148,8 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(ReceiveAndEditBuffer, SharedBufferTest, h) {
   WriteToBuffer(b, 0, message);
   EXPECT_EQ(MOJO_RESULT_OK, MojoClose(b));
   EXPECT_EQ("quit", ReadMessage(h));
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h));
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(other_child));
 }
 
 TEST_F(SharedBufferTest, PassSharedBufferFromChildToChild) {
@@ -158,6 +176,7 @@ TEST_F(SharedBufferTest, PassSharedBufferFromChildToChild) {
 
   // The second child should have written this message.
   ExpectBufferContents(b, 0, message);
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(b));
 }
 
 DEFINE_TEST_CLIENT_TEST_WITH_PIPE(CreateAndPassBufferParent,
@@ -178,6 +197,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(CreateAndPassBufferParent,
     EXPECT_EQ("quit", ReadMessage(parent));
     WriteMessage(child, "quit");
   });
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(parent));
 }
 
 DEFINE_TEST_CLIENT_TEST_WITH_PIPE(ReceiveAndEditBufferParent,
@@ -192,18 +212,24 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(ReceiveAndEditBufferParent,
     EXPECT_EQ("quit", ReadMessage(parent));
     WriteMessage(child, "quit");
   });
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(parent));
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Android multi-process tests are not executing the new process. This is flaky.
 #define MAYBE_PassHandleBetweenCousins DISABLED_PassHandleBetweenCousins
 #else
 #define MAYBE_PassHandleBetweenCousins PassHandleBetweenCousins
 #endif
 TEST_F(SharedBufferTest, MAYBE_PassHandleBetweenCousins) {
+  if (IsMojoIpczEnabled()) {
+    // TODO(https://crbug.com/1299283): This test relies on Mojo invitations
+    // between non-broker nodes, which is not currently supported by MojoIpcz.
+    GTEST_SKIP() << "Invitations between non-brokers are not yet supported "
+                 << "by MojoIpcz.";
+  }
+
   const std::string message = "hello";
-  MojoHandle p0, p1;
-  CreateMessagePipe(&p0, &p1);
 
   // Spawn two children who will each spawn their own child. Make sure the
   // grandchildren (cousins to each other) can pass platform handles.
@@ -226,6 +252,7 @@ TEST_F(SharedBufferTest, MAYBE_PassHandleBetweenCousins) {
 
   // The second grandchild should have written this message.
   ExpectBufferContents(b, 0, message);
+  MojoClose(b);
 }
 
 DEFINE_TEST_CLIENT_TEST_WITH_PIPE(ReadAndMapWriteSharedBuffer,
@@ -239,15 +266,23 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(ReadAndMapWriteSharedBuffer,
   ExpectBufferContents(b, 0, "hello");
 
   // Extract the shared memory handle and verify that it is read-only.
-  auto* dispatcher =
-      static_cast<SharedBufferDispatcher*>(Core::Get()->GetDispatcher(b).get());
-  base::subtle::PlatformSharedMemoryRegion& region =
-      dispatcher->GetRegionForTesting();
-  EXPECT_EQ(region.GetMode(),
-            base::subtle::PlatformSharedMemoryRegion::Mode::kReadOnly);
+  if (IsMojoIpczEnabled()) {
+    auto buffer = ipcz_driver::SharedBuffer::Unbox(b);
+    EXPECT_EQ(buffer->region().GetMode(),
+              base::subtle::PlatformSharedMemoryRegion::Mode::kReadOnly);
+  } else {
+    auto* dispatcher = static_cast<SharedBufferDispatcher*>(
+        Core::Get()->GetDispatcher(b).get());
+    base::subtle::PlatformSharedMemoryRegion& region =
+        dispatcher->GetRegionForTesting();
+    EXPECT_EQ(region.GetMode(),
+              base::subtle::PlatformSharedMemoryRegion::Mode::kReadOnly);
+    EXPECT_EQ(MOJO_RESULT_OK, MojoClose(b));
+  }
 
   WriteMessage(h, "ok");
   EXPECT_EQ("quit", ReadMessage(h));
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h));
 }
 
 TEST_F(SharedBufferTest, CreateAndPassReadOnlyBuffer) {
@@ -262,6 +297,7 @@ TEST_F(SharedBufferTest, CreateAndPassReadOnlyBuffer) {
 
     EXPECT_EQ("ok", ReadMessage(h));
     WriteMessage(h, "quit");
+    MojoClose(b);
   });
 }
 
@@ -278,6 +314,8 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(CreateAndPassReadOnlyBuffer,
 
   WriteMessage(h, "ok");
   EXPECT_EQ("quit", ReadMessage(h));
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h));
+  MojoClose(b);
 }
 
 TEST_F(SharedBufferTest, CreateAndPassFromChildReadOnlyBuffer) {
@@ -287,19 +325,26 @@ TEST_F(SharedBufferTest, CreateAndPassFromChildReadOnlyBuffer) {
     ExpectBufferContents(b, 0, "hello");
 
     // Extract the shared memory handle and verify that it is read-only.
-    auto* dispatcher = static_cast<SharedBufferDispatcher*>(
-        Core::Get()->GetDispatcher(b).get());
-    base::subtle::PlatformSharedMemoryRegion& region =
-        dispatcher->GetRegionForTesting();
-    EXPECT_EQ(region.GetMode(),
-              base::subtle::PlatformSharedMemoryRegion::Mode::kReadOnly);
+    if (IsMojoIpczEnabled()) {
+      auto buffer = ipcz_driver::SharedBuffer::Unbox(b);
+      EXPECT_EQ(buffer->region().GetMode(),
+                base::subtle::PlatformSharedMemoryRegion::Mode::kReadOnly);
+    } else {
+      auto* dispatcher = static_cast<SharedBufferDispatcher*>(
+          Core::Get()->GetDispatcher(b).get());
+      base::subtle::PlatformSharedMemoryRegion& region =
+          dispatcher->GetRegionForTesting();
+      EXPECT_EQ(region.GetMode(),
+                base::subtle::PlatformSharedMemoryRegion::Mode::kReadOnly);
+      EXPECT_EQ(MOJO_RESULT_OK, MojoClose(b));
+    }
 
     EXPECT_EQ("ok", ReadMessage(h));
     WriteMessage(h, "quit");
   });
 }
 
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 
 }  // namespace
 }  // namespace core

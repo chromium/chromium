@@ -26,7 +26,6 @@
 <translation id="225614027745146050">ยินดีต้อนรับ</translation>
 <translation id="2320166752086256636">ซ่อนแป้นพิมพ์</translation>
 <translation id="2329392777730037872">เปิด <ph name="URL" /> ในไคลเอ็นต์ไม่สำเร็จ</translation>
-<translation id="2333212046079545895">ลิขสิทธิ์ 2021 Google LLC สงวนลิขสิทธิ์</translation>
 <translation id="2359808026110333948">ต่อไป</translation>
 <translation id="2366718077645204424">ไม่สามารถเข้าถึงโฮสต์ อาจเป็นเพราะการกำหนดค่าของเครือข่ายที่คุณกำลังใช้อยู่</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  ออนไลน์ล่าสุด<ph name="RELATIVE_TIMESTAMP" /></translation>
@@ -37,6 +36,7 @@
 <translation id="2599300881200251572">บริการนี้จะช่วยให้สามารถใช้การเชื่อมต่อขาเข้าจากไคลเอ็นต์ Chrome Remote Desktop</translation>
 <translation id="2647232381348739934">Chromoting Service</translation>
 <translation id="2676780859508944670">กำลังทำงาน…</translation>
+<translation id="2692522824157224199">Copyright 2022 Google LLC. All Rights Reserved.</translation>
 <translation id="2699970397166997657">Chromoting</translation>
 <translation id="2758123043070977469">มีปัญหาในการตรวจสอบสิทธิ์ โปรดเข้าสู่ระบบอีกครั้ง</translation>
 <translation id="2803375539583399270">ป้อน PIN</translation>
@@ -73,10 +73,10 @@
 <translation id="4257751272692708833">ผู้ส่งต่อ URL ของ <ph name="PRODUCT_NAME" /></translation>
 <translation id="4277736576214464567">รหัสการเข้าถึงไม่ถูกต้อง โปรดลองอีกครั้ง</translation>
 <translation id="4281844954008187215">ข้อกำหนดในการให้บริการ</translation>
+<translation id="4372650392690220936">Copyright 2022 The Chromium Authors. All Rights Reserved.</translation>
 <translation id="4405930547258349619">Core Library</translation>
 <translation id="443560535555262820">เปิดค่ากำหนดการเข้าถึง</translation>
 <translation id="4450893287417543264">ไม่ต้องแสดงอีก</translation>
-<translation id="4512952200932940229">Copyright 2021 The Chromium Authors. All Rights Reserved.</translation>
 <translation id="4513946894732546136">ข้อเสนอแนะ</translation>
 <translation id="4563926062592110512">ไคลเอ็นต์ที่ยกเลิกการเชื่อมต่อ: <ph name="CLIENT_USERNAME" /></translation>
 <translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> ได้รับการกำหนดค่าไม่ถูกต้อง โปรดเลือกเว็บเบราว์เซอร์เริ่มต้นรายการอื่นแล้วเปิดใช้การส่งต่อ URL อีกครั้ง</translation>

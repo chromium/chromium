@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -63,7 +63,7 @@ class MediaPathFilter {
       MediaGalleryFileType type);
 
   // Checks |initialized_| is only accessed on one sequence.
-  base::SequenceChecker sequence_checker_;
+  SEQUENCE_CHECKER(sequence_checker_);
   bool initialized_;
   MediaFileExtensionMap media_file_extensions_map_;
 };

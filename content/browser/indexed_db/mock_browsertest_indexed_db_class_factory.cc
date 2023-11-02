@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -63,7 +63,7 @@ class IndexedDBTestDatabase : public IndexedDBDatabase {
       TasksAvailableCallback tasks_available_callback,
       std::unique_ptr<IndexedDBMetadataCoding> metadata_coding,
       const Identifier& unique_identifier,
-      ScopesLockManager* transaction_lock_manager)
+      PartitionedLockManager* transaction_lock_manager)
       : IndexedDBDatabase(name,
                           backing_store,
                           factory,
@@ -376,7 +376,7 @@ MockBrowserTestIndexedDBClassFactory::CreateIndexedDBDatabase(
     TasksAvailableCallback tasks_available_callback,
     std::unique_ptr<IndexedDBMetadataCoding> metadata_coding,
     const IndexedDBDatabase::Identifier& unique_identifier,
-    ScopesLockManager* transaction_lock_manager) {
+    PartitionedLockManager* transaction_lock_manager) {
   std::unique_ptr<IndexedDBTestDatabase> database =
       std::make_unique<IndexedDBTestDatabase>(
           name, backing_store, factory, this,

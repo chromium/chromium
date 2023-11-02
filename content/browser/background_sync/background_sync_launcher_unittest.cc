@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -21,7 +22,7 @@
 #include "content/public/test/test_browser_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/run_loop.h"
 #endif
 
@@ -90,7 +91,7 @@ class BackgroundSyncLauncherTest : public testing::Test {
         sync_type, &test_browser_context_);
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void FireBackgroundSyncEventsForAllPartitions() {
     num_invocations_fire_background_sync_events_ = 0;
 
@@ -124,7 +125,7 @@ class BackgroundSyncLauncherTest : public testing::Test {
 
   BrowserTaskEnvironment task_environment_;
   TestBrowserClient browser_client_;
-  ContentBrowserClient* original_client_;
+  raw_ptr<ContentBrowserClient> original_client_;
   TestBrowserContext test_browser_context_;
   int num_invocations_fire_background_sync_events_ = 0;
 };
@@ -188,7 +189,7 @@ TEST_F(BackgroundSyncLauncherTest, SoonestWakeupDeltaIsPickedForTheRightTask) {
             500);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(BackgroundSyncLauncherTest, FireBackgroundSyncEvents) {
   std::vector<GURL> urls = {GURL(kUrl_1), GURL(kUrl_2)};
   SetUpBrowserContext(urls, blink::mojom::BackgroundSyncType::ONE_SHOT);

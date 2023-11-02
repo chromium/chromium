@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #import "ios/web/public/web_state_user_data.h"
 
 namespace web {
+struct FaviconStatus;
 class WebState;
 }
 
@@ -29,9 +30,6 @@ class WebFaviconDriver : public web::WebStateObserver,
   WebFaviconDriver& operator=(const WebFaviconDriver&) = delete;
 
   ~WebFaviconDriver() override;
-
-  static void CreateForWebState(web::WebState* web_state,
-                                CoreFaviconService* favicon_service);
 
   // FaviconDriver implementation.
   gfx::Image GetFavicon() const override;
@@ -72,6 +70,13 @@ class WebFaviconDriver : public web::WebStateObserver,
   // Invoked when new favicon URL candidates are received.
   void FaviconUrlUpdatedInternal(
       const std::vector<favicon::FaviconURL>& candidates);
+
+  // Invoked to set the WebState's favicon and notify the observers.
+  void SetFaviconStatus(
+      const GURL& page_url,
+      const web::FaviconStatus& favicon_status,
+      FaviconDriverObserver::NotificationIconType notification_icon_type,
+      bool icon_url_changed);
 
   // Image Fetcher used to fetch favicon.
   image_fetcher::IOSImageDataFetcherWrapper image_fetcher_;

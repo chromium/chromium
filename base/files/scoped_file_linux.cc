@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,7 +37,8 @@ bool CanTrack(int fd) {
 }
 
 void UpdateAndCheckFdOwnership(int fd, bool owned) {
-  if (CanTrack(fd) && g_is_fd_owned[fd].exchange(owned) == owned &&
+  if (CanTrack(fd) &&
+      g_is_fd_owned[static_cast<size_t>(fd)].exchange(owned) == owned &&
       g_is_ownership_enforced) {
     CrashOnFdOwnershipViolation();
   }
@@ -63,7 +64,10 @@ void ScopedFDCloseTraits::Release(const ScopedFD& owner, int fd) {
 namespace subtle {
 
 void EnableFDOwnershipEnforcement(bool enabled) {
-  g_is_ownership_enforced = enabled;
+  // Disabled for record/replay, when replaying the ordering of calls across
+  // threads isn't preserved exactly and a fd can be closed on one thread before
+  // it is opened on another thread.
+  //g_is_ownership_enforced = enabled;
 }
 
 void ResetFDOwnership() {
@@ -73,7 +77,7 @@ void ResetFDOwnership() {
 }  // namespace subtle
 
 bool IsFDOwned(int fd) {
-  return CanTrack(fd) && g_is_fd_owned[fd];
+  return CanTrack(fd) && g_is_fd_owned[static_cast<size_t>(fd)];
 }
 
 }  // namespace base

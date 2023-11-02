@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
@@ -126,7 +127,7 @@ class ProxyServiceMojoTest : public testing::Test {
                 net::ProxyConfigWithAnnotation(
                     net::ProxyConfig::CreateFromCustomPacURL(GURL(kPacUrl)),
                     TRAFFIC_ANNOTATION_FOR_TESTS)),
-            base::WrapUnique(fetcher_),
+            base::WrapUnique(fetcher_.get()),
             std::make_unique<net::DoNothingDhcpPacFileFetcher>(),
             &mock_host_resolver_, net::NetLog::Get(),
             true /* pac_quick_check_enabled */, &network_delegate_);
@@ -137,7 +138,7 @@ class ProxyServiceMojoTest : public testing::Test {
   TestNetworkDelegate network_delegate_;
   net::MockHostResolver mock_host_resolver_;
   // Owned by |proxy_resolution_service_|.
-  net::MockPacFileFetcher* fetcher_;
+  raw_ptr<net::MockPacFileFetcher> fetcher_;
   net::RecordingNetLogObserver net_log_observer_;
   std::unique_ptr<net::ConfiguredProxyResolutionService>
       proxy_resolution_service_;
@@ -147,10 +148,11 @@ TEST_F(ProxyServiceMojoTest, Basic) {
   net::ProxyInfo info;
   net::TestCompletionCallback callback;
   std::unique_ptr<net::ProxyResolutionRequest> request;
-  EXPECT_EQ(net::ERR_IO_PENDING,
-            proxy_resolution_service_->ResolveProxy(
-                GURL("http://foo"), std::string(), net::NetworkIsolationKey(),
-                &info, callback.callback(), &request, net::NetLogWithSource()));
+  EXPECT_EQ(
+      net::ERR_IO_PENDING,
+      proxy_resolution_service_->ResolveProxy(
+          GURL("http://foo"), std::string(), net::NetworkAnonymizationKey(),
+          &info, callback.callback(), &request, net::NetLogWithSource()));
 
   // PAC file fetcher should have a fetch triggered by the first
   // |ResolveProxy()| request.
@@ -168,10 +170,11 @@ TEST_F(ProxyServiceMojoTest, DnsResolution) {
   net::ProxyInfo info;
   net::TestCompletionCallback callback;
   std::unique_ptr<net::ProxyResolutionRequest> request;
-  EXPECT_EQ(net::ERR_IO_PENDING,
-            proxy_resolution_service_->ResolveProxy(
-                GURL("http://foo"), std::string(), net::NetworkIsolationKey(),
-                &info, callback.callback(), &request, net::NetLogWithSource()));
+  EXPECT_EQ(
+      net::ERR_IO_PENDING,
+      proxy_resolution_service_->ResolveProxy(
+          GURL("http://foo"), std::string(), net::NetworkAnonymizationKey(),
+          &info, callback.callback(), &request, net::NetLogWithSource()));
 
   // PAC file fetcher should have a fetch triggered by the first
   // |ResolveProxy()| request.
@@ -192,10 +195,11 @@ TEST_F(ProxyServiceMojoTest, Error) {
   net::NetLogWithSource net_log_with_source =
       net::NetLogWithSource::Make(net::NetLogSourceType::NONE);
   std::unique_ptr<net::ProxyResolutionRequest> request;
-  EXPECT_EQ(net::ERR_IO_PENDING,
-            proxy_resolution_service_->ResolveProxy(
-                GURL("http://foo"), std::string(), net::NetworkIsolationKey(),
-                &info, callback.callback(), &request, net_log_with_source));
+  EXPECT_EQ(
+      net::ERR_IO_PENDING,
+      proxy_resolution_service_->ResolveProxy(
+          GURL("http://foo"), std::string(), net::NetworkAnonymizationKey(),
+          &info, callback.callback(), &request, net_log_with_source));
 
   // PAC file fetcher should have a fetch triggered by the first
   // |ResolveProxy()| request.
@@ -218,10 +222,11 @@ TEST_F(ProxyServiceMojoTest, ErrorOnInitialization) {
   net::ProxyInfo info;
   net::TestCompletionCallback callback;
   std::unique_ptr<net::ProxyResolutionRequest> request;
-  EXPECT_EQ(net::ERR_IO_PENDING,
-            proxy_resolution_service_->ResolveProxy(
-                GURL("http://foo"), std::string(), net::NetworkIsolationKey(),
-                &info, callback.callback(), &request, net::NetLogWithSource()));
+  EXPECT_EQ(
+      net::ERR_IO_PENDING,
+      proxy_resolution_service_->ResolveProxy(
+          GURL("http://foo"), std::string(), net::NetworkAnonymizationKey(),
+          &info, callback.callback(), &request, net::NetLogWithSource()));
 
   // PAC file fetcher should have a fetch triggered by the first
   // |ResolveProxy()| request.

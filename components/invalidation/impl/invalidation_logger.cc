@@ -1,9 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/invalidation/impl/invalidation_logger.h"
 
+#include "base/observer_list.h"
 #include "base/values.h"
 #include "components/invalidation/impl/invalidation_logger_observer.h"
 #include "components/invalidation/public/invalidation_handler.h"
@@ -18,6 +19,8 @@ InvalidationLogger::InvalidationLogger()
 InvalidationLogger::~InvalidationLogger() = default;
 
 void InvalidationLogger::OnRegistration(const std::string& registrar_name) {
+  DCHECK(registered_handlers_.find(registrar_name) ==
+         registered_handlers_.end());
   registered_handlers_.insert(registrar_name);
   EmitRegisteredHandlers();
 }
@@ -73,7 +76,7 @@ void InvalidationLogger::EmitUpdatedTopics() {
   }
 }
 
-void InvalidationLogger::OnDebugMessage(const base::DictionaryValue& details) {
+void InvalidationLogger::OnDebugMessage(const base::Value::Dict& details) {
   for (auto& observer : observer_list_)
     observer.OnDebugMessage(details);
 }

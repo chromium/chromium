@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,8 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
@@ -27,6 +27,8 @@ BluetoothAdminPolicyClient::Properties::Properties(
     : dbus::PropertySet(object_proxy, interface_name, callback) {
   RegisterProperty(bluetooth_admin_policy::kServiceAllowListProperty,
                    &service_allow_list);
+  RegisterProperty(bluetooth_admin_policy::kIsBlockedByPolicyProperty,
+                   &is_blocked_by_policy);
 }
 
 BluetoothAdminPolicyClient::Properties::~Properties() = default;
@@ -72,7 +74,8 @@ class BluetoothAdminPolicyClientImpl : public BluetoothAdminPolicyClient,
   // BluetoothAdminPolicyClient override.
   Properties* GetProperties(const dbus::ObjectPath& object_path) override {
     return static_cast<Properties*>(object_manager_->GetProperties(
-        object_path, bluetooth_admin_policy::kBluetoothAdminPolicyInterface));
+        object_path,
+        bluetooth_admin_policy::kBluetoothAdminPolicyStatusInterface));
   }
 
   void SetServiceAllowList(const dbus::ObjectPath& object_path,
@@ -85,7 +88,7 @@ class BluetoothAdminPolicyClientImpl : public BluetoothAdminPolicyClient,
       uuid_array.push_back(uuid.canonical_value());
 
     dbus::MethodCall method_call(
-        bluetooth_admin_policy::kBluetoothAdminPolicyInterface,
+        bluetooth_admin_policy::kBluetoothAdminPolicySetInterface,
         bluetooth_admin_policy::kSetServiceAllowList);
 
     dbus::MessageWriter writer(&method_call);
@@ -116,7 +119,7 @@ class BluetoothAdminPolicyClientImpl : public BluetoothAdminPolicyClient,
         dbus::ObjectPath(
             bluetooth_object_manager::kBluetoothObjectManagerServicePath));
     object_manager_->RegisterInterface(
-        bluetooth_admin_policy::kBluetoothAdminPolicyInterface, this);
+        bluetooth_admin_policy::kBluetoothAdminPolicyStatusInterface, this);
   }
 
  private:
@@ -167,7 +170,7 @@ class BluetoothAdminPolicyClientImpl : public BluetoothAdminPolicyClient,
     std::move(error_callback).Run(error_name, error_message);
   }
 
-  dbus::ObjectManager* object_manager_ = nullptr;
+  raw_ptr<dbus::ObjectManager> object_manager_ = nullptr;
 
   // List of observers interested in event notifications from us.
   base::ObserverList<BluetoothAdminPolicyClient::Observer>::Unchecked

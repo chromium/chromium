@@ -1,4 +1,4 @@
-// Copyright (c) 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -72,10 +72,6 @@ void LogScreenOnSettingsButtonClicked(Screen screen) {
                                 screen);
 }
 
-void LogNotificationOptInEvent(InterstitialScreenEvent event) {
-  base::UmaHistogramEnumeration("PhoneHub.NotificationOptInEvents", event);
-}
-
 void LogTabContinuationChipClicked(int tab_index) {
   base::UmaHistogramCounts100("PhoneHub.TabContinuationChipClicked", tab_index);
 }
@@ -91,6 +87,10 @@ void LogNotificationCount(int count) {
 void LogNotificationInteraction(NotificationInteraction interaction) {
   base::UmaHistogramEnumeration("PhoneHub.NotificationInteraction",
                                 interaction);
+}
+
+void LogNotificationMessageLength(int length) {
+  base::UmaHistogramCounts10000("PhoneHub.NotificationMessageLength", length);
 }
 
 std::string GetCameraRollMediaTypeSubcategoryName(
@@ -198,6 +198,10 @@ void LogCameraRollContextMenuDownload(int index,
           static_cast<int>(CameraRollContextMenuDownload::kDownloadGTE5));
       break;
   }
+}
+
+void LogCameraRollContentPresent() {
+  base::UmaHistogramBoolean("PhoneHub.CameraRoll.Content.Present", true);
 }
 
 }  // namespace phone_hub_metrics

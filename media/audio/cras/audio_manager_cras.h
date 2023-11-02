@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,6 +45,11 @@ class MEDIA_EXPORT AudioManagerCras : public AudioManagerCrasBase {
   // AudioManagerCrasBase implementation.
   bool IsDefault(const std::string& device_id, bool is_input) override;
   enum CRAS_CLIENT_TYPE GetClientType() override;
+
+  // Produces AudioParameters for the system, including audio processing
+  // capabilities tailored for the system,
+  AudioParameters GetStreamParametersForSystem(
+      int user_buffer_size);
 
  protected:
   AudioParameters GetPreferredOutputStreamParameters(

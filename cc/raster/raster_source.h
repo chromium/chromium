@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "cc/cc_export.h"
 #include "cc/debug/rendering_stats_instrumentation.h"
@@ -51,7 +52,10 @@ class CC_EXPORT RasterSource : public base::RefCountedThreadSafe<RasterSource> {
     // Specifies the sample count if MSAA is enabled for this tile.
     int msaa_sample_count = 0;
 
-    ImageProvider* image_provider = nullptr;
+    // Visible hint, GPU may use it as a hint to schedule raster tasks.
+    bool visible = false;
+
+    raw_ptr<ImageProvider> image_provider = nullptr;
   };
 
   RasterSource(const RasterSource&) = delete;
@@ -76,14 +80,15 @@ class CC_EXPORT RasterSource : public base::RefCountedThreadSafe<RasterSource> {
 
   // Returns whether the given rect at given scale is of solid color in
   // this raster source, as well as the solid color value.
-  bool PerformSolidColorAnalysis(gfx::Rect content_rect, SkColor* color) const;
+  bool PerformSolidColorAnalysis(gfx::Rect content_rect,
+                                 SkColor4f* color) const;
 
   // Returns true iff the whole raster source is of solid color.
   bool IsSolidColor() const;
 
   // Returns the color of the raster source if it is solid color. The results
   // are unspecified if IsSolidColor returns false.
-  SkColor GetSolidColor() const;
+  SkColor4f GetSolidColor() const;
 
   // Returns the recorded layer size of this raster source.
   gfx::Size GetSize() const;
@@ -117,7 +122,7 @@ class CC_EXPORT RasterSource : public base::RefCountedThreadSafe<RasterSource> {
 
   float recording_scale_factor() const { return recording_scale_factor_; }
 
-  SkColor background_color() const { return background_color_; }
+  SkColor4f background_color() const { return background_color_; }
 
   bool requires_clear() const { return requires_clear_; }
 
@@ -159,10 +164,10 @@ class CC_EXPORT RasterSource : public base::RefCountedThreadSafe<RasterSource> {
   // These members are const as this raster source may be in use on another
   // thread and so should not be touched after construction.
   const scoped_refptr<DisplayItemList> display_list_;
-  const SkColor background_color_;
+  const SkColor4f background_color_;
   const bool requires_clear_;
   const bool is_solid_color_;
-  const SkColor solid_color_;
+  const SkColor4f solid_color_;
   const gfx::Rect recorded_viewport_;
   const gfx::Size size_;
   const int slow_down_raster_scale_factor_for_debug_;

@@ -1,26 +1,34 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/hidden_style_css.m.js';
-import 'chrome://resources/cr_elements/shared_vars_css.m.js';
+import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 // TODO(gavinwill): Remove iron-dropdown dependency https://crbug.com/1082587.
 import 'chrome://resources/polymer/v3_0/iron-dropdown/iron-dropdown.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
+import './print_preview_vars.css.js';
 
-import './print_preview_vars_css.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {Destination, DestinationOrigin} from '../data/destination.js';
+import {Destination} from '../data/destination.js';
 import {ERROR_STRING_KEY_MAP, getPrinterStatusIcon, PrinterStatusReason} from '../data/printer_status_cros.js';
+
+import {getTemplate} from './destination_dropdown_cros.html.js';
 
 
 declare global {
   interface HTMLElementEventMap {
     'dropdown-value-selected': CustomEvent<HTMLButtonElement>;
   }
+}
+
+export interface PrintPreviewDestinationDropdownCrosElement {
+  $: {
+    destinationDropdown: HTMLDivElement,
+  };
 }
 
 const PrintPreviewDestinationDropdownCrosElementBase =
@@ -33,7 +41,7 @@ export class PrintPreviewDestinationDropdownCrosElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -62,6 +70,8 @@ export class PrintPreviewDestinationDropdownCrosElement extends
 
       destinationIcon: String,
 
+      isDarkModeActive_: Boolean,
+
       /**
        * Index of the highlighted item in the dropdown.
        */
@@ -79,32 +89,34 @@ export class PrintPreviewDestinationDropdownCrosElement extends
 
   value: Destination;
   itemList: Destination[];
+  destinationIcon: string;
   disabled: boolean;
   driveDestinationKey: string;
   noDestinations: boolean;
+  pdfDestinationKey: string;
   pdfPrinterDisabled: boolean;
   destinationStatusText: string;
+  private isDarkModeActive_: boolean;
   private highlightedIndex_: number;
   private dropdownLength_: number;
 
   private opened_: boolean = false;
   private dropdownRefitPending_: boolean = false;
 
-  ready() {
+  override ready() {
     super.ready();
 
     this.addEventListener('mousemove', e => this.onMouseMove_(e));
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.updateTabIndex_();
   }
 
-  focus() {
-    this.shadowRoot!.querySelector<HTMLElement>(
-                        '#destination-dropdown')!.focus();
+  override focus() {
+    this.$.destinationDropdown.focus();
   }
 
   private fireDropdownValueSelected_(element: Element) {
@@ -183,10 +195,10 @@ export class PrintPreviewDestinationDropdownCrosElement extends
   private onKeyDown_(event: KeyboardEvent) {
     event.stopPropagation();
     const dropdown = this.shadowRoot!.querySelector('iron-dropdown')!;
-    switch (event.code) {
+    switch (event.key) {
       case 'ArrowUp':
       case 'ArrowDown':
-        this.onArrowKeyPress_(event.code);
+        this.onArrowKeyPress_(event.key);
         break;
       case 'Enter': {
         if (dropdown.opened) {
@@ -207,7 +219,7 @@ export class PrintPreviewDestinationDropdownCrosElement extends
     }
   }
 
-  private onArrowKeyPress_(eventCode: string) {
+  private onArrowKeyPress_(eventKey: string) {
     const dropdown = this.shadowRoot!.querySelector('iron-dropdown')!;
     const items = this.getButtonListFromDropdown_();
     if (items.length === 0) {
@@ -219,7 +231,7 @@ export class PrintPreviewDestinationDropdownCrosElement extends
     // press to change the selected destination.
     if (dropdown.opened) {
       const nextIndex = this.getNextItemIndexInList_(
-          eventCode, this.highlightedIndex_, items.length);
+          eventKey, this.highlightedIndex_, items.length);
       if (nextIndex === -1) {
         return;
       }
@@ -230,7 +242,7 @@ export class PrintPreviewDestinationDropdownCrosElement extends
 
     const currentIndex = items.findIndex(item => item.value === this.value.key);
     const nextIndex =
-        this.getNextItemIndexInList_(eventCode, currentIndex, items.length);
+        this.getNextItemIndexInList_(eventKey, currentIndex, items.length);
     if (nextIndex === -1) {
       return;
     }
@@ -241,9 +253,9 @@ export class PrintPreviewDestinationDropdownCrosElement extends
    * @return -1 when the next item would be outside the list.
    */
   private getNextItemIndexInList_(
-      eventCode: string, currentIndex: number, numItems: number): number {
+      eventKey: string, currentIndex: number, numItems: number): number {
     const nextIndex =
-        eventCode === 'ArrowDown' ? currentIndex + 1 : currentIndex - 1;
+        eventKey === 'ArrowDown' ? currentIndex + 1 : currentIndex - 1;
     return nextIndex >= 0 && nextIndex < numItems ? nextIndex : -1;
   }
 
@@ -252,8 +264,7 @@ export class PrintPreviewDestinationDropdownCrosElement extends
     if (dropdownItem) {
       this.fireDropdownValueSelected_(dropdownItem);
     }
-    this.shadowRoot!.querySelector<HTMLElement>(
-                        '#destination-dropdown')!.focus();
+    this.$.destinationDropdown.focus();
   }
 
   /**
@@ -275,7 +286,7 @@ export class PrintPreviewDestinationDropdownCrosElement extends
    * being focusable.
    */
   private updateTabIndex_() {
-    this.shadowRoot!.querySelector('#destination-dropdown')!.setAttribute(
+    this.$.destinationDropdown.setAttribute(
         'tabindex', this.disabled ? '-1' : '0');
   }
 
@@ -331,7 +342,8 @@ export class PrintPreviewDestinationDropdownCrosElement extends
   private getPrinterStatusIcon_(
       printerStatusReason: PrinterStatusReason,
       isEnterprisePrinter: boolean): string {
-    return getPrinterStatusIcon(printerStatusReason, isEnterprisePrinter);
+    return getPrinterStatusIcon(
+        printerStatusReason, isEnterprisePrinter, this.isDarkModeActive_);
   }
 }
 

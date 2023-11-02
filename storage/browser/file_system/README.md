@@ -78,9 +78,9 @@ It owns:
    specific "sync" file system.
 
  - Via `scoped_refptr` a bunch of `FileSystemBackend` instances. These
-   are either created by the `FileSystemContext` itself (for sandbox, plugin
-   private, and isolated file systems) or passed in to constructor after
-   requesting the additional backends from the content embedder via
+   are either created by the `FileSystemContext` itself (for sandbox and
+   isolated file systems) or passed in to constructor after requesting the
+   additional backends from the content embedder via
    `ContentBrowserClient::GetAdditionalFileSystemBackends`.
 
 And further more it references:

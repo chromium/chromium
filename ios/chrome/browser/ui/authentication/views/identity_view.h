@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,7 +37,7 @@
 // image.
 - (void)setAvatar:(UIImage*)avatar;
 
-// Sets the title and subtitle. |subtitle| can be nil.
+// Sets the title and subtitle. `subtitle` can be nil.
 - (void)setTitle:(NSString*)title subtitle:(NSString*)subtitle;
 
 // Sets the color of the title.

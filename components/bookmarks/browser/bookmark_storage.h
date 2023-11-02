@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
 #include "base/files/important_file_writer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
@@ -35,9 +36,10 @@ class BookmarkStorage
   static constexpr base::TimeDelta kSaveDelay = base::Milliseconds(2500);
 
   // Creates a BookmarkStorage for the specified model. The data will saved to a
-  // location derived from |profile_path|. The disk writes will be executed as a
-  // task in a backend task runner.
-  BookmarkStorage(BookmarkModel* model, const base::FilePath& profile_path);
+  // file using the specified |file_path|. A backup file may be generated using
+  // a name derived from |file_path| (appending suffix kBackupExtension). All
+  // disk writes will be executed as a task in a backend task runner.
+  BookmarkStorage(BookmarkModel* model, const base::FilePath& file_path);
 
   BookmarkStorage(const BookmarkStorage&) = delete;
   BookmarkStorage& operator=(const BookmarkStorage&) = delete;
@@ -77,7 +79,7 @@ class BookmarkStorage
   bool SaveNow();
 
   // The model. The model is NULL once BookmarkModelDeleted has been invoked.
-  BookmarkModel* model_;
+  raw_ptr<BookmarkModel> model_;
 
   // Sequenced task runner where disk writes will be performed at.
   scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
@@ -88,6 +90,9 @@ class BookmarkStorage
   // The state of the backup file creation which is created lazily just before
   // the first scheduled save.
   bool backup_triggered_ = false;
+
+  // Used to track the frequency of saves starting from the first save.
+  base::TimeTicks last_scheduled_save_;
 };
 
 }  // namespace bookmarks

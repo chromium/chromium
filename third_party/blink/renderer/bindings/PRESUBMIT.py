@@ -58,11 +58,7 @@ def _RunBindingsTests(input_api, output_api):
         input_api.PresubmitLocalPath(), pardir, pardir, 'tools',
         'run_bindings_tests.py')
     cmd_name = 'run_bindings_tests.py'
-    if input_api.platform == 'win32':
-        # Windows needs some help.
-        cmd = [input_api.python_executable, run_bindings_tests_path]
-    else:
-        cmd = [run_bindings_tests_path]
+    cmd = [input_api.python3_executable, run_bindings_tests_path]
     test_cmd = input_api.Command(
         name=cmd_name, cmd=cmd, kwargs={}, message=message_type)
     if input_api.verbose:

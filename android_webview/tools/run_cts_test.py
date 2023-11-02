@@ -1,4 +1,5 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+#!/usr/bin/env vpython3
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -14,6 +15,7 @@ import run_cts
 
 sys.path.append(os.path.join(
     os.path.dirname(__file__), os.pardir, os.pardir, 'build', 'android'))
+# pylint: disable=wrong-import-position,import-error
 import devil_chromium  # pylint: disable=unused-import
 from devil.android.ndk import abis
 from devil.android.sdk import version_codes
@@ -120,6 +122,92 @@ class _RunCtsTest(unittest.TestCase):
     self.assertEqual([run_cts.TEST_FILTER_OPT + '=good.t1:good.t2-' + skip],
                      run_cts.GetTestRunFilterArg(mock_args, self._CTS_RUN))
 
+  def testFilter_IncludesForArchitecture(self):
+    mock_args = self._getArgsMock()
+
+    cts_run = {
+        'apk':
+        'module.apk',
+        'includes': [{
+            'match': 'good#test1',
+            'arch': 'x86'
+        }, {
+            'match': 'good#test2'
+        }, {
+            'match': 'exclude#test4',
+            'arch': 'arm64'
+        }]
+    }
+
+    self.assertEqual([run_cts.TEST_FILTER_OPT + '=good.test1:good.test2'],
+                     run_cts.GetTestRunFilterArg(mock_args, cts_run,
+                                                 arch='x86'))
+
+  def testFilter_ExcludesForArchitecture(self):
+    mock_args = self._getArgsMock(skip_expected_failures=True)
+
+    cts_run = {
+        'apk':
+        'module.apk',
+        'excludes': [{
+            'match': 'good#test1',
+            'arch': 'x86'
+        }, {
+            'match': 'good#test2'
+        }, {
+            'match': 'exclude#test4',
+            'arch': 'arm64'
+        }]
+    }
+
+    self.assertEqual([run_cts.TEST_FILTER_OPT + '=-good.test1:good.test2'],
+                     run_cts.GetTestRunFilterArg(mock_args, cts_run,
+                                                 arch='x86'))
+
+  def testFilter_IncludesForMode(self):
+    mock_args = self._getArgsMock()
+
+    cts_run = {
+        'apk':
+        'module.apk',
+        'includes': [{
+            'match': 'good#test1',
+            'mode': 'instant'
+        }, {
+            'match': 'good#test2'
+        }, {
+            'match': 'exclude#test4',
+            'mode': 'full'
+        }]
+    }
+
+    self.assertEqual([run_cts.TEST_FILTER_OPT + '=good.test1:good.test2'],
+                     run_cts.GetTestRunFilterArg(mock_args,
+                                                 cts_run,
+                                                 test_app_mode='instant'))
+
+  def testFilter_ExcludesForMode(self):
+    mock_args = self._getArgsMock(skip_expected_failures=True)
+
+    cts_run = {
+        'apk':
+        'module.apk',
+        'excludes': [{
+            'match': 'good#test1',
+            'mode': 'instant'
+        }, {
+            'match': 'good#test2'
+        }, {
+            'match': 'exclude#test4',
+            'mode': 'full'
+        }]
+    }
+
+    self.assertEqual([run_cts.TEST_FILTER_OPT + '=-good.test1:good.test2'],
+                     run_cts.GetTestRunFilterArg(mock_args,
+                                                 cts_run,
+                                                 test_app_mode='instant'))
+
   def testIsolatedFilter_CombinesExcludedMatches(self):
     mock_args = self._getArgsMock(isolated_script_test_filter='good#test',
                                   skip_expected_failures=False)
@@ -142,6 +230,8 @@ class _RunCtsTest(unittest.TestCase):
     self.assertEqual([run_cts.TEST_FILTER_OPT + '=good.t1:good.t2-' + skip],
                      run_cts.GetTestRunFilterArg(mock_args, self._CTS_RUN))
 
+  @unittest.skipIf(os.name == "nt", "Opening NamedTemporaryFile by name "
+                   "doesn't work in Windows.")
   def testFilterFile_CombinesExcludedMatches(self):
     with tempfile.NamedTemporaryFile(prefix='cts_run_test') as filter_file:
       filter_file.write('suite.goodtest'.encode())
@@ -151,6 +241,8 @@ class _RunCtsTest(unittest.TestCase):
       self.assertEqual([run_cts.TEST_FILTER_OPT + '=suite.goodtest'],
                        run_cts.GetTestRunFilterArg(mock_args, self._CTS_RUN))
 
+  @unittest.skipIf(os.name == "nt", "Opening NamedTemporaryFile by name "
+                   "doesn't work in Windows.")
   def testFilterFile_CombinesAll(self):
     with tempfile.NamedTemporaryFile(prefix='cts_run_test') as filter_file:
       filter_file.write('suite.goodtest'.encode())

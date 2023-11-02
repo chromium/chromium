@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,13 +10,10 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/values.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-
-namespace base {
-class DictionaryValue;
-class ListValue;
-}
 
 namespace signin {
 struct AccessTokenInfo;
@@ -79,6 +76,7 @@ class FamilyInfoFetcher {
     virtual void OnGetFamilyMembersSuccess(
         const std::vector<FamilyMember>& members) {}
     virtual void OnFailure(ErrorCode error) {}
+    virtual ~Consumer() = default;
   };
 
   // Instantiates a fetcher, but doesn't start a fetch - use the StartGet*
@@ -113,21 +111,18 @@ class FamilyInfoFetcher {
 
   void OnSimpleLoaderComplete(std::unique_ptr<std::string> response_body);
 
-  static bool ParseMembers(const base::ListValue* list,
+  static bool ParseMembers(const base::Value::List& list,
                            std::vector<FamilyMember>* members);
-  static bool ParseMember(const base::DictionaryValue* dict,
-                          FamilyMember* member);
-  static void ParseProfile(const base::DictionaryValue* dict,
-                           FamilyMember* member);
+  static bool ParseMember(const base::Value::Dict& dict, FamilyMember* member);
+  static void ParseProfile(const base::Value::Dict& dict, FamilyMember* member);
 
   void StartFetching();
   void StartFetchingAccessToken();
   void FamilyProfileFetched(const std::string& response);
   void FamilyMembersFetched(const std::string& response);
 
-  Consumer* consumer_;
-  const CoreAccountId primary_account_id_;
-  signin::IdentityManager* identity_manager_;
+  raw_ptr<Consumer> consumer_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   std::string request_path_;

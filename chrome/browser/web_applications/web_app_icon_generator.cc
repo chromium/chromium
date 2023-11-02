@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/i18n/case_conversion.h"
+#include "base/strings/utf_string_conversion_utils.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -18,7 +19,6 @@
 #include "skia/ext/image_operations.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/canvas.h"
-#include "ui/gfx/color_analysis.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/font_list.h"
@@ -26,6 +26,7 @@
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia_operations.h"
+#include "ui/gfx/image/image_skia_rep.h"
 
 namespace web_app {
 
@@ -35,12 +36,10 @@ namespace {
 // |icon_letter| into a rounded background of |color|.
 class GeneratedIconImageSource : public gfx::CanvasImageSource {
  public:
-  explicit GeneratedIconImageSource(char16_t icon_letter,
-                                    SkColor color,
+  explicit GeneratedIconImageSource(char32_t icon_letter,
                                     SquareSizePx output_size)
       : gfx::CanvasImageSource(gfx::Size(output_size, output_size)),
         icon_letter_(icon_letter),
-        color_(color),
         output_size_(output_size) {}
   GeneratedIconImageSource(const GeneratedIconImageSource&) = delete;
   GeneratedIconImageSource& operator=(const GeneratedIconImageSource&) = delete;
@@ -65,10 +64,13 @@ class GeneratedIconImageSource : public gfx::CanvasImageSource {
     font_name = kChromeOSFontFamily;
 #endif
 
+    // Use a dark gray so it will stand out on the black shelf.
+    constexpr SkColor color = SK_ColorDKGRAY;
+
     // Draw a rounded rect of the given |color|.
     cc::PaintFlags background_flags;
     background_flags.setAntiAlias(true);
-    background_flags.setColor(color_);
+    background_flags.setColor(color);
 
     gfx::Rect icon_rect(icon_inset, icon_inset, icon_size, icon_size);
     canvas->DrawRoundRect(icon_rect, border_radius, background_flags);
@@ -76,45 +78,49 @@ class GeneratedIconImageSource : public gfx::CanvasImageSource {
     // The text rect's size needs to be odd to center the text correctly.
     gfx::Rect text_rect(icon_inset, icon_inset, icon_size + 1, icon_size + 1);
     canvas->DrawStringRectWithFlags(
-        std::u16string(1, icon_letter_),
+        IconLetterToString(icon_letter_),
         gfx::FontList(gfx::Font(font_name, font_size)),
-        color_utils::GetColorWithMaxContrast(color_), text_rect,
+        color_utils::GetColorWithMaxContrast(color), text_rect,
         gfx::Canvas::TEXT_ALIGN_CENTER);
   }
 
-  char16_t icon_letter_;
-
-  SkColor color_;
+  char32_t icon_letter_;
 
   int output_size_;
 };
 
 // Adds a square container icon of |output_size| and 2 * |output_size| pixels
-// to |bitmaps| by drawing the given |icon_letter| into a rounded background of
-// |color|. For each size, if an icon of the requested size already exists in
-// |bitmaps|, nothing will happen.
+// to |bitmaps| by drawing the given |icon_letter| into a rounded background.
+// For each size, if an icon of the requested size already exists in |bitmaps|,
+// nothing will happen.
 void GenerateIcon(SizeToBitmap* bitmaps,
                   SquareSizePx output_size,
-                  SkColor color,
-                  char16_t icon_letter) {
+                  char32_t icon_letter) {
   // Do nothing if there is already an icon of |output_size|.
   if (bitmaps->count(output_size))
     return;
 
-  (*bitmaps)[output_size] = GenerateBitmap(output_size, color, icon_letter);
+  (*bitmaps)[output_size] = GenerateBitmap(output_size, icon_letter);
 }
 
-void GenerateIcons(std::set<SquareSizePx> generate_sizes,
-                   char16_t icon_letter,
-                   SkColor generated_icon_color,
+void GenerateIcons(const std::set<SquareSizePx>& generate_sizes,
+                   char32_t icon_letter,
                    SizeToBitmap* bitmap_map) {
-  // If no color has been specified, use a dark gray so it will stand out on the
-  // black shelf.
-  if (generated_icon_color == SK_ColorTRANSPARENT)
-    generated_icon_color = SK_ColorDKGRAY;
-
   for (SquareSizePx size : generate_sizes)
-    GenerateIcon(bitmap_map, size, generated_icon_color, icon_letter);
+    GenerateIcon(bitmap_map, size, icon_letter);
+}
+
+// Gets the first code point of a string.
+char32_t FirstCodepoint(const std::u16string& str) {
+  DCHECK(!str.empty());
+  size_t index = 0;
+  base_icu::UChar32 cp;
+  if (!base::ReadUnicodeCharacter(str.data(), str.size(), &index, &cp)) {
+    // U+FFFD REPLACEMENT CHARACTER
+    return 0xfffd;
+  }
+
+  return cp;
 }
 
 }  // namespace
@@ -161,12 +167,10 @@ SizeToBitmap ConstrainBitmapsToSizes(const std::vector<SkBitmap>& bitmaps,
   return output_bitmaps;
 }
 
-SkBitmap GenerateBitmap(SquareSizePx output_size,
-                        SkColor color,
-                        char16_t icon_letter) {
-  gfx::ImageSkia icon_image(std::make_unique<GeneratedIconImageSource>(
-                                icon_letter, color, output_size),
-                            gfx::Size(output_size, output_size));
+SkBitmap GenerateBitmap(SquareSizePx output_size, char32_t icon_letter) {
+  gfx::ImageSkia icon_image(
+      std::make_unique<GeneratedIconImageSource>(icon_letter, output_size),
+      gfx::Size(output_size, output_size));
   SkBitmap dst;
   if (dst.tryAllocPixels(icon_image.bitmap()->info())) {
     icon_image.bitmap()->readPixels(dst.info(), dst.getPixels(), dst.rowBytes(),
@@ -175,7 +179,7 @@ SkBitmap GenerateBitmap(SquareSizePx output_size,
   return dst;
 }
 
-char16_t GenerateIconLetterFromUrl(const GURL& app_url) {
+char32_t GenerateIconLetterFromUrl(const GURL& app_url) {
   std::string app_url_part = " ";
   const std::string domain_and_registry =
       net::registry_controlled_domains::GetDomainAndRegistry(
@@ -192,22 +196,25 @@ char16_t GenerateIconLetterFromUrl(const GURL& app_url) {
   const std::u16string string_for_display =
       url_formatter::IDNToUnicode(app_url_part);
 
-  char16_t icon_letter = base::i18n::ToUpper(string_for_display)[0];
-  return icon_letter;
+  return FirstCodepoint(base::i18n::ToUpper(string_for_display));
 }
 
-char16_t GenerateIconLetterFromAppName(const std::u16string& app_name) {
+char32_t GenerateIconLetterFromAppName(const std::u16string& app_name) {
   CHECK(!app_name.empty());
-  return base::i18n::ToUpper(app_name)[0];
+  return FirstCodepoint(base::i18n::ToUpper(app_name));
+}
+
+std::u16string IconLetterToString(char32_t cp) {
+  std::u16string str;
+  base::WriteUnicodeCharacter(cp, &str);
+  return str;
 }
 
 SizeToBitmap ResizeIconsAndGenerateMissing(
     const std::vector<SkBitmap>& icons,
     const std::set<SquareSizePx>& sizes_to_generate,
-    char16_t icon_letter,
-    SkColor* generated_icon_color,
+    char32_t icon_letter,
     bool* is_generated_icon) {
-  DCHECK(generated_icon_color);
   DCHECK(is_generated_icon);
 
   // Resize provided icons to make sure we have versions for each size in
@@ -222,12 +229,6 @@ SizeToBitmap ResizeIconsAndGenerateMissing(
   }
 
   if (!resized_bitmaps.empty()) {
-    // Determine the color that will be used for the icon's background. For this
-    // the dominant color of the first icon found is used.
-    color_utils::GridSampler sampler;
-    *generated_icon_color = color_utils::CalculateKMeanColorOfBitmap(
-        resized_bitmaps.begin()->second);
-
     *is_generated_icon = false;
     // ConstrainBitmapsToSizes generates versions for each size in
     // |sizes_to_generate|, so we don't need to generate icons.
@@ -235,20 +236,18 @@ SizeToBitmap ResizeIconsAndGenerateMissing(
   }
 
   *is_generated_icon = true;
-  GenerateIcons(sizes_to_generate, icon_letter, *generated_icon_color,
-                &resized_bitmaps);
+  GenerateIcons(sizes_to_generate, icon_letter, &resized_bitmaps);
 
   return resized_bitmaps;
 }
 
-SizeToBitmap GenerateIcons(const std::string& app_name,
-                           SkColor background_icon_color) {
+SizeToBitmap GenerateIcons(const std::string& app_name) {
   const std::u16string app_name_utf16 = base::UTF8ToUTF16(app_name);
-  const char16_t icon_letter = GenerateIconLetterFromAppName(app_name_utf16);
+  const char32_t icon_letter = GenerateIconLetterFromAppName(app_name_utf16);
 
   SizeToBitmap icons;
   for (SquareSizePx size : SizesToGenerate()) {
-    icons[size] = GenerateBitmap(size, background_icon_color, icon_letter);
+    icons[size] = GenerateBitmap(size, icon_letter);
   }
   return icons;
 }

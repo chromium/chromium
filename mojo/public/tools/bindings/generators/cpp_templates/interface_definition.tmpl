@@ -10,7 +10,7 @@
 {%- macro alloc_params(struct, params, message, method_number, is_response) %}
   bool success = true;
 {%-   for param in struct.packed.packed_fields_in_ordinal_order %}
-  {{param.field.kind|cpp_wrapper_call_type}} p_{{param.field.name}}{};
+  {{param.field.kind|cpp_wrapper_call_type}} p_{{param.field.name}} = mojo::DefaultConstructTraits::CreateInstance<{{param.field.kind|cpp_wrapper_call_type}}>();
 {%-   endfor %}
   {{struct.name}}DataView input_data_view({{params}}, {{message}});
   {{struct_macros.deserialize(struct, "input_data_view", "p_%s", "success")}}
@@ -45,6 +45,70 @@ constexpr {{constant.kind|cpp_pod_type}} {{interface.name}}::{{constant.name}};
 {%-   endif %}
 {%- endfor %}
 
+{{interface.name}}::IPCStableHashFunction {{interface.name}}::MessageToMethodInfo_(mojo::Message& message) {
+#if !BUILDFLAG(IS_FUCHSIA)
+{%- if interface.methods %}
+  switch (message.name()) {
+{%-   for method in interface.methods %}
+    case internal::k{{interface.name}}_{{method.name}}_Name: {
+      return &{{interface.name}}::{{method.name}}_Sym::IPCStableHash;
+    }
+{%-   endfor %}
+  }
+{%- endif %}
+#endif  // !BUILDFLAG(IS_FUCHSIA)
+  return nullptr;
+}
+
+
+const char* {{interface.name}}::MessageToMethodName_(mojo::Message& message) {
+#if BUILDFLAG(MOJO_TRACE_ENABLED)
+{%- if interface.methods %}
+  bool is_response = message.has_flag(mojo::Message::kFlagIsResponse);
+  if (!is_response) {
+    switch (message.name()) {
+{%-   for method in interface.methods %}
+      case internal::k{{interface.name}}_{{method.name}}_Name:
+            return "Receive {{namespace_as_string}}::{{interface.name}}::{{method.name}}";
+{%-   endfor %}
+    }
+  } else {
+    switch (message.name()) {
+{%-   for method in interface.methods %}
+      case internal::k{{interface.name}}_{{method.name}}_Name:
+            return "Receive reply {{namespace_as_string}}::{{interface.name}}::{{method.name}}";
+{%-   endfor %}
+    }
+  }
+{%- endif %}
+  return "Receive unknown mojo message";
+#else
+  bool is_response = message.has_flag(mojo::Message::kFlagIsResponse);
+  if (is_response) {
+    return "Receive mojo reply";
+  } else {
+    return "Receive mojo message";
+  }
+#endif // BUILDFLAG(MOJO_TRACE_ENABLED)
+}
+
+#if !BUILDFLAG(IS_FUCHSIA)
+{%-   for method in interface.methods %}
+uint32_t {{interface.name}}::{{method.name}}_Sym::IPCStableHash() {
+  // This method's address is used for indetifiying the mojo method name after
+  // symbolization. So each IPCStableHash should have a unique address.
+  // We cannot use NO_CODE_FOLDING() here - it relies on the uniqueness of
+  // __LINE__ value, which is not unique accross different mojo modules.
+  // The code below is very similar to NO_CODE_FOLDING, but it uses a unique
+  // hash instead of __LINE__.
+  constexpr uint32_t kHash = base::MD5Hash32Constexpr(
+          "(Impl){{namespace_as_string}}::{{interface.name}}::{{method.name}}");
+  const uint32_t hash = kHash;
+  base::debug::Alias(&hash);
+  return hash;
+}
+{%-   endfor %}
+# endif // !BUILDFLAG(IS_FUCHSIA)
 
 {%- for method in interface.methods %}
 {%-   if method.sync %}
@@ -135,6 +199,10 @@ bool {{proxy_name}}::{{method.name}}(
                                  method_name=event_name,
                                  parameter_group="input_parameters",
                                  trace_event_type='_BEGIN')}}
+#else
+{#- Output a minimal trace event if MOJO_TRACE_ENABLED is false. #}
+{%-     set event_name = "%s::%s" % (class_name, method.name) %}
+  {{interface_macros.trace_event(method_name=event_name)}}
 #endif
   const bool kExpectsResponse = true;
   const bool kIsSync = true;
@@ -167,7 +235,7 @@ bool {{proxy_name}}::{{method.name}}(
 {%-     for param in method.response_parameters -%}
           , out_param_{{param.name}}
 {%-     endfor %}));
-  ::mojo::internal::SendMessage(*receiver_, message, std::move(responder));
+  ::mojo::internal::SendMojoMessage(*receiver_, message, std::move(responder));
 #if BUILDFLAG(MOJO_TRACE_ENABLED)
   {{interface_macros.trace_event(prefix="out_param_",
                                  method_parameters=method.response_parameters,
@@ -221,11 +289,11 @@ void {{proxy_name}}::{{method.name}}(
   std::unique_ptr<mojo::MessageReceiver> responder(
       new {{class_name}}_{{method.name}}_ForwardToCallback(
           std::move(callback)));
-  ::mojo::internal::SendMessage(*receiver_, message, std::move(responder));
+  ::mojo::internal::SendMojoMessage(*receiver_, message, std::move(responder));
 {%- else %}
   // This return value may be ignored as false implies the Connector has
   // encountered an error, which will be visible through other means.
-  ::mojo::internal::SendMessage(*receiver_, message);
+  ::mojo::internal::SendMojoMessage(*receiver_, message);
 {%- endif %}
 }
 {%- endfor %}
@@ -293,10 +361,6 @@ class {{class_name}}_{{method.name}}_ProxyToResponder : public ::mojo::internal:
 
 bool {{class_name}}_{{method.name}}_ForwardToCallback::Accept(
     mojo::Message* message) {
-#if BUILDFLAG(MOJO_TRACE_ENABLED)
-  TRACE_EVENT("toplevel", "Receive reply {{namespace_as_string}}::{{class_name}}::{{method.name}}",
-               perfetto::Flow::Global(message->GetTraceId()));
-#endif
 {%-     if method|method_supports_lazy_serialization %}
   if (!message->is_serialized()) {
     auto context =
@@ -360,9 +424,12 @@ void {{class_name}}_{{method.name}}_ProxyToResponder::Run(
 
   message.set_request_id(request_id_);
   message.set_trace_nonce(trace_nonce_);
-  ::mojo::internal::SendMessage(*responder_, message);
-  // TODO(darin): Accept() returning false indicates a malformed message, and
-  // that may be good reason to close the connection. However, we don't have a
+  ::mojo::internal::SendMojoMessage(*responder_, message);
+  // SendMojoMessage() fails silently if the responder connection is closed,
+  // or if the message is malformed.
+  //
+  // TODO(darin): If Accept() returns false due to a malformed message, that
+  // may be good reason to close the connection. However, we don't have a
   // way to do that from here. We should add a way.
   responder_ = nullptr;
 }
@@ -421,15 +488,6 @@ bool {{class_name}}StubDispatch::Accept(
 {%-   for method in interface.methods %}
     case internal::k{{class_name}}_{{method.name}}_Name: {
 {%-     if method.response_parameters == None %}
-#if BUILDFLAG(MOJO_TRACE_ENABLED)
-      TRACE_EVENT(
-          "toplevel",
-          "Receive {{namespace_as_string}}::{{class_name}}::{{method.name}}",
-          perfetto::Flow::Global(message->GetTraceId()));
-#endif
-      static constexpr uint32_t kMessageHash = base::MD5Hash32Constexpr(
-              "(Impl){{namespace_as_string}}::{{class_name}}::{{method.name}}");
-      base::TaskAnnotator::ScopedSetIpcHash scoped_ipc_hash(kMessageHash);
 {%-       if method|method_supports_lazy_serialization %}
       if (!message->is_serialized()) {
         auto context = message->TakeUnserializedContext<
@@ -474,23 +532,13 @@ bool {{class_name}}StubDispatch::AcceptWithResponder(
     mojo::Message* message,
     std::unique_ptr<mojo::MessageReceiverWithStatus> responder) {
 {%- if interface.methods %}
-  const bool message_is_sync = message->has_flag(mojo::Message::kFlagIsSync);
-  const uint64_t request_id = message->request_id();
-  ALLOW_UNUSED_LOCAL(message_is_sync);
-  ALLOW_UNUSED_LOCAL(request_id);
+  [[maybe_unused]] const bool message_is_sync =
+      message->has_flag(mojo::Message::kFlagIsSync);
+  [[maybe_unused]] const uint64_t request_id = message->request_id();
   switch (message->header()->name) {
 {%-   for method in interface.methods %}
     case internal::k{{class_name}}_{{method.name}}_Name: {
 {%-     if method.response_parameters != None %}
-#if BUILDFLAG(MOJO_TRACE_ENABLED)
-      TRACE_EVENT(
-          "toplevel",
-          "Receive {{namespace_as_string}}::{{class_name}}::{{method.name}}",
-          perfetto::Flow::Global(message->GetTraceId()));
-#endif
-      static constexpr uint32_t kMessageHash = base::MD5Hash32Constexpr(
-              "(Impl){{namespace_as_string}}::{{class_name}}::{{method.name}}");
-      base::TaskAnnotator::ScopedSetIpcHash scoped_ipc_hash(kMessageHash);
 {%-       if method|method_supports_lazy_serialization %}
       if (!message->is_serialized()) {
         auto context = message->TakeUnserializedContext<

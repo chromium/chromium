@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -33,6 +34,23 @@ class SyncSessionDurationsMetricsRecorder
       const SyncSessionDurationsMetricsRecorder&) = delete;
 
   ~SyncSessionDurationsMetricsRecorder() override;
+
+  // Returns whether the user is signed in.
+  // Note: this is not the same thing as |account_status_|.
+  // |account_status_| says OFF (kind of like sayng "no, not signed-in") if the
+  // account is in an error state.  IsSignedIn() does not; it will return
+  // true for accounts that are signed-in in yet an error state.
+  // The most common reason this happens is if a syncing user signs out
+  // of the content area.  They will be put in an error state; this
+  // function will return true.
+  bool IsSignedIn() const;
+
+  // Returns whether the user is syncing.
+  // Note: this is not the same as |sync_status_|.
+  // |sync_status_| says ON (kind of like saying "yes, syncing") even if
+  // syncing is paused because the user signed out (i.e., the account is in an
+  // error state).  IsSyncing() returns false in those cases.
+  bool IsSyncing() const;
 
   // Informs this service that a session started at |session_start| time.
   void OnSessionStarted(base::TimeTicks session_start);
@@ -80,11 +98,11 @@ class SyncSessionDurationsMetricsRecorder
   // refresh token in the identity manager.
   FeatureState DeterminePrimaryAccountStatus() const;
 
-  // Determines the syns status..
+  // Determines the sync status.
   FeatureState DetermineSyncStatus() const;
 
-  SyncService* const sync_service_;
-  signin::IdentityManager* const identity_manager_;
+  const raw_ptr<SyncService> sync_service_;
+  const raw_ptr<signin::IdentityManager> identity_manager_;
 
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
       sync_observation_{this};

@@ -1,0 +1,4 @@
+include_rules = [
+  '+chrome/elevation_service/elevation_service_idl.h',
+  '+chrome/elevation_service/elevator.h',
+]

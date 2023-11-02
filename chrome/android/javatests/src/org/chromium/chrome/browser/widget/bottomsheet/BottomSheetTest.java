@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,8 +27,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
-import org.chromium.chrome.browser.ui.TabObscuringHandler;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -153,22 +153,27 @@ public class BottomSheetTest {
         CallbackHelper obscuringStateChangedHelper = new CallbackHelper();
         TabObscuringHandler handler = mTestRule.getActivity().getTabObscuringHandler();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            handler.addObserver((isObscured) -> obscuringStateChangedHelper.notifyCalled());
+            handler.addObserver(
+                    (isTabObscured,
+                            isToolbarObscured) -> obscuringStateChangedHelper.notifyCalled());
         });
         mHighPriorityContent.setHasCustomScrimLifecycle(false);
 
-        assertFalse("The tab should not yet be obscured.", handler.areAllTabsObscured());
+        assertFalse("The tab should not yet be obscured.", handler.isTabContentObscured());
+        assertFalse("The toolbar should not yet be obscured.", handler.isToolbarObscured());
 
         int callCount = obscuringStateChangedHelper.getCallCount();
         showContent(mHighPriorityContent, SheetState.HALF);
         obscuringStateChangedHelper.waitForCallback("The tab should be obscured.", callCount);
-        assertTrue("The tab should be obscured.", handler.areAllTabsObscured());
+        assertTrue("The tab should be obscured.", handler.isTabContentObscured());
+        assertTrue("The toolbar should be obscured.", handler.isToolbarObscured());
 
         callCount = obscuringStateChangedHelper.getCallCount();
         hideSheet();
         obscuringStateChangedHelper.waitForCallback("The tab should not be obscured.", callCount);
 
-        assertFalse("The tab should not be obscured.", handler.areAllTabsObscured());
+        assertFalse("The tab should not be obscured.", handler.isTabContentObscured());
+        assertFalse("The toolbar should not yet be obscured.", handler.isToolbarObscured());
     }
 
     @Test
@@ -177,14 +182,16 @@ public class BottomSheetTest {
         CallbackHelper obscuringStateChangedHelper = new CallbackHelper();
         TabObscuringHandler handler = mTestRule.getActivity().getTabObscuringHandler();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            handler.addObserver((isObscured) -> obscuringStateChangedHelper.notifyCalled());
+            handler.addObserver(
+                    (isTabObscured,
+                            isToolbarObscured) -> obscuringStateChangedHelper.notifyCalled());
         });
         mHighPriorityContent.setHasCustomScrimLifecycle(true);
 
-        assertFalse("The tab should not be obscured.", handler.areAllTabsObscured());
+        assertFalse("The tab should not be obscured.", handler.isTabContentObscured());
 
         showContent(mHighPriorityContent, SheetState.HALF);
-        assertFalse("The tab should still not be obscured.", handler.areAllTabsObscured());
+        assertFalse("The tab should still not be obscured.", handler.isTabContentObscured());
 
         hideSheet();
 

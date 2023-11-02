@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,6 @@
 namespace power_sampler {
 
 namespace {
-constexpr char kSamplerName[] = "UserIdleLevel";
 
 absl::optional<int> GetIntSysCtl(const std::vector<int>& mib_name) {
   int value = 0;

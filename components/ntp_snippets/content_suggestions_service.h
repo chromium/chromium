@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -400,11 +401,11 @@ class ContentSuggestionsService : public KeyedService,
   // Keep a direct reference to this special provider to redirect debugging
   // calls to it. If the RemoteSuggestionsProvider is loaded, it is also present
   // in |providers_|, otherwise this is a nullptr.
-  RemoteSuggestionsProvider* remote_suggestions_provider_;
+  raw_ptr<RemoteSuggestionsProvider> remote_suggestions_provider_;
 
-  favicon::LargeIconService* large_icon_service_;
+  raw_ptr<favicon::LargeIconService> large_icon_service_;
 
-  PrefService* pref_service_;
+  raw_ptr<PrefService> pref_service_;
 
   // Interface for informing about external events that have influence on
   // scheduling remote fetches.

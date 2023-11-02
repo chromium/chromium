@@ -1,0 +1,17 @@
+import("//build/shim_headers.gni")
+
+shim_headers("SPIRV-Headers_shim") {
+  root_path = "../../../../third_party/SPIRV-Headers/include"
+  headers = [
+    "spirv/unified1/GLSL.std.450.h",
+    "spirv/unified1/NonSemanticClspvReflection.h",
+    "spirv/unified1/NonSemanticDebugPrintf.h",
+    "spirv/unified1/OpenCL.std.h",
+    "spirv/unified1/spirv.h",
+    "spirv/unified1/spirv.hpp",
+  ]
+}
+
+source_set("spv_headers") {
+  deps = [ ":SPIRV-Headers_shim" ]
+}

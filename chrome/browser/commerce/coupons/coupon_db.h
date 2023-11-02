@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "url/gurl.h"
 
@@ -20,7 +21,7 @@ class CouponContentProto;
 }  // namespace coupon_db
 
 template <typename T>
-class ProfileProtoDB;
+class SessionProtoDB;
 
 class CouponDB {
  public:
@@ -58,7 +59,7 @@ class CouponDB {
   void OnOperationFinished(bool success);
 
  private:
-  ProfileProtoDB<coupon_db::CouponContentProto>* proto_db_;
+  raw_ptr<SessionProtoDB<coupon_db::CouponContentProto>> proto_db_;
   base::WeakPtrFactory<CouponDB> weak_ptr_factory_{this};
 };
 

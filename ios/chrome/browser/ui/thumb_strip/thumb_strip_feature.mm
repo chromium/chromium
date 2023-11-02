@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,10 +12,13 @@
 #error "This file requires ARC support."
 #endif
 
-// Returns true if the Thumb Strip feature is enabled and the device is an iPad.
+// Returns true if the Thumb Strip feature is enabled and the device is an iPad,
+// and Voice Over isn't active. There's no clean way to open and navigate
+// thumbstrip with VO.
 bool IsThumbStripEnabled() {
   return (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) &&
-         base::FeatureList::IsEnabled(kExpandedTabStrip);
+         base::FeatureList::IsEnabled(kExpandedTabStrip) &&
+         !UIAccessibilityIsVoiceOverRunning();
 }
 
 bool ShowThumbStripInTraitCollection(UITraitCollection* trait_collection) {

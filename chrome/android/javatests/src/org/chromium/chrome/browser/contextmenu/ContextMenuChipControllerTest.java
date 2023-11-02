@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,23 +17,23 @@ import android.view.View;
 
 import androidx.test.filters.SmallTest;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.test.util.DummyUiActivity;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
 /**
  * Tests for ContextMenuHeader view and {@link ContextMenuHeaderViewBinder}
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class ContextMenuChipControllerTest extends DummyUiActivityTestCase {
+@Batch(Batch.UNIT_TESTS)
+public class ContextMenuChipControllerTest extends BlankUiTestActivityTestCase {
     // This is the combination of the expected vertical margins and the chip height.
     private static final int EXPECTED_VERTICAL_DP = 80;
     // Computed by taking the 338dp max width and subtracting:
@@ -59,11 +59,6 @@ public class ContextMenuChipControllerTest extends DummyUiActivityTestCase {
     private float mMeasuredDeviceDensity;
     private View mAnchorView;
 
-    @BeforeClass
-    public static void setUpBeforeActivityLaunched() {
-        DummyUiActivity.setTestLayout(R.layout.context_menu_fullscreen_container);
-    }
-
     @Override
     public void setUpTest() throws Exception {
         super.setUpTest();
@@ -71,6 +66,7 @@ public class ContextMenuChipControllerTest extends DummyUiActivityTestCase {
         mMeasuredDeviceDensity = getActivity().getResources().getDisplayMetrics().density;
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            getActivity().setContentView(R.layout.context_menu_fullscreen_container);
             mAnchorView = getActivity().findViewById(R.id.context_menu_chip_anchor_point);
         });
     }

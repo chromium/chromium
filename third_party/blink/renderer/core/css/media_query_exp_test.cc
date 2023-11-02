@@ -1,8 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/css/media_query_exp.h"
+#include "third_party/blink/renderer/core/css/css_test_helpers.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -28,6 +30,35 @@ MediaQueryExpValue EmValue(double value) {
 
 MediaQueryExpValue RemValue(double value) {
   return MediaQueryExpValue(value, CSSPrimitiveValue::UnitType::kRems);
+}
+
+MediaQueryExpValue DvhValue(double value) {
+  return MediaQueryExpValue(
+      value, CSSPrimitiveValue::UnitType::kDynamicViewportHeight);
+}
+
+MediaQueryExpValue SvhValue(double value) {
+  return MediaQueryExpValue(value,
+                            CSSPrimitiveValue::UnitType::kSmallViewportHeight);
+}
+
+MediaQueryExpValue LvhValue(double value) {
+  return MediaQueryExpValue(value,
+                            CSSPrimitiveValue::UnitType::kLargeViewportHeight);
+}
+
+MediaQueryExpValue VhValue(double value) {
+  return MediaQueryExpValue(value,
+                            CSSPrimitiveValue::UnitType::kViewportHeight);
+}
+
+MediaQueryExpValue CqhValue(double value) {
+  return MediaQueryExpValue(value,
+                            CSSPrimitiveValue::UnitType::kContainerHeight);
+}
+
+MediaQueryExpValue CssValue(const CSSPrimitiveValue& value) {
+  return MediaQueryExpValue(value);
 }
 
 MediaQueryExpValue InvalidValue() {
@@ -74,32 +105,40 @@ MediaQueryExp PairExp(String feature,
   return MediaQueryExp::Create(feature, MediaQueryExpBounds(left, right));
 }
 
-std::unique_ptr<MediaQueryExpNode> FeatureNode(MediaQueryExp expr) {
-  return std::make_unique<MediaQueryFeatureExpNode>(expr);
+const MediaQueryExpNode* FeatureNode(MediaQueryExp expr) {
+  return MakeGarbageCollected<MediaQueryFeatureExpNode>(expr);
 }
 
-std::unique_ptr<MediaQueryExpNode> NestedNode(
-    std::unique_ptr<MediaQueryExpNode> child) {
-  return std::make_unique<MediaQueryNestedExpNode>(std::move(child));
+const MediaQueryExpNode* EnclosedFeatureNode(MediaQueryExp expr) {
+  return MediaQueryExpNode::Nested(
+      MakeGarbageCollected<MediaQueryFeatureExpNode>(expr));
 }
 
-std::unique_ptr<MediaQueryExpNode> NotNode(
-    std::unique_ptr<MediaQueryExpNode> operand) {
-  return std::make_unique<MediaQueryNotExpNode>(std::move(operand));
+const MediaQueryExpNode* NestedNode(const MediaQueryExpNode* child) {
+  return MediaQueryExpNode::Nested(child);
 }
 
-std::unique_ptr<MediaQueryExpNode> AndNode(
-    std::unique_ptr<MediaQueryExpNode> left,
-    std::unique_ptr<MediaQueryExpNode> right) {
-  return std::make_unique<MediaQueryAndExpNode>(std::move(left),
-                                                std::move(right));
+const MediaQueryExpNode* FunctionNode(const MediaQueryExpNode* child,
+                                      const AtomicString& name) {
+  return MediaQueryExpNode::Function(child, name);
 }
 
-std::unique_ptr<MediaQueryExpNode> OrNode(
-    std::unique_ptr<MediaQueryExpNode> left,
-    std::unique_ptr<MediaQueryExpNode> right) {
-  return std::make_unique<MediaQueryOrExpNode>(std::move(left),
-                                               std::move(right));
+const MediaQueryExpNode* NotNode(const MediaQueryExpNode* operand) {
+  return MediaQueryExpNode::Not(operand);
+}
+
+const MediaQueryExpNode* AndNode(const MediaQueryExpNode* left,
+                                 const MediaQueryExpNode* right) {
+  return MediaQueryExpNode::And(left, right);
+}
+
+const MediaQueryExpNode* OrNode(const MediaQueryExpNode* left,
+                                const MediaQueryExpNode* right) {
+  return MediaQueryExpNode::Or(left, right);
+}
+
+const MediaQueryExpNode* UnknownNode(String string) {
+  return MakeGarbageCollected<MediaQueryUnknownExpNode>(string);
 }
 
 }  // namespace
@@ -175,123 +214,101 @@ TEST(MediaQueryExpTest, ExpEquality) {
 
 TEST(MediaQueryExpTest, Serialize) {
   // Boolean feature:
-  EXPECT_EQ("(color)", RightExp("color", NoCmp(InvalidValue())).Serialize());
+  EXPECT_EQ("color", RightExp("color", NoCmp(InvalidValue())).Serialize());
 
   auto px = PxValue(10.0);
 
   // Plain feature:
-  EXPECT_EQ("(width: 10px)", RightExp("width", NoCmp(px)).Serialize());
+  EXPECT_EQ("width: 10px", RightExp("width", NoCmp(px)).Serialize());
 
   // Ranges:
-  EXPECT_EQ("(width = 10px)", RightExp("width", EqCmp(px)).Serialize());
-  EXPECT_EQ("(width < 10px)", RightExp("width", LtCmp(px)).Serialize());
-  EXPECT_EQ("(width <= 10px)", RightExp("width", LeCmp(px)).Serialize());
-  EXPECT_EQ("(width > 10px)", RightExp("width", GtCmp(px)).Serialize());
-  EXPECT_EQ("(width >= 10px)", RightExp("width", GeCmp(px)).Serialize());
+  EXPECT_EQ("width = 10px", RightExp("width", EqCmp(px)).Serialize());
+  EXPECT_EQ("width < 10px", RightExp("width", LtCmp(px)).Serialize());
+  EXPECT_EQ("width <= 10px", RightExp("width", LeCmp(px)).Serialize());
+  EXPECT_EQ("width > 10px", RightExp("width", GtCmp(px)).Serialize());
+  EXPECT_EQ("width >= 10px", RightExp("width", GeCmp(px)).Serialize());
 
-  EXPECT_EQ("(10px = width)", LeftExp("width", EqCmp(px)).Serialize());
-  EXPECT_EQ("(10px < width)", LeftExp("width", LtCmp(px)).Serialize());
-  EXPECT_EQ("(10px <= width)", LeftExp("width", LeCmp(px)).Serialize());
-  EXPECT_EQ("(10px > width)", LeftExp("width", GtCmp(px)).Serialize());
-  EXPECT_EQ("(10px >= width)", LeftExp("width", GeCmp(px)).Serialize());
+  EXPECT_EQ("10px = width", LeftExp("width", EqCmp(px)).Serialize());
+  EXPECT_EQ("10px < width", LeftExp("width", LtCmp(px)).Serialize());
+  EXPECT_EQ("10px <= width", LeftExp("width", LeCmp(px)).Serialize());
+  EXPECT_EQ("10px > width", LeftExp("width", GtCmp(px)).Serialize());
+  EXPECT_EQ("10px >= width", LeftExp("width", GeCmp(px)).Serialize());
 
   EXPECT_EQ(
-      "(10px < width < 20px)",
+      "10px < width < 20px",
       PairExp("width", LtCmp(PxValue(10.0)), LtCmp(PxValue(20.0))).Serialize());
   EXPECT_EQ(
-      "(20px > width > 10px)",
+      "20px > width > 10px",
       PairExp("width", GtCmp(PxValue(20.0)), GtCmp(PxValue(10.0))).Serialize());
   EXPECT_EQ(
-      "(10px <= width <= 20px)",
+      "10px <= width <= 20px",
       PairExp("width", LeCmp(PxValue(10.0)), LeCmp(PxValue(20.0))).Serialize());
   EXPECT_EQ(
-      "(20px > width >= 10px)",
+      "20px > width >= 10px",
       PairExp("width", GtCmp(PxValue(20.0)), GeCmp(PxValue(10.0))).Serialize());
 }
 
-TEST(MediaQueryExpTest, Copy) {
-  // (width < 10px)
-  MediaQueryExp width_lt10 = RightExp("width", LtCmp(PxValue(10)));
-  // (height < 10px)
-  MediaQueryExp height_lt10 = RightExp("height", LtCmp(PxValue(10)));
-
-  Vector<std::unique_ptr<MediaQueryExpNode>> nodes;
-  nodes.push_back(FeatureNode(width_lt10));
-  nodes.push_back(NotNode(FeatureNode(width_lt10)));
-  nodes.push_back(NestedNode(FeatureNode(width_lt10)));
-  nodes.push_back(AndNode(FeatureNode(width_lt10), FeatureNode(height_lt10)));
-  nodes.push_back(OrNode(FeatureNode(width_lt10), FeatureNode(height_lt10)));
-
-  for (const auto& node : nodes) {
-    EXPECT_EQ(node->GetType(), node->Copy()->GetType());
-    EXPECT_EQ(node->Serialize(), node->Copy()->Serialize());
-  }
-}
-
 TEST(MediaQueryExpTest, SerializeNode) {
-  EXPECT_EQ("(width < 10px)",
+  EXPECT_EQ("width < 10px",
             FeatureNode(RightExp("width", LtCmp(PxValue(10))))->Serialize());
 
   EXPECT_EQ(
+      "(width < 10px)",
+      EnclosedFeatureNode(RightExp("width", LtCmp(PxValue(10))))->Serialize());
+
+  EXPECT_EQ(
       "(width < 10px) and (11px >= thing) and (height = 12px)",
-      AndNode(FeatureNode(RightExp("width", LtCmp(PxValue(10)))),
-              AndNode(FeatureNode(LeftExp("thing", GeCmp(PxValue(11)))),
-                      FeatureNode(RightExp("height", EqCmp(PxValue(12))))))
+      AndNode(
+          EnclosedFeatureNode(RightExp("width", LtCmp(PxValue(10)))),
+          AndNode(EnclosedFeatureNode(LeftExp("thing", GeCmp(PxValue(11)))),
+                  EnclosedFeatureNode(RightExp("height", EqCmp(PxValue(12))))))
           ->Serialize());
 
   // Same as previous, but with 'or' instead:
-  EXPECT_EQ("(width < 10px) or (11px >= thing) or (height = 12px)",
-            OrNode(FeatureNode(RightExp("width", LtCmp(PxValue(10)))),
-                   OrNode(FeatureNode(LeftExp("thing", GeCmp(PxValue(11)))),
-                          FeatureNode(RightExp("height", EqCmp(PxValue(12))))))
-                ->Serialize());
-
   EXPECT_EQ(
-      "not (width < 10px)",
-      NotNode(FeatureNode(RightExp("width", LtCmp(PxValue(10)))))->Serialize());
-
-  EXPECT_EQ("((width < 10px))",
-            NestedNode(FeatureNode(RightExp("width", LtCmp(PxValue(10)))))
-                ->Serialize());
-  EXPECT_EQ(
-      "(((width < 10px)))",
-      NestedNode(NestedNode(FeatureNode(RightExp("width", LtCmp(PxValue(10))))))
+      "(width < 10px) or (11px >= thing) or (height = 12px)",
+      OrNode(
+          EnclosedFeatureNode(RightExp("width", LtCmp(PxValue(10)))),
+          OrNode(EnclosedFeatureNode(LeftExp("thing", GeCmp(PxValue(11)))),
+                 EnclosedFeatureNode(RightExp("height", EqCmp(PxValue(12))))))
           ->Serialize());
 
-  EXPECT_EQ("not ((11px >= thing) and (height = 12px))",
-            NotNode(NestedNode(AndNode(
-                        FeatureNode(LeftExp("thing", GeCmp(PxValue(11)))),
-                        FeatureNode(RightExp("height", EqCmp(PxValue(12)))))))
+  EXPECT_EQ("not (width < 10px)",
+            NotNode(EnclosedFeatureNode(RightExp("width", LtCmp(PxValue(10)))))
                 ->Serialize());
-}
 
-TEST(MediaQueryExpTest, QueriedAxes) {
-  MediaQueryExp color = RightExp("color", NoCmp(InvalidValue()));
-  MediaQueryExp width_lt10 = RightExp("width", LtCmp(PxValue(10)));
-  MediaQueryExp height_lt10 = RightExp("height", LtCmp(PxValue(10)));
-
-  // (color)
-  EXPECT_EQ(PhysicalAxes(kPhysicalAxisNone), FeatureNode(color)->QueriedAxes());
-  // (width < 10px)
-  EXPECT_EQ(PhysicalAxes(kPhysicalAxisHorizontal),
-            FeatureNode(width_lt10)->QueriedAxes());
-  // (height < 10px)
-  EXPECT_EQ(PhysicalAxes(kPhysicalAxisVertical),
-            FeatureNode(height_lt10)->QueriedAxes());
-  // (width < 10px) and (height < 10px)
-  EXPECT_EQ(PhysicalAxes(kPhysicalAxisBoth),
-            AndNode(FeatureNode(width_lt10), FeatureNode(height_lt10))
-                ->QueriedAxes());
-  // (width < 10px) or (height < 10px)
   EXPECT_EQ(
-      PhysicalAxes(kPhysicalAxisBoth),
-      OrNode(FeatureNode(width_lt10), FeatureNode(height_lt10))->QueriedAxes());
-  // ((width < 10px))
-  EXPECT_EQ(PhysicalAxes(kPhysicalAxisHorizontal),
-            NestedNode(FeatureNode(width_lt10))->QueriedAxes());
-  // not (width < 10px)
-  EXPECT_EQ(PhysicalAxes(kPhysicalAxisHorizontal),
-            NotNode(FeatureNode(width_lt10))->QueriedAxes());
+      "((width < 10px))",
+      NestedNode(EnclosedFeatureNode(RightExp("width", LtCmp(PxValue(10)))))
+          ->Serialize());
+  EXPECT_EQ("(((width < 10px)))",
+            NestedNode(NestedNode(EnclosedFeatureNode(
+                           RightExp("width", LtCmp(PxValue(10))))))
+                ->Serialize());
+
+  EXPECT_EQ(
+      "not ((11px >= thing) and (height = 12px))",
+      NotNode(NestedNode(AndNode(
+                  EnclosedFeatureNode(LeftExp("thing", GeCmp(PxValue(11)))),
+                  EnclosedFeatureNode(RightExp("height", EqCmp(PxValue(12)))))))
+          ->Serialize());
+
+  EXPECT_EQ("special(width < 10px)",
+            FunctionNode(FeatureNode(RightExp("width", LtCmp(PxValue(10)))),
+                         "special")
+                ->Serialize());
+  EXPECT_EQ(
+      "special((width < 10px))",
+      FunctionNode(EnclosedFeatureNode(RightExp("width", LtCmp(PxValue(10)))),
+                   "special")
+          ->Serialize());
+  EXPECT_EQ(
+      "special((11px >= thing) and (height = 12px))",
+      FunctionNode(
+          AndNode(EnclosedFeatureNode(LeftExp("thing", GeCmp(PxValue(11)))),
+                  EnclosedFeatureNode(RightExp("height", EqCmp(PxValue(12))))),
+          "special")
+          ->Serialize());
 }
 
 TEST(MediaQueryExpTest, CollectExpressions) {
@@ -300,16 +317,16 @@ TEST(MediaQueryExpTest, CollectExpressions) {
 
   // (width < 10px)
   {
-    Vector<MediaQueryExp> expressions;
-    FeatureNode(width_lt10)->CollectExpressions(expressions);
+    HeapVector<MediaQueryExp> expressions;
+    EnclosedFeatureNode(width_lt10)->CollectExpressions(expressions);
     ASSERT_EQ(1u, expressions.size());
     EXPECT_EQ(width_lt10, expressions[0]);
   }
 
   // (width < 10px) and (height < 10px)
   {
-    Vector<MediaQueryExp> expressions;
-    AndNode(FeatureNode(width_lt10), FeatureNode(height_lt10))
+    HeapVector<MediaQueryExp> expressions;
+    AndNode(EnclosedFeatureNode(width_lt10), EnclosedFeatureNode(height_lt10))
         ->CollectExpressions(expressions);
     ASSERT_EQ(2u, expressions.size());
     EXPECT_EQ(width_lt10, expressions[0]);
@@ -318,8 +335,8 @@ TEST(MediaQueryExpTest, CollectExpressions) {
 
   // (width < 10px) or (height < 10px)
   {
-    Vector<MediaQueryExp> expressions;
-    OrNode(FeatureNode(width_lt10), FeatureNode(height_lt10))
+    HeapVector<MediaQueryExp> expressions;
+    OrNode(EnclosedFeatureNode(width_lt10), EnclosedFeatureNode(height_lt10))
         ->CollectExpressions(expressions);
     ASSERT_EQ(2u, expressions.size());
     EXPECT_EQ(width_lt10, expressions[0]);
@@ -328,40 +345,87 @@ TEST(MediaQueryExpTest, CollectExpressions) {
 
   // ((width < 10px))
   {
-    Vector<MediaQueryExp> expressions;
-    NestedNode(FeatureNode(width_lt10))->CollectExpressions(expressions);
+    HeapVector<MediaQueryExp> expressions;
+    NestedNode(EnclosedFeatureNode(width_lt10))
+        ->CollectExpressions(expressions);
     ASSERT_EQ(1u, expressions.size());
     EXPECT_EQ(width_lt10, expressions[0]);
   }
 
   // not (width < 10px)
   {
-    Vector<MediaQueryExp> expressions;
-    NotNode(FeatureNode(width_lt10))->CollectExpressions(expressions);
+    HeapVector<MediaQueryExp> expressions;
+    NotNode(EnclosedFeatureNode(width_lt10))->CollectExpressions(expressions);
     ASSERT_EQ(1u, expressions.size());
     EXPECT_EQ(width_lt10, expressions[0]);
+  }
+
+  // unknown
+  {
+    HeapVector<MediaQueryExp> expressions;
+    UnknownNode("foo")->CollectExpressions(expressions);
+    EXPECT_EQ(0u, expressions.size());
   }
 }
 
 TEST(MediaQueryExpTest, UnitFlags) {
-  // (width < 10px)
+  // width < 10px
   EXPECT_EQ(MediaQueryExpValue::UnitFlags::kNone,
             RightExp("width", LtCmp(PxValue(10.0))).GetUnitFlags());
-  // (width < 10em)
+  // width < 10em
   EXPECT_EQ(MediaQueryExpValue::UnitFlags::kFontRelative,
             RightExp("width", LtCmp(EmValue(10.0))).GetUnitFlags());
-  // (width < 10rem)
+  // width < 10rem
   EXPECT_EQ(MediaQueryExpValue::UnitFlags::kRootFontRelative,
             RightExp("width", LtCmp(RemValue(10.0))).GetUnitFlags());
-  // (10px < width)
+  // 10px < width
   EXPECT_EQ(MediaQueryExpValue::UnitFlags::kNone,
             LeftExp("width", LtCmp(PxValue(10.0))).GetUnitFlags());
-  // (10em <  width)
+  // 10em <  width
   EXPECT_EQ(MediaQueryExpValue::UnitFlags::kFontRelative,
             LeftExp("width", LtCmp(EmValue(10.0))).GetUnitFlags());
-  // (10rem < width)
+  // 10rem < width
   EXPECT_EQ(MediaQueryExpValue::UnitFlags::kRootFontRelative,
             LeftExp("width", LtCmp(RemValue(10.0))).GetUnitFlags());
+  // 10dvh < width
+  EXPECT_EQ(MediaQueryExpValue::UnitFlags::kDynamicViewport,
+            LeftExp("width", LtCmp(DvhValue(10.0))).GetUnitFlags());
+  // 10svh < width
+  EXPECT_EQ(MediaQueryExpValue::UnitFlags::kStaticViewport,
+            LeftExp("width", LtCmp(SvhValue(10.0))).GetUnitFlags());
+  // 10lvh < width
+  EXPECT_EQ(MediaQueryExpValue::UnitFlags::kStaticViewport,
+            LeftExp("width", LtCmp(LvhValue(10.0))).GetUnitFlags());
+  // 10vh < width
+  EXPECT_EQ(MediaQueryExpValue::UnitFlags::kStaticViewport,
+            LeftExp("width", LtCmp(VhValue(10.0))).GetUnitFlags());
+  // 10cqh < width
+  EXPECT_EQ(MediaQueryExpValue::UnitFlags::kContainer,
+            LeftExp("width", LtCmp(CqhValue(10.0))).GetUnitFlags());
+
+  // width < calc(10em + 10dvh)
+  const auto* calc_value =
+      DynamicTo<CSSPrimitiveValue>(css_test_helpers::ParseValue(
+          *Document::CreateForTest(), "<length>", "calc(10em + 10dvh)"));
+  ASSERT_TRUE(calc_value);
+  EXPECT_EQ(
+      static_cast<unsigned>(MediaQueryExpValue::UnitFlags::kFontRelative |
+                            MediaQueryExpValue::UnitFlags::kDynamicViewport),
+      RightExp("width", LtCmp(CssValue(*calc_value))).GetUnitFlags());
+}
+
+TEST(MediaQueryExpTest, UtilsNullptrHandling) {
+  MediaQueryExp exp = RightExp("width", LtCmp(PxValue(10)));
+
+  EXPECT_FALSE(MediaQueryExpNode::Nested(nullptr));
+  EXPECT_FALSE(MediaQueryExpNode::Function(nullptr, "test"));
+  EXPECT_FALSE(MediaQueryExpNode::Not(nullptr));
+  EXPECT_FALSE(MediaQueryExpNode::And(nullptr, FeatureNode(exp)));
+  EXPECT_FALSE(MediaQueryExpNode::And(FeatureNode(exp), nullptr));
+  EXPECT_FALSE(MediaQueryExpNode::And(nullptr, nullptr));
+  EXPECT_FALSE(MediaQueryExpNode::Or(nullptr, FeatureNode(exp)));
+  EXPECT_FALSE(MediaQueryExpNode::Or(FeatureNode(exp), nullptr));
+  EXPECT_FALSE(MediaQueryExpNode::Or(nullptr, nullptr));
 }
 
 }  // namespace blink

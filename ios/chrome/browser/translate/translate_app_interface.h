@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 
 @interface TranslateAppInterface : NSObject
 
-// Sets up the app for testing. |translateScriptServer| is the URL
+// Sets up the app for testing. `translateScriptServer` is the URL
 // for the server that can serve up translate scripts to app.
 + (void)setUpWithScriptServer:(NSString*)translateScriptServerURL;
 
@@ -46,15 +46,15 @@
 // manager fakes the translation and does not depend on the real JavaScript.
 + (void)setUpFakeJSTranslateManagerInCurrentTab;
 
-/// Whether user has set a preference to translate from |source| language to
-// |target| language.
+/// Whether user has set a preference to translate from `source` language to
+// `target` language.
 + (BOOL)shouldAutoTranslateFromLanguage:(NSString*)source
                              toLanguage:(NSString*)target;
 
-// Whether user has set a preference to block the translation of |language|.
+// Whether user has set a preference to block the translation of `language`.
 + (BOOL)isBlockedLanguage:(NSString*)language;
 
-// Whether user has set a preference to translate any pages on |hostName|.
+// Whether user has set a preference to translate any pages on `hostName`.
 + (BOOL)isBlockedSite:(NSString*)hostName;
 
 // The following are Translate Infobar UI constants. Test client needs to know

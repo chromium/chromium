@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,9 +13,9 @@
 class ChromeBrowserState;
 class ExternalFileRemover;
 
-// Singleton that owns all |ExternalFileRemover| and associates them with
-// browser states. Listens for the |BrowserState|'s destruction notification and
-// cleans up the associated |ExternalFileRemover|.
+// Singleton that owns all `ExternalFileRemover` and associates them with
+// browser states. Listens for the `BrowserState`'s destruction notification and
+// cleans up the associated `ExternalFileRemover`.
 class ExternalFileRemoverFactory : public BrowserStateKeyedServiceFactory {
  public:
   static ExternalFileRemover* GetForBrowserState(

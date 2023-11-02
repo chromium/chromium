@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,7 +25,6 @@
 #include "chrome/chrome_cleaner/logging/scoped_logging.h"
 #include "chrome/chrome_cleaner/os/disk_util.h"
 #include "chrome/chrome_cleaner/os/initializer.h"
-#include "sandbox/win/src/sandbox.h"
 #include "sandbox/win/src/sandbox_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -46,7 +45,6 @@ class MockSandboxTargetServices : public sandbox::TargetServices {
   MOCK_METHOD0(Init, sandbox::ResultCode());
   MOCK_METHOD0(LowerToken, void());
   MOCK_METHOD0(GetState, sandbox::ProcessState*());
-  MOCK_METHOD3(CreateBrokeredSocket, SOCKET(int af, int family, int protocol));
 };
 
 class TestSandboxSetupHooks : public SandboxSetupHooks {

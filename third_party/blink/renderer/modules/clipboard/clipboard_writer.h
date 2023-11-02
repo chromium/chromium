@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/core/fileapi/file_reader_loader_client.h"
 #include "third_party/blink/renderer/modules/clipboard/clipboard_promise.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/self_keep_alive.h"
 #include "third_party/skia/include/core/SkImage.h"
 
@@ -53,12 +53,11 @@ class SystemClipboard;
 class ClipboardWriter : public GarbageCollected<ClipboardWriter>,
                         public FileReaderLoaderClient {
  public:
-  // For writing sanitized MIME types.
+  // For writing sanitized and custom MIME types.
   // IsValidType() must return true on types passed into `mime_type`.
   static ClipboardWriter* Create(SystemClipboard* system_clipboard,
                                  const String& mime_type,
-                                 ClipboardPromise* promise,
-                                 bool is_custom_format_type);
+                                 ClipboardPromise* promise);
 
   ~ClipboardWriter() override;
 
@@ -70,7 +69,7 @@ class ClipboardWriter : public GarbageCollected<ClipboardWriter>,
   // IsValidType() is used for both ClipboardWriter and ClipboardReader, as read
   // and write currently support the same types. If this changes in the future,
   // please create separate IsValidType functions.
-  static bool IsValidType(const String& mime_type, bool is_custom_format_type);
+  static bool IsValidType(const String& mime_type);
   // Begins the sequence of writing the Blob to the system clipbaord.
   void WriteToSystem(Blob* blob);
 

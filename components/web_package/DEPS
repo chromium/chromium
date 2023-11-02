@@ -1,4 +1,5 @@
 include_rules = [
+  "+components/base32",
   "+components/cbor",
   "+mojo/public/cpp",
   "+net",
@@ -8,5 +9,11 @@ include_rules = [
 specific_include_rules = {
   "web_bundle_parser_fuzzer\.cc": [
     "+mojo/core/embedder/embedder.h",
+  ],
+  "web_bundle_signer.cc": [
+    "+crypto",
+  ],
+  "(integrity_block_parser|ed25519_public_key|web_bundle_parser_unittest|web_bundle_signer)\.cc": [
+    "+third_party/boringssl",
   ],
 }

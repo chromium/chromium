@@ -1,10 +1,11 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_PAINT_ARTIFACT_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_PAINT_ARTIFACT_H_
 
+#include "base/check_op.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_list.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunk.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -33,7 +34,7 @@ class PLATFORM_EXPORT PaintArtifact final : public RefCounted<PaintArtifact> {
   PaintArtifact(PaintArtifact&& other) = delete;
   PaintArtifact& operator=(PaintArtifact&& other) = delete;
 
-  bool IsEmpty() const { return chunks_.IsEmpty(); }
+  bool IsEmpty() const { return chunks_.empty(); }
 
   DisplayItemList& GetDisplayItemList() { return display_item_list_; }
   const DisplayItemList& GetDisplayItemList() const {
@@ -66,10 +67,17 @@ class PLATFORM_EXPORT PaintArtifact final : public RefCounted<PaintArtifact> {
   DOMNodeId ClientOwnerNodeId(DisplayItemClientId) const;
   String IdAsString(const DisplayItem::Id& id) const;
 
+  std::unique_ptr<JSONArray> ToJSON() const;
+  void AppendChunksAsJSON(wtf_size_t start_chunk_index,
+                          wtf_size_t end_chunk_index,
+                          JSONArray&,
+                          unsigned flags) const;
+
  private:
   struct ClientDebugInfo {
     String name;
     DOMNodeId owner_node_id;
+    DISALLOW_NEW();
   };
 
   using DebugInfo = HashMap<DisplayItemClientId, ClientDebugInfo>;
@@ -78,6 +86,8 @@ class PLATFORM_EXPORT PaintArtifact final : public RefCounted<PaintArtifact> {
   Vector<PaintChunk> chunks_;
   DebugInfo debug_info_;
 };
+
+PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const PaintArtifact&);
 
 }  // namespace blink
 

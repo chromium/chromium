@@ -1,9 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/app_list/test/app_list_test_helper.h"
 
+#include <string>
 #include <utility>
 
 #include "ash/app_list/app_list_bubble_presenter.h"
@@ -16,19 +17,43 @@
 #include "ash/app_list/views/app_list_bubble_apps_page.h"
 #include "ash/app_list/views/app_list_bubble_search_page.h"
 #include "ash/app_list/views/app_list_bubble_view.h"
+#include "ash/app_list/views/app_list_folder_view.h"
 #include "ash/app_list/views/app_list_main_view.h"
+#include "ash/app_list/views/app_list_toast_container_view.h"
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/app_list/views/apps_container_view.h"
 #include "ash/app_list/views/contents_view.h"
+#include "ash/app_list/views/continue_section_view.h"
 #include "ash/app_list/views/productivity_launcher_search_view.h"
+#include "ash/app_list/views/search_result_page_dialog_controller.h"
 #include "ash/app_list/views/search_result_page_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
+#include "ash/test/ash_test_util.h"
 #include "base/guid.h"
 #include "base/run_loop.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/animation/tween.h"
+#include "ui/views/widget/root_view.h"
 
 namespace ash {
+
+namespace {
+
+// The size of the app list item solid-colored icons.
+constexpr gfx::Size kIconImageSize(56, 56);
+
+// An app list should be either a bubble app list or a fullscreen app list.
+// Returns true if a bubble app list should be used under the current mode.
+bool ShouldUseBubbleAppList() {
+  // A bubble app list should be used only when:
+  // (1) It is in clamshell mode; and
+  // (2) The productivity launcher flag is enabled.
+  return !Shell::Get()->IsInTabletMode() &&
+         features::IsProductivityLauncherEnabled();
+}
+
+}  // namespace
 
 AppListTestHelper::AppListTestHelper() {
   // The app list controller is ready after Shell is created.
@@ -40,6 +65,9 @@ AppListTestHelper::AppListTestHelper() {
   app_list_controller_->SetClient(app_list_client_.get());
   app_list_controller_->SetActiveModel(/*profile_id=*/1, &model_,
                                        &search_model_);
+  // Disable app list nudge as default.
+  DisableAppListNudge(true);
+  AppListNudgeController::SetPrivacyNoticeAcceptedForTest(true);
 }
 
 AppListTestHelper::~AppListTestHelper() {
@@ -49,6 +77,22 @@ AppListTestHelper::~AppListTestHelper() {
 
 void AppListTestHelper::WaitUntilIdle() {
   base::RunLoop().RunUntilIdle();
+}
+
+void AppListTestHelper::WaitForFolderAnimation() {
+  AppListFolderView* folder_view = nullptr;
+  if (!Shell::Get()->IsInTabletMode() &&
+      features::IsProductivityLauncherEnabled()) {
+    folder_view = GetBubbleFolderView();
+  } else {
+    folder_view = GetFullscreenFolderView();
+  }
+  if (!folder_view || !folder_view->IsAnimationRunning())
+    return;
+
+  base::RunLoop run_loop;
+  folder_view->SetAnimationDoneTestCallback(run_loop.QuitClosure());
+  run_loop.Run();
 }
 
 void AppListTestHelper::ShowAppList() {
@@ -89,6 +133,15 @@ void AppListTestHelper::ToggleAndRunLoop(uint64_t display_id,
   WaitUntilIdle();
 }
 
+void AppListTestHelper::StartSlideAnimationOnBubbleAppsPage(
+    views::View* view,
+    int vertical_offset,
+    base::TimeDelta duration,
+    gfx::Tween::Type tween_type) {
+  GetBubbleAppsPage()->SlideViewIntoPosition(view, vertical_offset, duration,
+                                             tween_type);
+}
+
 void AppListTestHelper::CheckVisibility(bool visible) {
   EXPECT_EQ(visible, app_list_controller_->IsVisible());
   EXPECT_EQ(visible, app_list_controller_->GetTargetVisibility(absl::nullopt));
@@ -99,11 +152,42 @@ void AppListTestHelper::CheckState(AppListViewState state) {
 }
 
 void AppListTestHelper::AddAppItems(int num_apps) {
+  AddAppItemsWithColorAndName(num_apps, IconColorType::kNotSet,
+                              /*set_name=*/true);
+}
+
+void AppListTestHelper::AddAppItemsWithColorAndName(int num_apps,
+                                                    IconColorType color_type,
+                                                    bool set_name) {
   AppListModel* const model = AppListModelProvider::Get()->model();
   const int num_apps_already_added = model->top_level_item_list()->item_count();
   for (int i = 0; i < num_apps; i++) {
-    model->AddItem(std::make_unique<AppListItem>(
-        test::AppListTestModel::GetItemName(i + num_apps_already_added)));
+    const std::string id(
+        test::AppListTestModel::GetItemName(i + num_apps_already_added));
+    auto item = std::make_unique<AppListItem>(id);
+    absl::optional<SkColor> solid_color;
+    switch (color_type) {
+      case IconColorType::kDefaultColor:
+        solid_color = icon_color_generator_.default_color();
+        break;
+      case IconColorType::kAlternativeColor:
+        solid_color = icon_color_generator_.GetAlternativeColor();
+        break;
+      case IconColorType::kNotSet:
+        break;
+    }
+
+    if (solid_color) {
+      // Skip the calculation of the icon color from the generated solid-colored
+      // icon to save some time.
+      item->SetDefaultIconAndColor(
+          CreateSolidColorTestImage(kIconImageSize, *solid_color), IconColor());
+    }
+
+    auto* item_ptr = item.get();
+    model->AddItem(std::move(item));
+    if (set_name)
+      model->SetItemName(item_ptr, id);
   }
 }
 
@@ -117,7 +201,7 @@ void AppListTestHelper::AddContinueSuggestionResults(int num_results) {
   for (int i = 0; i < num_results; i++) {
     auto result = std::make_unique<TestSearchResult>();
     result->set_result_id(base::NumberToString(i));
-    result->set_result_type(AppListSearchResultType::kFileChip);
+    result->set_result_type(AppListSearchResultType::kZeroStateFile);
     result->set_display_type(SearchResultDisplayType::kContinue);
     GetSearchResults()->Add(std::move(result));
   }
@@ -130,18 +214,15 @@ void AppListTestHelper::AddRecentApps(int num_apps) {
     // result IDs must match app item IDs in the app list data model.
     result->set_result_id(test::AppListTestModel::GetItemName(i));
     result->set_result_type(AppListSearchResultType::kInstalledApp);
-    // TODO(crbug.com/1216662): Replace with a real display type after the ML
-    // team gives us a way to query directly for recent apps.
-    result->set_display_type(SearchResultDisplayType::kList);
+    result->set_display_type(SearchResultDisplayType::kRecentApps);
     GetSearchResults()->Add(std::move(result));
   }
 }
 
 bool AppListTestHelper::IsInFolderView() {
-  if (!Shell::Get()->IsInTabletMode() &&
-      features::IsProductivityLauncherEnabled()) {
+  if (ShouldUseBubbleAppList())
     return GetBubbleView()->showing_folder_for_test();
-  }
+
   return GetAppListView()
       ->app_list_main_view()
       ->contents_view()
@@ -149,8 +230,28 @@ bool AppListTestHelper::IsInFolderView() {
       ->IsInFolderView();
 }
 
+void AppListTestHelper::DisableAppListNudge(bool disable) {
+  AppListNudgeController::SetReorderNudgeDisabledForTest(disable);
+}
+
+views::View* AppListTestHelper::GetAccessibilityAnnounceView() {
+  views::Widget* widget = ShouldUseBubbleAppList()
+                              ? GetBubbleView()->GetWidget()
+                              : GetAppListView()->GetWidget();
+  DCHECK(widget);
+  return static_cast<views::internal::RootView*>(widget->GetRootView())
+      ->GetAnnounceViewForTesting();
+}
+
 AppListView* AppListTestHelper::GetAppListView() {
-  return app_list_controller_->presenter()->GetView();
+  return app_list_controller_->fullscreen_presenter()->GetView();
+}
+
+SearchBoxView* AppListTestHelper::GetSearchBoxView() {
+  if (ShouldUseBubbleAppList())
+    return GetBubbleView()->search_box_view_for_test();
+
+  return GetAppListView()->search_box_view();
 }
 
 AppsContainerView* AppListTestHelper::GetAppsContainerView() {
@@ -165,11 +266,11 @@ AppListFolderView* AppListTestHelper::GetFullscreenFolderView() {
 }
 
 RecentAppsView* AppListTestHelper::GetFullscreenRecentAppsView() {
-  return GetAppsContainerView()->GetRecentApps();
+  return GetAppsContainerView()->GetRecentAppsView();
 }
 
 ContinueSectionView* AppListTestHelper::GetFullscreenContinueSectionView() {
-  return GetAppsContainerView()->GetContinueSection();
+  return GetAppsContainerView()->GetContinueSectionView();
 }
 
 PagedAppsGridView* AppListTestHelper::GetRootPagedAppsGridView() {
@@ -177,7 +278,28 @@ PagedAppsGridView* AppListTestHelper::GetRootPagedAppsGridView() {
 }
 
 views::View* AppListTestHelper::GetFullscreenLauncherAppsSeparatorView() {
-  return GetAppsContainerView()->GetSeparatorView();
+  return GetAppsContainerView()->separator();
+}
+
+SearchResultPageView* AppListTestHelper::GetFullscreenSearchResultPageView() {
+  return GetAppListView()
+      ->app_list_main_view()
+      ->contents_view()
+      ->search_result_page_view();
+}
+
+bool AppListTestHelper::IsShowingFullscreenSearchResults() {
+  return GetAppListView()
+      ->app_list_main_view()
+      ->contents_view()
+      ->IsShowingSearchResults();
+}
+
+SearchResultPageAnchoredDialog*
+AppListTestHelper::GetFullscreenSearchPageDialog() {
+  if (IsShowingFullscreenSearchResults())
+    return GetFullscreenSearchResultPageView()->dialog_for_test();
+  return GetAppsContainerView()->dialog_for_test();
 }
 
 AppListBubbleView* AppListTestHelper::GetBubbleView() {
@@ -221,6 +343,11 @@ AppListBubbleSearchPage* AppListTestHelper::GetBubbleSearchPage() {
       ->search_page_;
 }
 
+SearchResultPageAnchoredDialog* AppListTestHelper::GetBubbleSearchPageDialog() {
+  return app_list_controller_->bubble_presenter_for_test()
+      ->bubble_view_for_test()
+      ->search_page_dialog_controller_->dialog();
+}
 AppListBubbleAssistantPage* AppListTestHelper::GetBubbleAssistantPage() {
   return app_list_controller_->bubble_presenter_for_test()
       ->bubble_view_for_test()
@@ -229,6 +356,11 @@ AppListBubbleAssistantPage* AppListTestHelper::GetBubbleAssistantPage() {
 
 SearchModel::SearchResults* AppListTestHelper::GetSearchResults() {
   return AppListModelProvider::Get()->search_model()->results();
+}
+
+std::vector<ash::AppListSearchResultCategory>*
+AppListTestHelper::GetOrderedResultCategories() {
+  return AppListModelProvider::Get()->search_model()->ordered_categories();
 }
 
 ProductivityLauncherSearchView*

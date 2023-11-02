@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,7 +23,7 @@ namespace {
 // requested it.
 class CloseTrackingDelegate : public WebContentsDelegate {
  public:
-  CloseTrackingDelegate() : close_contents_called_(false) {}
+  CloseTrackingDelegate() = default;
 
   CloseTrackingDelegate(const CloseTrackingDelegate&) = delete;
   CloseTrackingDelegate& operator=(const CloseTrackingDelegate&) = delete;
@@ -35,7 +35,7 @@ class CloseTrackingDelegate : public WebContentsDelegate {
   }
 
  private:
-  bool close_contents_called_;
+  bool close_contents_called_ = false;
 };
 
 }  // namespace

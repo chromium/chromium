@@ -1,10 +1,9 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/browser/accessibility/touch_passthrough_manager.h"
 
-#include "base/containers/contains.h"
 #include "cc/trees/render_frame_metadata.h"
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
@@ -19,9 +18,9 @@
 #include "content/common/input/synthetic_pointer_action_list_params.h"
 #include "content/common/input/synthetic_pointer_action_params.h"
 #include "content/common/input/synthetic_tap_gesture_params.h"
-#include "content/public/common/use_zoom_for_dsf_policy.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/accessibility/platform/ax_platform_tree_manager.h"
 
 namespace content {
 
@@ -82,8 +81,8 @@ void TouchPassthroughManager::OnHitTestResult(
     int hit_test_id,
     base::TimeTicks event_time,
     gfx::Point location,
-    BrowserAccessibilityManager* hit_manager,
-    int hit_node_id) {
+    ui::AXPlatformTreeManager* hit_manager,
+    ui::AXNodeID hit_node_id) {
   // Ignore the result if it arrived too late to do something about it.
   if (hit_test_id != hit_test_id_)
     return;
@@ -106,14 +105,16 @@ void TouchPassthroughManager::OnHitTestResult(
 }
 
 bool TouchPassthroughManager::IsTouchPassthroughNode(
-    BrowserAccessibilityManager* hit_manager,
-    int hit_node_id) {
+    ui::AXPlatformTreeManager* hit_manager,
+    ui::AXNodeID hit_node_id) {
   // Given the result of a hit test, walk up the tree to determine if
   // this node or an ancestor has the passthrough bit set.
   if (!hit_manager)
     return false;
 
-  BrowserAccessibility* hit_node = hit_manager->GetFromID(hit_node_id);
+  BrowserAccessibility* hit_node =
+      static_cast<BrowserAccessibilityManager*>(hit_manager)
+          ->GetFromID(hit_node_id);
   if (!hit_node)
     return false;
 
@@ -139,7 +140,7 @@ void TouchPassthroughManager::CreateTouchDriverIfNeeded() {
 
 void TouchPassthroughManager::SendHitTest(
     const gfx::Point& point_in_frame_pixels,
-    base::OnceCallback<void(BrowserAccessibilityManager* hit_manager,
+    base::OnceCallback<void(ui::AXPlatformTreeManager* hit_manager,
                             int hit_node_id)> callback) {
   rfh_->AccessibilityHitTest(point_in_frame_pixels, ax::mojom::Event::kNone, 0,
                              std::move(callback));
@@ -156,8 +157,11 @@ void TouchPassthroughManager::CancelTouchesAndDestroyTouchDriver() {
 
   is_touch_down_ = false;
   touch_driver_.reset();
-  gesture_controller_.reset();
+  // `gesture_target_` is a raw pointer on a `unique_ptr` owned by
+  // `gesture_controller_`. Hence we need to clear this raw_ptr first before
+  // releasing `gesture_controller_`.
   gesture_target_ = nullptr;
+  gesture_controller_.reset();
 }
 
 void TouchPassthroughManager::SimulatePress(const gfx::Point& point,
@@ -189,8 +193,7 @@ gfx::Point TouchPassthroughManager::ToCSSPoint(
 
   // Scale by the device scale factor.
   float dsf = rfh_->AccessibilityGetDeviceScaleFactor();
-  if (IsUseZoomForDSFEnabled())
-    result = ScaleToRoundedPoint(result, 1.0 / dsf);
+  result = ScaleToRoundedPoint(result, 1.0 / dsf);
 
   // Offset by the top controls height.
   RenderWidgetHostImpl* rwhi = rfh_->GetRenderWidgetHost();

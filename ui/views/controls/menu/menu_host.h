@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,9 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
+#include "ui/base/owned_window_anchor.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/widget/widget.h"
@@ -105,12 +106,12 @@ class MenuHost : public Widget, public WidgetObserver {
   void OnWidgetDestroying(Widget* widget) override;
 
   // Parent of the MenuHost widget.
-  Widget* owner_ = nullptr;
+  raw_ptr<Widget> owner_ = nullptr;
 
   gfx::NativeView native_view_for_gestures_ = nullptr;
 
   // The view we contain.
-  SubmenuView* submenu_;
+  raw_ptr<SubmenuView> submenu_;
 
   // If true, DestroyMenuHost has been invoked.
   bool destroying_;
@@ -118,7 +119,7 @@ class MenuHost : public Widget, public WidgetObserver {
   // If true and capture is lost we don't notify the delegate.
   bool ignore_capture_lost_;
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   // Handles raw touch events at the moment.
   std::unique_ptr<internal::PreMenuEventDispatchHandler> pre_dispatch_handler_;
 #endif

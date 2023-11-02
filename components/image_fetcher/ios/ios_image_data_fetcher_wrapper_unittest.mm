@@ -1,4 +1,4 @@
-// Copyright 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #import "base/ios/ios_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/task_environment.h"
@@ -179,7 +178,7 @@ TEST_F(IOSImageDataFetcherWrapperTest, TestGoodWebP) {
   network::mojom::URLResponseHeadPtr head =
       network::mojom::URLResponseHead::New();
   head->headers = new net::HttpResponseHeaders(
-      std::string(kWEBPHeaderResponse, base::size(kWEBPHeaderResponse)));
+      std::string(kWEBPHeaderResponse, std::size(kWEBPHeaderResponse)));
   head->mime_type = "image/webp";
   network::URLLoaderCompletionStatus status;
   status.decoded_body_length = content.size();
@@ -215,7 +214,7 @@ TEST_F(IOSImageDataFetcherWrapperTest, TestBadWebP) {
   network::mojom::URLResponseHeadPtr head =
       network::mojom::URLResponseHead::New();
   head->headers = new net::HttpResponseHeaders(
-      std::string(kWEBPHeaderResponse, base::size(kWEBPHeaderResponse)));
+      std::string(kWEBPHeaderResponse, std::size(kWEBPHeaderResponse)));
   head->mime_type = "image/webp";
   network::URLLoaderCompletionStatus status;
   status.decoded_body_length = content.size();

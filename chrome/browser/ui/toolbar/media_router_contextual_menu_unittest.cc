@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "build/branding_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/extensions/extension_action_test_util.h"
@@ -37,7 +38,7 @@ constexpr bool kShownByPolicy = true;
 constexpr bool kShownByUser = false;
 
 bool HasCommandId(ui::MenuModel* menu_model, int command_id) {
-  for (int i = 0; i < menu_model->GetItemCount(); i++) {
+  for (size_t i = 0; i < menu_model->GetItemCount(); ++i) {
     if (menu_model->GetCommandIdAt(i) == command_id)
       return true;
   }
@@ -114,7 +115,7 @@ class MediaRouterContextualMenuUnitTest : public BrowserWithTestWindowTest {
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
 
-  ToolbarActionsModel* toolbar_actions_model_ = nullptr;
+  raw_ptr<ToolbarActionsModel> toolbar_actions_model_ = nullptr;
   MockMediaRouterContextualMenuObserver observer_;
 };
 
@@ -130,7 +131,7 @@ TEST_F(MediaRouterContextualMenuUnitTest, Basic) {
   // Report an issue
 
   // Number of menu items, including separators.
-  int expected_number_items = 6;
+  size_t expected_number_items = 6;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   expected_number_items += 2;
 #endif
@@ -139,7 +140,7 @@ TEST_F(MediaRouterContextualMenuUnitTest, Basic) {
   std::unique_ptr<ui::SimpleMenuModel> model = menu.CreateMenuModel();
   EXPECT_EQ(model->GetItemCount(), expected_number_items);
 
-  for (int i = 0; i < expected_number_items; i++) {
+  for (size_t i = 0; i < expected_number_items; ++i) {
     EXPECT_TRUE(model->IsEnabledAt(i));
     EXPECT_TRUE(model->IsVisibleAt(i));
   }
@@ -151,19 +152,21 @@ TEST_F(MediaRouterContextualMenuUnitTest, Basic) {
   // Run the same checks as before. All existing menu items should be now
   // enabled and visible.
   EXPECT_EQ(model->GetItemCount(), expected_number_items);
-  for (int i = 0; i < expected_number_items; i++) {
+  for (size_t i = 0; i < expected_number_items; ++i) {
     EXPECT_TRUE(model->IsEnabledAt(i));
     EXPECT_TRUE(model->IsVisibleAt(i));
   }
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-// "Report an issue" should be present for normal profiles but not for
+// "Report an issue" should be present for normal profiles as well as for
 // incognito.
 TEST_F(MediaRouterContextualMenuUnitTest, EnableAndDisableReportIssue) {
   MediaRouterContextualMenu menu(browser(), kShownByPolicy, &observer_);
-  EXPECT_NE(-1, menu.CreateMenuModel()->GetIndexOfCommandId(
-                    IDC_MEDIA_ROUTER_REPORT_ISSUE));
+  EXPECT_TRUE(
+      menu.CreateMenuModel()
+          ->GetIndexOfCommandId(IDC_MEDIA_TOOLBAR_CONTEXT_REPORT_CAST_ISSUE)
+          .has_value());
 
   std::unique_ptr<BrowserWindow> window(CreateBrowserWindow());
   std::unique_ptr<Browser> incognito_browser(
@@ -172,8 +175,10 @@ TEST_F(MediaRouterContextualMenuUnitTest, EnableAndDisableReportIssue) {
 
   MediaRouterContextualMenu incognito_menu(incognito_browser.get(),
                                            kShownByPolicy, &observer_);
-  EXPECT_EQ(-1, incognito_menu.CreateMenuModel()->GetIndexOfCommandId(
-                    IDC_MEDIA_ROUTER_REPORT_ISSUE));
+  EXPECT_TRUE(
+      incognito_menu.CreateMenuModel()
+          ->GetIndexOfCommandId(IDC_MEDIA_TOOLBAR_CONTEXT_REPORT_CAST_ISSUE)
+          .has_value());
 }
 #endif
 

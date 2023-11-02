@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,7 +19,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/supervised_user/child_accounts/child_account_service_android.h"
 #endif
 
@@ -42,7 +42,7 @@ SupervisedUserGoogleAuthNavigationThrottle::
         content::NavigationHandle* navigation_handle)
     : content::NavigationThrottle(navigation_handle),
       child_account_service_(ChildAccountServiceFactory::GetForProfile(profile))
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       ,
       has_shown_reauth_(false)
 #endif
@@ -134,7 +134,7 @@ SupervisedUserGoogleAuthNavigationThrottle::ShouldProceed() {
   // account reconciliation). Nothing to do here except block the navigation
   // while re-minting is underway.
   return content::NavigationThrottle::DEFER;
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   if (!has_shown_reauth_) {
     has_shown_reauth_ = true;
 

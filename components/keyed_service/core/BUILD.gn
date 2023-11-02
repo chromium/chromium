@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -10,7 +10,6 @@ component("core") {
     "dependency_manager.cc",
     "dependency_manager.h",
     "dependency_node.h",
-    "keyed_service.cc",
     "keyed_service.h",
     "keyed_service_base_factory.cc",
     "keyed_service_base_factory.h",

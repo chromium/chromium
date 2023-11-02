@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,9 @@
 #include "chrome/browser/sharing/features.h"
 #include "chrome/browser/sharing/proto/sharing_message.pb.h"
 #include "chrome/browser/sharing/sharing_constants.h"
-#include "components/sync/driver/test_sync_service.h"
 #include "components/sync/protocol/device_info_specifics.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
+#include "components/sync/test/test_sync_service.h"
 #include "components/sync_device_info/device_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -45,8 +45,10 @@ TEST_F(SharingUtilsTest, SyncEnabled_FullySynced) {
   test_sync_service_.SetTransportState(
       syncer::SyncService::TransportState::ACTIVE);
   // PREFERENCES is actively synced.
-  test_sync_service_.SetActiveDataTypes(
-      {syncer::DEVICE_INFO, syncer::PREFERENCES});
+  test_sync_service_.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/syncer::UserSelectableTypeSet(
+          syncer::UserSelectableType::kPreferences));
 
   EXPECT_TRUE(IsSyncEnabledForSharing(&test_sync_service_));
   EXPECT_FALSE(IsSyncDisabledForSharing(&test_sync_service_));
@@ -60,7 +62,9 @@ TEST_F(SharingUtilsTest, SyncDisabled_FullySynced_MissingDataTypes) {
   test_sync_service_.SetTransportState(
       syncer::SyncService::TransportState::ACTIVE);
   // Missing PREFERENCES.
-  test_sync_service_.SetActiveDataTypes({syncer::DEVICE_INFO});
+  test_sync_service_.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/syncer::UserSelectableTypeSet());
 
   EXPECT_FALSE(IsSyncEnabledForSharing(&test_sync_service_));
   EXPECT_TRUE(IsSyncDisabledForSharing(&test_sync_service_));
@@ -74,9 +78,6 @@ TEST_F(SharingUtilsTest, SyncEnabled_SigninOnly) {
   test_sync_service_.SetTransportState(
       syncer::SyncService::TransportState::ACTIVE);
   // SHARING_MESSAGE is actively synced.
-  test_sync_service_.SetActiveDataTypes(
-      {syncer::DEVICE_INFO, syncer::SHARING_MESSAGE});
-
   EXPECT_TRUE(IsSyncEnabledForSharing(&test_sync_service_));
   EXPECT_FALSE(IsSyncDisabledForSharing(&test_sync_service_));
 }
@@ -89,7 +90,10 @@ TEST_F(SharingUtilsTest, SyncDisabled_SigninOnly_MissingDataTypes) {
   test_sync_service_.SetTransportState(
       syncer::SyncService::TransportState::ACTIVE);
   // Missing SHARING_MESSAGE.
-  test_sync_service_.SetActiveDataTypes({syncer::DEVICE_INFO});
+  test_sync_service_.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/syncer::UserSelectableTypeSet());
+  test_sync_service_.SetFailedDataTypes({syncer::SHARING_MESSAGE});
 
   EXPECT_FALSE(IsSyncEnabledForSharing(&test_sync_service_));
   EXPECT_TRUE(IsSyncDisabledForSharing(&test_sync_service_));
@@ -98,8 +102,10 @@ TEST_F(SharingUtilsTest, SyncDisabled_SigninOnly_MissingDataTypes) {
 TEST_F(SharingUtilsTest, SyncDisabled_Disabled) {
   test_sync_service_.SetTransportState(
       syncer::SyncService::TransportState::DISABLED);
-  test_sync_service_.SetActiveDataTypes(
-      {syncer::DEVICE_INFO, syncer::PREFERENCES});
+  test_sync_service_.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/syncer::UserSelectableTypeSet(
+          syncer::UserSelectableType::kPreferences));
 
   EXPECT_FALSE(IsSyncEnabledForSharing(&test_sync_service_));
   EXPECT_TRUE(IsSyncDisabledForSharing(&test_sync_service_));
@@ -108,8 +114,10 @@ TEST_F(SharingUtilsTest, SyncDisabled_Disabled) {
 TEST_F(SharingUtilsTest, SyncDisabled_Configuring) {
   test_sync_service_.SetTransportState(
       syncer::SyncService::TransportState::CONFIGURING);
-  test_sync_service_.SetActiveDataTypes(
-      {syncer::DEVICE_INFO, syncer::PREFERENCES});
+  test_sync_service_.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/syncer::UserSelectableTypeSet(
+          syncer::UserSelectableType::kPreferences));
 
   EXPECT_FALSE(IsSyncEnabledForSharing(&test_sync_service_));
   EXPECT_FALSE(IsSyncDisabledForSharing(&test_sync_service_));
@@ -137,52 +145,70 @@ TEST_F(SharingUtilsTest, GetFCMChannel) {
 TEST_F(SharingUtilsTest, GetDevicePlatform) {
   EXPECT_EQ(GetDevicePlatform(*CreateFakeDeviceInfo(
                 kDeviceGuid, kDeviceName, /*sharing_info=*/absl::nullopt,
-                sync_pb::SyncEnums_DeviceType_TYPE_CROS)),
+                sync_pb::SyncEnums_DeviceType_TYPE_CROS,
+                syncer::DeviceInfo::OsType::kChromeOsAsh,
+                syncer::DeviceInfo::FormFactor::kDesktop)),
             SharingDevicePlatform::kChromeOS);
 
   EXPECT_EQ(GetDevicePlatform(*CreateFakeDeviceInfo(
                 kDeviceGuid, kDeviceName, /*sharing_info=*/absl::nullopt,
-                sync_pb::SyncEnums_DeviceType_TYPE_LINUX)),
+                sync_pb::SyncEnums_DeviceType_TYPE_LINUX,
+                syncer::DeviceInfo::OsType::kLinux,
+                syncer::DeviceInfo::FormFactor::kDesktop)),
             SharingDevicePlatform::kLinux);
 
   EXPECT_EQ(GetDevicePlatform(*CreateFakeDeviceInfo(
                 kDeviceGuid, kDeviceName, /*sharing_info=*/absl::nullopt,
-                sync_pb::SyncEnums_DeviceType_TYPE_MAC)),
+                sync_pb::SyncEnums_DeviceType_TYPE_MAC,
+                syncer::DeviceInfo::OsType::kMac,
+                syncer::DeviceInfo::FormFactor::kDesktop)),
             SharingDevicePlatform::kMac);
 
   EXPECT_EQ(GetDevicePlatform(*CreateFakeDeviceInfo(
                 kDeviceGuid, kDeviceName, /*sharing_info=*/absl::nullopt,
-                sync_pb::SyncEnums_DeviceType_TYPE_WIN)),
+                sync_pb::SyncEnums_DeviceType_TYPE_WIN,
+                syncer::DeviceInfo::OsType::kWindows,
+                syncer::DeviceInfo::FormFactor::kDesktop)),
             SharingDevicePlatform::kWindows);
 
   EXPECT_EQ(
       GetDevicePlatform(*CreateFakeDeviceInfo(
           kDeviceGuid, kDeviceName, /*sharing_info=*/absl::nullopt,
-          sync_pb::SyncEnums_DeviceType_TYPE_PHONE, "Apple Inc.", "iPhone 50")),
+          sync_pb::SyncEnums_DeviceType_TYPE_PHONE,
+          syncer::DeviceInfo::OsType::kIOS,
+          syncer::DeviceInfo::FormFactor::kPhone, "Apple Inc.", "iPhone 50")),
       SharingDevicePlatform::kIOS);
   EXPECT_EQ(
       GetDevicePlatform(*CreateFakeDeviceInfo(
           kDeviceGuid, kDeviceName, /*sharing_info=*/absl::nullopt,
-          sync_pb::SyncEnums_DeviceType_TYPE_TABLET, "Apple Inc.", "iPad 99")),
+          sync_pb::SyncEnums_DeviceType_TYPE_TABLET,
+          syncer::DeviceInfo::OsType::kIOS,
+          syncer::DeviceInfo::FormFactor::kTablet, "Apple Inc.", "iPad 99")),
       SharingDevicePlatform::kIOS);
-
-  EXPECT_EQ(
-      GetDevicePlatform(*CreateFakeDeviceInfo(
-          kDeviceGuid, kDeviceName, /*sharing_info=*/absl::nullopt,
-          sync_pb::SyncEnums_DeviceType_TYPE_PHONE, "Google", "Pixel 777")),
-      SharingDevicePlatform::kAndroid);
-  EXPECT_EQ(
-      GetDevicePlatform(*CreateFakeDeviceInfo(
-          kDeviceGuid, kDeviceName, /*sharing_info=*/absl::nullopt,
-          sync_pb::SyncEnums_DeviceType_TYPE_TABLET, "Google", "Pixel Z")),
-      SharingDevicePlatform::kAndroid);
 
   EXPECT_EQ(GetDevicePlatform(*CreateFakeDeviceInfo(
                 kDeviceGuid, kDeviceName, /*sharing_info=*/absl::nullopt,
-                sync_pb::SyncEnums_DeviceType_TYPE_UNSET)),
+                sync_pb::SyncEnums_DeviceType_TYPE_PHONE,
+                syncer::DeviceInfo::OsType::kAndroid,
+                syncer::DeviceInfo::FormFactor::kPhone, "Google", "Pixel 777")),
+            SharingDevicePlatform::kAndroid);
+  EXPECT_EQ(GetDevicePlatform(*CreateFakeDeviceInfo(
+                kDeviceGuid, kDeviceName, /*sharing_info=*/absl::nullopt,
+                sync_pb::SyncEnums_DeviceType_TYPE_TABLET,
+                syncer::DeviceInfo::OsType::kAndroid,
+                syncer::DeviceInfo::FormFactor::kTablet, "Google", "Pixel Z")),
+            SharingDevicePlatform::kAndroid);
+
+  EXPECT_EQ(GetDevicePlatform(*CreateFakeDeviceInfo(
+                kDeviceGuid, kDeviceName, /*sharing_info=*/absl::nullopt,
+                sync_pb::SyncEnums_DeviceType_TYPE_UNSET,
+                syncer::DeviceInfo::OsType::kUnknown,
+                syncer::DeviceInfo::FormFactor::kUnknown)),
             SharingDevicePlatform::kUnknown);
   EXPECT_EQ(GetDevicePlatform(*CreateFakeDeviceInfo(
                 kDeviceGuid, kDeviceName, /*sharing_info=*/absl::nullopt,
-                sync_pb::SyncEnums_DeviceType_TYPE_OTHER)),
+                sync_pb::SyncEnums_DeviceType_TYPE_OTHER,
+                syncer::DeviceInfo::OsType::kUnknown,
+                syncer::DeviceInfo::FormFactor::kUnknown)),
             SharingDevicePlatform::kUnknown);
 }

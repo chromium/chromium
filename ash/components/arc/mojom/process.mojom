@@ -1,0 +1,233 @@
+// Copyright 2015 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+//
+// Next MinVersion: 12
+
+module arc.mojom;
+
+import "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom";
+
+// Describes the current process state, as defined by AOSP in
+// android.app.ActivityManager.
+// This enum is used to communicate with different versions of Android.
+// The un-prefixed values are for Android P, used by ARC++. Prefixed values are
+// for later versions of Android.
+// R_* used by ARCVM introduced PROCESS_STATE_BOUND_TOP
+// TODO (b:197264634): Make this enum stable across android versions so
+// consuming code doesn't need to know which Android version it's communicating
+// with.
+[Extensible]
+enum ProcessState {
+  // Not a real process state.
+  UNKNOWN = -1,
+  R_UNKNOWN = -1,
+
+  // Process is a persistent system process.
+  PERSISTENT = 0,
+  R_PERSISTENT = 0,
+
+  // Process is a persistent system process and is doing UI.
+  PERSISTENT_UI = 1,
+  R_PERSISTENT_UI = 1,
+
+  // Process is hosting the current top activities.  Note that this covers
+  // all activities that are visible to the user.
+  TOP = 2,
+  R_TOP = 2,
+
+  // Process is bound to a TOP app. This is ranked below SERVICE_LOCATION so
+  // that it doesn't get the capability of location access while-in-use.
+  R_BOUND_TOP = 3,
+
+  // Process is hosting a foreground service.
+  FOREGROUND_SERVICE = 3,
+  R_FOREGROUND_SERVICE = 4,
+
+  // Process is hosting a foreground service due to a system binding.
+  BOUND_FOREGROUND_SERVICE = 4,
+  R_BOUND_FOREGROUND_SERVICE = 5,
+
+  // Process is important to the user, and something they are aware of.
+  IMPORTANT_FOREGROUND = 5,
+  R_IMPORTANT_FOREGROUND = 6,
+
+  // Process is important to the user, but not something they are aware of.
+  IMPORTANT_BACKGROUND = 6,
+  R_IMPORTANT_BACKGROUND = 7,
+
+  // Process is in the background transient so we will try to keep running.
+  TRANSIENT_BACKGROUND = 7,
+  R_TRANSIENT_BACKGROUND = 8,
+
+  // Process is in the background running a backup/restore operation.
+  BACKUP = 8,
+  R_BACKUP = 9,
+
+  // Process is in the background running a service.  Unlike oom_adj, this level
+  // is used for both the normal running in background state and the executing
+  // operations state.
+  SERVICE = 9,
+  R_SERVICE = 10,
+
+  // Process is in the background running a receiver. Note that from the
+  // perspective of oom_adj, receivers run at a higher foreground level, but
+  // for our prioritization here that is not necessary and putting them below
+  // services means many fewer changes in some process states as they receive
+  // broadcasts.
+  RECEIVER = 10,
+  R_RECEIVER = 11,
+
+  // Same as PROCESS_STATE_TOP but while device is sleeping.
+  TOP_SLEEPING = 11,
+  R_TOP_SLEEPING = 12,
+
+  // Process is in the background, but it can't restore its state so we want
+  // to try to avoid killing it.
+  HEAVY_WEIGHT = 12,
+  R_HEAVY_WEIGHT = 13,
+
+  // Process is in the background but hosts the home activity.
+  HOME = 13,
+  R_HOME = 14,
+
+  // Process is in the background but hosts the last shown activity.
+  LAST_ACTIVITY = 14,
+  R_LAST_ACTIVITY = 15,
+
+  // Process is being cached for later use and contains activities.
+  CACHED_ACTIVITY = 15,
+  R_CACHED_ACTIVITY = 16,
+
+  // Process is being cached for later use and is a client of another cached
+  // process that contains activities.
+  CACHED_ACTIVITY_CLIENT = 16,
+  R_CACHED_ACTIVITY_CLIENT = 17,
+
+  // Process is being cached for later use and has an activity that corresponds
+  // to an existing recent task.
+  CACHED_RECENT = 17,
+  R_CACHED_RECENT = 18,
+
+  // Process is being cached for later use and is empty.
+  CACHED_EMPTY = 18,
+  R_CACHED_EMPTY = 19,
+
+  // Process does not exist.
+  NONEXISTENT = 19,
+  R_NONEXISTENT = 20,
+};
+
+// Describes a running ARC process.
+// This struct is a subset of android.app.ActivityManager.RunningAppProcessInfo.
+struct RunningAppProcessInfo {
+  // Name of the process.
+  string process_name;
+
+  // PID (within ARC's PID namespace) of the process.
+  uint32 pid;
+
+  // Current process state.
+  ProcessState process_state;
+
+  // Package names running in the process.
+  array<string>? packages;
+
+  // Whether this app is focused in ARC multi-window environment.
+  bool is_focused;
+
+  // Last time the process was active. Milliseconds since boot.
+  // The clock is monotonic (comes from Android System.uptimeMillis()).
+  int64 last_activity_time;
+};
+
+// Describes the memory usage of an ARC process.
+struct ArcMemoryDump {
+  // PID (within ARC's PID namespace) of the process.
+  uint32 pid;
+
+  // Resident Set Size (RSS) in kilobytes
+  uint32 resident_set_kb = 0;
+
+  // Private footprint (RSS + swap usage) in kilobytes
+  uint32 private_footprint_kb = 0;
+};
+
+// Describes ChromeOS's memory pressure level, which indicates what priority of
+// apps should be killed to save memory.
+[Extensible]
+enum PressureLevel {
+  kForeground = 0,
+  kPerceptible = 1,
+  kCached = 2,
+};
+
+// The total number of low memory related app kills from various sources.
+struct LowMemoryKillCounts {
+  // Count of apps killed by ARCVM's Linux OOM killer.
+  uint32 guest_oom;
+
+  // Count of apps killed by LMKD with oom_score_adj <= FOREGROUND_APP_ADJ.
+  uint32 lmkd_foreground;
+
+  // Count of apps killed by LMKD with FOREGROUND_APP_ADJ < oom_score_adj <
+  // CACHED_APP_MIN_ADJ.
+  uint32 lmkd_perceptible;
+
+  // Count of apps killed by LMKD with CACHED_APP_MIN_ADJ <= oom_score_adj.
+  uint32 lmkd_cached;
+
+  // Count of app killed by ArcProcessService.ApplyHostMemoryPressure with
+  // state < PROCESS_STATE_TOP || (state == PROCESS_STATE_TOP && focused).
+  uint32 pressure_foreground;
+
+  // Count of app killed by ArcProcessService.ApplyHostMemoryPressure with
+  // (PROCESS_STATE_TOP <= state < PROCESS_STATE_CACHED_ACTIVITY) && !focused.
+  uint32 pressure_perceptible;
+
+  // Count of app killed by ArcProcessService.ApplyHostMemoryPressure with
+  // PROCESS_STATE_CACHED_ACTIVITY <= state
+  uint32 pressure_cached;
+};
+
+// Deprecated method IDs: 6, 7, 10
+// Next Method ID: 13
+interface ProcessInstance {
+  // Requests ARC instance to kill a process.
+  [MinVersion=1]
+  KillProcess@1(uint32 pid, string reason);
+
+  [MinVersion=6]
+  RequestProcessList@5() => (array<RunningAppProcessInfo> processes);
+
+  // Requests memory usage dumps for all ARC application processes.
+  [MinVersion=8]
+  RequestApplicationProcessMemoryInfo@8()
+    => (array<ArcMemoryDump> process_dumps);
+
+  // Requests memory usage dumps for all ARC system processes.
+  [MinVersion=8]
+  RequestSystemProcessMemoryInfo@9(array<uint32> nspids)
+    => (array<ArcMemoryDump> process_dumps);
+
+  // TODO (cwd): Submit http://ag/c/16816223 and https://crrev.com/c/3447769
+  // after M101 to remove the deprecated method.
+  // Requests that ARC discard processes at and below the given level to free
+  // the given amount of memory.
+  // Returns the number of processes killed, and the estimated bytes reclaimed.
+  [MinVersion=9]
+  ApplyHostMemoryPressureDeprecated@10(ProcessState level, int64 reclaim_target)
+    => (uint32 killed, uint64 reclaimed);
+
+  // Requests that ARC discard processes at and below the given level to free
+  // the given amount of memory.
+  // Returns the number of processes killed, and the estimated bytes reclaimed.
+  [MinVersion=10]
+  ApplyHostMemoryPressure@11(PressureLevel level, int64 reclaim_target)
+    => (uint32 killed, uint64 reclaimed);
+
+  // Requests the number of app kills performed since initialization. Only
+  // available in Android R+/ARCVM.
+  [MinVersion=11]
+  RequestLowMemoryKillCounts@12() => (LowMemoryKillCounts counts);
+};

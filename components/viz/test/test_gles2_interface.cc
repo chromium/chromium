@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -273,27 +273,6 @@ void TestGLES2Interface::PixelStorei(GLenum pname, GLint param) {
     default:
       break;
   }
-}
-
-GLuint TestGLES2Interface::CreateImageCHROMIUM(ClientBuffer buffer,
-                                               GLsizei width,
-                                               GLsizei height,
-                                               GLenum internalformat) {
-  DCHECK(internalformat == GL_RGB || internalformat == GL_RGBA ||
-         (test_capabilities_.texture_format_bgra8888 &&
-          internalformat == GL_BGRA_EXT));
-  GLuint image_id = NextImageId();
-  images_.insert(image_id);
-  return image_id;
-}
-
-void TestGLES2Interface::DestroyImageCHROMIUM(GLuint image_id) {
-  RetireImageId(image_id);
-  if (!images_.count(image_id)) {
-    ADD_FAILURE() << "destroyImageCHROMIUM called on unknown image "
-                  << image_id;
-  }
-  images_.erase(image_id);
 }
 
 void* TestGLES2Interface::MapBufferCHROMIUM(GLuint target, GLenum access) {
@@ -632,10 +611,6 @@ GLuint TestGLES2Interface::NextRenderbufferId() {
 void TestGLES2Interface::RetireRenderbufferId(GLuint id) {
   DCHECK(base::Contains(renderbuffer_set_, id));
   renderbuffer_set_.erase(id);
-}
-
-void TestGLES2Interface::SetMaxSamples(int max_samples) {
-  test_capabilities_.max_samples = max_samples;
 }
 
 size_t TestGLES2Interface::NumFramebuffers() const {

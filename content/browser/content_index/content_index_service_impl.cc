@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/task/post_task.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/content_index/content_index_database.h"
 #include "content/browser/storage_partition_impl.h"
@@ -48,6 +47,13 @@ void ContentIndexServiceImpl::CreateForFrame(
 
   RenderProcessHost* render_process_host = render_frame_host->GetProcess();
   DCHECK(render_process_host);
+
+  if (render_frame_host->IsNestedWithinFencedFrame()) {
+    mojo::ReportBadMessage(
+        "Content Index API is not allowed in a fenced frame");
+    return;
+  }
+
   auto* storage_partition = static_cast<StoragePartitionImpl*>(
       render_process_host->GetStoragePartition());
 
@@ -74,6 +80,16 @@ void ContentIndexServiceImpl::CreateForWorker(
 
   auto* storage_partition = static_cast<StoragePartitionImpl*>(
       render_process_host->GetStoragePartition());
+
+  scoped_refptr<ServiceWorkerRegistration> registration =
+      storage_partition->GetServiceWorkerContext()->GetLiveRegistration(
+          info.registration_id);
+  if (registration && registration->ancestor_frame_type() ==
+                          blink::mojom::AncestorFrameType::kFencedFrame) {
+    mojo::ReportBadMessage(
+        "Content Index API is not allowed in a fenced frame");
+    return;
+  }
 
   mojo::MakeSelfOwnedReceiver(std::make_unique<ContentIndexServiceImpl>(
                                   info.storage_key.origin(),
@@ -134,8 +150,7 @@ void ContentIndexServiceImpl::Add(
     }
   }
 
-  if (!launch_url.is_valid() || !origin_.IsSameOriginWith(url::Origin::Create(
-                                    launch_url.DeprecatedGetOriginAsURL()))) {
+  if (!launch_url.is_valid() || !origin_.IsSameOriginWith(launch_url)) {
     mojo::ReportBadMessage("Invalid launch URL");
     std::move(callback).Run(blink::mojom::ContentIndexError::INVALID_PARAMETER);
     return;

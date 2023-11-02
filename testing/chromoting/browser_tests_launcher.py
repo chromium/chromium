@@ -1,4 +1,4 @@
-# Copyright (c) 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -85,7 +85,7 @@ def LaunchBTCommand(args, command):
       retries += 1
       time.sleep(30)
       continue
-    elif jids_used:
+    if jids_used:
       print('JID used by test matched me2me host JID: %s' % host_jid)
     else:
       # There wasn't a mismatch and no JIDs were returned. If no JIDs were

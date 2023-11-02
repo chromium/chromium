@@ -15,6 +15,7 @@ s! {
         pub uc_link: *mut ::ucontext_t,
         pub uc_mcsize: usize,
         pub uc_mcontext: mcontext_t,
+        __mcontext_data: __darwin_mcontext64,
     }
 
     pub struct __darwin_mcontext64 {
@@ -39,8 +40,15 @@ s! {
         pub __pad: u32,
     }
 
-    #[repr(align(16))]
+    // This type natively uses a uint128, but for a while we hacked
+    // it in with repr(align) and `[u64; 2]`. uint128 isn't available
+    // all the way back to our earliest supported versions so we
+    // preserver the old shim.
+    #[cfg_attr(not(libc_int128), repr(align(16)))]
     pub struct __darwin_arm_neon_state64 {
+        #[cfg(libc_int128)]
+        pub __v: [::__uint128_t; 32],
+        #[cfg(not(libc_int128))]
         pub __v: [[u64; 2]; 32],
         pub __fpsr: u32,
         pub __fpcr: u32,

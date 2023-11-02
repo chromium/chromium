@@ -14,7 +14,7 @@
 
 #include "absl/base/internal/thread_identity.h"
 
-#ifndef _WIN32
+#if !defined(_WIN32) || defined(__MINGW32__)
 #include <pthread.h>
 #include <signal.h>
 #endif
@@ -27,6 +27,42 @@
 #include "absl/base/call_once.h"
 #include "absl/base/internal/raw_logging.h"
 #include "absl/base/internal/spinlock.h"
+
+#ifndef _WIN32
+#include <dlfcn.h>
+#else
+#include <windows.h>
+#endif
+
+static void* LookupRecordReplaySymbol(const char* name) {
+#ifndef _WIN32
+  void* fnptr = dlsym(RTLD_DEFAULT, name);
+#else
+  HMODULE module = GetModuleHandleA("windows-recordreplay.dll");
+  void* fnptr = module ? (void*)GetProcAddress(module, name) : nullptr;
+#endif
+  return fnptr ? fnptr : reinterpret_cast<void*>(1);
+}
+
+static void RecordReplayBeginDisallowEventsWithLabel(const char* label) {
+  static void* fnptr;
+  if (!fnptr) {
+    fnptr = LookupRecordReplaySymbol("RecordReplayBeginDisallowEventsWithLabel");
+  }
+  if (fnptr != reinterpret_cast<void*>(1)) {
+    reinterpret_cast<void(*)(const char*)>(fnptr)(label);
+  }
+}
+
+static void RecordReplayEndDisallowEvents() {
+  static void* fnptr;
+  if (!fnptr) {
+    fnptr = LookupRecordReplaySymbol("RecordReplayEndDisallowEvents");
+  }
+  if (fnptr != reinterpret_cast<void*>(1)) {
+    reinterpret_cast<void(*)()>(fnptr)();
+  }
+}
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN
@@ -56,6 +92,7 @@ void AllocateThreadIdentityKey(ThreadIdentityReclaimerFunction reclaimer) {
 // *different* instances of this ptr.
 // Apple platforms have the visibility attribute, but issue a compile warning
 // that protected visibility is unsupported.
+ABSL_CONST_INIT  // Must come before __attribute__((visibility("protected")))
 #if ABSL_HAVE_ATTRIBUTE(visibility) && !defined(__APPLE__)
 __attribute__((visibility("protected")))
 #endif  // ABSL_HAVE_ATTRIBUTE(visibility) && !defined(__APPLE__)
@@ -69,6 +106,9 @@ thread_local ThreadIdentity* thread_identity_ptr = nullptr;
 
 void SetCurrentThreadIdentity(
     ThreadIdentity* identity, ThreadIdentityReclaimerFunction reclaimer) {
+  // Setting the identity can happen at non-deterministic points.
+  RecordReplayBeginDisallowEventsWithLabel("SetCurrentThreadIdentity");
+
   assert(CurrentThreadIdentityIfPresent() == nullptr);
   // Associate our destructor.
   // NOTE: This call to pthread_setspecific is currently the only immovable
@@ -114,6 +154,8 @@ void SetCurrentThreadIdentity(
 #else
 #error Unimplemented ABSL_THREAD_IDENTITY_MODE
 #endif
+
+  RecordReplayEndDisallowEvents();
 }
 
 #if ABSL_THREAD_IDENTITY_MODE == ABSL_THREAD_IDENTITY_MODE_USE_TLS || \

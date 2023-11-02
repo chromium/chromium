@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,8 @@
 #include "cc/paint/paint_op_writer.h"
 #include "cc/paint/transfer_cache_deserialize_helper.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+class SkColorSpace;
 
 namespace gpu {
 struct Mailbox;
@@ -33,11 +35,17 @@ class CC_PAINT_EXPORT PaintOpReader {
                 bool enable_security_constraints = false)
       : memory_(static_cast<const volatile char*>(memory) +
                 PaintOpWriter::HeaderBytes()),
-        remaining_bytes_(size - PaintOpWriter::HeaderBytes()),
+        remaining_bytes_(
+            base::bits::AlignDown(size, PaintOpWriter::Alignment())),
         options_(options),
         enable_security_constraints_(enable_security_constraints) {
-    if (size < PaintOpWriter::HeaderBytes())
+    DCHECK_EQ(memory_,
+              base::bits::AlignUp(memory_, PaintOpWriter::Alignment()));
+    if (remaining_bytes_ < PaintOpWriter::HeaderBytes()) {
       valid_ = false;
+      return;
+    }
+    remaining_bytes_ -= PaintOpWriter::HeaderBytes();
   }
 
   static void FixupMatrixPostSerialization(SkMatrix* matrix);
@@ -60,12 +68,13 @@ class CC_PAINT_EXPORT PaintOpReader {
   void Read(SkRect* rect);
   void Read(SkIRect* rect);
   void Read(SkRRect* rect);
+  void Read(SkColor4f* color);
 
   void Read(SkPath* path);
   void Read(PaintFlags* flags);
   void Read(PaintImage* image);
   void Read(sk_sp<SkData>* data);
-  void Read(sk_sp<SkTextBlob>* blob);
+  void Read(sk_sp<GrSlug>* slug);
   void Read(sk_sp<PaintFilter>* filter);
   void Read(sk_sp<PaintShader>* shader);
   void Read(SkMatrix* matrix);
@@ -123,6 +132,13 @@ class CC_PAINT_EXPORT PaintOpReader {
   // Aligns the memory to the given alignment.
   void AlignMemory(size_t alignment);
 
+  void AssertAlignment(size_t alignment) {
+#if DCHECK_IS_ON()
+    uintptr_t memory = reinterpret_cast<uintptr_t>(memory_);
+    DCHECK_EQ(base::bits::AlignUp(memory, alignment), memory);
+#endif
+  }
+
  private:
   enum class DeserializationError {
     // Enum values must remain synchronized with PaintOpDeserializationError
@@ -139,7 +155,7 @@ class CC_PAINT_EXPORT PaintOpReader {
     kInsufficientRemainingBytes_Read_SkData = 9,
     kInsufficientRemainingBytes_Read_SkPath = 10,
     kInsufficientRemainingBytes_Read_SkRegion = 11,
-    kInsufficientRemainingBytes_Read_SkTextBlob = 12,
+    kInsufficientRemainingBytes_Read_GrSlug = 12,
     kInsufficientRemainingBytes_ReadData = 13,
     kInsufficientRemainingBytes_ReadFlattenable = 14,
     kInsufficientRemainingBytes_ReadMatrixConvolutionPaintFilter = 15,
@@ -170,7 +186,7 @@ class CC_PAINT_EXPORT PaintOpReader {
     kSkPathEffectUnflattenFailure = 40,
     kSkPathReadFromMemoryFailure = 41,
     kSkRegionReadFromMemoryFailure = 42,
-    kSkTextBlobDeserializeFailure = 43,
+    kGrSlugDeserializeFailure = 43,
     kUnexpectedPaintShaderType = 44,
     kUnexpectedSerializedImageType = 45,
     kZeroMailbox = 46,
@@ -180,8 +196,9 @@ class CC_PAINT_EXPORT PaintOpReader {
     kSharedImageProviderNoAccess = 50,
     kSharedImageProviderSkImageCreationFailed = 51,
     kZeroSkColorFilterBytes = 52,
+    kInsufficientPixelData = 53,
 
-    kMaxValue = kZeroSkColorFilterBytes,
+    kMaxValue = kInsufficientPixelData
   };
 
   template <typename T>
@@ -289,6 +306,7 @@ class CC_PAINT_EXPORT PaintOpReader {
 
   void Read(SkRegion* region);
   uint8_t* CopyScratchSpace(size_t bytes);
+  void DidRead(size_t bytes_read);
 
   const volatile char* memory_ = nullptr;
   size_t remaining_bytes_ = 0u;

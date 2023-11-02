@@ -26,7 +26,6 @@ include_rules = [
   "+skia",
   "+testing/gmock",
   "+testing/gtest",
-  "+third_party/abseil-cpp/absl",
   "+third_party/android_opengl/etc1",
   "+third_party/skia/include",
   "+ui",

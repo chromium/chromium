@@ -41,7 +41,7 @@
 #include "third_party/blink/renderer/core/layout/layout_image.h"
 #include "third_party/blink/renderer/core/paint/rounded_border_geometry.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
@@ -190,7 +190,7 @@ std::unique_ptr<Shape> ShapeOutsideInfo::CreateShapeForImage(
 
   const LayoutSize& image_size = RoundedLayoutSize(style_image->ImageSize(
       layout_box_->StyleRef().EffectiveZoom(),
-      FloatSize(reference_box_logical_size_), respect_orientation));
+      gfx::SizeF(reference_box_logical_size_), respect_orientation));
 
   const LayoutRect& margin_rect =
       GetShapeImageMarginRect(*layout_box_, reference_box_logical_size_);
@@ -202,7 +202,7 @@ std::unique_ptr<Shape> ShapeOutsideInfo::CreateShapeForImage(
 
   scoped_refptr<Image> image =
       style_image->GetImage(*layout_box_, layout_box_->GetDocument(),
-                            layout_box_->StyleRef(), FloatSize(image_size));
+                            layout_box_->StyleRef(), gfx::SizeF(image_size));
 
   return Shape::CreateRasterShape(image.get(), shape_image_threshold,
                                   image_rect, margin_rect, writing_mode, margin,
@@ -225,7 +225,7 @@ const Shape& ShapeOutsideInfo::ComputedShape() const {
   // block has a vertical scrollbar and its content is smaller than the
   // scrollbar width.
   LayoutUnit percentage_resolution_inline_size =
-      containing_block.IsLayoutNGMixin()
+      containing_block.IsLayoutNGObject()
           ? percentage_resolution_inline_size_
           : std::max(LayoutUnit(), containing_block.ContentWidth());
 
@@ -478,13 +478,14 @@ PhysicalRect ShapeOutsideInfo::ComputedShapePhysicalBoundingBox() const {
   return PhysicalRect(physical_bounding_box);
 }
 
-FloatPoint ShapeOutsideInfo::ShapeToLayoutObjectPoint(FloatPoint point) const {
-  FloatPoint result = FloatPoint(point.x() + LogicalLeftOffset(),
-                                 point.y() + LogicalTopOffset());
+gfx::PointF ShapeOutsideInfo::ShapeToLayoutObjectPoint(
+    gfx::PointF point) const {
+  gfx::PointF result = gfx::PointF(point.x() + LogicalLeftOffset(),
+                                   point.y() + LogicalTopOffset());
   if (layout_box_->StyleRef().IsFlippedBlocksWritingMode())
     result.set_y(layout_box_->LogicalHeight() - result.y());
   if (!layout_box_->StyleRef().IsHorizontalWritingMode())
-    result = result.TransposedPoint();
+    result.Transpose();
   return result;
 }
 

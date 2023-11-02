@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Classes used to process the Web App testing framework data.
@@ -43,10 +43,10 @@ class TestPlatform(Enum):
         suffix: The suffix applied to browsertest files to specify that the
                 file runs on that platform.
     """
-    MAC = ("defined(OS_MAC)", "M", "mac")
-    WINDOWS = ("defined(OS_WIN)", "W", "win")
-    LINUX = ("defined(OS_LINUX)", "L", "linux")
-    CHROME_OS = ("defined(OS_CHROMEOS)", "C", "cros")
+    MAC = ("BUILDFLAG(IS_MAC)", "M", "mac")
+    WINDOWS = ("BUILDFLAG(IS_WIN)", "W", "win")
+    LINUX = ("BUILDFLAG(IS_LINUX)", "L", "linux")
+    CHROME_OS = ("BUILDFLAG(IS_CHROMEOS)", "C", "cros")
 
     def __init__(self, macro: str, char: str, suffix: str):
         self.macro: str = macro
@@ -91,16 +91,30 @@ class TestPlatform(Enum):
         return result
 
 
+class ArgEnum:
+    """Represents an enumeration used as an argument in an action."""
+
+    def __init__(self, type_name: str, values: List[str],
+                 default_value: Optional[str]):
+        assert type_name is not None
+        assert values is not None
+        assert len(values) != 0
+        self.type_name = type_name
+        self.values = values
+        self.default_value = default_value
+
+
 class Action:
     """Represents a user action.
 
     Attributes:
-        name: The name of the action often can contain a mode, which is
+        name: The name of the action often can contain arguments, which are
               resolved at parse time.
-        base_name: If the action has modes, this is the base action name
-                   before the mode was concatenated, resulting in the name.
-        short_name: Short name of the action, used during test naming.
-        cpp_method: Method to call in C++ to execute this action.
+        base_name: If the action has arguments, this is the base action name
+                   before the argument was concatenated, resulting in the name.
+        id: Short name of the action, used during test naming.
+        cpp_method: Resolved method to call in C++ to execute this action. This
+                    includes any arguments.
         type: The type of the action (see ActionType).
         output_actions: Only populated if `type` is PARAMETERIZED. These are the
                         possible actions that can take the place of this action
@@ -110,16 +124,15 @@ class Action:
                                     supported.
     """
 
-    def __init__(self, name: str, base_name: str, short_name: str,
-                 cpp_method: str, type: ActionType,
-                 full_coverage_platforms: Set[TestPlatform],
+    def __init__(self, name: str, base_name: str, id: str, cpp_method: str,
+                 type: ActionType, full_coverage_platforms: Set[TestPlatform],
                  partial_coverage_platforms: Set[TestPlatform]):
         assert name is not None
         assert base_name is not None
         assert type is not None
         self.name: str = name
         self.base_name: str = base_name
-        self.short_name: str = short_name
+        self.id: str = id
         self.cpp_method: str = cpp_method
         self.type: ActionType = type
         self.output_actions: List[Action] = []
@@ -128,7 +141,7 @@ class Action:
         self.partial_coverage_platforms: Set[
             TestPlatform] = partial_coverage_platforms
         # Used in `read_action_files` as temporary storage.
-        self._output_action_names: List[str] = []
+        self._output_canonical_action_names: List[str] = []
 
     def get_coverage_for_platform(self,
                                   platform: TestPlatform) -> ActionCoverage:
@@ -148,14 +161,14 @@ class Action:
     def __str__(self):
         return (f"Action[{self.name}, "
                 f"base_name: {self.base_name}, "
-                f"short_name: {self.short_name}, "
+                f"id: {self.id}, "
                 f"type: {self.type}, "
                 f"output_actions: "
                 f"{[a.name for a in self.output_actions]}, "
                 f"full_coverage_platforms: "
-                f"{self.full_coverage_platforms}, "
+                f"{[p.char for p in self.full_coverage_platforms]}, "
                 f"partial_coverage_platforms: "
-                f"{self.partial_coverage_platforms}]")
+                f"{[p.char for p in self.partial_coverage_platforms]}]")
 
 
 class ActionNode:
@@ -219,12 +232,12 @@ class CoverageTest:
         platforms: set of platforms this test is run on.
     """
 
-    TEST_ID_PREFIX = "WebAppIntegration_"
+    TEST_ID_PREFIX = "WAI_"
 
     def __init__(self, actions: List[Action], platforms: Set[TestPlatform]):
         assert actions is not None
         assert platforms is not None
-        self.id: TestId = "_".join([a.short_name for a in actions])
+        self.id: TestId = "_".join([a.id for a in actions])
         self.actions: List[Action] = actions
         self.platforms: Set[TestPlatform] = platforms
 
@@ -232,14 +245,14 @@ class CoverageTest:
                              ) -> str:
         comments = [
             "Test contents are generated by script. Please do not modify!",
-            "See `chrome/test/webapps/README.md` for more info.",
+            "See `docs/webapps/why-is-this-test-failing.md` or",
+            "`docs/webapps/integration-testing-framework` for more info.",
             "Sheriffs: Disabling this test is supported."
         ]
         body = ''.join(["  // " + comment + "\n" for comment in comments])
         body += '\n'.join([(f"  helper_.{action.cpp_method};")
                            for action in self.actions])
-        fixture = (f"{test_partition.test_fixture}"
-                   f"{TestPlatform.get_test_fixture_suffix(self.platforms)}")
+        fixture = f"{test_partition.test_fixture}"
         return (f"IN_PROC_BROWSER_TEST_F("
                 f"{fixture}, {CoverageTest.TEST_ID_PREFIX}{self.id}) {{\n"
                 f"{body}\n}}")
@@ -299,6 +312,8 @@ TestIdsByPlatform = Dict[TestPlatform, Set[TestId]]
 TestIdsByPlatformSet = Dict[FrozenSet[TestPlatform], Set[TestId]]
 CoverageTestsByPlatformSet = Dict[FrozenSet[TestPlatform], List[CoverageTest]]
 CoverageTestsByPlatform = Dict[TestPlatform, List[CoverageTest]]
+EnumsByType = Dict[str, ArgEnum]
 ActionsByName = Dict[str, Action]
+EnumsByType = Dict[str, ArgEnum]
 PartialAndFullCoverageByBaseName = Dict[
     str, Tuple[Set[TestPlatform], Set[TestPlatform]]]

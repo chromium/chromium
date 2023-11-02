@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/types/optional_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
@@ -18,7 +19,7 @@
 #include "extensions/browser/api/socket/tcp_socket.h"
 #include "extensions/browser/api/socket/tls_socket.h"
 #include "extensions/browser/api/sockets_tcp/tcp_socket_event_dispatcher.h"
-#include "extensions/common/api/sockets/sockets_manifest_data.h"
+#include "extensions/common/api/sockets_tcp.h"
 #include "net/base/net_errors.h"
 
 using extensions::ResumableTCPSocket;
@@ -39,11 +40,11 @@ SocketInfo CreateSocketInfo(int socket_id, ResumableTCPSocket* socket) {
   // to the system.
   socket_info.socket_id = socket_id;
   if (!socket->name().empty()) {
-    socket_info.name = std::make_unique<std::string>(socket->name());
+    socket_info.name = socket->name();
   }
   socket_info.persistent = socket->persistent();
   if (socket->buffer_size() > 0) {
-    socket_info.buffer_size = std::make_unique<int>(socket->buffer_size());
+    socket_info.buffer_size = socket->buffer_size();
   }
   socket_info.paused = socket->paused();
   socket_info.connected = socket->IsConnected();
@@ -51,9 +52,8 @@ SocketInfo CreateSocketInfo(int socket_id, ResumableTCPSocket* socket) {
   // Grab the local address as known by the OS.
   net::IPEndPoint localAddress;
   if (socket->GetLocalAddress(&localAddress)) {
-    socket_info.local_address =
-        std::make_unique<std::string>(localAddress.ToStringWithoutPort());
-    socket_info.local_port = std::make_unique<int>(localAddress.port());
+    socket_info.local_address = localAddress.ToStringWithoutPort();
+    socket_info.local_port = localAddress.port();
   }
 
   // Grab the peer address as known by the OS. This and the call below will
@@ -62,9 +62,8 @@ SocketInfo CreateSocketInfo(int socket_id, ResumableTCPSocket* socket) {
   // that it should be closed locally.
   net::IPEndPoint peerAddress;
   if (socket->GetPeerAddress(&peerAddress)) {
-    socket_info.peer_address =
-        std::make_unique<std::string>(peerAddress.ToStringWithoutPort());
-    socket_info.peer_port = std::make_unique<int>(peerAddress.port());
+    socket_info.peer_address = peerAddress.ToStringWithoutPort();
+    socket_info.peer_port = peerAddress.port();
   }
 
   return socket_info;
@@ -72,13 +71,13 @@ SocketInfo CreateSocketInfo(int socket_id, ResumableTCPSocket* socket) {
 
 void SetSocketProperties(ResumableTCPSocket* socket,
                          SocketProperties* properties) {
-  if (properties->name.get()) {
+  if (properties->name) {
     socket->set_name(*properties->name);
   }
-  if (properties->persistent.get()) {
+  if (properties->persistent) {
     socket->set_persistent(*properties->persistent);
   }
-  if (properties->buffer_size.get()) {
+  if (properties->buffer_size) {
     // buffer size is validated when issuing the actual Recv operation
     // on the socket.
     socket->set_buffer_size(*properties->buffer_size);
@@ -128,9 +127,10 @@ ExtensionFunction::ResponseAction SocketsTcpCreateFunction::Work() {
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   ResumableTCPSocket* socket =
-      new ResumableTCPSocket(browser_context(), extension_id());
+      new ResumableTCPSocket(browser_context(), GetOriginId());
 
-  sockets_tcp::SocketProperties* properties = params->properties.get();
+  sockets_tcp::SocketProperties* properties =
+      base::OptionalToPtr(params->properties);
   if (properties) {
     SetSocketProperties(socket, properties);
   }
@@ -184,8 +184,7 @@ ExtensionFunction::ResponseAction SocketsTcpSetPausedFunction::Work() {
   if (socket->paused() != params->paused) {
     socket->set_paused(params->paused);
     if (socket->IsConnected() && !params->paused) {
-      socket_event_dispatcher->OnSocketResume(extension_id(),
-                                              params->socket_id);
+      socket_event_dispatcher->OnSocketResume(GetOriginId(), params->socket_id);
     }
   }
 
@@ -273,14 +272,29 @@ ExtensionFunction::ResponseAction SocketsTcpConnectFunction::Work() {
 
   socket->set_hostname(params_->peer_address);
 
+  net::DnsQueryType dns_query_type;
+  switch (params_->dns_query_type) {
+    case extensions::api::sockets_tcp::DNS_QUERY_TYPE_NONE:
+    case extensions::api::sockets_tcp::DNS_QUERY_TYPE_ANY:
+      dns_query_type = net::DnsQueryType::UNSPECIFIED;
+      break;
+    case extensions::api::sockets_tcp::DNS_QUERY_TYPE_IPV4:
+      dns_query_type = net::DnsQueryType::A;
+      break;
+    case extensions::api::sockets_tcp::DNS_QUERY_TYPE_IPV6:
+      dns_query_type = net::DnsQueryType::AAAA;
+      break;
+  }
+
   content::SocketPermissionRequest param(SocketPermissionRequest::TCP_CONNECT,
                                          params_->peer_address,
                                          params_->peer_port);
-  if (!SocketsManifestData::CheckRequest(extension(), param)) {
+  if (!CheckRequest(param)) {
     return RespondNow(Error(kPermissionError));
   }
 
-  StartDnsLookup(net::HostPortPair(params_->peer_address, params_->peer_port));
+  StartDnsLookup(net::HostPortPair(params_->peer_address, params_->peer_port),
+                 dns_query_type);
   return RespondLater();
 }
 
@@ -306,7 +320,7 @@ void SocketsTcpConnectFunction::StartConnect() {
 
 void SocketsTcpConnectFunction::OnCompleted(int net_result) {
   if (net_result == net::OK) {
-    socket_event_dispatcher_->OnSocketConnect(extension_id(),
+    socket_event_dispatcher_->OnSocketConnect(GetOriginId(),
                                               params_->socket_id);
   }
 
@@ -373,7 +387,7 @@ void SocketsTcpSendFunction::SetSendResult(int net_result, int bytes_sent) {
   sockets_tcp::SendInfo send_info;
   send_info.result_code = net_result;
   if (net_result == net::OK) {
-    send_info.bytes_sent = std::make_unique<int>(bytes_sent);
+    send_info.bytes_sent = bytes_sent;
   }
 
   auto args = sockets_tcp::Send::Results::Create(send_info);
@@ -475,17 +489,10 @@ ExtensionFunction::ResponseAction SocketsTcpSecureFunction::Work() {
   // UpgradeSocketToTLS() uses the older API's SecureOptions. Copy over the
   // only values inside -- TLSVersionConstraints's |min| and |max|,
   api::socket::SecureOptions legacy_params;
-  if (params_->options.get() && params_->options->tls_version.get()) {
-    legacy_params.tls_version =
-        std::make_unique<api::socket::TLSVersionConstraints>();
-    if (params_->options->tls_version->min.get()) {
-      legacy_params.tls_version->min =
-          std::make_unique<std::string>(*params_->options->tls_version->min);
-    }
-    if (params_->options->tls_version->max.get()) {
-      legacy_params.tls_version->max =
-          std::make_unique<std::string>(*params_->options->tls_version->max);
-    }
+  if (params_->options && params_->options->tls_version) {
+    legacy_params.tls_version.emplace();
+    legacy_params.tls_version->min = params_->options->tls_version->min;
+    legacy_params.tls_version->max = params_->options->tls_version->max;
   }
 
   socket->UpgradeToTLS(
@@ -509,7 +516,7 @@ void SocketsTcpSecureFunction::TlsConnectDone(
   auto socket =
       std::make_unique<TLSSocket>(std::move(tls_socket), local_addr, peer_addr,
                                   std::move(receive_pipe_handle),
-                                  std::move(send_pipe_handle), extension_id());
+                                  std::move(send_pipe_handle), GetOriginId());
   socket->set_persistent(persistent_);
   socket->set_paused(paused_);
   ReplaceSocket(params_->socket_id, socket.release());

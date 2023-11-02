@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,7 @@
 #include "chrome/installer/util/google_update_settings.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/browser/mac/keystone_glue.h"
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/google/google_brand_chromeos.h"
@@ -27,7 +27,7 @@
 
 namespace {
 
-const char* g_brand_for_testing = NULL;
+const char* g_brand_for_testing = nullptr;
 
 }  // namespace
 
@@ -36,7 +36,7 @@ namespace google_brand {
 
 // Global functions -----------------------------------------------------------
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 bool GetBrand(std::string* brand) {
   if (g_brand_for_testing) {
@@ -76,7 +76,7 @@ bool GetBrand(std::string* brand) {
     return true;
   }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   brand->assign(keystone_glue::BrandCode());
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
   brand->assign(google_brand::chromeos::GetBrand());
@@ -119,7 +119,7 @@ bool IsOrganic(const std::string& brand) {
       "CHOU", "CHOX", "CHOY", "CHOZ", "CHPD", "CHPE", "CHPF", "CHPG", "ECBA",
       "ECBB", "ECDA", "ECDB", "ECSA", "ECSB", "ECVA", "ECVB", "ECWA", "ECWB",
       "ECWC", "ECWD", "ECWE", "ECWF", "EUBB", "EUBC", "GGLA", "GGLS"};
-  const char* const* end = &kOrganicBrands[base::size(kOrganicBrands)];
+  const char* const* end = &kOrganicBrands[std::size(kOrganicBrands)];
   if (std::binary_search(&kOrganicBrands[0], end, brand))
     return true;
 
@@ -158,12 +158,12 @@ bool IsEnterprise(const std::string& brand) {
 // BrandForTesting ------------------------------------------------------------
 
 BrandForTesting::BrandForTesting(const std::string& brand) : brand_(brand) {
-  DCHECK(g_brand_for_testing == NULL);
+  DCHECK(g_brand_for_testing == nullptr);
   g_brand_for_testing = brand_.c_str();
 }
 
 BrandForTesting::~BrandForTesting() {
-  g_brand_for_testing = NULL;
+  g_brand_for_testing = nullptr;
 }
 
 

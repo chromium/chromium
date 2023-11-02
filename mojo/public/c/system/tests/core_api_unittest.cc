@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <stdint.h>
 #include <string.h>
 
+#include "mojo/core/embedder/embedder.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "mojo/public/cpp/system/wait.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -230,18 +231,26 @@ TEST(CoreAPITest, BasicDataPipe) {
   EXPECT_EQ(MOJO_RESULT_OK, mojo::Wait(mojo::Handle(hc),
                                        MOJO_HANDLE_SIGNAL_PEER_CLOSED, &state));
 
-  EXPECT_EQ(MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED,
-            state.satisfied_signals);
-  EXPECT_EQ(MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED,
-            state.satisfiable_signals);
+  EXPECT_TRUE(state.satisfied_signals & MOJO_HANDLE_SIGNAL_READABLE);
+  EXPECT_TRUE(state.satisfied_signals & MOJO_HANDLE_SIGNAL_PEER_CLOSED);
+  EXPECT_TRUE(state.satisfiable_signals & MOJO_HANDLE_SIGNAL_READABLE);
+  EXPECT_TRUE(state.satisfiable_signals & MOJO_HANDLE_SIGNAL_PEER_CLOSED);
 
-  // Do a two-phase read from |hc|.
-  read_pointer = nullptr;
-  EXPECT_EQ(MOJO_RESULT_OK,
-            MojoBeginReadData(hc, nullptr, &read_pointer, &buffer_size));
-  ASSERT_LE(buffer_size, sizeof(buffer) - 1);
-  memcpy(&buffer[1], read_pointer, buffer_size);
-  EXPECT_EQ(MOJO_RESULT_OK, MojoEndReadData(hc, buffer_size, nullptr));
+  // Do two-phase reads from |hc| until drained.
+  size_t read_offset = 1;
+  for (;;) {
+    read_pointer = nullptr;
+    const MojoResult result =
+        MojoBeginReadData(hc, nullptr, &read_pointer, &buffer_size);
+    if (result == MOJO_RESULT_FAILED_PRECONDITION) {
+      break;
+    }
+    ASSERT_EQ(result, MOJO_RESULT_OK);
+    ASSERT_LE(buffer_size, sizeof(buffer) - 1);
+    memcpy(&buffer[read_offset], read_pointer, buffer_size);
+    EXPECT_EQ(MOJO_RESULT_OK, MojoEndReadData(hc, buffer_size, nullptr));
+    read_offset += buffer_size;
+  }
   EXPECT_STREQ("hello world", buffer);
 
   // |hc| should no longer be readable.

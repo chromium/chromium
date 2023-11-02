@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,9 @@
 #include <set>
 #include <utility>
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#include "build/build_config.h"
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include <sys/stat.h>
 #endif
 
@@ -16,7 +18,6 @@
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/task/current_thread.h"
 #include "base/token.h"
@@ -41,6 +42,10 @@
 #include "services/service_manager/public/mojom/connector.mojom.h"
 #include "services/service_manager/public/mojom/service.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/bundle_utils.h"
+#endif
 
 namespace chromecast {
 namespace external_mojo {
@@ -417,17 +422,30 @@ ExternalMojoBroker::ExternalMojoBroker(const std::string& broker_path) {
   // |broker_path|. Otherwise, only services in the same process network can
   // make use of the broker.
 #if BUILDFLAG(ENABLE_EXTERNAL_MOJO_SERVICES)
+#if BUILDFLAG(IS_ANDROID)
+  // Monolithic MediaShell can just access the service broker directly in the
+  // same process, so there's no need to stand up a server.
+  if (!base::android::BundleUtils::IsBundle()) {
+    return;
+  }
+  // On Android, use the abstract namespace to avoid filesystem access.
+  bool use_abstract_namespace = true;
+#else
+  bool use_abstract_namespace = false;
+#endif  // BUILDFLAG(IS_ANDROID)
+
   LOG(INFO) << "Initializing external mojo broker at: " << broker_path;
 
   mojo::NamedPlatformChannel::Options channel_options;
   channel_options.server_name = broker_path;
+  channel_options.use_abstract_namespace = use_abstract_namespace;
   mojo::NamedPlatformChannel named_channel(channel_options);
 
   mojo::PlatformChannelServerEndpoint server_endpoint =
       named_channel.TakeServerEndpoint();
   DCHECK(server_endpoint.is_valid());
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   chmod(broker_path.c_str(), 0770);
 #endif
 

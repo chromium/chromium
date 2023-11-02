@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,8 +44,9 @@ namespace chromeos {
 namespace system {
 
 namespace {
-const base::Feature kCoreScheduling{"CoreSchedulingEnabled",
-                                    base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kCoreScheduling,
+             "CoreSchedulingEnabled",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 }
 
 void EnableCoreSchedulingIfAvailable() {

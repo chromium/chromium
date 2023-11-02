@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,29 +22,29 @@ AccessibilityBridgeFuchsiaRegistry::~AccessibilityBridgeFuchsiaRegistry() =
 
 AccessibilityBridgeFuchsia*
 AccessibilityBridgeFuchsiaRegistry::GetAccessibilityBridge(
-    AXTreeID ax_tree_id) {
-  auto it = ax_tree_id_to_accessibility_bridge_map_.find(ax_tree_id);
-  if (it == ax_tree_id_to_accessibility_bridge_map_.end())
+    aura::Window* window) {
+  auto it = window_to_bridge_map_.find(window);
+  if (it == window_to_bridge_map_.end())
     return nullptr;
 
   return it->second;
 }
 
 void AccessibilityBridgeFuchsiaRegistry::RegisterAccessibilityBridge(
-    AXTreeID ax_tree_id,
+    aura::Window* window,
     AccessibilityBridgeFuchsia* accessibility_bridge) {
-  DCHECK(ax_tree_id_to_accessibility_bridge_map_.find(ax_tree_id) ==
-         ax_tree_id_to_accessibility_bridge_map_.end());
+  DCHECK(window);
+  DCHECK(!window_to_bridge_map_.count(window));
 
-  ax_tree_id_to_accessibility_bridge_map_[ax_tree_id] = accessibility_bridge;
+  window_to_bridge_map_.emplace(window, accessibility_bridge);
 }
 
 void AccessibilityBridgeFuchsiaRegistry::UnregisterAccessibilityBridge(
-    AXTreeID ax_tree_id) {
-  auto it = ax_tree_id_to_accessibility_bridge_map_.find(ax_tree_id);
-  DCHECK(it != ax_tree_id_to_accessibility_bridge_map_.end());
+    aura::Window* window) {
+  auto it = window_to_bridge_map_.find(window);
+  DCHECK(it != window_to_bridge_map_.end());
 
-  ax_tree_id_to_accessibility_bridge_map_.erase(it);
+  window_to_bridge_map_.erase(it);
 }
 
 }  // namespace ui

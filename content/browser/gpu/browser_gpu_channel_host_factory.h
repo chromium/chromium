@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,20 +18,24 @@
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
-#include "ipc/message_filter.h"
 
 namespace gpu {
 class GpuMemoryBufferManager;
 }
 
+namespace viz {
+class HostGpuMemoryBufferManager;
+}
+
 namespace content {
 
-class CONTENT_EXPORT BrowserGpuChannelHostFactory
-    : public gpu::GpuChannelEstablishFactory {
+class BrowserGpuChannelHostFactory : public gpu::GpuChannelEstablishFactory {
  public:
   static void Initialize(bool establish_gpu_channel);
   static void Terminate();
-  static BrowserGpuChannelHostFactory* instance() { return instance_; }
+  CONTENT_EXPORT static BrowserGpuChannelHostFactory* instance() {
+    return instance_;
+  }
 
   BrowserGpuChannelHostFactory(const BrowserGpuChannelHostFactory&) = delete;
   BrowserGpuChannelHostFactory& operator=(const BrowserGpuChannelHostFactory&) =
@@ -47,7 +51,7 @@ class CONTENT_EXPORT BrowserGpuChannelHostFactory
 
   // Closes the channel to the GPU process. This should be called before the IO
   // thread stops.
-  void CloseChannel();
+  CONTENT_EXPORT void CloseChannel();
 
   // Notify the BrowserGpuChannelHostFactory of visibility, used to prevent
   // timeouts while backgrounded.
@@ -73,20 +77,18 @@ class CONTENT_EXPORT BrowserGpuChannelHostFactory
   void GpuChannelEstablished(EstablishRequest* request);
   void RestartTimeout();
 
-  static void InitializeShaderDiskCacheOnIO(int gpu_client_id,
-                                            const base::FilePath& cache_dir);
-  static void InitializeGrShaderDiskCacheOnIO(const base::FilePath& cache_dir);
-
   const int gpu_client_id_;
   const uint64_t gpu_client_tracing_id_;
   scoped_refptr<gpu::GpuChannelHost> gpu_channel_;
-  std::unique_ptr<gpu::GpuMemoryBufferManager> gpu_memory_buffer_manager_;
+  std::unique_ptr<viz::HostGpuMemoryBufferManager> gpu_memory_buffer_manager_;
   scoped_refptr<EstablishRequest> pending_request_;
   bool is_visible_ = true;
 
   base::OneShotTimer timeout_;
 
-  static BrowserGpuChannelHostFactory* instance_;
+  // instance() might be inlined at a call site so instance_ must also be
+  // exported.
+  CONTENT_EXPORT static BrowserGpuChannelHostFactory* instance_;
 };
 
 }  // namespace content

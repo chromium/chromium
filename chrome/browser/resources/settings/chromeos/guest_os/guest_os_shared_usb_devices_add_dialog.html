@@ -1,0 +1,75 @@
+<style include="settings-shared md-select">
+  #selectDevice {
+    width: 100%;
+  }
+
+  .custom-body {
+    padding-bottom: 20px;
+  }
+
+  .custom-button-container {
+    float: right;
+  }
+
+  .input-container {
+    padding-bottom: 10px;
+  }
+</style>
+<cr-dialog id="dialog" close-text="$i18n{close}">
+  <div slot="title">$i18n{guestOsSharedUsbDevicesAddTitle}</div>
+  <div slot="body">
+    <div class="input-container">
+      <label class="cr-form-field-label">Device</label>
+      <select id="selectDevice" class="md-select"
+          disabled="[[!sharedUsbDevices.length]]">
+        <template is="dom-if" if="[[!sharedUsbDevices.length]]" restamp>
+          <option>$i18n{guestOsSharedUsbDevicesListEmptyMessage}</option>
+        </template>
+        <template is="dom-repeat" items="[[sharedUsbDevices]]">
+          <option value="[[item.device.guid]]">
+            [[item.device.label]]
+            [[[item.device.vendorId]]:[[item.device.productId]]]
+          </option>
+        </template>
+      </select>
+    </div>
+    <template is="dom-if" if="[[showContainerSelect_(allContainers)]]" restamp>
+      <settings-guest-os-container-select
+          containers="[[allContainers]]"
+          selected-container-id="{{guestId_}}"
+          default-vm-name="[[defaultGuestId.vm_name]]">
+      </settings-guest-os-container-select>
+    </template>
+  </div>
+  <div slot="body" class="custom-body">
+    <div slot="button-container" class="custom-button-container">
+      <cr-button id="cancel" class="cancel-button" on-click="onCancelTap_">
+        $i18n{cancel}
+      </cr-button>
+      <cr-button id="continue" class="action-button"
+          disabled="[[!sharedUsbDevices.length]]" on-click="onAddTap_">
+        $i18n{add}
+      </cr-button>
+    </div>
+  </div>
+</cr-dialog>
+<template is="dom-if" if="[[reassignDevice_]]" restamp>
+  <cr-dialog id="reassignDialog" close-text="$i18n{close}"
+      on-cancel="onReassignCancel_" show-on-attach>
+    <div slot="title">
+      $i18n{guestOsSharedUsbDevicesInUse}
+    </div>
+    <div slot="body">
+      [[getReassignDialogText_(reassignDevice_)]]
+    </div>
+    <div slot="button-container">
+      <cr-button id="cancel" class="cancel-button" on-click="onReassignCancel_">
+        $i18n{cancel}
+      </cr-button>
+      <cr-button id="continue" class="action-button"
+          on-click="onReassignContinueClick_">
+        $i18n{continue}
+      </cr-button>
+    </div>
+  </cr-dialog>
+</template>

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,8 @@
 
 #include <string>
 
+#include "ash/services/device_sync/public/cpp/cryptauth_device_id_provider.h"
 #include "base/no_destructor.h"
-#include "chromeos/services/device_sync/public/cpp/cryptauth_device_id_provider.h"
 
 class PrefRegistrySimple;
 
@@ -17,7 +17,7 @@ namespace ash {
 // Concrete CryptAuthDeviceIdProvider implementation which stores the device ID
 // in the browser process' local state PrefStore.
 class CryptAuthDeviceIdProviderImpl
-    : public chromeos::device_sync::CryptAuthDeviceIdProvider {
+    : public device_sync::CryptAuthDeviceIdProvider {
  public:
   // Registers the prefs used by this class. |registry| must be associated
   // with browser local storage, not an individual profile.

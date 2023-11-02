@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include "android_webview/common/mojom/renderer.mojom.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
 #include "content/public/browser/render_process_host_observer.h"
@@ -38,10 +39,6 @@ class AwRenderProcess : public content::RenderProcessHostObserver,
 
   void ClearCache();
   void SetJsOnlineProperty(bool network_up);
-  void SetCpuAffinityToLittleCores();
-  void EnableIdleThrottling(int32_t policy,
-                            int32_t min_time_ms,
-                            float min_cputime_ratio);
 
  private:
   void Ready();
@@ -56,7 +53,7 @@ class AwRenderProcess : public content::RenderProcessHostObserver,
 
   base::android::ScopedJavaGlobalRef<jobject> java_obj_;
 
-  content::RenderProcessHost* render_process_host_;
+  raw_ptr<content::RenderProcessHost> render_process_host_;
 
   mojo::AssociatedRemote<mojom::Renderer> renderer_remote_;
 

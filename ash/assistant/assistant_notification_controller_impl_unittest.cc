@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,11 +10,11 @@
 
 #include "ash/assistant/assistant_controller_impl.h"
 #include "ash/assistant/model/assistant_notification_model_observer.h"
+#include "ash/assistant/test/assistant_ash_test_base.h"
 #include "ash/assistant/test/test_assistant_service.h"
 #include "ash/shell.h"
-#include "ash/test/ash_test_base.h"
 #include "base/test/task_environment.h"
-#include "chromeos/services/assistant/public/cpp/assistant_service.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/message_center/message_center.h"
@@ -23,9 +23,9 @@ namespace ash {
 
 namespace {
 
-using chromeos::assistant::AssistantNotification;
-using chromeos::assistant::AssistantNotificationButton;
-using chromeos::assistant::AssistantNotificationPriority;
+using assistant::AssistantNotification;
+using assistant::AssistantNotificationButton;
+using assistant::AssistantNotificationPriority;
 
 using testing::_;
 using testing::Eq;
@@ -199,7 +199,7 @@ class AssistantServiceMock : public TestAssistantService {
 
 // AssistantNotificationControllerTest -----------------------------------------
 
-class AssistantNotificationControllerTest : public AshTestBase {
+class AssistantNotificationControllerTest : public AssistantAshTestBase {
  public:
   AssistantNotificationControllerTest(
       const AssistantNotificationControllerTest&) = delete;
@@ -208,11 +208,12 @@ class AssistantNotificationControllerTest : public AshTestBase {
 
  protected:
   AssistantNotificationControllerTest()
-      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+      : AssistantAshTestBase(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   ~AssistantNotificationControllerTest() override = default;
 
   void SetUp() override {
-    AshTestBase::SetUp();
+    AssistantAshTestBase::SetUp();
 
     controller_ =
         Shell::Get()->assistant_controller()->notification_controller();

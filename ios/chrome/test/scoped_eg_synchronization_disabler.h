@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define IOS_CHROME_TEST_SCOPED_EG_SYNCHRONIZATION_DISABLER_H_
 
 #import <Foundation/Foundation.h>
-#include "base/macros.h"
 
 // Disables EarlGrey synchronization in constructor and returns back to the
 // original value in destructor.

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,13 +8,16 @@
 #include <unordered_map>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/supports_user_data.h"
+#include "base/time/time.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/sessions/core/session_id.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "url/gurl.h"
 
@@ -57,8 +60,20 @@ struct NavigationEvent {
   // Which tab this request url is targeting to.
   SessionID target_tab_id;
 
-  // Frame tree node ID of the frame where this navigation takes place.
-  int frame_id;
+  // RFH ID of the outermost main frame of the frame which initiated this
+  // navigation. This can only differ from outermost_main_frame_id if
+  // |is_outermost_main_frame| is true, however differing values does not imply
+  // that we're in the outermost main frame (we could be navigating within the
+  // current RFH).
+  content::GlobalRenderFrameHostId initiator_outermost_main_frame_id;
+
+  // RFH ID of the outermost main frame of the frame where this navigation takes
+  // place. If this navigation is occurring in the outermost main frame, then
+  // this is not known until commit.
+  content::GlobalRenderFrameHostId outermost_main_frame_id;
+
+  // Whether this navigation is happening in the outermost main frame.
+  bool is_outermost_main_frame = false;
 
   // When this NavigationEvent was last updated.
   base::Time last_updated;
@@ -176,6 +191,9 @@ class SafeBrowsingNavigationObserver : public base::SupportsUserData::Data,
   void SetNavigationSourceMainFrameUrl(
       content::NavigationHandle* navigation_handle,
       NavigationEvent* nav_event);
+  void SetNavigationOutermostMainFrameIds(
+      content::NavigationHandle* navigation_handle,
+      NavigationEvent* nav_event);
 
   // Map keyed on NavigationHandle* to keep track of all the ongoing
   // navigation events. NavigationHandle pointers are owned by
@@ -189,7 +207,7 @@ class SafeBrowsingNavigationObserver : public base::SupportsUserData::Data,
   base::ScopedObservation<HostContentSettingsMap, content_settings::Observer>
       content_settings_observation_{this};
 
-  SafeBrowsingNavigationObserverManager* observer_manager_ = nullptr;
+  raw_ptr<SafeBrowsingNavigationObserverManager> observer_manager_ = nullptr;
 };
 
 }  // namespace safe_browsing

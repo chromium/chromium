@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -77,7 +77,8 @@ class AccountSelectFillData {
   // Adds form structure from |form_data| to internal lists of known forms and
   // overrides known credentials with credentials from |form_data|. So only the
   // credentials from the latest |form_data| will be shown to the user.
-  void Add(const autofill::PasswordFormFillData& form_data);
+  void Add(const autofill::PasswordFormFillData& form_data,
+           bool is_cross_origin_iframe);
   void Reset();
   bool Empty() const;
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "gpu/command_buffer/service/gl_utils.h"
 #include "gpu/command_buffer/service/indexed_buffer_binding_host.h"
@@ -83,7 +84,7 @@ class GPU_GLES2_EXPORT TransformFeedback : public IndexedBufferBindingHost {
   ~TransformFeedback() override;
 
   // The manager that owns this Buffer.
-  TransformFeedbackManager* manager_;
+  raw_ptr<TransformFeedbackManager> manager_;
 
   GLuint client_id_;
   GLuint service_id_;

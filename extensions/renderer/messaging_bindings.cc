@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,12 +31,9 @@ void MessagingBindings::AddRoutes() {
 
 void MessagingBindings::BindToGC(
     const v8::FunctionCallbackInfo<v8::Value>& args) {
-  CHECK(args.Length() == 3);
+  CHECK_EQ(2, args.Length());
   CHECK(args[0]->IsObject());
   CHECK(args[1]->IsFunction());
-  CHECK(args[2]->IsInt32());
-  // TODO(devlin): Update callers to not pass a port ID.
-  // int js_port_id = args[2].As<v8::Int32>()->Value();
 
   // Destroys itself when the object is GC'd or context is invalidated.
   new GCCallback(context(), args[0].As<v8::Object>(),

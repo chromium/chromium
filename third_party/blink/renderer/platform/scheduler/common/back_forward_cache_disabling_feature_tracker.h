@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@
 namespace blink {
 namespace scheduler {
 
-class ThreadSchedulerImpl;
+class ThreadSchedulerBase;
 
 // Keeps track of feature usage that disables back/forward cache.
 //
@@ -34,7 +34,7 @@ class PLATFORM_EXPORT BackForwardCacheDisablingFeatureTracker {
   // instance except for tests.
   BackForwardCacheDisablingFeatureTracker(
       TraceableVariableController* tracing_controller,
-      ThreadSchedulerImpl* scheduler);
+      ThreadSchedulerBase* scheduler);
 
   // Sets the delegate to notify the feature usage update. This must be called
   // only once for initialization. `delegate` must not be null and must outlive
@@ -80,7 +80,7 @@ class PLATFORM_EXPORT BackForwardCacheDisablingFeatureTracker {
       back_forward_cache_disabling_feature_counts_{};
   std::bitset<static_cast<size_t>(SchedulingPolicy::Feature::kMaxValue) + 1>
       back_forward_cache_disabling_features_{};
-  TraceableState<bool, TracingCategoryName::kInfo>
+  TraceableState<bool, TracingCategory::kInfo>
       opted_out_from_back_forward_cache_;
 
   // The last set of features passed to FrameOrWorkerScheduler::Delegate::
@@ -89,7 +89,7 @@ class PLATFORM_EXPORT BackForwardCacheDisablingFeatureTracker {
   bool feature_report_scheduled_ = false;
 
   FrameOrWorkerScheduler::Delegate* delegate_ = nullptr;
-  ThreadSchedulerImpl* scheduler_;
+  ThreadSchedulerBase* scheduler_;
 
   base::WeakPtrFactory<BackForwardCacheDisablingFeatureTracker> weak_factory_{
       this};

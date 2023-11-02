@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,14 +9,13 @@
 
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/embedded_test_server_connection_listener.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 
-namespace net {
-namespace test_server {
+namespace net::test_server {
 
 // The C++ side of the Java EmbeddedTestServer.
 class EmbeddedTestServerAndroid {
@@ -78,7 +77,7 @@ class EmbeddedTestServerAndroid {
   // Connection listener forwarding notifications to EmbeddedTestServerAndroid.
   class ConnectionListener : public EmbeddedTestServerConnectionListener {
    public:
-    ConnectionListener(EmbeddedTestServerAndroid* test_server_android);
+    explicit ConnectionListener(EmbeddedTestServerAndroid* test_server_android);
     ~ConnectionListener() override;
 
     std::unique_ptr<StreamSocket> AcceptedSocket(
@@ -88,7 +87,7 @@ class EmbeddedTestServerAndroid {
         std::unique_ptr<StreamSocket> socket) override;
 
    private:
-    EmbeddedTestServerAndroid* test_server_android_;
+    raw_ptr<EmbeddedTestServerAndroid> test_server_android_;
   };
 
   // Forwards notifications to Java. See EmbeddedTestServerConnectionListener.
@@ -101,7 +100,6 @@ class EmbeddedTestServerAndroid {
   ConnectionListener connection_listener_;
 };
 
-}  // namespace test_server
-}  // namespace net
+}  // namespace net::test_server
 
 #endif  // NET_TEST_EMBEDDED_TEST_SERVER_ANDROID_EMBEDDED_TEST_SERVER_ANDROID_H_

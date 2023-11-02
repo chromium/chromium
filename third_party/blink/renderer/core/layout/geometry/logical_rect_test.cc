@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,11 @@
 namespace blink {
 
 namespace {
+
+TEST(LogicalRectTest, AddOffset) {
+  EXPECT_EQ(LogicalRect(1, 2, 3, 4) + LogicalOffset(5, 6),
+            LogicalRect(6, 8, 3, 4));
+}
 
 struct LogicalRectUniteTestData {
   const char* test_case;

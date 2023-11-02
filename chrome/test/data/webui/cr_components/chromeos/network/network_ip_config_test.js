@@ -1,14 +1,13 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/strings.m.js';
-// #import 'chrome://resources/cr_components/chromeos/network/network_ip_config.m.js';
+import 'chrome://os-settings/strings.m.js';
+import 'chrome://resources/ash/common/network/network_ip_config.js';
 
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
-// clang-format on
+import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
+import {ConnectionStateType, NetworkType, PolicySource} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 suite('NetworkIpConfigTest', function() {
   /** @type {!NetworkIpConfig|undefined} */
@@ -17,74 +16,70 @@ suite('NetworkIpConfigTest', function() {
   setup(function() {
     ipConfig = document.createElement('network-ip-config');
     document.body.appendChild(ipConfig);
-    Polymer.dom.flush();
+    flush();
   });
 
   test('Enabled', function() {
-    const mojom = chromeos.networkConfig.mojom;
     assertTrue(!!ipConfig.$$('#autoConfigIpToggle'));
     // WiFi non-policy networks should enable autoConfigIpToggle.
     ipConfig.managedProperties = {
       ipAddressConfigType: {
         activeValue: 'Static',
-        policySource: mojom.PolicySource.kNone,
+        policySource: PolicySource.kNone,
       },
-      type: mojom.NetworkType.kWiFi,
+      type: NetworkType.kWiFi,
     };
-    Polymer.dom.flush();
+    flush();
     assertFalse(ipConfig.$$('#autoConfigIpToggle').disabled);
   });
 
   test('Auto-config toggle policy enforcement', function() {
-    const mojom = chromeos.networkConfig.mojom;
-
     assertTrue(!!ipConfig.$$('#autoConfigIpToggle'));
 
     // ipAddressConfigType is not set; auto-config is toggleable.
     ipConfig.managedProperties = {
       ipAddressConfigType: null,
     };
-    Polymer.dom.flush();
+    flush();
     assertFalse(ipConfig.$$('#autoConfigIpToggle').disabled);
 
     // ipAddressConfigType policy is not enforced (kNone).
     ipConfig.managedProperties = {
       ipAddressConfigType: {
         activeValue: 'Static',
-        policySource: mojom.PolicySource.kNone,
+        policySource: PolicySource.kNone,
       },
     };
-    Polymer.dom.flush();
+    flush();
     assertFalse(ipConfig.$$('#autoConfigIpToggle').disabled);
 
     // ipAddressConfigType policy is enforced.
     ipConfig.managedProperties = {
       ipAddressConfigType: {
         activeValue: 'Static',
-        policySource: mojom.PolicySource.kUserPolicyEnforced,
+        policySource: PolicySource.kUserPolicyEnforced,
       },
     };
-    Polymer.dom.flush();
+    flush();
     assertTrue(ipConfig.$$('#autoConfigIpToggle').disabled);
   });
 
   test('Disabled UI state', function() {
-    const mojom = chromeos.networkConfig.mojom;
     // WiFi non-policy networks should enable autoConfigIpToggle.
     ipConfig.managedProperties = {
       ipAddressConfigType: {
         activeValue: 'Static',
-        policySource: mojom.PolicySource.kNone,
+        policySource: PolicySource.kNone,
       },
       staticIpConfig: {
         ipAddress: {
           activeValue: '127.0.0.1',
         },
       },
-      connectionState: mojom.ConnectionStateType.kNotConnected,
-      type: mojom.NetworkType.kWiFi,
+      connectionState: ConnectionStateType.kNotConnected,
+      type: NetworkType.kWiFi,
     };
-    Polymer.dom.flush();
+    flush();
 
     const autoConfigIpToggle = ipConfig.$$('#autoConfigIpToggle');
     const propertyList = ipConfig.$$('network-property-list-mojo');
@@ -100,19 +95,18 @@ suite('NetworkIpConfigTest', function() {
 
   test('Do not show toggle if network is cellular', function() {
     const getAutoConfig = () => ipConfig.$$('#autoConfig');
-    const mojom = chromeos.networkConfig.mojom;
 
-    const properties = OncMojo.getDefaultManagedProperties(
-        mojom.NetworkType.kCellular, 'cellular');
+    const properties =
+        OncMojo.getDefaultManagedProperties(NetworkType.kCellular, 'cellular');
     ipConfig.managedProperties = properties;
-    Polymer.dom.flush();
+    flush();
 
     assertFalse(!!getAutoConfig());
 
-    const wifi = OncMojo.getDefaultManagedProperties(
-        chromeos.networkConfig.mojom.NetworkType.kWiFi, 'someguid', '');
+    const wifi =
+        OncMojo.getDefaultManagedProperties(NetworkType.kWiFi, 'someguid', '');
     ipConfig.managedProperties = wifi;
-    Polymer.dom.flush();
+    flush();
 
     assertTrue(!!getAutoConfig());
   });

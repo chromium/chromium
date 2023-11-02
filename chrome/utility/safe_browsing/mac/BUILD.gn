@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -47,11 +47,6 @@ source_set("dmg_common") {
   deps = [
     "//base",
     "//third_party/zlib",
-  ]
-
-  cflags = [
-    # For HFSPlusForkData and HFSPlusVolumeHeader (crbug.com/619640).
-    "-Wno-address-of-packed-member",
   ]
 
   public_configs = [ ":dmg_public_config" ]

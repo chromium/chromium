@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,13 +21,13 @@ class SaveAddressProfileModalRequestConfig
  public:
   ~SaveAddressProfileModalRequestConfig() override;
 
-  // Returns the envelope style address stored in |address_|..
+  // Returns the envelope style address stored in `address_`..
   std::u16string address() const { return address_; }
 
-  // Returns phone number stored in the |profile_|.
+  // Returns phone number stored in the `profile_`.
   std::u16string phoneNumber() const { return phoneNumber_; }
 
-  // Returns email stored in the |profile_|.
+  // Returns email stored in the `profile_`.
   std::u16string emailAddress() const { return emailAddress_; }
 
   // Returns the original profile's description for display.
@@ -35,7 +35,7 @@ class SaveAddressProfileModalRequestConfig
     return update_modal_description_;
   }
 
-  // Returns |profile_diff_| containing the profile differences fetched from the
+  // Returns `profile_diff_` containing the profile differences fetched from the
   // delegate.
   NSMutableDictionary<NSNumber*, NSArray*>* profile_diff() const {
     return profile_diff_;
@@ -61,7 +61,7 @@ class SaveAddressProfileModalRequestConfig
   // OverlayUserData:
   void CreateAuxiliaryData(base::SupportsUserData* user_data) override;
 
-  // Computes |profile_diff_| based on the map of
+  // Computes `profile_diff_` based on the map of
   // profile difference data fetched from the delegate.
   void StoreProfileDiff(
       const std::vector<autofill::ProfileValueDifference>& profile_diff);
@@ -69,13 +69,13 @@ class SaveAddressProfileModalRequestConfig
   // The InfoBar causing this modal.
   InfoBarIOS* infobar_ = nullptr;
 
-  // Configuration data extracted from |infobar_|'s save address profile
+  // Configuration data extracted from `infobar_`'s save address profile
   // delegate.
   std::u16string address_;
   std::u16string emailAddress_;
   std::u16string phoneNumber_;
 
-  // Configuration data extracted from |infobar_|'s update address profile
+  // Configuration data extracted from `infobar_`'s update address profile
   // delegate.
   std::u16string update_modal_description_;
   // The key is AutofillUIType and the value consists of array

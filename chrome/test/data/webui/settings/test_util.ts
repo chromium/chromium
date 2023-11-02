@@ -1,9 +1,9 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 // clang-format off
-import {ChooserType, ContentSetting, ContentSettingsTypes, DefaultContentSetting, OriginInfo, RawChooserException, RawSiteException, SiteGroup, SiteSettingSource} from 'chrome://settings/lazy_load.js';
+import {ChooserType, ContentSetting, ContentSettingProvider, ContentSettingsTypes, DefaultContentSetting, OriginInfo, RawChooserException, RawSiteException, SiteGroup, SiteSettingSource} from 'chrome://settings/lazy_load.js';
 import {Route, Router} from 'chrome://settings/settings.js';
 // clang-format on
 
@@ -32,7 +32,7 @@ export function createDefaultContentSetting(
   return Object.assign(
       {
         setting: ContentSetting.ASK,
-        source: SiteSettingSource.PREFERENCE,
+        source: ContentSettingProvider.PREFERENCE,
       },
       override || {});
 }
@@ -55,7 +55,6 @@ export function createRawSiteException(
         setting: ContentSetting.ALLOW,
         source: SiteSettingSource.PREFERENCE,
         isEmbargoed: false,
-        settingDetail: null,
         type: '',
       },
       override || {});
@@ -86,11 +85,11 @@ export function createRawChooserException(
  * In the real (non-test) code, this data comes from the C++ handler.
  * Only used for tests.
  */
-export type SiteSettingsPref = {
-  defaults: {[key in ContentSettingsTypes]: DefaultContentSetting},
-  exceptions: {[key in ContentSettingsTypes]: RawSiteException[]},
-  chooserExceptions: {[key in ContentSettingsTypes]: RawChooserException[]},
-};
+export interface SiteSettingsPref {
+  defaults: {[key in ContentSettingsTypes]: DefaultContentSetting};
+  exceptions: {[key in ContentSettingsTypes]: RawSiteException[]};
+  chooserExceptions: {[key in ContentSettingsTypes]: RawChooserException[]};
+}
 
 /**
  * Helper to create a mock SiteSettingsPref.
@@ -191,6 +190,7 @@ export function createOriginInfo(
         numCookies: 0,
         hasPermissionSettings: false,
         isInstalled: false,
+        isPartitioned: false,
       },
       override || {});
 }

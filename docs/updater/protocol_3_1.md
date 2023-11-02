@@ -1,5 +1,3 @@
-# Omaha Protocol (V3.1)
-This document describes version 3.1 of the Omaha Client-Server Protocol.
 Previous versions are described at:
  * [Version 3](https://github.com/google/omaha/blob/master/doc/ServerProtocolV3.md)
  * [Version 2](https://github.com/google/omaha/blob/master/doc/ServerProtocolV2.md)
@@ -91,18 +89,17 @@ The Omaha protocol is anonymous, but allows servers to compute the number of
 unique active or update-checking devices. This is accomplished through
 client-regulated counting.
 
-The idea of client-regulated counting is to inspect all update
-check requests received over the last N days and discard all but one from each
+The idea of client-regulated counting is to inspect all update check requests
+received over the last N days and discard all but the first request from each
 client. The number of remaining requests is equal to the number of unique
 clients.
 
 Each response from the server contains a numeric date, representing the date (in
 the server's choice of timezone) that the client's request was received. The
 client stores this date, and sends it on the next request to the server. When
-inspecting this next request, the server can determine whether the date is
-greater than or equal to (current date - N). If so, this is the first request
-from the client in the N-day window. Otherwise, there is another request from
-this client in the N-day window and this request can be excluded from the count.
+inspecting the next request, the server can determine whether the date is before
+(current date - N + 1). If so, this is the first request from the client in the
+N-day window. Otherwise, this request is a "duplicate" and can be discarded.
 
 In certain environments (for example, frequently re-imaged VMs in internet
 cafes), it is likely that the client may fail to update the date of the last
@@ -279,7 +276,7 @@ A request object has the following members:
      counted toward official metrics. Default: "" (empty string).
  *   `updater`: A list of `updater` objects.
  *   `updaterchannel`: If present, identifies the distribution channel of the
-     client (e.g. "stable", "beta", "dev", "canary"). Default: "".
+     client (e.g. "stable", "beta", "dev", "canary", "extended"). Default: "".
  *   `updaterversion`: The version of the client that is sending this request.
      Default: "0".
 
@@ -427,6 +424,8 @@ data from the server. The server maintains a map of index values to data
 contents, and can supply them if requested. This is used during installation to
 transmit alternate branding or seeded configurations to the application. `data`
 objects have the following members:
+ *   `name`: The type of data lookup to perform. The only known supported value
+      is "install". Default: "".
  *   `index`: The key to look up on the server. Default: "".
 
 #### `disabled` Objects (Update Check Request)
@@ -441,6 +440,9 @@ An updatecheck object represents the actual intent to update. It has the
 following members:
  *   `rollback_allowed`: true if the client will accept a version downgrade.
      Typically used in conjunction with a targetversionprefix. Default: false.
+ *   `sameversionupdate`: true if the client is requesting that it be updated
+     to the version it currently has (usually as part of a repair or
+     overinstallation) instead of receiving no update. Default: false.
  *   `targetversionprefix`: A component-wise prefix of a version number, or a
      complete version number. The server SHOULD NOT return an update
      instruction to a version number that does not match the prefix or complete
@@ -571,8 +573,10 @@ in the response. It has the following members:
 #### `data` Objects (Update Check Response)
 Each data object in the response represents an answer to a data request from the
 client. It has the following members:
+ *   `name`: The requested data name from `request.app.data.name`, echoed back
+     to the client.
  *   `index`: The requested data index from `request.app.data.index`, echoed
-     back to the client.
+     back to the client, if valid.
  *   `status`: The outcome of the data lookup. Default: "ok". Known values:
      *   "ok": This tag contains the appropriate data response, even if such a
          response is the empty string.
@@ -581,7 +585,7 @@ client. It has the following members:
      *   "error-nodata": The data request was understood, but the server does
          not have a value for the requested entry. (This is distinct from having
          a zero-length value.)
- *   `value`: The value of the requested data index.
+ *   `#text`: The value of the requested data index.
 
 #### `updatecheck` Objects (Update Check Response)
 An updatecheck response object contains whether or not there is an update

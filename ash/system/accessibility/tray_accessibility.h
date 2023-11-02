@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,14 +33,17 @@ class TrayAccessibilityLoginScreenTest;
 class TrayAccessibilitySodaTest;
 class TrayAccessibilityTest;
 
-namespace tray {
+enum class SodaFeature {
+  kDictation,
+  kLiveCaption,
+};
 
 // Create the detailed view of accessibility tray.
 class ASH_EXPORT AccessibilityDetailedView
     : public TrayDetailedView,
       public speech::SodaInstaller::Observer {
  public:
-  static constexpr char kClassName[] = "AccessibilityDetailedView";
+  static const char kClassName[];
 
   explicit AccessibilityDetailedView(DetailedViewDelegate* delegate);
 
@@ -56,9 +59,9 @@ class ASH_EXPORT AccessibilityDetailedView
   const char* GetClassName() const override;
 
  private:
-  friend class ::ash::TrayAccessibilityLoginScreenTest;
-  friend class ::ash::TrayAccessibilitySodaTest;
-  friend class ::ash::TrayAccessibilityTest;
+  friend class TrayAccessibilityLoginScreenTest;
+  friend class TrayAccessibilitySodaTest;
+  friend class TrayAccessibilityTest;
   friend class chromeos::TrayAccessibilityTest;
 
   // TrayDetailedView:
@@ -74,22 +77,20 @@ class ASH_EXPORT AccessibilityDetailedView
   // Add the accessibility feature list.
   void AppendAccessibilityList();
 
-  void UpdateSodaInstallerObserverStatus();
-  void OnSodaInstallSucceeded();
-  void OnSodaInstallProgress(int progress, speech::LanguageCode language_code);
-  void OnSodaInstallFailed(speech::LanguageCode language_code);
-
   // SodaInstaller::Observer:
-  void OnSodaInstalled() override;
-  void OnSodaLanguagePackInstalled(speech::LanguageCode language_code) override;
-  void OnSodaError() override;
-  void OnSodaLanguagePackError(speech::LanguageCode language_code) override;
-  void OnSodaProgress(int combined_progress) override {}
-  void OnSodaLanguagePackProgress(int language_progress,
-                                  speech::LanguageCode language_code) override;
+  void OnSodaInstalled(speech::LanguageCode language_code) override;
+  void OnSodaInstallError(speech::LanguageCode language_code,
+                          speech::SodaInstaller::ErrorCode error_code) override;
+  void OnSodaProgress(speech::LanguageCode language_code,
+                      int combined_progress) override;
 
-  void SetDictationViewSubtitleTextForTesting(std::u16string text);
-  std::u16string GetDictationViewSubtitleTextForTesting();
+  // Shows a message next to the feature icon in the tray if it is available
+  // and if the language code provided is relevant to the feature.
+  void MaybeShowSodaMessage(SodaFeature feature,
+                            speech::LanguageCode language_code,
+                            std::u16string message);
+  bool IsSodaFeatureInTray(SodaFeature feature);
+  void SetSodaFeatureSubtext(SodaFeature feature, std::u16string message);
 
   HoverHighlightView* spoken_feedback_view_ = nullptr;
   HoverHighlightView* select_to_speak_view_ = nullptr;
@@ -131,7 +132,6 @@ class ASH_EXPORT AccessibilityDetailedView
   LoginStatus login_;
 };
 
-}  // namespace tray
 }  // namespace ash
 
 #endif  // ASH_SYSTEM_ACCESSIBILITY_TRAY_ACCESSIBILITY_H_

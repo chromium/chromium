@@ -1,4 +1,4 @@
-# Copyright (c) 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -22,6 +22,10 @@ def CheckChangeOnCommit(input_api, output_api):
 
 def _CommonChecks(input_api, output_api):
   result = []
-  result.extend(input_api.canned_checks.RunUnitTests(
-      input_api, output_api, ['./checkxmlstyle_test.py']))
+  result.extend(
+      input_api.canned_checks.RunUnitTests(input_api,
+                                           output_api,
+                                           ['./checkxmlstyle_test.py'],
+                                           run_on_python2=False,
+                                           run_on_python3=True))
   return result

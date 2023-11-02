@@ -1,5 +1,5 @@
 <!--
-Copyright 2020 The Chromium Authors. All rights reserved.
+Copyright 2020 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
@@ -35,8 +35,82 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="CustomTabs.AutoclosedSessionDuration" units="ms"
+    expires_after="2023-02-12">
+  <owner>jinsukkim@chromium.org</owner>
+  <owner>twellington@chromium.org</owner>
+  <owner>cct-team@google.com</owner>
+  <summary>
+    Android: Duration in milliseconds of a custom tab session (between onResume
+    and onPause). This is logged for the sessions closed automatically without
+    user intervention. Sessions closed by user input (back press/close button)
+    will not be logged.
+
+    Note that there can be user inputs that go undetected by the logic. So the
+    histogram can contain false positives i.e. session closed by user but
+    regarded as auto-closed.
+  </summary>
+</histogram>
+
+<histogram name="CustomTabs.Branding.BrandingCheckCanceled"
+    enum="BooleanCanceled" expires_after="2023-02-09">
+  <owner>wenyufu@chromium.org</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    For every CCT launch, Chrome will start an async task in the background
+    checking the last time branding is shown for the client app. Record whether
+    such branding check is canceled due to timeout when it is finished. Record
+    for Android CCT only.
+  </summary>
+</histogram>
+
+<histogram name="CustomTabs.Branding.BrandingCheckDuration" units="ms"
+    expires_after="2023-02-09">
+  <owner>wenyufu@chromium.org</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    For every CCT launch, Chrome will start an async task in the background
+    checking the last time branding is shown for the client app. Record the
+    duration of this background async task when it completes, regardless whether
+    it is canceled. Record for Android CCT only.
+  </summary>
+</histogram>
+
+<histogram name="CustomTabs.Branding.BrandingDecision"
+    enum="CustomTabsBrandingDecision" expires_after="2023-02-09">
+  <owner>wenyufu@chromium.org</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    For every CCT launch, Chrome will start an async task in the background
+    checking the last time branding is shown for the client app. When such task
+    completed, a branding decision will be made based on the last time branding
+    was shown, and the task completion time. (e.g. show a &quot;chrome logo +
+    text&quot; combination on the toolbar). See go/clank-cct-branding-dd for
+    detail.
+
+    Record what branding decision will be used for the current CCT session when
+    the branding check is finished or canceled. Record for Android CCT only.
+  </summary>
+</histogram>
+
+<histogram name="CustomTabs.Branding.IsPackageNameValid" enum="BooleanValid"
+    expires_after="2023-02-09">
+  <owner>wenyufu@chromium.org</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    For every CCT launch, Chrome will start an async task in the background
+    checking the last time branding is shown for the client app. Recorded
+    whether the package name of CCT client app can be found on device when the
+    async task is finished. Record for Android CCT only.
+
+    If the client app is using CCT service connection, the client app package
+    name will be read from CCT service; otherwise the package name will be
+    parsed from the Activity#getReferrer of CustomTabsActivity.
+  </summary>
+</histogram>
+
 <histogram name="CustomTabs.ClientAppId" enum="ClientAppId"
-    expires_after="2022-03-20">
+    expires_after="2023-04-02">
   <owner>yusufo@chromium.org</owner>
   <summary>
     Android: AppId declared by the launching application in EXTRA_APPLICATION_ID
@@ -48,7 +122,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.ClientAppId.Incognito" enum="ClientAppId"
-    expires_after="2022-03-03">
+    expires_after="M110">
   <owner>roagarwal@chromium.org</owner>
   <owner>chrome-incognito@google.com</owner>
   <owner>cct-team@google.com</owner>
@@ -68,7 +142,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.CloseButton.ChildTab.ScopeAlgorithm.ClosesOneTab"
-    enum="BooleanCloseJustCurrentTab" expires_after="M104">
+    enum="BooleanCloseJustCurrentTab" expires_after="M114">
   <owner>peconn@chromium.org</owner>
   <owner>
     src/chrome/android/java/src/org/chromium/chrome/browser/browserservices/OWNERS
@@ -84,8 +158,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="CustomTabs.CloseCause" enum="CustomTabsCloseCause"
+    expires_after="2023-02-12">
+  <owner>jinsukkim@chromium.org</owner>
+  <owner>twellington@chromium.org</owner>
+  <owner>cct-team@google.com</owner>
+  <summary>
+    Android: The reason a custom tab is closed. Main interest is whether a
+    custom tab is triggered by user inputs like back press/close button click,
+    or it is automatically closed by the app that opened it.
+  </summary>
+</histogram>
+
 <histogram name="CustomTabs.ConnectionStatusOnReturn.GSA"
-    enum="CustomTabsConnection" expires_after="2022-04-24">
+    enum="CustomTabsConnection" expires_after="M114">
   <owner>peconn@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -98,7 +184,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.ConnectionStatusOnReturn.NonGSA"
-    enum="CustomTabsConnection" expires_after="M104">
+    enum="CustomTabsConnection" expires_after="M114">
   <owner>peconn@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -122,7 +208,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.DetachedResourceRequest.FinalStatus"
-    enum="NetErrorCodes" expires_after="2022-04-17">
+    enum="NetErrorCodes" expires_after="2023-02-26">
   <owner>lizeb@chromium.org</owner>
   <owner>cct-team@google.com</owner>
   <summary>
@@ -144,8 +230,42 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="CustomTabs.HadInteractionOnClose" enum="Boolean"
+    expires_after="2023-02-12">
+  <owner>wenyufu@chromium.org</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    Whether current CCT has seen any interactions. &quot;Interactions&quot;
+    includes any form entries for text / drop down, and whether a tab can go
+    forward / back when it is closed. Recorded when CCT tab is closed.
+  </summary>
+</histogram>
+
+<histogram name="CustomTabs.ImmersiveModeConfirmationsSettingConfirmed"
+    enum="Boolean" expires_after="2023-03-15">
+  <owner>kgrosu@google.com</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    Android only. Recorded during Partial Custom Tab creation, if it has not
+    already been logged during the existing Chrome session. Returns true if the
+    value for &quot;immersive_mode_confirmations&quot; from Settings.Secure is
+    set to &quot;confirmed&quot;, false otherwise.
+
+    This is trying to approximate what percentage of Chrome sessions that run
+    PCCTs have already confirmed the dialog that shows up when an app enters
+    immersive mode (e.g. when hiding the navigation bar buttons or status bar).
+    Once the user has tapped on the dialog, it should never be displayed again.
+    This metric will be used to measure the impact that hiding the navigation
+    bar buttons would have. In the scenario where we hide the nav bar buttons
+    only when a PCCT is being resized, this confirmation dialog shows only while
+    the user is dragging the PCCT window, but disappears as soon as the finger
+    is lifted from the screen, giving no time for the user to confirm that they
+    are aware that they entered immersive mode.
+  </summary>
+</histogram>
+
 <histogram name="CustomTabs.IncognitoCCTCallerId" enum="IncognitoCCTCallerId"
-    expires_after="2022-03-03">
+    expires_after="2023-03-12">
   <owner>roagarwal@chromium.org</owner>
   <owner>chrome-incognito@google.com</owner>
   <owner>cct-team@google.com</owner>
@@ -210,6 +330,42 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="CustomTabs.PostMessage.OnMessage" enum="Boolean"
+    expires_after="2023-02-26">
+  <owner>sinansahin@google.com</owner>
+  <owner>jinsukkim@chromium.org</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    Android only. Recorded when the tab controlled by the CustomTabsSession
+    sends a postMessage. Always emits true.
+  </summary>
+</histogram>
+
+<histogram name="CustomTabs.PostMessage.PostMessageFromClientApp"
+    enum="Boolean" expires_after="2023-02-26">
+  <owner>sinansahin@google.com</owner>
+  <owner>jinsukkim@chromium.org</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    Android only. Recorded when the CCT client sends a postMessage request to
+    the tab. Always emits true.
+  </summary>
+</histogram>
+
+<histogram name="CustomTabs.PostMessage.RequestPostMessageChannel"
+    enum="Boolean" expires_after="2023-02-26">
+  <owner>sinansahin@google.com</owner>
+  <owner>jinsukkim@chromium.org</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    Android only. Recorded when the CCT client calls requestPostMessageChannel
+    to establish a two way postMessage channel. Emits true if the request is
+    successful and false otherwise. A true value emitted here doesn't mean the
+    request cannot fail later; and a false value may be the result of multiple
+    things, e.g. the warmup hasn't been called.
+  </summary>
+</histogram>
+
 <histogram name="CustomTabs.PredictionStatus" enum="PredictionStatus"
     expires_after="2020-03-01">
   <owner>lizeb@chromium.org</owner>
@@ -228,27 +384,92 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="CustomTabs.ResourcePrefetch.Duration" units="ms"
-    expires_after="M73">
-  <owner>alexilin@chromium.org</owner>
+<histogram name="CustomTabs.ResizeType" enum="CustomTabsResizeType"
+    expires_after="2023-03-12">
+  <owner>kgrosu@google.com</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
   <summary>
-    Time between the start of a detached resource request for resource prefetch
-    and its completion (failure or success). Android only.
+    When a Partial Custom Tab has been resized by the user log if it is an
+    expansion or a minimization of the tab.
   </summary>
 </histogram>
 
-<histogram name="CustomTabs.ResourcePrefetch.FinalStatus" enum="NetErrorCodes"
-    expires_after="M73">
-  <owner>alexilin@chromium.org</owner>
+<histogram
+    name="CustomTabs.RetainableSessions.TimeBetweenLaunch{IdentifierType}"
+    units="seconds" expires_after="2023-02-12">
+  <owner>wenyufu@chromium.org</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
   <summary>
-    Reports the final status of the detached request for resource prefetch,
-    including success. Recorded once per resource prefetch request. Android
-    only.
+    When a CCT session is launched, if it is launch with the same Uri and same
+    taskId, record the duration between previous CCT closure and current CCT
+    launch. Recorded on CCT launch.
+
+    A CCT can be defined as retainable if: 1) it is launching with the same Uri
+    as the most recently closed CCT; 2) it is launched from the same embedded
+    app as the most recently closed CCT; 3) the most recently closed CCT had
+    user interactions. See &quot;CustomTabs.HadInteractionOnClose&quot; for
+    information on interactions.
+
+    The histogram suffix identifies whether the CCT is created with the same
+    intent Uri data and for the same embedded app, launching CCT with the same
+    taskId and package name. The package name identifier to use will depend on
+    whether the client app is using CustomTabService. If app is using the CCT
+    service, the package name will be read from CCT service; otherwise the
+    package name is read from the referrer of CCT activity.
+
+    This histogram is recorded for {IdentifierType}
+  </summary>
+  <token key="IdentifierType">
+    <variant name=".Different"
+        summary="App is not launched from the same embedded app as package
+                 name / referrer is different."/>
+    <variant name=".Mixed"
+        summary="Apps not consistently using CCT services. Referrer and
+                 package are used together."/>
+    <variant name=".PackageName"
+        summary="Apps using CCT services. Package name is used as identifier."/>
+    <variant name=".Referrer"
+        summary="Apps not connecting with CCT services. Activity referrer is
+                 used as identifier."/>
+  </token>
+</histogram>
+
+<histogram name="CustomTabs.SessionDisconnectStatus"
+    enum="CustomTabsSessionDisconnectStatus" expires_after="2023-03-15">
+  <owner>kgrosu@google.com</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    Recorded only for Android. Record information about the state of the client
+    app, custom tab and system in the moment the connection between the client
+    and the custom tab is terminated. With this, we are trying to understand how
+    often a connection is terminated (the client app dies/is killed/is closed)
+    while a custom tab is in foreground. Also, if the EXTRA_KEEP_ALIVE is set,
+    we want to understand if it reduces the number of connections being
+    terminated. The aim is that CT_FOREGROUND and CT_FOREGROUND_KEEPALIVE are
+    logged as little as possible, while the rest of the states are expected ways
+    in which a connection may be terminated.
+
+    *CT_FOREGROUND*/*CT_BACKGROUND* - an enum value that contains this text
+    reflects if the custom tab was in the foreground/background when the
+    connection was terminated.
+
+    *KEEP_ALIVE* - an enum value that contains this text reflects that the
+    EXTRA_KEEP_ALIVE intent extra was specified and that the custom tab binds to
+    the service provided by it in order to increase the priority of the client
+    app to foreground.
+
+    *LOW_MEMORY* - an enum value that contains this text reflects that the
+    system was low on memory when the connection was terminated. This does not
+    mean that this was indeed the reason for the connection being terminated,
+    but it might be a good indicator of it.
+
+    UNKNOWN - if this is logged then there is probably a bug in the code as we
+    have a state we can be in that we don't currently account for.
   </summary>
 </histogram>
 
 <histogram name="CustomTabs.ShareOptionLocation" enum="ShareOptionLocation"
-    expires_after="M105">
+    expires_after="M115">
   <owner>sophey@chromium.org</owner>
   <owner>src/components/send_tab_to_self/OWNERS</owner>
   <summary>
@@ -327,7 +548,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.WarmupStateOnLaunch" enum="WarmupStateOnLaunch"
-    expires_after="2022-03-13">
+    expires_after="2023-03-26">
   <owner>lizeb@chromium.org</owner>
   <summary>
     Recorded only on Android. Reports whether warmup() has been called when a
@@ -343,6 +564,177 @@ chromium-metrics-reviews@google.com.
   <summary>
     Android: When a CustomTabActivity creates its Tab, whether we use a
     prerendered WebContents, a spare renderer or create a new WebContents.
+  </summary>
+</histogram>
+
+<histogram name="TrustedWebActivity.ClearDataDialogOnClearAppDataAccepted"
+    enum="Boolean" expires_after="M114">
+  <owner>peconn@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Emits true if the user went to site settings from the dialog that is shown
+    after a Trusted Web Activity client app has had its data cleared.
+  </summary>
+</histogram>
+
+<histogram name="TrustedWebActivity.ClearDataDialogOnUninstallAccepted"
+    enum="Boolean" expires_after="M114">
+  <owner>peconn@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Emits true if the user went to site settings from the dialog that is shown
+    after a Trusted Web Activity client app has been uninstalled.
+  </summary>
+</histogram>
+
+<histogram name="TrustedWebActivity.DelegatedNotificationSmallIconFallback"
+    enum="TrustedWebActivityDelegatedNotificationSmallIconFallback"
+    expires_after="M114">
+  <owner>peconn@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Logs which kind of fallback for notification small icon was used for Trusted
+    Web Activity notification delegation.
+  </summary>
+</histogram>
+
+<histogram name="TrustedWebActivity.ExtraCommandSuccess.{command}"
+    enum="BooleanSuccess" expires_after="2022-11-23">
+  <owner>mvanouwerkerk@google.com</owner>
+  <owner>peconn@chromium.org</owner>
+  <owner>
+    src/chrome/android/java/src/org/chromium/chrome/browser/browserservices/OWNERS
+  </owner>
+  <summary>
+    Records whether the extra command {command} called from
+    TrustedWebActivityClient resulted in success or failure.
+  </summary>
+  <token key="command">
+    <variant name="checkNotificationPermission"/>
+    <variant name="getNotificationPermissionRequestPendingIntent"/>
+  </token>
+</histogram>
+
+<histogram name="TrustedWebActivity.LocationDelegationEnrolled" enum="Boolean"
+    expires_after="2023-06-30">
+  <owner>eirage@chromium.org</owner>
+  <owner>peconn@chromium.org</owner>
+  <summary>
+    When a site running in Truested Web Activity is accessing geolocation,
+    records whether the last tracked focused Trusted Web Activity client app
+    enrolled location delegation.
+  </summary>
+</histogram>
+
+<histogram name="TrustedWebActivity.LocationPermissionChanged"
+    enum="TrustedWebActivityPermissionChanged" expires_after="2023-06-30">
+  <owner>eirage@chromium.org</owner>
+  <owner>peconn@chromium.org</owner>
+  <summary>
+    When a Trusted Web Activity client app's location permission is changed,
+    record the previous state and new stase.
+  </summary>
+</histogram>
+
+<histogram name="TrustedWebActivity.LocationPermissionRequestIsGranted"
+    enum="Boolean" expires_after="2023-06-30">
+  <owner>eirage@chromium.org</owner>
+  <owner>peconn@chromium.org</owner>
+  <summary>
+    Records the boolean result (granted or not) from requesting a Trusted Web
+    Activity client app's location permission.
+  </summary>
+</histogram>
+
+<histogram name="TrustedWebActivity.LocationUpdateErrorCode"
+    enum="TrustedWebActivityLocationErrorCode" expires_after="2022-10-23">
+  <obsolete>
+    Deprecated 2022-09. no longer needed.
+  </obsolete>
+  <owner>eirage@chromium.org</owner>
+  <owner>peconn@chromium.org</owner>
+  <summary>
+    Records an error code when we get a new location update or location error
+    from the Trusted Web Activity client app. Record
+    &quot;LocationUpdateError.NONE&quot; (value = 0) if there is no error and
+    the geoposition is valid.
+  </summary>
+</histogram>
+
+<histogram name="TrustedWebActivity.Notification.PermissionRequestResult"
+    enum="ContentSetting" expires_after="2022-12-04">
+  <owner>mvanouwerkerk@chromium.org</owner>
+  <owner>peconn@chromium.org</owner>
+  <owner>
+    src/chrome/android/java/src/org/chromium/chrome/browser/browserservices/OWNERS
+  </owner>
+  <summary>
+    The result of a TWA notification permission request for the purpose of
+    notification delegation. This is logged when the
+    NotificationPermissionUpdater receives the result from the
+    TrustedWebActivityClient.
+  </summary>
+</histogram>
+
+<histogram name="TrustedWebActivity.QualityEnforcementViolation"
+    enum="TrustedWebActivityQualityEnforcementViolationType"
+    expires_after="2023-06-30">
+  <owner>eirage@chromium.org</owner>
+  <owner>peconn@chromium.org</owner>
+  <summary>
+    When Trusted Web Activity launches or navigates to a site that violate the
+    quality criteria, records the violation type.
+  </summary>
+</histogram>
+
+<histogram name="TrustedWebActivity.QualityEnforcementViolation.Crashed"
+    enum="TrustedWebActivityQualityEnforcementViolationType"
+    expires_after="M104">
+  <owner>eirage@chromium.org</owner>
+  <owner>peconn@chromium.org</owner>
+  <summary>
+    When Trusted Web Activity launches or navigates to a site that violate the
+    quality criteria, and the CCT will be closed, records the violation type.
+
+    This is similar to TrustedWebActivity.QualityEnforcementViolation but only
+    records when the violation will close the CCT.
+  </summary>
+</histogram>
+
+<histogram name="TrustedWebActivity.ShareTargetRequest"
+    enum="WebShareTargetMethod" expires_after="M114">
+  <owner>peconn@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>Recorded when data is shared via a Trusted Web Activity.</summary>
+</histogram>
+
+<histogram name="TrustedWebActivity.SplashScreenShown" enum="Boolean"
+    expires_after="M114">
+  <owner>peconn@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Records whether or not a splash screen has been shown when launching a
+    Trusted Web Activity.
+  </summary>
+</histogram>
+
+<histogram name="TrustedWebActivity.TimeInVerifiedOrigin.V2" units="ms"
+    expires_after="M114">
+  <owner>peconn@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Time spent in a verified origin until navigating to an unverified one or
+    pausing the Trusted Web Activity.
+  </summary>
+</histogram>
+
+<histogram name="TrustedWebActivity.TimeOutOfVerifiedOrigin.V2" units="ms"
+    expires_after="M114">
+  <owner>peconn@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Time spent out of verified origins until navigating back to a verified one
+    or pausing the Trusted Web Activity.
   </summary>
 </histogram>
 

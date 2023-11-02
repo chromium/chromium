@@ -102,11 +102,11 @@ ImageDataBuffer::ImageDataBuffer(scoped_refptr<StaticBitmapImage> image) {
     MSAN_CHECK_MEM_IS_INITIALIZED(pixmap_.addr(), pixmap_.computeByteSize());
   }
   is_valid_ = true;
-  size_ = IntSize(image->width(), image->height());
+  size_ = gfx::Size(image->width(), image->height());
 }
 
 ImageDataBuffer::ImageDataBuffer(const SkPixmap& pixmap)
-    : pixmap_(pixmap), size_(IntSize(pixmap.width(), pixmap.height())) {
+    : pixmap_(pixmap), size_(gfx::Size(pixmap.width(), pixmap.height())) {
   is_valid_ = pixmap_.addr() && !size_.IsEmpty();
 }
 

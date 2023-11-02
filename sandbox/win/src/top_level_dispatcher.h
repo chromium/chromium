@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "sandbox/win/src/crosscall_server.h"
 #include "sandbox/win/src/interception.h"
 #include "sandbox/win/src/ipc_tags.h"
@@ -38,16 +38,13 @@ class TopLevelDispatcher : public Dispatcher {
   // Returns a dispatcher from ipc_targets_.
   Dispatcher* GetDispatcher(IpcTag ipc_tag);
 
-  PolicyBase* policy_;
+  raw_ptr<PolicyBase> policy_;
   std::unique_ptr<Dispatcher> filesystem_dispatcher_;
   std::unique_ptr<Dispatcher> named_pipe_dispatcher_;
   std::unique_ptr<Dispatcher> thread_process_dispatcher_;
-  std::unique_ptr<Dispatcher> sync_dispatcher_;
-  std::unique_ptr<Dispatcher> registry_dispatcher_;
   std::unique_ptr<Dispatcher> handle_dispatcher_;
   std::unique_ptr<Dispatcher> process_mitigations_win32k_dispatcher_;
   std::unique_ptr<Dispatcher> signed_dispatcher_;
-  std::unique_ptr<Dispatcher> socket_dispatcher_;
   Dispatcher* ipc_targets_[kMaxIpcTag];
 };
 

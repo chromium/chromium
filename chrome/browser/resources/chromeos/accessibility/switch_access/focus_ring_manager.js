@@ -1,6 +1,8 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+import {RectUtil} from '../common/rect_util.js';
 
 import {MenuManager} from './menu_manager.js';
 import {SAChildNode, SARootNode} from './nodes/switch_access_node.js';
@@ -22,7 +24,8 @@ export class FocusRingManager {
 
     /** @private {!Map<SAConstants.Focus.ID, SAChildNode>} */
     this.ringNodesForTesting_ = new Map([
-      [SAConstants.Focus.ID.PRIMARY, null], [SAConstants.Focus.ID.PREVIEW, null]
+      [SAConstants.Focus.ID.PRIMARY, null],
+      [SAConstants.Focus.ID.PREVIEW, null],
     ]);
 
     /**
@@ -55,44 +58,7 @@ export class FocusRingManager {
               'a valid CSS color string.'));
       return;
     }
-    manager.rings_.forEach((ring) => ring.color = color);
-  }
-
-  /**
-   * Set state of recording macro and switch colors of the focus rings.
-   * @param {boolean} isRecording
-   */
-  static setIsRecording(isRecording) {
-    // If the feature flag is not enabled, escape.
-    if (!SwitchAccess.instance.multistepAutomationFeaturesEnabled()) {
-      return;
-    }
-
-    const manager = FocusRingManager.instance;
-
-    if (isRecording) {
-      manager.rings_.get(SAConstants.Focus.ID.PRIMARY).color =
-          SAConstants.Focus.PRIMARY_COLOR_RECORDING_MACRO;
-      manager.rings_.get(SAConstants.Focus.ID.PRIMARY).secondaryColor =
-          SAConstants.Focus.OUTER_COLOR_RECORDING_MACRO;
-
-      manager.rings_.get(SAConstants.Focus.ID.PREVIEW).color =
-          SAConstants.Focus.PREVIEW_COLOR_RECORDING_MACRO;
-      manager.rings_.get(SAConstants.Focus.ID.PREVIEW).secondaryColor =
-          SAConstants.Focus.OUTER_COLOR_RECORDING_MACRO;
-    } else {
-      manager.rings_.get(SAConstants.Focus.ID.PRIMARY).color =
-          SAConstants.Focus.PRIMARY_COLOR;
-      manager.rings_.get(SAConstants.Focus.ID.PRIMARY).secondaryColor =
-          SAConstants.Focus.OUTER_COLOR;
-
-      manager.rings_.get(SAConstants.Focus.ID.PREVIEW).color =
-          SAConstants.Focus.PREVIEW_COLOR;
-      manager.rings_.get(SAConstants.Focus.ID.PREVIEW).secondaryColor =
-          SAConstants.Focus.OUTER_COLOR;
-    }
-
-    manager.updateFocusRings_(null, null);
+    manager.rings_.forEach(ring => ring.color = color);
   }
 
   /**
@@ -161,7 +127,7 @@ export class FocusRingManager {
   /** Clears all focus rings. */
   static clearAll() {
     const manager = FocusRingManager.instance;
-    manager.rings_.forEach((ring) => {
+    manager.rings_.forEach(ring => {
       ring.rects = [];
     });
     manager.updateFocusRings_(null, null);
@@ -190,7 +156,7 @@ export class FocusRingManager {
       rects: [],
       type: chrome.accessibilityPrivate.FocusType.SOLID,
       color: SAConstants.Focus.PRIMARY_COLOR,
-      secondaryColor: SAConstants.Focus.OUTER_COLOR
+      secondaryColor: SAConstants.Focus.OUTER_COLOR,
     };
 
     const previewRing = {
@@ -198,12 +164,12 @@ export class FocusRingManager {
       rects: [],
       type: chrome.accessibilityPrivate.FocusType.DASHED,
       color: SAConstants.Focus.PREVIEW_COLOR,
-      secondaryColor: SAConstants.Focus.OUTER_COLOR
+      secondaryColor: SAConstants.Focus.OUTER_COLOR,
     };
 
     return new Map([
       [SAConstants.Focus.ID.PRIMARY, primaryRing],
-      [SAConstants.Focus.ID.PREVIEW, previewRing]
+      [SAConstants.Focus.ID.PREVIEW, previewRing],
     ]);
   }
 
@@ -222,7 +188,7 @@ export class FocusRingManager {
     }
 
     const focusRings = [];
-    this.rings_.forEach((ring) => focusRings.push(ring));
+    this.rings_.forEach(ring => focusRings.push(ring));
     chrome.accessibilityPrivate.setFocusRings(focusRings);
 
     // Keep track of the nodes associated with each focus ring for testing

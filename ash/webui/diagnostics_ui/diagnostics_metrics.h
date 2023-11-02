@@ -1,11 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef ASH_WEBUI_DIAGNOSTICS_UI_DIAGNOSTICS_METRICS_H_
 #define ASH_WEBUI_DIAGNOSTICS_UI_DIAGNOSTICS_METRICS_H_
 
-#include "chromeos/components/feature_usage/feature_usage_metrics.h"
+#include "chromeos/ash/components/feature_usage/feature_usage_metrics.h"
 
 namespace ash {
 namespace diagnostics {

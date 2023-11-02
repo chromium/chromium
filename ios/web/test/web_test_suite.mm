@@ -1,18 +1,18 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/web/public/test/web_test_suite.h"
+#import "ios/web/public/test/web_test_suite.h"
 
-#include "base/check.h"
-#include "base/memory/ptr_util.h"
-#include "base/path_service.h"
-#include "components/crash/core/common/objc_zombie.h"
-#include "ios/testing/verify_custom_webkit.h"
-#include "ios/web/public/navigation/url_schemes.h"
+#import "base/check.h"
+#import "base/memory/ptr_util.h"
+#import "base/path_service.h"
+#import "components/crash/core/common/objc_zombie.h"
+#import "ios/testing/verify_custom_webkit.h"
+#import "ios/web/public/navigation/url_schemes.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/resource/resource_bundle.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "ui/base/resource/resource_bundle.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

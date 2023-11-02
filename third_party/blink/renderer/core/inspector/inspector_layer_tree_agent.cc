@@ -49,7 +49,6 @@
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/graphics/compositing_reasons.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/graphics/picture_snapshot.h"
@@ -150,7 +149,8 @@ BuildStickyInfoForLayer(const cc::Layer* root, const cc::Layer* layer) {
   const cc::StickyPositionNodeData* sticky_data =
       layer->layer_tree_host()
           ->property_trees()
-          ->transform_tree.GetStickyPositionData(layer->transform_tree_index());
+          ->transform_tree()
+          .GetStickyPositionData(layer->transform_tree_index());
   if (!sticky_data)
     return nullptr;
   const cc::StickyPositionConstraint& constraints = sticky_data->constraints;
@@ -192,7 +192,7 @@ static std::unique_ptr<protocol::LayerTree::Layer> BuildObjectForLayer(
   // because the non-DrawsContent root layer is the parent of all DrawsContent
   // layers. We have to cheat the front-end by setting drawsContent to true for
   // the root layer.
-  bool draws_content = root == layer || layer->DrawsContent();
+  bool draws_content = root == layer || layer->draws_content();
 
   // TODO(pdr): Now that BlinkGenPropertyTrees has launched, we can remove
   // setOffsetX and setOffsetY.
@@ -219,11 +219,10 @@ static std::unique_ptr<protocol::LayerTree::Layer> BuildObjectForLayer(
   gfx::Transform transform = layer->ScreenSpaceTransform();
 
   if (!transform.IsIdentity()) {
-    auto transform_array = std::make_unique<protocol::Array<double>>();
-    for (int col = 0; col < 4; ++col) {
-      for (int row = 0; row < 4; ++row)
-        transform_array->emplace_back(transform.matrix().get(row, col));
-    }
+    auto transform_array = std::make_unique<protocol::Array<double>>(16);
+    // TODO(1359528): This conversion will disappear when we merge
+    // TransformationMatrix and gfx::Transform.
+    TransformationMatrix(transform).GetColMajor(transform_array->data());
     layer_object->setTransform(std::move(transform_array));
     // FIXME: rename these to setTransformOrigin*
     // TODO(pdr): Now that BlinkGenPropertyTrees has launched, we can remove
@@ -389,7 +388,7 @@ Response InspectorLayerTreeAgent::makeSnapshot(const String& layer_id,
   Response response = LayerById(layer_id, layer);
   if (!response.IsSuccess())
     return response;
-  if (!layer->DrawsContent())
+  if (!layer->draws_content())
     return Response::ServerError("Layer does not draw content");
 
   auto picture = layer->GetPicture();
@@ -463,15 +462,15 @@ Response InspectorLayerTreeAgent::replaySnapshot(const String& snapshot_id,
     return response;
   auto png_data = snapshot->Replay(from_step.fromMaybe(0), to_step.fromMaybe(0),
                                    scale.fromMaybe(1.0));
-  if (png_data.IsEmpty())
+  if (png_data.empty())
     return Response::ServerError("Image encoding failed");
   *data_url = "data:image/png;base64," + Base64Encode(png_data);
   return Response::Success();
 }
 
-static void ParseRect(protocol::DOM::Rect* object, FloatRect* rect) {
-  *rect = FloatRect(object->getX(), object->getY(), object->getWidth(),
-                    object->getHeight());
+static void ParseRect(protocol::DOM::Rect* object, gfx::RectF* rect) {
+  *rect = gfx::RectF(object->getX(), object->getY(), object->getWidth(),
+                     object->getHeight());
 }
 
 Response InspectorLayerTreeAgent::profileSnapshot(
@@ -484,7 +483,7 @@ Response InspectorLayerTreeAgent::profileSnapshot(
   Response response = GetSnapshotById(snapshot_id, snapshot);
   if (!response.IsSuccess())
     return response;
-  FloatRect rect;
+  gfx::RectF rect;
   if (clip_rect.isJust())
     ParseRect(clip_rect.fromJust(), &rect);
   auto timings = snapshot->Profile(min_repeat_count.fromMaybe(1),

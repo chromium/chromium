@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,16 +6,25 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include "base/logging.h"
+
 #include "base/mac/foundation_util.h"
+#include "base/no_destructor.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_range.h"
+#include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/platform/ax_platform_node_mac.h"
 #include "ui/accessibility/platform/ax_private_attributes_mac.h"
+#include "ui/accessibility/platform/ax_private_roles_mac.h"
+#include "ui/accessibility/platform/ax_utils_mac.h"
 #include "ui/base/l10n/l10n_util.h"
 #import "ui/gfx/mac/coordinate_conversion.h"
-#include "ui/strings/grit/ui_strings.h"
+#include "ui/strings/grit/ax_strings.h"
+
+using AXRange = ui::AXPlatformNodeDelegate::AXRange;
 
 namespace ui {
 
@@ -32,225 +41,6 @@ static int kLiveRegionDebounceMillis = 20;
 using RoleMap = std::map<ax::mojom::Role, NSString*>;
 using EventMap = std::map<ax::mojom::Event, NSString*>;
 using ActionList = std::vector<std::pair<ax::mojom::Action, NSString*>>;
-
-RoleMap BuildRoleMap() {
-  // TODO(accessibility) Are any missing? Consider switch statement so that
-  // compiler doesn't allow missing roles;
-  const RoleMap::value_type roles[] = {
-      {ax::mojom::Role::kAbbr, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kAlert, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kAlertDialog, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kApplication, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kArticle, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kAudio, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kBanner, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kBlockquote, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kButton, NSAccessibilityButtonRole},
-      {ax::mojom::Role::kCanvas, NSAccessibilityImageRole},
-      {ax::mojom::Role::kCaption, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kCell, @"AXCell"},
-      {ax::mojom::Role::kCheckBox, NSAccessibilityCheckBoxRole},
-      {ax::mojom::Role::kCode, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kColorWell, NSAccessibilityColorWellRole},
-      {ax::mojom::Role::kColumn, NSAccessibilityColumnRole},
-      {ax::mojom::Role::kColumnHeader, @"AXCell"},
-      {ax::mojom::Role::kComboBoxGrouping, NSAccessibilityComboBoxRole},
-      {ax::mojom::Role::kComboBoxMenuButton, NSAccessibilityComboBoxRole},
-      {ax::mojom::Role::kComment, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kComplementary, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kContentDeletion, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kContentInsertion, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kContentInfo, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kDate, @"AXDateField"},
-      {ax::mojom::Role::kDateTime, @"AXDateField"},
-      {ax::mojom::Role::kDefinition, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kDescriptionListDetail, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kDescriptionList, NSAccessibilityListRole},
-      {ax::mojom::Role::kDescriptionListTerm, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kDialog, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kDetails, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kDirectory, NSAccessibilityListRole},
-      // If Mac supports AXExpandedChanged event with
-      // NSAccessibilityDisclosureTriangleRole, We should update
-      // ax::mojom::Role::kDisclosureTriangle mapping to
-      // NSAccessibilityDisclosureTriangleRole. http://crbug.com/558324
-      {ax::mojom::Role::kDisclosureTriangle, NSAccessibilityButtonRole},
-      {ax::mojom::Role::kDocAbstract, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kDocAcknowledgments, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kDocAfterword, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kDocAppendix, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kDocBackLink, NSAccessibilityLinkRole},
-      {ax::mojom::Role::kDocBiblioEntry, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kDocBibliography, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kDocBiblioRef, NSAccessibilityLinkRole},
-      {ax::mojom::Role::kDocChapter, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kDocColophon, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kDocConclusion, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kDocCover, NSAccessibilityImageRole},
-      {ax::mojom::Role::kDocCredit, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kDocCredits, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kDocDedication, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kDocEndnote, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kDocEndnotes, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kDocEpigraph, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kDocEpilogue, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kDocErrata, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kDocExample, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kDocFootnote, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kDocForeword, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kDocGlossary, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kDocGlossRef, NSAccessibilityLinkRole},
-      {ax::mojom::Role::kDocIndex, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kDocIntroduction, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kDocNoteRef, NSAccessibilityLinkRole},
-      {ax::mojom::Role::kDocNotice, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kDocPageBreak, NSAccessibilitySplitterRole},
-      {ax::mojom::Role::kDocPageFooter, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kDocPageHeader, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kDocPageList, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kDocPart, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kDocPreface, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kDocPrologue, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kDocPullquote, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kDocQna, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kDocSubtitle, @"AXHeading"},
-      {ax::mojom::Role::kDocTip, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kDocToc, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kDocument, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kEmbeddedObject, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kEmphasis, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kFeed, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kFigcaption, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kFigure, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kFooter, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kFooterAsNonLandmark, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kForm, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kGenericContainer, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kGraphicsDocument, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kGraphicsObject, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kGraphicsSymbol, NSAccessibilityImageRole},
-      // Should be NSAccessibilityGridRole but VoiceOver treating it like
-      // a list as of 10.12.6, so following WebKit and using table role:
-      {ax::mojom::Role::kGrid, NSAccessibilityTableRole},  // crbug.com/753925
-      {ax::mojom::Role::kGroup, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kHeader, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kHeaderAsNonLandmark, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kHeading, @"AXHeading"},
-      {ax::mojom::Role::kIframe, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kIframePresentational, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kImage, NSAccessibilityImageRole},
-      {ax::mojom::Role::kInputTime, @"AXTimeField"},
-      {ax::mojom::Role::kLabelText, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kLayoutTable, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kLayoutTableCell, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kLayoutTableRow, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kLegend, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kLineBreak, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kLink, NSAccessibilityLinkRole},
-      {ax::mojom::Role::kList, NSAccessibilityListRole},
-      {ax::mojom::Role::kListBox, NSAccessibilityListRole},
-      {ax::mojom::Role::kListBoxOption, NSAccessibilityStaticTextRole},
-      {ax::mojom::Role::kListItem, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kListMarker, @"AXListMarker"},
-      {ax::mojom::Role::kLog, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kMain, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kMark, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kMarquee, NSAccessibilityGroupRole},
-      // https://w3c.github.io/mathml-aam/#mathml-element-mappings
-      {ax::mojom::Role::kMath, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kMathMLFraction, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kMathMLIdentifier, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kMathMLMath, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kMathMLMultiscripts, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kMathMLNoneScript, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kMathMLNumber, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kMathMLOperator, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kMathMLOver, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kMathMLPrescriptDelimiter, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kMathMLRoot, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kMathMLRow, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kMathMLSquareRoot, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kMathMLStringLiteral, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kMathMLSub, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kMathMLSubSup, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kMathMLSup, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kMathMLTable, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kMathMLTableCell, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kMathMLTableRow, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kMathMLText, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kMathMLUnder, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kMathMLUnderOver, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kMenu, NSAccessibilityMenuRole},
-      {ax::mojom::Role::kMenuBar, NSAccessibilityMenuBarRole},
-      {ax::mojom::Role::kMenuItem, NSAccessibilityMenuItemRole},
-      {ax::mojom::Role::kMenuItemCheckBox, NSAccessibilityMenuItemRole},
-      {ax::mojom::Role::kMenuItemRadio, NSAccessibilityMenuItemRole},
-      {ax::mojom::Role::kMenuListOption, NSAccessibilityMenuItemRole},
-      {ax::mojom::Role::kMenuListPopup, NSAccessibilityMenuRole},
-      {ax::mojom::Role::kMeter, NSAccessibilityLevelIndicatorRole},
-      {ax::mojom::Role::kNavigation, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kNone, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kNote, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kParagraph, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kPdfActionableHighlight, NSAccessibilityButtonRole},
-      {ax::mojom::Role::kPdfRoot, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kPluginObject, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kPopUpButton, NSAccessibilityPopUpButtonRole},
-      {ax::mojom::Role::kPortal, NSAccessibilityButtonRole},
-      {ax::mojom::Role::kPre, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kProgressIndicator,
-       NSAccessibilityProgressIndicatorRole},
-      {ax::mojom::Role::kRadioButton, NSAccessibilityRadioButtonRole},
-      {ax::mojom::Role::kRadioGroup, NSAccessibilityRadioGroupRole},
-      {ax::mojom::Role::kRegion, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kRootWebArea, @"AXWebArea"},
-      {ax::mojom::Role::kRow, NSAccessibilityRowRole},
-      {ax::mojom::Role::kRowGroup, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kRowHeader, @"AXCell"},
-      {ax::mojom::Role::kRuby, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kRubyAnnotation, NSAccessibilityUnknownRole},
-      {ax::mojom::Role::kScrollBar, NSAccessibilityScrollBarRole},
-      {ax::mojom::Role::kSearch, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kSearchBox, NSAccessibilityTextFieldRole},
-      {ax::mojom::Role::kSection, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kSlider, NSAccessibilitySliderRole},
-      {ax::mojom::Role::kSpinButton, NSAccessibilityIncrementorRole},
-      {ax::mojom::Role::kSplitter, NSAccessibilitySplitterRole},
-      {ax::mojom::Role::kStaticText, NSAccessibilityStaticTextRole},
-      {ax::mojom::Role::kStatus, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kSubscript, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kSuggestion, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kSuperscript, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kSvgRoot, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kSwitch, NSAccessibilityCheckBoxRole},
-      {ax::mojom::Role::kStrong, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kTab, NSAccessibilityRadioButtonRole},
-      {ax::mojom::Role::kTable, NSAccessibilityTableRole},
-      {ax::mojom::Role::kTableHeaderContainer, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kTabList, NSAccessibilityTabGroupRole},
-      {ax::mojom::Role::kTabPanel, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kTerm, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kTextField, NSAccessibilityTextFieldRole},
-      {ax::mojom::Role::kTextFieldWithComboBox, NSAccessibilityComboBoxRole},
-      {ax::mojom::Role::kTime, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kTimer, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kTitleBar, NSAccessibilityStaticTextRole},
-      {ax::mojom::Role::kToggleButton, NSAccessibilityCheckBoxRole},
-      {ax::mojom::Role::kToolbar, NSAccessibilityToolbarRole},
-      {ax::mojom::Role::kTooltip, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kTree, NSAccessibilityOutlineRole},
-      {ax::mojom::Role::kTreeGrid, NSAccessibilityTableRole},
-      {ax::mojom::Role::kTreeItem, NSAccessibilityRowRole},
-      {ax::mojom::Role::kVideo, NSAccessibilityGroupRole},
-      // Use the group role as the BrowserNativeWidgetWindow already provides
-      // a kWindow role, and having extra window roles, which are treated
-      // specially by screen readers, can break their ability to find the
-      // content window. See http://crbug.com/875843 for more information.
-      {ax::mojom::Role::kWindow, NSAccessibilityGroupRole},
-  };
-
-  return RoleMap(begin(roles), end(roles));
-}
 
 RoleMap BuildSubroleMap() {
   const RoleMap::value_type subroles[] = {
@@ -312,6 +102,7 @@ RoleMap BuildSubroleMap() {
       {ax::mojom::Role::kSubscript, @"AXSubscriptStyleGroup"},
       {ax::mojom::Role::kSuperscript, @"AXSuperscriptStyleGroup"},
       {ax::mojom::Role::kSwitch, @"AXSwitch"},
+      {ax::mojom::Role::kTab, @"AXTabButton"},
       {ax::mojom::Role::kTabPanel, @"AXTabPanel"},
       {ax::mojom::Role::kTerm, @"AXTerm"},
       {ax::mojom::Role::kTime, @"AXTimeGroup"},
@@ -397,7 +188,8 @@ bool HasImplicitAction(const ui::AXPlatformNodeBase& node,
 bool AlsoUseShowMenuActionForDefaultAction(const ui::AXPlatformNodeBase& node) {
   return HasImplicitAction(node, ax::mojom::Action::kDoDefault) &&
          !node.HasAction(ax::mojom::Action::kShowContextMenu) &&
-         node.GetRole() == ax::mojom::Role::kPopUpButton;
+         (node.GetRole() == ax::mojom::Role::kPopUpButton ||
+          node.GetRole() == ax::mojom::Role::kComboBoxSelect);
 }
 
 // Check whether |selector| is an accessibility setter. This is a heuristic but
@@ -415,8 +207,16 @@ bool IsAXSetter(SEL selector) {
 // Returns AXValue, or nil if AXValue isn't an NSString.
 - (NSString*)getAXValueAsString;
 
+// Returns this node's internal role, i.e. the one that is stored in
+// the internal accessibility tree as opposed to the platform tree.
+- (ax::mojom::Role)internalRole;
+
 // Returns the native wrapper for the given node id.
 - (AXPlatformNodeCocoa*)fromNodeID:(ui::AXNodeID)id;
+
+// Returns true if this object is an image.
+- (BOOL)isImage;
+
 @end
 
 @implementation AXPlatformNodeCocoa {
@@ -426,14 +226,411 @@ bool IsAXSetter(SEL selector) {
 
 @synthesize node = _node;
 
+- (ui::AXPlatformNodeDelegate*)nodeDelegate {
+  return _node ? _node->GetDelegate() : nil;
+}
+
 - (BOOL)instanceActive {
   return _node != nullptr;
 }
 
+- (BOOL)isIncludedInPlatformTree {
+  // TODO(accessibility): Do we really need to have invisible objects in
+  // the platform tree?
+  return [self instanceActive] &&
+         ![[self AXRole] isEqualToString:NSAccessibilityUnknownRole] &&
+         !_node->IsInvisibleOrIgnored();
+}
+
+- (id)titleUIElement {
+  // True only if it's a control, if there's a single label, and the label has
+  // nonempty text.
+
+  // VoiceOver ignores TitleUIElement if the element isn't a control.
+  if (!ui::IsControl(_node->GetRole()))
+    return nil;
+
+  if (!_node->HasNameFromOtherElement())
+    return nil;
+
+  std::vector<int32_t> labelledby_ids =
+      _node->GetIntListAttribute(ax::mojom::IntListAttribute::kLabelledbyIds);
+  if (labelledby_ids.size() != 1)
+    return nil;
+
+  ui::AXPlatformNode* label =
+      _node->GetDelegate()->GetFromNodeID(labelledby_ids[0]);
+  if (!label)
+    return nil;
+
+  // No title UI element if the label's name is empty.
+  std::string labelName = label->GetDelegate()->GetName();
+  if (labelName.empty())
+    return nil;
+
+  return label->GetNativeViewAccessible();
+}
+
+- (BOOL)isNameFromLabel {
+  // Image annotations are not visible text, so they should be exposed
+  // as a description and not a title.
+  switch (_node->GetData().GetImageAnnotationStatus()) {
+    case ax::mojom::ImageAnnotationStatus::kEligibleForAnnotation:
+    case ax::mojom::ImageAnnotationStatus::kAnnotationPending:
+    case ax::mojom::ImageAnnotationStatus::kAnnotationEmpty:
+    case ax::mojom::ImageAnnotationStatus::kAnnotationAdult:
+    case ax::mojom::ImageAnnotationStatus::kAnnotationProcessFailed:
+    case ax::mojom::ImageAnnotationStatus::kAnnotationSucceeded:
+      return true;
+
+    case ax::mojom::ImageAnnotationStatus::kNone:
+    case ax::mojom::ImageAnnotationStatus::kWillNotAnnotateDueToScheme:
+    case ax::mojom::ImageAnnotationStatus::kIneligibleForAnnotation:
+    case ax::mojom::ImageAnnotationStatus::kSilentlyEligibleForAnnotation:
+      break;
+  }
+
+  // No label for windows or native dialogs.
+  ax::mojom::Role role = _node->GetRole();
+  if (ui::IsWindow(role) ||
+      (ui::IsDialog(role) && !_node->GetDelegate()->IsWebContent()))
+    return false;
+
+  // VoiceOver computes the wrong description for a link.
+  if (ui::IsLink(role))
+    return true;
+
+  // VoiceOver will not read the label of these roles unless it is
+  // exposed in the description instead of the title.
+  switch (role) {
+    case ax::mojom::Role::kGenericContainer:
+    case ax::mojom::Role::kGroup:
+    case ax::mojom::Role::kRadioGroup:
+    case ax::mojom::Role::kTabPanel:
+      return true;
+    default:
+      break;
+  }
+
+  // On Mac OS X, the accessible name of an object is exposed as its
+  // title if it comes from visible text, and as its description
+  // otherwise, but never both.
+  // Note: a placeholder is often visible text, but since it aids in data entry
+  // it is similar to accessibilityValue, and thus cannot be exposed either in
+  // accessibilityTitle or in accessibilityLabel.
+  ax::mojom::NameFrom nameFrom = _node->GetNameFrom();
+  if (nameFrom == ax::mojom::NameFrom::kCaption ||
+      nameFrom == ax::mojom::NameFrom::kContents ||
+      nameFrom == ax::mojom::NameFrom::kPlaceholder ||
+      nameFrom == ax::mojom::NameFrom::kRelatedElement ||
+      nameFrom == ax::mojom::NameFrom::kValue) {
+    return false;
+  }
+
+  return true;
+}
+
 + (NSString*)nativeRoleFromAXRole:(ax::mojom::Role)role {
-  static const base::NoDestructor<RoleMap> role_map(BuildRoleMap());
-  RoleMap::const_iterator it = role_map->find(role);
-  return it != role_map->end() ? it->second : NSAccessibilityUnknownRole;
+  switch (role) {
+    case ax::mojom::Role::kAbbr:
+    case ax::mojom::Role::kAlert:
+    case ax::mojom::Role::kAlertDialog:
+    case ax::mojom::Role::kApplication:
+    case ax::mojom::Role::kArticle:
+    case ax::mojom::Role::kAudio:
+    case ax::mojom::Role::kBanner:
+    case ax::mojom::Role::kBlockquote:
+    case ax::mojom::Role::kCaption:
+    case ax::mojom::Role::kClient:
+    case ax::mojom::Role::kCode:
+    case ax::mojom::Role::kComment:
+    case ax::mojom::Role::kComplementary:
+    case ax::mojom::Role::kContentDeletion:
+    case ax::mojom::Role::kContentInsertion:
+    case ax::mojom::Role::kContentInfo:
+    case ax::mojom::Role::kDefinition:
+    case ax::mojom::Role::kDescriptionListDetail:
+    case ax::mojom::Role::kDescriptionListTerm:
+    case ax::mojom::Role::kDesktop:
+    case ax::mojom::Role::kDialog:
+    case ax::mojom::Role::kDetails:
+    case ax::mojom::Role::kDocAbstract:
+    case ax::mojom::Role::kDocAcknowledgments:
+    case ax::mojom::Role::kDocAfterword:
+    case ax::mojom::Role::kDocAppendix:
+    case ax::mojom::Role::kDocBiblioEntry:
+    case ax::mojom::Role::kDocBibliography:
+    case ax::mojom::Role::kDocChapter:
+    case ax::mojom::Role::kDocColophon:
+    case ax::mojom::Role::kDocConclusion:
+    case ax::mojom::Role::kDocCredit:
+    case ax::mojom::Role::kDocCredits:
+    case ax::mojom::Role::kDocDedication:
+    case ax::mojom::Role::kDocEndnote:
+    case ax::mojom::Role::kDocEndnotes:
+    case ax::mojom::Role::kDocEpigraph:
+    case ax::mojom::Role::kDocEpilogue:
+    case ax::mojom::Role::kDocErrata:
+    case ax::mojom::Role::kDocExample:
+    case ax::mojom::Role::kDocFootnote:
+    case ax::mojom::Role::kDocForeword:
+    case ax::mojom::Role::kDocGlossary:
+    case ax::mojom::Role::kDocIndex:
+    case ax::mojom::Role::kDocIntroduction:
+    case ax::mojom::Role::kDocNotice:
+    case ax::mojom::Role::kDocPageFooter:
+    case ax::mojom::Role::kDocPageHeader:
+    case ax::mojom::Role::kDocPageList:
+    case ax::mojom::Role::kDocPart:
+    case ax::mojom::Role::kDocPreface:
+    case ax::mojom::Role::kDocPrologue:
+    case ax::mojom::Role::kDocPullquote:
+    case ax::mojom::Role::kDocQna:
+    case ax::mojom::Role::kDocTip:
+    case ax::mojom::Role::kDocToc:
+    case ax::mojom::Role::kDocument:
+    case ax::mojom::Role::kEmbeddedObject:
+    case ax::mojom::Role::kEmphasis:
+    case ax::mojom::Role::kFeed:
+    case ax::mojom::Role::kFigcaption:
+    case ax::mojom::Role::kFigure:
+    case ax::mojom::Role::kFooter:
+    case ax::mojom::Role::kFooterAsNonLandmark:
+    case ax::mojom::Role::kForm:
+    case ax::mojom::Role::kGenericContainer:
+    case ax::mojom::Role::kGraphicsDocument:
+    case ax::mojom::Role::kGraphicsObject:
+    case ax::mojom::Role::kGroup:
+    case ax::mojom::Role::kHeader:
+    case ax::mojom::Role::kHeaderAsNonLandmark:
+    case ax::mojom::Role::kIframe:
+    case ax::mojom::Role::kIframePresentational:
+    case ax::mojom::Role::kLabelText:
+    case ax::mojom::Role::kLayoutTable:
+    case ax::mojom::Role::kLayoutTableCell:
+    case ax::mojom::Role::kLayoutTableRow:
+    case ax::mojom::Role::kLegend:
+    case ax::mojom::Role::kLineBreak:
+    case ax::mojom::Role::kListItem:
+    case ax::mojom::Role::kLog:
+    case ax::mojom::Role::kMain:
+    case ax::mojom::Role::kMark:
+    case ax::mojom::Role::kMarquee:
+    case ax::mojom::Role::kMath:
+    case ax::mojom::Role::kMathMLFraction:
+    case ax::mojom::Role::kMathMLIdentifier:
+    case ax::mojom::Role::kMathMLMath:
+    case ax::mojom::Role::kMathMLMultiscripts:
+    case ax::mojom::Role::kMathMLNoneScript:
+    case ax::mojom::Role::kMathMLNumber:
+    case ax::mojom::Role::kMathMLOperator:
+    case ax::mojom::Role::kMathMLOver:
+    case ax::mojom::Role::kMathMLPrescriptDelimiter:
+    case ax::mojom::Role::kMathMLRoot:
+    case ax::mojom::Role::kMathMLRow:
+    case ax::mojom::Role::kMathMLSquareRoot:
+    case ax::mojom::Role::kMathMLStringLiteral:
+    case ax::mojom::Role::kMathMLSub:
+    case ax::mojom::Role::kMathMLSubSup:
+    case ax::mojom::Role::kMathMLSup:
+    case ax::mojom::Role::kMathMLTable:
+    case ax::mojom::Role::kMathMLTableCell:
+    case ax::mojom::Role::kMathMLTableRow:
+    case ax::mojom::Role::kMathMLText:
+    case ax::mojom::Role::kMathMLUnder:
+    case ax::mojom::Role::kMathMLUnderOver:
+    case ax::mojom::Role::kNavigation:
+    case ax::mojom::Role::kNone:
+    case ax::mojom::Role::kNote:
+    case ax::mojom::Role::kPane:
+    case ax::mojom::Role::kParagraph:
+    case ax::mojom::Role::kPdfRoot:
+    case ax::mojom::Role::kPluginObject:
+    case ax::mojom::Role::kPre:
+    case ax::mojom::Role::kRegion:
+    case ax::mojom::Role::kRowGroup:
+    case ax::mojom::Role::kRuby:
+    case ax::mojom::Role::kSearch:
+    case ax::mojom::Role::kSection:
+    case ax::mojom::Role::kStatus:
+    case ax::mojom::Role::kSubscript:
+    case ax::mojom::Role::kSuggestion:
+    case ax::mojom::Role::kSuperscript:
+      return NSAccessibilityGroupRole;
+    case ax::mojom::Role::kSvgRoot:
+      return NSAccessibilityImageRole;
+    case ax::mojom::Role::kStrong:
+    case ax::mojom::Role::kTableHeaderContainer:
+    case ax::mojom::Role::kTabPanel:
+    case ax::mojom::Role::kTerm:
+    case ax::mojom::Role::kTime:
+    case ax::mojom::Role::kTimer:
+    case ax::mojom::Role::kTooltip:
+    case ax::mojom::Role::kVideo:
+    case ax::mojom::Role::kWebView:
+      return NSAccessibilityGroupRole;
+    case ax::mojom::Role::kButton:
+      return NSAccessibilityButtonRole;
+    case ax::mojom::Role::kCanvas:
+      return NSAccessibilityImageRole;
+    case ax::mojom::Role::kCaret:
+      return NSAccessibilityUnknownRole;
+    case ax::mojom::Role::kCell:
+      return @"AXCell";
+    case ax::mojom::Role::kCheckBox:
+      return NSAccessibilityCheckBoxRole;
+    case ax::mojom::Role::kColorWell:
+      return NSAccessibilityColorWellRole;
+    case ax::mojom::Role::kColumn:
+      return NSAccessibilityColumnRole;
+    case ax::mojom::Role::kColumnHeader:
+      return @"AXCell";
+    case ax::mojom::Role::kComboBoxGrouping:
+      return NSAccessibilityComboBoxRole;
+    case ax::mojom::Role::kComboBoxMenuButton:
+      return NSAccessibilityComboBoxRole;
+    case ax::mojom::Role::kComboBoxSelect:
+      // TODO(crbug.com/1362834): Can this be NSAccessibilityComboBoxRole?
+      return NSAccessibilityPopUpButtonRole;
+    case ax::mojom::Role::kDate:
+      return @"AXDateField";
+    case ax::mojom::Role::kDateTime:
+      return @"AXDateField";
+    case ax::mojom::Role::kDescriptionList:
+      return NSAccessibilityListRole;
+    case ax::mojom::Role::kDirectory:
+      return NSAccessibilityListRole;
+    case ax::mojom::Role::kDisclosureTriangle:
+      // If Mac supports AXExpandedChanged event with
+      // NSAccessibilityDisclosureTriangleRole, We should update
+      // ax::mojom::Role::kDisclosureTriangle mapping to
+      // NSAccessibilityDisclosureTriangleRole. http://crbug.com/558324
+      return NSAccessibilityButtonRole;
+    case ax::mojom::Role::kDocBackLink:
+    case ax::mojom::Role::kDocBiblioRef:
+    case ax::mojom::Role::kDocGlossRef:
+    case ax::mojom::Role::kDocNoteRef:
+      return NSAccessibilityLinkRole;
+    case ax::mojom::Role::kDocCover:
+      return NSAccessibilityImageRole;
+    case ax::mojom::Role::kDocPageBreak:
+      return NSAccessibilitySplitterRole;
+    case ax::mojom::Role::kDocSubtitle:
+      return @"AXHeading";
+    case ax::mojom::Role::kGraphicsSymbol:
+      return NSAccessibilityImageRole;
+    case ax::mojom::Role::kGrid:
+      // Should be NSAccessibilityGridRole but VoiceOver treating it like
+      // a list as of 10.12.6, so following WebKit and using table role:
+      // crbug.com/753925
+      return NSAccessibilityTableRole;
+    case ax::mojom::Role::kHeading:
+      return @"AXHeading";
+    case ax::mojom::Role::kImage:
+      return NSAccessibilityImageRole;
+    case ax::mojom::Role::kImeCandidate:
+      return NSAccessibilityUnknownRole;
+    case ax::mojom::Role::kInlineTextBox:
+      return NSAccessibilityStaticTextRole;
+    case ax::mojom::Role::kInputTime:
+      return @"AXTimeField";
+    case ax::mojom::Role::kKeyboard:
+      return NSAccessibilityUnknownRole;
+    case ax::mojom::Role::kLink:
+      return NSAccessibilityLinkRole;
+    case ax::mojom::Role::kList:
+      return NSAccessibilityListRole;
+    case ax::mojom::Role::kListBox:
+      return NSAccessibilityListRole;
+    case ax::mojom::Role::kListBoxOption:
+      return NSAccessibilityStaticTextRole;
+    case ax::mojom::Role::kListGrid:
+      return NSAccessibilityTableRole;
+    case ax::mojom::Role::kListMarker:
+      return @"AXListMarker";
+    case ax::mojom::Role::kMenu:
+      return NSAccessibilityMenuRole;
+    case ax::mojom::Role::kMenuBar:
+      return NSAccessibilityMenuBarRole;
+    case ax::mojom::Role::kMenuItem:
+      return NSAccessibilityMenuItemRole;
+    case ax::mojom::Role::kMenuItemCheckBox:
+      return NSAccessibilityMenuItemRole;
+    case ax::mojom::Role::kMenuItemRadio:
+      return NSAccessibilityMenuItemRole;
+    case ax::mojom::Role::kMenuListOption:
+      return NSAccessibilityMenuItemRole;
+    case ax::mojom::Role::kMenuListPopup:
+      return NSAccessibilityMenuRole;
+    case ax::mojom::Role::kMeter:
+      return NSAccessibilityLevelIndicatorRole;
+    case ax::mojom::Role::kPdfActionableHighlight:
+      return NSAccessibilityButtonRole;
+    case ax::mojom::Role::kPopUpButton:
+      return NSAccessibilityPopUpButtonRole;
+    case ax::mojom::Role::kPortal:
+      return NSAccessibilityButtonRole;
+    case ax::mojom::Role::kProgressIndicator:
+      return NSAccessibilityProgressIndicatorRole;
+    case ax::mojom::Role::kRadioButton:
+      return NSAccessibilityRadioButtonRole;
+    case ax::mojom::Role::kRadioGroup:
+      return NSAccessibilityRadioGroupRole;
+    case ax::mojom::Role::kRootWebArea:
+      return NSAccessibilityWebAreaRole;
+    case ax::mojom::Role::kRow:
+      return NSAccessibilityRowRole;
+    case ax::mojom::Role::kRowHeader:
+      return @"AXCell";
+    case ax::mojom::Role::kRubyAnnotation:
+      return NSAccessibilityUnknownRole;
+    case ax::mojom::Role::kScrollBar:
+      return NSAccessibilityScrollBarRole;
+    case ax::mojom::Role::kScrollView:
+      return NSAccessibilityScrollAreaRole;
+    case ax::mojom::Role::kSearchBox:
+      return NSAccessibilityTextFieldRole;
+    case ax::mojom::Role::kSlider:
+      return NSAccessibilitySliderRole;
+    case ax::mojom::Role::kSpinButton:
+      return NSAccessibilityIncrementorRole;
+    case ax::mojom::Role::kSplitter:
+      return NSAccessibilitySplitterRole;
+    case ax::mojom::Role::kStaticText:
+      return NSAccessibilityStaticTextRole;
+    case ax::mojom::Role::kSwitch:
+      return NSAccessibilityCheckBoxRole;
+    case ax::mojom::Role::kTab:
+      return NSAccessibilityRadioButtonRole;
+    case ax::mojom::Role::kTable:
+      return NSAccessibilityTableRole;
+    case ax::mojom::Role::kTabList:
+      return NSAccessibilityTabGroupRole;
+    case ax::mojom::Role::kTextField:
+      return NSAccessibilityTextFieldRole;
+    case ax::mojom::Role::kTextFieldWithComboBox:
+      return NSAccessibilityComboBoxRole;
+    case ax::mojom::Role::kTitleBar:
+      return NSAccessibilityStaticTextRole;
+    case ax::mojom::Role::kToggleButton:
+      return NSAccessibilityCheckBoxRole;
+    case ax::mojom::Role::kToolbar:
+      return NSAccessibilityToolbarRole;
+    case ax::mojom::Role::kTree:
+      return NSAccessibilityOutlineRole;
+    case ax::mojom::Role::kTreeGrid:
+      return NSAccessibilityTableRole;
+    case ax::mojom::Role::kTreeItem:
+      return NSAccessibilityRowRole;
+    case ax::mojom::Role::kUnknown:
+      return NSAccessibilityUnknownRole;
+    case ax::mojom::Role::kWindow:
+      // Use the group role as the BrowserNativeWidgetWindow already provides
+      // a kWindow role, and having extra window roles, which are treated
+      // specially by screen readers, can break their ability to find the
+      // content window. See http://crbug.com/875843 for more information.
+      return NSAccessibilityGroupRole;
+  }
 }
 
 + (NSString*)nativeSubroleFromAXRole:(ax::mojom::Role)role {
@@ -482,11 +679,83 @@ bool IsAXSetter(SEL selector) {
   return [value isKindOfClass:[NSString class]] ? value : nil;
 }
 
+- (ax::mojom::Role)internalRole {
+  if ([self instanceActive])
+    return _node->GetRole();
+  return ax::mojom::Role::kUnknown;
+}
+
 - (AXPlatformNodeCocoa*)fromNodeID:(ui::AXNodeID)id {
   ui::AXPlatformNode* cell = _node->GetDelegate()->GetFromNodeID(id);
   if (cell)
     return cell->GetNativeViewAccessible();
   return nil;
+}
+
+- (BOOL)isImage {
+  bool has_image_semantics =
+      ui::IsImage(_node->GetRole()) &&
+      !_node->GetBoolAttribute(ax::mojom::BoolAttribute::kCanvasHasFallback) &&
+      !_node->GetChildCount() &&
+      _node->GetNameFrom() != ax::mojom::NameFrom::kAttributeExplicitlyEmpty;
+#if DCHECK_IS_ON()
+  bool is_native_image =
+      [[self accessibilityRole] isEqualToString:NSAccessibilityImageRole];
+  DCHECK_EQ(is_native_image, has_image_semantics)
+      << "\nPresence/lack of native image role do not match the expected "
+         "internal semantics:"
+      << "\n* Chrome role: " << ui::ToString(_node->GetRole())
+      << "\n* NSAccessibility role: " << [self accessibilityRole]
+      << "\n* AXNode: " << *_node;
+#endif
+  return has_image_semantics;
+}
+
+- (void)addMisspelledTextAttributes:(const AXRange&)axRange
+                           toString:
+                               (NSMutableAttributedString*)attributedString {
+  int anchorStartOffset = 0;
+  [attributedString beginEditing];
+  for (const AXRange& leafTextRange : axRange) {
+    DCHECK(!leafTextRange.IsNull());
+    DCHECK_EQ(leafTextRange.anchor()->GetAnchor(),
+              leafTextRange.focus()->GetAnchor())
+        << "An anchor range should only span a single object.";
+
+    ui::AXNode* anchor = leafTextRange.focus()->GetAnchor();
+
+    DCHECK(anchor) << "A non-null position should have a non-null anchor node.";
+    const std::vector<int32_t>& markerTypes =
+        anchor->GetIntListAttribute(ax::mojom::IntListAttribute::kMarkerTypes);
+    const std::vector<int>& markerStarts =
+        anchor->GetIntListAttribute(ax::mojom::IntListAttribute::kMarkerStarts);
+    const std::vector<int>& markerEnds =
+        anchor->GetIntListAttribute(ax::mojom::IntListAttribute::kMarkerEnds);
+
+    DCHECK_EQ(markerTypes.size(), markerStarts.size());
+    DCHECK_EQ(markerTypes.size(), markerEnds.size());
+
+    for (size_t i = 0; i < markerTypes.size(); ++i) {
+      if (!(markerTypes[i] &
+            static_cast<int32_t>(ax::mojom::MarkerType::kSpelling))) {
+        continue;
+      }
+
+      int misspellingStart = anchorStartOffset + markerStarts[i];
+      int misspellingEnd = anchorStartOffset + markerEnds[i];
+      int misspellingLength = misspellingEnd - misspellingStart;
+      DCHECK_LE(static_cast<unsigned long>(misspellingEnd),
+                [attributedString length]);
+      DCHECK_GT(misspellingLength, 0);
+      [attributedString
+          addAttribute:NSAccessibilityMarkedMisspelledTextAttribute
+                 value:@YES
+                 range:NSMakeRange(misspellingStart, misspellingLength)];
+    }
+
+    anchorStartOffset += leafTextRange.GetText().length();
+  }
+  [attributedString endEditing];
 }
 
 - (NSString*)getName {
@@ -506,8 +775,9 @@ bool IsAXSetter(SEL selector) {
 
   NSString* name = [self getName];
   NSString* announcementText =
-      [name length] > 0 ? name
-                        : base::SysUTF16ToNSString(_node->GetInnerText());
+      [name length] > 0
+          ? name
+          : base::SysUTF16ToNSString(_node->GetTextContentUTF16());
   if ([announcementText length] == 0)
     return nullptr;
 
@@ -552,7 +822,9 @@ bool IsAXSetter(SEL selector) {
       });
 }
 
-// NSAccessibility informal protocol implementation.
+//
+// NSAccessibility legacy informal protocol implementation (deprecated).
+//
 
 - (BOOL)accessibilityIsIgnored {
   return ![self isAccessibilityElement];
@@ -640,22 +912,21 @@ bool IsAXSetter(SEL selector) {
 
   // These attributes are required on all accessibility objects.
   NSArray* const kAllRoleAttributes = @[
-    NSAccessibilityChildrenAttribute,
-    NSAccessibilityParentAttribute,
-    NSAccessibilityPositionAttribute,
-    NSAccessibilityRoleAttribute,
-    NSAccessibilitySizeAttribute,
+    NSAccessibilityBlockQuoteLevelAttribute, NSAccessibilityChildrenAttribute,
+    NSAccessibilityDOMClassList, NSAccessibilityDOMIdentifierAttribute,
+    NSAccessibilityDescriptionAttribute, NSAccessibilityElementBusyAttribute,
+    NSAccessibilityParentAttribute, NSAccessibilityPositionAttribute,
+    NSAccessibilityRoleAttribute, NSAccessibilitySizeAttribute,
+    NSAccessibilitySelectedAttribute, NSAccessibilitySizeAttribute,
     NSAccessibilitySubroleAttribute,
     // Title is required for most elements. Cocoa asks for the value even if it
     // is omitted here, but won't present it to accessibility APIs without this.
     NSAccessibilityTitleAttribute,
     // Attributes which are not required, but are general to all roles.
-    NSAccessibilityRoleDescriptionAttribute,
-    NSAccessibilityEnabledAttribute,
-    NSAccessibilityFocusedAttribute,
-    NSAccessibilityHelpAttribute,
-    NSAccessibilityTopLevelUIElementAttribute,
-    NSAccessibilityWindowAttribute,
+    NSAccessibilityRoleDescriptionAttribute, NSAccessibilityEnabledAttribute,
+    NSAccessibilityFocusedAttribute, NSAccessibilityHelpAttribute,
+    NSAccessibilityTopLevelUIElementAttribute, NSAccessibilityVisitedAttribute,
+    NSAccessibilityWindowAttribute, NSAccessibilityChromeAXNodeIdAttribute
   ];
   // Attributes required for user-editable controls.
   NSArray* const kValueAttributes = @[ NSAccessibilityValueAttribute ];
@@ -665,7 +936,7 @@ bool IsAXSetter(SEL selector) {
     NSAccessibilityNumberOfCharactersAttribute,
     NSAccessibilitySelectedTextAttribute,
     NSAccessibilitySelectedTextRangeAttribute,
-    NSAccessibilityVisibleCharacterRangeAttribute,
+    NSAccessibilityVisibleCharacterRangeAttribute
   ];
   // Required for all text, including protected textfields.
   NSString* const kTextAttributes = NSAccessibilityPlaceholderValueAttribute;
@@ -677,11 +948,13 @@ bool IsAXSetter(SEL selector) {
   switch (role) {
     case ax::mojom::Role::kTextField:
     case ax::mojom::Role::kTextFieldWithComboBox:
+      [axAttributes addObject:NSAccessibilityOwnsAttribute];
+      break;
     case ax::mojom::Role::kStaticText:
       [axAttributes addObject:kTextAttributes];
       if (!_node->HasState(ax::mojom::State::kProtected))
         [axAttributes addObjectsFromArray:kUnprotectedTextAttributes];
-      FALLTHROUGH;
+      [[fallthrough]];
     case ax::mojom::Role::kCheckBox:
     case ax::mojom::Role::kComboBoxMenuButton:
     case ax::mojom::Role::kMenuItemCheckBox:
@@ -751,14 +1024,30 @@ bool IsAXSetter(SEL selector) {
     default:
       break;
   }
-  if (_node->HasBoolAttribute(ax::mojom::BoolAttribute::kSelected))
-    [axAttributes addObject:NSAccessibilitySelectedAttribute];
   if (ui::IsMenuItem(role))
     [axAttributes addObject:@"AXMenuItemMarkChar"];
   if (ui::IsItemLike(role))
     [axAttributes addObjectsFromArray:@[ @"AXARIAPosInSet", @"AXARIASetSize" ]];
   if (ui::IsSetLike(role))
     [axAttributes addObject:@"AXARIASetSize"];
+
+  if ([[self accessibilityRole] isEqualToString:NSAccessibilityWebAreaRole]) {
+    [axAttributes addObjectsFromArray:@[
+      NSAccessibilityLoadedAttribute, NSAccessibilityLoadingProgressAttribute
+    ]];
+  }
+
+  // Caret navigation and text selection attributes.
+  if (!ui::IsPlatformDocument(_node->GetRole())) {
+    [axAttributes addObject:NSAccessibilityFocusableAncestorAttribute];
+
+    if (_node->HasState(ax::mojom::State::kEditable)) {
+      [axAttributes addObjectsFromArray:@[
+        NSAccessibilityEditableAncestorAttribute,
+        NSAccessibilityHighestEditableAncestorAttribute
+      ]];
+    }
+  }
 
   // Live regions.
   if (_node->HasStringAttribute(ax::mojom::StringAttribute::kLiveStatus))
@@ -772,10 +1061,11 @@ bool IsAXSetter(SEL selector) {
   if (_node->HasIntAttribute(ax::mojom::IntAttribute::kAriaCurrentState))
     [axAttributes addObject:NSAccessibilityARIACurrentAttribute];
 
-  // Focusable element or a control element.
+  // Control element.
   if (ui::IsControl(role)) {
     [axAttributes addObjectsFromArray:@[
       NSAccessibilityAccessKeyAttribute,
+      NSAccessibilityInvalidAttribute,
     ]];
   }
 
@@ -783,26 +1073,92 @@ bool IsAXSetter(SEL selector) {
   if (_node->HasStringAttribute(ax::mojom::StringAttribute::kAutoComplete))
     [axAttributes addObject:NSAccessibilityAutocompleteValueAttribute];
 
+  // AriaBrailleLabel.
+  if (_node->HasStringAttribute(ax::mojom::StringAttribute::kAriaBrailleLabel))
+    [axAttributes addObject:NSAccessibilityBrailleLabelAttribute];
+
+  // AriaBrailleRoleDescription.
+  if (_node->HasStringAttribute(
+          ax::mojom::StringAttribute::kAriaBrailleRoleDescription))
+    [axAttributes addObject:NSAccessibilityBrailleRoleDescription];
+
   // Details.
   if (_node->HasIntListAttribute(ax::mojom::IntListAttribute::kDetailsIds)) {
     [axAttributes addObject:NSAccessibilityDetailsElementsAttribute];
   }
 
-  // Anything focusable or any control
-  if (_node->HasIntAttribute(ax::mojom::IntAttribute::kRestriction) ||
-      _node->HasIntAttribute(ax::mojom::IntAttribute::kInvalidState) ||
-      _node->HasState(ax::mojom::State::kFocusable)) {
-    [axAttributes addObject:NSAccessibilityInvalidAttribute];
+  // Drop effect.
+  if (_node->HasHtmlAttribute("aria-dropeffect"))
+    [axAttributes addObject:NSAccessibilityDropEffectsAttribute];
+
+  // Grabbed
+  if (_node->HasHtmlAttribute("aria-grabbed"))
+    [axAttributes addObject:NSAccessibilityGrabbedAttribute];
+
+  if (ui::SupportsRequired(role)) {
+    [axAttributes addObject:NSAccessibilityRequiredAttribute];
   }
+
+  // Url: add the url attribute only if the object has a valid url.
+  if ([self accessibilityURL])
+    [axAttributes addObject:NSAccessibilityURLAttribute];
 
   // Table and grid.
   if (ui::IsTableLike(role)) {
-    [axAttributes addObject:NSAccessibilityColumnHeaderUIElementsAttribute];
+    [axAttributes addObjectsFromArray:@[
+      NSAccessibilityColumnHeaderUIElementsAttribute,
+      NSAccessibilityARIAColumnCountAttribute,
+      NSAccessibilityARIARowCountAttribute,
+    ]];
+  }
+  if (ui::IsCellOrTableHeader(role)) {
+    [axAttributes addObjectsFromArray:@[
+      NSAccessibilityARIAColumnIndexAttribute,
+      NSAccessibilityARIARowIndexAttribute,
+    ]];
   }
   if (ui::IsCellOrTableHeader(role) && role != ax::mojom::Role::kColumnHeader) {
     [axAttributes addObject:NSAccessibilityColumnHeaderUIElementsAttribute];
   }
+
+  // Tree and grid (Outline role in Mac accessibility)
+  if (ui::IsGridLike(role))
+    [axAttributes addObject:NSAccessibilitySelectedRowsAttribute];
+
+  // Popup
+  if (_node->HasIntAttribute(ax::mojom::IntAttribute::kHasPopup)) {
+    [axAttributes addObjectsFromArray:@[
+      NSAccessibilityHasPopupAttribute, NSAccessibilityPopupValueAttribute
+    ]];
+  }
+
+  // KeyShortcuts
+  if (_node->HasStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts))
+    [axAttributes addObject:NSAccessibilityKeyShortcutsValueAttribute];
+
+  // TitleUIElement
+  if ([self titleUIElement])
+    [axAttributes addObject:NSAccessibilityTitleUIElementAttribute];
+
   return axAttributes.autorelease();
+}
+
+- (NSArray*)accessibilityParameterizedAttributeNames {
+  if (!_node)
+    return @[];
+
+  // General attributes.
+  NSMutableArray* ret = [NSMutableArray
+      arrayWithObjects:
+          NSAccessibilityAttributedStringForTextMarkerRangeParameterizedAttribute,
+          nil];
+
+  if (_node->HasState(ax::mojom::State::kEditable)) {
+    [ret addObjectsFromArray:@[
+      NSAccessibilityAttributedStringForRangeParameterizedAttribute
+    ]];
+  }
+  return ret;
 }
 
 // Despite it being deprecated, AppKit internally calls this function sometimes
@@ -907,6 +1263,28 @@ bool IsAXSetter(SEL selector) {
   return @"false";
 }
 
+- (NSNumber*)AXARIAColumnCount {
+  if (![self instanceActive])
+    return nil;
+  absl::optional<int> ariaColCount =
+      _node->GetDelegate()->GetTableAriaColCount();
+  if (!ariaColCount)
+    return nil;
+  return @(*ariaColCount);
+}
+
+- (NSNumber*)AXARIAColumnIndex {
+  if (![self instanceActive])
+    return nil;
+
+  absl::optional<int> ariaColIndex =
+      _node->GetDelegate()->GetTableCellAriaColIndex();
+  if (!ariaColIndex)
+
+    return nil;
+  return @(*ariaColIndex);
+}
+
 - (NSString*)AXARIALive {
   if (![self instanceActive])
     return nil;
@@ -921,11 +1299,65 @@ bool IsAXSetter(SEL selector) {
   return [self getStringAttribute:ax::mojom::StringAttribute::kLiveRelevant];
 }
 
+- (NSNumber*)AXARIARowCount {
+  if (![self instanceActive])
+    return nil;
+  absl::optional<int> ariaRowCount =
+      _node->GetDelegate()->GetTableAriaRowCount();
+  if (!ariaRowCount)
+    return nil;
+  return @(*ariaRowCount);
+}
+
+- (NSNumber*)AXARIARowIndex {
+  if (![self instanceActive])
+    return nil;
+  absl::optional<int> ariaRowIndex =
+      _node->GetDelegate()->GetTableCellAriaRowIndex();
+  if (!ariaRowIndex)
+    return nil;
+  return @(*ariaRowIndex);
+}
+
 - (NSString*)AXAutocompleteValue {
   if (![self instanceActive])
     return nil;
 
   return [self getStringAttribute:ax::mojom::StringAttribute::kAutoComplete];
+}
+
+- (NSString*)AXBrailleLabel {
+  if (![self instanceActive])
+    return nil;
+
+  return
+      [self getStringAttribute:ax::mojom::StringAttribute::kAriaBrailleLabel];
+}
+
+- (NSString*)AXBrailleRoleDescription {
+  if (![self instanceActive])
+    return nil;
+
+  return [self getStringAttribute:ax::mojom::StringAttribute::
+                                      kAriaBrailleRoleDescription];
+}
+
+- (id)AXBlockQuoteLevel {
+  if (![self instanceActive])
+    return nil;
+  // This is for the number of ancestors that are a <blockquote>, including
+  // self, useful for tracking replies to replies etc. in an email.
+  int level = 0;
+
+  for (ui::AXPlatformNodeBase* ancestor = _node; ancestor;
+       ancestor = ancestor->GetPlatformParent()) {
+    // Do not cross document boundaries.
+    if (ui::IsPlatformDocument(ancestor->GetRole()))
+      break;
+    if (ancestor->GetRole() == ax::mojom::Role::kBlockquote)
+      ++level;
+  }
+  return @(level);
 }
 
 - (NSArray*)AXColumnHeaderUIElements {
@@ -947,11 +1379,93 @@ bool IsAXSetter(SEL selector) {
   return [elements count] ? elements : nil;
 }
 
-- (NSString*)AXRole {
-  if (!_node)
+- (NSArray*)AXDOMClassList {
+  if (![self instanceActive])
     return nil;
 
-  return [[self class] nativeRoleFromAXRole:_node->GetRole()];
+  NSMutableArray* ret = [[[NSMutableArray alloc] init] autorelease];
+
+  std::string classes;
+  if (_node->GetStringAttribute(ax::mojom::StringAttribute::kClassName,
+                                &classes)) {
+    std::vector<std::string> split_classes = base::SplitString(
+        classes, " ", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+    for (const auto& className : split_classes)
+      [ret addObject:(base::SysUTF8ToNSString(className))];
+  }
+  return ret;
+}
+
+- (NSString*)AXDOMIdentifier {
+  if (![self instanceActive])
+    return nil;
+
+  std::string id;
+  if (_node->GetHtmlAttribute("id", &id))
+    return base::SysUTF8ToNSString(id);
+
+  return @"";
+}
+
+- (NSString*)AXDropEffects {
+  if (![self instanceActive])
+    return nil;
+
+  std::string dropEffects;
+  if (_node->GetHtmlAttribute("aria-dropeffect", &dropEffects))
+    return base::SysUTF8ToNSString(dropEffects);
+
+  return nil;
+}
+
+- (id)AXEditableAncestor {
+  if (![self instanceActive])
+    return nil;
+  ui::AXPlatformNodeBase* text_field_ancestor =
+      _node->GetPlatformTextFieldAncestor();
+  if (text_field_ancestor)
+    return text_field_ancestor->GetNativeViewAccessible();
+  return nil;
+}
+
+- (NSNumber*)AXElementBusy {
+  if (![self instanceActive])
+    return nil;
+  return @(_node->GetBoolAttribute(ax::mojom::BoolAttribute::kBusy));
+}
+
+- (NSNumber*)AXGrabbed {
+  if (![self instanceActive])
+    return nil;
+  std::string grabbed;
+  if (_node->GetHtmlAttribute("aria-grabbed", &grabbed) && grabbed == "true")
+    return @YES;
+
+  return @NO;
+}
+
+- (NSNumber*)AXHasPopup {
+  if (![self instanceActive])
+    return nil;
+  return @(_node->HasIntAttribute(ax::mojom::IntAttribute::kHasPopup));
+}
+
+- (id)AXHighestEditableAncestor {
+  if (![self instanceActive])
+    return nil;
+
+  AXPlatformNodeCocoa* highestEditableAncestor = [self AXEditableAncestor];
+
+  while (highestEditableAncestor) {
+    AXPlatformNodeCocoa* ancestorParent = [highestEditableAncestor AXParent];
+    if (!ancestorParent || ![ancestorParent isKindOfClass:[self class]])
+      break;
+    AXPlatformNodeCocoa* higherAncestor = [ancestorParent AXEditableAncestor];
+    if (!higherAncestor)
+      break;
+    highestEditableAncestor = higherAncestor;
+  }
+  return highestEditableAncestor;
 }
 
 - (NSString*)AXInvalid {
@@ -966,23 +1480,91 @@ bool IsAXSetter(SEL selector) {
   }
 }
 
+- (NSNumber*)AXIsMultiSelectable {
+  if (![self instanceActive])
+    return nil;
+  return @(_node->HasState(ax::mojom::State::kMultiselectable));
+}
+
+- (NSString*)AXKeyShortcutsValue {
+  if (![self instanceActive])
+    return nil;
+  return [self getStringAttribute:ax::mojom::StringAttribute::kKeyShortcuts];
+}
+
+- (NSNumber*)AXLoaded {
+  if (![self instanceActive])
+    return nil;
+  return @(_node->GetDelegate()->GetTreeData().loaded);
+}
+
+- (NSNumber*)AXLoadingProgress {
+  if (![self instanceActive])
+    return nil;
+  double doubleValue = _node->GetDelegate()->GetTreeData().loading_progress;
+  return @(doubleValue);
+}
+
+- (id)AXOwns {
+  if (![self instanceActive])
+    return nil;
+
+  ui::AXPlatformNodeBase* activeDescendant = _node->GetActiveDescendant();
+  if (!activeDescendant)
+    return nil;
+
+  ui::AXPlatformNodeBase* container = activeDescendant->GetSelectionContainer();
+  if (!container)
+    return nil;
+
+  NSMutableArray* ret = [[[NSMutableArray alloc] init] autorelease];
+  [ret addObject:container->GetNativeViewAccessible()];
+  return ret;
+}
+
+- (NSString*)AXPopupValue {
+  if (![self instanceActive])
+    return nil;
+  int hasPopup = _node->GetIntAttribute(ax::mojom::IntAttribute::kHasPopup);
+  switch (static_cast<ax::mojom::HasPopup>(hasPopup)) {
+    case ax::mojom::HasPopup::kFalse:
+      return @"false";
+    case ax::mojom::HasPopup::kTrue:
+      return @"true";
+    case ax::mojom::HasPopup::kMenu:
+      return @"menu";
+    case ax::mojom::HasPopup::kListbox:
+      return @"listbox";
+    case ax::mojom::HasPopup::kTree:
+      return @"tree";
+    case ax::mojom::HasPopup::kGrid:
+      return @"grid";
+    case ax::mojom::HasPopup::kDialog:
+      return @"dialog";
+  }
+}
+
+- (NSNumber*)AXRequired {
+  return [self accessibilityRequired];
+}
+
+- (NSString*)AXRole {
+  if (!_node)
+    return nil;
+
+  return [[self class] nativeRoleFromAXRole:_node->GetRole()];
+}
+
 - (NSString*)AXRoleDescription {
-  if (_node->HasStringAttribute(ax::mojom::StringAttribute::kRoleDescription)) {
-    return [base::SysUTF8ToNSString(_node->GetStringAttribute(
-        ax::mojom::StringAttribute::kRoleDescription)) lowercaseString];
-  }
-  switch (_node->GetRole()) {
-    case ax::mojom::Role::kTab:
-      // There is no NSAccessibilityTabRole or similar (AXRadioButton is used
-      // instead). Do the same as NSTabView and put "tab" in the description.
-      return [l10n_util::GetNSStringWithFixup(IDS_AX_ROLE_TAB) lowercaseString];
-    case ax::mojom::Role::kDisclosureTriangle:
-      return [l10n_util::GetNSStringWithFixup(IDS_AX_ROLE_DISCLOSURE_TRIANGLE)
-          lowercaseString];
-    default:
-      break;
-  }
-  return NSAccessibilityRoleDescription([self AXRole], [self AXSubrole]);
+  return [self accessibilityRoleDescription];
+}
+
+- (NSNumber*)AXSelected {
+  return [self accessibilitySelected];
+}
+
+- (NSArray*)AXSelectedRows {
+  return [self accessibilitySelectedRows];
 }
 
 - (NSString*)AXSubrole {
@@ -998,19 +1580,22 @@ bool IsAXSetter(SEL selector) {
   return [AXPlatformNodeCocoa nativeSubroleFromAXRole:role];
 }
 
+- (NSURL*)AXURL {
+  return [self accessibilityURL];
+}
+
+- (NSNumber*)AXVisited {
+  if (![self instanceActive])
+    return nil;
+
+  return @(_node->HasState(ax::mojom::State::kVisited));
+}
+
 - (NSString*)AXHelp {
-  // TODO(aleventhal) Key shortcuts attribute should eventually get
-  // its own field. Follow what WebKit does for aria-keyshortcuts, see
-  // https://bugs.webkit.org/show_bug.cgi?id=159215 (WebKit bug).
-  NSString* desc =
-      [self getStringAttribute:ax::mojom::StringAttribute::kDescription];
-  NSString* key =
-      [self getStringAttribute:ax::mojom::StringAttribute::kKeyShortcuts];
-  if (!desc.length)
-    return key.length ? key : @"";
-  if (!key.length)
-    return desc;
-  return [NSString stringWithFormat:@"%@ %@", desc, key];
+  if (![self instanceActive])
+    return nil;
+
+  return [self getStringAttribute:ax::mojom::StringAttribute::kDescription];
 }
 
 - (id)AXValue {
@@ -1041,6 +1626,24 @@ bool IsAXSetter(SEL selector) {
     return
         @(_node->GetDelegate()->GetFocus() == _node->GetNativeViewAccessible());
   return @NO;
+}
+
+- (id)AXFocusableAncestor {
+  if (![self instanceActive])
+    return nil;
+
+  ui::AXPlatformNodeBase* ancestor = _node;
+  for (; ancestor; ancestor = ancestor->GetPlatformParent()) {
+    // Do not cross document boundaries.
+    if (ui::IsPlatformDocument(ancestor->GetRole()))
+      return nil;
+    if (ancestor->HasState(ax::mojom::State::kFocusable))
+      break;
+  }
+  // The assignment to ancestor may be null.
+  if (!ancestor)
+    return nil;
+  return ancestor->GetNativeViewAccessible();
 }
 
 - (id)AXParent {
@@ -1080,21 +1683,18 @@ bool IsAXSetter(SEL selector) {
 }
 
 - (NSString*)AXTitle {
-  if (ui::IsNameExposedInAXValueForRole(_node->GetRole()))
-    return @"";
+  return [self accessibilityTitle];
+}
 
-  return [self getName];
+- (id)AXTitleUIElement {
+  return [self accessibilityTitleUIElement];
 }
 
 - (NSString*)AXDescription {
-  return [self AXTitle];
+  return [self accessibilityLabel];
 }
 
 // Misc attributes.
-
-- (NSNumber*)AXSelected {
-  return @(_node->GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
-}
 
 - (NSString*)AXPlaceholderValue {
   return [self accessibilityPlaceholderValue];
@@ -1114,6 +1714,8 @@ bool IsAXSetter(SEL selector) {
 }
 
 - (NSNumber*)AXARIAPosInSet {
+  if (![self instanceActive])
+    return nil;
   absl::optional<int> posInSet = _node->GetPosInSet();
   if (!posInSet)
     return nil;
@@ -1121,6 +1723,8 @@ bool IsAXSetter(SEL selector) {
 }
 
 - (NSNumber*)AXARIASetSize {
+  if (![self instanceActive])
+    return nil;
   absl::optional<int> setSize = _node->GetSetSize();
   if (!setSize)
     return nil;
@@ -1165,37 +1769,37 @@ bool IsAXSetter(SEL selector) {
 // Parameterized text-specific attributes.
 
 - (id)AXLineForIndex:(id)parameter {
-  DCHECK([parameter isKindOfClass:[NSNumber class]]);
   // TODO: multiline is not supported on views.
   return @0;
 }
 
 - (id)AXRangeForLine:(id)parameter {
-  DCHECK([parameter isKindOfClass:[NSNumber class]]);
-  DCHECK_EQ(0, [parameter intValue]);
+  if (![parameter isKindOfClass:[NSNumber class]] || [parameter intValue] != 0)
+    return nil;
+
   return [NSValue valueWithRange:{0, [[self getAXValueAsString] length]}];
 }
 
 - (id)AXStringForRange:(id)parameter {
-  DCHECK([parameter isKindOfClass:[NSValue class]]);
+  if (![parameter isKindOfClass:[NSValue class]] ||
+      (0 != strcmp([parameter objCType], @encode(NSRange))))
+    return nil;
+
   return [[self getAXValueAsString] substringWithRange:[parameter rangeValue]];
 }
 
 - (id)AXRangeForPosition:(id)parameter {
-  DCHECK([parameter isKindOfClass:[NSValue class]]);
   // TODO(tapted): Hit-test [parameter pointValue] and return an NSRange.
   NOTIMPLEMENTED();
   return nil;
 }
 
 - (id)AXRangeForIndex:(id)parameter {
-  DCHECK([parameter isKindOfClass:[NSNumber class]]);
   NOTIMPLEMENTED();
   return nil;
 }
 
 - (id)AXBoundsForRange:(id)parameter {
-  DCHECK([parameter isKindOfClass:[NSValue class]]);
   // TODO(tapted): Provide an accessor on AXPlatformNodeDelegate to obtain this
   // from ui::TextInputClient::GetCompositionCharacterBounds().
   NOTIMPLEMENTED();
@@ -1203,34 +1807,180 @@ bool IsAXSetter(SEL selector) {
 }
 
 - (id)AXRTFForRange:(id)parameter {
-  DCHECK([parameter isKindOfClass:[NSValue class]]);
   NOTIMPLEMENTED();
   return nil;
 }
 
 - (id)AXStyleRangeForIndex:(id)parameter {
-  DCHECK([parameter isKindOfClass:[NSNumber class]]);
+  if (![parameter isKindOfClass:[NSNumber class]])
+    return nil;
+
   // TODO(https://crbug.com/958811): Implement this for real.
   return [NSValue
       valueWithRange:NSMakeRange(0, [self accessibilityNumberOfCharacters])];
 }
 
 - (id)AXAttributedStringForRange:(id)parameter {
-  DCHECK([parameter isKindOfClass:[NSValue class]]);
-  // TODO(https://crbug.com/958811): Implement this for real.
-  base::scoped_nsobject<NSAttributedString> attributedString(
-      [[NSAttributedString alloc]
-          initWithString:[self AXStringForRange:parameter]]);
+  if (![parameter isKindOfClass:[NSValue class]])
+    return nil;
+
+  // TODO(https://crbug.com/958811): Finish implementation.
+  // Currently, we only decorate the attributed string with misspelling
+  // information.
   // TODO(tapted): views::WordLookupClient has a way to obtain the actual
   // decorations, and BridgedContentView has a conversion function that creates
   // an NSAttributedString. Refactor things so they can be used here.
-  return attributedString.autorelease();
+
+  NSRange range = [(NSValue*)parameter rangeValue];
+  std::u16string textContent = _node->GetTextContentUTF16();
+  if (NSMaxRange(range) > textContent.length())
+    return nil;
+
+  // We potentially need to add text attributes to the whole text content
+  // because a spelling mistake might start or end outside the given range.
+  NSMutableAttributedString* attributedTextContent =
+      [[[NSMutableAttributedString alloc]
+          initWithString:base::SysUTF16ToNSString(textContent)] autorelease];
+  if (!_node->IsText()) {
+    AXRange axRange(_node->GetDelegate()->CreateTextPositionAt(0),
+                    _node->GetDelegate()->CreateTextPositionAt(
+                        static_cast<int>(textContent.length())));
+    [self addMisspelledTextAttributes:axRange toString:attributedTextContent];
+  }
+
+  return [attributedTextContent attributedSubstringFromRange:range];
+}
+
+- (NSAttributedString*)AXAttributedStringForTextMarkerRange:(id)markerRange {
+  AXRange axRange = ui::AXTextMarkerRangeToAXRange(markerRange);
+  if (axRange.IsNull())
+    return nil;
+
+  NSString* text = base::SysUTF16ToNSString(axRange.GetText());
+  if ([text length] == 0)
+    return nil;
+
+  NSMutableAttributedString* attributedText =
+      [[[NSMutableAttributedString alloc] initWithString:text] autorelease];
+  // Currently, we only decorate the attributed string with misspelling
+  // information.
+  [self addMisspelledTextAttributes:axRange toString:attributedText];
+  return attributedText;
+}
+
+- (NSString*)ChromeAXNodeId {
+  return [@(_node->GetNodeId()) stringValue];
 }
 
 - (NSString*)description {
   return [NSString stringWithFormat:@"%@ - %@ (%@)", [super description],
-                                    [self AXTitle], [self AXRole]];
+                                    [self accessibilityTitle], [self AXRole]];
 }
+
+//
+// UIAccessibility protocol.
+//
+
+- (BOOL)isAccessibilityElement {
+  if (![self instanceActive])
+    return NO;
+
+  return (![[[self class] nativeRoleFromAXRole:_node->GetRole()]
+              isEqualToString:NSAccessibilityUnknownRole] &&
+          !_node->GetDelegate()->IsIgnored());
+}
+
+- (BOOL)isAccessibilityEnabled {
+  if (!_node)
+    return NO;
+
+  return _node->GetData().GetRestriction() != ax::mojom::Restriction::kDisabled;
+}
+
+- (NSRect)accessibilityFrame {
+  return [self boundsInScreen];
+}
+
+- (NSString*)accessibilityLabel {
+  if (![self instanceActive])
+    return nil;
+
+  // Mac OS X wants static text exposed in AXValue.
+  if (ui::IsNameExposedInAXValueForRole([self internalRole]))
+    return @"";
+
+  // If we're exposing the title in TitleUIElement, don't also redundantly
+  // expose it in accessibilityLabel.
+  if ([self titleUIElement])
+    return @"";
+
+  if (![self isNameFromLabel])
+    return @"";
+
+  std::string name = _node->GetName();
+
+  if (!name.empty())
+    return base::SysUTF8ToNSString(name);
+
+  // Given an image where there's no other title, return the base part
+  // of the filename as the description.
+  if ([self isImage]) {
+    std::string url;
+    if (_node->GetStringAttribute(ax::mojom::StringAttribute::kUrl, &url)) {
+      // Given a url like http://foo.com/bar/baz.png, just return the
+      // base name, e.g., "baz.png".
+      size_t leftIndex = url.rfind('/');
+      std::string basename =
+          leftIndex != std::string::npos ? url.substr(leftIndex) : url;
+      return base::SysUTF8ToNSString(basename);
+    }
+  }
+
+  return @"";
+}
+
+- (NSString*)accessibilityTitle {
+  if (![self instanceActive])
+    return nil;
+
+  if (ui::IsNameExposedInAXValueForRole(_node->GetRole()))
+    return @"";
+
+  if ([self isNameFromLabel])
+    return @"";
+
+  // If we're exposing the title in TitleUIElement, don't also redundantly
+  // expose it in AXDescription.
+  if ([self titleUIElement])
+    return @"";
+
+  ax::mojom::NameFrom nameFrom = _node->GetNameFrom();
+
+  // The accessible name, which is exposed via accessibilityTitle, should not
+  // contain any placeholder text because an HTML or an ARIA placeholder refers
+  // to a sample value that is usually found in a text field and is used to aid
+  // the user in data entry. It is similar to a replacement for the value
+  // attribute, not the title.
+  if (nameFrom == ax::mojom::NameFrom::kPlaceholder)
+    return @"";
+
+  // Cell titles are empty if they came from content.
+  if (nameFrom == ax::mojom::NameFrom::kContents) {
+    NSString* role = [self accessibilityRole];
+    if ([role isEqualToString:NSAccessibilityCellRole])
+      return @"";
+  }
+
+  return [self getName];
+}
+
+- (id)accessibilityValue {
+  return [self AXValue];
+}
+
+//
+// NSAccessibility protocol.
+//
 
 // The methods below implement the NSAccessibility protocol. These methods
 // appear to be the minimum needed to avoid AppKit refusing to handle the
@@ -1245,49 +1995,38 @@ bool IsAXSetter(SEL selector) {
   return [self AXChildren];
 }
 
-- (BOOL)isAccessibilityElement {
-  if (!_node)
-    return NO;
+- (NSNumber*)accessibilityRequired {
+  TRACE_EVENT1("accessibility", "accessibilityRequired",
+               "role=", ui::ToString([self internalRole]));
 
-  return (![[self AXRole] isEqualToString:NSAccessibilityUnknownRole] &&
-          !_node->IsInvisibleOrIgnored());
-}
-- (BOOL)isAccessibilityEnabled {
-  if (!_node)
-    return NO;
+  if (![self instanceActive])
+    return nil;
 
-  return _node->GetData().GetRestriction() != ax::mojom::Restriction::kDisabled;
-}
-- (NSRect)accessibilityFrame {
-  return [self boundsInScreen];
-}
-
-- (NSString*)accessibilityLabel {
-  // accessibilityLabel is "a short description of the accessibility element",
-  // and accessibilityTitle is "the title of the accessibility element"; at
-  // least in Chromium, the title usually is a short description of the element,
-  // so it also functions as a label.
-  return [self AXDescription];
-}
-
-- (NSString*)accessibilityTitle {
-  return [self AXTitle];
-}
-
-- (id)accessibilityValue {
-  return [self AXValue];
+  return _node->HasState(ax::mojom::State::kRequired) ? @YES : @NO;
 }
 
 - (NSAccessibilityRole)accessibilityRole {
   return [self AXRole];
 }
 
-- (NSAccessibilitySubrole)accessibilitySubrole {
-  return [self AXSubrole];
+- (NSArray*)accessibilitySelectedRows {
+  if (![self instanceActive])
+    return nil;
+
+  NSArray* rows = [self accessibilityRows];
+  // accessibilityRows returns an empty array unless instanceActive does,
+  // not exist, so we do not need to check if rows is nil at this time.
+  NSMutableArray* selectedRows = [[[NSMutableArray alloc] init] autorelease];
+  for (id row in rows) {
+    if ([[row accessibilitySelected] boolValue]) {
+      [selectedRows addObject:row];
+    }
+  }
+  return selectedRows;
 }
 
-- (NSString*)accessibilityRoleDescription {
-  return [self AXRoleDescription];
+- (NSAccessibilitySubrole)accessibilitySubrole {
+  return [self AXSubrole];
 }
 
 - (BOOL)isAccessibilitySelectorAllowed:(SEL)selector {
@@ -1301,12 +2040,42 @@ bool IsAXSetter(SEL selector) {
   if (selector == @selector(setAccessibilityFocused:))
     return _node->HasState(ax::mojom::State::kFocusable);
 
-  if (selector == @selector(setAccessibilityValue:) &&
-      _node->GetRole() == ax::mojom::Role::kTab) {
-    // Tabs use the radio button role on Mac, so they are selected by calling
-    // setSelected on an individual tab, rather than by setting the selected
-    // element on the tabstrip as a whole.
-    return !_node->GetBoolAttribute(ax::mojom::BoolAttribute::kSelected);
+  if (selector == @selector(setAccessibilityValue:)) {
+    switch (_node->GetRole()) {
+      case ax::mojom::Role::kSlider:
+        // When VoiceOver performs an increment/decrement action, it immediately
+        // calls upon success of the action the selector setAccessibilityValue
+        // on the slider that was just updated. The value passed to this
+        // function is always equals to 5% of the slider's value range, so
+        // actually setting that value to our slider would:
+        //   1. render the increment/decrement action performed a moment before
+        //      useless as it would override the modified value;
+        //   2. make the slider value stuck in place, at 5% of its range.
+        //
+        // I haven't found much on the topic online, so the following is at best
+        // a conjecture: I believe that VoiceOver "suggests" us to
+        // increment/decrement the value by 5%. There might be a setting I'm not
+        // aware of that allows the VO users to modify this value by a different
+        // one, which would allow them to always increment/decrement sliders by
+        // the same amount on all apps.
+        //
+        // However, in Chromium, we handle the increment and decrement actions
+        // on the blink side and the step value is computed over there. That
+        // way, the experience for changing the value of a slider by increments
+        // is the same for all different inputs: whether it's the keyboard arrow
+        // keys, an AT, etc.
+        //
+        // TL;DR: setAccessibilityValue, when called on sliders, is breaking our
+        // increment and decrement AX actions, so don't allow it.
+        return NO;
+      case ax::mojom::Role::kTab:
+        // Tabs use the radio button role on Mac, so they are selected by
+        // calling setSelected on an individual tab, rather than by setting the
+        // selected element on the tabstrip as a whole.
+        return !_node->GetBoolAttribute(ax::mojom::BoolAttribute::kSelected);
+      default:
+        break;
+    }
   }
 
   // Don't allow calling AX setters on disabled elements.
@@ -1315,7 +2084,7 @@ bool IsAXSetter(SEL selector) {
   // remove the check here when the selector is setAccessibilitySelectedText*;
   // right now, this check serves to prevent accessibility clients from trying
   // to set the selection range, which won't work because of 692362.
-  if (_node->GetData().IsReadOnlyOrDisabled() && IsAXSetter(selector))
+  if (_node->GetDelegate()->IsReadOnlyOrDisabled() && IsAXSetter(selector))
     return NO;
 
   // TODO(https://crbug.com/386671): What about role-specific selectors?
@@ -1398,7 +2167,7 @@ bool IsAXSetter(SEL selector) {
     return nil;
 
   if (_node->GetNameFrom() == ax::mojom::NameFrom::kPlaceholder)
-    return base::SysUTF8ToNSString(_node->GetName());
+    return [self getName];
 
   return [self getStringAttribute:ax::mojom::StringAttribute::kPlaceholder];
 }
@@ -1482,7 +2251,97 @@ bool IsAXSetter(SEL selector) {
 }
 
 //
-// NSAccessibility protocol: configuring table and outline views
+// NSAccessibility protocol: setting content and values.
+//
+
+- (NSNumber*)accessibilitySelected {
+  if (![self instanceActive])
+    return nil;
+
+  return @(_node->GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+}
+
+- (NSURL*)accessibilityURL {
+  TRACE_EVENT1("accessibility", "accessibilityURL",
+               "role=", ui::ToString([self internalRole]));
+  if (![self instanceActive])
+    return nil;
+
+  std::string url;
+  if ([[self accessibilityRole] isEqualToString:NSAccessibilityWebAreaRole])
+    url = _node->GetDelegate()->GetTreeData().url;
+  else
+    url = _node->GetStringAttribute(ax::mojom::StringAttribute::kUrl);
+
+  if (url.empty())
+    return nil;
+
+  return [NSURL URLWithString:(base::SysUTF8ToNSString(url))];
+}
+
+//
+// NSAccessibility protocol: assigning roles.
+//
+
+- (NSString*)accessibilityRoleDescription {
+  TRACE_EVENT1("accessibility", "accessibilityRoleDescription",
+               "role=", ui::ToString([self internalRole]));
+  if (![self instanceActive])
+    return nil;
+
+  // Image annotations.
+  if (_node->GetData().GetImageAnnotationStatus() ==
+          ax::mojom::ImageAnnotationStatus::kEligibleForAnnotation ||
+      _node->GetData().GetImageAnnotationStatus() ==
+          ax::mojom::ImageAnnotationStatus::kSilentlyEligibleForAnnotation) {
+    return base::SysUTF16ToNSString(
+        _node->GetDelegate()->GetLocalizedRoleDescriptionForUnlabeledImage());
+  }
+
+  // ARIA role description.
+  std::string roleDescription;
+  if (_node->GetStringAttribute(ax::mojom::StringAttribute::kRoleDescription,
+                                &roleDescription)) {
+    return [base::SysUTF8ToNSString(_node->GetStringAttribute(
+        ax::mojom::StringAttribute::kRoleDescription)) lowercaseString];
+  }
+
+  NSString* role = [self accessibilityRole];
+  switch (_node->GetRole()) {
+    case ax::mojom::Role::kColorWell:            // Use platform's "color well"
+    case ax::mojom::Role::kFooterAsNonLandmark:  // Default: IDS_AX_ROLE_FOOTER
+    case ax::mojom::Role::kHeaderAsNonLandmark:  // Default: IDS_AX_ROLE_HEADER
+    case ax::mojom::Role::kImage:                // Default: IDS_AX_ROLE_GRAPHIC
+    case ax::mojom::Role::kInputTime:            // Use platform's "time field"
+    case ax::mojom::Role::kMeter:     // Use platform's "level indicator"
+    case ax::mojom::Role::kTabList:   // Use platform's "tab group"
+    case ax::mojom::Role::kTree:      // Use platform's "outline"
+    case ax::mojom::Role::kTreeItem:  // Use platform's "outline row"
+      break;
+    case ax::mojom::Role::kHeader:  // Default: IDS_AX_ROLE_HEADER
+      return l10n_util::GetNSString(IDS_AX_ROLE_BANNER);
+    case ax::mojom::Role::kRootWebArea: {
+      if ([role isEqualToString:NSAccessibilityWebAreaRole])
+        return l10n_util::GetNSString(IDS_AX_ROLE_WEB_AREA);
+      // Preserve platform default of "group" in the case of the child
+      // of a presentational <iframe> which has the internal role of
+      // kRootWebArea.
+      break;
+    }
+    default: {
+      std::u16string result =
+          _node->GetDelegate()->GetLocalizedStringForRoleDescription();
+      if (!result.empty())
+        return base::SysUTF16ToNSString(result);
+    }
+  }
+
+  return NSAccessibilityRoleDescription(role, [self accessibilitySubrole]);
+}
+
+//
+// NSAccessibility protocol: configuring table and outline views.
+//
 
 - (NSArray*)accessibilityColumnHeaderUIElements {
   if (![self instanceActive])
@@ -1525,6 +2384,24 @@ bool IsAXSetter(SEL selector) {
       [ret addObject:colheader];
   }
   return [ret count] ? ret : nil;
+}
+
+- (NSArray*)accessibilityRows {
+  // TODO(accessibility) accessibilityRows is defined in
+  // browser_accessibility_cocoa.mm eventually that function definition should
+  // be moved here.
+  return nil;
+}
+
+//
+// NSAccessibility protocol: configuring linkage elements.
+//
+
+- (id)accessibilityTitleUIElement {
+  if (![self instanceActive])
+    return nil;
+
+  return [self titleUIElement];
 }
 
 // MathML attributes.
@@ -1685,7 +2562,7 @@ static NSDictionary* createMathSubSupScriptsPair(
   bool foundBaseElement = false;
   AXPlatformNodeCocoa* subscript = nullptr;
   for (AXPlatformNodeCocoa* child in [self AXChildren]) {
-    if ([child node]->GetRole() == ax::mojom::Role::kMathMLPrescriptDelimiter)
+    if ([child internalRole] == ax::mojom::Role::kMathMLPrescriptDelimiter)
       break;
     if (!foundBaseElement) {
       foundBaseElement = true;
@@ -1711,8 +2588,8 @@ static NSDictionary* createMathSubSupScriptsPair(
   AXPlatformNodeCocoa* subscript = nullptr;
   for (AXPlatformNodeCocoa* child in [self AXChildren]) {
     if (!foundPrescriptDelimiter) {
-      foundPrescriptDelimiter = ([child node]->GetRole() ==
-                                 ax::mojom::Role::kMathMLPrescriptDelimiter);
+      foundPrescriptDelimiter =
+          ([child internalRole] == ax::mojom::Role::kMathMLPrescriptDelimiter);
       continue;
     }
     if (!subscript) {

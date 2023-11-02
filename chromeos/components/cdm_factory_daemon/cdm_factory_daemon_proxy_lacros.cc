@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -76,6 +76,14 @@ void CdmFactoryDaemonProxyLacros::GetScreenResolutions(
   } else {
     std::move(callback).Run(std::vector<gfx::Size>());
   }
+}
+
+void CdmFactoryDaemonProxyLacros::GetAndroidHwKeyData(
+    const std::vector<uint8_t>& key_id,
+    const std::vector<uint8_t>& hw_identifier,
+    GetAndroidHwKeyDataCallback callback) {
+  // This should only go through ash-chrome.
+  NOTREACHED();
 }
 
 void CdmFactoryDaemonProxyLacros::EstablishAshConnection(

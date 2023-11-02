@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"
-#include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
@@ -141,7 +140,7 @@ bool GetControlText(HWND control, std::wstring* text) {
   // GetWindowText truncates the text if it is longer than can fit into
   // the buffer.
   WCHAR buffer[256];
-  int result = GetWindowText(control, buffer, base::size(buffer));
+  int result = GetWindowText(control, buffer, std::size(buffer));
   if (!result)
     return false;
 

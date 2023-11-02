@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,8 +33,10 @@ const char kPreferredLanguagesSyncable[] =
 // Important: Refer to header file for how to use this.
 const char kApplicationLocale[] = "intl.app_locale";
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 const char kAppLanguagePromptShown[] = "language.app_language_prompt_shown";
+
+const char kULPLanguages[] = "language.ulp_languages";
 #endif
 
 }  // namespace prefs

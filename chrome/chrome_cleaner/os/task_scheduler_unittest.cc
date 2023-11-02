@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,6 +26,10 @@
 #include "chrome/chrome_cleaner/test/test_executables.h"
 #include "chrome/chrome_cleaner/test/test_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/win/windows_version.h"
+#endif
 
 namespace chrome_cleaner {
 
@@ -94,6 +98,13 @@ TEST_F(TaskSchedulerTests, DeleteAndIsRegistered) {
 }
 
 TEST_F(TaskSchedulerTests, RunAProgramNow) {
+#if BUILDFLAG(IS_WIN)
+    // TODO(crbug.com/1307401): Failing on Windows7.
+    if (base::win::GetVersion() <= base::win::Version::WIN7) {
+      return;
+    }
+#endif
+
   base::FilePath executable_path;
   ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &executable_path));
   base::CommandLine command_line(

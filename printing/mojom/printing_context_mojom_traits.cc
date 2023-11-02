@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,14 +9,13 @@
 #include "build/build_config.h"
 #include "mojo/public/cpp/base/string16_mojom_traits.h"
 #include "printing/mojom/print.mojom.h"
-#include "printing/page_range.h"
 #include "printing/page_setup.h"
 #include "printing/print_settings.h"
 #include "ui/gfx/geometry/mojom/geometry.mojom-shared.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 #include "ui/gfx/geometry/size.h"
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "mojo/public/mojom/base/values.mojom.h"
 #endif
 
@@ -66,20 +65,6 @@ bool StructTraits<printing::mojom::PageSetupDataView, printing::PageSetup>::
     return false;
 
   *out = page_setup;
-  return true;
-}
-
-// static
-bool StructTraits<printing::mojom::PageRangeDataView, printing::PageRange>::
-    Read(printing::mojom::PageRangeDataView data, printing::PageRange* out) {
-  out->from = data.from();
-  out->to = data.to();
-
-  // A range should represent increasing page numbers, not to be used to
-  // indicate processing pages backwards.
-  if (out->from > out->to)
-    return false;
-
   return true;
 }
 
@@ -147,10 +132,9 @@ bool StructTraits<
 
   out->SetOrientation(data.landscape());
   out->set_supports_alpha_blend(data.supports_alpha_blend());
-#if defined(OS_WIN)
-  out->set_print_text_with_gdi(data.print_text_with_gdi());
+#if BUILDFLAG(IS_WIN)
   out->set_printer_language_type(data.printer_language_type());
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   out->set_is_modifiable(data.is_modifiable());
 
   // `SetCustomMargins()` has side effect of explicitly setting `margin_type_`
@@ -163,12 +147,12 @@ bool StructTraits<
   }
 
   out->set_pages_per_sheet(data.pages_per_sheet());
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   DCHECK(out->advanced_settings().empty());
   if (!data.ReadAdvancedSettings(&out->advanced_settings()))
     return false;
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
-#if defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   out->set_send_user_info(data.send_user_info());
 
   std::string username;
@@ -180,7 +164,7 @@ bool StructTraits<
   if (!data.ReadPinValue(&pin_value))
     return false;
   out->set_pin_value(pin_value);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   return true;
 }

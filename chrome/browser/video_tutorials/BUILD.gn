@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -110,7 +110,6 @@ if (is_android) {
     # These deps will be inherited by the resulting android_library target.
     deps = [
       ":java",
-      "//base:base_java",
       "//chrome/browser/profiles/android:java",
       "//components/embedder_support/android:content_view_java",
       "//components/image_fetcher:java",

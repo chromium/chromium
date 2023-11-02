@@ -1,10 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ios/chrome/common/crash_report/chrome_crash_reporter_client.h"
 
 #include "base/files/file_path.h"
+#include "base/no_destructor.h"
 #include "ios/chrome/common/crash_report/crash_helper.h"
 
 void ChromeCrashReporterClient::Create() {

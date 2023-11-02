@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,13 +6,13 @@
 #define CHROME_BROWSER_EXTENSIONS_ERROR_CONSOLE_ERROR_CONSOLE_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace extensions {
 
 class ErrorConsole;
 
-class ErrorConsoleFactory : public BrowserContextKeyedServiceFactory {
+class ErrorConsoleFactory : public ProfileKeyedServiceFactory {
  public:
   ErrorConsoleFactory(const ErrorConsoleFactory&) = delete;
   ErrorConsoleFactory& operator=(const ErrorConsoleFactory&) = delete;
@@ -28,8 +28,6 @@ class ErrorConsoleFactory : public BrowserContextKeyedServiceFactory {
 
   // BrowserContextKeyedServiceFactory implementation
   KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
 };
 

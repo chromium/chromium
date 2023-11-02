@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,9 @@
 #include <vector>
 
 #include "base/memory/memory_pressure_listener.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/time/time.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/media_export.h"
 #include "media/base/media_log.h"
@@ -176,6 +178,11 @@ class MEDIA_EXPORT SourceBufferStream {
   void set_memory_limit(size_t memory_limit) {
     memory_limit_ = memory_limit;
   }
+
+  // A helper function for detecting video/audio config change, so that we
+  // can "peek" the next buffer instead of dequeuing it directly from the source
+  // stream buffer queue.
+  bool IsNextBufferConfigChanged();
 
  private:
   friend class SourceBufferStreamTest;
@@ -390,7 +397,7 @@ class MEDIA_EXPORT SourceBufferStream {
 
   // Used to report log messages that can help the web developer figure out what
   // is wrong with the content.
-  MediaLog* media_log_;
+  raw_ptr<MediaLog> media_log_;
 
   // List of disjoint buffered ranges, ordered by start time.
   RangeList ranges_;
@@ -427,7 +434,7 @@ class MEDIA_EXPORT SourceBufferStream {
   // Pointer to the seeked-to Range. This is the range from which
   // GetNextBuffer() calls are fulfilled after the |track_buffer_| has been
   // emptied.
-  SourceBufferRange* selected_range_ = nullptr;
+  raw_ptr<SourceBufferRange> selected_range_ = nullptr;
 
   // Queue of the next buffers to be returned from calls to GetNextBuffer(). If
   // |track_buffer_| is empty, return buffers from |selected_range_|.
@@ -459,7 +466,7 @@ class MEDIA_EXPORT SourceBufferStream {
   // verify monotonically increasing intra-GOP DTS sequence and to update max
   // interbuffer distance also by DTS deltas within a coded frame group, the
   // following is needed.
-  DecodeTimestamp last_appended_buffer_decode_timestamp_ = kNoDecodeTimestamp();
+  DecodeTimestamp last_appended_buffer_decode_timestamp_ = kNoDecodeTimestamp;
 
   // The following is the highest presentation timestamp appended so far in this
   // coded frame group. Due to potentially out-of-order decode versus

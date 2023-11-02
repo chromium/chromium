@@ -1,11 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/vr/elements/ui_element_type.h"
 
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 
 namespace vr {
 
@@ -50,7 +49,7 @@ static const char* g_ui_element_type_strings[] = {
 };
 
 static_assert(
-    kNumUiElementTypes == base::size(g_ui_element_type_strings),
+    kNumUiElementTypes == std::size(g_ui_element_type_strings),
     "Mismatch between the kUiElementType enum and the corresponding array "
     "of strings.");
 

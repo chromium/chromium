@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <initializer_list>
 #include <iterator>
 #include <set>
@@ -16,8 +15,9 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -44,6 +44,7 @@ const char kWorkerSrc[] = "worker-src";
 const char kSelfSource[] = "'self'";
 const char kNoneSource[] = "'none'";
 const char kWasmEvalSource[] = "'wasm-eval'";
+const char kWasmUnsafeEvalSource[] = "'wasm-unsafe-eval'";
 
 const char kDirectiveSeparator = ';';
 
@@ -85,8 +86,8 @@ bool IsLocalHostSource(const std::string& source_lower) {
   constexpr char kLocalHostIP[] = "http://127.0.0.1";
 
   // Subtracting 1 to exclude the null terminator '\0'.
-  constexpr size_t kLocalHostLen = base::size(kLocalHost) - 1;
-  constexpr size_t kLocalHostIPLen = base::size(kLocalHostIP) - 1;
+  constexpr size_t kLocalHostLen = std::size(kLocalHost) - 1;
+  constexpr size_t kLocalHostIPLen = std::size(kLocalHostIP) - 1;
 
   if (base::StartsWith(source_lower, kLocalHost,
                        base::CompareCase::SENSITIVE)) {
@@ -194,7 +195,7 @@ bool isNonWildcardTLD(const std::string& url,
   if (!is_wildcard_subdomain || !should_check_rcd)
     return true;
 
-  // Allow *.googleapis.com to be whitelisted for backwards-compatibility.
+  // Allow *.googleapis.com to be allowlisted for backwards-compatibility.
   // (crbug.com/409952)
   if (host == "googleapis.com")
     return true;
@@ -239,9 +240,10 @@ std::string GetSecureDirectiveValues(
     std::string source_lower = base::ToLowerASCII(source_literal);
     bool is_secure_csp_token = false;
 
-    // We might need to relax this whitelist over time.
+    // We might need to relax this allowlist over time.
     if (source_lower == kSelfSource || source_lower == kNoneSource ||
-        source_lower == kWasmEvalSource || source_lower == "blob:" ||
+        source_lower == kWasmEvalSource ||
+        source_lower == kWasmUnsafeEvalSource || source_lower == "blob:" ||
         source_lower == "filesystem:" ||
         isNonWildcardTLD(source_lower, "https://", true) ||
         isNonWildcardTLD(source_lower, "chrome://", false) ||
@@ -528,7 +530,7 @@ bool ContentSecurityPolicyIsLegal(const std::string& policy) {
   // representing the content security policy as an HTTP header.
   const char kBadChars[] = {',', '\r', '\n', '\0'};
 
-  return policy.find_first_of(kBadChars, 0, base::size(kBadChars)) ==
+  return policy.find_first_of(kBadChars, 0, std::size(kBadChars)) ==
          std::string::npos;
 }
 
@@ -539,8 +541,9 @@ Directive::Directive(base::StringPiece directive_string,
       directive_name(std::move(directive_name)),
       directive_values(std::move(directive_values)) {
   // |directive_name| should be lower cased.
-  DCHECK(std::none_of(directive_name.begin(), directive_name.end(),
-                      base::IsAsciiUpper<char>));
+  // Note: Using |this->directive_name|, because |directive_name| refers to the
+  // already-moved-from input parameter.
+  DCHECK(base::ranges::none_of(this->directive_name, base::IsAsciiUpper<char>));
 }
 
 CSPParser::Directive::~Directive() = default;
@@ -636,7 +639,7 @@ bool DoesCSPDisallowRemoteCode(const std::string& content_security_policy,
     DirectiveMapping(DirectiveStatus status) : status(std::move(status)) {}
 
     DirectiveStatus status;
-    const CSPParser::Directive* directive = nullptr;
+    raw_ptr<const CSPParser::Directive> directive = nullptr;
   };
 
   DirectiveMapping script_src_mapping({DirectiveStatus({kScriptSrc})});
@@ -657,8 +660,8 @@ bool DoesCSPDisallowRemoteCode(const std::string& content_security_policy,
     // Find the first matching directive. As per
     // http://www.w3.org/TR/CSP/#parse-a-csp-policy, duplicate directive names
     // are ignored.
-    auto it = std::find_if(
-        csp_parser.directives().begin(), csp_parser.directives().end(),
+    auto it = base::ranges::find_if(
+        csp_parser.directives(),
         [mapping](const CSPParser::Directive& directive) {
           return mapping->status.Matches(directive.directive_name);
         });
@@ -698,22 +701,13 @@ bool DoesCSPDisallowRemoteCode(const std::string& content_security_policy,
     }
 
     auto directive_values = mapping.directive->directive_values;
-    auto it = std::find_if_not(
-        directive_values.begin(), directive_values.end(),
-        [](base::StringPiece source) {
+    auto it = base::ranges::find_if_not(
+        directive_values, [](base::StringPiece source) {
           std::string source_lower = base::ToLowerASCII(source);
-          if (source_lower == kSelfSource || source_lower == kNoneSource ||
-              IsLocalHostSource(source_lower)) {
-            return true;
-          }
 
-          if (source_lower == kWasmEvalSource &&
-              base::FeatureList::IsEnabled(
-                  extensions_features::kAllowWasmInMV3)) {
-            return true;
-          }
-
-          return false;
+          return source_lower == kSelfSource || source_lower == kNoneSource ||
+                 IsLocalHostSource(source_lower) ||
+                 source_lower == kWasmUnsafeEvalSource;
         });
 
     if (it == directive_values.end())

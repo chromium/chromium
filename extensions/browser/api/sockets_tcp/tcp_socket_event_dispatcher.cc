@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -196,10 +196,18 @@ void TCPSocketEventDispatcher::DispatchEvent(void* browser_context_id,
       reinterpret_cast<content::BrowserContext*>(browser_context_id);
   if (!extensions::ExtensionsBrowserClient::Get()->IsValidContext(context))
     return;
-
-  EventRouter* event_router = EventRouter::Get(context);
-  if (event_router)
-    event_router->DispatchEventToExtension(extension_id, std::move(event));
+  EventRouter* router = EventRouter::Get(context);
+  if (router) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // Terminal app is the only non-extension to use sockets
+    // (crbug.com/1350479).
+    if (extension_id == kCrOSTerminal) {
+      router->DispatchEventToURL(GURL(extension_id), std::move(event));
+      return;
+    }
+#endif
+    router->DispatchEventToExtension(extension_id, std::move(event));
+  }
 }
 
 }  // namespace api

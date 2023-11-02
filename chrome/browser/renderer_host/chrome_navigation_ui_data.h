@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,15 +6,21 @@
 #define CHROME_BROWSER_RENDERER_HOST_CHROME_NAVIGATION_UI_DATA_H_
 
 #include <memory>
+#include <string>
 
 #include "components/offline_pages/buildflags/buildflags.h"
 #include "components/offline_pages/core/request_header/offline_page_navigation_ui_data.h"
 #include "content/public/browser/navigation_ui_data.h"
-#include "extensions/browser/extension_navigation_ui_data.h"
 #include "extensions/buildflags/buildflags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/browser/extension_navigation_ui_data.h"
+#endif
 
 namespace content {
 class NavigationHandle;
+class WebContents;
 }
 
 enum class WindowOpenDisposition;
@@ -77,6 +83,9 @@ class ChromeNavigationUIData : public content::NavigationUIData {
     return is_using_https_as_default_scheme_;
   }
 
+  absl::optional<int64_t> bookmark_id() { return bookmark_id_; }
+  void set_bookmark_id(absl::optional<int64_t> id) { bookmark_id_ = id; }
+
  private:
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // Manages the lifetime of optional ExtensionNavigationUIData information.
@@ -98,6 +107,9 @@ class ChromeNavigationUIData : public content::NavigationUIData {
   // TypedNavigationUpgradeThrottle to determine if the navigation should be
   // observed and fall back to using http scheme if necessary.
   bool is_using_https_as_default_scheme_ = false;
+
+  // Id of the bookmark which started this navigation.
+  absl::optional<int64_t> bookmark_id_ = absl::nullopt;
 };
 
 #endif  // CHROME_BROWSER_RENDERER_HOST_CHROME_NAVIGATION_UI_DATA_H_

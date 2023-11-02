@@ -1,4 +1,15 @@
-import {BillingResponseCode, CreateDigitalGoodsResponseCode, DigitalGoodsFactory, DigitalGoodsFactoryReceiver, DigitalGoodsReceiver, DigitalGoodsRemote, PurchaseState} from '/gen/third_party/blink/public/mojom/digital_goods/digital_goods.mojom.m.js';
+import {
+  BillingResponseCode,
+  CreateDigitalGoodsResponseCode,
+  ItemType,
+} from '/gen/components/digital_goods/mojom/digital_goods.mojom.m.js';
+
+import {
+  DigitalGoodsFactory,
+  DigitalGoodsFactoryReceiver,
+  DigitalGoodsReceiver,
+  DigitalGoodsRemote,
+} from '/gen/third_party/blink/public/mojom/digital_goods/digital_goods.mojom.m.js';
 
 class MockDigitalGoods {
   constructor() {
@@ -41,6 +52,9 @@ class MockDigitalGoods {
       itemDetails.introductoryPrice.currency = 'JPY';
       itemDetails.introductoryPrice.value = 2*num + '';
       itemDetails.introductoryPricePeriod = 'P' + num + 'D';
+      itemDetails.introductoryPriceCycles = 3*num;
+      itemDetails.type = Math.floor(num / 2) % 2 ? ItemType.kProduct : ItemType.kSubscription;
+      itemDetails.iconUrls = [{url: 'https://example.com/icon.png'}];
     }
     return itemDetails;
   }
@@ -66,32 +80,12 @@ class MockDigitalGoods {
     };
   }
 
-  async acknowledge(purchaseToken, makeAvailableAgain) {
-    this.actionResolve_(
-        'acknowledge:' + purchaseToken + ' ' + makeAvailableAgain);
-
-    if (purchaseToken === 'fail') {
-      return {code: BillingResponseCode.kError};
-    }
-    return {code: BillingResponseCode.kOk};
-  }
-
-  makePurchaseDetails_(id) {
-    // purchaseDetails is a payments.mojom.PurchaseDetails.
-    let purchaseDetails = {};
-    purchaseDetails.itemId = 'id:' + id;
-    purchaseDetails.purchaseToken = 'purchaseToken:' + id;
-    purchaseDetails.acknowledged = Boolean(id % 2);
-    const purchaseStates = [
-      PurchaseState.kUnknown,
-      PurchaseState.kPurchased,
-      PurchaseState.kPending,
-    ];
-    purchaseDetails.purchaseState = purchaseStates[id % 3];
-    // Use idNum as seconds. |microseconds| is since Unix epoch.
-    purchaseDetails.purchaseTime = {microseconds: BigInt(id * 1000 * 1000)};
-    purchaseDetails.willAutoRenew = Boolean(id % 2);
-    return purchaseDetails;
+  makePurchaseReference_(id) {
+    // purchaseReference is a payments.mojom.PurchaseReference.
+    let purchaseReference = {};
+    purchaseReference.itemId = 'id:' + id;
+    purchaseReference.purchaseToken = 'purchaseToken:' + id;
+    return purchaseReference;
   }
 
   async listPurchases() {
@@ -99,13 +93,36 @@ class MockDigitalGoods {
 
     let result = [];
     for (let i = 0; i < 10; i++) {
-      result.push(this.makePurchaseDetails_(i));
+      result.push(this.makePurchaseReference_(i));
     }
 
     return {
       code: BillingResponseCode.kOk,
-      purchaseDetailsList: result
+      purchaseReferenceList: result
     };
+  }
+
+  async listPurchaseHistory() {
+    this.actionResolve_('listPurchaseHistory');
+
+    let result = [];
+    for (let i = 0; i < 20; i++) {
+      result.push(this.makePurchaseReference_(i));
+    }
+
+    return {
+      code: BillingResponseCode.kOk,
+      purchaseReferenceList: result
+    };
+  }
+
+  async consume(purchaseToken) {
+    this.actionResolve_('consume:' + purchaseToken);
+
+    if (purchaseToken === 'fail') {
+      return { code: BillingResponseCode.kError };
+    }
+    return { code: BillingResponseCode.kOk };
   }
 }
 

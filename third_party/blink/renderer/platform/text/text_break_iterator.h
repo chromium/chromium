@@ -26,6 +26,7 @@
 
 #include <unicode/brkiter.h>
 
+#include "base/check_op.h"
 #include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/text/character.h"
@@ -138,7 +139,7 @@ class PLATFORM_EXPORT LazyLineBreakIterator final {
   LazyLineBreakIterator(String string,
                         const AtomicString& locale = AtomicString(),
                         LineBreakType break_type = LineBreakType::kNormal)
-      : string_(string),
+      : string_(std::move(string)),
         locale_(locale),
         iterator_(nullptr),
         break_type_(break_type) {

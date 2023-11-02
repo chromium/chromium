@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,7 +36,7 @@ void CachedNavigationURLLoader::OnResponseStarted() {
       /*url_loader_client_endpoints=*/nullptr, std::move(cached_response_head_),
       /*response_body=*/mojo::ScopedDataPipeConsumerHandle(), global_id,
       /*is_download=*/false, blink::NavigationDownloadPolicy(),
-      request_info_->isolation_info.network_isolation_key(), absl::nullopt,
+      request_info_->isolation_info.network_anonymization_key(), absl::nullopt,
       /*early_hints=*/{});
 }
 CachedNavigationURLLoader::~CachedNavigationURLLoader() {}
@@ -84,8 +84,7 @@ void CachedNavigationURLLoader::Start() {
 void CachedNavigationURLLoader::FollowRedirect(
     const std::vector<std::string>& removed_headers,
     const net::HttpRequestHeaders& modified_headers,
-    const net::HttpRequestHeaders& modified_cors_exempt_headers,
-    blink::PreviewsState new_previews_state) {
+    const net::HttpRequestHeaders& modified_cors_exempt_headers) {
   NOTREACHED();
 }
 

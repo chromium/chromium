@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,9 @@ namespace accessibility_state_utils {
 
 // Returns true if a screen reader is enabled on any platform.
 bool IsScreenReaderEnabled();
+
+// Overrides |IsScreenReaderEnabled| for testing.
+void OverrideIsScreenReaderEnabledForTesting(bool enabled);
 
 }  // namespace accessibility_state_utils
 

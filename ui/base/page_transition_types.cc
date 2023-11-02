@@ -1,4 +1,4 @@
-// Copyright (c) 2010 The Chromium Authors. All rights reserved.
+// Copyright 2010 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,35 +8,35 @@
 
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "base/stl_util.h"
 
 namespace ui {
 
 bool PageTransitionCoreTypeIs(PageTransition lhs,
                               PageTransition rhs) {
-  // Expect the rhs to be a compile time constant without qualifiers.
-  DCHECK_EQ(PageTransitionGetQualifier(rhs), 0);
-  DCHECK(PageTransitionIsValidType(rhs));
-  return static_cast<int32_t>(PageTransitionStripQualifier(lhs)) ==
-      static_cast<int32_t>(PageTransitionStripQualifier(rhs));
+  // Expect the rhs to have no qualifiers.
+  DCHECK(IsValidPageTransitionType(base::to_underlying(rhs)));
+  const auto rhs_core = PageTransitionStripQualifier(rhs);
+  DCHECK(PageTransitionTypeIncludingQualifiersIs(rhs, rhs_core));
+  return PageTransitionTypeIncludingQualifiersIs(
+      PageTransitionStripQualifier(lhs), rhs_core);
 }
 
 bool PageTransitionTypeIncludingQualifiersIs(PageTransition lhs,
                                              PageTransition rhs) {
-  return static_cast<int32_t>(lhs) == static_cast<int32_t>(rhs);
+  return base::to_underlying(lhs) == base::to_underlying(rhs);
 }
 
 PageTransition PageTransitionStripQualifier(PageTransition type) {
   return static_cast<PageTransition>(type & ~PAGE_TRANSITION_QUALIFIER_MASK);
 }
 
-bool PageTransitionIsValidType(int32_t type) {
-  PageTransition t = PageTransitionStripQualifier(
-      static_cast<PageTransition>(type));
-  return (t <= PAGE_TRANSITION_LAST_CORE);
+bool IsValidPageTransitionType(int32_t type) {
+  return (type & ~PAGE_TRANSITION_QUALIFIER_MASK) <= PAGE_TRANSITION_LAST_CORE;
 }
 
 PageTransition PageTransitionFromInt(int32_t type) {
-  if (!PageTransitionIsValidType(type)) {
+  if (!IsValidPageTransitionType(type)) {
     NOTREACHED() << "Invalid transition type " << type;
 
     // Return a safe default so we don't have corrupt data in release mode.
@@ -59,24 +59,25 @@ bool PageTransitionIsNewNavigation(PageTransition type) {
       !PageTransitionCoreTypeIs(type, PAGE_TRANSITION_RELOAD);
 }
 
-int32_t PageTransitionGetQualifier(PageTransition type) {
-  return type & PAGE_TRANSITION_QUALIFIER_MASK;
+PageTransition PageTransitionGetQualifier(PageTransition type) {
+  return static_cast<PageTransition>(type & PAGE_TRANSITION_QUALIFIER_MASK);
 }
 
 bool PageTransitionIsWebTriggerable(PageTransition type) {
-  int32_t t = PageTransitionStripQualifier(type);
+  const PageTransition t = PageTransitionStripQualifier(type);
   switch (t) {
     case PAGE_TRANSITION_LINK:
     case PAGE_TRANSITION_AUTO_SUBFRAME:
     case PAGE_TRANSITION_MANUAL_SUBFRAME:
     case PAGE_TRANSITION_FORM_SUBMIT:
       return true;
+    default:
+      return false;
   }
-  return false;
 }
 
 const char* PageTransitionGetCoreTransitionString(PageTransition type) {
-  int32_t t = PageTransitionStripQualifier(type);
+  const PageTransition t = PageTransitionStripQualifier(type);
   switch (t) {
     case PAGE_TRANSITION_LINK: return "link";
     case PAGE_TRANSITION_TYPED: return "typed";
@@ -89,8 +90,10 @@ const char* PageTransitionGetCoreTransitionString(PageTransition type) {
     case PAGE_TRANSITION_RELOAD: return "reload";
     case PAGE_TRANSITION_KEYWORD: return "keyword";
     case PAGE_TRANSITION_KEYWORD_GENERATED: return "keyword_generated";
+    default:
+      NOTREACHED();
+      return nullptr;
   }
-  return nullptr;
 }
 
 }  // namespace ui

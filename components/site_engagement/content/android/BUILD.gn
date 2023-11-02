@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -8,6 +8,8 @@ android_library("java") {
   sources = [ "java/src/org/chromium/components/site_engagement/SiteEngagementService.java" ]
   deps = [
     "//base:base_java",
+    "//base:jni_java",
+    "//build/android:build_java",
     "//content/public/android:content_full_java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]

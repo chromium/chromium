@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,7 +35,7 @@ class AudioDeviceListenerMacTest : public testing::Test {
   AudioDeviceListenerMacTest& operator=(const AudioDeviceListenerMacTest&) =
       delete;
 
-  virtual ~AudioDeviceListenerMacTest() {
+  ~AudioDeviceListenerMacTest() override {
     // It's important to destroy the device listener from the message loop in
     // order to ensure we don't end up with unbalanced TaskObserver calls.
     task_environment_.GetMainThreadTaskRunner()->PostTask(

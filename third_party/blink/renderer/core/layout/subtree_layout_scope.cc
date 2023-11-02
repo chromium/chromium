@@ -51,7 +51,7 @@ SubtreeLayoutScope::~SubtreeLayoutScope() {
     // have been marked for layout. Skip such LayoutObject to avoid that
     // NOT_DESTROYED() triggers a DCHECK failure in AssertLaidOut() or
     // AssertFragmentTree().
-    if (layout_object->IsDestroyed()) {
+    if (layout_object->is_destroyed_) {
       DCHECK(RuntimeEnabledFeatures::CSSContainerQueriesEnabled());
       continue;
     }

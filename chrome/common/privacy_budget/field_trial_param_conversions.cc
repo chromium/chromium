@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,6 +38,10 @@ bool DecodeIdentifiabilityType(const base::StringPiece s, int* out) {
   return base::StringToInt(s, out);
 }
 
+bool DecodeIdentifiabilityType(const base::StringPiece s, uint64_t* out) {
+  return base::StringToUint64(s, out);
+}
+
 bool DecodeIdentifiabilityType(const base::StringPiece s, unsigned int* out) {
   return base::StringToUint(s, out);
 }
@@ -51,6 +55,11 @@ bool DecodeIdentifiabilityType(const base::StringPiece s,
   *out = DecodeIdentifiabilityFieldTrialParam<
       std::vector<blink::IdentifiableSurface>, ';'>(s);
   return !out->empty();
+}
+
+bool DecodeIdentifiabilityType(const base::StringPiece s, std::string* out) {
+  *out = std::string(s);
+  return true;
 }
 
 std::string EncodeIdentifiabilityType(const blink::IdentifiableSurface& s) {
@@ -76,6 +85,18 @@ std::string EncodeIdentifiabilityType(const double& value) {
   return base::NumberToString(value);
 }
 
+std::string EncodeIdentifiabilityType(const std::string& value) {
+  return value;
+}
+
+std::string EncodeIdentifiabilityType(const uint64_t& value) {
+  return base::NumberToString(value);
+}
+
+std::string EncodeIdentifiabilityType(const int& value) {
+  return base::NumberToString(value);
+}
+
 std::string EncodeIdentifiabilityType(
     const std::vector<blink::IdentifiableSurface>& value) {
   std::vector<std::string> parts;
@@ -88,3 +109,7 @@ std::string EncodeIdentifiabilityType(
 }
 
 }  // namespace privacy_budget_internal
+
+std::string EncodeIdentifiabilityFieldTrialParam(bool source) {
+  return source ? "true" : "false";
+}

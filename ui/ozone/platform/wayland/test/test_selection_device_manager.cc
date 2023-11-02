@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,6 @@
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/notreached.h"
-#include "base/task/post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner_util.h"
 #include "base/task/task_traits.h"
@@ -91,7 +90,9 @@ TestSelectionSource::TestSelectionSource(wl_resource* resource,
       task_runner_(
           base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})) {}
 
-TestSelectionSource::~TestSelectionSource() = default;
+TestSelectionSource::~TestSelectionSource() {
+  delegate_->OnDestroying();
+}
 
 void TestSelectionSource::ReadData(const std::string& mime_type,
                                    ReadDataCallback callback) {
@@ -111,9 +112,18 @@ void TestSelectionSource::ReadData(const std::string& mime_type,
       std::move(callback));
 }
 
+void TestSelectionSource::OnFinished() {
+  delegate_->SendFinished();
+  mime_types_.clear();
+}
+
 void TestSelectionSource::OnCancelled() {
   delegate_->SendCancelled();
   mime_types_.clear();
+}
+
+void TestSelectionSource::OnDndAction(uint32_t action) {
+  delegate_->SendDndAction(action);
 }
 
 void TestSelectionSource::Offer(struct wl_client* client,
@@ -148,7 +158,10 @@ void TestSelectionDevice::SetSelection(struct wl_client* client,
   CHECK(GetUserDataAs<TestSelectionDevice>(resource));
   auto* self = GetUserDataAs<TestSelectionDevice>(resource);
   auto* src = source ? GetUserDataAs<TestSelectionSource>(source) : nullptr;
+  self->selection_serial_ = serial;
   self->delegate_->HandleSetSelection(src, serial);
+  if (self->manager_)
+    self->manager_->set_source(src);
 }
 
 TestSelectionDeviceManager::TestSelectionDeviceManager(
@@ -166,7 +179,7 @@ void TestSelectionDeviceManager::CreateSource(wl_client* client,
                                               uint32_t id) {
   CHECK(GetUserDataAs<TestSelectionDeviceManager>(manager_resource));
   auto* manager = GetUserDataAs<TestSelectionDeviceManager>(manager_resource);
-  manager->source_ = manager->delegate_->CreateSource(client, id);
+  manager->delegate_->CreateSource(client, id);
 }
 
 void TestSelectionDeviceManager::GetDevice(wl_client* client,
@@ -175,7 +188,9 @@ void TestSelectionDeviceManager::GetDevice(wl_client* client,
                                            wl_resource* seat_resource) {
   CHECK(GetUserDataAs<TestSelectionDeviceManager>(manager_resource));
   auto* manager = GetUserDataAs<TestSelectionDeviceManager>(manager_resource);
-  manager->device_ = manager->delegate_->CreateDevice(client, id);
+  auto* new_device = manager->delegate_->CreateDevice(client, id);
+  new_device->set_manager(manager);
+  manager->device_ = new_device;
 }
 
 }  // namespace wl

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,11 @@
 #include <string>
 
 #include "base/auto_reset.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
 
 class Browser;
-class ExtensionsMenuItemView;
+class InstalledExtensionMenuItemView;
 class ExtensionsMenuView;
 class ExtensionsToolbarContainer;
 
@@ -57,9 +58,9 @@ class ExtensionsMenuTestUtil : public ExtensionActionTestHelper {
   class MenuViewObserver;
   class Wrapper;
 
-  // Returns the ExtensionsMenuItemView for the given `id` from the
+  // Returns the InstalledExtensionMenuItemView for the given `id` from the
   // `menu_view`.
-  ExtensionsMenuItemView* GetMenuItemViewForId(
+  InstalledExtensionMenuItemView* GetMenuItemViewForId(
       const extensions::ExtensionId& id);
 
   // An override to allow test instances of the ExtensionsMenuView.
@@ -68,8 +69,8 @@ class ExtensionsMenuTestUtil : public ExtensionActionTestHelper {
 
   std::unique_ptr<Wrapper> wrapper_;
 
-  Browser* const browser_;
-  ExtensionsToolbarContainer* extensions_container_ = nullptr;
+  const raw_ptr<Browser> browser_;
+  raw_ptr<ExtensionsToolbarContainer> extensions_container_ = nullptr;
 
   // Helps make sure that |menu_view_| set to null when destroyed by the widget
   // or via manual means.

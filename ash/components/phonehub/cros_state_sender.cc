@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,12 +6,15 @@
 
 #include "ash/components/phonehub/message_sender.h"
 #include "ash/components/phonehub/phone_model.h"
-#include "chromeos/components/multidevice/logging/logging.h"
-#include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
+#include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 namespace {
+
+using multidevice_setup::mojom::Feature;
+using multidevice_setup::mojom::FeatureState;
 
 // The minimum time to wait before checking whether the phone has responded to
 // status messages sent by CrosStateSender, and re-sending the status messages
@@ -24,9 +27,6 @@ constexpr base::TimeDelta kMinimumRetryDelay = base::Seconds(15u);
 constexpr int kRetryDelayMultiplier = 2;
 
 }  // namespace
-
-using multidevice_setup::mojom::Feature;
-using multidevice_setup::mojom::FeatureState;
 
 CrosStateSender::CrosStateSender(
     MessageSender* message_sender,
@@ -130,4 +130,4 @@ void CrosStateSender::OnFeatureStatesChanged(
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

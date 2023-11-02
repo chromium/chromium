@@ -1,14 +1,18 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "media/gpu/v4l2/v4l2_video_decoder_delegate_h264.h"
 
+// ChromeOS specific header; does not exist upstream
+#if BUILDFLAG(IS_CHROMEOS)
 // TODO(987856): prevent legacy headers being included from videodev2.h until
 // v4.14 support is deprecated.
 #define _H264_CTRLS_LEGACY_H_
 
 #include <linux/media/h264-ctrls-upstream.h>
+#endif
+
 #include <linux/videodev2.h>
 #include <type_traits>
 
@@ -20,6 +24,20 @@
 #include "media/gpu/v4l2/v4l2_device.h"
 
 namespace media {
+
+namespace {
+
+constexpr uint8_t zigzag_4x4[] = {
+    0, 1, 4, 8, 5, 2, 3, 6, 9, 12, 13, 10, 7, 11, 14, 15,
+};
+
+constexpr uint8_t zigzag_8x8[] = {
+    0,  1,  8,  16, 9,  2,  3,  10, 17, 24, 32, 25, 18, 11, 4,  5,
+    12, 19, 26, 33, 40, 48, 41, 34, 27, 20, 13, 6,  7,  14, 21, 28,
+    35, 42, 49, 56, 57, 50, 43, 36, 29, 22, 15, 23, 30, 37, 44, 51,
+    58, 59, 52, 45, 38, 31, 39, 46, 53, 60, 61, 54, 47, 55, 62, 63};
+
+}  // namespace
 
 // This struct contains the kernel-specific parts of the H264 acceleration,
 // that we don't want to expose in the .h file since they may differ from
@@ -72,7 +90,7 @@ V4L2VideoDecoderDelegateH264::H264DPBToV4L2DPB(const H264DPB& dpb) {
   memset(priv_->v4l2_decode_param.dpb, 0, sizeof(priv_->v4l2_decode_param.dpb));
   size_t i = 0;
   for (const auto& pic : dpb) {
-    if (i >= base::size(priv_->v4l2_decode_param.dpb)) {
+    if (i >= std::size(priv_->v4l2_decode_param.dpb)) {
       VLOGF(1) << "Invalid DPB size";
       break;
     }
@@ -87,8 +105,18 @@ V4L2VideoDecoderDelegateH264::H264DPBToV4L2DPB(const H264DPB& dpb) {
 
     struct v4l2_h264_dpb_entry& entry = priv_->v4l2_decode_param.dpb[i++];
     entry.reference_ts = index;
-    entry.pic_num = pic->pic_num;
-    entry.frame_num = pic->frame_num;
+    if (pic->long_term) {
+      entry.frame_num = pic->long_term_pic_num;
+      entry.pic_num = pic->long_term_frame_idx;
+    } else {
+      entry.frame_num = pic->frame_num;
+      entry.pic_num = pic->pic_num;
+    }
+
+    DCHECK_EQ(pic->field, H264Picture::FIELD_NONE)
+        << "Interlacing not supported";
+    entry.fields = V4L2_H264_FRAME_REF;
+
     entry.top_field_order_cnt = pic->top_field_order_cnt;
     entry.bottom_field_order_cnt = pic->bottom_field_order_cnt;
     entry.flags = V4L2_H264_DPB_ENTRY_FLAG_VALID |
@@ -137,7 +165,7 @@ V4L2VideoDecoderDelegateH264::SubmitFrameMetadata(
   static_assert(std::extent<decltype(v4l2_sps.offset_for_ref_frame)>() ==
                     std::extent<decltype(sps->offset_for_ref_frame)>(),
                 "offset_for_ref_frame arrays must be same size");
-  for (size_t i = 0; i < base::size(v4l2_sps.offset_for_ref_frame); ++i) {
+  for (size_t i = 0; i < std::size(v4l2_sps.offset_for_ref_frame); ++i) {
     v4l2_sps.offset_for_ref_frame[i] = sps->offset_for_ref_frame[i];
   }
   SPS_TO_V4L2SPS(max_num_ref_frames);
@@ -238,18 +266,26 @@ V4L2VideoDecoderDelegateH264::SubmitFrameMetadata(
     scaling_list8x8 = &pps->scaling_list8x8[0];
   }
 
-  for (size_t i = 0; i < base::size(v4l2_scaling_matrix.scaling_list_4x4);
-       ++i) {
-    for (size_t j = 0; j < base::size(v4l2_scaling_matrix.scaling_list_4x4[i]);
+  for (size_t i = 0; i < std::size(v4l2_scaling_matrix.scaling_list_4x4); ++i) {
+    for (size_t j = 0; j < std::size(v4l2_scaling_matrix.scaling_list_4x4[i]);
          ++j) {
-      v4l2_scaling_matrix.scaling_list_4x4[i][j] = scaling_list4x4[i][j];
+      // Parser uses source (zigzag) order, while V4L2 API requires raster
+      // order.
+      static_assert(
+          std::extent<decltype(v4l2_scaling_matrix.scaling_list_4x4), 1>() ==
+          std::extent<decltype(zigzag_4x4)>());
+      v4l2_scaling_matrix.scaling_list_4x4[i][zigzag_4x4[j]] =
+          scaling_list4x4[i][j];
     }
   }
-  for (size_t i = 0; i < base::size(v4l2_scaling_matrix.scaling_list_8x8);
-       ++i) {
-    for (size_t j = 0; j < base::size(v4l2_scaling_matrix.scaling_list_8x8[i]);
+  for (size_t i = 0; i < std::size(v4l2_scaling_matrix.scaling_list_8x8); ++i) {
+    for (size_t j = 0; j < std::size(v4l2_scaling_matrix.scaling_list_8x8[i]);
          ++j) {
-      v4l2_scaling_matrix.scaling_list_8x8[i][j] = scaling_list8x8[i][j];
+      static_assert(
+          std::extent<decltype(v4l2_scaling_matrix.scaling_list_8x8), 1>() ==
+          std::extent<decltype(zigzag_8x8)>());
+      v4l2_scaling_matrix.scaling_list_8x8[i][zigzag_8x8[j]] =
+          scaling_list8x8[i][j];
     }
   }
 
@@ -374,10 +410,9 @@ H264Decoder::H264Accelerator::Status V4L2VideoDecoderDelegateH264::SubmitDecode(
 
 bool V4L2VideoDecoderDelegateH264::OutputPicture(
     scoped_refptr<H264Picture> pic) {
-  // TODO(crbug.com/647725): Insert correct color space.
   surface_handler_->SurfaceReady(H264PictureToV4L2DecodeSurface(pic.get()),
                                  pic->bitstream_id(), pic->visible_rect(),
-                                 VideoColorSpace());
+                                 pic->get_colorspace());
   return true;
 }
 

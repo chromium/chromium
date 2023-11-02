@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,9 @@
 #include <string>
 #include <vector>
 
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -18,7 +21,6 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
-#include "url/origin.h"
 
 namespace content {
 
@@ -26,7 +28,7 @@ class TestAggregationServiceImplTest : public testing::Test {
  public:
   TestAggregationServiceImplTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        impl_(std::make_unique<TestAggregationServiceImpl>(
+        service_impl_(std::make_unique<TestAggregationServiceImpl>(
             task_environment_.GetMockClock(),
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_))) {}
@@ -36,7 +38,7 @@ class TestAggregationServiceImplTest : public testing::Test {
   network::TestURLLoaderFactory test_url_loader_factory_;
 
  protected:
-  std::unique_ptr<TestAggregationServiceImpl> impl_;
+  std::unique_ptr<TestAggregationServiceImpl> service_impl_;
 };
 
 TEST_F(TestAggregationServiceImplTest, SetPublicKeys) {
@@ -55,16 +57,23 @@ TEST_F(TestAggregationServiceImplTest, SetPublicKeys) {
          })",
       {generated_key.base64_encoded_public_key}, /*offsets=*/nullptr);
 
-  url::Origin origin = url::Origin::Create(GURL("https://a.com"));
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath json_file =
+      temp_dir.GetPath().Append(FILE_PATH_LITERAL("public_keys.json"));
 
-  impl_->SetPublicKeys(origin, json_string,
-                       base::BindLambdaForTesting([&](bool succeeded) {
-                         EXPECT_TRUE(succeeded);
-                       }));
+  ASSERT_TRUE(base::WriteFile(json_file, json_string));
+
+  GURL url("https://a.com/keys");
+
+  service_impl_->SetPublicKeys(url, json_file,
+                               base::BindLambdaForTesting([&](bool succeeded) {
+                                 EXPECT_TRUE(succeeded);
+                               }));
 
   base::RunLoop run_loop;
-  impl_->GetPublicKeys(
-      origin, base::BindLambdaForTesting([&](std::vector<PublicKey> keys) {
+  service_impl_->GetPublicKeys(
+      url, base::BindLambdaForTesting([&](std::vector<PublicKey> keys) {
         EXPECT_TRUE(content::aggregation_service::PublicKeysEqual(
             {generated_key.public_key}, keys));
         run_loop.Quit();

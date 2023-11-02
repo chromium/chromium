@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,6 +22,7 @@ SilentSinkSuspender::SilentSinkSuspender(
       task_runner_(base::ThreadTaskRunnerHandle::Get()),
       silence_timeout_(silence_timeout),
       fake_sink_(std::move(worker), params_),
+      transition_lock_("SilentSinkSuspender"),
       sink_transition_callback_(
           base::BindRepeating(&SilentSinkSuspender::TransitionSinks,
                               base::Unretained(this))) {

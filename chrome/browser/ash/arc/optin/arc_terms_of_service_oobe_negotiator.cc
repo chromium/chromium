@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,7 +26,10 @@ chromeos::ArcTermsOfServiceScreenView* GetScreenView() {
 
   auto* host = ash::LoginDisplayHost::default_host();
   DCHECK(host);
-  DCHECK(host->GetOobeUI());
+
+  // Ensure WebUI is loaded
+  host->GetWizardController();
+
   return host->GetOobeUI()->GetView<chromeos::ArcTermsOfServiceScreenHandler>();
 }
 
@@ -94,6 +97,11 @@ void ArcTermsOfServiceOobeNegotiator::OnViewDestroyed(
 void ArcTermsOfServiceOobeNegotiator::OnConsolidatedConsentAccept() {
   DCHECK(chromeos::features::IsOobeConsolidatedConsentEnabled());
   HandleTermsAccepted(true);
+}
+
+void ArcTermsOfServiceOobeNegotiator::OnConsolidatedConsentScreenDestroyed() {
+  DCHECK(chromeos::features::IsOobeConsolidatedConsentEnabled());
+  HandleTermsAccepted(false);
 }
 
 }  // namespace arc

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,7 +29,10 @@ PermissionIDSet MockManifestPermission::GetPermissions() const {
 }
 
 bool MockManifestPermission::FromValue(const base::Value* value) {
-  return value && value->GetAsString(&value_);
+  if (!value || !value->is_string())
+    return false;
+  value_ = value->GetString();
+  return true;
 }
 
 std::unique_ptr<base::Value> MockManifestPermission::ToValue() const {

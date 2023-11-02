@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,6 +19,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/address_list.h"
 #include "net/base/net_errors.h"
+#include "net/dns/public/host_resolver_results.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "net/log/net_log_with_source.h"
 #include "services/network/public/cpp/resolve_host_client_base.h"
@@ -32,12 +33,12 @@ namespace {
 // Preconnects can be received from the renderer before commit messages, so
 // need to use the key from the pending navigation, and not the committed
 // navigation, unlike other consumers. This does mean on navigating away from a
-// site, preconnect is more likely to incorrectly use the NetworkIsolationKey of
-// the previous commit.
-net::NetworkIsolationKey GetPendingNetworkIsolationKey(
+// site, preconnect is more likely to incorrectly use the
+// NetworkAnonymizationKey of the previous commit.
+net::NetworkAnonymizationKey GetPendingNetworkAnonymizationKey(
     content::RenderFrameHost* render_frame_host) {
   return render_frame_host->GetPendingIsolationInfoForSubresources()
-      .network_isolation_key();
+      .network_anonymization_key();
 }
 
 const int kDefaultPort = 80;
@@ -68,7 +69,9 @@ class DnsLookupRequest : public network::ResolveHostClientBase {
         content::RenderFrameHost::FromID(render_process_id_, render_frame_id_);
     if (!render_frame_host) {
       OnComplete(net::ERR_NAME_NOT_RESOLVED,
-                 net::ResolveErrorInfo(net::ERR_FAILED), absl::nullopt);
+                 net::ResolveErrorInfo(net::ERR_FAILED),
+                 /*resolved_addresses=*/absl::nullopt,
+                 /*endpoint_results_with_metadata=*/absl::nullopt);
       return;
     }
 
@@ -81,26 +84,32 @@ class DnsLookupRequest : public network::ResolveHostClientBase {
     // Make a note that this is a speculative resolve request. This allows
     // separating it from real navigations in the observer's callback.
     resolve_host_parameters->is_speculative = true;
-    // TODO(https://crbug.com/997049): Pass in a non-empty NetworkIsolationKey.
+    // TODO(https://crbug.com/997049): Pass in a non-empty
+    // NetworkAnonymizationKey.
+    // TODO(crbug.com/1355169): Consider passing a SchemeHostPort to trigger
+    // HTTPS DNS resource record query.
     render_frame_host->GetProcess()
         ->GetStoragePartition()
         ->GetNetworkContext()
-        ->ResolveHost(host_port_pair,
-                      GetPendingNetworkIsolationKey(render_frame_host),
+        ->ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
+                          std::move(host_port_pair)),
+                      GetPendingNetworkAnonymizationKey(render_frame_host),
                       std::move(resolve_host_parameters),
                       receiver_.BindNewPipeAndPassRemote());
-    receiver_.set_disconnect_handler(
-        base::BindOnce(&DnsLookupRequest::OnComplete, base::Unretained(this),
-                       net::ERR_NAME_NOT_RESOLVED,
-                       net::ResolveErrorInfo(net::ERR_FAILED), absl::nullopt));
+    receiver_.set_disconnect_handler(base::BindOnce(
+        &DnsLookupRequest::OnComplete, base::Unretained(this),
+        net::ERR_NAME_NOT_RESOLVED, net::ResolveErrorInfo(net::ERR_FAILED),
+        /*resolved_addresses=*/absl::nullopt,
+        /*endpoint_results_with_metadata=*/absl::nullopt));
   }
 
  private:
   // network::mojom::ResolveHostClient:
-  void OnComplete(
-      int result,
-      const net::ResolveErrorInfo& resolve_error_info,
-      const absl::optional<net::AddressList>& resolved_addresses) override {
+  void OnComplete(int result,
+                  const net::ResolveErrorInfo& resolve_error_info,
+                  const absl::optional<net::AddressList>& resolved_addresses,
+                  const absl::optional<net::HostResolverEndpointResults>&
+                      endpoint_results_with_metadata) override {
     VLOG(2) << __FUNCTION__ << ": " << hostname_
             << ", result=" << resolve_error_info.error;
     request_.reset();
@@ -148,7 +157,24 @@ void SimpleNetworkHintsHandlerImpl::PrefetchDNS(
 
 void SimpleNetworkHintsHandlerImpl::Preconnect(const GURL& url,
                                                bool allow_credentials) {
-  // Not implemented.
+  if (!url.is_valid() || !url.has_host() || !url.has_scheme() ||
+      !url.SchemeIsHTTPOrHTTPS()) {
+    return;
+  }
+
+  auto* render_frame_host =
+      content::RenderFrameHost::FromID(render_process_id_, render_frame_id_);
+  if (!render_frame_host)
+    return;
+
+  net::NetworkAnonymizationKey network_anonymization_key =
+      render_frame_host->GetPendingIsolationInfoForSubresources()
+          .network_anonymization_key();
+
+  render_frame_host->GetStoragePartition()
+      ->GetNetworkContext()
+      ->PreconnectSockets(/*num_streams=*/1, url, allow_credentials,
+                          network_anonymization_key);
 }
 
 }  // namespace network_hints

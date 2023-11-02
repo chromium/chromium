@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "media/base/video_codecs.h"
 #include "remoting/codec/webrtc_video_encoder.h"
-#include "remoting/codec/webrtc_video_encoder_selector.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -22,9 +22,13 @@ namespace remoting {
 // class which is run on a dedicated thread.
 class WebrtcVideoEncoderGpu : public WebrtcVideoEncoder {
  public:
+  struct Profile {
+    gfx::Size resolution;
+    int frame_rate;  // Always > 0
+  };
+
   static std::unique_ptr<WebrtcVideoEncoder> CreateForH264();
-  static bool IsSupportedByH264(
-      const WebrtcVideoEncoderSelector::Profile& profile);
+  static bool IsSupportedByH264(const Profile& profile);
 
   ~WebrtcVideoEncoderGpu() override;
   WebrtcVideoEncoderGpu(const WebrtcVideoEncoderGpu&) = delete;

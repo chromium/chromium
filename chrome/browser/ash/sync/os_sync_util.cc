@@ -1,76 +1,21 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/sync/os_sync_util.h"
 
-#include "ash/constants/ash_features.h"
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/ui/webui/settings/chromeos/pref_names.h"
+#include "chrome/browser/ui/webui/settings/ash/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/pref_names.h"
 
 namespace os_sync_util {
 namespace {
 
-void MaybeMigratePreferencesForSyncConsentOptional(PrefService* prefs) {
-  DCHECK(chromeos::features::IsSyncSettingsCategorizationEnabled());
-
-  if (!ash::features::IsSyncConsentOptionalEnabled()) {
-    // Always enable the OS sync if SyncConsentOptional is disabled. Before the
-    // SyncConsentOptional launch it's impossible to disable/enable the OS sync
-    // from the UI.
-    prefs->SetBoolean(syncer::prefs::kOsSyncFeatureEnabled, true);
-    return;
-  }
-
-  // TODO(https://crbug.com/1246357) Add a migration code here. To handle switch
-  // between SyncConsentOptional being disabled and enabled
-
-  bool sync_all_os_types = prefs->GetBoolean(syncer::prefs::kSyncAllOsTypes);
-  bool sync_os_apps = prefs->GetBoolean(syncer::prefs::kSyncOsApps);
-  bool sync_os_preferences =
-      prefs->GetBoolean(syncer::prefs::kSyncOsPreferences);
-  bool sync_os_wallpaper =
-      prefs->GetBoolean(chromeos::settings::prefs::kSyncOsWallpaper);
-  bool sync_wifi = prefs->GetBoolean(syncer::prefs::kSyncWifiConfigurations);
-
-  // Enable the OS sync feature if any OS data type is enabled. Otherwise the
-  // user would stop syncing a type that they were syncing before.
-  if (sync_all_os_types || sync_os_apps || sync_os_preferences ||
-      sync_os_wallpaper || sync_wifi) {
-    prefs->SetBoolean(syncer::prefs::kOsSyncFeatureEnabled, true);
-    return;
-  }
-
-  // TODO(https://crbug.com/1246357) Figure out how to run the Sync Consent
-  // dialog here.
-  prefs->SetBoolean(syncer::prefs::kOsSyncFeatureEnabled, false);
-}
-
 // Returns true if the prefs were migrated.
 bool MaybeMigratePreferencesForSyncSettingsCategorization(PrefService* prefs) {
   // Migration code can be removed when SyncSettingsCategorization has been
   // fully deployed to stable channel for a couple milestones.
-  if (!chromeos::features::IsSyncSettingsCategorizationEnabled()) {
-    // SyncSettingsCategorization should be launched before SyncConsentOptional.
-    DCHECK(!chromeos::features::IsSyncConsentOptionalEnabled());
-
-    // Reset the migration flag because this might be a rollback of the feature.
-    // We want migration to happen again when the feature is enabled.
-    prefs->SetBoolean(syncer::prefs::kOsSyncPrefsMigrated, false);
-    // Reset the OS sync pref to its default state, such that we get the same
-    // migration behavior next time SyncSettingsCategorization is enabled.
-    prefs->SetBoolean(syncer::prefs::kOsSyncFeatureEnabled, false);
-
-    prefs->ClearPref(syncer::prefs::kSyncAllOsTypes);
-    prefs->ClearPref(syncer::prefs::kSyncOsApps);
-    prefs->ClearPref(syncer::prefs::kSyncOsPreferences);
-    prefs->ClearPref(chromeos::settings::prefs::kSyncOsWallpaper);
-
-    return false;
-  }
-
   bool migrated_this_time = false;
 
   // Don't migrate more than once.
@@ -96,8 +41,6 @@ bool MaybeMigratePreferencesForSyncSettingsCategorization(PrefService* prefs) {
     prefs->SetBoolean(syncer::prefs::kOsSyncPrefsMigrated, true);
     migrated_this_time = true;
   }
-
-  MaybeMigratePreferencesForSyncConsentOptional(prefs);
 
   return migrated_this_time;
 }

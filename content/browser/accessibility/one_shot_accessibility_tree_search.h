@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
 
 namespace content {
@@ -33,16 +34,16 @@ DECLARE_ACCESSIBILITY_PREDICATE(AccessibilityCheckboxPredicate);
 DECLARE_ACCESSIBILITY_PREDICATE(AccessibilityComboboxPredicate);
 DECLARE_ACCESSIBILITY_PREDICATE(AccessibilityControlPredicate);
 DECLARE_ACCESSIBILITY_PREDICATE(AccessibilityFocusablePredicate);
+DECLARE_ACCESSIBILITY_PREDICATE(AccessibilityFramePredicate);
 DECLARE_ACCESSIBILITY_PREDICATE(AccessibilityGraphicPredicate);
-DECLARE_ACCESSIBILITY_PREDICATE(AccessibilityHeadingPredicate);
 DECLARE_ACCESSIBILITY_PREDICATE(AccessibilityH1Predicate);
 DECLARE_ACCESSIBILITY_PREDICATE(AccessibilityH2Predicate);
 DECLARE_ACCESSIBILITY_PREDICATE(AccessibilityH3Predicate);
 DECLARE_ACCESSIBILITY_PREDICATE(AccessibilityH4Predicate);
 DECLARE_ACCESSIBILITY_PREDICATE(AccessibilityH5Predicate);
 DECLARE_ACCESSIBILITY_PREDICATE(AccessibilityH6Predicate);
+DECLARE_ACCESSIBILITY_PREDICATE(AccessibilityHeadingPredicate);
 DECLARE_ACCESSIBILITY_PREDICATE(AccessibilityHeadingSameLevelPredicate);
-DECLARE_ACCESSIBILITY_PREDICATE(AccessibilityFramePredicate);
 DECLARE_ACCESSIBILITY_PREDICATE(AccessibilityLandmarkPredicate);
 DECLARE_ACCESSIBILITY_PREDICATE(AccessibilityLinkPredicate);
 DECLARE_ACCESSIBILITY_PREDICATE(AccessibilityListPredicate);
@@ -52,6 +53,7 @@ DECLARE_ACCESSIBILITY_PREDICATE(AccessibilityMainPredicate);
 DECLARE_ACCESSIBILITY_PREDICATE(AccessibilityMediaPredicate);
 DECLARE_ACCESSIBILITY_PREDICATE(AccessibilityRadioButtonPredicate);
 DECLARE_ACCESSIBILITY_PREDICATE(AccessibilityRadioGroupPredicate);
+DECLARE_ACCESSIBILITY_PREDICATE(AccessibilitySectionPredicate);
 DECLARE_ACCESSIBILITY_PREDICATE(AccessibilityTablePredicate);
 DECLARE_ACCESSIBILITY_PREDICATE(AccessibilityTextfieldPredicate);
 DECLARE_ACCESSIBILITY_PREDICATE(AccessibilityTextStyleBoldPredicate);
@@ -60,7 +62,6 @@ DECLARE_ACCESSIBILITY_PREDICATE(AccessibilityTextStyleUnderlinePredicate);
 DECLARE_ACCESSIBILITY_PREDICATE(AccessibilityTreePredicate);
 DECLARE_ACCESSIBILITY_PREDICATE(AccessibilityUnvisitedLinkPredicate);
 DECLARE_ACCESSIBILITY_PREDICATE(AccessibilityVisitedLinkPredicate);
-DECLARE_ACCESSIBILITY_PREDICATE(AccessibilityTextStyleBoldPredicate);
 
 #undef DECLARE_ACCESSIBILITY_PREDICATE
 
@@ -142,9 +143,9 @@ class CONTENT_EXPORT OneShotAccessibilityTreeSearch {
   void SearchByIteratingOverChildren();
   bool Matches(BrowserAccessibility* node);
 
-  BrowserAccessibilityManager* tree_;
-  BrowserAccessibility* scope_node_;
-  BrowserAccessibility* start_node_;
+  raw_ptr<BrowserAccessibilityManager> tree_;
+  raw_ptr<BrowserAccessibility> scope_node_;
+  raw_ptr<BrowserAccessibility> start_node_;
   Direction direction_;
   int result_limit_;
   bool immediate_descendants_only_;

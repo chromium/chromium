@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <string>
 
 #include "chrome/browser/ash/input_method/input_method_engine.h"
-#include "chrome/browser/ash/input_method/input_method_engine_base.h"
 #include "chrome/browser/ash/input_method/suggestion_enums.h"
 #include "chrome/browser/ash/input_method/suggestions_source.h"
 
@@ -33,11 +32,11 @@ class Suggester : public SuggestionsSource {
   // Returns SuggestionStatus as suggester handles the event.
   virtual SuggestionStatus HandleKeyEvent(const ui::KeyEvent& event) = 0;
 
-  // Check if suggestion should be displayed according to the surrounding text
-  // information.
-  virtual bool Suggest(const std::u16string& text,
-                       size_t cursor_pos,
-                       size_t anchor_pos) = 0;
+  // Attempts to display a suggestion on surrounding text change. Returns if
+  // suggestion was displayed according to the surrounding text information.
+  virtual bool TrySuggestWithSurroundingText(const std::u16string& text,
+                                             int cursor_pos,
+                                             int anchor_pos) = 0;
 
   // Accepts the suggestion at a given index, index can be made default if
   // unnecessary. Returns true if suggestion is accepted successfully.

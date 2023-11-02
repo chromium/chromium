@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,12 +39,10 @@ bool UrlMatchesGlobs(const std::vector<std::string>* globs,
 namespace extensions {
 
 // The bitmask for valid user script injectable schemes used by URLPattern.
-// TODO(https://crbug.com/1257045): Remove urn: scheme support.
 enum {
   kValidUserScriptSchemes = URLPattern::SCHEME_CHROMEUI |
                             URLPattern::SCHEME_HTTP | URLPattern::SCHEME_HTTPS |
                             URLPattern::SCHEME_FILE | URLPattern::SCHEME_FTP |
-                            URLPattern::SCHEME_URN |
                             URLPattern::SCHEME_UUID_IN_PACKAGE
 };
 
@@ -136,6 +134,7 @@ std::unique_ptr<UserScript> UserScript::CopyMetadataFrom(
   script->match_all_frames_ = other.match_all_frames_;
   script->match_origin_as_fallback_ = other.match_origin_as_fallback_;
   script->incognito_enabled_ = other.incognito_enabled_;
+  script->execution_world_ = other.execution_world_;
 
   return script;
 }
@@ -202,6 +201,7 @@ void UserScript::Pickle(base::Pickle* pickle) const {
   pickle->WriteBool(match_all_frames());
   pickle->WriteInt(static_cast<int>(match_origin_as_fallback()));
   pickle->WriteBool(is_incognito_enabled());
+  pickle->WriteInt(static_cast<int>(execution_world()));
 
   PickleHostID(pickle, host_id_);
   pickle->WriteInt(consumer_instance_type());
@@ -261,6 +261,13 @@ void UserScript::Unpickle(const base::Pickle& pickle,
   match_origin_as_fallback_ =
       static_cast<MatchOriginAsFallbackBehavior>(match_origin_as_fallback_int);
   CHECK(iter->ReadBool(&incognito_enabled_));
+
+  // Read the execution world.
+  int execution_world = 0;
+  CHECK(iter->ReadInt(&execution_world));
+  CHECK(execution_world >= static_cast<int>(mojom::ExecutionWorld::kIsolated) &&
+        execution_world <= static_cast<int>(mojom::ExecutionWorld::kMaxValue));
+  execution_world_ = static_cast<mojom::ExecutionWorld>(execution_world);
 
   UnpickleHostID(pickle, iter, &host_id_);
 

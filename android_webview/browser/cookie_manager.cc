@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -314,8 +314,8 @@ net::CookieStore* CookieManager::GetCookieStore() {
 
   if (!cookie_store_) {
     content::CookieStoreConfig cookie_config(
-        cookie_store_path_, true /* restore_old_session_cookies */,
-        true /* persist_session_cookies */);
+        cookie_store_path_, /* restore_old_session_cookies= */ true,
+        /* persist_session_cookies= */ true);
     cookie_config.client_task_runner = cookie_store_task_runner_;
     cookie_config.background_task_runner =
         cookie_store_backend_thread_.task_runner();
@@ -466,7 +466,7 @@ void CookieManager::SetCookieHelper(const GURL& host,
 
   std::unique_ptr<net::CanonicalCookie> cc(net::CanonicalCookie::Create(
       new_host, value, base::Time::Now(), absl::nullopt /* server_time */,
-      net::CookiePartitionKey::Todo()));
+      absl::nullopt /* cookie_partition_key */));
 
   if (!cc || !should_allow_cookie) {
     MaybeRunCookieCallback(std::move(callback), false);
@@ -505,6 +505,25 @@ ScopedJavaLocalRef<jstring> CookieManager::GetCookie(
       env, net::CanonicalCookie::BuildCookieLine(cookie_list));
 }
 
+ScopedJavaLocalRef<jobjectArray> CookieManager::GetCookieInfo(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj,
+    const JavaParamRef<jstring>& url) {
+  GURL host(ConvertJavaStringToUTF16(env, url));
+
+  net::CookieList cookie_list;
+  ExecCookieTaskSync(base::BindOnce(&CookieManager::GetCookieListAsyncHelper,
+                                    base::Unretained(this), host,
+                                    &cookie_list));
+  std::vector<std::string> cookie_attributes;
+  for (net::CanonicalCookie cookie : cookie_list) {
+    cookie_attributes.push_back(
+        net::CanonicalCookie::BuildCookieAttributesLine(cookie));
+  }
+  return base::android::ToJavaArrayOfStrings(
+      env, base::span<const std::string>(cookie_attributes));
+}
+
 void CookieManager::GetCookieListAsyncHelper(const GURL& host,
                                              net::CookieList* result,
                                              base::OnceClosure complete) {
@@ -512,12 +531,12 @@ void CookieManager::GetCookieListAsyncHelper(const GURL& host,
 
   if (GetMojoCookieManager()) {
     GetMojoCookieManager()->GetCookieList(
-        host, options, net::CookiePartitionKeychain::Todo(),
+        host, options, net::CookiePartitionKeyCollection::Todo(),
         base::BindOnce(&CookieManager::GetCookieListCompleted,
                        base::Unretained(this), std::move(complete), result));
   } else {
     GetCookieStore()->GetCookieListWithOptionsAsync(
-        host, options, net::CookiePartitionKeychain::Todo(),
+        host, options, net::CookiePartitionKeyCollection::Todo(),
         base::BindOnce(&CookieManager::GetCookieListCompleted,
                        base::Unretained(this), std::move(complete), result));
   }

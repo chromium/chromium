@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,13 +21,14 @@ class ThemeServiceAuraLinux : public ThemeService {
   ~ThemeServiceAuraLinux() override;
 
   // Overridden from ThemeService:
-  bool ShouldInitWithSystemTheme() const override;
+  ui::SystemTheme GetDefaultSystemTheme() const override;
+  void UseTheme(ui::SystemTheme system_theme) override;
   void UseSystemTheme() override;
   bool IsSystemThemeDistinctFromDefaultTheme() const override;
   bool UsingSystemTheme() const override;
   void FixInconsistentPreferencesIfNeeded() override;
 
-  static bool ShouldUseSystemThemeForProfile(const Profile* profile);
+  static ui::SystemTheme GetSystemThemeForProfile(const Profile* profile);
 };
 
 #endif  // CHROME_BROWSER_THEMES_THEME_SERVICE_AURA_LINUX_H_

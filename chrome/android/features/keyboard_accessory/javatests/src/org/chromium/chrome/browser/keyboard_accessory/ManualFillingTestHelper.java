@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,6 +27,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.StringRes;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.PerformException;
 import androidx.test.espresso.UiController;
@@ -92,6 +93,15 @@ public class ManualFillingTestHelper {
         mActivityTestRule = activityTestRule;
     }
 
+    public EmbeddedTestServer getOrCreateTestServer() {
+        if (mEmbeddedTestServer == null) {
+            mEmbeddedTestServer = EmbeddedTestServer.createAndStartHTTPSServer(
+                    InstrumentationRegistry.getInstrumentation().getContext(),
+                    ServerCertificate.CERT_OK);
+        }
+        return mEmbeddedTestServer;
+    }
+
     public void loadTestPage(boolean isRtl) {
         loadTestPage("/chrome/test/data/password/password_form.html", isRtl);
     }
@@ -102,9 +112,7 @@ public class ManualFillingTestHelper {
 
     public void loadTestPage(String url, boolean isRtl, boolean waitForNode,
             ChromeWindow.KeyboardVisibilityDelegateFactory keyboardDelegate) {
-        mEmbeddedTestServer = EmbeddedTestServer.createAndStartHTTPSServer(
-                InstrumentationRegistry.getInstrumentation().getContext(),
-                ServerCertificate.CERT_OK);
+        getOrCreateTestServer();
         ChromeWindow.setKeyboardVisibilityDelegateFactory(keyboardDelegate);
         if (mActivityTestRule.getActivity() == null) {
             mActivityTestRule.startMainActivityWithURL(mEmbeddedTestServer.getURL(url));
@@ -113,7 +121,7 @@ public class ManualFillingTestHelper {
         }
         setRtlForTesting(isRtl);
         updateWebContentsDependentState();
-        cacheCredentials(new String[0], new String[0], false); // This caches the empty state.
+        cacheCredentials("mpark@gmail.com", "S3cr3t"); // Providing suggestions ensures visibility.
         if (waitForNode) DOMUtils.waitForNonZeroNodeBounds(mWebContentsRef.get(), PASSWORD_NODE_ID);
     }
 
@@ -122,9 +130,7 @@ public class ManualFillingTestHelper {
             ChromeActivity activity = mActivityTestRule.getActivity();
             mWebContentsRef.set(activity.getActivityTab().getWebContents());
             getManualFillingCoordinator().getMediatorForTesting().setInsetObserverViewSupplier(
-                    ()
-                            -> getKeyboard().createInsetObserver(
-                                    activity.getInsetObserverView().getContext()));
+                    () -> getKeyboard().createInsetObserver(activity.getApplicationContext()));
             // The TestInputMethodManagerWrapper intercepts showSoftInput so that a keyboard is
             // never brought up.
             final ImeAdapter imeAdapter = ImeAdapter.fromWebContents(mWebContentsRef.get());
@@ -406,6 +412,41 @@ public class ManualFillingTestHelper {
                 }
                 PostTask.runOrPostTask(
                         UiThreadTaskTraits.DEFAULT, () -> tabLayout.getTabAt(tabIndex).select());
+            }
+        };
+    }
+
+    /**
+     * Use in a |onView().perform| action to select the tab at |tabIndex| for the found tab layout.
+     * @param tabIndex The index to be selected.
+     * @return The action executed by |perform|.
+     */
+    public static ViewAction selectTabWithDescription(@StringRes int descriptionResId) {
+        return new ViewAction() {
+            @Override
+            public Matcher<View> getConstraints() {
+                return allOf(isDisplayed(), isAssignableFrom(TabLayout.class));
+            }
+
+            @Override
+            public String getDescription() {
+                return "with tab with matching description.";
+            }
+
+            @Override
+            public void perform(UiController uiController, View view) {
+                String descriptionToMatch = view.getContext().getString(descriptionResId);
+                TabLayout tabLayout = (TabLayout) view;
+                for (int tabIndex = 0; tabIndex < tabLayout.getTabCount(); tabIndex++) {
+                    final TabLayout.Tab tab = tabLayout.getTabAt(tabIndex);
+                    if (descriptionToMatch.equals(tab.getContentDescription())) {
+                        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, tab::select);
+                        return;
+                    }
+                }
+                throw new PerformException.Builder()
+                        .withCause(new Throwable("No tab with description: " + descriptionToMatch))
+                        .build();
             }
         };
     }

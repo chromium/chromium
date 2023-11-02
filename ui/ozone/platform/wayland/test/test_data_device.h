@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,10 @@
 
 #include <cstdint>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
 #include "ui/ozone/platform/wayland/test/test_selection_device_manager.h"
 
-struct wl_client;
 struct wl_resource;
 
 namespace wl {
@@ -21,6 +21,7 @@ extern const struct wl_data_device_interface kTestDataDeviceImpl;
 
 class TestDataOffer;
 class TestDataSource;
+class TestDataDeviceManager;
 
 class TestDataDevice : public TestSelectionDevice {
  public:
@@ -30,7 +31,7 @@ class TestDataDevice : public TestSelectionDevice {
                            uint32_t serial) = 0;
   };
 
-  TestDataDevice(wl_resource* resource, wl_client* client);
+  TestDataDevice(wl_resource* resource, TestDataDeviceManager* manager);
 
   TestDataDevice(const TestDataDevice&) = delete;
   TestDataDevice& operator=(const TestDataDevice&) = delete;
@@ -54,11 +55,10 @@ class TestDataDevice : public TestSelectionDevice {
   void OnMotion(uint32_t time, wl_fixed_t x, wl_fixed_t y);
   void OnDrop();
 
-  wl_client* client() { return client_; }
-
  private:
-  wl_client* client_ = nullptr;
-  DragDelegate* drag_delegate_ = nullptr;
+  raw_ptr<DragDelegate> drag_delegate_ = nullptr;
+
+  const raw_ptr<TestDataDeviceManager> manager_;
 };
 
 }  // namespace wl

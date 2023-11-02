@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,12 +37,13 @@ void DelegatedInkPointPixelTestHelper::CreateInkRenderer() {
 void DelegatedInkPointPixelTestHelper::CreateAndSendMetadata(
     const gfx::PointF& point,
     float diameter,
-    SkColor color,
+    SkColor4f color,
     base::TimeTicks timestamp,
     const gfx::RectF& presentation_area) {
   DCHECK(renderer_);
+  // TODO(crbug.com/1308932): Make this function use SkColor4f
   metadata_ = gfx::DelegatedInkMetadata(
-      point, diameter, color, timestamp, presentation_area,
+      point, diameter, color.toSkColor(), timestamp, presentation_area,
       base::TimeTicks::Now(), /*hovering*/ false);
   ink_renderer_->SetDelegatedInkMetadata(
       std::make_unique<gfx::DelegatedInkMetadata>(metadata_));
@@ -56,8 +57,10 @@ void DelegatedInkPointPixelTestHelper::CreateAndSendMetadataFromLastPoint() {
 void DelegatedInkPointPixelTestHelper::CreateAndSendMetadataFromLastPoint(
     int32_t pointer_id) {
   DCHECK(ink_points_.find(pointer_id) != ink_points_.end());
+  // TODO(crbug.com/1308932): Make this function use SkColor4f
   CreateAndSendMetadata(ink_points_[pointer_id].back().point(),
-                        metadata_.diameter(), metadata_.color(),
+                        metadata_.diameter(),
+                        SkColor4f::FromColor(metadata_.color()),
                         ink_points_[pointer_id].back().timestamp(),
                         metadata_.presentation_area());
 }
@@ -109,8 +112,7 @@ gfx::Rect DelegatedInkPointPixelTestHelper::GetDelegatedInkDamageRect(
     ink_damage_rect_f.Union(
         gfx::RectF(ink_points_[pointer_id][i].point(), gfx::SizeF(1, 1)));
   }
-  ink_damage_rect_f.Inset(-metadata().diameter() / 2.f,
-                          -metadata().diameter() / 2.f);
+  ink_damage_rect_f.Inset(-metadata().diameter() / 2.f);
 
   return gfx::ToEnclosingRect(ink_damage_rect_f);
 }

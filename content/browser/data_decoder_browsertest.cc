@@ -1,16 +1,18 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <limits>
 
 #include "base/base_paths.h"
+#include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/time/time.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -250,6 +252,83 @@ IN_PROC_BROWSER_TEST_F(DataDecoderBrowserTest, DecodeImage) {
 
   EXPECT_LE(decoding_duration_estimate, end_to_end_duration_estimate);
   EXPECT_LE(overhead_estimate, end_to_end_duration_estimate);
+}
+
+IN_PROC_BROWSER_TEST_F(DataDecoderBrowserTest,
+                       NoCallbackAfterDestruction_Json) {
+  base::RunLoop run_loop;
+
+  auto decoder = std::make_unique<data_decoder::DataDecoder>();
+  auto* raw_decoder = decoder.get();
+
+  // Android's in-process parser can complete synchronously, so queue the
+  // delete task first unlike in the other tests.
+  base::SequencedTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE,
+                                                     std::move(decoder));
+
+  bool got_callback = false;
+  raw_decoder->ParseJson(
+      "[1, 2, 3]",
+      base::BindOnce(
+          [](bool* got_callback, base::ScopedClosureRunner quit_closure_runner,
+             data_decoder::DataDecoder::ValueOrError result) {
+            *got_callback = true;
+          },
+          // Pass the quit closure as a ScopedClosureRunner, so that the loop
+          // is quit if the callback is destroyed un-run or after it runs.
+          &got_callback, base::ScopedClosureRunner(run_loop.QuitClosure())));
+
+  run_loop.Run();
+
+  EXPECT_FALSE(got_callback);
+}
+
+IN_PROC_BROWSER_TEST_F(DataDecoderBrowserTest, NoCallbackAfterDestruction_Xml) {
+  base::RunLoop run_loop;
+
+  auto decoder = std::make_unique<data_decoder::DataDecoder>();
+  bool got_callback = false;
+  decoder->ParseXml(
+      "<marquee>hello world</marquee>",
+      data_decoder::mojom::XmlParser::WhitespaceBehavior::kIgnore,
+      base::BindOnce(
+          [](bool* got_callback, base::ScopedClosureRunner quit_closure_runner,
+             data_decoder::DataDecoder::ValueOrError result) {
+            *got_callback = true;
+          },
+          // Pass the quit closure as a ScopedClosureRunner, so that the loop
+          // is quit if the callback is destroyed un-run or after it runs.
+          &got_callback, base::ScopedClosureRunner(run_loop.QuitClosure())));
+
+  base::SequencedTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE,
+                                                     std::move(decoder));
+  run_loop.Run();
+
+  EXPECT_FALSE(got_callback);
+}
+
+IN_PROC_BROWSER_TEST_F(DataDecoderBrowserTest,
+                       NoCallbackAfterDestruction_Gzip) {
+  base::RunLoop run_loop;
+
+  auto decoder = std::make_unique<data_decoder::DataDecoder>();
+  bool got_callback = false;
+  decoder->GzipCompress(
+      {{0x1, 0x1, 0x1, 0x1, 0x1, 0x1}},
+      base::BindOnce(
+          [](bool* got_callback, base::ScopedClosureRunner quit_closure_runner,
+             base::expected<mojo_base::BigBuffer, std::string> result) {
+            *got_callback = true;
+          },
+          // Pass the quit closure as a ScopedClosureRunner, so that the loop
+          // is quit if the callback is destroyed un-run or after it runs.
+          &got_callback, base::ScopedClosureRunner(run_loop.QuitClosure())));
+
+  base::SequencedTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE,
+                                                     std::move(decoder));
+  run_loop.Run();
+
+  EXPECT_FALSE(got_callback);
 }
 
 }  // namespace content

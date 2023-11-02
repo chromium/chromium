@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,8 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/feature_list.h"
 #include "chrome/browser/ui/android/safe_browsing/password_reuse_dialog_view_android.h"
 #include "components/safe_browsing/core/browser/password_protection/metrics_util.h"
-#include "components/safe_browsing/core/common/features.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/android/window_android.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -22,7 +20,8 @@ PasswordReuseControllerAndroid::PasswordReuseControllerAndroid(
     ChromePasswordProtectionService* service,
     ReusedPasswordAccountType password_type,
     OnWarningDone done_callback)
-    : service_(service),
+    : content::WebContentsObserver(web_contents),
+      service_(service),
       url_(web_contents->GetLastCommittedURL()),
       password_type_(password_type),
       window_android_(web_contents->GetTopLevelNativeWindow()),
@@ -72,16 +71,10 @@ void PasswordReuseControllerAndroid::CloseDialog() {
 
 std::u16string PasswordReuseControllerAndroid::GetPrimaryButtonText() const {
   if (password_type_.account_type() == ReusedPasswordAccountType::GMAIL &&
-      password_type_.is_account_syncing() &&
-      base::FeatureList::IsEnabled(
-          safe_browsing::kPasswordProtectionForSignedInUsers)) {
+      password_type_.is_account_syncing()) {
     return l10n_util::GetStringUTF16(IDS_PAGE_INFO_PROTECT_ACCOUNT_BUTTON);
-  } else if (
-      password_type_.account_type() ==
-          ReusedPasswordAccountType::SAVED_PASSWORD &&
-      base::FeatureList::IsEnabled(
-          safe_browsing::
-              kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid)) {
+  } else if (password_type_.account_type() ==
+             ReusedPasswordAccountType::SAVED_PASSWORD) {
     return l10n_util::GetStringUTF16(IDS_PAGE_INFO_CHECK_PASSWORDS_BUTTON);
   }
 
@@ -90,14 +83,9 @@ std::u16string PasswordReuseControllerAndroid::GetPrimaryButtonText() const {
 
 std::u16string PasswordReuseControllerAndroid::GetSecondaryButtonText() const {
   if ((password_type_.account_type() == ReusedPasswordAccountType::GMAIL &&
-       password_type_.is_account_syncing() &&
-       base::FeatureList::IsEnabled(
-           safe_browsing::kPasswordProtectionForSignedInUsers)) ||
+       password_type_.is_account_syncing()) ||
       (password_type_.account_type() ==
-           ReusedPasswordAccountType::SAVED_PASSWORD &&
-       base::FeatureList::IsEnabled(
-           safe_browsing::
-               kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid))) {
+       ReusedPasswordAccountType::SAVED_PASSWORD)) {
     return l10n_util::GetStringUTF16(
         IDS_PAGE_INFO_IGNORE_PASSWORD_WARNING_BUTTON);
   }
@@ -111,10 +99,7 @@ std::u16string PasswordReuseControllerAndroid::GetWarningDetailText() const {
 
 std::u16string PasswordReuseControllerAndroid::GetTitle() const {
   if (password_type_.account_type() ==
-          ReusedPasswordAccountType::SAVED_PASSWORD &&
-      base::FeatureList::IsEnabled(
-          safe_browsing::
-              kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid)) {
+      ReusedPasswordAccountType::SAVED_PASSWORD) {
     return l10n_util::GetStringUTF16(
         IDS_PAGE_INFO_CHANGE_PASSWORD_SAVED_PASSWORD_SUMMARY);
   }

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,17 +36,17 @@ namespace content {
 
 namespace {
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 
 // These inset and flags simulate when we are not extending into the cutout.
-const gfx::Insets kNoCutoutInsets = gfx::Insets();
+const auto kNoCutoutInsets = gfx::Insets();
 
 // These inset and flags simulate when the we are extending into the cutout.
-const gfx::Insets kCutoutInsets = gfx::Insets(1, 0, 1, 0);
+const auto kCutoutInsets = gfx::Insets::TLBR(1, 0, 1, 0);
 
 // These inset and flags simulate when we are extending into the cutout and have
 // rotated the device so that the cutout is on the other sides.
-const gfx::Insets kRotatedCutoutInsets = gfx::Insets(0, 1, 0, 1);
+const auto kRotatedCutoutInsets = gfx::Insets::TLBR(0, 1, 0, 1);
 
 #endif
 
@@ -165,8 +165,7 @@ class DisplayCutoutBrowserTest : public ContentBrowserTest {
     mojo::AssociatedRemote<blink::mojom::DisplayCutoutClient> client;
     MainFrame()->GetRemoteAssociatedInterfaces()->GetInterface(
         client.BindNewEndpointAndPassReceiver());
-    client->SetSafeArea(
-        blink::mojom::DisplayCutoutSafeArea::New(top, left, bottom, right));
+    client->SetSafeArea(gfx::Insets::TLBR(top, left, bottom, right));
   }
 
   std::string GetCurrentSafeAreaValue(const std::string& name) {
@@ -206,7 +205,7 @@ class DisplayCutoutBrowserTest : public ContentBrowserTest {
   }
 
   RenderFrameHostImpl* MainFrame() {
-    return web_contents_impl()->GetMainFrame();
+    return web_contents_impl()->GetPrimaryMainFrame();
   }
 
   RenderFrameHostImpl* ChildFrame() {
@@ -223,7 +222,7 @@ class DisplayCutoutBrowserTest : public ContentBrowserTest {
 };
 
 // The viewport meta tag is only enabled on Android.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(DisplayCutoutBrowserTest, ViewportFit_Fullscreen) {
   LoadTestPageWithViewportFitFromMeta("cover");

@@ -1,15 +1,15 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/sync/engine/cancelation_signal.h"
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread.h"
-#include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace syncer {
@@ -42,16 +42,15 @@ class BlockingTask : public CancelationSignal::Observer {
  private:
   base::WaitableEvent event_;
   base::Thread exec_thread_;
-  CancelationSignal* cancel_signal_;
-  bool was_started_;
+  raw_ptr<CancelationSignal> cancel_signal_;
+  bool was_started_ = false;
 };
 
 BlockingTask::BlockingTask(CancelationSignal* cancel_signal)
     : event_(base::WaitableEvent::ResetPolicy::MANUAL,
              base::WaitableEvent::InitialState::NOT_SIGNALED),
       exec_thread_("BlockingTaskBackgroundThread"),
-      cancel_signal_(cancel_signal),
-      was_started_(false) {}
+      cancel_signal_(cancel_signal) {}
 
 BlockingTask::~BlockingTask() {
   if (was_started_) {

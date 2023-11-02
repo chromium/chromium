@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,10 +25,6 @@
 using views::Widget;
 
 namespace {
-
-// Duration of animation scheduled when frame color is changed.
-constexpr base::TimeDelta kFrameColorChangeAnimationDuration =
-    base::Milliseconds(240);
 
 // Tiles an image into an area, rounding the top corners.
 void TileRoundRect(gfx::Canvas* canvas,
@@ -99,7 +95,7 @@ void DefaultFrameHeader::UpdateFrameColors() {
 
   if (updated) {
     UpdateCaptionButtonColors();
-    StartTransitionAnimation(kFrameColorChangeAnimationDuration);
+    StartTransitionAnimation(kDefaultFrameColorChangeAnimationDuration);
   }
 }
 

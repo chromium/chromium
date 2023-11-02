@@ -1,13 +1,13 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/web/public/test/fakes/fake_download_controller_delegate.h"
+#import "ios/web/public/test/fakes/fake_download_controller_delegate.h"
 
-#include "base/check.h"
-#include "base/check_op.h"
-#include "ios/web/public/download/download_controller.h"
-#include "ios/web/public/download/download_task.h"
+#import "base/check.h"
+#import "base/check_op.h"
+#import "ios/web/public/download/download_controller.h"
+#import "ios/web/public/download/download_task.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

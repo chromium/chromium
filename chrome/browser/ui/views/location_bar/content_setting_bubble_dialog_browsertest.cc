@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -121,7 +121,10 @@ void ContentSettingBubbleDialogTest::ApplyMediastreamSettings(
           : 0;
   content_settings::PageSpecificContentSettings* content_settings =
       content_settings::PageSpecificContentSettings::GetForFrame(
-          browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame());
+          browser()
+              ->tab_strip_model()
+              ->GetActiveWebContents()
+              ->GetPrimaryMainFrame());
   content_settings->OnMediaStreamPermissionSet(
       GURL("https://example.com/"), mic_setting | camera_setting, std::string(),
       std::string(), std::string(), std::string());
@@ -133,7 +136,7 @@ void ContentSettingBubbleDialogTest::ApplyContentSettingsForType(
       browser()->tab_strip_model()->GetActiveWebContents();
   content_settings::PageSpecificContentSettings* content_settings =
       content_settings::PageSpecificContentSettings::GetForFrame(
-          web_contents->GetMainFrame());
+          web_contents->GetPrimaryMainFrame());
   switch (content_type) {
     case ContentSettingsType::AUTOMATIC_DOWNLOADS: {
       // Automatic downloads are handled by DownloadRequestLimiter.
@@ -159,8 +162,9 @@ void ContentSettingBubbleDialogTest::ApplyContentSettingsForType(
     }
     case ContentSettingsType::PROTOCOL_HANDLERS:
       chrome::PageSpecificContentSettingsDelegate::FromWebContents(web_contents)
-          ->set_pending_protocol_handler(ProtocolHandler::CreateProtocolHandler(
-              "mailto", GURL("https://example.com/")));
+          ->set_pending_protocol_handler(
+              custom_handlers::ProtocolHandler::CreateProtocolHandler(
+                  "mailto", GURL("https://example.com/")));
       break;
 
     default:
@@ -183,7 +187,7 @@ void ContentSettingBubbleDialogTest::TriggerQuietNotificationPermissionRequest(
   DCHECK(!notification_permission_request_);
   notification_permission_request_.emplace(
       GURL("https://example.com"), permissions::RequestType::kNotifications);
-  permission_request_manager->AddRequest(web_contents->GetMainFrame(),
+  permission_request_manager->AddRequest(web_contents->GetPrimaryMainFrame(),
                                          &*notification_permission_request_);
   base::RunLoop().RunUntilIdle();
 }
@@ -222,7 +226,7 @@ void ContentSettingBubbleDialogTest::ShowUi(const std::string& name) {
     else if (name == "notifications_quiet_abusive_content")
       reason = QuietUiReason::kTriggeredDueToAbusiveContent;
     else if (name == "notifications_quiet_predicted_very_unlikely")
-      reason = QuietUiReason::kPredictedVeryUnlikelyGrant;
+      reason = QuietUiReason::kServicePredictedVeryUnlikelyGrant;
     TriggerQuietNotificationPermissionRequest(reason);
     ShowDialogBubble(ImageType::NOTIFICATIONS_QUIET_PROMPT);
     return;

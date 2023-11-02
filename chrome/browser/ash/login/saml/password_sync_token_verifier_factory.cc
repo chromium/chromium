@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include "chrome/browser/ash/login/saml/password_sync_token_verifier.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -30,9 +29,7 @@ PasswordSyncTokenVerifier* PasswordSyncTokenVerifierFactory::GetForProfile(
 }
 
 PasswordSyncTokenVerifierFactory::PasswordSyncTokenVerifierFactory()
-    : BrowserContextKeyedServiceFactory(
-          "PasswordSyncTokenVerifier",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("PasswordSyncTokenVerifier") {
   DependsOn(InSessionPasswordSyncManagerFactory::GetInstance());
 }
 

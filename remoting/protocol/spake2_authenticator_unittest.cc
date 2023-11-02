@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "remoting/base/rsa_key_pair.h"
 #include "remoting/protocol/authenticator_test_base.h"
@@ -20,8 +19,7 @@ using testing::_;
 using testing::DeleteArg;
 using testing::SaveArg;
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 namespace {
 
@@ -84,7 +82,8 @@ TEST_F(Spake2AuthenticatorTest, InvalidSecret) {
   ASSERT_NO_FATAL_FAILURE(RunAuthExchange());
 
   ASSERT_EQ(Authenticator::REJECTED, client_->state());
-  ASSERT_EQ(Authenticator::INVALID_CREDENTIALS, client_->rejection_reason());
+  ASSERT_EQ(Authenticator::RejectionReason::INVALID_CREDENTIALS,
+            client_->rejection_reason());
 
   // Change |client_| so that we can get the last message.
   reinterpret_cast<Spake2Authenticator*>(client_.get())->state_ =
@@ -99,5 +98,4 @@ TEST_F(Spake2AuthenticatorTest, InvalidSecret) {
   ASSERT_EQ(Authenticator::REJECTED, host_->state());
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

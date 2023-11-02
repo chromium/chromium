@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,9 +16,6 @@
 
 namespace {
 
-using DeviceCredentialsPromptResult =
-    ::content::BluetoothDelegate::DeviceCredentialsPromptResult;
-
 const std::u16string kDeviceIdentifier = u"test-device";
 
 }  // namespace
@@ -28,15 +25,10 @@ class BluetoothDeviceCredentialsViewBrowserTest : public DialogBrowserTest {
   BluetoothDeviceCredentialsViewBrowserTest() = default;
   ~BluetoothDeviceCredentialsViewBrowserTest() override = default;
 
-  void DialogCallback(DeviceCredentialsPromptResult status,
-                      const std::u16string& result) {}
-
   void ShowUi(const std::string& name) override {
     chrome::ShowBluetoothDeviceCredentialsDialog(
         browser()->tab_strip_model()->GetActiveWebContents(), kDeviceIdentifier,
-        base::BindOnce(
-            &BluetoothDeviceCredentialsViewBrowserTest::DialogCallback,
-            weak_factory_.GetWeakPtr()));
+        base::NullCallback());
   }
 
  private:

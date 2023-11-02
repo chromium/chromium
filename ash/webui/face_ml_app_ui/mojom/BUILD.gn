@@ -1,0 +1,36 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
+import("//tools/typescript/ts_library.gni")
+
+assert(is_chromeos_ash, "Face ML is ash-chrome only")
+
+cur_dir = rebase_path(".", "//")
+
+mojom("trusted") {
+  sources = [ "face_ml_app_ui.mojom" ]
+  public_deps = [ "//mojo/public/mojom/base" ]
+  webui_module_path = "/$cur_dir"
+}
+
+ts_library("mojom_ts") {
+  mojom_gen_dir = "$root_gen_dir/mojom-webui/$cur_dir"
+  root_dir = mojom_gen_dir
+  out_dir = "$mojom_gen_dir/tsc"
+  tsconfig_base = "../tsconfig_base.json"
+  in_files = [ "face_ml_app_ui.mojom-webui.js" ]
+
+  # Targets that generate the above .mojom-webui.js files.
+  extra_deps = [
+    ":trusted_webui_js",
+
+    # Required for Mojo's bindings.js resolution.
+    "//ui/webui/resources:generate_definitions",
+  ]
+
+  # Generates d.ts files which allows this library to be depended upon.
+  composite = true
+}

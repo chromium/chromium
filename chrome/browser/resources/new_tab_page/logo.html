@@ -123,7 +123,7 @@
         <ntp-iframe id="animation" src="[[animationUrl_]]"
             hidden="[[!showAnimation_]]">
         </ntp-iframe>
-        <cr-button id="shareButton" title="[[i18n('shareDoodle')]]"
+        <cr-button id="shareButton" title="$i18n{shareDoodle}"
             on-click="onShareButtonClick_"
             hidden="[[!imageDoodle_.shareButton]]">
           <img id="shareButtonImage"
@@ -133,7 +133,8 @@
       </div>
     </div>
     <template is="dom-if" if="[[iframeUrl_]]" restamp>
-      <ntp-iframe id="iframe" src="[[iframeUrl_]]" expanded$="[[expanded_]]">
+      <ntp-iframe id="iframe" src="[[iframeUrl_]]" expanded$="[[expanded_]]"
+          allow="autoplay">
       </ntp-iframe>
     </template>
   </div>

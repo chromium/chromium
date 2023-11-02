@@ -1,4 +1,4 @@
-// Copyright (c) 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,9 @@
 #include <map>
 #include <set>
 #include <string>
+#include <utility>
 
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 
 namespace apps {
@@ -41,6 +43,9 @@ class AppNotifications {
   // an empty set.
   std::set<std::string> GetAppIdsForNotification(
       const std::string& notification_id);
+
+  AppPtr CreateAppWithHasBadgeStatus(AppType app_type,
+                                     const std::string& app_id);
 
   apps::mojom::AppPtr GetAppWithHasBadgeStatus(apps::mojom::AppType app_type,
                                                const std::string& app_id);

@@ -1,12 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CapabilitiesResponse, GooglePromotedDestinationId, LocalDestinationInfo, NativeInitialSettings, NativeLayer, PageLayoutInfo, PrinterType, ProvisionalDestinationInfo} from 'chrome://print/print_preview.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {CapabilitiesResponse, ExtensionDestinationInfo, GooglePromotedDestinationId, LocalDestinationInfo, NativeInitialSettings, NativeLayer, PageLayoutInfo, PrinterType} from 'chrome://print/print_preview.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
-import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
-
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 import {getCddTemplate, getPdfPrinter} from './print_preview_test_utils.js';
@@ -21,18 +20,15 @@ export class NativeLayerStub extends TestBrowserProxy implements NativeLayer {
    */
   private initialSettings_: NativeInitialSettings|null = null;
 
-  /** Accounts to be sent on signIn(). */
-  private accounts_: string[]|null = null;
-
   /**
    * Local destination list to be used for the response to |getPrinters|.
    */
   private localDestinationInfos_: LocalDestinationInfo[] = [];
 
   /**
-   * Extension destination list to be used for the response to |getPrinters|.
+   * Extension destination lists to be used for the response to |getPrinters|.
    */
-  private extensionDestinationInfos_: ProvisionalDestinationInfo[] = [];
+  private extensionDestinationInfos_: ExtensionDestinationInfo[][] = [];
 
   /**
    *     A map from destination IDs to the responses to be sent when
@@ -44,6 +40,10 @@ export class NativeLayerStub extends TestBrowserProxy implements NativeLayer {
   private multipleCapabilitiesPromise_: PromiseResolver<void>|null = null;
 
   private multipleCapabilitiesCount_: number = 0;
+
+  private multipleGetPrintersPromise_: PromiseResolver<void>|null = null;
+
+  private multipleGetPrintersCount_: number = 0;
 
   /** The ID of a printer with a simulated bad driver. */
   private badPrinterId_: string = '';
@@ -64,7 +64,6 @@ export class NativeLayerStub extends TestBrowserProxy implements NativeLayer {
       'print',
       'saveAppState',
       'showSystemDialog',
-      'signIn',
     ]);
   }
 
@@ -83,6 +82,14 @@ export class NativeLayerStub extends TestBrowserProxy implements NativeLayer {
 
   getPrinters(type: PrinterType) {
     this.methodCalled('getPrinters', type);
+    if (this.multipleGetPrintersPromise_) {
+      this.multipleGetPrintersCount_--;
+      if (this.multipleGetPrintersCount_ === 0) {
+        this.multipleGetPrintersPromise_.resolve();
+        this.multipleGetPrintersPromise_ = null;
+      }
+    }
+
     if (type === PrinterType.LOCAL_PRINTER &&
         this.localDestinationInfos_.length > 0) {
       webUIListenerCallback(
@@ -90,8 +97,9 @@ export class NativeLayerStub extends TestBrowserProxy implements NativeLayer {
     } else if (
         type === PrinterType.EXTENSION_PRINTER &&
         this.extensionDestinationInfos_.length > 0) {
-      webUIListenerCallback(
-          'printers-added', type, this.extensionDestinationInfos_);
+      this.extensionDestinationInfos_.forEach(infoList => {
+        webUIListenerCallback('printers-added', type, infoList);
+      });
     }
     return Promise.resolve();
   }
@@ -145,7 +153,7 @@ export class NativeLayerStub extends TestBrowserProxy implements NativeLayer {
     if (printerId === GooglePromotedDestinationId.SAVE_AS_PDF) {
       return Promise.resolve(getPdfPrinter());
     }
-    // <if expr="chromeos or lacros">
+    // <if expr="is_chromeos">
     if (printerId === GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS) {
       return Promise.resolve(getPdfPrinter());
     }
@@ -159,9 +167,6 @@ export class NativeLayerStub extends TestBrowserProxy implements NativeLayer {
 
   print(printTicket: string) {
     this.methodCalled('print', printTicket);
-    if (JSON.parse(printTicket).printerType === PrinterType.CLOUD_PRINTER) {
-      return Promise.resolve('sample data');
-    }
     return Promise.resolve(undefined);
   }
 
@@ -177,17 +182,6 @@ export class NativeLayerStub extends TestBrowserProxy implements NativeLayer {
 
   saveAppState(appState: string) {
     this.methodCalled('saveAppState', appState);
-  }
-
-  signIn() {
-    this.methodCalled('signIn');
-    const accounts = this.accounts_ || ['foo@chromium.org'];
-    if (!this.accounts_) {
-      accounts.push('bar@chromium.org');
-    }
-    if (accounts.length > 0) {
-      webUIListenerCallback('user-accounts-updated', accounts);
-    }
   }
 
   cancelPendingPrintRequest() {}
@@ -222,21 +216,21 @@ export class NativeLayerStub extends TestBrowserProxy implements NativeLayer {
    *     response to |getPrinters|.
    */
   setExtensionDestinations(extensionDestinations:
-                               ProvisionalDestinationInfo[]) {
+                               ExtensionDestinationInfo[][]) {
     this.extensionDestinationInfos_ = extensionDestinations;
   }
 
   /**
    * @param response The response to send for the destination whose ID is in the
    *     response.
-   * @param opt_reject Whether to reject the callback for this destination.
+   * @param reject Whether to reject the callback for this destination.
    *     Defaults to false (will resolve callback) if not provided.
    */
   setLocalDestinationCapabilities(
-      response: CapabilitiesResponse, opt_reject?: boolean) {
+      response: CapabilitiesResponse, reject?: boolean) {
     this.localDestinationCapabilities_.set(
         response.printer!.deviceName,
-        opt_reject ? Promise.reject() : Promise.resolve(response));
+        reject ? Promise.reject() : Promise.resolve(response));
   }
 
   /**
@@ -260,5 +254,16 @@ export class NativeLayerStub extends TestBrowserProxy implements NativeLayer {
     this.multipleCapabilitiesCount_ = count;
     this.multipleCapabilitiesPromise_ = new PromiseResolver();
     return this.multipleCapabilitiesPromise_.promise;
+  }
+
+  /**
+   * @param count The number of getPrinters requests to wait for.
+   * @return Promise that resolves after |count| requests.
+   */
+  waitForGetPrinters(count: number): Promise<void> {
+    assert(this.multipleGetPrintersPromise_ === null);
+    this.multipleGetPrintersCount_ = count;
+    this.multipleGetPrintersPromise_ = new PromiseResolver();
+    return this.multipleGetPrintersPromise_.promise;
   }
 }

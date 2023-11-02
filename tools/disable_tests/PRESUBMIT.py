@@ -1,4 +1,4 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Runs python unittests.
@@ -22,10 +22,22 @@ def _CommonChecks(input_api, output_api):
           output_api,
           input_api.os_path.join(input_api.PresubmitLocalPath()),
           files_to_check=[r'.+_test\.py$'],
-          files_to_skip=[],
+          files_to_skip=['integration_test.py'],
           run_on_python2=False,
           run_on_python3=True,
           skip_shebang_check=True))
+
+  # integration_test.py uses subcommands, so we can't use the standard unit test
+  # presubmit API to run it.
+  commands.append(
+      input_api.Command(
+          name='integration_test.py',
+          cmd=['integration_test.py', 'run'],
+          kwargs={},
+          message=output_api.PresubmitError,
+          python3=True,
+      ))
+
   results.extend(input_api.RunTests(commands))
 
   return results

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -84,16 +84,18 @@ class ASH_EXPORT PrivacyScreenController
   // is changed.
   void OnStateChanged(bool notify_observers);
 
+  // Called when GPU/DRM is done setting the privacy screen panel to
+  // |requested_config|.
+  void OnSetPrivacyScreenComplete(bool from_user_pref_init,
+                                  bool requested_config,
+                                  bool success);
+
   // Called when a change to |active_user_pref_service_| is detected (i.e. when
   // OnActiveUserPrefServiceChanged() is called.
   void InitFromUserPrefs();
 
   // Retrieves the current user's PrivacyScreen preference.
   bool GetStateFromActiveUserPreference() const;
-
-  // Get the ID of the internal display that supports privacy screen. Return
-  // display::kInvalidDisplayId if none is found.
-  int64_t GetSupportedDisplayId() const;
 
   // Whether or not to alert observers about PrivacyScreen state change.
   bool ShouldNotifyObservers(bool from_user_pref_init) const;
@@ -121,6 +123,9 @@ class ASH_EXPORT PrivacyScreenController
   // PrivacyScreenController settings controlled by this class from the WebUI
   // settings.
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
+
+  // This must be the last variable.
+  base::WeakPtrFactory<PrivacyScreenController> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

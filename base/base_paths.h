@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,15 +10,15 @@
 
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/base_paths_win.h"
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
 #include "base/base_paths_mac.h"
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
 #include "base/base_paths_android.h"
 #endif
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include "base/base_paths_posix.h"
 #endif
 
@@ -28,14 +28,26 @@ enum BasePathKey {
   PATH_START = 0,
 
   // The following refer to the current application.
-  FILE_EXE,     // Path and filename of the current executable.
+  FILE_EXE,  // Path and filename of the current executable.
+#if !BUILDFLAG(IS_FUCHSIA)
+  // Prefer keys (e.g., DIR_ASSETS) that are specific to the use case as the
+  // module location may not work as expected on some platforms. For this
+  // reason, this key is not defined on Fuchsia. See crbug.com/1263691 for
+  // details.
   FILE_MODULE,  // Path and filename of the module containing the code for
                 // the PathService (which could differ from FILE_EXE if the
                 // PathService were compiled into a shared object, for
                 // example).
-  DIR_EXE,      // Directory containing FILE_EXE.
-  DIR_MODULE,   // Directory containing FILE_MODULE.
-  DIR_ASSETS,   // Directory that contains application assets.
+#endif
+  DIR_EXE,  // Directory containing FILE_EXE.
+#if !BUILDFLAG(IS_FUCHSIA)
+  // Prefer keys (e.g., DIR_ASSETS) that are specific to the use case as the
+  // module location may not work as expected on some platforms. For this
+  // reason, this key is not defined on Fuchsia. See crbug.com/1263691 for
+  // details.
+  DIR_MODULE,  // Directory containing FILE_MODULE.
+#endif
+  DIR_ASSETS,  // Directory that contains application assets.
 
   // The following refer to system and system user directories.
   DIR_TEMP,          // Temporary directory for the system and/or user.

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "base/bit_cast.h"
 #include "base/command_line.h"
 #include "base/path_service.h"
+#include "base/task/task_runner_util.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "chrome/browser/task_manager/sampling/shared_sampler_win_defines.h"
@@ -211,7 +212,7 @@ const ProcessData* SeekInPreviousSnapshot(
 
 // A wrapper function converting ticks (in units of 100 ns) to Time.
 base::Time ConvertTicksToTime(uint64_t ticks) {
-  FILETIME ft = bit_cast<FILETIME, uint64_t>(ticks);
+  FILETIME ft = base::bit_cast<FILETIME, uint64_t>(ticks);
   return base::Time::FromFileTime(ft);
 }
 
@@ -243,7 +244,7 @@ SharedSampler::SharedSampler(
   // will be used to assert we're running the expensive operations on one of the
   // blocking pool threads.
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  worker_pool_sequenced_checker_.DetachFromSequence();
+  DETACH_FROM_SEQUENCE(worker_pool_sequenced_checker_);
 }
 
 SharedSampler::~SharedSampler() {}
@@ -313,7 +314,7 @@ void SharedSampler::ClearState() {
 }
 
 SharedSampler::AllSamplingResults SharedSampler::RefreshOnWorkerThread() {
-  DCHECK(worker_pool_sequenced_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(worker_pool_sequenced_checker_);
 
   AllSamplingResults results;
 
@@ -363,7 +364,7 @@ bool SharedSampler::IsSupportedImageName(
 }
 
 std::unique_ptr<ProcessDataSnapshot> SharedSampler::CaptureSnapshot() {
-  DCHECK(worker_pool_sequenced_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(worker_pool_sequenced_checker_);
 
   // Preallocate the buffer with the size determined on the previous call to
   // QuerySystemProcessInformation. This should be sufficient most of the time.

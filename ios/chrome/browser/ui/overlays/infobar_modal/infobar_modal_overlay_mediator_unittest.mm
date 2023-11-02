@@ -1,19 +1,19 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/overlays/infobar_modal/infobar_modal_overlay_mediator.h"
 
 #import "base/bind.h"
-#include "ios/chrome/browser/overlays/public/infobar_modal/infobar_modal_overlay_responses.h"
-#include "ios/chrome/browser/overlays/public/overlay_callback_manager.h"
-#include "ios/chrome/browser/overlays/public/overlay_request.h"
-#include "ios/chrome/browser/overlays/public/overlay_response.h"
-#include "ios/chrome/browser/overlays/public/overlay_response_support.h"
-#include "ios/chrome/browser/overlays/test/fake_overlay_request_callback_installer.h"
-#include "ios/chrome/browser/overlays/test/fake_overlay_user_data.h"
-#include "ios/chrome/browser/overlays/test/overlay_test_macros.h"
-#include "testing/platform_test.h"
+#import "ios/chrome/browser/overlays/public/infobar_modal/infobar_modal_overlay_responses.h"
+#import "ios/chrome/browser/overlays/public/overlay_callback_manager.h"
+#import "ios/chrome/browser/overlays/public/overlay_request.h"
+#import "ios/chrome/browser/overlays/public/overlay_response.h"
+#import "ios/chrome/browser/overlays/public/overlay_response_support.h"
+#import "ios/chrome/browser/overlays/test/fake_overlay_request_callback_installer.h"
+#import "ios/chrome/browser/overlays/test/fake_overlay_user_data.h"
+#import "ios/chrome/browser/overlays/test/overlay_test_macros.h"
+#import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
@@ -52,7 +52,7 @@ class InfobarModalOverlayMediatorTest : public PlatformTest {
     callback_installer_.InstallCallbacks(request_.get());
   }
   ~InfobarModalOverlayMediatorTest() override {
-    // |callback_receiver_|'s completion callback is guaranteed to be called
+    // `callback_receiver_`'s completion callback is guaranteed to be called
     // when the test fixture is torn down.  This functionality is already tested
     // in OverlayRequestCallbackInstaller's unittests.  This EXPECT_CALL() for
     // the completion callback is added here instead of in individual tests
@@ -70,13 +70,13 @@ class InfobarModalOverlayMediatorTest : public PlatformTest {
   FakeInfobarModalOverlayMediator* mediator_ = nil;
 };
 
-// Tests that |-dismissInfobarModal| triggers dismissal via the delegate.
+// Tests that `-dismissInfobarModal` triggers dismissal via the delegate.
 TEST_F(InfobarModalOverlayMediatorTest, DismissInfobarModal) {
   OCMExpect([delegate_ stopOverlayForMediator:mediator_]);
   [mediator_ dismissInfobarModal:nil];
 }
 
-// Tests that |-modalInfobarButtonWasAccepted| dispatches a main action response
+// Tests that `-modalInfobarButtonWasAccepted` dispatches a main action response
 // then dismisses the modal.
 TEST_F(InfobarModalOverlayMediatorTest, ModalInfobarButtonWasAccepted) {
   EXPECT_CALL(

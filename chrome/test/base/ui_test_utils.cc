@@ -1,8 +1,9 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/test/base/ui_test_utils.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 
 #include <stddef.h>
@@ -78,7 +79,7 @@
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "ui/gfx/geometry/rect.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -149,15 +150,14 @@ class AppModalDialogWaiter : public javascript_dialogs::AppModalDialogObserver {
     // and this will catch that case.
     auto* contents = dialog->web_contents();
     bool found_disabled_for_testing = false;
-    contents->GetMainFrame()->ForEachRenderFrameHost(base::BindRepeating(
-        [](bool* found_disabled_for_testing, content::RenderFrameHost* frame) {
+    contents->GetPrimaryMainFrame()->ForEachRenderFrameHostWithAction(
+        [&found_disabled_for_testing](content::RenderFrameHost* frame) {
           if (frame->IsBeforeUnloadHangMonitorDisabledForTesting()) {
-            *found_disabled_for_testing = true;
+            found_disabled_for_testing = true;
             return content::RenderFrameHost::FrameIterationAction::kStop;
           }
           return content::RenderFrameHost::FrameIterationAction::kContinue;
-        },
-        &found_disabled_for_testing));
+        });
 
     ASSERT_TRUE(found_disabled_for_testing)
         << "If waiting for a beforeunload dialog, the beforeunload timer "
@@ -165,7 +165,7 @@ class AppModalDialogWaiter : public javascript_dialogs::AppModalDialogObserver {
   }
 
  private:
-  javascript_dialogs::AppModalDialogController* dialog_ = nullptr;
+  raw_ptr<javascript_dialogs::AppModalDialogController> dialog_ = nullptr;
   scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
 };
 
@@ -295,7 +295,7 @@ NavigateToURLWithDispositionBlockUntilNavigationsComplete(
   }
   if (disposition == WindowOpenDisposition::CURRENT_TAB) {
     same_tab_observer.Wait();
-    return web_contents->GetMainFrame();
+    return web_contents->GetPrimaryMainFrame();
   } else if (web_contents) {
     content::TestNavigationObserver observer(
         web_contents, number_of_navigations,
@@ -304,7 +304,7 @@ NavigateToURLWithDispositionBlockUntilNavigationsComplete(
     if (!blink::IsRendererDebugURL(url))
       observer.set_expected_initial_url(url);
     observer.Wait();
-    return web_contents->GetMainFrame();
+    return web_contents->GetPrimaryMainFrame();
   }
   EXPECT_TRUE(web_contents)
       << " Unable to wait for navigation to \"" << url.spec() << "\""
@@ -365,11 +365,10 @@ bool GetRelativeBuildDirectory(base::FilePath* build_dir) {
     return false;
 
   size_t match, exe_size, src_size;
-  std::vector<base::FilePath::StringType> src_parts, exe_parts;
 
   // Determine point at which src and exe diverge.
-  exe_dir.GetComponents(&exe_parts);
-  src_dir.GetComponents(&src_parts);
+  auto exe_parts = exe_dir.GetComponents();
+  auto src_parts = src_dir.GetComponents();
   exe_size = exe_parts.size();
   src_size = src_parts.size();
   for (match = 0; match < exe_size && match < src_size; ++match) {
@@ -496,11 +495,11 @@ void GetCookies(const GURL& url,
   if (url.is_valid() && contents) {
     base::RunLoop loop;
     auto* storage_partition =
-        contents->GetMainFrame()->GetProcess()->GetStoragePartition();
+        contents->GetPrimaryMainFrame()->GetProcess()->GetStoragePartition();
     net::CookieList cookie_list;
     storage_partition->GetCookieManagerForBrowserProcess()->GetCookieList(
         url, net::CookieOptions::MakeAllInclusive(),
-        net::CookiePartitionKeychain(),
+        net::CookiePartitionKeyCollection(),
         base::BindOnce(GetCookieCallback, loop.QuitClosure(), &cookie_list));
     loop.Run();
 
@@ -560,7 +559,7 @@ class WaitHistoryLoadedObserver : public history::HistoryServiceObserver {
 
  private:
   // weak
-  content::MessageLoopRunner* runner_;
+  raw_ptr<content::MessageLoopRunner> runner_;
 };
 
 WaitHistoryLoadedObserver::WaitHistoryLoadedObserver(

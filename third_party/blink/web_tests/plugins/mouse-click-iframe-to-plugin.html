@@ -2,6 +2,8 @@
 <head>
 <script>
 function runTest() {
+    // Accessing a property on the plugin forces it to be synchronously updated.
+    document.querySelector('embed')['foo'];
     frameDocument = document.getElementById('frame').contentWindow.document;
     frameDocument.body.innerHTML = "<textarea id=textarea cols=50 rows=5 onblur='this.style.backgroundColor=\"green\"'></textarea>";
     var textarea = frameDocument.getElementById('textarea');

@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,9 +43,7 @@ std::string RandASCIIString(size_t length) {
 SyncCommitError GetSyncCommitError(SyncerError syncer_error) {
   switch (syncer_error.value()) {
     case SyncerError::UNSET:
-    case SyncerError::CANNOT_DO_WORK:
     case SyncerError::SYNCER_OK:
-    case SyncerError::DATATYPE_TRIGGERED_RETRY:
     case SyncerError::SERVER_MORE_TO_DOWNLOAD:
       NOTREACHED();
       break;
@@ -62,7 +60,6 @@ SyncCommitError GetSyncCommitError(SyncerError syncer_error) {
     case SyncerError::SERVER_RETURN_CLEAR_PENDING:
     case SyncerError::SERVER_RETURN_NOT_MY_BIRTHDAY:
     case SyncerError::SERVER_RETURN_CONFLICT:
-    case SyncerError::SERVER_RETURN_PARTIAL_FAILURE:
     case SyncerError::SERVER_RETURN_CLIENT_DATA_OBSOLETE:
     case SyncerError::SERVER_RETURN_ENCRYPTION_OBSOLETE:
     case SyncerError::SERVER_RETURN_DISABLED_BY_ADMIN:
@@ -126,8 +123,8 @@ std::unique_ptr<Commit> Commit::Init(
   }
 
   ModelTypeSet contributed_data_types;
-  for (const auto& contribution : contributions) {
-    contributed_data_types.Put(contribution.first);
+  for (const auto& [type, contribution] : contributions) {
+    contributed_data_types.Put(type);
   }
 
   // Set the client config params.
@@ -135,7 +132,12 @@ std::unique_ptr<Commit> Commit::Init(
       enabled_types, proxy_tabs_datatype_enabled, cookie_jar_mismatch,
       active_devices_invalidation_info.IsSingleClientForTypes(
           contributed_data_types),
-      active_devices_invalidation_info.fcm_registration_tokens(),
+      active_devices_invalidation_info
+          .IsSingleClientWithStandaloneInvalidationsForTypes(
+              contributed_data_types),
+      active_devices_invalidation_info.all_fcm_registration_tokens(),
+      active_devices_invalidation_info
+          .GetFcmRegistrationTokensForInterestedClients(contributed_data_types),
       commit_message);
 
   // Finally, serialize all our contributions.
@@ -154,9 +156,7 @@ SyncerError Commit::PostAndProcessResponse(
     StatusController* status,
     ExtensionsActivity* extensions_activity) {
   ModelTypeSet request_types;
-  for (ContributionMap::const_iterator it = contributions_.begin();
-       it != contributions_.end(); ++it) {
-    ModelType request_type = it->first;
+  for (const auto& [request_type, contribution] : contributions_) {
     request_types.Put(request_type);
     UMA_HISTOGRAM_ENUMERATION("Sync.PostedDataTypeCommitRequest",
                               ModelTypeHistogramValue(request_type));
@@ -219,14 +219,13 @@ SyncerError Commit::PostAndProcessResponse(
 
   // Let the contributors process the responses to each of their requests.
   SyncerError processing_result = SyncerError(SyncerError::SYNCER_OK);
-  for (ContributionMap::const_iterator it = contributions_.begin();
-       it != contributions_.end(); ++it) {
-    TRACE_EVENT1("sync", "ProcessCommitResponse", "type",
-                 ModelTypeToString(it->first));
+  for (const auto& [type, contributions] : contributions_) {
+    const char* model_type_str = ModelTypeToDebugString(type);
+    TRACE_EVENT1("sync", "ProcessCommitResponse", "type", model_type_str);
     SyncerError type_result =
-        it->second->ProcessCommitResponse(response, status);
+        contributions->ProcessCommitResponse(response, status);
     if (type_result.value() == SyncerError::SERVER_RETURN_CONFLICT) {
-      nudge_tracker->RecordCommitConflict(it->first);
+      nudge_tracker->RecordCommitConflict(type);
     }
     if (processing_result.value() == SyncerError::SYNCER_OK &&
         type_result.value() != SyncerError::SYNCER_OK) {
@@ -247,16 +246,16 @@ SyncerError Commit::PostAndProcessResponse(
 
 ModelTypeSet Commit::GetContributingDataTypes() const {
   ModelTypeSet contributed_data_types;
-  for (const auto& model_type_and_contribution : contributions_) {
-    contributed_data_types.Put(model_type_and_contribution.first);
+  for (const auto& [model_type, contribution] : contributions_) {
+    contributed_data_types.Put(model_type);
   }
   return contributed_data_types;
 }
 
 void Commit::ReportFullCommitFailure(SyncerError syncer_error) {
   const SyncCommitError commit_error = GetSyncCommitError(syncer_error);
-  for (auto& model_type_and_contribution : contributions_) {
-    model_type_and_contribution.second->ProcessCommitFailure(commit_error);
+  for (auto& [model_type, contribution] : contributions_) {
+    contribution->ProcessCommitFailure(commit_error);
   }
 }
 

@@ -1,13 +1,13 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/segmentation_platform/internal/stats.h"
 
 #include "base/test/metrics/histogram_tester.h"
-#include "components/optimization_guide/proto/models.pb.h"
-#include "components/segmentation_platform/internal/proto/types.pb.h"
-#include "components/segmentation_platform/public/config.h"
+#include "components/segmentation_platform/public/constants.h"
+#include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
+#include "components/segmentation_platform/public/proto/types.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -15,12 +15,7 @@ namespace segmentation_platform {
 using proto::SignalType;
 namespace stats {
 
-class StatsTest : public testing::Test {
- public:
-  ~StatsTest() override = default;
-};
-
-TEST_F(StatsTest, ModelExecutionZeroValuePercent) {
+TEST(StatsTest, ModelExecutionZeroValuePercent) {
   base::HistogramTester tester;
   std::vector<float> empty{};
   std::vector<float> single_zero{0};
@@ -30,70 +25,66 @@ TEST_F(StatsTest, ModelExecutionZeroValuePercent) {
   std::vector<float> all_non_zero{1, 2, 3};
 
   RecordModelExecutionZeroValuePercent(
-      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, empty);
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, empty);
   EXPECT_EQ(
       1, tester.GetBucketCount(
              "SegmentationPlatform.ModelExecution.ZeroValuePercent.NewTab", 0));
 
   RecordModelExecutionZeroValuePercent(
-      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,
-      single_zero);
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, single_zero);
   EXPECT_EQ(
       1,
       tester.GetBucketCount(
           "SegmentationPlatform.ModelExecution.ZeroValuePercent.NewTab", 100));
 
   RecordModelExecutionZeroValuePercent(
-      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,
-      single_non_zero);
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, single_non_zero);
   EXPECT_EQ(
       2, tester.GetBucketCount(
              "SegmentationPlatform.ModelExecution.ZeroValuePercent.NewTab", 0));
 
   RecordModelExecutionZeroValuePercent(
-      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, all_zeroes);
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, all_zeroes);
   EXPECT_EQ(
       2,
       tester.GetBucketCount(
           "SegmentationPlatform.ModelExecution.ZeroValuePercent.NewTab", 100));
 
   RecordModelExecutionZeroValuePercent(
-      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,
-      one_non_zero);
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, one_non_zero);
   EXPECT_EQ(
       1,
       tester.GetBucketCount(
           "SegmentationPlatform.ModelExecution.ZeroValuePercent.NewTab", 66));
 
   RecordModelExecutionZeroValuePercent(
-      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,
-      all_non_zero);
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, all_non_zero);
   EXPECT_EQ(
       3, tester.GetBucketCount(
              "SegmentationPlatform.ModelExecution.ZeroValuePercent.NewTab", 0));
 }
 
-TEST_F(StatsTest, AdaptiveToolbarSegmentSwitch) {
+TEST(StatsTest, AdaptiveToolbarSegmentSwitch) {
   std::string histogram("SegmentationPlatform.AdaptiveToolbar.SegmentSwitched");
   base::HistogramTester tester;
+  Config config;
+  config.segmentation_key = kAdaptiveToolbarSegmentationKey;
+  config.segmentation_uma_name =
+      SegmentationKeyToUmaName(config.segmentation_key);
 
   // Share -> New tab.
   RecordSegmentSelectionComputed(
-      kAdaptiveToolbarSegmentationKey,
-      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,
-      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
+      config, SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
 
   // None -> Share.
   RecordSegmentSelectionComputed(
-      kAdaptiveToolbarSegmentationKey,
-      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE,
-      absl::nullopt);
+      config, SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE, absl::nullopt);
 
   // Share -> Share.
   RecordSegmentSelectionComputed(
-      kAdaptiveToolbarSegmentationKey,
-      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE,
-      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
+      config, SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE,
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
   tester.ExpectTotalCount(histogram, 2);
 
   EXPECT_THAT(
@@ -108,17 +99,19 @@ TEST_F(StatsTest, AdaptiveToolbarSegmentSwitch) {
       "SegmentationPlatform.AdaptiveToolbar.SegmentSelection.Computed", 3);
 }
 
-TEST_F(StatsTest, BooleanSegmentSwitch) {
+TEST(StatsTest, BooleanSegmentSwitch) {
   std::string histogram(
       "SegmentationPlatform.ChromeStartAndroid.SegmentSwitched");
   base::HistogramTester tester;
+  Config config;
+  config.segmentation_key = kChromeStartAndroidSegmentationKey;
+  config.segmentation_uma_name =
+      SegmentationKeyToUmaName(config.segmentation_key);
 
   // Start to none.
   RecordSegmentSelectionComputed(
-      kChromeStartAndroidSegmentationKey,
-      OptimizationTarget::OPTIMIZATION_TARGET_UNKNOWN,
-      OptimizationTarget::
-          OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID);
+      config, SegmentId::OPTIMIZATION_TARGET_UNKNOWN,
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID);
 
   tester.ExpectTotalCount(histogram, 1);
   EXPECT_THAT(tester.GetAllSamples(histogram),
@@ -126,8 +119,7 @@ TEST_F(StatsTest, BooleanSegmentSwitch) {
                   static_cast<int>(BooleanSegmentSwitch::kEnabledToNone), 1)));
   // None to start.
   RecordSegmentSelectionComputed(
-      kChromeStartAndroidSegmentationKey,
-      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID,
+      config, SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID,
       absl::nullopt);
 
   tester.ExpectTotalCount(histogram, 2);
@@ -143,7 +135,7 @@ TEST_F(StatsTest, BooleanSegmentSwitch) {
       "SegmentationPlatform.ChromeStartAndroid.SegmentSelection.Computed2", 2);
 }
 
-TEST_F(StatsTest, SignalsListeningCount) {
+TEST(StatsTest, SignalsListeningCount) {
   base::HistogramTester tester;
   std::set<uint64_t> user_actions{1, 2, 3, 4};
   std::set<std::pair<std::string, proto::SignalType>> histograms;
@@ -164,6 +156,42 @@ TEST_F(StatsTest, SignalsListeningCount) {
   EXPECT_EQ(
       1, tester.GetBucketCount(
              "SegmentationPlatform.Signals.ListeningCount.HistogramValue", 2));
+}
+
+TEST(StatsTest, TrainingDataCollectionEvent) {
+  base::HistogramTester tester;
+  RecordTrainingDataCollectionEvent(
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE,
+      TrainingDataCollectionEvent::kImmediateCollectionStart);
+  EXPECT_EQ(1,
+            tester.GetBucketCount(
+                "SegmentationPlatform.TrainingDataCollectionEvents.Share", 0));
+}
+
+TEST(StatsTest, RecordModelScore) {
+  base::HistogramTester tester;
+  // Test Adaptive Toolbar special case which records both using a unique
+  // histogram name, and the default histogram name. Both results are multiplied
+  // by 100.
+  stats::RecordModelScore(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_VOICE,
+                          0.13);
+  EXPECT_EQ(1,
+            tester.GetBucketCount(
+                "SegmentationPlatform.AdaptiveToolbar.ModelScore.Voice", 13));
+  EXPECT_EQ(1,
+            tester.GetBucketCount("SegmentationPlatform.ModelScore.Voice", 13));
+
+  // Test default case of multiplying result by 100.
+  stats::RecordModelScore(
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_QUERY_TILES, 0.19);
+  EXPECT_EQ(1, tester.GetBucketCount(
+                   "SegmentationPlatform.ModelScore.QueryTiles", 19));
+
+  // Test segments that uses rank as scores, which should be recorded as-is.
+  stats::RecordModelScore(
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SEARCH_USER, 75);
+  EXPECT_EQ(1, tester.GetBucketCount(
+                   "SegmentationPlatform.ModelScore.SearchUserSegment", 75));
 }
 
 }  // namespace stats

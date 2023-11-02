@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,15 +15,15 @@
 #include "chrome/browser/ash/borealis/borealis_metrics.h"
 #include "chrome/browser/ash/borealis/borealis_task.h"
 #include "chrome/browser/ash/borealis/testing/callback_factory.h"
-#include "chrome/browser/ash/borealis/testing/dbus.h"
+#include "chrome/browser/ash/guest_os/dbus_test_helper.h"
 #include "chrome/browser/ash/guest_os/guest_os_stability_monitor.h"
 #include "chrome/browser/ash/login/users/mock_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/sessions/exit_type_service.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/dbus/concierge/fake_concierge_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/seneschal/seneschal_client.h"
+#include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
+#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -69,7 +69,7 @@ class BorealisContextManagerImplForTesting : public BorealisContextManagerImpl {
  private:
   base::queue<std::unique_ptr<BorealisTask>> GetTasks() override {
     base::queue<std::unique_ptr<BorealisTask>> task_queue;
-    for (int i = 0; i < tasks_; i++) {
+    for (size_t i = 0; i < tasks_; i++) {
       if (!success_ && tasks_ > 1 && i == 0) {
         // If we are testing the case for multiple tasks, and at least one of
         // them fails, we want the first task to succeed.
@@ -89,7 +89,7 @@ using StartupCallbackFactory =
     StrictCallbackFactory<void(BorealisContextManager::ContextOrFailure)>;
 
 class BorealisContextManagerTest : public testing::Test,
-                                   protected FakeVmServicesHelper {
+                                   protected guest_os::FakeVmServicesHelper {
  public:
   BorealisContextManagerTest() = default;
   BorealisContextManagerTest(const BorealisContextManagerTest&) = delete;
@@ -109,7 +109,7 @@ class BorealisContextManagerTest : public testing::Test,
   }
 
   void SendVmStartedSignal() {
-    auto* concierge_client = chromeos::FakeConciergeClient::Get();
+    auto* concierge_client = ash::FakeConciergeClient::Get();
 
     vm_tools::concierge::VmStartedSignal signal;
     signal.set_name("test_vm_name");
@@ -119,7 +119,7 @@ class BorealisContextManagerTest : public testing::Test,
   }
 
   void SendVmStoppedSignal() {
-    auto* concierge_client = chromeos::FakeConciergeClient::Get();
+    auto* concierge_client = ash::FakeConciergeClient::Get();
 
     vm_tools::concierge::VmStoppedSignal signal;
     signal.set_name("test_vm_name");
@@ -294,8 +294,8 @@ TEST_F(BorealisContextManagerTest, ShutDownCancelsRequestsAndTerminatesVm) {
   context_manager.ShutDownBorealis(shutdown_callback_handler.BindOnce());
   task_environment_.RunUntilIdle();
 
-  chromeos::FakeConciergeClient* fake_concierge_client =
-      chromeos::FakeConciergeClient::Get();
+  ash::FakeConciergeClient* fake_concierge_client =
+      ash::FakeConciergeClient::Get();
   EXPECT_GE(fake_concierge_client->stop_vm_call_count(), 1);
   histogram_tester_->ExpectTotalCount(kBorealisShutdownNumAttemptsHistogram, 1);
   histogram_tester_->ExpectUniqueSample(kBorealisShutdownResultHistogram,
@@ -321,8 +321,8 @@ TEST_F(BorealisContextManagerTest, FailureToShutdownReportsError) {
   vm_tools::concierge::StopVmResponse response;
   response.set_success(false);
   response.set_failure_reason("expected failure");
-  chromeos::FakeConciergeClient* fake_concierge_client =
-      chromeos::FakeConciergeClient::Get();
+  ash::FakeConciergeClient* fake_concierge_client =
+      ash::FakeConciergeClient::Get();
   fake_concierge_client->set_stop_vm_response(std::move(response));
 
   ShutdownCallbackFactory shutdown_callback_handler;
@@ -426,8 +426,8 @@ TEST_F(BorealisContextManagerTest, LogVmStoppedWhenUnexpected) {
 }
 
 TEST_F(BorealisContextManagerTest, VmShutsDownAfterChromeCrashes) {
-  chromeos::FakeConciergeClient* fake_concierge_client =
-      chromeos::FakeConciergeClient::Get();
+  ash::FakeConciergeClient* fake_concierge_client =
+      ash::FakeConciergeClient::Get();
 
   // Ensure that GetVmInfo returns success - a VM "still running".
   SendVmStartedSignal();

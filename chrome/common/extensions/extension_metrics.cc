@@ -1,10 +1,11 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/common/extensions/extension_metrics.h"
 
 #include "base/metrics/histogram_macros.h"
+#include "components/app_constants/constants.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 
@@ -27,7 +28,7 @@ void RecordAppListSearchLaunch(const extensions::Extension* extension) {
       extension_misc::APP_LAUNCH_APP_LIST_SEARCH;
   if (extension->id() == extensions::kWebStoreAppId)
     bucket = extension_misc::APP_LAUNCH_APP_LIST_SEARCH_WEBSTORE;
-  else if (extension->id() == extension_misc::kChromeAppId)
+  else if (extension->id() == app_constants::kChromeAppId)
     bucket = extension_misc::APP_LAUNCH_APP_LIST_SEARCH_CHROME;
   RecordAppLaunchType(bucket, extension->GetType());
 }
@@ -37,7 +38,7 @@ void RecordAppListMainLaunch(const extensions::Extension* extension) {
       extension_misc::APP_LAUNCH_APP_LIST_MAIN;
   if (extension->id() == extensions::kWebStoreAppId)
     bucket = extension_misc::APP_LAUNCH_APP_LIST_MAIN_WEBSTORE;
-  else if (extension->id() == extension_misc::kChromeAppId)
+  else if (extension->id() == app_constants::kChromeAppId)
     bucket = extension_misc::APP_LAUNCH_APP_LIST_MAIN_CHROME;
   RecordAppLaunchType(bucket, extension->GetType());
 }

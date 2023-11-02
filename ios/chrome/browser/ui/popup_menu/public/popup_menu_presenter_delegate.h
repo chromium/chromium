@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@
 
 // Tells the delegate that user took an action that will result in the dismissal
 // of the presented view. It is the delegate's responsibility to call
-// |dismissAnimated:|.
+// `dismissAnimated:`.
 - (void)popupMenuPresenterWillDismiss:(PopupMenuPresenter*)presenter;
 
 @end

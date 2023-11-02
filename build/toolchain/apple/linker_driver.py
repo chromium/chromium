@@ -1,6 +1,6 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -9,9 +9,13 @@ import os.path
 import shutil
 import subprocess
 import sys
+import tempfile
 
 # Prefix for all custom linker driver arguments.
 LINKER_DRIVER_ARG_PREFIX = '-Wcrl,'
+# Linker action to create a directory and pass it to the linker as
+# `-object_path_lto`. Special-cased since it has to run before the link.
+OBJECT_PATH_LTO = 'object_path_lto'
 
 # The linker_driver.py is responsible for forwarding a linker invocation to
 # the compiler driver, while processing special arguments itself.
@@ -26,6 +30,15 @@ LINKER_DRIVER_ARG_PREFIX = '-Wcrl,'
 # invocation for the linker. It is first invoked unaltered (except for the
 # removal of the special driver arguments, described below). Then the driver
 # performs additional actions, based on these arguments:
+#
+# -Wcrl,installnametoolpath,<install_name_tool_path>
+#    Sets the path to the `install_name_tool` to run with
+#    -Wcrl,installnametool, in which case `xcrun` is not used to invoke it.
+#
+# -Wcrl,installnametool,<arguments,...>
+#    After invoking the linker, this will run install_name_tool on the linker's
+#    output. |arguments| are comma-separated arguments to be passed to the
+#    install_name_tool command.
 #
 # -Wcrl,dsym,<dsym_path_prefix>
 #    After invoking the linker, this will run `dsymutil` on the linker's
@@ -50,6 +63,8 @@ LINKER_DRIVER_ARG_PREFIX = '-Wcrl,'
 # -Wcrl,strippath,<strip_path>
 #    Sets the path to the strip to run with -Wcrl,strip, in which case
 #    `xcrun` is not used to invoke it.
+# -Wcrl,object_path_lto
+#    Creates temporary directory for LTO object files.
 
 
 class LinkerDriver(object):
@@ -68,6 +83,8 @@ class LinkerDriver(object):
         # The first item in the tuple is the argument's -Wcrl,<sub_argument>
         # and the second is the function to invoke.
         self._actions = [
+            ('installnametoolpath,', self.set_install_name_tool_path),
+            ('installnametool,', self.run_install_name_tool),
             ('dsymutilpath,', self.set_dsymutil_path),
             ('dsym,', self.run_dsymutil),
             ('unstripped,', self.run_save_unstripped),
@@ -76,11 +93,15 @@ class LinkerDriver(object):
         ]
 
         # Linker driver actions can modify the these values.
+        self._install_name_tool_cmd = ['xcrun', 'install_name_tool']
         self._dsymutil_cmd = ['xcrun', 'dsymutil']
         self._strip_cmd = ['xcrun', 'strip']
 
         # The linker output file, lazily computed in self._get_linker_output().
         self._linker_output = None
+        # The temporary directory for intermediate LTO object files. If it
+        # exists, it will clean itself up on script exit.
+        self._object_path_lto = None
 
     def run(self):
         """Runs the linker driver, separating out the main compiler driver's
@@ -101,6 +122,9 @@ class LinkerDriver(object):
             else:
                 compiler_driver_args.append(arg)
 
+        if self._object_path_lto is not None:
+            compiler_driver_args.append('-Wl,-object_path_lto,{}'.format(
+                self._object_path_lto.name))
         if self._get_linker_output() is None:
             raise ValueError(
                 'Could not find path to linker output (-o or --output)')
@@ -155,6 +179,13 @@ class LinkerDriver(object):
             raise ValueError('%s is not a linker driver argument' % (arg, ))
 
         sub_arg = arg[len(LINKER_DRIVER_ARG_PREFIX):]
+        # Special-cased, since it needs to run before the link.
+        # TODO(lgrey): Remove if/when we start running `dsymutil`
+        # through the clang driver. See https://crbug.com/1324104
+        if sub_arg == OBJECT_PATH_LTO:
+            self._object_path_lto = tempfile.TemporaryDirectory(
+                dir=os.getcwd())
+            return (OBJECT_PATH_LTO, lambda: [])
 
         for driver_action in self._actions:
             (name, action) = driver_action
@@ -162,6 +193,40 @@ class LinkerDriver(object):
                 return (name, lambda: action(sub_arg[len(name):]))
 
         raise ValueError('Unknown linker driver argument: %s' % (arg, ))
+
+    def set_install_name_tool_path(self, install_name_tool_path):
+        """Linker driver action for -Wcrl,installnametoolpath,<path>.
+
+        Sets the invocation command for install_name_tool, which allows the
+        caller to specify an alternate path. This action is always
+        processed before the run_install_name_tool action.
+
+        Args:
+            install_name_tool_path: string, The path to the install_name_tool
+                binary to run
+
+        Returns:
+            No output - this step is run purely for its side-effect.
+        """
+        self._install_name_tool_cmd = [install_name_tool_path]
+        return []
+
+    def run_install_name_tool(self, args_string):
+        """Linker driver action for -Wcrl,installnametool,<args>. Invokes
+        install_name_tool on the linker's output.
+
+        Args:
+            args_string: string, Comma-separated arguments for
+                `install_name_tool`.
+
+        Returns:
+            No output - this step is run purely for its side-effect.
+        """
+        command = list(self._install_name_tool_cmd)
+        command.extend(args_string.split(','))
+        command.append(self._get_linker_output())
+        subprocess.check_call(command)
+        return []
 
     def run_dsymutil(self, dsym_path_prefix):
         """Linker driver action for -Wcrl,dsym,<dsym-path-prefix>. Invokes

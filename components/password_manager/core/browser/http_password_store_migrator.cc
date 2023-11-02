@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -52,11 +52,11 @@ HttpPasswordStoreMigrator::HttpPasswordStoreMigrator(
                           http_origin.DeprecatedGetOriginAsURL().spec(),
                           http_origin);
   http_origin_domain_ = url::Origin::Create(http_origin);
-  store_->GetLogins(form, this);
+  store_->GetLogins(form, weak_ptr_factory_.GetWeakPtr());
 
   PostHSTSQueryForHostAndNetworkContext(
       https_origin, network_context,
-      base::BindOnce(&OnHSTSQueryResultHelper, GetWeakPtr()));
+      base::BindOnce(&OnHSTSQueryResultHelper, weak_ptr_factory_.GetWeakPtr()));
 }
 
 HttpPasswordStoreMigrator::~HttpPasswordStoreMigrator() = default;

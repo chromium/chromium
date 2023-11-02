@@ -1,8 +1,8 @@
 (async function(testRunner) {
-  var {page, session, dp} = await testRunner.startBlank(
+  const {session, dp} = await testRunner.startBlank(
       `Tests that Fetch intercepts CORS preflight requests correctly.`);
 
-  const url = 'http://localhost:8000/inspector-protocol/network/resources/post-echo.pl';
+  const url = 'http://localhost:8000/inspector-protocol/fetch/resources/post-echo.pl';
 
   await dp.Fetch.enable();
 

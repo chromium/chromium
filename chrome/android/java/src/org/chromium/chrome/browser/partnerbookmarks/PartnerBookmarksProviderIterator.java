@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,18 +42,12 @@ public class PartnerBookmarksProviderIterator implements PartnerBookmark.Bookmar
     // Bookmark id of the main container folder.
     private static final long BOOKMARK_CONTAINER_FOLDER_ID = 0;
 
-    private static final String BOOKMARKS_SORT_ORDER = BOOKMARKS_COLUMN_TYPE
-            + " DESC, " + BOOKMARKS_COLUMN_ID + " ASC";
+    private static final String BOOKMARKS_SORT_ORDER =
+            BOOKMARKS_COLUMN_TYPE + " DESC, " + BOOKMARKS_COLUMN_ID + " ASC";
 
-    private static final String[] BOOKMARKS_PROJECTION = {
-        BOOKMARKS_COLUMN_ID,
-        BOOKMARKS_COLUMN_URL,
-        BOOKMARKS_COLUMN_TITLE,
-        BOOKMARKS_COLUMN_TYPE,
-        BOOKMARKS_COLUMN_PARENT,
-        BOOKMARKS_COLUMN_FAVICON,
-        BOOKMARKS_COLUMN_TOUCHICON
-    };
+    private static final String[] BOOKMARKS_PROJECTION = {BOOKMARKS_COLUMN_ID, BOOKMARKS_COLUMN_URL,
+            BOOKMARKS_COLUMN_TITLE, BOOKMARKS_COLUMN_TYPE, BOOKMARKS_COLUMN_PARENT,
+            BOOKMARKS_COLUMN_FAVICON, BOOKMARKS_COLUMN_TOUCHICON};
 
     private final Cursor mCursor;
 
@@ -114,7 +108,7 @@ public class PartnerBookmarksProviderIterator implements PartnerBookmark.Bookmar
             }
             bookmark.mIsFolder =
                     mCursor.getInt(mCursor.getColumnIndexOrThrow(BOOKMARKS_COLUMN_TYPE))
-                            == BOOKMARK_TYPE_FOLDER;
+                    == BOOKMARK_TYPE_FOLDER;
             bookmark.mUrl = mCursor.getString(mCursor.getColumnIndexOrThrow(BOOKMARKS_COLUMN_URL));
             bookmark.mTitle =
                     mCursor.getString(mCursor.getColumnIndexOrThrow(BOOKMARKS_COLUMN_TITLE));

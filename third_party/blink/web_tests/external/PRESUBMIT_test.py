@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright (c) 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -161,6 +161,16 @@ class DontModifyIDLFilesTest(unittest.TestCase):
         mock_input = MockInputApi()
         mock_output = MockOutputApi()
         mock_input.affected_paths = [os.path.join(mock_input.PresubmitLocalPath(), 'other', 'interfaces', 'test.idl')]
+        errors = PRESUBMIT._DontModifyIDLFiles(mock_input, mock_output)
+        self.assertEqual(errors, [])
+
+    def testModifiesTentativeIDL(self):
+        mock_input = MockInputApi()
+        mock_output = MockOutputApi()
+        mock_input.affected_paths = [
+            os.path.join(mock_input.PresubmitLocalPath(), 'wpt', 'interfaces',
+                         'test.tentative.idl')
+        ]
         errors = PRESUBMIT._DontModifyIDLFiles(mock_input, mock_output)
         self.assertEqual(errors, [])
 

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -46,7 +46,14 @@ void MojoAudioInputIPC::CreateStream(media::AudioInputIPCDelegate* delegate,
   factory_client_receiver_.set_disconnect_with_reason_handler(
       base::BindOnce(&MojoAudioInputIPC::OnDisconnect, base::Unretained(this)));
 
-  stream_creator_.Run(source_params_, std::move(client), params,
+  mojo::PendingReceiver<media::mojom::blink::AudioProcessorControls>
+      controls_receiver;
+
+  if (source_params_.processing.has_value())
+    controls_receiver = processor_controls_.BindNewPipeAndPassReceiver();
+
+  stream_creator_.Run(source_params_, std::move(client),
+                      std::move(controls_receiver), params,
                       automatic_gain_control, total_segments);
 }
 
@@ -71,12 +78,31 @@ void MojoAudioInputIPC::SetOutputDeviceForAec(
     stream_associator_.Run(*stream_id_, output_device_id);
 }
 
+media::AudioProcessorControls* MojoAudioInputIPC::GetProcessorControls() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return this;
+}
+
 void MojoAudioInputIPC::CloseStream() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   delegate_ = nullptr;
   factory_client_receiver_.reset();
   stream_client_receiver_.reset();
   stream_.reset();
+  processor_controls_.reset();
+}
+
+void MojoAudioInputIPC::GetStats(GetStatsCB callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (processor_controls_)
+    processor_controls_->GetStats(std::move(callback));
+}
+
+void MojoAudioInputIPC::SetPreferredNumCaptureChannels(
+    int32_t num_preferred_channels) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (processor_controls_)
+    processor_controls_->SetPreferredNumCaptureChannels(num_preferred_channels);
 }
 
 void MojoAudioInputIPC::StreamCreated(

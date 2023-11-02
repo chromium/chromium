@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <jni.h>
 
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "components/dom_distiller/core/dom_distiller_service.h"
 
 namespace dom_distiller {
@@ -31,7 +32,7 @@ class DomDistillerServiceAndroid {
   friend class DomDistillerServiceFactoryAndroid;
   // Points to a Java instance of DomDistillerService.
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;
-  DomDistillerService* service_;
+  raw_ptr<DomDistillerService> service_;
 };
 
 }  // namespace android

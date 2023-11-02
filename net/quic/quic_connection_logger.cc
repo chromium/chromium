@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,13 +18,13 @@
 #include "net/cert/x509_certificate.h"
 #include "net/quic/address_utils.h"
 #include "net/quic/quic_address_mismatch.h"
-#include "net/third_party/quiche/src/quic/core/crypto/crypto_handshake_message.h"
-#include "net/third_party/quiche/src/quic/core/crypto/crypto_protocol.h"
-#include "net/third_party/quiche/src/quic/core/quic_connection_id.h"
-#include "net/third_party/quiche/src/quic/core/quic_packets.h"
-#include "net/third_party/quiche/src/quic/core/quic_socket_address_coder.h"
-#include "net/third_party/quiche/src/quic/core/quic_time.h"
-#include "net/third_party/quiche/src/quic/core/quic_utils.h"
+#include "net/third_party/quiche/src/quiche/quic/core/crypto/crypto_handshake_message.h"
+#include "net/third_party/quiche/src/quiche/quic/core/crypto/crypto_protocol.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_connection_id.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_packets.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_socket_address_coder.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_time.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_utils.h"
 
 using quic::kMaxOutgoingPacketSize;
 using std::string;
@@ -62,19 +62,6 @@ QuicConnectionLogger::QuicConnectionLogger(
     std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher,
     const NetLogWithSource& net_log)
     : session_(session),
-      last_received_packet_size_(0),
-      no_packet_received_after_ping_(false),
-      previous_received_packet_size_(0),
-      num_out_of_order_received_packets_(0),
-      num_out_of_order_large_received_packets_(0),
-      num_packets_received_(0),
-      num_frames_received_(0),
-      num_duplicate_frames_received_(0),
-      num_incorrect_connection_ids_(0),
-      num_undecryptable_packets_(0),
-      num_duplicate_packets_(0),
-      num_blocked_frames_received_(0),
-      num_blocked_frames_sent_(0),
       connection_description_(connection_description),
       socket_performance_watcher_(std::move(socket_performance_watcher)),
       event_logger_(session, net_log) {}
@@ -162,7 +149,7 @@ void QuicConnectionLogger::OnFrameAddedToPacket(const quic::QuicFrame& frame) {
       break;
     case quic::STOP_SENDING_FRAME:
       base::UmaHistogramSparse("Net.QuicSession.StopSendingErrorCodeClient",
-                               frame.stop_sending_frame->error_code);
+                               frame.stop_sending_frame.error_code);
       break;
     case quic::MESSAGE_FRAME:
       break;

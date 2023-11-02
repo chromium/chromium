@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,16 +15,11 @@
 #include "extensions/browser/api/system_display/system_display_api.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/mock_display_info_provider.h"
-#include "extensions/browser/mock_screen.h"
 #include "extensions/common/api/system_display.h"
 #include "ui/display/display.h"
-#include "ui/display/screen.h"
-#include "ui/display/test/scoped_screen_override.h"
 
 namespace extensions {
 
-using display::Screen;
-using display::test::ScopedScreenOverride;
 using ContextType = ExtensionBrowserTest::ContextType;
 
 class SystemDisplayExtensionApiTest
@@ -39,28 +34,20 @@ class SystemDisplayExtensionApiTest
 
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
-    ANNOTATE_LEAKING_OBJECT_PTR(Screen::GetScreen());
-    scoped_screen_override_ =
-        std::make_unique<ScopedScreenOverride>(screen_.get());
     DisplayInfoProvider::InitializeForTesting(provider_.get());
   }
 
   void TearDownOnMainThread() override {
     ExtensionApiTest::TearDownOnMainThread();
-    scoped_screen_override_.reset();
   }
 
  protected:
   std::unique_ptr<MockDisplayInfoProvider> provider_ =
       std::make_unique<MockDisplayInfoProvider>();
-
- private:
-  std::unique_ptr<Screen> screen_ = std::make_unique<MockScreen>();
-  std::unique_ptr<ScopedScreenOverride> scoped_screen_override_;
 };
 
-// TODO(crbug.com/1231357): MockScreen causes random failures on Windows.
-#if !defined(OS_WIN)
+// TODO(crbug.com/1231357): Revisit this after screen creation refactoring.
+#if !BUILDFLAG(IS_WIN)
 
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,
                          SystemDisplayExtensionApiTest,
@@ -73,9 +60,9 @@ IN_PROC_BROWSER_TEST_P(SystemDisplayExtensionApiTest, GetDisplayInfo) {
   ASSERT_TRUE(RunExtensionTest("system_display/info")) << message_;
 }
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !(BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS))
 
 using SystemDisplayExtensionApiFunctionTest = SystemDisplayExtensionApiTest;
 

@@ -1,8 +1,7 @@
 Name: Java Development Kit
 Short Name: JDK
 URL: https://openjdk.java.net/
-Version: 11.0.4
-CPEPrefix: cpe:/a:oracle:openjdk:11.0.4
+Version: 11.0.15+10.cr0
 License: GPL v2
 License File: NOT_SHIPPED
 Security Critical: no
@@ -21,17 +20,6 @@ For the `jdk` directory:
 5. Upload and land the CL.
 6. Wait for the 3pp packager (https://ci.chromium.org/p/chromium/builders/ci/3pp-linux-amd64-packager)
    to create the new instance at https://chrome-infra-packages.appspot.com/p/chromium/third_party/jdk/+/
-7. Update instance ID in //DEPS
-
-For the `jdk/extras` subdirectory:
-1. Find the specific version you want to update from
-   https://wiki.openjdk.java.net/display/jdk8u#Main-Releases
-2. Click the link "[Binaries]" for the specific version.
-3. Copy the link address of the asset "OpenJDK8U-jdk_x64_linux_<specific_version>.tar.gz"
-4. Update the "download_url" and "version" in 3pp/3pp.pb with the desired values.
-5. Upload and land the CL.
-6. Wait for the 3pp packager (https://ci.chromium.org/p/chromium/builders/ci/3pp-linux-amd64-packager)
-   to create the new instance at https://chrome-infra-packages.appspot.com/p/chromium/third_party/jdk/extras/+/
 7. Update instance ID in //DEPS
 
 Local Modifications:

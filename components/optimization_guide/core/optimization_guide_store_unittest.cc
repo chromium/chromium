@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,15 +10,20 @@
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/leveldb_proto/testing/fake_db.h"
+#include "components/optimization_guide/core/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/core/store_update_data.h"
 #include "components/optimization_guide/proto/hint_cache.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -59,8 +64,8 @@ std::unique_ptr<proto::PredictionModel> CreatePredictionModel() {
   model_info->set_version(1);
   model_info->set_optimization_target(
       proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
-  model_info->add_supported_model_types(
-      proto::ModelType::MODEL_TYPE_DECISION_TREE);
+  model_info->add_supported_model_engine_versions(
+      proto::ModelEngineVersion::MODEL_ENGINE_VERSION_TFLITE_2_11);
   return prediction_model;
 }
 
@@ -77,17 +82,23 @@ class OptimizationGuideStoreTest : public testing::Test {
   OptimizationGuideStoreTest& operator=(const OptimizationGuideStoreTest&) =
       delete;
 
-  void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
+  void SetUp() override {
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
 
-  void TearDown() override { last_loaded_hint_.reset(); }
+    pref_service_ = std::make_unique<TestingPrefServiceSimple>();
+    prefs::RegisterProfilePrefs(pref_service_->registry());
+  }
+
+  void TearDown() override {
+    last_loaded_hint_.reset();
+    pref_service_.reset();
+  }
 
   // Initializes the entries contained within the database on startup.
   void SeedInitialData(
       MetadataSchemaState state,
       absl::optional<size_t> component_hint_count = absl::optional<size_t>(),
       absl::optional<base::Time> fetched_hints_update =
-          absl::optional<base::Time>(),
-      absl::optional<base::Time> host_model_features_update =
           absl::optional<base::Time>()) {
     db_store_.clear();
 
@@ -134,13 +145,6 @@ class OptimizationGuideStoreTest : public testing::Test {
           .set_update_time_secs(
               fetched_hints_update->ToDeltaSinceWindowsEpoch().InSeconds());
     }
-    if (host_model_features_update) {
-      db_store_[OptimizationGuideStore::GetMetadataTypeEntryKey(
-                    OptimizationGuideStore::MetadataType::kHostModelFeatures)]
-          .set_update_time_secs(
-              host_model_features_update->ToDeltaSinceWindowsEpoch()
-                  .InSeconds());
-    }
   }
 
   // Moves the specified number of component hints into the update data.
@@ -175,36 +179,25 @@ class OptimizationGuideStoreTest : public testing::Test {
       StoreUpdateData* update_data,
       optimization_guide::proto::OptimizationTarget optimization_target,
       absl::optional<base::FilePath> model_file_path = absl::nullopt,
-      base::flat_set<base::FilePath> additional_file_paths = {}) {
+      absl::optional<proto::ModelInfo> info = absl::nullopt,
+      absl::optional<base::Time> expiry_time = absl::nullopt) {
     std::unique_ptr<optimization_guide::proto::PredictionModel>
         prediction_model = CreatePredictionModel();
+    if (info)
+      prediction_model->mutable_model_info()->MergeFrom(*info);
     prediction_model->mutable_model_info()->set_optimization_target(
         optimization_target);
+    if (expiry_time) {
+      auto diff = expiry_time.value() - base::Time::Now();
+      prediction_model->mutable_model_info()
+          ->mutable_valid_duration()
+          ->set_seconds(diff.InSeconds());
+    }
     if (model_file_path) {
       prediction_model->mutable_model()->set_download_url(
           FilePathToString(*model_file_path));
     }
-    for (const base::FilePath& additional_file : additional_file_paths) {
-      prediction_model->mutable_model_info()
-          ->add_additional_files()
-          ->set_file_path(FilePathToString(additional_file));
-    }
     update_data->CopyPredictionModelIntoUpdateData(*prediction_model);
-  }
-
-  // Moves |host_model_features_count| into |update_data|.
-  void SeedHostModelFeaturesUpdateData(StoreUpdateData* update_data,
-                                       size_t host_model_features_count) {
-    for (size_t i = 0; i < host_model_features_count; i++) {
-      std::string host = GetHost(i);
-      proto::HostModelFeatures host_model_features;
-      proto::ModelFeature* model_feature =
-          host_model_features.add_model_features();
-      model_feature->set_feature_name("host_feat1");
-      model_feature->set_double_value(2.0);
-      host_model_features.set_host(host);
-      update_data->CopyHostModelFeaturesIntoUpdateData(host_model_features);
-    }
   }
 
   void CreateDatabase() {
@@ -217,7 +210,8 @@ class OptimizationGuideStoreTest : public testing::Test {
     db_ = db.get();
 
     guide_store_ = std::make_unique<OptimizationGuideStore>(
-        std::move(db), task_environment_.GetMainThreadTaskRunner());
+        std::move(db), task_environment_.GetMainThreadTaskRunner(),
+        pref_service_.get());
   }
 
   void InitializeDatabase(bool success, bool purge_existing_data = false) {
@@ -303,48 +297,14 @@ class OptimizationGuideStoreTest : public testing::Test {
     }
   }
 
-  void UpdateHostModelFeatures(
-      std::unique_ptr<StoreUpdateData> host_model_features_data,
-      bool update_success = true,
-      bool load_host_model_features_entry_keys_success = true) {
-    EXPECT_CALL(*this, OnUpdateStore());
-    guide_store()->UpdateHostModelFeatures(
-        std::move(host_model_features_data),
-        base::BindOnce(&OptimizationGuideStoreTest::OnUpdateStore,
-                       base::Unretained(this)));
-    // OnUpdateStore callback
-    db()->UpdateCallback(update_success);
-    if (update_success) {
-      // OnLoadEntryKeys callback
-      db()->LoadCallback(load_host_model_features_entry_keys_success);
-    }
-  }
-
   void ClearFetchedHintsFromDatabase() {
     guide_store()->ClearFetchedHintsFromDatabase();
     db()->UpdateCallback(true);
     db()->LoadCallback(true);
   }
 
-  void ClearHostModelFeaturesFromDatabase() {
-    guide_store()->ClearHostModelFeaturesFromDatabase();
-    db()->UpdateCallback(true);
-    db()->LoadCallback(true);
-  }
-
   void PurgeExpiredFetchedHints() {
     guide_store()->PurgeExpiredFetchedHints();
-
-    // OnLoadExpiredEntriesToPurge
-    db()->LoadCallback(true);
-    // OnUpdateStore
-    db()->UpdateCallback(true);
-    // OnLoadEntryKeys callback
-    db()->LoadCallback(true);
-  }
-
-  void PurgeExpiredHostModelFeatures() {
-    guide_store()->PurgeExpiredHostModelFeatures();
 
     // OnLoadExpiredEntriesToPurge
     db()->LoadCallback(true);
@@ -387,23 +347,6 @@ class OptimizationGuideStoreTest : public testing::Test {
     }
   }
 
-  // Verifies that the host model features metadata has the expected next update
-  // time.
-  void ExpectHostModelFeaturesMetadata(base::Time update_time) const {
-    const auto& metadata_entry =
-        db_store_.find(OptimizationGuideStore::GetMetadataTypeEntryKey(
-            OptimizationGuideStore::MetadataType::kHostModelFeatures));
-    if (metadata_entry != db_store_.end()) {
-      // The next update time should have same time up to the second as the
-      // metadata entry is stored in seconds.
-      EXPECT_TRUE(base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(
-                      metadata_entry->second.update_time_secs())) -
-                      update_time <
-                  base::Seconds(1));
-    } else {
-      FAIL() << "No host model features metadata found";
-    }
-  }
   // Verifies that the component metadata has the expected version and all
   // expected component hints are present.
   void ExpectComponentHintsPresent(const std::string& version,
@@ -457,14 +400,6 @@ class OptimizationGuideStoreTest : public testing::Test {
 
   MemoryHint* last_loaded_hint() { return last_loaded_hint_.get(); }
 
-  proto::HostModelFeatures* last_loaded_host_model_features() {
-    return last_loaded_host_model_features_.get();
-  }
-
-  std::vector<proto::HostModelFeatures>* last_loaded_all_host_model_features() {
-    return last_loaded_all_host_model_features_.get();
-  }
-
   proto::PredictionModel* last_loaded_prediction_model() {
     return last_loaded_prediction_model_.get();
   }
@@ -475,21 +410,15 @@ class OptimizationGuideStoreTest : public testing::Test {
     last_loaded_hint_ = std::move(loaded_hint);
   }
 
-  void OnHostModelFeaturesLoaded(
-      std::unique_ptr<proto::HostModelFeatures> loaded_host_model_features) {
-    last_loaded_host_model_features_ = std::move(loaded_host_model_features);
-  }
-
-  void OnAllHostModelFeaturesLoaded(
-      std::unique_ptr<std::vector<proto::HostModelFeatures>>
-          loaded_all_host_model_features) {
-    last_loaded_all_host_model_features_ =
-        std::move(loaded_all_host_model_features);
-  }
-
   void OnPredictionModelLoaded(
       std::unique_ptr<proto::PredictionModel> loaded_prediction_model) {
     last_loaded_prediction_model_ = std::move(loaded_prediction_model);
+  }
+
+  bool IsStoreFilesToDeletePrefEmpty() {
+    const base::Value::Dict& pref_dict =
+        pref_service_->GetDict(prefs::kStoreFilePathsToDelete);
+    return pref_dict.empty();
   }
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
@@ -499,16 +428,14 @@ class OptimizationGuideStoreTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  FakeDB<proto::StoreEntry>* db_;
+  std::unique_ptr<TestingPrefServiceSimple> pref_service_;
+  raw_ptr<FakeDB<proto::StoreEntry>> db_;
   StoreEntryMap db_store_;
   std::unique_ptr<OptimizationGuideStore> guide_store_;
   base::ScopedTempDir temp_dir_;
 
   OptimizationGuideStore::EntryKey last_loaded_entry_key_;
   std::unique_ptr<MemoryHint> last_loaded_hint_;
-  std::unique_ptr<proto::HostModelFeatures> last_loaded_host_model_features_;
-  std::unique_ptr<std::vector<proto::HostModelFeatures>>
-      last_loaded_all_host_model_features_;
   std::unique_ptr<proto::PredictionModel> last_loaded_prediction_model_;
 };
 
@@ -736,10 +663,6 @@ TEST_F(OptimizationGuideStoreTest,
   histogram_tester.ExpectBucketCount(
       "OptimizationGuide.HintCacheLevelDBStore.LoadMetadataResult",
       0 /* kSuccess */, 1);
-  histogram_tester.ExpectBucketCount(
-      "OptimizationGuide.PredictionModelStore."
-      "HostModelFeaturesLoadMetadataResult",
-      false, 1);
 
   histogram_tester.ExpectBucketCount(
       "OptimizationGuide.HintCacheLevelDBStore.Status", 0 /* kUninitialized */,
@@ -838,11 +761,6 @@ TEST_F(OptimizationGuideStoreTest, InitializeSucceededWithValidSchemaEntry) {
       6 /* kComponentAndFetchedMetadataMissing*/, 1);
 
   histogram_tester.ExpectBucketCount(
-      "OptimizationGuide.PredictionModelStore."
-      "HostModelFeaturesLoadMetadataResult",
-      false, 1);
-
-  histogram_tester.ExpectBucketCount(
       "OptimizationGuide.HintCacheLevelDBStore.Status", 0 /* kUninitialized */,
       1);
   histogram_tester.ExpectBucketCount(
@@ -900,9 +818,6 @@ TEST_F(OptimizationGuideStoreTest, InitializeSucceededWithPurgeExistingData) {
 
   EXPECT_TRUE(IsMetadataSchemaEntryKeyPresent());
 
-  histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.HintCacheLevelDBStore.LoadMetadataResult", 0);
-
   histogram_tester.ExpectBucketCount(
       "OptimizationGuide.HintCacheLevelDBStore.Status", 0 /* kUninitialized */,
       1);
@@ -922,15 +837,14 @@ TEST_F(OptimizationGuideStoreTest,
   MetadataSchemaState schema_state = MetadataSchemaState::kValid;
   size_t component_hint_count = 10;
   SeedInitialData(schema_state, component_hint_count,
-                  base::Time().Now(), /* fetch_update_time */
-                  base::Time().Now() /* host_model_features_update_time */);
+                  base::Time().Now() /* fetch_update_time */);
   CreateDatabase();
   InitializeStore(schema_state);
 
   // The store should contain the schema metadata entry, the component metadata
   // entry, and all of the initial component hints.
   EXPECT_EQ(GetDBStoreEntryCount(),
-            static_cast<size_t>(component_hint_count + 4));
+            static_cast<size_t>(component_hint_count + 3));
   EXPECT_EQ(GetStoreEntryKeyCount(), component_hint_count);
 
   EXPECT_TRUE(IsMetadataSchemaEntryKeyPresent());
@@ -939,11 +853,6 @@ TEST_F(OptimizationGuideStoreTest,
   histogram_tester.ExpectBucketCount(
       "OptimizationGuide.HintCacheLevelDBStore.LoadMetadataResult",
       0 /* kSuccess */, 1);
-
-  histogram_tester.ExpectBucketCount(
-      "OptimizationGuide.PredictionModelStore."
-      "HostModelFeaturesLoadMetadataResult",
-      true, 1);
 
   histogram_tester.ExpectBucketCount(
       "OptimizationGuide.HintCacheLevelDBStore.Status", 0 /* kUninitialized */,
@@ -987,11 +896,6 @@ TEST_F(OptimizationGuideStoreTest,
       6 /* kComponentAndFetchedMetadataMissing*/, 0);
 
   histogram_tester.ExpectBucketCount(
-      "OptimizationGuide.PredictionModelStore."
-      "HostModelFeaturesLoadMetadataResult",
-      false, 1);
-
-  histogram_tester.ExpectBucketCount(
       "OptimizationGuide.HintCacheLevelDBStore.Status", 0 /* kUninitialized */,
       1);
   histogram_tester.ExpectBucketCount(
@@ -1024,11 +928,6 @@ TEST_F(OptimizationGuideStoreTest,
   histogram_tester.ExpectBucketCount(
       "OptimizationGuide.HintCacheLevelDBStore.LoadMetadataResult",
       4 /* kComponentMetadataMissing*/, 1);
-
-  histogram_tester.ExpectBucketCount(
-      "OptimizationGuide.PredictionModelStore."
-      "HostModelFeaturesLoadMetadataResult",
-      false, 1);
 
   histogram_tester.ExpectBucketCount(
       "OptimizationGuide.HintCacheLevelDBStore.Status", 0 /* kUninitialized */,
@@ -1944,7 +1843,7 @@ TEST_F(OptimizationGuideStoreTest, FindPredictionModelEntryKey) {
   std::unique_ptr<StoreUpdateData> update_data =
       guide_store()->CreateUpdateDataForPredictionModels(
           update_time +
-          optimization_guide::features::StoredModelsInactiveDuration());
+          optimization_guide::features::StoredModelsValidDuration());
   ASSERT_TRUE(update_data);
   SeedPredictionModelUpdateData(update_data.get(),
                                 proto::OPTIMIZATION_TARGET_UNKNOWN);
@@ -1970,7 +1869,7 @@ TEST_F(OptimizationGuideStoreTest,
   std::unique_ptr<StoreUpdateData> update_data =
       guide_store()->CreateUpdateDataForPredictionModels(
           update_time +
-          optimization_guide::features::StoredModelsInactiveDuration());
+          optimization_guide::features::StoredModelsValidDuration());
   ASSERT_TRUE(update_data);
   SeedPredictionModelUpdateData(update_data.get(),
                                 proto::OPTIMIZATION_TARGET_UNKNOWN);
@@ -1993,7 +1892,7 @@ TEST_F(OptimizationGuideStoreTest, FindAndRemovePredictionModelEntryKey) {
   std::unique_ptr<StoreUpdateData> update_data =
       guide_store()->CreateUpdateDataForPredictionModels(
           update_time +
-          optimization_guide::features::StoredModelsInactiveDuration());
+          optimization_guide::features::StoredModelsValidDuration());
   ASSERT_TRUE(update_data);
   SeedPredictionModelUpdateData(update_data.get(),
                                 proto::OPTIMIZATION_TARGET_UNKNOWN);
@@ -2033,7 +1932,7 @@ TEST_F(OptimizationGuideStoreTest, LoadPredictionModel) {
   std::unique_ptr<StoreUpdateData> update_data =
       guide_store()->CreateUpdateDataForPredictionModels(
           update_time +
-          optimization_guide::features::StoredModelsInactiveDuration());
+          optimization_guide::features::StoredModelsValidDuration());
   ASSERT_TRUE(update_data);
   SeedPredictionModelUpdateData(update_data.get(),
                                 proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
@@ -2075,6 +1974,46 @@ TEST_F(OptimizationGuideStoreTest, LoadPredictionModelOnUnavailableStore) {
   EXPECT_FALSE(last_loaded_prediction_model());
 }
 
+TEST_F(OptimizationGuideStoreTest, LoadPredictionModelOnExpiredModel) {
+  base::HistogramTester histogram_tester;
+  size_t initial_hint_count = 10;
+  MetadataSchemaState schema_state = MetadataSchemaState::kValid;
+  SeedInitialData(schema_state, initial_hint_count);
+  CreateDatabase();
+  InitializeStore(schema_state);
+
+  // Add an update with models that are "inactive".
+  base::Time update_time = base::Time().Now();
+  std::unique_ptr<StoreUpdateData> update_data =
+      guide_store()->CreateUpdateDataForPredictionModels(
+          update_time -
+          optimization_guide::features::StoredModelsValidDuration());
+  ASSERT_TRUE(update_data);
+  SeedPredictionModelUpdateData(
+      update_data.get(), proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
+      /*model_file_path=*/absl::nullopt,
+      /*info=*/{},
+      update_time - optimization_guide::features::StoredModelsValidDuration());
+  UpdatePredictionModels(std::move(update_data));
+  // Since models haven't been purged yet it will initially show up as valid.
+  OptimizationGuideStore::EntryKey entry_key;
+  EXPECT_TRUE(guide_store()->FindPredictionModelEntryKey(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, &entry_key));
+  guide_store()->LoadPredictionModel(
+      entry_key,
+      base::BindOnce(&OptimizationGuideStoreTest::OnPredictionModelLoaded,
+                     base::Unretained(this)));
+  // OnPredictionModelLoaded callback
+  db()->GetCallback(true);
+  // After load completes, the key will still exist until after purge.
+  EXPECT_TRUE(guide_store()->FindPredictionModelEntryKey(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, &entry_key));
+
+  // Verify that the OnPredictionModelLoaded callback runs when the store is
+  // unavailable and that the prediction model was correctly not available.
+  EXPECT_FALSE(last_loaded_prediction_model());
+}
+
 TEST_F(OptimizationGuideStoreTest, LoadPredictionModelWithUpdateInFlight) {
   base::HistogramTester histogram_tester;
   MetadataSchemaState schema_state = MetadataSchemaState::kValid;
@@ -2086,7 +2025,7 @@ TEST_F(OptimizationGuideStoreTest, LoadPredictionModelWithUpdateInFlight) {
   std::unique_ptr<StoreUpdateData> update_data =
       guide_store()->CreateUpdateDataForPredictionModels(
           update_time +
-          optimization_guide::features::StoredModelsInactiveDuration());
+          optimization_guide::features::StoredModelsValidDuration());
   ASSERT_TRUE(update_data);
   SeedPredictionModelUpdateData(update_data.get(),
                                 proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
@@ -2116,7 +2055,7 @@ TEST_F(OptimizationGuideStoreTest,
   std::unique_ptr<StoreUpdateData> update_data =
       guide_store()->CreateUpdateDataForPredictionModels(
           update_time +
-          optimization_guide::features::StoredModelsInactiveDuration());
+          optimization_guide::features::StoredModelsValidDuration());
   ASSERT_TRUE(update_data);
   SeedPredictionModelUpdateData(update_data.get(),
                                 proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
@@ -2163,7 +2102,7 @@ TEST_F(OptimizationGuideStoreTest,
   std::unique_ptr<StoreUpdateData> update_data =
       guide_store()->CreateUpdateDataForPredictionModels(
           update_time +
-          optimization_guide::features::StoredModelsInactiveDuration());
+          optimization_guide::features::StoredModelsValidDuration());
   ASSERT_TRUE(update_data);
 
   base::FilePath model_file_path = temp_dir().AppendASCII("model.tflite");
@@ -2172,9 +2111,12 @@ TEST_F(OptimizationGuideStoreTest,
 
   base::FilePath additional_file_path = temp_dir().AppendASCII("doesntexist");
 
-  SeedPredictionModelUpdateData(
-      update_data.get(), proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
-      temp_dir().AppendASCII("doesntexist"), {additional_file_path});
+  proto::ModelInfo info;
+  info.add_additional_files()->set_file_path(
+      FilePathToString(additional_file_path));
+  SeedPredictionModelUpdateData(update_data.get(),
+                                proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
+                                temp_dir().AppendASCII("doesntexist"), info);
   UpdatePredictionModels(std::move(update_data));
 
   OptimizationGuideStore::EntryKey entry_key;
@@ -2220,7 +2162,7 @@ TEST_F(OptimizationGuideStoreTest,
   std::unique_ptr<StoreUpdateData> update_data =
       guide_store()->CreateUpdateDataForPredictionModels(
           update_time +
-          optimization_guide::features::StoredModelsInactiveDuration());
+          optimization_guide::features::StoredModelsValidDuration());
   ASSERT_TRUE(update_data);
 
   base::FilePath model_file_path = temp_dir().AppendASCII("model.tflite");
@@ -2231,10 +2173,12 @@ TEST_F(OptimizationGuideStoreTest,
       temp_dir().AppendASCII("additional_file.txt");
   ASSERT_EQ(static_cast<int32_t>(3),
             base::WriteFile(additional_file_path, "ah!", 3));
-
+  proto::ModelInfo info;
+  info.add_additional_files()->set_file_path(
+      FilePathToString(additional_file_path));
   SeedPredictionModelUpdateData(update_data.get(),
                                 proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
-                                model_file_path, {additional_file_path});
+                                model_file_path, info);
   UpdatePredictionModels(std::move(update_data));
 
   OptimizationGuideStore::EntryKey entry_key;
@@ -2276,7 +2220,7 @@ TEST_F(OptimizationGuideStoreTest,
   std::unique_ptr<StoreUpdateData> update_data =
       guide_store()->CreateUpdateDataForPredictionModels(
           update_time +
-          optimization_guide::features::StoredModelsInactiveDuration());
+          optimization_guide::features::StoredModelsValidDuration());
   ASSERT_TRUE(update_data);
   base::FilePath file_path = temp_dir().AppendASCII("file");
   ASSERT_EQ(static_cast<int32_t>(3), base::WriteFile(file_path, "boo", 3));
@@ -2323,7 +2267,7 @@ TEST_F(OptimizationGuideStoreTest, UpdatePredictionModelsDeletesOldFile) {
   std::unique_ptr<StoreUpdateData> update_data =
       guide_store()->CreateUpdateDataForPredictionModels(
           update_time +
-          optimization_guide::features::StoredModelsInactiveDuration());
+          optimization_guide::features::StoredModelsValidDuration());
   ASSERT_TRUE(update_data);
   base::FilePath old_file_path = old_dir.AppendASCII("model.tflite");
   ASSERT_EQ(static_cast<int32_t>(3), base::WriteFile(old_file_path, "boo", 3));
@@ -2340,7 +2284,7 @@ TEST_F(OptimizationGuideStoreTest, UpdatePredictionModelsDeletesOldFile) {
   std::unique_ptr<StoreUpdateData> update_data2 =
       guide_store()->CreateUpdateDataForPredictionModels(
           update_time +
-          optimization_guide::features::StoredModelsInactiveDuration());
+          optimization_guide::features::StoredModelsValidDuration());
   ASSERT_TRUE(update_data2);
   base::FilePath new_file_path = new_dir.AppendASCII("model.tflite");
   ASSERT_EQ(static_cast<int32_t>(3), base::WriteFile(new_file_path, "boo", 3));
@@ -2350,12 +2294,23 @@ TEST_F(OptimizationGuideStoreTest, UpdatePredictionModelsDeletesOldFile) {
   UpdatePredictionModels(std::move(update_data2));
   RunUntilIdle();
 
-  // Make sure old file is deleted when model updated for target.
+  // Make sure new file exists.
+  EXPECT_TRUE(base::PathExists(new_file_path));
+  EXPECT_TRUE(base::PathExists(new_dir));
+
+  // Make sure the path to delete gets stored in the pref.
+  EXPECT_FALSE(IsStoreFilesToDeletePrefEmpty());
+
+  // Re-create the database so the old file gets deleted.
+  CreateDatabase();
+  RunUntilIdle();
+
+  // Make sure old file is deleted when store is deleted.
   EXPECT_FALSE(base::PathExists(old_file_path));
   EXPECT_FALSE(base::PathExists(old_dir));
 
-  EXPECT_TRUE(base::PathExists(new_file_path));
-  EXPECT_TRUE(base::PathExists(new_dir));
+  // Make sure the pref gets cleared out.
+  EXPECT_TRUE(IsStoreFilesToDeletePrefEmpty());
 }
 
 TEST_F(OptimizationGuideStoreTest,
@@ -2379,7 +2334,7 @@ TEST_F(OptimizationGuideStoreTest,
   std::unique_ptr<StoreUpdateData> update_data =
       guide_store()->CreateUpdateDataForPredictionModels(
           update_time +
-          optimization_guide::features::StoredModelsInactiveDuration());
+          optimization_guide::features::StoredModelsValidDuration());
   ASSERT_TRUE(update_data);
   base::FilePath old_file_path = old_dir.AppendASCII("model_v1.tflite");
   ASSERT_EQ(static_cast<int32_t>(3), base::WriteFile(old_file_path, "boo", 3));
@@ -2396,7 +2351,7 @@ TEST_F(OptimizationGuideStoreTest,
   std::unique_ptr<StoreUpdateData> update_data2 =
       guide_store()->CreateUpdateDataForPredictionModels(
           update_time +
-          optimization_guide::features::StoredModelsInactiveDuration());
+          optimization_guide::features::StoredModelsValidDuration());
   ASSERT_TRUE(update_data2);
   base::FilePath new_file_path = new_dir.Append(GetBaseFileNameForModels());
   ASSERT_EQ(static_cast<int32_t>(3), base::WriteFile(new_file_path, "boo", 3));
@@ -2404,6 +2359,12 @@ TEST_F(OptimizationGuideStoreTest,
                                 proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
                                 new_file_path);
   UpdatePredictionModels(std::move(update_data2));
+  RunUntilIdle();
+
+  EXPECT_FALSE(IsStoreFilesToDeletePrefEmpty());
+
+  // Re-create database so files get deleted.
+  CreateDatabase();
   RunUntilIdle();
 
   // The old file should have been deleted, but not its containing directory
@@ -2416,6 +2377,8 @@ TEST_F(OptimizationGuideStoreTest,
 
   EXPECT_TRUE(base::PathExists(new_file_path));
   EXPECT_TRUE(base::PathExists(new_dir));
+
+  EXPECT_TRUE(IsStoreFilesToDeletePrefEmpty());
 }
 
 TEST_F(OptimizationGuideStoreTest, RemovePredictionModelEntryKeyDeletesFile) {
@@ -2428,7 +2391,7 @@ TEST_F(OptimizationGuideStoreTest, RemovePredictionModelEntryKeyDeletesFile) {
   std::unique_ptr<StoreUpdateData> update_data =
       guide_store()->CreateUpdateDataForPredictionModels(
           update_time +
-          optimization_guide::features::StoredModelsInactiveDuration());
+          optimization_guide::features::StoredModelsValidDuration());
   ASSERT_TRUE(update_data);
   base::FilePath file_path = temp_dir().AppendASCII("file");
   ASSERT_EQ(static_cast<int32_t>(3), base::WriteFile(file_path, "boo", 3));
@@ -2454,205 +2417,18 @@ TEST_F(OptimizationGuideStoreTest, RemovePredictionModelEntryKeyDeletesFile) {
   EXPECT_FALSE(guide_store()->FindPredictionModelEntryKey(
       proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, &entry_key));
 
+  // Ensure that file to delete gets persisted so it can be deleted later.
+  EXPECT_FALSE(IsStoreFilesToDeletePrefEmpty());
+
+  // Re-create the database so files get deleted.
+  CreateDatabase();
   RunUntilIdle();
-  // Make sure file is deleted when model is removed.
+  // Make sure file is deleted when model is removed and store is getting
+  // cleaned up.
   EXPECT_FALSE(base::PathExists(file_path));
-}
 
-TEST_F(OptimizationGuideStoreTest, HostModelFeaturesMetadataStored) {
-  MetadataSchemaState schema_state = MetadataSchemaState::kValid;
-  base::Time update_time = base::Time().Now();
-  SeedInitialData(schema_state, 10, update_time,
-                  base::Time().Now() /* host_model_features_update_time */);
-  CreateDatabase();
-  InitializeStore(schema_state);
-
-  ExpectHostModelFeaturesMetadata(update_time);
-}
-
-TEST_F(OptimizationGuideStoreTest, FindEntryKeyForHostModelFeatures) {
-  MetadataSchemaState schema_state = MetadataSchemaState::kValid;
-  size_t update_host_model_features_count = 5;
-  base::Time update_time = base::Time().Now();
-  SeedInitialData(schema_state, 0,
-                  base::Time().Now() /* host_model_features_update_time */);
-  CreateDatabase();
-  InitializeStore(schema_state);
-
-  std::unique_ptr<StoreUpdateData> update_data =
-      guide_store()->CreateUpdateDataForHostModelFeatures(
-          update_time, update_time +
-                           optimization_guide::features::
-                               StoredHostModelFeaturesFreshnessDuration());
-  ASSERT_TRUE(update_data);
-  SeedHostModelFeaturesUpdateData(update_data.get(),
-                                  update_host_model_features_count);
-  UpdateHostModelFeatures(std::move(update_data));
-
-  for (size_t i = 0; i < update_host_model_features_count; ++i) {
-    std::string host = GetHost(i);
-    OptimizationGuideStore::EntryKey entry_key;
-    bool success =
-        guide_store()->FindHostModelFeaturesEntryKey(host, &entry_key);
-    EXPECT_EQ(success, i < update_host_model_features_count);
-  }
-}
-
-TEST_F(OptimizationGuideStoreTest, LoadHostModelFeaturesForHost) {
-  base::HistogramTester histogram_tester;
-  size_t update_host_model_features_count = 5;
-  MetadataSchemaState schema_state = MetadataSchemaState::kValid;
-  base::Time update_time = base::Time().Now();
-  SeedInitialData(schema_state, 0, base::Time().Now());
-  CreateDatabase();
-  InitializeStore(schema_state);
-
-  std::unique_ptr<StoreUpdateData> update_data =
-      guide_store()->CreateUpdateDataForHostModelFeatures(
-          update_time, update_time +
-                           optimization_guide::features::
-                               StoredHostModelFeaturesFreshnessDuration());
-  ASSERT_TRUE(update_data);
-  SeedHostModelFeaturesUpdateData(update_data.get(),
-                                  update_host_model_features_count);
-  UpdateHostModelFeatures(std::move(update_data));
-
-  for (size_t i = 0; i < update_host_model_features_count; ++i) {
-    std::string host = GetHost(i);
-    OptimizationGuideStore::EntryKey entry_key;
-    bool success =
-        guide_store()->FindHostModelFeaturesEntryKey(host, &entry_key);
-    EXPECT_TRUE(success);
-
-    guide_store()->LoadHostModelFeatures(
-        entry_key,
-        base::BindOnce(&OptimizationGuideStoreTest::OnHostModelFeaturesLoaded,
-                       base::Unretained(this)));
-
-    // OnPredictionModelLoaded callback
-    db()->GetCallback(true);
-
-    if (!last_loaded_host_model_features()) {
-      FAIL() << "Loaded host model features was null for entry key: "
-             << entry_key;
-    }
-
-    EXPECT_EQ(last_loaded_host_model_features()->host(), host);
-  }
-}
-
-TEST_F(OptimizationGuideStoreTest, LoadAllHostModelFeatures) {
-  base::HistogramTester histogram_tester;
-  size_t update_host_model_features_count = 5;
-  MetadataSchemaState schema_state = MetadataSchemaState::kValid;
-  base::Time update_time = base::Time().Now();
-  SeedInitialData(schema_state, 0, base::Time().Now());
-  CreateDatabase();
-  InitializeStore(schema_state);
-
-  std::unique_ptr<StoreUpdateData> update_data =
-      guide_store()->CreateUpdateDataForHostModelFeatures(
-          update_time, update_time +
-                           optimization_guide::features::
-                               StoredHostModelFeaturesFreshnessDuration());
-  ASSERT_TRUE(update_data);
-  SeedHostModelFeaturesUpdateData(update_data.get(),
-                                  update_host_model_features_count);
-  UpdateHostModelFeatures(std::move(update_data));
-  guide_store()->LoadAllHostModelFeatures(
-      base::BindOnce(&OptimizationGuideStoreTest::OnAllHostModelFeaturesLoaded,
-                     base::Unretained(this)));
-
-  // OnAllHostModelFeaturesLoaded callback
-  db()->LoadCallback(true);
-
-  std::vector<proto::HostModelFeatures>* all_host_model_features =
-      last_loaded_all_host_model_features();
-  EXPECT_TRUE(all_host_model_features);
-  EXPECT_EQ(update_host_model_features_count, all_host_model_features->size());
-
-  // Build a list of the hosts that are stored in the store.
-  base::flat_set<std::string> hosts = {};
-  for (size_t i = 0; i < update_host_model_features_count; i++)
-    hosts.insert(GetHost(i));
-
-  // Make sure all of the hosts of the host model features are returned.
-  for (const auto& host_model_features : *all_host_model_features)
-    EXPECT_NE(hosts.find(host_model_features.host()), hosts.end());
-}
-
-TEST_F(OptimizationGuideStoreTest, ClearHostModelFeatures) {
-  base::HistogramTester histogram_tester;
-  size_t update_host_model_features_count = 5;
-  MetadataSchemaState schema_state = MetadataSchemaState::kValid;
-  base::Time update_time = base::Time().Now();
-  SeedInitialData(schema_state, 0, base::Time().Now());
-  CreateDatabase();
-  InitializeStore(schema_state);
-
-  std::unique_ptr<StoreUpdateData> update_data =
-      guide_store()->CreateUpdateDataForHostModelFeatures(
-          update_time, update_time +
-                           optimization_guide::features::
-                               StoredHostModelFeaturesFreshnessDuration());
-  ASSERT_TRUE(update_data);
-  SeedHostModelFeaturesUpdateData(update_data.get(),
-                                  update_host_model_features_count);
-  UpdateHostModelFeatures(std::move(update_data));
-
-  for (size_t i = 0; i < update_host_model_features_count; ++i) {
-    std::string host = GetHost(i);
-    OptimizationGuideStore::EntryKey entry_key;
-    EXPECT_TRUE(guide_store()->FindHostModelFeaturesEntryKey(host, &entry_key));
-  }
-
-  // Remove the host model features from the OptimizationGuideStore.
-  ClearHostModelFeaturesFromDatabase();
-  histogram_tester.ExpectBucketCount(
-      "OptimizationGuide.ClearHostModelFeatures.StoreAvailable", true, 1);
-
-  for (size_t i = 0; i < update_host_model_features_count; ++i) {
-    std::string host = GetHost(i);
-    OptimizationGuideStore::EntryKey entry_key;
-    EXPECT_FALSE(
-        guide_store()->FindHostModelFeaturesEntryKey(host, &entry_key));
-  }
-}
-
-TEST_F(OptimizationGuideStoreTest, PurgeExpiredHostModelFeatures) {
-  base::HistogramTester histogram_tester;
-  size_t update_host_model_features_count = 5;
-  MetadataSchemaState schema_state = MetadataSchemaState::kValid;
-  base::Time update_time = base::Time().Now();
-  SeedInitialData(schema_state, 0, base::Time().Now());
-  CreateDatabase();
-  InitializeStore(schema_state);
-
-  std::unique_ptr<StoreUpdateData> update_data =
-      guide_store()->CreateUpdateDataForHostModelFeatures(
-          update_time, update_time -
-                           optimization_guide::features::
-                               StoredHostModelFeaturesFreshnessDuration());
-  ASSERT_TRUE(update_data);
-  SeedHostModelFeaturesUpdateData(update_data.get(),
-                                  update_host_model_features_count);
-  UpdateHostModelFeatures(std::move(update_data));
-
-  for (size_t i = 0; i < update_host_model_features_count; ++i) {
-    std::string host = GetHost(i);
-    OptimizationGuideStore::EntryKey entry_key;
-    EXPECT_TRUE(guide_store()->FindHostModelFeaturesEntryKey(host, &entry_key));
-  }
-
-  // Remove expired host model features from the opt. guide store.
-  PurgeExpiredHostModelFeatures();
-
-  for (size_t i = 0; i < update_host_model_features_count; ++i) {
-    std::string host = GetHost(i);
-    OptimizationGuideStore::EntryKey entry_key;
-    EXPECT_FALSE(
-        guide_store()->FindHostModelFeaturesEntryKey(host, &entry_key));
-  }
+  // Make sure pref gets cleaned up when path gets deleted.
+  EXPECT_TRUE(IsStoreFilesToDeletePrefEmpty());
 }
 
 TEST_F(OptimizationGuideStoreTest, PurgeInactiveModels) {
@@ -2668,17 +2444,23 @@ TEST_F(OptimizationGuideStoreTest, PurgeInactiveModels) {
   std::unique_ptr<StoreUpdateData> update_data =
       guide_store()->CreateUpdateDataForPredictionModels(
           update_time -
-          optimization_guide::features::StoredModelsInactiveDuration());
+          optimization_guide::features::StoredModelsValidDuration());
   ASSERT_TRUE(update_data);
-  SeedPredictionModelUpdateData(update_data.get(),
-                                proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
+  base::FilePath old_file_path = temp_dir().AppendASCII("model_v1.tflite");
+  ASSERT_EQ(static_cast<int32_t>(3), base::WriteFile(old_file_path, "boo", 3));
+  proto::ModelInfo model_info;
+  model_info.set_version(123);
+  SeedPredictionModelUpdateData(
+      update_data.get(), proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
+      old_file_path, model_info,
+      update_time - optimization_guide::features::StoredModelsValidDuration());
   UpdatePredictionModels(std::move(update_data));
 
   // Add an update with models that are "active".
   std::unique_ptr<StoreUpdateData> update_data2 =
       guide_store()->CreateUpdateDataForPredictionModels(
           update_time +
-          optimization_guide::features::StoredModelsInactiveDuration());
+          optimization_guide::features::StoredModelsValidDuration());
   ASSERT_TRUE(update_data2);
   SeedPredictionModelUpdateData(update_data2.get(),
                                 proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION);
@@ -2694,17 +2476,172 @@ TEST_F(OptimizationGuideStoreTest, PurgeInactiveModels) {
   ASSERT_TRUE(success);
 
   PurgeInactiveModels();
-
+  RunUntilIdle();
+  // The expired model should be removed.
   EXPECT_FALSE(guide_store()->FindPredictionModelEntryKey(
       proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, &entry_key));
+
   // Should not purge models that are still active.
   EXPECT_TRUE(guide_store()->FindPredictionModelEntryKey(
       proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION, &entry_key));
 
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.PredictionModelExpired.PainfulPageLoad", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PredictionModelExpiredVersion.PainfulPageLoad", 123,
+      1);
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.PredictionModelExpired.LanguageDetection", 0);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PredictionModelExpiredVersion.LanguageDetection", 0);
+
+  // Make sure old file path gets persisted to be deleted later.
+  EXPECT_FALSE(IsStoreFilesToDeletePrefEmpty());
+
+  // Reset database to clean up old files.
+  CreateDatabase();
+  RunUntilIdle();
+
+  EXPECT_FALSE(base::PathExists(old_file_path));
+
+  // Make sure pref gets cleaned up when file path gets deleted.
+  EXPECT_TRUE(IsStoreFilesToDeletePrefEmpty());
 }
+
+struct ValidityTestCase {
+  std::string test_name;
+  bool keep_beyond_valid_duration;
+  bool initially_expired;
+  bool expect_kept;
+};
+
+class OptimizationGuideStoreValidityTest
+    : public OptimizationGuideStoreTest,
+      public ::testing::WithParamInterface<ValidityTestCase> {};
+
+TEST_P(OptimizationGuideStoreValidityTest, PurgeInactiveModels) {
+  const ValidityTestCase& test_case = GetParam();
+  base::HistogramTester histogram_tester;
+
+  MetadataSchemaState schema_state = MetadataSchemaState::kValid;
+  SeedInitialData(schema_state, 0);
+  CreateDatabase();
+  InitializeStore(schema_state);
+
+  // Add an update with one model according to ValidityTestCase settings.
+  base::Time update_time = base::Time().Now();
+  if (test_case.initially_expired) {
+    update_time -= optimization_guide::features::StoredModelsValidDuration();
+  } else {
+    update_time += optimization_guide::features::StoredModelsValidDuration();
+  }
+  std::unique_ptr<StoreUpdateData> update_data =
+      guide_store()->CreateUpdateDataForPredictionModels(update_time);
+  ASSERT_TRUE(update_data);
+  proto::ModelInfo info;
+  info.set_version(123);
+  info.set_keep_beyond_valid_duration(test_case.keep_beyond_valid_duration);
+  base::FilePath old_file_path = temp_dir().AppendASCII("model_v1.tflite");
+  ASSERT_EQ(static_cast<int32_t>(3), base::WriteFile(old_file_path, "boo", 3));
+  SeedPredictionModelUpdateData(update_data.get(),
+                                proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
+                                old_file_path, info, update_time);
+  UpdatePredictionModels(std::move(update_data));
+
+  // Add an update with models that are "active" and should be unaffected.
+  std::unique_ptr<StoreUpdateData> update_data2 =
+      guide_store()->CreateUpdateDataForPredictionModels(
+          base::Time().Now() +
+          optimization_guide::features::StoredModelsValidDuration());
+  ASSERT_TRUE(update_data2);
+  SeedPredictionModelUpdateData(update_data2.get(),
+                                proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION);
+  UpdatePredictionModels(std::move(update_data2));
+
+  // Make sure both models are in the store.
+  OptimizationGuideStore::EntryKey entry_key;
+  bool success = guide_store()->FindPredictionModelEntryKey(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, &entry_key);
+  ASSERT_TRUE(success);
+  EXPECT_TRUE(base::PathExists(old_file_path));
+
+  success = guide_store()->FindPredictionModelEntryKey(
+      proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION, &entry_key);
+  ASSERT_TRUE(success);
+
+  PurgeInactiveModels();
+  RunUntilIdle();
+  // Verify that the model file, entry key and histogram match expectations for
+  // PageLoad.
+  EXPECT_EQ(test_case.expect_kept,
+            guide_store()->FindPredictionModelEntryKey(
+                proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, &entry_key));
+
+  if (test_case.expect_kept) {
+    histogram_tester.ExpectTotalCount(
+        "OptimizationGuide.PredictionModelExpired.PainfulPageLoad", 0);
+    histogram_tester.ExpectTotalCount(
+        "OptimizationGuide.PredictionModelExpiredVersion.PainfulPageLoad", 0);
+  } else {
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.PredictionModelExpired.PainfulPageLoad", true, 1);
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.PredictionModelExpiredVersion.PainfulPageLoad", 123,
+        1);
+  }
+  // Verify that the other model is not deleted.
+  EXPECT_TRUE(guide_store()->FindPredictionModelEntryKey(
+      proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION, &entry_key));
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PredictionModelExpired.LanguageDetection", 0);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PredictionModelExpiredVersion.LanguageDetection", 0);
+
+  // Make sure file to delete gets put in pref to delete later, if applicable.
+  EXPECT_EQ(test_case.expect_kept, IsStoreFilesToDeletePrefEmpty());
+
+  // Reset database to delete files.
+  CreateDatabase();
+  RunUntilIdle();
+
+  // Make sure old file is deleted if we expect it to.
+  EXPECT_EQ(test_case.expect_kept, base::PathExists(old_file_path));
+  // Make sure pref doesn't have any items in it.
+  EXPECT_TRUE(IsStoreFilesToDeletePrefEmpty());
+}
+INSTANTIATE_TEST_SUITE_P(
+    OptimizationGuideStoreValidityTests,
+    OptimizationGuideStoreValidityTest,
+    testing::ValuesIn<ValidityTestCase>({
+        {
+            "KeepDespiteInvalidModel",
+            /*keep_beyond_valid_duration=*/true,
+            /*initially_expired=*/true,
+            /*expect_kept=*/true,
+        },
+        {
+            "KeepAndInitiallyValid",
+            /*keep_beyond_valid_duration=*/true,
+            /*initially_expired=*/false,
+            /*expect_kept=*/true,
+        },
+        {
+            "DeleteAndInitiallyValid",
+            /*keep_beyond_valid_duration=*/false,
+            /*initially_expired=*/false,
+            /*expect_kept=*/true,
+        },
+        // Only in this case should the model be removed.
+        {
+            "DeleteAndInvalidModel",
+            /*keep_beyond_valid_duration=*/false,
+            /*initially_expired=*/true,
+            /*expect_kept=*/false,
+        },
+    }),
+    [](const testing::TestParamInfo<
+        OptimizationGuideStoreValidityTest::ParamType>& info) {
+      return info.param.test_name;
+    });
 
 }  // namespace optimization_guide

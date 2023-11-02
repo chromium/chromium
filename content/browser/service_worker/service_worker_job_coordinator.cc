@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -78,10 +78,13 @@ void ServiceWorkerJobCoordinator::Register(
     blink::mojom::FetchClientSettingsObjectPtr
         outside_fetch_client_settings_object,
     const GlobalRenderFrameHostId& requesting_frame_id,
-    ServiceWorkerRegisterJob::RegistrationCallback callback) {
+    blink::mojom::AncestorFrameType ancestor_frame_type,
+    ServiceWorkerRegisterJob::RegistrationCallback callback,
+    const PolicyContainerPolicies& policy_container_policies) {
   auto job = std::make_unique<ServiceWorkerRegisterJob>(
       context_, script_url, options, key,
-      std::move(outside_fetch_client_settings_object), requesting_frame_id);
+      std::move(outside_fetch_client_settings_object), requesting_frame_id,
+      ancestor_frame_type, policy_container_policies.Clone());
   ServiceWorkerRegisterJob* queued_job = static_cast<ServiceWorkerRegisterJob*>(
       job_queues_[UniqueRegistrationKey(options.scope, key)].Push(
           std::move(job)));

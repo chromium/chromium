@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <map>
 
+#include "base/memory/raw_ptr.h"
 #include "base/types/id_type.h"
 #include "base/types/pass_key.h"
 #include "device/vr/android/arcore/address_to_id_map.h"
@@ -84,7 +85,7 @@ class ArCorePlaneManager {
 
   // Owned by ArCoreImpl - non-owning pointer is fine since ArCorePlaneManager
   // is also owned by ArCoreImpl.
-  ArSession* arcore_session_;
+  raw_ptr<ArSession> arcore_session_;
 
   // List of trackables - used for retrieving planes detected by ARCore.
   // Allows reuse of the list across updates; ARCore clears the list on each

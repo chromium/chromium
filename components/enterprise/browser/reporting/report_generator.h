@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,14 +6,13 @@
 #define COMPONENTS_ENTERPRISE_BROWSER_REPORTING_REPORT_GENERATOR_H_
 
 #include <memory>
-#include <queue>
 #include <string>
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/system/sys_info.h"
 #include "components/enterprise/browser/reporting/browser_report_generator.h"
-#include "components/enterprise/browser/reporting/report_request_definition.h"
+#include "components/enterprise/browser/reporting/report_request.h"
 #include "components/enterprise/browser/reporting/report_request_queue_generator.h"
 #include "components/enterprise/browser/reporting/report_type.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -24,9 +23,7 @@ class ReportingDelegateFactory;
 
 class ReportGenerator {
  public:
-  using ReportRequest = definition::ReportRequest;
-  using ReportRequests = std::queue<std::unique_ptr<ReportRequest>>;
-  using ReportCallback = base::OnceCallback<void(ReportRequests)>;
+  using ReportCallback = base::OnceCallback<void(ReportRequestQueue)>;
 
   class Delegate {
    public:
@@ -54,17 +51,11 @@ class ReportGenerator {
   // information that are needed by that particular type.
   virtual void Generate(ReportType report_type, ReportCallback callback);
 
-  void SetMaximumReportSizeForTesting(size_t size);
-
  protected:
   // Creates a basic request that will be used by all Profiles.
   void CreateBasicRequest(std::unique_ptr<ReportRequest> basic_request,
                           ReportType report_type,
                           ReportCallback callback);
-
-  // Returns an OS report contains basic OS information includes OS name, OS
-  // architecture and OS version.
-  virtual std::unique_ptr<enterprise_management::OSReport> GetOSReport();
 
   // Returns the name of computer.
   virtual std::string GetMachineName();

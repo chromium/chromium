@@ -1,10 +1,11 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_HISTORY_CORE_BROWSER_VISIT_DATABASE_H_
 #define COMPONENTS_HISTORY_CORE_BROWSER_VISIT_DATABASE_H_
 
+#include <string>
 #include <vector>
 
 #include "components/history/core/browser/history_types.h"
@@ -48,9 +49,24 @@ class VisitDatabase {
   // doesn't exist, it will not do anything.
   void DeleteVisit(const VisitRow& visit);
 
-  // Query a VisitInfo giving an visit id, filling the given VisitRow.
+  // Query a VisitRow given a visit id, filling the given VisitRow.
   // Returns true on success.
   bool GetRowForVisit(VisitID visit_id, VisitRow* out_visit);
+
+  // Query a VisitRow given a visit time, filling the given VisitRow. If there
+  // are multiple visits with the given visit time (which happens in case of
+  // redirects), returns the one with the largest ID, i.e. the most recently
+  // added one, i.e. the end of the redirect chain.
+  // Returns true on success.
+  bool GetLastRowForVisitByVisitTime(base::Time visit_time,
+                                     VisitRow* out_visit);
+
+  // Query a VisitRow given `originator_cache_guid` and `originator_visit_id`.
+  // If found, returns true and writes the visit into `visit_row`; otherwise
+  // returns false.
+  bool GetRowForForeignVisit(const std::string& originator_cache_guid,
+                             VisitID originator_visit_id,
+                             VisitRow* out_visit);
 
   // Updates an existing row. The new information is set on the row, using the
   // VisitID as the key. The visit must exist. Returns true on success.
@@ -277,15 +293,36 @@ class VisitDatabase {
   // column which is no longer used.
   bool MigrateVisitsWithoutOpenerVisitColumnAndDropPubliclyRoutableColumn();
 
+  // Called by the derived classes to migrate the older visits table which
+  // which aren't ready to accommodate Sync. It sets `id` to AUTOINCREMENT, and
+  // ensures the existence of the `originator_cache_guid` and
+  // `originator_visit_id` columns.
+  bool MigrateVisitsAutoincrementIdAndAddOriginatorColumns();
+
+  // Called by the derived classes to migrate the older visits table which
+  // doesn't have the `originator_from_visit` and `originator_opener_visit`
+  // columns.
+  bool MigrateVisitsAddOriginatorFromVisitAndOpenerVisitColumns();
+
+  // Return true if the visits table's schema contains "AUTOINCREMENT".
+  // false if table do not contain AUTOINCREMENT, or the table is not created.
+  bool VisitTableContainsAutoincrement();
+
   // A subprocedure in the process of migration to version 40.
   bool GetAllVisitedURLRowidsForMigrationToVersion40(
       std::vector<URLID>* visited_url_rowids_sorted);
+
+  // Called by the derived classes to migrate the older visits table which
+  // doesn't have the `is_known_to_sync` column.
+  bool MigrateVisitsAddIsKnownToSyncColumn();
 };
 
 // Columns, in order, of the visit table.
 #define HISTORY_VISIT_ROW_FIELDS                                        \
   " id,url,visit_time,from_visit,transition,segment_id,visit_duration," \
-  "incremented_omnibox_typed_score,opener_visit "
+  "incremented_omnibox_typed_score,opener_visit,originator_cache_guid," \
+  "originator_visit_id,originator_from_visit,originator_opener_visit,"  \
+  "is_known_to_sync "
 
 }  // namespace history
 

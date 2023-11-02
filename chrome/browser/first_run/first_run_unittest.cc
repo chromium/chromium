@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -47,7 +47,7 @@ class FirstRunTest : public testing::Test {
 
 TEST_F(FirstRunTest, SetupInitialPrefsFromInstallPrefs_NoVariationsSeed) {
   installer::InitialPreferences install_prefs("{ }");
-  EXPECT_TRUE(install_prefs.initial_dictionary().DictEmpty());
+  EXPECT_TRUE(install_prefs.initial_dictionary().empty());
 
   EXPECT_TRUE(install_prefs.GetCompressedVariationsSeed().empty());
   EXPECT_TRUE(install_prefs.GetVariationsSeedSignature().empty());
@@ -58,12 +58,12 @@ TEST_F(FirstRunTest,
   installer::InitialPreferences install_prefs(
       "{\"variations_compressed_seed\":\"xyz\","
       " \"variations_seed_signature\":\"abc\"}");
-  EXPECT_EQ(2U, install_prefs.initial_dictionary().DictSize());
+  EXPECT_EQ(2U, install_prefs.initial_dictionary().size());
 
   EXPECT_EQ("xyz", install_prefs.GetCompressedVariationsSeed());
   EXPECT_EQ("abc", install_prefs.GetVariationsSeedSignature());
   // Variations prefs should have been extracted (removed) from the dictionary.
-  EXPECT_TRUE(install_prefs.initial_dictionary().DictEmpty());
+  EXPECT_TRUE(install_prefs.initial_dictionary().empty());
 }
 
 // No switches and no sentinel present. This is the standard case for first run.
@@ -137,17 +137,17 @@ TEST_F(FirstRunTest, GetFirstRunSentinelCreationTime_NotCreated) {
 // TODO(ellyjones): Add a scoped override for
 // NSSearchPathForDirectoriesInDomains, then re-enable these on macOS.
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_InitialPrefsUsedIfReadable DISABLED_InitialPrefsUsedIfReadable
 #else
 #define MAYBE_InitialPrefsUsedIfReadable InitialPrefsUsedIfReadable
 #endif
-  
+
 TEST_F(FirstRunTest, MAYBE_InitialPrefsUsedIfReadable) {
   base::ScopedPathOverride override(base::DIR_EXE, GetTestDataPath("initial"));
   std::unique_ptr<installer::InitialPreferences> prefs =
       first_run::LoadInitialPrefs();
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   // Initial preferences are not supported on Fuchsia and will thus return a
   // null result.
   ASSERT_FALSE(prefs);
@@ -157,7 +157,7 @@ TEST_F(FirstRunTest, MAYBE_InitialPrefsUsedIfReadable) {
 #endif
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_LegacyInitialPrefsUsedIfNewFileIsNotPresent \
   DISABLED_LegacyInitialPrefsUsedIfNewFileIsNotPresent
 #else
@@ -170,7 +170,7 @@ TEST_F(FirstRunTest, MAYBE_LegacyInitialPrefsUsedIfNewFileIsNotPresent) {
   std::unique_ptr<installer::InitialPreferences> prefs =
       first_run::LoadInitialPrefs();
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   // Initial preferences are not supported on Fuchsia and will thus return a
   // null result.
   ASSERT_FALSE(prefs);

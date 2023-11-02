@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,23 @@
  * @fileoverview Polymer element for displaying material design reset screen.
  */
 
-/* #js_imports_placeholder */
+import '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
+import '//resources/js/action_link.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '../../components/oobe_icons.m.js';
+import '../../components/common_styles/common_styles.m.js';
+import '../../components/common_styles/oobe_dialog_host_styles.m.js';
+import '../../components/dialogs/oobe_adaptive_dialog.m.js';
+import '../../components/dialogs/oobe_modal_dialog.m.js';
+
+import {announceAccessibleMessage, ensureTransitionEndEvent} from '//resources/js/util.js';
+import {afterNextRender, dom, flush, html, mixinBehaviors, Polymer, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.m.js';
+import {OobeDialogHostBehavior} from '../../components/behaviors/oobe_dialog_host_behavior.m.js';
+import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.m.js';
+import {OobeTextButton} from '../../components/buttons/oobe_text_button.m.js';
+
 
 /** @enum {number} */
 const RESET_SCREEN_STATE = {
@@ -27,20 +43,22 @@ const POWERWASH_MODE = {
 /** @type {Map<number, Object<string,string>>} */
 const POWERWASH_MODE_DETAILS = new Map([
   [
-    POWERWASH_MODE.POWERWASH_WITH_ROLLBACK, {
+    POWERWASH_MODE.POWERWASH_WITH_ROLLBACK,
+    {
       subtitleText: 'resetPowerwashRollbackWarningDetails',
       dialogTitle: 'confirmRollbackTitle',
       dialogContent: 'confirmRollbackMessage',
       buttonTextKey: 'resetButtonPowerwashAndRollback',
-    }
+    },
   ],
   [
-    POWERWASH_MODE.POWERWASH_ONLY, {
+    POWERWASH_MODE.POWERWASH_ONLY,
+    {
       subtitleText: 'resetPowerwashWarningDetails',
       dialogTitle: 'confirmPowerwashTitle',
       dialogContent: 'confirmPowerwashMessage',
       buttonTextKey: 'resetButtonPowerwash',
-    }
+    },
   ],
 ]);
 
@@ -50,9 +68,9 @@ const POWERWASH_MODE_DETAILS = new Map([
  * @implements {LoginScreenBehaviorInterface}
  * @implements {OobeI18nBehaviorInterface}
  */
-const ResetScreenElementBase = Polymer.mixinBehaviors(
+const ResetScreenElementBase = mixinBehaviors(
     [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
-    Polymer.Element);
+    PolymerElement);
 
 /**
  * @typedef {{
@@ -71,19 +89,23 @@ class OobeReset extends ResetScreenElementBase {
     return 'oobe-reset-element';
   }
 
-  /* #html_template_placeholder */
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
   static get properties() {
     return {
       /* The current state of the screen as set from the C++ side. */
       screenState_: {
         type: Number,
+        value: RESET_SCREEN_STATE.RESTART_REQUIRED,
         observer: 'onScreenStateChanged_',
       },
 
       /** Whether rollback is available */
       isRollbackAvailable_: {
         type: Boolean,
+        value: false,
         observer: 'updatePowerwashModeBasedOnRollbackOptions_',
       },
 
@@ -92,6 +114,7 @@ class OobeReset extends ResetScreenElementBase {
        */
       isRollbackRequested_: {
         type: Boolean,
+        value: false,
         observer: 'updatePowerwashModeBasedOnRollbackOptions_',
       },
 
@@ -138,13 +161,13 @@ class OobeReset extends ResetScreenElementBase {
       // The subtitle to be shown while the screen is in POWERWASH_PROPOSAL
       powerwashStateSubtitle_: {
         type: String,
-        computed: 'getPowerwashStateSubtitle_(locale, powerwashMode_)'
+        computed: 'getPowerwashStateSubtitle_(locale, powerwashMode_)',
       },
 
       // The text shown on the powerwash button. (depends on powerwash mode)
       powerwashButtonTextKey_: {
         type: String,
-        computed: 'getPowerwashButtonTextKey_(locale, powerwashMode_)'
+        computed: 'getPowerwashButtonTextKey_(locale, powerwashMode_)',
       },
 
       // Whether the powerwash button is disabled.
@@ -156,35 +179,32 @@ class OobeReset extends ResetScreenElementBase {
       // The chosen powerwash mode
       powerwashMode_: {
         type: Number,
+        value: POWERWASH_MODE.POWERWASH_ONLY,
       },
 
       // Simple variables that reflect the current screen state
       // Only modified by the observer of 'screenState_'
       inRestartRequiredState_: {
         type: Boolean,
+        value: true,
       },
 
       inRevertState_: {
         type: Boolean,
+        value: false,
       },
 
       inPowerwashState_: {
         type: Boolean,
+        value: false,
+      },
+
+      inErrorState_: {
+        type: Boolean,
+        value: false,
       },
     };
   }
-
-  constructor() {
-    super();
-    this.screenState_ = RESET_SCREEN_STATE.RESTART_REQUIRED;
-    this.isRollbackAvailable_ = false;
-    this.isRollbackRequested_ = false;
-    this.powerwashMode_ = POWERWASH_MODE.POWERWASH_ONLY;
-    this.inRestartRequiredState_ = true;
-    this.inRevertState_ = false;
-    this.inPowerwashState_ = false;
-  }
-
 
   /** Overridden from LoginScreenBehavior. */
   // clang-format off
@@ -205,7 +225,7 @@ class OobeReset extends ResetScreenElementBase {
   /** @override */
   ready() {
     super.ready();
-    this.initializeLoginScreen('ResetScreen', {resetAllowed: false});
+    this.initializeLoginScreen('ResetScreen');
   }
 
   /**
@@ -307,6 +327,7 @@ class OobeReset extends ResetScreenElementBase {
         (this.screenState_ == RESET_SCREEN_STATE.RESTART_REQUIRED);
     this.inPowerwashState_ =
         (this.screenState_ == RESET_SCREEN_STATE.POWERWASH_PROPOSAL);
+    this.inErrorState_ = (this.screenState_ == RESET_SCREEN_STATE.ERROR);
   }
 
   /**
@@ -316,8 +337,9 @@ class OobeReset extends ResetScreenElementBase {
    * @private
    */
   getPowerwashStateSubtitle_(locale, mode) {
-    if (this.powerwashMode_ === undefined)
+    if (this.powerwashMode_ === undefined) {
       return '';
+    }
     const modeDetails = POWERWASH_MODE_DETAILS.get(this.powerwashMode_);
     return this.i18n(modeDetails.subtitleText);
   }
@@ -329,8 +351,9 @@ class OobeReset extends ResetScreenElementBase {
    * @private
    */
   getPowerwashButtonTextKey_(locale, mode) {
-    if (this.powerwashMode_ === undefined)
+    if (this.powerwashMode_ === undefined) {
       return '';
+    }
     return POWERWASH_MODE_DETAILS.get(this.powerwashMode_).buttonTextKey;
   }
 
@@ -354,8 +377,9 @@ class OobeReset extends ResetScreenElementBase {
    * @private
    */
   getConfirmationDialogTitle_(locale, mode) {
-    if (this.powerwashMode_ === undefined)
+    if (this.powerwashMode_ === undefined) {
       return '';
+    }
     const modeDetails = POWERWASH_MODE_DETAILS.get(this.powerwashMode_);
     return this.i18n(modeDetails.dialogTitle);
   }
@@ -367,8 +391,9 @@ class OobeReset extends ResetScreenElementBase {
    * @private
    */
   getConfirmationDialogText_(locale, mode) {
-    if (this.powerwashMode_ === undefined)
+    if (this.powerwashMode_ === undefined) {
       return '';
+    }
     const modeDetails = POWERWASH_MODE_DETAILS.get(this.powerwashMode_);
     return this.i18n(modeDetails.dialogContent);
   }
@@ -438,7 +463,7 @@ class OobeReset extends ResetScreenElementBase {
    */
   onTPMFirmwareUpdateChanged_() {
     const checked = this.$.tpmFirmwareUpdateCheckbox.checked;
-    chrome.send('ResetScreen.setTpmFirmwareUpdateChecked', [checked]);
+    this.userActed(['tpmfirmware-update-checked', checked]);
   }
 
   /**

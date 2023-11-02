@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,29 +10,16 @@
 
 #include "base/callback.h"
 #include "components/optimization_guide/core/entity_metadata.h"
+#include "components/optimization_guide/core/model_info.h"
+#include "components/optimization_guide/core/page_content_annotation_job_executor.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/category.h"
 
 namespace optimization_guide {
 
-// TODO(crbug/1249632): Remove this entirely.
-class HumanReadablePageEntitiesModelExecutor {
- public:
-  virtual ~HumanReadablePageEntitiesModelExecutor() = default;
-
-  using PageEntitiesModelExecutedCallback = base::OnceCallback<void(
-      const absl::optional<std::vector<tflite::task::core::Category>>&)>;
-
-  // Annotates |text| with page entities likely represented on the page. Invokes
-  // |callback| when done.
-  virtual void ExecuteModelWithInput(
-      const std::string& text,
-      PageEntitiesModelExecutedCallback callback) = 0;
-};
-
 // The PageEntitiesModelExecutor is responsible for executing the PAGE_ENTITIES
 // model.
-class PageEntitiesModelExecutor {
+class PageEntitiesModelExecutor : public PageContentAnnotationJobExecutor {
  public:
   virtual ~PageEntitiesModelExecutor() = default;
 
@@ -42,7 +29,7 @@ class PageEntitiesModelExecutor {
   // Annotates |text| with page entities likely represented on the page,
   // returning the entity metadata in the reader's locale with associated score.
   // Invokes |callback| when done.
-  virtual void HumanReadableExecuteModelWithInput(
+  virtual void ExecuteModelWithInput(
       const std::string& text,
       PageEntitiesMetadataModelExecutedCallback callback) = 0;
 
@@ -54,6 +41,19 @@ class PageEntitiesModelExecutor {
   virtual void GetMetadataForEntityId(
       const std::string& entity_id,
       PageEntitiesModelEntityMetadataRetrievedCallback callback) = 0;
+
+  // Runs |callback| now if a model is loaded or the next time |OnModelUpdated|
+  // is called.
+  virtual void AddOnModelUpdatedCallback(base::OnceClosure callback) = 0;
+
+  // Returns the ModelInfo for a currently loaded model, if available.
+  virtual absl::optional<ModelInfo> GetModelInfo() const = 0;
+
+  // PageContentAnnotationJobExecutor:
+  void ExecuteOnSingleInput(
+      AnnotationType annotation_type,
+      const std::string& input,
+      base::OnceCallback<void(const BatchAnnotationResult&)> callback) override;
 };
 
 }  // namespace optimization_guide

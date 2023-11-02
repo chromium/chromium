@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,9 @@
 
 #include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/get_ptr.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
 
 #if DCHECK_IS_ON()
@@ -125,7 +125,7 @@ class WTF_EXPORT StringView {
       : StringView(reinterpret_cast<const LChar*>(chars), length) {}
   StringView(const LChar* chars)
       : StringView(chars,
-                   chars ? SafeCast<unsigned>(
+                   chars ? base::checked_cast<unsigned>(
                                strlen(reinterpret_cast<const char*>(chars)))
                          : 0) {}
   StringView(const char* chars)
@@ -141,7 +141,7 @@ class WTF_EXPORT StringView {
 #endif
 
   bool IsNull() const { return !bytes_; }
-  bool IsEmpty() const { return !length_; }
+  bool empty() const { return !length_; }
 
   unsigned length() const { return length_; }
 
@@ -150,8 +150,8 @@ class WTF_EXPORT StringView {
     return impl_->Is8Bit();
   }
 
-  std::string Utf8(UTF8ConversionMode mode = kLenientUTF8Conversion) const
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] std::string Utf8(
+      UTF8ConversionMode mode = kLenientUTF8Conversion) const;
 
   bool IsAtomic() const { return SharedImpl() && SharedImpl()->IsAtomic(); }
 
@@ -164,6 +164,8 @@ class WTF_EXPORT StringView {
   }
 
   bool ContainsOnlyASCIIOrEmpty() const;
+
+  bool SubstringContainsOnlyWhitespaceOrEmpty(unsigned from, unsigned to) const;
 
   void Clear();
 

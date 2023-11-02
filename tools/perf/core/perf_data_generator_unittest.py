@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 import copy
@@ -13,7 +13,7 @@ import six
 # unicode. BytesIO works in Python 2, but then complains when given a str
 # instead of bytes in Python 3.
 if six.PY2:
-  from cStringIO import StringIO  # pylint: disable=wrong-import-order
+  from cStringIO import StringIO  # pylint: disable=wrong-import-order,import-error
 else:
   from io import StringIO  # pylint: disable=wrong-import-order
 
@@ -26,7 +26,7 @@ from core.perf_data_generator import BenchmarkMetadata
 class PerfDataGeneratorTest(unittest.TestCase):
   def setUp(self):
     # Test config can be big, so set maxDiff to None to see the full comparision
-    # diff when assertEquals fails.
+    # diff when assertEqual fails.
     self.maxDiff = None
 
   def test_get_scheduled_non_telemetry_benchmarks(self):
@@ -94,8 +94,8 @@ class TestIsPerfBenchmarksSchedulingValid(unittest.TestCase):
     valid = perf_data_generator.is_perf_benchmarks_scheduling_valid(
         'dummy', self.test_stream)
 
-    self.assertEquals(self.test_stream.getvalue(), '')
-    self.assertEquals(valid, True)
+    self.assertEqual(self.test_stream.getvalue(), '')
+    self.assertEqual(valid, True)
 
   def test_UnscheduledCppBenchmarks(self):
     self.get_non_telemetry_benchmarks.return_value = {'honda'}
@@ -108,7 +108,7 @@ class TestIsPerfBenchmarksSchedulingValid(unittest.TestCase):
     valid = perf_data_generator.is_perf_benchmarks_scheduling_valid(
         'dummy', self.test_stream)
 
-    self.assertEquals(valid, False)
+    self.assertEqual(valid, False)
     self.assertIn('Benchmark toyota is tracked but not scheduled',
         self.test_stream.getvalue())
 
@@ -122,7 +122,7 @@ class TestIsPerfBenchmarksSchedulingValid(unittest.TestCase):
     valid = perf_data_generator.is_perf_benchmarks_scheduling_valid(
         'dummy', self.test_stream)
 
-    self.assertEquals(valid, False)
+    self.assertEqual(valid, False)
     self.assertIn(
         'Benchmark tesla is scheduled on perf waterfall but not tracked',
         self.test_stream.getvalue())

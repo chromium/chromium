@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,8 +24,8 @@ struct FakeJavaScriptDialog {
 };
 
 // Fake presenter to check that the JavaScriptDialogPresenter methods are called
-// as expected. |RunJavaScriptDialog| always calls |callback| with
-// |callback_success_argument| and |callback_user_input_argument| values.
+// as expected. `RunJavaScriptDialog` always calls `callback` with
+// `callback_success_argument` and `callback_user_input_argument` values.
 class FakeJavaScriptDialogPresenter : public JavaScriptDialogPresenter {
  public:
   FakeJavaScriptDialogPresenter();
@@ -60,20 +60,20 @@ class FakeJavaScriptDialogPresenter : public JavaScriptDialogPresenter {
     return requested_dialogs_;
   }
 
-  // Sets |success| argument to be used for RunJavaScriptDialog callback.
+  // Sets `success` argument to be used for RunJavaScriptDialog callback.
   void set_callback_success_argument(bool success) {
     callback_success_argument_ = success;
   }
 
-  // Sets |user_input| argument to be used for RunJavaScriptDialog callback.
+  // Sets `user_input` argument to be used for RunJavaScriptDialog callback.
   void set_callback_user_input_argument(NSString* user_input) {
     callback_user_input_argument_ = user_input;
   }
 
  private:
-  // Executes all non-executed callbacks in |requested_dialogs_|.
+  // Executes all non-executed callbacks in `requested_dialogs_`.
   void ExecuteAllDialogCallbacks();
-  // Executes the callback for |dialog|.
+  // Executes the callback for `dialog`.
   void ExecuteDialogCallback(FakeJavaScriptDialog* dialog);
 
   bool callback_execution_paused_ = false;

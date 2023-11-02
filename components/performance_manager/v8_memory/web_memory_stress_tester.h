@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,7 +29,8 @@ class WebMeasureMemoryStressTester : public PageNode::ObserverDefaultImpl,
       const WebMeasureMemoryStressTester& other) = delete;
 
   // PageNode::ObserverDefaultImpl
-  void OnLoadingStateChanged(const PageNode* page_node) override;
+  void OnLoadingStateChanged(const PageNode* page_node,
+                             PageNode::LoadingState previous_state) override;
 
   // GraphOwned
   void OnPassedToGraph(Graph* graph) override;

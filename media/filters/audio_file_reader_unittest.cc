@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/hash/md5.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_hash.h"
@@ -120,11 +121,11 @@ class AudioFileReaderTest : public testing::Test {
     EXPECT_FALSE(reader_->Open());
   }
 
-  void RunTestFailingDecode(const char* fn) {
+  void RunTestFailingDecode(const char* fn, int expect_read = 0) {
     Initialize(fn);
     EXPECT_TRUE(reader_->Open());
     std::vector<std::unique_ptr<AudioBus>> decoded_audio_packets;
-    EXPECT_EQ(reader_->Read(&decoded_audio_packets), 0);
+    EXPECT_EQ(reader_->Read(&decoded_audio_packets), expect_read);
   }
 
   void RunTestPartialDecode(const char* fn) {
@@ -204,7 +205,7 @@ TEST_F(AudioFileReaderTest, CorruptMP3) {
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
 TEST_F(AudioFileReaderTest, AAC) {
   RunTest("sfx.m4a", "0.79,2.31,4.15,4.92,4.04,1.44,", 1, 44100,
-          base::Microseconds(371660), 16391, 12701);
+          base::Microseconds(347665), 15333, 12701);
 }
 
 TEST_F(AudioFileReaderTest, AAC_SinglePacket) {
@@ -218,7 +219,7 @@ TEST_F(AudioFileReaderTest, AAC_ADTS) {
 }
 
 TEST_F(AudioFileReaderTest, MidStreamConfigChangesFail) {
-  RunTestFailingDecode("midstream_config_change.mp3");
+  RunTestFailingDecode("midstream_config_change.mp3", 42624);
 }
 #endif
 

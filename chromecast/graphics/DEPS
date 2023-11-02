@@ -1,6 +1,5 @@
 include_rules = [
   "+chromecast/ui",
-  "+components/exo",
   "+components/viz/common/frame_sinks",
   "+ui/aura",
   "+ui/base",

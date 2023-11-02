@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,15 +8,21 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_macros.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
+#include "media/base/media_log.h"
 #include "media/base/video_frame.h"
 #include "media/gpu/gpu_video_accelerator_util.h"
-#include "media/mojo/common/mojo_shared_buffer_video_frame.h"
+#include "media/mojo/clients/mojo_media_log_service.h"
 #include "media/mojo/mojom/video_encoder_info.mojom.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/system/platform_handle.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace media {
 
@@ -30,7 +36,8 @@ class VideoEncodeAcceleratorClient
  public:
   VideoEncodeAcceleratorClient(
       VideoEncodeAccelerator::Client* client,
-      mojo::PendingReceiver<mojom::VideoEncodeAcceleratorClient> receiver);
+      mojo::PendingAssociatedReceiver<mojom::VideoEncodeAcceleratorClient>
+          receiver);
 
   VideoEncodeAcceleratorClient(const VideoEncodeAcceleratorClient&) = delete;
   VideoEncodeAcceleratorClient& operator=(const VideoEncodeAcceleratorClient&) =
@@ -49,13 +56,14 @@ class VideoEncodeAcceleratorClient
   void NotifyEncoderInfoChange(const VideoEncoderInfo& info) override;
 
  private:
-  VideoEncodeAccelerator::Client* client_;
-  mojo::Receiver<mojom::VideoEncodeAcceleratorClient> receiver_;
+  raw_ptr<VideoEncodeAccelerator::Client> client_;
+  mojo::AssociatedReceiver<mojom::VideoEncodeAcceleratorClient> receiver_;
 };
 
 VideoEncodeAcceleratorClient::VideoEncodeAcceleratorClient(
     VideoEncodeAccelerator::Client* client,
-    mojo::PendingReceiver<mojom::VideoEncodeAcceleratorClient> receiver)
+    mojo::PendingAssociatedReceiver<mojom::VideoEncodeAcceleratorClient>
+        receiver)
     : client_(client), receiver_(this, std::move(receiver)) {
   DCHECK(client_);
 }
@@ -95,23 +103,29 @@ void VideoEncodeAcceleratorClient::NotifyEncoderInfoChange(
 }  // anonymous namespace
 
 MojoVideoEncodeAccelerator::MojoVideoEncodeAccelerator(
-    mojo::PendingRemote<mojom::VideoEncodeAccelerator> vea,
-    const SupportedProfiles& supported_profiles)
-    : vea_(std::move(vea)), supported_profiles_(supported_profiles) {
+    mojo::PendingRemote<mojom::VideoEncodeAccelerator> vea)
+    : vea_(std::move(vea)) {
   DVLOG(1) << __func__;
   DCHECK(vea_);
+
+  vea_.set_disconnect_handler(
+      base::BindOnce(&MojoVideoEncodeAccelerator::MojoDisconnectionHandler,
+                     base::Unretained(this)));
 }
 
 VideoEncodeAccelerator::SupportedProfiles
 MojoVideoEncodeAccelerator::GetSupportedProfiles() {
-  DVLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  return supported_profiles_;
+  NOTREACHED() << "GetSupportedProfiles() should never be called."
+               << "Use VEA provider or GPU factories";
+  return {};
 }
 
-bool MojoVideoEncodeAccelerator::Initialize(const Config& config,
-                                            Client* client) {
+bool MojoVideoEncodeAccelerator::Initialize(
+    const Config& config,
+    Client* client,
+    std::unique_ptr<MediaLog> media_log) {
   DVLOG(2) << __func__ << " " << config.AsHumanReadableString();
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!client)
@@ -119,53 +133,48 @@ bool MojoVideoEncodeAccelerator::Initialize(const Config& config,
 
   // Get a mojom::VideoEncodeAcceleratorClient bound to a local implementation
   // (VideoEncodeAcceleratorClient) and send the remote.
-  mojo::PendingRemote<mojom::VideoEncodeAcceleratorClient> vea_client_remote;
+  mojo::PendingAssociatedRemote<mojom::VideoEncodeAcceleratorClient>
+      vea_client_remote;
   vea_client_ = std::make_unique<VideoEncodeAcceleratorClient>(
-      client, vea_client_remote.InitWithNewPipeAndPassReceiver());
+      client, vea_client_remote.InitWithNewEndpointAndPassReceiver());
+
+  // Use `mojo::MakeSelfOwnedReceiver` for MediaLog so logs may go through even
+  // after `MojoVideoEncodeAccelerator` is destructed.
+  mojo::PendingReceiver<mojom::MediaLog> media_log_pending_receiver;
+  auto media_log_pending_remote =
+      media_log_pending_receiver.InitWithNewPipeAndPassRemote();
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<MojoMediaLogService>(media_log->Clone()),
+      std::move(media_log_pending_receiver));
 
   bool result = false;
-  vea_->Initialize(config, std::move(vea_client_remote), &result);
+  vea_->Initialize(config, std::move(vea_client_remote),
+                   std::move(media_log_pending_remote), &result);
   return result;
 }
 
 void MojoVideoEncodeAccelerator::Encode(scoped_refptr<VideoFrame> frame,
                                         bool force_keyframe) {
+  TRACE_EVENT1("media", "MojoVideoEncodeAccelerator::Encode", "timestamp",
+               frame->timestamp());
   DVLOG(2) << __func__ << " tstamp=" << frame->timestamp();
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  size_t num_planes = VideoFrame::NumPlanes(frame->format());
-  DCHECK_EQ(num_planes, frame->layout().num_planes());
+  DCHECK_EQ(VideoFrame::NumPlanes(frame->format()),
+            frame->layout().num_planes());
   DCHECK(vea_.is_bound());
 
-  // GPU memory path: Pass-through.
-  if (frame->storage_type() == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
-    vea_->Encode(frame, force_keyframe,
-                 base::BindOnce([](scoped_refptr<VideoFrame>) {}, frame));
-    return;
-  }
-
-  // Mappable memory path: Copy buffer to shared memory.
+  UMA_HISTOGRAM_ENUMERATION("Media.MojoVideoEncodeAccelerator.InputStorageType",
+                            frame->storage_type(),
+                            static_cast<int>(VideoFrame::STORAGE_MAX) + 1);
   if (frame->format() != PIXEL_FORMAT_I420 &&
       frame->format() != PIXEL_FORMAT_NV12) {
     DLOG(ERROR) << "Unexpected pixel format: "
                 << VideoPixelFormatToString(frame->format());
     return;
   }
-  if (frame->storage_type() != VideoFrame::STORAGE_SHMEM &&
-      frame->storage_type() != VideoFrame::STORAGE_UNOWNED_MEMORY) {
-    DLOG(ERROR) << "Unexpected storage type: "
-                << VideoFrame::StorageTypeToString(frame->storage_type());
-    return;
-  }
 
-  scoped_refptr<MojoSharedBufferVideoFrame> mojo_frame =
-      MojoSharedBufferVideoFrame::CreateFromYUVFrame(*frame);
-  if (!mojo_frame) {
-    DLOG(ERROR) << "Failed creating MojoSharedBufferVideoFrame from YUV";
-    return;
-  }
-  vea_->Encode(
-      std::move(mojo_frame), force_keyframe,
-      base::BindOnce([](scoped_refptr<VideoFrame>) {}, std::move(frame)));
+  vea_->Encode(frame, force_keyframe,
+               base::BindOnce([](scoped_refptr<VideoFrame>) {}, frame));
 }
 
 void MojoVideoEncodeAccelerator::UseOutputBitstreamBuffer(
@@ -176,10 +185,7 @@ void MojoVideoEncodeAccelerator::UseOutputBitstreamBuffer(
 
   DCHECK(buffer.region().IsValid());
 
-  auto buffer_handle =
-      mojo::WrapPlatformSharedMemoryRegion(buffer.TakeRegion());
-
-  vea_->UseOutputBitstreamBuffer(buffer.id(), std::move(buffer_handle));
+  vea_->UseOutputBitstreamBuffer(buffer.id(), buffer.TakeRegion());
 }
 
 void MojoVideoEncodeAccelerator::RequestEncodingParametersChange(
@@ -231,6 +237,14 @@ void MojoVideoEncodeAccelerator::Destroy() {
 
 MojoVideoEncodeAccelerator::~MojoVideoEncodeAccelerator() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+void MojoVideoEncodeAccelerator::MojoDisconnectionHandler() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (vea_client_) {
+    vea_client_->NotifyError(
+        VideoEncodeAccelerator::Error::kPlatformFailureError);
+  }
 }
 
 }  // namespace media

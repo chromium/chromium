@@ -29,6 +29,8 @@
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/trust_tokens.mojom-blink.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
+#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_html_iframe_element.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
@@ -37,6 +39,7 @@
 #include "third_party/blink/renderer/core/fetch/trust_token_issuance_authorization.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/html/client_hints_util.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/trust_token_attribute_parsing.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -46,12 +49,36 @@
 #include "third_party/blink/renderer/core/permissions_policy/document_policy_parser.h"
 #include "third_party/blink/renderer/core/permissions_policy/iframe_policy.h"
 #include "third_party/blink/renderer/core/permissions_policy/permissions_policy_parser.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/json/json_parser.h"
+#include "third_party/blink/renderer/platform/network/content_security_policy_parsers.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
+
+namespace {
+// Cut down |value| if too long and return empty string if null. This is used to
+// convert the HTML attributes to report to the browser.
+String ConvertToReportValue(const AtomicString& value) {
+  if (value.IsNull()) {
+    return g_empty_string;
+  }
+  static constexpr size_t kMaxLengthToReport = 1024;
+  return value.GetString().Left(kMaxLengthToReport);
+}
+
+bool AnonymousIframeEnabled(const FeatureContext* context) {
+  // AnonymousIframe is enabled via command line flags, or via the Origin Trial.
+  // The origin trial is gated using the `AnonymousIframeOriginTrial` flag until
+  // AnonymousIframe is safe to use. It is useful, because the OT token do not
+  // enforce a specific version.
+  return RuntimeEnabledFeatures::AnonymousIframeEnabled(nullptr) ||
+         (RuntimeEnabledFeatures::AnonymousIframeEnabled(context) &&
+          base::FeatureList::IsEnabled(features::kAnonymousIframeOriginTrial));
+}
+
+}  // namespace
 
 HTMLIFrameElement::HTMLIFrameElement(Document& document)
     : HTMLFrameElementBase(html_names::kIFrameTag, document),
@@ -141,6 +168,8 @@ void HTMLIFrameElement::ParseAttribute(
     const AttributeModificationParams& params) {
   const QualifiedName& name = params.name;
   const AtomicString& value = params.new_value;
+  // This is only set to true for values needed by the browser.
+  bool should_call_did_change_attributes = false;
   if (name == html_names::kNameAttr) {
     auto* document = DynamicTo<HTMLDocument>(GetDocument());
     if (document && IsInDocumentTree()) {
@@ -149,8 +178,14 @@ void HTMLIFrameElement::ParseAttribute(
     }
     AtomicString old_name = name_;
     name_ = value;
-    if (name_ != old_name)
+    if (name_ != old_name) {
       FrameOwnerPropertiesChanged();
+      should_call_did_change_attributes = true;
+    }
+    if (name_.Contains('\n'))
+      UseCounter::Count(GetDocument(), WebFeature::kFrameNameContainsNewline);
+    if (name_.Contains('<'))
+      UseCounter::Count(GetDocument(), WebFeature::kFrameNameContainsBrace);
   } else if (name == html_names::kSandboxAttr) {
     sandbox_->DidUpdateAttributeValue(params.old_value, value);
 
@@ -230,21 +265,21 @@ void HTMLIFrameElement::ParseAttribute(
                          kMaxLengthCSPAttribute)));
     } else if (required_csp_ != value) {
       required_csp_ = value;
-      DidChangeAttributes();
+      should_call_did_change_attributes = true;
       UseCounter::Count(GetDocument(), WebFeature::kIFrameCSPAttribute);
     }
   } else if (name == html_names::kAnonymousAttr &&
-             RuntimeEnabledFeatures::AnonymousIframeEnabled()) {
+             AnonymousIframeEnabled(GetExecutionContext())) {
     bool new_value = !value.IsNull();
     if (anonymous_ != new_value) {
       anonymous_ = new_value;
-      DidChangeAttributes();
+      should_call_did_change_attributes = true;
     }
   } else if (name == html_names::kAllowAttr) {
     if (allow_ != value) {
       allow_ = value;
       UpdateContainerPolicy();
-      if (!value.IsEmpty()) {
+      if (!value.empty()) {
         UseCounter::Count(GetDocument(),
                           WebFeature::kFeaturePolicyAllowAttribute);
       }
@@ -277,9 +312,26 @@ void HTMLIFrameElement::ParseAttribute(
           "https://goo.gl/ximf56"));
     }
 
-    if (name == html_names::kSrcAttr)
+    if (name == html_names::kSrcAttr) {
       LogUpdateAttributeIfIsolatedWorldAndInDocument("iframe", params);
+      if (src_ != value) {
+        src_ = value;
+        should_call_did_change_attributes = true;
+      }
+    }
+    if (name == html_names::kIdAttr && id_ != value) {
+      id_ = value;
+      should_call_did_change_attributes = true;
+    }
+    if (name == html_names::kNameAttr && name_ != value) {
+      name_ = value;
+      should_call_did_change_attributes = true;
+    }
     HTMLFrameElementBase::ParseAttribute(params);
+  }
+  if (should_call_did_change_attributes) {
+    // This causes IPC to the browser. Only call it once per parsing.
+    DidChangeAttributes();
   }
 }
 
@@ -288,7 +340,7 @@ DocumentPolicyFeatureState HTMLIFrameElement::ConstructRequiredPolicy() const {
           GetExecutionContext()))
     return {};
 
-  if (!required_policy_.IsEmpty()) {
+  if (!required_policy_.empty()) {
     UseCounter::Count(
         GetDocument(),
         mojom::blink::WebFeature::kDocumentPolicyIframePolicyAttribute);
@@ -356,11 +408,20 @@ ParsedPermissionsPolicy HTMLIFrameElement::ConstructContainerPolicy() const {
   if (AllowPaymentRequest()) {
     bool policy_changed = AllowFeatureEverywhereIfNotPresent(
         mojom::blink::PermissionsPolicyFeature::kPayment, container_policy);
-    if (!policy_changed) {
+    // Measure cases where allowpaymentrequest had an actual effect, to see if
+    // we can deprecate it. See https://crbug.com/1127988
+    if (policy_changed) {
+      UseCounter::Count(GetDocument(),
+                        WebFeature::kAllowPaymentRequestAttributeHasEffect);
+    } else {
       logger.Warn(
           "Allow attribute will take precedence over 'allowpaymentrequest'.");
     }
   }
+
+  // Factor in changes in client hint permissions.
+  UpdateIFrameContainerPolicyWithDelegationSupportForClientHints(
+      container_policy, GetDocument().domWindow());
 
   // Update the JavaScript policy object associated with this iframe, if it
   // exists.
@@ -500,9 +561,22 @@ void HTMLIFrameElement::DidChangeAttributes() {
           network::mojom::blink::ContentSecurityPolicySource::kHTTP, KURL());
   DCHECK_LE(csp.size(), 1u);
 
+  auto attributes = mojom::blink::IframeAttributes::New();
+  attributes->parsed_csp_attribute = csp.empty() ? nullptr : std::move(csp[0]);
+  attributes->anonymous = anonymous_;
+
+  attributes->id = ConvertToReportValue(id_);
+  attributes->name = ConvertToReportValue(name_);
+  attributes->src = ConvertToReportValue(src_);
   GetDocument().GetFrame()->GetLocalFrameHostRemote().DidChangeIframeAttributes(
-      ContentFrame()->GetFrameToken(),
-      csp.IsEmpty() ? nullptr : std::move(csp[0]), anonymous_);
+      ContentFrame()->GetFrameToken(), std::move(attributes));
+
+  // Make sure we update the srcdoc value, if any, in the browser.
+  String srcdoc_value = "";
+  if (FastHasAttribute(html_names::kSrcdocAttr))
+    srcdoc_value = FastGetAttribute(html_names::kSrcdocAttr).GetString();
+  GetDocument().GetFrame()->GetLocalFrameHostRemote().DidChangeSrcDoc(
+      ContentFrame()->GetFrameToken(), srcdoc_value);
 }
 
 }  // namespace blink

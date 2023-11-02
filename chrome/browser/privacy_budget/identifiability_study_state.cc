@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,6 +26,7 @@
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/privacy_budget/identifiability_study_group_settings.h"
 #include "chrome/browser/privacy_budget/privacy_budget_prefs.h"
+#include "chrome/browser/privacy_budget/privacy_budget_reid_score_estimator.h"
 #include "chrome/browser/privacy_budget/representative_surface_set.h"
 #include "chrome/browser/privacy_budget/surface_set_equivalence.h"
 #include "chrome/common/privacy_budget/field_trial_param_conversions.h"
@@ -33,6 +34,7 @@
 #include "chrome/common/privacy_budget/privacy_budget_settings_provider.h"
 #include "chrome/common/privacy_budget/types.h"
 #include "components/prefs/pref_service.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings_provider.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
@@ -55,8 +57,17 @@ IdentifiabilityStudyState::IdentifiabilityStudyState(PrefService* pref_service)
       active_surfaces_(valuation_),
       generation_(GetStudyGenerationFromFieldTrial()),
       active_surface_budget_(settings_.surface_budget()),
-      random_offset_generator_(settings_.expected_surface_count(),
-                               kMesaDistributionRatio) {
+      random_offset_generator_(
+          settings_.expected_surface_count() > 0
+              ? settings_.expected_surface_count()
+              // If settings_.expected_surface_count() is 0 then the study is
+              // disabled. The random offset generator will not be used.
+              // However, `MesaDistribution` needs a `pivot_point` parameter
+              // bigger than 0.
+              : 1,
+          kMesaDistributionRatio),
+      reid_estimator_(
+          PrivacyBudgetReidScoreEstimator(&settings_, pref_service)) {
   InitializeGlobalStudySettings();
   InitFromPrefs();
 }
@@ -73,16 +84,36 @@ bool IdentifiabilityStudyState::ShouldRecordSurface(
   if (LIKELY(!settings_.enabled()))
     return false;
 
+  // We always record surfaces of type zero.
+  if (surface.GetType() == blink::IdentifiableSurface::Type::kReservedInternal)
+    return true;
+
+  if (surface.GetType() ==
+      blink::IdentifiableSurface::Type::kReidScoreEstimator) {
+    return settings_.IsUsingReidScoreEstimator();
+  }
+
+  // All other surfaces should be recorded only when sampling.
+  if (!settings_.IsUsingSamplingOfSurfaces())
+    return false;
+
   if (base::Contains(active_surfaces_, surface))
     return true;
 
-  if (settings_.is_using_assigned_block_sampling())
+  if (settings_.IsUsingAssignedBlockSampling())
     return false;
+
+  DCHECK(settings_.IsUsingRandomSampling());
+
+  if ((settings_.allowed_random_types().size() > 0) &&
+      (!base::Contains(settings_.allowed_random_types(), surface.GetType()))) {
+    return false;
+  }
 
   if (!CanAddOneMoreActiveSurface())
     return false;
 
-  if (!blink::IdentifiabilityStudySettings::Get()->IsSurfaceAllowed(surface))
+  if (!blink::IdentifiabilityStudySettings::Get()->ShouldSampleSurface(surface))
     return false;
 
   // (surface ∈ seen_surfaces_) but (surface ∉ active_surfaces_) means that
@@ -106,6 +137,7 @@ void IdentifiabilityStudyState::InitializeGlobalStudySettings() {
 
 bool IdentifiabilityStudyState::DecideInclusionForNewSurface(
     blink::IdentifiableSurface new_surface) {
+  DCHECK(settings_.IsUsingRandomSampling());
   if (UNLIKELY(seen_surfaces_.size() > kMaxSelectedSurfaceOffset + 1))
     return false;
 
@@ -173,6 +205,8 @@ unsigned IdentifiabilityStudyState::GetCountOfOffsetsToSelect() const {
 }
 
 void IdentifiabilityStudyState::MaybeUpdateSelectedOffsets() {
+  DCHECK(settings_.IsUsingRandomSampling());
+
   if (!CanAddOneMoreActiveSurface())
     return;
 
@@ -235,7 +269,7 @@ void IdentifiabilityStudyState::UpdateSelectedOffsets(
 namespace {
 // Predicate used in CheckInvariants().
 bool IsSurfaceAllowed(const blink::IdentifiableSurface& value) {
-  return blink::IdentifiabilityStudySettings::Get()->IsSurfaceAllowed(value);
+  return blink::IdentifiabilityStudySettings::Get()->ShouldSampleSurface(value);
 }
 bool IsRepresentativeSurfaceAllowed(const RepresentativeSurface& value) {
   return IsSurfaceAllowed(value.value());
@@ -309,6 +343,8 @@ void IdentifiabilityStudyState::ResetInMemoryState() {
 
 void IdentifiabilityStudyState::ResetPersistedState() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  reid_estimator_.ResetPersistedState();
+
   ResetInMemoryState();
 
   pref_service_->ClearPref(prefs::kPrivacyBudgetSeenSurfaces);
@@ -322,15 +358,18 @@ void IdentifiabilityStudyState::ResetPersistedState() {
 
   pref_service_->SetInteger(prefs::kPrivacyBudgetGeneration, generation_);
 
-  if (settings_.is_using_assigned_block_sampling()) {
+  if (settings_.IsUsingAssignedBlockSampling()) {
     InitStateForAssignedBlockSampling();
-  } else {
+  }
+
+  if (settings_.IsUsingRandomSampling()) {
     MaybeUpdateSelectedOffsets();
   }
   CheckInvariants();
 }
 
 void IdentifiabilityStudyState::InitStateForAssignedBlockSampling() {
+  DCHECK(settings_.IsUsingAssignedBlockSampling());
   DCHECK_LT(selected_block_offset_, 0);
 
   IdentifiableSurfaceBlocks blocks = settings_.blocks();
@@ -408,7 +447,7 @@ bool IdentifiabilityStudyState::StripDisallowedSurfaces(
 
     unique_surfaces.insert(surface);
 
-    if (settings->IsSurfaceAllowed(surface)) {
+    if (settings->ShouldSampleSurface(surface)) {
       container[write_position++] = surface;
     } else {
       dropped_offsets.push_back(read_position);
@@ -469,15 +508,29 @@ void IdentifiabilityStudyState::InitFromPrefs() {
     return;
   }
 
-  if (settings_.is_using_assigned_block_sampling()) {
+  reid_estimator_.Init();
+
+  if (settings_.IsUsingAssignedBlockSampling()) {
     InitStateForAssignedBlockSampling();
-  } else {
+  }
+
+  if (settings_.IsUsingRandomSampling()) {
     InitStateForRandomSurfaceSampling();
   }
+
   CheckInvariants();
 }
 
+void IdentifiabilityStudyState::MaybeStoreValueForComputingReidScore(
+    blink::IdentifiableSurface surface,
+    blink::IdentifiableToken token) {
+  if (!settings_.IsUsingReidScoreEstimator())
+    return;
+  reid_estimator_.ProcessForReidScore(surface, token);
+}
+
 void IdentifiabilityStudyState::InitStateForRandomSurfaceSampling() {
+  DCHECK(settings_.IsUsingRandomSampling());
   ResetInMemoryState();
 
   selected_offsets_ =
@@ -561,10 +614,22 @@ void IdentifiabilityStudyState::WriteSelectedOffsetsToPrefs() const {
 bool IdentifiabilityStudyState::ShouldReportEncounteredSurface(
     uint64_t source_id,
     blink::IdentifiableSurface surface) {
-  if (!blink::IdentifiabilityStudySettings::Get()->IsTypeAllowed(
+  if (!blink::IdentifiabilityStudySettings::Get()->ShouldSampleType(
           blink::IdentifiableSurface::Type::kMeasuredSurface)) {
     return false;
   }
+
+  if (surface.GetType() ==
+      blink::IdentifiableSurface::Type::kReservedInternal) {
+    return false;
+  }
+
+  // Don't report actively sampled surfaces as encountered surfaces.
+  if (ukm::SourceIdObj::FromInt64(source_id).GetType() ==
+      ukm::SourceIdType::NO_URL_ID) {
+    return false;
+  }
+
   return surface_encounters_.IsNewEncounter(source_id,
                                             surface.ToUkmMetricHash());
 }

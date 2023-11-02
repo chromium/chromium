@@ -48,15 +48,15 @@ EntrySyncHeapVector DirectoryReaderSync::readEntries(
     ExceptionState& exception_state) {
   auto success_callback_wrapper = WTF::BindRepeating(
       [](DirectoryReaderSync* persistent_reader, EntryHeapVector* entries) {
-        persistent_reader->entries_.ReserveCapacity(
-            persistent_reader->entries_.size() + entries->size());
+        persistent_reader->entries_.reserve(persistent_reader->entries_.size() +
+                                            entries->size());
         for (const auto& entry : *entries) {
           persistent_reader->entries_.UncheckedAppend(
               EntrySync::Create(entry.Get()));
         }
       },
       WrapPersistentIfNeeded(this));
-  auto error_callback_wrapper = WTF::Bind(
+  auto error_callback_wrapper = WTF::BindOnce(
       [](DirectoryReaderSync* persistent_reader, base::File::Error error) {
         persistent_reader->error_code_ = error;
       },

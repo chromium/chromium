@@ -1,12 +1,12 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
-import("//build/config/dcheck_always_on.gni")
 import("//build/config/devtools.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//third_party/blink/public/public_features.gni")
+import("//third_party/blink/renderer/build/scripts/scripts.gni")
 import("//third_party/blink/renderer/config.gni")
 import("//third_party/blink/renderer/core/core.gni")
 import("//third_party/webrtc/webrtc.gni")
@@ -17,6 +17,8 @@ if (is_android) {
   import("//build/config/android/config.gni")
   import("//build/config/android/rules.gni")
 }
+
+blink_public_output_dir = "$root_gen_dir/third_party/blink/public"
 
 group("blink") {
   public_deps = [ ":blink_headers" ]
@@ -80,6 +82,7 @@ if (is_android) {
     sources = [
       "./common/input/web_input_event.h",
       "./mojom/context_menu/context_menu.mojom",
+      "./mojom/input/input_handler.mojom",
       "./platform/web_text_input_mode.h",
       "./platform/web_text_input_type.h",
     ]
@@ -121,15 +124,9 @@ source_set("test_headers") {
 source_set("blink_headers") {
   sources = [
     "platform/audio/web_audio_device_source_type.h",
-    "platform/blame_context.h",
     "platform/child_url_loader_factory_bundle.h",
     "platform/cross_variant_mojo_util.h",
     "platform/file_path_conversion.h",
-    "platform/impression_conversions.h",
-    "platform/input/input_handler_proxy.h",
-    "platform/input/input_handler_proxy_client.h",
-    "platform/input/predictor_factory.h",
-    "platform/input/synchronous_input_handler_proxy.h",
     "platform/interface_registry.h",
     "platform/internet_disconnected_web_url_loader.h",
     "platform/media/webmediaplayer_delegate.h",
@@ -143,6 +140,7 @@ source_set("blink_headers") {
     "platform/modules/mediastream/web_media_stream_track.h",
     "platform/modules/mediastream/web_media_stream_video_renderer.h",
     "platform/modules/mediastream/web_platform_media_stream_source.h",
+    "platform/modules/remoteplayback/remote_playback_source.h",
     "platform/modules/remoteplayback/web_remote_playback_client.h",
     "platform/modules/service_worker/web_service_worker_error.h",
     "platform/modules/service_worker/web_service_worker_fetch_context.h",
@@ -158,12 +156,10 @@ source_set("blink_headers") {
     "platform/resource_load_info_notifier_wrapper.h",
     "platform/scheduler/web_agent_group_scheduler.h",
     "platform/scheduler/web_rail_mode_observer.h",
-    "platform/scheduler/web_render_widget_scheduling_state.h",
     "platform/scheduler/web_renderer_process_type.h",
     "platform/scheduler/web_resource_loading_task_runner_handle.h",
     "platform/scheduler/web_scoped_virtual_time_pauser.h",
     "platform/scheduler/web_thread_scheduler.h",
-    "platform/scheduler/web_widget_scheduler.h",
     "platform/task_type.h",
     "platform/tracked_child_url_loader_factory_bundle.h",
     "platform/url_conversion.h",
@@ -173,6 +169,7 @@ source_set("blink_headers") {
     "platform/web_audio_bus.h",
     "platform/web_audio_device.h",
     "platform/web_audio_latency_hint.h",
+    "platform/web_audio_sink_descriptor.h",
     "platform/web_audio_source_provider.h",
     "platform/web_back_forward_cache_loader_helper.h",
     "platform/web_blob_info.h",
@@ -201,13 +198,14 @@ source_set("blink_headers") {
     "platform/web_dedicated_worker_host_factory_client.h",
     "platform/web_distillability.h",
     "platform/web_document_subresource_filter.h",
-    "platform/web_double_size.h",
     "platform/web_drag_data.h",
     "platform/web_effective_connection_type.h",
+    "platform/web_encoding_data.h",
     "platform/web_encrypted_media_client.h",
     "platform/web_encrypted_media_key_information.h",
     "platform/web_encrypted_media_request.h",
     "platform/web_encrypted_media_types.h",
+    "platform/web_fenced_frame_reporting.h",
     "platform/web_fetch_client_settings_object.h",
     "platform/web_file_system_type.h",
     "platform/web_font.h",
@@ -220,7 +218,6 @@ source_set("blink_headers") {
     "platform/web_http_header_visitor.h",
     "platform/web_icon_sizes_parser.h",
     "platform/web_image_generator.h",
-    "platform/web_impression.h",
     "platform/web_inband_text_track.h",
     "platform/web_inband_text_track_client.h",
     "platform/web_input_event_result.h",
@@ -282,9 +279,11 @@ source_set("blink_headers") {
     "platform/websocket_handshake_throttle_provider.h",
     "web/blink.h",
     "web/modules/autofill/web_form_element_observer.h",
-    "web/modules/media/audio/web_audio_device_factory.h",
-    "web/modules/media/audio/web_audio_input_ipc_factory.h",
-    "web/modules/media/audio/web_audio_output_ipc_factory.h",
+    "web/modules/autofill_assistant/node_signals.h",
+    "web/modules/canvas/canvas_test_utils.h",
+    "web/modules/media/audio/audio_device_factory.h",
+    "web/modules/media/audio/audio_input_ipc_factory.h",
+    "web/modules/media/audio/audio_output_ipc_factory.h",
     "web/modules/media/webmediaplayer_util.h",
     "web/modules/mediastream/encoded_video_frame.h",
     "web/modules/mediastream/media_stream_video_sink.h",
@@ -292,6 +291,7 @@ source_set("blink_headers") {
     "web/modules/mediastream/web_media_stream_device_observer.h",
     "web/modules/mediastream/web_media_stream_utils.h",
     "web/modules/mediastream/webmediaplayer_ms.h",
+    "web/modules/service_worker/web_navigation_preload_request.h",
     "web/modules/service_worker/web_service_worker_context_client.h",
     "web/modules/service_worker/web_service_worker_context_proxy.h",
     "web/web_array_buffer.h",
@@ -309,7 +309,9 @@ source_set("blink_headers") {
     "web/web_content_capture_client.h",
     "web/web_content_holder.h",
     "web/web_crypto_normalize.h",
+    "web/web_css_origin.h",
     "web/web_custom_element.h",
+    "web/web_disallow_transition_scope.h",
     "web/web_document.h",
     "web/web_document_loader.h",
     "web/web_dom_activity_logger.h",
@@ -334,7 +336,6 @@ source_set("blink_headers") {
     "web/web_frame_widget.h",
     "web/web_heap.h",
     "web/web_history_commit_type.h",
-    "web/web_history_entry.h",
     "web/web_history_item.h",
     "web/web_hit_test_result.h",
     "web/web_image.h",
@@ -346,6 +347,7 @@ source_set("blink_headers") {
     "web/web_lifecycle_update.h",
     "web/web_local_frame.h",
     "web/web_local_frame_client.h",
+    "web/web_local_frame_observer.h",
     "web/web_manifest_manager.h",
     "web/web_meaningful_layout.h",
     "web/web_media_inspector.h",
@@ -360,11 +362,11 @@ source_set("blink_headers") {
     "web/web_node.h",
     "web/web_non_composited_widget_client.h",
     "web/web_option_element.h",
-    "web/web_origin_policy.h",
     "web/web_page_popup.h",
     "web/web_pepper_socket.h",
     "web/web_pepper_socket_client.h",
     "web/web_performance.h",
+    "web/web_picture_in_picture_window_options.h",
     "web/web_plugin.h",
     "web/web_plugin_container.h",
     "web/web_plugin_document.h",
@@ -377,7 +379,6 @@ source_set("blink_headers") {
     "web/web_print_preset_options.h",
     "web/web_range.h",
     "web/web_remote_frame.h",
-    "web/web_remote_frame_client.h",
     "web/web_render_theme.h",
     "web/web_savable_resources_test_support.h",
     "web/web_scoped_window_focus_allowed_indicator.h",
@@ -407,10 +408,6 @@ source_set("blink_headers") {
     "web/web_window_features.h",
   ]
 
-  if (is_debug || dcheck_always_on) {
-    sources += [ "web/web_disallow_transition_scope.h" ]
-  }
-
   if (is_mac) {
     sources += [
       "platform/mac/web_sandbox_support.h",
@@ -425,6 +422,8 @@ source_set("blink_headers") {
   if (is_win) {
     sources += [
       "platform/web_font_prewarmer.h",
+      "platform/web_font_rendering_client.h",
+      "web/win/web_font_family_names.h",
       "web/win/web_font_rendering.h",
     ]
   }
@@ -439,6 +438,7 @@ source_set("blink_headers") {
   public_deps = [
     ":devtools_inspector_resources_grit",
     ":resources_grit",
+    ":runtime_features_for_public",
     "//net",
     "//services/network/public/mojom:mojom_shared",
     "//services/service_manager/public/cpp",
@@ -446,13 +446,16 @@ source_set("blink_headers") {
     "//third_party/blink/public/common",
     "//third_party/blink/public/common:headers",
     "//ui/accessibility:ax_base",
-    "//ui/base/cursor:cursor_base",
     "//ui/base/dragdrop/mojom:mojom_shared",
     "//ui/base/ime",
     "//ui/base/ime/mojom",
     "//ui/base/prediction:prediction",
     "//url",
   ]
+
+  if (is_mac) {
+    public_deps += [ "//ui/gfx" ]
+  }
 
   deps = [
     "//base:base",
@@ -475,6 +478,30 @@ source_set("blink_headers") {
   ]
 }
 
+blink_python_runner("runtime_features_for_public") {
+  script = "../renderer/build/scripts/make_runtime_features_for_public.py"
+
+  runtime_enabled_features_json5 =
+      "../renderer/platform/runtime_enabled_features.json5"
+  inputs =
+      scripts_for_json5_files + [
+        runtime_enabled_features_json5,
+        "../renderer/build/scripts/templates/features_generated.h.tmpl",
+        "../renderer/build/scripts/templates/web_runtime_features_base.h.tmpl",
+      ]
+
+  outputs = [
+    "$blink_public_output_dir/common/features_generated.h",
+    "$blink_public_output_dir/platform/web_runtime_features_base.h",
+  ]
+
+  args = [
+    rebase_path(runtime_enabled_features_json5, root_build_dir),
+    "--output_dir",
+    rebase_path(blink_public_output_dir, root_build_dir),
+  ]
+}
+
 devtools_frontend_path = "//$devtools_root_location"
 
 group("blink_devtools_frontend_resources") {
@@ -494,7 +521,7 @@ group("blink_generate_devtools_grd") {
   public_deps = [ "$devtools_frontend_path:generate_devtools_grd" ]
 }
 
-resources_out_dir = "$root_gen_dir/third_party/blink/public/resources"
+resources_out_dir = "$blink_public_output_dir/resources"
 
 grit("resources") {
   output_dir = resources_out_dir
@@ -503,6 +530,7 @@ grit("resources") {
     "grit/blink_resources.h",
     "blink_resources.pak",
   ]
+  use_brotli = true
 }
 
 grit("devtools_inspector_resources") {

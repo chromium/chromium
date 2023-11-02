@@ -1,0 +1,35 @@
+caption: Enable the default search provider
+default: null
+desc: |-
+  Setting the policy to Enabled means a default search is performed when a user enters non-URL text in the address bar. To specify the default search provider, set the rest of the default search policies. If you leave those policies empty, the user can choose the default provider. Setting the policy to Disabled means there's no search when the user enters non-URL text in the address bar.
+
+        If you set the policy, users can't change it in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>. If not set, the default search provider is on, and users can set the search provider list.
+
+        On <ph name="MS_WIN_NAME">Microsoft® Windows®</ph>, this functionality is only available on instances that are joined to a <ph name="MS_AD_NAME">Microsoft® Active Directory®</ph> domain, running on Windows 10 Pro, or enrolled in Chrome Browser Cloud Management. On <ph name="MAC_OS_NAME">macOS</ph>, this functionality is only available on instances that are managed via MDM, or joined to a domain via MCX.
+example_value: true
+features:
+  can_be_recommended: true
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- fuchsia
+items:
+- caption: Enable the default search provider
+  value: true
+- caption: Disable the default search provider
+  value: false
+- caption: Enable the default search provider and allow users to modify the search
+    provier list
+  value: null
+owners:
+- file://components/policy/resources/OWNERS
+- rsorokin@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome.*:8-
+- chrome_os:11-
+- android:30-
+- ios:88-
+tags: []
+type: main

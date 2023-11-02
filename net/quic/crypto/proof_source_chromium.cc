@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "crypto/openssl_util.h"
 #include "net/cert/x509_util.h"
-#include "net/third_party/quiche/src/quic/core/crypto/crypto_protocol.h"
+#include "net/third_party/quiche/src/quiche/quic/core/crypto/crypto_protocol.h"
 #include "third_party/boringssl/src/include/openssl/digest.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/rsa.h"
@@ -16,9 +16,9 @@ using std::string;
 
 namespace net {
 
-ProofSourceChromium::ProofSourceChromium() {}
+ProofSourceChromium::ProofSourceChromium() = default;
 
-ProofSourceChromium::~ProofSourceChromium() {}
+ProofSourceChromium::~ProofSourceChromium() = default;
 
 bool ProofSourceChromium::Initialize(const base::FilePath& cert_path,
                                      const base::FilePath& key_path,
@@ -78,7 +78,7 @@ bool ProofSourceChromium::GetProofInner(
     const string& server_config,
     quic::QuicTransportVersion quic_version,
     absl::string_view chlo_hash,
-    quic::QuicReferenceCountedPointer<quic::ProofSource::Chain>* out_chain,
+    quiche::QuicheReferenceCountedPointer<quic::ProofSource::Chain>* out_chain,
     quic::QuicCryptoProof* proof) {
   DCHECK(proof != nullptr);
   DCHECK(private_key_.get()) << " this: " << this;
@@ -137,7 +137,7 @@ void ProofSourceChromium::GetProof(const quic::QuicSocketAddress& server_addr,
                                    std::unique_ptr<Callback> callback) {
   // As a transitional implementation, just call the synchronous version of
   // GetProof, then invoke the callback with the results and destroy it.
-  quic::QuicReferenceCountedPointer<quic::ProofSource::Chain> chain;
+  quiche::QuicheReferenceCountedPointer<quic::ProofSource::Chain> chain;
   string signature;
   string leaf_cert_sct;
   quic::QuicCryptoProof out_proof;
@@ -147,7 +147,7 @@ void ProofSourceChromium::GetProof(const quic::QuicSocketAddress& server_addr,
   callback->Run(ok, chain, out_proof, nullptr /* details */);
 }
 
-quic::QuicReferenceCountedPointer<quic::ProofSource::Chain>
+quiche::QuicheReferenceCountedPointer<quic::ProofSource::Chain>
 ProofSourceChromium::GetCertChain(const quic::QuicSocketAddress& server_address,
                                   const quic::QuicSocketAddress& client_address,
                                   const std::string& hostname,

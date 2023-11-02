@@ -1,8 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/link_header_util/link_header_util.h"
+
+#include <algorithm>
 
 #include "base/strings/string_util.h"
 #include "net/http/http_util.h"

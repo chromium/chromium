@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -47,6 +47,7 @@ void CheckDisplaysEqual(const Display& input, const Display& output) {
   EXPECT_EQ(input.depth_per_component(), output.depth_per_component());
   EXPECT_EQ(input.is_monochrome(), output.is_monochrome());
   EXPECT_EQ(input.display_frequency(), output.display_frequency());
+  EXPECT_EQ(input.label(), output.label());
 }
 
 void CheckDisplayLayoutsEqual(const DisplayLayout& input,
@@ -151,6 +152,7 @@ TEST(DisplayStructTraitsTest, SetAllDisplayValues) {
   input.set_depth_per_component(input.depth_per_component() + 1);
   input.set_is_monochrome(!input.is_monochrome());
   input.set_display_frequency(input.display_frequency() + 1);
+  input.set_label("Internal Display");
 
   Display output;
   SerializeAndDeserialize<mojom::Display>(input, &output);

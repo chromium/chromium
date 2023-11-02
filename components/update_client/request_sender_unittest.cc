@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -149,7 +149,6 @@ TEST_P(RequestSenderTest, RequestSendSuccess) {
   EXPECT_EQ(0, post_interceptor_->GetHitCountForURL(GURL(kUrl2)))
       << post_interceptor_->GetRequestsAsString();
 
-  // Sanity check the request.
   EXPECT_STREQ("test", post_interceptor_->GetRequestBody(0).c_str());
 
   // Check the response post conditions.

@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,11 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "net/base/net_export.h"
 
-class GURL;
+namespace url {
+class SchemeHostPort;
+}
 
 namespace net {
 
@@ -20,12 +21,12 @@ class HttpAuthFilter;
 // regarding URL actions (e.g., sending the default credentials to a server).
 class NET_EXPORT_PRIVATE URLSecurityManager {
  public:
-  URLSecurityManager() {}
+  URLSecurityManager() = default;
 
   URLSecurityManager(const URLSecurityManager&) = delete;
   URLSecurityManager& operator=(const URLSecurityManager&) = delete;
 
-  virtual ~URLSecurityManager() {}
+  virtual ~URLSecurityManager() = default;
 
   // Creates a platform-dependent instance of URLSecurityManager.
   //
@@ -48,12 +49,14 @@ class NET_EXPORT_PRIVATE URLSecurityManager {
   static std::unique_ptr<URLSecurityManager> Create();
 
   // Returns true if we can send the default credentials to the server at
-  // |auth_origin| for HTTP NTLM or Negotiate authentication.
-  virtual bool CanUseDefaultCredentials(const GURL& auth_origin) const = 0;
+  // |auth_scheme_host_port| for HTTP NTLM or Negotiate authentication.
+  virtual bool CanUseDefaultCredentials(
+      const url::SchemeHostPort& auth_scheme_host_port) const = 0;
 
   // Returns true if Kerberos delegation is allowed for the server at
-  // |auth_origin| for HTTP Negotiate authentication.
-  virtual bool CanDelegate(const GURL& auth_origin) const = 0;
+  // |auth_scheme_host_port| for HTTP Negotiate authentication.
+  virtual bool CanDelegate(
+      const url::SchemeHostPort& auth_scheme_host_port) const = 0;
 
   virtual void SetDefaultAllowlist(
       std::unique_ptr<HttpAuthFilter> allowlist_default) = 0;
@@ -72,8 +75,10 @@ class URLSecurityManagerAllowlist : public URLSecurityManager {
   ~URLSecurityManagerAllowlist() override;
 
   // URLSecurityManager methods.
-  bool CanUseDefaultCredentials(const GURL& auth_origin) const override;
-  bool CanDelegate(const GURL& auth_origin) const override;
+  bool CanUseDefaultCredentials(
+      const url::SchemeHostPort& auth_scheme_host_port) const override;
+  bool CanDelegate(
+      const url::SchemeHostPort& auth_scheme_host_port) const override;
   void SetDefaultAllowlist(
       std::unique_ptr<HttpAuthFilter> allowlist_default) override;
   void SetDelegateAllowlist(

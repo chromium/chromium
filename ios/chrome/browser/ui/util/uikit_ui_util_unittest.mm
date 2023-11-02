@@ -1,13 +1,13 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 
-#include "base/ios/ios_util.h"
-#include "base/strings/sys_string_conversions.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/platform_test.h"
+#import "base/ios/ios_util.h"
+#import "base/strings/sys_string_conversions.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "ui/base/device_form_factor.h"
 
@@ -66,35 +66,6 @@ UIImage* testImage(CGSize imageSize) {
   UIImage* image = UIGraphicsGetImageFromCurrentImageContext();
   UIGraphicsEndImageContext();
   return image;
-}
-
-TEST_F(UIKitUIUtilTest, TestResizeImageOpacity) {
-  UIImage* actual;
-  UIImage* image = testImage(CGSizeMake(100, 100));
-  actual =
-      ResizeImage(image, CGSizeMake(50, 50), ProjectionMode::kAspectFit, YES);
-  EXPECT_TRUE(actual);
-
-  actual =
-      ResizeImage(image, CGSizeMake(50, 50), ProjectionMode::kAspectFit, NO);
-  EXPECT_TRUE(actual);
-}
-
-TEST_F(UIKitUIUtilTest, TestResizeImageInvalidInput) {
-  UIImage* actual;
-  UIImage* image = testImage(CGSizeMake(100, 50));
-  actual = ResizeImage(image, CGSizeZero, ProjectionMode::kAspectFit);
-  EXPECT_FALSE(actual);
-
-  actual = ResizeImage(image, CGSizeMake(0.1, 0.1), ProjectionMode::kAspectFit);
-  EXPECT_FALSE(actual);
-
-  actual =
-      ResizeImage(image, CGSizeMake(-100, -100), ProjectionMode::kAspectFit);
-  EXPECT_FALSE(actual);
-
-  actual = ResizeImage(nil, CGSizeMake(100, 100), ProjectionMode::kAspectFit);
-  EXPECT_FALSE(actual);
 }
 
 TEST_F(UIKitUIUtilTest, TintImageKeepsImageProperties) {

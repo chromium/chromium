@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,8 +35,8 @@ void RunTestForURL(const GURL& url,
       HostZoomMap::GetForWebContents(web_contents));
 
   int view_id =
-      web_contents->GetMainFrame()->GetRenderViewHost()->GetRoutingID();
-  int process_id = web_contents->GetMainFrame()->GetProcess()->GetID();
+      web_contents->GetPrimaryMainFrame()->GetRenderViewHost()->GetRoutingID();
+  int process_id = web_contents->GetPrimaryMainFrame()->GetProcess()->GetID();
 
   // Assume caller has set the zoom level to |host_zoom_level| using
   // either a host or host+scheme entry in the HostZoomMap prior to

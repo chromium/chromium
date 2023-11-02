@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,6 +45,15 @@ public interface NewTabPageDelegate {
      * @return {@code true} if we're transitioning away from showing the location bar.
      */
     default boolean transitioningAwayFromLocationBar() {
+        return false;
+    }
+
+    /**
+     * Returns whether the first layout pass has happened or not. When false, this often means there
+     * is some animation playing for creating the tab itself. During this time the NTP will not be
+     * able to control any drawing, and the toolbar will still be responsible for drawing itself.
+     */
+    default boolean hasCompletedFirstLayout() {
         return false;
     }
 

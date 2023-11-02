@@ -1,13 +1,13 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
-export type Extension = {
-  name: string,
-  permissions: string[],
-};
+export interface Extension {
+  name: string;
+  permissions: string[];
+}
 
 export enum ReportingType {
   SECURITY = 'security',
@@ -17,37 +17,37 @@ export enum ReportingType {
   EXTENSIONS = 'extensions',
 }
 
-export type BrowserReportingResponse = {
-  messageId: string,
-  reportingType: ReportingType,
-};
+export interface BrowserReportingResponse {
+  messageId: string;
+  reportingType: ReportingType;
+}
 
-type ManagedDataResponse = {
-  browserManagementNotice: string,
-  extensionReportingTitle: string,
-  managedWebsitesSubtitle: string,
-  pageSubtitle: string,
-  managed: boolean,
-  overview: string,
-  customerLogo: string,
-  threatProtectionDescription: string,
-  showUpdateRequiredEol: boolean,
-  eolMessage: string,
-  eolAdminMessage: string,
-  showProxyServerPrivacyDisclosure: boolean,
-};
+interface ManagedDataResponse {
+  browserManagementNotice: string;
+  extensionReportingTitle: string;
+  managedWebsitesSubtitle: string;
+  pageSubtitle: string;
+  managed: boolean;
+  overview: string;
+  customerLogo: string;
+  threatProtectionDescription: string;
+  showUpdateRequiredEol: boolean;
+  eolMessage: string;
+  eolAdminMessage: string;
+  showProxyServerPrivacyDisclosure: boolean;
+}
 
-type ThreatProtectionPermission = {
-  title: string,
-  permission: string,
-};
+interface ThreatProtectionPermission {
+  title: string;
+  permission: string;
+}
 
-export type ThreatProtectionInfo = {
-  info: Array<ThreatProtectionPermission>,
-  description: string,
-};
+export interface ThreatProtectionInfo {
+  info: ThreatProtectionPermission[];
+  description: string;
+}
 
-// <if expr="chromeos">
+// <if expr="is_chromeos">
 /**
  * @enum {string} Look at ToJSDeviceReportingType usage in
  *    management_ui_handler.cc for more details.
@@ -68,22 +68,24 @@ export enum DeviceReportingType {
   EXTENSION = 'extension',
   ANDROID_APPLICATION = 'android application',
   LOGIN_LOGOUT = 'login-logout',
+  CRD_SESSIONS = 'crd sessions',
+  PERIPHERALS = 'peripherals',
 }
 
 
-export type DeviceReportingResponse = {
-  messageId: string,
-  reportingType: DeviceReportingType,
-};
+export interface DeviceReportingResponse {
+  messageId: string;
+  reportingType: DeviceReportingType;
+}
 // </if>
 
 /** @interface */
 export interface ManagementBrowserProxy {
-  getExtensions(): Promise<Array<Extension>>;
+  getExtensions(): Promise<Extension[]>;
 
-  getManagedWebsites(): Promise<Array<string>>;
+  getManagedWebsites(): Promise<string[]>;
 
-  // <if expr="chromeos">
+  // <if expr="is_chromeos">
   /**
    * @return Whether trust root configured or not.
    */
@@ -92,7 +94,7 @@ export interface ManagementBrowserProxy {
   /**
    * @return List of items to display in device reporting section.
    */
-  getDeviceReportingInfo(): Promise<Array<DeviceReportingResponse>>;
+  getDeviceReportingInfo(): Promise<DeviceReportingResponse[]>;
 
   /**
    * @return Whether the Plugin VM data collection is enabled or not.
@@ -107,7 +109,7 @@ export interface ManagementBrowserProxy {
   /**
    * @return The list of browser reporting info messages.
    */
-  initBrowserReportingInfo(): Promise<Array<BrowserReportingResponse>>;
+  initBrowserReportingInfo(): Promise<BrowserReportingResponse[]>;
 }
 
 export class ManagementBrowserProxyImpl implements ManagementBrowserProxy {
@@ -119,7 +121,7 @@ export class ManagementBrowserProxyImpl implements ManagementBrowserProxy {
     return sendWithPromise('getManagedWebsites');
   }
 
-  // <if expr="chromeos">
+  // <if expr="is_chromeos">
   getLocalTrustRootsInfo() {
     return sendWithPromise('getLocalTrustRootsInfo');
   }

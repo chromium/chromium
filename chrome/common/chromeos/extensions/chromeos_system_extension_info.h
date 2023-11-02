@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,20 +8,29 @@
 #include <cstddef>
 #include <string>
 
+#include "base/containers/flat_set.h"
+
 namespace chromeos {
 
+namespace switches {
+
+extern const char kTelemetryExtensionManufacturerOverrideForTesting[];
+extern const char kTelemetryExtensionPwaOriginOverrideForTesting[];
+
+}  // namespace switches
+
 struct ChromeOSSystemExtensionInfo {
-  ChromeOSSystemExtensionInfo(const std::string& manufacturer,
+  ChromeOSSystemExtensionInfo(base::flat_set<std::string> manufacturers,
                               const std::string& pwa_origin);
   ChromeOSSystemExtensionInfo(const ChromeOSSystemExtensionInfo& other);
   ~ChromeOSSystemExtensionInfo();
 
-  const std::string manufacturer;
-  const std::string pwa_origin;
+  base::flat_set<std::string> manufacturers;
+  std::string pwa_origin;
 };
 
 size_t GetChromeOSSystemExtensionInfosSize();
-const ChromeOSSystemExtensionInfo& GetChromeOSExtensionInfoForId(
+ChromeOSSystemExtensionInfo GetChromeOSExtensionInfoForId(
     const std::string& id);
 bool IsChromeOSSystemExtension(const std::string& id);
 

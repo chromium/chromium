@@ -83,6 +83,9 @@
     <output filename="values-zh-rHK/android_chrome_vr_strings.xml" lang="zh-HK" type="android" />
     <output filename="values-zh-rTW/android_chrome_vr_strings.xml" lang="zh-TW" type="android" />
     <output filename="values-zu/android_chrome_vr_strings.xml" lang="zu" type="android" />
+    <!-- Pseudolocales -->
+    <output filename="values-ar-rXB/android_chrome_vr_strings.xml" lang="ar-XB" type="android" />
+    <output filename="values-en-rXA/android_chrome_vr_strings.xml" lang="en-XA" type="android" />
   </outputs>
   <translations>
     <file path="translations/android_chrome_vr_strings_af.xtb" lang="af" />
@@ -96,6 +99,7 @@
     <file path="translations/android_chrome_vr_strings_bs.xtb" lang="bs" />
     <file path="translations/android_chrome_vr_strings_ca.xtb" lang="ca" />
     <file path="translations/android_chrome_vr_strings_cs.xtb" lang="cs" />
+    <file path="translations/android_chrome_vr_strings_cy.xtb" lang="cy" />
     <file path="translations/android_chrome_vr_strings_da.xtb" lang="da" />
     <file path="translations/android_chrome_vr_strings_de.xtb" lang="de" />
     <file path="translations/android_chrome_vr_strings_el.xtb" lang="el" />
@@ -176,20 +180,22 @@
           Provide feedback
         </message>
 
-        <!-- VR services check infobar -->
-        <message name="IDS_VR_SERVICES_CHECK_INFOBAR_INSTALL_TEXT" desc="Text to be displayed in the VR Services check infobar. When a WebVR page is loaded if the VR services that are needed to display WebVR don't exist an infobar will be shown to the user prompting them to install VR services.">
-          To view virtual reality content, install Google VR Services
+        <!-- VR services check message -->
+        <message name="IDS_VR_SERVICES_CHECK_MESSAGE_INSTALL_TITLE" desc="Title to be displayed in the VR Services check message. When a WebVR page is loaded if the VR services that are needed to display WebVR don't exist a message will be shown to the user prompting them to install VR services.">
+          Install Google VR Services?
         </message>
-        <message name="IDS_VR_SERVICES_CHECK_INFOBAR_UPDATE_TEXT" desc="Text to be displayed in the VR Services check infobar. When a WebVR page is loaded if the VR services that are needed to display WebVR are out of date an infobar will be shown to the user prompting them to update VR services.">
-          To view virtual reality content, update Google VR Services
+        <message name="IDS_VR_SERVICES_CHECK_MESSAGE_UPDATE_TITLE" desc="Title to be displayed in the VR Services check message. When a WebVR page is loaded if the VR services that are needed to display WebVR are out of date a message will be shown to the user prompting them to update VR services.">
+          Update Google VR Services?
         </message>
-        <message name="IDS_VR_SERVICES_CHECK_INFOBAR_INSTALL_BUTTON" desc="Text to be displayed in the VR Services check infobar confirm button for installing.">
+        <message name="IDS_VR_SERVICES_CHECK_MESSAGE_DESCRIPTION" desc="Text to be displayed in the VR Services check message description.">
+          View virtual reality content
+        </message>
+        <message name="IDS_VR_SERVICES_CHECK_MESSAGE_INSTALL_BUTTON" desc="Text to be displayed in the VR Services check message confirm button for installing.">
           Install
         </message>
-        <message name="IDS_VR_SERVICES_CHECK_INFOBAR_UPDATE_BUTTON" desc="Text to be displayed in the VR Services check infobar confirm button for updating.">
+        <message name="IDS_VR_SERVICES_CHECK_MESSAGE_UPDATE_BUTTON" desc="Text to be displayed in the VR Services check message confirm button for updating.">
           Update
         </message>
     </messages>
   </release>
 </grit>
-

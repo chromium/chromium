@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_resource_provider_cache.h"
+#include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
@@ -17,9 +18,17 @@ scoped_refptr<DawnControlClientHolder> DawnControlClientHolder::Create(
   auto dawn_control_client_holder =
       base::MakeRefCounted<DawnControlClientHolder>(std::move(context_provider),
                                                     std::move(task_runner));
+  // The context lost callback occurs when the client receives
+  // OnGpuControlLostContext. This can happen on fatal errors when the GPU
+  // channel is disconnected: the GPU process crashes, the GPU process fails to
+  // deserialize a message, etc. We mark the context lost, but NOT destroy the
+  // entire WebGraphicsContext3DProvider as that would free services for mapping
+  // shared memory. There may still be outstanding mapped GPUBuffers pointing to
+  // this memory.
   dawn_control_client_holder->context_provider_->ContextProvider()
       ->SetLostContextCallback(WTF::BindRepeating(
-          &DawnControlClientHolder::Destroy, dawn_control_client_holder));
+          &DawnControlClientHolder::MarkContextLost,
+          dawn_control_client_holder->weak_ptr_factory_.GetWeakPtr()));
   return dawn_control_client_holder;
 }
 
@@ -38,7 +47,7 @@ DawnControlClientHolder::DawnControlClientHolder(
 DawnControlClientHolder::~DawnControlClientHolder() = default;
 
 void DawnControlClientHolder::Destroy() {
-  api_channel_->Disconnect();
+  MarkContextLost();
 
   // Destroy the WebGPU context.
   // This ensures that GPU resources are eagerly reclaimed.
@@ -68,8 +77,20 @@ DawnControlClientHolder::GetContextProviderWeakPtr() const {
   return context_provider_->GetWeakPtr();
 }
 
+WGPUInstance DawnControlClientHolder::GetWGPUInstance() const {
+  return api_channel_->GetWGPUInstance();
+}
+
+void DawnControlClientHolder::MarkContextLost() {
+  if (context_lost_) {
+    return;
+  }
+  api_channel_->Disconnect();
+  context_lost_ = true;
+}
+
 bool DawnControlClientHolder::IsContextLost() const {
-  return !context_provider_;
+  return context_lost_;
 }
 
 std::unique_ptr<RecyclableCanvasResource>
@@ -77,6 +98,36 @@ DawnControlClientHolder::GetOrCreateCanvasResource(const SkImageInfo& info,
                                                    bool is_origin_top_left) {
   return recyclable_resource_cache_.GetOrCreateCanvasResource(
       info, is_origin_top_left);
+}
+
+void DawnControlClientHolder::Flush() {
+  auto context_provider = GetContextProviderWeakPtr();
+  if (LIKELY(context_provider)) {
+    context_provider->ContextProvider()->WebGPUInterface()->FlushCommands();
+  }
+}
+
+void DawnControlClientHolder::EnsureFlush(scheduler::EventLoop& event_loop) {
+  auto context_provider = GetContextProviderWeakPtr();
+  if (UNLIKELY(!context_provider))
+    return;
+  if (!context_provider->ContextProvider()
+           ->WebGPUInterface()
+           ->EnsureAwaitingFlush()) {
+    // We've already enqueued a task to flush, or the command buffer
+    // is empty. Do nothing.
+    return;
+  }
+  event_loop.EnqueueMicrotask(WTF::BindOnce(
+      [](scoped_refptr<DawnControlClientHolder> dawn_control_client) {
+        if (auto context_provider =
+                dawn_control_client->GetContextProviderWeakPtr()) {
+          context_provider->ContextProvider()
+              ->WebGPUInterface()
+              ->FlushAwaitingCommands();
+        }
+      },
+      scoped_refptr<DawnControlClientHolder>(this)));
 }
 
 }  // namespace blink

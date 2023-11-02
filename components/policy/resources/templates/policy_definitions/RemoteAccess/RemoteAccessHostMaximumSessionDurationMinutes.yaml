@@ -1,0 +1,25 @@
+caption: Maximum session duration allowed for remote access connections
+default: null
+desc: |-
+  If this policy is set, remote access connections will automatically disconnect after the number of minutes defined in the policy have elapsed. This does not prevent the client from reconnecting after the maximum session duration has been reached. Setting the policy to a value that is not within the min/max range may prevent the host from starting. This policy does not affect remote support scenarios.
+
+            This policy has no effect if it is not set. In this case, remote access connections will have no maximum duration on this machine.
+example_value: 1200
+features:
+  dynamic_refresh: true
+  per_profile: false
+  platform_only: true
+future_on:
+- fuchsia
+owners:
+- file://remoting/OWNERS
+- jamiewalch@chromium.org
+- joedow@chromium.org
+schema:
+  maximum: 10080
+  minimum: 30
+  type: integer
+supported_on:
+- chrome.*:89-
+tags: []
+type: int

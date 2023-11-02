@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,8 +34,7 @@ class TestFormActivityTabHelper {
   void DocumentSubmitted(web::WebFrame* sender_frame,
                          const std::string& form_name,
                          const std::string& form_data,
-                         bool has_user_gesture,
-                         bool form_in_main_frame);
+                         bool has_user_gesture);
 
  private:
   web::WebState* web_state_ = nullptr;

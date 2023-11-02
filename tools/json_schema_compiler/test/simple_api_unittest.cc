@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,7 +38,7 @@ void GetManifestParseError(base::StringPiece manifest_json,
   simple_api::ManifestKeys manifest_keys;
   std::u16string error_16;
   bool result = simple_api::ManifestKeys::ParseFromDictionary(
-      base::Value::AsDictionaryValue(*manifest), &manifest_keys, &error_16);
+      manifest->GetDict(), &manifest_keys, &error_16);
 
   ASSERT_FALSE(result);
   *error = base::UTF16ToASCII(error_16);
@@ -51,7 +51,7 @@ void PopulateManifestKeys(base::StringPiece manifest_json,
 
   std::u16string error_16;
   bool result = simple_api::ManifestKeys::ParseFromDictionary(
-      base::Value::AsDictionaryValue(*manifest), manifest_keys, &error_16);
+      manifest->GetDict(), manifest_keys, &error_16);
 
   ASSERT_TRUE(result) << error_16;
   ASSERT_TRUE(error_16.empty()) << error_16;
@@ -67,8 +67,8 @@ TEST(JsonSchemaCompilerSimpleTest, IncrementIntegerResultCreate) {
 }
 
 TEST(JsonSchemaCompilerSimpleTest, IncrementIntegerParamsCreate) {
-  std::vector<base::Value> params_value;
-  params_value.emplace_back(6);
+  base::Value::List params_value;
+  params_value.Append(6);
   std::unique_ptr<simple_api::IncrementInteger::Params> params(
       simple_api::IncrementInteger::Params::Create(params_value));
   EXPECT_TRUE(params.get());
@@ -77,15 +77,15 @@ TEST(JsonSchemaCompilerSimpleTest, IncrementIntegerParamsCreate) {
 
 TEST(JsonSchemaCompilerSimpleTest, NumberOfParams) {
   {
-    std::vector<base::Value> params_value;
-    params_value.emplace_back("text");
-    params_value.emplace_back("text");
+    base::Value::List params_value;
+    params_value.Append("text");
+    params_value.Append("text");
     std::unique_ptr<simple_api::OptionalString::Params> params(
         simple_api::OptionalString::Params::Create(params_value));
     EXPECT_FALSE(params.get());
   }
   {
-    std::vector<base::Value> params_value;
+    base::Value::List params_value;
     std::unique_ptr<simple_api::IncrementInteger::Params> params(
         simple_api::IncrementInteger::Params::Create(params_value));
     EXPECT_FALSE(params.get());
@@ -94,38 +94,38 @@ TEST(JsonSchemaCompilerSimpleTest, NumberOfParams) {
 
 TEST(JsonSchemaCompilerSimpleTest, OptionalStringParamsCreate) {
   {
-    std::vector<base::Value> params_value;
+    base::Value::List params_value;
     std::unique_ptr<simple_api::OptionalString::Params> params(
         simple_api::OptionalString::Params::Create(params_value));
     EXPECT_TRUE(params.get());
-    EXPECT_FALSE(params->str.get());
+    EXPECT_FALSE(params->str);
   }
   {
-    std::vector<base::Value> params_value;
-    params_value.emplace_back("asdf");
+    base::Value::List params_value;
+    params_value.Append("asdf");
     std::unique_ptr<simple_api::OptionalString::Params> params(
         simple_api::OptionalString::Params::Create(params_value));
     EXPECT_TRUE(params.get());
-    EXPECT_TRUE(params->str.get());
+    EXPECT_TRUE(params->str);
     EXPECT_EQ("asdf", *params->str);
   }
 }
 
 TEST(JsonSchemaCompilerSimpleTest, OptionalParamsTakingNull) {
   {
-    std::vector<base::Value> params_value;
-    params_value.emplace_back();
+    base::Value::List params_value;
+    params_value.Append(base::Value());
     std::unique_ptr<simple_api::OptionalString::Params> params(
         simple_api::OptionalString::Params::Create(params_value));
     EXPECT_TRUE(params.get());
-    EXPECT_FALSE(params->str.get());
+    EXPECT_FALSE(params->str);
   }
 }
 
 TEST(JsonSchemaCompilerSimpleTest, OptionalStringParamsWrongType) {
   {
-    std::vector<base::Value> params_value;
-    params_value.emplace_back(5);
+    base::Value::List params_value;
+    params_value.Append(5);
     std::unique_ptr<simple_api::OptionalString::Params> params(
         simple_api::OptionalString::Params::Create(params_value));
     EXPECT_FALSE(params.get());
@@ -134,13 +134,13 @@ TEST(JsonSchemaCompilerSimpleTest, OptionalStringParamsWrongType) {
 
 TEST(JsonSchemaCompilerSimpleTest, OptionalBeforeRequired) {
   {
-    std::vector<base::Value> params_value;
-    params_value.emplace_back();
-    params_value.emplace_back("asdf");
+    base::Value::List params_value;
+    params_value.Append(base::Value());
+    params_value.Append("asdf");
     std::unique_ptr<simple_api::OptionalBeforeRequired::Params> params(
         simple_api::OptionalBeforeRequired::Params::Create(params_value));
     EXPECT_TRUE(params.get());
-    EXPECT_FALSE(params->first.get());
+    EXPECT_FALSE(params->first);
     EXPECT_EQ("asdf", params->second);
   }
 }
@@ -160,7 +160,7 @@ TEST(JsonSchemaCompilerSimpleTest, TestTypePopulate) {
     EXPECT_EQ(1.1, test_type->number);
     EXPECT_EQ(4, test_type->integer);
     EXPECT_EQ(true, test_type->boolean);
-    EXPECT_TRUE(value->Equals(test_type->ToValue().get()));
+    EXPECT_EQ(*value, test_type->ToValue());
   }
   {
     auto test_type = std::make_unique<simple_api::TestType>();
@@ -175,10 +175,10 @@ TEST(JsonSchemaCompilerSimpleTest, GetTestType) {
     std::unique_ptr<base::DictionaryValue> value = CreateTestTypeDictionary();
     auto test_type = std::make_unique<simple_api::TestType>();
     EXPECT_TRUE(simple_api::TestType::Populate(*value, test_type.get()));
-    std::vector<base::Value> results =
+    base::Value::List results =
         simple_api::GetTestType::Results::Create(*test_type);
     ASSERT_EQ(1u, results.size());
-    EXPECT_TRUE(results[0].Equals(value.get()));
+    EXPECT_EQ(results[0], *value);
   }
 }
 
@@ -212,12 +212,14 @@ TEST(JsonSchemaCompilerSimpleTest, OnTestTypeFiredCreate) {
 
     ASSERT_TRUE(expected->GetString("string", &some_test_type.string));
     ASSERT_TRUE(expected->GetInteger("integer", &some_test_type.integer));
-    ASSERT_TRUE(expected->GetBoolean("boolean", &some_test_type.boolean));
+    absl::optional<bool> boolean_value = expected->FindBoolKey("boolean");
+    ASSERT_TRUE(boolean_value);
+    some_test_type.boolean = *boolean_value;
 
     base::Value results(simple_api::OnTestTypeFired::Create(some_test_type));
     ASSERT_TRUE(results.is_list());
-    ASSERT_EQ(1u, results.GetList().size());
-    EXPECT_EQ(*expected, results.GetList()[0]);
+    ASSERT_EQ(1u, results.GetListDeprecated().size());
+    EXPECT_EQ(*expected, results.GetListDeprecated()[0]);
   }
 }
 

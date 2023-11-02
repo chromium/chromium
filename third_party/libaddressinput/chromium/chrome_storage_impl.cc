@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,10 +22,8 @@ ChromeStorageImpl::~ChromeStorageImpl() {}
 
 void ChromeStorageImpl::Put(const std::string& key, std::string* data) {
   DCHECK(data);
-  std::unique_ptr<std::string> owned_data(data);
-  backing_store_->SetValue(
-      key, std::make_unique<base::Value>(std::move(*owned_data)),
-      WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
+  backing_store_->SetValue(key, base::Value(*data),
+                           WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
 }
 
 void ChromeStorageImpl::Get(const std::string& key,

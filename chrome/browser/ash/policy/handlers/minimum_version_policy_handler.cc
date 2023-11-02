@@ -1,4 +1,4 @@
-// Copyright (c) 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/components/settings/cros_settings_names.h"
-#include "ash/components/settings/cros_settings_provider.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/system_tray.h"
@@ -30,19 +28,21 @@
 #include "chrome/browser/upgrade_detector/build_state.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/network/network_handler.h"
-#include "chromeos/network/network_state_handler.h"
+#include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
+#include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/ash/components/settings/cros_settings_provider.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "ui/chromeos/devicetype_utils.h"
 
-using MinimumVersionRequirement =
-    policy::MinimumVersionPolicyHandler::MinimumVersionRequirement;
-
 namespace policy {
 
 namespace {
+
+using ::ash::UpdateEngineClient;
+using MinimumVersionRequirement =
+    MinimumVersionPolicyHandler::MinimumVersionRequirement;
 
 const int kOneWeekEolNotificationInDays = 7;
 
@@ -51,9 +51,9 @@ PrefService* local_state() {
 }
 
 MinimumVersionPolicyHandler::NetworkStatus GetCurrentNetworkStatus() {
-  chromeos::NetworkStateHandler* network_state_handler =
-      chromeos::NetworkHandler::Get()->network_state_handler();
-  const chromeos::NetworkState* current_network =
+  ash::NetworkStateHandler* network_state_handler =
+      ash::NetworkHandler::Get()->network_state_handler();
+  const ash::NetworkState* current_network =
       network_state_handler->DefaultNetwork();
   if (!current_network || !current_network->IsConnectedState())
     return MinimumVersionPolicyHandler::NetworkStatus::kOffline;
@@ -82,10 +82,6 @@ BuildState* GetBuildState() {
 
 int GetDaysRounded(base::TimeDelta time) {
   return base::ClampRound(time / base::Days(1));
-}
-
-chromeos::UpdateEngineClient* GetUpdateEngineClient() {
-  return chromeos::DBusThreadManager::Get()->GetUpdateEngineClient();
 }
 
 // Overrides the relaunch notification style to required and configures the
@@ -123,17 +119,17 @@ MinimumVersionRequirement::MinimumVersionRequirement(
 
 std::unique_ptr<MinimumVersionRequirement>
 MinimumVersionRequirement::CreateInstanceIfValid(
-    const base::DictionaryValue* dict) {
-  const std::string* version = dict->FindStringKey(kChromeOsVersion);
+    const base::Value::Dict& dict) {
+  const std::string* version = dict.FindString(kChromeOsVersion);
   if (!version)
     return nullptr;
   base::Version minimum_version(*version);
   if (!minimum_version.IsValid())
     return nullptr;
-  auto warning = dict->FindIntKey(kWarningPeriod);
+  auto warning = dict.FindInt(kWarningPeriod);
   base::TimeDelta warning_time =
       base::Days(warning.has_value() ? warning.value() : 0);
-  auto eol_warning = dict->FindIntKey(kEolWarningPeriod);
+  auto eol_warning = dict.FindInt(kEolWarningPeriod);
   base::TimeDelta eol_warning_time =
       base::Days(eol_warning.has_value() ? eol_warning.value() : 0);
   return std::make_unique<MinimumVersionRequirement>(
@@ -170,7 +166,7 @@ MinimumVersionPolicyHandler::MinimumVersionPolicyHandler(
 MinimumVersionPolicyHandler::~MinimumVersionPolicyHandler() {
   GetBuildState()->RemoveObserver(this);
   StopObservingNetwork();
-  GetUpdateEngineClient()->RemoveObserver(this);
+  UpdateEngineClient::Get()->RemoveObserver(this);
 }
 
 void MinimumVersionPolicyHandler::AddObserver(Observer* observer) {
@@ -228,31 +224,30 @@ void MinimumVersionPolicyHandler::OnPolicyChanged() {
     return;
   }
 
-  const base::DictionaryValue* policy_value;
+  const base::Value::Dict* policy_value;
   if (!cros_settings_->GetDictionary(ash::kDeviceMinimumVersion,
                                      &policy_value)) {
     VLOG(1) << "Revoke policy - policy is unset or value is incorrect.";
     HandleUpdateNotRequired();
     return;
   }
-  const base::Value* entries = policy_value->FindListKey(kRequirements);
-  if (!entries || entries->GetList().empty()) {
+  const base::Value::List* entries = policy_value->FindList(kRequirements);
+  if (!entries || entries->empty()) {
     VLOG(1) << "Revoke policy - empty policy requirements.";
     HandleUpdateNotRequired();
     return;
   }
-  auto restricted = policy_value->FindBoolKey(kUnmanagedUserRestricted);
+  auto restricted = policy_value->FindBool(kUnmanagedUserRestricted);
   unmanaged_user_restricted_ = restricted.value_or(false);
 
   std::vector<std::unique_ptr<MinimumVersionRequirement>> configs;
-  for (const auto& item : entries->GetList()) {
-    const base::DictionaryValue* dict;
-    if (item.GetAsDictionary(&dict)) {
-      std::unique_ptr<MinimumVersionRequirement> instance =
-          MinimumVersionRequirement::CreateInstanceIfValid(dict);
-      if (instance)
-        configs.push_back(std::move(instance));
-    }
+  for (const auto& item : *entries) {
+    if (!item.is_dict())
+      continue;
+    std::unique_ptr<MinimumVersionRequirement> instance =
+        MinimumVersionRequirement::CreateInstanceIfValid(item.GetDict());
+    if (instance)
+      configs.push_back(std::move(instance));
   }
 
   // Select the strongest config whose requirements are not satisfied by the
@@ -331,14 +326,14 @@ void MinimumVersionPolicyHandler::FetchEolInfo() {
 
   update_required_time_ = clock_->Now();
   // Request the End of Life (Auto Update Expiration) status.
-  GetUpdateEngineClient()->GetEolInfo(
+  UpdateEngineClient::Get()->GetEolInfo(
       base::BindOnce(&MinimumVersionPolicyHandler::OnFetchEolInfo,
                      weak_factory_.GetWeakPtr()));
 }
 
 void MinimumVersionPolicyHandler::OnFetchEolInfo(
-    const chromeos::UpdateEngineClient::EolInfo info) {
-  if (!chromeos::switches::IsAueReachedForUpdateRequiredForTest() &&
+    const UpdateEngineClient::EolInfo info) {
+  if (!ash::switches::IsAueReachedForUpdateRequiredForTest() &&
       (info.eol_date.is_null() || info.eol_date > update_required_time_)) {
     // End of life is not reached. Start update with |warning_time_|.
     eol_reached_ = false;
@@ -518,10 +513,10 @@ void MinimumVersionPolicyHandler::MaybeShowNotification(
                               std::move(close_callback));
 
   if (!eol_reached_) {
-    chromeos::NetworkStateHandler* network_state_handler =
-        chromeos::NetworkHandler::Get()->network_state_handler();
+    ash::NetworkStateHandler* network_state_handler =
+        ash::NetworkHandler::Get()->network_state_handler();
     if (!network_state_handler->HasObserver(this))
-      network_state_handler->AddObserver(this, FROM_HERE);
+      network_state_handler_observer_.Observe(network_state_handler);
   }
 }
 
@@ -561,7 +556,7 @@ void MinimumVersionPolicyHandler::OnUpdate(const BuildState* build_state) {
   // will reboot it for applying the updates.
   VLOG(1) << "Update installed successfully at " << clock_->Now()
           << " with deadline " << update_required_deadline_;
-  GetUpdateEngineClient()->RemoveObserver(this);
+  UpdateEngineClient::Get()->RemoveObserver(this);
   if (build_state->update_type() == BuildState::UpdateType::kNormalUpdate) {
     ResetOnUpdateCompleted();
     OverrideRelaunchNotification(update_required_deadline_);
@@ -574,7 +569,7 @@ void MinimumVersionPolicyHandler::HideNotification() const {
 }
 
 void MinimumVersionPolicyHandler::DefaultNetworkChanged(
-    const chromeos::NetworkState* network) {
+    const ash::NetworkState* network) {
   // Close notification if network has switched to one that allows updates.
   const NetworkStatus status = GetCurrentNetworkStatus();
   if (status == NetworkStatus::kAllowed && notification_handler_) {
@@ -582,18 +577,17 @@ void MinimumVersionPolicyHandler::DefaultNetworkChanged(
   }
 }
 
+void MinimumVersionPolicyHandler::OnShuttingDown() {
+  network_state_handler_observer_.Reset();
+}
+
 void MinimumVersionPolicyHandler::StopObservingNetwork() {
-  if (!chromeos::NetworkHandler::IsInitialized())
-    return;
-  chromeos::NetworkStateHandler* network_state_handler =
-      chromeos::NetworkHandler::Get()->network_state_handler();
-  network_state_handler->RemoveObserver(this, FROM_HERE);
+  network_state_handler_observer_.Reset();
 }
 
 void MinimumVersionPolicyHandler::UpdateOverMeteredPermssionGranted() {
   VLOG(1) << "Permission for update over metered network granted.";
-  chromeos::UpdateEngineClient* const update_engine_client =
-      GetUpdateEngineClient();
+  UpdateEngineClient* const update_engine_client = UpdateEngineClient::Get();
   if (!update_engine_client->HasObserver(this))
     update_engine_client->AddObserver(this);
   update_engine_client->RequestUpdateCheck(
@@ -602,17 +596,17 @@ void MinimumVersionPolicyHandler::UpdateOverMeteredPermssionGranted() {
 }
 
 void MinimumVersionPolicyHandler::OnUpdateCheckStarted(
-    chromeos::UpdateEngineClient::UpdateCheckResult result) {
+    UpdateEngineClient::UpdateCheckResult result) {
   VLOG(1) << "Update check started.";
-  if (result != chromeos::UpdateEngineClient::UPDATE_RESULT_SUCCESS)
-    GetUpdateEngineClient()->RemoveObserver(this);
+  if (result != UpdateEngineClient::UPDATE_RESULT_SUCCESS)
+    UpdateEngineClient::Get()->RemoveObserver(this);
 }
 
 void MinimumVersionPolicyHandler::UpdateStatusChanged(
     const update_engine::StatusResult& status) {
   if (status.current_operation() ==
       update_engine::Operation::NEED_PERMISSION_TO_UPDATE) {
-    GetUpdateEngineClient()->SetUpdateOverCellularOneTimePermission(
+    UpdateEngineClient::Get()->SetUpdateOverCellularOneTimePermission(
         status.new_version(), status.new_size(),
         base::BindOnce(&MinimumVersionPolicyHandler::
                            OnSetUpdateOverCellularOneTimePermission,
@@ -625,7 +619,7 @@ void MinimumVersionPolicyHandler::OnSetUpdateOverCellularOneTimePermission(
   if (success)
     UpdateOverMeteredPermssionGranted();
   else
-    GetUpdateEngineClient()->RemoveObserver(this);
+    UpdateEngineClient::Get()->RemoveObserver(this);
 }
 
 void MinimumVersionPolicyHandler::OnDeadlineReached() {

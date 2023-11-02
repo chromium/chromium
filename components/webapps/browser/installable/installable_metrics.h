@@ -1,16 +1,19 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_WEBAPPS_BROWSER_INSTALLABLE_INSTALLABLE_METRICS_H_
 #define COMPONENTS_WEBAPPS_BROWSER_INSTALLABLE_INSTALLABLE_METRICS_H_
 
-#include "base/time/time.h"
-#include "content/public/browser/service_worker_context.h"
+namespace base {
+class TimeDelta;
+}
 
 namespace content {
 class WebContents;
-}
+enum class OfflineCapability;
+enum class ServiceWorkerCapability;
+}  // namespace content
 
 namespace webapps {
 
@@ -24,13 +27,18 @@ enum class InstallTrigger {
   CREATE_SHORTCUT,
 };
 
+// Sources for triggering webapp installation. Each install source must map to
+// one web_app::Source::Type that is calculated in the method
+// `web_app::ConvertExternalInstallSourceToSource`.
+//
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-// Sources for triggering webapp installation.
+//
 // NOTE: each enum entry which is reportable must be added to
-// InstallableMetrics::IsReportableInstallSource().
-// This enum backs a UMA histogram and must be treated as append-only.
-// A Java counterpart will be generated for this enum.
+// InstallableMetrics::IsReportableInstallSource(). This enum backs a UMA
+// histogram and must be treated as append-only. A Java counterpart will be
+// generated for this enum.
+//
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.webapps
 enum class WebappInstallSource {
   // Menu item in a browser tab.
@@ -91,13 +99,28 @@ enum class WebappInstallSource {
   // Installed via the SubApps API.
   SUB_APP = 18,
 
+  // Chrome Android service for installing WebAPKs from another app.
+  CHROME_SERVICE = 19,
+
+  // PWA rich install bottom sheet in WebLayer.
+  RICH_INSTALL_UI_WEBLAYER = 20,
+
+  // Installed by Kiosk on Chrome OS.
+  KIOSK = 21,
+
+  // Isolated app installation for development.
+  ISOLATED_APP_DEV_INSTALL = 22,
+
+  // Lock screen app infrastructure installing to the lock screen app profile.
+  EXTERNAL_LOCK_SCREEN = 23,
+
   // Add any new values above this one.
   COUNT,
 };
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-// Sources for triggering webapp uninstallation.
+// Uninstall surface from which an uninstall was initiated. This value cannot be
+// used to infer an install source. These values are persisted to logs. Entries
+// should not be renumbered and numeric values should never be reused.
 enum class WebappUninstallSource {
   // Unknown surface, potentially in ChromeOS.
   kUnknown = 0,
@@ -151,8 +174,16 @@ enum class WebappUninstallSource {
   // yet been fully uninstalled are re-uninstalled.
   kStartupCleanup = 16,
 
+  // Used to track uninstalls for web_apps which are installed as sub-apps and
+  // are being removed because of the removal of the parent app.
+  kParentUninstall = 17,
+
+  // Lock screen app infrastructure uninstalling from the lock screen app
+  // profile.
+  kExternalLockScreen = 18,
+
   // Add any new values above this one.
-  kMaxValue = kStartupCleanup,
+  kMaxValue = kExternalLockScreen,
 };
 
 // This is the result of the promotability check that is recorded in the
@@ -184,9 +215,6 @@ class InstallableMetrics {
   // TrackInstallEvent.
   static bool IsReportableInstallSource(WebappInstallSource source);
 
-  // Returns whether the install initiated by the user based on install source.
-  static bool IsUserInitiatedInstallSource(WebappInstallSource source);
-
   // Returns the appropriate WebappInstallSource for |web_contents| when the
   // install originates from |trigger|.
   static WebappInstallSource GetInstallSource(
@@ -210,6 +238,9 @@ class InstallableMetrics {
 
   // Records |source| in the Webapp.Install.UninstallEvent histogram.
   static void TrackUninstallEvent(WebappUninstallSource source);
+
+  // Records the result for WebApp.Install.Result histogram.
+  static void TrackInstallResult(bool result);
 };
 
 }  // namespace webapps

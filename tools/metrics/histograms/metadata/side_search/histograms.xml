@@ -1,5 +1,5 @@
 <!--
-Copyright 2021 The Chromium Authors. All rights reserved.
+Copyright 2021 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
@@ -22,8 +22,33 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram
+    name="SideSearch.AutoTrigger.NavigationCommittedWithinSideSearchCountPerJourney"
+    units="navigations" expires_after="2023-02-05">
+  <owner>yuhengh@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <summary>
+    Number of navigations committed within the side search panel a given side
+    search journey started from an autotriggered side panel. Emitted when the
+    current search journey ends (i.e. the side panel was explicitly closed by
+    the user).
+  </summary>
+</histogram>
+
+<histogram name="SideSearch.AutoTrigger.RedirectionToTabCountPerJourney"
+    units="navigations" expires_after="2023-02-05">
+  <owner>yuhengh@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <summary>
+    Number of navigations redirected to the tab from the side panel for side
+    search journeys started from an autotriggered side panel. Emitted when the
+    current search journey ends (i.e. the side panel was explicitly closed by
+    the user).
+  </summary>
+</histogram>
+
 <histogram name="SideSearch.AvailabilityChanged"
-    enum="SideSearchAvailabilityChangeType" expires_after="2022-09-29">
+    enum="SideSearchAvailabilityChangeType" expires_after="2023-02-12">
   <owner>yuhengh@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <owner>romanarora@chromium.org</owner>
@@ -35,7 +60,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SideSearch.CloseAction" enum="SideSearchCloseActionType"
-    expires_after="2022-09-29">
+    expires_after="2023-02-12">
   <owner>yuhengh@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <owner>romanarora@chromium.org</owner>
@@ -46,7 +71,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SideSearch.LoadCompletedTime" units="ms"
-    expires_after="2022-09-29">
+    expires_after="2023-02-12">
   <owner>yuhengh@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <owner>romanarora@chromium.org</owner>
@@ -58,7 +83,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SideSearch.LoadDocumentTime" units="ms"
-    expires_after="2022-09-29">
+    expires_after="2023-02-12">
   <owner>yuhengh@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <owner>romanarora@chromium.org</owner>
@@ -70,7 +95,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SideSearch.Navigation" enum="SideSearchNavigationType"
-    expires_after="2022-09-29">
+    expires_after="2023-02-12">
   <owner>yuhengh@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <owner>romanarora@chromium.org</owner>
@@ -82,7 +107,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SideSearch.NavigationCommittedWithinSideSearchCountPerJourney"
-    units="navigations" expires_after="2022-09-29">
+    units="navigations" expires_after="2023-02-05">
+  <obsolete>
+    Removed in M107
+  </obsolete>
   <owner>yuhengh@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <owner>romanarora@chromium.org</owner>
@@ -93,8 +121,35 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="SideSearch.NavigationCommittedWithinSideSearchCountPerJourney2"
+    units="navigations" expires_after="2023-04-09">
+  <owner>yuhengh@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <owner>romanarora@chromium.org</owner>
+  <summary>
+    The number of navigations committed within the side search panel for a given
+    search journey. The search journey corresponds to the life of the side panel
+    web contents. Emitted when the side panel WebContents is destroyed.
+  </summary>
+</histogram>
+
+<histogram
+    name="SideSearch.NavigationCommittedWithinSideSearchCountPerJourneyFromMenuOption"
+    units="navigations" expires_after="2023-02-05">
+  <owner>pengchaocai@chromium.org</owner>
+  <owner>yuhengh@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <summary>
+    The number of navigations committed within the side search panel for a given
+    search journey, if the side panel web contents is created from menu entry
+    point. The search journey corresponds to the life of the side panel web
+    contents. Emitted when the side panel WebContents is destroyed.
+  </summary>
+</histogram>
+
 <histogram name="SideSearch.OpenAction" enum="SideSearchOpenActionType"
-    expires_after="2022-09-29">
+    expires_after="2023-04-09">
   <owner>yuhengh@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <owner>romanarora@chromium.org</owner>
@@ -104,15 +159,76 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SideSearch.RedirectionToTabCountPerJourney"
-    units="navigations" expires_after="2022-09-29">
+<histogram name="SideSearch.PageActionIcon.LabelVisibleWhenToggled"
+    enum="SideSearchPageActionLabelVisibility" expires_after="2023-02-12">
+  <owner>yuhengh@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <summary>
+    This metric tracks whether the SideSearchIconView's label is visible when
+    the page action is toggled. The label is considered visible if it is fully
+    expanded as well as if it is animating in and out.
+  </summary>
+</histogram>
+
+<histogram name="SideSearch.RedirectionToTabCountPerJourney2"
+    units="navigations" expires_after="2023-02-05">
   <owner>yuhengh@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <owner>romanarora@chromium.org</owner>
   <summary>
-    Number of navigations redirected to the tab in the same side panel web
-    contents for a given search journey. Recorded when the current search
-    journey ends.
+    Number of navigations redirected to the tab from the side panel for a given
+    side search journeys. Emitted when the current search journey ends (i.e. the
+    side panel was explicitly closed by the user).
+  </summary>
+</histogram>
+
+<histogram name="SideSearch.RedirectionToTabCountPerJourneyFromMenuOption"
+    units="navigations" expires_after="2023-02-05">
+  <owner>pengchaocai@chromium.org</owner>
+  <owner>yuhengh@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <summary>
+    Number of navigations redirected to the tab from the side panel for a given
+    side search journeys, if the side panel web contents is created from menu
+    entry point. Emitted when the current search journey ends (i.e. the side
+    panel was explicitly closed by the user).
+  </summary>
+</histogram>
+
+<histogram name="SideSearch.SidePanel.TimeShownOpenedVia{OpenAction}"
+    units="ms" expires_after="2023-02-12">
+  <owner>tluk@chromium.org</owner>
+  <owner>yuhengh@chromium.org</owner>
+  <summary>
+    Tracks the duration that a given tab's side search side panel was open for
+    when opened via a {OpenAction} action. This metric is emitted when the tab's
+    side search side panel is hidden.
+  </summary>
+  <token key="OpenAction">
+    <variant name="Entrypoint"/>
+    <variant name="TabSwitch"/>
+  </token>
+</histogram>
+
+<histogram name="SideSearch.TimeSinceSidePanelAvailableToFirstOpen" units="ms"
+    expires_after="2023-02-12">
+  <owner>yuhengh@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <summary>
+    The time interval between when the side panel is made available to when it
+    is first opened for a given tab. Emitted for the active tab when the side
+    panel is toggled open.
+  </summary>
+</histogram>
+
+<histogram name="SideSearch.TimesReturnedBackToSRP" units="navigations"
+    expires_after="2023-02-12">
+  <owner>yuhengh@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <summary>
+    The number of times the user navigated back to the same search results page
+    in a given tab's history. Emitted after the count is reset when the user
+    navigates to a new search results page in a given tab.
   </summary>
 </histogram>
 

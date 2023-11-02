@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 package org.chromium.chrome.browser.merchant_viewer;
@@ -7,6 +7,8 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.FeatureList;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.merchant_viewer.MerchantTrustMessageViewModel.MessageDescriptionUI;
+import org.chromium.chrome.browser.merchant_viewer.MerchantTrustMessageViewModel.MessageTitleUI;
 
 import java.util.concurrent.TimeUnit;
 
@@ -44,6 +46,18 @@ public class MerchantViewerConfig {
     @VisibleForTesting
     public static final String TRUST_SIGNALS_NON_PERSONALIZED_FAMILIARITY_SCORE_THRESHOLD_PARAM =
             "trust_signals_non_personalized_familiarity_score_threshold";
+    @VisibleForTesting
+    public static final String TRUST_SIGNALS_MESSAGE_USE_GOOGLE_ICON_PARAM =
+            "trust_signals_message_use_google_icon";
+    @VisibleForTesting
+    public static final String TRUST_SIGNALS_MESSAGE_TITLE_UI_PARAM =
+            "trust_signals_message_title_ui";
+    @VisibleForTesting
+    public static final String TRUST_SIGNALS_MESSAGE_DESCRIPTION_UI_PARAM =
+            "trust_signals_message_description_ui";
+    @VisibleForTesting
+    public static final String TRUST_SIGNALS_MESSAGE_DISABLED_FOR_IMPACT_STUDY_PARAM =
+            "trust_signals_message_disabled_for_impact_study";
 
     public static int getDefaultTrustSignalsMessageDelay() {
         int defaultDelay = (int) TimeUnit.SECONDS.toMillis(30);
@@ -152,5 +166,45 @@ public class MerchantViewerConfig {
                     defaultThreshold);
         }
         return defaultThreshold;
+    }
+
+    public static boolean doesTrustSignalsMessageUseGoogleIcon() {
+        boolean defaultValue = false;
+        if (FeatureList.isInitialized()) {
+            return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                    ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,
+                    TRUST_SIGNALS_MESSAGE_USE_GOOGLE_ICON_PARAM, defaultValue);
+        }
+        return defaultValue;
+    }
+
+    public static int getTrustSignalsMessageTitleUI() {
+        int defaultUI = MessageTitleUI.VIEW_STORE_INFO;
+        if (FeatureList.isInitialized()) {
+            return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                    ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,
+                    TRUST_SIGNALS_MESSAGE_TITLE_UI_PARAM, defaultUI);
+        }
+        return defaultUI;
+    }
+
+    public static int getTrustSignalsMessageDescriptionUI() {
+        int defaultUI = MessageDescriptionUI.RATING_AND_REVIEWS;
+        if (FeatureList.isInitialized()) {
+            return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                    ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,
+                    TRUST_SIGNALS_MESSAGE_DESCRIPTION_UI_PARAM, defaultUI);
+        }
+        return defaultUI;
+    }
+
+    public static boolean isTrustSignalsMessageDisabledForImpactStudy() {
+        boolean defaultValue = false;
+        if (FeatureList.isInitialized()) {
+            return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                    ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,
+                    TRUST_SIGNALS_MESSAGE_DISABLED_FOR_IMPACT_STUDY_PARAM, defaultValue);
+        }
+        return defaultValue;
     }
 }

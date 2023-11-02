@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,11 @@
     RuntimeEnabled=PaymentApp,
     Exposed=ServiceWorker
 ] interface CanMakePaymentEvent : ExtendableEvent {
-    constructor(DOMString type, CanMakePaymentEventInit eventInitDict);
-    readonly attribute USVString topOrigin;
-    readonly attribute USVString paymentRequestOrigin;
-    readonly attribute FrozenArray<PaymentMethodData> methodData;
-    readonly attribute FrozenArray<PaymentDetailsModifier> modifiers;
+    [CallWith=ScriptState] constructor(DOMString type, CanMakePaymentEventInit eventInitDict);
+    [DeprecateAs=IdentityInCanMakePaymentEvent] readonly attribute USVString topOrigin;
+    [DeprecateAs=IdentityInCanMakePaymentEvent] readonly attribute USVString paymentRequestOrigin;
+    [DeprecateAs=IdentityInCanMakePaymentEvent] readonly attribute FrozenArray<PaymentMethodData> methodData;
+    [DeprecateAs=IdentityInCanMakePaymentEvent] readonly attribute FrozenArray<PaymentDetailsModifier> modifiers;
 
     [CallWith=ScriptState, RaisesException] void respondWith(Promise<boolean> canMakePaymentResponse);
 };

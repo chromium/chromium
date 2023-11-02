@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,10 +39,14 @@ struct TemplateURLData {
                   base::StringPiece search_url_post_params,
                   base::StringPiece suggest_url_post_params,
                   base::StringPiece image_url_post_params,
+                  base::StringPiece side_search_param,
+                  base::StringPiece side_image_search_param,
                   base::StringPiece favicon_url,
                   base::StringPiece encoding,
+                  base::StringPiece16 image_search_branding_label,
                   const base::Value& alternate_urls_list,
                   bool preconnect_to_search_url,
+                  bool prefetch_likely_navigations,
                   int prepopulate_id);
 
   ~TemplateURLData();
@@ -63,8 +67,9 @@ struct TemplateURLData {
   const std::string& url() const { return url_; }
 
   // Recomputes |sync_guid| using the same logic as in the constructor. This
-  // means a random GUID is generated, except for prepopulated search engines,
-  // which generate GUIDs deterministically based on |prepopulate_id|.
+  // means a random GUID is generated, except for built-in search engines,
+  // which generate GUIDs deterministically based on |prepopulate_id| or
+  // |starter_pack_id|.
   void GenerateSyncGUID();
 
   // Estimates dynamic memory usage.
@@ -88,6 +93,18 @@ struct TemplateURLData {
   std::string search_url_post_params;
   std::string suggestions_url_post_params;
   std::string image_url_post_params;
+
+  // The parameter appended to the engine's search URL when constructing the URL
+  // for the side search side panel.
+  std::string side_search_param;
+
+  // The parameter appended to the engine's image URL when constructing the
+  // URL for the image search entry in the side panel.
+  std::string side_image_search_param;
+
+  // Brand name used for image search queries. If not set, the short_name
+  // will be used.
+  std::u16string image_search_branding_label;
 
   // Favicon for the TemplateURL.
   GURL favicon_url;
@@ -155,6 +172,11 @@ struct TemplateURLData {
   // set as the "default search engine".
   bool preconnect_to_search_url = false;
 
+  // Whether the client is allowed to prefetch Search queries that are likely
+  // (in addition to queries that are recommended via suggestion server). This
+  // is experimental.
+  bool prefetch_likely_navigations = false;
+
   enum class ActiveStatus {
     kUnspecified = 0,  // The default value when a search engine is auto-added.
     kTrue,             // Search engine is active.
@@ -165,6 +187,10 @@ struct TemplateURLData {
   // via the omnibox.  Inactive search engines do nothing until they have been
   // activated.  A search engine is inactive if it's unspecified or false.
   ActiveStatus is_active{ActiveStatus::kUnspecified};
+
+  // This TemplateURL is part of the built-in "starter pack" if
+  // starter_pack_id > 0.
+  int starter_pack_id{0};
 
  private:
   // Private so we can enforce using the setters and thus enforce that these

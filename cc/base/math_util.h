@@ -1,26 +1,22 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CC_BASE_MATH_UTIL_H_
 #define CC_BASE_MATH_UTIL_H_
 
+#include <cmath>
 #include <limits>
-#include <memory>
-#include <vector>
 
 #include "base/check.h"
 #include "base/cxx17_backports.h"
 #include "build/build_config.h"
 #include "cc/base/base_export.h"
 #include "third_party/skia/include/core/SkM44.h"
+#include "third_party/skia/include/core/SkScalar.h"
 #include "ui/gfx/geometry/box_f.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/point_f.h"
-#include "ui/gfx/geometry/rounded_corners_f.h"
-#include "ui/gfx/geometry/size.h"
-#include "ui/gfx/geometry/transform.h"
-#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace base {
 class Value;
@@ -34,11 +30,13 @@ class QuadF;
 class Rect;
 class RectF;
 class RRectF;
+class Size;
 class SizeF;
 class Transform;
 class Vector2dF;
 class Vector2d;
 class Vector3dF;
+class LinearGradient;
 }  // namespace gfx
 
 namespace cc {
@@ -311,6 +309,9 @@ class CC_BASE_EXPORT MathUtil {
   static void AddCornerRadiiToTracedValue(const char* name,
                                           const gfx::RRectF& rect,
                                           base::trace_event::TracedValue* res);
+  static void AddToTracedValue(const char* name,
+                               const gfx::LinearGradient& gradient,
+                               base::trace_event::TracedValue* res);
 
   // Returns a base::Value representation of the floating point value.
   // If the value is inf, returns max double/float representation.

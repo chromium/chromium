@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,13 +6,16 @@
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_BASIC_INTERACTIONS_H_
 
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill_assistant/browser/client_settings.h"
 #include "components/autofill_assistant/browser/client_status.h"
+#include "components/autofill_assistant/browser/execution_delegate.h"
 #include "components/autofill_assistant/browser/generic_ui.pb.h"
+#include "components/autofill_assistant/browser/script_executor_ui_delegate.h"
 
 namespace autofill_assistant {
-class ScriptExecutorDelegate;
+class ScriptExecutorUiDelegate;
 
 // Provides basic interactions for use by the generic UI framework. These
 // methods are intended to be bound to by the corresponding interaction
@@ -20,7 +23,8 @@ class ScriptExecutorDelegate;
 class BasicInteractions {
  public:
   // Constructor. |delegate| must outlive this instance.
-  BasicInteractions(ScriptExecutorDelegate* delegate);
+  BasicInteractions(ScriptExecutorUiDelegate* ui_delegate,
+                    ExecutionDelegate* execution_delegate);
   ~BasicInteractions();
 
   BasicInteractions(const BasicInteractions&) = delete;
@@ -28,7 +32,7 @@ class BasicInteractions {
 
   base::WeakPtr<BasicInteractions> GetWeakPtr();
 
-  // Returns ClientSettings from the ScriptExecutorDelegate.
+  // Returns ClientSettings.
   const ClientSettings& GetClientSettings();
 
   // Performs the computation specified by |proto| and writes the result to
@@ -49,6 +53,12 @@ class BasicInteractions {
   // Ends the current action. Can only be called during a ShowGenericUiAction.
   bool EndAction(const ClientStatus& status);
 
+  // Makes a backend call and populates UserModel.
+  bool RequestBackendData(const RequestBackendDataProto& request);
+
+  // Show user's account screen.
+  bool ShowAccountScreen(const ShowAccountScreenProto& proto);
+
   // Runs |view_inflation_finished_callback_| to notify its owner that view
   // inflation has finished. Can only be called during a ShowGenericUiAction.
   bool NotifyViewInflationFinished(const ClientStatus& status);
@@ -66,6 +76,15 @@ class BasicInteractions {
   void SetViewInflationFinishedCallback(
       base::OnceCallback<void(const ClientStatus&)>
           view_inflation_finished_callback);
+
+  // Sets the callback to indicate whether view inflation was successful or not.
+  void SetRequestBackendDataCallback(
+      base::RepeatingCallback<void(const RequestBackendDataProto&)>
+          request_backend_data_callback);
+
+  void SetShowAccountScreenCallback(
+      base::RepeatingCallback<void(const ShowAccountScreenProto&)>
+          show_account_screen_callback);
 
   // Sets the callback to indicate whether view inflation of the persistent Ui
   // was successful or not.
@@ -86,11 +105,16 @@ class BasicInteractions {
                               base::RepeatingCallback<void()> callback);
 
  private:
-  ScriptExecutorDelegate* delegate_;
+  raw_ptr<ScriptExecutorUiDelegate> ui_delegate_;
+  raw_ptr<ExecutionDelegate> execution_delegate_;
   // Only valid during a ShowGenericUiAction.
   base::OnceCallback<void(const ClientStatus&)> end_action_callback_;
   base::OnceCallback<void(const ClientStatus&)>
       view_inflation_finished_callback_;
+  base::RepeatingCallback<void(const RequestBackendDataProto&)>
+      request_backend_data_callback_;
+  base::RepeatingCallback<void(const ShowAccountScreenProto&)>
+      show_account_screen_callback_;
   // Set during a SetPersistentUiAction.
   base::OnceCallback<void(const ClientStatus&)>
       persistent_view_inflation_finished_callback_;

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,14 +10,12 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "chrome/browser/platform_keys/platform_keys.h"
 #include "chromeos/crosapi/mojom/keystore_error.mojom.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
-
-namespace base {
-class Value;
-}
 
 namespace extensions {
 class StateStore;
@@ -106,7 +104,7 @@ class ExtensionKeyPermissionsService {
   // instead.
   ExtensionKeyPermissionsService(const std::string& extension_id,
                                  extensions::StateStore* state_store,
-                                 std::unique_ptr<base::Value> state_store_value,
+                                 base::Value::List state_store_value,
                                  policy::PolicyService* profile_policies,
                                  content::BrowserContext* browser_context);
 
@@ -174,7 +172,7 @@ class ExtensionKeyPermissionsService {
     bool sign_unlimited = false;
   };
 
-  void OnGotExtensionValue(std::unique_ptr<base::Value> value);
+  void OnGotExtensionValue(absl::optional<base::Value> value);
 
   // Writes the current |state_store_entries_| to the state store of
   // |extension_id_|.
@@ -182,11 +180,11 @@ class ExtensionKeyPermissionsService {
 
   // Reads a KeyEntry list from |state| and stores them in
   // |state_store_entries_|.
-  void KeyEntriesFromState(const base::Value& state);
+  void KeyEntriesFromState(const base::Value::List& state);
 
   // Converts |state_store_entries_| to a base::Value for storing in the state
   // store.
-  std::unique_ptr<base::Value> KeyEntriesToState();
+  base::Value::List KeyEntriesToState();
 
   // Returns an existing entry for |public_key_spki_der_b64| from
   // |state_store_entries_|. If there is no existing entry, creates, adds and
@@ -196,7 +194,7 @@ class ExtensionKeyPermissionsService {
   KeyEntry* GetStateStoreEntry(const std::string& public_key_spki_der_b64);
 
   // Writes |value| to the state store of the extension.
-  void SetPlatformKeysInStateStore(std::unique_ptr<base::Value> value);
+  void SetPlatformKeysInStateStore(absl::optional<base::Value> value);
 
   bool PolicyAllowsCorporateKeyUsage() const;
 
@@ -211,10 +209,10 @@ class ExtensionKeyPermissionsService {
       bool can_user_grant_permission);
 
   const std::string extension_id_;
-  extensions::StateStore* extensions_state_store_ = nullptr;
+  raw_ptr<extensions::StateStore> extensions_state_store_ = nullptr;
   std::vector<KeyEntry> state_store_entries_;
-  policy::PolicyService* const profile_policies_;
-  crosapi::mojom::KeystoreService* const keystore_service_ = nullptr;
+  const raw_ptr<policy::PolicyService> profile_policies_;
+  const raw_ptr<crosapi::mojom::KeystoreService> keystore_service_ = nullptr;
   base::WeakPtrFactory<ExtensionKeyPermissionsService> weak_factory_{this};
 };
 

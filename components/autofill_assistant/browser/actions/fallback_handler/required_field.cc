@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,10 +18,10 @@ void RequiredField::FromProto(const RequiredFieldProto& required_field_proto) {
 }
 
 bool RequiredField::ShouldFallback(bool apply_fallback) const {
-  return (status == EMPTY && HasValue() &&
+  return (status == FieldValueStatus::kEmpty && HasValue() &&
           !proto.has_option_element_to_click() &&
           !(proto.is_optional() && !apply_fallback)) ||
-         (status != EMPTY && !HasValue() &&
+         (status != FieldValueStatus::kEmpty && !HasValue() &&
           !proto.has_option_element_to_click()) ||
          (proto.forced() && apply_fallback) ||
          (proto.has_option_element_to_click() && apply_fallback);

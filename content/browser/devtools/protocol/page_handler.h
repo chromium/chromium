@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
@@ -21,11 +20,15 @@
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/protocol/devtools_download_manager_delegate.h"
 #include "content/browser/devtools/protocol/page.h"
+#include "content/browser/preloading/prerender/prerender_host.h"
+#include "content/browser/renderer_host/back_forward_cache_impl.h"
+#include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/javascript_dialog_manager.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_observer.h"
 #include "content/public/common/javascript_dialog_type.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "url/gurl.h"
 
@@ -64,7 +67,10 @@ class PageHandler : public DevToolsDomainHandler,
  public:
   PageHandler(EmulationHandler* emulation_handler,
               BrowserHandler* browser_handler,
-              bool allow_unsafe_operations);
+              bool allow_unsafe_operations,
+              bool is_trusted,
+              absl::optional<url::Origin> navigation_initiator_origin,
+              bool may_read_local_files);
 
   PageHandler(const PageHandler&) = delete;
   PageHandler& operator=(const PageHandler&) = delete;
@@ -79,8 +85,6 @@ class PageHandler : public DevToolsDomainHandler,
   void SetRenderer(int process_host_id,
                    RenderFrameHostImpl* frame_host) override;
   // Instrumentation signals.
-  void OnSynchronousSwapCompositorFrame(
-      const cc::RenderFrameMetadata& frame_metadata);
   void DidAttachInterstitialPage();
   void DidDetachInterstitialPage();
   bool screencast_enabled() const { return enabled_ && screencast_enabled_; }
@@ -99,12 +103,17 @@ class PageHandler : public DevToolsDomainHandler,
   void NavigationReset(NavigationRequest* navigation_request);
   void DownloadWillBegin(FrameTreeNode* ftn, download::DownloadItem* item);
 
-  WebContentsImpl* GetWebContents();
-
   bool ShouldBypassCSP();
   void BackForwardCacheNotUsed(
       const NavigationRequest* nav_request,
-      const BackForwardCacheCanStoreDocumentResult* result);
+      const BackForwardCacheCanStoreDocumentResult* result,
+      const BackForwardCacheCanStoreTreeResult* tree_result);
+
+  void DidActivatePrerender(const NavigationRequest& nav_request);
+  void DidCancelPrerender(const GURL& prerendering_url,
+                          const std::string& initiating_frame_id,
+                          PrerenderHost::FinalStatus status,
+                          const std::string& disallowed_api_method);
 
   Response Enable() override;
   Response Disable() override;
@@ -171,12 +180,18 @@ class PageHandler : public DevToolsDomainHandler,
   Response AddCompilationCache(const std::string& url,
                                const Binary& data) override;
 
+  Response AssureTopLevelActiveFrame();
+
  private:
   enum EncodingFormat { PNG, JPEG };
 
+  void CaptureFullPageScreenshot(
+      Maybe<std::string> format,
+      Maybe<int> quality,
+      std::unique_ptr<CaptureScreenshotCallback> callback,
+      const gfx::Size& full_page_size);
   bool ShouldCaptureNextScreencastFrame();
   void NotifyScreencastVisibility(bool visible);
-  void InnerSwapCompositorFrame();
   void OnFrameFromVideoConsumer(scoped_refptr<media::VideoFrame> frame);
   void ScreencastFrameCaptured(
       std::unique_ptr<Page::ScreencastFrameMetadata> metadata,
@@ -209,7 +224,17 @@ class PageHandler : public DevToolsDomainHandler,
   void OnDownloadUpdated(download::DownloadItem* item) override;
   void OnDownloadDestroyed(download::DownloadItem* item) override;
 
+  // Returns WebContents only if `host_` is a top level frame. Otherwise, it
+  // returns Response with an error.
+  using ResponseOrWebContents = absl::variant<Response, WebContentsImpl*>;
+  ResponseOrWebContents GetWebContentsForTopLevelActiveFrame();
+
+  void RetrievePrerenderActivationFromWebContents();
+
   const bool allow_unsafe_operations_;
+  const bool is_trusted_;
+  const absl::optional<url::Origin> navigation_initiator_origin_;
+  const bool may_read_local_files_;
 
   bool enabled_;
   bool bypass_csp_ = false;
@@ -220,11 +245,13 @@ class PageHandler : public DevToolsDomainHandler,
   int screencast_max_width_;
   int screencast_max_height_;
   int capture_every_nth_frame_;
-  int capture_retry_count_;
-  absl::optional<cc::RenderFrameMetadata> frame_metadata_;
   int session_id_;
   int frame_counter_;
   int frames_in_flight_;
+
+  // Whether stored prerender activation has been dispatched to Devtools. Reset
+  // whenever a new prerender event received.
+  bool has_dispatched_stored_prerender_activation_ = false;
 
   // |video_consumer_| consumes video frames from FrameSinkVideoCapturerImpl,
   // and provides PageHandler with these frames via OnFrameFromVideoConsumer.

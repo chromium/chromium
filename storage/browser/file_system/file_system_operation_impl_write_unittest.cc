@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,13 +10,12 @@
 
 #include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "net/url_request/url_request.h"
 #include "storage/browser/blob/blob_storage_context.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_file_util.h"
@@ -28,6 +27,7 @@
 #include "storage/browser/test/mock_blob_util.h"
 #include "storage/browser/test/mock_file_change_observer.h"
 #include "storage/browser/test/mock_quota_manager.h"
+#include "storage/browser/test/mock_special_storage_policy.h"
 #include "storage/browser/test/test_file_system_backend.h"
 #include "storage/browser/test/test_file_system_context.h"
 #include "storage/common/file_system/file_system_util.h"
@@ -43,16 +43,15 @@ namespace {
 const char kOrigin[] = "http://example.com";
 const FileSystemType kFileSystemType = kFileSystemTypeTest;
 
-void AssertStatusEq(base::File::Error expected, base::File::Error actual) {
-  ASSERT_EQ(expected, actual);
-}
-
 }  // namespace
 
 class FileSystemOperationImplWriteTest : public testing::Test {
  public:
   FileSystemOperationImplWriteTest()
-      : task_environment_(base::test::TaskEnvironment::MainThreadType::IO),
+      : special_storage_policy_(
+            base::MakeRefCounted<MockSpecialStoragePolicy>()),
+        task_environment_(base::test::TaskEnvironment::MainThreadType::IO),
+        virtual_path_(FILE_PATH_LITERAL("temporary file")),
         status_(base::File::FILE_OK),
         cancel_status_(base::File::FILE_ERROR_FAILED),
         bytes_written_(0),
@@ -66,21 +65,20 @@ class FileSystemOperationImplWriteTest : public testing::Test {
       const FileSystemOperationImplWriteTest&) = delete;
 
   void SetUp() override {
-    ASSERT_TRUE(dir_.CreateUniqueTempDir());
+    ASSERT_TRUE(data_dir_.CreateUniqueTempDir());
 
     quota_manager_ = base::MakeRefCounted<MockQuotaManager>(
-        /* is_incognito= */ false, dir_.GetPath(),
-        base::ThreadTaskRunnerHandle::Get().get(),
-        /* special storage policy= */ nullptr);
-    virtual_path_ = base::FilePath(FILE_PATH_LITERAL("temporary file"));
+        /* is_incognito= */ false, data_dir_.GetPath(),
+        base::ThreadTaskRunnerHandle::Get(), special_storage_policy_);
 
     file_system_context_ = CreateFileSystemContextForTesting(
-        quota_manager_->proxy(), dir_.GetPath());
+        quota_manager_->proxy(), data_dir_.GetPath());
     blob_storage_context_ = std::make_unique<BlobStorageContext>();
 
+    base::test::TestFuture<base::File::Error> future;
     file_system_context_->operation_runner()->CreateFile(
-        URLForPath(virtual_path_), true /* exclusive */,
-        base::BindOnce(&AssertStatusEq, base::File::FILE_OK));
+        URLForPath(virtual_path_), true /* exclusive */, future.GetCallback());
+    ASSERT_EQ(base::File::FILE_OK, future.Get());
 
     static_cast<TestFileSystemBackend*>(
         file_system_context_->GetFileSystemBackend(kFileSystemType))
@@ -148,13 +146,15 @@ class FileSystemOperationImplWriteTest : public testing::Test {
     return blob_storage_context_.get();
   }
 
+  scoped_refptr<MockSpecialStoragePolicy> special_storage_policy_;
+
+  base::ScopedTempDir data_dir_;
   base::test::TaskEnvironment task_environment_;
 
   scoped_refptr<FileSystemContext> file_system_context_;
   scoped_refptr<MockQuotaManager> quota_manager_;
 
-  base::ScopedTempDir dir_;
-  base::FilePath virtual_path_;
+  const base::FilePath virtual_path_;
 
   // For post-operation status.
   base::File::Error status_;
@@ -230,9 +230,12 @@ TEST_F(FileSystemOperationImplWriteTest, TestWriteInvalidFile) {
 
 TEST_F(FileSystemOperationImplWriteTest, TestWriteDir) {
   base::FilePath virtual_dir_path(FILE_PATH_LITERAL("d"));
+
+  base::test::TestFuture<base::File::Error> future;
   file_system_context_->operation_runner()->CreateDirectory(
       URLForPath(virtual_dir_path), true /* exclusive */, false /* recursive */,
-      base::BindOnce(&AssertStatusEq, base::File::FILE_OK));
+      future.GetCallback());
+  ASSERT_EQ(base::File::FILE_OK, future.Get());
 
   ScopedTextBlob blob(blob_storage_context(), "blob:writedir",
                       "It\'ll not be written, too.");

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -49,8 +49,9 @@ enum UMAEventType {
   UMA_ET_GESTURE_SHOW_PRESS = 32,
   UMA_ET_GESTURE_TAP_CANCEL = 33,
   UMA_ET_GESTURE_WIN8_EDGE_SWIPE = 34,  // Deprecated. Do not remove.
-  UMA_ET_GESTURE_SWIPE_1 = 35,  // Swipe with 1 finger
+  UMA_ET_GESTURE_SWIPE_1 = 35,          // Swipe with 1 finger
   UMA_ET_GESTURE_TAP_UNCONFIRMED = 36,
+  UMA_ET_GESTURE_SHORT_PRESS = 37,
   // NOTE: Add new event types only immediately above this line. Make sure to
   // update the UIEventType enum in tools/metrics/histograms/histograms.xml
   // accordingly.

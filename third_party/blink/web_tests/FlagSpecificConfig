@@ -4,28 +4,16 @@
     "args": ["--enable-features=BackForwardCache"]
   },
   {
-    "name": "composite-after-paint",
-    "args": ["--enable-blink-features=CompositeAfterPaint"]
-  },
-  {
     "name": "disable-layout-ng",
-    "args": ["--disable-blink-features=LayoutNG"]
+    "args": ["--disable-blink-features=LayoutNG,LayoutNGBlockFragmentation"]
   },
   {
     "name": "disable-site-isolation-trials",
     "args": ["--disable-site-isolation-trials"]
   },
   {
-    "name": "enable-back-forward-cache-same-site",
-    "args": ["--enable-features=BackForwardCache:enable_same_site/true"]
-  },
-  {
     "name": "enable-blink-heap-concurrent-marking",
     "args": ["--enable-features=BlinkHeapConcurrentMarking"]
-  },
-  {
-    "name": "enable-editing-ng",
-    "args": ["--enable-blink-features=EditingNG"]
   },
   {
     "name": "enable-percent-based-scrolling",
@@ -40,47 +28,19 @@
     "args": ["--js-flags=--future"]
   },
   {
-    "name": "layout-ng-fragment-item",
-    "args": ["--enable-blink-features=LayoutNGFragmentItem"]
-  },
-  {
     "name": "new-system-colors",
     "args": ["--enable-blink-features=NewSystemColors"]
   },
   {
     "name": "highdpi",
-    "args": ["--force-device-scale-factor=1.5"]
-  },
-  {
-    "name": "skia-gl",
-    "args": [
-          "--enable-gpu-rasterization",
-          "--enable-features=UseSkiaRenderer",
-          "--use-gl=any",
-          "--enable-oop-rasterization",
-          "--disable-software-compositing-fallback",
-          "--disable-headless-mode"
-    ]
-  },
-  {
-    "name": "skia-vulkan-native",
-    "args": [
-          "--enable-gpu-rasterization",
-          "--enable-features=UseSkiaRenderer,Vulkan",
-          "--use-gl=any",
-          "--enable-oop-rasterization",
-          "--disable-software-compositing-fallback",
-          "--use-vulkan=native",
-          "--disable-vulkan-fallback-to-gl-for-testing",
-          "--disable-headless-mode"
-    ]
+    "args": ["--force-device-scale-factor=1.5"],
+    "smoke_file": "SmokeTests/highdpi"
   },
   {
     "name": "skia-vulkan-swiftshader",
     "args": [
           "--enable-gpu-rasterization",
-          "--enable-features=UseSkiaRenderer,Vulkan",
-          "--enable-oop-rasterization",
+          "--enable-features=Vulkan",
           "--use-vulkan=swiftshader",
           "--disable-vulkan-fallback-to-gl-for-testing"
     ]
@@ -90,14 +50,58 @@
     "args": [
           "--enable-unsafe-webgpu",
           "--disable-dawn-features=disallow_unsafe_apis",
-          "--use-gpu-in-tests"
+          "--use-gpu-in-tests",
+          "--enable-accelerated-2d-canvas"
     ],
     "comments": [
           "--disable-dawn-features=disallow_unsafe_apis is added so 'unsafe'",
           "APIs can be tested with WebGPU CTS",
           "--use-gpu-in-tests is needed to initialize ANGLE, which in turn is",
           "needed to tell Dawn which ANGLE adapter Chromium is using. This",
-          "helps match the test behavior with the browser"
+          "helps match the test behavior with the browser.",
+          "--enable-accelerated-2d-canvas ensures that the canvas reference",
+          "tests are using GPU rather than CPU"
+    ]
+  },
+  {
+    "name": "webgpu-swiftshader",
+    "args": [
+          "--enable-unsafe-webgpu",
+          "--use-webgpu-adapter=swiftshader",
+          "--disable-dawn-features=disallow_unsafe_apis",
+          "--use-gpu-in-tests",
+          "--enable-accelerated-2d-canvas"
+    ],
+    "comments": [
+          "--disable-dawn-features=disallow_unsafe_apis is added so 'unsafe'",
+          "APIs can be tested with WebGPU CTS",
+          "--use-webgpu-adapter=swiftshader forces usage for the SwiftShader adapter",
+          "--use-gpu-in-tests is needed to initialize ANGLE, which in turn is",
+          "needed to tell Dawn which ANGLE adapter Chromium is using. This",
+          "helps match the test behavior with the browser.",
+          "--enable-accelerated-2d-canvas ensures that the canvas reference",
+          "tests are using GPU rather than CPU"
+    ]
+  },
+  {
+    "name": "webgpu-swiftshader-with-backend-validation",
+    "args": [
+          "--enable-unsafe-webgpu",
+          "--use-webgpu-adapter=swiftshader",
+          "--enable-dawn-backend-validation",
+          "--disable-dawn-features=disallow_unsafe_apis",
+          "--use-gpu-in-tests",
+          "--enable-accelerated-2d-canvas"
+    ],
+    "comments": [
+          "--disable-dawn-features=disallow_unsafe_apis is added so 'unsafe'",
+          "APIs can be tested with WebGPU CTS",
+          "--use-webgpu-adapter=swiftshader forces usage for the SwiftShader adapter",
+          "--use-gpu-in-tests is needed to initialize ANGLE, which in turn is",
+          "needed to tell Dawn which ANGLE adapter Chromium is using. This",
+          "helps match the test behavior with the browser.",
+          "--enable-accelerated-2d-canvas ensures that the canvas reference",
+          "tests are using GPU rather than CPU"
     ]
   },
   {
@@ -106,14 +110,17 @@
           "--enable-unsafe-webgpu",
           "--enable-dawn-backend-validation",
           "--disable-dawn-features=disallow_unsafe_apis",
-          "--use-gpu-in-tests"
+          "--use-gpu-in-tests",
+          "--enable-accelerated-2d-canvas"
     ],
     "comments": [
           "--disable-dawn-features=disallow_unsafe_apis is added so 'unsafe'",
           "APIs can be tested with WebGPU CTS",
           "--use-gpu-in-tests is needed to initialize ANGLE, which in turn is",
           "needed to tell Dawn which ANGLE adapter Chromium is using. This",
-          "helps match the test behavior with the browser"
+          "helps match the test behavior with the browser.",
+          "--enable-accelerated-2d-canvas ensures that the canvas reference",
+          "tests are using GPU rather than CPU"
     ]
   },
   {
@@ -122,15 +129,17 @@
           "--enable-unsafe-webgpu",
           "--enable-dawn-backend-validation=partial",
           "--disable-dawn-features=disallow_unsafe_apis",
-          "--use-gpu-in-tests"
+          "--use-gpu-in-tests",
+          "--enable-accelerated-2d-canvas"
     ],
     "comments": [
           "--disable-dawn-features=disallow_unsafe_apis is added so 'unsafe'",
           "APIs can be tested with WebGPU CTS",
           "--use-gpu-in-tests is needed to initialize ANGLE, which in turn is",
           "needed to tell Dawn which ANGLE adapter Chromium is using. This",
-          "helps match the test behavior with the browser"
+          "helps match the test behavior with the browser.",
+          "--enable-accelerated-2d-canvas ensures that the canvas reference",
+          "tests are using GPU rather than CPU"
     ]
   }
 ]
-

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,18 +7,18 @@
 #import <Foundation/Foundation.h>
 #import <MetricKit/MetricKit.h>
 
-#include "base/files/file_path.h"
-#include "base/files/file_util.h"
-#include "base/ios/ios_util.h"
-#include "base/run_loop.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/test/ios/wait_util.h"
-#include "base/test/metrics/histogram_tester.h"
-#include "base/test/task_environment.h"
-#include "ios/chrome/app/application_delegate/mock_metrickit_metric_payload.h"
-#include "testing/platform_test.h"
+#import "base/files/file_path.h"
+#import "base/files/file_util.h"
+#import "base/ios/ios_util.h"
+#import "base/run_loop.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/test/ios/wait_util.h"
+#import "base/test/metrics/histogram_tester.h"
+#import "base/test/task_environment.h"
+#import "ios/chrome/app/application_delegate/mock_metrickit_metric_payload.h"
+#import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
-#include "third_party/ocmock/gtest_support.h"
+#import "third_party/ocmock/gtest_support.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

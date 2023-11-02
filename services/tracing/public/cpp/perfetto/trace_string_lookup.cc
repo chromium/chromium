@@ -1,10 +1,9 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "services/tracing/public/cpp/perfetto/trace_string_lookup.h"
 
-#include "base/cxx17_backports.h"
 #include "base/strings/pattern.h"
 
 using ::perfetto::protos::pbzero::ChromeProcessDescriptor;
@@ -55,9 +54,9 @@ constexpr ProcessType kProcessTypes[] = {
      ChromeProcessDescriptor::PROCESS_SERVICE_PRINTING},
     {"Service: quarantine.mojom.Quarantine",
      ChromeProcessDescriptor::PROCESS_SERVICE_QUARANTINE},
-    {"Service: chromeos.local_search_service.mojom.LocalSearchService",
+    {"Service: ash.local_search_service.mojom.LocalSearchService",
      ChromeProcessDescriptor::PROCESS_SERVICE_CROS_LOCALSEARCH},
-    {"Service: chromeos.assistant.mojom.AssistantAudioDecoderFactory",
+    {"Service: ash.assistant.mojom.AssistantAudioDecoderFactory",
      ChromeProcessDescriptor::PROCESS_SERVICE_CROS_ASSISTANT_AUDIO_DECODER},
     {"Service: chrome.mojom.FileUtilService",
      ChromeProcessDescriptor::PROCESS_SERVICE_FILEUTIL},
@@ -81,7 +80,7 @@ constexpr ProcessType kProcessTypes[] = {
      ChromeProcessDescriptor::PROCESS_SERVICE_QRCODEGENERATOR},
     {"Service: chrome.mojom.ProfileImport",
      ChromeProcessDescriptor::PROCESS_SERVICE_PROFILEIMPORT},
-    {"Service: chromeos.ime.mojom.ImeService",
+    {"Service: ash.ime.mojom.ImeService",
      ChromeProcessDescriptor::PROCESS_SERVICE_IME},
     {"Service: recording.mojom.RecordingService",
      ChromeProcessDescriptor::PROCESS_SERVICE_RECORDING},
@@ -148,10 +147,11 @@ constexpr ThreadType kThreadTypes[] = {
     {"NetworkConfigWatcher",
      ChromeThreadDescriptor::THREAD_NETWORKCONFIGWATCHER},
     {"wasapi_render_thread", ChromeThreadDescriptor::THREAD_WASAPI_RENDER},
+    {"LoaderLockSampler", ChromeThreadDescriptor::THREAD_LOADER_LOCK_SAMPLER},
 };
 
 ChromeProcessDescriptor::ProcessType GetProcessType(const std::string& name) {
-  for (size_t i = 0; i < base::size(kProcessTypes); ++i) {
+  for (size_t i = 0; i < std::size(kProcessTypes); ++i) {
     if (base::MatchPattern(name, kProcessTypes[i].name)) {
       return kProcessTypes[i].type;
     }
@@ -162,7 +162,7 @@ ChromeProcessDescriptor::ProcessType GetProcessType(const std::string& name) {
 
 ChromeThreadDescriptor::ThreadType GetThreadType(
     const char* const thread_name) {
-  for (size_t i = 0; i < base::size(kThreadTypes); ++i) {
+  for (size_t i = 0; i < std::size(kThreadTypes); ++i) {
     if (base::MatchPattern(thread_name, kThreadTypes[i].name)) {
       return kThreadTypes[i].type;
     }

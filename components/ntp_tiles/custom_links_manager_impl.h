@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,14 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/ntp_tiles/custom_links_manager.h"
 #include "components/ntp_tiles/custom_links_store.h"
+#include "components/ntp_tiles/most_visited_sites.h"
 #include "components/ntp_tiles/ntp_tile.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -69,6 +71,10 @@ class CustomLinksManagerImpl : public CustomLinksManager,
   // |OnPreferenceChanged|.
   void StoreLinks();
 
+  // Checks during instantiation to remove custom shortcut links
+  // created through preinstalled apps.
+  void RemoveCustomLinksForPreinstalledApps();
+
   // Returns an iterator into |custom_links_|.
   std::vector<Link>::iterator FindLinkWithUrl(const GURL& url);
 
@@ -85,7 +91,7 @@ class CustomLinksManagerImpl : public CustomLinksManager,
   // and notifies |closure_list_|.
   void OnPreferenceChanged();
 
-  PrefService* const prefs_;
+  const raw_ptr<PrefService> prefs_;
   CustomLinksStore store_;
   std::vector<Link> current_links_;
   // The state of the current list of links before the last action was

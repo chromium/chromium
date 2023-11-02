@@ -1,5 +1,5 @@
-#!/usr/bin/env vpython
-# Copyright 2019 The Chromium Authors. All rights reserved.
+#!/usr/bin/env vpython3
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -85,7 +85,7 @@ XCRESULT_ROOT = """
   }
 }"""
 
-REF_ID = """
+REF_ID = b"""
   {
     "actions": {
       "_values": [{
@@ -143,6 +143,12 @@ TESTS_REF = """
                             "testStatus": {
                               "_value": "Success"
                             },
+                            "duration" : {
+                              "_type" : {
+                                 "_name" : "Double"
+                              },
+                              "_value" : "35.38412606716156"
+                            },
                             "identifier": {
                               "_value": "PageStateTestCase/testMethod1"
                             },
@@ -169,6 +175,12 @@ TESTS_REF = """
                           {
                             "testStatus": {
                               "_value": "Success"
+                            },
+                            "duration" : {
+                              "_type" : {
+                                 "_name" : "Double"
+                              },
+                              "_value" : "28.988606716156"
                             },
                             "identifier": {
                               "_value": "PageStateTestCase/testMethod2"
@@ -435,7 +447,7 @@ class XCode11LogParserTest(test_runner_test.TestCase):
 
   @mock.patch('subprocess.check_output', autospec=True)
   def testXcresulttoolGetRoot(self, mock_process):
-    mock_process.return_value = '%JSON%'
+    mock_process.return_value = b'%JSON%'
     xcode_log_parser.Xcode11LogParser()._xcresulttool_get('xcresult_path')
     self.assertTrue(
         os.path.join(XCODE11_DICT['path'], 'usr', 'bin') in os.environ['PATH'])
@@ -445,7 +457,7 @@ class XCode11LogParserTest(test_runner_test.TestCase):
 
   @mock.patch('subprocess.check_output', autospec=True)
   def testXcresulttoolGetRef(self, mock_process):
-    mock_process.side_effect = [REF_ID, 'JSON']
+    mock_process.side_effect = [REF_ID, b'JSON']
     xcode_log_parser.Xcode11LogParser()._xcresulttool_get('xcresult_path',
                                                           'testsRef')
     self.assertEqual(
@@ -492,17 +504,28 @@ class XCode11LogParserTest(test_runner_test.TestCase):
     self.assertEqual(expected_expected_tests, results.expected_tests())
     seen_failed_test = False
     for test_result in results.test_results:
-      if (test_result.name == 'PageStateTestCase/testZeroContentOffsetAfterLoad'
-         ):
+      if test_result.name == 'PageStateTestCase/testZeroContentOffsetAfterLoad':
         seen_failed_test = True
         self.assertEqual(test_result.test_log, expected_failure_log)
-        crash_file_name = 'attempt_0_PageStateTestCase_testZeroContentOffsetAfterLoad_1.crash'
-        jpeg_file_name = 'attempt_0_PageStateTestCase_testZeroContentOffsetAfterLoad_2.jpeg'
+        self.assertEqual(test_result.duration, None)
+        crash_file_name = (
+            'attempt_0_PageStateTestCase_testZeroContentOffsetAfterLoad_'
+            'Crash_3F0A2B1C-7ADA-436E-A54C-D4C39B8411F8.crash'
+        )
+        jpeg_file_name = (
+            'attempt_0_PageStateTestCase_testZeroContentOffsetAfterLoad'
+            '_kXCTAttachmentLegacyScreenImageData_1'
+            '_6CED1FE5-96CA-47EA-9852-6FADED687262.jpeg')
         self.assertDictEqual(
             {
                 crash_file_name: '/tmp/%s' % crash_file_name,
                 jpeg_file_name: '/tmp/%s' % jpeg_file_name,
             }, test_result.attachments)
+      if test_result.name == 'PageStateTestCase/testMethod1':
+        self.assertEqual(test_result.duration, 35384)
+      if test_result.name == 'PageStateTestCase/testMethod2':
+        self.assertEqual(test_result.duration, 28988)
+
     self.assertTrue(seen_failed_test)
 
   @mock.patch('file_util.zip_and_remove_folder')
@@ -579,14 +602,16 @@ class XCode11LogParserTest(test_runner_test.TestCase):
         'xcresulttool', 'export', '--type', 'file', '--id',
         'SCREENSHOT_REF_ID_IN_FAILURE_SUMMARIES', '--path', XCRESULT_PATH,
         '--output-path',
-        '/tmp/attempt_0_PageStateTestCase_testZeroContentOffsetAfterLoad_2.jpeg'
+        '/tmp/attempt_0_PageStateTestCase_testZeroContentOffsetAfterLoad'
+        '_kXCTAttachmentLegacyScreenImageData_1'
+        '_6CED1FE5-96CA-47EA-9852-6FADED687262.jpeg'
     ])
     mock_process.assert_any_call([
         'xcresulttool', 'export', '--type', 'file', '--id',
         'CRASH_REF_ID_IN_ACTIVITY_SUMMARIES', '--path', XCRESULT_PATH,
         '--output-path',
-        '/tmp/attempt_0_PageStateTestCase_testZeroContentOffsetAfterLoad_1'
-        '.crash'
+        '/tmp/attempt_0_PageStateTestCase_testZeroContentOffsetAfterLoad'
+        '_Crash_3F0A2B1C-7ADA-436E-A54C-D4C39B8411F8.crash'
     ])
     # Ensures screenshots in activitySummaries are not copied.
     self.assertEqual(2, mock_process.call_count)

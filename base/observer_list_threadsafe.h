@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,10 +10,14 @@
 
 #include "base/base_export.h"
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/deterministic_containers.h"
+#include "base/dcheck_is_on.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/synchronization/lock.h"
@@ -79,7 +83,7 @@ class BASE_EXPORT ObserverListThreadSafeBase
     NotificationDataBase(void* observer_list_in, const Location& from_here_in)
         : observer_list(observer_list_in), from_here(from_here_in) {}
 
-    void* observer_list;
+    raw_ptr<void> observer_list;
     Location from_here;
   };
 
@@ -106,9 +110,9 @@ class ObserverListThreadSafe : public internal::ObserverListThreadSafeBase {
     kRemainsNonEmpty,
   };
 
-  ObserverListThreadSafe() = default;
+  ObserverListThreadSafe() : lock_("ObserverListThreadSafe.lock_") {}
   explicit ObserverListThreadSafe(ObserverListPolicy policy)
-      : policy_(policy) {}
+      : policy_(policy), lock_("ObserverListThreadSafe.lock_") {}
   ObserverListThreadSafe(const ObserverListThreadSafe&) = delete;
   ObserverListThreadSafe& operator=(const ObserverListThreadSafe&) = delete;
 
@@ -151,7 +155,7 @@ class ObserverListThreadSafe : public internal::ObserverListThreadSafeBase {
         task_runner->PostTask(
             current_notification->from_here,
             BindOnce(&ObserverListThreadSafe<ObserverType>::NotifyWrapper, this,
-                     observer,
+                     UnsafeDanglingUntriaged(observer),
                      NotificationData(this, observer_id,
                                       current_notification->from_here,
                                       notification_data->method)));
@@ -197,7 +201,7 @@ class ObserverListThreadSafe : public internal::ObserverListThreadSafeBase {
       observer.second.task_runner->PostTask(
           from_here,
           BindOnce(&ObserverListThreadSafe<ObserverType>::NotifyWrapper, this,
-                   observer.first,
+                   base::UnsafeDanglingUntriaged(observer.first),
                    NotificationData(this, observer.second.observer_id,
                                     from_here, method)));
     }
@@ -268,7 +272,7 @@ class ObserverListThreadSafe : public internal::ObserverListThreadSafeBase {
 
   // Keys are observers. Values are the SequencedTaskRunners on which they must
   // be notified.
-  std::unordered_map<ObserverType*, ObserverTaskRunnerInfo> observers_
+  deterministic_unordered_map<ObserverType*, ObserverTaskRunnerInfo> observers_
       GUARDED_BY(lock_);
 };
 

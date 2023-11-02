@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,8 @@
 #include "base/check.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/win/resource_util.h"
+
+#include "base/record_replay.h"
 
 namespace ui {
 
@@ -33,6 +35,11 @@ bool ResourceDataDLL::GetStringPiece(uint16_t resource_id,
   DCHECK(data);
   void* data_ptr;
   size_t data_size;
+
+  // RUN-2620
+  if (recordreplay::IsInReplayCode("ResourceDataDLL::GetStringPiece"))
+    return false;
+
   if (base::win::GetDataResourceFromModule(module_,
                                            resource_id,
                                            &data_ptr,

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/common/proto/webui.pb.h"
 
@@ -187,7 +188,7 @@ class V4Store {
 
   // True if this store has valid contents, either from a successful read
   // from disk or a full update.  This does not mean the checksum was verified.
-  virtual bool HasValidData() const;
+  virtual bool HasValidData();
 
   const std::string& state() const { return state_; }
 
@@ -430,6 +431,10 @@ class V4Store {
 
   // The size of the file on disk for this store.
   int64_t file_size_;
+
+  // A counter used to manage how frequently the value of `has_valid_data_`
+  // below is recorded.
+  uint8_t record_has_valid_data_counter_ = 0;
 
   // True if the file was successfully read+parsed or was populated from
   // a full update.

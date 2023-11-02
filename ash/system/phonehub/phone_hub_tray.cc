@@ -1,12 +1,15 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/system/phonehub/phone_hub_tray.h"
+#include <utility>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/components/phonehub/phone_hub_manager.h"
 #include "ash/components/phonehub/phone_model.h"
+#include "ash/constants/ash_features.h"
+#include "ash/constants/tray_background_view_catalog.h"
 #include "ash/focus_cycler.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -14,6 +17,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/system/eche/eche_icon_loading_indicator_view.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/phonehub/phone_hub_content_view.h"
 #include "ash/system/phonehub/phone_hub_metrics.h"
@@ -27,8 +31,10 @@
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tray_utils.h"
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/events/event.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/border.h"
@@ -38,23 +44,51 @@ namespace ash {
 
 namespace {
 
-// Padding for tray icon (dp; the button that shows the phone_hub menu).
+// Padding for tray icons (dp; the button that shows the phone_hub menu).
 constexpr int kTrayIconMainAxisInset = 6;
 constexpr int kTrayIconCrossAxisInset = 0;
+constexpr int kEcheIconMinSize = 24;
+constexpr int kIconSpacing = 12;
 
-constexpr gfx::Insets kBubblePadding(0, 0, kBubbleBottomPaddingDip, 0);
+constexpr auto kBubblePadding =
+    gfx::Insets::TLBR(0, 0, kBubbleBottomPaddingDip, 0);
 
 }  // namespace
 
 PhoneHubTray::PhoneHubTray(Shelf* shelf)
-    : TrayBackgroundView(shelf), ui_controller_(new PhoneHubUiController()) {
+    : TrayBackgroundView(shelf, TrayBackgroundViewCatalogName::kPhoneHub),
+      ui_controller_(new PhoneHubUiController()) {
   observed_phone_hub_ui_controller_.Observe(ui_controller_.get());
   observed_session_.Observe(Shell::Get()->session_controller());
 
-  auto icon = std::make_unique<views::ImageView>();
+  tray_container()->SetMargin(kTrayIconMainAxisInset, kTrayIconCrossAxisInset);
+  // TODO(nayebi): Think about constructing the eche_icon outside of this class,
+  // either as an input argument or being set through a setter.
+  if (features::IsEcheSWAEnabled()) {
+    auto eche_icon = std::make_unique<views::ImageButton>(base::BindRepeating(
+        &PhoneHubTray::EcheIconActivated, weak_factory_.GetWeakPtr()));
+    eche_icon->SetImageVerticalAlignment(
+        views::ImageButton::VerticalAlignment::ALIGN_MIDDLE);
+    eche_icon->SetImageHorizontalAlignment(
+        views::ImageButton::HorizontalAlignment::ALIGN_CENTER);
+    eche_icon->SetMinimumImageSize(
+        gfx::Size(kEcheIconMinSize, kEcheIconMinSize));
+    eche_icon->SetVisible(false);
+    eche_loading_indicator_ = eche_icon->AddChildView(
+        std::make_unique<EcheIconLoadingIndicatorView>(eche_icon.get()));
+    eche_loading_indicator_->SetVisible(false);
+    eche_icon_ = tray_container()->AddChildView(std::move(eche_icon));
+    tray_container()->SetSpacingBetweenChildren(kIconSpacing);
+  }
+  auto icon = std::make_unique<views::ImageButton>(base::BindRepeating(
+      &PhoneHubTray::PhoneHubIconActivated, weak_factory_.GetWeakPtr()));
+  icon->SetFocusBehavior(FocusBehavior::NEVER);
   icon->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_TRAY_ACCESSIBLE_NAME));
-  tray_container()->SetMargin(kTrayIconMainAxisInset, kTrayIconCrossAxisInset);
+  icon->SetImageVerticalAlignment(
+      views::ImageButton::VerticalAlignment::ALIGN_MIDDLE);
+  icon->SetImageHorizontalAlignment(
+      views::ImageButton::HorizontalAlignment::ALIGN_CENTER);
   icon_ = tray_container()->AddChildView(std::move(icon));
 }
 
@@ -64,7 +98,7 @@ PhoneHubTray::~PhoneHubTray() {
 }
 
 void PhoneHubTray::SetPhoneHubManager(
-    chromeos::phonehub::PhoneHubManager* phone_hub_manager) {
+    phonehub::PhoneHubManager* phone_hub_manager) {
   ui_controller_->SetPhoneHubManager(phone_hub_manager);
 }
 
@@ -131,7 +165,8 @@ void PhoneHubTray::OnPhoneHubUiStateChanged() {
 }
 
 void PhoneHubTray::OnSessionStateChanged(session_manager::SessionState state) {
-  icon_->SetImage(CreateVectorIcon(kPhoneHubPhoneIcon, TrayIconColor(state)));
+  icon_->SetImage(views::ImageButton::STATE_NORMAL,
+                  CreateVectorIcon(kPhoneHubPhoneIcon, TrayIconColor(state)));
 
   TemporarilyDisableAnimation();
 }
@@ -157,7 +192,7 @@ void PhoneHubTray::ShowBubble() {
   ui_controller_->HandleBubbleOpened();
 
   TrayBubbleView::InitParams init_params;
-  init_params.delegate = this;
+  init_params.delegate = GetWeakPtr();
   init_params.parent_window = GetBubbleWindowContainer();
   init_params.anchor_mode = TrayBubbleView::AnchorMode::kRect;
   init_params.anchor_rect = shelf()->GetSystemTrayAnchorRect();
@@ -165,7 +200,6 @@ void PhoneHubTray::ShowBubble() {
   init_params.shelf_alignment = shelf()->alignment();
   init_params.preferred_width = kTrayMenuWidth;
   init_params.close_on_deactivate = true;
-  init_params.has_shadow = false;
   init_params.translucent = true;
   init_params.reroute_event_handler = true;
   init_params.corner_radius = kTrayItemCornerRadius;
@@ -200,6 +234,13 @@ void PhoneHubTray::ShowBubble() {
       content_view_->GetScreenForMetrics());
 }
 
+bool PhoneHubTray::PerformAction(const ui::Event& event) {
+  // By default, if the individual buttons did not handle the event consider it
+  // as a phone hub icon event.
+  PhoneHubIconActivated(event);
+  return true;
+}
+
 TrayBubbleView* PhoneHubTray::GetBubbleView() {
   return bubble_ ? bubble_->bubble_view() : nullptr;
 }
@@ -214,9 +255,12 @@ const char* PhoneHubTray::GetClassName() const {
 
 void PhoneHubTray::OnThemeChanged() {
   TrayBackgroundView::OnThemeChanged();
-  icon_->SetImage(CreateVectorIcon(
-      kPhoneHubPhoneIcon,
-      TrayIconColor(Shell::Get()->session_controller()->GetSessionState())));
+  icon_->SetImage(
+      views::ImageButton::STATE_NORMAL,
+      CreateVectorIcon(
+          kPhoneHubPhoneIcon,
+          TrayIconColor(
+              Shell::Get()->session_controller()->GetSessionState())));
 }
 
 bool PhoneHubTray::CanOpenConnectedDeviceSettings() {
@@ -238,6 +282,11 @@ void PhoneHubTray::HideStatusHeaderView() {
 
   phone_status_view_->SetVisible(false);
   bubble_->bubble_view()->UpdateBubble();
+}
+
+void PhoneHubTray::SetEcheIconActivationCallback(
+    base::RepeatingCallback<bool(const ui::Event&)> callback) {
+  eche_icon_callback_ = std::move(callback);
 }
 
 void PhoneHubTray::CloseBubble() {
@@ -270,6 +319,19 @@ void PhoneHubTray::UpdateVisibility() {
 void PhoneHubTray::TemporarilyDisableAnimation() {
   base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, DisableShowAnimation().Release(), base::Seconds(5));
+}
+
+void PhoneHubTray::EcheIconActivated(const ui::Event& event) {
+  eche_icon_callback_.Run(event);
+}
+
+void PhoneHubTray::PhoneHubIconActivated(const ui::Event& event) {
+  // Simply toggle between visible/invisibvle
+  if (bubble_ && bubble_->bubble_view()->GetVisible()) {
+    CloseBubble();
+  } else {
+    ShowBubble();
+  }
 }
 
 }  // namespace ash

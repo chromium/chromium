@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <GLES3/gl3.h>
 
+#include "base/logging.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/client/raster_interface.h"
@@ -14,6 +15,8 @@
 #include "media/base/video_frame.h"
 #include "media/renderers/video_frame_yuv_mailboxes_holder.h"
 #include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
+#include "third_party/skia/include/core/SkColorType.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSurface.h"
@@ -65,7 +68,7 @@ GrGLenum GetSurfaceColorFormat(GrGLenum format, GrGLenum type) {
   return format;
 }
 
-bool DrawYUVImageToSkSurface(const VideoFrame* video_frame,
+void DrawYUVImageToSkSurface(const VideoFrame* video_frame,
                              sk_sp<SkImage> image,
                              sk_sp<SkSurface> surface,
                              bool use_visible_rect) {
@@ -86,23 +89,6 @@ bool DrawYUVImageToSkSurface(const VideoFrame* video_frame,
   }
 
   surface->flushAndSubmit();
-  return true;
-}
-
-bool YUVPixmapsToSkSurface(GrDirectContext* gr_context,
-                           const VideoFrame* video_frame,
-                           const SkYUVAPixmaps yuva_pixmaps,
-                           sk_sp<SkSurface> surface,
-                           bool use_visible_rect) {
-  auto image =
-      SkImage::MakeFromYUVAPixmaps(gr_context, yuva_pixmaps, GrMipmapped::kNo,
-                                   false, SkColorSpace::MakeSRGB());
-
-  if (!image) {
-    return false;
-  }
-
-  return DrawYUVImageToSkSurface(video_frame, image, surface, use_visible_rect);
 }
 
 }  // namespace
@@ -119,21 +105,18 @@ bool VideoFrameYUVConverter::IsVideoFrameFormatSupported(
 bool VideoFrameYUVConverter::ConvertYUVVideoFrameNoCaching(
     const VideoFrame* video_frame,
     viz::RasterContextProvider* raster_context_provider,
-    const gpu::MailboxHolder& dest_mailbox_holder) {
+    const gpu::MailboxHolder& dest_mailbox_holder,
+    absl::optional<GrParams> gr_params) {
   VideoFrameYUVConverter converter;
   return converter.ConvertYUVVideoFrame(video_frame, raster_context_provider,
-                                        dest_mailbox_holder);
+                                        dest_mailbox_holder, gr_params);
 }
 
 bool VideoFrameYUVConverter::ConvertYUVVideoFrame(
     const VideoFrame* video_frame,
     viz::RasterContextProvider* raster_context_provider,
     const gpu::MailboxHolder& dest_mailbox_holder,
-    unsigned int internal_format,
-    unsigned int type,
-    bool flip_y,
-    bool use_visible_rect,
-    bool use_sk_pixmap) {
+    absl::optional<GrParams> gr_params) {
   DCHECK(video_frame);
   DCHECK(IsVideoFrameFormatSupported(*video_frame))
       << "VideoFrame has an unsupported YUV format " << video_frame->format();
@@ -145,10 +128,15 @@ bool VideoFrameYUVConverter::ConvertYUVVideoFrame(
     holder_ = std::make_unique<VideoFrameYUVMailboxesHolder>();
 
   if (raster_context_provider->GrContext()) {
-    // Only SW VideoFrame direct uploading path use SkPixmap.
     return ConvertFromVideoFrameYUVWithGrContext(
         video_frame, raster_context_provider, dest_mailbox_holder,
-        internal_format, type, flip_y, use_visible_rect, use_sk_pixmap);
+        gr_params.value_or(GrParams()));
+  }
+
+  // The RasterInterface path does not support flip_y or use_visible_rect.
+  if (gr_params) {
+    DCHECK(!gr_params->flip_y);
+    DCHECK(!gr_params->use_visible_rect);
   }
 
   auto* ri = raster_context_provider->RasterInterface();
@@ -159,25 +147,10 @@ bool VideoFrameYUVConverter::ConvertYUVVideoFrame(
   holder_->VideoFrameToMailboxes(video_frame, raster_context_provider,
                                  mailboxes);
   ri->ConvertYUVAMailboxesToRGB(dest_mailbox_holder.mailbox,
-                                holder_->yuva_info().yuvColorSpace(),
+                                holder_->yuva_info().yuvColorSpace(), nullptr,
                                 holder_->yuva_info().planeConfig(),
                                 holder_->yuva_info().subsampling(), mailboxes);
   return true;
-}
-
-bool VideoFrameYUVConverter::ConvertYUVVideoFrameToDstTextureNoCaching(
-    const VideoFrame* video_frame,
-    viz::RasterContextProvider* raster_context_provider,
-    const gpu::MailboxHolder& dest_mailbox_holder,
-    unsigned int internal_format,
-    unsigned int type,
-    bool flip_y,
-    bool use_visible_rect,
-    bool use_sk_pixmap) {
-  VideoFrameYUVConverter converter;
-  return converter.ConvertYUVVideoFrame(
-      video_frame, raster_context_provider, dest_mailbox_holder,
-      internal_format, type, flip_y, use_visible_rect, use_sk_pixmap);
 }
 
 void VideoFrameYUVConverter::ReleaseCachedData() {
@@ -188,11 +161,7 @@ bool VideoFrameYUVConverter::ConvertFromVideoFrameYUVWithGrContext(
     const VideoFrame* video_frame,
     viz::RasterContextProvider* raster_context_provider,
     const gpu::MailboxHolder& dest_mailbox_holder,
-    unsigned int internal_format,
-    unsigned int type,
-    bool flip_y,
-    bool use_visible_rect,
-    bool use_sk_pixmap) {
+    const GrParams& gr_params) {
   gpu::raster::RasterInterface* ri = raster_context_provider->RasterInterface();
   DCHECK(ri);
   ri->WaitSyncTokenCHROMIUM(dest_mailbox_holder.sync_token.GetConstData());
@@ -203,28 +172,6 @@ bool VideoFrameYUVConverter::ConvertFromVideoFrameYUVWithGrContext(
         dest_tex_id, GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM);
   }
 
-  bool result = ConvertFromVideoFrameYUVSkia(
-      video_frame, raster_context_provider, dest_mailbox_holder.texture_target,
-      dest_tex_id, internal_format, type, flip_y, use_visible_rect,
-      use_sk_pixmap);
-
-  if (dest_mailbox_holder.mailbox.IsSharedImage())
-    ri->EndSharedImageAccessDirectCHROMIUM(dest_tex_id);
-  ri->DeleteGpuRasterTexture(dest_tex_id);
-
-  return result;
-}
-
-bool VideoFrameYUVConverter::ConvertFromVideoFrameYUVSkia(
-    const VideoFrame* video_frame,
-    viz::RasterContextProvider* raster_context_provider,
-    unsigned int texture_target,
-    unsigned int texture_id,
-    unsigned int internal_format,
-    unsigned int type,
-    bool flip_y,
-    bool use_visible_rect,
-    bool use_sk_pixmap) {
   // Rendering YUV textures to SkSurface by dst texture
   GrDirectContext* gr_context = raster_context_provider->GrContext();
   DCHECK(gr_context);
@@ -234,47 +181,55 @@ bool VideoFrameYUVConverter::ConvertFromVideoFrameYUVSkia(
 
   // Create SkSurface with dst texture.
   GrGLTextureInfo result_gl_texture_info{};
-  result_gl_texture_info.fID = texture_id;
-  result_gl_texture_info.fTarget = texture_target;
-  result_gl_texture_info.fFormat = GetSurfaceColorFormat(internal_format, type);
+  result_gl_texture_info.fID = dest_tex_id;
+  result_gl_texture_info.fTarget = dest_mailbox_holder.texture_target;
+  result_gl_texture_info.fFormat =
+      GetSurfaceColorFormat(gr_params.internal_format, gr_params.type);
 
-  int result_width = use_visible_rect ? video_frame->visible_rect().width()
-                                      : video_frame->coded_size().width();
-  int result_height = use_visible_rect ? video_frame->visible_rect().height()
-                                       : video_frame->coded_size().height();
+  int result_width = gr_params.use_visible_rect
+                         ? video_frame->visible_rect().width()
+                         : video_frame->coded_size().width();
+  int result_height = gr_params.use_visible_rect
+                          ? video_frame->visible_rect().height()
+                          : video_frame->coded_size().height();
 
   GrBackendTexture result_texture(result_width, result_height, GrMipMapped::kNo,
                                   result_gl_texture_info);
 
+  // Use the same SkColorSpace for the surface and image, so that no color space
+  // conversion is performed.
+  auto source_and_dest_color_space = SkColorSpace::MakeSRGB();
+
   // Use dst texture as SkSurface back resource.
   auto surface = SkSurface::MakeFromBackendTexture(
       gr_context, result_texture,
-      flip_y ? kBottomLeft_GrSurfaceOrigin : kTopLeft_GrSurfaceOrigin, 1,
-      GetCompatibleSurfaceColorType(result_gl_texture_info.fFormat),
-      SkColorSpace::MakeSRGB(), nullptr);
+      gr_params.flip_y ? kBottomLeft_GrSurfaceOrigin : kTopLeft_GrSurfaceOrigin,
+      1, GetCompatibleSurfaceColorType(result_gl_texture_info.fFormat),
+      source_and_dest_color_space, nullptr);
 
   // Terminate if surface cannot be created.
-  if (!surface) {
-    return false;
-  }
-
   bool result = false;
-  if (use_sk_pixmap) {
-    SkYUVAPixmaps yuva_pixmaps = holder_->VideoFrameToSkiaPixmaps(video_frame);
-    DCHECK(yuva_pixmaps.isValid());
-
-    result = YUVPixmapsToSkSurface(gr_context, video_frame, yuva_pixmaps,
-                                   surface, use_visible_rect);
+  if (surface) {
+    auto image = holder_->VideoFrameToSkImage(
+        video_frame, raster_context_provider, source_and_dest_color_space);
+    if (image) {
+      result = true;
+      DrawYUVImageToSkSurface(video_frame, image, surface,
+                              gr_params.use_visible_rect);
+    } else {
+      DLOG(ERROR) << "Failed to create YUV SkImage";
+    }
   } else {
-    auto image =
-        holder_->VideoFrameToSkImage(video_frame, raster_context_provider);
-    result =
-        DrawYUVImageToSkSurface(video_frame, image, surface, use_visible_rect);
-
-    // Release textures to guarantee |holder_| doesn't hold read access on
-    // textures it doesn't own.
-    holder_->ReleaseTextures();
+    DLOG(ERROR) << "Failed to create SkSurface";
   }
+
+  // Release textures to guarantee |holder_| doesn't hold read access on
+  // textures it doesn't own.
+  holder_->ReleaseTextures();
+
+  if (dest_mailbox_holder.mailbox.IsSharedImage())
+    ri->EndSharedImageAccessDirectCHROMIUM(dest_tex_id);
+  ri->DeleteGpuRasterTexture(dest_tex_id);
 
   return result;
 }

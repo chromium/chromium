@@ -1,4 +1,4 @@
-// Copyright (c) 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,7 +37,7 @@ MoveToDesksMenuModel::MoveToDesksMenuModel(
 
 MoveToDesksMenuModel::~MoveToDesksMenuModel() {}
 
-bool MoveToDesksMenuModel::MayHaveMnemonicsAt(int index) const {
+bool MoveToDesksMenuModel::MayHaveMnemonicsAt(size_t index) const {
   // If the label is a user-created desk name, the user might have ampersands so
   // don't process mnemonics for them.
   return (index == assign_to_all_desks_item_index_);

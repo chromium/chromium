@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,35 +6,23 @@
 
 #include <algorithm>
 
+#include "base/time/time.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/navigator_base.h"
-#include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
 namespace {
-
-Settings* GetSettings(ExecutionContext* execution_context) {
-  auto* window = DynamicTo<LocalDOMWindow>(execution_context);
-  return window ? window->GetFrame()->GetSettings() : nullptr;
-}
-
-bool IsInDataSaverHoldbackWebApi(ExecutionContext* execution_context) {
-  Settings* settings = GetSettings(execution_context);
-  if (!settings)
-    return false;
-  return settings->GetDataSaverHoldbackWebApi();
-}
 
 String ConnectionTypeToString(WebConnectionType type) {
   switch (type) {
@@ -147,10 +135,8 @@ double NetworkInformation::downlink() {
 }
 
 bool NetworkInformation::saveData() const {
-  return IsObserving()
-             ? save_data_
-             : GetNetworkStateNotifier().SaveDataEnabled() &&
-                   !IsInDataSaverHoldbackWebApi(GetExecutionContext());
+  return IsObserving() ? save_data_
+                       : GetNetworkStateNotifier().SaveDataEnabled();
 }
 
 void NetworkInformation::ConnectionChange(
@@ -207,8 +193,8 @@ void NetworkInformation::ConnectionChange(
   save_data_ = save_data;
 
   if (type_changed)
-    DispatchEvent(*Event::Create(event_type_names::kTypechange));
-  DispatchEvent(*Event::Create(event_type_names::kChange));
+    DispatchEvent(*Event::Create(event_type_names::kTypechange), "NetworkInformation::ConnectionChange #1");
+  DispatchEvent(*Event::Create(event_type_names::kChange), "NetworkInformation::ConnectionChange #2");
 }
 
 const AtomicString& NetworkInformation::InterfaceName() const {
@@ -300,8 +286,6 @@ NetworkInformation::NetworkInformation(NavigatorBase& navigator)
 
   http_rtt_msec_ = GetNetworkStateNotifier().RoundRtt(Host(), http_rtt);
   downlink_mbps_ = GetNetworkStateNotifier().RoundMbps(Host(), downlink_mbps);
-  save_data_ =
-      save_data_ && !IsInDataSaverHoldbackWebApi(GetExecutionContext());
 
   DCHECK_LE(1u, GetNetworkStateNotifier().RandomizationSalt());
   DCHECK_GE(20u, GetNetworkStateNotifier().RandomizationSalt());

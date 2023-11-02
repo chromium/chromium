@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,12 +9,13 @@
 #include <vector>
 
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "net/base/elements_upload_data_stream.h"
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/upload_bytes_element_reader.h"
 #include "net/http/http_response_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -85,8 +86,7 @@ struct PendingUpload {
                 const std::string& json,
                 int max_depth,
                 ReportingUploader::UploadCallback callback)
-      : state(CREATED),
-        report_origin(report_origin),
+      : report_origin(report_origin),
         url(url),
         isolation_info(isolation_info),
         payload_reader(UploadOwnedBytesElementReader::CreateWithString(json)),
@@ -97,7 +97,7 @@ struct PendingUpload {
     std::move(callback).Run(outcome);
   }
 
-  State state;
+  State state = CREATED;
   const url::Origin report_origin;
   const GURL url;
   const IsolationInfo isolation_info;
@@ -109,7 +109,8 @@ struct PendingUpload {
 
 class ReportingUploaderImpl : public ReportingUploader, URLRequest::Delegate {
  public:
-  ReportingUploaderImpl(const URLRequestContext* context) : context_(context) {
+  explicit ReportingUploaderImpl(const URLRequestContext* context)
+      : context_(context) {
     DCHECK(context_);
   }
 
@@ -198,7 +199,14 @@ class ReportingUploaderImpl : public ReportingUploader, URLRequest::Delegate {
     // in the case of V1 reporting endpoints, and will be null for V0 reports.
     upload->request->set_site_for_cookies(
         upload->isolation_info.site_for_cookies());
-    upload->request->set_initiator(upload->isolation_info.frame_origin());
+    // Prior to using `isolation_info` directly here we built the
+    // `upload->network_anonymization_key` to create the set the
+    // `isolation_info`. As experiments roll out to determine whether network
+    // partitions should be double or triple keyed the isolation_info might have
+    // a null value for `frame_origin`. Thus we should again get it from
+    // `network_anonymization_key` until we can trust
+    // `isolation_info::frame_origin`.
+    upload->request->set_initiator(upload->report_origin);
     upload->request->set_isolation_info(upload->isolation_info);
 
     upload->request->SetExtraRequestHeaderByName(
@@ -282,17 +290,18 @@ class ReportingUploaderImpl : public ReportingUploader, URLRequest::Delegate {
     // Check that the preflight succeeded: it must have an HTTP OK status code,
     // with the following headers:
     // - Access-Control-Allow-Origin: * or the report origin
-    // - Access-Control-Allow-Methods: POST
-    // - Access-Control-Allow-Headers: Content-Type
+    // - Access-Control-Allow-Headers: * or Content-Type
+    // Note that * is allowed here as the credentials mode is never 'include'.
+    // Access-Control-Allow-Methods is not checked, as the preflight is always
+    // for a POST method, which is safelisted.
     URLRequest* request = upload->request.get();
     bool preflight_succeeded =
         (response_code >= 200 && response_code <= 299) &&
         HasHeaderValues(
             request, "Access-Control-Allow-Origin",
             {"*", base::ToLowerASCII(upload->report_origin.Serialize())}) &&
-        HasHeaderValues(request, "Access-Control-Allow-Methods", {"post"}) &&
         HasHeaderValues(request, "Access-Control-Allow-Headers",
-                        {"content-type"});
+                        {"*", "content-type"});
     if (!preflight_succeeded) {
       upload->RunCallback(ReportingUploader::Outcome::FAILURE);
       return;
@@ -318,7 +327,7 @@ class ReportingUploaderImpl : public ReportingUploader, URLRequest::Delegate {
   }
 
  private:
-  const URLRequestContext* context_;
+  raw_ptr<const URLRequestContext> context_;
   std::map<const URLRequest*, std::unique_ptr<PendingUpload>> uploads_;
 };
 

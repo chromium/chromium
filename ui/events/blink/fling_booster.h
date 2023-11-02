@@ -1,10 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_EVENTS_BLINK_FLING_BOOSTER_H_
 #define UI_EVENTS_BLINK_FLING_BOOSTER_H_
 
+#include "base/time/time.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 
 namespace ui {

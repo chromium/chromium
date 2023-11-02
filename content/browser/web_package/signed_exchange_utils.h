@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,6 +36,9 @@ struct URLWithRawString {
   URLWithRawString(base::StringPiece url_string)
       : url(url_string), raw_string(url_string) {}
 };
+
+// Records SignedExchange.LoadResult2 UMA histogram.
+void RecordLoadResultHistogram(SignedExchangeLoadResult result);
 
 // Utility method to call SignedExchangeDevToolsProxy::ReportError() and
 // TRACE_EVENT_INSTANT1 to report the error to both DevTools and about:tracing.
@@ -100,6 +103,8 @@ base::Time GetVerificationTime();
 // Override the time which is used for verifying signed exchange.
 CONTENT_EXPORT void SetVerificationTimeForTesting(
     absl::optional<base::Time> verification_time_for_testing);
+
+bool IsCookielessOnlyExchange(const net::HttpResponseHeaders& inner_headers);
 
 }  // namespace signed_exchange_utils
 }  // namespace content

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,9 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/prefs/pref_change_registrar.h"
+#include "components/prefs/pref_service.h"
+#include "components/safe_browsing/core/browser/safe_browsing_sync_observer.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
 #include "url/gurl.h"
@@ -31,9 +34,10 @@ using ReusedPasswordAccountType =
 class VerdictCacheManager : public history::HistoryServiceObserver,
                             public KeyedService {
  public:
-  explicit VerdictCacheManager(
-      history::HistoryService* history_service,
-      scoped_refptr<HostContentSettingsMap> content_settings);
+  VerdictCacheManager(history::HistoryService* history_service,
+                      scoped_refptr<HostContentSettingsMap> content_settings,
+                      PrefService* pref_service,
+                      std::unique_ptr<SafeBrowsingSyncObserver> sync_observer);
   VerdictCacheManager(const VerdictCacheManager&) = delete;
   VerdictCacheManager& operator=(const VerdictCacheManager&) = delete;
   VerdictCacheManager(VerdictCacheManager&&) = delete;
@@ -100,6 +104,9 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
   void HistoryServiceBeingDeleted(
       history::HistoryService* history_service) override;
 
+  // Called by browsing data remover.
+  void OnCookiesDeleted();
+
   // Returns true if an artificial unsafe URL has been provided using
   // command-line flags.
   static bool has_artificial_unsafe_url();
@@ -123,6 +130,16 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
   FRIEND_TEST_ALL_PREFIXES(VerdictCacheManagerTest,
                            TestCleanUpVerdictOlderThanUpperBound);
 
+  // Enum representing the reason why page load tokens are cleared. Used to log
+  // histograms. Entries must not be removed or reordered.
+  enum class ClearReason {
+    kSafeBrowsingStateChanged = 0,
+    kCookiesDeleted = 1,
+    kSyncStateChanged = 2,
+
+    kMaxValue = kSyncStateChanged
+  };
+
   void ScheduleNextCleanUpAfterInterval(base::TimeDelta interval);
 
   // Removes all the expired verdicts from cache.
@@ -130,6 +147,7 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
   void CleanUpExpiredPhishGuardVerdicts();
   void CleanUpExpiredRealTimeUrlCheckVerdicts();
   void CleanUpExpiredPageLoadTokens();
+  void CleanUpAllPageLoadTokens(ClearReason reason);
 
   // Helper method to remove content settings when URLs are deleted. If
   // |all_history| is true, removes all cached verdicts. Otherwise it removes
@@ -180,6 +198,12 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
   scoped_refptr<HostContentSettingsMap> content_settings_;
 
   base::OneShotTimer cleanup_timer_;
+
+  PrefChangeRegistrar pref_change_registrar_;
+
+  std::unique_ptr<SafeBrowsingSyncObserver> sync_observer_;
+
+  bool is_shut_down_ = false;
 
   base::WeakPtrFactory<VerdictCacheManager> weak_factory_{this};
 

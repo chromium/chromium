@@ -1,23 +1,20 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
 import 'chrome://bluetooth-pairing/strings.m.js';
 
-import {SettingsBluetoothRequestCodePageElement} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_pairing_request_code_page.js';
-import {ButtonState, PairingAuthType} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_types.js';
-import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
+import {SettingsBluetoothRequestCodePageElement} from 'chrome://resources/ash/common/bluetooth/bluetooth_pairing_request_code_page.js';
+import {ButtonState, PairingAuthType} from 'chrome://resources/ash/common/bluetooth/bluetooth_types.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.js';
+import {AudioOutputCapability, DeviceConnectionState, DeviceType} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertEquals, assertTrue} from '../../../chai_assert.js';
 import {eventToPromise} from '../../../test_util.js';
-import {waitAfterNextRender} from '../../../test_util.js';
+
 import {createDefaultBluetoothDevice} from './fake_bluetooth_config.js';
-
-// clang-format on
-
-const mojom = chromeos.bluetoothConfig.mojom;
 
 suite('CrComponentsBluetoothPairingRequestCodePageTest', function() {
   /** @type {?SettingsBluetoothRequestCodePageElement} */
@@ -60,11 +57,11 @@ suite('CrComponentsBluetoothPairingRequestCodePageTest', function() {
             /*id=*/ '123456789',
             /*publicName=*/ deviceName,
             /*connectionState=*/
-            chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected,
+            DeviceConnectionState.kConnected,
             /*opt_nickname=*/ 'device1',
             /*opt_audioCapability=*/
-            mojom.AudioOutputCapability.kCapableOfAudioOutput,
-            /*opt_deviceType=*/ mojom.DeviceType.kMouse);
+            AudioOutputCapability.kCapableOfAudioOutput,
+            /*opt_deviceType=*/ DeviceType.kMouse);
 
         bluetoothPairingRequestCodePage.device = device.deviceProperties;
         bluetoothPairingRequestCodePage.authType =
@@ -94,17 +91,17 @@ suite('CrComponentsBluetoothPairingRequestCodePageTest', function() {
   test(
       'request-code-entered is fired when pair button is clicked',
       async function() {
-        let requestCodePromise = eventToPromise(
+        const requestCodePromise = eventToPromise(
             'request-code-entered', bluetoothPairingRequestCodePage);
         const device = createDefaultBluetoothDevice(
             /*id=*/ '123456789',
             /*publicName=*/ 'BeatsX',
             /*connectionState=*/
-            chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected,
+            DeviceConnectionState.kConnected,
             /*opt_nickname=*/ 'device1',
             /*opt_audioCapability=*/
-            mojom.AudioOutputCapability.kCapableOfAudioOutput,
-            /*opt_deviceType=*/ mojom.DeviceType.kMouse);
+            AudioOutputCapability.kCapableOfAudioOutput,
+            /*opt_deviceType=*/ DeviceType.kMouse);
 
         bluetoothPairingRequestCodePage.device = device.deviceProperties;
         await flushAsync();

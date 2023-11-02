@@ -1,15 +1,13 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/new_tab_page/modules/photos/photos_service_factory.h"
 
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/new_tab_page/modules/photos/photos_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 
@@ -23,10 +21,8 @@ PhotosServiceFactory* PhotosServiceFactory::GetInstance() {
 }
 
 PhotosServiceFactory::PhotosServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "PhotosService",
-          BrowserContextDependencyManager::GetInstance()) {
-  DependsOn(CookieSettingsFactory::GetInstance());
+    : ProfileKeyedServiceFactory("PhotosService") {
+  DependsOn(IdentityManagerFactory::GetInstance());
 }
 
 PhotosServiceFactory::~PhotosServiceFactory() = default;

@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-# Copyright 2020 The Chromium Authors. All rights reserved.
+#!/usr/bin/env python3
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Reports binary size metrics for LaCrOS build artifacts.
@@ -16,6 +16,10 @@ import os
 import subprocess
 import sys
 import tempfile
+SRC_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+sys.path.insert(0, os.path.join(SRC_DIR, 'build', 'util'))
+from lib.results import result_sink
+from lib.results import result_types
 
 
 @contextlib.contextmanager
@@ -55,7 +59,6 @@ with _SysPath(TRACING_PATH):
 _BASE_CHART = {
     'format_version': '0.1',
     'benchmark_name': 'resource_sizes',
-    'benchmark_description': 'LaCrOS resource size information.',
     'trace_rerun_options': [],
     'charts': {}
 }
@@ -88,11 +91,19 @@ class _Group:
     self.track_stripped = track_stripped
     self.track_compressed = track_compressed
 
+  def __eq__(self, other):
+    """Overrides the default implementation"""
+    if isinstance(other, _Group):
+      return (self.paths == other.paths) & (self.title == other.title) & (
+          self.track_stripped == other.track_stripped) & (
+              self.track_compressed == other.track_compressed)
+    return False
 
-# List of disjoint build artifact groups for size tracking. This list should be
-# synched with lacros-amd64-generic-binary-size-rel builder contents (specified
-# in # //infra/config/subprojects/chromium/ci.star) and
-# chromeos-amd64-generic-lacros-internal builder (specified in src-internal).
+# Common artifacts in official builder lacros-arm32 and lacros64 in
+# src-internal. The artifcts can be found in
+# chromium/src-internal/testing/buildbot/archive/lacros64.json and
+# chromium/src-internal/testing/buildbot/archive/lacros-arm32.json
+# chromium/src-internal/testing/buildbot/archive/lacros-arm64.json
 _TRACKED_GROUPS = [
     _Group(paths=['chrome'],
            title='File: chrome',
@@ -101,16 +112,18 @@ _TRACKED_GROUPS = [
     _Group(paths=['chrome_crashpad_handler'],
            title='File: chrome_crashpad_handler'),
     _Group(paths=['icudtl.dat'], title='File: icudtl.dat'),
+    _Group(paths=['icudtl.dat.hash'], title='File: icudtl.dat.hash'),
+    _Group(paths=['libEGL.so'], title='File: libEGL.so'),
+    _Group(paths=['libGLESv2.so'], title='File: libGLESv2.so'),
     _Group(paths=['nacl_helper'], title='File: nacl_helper'),
-    _Group(paths=['nacl_irt_x86_64.nexe'], title='File: nacl_irt_x86_64.nexe'),
     _Group(paths=['resources.pak'], title='File: resources.pak'),
     _Group(paths=[
-        'chrome_100_percent.pak', 'chrome_200_percent.pak', 'headless_lib.pak'
+        'chrome_100_percent.pak', 'chrome_200_percent.pak',
+        'headless_lib_data.pak', 'headless_lib_strings.pak'
     ],
            title='Group: Other PAKs'),
     _Group(paths=['snapshot_blob.bin'], title='Group: Misc'),
     _Group(paths=['locales/'], title='Dir: locales'),
-    _Group(paths=['swiftshader/'], title='Dir: swiftshader'),
     _Group(paths=['WidevineCdm/'], title='Dir: WidevineCdm'),
 ]
 
@@ -240,13 +253,17 @@ def _dump_chart_json(output_dir, chartjson):
 
   histogram_path = os.path.join(output_dir, 'perf_results.json')
   logging.critical('Dumping histograms to %s', histogram_path)
-  with open(histogram_path, 'w') as json_file:
+  with open(histogram_path, 'wb') as json_file:
     json_file.write(histogram_result.stdout)
 
 
 def _run_resource_sizes(args):
   """Main flow to extract and output size data."""
   chartjson = _BASE_CHART.copy()
+  chartjson.update({
+      'benchmark_description':
+      ('LaCrOS %s resource size information.' % args.arch)
+  })
   report_func = perf_tests_results_helper.ReportPerfResult
   total_sizes = collections.Counter()
 
@@ -278,7 +295,25 @@ def _run_resource_sizes(args):
                   value=sizes[_KEY_STRIPPED_GZIPPED],
                   units='bytes')
 
-  for g in _TRACKED_GROUPS:
+  tracked_groups = _TRACKED_GROUPS.copy()
+  # Architecture amd64 requires artifact nacl_irt_x86_64.nexe.
+  if args.arch == 'amd64':
+    tracked_groups.append(
+        _Group(paths=['nacl_irt_x86_64.nexe'],
+               title='File: nacl_irt_x86_64.nexe'))
+  # Architecture arm32 requires artifact nacl_irt_arm.nexe.
+  elif args.arch == 'arm32':
+    tracked_groups.append(
+        _Group(paths=['nacl_irt_arm.nexe'], title='File: nacl_irt_arm.nexe'))
+    tracked_groups.append(
+        _Group(paths=['nacl_helper_bootstrap'],
+               title='File: nacl_helper_bootstrap'))
+  # TODO(https://crbug.com/1356761): remove the following part once nacl files
+  # are available.
+  elif args.arch == 'arm64':
+    tracked_groups.remove(
+        _Group(paths=['nacl_helper'], title='File: nacl_helper'))
+  for g in tracked_groups:
     sizes = sum(
         map(_get_catagorized_filesizes, _visit_paths(args.out_dir, g.paths)),
         collections.Counter())
@@ -304,6 +339,11 @@ def main():
                          required=True,
                          type=os.path.realpath,
                          help='Location of the build artifacts.')
+  argparser.add_argument('--arch',
+                         required=True,
+                         type=str,
+                         help='The architecture of lacros, valid values: amd64,'
+                         ' arm32, arm64')
 
   output_group = argparser.add_mutually_exclusive_group()
 
@@ -344,6 +384,14 @@ def main():
         json.dump(isolated_script_output, output_file)
       with open(args.isolated_script_test_output, 'w') as output_file:
         json.dump(isolated_script_output, output_file)
+  result_sink_client = result_sink.TryInitClient()
+  if result_sink_client:
+    status = result_types.PASS
+    if not isolated_script_output['valid']:
+      status = result_types.UNKNOWN
+    elif isolated_script_output['failures']:
+      status = result_types.FAIL
+    result_sink_client.Post(test_name, status, None, None, None)
 
 
 if __name__ == '__main__':

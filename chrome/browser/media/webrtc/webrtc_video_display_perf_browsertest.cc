@@ -1,11 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <algorithm>
+#include <tuple>
 
 #include "base/json/json_reader.h"
-#include "base/macros.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/trace_event_analyzer.h"
@@ -127,32 +127,31 @@ std::vector<double> ParseGoogMaxDecodeFromWebrtcInternalsTab(
     const std::string& webrtc_internals_stats_json) {
   std::vector<double> goog_decode_ms;
 
-  std::unique_ptr<base::Value> parsed_json =
-      base::JSONReader::ReadDeprecated(webrtc_internals_stats_json);
-  base::DictionaryValue* dictionary = nullptr;
-  if (!parsed_json.get() || !parsed_json->GetAsDictionary(&dictionary))
+  absl::optional<base::Value> parsed_json =
+      base::JSONReader::Read(webrtc_internals_stats_json);
+  if (!parsed_json || !parsed_json->is_dict())
     return goog_decode_ms;
-  ignore_result(parsed_json.release());
+  const base::Value::Dict& dictionary = parsed_json->GetDict();
 
   // |dictionary| should have exactly two entries, one per ssrc.
-  if (!dictionary || dictionary->DictSize() != 2u)
+  if (dictionary.size() != 2u)
     return goog_decode_ms;
 
   // Only a given |dictionary| entry will have a "stats" entry that has a key
   // that ends with "recv-googMaxDecodeMs" inside (it will start with the ssrc
   // id, but we don't care about that). Then collect the string of "values" out
   // of that key and convert those into the |goog_decode_ms| vector of doubles.
-  for (auto dictionary_entry : dictionary->DictItems()) {
-    for (auto ssrc_entry : dictionary_entry.second.DictItems()) {
+  for (auto dictionary_entry : dictionary) {
+    for (auto ssrc_entry : dictionary_entry.second.GetDict()) {
       if (ssrc_entry.first != "stats")
         continue;
 
-      for (auto stat_entry : ssrc_entry.second.DictItems()) {
+      for (auto stat_entry : ssrc_entry.second.GetDict()) {
         if (!base::EndsWith(stat_entry.first, "recv-googMaxDecodeMs",
                             base::CompareCase::SENSITIVE)) {
           continue;
         }
-        base::Value* values_entry = stat_entry.second.FindKey({"values"});
+        const base::Value* values_entry = stat_entry.second.FindKey({"values"});
         if (!values_entry)
           continue;
         base::StringTokenizer values_tokenizer(values_entry->GetString(),
@@ -233,7 +232,7 @@ class WebRtcVideoDisplayPerfBrowserTest
         OpenPageAndGetUserMediaInNewTabWithConstraints(
             embedded_test_server()->GetURL(kMainWebrtcTestHtmlPage),
             "{audio: true, video: false}");
-    const int process_id = right_tab->GetMainFrame()
+    const int process_id = right_tab->GetPrimaryMainFrame()
                                ->GetRenderViewHost()
                                ->GetProcess()
                                ->GetProcess()

@@ -1,15 +1,19 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/wm/window_restore/window_restore_util.h"
 
 #include "ash/public/cpp/app_types_util.h"
+#include "ash/public/cpp/desks_templates_delegate.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/window_state.h"
+#include "base/ranges/algorithm.h"
+#include "components/app_restore/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/aura/client/screen_position_client.h"
 #include "ui/aura/window.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -18,16 +22,39 @@
 
 namespace ash {
 
+namespace {
+
+// If `use_screen` is true we convert to screen coordinates, otherwise we
+// convert to root window coordinates.
+gfx::Rect GetBoundsIgnoringTransforms(const aura::Window* window,
+                                      bool use_screen) {
+  // `aura::Window::Get*Bounds*` is affected by transforms, which may be the
+  // case when in overview mode. Compute the bounds in screen minus the
+  // transform.
+  auto* client = aura::client::GetScreenPositionClient(window->GetRootWindow());
+  DCHECK(client);
+  gfx::Point origin;
+  if (use_screen) {
+    client->ConvertPointToScreenIgnoringTransforms(window, &origin);
+  } else {
+    client->ConvertPointToRootWindowIgnoringTransforms(window, &origin);
+  }
+  return gfx::Rect(origin, window->bounds().size());
+}
+
+}  // namespace
+
 std::unique_ptr<app_restore::WindowInfo> BuildWindowInfo(
     aura::Window* window,
     absl::optional<int> activation_index,
+    bool for_saved_desks,
     const std::vector<aura::Window*>& mru_windows) {
   auto window_info = std::make_unique<app_restore::WindowInfo>();
   int window_activation_index = -1;
   if (activation_index) {
     window_activation_index = *activation_index;
   } else {
-    auto it = std::find(mru_windows.begin(), mru_windows.end(), window);
+    auto it = base::ranges::find(mru_windows, window);
     if (it != mru_windows.end())
       window_activation_index = it - mru_windows.begin();
   }
@@ -56,12 +83,8 @@ std::unique_ptr<app_restore::WindowInfo> BuildWindowInfo(
     if (window_state->HasRestoreBounds()) {
       window_info->current_bounds = window_state->GetRestoreBoundsInScreen();
     } else {
-      // `aura::Window::Get*Bounds*` is affected by transforms, which may be the
-      // case when in overview mode. Compute the bounds in screen minus the
-      // transform.
-      gfx::Rect untransformed_window_bounds = window->bounds();
-      wm::ConvertRectToScreen(window->parent(), &untransformed_window_bounds);
-      window_info->current_bounds = untransformed_window_bounds;
+      window_info->current_bounds =
+          GetBoundsIgnoringTransforms(window, /*use_screen=*/true);
     }
 
     // Window restore does not support restoring fullscreen windows. If a window
@@ -69,18 +92,41 @@ std::unique_ptr<app_restore::WindowInfo> BuildWindowInfo(
     window_info->window_state_type =
         window_state->IsFullscreen()
             ? chromeos::ToWindowStateType(
-                  window->GetProperty(aura::client::kPreFullscreenShowStateKey))
+                  window->GetProperty(aura::client::kRestoreShowStateKey))
             : window_state->GetStateType();
   }
 
-  // Populate the pre minimized show state field if the window is minimized.
+  // Populate the restore show state field that the minimize should restore back
+  // to if the window is minimized.
   if (window_state->IsMinimized()) {
     window_info->pre_minimized_show_state_type =
-        window->GetProperty(aura::client::kPreMinimizedShowStateKey);
+        window->GetProperty(aura::client::kRestoreShowStateKey);
+  }
+
+  if (window_state->IsSnapped()) {
+    // `WindowState::snap_ratio_` is stored as a float between 0 and 1. Convert
+    // it to a percentage here.
+    absl::optional<float> snap_ratio = window_state->snap_ratio();
+    window_info->snap_percentage =
+        snap_ratio.has_value() ? absl::make_optional(std::round(
+                                     100 * window_state->snap_ratio().value()))
+                               : absl::nullopt;
   }
 
   window_info->display_id =
       display::Screen::GetScreen()->GetDisplayNearestWindow(window).id();
+
+  // For saved desks, store the readable app name so that we can have a nice
+  // error message if the user tries to used the saved desk on a device that
+  // doesn't have the app.
+  if (for_saved_desks) {
+    std::string* app_id = window->GetProperty(kAppIDKey);
+    window_info->app_title =
+        app_id ? base::UTF8ToUTF16(
+                     Shell::Get()->desks_templates_delegate()->GetAppShortName(
+                         *app_id))
+               : window->GetTitle();
+  }
 
   // Save window size restriction of ARC app window.
   if (IsArcWindow(window)) {
@@ -89,9 +135,10 @@ std::unique_ptr<app_restore::WindowInfo> BuildWindowInfo(
       auto extra = app_restore::WindowInfo::ArcExtraInfo();
       extra.maximum_size = widget->GetMaximumSize();
       extra.minimum_size = widget->GetMinimumSize();
-      extra.title = window->GetTitle();
-      extra.bounds_in_root = window->GetBoundsInRootWindow();
+      extra.bounds_in_root =
+          GetBoundsIgnoringTransforms(window, /*use_screen=*/false);
       window_info->arc_extra_info = extra;
+      window_info->app_title = window->GetTitle();
     }
   }
 

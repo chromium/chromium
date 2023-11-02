@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <set>
 
-#include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/container_floating_behavior.h"
 #include "ash/keyboard/ui/container_full_width_behavior.h"
 #include "ash/keyboard/ui/display_util.h"
@@ -686,6 +685,10 @@ void KeyboardUIController::SetContainerBehaviorInternal(ContainerType type) {
 }
 
 void KeyboardUIController::ShowKeyboard(bool lock) {
+  // TODO(b/245019967): Delete lock arg.
+  // Outside of unittests, this function is only ever called with
+  // lock = false.
+  // Maybe it could be refactored to not support the lock = true case.
   DVLOG(1) << "ShowKeyboard";
   set_keyboard_locked(lock);
   ShowKeyboardInternal(layout_delegate_->GetContainerForDefaultDisplay());
@@ -832,7 +835,8 @@ void KeyboardUIController::OnTextInputStateChanged(
     // of hiding or the hide duration was very short (transient blur). Instead,
     // the virtual keyboard is shown in response to a user gesture (mouse or
     // touch) that is received while an element has input focus. Showing the
-    // keyboard requires an explicit call to OnShowVirtualKeyboardIfEnabled.
+    // keyboard requires an explicit call to
+    // OnVirtualKeyboardVisibilityChangedIfEnabled.
   }
 }
 
@@ -841,21 +845,15 @@ void KeyboardUIController::ShowKeyboardIfWithinTransientBlurThreshold() {
     ShowKeyboard(false);
 }
 
-void KeyboardUIController::OnShowVirtualKeyboardIfEnabled() {
-  DVLOG(1) << "OnShowVirtualKeyboardIfEnabled: " << IsEnabled();
-  // Calling |ShowKeyboardInternal| may move the keyboard to another display.
-  if (IsEnabled() && !keyboard_locked_)
-    ShowKeyboardInternal(layout_delegate_->GetContainerForDefaultDisplay());
-}
-
 void KeyboardUIController::OnVirtualKeyboardVisibilityChangedIfEnabled(
     bool should_show) {
-  if (base::FeatureList::IsEnabled(chromeos::features::kVirtualKeyboardApi)) {
-    if (should_show) {
-      OnShowVirtualKeyboardIfEnabled();
-    } else {
-      HideKeyboardExplicitlyBySystem();
-    }
+  if (should_show) {
+    DVLOG(1) << "OnVirtualKeyboardVisibilityChangedIfEnabled: " << IsEnabled();
+    // Calling |ShowKeyboardInternal| may move the keyboard to another display.
+    if (IsEnabled() && !keyboard_locked_)
+      ShowKeyboardInternal(layout_delegate_->GetContainerForDefaultDisplay());
+  } else {
+    HideKeyboardExplicitlyBySystem();
   }
 }
 
@@ -1158,7 +1156,7 @@ void KeyboardUIController::EnsureCaretInWorkArea(
   TRACE_EVENT0("vk", "EnsureCaretInWorkArea");
 
   if (IsOverscrollAllowed()) {
-    ime->SetOnScreenKeyboardBounds(occluded_bounds_in_screen);
+    ime->SetVirtualKeyboardBounds(occluded_bounds_in_screen);
   } else if (ime->GetTextInputClient()) {
     ime->GetTextInputClient()->EnsureCaretNotInRect(occluded_bounds_in_screen);
   }

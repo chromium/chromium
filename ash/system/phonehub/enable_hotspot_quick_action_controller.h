@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,10 +13,10 @@ namespace ash {
 // Controller of a quick action item that toggles Locate phone mode.
 class EnableHotspotQuickActionController
     : public QuickActionControllerBase,
-      public chromeos::phonehub::TetherController::Observer {
+      public phonehub::TetherController::Observer {
  public:
   explicit EnableHotspotQuickActionController(
-      chromeos::phonehub::TetherController* tether_controller);
+      phonehub::TetherController* tether_controller);
   ~EnableHotspotQuickActionController() override;
   EnableHotspotQuickActionController(EnableHotspotQuickActionController&) =
       delete;
@@ -27,7 +27,7 @@ class EnableHotspotQuickActionController
   QuickActionItem* CreateItem() override;
   void OnButtonPressed(bool is_now_enabled) override;
 
-  // chromeos::phonehub::TetherController::Observer:
+  // phonehub::TetherController::Observer:
   void OnTetherStatusChanged() override;
 
  private:
@@ -38,7 +38,7 @@ class EnableHotspotQuickActionController
   // Set the item (including icon, label and tooltips) to a certain state.
   void SetState(ActionState state);
 
-  chromeos::phonehub::TetherController* tether_controller_ = nullptr;
+  phonehub::TetherController* tether_controller_ = nullptr;
   QuickActionItem* item_ = nullptr;
 };
 

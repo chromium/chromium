@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,19 +6,18 @@
 
 #include <algorithm>
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/model/app_list_item_list.h"
-#include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_config_provider.h"
+#include "base/i18n/rtl.h"
 #include "base/memory/ptr_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/canvas.h"
-#include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/point.h"
-#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/canvas_image_source.h"
@@ -35,9 +34,6 @@ constexpr int kIconShadowBlur = 5;
 
 // The shadow color of icon.
 constexpr SkColor kIconShadowColor = SkColorSetA(SK_ColorBLACK, 31);
-
-// The default bubble color.
-constexpr SkColor kDefaultBubbleColor = SkColorSetA(gfx::kGoogleGrey100, 0x7A);
 
 // Generates the folder icon with the top 4 child item icons laid in 2x2 tile.
 class FolderImageSource : public gfx::CanvasImageSource {
@@ -116,17 +112,6 @@ void FolderImageSource::DrawIcon(gfx::Canvas* canvas,
 }
 
 void FolderImageSource::Draw(gfx::Canvas* canvas) {
-  // Draw circle for folder bubble.
-  cc::PaintFlags flags;
-  flags.setStyle(cc::PaintFlags::kFill_Style);
-  flags.setAntiAlias(true);
-  flags.setColor(AppListColorProvider::Get()
-                     ? AppListColorProvider::Get()->GetFolderBubbleColor()
-                     : kDefaultBubbleColor);
-  const gfx::PointF bubble_center(size().width() / 2, size().height() / 2);
-  canvas->DrawCircle(bubble_center, app_list_config_.folder_bubble_radius(),
-                     flags);
-
   if (icons_.size() == 0)
     return;
 
@@ -251,11 +236,15 @@ std::vector<gfx::Rect> FolderImage::GetTopIconsBounds(
     // Left icon bounds.
     gfx::Rect left_rect = center_rect;
     left_rect.Offset(-origin_offset, 0);
-    top_icon_bounds.emplace_back(scale_and_translate_bounds(left_rect));
 
     // Right icon bounds.
     gfx::Rect right_rect = center_rect;
     right_rect.Offset(origin_offset, 0);
+
+    if (base::i18n::IsRTL())
+      std::swap(left_rect, right_rect);
+
+    top_icon_bounds.emplace_back(scale_and_translate_bounds(left_rect));
     top_icon_bounds.emplace_back(scale_and_translate_bounds(right_rect));
     return top_icon_bounds;
   }
@@ -263,11 +252,15 @@ std::vector<gfx::Rect> FolderImage::GetTopIconsBounds(
   // Top left icon bounds.
   gfx::Rect top_left_rect = center_rect;
   top_left_rect.Offset(-origin_offset, -origin_offset);
-  top_icon_bounds.emplace_back(scale_and_translate_bounds(top_left_rect));
 
   // Top right icon bounds.
   gfx::Rect top_right_rect = center_rect;
   top_right_rect.Offset(origin_offset, -origin_offset);
+
+  if (base::i18n::IsRTL())
+    std::swap(top_left_rect, top_right_rect);
+
+  top_icon_bounds.emplace_back(scale_and_translate_bounds(top_left_rect));
   top_icon_bounds.emplace_back(scale_and_translate_bounds(top_right_rect));
 
   if (num_items == 3) {
@@ -281,11 +274,15 @@ std::vector<gfx::Rect> FolderImage::GetTopIconsBounds(
   // Bottom left icon bounds.
   gfx::Rect bottom_left_rect = center_rect;
   bottom_left_rect.Offset(-origin_offset, origin_offset);
-  top_icon_bounds.emplace_back(scale_and_translate_bounds(bottom_left_rect));
 
   // Bottom right icon bounds.
   gfx::Rect bottom_right_rect = center_rect;
   bottom_right_rect.Offset(origin_offset, origin_offset);
+
+  if (base::i18n::IsRTL())
+    std::swap(bottom_left_rect, bottom_right_rect);
+
+  top_icon_bounds.emplace_back(scale_and_translate_bounds(bottom_left_rect));
   top_icon_bounds.emplace_back(scale_and_translate_bounds(bottom_right_rect));
   return top_icon_bounds;
 }

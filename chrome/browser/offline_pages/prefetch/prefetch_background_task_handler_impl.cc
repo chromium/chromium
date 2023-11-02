@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -56,12 +56,10 @@ int PrefetchBackgroundTaskHandlerImpl::GetAdditionalBackoffSeconds() const {
 
 std::unique_ptr<net::BackoffEntry>
 PrefetchBackgroundTaskHandlerImpl::GetCurrentBackoff() const {
-  const base::ListValue* value = prefs_->GetList(prefetch_prefs::kBackoff);
-  std::unique_ptr<net::BackoffEntry> result;
-  if (value) {
-    result = net::BackoffEntrySerializer::DeserializeFromValue(
-        *value, &kPrefetchBackoffPolicy, tick_clock_, OfflineTimeNow());
-  }
+  const base::Value::List& value = prefs_->GetList(prefetch_prefs::kBackoff);
+  std::unique_ptr<net::BackoffEntry> result =
+      net::BackoffEntrySerializer::DeserializeFromList(
+          value, &kPrefetchBackoffPolicy, tick_clock_, OfflineTimeNow());
   if (!result)
     return std::make_unique<net::BackoffEntry>(&kPrefetchBackoffPolicy,
                                                tick_clock_);
@@ -116,9 +114,9 @@ void PrefetchBackgroundTaskHandlerImpl::SetTickClockForTesting(
 
 void PrefetchBackgroundTaskHandlerImpl::UpdateBackoff(
     net::BackoffEntry* backoff) {
-  base::Value value =
-      net::BackoffEntrySerializer::SerializeToValue(*backoff, OfflineTimeNow());
-  prefs_->Set(prefetch_prefs::kBackoff, value);
+  base::Value::List serialized =
+      net::BackoffEntrySerializer::SerializeToList(*backoff, OfflineTimeNow());
+  prefs_->SetList(prefetch_prefs::kBackoff, std::move(serialized));
 }
 
 }  // namespace offline_pages

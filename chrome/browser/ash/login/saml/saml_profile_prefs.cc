@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 
 #include "chrome/browser/ash/login/login_constants.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
-#include "chromeos/login/auth/saml_password_attributes.h"
+#include "chromeos/ash/components/login/auth/public/saml_password_attributes.h"
 #include "components/prefs/pref_registry_simple.h"
 
 namespace ash {

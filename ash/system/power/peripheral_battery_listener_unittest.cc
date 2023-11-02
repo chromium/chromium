@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -1030,6 +1030,35 @@ TEST_F(PeripheralBatteryListenerTest, Charger) {
       /*serial_number=*/"", kBatteryEventUpdate);
 }
 
+// TODO(b/215381232): Temporarily support both 'PCHG' name and 'peripheral' name
+// till upstream kernel driver is merged. Remove test case when upstream kernel
+// driver is merged.
+TEST_F(PeripheralBatteryListenerTest, Charger_PCHG) {
+  testing::StrictMock<MockPeripheralBatteryObserver> listener_observer_mock;
+  base::ScopedObservation<PeripheralBatteryListener,
+                          PeripheralBatteryListener::Observer>
+      scoped_listener_obs{&listener_observer_mock};
+  scoped_listener_obs.Observe(battery_listener_.get());
+
+  testing::InSequence sequence;
+
+  EXPECT_CALL(listener_observer_mock,
+              OnAddingBattery(AFIELD(&BI::key, Eq(kTestChargerId))));
+  EXPECT_CALL(
+      listener_observer_mock,
+      OnUpdatedBatteryLevel(
+          AllOf(AFIELD(&BI::key, Eq(kTestChargerId)),
+                AFIELD(&BI::type, Eq(BI::PeripheralType::kStylusViaCharger)),
+                AFIELD(&BI::level, Eq(50)),
+                AFIELD(&BI::charge_status, Eq(BI::ChargeStatus::kCharging)))));
+
+  battery_listener_->PeripheralBatteryStatusReceived(
+      kTestPCHGChargerPath, kTestChargerName, 50,
+      power_manager::
+          PeripheralBatteryStatus_ChargeStatus_CHARGE_STATUS_CHARGING,
+      /*serial_number=*/"", kBatteryEventUpdate);
+}
+
 TEST_F(PeripheralBatteryListenerTest, ChargerError) {
   testing::StrictMock<MockPeripheralBatteryObserver> listener_observer_mock;
   base::ScopedObservation<PeripheralBatteryListener,
@@ -1051,6 +1080,78 @@ TEST_F(PeripheralBatteryListenerTest, ChargerError) {
       kTestChargerPath, kTestChargerName, 50,
       power_manager::PeripheralBatteryStatus_ChargeStatus_CHARGE_STATUS_ERROR,
       /*serial_number=*/"", kBatteryPolledUpdate);
+}
+
+// Check that zero value from charger is accepted, this may happen
+// if it is charging from a deep discharge.
+TEST_F(PeripheralBatteryListenerTest, StylusChargingFromDeepDischarge) {
+  testing::StrictMock<MockPeripheralBatteryObserver> listener_observer_mock;
+  base::ScopedObservation<PeripheralBatteryListener,
+                          PeripheralBatteryListener::Observer>
+      scoped_listener_obs{&listener_observer_mock};
+  scoped_listener_obs.Observe(battery_listener_.get());
+
+  testing::InSequence sequence;
+
+  EXPECT_CALL(listener_observer_mock,
+              OnAddingBattery(AFIELD(&BI::key, Eq(kTestChargerId))));
+  EXPECT_CALL(
+      listener_observer_mock,
+      OnUpdatedBatteryLevel(AllOf(
+          AFIELD(&BI::key, Eq(kTestChargerId)),
+          AFIELD(&BI::type, Eq(BI::PeripheralType::kStylusViaCharger)),
+          AFIELD(&BI::level, Eq(0)),
+          AFIELD(&BI::charge_status, Eq(PeripheralBatteryListener::BatteryInfo::
+                                            ChargeStatus::kCharging)))));
+
+  battery_listener_->PeripheralBatteryStatusReceived(
+      kTestChargerPath, kTestChargerName, 0,
+      power_manager::
+          PeripheralBatteryStatus_ChargeStatus_CHARGE_STATUS_CHARGING,
+      /*serial_number=*/"", kBatteryEventUpdate);
+}
+
+// Check that zero value from charger is accepted, even if there was
+// an existing non-zero value from another stylus.
+TEST_F(PeripheralBatteryListenerTest, StylusChargingFromDeepDischarge2) {
+  testing::StrictMock<MockPeripheralBatteryObserver> listener_observer_mock;
+  base::ScopedObservation<PeripheralBatteryListener,
+                          PeripheralBatteryListener::Observer>
+      scoped_listener_obs{&listener_observer_mock};
+  scoped_listener_obs.Observe(battery_listener_.get());
+
+  const int nonZeroBatteryLevel = 74;
+
+  testing::InSequence sequence;
+
+  EXPECT_CALL(listener_observer_mock,
+              OnAddingBattery(AFIELD(&BI::key, Eq(kTestChargerId))));
+
+  // First establish a stylus is charging at a normal level
+  EXPECT_CALL(
+      listener_observer_mock,
+      OnUpdatedBatteryLevel(AllOf(
+          AFIELD(&BI::key, Eq(kTestChargerId)),
+          AFIELD(&BI::type, Eq(BI::PeripheralType::kStylusViaCharger)),
+          AFIELD(&BI::level, Eq(nonZeroBatteryLevel)),
+          AFIELD(&BI::charge_status, Eq(PeripheralBatteryListener::BatteryInfo::
+                                            ChargeStatus::kCharging)))));
+
+  battery_listener_->PeripheralBatteryStatusReceived(
+      kTestChargerPath, kTestChargerName, nonZeroBatteryLevel,
+      power_manager::
+          PeripheralBatteryStatus_ChargeStatus_CHARGE_STATUS_CHARGING,
+      /*serial_number=*/"", kBatteryEventUpdate);
+
+  // Then put on a stylus that is in deep discharge
+  EXPECT_CALL(listener_observer_mock,
+              OnUpdatedBatteryLevel(AllOf(AFIELD(&BI::level, Eq(0)))));
+
+  battery_listener_->PeripheralBatteryStatusReceived(
+      kTestChargerPath, kTestChargerName, 0,
+      power_manager::
+          PeripheralBatteryStatus_ChargeStatus_CHARGE_STATUS_CHARGING,
+      /*serial_number=*/"", kBatteryEventUpdate);
 }
 
 TEST_F(PeripheralBatteryListenerTest, ChargerErrorTransition) {
@@ -1781,6 +1882,40 @@ TEST_F(PeripheralBatteryListenerTest, StylusBatteryEligibility) {
         kTestStylusBatteryPath, kTestStylusName, 5,
         kTestStylusBatteryStatusDischargingIn, sn, kBatteryEventUpdate);
   }
+}
+
+TEST_F(PeripheralBatteryListenerTest,
+       PostNofiticationWhenDeviceIsConnectedWithLowBattery) {
+  testing::StrictMock<MockPeripheralBatteryObserver> listener_observer_mock;
+  base::ScopedObservation<PeripheralBatteryListener,
+                          PeripheralBatteryListener::Observer>
+      scoped_listener_obs{&listener_observer_mock};
+  scoped_listener_obs.Observe(battery_listener_.get());
+
+  Sequence a;
+  EXPECT_CALL(
+      listener_observer_mock,
+      OnUpdatedBatteryLevel(AllOf(
+          AFIELD(&BI::key, Eq(kBluetoothDeviceId1)), AFIELD(&BI::level, Eq(5)),
+          AFIELD(&BI::battery_report_eligible, Eq(true)),
+          AFIELD(&BI::bluetooth_address, Eq(kBluetoothDeviceAddress1)))))
+      .InSequence(a);
+  EXPECT_CALL(listener_observer_mock,
+              OnAddingBattery(AFIELD(&BI::key, Eq(kBluetoothDeviceId1))));
+  mock_device_1_->SetBatteryInfo(
+      BatteryInfo(BatteryType::kDefault, /*percentage=*/5));
+
+  Sequence b;
+  EXPECT_CALL(
+      listener_observer_mock,
+      OnUpdatedBatteryLevel(AllOf(
+          AFIELD(&BI::key, Eq(kBluetoothDeviceId1)), AFIELD(&BI::level, Eq(5)),
+          AFIELD(&BI::battery_report_eligible, Eq(true)),
+          AFIELD(&BI::bluetooth_address, Eq(kBluetoothDeviceAddress1)))))
+      .InSequence(b);
+
+  battery_listener_->DeviceConnectedStateChanged(
+      mock_adapter_.get(), mock_device_1_.get(), /*is_now_connected=*/true);
 }
 
 // TODO: Test needed for eligibility behaviour of stylus chargers.

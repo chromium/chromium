@@ -1,9 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "services/device/geolocation/wifi_data_provider_lacros.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
@@ -63,7 +64,7 @@ class WifiDataProviderLacrosTest : public testing::Test {
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  WifiPollingPolicy* polling_policy_ = nullptr;
+  raw_ptr<WifiPollingPolicy> polling_policy_ = nullptr;
   scoped_refptr<WifiDataProviderLacros> provider_;
 };
 

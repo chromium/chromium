@@ -1,9 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.keyboard_accessory;
 
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.AUTOFILL_ENABLE_MANUAL_FALLBACK_FOR_VIRTUAL_CARDS;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.AUTOFILL_MANUAL_FALLBACK_ANDROID;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.KEYBOARD_EXTENSION_STATE;
@@ -31,6 +32,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -62,6 +64,8 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Shee
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.widget.InsetObserverView;
+import org.chromium.components.browser_ui.widget.InsetObserverViewSupplier;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.DropdownPopupWindow;
 import org.chromium.ui.base.WindowAndroid;
@@ -75,8 +79,9 @@ import java.util.HashSet;
  * This part of the manual filling component manages the state of the manual filling flow depending
  * on the currently shown tab.
  */
-class ManualFillingMediator extends EmptyTabObserver
-        implements KeyboardAccessoryCoordinator.VisibilityDelegate, View.OnLayoutChangeListener {
+class ManualFillingMediator
+        extends EmptyTabObserver implements KeyboardAccessoryCoordinator.VisibilityDelegate,
+                                            View.OnLayoutChangeListener, BackPressHandler {
     private static final int MINIMAL_AVAILABLE_VERTICAL_SPACE = 128; // in DP.
     private static final int MINIMAL_AVAILABLE_HORIZONTAL_SPACE = 180; // in DP.
 
@@ -96,6 +101,9 @@ class ManualFillingMediator extends EmptyTabObserver
     private BottomSheetController mBottomSheetController;
     private ManualFillingComponent.SoftKeyboardDelegate mSoftKeyboardDelegate;
     private ConfirmationDialogHelper mConfirmationHelper;
+    private BackPressManager mBackPressManager;
+    private final ObservableSupplierImpl<Boolean> mBackPressChangedSupplier =
+            new ObservableSupplierImpl<>();
 
     private final TabObserver mTabObserver = new EmptyTabObserver() {
         @Override
@@ -133,7 +141,7 @@ class ManualFillingMediator extends EmptyTabObserver
 
     void initialize(KeyboardAccessoryCoordinator keyboardAccessory,
             AccessorySheetCoordinator accessorySheet, WindowAndroid windowAndroid,
-            BottomSheetController sheetController,
+            BottomSheetController sheetController, BackPressManager backPressManager,
             ManualFillingComponent.SoftKeyboardDelegate keyboardDelegate,
             ConfirmationDialogHelper confirmationHelper) {
         mActivity = (ChromeActivity) windowAndroid.getActivity().get();
@@ -150,8 +158,13 @@ class ManualFillingMediator extends EmptyTabObserver
         mAccessorySheet.setHeight(3
                 * mActivity.getResources().getDimensionPixelSize(
                         R.dimen.keyboard_accessory_suggestion_height));
-        setInsetObserverViewSupplier(mActivity::getInsetObserverView);
+        setInsetObserverViewSupplier(InsetObserverViewSupplier.from(mWindowAndroid));
         mActivity.findViewById(android.R.id.content).addOnLayoutChangeListener(this);
+        mBackPressManager = backPressManager;
+        mBackPressChangedSupplier.set(shouldHideOnBackPress());
+        if (BackPressManager.isEnabled()) {
+            mBackPressManager.addHandler(this, Type.MANUAL_FILLING);
+        }
         mTabModelObserver = new TabModelSelectorTabModelObserver(mActivity.getTabModelSelector()) {
             @Override
             public void didSelectTab(Tab tab, int type, int lastId) {
@@ -266,17 +279,30 @@ class ManualFillingMediator extends EmptyTabObserver
         mObservedTabs.clear();
         mActivity.getFullscreenManager().removeObserver(mFullscreenObserver);
         mBottomSheetController.removeObserver(mBottomSheetObserver);
+        mBackPressChangedSupplier.set(false);
+        mBackPressManager.removeHandler(this);
+        mBackPressManager = null;
         mWindowAndroid = null;
         mActivity = null;
     }
 
-    boolean handleBackPress() {
-        if (isInitialized()
-                && (is(WAITING_TO_REPLACE) || is(REPLACING_KEYBOARD) || is(FLOATING_SHEET))) {
+    boolean onBackPressed() {
+        if (shouldHideOnBackPress()) {
             pause();
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void handleBackPress() {
+        boolean ret = onBackPressed();
+        assert ret : "This should only be called when mBackPressChangedSupplier yields true";
+    }
+
+    @Override
+    public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+        return mBackPressChangedSupplier;
     }
 
     void dismiss() {
@@ -348,6 +374,7 @@ class ManualFillingMediator extends EmptyTabObserver
 
     private void onPropertyChanged(PropertyObservable<PropertyKey> source, PropertyKey property) {
         assert source == mModel;
+        mBackPressChangedSupplier.set(shouldHideOnBackPress());
         if (property == SHOW_WHEN_VISIBLE) {
             return;
         } else if (property == PORTRAIT_ORIENTATION) {
@@ -424,6 +451,7 @@ class ManualFillingMediator extends EmptyTabObserver
     }
 
     private void enforceStateProperties(@KeyboardExtensionState int extensionState) {
+        TraceEvent.begin("ManualFillingMediator#enforceStateProperties");
         if (requiresVisibleBar(extensionState)) {
             mKeyboardAccessory.show();
         } else {
@@ -447,6 +475,7 @@ class ManualFillingMediator extends EmptyTabObserver
                 compositorViewHolderSupplier.get().requestLayout();
             }
         }
+        TraceEvent.end("ManualFillingMediator#enforceStateProperties");
     }
 
     private void updateKeyboard(@KeyboardExtensionState int extensionState) {
@@ -485,8 +514,12 @@ class ManualFillingMediator extends EmptyTabObserver
         if (VrModuleProvider.getDelegate().isInVr()) return false;
 
         // Don't open the accessory inside the contextual search panel.
-        ContextualSearchManager contextualSearch = mActivity.getContextualSearchManager();
-        if (contextualSearch != null && contextualSearch.isSearchPanelOpened()) return false;
+        ObservableSupplier<ContextualSearchManager> contextualSearchSupplier =
+                mActivity.getContextualSearchManagerSupplier();
+        if (contextualSearchSupplier != null && contextualSearchSupplier.hasValue()
+                && contextualSearchSupplier.get().isSearchPanelOpened()) {
+            return false;
+        }
 
         // If an accessory sheet was opened, the accessory bar must be visible.
         if (mAccessorySheet.isShown()) return true;
@@ -619,12 +652,14 @@ class ManualFillingMediator extends EmptyTabObserver
 
     private void refreshTabs() {
         if (!isInitialized()) return;
+        TraceEvent.begin("ManualFillingMediator#refreshTabs");
         ManualFillingState state = mStateCache.getStateFor(mActivity.getCurrentWebContents());
         state.notifyObservers();
         KeyboardAccessoryData.Tab[] tabs = state.getTabs();
         mAccessorySheet.setTabs(tabs); // Set the sheet tabs first to invalidate the tabs properly.
         mKeyboardAccessory.setTabs(tabs);
         state.requestRecentSheets();
+        TraceEvent.end("ManualFillingMediator#refreshTabs");
     }
 
     @VisibleForTesting
@@ -656,7 +691,10 @@ class ManualFillingMediator extends EmptyTabObserver
     private boolean canCreateSheet(@AccessoryTabType int tabType) {
         if (!isInitialized()) return false;
         switch (tabType) {
-            case AccessoryTabType.CREDIT_CARDS: // Intentional fallthrough.
+            case AccessoryTabType.CREDIT_CARDS:
+                return ChromeFeatureList.isEnabled(AUTOFILL_MANUAL_FALLBACK_ANDROID)
+                        || ChromeFeatureList.isEnabled(
+                                AUTOFILL_ENABLE_MANUAL_FALLBACK_FOR_VIRTUAL_CARDS);
             case AccessoryTabType.ADDRESSES:
                 return ChromeFeatureList.isEnabled(AUTOFILL_MANUAL_FALLBACK_ANDROID);
             case AccessoryTabType.PASSWORDS:
@@ -704,6 +742,11 @@ class ManualFillingMediator extends EmptyTabObserver
 
     private boolean requiresHiddenSheet(int state) {
         return (state & StateProperty.HIDDEN_SHEET) != 0;
+    }
+
+    private boolean shouldHideOnBackPress() {
+        return isInitialized()
+                && (is(WAITING_TO_REPLACE) || is(REPLACING_KEYBOARD) || is(FLOATING_SHEET));
     }
 
     private boolean is(@KeyboardExtensionState int state) {

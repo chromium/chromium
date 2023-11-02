@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,11 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/memory/singleton.h"
+#include "base/time/time.h"
+#include "chromeos/dbus/power/power_manager_client.h"
+#include "chromeos/dbus/power_manager/backlight.pb.h"
 #include "components/exo/wm_helper.h"
+#include "ui/aura/client/drag_drop_client.h"
 #include "ui/aura/client/drag_drop_delegate.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
@@ -22,6 +26,7 @@
 #include "ui/display/manager/display_configurator.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/types/display_snapshot.h"
+#include "ui/display/util/display_util.h"
 #include "ui/wm/core/capture_controller.h"
 #include "ui/wm/public/activation_client.h"
 
@@ -37,9 +42,18 @@ aura::Window* GetPrimaryRoot() {
 ////////////////////////////////////////////////////////////////////////////////
 // WMHelperChromeOS, public:
 
-WMHelperChromeOS::WMHelperChromeOS() : vsync_timing_manager_(this) {}
+WMHelperChromeOS::WMHelperChromeOS() : vsync_timing_manager_(this) {
+  auto* power_manager = chromeos::PowerManagerClient::Get();
+  // May be null in tests
+  if (power_manager)
+    power_manager->AddObserver(this);
+}
 
-WMHelperChromeOS::~WMHelperChromeOS() {}
+WMHelperChromeOS::~WMHelperChromeOS() {
+  auto* power_manager = chromeos::PowerManagerClient::Get();
+  if (power_manager)
+    power_manager->RemoveObserver(this);
+}
 
 WMHelperChromeOS* WMHelperChromeOS::GetInstance() {
   return static_cast<WMHelperChromeOS*>(WMHelper::GetInstance());
@@ -77,6 +91,14 @@ void WMHelperChromeOS::AddFrameThrottlingObserver() {
 void WMHelperChromeOS::RemoveFrameThrottlingObserver() {
   ash::Shell::Get()->frame_throttling_controller()->RemoveArcObserver(
       &vsync_timing_manager_);
+}
+
+void WMHelperChromeOS::AddPowerObserver(WMHelper::PowerObserver* observer) {
+  power_observers_.AddObserver(observer);
+}
+
+void WMHelperChromeOS::RemovePowerObserver(WMHelper::PowerObserver* observer) {
+  power_observers_.RemoveObserver(observer);
 }
 
 void WMHelperChromeOS::AddActivationObserver(
@@ -146,21 +168,12 @@ void WMHelperChromeOS::OnDragExited() {
     observer.OnDragExited();
 }
 
-ui::mojom::DragOperation WMHelperChromeOS::OnPerformDrop(
-    const ui::DropTargetEvent& event,
-    std::unique_ptr<ui::OSExchangeData> data) {
-  auto drop_cb = GetDropCallback(event);
-  auto output_drag_op = ui::mojom::DragOperation::kNone;
-  std::move(drop_cb).Run(event, std::move(data), output_drag_op);
-  return output_drag_op;
-}
-
 aura::client::DragDropDelegate::DropCallback WMHelperChromeOS::GetDropCallback(
     const ui::DropTargetEvent& event) {
   std::vector<WMHelper::DragDropObserver::DropCallback> drop_callbacks;
   for (DragDropObserver& observer : drag_drop_observers_) {
     WMHelper::DragDropObserver::DropCallback drop_cb =
-        observer.GetDropCallback(event);
+        observer.GetDropCallback();
     if (!drop_cb.is_null()) {
       drop_callbacks.push_back(std::move(drop_cb));
     }
@@ -168,6 +181,25 @@ aura::client::DragDropDelegate::DropCallback WMHelperChromeOS::GetDropCallback(
   return base::BindOnce(&WMHelperChromeOS::PerformDrop,
                         weak_ptr_factory_.GetWeakPtr(),
                         std::move(drop_callbacks));
+}
+
+void WMHelperChromeOS::SuspendDone(base::TimeDelta sleep_duration) {
+  for (PowerObserver& observer : power_observers_)
+    observer.SuspendDone();
+}
+
+void WMHelperChromeOS::ScreenBrightnessChanged(
+    const power_manager::BacklightBrightnessChange& change) {
+  for (PowerObserver& observer : power_observers_)
+    observer.ScreenBrightnessChanged(change.percent());
+}
+
+void WMHelperChromeOS::LidEventReceived(
+    chromeos::PowerManagerClient::LidState state,
+    base::TimeTicks timestamp) {
+  for (PowerObserver& observer : power_observers_)
+    observer.LidEventReceived(state ==
+                              chromeos::PowerManagerClient::LidState::OPEN);
 }
 
 void WMHelperChromeOS::AddVSyncParameterObserver(
@@ -224,6 +256,10 @@ aura::client::CursorClient* WMHelperChromeOS::GetCursorClient() {
   return aura::client::GetCursorClient(ash::Shell::GetPrimaryRootWindow());
 }
 
+aura::client::DragDropClient* WMHelperChromeOS::GetDragDropClient() {
+  return aura::client::GetDragDropClient(ash::Shell::GetPrimaryRootWindow());
+}
+
 void WMHelperChromeOS::AddPreTargetHandler(ui::EventHandler* handler) {
   ash::Shell::Get()->AddPreTargetHandler(handler);
 }
@@ -276,7 +312,7 @@ aura::client::CaptureClient* WMHelperChromeOS::GetCaptureClient() {
 }
 
 float GetDefaultDeviceScaleFactor() {
-  if (!display::Display::HasInternalDisplay())
+  if (!display::HasInternalDisplay())
     return 1.0;
 
   if (display::Display::HasForceDeviceScaleFactor())
@@ -292,12 +328,11 @@ float GetDefaultDeviceScaleFactor() {
 
 void WMHelperChromeOS::PerformDrop(
     std::vector<WMHelper::DragDropObserver::DropCallback> drop_callbacks,
-    const ui::DropTargetEvent& event,
     std::unique_ptr<ui::OSExchangeData> data,
     ui::mojom::DragOperation& output_drag_op) {
   for (auto& drop_cb : drop_callbacks) {
     auto operation = ui::mojom::DragOperation::kNone;
-    std::move(drop_cb).Run(event, operation);
+    std::move(drop_cb).Run(operation);
     if (operation != ui::mojom::DragOperation::kNone)
       output_drag_op = operation;
   }

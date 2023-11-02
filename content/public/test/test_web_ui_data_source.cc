@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,7 +23,7 @@ class WebUIDataSourceImplWithPublicData : public WebUIDataSourceImpl {
       const WebUIDataSourceImplWithPublicData&) = delete;
 
   using WebUIDataSourceImpl::GetLocalizedStrings;
-  using WebUIDataSourceImpl::PathToIdrOrDefault;
+  using WebUIDataSourceImpl::URLToIdrOrDefault;
 
  protected:
   explicit WebUIDataSourceImplWithPublicData(const std::string& source_name)
@@ -41,7 +41,7 @@ class TestWebUIDataSourceImpl : public TestWebUIDataSource {
 
   ~TestWebUIDataSourceImpl() override {}
 
-  const base::DictionaryValue* GetLocalizedStrings() override {
+  const base::Value::Dict* GetLocalizedStrings() override {
     return source_->GetLocalizedStrings();
   }
 
@@ -49,8 +49,8 @@ class TestWebUIDataSourceImpl : public TestWebUIDataSource {
     return source_->source()->GetReplacements();
   }
 
-  int PathToIdrOrDefault(const std::string& path) override {
-    return source_->PathToIdrOrDefault(path);
+  int URLToIdrOrDefault(const GURL& url) override {
+    return source_->URLToIdrOrDefault(url);
   }
 
   WebUIDataSource* GetWebUIDataSource() override { return source_.get(); }

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -152,12 +152,11 @@ class MockSnippetsAvailableCallback {
 void ParseJson(const std::string& json,
                SuccessCallback success_callback,
                ErrorCallback error_callback) {
-  base::JSONReader::ValueWithError parsed_json =
-      base::JSONReader::ReadAndReturnValueWithError(json);
-  if (parsed_json.value) {
-    std::move(success_callback).Run(std::move(*parsed_json.value));
+  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(json);
+  if (parsed_json.has_value()) {
+    std::move(success_callback).Run(std::move(*parsed_json));
   } else {
-    std::move(error_callback).Run(std::move(parsed_json.error_message));
+    std::move(error_callback).Run(std::move(parsed_json.error().message));
   }
 }
 

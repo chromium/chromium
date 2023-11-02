@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,7 +19,6 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/font_list.h"
-#include "ui/views/native_cursor.h"
 #include "ui/views/style/platform_style.h"
 
 namespace views {
@@ -60,10 +59,14 @@ void Link::SetForceUnderline(bool force_underline) {
   RecalculateFont();
 }
 
-gfx::NativeCursor Link::GetCursor(const ui::MouseEvent& event) {
+bool Link::GetForceUnderline() const {
+  return force_underline_;
+}
+
+ui::Cursor Link::GetCursor(const ui::MouseEvent& event) {
   if (!GetEnabled())
-    return gfx::kNullCursor;
-  return GetNativeHandCursor();
+    return ui::Cursor();
+  return ui::mojom::CursorType::kHand;
 }
 
 bool Link::GetCanProcessEventsWithinSubtree() const {
@@ -222,7 +225,7 @@ void Link::ConfigureFocus() {
   if (GetText().empty()) {
     SetFocusBehavior(FocusBehavior::NEVER);
   } else {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
 #else
     SetFocusBehavior(FocusBehavior::ALWAYS);
@@ -232,6 +235,7 @@ void Link::ConfigureFocus() {
 
 BEGIN_METADATA(Link, Label)
 ADD_READONLY_PROPERTY_METADATA(SkColor, Color, ui::metadata::SkColorConverter)
+ADD_PROPERTY_METADATA(bool, ForceUnderline)
 END_METADATA
 
 }  // namespace views

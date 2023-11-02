@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,8 +16,6 @@
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
 #include "third_party/blink/public/common/input/web_pointer_event.h"
-#include "ui/events/android/gesture_event_android.h"
-#include "ui/events/android/gesture_event_type.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/gesture_detection/gesture_event_data.h"
@@ -29,6 +27,11 @@
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/vector2d_f.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "ui/events/android/gesture_event_android.h"
+#include "ui/events/android/gesture_event_type.h"
+#endif
 
 using blink::WebGestureDevice;
 using blink::WebGestureEvent;
@@ -365,6 +368,13 @@ WebGestureEvent CreateWebGestureEvent(const GestureEventDetails& details,
       gesture.data.tap.width =
           IfNanUseMaxFloat(details.bounding_box_f().width());
       gesture.data.tap.height =
+          IfNanUseMaxFloat(details.bounding_box_f().height());
+      break;
+    case ET_GESTURE_SHORT_PRESS:
+      gesture.SetType(WebInputEvent::Type::kGestureShortPress);
+      gesture.data.long_press.width =
+          IfNanUseMaxFloat(details.bounding_box_f().width());
+      gesture.data.long_press.height =
           IfNanUseMaxFloat(details.bounding_box_f().height());
       break;
     case ET_GESTURE_LONG_PRESS:
@@ -754,7 +764,7 @@ blink::WebGestureEvent ScrollBeginFromScrollUpdate(
   return scroll_begin;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 std::unique_ptr<WebGestureEvent> CreateWebGestureEventFromGestureEventAndroid(
     const GestureEventAndroid& event) {
   WebInputEvent::Type event_type = WebInputEvent::Type::kUndefined;

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -51,8 +51,9 @@ EduCoexistenceLoginScreen::EduCoexistenceLoginScreen(
 
 EduCoexistenceLoginScreen::~EduCoexistenceLoginScreen() {}
 
-bool EduCoexistenceLoginScreen::MaybeSkip(WizardContext* context) {
-  if (!ProfileManager::GetActiveUserProfile()->IsChild()) {
+bool EduCoexistenceLoginScreen::MaybeSkip(WizardContext& context) {
+  if (context.skip_post_login_screens_for_tests ||
+      !ProfileManager::GetActiveUserProfile()->IsChild()) {
     exit_callback_.Run(Result::SKIPPED);
     return true;
   }

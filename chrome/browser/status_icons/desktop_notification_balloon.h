@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,14 +8,12 @@
 #include <memory>
 #include <string>
 
-#include "base/compiler_specific.h"
-
-namespace gfx {
-class ImageSkia;
-}
-
 namespace message_center {
 struct NotifierId;
+}
+
+namespace ui {
+class ImageModel;
 }
 
 // Provides the notification balloon functionality by using desktop
@@ -30,7 +28,7 @@ class DesktopNotificationBalloon {
 
   virtual ~DesktopNotificationBalloon();
 
-  void DisplayBalloon(const gfx::ImageSkia& icon,
+  void DisplayBalloon(const ui::ImageModel& icon,
                       const std::u16string& title,
                       const std::u16string& contents,
                       const message_center::NotifierId& notifier_id);

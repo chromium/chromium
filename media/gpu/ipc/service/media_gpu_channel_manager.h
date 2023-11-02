@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,11 @@
 
 #include <stdint.h>
 
+#include <map>
 #include <memory>
 #include <unordered_map>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
 #include "ipc/ipc_listener.h"
@@ -46,7 +48,7 @@ class MediaGpuChannelManager
   gpu::GpuChannel* LookupChannel(const base::UnguessableToken& channel_token);
 
  private:
-  gpu::GpuChannelManager* const channel_manager_;
+  const raw_ptr<gpu::GpuChannelManager> channel_manager_;
   std::unordered_map<int32_t, std::unique_ptr<MediaGpuChannel>>
       media_gpu_channels_;
   std::map<base::UnguessableToken, int32_t> token_to_channel_;

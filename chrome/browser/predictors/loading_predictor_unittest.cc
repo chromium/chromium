@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,15 +10,16 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/net/prediction_options.h"
 #include "chrome/browser/predictors/loading_test_util.h"
+#include "chrome/browser/prefetch/prefetch_prefs.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/origin.h"
@@ -47,16 +48,18 @@ class MockPreconnectManager : public PreconnectManager {
   MOCK_METHOD2(StartProxy,
                void(const GURL& url,
                     const std::vector<PreconnectRequest>& requests));
-  MOCK_METHOD2(StartPreresolveHost,
-               void(const GURL& url,
-                    const net::NetworkIsolationKey& network_isolation_key));
-  MOCK_METHOD2(StartPreresolveHosts,
-               void(const std::vector<std::string>& hostnames,
-                    const net::NetworkIsolationKey& network_isolation_key));
+  MOCK_METHOD2(
+      StartPreresolveHost,
+      void(const GURL& url,
+           const net::NetworkAnonymizationKey& network_anonymization_key));
+  MOCK_METHOD2(
+      StartPreresolveHosts,
+      void(const std::vector<std::string>& hostnames,
+           const net::NetworkAnonymizationKey& network_anonymization_key));
   MOCK_METHOD3(StartPreconnectUrl,
                void(const GURL& url,
                     bool allow_credentials,
-                    net::NetworkIsolationKey network_isolation_key));
+                    net::NetworkAnonymizationKey network_anonymization_key));
   MOCK_METHOD1(Stop, void(const GURL& url));
 
   void Start(const GURL& url,
@@ -75,10 +78,11 @@ LoadingPredictorConfig CreateConfig() {
   return config;
 }
 
-// Creates a NetworkIsolationKey for a main frame navigation to URL.
-net::NetworkIsolationKey CreateNetworkIsolationKey(const GURL& main_frame_url) {
-  url::Origin origin = url::Origin::Create(main_frame_url);
-  return net::NetworkIsolationKey(origin, origin);
+// Creates a NetworkAnonymizationKey for a main frame navigation to URL.
+net::NetworkAnonymizationKey CreateNetworkanonymization_key(
+    const GURL& main_frame_url) {
+  net::SchemefulSite site = net::SchemefulSite(main_frame_url);
+  return net::NetworkAnonymizationKey(site, site);
 }
 
 NavigationId GetNextId() {
@@ -100,7 +104,7 @@ class LoadingPredictorTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<LoadingPredictor> predictor_;
-  StrictMock<MockResourcePrefetchPredictor>* mock_predictor_;
+  raw_ptr<StrictMock<MockResourcePrefetchPredictor>> mock_predictor_;
 };
 
 LoadingPredictorTest::~LoadingPredictorTest() = default;
@@ -132,9 +136,8 @@ void LoadingPredictorTest::TearDown() {
 }
 
 void LoadingPredictorTest::SetPreference() {
-  profile_->GetPrefs()->SetInteger(
-      prefs::kNetworkPredictionOptions,
-      chrome_browser_net::NETWORK_PREDICTION_NEVER);
+  prefetch::SetPreloadPagesState(profile_->GetPrefs(),
+                                 prefetch::PreloadPagesState::kNoPreloading);
 }
 
 class LoadingPredictorPreconnectTest : public LoadingPredictorTest {
@@ -144,7 +147,7 @@ class LoadingPredictorPreconnectTest : public LoadingPredictorTest {
  protected:
   void SetPreference() override;
 
-  StrictMock<MockPreconnectManager>* mock_preconnect_manager_;
+  raw_ptr<StrictMock<MockPreconnectManager>> mock_preconnect_manager_;
 };
 
 void LoadingPredictorPreconnectTest::SetUp() {
@@ -157,9 +160,8 @@ void LoadingPredictorPreconnectTest::SetUp() {
 }
 
 void LoadingPredictorPreconnectTest::SetPreference() {
-  profile_->GetPrefs()->SetInteger(
-      prefs::kNetworkPredictionOptions,
-      chrome_browser_net::NETWORK_PREDICTION_ALWAYS);
+  prefetch::SetPreloadPagesState(
+      profile_->GetPrefs(), prefetch::PreloadPagesState::kStandardPreloading);
 }
 
 TEST_F(LoadingPredictorTest, TestOnNavigationStarted) {
@@ -318,10 +320,10 @@ TEST_F(LoadingPredictorTest, TestDontPredictOmniboxHints) {
 
 TEST_F(LoadingPredictorPreconnectTest, TestHandleOmniboxHint) {
   const GURL preconnect_suggestion = GURL("http://search.com/kittens");
-  EXPECT_CALL(
-      *mock_preconnect_manager_,
-      StartPreconnectUrl(preconnect_suggestion, true,
-                         CreateNetworkIsolationKey(preconnect_suggestion)));
+  EXPECT_CALL(*mock_preconnect_manager_,
+              StartPreconnectUrl(
+                  preconnect_suggestion, true,
+                  CreateNetworkanonymization_key(preconnect_suggestion)));
   predictor_->PrepareForPageLoad(preconnect_suggestion, HintOrigin::OMNIBOX,
                                  true);
   // The second suggestion for the same host should be filtered out.
@@ -330,10 +332,10 @@ TEST_F(LoadingPredictorPreconnectTest, TestHandleOmniboxHint) {
                                  true);
 
   const GURL preresolve_suggestion = GURL("http://en.wikipedia.org/wiki/main");
-  url::Origin origin = url::Origin::Create(preresolve_suggestion);
+  net::SchemefulSite site = net::SchemefulSite(preresolve_suggestion);
   EXPECT_CALL(*mock_preconnect_manager_,
               StartPreresolveHost(preresolve_suggestion,
-                                  net::NetworkIsolationKey(origin, origin)));
+                                  net::NetworkAnonymizationKey(site, site)));
   predictor_->PrepareForPageLoad(preresolve_suggestion, HintOrigin::OMNIBOX,
                                  false);
   // The second suggestions should be filtered out as well.
@@ -354,7 +356,7 @@ TEST_F(LoadingPredictorPreconnectTest, TestAddInitialUrlToEmptyPrediction) {
       StartProxy(main_frame_url,
                  std::vector<PreconnectRequest>(
                      {{url::Origin::Create(GURL("http://search.com")), 2,
-                       CreateNetworkIsolationKey(main_frame_url)}})));
+                       CreateNetworkanonymization_key(main_frame_url)}})));
   EXPECT_FALSE(
       predictor_->PrepareForPageLoad(main_frame_url, HintOrigin::NAVIGATION));
 }
@@ -363,16 +365,16 @@ TEST_F(LoadingPredictorPreconnectTest, TestAddInitialUrlToEmptyPrediction) {
 // if the list already contains the origin.
 TEST_F(LoadingPredictorPreconnectTest, TestAddInitialUrlMatchesPrediction) {
   GURL main_frame_url("http://search.com/kittens");
-  net::NetworkIsolationKey network_isolation_key =
-      CreateNetworkIsolationKey(main_frame_url);
+  net::NetworkAnonymizationKey network_anonymization_key =
+      CreateNetworkanonymization_key(main_frame_url);
   PreconnectPrediction prediction = CreatePreconnectPrediction(
       "search.com", true,
       {{url::Origin::Create(GURL("http://search.com")), 1,
-        network_isolation_key},
+        network_anonymization_key},
        {url::Origin::Create(GURL("http://cdn.search.com")), 1,
-        network_isolation_key},
+        network_anonymization_key},
        {url::Origin::Create(GURL("http://ads.search.com")), 0,
-        network_isolation_key}});
+        network_anonymization_key}});
   EXPECT_CALL(*mock_predictor_, PredictPreconnectOrigins(main_frame_url, _))
       .WillOnce(DoAll(SetArgPointee<1>(prediction), Return(true)));
   EXPECT_CALL(
@@ -380,11 +382,11 @@ TEST_F(LoadingPredictorPreconnectTest, TestAddInitialUrlMatchesPrediction) {
       StartProxy(main_frame_url,
                  std::vector<PreconnectRequest>(
                      {{url::Origin::Create(GURL("http://search.com")), 2,
-                       network_isolation_key},
+                       network_anonymization_key},
                       {url::Origin::Create(GURL("http://cdn.search.com")), 1,
-                       network_isolation_key},
+                       network_anonymization_key},
                       {url::Origin::Create(GURL("http://ads.search.com")), 0,
-                       network_isolation_key}})));
+                       network_anonymization_key}})));
   EXPECT_TRUE(
       predictor_->PrepareForPageLoad(main_frame_url, HintOrigin::EXTERNAL));
 }
@@ -394,16 +396,16 @@ TEST_F(LoadingPredictorPreconnectTest, TestAddInitialUrlMatchesPrediction) {
 // url redirects to another host.
 TEST_F(LoadingPredictorPreconnectTest, TestAddInitialUrlDoesntMatchPrediction) {
   GURL main_frame_url("http://search.com/kittens");
-  net::NetworkIsolationKey network_isolation_key =
-      CreateNetworkIsolationKey(main_frame_url);
+  net::NetworkAnonymizationKey network_anonymization_key =
+      CreateNetworkanonymization_key(main_frame_url);
   PreconnectPrediction prediction = CreatePreconnectPrediction(
       "search.com", true,
       {{url::Origin::Create(GURL("http://en.search.com")), 1,
-        network_isolation_key},
+        network_anonymization_key},
        {url::Origin::Create(GURL("http://cdn.search.com")), 1,
-        network_isolation_key},
+        network_anonymization_key},
        {url::Origin::Create(GURL("http://ads.search.com")), 0,
-        network_isolation_key}});
+        network_anonymization_key}});
   EXPECT_CALL(*mock_predictor_, PredictPreconnectOrigins(main_frame_url, _))
       .WillOnce(DoAll(SetArgPointee<1>(prediction), Return(true)));
   EXPECT_CALL(
@@ -411,13 +413,13 @@ TEST_F(LoadingPredictorPreconnectTest, TestAddInitialUrlDoesntMatchPrediction) {
       StartProxy(main_frame_url,
                  std::vector<PreconnectRequest>(
                      {{url::Origin::Create(GURL("http://search.com")), 2,
-                       network_isolation_key},
+                       network_anonymization_key},
                       {url::Origin::Create(GURL("http://en.search.com")), 1,
-                       network_isolation_key},
+                       network_anonymization_key},
                       {url::Origin::Create(GURL("http://cdn.search.com")), 1,
-                       network_isolation_key},
+                       network_anonymization_key},
                       {url::Origin::Create(GURL("http://ads.search.com")), 0,
-                       network_isolation_key}})));
+                       network_anonymization_key}})));
   EXPECT_TRUE(
       predictor_->PrepareForPageLoad(main_frame_url, HintOrigin::EXTERNAL));
 }
@@ -436,28 +438,28 @@ TEST_F(LoadingPredictorPreconnectTest, TestAddInvalidInitialUrl) {
 TEST_F(LoadingPredictorPreconnectTest,
        TestPrepareForPageLoadPredictionProvided) {
   GURL main_frame_url("http://search.com/kittens");
-  net::NetworkIsolationKey network_isolation_key =
-      CreateNetworkIsolationKey(main_frame_url);
+  net::NetworkAnonymizationKey network_anonymization_key =
+      CreateNetworkanonymization_key(main_frame_url);
   EXPECT_CALL(*mock_predictor_, PredictPreconnectOrigins(main_frame_url, _))
       .WillOnce(Return(false));
   PreconnectPrediction prediction = CreatePreconnectPrediction(
       "search.com", true,
       {{url::Origin::Create(GURL("http://cdn1.search.com")), 1,
-        network_isolation_key},
+        network_anonymization_key},
        {url::Origin::Create(GURL("http://cdn2.search.com")), 1,
-        network_isolation_key},
+        network_anonymization_key},
        {url::Origin::Create(GURL("http://cdn3.search.com")), 1,
-        network_isolation_key}});
+        network_anonymization_key}});
   EXPECT_CALL(
       *mock_preconnect_manager_,
       StartProxy(main_frame_url,
                  std::vector<PreconnectRequest>(
                      {{url::Origin::Create(GURL("http://cdn1.search.com")), 1,
-                       network_isolation_key},
+                       network_anonymization_key},
                       {url::Origin::Create(GURL("http://cdn2.search.com")), 1,
-                       network_isolation_key},
+                       network_anonymization_key},
                       {url::Origin::Create(GURL("http://cdn3.search.com")), 1,
-                       network_isolation_key}})));
+                       network_anonymization_key}})));
   EXPECT_TRUE(predictor_->PrepareForPageLoad(
       main_frame_url, HintOrigin::OPTIMIZATION_GUIDE, false, prediction));
 }
@@ -466,8 +468,8 @@ TEST_F(LoadingPredictorPreconnectTest,
 TEST_F(LoadingPredictorPreconnectTest,
        TestPrepareForPageLoadPredictionWithEmptyRequestsProvided) {
   GURL main_frame_url("http://nopredictions.com/");
-  net::NetworkIsolationKey network_isolation_key =
-      CreateNetworkIsolationKey(main_frame_url);
+  net::NetworkAnonymizationKey network_anonymization_key =
+      CreateNetworkanonymization_key(main_frame_url);
   EXPECT_CALL(*mock_predictor_, PredictPreconnectOrigins(main_frame_url, _))
       .WillOnce(Return(false));
   PreconnectPrediction prediction;
@@ -483,13 +485,13 @@ TEST_F(LoadingPredictorPreconnectTest,
   GURL main_frame_url("http://search.com/kittens");
   EXPECT_CALL(*mock_predictor_, PredictPreconnectOrigins(main_frame_url, _))
       .WillRepeatedly(Return(false));
-  net::NetworkIsolationKey network_isolation_key =
-      CreateNetworkIsolationKey(main_frame_url);
+  net::NetworkAnonymizationKey network_anonymization_key =
+      CreateNetworkanonymization_key(main_frame_url);
   EXPECT_CALL(*mock_preconnect_manager_,
               StartProxy(main_frame_url,
                          std::vector<PreconnectRequest>(
                              {{url::Origin::Create(GURL("http://search.com")),
-                               2, network_isolation_key}})));
+                               2, network_anonymization_key}})));
   EXPECT_FALSE(
       predictor_->PrepareForPageLoad(main_frame_url, HintOrigin::NAVIGATION));
 
@@ -498,21 +500,21 @@ TEST_F(LoadingPredictorPreconnectTest,
   PreconnectPrediction prediction = CreatePreconnectPrediction(
       "search.com", true,
       {{url::Origin::Create(GURL("http://cdn1.search.com")), 1,
-        network_isolation_key},
+        network_anonymization_key},
        {url::Origin::Create(GURL("http://cdn2.search.com")), 1,
-        network_isolation_key},
+        network_anonymization_key},
        {url::Origin::Create(GURL("http://cdn3.search.com")), 1,
-        network_isolation_key}});
+        network_anonymization_key}});
   EXPECT_CALL(
       *mock_preconnect_manager_,
       StartProxy(main_frame_url,
                  std::vector<PreconnectRequest>(
                      {{url::Origin::Create(GURL("http://cdn1.search.com")), 1,
-                       network_isolation_key},
+                       network_anonymization_key},
                       {url::Origin::Create(GURL("http://cdn2.search.com")), 1,
-                       network_isolation_key},
+                       network_anonymization_key},
                       {url::Origin::Create(GURL("http://cdn3.search.com")), 1,
-                       network_isolation_key}})));
+                       network_anonymization_key}})));
   EXPECT_TRUE(predictor_->PrepareForPageLoad(
       main_frame_url, HintOrigin::OPTIMIZATION_GUIDE, false, prediction));
 }
@@ -523,16 +525,16 @@ TEST_F(
     LoadingPredictorPreconnectTest,
     TestPrepareForPageLoadPredictionProvidedButHasLocalPreconnectPrediction) {
   GURL main_frame_url("http://search.com/kittens");
-  net::NetworkIsolationKey network_isolation_key =
-      CreateNetworkIsolationKey(main_frame_url);
+  net::NetworkAnonymizationKey network_anonymization_key =
+      CreateNetworkanonymization_key(main_frame_url);
   PreconnectPrediction prediction = CreatePreconnectPrediction(
       "search.com", true,
       {{url::Origin::Create(GURL("http://search.com")), 1,
-        network_isolation_key},
+        network_anonymization_key},
        {url::Origin::Create(GURL("http://cdn.search.com")), 1,
-        network_isolation_key},
+        network_anonymization_key},
        {url::Origin::Create(GURL("http://ads.search.com")), 0,
-        network_isolation_key}});
+        network_anonymization_key}});
   EXPECT_CALL(*mock_predictor_, PredictPreconnectOrigins(main_frame_url, _))
       .WillRepeatedly(DoAll(SetArgPointee<1>(prediction), Return(true)));
   EXPECT_CALL(
@@ -540,11 +542,11 @@ TEST_F(
       StartProxy(main_frame_url,
                  std::vector<PreconnectRequest>(
                      {{url::Origin::Create(GURL("http://search.com")), 2,
-                       network_isolation_key},
+                       network_anonymization_key},
                       {url::Origin::Create(GURL("http://cdn.search.com")), 1,
-                       network_isolation_key},
+                       network_anonymization_key},
                       {url::Origin::Create(GURL("http://ads.search.com")), 0,
-                       network_isolation_key}})));
+                       network_anonymization_key}})));
   EXPECT_TRUE(
       predictor_->PrepareForPageLoad(main_frame_url, HintOrigin::EXTERNAL));
 
@@ -553,21 +555,21 @@ TEST_F(
   prediction = CreatePreconnectPrediction(
       "search.com", true,
       {{url::Origin::Create(GURL("http://cdn1.search.com")), 1,
-        network_isolation_key},
+        network_anonymization_key},
        {url::Origin::Create(GURL("http://cdn2.search.com")), 1,
-        network_isolation_key},
+        network_anonymization_key},
        {url::Origin::Create(GURL("http://cdn3.search.com")), 1,
-        network_isolation_key}});
+        network_anonymization_key}});
   EXPECT_CALL(
       *mock_preconnect_manager_,
       StartProxy(main_frame_url,
                  std::vector<PreconnectRequest>(
                      {{url::Origin::Create(GURL("http://cdn1.search.com")), 1,
-                       network_isolation_key},
+                       network_anonymization_key},
                       {url::Origin::Create(GURL("http://cdn2.search.com")), 1,
-                       network_isolation_key},
+                       network_anonymization_key},
                       {url::Origin::Create(GURL("http://cdn3.search.com")), 1,
-                       network_isolation_key}})));
+                       network_anonymization_key}})));
   EXPECT_TRUE(predictor_->PrepareForPageLoad(
       main_frame_url, HintOrigin::OPTIMIZATION_GUIDE, false, prediction));
 }

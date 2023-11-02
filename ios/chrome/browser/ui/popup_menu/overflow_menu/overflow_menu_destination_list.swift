@@ -1,10 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import SwiftUI
 
 /// A view displaying a list of destinations.
+@available(iOS 15, *)
 struct OverflowMenuDestinationList: View {
   enum Constants {
     /// Padding breakpoints for each width. The ranges should be inclusive of
@@ -28,25 +29,120 @@ struct OverflowMenuDestinationList: View {
 
     /// Range of icon paddings; varies based on view width.
     static let iconPaddingRange: ClosedRange<CGFloat> = 0...3
+
+    /// When the dynamic text size is large, the width of each item is the
+    /// screen width minus a fixed space.
+    static let largeTextSizeSpace: CGFloat = 120
+
+    /// Space above the list pushing them down from the grabber.
+    static let topMargin: CGFloat = 20
+
+    /// The name for the coordinate space of the scroll view, so children can
+    /// find their positioning in the scroll view.
+    static let coordinateSpaceName = "destinations"
   }
+
+  /// `PreferenceKey` to track the leading offset of the scroll view.
+  struct ScrollViewLeadingOffset: PreferenceKey {
+    static var defaultValue: CGFloat = .greatestFiniteMagnitude
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+      value = min(value, nextValue())
+    }
+  }
+
+  /// The current dynamic type size.
+  @Environment(\.sizeCategory) var sizeCategory
+
+  /// The current environment layout direction.
+  @Environment(\.layoutDirection) var layoutDirection: LayoutDirection
 
   /// The destinations for this view.
   var destinations: [OverflowMenuDestination]
 
+  weak var metricsHandler: PopupMenuMetricsHandler?
+
+  @ObservedObject var uiConfiguration: OverflowMenuUIConfiguration
+
+  /// Tracks the list's current offset, to see when it scrolls. When the offset
+  /// is `nil`, scroll tracking is not set up yet. This is necessary because
+  /// in RTL languages, the scroll view has to manually scroll to the right edge
+  /// of the list first.
+  @State var listOffset: CGFloat? = nil
+
   var body: some View {
-    GeometryReader { geometry in
+    VStack {
+      Spacer(minLength: Constants.topMargin)
+      GeometryReader { geometry in
+        scrollView(in: geometry)
+          .coordinateSpace(name: Constants.coordinateSpaceName)
+          .accessibilityIdentifier(kPopupMenuToolsMenuTableViewId)
+      }
+    }
+    .animation(nil)
+    .background(
+      uiConfiguration.highlightDestinationsRow ? Color("destination_highlight_color") : Color.clear
+    )
+    .animation(.linear(duration: kMaterialDuration3))
+    .onPreferenceChange(ScrollViewLeadingOffset.self) { newOffset in
+      // Only alert the handler if scroll tracking has started.
+      if let listOffset = listOffset,
+        newOffset != listOffset
+      {
+        metricsHandler?.popupMenuScrolledHorizontally()
+      }
+      // Only update the offset if scroll tracking has started or the newOffset
+      // is approximately 0 (this starts scroll tracking). In RTL mode, the
+      // offset is not exactly 0, so a strict comparison won't work.
+      if listOffset != nil || (listOffset == nil && abs(newOffset) < 1e-9) {
+        listOffset = newOffset
+      }
+    }
+  }
+
+  @ViewBuilder
+  private func scrollView(in geometry: GeometryProxy) -> some View {
+    ScrollViewReader { proxy in
       ScrollView(.horizontal, showsIndicators: false) {
         let spacing = destinationSpacing(forScreenWidth: geometry.size.width)
-        LazyHStack(spacing: 0) {
-          ForEach(destinations) { destination in
-            OverflowMenuDestinationView(
-              destination: destination, iconSpacing: spacing.iconSpacing,
-              iconPadding: spacing.iconPadding)
+        let layoutParameters: OverflowMenuDestinationView.LayoutParameters =
+          sizeCategory >= .accessibilityMedium
+          ? .horizontal(itemWidth: geometry.size.width - Constants.largeTextSizeSpace)
+          : .vertical(
+            iconSpacing: spacing.iconSpacing,
+            iconPadding: spacing.iconPadding)
+        let alignment: VerticalAlignment = sizeCategory >= .accessibilityMedium ? .center : .top
+
+        ZStack {
+          HStack(alignment: alignment, spacing: 0) {
+            // Make sure the space to the first icon is constant, so add extra
+            // spacing before the first item.
+            Spacer().frame(width: Constants.iconInitialSpace - spacing.iconSpacing)
+            ForEach(destinations) { destination in
+              OverflowMenuDestinationView(
+                destination: destination, layoutParameters: layoutParameters,
+                metricsHandler: metricsHandler
+              ).id(destination.destinationName)
+            }
+          }
+
+          GeometryReader { innerGeometry in
+            let frame = innerGeometry.frame(in: .named(Constants.coordinateSpaceName))
+            let parentWidth = geometry.size.width
+
+            // When the view is RTL, the offset should be calculated from the
+            // right edge.
+            let offset = layoutDirection == .leftToRight ? frame.minX : parentWidth - frame.maxX
+
+            Color.clear
+              .preference(key: ScrollViewLeadingOffset.self, value: offset)
           }
         }
-        // Make sure the space to the first icon is constant, so add extra
-        // spacing before the first item.
-        .padding([.leading], Constants.iconInitialSpace - spacing.iconSpacing)
+      }
+      .onAppear {
+        if layoutDirection == .rightToLeft {
+          proxy.scrollTo(destinations.first?.destinationName)
+        }
+        uiConfiguration.destinationListScreenFrame = geometry.frame(in: .global)
       }
     }
   }

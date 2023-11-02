@@ -1,4 +1,4 @@
-// Copyright (c) 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,21 +12,25 @@
 #include "components/live_caption/live_caption_controller.h"
 #include "components/live_caption/views/caption_bubble.h"
 #include "components/live_caption/views/caption_bubble_model.h"
+#include "components/prefs/pref_service.h"
 
 namespace captions {
 
 // Static
-std::unique_ptr<CaptionBubbleController> CaptionBubbleController::Create() {
-  return std::make_unique<CaptionBubbleControllerViews>();
+std::unique_ptr<CaptionBubbleController> CaptionBubbleController::Create(
+    PrefService* profile_prefs) {
+  return std::make_unique<CaptionBubbleControllerViews>(profile_prefs);
 }
 
-CaptionBubbleControllerViews::CaptionBubbleControllerViews() {
+CaptionBubbleControllerViews::CaptionBubbleControllerViews(
+    PrefService* profile_prefs) {
   caption_bubble_ = new CaptionBubble(
+      profile_prefs,
       base::BindOnce(&CaptionBubbleControllerViews::OnCaptionBubbleDestroyed,
-                     base::Unretained(this)),
-      /* hide_on_inactivity= */ true);
+                     base::Unretained(this)));
   caption_widget_ =
       views::BubbleDialogDelegateView::CreateBubble(caption_bubble_);
+  caption_bubble_->SetCaptionBubbleStyle();
 }
 
 CaptionBubbleControllerViews::~CaptionBubbleControllerViews() {
@@ -64,13 +68,17 @@ bool CaptionBubbleControllerViews::OnTranscription(
 }
 
 void CaptionBubbleControllerViews::OnError(
-    CaptionBubbleContext* caption_bubble_context) {
+    CaptionBubbleContext* caption_bubble_context,
+    CaptionBubbleErrorType error_type,
+    OnErrorClickedCallback error_clicked_callback,
+    OnDoNotShowAgainClickedCallback error_silenced_callback) {
   if (!caption_bubble_)
     return;
   SetActiveModel(caption_bubble_context);
   if (active_model_->IsClosed())
     return;
-  active_model_->OnError();
+  active_model_->OnError(error_type, std::move(error_clicked_callback),
+                         std::move(error_silenced_callback));
 }
 
 void CaptionBubbleControllerViews::OnAudioStreamEnd(

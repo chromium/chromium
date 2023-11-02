@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -161,8 +161,8 @@ void ActivityStorage::AddActivityPeriod(base::Time start,
   DCHECK(!start.is_max());
   DCHECK(!end.is_max());
 
-  DictionaryPrefUpdate update(pref_service_, pref_name_);
-  base::Value* activity_times = update.Get();
+  ScopedDictPrefUpdate update(pref_service_, pref_name_);
+  base::Value::Dict& activity_times = update.Get();
 
   // Assign the period to day buckets in local time.
   base::Time midnight = GetBeginningOfDay(start);
@@ -174,11 +174,11 @@ void ActivityStorage::AddActivityPeriod(base::Time start,
     const std::string key = MakeActivityPeriodPrefKey(day_key, activity_id);
     VLOG(1) << "Add Activity: " << base::Time::FromJavaTime(day_key) << " to "
             << base::Time::FromJavaTime(day_key + activity);
-    const auto previous_activity = activity_times->FindIntPath(key);
+    const auto previous_activity = activity_times.FindIntByDottedPath(key);
     if (previous_activity.has_value()) {
       activity += previous_activity.value();
     }
-    activity_times->SetIntKey(key, activity);
+    activity_times.Set(key, static_cast<int>(activity));
     start = midnight;
   }
 }
@@ -251,9 +251,9 @@ bool ActivityStorage::ParseActivityPeriodPrefKey(const std::string& key,
 void ActivityStorage::ForEachActivityPeriodFromPref(
     const base::RepeatingCallback<
         void(const int64_t, const int64_t, const std::string&)>& f) const {
-  const base::DictionaryValue* stored_activity_periods =
-      pref_service_->GetDictionary(pref_name_);
-  for (const auto item : stored_activity_periods->DictItems()) {
+  const base::Value::Dict& stored_activity_periods =
+      pref_service_->GetDict(pref_name_);
+  for (const auto item : stored_activity_periods) {
     int64_t timestamp;
     std::string activity_id;
     if (!ParseActivityPeriodPrefKey(item.first, &timestamp, &activity_id)) {

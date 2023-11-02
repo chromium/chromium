@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include "chrome/browser/sharesheet/share_action/example_action.h"
 #include "chrome/browser/sharesheet/share_action/share_action.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
-#include "chrome/common/chrome_features.h"
 #include "ui/gfx/vector_icon_types.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -29,11 +28,9 @@ ShareActionCache::ShareActionCache(Profile* profile) {
           profile)) {
     AddShareAction(std::make_unique<NearbyShareAction>(profile));
   }
-  AddShareAction(std::make_unique<ash::sharesheet::DriveShareAction>(profile));
-  if (base::FeatureList::IsEnabled(features::kSharesheetCopyToClipboard)) {
-    AddShareAction(
-        std::make_unique<ash::sharesheet::CopyToClipboardShareAction>(profile));
-  }
+  AddShareAction(std::make_unique<ash::sharesheet::DriveShareAction>());
+  AddShareAction(
+      std::make_unique<ash::sharesheet::CopyToClipboardShareAction>(profile));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
@@ -66,7 +63,7 @@ const gfx::VectorIcon* ShareActionCache::GetVectorIconFromName(
   return &share_action->GetActionIcon();
 }
 
-bool ShareActionCache::HasVisibleActions(const apps::mojom::IntentPtr& intent,
+bool ShareActionCache::HasVisibleActions(const apps::IntentPtr& intent,
                                          bool contains_google_document) {
   for (auto& action : share_actions_) {
     if (action->ShouldShowAction(intent, contains_google_document)) {
@@ -74,6 +71,10 @@ bool ShareActionCache::HasVisibleActions(const apps::mojom::IntentPtr& intent,
     }
   }
   return false;
+}
+
+void ShareActionCache::AddShareActionForTesting() {
+  AddShareAction(std::make_unique<ExampleAction>());
 }
 
 void ShareActionCache::AddShareAction(std::unique_ptr<ShareAction> action) {

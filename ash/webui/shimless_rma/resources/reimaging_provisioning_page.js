@@ -1,35 +1,44 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/icons.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './shimless_rma_shared_css.js';
 import './base_page.js';
 import './icons.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
-import {ProvisioningObserverInterface, ProvisioningObserverReceiver, ProvisioningStatus, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
-
-// TODO(gavindodd): Update text for i18n
-/** @type {!Object<!ProvisioningStatus, string>} */
-const provisioningStatusText = {
-  [ProvisioningStatus.kInProgress]: 'In progress...',
-  [ProvisioningStatus.kComplete]: 'Complete.',
-  [ProvisioningStatus.kFailedBlocking]: 'Failed, blocking.',
-  [ProvisioningStatus.kFailedNonBlocking]: 'Failed, non blocking.',
-};
+import {ProvisioningError, ProvisioningObserverInterface, ProvisioningObserverReceiver, ProvisioningStatus, RmadErrorCode, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
+import {disableNextButton, enableNextButton, executeThenTransitionState, focusPageTitle} from './shimless_rma_util.js';
 
 /**
  * @fileoverview
- * 'reimaging-provisioning-page' enter updated device information if needed.
- *
- * Currently device information is serial number, region and sku. All values are
- * OEM specific.
+ * 'reimaging-provisioning-page' provisions the device then auto-transitions to
+ * the next page once complete.
  */
-export class ReimagingProvisioningPageElement extends PolymerElement {
+
+/**
+ * The prefix for a `ProvisioningError` displayed on the Hardware Error page.
+ * @type {number}
+ */
+export const PROVISIONING_ERROR_CODE_PREFIX = 1000;
+
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const ReimagingProvisioningPageBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
+
+/** @polymer */
+export class ReimagingProvisioningPage extends ReimagingProvisioningPageBase {
   static get is() {
     return 'reimaging-provisioning-page';
   }
@@ -40,21 +49,21 @@ export class ReimagingProvisioningPageElement extends PolymerElement {
 
   static get properties() {
     return {
+      /**
+       * Set by shimless_rma.js.
+       * @type {boolean}
+       */
+      allButtonsDisabled: Boolean,
+
       /** @protected {!ProvisioningStatus} */
       status_: {
         type: Object,
       },
 
-      /** @protected */
-      progress_: {
-        type: Number,
-        value: 0.0,
-      },
-
-      /** @protected */
-      statusString_: {
-        type: String,
-        computed: 'getStatusString_(status_, progress_)',
+      /** @protected {boolean} */
+      shouldShowSpinner_: {
+        type: Boolean,
+        value: true,
       },
     };
   }
@@ -74,44 +83,65 @@ export class ReimagingProvisioningPageElement extends PolymerElement {
         this.provisioningObserverReceiver_.$.bindNewPipeAndPassRemote());
   }
 
-  /**
-   * @protected
-   * @return {string}
-   */
-  getStatusString_() {
-    // TODO(gavindodd): Update text for i18n
-    return provisioningStatusText[this.status_] + ' ' +
-        Math.round(this.progress_ * 100) + '%';
+  /** @override */
+  ready() {
+    super.ready();
+
+    focusPageTitle(this);
   }
 
   /**
    * Implements ProvisioningObserver.onProvisioningUpdated()
-   * TODO(joonbug): Add error handling and display failure using cr-dialog.
-   * @protected
    * @param {!ProvisioningStatus} status
    * @param {number} progress
+   * @param {!ProvisioningError} error
+   * @protected
    */
-  onProvisioningUpdated(status, progress) {
+  onProvisioningUpdated(status, progress, error) {
+    const isErrorStatus = status === ProvisioningStatus.kFailedBlocking ||
+        status === ProvisioningStatus.kFailedNonBlocking;
+    const isWpError = isErrorStatus && error === ProvisioningError.kWpEnabled;
+
+    if (isErrorStatus && !isWpError) {
+      this.dispatchEvent(new CustomEvent('fatal-hardware-error', {
+        bubbles: true,
+        composed: true,
+        detail: {
+          rmadErrorCode: RmadErrorCode.kProvisioningFailed,
+          fatalErrorCode: (PROVISIONING_ERROR_CODE_PREFIX + error),
+        },
+      }));
+    }
+
     this.status_ = status;
-    this.progress_ = progress;
-    const disabled = this.status_ != ProvisioningStatus.kComplete &&
-        this.status_ != ProvisioningStatus.kFailedNonBlocking;
-    this.dispatchEvent(new CustomEvent(
-        'disable-next-button',
-        {bubbles: true, composed: true, detail: disabled},
-        ));
+
+    // Transition to next state when provisioning is complete.
+    if (this.status_ === ProvisioningStatus.kComplete) {
+      this.shouldShowSpinner_ = false;
+      executeThenTransitionState(
+          this, () => this.shimlessRmaService_.provisioningComplete());
+      return;
+    }
+
+    this.shouldShowSpinner_ =
+        isWpError || this.status_ === ProvisioningStatus.kInProgress;
+
+    if (isWpError) {
+      const dialog = /** @type {!CrDialogElement} */ (
+          this.shadowRoot.querySelector('#wpEnabledDialog'));
+      dialog.showModal();
+    }
   }
 
-  /** @return {!Promise<!StateResult>} */
-  onNextButtonClick() {
-    if (this.status_ == ProvisioningStatus.kComplete ||
-        this.status_ == ProvisioningStatus.kFailedNonBlocking) {
-      return this.shimlessRmaService_.provisioningComplete();
-    } else {
-      return Promise.reject(new Error('Provisioning is not complete.'));
-    }
+  /** @protected */
+  onTryAgainButtonClick_() {
+    const dialog = /** @type {!CrDialogElement} */ (
+        this.shadowRoot.querySelector('#wpEnabledDialog'));
+    dialog.close();
+
+    executeThenTransitionState(
+        this, () => this.shimlessRmaService_.retryProvisioning());
   }
 }
 
-customElements.define(
-    ReimagingProvisioningPageElement.is, ReimagingProvisioningPageElement);
+customElements.define(ReimagingProvisioningPage.is, ReimagingProvisioningPage);

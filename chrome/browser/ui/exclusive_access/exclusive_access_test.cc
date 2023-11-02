@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -192,7 +192,7 @@ void ExclusiveAccessTest::Reload() {
 void ExclusiveAccessTest::EnterActiveTabFullscreen() {
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
   FullscreenNotificationObserver fullscreen_observer(browser());
-  browser()->EnterFullscreenModeForTab(tab->GetMainFrame(), {});
+  browser()->EnterFullscreenModeForTab(tab->GetPrimaryMainFrame(), {});
   fullscreen_observer.Wait();
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 namespace {
 
@@ -56,7 +56,8 @@ NotificationAccessSetupOperation::~NotificationAccessSetupOperation() {
   std::move(destructor_callback_).Run();
 }
 
-void NotificationAccessSetupOperation::NotifyStatusChanged(Status new_status) {
+void NotificationAccessSetupOperation::NotifyNotificationStatusChanged(
+    Status new_status) {
   base::UmaHistogramEnumeration("PhoneHub.NotificationAccessSetup.AllStatuses",
                                 new_status);
   if (new_status == Status::kCompletedSuccessfully) {
@@ -68,7 +69,7 @@ void NotificationAccessSetupOperation::NotifyStatusChanged(Status new_status) {
   }
   current_status_ = new_status;
 
-  delegate_->OnStatusChange(new_status);
+  delegate_->OnNotificationStatusChange(new_status);
 }
 
 std::ostream& operator<<(std::ostream& stream,
@@ -100,4 +101,4 @@ std::ostream& operator<<(std::ostream& stream,
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

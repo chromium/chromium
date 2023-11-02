@@ -10,15 +10,7 @@
 <script src="resources/grid-definitions-parsing-utils.js"></script>
 <script src="resources/grid-tracks-length.js"></script>
 
-<div id="handMadeAutoFillRows" class="grid tallGrid handMadeMoreThanThousandAutoFillRows"></div>
-<div id="handMadeAutoFitRows" class="grid tallGrid handMadeMoreThanThousandAutoFitRows">
-    <div>Item1</div>
-    <div>Item2</div>
-    <div class="lastRow">Item3</div>
-</div>
-
-<div id="handMadeAutoFillCols" class="grid wideGrid handMadeMoreThanThousandAutoFillCols"></div>
-<div id="handMadeAutoFitCols" class="grid wideGrid handMadeMoreThanThousandAutoFitCols">
+<div id="wideAutoFitGridReversed" class="grid wideGrid lotsOfFixedRepeatWithAutoFitColsReversed">
     <div>Item1</div>
     <div>Item2</div>
     <div class="lastColumn">Item3</div>
@@ -27,23 +19,12 @@
 <script>
 
 test(function() {
-     var autoFillGrid = testElement("handMadeAutoFillRows", "grid-template-rows", 100000);
-     var autoFitGrid = testElement("handMadeAutoFitRows", "grid-template-rows", 100000);
+     var autoFitGrid = testElement("wideAutoFitGridReversed", "grid-template-columns", 5034005);
 
-     assert_equals(autoFillGrid[100000 - 1], "10px");
-     assert_equals(autoFillGrid[0], "10px");
-     assert_equals(autoFitGrid[100000 - 1], "10px");
-     assert_equals(autoFitGrid[0], "10px");
-}, "Test that we don't crash when there are more than kGridMaxTracks rows in the auto repeat <track-list>.");
-
-test(function() {
-     var autoFillGrid = testElement("handMadeAutoFillCols", "grid-template-columns", 100000);
-     var autoFitGrid = testElement("handMadeAutoFitCols", "grid-template-columns", 100000);
-
-     assert_equals(autoFillGrid[100000 - 1], "10px");
-     assert_equals(autoFillGrid[0], "10px");
-     assert_equals(autoFitGrid[100000 - 1], "10px");
-     assert_equals(autoFitGrid[0], "10px");
-}, "Test that we don't crash when there are more than kGridMaxTracks columns in the auto repeat <track-list>.");
+     assert_equals(autoFitGrid[5034005 - 1], "8px");
+     assert_equals(autoFitGrid[5034005 - 2], "0px");
+     assert_equals(autoFitGrid[0], "1px");
+     assert_equals(autoFitGrid[1], "1px");
+}, "Test that we don't get more than kGridMaxTracks repetitions even on very wide grids (auto repeat tracks clamped).");
 
 </script>

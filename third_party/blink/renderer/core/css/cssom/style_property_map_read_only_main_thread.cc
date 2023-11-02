@@ -1,4 +1,4 @@
-// Copyright 2018 the chromium authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,7 +24,10 @@ namespace blink {
 namespace {
 
 class StylePropertyMapIterationSource final
-    : public PairIterable<String, CSSStyleValueVector>::IterationSource {
+    : public PairIterable<String,
+                          IDLString,
+                          CSSStyleValueVector,
+                          IDLSequence<CSSStyleValue>>::IterationSource {
  public:
   explicit StylePropertyMapIterationSource(
       HeapVector<StylePropertyMapReadOnlyMainThread::StylePropertyMapEntry>
@@ -47,7 +50,8 @@ class StylePropertyMapIterationSource final
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(values_);
-    PairIterable<String, CSSStyleValueVector>::IterationSource::Trace(visitor);
+    PairIterable<String, IDLString, CSSStyleValueVector,
+                 IDLSequence<CSSStyleValue>>::IterationSource::Trace(visitor);
   }
 
  private:
@@ -84,7 +88,7 @@ CSSStyleValue* StylePropertyMapReadOnlyMainThread::get(
       (name->IsCustomProperty() && value->IsValueList())) {
     CSSStyleValueVector values =
         StyleValueFactory::CssValueToStyleValueVector(*name, *value);
-    return values.IsEmpty() ? nullptr : values[0];
+    return values.empty() ? nullptr : values[0];
   }
 
   return StyleValueFactory::CssValueToStyleValue(*name, *value);
@@ -122,7 +126,7 @@ bool StylePropertyMapReadOnlyMainThread::has(
     const ExecutionContext* execution_context,
     const String& property_name,
     ExceptionState& exception_state) const {
-  return !getAll(execution_context, property_name, exception_state).IsEmpty();
+  return !getAll(execution_context, property_name, exception_state).empty();
 }
 
 StylePropertyMapReadOnlyMainThread::IterationSource*
@@ -144,7 +148,7 @@ CSSStyleValue* StylePropertyMapReadOnlyMainThread::GetShorthandProperty(
   DCHECK(CSSProperty::IsShorthand(name));
   const CSSProperty& property = CSSProperty::Get(name.Id());
   const auto serialization = SerializationForShorthand(property);
-  if (serialization.IsEmpty())
+  if (serialization.empty())
     return nullptr;
   return MakeGarbageCollected<CSSUnsupportedStyleValue>(
       CSSPropertyName(property.PropertyID()), serialization);

@@ -104,8 +104,8 @@ void WebURLResponse::SetLoadTiming(
   timing->SetRequestTime(mojo_timing.request_start);
   timing->SetProxyStart(mojo_timing.proxy_resolve_start);
   timing->SetProxyEnd(mojo_timing.proxy_resolve_end);
-  timing->SetDnsStart(mojo_timing.connect_timing.dns_start);
-  timing->SetDnsEnd(mojo_timing.connect_timing.dns_end);
+  timing->SetDomainLookupStart(mojo_timing.connect_timing.domain_lookup_start);
+  timing->SetDomainLookupEnd(mojo_timing.connect_timing.domain_lookup_end);
   timing->SetConnectStart(mojo_timing.connect_timing.connect_start);
   timing->SetConnectEnd(mojo_timing.connect_timing.connect_end);
   timing->SetWorkerStart(mojo_timing.service_worker_start_time);
@@ -221,38 +221,16 @@ void WebURLResponse::SetHasMajorCertificateErrors(bool value) {
   resource_response_->SetHasMajorCertificateErrors(value);
 }
 
-void WebURLResponse::SetCTPolicyCompliance(
-    net::ct::CTPolicyCompliance compliance) {
-  switch (compliance) {
-    case net::ct::CTPolicyCompliance::
-        CT_POLICY_COMPLIANCE_DETAILS_NOT_AVAILABLE:
-    case net::ct::CTPolicyCompliance::CT_POLICY_BUILD_NOT_TIMELY:
-      resource_response_->SetCTPolicyCompliance(
-          ResourceResponse::kCTPolicyComplianceDetailsNotAvailable);
-      break;
-    case net::ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS:
-    case net::ct::CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS:
-      resource_response_->SetCTPolicyCompliance(
-          ResourceResponse::kCTPolicyDoesNotComply);
-      break;
-    case net::ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS:
-      resource_response_->SetCTPolicyCompliance(
-          ResourceResponse::kCTPolicyComplies);
-      break;
-    case net::ct::CTPolicyCompliance::CT_POLICY_COUNT:
-      NOTREACHED();
-      resource_response_->SetCTPolicyCompliance(
-          ResourceResponse::kCTPolicyComplianceDetailsNotAvailable);
-      break;
-  };
-}
-
 void WebURLResponse::SetIsLegacyTLSVersion(bool value) {
   resource_response_->SetIsLegacyTLSVersion(value);
 }
 
 void WebURLResponse::SetHasRangeRequested(bool value) {
   resource_response_->SetHasRangeRequested(value);
+}
+
+bool WebURLResponse::TimingAllowPassed() const {
+  return resource_response_->TimingAllowPassed();
 }
 
 void WebURLResponse::SetTimingAllowPassed(bool value) {
@@ -289,6 +267,10 @@ bool WebURLResponse::WasFetchedViaServiceWorker() const {
 
 void WebURLResponse::SetWasFetchedViaServiceWorker(bool value) {
   resource_response_->SetWasFetchedViaServiceWorker(value);
+}
+
+void WebURLResponse::SetArrivalTimeAtRenderer(base::TimeTicks value) {
+  resource_response_->SetArrivalTimeAtRenderer(value);
 }
 
 network::mojom::FetchResponseSource
@@ -350,7 +332,7 @@ void WebURLResponse::SetCorsExposedHeaderNames(
     const WebVector<WebString>& header_names) {
   Vector<String> exposed_header_names;
   exposed_header_names.Append(
-      header_names.Data(), base::checked_cast<wtf_size_t>(header_names.size()));
+      header_names.data(), base::checked_cast<wtf_size_t>(header_names.size()));
   resource_response_->SetCorsExposedHeaderNames(exposed_header_names);
 }
 
@@ -374,6 +356,15 @@ network::mojom::IPAddressSpace WebURLResponse::AddressSpace() const {
 void WebURLResponse::SetAddressSpace(
     network::mojom::IPAddressSpace remote_ip_address_space) {
   resource_response_->SetAddressSpace(remote_ip_address_space);
+}
+
+network::mojom::IPAddressSpace WebURLResponse::ClientAddressSpace() const {
+  return resource_response_->ClientAddressSpace();
+}
+
+void WebURLResponse::SetClientAddressSpace(
+    network::mojom::IPAddressSpace client_address_space) {
+  resource_response_->SetClientAddressSpace(client_address_space);
 }
 
 void WebURLResponse::SetIsValidated(bool is_validated) {
@@ -426,6 +417,11 @@ WebString WebURLResponse::AlpnNegotiatedProtocol() const {
 void WebURLResponse::SetAlpnNegotiatedProtocol(
     const WebString& alpn_negotiated_protocol) {
   resource_response_->SetAlpnNegotiatedProtocol(alpn_negotiated_protocol);
+}
+
+void WebURLResponse::SetAlternateProtocolUsage(
+    const net::AlternateProtocolUsage alternate_protocol_usage) {
+  resource_response_->SetAlternateProtocolUsage(alternate_protocol_usage);
 }
 
 bool WebURLResponse::HasAuthorizationCoveredByWildcardOnPreflight() const {
@@ -502,5 +498,9 @@ bool WebURLResponse::RequestIncludeCredentials() const {
 }
 
 WebURLResponse::WebURLResponse(ResourceResponse& r) : resource_response_(&r) {}
+
+void WebURLResponse::SetHasPartitionedCookie(bool has_partitioned_cookie) {
+  resource_response_->SetHasPartitionedCookie(has_partitioned_cookie);
+}
 
 }  // namespace blink

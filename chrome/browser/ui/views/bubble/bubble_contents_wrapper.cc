@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,9 +21,13 @@ bool IsEscapeEvent(const content::NativeWebKeyboardEvent& event) {
 }
 
 content::WebContents::CreateParams GetWebContentsCreateParams(
-    content::BrowserContext* browser_context) {
+    content::BrowserContext* browser_context,
+    const GURL& webui_url) {
   content::WebContents::CreateParams create_params(browser_context);
   create_params.initially_hidden = true;
+  create_params.site_instance =
+      content::SiteInstance::CreateForURL(browser_context, webui_url);
+
   return create_params;
 }
 
@@ -36,24 +40,18 @@ bool BubbleContentsWrapper::Host::HandleKeyboardEvent(
 }
 
 BubbleContentsWrapper::BubbleContentsWrapper(
+    const GURL& webui_url,
     content::BrowserContext* browser_context,
     int task_manager_string_id,
-    bool enable_extension_apis,
     bool webui_resizes_host,
     bool esc_closes_ui)
     : webui_resizes_host_(webui_resizes_host),
       esc_closes_ui_(esc_closes_ui),
       web_contents_(content::WebContents::Create(
-          GetWebContentsCreateParams(browser_context))) {
+          GetWebContentsCreateParams(browser_context, webui_url))) {
   web_contents_->SetDelegate(this);
   WebContentsObserver::Observe(web_contents_.get());
 
-  if (enable_extension_apis) {
-    // In order for the WebUI in the renderer to use extensions APIs we must
-    // add a ChromeExtensionWebContentsObserver to the WebView's WebContents.
-    extensions::ChromeExtensionWebContentsObserver::CreateForWebContents(
-        web_contents_.get());
-  }
   PrefsTabHelper::CreateForWebContents(web_contents_.get());
   task_manager::WebContentsTags::CreateForToolContents(web_contents_.get(),
                                                        task_manager_string_id);

@@ -30,7 +30,6 @@
 
 #include "mojo/public/mojom/base/text_direction.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
-#include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/editing_style.h"
 #include "third_party/blink/renderer/core/editing/finder/find_options.h"
@@ -38,7 +37,7 @@
 #include "third_party/blink/renderer/core/editing/visible_selection.h"
 #include "third_party/blink/renderer/core/events/input_event.h"
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -52,6 +51,7 @@ class HitTestResult;
 class KeyboardEvent;
 class KillRing;
 class SpellChecker;
+enum class SyncCondition;
 class CSSPropertyValueSet;
 class TextEvent;
 class UndoStack;
@@ -175,6 +175,8 @@ class CORE_EXPORT Editor final : public GarbageCollected<Editor> {
   void ComputeAndSetTypingStyle(CSSPropertyValueSet*, InputEvent::InputType);
 
   EphemeralRange RangeForPoint(const gfx::Point&) const;
+  EphemeralRange RangeBetweenPoints(const gfx::Point& start_point,
+                                    const gfx::Point& end_point) const;
 
   void RespondToChangedSelection();
   void SyncSelection(blink::SyncCondition force_sync);

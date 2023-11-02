@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,8 +20,8 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/dbus/cryptohome/rpc.pb.h"
-#include "chromeos/dbus/userdataauth/cryptohome_misc_client.h"
+#include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
+#include "chromeos/ash/components/dbus/userdataauth/cryptohome_misc_client.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -56,7 +56,7 @@ const char kNotificationLearnMoreLink[] =
     "https://support.google.com/chromebook?p=factory_reset";
 
 std::u16string GetEnterpriseManager() {
-  policy::BrowserPolicyConnectorAsh* connector =
+  BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
   return base::UTF8ToUTF16(connector->GetEnterpriseDomainManager());
 }
@@ -100,7 +100,7 @@ void OnCryptohomeAvailability(base::OnceClosure on_initialized_callback,
       std::move(on_initialized_callback).Run();
     return;
   }
-  chromeos::CryptohomeMiscClient::Get()->CheckHealth(
+  ash::CryptohomeMiscClient::Get()->CheckHealth(
       user_data_auth::CheckHealthRequest(),
       base::BindOnce(OnCryptohomeCheckHealth,
                      std::move(on_initialized_callback)));
@@ -110,14 +110,14 @@ void OnCryptohomeAvailability(base::OnceClosure on_initialized_callback,
 
 // static
 void PowerwashRequirementsChecker::Initialize() {
-  chromeos::CryptohomeMiscClient::Get()->WaitForServiceToBeAvailable(
+  ash::CryptohomeMiscClient::Get()->WaitForServiceToBeAvailable(
       base::BindOnce(OnCryptohomeAvailability, base::OnceClosure{}));
 }
 
 // static
 void PowerwashRequirementsChecker::InitializeSynchronouslyForTesting() {
   base::RunLoop run_loop;
-  chromeos::CryptohomeMiscClient::Get()->WaitForServiceToBeAvailable(
+  ash::CryptohomeMiscClient::Get()->WaitForServiceToBeAvailable(
       base::BindOnce(OnCryptohomeAvailability, run_loop.QuitClosure()));
   run_loop.Run();
 }
@@ -162,7 +162,7 @@ bool PowerwashRequirementsChecker::IsPolicySet() const {
 
 bool PowerwashRequirementsChecker::IsUserAffiliated() const {
   user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile_);
+      ash::ProfileHelper::Get()->GetUserByProfile(profile_);
   return user->IsAffiliated();
 }
 
@@ -197,16 +197,16 @@ void PowerwashRequirementsChecker::ShowNotification() {
   rich_data.buttons = std::vector<mc::ButtonInfo>{mc::ButtonInfo(
       l10n_util::GetStringUTF16(IDS_POWERWASH_REQUEST_MESSAGE_BUTTON))};
 
-  auto delegate =
-      base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
-          base::BindRepeating(&OnNotificationClicked, profile_));
+  auto delegate = base::MakeRefCounted<mc::HandleNotificationClickDelegate>(
+      base::BindRepeating(&OnNotificationClicked, profile_));
 
   auto notification = ash::CreateSystemNotification(
       mc::NOTIFICATION_TYPE_SIMPLE, notification_id,
       l10n_util::GetStringUTF16(IDS_POWERWASH_REQUEST_TITLE),
       l10n_util::GetStringFUTF16(message_id, GetEnterpriseManager()),
       std::u16string{}, GURL{},
-      mc::NotifierId(mc::NotifierType::SYSTEM_COMPONENT, notification_id),
+      mc::NotifierId(mc::NotifierType::SYSTEM_COMPONENT, notification_id,
+                     ash::NotificationCatalogName::kPowerwashRequest),
       std::move(rich_data), std::move(delegate), kNotificationIcon,
       kNotificationLevel);
 
@@ -234,18 +234,18 @@ void PowerwashRequirementsChecker::ShowCryptohomeErrorNotification() {
       break;
   }
 
-  auto delegate =
-      base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
-          base::BindRepeating(&OnNotificationClickedCloseIt, profile_,
-                              notification_id));
+  auto delegate = base::MakeRefCounted<mc::HandleNotificationClickDelegate>(
+      base::BindRepeating(&OnNotificationClickedCloseIt, profile_,
+                          notification_id));
 
   auto notification = ash::CreateSystemNotification(
       mc::NOTIFICATION_TYPE_SIMPLE, notification_id,
       l10n_util::GetStringUTF16(
           IDS_POWERWASH_REQUEST_UNDEFINED_STATE_ERROR_TITLE),
       l10n_util::GetStringUTF16(message_id), std::u16string{}, GURL{},
-      mc::NotifierId(mc::NotifierType::SYSTEM_COMPONENT, notification_id), {},
-      std::move(delegate), kNotificationIcon, kNotificationLevel);
+      mc::NotifierId(mc::NotifierType::SYSTEM_COMPONENT, notification_id,
+                     ash::NotificationCatalogName::kPowerwashRequestError),
+      {}, std::move(delegate), kNotificationIcon, kNotificationLevel);
 
   NotificationDisplayService::GetForProfile(profile_)->Close(
       kNotificationHandlerType, notification_id);

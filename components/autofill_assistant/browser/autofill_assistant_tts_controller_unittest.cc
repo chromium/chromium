@@ -1,9 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/autofill_assistant/browser/autofill_assistant_tts_controller.h"
 
+#include "base/callback.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -31,6 +32,7 @@ class MockTtsController : public content::TtsController {
                   int char_index,
                   int length,
                   const std::string& error_message) override {}
+  void OnTtsUtteranceBecameInvalid(int utterance_id) override {}
   void GetVoices(content::BrowserContext* browser_context,
                  const GURL& source_url,
                  std::vector<content::VoiceData>* out_voices) override {}
@@ -43,6 +45,7 @@ class MockTtsController : public content::TtsController {
   content::TtsEngineDelegate* GetTtsEngineDelegate() override {
     return nullptr;
   }
+  void RefreshVoices() override {}
   void SetTtsPlatform(content::TtsPlatform* tts_platform) override {}
   int QueueSize() override { return 0; }
   void StripSSML(

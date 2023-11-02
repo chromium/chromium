@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,7 +33,7 @@ PCMQueueInAudioInputStream::PCMQueueInAudioInputStream(
     AudioManagerMac* manager,
     const AudioParameters& params)
     : manager_(manager),
-      callback_(NULL),
+      callback_(nullptr),
       audio_queue_(NULL),
       buffer_size_bytes_(0),
       started_(false),
@@ -136,7 +136,7 @@ void PCMQueueInAudioInputStream::Stop() {
 
   SetInputCallbackIsActive(false);
   started_ = false;
-  callback_ = NULL;
+  callback_ = nullptr;
 }
 
 void PCMQueueInAudioInputStream::Close() {

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -80,8 +80,8 @@ class MidiManagerWin final
   // Reflect active port list to a device list.
   template <typename T>
   void ReflectActiveDeviceList(MidiManagerWin* manager,
-                               std::vector<T>* known_ports,
-                               std::vector<T>* active_ports);
+                               std::vector<std::unique_ptr<T>>* known_ports,
+                               std::vector<std::unique_ptr<T>>* active_ports);
 
   // Sends MIDI data on TaskRunner.
   void SendOnTaskRunner(MidiManagerClient* client,

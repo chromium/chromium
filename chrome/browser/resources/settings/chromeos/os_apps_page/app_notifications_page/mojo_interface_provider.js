@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,14 +7,14 @@ import '/os_apps_page/app_notification_handler.mojom-lite.js';
 
 /**
  * @type {
- *    ?chromeos.settings.appNotification.mojom.AppNotificationsHandlerInterface
+ *    ?ash.settings.appNotification.mojom.AppNotificationsHandlerInterface
  * }
  */
 let appNotificationProvider = null;
 
 /**
  * @param {
- *    !chromeos.settings.appNotification.mojom.AppNotificationsHandlerInterface
+ *    !ash.settings.appNotification.mojom.AppNotificationsHandlerInterface
  * } testProvider
  */
 export function setAppNotificationProviderForTesting(testProvider) {
@@ -23,7 +23,7 @@ export function setAppNotificationProviderForTesting(testProvider) {
 
 /**
  * @return {
- *    !chromeos.settings.appNotification.mojom.AppNotificationsHandlerInterface
+ *    !ash.settings.appNotification.mojom.AppNotificationsHandlerInterface
  * }
  */
 export function getAppNotificationProvider() {
@@ -31,7 +31,7 @@ export function getAppNotificationProvider() {
   if (appNotificationProvider) {
     return appNotificationProvider;
   }
-  appNotificationProvider = chromeos.settings.appNotification.mojom
-                                .AppNotificationsHandler.getRemote();
+  appNotificationProvider =
+      ash.settings.appNotification.mojom.AppNotificationsHandler.getRemote();
   return appNotificationProvider;
 }

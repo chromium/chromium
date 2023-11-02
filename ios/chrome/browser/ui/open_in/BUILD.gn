@@ -1,10 +1,13 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 source_set("open_in_ui") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "open_in_activity_delegate.h",
+    "open_in_activity_view_controller.h",
+    "open_in_activity_view_controller.mm",
     "open_in_controller.h",
     "open_in_controller.mm",
     "open_in_controller_testing.h",
@@ -12,17 +15,20 @@ source_set("open_in_ui") {
     "open_in_toolbar.mm",
   ]
   deps = [
+    ":features",
+    ":open_in_histograms",
     "//base",
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/open_in",
+    "//ios/chrome/browser/ui/activity_services",
     "//ios/chrome/browser/ui/alert_coordinator",
-    "//ios/chrome/browser/ui/colors",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
     "//ios/web/public",
+    "//ios/web/public/download",
     "//ui/base",
     "//url",
   ]
@@ -52,6 +58,14 @@ source_set("open_in") {
   ]
 }
 
+source_set("open_in_histograms") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "open_in_histograms.h",
+    "open_in_histograms.mm",
+  ]
+}
+
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
@@ -62,6 +76,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":open_in",
+    ":open_in_histograms",
     ":open_in_ui",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/main:test_support",
@@ -98,4 +113,13 @@ source_set("eg2_tests") {
   ]
 
   frameworks = [ "UIKit.framework" ]
+}
+
+source_set("features") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "features.h",
+    "features.mm",
+  ]
+  public_deps = [ "//base" ]
 }

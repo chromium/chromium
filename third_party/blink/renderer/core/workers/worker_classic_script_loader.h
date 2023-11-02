@@ -32,7 +32,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink-forward.h"
-#include "services/network/public/mojom/ip_address_space.mojom-blink-forward.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info_notifier.mojom-shared.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
@@ -99,7 +98,8 @@ class CORE_EXPORT WorkerClassicScriptLoader final
       RejectCoepUnsafeNone reject_coep_unsafe_none =
           RejectCoepUnsafeNone(false),
       mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>
-          blob_url_loader_factory = {});
+          blob_url_loader_factory = {},
+      absl::optional<uint64_t> main_script_identifier = absl::nullopt);
 
   // This will immediately invoke |finishedCallback| if
   // LoadTopLevelScriptAsynchronously() is in progress.
@@ -121,10 +121,6 @@ class CORE_EXPORT WorkerClassicScriptLoader final
   }
 
   const String& GetReferrerPolicy() const { return referrer_policy_; }
-
-  network::mojom::IPAddressSpace ResponseAddressSpace() const {
-    return response_address_space_;
-  }
 
   const Vector<String>* OriginTrialTokens() const {
     return origin_trial_tokens_.get();
@@ -181,7 +177,6 @@ class CORE_EXPORT WorkerClassicScriptLoader final
   uint64_t identifier_ = 0;
   std::unique_ptr<Vector<uint8_t>> cached_metadata_;
   Member<ContentSecurityPolicy> content_security_policy_;
-  network::mojom::IPAddressSpace response_address_space_;
   std::unique_ptr<Vector<String>> origin_trial_tokens_;
   String referrer_policy_;
 

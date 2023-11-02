@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -7,9 +7,8 @@ import("//third_party/protobuf/proto_library.gni")
 
 source_set("persisted_state_db") {
   sources = [
-    "profile_proto_db.h",
-    "profile_proto_db_factory.cc",
-    "profile_proto_db_factory.h",
+    "session_proto_db_factory.cc",
+    "session_proto_db_factory.h",
   ]
 
   if (is_android) {
@@ -20,27 +19,24 @@ source_set("persisted_state_db") {
   }
 
   deps = [
-    ":persisted_state_db_content_proto",
     "//base:base",
+    "//components/commerce/core:commerce_subscription_db_content_proto",
+    "//components/commerce/core:persisted_state_db_content_proto",
     "//components/keyed_service/content",
     "//components/leveldb_proto",
+    "//components/session_proto_db:session_proto_db",
     "//content/public/browser:browser",
     "//third_party/leveldatabase",
   ]
   if (is_android) {
     deps += [
-      "//chrome/browser/commerce/merchant_viewer:merchant_signal_db_content_proto",
-      "//chrome/browser/commerce/subscriptions:commerce_subscription_db_content_proto",
       "//chrome/browser/tab:jni_headers",
+      "//components/commerce/core:merchant_signal_db_proto",
     ]
   } else {
     deps += [
-      "//chrome/browser:cart_db_content_proto",
-      "//chrome/browser:coupon_db_content_proto",
+      "//components/commerce/core:cart_db_content_proto",
+      "//components/commerce/core:coupon_db_content_proto",
     ]
   }
-}
-
-proto_library("persisted_state_db_content_proto") {
-  sources = [ "persisted_state_db_content.proto" ]
 }

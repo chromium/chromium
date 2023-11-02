@@ -1,0 +1,17 @@
+Test Invalid Origin Delegate-CH
+Inspector issue: {
+    issue : {
+        code : ClientHintIssue
+        details : {
+            clientHintIssueDetails : {
+                clientHintIssueReason : MetaTagAllowListInvalidOrigin
+                sourceCodeLocation : {
+                    columnNumber : 0
+                    lineNumber : 0
+                    url : https://devtools.test:8443/inspector-protocol/resources/client-hint-delegate-ch-meta-tag-invalid-origin.html
+                }
+            }
+        }
+    }
+}
+

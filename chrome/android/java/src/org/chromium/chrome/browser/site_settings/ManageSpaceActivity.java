@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,7 +38,6 @@ import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager;
-import org.chromium.chrome.browser.version.ChromeVersionInfo;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.site_settings.AllSiteSettings;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
@@ -47,6 +46,7 @@ import org.chromium.components.browser_ui.site_settings.Website;
 import org.chromium.components.browser_ui.site_settings.Website.StoredDataClearedCallback;
 import org.chromium.components.browser_ui.site_settings.WebsitePermissionsFetcher;
 import org.chromium.components.browser_ui.util.ConversionUtils;
+import org.chromium.components.version_info.VersionInfo;
 
 import java.util.Collection;
 
@@ -122,8 +122,8 @@ public class ManageSpaceActivity extends AppCompatActivity implements View.OnCli
             }
         };
 
-        String productVersion = AboutChromeSettings.getApplicationVersion(
-                this, ChromeVersionInfo.getProductVersion());
+        String productVersion =
+                AboutChromeSettings.getApplicationVersion(this, VersionInfo.getProductVersion());
         String failedVersion = SharedPreferencesManager.getInstance().readString(
                 ChromePreferenceKeys.SETTINGS_WEBSITE_FAILED_BUILD_VERSION, null);
         if (TextUtils.equals(failedVersion, productVersion)) {
@@ -266,9 +266,9 @@ public class ManageSpaceActivity extends AppCompatActivity implements View.OnCli
     }
 
     private void onSiteStorageSizeCalculated(long totalSize, long unimportantSize) {
-        RecordHistogram.recordCountHistogram("Android.ManageSpace.TotalDiskUsageMB",
+        RecordHistogram.recordCount1MHistogram("Android.ManageSpace.TotalDiskUsageMB",
                 (int) ConversionUtils.bytesToMegabytes(totalSize));
-        RecordHistogram.recordCountHistogram("Android.ManageSpace.UnimportantDiskUsageMB",
+        RecordHistogram.recordCount1MHistogram("Android.ManageSpace.UnimportantDiskUsageMB",
                 (int) ConversionUtils.bytesToMegabytes(unimportantSize));
         mSiteDataSizeText.setText(Formatter.formatFileSize(this, totalSize));
         mUnimportantSiteDataSizeText.setText(Formatter.formatFileSize(this, unimportantSize));

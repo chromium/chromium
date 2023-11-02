@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,12 +15,15 @@ import static org.hamcrest.Matchers.anything;
 
 import static org.chromium.android_webview.test.devui.DeveloperUiTestUtils.withCount;
 
+import android.content.Context;
 import android.content.Intent;
+import android.support.test.InstrumentationRegistry;
 
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,6 +31,7 @@ import org.junit.runner.RunWith;
 import org.chromium.android_webview.devui.ComponentsListFragment;
 import org.chromium.android_webview.devui.MainActivity;
 import org.chromium.android_webview.devui.R;
+import org.chromium.android_webview.nonembedded_util.WebViewPackageHelper;
 import org.chromium.android_webview.services.ComponentsProviderPathUtil;
 import org.chromium.android_webview.test.AwJUnit4ClassRunner;
 import org.chromium.base.ContextUtils;
@@ -53,6 +57,13 @@ public class ComponentsListFragmentTest {
     private static File sComponentsDownloadDir =
             new File(ComponentsProviderPathUtil.getComponentUpdateServiceDirectoryPath());
 
+    @Before
+    public void setUp() {
+        Context context = InstrumentationRegistry.getTargetContext();
+        WebViewPackageHelper.setCurrentWebViewPackageForTesting(
+                WebViewPackageHelper.getContextPackageInfo(context));
+    }
+
     @After
     public void tearDown() {
         if (sComponentsDownloadDir.exists()) {
@@ -74,6 +85,14 @@ public class ComponentsListFragmentTest {
         intent.putExtra(MainActivity.FRAGMENT_ID_INTENT_EXTRA, MainActivity.FRAGMENT_ID_COMPONENTS);
         mRule.launchActivity(intent);
         onView(withId(R.id.fragment_components_list)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testHasPublicNoArgsConstructor() throws Throwable {
+        ComponentsListFragment fragment = new ComponentsListFragment();
+        Assert.assertNotNull(fragment);
     }
 
     @Test

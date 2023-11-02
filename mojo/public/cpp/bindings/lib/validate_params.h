@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr_exclusion.h"
 
 namespace mojo {
 namespace internal {
@@ -68,7 +68,10 @@ class ContainerValidateParams {
 
   // Validation information for the map key array. May contain other
   // ArrayValidateParams e.g. if the keys are strings.
-  ContainerValidateParams* key_validate_params = nullptr;
+  //
+  // `key_validate_params` is not a raw_ptr<...> for performance reasons:
+  // On-stack pointee (i.e. not covered by BackupRefPtr protection).
+  RAW_PTR_EXCLUSION ContainerValidateParams* key_validate_params = nullptr;
 
   // For arrays: validation information for elements. It is either a pointer to
   // another instance of ArrayValidateParams (if elements are arrays or maps),
@@ -76,7 +79,10 @@ class ContainerValidateParams {
   //
   // For maps: validation information for the whole value array. May contain
   // other ArrayValidateParams e.g. if the values are arrays or maps.
-  ContainerValidateParams* element_validate_params = nullptr;
+  //
+  // `element_validate_params` is not a raw_ptr<...> for performance reasons:
+  // On-stack pointee (i.e. not covered by BackupRefPtr protection).
+  RAW_PTR_EXCLUSION ContainerValidateParams* element_validate_params = nullptr;
 
   // Validation function for enum elements.
   ValidateEnumFunc validate_enum_func = nullptr;

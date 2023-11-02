@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "ui/web_dialogs/web_dialogs_export.h"
 
@@ -46,7 +47,7 @@ class WEB_DIALOGS_EXPORT WebDialogWebContentsDelegate
         std::unique_ptr<content::WebContents> new_contents,
         const GURL& target_url,
         WindowOpenDisposition disposition,
-        const gfx::Rect& initial_rect,
+        const blink::mojom::WindowFeatures& window_features,
         bool user_gesture) = 0;
     // This is added to allow the injection of a file chooser handler.
     // The WebDialogWebContentsDelegate's original implementation does not
@@ -85,7 +86,7 @@ class WEB_DIALOGS_EXPORT WebDialogWebContentsDelegate
                       std::unique_ptr<content::WebContents> new_contents,
                       const GURL& target_url,
                       WindowOpenDisposition disposition,
-                      const gfx::Rect& initial_rect,
+                      const blink::mojom::WindowFeatures& window_features,
                       bool user_gesture,
                       bool* was_blocked) override;
   bool PreHandleGestureEvent(content::WebContents* source,
@@ -96,7 +97,7 @@ class WEB_DIALOGS_EXPORT WebDialogWebContentsDelegate
 
  private:
   // Weak pointer.  Always an original profile.
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
 
   std::unique_ptr<WebContentsHandler> const handler_;
 };

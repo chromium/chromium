@@ -1,10 +1,11 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/common/child_process_host_impl.h"
 
 #include <limits>
+#include <tuple>
 
 #include "base/atomic_sequence_num.h"
 #include "base/clang_profiling_buildflags.h"
@@ -13,7 +14,6 @@
 #include "base/files/file_path.h"
 #include "base/hash/hash.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_math.h"
@@ -35,20 +35,17 @@
 #include "ipc/ipc_logging.h"
 #include "ipc/message_filter.h"
 #include "mojo/public/cpp/bindings/lib/message_quota_checker.h"
-#include "ppapi/buildflags/buildflags.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/constants.mojom.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "base/linux_util.h"
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 #include "base/mac/foundation_util.h"
 #include "content/common/mac_helpers.h"
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX)
-#include "content/public/common/profiling_utils.h"
-#endif
+#include "base/record_replay.h"
 
 namespace {
 
@@ -58,6 +55,8 @@ base::AtomicSequenceNumber g_unique_id;
 }  // namespace
 
 namespace content {
+
+ChildProcessHost::~ChildProcessHost() = default;
 
 // static
 std::unique_ptr<ChildProcessHost> ChildProcessHost::Create(
@@ -73,7 +72,7 @@ base::FilePath ChildProcessHost::GetChildPath(int flags) {
   child_path = base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
       switches::kBrowserSubprocessPath);
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // Use /proc/self/exe rather than our known binary path so updates
   // can't swap out the binary from underneath us.
   if (child_path.empty() && flags & CHILD_ALLOW_SELF)
@@ -85,7 +84,7 @@ base::FilePath ChildProcessHost::GetChildPath(int flags) {
   if (child_path.empty())
     base::PathService::Get(CHILD_PROCESS_EXE, &child_path);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   std::string child_base_name = child_path.BaseName().value();
 
   if (flags != CHILD_NORMAL && base::mac::AmIBundled()) {
@@ -99,10 +98,8 @@ base::FilePath ChildProcessHost::GetChildPath(int flags) {
       child_base_name += kMacHelperSuffix_renderer;
     } else if (flags == CHILD_GPU) {
       child_base_name += kMacHelperSuffix_gpu;
-#if BUILDFLAG(ENABLE_PLUGINS)
     } else if (flags == CHILD_PLUGIN) {
       child_base_name += kMacHelperSuffix_plugin;
-#endif  // ENABLE_PLUGINS
     } else if (flags > CHILD_EMBEDDER_FIRST) {
       return GetContentClient()->GetChildProcessPath(flags, child_path);
     } else {
@@ -114,7 +111,7 @@ base::FilePath ChildProcessHost::GetChildPath(int flags) {
                      .Append("MacOS")
                      .Append(child_base_name);
   }
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 
   return child_path;
 }
@@ -125,7 +122,7 @@ ChildProcessHostImpl::ChildProcessHostImpl(ChildProcessHostDelegate* delegate,
   if (ipc_mode_ == IpcMode::kLegacy) {
     // In legacy mode, we only have an IPC Channel. Bind ChildProcess to a
     // disconnected pipe so it quietly discards messages.
-    ignore_result(child_process_.BindNewPipeAndPassReceiver());
+    std::ignore = child_process_.BindNewPipeAndPassReceiver();
     channel_ = IPC::ChannelMojo::Create(
         mojo_invitation_->AttachMessagePipe(
             kChildProcessReceiverAttachmentName),
@@ -143,10 +140,6 @@ ChildProcessHostImpl::ChildProcessHostImpl(ChildProcessHostDelegate* delegate,
     receiver_.set_disconnect_handler(
         base::BindOnce(&ChildProcessHostImpl::OnDisconnectedFromChildProcess,
                        base::Unretained(this)));
-
-#if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX)
-    child_process_->SetProfilingFile(OpenProfilingFile());
-#endif
   }
 }
 
@@ -174,6 +167,18 @@ void ChildProcessHostImpl::BindReceiver(mojo::GenericPendingReceiver receiver) {
   child_process_->BindReceiver(std::move(receiver));
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void ChildProcessHostImpl::ReinitializeLogging(
+    uint32_t logging_dest,
+    base::ScopedFD log_file_descriptor) {
+  auto logging_settings = mojom::LoggingSettings::New();
+  logging_settings->logging_dest = logging_dest;
+  logging_settings->log_file_descriptor =
+      mojo::PlatformHandle(std::move(log_file_descriptor));
+  child_process()->ReinitializeLogging(std::move(logging_settings));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 base::Process& ChildProcessHostImpl::GetPeerProcess() {
   if (!peer_process_.IsValid()) {
     const base::Process& process = delegate_->GetProcess();
@@ -188,11 +193,14 @@ base::Process& ChildProcessHostImpl::GetPeerProcess() {
   return peer_process_;
 }
 
+// TODO(crbug.com/1328879): Remove this method when fixing the bug.
+#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
 void ChildProcessHostImpl::RunServiceDeprecated(
     const std::string& service_name,
     mojo::ScopedMessagePipeHandle service_pipe) {
   child_process_->RunServiceDeprecated(service_name, std::move(service_pipe));
 }
+#endif
 
 void ChildProcessHostImpl::ForceShutdown() {
   child_process_->ProcessShutdown();
@@ -337,7 +345,7 @@ bool ChildProcessHostImpl::OnMessageReceived(const IPC::Message& msg) {
   }
 
   if (!handled) {
-      handled = delegate_->OnMessageReceived(msg);
+    handled = delegate_->OnMessageReceived(msg);
   }
 
 #if BUILDFLAG(IPC_MESSAGE_LOG_ENABLED)
@@ -379,12 +387,21 @@ void ChildProcessHostImpl::OnChannelError() {
 }
 
 void ChildProcessHostImpl::OnBadMessageReceived(const IPC::Message& message) {
+  // https://linear.app/replay/issue/RUN-1082
+  recordreplay::Diagnostic("[RUN-1082] ChildProcessHostImpl::OnBadMessageReceived %p", (void*)delegate_);
+  if (!delegate_)
+    return;
+
   delegate_->OnBadMessageReceived(message);
 }
 
 #if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX)
 void ChildProcessHostImpl::DumpProfilingData(base::OnceClosure callback) {
   child_process_->WriteClangProfilingProfile(std::move(callback));
+}
+
+void ChildProcessHostImpl::SetProfilingFile(base::File file) {
+  child_process_->SetProfilingFile(std::move(file));
 }
 #endif
 

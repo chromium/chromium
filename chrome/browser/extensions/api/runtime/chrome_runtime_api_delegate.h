@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
@@ -76,7 +77,9 @@ class ChromeRuntimeAPIDelegate : public extensions::RuntimeAPIDelegate,
   void CallUpdateCallbacks(const std::string& extension_id,
                            const UpdateCheckResult& result);
 
-  content::BrowserContext* browser_context_;
+  // TODO(crbug.com/1298696): unit_tests breaks with MTECheckedPtr
+  // enabled. Triage.
+  raw_ptr<content::BrowserContext, DegradeToNoOpWhenMTE> browser_context_;
 
   content::NotificationRegistrar registrar_;
 

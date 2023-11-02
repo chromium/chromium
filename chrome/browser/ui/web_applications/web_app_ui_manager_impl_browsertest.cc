@@ -1,10 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/web_applications/web_app_ui_manager_impl.h"
 
 #include "base/barrier_closure.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -13,17 +14,18 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/browser/web_applications/web_application_info.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/browser/uninstall_result_code.h"
 #include "content/public/test/browser_test.h"
 #include "url/gurl.h"
 
@@ -54,16 +56,11 @@ class WebAppUiManagerImplBrowserTest : public InProcessBrowserTest {
 
   Profile* profile() { return browser()->profile(); }
 
-  const AppId InstallWebApp(const GURL& start_url) {
-    auto web_app_info = std::make_unique<WebApplicationInfo>();
+  AppId InstallWebApp(const GURL& start_url) {
+    auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->start_url = start_url;
-    web_app_info->user_display_mode = DisplayMode::kStandalone;
+    web_app_info->user_display_mode = UserDisplayMode::kStandalone;
     return web_app::test::InstallWebApp(profile(), std::move(web_app_info));
-  }
-
-  void UninstallWebApp(const AppId& app_id, UninstallWebAppCallback callback) {
-    return web_app::UninstallWebAppWithCallback(profile(), app_id,
-                                                std::move(callback));
   }
 
   Browser* LaunchWebApp(const AppId& app_id) {
@@ -74,8 +71,8 @@ class WebAppUiManagerImplBrowserTest : public InProcessBrowserTest {
     return WebAppProvider::GetForTest(profile())->ui_manager();
   }
 
-  TestShortcutManager* shortcut_manager_;
-  FakeOsIntegrationManager* os_integration_manager_;
+  raw_ptr<TestShortcutManager> shortcut_manager_;
+  raw_ptr<FakeOsIntegrationManager> os_integration_manager_;
 
  private:
   std::unique_ptr<KeyedService> CreateFakeWebAppProvider(Profile* profile) {
@@ -116,23 +113,14 @@ IN_PROC_BROWSER_TEST_F(WebAppUiManagerImplBrowserTest,
   EXPECT_EQ(1u, ui_manager().GetNumWindowsForApp(foo_app_id));
   // It has 2 browser window object.
   EXPECT_EQ(2u, BrowserList::GetInstance()->size());
-  // Retrieve the provider before closing the browser, as this causes a crash.
-  WebAppProvider* provider = web_app::WebAppProvider::GetForTest(profile());
   web_app::CloseAndWait(browser());
   EXPECT_EQ(1u, BrowserList::GetInstance()->size());
   Browser* app_browser = BrowserList::GetInstance()->GetLastActive();
+  BrowserWaiter waiter(app_browser);
   // Uninstalling should close the |app_browser|, but keep the browser
   // object alive long enough to complete the uninstall.
-  base::RunLoop run_loop;
-  DCHECK(provider->install_finalizer().CanUserUninstallWebApp(foo_app_id));
-  provider->install_finalizer().UninstallWebApp(
-      foo_app_id, webapps::WebappUninstallSource::kAppMenu,
-      base::BindLambdaForTesting([&](bool success) {
-        EXPECT_TRUE(success);
-        run_loop.Quit();
-      }));
-  run_loop.Run();
-  web_app::WaitForBrowserToBeClosed(app_browser);
+  test::UninstallWebApp(app_browser->profile(), foo_app_id);
+  waiter.AwaitRemoved();
 
   EXPECT_EQ(0u, BrowserList::GetInstance()->size());
 }
@@ -229,8 +217,6 @@ IN_PROC_BROWSER_TEST_F(WebAppUiManagerImplBrowserTest,
   // Install a new app to migrate the old one to.
   AppId new_app_id = InstallWebApp(GURL("https://new.app.com"));
   ui_manager().UninstallAndReplaceIfExists({old_app_id}, new_app_id);
-  apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
-      ->FlushMojoCallsForTesting();
 
   EXPECT_TRUE(os_integration_manager_->did_add_to_desktop());
   auto options = os_integration_manager_->get_last_install_options();
@@ -259,8 +245,6 @@ IN_PROC_BROWSER_TEST_F(WebAppUiManagerImplBrowserTest, DoubleMigration) {
     waiter.BeginListening({old_app_id});
     ui_manager().UninstallAndReplaceIfExists({old_app_id}, new_app_id);
     waiter.Wait();
-    apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
-        ->FlushMojoCallsForTesting();
   }
 
   // New app should acquire old app's pin position.
@@ -274,8 +258,6 @@ IN_PROC_BROWSER_TEST_F(WebAppUiManagerImplBrowserTest, DoubleMigration) {
 
   // Do migration again. New app should not move.
   ui_manager().UninstallAndReplaceIfExists({old_app_id}, new_app_id);
-  apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
-      ->FlushMojoCallsForTesting();
   EXPECT_EQ(app_list_service->GetSyncItem(new_app_id)
                 ->item_pin_ordinal.ToDebugString(),
             "positionnew");

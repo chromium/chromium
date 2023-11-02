@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -10,7 +10,7 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/values.h"
-#include "components/cast_streaming/browser/message_serialization.h"
+#include "components/cast_streaming/common/message_serialization.h"
 #include "third_party/openscreen/src/platform/base/error.h"
 
 namespace cast_streaming {
@@ -80,13 +80,9 @@ void CastMessagePortImpl::MaybeClose() {
 }
 
 void CastMessagePortImpl::SetClient(
-    openscreen::cast::MessagePort::Client* client,
-    std::string client_sender_id) {
+    openscreen::cast::MessagePort::Client& client) {
   DVLOG(2) << __func__;
-  DCHECK_NE(!client_, !client);
-  client_ = client;
-  if (!client_)
-    MaybeClose();
+  client_ = &client;
 }
 
 void CastMessagePortImpl::ResetClient() {

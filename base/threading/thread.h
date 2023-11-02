@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 
 #include "base/base_export.h"
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/check.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/message_loop/timer_slack.h"
 #include "base/sequence_checker.h"
@@ -29,7 +29,7 @@ class MessagePump;
 class RunLoop;
 
 // IMPORTANT: Instead of creating a base::Thread, consider using
-// base::Create(Sequenced|SingleThread)TaskRunner().
+// base::ThreadPool::Create(Sequenced|SingleThread)TaskRunner().
 //
 // A simple thread abstraction that establishes a MessageLoop on a new thread.
 // The consumer uses the MessageLoop of the thread to cause code to execute on
@@ -76,6 +76,7 @@ class BASE_EXPORT Thread : PlatformThread::Delegate {
 
     Options();
     Options(MessagePumpType type, size_t size);
+    explicit Options(ThreadType thread_type);
     Options(Options&& other);
     Options& operator=(Options&& other);
     ~Options();
@@ -103,8 +104,8 @@ class BASE_EXPORT Thread : PlatformThread::Delegate {
     // A value of 0 indicates that the default maximum should be used.
     size_t stack_size = 0;
 
-    // Specifies the initial thread priority.
-    ThreadPriority priority = ThreadPriority::NORMAL;
+    // Specifies the initial thread type.
+    ThreadType thread_type = ThreadType::kDefault;
 
     // If false, the thread will not be joined on destruction. This is intended
     // for threads that want TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN
@@ -139,7 +140,7 @@ class BASE_EXPORT Thread : PlatformThread::Delegate {
   // before it is destructed.
   ~Thread() override;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Causes the thread to initialize COM.  This must be called before calling
   // Start() or StartWithOptions().  If |use_mta| is false, the thread is also
   // started with a TYPE_UI message loop.  It is an error to call
@@ -276,7 +277,7 @@ class BASE_EXPORT Thread : PlatformThread::Delegate {
   friend class MessageLoopTaskRunnerTest;
   friend class ScheduleWorkTest;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   enum ComStatus {
     NONE,
     STA,
@@ -289,7 +290,7 @@ class BASE_EXPORT Thread : PlatformThread::Delegate {
 
   void ThreadQuitHelper();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Whether this thread needs to initialize COM, and if so, in what mode.
   ComStatus com_status_ = NONE;
 #endif

@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,7 +23,10 @@ namespace sandbox {
 // Crash if anything else is attempted.
 SANDBOX_EXPORT bpf_dsl::ResultExpr RestrictCloneToThreadsAndEPERMFork();
 
-// Allow PR_SET_NAME, PR_SET_DUMPABLE, PR_GET_DUMPABLE.
+// Allow PR_GET_NAME, PR_SET_NAME, PR_SET_DUMPABLE, PR_GET_DUMPABLE.
+// On Android allows a few other options.
+// Returns EPERM for PR_SET_PTRACER to allow crashpad to try to set itself as
+// ptracer at crash time, if it hasn't yet been able to.
 // Crash if anything else is attempted.
 SANDBOX_EXPORT bpf_dsl::ResultExpr RestrictPrctl();
 
@@ -116,6 +119,9 @@ SANDBOX_EXPORT bpf_dsl::ResultExpr RestrictPtrace();
 
 // Restrict the flags argument for pkey_alloc. It's specified to always be 0.
 SANDBOX_EXPORT bpf_dsl::ResultExpr RestrictPkeyAllocFlags();
+
+// Restrict the which argument to getitimer() and setitimer().
+SANDBOX_EXPORT bpf_dsl::ResultExpr RestrictGoogle3Threading(int sysno);
 
 }  // namespace sandbox.
 

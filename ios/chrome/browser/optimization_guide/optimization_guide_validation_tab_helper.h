@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,10 +21,6 @@ class OptimizationGuideValidationTabHelper
       const OptimizationGuideValidationTabHelper&) = delete;
   OptimizationGuideValidationTabHelper& operator=(
       const OptimizationGuideValidationTabHelper&) = delete;
-
-  // Creates OptimizationGuideValidationTabHelper and attaches to |web_state|.
-  // |web_state| must not be null.
-  static void CreateForWebState(web::WebState* web_state);
 
  private:
   friend class web::WebStateUserData<OptimizationGuideValidationTabHelper>;

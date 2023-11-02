@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,11 +13,11 @@
 #include <memory>
 #include <ostream>
 #include <set>
-#include <unordered_set>
 #include <vector>
 
 #include "base/debug/crash_logging.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "ui/accessibility/ax_common.h"
@@ -201,13 +201,13 @@ class AXTreeSerializer {
   ClientTreeNode* GetClientTreeNodeParent(ClientTreeNode* obj);
 
   // The tree source.
-  AXTreeSource<AXSourceNode>* tree_;
+  raw_ptr<AXTreeSource<AXSourceNode>> tree_;
 
   // The tree data most recently sent to the client.
   AXTreeData client_tree_data_;
 
   // Our representation of the client tree.
-  ClientTreeNode* client_root_ = nullptr;
+  raw_ptr<ClientTreeNode> client_root_ = nullptr;
 
   // A map from IDs to nodes in the client tree.
   std::map<AXNodeID, ClientTreeNode*> client_id_map_;
@@ -244,7 +244,7 @@ struct AX_EXPORT ClientTreeNode {
   ClientTreeNode();
   virtual ~ClientTreeNode();
   AXNodeID id;
-  ClientTreeNode* parent;
+  raw_ptr<ClientTreeNode> parent;
   std::vector<ClientTreeNode*> children;
   bool ignored;
   bool invalid;
@@ -321,16 +321,14 @@ AXSourceNode AXTreeSerializer<AXSourceNode>::LeastCommonAncestor(
   // client ancestor chain disagree. The last node before they disagree
   // is the LCA.
   AXSourceNode lca = tree_->GetNull();
-  int source_index = static_cast<int>(ancestors.size() - 1);
-  int client_index = static_cast<int>(client_ancestors.size() - 1);
-  while (source_index >= 0 && client_index >= 0) {
-    if (tree_->GetId(ancestors[source_index]) !=
-            client_ancestors[client_index]->id) {
+  for (size_t source_index = ancestors.size(),
+              client_index = client_ancestors.size();
+       source_index > 0 && client_index > 0; --source_index, --client_index) {
+    if (tree_->GetId(ancestors[source_index - 1]) !=
+        client_ancestors[client_index - 1]->id) {
       return lca;
     }
-    lca = ancestors[source_index];
-    source_index--;
-    client_index--;
+    lca = ancestors[source_index - 1];
   }
   return lca;
 }

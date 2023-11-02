@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -80,9 +80,9 @@ struct MyStruct {
   raw_ptr<my_namespace::SomeClass> class_spelling3;
 
   // No rewrite of function pointers expected, because they won't ever be either
-  // A) allocated by PartitionAlloc or B) derived from raw_ptrSupport.  In
+  // A) allocated by PartitionAlloc or B) derived from RawPtrSupport.  In
   // theory |member_data_ptr| below can be A or B, but it can't be expressed as
-  // non-pointer T used as a template argument of raw_ptr.
+  // non-pointer T used as a template argument of raw_ptr<>.
   int (*func_ptr)();
   void (SomeClass::*member_func_ptr)(char);  // ~ pointer to SomeClass::Method
   int SomeClass::*member_data_ptr;  // ~ pointer to SomeClass::data_member

@@ -1,0 +1,207 @@
+<style>
+  #enter-pin-description {
+    margin-bottom: 16px;
+  }
+
+  .pinEntrySubtext {
+    font-size: var(--cr-form-field-label-font-size);
+    font-weight: 400;
+    margin-top: -10px;
+  }
+
+  :host([has-error-text_]) .pinEntrySubtext {
+    color: var(--cros-text-color-alert);
+  }
+
+  #changePinOld {
+    margin-top: 24px;
+  }
+
+  #unlockPin {
+    margin-top: 24px;
+  }
+
+  #puk-warning-container {
+    display: flex;
+    margin-bottom: 24px;
+    margin-top: 20px;
+  }
+
+  #puk-warning-icon {
+    --iron-icon-fill-color: var(--cros-icon-color-alert);
+    --iron-icon-height: 24px;
+    --iron-icon-width: 24px;
+    margin-inline-end: 4px;
+  }
+
+  :host([has-error-text_]) #puk-warning-container {
+    color: var(--cros-text-color-alert);
+  }
+</style>
+<!-- Enter PIN dialog -->
+<cr-dialog id="enterPinDialog"
+    on-cancel="onCancel_"
+    close-text="[[i18n('close')]]">
+  <div slot="title">[[i18n('networkSimEnterPinTitle')]]</div>
+  <div slot="body">
+    <div id="enter-pin-description" aria-hidden="true">
+      [[getEnterPinDescription_(isSimPinLockRestricted_)]]
+    </div>
+    <network-password-input id="enterPin"
+        value="{{pin_}}"
+        on-enter="sendEnterPin_"
+        disabled="[[inProgress_]]"
+        invalid="[[hasErrorText_]]"
+        aria-labeledby="pinEntrySubtext">
+    </network-password-input>
+    <div class="pinEntrySubtext" aria-live="assertive">
+      [[getPinEntrySubtext_(error_, deviceState)]]
+    </div>
+  </div>
+  <div slot="button-container">
+    <cr-button class="cancel-button" on-click="onCancel_">
+      [[i18n('cancel')]]
+    </cr-button>
+    <cr-button class="action-button"
+        aria-describedby="enter-pin-description"
+        on-click="sendEnterPin_"
+        disabled="[[!enterPinEnabled_]]">
+      [[i18n('networkSimEnter')]]
+    </cr-button>
+  </div>
+</cr-dialog>
+
+<!-- Change PIN dialog -->
+<cr-dialog id="changePinDialog"
+    on-cancel="onCancel_"
+    close-text="[[i18n('close')]]">
+  <div slot="title">[[i18n('networkSimChangePinTitle')]]</div>
+  <div slot="body">
+    <network-password-input id="changePinOld"
+        value="{{pin_}}"
+        label="[[i18n('networkSimEnterOldPin')]]"
+        disabled="[[inProgress_]]"
+        invalid="[[isOldPinInvalid_(error_, deviceState)]]"
+        error-message="[[getOldPinErrorMessage_(error_, deviceState)]]"
+        allow-error-message>
+    </network-password-input>
+    <network-password-input id="changePinNew1"
+        value="{{pin_new1_}}"
+        label="[[i18n('networkSimEnterNewPin')]]"
+        disabled="[[inProgress_]]"
+        allow-error-message>
+    </network-password-input>
+    <network-password-input id="changePinNew2"
+        value="{{pin_new2_}}"
+        label="[[i18n('networkSimReEnterNewPin')]]"
+        on-enter="sendChangePin_"
+        disabled="[[inProgress_]]"
+        invalid="[[isSecondNewPinInvalid_(error_, deviceState)]]"
+        error-message="[[getSecondNewPinErrorMessage_(error_, deviceState)]]"
+        allow-error-message>
+    </network-password-input>
+  </div>
+  <div slot="button-container">
+    <cr-button class="cancel-button" on-click="onCancel_">
+      [[i18n('cancel')]]
+    </cr-button>
+    <cr-button class="action-button"
+        on-click="sendChangePin_"
+        disabled="[[!changePinEnabled_]]">
+      [[i18n('networkSimChange')]]
+    </cr-button>
+  </div>
+</cr-dialog>
+
+<!-- Unlock PIN dialog -->
+<cr-dialog id="unlockPinDialog"
+    on-cancel="onCancel_"
+    close-text="[[i18n('close')]]">
+  <div slot="title" aria-live="polite">[[i18n('networkSimLockedTitle')]]</div>
+  <div slot="body">
+    <template is="dom-if" if="[[isSimPinLockRestricted_]]">
+      <div id="adminSubtitle">
+        [[i18n('networkSimLockPolicyAdminSubtitle')]]
+      </div>
+    </template>
+    <network-password-input id="unlockPin"
+        value="{{pin_}}"
+        on-enter="sendUnlockPin_"
+        disabled="[[inProgress_]]">
+    </network-password-input>
+    <div class="pinEntrySubtext" aria-live="polite">
+      [[getPinEntrySubtext_(error_, deviceState)]]
+    </div>
+  </div>
+  <div slot="button-container">
+    <cr-button class="cancel-button" on-click="onCancel_">
+      [[i18n('cancel')]]
+    </cr-button>
+    <cr-button class="action-button"
+        on-click="sendUnlockPin_"
+        disabled="[[!enterPinEnabled_]]">
+      [[i18n('networkSimUnlock')]]
+    </cr-button>
+  </div>
+</cr-dialog>
+
+<!-- Unlock PUK dialog -->
+<cr-dialog id="unlockPukDialog"
+    on-cancel="onCancel_"
+    close-text="[[i18n('close')]]">
+  <div slot="title" aria-live="polite">[[i18n('networkSimLockedTitle')]]</div>
+  <div slot="body">
+    <div id="puk-subtitle">
+      [[getNetworkSimPukDialogString_(isSimPinLockRestricted_)]]
+    </div>
+    <div id="puk-warning-container">
+      <template is="dom-if" if="[[hasErrorText_]]">
+        <iron-icon id="puk-warning-icon" icon="cellular-setup:warning">
+        </iron-icon>
+      </template>
+      <div aria-live="polite">
+        [[getPukWarningMessage_(error_, deviceState,
+            isSimPinLockRestricted_)]]
+      </div>
+    </div>
+    <network-password-input id="unlockPuk"
+        value="{{puk_}}"
+        label="[[i18n('networkSimEnterPuk')]]"
+        disabled="[[inProgress_]]"
+        invalid="[[isPukInvalid_(error_, deviceState)]]"
+        error-message="[[getPukErrorMessage_(error_, deviceState)]]"
+        allow-error-message>
+    </network-password-input>
+    <!-- TODO(b/228093904): Use template dom-if instead of
+      hidden for SIM PIN Lock Dialog refactor. -->
+    <network-password-input id="unlockPin1"
+        value="{{pin_new1_}}"
+        label="[[i18n('networkSimEnterNewPin')]]"
+        disabled="[[inProgress_]]"
+        hidden="[[isSimPinLockRestricted_]]"
+        allow-error-message>
+    </network-password-input>
+    <network-password-input id="unlockPin2"
+        value="{{pin_new2_}}"
+        label="[[i18n('networkSimReEnterNewPin')]]"
+        on-enter="sendUnlockPuk_"
+        disabled="[[inProgress_]]"
+        invalid="[[isSecondNewPinInvalid_(error_, deviceState)]]"
+        error-message="[[getSecondNewPinErrorMessage_(error_,
+            deviceState)]]"
+        hidden="[[isSimPinLockRestricted_]]"
+        allow-error-message>
+    </network-password-input>
+  </div>
+  <div slot="button-container">
+    <cr-button class="cancel-button" on-click="onCancel_">
+      [[i18n('cancel')]]
+    </cr-button>
+    <cr-button class="action-button"
+        on-click="sendUnlockPuk_"
+        disabled="[[!enterPukEnabled_]]"
+        aria-describedby="puk-subtitle">
+      [[i18n('networkSimUnlock')]]
+    </cr-button>
+  </div>
+</cr-dialog>

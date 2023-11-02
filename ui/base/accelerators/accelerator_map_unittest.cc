@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/events/event.h"
@@ -105,7 +106,7 @@ TEST(AcceleratorMapTest, Iterate) {
 
 // Chrome OS specific tests.
 // Only Chrome OS supports positional shortcuts.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 
 // Even with positional lookup enabled, if both the stored and lookup
 // accelerator have no DomCode then the behavior is as if there was no
@@ -228,7 +229,7 @@ TEST(AcceleratorMapTest, DomCodesStrippedWhenInserted) {
   EXPECT_EQ(*value, expected);
 }
 
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 

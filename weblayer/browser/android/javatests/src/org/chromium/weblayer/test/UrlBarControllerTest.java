@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -48,7 +48,7 @@ import java.util.concurrent.ExecutionException;
  * Test class to test UrlBarController logic.
  */
 @RunWith(WebLayerJUnit4ClassRunner.class)
-@DisabledTest(message = "https://crbug.com/1223953")
+@DisabledTest(message = "https://crbug.com/1315403")
 public class UrlBarControllerTest {
     @Rule
     public InstrumentationActivityTestRule mActivityTestRule =

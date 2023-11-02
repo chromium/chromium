@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,7 +40,7 @@ PerformanceServerTiming::ParseServerTimingFromHeaderValueToMojo(
   std::unique_ptr<ServerTimingHeaderVector> headers =
       ParseServerTimingHeader(value);
   Vector<mojom::blink::ServerTimingInfoPtr> result;
-  result.ReserveCapacity(headers->size());
+  result.reserve(headers->size());
   for (const auto& header : *headers) {
     result.emplace_back(mojom::blink::ServerTimingInfo::New(
         header->Name(), header->Duration(), header->Description()));
@@ -54,7 +54,7 @@ PerformanceServerTiming::ParseServerTiming(const ResourceTimingInfo& info) {
   const ResourceResponse& response = info.FinalResponse();
   std::unique_ptr<ServerTimingHeaderVector> headers = ParseServerTimingHeader(
       response.HttpHeaderField(http_names::kServerTiming));
-  result.ReserveCapacity(headers->size());
+  result.reserve(headers->size());
   for (const auto& header : *headers) {
     result.push_back(MakeGarbageCollected<PerformanceServerTiming>(
         header->Name(), header->Duration(), header->Description()));

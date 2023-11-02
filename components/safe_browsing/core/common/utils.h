@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -61,6 +61,16 @@ bool CanGetReputationOfUrl(const GURL& url);
 void SetAccessTokenAndClearCookieInResourceRequest(
     network::ResourceRequest* resource_request,
     const std::string& access_token);
+
+// Record HTTP response code when there's no error in fetching an HTTP
+// request, and the error code, when there is.
+// |metric_name| is the name of the UMA metric to record the response code or
+// error code against, |net_error| represents the net error code of the HTTP
+// request, and |response code| represents the HTTP response code received
+// from the server.
+void RecordHttpResponseOrErrorCode(const char* metric_name,
+                                   int net_error,
+                                   int response_code);
 
 }  // namespace safe_browsing
 

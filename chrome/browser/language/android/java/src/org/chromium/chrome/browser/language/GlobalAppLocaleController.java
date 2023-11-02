@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -49,7 +49,7 @@ public class GlobalAppLocaleController {
     }
 
     // Set the original system language before Locale.getDefault() is overridden.
-    private final Locale mOriginalSystemLocale = Locale.getDefault();
+    private Locale mOriginalSystemLocale = Locale.getDefault();
     private String mOverrideLanguage;
     private boolean mIsOverridden;
 
@@ -62,11 +62,25 @@ public class GlobalAppLocaleController {
      * @return boolean Whether or not an override language is set.
      */
     public boolean init(Context base) {
-        mOverrideLanguage = AppLocaleUtils.getAppLanguagePrefStartUp(base);
-
-        mIsOverridden = shouldOverrideAppLocale(
-                mOverrideLanguage, LocaleUtils.toLanguageTag(mOriginalSystemLocale));
+        if (AppLocaleUtils.shouldUseSystemManagedLocale()) {
+            mIsOverridden = false;
+        } else {
+            mOverrideLanguage = AppLocaleUtils.getAppLanguagePrefStartUp(base);
+            mIsOverridden = shouldOverrideAppLocale(
+                    mOverrideLanguage, LocaleUtils.toLanguageTag(mOriginalSystemLocale));
+        }
         return mIsOverridden;
+    }
+
+    /**
+     * Preform setup actions when using {@link LocaleManager} that need to be done after the
+     * Application has started.
+     */
+    public void maybeSetupLocaleManager() {
+        if (AppLocaleUtils.shouldUseSystemManagedLocale()) {
+            mOverrideLanguage = AppLocaleUtils.getSystemManagedAppLanguage();
+            mOriginalSystemLocale = AppLocaleUtils.getSystemManagedOriginalLocale();
+        }
     }
 
     /**

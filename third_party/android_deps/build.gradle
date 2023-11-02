@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,7 +40,7 @@ dependencies {
     // Note about the configuration names: they are defined in buildSrc/ChromiumPlugin
 
     // Replacement for com.android.support:design
-    compile 'com.google.android.material:material:1.5.0-alpha05'
+    compile 'com.google.android.material:material:1.7.0-alpha02'
 
     compile 'com.google.android.play:core:1.10.0'
 
@@ -54,21 +54,26 @@ dependencies {
     // Play services libraries
     // See https://developers.google.com/android/guides/releases for updates
     // Starting from 15.0.0 these libraries are allowed to update independently
-    String gmsVersion = '17.0.0'
-    compile "com.google.android.gms:play-services-basement:${gmsVersion}"
-    compile "com.google.android.gms:play-services-tasks:${gmsVersion}"
-    compile "com.google.android.gms:play-services-base:${gmsVersion}"
-    compile "com.google.android.gms:play-services-auth-base:${gmsVersion}"
-    compile 'com.google.android.gms:play-services-auth-api-phone:17.5.0'
-    compile "com.google.android.gms:play-services-auth:${gmsVersion}"
-    compile "com.google.android.gms:play-services-cast:${gmsVersion}"
-    compile "com.google.android.gms:play-services-cast-framework:${gmsVersion}"
-    compile "com.google.android.gms:play-services-iid:${gmsVersion}"
-    compile "com.google.android.gms:play-services-instantapps:${gmsVersion}"
-    compile "com.google.android.gms:play-services-gcm:${gmsVersion}"
-    compile "com.google.android.gms:play-services-location:${gmsVersion}"
-    compile 'com.google.android.gms:play-services-vision-common:18.0.0'
-    compile 'com.google.android.gms:play-services-vision:18.0.0'
+    String baseGmsVersion = '18.0.1'
+    // GCM is old and deprecated - nothing newer is available.
+    String gcmGmsVersion = '17.0.0'
+    // Attemped to roll cast with everything else, but it caused a missing class error, and we had
+    // no other versions available on CIPD - see crbug.com/1310799.
+    String castGmsVersion = '17.0.0'
+    compile "com.google.android.gms:play-services-basement:${baseGmsVersion}"
+    compile "com.google.android.gms:play-services-tasks:${baseGmsVersion}"
+    compile "com.google.android.gms:play-services-base:${baseGmsVersion}"
+    compile 'com.google.android.gms:play-services-auth-base:18.0.2'
+    compile "com.google.android.gms:play-services-auth-api-phone:${baseGmsVersion}"
+    compile 'com.google.android.gms:play-services-auth:20.1.0'
+    compile "com.google.android.gms:play-services-cast:${castGmsVersion}"
+    compile "com.google.android.gms:play-services-cast-framework:${castGmsVersion}"
+    compile "com.google.android.gms:play-services-iid:${gcmGmsVersion}"
+    compile "com.google.android.gms:play-services-instantapps:${baseGmsVersion}"
+    compile "com.google.android.gms:play-services-gcm:${gcmGmsVersion}"
+    compile 'com.google.android.gms:play-services-location:19.0.1'
+    compile 'com.google.android.gms:play-services-vision-common:19.1.3'
+    compile 'com.google.android.gms:play-services-vision:20.1.3'
     compile 'com.google.android.gms:play-services-fido:19.0.0-beta'
 
     // TODO (bjoyce): Remove after androidx migration crbug.com/896775
@@ -101,7 +106,7 @@ dependencies {
     compile 'com.google.firebase:firebase-messaging:21.0.1'
     compile 'com.google.guava:failureaccess:1.0.1'
     compile 'com.google.j2objc:j2objc-annotations:1.1'
-    compile 'com.google.protobuf:protobuf-javalite:3.13.0'
+    compile 'com.google.protobuf:protobuf-javalite:3.19.3'
     compile 'javax.annotation:javax.annotation-api:1.3.2'
     compile 'javax.annotation:jsr250-api:1.0'
     compile 'javax.inject:javax.inject:1'
@@ -109,13 +114,20 @@ dependencies {
     // Used by R8 to desugar library functions.
     // See instructions in //third_party/r8/README.chromium for how to
     // update desugar_jdk_libs.json (needed when changing this version).
-    compile 'com.android.tools:desugar_jdk_libs:1.1.1'
-    compile 'com.android.tools:desugar_jdk_libs_configuration:1.1.1'
+    compile 'com.android.tools:desugar_jdk_libs:1.1.5'
+    compile 'com.android.tools:desugar_jdk_libs_configuration:1.1.5'
 
-    // Needed by androidx.
-    String kotlinxVersion = '1.5.0'
-    compile "org.jetbrains.kotlinx:kotlinx-coroutines-android:${kotlinxVersion}"
-    compile "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:${kotlinxVersion}"
+    compile 'io.grpc:grpc-binder:1.49.0'
+    compile 'io.grpc:grpc-protobuf-lite:1.49.0'
+    compile 'io.grpc:grpc-stub:1.49.0'
+    compile 'io.grpc:grpc-api:1.49.0'
+
+    // Needed by androidx and by doubledown targets.
+    // Note: These have version overrides set in ChromiumDepGraph.groovy.
+    compile "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1"
+    compile "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.1"
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.6.20"
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.20"
 
 
     // Upstream guava introduced versions with -android suffix starting with version
@@ -133,14 +145,17 @@ dependencies {
     // Matches version depended on by Dagger.
     buildCompile 'com.squareup:javapoet:1.13.0'
 
-    String errorproneVersion = '2.10.0'
+    String errorproneVersion = '2.11.0'
+
     // Used by downstream targets.
     compile "com.google.errorprone:error_prone_annotations:${errorproneVersion}"
-    compile 'org.checkerframework:checker-compat-qual:2.5.3'
+    compile 'org.checkerframework:checker-compat-qual:2.5.5'
+    compile 'org.checkerframework:checker-util:3.25.0'
     compile 'org.codehaus.mojo:animal-sniffer-annotations:1.17'
 
     // Dedicated configuration to avoid using higher version number. The 9999 version is empty.
-    compileListenableFuture 'com.google.guava:listenablefuture:1.0'
+    // This has a version override in ChromiumDepGraph.groovy.
+    compile 'com.google.guava:listenablefuture:1.0'
 
     buildCompile "com.google.errorprone:error_prone_core:${errorproneVersion}"
     buildCompile "com.google.errorprone:error_prone_check_api:${errorproneVersion}"
@@ -160,17 +175,25 @@ dependencies {
     // this list of targets is carefully curated for the use of the resources
     // shrinker. If these are needed for something other than the resources
     // shrinker, use buildCompile instead.
-    String androidToolsVersion = '30.0.0-alpha10'
+    String androidToolsVersion = '30.2.0-beta01'
     buildCompileNoDeps "com.android.tools:sdk-common:${androidToolsVersion}"
     buildCompileNoDeps "com.android.tools:common:${androidToolsVersion}"
     buildCompileNoDeps "com.android.tools.layoutlib:layoutlib-api:${androidToolsVersion}"
-    buildCompile 'org.jetbrains.kotlin:kotlin-stdlib:1.4.32'
+    buildCompile 'org.jetbrains.kotlin:kotlin-stdlib:1.7.10'
 
+    androidTestCompile 'com.google.android.apps.common.testing.accessibility.framework:accessibility-test-framework:4.0.0'
+    // accessibility-test-framework:3.1.2 depends on jsoup 1.12, which has a security
+    // vulnerability, so grab a later version.
+    androidTestCompile 'org.jsoup:jsoup:1.14.3'
     androidTestCompile 'com.googlecode.java-diff-utils:diffutils:1.3.0'
     // Version 1.2 is needed by espresso-web, but we'll newer 1.2.1.
     androidTestCompile 'org.ccil.cowan.tagsoup:tagsoup:1.2.1'
 
-    String robolectricVersion = '4.3.1'
+    androidTestCompile "org.mockito:mockito-core:4.7.0"
+    // Depended on by downstream guava_java rewrite.
+    androidTestCompile "org.checkerframework:checker-qual:3.25.0"
+
+    String robolectricVersion = '4.8.1'
     // Use testCompile to avoid having support_android = true set on
     // robolectric dependencies.
     testCompile "org.robolectric:robolectric:${robolectricVersion}"

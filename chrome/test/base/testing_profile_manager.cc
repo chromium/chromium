@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/memory/ref_counted.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_file_util.h"
 #include "build/build_config.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_destroyer.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
@@ -27,14 +29,22 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "components/account_id/account_id.h"
+#include "components/user_manager/fake_user_manager.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/lacros/account_manager/account_profile_mapper.h"
 #endif
 
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+#include "chrome/browser/supervised_user/supervised_user_constants.h"
+#endif
+
 const char kGuestProfileName[] = "Guest";
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
 const char kSystemProfileName[] = "System";
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
 
 TestingProfileManager::TestingProfileManager(TestingBrowserProcess* process)
     : called_set_up_(false),
@@ -53,6 +63,8 @@ TestingProfileManager::TestingProfileManager(
       profile_manager_(nullptr) {}
 
 TestingProfileManager::~TestingProfileManager() {
+  ProfileDestroyer::DestroyPendingProfilesForShutdown();
+
   // Destroying this class also destroys the LocalState, so make sure the
   // associated ProfileManager is also destroyed.
   browser_process_->SetProfileManager(nullptr);
@@ -68,8 +80,8 @@ TestingProfile* TestingProfileManager::CreateTestingProfile(
     std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs,
     const std::u16string& user_name,
     int avatar_id,
-    const std::string& supervised_user_id,
     TestingProfile::TestingFactories testing_factories,
+    bool is_supervised_profile,
     absl::optional<bool> is_new_profile,
     absl::optional<std::unique_ptr<policy::PolicyService>> policy_service) {
   DCHECK(called_set_up_);
@@ -79,11 +91,15 @@ TestingProfile* TestingProfileManager::CreateTestingProfile(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (profile_name != chrome::kInitialProfile &&
       profile_name != chrome::kLockScreenProfile &&
-      profile_name != chromeos::ProfileHelper::GetLockScreenAppProfileName()) {
+      profile_name != ash::ProfileHelper::GetLockScreenAppProfileName()) {
+    const std::string fake_email =
+        profile_name.find('@') == std::string::npos
+            ? base::ToLowerASCII(profile_name) + "@test"
+            : profile_name;
     profile_path =
-        profile_path.Append(chromeos::ProfileHelper::Get()->GetUserProfileDir(
-            chromeos::ProfileHelper::GetUserIdHashByUserIdForTesting(
-                profile_name)));
+        profile_path.Append(ash::ProfileHelper::Get()->GetUserProfileDir(
+            user_manager::FakeUserManager::GetFakeUsernameHash(
+                AccountId::FromUserEmail(fake_email))));
   } else {
     profile_path = profile_path.AppendASCII(profile_name);
   }
@@ -95,7 +111,10 @@ TestingProfile* TestingProfileManager::CreateTestingProfile(
   TestingProfile::Builder builder;
   builder.SetPath(profile_path);
   builder.SetPrefService(std::move(prefs));
-  builder.SetSupervisedUserId(supervised_user_id);
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+  if (is_supervised_profile)
+    builder.SetIsSupervisedProfile();
+#endif
   builder.SetProfileName(profile_name);
   builder.SetIsNewProfile(is_new_profile.value_or(false));
   if (policy_service)
@@ -115,7 +134,11 @@ TestingProfile* TestingProfileManager::CreateTestingProfile(
           .GetProfileAttributesWithPath(profile_path);
   DCHECK(entry);
   entry->SetAvatarIconIndex(avatar_id);
-  entry->SetSupervisedUserId(supervised_user_id);
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+  entry->SetSupervisedUserId(is_supervised_profile
+                                 ? ::supervised_users::kChildAccountSUID
+                                 : std::string());
+#endif
   entry->SetLocalProfileName(user_name, entry->IsUsingDefaultName());
 
   testing_profiles_.insert(std::make_pair(profile_name, profile_ptr));
@@ -136,7 +159,7 @@ TestingProfile* TestingProfileManager::CreateTestingProfile(
   DCHECK(called_set_up_);
   return CreateTestingProfile(
       name, std::unique_ptr<sync_preferences::PrefServiceSyncable>(),
-      base::UTF8ToUTF16(name), 0, std::string(), std::move(testing_factories));
+      base::UTF8ToUTF16(name), 0, std::move(testing_factories));
 }
 
 TestingProfile* TestingProfileManager::CreateGuestProfile() {
@@ -167,6 +190,7 @@ TestingProfile* TestingProfileManager::CreateGuestProfile() {
   return profile_ptr;
 }
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
 TestingProfile* TestingProfileManager::CreateSystemProfile() {
   DCHECK(called_set_up_);
 
@@ -186,6 +210,7 @@ TestingProfile* TestingProfileManager::CreateSystemProfile() {
 
   return profile_ptr;
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
 
 void TestingProfileManager::DeleteTestingProfile(const std::string& name) {
   DCHECK(called_set_up_);
@@ -232,6 +257,7 @@ void TestingProfileManager::DeleteGuestProfile() {
   profile_manager_->profiles_info_.erase(ProfileManager::GetGuestProfilePath());
 }
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
 void TestingProfileManager::DeleteSystemProfile() {
   DCHECK(called_set_up_);
 
@@ -241,13 +267,14 @@ void TestingProfileManager::DeleteSystemProfile() {
   profile_manager_->profiles_info_.erase(
       ProfileManager::GetSystemProfilePath());
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
 
 void TestingProfileManager::DeleteProfileAttributesStorage() {
   profile_manager_->profile_attributes_storage_.reset(nullptr);
 }
 
 void TestingProfileManager::UpdateLastUser(Profile* last_active) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   profile_manager_->UpdateLastUser(last_active);
 #endif
 }

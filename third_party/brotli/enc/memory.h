@@ -107,6 +107,12 @@ V: value to append
   A[(S) - 1] = (V);                                       \
 }
 
+/* "Bootstrap" allocations are not tracked by memory manager; should be used
+   only to allocate MemoryManager itself (or structure containing it). */
+BROTLI_INTERNAL void* BrotliBootstrapAlloc(size_t size,
+    brotli_alloc_func alloc_func, brotli_free_func free_func, void* opaque);
+BROTLI_INTERNAL void BrotliBootstrapFree(void* address, MemoryManager* m);
+
 #if defined(__cplusplus) || defined(c_plusplus)
 }  /* extern "C" */
 #endif

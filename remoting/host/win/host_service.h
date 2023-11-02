@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include <list>
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
@@ -101,7 +101,7 @@ class HostService : public WtsTerminalMonitor {
 
     // Points to the observer receiving notifications about the WTS terminal
     // identified by |terminal_id|.
-    WtsTerminalObserver* observer;
+    raw_ptr<WtsTerminalObserver> observer;
   };
 
   // The list of observers receiving session notifications.

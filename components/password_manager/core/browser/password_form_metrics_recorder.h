@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include <set>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/clock.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
@@ -235,7 +236,9 @@ class PasswordFormMetricsRecorder
     kAffiliatedWebsite = 9,
     // The form may accept WebAuthn credentials.
     kAcceptsWebAuthnCredentials = 10,
-    kMaxValue = kAcceptsWebAuthnCredentials,
+    // User need to reauthenticate using biometric.
+    kBiometricAuthentication = 11,
+    kMaxValue = kBiometricAuthentication,
   };
 
   // Used in UMA histogram, please do NOT reorder.
@@ -429,6 +432,11 @@ class PasswordFormMetricsRecorder
 
   void set_clock_for_testing(base::Clock* clock) { clock_ = clock; }
 
+  void set_submitted_form_frame(
+      metrics_util::SubmittedFormFrame submitted_form_frame) {
+    submitted_form_frame_ = submitted_form_frame;
+  }
+
  private:
   friend class base::RefCounted<PasswordFormMetricsRecorder>;
 
@@ -449,7 +457,7 @@ class PasswordFormMetricsRecorder
 
   // Not owned. Points to base::DefaultClock::GetInstance() by default, but can
   // be overridden for testing.
-  base::Clock* clock_;
+  raw_ptr<base::Clock> clock_;
 
   // True if the main frame's committed URL, at the time PasswordFormManager
   // was created, is secure.
@@ -493,7 +501,7 @@ class PasswordFormMetricsRecorder
   // Holds URL keyed metrics (UKMs) to be recorded on destruction.
   ukm::builders::PasswordForm ukm_entry_builder_;
 
-  PrefService* const pref_service_;
+  const raw_ptr<PrefService> pref_service_;
 
   // Counter for DetailedUserActions observed during the lifetime of a
   // PasswordFormManager. Reported upon destruction.
@@ -517,6 +525,7 @@ class PasswordFormMetricsRecorder
   absl::optional<FillingSource> filling_source_;
   absl::optional<metrics_util::PasswordAccountStorageUsageLevel>
       account_storage_usage_level_;
+  absl::optional<metrics_util::SubmittedFormFrame> submitted_form_frame_;
 
   // Whether a single username candidate was populated in prompt.
   bool possible_username_used_ = false;

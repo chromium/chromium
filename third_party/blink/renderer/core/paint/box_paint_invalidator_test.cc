@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@
 #include "third_party/blink/renderer/core/paint/paint_invalidator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
 #include "third_party/blink/renderer/platform/graphics/paint/raster_invalidation_tracking.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
@@ -55,13 +54,8 @@ class BoxPaintInvalidatorTest : public PaintAndRasterInvalidationTest {
     target.setAttribute(
         html_names::kStyleAttr,
         target.getAttribute(html_names::kStyleAttr) + "; width: 200px");
-    if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-      GetDocument().View()->UpdateLifecycleToLayoutClean(
-          DocumentUpdateReason::kTest);
-    } else {
-      GetDocument().View()->UpdateLifecycleToCompositingInputsClean(
-          DocumentUpdateReason::kTest);
-    }
+    GetDocument().View()->UpdateLifecycleToLayoutClean(
+        DocumentUpdateReason::kTest);
 
     EXPECT_EQ(PaintInvalidationReason::kGeometry,
               ComputePaintInvalidationReason(box, paint_offset));

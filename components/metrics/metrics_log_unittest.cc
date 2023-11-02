@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/base64.h"
+#include "base/command_line.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/bucket_ranges.h"
 #include "base/metrics/sample_vector.h"
@@ -38,16 +39,20 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/current_module.h"
 #endif
 
-namespace metrics {
+#if BUILDFLAG(IS_LINUX)
+#include "base/nix/xdg_util.h"
+#include "base/scoped_environment_variable_override.h"
+#endif
 
+namespace metrics {
 namespace {
 
 const char kClientId[] = "bogus client ID";
@@ -164,6 +169,18 @@ TEST_F(MetricsLogTest, BasicRecord) {
   command_line->AppendSwitch("mock-flag-1");
   command_line->AppendSwitchASCII("mock-flag-2", "unused_value");
 
+#if BUILDFLAG(IS_LINUX)
+  base::ScopedEnvironmentVariableOverride scoped_desktop_override(
+      base::nix::kXdgCurrentDesktopEnvVar, "GNOME");
+  metrics::SystemProfileProto::OS::XdgCurrentDesktop expected_current_desktop =
+      metrics::SystemProfileProto::OS::GNOME;
+
+  base::ScopedEnvironmentVariableOverride scoped_session_override(
+      base::nix::kXdgSessionTypeEnvVar, "wayland");
+  metrics::SystemProfileProto::OS::XdgSessionType expected_session_type =
+      metrics::SystemProfileProto::OS::WAYLAND;
+#endif
+
   MetricsLog log(kOtherClientId, 137, MetricsLog::ONGOING_LOG, &client);
   log.CloseLog();
 
@@ -202,7 +219,7 @@ TEST_F(MetricsLogTest, BasicRecord) {
     hardware->set_app_cpu_architecture(app_os_arch);
   hardware->set_system_ram_mb(base::SysInfo::AmountOfPhysicalMemoryMB());
   hardware->set_hardware_class(GetExpectedHardwareClass());
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   hardware->set_dll_base(reinterpret_cast<uint64_t>(CURRENT_MODULE()));
 #endif
 
@@ -218,22 +235,28 @@ TEST_F(MetricsLogTest, BasicRecord) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   system_profile->mutable_os()->set_kernel_version(
       base::SysInfo::KernelVersion());
-#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   system_profile->mutable_os()->set_kernel_version(
       base::SysInfo::OperatingSystemVersion());
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   system_profile->mutable_os()->set_build_fingerprint(
       base::android::BuildInfo::GetInstance()->android_build_fp());
   system_profile->set_app_package_name("test app");
-#elif defined(OS_IOS)
+#elif BUILDFLAG(IS_IOS)
   system_profile->mutable_os()->set_build_number(
       base::SysInfo::GetIOSBuildNumber());
+#endif
+
+#if BUILDFLAG(IS_LINUX)
+  system_profile->mutable_os()->set_xdg_session_type(expected_session_type);
+  system_profile->mutable_os()->set_xdg_current_desktop(
+      expected_current_desktop);
 #endif
 
   // Hard to mock.
   system_profile->set_build_timestamp(
       parsed.system_profile().build_timestamp());
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   system_profile->set_installer_package(
       parsed.system_profile().installer_package());
 #endif
@@ -476,7 +499,8 @@ TEST_F(MetricsLogTest, InitialLogStabilityMetrics) {
   delegating_provider.RegisterMetricsProvider(
       base::WrapUnique<MetricsProvider>(test_provider));
   log.RecordEnvironment(&delegating_provider);
-  log.RecordPreviousSessionData(&delegating_provider);
+  TestingPrefServiceSimple prefs;
+  log.RecordPreviousSessionData(&delegating_provider, &prefs);
 
   // The test provider should have been called upon to provide initial
   // stability and regular stability metrics.
@@ -492,8 +516,9 @@ TEST_F(MetricsLogTest, OngoingLogStabilityMetrics) {
   delegating_provider.RegisterMetricsProvider(
       base::WrapUnique<MetricsProvider>(test_provider));
   log.RecordEnvironment(&delegating_provider);
-  log.RecordCurrentSessionData(&delegating_provider, base::TimeDelta(),
-                               base::TimeDelta());
+  TestingPrefServiceSimple prefs;
+  log.RecordCurrentSessionData(base::TimeDelta(), base::TimeDelta(),
+                               &delegating_provider, &prefs);
 
   // The test provider should have been called upon to provide regular but not
   // initial stability metrics.

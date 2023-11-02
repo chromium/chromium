@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,8 +17,6 @@ extern const char kPreviewRequestID[];
 COMPONENT_EXPORT(PRINTING_BASE) extern const char kPreviewUIID[];
 COMPONENT_EXPORT(PRINTING_BASE)
 extern const char kSettingCapabilities[];
-COMPONENT_EXPORT(PRINTING_BASE)
-extern const char kSettingCloudPrintId[];
 COMPONENT_EXPORT(PRINTING_BASE) extern const char kSettingCollate[];
 COMPONENT_EXPORT(PRINTING_BASE) extern const char kSettingColor[];
 COMPONENT_EXPORT(PRINTING_BASE)
@@ -60,6 +58,14 @@ COMPONENT_EXPORT(PRINTING_BASE)
 extern const char kSettingMediaSizeHeightMicrons[];
 COMPONENT_EXPORT(PRINTING_BASE)
 extern const char kSettingMediaSizeWidthMicrons[];
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingsImageableAreaLeftMicrons[];
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingsImageableAreaBottomMicrons[];
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingsImageableAreaRightMicrons[];
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingsImageableAreaTopMicrons[];
 COMPONENT_EXPORT(PRINTING_BASE)
 extern const char kSettingMediaSizeVendorId[];
 COMPONENT_EXPORT(PRINTING_BASE)
@@ -179,7 +185,7 @@ enum HorizontalHeaderFooterPosition { LEFT, CENTER, RIGHT };
 enum VerticalHeaderFooterPosition { TOP, BOTTOM };
 
 // Must match print_preview.ScalingType in
-// chrome/browser/resources/print_preview/data/scaling.js
+// chrome/browser/resources/print_preview/data/scaling.ts
 enum ScalingType {
   DEFAULT,
   FIT_TO_PAGE,

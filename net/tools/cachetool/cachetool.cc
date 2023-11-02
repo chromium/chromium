@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/format_macros.h"
 #include "base/hash/md5.h"
@@ -30,6 +29,7 @@
 #include "net/http/http_util.h"
 
 using disk_cache::Backend;
+using disk_cache::BackendResult;
 using disk_cache::Entry;
 using disk_cache::EntryResult;
 
@@ -86,7 +86,7 @@ void PrintHelp() {
 class CommandMarshal {
  public:
   explicit CommandMarshal(Backend* cache_backend)
-      : command_failed_(false), cache_backend_(cache_backend) {}
+      : cache_backend_(cache_backend) {}
   virtual ~CommandMarshal() = default;
 
   // Reads the next command's name to execute.
@@ -138,7 +138,7 @@ class CommandMarshal {
   Backend* cache_backend() { return cache_backend_; }
 
  protected:
-  bool command_failed_;
+  bool command_failed_ = false;
   Backend* const cache_backend_;
 };
 
@@ -147,7 +147,7 @@ class ProgramArgumentCommandMarshal final : public CommandMarshal {
  public:
   ProgramArgumentCommandMarshal(Backend* cache_backend,
                                 base::CommandLine::StringVector args)
-      : CommandMarshal(cache_backend), command_line_args_(args), args_id_(0) {}
+      : CommandMarshal(cache_backend), command_line_args_(args) {}
 
   // Implements CommandMarshal.
   std::string ReadCommandName() override {
@@ -221,7 +221,7 @@ class ProgramArgumentCommandMarshal final : public CommandMarshal {
 
  private:
   const base::CommandLine::StringVector command_line_args_;
-  size_t args_id_;
+  size_t args_id_ = 0;
 };
 
 // Online command input/output that receives pickled commands from stdin and
@@ -238,7 +238,7 @@ class StreamCommandMarshal final : public CommandMarshal {
       return "";
     std::cout.flush();
     size_t command_id = static_cast<size_t>(std::cin.get());
-    if (command_id >= base::size(kCommandNames)) {
+    if (command_id >= std::size(kCommandNames)) {
       ReturnFailure("Unknown command.");
       return "";
     }
@@ -605,7 +605,8 @@ void UpdateRawResponseHeaders(CommandMarshal* command_marshal) {
   if (truncated_response_info)
     std::cerr << "WARNING: Truncated HTTP response." << std::endl;
 
-  response_info.headers = new net::HttpResponseHeaders(raw_headers);
+  response_info.headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>(raw_headers);
   PersistResponseInfo(command_marshal, key, response_info);
 }
 
@@ -751,16 +752,17 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
-  std::unique_ptr<Backend> cache_backend;
-  net::TestCompletionCallback cb;
-  int rv = disk_cache::CreateCacheBackend(
-      net::DISK_CACHE, backend_type, cache_path, INT_MAX,
-      disk_cache::ResetHandling::kNeverReset, nullptr, &cache_backend,
+  TestBackendResultCompletionCallback cb;
+  BackendResult result = disk_cache::CreateCacheBackend(
+      net::DISK_CACHE, backend_type, /*file_operations=*/nullptr, cache_path,
+      INT_MAX, disk_cache::ResetHandling::kNeverReset, /*net_log=*/nullptr,
       cb.callback());
-  if (cb.GetResult(rv) != net::OK) {
+  result = cb.GetResult(std::move(result));
+  if (result.net_error != net::OK) {
     std::cerr << "Invalid cache." << std::endl;
     return 1;
   }
+  std::unique_ptr<Backend> cache_backend = std::move(result.backend);
 
   ProgramArgumentCommandMarshal program_argument_marshal(
       cache_backend.get(),

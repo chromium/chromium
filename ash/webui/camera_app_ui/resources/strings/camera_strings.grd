@@ -6,12 +6,18 @@
     <output filename="grit/ash_camera_app_strings.h" type="rc_header">
       <emit emit_type='prepend'></emit>
     </output>
+    <output filename="ash_camera_app_strings_af.pak" type="data_package" lang="af" />
     <output filename="ash_camera_app_strings_am.pak" type="data_package" lang="am" />
     <output filename="ash_camera_app_strings_ar.pak" type="data_package" lang="ar" />
+    <output filename="ash_camera_app_strings_as.pak" type="data_package" lang="as" />
+    <output filename="ash_camera_app_strings_az.pak" type="data_package" lang="az" />
+    <output filename="ash_camera_app_strings_be.pak" type="data_package" lang="be" />
     <output filename="ash_camera_app_strings_bg.pak" type="data_package" lang="bg" />
     <output filename="ash_camera_app_strings_bn.pak" type="data_package" lang="bn" />
+    <output filename="ash_camera_app_strings_bs.pak" type="data_package" lang="bs" />
     <output filename="ash_camera_app_strings_ca.pak" type="data_package" lang="ca" />
     <output filename="ash_camera_app_strings_cs.pak" type="data_package" lang="cs" />
+    <output filename="ash_camera_app_strings_cy.pak" type="data_package" lang="cy" />
     <output filename="ash_camera_app_strings_da.pak" type="data_package" lang="da" />
     <output filename="ash_camera_app_strings_de.pak" type="data_package" lang="de" />
     <output filename="ash_camera_app_strings_el.pak" type="data_package" lang="el" />
@@ -20,37 +26,55 @@
     <output filename="ash_camera_app_strings_es.pak" type="data_package" lang="es" />
     <output filename="ash_camera_app_strings_es-419.pak" type="data_package" lang="es-419" />
     <output filename="ash_camera_app_strings_et.pak" type="data_package" lang="et" />
+    <output filename="ash_camera_app_strings_eu.pak" type="data_package" lang="eu" />
     <output filename="ash_camera_app_strings_fa.pak" type="data_package" lang="fa" />
     <output filename="ash_camera_app_strings_fi.pak" type="data_package" lang="fi" />
     <output filename="ash_camera_app_strings_fil.pak" type="data_package" lang="fil" />
+    <output filename="ash_camera_app_strings_fr-CA.pak" type="data_package" lang="fr-CA" />
     <output filename="ash_camera_app_strings_fr.pak" type="data_package" lang="fr" />
+    <output filename="ash_camera_app_strings_gl.pak" type="data_package" lang="gl" />
     <output filename="ash_camera_app_strings_gu.pak" type="data_package" lang="gu" />
     <output filename="ash_camera_app_strings_he.pak" type="data_package" lang="he" />
     <output filename="ash_camera_app_strings_hi.pak" type="data_package" lang="hi" />
     <output filename="ash_camera_app_strings_hr.pak" type="data_package" lang="hr" />
     <output filename="ash_camera_app_strings_hu.pak" type="data_package" lang="hu" />
+    <output filename="ash_camera_app_strings_hy.pak" type="data_package" lang="hy" />
     <output filename="ash_camera_app_strings_id.pak" type="data_package" lang="id" />
     <output filename="ash_camera_app_strings_is.pak" type="data_package" lang="is" />
     <output filename="ash_camera_app_strings_it.pak" type="data_package" lang="it" />
     <output filename="ash_camera_app_strings_ja.pak" type="data_package" lang="ja" />
+    <output filename="ash_camera_app_strings_ka.pak" type="data_package" lang="ka" />
+    <output filename="ash_camera_app_strings_kk.pak" type="data_package" lang="kk" />
+    <output filename="ash_camera_app_strings_km.pak" type="data_package" lang="km" />
     <output filename="ash_camera_app_strings_kn.pak" type="data_package" lang="kn" />
     <output filename="ash_camera_app_strings_ko.pak" type="data_package" lang="ko" />
+    <output filename="ash_camera_app_strings_ky.pak" type="data_package" lang="ky" />
+    <output filename="ash_camera_app_strings_lo.pak" type="data_package" lang="lo" />
     <output filename="ash_camera_app_strings_lt.pak" type="data_package" lang="lt" />
     <output filename="ash_camera_app_strings_lv.pak" type="data_package" lang="lv" />
+    <output filename="ash_camera_app_strings_mk.pak" type="data_package" lang="mk" />
     <output filename="ash_camera_app_strings_ml.pak" type="data_package" lang="ml" />
+    <output filename="ash_camera_app_strings_mn.pak" type="data_package" lang="mn" />
     <output filename="ash_camera_app_strings_mr.pak" type="data_package" lang="mr" />
     <output filename="ash_camera_app_strings_ms.pak" type="data_package" lang="ms" />
+    <output filename="ash_camera_app_strings_my.pak" type="data_package" lang="my" />
+    <output filename="ash_camera_app_strings_ne.pak" type="data_package" lang="ne" />
     <output filename="ash_camera_app_strings_nl.pak" type="data_package" lang="nl" />
     <!-- The translation console uses 'no' for Norwegian Bokmål. It should
          be 'nb'. -->
     <output filename="ash_camera_app_strings_nb.pak" type="data_package" lang="no" />
+    <output filename="ash_camera_app_strings_pa.pak" type="data_package" lang="pa" />
     <output filename="ash_camera_app_strings_pl.pak" type="data_package" lang="pl" />
     <output filename="ash_camera_app_strings_pt-BR.pak" type="data_package" lang="pt-BR" />
     <output filename="ash_camera_app_strings_pt-PT.pak" type="data_package" lang="pt-PT" />
+    <output filename="ash_camera_app_strings_or.pak" type="data_package" lang="or" />
     <output filename="ash_camera_app_strings_ro.pak" type="data_package" lang="ro" />
     <output filename="ash_camera_app_strings_ru.pak" type="data_package" lang="ru" />
+    <output filename="ash_camera_app_strings_si.pak" type="data_package" lang="si" />
     <output filename="ash_camera_app_strings_sk.pak" type="data_package" lang="sk" />
     <output filename="ash_camera_app_strings_sl.pak" type="data_package" lang="sl" />
+    <output filename="ash_camera_app_strings_sq.pak" type="data_package" lang="sq" />
+    <output filename="ash_camera_app_strings_sr-Latn.pak" type="data_package" lang="sr-Latn" />
     <output filename="ash_camera_app_strings_sr.pak" type="data_package" lang="sr" />
     <output filename="ash_camera_app_strings_sv.pak" type="data_package" lang="sv" />
     <output filename="ash_camera_app_strings_sw.pak" type="data_package" lang="sw" />
@@ -59,10 +83,13 @@
     <output filename="ash_camera_app_strings_th.pak" type="data_package" lang="th" />
     <output filename="ash_camera_app_strings_tr.pak" type="data_package" lang="tr" />
     <output filename="ash_camera_app_strings_uk.pak" type="data_package" lang="uk" />
+    <output filename="ash_camera_app_strings_ur.pak" type="data_package" lang="ur" />
+    <output filename="ash_camera_app_strings_uz.pak" type="data_package" lang="uz" />
     <output filename="ash_camera_app_strings_vi.pak" type="data_package" lang="vi" />
     <output filename="ash_camera_app_strings_zh-CN.pak" type="data_package" lang="zh-CN" />
+    <output filename="ash_camera_app_strings_zh-HK.pak" type="data_package" lang="zh-HK" />
     <output filename="ash_camera_app_strings_zh-TW.pak" type="data_package" lang="zh-TW" />
-
+    <output filename="ash_camera_app_strings_zu.pak" type="data_package" lang="zu" />
     <!-- Pseudolocales -->
     <output filename="ash_camera_app_strings_ar-XB.pak" type="data_package" lang="ar-XB" />
     <output filename="ash_camera_app_strings_en-XA.pak" type="data_package" lang="en-XA" />
@@ -79,6 +106,7 @@
     <file path="camera_strings_bs.xtb" lang="bs" />
     <file path="camera_strings_ca.xtb" lang="ca" />
     <file path="camera_strings_cs.xtb" lang="cs" />
+    <file path="camera_strings_cy.xtb" lang="cy" />
     <file path="camera_strings_da.xtb" lang="da" />
     <file path="camera_strings_de.xtb" lang="de" />
     <file path="camera_strings_el.xtb" lang="el" />
@@ -165,7 +193,7 @@
         Print
       </message>
       <message desc="Label for the gallery button." name="IDS_GALLERY_BUTTON">
-        Go to gallery
+        Go to Gallery
       </message>
       <message desc="Error message shown when saving/adding a image or video to the file system failed." name="IDS_ERROR_MSG_SAVE_FILE_FAILED">
         Unable to save the file
@@ -177,7 +205,7 @@
         Pan tilt zoom
       </message>
       <message desc="Toast message notifying user about new document scanning feature is available" name="IDS_NEW_DOCUMENT_SCAN_TOAST">
-        Document scanning now available
+        Document scan available
       </message>
       <message desc="Toast message notifying user about new controls available" name="IDS_NEW_CONTROL_TOAST">
         Additional camera controls available
@@ -185,11 +213,14 @@
       <message desc="Message for how to navigate to new controls UI with accessibility tool" name="IDS_NEW_CONTROL_NAVIGATION">
         <ph name="aspect_ratio_width">$1<ex>Additional camera controls available</ex></ph>. Search + Left arrow to access.
       </message>
-      <message desc="Label for the checkbox to toggle the 3 seconds countdown timer." name="IDS_TOGGLE_TIMER_3S_BUTTON">
+      <message desc="Label for the radio button to toggle the 3 seconds countdown timer." name="IDS_ARIA_TIMER_3S">
         3 seconds timer
       </message>
-      <message desc="Label for the checkbox to toggle the 10 seconds countdown timer." name="IDS_TOGGLE_TIMER_10S_BUTTON">
+      <message desc="Label for the radio button to toggle the 10 seconds countdown timer." name="IDS_ARIA_TIMER_10S">
         10 seconds timer
+      </message>
+      <message desc="Label for the radio button to turn off the timer." name="IDS_ARIA_TIMER_OFF">
+        Timer off
       </message>
       <message desc="Message shown before moving all photos and videos stored in the Camera App to the Downloads folder." name="IDS_MIGRATE_PICTURES_MSG">
         Photos and videos taken with the camera will be moved to the Downloads folder. You can access them in Files.
@@ -217,7 +248,7 @@
       <message desc="Label for the button to switch to next connected camera. Eg. switching from front facing to back facing, or a camera connected via USB. The button is shown only when more than one camera is connected." name="IDS_SWITCH_CAMERA_BUTTON">
         Switch to next camera
       </message>
-      <message desc="Label for the button of timer-duration options." name="IDS_TIMER_DURATION_BUTTON">
+      <message desc="Label for the button to open timer duration control panel" name="IDS_OPEN_TIMER_PANEL_BUTTON">
         Timer duration
       </message>
       <message desc="Label for timer-duration: 3 seconds." name="IDS_LABEL_TIMER_3S">
@@ -268,7 +299,7 @@
       <message desc="Label for switch to take photo mode button." name="IDS_LABEL_SWITCH_TAKE_PHOTO_BUTTON">
         Photo
       </message>
-      <message desc="Label for the checkbox to toggle the grid shown on preview." name="IDS_TOGGLE_GRID_BUTTON">
+      <message desc="Label for the button to open grid control panel." name="IDS_OPEN_GRID_PANEL_BUTTON">
         Grid
       </message>
       <message desc="Label for the shutter button to take photo." name="IDS_TAKE_PHOTO_BUTTON">
@@ -320,14 +351,17 @@
       <message desc="Label for expert mode option: Multi-stream video recording." name="IDS_EXPERT_MULTISTREAM_RECORDING">
         Multistream video recording
       </message>
+      <message desc="Label for expert mode option: enable video FPS picker for builtin camera." name="IDS_EXPERT_ENABLE_FPS_PICKER_FOR_BUILTIN">
+        Enable video FPS picker
+      </message>
       <message desc="Label for expert mode option: enable expert mode." name="IDS_EXPERT_ENABLE_EXPERT_MODE">
         Enable expert mode
       </message>
-      <message desc="Label for expert mode option: enable full-sized video snapshot." name="IDS_EXPERT_ENABLE_FULL_SIZED_VIDEO_SNAPSHOT">
-        Enable full-sized video snaphost
+      <message desc="Label for expert mode option: enable PTZ for builtin camera." name="IDS_EXPERT_ENABLE_PTZ_FOR_BUILTIN">
+        Enable pan tilt zoom
       </message>
-      <message desc="Label for expert mode option: Show GIF recording option." name="IDS_EXPERT_SHOW_GIF_RECORDING_OPTION">
-        Show GIF recording option
+      <message desc="Label for expert mode option: enable full-sized video snapshot." name="IDS_EXPERT_ENABLE_FULL_SIZED_VIDEO_SNAPSHOT">
+        Enable full-sized video snapshot
       </message>
       <message desc="Label for snackbar message when a link is copied" name="IDS_SNACKBAR_LINK_COPIED">
         Link copied
@@ -419,8 +453,8 @@
       <message desc="Label for switch to record video mode button." name="IDS_LABEL_SWITCH_RECORD_VIDEO_BUTTON">
         Video
       </message>
-      <message desc="Label for the checkbox to toggle the preview mirroring. Eg. if mirroring is toggled on, preview will be flipped horizontally." name="IDS_TOGGLE_MIRROR_BUTTON">
-        Mirroring
+      <message desc="Label for the button to open mirror control panel. Eg. if mirroring is toggled on, preview will be flipped horizontally." name="IDS_OPEN_MIRROR_PANEL_BUTTON">
+        Mirror preview
       </message>
       <message desc="Label for the button of grid-type options." name="IDS_GRID_TYPE_BUTTON">
         Grid type
@@ -485,9 +519,6 @@
       <message desc="Label for the cancel button to cancel with the reviewed photo or video." name="IDS_CANCEL_REVIEW_BUTTON">
         Cancel
       </message>
-      <message desc="Label for the button to play video." name="IDS_PLAY_RESULT_VIDEO_BUTTON">
-        Play video
-      </message>
       <message desc="Indicator message for recording paused." name="IDS_RECORD_VIDEO_PAUSED_MSG">
         PAUSED
       </message>
@@ -504,9 +535,6 @@ If your feedback is about image or video quality, please attach a sample photo o
       </message>
       <message desc="Title of dialog introducing document mode." name="IDS_DOCUMENT_MODE_DIALOG_INTRO_TITLE">
         Scan your document
-      </message>
-      <message desc="Title of dialog notify user no document is detected from camera and reintroducing document mode." name="IDS_DOCUMENT_MODE_DIALOG_NOT_DETECTED_TITLE">
-        Couldn't detect a document
       </message>
       <message desc="Detail description introducing document mode." name="IDS_DOCUMENT_MODE_DIALOG_MSG">
         Place all edges of the document within the frame. Scanning works best if the document and background are different colors.
@@ -562,6 +590,30 @@ If your feedback is about image or video quality, please attach a sample photo o
       <message desc="Description read by screen reader for moving document corner with arrow key" name="IDS_DOCUMENT_CORNER_MOVE_DESC">
         Move corner position with arrow keys
       </message>
+      <message desc="Message read by screen reader that document corner is moving in top direction" name="IDS_MOVING_IN_TOP_DIRECTION">
+        Moving in top direction
+      </message>
+      <message desc="Message read by screen reader that document corner is moving in bottom direction" name="IDS_MOVING_IN_BOTTOM_DIRECTION">
+        Moving in bottom direction
+      </message>
+      <message desc="Message read by screen reader that document corner is moving in left direction" name="IDS_MOVING_IN_LEFT_DIRECTION">
+        Moving in left direction
+      </message>
+      <message desc="Message read by screen reader that document corner is moving in right direction" name="IDS_MOVING_IN_RIGHT_DIRECTION">
+        Moving in right direction
+      </message>
+      <message desc="Message read by screen reader that document corner is moving in top-left direction" name="IDS_MOVING_IN_TOP_LEFT_DIRECTION">
+        Moving in top-left direction
+      </message>
+      <message desc="Message read by screen reader that document corner is moving in top-right direction" name="IDS_MOVING_IN_TOP_RIGHT_DIRECTION">
+        Moving in top-right direction
+      </message>
+      <message desc="Message read by screen reader that document corner is moving in bottom-left direction" name="IDS_MOVING_IN_BOTTOM_LEFT_DIRECTION">
+        Moving in bottom-left direction
+      </message>
+      <message desc="Message read by screen reader that document corner is moving in bottom-right direction" name="IDS_MOVING_IN_BOTTOM_RIGHT_DIRECTION">
+        Moving in bottom-right direction
+      </message>
       <message desc="Label for button for rotating document 90 degrees in clockwise direction" name="IDS_ROTATE_CLOCKWISE_BUTTON">
         Rotate 90 degrees clockwise
       </message>
@@ -576,6 +628,99 @@ If your feedback is about image or video quality, please attach a sample photo o
       </message>
       <message desc="Label for spoken feedback to read out group of record type options." name="IDS_ARIA_RECORD_TYPE_GROUP">
         Record type
+      </message>
+      <message desc="Label for the option state off" name="IDS_LABEL_OFF">
+        Off
+      </message>
+      <message desc="Label for the option state on" name="IDS_LABEL_ON">
+        On
+      </message>
+      <message desc="Label for spoken feedback to turn off the mirror button." name="IDS_ARIA_MIRROR_OFF">
+        Mirror off
+      </message>
+      <message desc="Label for spoken feedback to turn on the mirror button." name="IDS_ARIA_MIRROR_ON">
+        Mirror on
+      </message>
+      <message desc="Label for spoken feedback to turn off the grid button." name="IDS_ARIA_GRID_OFF">
+        Grid off
+      </message>
+      <message desc="Text showing on the settings page when under photo mode." name="IDS_PHOTO_SETTINGS">
+        Photo settings
+      </message>
+      <message desc="Text showing on the settings page when under video mode." name="IDS_VIDEO_SETTINGS">
+        Video settings
+      </message>
+      <message desc="Text of the settings button to choose aspect ratio of the captured photo." name="IDS_PHOTO_ASPECT_RATIO_BUTTON">
+        Photo aspect ratio
+      </message>
+      <message desc="Label of the option to specify the largest resolution in the resolution settings" name="IDS_LABEL_FULL_RESOLUTION">
+        Full resolution
+      </message>
+      <message desc="Label of the option to specify the medium resolution in the resolution settings" name="IDS_LABEL_MEDIUM_RESOLUTION">
+        Medium resolution
+      </message>
+      <message desc="Label of the option to select other aspect ratio rather than the common ones (4:3, 16:9)." name="IDS_LABEL_OTHER_ASPECT_RATIO">
+        Others
+      </message>
+      <message desc="Label to indicate that there is no resolution option to choose under the selected aspect ratio" name="IDS_LABEL_NO_RESOLUTION_OPTION">
+        This camera cannot change resolution
+      </message>
+      <message desc="Label for spoken feedback to read out aspect ratio: 4:3." name="IDS_ARIA_ASPECT_RATIO_4_TO_3">
+        4 to 3
+      </message>
+      <message desc="Label for spoken feedback to read out aspect ratio: 16:9." name="IDS_ARIA_ASPECT_RATIO_16_TO_9">
+        16 to 9
+      </message>
+      <message desc="Label of the 4K video resolution option." name="IDS_LABEL_VIDEO_RESOLUTION_4K">
+        4K (2160p)
+      </message>
+      <message desc="Label of the Quad HD (QHD) video resolution option." name="IDS_LABEL_VIDEO_RESOLUTION_QUAD_HD">
+        Quad HD (1440p)
+      </message>
+      <message desc="Label of the Full HD video resolution option." name="IDS_LABEL_VIDEO_RESOLUTION_FULL_HD">
+        Full HD (1080p)
+      </message>
+      <message desc="Label of the HD video resolution option." name="IDS_LABEL_VIDEO_RESOLUTION_HD">
+        HD (720p)
+      </message>
+      <message desc="Label of the 360p video resolution option." name="IDS_LABEL_VIDEO_RESOLUTION_360P">
+        360p
+      </message>
+      <message desc="Label to represent photo/video resolution using the amount of mega pixels (= 1 million pixels)" name="IDS_LABEL_RESOLUTION_MP">
+        <ph name="magapixels_amount">$1<ex>2.8</ex></ph> MP
+      </message>
+      <message desc="Label for expert mode option: show all resolutions." name="IDS_EXPERT_SHOW_ALL_RESOLUTIONS">
+        Show all resolutions
+      </message>
+      <message desc="Label for spoken feedback to indicate that the mute button is now off." name="IDS_ARIA_MUTE_OFF">
+        Toggle microphone mute. Mute is off
+      </message>
+      <message desc="Label for spoken feedback to indicate that the mute button is now on." name="IDS_ARIA_MUTE_ON">
+        Toggle microphone mute. Mute is on
+      </message>
+      <message desc="Toast message notifying user about the document scanner feature is currently downloading" name="IDS_DOWNLOADING_DOCUMENT_SCANNING_FEATURE">
+        Downloading updates for document scanning
+      </message>
+      <message desc="Label for the button of adding a new document page." name="IDS_ADD_NEW_PAGE_BUTTON">
+        Scan additional page
+      </message>
+      <message desc="Label for the button of selecting the document page." name="IDS_SELECT_PAGE_BUTTON">
+        Page thumbnail
+      </message>
+      <message desc="Label for the button of deleting the document page." name="IDS_DELETE_PAGE_BUTTON">
+        Delete page <ph name="page_number">$1<ex>2</ex></ph>
+      </message>
+      <message desc="Message for the next page count of document scanning mode." name="IDS_NEXT_PAGE_COUNT">
+        Scanning page <ph name="count">$1<ex>2</ex></ph>
+      </message>
+      <message desc="Toast message notifying user about multi-page PDF in document mode is available." name="IDS_DOCUMENT_MODE_MULTI_PAGE_TOAST">
+        You can now create multi-page PDF
+      </message>
+      <message desc="Label for the button to edit the selected document page." name="IDS_FIX_PAGE_BUTTON">
+        Edit page <ph name="index">$1<ex>1</ex></ph>
+      </message>
+      <message desc="Message for page deletion" name="IDS_DELETE_PAGE_MESSAGE">
+        Page <ph name="page_number">$1<ex>2</ex></ph> deleted
       </message>
     </messages>
   </release>

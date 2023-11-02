@@ -1,0 +1,11 @@
+type: DECODING_WEBRTC
+video {
+    content_type: 'video/VP8'
+    width: 1280
+    height: 720
+    bitrate: 3000
+    framerate: "24"
+  }
+audio {
+    content_type: 'audio/opus'
+  }

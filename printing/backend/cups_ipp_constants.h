@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 #define PRINTING_BACKEND_CUPS_IPP_CONSTANTS_H_
 
 #include "base/component_export.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 
 namespace printing {
 
@@ -25,7 +25,7 @@ COMPONENT_EXPORT(PRINT_BACKEND) extern const char kIppPinEncryption[];
 COMPONENT_EXPORT(PRINT_BACKEND) extern const char kCollated[];
 COMPONENT_EXPORT(PRINT_BACKEND) extern const char kUncollated[];
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 
 COMPONENT_EXPORT(PRINT_BACKEND) extern const char kIppDocumentAttributes[];
 COMPONENT_EXPORT(PRINT_BACKEND) extern const char kIppJobAttributes[];
@@ -35,7 +35,7 @@ COMPONENT_EXPORT(PRINT_BACKEND) extern const char kPinEncryptionNone[];
 COMPONENT_EXPORT(PRINT_BACKEND) extern const char kOptionFalse[];
 COMPONENT_EXPORT(PRINT_BACKEND) extern const char kOptionTrue[];
 
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace printing
 

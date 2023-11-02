@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,13 +10,12 @@
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/guid.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autofill/android/personal_data_manager_android.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/geo/country_names.h"
-#include "components/autofill/core/common/autofill_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -37,12 +36,6 @@ class MockSaveUpdateAddressProfilePromptView
 class SaveUpdateAddressProfilePromptControllerTest : public testing::Test {
  public:
   void SetUp() override {
-    // Enable both explicit save prompts and structured names.
-    feature_list_.InitWithFeatures(
-        {features::kAutofillAddressProfileSavePrompt,
-         features::kAutofillEnableSupportForMoreStructureInNames},
-        {});
-
     profile_ = test::GetFullProfile();
     original_profile_ = test::GetFullProfile();
     original_profile_.SetInfo(NAME_FULL, u"John Doe", GetLocale());
@@ -71,15 +64,14 @@ class SaveUpdateAddressProfilePromptControllerTest : public testing::Test {
 
   std::string GetLocale() { return "en-US"; }
 
-  base::test::ScopedFeatureList feature_list_;
-  MockSaveUpdateAddressProfilePromptView* prompt_view_;
+  raw_ptr<MockSaveUpdateAddressProfilePromptView> prompt_view_;
   AutofillProfile profile_;
   AutofillProfile original_profile_;
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback>
       decision_callback_;
   base::MockCallback<base::OnceCallback<void()>> dismissal_callback_;
   std::unique_ptr<SaveUpdateAddressProfilePromptController> controller_;
-  JNIEnv* env_ = base::android::AttachCurrentThread();
+  raw_ptr<JNIEnv> env_ = base::android::AttachCurrentThread();
   base::android::JavaParamRef<jobject> mock_caller_{nullptr};
 };
 

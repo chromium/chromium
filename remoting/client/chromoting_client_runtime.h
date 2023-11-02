@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/sequence_bound.h"
@@ -122,7 +122,7 @@ class ChromotingClientRuntime {
   // For logging session stage changes and stats.
   std::unique_ptr<TelemetryLogWriter> log_writer_;
 
-  ChromotingClientRuntime::Delegate* delegate_ = nullptr;
+  raw_ptr<ChromotingClientRuntime::Delegate> delegate_ = nullptr;
 
   friend struct base::DefaultSingletonTraits<ChromotingClientRuntime>;
 };

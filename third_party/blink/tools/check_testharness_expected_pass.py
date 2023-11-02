@@ -1,6 +1,6 @@
-#!/usr/bin/env vpython
+#!/usr/bin/env vpython3
 #
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Check if a web test expected file is an all-PASS testharness result.
@@ -16,8 +16,16 @@ from blinkpy.web_tests.models.testharness_results import is_all_pass_testharness
 
 paths = []
 
-for path in sys.argv[1:]:
-    content = open(path, 'r').read()
+if len(sys.argv) == 3 and sys.argv[1] == '--path-files':
+    with open(sys.argv[2]) as f:
+        filelist = [x.strip() for x in f.readlines()]
+else:
+    filelist = sys.argv[1:]
+
+for path in filelist:
+    # Call .decode() with errors="ignore" because there are a few files that
+    # are invalid UTF-8 and will otherwise trigger decode exceptions.
+    content = open(path, 'rb').read().decode(errors="ignore")
     if is_all_pass_testharness_result(content):
         paths.append(path)
 

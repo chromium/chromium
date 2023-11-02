@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_LOGIN_TEST_PROFILE_PREPARED_WAITER_H_
 
 #include "base/run_loop.h"
-#include "chromeos/login/auth/auth_status_consumer.h"
+#include "chromeos/ash/components/login/auth/auth_status_consumer.h"
 #include "components/account_id/account_id.h"
 
 namespace ash {
@@ -22,7 +22,7 @@ class ProfilePreparedWaiter : public AuthStatusConsumer {
   ~ProfilePreparedWaiter() override;
 
   // AuthStatusConsumer
-  void OnAuthSuccess(const chromeos::UserContext& user_context) override;
+  void OnAuthSuccess(const UserContext& user_context) override;
   void OnAuthFailure(const AuthFailure& error) override;
 
   void Wait();

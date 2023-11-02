@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,15 +9,9 @@
 namespace certificate_transparency {
 namespace features {
 
-#if defined(OS_ANDROID)
-const base::Feature kCertificateTransparencyComponentUpdater{
-    "CertificateTransparencyComponentUpdater",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-#else
-const base::Feature kCertificateTransparencyComponentUpdater{
-    "CertificateTransparencyComponentUpdater",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-#endif
+BASE_FEATURE(kCertificateTransparencyComponentUpdater,
+             "CertificateTransparencyComponentUpdater",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace features
 }  // namespace certificate_transparency

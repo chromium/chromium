@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,6 @@
 #include "base/callback.h"
 #include "base/cancelable_callback.h"
 #include "base/containers/linked_list.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "ios/net/cookies/cookie_cache.h"
@@ -25,6 +24,7 @@
 #include "net/cookies/cookie_change_dispatcher.h"
 #include "net/cookies/cookie_monster.h"
 #include "net/cookies/cookie_store.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 @class NSHTTPCookie;
@@ -85,14 +85,17 @@ class CookieStoreIOS : public net::CookieStore,
   void SetMetricsEnabled();
 
   // Implementation of the net::CookieStore interface.
-  void SetCanonicalCookieAsync(std::unique_ptr<CanonicalCookie> cookie,
-                               const GURL& source_url,
-                               const net::CookieOptions& options,
-                               SetCookiesCallback callback) override;
+  void SetCanonicalCookieAsync(
+      std::unique_ptr<CanonicalCookie> cookie,
+      const GURL& source_url,
+      const net::CookieOptions& options,
+      SetCookiesCallback callback,
+      absl::optional<net::CookieAccessResult> cookie_access_result =
+          absl::nullopt) override;
   void GetCookieListWithOptionsAsync(
       const GURL& url,
       const net::CookieOptions& options,
-      const net::CookiePartitionKeychain& cookie_partition_keychain,
+      const net::CookiePartitionKeyCollection& cookie_partition_key_collection,
       GetCookieListCallback callback) override;
   void GetAllCookiesAsync(GetAllCookiesCallback callback) override;
   void DeleteCanonicalCookieAsync(const CanonicalCookie& cookie,
@@ -162,17 +165,18 @@ class CookieStoreIOS : public net::CookieStore,
     ~CookieChangeDispatcherIOS() override;
 
     // net::CookieChangeDispatcher
-    std::unique_ptr<CookieChangeSubscription> AddCallbackForCookie(
+    [[nodiscard]] std::unique_ptr<CookieChangeSubscription>
+    AddCallbackForCookie(
         const GURL& url,
         const std::string& name,
         const absl::optional<net::CookiePartitionKey>& cookie_partition_key,
-        CookieChangeCallback callback) override WARN_UNUSED_RESULT;
-    std::unique_ptr<CookieChangeSubscription> AddCallbackForUrl(
+        CookieChangeCallback callback) override;
+    [[nodiscard]] std::unique_ptr<CookieChangeSubscription> AddCallbackForUrl(
         const GURL& url,
         const absl::optional<net::CookiePartitionKey>& cookie_partition_key,
-        CookieChangeCallback callback) override WARN_UNUSED_RESULT;
-    std::unique_ptr<CookieChangeSubscription> AddCallbackForAllChanges(
-        CookieChangeCallback callback) override WARN_UNUSED_RESULT;
+        CookieChangeCallback callback) override;
+    [[nodiscard]] std::unique_ptr<CookieChangeSubscription>
+    AddCallbackForAllChanges(CookieChangeCallback callback) override;
 
    private:
     // Instances of this class are always members of CookieStoreIOS, so
@@ -181,10 +185,10 @@ class CookieStoreIOS : public net::CookieStore,
   };
 
   // Interface only used by CookieChangeDispatcherIOS.
-  std::unique_ptr<CookieChangeSubscription> AddCallbackForCookie(
+  [[nodiscard]] std::unique_ptr<CookieChangeSubscription> AddCallbackForCookie(
       const GURL& url,
       const std::string& name,
-      CookieChangeCallback callback) WARN_UNUSED_RESULT;
+      CookieChangeCallback callback);
 
   // Returns true if the system cookie store policy is
   // |NSHTTPCookieAcceptPolicyAlways|.

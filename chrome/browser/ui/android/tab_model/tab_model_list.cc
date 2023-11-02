@@ -1,10 +1,13 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 
-#include "base/no_destructor.h"
+#include <jni.h>
+
+#include "base/android/jni_android.h"
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
@@ -33,7 +36,7 @@ void TabModelList::RemoveTabModel(TabModel* tab_model) {
   auto& tab_models = tab_model_list_.Get().models_;
 
   TabModelList::iterator remove_tab_model =
-      std::find(tab_models.begin(), tab_models.end(), tab_model);
+      base::ranges::find(tab_models, tab_model);
 
   if (remove_tab_model != tab_models.end())
     tab_models.erase(remove_tab_model);
@@ -93,6 +96,18 @@ TabModel* TabModelList::FindTabModelWithId(SessionID desired_id) {
   for (TabModel* model : models()) {
     if (model->GetSessionId() == desired_id)
       return model;
+  }
+
+  return nullptr;
+}
+
+TabModel* TabModelList::FindNativeTabModelForJavaObject(
+    const base::android::ScopedJavaLocalRef<jobject>& jtab_model) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  for (TabModel* model : models()) {
+    if (env->IsSameObject(jtab_model.obj(), model->GetJavaObject().obj())) {
+      return model;
+    }
   }
 
   return nullptr;

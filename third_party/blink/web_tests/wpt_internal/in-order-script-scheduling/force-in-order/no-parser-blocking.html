@@ -1,0 +1,35 @@
+<!doctype html>
+<title>InOrder Script Execution Order</title>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="../resources/helper.js"></script>
+</head>
+
+<body>
+  <script>
+    setup({ single_test: true });
+    enableLogDOMContentLoaded();
+    function finish() {
+      assert_array_equals(
+        window.result,
+        ["Inline1", "Sync1", "EndOfBody", "DOMContentLoaded", "Async1"],
+        "Execution order");
+      // When ForceInOrder is enabled, the order is following:
+      // ["Inline1", "EndOfBody", "DOMContentLoaded", "Async1", "Sync1"],
+      done();
+    }
+    logScript("Inline1");
+    window.addEventListener("load", finish);
+  </script>
+
+  <!-- Add 1 sec delay to make the loading happens after DOMContentLoaded -->
+  <script src="../resources/async-script-1.js?pipe=trickle(d1)" async></script>
+  <script src="../resources/sync-script-1.js"></script>
+  <pre id="bodyend">End</pre>
+</body>
+
+</html>

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,8 +34,7 @@ static const GLsizeiptr kDefaultMaxBufferSize = 1u << 30;  // 1GB
 
 BufferManager::BufferManager(MemoryTracker* memory_tracker,
                              FeatureInfo* feature_info)
-    : memory_type_tracker_(
-          new MemoryTypeTracker(memory_tracker)),
+    : memory_type_tracker_(new MemoryTypeTracker(memory_tracker)),
       memory_tracker_(memory_tracker),
       feature_info_(feature_info),
       max_buffer_size_(kDefaultMaxBufferSize),
@@ -45,10 +44,9 @@ BufferManager::BufferManager(MemoryTracker* memory_tracker,
       primitive_restart_fixed_index_(0),
       lost_context_(false),
       use_client_side_arrays_for_stream_buffers_(
-          feature_info
-              ? feature_info->workarounds()
-                    .use_client_side_arrays_for_stream_buffers
-              : 0) {
+          feature_info ? feature_info->workarounds()
+                             .use_client_side_arrays_for_stream_buffers
+                       : false) {
   // When created from InProcessCommandBuffer, we won't have a |memory_tracker_|
   // so don't register a dump provider.
   if (memory_tracker_) {

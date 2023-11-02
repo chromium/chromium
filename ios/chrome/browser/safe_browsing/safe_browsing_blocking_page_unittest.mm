@@ -1,22 +1,22 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/safe_browsing/safe_browsing_blocking_page.h"
 
-#include "base/strings/string_number_conversions.h"
+#import "base/strings/string_number_conversions.h"
 #import "base/test/ios/wait_util.h"
-#include "base/test/metrics/histogram_tester.h"
-#include "base/values.h"
+#import "base/test/metrics/histogram_tester.h"
+#import "base/values.h"
 #import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
-#include "components/security_interstitials/core/metrics_helper.h"
-#include "components/security_interstitials/core/unsafe_resource.h"
+#import "components/security_interstitials/core/metrics_helper.h"
+#import "components/security_interstitials/core/unsafe_resource.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
-#include "ios/web/public/test/web_task_environment.h"
-#include "testing/platform_test.h"
+#import "ios/web/public/test/web_task_environment.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -34,12 +34,13 @@ namespace {
 // Name of the metric recorded when a malware interstitial is shown or closed.
 const char kMalwareDecisionMetric[] = "interstitial.malware.decision";
 
-// Creates an UnsafeResource for |web_state| using |url|.
+// Creates an UnsafeResource for `web_state` using `url`.
 UnsafeResource CreateResource(web::WebState* web_state, const GURL& url) {
   UnsafeResource resource;
   resource.url = url;
   resource.threat_type = safe_browsing::SB_THREAT_TYPE_URL_MALWARE;
-  resource.web_state_getter = web_state->CreateDefaultGetter();
+  resource.weak_web_state = web_state->GetWeakPtr();
+  resource.threat_source = safe_browsing::ThreatSource::LOCAL_PVER4;
   return resource;
 }
 }  // namespace

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,16 +12,11 @@
 
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ash/arc/fileapi/arc_file_system_bridge.h"
 #include "chrome/browser/ash/crosapi/download_controller_ash.h"
 #include "chrome/browser/download/notification/multi_profile_download_notifier.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_delegate.h"
 #include "chromeos/crosapi/mojom/download_controller.mojom-forward.h"
-#include "components/arc/intent_helper/arc_intent_helper_bridge.h"
-#include "components/arc/intent_helper/arc_intent_helper_observer.h"
-
-namespace base {
-class FilePath;
-}  // namespace base
 
 namespace content {
 class DownloadManager;
@@ -34,7 +29,7 @@ namespace ash {
 class HoldingSpaceDownloadsDelegate
     : public HoldingSpaceKeyedServiceDelegate,
       public MultiProfileDownloadNotifier::Client,
-      public arc::ArcIntentHelperObserver,
+      public arc::ArcFileSystemBridge::Observer,
       public crosapi::DownloadControllerAsh::DownloadControllerObserver {
  public:
   HoldingSpaceDownloadsDelegate(HoldingSpaceKeyedService* service,
@@ -44,14 +39,11 @@ class HoldingSpaceDownloadsDelegate
       const HoldingSpaceDownloadsDelegate&) = delete;
   ~HoldingSpaceDownloadsDelegate() override;
 
-  // Attempts to cancel/pause/resume the download underlying the given `item`.
-  void Cancel(const HoldingSpaceItem* item);
-  void Pause(const HoldingSpaceItem* item);
-  void Resume(const HoldingSpaceItem* item);
-
-  // Attempts to mark the download underlying the given `item` to be opened when
-  // complete, returning whether or not the attempt was successful.
-  bool OpenWhenComplete(const HoldingSpaceItem* item);
+  // Attempts to mark the download underlying the given `item` to open when
+  // complete. Returns `absl::nullopt` on success or the reason if the attempt
+  // was not successful.
+  absl::optional<holding_space_metrics::ItemFailureToLaunchReason>
+  OpenWhenComplete(const HoldingSpaceItem* item);
 
  private:
   class InProgressDownload;
@@ -70,11 +62,11 @@ class HoldingSpaceDownloadsDelegate
                          download::DownloadItem* item) override;
   void OnDownloadUpdated(content::DownloadManager* manager,
                          download::DownloadItem* item) override;
-  bool ShouldObserveProfile(Profile* profile) override;
 
-  // arc::ArcIntentHelperObserver:
-  void OnArcDownloadAdded(const base::FilePath& relative_path,
-                          const std::string& owner_package_name) override;
+  // arc::ArcFileSystemBridge::Observer:
+  void OnMediaStoreUriAdded(
+      const GURL& uri,
+      const arc::mojom::MediaStoreMetadata& metadata) override;
 
   // crosapi::DownloadControllerAsh::DownloadControllerObserver:
   void OnLacrosDownloadCreated(
@@ -114,13 +106,18 @@ class HoldingSpaceDownloadsDelegate
   void CreateOrUpdateHoldingSpaceItem(InProgressDownload* in_progress_download,
                                       bool invalidate_image);
 
+  // Attempts to cancel/pause/resume the download underlying the given `item`.
+  void Cancel(const HoldingSpaceItem* item, HoldingSpaceCommandId command_id);
+  void Pause(const HoldingSpaceItem* item, HoldingSpaceCommandId command_id);
+  void Resume(const HoldingSpaceItem* item, HoldingSpaceCommandId command_id);
+
   // The collection of currently in-progress downloads.
   std::set<std::unique_ptr<InProgressDownload>, base::UniquePtrComparator>
       in_progress_downloads_;
 
-  base::ScopedObservation<arc::ArcIntentHelperBridge,
-                          arc::ArcIntentHelperObserver>
-      arc_intent_helper_observation_{this};
+  base::ScopedObservation<arc::ArcFileSystemBridge,
+                          arc::ArcFileSystemBridge::Observer>
+      arc_file_system_bridge_observation_{this};
 
   // Notifies this delegate of download events created for the profile
   // associated with this delegate's service. If the incognito profile

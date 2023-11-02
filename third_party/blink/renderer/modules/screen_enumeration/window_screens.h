@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,8 +20,8 @@ class ScriptPromiseResolver;
 class ScriptState;
 class ScreenDetails;
 
-// Supplements LocalDOMWindow with a Screens interface.
-// https://github.com/webscreens/window-placement
+// Supplements LocalDOMWindow with a ScreenDetails interface.
+// https://w3c.github.io/window-placement/
 class WindowScreens final : public GarbageCollected<WindowScreens>,
                             public ExecutionContextLifecycleObserver,
                             public Supplement<LocalDOMWindow> {

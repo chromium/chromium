@@ -1,0 +1,24 @@
+<style>
+  #title {
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+
+  #rowList {
+    display: flex;
+    flex-direction: column;
+  }
+</style>
+
+<div id="container" part="container">
+  <div id="title">[[title]]</div>
+  <div id="rowList">
+    <template id="list" is="dom-repeat" items="[[acceleratorContainer]]">
+      <accelerator-row class="acceleratorRow" description="[[item.description]]"
+          action="[[item.action]]"
+          source="[[item.source]]"
+          accelerator-infos="[[item.acceleratorInfos]]">
+      </accelerator-row>
+    </template>
+  </div>
+</div>

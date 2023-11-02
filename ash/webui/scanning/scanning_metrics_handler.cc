@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,21 +32,21 @@ ScanningMetricsHandler::ScanningMetricsHandler() = default;
 ScanningMetricsHandler::~ScanningMetricsHandler() = default;
 
 void ScanningMetricsHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "recordNumScanSettingChanges",
       base::BindRepeating(
           &ScanningMetricsHandler::HandleRecordNumScanSettingChanges,
           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "recordScanCompleteAction",
       base::BindRepeating(
           &ScanningMetricsHandler::HandleRecordScanCompleteAction,
           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "recordScanJobSettings",
       base::BindRepeating(&ScanningMetricsHandler::HandleRecordScanJobSettings,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "recordNumCompletedScans",
       base::BindRepeating(
           &ScanningMetricsHandler::HandleRecordNumCompletedScans,
@@ -54,30 +54,30 @@ void ScanningMetricsHandler::RegisterMessages() {
 }
 
 void ScanningMetricsHandler::HandleRecordNumScanSettingChanges(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   AllowJavascript();
 
-  CHECK_EQ(1U, args->GetList().size());
+  CHECK_EQ(1U, args.size());
   base::UmaHistogramCounts100("Scanning.NumScanSettingChanges",
-                              args->GetList()[0].GetInt());
+                              args[0].GetInt());
 }
 
 void ScanningMetricsHandler::HandleRecordScanCompleteAction(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   AllowJavascript();
 
-  CHECK_EQ(1U, args->GetList().size());
+  CHECK_EQ(1U, args.size());
   base::UmaHistogramEnumeration(
       "Scanning.ScanCompleteAction",
-      static_cast<scanning::ScanCompleteAction>(args->GetList()[0].GetInt()));
+      static_cast<scanning::ScanCompleteAction>(args[0].GetInt()));
 }
 
 void ScanningMetricsHandler::HandleRecordScanJobSettings(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   AllowJavascript();
 
-  CHECK_EQ(1U, args->GetList().size());
-  const base::Value& scan_job_settings = args->GetList()[0];
+  CHECK_EQ(1U, args.size());
+  const base::Value& scan_job_settings = args[0];
   CHECK(scan_job_settings.is_dict());
 
   base::UmaHistogramEnumeration(
@@ -106,12 +106,12 @@ void ScanningMetricsHandler::HandleRecordScanJobSettings(
 }
 
 void ScanningMetricsHandler::HandleRecordNumCompletedScans(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   AllowJavascript();
 
-  CHECK_EQ(1U, args->GetList().size());
+  CHECK_EQ(1U, args.size());
   base::UmaHistogramCounts100("Scanning.NumCompletedScansInSession",
-                              args->GetList()[0].GetInt());
+                              args[0].GetInt());
 }
 
 }  // namespace ash

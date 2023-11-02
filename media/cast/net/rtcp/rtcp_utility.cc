@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -59,10 +59,10 @@ bool RtcpParser::Parse(base::BigEndianReader* reader) {
     if (!ParseCommonHeader(reader, &header))
       return false;
 
-    base::StringPiece tmp;
-    if (!reader->ReadPiece(&tmp, header.length_in_octets - 4))
+    base::span<const uint8_t> tmp;
+    if (!reader->ReadSpan(&tmp, header.length_in_octets - 4))
       return false;
-    base::BigEndianReader chunk(tmp.data(), tmp.size());
+    base::BigEndianReader chunk(tmp);
 
     switch (header.PT) {
       case kPacketTypeSenderReport:
@@ -329,11 +329,6 @@ bool RtcpParser::ParseFeedbackCommon(base::BigEndianReader* reader,
       !reader->ReadU16(&cast_message_.target_delay_ms))
     return false;
 
-  // TODO(miu): 8 bits is not enough.  If an RTCP packet is received very late
-  // (e.g., more than 1.2 seconds late for 100 FPS audio), the frame ID here
-  // will be mis-interpreted as a higher-numbered frame than what the packet
-  // intends to represent.  This could make the sender's tracking of ACK'ed
-  // frames inconsistent.
   cast_message_.ack_frame_id =
       max_valid_frame_id_.ExpandLessThanOrEqual(truncated_last_frame_id);
 
@@ -557,8 +552,7 @@ uint32_t GetSsrcOfSender(const uint8_t* rtcp_buffer, size_t length) {
   if (length < kMinLengthOfRtcp)
     return 0;
   uint32_t ssrc_of_sender;
-  base::BigEndianReader big_endian_reader(
-      reinterpret_cast<const char*>(rtcp_buffer), length);
+  base::BigEndianReader big_endian_reader(rtcp_buffer, length);
   big_endian_reader.Skip(4);  // Skip header.
   big_endian_reader.ReadU32(&ssrc_of_sender);
   return ssrc_of_sender;

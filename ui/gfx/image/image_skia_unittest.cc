@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/simple_thread.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -129,7 +130,7 @@ class TestOnThread : public base::SimpleThread {
   bool can_modify() const { return can_modify_; }
 
  private:
-  ImageSkia* image_skia_;
+  raw_ptr<ImageSkia> image_skia_;
 
   bool can_read_;
   bool can_modify_;

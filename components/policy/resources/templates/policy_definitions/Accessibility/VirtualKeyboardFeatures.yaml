@@ -1,0 +1,47 @@
+caption: Enable or disable various features on the on-screen keyboard
+desc: |-
+  Enable or disable various features on the on-screen keyboard. This policy takes effect only when "VirtualKeyboardEnabled" policy is enabled.
+
+        If one feature in this policy is set to True, it will be enabled on the on-screen keyboard.
+
+        If one feature in this policy is set to False or left unset, it will be disabled on the on-screen keyboard.
+
+        NOTE: this policy is only supported in PWA Kiosk mode.
+example_value:
+  auto_complete_enabled: true
+  auto_correct_enabled: true
+  handwriting_enabled: false
+  spell_check_enabled: false
+  voice_input_enabled: false
+features:
+  dynamic_refresh: true
+  per_profile: true
+owners:
+- anqing@chromium.org
+schema:
+  properties:
+    auto_complete_enabled:
+      description: A boolean flag indicating if the on-screen keyboard can provide
+        auto-complete.
+      type: boolean
+    auto_correct_enabled:
+      description: A boolean flag indicating if the on-screen keyboard can provide
+        auto-correct.
+      type: boolean
+    handwriting_enabled:
+      description: A boolean flag indicating if the on-screen keyboard can provide
+        input via handwriting recognition.
+      type: boolean
+    spell_check_enabled:
+      description: A boolean flag indicating if the on-screen keyboard can provide
+        spell-check.
+      type: boolean
+    voice_input_enabled:
+      description: A boolean flag indicating if the on-screen keyboard can provide
+        voice input.
+      type: boolean
+  type: object
+supported_on:
+- chrome_os:94-
+tags: []
+type: dict

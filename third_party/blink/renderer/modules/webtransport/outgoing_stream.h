@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,6 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
-#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -65,6 +64,8 @@ class MODULES_EXPORT OutgoingStream final
   void Init(ExceptionState&);
 
   void InitWithExistingWritableStream(WritableStream*, ExceptionState&);
+
+  void AbortAlgorithm(OutgoingStream*);
 
   // Implementation of OutgoingStream IDL, used by client classes to implement
   // it. https://wicg.github.io/web-transport/#outgoing-stream
@@ -187,6 +188,8 @@ class MODULES_EXPORT OutgoingStream final
   // If a close() on the underlying sink object is pending, this will be
   // non-null.
   Member<ScriptPromiseResolver> close_promise_resolver_;
+
+  Member<ScriptPromiseResolver> pending_operation_;
 
   State state_ = State::kOpen;
 };

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,13 +9,12 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 
-namespace chromeos {
+namespace ash {
 namespace ime {
 
 namespace {
-
-absl::optional<ImeDecoder::EntryPoints> g_fake_decoder_entry_points_for_testing;
 
 const char kCrosImeDecoderLib[] = "libimedecoder.so";
 
@@ -45,71 +44,71 @@ void ImeLoggerBridge(int severity, const char* message) {
     case logging::LOG_ERROR:
       LOG(ERROR) << message;
       break;
+    case logging::LOG_FATAL:
+      LOG(FATAL) << message;
+      break;
     default:
       break;
   }
 }
 
-// Check whether the crucial members of an EntryPoints are loaded.
-bool IsEntryPointsLoaded(ImeDecoder::EntryPoints entry) {
-  return (entry.init_once && entry.supports && entry.activate_ime &&
-          entry.process && entry.close);
-}
-
 }  // namespace
 
-ImeDecoder::ImeDecoder() : status_(Status::kUninitialized) {
-  if (g_fake_decoder_entry_points_for_testing) {
-    entry_points_ = *g_fake_decoder_entry_points_for_testing;
-    status_ = Status::kSuccess;
-    entry_points_.is_ready = true;
-    return;
+ImeDecoderImpl::ImeDecoderImpl() = default;
+
+absl::optional<ImeDecoder::EntryPoints>
+ImeDecoderImpl::MaybeLoadThenReturnEntryPoints() {
+  if (entry_points_) {
+    return entry_points_;
   }
 
   base::FilePath path = GetImeDecoderLibPath();
-
-  if (!base::PathExists(path)) {
-    LOG(WARNING) << "IME decoder shared library is not installed.";
-    status_ = Status::kNotInstalled;
-    return;
-  }
 
   // Add dlopen flags (RTLD_LAZY | RTLD_NODELETE) later.
   base::ScopedNativeLibrary library = base::ScopedNativeLibrary(path);
   if (!library.is_valid()) {
     LOG(ERROR) << "Failed to load decoder shared library from: " << path
                << ", error: " << library.GetError()->ToString();
-    status_ = Status::kLoadLibraryFailed;
-    return;
+    return absl::nullopt;
   }
 
-  // TODO(b/172527471): Create a macro to fetch function pointers.
-  entry_points_.init_once = reinterpret_cast<ImeDecoderInitOnceFn>(
-      library.GetFunctionPointer("ImeDecoderInitOnce"));
-  entry_points_.supports = reinterpret_cast<ImeDecoderSupportsFn>(
-      library.GetFunctionPointer("ImeDecoderSupports"));
-  entry_points_.activate_ime = reinterpret_cast<ImeDecoderActivateImeFn>(
-      library.GetFunctionPointer("ImeDecoderActivateIme"));
-  entry_points_.process = reinterpret_cast<ImeDecoderProcessFn>(
-      library.GetFunctionPointer("ImeDecoderProcess"));
-  entry_points_.close = reinterpret_cast<ImeDecoderCloseFn>(
-      library.GetFunctionPointer("ImeDecoderClose"));
-  entry_points_.connect_to_input_method =
-      reinterpret_cast<ConnectToInputMethodFn>(
-          library.GetFunctionPointer("ConnectToInputMethod"));
-  entry_points_.is_input_method_connected =
-      reinterpret_cast<IsInputMethodConnectedFn>(
-          library.GetFunctionPointer("IsInputMethodConnected"));
-  if (!IsEntryPointsLoaded(entry_points_)) {
-    status_ = Status::kFunctionMissing;
-    return;
+  EntryPoints entry_points = {
+      .init_proto_mode = reinterpret_cast<InitProtoModeFn>(
+          library.GetFunctionPointer(kInitProtoModeFnName)),
+      .close_proto_mode = reinterpret_cast<CloseProtoModeFn>(
+          library.GetFunctionPointer(kCloseProtoModeFnName)),
+      .supports = reinterpret_cast<ImeDecoderSupportsFn>(
+          library.GetFunctionPointer(kImeDecoderSupportsFnName)),
+      .activate_ime = reinterpret_cast<ImeDecoderActivateImeFn>(
+          library.GetFunctionPointer(kImeDecoderActivateImeFnName)),
+      .process = reinterpret_cast<ImeDecoderProcessFn>(
+          library.GetFunctionPointer(kImeDecoderProcessFnName)),
+      .init_mojo_mode = reinterpret_cast<InitMojoModeFn>(
+          library.GetFunctionPointer(kInitMojoModeFnName)),
+      .close_mojo_mode = reinterpret_cast<CloseMojoModeFn>(
+          library.GetFunctionPointer(kCloseMojoModeFnName)),
+      .connect_to_input_method = reinterpret_cast<ConnectToInputMethodFn>(
+          library.GetFunctionPointer(kConnectToInputMethodFnName)),
+      .initialize_connection_factory =
+          reinterpret_cast<InitializeConnectionFactoryFn>(
+              library.GetFunctionPointer(kInitializeConnectionFactoryFnName)),
+      .is_input_method_connected = reinterpret_cast<IsInputMethodConnectedFn>(
+          library.GetFunctionPointer(kIsInputMethodConnectedFnName)),
+  };
+
+  // Checking if entry_points are loaded.
+  if (!entry_points.init_proto_mode || !entry_points.close_proto_mode ||
+      !entry_points.supports || !entry_points.activate_ime ||
+      !entry_points.process || !entry_points.init_mojo_mode ||
+      !entry_points.close_mojo_mode || !entry_points.connect_to_input_method ||
+      !entry_points.is_input_method_connected ||
+      !entry_points.initialize_connection_factory) {
+    return absl::nullopt;
   }
-  entry_points_.is_ready = true;
 
   // Optional function pointer.
-  ImeEngineLoggerSetterFn logger_setter =
-      reinterpret_cast<ImeEngineLoggerSetterFn>(
-          library.GetFunctionPointer("SetImeEngineLogger"));
+  SetImeEngineLoggerFn logger_setter = reinterpret_cast<SetImeEngineLoggerFn>(
+      library.GetFunctionPointer(kSetImeEngineLoggerFnName));
   if (logger_setter) {
     logger_setter(ImeLoggerBridge);
   } else {
@@ -117,29 +116,16 @@ ImeDecoder::ImeDecoder() : status_(Status::kUninitialized) {
   }
 
   library_ = std::move(library);
-  status_ = Status::kSuccess;
-}
-
-ImeDecoder::~ImeDecoder() = default;
-
-ImeDecoder* ImeDecoder::GetInstance() {
-  static base::NoDestructor<ImeDecoder> instance;
-  return instance.get();
-}
-
-ImeDecoder::Status ImeDecoder::GetStatus() const {
-  return status_;
-}
-
-ImeDecoder::EntryPoints ImeDecoder::GetEntryPoints() {
-  DCHECK(status_ == Status::kSuccess);
+  entry_points_ = entry_points;
   return entry_points_;
 }
 
-void FakeDecoderEntryPointsForTesting(  // IN-TEST
-    const ImeDecoder::EntryPoints& decoder_entry_points) {
-  g_fake_decoder_entry_points_for_testing = decoder_entry_points;
+ImeDecoderImpl::~ImeDecoderImpl() = default;
+
+ImeDecoderImpl* ImeDecoderImpl::GetInstance() {
+  static base::NoDestructor<ImeDecoderImpl> instance;
+  return instance.get();
 }
 
 }  // namespace ime
-}  // namespace chromeos
+}  // namespace ash

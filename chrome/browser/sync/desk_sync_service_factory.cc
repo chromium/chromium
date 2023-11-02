@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/common/channel_info.h"
 #include "components/desks_storage/core/desk_sync_service.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/sync/model/model_type_store_service.h"
 
 // static
@@ -26,9 +25,7 @@ DeskSyncServiceFactory* DeskSyncServiceFactory::GetInstance() {
 }
 
 DeskSyncServiceFactory::DeskSyncServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "DeskSyncService",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("DeskSyncService") {
   DependsOn(ModelTypeStoreServiceFactory::GetInstance());
 }
 

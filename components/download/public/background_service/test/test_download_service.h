@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "components/download/public/background_service/background_download_service.h"
 #include "components/download/public/background_service/client.h"
 #include "components/download/public/background_service/download_params.h"
@@ -79,7 +80,7 @@ class TestDownloadService : public BackgroundDownloadService {
   bool fail_at_start_;
   uint64_t file_size_;
 
-  Client* client_;
+  raw_ptr<Client> client_;
 
   std::list<absl::optional<DownloadParams>> downloads_;
 };

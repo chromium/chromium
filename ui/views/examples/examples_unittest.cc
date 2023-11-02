@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,14 +10,7 @@
 namespace views {
 namespace examples {
 
-// TODO(crbug.com/1221012): Disabled the test on windows due to its flakiness.
-#if defined(OS_WIN)
-#define MAYBE_TestViewsExamplesLaunches DISABLED_TestViewsExamplesLaunches
-#else
-#define MAYBE_TestViewsExamplesLaunches TestViewsExamplesLaunches
-#endif
-
-TEST(ExamplesTest, MAYBE_TestViewsExamplesLaunches) {
+TEST(ExamplesTest, TestViewsExamplesLaunches) {
   const ExamplesExitCode exit_code = ExamplesMainProc(true);
   // Check the status of the Skia Gold comparison.
   EXPECT_EQ(ExamplesExitCode::kSucceeded, exit_code);

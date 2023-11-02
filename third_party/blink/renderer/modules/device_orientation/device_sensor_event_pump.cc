@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,12 +12,12 @@ namespace blink {
 void DeviceSensorEventPump::Start(LocalFrame& frame) {
   DVLOG(2) << "requested start";
 
-  if (state_ != PumpState::STOPPED)
+  if (state_ != PumpState::kStopped)
     return;
 
   DCHECK(!timer_.IsActive());
 
-  state_ = PumpState::PENDING_START;
+  state_ = PumpState::kPendingStart;
 
   SendStartMessage(frame);
 }
@@ -25,18 +25,18 @@ void DeviceSensorEventPump::Start(LocalFrame& frame) {
 void DeviceSensorEventPump::Stop() {
   DVLOG(2) << "requested stop";
 
-  if (state_ == PumpState::STOPPED)
+  if (state_ == PumpState::kStopped)
     return;
 
-  DCHECK((state_ == PumpState::PENDING_START && !timer_.IsActive()) ||
-         (state_ == PumpState::RUNNING && timer_.IsActive()));
+  DCHECK((state_ == PumpState::kPendingStart && !timer_.IsActive()) ||
+         (state_ == PumpState::kRunning && timer_.IsActive()));
 
   if (timer_.IsActive())
     timer_.Stop();
 
   SendStopMessage();
 
-  state_ = PumpState::STOPPED;
+  state_ = PumpState::kStopped;
 }
 
 void DeviceSensorEventPump::HandleSensorProviderError() {
@@ -47,8 +47,8 @@ void DeviceSensorEventPump::SetSensorProviderForTesting(
     mojo::PendingRemote<device::mojom::blink::SensorProvider> sensor_provider) {
   sensor_provider_.Bind(std::move(sensor_provider), task_runner_);
   sensor_provider_.set_disconnect_handler(
-      WTF::Bind(&DeviceSensorEventPump::HandleSensorProviderError,
-                WrapWeakPersistent(this)));
+      WTF::BindOnce(&DeviceSensorEventPump::HandleSensorProviderError,
+                    WrapWeakPersistent(this)));
 }
 
 DeviceSensorEventPump::PumpState
@@ -64,7 +64,7 @@ void DeviceSensorEventPump::Trace(Visitor* visitor) const {
 DeviceSensorEventPump::DeviceSensorEventPump(LocalFrame& frame)
     : sensor_provider_(frame.DomWindow()),
       task_runner_(frame.GetTaskRunner(TaskType::kSensor)),
-      state_(PumpState::STOPPED),
+      state_(PumpState::kStopped),
       timer_(frame.GetTaskRunner(TaskType::kSensor),
              this,
              &DeviceSensorEventPump::FireEvent) {}
@@ -74,7 +74,7 @@ DeviceSensorEventPump::~DeviceSensorEventPump() = default;
 void DeviceSensorEventPump::DidStartIfPossible() {
   DVLOG(2) << "did start sensor event pump";
 
-  if (state_ != PumpState::PENDING_START)
+  if (state_ != PumpState::kPendingStart)
     return;
 
   if (!SensorsReadyOrErrored())
@@ -84,7 +84,7 @@ void DeviceSensorEventPump::DidStartIfPossible() {
 
   timer_.StartRepeating(base::Microseconds(kDefaultPumpDelayMicroseconds),
                         FROM_HERE);
-  state_ = PumpState::RUNNING;
+  state_ = PumpState::kRunning;
 }
 
 }  // namespace blink

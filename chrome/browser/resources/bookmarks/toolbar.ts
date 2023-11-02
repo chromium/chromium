@@ -1,25 +1,26 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_selection_overlay.js';
-import 'chrome://resources/cr_elements/icons.m.js';
-import './shared_style.js';
+import 'chrome://resources/cr_elements/icons.html.js';
+import './shared_style.css.js';
 import './strings.m.js';
 import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 
 import {CrToolbarElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 import {CrToolbarSearchFieldElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {deselectItems, setSearchTerm} from './actions.js';
+import {setSearchTerm} from './actions.js';
 import {BookmarksCommandManagerElement} from './command_manager.js';
 import {Command, MenuSource} from './constants.js';
 import {StoreClientMixin} from './store_client_mixin.js';
+import {getTemplate} from './toolbar.html.js';
 
 const BookmarksToolbarElementBase = StoreClientMixin(PolymerElement);
 
@@ -29,7 +30,7 @@ export class BookmarksToolbarElement extends BookmarksToolbarElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -68,7 +69,7 @@ export class BookmarksToolbarElement extends BookmarksToolbarElementBase {
   private selectedItems_: Set<string>;
   private globalCanEdit_: boolean;
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     this.watch('searchTerm_', state => state.search.term);
     this.watch('selectedItems_', state => state.selection.items);
@@ -88,7 +89,7 @@ export class BookmarksToolbarElement extends BookmarksToolbarElementBase {
       detail: {
         targetElement: e.target,
         source: MenuSource.TOOLBAR,
-      }
+      },
     }));
   }
 

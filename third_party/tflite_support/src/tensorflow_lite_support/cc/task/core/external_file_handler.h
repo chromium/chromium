@@ -18,8 +18,8 @@ limitations under the License.
 
 #include <memory>
 
-#include "absl/status/status.h"
-#include "absl/strings/string_view.h"
+#include "absl/status/status.h"        // from @com_google_absl
+#include "absl/strings/string_view.h"  // from @com_google_absl
 #include "tensorflow_lite_support/cc/port/integral_types.h"
 #include "tensorflow_lite_support/cc/port/statusor.h"
 #include "tensorflow_lite_support/cc/task/core/proto/external_file_proto_inc.h"
@@ -65,6 +65,10 @@ class ExternalFileHandler {
   // Reference to the input ExternalFile.
   const ExternalFile& external_file_;
 
+  // The file descriptor of the ExternalFile if provided by path, as it is
+  // opened and owned by this class. Set to -1 otherwise.
+  int owned_fd_{-1};
+
   // Points to the memory buffer mapped from the file descriptor of the
   // ExternalFile, if provided by path or file descriptor.
   void* buffer_{};
@@ -78,10 +82,14 @@ class ExternalFileHandler {
 
   // The aligned mapped memory buffer offset, if any.
   int64 buffer_aligned_offset_{};
+#ifndef _WIN32
+  // The aligned mapped memory buffer size in bytes taking into account the
+  // offset shift introduced by buffer_aligned_memory_offset_, if any.
+  int64 buffer_aligned_size_{};
+#endif
 };
 
 }  // namespace core
 }  // namespace task
 }  // namespace tflite
-
 #endif  // TENSORFLOW_LITE_SUPPORT_CC_TASK_CORE_EXTERNAL_FILE_HANDLER_H_

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@
 
 #include <string>
 
+#include "base/strings/string_piece_forward.h"
 
 namespace task_manager {
 namespace browsertest_util {
@@ -42,7 +43,7 @@ enum class ColumnSpecifier {
 // If the wait times out, this test will trigger a gtest failure. To get
 // meaningful errors, tests should wrap invocations of this function with
 // ASSERT_NO_FATAL_FAILURE().
-void WaitForTaskManagerRows(int resource_count,
+void WaitForTaskManagerRows(size_t resource_count,
                             const std::u16string& title_pattern);
 
 // Make the indicated TaskManager column be visible.
@@ -60,9 +61,11 @@ void WaitForTaskManagerStatToExceed(const std::u16string& title_pattern,
                                     size_t min_column_value);
 
 // ASCII matcher convenience functions for use with WaitForTaskManagerRows()
-std::u16string MatchTab(const char* title);         // "Tab: " + title
+std::u16string MatchTab(base::StringPiece title);   // "Tab: " + title
 std::u16string MatchAnyTab();                       // "Tab: *"
 std::u16string MatchAboutBlankTab();                // "Tab: about:blank"
+std::u16string MatchIncognitoTab(base::StringPiece title);
+std::u16string MatchAnyIncognitoTab();
 std::u16string MatchExtension(const char* title);   // "Extension: " + title
 std::u16string MatchAnyExtension();                 // "Extension: *"
 std::u16string MatchApp(const char* title);         // "App: " + title
@@ -78,7 +81,14 @@ std::u16string MatchAnySubframe();                  // "Subframe: *"
 // "Utility: " + title
 std::u16string MatchUtility(const std::u16string& title);
 std::u16string MatchAnyUtility();  // "Utility: *"
-
+std::u16string MatchBFCache(base::StringPiece title);
+std::u16string MatchAnyBFCache();
+std::u16string MatchPrerender(base::StringPiece title);
+std::u16string MatchAnyPrerender();
+std::u16string MatchFencedFrame(base::StringPiece title);
+std::u16string MatchAnyFencedFrame();
+std::u16string MatchIncognitoFencedFrame(base::StringPiece title);
+std::u16string MatchAnyIncognitoFencedFrame();
 }  // namespace browsertest_util
 }  // namespace task_manager
 

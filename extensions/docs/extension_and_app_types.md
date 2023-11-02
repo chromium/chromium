@@ -115,10 +115,6 @@ Chrome then created a desktop shortcut that would open a browser window with
 flags that specify the app and profile. Activating the icon launched the
 "bookmarked" URL in a tab or a window.
 
-A bookmark app's `manifest.json` identifies it as a hosted app. However, in the
-C++ code, the `Extension` object will return true from its `from_bookmark()`
-method.
-
 *Bookmark apps based on Extensions are retired.*
 
 ### Web App

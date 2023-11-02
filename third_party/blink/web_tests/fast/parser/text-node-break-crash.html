@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<script>
+test(() => {
+  let arr = [];
+  for(let i=0;i<100000;++i) {
+    arr.push(0xcc,0x81);
+  }
+  const str = new TextDecoder().decode((new Uint8Array([0x65,...arr])).buffer);
+  (new DOMParser()).parseFromString(str,'text/html');
+},'See crbug.com/1307117. This test passes if it does not crash/DCHECK.');
+</script>

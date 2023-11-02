@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
+#include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "ui/compositor/layer.h"
@@ -166,7 +167,14 @@ struct AnimationBuilder::Value {
 
 AnimationBuilder::AnimationBuilder() = default;
 
+AnimationBuilder::AnimationBuilder(AnimationBuilder&& rhs) = default;
+
+AnimationBuilder& AnimationBuilder::operator=(AnimationBuilder&& rhs) = default;
+
 AnimationBuilder::~AnimationBuilder() {
+  // Terminate `current_sequence_` to complete layer animation configuration.
+  current_sequence_.reset();
+
   DCHECK(!next_animation_observer_)
       << "Callbacks were scheduled without creating a sequence block "
          "afterwards. There are no animations to run these callbacks on.";
@@ -227,14 +235,12 @@ AnimationBuilder& AnimationBuilder::OnScheduled(base::OnceClosure callback) {
   return *this;
 }
 
-AnimationSequenceBlock AnimationBuilder::Once() {
-  repeating_ = false;
-  return NewSequence();
+AnimationSequenceBlock& AnimationBuilder::Once() {
+  return NewSequence(false);
 }
 
-AnimationSequenceBlock AnimationBuilder::Repeatedly() {
-  repeating_ = true;
-  return NewSequence();
+AnimationSequenceBlock& AnimationBuilder::Repeatedly() {
+  return NewSequence(true);
 }
 
 void AnimationBuilder::AddLayerAnimationElement(
@@ -249,16 +255,24 @@ void AnimationBuilder::AddLayerAnimationElement(
   values.insert(it, std::move(value));
 }
 
+std::unique_ptr<AnimationSequenceBlock> AnimationBuilder::SwapCurrentSequence(
+    base::PassKey<AnimationSequenceBlock>,
+    std::unique_ptr<AnimationSequenceBlock> new_sequence) {
+  auto old_sequence = std::move(current_sequence_);
+  current_sequence_ = std::move(new_sequence);
+  return old_sequence;
+}
+
 void AnimationBuilder::BlockEndedAt(base::PassKey<AnimationSequenceBlock>,
                                     base::TimeDelta end) {
   end_ = std::max(end_, end);
 }
 
-void AnimationBuilder::TerminateSequence(
-    base::PassKey<AnimationSequenceBlock>) {
+void AnimationBuilder::TerminateSequence(base::PassKey<AnimationSequenceBlock>,
+                                         bool repeating) {
   for (auto& pair : values_) {
     auto sequence = std::make_unique<ui::LayerAnimationSequence>();
-    sequence->set_is_repeating(repeating_);
+    sequence->set_is_repeating(repeating);
     if (animation_observer_)
       sequence->AddObserver(animation_observer_.get());
 
@@ -289,10 +303,15 @@ void AnimationBuilder::TerminateSequence(
   values_.clear();
 }
 
+AnimationSequenceBlock& AnimationBuilder::GetCurrentSequence() {
+  DCHECK(current_sequence_);
+  return *current_sequence_;
+}
+
 std::unique_ptr<AnimationAbortHandle> AnimationBuilder::GetAbortHandle() {
   DCHECK(!abort_handle_) << "An abort handle is already created.";
   abort_handle_ = new AnimationAbortHandle(GetObserver());
-  return base::WrapUnique(abort_handle_);
+  return base::WrapUnique(abort_handle_.get());
 }
 
 AnimationBuilder::Observer* AnimationBuilder::GetObserver() {
@@ -307,8 +326,14 @@ void AnimationBuilder::SetObserverDeletedCallbackForTesting(
   GetObserverDeletedCallback() = std::move(deleted_closure);
 }
 
-AnimationSequenceBlock AnimationBuilder::NewSequence() {
+AnimationSequenceBlock& AnimationBuilder::NewSequence(bool repeating) {
   // Each sequence should have its own observer.
+
+  // Ensure to terminate the current sequence block before touching the
+  // animation sequence observer so that the sequence observer is attached to
+  // the layer animation sequence.
+  if (current_sequence_)
+    current_sequence_.reset();
 
   // The observer needs to outlive the AnimationBuilder and will manage its own
   // lifetime. GetAttachedToSequence should not return false here. This is
@@ -321,8 +346,9 @@ AnimationSequenceBlock AnimationBuilder::NewSequence() {
   }
 
   end_ = base::TimeDelta();
-  return AnimationSequenceBlock(base::PassKey<AnimationBuilder>(), this,
-                                base::TimeDelta());
+  current_sequence_ = std::make_unique<AnimationSequenceBlock>(
+      base::PassKey<AnimationBuilder>(), this, base::TimeDelta(), repeating);
+  return *current_sequence_;
 }
 
 // static

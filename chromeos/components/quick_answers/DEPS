@@ -1,0 +1,14 @@
+include_rules = [
+  "+ash/public",
+  "+chrome/common",
+  "+components/language/core/browser",
+  "+components/spellcheck/common",
+  "+content/public/browser",
+  "+google_apis",
+  "+services/data_decoder/public",
+  "+third_party/hunspell",
+  "+ui/base/l10n",
+  "+ui/base/resource/resource_bundle.h",
+  "+ui/color",
+  "+ui/gfx",
+]

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 
 #include "ash/ash_export.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/events/event.h"
@@ -276,6 +277,9 @@ class ASH_EXPORT TouchExplorationController
   void OnGestureEvent(ui::GestureConsumer* raw_input_consumer,
                       ui::GestureEvent* gesture) override;
 
+  // ui::GestureConsumer:
+  const std::string& GetName() const override;
+
   // Process the gesture events that have been created.
   void ProcessGestureEvents();
 
@@ -287,10 +291,6 @@ class ASH_EXPORT TouchExplorationController
   void DispatchKeyWithFlags(const ui::KeyboardCode key,
                             int flags,
                             const Continuation continuation);
-
-  std::unique_ptr<ui::MouseEvent> CreateMouseMoveEvent(
-      const gfx::PointF& location,
-      int flags);
 
   void EnterTouchToMouseMode();
 

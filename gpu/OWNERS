@@ -1,5 +1,4 @@
 set noparent
-backer@chromium.org
 kbr@chromium.org
 vasilyt@chromium.org
 vmiura@chromium.org
@@ -18,3 +17,6 @@ vikassoni@chromium.org
 
 # D3D, dcomp, Windows platform integration, etc.
 rafael.cintron@microsoft.com
+
+# The extended Chrome Graphics team should be able to self-administer.
+per-file GRAPHICS_TEAM_OWNERS=file://gpu/GRAPHICS_TEAM_OWNERS

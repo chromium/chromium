@@ -1,50 +1,46 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/strings.m.js';
-// #import 'chrome://resources/cr_components/chromeos/network/network_icon.m.js';
+import 'chrome://os-settings/strings.m.js';
+import 'chrome://resources/ash/common/network/network_icon.js';
 
-// #import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// clang-format on
+import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
+import {DeviceStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 suite('NetworkIconTest', function() {
   /** @type {!NetworkList|undefined} */
   let networkIcon;
 
-  let mojom;
-
   function flushAsync() {
-    Polymer.dom.flush();
+    flush();
     // Use setTimeout to wait for the next macrotask.
     return new Promise(resolve => setTimeout(resolve));
   }
 
   setup(function() {
-    mojom = chromeos.networkConfig.mojom;
     networkIcon = document.createElement('network-icon');
     document.body.appendChild(networkIcon);
     assertTrue(!!networkIcon);
-    Polymer.dom.flush();
+    flush();
   });
 
   test('Display locked cellular icon', async function() {
-    const networkState = OncMojo.getDefaultNetworkState(
-      mojom.NetworkType.kCellular, 'cellular');
+    const networkState =
+        OncMojo.getDefaultNetworkState(NetworkType.kCellular, 'cellular');
     networkState.typeState.cellular.iccid = '1';
     networkState.typeState.cellular.eid = '1';
     networkState.typeState.cellular.simLocked = true;
     networkIcon.networkState = networkState;
 
     networkIcon.deviceState = {
-      type: mojom.NetworkType.kCellular,
-      deviceState: mojom.DeviceStateType.kEnabled,
+      type: NetworkType.kCellular,
+      deviceState: DeviceStateType.kEnabled,
       simInfos: [
         {slot_id: 1, eid: '1', iccid: '1', isPrimary: false},
       ],
-      scanning: true
+      scanning: true,
     };
     await flushAsync();
 
@@ -52,8 +48,8 @@ suite('NetworkIconTest', function() {
   });
 
   test('Display roaming badge', async function() {
-    const networkState = OncMojo.getDefaultNetworkState(
-      mojom.NetworkType.kCellular, 'cellular');
+    const networkState =
+        OncMojo.getDefaultNetworkState(NetworkType.kCellular, 'cellular');
     networkState.typeState.cellular.roaming = true;
     networkIcon.networkState = networkState;
 
@@ -63,8 +59,8 @@ suite('NetworkIconTest', function() {
   });
 
   test('Should not display roaming badge', async function() {
-    const networkState = OncMojo.getDefaultNetworkState(
-      mojom.NetworkType.kCellular, 'cellular');
+    const networkState =
+        OncMojo.getDefaultNetworkState(NetworkType.kCellular, 'cellular');
     networkState.typeState.cellular.roaming = false;
     networkIcon.networkState = networkState;
 
@@ -75,7 +71,7 @@ suite('NetworkIconTest', function() {
 
   test('Should not display icon', async function() {
     const networkState =
-        OncMojo.getDefaultNetworkState(mojom.NetworkType.kCellular, 'cellular');
+        OncMojo.getDefaultNetworkState(NetworkType.kCellular, 'cellular');
     networkIcon.networkState = networkState;
     await flushAsync();
 

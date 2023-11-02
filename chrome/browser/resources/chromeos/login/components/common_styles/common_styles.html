@@ -1,6 +1,8 @@
-<!-- Copyright 2020 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 
 <link rel="import" href="../oobe_vars/oobe_custom_vars_css.html">
 <link rel="import" href="../oobe_vars/oobe_shared_vars_css.html">
@@ -45,39 +47,39 @@
          OobeScrollableBehavior. */
       .scrollable.can-scroll:not(.is-scrolled):not(.scrolled-to-bottom) {
         background: linear-gradient(0deg,
-                        rgba(var(--google-grey-refresh-100-rgb), 1) 0,
-                        rgba(var(--google-grey-refresh-100-rgb), 0) 8px);
+                        rgba(var(--google-grey-100-rgb), 1) 0,
+                        rgba(var(--google-grey-100-rgb), 0) 8px);
 
       }
       .scrollable.can-scroll.is-scrolled:not(.scrolled-to-bottom) {
         background: linear-gradient(0deg,
-                        rgba(var(--google-grey-refresh-100-rgb), 1) 0,
-                        rgba(var(--google-grey-refresh-100-rgb), 0) 8px),
+                        rgba(var(--google-grey-100-rgb), 1) 0,
+                        rgba(var(--google-grey-100-rgb), 0) 8px),
                     linear-gradient(180deg,
-                        rgba(var(--google-grey-refresh-100-rgb), 1) 0,
-                        rgba(var(--google-grey-refresh-100-rgb), 0) 8px);
+                        rgba(var(--google-grey-100-rgb), 1) 0,
+                        rgba(var(--google-grey-100-rgb), 0) 8px);
       }
       .scrollable.is-scrolled.scrolled-to-bottom {
         background: linear-gradient(180deg,
-                        rgba(var(--google-grey-refresh-100-rgb), 1) 0,
-                        rgba(var(--google-grey-refresh-100-rgb), 0) 8px);
+                        rgba(var(--google-grey-100-rgb), 1) 0,
+                        rgba(var(--google-grey-100-rgb), 0) 8px);
       }
 
       /* Links styles used within OOBE */
 
       .oobe-local-link {
-        color: rgb(17, 85, 204); /* #1155CC */
+        color: var(--cros-link-color);
         cursor: pointer;
         text-decoration: none;
       }
 
       .oobe-local-link:focus {
-        outline-color: rgb(77, 144, 254); /* #4D90FE */
+        outline-color: var(--cros-focus-ring-color);
         transition: outline-color 200ms;
       }
 
       .oobe-optin-row {
-        border-top: 1px solid var(--google-grey-200);
+        border-top: 1px solid var(--cros-color-primary-inverted);
         font-size: 13px;
         margin-top: 12px;
         padding-top: 12px;

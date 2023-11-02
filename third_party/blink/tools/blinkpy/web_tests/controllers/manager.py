@@ -46,8 +46,6 @@ import sys
 import time
 import traceback
 
-from six.moves import range
-
 from blinkpy.common import exit_codes
 from blinkpy.common import path_finder
 from blinkpy.common.net.file_uploader import FileUploader
@@ -168,17 +166,7 @@ class Manager(object):
         should_retry_failures = self._options.num_retries > 0
 
         try:
-            if not self._port.host.platform.is_win():
-                _pid = os.getpid()
-                def sighandler(signum, frame):
-                    self._printer.write_update("Received SIGTERM in %d" % os.getpid())
-                    message = ''.join(traceback.format_stack(frame))
-                    self._printer.write_update(message)
-                    if os.getpid() == _pid:
-                        os.killpg(os.getpgrp(), signal.SIGINT)
-                    else:
-                        os.kill(os.getpid(), signal.SIGINT)
-                signal.signal(signal.SIGTERM, sighandler)
+            self._register_termination_handler()
             self._start_servers(tests_to_run)
             if self._options.watch:
                 run_results = self._run_test_loop(tests_to_run, tests_to_skip)
@@ -204,13 +192,18 @@ class Manager(object):
 
         self._printer.write_update('Summarizing results ...')
         summarized_full_results = test_run_results.summarize_results(
-            self._port, self._expectations, initial_results, all_retry_results)
+            self._port, self._options, self._expectations, initial_results,
+            all_retry_results)
         summarized_failing_results = test_run_results.summarize_results(
             self._port,
+            self._options,
             self._expectations,
             initial_results,
             all_retry_results,
             only_include_failing=True)
+        run_histories = test_run_results.test_run_histories(
+            self._options, self._expectations, initial_results,
+            all_retry_results)
 
         exit_code = summarized_failing_results['num_regressions']
         if exit_code > exit_codes.MAX_FAILURES_EXIT_STATUS:
@@ -221,13 +214,14 @@ class Manager(object):
         if not self._options.dry_run:
             self._write_json_files(summarized_full_results,
                                    summarized_failing_results, initial_results,
-                                   running_all_tests)
+                                   running_all_tests, run_histories)
 
             self._upload_json_files()
 
             self._copy_results_html_file(self._artifacts_directory,
                                          'results.html')
-            if initial_results.keyboard_interrupted:
+            if (initial_results.interrupt_reason is
+                    test_run_results.InterruptReason.EXTERNAL_SIGNAL):
                 exit_code = exit_codes.INTERRUPTED_EXIT_STATUS
             else:
                 if initial_results.interrupted:
@@ -243,6 +237,19 @@ class Manager(object):
         return test_run_results.RunDetails(exit_code, summarized_full_results,
                                            summarized_failing_results,
                                            initial_results, all_retry_results)
+
+    def _register_termination_handler(self):
+        if self._port.host.platform.is_win():
+            signum = signal.SIGBREAK
+        else:
+            signum = signal.SIGTERM
+        signal.signal(signum, self._on_termination)
+
+    def _on_termination(self, signum, _frame):
+        self._printer.write_update(
+            'Received signal "%s" (%d) in %d' %
+            (signal.strsignal(signum), signum, os.getpid()))
+        raise KeyboardInterrupt
 
     def _run_test_loop(self, tests_to_run, tests_to_skip):
         # Don't show results in a new browser window because we're already
@@ -279,9 +286,8 @@ class Manager(object):
             self._options.iterations, num_workers)
 
         # Don't retry failures when interrupted by user or failures limit exception.
-        should_retry_failures = should_retry_failures and not (
-            initial_results.interrupted
-            or initial_results.keyboard_interrupted)
+        should_retry_failures = (should_retry_failures
+                                 and not initial_results.interrupted)
 
         tests_to_retry = self._tests_to_retry(initial_results)
         all_retry_results = []
@@ -322,7 +328,8 @@ class Manager(object):
     def _collect_tests(self, args):
         return self._finder.find_tests(
             args,
-            filter_files=self._options.test_list,
+            test_lists=self._options.test_list,
+            filter_files=self._options.isolated_script_test_filter_file,
             fastest_percentile=self._options.fastest,
             filters=self._options.isolated_script_test_filter)
 
@@ -357,8 +364,8 @@ class Manager(object):
     def _test_input_for_file(self, test_file, retry_attempt):
         return TestInput(
             test_file,
-            self._options.slow_time_out_ms
-            if self._test_is_slow(test_file) else self._options.time_out_ms,
+            self._options.slow_timeout_ms
+            if self._test_is_slow(test_file) else self._options.timeout_ms,
             self._test_requires_lock(test_file),
             retry_attempt=retry_attempt)
 
@@ -612,7 +619,7 @@ class Manager(object):
 
     def _write_json_files(self, summarized_full_results,
                           summarized_failing_results, initial_results,
-                          running_all_tests):
+                          running_all_tests, run_histories):
         _log.debug("Writing JSON files in %s.", self._artifacts_directory)
 
         # FIXME: Upload stats.json to the server and delete times_ms.
@@ -648,14 +655,14 @@ class Manager(object):
             summarized_full_results,
             full_results_jsonp_path,
             callback='ADD_FULL_RESULTS')
-        full_results_path = self._filesystem.join(self._artifacts_directory,
-                                                  'failing_results.json')
+        failing_results_path = self._filesystem.join(self._artifacts_directory,
+                                                     'failing_results.json')
         # We write failing_results.json out as jsonp because we need to load it
         # from a file url for results.html and Chromium doesn't allow that.
         json_results_generator.write_json(
             self._filesystem,
             summarized_failing_results,
-            full_results_path,
+            failing_results_path,
             callback='ADD_RESULTS')
 
         # Write out the JSON files suitable for other tools to process.
@@ -671,6 +678,10 @@ class Manager(object):
             json_results_generator.write_json(self._filesystem,
                                               summarized_full_results,
                                               self._options.json_test_results)
+        if self._options.write_run_histories_to:
+            json_results_generator.write_json(
+                self._filesystem, run_histories,
+                self._options.write_run_histories_to)
 
         _log.debug('Finished writing JSON files.')
 
@@ -716,7 +727,8 @@ class Manager(object):
 
     def _copy_results_html_file(self, destination_dir, filename):
         """Copies a file from the template directory to the results directory."""
-        template_dir = self._path_finder.path_from_web_tests('fast', 'harness')
+        template_dir = self._path_finder.path_from_blink_tools(
+            'blinkpy', 'web_tests')
         source_path = self._filesystem.join(template_dir, filename)
         destination_path = self._filesystem.join(destination_dir, filename)
         # Note that the results.html template file won't exist when

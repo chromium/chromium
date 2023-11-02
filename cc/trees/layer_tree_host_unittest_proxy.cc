@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/proxy_impl.h"
 #include "cc/trees/proxy_main.h"
+#include "cc/trees/single_thread_proxy.h"
 
 namespace cc {
 
@@ -386,7 +387,7 @@ class LayerTreeHostProxyTestCommitWaitsForActivationMFBA
         // case above). We unblock activate to allow this main frame to commit.
         auto unblock = base::BindOnce(
             &LayerTreeHostImpl::BlockNotifyReadyToActivateForTesting,
-            base::Unretained(impl), false);
+            base::Unretained(impl), false, true);
         // Post the unblock instead of doing it immediately so that the main
         // frame is fully processed by the compositor thread, and it has a full
         // opportunity to wrongly unblock the main thread.
@@ -471,14 +472,23 @@ class LayerTreeHostProxyTestImplFrameCausesAnimatePending
   void CommitCompleteOnThread(LayerTreeHostImpl* host_impl) override {
     switch (host_impl->sync_tree()->source_frame_number()) {
       case 0: {
-        EXPECT_FALSE(proxy()->RequestedAnimatePending());
+        {
+          DebugScopedSetMainThread main(host_impl->task_runner_provider());
+          EXPECT_FALSE(proxy()->RequestedAnimatePending());
+        }
         host_impl->SetNeedsOneBeginImplFrame();
-        EXPECT_TRUE(proxy()->RequestedAnimatePending());
+        {
+          DebugScopedSetMainThread main(host_impl->task_runner_provider());
+          EXPECT_TRUE(proxy()->RequestedAnimatePending());
+        }
         PostSetNeedsCommitToMainThread();
         break;
       }
       case 1: {
-        EXPECT_FALSE(proxy()->RequestedAnimatePending());
+        {
+          DebugScopedSetMainThread main(host_impl->task_runner_provider());
+          EXPECT_FALSE(proxy()->RequestedAnimatePending());
+        }
         EndTest();
         break;
       }

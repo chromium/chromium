@@ -1,17 +1,20 @@
-// Copyright (c) 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/peerconnection/rtc_stats.h"
 
-#include <algorithm>
 #include <set>
 #include <string>
 
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/numerics/safe_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_scoped_refptr_cross_thread_copier.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
@@ -77,6 +80,10 @@ bool IsAllowlistedStats(const webrtc::RTCStats& stats) {
 std::vector<const webrtc::RTCStatsMemberInterface*> FilterMembers(
     std::vector<const webrtc::RTCStatsMemberInterface*> stats_members,
     const Vector<webrtc::NonStandardGroupId>& exposed_group_ids) {
+  if (base::FeatureList::IsEnabled(
+          blink::features::kWebRtcExposeNonStandardStats)) {
+    return stats_members;
+  }
   // Note that using "is_standarized" avoids having to maintain an allowlist of
   // every single standardized member, as we do at the "stats object" level
   // with "RTCStatsAllowlist".
@@ -90,7 +97,7 @@ std::vector<const webrtc::RTCStatsMemberInterface*> FilterMembers(
         const std::vector<webrtc::NonStandardGroupId>& ids =
             member->group_ids();
         for (const webrtc::NonStandardGroupId& id : exposed_group_ids) {
-          if (std::find(ids.begin(), ids.end(), id) != ids.end()) {
+          if (base::Contains(ids, id)) {
             return false;
           }
         }
@@ -112,7 +119,7 @@ size_t CountAllowlistedStats(
 
 template <typename T>
 Vector<T> ToWTFVector(const std::vector<T>& vector) {
-  Vector<T> wtf_vector(SafeCast<WTF::wtf_size_t>(vector.size()));
+  Vector<T> wtf_vector(base::checked_cast<WTF::wtf_size_t>(vector.size()));
   std::move(vector.begin(), vector.end(), wtf_vector.begin());
   return wtf_vector;
 }
@@ -314,7 +321,7 @@ HashMap<String, uint64_t> RTCStatsMember::ValueMapStringUint64() const {
       *member_
            ->cast_to<webrtc::RTCStatsMember<std::map<std::string, uint64_t>>>();
   HashMap<String, uint64_t> wtf_map;
-  wtf_map.ReserveCapacityForSize(SafeCast<unsigned>(map.size()));
+  wtf_map.ReserveCapacityForSize(base::checked_cast<unsigned>(map.size()));
   for (auto& elem : map) {
     wtf_map.insert(String::FromUTF8(elem.first), elem.second);
   }
@@ -327,7 +334,7 @@ HashMap<String, double> RTCStatsMember::ValueMapStringDouble() const {
       *member_
            ->cast_to<webrtc::RTCStatsMember<std::map<std::string, double>>>();
   HashMap<String, double> wtf_map;
-  wtf_map.ReserveCapacityForSize(SafeCast<unsigned>(map.size()));
+  wtf_map.ReserveCapacityForSize(base::checked_cast<unsigned>(map.size()));
   for (auto& elem : map) {
     wtf_map.insert(String::FromUTF8(elem.first), elem.second);
   }

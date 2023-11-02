@@ -1,6 +1,1 @@
-drubery@chromium.org
-nparker@chromium.org
-vakh@chromium.org
-xinghuilu@chromium.org
-
-per-file *password_protection*=file://components/safe_browsing/content/password_protection/OWNERS
+file://components/safe_browsing/OWNERS

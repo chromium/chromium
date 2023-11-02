@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -6,7 +6,7 @@ assert(is_fuchsia)
 
 import("//build/config/chromecast_build.gni")
 import("//build/config/fuchsia/config.gni")
-import("//build/config/fuchsia/package.gni")
+import("//build/config/fuchsia/fuchsia_package_metadata.gni")
 import("//build/config/gclient_args.gni")
 import("//build/config/sysroot.gni")
 import("//build/util/generate_wrapper.gni")
@@ -30,6 +30,14 @@ declare_args() {
 
   # A list of additional Fuchsia boot images to include in the test isolates.
   fuchsia_additional_boot_images = []
+
+  # This variable controls the browser included in the Telemetry based test
+  # targets.
+  fuchsia_browser_type = "web_engine_shell"
+
+  # This variable controls which version of the testing scripts to use.
+  # TODO(crbug/1280705): remove when all tests are migrated to CFv2.
+  use_cfv2_script = false
 }
 
 # Generates a wrapper script under root_build_dir/bin that performs an
@@ -68,10 +76,6 @@ template("fuchsia_run_script_with_packages") {
     _pkg_shortname = get_label_info(invoker.package, "name")
   }
 
-  _pkg_dir = "$root_out_dir/gen/" + get_label_info(invoker.package, "dir") +
-             "/" + _pkg_shortname
-  _package_path = "$_pkg_dir/${_pkg_shortname}.far"
-
   _generated_script_path =
       "$root_build_dir/bin/" +
       string_replace(invoker.output_name_format, "%package%", _pkg_shortname)
@@ -87,8 +91,6 @@ template("fuchsia_run_script_with_packages") {
                                ])
 
     wrapper_script = _generated_script_path
-    use_vpython3 = true
-
     deps = [ invoker.package ]
 
     if (!defined(data_deps)) {
@@ -97,6 +99,7 @@ template("fuchsia_run_script_with_packages") {
     data_deps += [ "//build/config/fuchsia:deployment_resources" ]
 
     _combined_package_list = [ invoker.package ]
+
     if (defined(invoker.package_deps)) {
       foreach(package_dep, invoker.package_deps) {
         _combined_package_list += [ package_dep[0] ]
@@ -115,19 +118,25 @@ template("fuchsia_run_script_with_packages") {
     }
 
     # Compute the list of full paths to package files, including dependencies.
-    package_paths = [ rebase_path(_package_path, root_build_dir) ]
+    if (!use_cfv2_script) {
+      _pkg_dir = "$root_out_dir/gen/" + get_label_info(invoker.package, "dir") +
+                 "/" + _pkg_shortname
+      package_paths =
+          [ rebase_path("$_pkg_dir/${_pkg_shortname}.far", root_build_dir) ]
+    }
     if (defined(invoker.package_deps)) {
       foreach(package_dep, invoker.package_deps) {
         package_dep_target = package_dep[0]
-        package_dep_name = package_dep[1]
-
         deps += [ package_dep_target ]
         data_deps += [ package_dep_target ]
-        package_dep_path = rebase_path(
-                get_label_info(package_dep_target, "target_gen_dir") + "/" +
-                    package_dep_name + "/" + package_dep_name + ".far",
-                root_build_dir)
-        package_paths += [ package_dep_path ]
+        if (!use_cfv2_script) {
+          package_dep_name = package_dep[1]
+          package_dep_path = rebase_path(
+                  get_label_info(package_dep_target, "target_gen_dir") + "/" +
+                      package_dep_name + "/" + package_dep_name + ".far",
+                  root_build_dir)
+          package_paths += [ package_dep_path ]
+        }
       }
     }
 
@@ -135,13 +144,16 @@ template("fuchsia_run_script_with_packages") {
     if (!defined(executable_args)) {
       executable_args = []
     }
-    foreach(package_path, package_paths) {
-      executable_args += [
-        "--package",
-        "@WrappedPath(${package_path})",
-        "--package-name",
-        _pkg_shortname,
-      ]
+
+    if (!use_cfv2_script) {
+      foreach(package_path, package_paths) {
+        executable_args += [
+          "--package",
+          "@WrappedPath(${package_path})",
+          "--package-name",
+          _pkg_shortname,
+        ]
+      }
     }
 
     if (defined(include_fuchsia_build_dir) && include_fuchsia_build_dir &&
@@ -152,19 +164,39 @@ template("fuchsia_run_script_with_packages") {
       ]
     }
   }
+
+  # Create a wrapper script rather than using a group() in order to ensure
+  # "ninja $target_name" always works.
+  if (defined(invoker.executable_wrapper)) {
+    generate_wrapper(invoker.executable_wrapper) {
+      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+      executable = _generated_script_path
+      wrapper_script = "$root_build_dir/${invoker.executable_wrapper}"
+      deps = [ ":${invoker._run_target}" ]
+    }
+  }
 }
 
 # Generates a script which deploys a package to the TUF repo of a Fuchsia
 # build output directory.
 template("fuchsia_package_installer") {
+  if (defined(invoker.package_name)) {
+    pkg_shortname = invoker.package_name
+  } else {
+    pkg_shortname = get_label_info(invoker.package, "name")
+  }
+  fuchsia_package_metadata(pkg_shortname) {
+    forward_variables_from(invoker,
+                           TESTONLY_AND_VISIBILITY + [
+                                 "package",
+                                 "package_deps",
+                               ])
+  }
   fuchsia_run_script_with_packages(target_name) {
     forward_variables_from(invoker,
                            "*",
-                           [
-                             "runner_script",
-                             "executable_args",
-                           ])
-
+                           TESTONLY_AND_VISIBILITY + [ "executable_args" ])
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
     executable = rebase_path("//build/fuchsia/deploy_to_pkg_repo.py")
     output_name_format = "deploy_%package%"
     include_fuchsia_build_dir = true
@@ -179,54 +211,75 @@ template("fuchsia_test_runner") {
 
   fuchsia_run_script_with_packages(_run_target) {
     forward_variables_from(invoker,
-                           [
-                             "data",
-                             "data_deps",
-                             "package",
-                             "package_name",
-                             "package_deps",
-                           ])
-    testonly = true
+                           TESTONLY_AND_VISIBILITY + [
+                                 "data",
+                                 "data_deps",
+                                 "package",
+                                 "package_name",
+                                 "package_deps",
+                               ])
 
-    _test_runner_py = "//build/fuchsia/test_runner.py"
+    if (use_cfv2_script) {
+      _test_runner_py = "//build/fuchsia/test/run_test.py"
+    } else {
+      _test_runner_py = "//build/fuchsia/test_runner.py"
+    }
+
+    executable = rebase_path(_test_runner_py)
 
     if (defined(invoker.is_test_exe) && invoker.is_test_exe) {
-      executable = "//testing/test_env.py"
-      executable_args =
-          [ "@WrappedPath(" + rebase_path(_test_runner_py, root_out_dir) + ")" ]
-      data += [
-        _test_runner_py,
-        "//.vpython3",
-      ]
-      data_deps += [ "//testing:test_scripts_shared" ]
-    } else {
-      executable = rebase_path(_test_runner_py)
-      executable_args = []
+      data += [ "//.vpython3" ]
     }
     output_name_format = "run_%package%"
+    executable_wrapper = invoker.target_name
 
     # Populate the arguments used by the test runner, defined at build-time.
-    executable_args += [
+    executable_args = [
       "--out-dir",
       "@WrappedPath(.)",
-      "--target-cpu",
-      target_cpu,
     ]
 
+    if (use_cfv2_script) {
+      executable_args += [ package_name ]
+    } else {
+      executable_args += [
+        "--target-cpu",
+        target_cpu,
+      ]
+    }
+
     if (defined(invoker.use_run_test_component) &&
-        invoker.use_run_test_component) {
+        invoker.use_run_test_component && !use_cfv2_script) {
       executable_args += [ "--use-run-test-component" ]
     }
 
     if (defined(invoker.use_test_server) && invoker.use_test_server) {
+      # TODO(crbug.com/1254563): Tests that needs the test server need access
+      # to the network and run-test-component doesn't support it. Provide the
+      # necessary access via capability routing once the tests are running via
+      # CFv2.
       executable_args += [ "--enable-test-server" ]
+      if (!use_cfv2_script) {
+        executable_args += [ "--use-run" ]
+      }
+    }
+
+    if ((!defined(invoker.use_cfv2) || invoker.use_cfv2) && !use_cfv2_script) {
+      executable_args += [ "--component-version=2" ]
     }
 
     if (default_fuchsia_device_node_name != "") {
-      executable_args += [
-        "--node-name",
-        default_fuchsia_device_node_name,
-      ]
+      if (use_cfv2_script) {
+        executable_args += [
+          "--target-id",
+          default_fuchsia_device_node_name,
+        ]
+      } else {
+        executable_args += [
+          "--node-name",
+          default_fuchsia_device_node_name,
+        ]
+      }
     }
 
     # Declare the files that are needed for test execution on LUCI swarming
@@ -236,29 +289,23 @@ template("fuchsia_test_runner") {
     }
     data += [ _test_runner_py ]
 
+    if (use_cfv2_script) {
+      data += [ "$root_gen_dir/package_metadata/${invoker.package_name}.meta" ]
+    }
+
     # TODO(crbug.com/1256870): Remove this once all out-of-tree references
     # to "package_name_override" are migrated to "package_name".
     if (defined(invoker.package_name_override)) {
       package_name = invoker.package_name_override
     }
   }
-
   fuchsia_package_installer(_install_target) {
     forward_variables_from(invoker,
                            TESTONLY_AND_VISIBILITY + [
                                  "package",
                                  "package_name",
+                                 "package_deps",
                                ])
-    testonly = invoker.testonly
-    include_fuchsia_build_dir = true
-  }
-
-  group(target_name) {
-    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
-    deps = [
-      ":${_install_target}",
-      ":${_run_target}",
-    ]
   }
 }
 

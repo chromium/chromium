@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,21 +6,22 @@
 
 #import <UIKit/UIKit.h>
 
-#include <memory>
+#import <memory>
+#import <tuple>
 
-#include "base/macros.h"
-#include "base/metrics/histogram_samples.h"
-#include "base/test/metrics/histogram_tester.h"
-#include "base/test/task_environment.h"
+#import "base/metrics/histogram_samples.h"
+#import "base/test/metrics/histogram_tester.h"
+#import "base/test/task_environment.h"
 #import "components/previous_session_info/previous_session_info.h"
+#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
-#include "ios/web/public/test/web_task_environment.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/platform_test.h"
+#import "ios/web/public/test/web_task_environment.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -50,8 +51,11 @@ class TabUsageRecorderBrowserAgentTest : public PlatformTest {
  protected:
   TabUsageRecorderBrowserAgentTest()
       : application_(OCMClassMock([UIApplication class])) {
-    TabUsageRecorderBrowserAgent::CreateForBrowser(&browser_);
-    tab_usage_recorder_ = TabUsageRecorderBrowserAgent::FromBrowser(&browser_);
+    browser_state_ = TestChromeBrowserState::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    TabUsageRecorderBrowserAgent::CreateForBrowser(browser_.get());
+    tab_usage_recorder_ =
+        TabUsageRecorderBrowserAgent::FromBrowser(browser_.get());
     OCMStub([application_ sharedApplication]).andReturn(application_);
   }
 
@@ -69,12 +73,12 @@ class TabUsageRecorderBrowserAgentTest : public PlatformTest {
     fake_web_state->SetNavigationManager(std::move(fake_navigation_manager));
     fake_web_state->SetIsEvicted(in_memory == NOT_IN_MEMORY);
 
-    const int insertion_index = browser_.GetWebStateList()->InsertWebState(
+    const int insertion_index = browser_->GetWebStateList()->InsertWebState(
         WebStateList::kInvalidIndex, std::move(fake_web_state),
         WebStateList::INSERT_NO_FLAGS, WebStateOpener());
 
     return static_cast<web::FakeWebState*>(
-        browser_.GetWebStateList()->GetWebStateAt(insertion_index));
+        browser_->GetWebStateList()->GetWebStateAt(insertion_index));
   }
 
   web::NavigationItem* InsertItemToFakeNavigationManager(
@@ -92,7 +96,8 @@ class TabUsageRecorderBrowserAgentTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
-  TestBrowser browser_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestBrowser> browser_;
   base::HistogramTester histogram_tester_;
   TabUsageRecorderBrowserAgent* tab_usage_recorder_;
   id application_;
@@ -336,12 +341,12 @@ TEST_F(TabUsageRecorderBrowserAgentTest, RendererTerminated) {
   // TabUsageRecorder count kAliveTabsCountAtRendererTermination tabs
   // as alive when mock_tab_a is evicted.
   for (int ii = 0; ii < kAliveTabsCountAtRendererTermination; ++ii) {
-    ignore_result(InsertFakeWebState(kURL, IN_MEMORY));
+    std::ignore = InsertFakeWebState(kURL, IN_MEMORY);
   }
 
   base::TimeTicks now = base::TimeTicks::Now();
 
-  // Add |kExpiredTimesAddedCount| expired timestamps and one recent timestamp
+  // Add `kExpiredTimesAddedCount` expired timestamps and one recent timestamp
   // to the termination timestamp list.
   for (int seconds = kExpiredTimesAddedCount; seconds > 0; seconds--) {
     int expired_time_delta =

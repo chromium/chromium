@@ -1,0 +1,52 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// Parameters to evaluate scripts, mainly from outside Blink.
+
+// Whether the script evaluation should be associated with a user gesture.
+enum UserActivationOption {
+  kDoNotActivate,
+  kActivate,
+};
+
+enum WantResultOption {
+  kNoResult,
+
+  // Evaluation result (or promise resolution result if
+  // `PromiseResultOption::kAwait` is used) is passed to callback.
+  kWantResult,
+
+  // Same as above, with date and regexp allowed in V8ValueConverter.
+  kWantResultDateAndRegExpAllowed,
+};
+
+enum PromiseResultOption {
+  // If the result of the executed script is a promise or other then-able,
+  // wait for it to settle and pass the result of the promise to the caller.
+  // If the promise (and any subsequent thenables) resolves, this passes the
+  // value. If the promise rejects, the corresponding value will be empty.
+  kAwait,
+
+  // Don't wait for any promise to settle.
+  kDoNotWait,
+};
+
+enum EvaluationTiming {
+  // Execute scripts asynchronously.
+  kAsynchronous,
+
+  // Execute scripts synchronously, unless the page is suspended.
+  // Even in this case, completion can be asynchronous, e.g. when
+  // `PromiseResultOption::kAwait` is used.
+  // If the page is suspended, execute scripts asynchronously.
+  kSynchronous,
+};
+
+// Whether to block window load event until the scripts are evaluated.
+enum LoadEventBlockingOption {
+  kDoNotBlock,
+  kBlock,
+};

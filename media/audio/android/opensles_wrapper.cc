@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,8 @@
 // asan. Including here forces __config to be included while const is still
 // untouched.
 #include <stdint.h>
+
+#include "base/memory/raw_ptr.h"
 
 #define const
 #include <SLES/OpenSLES.h>
@@ -60,7 +62,7 @@ base::NativeLibrary IntializeLibraryHandle() {
   // Attach the symbol name to the proxy address.
   struct SymbolDefinition {
     const char* name;
-    SLInterfaceID* sl_iid;
+    raw_ptr<SLInterfaceID> sl_iid;
   };
 
   // The list of defined symbols.

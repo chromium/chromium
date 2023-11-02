@@ -1,14 +1,14 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "device/fido/ctap_get_assertion_request.h"
 
-#include <algorithm>
 #include <limits>
 #include <utility>
 
 #include "base/numerics/safe_conversions.h"
+#include "base/ranges/algorithm.h"
 #include "components/cbor/writer.h"
 #include "device/fido/device_response_converter.h"
 #include "device/fido/fido_constants.h"
@@ -20,8 +20,8 @@ namespace device {
 namespace {
 bool IsGetAssertionOptionMapFormatCorrect(
     const cbor::Value::MapValue& option_map) {
-  return std::all_of(
-      option_map.begin(), option_map.end(), [](const auto& param) {
+  return base::ranges::all_of(
+      option_map, [](const auto& param) {
         return param.first.is_string() &&
                (param.first.GetString() == kUserPresenceMapKey ||
                 param.first.GetString() == kUserVerificationMapKey) &&
@@ -31,8 +31,8 @@ bool IsGetAssertionOptionMapFormatCorrect(
 
 bool AreGetAssertionRequestMapKeysCorrect(
     const cbor::Value::MapValue& request_map) {
-  return std::all_of(
-      request_map.begin(), request_map.end(), [](const auto& param) {
+  return base::ranges::all_of(
+      request_map, [](const auto& param) {
         return (param.first.is_integer() && 1u <= param.first.GetInteger() &&
                 param.first.GetInteger() <= 7u);
       });
@@ -175,6 +175,14 @@ absl::optional<CtapGetAssertionRequest> CtapGetAssertionRequest::Parse(
           return absl::nullopt;
         }
         request.get_cred_blob = true;
+      } else if (extension_id == kExtensionDevicePublicKey) {
+        // There's not currently any support for the ep bit in assertion
+        // requests so DPK requests are assumed to be ep=1 only.
+        request.device_public_key = DevicePublicKeyRequest::FromCBOR(
+            extension.second, /* ep_approved_by_browser= */ false);
+        if (!request.device_public_key) {
+          return absl::nullopt;
+        }
       }
     }
   }
@@ -284,6 +292,11 @@ AsCTAPRequestValuePair(const CtapGetAssertionRequest& request) {
 
   if (request.get_cred_blob) {
     extensions.emplace(kExtensionCredBlob, true);
+  }
+
+  if (request.device_public_key) {
+    extensions.emplace(kExtensionDevicePublicKey,
+                       request.device_public_key->ToCBOR());
   }
 
   if (!extensions.empty()) {

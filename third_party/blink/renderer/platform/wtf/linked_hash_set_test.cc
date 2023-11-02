@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,7 +28,7 @@ TEST(LinkedHashSetTest, CopyConstructAndAssignInt) {
   int counter3 = 0;
   Set set1;
   EXPECT_EQ(set1.size(), 0u);
-  EXPECT_TRUE(set1.IsEmpty());
+  EXPECT_TRUE(set1.empty());
   set1.insert(ValueInstanceCount<int>(&counter1, 1));
   set1.insert(ValueInstanceCount<int>(&counter2, 2));
   set1.insert(ValueInstanceCount<int>(&counter3, 3));
@@ -62,7 +62,7 @@ TEST(LinkedHashSetTest, CopyConstructAndAssignIntPtr) {
   using Set = LinkedHashSet<int*>;
   Set set1;
   EXPECT_EQ(set1.size(), 0u);
-  EXPECT_TRUE(set1.IsEmpty());
+  EXPECT_TRUE(set1.empty());
   std::unique_ptr<int> int1 = std::make_unique<int>(1);
   std::unique_ptr<int> int2 = std::make_unique<int>(2);
   std::unique_ptr<int> int3 = std::make_unique<int>(3);
@@ -108,7 +108,7 @@ TEST(LinkedHashSetTest, CopyConstructAndAssignString) {
   using Set = LinkedHashSet<String>;
   Set set1;
   EXPECT_EQ(set1.size(), 0u);
-  EXPECT_TRUE(set1.IsEmpty());
+  EXPECT_TRUE(set1.empty());
   set1.insert("1");
   set1.insert("2");
   set1.insert("3");
@@ -156,7 +156,7 @@ TEST(LinkedHashSetTest, MoveConstructAndAssignInt) {
   int counter3 = 0;
   Set set1;
   EXPECT_EQ(set1.size(), 0u);
-  EXPECT_TRUE(set1.IsEmpty());
+  EXPECT_TRUE(set1.empty());
   set1.insert(ValueInstanceCount<int>(&counter1, 1));
   set1.insert(ValueInstanceCount<int>(&counter2, 2));
   set1.insert(ValueInstanceCount<int>(&counter3, 3));
@@ -193,7 +193,7 @@ TEST(LinkedHashSetTest, MoveConstructAndAssignString) {
   int counter3 = 0;
   Set set1;
   EXPECT_EQ(set1.size(), 0u);
-  EXPECT_TRUE(set1.IsEmpty());
+  EXPECT_TRUE(set1.empty());
   set1.insert(ValueInstanceCount<String>(&counter1, "1"));
   set1.insert(ValueInstanceCount<String>(&counter2, "2"));
   set1.insert(ValueInstanceCount<String>(&counter3, "3"));
@@ -242,7 +242,7 @@ TEST(LinkedHashSetTest, FrontAndBack) {
   using Set = LinkedHashSet<int, CustomHashTraitsForInt>;
   Set set;
   EXPECT_EQ(set.size(), 0u);
-  EXPECT_TRUE(set.IsEmpty());
+  EXPECT_TRUE(set.empty());
 
   set.PrependOrMoveToFirst(1);
   EXPECT_EQ(set.front(), 1);
@@ -591,7 +591,7 @@ TEST(LinkedHashSetTest, RemoveFirst) {
   EXPECT_EQ(*it, 2);
 
   set.RemoveFirst();
-  EXPECT_TRUE(set.IsEmpty());
+  EXPECT_TRUE(set.empty());
 }
 
 TEST(LinkedHashSetTest, pop_back) {

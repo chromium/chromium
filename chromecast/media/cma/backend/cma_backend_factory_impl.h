@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chromecast/media/api/cma_backend_factory.h"
 
 namespace chromecast {
@@ -32,6 +31,8 @@ class CmaBackendFactoryImpl : public CmaBackendFactory {
 
   std::unique_ptr<CmaBackend> CreateBackend(
       const MediaPipelineDeviceParams& params) override;
+
+  scoped_refptr<base::SequencedTaskRunner> GetMediaTaskRunner() override;
 
  protected:
   MediaPipelineBackendManager* media_pipeline_backend_manager() {

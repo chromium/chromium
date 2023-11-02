@@ -1,0 +1,73 @@
+<!--
+
+This module is a "pin setup" keyboard + pin display element.
+It can be integrated into some UI container to set pin unlock.
+
+Usage:
+          <setup-pin-keyboard
+              enable-submit="{{enableSubmit_}}"
+              is-confirm-step="{{isConfirmStep_}}"
+              on-pin-submit="onPinSubmit_"
+              on-set-pin-done="onSetPinDone_"
+              set-modes="{{setModes}}">
+          </setup-pin-keyboard>
+
+Where:
+  * enable-submit - Notification property for the container to enable/disable
+        submit button in the container (if it exists). True when pin can be
+        submitted.
+  * is-confirm-step - Notification property for the container to update UI
+        when pin confirmation is requested. False when initial PIN entry step
+        is active, true when pin confirmation is active.
+  * on-pin-submit - Event handler for the user requested pin submit by pressing
+        "Enter" key on the keyboard. setup-pin-keyboard will
+        not submit pin automatically, delegating this step to outer container.
+        Container must call setup-pin-keyboard.doSubmit() when
+        pin should be submitted.
+  * on-set-pin-done - Event handler for the "set pin done" event, which should
+        normally close the pin setup UI. This object state is reset before
+        sending this event.
+  * set-modes - Reflects property set in password_prompt_dialog.js.
+
+-->
+
+<style include="settings-shared">
+  .error {
+    color: var(--cros-text-color-alert);
+    display: inline-block;
+  }
+
+  .warning {
+    color: var(--cr-secondary-text-color);
+  }
+
+  #problemDiv {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    font-size: 10px;
+    height: 32px;
+    min-height: 0;
+    padding-bottom: 8px;
+  }
+
+  /* Hide this using visibility: hidden instead of hidden so that the
+      dialog does not resize when there are no problems to display. */
+  #problemDiv[invisible] {
+    visibility: hidden;
+  }
+</style>
+<pin-keyboard id="pinKeyboard" on-pin-change="onPinChange_"
+    on-submit="onPinSubmit_" value="{{pinKeyboardValue_}}"
+    has-error="[[hasError_(problemMessageId_, problemClass_)]]"
+    disabled="[[isSetModesCallPending_]]"
+    enable-placeholder="[[enablePlaceholder]]">
+  <!-- Warning/error; only shown if title is hidden. -->
+  <div id="problemDiv" class$="[[problemClass_]]"
+      invisible$="[[!problemMessageId_]]" problem>
+    <span aria-live="assertive">
+      [[formatProblemMessage_(locale, problemMessageId_,
+            problemMessageParameters_)]]
+    </span>
+  </div>
+</pin-keyboard>

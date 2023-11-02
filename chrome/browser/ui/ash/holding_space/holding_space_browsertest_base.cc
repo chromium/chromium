@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,12 +18,13 @@
 #include "base/test/bind.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
-#include "chromeos/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "storage/browser/file_system/external_mount_points.h"
@@ -80,53 +81,11 @@ base::FilePath CreateImageFile(Profile* profile) {
   return CreateFile(profile, "png");
 }
 
-// SessionStateWaiter ----------------------------------------------------------
-
-// Utility class which allows waiting for a `session_manager::SessionState`.
-class SessionStateWaiter : public session_manager::SessionManagerObserver {
- public:
-  SessionStateWaiter() {
-    session_manager_observation_.Observe(
-        session_manager::SessionManager::Get());
-  }
-
-  void WaitFor(session_manager::SessionState state) {
-    if (session_state() == state)
-      return;
-
-    state_ = state;
-
-    wait_loop_ = std::make_unique<base::RunLoop>();
-    wait_loop_->Run();
-    wait_loop_.reset();
-  }
-
- private:
-  // session_manager::SessionManagerObserver:
-  void OnSessionStateChanged() override {
-    if (wait_loop_ && session_state() == state_)
-      wait_loop_->Quit();
-  }
-
-  session_manager::SessionState session_state() const {
-    return session_manager::SessionManager::Get()->session_state();
-  }
-
-  session_manager::SessionState state_ = session_manager::SessionState::UNKNOWN;
-  std::unique_ptr<base::RunLoop> wait_loop_;
-
-  base::ScopedObservation<session_manager::SessionManager,
-                          session_manager::SessionManagerObserver>
-      session_manager_observation_{this};
-};
-
 }  // namespace
 
 // HoldingSpaceBrowserTestBase -------------------------------------------------
 
-HoldingSpaceBrowserTestBase::HoldingSpaceBrowserTestBase()
-    : web_app::SystemWebAppBrowserTestBase(false) {}
-
+HoldingSpaceBrowserTestBase::HoldingSpaceBrowserTestBase() = default;
 HoldingSpaceBrowserTestBase::~HoldingSpaceBrowserTestBase() = default;
 
 void HoldingSpaceBrowserTestBase::SetUpInProcessBrowserTestFixture() {
@@ -213,8 +172,8 @@ void HoldingSpaceBrowserTestBase::RequestAndAwaitLockScreen() {
   if (session_manager::SessionManager::Get()->IsScreenLocked())
     return;
 
-  chromeos::SessionManagerClient::Get()->RequestLockScreen();
-  SessionStateWaiter().WaitFor(session_manager::SessionState::LOCKED);
+  SessionManagerClient::Get()->RequestLockScreen();
+  SessionStateWaiter(session_manager::SessionState::LOCKED).Wait();
 }
 
 }  // namespace ash

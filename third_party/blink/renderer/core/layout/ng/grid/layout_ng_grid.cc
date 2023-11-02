@@ -1,24 +1,21 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/layout/ng/grid/layout_ng_grid.h"
+
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
 
 namespace blink {
 
 LayoutNGGrid::LayoutNGGrid(Element* element)
-    : LayoutNGMixin<LayoutBlock>(element) {
-  if (element)
-    GetDocument().IncLayoutGridCounterNG();
-}
+    : LayoutNGMixin<LayoutBlock>(element) {}
 
 void LayoutNGGrid::UpdateBlockLayout(bool relayout_children) {
   if (IsOutOfFlowPositioned()) {
     UpdateOutOfFlowBlockLayout();
     return;
   }
-
   UpdateInFlowBlockLayout();
 }
 
@@ -27,7 +24,7 @@ void LayoutNGGrid::AddChild(LayoutObject* new_child,
   NOT_DESTROYED();
   LayoutBlock::AddChild(new_child, before_child);
 
-  // Out-of-flow grid items do not impact grid placement.
+  // Out-of-flow grid items don't impact placement.
   if (!new_child->IsOutOfFlowPositioned())
     SetGridPlacementDirty(true);
 }
@@ -36,69 +33,45 @@ void LayoutNGGrid::RemoveChild(LayoutObject* child) {
   NOT_DESTROYED();
   LayoutBlock::RemoveChild(child);
 
-  // Out-of-flow grid items do not impact grid placement.
+  // Out-of-flow grid items don't impact placement.
   if (!child->IsOutOfFlowPositioned())
     SetGridPlacementDirty(true);
 }
 
 namespace {
 
-using GridTrackListStyleFunc =
-    const blink::GridTrackList& (blink::ComputedStyleBase::*)() const;
-using GridAutoFlowStyleFunc =
-    blink::GridAutoFlow (blink::ComputedStyle::*)() const;
-using NamedGridLinesMapStyleFunc =
-    const blink::NamedGridLinesMap& (blink::ComputedStyleBase::*)() const;
-using WTFSizeTStyleFunc = WTF::wtf_size_t (blink::ComputedStyleBase::*)() const;
-
-template <typename T>
-bool StyleChanged(const ComputedStyle& new_style,
-                  const ComputedStyle& old_style,
-                  T style_func) {
-  auto new_style_binding = WTF::Bind(style_func, WTF::Unretained(&new_style));
-  auto old_style_binding = WTF::Bind(style_func, WTF::Unretained(&old_style));
-  return std::move(new_style_binding).Run() !=
-         std::move(old_style_binding).Run();
-}
-
-bool WTFSizeTChanged(wtf_size_t old_value, wtf_size_t new_value) {
-  return old_value != new_value;
-}
-
 bool ExplicitGridDidResize(const ComputedStyle& new_style,
                            const ComputedStyle& old_style) {
-  return WTFSizeTChanged(
-             old_style.GridTemplateColumns().LegacyTrackList().size(),
-             new_style.GridTemplateColumns().LegacyTrackList().size()) ||
-         WTFSizeTChanged(
-             old_style.GridTemplateRows().LegacyTrackList().size(),
-             new_style.GridTemplateRows().LegacyTrackList().size()) ||
-         WTFSizeTChanged(old_style.GridAutoRepeatColumns().size(),
-                         new_style.GridAutoRepeatColumns().size()) ||
-         WTFSizeTChanged(old_style.GridAutoRepeatRows().size(),
-                         new_style.GridAutoRepeatRows().size() ||
-                             StyleChanged<WTFSizeTStyleFunc>(
-                                 new_style, old_style,
-                                 &ComputedStyle::NamedGridAreaColumnCount) ||
-                             StyleChanged<WTFSizeTStyleFunc>(
-                                 new_style, old_style,
-                                 &ComputedStyle::NamedGridAreaColumnCount) ||
-                             StyleChanged<WTFSizeTStyleFunc>(
-                                 new_style, old_style,
-                                 &ComputedStyle::NamedGridAreaRowCount));
+  const auto& old_ng_columns_track_list =
+      old_style.GridTemplateColumns().TrackList();
+  const auto& new_ng_columns_track_list =
+      new_style.GridTemplateColumns().TrackList();
+  const auto& old_ng_rows_track_list = old_style.GridTemplateRows().TrackList();
+  const auto& new_ng_rows_track_list = new_style.GridTemplateRows().TrackList();
+
+  return old_ng_columns_track_list.TrackCountWithoutAutoRepeat() !=
+             new_ng_columns_track_list.TrackCountWithoutAutoRepeat() ||
+         old_ng_rows_track_list.TrackCountWithoutAutoRepeat() !=
+             new_ng_rows_track_list.TrackCountWithoutAutoRepeat() ||
+         old_ng_columns_track_list.AutoRepeatTrackCount() !=
+             new_ng_columns_track_list.AutoRepeatTrackCount() ||
+         old_ng_rows_track_list.AutoRepeatTrackCount() !=
+             new_ng_rows_track_list.AutoRepeatTrackCount() ||
+         old_style.NamedGridAreaColumnCount() !=
+             new_style.NamedGridAreaColumnCount() ||
+         old_style.NamedGridAreaRowCount() != new_style.NamedGridAreaRowCount();
 }
 
 bool NamedGridLinesDefinitionDidChange(const ComputedStyle& new_style,
                                        const ComputedStyle& old_style) {
-  return StyleChanged<NamedGridLinesMapStyleFunc>(
-             new_style, old_style, &ComputedStyle::NamedGridRowLines) ||
-         StyleChanged<NamedGridLinesMapStyleFunc>(
-             new_style, old_style, &ComputedStyle::NamedGridColumnLines) ||
-         StyleChanged<NamedGridLinesMapStyleFunc>(
-             new_style, old_style, &ComputedStyle::ImplicitNamedGridRowLines) ||
-         StyleChanged<NamedGridLinesMapStyleFunc>(
-             new_style, old_style,
-             &ComputedStyle::ImplicitNamedGridColumnLines);
+  return new_style.GridTemplateRows().named_grid_lines !=
+             old_style.GridTemplateRows().named_grid_lines ||
+         new_style.GridTemplateColumns().named_grid_lines !=
+             old_style.GridTemplateColumns().named_grid_lines ||
+         new_style.ImplicitNamedGridRowLines() !=
+             old_style.ImplicitNamedGridRowLines() ||
+         new_style.ImplicitNamedGridColumnLines() !=
+             old_style.ImplicitNamedGridColumnLines();
 }
 
 }  // namespace
@@ -110,24 +83,26 @@ void LayoutNGGrid::StyleDidChange(StyleDifference diff,
   if (!old_style)
     return;
 
-  const ComputedStyle& new_style = StyleRef();
-  if (StyleChanged<GridTrackListStyleFunc>(
-          new_style, *old_style, &ComputedStyle::GridTemplateColumns) ||
-      StyleChanged<GridTrackListStyleFunc>(new_style, *old_style,
-                                           &ComputedStyle::GridTemplateRows) ||
-      StyleChanged<GridTrackListStyleFunc>(new_style, *old_style,
-                                           &ComputedStyle::GridAutoColumns) ||
-      StyleChanged<GridTrackListStyleFunc>(new_style, *old_style,
-                                           &ComputedStyle::GridAutoRows) ||
-      StyleChanged<GridAutoFlowStyleFunc>(new_style, *old_style,
-                                          &ComputedStyle::GetGridAutoFlow)) {
+  const auto& new_style = StyleRef();
+  const auto& new_grid_columns_track_list =
+      new_style.GridTemplateColumns().TrackList();
+  const auto& new_grid_rows_track_list =
+      new_style.GridTemplateRows().TrackList();
+
+  if (new_grid_columns_track_list !=
+          old_style->GridTemplateColumns().TrackList() ||
+      new_grid_rows_track_list != old_style->GridTemplateRows().TrackList() ||
+      new_style.GridAutoColumns() != old_style->GridAutoColumns() ||
+      new_style.GridAutoRows() != old_style->GridAutoRows() ||
+      new_style.GetGridAutoFlow() != old_style->GetGridAutoFlow()) {
     SetGridPlacementDirty(true);
   }
 
   if (ExplicitGridDidResize(new_style, *old_style) ||
       NamedGridLinesDefinitionDidChange(new_style, *old_style) ||
-      (diff.NeedsLayout() && (StyleRef().GridAutoRepeatColumns().size() ||
-                              StyleRef().GridAutoRepeatRows().size()))) {
+      (diff.NeedsLayout() &&
+       (new_grid_columns_track_list.AutoRepeatTrackCount() ||
+        new_grid_rows_track_list.AutoRepeatTrackCount()))) {
     SetGridPlacementDirty(true);
   }
 }
@@ -148,14 +123,18 @@ const NGGridPlacementData& LayoutNGGrid::CachedPlacementData() const {
 
 void LayoutNGGrid::SetCachedPlacementData(
     NGGridPlacementData&& placement_data) {
-  cached_placement_data_ = std::move(placement_data);
+  cached_placement_data_ =
+      std::make_unique<NGGridPlacementData>(std::move(placement_data));
   SetGridPlacementDirty(false);
 }
 
 const NGGridLayoutData* LayoutNGGrid::GridLayoutData() const {
-  const auto* cached_layout_result = GetCachedLayoutResult();
-  return cached_layout_result ? cached_layout_result->GridLayoutData()
-                              : nullptr;
+  // Retrieve the layout data from the last fragment as it has the most
+  // up-to-date grid geometry.
+  const wtf_size_t fragment_count = PhysicalFragmentCount();
+  if (fragment_count == 0)
+    return nullptr;
+  return GetLayoutResult(fragment_count - 1)->GridLayoutData();
 }
 
 wtf_size_t LayoutNGGrid::AutoRepeatCountForDirection(
@@ -167,8 +146,8 @@ wtf_size_t LayoutNGGrid::AutoRepeatCountForDirection(
   const bool is_for_columns = track_direction == kForColumns;
   const wtf_size_t auto_repeat_size =
       is_for_columns
-          ? StyleRef().GridTemplateColumns().NGTrackList().AutoRepeatSize()
-          : StyleRef().GridTemplateRows().NGTrackList().AutoRepeatSize();
+          ? StyleRef().GridTemplateColumns().TrackList().AutoRepeatTrackCount()
+          : StyleRef().GridTemplateRows().TrackList().AutoRepeatTrackCount();
 
   return auto_repeat_size *
          (is_for_columns ? cached_placement_data_->column_auto_repetitions
@@ -188,16 +167,17 @@ wtf_size_t LayoutNGGrid::ExplicitGridStartForDirection(
 wtf_size_t LayoutNGGrid::ExplicitGridEndForDirection(
     const GridTrackSizingDirection track_direction) const {
   NOT_DESTROYED();
-  const wtf_size_t start_offset =
-      ExplicitGridStartForDirection(track_direction);
+  if (!HasCachedPlacementData())
+    return 0;
+
+  const wtf_size_t explicit_grid_track_count =
+      (track_direction == kForColumns)
+          ? cached_placement_data_->explicit_grid_column_count
+          : cached_placement_data_->explicit_grid_row_count;
 
   return base::checked_cast<wtf_size_t>(
-      start_offset +
-      ((track_direction == kForColumns)
-           ? GridPositionsResolver::ExplicitGridColumnCount(
-                 StyleRef(), AutoRepeatCountForDirection(kForColumns))
-           : GridPositionsResolver::ExplicitGridRowCount(
-                 StyleRef(), AutoRepeatCountForDirection(kForRows))));
+      ExplicitGridStartForDirection(track_direction) +
+      explicit_grid_track_count);
 }
 
 LayoutUnit LayoutNGGrid::GridGap(
@@ -208,8 +188,8 @@ LayoutUnit LayoutNGGrid::GridGap(
     return LayoutUnit();
 
   return (track_direction == kForColumns)
-             ? grid_layout_data->column_geometry.gutter_size
-             : grid_layout_data->row_geometry.gutter_size;
+             ? grid_layout_data->Columns()->GutterSize()
+             : grid_layout_data->Rows()->GutterSize();
 }
 
 LayoutUnit LayoutNGGrid::GridItemOffset(
@@ -227,19 +207,23 @@ Vector<LayoutUnit, 1> LayoutNGGrid::TrackSizesForComputedStyle(
   if (!grid_layout_data)
     return track_sizes;
 
-  const auto& geometry = (track_direction == kForColumns)
-                             ? grid_layout_data->column_geometry
-                             : grid_layout_data->row_geometry;
+  const auto& track_collection = (track_direction == kForColumns)
+                                     ? *grid_layout_data->Columns()
+                                     : *grid_layout_data->Rows();
 
-  track_sizes.ReserveInitialCapacity(
-      std::min<wtf_size_t>(geometry.track_count, kGridMaxTracks));
+  // |EndLineOfImplicitGrid| is equivalent to the total track count.
+  track_sizes.ReserveInitialCapacity(std::min<wtf_size_t>(
+      track_collection.EndLineOfImplicitGrid(), kGridMaxTracks));
 
-  for (const auto& range : geometry.ranges) {
-    Vector<LayoutUnit> track_sizes_in_range =
-        ComputeTrackSizeRepeaterForRange(geometry, range);
-    for (wtf_size_t i = 0; i < range.track_count; ++i) {
+  const wtf_size_t range_count = track_collection.RangeCount();
+  for (wtf_size_t i = 0; i < range_count; ++i) {
+    auto track_sizes_in_range =
+        ComputeTrackSizeRepeaterForRange(track_collection, i);
+
+    const wtf_size_t range_track_count = track_collection.RangeTrackCount(i);
+    for (wtf_size_t j = 0; j < range_track_count; ++j) {
       track_sizes.emplace_back(
-          track_sizes_in_range[i % track_sizes_in_range.size()]);
+          track_sizes_in_range[j % track_sizes_in_range.size()]);
 
       // Respect total track count limit.
       DCHECK(track_sizes.size() <= kGridMaxTracks);
@@ -261,34 +245,37 @@ Vector<LayoutUnit> LayoutNGGrid::ColumnPositions() const {
 }
 
 Vector<LayoutUnit> LayoutNGGrid::ComputeTrackSizeRepeaterForRange(
-    const NGGridLayoutData::TrackCollectionGeometry& geometry,
-    const NGGridLayoutData::RangeData& range) const {
-  if (range.IsCollapsed())
+    const NGGridLayoutTrackCollection& track_collection,
+    wtf_size_t range_index) const {
+  const wtf_size_t range_set_count =
+      track_collection.RangeSetCount(range_index);
+
+  if (!range_set_count)
     return {LayoutUnit()};
 
   Vector<LayoutUnit> track_sizes;
-  track_sizes.ReserveInitialCapacity(range.set_count);
+  track_sizes.ReserveInitialCapacity(range_set_count);
 
-  const wtf_size_t ending_set_index =
-      range.starting_set_index + range.set_count;
-  for (wtf_size_t set_index = range.starting_set_index;
-       set_index < ending_set_index; ++set_index) {
-    // Set information is stored as offsets. To determine the size of a single
-    // track in a given set, first determine the total size the set takes up by
-    // finding the difference between the offsets.
+  const wtf_size_t begin_set_index =
+      track_collection.RangeBeginSetIndex(range_index);
+  const wtf_size_t end_set_index = begin_set_index + range_set_count;
+
+  for (wtf_size_t i = begin_set_index; i < end_set_index; ++i) {
     LayoutUnit set_size =
-        geometry.sets[set_index + 1].offset - geometry.sets[set_index].offset;
+        track_collection.GetSetOffset(i + 1) - track_collection.GetSetOffset(i);
+    const wtf_size_t set_track_count = track_collection.GetSetTrackCount(i);
 
-    const wtf_size_t set_track_count = geometry.sets[set_index + 1].track_count;
-    DCHECK_GT(set_track_count, 0u);
+    DCHECK_GE(set_size, 0);
+    set_size = (set_size - track_collection.GutterSize() * set_track_count)
+                   .ClampNegativeToZero();
 
     // Once we have determined the size of the set, we can find the size of a
     // given track by dividing the |set_size| by the |set_track_count|.
     // In some situations, this will leave a remainder, but rather than try to
     // distribute the space unequally between tracks, discard it to prefer equal
     // length tracks.
-    track_sizes.emplace_back((set_size / set_track_count) -
-                             geometry.gutter_size);
+    DCHECK_GT(set_track_count, 0u);
+    track_sizes.emplace_back(set_size / set_track_count);
   }
   return track_sizes;
 }
@@ -300,33 +287,38 @@ Vector<LayoutUnit> LayoutNGGrid::ComputeExpandedPositions(
   if (!grid_layout_data)
     return expanded_positions;
 
-  const auto& geometry = (track_direction == kForColumns)
-                             ? grid_layout_data->column_geometry
-                             : grid_layout_data->row_geometry;
+  const auto& track_collection = (track_direction == kForColumns)
+                                     ? *grid_layout_data->Columns()
+                                     : *grid_layout_data->Rows();
 
-  expanded_positions.ReserveInitialCapacity(
-      std::min<wtf_size_t>(geometry.track_count + 1, kGridMaxTracks + 1));
+  // |EndLineOfImplicitGrid| is equivalent to the total track count.
+  expanded_positions.ReserveInitialCapacity(std::min<wtf_size_t>(
+      track_collection.EndLineOfImplicitGrid() + 1, kGridMaxTracks + 1));
 
-  LayoutUnit current_offset = geometry.sets[0].offset;
+  auto current_offset = track_collection.GetSetOffset(0);
   expanded_positions.emplace_back(current_offset);
 
-  bool is_last_range_collapsed = true;
+  auto last_applied_gutter_size = LayoutUnit();
   auto BuildExpandedPositions = [&]() {
-    for (const auto& range : geometry.ranges) {
-      is_last_range_collapsed = range.IsCollapsed();
-      Vector<LayoutUnit> track_sizes_in_range =
-          ComputeTrackSizeRepeaterForRange(geometry, range);
+    const wtf_size_t range_count = track_collection.RangeCount();
 
-      for (wtf_size_t i = 0; i < range.track_count; ++i) {
+    for (wtf_size_t i = 0; i < range_count; ++i) {
+      auto track_sizes_in_range =
+          ComputeTrackSizeRepeaterForRange(track_collection, i);
+      last_applied_gutter_size = track_collection.RangeSetCount(i)
+                                     ? track_collection.GutterSize()
+                                     : LayoutUnit();
+
+      const wtf_size_t range_track_count = track_collection.RangeTrackCount(i);
+      for (wtf_size_t j = 0; j < range_track_count; ++j) {
         current_offset +=
-            track_sizes_in_range[i % track_sizes_in_range.size()] +
-            (range.IsCollapsed() ? LayoutUnit() : geometry.gutter_size);
+            track_sizes_in_range[j % track_sizes_in_range.size()] +
+            last_applied_gutter_size;
         expanded_positions.emplace_back(current_offset);
 
         // Respect total track count limit, don't forget to account for the
         // initial offset.
-        DCHECK_LE(expanded_positions.size(),
-                  static_cast<unsigned int>(kGridMaxTracks + 1));
+        DCHECK(expanded_positions.size() <= kGridMaxTracks + 1);
         if (expanded_positions.size() == kGridMaxTracks + 1)
           return;
       }
@@ -334,8 +326,7 @@ Vector<LayoutUnit> LayoutNGGrid::ComputeExpandedPositions(
   };
 
   BuildExpandedPositions();
-  if (!is_last_range_collapsed)
-    expanded_positions.back() -= geometry.gutter_size;
+  expanded_positions.back() -= last_applied_gutter_size;
   return expanded_positions;
 }
 

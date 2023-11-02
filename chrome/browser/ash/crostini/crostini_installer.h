@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,8 @@
 
 #include "base/callback_forward.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/ash/crostini/ansible/ansible_management_service.h"
 #include "chrome/browser/ash/crostini/crostini_installer_ui_delegate.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
@@ -15,16 +17,11 @@
 
 class Profile;
 
-namespace base {
-class RepeatingTimer;
-}  // namespace base
-
 namespace crostini {
 
 class CrostiniInstaller : public KeyedService,
                           public CrostiniManager::RestartObserver,
-                          public CrostiniInstallerUIDelegate,
-                          public AnsibleManagementService::Observer {
+                          public CrostiniInstallerUIDelegate {
  public:
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -97,7 +94,7 @@ class CrostiniInstaller : public KeyedService,
   void OnStageStarted(crostini::mojom::InstallerState stage) override;
   void OnComponentLoaded(crostini::CrostiniResult result) override;
   void OnDiskImageCreated(bool success,
-                          vm_tools::concierge::DiskImageStatus status,
+                          CrostiniResult result,
                           int64_t disk_size_available) override;
   void OnVmStarted(bool success) override;
   void OnLxdStarted(CrostiniResult result) override;
@@ -105,10 +102,6 @@ class CrostiniInstaller : public KeyedService,
   void OnContainerCreated(crostini::CrostiniResult result) override;
   void OnContainerSetup(bool success) override;
   void OnContainerStarted(crostini::CrostiniResult result) override;
-
-  // AnsibleManagementService::Observer:
-  void OnAnsibleSoftwareConfigurationStarted() override;
-  void OnAnsibleSoftwareConfigurationFinished(bool success) override;
 
   // Return true if internal state allows starting installation.
   bool CanInstall();
@@ -163,10 +156,6 @@ class CrostiniInstaller : public KeyedService,
   ProgressCallback progress_callback_;
   ResultCallback result_callback_;
   base::OnceClosure cancel_callback_;
-
-  base::ScopedObservation<AnsibleManagementService,
-                          AnsibleManagementService::Observer>
-      ansible_management_service_observation_{this};
 
   base::WeakPtrFactory<CrostiniInstaller> weak_ptr_factory_{this};
 };

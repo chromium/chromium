@@ -1,11 +1,13 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/segmentation_platform/internal/signals/histogram_signal_handler.h"
 
+#include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/metrics/metrics_hashes.h"
+#include "base/observer_list.h"
 #include "components/segmentation_platform/internal/database/signal_database.h"
 
 namespace segmentation_platform {
@@ -13,10 +15,12 @@ namespace segmentation_platform {
 HistogramSignalHandler::HistogramSignalHandler(SignalDatabase* signal_database)
     : db_(signal_database), metrics_enabled_(false) {}
 
-HistogramSignalHandler::~HistogramSignalHandler() = default;
+HistogramSignalHandler::~HistogramSignalHandler() {
+  DCHECK(observers_.empty());
+}
 
 void HistogramSignalHandler::SetRelevantHistograms(
-    const std::set<std::pair<std::string, proto::SignalType>>& histograms) {
+    const RelevantHistograms& histograms) {
   histogram_observers_.clear();
   for (const auto& pair : histograms) {
     const auto& histogram_name = pair.first;
@@ -45,7 +49,28 @@ void HistogramSignalHandler::OnHistogramSample(
   if (!metrics_enabled_)
     return;
 
-  db_->WriteSample(signal_type, name_hash, sample, base::DoNothing());
+  db_->WriteSample(signal_type, name_hash, sample,
+                   base::BindOnce(&HistogramSignalHandler::OnSampleWritten,
+                                  weak_ptr_factory_.GetWeakPtr(),
+                                  std::string(histogram_name), sample));
+}
+
+void HistogramSignalHandler::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void HistogramSignalHandler::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
+void HistogramSignalHandler::OnSampleWritten(const std::string& histogram_name,
+                                             base::HistogramBase::Sample sample,
+                                             bool success) {
+  if (!success)
+    return;
+
+  for (Observer& ob : observers_)
+    ob.OnHistogramSignalUpdated(histogram_name, sample);
 }
 
 }  // namespace segmentation_platform

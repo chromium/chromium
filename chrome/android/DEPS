@@ -13,6 +13,8 @@ include_rules = [
   # Restrict dependencies to xsurface by default (crbug.com/1115137)
   "-chrome/browser/xsurface",
 
+  "+components/autofill_assistant/android/public",
+  "+components/browser_ui/accessibility/android",
   "+components/browser_ui/banners/android",
   "+components/browser_ui/bottomsheet/android",
   "+components/browser_ui/contacts_picker/android",
@@ -26,6 +28,7 @@ include_rules = [
   "+components/browser_ui/util/android",
   "+components/browser_ui/webshare/android",
   "+components/browser_ui/widget/android",
+  "+components/commerce/core",
   "+components/content_capture",
   "+components/content_settings",
   "+components/download",
@@ -39,13 +42,14 @@ include_rules = [
   "+components/installedapp/android",
   "+components/invalidation",
   "+components/javascript_dialogs/android",
-  "+components/messages/android",
   "+components/media_router/browser/android",
+  "+components/messages/android",
   "+components/page_info/android/java",
   "+components/permissions/android/nfc",
   "+components/policy",
   "+components/prefs/android",
   "+components/query_tiles",
+  "+components/safe_browsing/android/java",
   "+components/security_interstitials/content/android",
   "+components/signin/public/android",
   "+components/site_engagement/content/android",
@@ -54,6 +58,7 @@ include_rules = [
   "+components/subresource_filter/android",
   "+components/translate/content/android",
   "+components/user_prefs/android",
+  "+components/version_info/android",
   "+components/viz/common/java",
   "+components/webapk/android",
   "+components/webapps/browser/android/java",
@@ -87,11 +92,14 @@ specific_include_rules = {
 
   # Exceptions to the Chrome*Activity dependency restriction. These will all eventually be removed
   # new code should rely on acceptable dependency aquisition patterns.
-  "AutofillAssistantUiController\.java": [
-    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
-  ],
   "AutofillAssistantFacade\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "AssistantDependenciesChrome\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "ContextualNotificationPermissionRequesterImpl\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
   ],
   "ManualFillingMediator\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",

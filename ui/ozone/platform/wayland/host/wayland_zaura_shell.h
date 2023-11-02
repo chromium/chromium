@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,8 @@
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_ZAURA_SHELL_H_
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
+#include "ui/display/tablet_state.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 
 namespace ui {
@@ -37,6 +39,7 @@ class WaylandZAuraShell : public wl::GlobalObjectRegistrar<WaylandZAuraShell> {
   std::string GetDeskName(int index) const;
   int GetNumberOfDesks();
   int GetActiveDeskIndex() const;
+  display::TabletState GetTabletState() const;
 
  private:
   // zaura_shell_listeners
@@ -58,7 +61,7 @@ class WaylandZAuraShell : public wl::GlobalObjectRegistrar<WaylandZAuraShell> {
                           struct wl_surface* lost_active);
 
   wl::Object<zaura_shell> obj_;
-  WaylandConnection* const connection_;
+  const raw_ptr<WaylandConnection> connection_;
   base::flat_set<uint32_t> bug_fix_ids_;
   std::vector<std::string> desks_;
   int active_desk_index_ = 0;

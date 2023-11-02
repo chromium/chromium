@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -57,7 +57,7 @@ TEST_F(FileSystemProviderOperationsCreateFileTest, Execute) {
   util::StatusCallbackLog callback_log;
 
   CreateFile create_file(
-      NULL, file_system_info_, base::FilePath(kFilePath),
+      nullptr, file_system_info_, base::FilePath(kFilePath),
       base::BindOnce(&util::LogStatusCallback, &callback_log));
   create_file.SetDispatchEventImplForTesting(
       base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
@@ -70,10 +70,10 @@ TEST_F(FileSystemProviderOperationsCreateFileTest, Execute) {
   EXPECT_EQ(
       extensions::api::file_system_provider::OnCreateFileRequested::kEventName,
       event->event_name);
-  base::ListValue* event_args = event->event_args.get();
-  ASSERT_EQ(1u, event_args->GetList().size());
+  const base::Value::List& event_args = event->event_args;
+  ASSERT_EQ(1u, event_args.size());
 
-  const base::Value* options_as_value = &event_args->GetList()[0];
+  const base::Value* options_as_value = &event_args[0];
   ASSERT_TRUE(options_as_value->is_dict());
 
   CreateFileRequestedOptions options;
@@ -89,7 +89,7 @@ TEST_F(FileSystemProviderOperationsCreateFileTest, Execute_NoListener) {
   util::StatusCallbackLog callback_log;
 
   CreateFile create_file(
-      NULL, file_system_info_, base::FilePath(kFilePath),
+      nullptr, file_system_info_, base::FilePath(kFilePath),
       base::BindOnce(&util::LogStatusCallback, &callback_log));
   create_file.SetDispatchEventImplForTesting(
       base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
@@ -108,7 +108,7 @@ TEST_F(FileSystemProviderOperationsCreateFileTest, Execute_ReadOnly) {
       true /* watchable */, extensions::SOURCE_FILE, IconSet());
 
   CreateFile create_file(
-      NULL, read_only_file_system_info, base::FilePath(kFilePath),
+      nullptr, read_only_file_system_info, base::FilePath(kFilePath),
       base::BindOnce(&util::LogStatusCallback, &callback_log));
   create_file.SetDispatchEventImplForTesting(
       base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
@@ -122,7 +122,7 @@ TEST_F(FileSystemProviderOperationsCreateFileTest, OnSuccess) {
   util::StatusCallbackLog callback_log;
 
   CreateFile create_file(
-      NULL, file_system_info_, base::FilePath(kFilePath),
+      nullptr, file_system_info_, base::FilePath(kFilePath),
       base::BindOnce(&util::LogStatusCallback, &callback_log));
   create_file.SetDispatchEventImplForTesting(
       base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
@@ -141,7 +141,7 @@ TEST_F(FileSystemProviderOperationsCreateFileTest, OnError) {
   util::StatusCallbackLog callback_log;
 
   CreateFile create_file(
-      NULL, file_system_info_, base::FilePath(kFilePath),
+      nullptr, file_system_info_, base::FilePath(kFilePath),
       base::BindOnce(&util::LogStatusCallback, &callback_log));
   create_file.SetDispatchEventImplForTesting(
       base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,9 @@
 
 #include "ash/test/ash_test_base.h"
 #include "base/memory/ptr_util.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
-#include "chromeos/dbus/debug_daemon/fake_debug_daemon_client.h"
+#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
+#include "chromeos/ash/components/dbus/debug_daemon/fake_debug_daemon_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/message_center/message_center.h"
@@ -28,14 +28,14 @@ class DebugdNotificationHandlerTest : public AshTestBase {
 
   void SetUp() override {
     AshTestBase::SetUp();
-    debug_daemon_client_ = std::make_unique<chromeos::FakeDebugDaemonClient>();
+    debug_daemon_client_ = std::make_unique<FakeDebugDaemonClient>();
     handler_ =
         std::make_unique<DebugdNotificationHandler>(debug_daemon_client_.get());
     message_center_ = message_center::MessageCenter::Get();
   }
 
  protected:
-  std::unique_ptr<chromeos::DebugDaemonClient> debug_daemon_client_;
+  std::unique_ptr<DebugDaemonClient> debug_daemon_client_;
   std::unique_ptr<DebugdNotificationHandler> handler_;
   message_center::MessageCenter* message_center_;
 };

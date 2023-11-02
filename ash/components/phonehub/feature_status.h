@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <ostream>
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 // Enum representing potential status values for the Phone Hub feature. Note
@@ -63,13 +63,13 @@ enum class FeatureStatus {
 std::ostream& operator<<(std::ostream& stream, FeatureStatus status);
 
 }  // namespace phonehub
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash {
-namespace phonehub {
-using ::chromeos::phonehub::FeatureStatus;
-}  // namespace phonehub
 }  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace chromeos {
+namespace phonehub {
+using ::ash::phonehub::FeatureStatus;
+}
+}  // namespace chromeos
 
 #endif  // ASH_COMPONENTS_PHONEHUB_FEATURE_STATUS_H_

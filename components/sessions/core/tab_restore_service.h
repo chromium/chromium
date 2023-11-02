@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "base/token.h"
@@ -72,6 +73,9 @@ class SESSIONS_EXPORT TabRestoreService : public KeyedService {
     // session.
     SessionID id;
 
+    // The original id of the entry when it was saved.
+    SessionID original_id;
+
     // The type of the entry.
     const Type type;
 
@@ -79,6 +83,9 @@ class SESSIONS_EXPORT TabRestoreService : public KeyedService {
     // be nullptr or 0 in cases where a timestamp isn't available at entry
     // creation.
     base::Time timestamp;
+
+    // Used for storing arbitrary key/value pairs.
+    std::map<std::string, std::string> extra_data;
 
     // Estimates memory usage. By default returns 0.
     virtual size_t EstimateMemoryUsage() const;
@@ -138,6 +145,9 @@ class SESSIONS_EXPORT TabRestoreService : public KeyedService {
 
     // Entry:
     size_t EstimateMemoryUsage() const override;
+
+    // Type of window.
+    SessionWindow::WindowType type;
 
     // The tabs that comprised the window, in order.
     std::vector<std::unique_ptr<Tab>> tabs;
@@ -239,8 +249,8 @@ class SESSIONS_EXPORT TabRestoreService : public KeyedService {
   virtual std::vector<LiveTab*> RestoreMostRecentEntry(
       LiveTabContext* context) = 0;
 
-  // Removes the Tab with id |id| from the list and returns it.
-  virtual std::unique_ptr<Tab> RemoveTabEntryById(SessionID id) = 0;
+  // Removes the Entry with id |id| if it is a Tab entry.
+  virtual void RemoveTabEntryById(SessionID id) = 0;
 
   // Restores an entry by id. If there is no entry with an id matching |id|,
   // this does nothing. If |context| is NULL, this creates a new window for the

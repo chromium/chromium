@@ -57,7 +57,7 @@ namespace blink {
 
 static void AddNewClass(StringBuilder& classes,
                         const StringBuilder& new_class) {
-  if (!classes.IsEmpty())
+  if (!classes.empty())
     classes.Append(' ');
   classes.Append(new_class);
 }
@@ -132,7 +132,7 @@ bool VTTTokenizer::NextToken(VTTToken& token) {
       if (cc == '&') {
         WEBVTT_ADVANCE_TO(kHTMLCharacterReferenceInDataState);
       } else if (cc == '<') {
-        if (result.IsEmpty()) {
+        if (result.empty()) {
           WEBVTT_ADVANCE_TO(kTagState);
         } else {
           // We don't want to advance input or perform a state transition - just
@@ -158,10 +158,10 @@ bool VTTTokenizer::NextToken(VTTToken& token) {
 
     WEBVTT_BEGIN_STATE(kTagState) {
       if (IsTokenizerWhitespace(cc)) {
-        DCHECK(result.IsEmpty());
+        DCHECK(result.empty());
         WEBVTT_ADVANCE_TO(kStartTagAnnotationState);
       } else if (cc == '.') {
-        DCHECK(result.IsEmpty());
+        DCHECK(result.empty());
         WEBVTT_ADVANCE_TO(kStartTagClassState);
       } else if (cc == '/') {
         WEBVTT_ADVANCE_TO(kEndTagState);
@@ -169,7 +169,7 @@ bool VTTTokenizer::NextToken(VTTToken& token) {
         result.Append(cc);
         WEBVTT_ADVANCE_TO(kTimestampTagState);
       } else if (cc == '>' || cc == kEndOfFileMarker) {
-        DCHECK(result.IsEmpty());
+        DCHECK(result.empty());
         return AdvanceAndEmitToken(input_, token,
                                    VTTToken::StartTag(result.ToString()));
       } else {

@@ -1,11 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_PUBLIC_TEST_CONTENT_TEST_SUITE_BASE_H_
 #define CONTENT_PUBLIC_TEST_CONTENT_TEST_SUITE_BASE_H_
 
-#include "base/compiler_specific.h"
 #include "base/test/test_suite.h"
 
 namespace content {
@@ -29,6 +28,9 @@ class ContentTestSuiteBase : public base::TestSuite {
 
   // Registers renderer/utility/gpu processes to run in-thread.
   static void RegisterInProcessThreads();
+
+  // Initializes ResourceBundle using Content Shell's PAK file.
+  static void InitializeResourceBundle();
 
  protected:
   ContentTestSuiteBase(int argc, char** argv);

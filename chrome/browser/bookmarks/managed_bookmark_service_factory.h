@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace base {
 template <typename T>
@@ -22,7 +22,7 @@ class ManagedBookmarkService;
 
 // Singleton that owns all ManagedBookmarkServices and associates them with
 // Profile.
-class ManagedBookmarkServiceFactory : public BrowserContextKeyedServiceFactory {
+class ManagedBookmarkServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static bookmarks::ManagedBookmarkService* GetForProfile(Profile* profile);
   static ManagedBookmarkServiceFactory* GetInstance();
@@ -43,8 +43,6 @@ class ManagedBookmarkServiceFactory : public BrowserContextKeyedServiceFactory {
 
   // BrowserStateKeyedServiceFactory implementation.
   KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
   bool ServiceIsNULLWhileTesting() const override;
 };

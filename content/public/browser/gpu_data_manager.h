@@ -1,11 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_PUBLIC_BROWSER_GPU_DATA_MANAGER_H_
 #define CONTENT_PUBLIC_BROWSER_GPU_DATA_MANAGER_H_
 
-#include <list>
 #include <string>
 
 #include "base/callback_forward.h"
@@ -52,7 +51,7 @@ class GpuDataManager {
       gpu::GpuFeatureType feature) = 0;
 
   // This indicator might change because we could collect more GPU info or
-  // because the GPU blacklist could be updated.
+  // because the GPU blocklist could be updated.
   // If this returns false, any further GPU access, including establishing GPU
   // channel, and GPU info collection, should be blocked.
   // Can be called on any thread.

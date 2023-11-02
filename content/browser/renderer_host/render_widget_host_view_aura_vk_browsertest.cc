@@ -1,9 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/observer_list.h"
 #include "base/win/windows_version.h"
+#include "build/build_config.h"
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/renderer_host/delegated_frame_host.h"
@@ -20,6 +21,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/text_input_test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "net/base/filename_util.h"
@@ -139,7 +141,7 @@ class RenderWidgetHostViewAuraBrowserMockIMETest : public ContentBrowserTest {
 
   RenderViewHost* GetRenderViewHost() const {
     RenderViewHost* const rvh =
-        shell()->web_contents()->GetMainFrame()->GetRenderViewHost();
+        shell()->web_contents()->GetPrimaryMainFrame()->GetRenderViewHost();
     CHECK(rvh);
     return rvh;
   }
@@ -151,7 +153,7 @@ class RenderWidgetHostViewAuraBrowserMockIMETest : public ContentBrowserTest {
 
   BrowserAccessibility* FindNode(ax::mojom::Role role,
                                  const std::string& name_or_value) {
-    BrowserAccessibility* root = GetManager()->GetRoot();
+    BrowserAccessibility* root = GetManager()->GetBrowserAccessibilityRoot();
     CHECK(root);
     return FindNodeInSubtree(*root, role, name_or_value);
   }
@@ -168,7 +170,7 @@ class RenderWidgetHostViewAuraBrowserMockIMETest : public ContentBrowserTest {
                                            ax::mojom::Event::kLoadComplete);
     GURL html_data_url("data:text/html," + html);
     EXPECT_TRUE(NavigateToURL(shell(), html_data_url));
-    waiter.WaitForNotification();
+    ASSERT_TRUE(waiter.WaitForNotification());
   }
 
   net::EmbeddedTestServer server_{net::EmbeddedTestServer::TYPE_HTTPS};
@@ -195,7 +197,7 @@ class RenderWidgetHostViewAuraBrowserMockIMETest : public ContentBrowserTest {
   }
 };
 
-#ifdef OS_WIN
+#if BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserMockIMETest,
                        VirtualKeyboardAccessibilityFocusTest) {
   // The keyboard input pane events are not supported on Win7.
@@ -216,13 +218,13 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserMockIMETest,
       static_cast<WebContentsImpl*>(shell()->web_contents());
   auto* root = web_contents->GetPrimaryFrameTree().root();
   web_contents->GetPrimaryFrameTree().SetFocusedFrame(
-      root, root->current_frame_host()->GetSiteInstance());
+      root, root->current_frame_host()->GetSiteInstance()->group());
 
   AccessibilityNotificationWaiter waiter2(
       shell()->web_contents(), ui::kAXModeComplete, ax::mojom::Event::kFocus);
   GetManager()->SetFocus(*target);
   GetManager()->DoDefaultAction(*target);
-  waiter2.WaitForNotification();
+  ASSERT_TRUE(waiter2.WaitForNotification());
 
   BrowserAccessibility* focus = GetManager()->GetFocus();
   EXPECT_EQ(focus->GetId(), target->GetId());
@@ -242,7 +244,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserMockIMETest,
       static_cast<WebContentsImpl*>(shell()->web_contents());
   auto* root = web_contents->GetPrimaryFrameTree().root();
   web_contents->GetPrimaryFrameTree().SetFocusedFrame(
-      root, root->current_frame_host()->GetSiteInstance());
+      root, root->current_frame_host()->GetSiteInstance()->group());
 
   // Send a touch event so that RenderWidgetHostViewAura will create the
   // keyboard observer (requires last_pointer_type_ to be TOUCH).
@@ -308,7 +310,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserMockIMETest,
       static_cast<WebContentsImpl*>(shell()->web_contents());
   auto* root = web_contents->GetPrimaryFrameTree().root();
   web_contents->GetPrimaryFrameTree().SetFocusedFrame(
-      root, root->current_frame_host()->GetSiteInstance());
+      root, root->current_frame_host()->GetSiteInstance()->group());
 
   // Send a touch event so that RenderWidgetHostViewAura will create the
   // keyboard observer (requires last_pointer_type_ to be TOUCH).
@@ -346,7 +348,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserMockIMETest,
       static_cast<WebContentsImpl*>(shell()->web_contents());
   auto* root = web_contents->GetPrimaryFrameTree().root();
   web_contents->GetPrimaryFrameTree().SetFocusedFrame(
-      root, root->current_frame_host()->GetSiteInstance());
+      root, root->current_frame_host()->GetSiteInstance()->group());
 
   // Send a touch event so that RenderWidgetHostViewAura will create the
   // keyboard observer (requires last_pointer_type_ to be TOUCH).
@@ -406,7 +408,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserMockIMETest,
       static_cast<WebContentsImpl*>(shell()->web_contents());
   auto* root = web_contents->GetPrimaryFrameTree().root();
   web_contents->GetPrimaryFrameTree().SetFocusedFrame(
-      root, root->current_frame_host()->GetSiteInstance());
+      root, root->current_frame_host()->GetSiteInstance()->group());
 
   // Send a touch event so that RenderWidgetHostViewAura will create the
   // keyboard observer (requires last_pointer_type_ to be TOUCH).
@@ -418,6 +420,96 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserMockIMETest,
   SimulateTapAt(web_contents, gfx::Point(left + 1, top + 1));
   type_observer_none.Wait();
 }
-#endif  // #ifdef OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
+
+// This class observes TextInputManager for changes in `active_view_`.
+class TextInputManagerStateObserver : public TextInputManagerObserverBase {
+ public:
+  explicit TextInputManagerStateObserver(WebContents* web_contents)
+      : TextInputManagerObserverBase(web_contents) {
+    tester()->SetUpdateTextInputStateCalledCallback(base::BindRepeating(
+        &TextInputManagerStateObserver::VerifyActiveViewOnStateUpdate,
+        base::Unretained(this)));
+  }
+  ~TextInputManagerStateObserver() override = default;
+
+  void WaitUntilActiveViewIsUpdated() {
+    base::RunLoop run_loop;
+    quit_callback_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
+
+  RenderWidgetHostView* last_updated_active_view() {
+    return last_updated_active_view_;
+  }
+
+ private:
+  void VerifyActiveViewOnStateUpdate() {
+    RenderWidgetHostView* active_view =
+        const_cast<RenderWidgetHostView*>(tester()->GetActiveView());
+    EXPECT_TRUE(active_view);
+    last_updated_active_view_ = active_view;
+    RenderWidgetHostImpl* widget_host =
+        static_cast<RenderWidgetHostImpl*>(active_view->GetRenderWidgetHost());
+    EXPECT_EQ(widget_host->frame_tree()->type(), FrameTree::Type::kPrimary);
+    OnSuccess();
+    if (quit_callback_)
+      std::move(quit_callback_).Run();
+  }
+
+  RenderWidgetHostView* last_updated_active_view_ = nullptr;
+  base::OnceClosure quit_callback_;
+};
+
+class RenderWidgetHostViewAuraPrerenderingBrowserTest
+    : public ContentBrowserTest {
+ public:
+  RenderWidgetHostViewAuraPrerenderingBrowserTest()
+      : prerender_helper_(base::BindRepeating(
+            &RenderWidgetHostViewAuraPrerenderingBrowserTest::GetWebContents,
+            base::Unretained(this))) {}
+  ~RenderWidgetHostViewAuraPrerenderingBrowserTest() override = default;
+
+  WebContents* GetWebContents() { return shell()->web_contents(); }
+
+  test::PrerenderTestHelper& prerender_helper() { return prerender_helper_; }
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(test_server_handle_ =
+                    embedded_test_server()->StartAndReturnHandle());
+  }
+
+ private:
+  test::PrerenderTestHelper prerender_helper_;
+  net::test_server::EmbeddedTestServerHandle test_server_handle_;
+};
+
+// Tests that `active_view_` from TextInputManager is not set for prerendering.
+IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraPrerenderingBrowserTest,
+                       TextInputManagerActiveView) {
+  const GURL kVirtualKeyboardUrl =
+      embedded_test_server()->GetURL("/virtual-keyboard.html");
+  const GURL kEmptyUrl = embedded_test_server()->GetURL("/empty.html");
+
+  auto* web_contents = GetWebContents();
+  TextInputManagerStateObserver type_observer_show(web_contents);
+  // Navigate to a simple page.
+  ASSERT_TRUE(NavigateToURL(shell(), kEmptyUrl));
+  EXPECT_EQ(web_contents->GetLastCommittedURL(), kEmptyUrl);
+  EXPECT_EQ(type_observer_show.last_updated_active_view(), nullptr);
+
+  // Start prerendering `kVirtualKeyboardUrl`.
+  prerender_helper().AddPrerender(kVirtualKeyboardUrl);
+  // Prerendering shouldn't update `active_view_` from TextInputManager.
+  EXPECT_EQ(type_observer_show.last_updated_active_view(), nullptr);
+
+  prerender_helper().NavigatePrimaryPage(kVirtualKeyboardUrl);
+  type_observer_show.WaitUntilActiveViewIsUpdated();
+  // If the page is activated, it updates `active_view_` from TextInputManager.
+  EXPECT_EQ(web_contents->GetLastCommittedURL(), kVirtualKeyboardUrl);
+  EXPECT_EQ(type_observer_show.last_updated_active_view(),
+            web_contents->GetPrimaryMainFrame()->GetView());
+}
 
 }  // namespace content

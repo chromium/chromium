@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@
 
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/numerics/safe_conversions.h"
@@ -28,7 +29,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/application_status_listener.h"
 #endif
 
@@ -220,7 +221,7 @@ class NET_EXPORT_PRIVATE SimpleIndex
   base::Time GetLastUsedTime(uint64_t entry_hash);
   void SetLastUsedTimeForTest(uint64_t entry_hash, const base::Time last_used);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void set_app_status_listener(
       base::android::ApplicationStatusListener* app_status_listener) {
     app_status_listener_ = app_status_listener;
@@ -254,18 +255,19 @@ class NET_EXPORT_PRIVATE SimpleIndex
   // Must run on IO Thread.
   void MergeInitializingSet(std::unique_ptr<SimpleIndexLoadResult> load_result);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void OnApplicationStateChange(base::android::ApplicationState state);
 
   std::unique_ptr<base::android::ApplicationStatusListener>
       owned_app_status_listener_;
-  base::android::ApplicationStatusListener* app_status_listener_ = nullptr;
+  raw_ptr<base::android::ApplicationStatusListener> app_status_listener_ =
+      nullptr;
 #endif
 
   scoped_refptr<BackendCleanupTracker> cleanup_tracker_;
 
   // The owner of |this| must ensure the |delegate_| outlives |this|.
-  SimpleIndexDelegate* delegate_;
+  raw_ptr<SimpleIndexDelegate> delegate_;
 
   EntrySet entries_set_;
 

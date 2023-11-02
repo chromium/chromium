@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "base/hash/md5.h"
 #include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
+#include "base/record_replay.h"
 #include "base/sys_byteorder.h"
 #include "base/threading/thread_local.h"
 #include "base/trace_event/base_tracing.h"
@@ -26,10 +27,6 @@ namespace base {
 namespace {
 
 TaskAnnotator::ObserverForTesting* g_task_annotator_observer = nullptr;
-
-// Used as a sentinel to determine if a TLS-stored PendingTask is a dummy one.
-static constexpr int kSentinelSequenceNum =
-    static_cast<int>(0xF00DBAADF00DBAAD);
 
 // Returns the TLS slot that stores the PendingTask currently in progress on
 // each thread. Used to allow creating a breadcrumb of program counters on the
@@ -50,38 +47,18 @@ GetTLSForCurrentScopedIpcHash() {
   return instance.get();
 }
 
-// Determines whether or not the given |task| is a dummy pending task that has
-// been injected by ScopedSetIpcHash solely for the purposes of
-// tracking IPC context.
-bool IsDummyPendingTask(const PendingTask* task) {
-  if (task->sequence_num == kSentinelSequenceNum &&
-      !task->posted_from.has_source_info() &&
-      !task->posted_from.program_counter()) {
-    return true;
-  }
-  return false;
-}
-
 }  // namespace
 
 const PendingTask* TaskAnnotator::CurrentTaskForThread() {
-  auto* current_task = GetTLSForCurrentPendingTask()->Get();
-
-  // Don't return "dummy" current tasks that are only used for storing IPC
-  // context.
-  if (!current_task || (current_task && IsDummyPendingTask(current_task)))
-    return nullptr;
-  return current_task;
+  return GetTLSForCurrentPendingTask()->Get();
 }
 
 TaskAnnotator::TaskAnnotator() = default;
 TaskAnnotator::~TaskAnnotator() = default;
 
 void TaskAnnotator::WillQueueTask(perfetto::StaticString trace_event_name,
-                                  PendingTask* pending_task,
-                                  const char* task_queue_name) {
+                                  PendingTask* pending_task) {
   DCHECK(pending_task);
-  DCHECK(task_queue_name);
   TRACE_EVENT_INSTANT(
       "toplevel.flow", trace_event_name,
       perfetto::Flow::ProcessScoped(GetTaskTraceID(*pending_task)));
@@ -191,8 +168,7 @@ void TaskAnnotator::ClearObserverForTesting() {
 void TaskAnnotator::EmitTaskLocation(perfetto::EventContext& ctx,
                                      const PendingTask& task) const {
   ctx.event()->set_task_execution()->set_posted_from_iid(
-      base::trace_event::InternedSourceLocation::Get(
-          &ctx, base::trace_event::TraceSourceLocation(task.posted_from)));
+      base::trace_event::InternedSourceLocation::Get(&ctx, task.posted_from));
 }
 
 // TRACE_EVENT argument helper, writing the incoming task flow information
@@ -219,8 +195,8 @@ void TaskAnnotator::MaybeEmitIPCHashAndDelay(perfetto::EventContext& ctx,
   auto* annotator = event->set_chrome_task_annotator();
   annotator->set_ipc_hash(task.ipc_hash);
   if (!task.delayed_run_time.is_null()) {
-    annotator->set_task_delay_us(
-        (task.delayed_run_time - task.queue_time).InMicroseconds());
+    annotator->set_task_delay_us(static_cast<uint64_t>(
+        (task.delayed_run_time - task.queue_time).InMicroseconds()));
   }
 }
 #endif  //  BUILDFLAG(ENABLE_BASE_TRACING)
@@ -235,14 +211,6 @@ TaskAnnotator::ScopedSetIpcHash::ScopedSetIpcHash(
 TaskAnnotator::ScopedSetIpcHash::ScopedSetIpcHash(
     uint32_t ipc_hash,
     const char* ipc_interface_name) {
-  TRACE_EVENT_BEGIN(
-      "base", "ScopedSetIpcHash", [&](perfetto::EventContext ctx) {
-        auto* mojo_event = ctx.event()->set_chrome_mojo_event_info();
-        if (ipc_hash > 0)
-          mojo_event->set_ipc_hash(ipc_hash);
-        if (ipc_interface_name != nullptr)
-          mojo_event->set_mojo_interface_tag(ipc_interface_name);
-      });
   auto* tls_ipc_hash = GetTLSForCurrentScopedIpcHash();
   auto* current_ipc_hash = tls_ipc_hash->Get();
   old_scoped_ipc_hash_ = current_ipc_hash;
@@ -265,8 +233,7 @@ uint32_t TaskAnnotator::ScopedSetIpcHash::MD5HashMetricName(
 TaskAnnotator::ScopedSetIpcHash::~ScopedSetIpcHash() {
   auto* tls_ipc_hash = GetTLSForCurrentScopedIpcHash();
   DCHECK_EQ(this, tls_ipc_hash->Get());
-  tls_ipc_hash->Set(old_scoped_ipc_hash_);
-  TRACE_EVENT_END("base");
+  tls_ipc_hash->Set(old_scoped_ipc_hash_.get());
 }
 
 }  // namespace base

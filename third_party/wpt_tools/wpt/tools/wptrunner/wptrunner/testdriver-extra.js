@@ -244,4 +244,8 @@
     window.test_driver_internal.set_user_verified = function(authenticator_id, uv, context=null) {
         return create_action("set_user_verified", {authenticator_id, uv, context});
     };
+
+    window.test_driver_internal.set_spc_transaction_mode = function(mode, context = null) {
+        return create_action("set_spc_transaction_mode", {mode, context});
+    };
 })();

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -131,6 +131,8 @@ class VIEWS_EXPORT TableLayout : public LayoutManagerBase {
 
   TableLayout& SetMinimumSize(const gfx::Size& size);
 
+  TableLayout& SetIncludeHidden(bool include_hidden);
+
  protected:
   ProposedLayout CalculateProposedLayout(
       const SizeBounds& size_bounds) const override;
@@ -168,7 +170,8 @@ class VIEWS_EXPORT TableLayout : public LayoutManagerBase {
 
   // Calculates the preferred width of each view, as well as updating the
   // ViewStates' `remaining_width`.
-  void CalculateSize(SizeCalculationType type) const;
+  void CalculateSize(SizeCalculationType type,
+                     const std::vector<ViewState*>& view_states) const;
 
   // Distributes `delta` among the resizable columns.
   void Resize(int delta) const;
@@ -178,7 +181,8 @@ class VIEWS_EXPORT TableLayout : public LayoutManagerBase {
   // target width.
   void ResizeUsingMin(int delta) const;
 
-  // Only use the minimum size if all the columns the view is in are resizable.
+  // Only use the minimum size if any of the columns the view is in
+  // is resizable. Fixed columns will retain their fixed width.
   bool CanUseMinimum(const ViewState& view_state) const;
 
   // Columns.
@@ -199,6 +203,9 @@ class VIEWS_EXPORT TableLayout : public LayoutManagerBase {
 
   // ViewStates sorted based on column_span in ascending order.
   mutable std::vector<ViewState*> view_states_by_col_span_;
+
+  // Indicates whether hidden views are included.
+  bool include_hidden_ = false;
 };
 
 }  // namespace views

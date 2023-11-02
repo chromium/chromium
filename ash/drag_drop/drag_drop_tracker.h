@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -46,14 +46,13 @@ class ASH_EXPORT DragDropTracker {
 
   // Converts the locations of |event| in the coordinates of the active root
   // window to the ones in |target|'s coordinates.
-  // Caller takes ownership of the returned object.
-  ui::LocatedEvent* ConvertEvent(aura::Window* target,
-                                 const ui::LocatedEvent& event);
+  std::unique_ptr<ui::LocatedEvent> ConvertEvent(aura::Window* target,
+                                                 const ui::LocatedEvent& event);
 
  private:
+  std::unique_ptr<ash::DragDropTrackerDelegate> tracker_window_delegate_;
   // A window for capturing drag events while dragging.
   std::unique_ptr<aura::Window> capture_window_;
-  ash::DragDropTrackerDelegate* tracker_window_delegate_;
 };
 
 }  // namespace ash

@@ -26,7 +26,6 @@ Kung mayroon nang check ang '<ph name="SERVICE_SCRIPT_NAME" />,' i-uncheck ito a
 <translation id="225614027745146050">Maligayang pagdating</translation>
 <translation id="2320166752086256636">Itago ang keyboard</translation>
 <translation id="2329392777730037872">Hindi nabuksan ang <ph name="URL" /> sa client.</translation>
-<translation id="2333212046079545895">Copyright 2021 Google LLC. Nakalaan ang Lahat ng Karapatan.</translation>
 <translation id="2359808026110333948">Magpatuloy</translation>
 <translation id="2366718077645204424">Hindi maabot ang host. Malamang na dahil ito sa configuration ng network na iyong ginagamit.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  Huling nakitang naka-online noong <ph name="RELATIVE_TIMESTAMP" />.</translation>
@@ -37,6 +36,7 @@ Kung mayroon nang check ang '<ph name="SERVICE_SCRIPT_NAME" />,' i-uncheck ito a
 <translation id="2599300881200251572">Ini-enable ng serbisyong ito ang mga papasok na koneksyon mula sa mga client ng Remote na Desktop ng Chrome.</translation>
 <translation id="2647232381348739934">Serbisyo ng Chromoting</translation>
 <translation id="2676780859508944670">Isinasagawa…</translation>
+<translation id="2692522824157224199">Copyright 2022 Google LLC. Nakalaan ang Lahat ng Karapatan.</translation>
 <translation id="2699970397166997657">Chromoting</translation>
 <translation id="2758123043070977469">Nagkaisyu sa pag-authenticate, mag-log in muli.</translation>
 <translation id="2803375539583399270">Ilagay ang PIN</translation>
@@ -73,10 +73,10 @@ Kung mayroon nang check ang '<ph name="SERVICE_SCRIPT_NAME" />,' i-uncheck ito a
 <translation id="4257751272692708833">Forwarder ng URL ng <ph name="PRODUCT_NAME" /></translation>
 <translation id="4277736576214464567">Di-wasto ang access code. Pakisubukang muli.</translation>
 <translation id="4281844954008187215">Mga Tuntunin ng Serbisyo</translation>
+<translation id="4372650392690220936">Copyright 2022 Ang Mga Gumawa ng Chromium. Nakalaan ang Lahat ng Karapatan.</translation>
 <translation id="4405930547258349619">Pangunahing Library</translation>
 <translation id="443560535555262820">Buksan ang Mga Kagustuhan sa Accessibility</translation>
 <translation id="4450893287417543264">Huwag ipakitang muli</translation>
-<translation id="4512952200932940229">Copyright 2021 Ang Mga May-akda ng Chromium. Nakalaan ang Lahat ng Karapatan.</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="4563926062592110512">Naputol ang koneksyon ng client: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="4618411825115957973">Hindi naka-configure nang tama ang <ph name="URL_FORWARDER_NAME" />. Pumili ng ibang default na web browser at pagkatapos ay i-enable ulit ang pag-forward ng URL.</translation>

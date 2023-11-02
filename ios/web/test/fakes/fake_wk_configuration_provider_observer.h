@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,7 +23,7 @@ class FakeWKConfigurationProviderObserver
   void ResetLastCreatedWKConfig();
 
  private:
-  // Sets the |last_created_wk_config| with |new_config|.
+  // Sets the `last_created_wk_config` with `new_config`.
   void DidCreateNewConfiguration(
       WKWebViewConfigurationProvider* config_provider,
       WKWebViewConfiguration* new_config) override;

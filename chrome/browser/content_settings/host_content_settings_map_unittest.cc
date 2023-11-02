@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/content_settings/mock_settings_observer.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/client_hints/common/client_hints.h"
 #include "components/content_settings/core/browser/content_settings_pref_provider.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
@@ -30,7 +32,9 @@
 #include "components/content_settings/core/browser/user_modifiable_provider.h"
 #include "components/content_settings/core/browser/website_settings_info.h"
 #include "components/content_settings/core/browser/website_settings_registry.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/content_settings/core/test/content_settings_test_utils.h"
@@ -43,6 +47,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+using QueryReason = content_settings::CookieSettings::QueryReason;
 using ::testing::_;
 using ::testing::MockFunction;
 using ::testing::Return;
@@ -55,6 +60,14 @@ bool MatchPrimaryPattern(const ContentSettingsPattern& expected_primary,
   return expected_primary == primary_pattern;
 }
 
+base::Time GetSettingLastModifiedDate(HostContentSettingsMap* map,
+                                      GURL primary_url,
+                                      GURL secondary_url,
+                                      ContentSettingsType type) {
+  content_settings::SettingInfo info;
+  map->GetWebsiteSetting(primary_url, secondary_url, type, &info);
+  return info.metadata.last_modified;
+}
 }  // namespace
 
 class MockUserModifiableProvider
@@ -70,17 +83,17 @@ class MockUserModifiableProvider
                bool(const ContentSettingsPattern&,
                     const ContentSettingsPattern&,
                     ContentSettingsType,
-                    std::unique_ptr<base::Value>&&,
+                    base::Value&&,
                     const content_settings::ContentSettingConstraints&));
 
   MOCK_METHOD1(ClearAllContentSettingsRules, void(ContentSettingsType));
 
   MOCK_METHOD0(ShutdownOnUIThread, void());
 
-  MOCK_METHOD3(GetWebsiteSettingLastModified,
-               base::Time(const ContentSettingsPattern&,
-                          const ContentSettingsPattern&,
-                          ContentSettingsType));
+  MOCK_METHOD3(UpdateLastVisitTime,
+               bool(const ContentSettingsPattern& primary_pattern,
+                    const ContentSettingsPattern& secondary_pattern,
+                    ContentSettingsType content_type));
 
   MOCK_METHOD1(SetClockForTesting, void(base::Clock*));
 };
@@ -155,15 +168,14 @@ class TesterForType {
       const std::string& url_str) {
     GURL url(url_str);
     content_settings::SettingInfo setting_info;
-    std::unique_ptr<base::Value> result =
-        host_content_settings_map_->GetWebsiteSetting(url, url, content_type_,
-                                                      &setting_info);
+    base::Value result = host_content_settings_map_->GetWebsiteSetting(
+        url, url, content_type_, &setting_info);
     return setting_info.source;
   }
 
  private:
-  sync_preferences::TestingPrefServiceSyncable* prefs_;
-  HostContentSettingsMap* host_content_settings_map_;
+  raw_ptr<sync_preferences::TestingPrefServiceSyncable> prefs_;
+  raw_ptr<HostContentSettingsMap> host_content_settings_map_;
   ContentSettingsType content_type_;
   const char* policy_default_setting_;
 };
@@ -264,17 +276,14 @@ TEST_F(HostContentSettingsMapTest, GetWebsiteSettingsForOneType) {
   EXPECT_EQ(0U, client_hints_settings.size());
 
   // Add setting for hosts[0].
-  base::Value expiration_time((base::Time::Now() + base::Days(1)).ToDoubleT());
   base::Value client_hint_value(42);
 
-  base::Value expiration_times_dictionary(base::Value::Type::DICTIONARY);
-  expiration_times_dictionary.SetKey("client_hints",
-                                     {std::move(client_hint_value)});
-  expiration_times_dictionary.SetKey("expiration_time",
-                                     std::move(expiration_time));
+  base::Value client_hints_dictionary(base::Value::Type::DICTIONARY);
+  client_hints_dictionary.SetKey(client_hints::kClientHintsSettingKey,
+                                 {std::move(client_hint_value)});
   host_content_settings_map->SetWebsiteSettingDefaultScope(
       hosts[0], GURL(), ContentSettingsType::CLIENT_HINTS,
-      base::Value::ToUniquePtrValue(expiration_times_dictionary.Clone()));
+      client_hints_dictionary.Clone());
 
   // Reading the settings should now return one setting.
   host_content_settings_map->GetSettingsForOneType(
@@ -285,14 +294,14 @@ TEST_F(HostContentSettingsMapTest, GetWebsiteSettingsForOneType) {
               client_hints_settings.at(i).primary_pattern);
     EXPECT_EQ(ContentSettingsPattern::Wildcard(),
               client_hints_settings.at(i).secondary_pattern);
-    EXPECT_EQ(expiration_times_dictionary,
+    EXPECT_EQ(client_hints_dictionary,
               client_hints_settings.at(i).setting_value);
   }
 
   // Add setting for hosts[1].
   host_content_settings_map->SetWebsiteSettingDefaultScope(
       hosts[1], GURL(), ContentSettingsType::CLIENT_HINTS,
-      base::Value::ToUniquePtrValue(expiration_times_dictionary.Clone()));
+      client_hints_dictionary.Clone());
 
   // Reading the settings should now return two settings.
   host_content_settings_map->GetSettingsForOneType(
@@ -303,14 +312,14 @@ TEST_F(HostContentSettingsMapTest, GetWebsiteSettingsForOneType) {
               client_hints_settings.at(i).primary_pattern);
     EXPECT_EQ(ContentSettingsPattern::Wildcard(),
               client_hints_settings.at(i).secondary_pattern);
-    EXPECT_EQ(expiration_times_dictionary,
+    EXPECT_EQ(client_hints_dictionary,
               client_hints_settings.at(i).setting_value);
   }
 
   // Add settings again for hosts[0].
   host_content_settings_map->SetWebsiteSettingDefaultScope(
       hosts[0], GURL(), ContentSettingsType::CLIENT_HINTS,
-      base::Value::ToUniquePtrValue(expiration_times_dictionary.Clone()));
+      client_hints_dictionary.Clone());
 
   // Reading the settings should still return two settings.
   host_content_settings_map->GetSettingsForOneType(
@@ -321,7 +330,7 @@ TEST_F(HostContentSettingsMapTest, GetWebsiteSettingsForOneType) {
               client_hints_settings.at(i).primary_pattern);
     EXPECT_EQ(ContentSettingsPattern::Wildcard(),
               client_hints_settings.at(i).secondary_pattern);
-    EXPECT_EQ(expiration_times_dictionary,
+    EXPECT_EQ(client_hints_dictionary,
               client_hints_settings.at(i).setting_value);
   }
 }
@@ -532,18 +541,18 @@ TEST_F(HostContentSettingsMapTest, HostTrimEndingDotCheck) {
 
   GURL host_ending_with_dot("http://example.com./");
 
-  EXPECT_TRUE(cookie_settings->IsFullCookieAccessAllowed(host_ending_with_dot,
-                                                         host_ending_with_dot));
+  EXPECT_TRUE(cookie_settings->IsFullCookieAccessAllowed(
+      host_ending_with_dot, host_ending_with_dot, QueryReason::kSetting));
   host_content_settings_map->SetContentSettingDefaultScope(
       host_ending_with_dot, GURL(), ContentSettingsType::COOKIES,
       CONTENT_SETTING_DEFAULT);
-  EXPECT_TRUE(cookie_settings->IsFullCookieAccessAllowed(host_ending_with_dot,
-                                                         host_ending_with_dot));
+  EXPECT_TRUE(cookie_settings->IsFullCookieAccessAllowed(
+      host_ending_with_dot, host_ending_with_dot, QueryReason::kSetting));
   host_content_settings_map->SetContentSettingDefaultScope(
       host_ending_with_dot, GURL(), ContentSettingsType::COOKIES,
       CONTENT_SETTING_BLOCK);
   EXPECT_FALSE(cookie_settings->IsFullCookieAccessAllowed(
-      host_ending_with_dot, host_ending_with_dot));
+      host_ending_with_dot, host_ending_with_dot, QueryReason::kSetting));
 
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             host_content_settings_map->GetContentSetting(
@@ -724,7 +733,7 @@ TEST_F(HostContentSettingsMapTest, IncognitoInheritInitialAllow) {
     ASSERT_EQ(1u, otr_settings.size());
     EXPECT_FALSE(otr_settings[0].incognito);
     EXPECT_EQ(CONTENT_SETTING_ALLOW, content_settings::ValueToContentSetting(
-                                         &otr_settings[0].setting_value));
+                                         otr_settings[0].setting_value));
   }
 
   // Changing content settings on the main map should also affect the
@@ -744,12 +753,12 @@ TEST_F(HostContentSettingsMapTest, IncognitoInheritInitialAllow) {
     otr_map->GetSettingsForOneType(ContentSettingsType::COOKIES, &otr_settings);
     ASSERT_EQ(2u, otr_settings.size());
     EXPECT_FALSE(otr_settings[0].incognito);
-    EXPECT_EQ(CONTENT_SETTING_SESSION_ONLY,
-              content_settings::ValueToContentSetting(
-                  &otr_settings[0].setting_value));
+    EXPECT_EQ(
+        CONTENT_SETTING_SESSION_ONLY,
+        content_settings::ValueToContentSetting(otr_settings[0].setting_value));
     EXPECT_FALSE(otr_settings[1].incognito);
     EXPECT_EQ(CONTENT_SETTING_ALLOW, content_settings::ValueToContentSetting(
-                                         &otr_settings[1].setting_value));
+                                         otr_settings[1].setting_value));
   }
 
   host_content_settings_map->SetContentSettingDefaultScope(
@@ -780,13 +789,13 @@ TEST_F(HostContentSettingsMapTest, IncognitoInheritInitialAllow) {
     ASSERT_EQ(3u, otr_settings.size());
     EXPECT_TRUE(otr_settings[0].incognito);
     EXPECT_EQ(CONTENT_SETTING_ALLOW, content_settings::ValueToContentSetting(
-                                         &otr_settings[0].setting_value));
+                                         otr_settings[0].setting_value));
     EXPECT_FALSE(otr_settings[1].incognito);
     EXPECT_EQ(CONTENT_SETTING_BLOCK, content_settings::ValueToContentSetting(
-                                         &otr_settings[1].setting_value));
+                                         otr_settings[1].setting_value));
     EXPECT_FALSE(otr_settings[2].incognito);
     EXPECT_EQ(CONTENT_SETTING_ALLOW, content_settings::ValueToContentSetting(
-                                         &otr_settings[2].setting_value));
+                                         otr_settings[2].setting_value));
   }
 }
 
@@ -863,7 +872,7 @@ TEST_F(HostContentSettingsMapTest, IncognitoPartialInheritPref) {
     ASSERT_EQ(1u, otr_settings.size());
     EXPECT_FALSE(otr_settings[0].incognito);
     EXPECT_EQ(CONTENT_SETTING_ASK, content_settings::ValueToContentSetting(
-                                       &otr_settings[0].setting_value));
+                                       otr_settings[0].setting_value));
   }
 
   // BLOCK should be inherited from the main map to the incognito map.
@@ -885,11 +894,11 @@ TEST_F(HostContentSettingsMapTest, IncognitoPartialInheritPref) {
     ASSERT_EQ(2u, otr_settings.size());
     EXPECT_FALSE(otr_settings[0].incognito);
     EXPECT_EQ(CONTENT_SETTING_BLOCK, content_settings::ValueToContentSetting(
-                                         &otr_settings[0].setting_value));
+                                         otr_settings[0].setting_value));
 
     EXPECT_FALSE(otr_settings[1].incognito);
     EXPECT_EQ(CONTENT_SETTING_ASK, content_settings::ValueToContentSetting(
-                                       &otr_settings[1].setting_value));
+                                       otr_settings[1].setting_value));
   }
 
   // ALLOW should not be inherited from the main map to the incognito map (but
@@ -913,11 +922,11 @@ TEST_F(HostContentSettingsMapTest, IncognitoPartialInheritPref) {
     ASSERT_EQ(2u, otr_settings.size());
     EXPECT_FALSE(otr_settings[0].incognito);
     EXPECT_EQ(CONTENT_SETTING_ASK, content_settings::ValueToContentSetting(
-                                       &otr_settings[0].setting_value));
+                                       otr_settings[0].setting_value));
 
     EXPECT_FALSE(otr_settings[1].incognito);
     EXPECT_EQ(CONTENT_SETTING_ASK, content_settings::ValueToContentSetting(
-                                       &otr_settings[1].setting_value));
+                                       otr_settings[1].setting_value));
   }
 }
 
@@ -997,25 +1006,23 @@ TEST_F(HostContentSettingsMapTest, IncognitoDontInheritSetting) {
   GURL host("http://example.com/");
 
   // USB chooser data defaults to |nullptr|.
-  EXPECT_EQ(nullptr,
+  EXPECT_EQ(base::Value(),
             host_content_settings_map->GetWebsiteSetting(
                 host, host, ContentSettingsType::USB_CHOOSER_DATA, nullptr));
-  EXPECT_EQ(nullptr,
+  EXPECT_EQ(base::Value(),
             otr_map->GetWebsiteSetting(
                 host, host, ContentSettingsType::USB_CHOOSER_DATA, nullptr));
 
   base::Value test_value(base::Value::Type::DICTIONARY);
   test_value.SetKey("test", base::Value("value"));
   host_content_settings_map->SetWebsiteSettingDefaultScope(
-      host, host, ContentSettingsType::USB_CHOOSER_DATA,
-      base::Value::ToUniquePtrValue(test_value.Clone()));
+      host, host, ContentSettingsType::USB_CHOOSER_DATA, test_value.Clone());
 
   // The setting is not inherted by |otr_map|.
-  std::unique_ptr<base::Value> stored_value =
-      host_content_settings_map->GetWebsiteSetting(
-          host, host, ContentSettingsType::USB_CHOOSER_DATA, nullptr);
-  EXPECT_TRUE(stored_value && stored_value->Equals(&test_value));
-  EXPECT_EQ(nullptr,
+  base::Value stored_value = host_content_settings_map->GetWebsiteSetting(
+      host, host, ContentSettingsType::USB_CHOOSER_DATA, nullptr);
+  EXPECT_EQ(stored_value, test_value);
+  EXPECT_EQ(base::Value(),
             otr_map->GetWebsiteSetting(
                 host, host, ContentSettingsType::USB_CHOOSER_DATA, nullptr));
   {
@@ -1090,23 +1097,22 @@ TEST_F(HostContentSettingsMapTest, CanonicalizeExceptionsUnicodeOnly) {
 
   // Set utf-8 data.
   {
-    DictionaryPrefUpdate update(prefs,
+    ScopedDictPrefUpdate update(prefs,
                                 GetPrefName(ContentSettingsType::COOKIES));
-    base::Value* all_settings_dictionary = update.Get();
-    ASSERT_TRUE(all_settings_dictionary);
+    base::Value::Dict& all_settings_dictionary = update.Get();
 
-    base::Value dummy_payload(base::Value::Type::DICTIONARY);
-    dummy_payload.SetKey("setting", base::Value(CONTENT_SETTING_ALLOW));
-    all_settings_dictionary->SetKey("[*.]\xC4\x87ira.com,*",
-                                    std::move(dummy_payload));
+    base::Value::Dict dummy_payload;
+    dummy_payload.Set("setting", CONTENT_SETTING_ALLOW);
+    all_settings_dictionary.Set("[*.]\xC4\x87ira.com,*",
+                                std::move(dummy_payload));
   }
 
   HostContentSettingsMapFactory::GetForProfile(&profile);
 
-  const base::Value* all_settings_dictionary =
-      prefs->Get(GetPrefName(ContentSettingsType::COOKIES));
-  EXPECT_FALSE(all_settings_dictionary->FindDictKey("[*.]\xC4\x87ira.com,*"));
-  EXPECT_TRUE(all_settings_dictionary->FindDictKey("[*.]xn--ira-ppa.com,*"));
+  const base::Value::Dict& all_settings_dictionary =
+      prefs->GetDict(GetPrefName(ContentSettingsType::COOKIES));
+  EXPECT_FALSE(all_settings_dictionary.FindDict("[*.]\xC4\x87ira.com,*"));
+  EXPECT_TRUE(all_settings_dictionary.FindDict("[*.]xn--ira-ppa.com,*"));
 }
 
 // If both Unicode and its punycode pattern exist, make sure we don't touch the
@@ -1114,23 +1120,25 @@ TEST_F(HostContentSettingsMapTest, CanonicalizeExceptionsUnicodeOnly) {
 TEST_F(HostContentSettingsMapTest, CanonicalizeExceptionsUnicodeAndPunycode) {
   TestingProfile profile;
 
-  std::unique_ptr<base::Value> value = base::JSONReader::ReadDeprecated(
-      "{\"[*.]\\xC4\\x87ira.com,*\":{\"setting\":1}}");
-  profile.GetPrefs()->Set(GetPrefName(ContentSettingsType::COOKIES), *value);
+  base::Value value =
+      base::JSONReader::Read("{\"[*.]\\xC4\\x87ira.com,*\":{\"setting\":1}}")
+          .value();
+  profile.GetPrefs()->Set(GetPrefName(ContentSettingsType::COOKIES), value);
 
   // Set punycode equivalent, with different setting.
-  std::unique_ptr<base::Value> puny_value = base::JSONReader::ReadDeprecated(
-      "{\"[*.]xn--ira-ppa.com,*\":{\"setting\":2}}");
+  base::Value puny_value =
+      base::JSONReader::Read("{\"[*.]xn--ira-ppa.com,*\":{\"setting\":2}}")
+          .value();
   profile.GetPrefs()->Set(GetPrefName(ContentSettingsType::COOKIES),
-                          *puny_value);
+                          puny_value);
 
   // Initialize the content map.
   HostContentSettingsMapFactory::GetForProfile(&profile);
 
-  const base::Value* content_setting_prefs =
-      profile.GetPrefs()->Get(GetPrefName(ContentSettingsType::COOKIES));
+  const base::Value& content_setting_prefs =
+      profile.GetPrefs()->GetValue(GetPrefName(ContentSettingsType::COOKIES));
   std::string prefs_as_json;
-  base::JSONWriter::Write(*content_setting_prefs, &prefs_as_json);
+  base::JSONWriter::Write(content_setting_prefs, &prefs_as_json);
   EXPECT_STREQ("{\"[*.]xn--ira-ppa.com,*\":{\"setting\":2}}",
                prefs_as_json.c_str());
 }
@@ -1348,7 +1356,7 @@ TEST_F(HostContentSettingsMapTest, AddContentSettingsObserver) {
 }
 
 // Guest profiles do not exist on Android, so don't run these tests there.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(HostContentSettingsMapTest, GuestProfile) {
   TestingProfile::Builder profile_builder;
   profile_builder.SetGuestSession();
@@ -1372,9 +1380,9 @@ TEST_F(HostContentSettingsMapTest, GuestProfile) {
             host_content_settings_map->GetContentSetting(
                 host, host, ContentSettingsType::COOKIES));
 
-  const base::Value* all_settings_dictionary =
-      profile->GetPrefs()->Get(GetPrefName(ContentSettingsType::COOKIES));
-  EXPECT_TRUE(all_settings_dictionary->DictEmpty());
+  const base::Value::Dict& all_settings_dictionary =
+      profile->GetPrefs()->GetDict(GetPrefName(ContentSettingsType::COOKIES));
+  EXPECT_TRUE(all_settings_dictionary.empty());
 }
 
 // Default settings should not be modifiable for Guest profile (there is no UI
@@ -1401,7 +1409,7 @@ TEST_F(HostContentSettingsMapTest, GuestProfileDefaultSetting) {
                   host, host, ContentSettingsType::COOKIES));
 }
 
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(HostContentSettingsMapTest, InvalidPattern) {
   // This is a regression test for crbug.com/618529, which fixed a memory leak
@@ -1415,10 +1423,10 @@ TEST_F(HostContentSettingsMapTest, InvalidPattern) {
   test_value.SetKey("test", base::Value("value"));
   host_content_settings_map->SetWebsiteSettingDefaultScope(
       unsupported_url, unsupported_url, ContentSettingsType::APP_BANNER,
-      base::Value::ToUniquePtrValue(std::move(test_value)));
-  EXPECT_EQ(nullptr, host_content_settings_map->GetWebsiteSetting(
-                         unsupported_url, unsupported_url,
-                         ContentSettingsType::APP_BANNER, nullptr));
+      std::move(test_value));
+  EXPECT_EQ(base::Value(), host_content_settings_map->GetWebsiteSetting(
+                               unsupported_url, unsupported_url,
+                               ContentSettingsType::APP_BANNER, nullptr));
 }
 
 TEST_F(HostContentSettingsMapTest, ClearSettingsForOneTypeWithPredicate) {
@@ -1448,8 +1456,8 @@ TEST_F(HostContentSettingsMapTest, ClearSettingsForOneTypeWithPredicate) {
   host_content_settings_map->SetWebsiteSettingCustomScope(
       pattern2, ContentSettingsPattern::Wildcard(),
       ContentSettingsType::APP_BANNER,
-      base::Value::ToUniquePtrValue(
-          base::Value(base::Value::Type::DICTIONARY)));
+
+      base::Value(base::Value::Type::DICTIONARY));
 
   // First, test that we clear only COOKIES (not APP_BANNER), and pattern2.
   host_content_settings_map->ClearSettingsForOneTypeWithPredicate(
@@ -1479,17 +1487,14 @@ TEST_F(HostContentSettingsMapTest, ClearSettingsForOneTypeWithPredicate) {
   // Add settings.
   host_content_settings_map->SetWebsiteSettingDefaultScope(
       url1, GURL(), ContentSettingsType::SITE_ENGAGEMENT,
-      base::Value::ToUniquePtrValue(
-          base::Value(base::Value::Type::DICTIONARY)));
+      base::Value(base::Value::Type::DICTIONARY));
   // This setting should override the one above, as it's the same origin.
   host_content_settings_map->SetWebsiteSettingDefaultScope(
       url2, GURL(), ContentSettingsType::SITE_ENGAGEMENT,
-      base::Value::ToUniquePtrValue(
-          base::Value(base::Value::Type::DICTIONARY)));
+      base::Value(base::Value::Type::DICTIONARY));
   host_content_settings_map->SetWebsiteSettingDefaultScope(
       url3, GURL(), ContentSettingsType::SITE_ENGAGEMENT,
-      base::Value::ToUniquePtrValue(
-          base::Value(base::Value::Type::DICTIONARY)));
+      base::Value(base::Value::Type::DICTIONARY));
   // Verify we only have two.
   host_content_settings_map->GetSettingsForOneType(
       ContentSettingsType::SITE_ENGAGEMENT, &host_settings);
@@ -1595,19 +1600,16 @@ TEST_F(HostContentSettingsMapTest, GetSettingLastModified) {
   ContentSettingsForOneType host_settings;
 
   GURL url("https://www.google.com/");
-  ContentSettingsPattern pattern =
-      ContentSettingsPattern::FromURLNoWildcard(url);
 
-  // Last modified date for non existant settings should be base::Time().
-  base::Time t = map->GetSettingLastModifiedDate(
-      pattern, ContentSettingsPattern::Wildcard(), ContentSettingsType::POPUPS);
+  // Last modified date for non existent settings should be base::Time().
+  base::Time t =
+      GetSettingLastModifiedDate(map, url, url, ContentSettingsType::POPUPS);
   EXPECT_EQ(base::Time(), t);
 
   // Add setting for url.
   map->SetContentSettingDefaultScope(url, GURL(), ContentSettingsType::POPUPS,
                                      CONTENT_SETTING_BLOCK);
-  t = map->GetSettingLastModifiedDate(
-      pattern, ContentSettingsPattern::Wildcard(), ContentSettingsType::POPUPS);
+  t = GetSettingLastModifiedDate(map, url, url, ContentSettingsType::POPUPS);
   EXPECT_EQ(t, test_clock.Now());
 
   test_clock.Advance(base::Seconds(1));
@@ -1615,65 +1617,8 @@ TEST_F(HostContentSettingsMapTest, GetSettingLastModified) {
   map->SetContentSettingDefaultScope(url, GURL(), ContentSettingsType::POPUPS,
                                      CONTENT_SETTING_ALLOW);
 
-  t = map->GetSettingLastModifiedDate(
-      pattern, ContentSettingsPattern::Wildcard(), ContentSettingsType::POPUPS);
+  t = GetSettingLastModifiedDate(map, url, url, ContentSettingsType::POPUPS);
   EXPECT_EQ(t, test_clock.Now());
-}
-
-TEST_F(HostContentSettingsMapTest, LastModifiedMultipleModifiableProviders) {
-  TestingProfile profile;
-  auto* map = HostContentSettingsMapFactory::GetForProfile(&profile);
-  GURL url("https://www.google.com/");
-  ContentSettingsPattern pattern =
-      ContentSettingsPattern::FromURLNoWildcard(url);
-
-  base::Time t1 = base::Time::Now();
-  auto test_clock = std::make_unique<base::SimpleTestClock>();
-  test_clock->SetNow(t1);
-
-  base::SimpleTestClock* clock = test_clock.get();
-  clock->Advance(base::Seconds(1));
-  base::Time t2 = clock->Now();
-
-  // Register a provider which reports a modification time of t1.
-  std::unique_ptr<MockUserModifiableProvider> provider =
-      std::make_unique<MockUserModifiableProvider>();
-  EXPECT_CALL(*provider, GetWebsiteSettingLastModified(
-                             _, _, ContentSettingsType::NOTIFICATIONS))
-      .WillOnce(Return(t1));
-  MockUserModifiableProvider* weak_provider = provider.get();
-  map->RegisterUserModifiableProvider(
-      HostContentSettingsMap::PROVIDER_FOR_TESTS, std::move(provider));
-
-  // Register another provider which reports a modification time of t2.
-  std::unique_ptr<MockUserModifiableProvider> other_provider =
-      std::make_unique<MockUserModifiableProvider>();
-  EXPECT_CALL(*other_provider, GetWebsiteSettingLastModified(
-                                   _, _, ContentSettingsType::NOTIFICATIONS))
-      .WillRepeatedly(Return(t2));
-  MockUserModifiableProvider* weak_other_provider = other_provider.get();
-  map->RegisterUserModifiableProvider(
-      HostContentSettingsMap::OTHER_PROVIDER_FOR_TESTS,
-      std::move(other_provider));
-
-  // Expect the more recent modification time to be reported.
-  EXPECT_EQ(t2, map->GetSettingLastModifiedDate(
-                    pattern, ContentSettingsPattern::Wildcard(),
-                    ContentSettingsType::NOTIFICATIONS));
-
-  // Now have original provider report a more recent modification time.
-  clock->Advance(base::Seconds(1));
-  base::Time t3 = clock->Now();
-  EXPECT_CALL(*weak_provider, GetWebsiteSettingLastModified(
-                                  _, _, ContentSettingsType::NOTIFICATIONS))
-      .WillOnce(Return(t3));
-
-  // Expect the timestamp from the registered provider to be reported now.
-  EXPECT_EQ(t3, map->GetSettingLastModifiedDate(
-                    pattern, ContentSettingsPattern::Wildcard(),
-                    ContentSettingsType::NOTIFICATIONS));
-  weak_provider->RemoveObserver(map);
-  weak_other_provider->RemoveObserver(map);
 }
 
 TEST_F(HostContentSettingsMapTest, IsRestrictedToSecureOrigins) {
@@ -1815,7 +1760,8 @@ TEST_F(HostContentSettingsMapTest, GetPatternsFromScopingType) {
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(&profile);
 
-  // Testing case: WebsiteSettingsInfo::REQUESTING_DOMAIN_ONLY_SCOPE.
+  // Testing case:
+  //   WebsiteSettingsInfo::REQUESTING_ORIGIN_WITH_TOP_ORIGIN_EXCEPTIONS_SCOPE.
   host_content_settings_map->SetContentSettingDefaultScope(
       primary_url, secondary_url, ContentSettingsType::COOKIES,
       CONTENT_SETTING_ALLOW);
@@ -1829,35 +1775,11 @@ TEST_F(HostContentSettingsMapTest, GetPatternsFromScopingType) {
             ContentSettingsPattern::FromURL(primary_url));
   EXPECT_EQ(settings[0].secondary_pattern, ContentSettingsPattern::Wildcard());
 
-  // Testing case: WebsiteSettingsInfo::TOP_LEVEL_ORIGIN_ONLY_SCOPE.
-  host_content_settings_map->SetContentSettingDefaultScope(
-      primary_url, secondary_url, ContentSettingsType::JAVASCRIPT,
-      CONTENT_SETTING_ALLOW);
-
-  host_content_settings_map->GetSettingsForOneType(
-      ContentSettingsType::JAVASCRIPT, &settings);
-
-  EXPECT_EQ(settings[0].primary_pattern,
-            ContentSettingsPattern::FromURLNoWildcard(primary_url));
-  EXPECT_EQ(settings[0].secondary_pattern, ContentSettingsPattern::Wildcard());
-
-  // Testing case: WebsiteSettingsInfo::REQUESTING_ORIGIN_ONLY_SCOPE.
-  host_content_settings_map->SetContentSettingDefaultScope(
-      primary_url, secondary_url, ContentSettingsType::NOTIFICATIONS,
-      CONTENT_SETTING_ALLOW);
-
-  host_content_settings_map->GetSettingsForOneType(
-      ContentSettingsType::NOTIFICATIONS, &settings);
-
-  EXPECT_EQ(settings[0].primary_pattern,
-            ContentSettingsPattern::FromURLNoWildcard(primary_url));
-  EXPECT_EQ(settings[0].secondary_pattern, ContentSettingsPattern::Wildcard());
-
-  // Testing case:
-  // WebsiteSettingsInfo::REQUESTING_ORIGIN_AND_TOP_LEVEL_ORIGIN_SCOPE.
+  // Testing cases:
+  //   WebsiteSettingsInfo::REQUESTING_AND_TOP_ORIGIN_SCOPE,
   host_content_settings_map->SetContentSettingDefaultScope(
       primary_url, secondary_url, ContentSettingsType::STORAGE_ACCESS,
-      CONTENT_SETTING_ASK);
+      CONTENT_SETTING_ALLOW);
 
   host_content_settings_map->GetSettingsForOneType(
       ContentSettingsType::STORAGE_ACCESS, &settings);
@@ -1866,6 +1788,27 @@ TEST_F(HostContentSettingsMapTest, GetPatternsFromScopingType) {
             ContentSettingsPattern::FromURLNoWildcard(primary_url));
   EXPECT_EQ(settings[0].secondary_pattern,
             ContentSettingsPattern::FromURLNoWildcard(secondary_url));
+
+  // Testing cases:
+  //   WebsiteSettingsInfo::TOP_ORIGIN_WITH_RESOURCE_EXCEPTIONS_SCOPE,
+  //   WebsiteSettingsInfo::REQUESTING_ORIGIN_ONLY_SCOPE,
+  //   WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE,
+  //   WebsiteSettingsInfo::GENERIC_SINGLE_ORIGIN_SCOPE.
+  for (const auto& kContentSetting :
+       {ContentSettingsType::JAVASCRIPT, ContentSettingsType::NOTIFICATIONS,
+        ContentSettingsType::GEOLOCATION,
+        ContentSettingsType::FEDERATED_IDENTITY_API}) {
+    host_content_settings_map->SetContentSettingDefaultScope(
+        primary_url, secondary_url, kContentSetting, CONTENT_SETTING_ALLOW);
+
+    host_content_settings_map->GetSettingsForOneType(kContentSetting,
+                                                     &settings);
+
+    EXPECT_EQ(settings[0].primary_pattern,
+              ContentSettingsPattern::FromURLNoWildcard(primary_url));
+    EXPECT_EQ(settings[0].secondary_pattern,
+              ContentSettingsPattern::Wildcard());
+  }
 }
 
 // Tests if changing a settings in incognito mode does not affects the regular
@@ -1887,20 +1830,20 @@ TEST_F(HostContentSettingsMapTest, IncognitoChangesDoNotPersist) {
     SCOPED_TRACE(info->name());
 
     // Get regular profile default value.
-    std::unique_ptr<base::Value> original_value =
+    base::Value original_value =
         regular_map->GetWebsiteSetting(url, url, info->type(), &setting_info);
     // Get a different valid value for incognito mode.
     base::Value new_value;
     if (content_setting_registry->Get(info->type())) {
       // If no original value is available, the settings does not have any valid
       // values and no more steps are required.
-      if (!original_value || !original_value->is_int())
+      if (!original_value.is_int())
         continue;
 
       for (int another_value = 0;
            another_value < ContentSetting::CONTENT_SETTING_NUM_SETTINGS;
            another_value++) {
-        if (another_value != original_value->GetInt() &&
+        if (another_value != original_value.GetInt() &&
             content_setting_registry->Get(info->type())
                 ->IsSettingValid(static_cast<ContentSetting>(another_value))) {
           new_value = base::Value(another_value);
@@ -1913,29 +1856,23 @@ TEST_F(HostContentSettingsMapTest, IncognitoChangesDoNotPersist) {
       new_value = base::Value(base::Value::Type::DICTIONARY);
       new_value.SetIntPath("foo.bar", 0);
     }
-    // Ensure a different value is received (|original_value| can be null for
-    // website settings).
-    DCHECK(!original_value || *original_value != new_value);
+    // Ensure a different value is received.
+    ASSERT_NE(original_value, new_value);
 
     // Set the different value in incognito mode.
     base::Value incognito_value = new_value.Clone();
     incognito_map->SetWebsiteSettingCustomScope(
         pattern, ContentSettingsPattern::Wildcard(), info->type(),
-        base::Value::ToUniquePtrValue(std::move(new_value)));
+        std::move(new_value));
 
     // Ensure incognito mode value is changed.
-    EXPECT_EQ(incognito_value, *incognito_map->GetWebsiteSetting(
+    EXPECT_EQ(incognito_value, incognito_map->GetWebsiteSetting(
                                    url, url, info->type(), &setting_info));
 
     // Ensure regular mode value is not changed.
-    std::unique_ptr<base::Value> regular_mode_value =
+    base::Value regular_mode_value =
         regular_map->GetWebsiteSetting(url, url, info->type(), &setting_info);
-    if (regular_mode_value) {
-      ASSERT_TRUE(original_value);
-      EXPECT_EQ(*original_value, *regular_mode_value);
-    } else {
-      EXPECT_FALSE(original_value);
-    }
+    EXPECT_EQ(original_value, regular_mode_value);
   }
 }
 

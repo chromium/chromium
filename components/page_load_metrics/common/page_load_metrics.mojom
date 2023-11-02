@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,10 @@ module page_load_metrics.mojom;
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
 import "mojo/public/mojom/base/time.mojom";
-import "third_party/blink/public/mojom/web_feature/web_feature.mojom";
+import "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom";
 import
   "third_party/blink/public/mojom/mobile_metrics/mobile_friendliness.mojom";
 import "third_party/blink/public/mojom/use_counter/use_counter_feature.mojom";
-import "url/mojom/origin.mojom";
 
 // TimeDeltas below relative to navigation start.
 struct DocumentTiming {
@@ -39,7 +38,11 @@ struct LargestContentfulPaintTiming {
 
   // These are packed blink::LargestContentfulPaintType enums, indicating
   // the largest LCP candidate's type characteristics.
-  uint32 type;
+  uint64 type;
+
+  // Computed entropy of the page's largest image, calculated as the image file
+  // size, in bits, divided by the image's rendered size, in pixels.
+  double image_bpp;
 };
 
 // TimeDeltas below relative to navigation start.
@@ -184,23 +187,24 @@ struct PageLoadTiming {
   // If you add additional members, also be sure to update page_load_timing.h.
 };
 
-// FrameIntersectionUpdate contains a frame's intersections with other elements
-// in a page load.
-struct FrameIntersectionUpdate {
-  // The frame's current intersection rect with the main frame in the main
-  // frame's coordinate system.. The intersection rect is
-  // an empty rect when there is no intersection with the main frame and
-  // returns the document size of the root document for the main frame. This
-  // is only set the first time an intersection changes and is null otherwise.
-  gfx.mojom.Rect? main_frame_intersection_rect;
-};
-
 struct FrameMetadata {
   // These are packed blink::LoadingBehaviorFlag enums.
   int32 behavior_flags = 0;
 
-  // The frame's intersection with page elements.
-  FrameIntersectionUpdate? intersection_update;
+  // For the main frame, the rect is the main frame document size (at (0,0));
+  // for a subframe, the rect is frame's intersection rect with the main frame
+  // in the main frame's coordinate system, and is an empty rect when there is
+  // no intersection with the main frame. This is only set for the first time
+  // the intersection rectangle is initially computed, and for any subsequent
+  // changes, and is null otherwise (i.e. hasn't changed).
+  gfx.mojom.Rect? main_frame_intersection_rect;
+
+  // The main frame's viewport rectangle (encapsulating the dimensions and the
+  // scroll position) in the main frame's coordinate system. This is only set
+  // for the main frame, for the first time the viewport rectangle is initially
+  // computed, and for any subsequent changes, and is null otherwise (i.e.
+  // hasn't changed).
+  gfx.mojom.Rect? main_frame_viewport_rect;
 };
 
 // Enumeration of distinct cache types.
@@ -233,10 +237,6 @@ struct ResourceDataUpdate {
   // Whether this resource load has completed.
   bool is_complete;
 
-  // Compression ratio estimated from the response headers if data saver was
-  // used.
-  double data_reduction_proxy_compression_ratio_estimate;
-
   // Whether this resource was tagged as an ad in the renderer. This flag can
   // be set to true at any point during a resource load. A more recent
   // ResourceDataUpdate can have a different flag than the previous update.
@@ -260,9 +260,6 @@ struct ResourceDataUpdate {
 
   // Whether this resource was fetched via proxy.
   bool proxy_used;
-
-  // The origin of this resource.
-  url.mojom.Origin origin;
 
   // Whether this resource completed loading, either by network or cache, before
   // FCP in the frame it belongs to. This flag can be set to true at any point
@@ -300,12 +297,6 @@ struct FrameRenderDataUpdate {
   // How many times LayoutNG-based LayoutObject::UpdateLayout() is called.
   uint32 ng_layout_call_count_delta;
 
-  // How many LayoutNGFlexbox instances were created.
-  uint32 flexbox_ng_layout_block_count_delta;
-
-  // How many LayoutNGGrid instances were created.
-  uint32 grid_ng_layout_block_count_delta;
-
   // New layout shifts with timestamps.
   array<LayoutShift> new_layout_shifts;
 };
@@ -314,19 +305,6 @@ struct FrameRenderDataUpdate {
 struct CpuTiming {
   // Time spent in tasks measured in wall time.
   mojo_base.mojom.TimeDelta task_time;
-};
-
-// Metrics about the count of resources that were lazy loaded in the frame.
-struct DeferredResourceCounts {
-  // The count of frames that were deferred due to lazy load.
-  uint64 deferred_frames = 0;
-  // The count of frames that were loaded after being deferred due to lazy load.
-  uint64 frames_loaded_after_deferral = 0;
-
-  // The count of images that were deferred due to lazy load.
-  uint64 deferred_images = 0;
-  // The count of images that were loaded after being deferred due to lazy load.
-  uint64 images_loaded_after_deferral = 0;
 };
 
 // Metrics about general input delay.
@@ -352,12 +330,6 @@ struct InputTiming {
   // TODO(crbug.com/1252179): Once the experiment is done, we could simplify
   // this part.
   UserInteractionLatencies max_event_durations;
-
-  // Includes an array of total_event_duration which is the sum of input event
-  // durations within a user interaction without double counting the overlap.
-  // The unit of duration is ms. Currently, we send this array to the browser
-  // process behind a Finch flag.
-  UserInteractionLatencies total_event_durations;
 };
 
 // Data for user interaction latencies which can be meausred in different ways.
@@ -396,9 +368,9 @@ interface PageLoadMetrics {
                array<ResourceDataUpdate> resources,
                FrameRenderDataUpdate render_data,
                CpuTiming cpu_load_timing,
-               DeferredResourceCounts new_deferred_resource_data,
                InputTiming input_timing_delta,
-               blink.mojom.MobileFriendliness? mobile_friendliness);
+               blink.mojom.MobileFriendliness? mobile_friendliness,
+               uint32 soft_navigation_count);
 
   // Set up a shared memory used to transfer smoothness data from the renderer
   // to the browser. The structure is defined in

@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -36,7 +36,9 @@ component("base") {
       "device_info_query_win.h",
       "device_monitor_win.cc",
       "device_monitor_win.h",
+      "event_utils_winrt.h",
     ]
+    public_deps += [ "//third_party/abseil-cpp:absl" ]
     libs = [ "setupapi.lib" ]
   }
 }

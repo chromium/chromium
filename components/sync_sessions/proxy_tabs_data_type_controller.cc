@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,21 +7,30 @@
 #include <memory>
 #include <utility>
 
+#include "base/callback.h"
 #include "base/values.h"
 #include "components/sync/driver/configure_context.h"
 #include "components/sync/engine/data_type_activation_response.h"
-#include "components/sync/engine/model_type_configurer.h"
+#include "components/sync/model/sync_error.h"
 #include "components/sync/model/type_entities_count.h"
 
 namespace sync_sessions {
 
 ProxyTabsDataTypeController::ProxyTabsDataTypeController(
+    syncer::SyncService* sync_service,
+    PrefService* pref_service,
     const base::RepeatingCallback<void(State)>& state_changed_cb)
     : DataTypeController(syncer::PROXY_TABS),
-      state_changed_cb_(state_changed_cb),
-      state_(NOT_RUNNING) {}
+      helper_(syncer::PROXY_TABS, sync_service, pref_service),
+      state_changed_cb_(state_changed_cb) {}
 
 ProxyTabsDataTypeController::~ProxyTabsDataTypeController() = default;
+
+syncer::DataTypeController::PreconditionState
+ProxyTabsDataTypeController::GetPreconditionState() const {
+  DCHECK(CalledOnValidThread());
+  return helper_.GetPreconditionState();
+}
 
 void ProxyTabsDataTypeController::LoadModels(
     const syncer::ConfigureContext& configure_context,
@@ -65,7 +74,7 @@ bool ProxyTabsDataTypeController::ShouldRunInTransportOnlyMode() const {
 }
 
 void ProxyTabsDataTypeController::GetAllNodes(AllNodesCallback callback) {
-  std::move(callback).Run(type(), std::make_unique<base::ListValue>());
+  std::move(callback).Run(type(), base::Value::List());
 }
 
 void ProxyTabsDataTypeController::GetTypeEntitiesCount(

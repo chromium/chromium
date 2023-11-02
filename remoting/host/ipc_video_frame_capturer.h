@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,10 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "remoting/protocol/desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 
 namespace remoting {
@@ -20,7 +21,7 @@ class DesktopSessionProxy;
 // session agent running in the desktop integration process.
 // GetSourceList() and SelectSource() functions are not implemented, they always
 // return false.
-class IpcVideoFrameCapturer : public webrtc::DesktopCapturer {
+class IpcVideoFrameCapturer : public DesktopCapturer {
  public:
   explicit IpcVideoFrameCapturer(
       scoped_refptr<DesktopSessionProxy> desktop_session_proxy);
@@ -42,7 +43,7 @@ class IpcVideoFrameCapturer : public webrtc::DesktopCapturer {
 
  private:
   // Points to the callback passed to webrtc::DesktopCapturer::Start().
-  webrtc::DesktopCapturer::Callback* callback_;
+  raw_ptr<webrtc::DesktopCapturer::Callback> callback_;
 
   // Wraps the IPC channel to the desktop session agent.
   scoped_refptr<DesktopSessionProxy> desktop_session_proxy_;

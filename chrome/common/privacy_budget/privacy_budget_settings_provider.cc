@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,7 +19,9 @@ PrivacyBudgetSettingsProvider::PrivacyBudgetSettingsProvider()
       blocked_types_(
           DecodeIdentifiabilityFieldTrialParam<IdentifiableSurfaceTypeSet>(
               features::kIdentifiabilityStudyBlockedTypes.Get())),
-      enabled_(base::FeatureList::IsEnabled(features::kIdentifiabilityStudy)) {}
+      enabled_(base::FeatureList::IsEnabled(features::kIdentifiabilityStudy)),
+      active_sampling_enabled_(
+          features::kIdentifiabilityStudyEnableActiveSampling.Get()) {}
 
 PrivacyBudgetSettingsProvider::PrivacyBudgetSettingsProvider(
     const PrivacyBudgetSettingsProvider&) = default;
@@ -44,4 +46,14 @@ bool PrivacyBudgetSettingsProvider::IsSurfaceAllowed(
 bool PrivacyBudgetSettingsProvider::IsTypeAllowed(
     blink::IdentifiableSurface::Type type) const {
   return !base::Contains(blocked_types_, type);
+}
+
+bool PrivacyBudgetSettingsProvider::ShouldActivelySample() const {
+  return active_sampling_enabled_;
+}
+
+std::vector<std::string>
+PrivacyBudgetSettingsProvider::FontFamiliesToActivelySample() const {
+  return DecodeIdentifiabilityFieldTrialParam<std::vector<std::string>>(
+      features::kIdentifiabilityStudyActivelySampledFonts.Get());
 }

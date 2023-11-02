@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,14 @@
 
 #include <memory>
 
-#include "absl/strings/escaping.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/debug/stack_trace.h"
 #include "base/format_macros.h"
+#include "base/memory/raw_ptr.h"
+#include "base/strings/abseil_string_conversions.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "net/http/http_response_headers.h"
@@ -69,7 +72,8 @@ class Http2Connection::DataFrameSource
 
   bool Send(absl::string_view frame_header, size_t payload_length) override {
     std::string concatenated =
-        absl::StrCat(frame_header, chunks_.front().substr(0, payload_length));
+        base::StrCat({base::StringViewToStringPiece(frame_header),
+                      chunks_.front().substr(0, payload_length)});
     const int64_t result = connection_->OnReadyToSend(concatenated);
     // Write encountered error.
     if (result < 0) {
@@ -112,7 +116,7 @@ class Http2Connection::DataFrameSource
   }
 
  private:
-  Http2Connection* const connection_;
+  const raw_ptr<Http2Connection> connection_;
   const StreamId& stream_id_;
   std::queue<std::string> chunks_;
   bool last_frame_ = false;
@@ -199,8 +203,8 @@ class Http2Connection::ResponseDelegate : public HttpResponseDelegate {
  private:
   std::vector<std::unique_ptr<HttpResponse>> responses_;
   StreamId stream_id_;
-  Http2Connection* const connection_;
-  DataFrameSource* data_frame_;
+  const raw_ptr<Http2Connection> connection_;
+  raw_ptr<DataFrameSource> data_frame_;
   base::WeakPtrFactory<ResponseDelegate> weak_factory_{this};
 };
 
@@ -301,9 +305,10 @@ int64_t Http2Connection::OnReadyToSend(absl::string_view serialized) {
   return serialized.size();
 }
 
-void Http2Connection::OnCloseStream(StreamId stream_id,
+bool Http2Connection::OnCloseStream(StreamId stream_id,
                                     http2::adapter::Http2ErrorCode error_code) {
   response_map_.erase(stream_id);
+  return true;
 }
 
 void Http2Connection::SendInternal() {
@@ -371,7 +376,7 @@ Http2Connection::OnHeaderForStream(http2::adapter::Http2StreamId stream_id,
 bool Http2Connection::OnEndHeadersForStream(
     http2::adapter::Http2StreamId stream_id) {
   HttpRequest::HeaderMap header_map = header_map_[stream_id];
-  std::unique_ptr<HttpRequest> request(new HttpRequest());
+  auto request = std::make_unique<HttpRequest>();
   request->relative_url = header_map[":path"];
   request->base_url = GURL(header_map[":authority"]);
   request->method_string = header_map[":method"];
@@ -411,6 +416,11 @@ bool Http2Connection::OnBeginDataForStream(StreamId stream_id,
 
 bool Http2Connection::OnDataForStream(StreamId stream_id,
                                       absl::string_view data) {
+  return true;
+}
+
+bool Http2Connection::OnDataPaddingLength(StreamId stream_id,
+                                          size_t padding_length) {
   return true;
 }
 

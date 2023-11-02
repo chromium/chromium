@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,11 +19,12 @@ namespace ash {
 namespace input_method {
 namespace {
 
-namespace mojom = chromeos::ime::mojom;
+namespace mojom = ::ash::ime::mojom;
 
 constexpr char kUsEnglishEngineId[] = "xkb:us::eng";
 constexpr char kKoreanEngineId[] = "ko-t-i0-und";
 constexpr char kPinyinEngineId[] = "zh-t-i0-pinyin";
+constexpr char kZhuyinEngineId[] = "zh-hant-t-i0-und";
 
 void RegisterTestingPrefs(TestingPrefServiceSimple& prefs,
                           const base::DictionaryValue& dict) {
@@ -63,6 +64,40 @@ TEST(CreateSettingsFromPrefsTest, CreateLatinSettings) {
   const auto& latin_settings = *settings->get_latin_settings();
   EXPECT_TRUE(latin_settings.autocorrect);
   EXPECT_TRUE(latin_settings.predictive_writing);
+}
+
+TEST(CreateSettingsFromPrefsTest,
+     PredictiveWritingEnabledWhenMultiWordAllowedAndEnabled) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures({features::kAssistMultiWord}, {});
+  TestingPrefServiceSimple prefs;
+  base::DictionaryValue dict;
+  RegisterTestingPrefs(prefs, dict);
+  prefs.registry()->RegisterBooleanPref(prefs::kAssistPredictiveWritingEnabled,
+                                        true);
+
+  const auto settings = CreateSettingsFromPrefs(prefs, kUsEnglishEngineId);
+
+  ASSERT_TRUE(settings->is_latin_settings());
+  const auto& latin_settings = *settings->get_latin_settings();
+  EXPECT_TRUE(latin_settings.predictive_writing);
+}
+
+TEST(CreateSettingsFromPrefsTest,
+     PredictiveWritingDisabledWhenMultiwordDisabled) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures({}, {features::kAssistMultiWord});
+  TestingPrefServiceSimple prefs;
+  base::DictionaryValue dict;
+  RegisterTestingPrefs(prefs, dict);
+  prefs.registry()->RegisterBooleanPref(prefs::kAssistPredictiveWritingEnabled,
+                                        true);
+
+  const auto settings = CreateSettingsFromPrefs(prefs, kUsEnglishEngineId);
+
+  ASSERT_TRUE(settings->is_latin_settings());
+  const auto& latin_settings = *settings->get_latin_settings();
+  EXPECT_FALSE(latin_settings.predictive_writing);
 }
 
 TEST(CreateSettingsFromPrefsTest, CreateKoreanSettingsDefault) {
@@ -128,15 +163,20 @@ TEST(CreateSettingsFromPrefsTest, CreatePinyinSettingsDefault) {
 
 TEST(CreateSettingsFromPrefsTest, CreatePinyinSettings) {
   base::DictionaryValue dict;
-  dict.SetBoolPath("pinyin.en:eng", true);
-  dict.SetBoolPath("pinyin.k:g", true);
-  dict.SetBoolPath("pinyin.in:ing", true);
-  dict.SetStringPath("pinyin.xkbLayout", "Colemak");
-  dict.SetBoolPath("pinyin.pinyinEnableLowerPaging", false);
-  dict.SetBoolPath("pinyin.pinyinEnableUpperPaging", false);
-  dict.SetBoolPath("pinyin.pinyinDefaultChinese", false);
-  dict.SetBoolPath("pinyin.pinyinFullWidthCharacter", true);
-  dict.SetBoolPath("pinyin.pinyinChinesePunctuation", false);
+  dict.SetBoolPath(base::StrCat({kPinyinEngineId, ".en:eng"}), true);
+  dict.SetBoolPath(base::StrCat({kPinyinEngineId, ".k:g"}), true);
+  dict.SetBoolPath(base::StrCat({kPinyinEngineId, ".in:ing"}), true);
+  dict.SetStringPath(base::StrCat({kPinyinEngineId, ".xkbLayout"}), "Colemak");
+  dict.SetBoolPath(base::StrCat({kPinyinEngineId, ".pinyinEnableLowerPaging"}),
+                   false);
+  dict.SetBoolPath(base::StrCat({kPinyinEngineId, ".pinyinEnableUpperPaging"}),
+                   false);
+  dict.SetBoolPath(base::StrCat({kPinyinEngineId, ".pinyinDefaultChinese"}),
+                   false);
+  dict.SetBoolPath(base::StrCat({kPinyinEngineId, ".pinyinFullWidthCharacter"}),
+                   true);
+  dict.SetBoolPath(base::StrCat({kPinyinEngineId, ".pinyinChinesePunctuation"}),
+                   false);
   TestingPrefServiceSimple prefs;
   RegisterTestingPrefs(prefs, dict);
 
@@ -164,6 +204,41 @@ TEST(CreateSettingsFromPrefsTest, CreatePinyinSettings) {
   EXPECT_FALSE(pinyin_settings.default_to_chinese);
   EXPECT_TRUE(pinyin_settings.default_to_full_width_characters);
   EXPECT_FALSE(pinyin_settings.default_to_full_width_punctuation);
+}
+
+TEST(CreateSettingsFromPrefsTest, CreateZhuyinSettingsDefault) {
+  base::DictionaryValue dict;
+  TestingPrefServiceSimple prefs;
+  RegisterTestingPrefs(prefs, dict);
+
+  const auto settings = CreateSettingsFromPrefs(prefs, kZhuyinEngineId);
+
+  ASSERT_TRUE(settings->is_zhuyin_settings());
+  const auto& zhuyin_settings = *settings->get_zhuyin_settings();
+  EXPECT_EQ(zhuyin_settings.layout, mojom::ZhuyinLayout::kStandard);
+  EXPECT_EQ(zhuyin_settings.selection_keys,
+            mojom::ZhuyinSelectionKeys::k1234567890);
+  EXPECT_EQ(zhuyin_settings.page_size, 10u);
+}
+
+TEST(CreateSettingsFromPrefsTest, CreateZhuyinSettings) {
+  base::DictionaryValue dict;
+  dict.SetStringPath(base::StrCat({kZhuyinEngineId, ".zhuyinKeyboardLayout"}),
+                     "IBM");
+  dict.SetStringPath(base::StrCat({kZhuyinEngineId, ".zhuyinSelectKeys"}),
+                     "asdfghjkl;");
+  dict.SetStringPath(base::StrCat({kZhuyinEngineId, ".zhuyinPageSize"}), "8");
+  TestingPrefServiceSimple prefs;
+  RegisterTestingPrefs(prefs, dict);
+
+  const auto settings = CreateSettingsFromPrefs(prefs, kZhuyinEngineId);
+
+  ASSERT_TRUE(settings->is_zhuyin_settings());
+  const auto& zhuyin_settings = *settings->get_zhuyin_settings();
+  EXPECT_EQ(zhuyin_settings.layout, mojom::ZhuyinLayout::kIbm);
+  EXPECT_EQ(zhuyin_settings.selection_keys,
+            mojom::ZhuyinSelectionKeys::kAsdfghjkl);
+  EXPECT_EQ(zhuyin_settings.page_size, 8u);
 }
 
 }  // namespace

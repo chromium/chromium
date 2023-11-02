@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,10 +27,8 @@ void RestoreOnStartupPolicyHandler::ApplyPolicySettings(
     const PolicyMap& policies,
     PrefValueMap* prefs) {
   const base::Value* restore_on_startup_value =
-      policies.GetValue(policy_name());
+      policies.GetValue(policy_name(), base::Value::Type::INTEGER);
   if (restore_on_startup_value) {
-    if (!restore_on_startup_value->is_int())
-      return;
     prefs->SetInteger(prefs::kRestoreOnStartup,
                       restore_on_startup_value->GetInt());
   }
@@ -42,23 +40,22 @@ bool RestoreOnStartupPolicyHandler::CheckPolicySettings(
   if (!TypeCheckingPolicyHandler::CheckPolicySettings(policies, errors))
     return false;
 
-  const base::Value* restore_policy = policies.GetValue(key::kRestoreOnStartup);
+  const base::Value* restore_policy =
+      policies.GetValue(key::kRestoreOnStartup, base::Value::Type::INTEGER);
 
   if (restore_policy) {
-    CHECK(restore_policy->is_int());  // Passed type check.
     switch (restore_policy->GetInt()) {
       case 0:  // Deprecated kPrefValueHomePage.
         errors->AddError(policy_name(), IDS_POLICY_VALUE_DEPRECATED);
         break;
-      case SessionStartupPref::kPrefValueLast: {
+      case SessionStartupPref::kPrefValueLast:
+      case SessionStartupPref::kPrefValueLastAndURLs: {
         // If the "restore last session" policy is set, session cookies are
         // treated as permanent cookies and site data needed to restore the
         // session is not cleared so we have to warn the user in that case.
-        const base::Value* cookies_policy =
-            policies.GetValue(key::kCookiesSessionOnlyForUrls);
-        const base::ListValue* cookies_value;
-        if (cookies_policy && cookies_policy->GetAsList(&cookies_value) &&
-            !cookies_value->GetList().empty()) {
+        const base::Value* cookies_policy = policies.GetValue(
+            key::kCookiesSessionOnlyForUrls, base::Value::Type::LIST);
+        if (cookies_policy && !cookies_policy->GetListDeprecated().empty()) {
           errors->AddError(key::kCookiesSessionOnlyForUrls,
                            IDS_POLICY_OVERRIDDEN,
                            key::kRestoreOnStartup);

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,9 @@ class BrowserContext;
 }
 
 class Profile;
+
+namespace ash {
+
 class SystemExtensionsProvider;
 
 // Singleton that owns all SystemExtensionsFactories and associates them with
@@ -26,14 +29,15 @@ class SystemExtensionsProviderFactory
 
   static SystemExtensionsProviderFactory& GetInstance();
 
- private:
-  friend base::NoDestructor<SystemExtensionsProviderFactory>;
-
-  SystemExtensionsProviderFactory();
   SystemExtensionsProviderFactory(const SystemExtensionsProviderFactory&) =
       delete;
   SystemExtensionsProviderFactory& operator=(
       const SystemExtensionsProviderFactory&) = delete;
+
+ private:
+  friend base::NoDestructor<SystemExtensionsProviderFactory>;
+
+  SystemExtensionsProviderFactory();
   ~SystemExtensionsProviderFactory() override;
 
   // BrowserContextKeyedServiceFactory:
@@ -42,6 +46,10 @@ class SystemExtensionsProviderFactory
   bool ServiceIsCreatedWithBrowserContext() const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
+  void RegisterProfilePrefs(
+      user_prefs::PrefRegistrySyncable* registry) override;
 };
+
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_SYSTEM_EXTENSIONS_SYSTEM_EXTENSIONS_PROVIDER_FACTORY_H_

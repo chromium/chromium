@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,8 @@
 #define NET_LOG_TEST_NET_LOG_UTIL_H_
 
 #include <stddef.h>
+#include <string>
+#include <vector>
 
 #include "base/strings/string_piece.h"
 #include "net/log/net_log_event_type.h"

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -99,7 +99,8 @@ TEST(OverlayProcessorSurfaceControlTest, DisplayTransformOverlay) {
   candidates.back().transform = gfx::OVERLAY_TRANSFORM_ROTATE_90;
   processor.CheckOverlaySupport(nullptr, &candidates);
   EXPECT_TRUE(candidates.back().overlay_handled);
-  EXPECT_EQ(candidates.back().transform, gfx::OVERLAY_TRANSFORM_NONE);
+  EXPECT_EQ(absl::get<gfx::OverlayTransform>(candidates.back().transform),
+            gfx::OVERLAY_TRANSFORM_NONE);
   EXPECT_RECTF_EQ(candidates.back().display_rect, gfx::RectF(10, 40, 100, 50));
 }
 

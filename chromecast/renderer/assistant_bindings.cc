@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -64,7 +64,7 @@ void AssistantBindings::OnMessage(base::Value message) {
 
   v8::Local<v8::Value> argv[] = {message_val};
   web_frame->CallFunctionEvenIfScriptDisabled(handler, context->Global(),
-                                              base::size(argv), argv);
+                                              std::size(argv), argv);
 
   assistant_message_handler_ =
       v8::UniquePersistent<v8::Function>(isolate, handler);

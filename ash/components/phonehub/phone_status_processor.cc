@@ -1,27 +1,32 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/components/phonehub/phone_status_processor.h"
 
-#include "ash/components/phonehub/do_not_disturb_controller.h"
-#include "ash/components/phonehub/find_my_device_controller.h"
-#include "ash/components/phonehub/message_receiver.h"
-#include "ash/components/phonehub/mutable_phone_model.h"
-#include "ash/components/phonehub/notification_access_manager.h"
-#include "ash/components/phonehub/notification_processor.h"
-#include "ash/components/phonehub/screen_lock_manager_impl.h"
-#include "ash/constants/ash_features.h"
-#include "base/containers/flat_set.h"
-#include "base/strings/utf_string_conversions.h"
-#include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
-
 #include <algorithm>
 #include <string>
 
-namespace chromeos {
+#include "ash/components/phonehub/do_not_disturb_controller.h"
+#include "ash/components/phonehub/find_my_device_controller.h"
+#include "ash/components/phonehub/message_receiver.h"
+#include "ash/components/phonehub/multidevice_feature_access_manager.h"
+#include "ash/components/phonehub/mutable_phone_model.h"
+#include "ash/components/phonehub/notification_processor.h"
+#include "ash/components/phonehub/recent_apps_interaction_handler.h"
+#include "ash/components/phonehub/screen_lock_manager_impl.h"
+#include "ash/constants/ash_features.h"
+#include "ash/services/multidevice_setup/public/cpp/prefs.h"
+#include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
+#include "base/containers/flat_set.h"
+#include "base/strings/utf_string_conversions.h"
+#include "components/prefs/pref_service.h"
+
+namespace ash {
 namespace phonehub {
+
 namespace {
+
 using multidevice_setup::MultiDeviceSetupClient;
 
 PhoneStatusModel::MobileStatus GetMobileStatusFromProto(
@@ -83,19 +88,46 @@ PhoneStatusModel::BatterySaverState GetBatterySaverStateFromProto(
   }
 }
 
-NotificationAccessManager::AccessStatus ComputeNotificationAccessState(
+MultideviceFeatureAccessManager::AccessStatus ComputeNotificationAccessState(
     const proto::PhoneProperties& phone_properties) {
   // If the user has a Work Profile active, notification access is not allowed
   // by Android. See https://crbug.com/1155151.
   if (phone_properties.profile_type() == proto::ProfileType::WORK_PROFILE)
-    return NotificationAccessManager::AccessStatus::kProhibited;
+    return MultideviceFeatureAccessManager::AccessStatus::kProhibited;
 
   if (phone_properties.notification_access_state() ==
       proto::NotificationAccessState::ACCESS_GRANTED) {
-    return NotificationAccessManager::AccessStatus::kAccessGranted;
+    return MultideviceFeatureAccessManager::AccessStatus::kAccessGranted;
   }
 
-  return NotificationAccessManager::AccessStatus::kAvailableButNotGranted;
+  return MultideviceFeatureAccessManager::AccessStatus::kAvailableButNotGranted;
+}
+
+// User has to consent and agree for phoneHub to have storage permission on the
+// phone
+MultideviceFeatureAccessManager::AccessStatus ComputeCameraRollAccessState(
+    const proto::PhoneProperties& phone_properties) {
+  if (phone_properties.camera_roll_access_state().feature_enabled()) {
+    return MultideviceFeatureAccessManager::AccessStatus::kAccessGranted;
+  } else {
+    return MultideviceFeatureAccessManager::AccessStatus::
+        kAvailableButNotGranted;
+  }
+}
+
+MultideviceFeatureAccessManager::AccessProhibitedReason
+ComputeNotificationAccessProhibitedReason(
+    const proto::PhoneProperties& phone_properties) {
+  if (phone_properties.profile_disable_reason() ==
+      proto::ProfileDisableReason::DISABLE_REASON_DISABLED_BY_POLICY) {
+    return MultideviceFeatureAccessManager::AccessProhibitedReason::
+        kDisabledByPhonePolicy;
+  }
+  if (phone_properties.profile_type() == proto::ProfileType::WORK_PROFILE) {
+    return MultideviceFeatureAccessManager::AccessProhibitedReason::
+        kWorkProfile;
+  }
+  return MultideviceFeatureAccessManager::AccessProhibitedReason::kUnknown;
 }
 
 ScreenLockManager::LockStatus ComputeScreenLockState(
@@ -137,6 +169,19 @@ PhoneStatusModel CreatePhoneStatusModel(const proto::PhoneProperties& proto) {
       proto.battery_percentage());
 }
 
+std::vector<RecentAppsInteractionHandler::UserState> GetUserStates(
+    const RepeatedPtrField<proto::UserState>& user_states) {
+  std::vector<RecentAppsInteractionHandler::UserState> states;
+
+  for (const auto& user_state : user_states) {
+    RecentAppsInteractionHandler::UserState state;
+    state.user_id = user_state.user_id();
+    state.is_enabled = !user_state.is_quiet_mode_enabled();
+    states.emplace_back(state);
+  }
+  return states;
+}
+
 }  // namespace
 
 PhoneStatusProcessor::PhoneStatusProcessor(
@@ -144,28 +189,33 @@ PhoneStatusProcessor::PhoneStatusProcessor(
     FeatureStatusProvider* feature_status_provider,
     MessageReceiver* message_receiver,
     FindMyDeviceController* find_my_device_controller,
-    NotificationAccessManager* notification_access_manager,
+    MultideviceFeatureAccessManager* multidevice_feature_access_manager,
     ScreenLockManager* screen_lock_manager,
     NotificationProcessor* notification_processor_,
     MultiDeviceSetupClient* multidevice_setup_client,
-    MutablePhoneModel* phone_model)
+    MutablePhoneModel* phone_model,
+    RecentAppsInteractionHandler* recent_apps_interaction_handler,
+    PrefService* pref_service)
     : do_not_disturb_controller_(do_not_disturb_controller),
       feature_status_provider_(feature_status_provider),
       message_receiver_(message_receiver),
       find_my_device_controller_(find_my_device_controller),
-      notification_access_manager_(notification_access_manager),
+      multidevice_feature_access_manager_(multidevice_feature_access_manager),
       screen_lock_manager_(screen_lock_manager),
       notification_processor_(notification_processor_),
       multidevice_setup_client_(multidevice_setup_client),
-      phone_model_(phone_model) {
+      phone_model_(phone_model),
+      recent_apps_interaction_handler_(recent_apps_interaction_handler),
+      pref_service_(pref_service) {
   DCHECK(do_not_disturb_controller_);
   DCHECK(feature_status_provider_);
   DCHECK(message_receiver_);
   DCHECK(find_my_device_controller_);
-  DCHECK(notification_access_manager_);
+  DCHECK(multidevice_feature_access_manager_);
   DCHECK(notification_processor_);
   DCHECK(multidevice_setup_client_);
   DCHECK(phone_model_);
+  DCHECK(pref_service_);
 
   message_receiver_->AddObserver(this);
   feature_status_provider_->AddObserver(this);
@@ -218,8 +268,14 @@ void PhoneStatusProcessor::SetReceivedPhoneStatusModelStates(
           proto::NotificationMode::DO_NOT_DISTURB_ON,
       phone_properties.profile_type() != proto::ProfileType::WORK_PROFILE);
 
-  notification_access_manager_->SetAccessStatusInternal(
-      ComputeNotificationAccessState(phone_properties));
+  multidevice_feature_access_manager_->SetNotificationAccessStatusInternal(
+      ComputeNotificationAccessState(phone_properties),
+      ComputeNotificationAccessProhibitedReason(phone_properties));
+
+  if (features::IsPhoneHubCameraRollEnabled()) {
+    multidevice_feature_access_manager_->SetCameraRollAccessStatusInternal(
+        ComputeCameraRollAccessState(phone_properties));
+  }
 
   if (screen_lock_manager_) {
     screen_lock_manager_->SetLockStatusInternal(
@@ -228,6 +284,18 @@ void PhoneStatusProcessor::SetReceivedPhoneStatusModelStates(
 
   find_my_device_controller_->SetPhoneRingingStatusInternal(
       ComputeFindMyDeviceStatus(phone_properties));
+
+  if (features::IsEcheSWAEnabled()) {
+    recent_apps_interaction_handler_->set_user_states(
+        GetUserStates(phone_properties.user_states()));
+
+    SetEcheFeatureStatusReceivedFromPhoneHub(
+        phone_properties.eche_feature_status());
+  }
+
+  multidevice_feature_access_manager_->SetFeatureSetupRequestSupportedInternal(
+      phone_properties.feature_setup_config()
+          .feature_setup_request_supported());
 }
 
 void PhoneStatusProcessor::MaybeSetPhoneModelName(
@@ -238,6 +306,38 @@ void PhoneStatusProcessor::MaybeSetPhoneModelName(
   }
 
   phone_model_->SetPhoneName(base::UTF8ToUTF16(remote_device->name()));
+}
+
+void PhoneStatusProcessor::SetEcheFeatureStatusReceivedFromPhoneHub(
+    proto::FeatureStatus eche_feature_status) {
+  auto eche_support_received_from_phone_hub =
+      ash::multidevice_setup::EcheSupportReceivedFromPhoneHub::kNotSpecified;
+  if (eche_feature_status == proto::FeatureStatus::FEATURE_STATUS_SUPPORTED ||
+      eche_feature_status == proto::FeatureStatus::FEATURE_STATUS_ENABLED ||
+      eche_feature_status ==
+          proto::FeatureStatus::FEATURE_STATUS_PROHIBITED_BY_POLICY) {
+    eche_support_received_from_phone_hub =
+        ash::multidevice_setup::EcheSupportReceivedFromPhoneHub::kSupported;
+  } else if (eche_feature_status ==
+                 proto::FeatureStatus::FEATURE_STATUS_UNSUPPORTED ||
+             eche_feature_status ==
+                 proto::FeatureStatus::FEATURE_STATUS_ATTESTATION_FAILED) {
+    eche_support_received_from_phone_hub =
+        ash::multidevice_setup::EcheSupportReceivedFromPhoneHub::kNotSupported;
+  } else if (eche_feature_status ==
+             proto::FeatureStatus::FEATURE_STATUS_UNSPECIFIED) {
+    eche_support_received_from_phone_hub =
+        ash::multidevice_setup::EcheSupportReceivedFromPhoneHub::kNotSpecified;
+  } else {
+    NOTREACHED();
+    eche_support_received_from_phone_hub =
+        ash::multidevice_setup::EcheSupportReceivedFromPhoneHub::kNotSpecified;
+  }
+
+  pref_service_->SetInteger(
+      ash::multidevice_setup::
+          kEcheOverriddenSupportReceivedFromPhoneHubPrefName,
+      static_cast<int>(eche_support_received_from_phone_hub));
 }
 
 void PhoneStatusProcessor::OnFeatureStatusChanged() {
@@ -257,6 +357,11 @@ void PhoneStatusProcessor::OnPhoneStatusSnapshotReceived(
                << phone_status_snapshot.properties().gmscore_version();
   ProcessReceivedNotifications(phone_status_snapshot.notifications());
   SetReceivedPhoneStatusModelStates(phone_status_snapshot.properties());
+  if (features::IsEcheSWAEnabled()) {
+    SetStreamableApps(phone_status_snapshot.streamable_apps());
+  }
+  multidevice_feature_access_manager_
+      ->UpdatedFeatureSetupConnectionStatusIfNeeded();
 }
 
 void PhoneStatusProcessor::OnPhoneStatusUpdateReceived(
@@ -280,5 +385,11 @@ void PhoneStatusProcessor::OnHostStatusChanged(
   MaybeSetPhoneModelName(host_device_with_status.second);
 }
 
+void PhoneStatusProcessor::SetStreamableApps(
+    const proto::StreamableApps& streamable_apps) {
+  if (streamable_apps.apps_size() > 0 && recent_apps_interaction_handler_)
+    recent_apps_interaction_handler_->SetStreamableApps(streamable_apps);
+}
+
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

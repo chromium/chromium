@@ -1,10 +1,9 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "cc/metrics/frame_sequence_tracker.h"
 
-#include "base/macros.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "cc/metrics/throughput_ukm_reporter.h"
 #include "cc/trees/ukm_manager.h"
@@ -40,14 +39,14 @@ TEST(FrameSequenceMetricsTest, MergeMetrics) {
 #if DCHECK_IS_ON()
 TEST(FrameSequenceMetricsTest, ScrollingThreadMergeMetrics) {
   FrameSequenceMetrics first(FrameSequenceTrackerType::kTouchScroll, nullptr);
-  first.SetScrollingThread(FrameSequenceMetrics::ThreadType::kCompositor);
+  first.SetScrollingThread(FrameInfo::SmoothEffectDrivingThread::kCompositor);
   first.impl_throughput().frames_expected = 20;
   first.impl_throughput().frames_produced = 10;
   first.impl_throughput().frames_ontime = 10;
 
   auto second = std::make_unique<FrameSequenceMetrics>(
       FrameSequenceTrackerType::kTouchScroll, nullptr);
-  second->SetScrollingThread(FrameSequenceMetrics::ThreadType::kMain);
+  second->SetScrollingThread(FrameInfo::SmoothEffectDrivingThread::kMain);
   second->main_throughput().frames_expected = 50;
   second->main_throughput().frames_produced = 10;
   second->main_throughput().frames_ontime = 10;
@@ -213,7 +212,7 @@ TEST(FrameSequenceMetricsTest, ScrollingThreadMetricsReportedForInteractions) {
     base::HistogramTester histograms;
     auto metrics = setup();
     EXPECT_TRUE(metrics->HasEnoughDataForReporting());
-    metrics->SetScrollingThread(FrameSequenceMetrics::ThreadType::kMain);
+    metrics->SetScrollingThread(FrameInfo::SmoothEffectDrivingThread::kMain);
     metrics->ReportMetrics();
     histograms.ExpectTotalCount(metric, 1u);
     EXPECT_THAT(histograms.GetAllSamples(metric),
@@ -225,12 +224,59 @@ TEST(FrameSequenceMetricsTest, ScrollingThreadMetricsReportedForInteractions) {
     base::HistogramTester histograms;
     auto metrics = setup();
     EXPECT_TRUE(metrics->HasEnoughDataForReporting());
-    metrics->SetScrollingThread(FrameSequenceMetrics::ThreadType::kCompositor);
+    metrics->SetScrollingThread(
+        FrameInfo::SmoothEffectDrivingThread::kCompositor);
     metrics->ReportMetrics();
     histograms.ExpectTotalCount(metric, 1u);
     EXPECT_THAT(histograms.GetAllSamples(metric),
                 testing::ElementsAre(base::Bucket(20, 1)));
   }
+}
+
+TEST(FrameSequenceMetricsTest, CompositorSharedElementTransitionReported) {
+  base::HistogramTester histograms;
+
+  auto metrics = std::make_unique<FrameSequenceMetrics>(
+      FrameSequenceTrackerType::kSETCompositorAnimation, nullptr);
+  metrics->impl_throughput().frames_expected = 100;
+  metrics->impl_throughput().frames_produced = 80;
+  metrics->impl_throughput().frames_ontime = 70;
+  metrics->main_throughput().frames_expected = 100;
+  metrics->main_throughput().frames_produced = 60;
+  metrics->main_throughput().frames_ontime = 50;
+  EXPECT_TRUE(metrics->HasEnoughDataForReporting());
+  metrics->ReportMetrics();
+  histograms.ExpectTotalCount(
+      "Graphics.Smoothness.PercentDroppedFrames.CompositorThread."
+      "SETCompositorAnimation",
+      1u);
+  histograms.ExpectTotalCount(
+      "Graphics.Smoothness.PercentDroppedFrames.MainThread."
+      "SETCompositorAnimation",
+      0u);
+}
+
+TEST(FrameSequenceMetricsTest, MainThreadSharedElementTransitionReported) {
+  base::HistogramTester histograms;
+
+  auto metrics = std::make_unique<FrameSequenceMetrics>(
+      FrameSequenceTrackerType::kSETMainThreadAnimation, nullptr);
+  metrics->impl_throughput().frames_expected = 100;
+  metrics->impl_throughput().frames_produced = 80;
+  metrics->impl_throughput().frames_ontime = 70;
+  metrics->main_throughput().frames_expected = 100;
+  metrics->main_throughput().frames_produced = 60;
+  metrics->main_throughput().frames_ontime = 50;
+  EXPECT_TRUE(metrics->HasEnoughDataForReporting());
+  metrics->ReportMetrics();
+  histograms.ExpectTotalCount(
+      "Graphics.Smoothness.PercentDroppedFrames.CompositorThread."
+      "SETMainThreadAnimation",
+      0u);
+  histograms.ExpectTotalCount(
+      "Graphics.Smoothness.PercentDroppedFrames.MainThread."
+      "SETMainThreadAnimation",
+      1u);
 }
 
 }  // namespace cc

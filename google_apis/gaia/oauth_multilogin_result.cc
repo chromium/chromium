@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
@@ -74,7 +74,7 @@ void OAuthMultiloginResult::TryParseFailedAccountsFromValue(
     status_ = OAuthMultiloginResponseStatus::kUnknownStatus;
     return;
   }
-  for (auto& account : failed_accounts->GetList()) {
+  for (auto& account : failed_accounts->GetListDeprecated()) {
     const std::string* gaia_id = account.FindStringKey("obfuscated_id");
     const std::string* status = account.FindStringKey("status");
     if (status && gaia_id && *status != "OK")
@@ -92,7 +92,7 @@ void OAuthMultiloginResult::TryParseCookiesFromValue(base::Value* json_value) {
     status_ = OAuthMultiloginResponseStatus::kUnknownStatus;
     return;
   }
-  for (const auto& cookie : cookie_list->GetList()) {
+  for (const auto& cookie : cookie_list->GetListDeprecated()) {
     const std::string* name = cookie.FindStringKey("name");
     const std::string* value = cookie.FindStringKey("value");
     const std::string* domain = cookie.FindStringKey("domain");
@@ -105,8 +105,14 @@ void OAuthMultiloginResult::TryParseCookiesFromValue(base::Value* json_value) {
     const std::string* same_site = cookie.FindStringKey("sameSite");
     const std::string* same_party = cookie.FindStringKey("sameParty");
 
-    base::TimeDelta before_expiration =
-        base::Seconds(expiration_delta.value_or(0.0));
+    base::Time now = base::Time::Now();
+    // TODO(crbug.com/1264458) If CreateSanitizedCookie were used below, this
+    // wouldn't be needed and ValidateAndAdjustExpiryDate could be moved back
+    // into anon namespace instead of being exposed as a static function.
+    // Alternatly, if we were sure GAIA cookies wouldn't try to expire more
+    // than 400 days in the future we wouldn't need this either.
+    base::Time expiration = net::CanonicalCookie::ValidateAndAdjustExpiryDate(
+        now + base::Seconds(expiration_delta.value_or(0.0)), now);
     std::string cookie_domain = domain ? *domain : "";
     std::string cookie_host = host ? *host : "";
     if (cookie_domain.empty() && !cookie_host.empty() &&
@@ -127,9 +133,8 @@ void OAuthMultiloginResult::TryParseCookiesFromValue(base::Value* json_value) {
     std::unique_ptr<net::CanonicalCookie> new_cookie =
         net::CanonicalCookie::FromStorage(
             name ? *name : "", value ? *value : "", cookie_domain,
-            path ? *path : "", /*creation=*/base::Time::Now(),
-            base::Time::Now() + before_expiration,
-            /*last_access=*/base::Time::Now(), is_secure.value_or(true),
+            path ? *path : "", /*creation=*/now, expiration,
+            /*last_access=*/now, /*last_update=*/now, is_secure.value_or(true),
             is_http_only.value_or(true), samesite_mode,
             net::StringToCookiePriority(priority ? *priority : "medium"),
             same_party_bool, /*partition_key=*/absl::nullopt,

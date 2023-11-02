@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,12 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "media/audio/alive_checker.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -171,7 +173,7 @@ class AliveCheckerTest : public testing::Test {
 
   // Mocks suspend status. Set in CreatePowerObserverHelper, owned by
   // |alive_checker_|.
-  MockPowerObserverHelper* mock_power_observer_helper_;
+  raw_ptr<MockPowerObserverHelper> mock_power_observer_helper_;
 
  private:
   void CreateAliveCheckerOnAliveCheckerThread(

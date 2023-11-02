@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -66,6 +66,8 @@ enum class ProtoDbType {
   SIGNAL_STORAGE_CONFIG_DATABASE = 39,
   VIDEO_TUTORIALS_V2_DATABASE = 40,
   COUPON_DATABASE = 41,
+  PAGE_ENTITY_METADATA_STORE = 42,
+  WEBRTC_VIDEO_STATS_DB = 43,
   LAST,
 };
 

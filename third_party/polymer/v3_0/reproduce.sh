@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -16,6 +16,8 @@ check_dep() {
     exit 1
   fi
 }
+
+set -e
 
 check_dep "which npm" "npm" "visiting https://nodejs.org/en/"
 check_dep "which rsync" "rsync" "apt-get install rsync"
@@ -50,7 +52,12 @@ find components-chromium/polymer/ -mindepth 3 -maxdepth 3 -name '*.js' \
   -exec sed -i 's/@webcomponents\//..\/..\/..\//g' {} +
 
 # Apply additional chrome specific patches.
-patch -p1 --forward -r - < chromium.patch
+patch -p1 --forward < chromium.patch
+patch -p1 --forward < iron_icon.patch
+patch -p1 --forward < iron_list.patch
+patch -p1 --forward < iron_overlay_backdrop.patch
+patch -p1 --forward < paper_progress.patch
+patch -p1 --forward < paper_tooltip.patch
 
 echo 'Minifying Polymer 3, since it comes non-minified from NPM.'
 python minify_polymer.py
@@ -101,13 +108,13 @@ if [[ ! -z "${new}${deleted}" ]]; then
 fi
 
 echo 'Stripping unnecessary prefixed CSS rules...'
-python ../v1_0/css_strip_prefixes.py --file_extension=js
+python css_strip_prefixes.py --file_extension=js
 
 echo 'Generating -rgb versions of --google-* vars in paper-style/colors.js...'
-python ../v1_0/rgbify_hex_vars.py --filter-prefix=google --replace \
+python rgbify_hex_vars.py --filter-prefix=google --replace \
     components-chromium/paper-styles/color.js
 
 # TODO create components summary
 
 echo 'Creating GN files for interfaces and externs...'
-../v1_0/generate_gn.sh 3 # polymer_version=3
+./generate_gn.sh

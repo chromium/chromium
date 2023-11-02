@@ -1,11 +1,12 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/history/core/browser/in_memory_database.h"
 
+#include <tuple>
+
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
@@ -26,7 +27,7 @@ bool InMemoryDatabase::InitDB() {
   }
 
   // No reason to leave data behind in memory when rows are removed.
-  ignore_result(db_.Execute("PRAGMA auto_vacuum=1"));
+  std::ignore = db_.Execute("PRAGMA auto_vacuum=1");
 
   // Create the URL table, but leave it empty for now.
   if (!CreateURLTable(false)) {
@@ -62,7 +63,7 @@ bool InMemoryDatabase::InitFromDisk(const base::FilePath& history_name) {
   // Attach to the history database on disk.  (We can't ATTACH in the middle of
   // a transaction.)
   sql::Statement attach(GetDB().GetUniqueStatement("ATTACH ? AS history"));
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   attach.BindString(0, history_name.value());
 #else
   attach.BindString(0, base::WideToUTF8(history_name.value()));

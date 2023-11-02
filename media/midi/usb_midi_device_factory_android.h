@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "media/midi/usb_midi_device.h"
 #include "media/midi/usb_midi_export.h"
@@ -44,7 +45,7 @@ class USB_MIDI_EXPORT UsbMidiDeviceFactoryAndroid
  private:
   base::android::ScopedJavaGlobalRef<jobject> raw_factory_;
   // Not owned.
-  UsbMidiDeviceDelegate* delegate_;
+  raw_ptr<UsbMidiDeviceDelegate> delegate_;
   Callback callback_;
 };
 

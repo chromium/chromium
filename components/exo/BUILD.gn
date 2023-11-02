@@ -1,4 +1,4 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -11,12 +11,12 @@ import("//components/exo/buildflags.gni")
 import("//testing/test.gni")
 import("//ui/base/ui_features.gni")
 
+assert(use_ozone)
+assert(is_chromeos_ash)
+
 buildflag_header("buildflags") {
   header = "buildflags.h"
-  flags = [
-    "ENABLE_COLOR_MANAGER=$enable_color_manager",
-    "ENABLE_WESTON_TEST=$enable_weston_test",
-  ]
+  flags = [ "ENABLE_COLOR_MANAGER=$enable_color_manager" ]
 }
 
 if (use_xkbcommon) {
@@ -29,8 +29,6 @@ static_library("exo") {
   sources = [
     "buffer.cc",
     "buffer.h",
-    "capabilities.cc",
-    "capabilities.h",
     "data_device.cc",
     "data_device.h",
     "data_device_delegate.h",
@@ -64,15 +62,19 @@ static_library("exo") {
     "pointer.h",
     "pointer_constraint_delegate.h",
     "pointer_delegate.h",
+    "protected_native_pixmap_query_delegate.h",
     "seat.cc",
     "seat.h",
     "seat_observer.h",
+    "security_delegate.cc",
+    "security_delegate.h",
     "shared_memory.cc",
     "shared_memory.h",
     "shell_surface_util.cc",
     "shell_surface_util.h",
     "sub_surface.cc",
     "sub_surface.h",
+    "sub_surface_observer.h",
     "surface.cc",
     "surface.h",
     "surface_delegate.h",
@@ -106,7 +108,6 @@ static_library("exo") {
     "//third_party/blink/public/common",
     "//ui/accessibility:ax_base",
     "//ui/aura",
-    "//ui/base/cursor",
     "//ui/base/dragdrop:types",
     "//ui/base/dragdrop/mojom",
     "//ui/base/ime",
@@ -127,13 +128,14 @@ static_library("exo") {
   ]
 
   assert_no_deps = [
+    "//ash/components/arc",
     "//components/arc",
     "//content/public/browser",
     "//content/public/common",
   ]
 
   public_deps = [
-    "//ui/base/cursor:cursor_base",
+    "//ui/base/cursor",
     "//ui/base/cursor/mojom:cursor_type",
     "//ui/base/dragdrop/mojom:mojom_headers",
   ]
@@ -144,13 +146,17 @@ static_library("exo") {
       "//ash/constants",
       "//ash/keyboard/ui",
       "//ash/public/cpp",
-      "//chromeos/crosapi/cpp",
+      "//ash/resources/vector_icons",
+      "//chromeos/crosapi/cpp:crosapi_constants",
+      "//chromeos/dbus/power",
+      "//chromeos/dbus/power:power_manager_proto",
       "//chromeos/ui/base",
       "//chromeos/ui/frame",
       "//components/app_restore",
       "//components/fullscreen_control",
       "//components/strings",
       "//ui/base",
+      "//ui/base:hit_test",
       "//ui/events/ozone/layout",
     ]
     sources += [
@@ -158,6 +164,8 @@ static_library("exo") {
       "client_controlled_accelerators.h",
       "client_controlled_shell_surface.cc",
       "client_controlled_shell_surface.h",
+      "custom_window_state_delegate.cc",
+      "custom_window_state_delegate.h",
       "extended_drag_offer.cc",
       "extended_drag_offer.h",
       "extended_drag_source.cc",
@@ -182,6 +190,9 @@ static_library("exo") {
       "shell_surface.h",
       "shell_surface_base.cc",
       "shell_surface_base.h",
+      "shell_surface_observer.h",
+      "shell_surface_presentation_time_recorder.cc",
+      "shell_surface_presentation_time_recorder.h",
       "text_input.cc",
       "text_input.h",
       "toast_surface.cc",
@@ -200,14 +211,6 @@ static_library("exo") {
       configs += [ ":xkbcommon" ]
     }
   }
-
-  if (is_chromecast) {
-    deps += [ "//ui/accessibility:accessibility" ]
-    sources += [
-      "fullscreen_shell_surface.cc",
-      "fullscreen_shell_surface.h",
-    ]
-  }
 }
 
 source_set("test_support") {
@@ -220,6 +223,10 @@ source_set("test_support") {
     "test/exo_test_base_views.h",
     "test/exo_test_suite_aura.cc",
     "test/exo_test_suite_aura.h",
+    "test/mock_security_delegate.cc",
+    "test/mock_security_delegate.h",
+    "test/test_security_delegate.cc",
+    "test/test_security_delegate.h",
   ]
 
   public_deps = [ "//testing/gtest" ]
@@ -259,6 +266,7 @@ source_set("test_support") {
       "//ash:test_support",
       "//ash/public/cpp",
       "//chromeos/ui/base",
+      "//components/exo/wayland:weston_test_stub",
     ]
   }
 }
@@ -296,10 +304,6 @@ source_set("unit_tests") {
 
   sources = [ "mime_utils_unittest.cc" ]
 
-  if (use_ozone) {
-    deps += [ "//ui/ozone" ]
-  }
-
   if (is_chromeos_ash) {
     sources += [
       "../../ui/events/ozone/gamepad/gamepad_event.cc",
@@ -320,9 +324,12 @@ source_set("unit_tests") {
       "pointer_unittest.cc",
       "seat_unittest.cc",
       "shared_memory_unittest.cc",
+      "shell_surface_presentation_time_recorder_unittest.cc",
       "shell_surface_unittest.cc",
       "shell_surface_util_unittest.cc",
       "sub_surface_unittest.cc",
+      "surface_test_util.cc",
+      "surface_test_util.h",
       "surface_unittest.cc",
       "text_input_unittest.cc",
       "toast_surface_unittest.cc",
@@ -340,6 +347,8 @@ source_set("unit_tests") {
       "//ash/public/cpp",
       "//ash/public/cpp/external_arc",
       "//build:chromeos_buildflags",
+      "//chromeos/dbus/power",
+      "//chromeos/dbus/power:power_manager_proto",
       "//chromeos/ui/base",
       "//chromeos/ui/frame",
       "//components/fullscreen_control",
@@ -347,14 +356,10 @@ source_set("unit_tests") {
       "//ui/base/cursor/mojom:cursor_type",
       "//ui/base/dragdrop:types",
       "//ui/base/dragdrop/mojom",
+      "//ui/base/ime/ash",
       "//ui/gfx:test_support",
       "//ui/gfx/geometry",
     ]
-  }
-
-  if (is_chromecast) {
-    deps += [ "//ui/accessibility:accessibility" ]
-    sources += [ "fullscreen_shell_surface_unittest.cc" ]
   }
 }
 

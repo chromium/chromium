@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "base/base64.h"
-#include "base/files/file_path.h"
 #include "base/no_destructor.h"
 #include "components/metrics/metrics_provider.h"
 #include "components/metrics/metrics_service.h"
@@ -102,18 +101,9 @@ void WebLayerMetricsServiceClient::RegisterExternalExperiments(
     return;
   }
 
-  GetMetricsService()->synthetic_trial_registry()->RegisterExternalExperiments(
+  GetMetricsService()->GetSyntheticTrialRegistry()->RegisterExternalExperiments(
       "WebLayerExperiments", experiment_ids,
       variations::SyntheticTrialRegistry::kOverrideExistingIds);
-}
-
-void WebLayerMetricsServiceClient::Initialize(PrefService* pref_service) {
-  // Pass an empty file path since the path is for the Extended Variations Safe
-  // Mode experiment and Android WebLayer is temporarily excluded from this
-  // experiment.
-  // TODO(crbug/1245347): Enable the experiment on Android WebLayer.
-  AndroidMetricsServiceClient::Initialize(/*user_data_dir=*/base::FilePath(),
-                                          pref_service);
 }
 
 int32_t WebLayerMetricsServiceClient::GetProduct() {

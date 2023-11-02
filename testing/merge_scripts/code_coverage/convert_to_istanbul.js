@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,9 +24,11 @@ const {ArgumentParser} = require(join(...NODE_MODULES, 'argparse'));
  * @param {string} instrumentedDirectoryRoot Directory containing the source
  *    files where the coverage was instrumented from.
  * @param {string} outputDir Directory to store the istanbul coverage reports.
+ * @param {!Map<string, string>} urlToPathMap A mapping of URL observed during
+ *    test execution to the on-disk location created in previous steps.
  */
 async function extractCoverage(
-    coverageDirectory, instrumentedDirectoryRoot, outputDir) {
+    coverageDirectory, instrumentedDirectoryRoot, outputDir, urlToPathMap) {
   const coverages = await readdir(coverageDirectory);
 
   for (const fileName of coverages) {
@@ -41,13 +43,11 @@ async function extractCoverage(
       throw new Error(`result key missing for file: ${filePath}`);
 
     for (const coverage of scriptCoverages) {
-      // URLs with a "// #sourceURL=..." comment are rewritten by DevTools and
-      // thus we filter out any as these are not opted into coverage.
-      if (!coverage.url.startsWith('//'))
+      if (!urlToPathMap[coverage.url])
         continue;
 
       const instrumentedFilePath =
-          join(instrumentedDirectoryRoot, normalizePath(coverage.url));
+          join(instrumentedDirectoryRoot, urlToPathMap[coverage.url]);
       const converter = V8ToIstanbul(instrumentedFilePath);
       await converter.load();
       converter.applyCoverage(coverage.functions);
@@ -59,18 +59,6 @@ async function extractCoverage(
           jsonString);
     }
   }
-}
-
-/**
- * Remove the preceding // from the path and normalize it.
- * @param {string} sourceURL The value proceeding the "// #sourceURL=...".
- * @return {string} The normalized path.
- */
-function normalizePath(sourceURL) {
-  if (sourceURL.startsWith('//'))
-    return sourceURL.replace('//', '');
-
-  return normalize(sourceURL);
 }
 
 /**
@@ -88,10 +76,15 @@ function createSHA1HashFromFileContents(contents) {
  * @return {!Promise<string>} Directory containing istanbul reports.
  */
 async function main(args) {
+  const urlToPathMapFile =
+      await readFile(join(args.source_dir, 'parsed_scripts.json'));
+  const urlToPathMap = JSON.parse(urlToPathMapFile.toString());
+
   const outputDir = join(args.output_dir, 'istanbul')
   await mkdir(outputDir, {recursive: true});
   for (const coverageDir of args.raw_coverage_dirs)
-    await extractCoverage(coverageDir, args.source_dir, outputDir);
+    await extractCoverage(
+        coverageDir, args.source_dir, outputDir, urlToPathMap);
 
   return outputDir;
 }
@@ -100,25 +93,25 @@ const parser = new ArgumentParser({
   description: 'Converts raw v8 coverage into IstanbulJS compliant files.',
 });
 
-parser.addArgument(['-s', '--source-dir'], {
+parser.add_argument('-s', '--source-dir', {
   required: true,
   help: 'Root directory where source files live. The corresponding ' +
       'coverage files must refer to these files. Currently source ' +
       'maps are not supported.',
 });
-parser.addArgument(['-o', '--output-dir'], {
+parser.add_argument('-o', '--output-dir', {
   required: true,
   help: 'Root directory to output all the converted istanbul coverage ' +
       'reports.',
 });
-parser.addArgument(['-c', '--raw-coverage-dirs'], {
+parser.add_argument('-c', '--raw-coverage-dirs', {
   required: true,
   nargs: '*',
   help: 'Directory that contains the raw v8 coverage files (files ' +
       'ending in .cov.json)',
 });
 
-const args = parser.parseArgs();
+const args = parser.parse_args();
 main(args)
     .then(outputDir => {
       console.log(`Successfully converted from v8 to IstanbulJS: ${outputDir}`);

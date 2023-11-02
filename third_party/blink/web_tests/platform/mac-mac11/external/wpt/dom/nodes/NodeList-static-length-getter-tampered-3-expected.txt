@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL NodeList (static collection) "length" getter tampered assert_equals: expected -1 but got 50
+Harness: the test ran to completion.
+

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -149,11 +149,6 @@ class URLLoaderInterceptor {
       const std::string* headers = nullptr,
       absl::optional<net::SSLInfo> ssl_info = absl::nullopt,
       absl::optional<GURL> url = absl::nullopt);
-
-  // Attempts to write |body| to |client| and complete the load with status OK.
-  // client->OnReceiveResponse() must have been called prior to this.
-  static MojoResult WriteResponseBody(base::StringPiece body,
-                                      network::mojom::URLLoaderClient* client);
 
   // Returns an interceptor that (as long as it says alive) will intercept
   // requests to |url| and fail them using the provided |error|.

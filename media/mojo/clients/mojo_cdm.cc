@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,9 +12,10 @@
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/types/optional_util.h"
+#include "build/build_config.h"
 #include "media/base/cdm_context.h"
 #include "media/base/cdm_key_information.h"
 #include "media/base/cdm_promise.h"
@@ -45,10 +46,10 @@ MojoCdm::MojoCdm(mojo::Remote<mojom::ContentDecryptionModule> remote_cdm,
     : remote_cdm_(std::move(remote_cdm)),
       cdm_id_(cdm_context->cdm_id),
       decryptor_remote_(std::move(cdm_context->decryptor)),
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       requires_media_foundation_renderer_(
           cdm_context->requires_media_foundation_renderer),
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
       session_message_cb_(session_message_cb),
       session_closed_cb_(session_closed_cb),
       session_keys_change_cb_(session_keys_change_cb),
@@ -56,7 +57,7 @@ MojoCdm::MojoCdm(mojo::Remote<mojom::ContentDecryptionModule> remote_cdm,
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(cdm_id_);
   DVLOG(2) << __func__ << " cdm_id: "
-           << CdmContext::CdmIdToString(base::OptionalOrNullptr(cdm_id_));
+           << CdmContext::CdmIdToString(base::OptionalToPtr(cdm_id_));
   DCHECK(session_message_cb_);
   DCHECK(session_closed_cb_);
   DCHECK(session_keys_change_cb_);
@@ -274,18 +275,18 @@ absl::optional<base::UnguessableToken> MojoCdm::GetCdmId() const {
   // Can be called on a different thread.
   base::AutoLock auto_lock(lock_);
   DVLOG(2) << __func__ << ": cdm_id="
-           << CdmContext::CdmIdToString(base::OptionalOrNullptr(cdm_id_));
+           << CdmContext::CdmIdToString(base::OptionalToPtr(cdm_id_));
   return cdm_id_;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 bool MojoCdm::RequiresMediaFoundationRenderer() {
   base::AutoLock auto_lock(lock_);
   DVLOG(2) << __func__ << ": requires_media_foundation_renderer_="
            << requires_media_foundation_renderer_;
   return requires_media_foundation_renderer_;
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 void MojoCdm::OnSessionMessage(const std::string& session_id,
                                MessageType message_type,

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,8 +22,9 @@ import org.chromium.ui.widget.Toast;
  * Handles the long screenshot action in the Sharing Hub and launches the screenshot editor.
  */
 public class LongScreenshotsCoordinator extends ScreenshotCoordinator {
-    private Activity mActivity;
-    private EntryManager mEntryManager;
+    private final Activity mActivity;
+    private final EntryManager mEntryManager;
+    private final Tab mTab;
     private LongScreenshotsMediator mMediator;
 
     /**
@@ -46,9 +47,10 @@ public class LongScreenshotsCoordinator extends ScreenshotCoordinator {
             BottomSheetController sheetController,
             ImageEditorModuleProvider imageEditorModuleProvider, EntryManager manager,
             @Nullable LongScreenshotsMediator mediator, boolean shouldWarmupCompositor) {
-        super(activity, tab, shareUrl, chromeOptionShareCallback, sheetController,
-                imageEditorModuleProvider);
+        super(activity, tab.getWindowAndroid(), shareUrl, chromeOptionShareCallback,
+                sheetController, imageEditorModuleProvider);
         mActivity = activity;
+        mTab = tab;
         mEntryManager =
                 manager == null ? new EntryManager(mActivity, mTab, /*inMemory=*/false) : manager;
         mMediator = mediator;

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    style="@style/AlertDialogContent">
+
+    <TextView
+        android:id="@+id/reactions_progress_percentage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:textAppearance="@style/TextAppearance.TextMedium.Primary.Baseline.Light" />
+
+    <org.chromium.components.browser_ui.widget.MaterialProgressBar
+        android:id="@+id/reactions_progress_bar"
+        android:layout_marginTop="16dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_width="112dp"
+        android:layout_height="4dp" />
+
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/reactions_progress_cancel"
+        android:text="@string/cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="16dp"
+        android:textAppearance="@style/TextAppearance.Button.Text.Blue.Dark"
+        style="@style/TextButton"
+        app:buttonTextColor="@color/blue_when_enabled_dark" />
+
+</LinearLayout>

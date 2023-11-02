@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+// Records if 'onprerenderingchange' event is triggered at least once.
+const onprerenderingchange_observed_promise = new Promise(resolve => {
+  document.addEventListener('prerenderingchange', () => {
+    resolve(true);
+  });
+});
+</script>
+</head>
+</html>

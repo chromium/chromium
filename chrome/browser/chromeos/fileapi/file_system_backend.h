@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "components/account_id/account_id.h"
@@ -72,7 +71,7 @@ constexpr char kSystemMountNameRemovable[] = "removable";
 //
 class FileSystemBackend : public storage::ExternalFileSystemBackend {
  public:
-  using storage::FileSystemBackend::OpenFileSystemCallback;
+  using storage::FileSystemBackend::ResolveURLCallback;
 
   // |system_mount_points| should outlive FileSystemBackend instance.
   FileSystemBackend(
@@ -106,7 +105,7 @@ class FileSystemBackend : public storage::ExternalFileSystemBackend {
   void Initialize(storage::FileSystemContext* context) override;
   void ResolveURL(const storage::FileSystemURL& url,
                   storage::OpenFileSystemMode mode,
-                  OpenFileSystemCallback callback) override;
+                  ResolveURLCallback callback) override;
   storage::AsyncFileUtil* GetAsyncFileUtil(
       storage::FileSystemType type) override;
   storage::WatcherManager* GetWatcherManager(

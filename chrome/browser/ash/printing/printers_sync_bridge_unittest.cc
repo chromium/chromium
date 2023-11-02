@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/printing/printers_sync_bridge.h"
-#include "components/sync/test/model/model_type_store_test_util.h"
+#include "components/sync/test/model_type_store_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -28,7 +28,8 @@ class PrintersSyncBridgeTest : public testing::Test {
     bridge_ = std::make_unique<PrintersSyncBridge>(
         syncer::ModelTypeStoreTestUtil::FactoryForInMemoryStoreForTest(),
         base::BindRepeating(
-            base::IgnoreResult(&base::debug::DumpWithoutCrashing)));
+            base::IgnoreResult(&base::debug::DumpWithoutCrashing), FROM_HERE,
+            base::Minutes(5)));
   }
 
  protected:

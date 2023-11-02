@@ -1,0 +1,23 @@
+caption: Allow Quick Answers to access selected content
+deprecated: true
+desc: |-
+  This policy is deprecated and will be removed in <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> version 89.
+
+        This policy gives Quick Answers permission to access selected content and send the info to server.
+
+        If the policy is enabled, Quick Answers will be allowed to access selected content.
+        If the policy is disabled, Quick Answers will not be allowed to access selected content.
+        If the policy is not set, users can decide whether to allow Quick Answers to access selected content.
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: true
+owners:
+- llin@google.com
+schema:
+  type: boolean
+supported_on:
+- chrome_os:84-88
+tags:
+- google-sharing
+type: main

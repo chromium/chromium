@@ -1,0 +1,61 @@
+source_set("features") {
+  sources = [
+    "features.cc",
+    "features.h",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+  public_deps = [ "//base" ]
+}
+
+source_set("post_restore_signin") {
+  sources = [
+    "metrics.h",
+    "metrics.mm",
+    "post_restore_signin_provider.h",
+    "post_restore_signin_provider.mm",
+    "post_restore_signin_view_controller.h",
+    "post_restore_signin_view_controller.mm",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+  public_deps = [
+    "//ios/chrome/browser/ui/promos_manager:promos",
+    "//ios/chrome/common/ui/confirmation_alert",
+  ]
+  frameworks = [ "Foundation.framework" ]
+  deps = [
+    ":features",
+    "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/application_context",
+    "//ios/chrome/browser/promos_manager:constants",
+    "//ios/chrome/browser/signin:signin_util",
+    "//ios/chrome/browser/ui/authentication:authentication_constants",
+    "//ios/chrome/browser/ui/authentication/views",
+    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/util",
+    "//ios/chrome/common/ui/confirmation_alert",
+    "//ios/chrome/common/ui/promo_style:promo_style",
+    "//ios/public/provider/chrome/browser/branded_images:branded_images_api",
+    "//ios/public/provider/chrome/browser/signin:signin_resources_api",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "post_restore_signin_provider_unittest.mm",
+    "post_restore_signin_view_controller_unittest.mm",
+  ]
+  deps = [
+    ":post_restore_signin",
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/browser/signin:signin_util",
+    "//ios/chrome/browser/ui/post_restore_signin:features",
+    "//ios/chrome/test:test_support",
+    "//third_party/ocmock",
+    "//ui/base",
+  ]
+}

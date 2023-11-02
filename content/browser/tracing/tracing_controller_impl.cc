@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,6 +21,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_config.h"
 #include "base/tracing/protos/grit/tracing_proto_resources.h"
@@ -64,13 +65,14 @@
 #include "content/browser/tracing/cast_tracing_agent.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
 #include "base/win/registry.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include <sys/time.h>
 #include "base/debug/elf_reader.h"
 #include "content/browser/android/tracing_controller_android.h"
@@ -78,7 +80,7 @@
 
 // Symbol with virtual address of the start of ELF header of the current binary.
 extern char __ehdr_start;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace content {
 
@@ -131,7 +133,7 @@ std::string GetClockString() {
   return std::string();
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 int64_t ConvertTimespecToMicros(const struct timespec& ts) {
   // On 32-bit systems, the calculation cannot overflow int64_t.
   // 2**32 * 1000000 + 2**64 / 1000 < 2**63
@@ -215,7 +217,7 @@ void TracingControllerImpl::AddAgents() {
   tracing::TraceEventMetadataSource::GetInstance()->AddGeneratorFunction(
       base::BindRepeating(&TracingControllerImpl::GenerateMetadataPacket,
                           base::Unretained(this)));
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   tracing::PerfettoTracedProcess::Get()->AddDataSource(
       tracing::JavaHeapProfiler::GetInstance());
 #endif
@@ -247,18 +249,19 @@ void TracingControllerImpl::GenerateMetadataPacket(
 }
 
 // Can be called on any thread.
-absl::optional<base::Value> TracingControllerImpl::GenerateMetadataDict() {
+absl::optional<base::Value::Dict>
+TracingControllerImpl::GenerateMetadataDict() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  base::Value metadata_dict(base::Value::Type::DICTIONARY);
+  base::Value::Dict metadata_dict;
 
-  metadata_dict.SetStringKey("network-type", GetNetworkTypeString());
-  metadata_dict.SetStringKey("product-version",
-                             GetContentClient()->browser()->GetProduct());
-  metadata_dict.SetStringKey("v8-version", V8_VERSION_STRING);
-  metadata_dict.SetStringKey("user-agent",
-                             GetContentClient()->browser()->GetUserAgent());
+  metadata_dict.Set("network-type", GetNetworkTypeString());
+  metadata_dict.Set("product-version",
+                    GetContentClient()->browser()->GetProduct());
+  metadata_dict.Set("v8-version", V8_VERSION_STRING);
+  metadata_dict.Set("user-agent",
+                    GetContentClient()->browser()->GetUserAgent());
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // The library name is used for symbolizing heap profiles. This cannot be
   // obtained from process maps since library can be mapped from apk directly.
   // This is not added as part of memory-infra os dumps since it is special case
@@ -266,86 +269,86 @@ absl::optional<base::Value> TracingControllerImpl::GenerateMetadataDict() {
   absl::optional<base::StringPiece> soname =
       base::debug::ReadElfLibraryName(&__ehdr_start);
   if (soname)
-    metadata_dict.SetStringKey("chrome-library-name", *soname);
-  metadata_dict.SetStringKey("clock-offset-since-epoch",
-                             GetClockOffsetSinceEpoch());
-#endif  // defined(OS_ANDROID)
-  metadata_dict.SetIntKey("chrome-bitness", 8 * sizeof(uintptr_t));
+    metadata_dict.Set("chrome-library-name", *soname);
+  metadata_dict.Set("clock-offset-since-epoch", GetClockOffsetSinceEpoch());
+#endif  // BUILDFLAG(IS_ANDROID)
+  metadata_dict.Set("chrome-bitness", static_cast<int>(8 * sizeof(uintptr_t)));
 
 #if DCHECK_IS_ON()
-  metadata_dict.SetIntKey("chrome-dcheck-on", 1);
+  metadata_dict.Set("chrome-dcheck-on", 1);
 #endif
 
   // OS
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  metadata_dict.SetStringKey("os-name", "CrOS");
+  metadata_dict.Set("os-name", "CrOS");
   if (are_statistics_loaded_)
-    metadata_dict.SetStringKey("hardware-class", hardware_class_);
+    metadata_dict.Set("hardware-class", hardware_class_);
 #else
-  metadata_dict.SetStringKey("os-name", base::SysInfo::OperatingSystemName());
+  metadata_dict.Set("os-name", base::SysInfo::OperatingSystemName());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  metadata_dict.SetStringKey("os-version",
-                             base::SysInfo::OperatingSystemVersion());
-#if defined(OS_WIN)
+  metadata_dict.Set("os-version", base::SysInfo::OperatingSystemVersion());
+#if BUILDFLAG(IS_WIN)
   if (base::win::OSInfo::GetArchitecture() ==
       base::win::OSInfo::X64_ARCHITECTURE) {
     if (base::win::OSInfo::GetInstance()->IsWowX86OnAMD64()) {
-      metadata_dict.SetStringKey("os-wow64", "enabled");
+      metadata_dict.Set("os-wow64", "enabled");
     } else {
-      metadata_dict.SetStringKey("os-wow64", "disabled");
+      metadata_dict.Set("os-wow64", "disabled");
     }
   }
 
-  metadata_dict.SetStringKey(
-      "os-session", base::win::IsCurrentSessionRemote() ? "remote" : "local");
+  metadata_dict.Set("module-apphelp", (::GetModuleHandle(L"apphelp.dll"))
+                                          ? "Loaded"
+                                          : "NotLoaded");
+
+  metadata_dict.Set("os-session",
+                    base::win::IsCurrentSessionRemote() ? "remote" : "local");
 #endif
 
-  metadata_dict.SetStringKey("os-arch",
-                             base::SysInfo::OperatingSystemArchitecture());
+  metadata_dict.Set("os-arch", base::SysInfo::OperatingSystemArchitecture());
 
   // CPU
   base::CPU cpu;
-  metadata_dict.SetIntKey("cpu-family", cpu.family());
-  metadata_dict.SetIntKey("cpu-model", cpu.model());
-  metadata_dict.SetIntKey("cpu-stepping", cpu.stepping());
-  metadata_dict.SetIntKey("num-cpus", base::SysInfo::NumberOfProcessors());
-  metadata_dict.SetIntKey("physical-memory",
-                          base::SysInfo::AmountOfPhysicalMemoryMB());
+  metadata_dict.Set("cpu-family", cpu.family());
+  metadata_dict.Set("cpu-model", cpu.model());
+  metadata_dict.Set("cpu-stepping", cpu.stepping());
+  metadata_dict.Set("num-cpus", base::SysInfo::NumberOfProcessors());
+  metadata_dict.Set("physical-memory",
+                    base::SysInfo::AmountOfPhysicalMemoryMB());
 
-  metadata_dict.SetStringKey("cpu-brand", cpu.cpu_brand());
+  metadata_dict.Set("cpu-brand", cpu.cpu_brand());
 
   // GPU
   const gpu::GPUInfo gpu_info =
       content::GpuDataManagerImpl::GetInstance()->GetGPUInfo();
   const gpu::GPUInfo::GPUDevice& active_gpu = gpu_info.active_gpu();
 
-#if !defined(OS_ANDROID)
-  metadata_dict.SetIntKey("gpu-venid", active_gpu.vendor_id);
-  metadata_dict.SetIntKey("gpu-devid", active_gpu.device_id);
+#if !BUILDFLAG(IS_ANDROID)
+  metadata_dict.Set("gpu-venid", static_cast<int>(active_gpu.vendor_id));
+  metadata_dict.Set("gpu-devid", static_cast<int>(active_gpu.device_id));
 #endif
 
-  metadata_dict.SetStringKey("gpu-driver", active_gpu.driver_version);
-  metadata_dict.SetStringKey("gpu-psver", gpu_info.pixel_shader_version);
-  metadata_dict.SetStringKey("gpu-vsver", gpu_info.vertex_shader_version);
+  metadata_dict.Set("gpu-driver", active_gpu.driver_version);
+  metadata_dict.Set("gpu-psver", gpu_info.pixel_shader_version);
+  metadata_dict.Set("gpu-vsver", gpu_info.vertex_shader_version);
 
-#if defined(OS_MAC)
-  metadata_dict.SetStringKey("gpu-glver", gpu_info.gl_version);
-#elif defined(OS_POSIX)
-  metadata_dict.SetStringKey("gpu-gl-vendor", gpu_info.gl_vendor);
-  metadata_dict.SetStringKey("gpu-gl-renderer", gpu_info.gl_renderer);
+#if BUILDFLAG(IS_MAC)
+  metadata_dict.Set("gpu-glver", gpu_info.gl_version);
+#elif BUILDFLAG(IS_POSIX)
+  metadata_dict.Set("gpu-gl-vendor", gpu_info.gl_vendor);
+  metadata_dict.Set("gpu-gl-renderer", gpu_info.gl_renderer);
 #endif
-  metadata_dict.SetKey("gpu-features", GetFeatureStatus());
+  metadata_dict.Set("gpu-features", GetFeatureStatus());
 
-  metadata_dict.SetStringKey("clock-domain", GetClockString());
-  metadata_dict.SetBoolKey("highres-ticks",
-                           base::TimeTicks::IsHighResolution());
+  metadata_dict.Set("clock-domain", GetClockString());
+  metadata_dict.Set("highres-ticks", base::TimeTicks::IsHighResolution());
 
   base::CommandLine::StringType command_line =
       base::CommandLine::ForCurrentProcess()->GetCommandLineString();
-#if defined(OS_WIN)
-  metadata_dict.SetStringKey("command_line", base::WideToUTF16(command_line));
+#if BUILDFLAG(IS_WIN)
+  metadata_dict.Set("command_line", base::WideToUTF16(command_line));
 #else
-  metadata_dict.SetStringKey("command_line", command_line);
+  metadata_dict.Set("command_line", command_line);
 #endif
 
   base::Time::Exploded ctime;
@@ -353,7 +356,7 @@ absl::optional<base::Value> TracingControllerImpl::GenerateMetadataDict() {
   std::string time_string = base::StringPrintf(
       "%u-%u-%u %d:%d:%d", ctime.year, ctime.month, ctime.day_of_month,
       ctime.hour, ctime.minute, ctime.second);
-  metadata_dict.SetStringKey("trace-capture-datetime", time_string);
+  metadata_dict.Set("trace-capture-datetime", time_string);
 
   // TODO(crbug.com/737049): The central controller doesn't know about
   // metadata filters, so we temporarily filter here as the controller is
@@ -365,7 +368,7 @@ absl::optional<base::Value> TracingControllerImpl::GenerateMetadataDict() {
   }
 
   if (!metadata_filter.is_null()) {
-    for (auto it : metadata_dict.DictItems()) {
+    for (auto it : metadata_dict) {
       if (!metadata_filter.Run(it.first)) {
         it.second = base::Value("__stripped__");
       }
@@ -452,7 +455,7 @@ bool TracingControllerImpl::StopTracing(
     return false;
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   base::trace_event::TraceLog::GetInstance()->AddClockSyncMetadataEvent();
 #endif
 

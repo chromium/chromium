@@ -1,12 +1,13 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "gpu/vulkan/vulkan_image.h"
 
+#include <tuple>
+
 #include "base/containers/cxx20_erase.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
 
@@ -42,6 +43,7 @@ bool VulkanImage::InitializeFromGpuMemoryBufferHandle(
     return false;
   }
 
+  queue_family_index_ = queue_family_index;
   auto& native_pixmap_handle = gmb_handle.native_pixmap_handle;
 
   // 2 plane images are ok, they just need ycbcr set up.
@@ -90,19 +92,22 @@ bool VulkanImage::InitializeFromGpuMemoryBufferHandle(
     external_image_create_info.pNext = &modifier_info;
   }
 
+  int memory_fd = scoped_fd.release();
   VkImportMemoryFdInfoKHR import_memory_fd_info = {
       .sType = VK_STRUCTURE_TYPE_IMPORT_MEMORY_FD_INFO_KHR,
       .handleType = VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT,
-      .fd = scoped_fd.get(),
+      .fd = memory_fd,
   };
 
   VkMemoryRequirements* requirements = nullptr;
   bool result = Initialize(device_queue, size, format, usage, flags,
                            image_tiling, &external_image_create_info,
                            &import_memory_fd_info, requirements);
-  // If Initialize successfully, the fd in scoped_fd should be owned by vulkan.
-  if (result)
-    ignore_result(scoped_fd.release());
+  // If Initialize successfully, the fd in scoped_fd should be owned by vulkan,
+  // otherwise take the ownership of the fd back.
+  if (!result) {
+    scoped_fd.reset(memory_fd);
+  }
 
   return result;
 }

@@ -1,0 +1,91 @@
+{
+  "$build/archive": {
+    "archive_datas": [
+      {
+        "archive_type": "ARCHIVE_TYPE_ZIP",
+        "dirs": [
+          "locales"
+        ],
+        "files": [
+          "chrome",
+          "chrome_100_percent.pak",
+          "chrome_200_percent.pak",
+          "chrome_crashpad_handler",
+          "headless_lib_data.pak",
+          "headless_lib_strings.pak",
+          "icudtl.dat",
+          "nacl_helper",
+          "nacl_irt_x86_64.nexe",
+          "resources.pak",
+          "snapshot_blob.bin"
+        ],
+        "gcs_bucket": "chromium-lacros-fishfood",
+        "gcs_path": "x86_64/{%position%}/lacros.zip"
+      }
+    ]
+  },
+  "$build/chromium_tests_builder_config": {
+    "builder_config": {
+      "builder_db": {
+        "entries": [
+          {
+            "builder_id": {
+              "bucket": "ci",
+              "builder": "lacros-amd64-generic-binary-size-rel",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "build_gs_bucket": "chromium-chromiumos-archive",
+              "builder_group": "chromium.chromiumos",
+              "execution_mode": "COMPILE_AND_TEST",
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
+                "build_config": "Release",
+                "config": "chromium",
+                "target_arch": "intel",
+                "target_bits": 64,
+                "target_cros_boards": [
+                  "amd64-generic"
+                ],
+                "target_platform": "chromeos"
+              },
+              "legacy_gclient_config": {
+                "apply_configs": [
+                  "checkout_lacros_sdk",
+                  "chromeos"
+                ],
+                "config": "chromium"
+              }
+            }
+          }
+        ]
+      },
+      "builder_ids": [
+        {
+          "bucket": "ci",
+          "builder": "lacros-amd64-generic-binary-size-rel",
+          "project": "chromium"
+        }
+      ]
+    }
+  },
+  "$build/reclient": {
+    "instance": "rbe-chromium-trusted",
+    "jobs": 500,
+    "metrics_project": "chromium-reclient-metrics"
+  },
+  "$recipe_engine/resultdb/test_presentation": {
+    "column_keys": [],
+    "grouping_keys": [
+      "status",
+      "v.test_suite"
+    ]
+  },
+  "builder_group": "chromium.chromiumos",
+  "recipe": "chromium",
+  "sheriff_rotations": [
+    "chromium"
+  ]
+}

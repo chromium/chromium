@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -13,8 +13,6 @@ static_library("invalidations") {
     "interested_data_types_manager.cc",
     "interested_data_types_manager.h",
     "invalidations_listener.h",
-    "switches.cc",
-    "switches.h",
     "sync_invalidations_service.h",
     "sync_invalidations_service_impl.cc",
     "sync_invalidations_service_impl.h",
@@ -26,16 +24,4 @@ static_library("invalidations") {
     "//components/keyed_service/core",
     "//components/sync/base",
   ]
-}
-
-static_library("test_support") {
-  testonly = true
-  sources = [
-    "mock_sync_invalidations_service.cc",
-    "mock_sync_invalidations_service.h",
-  ]
-
-  public_deps = [ "//components/sync/invalidations" ]
-
-  deps = [ "//testing/gmock" ]
 }

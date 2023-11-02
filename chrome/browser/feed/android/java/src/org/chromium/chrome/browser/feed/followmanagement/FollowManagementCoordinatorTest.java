@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.verify;
 
-import android.os.Bundle;
-import android.view.View;
-import android.view.ViewGroup;
-
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.AppCompatImageButton;
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.After;
 import org.junit.Before;
@@ -22,27 +17,29 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.robolectric.Robolectric;
 
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.browser.feed.R;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridgeJni;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridgeJni;
-import org.chromium.testing.local.LocalRobolectricTestRunner;
+import org.chromium.ui.base.TestActivity;
 
 /**
  * Tests {@link FollowManagementCoordinator}.
  */
-@RunWith(LocalRobolectricTestRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
 public class FollowManagementCoordinatorTest {
     private TestActivity mActivity;
     private FollowManagementCoordinator mFollowManagementCoordinator;
 
     @Rule
     public JniMocker mocker = new JniMocker();
+    @Rule
+    public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
+            new ActivityScenarioRule<>(TestActivity.class);
 
     @Mock
     LargeIconBridge.Natives mLargeIconBridgeJni;
@@ -53,18 +50,9 @@ public class FollowManagementCoordinatorTest {
     @Mock
     private Profile mProfile;
 
-    private static class TestActivity extends AppCompatActivity {
-        TestActivity() {}
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            setTheme(R.style.Theme_BrowserUI);
-        }
-    }
-
     @Before
     public void setUpTest() {
-        mActivity = Robolectric.setupActivity(TestActivity.class);
+        mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
 
         MockitoAnnotations.initMocks(this);
         Profile.setLastUsedProfileForTesting(mProfile);
@@ -86,25 +74,5 @@ public class FollowManagementCoordinatorTest {
     @Test
     public void testConstruction() {
         assertTrue(true);
-    }
-
-    @Test
-    public void testBackArrow() {
-        View outerView = mFollowManagementCoordinator.getView();
-        // Send a click to the back arrow.
-        // Note that finding the back arrow view is ugly because it doesn't
-        // have an ID.
-        boolean clicked = false;
-        ViewGroup actionBar = (ViewGroup) outerView.findViewById(R.id.action_bar);
-        for (int i = 0; i < actionBar.getChildCount(); i++) {
-            try {
-                AppCompatImageButton button = (AppCompatImageButton) actionBar.getChildAt(i);
-                button.performClick();
-                clicked = true;
-            } catch (ClassCastException e) {
-            }
-        }
-
-        assertTrue(clicked);
     }
 }

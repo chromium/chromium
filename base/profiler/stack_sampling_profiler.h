@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 
 #include "base/base_export.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/profiler/profile_builder.h"
 #include "base/profiler/sampling_profiler_thread_token.h"
 #include "base/synchronization/waitable_event.h"
@@ -112,7 +111,8 @@ class BASE_EXPORT StackSamplingProfiler {
 
   // Same as above function, with custom |sampler| implementation. The sampler
   // on Android is not implemented in base.
-  StackSamplingProfiler(const SamplingParams& params,
+  StackSamplingProfiler(SamplingProfilerThreadToken thread_token,
+                        const SamplingParams& params,
                         std::unique_ptr<ProfileBuilder> profile_builder,
                         std::unique_ptr<StackSampler> sampler);
 
@@ -183,19 +183,23 @@ class BASE_EXPORT StackSamplingProfiler {
 
   // Friend the global function from sample_metadata.cc so that it can call into
   // the function below.
-  friend void ApplyMetadataToPastSamplesImpl(TimeTicks period_start,
-                                             TimeTicks period_end,
-                                             int64_t name_hash,
-                                             absl::optional<int64_t> key,
-                                             int64_t value);
+  friend void ApplyMetadataToPastSamplesImpl(
+      TimeTicks period_start,
+      TimeTicks period_end,
+      uint64_t name_hash,
+      absl::optional<int64_t> key,
+      int64_t value,
+      absl::optional<PlatformThreadId> thread_id);
 
   // Apply metadata to already recorded samples. See the
   // ApplyMetadataToPastSamples() docs in sample_metadata.h.
-  static void ApplyMetadataToPastSamples(TimeTicks period_start,
-                                         TimeTicks period_end,
-                                         int64_t name_hash,
-                                         absl::optional<int64_t> key,
-                                         int64_t value);
+  static void ApplyMetadataToPastSamples(
+      TimeTicks period_start,
+      TimeTicks period_end,
+      uint64_t name_hash,
+      absl::optional<int64_t> key,
+      int64_t value,
+      absl::optional<PlatformThreadId> thread_id);
 
   // The thread whose stack will be sampled.
   SamplingProfilerThreadToken thread_token_;

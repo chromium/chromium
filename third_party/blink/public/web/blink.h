@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_BLINK_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_BLINK_H_
 
+#include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "v8/include/v8-isolate.h"
 
@@ -120,16 +121,15 @@ BLINK_EXPORT void ForceNextDrawingBufferCreationToFailForTest();
 // agents, not both.
 // This is called at most once. This is called earlier than any frame commit.
 BLINK_EXPORT void SetIsCrossOriginIsolated(bool value);
-BLINK_EXPORT bool IsCrossOriginIsolated();
 
-// Direct sockets require isolation above and beyond what "cross-origin
-// isolation" provides. This flag corresponds to that set of restrictions.
-// Similarly to the `SetIsCrossOriginIsolated()` method above, this flag is
-// process global, and called at most once, prior to committing a frame.
+// Set whether this renderer process has the "isolated application" isolation
+// level. Similarly to the `SetIsCrossOriginIsolated()` method above, this
+// flag is process global, and called at most once, prior to committing a
+// frame.
 //
 // TODO(mkwst): We need a specification for this restriction.
-BLINK_EXPORT void SetIsDirectSocketEnabled(bool value);
-BLINK_EXPORT bool IsDirectSocketEnabled();
+BLINK_EXPORT void SetIsIsolatedApplication(bool value);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_BLINK_H_

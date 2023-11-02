@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_addition_result.h"
@@ -18,7 +19,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 class SigninHelper;
@@ -45,6 +45,9 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerMojoService
   void SetAccountManagerUI(
       std::unique_ptr<account_manager::AccountManagerUI> account_manager_ui);
 
+  void OnAccountAdditionFinishedForTesting(
+      const account_manager::AccountAdditionResult& result);
+
   // crosapi::mojom::AccountManager:
   void IsInitialized(IsInitializedCallback callback) override;
   void AddObserver(AddObserverCallback callback) override;
@@ -52,7 +55,8 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerMojoService
   void GetPersistentErrorForAccount(
       mojom::AccountKeyPtr mojo_account_key,
       GetPersistentErrorForAccountCallback callback) override;
-  void ShowAddAccountDialog(ShowAddAccountDialogCallback callback) override;
+  void ShowAddAccountDialog(mojom::AccountAdditionOptionsPtr options,
+                            ShowAddAccountDialogCallback callback) override;
   void ShowReauthAccountDialog(const std::string& email,
                                base::OnceClosure closure) override;
   void ShowManageAccountsSettings() override;
@@ -60,6 +64,8 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerMojoService
       mojom::AccountKeyPtr mojo_account_key,
       const std::string& oauth_consumer_name,
       CreateAccessTokenFetcherCallback callback) override;
+  void ReportAuthError(mojom::AccountKeyPtr account,
+                       mojom::GoogleServiceAuthErrorPtr error) override;
 
   // account_manager::AccountManager::Observer:
   void OnTokenUpserted(const account_manager::Account& account) override;
@@ -81,12 +87,24 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerMojoService
   // Deletes `request` from `pending_access_token_requests_`, if present.
   void DeletePendingAccessTokenFetchRequest(AccessTokenFetcher* request);
 
+  // Notifies observers about a change in the error status of `account_key`.
+  // Does nothing if `account_key` does not correspond to any account in
+  // `known_accounts`.
+  void MaybeNotifyAuthErrorObservers(
+      const account_manager::AccountKey& account_key,
+      const GoogleServiceAuthError& error,
+      const std::vector<account_manager::Account>& known_accounts);
+
+  // Notifies observers that the account addition / re-authentication dialog was
+  // closed (either successfully, or the user cancelled the flow).
+  void NotifySigninDialogClosed();
+
   void FlushMojoForTesting();
   int GetNumPendingAccessTokenRequests() const;
 
   ShowAddAccountDialogCallback account_addition_callback_;
   bool account_addition_in_progress_ = false;
-  account_manager::AccountManager* const account_manager_;
+  const raw_ptr<account_manager::AccountManager> account_manager_;
   std::unique_ptr<account_manager::AccountManagerUI> account_manager_ui_;
   std::vector<std::unique_ptr<AccessTokenFetcher>>
       pending_access_token_requests_;

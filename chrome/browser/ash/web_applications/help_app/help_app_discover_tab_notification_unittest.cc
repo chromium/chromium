@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,10 @@
 
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/mock_callback.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
-#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -22,7 +21,7 @@ namespace ash {
 
 class HelpAppDiscoverTabNotificationTest : public BrowserWithTestWindowTest {
  public:
-  HelpAppDiscoverTabNotificationTest() {}
+  HelpAppDiscoverTabNotificationTest() = default;
   ~HelpAppDiscoverTabNotificationTest() override = default;
 
   HelpAppDiscoverTabNotificationTest(

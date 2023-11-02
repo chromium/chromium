@@ -1,11 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/autofill/form_suggestion_tab_helper.h"
 
-#include "base/check.h"
-#include "base/memory/ptr_util.h"
+#import "base/check.h"
+#import "base/memory/ptr_util.h"
 #import "ios/chrome/browser/autofill/form_suggestion_controller.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -13,18 +13,6 @@
 #endif
 
 FormSuggestionTabHelper::~FormSuggestionTabHelper() = default;
-
-// static
-void FormSuggestionTabHelper::CreateForWebState(
-    web::WebState* web_state,
-    NSArray<id<FormSuggestionProvider>>* providers) {
-  DCHECK(web_state);
-  if (!FromWebState(web_state)) {
-    web_state->SetUserData(
-        UserDataKey(),
-        base::WrapUnique(new FormSuggestionTabHelper(web_state, providers)));
-  }
-}
 
 id<FormInputSuggestionsProvider>
 FormSuggestionTabHelper::GetAccessoryViewProvider() {

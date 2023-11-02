@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,10 @@
 #include "ash/public/cpp/window_properties.h"
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/syslog_logging.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_data.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
-#include "chrome/browser/extensions/api/tabs/tabs_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -22,11 +23,21 @@
 #include "chrome/common/chrome_features.h"
 #include "chromeos/ui/base/window_pin_type.h"
 #include "components/account_id/account_id.h"
+#include "components/webapps/browser/install_result_code.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "ui/aura/window.h"
 #include "ui/base/page_transition_types.h"
 #include "url/origin.h"
 
 namespace ash {
+
+namespace {
+
+void RecordKioskWebAppInstallError(webapps::InstallResultCode code) {
+  base::UmaHistogramEnumeration("Kiosk.WebApp.InstallError", code);
+}
+
+}  // namespace
 
 // The delay time of closing the splash window when a lacros-browser window is
 // launched.
@@ -49,6 +60,7 @@ void WebKioskAppLauncher::Initialize() {
   const WebKioskAppData* app =
       WebKioskAppManager::Get()->GetAppByAccountId(account_id_);
   DCHECK(app);
+  SYSLOG(INFO) << "Launching web kiosk for url: " << app->install_url();
   if (app->status() == WebKioskAppData::Status::kInstalled ||
       delegate_->ShouldSkipAppInstallation()) {
     delegate_->OnAppPrepared();
@@ -62,10 +74,10 @@ void WebKioskAppLauncher::ContinueWithNetworkReady() {
   delegate_->OnAppInstalling();
   DCHECK(!is_installed_);
   install_task_ = std::make_unique<web_app::WebAppInstallTask>(
-      profile_, /*os_integration_manager=*/nullptr,
+      profile_,
       /*install_finalizer=*/nullptr, data_retriever_factory_.Run(),
-      /*registrar=*/nullptr);
-  install_task_->LoadAndRetrieveWebApplicationInfoWithIcons(
+      /*registrar=*/nullptr, webapps::WebappInstallSource::MANAGEMENT_API);
+  install_task_->LoadAndRetrieveWebAppInstallInfoWithIcons(
       WebKioskAppManager::Get()->GetAppByAccountId(account_id_)->install_url(),
       url_loader_.get(),
       base::BindOnce(&WebKioskAppLauncher::OnAppDataObtained,
@@ -80,24 +92,27 @@ const WebKioskAppData* WebKioskAppLauncher::GetCurrentApp() const {
 }
 
 void WebKioskAppLauncher::OnAppDataObtained(
-    std::unique_ptr<WebApplicationInfo> app_info) {
-  if (!app_info) {
+    web_app::WebAppInstallTask::WebAppInstallInfoOrErrorCode info) {
+  if (absl::holds_alternative<webapps::InstallResultCode>(info)) {
+    RecordKioskWebAppInstallError(absl::get<webapps::InstallResultCode>(info));
     // Notify about failed installation, let the controller decide what to do.
     delegate_->OnLaunchFailed(KioskAppLaunchError::Error::kUnableToInstall);
     return;
   }
 
-  // When received |app_info->start_url| origin does not match the origin of
+  DCHECK(absl::holds_alternative<WebAppInstallInfo>(info));
+  const auto& app_info = absl::get<WebAppInstallInfo>(info);
+
+  // When received |app_info.start_url| origin does not match the origin of
   // |install_url|, fail.
   if (url::Origin::Create(GetCurrentApp()->install_url()) !=
-      url::Origin::Create(app_info->start_url)) {
+      url::Origin::Create(app_info.start_url)) {
     VLOG(1) << "Origin of the app does not match the origin of install url";
     delegate_->OnLaunchFailed(KioskAppLaunchError::Error::kUnableToLaunch);
     return;
   }
 
-  WebKioskAppManager::Get()->UpdateAppByAccountId(account_id_,
-                                                  std::move(app_info));
+  WebKioskAppManager::Get()->UpdateAppByAccountId(account_id_, app_info);
   delegate_->OnAppPrepared();
 }
 

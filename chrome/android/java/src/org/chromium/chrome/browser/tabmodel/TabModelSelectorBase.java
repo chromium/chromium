@@ -1,8 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.tabmodel;
+
+import androidx.annotation.Nullable;
 
 import org.chromium.base.ObserverList;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
@@ -35,9 +37,14 @@ public abstract class TabModelSelectorBase
 
     private final TabModelFilterFactory mTabModelFilterFactory;
     private int mActiveModelIndex;
+
     private final ObserverList<TabModelSelectorObserver> mObservers = new ObserverList<>();
     private final ObserverList<IncognitoTabModelObserver> mIncognitoObservers =
             new ObserverList<>();
+
+    @Nullable
+    protected IncognitoReauthDialogDelegate mIncognitoReauthDialogDelegate;
+
     private boolean mTabStateInitialized;
     private boolean mStartIncognito;
     private boolean mReparentingInProgress;
@@ -126,6 +133,12 @@ public abstract class TabModelSelectorBase
         previousModel.setActive(false);
         newModel.setActive(true);
         mActiveModelIndex = newIndex;
+
+        // Notify the re-auth code first so we show the re-auth dialog first.
+        if (mIncognitoReauthDialogDelegate != null && newModel.isIncognito()) {
+            mIncognitoReauthDialogDelegate.onBeforeIncognitoTabModelSelected();
+        }
+
         for (TabModelSelectorObserver listener : mObservers) {
             listener.onTabModelSelected(newModel, previousModel);
         }
@@ -237,7 +250,7 @@ public abstract class TabModelSelectorBase
     @Override
     public void closeAllTabs(boolean uponExit) {
         for (int i = 0; i < getModels().size(); i++) {
-            mTabModels.get(i).closeAllTabs(!uponExit, uponExit);
+            mTabModels.get(i).closeAllTabs(uponExit);
         }
     }
 
@@ -259,9 +272,6 @@ public abstract class TabModelSelectorBase
     public void removeObserver(TabModelSelectorObserver observer) {
         mObservers.removeObserver(observer);
     }
-
-    @Override
-    public void setCloseAllTabsDelegate(CloseAllTabsDelegate delegate) { }
 
     /**
      * Marks the task state being initialized and notifies observers.
@@ -357,5 +367,11 @@ public abstract class TabModelSelectorBase
         for (IncognitoTabModelObserver observer : mIncognitoObservers) {
             observer.didBecomeEmpty();
         }
+    }
+
+    @Override
+    public void setIncognitoReauthDialogDelegate(
+            IncognitoReauthDialogDelegate incognitoReauthDialogDelegate) {
+        mIncognitoReauthDialogDelegate = incognitoReauthDialogDelegate;
     }
 }

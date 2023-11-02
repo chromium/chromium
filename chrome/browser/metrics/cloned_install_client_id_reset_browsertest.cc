@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -52,7 +52,7 @@ class ClonedInstallClientIdResetBrowserTest : public InProcessBrowserTest {
     // Set up the initial client id for (before)
     // PRE_TestClonedInstallClientIdReset.
     state->SetValue(metrics::prefs::kMetricsClientID,
-                    std::make_unique<base::Value>(kInitialClientId), 0);
+                    base::Value(kInitialClientId), 0);
 
     return true;
   }

@@ -5,6 +5,7 @@ include_rules = [
   "-chrome",
   "-content",
 
-  "+dbus",
   "+ui/native_theme",
+  "+components/crash/core/common",
+  "+media/mojo/mojom/stable/stable_video_decoder.mojom.h",
 ]

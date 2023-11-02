@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/components/arc/memory/arc_memory_bridge.h"
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -15,7 +16,6 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "components/arc/memory/arc_memory_bridge.h"
 #include "components/performance_manager/public/graph/process_node.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -70,43 +70,71 @@ bool WorkingSetTrimmerChromeOS::TrimWorkingSet(base::ProcessId pid) {
 }
 
 void WorkingSetTrimmerChromeOS::TrimArcVmWorkingSet(
-    TrimArcVmWorkingSetCallback callback) {
+    TrimArcVmWorkingSetCallback callback,
+    ArcVmReclaimType reclaim_type,
+    int page_limit) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK_NE(ArcVmReclaimType::kReclaimNone, reclaim_type);
+  const char* error = nullptr;
 
   // Before trimming, drop ARCVM's page caches.
   content::BrowserContext* context =
       context_for_testing_ ? context_for_testing_ : GetContext();
-  if (!context) {
-    LOG(ERROR) << "BrowserContext unavailable";
-    OnDropArcVmCaches(std::move(callback), /*result=*/false);
-    return;
-  }
-  auto* bridge = arc::ArcMemoryBridge::GetForBrowserContext(context);
-  if (!bridge) {
-    LOG(ERROR) << "ArcMemoryBridge unavailable";
-    OnDropArcVmCaches(std::move(callback), /*result=*/false);
+  if (!context)
+    error = "BrowserContext unavailable";
+
+  auto* bridge =
+      context ? arc::ArcMemoryBridge::GetForBrowserContext(context) : nullptr;
+  if (!bridge)
+    error = "ArcMemoryBridge unavailable";
+
+  if (error) {
+    LOG(ERROR) << error;
+    if (reclaim_type == ArcVmReclaimType::kReclaimGuestPageCaches) {
+      // Failed to drop caches. When the type if kReclaimGuestPageCaches, run
+      // the |callback| now with the |error| message. No further action is
+      // necessary.
+      std::move(callback).Run(false, error);
+    } else {
+      // Otherwise, continue without dropping them.
+      OnDropArcVmCaches(std::move(callback), reclaim_type, page_limit,
+                        /*result=*/false);
+    }
     return;
   }
 
-  bridge->DropCaches(
-      base::BindOnce(&WorkingSetTrimmerChromeOS::OnDropArcVmCaches,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
+  bridge->DropCaches(base::BindOnce(
+      &WorkingSetTrimmerChromeOS::OnDropArcVmCaches, weak_factory_.GetWeakPtr(),
+      std::move(callback), reclaim_type, page_limit));
 }
 
 void WorkingSetTrimmerChromeOS::OnDropArcVmCaches(
     TrimArcVmWorkingSetCallback callback,
+    ArcVmReclaimType reclaim_type,
+    int page_limit,
     bool result) {
+  constexpr const char kErrorMessage[] =
+      "Failed to drop ARCVM's guest page caches";
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  LOG_IF(WARNING, !result)
-      << "Failed to drop ARCVM's page caches - continue anyway";
+  LOG_IF(WARNING, !result) << kErrorMessage;
+
+  if (reclaim_type == ArcVmReclaimType::kReclaimGuestPageCaches) {
+    // TrimVmMemory() is unnecessary. Just run the |callback| with the
+    // DropCaches() result.
+    std::move(callback).Run(result, result ? "" : kErrorMessage);
+    return;
+  }
+
+  // Do the actual VM trimming regardless of the |result|.
   arc::ArcSessionManager* arc_session_manager = arc::ArcSessionManager::Get();
   if (!arc_session_manager) {
     LOG(ERROR) << "ArcSessionManager unavailable";
     std::move(callback).Run(false, "ArcSessionManager unavailable");
     return;
   }
-  arc_session_manager->TrimVmMemory(std::move(callback));
+
+  arc_session_manager->TrimVmMemory(std::move(callback), page_limit);
 }
 
 bool WorkingSetTrimmerChromeOS::TrimWorkingSet(

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,12 +38,12 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.LifecycleObserver;
 import org.chromium.chrome.browser.ui.appmenu.test.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighterTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.test.util.DummyUiActivity;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivity;
+import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 import org.chromium.ui.test.util.UiDisableIf;
-import org.chromium.ui.widget.ChipView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,7 +57,7 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
-public class AppMenuTest extends DummyUiActivityTestCase {
+public class AppMenuTest extends BlankUiTestActivityTestCase {
     private AppMenuCoordinatorImpl mAppMenuCoordinator;
     private AppMenuHandlerImpl mAppMenuHandler;
     private TestAppMenuPropertiesDelegate mPropertiesDelegate;
@@ -74,7 +74,7 @@ public class AppMenuTest extends DummyUiActivityTestCase {
 
     @BeforeClass
     public static void setUpBeforeActivityLaunched() {
-        DummyUiActivity.setTestLayout(R.layout.test_app_menu_activity_layout);
+        BlankUiTestActivity.setTestLayout(R.layout.test_app_menu_activity_layout);
     }
 
     @Override
@@ -96,12 +96,18 @@ public class AppMenuTest extends DummyUiActivityTestCase {
         mTestMenuButtonDelegate = new TestMenuButtonDelegate();
         mAppMenuCoordinator = new AppMenuCoordinatorImpl(getActivity(), mLifecycleDispatcher,
                 mTestMenuButtonDelegate, mDelegate, getActivity().getWindow().getDecorView(),
-                getActivity().findViewById(R.id.menu_anchor_stub));
+                getActivity().findViewById(R.id.menu_anchor_stub), this::getAppRect);
         mAppMenuHandler = mAppMenuCoordinator.getAppMenuHandlerImplForTesting();
         mMenuObserver = new TestAppMenuObserver();
         mAppMenuCoordinator.getAppMenuHandler().addObserver(mMenuObserver);
         mPropertiesDelegate =
                 (TestAppMenuPropertiesDelegate) mAppMenuCoordinator.getAppMenuPropertiesDelegate();
+    }
+
+    private Rect getAppRect() {
+        Rect appRect = new Rect();
+        getActivity().getWindow().getDecorView().getWindowVisibleDisplayFrame(appRect);
+        return appRect;
     }
 
     @Test
@@ -806,6 +812,20 @@ public class AppMenuTest extends DummyUiActivityTestCase {
                 1 /* groupDividerResourceId */, 6 /* availableScreenSpace */);
         // The space is not enough for any item, but we still show 1 and half items at least.
         Assert.assertEquals(15, height);
+    }
+
+    @Test
+    @SmallTest
+    public void testCalculateHeightForItems_nagativeSpaceForZeroItems() throws Exception {
+        showMenuAndAssert();
+
+        List<Integer> menuItemIds = new ArrayList<Integer>();
+        List<Integer> heightList = new ArrayList<Integer>();
+
+        int height = mAppMenuHandler.getAppMenu().calculateHeightForItems(menuItemIds, heightList,
+                1 /* groupDividerResourceId */, -1 /* availableScreenSpace */);
+        // Make sure there are no crashes.
+        Assert.assertEquals(0, height);
     }
 
     private void createMenuItem(

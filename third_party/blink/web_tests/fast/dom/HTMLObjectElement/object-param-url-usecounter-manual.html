@@ -1,0 +1,56 @@
+<!DOCTYPE HTML>
+
+<body>
+  <p>Since content_shell does not support plugins, this test cannot be automated.
+    For manual verification, place LOG() statements next to the two relevant calls
+    to UseCounter::Count() in html_object_element.cc, and then  verify that they fire
+    for the "should count" test cases, and not for the "should not count" test cases.
+  </p>
+  <div id=wrapper style="width:300px;height:150px;border:1px solid black"></div>
+<script>
+
+const smallPdf1 = 'JVBERi0xLjIgCjkgMCBvYmoKPDwKPj4Kc3RyZWFtCkJULyA5IFRmKFRlc3QpJyBFVAplbmRzdHJlYW0KZW5kb2JqCjQgMCBvYmoKPDwKL1R5cGUgL1BhZ2UKL1BhcmVudCA1IDAgUgovQ29udGVudHMgOSAwIFIKPj4KZW5kb2JqCjUgMCBvYmoKPDwKL0tpZHMgWzQgMCBSIF0KL0NvdW50IDEKL1R5cGUgL1BhZ2VzCi9NZWRpYUJveCBbIDAgMCA5OSA5IF0KPj4KZW5kb2JqCjMgMCBvYmoKPDwKL1BhZ2VzIDUgMCBSCi9UeXBlIC9DYXRhbG9nCj4+CmVuZG9iagp0cmFpbGVyCjw8Ci9Sb290IDMgMCBSCj4+CiUlRU9G';
+const smallPdf2 = 'JVBERi0xLjIgCjkgMCBvYmoKPDwKPj4Kc3RyZWFtCkJULyAzMiBUZiggIFlPVVIgVEVYVCBIRVJFICAgKScgRVQKZW5kc3RyZWFtCmVuZG9iago0IDAgb2JqCjw8Ci9UeXBlIC9QYWdlCi9QYXJlbnQgNSAwIFIKL0NvbnRlbnRzIDkgMCBSCj4+CmVuZG9iago1IDAgb2JqCjw8Ci9LaWRzIFs0IDAgUiBdCi9Db3VudCAxCi9UeXBlIC9QYWdlcwovTWVkaWFCb3ggWyAwIDAgMjUwIDUwIF0KPj4KZW5kb2JqCjMgMCBvYmoKPDwKL1BhZ2VzIDUgMCBSCi9UeXBlIC9DYXRhbG9nCj4+CmVuZG9iagp0cmFpbGVyCjw8Ci9Sb290IDMgMCBSCj4+CiUlRU9G';
+const dataUrl1 = `data:application/pdf;base64,${smallPdf1}`;
+const dataUrl2 = `data:application/pdf;base64,${smallPdf2}`;
+const badUrl1 = `data:application/invalid_mime_type;foobar`;
+const badUrl2 = `https://@`;
+
+function testOne(isParam, paramInUse, html, description) {
+  const button = document.createElement('button');
+  let expectStr = 'NO use counters';
+  if (paramInUse) {
+    if (!isParam) {
+      expectStr = "THIS TEST IS BROKEN! If paramInUse, then isParam must be true also";
+    } else {
+      expectStr = "BOTH use counters";
+    }
+  } else if (isParam) {
+    expectStr = "JUST kHTMLParamElementURLParameter (no InUse counter)";
+  }
+  expectStr = `Should trigger ${expectStr}: `;
+  button.innerText = expectStr + description;
+  document.body.appendChild(button);
+  document.body.appendChild(document.createElement('br'));
+  button.onclick = () => {
+    const wrapper = document.getElementById('wrapper');
+    wrapper.innerHTML = html;
+  }
+}
+
+testOne(false, false, `<object data=${dataUrl1} type="application/pdf"></object>`,                                    'Regular <object> (no <param>)');
+testOne(false, false, `<object data=${dataUrl1} type="application/pdf"><param name=src value=${dataUrl1}></object>`,  '<param> URL when <object> has URL (matching URLs)');
+testOne(false, false, `<object data=${dataUrl1} type="application/pdf"><param name=src value=${dataUrl2}></object>`,  '<param> URL when <object> has URL (mismatched URLs)');
+testOne(false, false, `<object data=${dataUrl1}><param name=src value=${dataUrl2}></object>`,                         '<param> URL when <object> has URL (no type)');
+testOne(false, false, `<object type="application/pdf"><param name=data value=${dataUrl1}></object>`,                  '<param> URL with name=data');
+
+testOne(true,  false, `<object type="application/pdf"><param name=code value=${badUrl1}></object>`,                   '<param> URL with invalid mime type (counters differ here)');
+testOne(true,  false, `<object type="application/pdf"><param name=code value=${badUrl2}></object>`,                   'Invalid <param> URL (counters differ here)');
+
+testOne(true,  true,  `<object type="application/pdf"><param name=src value=${dataUrl1}></object>`,                   '<param> URL with no <object> URL');
+testOne(true,  true,  `<object><param name=src value=${dataUrl1}></object>`,                                          '<param> URL with no <object> URL, no type');
+testOne(true,  true,  `<object type="application/pdf"><param name=code value=${dataUrl1}></object>`,                  '<param> URL with no <object> URL, name=code');
+testOne(true,  true,  `<object type="application/pdf"><param name=movie value=${dataUrl1}></object>`,                 '<param> URL with no <object> URL, name=movie');
+testOne(true,  true,  `<object type="application/pdf"><param name=url value=${dataUrl1}></object>`,                   '<param> URL with no <object> URL, name=url');
+
+</script>

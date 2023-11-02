@@ -1,4 +1,4 @@
-// Copyright (c) 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,7 +44,7 @@ class MODULES_EXPORT WebRtcMediaStreamTrackAdapterMap
     bool is_initialized() const { return adapter_->is_initialized(); }
     void InitializeOnMainThread();
     MediaStreamComponent* track() const { return adapter_->track(); }
-    webrtc::MediaStreamTrackInterface* webrtc_track() const {
+    rtc::scoped_refptr<webrtc::MediaStreamTrackInterface> webrtc_track() const {
       return adapter_->webrtc_track();
     }
 

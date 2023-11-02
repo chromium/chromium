@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,22 +6,20 @@
 
 #include "base/threading/hang_watcher.h"
 #include "base/trace_event/base_tracing.h"
+#include "build/build_config.h"
 
 #if DCHECK_IS_ON()
-
 #include <utility>
 
 #include "base/check_op.h"
 #include "base/debug/stack_trace.h"
 #include "base/no_destructor.h"
 #include "base/threading/thread_local.h"
-#include "base/trace_event/base_tracing.h"
-#include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 // NaCL doesn't support stack sampling and Android is slow at stack sampling and
 // this causes timeouts (crbug.com/959139).
-#if defined(OS_NACL) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_NACL) || BUILDFLAG(IS_ANDROID)
 constexpr bool kCaptureStackTraces = false;
 #else
 // Always disabled when !EXPENSIVE_DCHECKS_ARE_ON() because user-facing builds
@@ -296,8 +294,7 @@ ScopedAllowBlocking::ScopedAllowBlocking(const Location& from_here)
   TRACE_EVENT_BEGIN(
       "base", "ScopedAllowBlocking", [&](perfetto::EventContext ctx) {
         ctx.event()->set_source_location_iid(
-            base::trace_event::InternedSourceLocation::Get(
-                &ctx, base::trace_event::TraceSourceLocation(from_here)));
+            base::trace_event::InternedSourceLocation::Get(&ctx, from_here));
       });
 }
 
@@ -321,8 +318,7 @@ ScopedAllowBaseSyncPrimitivesOutsideBlockingScope::
       "base", "ScopedAllowBaseSyncPrimitivesOutsideBlockingScope",
       [&](perfetto::EventContext ctx) {
         ctx.event()->set_source_location_iid(
-            base::trace_event::InternedSourceLocation::Get(
-                &ctx, base::trace_event::TraceSourceLocation(from_here)));
+            base::trace_event::InternedSourceLocation::Get(&ctx, from_here));
       });
 
   // Since this object is used to indicate that sync primitives will be used to
@@ -349,8 +345,7 @@ ThreadRestrictions::ScopedAllowIO::ScopedAllowIO(const Location& from_here)
 {
   TRACE_EVENT_BEGIN("base", "ScopedAllowIO", [&](perfetto::EventContext ctx) {
     ctx.event()->set_source_location_iid(
-        base::trace_event::InternedSourceLocation::Get(
-            &ctx, base::trace_event::TraceSourceLocation(from_here)));
+        base::trace_event::InternedSourceLocation::Get(&ctx, from_here));
   });
 }
 

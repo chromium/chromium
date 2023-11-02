@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "base/compiler_specific.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "cc/tiles/image_decode_cache_utils.h"
 #include "cc/trees/layer_tree_frame_sink_client.h"
 #include "components/viz/common/hit_test/hit_test_region_list.h"
 #include "components/viz/common/quads/compositor_frame.h"
@@ -29,10 +30,15 @@ DirectLayerTreeFrameSink::DirectLayerTreeFrameSink(
     scoped_refptr<viz::RasterContextProvider> worker_context_provider,
     scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
     gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager)
-    : LayerTreeFrameSink(std::move(context_provider),
-                         std::move(worker_context_provider),
-                         std::move(compositor_task_runner),
-                         gpu_memory_buffer_manager),
+    : LayerTreeFrameSink(
+          std::move(context_provider),
+          base::MakeRefCounted<cc::RasterContextProviderWrapper>(
+              std::move(worker_context_provider),
+              /*dark_mode_filter=*/nullptr,
+              cc::ImageDecodeCacheUtils::GetWorkingSetBytesForImageDecode(
+                  /*for_renderer=*/false)),
+          std::move(compositor_task_runner),
+          gpu_memory_buffer_manager),
       frame_sink_id_(frame_sink_id),
       frame_sink_manager_(frame_sink_manager),
       display_(display) {
@@ -77,8 +83,7 @@ void DirectLayerTreeFrameSink::DetachFromClient() {
 
 void DirectLayerTreeFrameSink::SubmitCompositorFrame(
     viz::CompositorFrame frame,
-    bool hit_test_data_changed,
-    bool show_hit_test_borders) {
+    bool hit_test_data_changed) {
   DCHECK(frame.metadata.begin_frame_ack.has_damage);
   DCHECK(frame.metadata.begin_frame_ack.frame_id.IsSequenceValid());
 
@@ -146,8 +151,7 @@ void DirectLayerTreeFrameSink::DisplayWillDrawAndSwap(
     bool will_draw_and_swap,
     viz::AggregatedRenderPassList* render_passes) {
   if (support_->GetHitTestAggregator()) {
-    support_->GetHitTestAggregator()->Aggregate(display_->CurrentSurfaceId(),
-                                                render_passes);
+    support_->GetHitTestAggregator()->Aggregate(display_->CurrentSurfaceId());
   }
 }
 

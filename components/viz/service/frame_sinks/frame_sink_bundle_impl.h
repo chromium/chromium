@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "build/build_config.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/surfaces/frame_sink_bundle_id.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -50,6 +51,11 @@ class FrameSinkBundleImpl : public mojom::FrameSinkBundle {
 
   const FrameSinkBundleId& id() const { return id_; }
 
+  // Called by the identified sink itself to notify the bundle that the sink
+  // needs (or no longer needs) BeginFrame notifications. This is distinct from
+  // SetNeedsBeginFrame(), as the latter is only called by clients.
+  void SetSinkNeedsBeginFrame(uint32_t sink_id, bool needs_begin_frame);
+
   void AddFrameSink(CompositorFrameSinkSupport* support);
   void UpdateFrameSink(CompositorFrameSinkSupport* support,
                        BeginFrameSource* old_source);
@@ -65,6 +71,10 @@ class FrameSinkBundleImpl : public mojom::FrameSinkBundle {
   void DidAllocateSharedBitmap(uint32_t sink_id,
                                base::ReadOnlySharedMemoryRegion region,
                                const gpu::Mailbox& id) override;
+#if BUILDFLAG(IS_ANDROID)
+  void SetThreadIds(uint32_t sink_id,
+                    const std::vector<int32_t>& thread_ids) override;
+#endif
 
   // Helpers used by each CompositorFrameSinkImpl to proxy their client messages
   // to this object for potentially batched communication.

@@ -1,16 +1,45 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/address_profile_save_manager.h"
 
-#include "base/stl_util.h"
+#include "base/types/optional_util.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/form_data_importer.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
 
 namespace autofill {
+
+namespace {
+
+// When multi-step complements are enabled, sufficiently complete profiles are
+// added as to `form_data_importer`s multi-step import candidates. This
+// enables complementing them in later steps with additional optional
+// information.
+// This function adds the imported profile as a candidate. This is only done
+// after the user decision to incorporate manual edits.
+void AddMultiStepComplementCandidate(FormDataImporter* form_data_importer,
+                                     const AutofillProfile& profile,
+                                     const url::Origin& origin) {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillEnableMultiStepImports) ||
+      !features::kAutofillEnableMultiStepImportComplements.Get() ||
+      !form_data_importer) {
+    return;
+  }
+  // Metrics depending on `import_process.import_metadata()` are collected
+  // for the `confirmed_import_candidate`. E.g. whether the removal of an
+  // invalid phone number made the import possible. Just like regular updates,
+  // future multi-step updates shouldn't claim impact of this feature again.
+  // The `import_metadata` is thus initialized to a neutral element.
+  ProfileImportMetadata import_metadata{.origin = origin};
+  form_data_importer->AddMultiStepImportCandidate(profile, import_metadata);
+}
+
+}  // namespace
 
 using UserDecision = AutofillClient::SaveAddressProfileOfferUserDecision;
 
@@ -25,7 +54,8 @@ void AddressProfileSaveManager::ImportProfileFromForm(
     const AutofillProfile& observed_profile,
     const std::string& app_locale,
     const GURL& url,
-    bool allow_only_silent_updates) {
+    bool allow_only_silent_updates,
+    ProfileImportMetadata import_metadata) {
   // Without a personal data manager, profile storage is not possible.
   if (!personal_data_manager_)
     return;
@@ -34,16 +64,19 @@ void AddressProfileSaveManager::ImportProfileFromForm(
   // behavior and directly import the observed profile without recording any
   // additional metrics. However, if only silent updates are allowed, proceed
   // with the profile import process.
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillAddressProfileSavePrompt) &&
+  if ((!base::FeatureList::IsEnabled(
+           features::kAutofillAddressProfileSavePrompt) ||
+       personal_data_manager_->auto_accept_address_imports_for_testing()) &&
       !allow_only_silent_updates) {
     personal_data_manager_->SaveImportedProfile(observed_profile);
+    AddMultiStepComplementCandidate(client_->GetFormDataImporter(),
+                                    observed_profile, import_metadata.origin);
     return;
   }
 
   auto process_ptr = std::make_unique<ProfileImportProcess>(
       observed_profile, app_locale, url, personal_data_manager_,
-      allow_only_silent_updates);
+      allow_only_silent_updates, import_metadata);
 
   MaybeOfferSavePrompt(std::move(process_ptr));
 }
@@ -71,13 +104,6 @@ void AddressProfileSaveManager::MaybeOfferSavePrompt(
     case AutofillProfileImportType::kNewProfile:
     case AutofillProfileImportType::kConfirmableMerge:
     case AutofillProfileImportType::kConfirmableMergeAndSilentUpdate:
-      // Emulates manually accepting new profiles and profile updates for
-      // testing purposes. This should only be applied in tests.
-      if (personal_data_manager_->auto_accept_address_imports_for_testing()) {
-        import_process->AcceptWithoutEdits();
-        FinalizeProfileImport(std::move(import_process));
-        return;
-      }
       OfferSavePrompt(std::move(import_process));
       return;
 
@@ -106,7 +132,7 @@ void AddressProfileSaveManager::OfferSavePrompt(
   ProfileImportProcess* process_ptr = import_process.get();
   client_->ConfirmSaveAddressProfile(
       process_ptr->import_candidate().value(),
-      base::OptionalOrNullptr(process_ptr->merge_candidate()),
+      base::OptionalToPtr(process_ptr->merge_candidate()),
       AutofillClient::SaveAddressProfilePromptOptions{.show_prompt = true},
       base::BindOnce(&AddressProfileSaveManager::OnUserDecision,
                      weak_ptr_factory_.GetWeakPtr(),
@@ -160,7 +186,17 @@ void AddressProfileSaveManager::FinalizeProfileImport(
     }
   }
 
-  import_process->CollectMetrics();
+  if (import_process->UserAccepted()) {
+    const absl::optional<AutofillProfile>& confirmed_import_candidate =
+        import_process->confirmed_import_candidate();
+    DCHECK(confirmed_import_candidate);
+    AddMultiStepComplementCandidate(client_->GetFormDataImporter(),
+                                    *confirmed_import_candidate,
+                                    import_process->import_metadata().origin);
+  }
+
+  import_process->CollectMetrics(client_->GetUkmRecorder(),
+                                 client_->GetUkmSourceId());
   ClearPendingImport(std::move(import_process));
 }
 

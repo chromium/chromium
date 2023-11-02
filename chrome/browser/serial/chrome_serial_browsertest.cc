@@ -1,8 +1,9 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -71,7 +72,7 @@ class SerialTest : public InProcessBrowserTest {
  private:
   base::test::ScopedFeatureList feature_list_;
   device::FakeSerialPortManager port_manager_;
-  SerialChooserContext* context_;
+  raw_ptr<SerialChooserContext> context_;
 };
 
 IN_PROC_BROWSER_TEST_F(SerialTest, NavigateWithChooserCrossOrigin) {
@@ -108,7 +109,8 @@ IN_PROC_BROWSER_TEST_F(SerialTest, RemovePort) {
   // Create port and grant permission to it.
   auto port = device::mojom::SerialPortInfo::New();
   port->token = base::UnguessableToken::Create();
-  url::Origin origin = web_contents->GetMainFrame()->GetLastCommittedOrigin();
+  url::Origin origin =
+      web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
   context()->GrantPortPermission(origin, *port);
   port_manager().AddPort(port.Clone());
 
@@ -130,6 +132,55 @@ IN_PROC_BROWSER_TEST_F(SerialTest, RemovePort) {
   port_manager().RemovePort(port->token);
 
   EXPECT_EQ(true, content::EvalJs(web_contents, "removedPromise"));
+}
+
+IN_PROC_BROWSER_TEST_F(SerialTest, ForgetPort) {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Create port and grant permission to it.
+  auto port = device::mojom::SerialPortInfo::New();
+  port->token = base::UnguessableToken::Create();
+  url::Origin origin =
+      web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
+  context()->GrantPortPermission(origin, *port);
+  port_manager().AddPort(port.Clone());
+
+  EXPECT_EQ(1, content::EvalJs(web_contents, R"(
+      (async () => {
+        const ports = await navigator.serial.getPorts();
+        return ports.length;
+      })())"));
+
+  EXPECT_EQ(0, content::EvalJs(web_contents, R"(
+      (async () => {
+        const [port] = await navigator.serial.getPorts();
+        await port.forget();
+        const ports = await navigator.serial.getPorts();
+        return ports.length;
+      })())"));
+}
+
+IN_PROC_BROWSER_TEST_F(SerialTest, ForgetAfterOpenPort) {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Create port and grant permission to it.
+  auto port = device::mojom::SerialPortInfo::New();
+  port->token = base::UnguessableToken::Create();
+  url::Origin origin =
+      web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
+  context()->GrantPortPermission(origin, *port);
+  port_manager().AddPort(port.Clone());
+
+  EXPECT_EQ(0, content::EvalJs(web_contents, R"(
+      (async () => {
+        const [port] = await navigator.serial.getPorts();
+        await port.open({baudRate: 9600});
+        await port.forget();
+        const ports = await navigator.serial.getPorts();
+        return ports.length;
+      })())"));
 }
 
 class SerialBlocklistTest : public SerialTest {
@@ -169,7 +220,8 @@ IN_PROC_BROWSER_TEST_F(SerialBlocklistTest, Blocklist) {
   port->vendor_id = 0x18D1;
   port->has_product_id = true;
   port->product_id = 0x58F0;
-  url::Origin origin = web_contents->GetMainFrame()->GetLastCommittedOrigin();
+  url::Origin origin =
+      web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
   context()->GrantPortPermission(origin, *port);
   port_manager().AddPort(port.Clone());
 

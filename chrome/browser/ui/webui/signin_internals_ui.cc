@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -81,14 +81,15 @@ void SignInInternalsHandler::OnJavascriptDisallowed() {
 }
 
 void SignInInternalsHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getSigninInfo",
       base::BindRepeating(&SignInInternalsHandler::HandleGetSignInInfo,
                           base::Unretained(this)));
 }
 
-void SignInInternalsHandler::HandleGetSignInInfo(const base::ListValue* args) {
-  std::string callback_id = args->GetList()[0].GetString();
+void SignInInternalsHandler::HandleGetSignInInfo(
+    const base::Value::List& args) {
+  std::string callback_id = args[0].GetString();
   AllowJavascript();
 
   Profile* profile = Profile::FromWebUI(web_ui());
@@ -121,10 +122,12 @@ void SignInInternalsHandler::HandleGetSignInInfo(const base::ListValue* args) {
   }
 }
 
-void SignInInternalsHandler::OnSigninStateChanged(const base::Value* info) {
-  FireWebUIListener("signin-info-changed", *info);
+void SignInInternalsHandler::OnSigninStateChanged(
+    const base::Value::Dict& info) {
+  FireWebUIListener("signin-info-changed", info);
 }
 
-void SignInInternalsHandler::OnCookieAccountsFetched(const base::Value* info) {
-  FireWebUIListener("update-cookie-accounts", *info);
+void SignInInternalsHandler::OnCookieAccountsFetched(
+    const base::Value::Dict& info) {
+  FireWebUIListener("update-cookie-accounts", info);
 }

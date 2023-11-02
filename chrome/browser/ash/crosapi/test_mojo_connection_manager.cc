@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,8 @@
 #include "base/path_service.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/crosapi/crosapi_util.h"
 #include "chrome/browser/ash/crosapi/environment_provider.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/account_manager_core/account.h"
@@ -90,7 +90,7 @@ void TestMojoConnectionManager::OnTestingSocketAvailable() {
       environment_provider_,
       browser_util::InitialBrowserAction(
           mojom::InitialBrowserAction::kUseStartupPreference),
-      /*is_keep_alive_enabled=*/false);
+      /*is_keep_alive_enabled=*/false, absl::nullopt);
   if (!startup_fd.is_valid()) {
     LOG(ERROR) << "Failed to create startup data";
     return;

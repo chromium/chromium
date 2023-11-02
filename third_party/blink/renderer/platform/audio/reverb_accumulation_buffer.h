@@ -30,7 +30,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_REVERB_ACCUMULATION_BUFFER_H_
 
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
-#include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -40,11 +39,11 @@ namespace blink {
 // offsets from the read position.  The read operation will zero the memory
 // just read from the buffer, so it will be ready for accumulation the next
 // time around.
-class PLATFORM_EXPORT ReverbAccumulationBuffer {
+class ReverbAccumulationBuffer {
   DISALLOW_NEW();
 
  public:
-  ReverbAccumulationBuffer(uint32_t length);
+  explicit ReverbAccumulationBuffer(uint32_t length);
   ReverbAccumulationBuffer(const ReverbAccumulationBuffer&) = delete;
   ReverbAccumulationBuffer& operator=(const ReverbAccumulationBuffer&) = delete;
 

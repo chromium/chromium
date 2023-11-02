@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,19 +6,19 @@
 
 #import <XCTest/XCTest.h>
 
-#include "base/debug/stack_trace.h"
-#include "base/files/file_path.h"
-#include "base/files/file_util.h"
-#include "base/guid.h"
-#include "base/json/json_reader.h"
-#include "base/json/json_writer.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/test/ios/wait_util.h"
-#include "components/version_info/version_info.h"
+#import "base/debug/stack_trace.h"
+#import "base/files/file_path.h"
+#import "base/files/file_util.h"
+#import "base/guid.h"
+#import "base/json/json_reader.h"
+#import "base/json/json_writer.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/test/ios/wait_util.h"
+#import "components/version_info/version_info.h"
 #import "ios/chrome/test/wpt/cwt_constants.h"
 #import "ios/chrome/test/wpt/cwt_webdriver_app_interface.h"
 #import "ios/third_party/edo/src/Service/Sources/EDOClientService.h"
-#include "net/http/http_status_code.h"
+#import "net/http/http_status_code.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -44,6 +44,7 @@ const char kWebDriverSyncScriptCommand[] = "sync";
 const char kWebDriverAsyncScriptCommand[] = "async";
 const char kWebDriverScreenshotCommand[] = "screenshot";
 const char kWebDriverWindowRectCommand[] = "rect";
+const char kWebDriverActionsCommand[] = "actions";
 
 // Non-standard commands used only for testing Chrome.
 // This command is similar to the standard "url" command. It loads the URL
@@ -258,6 +259,9 @@ absl::optional<base::Value> CWTRequestHandler::ProcessCommand(
     if (command == kWebDriverWindowCommand)
       return CloseTargetTab();
 
+    if (command == kWebDriverActionsCommand)
+      return ReleaseActions();
+
     return absl::nullopt;
   }
 
@@ -331,6 +335,10 @@ base::Value CWTRequestHandler::InitializeSession() {
 base::Value CWTRequestHandler::CloseSession() {
   session_id_.clear();
   session_completion_handler_();
+  return base::Value(base::Value::Type::NONE);
+}
+
+base::Value CWTRequestHandler::ReleaseActions() {
   return base::Value(base::Value::Type::NONE);
 }
 
@@ -508,13 +516,13 @@ base::Value CWTRequestHandler::ExecuteScript(const base::Value* script,
 
   NSString* function_to_execute;
   if (is_async_function) {
-    // The provided |script| is a function body that already calls its last
+    // The provided `script` is a function body that already calls its last
     // argument with the result of its computation.
     function_to_execute =
         [NSString stringWithFormat:@"function f(completionHandler) { %s }",
                                    script->GetString().c_str()];
   } else {
-    // The provided |script| directly computes a result. Convert to a function
+    // The provided `script` directly computes a result. Convert to a function
     // that calls a completion handler with the result of its computation.
     NSString* input_function = [NSString
         stringWithFormat:@"() => { %s }", script->GetString().c_str()];

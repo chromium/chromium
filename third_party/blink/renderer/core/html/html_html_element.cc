@@ -23,11 +23,12 @@
 
 #include "third_party/blink/renderer/core/html/html_html_element.h"
 
+#include "third_party/blink/renderer/core/css/css_property_value_set.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_parser.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
-#include "third_party/blink/renderer/core/frame/deprecation.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
@@ -37,7 +38,7 @@
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -54,9 +55,6 @@ void HTMLHtmlElement::InsertedByParser() {
   if (!GetDocument().Parser())
     return;
 
-  if (!GetDocument().Parser())
-    return;
-
   GetDocument().Parser()->DocumentElementAvailable();
   if (GetDocument().GetFrame()) {
     GetDocument().GetFrame()->Loader().DispatchDocumentElementAvailable();
@@ -64,19 +62,6 @@ void HTMLHtmlElement::InsertedByParser() {
     // RunScriptsAtDocumentElementAvailable might have invalidated
     // GetDocument().
   }
-}
-
-const CSSPropertyValueSet*
-HTMLHtmlElement::AdditionalPresentationAttributeStyle() {
-  if (const CSSValue* color_scheme =
-          GetDocument().GetStyleEngine().GetMetaColorSchemeValue()) {
-    DEFINE_STATIC_LOCAL(
-        Persistent<MutableCSSPropertyValueSet>, color_scheme_style,
-        (MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode)));
-    color_scheme_style->SetProperty(CSSPropertyID::kColorScheme, *color_scheme);
-    return color_scheme_style;
-  }
-  return nullptr;
 }
 
 namespace {
@@ -142,6 +127,8 @@ void HTMLHtmlElement::PropagateWritingModeAndDirectionFromBody() {
   if (old_style == new_style)
     return;
 
+  const bool is_writing_direction_equal =
+      old_style->GetWritingDirection() == new_style->GetWritingDirection();
   const bool is_orthogonal = old_style->IsHorizontalWritingMode() !=
                              new_style->IsHorizontalWritingMode();
 
@@ -150,19 +137,31 @@ void HTMLHtmlElement::PropagateWritingModeAndDirectionFromBody() {
   // however, inherit the computed value, which is unaffected by the
   // propagated used value from body.
   for (Node* node = firstChild(); node; node = node->nextSibling()) {
-    if (!node->IsTextNode() || node->NeedsReattachLayoutTree())
+    if (node->NeedsReattachLayoutTree())
       continue;
-    LayoutObject* const layout_text = node->GetLayoutObject();
-    if (!layout_text)
+    auto* child_layout_object = node->GetLayoutObject();
+    if (!child_layout_object)
       continue;
-    if (is_orthogonal) {
-      // If the old and new writing-modes are orthogonal, reattach the layout
-      // objects to make sure we create or remove any LayoutNGTextCombine.
+
+    // Tables need all their internals parts to have a consistent writing-mode
+    // and direction, force a reattach.
+    if (!is_writing_direction_equal &&
+        child_layout_object->StyleRef().IsDisplayTableType()) {
       node->SetNeedsReattachLayoutTree();
       continue;
     }
-    auto* const text_combine =
-        DynamicTo<LayoutNGTextCombine>(layout_text->Parent());
+
+    auto* layout_text = DynamicTo<LayoutText>(child_layout_object);
+    if (!layout_text)
+      continue;
+
+    // Upon an orthogonal writing-mode change text-combines may be
+    // inserted/destroyed, force a reattach.
+    if (is_orthogonal) {
+      node->SetNeedsReattachLayoutTree();
+      continue;
+    }
+    auto* text_combine = DynamicTo<LayoutNGTextCombine>(layout_text->Parent());
     if (UNLIKELY(text_combine)) {
       layout_text->SetStyle(text_combine->Style());
       continue;

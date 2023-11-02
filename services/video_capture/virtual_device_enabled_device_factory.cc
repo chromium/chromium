@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -147,7 +147,7 @@ void VirtualDeviceEnabledDeviceFactory::CreateDevice(
         base::BindOnce(&VirtualDeviceEnabledDeviceFactory::
                            OnVirtualDeviceConsumerConnectionErrorOrClose,
                        base::Unretained(this), device_id));
-    std::move(callback).Run(mojom::DeviceAccessResultCode::SUCCESS);
+    std::move(callback).Run(media::VideoCaptureError::kNone);
     return;
   }
 
@@ -158,7 +158,6 @@ void VirtualDeviceEnabledDeviceFactory::CreateDevice(
 void VirtualDeviceEnabledDeviceFactory::AddSharedMemoryVirtualDevice(
     const media::VideoCaptureDeviceInfo& device_info,
     mojo::PendingRemote<mojom::Producer> producer_pending_remote,
-    bool send_buffer_handles_to_producer_as_raw_file_descriptors,
     mojo::PendingReceiver<mojom::SharedMemoryVirtualDevice>
         virtual_device_receiver) {
   auto device_id = device_info.descriptor.device_id;
@@ -175,8 +174,7 @@ void VirtualDeviceEnabledDeviceFactory::AddSharedMemoryVirtualDevice(
                          OnVirtualDeviceProducerConnectionErrorOrClose,
                      base::Unretained(this), device_id));
   auto device = std::make_unique<SharedMemoryVirtualDeviceMojoAdapter>(
-      std::move(producer),
-      send_buffer_handles_to_producer_as_raw_file_descriptors);
+      std::move(producer));
   auto producer_receiver =
       std::make_unique<mojo::Receiver<mojom::SharedMemoryVirtualDevice>>(
           device.get(), std::move(virtual_device_receiver));
@@ -301,5 +299,12 @@ void VirtualDeviceEnabledDeviceFactory::OnDevicesChangedObserverDisconnected(
     }
   }
 }
+
+#if BUILDFLAG(IS_WIN)
+void VirtualDeviceEnabledDeviceFactory::OnGpuInfoUpdate(
+    const CHROME_LUID& luid) {
+  device_factory_->OnGpuInfoUpdate(luid);
+}
+#endif
 
 }  // namespace video_capture

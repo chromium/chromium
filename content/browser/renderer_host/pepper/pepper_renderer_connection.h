@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "content/common/pepper_plugin.mojom.h"
 #include "content/public/browser/browser_message_filter.h"
 #include "ppapi/c/pp_instance.h"
@@ -95,7 +95,7 @@ class PepperRendererConnection : public BrowserMessageFilter {
   // information (like the plugin name) won't be available.
   std::unique_ptr<BrowserPpapiHostImpl> in_process_host_;
 
-  PluginServiceImpl* const plugin_service_;
+  const raw_ptr<PluginServiceImpl> plugin_service_;
   const base::FilePath profile_data_directory_;
 };
 

@@ -24,3 +24,7 @@ Local Modifications:
 - open-fd.patch has been applied.
 - Added libusb_get_raw_config_descriptor and libusb_get_active_config_value
   methods to avoid using the built-in parser.
+- Removed OSAtomic calls from darwin_usb.c for macOS compatibility by
+  backporting and simplifying the 10.12 branch of the upstream
+  https://android.googlesource.com/platform/external/libusb/+/1e05092aa98d60c717929629ac16590595e08431
+  as the 10.12 branch works fine on all previous OSes.

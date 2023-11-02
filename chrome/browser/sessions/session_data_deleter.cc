@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,9 +17,9 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_keep_alive_types.h"
-#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
@@ -35,13 +35,14 @@
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "storage/browser/quota/special_storage_policy.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace {
 
-bool OriginMatcher(const url::Origin& origin,
+bool OriginMatcher(const blink::StorageKey& storage_key,
                    storage::SpecialStoragePolicy* policy) {
-  return policy->IsStorageSessionOnly(origin.GetURL()) &&
-         !policy->IsStorageProtected(origin.GetURL());
+  return policy->IsStorageSessionOnly(storage_key.origin().GetURL()) &&
+         !policy->IsStorageProtected(storage_key.origin().GetURL());
 }
 
 class SessionDataDeleterInternal
@@ -101,7 +102,7 @@ void SessionDataDeleterInternal::Run(
     // Clear storage and keep this object alive until deletion is done.
     storage_partition->ClearData(
         removal_mask, content::StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL,
-        base::BindRepeating(&OriginMatcher),
+        /*filter_builder=*/nullptr, base::BindRepeating(&OriginMatcher),
         /*cookie_deletion_filter=*/nullptr,
         /*perform_storage_cleanup=*/false, base::Time(), base::Time::Max(),
         base::BindOnce(&SessionDataDeleterInternal::OnStorageDeletionDone,
@@ -121,13 +122,10 @@ void SessionDataDeleterInternal::Run(
         // Fire and forget. Session cookies will be cleaned up on start as well.
         // (SQLitePersistentCookieStore::Backend::DeleteSessionCookiesOnStartup)
         base::DoNothing());
-
-    // If the permissions policy feature is enabled, delete the client hint
-    // preferences
-    if (base::FeatureList::IsEnabled(features::kFeaturePolicyForClientHints)) {
-      host_content_settings_map->ClearSettingsForOneType(
-          ContentSettingsType::CLIENT_HINTS);
-    }
+    host_content_settings_map->ClearSettingsForOneType(
+        ContentSettingsType::CLIENT_HINTS);
+    host_content_settings_map->ClearSettingsForOneType(
+        ContentSettingsType::REDUCED_ACCEPT_LANGUAGE);
   }
 
   if (!storage_policy_.get() || !storage_policy_->HasSessionOnlyOrigins())
@@ -159,13 +157,12 @@ void SessionDataDeleter::DeleteSessionOnlyData(bool skip_session_cookies,
   // called during shutdown.
   DCHECK(!browser_shutdown::IsTryingToQuit());
 
-  SessionStartupPref::Type startup_pref_type =
+  SessionStartupPref startup_pref =
       StartupBrowserCreator::GetSessionStartupPref(
-          *base::CommandLine::ForCurrentProcess(), profile_)
-          .type;
+          *base::CommandLine::ForCurrentProcess(), profile_);
 
   bool delete_only_by_session_only_policy =
-      skip_session_cookies || startup_pref_type == SessionStartupPref::LAST;
+      skip_session_cookies || startup_pref.ShouldRestoreLastSession();
 
   auto deleter = base::MakeRefCounted<SessionDataDeleterInternal>(
       profile_, delete_only_by_session_only_policy, std::move(callback));

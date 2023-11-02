@@ -1,12 +1,12 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "extensions/browser/api/declarative_net_request/regex_rules_matcher.h"
 
-#include <algorithm>
-
+#include "base/containers/contains.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "components/url_pattern_index/url_pattern_index.h"
@@ -30,11 +30,8 @@ bool IsExtraHeadersMatcherInternal(
                 "Modify this method to ensure IsExtraHeadersMatcherInternal is "
                 "updated as new actions are added.");
 
-  return std::any_of(regex_list->begin(), regex_list->end(),
-                     [](const flat::RegexRule* regex_rule) {
-                       return regex_rule->action_type() ==
-                              flat::ActionType_modify_headers;
-                     });
+  return base::Contains(*regex_list, flat::ActionType_modify_headers,
+                        &flat::RegexRule::action_type);
 }
 
 re2::StringPiece ToRE2StringPiece(const ::flatbuffers::String& str) {
@@ -53,9 +50,13 @@ bool DoesRuleMetadataMatchRequest(const flat_rule::UrlRule& rule,
     return false;
   }
 
-  // Compares included and excluded domains.
-  return url_pattern_index::DoesOriginMatchDomainList(
-      params.first_party_origin, rule, false /* disable_generic_rules */);
+  // Compares included and excluded request domains.
+  if (!url_pattern_index::DoesURLMatchRequestDomainList(*params.url, rule))
+    return false;
+
+  // Compares included and excluded initiator domains.
+  return url_pattern_index::DoesOriginMatchInitiatorDomainList(
+      params.first_party_origin, rule);
 }
 
 bool IsBeforeRequestAction(flat::ActionType action_type) {
@@ -98,6 +99,14 @@ RegexRulesMatcher::RegexRulesMatcher(const ExtensionId& extension_id,
 
 RegexRulesMatcher::~RegexRulesMatcher() = default;
 
+bool RegexRulesMatcher::IsExtraHeadersMatcher() const {
+  return is_extra_headers_matcher_;
+}
+
+size_t RegexRulesMatcher::GetRulesCount() const {
+  return regex_list_->size();
+}
+
 std::vector<RequestAction> RegexRulesMatcher::GetModifyHeadersActions(
     const RequestParams& params,
     absl::optional<uint64_t> min_priority) const {
@@ -125,13 +134,12 @@ absl::optional<RequestAction> RegexRulesMatcher::GetAllowAllRequestsAction(
     const RequestParams& params) const {
   const std::vector<RegexRuleInfo>& potential_matches =
       GetPotentialMatches(params);
-  auto info = std::find_if(potential_matches.begin(), potential_matches.end(),
-                           [&params](const RegexRuleInfo& info) {
-                             return info.regex_rule->action_type() ==
-                                        flat::ActionType_allow_all_requests &&
-                                    re2::RE2::PartialMatch(params.url->spec(),
-                                                           *info.regex);
-                           });
+  auto info = base::ranges::find_if(
+      potential_matches, [&params](const RegexRuleInfo& info) {
+        return info.regex_rule->action_type() ==
+                   flat::ActionType_allow_all_requests &&
+               re2::RE2::PartialMatch(params.url->spec(), *info.regex);
+      });
   if (info == potential_matches.end())
     return absl::nullopt;
 
@@ -143,9 +151,8 @@ RegexRulesMatcher::GetBeforeRequestActionIgnoringAncestors(
     const RequestParams& params) const {
   const std::vector<RegexRuleInfo>& potential_matches =
       GetPotentialMatches(params);
-  auto info = std::find_if(
-      potential_matches.begin(), potential_matches.end(),
-      [&params](const RegexRuleInfo& info) {
+  auto info = base::ranges::find_if(
+      potential_matches, [&params](const RegexRuleInfo& info) {
         return IsBeforeRequestAction(info.regex_rule->action_type()) &&
                re2::RE2::PartialMatch(params.url->spec(), *info.regex);
       });
@@ -220,23 +227,25 @@ void RegexRulesMatcher::InitializeMatcher() {
 
   // FilteredRE2 guarantees that the returned set of candidate strings is
   // lower-cased.
-  DCHECK(std::all_of(strings_to_match.begin(), strings_to_match.end(),
-                     [](const std::string& s) {
-                       return std::all_of(s.begin(), s.end(), [](const char c) {
-                         return !base::IsAsciiUpper(c);
-                       });
-                     }));
+  DCHECK(base::ranges::all_of(strings_to_match, [](const std::string& s) {
+    return base::ranges::all_of(
+        s, [](const char c) { return !base::IsAsciiUpper(c); });
+  }));
 
-  // Convert |strings_to_match| to StringPatterns. This is necessary to use
-  // url_matcher::SubstringSetMatcher.
-  std::vector<url_matcher::StringPattern> patterns;
+  // Convert |strings_to_match| to MatcherStringPatterns. This is necessary to
+  // use url_matcher::SubstringSetMatcher.
+  std::vector<base::MatcherStringPattern> patterns;
   patterns.reserve(strings_to_match.size());
 
   for (size_t i = 0; i < strings_to_match.size(); ++i)
     patterns.emplace_back(std::move(strings_to_match[i]), i);
 
-  substring_matcher_ =
-      std::make_unique<url_matcher::SubstringSetMatcher>(patterns);
+  substring_matcher_ = std::make_unique<base::SubstringSetMatcher>();
+
+  // This is only used for regex rules, which are limited to 1000,
+  // so hitting the 8MB limit should be all but impossible.
+  bool success = substring_matcher_->Build(patterns);
+  CHECK(success);
 }
 
 bool RegexRulesMatcher::IsEmpty() const {
@@ -264,7 +273,7 @@ const std::vector<RegexRuleInfo>& RegexRulesMatcher::GetPotentialMatches(
   // To pre-filter the set of regexes to match against |params|, we first need
   // to compute the set of candidate strings tracked by |substring_matcher_|
   // within |params.lower_cased_url_spec|.
-  std::set<int> candidate_ids_set;
+  std::set<base::MatcherStringPattern::ID> candidate_ids_set;
   DCHECK(substring_matcher_);
   substring_matcher_->Match(*params.lower_cased_url_spec, &candidate_ids_set);
   std::vector<int> candidate_ids_list(candidate_ids_set.begin(),

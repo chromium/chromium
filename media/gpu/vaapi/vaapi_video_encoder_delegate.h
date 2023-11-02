@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,7 +24,6 @@ struct BitstreamBufferMetadata;
 class CodecPicture;
 class ScopedVABuffer;
 class VideoFrame;
-class VASurface;
 class VaapiWrapper;
 
 // An VaapiVideoEncoderDelegate  performs high-level, platform-independent
@@ -43,25 +42,12 @@ class VaapiVideoEncoderDelegate {
                             base::RepeatingClosure error_cb);
   virtual ~VaapiVideoEncoderDelegate();
 
-  enum class BitrateControl {
-    kConstantBitrate,  // Constant Bitrate mode. This class relies on other
-                       // parts (e.g. driver) to achieve the specified bitrate.
-    kConstantQuantizationParameter  // Constant Quantization Parameter mode.
-                                    // This class needs to compute a proper
-                                    // quantization parameter and give other
-                                    // parts (e.g. the driver) the value.
-  };
-
   struct Config {
-    // Maxium number of reference frames.
+    // Maximum number of reference frames.
     // For H.264 encoding, the value represents the maximum number of reference
     // frames for both the reference picture list 0 (bottom 16 bits) and the
     // reference picture list 1 (top 16 bits).
     size_t max_num_ref_frames;
-
-    bool native_input_mode = false;
-
-    BitrateControl bitrate_control = BitrateControl::kConstantBitrate;
   };
 
   // EncodeResult owns the necessary resource to keep the encoded buffer. The
@@ -69,18 +55,14 @@ class VaapiVideoEncoderDelegate {
   // calling VaapiWrapper::DownloadFromVABuffer().
   class EncodeResult {
    public:
-    EncodeResult(scoped_refptr<VASurface> surface,
-                 std::unique_ptr<ScopedVABuffer> coded_buffer,
+    EncodeResult(std::unique_ptr<ScopedVABuffer> coded_buffer,
                  const BitstreamBufferMetadata& metadata);
     ~EncodeResult();
 
-    VASurfaceID input_surface_id() const;
     VABufferID coded_buffer_id() const;
-
     const BitstreamBufferMetadata& metadata() const;
 
    private:
-    const scoped_refptr<VASurface> surface_;
     const std::unique_ptr<ScopedVABuffer> coded_buffer_;
     const BitstreamBufferMetadata metadata_;
   };
@@ -96,11 +78,13 @@ class VaapiVideoEncoderDelegate {
     // Creates an EncodeJob to encode |input_frame|, which will be executed by
     // calling ExecuteSetupCallbacks() in VaapiVideoEncoderDelegate::Encode().
     // If |keyframe| is true, requests this job to produce a keyframe.
-    EncodeJob(scoped_refptr<VideoFrame> input_frame, bool keyframe);
+    EncodeJob(bool keyframe,
+              base::TimeDelta timestamp,
+              VASurfaceID input_surface_id);
     // Constructor for VA-API.
-    EncodeJob(scoped_refptr<VideoFrame> input_frame,
-              bool keyframe,
-              scoped_refptr<VASurface> input_surface,
+    EncodeJob(bool keyframe,
+              base::TimeDelta timestamp,
+              VASurfaceID input_surface_id,
               scoped_refptr<CodecPicture> picture,
               std::unique_ptr<ScopedVABuffer> coded_buffer);
 
@@ -125,23 +109,20 @@ class VaapiVideoEncoderDelegate {
 
     base::TimeDelta timestamp() const;
 
-    const scoped_refptr<VideoFrame>& input_frame() const;
-
     // VA-API specific methods.
     VABufferID coded_buffer_id() const;
-    const scoped_refptr<VASurface>& input_surface() const;
+    VASurfaceID input_surface_id() const;
     const scoped_refptr<CodecPicture>& picture() const;
 
    private:
-    // Input VideoFrame to be encoded.
-    const scoped_refptr<VideoFrame> input_frame_;
-
     // True if this job is to produce a keyframe.
     bool keyframe_;
+    // |timestamp_| to be added to the produced encoded chunk.
+    const base::TimeDelta timestamp_;
 
     // VA-API specific members.
-    // Input surface for video frame data or scaled data.
-    const scoped_refptr<VASurface> input_surface_;
+    // Input surface ID and size for video frame data or scaled data.
+    const VASurfaceID input_surface_id_;
     const scoped_refptr<CodecPicture> picture_;
     // Buffer that will contain the output bitstream data for this frame.
     std::unique_ptr<ScopedVABuffer> coded_buffer_;
@@ -172,7 +153,13 @@ class VaapiVideoEncoderDelegate {
   // at least this many frames simultaneously for encode to make progress.
   virtual size_t GetMaxNumOfRefFrames() const = 0;
 
-  virtual std::unique_ptr<EncodeResult> Encode(
+  // Prepares and submits the encode operation to underlying driver for an
+  // EncodeJob for one frame and returns true on success.
+  bool Encode(EncodeJob& encode_job);
+
+  // Creates and returns the encode result for specified EncodeJob by
+  // synchronizing the corresponding encode operation.
+  std::unique_ptr<EncodeResult> GetEncodeResult(
       std::unique_ptr<EncodeJob> encode_job);
 
   // Gets the active spatial layer resolutions for K-SVC encoding, VaapiVEA
@@ -188,8 +175,6 @@ class VaapiVideoEncoderDelegate {
 
   base::RepeatingClosure error_cb_;
 
-  bool native_input_mode_ = false;
-
   SEQUENCE_CHECKER(sequence_checker_);
 
  private:
@@ -199,9 +184,8 @@ class VaapiVideoEncoderDelegate {
   virtual bool PrepareEncodeJob(EncodeJob& encode_job) = 0;
 
   // Notifies the encoded chunk size in bytes to update a bitrate controller in
-  // VaapiVideoEncoderDelegate. This should be called only if
-  // VaapiVideoEncoderDelegate is configured with
-  // BitrateControl::kConstantQuantizationParameter.
+  // VaapiVideoEncoderDelegate. This should be called only if constant
+  // quantization encoding is used, which currently is true for VP8 and VP9.
   virtual void BitrateControlUpdate(uint64_t encoded_chunk_size_bytes);
 };
 }  // namespace media

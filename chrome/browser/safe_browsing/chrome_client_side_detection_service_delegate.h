@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_SAFE_BROWSING_CHROME_CLIENT_SIDE_DETECTION_SERVICE_DELEGATE_H_
 #define CHROME_BROWSER_SAFE_BROWSING_CHROME_CLIENT_SIDE_DETECTION_SERVICE_DELEGATE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/safe_browsing/content/browser/client_side_detection_service.h"
 
 class Profile;
@@ -33,7 +34,7 @@ class ChromeClientSideDetectionServiceDelegate
   ChromeUserPopulation GetUserPopulation() override;
 
  private:
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 };
 
 }  // namespace safe_browsing

@@ -1,16 +1,18 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/tabs/tab_icon.h"
 
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/default_tick_clock.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/paint/paint_flags.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/common/webui_url_constants.h"
@@ -19,12 +21,12 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/theme_provider.h"
+#include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/canvas.h"
-#include "ui/gfx/color_analysis.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/favicon_size.h"
@@ -72,7 +74,7 @@ class TabIcon::CrashAnimation : public gfx::LinearAnimation,
   }
 
  private:
-  TabIcon* target_;
+  raw_ptr<TabIcon> target_;
 };
 
 TabIcon::TabIcon()
@@ -422,12 +424,11 @@ void TabIcon::RefreshLayer() {
 }
 
 gfx::ImageSkia TabIcon::ThemeFavicon(const gfx::ImageSkia& source) {
-  const ui::ThemeProvider* tp = GetThemeProvider();
+  const auto* cp = GetColorProvider();
   return favicon::ThemeFavicon(
-      source, tp->GetColor(ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON),
-      tp->GetColor(ThemeProperties::COLOR_TAB_BACKGROUND_ACTIVE_FRAME_ACTIVE),
-      tp->GetColor(
-          ThemeProperties::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_ACTIVE));
+      source, cp->GetColor(kColorToolbarButtonIcon),
+      cp->GetColor(kColorTabBackgroundActiveFrameActive),
+      cp->GetColor(kColorTabBackgroundInactiveFrameActive));
 }
 
 BEGIN_METADATA(TabIcon, views::View)

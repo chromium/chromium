@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Simulcast manipulation</title>
+    <script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<script>
+
+var canvas = document.createElement('canvas');
+
+function createConnection() {
+  var pc = new RTCPeerConnection({
+    iceServers: [],
+    iceTransportPolicy: 'relay'
+  });
+  var encodings = [];
+  for (var i = 0; i < 2; i++) {
+    encodings.push({ rid: String.fromCharCode(97 + i) });
+    // rid must be alphabetic and unique
+  }
+  pc.addTransceiver(canvas.captureStream(0).getTracks()[0],
+                    { sendEncodings: encodings });
+  return pc;
+}
+
+function sdp_munge(offer) {
+  let sdp = offer.sdp;
+  sdp = sdp.replace(/\r?\na=rid:(.+)\s+send\r?\na=simulcast:send\s+.+;\1/, '');
+  // Check that munging worked
+  assert_false(sdp === offer.sdp);
+  offer.sdp = sdp;
+  return offer;
+}
+
+promise_test(async t => {
+  const pc = createConnection();
+  const offer = await pc.createOffer();
+  const sender = pc.getSenders()[0];
+  const parametersBefore = sender.getParameters();
+  const munged_offer = sdp_munge(offer);
+  await pc.setLocalDescription(munged_offer);
+  const parametersAfter = sender.getParameters();
+  assert_equals(parametersBefore.encodings.length,
+                parametersAfter.encodings.length);
+}, "Munging SDP simulcast should not cause changes to simulcast envelope")
+
+</script>
+</head>
+</html>

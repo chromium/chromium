@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -71,7 +71,7 @@ void DelegatedInkTrailData::AddPoint(const gfx::DelegatedInkPoint& point) {
   // Fail-safe to prevent storing excessive points if they are being sent but
   // never filtered and used, like if the renderer has stalled during a long
   // running script.
-  if (points_.size() == kMaximumDelegatedInkPointsStored)
+  if (points_.size() == gfx::kMaximumNumberOfDelegatedInkPoints)
     points_.erase(points_.begin());
 
   points_.insert({point.timestamp(), point.point()});
@@ -80,7 +80,7 @@ void DelegatedInkTrailData::AddPoint(const gfx::DelegatedInkPoint& point) {
 void DelegatedInkTrailData::PredictPoints(
     std::vector<gfx::DelegatedInkPoint>* ink_points_to_draw,
     gfx::DelegatedInkMetadata* metadata) {
-  TRACE_EVENT0("viz", "DelegatedInkTrailData::PredictPoints");
+  TRACE_EVENT0("delegated_ink_trails", "DelegatedInkTrailData::PredictPoints");
   // Base name used for the histograms that measure the latency improvement from
   // the prediction done for different experiments.
   static const char* histogram_base_name =

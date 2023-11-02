@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,6 @@
 
 #include <set>
 #include <string>
-
-#include "base/macros.h"
 
 namespace web {
 
@@ -37,7 +35,7 @@ class WebFramesManager {
   // NOTE: Due to the asynchronous nature of JavaScript to native messsaging,
   // this object may be outdated.
   virtual WebFrame* GetMainWebFrame() = 0;
-  // Returns the web frame with |frame_id|, if one exists.
+  // Returns the web frame with `frame_id`, if one exists.
   // NOTE: Due to the asynchronous nature of JavaScript to native messsaging,
   // this object may be outdated and the WebFrame returned by this method may
   // not back a real frame in the web page.

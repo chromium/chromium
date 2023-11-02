@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,14 +9,14 @@
 #include "base/numerics/safe_conversions.h"
 
 namespace metrics {
-
 namespace internal {
 
 // Used to assess the reliability of field trial data by injecting different
 // levels of effects to pseudo metrics. These pseudo metrics are just mirrors of
 // some existing metrics.
-const base::Feature kPseudoMetricsEffectFeature{
-    "UMAPseudoMetricsEffect", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kPseudoMetricsEffectFeature,
+             "UMAPseudoMetricsEffect",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // The multiplicative factor to apply to all samples. Modified samples will be
 // recorded in a pseudo metric alongside with the real metric.
@@ -31,8 +31,9 @@ const base::FeatureParam<double> kAdditiveFactor{&kPseudoMetricsEffectFeature,
 
 }  // namespace internal
 
-const base::Feature kNonUniformityValidationFeature{
-    "UMANonUniformityLogNormal", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kNonUniformityValidationFeature,
+             "UMANonUniformityLogNormal",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<double> kLogNormalMean{
     &kNonUniformityValidationFeature, "mean", 4.605};
@@ -41,10 +42,9 @@ const base::FeatureParam<double> kLogNormalDelta{
 const base::FeatureParam<double> kLogNormalStdDev{
     &kNonUniformityValidationFeature, "stdDev", 1.238};
 
-int GetPseudoMetricsSample(double sample) {
-  return base::saturated_cast<int>(sample *
-                                       internal::kMultiplicativeFactor.Get() +
-                                   internal::kAdditiveFactor.Get());
+double GetPseudoMetricsSample(double sample) {
+  return sample * internal::kMultiplicativeFactor.Get() +
+         internal::kAdditiveFactor.Get();
 }
 
 base::TimeDelta GetPseudoMetricsSample(base::TimeDelta sample) {

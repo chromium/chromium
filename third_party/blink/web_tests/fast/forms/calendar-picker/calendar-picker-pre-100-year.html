@@ -2,6 +2,8 @@
 <html>
 <head>
 <script src="../../../resources/js-test.js"></script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
 <script src="../../forms/resources/common.js"></script>
 <script src="../../forms/resources/picker-common.js"></script>
 <script src="resources/calendar-picker-common.js"></script>
@@ -13,10 +15,10 @@
 <script>
 description('Check if year before 100 can be set.');
 
-openPicker(document.getElementById('date'), finishTest);
+openPickerDeprecatedJsTest(document.getElementById('date'), finishTest);
 
 function finishTest() {
-    var daysContainer = popupWindow.document.getElementsByClassName("days-area")[0];
+    var daysContainer = internals.pagePopupWindow.document.getElementsByClassName("days-area")[0];
     eventSender.keyDown('ArrowRight');
     removeCommitDelay();
     eventSender.keyDown('Enter');

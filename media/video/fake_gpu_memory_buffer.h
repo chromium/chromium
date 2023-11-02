@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,7 +38,6 @@ class FakeGpuMemoryBuffer : public gfx::GpuMemoryBuffer {
   gfx::GpuMemoryBufferId GetId() const override;
   gfx::GpuMemoryBufferType GetType() const override;
   gfx::GpuMemoryBufferHandle CloneHandle() const override;
-  ClientBuffer AsClientBuffer() override;
   void OnMemoryDump(
       base::trace_event::ProcessMemoryDump* pmd,
       const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,
@@ -62,7 +61,8 @@ class FakeGpuMemoryBufferSupport : public gpu::GpuMemoryBufferSupport {
       gfx::BufferUsage usage,
       gpu::GpuMemoryBufferImpl::DestructionCallback callback,
       gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager = nullptr,
-      scoped_refptr<base::UnsafeSharedMemoryPool> pool = nullptr) override;
+      scoped_refptr<base::UnsafeSharedMemoryPool> pool = nullptr,
+      base::span<uint8_t> premapped_memory = base::span<uint8_t>()) override;
 };
 
 }  // namespace media

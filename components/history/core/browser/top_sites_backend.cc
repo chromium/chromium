@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/cancelable_task_tracker.h"
-#include "base/task/post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -89,10 +88,7 @@ void TopSitesBackend::ShutdownDBOnDBThread() {
 
 MostVisitedURLList TopSitesBackend::GetMostVisitedSitesOnDBThread() {
   DCHECK(db_task_runner_->RunsTasksInCurrentSequence());
-  MostVisitedURLList list;
-  if (db_)
-    db_->GetSites(&list);
-  return list;
+  return db_ ? db_->GetSites() : MostVisitedURLList();
 }
 
 void TopSitesBackend::UpdateTopSitesOnDBThread(

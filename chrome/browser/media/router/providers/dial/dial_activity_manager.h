@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/media/router/discovery/dial/dial_app_discovery_service.h"
 #include "chrome/browser/media/router/discovery/dial/dial_url_fetcher.h"
@@ -151,8 +152,8 @@ class DialActivityManager {
   // Checks if there are existing conditions that would cause a stop app request
   // to fail, such as |route_id| being invalid or there already being a pending
   // stop request. If so, returns the error message and error code. Returns
-  // nullopt and RouteRequestResult::OK otherwise.
-  std::pair<absl::optional<std::string>, RouteRequestResult::ResultCode>
+  // nullopt and mojom::RouteRequestResultCode::OK otherwise.
+  std::pair<absl::optional<std::string>, mojom::RouteRequestResultCode>
   CanStopApp(const MediaRoute::Id& route_id) const;
 
   // Stops the app that is currently active on |route_id|. Assumes that
@@ -212,7 +213,7 @@ class DialActivityManager {
 
   base::flat_map<MediaRoute::Id, std::unique_ptr<Record>> records_;
 
-  DialAppDiscoveryService* const app_discovery_service_;
+  const raw_ptr<DialAppDiscoveryService> app_discovery_service_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

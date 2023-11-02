@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/gtk/gtk_ui_platform.h"
 
@@ -26,22 +27,20 @@ class GtkUiPlatformWayland : public GtkUiPlatform {
   GdkModifierType GetGdkKeyEventState(const ui::KeyEvent& key_event) override;
   int GetGdkKeyEventGroup(const ui::KeyEvent& key_event) override;
   GdkWindow* GetGdkWindow(gfx::AcceleratedWidget window_id) override;
-  bool ExportWindowHandle(
-      gfx::AcceleratedWidget window_id,
-      base::OnceCallback<void(std::string)> callback) override;
   bool SetGtkWidgetTransientFor(GtkWidget* widget,
                                 gfx::AcceleratedWidget parent) override;
   void ClearTransientFor(gfx::AcceleratedWidget parent) override;
   void ShowGtkWindow(GtkWindow* window) override;
-  bool PreferGtkIme() override;
+  std::unique_ptr<ui::LinuxInputMethodContext> CreateInputMethodContext(
+      ui::LinuxInputMethodContextDelegate* delegate) const override;
 
  private:
+  GdkDisplay* GetDefaultGdkDisplay();
   // Called when xdg-foreign exports a parent window passed in
   // SetGtkWidgetTransientFor.
   void OnHandleSetTransient(GtkWidget* widget, const std::string& handle);
-  void OnHandleForward(base::OnceCallback<void(std::string)> callback,
-                       const std::string& handle);
 
+  raw_ptr<GdkDisplay> default_display_ = nullptr;
   base::WeakPtrFactory<GtkUiPlatformWayland> weak_factory_{this};
 };
 

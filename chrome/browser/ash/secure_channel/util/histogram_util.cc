@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -54,6 +54,24 @@ void RecordDisconnectFromEndpointResult(Status status) {
   base::UmaHistogramEnumeration(
       "MultiDevice.SecureChannel.Nearby.OperationResult.DisconnectFromEndpoint",
       status);
+}
+
+void RecordRegisterPayloadFilesResult(
+    location::nearby::connections::mojom::Status status) {
+  base::UmaHistogramEnumeration(
+      "MultiDevice.SecureChannel.Nearby.OperationResult.RegisterPayloadFiles",
+      status);
+}
+
+void LogFileAction(FileAction file_action) {
+  base::UmaHistogramEnumeration("MultiDevice.SecureChannel.Nearby.FileAction",
+                                file_action);
+}
+
+void LogFileTransferResult(FileTransferResult file_transfer_result) {
+  base::UmaHistogramEnumeration(
+      "MultiDevice.SecureChannel.Nearby.FileTransferResult",
+      file_transfer_result);
 }
 
 void LogMessageAction(MessageAction message_action) {

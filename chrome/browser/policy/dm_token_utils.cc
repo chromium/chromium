@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,6 @@
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/policy/core/common/policy_loader_lacros.h"
 #else
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
@@ -46,7 +45,7 @@ DMToken GetDMToken(Profile* const profile) {
     return dm_token;
 
   const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+      ash::ProfileHelper::Get()->GetUserByProfile(profile);
   if (!user)
     return dm_token;
 
@@ -87,7 +86,7 @@ DMToken GetDMToken(Profile* const profile) {
                          policy_manager->core()->client()->dm_token());
     }
   }
-#elif !defined(OS_ANDROID)
+#elif !BUILDFLAG(IS_ANDROID)
   if (dm_token.is_empty() &&
       ChromeBrowserCloudManagementController::IsEnabled()) {
     dm_token = BrowserDMTokenStorage::Get()->RetrieveDMToken();

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,7 @@
 #include "device/bluetooth/bluetooth_socket.h"
 #include "device/bluetooth/device.h"
 #include "device/bluetooth/discovery_session.h"
+#include "device/bluetooth/floss/floss_features.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 #include "device/bluetooth/public/mojom/connect_result_type_converter.h"
 #include "device/bluetooth/server_socket.h"
@@ -26,7 +27,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 #include "device/bluetooth/bluez/metrics_recorder.h"
 #endif
 
@@ -35,7 +36,7 @@ namespace {
 
 const char kMojoReceivingPipeError[] = "Failed to create receiving DataPipe.";
 const char kMojoSendingPipeError[] = "Failed to create sending DataPipe.";
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 const char kCannotConnectToDeviceError[] = "Cannot connect to device.";
 #endif
 
@@ -45,10 +46,12 @@ Adapter::ConnectToServiceRequestDetails::ConnectToServiceRequestDetails(
     const std::string& address,
     const device::BluetoothUUID& service_uuid,
     const base::Time& time_requested,
+    const bool should_unbond_on_error,
     ConnectToServiceInsecurelyCallback callback)
     : address(address),
       service_uuid(service_uuid),
       time_requested(time_requested),
+      should_unbond_on_error(should_unbond_on_error),
       callback(std::move(callback)) {}
 
 Adapter::ConnectToServiceRequestDetails::~ConnectToServiceRequestDetails() =
@@ -106,8 +109,9 @@ void Adapter::GetInfo(GetInfoCallback callback) {
   mojom::AdapterInfoPtr adapter_info = mojom::AdapterInfo::New();
   adapter_info->address = adapter_->GetAddress();
   adapter_info->name = adapter_->GetName();
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   adapter_info->system_name = adapter_->GetSystemName();
+  adapter_info->floss = floss::features::IsFlossEnabled();
 #endif
   adapter_info->initialized = adapter_->IsInitialized();
   adapter_info->present = adapter_->IsPresent();
@@ -131,21 +135,19 @@ void Adapter::RegisterAdvertisement(const device::BluetoothUUID& service_uuid,
       std::make_unique<device::BluetoothAdvertisement::Data>(
           device::BluetoothAdvertisement::ADVERTISEMENT_TYPE_BROADCAST);
 
-  auto uuid_list = std::make_unique<device::BluetoothAdvertisement::UUIDList>();
-  uuid_list->push_back(service_uuid.value());
+  device::BluetoothAdvertisement::UUIDList uuid_list;
+  uuid_list.push_back(service_uuid.value());
   advertisement_data->set_service_uuids(std::move(uuid_list));
 
   if (!use_scan_response) {
-    auto service_data_map =
-        std::make_unique<device::BluetoothAdvertisement::ServiceData>();
-    service_data_map->emplace(service_uuid.value(), service_data);
+    device::BluetoothAdvertisement::ServiceData service_data_map;
+    service_data_map.emplace(service_uuid.value(), service_data);
     advertisement_data->set_service_data(std::move(service_data_map));
   } else {
     // Require the service uuid to be in 128-bit format.
     DCHECK_EQ(service_uuid.format(),
               device::BluetoothUUID::Format::kFormat128Bit);
-    auto scan_response_data_map =
-        std::make_unique<device::BluetoothAdvertisement::ScanResponseData>();
+    device::BluetoothAdvertisement::ScanResponseData scan_response_data_map;
     // Start with the original scan response data.
     std::vector<uint8_t> scan_response_data(service_data.begin(),
                                             service_data.end());
@@ -163,7 +165,7 @@ void Adapter::RegisterAdvertisement(const device::BluetoothUUID& service_uuid,
                               id_bytes.rend());
     // The platform API only supports AD Type 0x16 "Service Data" which assumes
     // as 16-bit service id.
-    scan_response_data_map->emplace(0x16, scan_response_data);
+    scan_response_data_map.emplace(0x16, scan_response_data);
     advertisement_data->set_scan_response_data(
         std::move(scan_response_data_map));
   }
@@ -217,6 +219,7 @@ void Adapter::StartDiscoverySession(const std::string& client_name,
 void Adapter::ConnectToServiceInsecurely(
     const std::string& address,
     const device::BluetoothUUID& service_uuid,
+    bool should_unbond_on_error,
     ConnectToServiceInsecurelyCallback callback) {
   if (!base::Contains(allowed_uuids_, service_uuid)) {
     std::move(callback).Run(/*result=*/nullptr);
@@ -226,9 +229,9 @@ void Adapter::ConnectToServiceInsecurely(
   auto* device = adapter_->GetDevice(address);
   int request_id = next_request_id_++;
   connect_to_service_request_map_.emplace(
-      request_id,
-      std::make_unique<ConnectToServiceRequestDetails>(
-          address, service_uuid, base::Time::Now(), std::move(callback)));
+      request_id, std::make_unique<ConnectToServiceRequestDetails>(
+                      address, service_uuid, base::Time::Now(),
+                      should_unbond_on_error, std::move(callback)));
 
   if (device) {
     OnDeviceFetchedForInsecureServiceConnection(request_id, device);
@@ -237,14 +240,13 @@ void Adapter::ConnectToServiceInsecurely(
 
   // This device has neither been discovered, nor has it been paired/connected
   // to previously. Use the ConnectDevice() API, if available, to connect to it.
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   adapter_->ConnectDevice(
       address, /*address_type=*/absl::nullopt,
       base::BindOnce(&Adapter::OnDeviceFetchedForInsecureServiceConnection,
                      weak_ptr_factory_.GetWeakPtr(), request_id),
       base::BindOnce(&Adapter::OnConnectToServiceError,
-                     weak_ptr_factory_.GetWeakPtr(), request_id,
-                     kCannotConnectToDeviceError));
+                     weak_ptr_factory_.GetWeakPtr(), request_id));
 #else
   OnConnectToServiceError(request_id, "Device does not exist.");
 #endif
@@ -374,7 +376,7 @@ void Adapter::OnDeviceFetchedForInsecureServiceConnection(
       connect_to_service_request_map_[request_id]->service_uuid,
       base::BindOnce(&Adapter::OnConnectToService,
                      weak_ptr_factory_.GetWeakPtr(), request_id),
-      base::BindOnce(&Adapter::OnConnectToServiceError,
+      base::BindOnce(&Adapter::OnConnectToServiceInsecurelyError,
                      weak_ptr_factory_.GetWeakPtr(), request_id));
 }
 
@@ -499,7 +501,7 @@ void Adapter::OnConnectToService(
   ExecuteConnectToServiceCallback(request_id,
                                   std::move(connect_to_service_result));
 
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   RecordConnectToServiceInsecurelyResult(
       ConnectToServiceInsecurelyResult::kSuccess);
 #endif
@@ -510,7 +512,7 @@ void Adapter::OnConnectToServiceError(int request_id,
   DLOG(ERROR) << "Failed to connect to service: '" << message << "'";
   ExecuteConnectToServiceCallback(request_id, /*result=*/nullptr);
 
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   absl::optional<ConnectToServiceInsecurelyResult> result =
       ExtractResultFromErrorString(message);
   if (result) {
@@ -529,6 +531,49 @@ void Adapter::OnConnectToServiceError(int request_id,
         ConnectToServiceInsecurelyResult::kUnknownError);
   }
 #endif
+}
+
+void Adapter::OnConnectToServiceInsecurelyError(
+    int request_id,
+    const std::string& error_message) {
+  DCHECK(connect_to_service_request_map_.contains(request_id));
+  DLOG(ERROR) << error_message;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  device::BluetoothDevice* device =
+      adapter_->GetDevice(connect_to_service_request_map_[request_id]->address);
+  DCHECK(device);
+
+  ConnectToServiceFailureReason failure_reason =
+      ExtractFailureReasonFromErrorString(error_message);
+  // When the local device thinks it's paired with the remote device (IsBonded)
+  // and we receive one of these errors when trying to connect, then we're most
+  // likely in a state where the remote device doesn't recognize the pairing
+  // (half-paired).
+  bool is_half_paired_failure =
+      device->IsBonded() &&
+      (failure_reason == ConnectToServiceFailureReason::kReasonCanceled ||
+       failure_reason == ConnectToServiceFailureReason::kReasonRefused ||
+       failure_reason == ConnectToServiceFailureReason::kReasonUnknown);
+
+  if (is_half_paired_failure &&
+      connect_to_service_request_map_[request_id]->should_unbond_on_error) {
+    // To recover from the half-paired state, just forget the remote device.
+    // This strategy works because the local device will continue attempting to
+    // connect. On the next attempt, it will no longer be in the half-paired
+    // state.
+    DLOG(ERROR) << "Half-paired state detected. Forgetting the device.";
+    device->Forget(base::BindOnce(&Adapter::OnConnectToServiceError,
+                                  weak_ptr_factory_.GetWeakPtr(), request_id,
+                                  error_message),
+                   base::BindOnce(&Adapter::OnConnectToServiceError,
+                                  weak_ptr_factory_.GetWeakPtr(), request_id,
+                                  error_message));
+    return;
+  }
+#endif
+
+  OnConnectToServiceError(request_id, error_message);
 }
 
 void Adapter::OnCreateRfcommServiceInsecurely(

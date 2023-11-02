@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,27 +9,6 @@
 #include "base/memory/ref_counted.h"
 
 namespace device_reauth {
-
-// Different states for biometric availability for a given device. Either no
-// biometric hardware is available, hardware is available but the user has no
-// biometrics enrolled, or hardware is available and the user makes use of it.
-//
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-//
-// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.device_reauth
-enum class BiometricsAvailability {
-  kOtherError = 0,
-  kAvailable = 1,
-  kAvailableNoFallback = 2,
-  kNoHardware = 3,
-  kHwUnavailable = 4,
-  kNotEnrolled = 5,
-  kSecurityUpdateRequired = 6,
-  kAndroidVersionNotSupported = 7,
-
-  kMaxValue = kAndroidVersionNotSupported,
-};
 
 // The filling surface asking for biometric authentication.
 //
@@ -63,38 +42,11 @@ enum class BiometricAuthRequester {
   // lock setting in on and Chrome came to foreground.
   kIncognitoReauthPage = 6,
 
-  kMaxValue = kIncognitoReauthPage,
-};
+  // The prompt displayed when user is trying to copy/edit/view/export their
+  // passwords from settings page on Windows and Mac.
+  kPasswordsInSettings = 7,
 
-// The result of the biometric authentication.
-//
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class BiometricAuthFinalResult {
-  // This value is used for when we don't know the exact auth method used. This
-  // can be the case on Android versions under 11.
-  kSuccessWithUnknownMethod = 0,
-  kSuccessWithBiometrics = 1,
-  kSuccessWithDeviceLock = 2,
-  kCanceledByUser = 3,
-  kFailed = 4,
-
-  // Deprecated in favour of kCanceledByChrome. Recorded when the auth succeeds
-  // after Chrome cancelled it.
-  // kSuccessButCanceled = 5,
-
-  // Deprecated in favour of kCanceledByChrome. Recorded when the auth fails
-  // after Chrome cancelled it.
-  // kFailedAndCanceled = 6,
-
-  // Recorded if an authentication was requested within 60s of the previous
-  // successful authentication.
-  kAuthStillValid = 7,
-
-  // Recorded when the authentication flow is cancelled by Chrome.
-  kCanceledByChrome = 8,
-
-  kMaxValue = kCanceledByChrome,
+  kMaxValue = kPasswordsInSettings,
 };
 
 // This interface encapsulates operations related to biometric authentication.
@@ -108,16 +60,27 @@ class BiometricAuthenticator : public base::RefCounted<BiometricAuthenticator> {
   BiometricAuthenticator(const BiometricAuthenticator&) = delete;
   BiometricAuthenticator& operator=(const BiometricAuthenticator&) = delete;
 
-  // Returns whether biometrics are available for a given device. Only if this
-  // returns kAvailable, callers can expect Authenticate() to succeed.
-  virtual BiometricsAvailability CanAuthenticate(
-      BiometricAuthRequester requester) = 0;
+  // Returns whether biometrics are available for a given device.
+  virtual bool CanAuthenticate(BiometricAuthRequester requester) = 0;
 
   // Asks the user to authenticate. Invokes |callback| asynchronously when
   // the auth flow returns with the result.
   // |requester| is the filling surface that is asking for authentication.
+  // |use_last_valid_auth| if set to false, ignores the grace 60 seconds
+  // period between the last valid authentication and the current
+  // authentication, and re-invokes system authentication.
   virtual void Authenticate(BiometricAuthRequester requester,
-                            AuthenticateCallback callback) = 0;
+                            AuthenticateCallback callback,
+                            bool use_last_valid_auth) = 0;
+
+  // Asks the user to authenticate. Invokes |callback| asynchronously when
+  // the auth flow returns with the result.
+  // |requester| is the filling surface that is asking for authentication.
+  // |message| contains text that will be displayed to the end user on
+  // authentication request
+  virtual void AuthenticateWithMessage(BiometricAuthRequester requester,
+                                       const std::u16string& message,
+                                       AuthenticateCallback callback) = 0;
 
   // Cancels an in-progress authentication if the filling surface requesting
   // the cancelation corresponds to the one for which the ongoing auth was

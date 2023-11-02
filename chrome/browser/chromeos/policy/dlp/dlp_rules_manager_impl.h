@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include <memory>
 #include <set>
 
-#include "base/strings/string_piece_forward.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/url_matcher/url_matcher.h"
 
@@ -22,10 +21,14 @@ namespace policy {
 
 class DlpReportingManager;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+class DlpFilesController;
+#endif
+
 class DlpRulesManagerImpl : public DlpRulesManager {
  public:
   using RuleId = int;
-  using UrlConditionId = url_matcher::URLMatcherConditionSet::ID;
+  using UrlConditionId = base::MatcherStringPattern::ID;
 
   ~DlpRulesManagerImpl() override;
 
@@ -36,7 +39,8 @@ class DlpRulesManagerImpl : public DlpRulesManager {
   Level IsRestricted(const GURL& source,
                      Restriction restriction) const override;
   Level IsRestrictedByAnyRule(const GURL& source,
-                              Restriction restriction) const override;
+                              Restriction restriction,
+                              std::string* out_source_pattern) const override;
   Level IsRestrictedDestination(
       const GURL& source,
       const GURL& destination,
@@ -47,18 +51,29 @@ class DlpRulesManagerImpl : public DlpRulesManager {
                               const Component& destination,
                               Restriction restriction,
                               std::string* out_source_pattern) const override;
+  AggregatedDestinations GetAggregatedDestinations(
+      const GURL& source,
+      Restriction restriction) const override;
+  AggregatedComponents GetAggregatedComponents(
+      const GURL& source,
+      Restriction restriction) const override;
   bool IsReportingEnabled() const override;
   DlpReportingManager* GetReportingManager() const override;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  DlpFilesController* GetDlpFilesController() const override;
+#endif
+
   std::string GetSourceUrlPattern(const GURL& source_url,
                                   Restriction restriction,
                                   Level level) const override;
-  int GetClipboardCheckSizeLimitInBytes() const override;
+  size_t GetClipboardCheckSizeLimitInBytes() const override;
+  bool IsFilesPolicyEnabled() const override;
 
  protected:
   friend class DlpRulesManagerFactory;
 
-  DlpRulesManagerImpl(PrefService* local_state,
-                      base::StringPiece dm_token_value);
+  explicit DlpRulesManagerImpl(PrefService* local_state);
 
  private:
   void OnPolicyUpdate();
@@ -100,7 +115,13 @@ class DlpRulesManagerImpl : public DlpRulesManager {
   // string patterns.
   std::map<UrlConditionId, std::string> dst_pattterns_mapping_;
 
+  // System-wide singleton instantiated when required by rules configuration.
   std::unique_ptr<DlpReportingManager> reporting_manager_;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // System-wide singleton instantiated when there are rules involving files.
+  std::unique_ptr<DlpFilesController> files_controller_;
+#endif
 };
 
 }  // namespace policy

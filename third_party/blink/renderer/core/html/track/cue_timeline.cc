@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/html/track/text_track.h"
 #include "third_party/blink/renderer/core/html/track/text_track_cue.h"
 #include "third_party/blink/renderer/core/html/track/text_track_cue_list.h"
+#include "ui/accessibility/accessibility_features.h"
 
 namespace blink {
 
@@ -60,7 +61,7 @@ CueTimeline::CueTimeline(HTMLMediaElement& media_element)
       update_requested_while_ignoring_(false) {}
 
 void CueTimeline::AddCues(TextTrack* track, const TextTrackCueList* cues) {
-  DCHECK_NE(track->mode(), TextTrack::DisabledKeyword());
+  DCHECK_NE(track->mode(), TextTrackMode::kDisabled);
   for (wtf_size_t i = 0; i < cues->length(); ++i)
     AddCueInternal(cues->AnonymousIndexedGetter(i));
   if (!MediaElement().IsShowPosterFlagSet()) {
@@ -69,7 +70,7 @@ void CueTimeline::AddCues(TextTrack* track, const TextTrackCueList* cues) {
 }
 
 void CueTimeline::AddCue(TextTrack* track, TextTrackCue* cue) {
-  DCHECK_NE(track->mode(), TextTrack::DisabledKeyword());
+  DCHECK_NE(track->mode(), TextTrackMode::kDisabled);
   AddCueInternal(cue);
   if (!MediaElement().IsShowPosterFlagSet()) {
     InvokeTimeMarchesOn();
@@ -351,11 +352,19 @@ void CueTimeline::TimeMarchesOn() {
       media_element.ScheduleEvent(
           CreateEventWithTarget(event_type_names::kExit, task.second.Get()));
     } else {
+      TextTrackCue* cue = task.second.Get();
       bool is_enter_event = task.first == task.second->startTime();
       AtomicString event_name =
           is_enter_event ? event_type_names::kEnter : event_type_names::kExit;
       media_element.ScheduleEvent(
           CreateEventWithTarget(event_name, task.second.Get()));
+      if (features::IsTextBasedAudioDescriptionEnabled()) {
+        if (is_enter_event) {
+          cue->OnEnter(MediaElement());
+        } else {
+          cue->OnExit(MediaElement());
+        }
+      }
     }
   }
 

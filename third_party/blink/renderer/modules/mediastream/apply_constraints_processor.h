@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_APPLY_CONSTRAINTS_PROCESSOR_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
+#include "media/base/scoped_async_trace.h"
 #include "media/capture/video_capture_types.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/mediastream/media_devices.mojom-blink-forward.h"
@@ -88,6 +88,10 @@ class MODULES_EXPORT ApplyConstraintsProcessor final
   // |video_source_| and |request_completed_cb_| are the video source and
   // reply callback for the current request.
   Member<blink::ApplyConstraintsRequest> current_request_;
+
+  using ScopedMediaStreamTrace =
+      media::TypedScopedAsyncTrace<media::TraceCategory::kMediaStream>;
+  std::unique_ptr<ScopedMediaStreamTrace> video_device_request_trace_;
 
   // TODO(crbug.com/704136): Change to use Member.
   blink::MediaStreamVideoSource* video_source_ = nullptr;

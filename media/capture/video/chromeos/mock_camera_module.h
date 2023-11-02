@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,7 +29,7 @@ class MockCameraModule : public cros::mojom::CameraModule {
   MockCameraModule(const MockCameraModule&) = delete;
   MockCameraModule& operator=(const MockCameraModule&) = delete;
 
-  ~MockCameraModule();
+  ~MockCameraModule() override;
 
   void OpenDevice(
       int32_t camera_id,

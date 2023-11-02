@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,8 +41,8 @@ void GpuMemoryBufferVirtualDeviceMojoAdapter::OnNewGpuMemoryBufferHandle(
   if (!video_frame_handler_.is_bound())
     return;
   media::mojom::VideoBufferHandlePtr buffer_handle =
-      media::mojom::VideoBufferHandle::New();
-  buffer_handle->set_gpu_memory_buffer_handle(std::move(gmb_handle));
+      media::mojom::VideoBufferHandle::NewGpuMemoryBufferHandle(
+          std::move(gmb_handle));
   video_frame_handler_->OnNewBuffer(buffer_id, std::move(buffer_handle));
 }
 
@@ -99,8 +99,8 @@ void GpuMemoryBufferVirtualDeviceMojoAdapter::Start(
   // Notify receiver of known buffer handles */
   for (auto& entry : known_buffer_handles_) {
     media::mojom::VideoBufferHandlePtr buffer_handle =
-        media::mojom::VideoBufferHandle::New();
-    buffer_handle->set_gpu_memory_buffer_handle(entry.second.Clone());
+        media::mojom::VideoBufferHandle::NewGpuMemoryBufferHandle(
+            entry.second.Clone());
     video_frame_handler_->OnNewBuffer(entry.first, std::move(buffer_handle));
   }
 }
@@ -132,6 +132,10 @@ void GpuMemoryBufferVirtualDeviceMojoAdapter::TakePhoto(
 
 void GpuMemoryBufferVirtualDeviceMojoAdapter::ProcessFeedback(
     const media::VideoCaptureFeedback& feedback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+void GpuMemoryBufferVirtualDeviceMojoAdapter::RequestRefreshFrame() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 

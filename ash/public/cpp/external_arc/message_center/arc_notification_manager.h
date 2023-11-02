@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,13 +9,13 @@
 #include <string>
 #include <unordered_map>
 
+#include "ash/components/arc/mojom/notifications.mojom.h"
+#include "ash/components/arc/session/connection_holder.h"
+#include "ash/components/arc/session/connection_observer.h"
 #include "ash/public/cpp/message_center/arc_notification_manager_base.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
 #include "components/account_id/account_id.h"
-#include "components/arc/mojom/notifications.mojom.h"
-#include "components/arc/session/connection_holder.h"
-#include "components/arc/session/connection_observer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ui/message_center/message_center.h"
 
@@ -63,6 +63,7 @@ class ArcNotificationManager
       arc::mojom::ArcLockScreenNotificationSettingPtr setting) override;
   void ProcessUserAction(
       arc::mojom::ArcNotificationUserActionDataPtr data) override;
+  void LogInlineReplySent(const std::string& key) override;
 
   // Methods called from ArcNotificationItem:
   void SendNotificationRemovedFromChrome(const std::string& key);

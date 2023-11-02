@@ -1,12 +1,12 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/passwords/password_protection_coordinator.h"
 
-#include "base/check.h"
-#include "base/notreached.h"
-#include "components/safe_browsing/core/browser/password_protection/metrics_util.h"
+#import "base/check.h"
+#import "base/notreached.h"
+#import "components/safe_browsing/core/browser/password_protection/metrics_util.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
@@ -71,7 +71,7 @@
 
 - (void)confirmationAlertPrimaryAction {
   self.completion(safe_browsing::WarningAction::CHANGE_PASSWORD);
-  // Opening Password page will stop the presentation. No need to send |stop|.
+  // Opening Password page will stop the presentation. No need to send `stop`.
   [self startPasswordCheck];
 }
 

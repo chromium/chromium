@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "chrome/browser/page_load_metrics/observers/page_load_metrics_observer_test_harness.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "components/page_load_metrics/common/test/page_load_metrics_test_util.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -48,6 +49,22 @@ class ServiceWorkerPageLoadMetricsObserverTest
         internal::kHistogramServiceWorkerFirstContentfulPaintForwardBack, 0);
     tester()->histogram_tester().ExpectTotalCount(
         internal::kHistogramServiceWorkerFirstContentfulPaintForwardBackNoStore,
+        0);
+    tester()->histogram_tester().ExpectTotalCount(
+        internal::
+            kHistogramServiceWorkerFirstContentfulPaintSkippableFetchHandler,
+        0);
+    tester()->histogram_tester().ExpectTotalCount(
+        internal::
+            kHistogramServiceWorkerFirstContentfulPaintNonSkippableFetchHandler,
+        0);
+    tester()->histogram_tester().ExpectTotalCount(
+        internal::
+            kHistogramServiceWorkerLargestContentfulPaintSkippableFetchHandler,
+        0);
+    tester()->histogram_tester().ExpectTotalCount(
+        internal::
+            kHistogramServiceWorkerLargestContentfulPaintNonSkippableFetchHandler,
         0);
     tester()->histogram_tester().ExpectTotalCount(
         internal::kHistogramServiceWorkerParseStartToFirstContentfulPaint, 0);
@@ -119,7 +136,9 @@ TEST_F(ServiceWorkerPageLoadMetricsObserverTest, NoMetrics) {
   AssertNoServiceWorkerHistogramsLogged();
   AssertNoSearchHistogramsLogged();
   AssertNoSearchNoSWHistogramsLogged();
-  EXPECT_EQ(0ul, tester()->test_ukm_recorder().entries_count());
+  const auto& entries = tester()->test_ukm_recorder().GetEntriesByName(
+      ukm::builders::PageLoad_ServiceWorkerControlled::kEntryName);
+  EXPECT_EQ(0u, entries.size());
 }
 
 TEST_F(ServiceWorkerPageLoadMetricsObserverTest, NoServiceWorker) {
@@ -132,9 +151,9 @@ TEST_F(ServiceWorkerPageLoadMetricsObserverTest, NoServiceWorker) {
   AssertNoServiceWorkerHistogramsLogged();
   AssertNoSearchHistogramsLogged();
   AssertNoSearchNoSWHistogramsLogged();
-  // Only a DocumentCreated entry and an Unload entry is logged for creation of
-  // a blink::Document when the navigation committed.
-  EXPECT_EQ(2ul, tester()->test_ukm_recorder().entries_count());
+  const auto& entries = tester()->test_ukm_recorder().GetEntriesByName(
+      ukm::builders::PageLoad_ServiceWorkerControlled::kEntryName);
+  EXPECT_EQ(0u, entries.size());
   EXPECT_EQ(
       1ul,
       tester()->test_ukm_recorder().GetEntriesByName("DocumentCreated").size());
@@ -208,6 +227,14 @@ TEST_F(ServiceWorkerPageLoadMetricsObserverTest, WithServiceWorker) {
       internal::kHistogramServiceWorkerParseStartForwardBack, 0);
   tester()->histogram_tester().ExpectTotalCount(
       internal::kHistogramServiceWorkerParseStartForwardBackNoStore, 0);
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::
+          kHistogramServiceWorkerFirstContentfulPaintSkippableFetchHandler,
+      0);
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::
+          kHistogramServiceWorkerLargestContentfulPaintSkippableFetchHandler,
+      0);
 
   EXPECT_THAT(tester()->histogram_tester().GetAllSamples(
                   internal::kHistogramServiceWorkerLargestContentfulPaint),
@@ -463,6 +490,102 @@ TEST_F(ServiceWorkerPageLoadMetricsObserverTest,
   EXPECT_THAT(tester()->histogram_tester().GetAllSamples(
                   internal::kHistogramServiceWorkerLargestContentfulPaint),
               testing::ElementsAre(base::Bucket(4780, 1)));
+}
+
+TEST_F(ServiceWorkerPageLoadMetricsObserverTest,
+       WithServiceWorker_SkippableFetchHandler) {
+  page_load_metrics::mojom::PageLoadTiming timing;
+  InitializeTestPageLoadTiming(&timing);
+
+  NavigateAndCommit(GURL(kDefaultTestUrl));
+
+  page_load_metrics::mojom::FrameMetadata metadata;
+  metadata.behavior_flags |=
+      blink::LoadingBehaviorFlag::kLoadingBehaviorServiceWorkerControlled;
+  metadata.behavior_flags |= blink::LoadingBehaviorFlag::
+      kLoadingBehaviorServiceWorkerFetchHandlerSkippable;
+  tester()->SimulateTimingAndMetadataUpdate(timing, metadata);
+  tester()->NavigateToUntrackedUrl();
+
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::kHistogramServiceWorkerFirstPaint, 1);
+  tester()->histogram_tester().ExpectBucketCount(
+      internal::kHistogramServiceWorkerFirstPaint,
+      timing.paint_timing->first_paint.value().InMilliseconds(), 1);
+
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::kHistogramServiceWorkerFirstContentfulPaint, 1);
+  tester()->histogram_tester().ExpectBucketCount(
+      internal::kHistogramServiceWorkerFirstContentfulPaint,
+      timing.paint_timing->first_contentful_paint.value().InMilliseconds(), 1);
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::
+          kHistogramServiceWorkerFirstContentfulPaintSkippableFetchHandler,
+      1);
+  tester()->histogram_tester().ExpectBucketCount(
+      internal::
+          kHistogramServiceWorkerFirstContentfulPaintSkippableFetchHandler,
+      timing.paint_timing->first_contentful_paint.value().InMilliseconds(), 1);
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::
+          kHistogramServiceWorkerFirstContentfulPaintNonSkippableFetchHandler,
+      0);
+
+  EXPECT_THAT(tester()->histogram_tester().GetAllSamples(
+                  internal::kHistogramServiceWorkerLargestContentfulPaint),
+              testing::ElementsAre(base::Bucket(4780, 1)));
+  EXPECT_THAT(
+      tester()->histogram_tester().GetAllSamples(
+          internal::
+              kHistogramServiceWorkerLargestContentfulPaintSkippableFetchHandler),
+      testing::ElementsAre(base::Bucket(4780, 1)));
+}
+
+TEST_F(ServiceWorkerPageLoadMetricsObserverTest,
+       WithServiceWorker_NonSkippableFetchHandler) {
+  page_load_metrics::mojom::PageLoadTiming timing;
+  InitializeTestPageLoadTiming(&timing);
+
+  NavigateAndCommit(GURL(kDefaultTestUrl));
+
+  page_load_metrics::mojom::FrameMetadata metadata;
+  metadata.behavior_flags |=
+      blink::LoadingBehaviorFlag::kLoadingBehaviorServiceWorkerControlled;
+  tester()->SimulateTimingAndMetadataUpdate(timing, metadata);
+  tester()->NavigateToUntrackedUrl();
+
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::kHistogramServiceWorkerFirstPaint, 1);
+  tester()->histogram_tester().ExpectBucketCount(
+      internal::kHistogramServiceWorkerFirstPaint,
+      timing.paint_timing->first_paint.value().InMilliseconds(), 1);
+
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::kHistogramServiceWorkerFirstContentfulPaint, 1);
+  tester()->histogram_tester().ExpectBucketCount(
+      internal::kHistogramServiceWorkerFirstContentfulPaint,
+      timing.paint_timing->first_contentful_paint.value().InMilliseconds(), 1);
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::
+          kHistogramServiceWorkerFirstContentfulPaintSkippableFetchHandler,
+      0);
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::
+          kHistogramServiceWorkerFirstContentfulPaintNonSkippableFetchHandler,
+      1);
+  tester()->histogram_tester().ExpectBucketCount(
+      internal::
+          kHistogramServiceWorkerFirstContentfulPaintNonSkippableFetchHandler,
+      timing.paint_timing->first_contentful_paint.value().InMilliseconds(), 1);
+
+  EXPECT_THAT(tester()->histogram_tester().GetAllSamples(
+                  internal::kHistogramServiceWorkerLargestContentfulPaint),
+              testing::ElementsAre(base::Bucket(4780, 1)));
+  EXPECT_THAT(
+      tester()->histogram_tester().GetAllSamples(
+          internal::
+              kHistogramServiceWorkerLargestContentfulPaintNonSkippableFetchHandler),
+      testing::ElementsAre(base::Bucket(4780, 1)));
 }
 
 TEST_F(ServiceWorkerPageLoadMetricsObserverTest,

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,10 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/vector_icon_utils.h"
+
+#if !BUILDFLAG(IS_IOS)
+#include "ui/base/themed_vector_icon.h"
+#endif
 
 namespace ui {
 
@@ -158,6 +162,26 @@ bool ImageModel::operator==(const ImageModel& other) const {
 
 bool ImageModel::operator!=(const ImageModel& other) const {
   return !(*this == other);
+}
+
+gfx::ImageSkia ImageModel::Rasterize(
+    const ui::ColorProvider* color_provider) const {
+  if (IsImage())
+    return GetImage().AsImageSkia();
+
+  if (IsVectorIcon()) {
+#if BUILDFLAG(IS_IOS)
+    CHECK(false);
+#else
+    DCHECK(color_provider);
+    return ThemedVectorIcon(GetVectorIcon()).GetImageSkia(color_provider);
+#endif
+  }
+
+  if (IsImageGenerator())
+    return GetImageGenerator().Run(color_provider);
+
+  return gfx::ImageSkia();
 }
 
 ImageModel::ImageGeneratorAndSize::ImageGeneratorAndSize(

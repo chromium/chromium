@@ -1,9 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/autofill/autofill_popup_base_view.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view_delegate.h"
@@ -12,6 +13,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -41,19 +43,31 @@ class MockAutofillPopupViewDelegate : public AutofillPopupViewDelegate {
   MOCK_CONST_METHOD0(GetWebContents, content::WebContents*());
   MOCK_CONST_METHOD0(element_bounds, gfx::RectF&());
   MOCK_CONST_METHOD0(IsRTL, bool());
+
+  base::WeakPtr<AutofillPopupViewDelegate> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<MockAutofillPopupViewDelegate> weak_ptr_factory_{this};
 };
 
 }  // namespace
 
 class AutofillPopupBaseViewTest : public InProcessBrowserTest {
  public:
-  AutofillPopupBaseViewTest() {}
+  AutofillPopupBaseViewTest() {
+    // The only test in this class is a regression test for the legacy
+    // implementation. Disable the new method for placing the bubble.
+    feature_list_.InitAndDisableFeature(
+        features::kAutofillCenterAlignedSuggestions);
+  }
 
   AutofillPopupBaseViewTest(const AutofillPopupBaseViewTest&) = delete;
   AutofillPopupBaseViewTest& operator=(const AutofillPopupBaseViewTest&) =
       delete;
 
-  ~AutofillPopupBaseViewTest() override {}
+  ~AutofillPopupBaseViewTest() override = default;
 
   void SetUpOnMainThread() override {
     content::WebContents* web_contents =
@@ -65,9 +79,10 @@ class AutofillPopupBaseViewTest : public InProcessBrowserTest {
         .WillRepeatedly(Return(web_contents));
     EXPECT_CALL(mock_delegate_, ViewDestroyed());
 
-    view_ = new AutofillPopupBaseView(
-        &mock_delegate_, views::Widget::GetWidgetForNativeWindow(
-                             browser()->window()->GetNativeWindow()));
+    view_ =
+        new AutofillPopupBaseView(mock_delegate_.GetWeakPtr(),
+                                  views::Widget::GetWidgetForNativeWindow(
+                                      browser()->window()->GetNativeWindow()));
   }
 
   void ShowView() { view_->DoShow(); }
@@ -83,10 +98,12 @@ class AutofillPopupBaseViewTest : public InProcessBrowserTest {
 
  protected:
   testing::NiceMock<MockAutofillPopupViewDelegate> mock_delegate_;
-  AutofillPopupBaseView* view_;
+  raw_ptr<AutofillPopupBaseView> view_;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
-// Regression test for crbug.com/391316
 IN_PROC_BROWSER_TEST_F(AutofillPopupBaseViewTest, CorrectBoundsTest) {
   gfx::RectF bounds(100, 150, 5, 5);
   EXPECT_CALL(mock_delegate_, element_bounds())

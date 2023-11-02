@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/i18n/time_formatting.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browsing_data/cookies_tree_model.h"
@@ -64,7 +65,7 @@ class GestureScrollableTextfield : public views::Textfield {
 
   void OnEnabledChanged() { SetCanProcessEventsWithinSubtree(GetEnabled()); }
 
-  views::ScrollView* const scroll_parent_;
+  const raw_ptr<views::ScrollView> scroll_parent_;
   base::CallbackListSubscription on_enabled_subscription_;
 };
 
@@ -82,8 +83,8 @@ CookieInfoView::CookieInfoView() {
   const ChromeLayoutProvider* const provider = ChromeLayoutProvider::Get();
   const gfx::Insets& dialog_insets =
       provider->GetInsetsMetric(views::INSETS_DIALOG);
-  SetBorder(views::CreateEmptyBorder(0, dialog_insets.left(), 0,
-                                     dialog_insets.right()));
+  SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(0, dialog_insets.left(), 0, dialog_insets.right())));
 
   View* const contents = SetContents(std::make_unique<views::View>());
   views::TableLayout* layout =
@@ -173,7 +174,7 @@ void CookieInfoView::SetTextfieldColors() {
 
 views::Textfield* CookieInfoView::AddTextfieldRow(views::TableLayout* layout,
                                                   int label_message_id) {
-  layout->AddRows(1, views::GridLayout::kFixedSize);
+  layout->AddRows(1, views::TableLayout::kFixedSize);
   auto* label = contents()->AddChildView(std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(label_message_id)));
   auto* textfield = contents()->AddChildView(

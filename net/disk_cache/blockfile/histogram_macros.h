@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -95,7 +95,7 @@
       case net::REMOVED_MEDIA_CACHE:                                 \
       default:                                                       \
         NOTREACHED();                                                \
-        FALLTHROUGH;                                                 \
+        [[fallthrough]];                                                 \
       case net::DISK_CACHE:                                          \
       case net::APP_CACHE:                                           \
       case net::SHADER_CACHE:                                        \

@@ -1,0 +1,44 @@
+<!doctype html>
+<title>Should not crash when OffscreenCanvas outlives FontSelector</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<body>
+<script>
+promise_test(async function() {
+  assert_implements(window.gc, 'This test requires forced GC');
+  assert_implements(navigator.storage, 'This test requires navigator.storage');
+
+  // Set up a canvas and cache a font there
+  var iframe = document.body.appendChild(document.createElement('iframe'));
+  var canvas = new iframe.contentWindow.OffscreenCanvas(400, 300);
+  var context = canvas.getContext('2d');
+  context.measureText('text');
+
+  // Remove the owner document and run GC to remove FontFallbackMap
+  iframe.remove();
+  window.gc();
+  await navigator.storage.estimate();
+
+  context.measureText("text");
+}, 'Should not crash when re-accessing the font after the document is gone');
+
+promise_test(async function() {
+  assert_implements(window.gc, 'This test requires forced GC');
+  assert_implements(navigator.storage, 'This test requires navigator.storage');
+
+  // Set up a canvas and cache a font there
+  var iframe = document.body.appendChild(document.createElement('iframe'));
+  var canvas = new iframe.contentWindow.OffscreenCanvas(400, 300);
+  var context = canvas.getContext('2d');
+  context.letterSpacing = '1px';
+
+  // Remove the owner document and run GC to remove FontFallbackMap
+  iframe.remove();
+  window.gc();
+  await navigator.storage.estimate();
+
+  // Should not crash when setting a new font
+  context.font = '50% sans-serif';
+}, 'Should not crash when setting font after the document is gone');
+</script>
+</body>

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,9 +38,6 @@ class IncognitoMenuView : public ProfileMenuViewBase {
   std::u16string GetAccessibleWindowTitle() const override;
 
   // Button actions.
-#if defined(OS_WIN)
-  void OnCreateShortcutButtonClicked();
-#endif
   void OnExitButtonClicked();
 };
 

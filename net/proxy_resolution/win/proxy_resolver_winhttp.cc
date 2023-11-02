@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "net/base/net_errors.h"
@@ -62,7 +61,7 @@ class ProxyResolverWinHttp : public ProxyResolver {
 
   // ProxyResolver implementation:
   int GetProxyForURL(const GURL& url,
-                     const NetworkIsolationKey& network_isolation_key,
+                     const NetworkAnonymizationKey& network_anymization_key,
                      ProxyInfo* results,
                      CompletionOnceCallback /*callback*/,
                      std::unique_ptr<Request>* /*request*/,
@@ -73,15 +72,14 @@ class ProxyResolverWinHttp : public ProxyResolver {
   void CloseWinHttpSession();
 
   // Proxy configuration is cached on the session handle.
-  HINTERNET session_handle_;
+  HINTERNET session_handle_ = nullptr;
 
   const GURL pac_url_;
 };
 
 ProxyResolverWinHttp::ProxyResolverWinHttp(
     const scoped_refptr<PacFileData>& script_data)
-    : session_handle_(nullptr),
-      pac_url_(script_data->type() == PacFileData::TYPE_AUTO_DETECT
+    : pac_url_(script_data->type() == PacFileData::TYPE_AUTO_DETECT
                    ? GURL("http://wpad/wpad.dat")
                    : script_data->url()) {}
 
@@ -91,7 +89,7 @@ ProxyResolverWinHttp::~ProxyResolverWinHttp() {
 
 int ProxyResolverWinHttp::GetProxyForURL(
     const GURL& query_url,
-    const NetworkIsolationKey& network_isolation_key,
+    const NetworkAnonymizationKey& network_anonymization_key,
     ProxyInfo* results,
     CompletionOnceCallback /*callback*/,
     std::unique_ptr<Request>* /*request*/,

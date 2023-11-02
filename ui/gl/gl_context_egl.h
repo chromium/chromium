@@ -1,22 +1,19 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_GL_GL_CONTEXT_EGL_H_
 #define UI_GL_GL_CONTEXT_EGL_H_
 
-#include <map>
-
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_export.h"
 
 typedef void* EGLContext;
-typedef void* EGLDisplay;
 typedef void* EGLConfig;
 
 namespace gl {
-
+class GLDisplayEGL;
 class GLSurface;
 
 // Encapsulates an EGL OpenGL ES context.
@@ -36,25 +33,22 @@ class GL_EXPORT GLContextEGL : public GLContextReal {
   void* GetHandle() override;
   unsigned int CheckStickyGraphicsResetStatusImpl() override;
   void SetUnbindFboOnMakeCurrent() override;
-  YUVToRGBConverter* GetYUVToRGBConverter(
-      const gfx::ColorSpace& color_space) override;
   void SetVisibility(bool visibility) override;
+  GLDisplayEGL* GetGLDisplayEGL() override;
 
  protected:
   ~GLContextEGL() override;
 
  private:
   void Destroy();
-  void ReleaseYUVToRGBConvertersAndBackpressureFences();
+  void ReleaseBackpressureFences();
 
   EGLContext context_ = nullptr;
-  EGLDisplay display_ = nullptr;
+  raw_ptr<GLDisplayEGL> gl_display_ = nullptr;
   EGLConfig config_ = nullptr;
   unsigned int graphics_reset_status_ = 0;  // GL_NO_ERROR;
   bool unbind_fbo_on_makecurrent_ = false;
   bool lost_ = false;
-  std::map<gfx::ColorSpace, std::unique_ptr<YUVToRGBConverter>>
-      yuv_to_rgb_converters_;
 };
 
 }  // namespace gl

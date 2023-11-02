@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,11 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "content/public/test/test_launcher.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/app/android/chrome_main_delegate_android.h"
 #else
 #include "chrome/app/chrome_main_delegate.h"
@@ -36,13 +37,13 @@ class ChromeTestSuiteRunner {
 
 // Acts like normal ChromeMainDelegate but injects behaviour for browser tests.
 class ChromeTestChromeMainDelegate
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     : public ChromeMainDelegateAndroid {
 #else
     : public ChromeMainDelegate {
 #endif
  public:
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   ChromeTestChromeMainDelegate() : ChromeMainDelegateAndroid() {}
 #else
   explicit ChromeTestChromeMainDelegate(base::TimeTicks time)
@@ -51,7 +52,8 @@ class ChromeTestChromeMainDelegate
 
   // ChromeMainDelegateOverrides.
   content::ContentBrowserClient* CreateContentBrowserClient() override;
-#if defined(OS_WIN)
+  content::ContentUtilityClient* CreateContentUtilityClient() override;
+#if BUILDFLAG(IS_WIN)
   bool ShouldHandleConsoleControlEvents() override;
 #endif
 };
@@ -70,20 +72,20 @@ class ChromeTestLauncherDelegate : public content::TestLauncherDelegate {
   // content::TestLauncherDelegate:
   int RunTestSuite(int argc, char** argv) override;
   std::string GetUserDataDirectoryCommandLineSwitch() override;
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   content::ContentMainDelegate* CreateContentMainDelegate() override;
 #endif
   void PreSharding() override;
   void OnDoneRunningTests() override;
 
  private:
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   class ScopedFirewallRules;
 
   std::unique_ptr<ScopedFirewallRules> firewall_rules_;
 #endif
 
-  ChromeTestSuiteRunner* runner_;
+  raw_ptr<ChromeTestSuiteRunner> runner_;
 };
 
 // Launches Chrome browser tests. |parallel_jobs| is number of test jobs to be

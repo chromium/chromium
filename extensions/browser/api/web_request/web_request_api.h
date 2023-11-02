@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
@@ -211,7 +211,8 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
       ukm::SourceIdObj ukm_source_id,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory>* factory_receiver,
       mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>*
-          header_client);
+          header_client,
+      const url::Origin& request_initiator = url::Origin());
 
   // Any request which requires authentication to complete will be bounced
   // through this method.
@@ -278,7 +279,7 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
   // permissions.
   int web_request_extension_count_ = 0;
 
-  content::BrowserContext* const browser_context_;
+  const raw_ptr<content::BrowserContext> browser_context_;
 
   RequestIDGenerator request_id_generator_;
   std::unique_ptr<ProxySet> proxies_;
@@ -315,9 +316,11 @@ class ExtensionWebRequestEventRouter {
     RequestFilter();
     ~RequestFilter();
 
-    // TODO(devlin): Make these a move constructor/operator.
-    RequestFilter(const RequestFilter& other);
-    RequestFilter& operator=(const RequestFilter& other);
+    RequestFilter(const RequestFilter&) = delete;
+    RequestFilter& operator=(const RequestFilter&) = delete;
+
+    RequestFilter(RequestFilter&& other);
+    RequestFilter& operator=(RequestFilter&& other);
 
     // Returns false if there was an error initializing. If it is a user error,
     // an error message is provided, otherwise the error is internal (and
@@ -495,7 +498,7 @@ class ExtensionWebRequestEventRouter {
                         events::HistogramValue histogram_value,
                         const std::string& event_name,
                         const std::string& sub_event_name,
-                        const RequestFilter& filter,
+                        RequestFilter filter,
                         int extra_info_spec,
                         int render_process_id,
                         int web_view_instance_id,
@@ -534,34 +537,23 @@ class ExtensionWebRequestEventRouter {
   void DecrementExtraHeadersListenerCount(
       content::BrowserContext* browser_context);
 
+  // Called when a BrowserContext is being destroyed.
+  void OnBrowserContextShutdown(content::BrowserContext* browser_context);
+
+  // Get the number of listeners - for testing only.
+  size_t GetListenerCountForTesting(content::BrowserContext* browser_context,
+                                    const std::string& event_name);
+  size_t GetInactiveListenerCountForTesting(
+      content::BrowserContext* browser_context,
+      const std::string& event_name);
+
  private:
   friend class WebRequestAPI;
   friend class base::NoDestructor<ExtensionWebRequestEventRouter>;
-  FRIEND_TEST_ALL_PREFIXES(ExtensionWebRequestTest,
-                           BlockingEventPrecedenceRedirect);
-  FRIEND_TEST_ALL_PREFIXES(ExtensionWebRequestTest,
-                           BlockingEventPrecedenceCancel);
-  FRIEND_TEST_ALL_PREFIXES(ExtensionWebRequestTest,
-                           SimulateChancelWhileBlocked);
-  FRIEND_TEST_ALL_PREFIXES(ExtensionWebRequestTest, AccessRequestBodyData);
-  FRIEND_TEST_ALL_PREFIXES(ExtensionWebRequestTest,
-                           MinimalAccessRequestBodyData);
-  FRIEND_TEST_ALL_PREFIXES(ExtensionWebRequestTest,
-                           ProperFilteringInPublicSession);
-  FRIEND_TEST_ALL_PREFIXES(ExtensionWebRequestTest, NoAccessRequestBodyData);
   FRIEND_TEST_ALL_PREFIXES(ExtensionWebRequestTest, AddAndRemoveListeners);
-  FRIEND_TEST_ALL_PREFIXES(ExtensionWebRequestTest, BlockedRequestsAreRemoved);
-  FRIEND_TEST_ALL_PREFIXES(ExtensionWebRequestHeaderModificationTest,
-                           TestModifications);
+  FRIEND_TEST_ALL_PREFIXES(ExtensionWebRequestTest, BrowserContextShutdown);
 
   struct EventListener {
-    // TODO(rdevlin.cronin): There are two types of EventListeners - those
-    // associated with WebViews and those that are not. The ones associated with
-    // WebViews are always identified by all seven properties. The other ones
-    // will always have web_view_instance_id = 0. Unfortunately, the
-    // callbacks/interfaces for these ones don't specify render_process_id.
-    // This is why we need the LooselyMatches method, and the need for a
-    // |strict| argument on RemoveEventListener.
     struct ID {
       ID(content::BrowserContext* browser_context,
          const std::string& extension_id,
@@ -573,14 +565,9 @@ class ExtensionWebRequestEventRouter {
 
       ID(const ID& source);
 
-      // If web_view_instance_id is 0, then ignore render_process_id.
-      // TODO(rdevlin.cronin): In a more sane world, LooselyMatches wouldn't be
-      // necessary.
-      bool LooselyMatches(const ID& that) const;
-
       bool operator==(const ID& that) const;
 
-      content::BrowserContext* browser_context;
+      raw_ptr<content::BrowserContext> browser_context;
       std::string extension_id;
       std::string sub_event_name;
       // In the case of a webview, this is the process ID of the embedder.
@@ -600,7 +587,7 @@ class ExtensionWebRequestEventRouter {
 
     ~EventListener();
 
-    const ID id;
+    ID id;
     std::string extension_name;
     events::HistogramValue histogram_value = events::UNKNOWN;
     RequestFilter filter;
@@ -611,20 +598,47 @@ class ExtensionWebRequestEventRouter {
   using RawListeners = std::vector<EventListener*>;
   using ListenerIDs = std::vector<EventListener::ID>;
   using Listeners = std::vector<std::unique_ptr<EventListener>>;
-  using ListenerMapForBrowserContext = std::map<std::string, Listeners>;
-  using ListenerMap =
-      std::map<content::BrowserContext*, ListenerMapForBrowserContext>;
-  using ExtraHeadersListenerCountMap = std::map<content::BrowserContext*, int>;
+  using ListenerMap = std::map<std::string, Listeners>;
+
+  // A collection of data associated with a given BrowserContext.
+  struct BrowserContextData {
+    BrowserContextData();
+    BrowserContextData(BrowserContextData&&);
+    ~BrowserContextData();
+
+    // The listeners that are currently active (i.e., have a corresponding
+    // render process).
+    ListenerMap active_listeners;
+    // Listeners that are associated with currently-inactive lazy contexts.
+    // These can still match events, but don't have an active renderer process.
+    ListenerMap inactive_listeners;
+    // The number of listeners that request extra headers be included with their
+    // events. Modified through `IncrementExtraHeadersListenerCount()` and
+    // `DecrementExtraHeadersListenerCount()`.
+    int extra_headers_count = 0;
+    // The corresponding incognito or on-the-record context for this
+    // BrowserContext. That is, if this context is incognito, `cross_context`
+    // will point to the original context; if this context is the original,
+    // `cross_context` will point to the incognito context (if any).
+    content::BrowserContext* cross_context = nullptr;
+  };
+
+  using DataMap = std::map<content::BrowserContext*, BrowserContextData>;
   using BlockedRequestMap = std::map<uint64_t, BlockedRequest>;
   // Map of request_id -> bit vector of EventTypes already signaled
   using SignaledRequestMap = std::map<uint64_t, int>;
-  // For each browser_context: a bool indicating whether it is an incognito
-  // browser_context, and a pointer to the corresponding (non-)incognito
-  // browser_context.
-  using CrossBrowserContextMap =
-      std::map<content::BrowserContext*,
-               std::pair<bool, content::BrowserContext*>>;
   using CallbacksForPageLoad = std::list<base::OnceClosure>;
+
+  // The type of listener removal.
+  enum class ListenerUpdateType {
+    // The listener was fully removed by the extension and the registration
+    // should be removed here.
+    kRemove,
+    // This is for a lazy listener where the "active" listener's process is shut
+    // down, but the listener should still be registered (and will be stored in
+    // `BrowserContextData::inactive_listeners`).
+    kDeactivate,
+  };
 
   ExtensionWebRequestEventRouter();
 
@@ -644,9 +658,37 @@ class ExtensionWebRequestEventRouter {
   EventListener* FindEventListenerInContainer(const EventListener::ID& id,
                                               Listeners& listeners);
 
-  // Removes the listener for the given sub-event. Must be called from the IO
-  // thread.
-  void RemoveEventListener(const EventListener::ID& id, bool strict);
+  // Updates the active listener registration indicated by the given criteria.
+  // `update_type` indicates whether the listener is fully removed or if it's
+  // a lazy listener that had its context shut down.
+  void UpdateActiveListener(ListenerUpdateType update_type,
+                            content::BrowserContext* browser_context,
+                            const ExtensionId& extension_id,
+                            const std::string& sub_event_name,
+                            int worker_thread_id,
+                            int64_t service_worker_version_id);
+
+  // Removes a lazy listener registration. This affects both the provided
+  // `original_context` and any incognito context associated with it.
+  void RemoveLazyListener(content::BrowserContext* original_context,
+                          const ExtensionId& extension_id,
+                          const std::string& sub_event_name);
+
+  // Removes the listener from `listeners` that matches the given criteria.
+  // Optional criteria are ignored if not provided. Removes the matching
+  // listener, if any. Expects a maximum of one listener to match.
+  static std::unique_ptr<EventListener> RemoveMatchingListener(
+      Listeners& listeners,
+      const ExtensionId& extension_id,
+      const std::string& sub_event_name,
+      absl::optional<int> worker_thread_id,
+      absl::optional<int64_t> service_worker_version_id,
+      content::BrowserContext* browser_context);
+
+  // Cleans up for a listener being removed, unblocking any requests and
+  // updating counts as appropriate.
+  void CleanUpForListener(const EventListener& listener,
+                          ListenerUpdateType removal_type);
 
   // Ensures that future callbacks for |request| are ignored so that it can be
   // destroyed safely.
@@ -670,17 +712,26 @@ class ExtensionWebRequestEventRouter {
                                     const WebRequestInfo* request,
                                     int* extra_info_spec);
 
-  // Helper for the above functions. This is called twice: once for the
-  // browser_context of the event, the next time for the "cross" browser_context
-  // (i.e. the incognito browser_context if the event is originally for the
-  // normal browser_context, or vice versa).
-  void GetMatchingListenersImpl(content::BrowserContext* browser_context,
-                                const WebRequestInfo* request,
-                                bool crosses_incognito,
-                                const std::string& event_name,
-                                bool is_request_from_extension,
-                                int* extra_info_spec,
-                                RawListeners* matching_listeners);
+  // Returns true if the given `listener` matches the `request`.
+  // This needs to be a class method because `EventListener` is a private
+  // struct.
+  static bool ListenerMatchesRequest(const EventListener& listener,
+                                     const WebRequestInfo& request,
+                                     content::BrowserContext& browser_context,
+                                     bool is_request_from_extension,
+                                     bool crosses_incognito);
+
+  // Adds all listeners that match `request` from `listeners` into
+  // `listeners_out` and populates `extra_info_spec_out` with the set of all
+  // options on the matches listeners.
+  static void GetMatchingListenersForRequest(
+      const Listeners& listeners,
+      const WebRequestInfo& request,
+      content::BrowserContext& browser_context,
+      bool is_request_from_extension,
+      bool crosses_incognito,
+      RawListeners* listeners_out,
+      int* extra_info_spec_out);
 
   // Decrements the count of event handlers blocking the given request. When the
   // count reaches 0, we stop blocking the request and proceed it using the
@@ -747,32 +798,14 @@ class ExtensionWebRequestEventRouter {
   content::BrowserContext* GetCrossBrowserContext(
       content::BrowserContext* browser_context) const;
 
-  // Determines whether the specified browser_context is an incognito
-  // browser_context (based on the contents of the cross-browser_context table
-  // and without dereferencing the browser_context pointer).
-  bool IsIncognitoBrowserContext(
-      content::BrowserContext* browser_context) const;
-
   // Returns true if |request| was already signaled to some event handlers.
   bool WasSignaled(const WebRequestInfo& request) const;
 
   // Helper for |HasAnyExtraHeadersListener()|.
   bool HasAnyExtraHeadersListenerImpl(content::BrowserContext* browser_context);
 
-  // Get the number of listeners - for testing only.
-  size_t GetListenerCountForTesting(content::BrowserContext* browser_context,
-                                    const std::string& event_name);
-
-  // TODO(karandeepb): The below code should be refactored to have a single map
-  // to store per-browser-context data.
-
-  // A map for each browser_context that maps an event name to a set of
-  // extensions that are listening to that event.
-  ListenerMap listeners_;
-
-  // Count of listeners per browser context which request extra headers. Must be
-  // modified through [Increment/Decrement]ExtraHeadersListenerCount.
-  ExtraHeadersListenerCountMap extra_headers_listener_count_;
+  // A map of data associated with given BrowserContexts.
+  DataMap data_;
 
   // A map of network requests that are waiting for at least one event handler
   // to respond.
@@ -781,10 +814,6 @@ class ExtensionWebRequestEventRouter {
   // A map of request ids to a bitvector indicating which events have been
   // signaled and should not be sent again.
   SignaledRequestMap signaled_requests_;
-
-  // A map of original browser_context -> corresponding incognito
-  // browser_context (and vice versa).
-  CrossBrowserContextMap cross_browser_context_map_;
 
   // Keeps track of time spent waiting on extensions using the blocking
   // webRequest API.

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 
 // Constructs a record identifier for the given data. This should be as close
-// as possible to |RecordIdentifierForPasswordForm|, as this is what is used
+// as possible to `RecordIdentifierForPasswordForm`, as this is what is used
 // to detect if a credential should be updated instead of created.
 NSString* RecordIdentifierForData(NSURL* url, NSString* username);
 

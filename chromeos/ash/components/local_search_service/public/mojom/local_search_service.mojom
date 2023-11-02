@@ -1,0 +1,43 @@
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.local_search_service.mojom;
+
+import "chromeos/ash/components/local_search_service/public/mojom/index.mojom";
+import "chromeos/ash/components/local_search_service/public/mojom/types.mojom";
+import "sandbox/policy/mojom/sandbox.mojom";
+
+enum IndexId {
+  kCrosSettings = 0,
+  kHelpApp = 1,
+  kHelpAppLauncher = 2,
+  kPersonalization = 3
+  // Add new client IDs here.
+};
+
+enum Backend {
+  kLinearMap = 0,
+  kInvertedIndex = 1
+};
+
+// Interface that helps to log daily search requests to UMA.
+interface SearchMetricsReporter {
+  // Client can call this interface each time a search is performed.
+  OnSearchPerformed(IndexId index_id) => ();
+};
+
+// The main service interface.
+[ServiceSandbox=sandbox.mojom.Sandbox.kUtility]
+interface LocalSearchService {
+  // Call this function to request an Index as specified by |index_id| and
+  // |backend|.
+  // A new Index will be created if there isn't one already with the given
+  // |index_id|, otherwise the client will have its remote bound to the
+  // same Index, and in this case the input |backend| will be ignored.
+  // |reporter_remote| will be passed in for metrics logging (if provided).
+  BindIndex(IndexId index_id, Backend backend,
+      pending_receiver<Index> index_receiver,
+      pending_remote<SearchMetricsReporter>? reporter_remote)
+      => (string? error);
+};

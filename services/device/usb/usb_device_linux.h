@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,10 +12,8 @@
 #include <utility>
 
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "services/device/usb/usb_device.h"
 
 namespace base {
@@ -32,9 +30,9 @@ class UsbDeviceLinux : public UsbDevice {
   UsbDeviceLinux& operator=(const UsbDeviceLinux&) = delete;
 
 // UsbDevice implementation:
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   void CheckUsbAccess(ResultCallback callback) override;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   void Open(OpenCallback callback) override;
 
   const std::string& device_path() const { return device_path_; }
@@ -55,9 +53,10 @@ class UsbDeviceLinux : public UsbDevice {
   ~UsbDeviceLinux() override;
 
  private:
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   void OnOpenRequestComplete(OpenCallback callback,
                              base::ScopedFD fd,
+                             const std::string& client_id,
                              base::ScopedFD lifeline_fd);
   void OnOpenRequestError(OpenCallback callback,
                           const std::string& error_name,
@@ -67,9 +66,10 @@ class UsbDeviceLinux : public UsbDevice {
       OpenCallback callback,
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       scoped_refptr<base::SequencedTaskRunner> blocking_task_runner);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   void Opened(base::ScopedFD fd,
               base::ScopedFD lifeline_fd,
+              const std::string& client_id,
               OpenCallback callback,
               scoped_refptr<base::SequencedTaskRunner> blocking_task_runner);
 

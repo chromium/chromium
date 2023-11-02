@@ -1,6 +1,10 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
 
 source_set("user_activity_ukm_logger_helpers") {
   public = [ "user_activity_ukm_logger_helpers.h" ]
@@ -9,7 +13,7 @@ source_set("user_activity_ukm_logger_helpers") {
 
   deps = [
     "//base",
-    "//chrome/browser/chromeos:user_activity_event_proto",
+    "//chrome/browser/ash:user_activity_event_proto",
     "//ui/base",
   ]
 }

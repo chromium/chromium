@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -46,7 +46,7 @@ SnippetProto TestSnippetProto() {
   return proto;
 }
 
-base::DictionaryValue TestSnippetJsonValue() {
+base::Value::Dict TestSnippetJsonValue() {
   const char kJsonStr[] = R"(
     {
       "ids" : ["foo", "bar"],
@@ -70,14 +70,13 @@ base::DictionaryValue TestSnippetJsonValue() {
 
   auto json_parsed = base::JSONReader::ReadAndReturnValueWithError(
       kJsonStr, base::JSON_PARSE_RFC);
-  CHECK(json_parsed.value) << "error_message: " << json_parsed.error_message;
-  auto dict = base::DictionaryValue::From(
-      std::make_unique<base::Value>(std::move(json_parsed).value.value()));
-  return std::move(*dict);
+  CHECK(json_parsed.has_value())
+      << "error_message: " << json_parsed.error().message;
+  return std::move(*json_parsed).TakeDict();
 }
 
 TEST(RemoteSuggestionTest, FromContentSuggestionsDictionary) {
-  base::DictionaryValue snippet_dict = TestSnippetJsonValue();
+  base::Value::Dict snippet_dict = TestSnippetJsonValue();
   const base::Time fetch_date = DeserializeTime(1466634774L);
   std::unique_ptr<RemoteSuggestion> snippet =
       RemoteSuggestion::CreateFromContentSuggestionsDictionary(
@@ -110,9 +109,9 @@ TEST(RemoteSuggestionTest, FromContentSuggestionsDictionary) {
 
 TEST(RemoteSuggestionTest,
      FromContentSuggestionsDictionaryWithoutImageOrSnippet) {
-  base::DictionaryValue snippet_dict = TestSnippetJsonValue();
-  ASSERT_TRUE(snippet_dict.RemovePath("imageUrl"));
-  ASSERT_TRUE(snippet_dict.RemovePath("snippet"));
+  base::Value::Dict snippet_dict = TestSnippetJsonValue();
+  ASSERT_TRUE(snippet_dict.Remove("imageUrl"));
+  ASSERT_TRUE(snippet_dict.Remove("snippet"));
   const base::Time fetch_date = DeserializeTime(1466634774L);
   std::unique_ptr<RemoteSuggestion> snippet =
       RemoteSuggestion::CreateFromContentSuggestionsDictionary(
@@ -180,8 +179,8 @@ TEST(RemoteSuggestionTest, CreateFromProtoIgnoreMissingSalientImageAndSnippet) {
 
 TEST(RemoteSuggestionTest, NotifcationInfoAllSpecified) {
   auto json = TestSnippetJsonValue();
-  json.SetBoolean("notificationInfo.shouldNotify", true);
-  json.SetString("notificationInfo.deadline", "2016-06-30T13:01:37.000Z");
+  json.SetByDottedPath("notificationInfo.shouldNotify", true);
+  json.SetByDottedPath("notificationInfo.deadline", "2016-06-30T13:01:37.000Z");
   auto snippet = RemoteSuggestion::CreateFromContentSuggestionsDictionary(
       json, 0, base::Time());
   EXPECT_TRUE(snippet->should_notify());
@@ -192,8 +191,8 @@ TEST(RemoteSuggestionTest, NotifcationInfoAllSpecified) {
 
 TEST(RemoteSuggestionTest, NotificationInfoDeadlineInvalid) {
   auto json = TestSnippetJsonValue();
-  json.SetBoolean("notificationInfo.shouldNotify", true);
-  json.SetString("notificationInfo.deadline", "abcd");
+  json.SetByDottedPath("notificationInfo.shouldNotify", true);
+  json.SetByDottedPath("notificationInfo.deadline", "abcd");
   auto snippet = RemoteSuggestion::CreateFromContentSuggestionsDictionary(
       json, 0, base::Time());
   EXPECT_TRUE(snippet->should_notify());
@@ -202,8 +201,8 @@ TEST(RemoteSuggestionTest, NotificationInfoDeadlineInvalid) {
 
 TEST(RemoteSuggestionTest, NotificationInfoDeadlineAbsent) {
   auto json = TestSnippetJsonValue();
-  json.SetBoolean("notificationInfo.shouldNotify", true);
-  json.RemovePath("notificationInfo.deadline");
+  json.SetByDottedPath("notificationInfo.shouldNotify", true);
+  json.RemoveByDottedPath("notificationInfo.deadline");
   auto snippet = RemoteSuggestion::CreateFromContentSuggestionsDictionary(
       json, 0, base::Time());
   EXPECT_TRUE(snippet->should_notify());
@@ -212,7 +211,7 @@ TEST(RemoteSuggestionTest, NotificationInfoDeadlineAbsent) {
 
 TEST(RemoteSuggestionTest, NotificationInfoShouldNotifyInvalid) {
   auto json = TestSnippetJsonValue();
-  json.SetString("notificationInfo.shouldNotify", "non-bool");
+  json.SetByDottedPath("notificationInfo.shouldNotify", "non-bool");
   auto snippet = RemoteSuggestion::CreateFromContentSuggestionsDictionary(
       json, 0, base::Time());
   EXPECT_FALSE(snippet->should_notify());
@@ -220,7 +219,7 @@ TEST(RemoteSuggestionTest, NotificationInfoShouldNotifyInvalid) {
 
 TEST(RemoteSuggestionTest, NotificationInfoAbsent) {
   auto json = TestSnippetJsonValue();
-  json.SetBoolean("notificationInfo.shouldNotify", false);
+  json.SetByDottedPath("notificationInfo.shouldNotify", false);
   auto snippet = RemoteSuggestion::CreateFromContentSuggestionsDictionary(
       json, 0, base::Time());
   EXPECT_FALSE(snippet->should_notify());
@@ -228,7 +227,7 @@ TEST(RemoteSuggestionTest, NotificationInfoAbsent) {
 
 TEST(RemoteSuggestionTest, ToContentSuggestionWithoutNotificationInfo) {
   auto json = TestSnippetJsonValue();
-  json.RemovePath("notificationInfo");
+  json.Remove("notificationInfo");
   const base::Time fetch_date = DeserializeTime(1466634774L);
   auto snippet = RemoteSuggestion::CreateFromContentSuggestionsDictionary(
       json, 0, fetch_date);
@@ -276,7 +275,7 @@ TEST(RemoteSuggestionTest, ToContentSuggestionWithNotificationInfo) {
 
 TEST(RemoteSuggestionTest, ToContentSuggestionWithContentTypeVideo) {
   auto json = TestSnippetJsonValue();
-  json.SetString("contentType", "VIDEO");
+  json.Set("contentType", "VIDEO");
   auto snippet = RemoteSuggestion::CreateFromContentSuggestionsDictionary(
       json, 0, base::Time());
   ASSERT_THAT(snippet, NotNull());
@@ -288,7 +287,7 @@ TEST(RemoteSuggestionTest, ToContentSuggestionWithContentTypeVideo) {
 
 TEST(RemoteSuggestionTest, ToContentSuggestionWithContentTypeUnknown) {
   auto json = TestSnippetJsonValue();
-  json.SetString("contentType", "UNKNOWN");
+  json.Set("contentType", "UNKNOWN");
   auto snippet = RemoteSuggestion::CreateFromContentSuggestionsDictionary(
       json, 0, base::Time());
   ASSERT_THAT(snippet, NotNull());
@@ -313,7 +312,7 @@ TEST(RemoteSuggestionTest, ToContentSuggestionWithLargeImageDominantColor) {
   auto json = TestSnippetJsonValue();
   // JSON does not support unsigned types. As a result the value is parsed as
   // int if it fits and as double otherwise.
-  json.SetDouble("imageDominantColor", 4289379276.);
+  json.Set("imageDominantColor", 4289379276.);
   auto snippet = RemoteSuggestion::CreateFromContentSuggestionsDictionary(
       json, 0, base::Time());
   ASSERT_THAT(snippet, NotNull());
@@ -329,7 +328,7 @@ TEST(RemoteSuggestionTest, ToContentSuggestionWithSmallImageDominantColor) {
   auto json = TestSnippetJsonValue();
   // JSON does not support unsigned types. As a result the value is parsed as
   // int if it fits and as double otherwise.
-  json.SetInteger("imageDominantColor", 16777216 /*=0x1000000*/);
+  json.Set("imageDominantColor", 16777216 /*=0x1000000*/);
   auto snippet = RemoteSuggestion::CreateFromContentSuggestionsDictionary(
       json, 0, base::Time());
   ASSERT_THAT(snippet, NotNull());
@@ -343,7 +342,7 @@ TEST(RemoteSuggestionTest, ToContentSuggestionWithSmallImageDominantColor) {
 
 TEST(RemoteSuggestionTest, ToContentSuggestionWithoutImageDominantColor) {
   auto json = TestSnippetJsonValue();
-  json.RemovePath("imageDominantColor");
+  json.Remove("imageDominantColor");
   auto snippet = RemoteSuggestion::CreateFromContentSuggestionsDictionary(
       json, 0, base::Time());
   ASSERT_THAT(snippet, NotNull());

@@ -14,6 +14,7 @@
 
 #include "absl/functional/function_ref.h"
 
+#include <functional>
 #include <memory>
 
 #include "gmock/gmock.h"

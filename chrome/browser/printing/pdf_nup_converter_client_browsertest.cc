@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -67,11 +67,11 @@ base::MappedReadOnlyRegion GetPdfRegion(const char* file_name) {
 base::MappedReadOnlyRegion GetBadDataRegion() {
   static const char kBadData[] = "BADDATA";
   base::MappedReadOnlyRegion pdf_region =
-      base::ReadOnlySharedMemoryRegion::Create(base::size(kBadData));
+      base::ReadOnlySharedMemoryRegion::Create(std::size(kBadData));
   if (!pdf_region.IsValid())
     return pdf_region;
 
-  memcpy(pdf_region.mapping.memory(), kBadData, base::size(kBadData));
+  memcpy(pdf_region.mapping.memory(), kBadData, std::size(kBadData));
   return pdf_region;
 }
 

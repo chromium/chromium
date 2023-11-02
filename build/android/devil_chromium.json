@@ -1,15 +1,6 @@
 {
   "config_type": "BaseConfig",
   "dependencies": {
-    "aapt": {
-      "file_info": {
-        "linux2_x86_64": {
-          "local_paths": [
-            "../../third_party/android_sdk/public/build-tools/27.0.3/aapt"
-          ]
-        }
-      }
-    },
     "adb": {
       "file_info": {
         "linux2_x86_64": {
@@ -19,38 +10,11 @@
         }
       }
     },
-    "android_build_tools_libc++": {
-      "file_info": {
-        "linux2_x86_64": {
-          "local_paths": [
-            "../../third_party/android_sdk/public/build-tools/27.0.3/lib64/libc++.so"
-          ]
-        }
-      }
-    },
     "android_sdk": {
       "file_info": {
         "linux2_x86_64": {
           "local_paths": [
             "../../third_party/android_sdk/public"
-          ]
-        }
-      }
-    },
-    "dexdump": {
-      "file_info": {
-        "linux2_x86_64": {
-          "local_paths": [
-            "../../third_party/android_sdk/public/build-tools/27.0.3/dexdump"
-          ]
-        }
-      }
-    },
-    "split-select": {
-      "file_info": {
-        "linux2_x86_64": {
-          "local_paths": [
-            "../../third_party/android_sdk/public/build-tools/27.0.3/split-select"
           ]
         }
       }

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,11 @@
 #define UI_MESSAGE_CENTER_VIEWS_NOTIFICATION_HEADER_VIEW_H_
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/message_center/message_center_export.h"
@@ -71,7 +74,13 @@ class MESSAGE_CENTER_EXPORT NotificationHeaderView : public views::Button {
   // Shows or hides the app icon.
   void SetAppIconVisible(bool visible);
 
+  // Shows or hides the timestamp and timestamp divider
+  void SetTimestampVisible(bool visible);
+
   void SetIsInAshNotificationView(bool is_in_ash_notification);
+
+  // The header only shows timestamp if it is in a group child notification.
+  void SetIsInGroupChildNotification(bool is_in_group_child_notification);
 
   // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
@@ -99,9 +108,11 @@ class MESSAGE_CENTER_EXPORT NotificationHeaderView : public views::Button {
 
  private:
   FRIEND_TEST_ALL_PREFIXES(NotificationHeaderViewTest, SettingsMode);
+  FRIEND_TEST_ALL_PREFIXES(NotificationHeaderViewTest,
+                           GroupChildNotificationVisibility);
 
   // Update visibility for both |summary_text_view_| and |timestamp_view_|.
-  void UpdateSummaryTextVisibility();
+  void UpdateSummaryTextAndTimestampVisibility();
 
   void UpdateColors();
 
@@ -112,14 +123,15 @@ class MESSAGE_CENTER_EXPORT NotificationHeaderView : public views::Button {
   base::OneShotTimer timestamp_update_timer_;
   absl::optional<base::Time> timestamp_;
 
-  views::ImageView* app_icon_view_ = nullptr;
-  views::Label* app_name_view_ = nullptr;
-  views::View* detail_views_ = nullptr;
-  views::Label* summary_text_divider_ = nullptr;
-  views::Label* summary_text_view_ = nullptr;
-  views::Label* timestamp_divider_ = nullptr;
-  views::Label* timestamp_view_ = nullptr;
-  views::ImageView* expand_button_ = nullptr;
+  raw_ptr<views::ImageView> app_icon_view_ = nullptr;
+  raw_ptr<views::Label> app_name_view_ = nullptr;
+  raw_ptr<views::View> detail_views_ = nullptr;
+  raw_ptr<views::View> spacer_ = nullptr;
+  raw_ptr<views::Label> summary_text_divider_ = nullptr;
+  raw_ptr<views::Label> summary_text_view_ = nullptr;
+  raw_ptr<views::Label> timestamp_divider_ = nullptr;
+  raw_ptr<views::Label> timestamp_view_ = nullptr;
+  raw_ptr<views::ImageView> expand_button_ = nullptr;
 
   bool has_progress_ = false;
   bool is_expanded_ = false;
@@ -127,6 +139,9 @@ class MESSAGE_CENTER_EXPORT NotificationHeaderView : public views::Button {
 
   // Whether this view is used for an ash notification view.
   bool is_in_ash_notification_ = false;
+
+  // Whether this view is used for a group child notification.
+  bool is_in_group_child_notification_ = false;
 };
 
 BEGIN_VIEW_BUILDER(MESSAGE_CENTER_EXPORT, NotificationHeaderView, views::Button)

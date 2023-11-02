@@ -1,0 +1,55 @@
+[package]
+name = "serde"
+version = "1.0.130" # remember to update html_root_url and serde_derive dependency
+authors = ["Erick Tryzelaar <erick.tryzelaar@gmail.com>", "David Tolnay <dtolnay@gmail.com>"]
+license = "MIT OR Apache-2.0"
+description = "A generic serialization/deserialization framework"
+homepage = "https://serde.rs"
+repository = "https://github.com/serde-rs/serde"
+documentation = "https://docs.serde.rs/serde/"
+keywords = ["serde", "serialization", "no_std"]
+categories = ["encoding"]
+readme = "crates-io.md"
+include = ["build.rs", "src/**/*.rs", "crates-io.md", "README.md", "LICENSE-APACHE", "LICENSE-MIT"]
+build = "build.rs"
+
+[dependencies]
+serde_derive = { version = "=1.0.130", optional = true, path = "../serde_derive" }
+
+[dev-dependencies]
+serde_derive = { version = "1.0", path = "../serde_derive" }
+
+[package.metadata.playground]
+features = ["derive", "rc"]
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
+
+
+### FEATURES #################################################################
+
+[features]
+default = ["std"]
+
+# Provide derive(Serialize, Deserialize) macros.
+derive = ["serde_derive"]
+
+# Provide impls for common standard library types like Vec<T> and HashMap<K, V>.
+# Requires a dependency on the Rust standard library.
+std = []
+
+# Provide impls for types that require unstable functionality. For tracking and
+# discussion of unstable functionality please refer to this issue:
+#
+#    https://github.com/serde-rs/serde/issues/812
+unstable = []
+
+# Provide impls for types in the Rust core allocation and collections library
+# including String, Box<T>, Vec<T>, and Cow<T>. This is a subset of std but may
+# be enabled without depending on all of std.
+alloc = []
+
+# Opt into impls for Rc<T> and Arc<T>. Serializing and deserializing these types
+# does not preserve identity and may result in multiple copies of the same data.
+# Be sure that this is what you want before enabling this feature.
+rc = []

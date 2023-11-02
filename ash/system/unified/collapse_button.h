@@ -1,19 +1,22 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef ASH_SYSTEM_UNIFIED_COLLAPSE_BUTTON_H_
 #define ASH_SYSTEM_UNIFIED_COLLAPSE_BUTTON_H_
 
-#include "ui/views/controls/button/image_button.h"
+#include "ash/style/icon_button.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ash {
 
 // The button with `kUnifiedMenuExpandIcon`. This button can be set as expanded
 // or collapsed through SetExpandedAmount and the icon will be rotated on the
 // `expanded_amount_`. Expanded is the default state.
-class CollapseButton : public views::ImageButton {
+class CollapseButton : public IconButton {
  public:
+  METADATA_HEADER(CollapseButton);
+
   explicit CollapseButton(PressedCallback callback);
 
   CollapseButton(const CollapseButton&) = delete;
@@ -24,11 +27,8 @@ class CollapseButton : public views::ImageButton {
   // Change the expanded state. The icon will change.
   void SetExpandedAmount(double expanded_amount);
 
-  // views::ImageButton:
-  gfx::Size CalculatePreferredSize() const override;
+  // IconButton:
   void PaintButtonContents(gfx::Canvas* canvas) override;
-  const char* GetClassName() const override;
-  void OnThemeChanged() override;
 
  private:
   double expanded_amount_ = 1.0;

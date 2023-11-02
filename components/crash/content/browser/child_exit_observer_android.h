@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 
 #include "base/android/application_status_listener.h"
 #include "base/android/child_process_binding_types.h"
-#include "base/lazy_instance.h"
 #include "base/process/process.h"
 #include "base/scoped_observation.h"
 #include "base/synchronization/lock.h"
@@ -76,13 +75,6 @@ class ChildExitObserver : public content::BrowserChildProcessObserver,
     bool was_killed_intentionally_by_browser = false;
     int best_effort_reverse_rank = -1;
 
-    // Note this is slightly different |has_oom_protection_bindings|.
-    // This is equivalent to status == TERMINATION_STATUS_NORMAL_TERMINATION,
-    // which historically also checked whether app is in foreground, using
-    // a slightly different implementation than
-    // ApplicationStatusListener::GetState.
-    bool was_oom_protected_status = false;
-
     // Applies to renderer process only. Generally means renderer is hosting
     // one or more visible tabs.
     bool renderer_has_visible_clients = false;
@@ -118,16 +110,8 @@ class ChildExitObserver : public content::BrowserChildProcessObserver,
 
     virtual ~Client() {}
   };
-
-  // The global ChildExitObserver instance is created by calling
-  // Create (on the UI thread), and lives until process exit. Tests
-  // making use of this class should register an AtExitManager.
-  static void Create();
-
-  // Fetch a pointer to the global ChildExitObserver instance. The
-  // global instance must have been created by the time GetInstance is
-  // called.
-  static ChildExitObserver* GetInstance();
+  ChildExitObserver();
+  ~ChildExitObserver() override;
 
   ChildExitObserver(const ChildExitObserver&) = delete;
   ChildExitObserver& operator=(const ChildExitObserver&) = delete;
@@ -138,11 +122,6 @@ class ChildExitObserver : public content::BrowserChildProcessObserver,
   void ChildReceivedCrashSignal(base::ProcessId pid, int signo) override;
 
  private:
-  friend struct base::LazyInstanceTraitsBase<ChildExitObserver>;
-
-  ChildExitObserver();
-  ~ChildExitObserver() override;
-
   // content::BrowserChildProcessObserver implementation:
   void BrowserChildProcessHostDisconnected(
       const content::ChildProcessData& data) override;

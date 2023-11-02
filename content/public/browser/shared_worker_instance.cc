@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,20 +16,18 @@ SharedWorkerInstance::SharedWorkerInstance(
     network::mojom::CredentialsMode credentials_mode,
     const std::string& name,
     const blink::StorageKey& storage_key,
-    network::mojom::IPAddressSpace creation_address_space,
     blink::mojom::SharedWorkerCreationContextType creation_context_type)
     : url_(url),
       script_type_(script_type),
       credentials_mode_(credentials_mode),
       name_(name),
       storage_key_(storage_key),
-      creation_address_space_(creation_address_space),
       creation_context_type_(creation_context_type) {
   // Ensure the same-origin policy is enforced correctly.
   DCHECK(url.SchemeIs(url::kDataScheme) ||
          GetContentClient()->browser()->DoesSchemeAllowCrossOriginSharedWorker(
              storage_key.origin().scheme()) ||
-         url::Origin::Create(url).IsSameOriginWith(storage_key.origin()));
+         storage_key.origin().IsSameOriginWith(url));
 }
 
 SharedWorkerInstance::SharedWorkerInstance(const SharedWorkerInstance& other) =

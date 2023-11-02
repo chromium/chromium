@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -161,6 +161,7 @@ source_set("test_util") {
     "test_registry_util.h",
     "test_settings_util.cc",
     "test_settings_util.h",
+    "test_signature_matcher.cc",
     "test_signature_matcher.h",
     "test_task_scheduler.cc",
     "test_task_scheduler.h",

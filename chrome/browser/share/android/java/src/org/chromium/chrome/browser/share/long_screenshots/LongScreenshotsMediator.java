@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,7 +26,6 @@ import android.widget.ScrollView;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.Log;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.EntryManager;
@@ -77,6 +76,12 @@ public class LongScreenshotsMediator implements LongScreenshotsEntry.EntryListen
     // Distance for each auto-scroll-at-edge step.
     private static final int EDGE_DRAG_STEP_DP = 5;
 
+    // Enforce a maximum displayed image size to avoid too-large-[software]-bitmap
+    // errors in ImageView/Scrollview pair.
+    // Images above this will be downsampled.
+    // 100MB/(24-bit ARGB888) = 3.3e7
+    private static final long DOWNSCALE_AREA_THRESHOLD_PIXELS = 33000000;
+
     // Experimental flag feature variations for autoscrolling.
     private static final String AUTOSCROLL_EXPERIMENT_PARAM_NAME = "autoscroll";
     private int mAutoScrollExperimentArm;
@@ -107,13 +112,27 @@ public class LongScreenshotsMediator implements LongScreenshotsEntry.EntryListen
             @Override
             public void onCompositorReady(Size size, Point offset) {
                 mEntryManager.removeBitmapGeneratorObserver(this);
-                // TODO(skare): If testing does not hit memory limits, simplify EntryManager.
-                LongScreenshotsEntry entry = mEntryManager.generateInitialEntry();
+                LongScreenshotsEntry entry = mEntryManager.generateFullpageEntry();
                 entry.setListener(new LongScreenshotsEntry.EntryListener() {
                     @Override
                     public void onResult(@EntryStatus int status) {
                         if (status == EntryStatus.BITMAP_GENERATED) {
-                            showAreaSelectionDialog(entry.getBitmap());
+                            Bitmap entryBitmap = entry.getBitmap();
+                            long bitmapArea = entryBitmap.getWidth() * entryBitmap.getHeight();
+                            // Scale down the bitmap if passing it to ImageView.setImageBitmap()
+                            // would throw a too-large error.
+                            // TODO(skare): We could include this logic inside the generator and
+                            // reuse mScaleFactor there.
+                            if (bitmapArea > DOWNSCALE_AREA_THRESHOLD_PIXELS) {
+                                double oversizeRatio =
+                                        (1.0 * bitmapArea / DOWNSCALE_AREA_THRESHOLD_PIXELS);
+                                double scale = Math.sqrt(oversizeRatio);
+                                showAreaSelectionDialog(Bitmap.createScaledBitmap(entryBitmap,
+                                        (int) (Math.round(entryBitmap.getWidth() / scale)),
+                                        (int) (Math.round(entryBitmap.getHeight() / scale)), true));
+                            } else {
+                                showAreaSelectionDialog(entryBitmap);
+                            }
                             return;
                         }
 
@@ -250,35 +269,6 @@ public class LongScreenshotsMediator implements LongScreenshotsEntry.EntryListen
         mScrollView.smoothScrollBy(0, (isTop ? 1 : -1) * (newHeight - oldHeight));
     }
 
-    // Performs postprocessing or error handling on new entry availability.
-    // TODO(skare): Remove if no longer needed.
-    private void processNewEntry(LongScreenshotsEntry newEntry) {
-        if (newEntry == null) {
-            return;
-        }
-        if (newEntry.getStatus() == EntryStatus.BOUNDS_ABOVE_CAPTURE) {
-            Toast.makeText(
-                         mActivity, R.string.sharing_long_screenshot_reached_top, Toast.LENGTH_LONG)
-                    .show();
-            return;
-        }
-
-        if (newEntry.getStatus() == EntryStatus.BOUNDS_BELOW_CAPTURE) {
-            Toast.makeText(mActivity, R.string.sharing_long_screenshot_reached_bottom,
-                         Toast.LENGTH_LONG)
-                    .show();
-            return;
-        }
-
-        if (newEntry.getStatus() == EntryStatus.INSUFFICIENT_MEMORY) {
-            Log.w(TAG, "Encountered memory pressure.");
-            Toast.makeText(mActivity, R.string.sharing_long_screenshot_memory_pressure,
-                         Toast.LENGTH_LONG)
-                    .show();
-            return;
-        }
-    }
-
     @Override
     public void onResult(@LongScreenshotsEntry.EntryStatus int status) {
         if (status == EntryStatus.BITMAP_GENERATED) {
@@ -330,6 +320,9 @@ public class LongScreenshotsMediator implements LongScreenshotsEntry.EntryListen
         // Ensure in any case we don't crop beyond the bounds of the screenshot.
         startY = Math.max(startY, 0);
         endY = Math.min(endY, mFullBitmap.getHeight() - 1);
+        if (endY <= startY) {
+            return null;
+        }
 
         Bitmap cropped =
                 Bitmap.createBitmap(mFullBitmap, 0, startY, mFullBitmap.getWidth(), endY - startY);

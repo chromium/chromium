@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,8 +33,7 @@ class ProfilePickerTestBase : public InProcessBrowserTest {
   // Returns the internal web view for the profile picker.
   views::WebView* web_view();
 
-  // Wait until the widget of the picker gets created and the initialization of
-  // the picker is thus finished (and notably `widget()` is not null).
+  // Forwards to `profiles::testing::WaitForPickerWidgetCreated()`.
   void WaitForPickerWidgetCreated();
 
   // Waits until `target` WebContents stops loading `url`. If no `target` is
@@ -45,6 +44,8 @@ class ProfilePickerTestBase : public InProcessBrowserTest {
 
   // Waits until the picker gets closed.
   void WaitForPickerClosed();
+
+  // Waits until the picker gets closed and asserts it reopens immediately.
   void WaitForPickerClosedAndReopenedImmediately();
 
   // Gets the picker's web contents.

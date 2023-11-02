@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,9 +14,12 @@ struct wl_display;
 struct wl_surface;
 
 namespace gfx {
-class Rect;
 class Size;
 }  // namespace gfx
+
+namespace ui {
+class WaylandWindow;
+}
 
 namespace wl {
 
@@ -42,6 +45,9 @@ class COMPONENT_EXPORT(WAYLAND_PROXY) WaylandProxy {
     virtual void OnWindowConfigured(gfx::AcceleratedWidget widget,
                                     bool is_configured) = 0;
 
+    // Invoked when an existing surface is assigned a role.
+    virtual void OnWindowRoleAssigned(gfx::AcceleratedWidget widget) = 0;
+
    protected:
     virtual ~Delegate() = default;
   };
@@ -64,6 +70,9 @@ class COMPONENT_EXPORT(WAYLAND_PROXY) WaylandProxy {
   // Returns wl_surface that backs the |widget|.
   virtual wl_surface* GetWlSurfaceForAcceleratedWidget(
       gfx::AcceleratedWidget widget) = 0;
+  // Returns WaylandWindow backed by |widget|.
+  virtual ui::WaylandWindow* GetWaylandWindowForAcceleratedWidget(
+      gfx::AcceleratedWidget widget) = 0;
 
   // Creates and returns a shm based wl_buffer with |buffer_size|. The shared
   // memory is hold until DestroyShmForWlBuffer is called.
@@ -72,15 +81,12 @@ class COMPONENT_EXPORT(WAYLAND_PROXY) WaylandProxy {
   // When this is called, |buffer| becomes invalid and mustn't be used any more.
   virtual void DestroyShmForWlBuffer(wl_buffer* buffer) = 0;
 
-  // Schedules display flush that dispatches pending events.
-  virtual void ScheduleDisplayFlush() = 0;
+  // Immediately flushes pending requests for testing.
+  virtual void FlushForTesting() = 0;
 
   // Returns platform window type of a window backed by the |widget|.
   virtual ui::PlatformWindowType GetWindowType(
       gfx::AcceleratedWidget widget) = 0;
-
-  // Returns bounds in px of the window backed by |widget|.
-  virtual gfx::Rect GetWindowBounds(gfx::AcceleratedWidget widget) = 0;
 
   virtual bool WindowHasPointerFocus(gfx::AcceleratedWidget widget) = 0;
   virtual bool WindowHasKeyboardFocus(gfx::AcceleratedWidget widget) = 0;

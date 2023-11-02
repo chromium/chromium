@@ -1,6 +1,0 @@
-CONSOLE ERROR: Blocked form submission to 'javascript:window.top.disallowedFormSubmitted();' because the form's frame is sandboxed and the 'allow-forms' permission is not set.
-This test runs five IFrames with forms allowed, one IFrame with forms disallowed, then five more IFrames with forms allowed. If ten form submissions are made, and the disallowed submission is not one of them, we consider the test to have passed. This test will print "PASS" on success.
-
-          
-
-PASS

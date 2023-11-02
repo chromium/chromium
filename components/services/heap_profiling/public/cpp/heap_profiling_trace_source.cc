@@ -1,9 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/services/heap_profiling/public/cpp/heap_profiling_trace_source.h"
 
+#include "base/no_destructor.h"
 #include "base/profiler/frame.h"
 #include "base/profiler/module_cache.h"
 #include "base/trace_event/trace_event.h"

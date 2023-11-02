@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -177,8 +177,21 @@ struct Facet {
 // A collection of facets affiliated with each other, i.e. an equivalence class.
 using AffiliatedFacets = std::vector<Facet>;
 
-// A collection of grouped facets.
-using GroupedFacets = std::vector<Facet>;
+// A collection of grouped facets. Used to group passwords in the UI.
+struct GroupedFacets {
+  GroupedFacets();
+  ~GroupedFacets();
+  GroupedFacets(const GroupedFacets& other);
+  GroupedFacets(GroupedFacets&& other);
+  GroupedFacets& operator=(const GroupedFacets& other);
+  GroupedFacets& operator=(GroupedFacets&& other);
+
+  // Facets which are representing a group.
+  std::vector<Facet> facets;
+
+  // Group branding info.
+  FacetBrandingInfo branding_info;
+};
 
 // A collection of facets affiliated with each other, i.e. an equivalence class,
 // plus a timestamp that indicates the last time the data was updated from an

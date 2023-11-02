@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -27,6 +27,8 @@
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/safe_browsing_service_interface.h"
 #include "components/safe_browsing/core/browser/db/util.h"
+#include "components/safe_browsing/core/browser/ping_manager.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -41,6 +43,10 @@ class PrefService;
 
 namespace content {
 class DownloadManager;
+}
+
+namespace download {
+class DownloadItem;
 }
 
 namespace network {
@@ -62,14 +68,12 @@ class SafeBrowsingPrivateApiUnitTest;
 }  // namespace extensions
 
 namespace safe_browsing {
-class PingManager;
 class VerdictCacheManager;
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 class DownloadProtectionService;
 #endif
 class PasswordProtectionService;
 class SafeBrowsingDatabaseManager;
-class SafeBrowsingNetworkContext;
 class SafeBrowsingServiceFactory;
 class SafeBrowsingUIManager;
 class TriggerManager;
@@ -133,7 +137,8 @@ class SafeBrowsingService : public SafeBrowsingServiceInterface,
       content::BrowserContext* browser_context);
 
   // Flushes above two interfaces to avoid races in tests.
-  void FlushNetworkInterfaceForTesting();
+  void FlushNetworkInterfaceForTesting(
+      content::BrowserContext* browser_context);
 
   const scoped_refptr<SafeBrowsingUIManager>& ui_manager() const;
 
@@ -143,13 +148,10 @@ class SafeBrowsingService : public SafeBrowsingServiceInterface,
   ReferrerChainProvider* GetReferrerChainProviderFromBrowserContext(
       content::BrowserContext* browser_context) override;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   LoginReputationClientRequest::ReferringAppInfo GetReferringAppInfo(
       content::WebContents* web_contents) override;
 #endif
-
-  // Called on UI thread.
-  PingManager* ping_manager() const;
 
   TriggerManager* trigger_manager() const;
 
@@ -180,11 +182,19 @@ class SafeBrowsingService : public SafeBrowsingServiceInterface,
   virtual base::CallbackListSubscription RegisterStateCallback(
       const base::RepeatingClosure& callback);
 
-  // Sends serialized download report to backend.
-  virtual void SendSerializedDownloadReport(Profile* profile,
-                                            const std::string& report);
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+  // Sends download report to backend. Returns true if the report is sent
+  // successfully.
+  virtual bool SendDownloadReport(
+      download::DownloadItem* download,
+      ClientSafeBrowsingReportRequest::ReportType report_type,
+      bool did_proceed,
+      absl::optional<bool> show_download_in_folder);
+#endif
 
-  // Create the default v4 protocol config struct.
+  // Create the default v4 protocol config struct. This just calls into a helper
+  // function, but it's still useful so that TestSafeBrowsingService can
+  // override it.
   virtual V4ProtocolConfig GetV4ProtocolConfig() const;
 
   // Get the cache manager by profile.
@@ -217,9 +227,6 @@ class SafeBrowsingService : public SafeBrowsingServiceInterface,
   friend class TestSafeBrowsingService;
   friend class TestSafeBrowsingServiceFactory;
   friend class V4SafeBrowsingServiceTest;
-
-  // Returns the client_name to use for Safe Browsing requests..
-  std::string GetProtocolConfigClientName() const;
 
   void SetDatabaseManagerForTest(SafeBrowsingDatabaseManager* database_manager);
 
@@ -271,13 +278,6 @@ class SafeBrowsingService : public SafeBrowsingServiceInterface,
   void RecordCookieMetrics(Profile* profile);
 
   std::unique_ptr<ProxyConfigMonitor> proxy_config_monitor_;
-
-  // This owns the URLRequestContext inside the network service. This is used by
-  // SimpleURLLoader for safe browsing requests.
-  std::unique_ptr<safe_browsing::SafeBrowsingNetworkContext> network_context_;
-
-  // Provides phishing and malware statistics. Accessed on UI thread.
-  std::unique_ptr<PingManager> ping_manager_;
 
   // Whether SafeBrowsing Extended Reporting is enabled by the current set of
   // profiles. Updated on the UI thread.

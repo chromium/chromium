@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,7 +27,7 @@ ExploreSitesInternalsUI::ExploreSitesInternalsUI(content::WebUI* web_ui)
                           IDR_EXPLORE_SITES_INTERNALS_CSS);
   source->AddResourcePath("explore_sites_internals.js",
                           IDR_EXPLORE_SITES_INTERNALS_JS);
-  source->AddResourcePath("explore_sites_internals.mojom-lite.js",
+  source->AddResourcePath("explore_sites_internals.mojom-webui.js",
                           IDR_EXPLORE_SITES_INTERNALS_MOJO_JS);
   source->SetDefaultResource(IDR_EXPLORE_SITES_INTERNALS_HTML);
 

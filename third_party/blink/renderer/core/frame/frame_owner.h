@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink.h"
 #include "third_party/blink/public/mojom/scroll/scrollbar_mode.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
@@ -65,6 +65,11 @@ class CORE_EXPORT FrameOwner : public GarbageCollectedMixin {
 
   // Returns whether or not children of the owned frame should be lazily loaded.
   virtual bool ShouldLazyLoadChildren() const = 0;
+
+  // Returns whether this is an iframe with the anonymous attribute set.
+  // [spec]
+  // https://wicg.github.io/anonymous-iframe/#dom-htmliframeelement-anonymous
+  virtual bool Anonymous() const { return false; }
 
  protected:
   virtual void FrameOwnerPropertiesChanged() {}

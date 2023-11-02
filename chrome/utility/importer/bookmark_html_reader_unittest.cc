@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,11 +11,11 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/importer/imported_bookmark_entry.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -193,7 +193,7 @@ TEST(BookmarkHTMLReaderTest, CanImportURLAsSearchEngineTest) {
   };
 
   std::string search_engine_url;
-  for (size_t i = 0; i < base::size(test_cases); ++i) {
+  for (size_t i = 0; i < std::size(test_cases); ++i) {
     EXPECT_EQ(test_cases[i].can_be_imported_as_search_engine,
         CanImportURLAsSearchEngine(GURL(test_cases[i].url),
                                    &search_engine_url));

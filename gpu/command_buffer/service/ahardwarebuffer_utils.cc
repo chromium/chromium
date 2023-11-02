@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "base/notreached.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "components/viz/common/resources/resource_format_utils.h"
+#include "gpu/command_buffer/service/gl_utils.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "gpu/vulkan/vulkan_image.h"
@@ -29,13 +30,7 @@ gles2::Texture* MakeGLTexture(
     scoped_refptr<gl::GLImageAHardwareBuffer> egl_image,
     const gfx::Size& size,
     const gfx::Rect& cleared_rect) {
-  auto* texture = new gles2::Texture(service_id);
-  texture->SetLightweightRef();
-  texture->SetTarget(target, 1);
-  texture->set_min_filter(GL_LINEAR);
-  texture->set_mag_filter(GL_LINEAR);
-  texture->set_wrap_t(GL_CLAMP_TO_EDGE);
-  texture->set_wrap_s(GL_CLAMP_TO_EDGE);
+  auto* texture = gles2::CreateGLES2TextureWithLightRef(service_id, target);
 
   texture->SetLevelInfo(target, 0, egl_image->GetInternalFormat(), size.width(),
                         size.height(), 1, 0, egl_image->GetDataFormat(),
@@ -169,7 +164,7 @@ std::unique_ptr<VulkanImage> CreateVkImageFromAhbHandle(
     base::android::ScopedHardwareBufferHandle ahb_handle,
     SharedContextState* context_state,
     const gfx::Size& size,
-    const viz::ResourceFormat& format,
+    const viz::SharedImageFormat& format,
     uint32_t queue_family_index) {
   DCHECK(context_state);
   DCHECK(context_state->GrContextIsVulkan());
@@ -180,6 +175,13 @@ std::unique_ptr<VulkanImage> CreateVkImageFromAhbHandle(
       device_queue, std::move(gmb_handle), size, ToVkFormat(format),
       /*usage=*/0, /*flags=*/0, /*image_tiling=*/VK_IMAGE_TILING_OPTIMAL,
       /*queue_family_index=*/queue_family_index);
+}
+
+ui::ScopedEGLImage CreateEGLImageFromAHardwareBuffer(AHardwareBuffer* buffer) {
+  EGLint egl_image_attribs[] = {EGL_IMAGE_PRESERVED_KHR, EGL_FALSE, EGL_NONE};
+  EGLClientBuffer client_buffer = eglGetNativeClientBufferANDROID(buffer);
+  return ui::MakeScopedEGLImage(EGL_NO_CONTEXT, EGL_NATIVE_BUFFER_ANDROID,
+                                client_buffer, egl_image_attribs);
 }
 
 }  // namespace gpu

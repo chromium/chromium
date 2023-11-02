@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,6 +24,12 @@ let MockStartOptions;
  */
 let MockStopOptions;
 
+/** @enum {string} */
+const SpeechRecognitionType = {
+  ON_DEVICE: 'onDevice',
+  NETWORK: 'network',
+};
+
 /** A mock SpeechRecognitionPrivate API for tests. */
 class MockSpeechRecognitionPrivate {
   /** @constructor */
@@ -36,6 +42,8 @@ class MockSpeechRecognitionPrivate {
       locale: undefined,
       interimResults: undefined,
     };
+    /** @private {!SpeechRecognitionType} */
+    this.speechRecognitionType_ = SpeechRecognitionType.NETWORK;
 
     // Event listeners.
     /** @private {?function({}):void} */
@@ -53,14 +61,14 @@ class MockSpeechRecognitionPrivate {
      *  removeListener: function(Function):void}}
      */
     this.onStop = {
-      addListener: (listener) => {
+      addListener: listener => {
         this.onStopListener_ = listener;
       },
-      removeListener: (listener) => {
+      removeListener: listener => {
         if (this.onStopListener_ === listener) {
           this.onStopListener_ = null;
         }
-      }
+      },
     };
 
     /**
@@ -69,14 +77,14 @@ class MockSpeechRecognitionPrivate {
      *  removeListener: function(Function):void}}
      */
     this.onResult = {
-      addListener: (listener) => {
+      addListener: listener => {
         this.onResultListener_ = listener;
       },
-      removeListener: (listener) => {
+      removeListener: listener => {
         if (this.onResultListener_ === listener) {
           this.onResultListener_ = null;
         }
-      }
+      },
     };
 
     /**
@@ -85,14 +93,14 @@ class MockSpeechRecognitionPrivate {
      *  removeListener: function(Function):void}}
      */
     this.onError = {
-      addListener: (listener) => {
+      addListener: listener => {
         this.onErrorListener_ = listener;
       },
-      removeListener: (listener) => {
+      removeListener: listener => {
         if (this.onErrorListener_ === listener) {
           this.onErrorListener_ = null;
         }
-      }
+      },
     };
   }
 
@@ -100,7 +108,7 @@ class MockSpeechRecognitionPrivate {
 
   /**
    * @param {!MockStartOptions} props
-   * @param {function(): void} callback
+   * @param {function(SpeechRecognitionType): void} callback
    */
   start(props, callback) {
     chrome.runtime.lastError = null;
@@ -108,7 +116,7 @@ class MockSpeechRecognitionPrivate {
       // If speech recognition is already active when calling start(), the real
       // API will set chrome.runtime.lastError. Do the same for the mock API.
       chrome.runtime.lastError = {
-        message: 'Speech recognition already started'
+        message: 'Speech recognition already started',
       };
     }
 
@@ -123,7 +131,7 @@ class MockSpeechRecognitionPrivate {
         props.interimResults :
         this.properties_.interimResults;
 
-    callback();
+    callback(this.speechRecognitionType_);
   }
 
   /**
@@ -136,7 +144,7 @@ class MockSpeechRecognitionPrivate {
       // If speech recognition is already inactive when calling stop(), the real
       // API will set chrome.runtime.lastError. Do the same for the mock API.
       chrome.runtime.lastError = {
-        message: 'Speech recognition already stopped'
+        message: 'Speech recognition already stopped',
       };
     }
 
@@ -159,7 +167,7 @@ class MockSpeechRecognitionPrivate {
         this.started_,
         'Speech recognition should be active when firing a result event');
     assertTrue(
-        !!this.onResultListener_,
+        Boolean(this.onResultListener_),
         'Client should have added an onResult listener');
 
     // The real API will fire an onResult event.
@@ -172,7 +180,8 @@ class MockSpeechRecognitionPrivate {
         this.started_,
         'Speech recognition should be active when firing a stop event');
     assertTrue(
-        !!this.onStopListener_, 'Client should have added an onStop listener');
+        Boolean(this.onStopListener_),
+        'Client should have added an onStop listener');
 
     // The real API will turn off speech recognition and fire an onStop event.
     this.started_ = false;
@@ -185,7 +194,7 @@ class MockSpeechRecognitionPrivate {
         this.started_,
         'Speech recognition should be active when firing an error event');
     assertTrue(
-        !!this.onErrorListener_,
+        Boolean(this.onErrorListener_),
         'Client should have added an onError listener');
 
     // The real API will fire an onError and an onStop event.
@@ -218,5 +227,10 @@ class MockSpeechRecognitionPrivate {
   /** @return {boolean} */
   interimResults() {
     return this.properties_.interimResults;
+  }
+
+  /** @param {!SpeechRecognitionType} type */
+  setSpeechRecognitionType(type) {
+    this.speechRecognitionType_ = type;
   }
 }

@@ -1,13 +1,12 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/os_settings.js';
-// #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {keyDownOn, keyUpOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
-// clang-format on
+import 'chrome://os-settings/chromeos/os_settings.js';
+
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {assertEquals, assertTrue} from '../../chai_assert.js';
 
 /** @fileoverview Suite of tests for settings-scheduler-slider. */
 suite('SettingsSchedulerSlider', function() {
@@ -41,7 +40,7 @@ suite('SettingsSchedulerSlider', function() {
             type: chrome.settingsPrivate.PrefType.NUMBER,
             value: 120,
           },
-        }
+        },
       },
       settings: {
         clock: {
@@ -51,24 +50,26 @@ suite('SettingsSchedulerSlider', function() {
             value: false,
           },
         },
-      }
+      },
     };
     document.body.appendChild(slider);
     flush();
   });
 
-  test('pref value update time string', function() {
+  // TODO(crbug.com/1305868O): Skip test as it consistently fails whenever
+  // daylight savings is active.
+  test.skip('pref value update time string', function() {
     // Test that the slider time string is updated after the pref is
     // saved.
-    assertTrue(!!slider.$$('#startLabel'));
-    assertTrue(!!slider.$$('#endLabel'));
+    assertTrue(!!slider.shadowRoot.querySelector('#startLabel'));
+    assertTrue(!!slider.shadowRoot.querySelector('#endLabel'));
 
     const getStartTimeString = () => {
-      return slider.$$('#startLabel').innerHTML.trim();
+      return slider.shadowRoot.querySelector('#startLabel').innerHTML.trim();
     };
 
     const getEndTimeString = () => {
-      return slider.$$('#endLabel').innerHTML.trim();
+      return slider.shadowRoot.querySelector('#endLabel').innerHTML.trim();
     };
 
     assertEquals('1:00 AM', getStartTimeString());
@@ -102,5 +103,35 @@ suite('SettingsSchedulerSlider', function() {
     assertNotEquals(slider.prefEndTime, undefined);
     assertEquals(slider.prefStartTime.value, kDefaultStartTimeOffsetMinutes);
     assertEquals(slider.prefEndTime.value, kDefaultEndTimeOffsetMinutes);
+  });
+
+  // TODO(crbug.com/1305868): Skip test as it consistently fails whenever
+  // daylight savings is active.
+  test.skip('pref value update aria label', function() {
+    // Test that the aria label is updated after the pref is saved.
+    assertTrue(!!slider.shadowRoot.querySelector('#startKnob'));
+    assertTrue(!!slider.shadowRoot.querySelector('#endKnob'));
+
+    const getStartTimeAriaLabel = () => {
+      return slider.shadowRoot.querySelector('#startKnob').ariaLabel.trim();
+    };
+
+    const getEndTimeAriaLabel = () => {
+      return slider.shadowRoot.querySelector('#endKnob').ariaLabel.trim();
+    };
+
+    assertEquals(slider.i18n('startTime', '1:00 AM'), getStartTimeAriaLabel());
+    assertEquals(slider.i18n('endTime', '2:00 AM'), getEndTimeAriaLabel());
+
+    slider.prefStartTime.value = 71;
+    slider.setPrefValue(
+        'ash.night_light.custom_start_time', slider.prefStartTime.value);
+    slider.prefEndTime.value = 980;
+    slider.setPrefValue(
+        'ash.night_light.custom_end_time', slider.prefEndTime.value);
+    flush();
+
+    assertEquals(slider.i18n('startTime', '1:11 AM'), getStartTimeAriaLabel());
+    assertEquals(slider.i18n('endTime', '4:20 PM'), getEndTimeAriaLabel());
   });
 });

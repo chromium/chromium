@@ -1,0 +1,30 @@
+arc_support: This policy has no effect on Android apps.
+caption: Enable printing
+desc: |-
+  Setting the policy to Enabled or leaving it unset lets users print in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>, and users can't change this setting.
+
+        Setting the policy to Disabled means users can't print from <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>. Printing is off in the three dots menu, extensions, and JavaScript applications.
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- fuchsia
+items:
+- caption: Enable printing
+  value: true
+- caption: Disable printing
+  value: false
+owners:
+- file://printing/OWNERS
+- thestig@chromium.org
+- rbpotter@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome.*:8-
+- chrome_os:11-
+- android:39-
+- ios:88-
+tags: []
+type: main

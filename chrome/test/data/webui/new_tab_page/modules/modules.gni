@@ -1,0 +1,32 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("./cart/cart.gni")
+import("./cart_v2/cart_v2.gni")
+import("./drive/drive.gni")
+import("./drive_v2/drive_v2.gni")
+import("./feed/feed.gni")
+import("./photos/photos.gni")
+import("./recipes/recipes.gni")
+import("./recipes_v2/recipes_v2.gni")
+
+if (!is_official_build) {
+  import("./dummy_v2/dummy_v2.gni")
+}
+
+modules_test_files =
+    [
+      "modules/info_dialog_test.ts",
+      "modules/module_descriptor_test.ts",
+      "modules/module_header_test.ts",
+      "modules/module_registry_test.ts",
+      "modules/module_wrapper_test.ts",
+      "modules/modules_test.ts",
+    ] + cart_test_files + cart_v2_test_files + drive_test_files +
+    drive_v2_test_files + feed_test_files + photos_test_files +
+    recipes_v2_test_files + recipes_test_files
+
+if (!is_official_build) {
+  modules_test_files += dummy_v2_test_files
+}

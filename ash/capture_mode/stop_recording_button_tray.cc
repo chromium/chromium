@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,10 @@
 
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_metrics.h"
-#include "ash/public/cpp/shelf_config.h"
+#include "ash/constants/tray_background_view_catalog.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_container.h"
 #include "base/metrics/user_metrics.h"
@@ -20,9 +21,18 @@
 namespace ash {
 
 StopRecordingButtonTray::StopRecordingButtonTray(Shelf* shelf)
-    : TrayBackgroundView(shelf),
+    : TrayBackgroundView(
+          shelf,
+          TrayBackgroundViewCatalogName::kScreenCaptureStopRecording,
+          RoundedCornerBehavior::kAllRounded),
       image_view_(tray_container()->AddChildView(
           std::make_unique<views::ImageView>())) {
+  SetPressedCallback(base::BindRepeating([](const ui::Event& event) {
+    base::RecordAction(base::UserMetricsAction("Tray_StopRecording"));
+    CaptureModeController::Get()->EndVideoRecording(
+        EndRecordingReason::kStopRecordingButton);
+  }));
+
   image_view_->SetTooltipText(GetAccessibleNameForTray());
   image_view_->SetHorizontalAlignment(views::ImageView::Alignment::kCenter);
   image_view_->SetVerticalAlignment(views::ImageView::Alignment::kCenter);
@@ -30,17 +40,6 @@ StopRecordingButtonTray::StopRecordingButtonTray(Shelf* shelf)
 }
 
 StopRecordingButtonTray::~StopRecordingButtonTray() = default;
-
-bool StopRecordingButtonTray::PerformAction(const ui::Event& event) {
-  DCHECK(event.type() == ui::ET_MOUSE_RELEASED ||
-         event.type() == ui::ET_GESTURE_TAP ||
-         event.type() == ui::ET_KEY_PRESSED);
-
-  base::RecordAction(base::UserMetricsAction("Tray_StopRecording"));
-  CaptureModeController::Get()->EndVideoRecording(
-      EndRecordingReason::kStopRecordingButton);
-  return true;
-}
 
 std::u16string StopRecordingButtonTray::GetAccessibleNameForTray() {
   return l10n_util::GetStringUTF16(
@@ -51,8 +50,7 @@ void StopRecordingButtonTray::OnThemeChanged() {
   TrayBackgroundView::OnThemeChanged();
   image_view_->SetImage(gfx::CreateVectorIcon(
       kCaptureModeCircleStopIcon,
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kIconColorAlert)));
+      GetColorProvider()->GetColor(kColorAshIconColorAlert)));
 }
 
 }  // namespace ash

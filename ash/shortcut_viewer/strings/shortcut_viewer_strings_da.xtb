@@ -17,6 +17,7 @@
 <translation id="1516966594427080024">Åbn et nyt vindue i inkognitotilstand</translation>
 <translation id="152892567002884378">Lydstyrke op</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> og derefter <ph name="ESC" /></translation>
+<translation id="1586324912145647027">Gå til skrivebord 1 til 8</translation>
 <translation id="1652741121070700329">Flyt til begyndelsen af det forrige ord</translation>
 <translation id="1679841710523778799">Skru op for lysstyrken</translation>
 <translation id="168356808214100546">Hold <ph name="ALT" /> nede, og tryk på <ph name="TAB" />, indtil det vindue, du vil åbne, vises. Giv derefter slip på tasterne.</translation>
@@ -70,6 +71,7 @@
 <translation id="3140353188828248647">Fokuser på adresselinje</translation>
 <translation id="3256109297135787951">Fjern fremhævningen af et element på din hylde</translation>
 <translation id="3288816184963444640">Luk det aktuelle vindue</translation>
+<translation id="3322797428033495633">Fokuser på vinduet med integreret billede</translation>
 <translation id="3350805006883559974">Vis aktivt vindue som svævende øverst</translation>
 <translation id="3407560819924487926">Se Jobliste</translation>
 <translation id="3417835166382867856">Søg i faner</translation>
@@ -91,6 +93,7 @@
 <translation id="3949671998904569433">komma</translation>
 <translation id="3976863468609830880">Klik på det sidste ikon på din hylde</translation>
 <translation id="3994783594793697310">Nulstil zoomniveauet på skærmen</translation>
+<translation id="4026837045671473537">Aktivér tilstanden for ombytning af farver</translation>
 <translation id="4026843240379844265">Flyt det aktive vindue fra skærm til skærm</translation>
 <translation id="4035482366624727273">Markér alt på siden</translation>
 <translation id="4060703249685950734">Genåbn den sidste fane eller det sidste vindue, du lukkede</translation>
@@ -129,6 +132,7 @@
 <translation id="5563050856984839829">Tryk på <ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" />, og klik på et link</translation>
 <translation id="561814908794220892">Åbn websiden på en ny fane</translation>
 <translation id="5620219513321115856">Flyt det aktive vindue til skrivebordet til højre</translation>
+<translation id="5699366815052349604">Tildel aktivt vindue til alle skriveborde</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> eller <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">Åbn linket på fanen</translation>
 <translation id="5757474750054631686">Dæmp tastaturets lys (gælder kun for tastaturer med bagbelyste taster)</translation>
@@ -138,7 +142,6 @@
 <translation id="5921745308587794300">Rotér vindue</translation>
 <translation id="5926306472221400972">Tag screenshot af hele skærmen</translation>
 <translation id="6022924867608035986">Ryd teksten i søgefeltet</translation>
-<translation id="6045998054441862242">Aktivér tilstanden Høj kontrast</translation>
 <translation id="6052614013050385269">Højreklik på et link</translation>
 <translation id="6129953537138746214">Mellemrum</translation>
 <translation id="6143669479988153888">Zoom ind på siden</translation>
@@ -155,6 +158,7 @@
 <translation id="6445033640292336367">Flyt fanen tilbage til sin udgangsposition</translation>
 <translation id="6474744297082284761">Zoom ud (når lupvinduet er fastgjort, ELLER forstørrelse af fuld skærm er aktiveret)</translation>
 <translation id="649811797655257835">Vælg filen, og tryk på <ph name="SPACE" /></translation>
+<translation id="6515089016094047210">Åbn eller luk din kalenderwidget.</translation>
 <translation id="6551886416582667425">Tag et afgrænset screenshot</translation>
 <translation id="6556040137485212400">Åbn det vindue, der ikke har været brugt i længst tid</translation>
 <translation id="666343722268997814">Åbn højrekliksmenuen for det fremhævede element</translation>
@@ -198,12 +202,12 @@
 <translation id="8388247778047144397">Træk linket til et tomt område på fanelinjen</translation>
 <translation id="8389638407792712197">Åbn et nyt vindue</translation>
 <translation id="8429696719963529183">Brug F-tasterne (F1 til F12)</translation>
-<translation id="8537650670971624753">Afslut søgetilstand</translation>
 <translation id="85690795166292698">Åbn linket på en ny fane</translation>
 <translation id="8609384513243082612">Åbn en ny fane</translation>
 <translation id="8644639153978066712">Vis skjulte filer i appen Filer</translation>
 <translation id="8717459106217102612">Markér det forrige ord eller bogstav</translation>
 <translation id="8727232706774971183">Se dine notifikationer</translation>
+<translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> 1 til 8</translation>
 <translation id="8855885154700222542">Tast til fuld skærm</translation>
 <translation id="8881584919399569791">Flyt det aktive vindue til skrivebordet til venstre</translation>
 <translation id="88986195241502842">Gå en side ned</translation>

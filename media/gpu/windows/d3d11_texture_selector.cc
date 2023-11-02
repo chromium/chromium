@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,6 +40,31 @@ bool SupportsZeroCopy(const gpu::GpuPreferences& preferences,
   return true;
 }
 
+const char* DxgiFormatToString(DXGI_FORMAT format) {
+  switch (format) {
+    case DXGI_FORMAT_Y416:
+      return "Y416";
+    case DXGI_FORMAT_Y216:
+      return "Y216";
+    case DXGI_FORMAT_P016:
+      return "P016";
+    case DXGI_FORMAT_NV12:
+      return "NV12";
+    case DXGI_FORMAT_P010:
+      return "P010";
+    case DXGI_FORMAT_Y210:
+      return "Y210";
+    case DXGI_FORMAT_AYUV:
+      return "AYUV";
+    case DXGI_FORMAT_Y410:
+      return "Y410";
+    case DXGI_FORMAT_YUY2:
+      return "YUY2";
+    default:
+      return "UNKNOWN";
+  }
+}
+
 // static
 std::unique_ptr<TextureSelector> TextureSelector::Create(
     const gpu::GpuPreferences& gpu_preferences,
@@ -50,6 +75,7 @@ std::unique_ptr<TextureSelector> TextureSelector::Create(
     ComD3D11VideoDevice video_device,
     ComD3D11DeviceContext device_context,
     MediaLog* media_log,
+    gfx::ColorSpace input_color_space,
     bool shared_image_use_shared_handle) {
   VideoPixelFormat output_pixel_format;
   DXGI_FORMAT output_dxgi_format;
@@ -83,13 +109,24 @@ std::unique_ptr<TextureSelector> TextureSelector::Create(
       }
       break;
     }
-    case DXGI_FORMAT_P010: {
-      MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder producing P010";
+    case DXGI_FORMAT_P010:
+    case DXGI_FORMAT_Y416:
+    case DXGI_FORMAT_Y216:
+    case DXGI_FORMAT_P016:
+    case DXGI_FORMAT_Y410:
+    case DXGI_FORMAT_Y210: {
+      MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder producing "
+                                 << DxgiFormatToString(decoder_output_format);
       if (hdr_output_mode == HDRMode::kSDROnly &&
           supports_fmt(DXGI_FORMAT_B8G8R8A8_UNORM)) {
         output_dxgi_format = DXGI_FORMAT_B8G8R8A8_UNORM;
         output_pixel_format = PIXEL_FORMAT_ARGB;
-        output_color_space = gfx::ColorSpace::CreateSRGB();
+
+        // Gfx::ColorTransform now can handle both PQ/HLG content well for
+        // all gpu vendors and also has a better performance when compared with
+        // video processor, reset colorspace to use gfx do tone mapping.
+        output_color_space.reset();
+
         MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder: Selected ARGB";
       } else if (!needs_texture_copy || supports_fmt(DXGI_FORMAT_P010)) {
         output_dxgi_format = DXGI_FORMAT_P010;
@@ -99,7 +136,7 @@ std::unique_ptr<TextureSelector> TextureSelector::Create(
       } else if (supports_fmt(DXGI_FORMAT_R16G16B16A16_FLOAT)) {
         output_dxgi_format = DXGI_FORMAT_R16G16B16A16_FLOAT;
         output_pixel_format = PIXEL_FORMAT_RGBAF16;
-        output_color_space = gfx::ColorSpace::CreateSCRGBLinear();
+        output_color_space = gfx::ColorSpace::CreateSCRGBLinear80Nits();
         MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder: Selected RGBAF16";
       } else if (supports_fmt(DXGI_FORMAT_R10G10B10A2_UNORM)) {
         output_dxgi_format = DXGI_FORMAT_R10G10B10A2_UNORM;

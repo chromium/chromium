@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define CHROME_UPDATER_SERVICE_PROXY_FACTORY_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "base/time/time.h"
 
 namespace updater {
 
@@ -14,7 +15,8 @@ class UpdateService;
 class UpdateServiceInternal;
 
 scoped_refptr<UpdateService> CreateUpdateServiceProxy(
-    UpdaterScope updater_scope);
+    UpdaterScope updater_scope,
+    const base::TimeDelta& get_version_timeout = base::TimeDelta::Max());
 
 scoped_refptr<UpdateServiceInternal> CreateUpdateServiceInternalProxy(
     UpdaterScope updater_scope);

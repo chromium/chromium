@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,8 +32,10 @@ void FileBrowserHandlerCustomBindings::AddRoutes() {
 void FileBrowserHandlerCustomBindings::GetExternalFileEntry(
     const v8::FunctionCallbackInfo<v8::Value>& args,
     ScriptContext* context) {
-// TODO(zelidrag): Make this magic work on other platforms when file browser
-// matures enough on ChromeOS.
+  // TODO(zelidrag): Make this magic work on other platforms when file browser
+  // matures enough on ChromeOS.
+  // Lacros supports fileBrowserHandler, but does not use this code path.
+  // Therefore this code remains Ash-only.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   CHECK(args.Length() == 1);
   CHECK(args[0]->IsObject());

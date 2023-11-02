@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,18 +8,15 @@
 #include <memory>
 #include <string>
 
+#include "base/callback_forward.h"
+#include "base/memory/weak_ptr.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/key_network_delegate.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/signing_key_pair.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/key_rotation_manager.h"
 #include "components/policy/proto/device_management_backend.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-
-namespace crypto {
-class UnexportableSigningKey;
-}  // namespace crypto
 
 namespace enterprise_connectors {
 
-class KeyNetworkDelegate;
 class KeyPersistenceDelegate;
 
 class KeyRotationManagerImpl : public KeyRotationManager {
@@ -27,36 +24,40 @@ class KeyRotationManagerImpl : public KeyRotationManager {
   using KeyTrustLevel =
       enterprise_management::BrowserPublicKeyUploadRequest::KeyTrustLevel;
 
-  // `sleep_during_backoff` allows tests to control whether the manager will
-  // perform a sleep during network backoff inside RotateWithAdminRights().
-  // Removing the sleep is useful to keep tests from timing out.  This should
-  // never be done in production.
   KeyRotationManagerImpl(
       std::unique_ptr<KeyNetworkDelegate> network_delegate,
-      std::unique_ptr<KeyPersistenceDelegate> persistence_delegate,
-      bool sleep_during_backoff);
+      std::unique_ptr<KeyPersistenceDelegate> persistence_delegate);
   ~KeyRotationManagerImpl() override;
 
   // KeyRotationManager:
-  bool RotateWithAdminRights(const GURL& dm_server_url,
-                             const std::string& dm_token,
-                             const std::string& nonce) override
-      WARN_UNUSED_RESULT;
+  void Rotate(const GURL& dm_server_url,
+              const std::string& dm_token,
+              const std::string& nonce,
+              base::OnceCallback<void(Result)> result_callback) override;
 
  private:
   // Builds the protobuf message needed to tell DM server about the new public
-  // for this device.  `nonce` is an opaque binary blob and should not be
+  // for this device. `nonce` is an opaque binary blob and should not be
   // treated as an ASCII or UTF-8 string.
   bool BuildUploadPublicKeyRequest(
-      KeyTrustLevel new_trust_level,
-      const std::unique_ptr<crypto::UnexportableSigningKey>& new_key_pair,
+      const SigningKeyPair& new_key_pair,
       const std::string& nonce,
       enterprise_management::BrowserPublicKeyUploadRequest* request);
 
+  // Gets the `response_code` from the upload key request and continues
+  // the key rotation process. `rotate_callback` returns the rotation result.
+  // The `nonce` is an opaque binary blob and should not be treated as an
+  // ASCII or UTF-8 string. The `new_key_pair` refers to the key pair that is
+  // created during the rotation process.
+  void OnDmServerResponse(const std::string& nonce,
+                          std::unique_ptr<SigningKeyPair> new_key_pair,
+                          base::OnceCallback<void(Result)> result_callback,
+                          KeyNetworkDelegate::HttpResponseCode response_code);
+
   std::unique_ptr<KeyNetworkDelegate> network_delegate_;
   std::unique_ptr<KeyPersistenceDelegate> persistence_delegate_;
-  absl::optional<SigningKeyPair> key_pair_;
-  bool sleep_during_backoff_;
+  std::unique_ptr<SigningKeyPair> key_pair_;
+  base::WeakPtrFactory<KeyRotationManagerImpl> weak_factory_{this};
 };
 
 }  // namespace enterprise_connectors

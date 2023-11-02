@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -18,6 +18,7 @@ mojom("mojom") {
     "audio_logging.mojom",
     "audio_output_stream.mojom",
     "audio_parameters.mojom",
+    "audio_processing.mojom",
     "audio_stream_factory.mojom",
     "capture_handle.mojom",
     "cdm_document_service.mojom",
@@ -47,6 +48,7 @@ mojom("mojom") {
     "video_encode_accelerator.mojom",
     "video_encoder_info.mojom",
     "watch_time_recorder.mojom",
+    "webrtc_video_perf.mojom",
   ]
 
   if (enable_media_drm_storage) {
@@ -59,7 +61,9 @@ mojom("mojom") {
     sources += [ "speech_recognition_service.mojom" ]
   }
 
-  if (is_chromecast) {
+  # TODO(crbug.com/1293520): Revisit this after the cast renderer has been
+  # deprecated and removed.
+  if (is_castos || is_cast_android) {
     sources += [ "cast_application_media_info_manager.mojom" ]
   }
 
@@ -71,8 +75,11 @@ mojom("mojom") {
   }
 
   public_deps = [
+    ":audio_data",
+    ":encryption_pattern",
     "//gpu/ipc/common:interfaces",
     "//media/learning/mojo/public/mojom",
+    "//media/mojo/mojom/stable:stable_video_decoder",
     "//mojo/public/mojom/base",
     "//sandbox/policy/mojom",
     "//services/media_session/public/mojom",
@@ -90,6 +97,10 @@ mojom("mojom") {
     # TODO(xhwang): Ideally media should not worry about sandbox. Find a way to
     # remove this dependency.
     public_deps += [ "//sandbox/mac/mojom" ]
+  }
+
+  if (!is_android) {
+    public_deps += [ ":speech_recognition" ]
   }
 
   enabled_features = []
@@ -122,6 +133,20 @@ mojom("mojom") {
         "//media",
         "//media/base/ipc",
       ]
+    },
+    {
+      types = [
+        {
+          mojom = "media.mojom.AudioProcessingSettings"
+          cpp = "::media::AudioProcessingSettings"
+        },
+        {
+          mojom = "media.mojom.AudioProcessingStats"
+          cpp = "::media::AudioProcessingStats"
+        },
+      ]
+      traits_headers = [ "audio_processing_mojom_traits.h" ]
+      traits_public_deps = [ ":shared_mojom_traits" ]
     },
     {
       types = [
@@ -242,15 +267,6 @@ mojom("mojom") {
     {
       types = [
         {
-          mojom = "media.mojom.CopyMode"
-          cpp = "::media::VideoFrameMetadata::CopyMode"
-        },
-      ]
-      traits_headers = [ "media_types_enum_mojom_traits.h" ]
-    },
-    {
-      types = [
-        {
           mojom = "media.mojom.VideoRotation"
           cpp = "::media::VideoRotation"
         },
@@ -318,20 +334,6 @@ mojom("mojom") {
     {
       types = [
         {
-          mojom = "media.mojom.EncryptionPattern"
-          cpp = "::media::EncryptionPattern"
-        },
-      ]
-      traits_headers = [ "encryption_pattern_mojom_traits.h" ]
-      traits_sources = [ "encryption_pattern_mojom_traits.cc" ]
-      traits_public_deps = [
-        "//media",
-        "//media/base/ipc",
-      ]
-    },
-    {
-      types = [
-        {
           mojom = "media.mojom.PipelineStatistics"
           cpp = "::media::PipelineStatistics"
         },
@@ -361,8 +363,16 @@ mojom("mojom") {
           cpp = "::media::internal::StatusData"
         },
         {
-          mojom = "media.mojom.Status"
-          cpp = "::media::Status"
+          mojom = "media.mojom.EncoderStatus"
+          cpp = "::media::EncoderStatus"
+        },
+        {
+          mojom = "media.mojom.DecoderStatus"
+          cpp = "::media::DecoderStatus"
+        },
+        {
+          mojom = "media.mojom.PipelineStatus"
+          cpp = "::media::PipelineStatus"
         },
       ]
       traits_headers = [ "status_mojom_traits.h" ]
@@ -467,6 +477,14 @@ mojom("mojom") {
         {
           mojom = "media.mojom.SVCScalabilityMode"
           cpp = "::media::SVCScalabilityMode"
+        },
+        {
+          mojom = "media.mojom.VariableBitrate"
+          cpp = "::media::Bitrate"
+        },
+        {
+          mojom = "media.mojom.ConstantBitrate"
+          cpp = "::media::Bitrate"
         },
         {
           mojom = "media.mojom.Bitrate"
@@ -609,10 +627,7 @@ mojom("mojom") {
       ]
       traits_headers = [ "video_frame_mojom_traits.h" ]
       traits_sources = [ "video_frame_mojom_traits.cc" ]
-      traits_public_deps = [
-        "//media/mojo/common:mojo_shared_buffer_video_frame",
-        "//ui/gfx/geometry/mojom",
-      ]
+      traits_public_deps = [ "//ui/gfx/geometry/mojom" ]
     },
     {
       types = [
@@ -645,38 +660,17 @@ mojom("mojom") {
     },
   ]
 
-  if (!is_android) {
+  if (is_win) {
     cpp_typemaps += [
       {
         types = [
           {
-            mojom = "media.mojom.HypothesisParts"
-            cpp = "::media::HypothesisParts"
-          },
-          {
-            mojom = "media.mojom.TimingInformation"
-            cpp = "::media::TimingInformation"
-          },
-          {
-            mojom = "media.mojom.SpeechRecognitionResult"
-            cpp = "::media::SpeechRecognitionResult"
+            mojom = "media.mojom.CdmEvent"
+            cpp = "::media::CdmEvent"
           },
         ]
-        traits_headers = [
-          "speech_recognition_result_mojom_traits.h",
-          "speech_recognition_result.h",
-        ]
-        traits_sources = [
-          "speech_recognition_result.cc",
-          "speech_recognition_result_mojom_traits.cc",
-        ]
-        traits_public_deps = [ "//base" ]
+        traits_headers = [ "media_types_enum_mojom_traits.h" ]
       },
-    ]
-  }
-
-  if (is_win) {
-    cpp_typemaps += [
       {
         types = [
           {
@@ -687,6 +681,16 @@ mojom("mojom") {
         ]
         traits_headers = [ "media_foundation_cdm_data_mojom_traits.h" ]
         traits_sources = [ "media_foundation_cdm_data_mojom_traits.cc" ]
+        traits_public_deps = [ "//media" ]
+      },
+      {
+        types = [
+          {
+            mojom = "media.mojom.MediaFoundationRenderingMode"
+            cpp = "::media::MediaFoundationRenderingMode"
+          },
+        ]
+        traits_headers = [ "media_foundation_rendering_mode_mojom_traits.h" ]
         traits_public_deps = [ "//media" ]
       },
     ]
@@ -700,8 +704,74 @@ mojom("mojom") {
   export_header_blink = "third_party/blink/public/platform/web_common.h"
 }
 
+mojom("audio_data") {
+  generate_java = true
+  sources = [ "audio_data.mojom" ]
+}
+
+mojom("encryption_pattern") {
+  generate_java = true
+  sources = [ "encryption_pattern.mojom" ]
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "media.mojom.EncryptionPattern"
+          cpp = "::media::EncryptionPattern"
+        },
+      ]
+      traits_headers = [ "encryption_pattern_mojom_traits.h" ]
+      traits_sources = [ "encryption_pattern_mojom_traits.cc" ]
+      traits_public_deps = [
+        "//media",
+        "//media/base/ipc",
+      ]
+    },
+  ]
+}
+
+# Speech recognition API used between renderer/browser/service and between
+# LaCrOS/Ash.
+mojom("speech_recognition") {
+  sources = [ "speech_recognition.mojom" ]
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "media.mojom.HypothesisParts"
+          cpp = "::media::HypothesisParts"
+        },
+        {
+          mojom = "media.mojom.TimingInformation"
+          cpp = "::media::TimingInformation"
+        },
+        {
+          mojom = "media.mojom.SpeechRecognitionResult"
+          cpp = "::media::SpeechRecognitionResult"
+        },
+      ]
+      traits_headers = [
+        "speech_recognition_result_mojom_traits.h",
+        "speech_recognition_result.h",
+      ]
+      traits_sources = [
+        "speech_recognition_result.cc",
+        "speech_recognition_result_mojom_traits.cc",
+      ]
+      traits_public_deps = [ "//base" ]
+    },
+  ]
+  public_deps = [
+    ":audio_data",
+    "//mojo/public/mojom/base",
+    "//sandbox/policy/mojom",
+  ]
+}
+
 source_set("shared_mojom_traits") {
   sources = [
+    "audio_processing_mojom_traits.cc",
+    "audio_processing_mojom_traits.h",
     "video_frame_metadata_mojom_traits.cc",
     "video_frame_metadata_mojom_traits.h",
   ]
@@ -740,6 +810,7 @@ source_set("unit_tests") {
 
   sources = [
     "audio_decoder_config_mojom_traits_unittest.cc",
+    "audio_processing_mojom_traits_unittest.cc",
     "cdm_key_information_mojom_traits_unittest.cc",
     "video_decoder_config_mojom_traits_unittest.cc",
     "video_encode_accelerator_mojom_traits_unittest.cc",
@@ -761,4 +832,8 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//ui/gfx:test_support",
   ]
+
+  if (!is_android) {
+    deps += [ ":speech_recognition" ]
+  }
 }

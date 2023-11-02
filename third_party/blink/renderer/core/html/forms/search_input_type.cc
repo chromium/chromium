@@ -43,12 +43,12 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
 SearchInputType::SearchInputType(HTMLInputElement& element)
-    : BaseTextInputType(element),
+    : BaseTextInputType(Type::kSearch, element),
       search_event_timer_(
           element.GetDocument().GetTaskRunner(TaskType::kUserInteraction),
           this,
@@ -60,6 +60,10 @@ void SearchInputType::CountUsage() {
 
 const AtomicString& SearchInputType::FormControlType() const {
   return input_type_names::kSearch;
+}
+
+ControlPart SearchInputType::AutoAppearance() const {
+  return kSearchFieldPart;
 }
 
 bool SearchInputType::NeedsContainer() const {
@@ -84,7 +88,7 @@ void SearchInputType::HandleKeydownEvent(KeyboardEvent& event) {
     return;
   }
 
-  if (event.key() == "Escape") {
+  if (event.key() == "Escape" && GetElement().InnerEditorValue().length()) {
     GetElement().SetValueForUser("");
     GetElement().OnSearch();
     event.SetDefaultHandled();
@@ -102,8 +106,8 @@ void SearchInputType::StartSearchEventTimer() {
     GetElement()
         .GetDocument()
         .GetTaskRunner(TaskType::kUserInteraction)
-        ->PostTask(FROM_HERE, WTF::Bind(&HTMLInputElement::OnSearch,
-                                        WrapPersistent(&GetElement())));
+        ->PostTask(FROM_HERE, WTF::BindOnce(&HTMLInputElement::OnSearch,
+                                            WrapPersistent(&GetElement())));
     return;
   }
 
@@ -116,7 +120,7 @@ void SearchInputType::StartSearchEventTimer() {
 
 void SearchInputType::DispatchSearchEvent() {
   search_event_timer_.Stop();
-  GetElement().DispatchEvent(*Event::CreateBubble(event_type_names::kSearch));
+  GetElement().DispatchEvent(*Event::CreateBubble(event_type_names::kSearch), "SearchInputType::DispatchSearchEvent");
 }
 
 void SearchInputType::SearchEventTimerFired(TimerBase*) {
@@ -147,7 +151,7 @@ void SearchInputType::UpdateCancelButtonVisibility() {
       shadow_element_names::kIdSearchClearButton);
   if (!button)
     return;
-  if (GetElement().value().IsEmpty()) {
+  if (GetElement().Value().empty()) {
     button->SetInlineStyleProperty(CSSPropertyID::kOpacity, 0.0,
                                    CSSPrimitiveValue::UnitType::kNumber);
     button->SetInlineStyleProperty(CSSPropertyID::kPointerEvents,

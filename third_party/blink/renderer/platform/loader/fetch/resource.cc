@@ -30,13 +30,13 @@
 #include <cassert>
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_clock.h"
 #include "build/build_config.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/instance_counters.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
@@ -64,7 +64,8 @@ namespace blink {
 namespace {
 
 void NotifyFinishObservers(
-    HeapHashSet<WeakMember<ResourceFinishObserver>>* observers) {
+    HeapHashSet<WeakMember<ResourceFinishObserver>, WTF::MemberHashRecordReplayId<ResourceFinishObserver>>* observers,
+    HeapVector<Member<ResourceFinishObserver>>* observers_strong) {
   for (const auto& observer : *observers)
     observer->NotifyFinished();
 }
@@ -113,11 +114,11 @@ const char* const kHeaderPrefixesToIgnoreAfterRevalidation[] = {
 
 static inline bool ShouldUpdateHeaderAfterRevalidation(
     const AtomicString& header) {
-  for (size_t i = 0; i < base::size(kHeadersToIgnoreAfterRevalidation); i++) {
+  for (size_t i = 0; i < std::size(kHeadersToIgnoreAfterRevalidation); i++) {
     if (EqualIgnoringASCIICase(header, kHeadersToIgnoreAfterRevalidation[i]))
       return false;
   }
-  for (size_t i = 0; i < base::size(kHeaderPrefixesToIgnoreAfterRevalidation);
+  for (size_t i = 0; i < std::size(kHeaderPrefixesToIgnoreAfterRevalidation);
        i++) {
     if (header.StartsWithIgnoringASCIICase(
             kHeaderPrefixesToIgnoreAfterRevalidation[i]))
@@ -156,6 +157,8 @@ Resource::Resource(const ResourceRequestHead& request,
       response_timestamp_(Now()),
       resource_request_(request),
       overhead_size_(CalculateOverheadSize()) {
+  // Pointer registration is needed for sorting in ResourceFetcher.
+  recordreplay::RegisterPointer("Resource", this);
   scoped_refptr<const SecurityOrigin> top_frame_origin =
       resource_request_.TopFrameOrigin();
   if (top_frame_origin) {
@@ -171,6 +174,7 @@ Resource::Resource(const ResourceRequestHead& request,
 
 Resource::~Resource() {
   InstanceCounters::DecrementCounter(InstanceCounters::kResourceCounter);
+  recordreplay::UnregisterPointer(this);
 }
 
 void Resource::Trace(Visitor* visitor) const {
@@ -179,6 +183,8 @@ void Resource::Trace(Visitor* visitor) const {
   visitor->Trace(clients_awaiting_callback_);
   visitor->Trace(finished_clients_);
   visitor->Trace(finish_observers_);
+  visitor->Trace(replay_clients_strong_);
+  visitor->Trace(replay_finish_observers_strong_);
   MemoryPressureListener::Trace(visitor);
 }
 
@@ -203,7 +209,7 @@ void Resource::CheckResourceIntegrity() {
   }
 
   // No integrity attributes to check? Then we're passing.
-  if (IntegrityMetadata().IsEmpty()) {
+  if (IntegrityMetadata().empty()) {
     integrity_disposition_ = ResourceIntegrityDisposition::kPassed;
     return;
   }
@@ -283,16 +289,28 @@ void Resource::ClearData() {
 
 void Resource::TriggerNotificationForFinishObservers(
     base::SingleThreadTaskRunner* task_runner) {
-  if (finish_observers_.IsEmpty())
+  if (finish_observers_.empty())
     return;
 
+  // RUN-1724
+  // [RUN-1457 cleanup]
+  HeapVector<Member<ResourceFinishObserver>>* new_collections_strong =
+      MakeGarbageCollected<HeapVector<Member<ResourceFinishObserver>>>();
+  if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers", "Resource")) {
+    new_collections_strong->AppendRange(replay_finish_observers_strong_.begin(), replay_finish_observers_strong_.end());
+    replay_finish_observers_strong_.clear();
+  }
+
+
   auto* new_collections =
-      MakeGarbageCollected<HeapHashSet<WeakMember<ResourceFinishObserver>>>(
+      MakeGarbageCollected<HeapHashSet<WeakMember<ResourceFinishObserver>, WTF::MemberHashRecordReplayId<ResourceFinishObserver>>>(
           std::move(finish_observers_));
   finish_observers_.clear();
 
-  task_runner->PostTask(FROM_HERE, WTF::Bind(&NotifyFinishObservers,
-                                             WrapPersistent(new_collections)));
+  task_runner->PostTask(
+      FROM_HERE,
+      WTF::BindOnce(&NotifyFinishObservers, WrapPersistent(new_collections),
+                    WrapPersistent(new_collections_strong)));
 
   DidRemoveClientOrObserver();
 }
@@ -330,7 +348,7 @@ void Resource::FinishAsError(const ResourceError& error,
   is_revalidating_ = false;
 
   if (IsMainThread())
-    GetMemoryCache()->Remove(this);
+    MemoryCache::Get()->Remove(this);
 
   bool failed_during_start = status_ == ResourceStatus::kNotStarted;
   if (!ErrorOccurred()) {
@@ -356,8 +374,8 @@ void Resource::FinishAsError(const ResourceError& error,
   // So if this is an immediate failure (i.e., before NotifyStartLoad()),
   // post a task if the Resource::Type supports it.
   if (failed_during_start && !NeedsSynchronousCacheHit(GetType(), options_)) {
-    task_runner->PostTask(FROM_HERE, WTF::Bind(&Resource::NotifyFinished,
-                                               WrapWeakPersistent(this)));
+    task_runner->PostTask(FROM_HERE, WTF::BindOnce(&Resource::NotifyFinished,
+                                                   WrapWeakPersistent(this)));
   } else {
     NotifyFinished();
   }
@@ -381,7 +399,7 @@ AtomicString Resource::HttpContentType() const {
 
 bool Resource::MustRefetchDueToIntegrityMetadata(
     const FetchParameters& params) const {
-  if (params.IntegrityMetadata().IsEmpty())
+  if (params.IntegrityMetadata().empty())
     return false;
 
   return !IntegrityMetadata::SetsEqual(IntegrityMetadata(),
@@ -411,7 +429,7 @@ static base::TimeDelta CurrentAge(const ResourceResponse& response,
 
 static base::TimeDelta FreshnessLifetime(const ResourceResponse& response,
                                          base::Time response_timestamp) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // On desktop, local files should be reloaded in case they change.
   if (response.CurrentRequestUrl().IsLocalFile())
     return base::TimeDelta();
@@ -442,6 +460,9 @@ static base::TimeDelta FreshnessLifetime(const ResourceResponse& response,
 static bool CanUseResponse(const ResourceResponse& response,
                            bool allow_stale,
                            base::Time response_timestamp) {
+  // https://linear.app/replay/issue/RUN-820
+  recordreplay::Assert("CanUseResponse Start");
+
   if (response.IsNull())
     return false;
 
@@ -467,6 +488,9 @@ static bool CanUseResponse(const ResourceResponse& response,
   if (allow_stale)
     max_life += response.CacheControlStaleWhileRevalidate();
 
+  // https://linear.app/replay/issue/RUN-820
+  recordreplay::Assert("CanUseResponse Done");
+
   return CurrentAge(response, response_timestamp) <= max_life;
 }
 
@@ -487,7 +511,7 @@ size_t Resource::RedirectChainSize() const {
 }
 
 void Resource::SetRevalidatingRequest(const ResourceRequestHead& request) {
-  SECURITY_CHECK(redirect_chain_.IsEmpty());
+  SECURITY_CHECK(redirect_chain_.empty());
   SECURITY_CHECK(!is_unused_preload_);
   DCHECK(!request.IsNull());
   CHECK(!is_revalidation_start_forbidden_);
@@ -525,7 +549,6 @@ void Resource::ResponseReceived(const ResourceResponse& response) {
 
 void Resource::SetSerializedCachedMetadata(mojo_base::BigBuffer data) {
   DCHECK(!is_revalidating_);
-  DCHECK(!GetResponse().IsNull());
 }
 
 bool Resource::CodeCacheHashRequired() const {
@@ -537,23 +560,23 @@ String Resource::ReasonNotDeletable() const {
   if (HasClientsOrObservers()) {
     builder.Append("hasClients(");
     builder.AppendNumber(clients_.size());
-    if (!clients_awaiting_callback_.IsEmpty()) {
+    if (!clients_awaiting_callback_.empty()) {
       builder.Append(", AwaitingCallback=");
       builder.AppendNumber(clients_awaiting_callback_.size());
     }
-    if (!finished_clients_.IsEmpty()) {
+    if (!finished_clients_.empty()) {
       builder.Append(", Finished=");
       builder.AppendNumber(finished_clients_.size());
     }
     builder.Append(')');
   }
   if (loader_) {
-    if (!builder.IsEmpty())
+    if (!builder.empty())
       builder.Append(' ');
     builder.Append("loader_");
   }
-  if (IsMainThread() && GetMemoryCache()->Contains(this)) {
-    if (!builder.IsEmpty())
+  if (IsMainThread() && MemoryCache::Get()->Contains(this)) {
+    if (!builder.empty())
       builder.Append(' ');
     builder.Append("in_memory_cache");
   }
@@ -595,6 +618,8 @@ void Resource::AddClient(ResourceClient* client,
 
   if (is_revalidating_) {
     clients_.insert(client);
+    if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers", "Resource"))
+      replay_clients_strong_.insert(client);
     return;
   }
 
@@ -603,15 +628,20 @@ void Resource::AddClient(ResourceClient* client,
   if ((ErrorOccurred() || !GetResponse().IsNull()) &&
       !NeedsSynchronousCacheHit(GetType(), options_)) {
     clients_awaiting_callback_.insert(client);
+    if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers", "Resource"))
+        replay_clients_strong_.insert(client);
     if (!async_finish_pending_clients_task_.IsActive()) {
-      async_finish_pending_clients_task_ = PostCancellableTask(
-          *task_runner, FROM_HERE,
-          WTF::Bind(&Resource::FinishPendingClients, WrapWeakPersistent(this)));
+      async_finish_pending_clients_task_ =
+          PostCancellableTask(*task_runner, FROM_HERE,
+                              WTF::BindOnce(&Resource::FinishPendingClients,
+                                            WrapWeakPersistent(this)));
     }
     return;
   }
 
   clients_.insert(client);
+  if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers", "Resource"))
+    replay_clients_strong_.insert(client);
   DidAddClient(client);
   return;
 }
@@ -625,8 +655,10 @@ void Resource::RemoveClient(ResourceClient* client) {
     clients_awaiting_callback_.erase(client);
   else
     clients_.erase(client);
+  if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers", "Resource"))
+    replay_clients_strong_.erase(client);
 
-  if (clients_awaiting_callback_.IsEmpty() &&
+  if (clients_awaiting_callback_.empty() &&
       async_finish_pending_clients_task_.IsActive()) {
     async_finish_pending_clients_task_.Cancel();
   }
@@ -641,6 +673,8 @@ void Resource::AddFinishObserver(ResourceFinishObserver* client,
 
   WillAddClientOrObserver();
   finish_observers_.insert(client);
+  if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers", "Resource"))
+    replay_finish_observers_strong_.insert(client);
   if (IsLoaded())
     TriggerNotificationForFinishObservers(task_runner);
 }
@@ -649,6 +683,8 @@ void Resource::RemoveFinishObserver(ResourceFinishObserver* client) {
   CHECK(!is_add_remove_client_prohibited_);
 
   finish_observers_.erase(client);
+  if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers", "Resource"))
+    replay_finish_observers_strong_.erase(client);
   DidRemoveClientOrObserver();
 }
 
@@ -663,7 +699,7 @@ void Resource::DidRemoveClientOrObserver() {
     // "... History buffers MAY store such responses as part of their normal
     // operation."
     if (HasCacheControlNoStoreHeader() && IsMainThread()) {
-      GetMemoryCache()->Remove(this);
+      MemoryCache::Get()->Remove(this);
     }
   }
 }
@@ -679,7 +715,7 @@ void Resource::SetDecodedSize(size_t decoded_size) {
   size_t old_size = size();
   decoded_size_ = decoded_size;
   if (IsMainThread())
-    GetMemoryCache()->Update(this, old_size, size());
+    MemoryCache::Get()->Update(this, old_size, size());
 }
 
 void Resource::SetEncodedSize(size_t encoded_size) {
@@ -690,7 +726,7 @@ void Resource::SetEncodedSize(size_t encoded_size) {
   encoded_size_ = encoded_size;
   encoded_size_memory_usage_ = encoded_size;
   if (IsMainThread())
-    GetMemoryCache()->Update(this, old_size, size());
+    MemoryCache::Get()->Update(this, old_size, size());
 }
 
 void Resource::FinishPendingClients() {
@@ -723,11 +759,11 @@ void Resource::FinishPendingClients() {
   // It is still possible for the above loop to finish a new client
   // synchronously. If there's no client waiting we should deschedule.
   bool scheduled = async_finish_pending_clients_task_.IsActive();
-  if (scheduled && clients_awaiting_callback_.IsEmpty())
+  if (scheduled && clients_awaiting_callback_.empty())
     async_finish_pending_clients_task_.Cancel();
 
   // Prevent the case when there are clients waiting but no callback scheduled.
-  DCHECK(clients_awaiting_callback_.IsEmpty() || scheduled);
+  DCHECK(clients_awaiting_callback_.empty() || scheduled);
 }
 
 Resource::MatchStatus Resource::CanReuse(const FetchParameters& params) const {
@@ -919,17 +955,13 @@ void Resource::SetCachePolicyBypassingCache() {
   resource_request_.SetCacheMode(mojom::FetchCacheMode::kBypassCache);
 }
 
-void Resource::SetPreviewsState(PreviewsState previews_state) {
-  resource_request_.SetPreviewsState(previews_state);
-}
-
 void Resource::ClearRangeRequestHeader() {
   resource_request_.ClearHttpHeaderField("range");
 }
 
 void Resource::RevalidationSucceeded(
     const ResourceResponse& validating_response) {
-  SECURITY_CHECK(redirect_chain_.IsEmpty());
+  SECURITY_CHECK(redirect_chain_.empty());
   SECURITY_CHECK(
       EqualIgnoringFragmentIdentifier(validating_response.CurrentRequestUrl(),
                                       GetResponse().CurrentRequestUrl()));
@@ -953,7 +985,7 @@ void Resource::RevalidationSucceeded(
 }
 
 void Resource::RevalidationFailed() {
-  SECURITY_CHECK(redirect_chain_.IsEmpty());
+  SECURITY_CHECK(redirect_chain_.empty());
   ClearData();
   integrity_disposition_ = ResourceIntegrityDisposition::kNotChecked;
   integrity_report_info_.Clear();
@@ -1068,7 +1100,7 @@ bool Resource::CanUseCacheValidator() const {
     return false;
 
   // Do not revalidate Resource with redirects. https://crbug.com/613971
-  if (!RedirectChain().IsEmpty())
+  if (!RedirectChain().empty())
     return false;
 
   return GetResponse().HasCacheValidatorFields() ||
@@ -1094,6 +1126,8 @@ static const char* InitiatorTypeNameToString(
     const AtomicString& initiator_type_name) {
   if (initiator_type_name == fetch_initiator_type_names::kAudio)
     return "Audio";
+  if (initiator_type_name == fetch_initiator_type_names::kAttributionsrc)
+    return "Attribution resource";
   if (initiator_type_name == fetch_initiator_type_names::kCSS)
     return "CSS resource";
   if (initiator_type_name == fetch_initiator_type_names::kDocument)
@@ -1122,7 +1156,7 @@ static const char* InitiatorTypeNameToString(
     return "XMLHttpRequest";
 
   static_assert(
-      fetch_initiator_type_names::kNamesCount == 17,
+      fetch_initiator_type_names::kNamesCount == 18,
       "New FetchInitiatorTypeNames should be handled correctly here.");
 
   return "Resource";
@@ -1156,6 +1190,8 @@ const char* Resource::ResourceTypeToString(
       return "Video";
     case ResourceType::kManifest:
       return "Manifest";
+    case ResourceType::kSpeculationRules:
+      return "SpeculationRule";
     case ResourceType::kMock:
       return "Mock";
   }
@@ -1167,11 +1203,13 @@ bool Resource::IsLoadEventBlockingResourceType() const {
   switch (type_) {
     case ResourceType::kImage:
     case ResourceType::kCSSStyleSheet:
-    case ResourceType::kScript:
     case ResourceType::kFont:
     case ResourceType::kSVGDocument:
     case ResourceType::kXSLStyleSheet:
       return true;
+    case ResourceType::kScript:
+      // <script> elements delay the load event in core/script (e.g. in
+      // ScriptRunner) and no longer need the delaying in platform/loader side.
     case ResourceType::kRaw:
     case ResourceType::kLinkPrefetch:
     case ResourceType::kTextTrack:
@@ -1179,6 +1217,7 @@ bool Resource::IsLoadEventBlockingResourceType() const {
     case ResourceType::kVideo:
     case ResourceType::kManifest:
     case ResourceType::kMock:
+    case ResourceType::kSpeculationRules:
       return false;
   }
   NOTREACHED();

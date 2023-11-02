@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -53,7 +53,7 @@ bool ParseAnswer(const std::string& answer_json, SuggestionAnswer* answer) {
 
   // ParseAnswer previously did not change the default answer type of -1, so
   // here we keep the same behavior by explicitly supplying default value.
-  return SuggestionAnswer::ParseAnswer(*value, u"-1", answer);
+  return SuggestionAnswer::ParseAnswer(value->GetDict(), u"-1", answer);
 }
 
 }  // namespace

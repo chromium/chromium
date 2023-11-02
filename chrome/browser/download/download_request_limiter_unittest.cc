@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,7 +32,7 @@
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/common/input/web_touch_event.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #endif
 
@@ -160,8 +160,8 @@ class DownloadRequestLimiterTest : public ChromeRenderViewHostTestHarness {
   }
 
   void LoadCompleted() {
-    mock_permission_prompt_factory_->DocumentOnLoadCompletedInMainFrame(
-        main_rfh());
+    mock_permission_prompt_factory_
+        ->DocumentOnLoadCompletedInPrimaryMainFrame();
   }
 
   int AskAllowCount() { return mock_permission_prompt_factory_->show_count(); }
@@ -358,7 +358,7 @@ TEST_F(DownloadRequestLimiterTest, RendererInitiated) {
 
   // Set up a renderer-initiated navigation to the same host.
   content::NavigationSimulator::NavigateAndCommitFromDocument(
-      GURL("http://foo.com/bar2"), web_contents()->GetMainFrame());
+      GURL("http://foo.com/bar2"), web_contents()->GetPrimaryMainFrame());
   LoadCompleted();
 
   // The state should not be reset.
@@ -369,7 +369,7 @@ TEST_F(DownloadRequestLimiterTest, RendererInitiated) {
 
   // Renderer-initiated nav to a different host shouldn't reset the state.
   content::NavigationSimulator::NavigateAndCommitFromDocument(
-      GURL("http://fooey.com/bar"), web_contents()->GetMainFrame());
+      GURL("http://fooey.com/bar"), web_contents()->GetPrimaryMainFrame());
   LoadCompleted();
   EXPECT_EQ(DownloadRequestLimiter::PROMPT_BEFORE_DOWNLOAD,
             download_request_limiter_->GetDownloadStatus(web_contents()));
@@ -378,7 +378,8 @@ TEST_F(DownloadRequestLimiterTest, RendererInitiated) {
 
   // Set up a subframe. Navigations in the subframe shouldn't reset the state.
   content::RenderFrameHostTester* rfh_tester =
-      content::RenderFrameHostTester::For(web_contents()->GetMainFrame());
+      content::RenderFrameHostTester::For(
+          web_contents()->GetPrimaryMainFrame());
   content::RenderFrameHost* subframe = rfh_tester->AppendChild("subframe");
   subframe = content::NavigationSimulator::NavigateAndCommitFromDocument(
       GURL("http://foo.com"), subframe);
@@ -407,7 +408,7 @@ TEST_F(DownloadRequestLimiterTest, RendererInitiated) {
   // same host or a different host, in either the main frame or the subframe.
   // The UI state goes to DEFAULT until an actual download is triggered.
   content::NavigationSimulator::NavigateAndCommitFromDocument(
-      GURL("http://fooey.com/bar2"), web_contents()->GetMainFrame());
+      GURL("http://fooey.com/bar2"), web_contents()->GetPrimaryMainFrame());
   LoadCompleted();
   EXPECT_EQ(DownloadRequestLimiter::DOWNLOADS_NOT_ALLOWED,
             download_request_limiter_->GetDownloadStatus(web_contents()));
@@ -415,15 +416,15 @@ TEST_F(DownloadRequestLimiterTest, RendererInitiated) {
             download_request_limiter_->GetDownloadUiStatus(web_contents()));
 
   content::NavigationSimulator::NavigateAndCommitFromDocument(
-      GURL("http://foo.com/bar"), web_contents()->GetMainFrame());
+      GURL("http://foo.com/bar"), web_contents()->GetPrimaryMainFrame());
   LoadCompleted();
   EXPECT_EQ(DownloadRequestLimiter::DOWNLOADS_NOT_ALLOWED,
             download_request_limiter_->GetDownloadStatus(web_contents()));
   EXPECT_EQ(DownloadRequestLimiter::DOWNLOAD_UI_DEFAULT,
             download_request_limiter_->GetDownloadUiStatus(web_contents()));
 
-  rfh_tester =
-      content::RenderFrameHostTester::For(web_contents()->GetMainFrame());
+  rfh_tester = content::RenderFrameHostTester::For(
+      web_contents()->GetPrimaryMainFrame());
   subframe = rfh_tester->AppendChild("subframe");
   subframe = content::NavigationSimulator::NavigateAndCommitFromDocument(
       GURL("http://foo.com"), subframe);
@@ -469,7 +470,7 @@ TEST_F(DownloadRequestLimiterTest, RendererInitiated) {
   // The state should not be reset on a pending renderer-initiated load to
   // the same host.
   content::NavigationSimulator::NavigateAndCommitFromDocument(
-      GURL("http://foobar.com/bar"), web_contents()->GetMainFrame());
+      GURL("http://foobar.com/bar"), web_contents()->GetPrimaryMainFrame());
   LoadCompleted();
   EXPECT_EQ(DownloadRequestLimiter::ALLOW_ALL_DOWNLOADS,
             download_request_limiter_->GetDownloadStatus(web_contents()));
@@ -477,8 +478,8 @@ TEST_F(DownloadRequestLimiterTest, RendererInitiated) {
             download_request_limiter_->GetDownloadUiStatus(web_contents()));
 
   // The state should not be reset for a subframe nav to the same host.
-  rfh_tester =
-      content::RenderFrameHostTester::For(web_contents()->GetMainFrame());
+  rfh_tester = content::RenderFrameHostTester::For(
+      web_contents()->GetPrimaryMainFrame());
   subframe = rfh_tester->AppendChild("subframe");
   subframe = content::NavigationSimulator::NavigateAndCommitFromDocument(
       GURL("http://foobar.com/bar"), subframe);
@@ -497,7 +498,7 @@ TEST_F(DownloadRequestLimiterTest, RendererInitiated) {
   // Even a pending load to a different host in the main frame should not
   // reset the state.
   content::NavigationSimulator::NavigateAndCommitFromDocument(
-      GURL("http://foo.com"), web_contents()->GetMainFrame());
+      GURL("http://foo.com"), web_contents()->GetPrimaryMainFrame());
   LoadCompleted();
   EXPECT_EQ(DownloadRequestLimiter::ALLOW_ALL_DOWNLOADS,
             download_request_limiter_->GetDownloadStatus(web_contents()));
@@ -525,7 +526,7 @@ TEST_F(DownloadRequestLimiterTest, HistoryBack) {
   // Renderer-initiated navigation to a different host shouldn't reset the
   // state.
   content::NavigationSimulator::NavigateAndCommitFromDocument(
-      GURL("http://foobar.com/bar"), web_contents()->GetMainFrame());
+      GURL("http://foobar.com/bar"), web_contents()->GetPrimaryMainFrame());
   LoadCompleted();
   EXPECT_EQ(DownloadRequestLimiter::PROMPT_BEFORE_DOWNLOAD,
             download_request_limiter_->GetDownloadStatus(web_contents()));
@@ -587,7 +588,7 @@ TEST_F(DownloadRequestLimiterTest, HistoryForwardBack) {
   // Renderer-initiated navigation to a different host shouldn't reset the
   // state.
   content::NavigationSimulator::NavigateAndCommitFromDocument(
-      GURL("http://foobar.com/bar"), web_contents()->GetMainFrame());
+      GURL("http://foobar.com/bar"), web_contents()->GetPrimaryMainFrame());
   LoadCompleted();
   EXPECT_EQ(DownloadRequestLimiter::PROMPT_BEFORE_DOWNLOAD,
             download_request_limiter_->GetDownloadStatus(web_contents()));
@@ -808,7 +809,7 @@ TEST_F(DownloadRequestLimiterTest, ResetOnReload) {
 
   // Renderer initiated reload will not reset download status.
   content::NavigationSimulator::NavigateAndCommitFromDocument(
-      GURL("http://foo.com/bar"), web_contents()->GetMainFrame());
+      GURL("http://foo.com/bar"), web_contents()->GetPrimaryMainFrame());
   LoadCompleted();
   EXPECT_EQ(DownloadRequestLimiter::DOWNLOADS_NOT_ALLOWED,
             download_request_limiter_->GetDownloadStatus(web_contents()));

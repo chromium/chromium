@@ -1,4 +1,4 @@
-// Copyright 2014 The Crashpad Authors. All rights reserved.
+// Copyright 2014 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -117,6 +117,9 @@ class MinidumpMiscInfoWriter final : public internal::MinidumpStreamWriter {
   //
   //! \brief Sets MINIDUMP_MISC_INFO_5::XStateData.
   void SetXStateData(const XSTATE_CONFIG_FEATURE_MSC_INFO& xstate_data);
+
+  //! \brief Will this write extended context information?
+  bool HasXStateData() const;
 
   //! \brief Sets the field referenced by #MINIDUMP_MISC5_PROCESS_COOKIE.
   void SetProcessCookie(uint32_t process_cookie);

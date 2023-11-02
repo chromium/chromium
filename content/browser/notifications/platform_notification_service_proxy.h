@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,9 @@
 #include <string>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "content/common/content_export.h"
 
 class GURL;
 
@@ -32,7 +32,7 @@ class PlatformNotificationService;
 class ServiceWorkerContextWrapper;
 class ServiceWorkerRegistration;
 
-class CONTENT_EXPORT PlatformNotificationServiceProxy {
+class PlatformNotificationServiceProxy {
  public:
   using DisplayResultCallback =
       base::OnceCallback<void(bool /* success */,
@@ -116,8 +116,8 @@ class CONTENT_EXPORT PlatformNotificationServiceProxy {
       scoped_refptr<ServiceWorkerRegistration> registration);
 
   scoped_refptr<ServiceWorkerContextWrapper> service_worker_context_;
-  BrowserContext* browser_context_;
-  PlatformNotificationService* notification_service_;
+  raw_ptr<BrowserContext> browser_context_;
+  raw_ptr<PlatformNotificationService> notification_service_;
   base::WeakPtrFactory<PlatformNotificationServiceProxy> weak_ptr_factory_ui_{
       this};
   base::WeakPtrFactory<PlatformNotificationServiceProxy> weak_ptr_factory_io_{

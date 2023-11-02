@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,9 @@
 #include <stdint.h>
 #include <memory>
 
+#include "ash/components/arc/session/arc_management_transition.h"
 #include "base/callback_forward.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
-#include "components/arc/session/arc_management_transition.h"
 #include "storage/browser/file_system/file_system_url.h"
 
 // Most utility should be put in components/arc/arc_util.{h,cc}, rather than

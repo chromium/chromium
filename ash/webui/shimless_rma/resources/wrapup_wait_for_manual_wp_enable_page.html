@@ -2,13 +2,10 @@
 </style>
 
 <base-page>
-  <div slot="header">
-    <!-- TODO(gavindodd): Update text for i18n -->
-    <h1>Waiting For Manual Hardware Write Protection Enable</h1>
-  </div>
-  <div slot="body">
-    <p id="manuallyEnableHwwpInstructions">
-      [[getBodyText_(hwwpEnabled_)]]
-    </p>
+  <div slot="left-pane">
+    <h1 tabindex="-1">[[i18n('manuallyEnableWpTitleText')]]</h1>
+    <div id="manuallyEnableHwwpInstructions" class="instructions">
+      [[i18n('manuallyEnableWpInstructionsText')]]
+    </div>
   </div>
 </base-page>

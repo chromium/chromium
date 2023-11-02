@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -114,11 +114,6 @@ public class TabModelSelectorTabObserverTest {
             return new TabModelSelectorBase(null, EmptyTabModelFilter::new, false) {
                 @Override
                 public void requestToShowTab(Tab tab, int type) {}
-
-                @Override
-                public boolean closeAllTabsRequest(boolean incognito) {
-                    return false;
-                }
 
                 @Override
                 public boolean isSessionRestoreInProgress() {

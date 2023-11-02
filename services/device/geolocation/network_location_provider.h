@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,20 +7,20 @@
 
 #include <stddef.h>
 
-#include <list>
 #include <map>
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "services/device/geolocation/network_location_request.h"
-#include "services/device/geolocation/wifi_data_provider_manager.h"
+#include "services/device/geolocation/wifi_data_provider_handle.h"
 #include "services/device/public/cpp/geolocation/geolocation_manager.h"
 #include "services/device/public/cpp/geolocation/location_provider.h"
 #include "services/device/public/mojom/geoposition.mojom.h"
@@ -58,7 +58,7 @@ class NetworkLocationProvider : public LocationProvider,
   void RequestPosition();
 
   // Gets called when new wifi data is available, either via explicit request to
-  // or callback from |wifi_data_provider_manager_|.
+  // or callback from |wifi_data_provider_handle_|.
   void OnWifiDataUpdate();
 
   bool IsStarted() const;
@@ -69,18 +69,18 @@ class NetworkLocationProvider : public LocationProvider,
 
   // The wifi data provider, acquired via global factories. Valid between
   // StartProvider() and StopProvider(), and checked via IsStarted().
-  WifiDataProviderManager* wifi_data_provider_manager_;
+  std::unique_ptr<WifiDataProviderHandle> wifi_data_provider_handle_;
 
-  WifiDataProviderManager::WifiDataUpdateCallback wifi_data_update_callback_;
+  WifiDataProviderHandle::WifiDataUpdateCallback wifi_data_update_callback_;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Used to keep track of macOS System Permission changes. Also, ensures
   // lifetime of PermissionObserverList as the BrowserProcess may destroy its
   // reference on the UI Thread before we destroy this provider.
   scoped_refptr<GeolocationManager::PermissionObserverList>
       permission_observers_;
 
-  GeolocationManager* geolocation_manager_;
+  raw_ptr<GeolocationManager> geolocation_manager_;
 #endif
 
   // The  wifi data and a flag to indicate if the data set is complete.
@@ -90,7 +90,7 @@ class NetworkLocationProvider : public LocationProvider,
   // The timestamp for the latest wifi data update.
   base::Time wifi_timestamp_;
 
-  PositionCache* const position_cache_;
+  const raw_ptr<PositionCache> position_cache_;
 
   LocationProvider::LocationProviderUpdateCallback
       location_provider_update_callback_;

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,10 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
+
+namespace base {
+class TickClock;
+}
 
 namespace blink {
 
@@ -52,6 +56,10 @@ class MODULES_EXPORT WebSocketMessageChunkAccumulator final {
   wtf_size_t GetPoolSizeForTesting() const { return pool_.size(); }
   bool IsTimerActiveForTesting() const { return timer_.IsActive(); }
 
+  void SetTaskRunnerForTesting(
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      const base::TickClock* tick_clock);
+
   static constexpr size_t kSegmentSize = 16 * 1024;
   static constexpr base::TimeDelta kFreeDelay = base::Milliseconds(100);
 
@@ -68,7 +76,7 @@ class MODULES_EXPORT WebSocketMessageChunkAccumulator final {
   void OnTimerFired(TimerBase*);
 
   size_t GetLastSegmentSize() const {
-    DCHECK(!segments_.IsEmpty());
+    DCHECK(!segments_.empty());
     return size_ % kSegmentSize > 0 ? size_ % kSegmentSize : kSegmentSize;
   }
 

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,17 +11,18 @@
 #include <vector>
 
 #include "base/time/time.h"
-#include "components/sync/base/invalidation_interface.h"
 #include "components/sync/base/model_type.h"
+#include "components/sync/base/sync_invalidation.h"
+#include "components/sync/engine/cycle/commit_quota.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sync_pb {
-class DataTypeProgressMarker;
 class GetUpdateTriggers;
 }  // namespace sync_pb
 
 namespace syncer {
 
-class InvalidationInterface;
+class SyncInvalidation;
 
 struct WaitInterval {
   enum class BlockingMode {
@@ -44,6 +45,19 @@ struct WaitInterval {
   base::TimeDelta length;
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class PendingInvalidationStatus {
+  kAcknowledged = 0,
+  kLost = 1,
+  kInvalidationsOverflow = 2,
+  // kSameVersion = 3,
+  // Invalidation list already has another invalidation with the same version.
+  kSameKnownVersion = 4,
+  kSameUnknownVersion = 5,
+  kMaxValue = kSameUnknownVersion,
+};
+
 // A class to track the per-type scheduling data.
 class DataTypeTracker {
  public:
@@ -64,8 +78,7 @@ class DataTypeTracker {
   void RecordLocalRefreshRequest();
 
   // Tracks that we received invalidation notifications for this type.
-  void RecordRemoteInvalidation(
-      std::unique_ptr<InvalidationInterface> incoming);
+  void RecordRemoteInvalidation(std::unique_ptr<SyncInvalidation> incoming);
 
   // Takes note that initial sync is pending for this type.
   void RecordInitialSyncRequired();
@@ -73,6 +86,11 @@ class DataTypeTracker {
   // Takes note that the conflict happended for this type, need to sync to
   // resolve conflict locally.
   void RecordCommitConflict();
+
+  // Records that a commit message has been sent (note that each commit message
+  // may include multiple entities of this data type and each sync cycle may
+  // include an arbitrary number of commit messages).
+  void RecordSuccessfulCommitMessage();
 
   // Records that a sync cycle has been performed successfully.
   // Generally, this means that all local changes have been committed and all
@@ -82,7 +100,7 @@ class DataTypeTracker {
   // called since we count those cases as success. So we need to check if the
   // datatype is in partial throttling or backoff in the beginning of this
   // function.
-  void RecordSuccessfulSyncCycle();
+  void RecordSuccessfulSyncCycleIfNotBlocked();
 
   // Records that the initial sync has completed successfully. This gets called
   // when the initial configuration/download cycle has finished for this type.
@@ -116,14 +134,10 @@ class DataTypeTracker {
   // Returns true if this type is requesting a sync to resolve conflict issue.
   bool IsSyncRequiredToResolveConflict() const;
 
-  // Fills in the legacy invalidaiton payload information fields.
-  void SetLegacyNotificationHint(
-      sync_pb::DataTypeProgressMarker* progress) const;
-
   // Fills some type-specific contents of a GetUpdates request protobuf.  These
   // messages provide the server with the information it needs to decide how to
   // handle a request.
-  void FillGetUpdatesTriggersMessage(sync_pb::GetUpdateTriggers* msg) const;
+  void FillGetUpdatesTriggersMessage(sync_pb::GetUpdateTriggers* msg);
 
   // Returns true if the type is currently throttled or backed off.
   bool IsBlocked() const;
@@ -154,6 +168,10 @@ class DataTypeTracker {
   // Returns the current local change nudge delay for this type.
   base::TimeDelta GetLocalChangeNudgeDelay() const;
 
+  // Returns the current nudge delay for receiving remote invalitation for this
+  // type;
+  base::TimeDelta GetRemoteInvalidationDelay() const;
+
   // Return the BlockingMode for this type.
   WaitInterval::BlockingMode GetBlockingMode() const;
 
@@ -161,8 +179,33 @@ class DataTypeTracker {
   // is too small. This method ignores that check.
   void SetLocalChangeNudgeDelayIgnoringMinForTest(base::TimeDelta delay);
 
+  // Updates the parameters for the commit quota if the data type can receive
+  // commits via extension APIs. Empty optional means using the defaults.
+  void SetQuotaParamsIfExtensionType(
+      absl::optional<int> max_tokens,
+      absl::optional<base::TimeDelta> refill_interval,
+      absl::optional<base::TimeDelta> depleted_quota_nudge_delay);
+
  private:
+  struct PendingInvalidation {
+    PendingInvalidation();
+    PendingInvalidation(const PendingInvalidation&) = delete;
+    PendingInvalidation& operator=(const PendingInvalidation&) = delete;
+    PendingInvalidation(PendingInvalidation&&);
+    PendingInvalidation& operator=(PendingInvalidation&&);
+    PendingInvalidation(std::unique_ptr<SyncInvalidation> invalidation,
+                        bool is_processed);
+    ~PendingInvalidation();
+
+    std::unique_ptr<SyncInvalidation> pending_invalidation;
+    // is_processed is true, if the invalidation included to GetUpdates message
+    // trigger.
+    bool is_processed = false;
+  };
+
   friend class SyncSchedulerImplTest;
+
+  const ModelType type_;
 
   // Number of local change nudges received for this type since the last
   // successful sync cycle.
@@ -177,7 +220,7 @@ class DataTypeTracker {
   // drop_tracker_.IsRecoveringFromDropEvent() and server_payload_overflow_.
   //
   // This list takes ownership of its contents.
-  std::vector<std::unique_ptr<InvalidationInterface>> pending_invalidations_;
+  std::vector<PendingInvalidation> pending_invalidations_;
 
   size_t payload_buffer_size_;
 
@@ -197,11 +240,19 @@ class DataTypeTracker {
   std::unique_ptr<WaitInterval> wait_interval_;
 
   // A helper to keep track invalidations we dropped due to overflow.
-  std::unique_ptr<InvalidationInterface> last_dropped_invalidation_;
+  std::unique_ptr<SyncInvalidation> last_dropped_invalidation_;
 
   // The amount of time to delay a sync cycle by when a local change for this
   // type occurs.
   base::TimeDelta local_change_nudge_delay_;
+
+  // Quota for commits (used only for data types that can be committed by
+  // extensions).
+  std::unique_ptr<CommitQuota> quota_;
+
+  // The amount of time to delay a sync cycle by when a local change for this
+  // type occurs and the commit quota is depleted.
+  base::TimeDelta depleted_quota_nudge_delay_;
 };
 
 }  // namespace syncer

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -66,7 +66,7 @@ class FakeNavigationManager : public NavigationManager {
   // GetItemAtIndex(), and GetCurrentItemIndex().
   void AddItem(const GURL& url, ui::PageTransition transition);
 
-  // Sets the index to be returned by GetLastCommittedItemIndex(). |index| must
+  // Sets the index to be returned by GetLastCommittedItemIndex(). `index` must
   // be either -1 or between 0 and GetItemCount()-1, inclusively.
   void SetLastCommittedItemIndex(const int index);
 
@@ -79,8 +79,14 @@ class FakeNavigationManager : public NavigationManager {
   // Returns whether LoadIfNecessary has been called.
   bool LoadIfNecessaryWasCalled();
 
-  // Returns whether Reload has been called;
+  // Returns whether Reload has been called.
   bool ReloadWasCalled();
+
+  // Returns whether RequestDesktopSite has been called.
+  bool RequestDesktopSiteWasCalled();
+
+  // Returns whether RequestMobileSite has been called.
+  bool RequestMobileSiteWasCalled();
 
  private:
   // A list of items constructed by calling AddItem().
@@ -95,6 +101,8 @@ class FakeNavigationManager : public NavigationManager {
   bool load_url_with_params_was_called_;
   bool load_if_necessary_was_called_;
   bool reload_was_called_;
+  bool request_desktop_site_was_called_;
+  bool request_mobile_site_was_called_;
 };
 
 }  // namespace web

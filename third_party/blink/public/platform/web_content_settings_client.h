@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -113,6 +113,12 @@ class WebContentSettingsClient {
   // Controls whether mixed content autoupgrades should be allowed in this
   // frame.
   virtual bool ShouldAutoupgradeMixedContent() { return true; }
+
+  // Controls whether the SharedElementTransition callback needs to be larger
+  // than default.
+  virtual bool IncreaseSharedElementTransitionCallbackTimeout() const {
+    return false;
+  }
 
   virtual ~WebContentSettingsClient() = default;
 };

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/statistics_recorder.h"
@@ -69,7 +70,6 @@ class FileMetricsProvider : public MetricsProvider,
     // inactive for any period of time only to be opened again and have new
     // data written to them. The file should probably never be deleted because
     // there would be no guarantee that the data has been reported.
-    // TODO(bcwhite): Enable when read/write mem-mapped files are supported.
     SOURCE_HISTOGRAMS_ACTIVE_FILE,
   };
 
@@ -353,7 +353,7 @@ class FileMetricsProvider : public MetricsProvider,
   SourceInfoList sources_for_previous_run_;
 
   // The preferences-service used to store persistent state about sources.
-  PrefService* pref_service_;
+  raw_ptr<PrefService> pref_service_;
 
   const scoped_refptr<base::TaskRunner> main_task_runner_;
 

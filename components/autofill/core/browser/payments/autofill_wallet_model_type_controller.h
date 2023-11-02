@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/sync/driver/model_type_controller.h"
 #include "components/sync/driver/sync_service_observer.h"
@@ -63,8 +64,8 @@ class AutofillWalletModelTypeController : public syncer::ModelTypeController,
   bool IsEnabled() const;
   void SubscribeToPrefChanges();
 
-  PrefService* const pref_service_;
-  syncer::SyncService* const sync_service_;
+  const raw_ptr<PrefService> pref_service_;
+  const raw_ptr<syncer::SyncService> sync_service_;
 
   PrefChangeRegistrar pref_registrar_;
 };

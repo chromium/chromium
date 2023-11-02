@@ -1,0 +1,46 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// NOTE: This mojom should be kept in sync with the copy in Chromium OS's repo
+// in src/platform2/diagnostics/bindings/connectivity/mojom/state.mojom.
+
+module ash.cros_healthd.connectivity.mojom;
+
+// State provides interface to sync the internal state of connectivity test
+// between two context object in each processes.
+interface State {
+  // The following functions are for mojo method with response parameters. (
+  // e.g. |Foo() => ();|).
+  //
+  // LastCallHasNext returns whether there are more response parameters to be
+  // tested from the function last called.
+  // Only the function with response parameters sets this state. Otherwise it is
+  // undefined behavior.
+  LastCallHasNext() => (bool has_next);
+
+  // The following functions are for mojo method without response parameters. (
+  // e.g. |Foo();|).
+  //
+  // WaitLastCall returns after the last function call finished. This should be
+  // used before each call to a function without response parameters.
+  WaitLastCall() => ();
+  // FulfillLastCallCallback fulfills the callback function of |WaitLastCall|.
+  // When connection error ocurrs (e.g. Interfaces mismatch), the connection
+  // will be reset. In this case, the callback of |WaitRemoteLastCall| won't be
+  // called. We cannot drop the callback because the |State| interface is still
+  // connected. Instead, this function is used to call the remote callback from
+  // this side.
+  FulfillLastCallCallback();
+};
+
+// Provides methods to bootstrap the test objects between two processes.
+interface ConnectivityTestProvider {
+  // Binds bidirectional state connections to the context object.
+  BindContext(
+    pending_remote<State> remote, pending_receiver<State> receiver);
+
+  // Binds a test provider to be tested. The |interface_name| is used to
+  // identify what interface the caller want to test.
+  BindTestProvider(string interface_name, handle<message_pipe> receiver);
+};

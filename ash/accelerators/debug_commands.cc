@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,20 +8,31 @@
 #include <utility>
 
 #include "ash/accelerators/accelerator_commands.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/constants/notifier_catalogs.h"
+#include "ash/glanceables/glanceables_controller.h"
 #include "ash/hud_display/hud_display.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/debug_utils.h"
-#include "ash/public/cpp/toast_data.h"
+#include "ash/public/cpp/system/toast_data.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
+#include "ash/style/style_viewer/system_ui_components_style_viewer_view.h"
 #include "ash/system/toast/toast_manager_impl.h"
 #include "ash/touch/touch_devices_controller.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
+#include "ash/wm/float/float_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/window_state.h"
+#include "ash/wm/window_util.h"
 #include "base/command_line.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/ui/wm/features.h"
+#include "chromeos/ui/wm/window_util.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/display/manager/display_manager.h"
@@ -29,6 +40,7 @@
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
+#include "ui/native_theme/native_theme.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -100,6 +112,68 @@ void HandleToggleWallpaperMode() {
   }
 }
 
+void HandleDumpCalendarModel() {
+  accelerators::DumpCalendarModel();
+}
+
+void HandleToggleDarkMode() {
+  // Toggling dark mode requires that the active user session has started
+  // since the feature is backed by user preferences.
+  if (auto* controller = Shell::Get()->session_controller();
+      !(controller && controller->IsActiveUserSessionStarted())) {
+    return;
+  }
+
+  if (auto* controller = DarkLightModeControllerImpl::Get())
+    controller->ToggleColorMode();
+}
+
+void HandleToggleDynamicColor() {
+  if (!ash::features::IsJellyEnabled()) {
+    // Only toggle colors when Dynamic Colors are enabled.
+    return;
+  }
+  static int index = 0;
+  SkColor color;
+  switch (++index % 2) {
+    case 0:
+      color = SK_ColorGREEN;
+      break;
+    case 1:
+      color = SK_ColorRED;
+      break;
+  }
+
+  // This behavior is similar to the way that color changes in production, but
+  // it may not match exactly.
+  auto* theme = ui::NativeTheme::GetInstanceForNativeUi();
+  theme->set_user_color(color);
+  theme->NotifyOnNativeThemeUpdated();
+}
+
+void HandleToggleGlanceables() {
+  if (!features::AreGlanceablesEnabled())
+    return;
+  auto* controller = Shell::Get()->glanceables_controller();
+  DCHECK(controller);
+  if (controller->IsShowing())
+    controller->DestroyUi();
+  else
+    controller->CreateUi();
+}
+
+void HandleToggleKeyboardBacklight() {
+  if (ash::features::IsKeyboardBacklightToggleEnabled()) {
+    base::RecordAction(base::UserMetricsAction("Accel_Keyboard_Backlight"));
+    accelerators::ToggleKeyboardBacklight();
+  }
+}
+
+void HandleToggleMicrophoneMute() {
+  base::RecordAction(base::UserMetricsAction("Accel_Microphone_Mute"));
+  accelerators::MicrophoneMuteToggle();
+}
+
 void HandleToggleTouchpad() {
   base::RecordAction(base::UserMetricsAction("Accel_Toggle_Touchpad"));
   Shell::Get()->touch_devices_controller()->ToggleTouchpad();
@@ -126,6 +200,19 @@ void HandleTriggerHUDDisplay() {
   hud_display::HUDDisplayView::Toggle();
 }
 
+void HandleTuckFloatedWindow(AcceleratorAction action) {
+  // Find the active floated window.
+  auto* float_controller = Shell::Get()->float_controller();
+  auto* floated_window = float_controller->FindFloatedWindowOfDesk(
+      DesksController::Get()->GetTargetActiveDesk());
+
+  DCHECK(floated_window);
+
+  float_controller->OnFlingOrSwipeForTablet(
+      floated_window,
+      /*left=*/action == DEBUG_TUCK_FLOATED_WINDOW_LEFT, /*up=*/true);
+}
+
 }  // namespace
 
 void PrintUIHierarchies() {
@@ -135,6 +222,22 @@ void PrintUIHierarchies() {
   HandlePrintLayerHierarchy();
   HandlePrintWindowHierarchy();
   HandlePrintViewHierarchy();
+}
+
+bool CanToggleFloatingWindow() {
+  if (!chromeos::wm::features::IsFloatWindowEnabled())
+    return false;
+
+  aura::Window* window = window_util::GetActiveWindow();
+  return window && chromeos::wm::CanFloatWindow(window);
+}
+
+bool CanTuckFloatedWindow() {
+  if (!chromeos::wm::features::IsFloatWindowEnabled())
+    return false;
+
+  return Shell::Get()->float_controller()->FindFloatedWindowOfDesk(
+      DesksController::Get()->GetTargetActiveDesk());
 }
 
 bool DebugAcceleratorsEnabled() {
@@ -152,8 +255,14 @@ void PerformDebugActionIfEnabled(AcceleratorAction action) {
     return;
 
   switch (action) {
+    case DEBUG_DUMP_CALENDAR_MODEL:
+      HandleDumpCalendarModel();
+      break;
+    case DEBUG_KEYBOARD_BACKLIGHT_TOGGLE:
+      HandleToggleKeyboardBacklight();
+      break;
     case DEBUG_MICROPHONE_MUTE_TOGGLE:
-      accelerators::MicrophoneMuteToggle();
+      HandleToggleMicrophoneMute();
       break;
     case DEBUG_PRINT_LAYER_HIERARCHY:
       HandlePrintLayerHierarchy();
@@ -165,8 +274,23 @@ void PerformDebugActionIfEnabled(AcceleratorAction action) {
       HandlePrintWindowHierarchy();
       break;
     case DEBUG_SHOW_TOAST:
-      Shell::Get()->toast_manager()->Show(
-          ToastData("id", u"Toast", 5000 /* duration_ms */, u"Dismiss"));
+      Shell::Get()->toast_manager()->Show(ToastData(
+          /*id=*/"id", ToastCatalogName::kDebugCommand, /*text=*/u"Toast",
+          ToastData::kDefaultToastDuration,
+          /*visible_on_lock_screen=*/false, /*has_dismiss_button=*/true,
+          /*custom_dismiss_text=*/u"Dismiss"));
+      break;
+    case DEBUG_SYSTEM_UI_STYLE_VIEWER:
+      SystemUIComponentsStyleViewerView::CreateAndShowWidget();
+      break;
+    case DEBUG_TOGGLE_DARK_MODE:
+      HandleToggleDarkMode();
+      break;
+    case DEBUG_TOGGLE_DYNAMIC_COLOR:
+      HandleToggleDynamicColor();
+      break;
+    case DEBUG_TOGGLE_GLANCEABLES:
+      HandleToggleGlanceables();
       break;
     case DEBUG_TOGGLE_TOUCH_PAD:
       HandleToggleTouchpad();
@@ -185,6 +309,10 @@ void PerformDebugActionIfEnabled(AcceleratorAction action) {
       break;
     case DEBUG_TOGGLE_HUD_DISPLAY:
       HandleTriggerHUDDisplay();
+      break;
+    case DEBUG_TUCK_FLOATED_WINDOW_LEFT:
+    case DEBUG_TUCK_FLOATED_WINDOW_RIGHT:
+      HandleTuckFloatedWindow(action);
       break;
     default:
       break;

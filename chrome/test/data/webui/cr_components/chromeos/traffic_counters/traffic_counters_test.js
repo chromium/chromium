@@ -1,21 +1,18 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
 import 'chrome://network/strings.m.js';
 
-import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
-import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
-import {TrafficCountersElement} from 'chrome://resources/cr_components/chromeos/traffic_counters/traffic_counters.js';
-import {CrosNetworkConfig} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
-import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
+import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
+import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
+import {TrafficCountersElement} from 'chrome://resources/ash/common/traffic_counters/traffic_counters.js';
+import {ConnectionStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
+import {Time} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertEquals, assertTrue} from '../../../chai_assert.js';
-import {FakeNetworkConfig} from '../../../chromeos/fake_network_config_mojom.m.js';
-
-// clang-format on
+import {FakeNetworkConfig} from '../../../chromeos/fake_network_config_mojom.js';
 
 suite('TrafficCountersTest', function() {
   /** @type {!TrafficCountersElement} */
@@ -28,20 +25,22 @@ suite('TrafficCountersTest', function() {
    * Fake last reset time. Corresponds to a time on September 10, 2021.
    * @type {bigint}
    */
-  let FAKE_TIME_IN_MICROSECONDS = BigInt(13275778457938000);
-  /** @type {!mojoBase.mojom.Time} */
-  let FAKE_INITIAL_LAST_RESET_TIME = {internalValue: FAKE_TIME_IN_MICROSECONDS};
+  const FAKE_TIME_IN_MICROSECONDS = BigInt(13275778457938000);
+  /** @type {!Time} */
+  const FAKE_INITIAL_LAST_RESET_TIME = {
+    internalValue: FAKE_TIME_IN_MICROSECONDS,
+  };
   /**
    * @type {string} human readable string representing
    * the FAKE_INITIAL_LAST_RESET_TIME.
    */
-  let FAKE_INITIAL_LAST_RESET_TIME_LOCALE_STRING = '9/10/2021, 2:14:17 PM';
+  const FAKE_INITIAL_LAST_RESET_TIME_LOCALE_STRING = '9/10/2021, 2:14:17 PM';
   /**
    * Note that the hour here has been adjusted to test for locale.
    * @type {string} human readable string representing
    * the FAKE_POST_RESET_LAST_RESET_TIME_LOCALE_STRING.
    */
-  let FAKE_POST_RESET_LAST_RESET_TIME_LOCALE_STRING = '9/10/2021, 1:14:18 PM';
+  const FAKE_POST_RESET_LAST_RESET_TIME_LOCALE_STRING = '9/10/2021, 1:14:18 PM';
 
   async function flushAsync() {
     flush();
@@ -70,7 +69,7 @@ suite('TrafficCountersTest', function() {
 
   /** @return {!NetworkHealthContainerElement} container element */
   function getContainer() {
-    let container =
+    const container =
         trafficCounters.shadowRoot.querySelector('network-health-container');
     assertTrue(!!container);
     return /** @type {!NetworkHealthContainerElement} */ (container);
@@ -86,7 +85,7 @@ suite('TrafficCountersTest', function() {
    * @return {Element|null} service div
    */
   function getServiceDiv(id) {
-    let serviceDiv = getContainer().querySelector('#' + id);
+    const serviceDiv = getContainer().querySelector('#' + id);
     assertTrue(!!serviceDiv);
     return serviceDiv;
   }
@@ -159,12 +158,11 @@ suite('TrafficCountersTest', function() {
   test('Request and reset traffic counters', async function() {
     // Set managed properties for a connected cellular network.
     const managedProperties = OncMojo.getDefaultManagedProperties(
-        chromeos.networkConfig.mojom.NetworkType.kCellular, 'cellular_guid',
-        'cellular');
-    managedProperties.connectionState =
-        chromeos.networkConfig.mojom.ConnectionStateType.kConnected;
+        NetworkType.kCellular, 'cellular_guid', 'cellular');
+    managedProperties.connectionState = ConnectionStateType.kConnected;
     managedProperties.connectable = true;
-    managedProperties.trafficCounterResetTime = FAKE_INITIAL_LAST_RESET_TIME;
+    managedProperties.trafficCounterProperties.lastResetTime =
+        FAKE_INITIAL_LAST_RESET_TIME;
     networkConfigRemote.setManagedPropertiesForTest(managedProperties);
     await flushAsync();
 
@@ -173,8 +171,7 @@ suite('TrafficCountersTest', function() {
         'cellular_guid', generateTrafficCounters(100, 100));
     // Remove default network.
     networkConfigRemote.setNetworkConnectionStateForTest(
-        'eth0_guid',
-        chromeos.networkConfig.mojom.ConnectionStateType.kNotConnected);
+        'eth0_guid', ConnectionStateType.kNotConnected);
     await flushAsync();
 
     // Requests traffic counters.
@@ -208,7 +205,7 @@ suite('TrafficCountersTest', function() {
     // network. The internal value represents one second.
     networkConfigRemote.setLastResetTimeForTest('cellular_guid', {
       internalValue:
-          FAKE_INITIAL_LAST_RESET_TIME.internalValue + BigInt(1000 * 1000)
+          FAKE_INITIAL_LAST_RESET_TIME.internalValue + BigInt(1000 * 1000),
     });
     await flushAsync();
     // Reset the traffic counters.

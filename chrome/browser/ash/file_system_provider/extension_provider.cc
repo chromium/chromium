@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/file_system_provider/throttled_file_system.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -110,7 +111,7 @@ bool ExtensionProvider::RequestMount(Profile* profile) {
       std::make_unique<extensions::Event>(
           extensions::events::FILE_SYSTEM_PROVIDER_ON_MOUNT_REQUESTED,
           extensions::api::file_system_provider::OnMountRequested::kEventName,
-          std::vector<base::Value>()));
+          base::Value::List()));
 
   return true;
 }
@@ -125,7 +126,22 @@ ExtensionProvider::ExtensionProvider(
   capabilities_.multiple_mounts = info.capabilities.multiple_mounts();
   capabilities_.source = info.capabilities.source();
   name_ = info.name;
+  ObserveAppServiceForIcons(profile);
+}
 
+ExtensionProvider::ExtensionProvider(Profile* profile,
+                                     ProviderId id,
+                                     Capabilities capabilities,
+                                     std::string name)
+    : provider_id_(std::move(id)),
+      capabilities_(std::move(capabilities)),
+      name_(std::move(name)) {
+  ObserveAppServiceForIcons(profile);
+}
+
+ExtensionProvider::~ExtensionProvider() = default;
+
+void ExtensionProvider::ObserveAppServiceForIcons(Profile* profile) {
   if (apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
     auto* AppServiceProxy =
         apps::AppServiceProxyFactory::GetForProfile(profile);
@@ -136,7 +152,7 @@ ExtensionProvider::ExtensionProvider(
     Observe(&AppServiceProxy->AppRegistryCache());
 
     if (AppServiceProxy->AppRegistryCache().GetAppType(
-            provider_id_.GetExtensionId()) != apps::mojom::AppType::kUnknown) {
+            provider_id_.GetExtensionId()) != apps::AppType::kUnknown) {
       icon_set_.SetIcon(
           IconSet::IconSize::SIZE_16x16,
           apps::AppIconSource::GetIconURL(provider_id_.GetExtensionId(), 16));
@@ -154,8 +170,6 @@ ExtensionProvider::ExtensionProvider(
                     GURL(std::string("chrome://extension-icon/") +
                          provider_id_.GetExtensionId() + "/32/1"));
 }
-
-ExtensionProvider::~ExtensionProvider() = default;
 
 void ExtensionProvider::OnAppUpdate(const apps::AppUpdate& update) {
   if (update.AppId() != provider_id_.GetExtensionId() ||

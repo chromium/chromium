@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -128,11 +128,6 @@ public class PaymentRequestParamsBuilder implements ChromePaymentRequestService.
     }
 
     @Override
-    public boolean skipUiForBasicCard() {
-        return false;
-    }
-
-    @Override
     public BrowserPaymentRequest createBrowserPaymentRequest(
             PaymentRequestService paymentRequestService) {
         return new ChromePaymentRequestService(paymentRequestService, mDelegate);
@@ -237,16 +232,6 @@ public class PaymentRequestParamsBuilder implements ChromePaymentRequestService.
     @Override
     public PaymentAppFactoryInterface createAndroidPaymentAppFactory() {
         return null;
-    }
-
-    @Override
-    public PaymentAppFactoryInterface createAutofillPaymentAppFactory() {
-        return null;
-    }
-
-    @Override
-    public boolean canMakeAutofillPayment(Map<String, PaymentMethodData> methodData) {
-        return false;
     }
 
     @Override

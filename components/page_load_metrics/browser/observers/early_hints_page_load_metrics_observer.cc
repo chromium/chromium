@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
+#include "content/public/browser/navigation_handle.h"
 
 namespace internal {
 
@@ -29,9 +30,25 @@ EarlyHintsPageLoadMetricsObserver::~EarlyHintsPageLoadMetricsObserver() =
     default;
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
-EarlyHintsPageLoadMetricsObserver::OnCommit(
+EarlyHintsPageLoadMetricsObserver::OnFencedFramesStart(
     content::NavigationHandle* navigation_handle,
-    ukm::SourceId source_id) {
+    const GURL& currently_committed_url) {
+  // This class doesn't use subframe information. No need to forward.
+  return STOP_OBSERVING;
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+EarlyHintsPageLoadMetricsObserver::OnPrerenderStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url) {
+  // This class works as same as non prerendering case except for the metrics
+  // correction.
+  return CONTINUE_OBSERVING;
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+EarlyHintsPageLoadMetricsObserver::OnCommit(
+    content::NavigationHandle* navigation_handle) {
   // Continue observing when 103 Early Hints are received during the navigation
   // and these contain at least one resource hints (preload or preconnect).
   if (navigation_handle->WasResourceHintsReceived())
@@ -42,13 +59,21 @@ EarlyHintsPageLoadMetricsObserver::OnCommit(
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 EarlyHintsPageLoadMetricsObserver::FlushMetricsOnAppEnterBackground(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
-  if (GetDelegate().DidCommit())
-    RecordHistograms(timing);
+  if (!GetDelegate().DidCommit())
+    return STOP_OBSERVING;
+  if (GetDelegate().IsInPrerenderingBeforeActivationStart())
+    return STOP_OBSERVING;
+
+  RecordHistograms(timing);
+
   return STOP_OBSERVING;
 }
 
 void EarlyHintsPageLoadMetricsObserver::OnComplete(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
+  if (GetDelegate().IsInPrerenderingBeforeActivationStart())
+    return;
+
   RecordHistograms(timing);
 }
 
@@ -58,11 +83,15 @@ void EarlyHintsPageLoadMetricsObserver::RecordHistograms(
   // avoid skews.
 
   if (timing.paint_timing->first_contentful_paint.has_value() &&
-      page_load_metrics::WasStartedInForegroundOptionalEventInForeground(
-          timing.paint_timing->first_contentful_paint, GetDelegate())) {
+      page_load_metrics::EventOccurredBeforeNonPrerenderingBackgroundStart(
+          GetDelegate(), timing,
+          timing.paint_timing->first_contentful_paint.value())) {
+    base::TimeDelta corrected =
+        page_load_metrics::CorrectEventAsNavigationOrActivationOrigined(
+            GetDelegate(), timing,
+            timing.paint_timing->first_contentful_paint.value());
     PAGE_LOAD_HISTOGRAM(
-        internal::kHistogramEarlyHintsPreloadFirstContentfulPaint,
-        timing.paint_timing->first_contentful_paint.value());
+        internal::kHistogramEarlyHintsPreloadFirstContentfulPaint, corrected);
   }
 
   const page_load_metrics::ContentfulPaintTimingInfo& largest_contentful_paint =
@@ -70,16 +99,19 @@ void EarlyHintsPageLoadMetricsObserver::RecordHistograms(
           .GetLargestContentfulPaintHandler()
           .MainFrameLargestContentfulPaint();
   if (largest_contentful_paint.ContainsValidTime() &&
-      page_load_metrics::WasStartedInForegroundOptionalEventInForeground(
-          largest_contentful_paint.Time(), GetDelegate())) {
+      page_load_metrics::EventOccurredBeforeNonPrerenderingBackgroundStart(
+          GetDelegate(), timing, largest_contentful_paint.Time().value())) {
+    base::TimeDelta corrected =
+        page_load_metrics::CorrectEventAsNavigationOrActivationOrigined(
+            GetDelegate(), timing, largest_contentful_paint.Time().value());
     PAGE_LOAD_HISTOGRAM(
-        internal::kHistogramEarlyHintsPreloadLargestContentfulPaint,
-        largest_contentful_paint.Time().value());
+        internal::kHistogramEarlyHintsPreloadLargestContentfulPaint, corrected);
   }
 
   if (timing.interactive_timing->first_input_delay.has_value() &&
-      page_load_metrics::WasStartedInForegroundOptionalEventInForeground(
-          timing.interactive_timing->first_input_timestamp, GetDelegate())) {
+      page_load_metrics::EventOccurredBeforeNonPrerenderingBackgroundStart(
+          GetDelegate(), timing,
+          timing.interactive_timing->first_input_delay.value())) {
     base::UmaHistogramCustomTimes(
         internal::kHistogramEarlyHintsPreloadFirstInputDelay,
         timing.interactive_timing->first_input_delay.value(),

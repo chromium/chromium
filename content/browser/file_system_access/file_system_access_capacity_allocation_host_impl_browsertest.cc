@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -109,7 +109,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessCapacityAllocationHostImplBrowserTest,
   )")
                   .ExtractBool());
   int64_t usage_after_operation = GetUsageSync(quota_manager, storage_key);
-  EXPECT_EQ(usage_before_operation + 10, usage_after_operation);
+  EXPECT_EQ(usage_after_operation, usage_before_operation + 10);
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemAccessCapacityAllocationHostImplBrowserTest,
@@ -158,20 +158,19 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessCapacityAllocationHostImplBrowserTest,
   EXPECT_EQ(usage_before_operation, usage_after_operation + 100);
 }
 
+// TODO(crbug.com/1304977): Failing on Mac builders.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_QuotaUsageOverallocation DISABLED_QuotaUsageOverallocation
+#else
+#define MAYBE_QuotaUsageOverallocation QuotaUsageOverallocation
+#endif
 IN_PROC_BROWSER_TEST_F(FileSystemAccessCapacityAllocationHostImplBrowserTest,
-                       QuotaUsageOverallocation) {
+                       MAYBE_QuotaUsageOverallocation) {
   // TODO(https://crbug.com/1240056): Implement a more sophisticated test suite
   // for this feature.
   const GURL& test_url =
       embedded_test_server()->GetURL("/run_async_code_on_worker.html");
   Shell* browser = CreateBrowser();
-  scoped_refptr<storage::QuotaManager> quota_manager =
-      browser->web_contents()
-          ->GetBrowserContext()
-          ->GetDefaultStoragePartition()
-          ->GetQuotaManager();
-  blink::StorageKey storage_key =
-      blink::StorageKey::CreateFromStringForTesting(test_url.spec());
 
   NavigateToURLBlockUntilNavigationsComplete(browser, test_url,
                                              /*number_of_navigations=*/1);
@@ -208,6 +207,129 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessCapacityAllocationHostImplBrowserTest,
   )")
                 .ExtractInt(),
             4 * 1024 * 1024);
+}
+
+// TODO(crbug.com/1304977): Failing on Mac builders.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_QuotaUsageShrinks DISABLED_QuotaUsageShrinks
+#else
+#define MAYBE_QuotaUsageShrinks QuotaUsageShrinks
+#endif
+IN_PROC_BROWSER_TEST_F(FileSystemAccessCapacityAllocationHostImplBrowserTest,
+                       MAYBE_QuotaUsageShrinks) {
+  const GURL& test_url =
+      embedded_test_server()->GetURL("/run_async_code_on_worker.html");
+  Shell* browser = CreateBrowser();
+
+  NavigateToURLBlockUntilNavigationsComplete(browser, test_url,
+                                             /*number_of_navigations=*/1);
+  EXPECT_EQ(EvalJs(browser, R"(
+    runOnWorkerAndWaitForResult(`
+      let root = await navigator.storage.getDirectory();
+      let fh = await root.getFileHandle('test_file_medium', {create: true});
+      let ah =  await fh.createSyncAccessHandle();
+      let storage_manager = await navigator.storage.estimate();
+      let usage_before_operation = storage_manager.usageDetails.fileSystem;
+      let new_file_size = 3*1024*1024;
+      await ah.truncate(new_file_size);
+      storage_manager = await navigator.storage.estimate();
+      let usage_after_operation = storage_manager.usageDetails.fileSystem;
+      await ah.close();
+      return usage_after_operation-usage_before_operation;
+    `);
+  )")
+                .ExtractInt(),
+            4 * 1024 * 1024);
+  EXPECT_EQ(EvalJs(browser, R"(
+    runOnWorkerAndWaitForResult(`
+      let root = await navigator.storage.getDirectory();
+      let fh = await root.getFileHandle('test_file_small', {create: true});
+      let ah =  await fh.createSyncAccessHandle();
+      let storage_manager = await navigator.storage.estimate();
+      let usage_before_operation = storage_manager.usageDetails.fileSystem;
+      await ah.truncate(100);
+      storage_manager = await navigator.storage.estimate();
+      let usage_after_operation = storage_manager.usageDetails.fileSystem;
+      await ah.close();
+      return usage_after_operation-usage_before_operation;
+    `);
+  )")
+                .ExtractInt(),
+            1024 * 1024);
+}
+
+IN_PROC_BROWSER_TEST_F(FileSystemAccessCapacityAllocationHostImplBrowserTest,
+                       QuotaUsageWrite) {
+  const GURL& test_url =
+      embedded_test_server()->GetURL("/run_async_code_on_worker.html");
+  Shell* browser = CreateBrowser();
+  scoped_refptr<storage::QuotaManager> quota_manager =
+      browser->web_contents()
+          ->GetBrowserContext()
+          ->GetDefaultStoragePartition()
+          ->GetQuotaManager();
+  blink::StorageKey storage_key =
+      blink::StorageKey::CreateFromStringForTesting(test_url.spec());
+
+  NavigateToURLBlockUntilNavigationsComplete(browser, test_url,
+                                             /*number_of_navigations=*/1);
+  EXPECT_TRUE(EvalJs(browser, R"(
+    runOnWorkerAndWaitForResult(`
+      let root = await navigator.storage.getDirectory();
+      let fh = await root.getFileHandle('test_closing', {create: true});
+      return true;
+    `);
+  )")
+                  .ExtractBool());
+  int64_t usage_before_operation = GetUsageSync(quota_manager, storage_key);
+
+  // write() should update quota correctly.
+  EXPECT_TRUE(EvalJs(browser, R"(
+    runOnWorkerAndWaitForResult(`
+      let root = await navigator.storage.getDirectory();
+      let fh = await root.getFileHandle('test_closing', {create: false});
+      let ah = await fh.createSyncAccessHandle();
+      const buffer = new DataView(new ArrayBuffer(10));
+      ah.write(buffer, { at: 0 });
+      await ah.close();
+      return true;
+    `);
+  )")
+                  .ExtractBool());
+  int64_t usage_after_write1 = GetUsageSync(quota_manager, storage_key);
+  EXPECT_EQ(usage_after_write1, usage_before_operation + 10);
+
+  // Write at an offset past the end of the file.
+  EXPECT_TRUE(EvalJs(browser, R"(
+    runOnWorkerAndWaitForResult(`
+      let root = await navigator.storage.getDirectory();
+      let fh = await root.getFileHandle('test_closing', {create: false});
+      let ah = await fh.createSyncAccessHandle();
+      const buffer = new DataView(new ArrayBuffer(80));
+      ah.write(buffer, { at: 20 });
+      await ah.close();
+      return true;
+    `);
+  )")
+                  .ExtractBool());
+  int64_t usage_after_write2 = GetUsageSync(quota_manager, storage_key);
+  EXPECT_EQ(usage_after_write2, usage_before_operation + 100);
+
+  // Writing in bytes the middle of the file so the file size does not change.
+  EXPECT_TRUE(EvalJs(browser, R"(
+    runOnWorkerAndWaitForResult(`
+      let root = await navigator.storage.getDirectory();
+      let fh = await root.getFileHandle('test_closing', {create: false});
+      let ah = await fh.createSyncAccessHandle();
+      const buffer = new DataView(new ArrayBuffer(20));
+      ah.write(buffer, { at: 5 });
+      await ah.close();
+      return true;
+    `);
+  )")
+                  .ExtractBool());
+  int64_t usage_after_write3 = GetUsageSync(quota_manager, storage_key);
+  EXPECT_EQ(usage_after_write3, usage_after_write2);
 }
 
 }  // namespace content

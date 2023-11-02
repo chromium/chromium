@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,12 +11,11 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/values.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/shutdown_reason.h"
-#include "components/sync/model/data_type_error_handler.h"
 
 namespace syncer {
 
@@ -51,8 +50,7 @@ class DataTypeController : public base::SupportsWeakPtr<DataTypeController> {
   using StopCallback = base::OnceClosure;
 
   using AllNodesCallback =
-      base::OnceCallback<void(const ModelType,
-                              std::unique_ptr<base::ListValue>)>;
+      base::OnceCallback<void(const ModelType, base::Value::List)>;
 
   using TypeMap = std::map<ModelType, std::unique_ptr<DataTypeController>>;
   using TypeVector = std::vector<std::unique_ptr<DataTypeController>>;
@@ -87,7 +85,7 @@ class DataTypeController : public base::SupportsWeakPtr<DataTypeController> {
   virtual void Stop(ShutdownReason shutdown_reason, StopCallback callback) = 0;
 
   // Name of this data type.  For logging purposes only.
-  std::string name() const { return ModelTypeToString(type()); }
+  std::string name() const { return ModelTypeToDebugString(type()); }
 
   // Current state of the data type controller.
   virtual State state() const = 0;
@@ -109,7 +107,7 @@ class DataTypeController : public base::SupportsWeakPtr<DataTypeController> {
   // transport-only mode (see syncer::SyncMode enum).
   virtual bool ShouldRunInTransportOnlyMode() const = 0;
 
-  // Returns a ListValue representing all nodes for this data type through
+  // Returns a Value::List representing all nodes for this data type through
   // |callback| on this thread. Can only be called if state() != NOT_RUNNING.
   // Used for populating nodes in Sync Node Browser of chrome://sync-internals.
   virtual void GetAllNodes(AllNodesCallback callback) = 0;

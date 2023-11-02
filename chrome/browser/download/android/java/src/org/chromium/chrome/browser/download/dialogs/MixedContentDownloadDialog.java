@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -91,7 +91,7 @@ public class MixedContentDownloadDialog {
                         .with(ModalDialogProperties.TITLE,
                                 context.getResources().getString(
                                         R.string.mixed_content_download_dialog_title))
-                        .with(ModalDialogProperties.MESSAGE, message)
+                        .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1, message)
                         .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT,
                                 context.getResources().getString(
                                         R.string.mixed_content_download_dialog_confirm_text))

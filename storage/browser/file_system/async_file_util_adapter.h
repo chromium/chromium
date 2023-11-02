@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "storage/browser/file_system/async_file_util.h"
 
@@ -44,7 +43,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) AsyncFileUtilAdapter
   // AsyncFileUtil overrides.
   void CreateOrOpen(std::unique_ptr<FileSystemOperationContext> context,
                     const FileSystemURL& url,
-                    int file_flags,
+                    uint32_t file_flags,
                     CreateOrOpenCallback callback) override;
   void EnsureFileExists(std::unique_ptr<FileSystemOperationContext> context,
                         const FileSystemURL& url,

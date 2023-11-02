@@ -47,7 +47,6 @@
   </print-preview-preview-area>
 </div>
 <print-preview-sidebar id="sidebar"
-    cloud-print-error-message="[[cloudPrintErrorMessage_]]"
     destination-state="{{destinationState_}}"
     controls-managed="[[controlsManaged_]]" destination="{{destination_}}"
     error="{{error_}}" is-pdf="[[!documentSettings_.isModifiable]]"
@@ -57,7 +56,7 @@
 <if expr="is_macosx">
     on-open-pdf-in-preview="onOpenPdfInPreview_"
 </if>
-<if expr="not chromeos and not lacros">
+<if expr="not is_chromeos">
     on-print-with-system-dialog="onPrintWithSystemDialog_"
 </if>
     on-print-requested="onPrintRequested_"

@@ -1,9 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/views/layout/table_layout.h"
 
+#include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/border.h"
 #include "ui/views/view.h"
@@ -67,7 +68,7 @@ class TableLayoutTest : public testing::Test {
 
  private:
   std::unique_ptr<View> host_;
-  TableLayout* layout_;
+  raw_ptr<TableLayout> layout_;
 };
 
 class TableLayoutAlignmentTest : public testing::Test {
@@ -92,7 +93,7 @@ class TableLayoutAlignmentTest : public testing::Test {
 
  private:
   std::unique_ptr<View> host_;
-  TableLayout* layout_;
+  raw_ptr<TableLayout> layout_;
 };
 
 TEST_F(TableLayoutAlignmentTest, Fill) {
@@ -420,7 +421,7 @@ TEST_F(TableLayoutTest, TestVerticalResize1) {
 }
 
 TEST_F(TableLayoutTest, Border) {
-  host()->SetBorder(CreateEmptyBorder(1, 2, 3, 4));
+  host()->SetBorder(CreateEmptyBorder(gfx::Insets::TLBR(1, 2, 3, 4)));
   layout()
       .AddColumn(LayoutAlignment::kStart, LayoutAlignment::kStart,
                  TableLayout::kFixedSize,
@@ -437,7 +438,7 @@ TEST_F(TableLayoutTest, Border) {
 }
 
 TEST_F(TableLayoutTest, FixedSize) {
-  host()->SetBorder(CreateEmptyBorder(2, 2, 2, 2));
+  host()->SetBorder(CreateEmptyBorder(2));
 
   constexpr size_t kRowCount = 2;
   constexpr size_t kColumnCount = 4;
@@ -569,6 +570,72 @@ TEST_F(TableLayoutTest, ColumnSpanResizing) {
   // And view2 should be 8 pixels wide:
   // 4 + (6 * 4 / 6).
   ExpectViewBoundsEquals(4, 40, 8, 40, view2);
+}
+
+// Make sure that for views that span both fixed and resizable columns the
+// underlying resiable column is resized and the fixed sized column is not.
+TEST_F(TableLayoutTest, ColumnSpanResizing2) {
+  layout()
+      .AddColumn(LayoutAlignment::kStretch, LayoutAlignment::kCenter, 1.0f,
+                 TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      .AddColumn(LayoutAlignment::kStretch, LayoutAlignment::kCenter,
+                 TableLayout::kFixedSize, TableLayout::ColumnSize::kFixed, 10,
+                 0)
+      .AddRows(2, TableLayout::kFixedSize);
+  View* span_view = host()->AddChildView(
+      CreateViewWithMinAndPref(gfx::Size(20, 40), gfx::Size(80, 40)));
+  span_view->SetProperty(kTableColAndRowSpanKey, gfx::Size(2, 1));
+
+  auto* view1 = host()->AddChildView(CreateSizedView(gfx::Size(1, 40)));
+  auto* view2 = host()->AddChildView(CreateSizedView(gfx::Size(1, 40)));
+
+  // Host width is shorter than the preferred width.
+  host()->SetBounds(0, 0, 30, 80);
+  layout().Layout(host());
+
+  // `span_view` should shrink to respect the host bound.
+  ExpectViewBoundsEquals(0, 0, 30, 40, span_view);
+
+  // The first column is host_width - col2_width = 30 - 10 = 20 pixels wide.
+  ExpectViewBoundsEquals(0, 40, 20, 40, view1);
+
+  // The second column is fixed 10 pixels wide.
+  ExpectViewBoundsEquals(20, 40, 10, 40, view2);
+}
+
+// Make sure that for views that span both fixed and resizable columns the
+// underlying resizable column is resized and the fixed sized column is not.
+// The host width in this test is shorter than the minimum size of columns.
+TEST_F(TableLayoutTest, ColumnSpanResizing3) {
+  layout()
+      .AddColumn(LayoutAlignment::kStretch, LayoutAlignment::kCenter, 1.0f,
+                 TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      .AddColumn(LayoutAlignment::kStretch, LayoutAlignment::kCenter,
+                 TableLayout::kFixedSize, TableLayout::ColumnSize::kFixed, 10,
+                 0)
+      .AddRows(2, TableLayout::kFixedSize);
+  View* span_view = host()->AddChildView(
+      CreateViewWithMinAndPref(gfx::Size(0, 40), gfx::Size(80, 40)));
+  span_view->SetProperty(kTableColAndRowSpanKey, gfx::Size(2, 1));
+
+  auto* view1 = host()->AddChildView(
+      CreateViewWithMinAndPref(gfx::Size(0, 40), gfx::Size(1, 40)));
+  auto* view2 = host()->AddChildView(
+      CreateViewWithMinAndPref(gfx::Size(0, 40), gfx::Size(1, 40)));
+
+  // Host width is shorter than the minimum size of columns
+  // i.e 5 < col1_min_width + col2_min_width = 0 + 10 = 10.
+  host()->SetBounds(0, 0, 5, 80);
+  layout().Layout(host());
+
+  // `span_view` should shrink to the fixed width of col2.
+  ExpectViewBoundsEquals(0, 0, 10, 40, span_view);
+
+  // The first column is 0 pixels wide.
+  ExpectViewBoundsEquals(0, 40, 0, 40, view1);
+
+  // The second width column is fixed 10 pixels wide.
+  ExpectViewBoundsEquals(0, 40, 10, 40, view2);
 }
 
 TEST_F(TableLayoutTest, MinimumPreferredSize) {

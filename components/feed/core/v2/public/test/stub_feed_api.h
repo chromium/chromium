@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,13 +32,14 @@ class StubFeedApi : public FeedApi {
   WebFeedSubscriptions& subscriptions() override;
   void AttachSurface(FeedStreamSurface*) override {}
   void DetachSurface(FeedStreamSurface*) override {}
+  void UpdateUserProfileOnLinkClick(
+      const GURL& url,
+      const std::vector<int64_t>& entity_mids) override {}
   void AddUnreadContentObserver(const StreamType& stream_type,
                                 UnreadContentObserver* observer) override {}
   void RemoveUnreadContentObserver(const StreamType& stream_type,
                                    UnreadContentObserver* observer) override {}
   bool IsArticlesListVisible() override;
-  bool IsActivityLoggingEnabled(const StreamType& stream_type) const override;
-  std::string GetClientInstanceId() const override;
   std::string GetSessionId() const override;
   void ExecuteRefreshTask(RefreshTaskId task_id) override {}
   void LoadMore(const FeedStreamSurface& surface,
@@ -63,9 +64,14 @@ class StubFeedApi : public FeedApi {
                              EphemeralChangeId id) override;
   bool RejectEphemeralChange(const StreamType& stream_type,
                              EphemeralChangeId id) override;
-  void ProcessThereAndBackAgain(base::StringPiece data) override {}
-  void ProcessViewAction(base::StringPiece data) override {}
+  void ProcessThereAndBackAgain(
+      base::StringPiece data,
+      const LoggingParameters& logging_parameters) override {}
+  void ProcessViewAction(base::StringPiece data,
+                         const LoggingParameters& logging_parameters) override {
+  }
   bool WasUrlRecentlyNavigatedFromFeed(const GURL& url) override;
+  void InvalidateContentCacheFor(StreamKind stream_kind) override {}
   void ReportSliceViewed(SurfaceId surface_id,
                          const StreamType& stream_type,
                          const std::string& slice_id) override {}
@@ -74,24 +80,25 @@ class StubFeedApi : public FeedApi {
   void ReportPageLoaded() override {}
   void ReportOpenAction(const GURL& url,
                         const StreamType& stream_type,
-                        const std::string& slice_id) override {}
+                        const std::string& slice_id,
+                        OpenActionType action_type) override {}
   void ReportOpenVisitComplete(base::TimeDelta visit_time) override {}
-  void ReportOpenInNewTabAction(const GURL& url,
-                                const StreamType& stream_type,
-                                const std::string& slice_id) override {}
   void ReportStreamScrolled(const StreamType& stream_type,
                             int distance_dp) override {}
   void ReportStreamScrollStart() override {}
   void ReportOtherUserAction(const StreamType& stream_type,
                              FeedUserActionType action_type) override {}
-  void ReportNoticeCreated(const StreamType& stream_type,
-                           const std::string& key) override {}
-  void ReportNoticeViewed(const StreamType& stream_type,
-                          const std::string& key) override {}
-  void ReportNoticeOpenAction(const StreamType& stream_type,
-                              const std::string& key) override {}
-  void ReportNoticeDismissed(const StreamType& stream_type,
-                             const std::string& key) override {}
+  void ReportInfoCardTrackViewStarted(const StreamType& stream_type,
+                                      int info_card_type) override {}
+  void ReportInfoCardViewed(const StreamType& stream_type,
+                            int info_card_type,
+                            int minimum_view_interval_seconds) override {}
+  void ReportInfoCardClicked(const StreamType& stream_type,
+                             int info_card_type) override {}
+  void ReportInfoCardDismissedExplicitly(const StreamType& stream_type,
+                                         int info_card_type) override {}
+  void ResetInfoCardStates(const StreamType& stream_type,
+                           int info_card_type) override {}
   DebugStreamData GetDebugStreamData() override;
   void ForceRefreshForDebugging(const StreamType& stream_type) override {}
   std::string DumpStateForDebugging() override;
@@ -100,8 +107,9 @@ class StubFeedApi : public FeedApi {
   base::Time GetLastFetchTime(const StreamType& stream_type) override;
   void SetContentOrder(const StreamType& stream_type,
                        ContentOrder content_order) override {}
-  ContentOrder GetContentOrder(const StreamType& stream_type) override;
+  ContentOrder GetContentOrder(const StreamType& stream_type) const override;
   ContentOrder GetContentOrderFromPrefs(const StreamType& stream_type) override;
+  void IncrementFollowedFromWebPageMenuCount() override {}
 
  private:
   StubWebFeedSubscriptions web_feed_subscriptions_;

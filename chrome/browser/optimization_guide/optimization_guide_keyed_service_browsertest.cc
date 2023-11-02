@@ -1,11 +1,13 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <memory>
 
 #include "base/base64.h"
+#include "base/feature_list.h"
 #include "base/run_loop.h"
+#include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -37,7 +39,6 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "net/base/escape.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -46,6 +47,8 @@
 #include "services/network/test/test_network_connection_tracker.h"
 
 namespace {
+
+using optimization_guide::proto::OptimizationType;
 
 // A WebContentsObserver that asks whether an optimization type can be applied.
 class OptimizationGuideConsumerWebContentsObserver
@@ -94,6 +97,34 @@ class OptimizationGuideConsumerWebContentsObserver
   optimization_guide::OptimizationGuideDecision
       last_can_apply_optimization_decision_ =
           optimization_guide::OptimizationGuideDecision::kUnknown;
+  optimization_guide::OptimizationGuideDecisionCallback callback_;
+};
+
+// A WebContentsObserver that specifically calls the new API that automatically
+// decided whether to use the sync or async api in the background.
+class OptimizationGuideNewApiConsumerWebContentsObserver
+    : public content::WebContentsObserver {
+ public:
+  OptimizationGuideNewApiConsumerWebContentsObserver(
+      content::WebContents* web_contents,
+      optimization_guide::OptimizationGuideDecisionCallback callback)
+      : content::WebContentsObserver(web_contents),
+        callback_(std::move(callback)) {}
+  ~OptimizationGuideNewApiConsumerWebContentsObserver() override = default;
+
+  void DidStartNavigation(
+      content::NavigationHandle* navigation_handle) override {
+    if (callback_) {
+      OptimizationGuideKeyedService* service =
+          OptimizationGuideKeyedServiceFactory::GetForProfile(
+              Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
+      service->CanApplyOptimization(navigation_handle->GetURL(),
+                                    optimization_guide::proto::NOSCRIPT,
+                                    std::move(callback_));
+    }
+  }
+
+ private:
   optimization_guide::OptimizationGuideDecisionCallback callback_;
 };
 
@@ -173,6 +204,19 @@ class OptimizationGuideKeyedServiceBrowserTest
         browser()->tab_strip_model()->GetActiveWebContents());
   }
 
+  void CanApplyOptimizationOnDemand(
+      const std::vector<GURL>& urls,
+      const std::vector<optimization_guide::proto::OptimizationType>&
+          optimization_types,
+      optimization_guide::OnDemandOptimizationGuideDecisionRepeatingCallback
+          callback) {
+    OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+        ->CanApplyOptimizationOnDemand(
+            urls, optimization_types,
+            optimization_guide::proto::CONTEXT_BATCH_UPDATE_ACTIVE_TABS,
+            callback);
+  }
+
   optimization_guide::PredictionManager* prediction_manager() {
     auto* optimization_guide_keyed_service =
         OptimizationGuideKeyedServiceFactory::GetForProfile(
@@ -181,6 +225,10 @@ class OptimizationGuideKeyedServiceBrowserTest
   }
 
   void PushHintsComponentAndWaitForCompletion() {
+    optimization_guide::RetryForHistogramUntilCountReached(
+        histogram_tester(),
+        "OptimizationGuide.HintsManager.HintCacheInitialized", 1);
+
     base::RunLoop run_loop;
     OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
         ->GetHintsManager()
@@ -211,19 +259,6 @@ class OptimizationGuideKeyedServiceBrowserTest
     consumer_->set_callback(std::move(callback));
   }
 
-  // Returns whether the synthetic trial |trial_name| has been logged and is in
-  // the |trial_group| for the trial.
-  bool IsInSyntheticTrialGroup(const std::string& trial_name,
-                               const std::string& trial_group) {
-    std::vector<std::string> synthetic_trials;
-    variations::GetSyntheticTrialGroupIdsAsString(&synthetic_trials);
-    std::string expected_entry =
-        base::StringPrintf("%x-%x", variations::HashName(trial_name),
-                           variations::HashName(trial_group));
-    return std::find(synthetic_trials.begin(), synthetic_trials.end(),
-                     expected_entry) != synthetic_trials.end();
-  }
-
   // Returns the last decision from the CanApplyOptimization() method seen by
   // the consumer of the OptimizationGuideKeyedService.
   optimization_guide::OptimizationGuideDecision
@@ -250,7 +285,7 @@ class OptimizationGuideKeyedServiceBrowserTest
 
     GURL request_url = request.GetURL();
     std::string dest =
-        net::UnescapeBinaryURLComponent(request_url.query_piece());
+        base::UnescapeBinaryURLComponent(request_url.query_piece());
 
     auto http_response =
         std::make_unique<net::test_server::BasicHttpResponse>();
@@ -283,24 +318,9 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   histogram_tester()->ExpectUniqueSample(
       "OptimizationGuide.RemoteFetchingEnabled", false, 1);
-  EXPECT_TRUE(IsInSyntheticTrialGroup(
+  EXPECT_TRUE(variations::IsInSyntheticTrialGroup(
       "SyntheticOptimizationGuideRemoteFetching", "Disabled"));
 #endif
-}
-
-IN_PROC_BROWSER_TEST_F(
-    OptimizationGuideKeyedServiceBrowserTest,
-    NavigateToPageWithHintsButNoRegistrationDoesNotAttemptToLoadHint) {
-  PushHintsComponentAndWaitForCompletion();
-
-  ukm::TestAutoSetUkmRecorder ukm_recorder;
-  base::HistogramTester histogram_tester;
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_with_hints()));
-  histogram_tester.ExpectTotalCount("OptimizationGuide.LoadedHint.Result", 0);
-
-  // Navigate away so UKM get recorded.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_with_hints()));
 }
 
 IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
@@ -397,10 +417,11 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
   EXPECT_TRUE(ukm_recorder.EntryHasMetric(
       entry,
       ukm::builders::OptimizationGuide::kRegisteredOptimizationTypesName));
-  // NOSCRIPT = 1, so bit mask is 10, which equals 2.
-  ukm_recorder.ExpectEntryMetric(
-      entry, ukm::builders::OptimizationGuide::kRegisteredOptimizationTypesName,
-      2);
+
+  const int64_t* entry_metric = ukm_recorder.GetEntryMetric(
+      entry,
+      ukm::builders::OptimizationGuide::kRegisteredOptimizationTypesName);
+  EXPECT_TRUE(*entry_metric & (1 << optimization_guide::proto::NOSCRIPT));
 }
 
 IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
@@ -435,10 +456,10 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
   EXPECT_TRUE(ukm_recorder.EntryHasMetric(
       entry,
       ukm::builders::OptimizationGuide::kRegisteredOptimizationTypesName));
-  // NOSCRIPT = 1, so bit mask is 10, which equals 2.
-  ukm_recorder.ExpectEntryMetric(
-      entry, ukm::builders::OptimizationGuide::kRegisteredOptimizationTypesName,
-      2);
+  const int64_t* entry_metric = ukm_recorder.GetEntryMetric(
+      entry,
+      ukm::builders::OptimizationGuide::kRegisteredOptimizationTypesName);
+  EXPECT_TRUE(*entry_metric & (1 << optimization_guide::proto::NOSCRIPT));
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -545,11 +566,131 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
   }
 }
 
-class OptimizationGuideKeyedServiceDataSaverUserWithInfobarShownTest
+IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
+                       CanApplyOptimizationOnDemand) {
+  PushHintsComponentAndWaitForCompletion();
+  OptimizationGuideKeyedService* ogks =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile());
+  ogks->RegisterOptimizationTypes(
+      {optimization_guide::proto::OptimizationType::NOSCRIPT,
+       optimization_guide::proto::OptimizationType::FAST_HOST_HINTS});
+
+  base::HistogramTester histogram_tester;
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_with_hints()));
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester, "OptimizationGuide.LoadedHint.Result", 1);
+
+  std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
+  base::flat_set<GURL> received_callbacks;
+  CanApplyOptimizationOnDemand(
+      {url_with_hints(), GURL("https://blockedhost.com/whatever")},
+      {optimization_guide::proto::OptimizationType::NOSCRIPT,
+       optimization_guide::proto::OptimizationType::FAST_HOST_HINTS},
+      base::BindRepeating(
+          [](base::RunLoop* run_loop, base::flat_set<GURL>* received_callbacks,
+             const GURL& url,
+             const base::flat_map<
+                 optimization_guide::proto::OptimizationType,
+                 optimization_guide::OptimizationGuideDecisionWithMetadata>&
+                 decisions) {
+            received_callbacks->insert(url);
+
+            // Expect one decision per requested type.
+            EXPECT_EQ(decisions.size(), 2u);
+
+            if (received_callbacks->size() == 2) {
+              run_loop->Quit();
+            }
+          },
+          run_loop.get(), &received_callbacks));
+  run_loop->Run();
+}
+
+IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
+                       CanApplyOptimizationNewAPI) {
+  OptimizationGuideKeyedService* ogks =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile());
+  ogks->RegisterOptimizationTypes(
+      {optimization_guide::proto::OptimizationType::NOSCRIPT});
+  std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
+
+  // Beforw the hints or navigation are initiated, we should get a negative
+  // response.
+  ogks->CanApplyOptimization(
+      url_with_hints(), optimization_guide::proto::OptimizationType::NOSCRIPT,
+      base::BindOnce(
+          [](base::RunLoop* run_loop,
+             optimization_guide::OptimizationGuideDecision decision,
+             const optimization_guide::OptimizationMetadata& metadata) {
+            EXPECT_EQ(decision,
+                      optimization_guide::OptimizationGuideDecision::kFalse);
+
+            run_loop->Quit();
+          },
+          run_loop.get()));
+  run_loop->Run();
+
+  // Now attach a WebContentsObserver to make a request while a navigation is
+  // in progress.
+  run_loop = std::make_unique<base::RunLoop>();
+  OptimizationGuideNewApiConsumerWebContentsObserver observer(
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      base::BindOnce(
+          [](base::RunLoop* run_loop,
+             optimization_guide::OptimizationGuideDecision decision,
+             const optimization_guide::OptimizationMetadata& metadata) {
+            EXPECT_EQ(optimization_guide::OptimizationGuideDecision::kTrue,
+                      decision);
+            run_loop->Quit();
+          },
+          run_loop.get()));
+
+  PushHintsComponentAndWaitForCompletion();
+  RegisterWithKeyedService();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_with_hints()));
+  run_loop->Run();
+
+  // After the navigation has finished, we should still be able to query and
+  // get the correct response.
+  run_loop = std::make_unique<base::RunLoop>();
+  ogks->CanApplyOptimization(
+      url_with_hints(), optimization_guide::proto::OptimizationType::NOSCRIPT,
+      base::BindOnce(
+          [](base::RunLoop* run_loop,
+             optimization_guide::OptimizationGuideDecision decision,
+             const optimization_guide::OptimizationMetadata& metadata) {
+            EXPECT_EQ(decision,
+                      optimization_guide::OptimizationGuideDecision::kTrue);
+
+            run_loop->Quit();
+          },
+          run_loop.get()));
+  run_loop->Run();
+}
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+// CreateGuestBrowser() is not supported for Android or ChromeOS out of the box.
+IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
+                       GuestProfileUniqueKeyedService) {
+  Browser* guest_browser = CreateGuestBrowser();
+  OptimizationGuideKeyedService* guest_ogks =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(
+          guest_browser->profile());
+  OptimizationGuideKeyedService* ogks =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile());
+
+  EXPECT_TRUE(guest_ogks);
+  EXPECT_TRUE(ogks);
+  EXPECT_NE(guest_ogks, ogks);
+}
+#endif
+
+class OptimizationGuideKeyedServicePermissionsCheckDisabledTest
     : public OptimizationGuideKeyedServiceBrowserTest {
  public:
-  OptimizationGuideKeyedServiceDataSaverUserWithInfobarShownTest() = default;
-  ~OptimizationGuideKeyedServiceDataSaverUserWithInfobarShownTest() override =
+  OptimizationGuideKeyedServicePermissionsCheckDisabledTest() = default;
+  ~OptimizationGuideKeyedServicePermissionsCheckDisabledTest() override =
       default;
 
   void SetUp() override {
@@ -568,7 +709,9 @@ class OptimizationGuideKeyedServiceDataSaverUserWithInfobarShownTest
   void SetUpCommandLine(base::CommandLine* cmd) override {
     OptimizationGuideKeyedServiceBrowserTest::SetUpCommandLine(cmd);
 
-    cmd->AppendSwitch("enable-spdy-proxy-auth");
+    cmd->AppendSwitch(optimization_guide::switches::
+                          kDisableCheckingUserPermissionsForTesting);
+
     // Add switch to avoid racing navigations in the test.
     cmd->AppendSwitch(optimization_guide::switches::
                           kDisableFetchingHintsAtNavigationStartForTesting);
@@ -579,20 +722,20 @@ class OptimizationGuideKeyedServiceDataSaverUserWithInfobarShownTest
 };
 
 IN_PROC_BROWSER_TEST_F(
-    OptimizationGuideKeyedServiceDataSaverUserWithInfobarShownTest,
+    OptimizationGuideKeyedServicePermissionsCheckDisabledTest,
     RemoteFetchingAllowed) {
   // ChromeOS has multiple profiles and optimization guide currently does not
   // run on non-Android.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   histogram_tester()->ExpectUniqueSample(
       "OptimizationGuide.RemoteFetchingEnabled", true, 1);
-  EXPECT_TRUE(IsInSyntheticTrialGroup(
+  EXPECT_TRUE(variations::IsInSyntheticTrialGroup(
       "SyntheticOptimizationGuideRemoteFetching", "Enabled"));
 #endif
 }
 
 IN_PROC_BROWSER_TEST_F(
-    OptimizationGuideKeyedServiceDataSaverUserWithInfobarShownTest,
+    OptimizationGuideKeyedServicePermissionsCheckDisabledTest,
     IncognitoCanStillReadFromComponentHints) {
   // Wait until initialization logic finishes running and component pushed to
   // both incognito and regular browsers.
@@ -623,7 +766,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    OptimizationGuideKeyedServiceDataSaverUserWithInfobarShownTest,
+    OptimizationGuideKeyedServicePermissionsCheckDisabledTest,
     IncognitoStillProcessesBloomFilter) {
   PushHintsComponentAndWaitForCompletion();
 

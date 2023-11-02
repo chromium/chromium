@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -125,7 +125,7 @@ class IndexedDBFakeBackingStore : public IndexedDBBackingStore {
     FakeTransaction(const FakeTransaction&) = delete;
     FakeTransaction& operator=(const FakeTransaction&) = delete;
 
-    void Begin(std::vector<ScopeLock> locks) override;
+    void Begin(std::vector<PartitionedLock> locks) override;
     leveldb::Status CommitPhaseOne(BlobWriteCallback) override;
     leveldb::Status CommitPhaseTwo() override;
     uint64_t GetTransactionSize() override;

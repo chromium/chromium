@@ -1,9 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/dbus/encrypted_reporting_service_provider.h"
 
+#include <limits>
 #include <memory>
 #include <utility>
 
@@ -14,10 +15,12 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/policy/messaging_layer/upload/event_upload_size_controller.h"
 #include "chrome/browser/policy/messaging_layer/upload/upload_client.h"
 #include "chrome/browser/policy/messaging_layer/upload/upload_provider.h"
 #include "chromeos/dbus/missive/missive_client.h"
-#include "components/reporting/proto/interface.pb.h"
+#include "components/reporting/proto/synced/interface.pb.h"
+#include "components/reporting/resources/memory_resource_impl.h"
 #include "components/reporting/storage_selector/storage_selector.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/status.pb.h"
@@ -30,6 +33,9 @@
 namespace ash {
 
 namespace {
+
+static constexpr uint64_t kDefaultMemoryAllocation =
+    16u * 1024uLL * 1024uLL;  // 16 MiB by default
 
 void SendStatusAsResponse(std::unique_ptr<dbus::Response> response,
                           dbus::ExportedObject::ResponseSender response_sender,
@@ -54,6 +60,8 @@ EncryptedReportingServiceProvider::EncryptedReportingServiceProvider(
         upload_provider)
     : origin_thread_id_(base::PlatformThread::CurrentId()),
       origin_thread_runner_(base::ThreadTaskRunnerHandle::Get()),
+      memory_resource_(base::MakeRefCounted<::reporting::MemoryResourceImpl>(
+          kDefaultMemoryAllocation)),
       upload_provider_(std::move(upload_provider)) {
   DCHECK(upload_provider_.get());
 }
@@ -94,11 +102,12 @@ void EncryptedReportingServiceProvider::OnExported(
 // static
 ::reporting::UploadClient::ReportSuccessfulUploadCallback
 EncryptedReportingServiceProvider::GetReportSuccessUploadCallback() {
-  MissiveClient* const missive_client = MissiveClient::Get();
+  chromeos::MissiveClient* const missive_client =
+      chromeos::MissiveClient::Get();
   return base::BindPostTask(
       missive_client->origin_task_runner(),
       base::BindRepeating(
-          [](base::WeakPtr<MissiveClient> missive_client,
+          [](base::WeakPtr<chromeos::MissiveClient> missive_client,
              ::reporting::SequenceInformation sequence_information,
              bool force_confirm) {
             if (missive_client) {
@@ -112,14 +121,16 @@ EncryptedReportingServiceProvider::GetReportSuccessUploadCallback() {
 // static
 ::reporting::UploadClient::EncryptionKeyAttachedCallback
 EncryptedReportingServiceProvider::GetEncryptionKeyAttachedCallback() {
-  MissiveClient* const missive_client = MissiveClient::Get();
+  chromeos::MissiveClient* const missive_client =
+      chromeos::MissiveClient::Get();
   return base::BindPostTask(
       missive_client->origin_task_runner(),
       base::BindRepeating(
-          [](base::WeakPtr<MissiveClient> missive_client,
+          [](base::WeakPtr<chromeos::MissiveClient> missive_client,
              ::reporting::SignedEncryptionInfo signed_encryption_info) {
             if (missive_client) {
-              missive_client->UpdateEncryptionKey(signed_encryption_info);
+              missive_client->UpdateEncryptionKey(
+                  std::move(signed_encryption_info));
             }
           },
           missive_client->GetWeakPtr()));
@@ -143,12 +154,15 @@ void EncryptedReportingServiceProvider::RequestUploadEncryptedRecords(
     return;
   }
 
-  reporting::UploadEncryptedRecordRequest request;
   dbus::MessageReader reader(method_call);
-  if (!reader.PopArrayOfBytesAsProto(&request)) {
+  const char* serialized_request_buf = nullptr;
+  size_t serialized_request_buf_size = 0;
+  if (!reader.PopArrayOfBytes(
+          reinterpret_cast<const uint8_t**>(&serialized_request_buf),
+          &serialized_request_buf_size)) {
     reporting::Status status{
         reporting::error::INVALID_ARGUMENT,
-        "Message was not decipherable as an UploadEncryptedRecordRequest"};
+        "Error reading UploadEncryptedRecordRequest as array of bytes"};
     LOG(ERROR) << "Unable to process UploadEncryptedRecordRequest. status: "
                << status;
     SendStatusAsResponse(std::move(response), std::move(response_sender),
@@ -156,12 +170,53 @@ void EncryptedReportingServiceProvider::RequestUploadEncryptedRecords(
     return;
   }
 
-  auto records = std::make_unique<std::vector<reporting::EncryptedRecord>>();
-  for (auto& record : request.encrypted_record()) {
-    records->push_back(std::move(record));
+  ::reporting::ScopedReservation scoped_reservation(serialized_request_buf_size,
+                                                    memory_resource_);
+  if (!scoped_reservation.reserved()) {
+    reporting::Status status{reporting::error::RESOURCE_EXHAUSTED,
+                             "UploadEncryptedRecordRequest has exhausted "
+                             "assigned memory pool in Chrome"};
+    LOG(ERROR) << "Unable to process UploadEncryptedRecordRequest. status: "
+               << status;
+    SendStatusAsResponse(std::move(response), std::move(response_sender),
+                         status);
+    return;
   }
+
+  reporting::UploadEncryptedRecordRequest request;
+  if (!request.ParseFromArray(serialized_request_buf,
+                              serialized_request_buf_size)) {
+    reporting::Status status{
+        reporting::error::INVALID_ARGUMENT,
+        "Failed to parse UploadEncryptedRecordRequest from array of bytes."};
+    LOG(ERROR) << "Unable to process UploadEncryptedRecordRequest. status: "
+               << status;
+    SendStatusAsResponse(std::move(response), std::move(response_sender),
+                         status);
+    return;
+  }
+
+  // Missive should always send the remaining storage capacity and new events
+  // rate. If not, probably an outdated version of missive is running. In this
+  // case, we ignore the effect of remaining storage capacity/new events rate
+  // and give it the max/min possible value.
+  const auto remaining_storage_capacity =
+      request.has_remaining_storage_capacity()
+          ? request.remaining_storage_capacity()
+          : std::numeric_limits<uint64_t>::max();
+  const auto new_events_rate =
+      request.has_new_events_rate() ? request.new_events_rate() : 1U;
+  // Move events from |request| into a separate vector |records|, using more or
+  // less the same amount of memory that has been reserved above.
+  auto records{reporting::EventUploadSizeController::BuildEncryptedRecords(
+      request.encrypted_record(),
+      reporting::EventUploadSizeController(network_condition_service_,
+                                           new_events_rate,
+                                           remaining_storage_capacity))};
+
   DCHECK(upload_provider_);
-  MissiveClient* const missive_client = MissiveClient::Get();
+  chromeos::MissiveClient* const missive_client =
+      chromeos::MissiveClient::Get();
   if (!missive_client) {
     LOG(ERROR) << "No Missive client available";
     SendStatusAsResponse(
@@ -173,6 +228,7 @@ void EncryptedReportingServiceProvider::RequestUploadEncryptedRecords(
 
   upload_provider_->RequestUploadEncryptedRecords(
       request.need_encryption_keys(), std::move(records),
+      std::move(scoped_reservation),
       base::BindPostTask(
           origin_thread_runner_,
           base::BindOnce(&SendStatusAsResponse, std::move(response),

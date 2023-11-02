@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,16 +10,14 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view_delegate.h"
+#include "components/autofill/core/browser/ui/suggestion.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/native_theme/native_theme.h"
 
 namespace autofill {
-
-struct Suggestion;
 
 // This interface provides data to an AutofillPopupView.
 class AutofillPopupController : public AutofillPopupViewDelegate {
@@ -51,9 +49,13 @@ class AutofillPopupController : public AutofillPopupViewDelegate {
   // the suggestion item.
   virtual std::u16string GetSuggestionMinorTextAt(int row) const = 0;
 
-  // Returns the suggestion label string at the given |row| index. The label
-  // includes detailed but less important information for the suggestion.
-  virtual const std::u16string& GetSuggestionLabelAt(int row) const = 0;
+  // Returns all the labels of the suggestion at the given |row| index. The
+  // labels are presented as a N*M matrix, and the position of the text in the
+  // matrix decides where the text will be shown on the UI. (e.g. The text
+  // labels[1][2] will be shown on the second line, third column in the grid
+  // view of label).
+  virtual std::vector<std::vector<Suggestion::Text>> GetSuggestionLabelsAt(
+      int row) const = 0;
 
   // Returns whether the item at |list_index| can be removed. If so, fills
   // out |title| and |body| (when non-null) with relevant user-facing text.

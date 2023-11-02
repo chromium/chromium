@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,8 @@
 #endif
 
 namespace web {
+
+enum Permission : NSUInteger;
 
 WebStateObserverBridge::WebStateObserverBridge(id<CRWWebStateObserver> observer)
     : observer_(observer) {}
@@ -123,6 +125,15 @@ void WebStateObserverBridge::FaviconUrlUpdated(
   }
 }
 
+void WebStateObserverBridge::PermissionStateChanged(
+    web::WebState* web_state,
+    web::Permission permission) {
+  SEL selector = @selector(webState:didChangeStateForPermission:);
+  if ([observer_ respondsToSelector:selector]) {
+    [observer_ webState:web_state didChangeStateForPermission:permission];
+  }
+}
+
 void WebStateObserverBridge::WebFrameDidBecomeAvailable(
     web::WebState* web_state,
     web::WebFrame* web_frame) {
@@ -156,7 +167,7 @@ void WebStateObserverBridge::WebStateRealized(web::WebState* web_state) {
 void WebStateObserverBridge::WebStateDestroyed(web::WebState* web_state) {
   SEL selector = @selector(webStateDestroyed:);
   if ([observer_ respondsToSelector:selector]) {
-    // |webStateDestroyed:| may delete |this|, so don't expect |this| to be
+    // `webStateDestroyed:` may delete `this`, so don't expect `this` to be
     // valid afterwards.
     [observer_ webStateDestroyed:web_state];
   }

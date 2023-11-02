@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,7 @@
 #include "chrome/browser/media/router/providers/cast/cast_session_client.h"
 #include "chrome/browser/media/router/providers/cast/test_util.h"
 #include "chrome/browser/media/router/test/provider_test_helpers.h"
-#include "components/cast_channel/cast_test_util.h"
+#include "components/media_router/common/providers/cast/channel/cast_test_util.h"
 #include "components/media_router/common/test/test_helper.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -31,7 +31,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-using base::test::ParseJson;
+using base::test::ParseJsonDict;
 using testing::NiceMock;
 
 namespace media_router {
@@ -73,7 +73,8 @@ void CastActivityTestBase::SetUp() {
 
   CastActivity::SetClientFactoryForTest(this);
 
-  std::unique_ptr<CastSession> session = CastSession::From(sink_, ParseJson(R"({
+  std::unique_ptr<CastSession> session =
+      CastSession::From(sink_, ParseJsonDict(R"({
         "applications": [{
           "appId": "theAppId",
           "displayName": "App display name",

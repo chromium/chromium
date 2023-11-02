@@ -1,11 +1,11 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 source_set("breadcrumbs") {
   deps = [
     "//base",
-    "//chrome/browser/profiles",
+    "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//components/breadcrumbs/core",
     "//components/infobars/content",
@@ -43,5 +43,19 @@ source_set("unit_tests") {
   # including CrashKeys in reports.
   if (!is_fuchsia) {
     sources += [ "crash_reporter_breadcrumb_observer_unittest.cc" ]
+  }
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    testonly = true
+    deps = [
+      ":breadcrumbs",
+      "//chrome/test:test_support",
+      "//components/breadcrumbs/core",
+    ]
+
+    sources = [ "breadcrumb_manager_tab_helper_desktop_browsertest.cc" ]
   }
 }

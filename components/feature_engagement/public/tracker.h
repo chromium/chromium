@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
@@ -17,10 +16,11 @@
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace leveldb_proto {
 class ProtoDatabaseProvider;
@@ -64,6 +64,9 @@ class Tracker : public KeyedService, public base::SupportsUserData {
   };
 
   // Represents the action taken by the user on the snooze UI.
+  // These enums are persisted as histogram entries, so this enum should be
+  // treated as append-only and kept in sync with InProductHelpSnoozeAction in
+  // enums.xml.
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.feature_engagement
   enum class SnoozeAction : int {
     // User chose to snooze the IPH.
@@ -93,11 +96,11 @@ class Tracker : public KeyedService, public base::SupportsUserData {
     bool should_show_snooze_;
   };
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Returns a Java object of the type Tracker for the given Tracker.
   static base::android::ScopedJavaLocalRef<jobject> GetJavaObject(
       Tracker* feature_engagement);
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Invoked when the tracker has been initialized. The |success| parameter
   // indicates that the initialization was a success and the tracker is ready to
@@ -122,8 +125,8 @@ class Tracker : public KeyedService, public base::SupportsUserData {
   // help must happen.
   // If |true| is returned, the caller *must* call Dismissed(...) when display
   // of feature enlightenment ends.
-  virtual bool ShouldTriggerHelpUI(const base::Feature& feature)
-      WARN_UNUSED_RESULT = 0;
+  [[nodiscard]] virtual bool ShouldTriggerHelpUI(
+      const base::Feature& feature) = 0;
 
   // For callers interested in showing a snooze button. For other callers, use
   // the ShouldTriggerHelpUI(..) method.
@@ -188,6 +191,27 @@ class Tracker : public KeyedService, public base::SupportsUserData {
   // The DisplayLockHandle must be released on the main thread.
   // This method returns nullptr if no handle could be retrieved.
   virtual std::unique_ptr<DisplayLockHandle> AcquireDisplayLock() = 0;
+
+  // Called by the client to notify the tracker that a priority notification
+  // should be shown. If a handler has already been registered, the IPH will be
+  // shown right away. Otherwise, the tracker will cache the priority feature
+  // and will show the IPH whenever a handler is registered in future. All other
+  // IPHs will be blocked until then. It isn't allowed to invoke this method
+  // again with another notification before the existing one is processed.
+  virtual void SetPriorityNotification(const base::Feature& feature) = 0;
+
+  // Called to get if there is a pending priority notification to be shown next.
+  virtual absl::optional<std::string> GetPendingPriorityNotification() = 0;
+
+  // Called by the client to register a handler for priority notifications. This
+  // will essentially contain the code to spin up an IPH.
+  virtual void RegisterPriorityNotificationHandler(
+      const base::Feature& feature,
+      base::OnceClosure callback) = 0;
+
+  // Unregister the handler. Must be called during client destruction.
+  virtual void UnregisterPriorityNotificationHandler(
+      const base::Feature& feature) = 0;
 
   // Returns whether the tracker has been successfully initialized. During
   // startup, this will be false until the internal models have been loaded at

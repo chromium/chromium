@@ -1,10 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.autofill.settings;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -12,6 +13,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
@@ -24,12 +27,13 @@ import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.prefeditor.EditorDialog;
-import org.chromium.chrome.browser.autofill.prefeditor.EditorObserverForTest;
 import org.chromium.chrome.browser.payments.AutofillAddress;
 import org.chromium.chrome.browser.payments.SettingsAutofillAndPaymentsObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
+import org.chromium.components.autofill.prefeditor.EditorObserverForTest;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
 /**
  * Autofill profiles fragment, which allows the user to edit autofill profiles.
@@ -38,8 +42,7 @@ public class AutofillProfilesFragment extends PreferenceFragmentCompat
         implements PersonalDataManager.PersonalDataManagerObserver {
     private static EditorObserverForTest sObserverForTest;
     static final String PREF_NEW_PROFILE = "new_profile";
-
-    EditorDialog mLastEditorDialogForTest;
+    private @Nullable EditorDialog mEditorDialog;
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -51,6 +54,14 @@ public class AutofillProfilesFragment extends PreferenceFragmentCompat
         screen.setShouldUseGeneratedIds(false);
 
         setPreferenceScreen(screen);
+    }
+
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if (mEditorDialog != null) {
+            mEditorDialog.onConfigurationChanged();
+        }
     }
 
     @Override
@@ -129,8 +140,7 @@ public class AutofillProfilesFragment extends PreferenceFragmentCompat
                     new AutofillProfileEditorPreference(getStyledContext());
             Drawable plusIcon = ApiCompatibilityUtils.getDrawable(getResources(), R.drawable.plus);
             plusIcon.mutate();
-            plusIcon.setColorFilter(ApiCompatibilityUtils.getColor(
-                                            getResources(), R.color.default_control_color_active),
+            plusIcon.setColorFilter(SemanticColorUtils.getDefaultControlColorActive(getContext()),
                     PorterDuff.Mode.SRC_IN);
             pref.setIcon(plusIcon);
             pref.setTitle(R.string.autofill_create_profile);
@@ -170,8 +180,7 @@ public class AutofillProfilesFragment extends PreferenceFragmentCompat
     public void onDisplayPreferenceDialog(Preference preference) {
         if (preference instanceof AutofillProfileEditorPreference) {
             String guid = ((AutofillProfileEditorPreference) preference).getGUID();
-            EditorDialog editorDialog = prepareEditorDialog(guid);
-            mLastEditorDialogForTest = editorDialog;
+            mEditorDialog = prepareEditorDialog(guid);
             AutofillAddress autofillAddress = null;
             if (guid != null) {
                 AutofillProfile profile = PersonalDataManager.getInstance().getProfile(guid);
@@ -179,7 +188,7 @@ public class AutofillProfilesFragment extends PreferenceFragmentCompat
                     autofillAddress = new AutofillAddress(getActivity(), profile);
                 }
             }
-            editAddress(editorDialog, autofillAddress);
+            editAddress(mEditorDialog, autofillAddress);
             return;
         }
 
@@ -228,7 +237,8 @@ public class AutofillProfilesFragment extends PreferenceFragmentCompat
         return getPreferenceManager().getContext();
     }
 
+    @VisibleForTesting
     EditorDialog getEditorDialogForTest() {
-        return mLastEditorDialogForTest;
+        return mEditorDialog;
     }
 }

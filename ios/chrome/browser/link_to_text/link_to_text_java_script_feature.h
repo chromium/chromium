@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,11 @@
 #define IOS_CHROME_BROWSER_LINK_TO_TEXT_LINK_TO_TEXT_JAVA_SCRIPT_FEATURE_H_
 
 #import "base/memory/weak_ptr.h"
-#include "base/no_destructor.h"
-#include "base/values.h"
+#import "base/no_destructor.h"
+#import "base/values.h"
 #import "ios/chrome/browser/link_to_text/link_to_text_response.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
+#import "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class ElapsedTimer;
@@ -27,10 +28,10 @@ class LinkToTextJavaScriptFeature : public web::JavaScriptFeature {
   static LinkToTextJavaScriptFeature* GetInstance();
 
   // Invokes JS-side handlers to grab the current selected text, and generate a
-  // text fragment pointing to this selection.
+  // text fragment pointing to this selection. Will attempt on the main frame
+  // first, and may subsequently attempt on certain iframes.
   virtual void GetLinkToText(
       web::WebState* state,
-      web::WebFrame* frame,
       base::OnceCallback<void(LinkToTextResponse*)> callback);
 
  protected:
@@ -38,13 +39,31 @@ class LinkToTextJavaScriptFeature : public web::JavaScriptFeature {
   LinkToTextJavaScriptFeature();
   ~LinkToTextJavaScriptFeature() override;
 
+  // Invokes the JavaScript for link generation. This is a simple wrapper around
+  // CallJavaScriptFunction with a few common params included, so it is safe to
+  // override in tests where JavaScript execution should be faked without
+  // affecting the rest of the logic in this class.
+  virtual void RunGenerationJS(
+      web::WebFrame* frame,
+      base::OnceCallback<void(const base::Value*)> callback);
+
  private:
   friend class base::NoDestructor<LinkToTextJavaScriptFeature>;
+  FRIEND_TEST_ALL_PREFIXES(LinkToTextJavaScriptFeatureTest,
+                           ShouldAttemptIframeGeneration);
 
   void HandleResponse(web::WebState* state,
                       base::ElapsedTimer link_generation_timer,
                       base::OnceCallback<void(LinkToTextResponse*)> callback,
                       const base::Value* value);
+
+  void HandleResponseFromSubframe(
+      base::OnceCallback<void(LinkToTextResponse*)> final_callback,
+      std::vector<LinkToTextResponse*> responses);
+
+  static bool ShouldAttemptIframeGeneration(
+      absl::optional<shared_highlighting::LinkGenerationError> error,
+      const GURL& main_frame_url);
 
   LinkToTextJavaScriptFeature(const LinkToTextJavaScriptFeature&) = delete;
   LinkToTextJavaScriptFeature& operator=(const LinkToTextJavaScriptFeature&) =

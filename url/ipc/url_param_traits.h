@@ -1,13 +1,20 @@
-// Copyright (c) 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef URL_IPC_URL_PARAM_TRAITS_H_
 #define URL_IPC_URL_PARAM_TRAITS_H_
 
-#include "ipc/ipc_message_utils.h"
+#include <string>
+
+#include "ipc/ipc_param_traits.h"
 #include "url/gurl.h"
 #include "url/ipc/url_ipc_export.h"
+
+namespace base {
+class Pickle;
+class PickleIterator;
+}  // namespace base
 
 namespace IPC {
 

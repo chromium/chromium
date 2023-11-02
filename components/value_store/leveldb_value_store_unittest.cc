@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,10 +10,10 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ref_counted.h"
+#include "base/test/task_environment.h"
 #include "base/values.h"
 #include "components/value_store/leveldb_value_store.h"
 #include "components/value_store/value_store_test_suite.h"
-#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/leveldatabase/src/include/leveldb/db.h"
 #include "third_party/leveldatabase/src/include/leveldb/write_batch.h"
@@ -64,10 +64,9 @@ class LeveldbValueStoreUnitTest : public testing::Test {
   const base::FilePath& database_path() { return database_dir_.GetPath(); }
 
  private:
+  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<LeveldbValueStore> store_;
   base::ScopedTempDir database_dir_;
-
-  content::BrowserTaskEnvironment task_environment_;
 };
 
 // Check that we can restore a single corrupted key in the LeveldbValueStore.
@@ -95,15 +94,15 @@ TEST_F(LeveldbValueStoreUnitTest, RestoreKeyTest) {
   result = store()->Get(kCorruptKey);
   EXPECT_TRUE(result.status().ok())
       << "Get result not OK: " << result.status().message;
-  EXPECT_TRUE(result.settings().DictEmpty());
+  EXPECT_TRUE(result.settings().empty());
 
   // Verify that the valid pair is still present.
   result = store()->Get(kNotCorruptKey);
   EXPECT_TRUE(result.status().ok());
-  EXPECT_TRUE(result.settings().HasKey(kNotCorruptKey));
-  std::string value_string;
-  EXPECT_TRUE(result.settings().GetString(kNotCorruptKey, &value_string));
-  EXPECT_EQ(kValue, value_string);
+  const std::string* value_string =
+      result.settings().FindString(kNotCorruptKey);
+  ASSERT_TRUE(value_string);
+  EXPECT_EQ(kValue, *value_string);
 }
 
 // Test that the Restore() method does not just delete the entire database
@@ -138,14 +137,14 @@ TEST_F(LeveldbValueStoreUnitTest, RestoreDoesMinimumNecessary) {
             result.status().restore_status);
 
   // We should still have all valid pairs present in the database.
-  std::string value_string;
+  std::string* value_string;
   for (auto* kNotCorruptKey : kNotCorruptKeys) {
     result = store()->Get(kNotCorruptKey);
     EXPECT_TRUE(result.status().ok());
     ASSERT_EQ(ValueStore::RESTORE_NONE, result.status().restore_status);
-    EXPECT_TRUE(result.settings().HasKey(kNotCorruptKey));
-    EXPECT_TRUE(result.settings().GetString(kNotCorruptKey, &value_string));
-    EXPECT_EQ(kValue, value_string);
+    value_string = result.settings().FindString(kNotCorruptKey);
+    ASSERT_TRUE(value_string);
+    EXPECT_EQ(kValue, *value_string);
   }
 }
 
@@ -185,7 +184,7 @@ TEST_F(LeveldbValueStoreUnitTest, RestoreFullDatabase) {
   ASSERT_EQ(ValueStore::DB_RESTORE_REPAIR_SUCCESS,
             result.status().restore_status);
   EXPECT_TRUE(result.status().ok());
-  EXPECT_EQ(0u, result.settings().DictSize());
+  EXPECT_EQ(0u, result.settings().size());
 }
 
 }  // namespace value_store

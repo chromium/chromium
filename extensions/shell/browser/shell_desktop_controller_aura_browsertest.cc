@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,8 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
@@ -83,7 +82,7 @@ class ShellDesktopControllerAuraBrowserTest : public ShellApiTest {
   scoped_refptr<const Extension> app_;
 
  private:
-  ShellDesktopControllerAura* desktop_controller_ = nullptr;
+  raw_ptr<ShellDesktopControllerAura> desktop_controller_ = nullptr;
 };
 
 // Test that closing the app window stops the DesktopController.

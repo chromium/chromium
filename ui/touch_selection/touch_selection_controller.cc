@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,16 +44,6 @@ TouchHandleOrientation ToTouchHandleOrientation(
 }
 
 }  // namespace
-
-TouchSelectionController::Config::Config()
-    : max_tap_duration(base::Milliseconds(300)),
-      tap_slop(8),
-      enable_adaptive_handle_orientation(false),
-      enable_longpress_drag_selection(false),
-      hide_active_handle(false) {}
-
-TouchSelectionController::Config::~Config() {
-}
 
 TouchSelectionController::TouchSelectionController(
     TouchSelectionControllerClient* client,

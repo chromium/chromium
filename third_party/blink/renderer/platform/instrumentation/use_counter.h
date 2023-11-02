@@ -1,12 +1,12 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_INSTRUMENTATION_USE_COUNTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_INSTRUMENTATION_USE_COUNTER_H_
 
-#include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink-forward.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink-forward.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -14,7 +14,7 @@ namespace blink {
 using WebFeature = mojom::WebFeature;
 
 // Definition for UseCounter features can be found in:
-// third_party/blink/public/mojom/web_feature/web_feature.mojom
+// third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom
 //
 // UseCounter is used for counting the number of times features of
 // Blink are used on real web pages and help us know commonly
@@ -41,6 +41,12 @@ class UseCounter : public GarbageCollectedMixin {
   }
   static void Count(UseCounter& use_counter, mojom::WebFeature feature) {
     use_counter.CountUse(feature);
+  }
+  static void CountDeprecation(UseCounter* use_counter,
+                               mojom::WebFeature feature) {
+    if (use_counter) {
+      use_counter->CountDeprecation(feature);
+    }
   }
 
   UseCounter() = default;

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,49 +6,54 @@
 
 #include <utility>
 
+#include "base/i18n/number_formatting.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
+#include "components/app_constants/constants.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/window_info.h"
-#include "extensions/common/constants.h"
 
 namespace app_restore {
+
+namespace {
+
+// Used to generate unique restore window IDs for desk template launches. These
+// IDs will all be negative in order to avoid clashes with full restore (which
+// are all positive). The first generated ID will be one lower than the starting
+// point and then proceed down. The starting point is a special case value that
+// a valid RWID should not use.
+int32_t g_desk_template_window_restore_id = -1;
+
+}  // namespace
 
 RestoreData::RestoreData() = default;
 
 RestoreData::RestoreData(std::unique_ptr<base::Value> restore_data_value) {
-  base::DictionaryValue* restore_data_dict = nullptr;
-  if (!restore_data_value || !restore_data_value->is_dict() ||
-      !restore_data_value->GetAsDictionary(&restore_data_dict) ||
-      !restore_data_dict) {
+  if (!restore_data_value || !restore_data_value->is_dict()) {
     DVLOG(0) << "Fail to parse full restore data. "
              << "Cannot find the full restore data dict.";
     return;
   }
 
-  for (base::DictionaryValue::Iterator iter(*restore_data_dict);
-       !iter.IsAtEnd(); iter.Advance()) {
-    const std::string& app_id = iter.key();
-    base::Value* value = restore_data_dict->FindDictKey(app_id);
-    base::DictionaryValue* data_dict = nullptr;
-    if (!value || !value->is_dict() || !value->GetAsDictionary(&data_dict) ||
-        !data_dict) {
+  for (auto iter : restore_data_value->DictItems()) {
+    const std::string& app_id = iter.first;
+    base::Value* value = restore_data_value->FindDictKey(app_id);
+    if (!value || !value->is_dict()) {
       DVLOG(0) << "Fail to parse full restore data. "
                << "Cannot find the app restore data dict.";
       continue;
     }
 
-    for (base::DictionaryValue::Iterator data_iter(*data_dict);
-         !data_iter.IsAtEnd(); data_iter.Advance()) {
+    for (auto data_iter : value->DictItems()) {
       int window_id = 0;
-      if (!base::StringToInt(data_iter.key(), &window_id)) {
+      if (!base::StringToInt(data_iter.first, &window_id)) {
         DVLOG(0) << "Fail to parse full restore data. "
                  << "Cannot find the valid id.";
         continue;
       }
       app_id_to_launch_list_[app_id][window_id] =
           std::make_unique<AppRestoreData>(
-              std::move(*data_dict->FindDictKey(data_iter.key())));
+              std::move(*value->FindDictKey(data_iter.first)));
     }
   }
 }
@@ -84,7 +89,7 @@ base::Value RestoreData::ConvertToValue() const {
 }
 
 bool RestoreData::HasAppTypeBrowser() const {
-  auto it = app_id_to_launch_list_.find(extension_misc::kChromeAppId);
+  auto it = app_id_to_launch_list_.find(app_constants::kChromeAppId);
   if (it == app_id_to_launch_list_.end())
     return false;
 
@@ -98,7 +103,7 @@ bool RestoreData::HasAppTypeBrowser() const {
 }
 
 bool RestoreData::HasBrowser() const {
-  auto it = app_id_to_launch_list_.find(extension_misc::kChromeAppId);
+  auto it = app_id_to_launch_list_.find(app_constants::kChromeAppId);
   if (it == app_id_to_launch_list_.end())
     return false;
 
@@ -249,6 +254,48 @@ const AppRestoreData* RestoreData::GetAppRestoreData(const std::string& app_id,
     return nullptr;
 
   return data_it->second.get();
+}
+
+void RestoreData::SetDeskIndex(int desk_index) {
+  for (auto& [app_id, launch_list] : app_id_to_launch_list_) {
+    for (auto& [window_id, app_restore_data] : launch_list) {
+      app_restore_data->desk_id = desk_index;
+    }
+  }
+}
+
+void RestoreData::MakeWindowIdsUniqueForDeskTemplate() {
+  for (auto& [app_id, launch_list] : app_id_to_launch_list_) {
+    // We don't want to do in-place updates of the launch list since it
+    // complicates traversal. We'll therefore build a new LaunchList and pilfer
+    // the old one for AppRestoreData.
+    LaunchList new_launch_list;
+    for (auto& [window_id, app_restore_data] : launch_list) {
+      new_launch_list[--g_desk_template_window_restore_id] =
+          std::move(app_restore_data);
+    }
+    launch_list = std::move(new_launch_list);
+  }
+}
+
+std::string RestoreData::ToString() const {
+  if (app_id_to_launch_list_.empty())
+    return "empty";
+
+  std::string result = "( ";
+  for (const auto& entry : app_id_to_launch_list_) {
+    result += base::StringPrintf(
+        "(App ID: %s, Count: %s)", entry.first.c_str(),
+        base::UTF16ToUTF8(base::FormatNumber(entry.second.size())).c_str());
+    for (const auto& windows : entry.second) {
+      result +=
+          base::StringPrintf(
+              "(Window ID: %s)",
+              base::UTF16ToUTF8(base::FormatNumber(windows.first)).c_str()) +
+          windows.second->GetWindowInfo()->ToString();
+    }
+  }
+  return result + " )";
 }
 
 AppRestoreData* RestoreData::GetAppRestoreDataMutable(const std::string& app_id,

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,11 +15,8 @@
 
 namespace ui {
 
-TestContextFactories::TestContextFactories(bool enable_pixel_output)
-    : TestContextFactories(enable_pixel_output,
-                           features::IsUsingSkiaRenderer()) {}
 TestContextFactories::TestContextFactories(bool enable_pixel_output,
-                                           bool use_skia_renderer) {
+                                           bool output_to_window) {
   auto* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(switches::kEnablePixelOutputInTests))
     enable_pixel_output = true;
@@ -31,7 +28,7 @@ TestContextFactories::TestContextFactories(bool enable_pixel_output,
   host_frame_sink_manager_ = std::make_unique<viz::HostFrameSinkManager>();
   implicit_factory_ = std::make_unique<InProcessContextFactory>(
       host_frame_sink_manager_.get(), frame_sink_manager_.get(),
-      use_skia_renderer);
+      output_to_window);
   implicit_factory_->SetUseFastRefreshRateForTests();
 
   // Directly connect without using Mojo.
@@ -43,10 +40,6 @@ TestContextFactories::~TestContextFactories() = default;
 
 ContextFactory* TestContextFactories::GetContextFactory() const {
   return implicit_factory_.get();
-}
-
-void TestContextFactories::SetUseTestSurface(bool use_test_surface) {
-  implicit_factory_->set_use_test_surface(use_test_surface);
 }
 
 }  // namespace ui

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,7 @@ import org.chromium.url.GURL;
  * Provides default favicons and helps to fetch and set favicons.
  */
 public class FaviconHelper {
-    private final Resources mResources;
+    private final Context mContext;
     private final RoundedIconGenerator mIconGenerator;
     private final int mDesiredSize;
 
@@ -52,15 +52,17 @@ public class FaviconHelper {
      * @param context The {@link Context} used to fetch resources and create Drawables.
      */
     protected FaviconHelper(Context context) {
-        mResources = context.getResources();
+        mContext = context;
+        final Resources resources = mContext.getResources();
         mDesiredSize =
-                mResources.getDimensionPixelSize(R.dimen.keyboard_accessory_suggestion_icon_size);
-        mIconGenerator = FaviconUtils.createCircularIconGenerator(mResources);
+                resources.getDimensionPixelSize(R.dimen.keyboard_accessory_suggestion_icon_size);
+        mIconGenerator = FaviconUtils.createCircularIconGenerator(mContext);
     }
 
     public Drawable getDefaultIcon(String origin) {
         return FaviconUtils.getIconDrawableWithoutFilter(null, origin,
-                R.color.default_favicon_background_color, mIconGenerator, mResources, mDesiredSize);
+                mContext.getColor(R.color.default_favicon_background_color), mIconGenerator,
+                mContext.getResources(), mDesiredSize);
     }
 
     /**
@@ -76,7 +78,7 @@ public class FaviconHelper {
         mIconBridge.getLargeIconForUrl(gurlOrigin, mDesiredSize,
                 (icon, fallbackColor, isFallbackColorDefault, iconType) -> {
                     Drawable drawable = FaviconUtils.getIconDrawableWithoutFilter(icon, gurlOrigin,
-                            fallbackColor, mIconGenerator, mResources, mDesiredSize);
+                            fallbackColor, mIconGenerator, mContext.getResources(), mDesiredSize);
                     setIconCallback.onResult(drawable);
                 });
     }

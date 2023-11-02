@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,7 +26,6 @@ const char kPlatformDeviceMapKey[] = "plat";
 const char kEntityIdMapKey[] = "id";
 const char kEntityNameMapKey[] = "name";
 const char kDisplayNameMapKey[] = "displayName";
-const char kIconUrlMapKey[] = "icon";
 const char kCredentialTypeMapKey[] = "type";
 const char kCredentialAlgorithmMapKey[] = "alg";
 const char kCredentialManagementMapKey[] = "credMgmt";
@@ -75,6 +74,16 @@ const char kExtensionHmacSecret[] = "hmac-secret";
 const char kExtensionCredProtect[] = "credProtect";
 const char kExtensionLargeBlobKey[] = "largeBlobKey";
 const char kExtensionCredBlob[] = "credBlob";
+const char kExtensionMinPINLength[] = "minPinLength";
+const char kExtensionDevicePublicKey[] = "devicePubKey";
+
+const char kDevicePublicKeyAttestationKey[] = "attestation";
+const char kDevicePublicKeyAttestationFormatsKey[] = "attestationFormats";
+const char kDevicePublicKeyAAGUIDKey[] = "aaguid";
+const char kDevicePublicKeyDPKKey[] = "dpk";
+const char kDevicePublicKeyScopeKey[] = "scope";
+const char kDevicePublicKeyNonceKey[] = "nonce";
+const char kDevicePublicKeyEPKey[] = "epAtt";
 
 const base::TimeDelta kBleDevicePairingModeWaitingInterval = base::Seconds(2);
 

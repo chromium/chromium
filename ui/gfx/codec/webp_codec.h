@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,11 @@
 
 #include <vector>
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkPixmap.h"
+#include "third_party/skia/include/encode/SkEncoder.h"
+#include "third_party/skia/include/encode/SkWebpEncoder.h"
 #include "ui/gfx/codec/codec_export.h"
 
 class SkBitmap;
@@ -22,6 +25,13 @@ class Size;
 // supports lossy encoding.
 class CODEC_EXPORT WebpCodec {
  public:
+  struct Frame {
+    // Bitmap of the frame.
+    SkBitmap bitmap;
+    // Duration of the frame in milliseconds.
+    int duration;
+  };
+
   WebpCodec(const WebpCodec&) = delete;
   WebpCodec& operator=(const WebpCodec&) = delete;
 
@@ -48,6 +58,18 @@ class CODEC_EXPORT WebpCodec {
   static bool Encode(const SkBitmap& input,
                      int quality,
                      std::vector<unsigned char>* output);
+
+  // Encodes the pixmap 'frames' as an animated WebP image. Returns the encoded
+  // data on success, or absl::nullopt on failure.
+  static absl::optional<std::vector<uint8_t>> EncodeAnimated(
+      const std::vector<SkEncoder::Frame>& frames,
+      const SkWebpEncoder::Options& options);
+
+  // Encodes the bitmap 'frames' as an animated WebP image. Returns the encoded
+  // data on success, or absl::nullopt on failure.
+  static absl::optional<std::vector<uint8_t>> EncodeAnimated(
+      const std::vector<Frame>& frames,
+      const SkWebpEncoder::Options& options);
 };
 
 }  // namespace gfx

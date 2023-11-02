@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -69,7 +69,7 @@ TEST_F(AutotestDesksApiTest, ActivateDeskAtIndex) {
   auto* controller = DesksController::Get();
   while (controller->CanCreateDesks())
     EXPECT_TRUE(test_api.CreateNewDesk());
-  EXPECT_EQ(desks_util::kMaxNumberOfDesks, controller->desks().size());
+  EXPECT_EQ(desks_util::GetMaxNumberOfDesks(), controller->desks().size());
   constexpr int kIndices[] = {1, 2, 3, 0};
   for (const int index : kIndices) {
     base::RunLoop run_loop;
@@ -83,7 +83,7 @@ TEST_F(AutotestDesksApiTest, RemoveActiveDesk) {
   AutotestDesksApi test_api;
   EXPECT_FALSE(test_api.RemoveActiveDesk(base::DoNothing()));
 
-  const size_t max_number_of_desks = desks_util::kMaxNumberOfDesks;
+  const size_t max_number_of_desks = desks_util::GetMaxNumberOfDesks();
   auto* controller = DesksController::Get();
   while (controller->CanCreateDesks())
     EXPECT_TRUE(test_api.CreateNewDesk());
@@ -109,11 +109,12 @@ TEST_F(AutotestDesksApiTest, RemoveActiveDesk) {
 
 using EnhancedDeskAnimationsAutotestDesksApiTest = AutotestDesksApiTest;
 
+// TODO(b/219068687): Re-enable chained desk animation tests.
 TEST_F(EnhancedDeskAnimationsAutotestDesksApiTest,
-       ActivateAdjacentDesksToTargetIndex) {
+       DISABLED_ActivateAdjacentDesksToTargetIndex) {
   // Create all desks possible.
   AutotestDesksApi test_api;
-  const int max_number_of_desks = desks_util::kMaxNumberOfDesks;
+  const int max_number_of_desks = desks_util::GetMaxNumberOfDesks();
   auto* controller = DesksController::Get();
   while (controller->CanCreateDesks())
     EXPECT_TRUE(test_api.CreateNewDesk());
@@ -126,7 +127,7 @@ TEST_F(EnhancedDeskAnimationsAutotestDesksApiTest,
   // Activating already active desk does nothing.
   EXPECT_FALSE(
       test_api.ActivateAdjacentDesksToTargetIndex(0, base::DoNothing()));
-  EXPECT_EQ(desks_util::kMaxNumberOfDesks, controller->desks().size());
+  EXPECT_EQ(desks_util::GetMaxNumberOfDesks(), controller->desks().size());
 
   // Replacing needs to be done while a current animation is underway, otherwise
   // it will have no effect.

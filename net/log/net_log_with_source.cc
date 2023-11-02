@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,11 +25,11 @@ namespace {
 base::Value BytesTransferredParams(int byte_count,
                                    const char* bytes,
                                    NetLogCaptureMode capture_mode) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetIntKey("byte_count", byte_count);
+  base::Value::Dict dict;
+  dict.Set("byte_count", byte_count);
   if (NetLogCaptureIncludesSocketBytes(capture_mode) && byte_count > 0)
-    dict.SetKey("bytes", NetLogBinaryValue(bytes, byte_count));
-  return dict;
+    dict.Set("bytes", NetLogBinaryValue(bytes, byte_count));
+  return base::Value(std::move(dict));
 }
 
 }  // namespace
@@ -48,7 +48,7 @@ NetLogWithSource::NetLogWithSource() {
   non_null_net_log_ = dummy.get();
 }
 
-NetLogWithSource::~NetLogWithSource() {}
+NetLogWithSource::~NetLogWithSource() = default;
 
 void NetLogWithSource::AddEntry(NetLogEventType type,
                                 NetLogEventPhase phase) const {

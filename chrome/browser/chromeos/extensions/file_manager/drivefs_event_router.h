@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,10 +10,10 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/drivefs/drivefs_host_observer.h"
-#include "ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/extensions/file_manager/system_notification_manager.h"
+#include "chromeos/ash/components/drivefs/drivefs_host_observer.h"
+#include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "extensions/browser/extension_event_histogram_value.h"
 #include "url/gurl.h"
 
@@ -37,7 +37,7 @@ class DriveFsEventRouter : public drivefs::DriveFsHostObserver {
  public:
   explicit DriveFsEventRouter(SystemNotificationManager* notification_manager);
   DriveFsEventRouter(const DriveFsEventRouter&) = delete;
-  virtual ~DriveFsEventRouter();
+  ~DriveFsEventRouter() override;
 
   DriveFsEventRouter& operator=(const DriveFsEventRouter&) = delete;
 
@@ -49,6 +49,12 @@ class DriveFsEventRouter : public drivefs::DriveFsHostObserver {
   // Called from the UI to notify the caller of DisplayConfirmDialog() of the
   // dialog's result.
   void OnDialogResult(drivefs::mojom::DialogResult result);
+
+  // In some cases, we might want to disable Drive notifications for a file
+  // identified by its relative Drive path. These methods help control when to
+  // suppress and restore these notifications.
+  void SuppressNotificationsForFilePath(const base::FilePath& path);
+  void RestoreNotificationsForFilePath(const base::FilePath& path);
 
  protected:
   SystemNotificationManager* system_notification_manager() {
@@ -96,9 +102,9 @@ class DriveFsEventRouter : public drivefs::DriveFsHostObserver {
   virtual void BroadcastEvent(
       extensions::events::HistogramValue histogram_value,
       const std::string& event_name,
-      std::vector<base::Value> event_args) = 0;
+      base::Value::List event_args) = 0;
 
-  static extensions::api::file_manager_private::FileTransferStatus
+  extensions::api::file_manager_private::FileTransferStatus
   CreateFileTransferStatus(
       const std::vector<drivefs::mojom::ItemEvent*>& item_events,
       SyncingStatusState* state);
@@ -108,6 +114,8 @@ class DriveFsEventRouter : public drivefs::DriveFsHostObserver {
 
   SyncingStatusState sync_status_state_;
   SyncingStatusState pin_status_state_;
+  // Set of paths for which Drive transfer events are ignored.
+  std::set<base::FilePath> ignored_file_paths_;
   base::OnceCallback<void(drivefs::mojom::DialogResult)> dialog_callback_;
 };
 

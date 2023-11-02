@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -461,13 +461,6 @@ class LoadDocsStory2019(_LoadingStory):
       'https://docs.google.com/document/d/1GvzDP-tTLmJ0myRhUAfTYWs3ZUFilUICg8psNHyccwQ/edit?usp=sharing')
   TAGS = [story_tags.YEAR_2019]
 
-  # TODO(crbug.com/1256844): Disable the ForceSynchronousHTMLParsing and
-  # LoaderDataPipeTuning experiments, because they cause failures and
-  # flakiness for this story as-recorded in 2019.
-  EXTRA_BROWSER_ARGUMENTS = [
-      '--disable-features=ForceSynchronousHTMLParsing,LoaderDataPipeTuning'
-  ]
-
 
 class _LoadGmailBaseStory(_LoadingStory):
   NAME = 'load:tools:gmail'
@@ -496,13 +489,6 @@ class LoadGmailStory2019(_LoadingStory):
   TAGS = [story_tags.HEALTH_CHECK, story_tags.YEAR_2019]
   SKIP_LOGIN = False
 
-  # TODO(crbug.com/1256844): Disable the ForceSynchronousHTMLParsing and
-  # LoaderDataPipeTuning experiments, because they cause failures and
-  # flakiness for this story as-recorded in 2019.
-  EXTRA_BROWSER_ARGUMENTS = [
-      '--disable-features=ForceSynchronousHTMLParsing,LoaderDataPipeTuning'
-  ]
-
   def _Login(self, action_runner):
     google_login.NewLoginGoogleAccount(action_runner, 'googletest')
 
@@ -525,13 +511,6 @@ class LoadChatStory2020(_LoadingStory):
   TAGS = [story_tags.YEAR_2020]
   SUPPORTED_PLATFORMS = platforms.DESKTOP_ONLY
   SKIP_LOGIN = False
-
-  # TODO(crbug.com/1256844): Disable the ForceSynchronousHTMLParsing and
-  # LoaderDataPipeTuning experiments, because they cause failures and
-  # flakiness for this story as-recorded in 2020.
-  EXTRA_BROWSER_ARGUMENTS = [
-      '--disable-features=ForceSynchronousHTMLParsing,LoaderDataPipeTuning'
-  ]
 
   def _Login(self, action_runner):
     google_login.NewLoginGoogleAccount(action_runner, 'chatfeature')

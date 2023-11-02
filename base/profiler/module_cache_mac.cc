@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -137,9 +137,17 @@ class MacModule : public ModuleCache::Module {
   size_t size_;
 };
 
+static inline bool MaybeRecordingOrReplaying() {
+  return true;
+}
+
 // static
 std::unique_ptr<const ModuleCache::Module> ModuleCache::CreateModuleForAddress(
     uintptr_t address) {
+  if (MaybeRecordingOrReplaying()) {
+    // When recording/replaying dladdr doesn't behave as expected.
+    return nullptr;
+  }
   Dl_info info;
   if (!dladdr(reinterpret_cast<const void*>(address), &info))
     return nullptr;

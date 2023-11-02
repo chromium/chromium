@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,13 +35,11 @@ class EmptyWebMediaPlayer : public WebMediaPlayer,
   void SetVolume(double) override {}
   void SetLatencyHint(double) override {}
   void SetPreservesPitch(bool) override {}
-  void SetAutoplayInitiated(bool) override {}
+  void SetWasPlayedWithUserActivation(bool) override {}
   void OnRequestPictureInPicture() override {}
-  SurfaceLayerMode GetVideoSurfaceLayerMode() const override {
-    return SurfaceLayerMode::kNever;
-  }
   WebTimeRanges Buffered() const override;
   WebTimeRanges Seekable() const override;
+  void OnFrozen() override {}
   bool SetSinkId(const WebString& sink_id,
                  WebSetSinkIdCompleteCallback) override {
     return false;
@@ -71,13 +69,15 @@ class EmptyWebMediaPlayer : public WebMediaPlayer,
   void SetPowerExperimentState(bool enabled) override {}
   void SuspendForFrameClosed() override {}
   void Paint(cc::PaintCanvas*, const gfx::Rect&, cc::PaintFlags&) override {}
-  scoped_refptr<media::VideoFrame> GetCurrentFrame() override;
+  scoped_refptr<media::VideoFrame> GetCurrentFrameThenUpdate() override;
+  absl::optional<int> CurrentFrameId() const override;
   bool HasAvailableVideoFrame() const override { return false; }
   base::WeakPtr<WebMediaPlayer> AsWeakPtr() override {
     return base::SupportsWeakPtr<EmptyWebMediaPlayer>::AsWeakPtr();
   }
   void RegisterFrameSinkHierarchy() override {}
   void UnregisterFrameSinkHierarchy() override {}
+  bool PassedTimingAllowOriginCheck() const override { return true; }
 };
 
 }  // namespace blink

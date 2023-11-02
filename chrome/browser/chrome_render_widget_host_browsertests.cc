@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -70,7 +70,7 @@ IN_PROC_BROWSER_TEST_F(ActiveRenderWidgetHostBrowserTest,
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  content::RenderFrameHost* main_frame_a = web_contents->GetMainFrame();
+  content::RenderFrameHost* main_frame_a = web_contents->GetPrimaryMainFrame();
   content::RenderFrameHost* child_frame_b = ChildFrameAt(main_frame_a, 0);
   ASSERT_NE(nullptr, child_frame_b);
   content::RenderFrameHost* child_frame_d = ChildFrameAt(main_frame_a, 1);
@@ -224,7 +224,7 @@ IN_PROC_BROWSER_TEST_F(ActiveRenderWidgetHostBrowserTest, FocusOmniBox) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  content::RenderFrameHost* main_frame = web_contents->GetMainFrame();
+  content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
   EXPECT_EQ(main_frame, web_contents->GetFocusedFrame());
 
   mojo::PendingAssociatedReceiver<blink::mojom::FrameWidget>
@@ -240,7 +240,7 @@ IN_PROC_BROWSER_TEST_F(ActiveRenderWidgetHostBrowserTest, FocusOmniBox) {
   omnibox->SetFocus(/*is_user_initiated=*/true);
 
   base::RunLoop().RunUntilIdle();
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // On MacOS, calling omnibox->SetFocus function doesn't invoke
   // RWHI::SetActive. Hence there is no IPC call to renderer and
   // FakeFrameWidget's 'active' state remains uninitialised.

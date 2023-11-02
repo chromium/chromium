@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,10 +18,7 @@ enum PhoneHubViewID {
   kTaskContinuationView,
 
   // Notification opt in view and its components.
-  kNotificationOptInView,
-
-  // Camera Roll opt in view and its components.
-  kCameraRollOptInView,
+  kMultideviceFeatureOptInView,
 
   // Sub feature opt in view buttons
   kSubFeatureOptInConfirmButton,

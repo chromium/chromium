@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,12 +17,14 @@ class StatusViewBinder implements ViewBinder<PropertyModel, StatusView, Property
 
     @Override
     public void bind(PropertyModel model, StatusView view, PropertyKey propertyKey) {
-        if (StatusProperties.ANIMATIONS_ENABLED.equals(propertyKey)) {
+        if (StatusProperties.ALPHA.equals(propertyKey)) {
+            view.setAlpha(model.get(StatusProperties.ALPHA));
+        } else if (StatusProperties.ANIMATIONS_ENABLED.equals(propertyKey)) {
             view.setAnimationsEnabled(model.get(StatusProperties.ANIMATIONS_ENABLED));
         } else if (StatusProperties.INCOGNITO_BADGE_VISIBLE.equals(propertyKey)) {
             view.setIncognitoBadgeVisibility(model.get(StatusProperties.INCOGNITO_BADGE_VISIBLE));
-        } else if (StatusProperties.SEPARATOR_COLOR_RES.equals(propertyKey)) {
-            view.setSeparatorColor(model.get(StatusProperties.SEPARATOR_COLOR_RES));
+        } else if (StatusProperties.SEPARATOR_COLOR.equals(propertyKey)) {
+            view.setSeparatorColor(model.get(StatusProperties.SEPARATOR_COLOR));
         } else if (StatusProperties.SHOW_STATUS_ICON.equals(propertyKey)) {
             view.setStatusIconShown(model.get(StatusProperties.SHOW_STATUS_ICON));
         } else if (StatusProperties.STATUS_CLICK_LISTENER.equals(propertyKey)) {
@@ -46,9 +48,8 @@ class StatusViewBinder implements ViewBinder<PropertyModel, StatusView, Property
             }
             view.setStatusIconResources(res.getDrawable(view.getContext(), view.getResources()),
                     res.getTransitionType(), res.getAnimationFinishedCallback());
-        } else if (StatusProperties.VERBOSE_STATUS_TEXT_COLOR_RES.equals(propertyKey)) {
-            view.setVerboseStatusTextColor(
-                    model.get(StatusProperties.VERBOSE_STATUS_TEXT_COLOR_RES));
+        } else if (StatusProperties.VERBOSE_STATUS_TEXT_COLOR.equals(propertyKey)) {
+            view.setVerboseStatusTextColor(model.get(StatusProperties.VERBOSE_STATUS_TEXT_COLOR));
         } else if (StatusProperties.VERBOSE_STATUS_TEXT_STRING_RES.equals(propertyKey)) {
             view.setVerboseStatusTextContent(
                     model.get(StatusProperties.VERBOSE_STATUS_TEXT_STRING_RES));

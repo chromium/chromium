@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
@@ -224,16 +223,23 @@ scoped_refptr<DecoderBuffer> ReadTestDataFile(const std::string& name) {
   return buffer;
 }
 
+scoped_refptr<DecoderBuffer> ReadTestDataFile(const std::string& name,
+                                              base::TimeDelta pts) {
+  auto buffer = ReadTestDataFile(name);
+  buffer->set_timestamp(pts);
+  return buffer;
+}
+
 bool LookupTestKeyVector(const std::vector<uint8_t>& key_id,
                          bool allow_rotation,
                          std::vector<uint8_t>* key) {
-  std::vector<uint8_t> starting_key_id(kKeyId, kKeyId + base::size(kKeyId));
+  std::vector<uint8_t> starting_key_id(kKeyId, kKeyId + std::size(kKeyId));
   size_t rotate_limit = allow_rotation ? starting_key_id.size() : 1;
   for (size_t pos = 0; pos < rotate_limit; ++pos) {
     std::rotate(starting_key_id.begin(), starting_key_id.begin() + pos,
                 starting_key_id.end());
     if (key_id == starting_key_id) {
-      key->assign(kSecretKey, kSecretKey + base::size(kSecretKey));
+      key->assign(kSecretKey, kSecretKey + std::size(kSecretKey));
       std::rotate(key->begin(), key->begin() + pos, key->end());
       return true;
     }

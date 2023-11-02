@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -285,7 +285,8 @@ void V8SetReturnValue(const CallbackInfo& info,
                                                wrappable))
     return;
   V8ReturnValue::SetWrapper(
-      info, wrappable, V8ReturnValue::CreationContext(info)->CreationContext());
+      info, wrappable,
+      V8ReturnValue::CreationContext(info)->GetCreationContextChecked());
 }
 
 template <typename CallbackInfo>
@@ -298,7 +299,8 @@ void V8SetReturnValue(const CallbackInfo& info,
                                                wrappable))
     return;
   V8ReturnValue::SetWrapper(
-      info, wrappable, V8ReturnValue::CreationContext(info)->CreationContext());
+      info, wrappable,
+      V8ReturnValue::CreationContext(info)->GetCreationContextChecked());
 }
 
 template <typename CallbackInfo>
@@ -314,7 +316,8 @@ void V8SetReturnValue(const CallbackInfo& info,
     return;
   }
   V8ReturnValue::SetWrapper(
-      info, wrappable, V8ReturnValue::CreationContext(info)->CreationContext());
+      info, wrappable,
+      V8ReturnValue::CreationContext(info)->GetCreationContextChecked());
 }
 
 template <typename CallbackInfo>
@@ -328,7 +331,8 @@ void V8SetReturnValue(const CallbackInfo& info,
     return;
   }
   V8ReturnValue::SetWrapper(
-      info, wrappable, V8ReturnValue::CreationContext(info)->CreationContext());
+      info, wrappable,
+      V8ReturnValue::CreationContext(info)->GetCreationContextChecked());
 }
 
 template <typename CallbackInfo>

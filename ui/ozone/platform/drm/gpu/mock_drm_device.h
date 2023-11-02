@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -77,6 +77,7 @@ class MockDrmDevice : public DrmDevice {
   int get_overlay_clear_call_count() const { return overlay_clear_call_count_; }
   int get_test_modeset_count() const { return test_modeset_count_; }
   int get_commit_modeset_count() const { return commit_modeset_count_; }
+  int get_seamless_modeset_count() const { return seamless_modeset_count_; }
   int get_commit_count() const { return commit_count_; }
   int get_set_object_property_count() const {
     return set_object_property_count_;
@@ -195,6 +196,8 @@ class MockDrmDevice : public DrmDevice {
       uint32_t crtc_id,
       const std::vector<display::GammaRampRGBEntry>& lut) override;
   bool SetCapability(uint64_t capability, uint64_t value) override;
+  absl::optional<std::string> GetDriverName() const override;
+  void SetDriverName(absl::optional<std::string> name);
   uint32_t GetFramebufferForCrtc(uint32_t crtc_id) const;
 
  private:
@@ -230,6 +233,7 @@ class MockDrmDevice : public DrmDevice {
   int allocate_buffer_count_;
   int test_modeset_count_ = 0;
   int commit_modeset_count_ = 0;
+  int seamless_modeset_count_ = 0;
   int commit_count_ = 0;
   int set_object_property_count_ = 0;
   int set_gamma_ramp_count_ = 0;
@@ -245,6 +249,8 @@ class MockDrmDevice : public DrmDevice {
 
   uint32_t current_framebuffer_;
   uint32_t plane_crtc_id_prop_id_ = 0;
+
+  absl::optional<std::string> driver_name_ = "mock";
 
   std::vector<sk_sp<SkSurface>> buffers_;
 

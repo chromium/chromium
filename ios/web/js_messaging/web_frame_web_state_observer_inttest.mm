@@ -1,20 +1,21 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/web/public/test/web_test_with_web_state.h"
 
-#include "base/ios/ios_util.h"
-#include "ios/testing/embedded_test_server_handlers.h"
+#import "base/containers/contains.h"
+#import "base/ios/ios_util.h"
+#import "ios/testing/embedded_test_server_handlers.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/test/navigation_test_util.h"
 #import "ios/web/public/test/web_view_content_test_util.h"
 #import "ios/web/public/web_state.h"
-#include "ios/web/public/web_state_observer.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
-#include "net/test/embedded_test_server/request_handler_util.h"
-#include "testing/gmock/include/gmock/gmock.h"
+#import "ios/web/public/web_state_observer.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
+#import "net/test/embedded_test_server/request_handler_util.h"
+#import "testing/gmock/include/gmock/gmock.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -39,7 +40,7 @@ class WebStateObserverMock : public web::WebStateObserver {
   void WebStateDestroyed(web::WebState* web_state) override { NOTREACHED(); }
 };
 
-// A predicate that returns true if |frame| is a main frame.
+// A predicate that returns true if `frame` is a main frame.
 bool IsMainFrame(web::WebFrame* frame) {
   return frame->IsMainFrame();
 }
@@ -56,7 +57,7 @@ ACTION_P(VerifyChildWebFrame, web_state) {
 
   web::WebFramesManager* manager = web_state->GetWebFramesManager();
   auto frames = manager->GetAllWebFrames();
-  EXPECT_TRUE(frames.end() != std::find(frames.begin(), frames.end(), arg1));
+  EXPECT_TRUE(base::Contains(frames, arg1));
   EXPECT_NE(manager->GetMainWebFrame(), arg1);
 }
 }
@@ -106,7 +107,7 @@ TEST_F(WebFrameWebStateObserverInttest, SingleWebFrameHTTPS) {
   EXPECT_CALL(observer_, WebFrameDidBecomeAvailable(web_state(), testing::_))
       .WillOnce(VerifyMainWebFrame(web_state()));
 
-  // Load a first page to avoid having an item inserted during the |LoadHtml|.
+  // Load a first page to avoid having an item inserted during the `LoadHtml`.
   test::LoadUrl(web_state(), test_server_.GetURL("/echo-query?test"));
   ASSERT_TRUE(test::WaitForWebViewContainingText(web_state(), "test"));
 
@@ -130,7 +131,7 @@ TEST_F(WebFrameWebStateObserverInttest, TwoWebFrameHTTPS) {
   EXPECT_CALL(observer_, WebFrameDidBecomeAvailable(web_state(), testing::_))
       .WillOnce(VerifyMainWebFrame(web_state()));
 
-  // Load a first page to avoid having an item inserted during the |LoadHtml|.
+  // Load a first page to avoid having an item inserted during the `LoadHtml`.
   test::LoadUrl(web_state(), test_server_.GetURL("/echo-query?test"));
   ASSERT_TRUE(test::WaitForWebViewContainingText(web_state(), "test"));
 

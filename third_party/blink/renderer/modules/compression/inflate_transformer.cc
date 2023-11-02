@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,6 +40,9 @@ InflateTransformer::InflateTransformer(ScriptState* script_state,
       break;
     case CompressionFormat::kGzip:
       err = inflateInit2(&stream_, kWindowBits + kUseGzip);
+      break;
+    case CompressionFormat::kDeflateRaw:
+      err = inflateInit2(&stream_, -kWindowBits);
       break;
   }
   DCHECK_EQ(Z_OK, err);

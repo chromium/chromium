@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include "ui/accessibility/platform/ax_platform_node_textrangeprovider_win.h"
 
 #include "base/command_line.h"
+#include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_safearray.h"
@@ -18,7 +19,6 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
-#include "net/base/escape.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "ui/accessibility/accessibility_switches.h"
@@ -63,7 +63,7 @@ class AXPlatformNodeTextProviderWinBrowserTest : public ContentBrowserTest {
                                            accessibility_mode,
                                            ax::mojom::Event::kLoadComplete);
     EXPECT_TRUE(NavigateToURL(shell(), url));
-    waiter.WaitForNotification();
+    ASSERT_TRUE(waiter.WaitForNotification());
   }
 
   void LoadInitialAccessibilityTreeFromHtmlFilePath(
@@ -80,7 +80,7 @@ class AXPlatformNodeTextProviderWinBrowserTest : public ContentBrowserTest {
       const std::string& html,
       ui::AXMode accessibility_mode = ui::kAXModeComplete) {
     LoadInitialAccessibilityTreeFromUrl(
-        GURL("data:text/html," + net::EscapeQueryParamValue(html, false)),
+        GURL("data:text/html," + base::EscapeQueryParamValue(html, false)),
         accessibility_mode);
   }
 
@@ -104,7 +104,7 @@ class AXPlatformNodeTextProviderWinBrowserTest : public ContentBrowserTest {
   BrowserAccessibility* GetRootAndAssertNonNull() {
     auto GetRootAndAssertNonNull = [this](BrowserAccessibility** result) {
       BrowserAccessibility* root_browser_accessibility =
-          GetManagerAndAssertNonNull()->GetRoot();
+          GetManagerAndAssertNonNull()->GetBrowserAccessibilityRoot();
       ASSERT_NE(nullptr, result);
       *result = root_browser_accessibility;
     };

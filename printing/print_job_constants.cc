@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,9 +19,6 @@ const char kPreviewUIID[] = "previewUIID";
 
 // Capabilities option. Contains the capabilities in CDD format.
 const char kSettingCapabilities[] = "capabilities";
-
-// Print using cloud print: true if selected, false if not.
-const char kSettingCloudPrintId[] = "cloudPrintID";
 
 // Print job setting 'collate'.
 const char kSettingCollate[] = "collate";
@@ -92,6 +89,24 @@ const char kSettingMediaSizeHeightMicrons[] = "height_microns";
 
 // Key that specifies the requested media width in microns.
 const char kSettingMediaSizeWidthMicrons[] = "width_microns";
+
+// Key that specifies the left side of the bounding box for the requested
+// media's printable area.
+const char kSettingsImageableAreaLeftMicrons[] = "imageable_area_left_microns";
+
+// Key that specifies the bottom side of the bounding box for the requested
+// media's printable area.
+const char kSettingsImageableAreaBottomMicrons[] =
+    "imageable_area_bottom_microns";
+
+// Key that specifies the right side of the bounding box for the requested
+// media's printable area.
+const char kSettingsImageableAreaRightMicrons[] =
+    "imageable_area_right_microns";
+
+// Key that specifies the top side of the bounding box for the requested
+// media's printable area.
+const char kSettingsImageableAreaTopMicrons[] = "imageable_area_top_microns";
 
 // Key that specifies the requested media platform specific vendor id.
 const char kSettingMediaSizeVendorId[] = "vendor_id";

@@ -9,7 +9,6 @@
 -ExtensionSettingsApiTest.ExtensionsSchemas*
 -LazyBackgroundPageApiTest.Messaging*
 -DeclarativeNetRequestBrowserTest.ActionsMatchedCountAsBadgeTextIncognito*
--WebViewNewWindowTest.Shim_TestAddContentScriptsWithNewWindowAPI*
 -WebViewNewWindowTest.UserAgent_NewWindow*
 -NativeAppWindowCocoaBrowserTest.Controls*
 -AutomationApiTest.GetTreeByTabId*

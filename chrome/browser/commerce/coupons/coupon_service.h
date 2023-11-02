@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,11 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
+#include "base/time/time.h"
 #include "chrome/browser/commerce/coupons/coupon_db.h"
 #include "chrome/browser/commerce/coupons/coupon_service_factory.h"
+#include "chrome/browser/commerce/coupons/coupon_service_observer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
@@ -62,6 +65,10 @@ class CouponService : public KeyedService,
   // Check if CouponService has eligible coupons for |url|.
   bool IsUrlEligible(const GURL& url) override;
 
+  void AddObserver(CouponServiceObserver* observer);
+
+  void RemoveObserver(CouponServiceObserver* observer);
+
  protected:
   // Default constructor for testing purposes only.
   CouponService();
@@ -88,6 +95,10 @@ class CouponService : public KeyedService,
                                bool success,
                                std::vector<CouponDB::KeyAndValue> proto_pairs);
   CouponDB* GetDB();
+  // Dispatch signals to registered CouponServiceObservers that the coupons for
+  // |url| are no longer valid. Note that this call should be made before the
+  // coupons are deleted from cache.
+  void NotifyObserversOfInvalidatedCoupon(const GURL& url);
 
   std::unique_ptr<CouponDB> coupon_db_;
   CouponsMap coupon_map_;
@@ -95,6 +106,7 @@ class CouponService : public KeyedService,
   // Indicates whether features required for CouponService to expose coupon data
   // are all enabled.
   bool features_enabled_{false};
+  base::ObserverList<CouponServiceObserver> observers_;
   base::WeakPtrFactory<CouponService> weak_ptr_factory_{this};
 };
 

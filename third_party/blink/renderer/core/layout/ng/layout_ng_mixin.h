@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <type_traits>
 
-#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 
 namespace blink {
@@ -28,7 +27,7 @@ namespace blink {
 template <typename Base>
 class LayoutNGMixin : public Base {
  public:
-  explicit LayoutNGMixin(Element* element);
+  explicit LayoutNGMixin(ContainerNode*);
   ~LayoutNGMixin() override;
 
   void Paint(const PaintInfo&) const override;
@@ -36,23 +35,19 @@ class LayoutNGMixin : public Base {
   bool NodeAtPoint(HitTestResult&,
                    const HitTestLocation&,
                    const PhysicalOffset& accumulated_offset,
-                   HitTestAction) override;
+                   HitTestPhase) override;
   RecalcLayoutOverflowResult RecalcLayoutOverflow() override;
   RecalcLayoutOverflowResult RecalcChildLayoutOverflow() override;
   void RecalcVisualOverflow() override;
 
-  bool IsLayoutNGObject() const final { return true; }
-
-  const NGPhysicalBoxFragment* CurrentFragment() const final;
+  bool IsLayoutNGObject() const final;
 
  protected:
-  bool IsOfType(LayoutObject::LayoutObjectType) const override;
-
   MinMaxSizes ComputeIntrinsicLogicalWidths() const override;
   NGConstraintSpace ConstraintSpaceForMinMaxSizes() const;
 
   void UpdateOutOfFlowBlockLayout();
-  scoped_refptr<const NGLayoutResult> UpdateInFlowBlockLayout();
+  const NGLayoutResult* UpdateInFlowBlockLayout();
   void UpdateMargins();
 };
 

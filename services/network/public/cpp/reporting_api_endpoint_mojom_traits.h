@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,9 @@
 
 #include "base/values.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/reporting/reporting_endpoint.h"
-#include "services/network/public/cpp/network_isolation_key_mojom_traits.h"
+#include "services/network/public/cpp/network_anonymization_key_mojom_traits.h"
 #include "services/network/public/mojom/reporting_service.mojom-shared.h"
 #include "url/mojom/url_gurl_mojom_traits.h"
 
@@ -54,9 +54,9 @@ struct StructTraits<network::mojom::ReportingApiEndpointDataView,
     return endpoint.group_key.group_name;
   }
 
-  static const net::NetworkIsolationKey network_isolation_key(
+  static const net::NetworkAnonymizationKey& network_anonymization_key(
       const net::ReportingEndpoint& endpoint) {
-    return endpoint.group_key.network_isolation_key;
+    return endpoint.group_key.network_anonymization_key;
   }
 
   static const absl::optional<base::UnguessableToken>& reporting_source(

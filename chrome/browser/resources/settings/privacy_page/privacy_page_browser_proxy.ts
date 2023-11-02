@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,16 +8,16 @@
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 // clang-format on
 
-export type MetricsReporting = {
-  enabled: boolean,
-  managed: boolean,
-};
+export interface MetricsReporting {
+  enabled: boolean;
+  managed: boolean;
+}
 
-export type ResolverOption = {
-  name: string,
-  value: string,
-  policy: string,
-};
+export interface ResolverOption {
+  name: string;
+  value: string;
+  policy: string;
+}
 
 /**
  * Contains the possible string values for the secure DNS mode. This must be
@@ -39,14 +39,14 @@ export enum SecureDnsUiManagementMode {
   DISABLED_PARENTAL_CONTROLS = 2,
 }
 
-export type SecureDnsSetting = {
-  mode: SecureDnsMode,
-  templates: Array<string>,
-  managementMode: SecureDnsUiManagementMode,
-};
+export interface SecureDnsSetting {
+  mode: SecureDnsMode;
+  config: string;
+  managementMode: SecureDnsUiManagementMode;
+}
 
 export interface PrivacyPageBrowserProxy {
-  // <if expr="_google_chrome and not chromeos">
+  // <if expr="_google_chrome and not chromeos_ash">
   getMetricsReporting(): Promise<MetricsReporting>;
   setMetricsReportingEnabled(enabled: boolean): void;
 
@@ -59,19 +59,20 @@ export interface PrivacyPageBrowserProxy {
   // </if>
 
   setBlockAutoplayEnabled(enabled: boolean): void;
-  getSecureDnsResolverList(): Promise<Array<ResolverOption>>;
+  getSecureDnsResolverList(): Promise<ResolverOption[]>;
   getSecureDnsSetting(): Promise<SecureDnsSetting>;
 
   /**
-   * @return the URL templates, if they are all valid.
+   * @return true if the config string is syntactically valid.
    */
-  parseCustomDnsEntry(entry: string): Promise<Array<string>>;
+  isValidConfig(entry: string): Promise<boolean>;
 
   /**
-   * @return True if a test query to the secure DNS template succeeded
-   *     or was cancelled.
+   * @return True if a test query succeeded in the specified DoH
+   *     configuration or the probe was cancelled.
    */
-  probeCustomDnsTemplate(template: string): Promise<boolean>;
+  probeConfig(entry: string): Promise<boolean>;
+
 
   /**
    * Records metrics on the user's interaction with the dropdown menu.
@@ -83,7 +84,7 @@ export interface PrivacyPageBrowserProxy {
 }
 
 export class PrivacyPageBrowserProxyImpl implements PrivacyPageBrowserProxy {
-  // <if expr="_google_chrome and not chromeos">
+  // <if expr="_google_chrome and not chromeos_ash">
   getMetricsReporting() {
     return sendWithPromise('getMetricsReporting');
   }
@@ -112,12 +113,12 @@ export class PrivacyPageBrowserProxyImpl implements PrivacyPageBrowserProxy {
     return sendWithPromise('getSecureDnsSetting');
   }
 
-  parseCustomDnsEntry(entry: string): Promise<Array<string>> {
-    return sendWithPromise('parseCustomDnsEntry', entry);
+  isValidConfig(entry: string): Promise<boolean> {
+    return sendWithPromise('isValidConfig', entry);
   }
 
-  probeCustomDnsTemplate(template: string): Promise<boolean> {
-    return sendWithPromise('probeCustomDnsTemplate', template);
+  probeConfig(entry: string): Promise<boolean> {
+    return sendWithPromise('probeConfig', entry);
   }
 
   recordUserDropdownInteraction(oldSelection: string, newSelection: string) {

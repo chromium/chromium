@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -32,7 +32,7 @@ source_set("autofill") {
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
     "//components/autofill/ios/browser",
-    "//components/password_manager/core/common",
+    "//components/password_manager/core/common:features",
     "//components/prefs",
     "//components/strings",
     "//ios/chrome/app/strings",
@@ -40,6 +40,7 @@ source_set("autofill") {
     "//ios/chrome/browser/autofill",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/net:crurl",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/alert_coordinator",
     "//ios/chrome/browser/ui/autofill",
@@ -57,10 +58,10 @@ source_set("autofill") {
     "//ios/chrome/browser/ui/table_view",
     "//ios/chrome/browser/ui/table_view:utils",
     "//ios/chrome/browser/ui/table_view/cells",
-    "//ios/chrome/browser/ui/table_view/cells:cells_constants",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/elements:form_input_accessory",
+    "//ios/chrome/common/ui/table_view:cells_constants",
     "//ui/base",
   ]
 }
@@ -98,6 +99,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/ui/settings:test_support",
     "//ios/chrome/browser/ui/table_view",
     "//ios/chrome/browser/ui/table_view:test_support",
+    "//ios/chrome/browser/webdata_services",
+    "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//testing/gtest",
     "//third_party/ocmock",
@@ -120,7 +123,7 @@ source_set("eg2_tests") {
     ":constants",
     "//base",
     "//components/autofill/core/browser:test_support",
-    "//components/strings:components_strings_grit",
+    "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/ui/autofill:eg_test_support+eg2",
     "//ios/chrome/browser/ui/autofill:eg_test_support+eg2",

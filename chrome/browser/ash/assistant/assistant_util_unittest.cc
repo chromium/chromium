@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/command_line.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -199,7 +200,7 @@ class ChromeAssistantUtilTest : public testing::Test {
 
     profile_ = profile_manager_->CreateTestingProfile(
         kTestProfileName, /*prefs=*/{}, kTestProfileName16,
-        /*avatar_id=*/0, /*supervised_user_id=*/{},
+        /*avatar_id=*/0,
         IdentityTestEnvironmentProfileAdaptor::
             GetIdentityTestEnvironmentFactories());
     identity_test_env_adaptor_ =
@@ -269,7 +270,7 @@ TEST_F(ChromeAssistantUtilTest, IsAssistantAllowedForProfile_PrimaryUser) {
   ScopedLogIn login(GetFakeUserManager(), identity_test_env(),
                     GetGaiaUserAccountId(profile()));
 
-  EXPECT_EQ(chromeos::assistant::AssistantAllowedState::ALLOWED,
+  EXPECT_EQ(ash::assistant::AssistantAllowedState::ALLOWED,
             IsAssistantAllowedForProfile(profile()));
 }
 
@@ -281,7 +282,7 @@ TEST_F(ChromeAssistantUtilTest, IsAssistantAllowedForProfile_SecondaryUser) {
                                  GetGaiaUserAccountId(profile()));
 
   EXPECT_EQ(
-      chromeos::assistant::AssistantAllowedState::DISALLOWED_BY_NONPRIMARY_USER,
+      ash::assistant::AssistantAllowedState::DISALLOWED_BY_NONPRIMARY_USER,
       IsAssistantAllowedForProfile(profile()));
 }
 
@@ -290,7 +291,7 @@ TEST_F(ChromeAssistantUtilTest, IsAssistantAllowedForProfile_ChildUser) {
                     GetGaiaUserAccountId(profile()),
                     user_manager::USER_TYPE_CHILD);
 
-  EXPECT_EQ(chromeos::assistant::AssistantAllowedState::ALLOWED,
+  EXPECT_EQ(ash::assistant::AssistantAllowedState::ALLOWED,
             IsAssistantAllowedForProfile(profile()));
 }
 
@@ -299,7 +300,7 @@ TEST_F(ChromeAssistantUtilTest, IsAssistantAllowedForProfile_GuestUser) {
                     GetGuestAccountId(), user_manager::USER_TYPE_GUEST);
 
   EXPECT_EQ(
-      chromeos::assistant::AssistantAllowedState::DISALLOWED_BY_NONPRIMARY_USER,
+      ash::assistant::AssistantAllowedState::DISALLOWED_BY_NONPRIMARY_USER,
       IsAssistantAllowedForProfile(profile()));
 }
 
@@ -312,7 +313,7 @@ TEST_F(ChromeAssistantUtilTest, IsAssistantAllowedForProfile_Locale) {
   ScopedLogIn login(GetFakeUserManager(), identity_test_env(),
                     GetGaiaUserAccountId(profile()));
 
-  EXPECT_EQ(chromeos::assistant::AssistantAllowedState::DISALLOWED_BY_LOCALE,
+  EXPECT_EQ(ash::assistant::AssistantAllowedState::DISALLOWED_BY_LOCALE,
             IsAssistantAllowedForProfile(profile()));
   icu::Locale::setDefault(old_locale, error_code);
 }
@@ -323,7 +324,7 @@ TEST_F(ChromeAssistantUtilTest, IsAssistantAllowedForProfile_DemoMode) {
   ScopedLogIn login(GetFakeUserManager(), identity_test_env(),
                     GetNonGaiaUserAccountId(profile()),
                     user_manager::USER_TYPE_PUBLIC_ACCOUNT);
-  EXPECT_EQ(chromeos::assistant::AssistantAllowedState::DISALLOWED_BY_DEMO_MODE,
+  EXPECT_EQ(ash::assistant::AssistantAllowedState::DISALLOWED_BY_DEMO_MODE,
             IsAssistantAllowedForProfile(profile()));
 
   ash::DemoSession::SetDemoConfigForTesting(
@@ -334,9 +335,8 @@ TEST_F(ChromeAssistantUtilTest, IsAssistantAllowedForProfile_PublicSession) {
   ScopedLogIn login(GetFakeUserManager(), identity_test_env(),
                     GetNonGaiaUserAccountId(profile()),
                     user_manager::USER_TYPE_PUBLIC_ACCOUNT);
-  EXPECT_EQ(
-      chromeos::assistant::AssistantAllowedState::DISALLOWED_BY_PUBLIC_SESSION,
-      IsAssistantAllowedForProfile(profile()));
+  EXPECT_EQ(ash::assistant::AssistantAllowedState::DISALLOWED_BY_PUBLIC_SESSION,
+            IsAssistantAllowedForProfile(profile()));
 }
 
 TEST_F(ChromeAssistantUtilTest, IsAssistantAllowedForProfile_NonGmail) {
@@ -344,16 +344,15 @@ TEST_F(ChromeAssistantUtilTest, IsAssistantAllowedForProfile_NonGmail) {
       GetFakeUserManager(), identity_test_env(),
       GetGaiaUserAccountId("user2@someotherdomain.com", "0123456789"));
 
-  EXPECT_EQ(
-      chromeos::assistant::AssistantAllowedState::DISALLOWED_BY_ACCOUNT_TYPE,
-      IsAssistantAllowedForProfile(profile()));
+  EXPECT_EQ(ash::assistant::AssistantAllowedState::DISALLOWED_BY_ACCOUNT_TYPE,
+            IsAssistantAllowedForProfile(profile()));
 }
 
 TEST_F(ChromeAssistantUtilTest, IsAssistantAllowedForProfile_GoogleMail) {
   ScopedLogIn login(GetFakeUserManager(), identity_test_env(),
                     GetGaiaUserAccountId("user2@googlemail.com", "0123456789"));
 
-  EXPECT_EQ(chromeos::assistant::AssistantAllowedState::ALLOWED,
+  EXPECT_EQ(ash::assistant::AssistantAllowedState::ALLOWED,
             IsAssistantAllowedForProfile(profile()));
 }
 
@@ -364,7 +363,7 @@ TEST_F(ChromeAssistantUtilTest,
       GetGaiaUserAccountId("user2@someotherdomain.com", "0123456789"));
 
   ScopedSpoofGoogleBrandedDevice make_google_branded_device;
-  EXPECT_EQ(chromeos::assistant::AssistantAllowedState::ALLOWED,
+  EXPECT_EQ(ash::assistant::AssistantAllowedState::ALLOWED,
             IsAssistantAllowedForProfile(profile()));
 }
 
@@ -374,9 +373,8 @@ TEST_F(ChromeAssistantUtilTest,
                     GetActiveDirectoryUserAccountId(profile()),
                     user_manager::USER_TYPE_ACTIVE_DIRECTORY);
 
-  EXPECT_EQ(
-      chromeos::assistant::AssistantAllowedState::DISALLOWED_BY_ACCOUNT_TYPE,
-      IsAssistantAllowedForProfile(profile()));
+  EXPECT_EQ(ash::assistant::AssistantAllowedState::DISALLOWED_BY_ACCOUNT_TYPE,
+            IsAssistantAllowedForProfile(profile()));
 }
 
 TEST_F(ChromeAssistantUtilTest, IsAssistantAllowedForKiosk_KioskApp) {
@@ -384,9 +382,8 @@ TEST_F(ChromeAssistantUtilTest, IsAssistantAllowedForKiosk_KioskApp) {
                     GetNonGaiaUserAccountId(profile()),
                     user_manager::USER_TYPE_KIOSK_APP);
 
-  EXPECT_EQ(
-      chromeos::assistant::AssistantAllowedState::DISALLOWED_BY_KIOSK_MODE,
-      IsAssistantAllowedForProfile(profile()));
+  EXPECT_EQ(ash::assistant::AssistantAllowedState::DISALLOWED_BY_KIOSK_MODE,
+            IsAssistantAllowedForProfile(profile()));
 }
 
 TEST_F(ChromeAssistantUtilTest, IsAssistantAllowedForKiosk_ArcKioskApp) {
@@ -394,9 +391,8 @@ TEST_F(ChromeAssistantUtilTest, IsAssistantAllowedForKiosk_ArcKioskApp) {
                     GetNonGaiaUserAccountId(profile()),
                     user_manager::USER_TYPE_ARC_KIOSK_APP);
 
-  EXPECT_EQ(
-      chromeos::assistant::AssistantAllowedState::DISALLOWED_BY_KIOSK_MODE,
-      IsAssistantAllowedForProfile(profile()));
+  EXPECT_EQ(ash::assistant::AssistantAllowedState::DISALLOWED_BY_KIOSK_MODE,
+            IsAssistantAllowedForProfile(profile()));
 }
 
 TEST_F(ChromeAssistantUtilTest, IsAssistantAllowedForKiosk_WebKioskApp) {
@@ -404,9 +400,8 @@ TEST_F(ChromeAssistantUtilTest, IsAssistantAllowedForKiosk_WebKioskApp) {
                     GetNonGaiaUserAccountId(profile()),
                     user_manager::USER_TYPE_WEB_KIOSK_APP);
 
-  EXPECT_EQ(
-      chromeos::assistant::AssistantAllowedState::DISALLOWED_BY_KIOSK_MODE,
-      IsAssistantAllowedForProfile(profile()));
+  EXPECT_EQ(ash::assistant::AssistantAllowedState::DISALLOWED_BY_KIOSK_MODE,
+            IsAssistantAllowedForProfile(profile()));
 }
 
 }  // namespace assistant

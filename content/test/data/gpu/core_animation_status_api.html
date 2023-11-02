@@ -1,0 +1,69 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>GPU Benchmarking Core Animation Status API Test</title>
+<script>
+
+const parsedString = (function (names) {
+  const pairs = {};
+  for (let i = 0; i < names.length; ++i) {
+    var keyValue = names[i].split('=', 2);
+    if (keyValue.length == 1)
+      pairs[keyValue[0]] = '';
+    else
+      pairs[keyValue[0]] = decodeURIComponent(keyValue[1].replace(/\+/g, ' '));
+  }
+  return pairs;
+})(window.location.search.substr(1).split('&'));
+
+// Command line '--enable-gpu-benchmarking' is required for this test.
+function main() {
+  var expectedError = parsedString['error'];
+  if (expectedError == undefined)
+    expectedError = 0;  // gfx::kCALayerSuccess = 0,
+
+  const container = document.getElementById('container');
+  const icon = document.createElement('icon');
+  icon.style.backgroundColor = 'Red';
+  icon.style.position = "absolute";
+  icon.style.width = '100px';
+  icon.style.height = '100px';
+  icon.style.top = '0px';
+  icon.style.left = '0px';
+  container.appendChild(icon);
+
+  // If core_animation_status_api.html is tested with a command line
+  // '--disable-features=CoreAnimationRenderer' which causes overlay to fail.
+  // The error code would be 32 (gfx::kCALayerFailedOverlayDisabled).
+  // (See "ui/gfx/ca_layer_result.h" for error code.)
+  function errorCodeHandler(errorCode) {
+    if (errorCode == expectedError) {
+      window.domAutomationController.send("SUCCESS");
+    } else {
+      console.log("Error code should be ", expectedError, ", got ", errorCode);
+      window.domAutomationController.send("FAILED");
+    }
+  }
+
+  function animation() {
+     if (!chrome.gpuBenchmarking.addCoreAnimationStatusEventListener(errorCodeHandler)) {
+       console.log("addCoreAnimationStatusEventListener failed!");
+       window.domAutomationController.send("FAILED");
+     }
+
+     // if gpuBenchmarking is not supported, the test will not reach here and
+     // the final output shows a red quad instead of a bluish quad.
+     icon.style.left = '200px';
+     icon.style.backgroundColor = "rgba(90, 129, 193, 255)";
+  }
+
+  window.requestAnimationFrame(animation);
+}
+
+</script>
+</head>
+<body onload="main()">
+  <div id="container" style="position:absolute; top:0px; left:0px">
+  </div>
+</body>
+</html>

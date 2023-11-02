@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,21 +9,26 @@
 #include <vector>
 
 #include "ash/public/cpp/shelf_types.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/ash/shelf/arc_app_shelf_id.h"
 #include "ui/aura/window.h"
+#include "ui/aura/window_observer.h"
 #include "ui/gfx/image/image_skia.h"
 
 // The information about the ARC application window which has to be kept
 // even when its AppWindow is not present.
-class ArcAppWindowInfo {
+class ArcAppWindowInfo : public aura::WindowObserver {
  public:
   ArcAppWindowInfo(const arc::ArcAppShelfId& app_shelf_id,
                    const std::string& launch_intent,
                    const std::string& package_name);
-  ~ArcAppWindowInfo();
+  ~ArcAppWindowInfo() override;
 
   ArcAppWindowInfo(const ArcAppWindowInfo&) = delete;
   ArcAppWindowInfo& operator=(const ArcAppWindowInfo&) = delete;
+
+  // aura::WindowObserver:
+  void OnWindowDestroying(aura::Window* window) override;
 
   void SetDescription(const std::string& title, const gfx::ImageSkia& icon);
 
@@ -37,7 +42,7 @@ class ArcAppWindowInfo {
 
   const arc::ArcAppShelfId& app_shelf_id() const;
 
-  const ash::ShelfID shelf_id() const;
+  ash::ShelfID shelf_id() const;
 
   const std::string& launch_intent() const;
 
@@ -68,6 +73,15 @@ class ArcAppWindowInfo {
   gfx::ImageSkia icon_;
 
   aura::Window* window_ = nullptr;
+
+  // Scoped list of observed windows (for removal on destruction)
+  // TODO(crbug.com/1323913, crbug.com/1316374): When the window is destroyed,
+  // it looks like that set_window is not set in AppServiceAppWindowArcTracker
+  // for an unknown reason. So observe windows in ArcAppWindowInfo, to clear
+  // window_, when the window is destroyed. When the root cause is figured out,
+  // observed_windows_ can be removed.
+  base::ScopedObservation<aura::Window, aura::WindowObserver> observed_window_{
+      this};
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_SHELF_ARC_APP_WINDOW_INFO_H_

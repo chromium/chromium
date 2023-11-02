@@ -15,6 +15,8 @@
   "background_color_xml": "#202020",
   "icon_urls_and_icon_murmur2_hashes": "https://doom-fire.com/icons/fire-new-192.png 0 https://doom-fire.com/icons/fire-maskable-512.png 0",
   "web_manifest_url": "https://doom-fire.com/manifest.json",
+  "web_manifest_id": "https://doom-fire.com/?utm_source=homescreen",
+  "app_key": "https://doom-fire.com/manifest.json",
   "distributor": "browser",
   "version_code": "1",
   "version_name": "1.0",

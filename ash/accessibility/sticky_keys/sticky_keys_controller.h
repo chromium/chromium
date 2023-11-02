@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -72,6 +72,9 @@ class ASH_EXPORT StickyKeysController : public ui::EventRewriter {
   void Enable(bool enabled);
 
   void SetModifiersEnabled(bool mod3_enabled, bool altgr_enabled);
+
+  // Update StickyKeysOverlay bounds (e.g. if the workspace area changed).
+  void UpdateStickyKeysOverlayBoundsIfNeeded();
 
   // Returns the StickyKeyOverlay used by the controller. Ownership is not
   // passed.

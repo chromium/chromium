@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,7 +24,6 @@ FuchsiaCdmFactory::FuchsiaCdmFactory(
 FuchsiaCdmFactory::~FuchsiaCdmFactory() = default;
 
 void FuchsiaCdmFactory::Create(
-    const std::string& key_system,
     const CdmConfig& cdm_config,
     const SessionMessageCB& session_message_cb,
     const SessionClosedCB& session_closed_cb,
@@ -34,7 +33,7 @@ void FuchsiaCdmFactory::Create(
   CdmCreatedCB bound_cdm_created_cb =
       BindToCurrentLoop(std::move(cdm_created_cb));
 
-  if (CanUseAesDecryptor(key_system)) {
+  if (CanUseAesDecryptor(cdm_config.key_system)) {
     auto cdm = base::MakeRefCounted<AesDecryptor>(
         session_message_cb, session_closed_cb, session_keys_change_cb,
         session_expiration_update_cb);
@@ -59,7 +58,8 @@ void FuchsiaCdmFactory::Create(
                      creation_id, std::move(bound_cdm_created_cb)),
       std::move(callbacks));
 
-  cdm_provider_->CreateCdmInterface(key_system, std::move(cdm_request));
+  cdm_provider_->CreateCdmInterface(cdm_config.key_system,
+                                    std::move(cdm_request));
   pending_cdms_.emplace(creation_id, std::move(cdm));
 }
 

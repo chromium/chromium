@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "components/infobars/content/content_infobar_manager.h"
@@ -22,11 +23,12 @@
 #include "components/subresource_filter/core/browser/subresource_filter_features_test_support.h"
 #include "components/subresource_filter/core/common/test_ruleset_creator.h"
 #include "components/url_pattern_index/proto/rules.pb.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/test/base/android/android_browser_test.h"
 #else
 #include "chrome/test/base/in_process_browser_test.h"
@@ -131,9 +133,6 @@ class SubresourceFilterBrowserTest : public PlatformBrowserTest {
       "SubresourceFilter.Actions2";
 
   bool AdsBlockedInContentSettings(content::RenderFrameHost* frame_host);
-#if defined(OS_ANDROID)
-  bool PresentingAdsBlockedInfobar(content::WebContents* web_contents);
-#endif
 
  protected:
   // InProcessBrowserTest:
@@ -212,7 +211,7 @@ class SubresourceFilterBrowserTest : public PlatformBrowserTest {
   std::unique_ptr<TestSafeBrowsingDatabaseHelper> database_helper_;
 
   // Owned by the profile.
-  SubresourceFilterProfileContext* profile_context_;
+  raw_ptr<SubresourceFilterProfileContext> profile_context_;
 };
 
 // This class automatically syncs the SubresourceFilter SafeBrowsing list
@@ -232,6 +231,20 @@ class SubresourceFilterPrerenderingBrowserTest
 
  protected:
   content::test::PrerenderTestHelper prerender_helper_;
+};
+
+class SubresourceFilterFencedFrameBrowserTest
+    : public SubresourceFilterListInsertingBrowserTest {
+ public:
+  SubresourceFilterFencedFrameBrowserTest() = default;
+  ~SubresourceFilterFencedFrameBrowserTest() override = default;
+
+  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return fenced_frame_test_helper_;
+  }
+
+ private:
+  content::test::FencedFrameTestHelper fenced_frame_test_helper_;
 };
 
 }  // namespace subresource_filter

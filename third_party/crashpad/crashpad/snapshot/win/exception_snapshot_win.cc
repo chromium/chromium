@@ -1,4 +1,4 @@
-// Copyright 2015 The Crashpad Authors. All rights reserved.
+// Copyright 2015 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,13 +15,13 @@
 #include "snapshot/win/exception_snapshot_win.h"
 
 #include "base/logging.h"
-#include "client/crashpad_client.h"
 #include "snapshot/capture_memory.h"
 #include "snapshot/memory_snapshot.h"
 #include "snapshot/memory_snapshot_generic.h"
 #include "snapshot/win/capture_memory_delegate_win.h"
 #include "snapshot/win/cpu_context_win.h"
 #include "snapshot/win/process_reader_win.h"
+#include "util/win/exception_codes.h"
 #include "util/win/nt_internals.h"
 
 namespace crashpad {
@@ -36,7 +36,7 @@ using Context32 = CONTEXT;
 using Context32 = WOW64_CONTEXT;
 #endif
 
-void NativeContextToCPUContext32(const Context32& context_record,
+void NativeContextToCPUContext32(const Context32* context_record,
                                  CPUContext* context,
                                  CPUContextUnion* context_union) {
   context->architecture = kCPUArchitectureX86;
@@ -46,13 +46,25 @@ void NativeContextToCPUContext32(const Context32& context_record,
 #endif  // ARCH_CPU_X86_FAMILY
 
 #if defined(ARCH_CPU_64_BITS)
-void NativeContextToCPUContext64(const CONTEXT& context_record,
+void NativeContextToCPUContext64(const CONTEXT* context_record,
                                  CPUContext* context,
                                  CPUContextUnion* context_union) {
 #if defined(ARCH_CPU_X86_64)
   context->architecture = kCPUArchitectureX86_64;
   context->x86_64 = &context_union->x86_64;
+  // Note that the context here is not extended, even if the flags suggest so,
+  // as we only copied in sizeof(CONTEXT).
   InitializeX64Context(context_record, context->x86_64);
+  // TODO(1250098) plumb through ssp via message from crashed process. For now
+  // we zero this if CET is available in the capturing process as otherwise
+  // WinDBG will show the relevant thread's ssp for the exception which will
+  // likely be more confusing than showing a zero value.
+  if (IsXStateFeatureEnabled(XSTATE_MASK_CET_U)) {
+    XSAVE_CET_U_FORMAT cet_u_fake;
+    cet_u_fake.Ia32CetUMsr = 0;
+    cet_u_fake.Ia32Pl3SspMsr = 0;
+    InitializeX64XStateCet(context_record, &cet_u_fake, context->x86_64);
+  }
 #elif defined(ARCH_CPU_ARM64)
   context->architecture = kCPUArchitectureARM64;
   context->arm64 = &context_union->arm64;
@@ -84,7 +96,8 @@ ExceptionSnapshotWin::~ExceptionSnapshotWin() {
 bool ExceptionSnapshotWin::Initialize(
     ProcessReaderWin* process_reader,
     DWORD thread_id,
-    WinVMAddress exception_pointers_address) {
+    WinVMAddress exception_pointers_address,
+    uint32_t* gather_indirectly_referenced_memory_cap) {
   INITIALIZATION_STATE_SET_INITIALIZING(initialized_);
 
   const ProcessReaderWin::Thread* thread = nullptr;
@@ -132,7 +145,10 @@ bool ExceptionSnapshotWin::Initialize(
 #endif
 
   CaptureMemoryDelegateWin capture_memory_delegate(
-      process_reader, *thread, &extra_memory_, nullptr);
+      process_reader,
+      *thread,
+      &extra_memory_,
+      gather_indirectly_referenced_memory_cap);
   CaptureMemory::PointedToByContext(context_, &capture_memory_delegate);
 
   INITIALIZATION_STATE_SET_VALID(initialized_);
@@ -186,7 +202,7 @@ bool ExceptionSnapshotWin::InitializeFromExceptionPointers(
     ProcessReaderWin* process_reader,
     WinVMAddress exception_pointers_address,
     DWORD exception_thread_id,
-    void (*native_to_cpu_context)(const ContextType& context_record,
+    void (*native_to_cpu_context)(const ContextType* context_record,
                                   CPUContext* context,
                                   CPUContextUnion* context_union)) {
   ExceptionPointersType exception_pointers;
@@ -211,7 +227,7 @@ bool ExceptionSnapshotWin::InitializeFromExceptionPointers(
   }
 
   const bool triggered_by_client =
-      first_record.ExceptionCode == CrashpadClient::kTriggeredExceptionCode &&
+      first_record.ExceptionCode == ExceptionCodes::kTriggeredExceptionCode &&
       first_record.NumberParameters == 2;
   if (triggered_by_client)
     process_reader->DecrementThreadSuspendCounts(exception_thread_id);
@@ -228,10 +244,9 @@ bool ExceptionSnapshotWin::InitializeFromExceptionPointers(
     for (const auto& thread : process_reader->Threads()) {
       if (thread.id == blame_thread_id) {
         thread_id_ = blame_thread_id;
-        native_to_cpu_context(
-            *reinterpret_cast<const ContextType*>(&thread.context),
-            &context_,
-            &context_union_);
+        native_to_cpu_context(thread.context.context<const ContextType>(),
+                              &context_,
+                              &context_union_);
         exception_address_ = context_.InstructionPointer();
         break;
       }
@@ -262,7 +277,7 @@ bool ExceptionSnapshotWin::InitializeFromExceptionPointers(
       return false;
     }
 
-    native_to_cpu_context(context_record, &context_, &context_union_);
+    native_to_cpu_context(&context_record, &context_, &context_union_);
   }
 
   return true;

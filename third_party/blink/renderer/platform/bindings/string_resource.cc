@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -328,9 +328,8 @@ static String ToBlinkStringFast(int value) {
   if (0 <= value && value <= kLowNumbers) {
     web_core_string = low_numbers[value];
     if (!web_core_string) {
-      AtomicString value_string = AtomicString::Number(value);
-      low_numbers[value] = value_string;
-      web_core_string = value_string;
+      low_numbers[value] = AtomicString::Number(value);
+      web_core_string = low_numbers[value];
     }
   } else {
     web_core_string = String::Number(value);

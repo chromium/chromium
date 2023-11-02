@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
@@ -26,6 +27,7 @@
 #include "components/autofill/core/browser/ui/accessory_sheet_data.h"
 #include "components/autofill/core/browser/ui/accessory_sheet_enums.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_contents_factory.h"
@@ -132,7 +134,7 @@ class ManualFillingControllerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   content::TestWebContentsFactory web_contents_factory_;
-  content::WebContents* web_contents_ =
+  raw_ptr<content::WebContents> web_contents_ =
       web_contents_factory_.CreateWebContents(&profile_);
 
   NiceMock<MockPasswordAccessoryController> mock_pwd_controller_;
@@ -155,6 +157,7 @@ class ManualFillingControllerLegacyTest : public ManualFillingControllerTest {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{},
         /*disabled_features=*/{
+            autofill::features::kAutofillEnableManualFallbackForVirtualCards,
             autofill::features::kAutofillKeyboardAccessory,
             autofill::features::kAutofillManualFallbackAndroid});
     ManualFillingControllerImpl::CreateForWebContentsForTesting(
@@ -291,11 +294,10 @@ TEST_F(ManualFillingControllerTest,
       .Times(AnyNumber());
   EXPECT_CALL(*view(), ShowWhenKeyboardIsVisible());
 
-  FocusFieldAndClearExpectations(FocusedFieldType::kFillableUsernameField);
   NotifyPasswordSourceObserver(IsFillingSourceAvailable(true));
+  FocusFieldAndClearExpectations(FocusedFieldType::kFillableUsernameField);
 
-  // TODO(crbug/1242839): Hide the accessory if no fallback is available.
-  EXPECT_CALL(*view(), Hide()).Times(0);
+  EXPECT_CALL(*view(), Hide());
   NotifyPasswordSourceObserver(IsFillingSourceAvailable(false));
 }
 
@@ -312,11 +314,10 @@ TEST_F(ManualFillingControllerTest,
   EXPECT_CALL(*view(), OnItemsAvailable(kTestAddressSheet)).Times(AnyNumber());
   EXPECT_CALL(*view(), ShowWhenKeyboardIsVisible());
 
-  FocusFieldAndClearExpectations(FocusedFieldType::kFillableNonSearchField);
   NotifyAddressSourceObserver(IsFillingSourceAvailable(true));
+  FocusFieldAndClearExpectations(FocusedFieldType::kFillableNonSearchField);
 
-  // TODO(crbug/1242839): Hide the accessory if no fallback is available.
-  EXPECT_CALL(*view(), Hide()).Times(0);
+  EXPECT_CALL(*view(), Hide());
   NotifyAddressSourceObserver(IsFillingSourceAvailable(false));
 }
 
@@ -334,10 +335,39 @@ TEST_F(ManualFillingControllerTest,
       .Times(AnyNumber());
   EXPECT_CALL(*view(), ShowWhenKeyboardIsVisible());
 
-  FocusFieldAndClearExpectations(FocusedFieldType::kFillableNonSearchField);
   NotifyCreditCardSourceObserver(IsFillingSourceAvailable(true));
+  FocusFieldAndClearExpectations(FocusedFieldType::kFillableNonSearchField);
 
-  EXPECT_CALL(*view(), Hide()).Times(0);
+  EXPECT_CALL(*view(), Hide());
+  NotifyCreditCardSourceObserver(IsFillingSourceAvailable(false));
+}
+
+TEST_F(ManualFillingControllerTest,
+       ShowsAccessoryForCreditCardsWhenManualFallbackEnabledForVirtualCards) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(/*enabled_features=*/
+                            {autofill::features::
+                                 kAutofillEnableManualFallbackForVirtualCards},
+                            /*disabled_features=*/{
+                                autofill::features::kAutofillKeyboardAccessory,
+                                autofill::features::
+                                    kAutofillManualFallbackAndroid});
+  const AccessorySheetData kTestCreditCardSheet =
+      populate_sheet(AccessoryTabType::CREDIT_CARDS);
+
+  // TODO(crbug.com/1169167): Because the data isn't cached, test that only one
+  // call to `GetSheetData()` happens.
+  EXPECT_CALL(mock_cc_controller_, GetSheetData)
+      .Times(AtLeast(1))
+      .WillRepeatedly(Return(kTestCreditCardSheet));
+  EXPECT_CALL(*view(), OnItemsAvailable(kTestCreditCardSheet))
+      .Times(AnyNumber());
+  EXPECT_CALL(*view(), ShowWhenKeyboardIsVisible());
+
+  NotifyCreditCardSourceObserver(IsFillingSourceAvailable(true));
+  FocusFieldAndClearExpectations(FocusedFieldType::kFillableNonSearchField);
+
+  EXPECT_CALL(*view(), Hide());
   NotifyCreditCardSourceObserver(IsFillingSourceAvailable(false));
 }
 
@@ -367,8 +397,7 @@ TEST_F(ManualFillingControllerTest, HidesAccessoryWithoutAvailableSources) {
                                          /*has_suggestions=*/false);
   testing::Mock::VerifyAndClearExpectations(view());
 
-  // TODO(crbug/1242839): Hide the accessory if no fallback is available.
-  EXPECT_CALL(*view(), Hide()).Times(0);
+  EXPECT_CALL(*view(), Hide());
   controller()->UpdateSourceAvailability(FillingSource::AUTOFILL,
                                          /*has_suggestions=*/false);
 }
@@ -385,8 +414,10 @@ TEST_F(ManualFillingControllerLegacyTest,
        OnFillingTriggeredFillsAndClosesSheet) {
   const char16_t kTextToFill[] = u"TextToFill";
   const std::u16string text_to_fill(kTextToFill);
-  const autofill::AccessorySheetField field(text_to_fill, text_to_fill, false,
-                                            true);
+  const autofill::AccessorySheetField field(
+      /*display_text=*/text_to_fill, /*text_to_fill=*/text_to_fill,
+      /*a11y_description=*/text_to_fill, /*id=*/"", /*is_obfuscated=*/false,
+      /*selectable=*/true);
 
   EXPECT_CALL(mock_pwd_controller_,
               OnFillingTriggered(autofill::FieldGlobalId(), field));

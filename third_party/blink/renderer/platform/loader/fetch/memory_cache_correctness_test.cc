@@ -32,7 +32,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_context.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/raw_resource.h"
@@ -89,7 +89,7 @@ class MemoryCacheCorrectnessTest : public testing::Test {
     return resource;
   }
   void AddResourceToMemoryCache(Resource* resource) {
-    GetMemoryCache()->Add(resource);
+    MemoryCache::Get()->Add(resource);
   }
   // TODO(toyoshim): Consider to use MockResource for all tests instead of
   // RawResource.
@@ -137,7 +137,7 @@ class MemoryCacheCorrectnessTest : public testing::Test {
     Resource::SetClockForTesting(platform_->test_task_runner()->GetMockClock());
   }
   void TearDown() override {
-    GetMemoryCache()->EvictResources();
+    MemoryCache::Get()->EvictResources();
 
     Resource::SetClockForTesting(nullptr);
 
@@ -145,6 +145,7 @@ class MemoryCacheCorrectnessTest : public testing::Test {
     ReplaceMemoryCacheForTesting(global_memory_cache_.Release());
   }
 
+  base::test::SingleThreadTaskEnvironment task_environment_;
   Persistent<MemoryCache> global_memory_cache_;
   scoped_refptr<const SecurityOrigin> security_origin_;
   Persistent<ResourceFetcher> fetcher_;

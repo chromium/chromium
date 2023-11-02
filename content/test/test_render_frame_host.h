@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/navigation_client.mojom-forward.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -24,9 +25,15 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom-forward.h"
+#include "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom-forward.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-forward.h"
+#include "third_party/blink/public/mojom/usb/web_usb_service.mojom-forward.h"
 #include "ui/base/page_transition_types.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "third_party/blink/public/mojom/hid/hid.mojom-forward.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace net {
 class IPEndPoint;
@@ -45,30 +52,36 @@ class TestRenderFrameHostCreationObserver : public WebContentsObserver {
   RenderFrameHost* last_created_frame() const { return last_created_frame_; }
 
  private:
-  RenderFrameHost* last_created_frame_;
+  raw_ptr<RenderFrameHost> last_created_frame_;
 };
 
 class TestRenderFrameHost : public RenderFrameHostImpl,
                             public RenderFrameHostTester {
  public:
-  TestRenderFrameHost(SiteInstance* site_instance,
-                      scoped_refptr<RenderViewHostImpl> render_view_host,
-                      RenderFrameHostDelegate* delegate,
-                      FrameTree* frame_tree,
-                      FrameTreeNode* frame_tree_node,
-                      int32_t routing_id,
-                      mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
-                      const blink::LocalFrameToken& frame_token,
-                      LifecycleStateImpl lifecycle_state);
+  TestRenderFrameHost(
+      SiteInstance* site_instance,
+      scoped_refptr<RenderViewHostImpl> render_view_host,
+      RenderFrameHostDelegate* delegate,
+      FrameTree* frame_tree,
+      FrameTreeNode* frame_tree_node,
+      int32_t routing_id,
+      mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
+      const blink::LocalFrameToken& frame_token,
+      const blink::DocumentToken& document_token,
+      LifecycleStateImpl lifecycle_state,
+      scoped_refptr<BrowsingContextState> browsing_context_state);
 
   TestRenderFrameHost(const TestRenderFrameHost&) = delete;
   TestRenderFrameHost& operator=(const TestRenderFrameHost&) = delete;
 
   ~TestRenderFrameHost() override;
 
+  // Flushes mojo messages on `local_frame_`.
+  void FlushLocalFrameMessages();
+
   // RenderFrameHostImpl overrides (same values, but in Test*/Mock* types)
-  TestRenderViewHost* GetRenderViewHost() override;
-  MockRenderProcessHost* GetProcess() override;
+  TestRenderViewHost* GetRenderViewHost() const override;
+  MockRenderProcessHost* GetProcess() const override;
   MockAgentSchedulingGroupHost& GetAgentSchedulingGroup() override;
   TestRenderWidgetHost* GetRenderWidgetHost() override;
   void AddMessageToConsole(blink::mojom::ConsoleMessageLevel level,
@@ -85,6 +98,8 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
   TestRenderFrameHost* AppendChildWithPolicy(
       const std::string& frame_name,
       const blink::ParsedPermissionsPolicy& allow) override;
+  TestRenderFrameHost* AppendAnonymousChild(
+      const std::string& frame_name) override;
   void Detach() override;
   void SendNavigateWithTransition(int nav_entry_id,
                                   bool did_create_new_entry,
@@ -96,6 +111,16 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
   const std::vector<std::string>& GetConsoleMessages() override;
   int GetHeavyAdIssueCount(HeavyAdIssueType type) override;
   void SimulateManifestURLUpdate(const GURL& manifest_url) override;
+  TestRenderFrameHost* AppendFencedFrame(
+      blink::mojom::FencedFrameMode mode =
+          blink::mojom::FencedFrameMode::kDefault) override;
+  void CreateWebUsbServiceForTesting(
+      mojo::PendingReceiver<blink::mojom::WebUsbService> receiver) override;
+
+#if !BUILDFLAG(IS_ANDROID)
+  void CreateHidServiceForTesting(
+      mojo::PendingReceiver<blink::mojom::HidService> receiver) override;
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   void SendNavigate(int nav_entry_id,
                     bool did_create_new_entry,
@@ -106,6 +131,9 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
       mojom::DidCommitProvisionalLoadParamsPtr params,
       mojom::DidCommitProvisionalLoadInterfaceParamsPtr interface_params,
       bool was_within_same_document);
+  void SendDidCommitSameDocumentNavigation(
+      mojom::DidCommitProvisionalLoadParamsPtr params,
+      blink::mojom::SameDocumentNavigationType same_document_navigation_type);
 
   // With the current navigation logic this method is a no-op.
   // Simulates a renderer-initiated navigation to |url| starting in the
@@ -128,6 +156,11 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
 
   void DidEnforceInsecureRequestPolicy(
       blink::mojom::InsecureRequestPolicy policy);
+
+  // Returns the number of FedCM issues sent to DevTools with the given
+  // FederatedAuthRequestResult.
+  int GetFederatedAuthRequestIssueCount(
+      blink::mojom::FederatedAuthRequestResult result);
 
   // If set, navigations will appear to have cleared the history list in the
   // RenderFrame (DidCommitProvisionalLoadParams::history_list_was_cleared).
@@ -176,6 +209,12 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
   // an implementation, but will never receive any interface requests.
   static mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
   CreateStubBrowserInterfaceBrokerReceiver();
+
+  // Returns an `AssociatedInterfaceProvider` that will never receive any
+  // interface requests.
+  static mojo::PendingAssociatedReceiver<
+      blink::mojom::AssociatedInterfaceProvider>
+  CreateStubAssociatedInterfaceProviderReceiver();
 
   // Returns a blink::mojom::PolicyContainerBindParams containing a
   // PendingAssociatedReceiver<PolicyContainerHost> and a
@@ -229,7 +268,9 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
       blink::mojom::ServiceWorkerContainerInfoForClientPtr container_info,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           prefetch_loader_factory,
+      const absl::optional<blink::ParsedPermissionsPolicy>& permissions_policy,
       blink::mojom::PolicyContainerPtr policy_container,
+      const blink::DocumentToken& document_token,
       const base::UnguessableToken& devtools_navigation_token) override;
   void SendCommitFailedNavigation(
       mojom::NavigationClient* navigation_client,
@@ -242,6 +283,7 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
       const absl::optional<std::string>& error_page_content,
       std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
           subresource_loader_factories,
+      const blink::DocumentToken& document_token,
       blink::mojom::PolicyContainerPtr policy_container) override;
 
  private:
@@ -281,6 +323,11 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
   int heavy_ad_issue_network_count_ = 0;
   int heavy_ad_issue_cpu_total_count_ = 0;
   int heavy_ad_issue_cpu_peak_count_ = 0;
+
+  // Keeps a count of federated authentication request issues sent to
+  // ReportInspectorIssue.
+  std::unordered_map<blink::mojom::FederatedAuthRequestResult, int>
+      federated_auth_counts_;
 
   TestRenderFrameHostCreationObserver child_creation_observer_;
 

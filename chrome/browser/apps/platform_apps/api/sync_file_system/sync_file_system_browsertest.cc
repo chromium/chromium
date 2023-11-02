@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,8 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -59,7 +59,7 @@ class FakeDriveServiceFactory
   }
 
  private:
-  drive::FakeDriveService::ChangeObserver* change_observer_;
+  raw_ptr<drive::FakeDriveService::ChangeObserver> change_observer_;
 };
 
 }  // namespace
@@ -152,16 +152,16 @@ class SyncFileSystemTest : public extensions::PlatformAppBrowserTest,
 
   std::unique_ptr<signin::IdentityTestEnvironment> identity_test_env_;
 
-  drive_backend::SyncEngine* remote_service_ = nullptr;
+  raw_ptr<drive_backend::SyncEngine> remote_service_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(SyncFileSystemTest, AuthorizationTest) {
   ExtensionTestMessageListener open_failure("checkpoint: Failed to get syncfs",
-                                            true);
+                                            ReplyBehavior::kWillReply);
   ExtensionTestMessageListener bar_created("checkpoint: \"/bar\" created",
-                                           true);
+                                           ReplyBehavior::kWillReply);
   ExtensionTestMessageListener foo_created("checkpoint: \"/foo\" created",
-                                           true);
+                                           ReplyBehavior::kWillReply);
   extensions::ResultCatcher catcher;
 
   LoadAndLaunchPlatformApp("sync_file_system/authorization_test", "Launched");

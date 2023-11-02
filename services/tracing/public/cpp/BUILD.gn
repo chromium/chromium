@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -56,6 +56,8 @@ target(tracing_lib_type, "cpp") {
     sources += [
       "base_agent.cc",
       "base_agent.h",
+      "perfetto/custom_event_recorder.cc",
+      "perfetto/custom_event_recorder.h",
       "perfetto/dummy_producer.cc",
       "perfetto/dummy_producer.h",
       "perfetto/interning_index.h",
@@ -146,12 +148,27 @@ target(tracing_lib_type, "cpp") {
     ]
 
     # Add the SystemProducer implementations.
-    if (is_posix) {
+    if (is_posix || is_fuchsia) {
       sources += [
         "perfetto/posix_system_producer.cc",
         "perfetto/posix_system_producer.h",
       ]
-      if (!is_android) {
+
+      deps += [ "//third_party/perfetto/include/perfetto/ext/ipc:ipc" ]
+
+      if (is_fuchsia) {
+        sources += [
+          "perfetto/fuchsia_perfetto_producer_connector.cc",
+          "perfetto/fuchsia_perfetto_producer_connector.h",
+        ]
+
+        deps += [
+          "//third_party/fuchsia-sdk/sdk/pkg/fidl_cpp_base",
+          "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
+        ]
+        public_deps +=
+            [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.tracing.perfetto" ]
+      } else if (!is_android) {
         sources += [
           "system_tracing_service.cc",
           "system_tracing_service.h",

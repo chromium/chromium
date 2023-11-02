@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -49,8 +48,9 @@
 #include "extensions/browser/management_policy.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/base_paths.h"
 #include "base/path_service.h"
 #include "chrome/installer/util/shell_util.h"
@@ -66,7 +66,7 @@ void ResetShortcutsOnBlockingThread() {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
   for (int location = ShellUtil::SHORTCUT_LOCATION_FIRST;
-       location < ShellUtil::NUM_SHORTCUT_LOCATIONS; ++location) {
+       location <= ShellUtil::SHORTCUT_LOCATION_LAST; ++location) {
     ShellUtil::ShortcutListMaybeRemoveUnknownArgs(
         static_cast<ShellUtil::ShortcutLocation>(location),
         ShellUtil::CURRENT_USER, chrome_exe, true, nullptr, nullptr);
@@ -77,7 +77,7 @@ void ResetShortcutsOnBlockingThread() {
 }
 
 }  // namespace
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 ProfileResetter::ProfileResetter(Profile* profile)
     : profile_(profile),
@@ -136,7 +136,7 @@ void ProfileResetter::Reset(
   };
 
   ResettableFlags reset_triggered_for_flags = 0;
-  for (size_t i = 0; i < base::size(flagToMethod); ++i) {
+  for (size_t i = 0; i < std::size(flagToMethod); ++i) {
     if (resettable_flags & flagToMethod[i].flag) {
       reset_triggered_for_flags |= flagToMethod[i].flag;
       (this->*flagToMethod[i].method)();
@@ -177,16 +177,17 @@ void ProfileResetter::ResetDefaultSearchEngine() {
     DCHECK(prefs);
     TemplateURLPrepopulateData::ClearPrepopulatedEnginesInPrefs(
         profile_->GetPrefs());
-    std::unique_ptr<base::ListValue> search_engines(
+    absl::optional<base::Value::List> search_engines(
         master_settings_->GetSearchProviderOverrides());
-    if (search_engines) {
+    if (search_engines.has_value()) {
       // This Chrome distribution channel provides a custom search engine. We
       // must reset to it.
-      ListPrefUpdate update(prefs, prefs::kSearchProviderOverrides);
-      update->Swap(search_engines.get());
+      prefs->SetList(prefs::kSearchProviderOverrides,
+                     std::move(search_engines).value());
     }
 
     template_url_service_->RepairPrepopulatedSearchEngines();
+    template_url_service_->RepairStarterPackEngines();
 
     MarkAsDone(DEFAULT_SEARCH_ENGINE);
   } else {
@@ -203,18 +204,20 @@ void ProfileResetter::ResetHomepage() {
   PrefService* prefs = profile_->GetPrefs();
   DCHECK(prefs);
   std::string homepage;
-  bool homepage_is_ntp, show_home_button;
 
   if (master_settings_->GetHomepage(&homepage))
     prefs->SetString(prefs::kHomePage, homepage);
 
-  if (master_settings_->GetHomepageIsNewTab(&homepage_is_ntp))
-    prefs->SetBoolean(prefs::kHomePageIsNewTabPage, homepage_is_ntp);
+  absl::optional<bool> homepage_is_ntp =
+      master_settings_->GetHomepageIsNewTab();
+  if (homepage_is_ntp.has_value())
+    prefs->SetBoolean(prefs::kHomePageIsNewTabPage, *homepage_is_ntp);
   else
     prefs->ClearPref(prefs::kHomePageIsNewTabPage);
 
-  if (master_settings_->GetShowHomeButton(&show_home_button))
-    prefs->SetBoolean(prefs::kShowHomeButton, show_home_button);
+  absl::optional<bool> show_home_button = master_settings_->GetShowHomeButton();
+  if (show_home_button.has_value())
+    prefs->SetBoolean(prefs::kShowHomeButton, *show_home_button);
   else
     prefs->ClearPref(prefs::kShowHomeButton);
   MarkAsDone(HOMEPAGE);
@@ -296,10 +299,11 @@ void ProfileResetter::ResetStartupPages() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   PrefService* prefs = profile_->GetPrefs();
   DCHECK(prefs);
-  std::unique_ptr<base::ListValue> url_list(
+  absl::optional<base::Value::List> url_list(
       master_settings_->GetUrlsToRestoreOnStartup());
-  if (url_list)
-    ListPrefUpdate(prefs, prefs::kURLsToRestoreOnStartup)->Swap(url_list.get());
+  if (url_list.has_value()) {
+    prefs->SetList(prefs::kURLsToRestoreOnStartup, std::move(url_list).value());
+  }
 
   int restore_on_startup;
   if (master_settings_->GetRestoreOnStartup(&restore_on_startup))
@@ -328,7 +332,7 @@ void ProfileResetter::ResetPinnedTabs() {
 }
 
 void ProfileResetter::ResetShortcuts() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::ThreadPool::CreateCOMSTATaskRunner(
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE})
       ->PostTaskAndReply(
@@ -374,7 +378,7 @@ void ProfileResetter::OnBrowsingDataRemoverDone(uint64_t failed_data_types) {
   MarkAsDone(COOKIES_AND_SITE_DATA);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 std::vector<ShortcutCommand> GetChromeLaunchShortcuts(
     const scoped_refptr<SharedCancellationFlag>& cancel) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
@@ -385,7 +389,7 @@ std::vector<ShortcutCommand> GetChromeLaunchShortcuts(
     return std::vector<ShortcutCommand>();
   std::vector<ShortcutCommand> shortcuts;
   for (int location = ShellUtil::SHORTCUT_LOCATION_FIRST;
-       location < ShellUtil::NUM_SHORTCUT_LOCATIONS; ++location) {
+       location <= ShellUtil::SHORTCUT_LOCATION_LAST; ++location) {
     if (cancel.get() && cancel->data.IsSet())
       break;
     ShellUtil::ShortcutListMaybeRemoveUnknownArgs(
@@ -398,4 +402,4 @@ std::vector<ShortcutCommand> GetChromeLaunchShortcuts(
   }
   return shortcuts;
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)

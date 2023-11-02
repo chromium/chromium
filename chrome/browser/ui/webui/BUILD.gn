@@ -1,0 +1,67 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+source_set("configs") {
+  sources = [
+    "chrome_untrusted_web_ui_configs.cc",
+    "chrome_untrusted_web_ui_configs.h",
+    "chrome_untrusted_web_ui_configs_common.cc",
+    "chrome_untrusted_web_ui_configs_common.h",
+    "chrome_web_ui_configs.cc",
+    "chrome_web_ui_configs.h",
+  ]
+
+  deps = [
+    "//content/public/browser",
+    "//printing/buildflags:buildflags",
+    "//skia",
+    "//third_party/abseil-cpp:absl",
+  ]
+
+  if (is_android) {
+    sources += [
+      "chrome_untrusted_web_ui_configs_android.cc",
+      "chrome_untrusted_web_ui_configs_android.h",
+    ]
+  }
+
+  if (is_mac || is_win || is_linux || is_chromeos || is_fuchsia) {
+    sources += [
+      "chrome_untrusted_web_ui_configs_desktop.cc",
+      "chrome_untrusted_web_ui_configs_desktop.h",
+    ]
+
+    deps += [ "//chrome/browser/ui/webui/image_editor:image_editor_ui" ]
+  }
+
+  # Includes Ash Chrome and Lacros Chrome
+  if (is_chromeos) {
+    sources += [
+      "chrome_untrusted_web_ui_configs_chromeos.cc",
+      "chrome_untrusted_web_ui_configs_chromeos.h",
+      "chrome_web_ui_configs_chromeos.cc",
+      "chrome_web_ui_configs_chromeos.h",
+    ]
+    deps += [ "//build:chromeos_buildflags" ]
+  }
+
+  if (is_chromeos_ash) {
+    deps += [
+      "//ash/constants",
+      "//ash/webui/demo_mode_app_ui",
+      "//ash/webui/eche_app_ui",
+      "//ash/webui/face_ml_app_ui",
+      "//ash/webui/file_manager:file_manager_untrusted_ui",
+      "//ash/webui/help_app_ui",
+      "//ash/webui/os_feedback_ui",
+      "//ash/webui/shortcut_customization_ui",
+      "//chrome/browser/ash",
+    ]
+    if (!is_official_build) {
+      deps += [ "//ash/webui/sample_system_web_app_ui" ]
+    }
+  }
+}

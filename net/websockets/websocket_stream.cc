@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
@@ -76,7 +77,7 @@ class Delegate : public URLRequest::Delegate {
   void OnAuthRequiredComplete(URLRequest* request,
                               const AuthCredentials* auth_credentials);
 
-  WebSocketStreamRequestImpl* owner_;
+  raw_ptr<WebSocketStreamRequestImpl> owner_;
 };
 
 class WebSocketStreamRequestImpl : public WebSocketStreamRequestAPI {

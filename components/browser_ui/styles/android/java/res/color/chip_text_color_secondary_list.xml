@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2019 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:alpha="@dimen/default_disabled_alpha"
+        android:color="@macro/default_text_color_on_accent2_container"
+        android:state_selected="true" android:state_enabled="false" />
+    <item android:alpha="@dimen/default_disabled_alpha"
+        android:color="@macro/default_chip_assistive_text_color_secondary" android:state_enabled="false" />
+    <item android:color="@macro/default_text_color_on_accent2_container" android:state_selected="true" />
+    <item android:color="@macro/default_chip_assistive_text_color_secondary" />
+</selector>

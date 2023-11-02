@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -543,7 +543,7 @@ public final class InfoBarLayout extends ViewGroup implements View.OnClickListen
     }
 
     private NoUnderlineClickableSpan createClickableSpan() {
-        return new NoUnderlineClickableSpan(getResources(), (view) -> mInfoBar.onLinkClicked());
+        return new NoUnderlineClickableSpan(getContext(), (view) -> mInfoBar.onLinkClicked());
     }
 
     /**
@@ -583,7 +583,7 @@ public final class InfoBarLayout extends ViewGroup implements View.OnClickListen
      */
     public static ImageButton createCloseButton(Context context) {
         final ColorStateList tint =
-                AppCompatResources.getColorStateList(context, R.color.default_icon_color);
+                AppCompatResources.getColorStateList(context, R.color.default_icon_color_tint_list);
         TypedArray a =
                 context.obtainStyledAttributes(new int[] {android.R.attr.selectableItemBackground});
         Drawable closeButtonBackground = a.getDrawable(0);

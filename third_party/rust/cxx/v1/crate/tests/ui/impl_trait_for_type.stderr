@@ -1,5 +1,5 @@
 error: unexpected impl, expected something like `impl UniquePtr<T> {}`
- --> $DIR/impl_trait_for_type.rs:7:10
+ --> tests/ui/impl_trait_for_type.rs:7:10
   |
 7 |     impl UniquePtrTarget for S {}
   |          ^^^^^^^^^^^^^^^^^^^^^

@@ -1,26 +1,35 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/overlays/infobar_banner/translate/translate_infobar_banner_overlay_mediator.h"
 
-#include <ostream>
+#import <ostream>
 
-#include "base/notreached.h"
+#import "base/notreached.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/infobar_banner_overlay_responses.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/translate_infobar_banner_overlay_request_config.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
+#import "ios/chrome/browser/ui/icons/infobar_icon.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_consumer.h"
 #import "ios/chrome/browser/ui/overlays/infobar_banner/infobar_banner_overlay_mediator+consumer_support.h"
 #import "ios/chrome/browser/ui/overlays/overlay_request_mediator+subclassing.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "ui/base/l10n/l10n_util_mac.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
 using translate_infobar_overlays::TranslateBannerRequestConfig;
+
+namespace {
+
+// The name of the translate icon image.
+NSString* const kTranslateImageName = @"infobar_translate_icon";
+
+}  // namespace
 
 @interface TranslateInfobarBannerOverlayMediator ()
 // The translate banner config from the request.
@@ -53,14 +62,19 @@ using translate_infobar_overlays::TranslateBannerRequestConfig;
 
   [self.consumer setBannerAccessibilityLabel:[self bannerTitleText]];
   [self.consumer setButtonText:[self infobarButtonText]];
-  [self.consumer setIconImage:[UIImage imageNamed:config->icon_image_name()]];
+
+  UIImage* iconImage = UseSymbols()
+                           ? CustomSymbolTemplateWithPointSize(
+                                 kTranslateSymbol, kSymbolImagePointSize)
+                           : [UIImage imageNamed:kTranslateImageName];
+  [self.consumer setIconImage:iconImage];
   [self.consumer setPresentsModal:YES];
   [self.consumer setTitleText:[self bannerTitleText]];
   [self.consumer setSubtitleText:[self bannerSubtitleText]];
 }
 
 // Returns the title text of the banner depending on the
-// |self.config.translate_step()|.
+// `self.config.translate_step()`.
 - (NSString*)bannerTitleText {
   switch (self.config->translate_step()) {
     case translate::TranslateStep::TRANSLATE_STEP_BEFORE_TRANSLATE:
@@ -86,7 +100,7 @@ using translate_infobar_overlays::TranslateBannerRequestConfig;
 }
 
 // Returns the text of the banner and modal action button depending on the
-// |self.config.translate_step()|.
+// `self.config.translate_step()`.
 - (NSString*)infobarButtonText {
   switch (self.config->translate_step()) {
     case translate::TranslateStep::TRANSLATE_STEP_BEFORE_TRANSLATE:

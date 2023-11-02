@@ -14,9 +14,10 @@ gaia.chromeOSLogin.shouldSendCloseView = true;
 
 const urlParams = new URLSearchParams(window.location.search);
 const useNativeNavigation = !!urlParams.get('use_native_navigation');
+const reauthRequestToken = urlParams.get('rart')
+const prefillEmail = urlParams.get('Email')
 
 function goFirstPage() {
-console.error('On first page');
   document.getElementById('page1').hidden = false;
   document.getElementById('page2').hidden = true;
   history.replaceState({}, '', window.location.pathname + '#identifier');
@@ -32,6 +33,9 @@ gaia.chromeOSLogin.registerHtml5Listener = function() {
         gaia.chromeOSLogin.parent_webview_ = e.source;
         gaia.chromeOSLogin.parent_webview_url_ = e.origin;
         if (!gaia.chromeOSLogin.initialized_) {
+            if (e.data.method != 'handshake') {
+              return
+            }
           gaia.chromeOSLogin.initialized_ = true;
           goFirstPage();
         } else if (e.data == 'primaryActionHit') {
@@ -66,6 +70,15 @@ gaia.chromeOSLogin.attemptLogin = function(email, password) {
               user: email,
               passwordBytes: password,
               keyType: 'KEY_TYPE_PASSWORD_PLAIN'}
+      }, '/');
+};
+
+gaia.chromeOSLogin.confirmToken = function() {
+  // SAML credential passing api for password.
+  window.postMessage(
+      {type: 'gaia_saml_api',
+       call: {method: 'confirm',
+              token: 'token'}
       }, '/');
 };
 
@@ -153,12 +166,18 @@ function goNext() {
         }
         if (services)
           gaia.chromeOSLogin.sendUserInfo(services);
+
+        gaia.chromeOSLogin.confirmToken();
         if (gaia.chromeOSLogin.shouldSendCloseView)
           gaia.chromeOSLogin.sendCloseView();
         history.pushState({}, "", window.location.pathname + "#close");
       }
     };
-    request.send('identifier=' + encodeURIComponent(email));
+    content = 'identifier=' + encodeURIComponent(email);
+    if (reauthRequestToken) {
+      content += ('&rart=' + reauthRequestToken);
+    }
+    request.send(content);
 
     gaia.chromeOSLogin.attemptLogin(email, password);
   }
@@ -167,6 +186,9 @@ function goNext() {
 function onLoad() {
   if (useNativeNavigation) {
     document.getElementById("nextButton").remove();
+  }
+  if (prefillEmail) {
+    document.getElementById("identifier").value = prefillEmail;
   }
   gaia.chromeOSLogin.registerHtml5Listener();
 }

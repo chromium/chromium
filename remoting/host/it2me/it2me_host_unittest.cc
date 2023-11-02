@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,8 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/location.h"
-#include "base/macros.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -34,9 +34,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "base/linux_util.h"
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 namespace remoting {
 
@@ -64,6 +64,30 @@ const char kPortRange[] = "12401-12408";
 const char kTestStunServer[] = "test_relay_server.com";
 
 }  // namespace
+
+// This is invoked automatically by the gtest framework, and improves the error
+// messages when a test fails (by properly formatting the host state instead
+// of printing their byte value).
+void PrintTo(It2MeHostState state, std::ostream* os) {
+#define CASE(_state)           \
+  case It2MeHostState::_state: \
+    *os << #_state;            \
+    return;
+
+  switch (state) {
+    CASE(kDisconnected);
+    CASE(kStarting);
+    CASE(kRequestedAccessCode);
+    CASE(kReceivedAccessCode);
+    CASE(kConnecting);
+    CASE(kConnected);
+    CASE(kError);
+    CASE(kInvalidDomainError);
+  }
+  NOTREACHED();
+  *os << "Unknown state " << static_cast<int>(state);
+  return;
+}
 
 class FakeIt2MeConfirmationDialog : public It2MeConfirmationDialog {
  public:
@@ -190,6 +214,8 @@ class It2MeHostTest : public testing::Test, public It2MeHost::Observer {
   absl::optional<bool> enable_dialogs_;
   absl::optional<bool> enable_notifications_;
   absl::optional<bool> is_enterprise_session_;
+  absl::optional<bool> terminate_upon_input_;
+  absl::optional<bool> enable_curtaining_;
 
   // Stores the last nat traversal policy value received.
   bool last_nat_traversal_enabled_value_ = false;
@@ -205,9 +231,9 @@ class It2MeHostTest : public testing::Test, public It2MeHost::Observer {
   ErrorCode last_error_code_ = ErrorCode::OK;
 
   // Used to set ConfirmationDialog behavior.
-  FakeIt2MeDialogFactory* dialog_factory_ = nullptr;
+  raw_ptr<FakeIt2MeDialogFactory> dialog_factory_ = nullptr;
 
-  std::unique_ptr<base::DictionaryValue> policies_;
+  absl::optional<base::Value::Dict> policies_;
 
   scoped_refptr<It2MeHost> it2me_host_;
 
@@ -232,7 +258,7 @@ It2MeHostTest::It2MeHostTest() {}
 It2MeHostTest::~It2MeHostTest() = default;
 
 void It2MeHostTest::SetUp() {
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // Need to prime the host OS version value for linux to prevent IO on the
   // network thread. base::GetLinuxDistro() caches the result.
   base::GetLinuxDistro();
@@ -270,12 +296,12 @@ void It2MeHostTest::OnValidationComplete(base::OnceClosure resume_callback,
 void It2MeHostTest::SetPolicies(
     std::initializer_list<std::pair<base::StringPiece, const base::Value&>>
         policies) {
-  policies_ = std::make_unique<base::DictionaryValue>();
+  policies_.emplace();
   for (const auto& policy : policies) {
-    policies_->Set(policy.first, policy.second.CreateDeepCopy());
+    policies_->Set(policy.first, policy.second.Clone());
   }
   if (it2me_host_) {
-    it2me_host_->OnPolicyUpdate(std::move(policies_));
+    it2me_host_->OnPolicyUpdate(std::move(*policies_));
   }
 }
 
@@ -328,6 +354,16 @@ void It2MeHostTest::StartHost() {
     // is_enterprise_session should only be run on ChromeOS.
     it2me_host_->set_is_enterprise_session(is_enterprise_session_.value());
   }
+  if (terminate_upon_input_.has_value()) {
+    // Only ChromeOS supports this method, so tests setting
+    // terminate_upon_input_ should only be run on ChromeOS.
+    it2me_host_->set_terminate_upon_input(terminate_upon_input_.value());
+  }
+  if (enable_curtaining_.has_value()) {
+    // Only ChromeOS supports this method, so tests setting
+    // curtain_local_user_session should only be run on ChromeOS.
+    it2me_host_->set_enable_curtaining(enable_curtaining_.value());
+  }
   auto create_connection_context = base::BindOnce(
       [](std::unique_ptr<SignalStrategy> signal_strategy,
          ChromotingHostContext* host_context) {
@@ -341,7 +377,7 @@ void It2MeHostTest::StartHost() {
         return context;
       },
       std::move(fake_signal_strategy));
-  it2me_host_->Connect(host_context_->Copy(), policies_->CreateDeepCopy(),
+  it2me_host_->Connect(host_context_->Copy(), policies_->Clone(),
                        std::move(dialog_factory), weak_factory_.GetWeakPtr(),
                        std::move(create_connection_context), kTestUserName,
                        ice_config);
@@ -799,10 +835,45 @@ TEST_F(It2MeHostTest, ConnectRespectsSuppressNotificationsParameter) {
   EXPECT_FALSE(GetHost()->desktop_environment_options().enable_notifications());
 }
 
+TEST_F(It2MeHostTest, ConnectRespectsTerminateUponInputParameter) {
+  terminate_upon_input_ = true;
+  StartHost();
+  EXPECT_TRUE(GetHost()->desktop_environment_options().terminate_upon_input());
+}
+
+TEST_F(It2MeHostTest, TerminateUponInputDefaultsToFalse) {
+  StartHost();
+  EXPECT_FALSE(GetHost()->desktop_environment_options().terminate_upon_input());
+}
+
+TEST_F(It2MeHostTest, ConnectRespectsEnableCurtainingParameter) {
+  enable_curtaining_ = true;
+  StartHost();
+  EXPECT_TRUE(GetHost()->desktop_environment_options().enable_curtaining());
+}
+
+TEST_F(It2MeHostTest, EnableCurtainingDefaultsToFalse) {
+  StartHost();
+  EXPECT_FALSE(GetHost()->desktop_environment_options().enable_curtaining());
+}
+
 TEST_F(It2MeHostTest,
        EnterpriseSessionsSucceedWhenRemoteSupportConnectionsPolicyDisabled) {
   SetPolicies({{policy::key::kRemoteAccessHostAllowRemoteSupportConnections,
                 base::Value(false)}});
+
+  is_enterprise_session_ = true;
+  StartHost();
+  ASSERT_EQ(It2MeHostState::kReceivedAccessCode, last_host_state_);
+
+  ShutdownHost();
+  ASSERT_EQ(It2MeHostState::kDisconnected, last_host_state_);
+  ASSERT_EQ(ErrorCode::OK, last_error_code_);
+}
+
+TEST_F(It2MeHostTest, EnterpriseSessionsShouldNotCheckHostDomain) {
+  SetPolicies({{policy::key::kRemoteAccessHostDomainList,
+                MakeList({"other-domain.com"})}});
 
   is_enterprise_session_ = true;
   StartHost();

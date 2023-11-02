@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -48,6 +48,22 @@ class QRCodeGeneratorServiceImpl : public mojom::QRCodeGeneratorService {
                 const int dino_border_px,
                 const SkPaint& paint_foreground,
                 const SkPaint& paint_background);
+
+  // Draws a passkey icon at the center of |canvas|.
+  void DrawPasskeyIcon(SkCanvas* canvas,
+                       const SkRect& canvas_bounds,
+                       const SkPaint& paint_foreground,
+                       const SkPaint& paint_background);
+
+  // Draws |image| at the center of |canvas| with a border of at least
+  // |border_px|, snapped to a whole module.
+  void PaintCenterImage(SkCanvas* canvas,
+                        const SkRect& canvas_bounds,
+                        const int width_px,
+                        const int height_px,
+                        const int border_px,
+                        const SkPaint& paint_background,
+                        const SkBitmap& image);
 
   // Renders the QR code with pixel information in |data| and render parameters
   // in |request|. Result is stored into |response|.

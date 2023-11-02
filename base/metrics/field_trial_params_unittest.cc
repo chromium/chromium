@@ -1,11 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/metrics/field_trial_params.h"
 
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_param_associator.h"
 #include "base/test/gtest_util.h"
@@ -21,11 +20,10 @@ namespace {
 scoped_refptr<FieldTrial> CreateFieldTrial(
     const std::string& trial_name,
     int total_probability,
-    const std::string& default_group_name,
-    int* default_group_number) {
+    const std::string& default_group_name) {
   return FieldTrialList::FactoryGetFieldTrial(
       trial_name, total_probability, default_group_name,
-      FieldTrial::SESSION_RANDOMIZED, default_group_number);
+      base::FieldTrialList::GetEntropyProviderForSessionRandomization());
 }
 
 }  // namespace
@@ -124,8 +122,7 @@ TEST_F(FieldTrialParamsTest, AssociateFieldTrialParams_DoesntActivateTrial) {
       "AssociateFieldTrialParams_DoesntActivateTrial";
 
   ASSERT_FALSE(FieldTrialList::IsTrialActive(kTrialName));
-  scoped_refptr<FieldTrial> trial(
-      CreateFieldTrial(kTrialName, 100, "A", nullptr));
+  scoped_refptr<FieldTrial> trial(CreateFieldTrial(kTrialName, 100, "A"));
   ASSERT_FALSE(FieldTrialList::IsTrialActive(kTrialName));
 
   std::map<std::string, std::string> params;
@@ -158,8 +155,7 @@ TEST_F(FieldTrialParamsTest, GetFieldTrialParams_ActivatesTrial) {
   const std::string kTrialName = "GetFieldTrialParams_ActivatesTrial";
 
   ASSERT_FALSE(FieldTrialList::IsTrialActive(kTrialName));
-  scoped_refptr<FieldTrial> trial(
-      CreateFieldTrial(kTrialName, 100, "A", nullptr));
+  scoped_refptr<FieldTrial> trial(CreateFieldTrial(kTrialName, 100, "A"));
   ASSERT_FALSE(FieldTrialList::IsTrialActive(kTrialName));
 
   std::map<std::string, std::string> params;
@@ -171,8 +167,7 @@ TEST_F(FieldTrialParamsTest, GetFieldTrialParamValue_ActivatesTrial) {
   const std::string kTrialName = "GetFieldTrialParamValue_ActivatesTrial";
 
   ASSERT_FALSE(FieldTrialList::IsTrialActive(kTrialName));
-  scoped_refptr<FieldTrial> trial(
-      CreateFieldTrial(kTrialName, 100, "A", nullptr));
+  scoped_refptr<FieldTrial> trial(CreateFieldTrial(kTrialName, 100, "A"));
   ASSERT_FALSE(FieldTrialList::IsTrialActive(kTrialName));
 
   std::map<std::string, std::string> params;
@@ -182,13 +177,12 @@ TEST_F(FieldTrialParamsTest, GetFieldTrialParamValue_ActivatesTrial) {
 
 TEST_F(FieldTrialParamsTest, GetFieldTrialParamsByFeature) {
   const std::string kTrialName = "GetFieldTrialParamsByFeature";
-  const Feature kFeature{"TestFeature", FEATURE_DISABLED_BY_DEFAULT};
+  static BASE_FEATURE(kFeature, "TestFeature", FEATURE_DISABLED_BY_DEFAULT);
 
   std::map<std::string, std::string> params;
   params["x"] = "1";
   AssociateFieldTrialParams(kTrialName, "A", params);
-  scoped_refptr<FieldTrial> trial(
-      CreateFieldTrial(kTrialName, 100, "A", nullptr));
+  scoped_refptr<FieldTrial> trial(CreateFieldTrial(kTrialName, 100, "A"));
 
   CreateFeatureWithTrial(kFeature, FeatureList::OVERRIDE_ENABLE_FEATURE,
                          trial.get());
@@ -200,13 +194,12 @@ TEST_F(FieldTrialParamsTest, GetFieldTrialParamsByFeature) {
 
 TEST_F(FieldTrialParamsTest, GetFieldTrialParamValueByFeature) {
   const std::string kTrialName = "GetFieldTrialParamsByFeature";
-  const Feature kFeature{"TestFeature", FEATURE_DISABLED_BY_DEFAULT};
+  static BASE_FEATURE(kFeature, "TestFeature", FEATURE_DISABLED_BY_DEFAULT);
 
   std::map<std::string, std::string> params;
   params["x"] = "1";
   AssociateFieldTrialParams(kTrialName, "A", params);
-  scoped_refptr<FieldTrial> trial(
-      CreateFieldTrial(kTrialName, 100, "A", nullptr));
+  scoped_refptr<FieldTrial> trial(CreateFieldTrial(kTrialName, 100, "A"));
 
   CreateFeatureWithTrial(kFeature, FeatureList::OVERRIDE_ENABLE_FEATURE,
                          trial.get());
@@ -217,13 +210,12 @@ TEST_F(FieldTrialParamsTest, GetFieldTrialParamValueByFeature) {
 
 TEST_F(FieldTrialParamsTest, GetFieldTrialParamsByFeature_Disable) {
   const std::string kTrialName = "GetFieldTrialParamsByFeature";
-  const Feature kFeature{"TestFeature", FEATURE_DISABLED_BY_DEFAULT};
+  static BASE_FEATURE(kFeature, "TestFeature", FEATURE_DISABLED_BY_DEFAULT);
 
   std::map<std::string, std::string> params;
   params["x"] = "1";
   AssociateFieldTrialParams(kTrialName, "A", params);
-  scoped_refptr<FieldTrial> trial(
-      CreateFieldTrial(kTrialName, 100, "A", nullptr));
+  scoped_refptr<FieldTrial> trial(CreateFieldTrial(kTrialName, 100, "A"));
 
   CreateFeatureWithTrial(kFeature, FeatureList::OVERRIDE_DISABLE_FEATURE,
                          trial.get());
@@ -234,13 +226,12 @@ TEST_F(FieldTrialParamsTest, GetFieldTrialParamsByFeature_Disable) {
 
 TEST_F(FieldTrialParamsTest, GetFieldTrialParamValueByFeature_Disable) {
   const std::string kTrialName = "GetFieldTrialParamsByFeature";
-  const Feature kFeature{"TestFeature", FEATURE_DISABLED_BY_DEFAULT};
+  static BASE_FEATURE(kFeature, "TestFeature", FEATURE_DISABLED_BY_DEFAULT);
 
   std::map<std::string, std::string> params;
   params["x"] = "1";
   AssociateFieldTrialParams(kTrialName, "A", params);
-  scoped_refptr<FieldTrial> trial(
-      CreateFieldTrial(kTrialName, 100, "A", nullptr));
+  scoped_refptr<FieldTrial> trial(CreateFieldTrial(kTrialName, 100, "A"));
 
   CreateFeatureWithTrial(kFeature, FeatureList::OVERRIDE_DISABLE_FEATURE,
                          trial.get());
@@ -252,7 +243,7 @@ TEST_F(FieldTrialParamsTest, GetFieldTrialParamValueByFeature_Disable) {
 TEST_F(FieldTrialParamsTest, FeatureParamString) {
   const std::string kTrialName = "GetFieldTrialParamsByFeature";
 
-  static const Feature kFeature{"TestFeature", FEATURE_DISABLED_BY_DEFAULT};
+  static BASE_FEATURE(kFeature, "TestFeature", FEATURE_DISABLED_BY_DEFAULT);
   static const FeatureParam<std::string> a{&kFeature, "a", "default"};
   static const FeatureParam<std::string> b{&kFeature, "b", ""};
   static const FeatureParam<std::string> c{&kFeature, "c", "default"};
@@ -268,8 +259,7 @@ TEST_F(FieldTrialParamsTest, FeatureParamString) {
   // "e" is not registered
   // "f" is not registered
   AssociateFieldTrialParams(kTrialName, "A", params);
-  scoped_refptr<FieldTrial> trial(
-      CreateFieldTrial(kTrialName, 100, "A", nullptr));
+  scoped_refptr<FieldTrial> trial(CreateFieldTrial(kTrialName, 100, "A"));
 
   CreateFeatureWithTrial(kFeature, FeatureList::OVERRIDE_ENABLE_FEATURE,
                          trial.get());
@@ -285,7 +275,7 @@ TEST_F(FieldTrialParamsTest, FeatureParamString) {
 TEST_F(FieldTrialParamsTest, FeatureParamInt) {
   const std::string kTrialName = "GetFieldTrialParamsByFeature";
 
-  static const Feature kFeature{"TestFeature", FEATURE_DISABLED_BY_DEFAULT};
+  static BASE_FEATURE(kFeature, "TestFeature", FEATURE_DISABLED_BY_DEFAULT);
   static const FeatureParam<int> a{&kFeature, "a", 0};
   static const FeatureParam<int> b{&kFeature, "b", 0};
   static const FeatureParam<int> c{&kFeature, "c", 0};
@@ -299,8 +289,7 @@ TEST_F(FieldTrialParamsTest, FeatureParamInt) {
   params["d"] = "";
   // "e" is not registered
   AssociateFieldTrialParams(kTrialName, "A", params);
-  scoped_refptr<FieldTrial> trial(
-      CreateFieldTrial(kTrialName, 100, "A", nullptr));
+  scoped_refptr<FieldTrial> trial(CreateFieldTrial(kTrialName, 100, "A"));
 
   CreateFeatureWithTrial(kFeature, FeatureList::OVERRIDE_ENABLE_FEATURE,
                          trial.get());
@@ -321,7 +310,7 @@ TEST_F(FieldTrialParamsTest, FeatureParamInt) {
 TEST_F(FieldTrialParamsTest, FeatureParamDouble) {
   const std::string kTrialName = "GetFieldTrialParamsByFeature";
 
-  static const Feature kFeature{"TestFeature", FEATURE_DISABLED_BY_DEFAULT};
+  static BASE_FEATURE(kFeature, "TestFeature", FEATURE_DISABLED_BY_DEFAULT);
   static const FeatureParam<double> a{&kFeature, "a", 0.0};
   static const FeatureParam<double> b{&kFeature, "b", 0.0};
   static const FeatureParam<double> c{&kFeature, "c", 0.0};
@@ -337,8 +326,7 @@ TEST_F(FieldTrialParamsTest, FeatureParamDouble) {
   params["e"] = "";
   // "f" is not registered
   AssociateFieldTrialParams(kTrialName, "A", params);
-  scoped_refptr<FieldTrial> trial(
-      CreateFieldTrial(kTrialName, 100, "A", nullptr));
+  scoped_refptr<FieldTrial> trial(CreateFieldTrial(kTrialName, 100, "A"));
 
   CreateFeatureWithTrial(kFeature, FeatureList::OVERRIDE_ENABLE_FEATURE,
                          trial.get());
@@ -361,7 +349,7 @@ TEST_F(FieldTrialParamsTest, FeatureParamDouble) {
 TEST_F(FieldTrialParamsTest, FeatureParamBool) {
   const std::string kTrialName = "GetFieldTrialParamsByFeature";
 
-  static const Feature kFeature{"TestFeature", FEATURE_DISABLED_BY_DEFAULT};
+  static BASE_FEATURE(kFeature, "TestFeature", FEATURE_DISABLED_BY_DEFAULT);
   static const FeatureParam<bool> a{&kFeature, "a", false};
   static const FeatureParam<bool> b{&kFeature, "b", true};
   static const FeatureParam<bool> c{&kFeature, "c", false};
@@ -377,8 +365,7 @@ TEST_F(FieldTrialParamsTest, FeatureParamBool) {
   params["e"] = "";
   // "f" is not registered
   AssociateFieldTrialParams(kTrialName, "A", params);
-  scoped_refptr<FieldTrial> trial(
-      CreateFieldTrial(kTrialName, 100, "A", nullptr));
+  scoped_refptr<FieldTrial> trial(CreateFieldTrial(kTrialName, 100, "A"));
 
   CreateFeatureWithTrial(kFeature, FeatureList::OVERRIDE_ENABLE_FEATURE,
                          trial.get());
@@ -394,7 +381,7 @@ TEST_F(FieldTrialParamsTest, FeatureParamBool) {
 TEST_F(FieldTrialParamsTest, FeatureParamTimeDelta) {
   const std::string kTrialName = "GetFieldTrialParamsByFeature";
 
-  static const Feature kFeature{"TestFeature", FEATURE_DISABLED_BY_DEFAULT};
+  static BASE_FEATURE(kFeature, "TestFeature", FEATURE_DISABLED_BY_DEFAULT);
   static const FeatureParam<base::TimeDelta> a{&kFeature, "a",
                                                base::TimeDelta()};
   static const FeatureParam<base::TimeDelta> b{&kFeature, "b",
@@ -416,8 +403,7 @@ TEST_F(FieldTrialParamsTest, FeatureParamTimeDelta) {
   params["e"] = "";
   // "f" is not registered
   AssociateFieldTrialParams(kTrialName, "A", params);
-  scoped_refptr<FieldTrial> trial(
-      CreateFieldTrial(kTrialName, 100, "A", nullptr));
+  scoped_refptr<FieldTrial> trial(CreateFieldTrial(kTrialName, 100, "A"));
 
   CreateFeatureWithTrial(kFeature, FeatureList::OVERRIDE_ENABLE_FEATURE,
                          trial.get());
@@ -437,7 +423,7 @@ TEST_F(FieldTrialParamsTest, FeatureParamEnum) {
 
   static const FeatureParam<Hand>::Option hands[] = {
       {ROCK, "rock"}, {PAPER, "paper"}, {SCISSORS, "scissors"}};
-  static const Feature kFeature{"TestFeature", FEATURE_DISABLED_BY_DEFAULT};
+  static BASE_FEATURE(kFeature, "TestFeature", FEATURE_DISABLED_BY_DEFAULT);
   static const FeatureParam<Hand> a{&kFeature, "a", ROCK, &hands};
   static const FeatureParam<Hand> b{&kFeature, "b", ROCK, &hands};
   static const FeatureParam<Hand> c{&kFeature, "c", ROCK, &hands};
@@ -453,8 +439,7 @@ TEST_F(FieldTrialParamsTest, FeatureParamEnum) {
   params["e"] = "";
   // "f" is not registered
   AssociateFieldTrialParams(kTrialName, "A", params);
-  scoped_refptr<FieldTrial> trial(
-      CreateFieldTrial(kTrialName, 100, "A", nullptr));
+  scoped_refptr<FieldTrial> trial(CreateFieldTrial(kTrialName, 100, "A"));
 
   CreateFeatureWithTrial(kFeature, FeatureList::OVERRIDE_ENABLE_FEATURE,
                          trial.get());
@@ -474,7 +459,7 @@ TEST_F(FieldTrialParamsTest, FeatureParamEnumClass) {
 
   static const FeatureParam<UI>::Option uis[] = {
       {UI::ONE_D, "1d"}, {UI::TWO_D, "2d"}, {UI::THREE_D, "3d"}};
-  static const Feature kFeature{"TestFeature", FEATURE_DISABLED_BY_DEFAULT};
+  static BASE_FEATURE(kFeature, "TestFeature", FEATURE_DISABLED_BY_DEFAULT);
   static const FeatureParam<UI> a{&kFeature, "a", UI::ONE_D, &uis};
   static const FeatureParam<UI> b{&kFeature, "b", UI::ONE_D, &uis};
   static const FeatureParam<UI> c{&kFeature, "c", UI::ONE_D, &uis};
@@ -490,8 +475,7 @@ TEST_F(FieldTrialParamsTest, FeatureParamEnumClass) {
   params["e"] = "";
   // "f" is not registered
   AssociateFieldTrialParams(kTrialName, "A", params);
-  scoped_refptr<FieldTrial> trial(
-      CreateFieldTrial(kTrialName, 100, "A", nullptr));
+  scoped_refptr<FieldTrial> trial(CreateFieldTrial(kTrialName, 100, "A"));
 
   CreateFeatureWithTrial(kFeature, FeatureList::OVERRIDE_ENABLE_FEATURE,
                          trial.get());

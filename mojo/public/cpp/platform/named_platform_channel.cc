@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 
 namespace mojo {
 
@@ -29,7 +30,7 @@ NamedPlatformChannel& NamedPlatformChannel::operator=(
 // static
 NamedPlatformChannel::ServerName NamedPlatformChannel::ServerNameFromUTF8(
     base::StringPiece name) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return base::UTF8ToWide(name);
 #else
   return std::string(name);
@@ -45,7 +46,15 @@ void NamedPlatformChannel::PassServerNameOnCommandLine(
 PlatformChannelEndpoint NamedPlatformChannel::ConnectToServer(
     const ServerName& server_name) {
   DCHECK(!server_name.empty());
-  return CreateClientEndpoint(server_name);
+  Options options = {.server_name = server_name};
+  return CreateClientEndpoint(options);
+}
+
+// static
+PlatformChannelEndpoint NamedPlatformChannel::ConnectToServer(
+    const Options& options) {
+  DCHECK(!options.server_name.empty());
+  return CreateClientEndpoint(options);
 }
 
 // static

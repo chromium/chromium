@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -62,8 +62,7 @@ void LayerTreeFrameSinkHolder::DeleteWhenLastResourceHasBeenReclaimed(
   frame.render_pass_list.push_back(std::move(pass));
   holder->last_frame_resources_.clear();
   holder->frame_sink_->SubmitCompositorFrame(std::move(frame),
-                                             /*hit_test_data_changed=*/true,
-                                             /*show_hit_test_borders=*/false);
+                                             /*hit_test_data_changed=*/true);
 
   // Delete sink holder immediately if not waiting for resources to be
   // reclaimed.
@@ -92,8 +91,7 @@ void LayerTreeFrameSinkHolder::SubmitCompositorFrame(
   for (auto& resource : frame.resource_list)
     last_frame_resources_.push_back(resource.id);
   frame_sink_->SubmitCompositorFrame(std::move(frame),
-                                     /*hit_test_data_changed=*/true,
-                                     /*show_hit_test_borders=*/false);
+                                     /*hit_test_data_changed=*/true);
 }
 
 void LayerTreeFrameSinkHolder::DidNotProduceFrame(

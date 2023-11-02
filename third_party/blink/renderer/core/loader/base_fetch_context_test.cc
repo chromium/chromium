@@ -86,6 +86,7 @@ class MockBaseFetchContext final : public BaseFetchContext {
   }
   bool ShouldBlockFetchByMixedContentCheck(
       mojom::blink::RequestContextType,
+      network::mojom::blink::IPAddressSpace,
       const absl::optional<ResourceRequest::RedirectInfo>&,
       const KURL&,
       ReportingDisposition,

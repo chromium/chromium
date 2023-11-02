@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include "base/files/file_util.h"
 #include "base/run_loop.h"
 #include "base/scoped_environment_variable_override.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
@@ -31,6 +32,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/network_service_util.h"
 #include "content/public/test/browser_test.h"
@@ -38,6 +40,7 @@
 #include "content/public/test/commit_message_delayer.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/frame_test_utils.h"
 #include "content/public/test/simple_url_loader_test_helper.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
@@ -47,22 +50,26 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
+#include "net/base/features.h"
+#include "net/cookies/canonical_cookie_test_helpers.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
+#include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/network_service_test.mojom.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
-
-#if BUILDFLAG(ENABLE_PLUGINS)
-#include "content/public/test/ppapi_test_utils.h"
-#endif
 
 namespace content {
 
 namespace {
+
+const char kHostA[] = "a.test";
+const char kSamePartyCookieName[] = "SamePartyCookie";
 
 using SharedURLLoaderFactoryGetterCallback =
     base::OnceCallback<scoped_refptr<network::SharedURLLoaderFactory>()>;
@@ -73,7 +80,7 @@ mojo::PendingRemote<network::mojom::NetworkContext> CreateNetworkContext() {
       network::mojom::NetworkContextParams::New();
   context_params->cert_verifier_params = GetCertVerifierParams(
       cert_verifier::mojom::CertVerifierCreationParams::New());
-  GetNetworkService()->CreateNetworkContext(
+  CreateNetworkContextInNetworkService(
       network_context.InitWithNewPipeAndPassReceiver(),
       std::move(context_params));
   return network_context;
@@ -131,12 +138,6 @@ class NetworkServiceRestartBrowserTest : public ContentBrowserTest {
       const NetworkServiceRestartBrowserTest&) = delete;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-#if BUILDFLAG(ENABLE_PLUGINS)
-    // TODO(lukasza, kmoon): https://crbug.com/702993: Remove this dependency
-    // (and //ppapi/tests/corb_test_plugin.cc + BUILD.gn dependencies) once
-    // PDF support doesn't depend on PPAPI anymore.
-    ASSERT_TRUE(ppapi::RegisterCorbTestPlugin(command_line));
-#endif
     ContentBrowserTest::SetUpCommandLine(command_line);
   }
 
@@ -161,7 +162,7 @@ class NetworkServiceRestartBrowserTest : public ContentBrowserTest {
 
   RenderFrameHostImpl* main_frame() {
     return static_cast<RenderFrameHostImpl*>(
-        shell()->web_contents()->GetMainFrame());
+        shell()->web_contents()->GetPrimaryMainFrame());
   }
 
   bool CheckCanLoadHttp(Shell* shell, const std::string& relative_url) {
@@ -558,7 +559,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
 // |StoragePartition::GetURLLoaderFactoryForBrowserProcessIOThread()| can be
 // used after crashes.
 // Flaky on Windows. https://crbug.com/840127
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_BrowserIOPendingFactory DISABLED_BrowserIOPendingFactory
 #else
 #define MAYBE_BrowserIOPendingFactory BrowserIOPendingFactory
@@ -894,7 +895,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest, ServiceWorkerFetch) {
 }
 
 // TODO(crbug.com/154571): Shared workers are not available on Android.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_SharedWorker DISABLED_SharedWorker
 #else
 #define MAYBE_SharedWorker SharedWorker
@@ -947,7 +948,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest, SSLKeyLogFileMetrics) {
   base::FilePath log_file_path;
   base::CreateTemporaryFile(&log_file_path);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On Windows, FilePath::value() returns std::wstring, so convert.
   std::string log_file_path_str = base::WideToUTF8(log_file_path.value());
 #else
@@ -1003,98 +1004,8 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest, Cookies) {
   EXPECT_EQ("foo=bar", EvalJs(web_contents, "document.cookie;"));
 }
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-// Make sure that "trusted" plugins continue to be able to issue requests that
-// are cross-origin (wrt the host frame) after a network process crash:
-// - html frame: main-frame.com/title1.html
-// \-- plugin document: cross.origin.com/.../js.txt (`plugin_document_url`)
-//   \-- request from plugin: cross.origin.com/.../js.txt
-// This mimics the behavior of PDFs, which only issue requests for the plugin
-// document (e.q. network::ResourceRequest::request_initiator is same-origin wrt
-// ResourceRequest::url).
-//
-// This primarily verifies that OnNetworkServiceCrashRestorePluginExceptions in
-// render_process_host_impl.cc refreshes AddAllowedRequestInitiatorForPlugin
-// data after a NetworkService crash.
-//
-// See also https://crbug.com/874515 and https://crbug.com/846339.
-//
-// TODO(lukasza, kmoon): https://crbug.com/702993: Remove this test once PDF
-// support doesn't depend on PPAPI anymore.
-IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest, Plugin) {
-  if (IsInProcessNetworkService())
-    return;
-  auto* web_contents = shell()->web_contents();
-  ASSERT_TRUE(NavigateToURL(
-      web_contents,
-      embedded_test_server()->GetURL("main.frame.com", "/title1.html")));
-
-  // Load cross-origin document into the test plugin (see
-  // ppapi::RegisterCorbTestPlugin).
-  //
-  // The document has to be a MIME type that CORB will allow (such as
-  // javascript) - it cannot be a pdf or json, because these would be blocked by
-  // CORB (the real PDF plugin works because the plugin is hosted in a Chrome
-  // Extension where CORB is turned off).
-  GURL plugin_document_url = embedded_test_server()->GetURL(
-      "cross.origin.com", "/site_isolation/js.txt");
-  const char kLoadingScriptTemplate[] = R"(
-      var obj = document.createElement('object');
-      obj.id = 'plugin';
-      obj.data = $1;
-      obj.type = 'application/x-fake-pdf-for-testing';
-      obj.width = 400;
-      obj.height = 400;
-
-      document.body.appendChild(obj);
-  )";
-  EXPECT_FALSE(
-      web_contents->GetMainFrame()->GetLastCommittedOrigin().IsSameOriginWith(
-          url::Origin::Create(plugin_document_url)));
-  ASSERT_TRUE(ExecJs(web_contents,
-                     JsReplace(kLoadingScriptTemplate, plugin_document_url)));
-
-  // Ask the plugin to re-request the document URL (similarly to what the PDF
-  // plugin does to get chunks of linearized PDFs).
-  const char kFetchScriptTemplate[] = R"(
-      new Promise(function (resolve, reject) {
-          var obj = document.getElementById('plugin');
-          function callback(event) {
-              // Ignore plugin messages unrelated to requestUrl.
-              if (!event.data.startsWith('requestUrl: '))
-                return;
-
-              obj.removeEventListener('message', callback);
-              resolve('msg-from-plugin: ' + event.data);
-          };
-          obj.addEventListener('message', callback);
-          obj.postMessage('requestUrl: ' + $1);
-      });
-  )";
-  std::string fetch_script =
-      JsReplace(kFetchScriptTemplate, plugin_document_url);
-  ASSERT_EQ(
-      "msg-from-plugin: requestUrl: RESPONSE BODY: "
-      "var j = 0; document.write(j);\n",
-      EvalJs(web_contents, fetch_script));
-
-  // Crash the Network Service process and wait until host frame's
-  // URLLoaderFactory has been refreshed.
-  SimulateNetworkServiceCrash();
-  main_frame()->FlushNetworkAndNavigationInterfacesForTesting();
-
-  // Try the fetch again - it should still work (i.e. the mechanism for relaxing
-  // request_initiator_origin_lock enforcement should be resilient to network
-  // process crashes).
-  ASSERT_EQ(
-      "msg-from-plugin: requestUrl: RESPONSE BODY: "
-      "var j = 0; document.write(j);\n",
-      EvalJs(web_contents, fetch_script));
-}
-#endif
-
 // TODO(crbug.com/901026): Fix deadlock on process startup on Android.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
                        DISABLED_SyncCallDuringRestart) {
   if (IsInProcessNetworkService())
@@ -1105,6 +1016,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
       network_service_test.BindNewPipeAndPassReceiver());
 
   // Crash the network service, but do not wait for full startup.
+  IgnoreNetworkServiceCrashes();
   network_service_test.set_disconnect_handler(run_loop.QuitClosure());
   network_service_test->SimulateCrash();
   run_loop.Run();
@@ -1126,7 +1038,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
 //
 // TODO(lukasza): https://crbug.com/1129592: Flaky on Android and Mac.  No
 // flakiness observed whatsoever on Windows, Linux or CrOS.
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_BetweenCommitNavigationAndDidCommit \
   DISABLED_BetweenCommitNavigationAndDidCommit
 #else
@@ -1177,5 +1089,108 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
       EvalJs(shell(), JsReplace("fetch($1).then(response => response.text())",
                                 final_resource_url)));
 }
+
+class NetworkServiceRestartWithFirstPartySetBrowserTest
+    : public NetworkServiceRestartBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  NetworkServiceRestartWithFirstPartySetBrowserTest()
+      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+    if (IsFirstPartySetsEnabled()) {
+      scoped_feature_list_.InitWithFeatures(
+          {features::kFirstPartySets,
+           net::features::kSamePartyAttributeEnabled},
+          {});
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(features::kFirstPartySets);
+    }
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    NetworkServiceRestartBrowserTest::SetUpCommandLine(command_line);
+    if (IsFirstPartySetsEnabled()) {
+      command_line->AppendSwitchASCII(
+          network::switches::kUseFirstPartySet,
+          R"({"primary": "https://a.test",)"
+          R"("associatedSites": ["https://b.test","https://c.test"]})");
+    }
+  }
+
+  void SetUpOnMainThread() override {
+    NetworkServiceRestartBrowserTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+    https_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    https_server()->AddDefaultHandlers(GetTestDataFilePath());
+    ASSERT_TRUE(https_server()->Start());
+  }
+
+  GURL EchoCookiesUrl(const std::string& host) {
+    return https_server_.GetURL(host, "/echoheader?Cookie");
+  }
+
+  GURL HostURL(const std::string& host) {
+    return https_server()->GetURL(host, "/");
+  }
+
+  std::vector<std::string> ExpectedSamePartyCookieNames() const {
+    // This function assumes that it is used with a cross-site context which may
+    // or may not be same-party, depending on whether First-Party Sets is
+    // enabled or not.
+    if (IsFirstPartySetsEnabled())
+      return {kSamePartyCookieName};
+    return {};
+  }
+
+  void SetSamePartyCookie(const std::string& host) {
+    ASSERT_TRUE(content::SetCookie(
+        web_contents()->GetBrowserContext(), HostURL(host),
+        base::StrCat(
+            {kSamePartyCookieName, "=1; samesite=lax; secure; sameparty"})));
+  }
+
+  std::string EmbedFrameAndGetCookieString() {
+    return ArrangeFramesAndGetContentFromLeaf(web_contents(), https_server(),
+                                              "b.test(%s)", {0},
+                                              EchoCookiesUrl(kHostA));
+  }
+
+  net::EmbeddedTestServer* https_server() { return &https_server_; }
+
+  WebContents* web_contents() { return shell()->web_contents(); }
+
+  bool IsFirstPartySetsEnabled() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  net::test_server::EmbeddedTestServer https_server_;
+};
+
+IN_PROC_BROWSER_TEST_P(NetworkServiceRestartWithFirstPartySetBrowserTest,
+                       GetsUseFirstPartySetSwitch) {
+  // Network service is not running out of process, so cannot be crashed.
+  if (!content::IsOutOfProcessNetworkService())
+    return;
+
+  SetSamePartyCookie(kHostA);
+
+  EXPECT_THAT(EmbedFrameAndGetCookieString(),
+              net::CookieStringIs(testing::UnorderedPointwise(
+                  net::NameIs(), ExpectedSamePartyCookieNames())));
+
+  SimulateNetworkServiceCrash();
+
+  // content_shell uses an in-memory cookie store, so cookies are not persisted,
+  // but that's ok. What matters is that the command-line set is re-plumbed to
+  // the network service upon restart.
+  SetSamePartyCookie(kHostA);
+
+  EXPECT_THAT(EmbedFrameAndGetCookieString(),
+              net::CookieStringIs(testing::UnorderedPointwise(
+                  net::NameIs(), ExpectedSamePartyCookieNames())));
+}
+
+INSTANTIATE_TEST_SUITE_P(/* no prefix */,
+                         NetworkServiceRestartWithFirstPartySetBrowserTest,
+                         testing::Bool());
 
 }  // namespace content

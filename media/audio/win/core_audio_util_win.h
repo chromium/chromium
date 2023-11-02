@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,10 +25,7 @@
 
 namespace media {
 
-// Represents audio channel configuration constants as understood by Windows.
-// E.g. KSAUDIO_SPEAKER_MONO.  For a list of possible values see:
-// http://msdn.microsoft.com/en-us/library/windows/hardware/ff537083(v=vs.85).aspx
-typedef uint32_t ChannelConfig;
+using ChannelConfig = uint32_t;
 
 class MEDIA_EXPORT CoreAudioUtil {
  public:

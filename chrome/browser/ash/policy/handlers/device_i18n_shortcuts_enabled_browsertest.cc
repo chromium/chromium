@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 #include "chrome/browser/ash/policy/core/device_policy_builder.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/browser_process.h"
-#include "chromeos/tpm/stub_install_attributes.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/prefs/pref_observer.h"
 #include "components/prefs/pref_service.h"
@@ -68,7 +68,7 @@ class DeviceI18nShortcutsEnabledPolicyEnterpriseManagedTest
                                                            "fake-id")) {}
   ~DeviceI18nShortcutsEnabledPolicyEnterpriseManagedTest() override = default;
 
-  chromeos::ScopedStubInstallAttributes install_attributes_;
+  ash::ScopedStubInstallAttributes install_attributes_;
 };
 
 IN_PROC_BROWSER_TEST_F(DeviceI18nShortcutsEnabledPolicyEnterpriseManagedTest,

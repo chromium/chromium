@@ -1,8 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {beforeNextRender, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {beforeNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {getTemplate} from './emoji_variants.html.js';
 import {createCustomEvent, EMOJI_VARIANTS_SHOWN} from './events.js';
 import {Emoji} from './types.js';
 
@@ -50,7 +52,7 @@ export class EmojiVariants extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -124,8 +126,9 @@ export class EmojiVariants extends PolymerElement {
    * @param {!KeyboardEvent} ev
    */
   onKeyDown(ev) {
-    if (ev.key !== 'Escape')
+    if (ev.key !== 'Escape') {
       return;
+    }
 
     // hide visible variants when escape is pressed.
     // TODO(crbug.com/1177020): does not work (whole dialog is closed instead).

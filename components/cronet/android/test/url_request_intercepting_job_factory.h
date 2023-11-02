@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "net/url_request/url_request_job_factory.h"
 
 class GURL;
@@ -47,8 +48,8 @@ class URLRequestInterceptingJobFactory : public net::URLRequestJobFactory {
   bool IsSafeRedirectTarget(const GURL& location) const override;
 
  private:
-  net::URLRequestJobFactory* const job_factory_;
-  net::URLRequestInterceptor* const interceptor_;
+  const raw_ptr<net::URLRequestJobFactory> job_factory_;
+  const raw_ptr<net::URLRequestInterceptor> interceptor_;
 };
 
 }  // namespace cronet

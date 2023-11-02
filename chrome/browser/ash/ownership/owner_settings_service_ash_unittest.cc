@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,13 @@
 #include <memory>
 #include <utility>
 
-#include "ash/components/settings/cros_settings_names.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/containers/queue.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_path_override.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/settings/device_settings_provider.h"
@@ -22,6 +22,7 @@
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/flags_ui/pref_service_flags_storage.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -108,7 +109,8 @@ class OwnerSettingsServiceAshTest : public DeviceSettingsTestBase {
     provider_ = std::make_unique<DeviceSettingsProvider>(
         base::BindRepeating(&OnPrefChanged), device_settings_service_.get(),
         TestingBrowserProcess::GetGlobal()->local_state());
-    owner_key_util_->SetPrivateKey(device_policy_->GetSigningKey());
+    owner_key_util_->ImportPrivateKeyAndSetPublicKey(
+        device_policy_->GetSigningKey());
     InitOwner(
         AccountId::FromUserEmail(device_policy_->policy_data().username()),
         true);
@@ -207,16 +209,17 @@ TEST_F(OwnerSettingsServiceAshTest, ForceAllowlist) {
 }
 
 TEST_F(OwnerSettingsServiceAshTest, AccountPrefUsersEmptyLists) {
-  std::vector<base::Value> list;
-  list.push_back(base::Value(kUserAllowlist));
+  base::Value::List list;
+  list.Append(kUserAllowlist);
 
   EXPECT_EQ(0,
             device_policy_->payload().user_allowlist().user_allowlist().size());
   EXPECT_EQ(0,
             device_policy_->payload().user_whitelist().user_whitelist().size());
 
-  OwnerSettingsServiceAsh::UpdateDeviceSettings(
-      kAccountsPrefUsers, base::ListValue(list), device_policy_->payload());
+  OwnerSettingsServiceAsh::UpdateDeviceSettings(kAccountsPrefUsers,
+                                                base::Value(std::move(list)),
+                                                device_policy_->payload());
 
   EXPECT_EQ(1,
             device_policy_->payload().user_allowlist().user_allowlist().size());
@@ -227,8 +230,8 @@ TEST_F(OwnerSettingsServiceAshTest, AccountPrefUsersEmptyLists) {
 }
 
 TEST_F(OwnerSettingsServiceAshTest, AccountPrefUsersAllowList) {
-  std::vector<base::Value> list;
-  list.push_back(base::Value(kUserAllowlist));
+  base::Value::List list;
+  list.Append(kUserAllowlist);
 
   device_policy_->payload().mutable_user_allowlist()->add_user_allowlist(
       kOther);
@@ -238,8 +241,9 @@ TEST_F(OwnerSettingsServiceAshTest, AccountPrefUsersAllowList) {
   EXPECT_EQ(0,
             device_policy_->payload().user_whitelist().user_whitelist().size());
 
-  OwnerSettingsServiceAsh::UpdateDeviceSettings(
-      kAccountsPrefUsers, base::ListValue(list), device_policy_->payload());
+  OwnerSettingsServiceAsh::UpdateDeviceSettings(kAccountsPrefUsers,
+                                                base::Value(std::move(list)),
+                                                device_policy_->payload());
 
   EXPECT_EQ(1,
             device_policy_->payload().user_allowlist().user_allowlist().size());
@@ -250,8 +254,8 @@ TEST_F(OwnerSettingsServiceAshTest, AccountPrefUsersAllowList) {
 }
 
 TEST_F(OwnerSettingsServiceAshTest, AccountPrefUsersWhiteList) {
-  std::vector<base::Value> list;
-  list.push_back(base::Value(kUserAllowlist));
+  base::Value::List list;
+  list.Append(kUserAllowlist);
 
   device_policy_->payload().mutable_user_whitelist()->add_user_whitelist(
       kOther);
@@ -261,8 +265,9 @@ TEST_F(OwnerSettingsServiceAshTest, AccountPrefUsersWhiteList) {
   EXPECT_EQ(1,
             device_policy_->payload().user_whitelist().user_whitelist().size());
 
-  OwnerSettingsServiceAsh::UpdateDeviceSettings(
-      kAccountsPrefUsers, base::ListValue(list), device_policy_->payload());
+  OwnerSettingsServiceAsh::UpdateDeviceSettings(kAccountsPrefUsers,
+                                                base::Value(std::move(list)),
+                                                device_policy_->payload());
 
   EXPECT_EQ(0,
             device_policy_->payload().user_allowlist().user_allowlist().size());
@@ -273,8 +278,8 @@ TEST_F(OwnerSettingsServiceAshTest, AccountPrefUsersWhiteList) {
 }
 
 TEST_F(OwnerSettingsServiceAshTest, AccountPrefUsersBothLists) {
-  std::vector<base::Value> list;
-  list.push_back(base::Value(kUserAllowlist));
+  base::Value::List list;
+  list.Append(kUserAllowlist);
 
   device_policy_->payload().mutable_user_allowlist()->add_user_allowlist(
       kOther);
@@ -286,8 +291,9 @@ TEST_F(OwnerSettingsServiceAshTest, AccountPrefUsersBothLists) {
   EXPECT_EQ(1,
             device_policy_->payload().user_whitelist().user_whitelist().size());
 
-  OwnerSettingsServiceAsh::UpdateDeviceSettings(
-      kAccountsPrefUsers, base::ListValue(list), device_policy_->payload());
+  OwnerSettingsServiceAsh::UpdateDeviceSettings(kAccountsPrefUsers,
+                                                base::Value(std::move(list)),
+                                                device_policy_->payload());
 
   EXPECT_EQ(1,
             device_policy_->payload().user_allowlist().user_allowlist().size());
@@ -376,8 +382,7 @@ TEST_F(OwnerSettingsServiceAshTest, MigrateFeatureFlagsAlreadyMigrated) {
       FeatureFlagsMigrationStatus::kAlreadyMigrated, 1);
 }
 
-class OwnerSettingsServiceAshNoOwnerTest
-    : public OwnerSettingsServiceAshTest {
+class OwnerSettingsServiceAshNoOwnerTest : public OwnerSettingsServiceAshTest {
  public:
   OwnerSettingsServiceAshNoOwnerTest() {}
 
@@ -401,14 +406,18 @@ class OwnerSettingsServiceAshNoOwnerTest
   }
 };
 
+// Test that a non-owner cannot set owner settings.
 TEST_F(OwnerSettingsServiceAshNoOwnerTest, SingleSetTest) {
   ASSERT_FALSE(service_->SetBoolean(kAccountsPrefAllowGuest, false));
 }
 
+// Test that when ownership is taken, the owner is forcefully added to the list
+// of allowed users (i.e. into the kAccountsPrefUsers allowlist policy).
 TEST_F(OwnerSettingsServiceAshNoOwnerTest, TakeOwnershipForceAllowlist) {
   EXPECT_FALSE(FindInListValue(device_policy_->policy_data().username(),
                                provider_->Get(kAccountsPrefUsers)));
-  owner_key_util_->SetPrivateKey(device_policy_->GetSigningKey());
+  owner_key_util_->ImportPrivateKeyAndSetPublicKey(
+      device_policy_->GetSigningKey());
   InitOwner(AccountId::FromUserEmail(device_policy_->policy_data().username()),
             true);
   ReloadDeviceSettings();
@@ -416,6 +425,56 @@ TEST_F(OwnerSettingsServiceAshNoOwnerTest, TakeOwnershipForceAllowlist) {
 
   EXPECT_TRUE(FindInListValue(device_policy_->policy_data().username(),
                               provider_->Get(kAccountsPrefUsers)));
+}
+
+// Test that OwnerSettingsService can successfully finish the key loading flow
+// when owner keys don't exist and `IsReady()`, `IsOwner()`, `IsOwnerAsync()`
+// methods return correct results.
+TEST_F(OwnerSettingsServiceAshNoOwnerTest, LoadKeysNoKeys) {
+  EXPECT_FALSE(service_->IsReady());
+  service_->OnTPMTokenReady();  // Trigger key load.
+
+  base::test::TestFuture<bool> is_owner;
+  service_->IsOwnerAsync(is_owner.GetCallback());
+  EXPECT_FALSE(is_owner.Get());
+
+  EXPECT_TRUE(service_->IsReady());
+  EXPECT_EQ(service_->IsOwner(), is_owner.Get());
+}
+
+// Test that OwnerSettingsService can successfully finish the key loading flow
+// when owner only the public owner key exists and `IsReady()`, `IsOwner()`,
+// `IsOwnerAsync()` methods return correct results.
+TEST_F(OwnerSettingsServiceAshNoOwnerTest, LoadKeysPublicKeyOnly) {
+  owner_key_util_->SetPublicKeyFromPrivateKey(*device_policy_->GetSigningKey());
+
+  EXPECT_FALSE(service_->IsReady());
+  service_->OnTPMTokenReady();  // Trigger key load.
+
+  base::test::TestFuture<bool> is_owner;
+  service_->IsOwnerAsync(is_owner.GetCallback());
+  EXPECT_FALSE(is_owner.Get());
+
+  EXPECT_TRUE(service_->IsReady());
+  EXPECT_EQ(service_->IsOwner(), is_owner.Get());
+}
+
+// Test that OwnerSettingsService can successfully finish the key loading flow
+// when both keys exist and `IsReady()`, `IsOwner()`, `IsOwnerAsync()` methods
+// return correct results.
+TEST_F(OwnerSettingsServiceAshNoOwnerTest, LoadKeysBothKeys) {
+  owner_key_util_->ImportPrivateKeyAndSetPublicKey(
+      device_policy_->GetSigningKey());
+
+  EXPECT_FALSE(service_->IsReady());
+  service_->OnTPMTokenReady();  // Trigger key load.
+
+  base::test::TestFuture<bool> is_owner;
+  service_->IsOwnerAsync(is_owner.GetCallback());
+  EXPECT_TRUE(is_owner.Get());
+
+  EXPECT_TRUE(service_->IsReady());
+  EXPECT_EQ(service_->IsOwner(), is_owner.Get());
 }
 
 }  // namespace ash

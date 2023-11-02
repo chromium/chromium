@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,19 +6,21 @@
  * @fileoverview
  * 'settings-safety-check-element' bundles functionality safety check elements
  * have in common. It is used by all safety check elements: parent, updates,
- * passwors, etc.
+ * passwords, etc.
  */
-import 'chrome://resources/cr_elements/cr_actionable_row_style.m.js';
-import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
-import 'chrome://resources/cr_elements/shared_style_css.m.js';
-import 'chrome://resources/cr_elements/shared_vars_css.m.js';
+import 'chrome://resources/cr_elements/cr_actionable_row_style.css.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_shared_style.css.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import '../settings_shared_css.js';
+import '../settings_shared.css.js';
 
-import {assertNotReached} from 'chrome://resources/js/assert.m.js';
-import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {getTemplate} from './safety_check_child.html.js';
 
 /**
  * UI states a safety check child can be in. Defines the basic UI of the child.
@@ -28,6 +30,8 @@ export enum SafetyCheckIconStatus {
   SAFE = 1,
   INFO = 2,
   WARNING = 3,
+  NOTIFICATION_PERMISSIONS = 4,
+  UNUSED_SITE_PERMISSIONS = 5,
 }
 
 const SettingsSafetyCheckChildElementBase = I18nMixin(PolymerElement);
@@ -39,7 +43,7 @@ export class SettingsSafetyCheckChildElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -113,9 +117,12 @@ export class SettingsSafetyCheckChildElement extends
         return 'cr:info';
       case SafetyCheckIconStatus.WARNING:
         return 'cr:warning';
+      case SafetyCheckIconStatus.NOTIFICATION_PERMISSIONS:
+        return 'settings:notifications-none';
+      case SafetyCheckIconStatus.UNUSED_SITE_PERMISSIONS:
+        return 'cr:info-outline';
       default:
         assertNotReached();
-        return null;
     }
   }
 
@@ -141,7 +148,7 @@ export class SettingsSafetyCheckChildElement extends
   }
 
   /** @return The left hand icon aria label for an icon status. */
-  private getStatusIconAriaLabel_(): string {
+  private getStatusIconAriaLabel_(): string|undefined {
     switch (this.iconStatus) {
       case SafetyCheckIconStatus.RUNNING:
         return this.i18n('safetyCheckIconRunningAriaLabel');
@@ -151,9 +158,11 @@ export class SettingsSafetyCheckChildElement extends
         return this.i18n('safetyCheckIconInfoAriaLabel');
       case SafetyCheckIconStatus.WARNING:
         return this.i18n('safetyCheckIconWarningAriaLabel');
+      case SafetyCheckIconStatus.NOTIFICATION_PERMISSIONS:
+      case SafetyCheckIconStatus.UNUSED_SITE_PERMISSIONS:
+        return undefined;
       default:
         assertNotReached();
-        return '';
     }
   }
 

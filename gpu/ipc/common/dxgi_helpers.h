@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <dxgi.h>
 #include <wrl/client.h>
 
+#include "base/containers/span.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "gpu/gpu_export.h"
 
@@ -60,7 +61,7 @@ class GPU_EXPORT DXGIScopedReleaseKeyedMutex {
 // format. Returns true if succeeded.
 GPU_EXPORT bool CopyDXGIBufferToShMem(
     HANDLE dxgi_handle,
-    base::UnsafeSharedMemoryRegion shared_memory,
+    base::span<uint8_t> shared_memory,
     ID3D11Device* d3d11_device,
     Microsoft::WRL::ComPtr<ID3D11Texture2D>* staging_texture);
 

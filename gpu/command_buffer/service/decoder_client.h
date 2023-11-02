@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 
 #include "base/containers/span.h"
 #include "gpu/gpu_export.h"
+#include "gpu/ipc/common/gpu_disk_cache_type.h"
 #include "ui/gl/gpu_preference.h"
 #include "url/gurl.h"
 
@@ -26,9 +27,11 @@ class GPU_EXPORT DecoderClient {
   // Notifies the renderer process that the active GPU changed.
   virtual void OnGpuSwitched(gl::GpuPreference active_gpu_heuristic) {}
 
-  // Cache a newly linked shader.
-  virtual void CacheShader(const std::string& key,
-                           const std::string& shader) = 0;
+  // Cache a blob (i.e. shader intermediates, shader bytecodes, pipelines, etc)
+  // to persistent storage.
+  virtual void CacheBlob(gpu::GpuDiskCacheType type,
+                         const std::string& key,
+                         const std::string& blob) = 0;
 
   // Called when the decoder releases a fence sync. Allows the client to
   // reschedule waiting decoders.
@@ -44,8 +47,7 @@ class GPU_EXPORT DecoderClient {
   // because the fence completed.
   virtual void OnRescheduleAfterFinished() = 0;
 
-  // Called when SwapBuffers, PostSubBufferCHROMIUM,
-  // SwapBuffersWithBoundsCHROMIUM or CommitOverlayPlanesCHROMIUM is called.
+  // Called when SwapBuffers is called.
   virtual void OnSwapBuffers(uint64_t swap_id, uint32_t flags) = 0;
 
   // Notifies the client that the shared GrContext may have been used by this

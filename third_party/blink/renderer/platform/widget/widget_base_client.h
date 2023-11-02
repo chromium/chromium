@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,10 +14,11 @@
 #include "cc/paint/element_id.h"
 #include "cc/trees/layer_tree_host_client.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
-#include "third_party/blink/public/platform/input/input_handler_proxy.h"
+#include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
 #include "third_party/blink/public/platform/web_input_event_result.h"
 #include "third_party/blink/public/platform/web_text_input_type.h"
 #include "third_party/blink/public/web/web_lifecycle_update.h"
+#include "third_party/blink/renderer/platform/widget/input/input_handler_proxy.h"
 #include "ui/display/mojom/screen_orientation.mojom-blink.h"
 
 namespace cc {
@@ -147,7 +148,7 @@ class WidgetBaseClient {
   virtual blink::FrameWidget* FrameWidget() { return nullptr; }
 
   // Called to inform the Widget that it has gained or lost keyboard focus.
-  virtual void FocusChanged(bool) {}
+  virtual void FocusChanged(mojom::blink::FocusState focus_state) {}
 
   // Call to request an animation frame from the compositor.
   virtual void ScheduleAnimation() {}
@@ -228,6 +229,10 @@ class WidgetBaseClient {
   // touchstart. But we still want to count those touchstart, pointerdown and
   // touchend.
   virtual void CountDroppedPointerDownForEventTiming(unsigned count) {}
+
+  // Whether to use ScrollPredictor to resample scroll events. This is false for
+  // web_tests to ensure that scroll deltas are not timing-dependent.
+  virtual bool AllowsScrollResampling() { return true; }
 };
 
 }  // namespace blink

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,13 +6,14 @@
 #define COMPONENTS_SERVICES_APP_SERVICE_APP_SERVICE_MOJOM_IMPL_H_
 
 #include <map>
+#include <memory>
 
-#include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/memory/scoped_refptr.h"
-#include "base/memory/weak_ptr.h"
-#include "base/task/sequenced_task_runner.h"
-#include "components/services/app_service/public/cpp/preferred_apps_list.h"
+#include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/intent.h"
+#include "components/services/app_service/public/cpp/intent_filter.h"
+#include "components/services/app_service/public/cpp/preferred_app.h"
+#include "components/services/app_service/public/cpp/preferred_apps_impl.h"
 #include "components/services/app_service/public/mojom/app_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -48,13 +49,6 @@ class AppServiceMojomImpl : public apps::mojom::AppService {
   void RegisterSubscriber(
       mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
       apps::mojom::ConnectOptionsPtr opts) override;
-  void LoadIcon(apps::mojom::AppType app_type,
-                const std::string& app_id,
-                apps::mojom::IconKeyPtr icon_key,
-                apps::mojom::IconType icon_type,
-                int32_t size_hint_in_dip,
-                bool allow_placeholder_icon,
-                LoadIconCallback callback) override;
   void Launch(apps::mojom::AppType app_type,
               const std::string& app_id,
               int32_t event_flags,
@@ -98,50 +92,19 @@ class AppServiceMojomImpl : public apps::mojom::AppService {
                                  int64_t display_id) override;
   void OpenNativeSettings(apps::mojom::AppType app_type,
                           const std::string& app_id) override;
-  void AddPreferredApp(apps::mojom::AppType app_type,
-                       const std::string& app_id,
-                       apps::mojom::IntentFilterPtr intent_filter,
-                       apps::mojom::IntentPtr intent,
-                       bool from_publisher) override;
-  void RemovePreferredApp(apps::mojom::AppType app_type,
-                          const std::string& app_id) override;
-  void RemovePreferredAppForFilter(
-      apps::mojom::AppType app_type,
-      const std::string& app_id,
-      apps::mojom::IntentFilterPtr intent_filter) override;
-  void SetSupportedLinksPreference(
-      apps::mojom::AppType app_type,
-      const std::string& app_id,
-      std::vector<apps::mojom::IntentFilterPtr> all_link_filters) override;
-  void RemoveSupportedLinksPreference(apps::mojom::AppType app_type,
-                                      const std::string& app_id) override;
   void SetResizeLocked(apps::mojom::AppType app_type,
                        const std::string& app_id,
                        apps::mojom::OptionalBool locked) override;
   void SetWindowMode(apps::mojom::AppType app_type,
                      const std::string& app_id,
                      apps::mojom::WindowMode window_mode) override;
-
-  // Retern the preferred_apps_ for testing.
-  PreferredAppsList& GetPreferredAppsForTesting();
-
-  void SetWriteCompletedCallbackForTesting(base::OnceClosure testing_callback);
+  void SetRunOnOsLoginMode(
+      apps::mojom::AppType app_type,
+      const std::string& app_id,
+      apps::mojom::RunOnOsLoginMode run_on_os_login_mode) override;
 
  private:
   void OnPublisherDisconnected(apps::mojom::AppType app_type);
-
-  // Initialize the preferred apps from disk.
-  void InitializePreferredApps();
-
-  // Write the preferred apps to a json file.
-  void WriteToJSON(const base::FilePath& profile_dir,
-                   const apps::PreferredAppsList& preferred_apps);
-
-  void WriteCompleted();
-
-  void ReadFromJSON(const base::FilePath& profile_dir);
-
-  void ReadCompleted(std::string preferred_apps_string);
 
   // publishers_ is a std::map, not a mojo::RemoteSet, since we want to
   // be able to find *the* publisher for a given apps::mojom::AppType.
@@ -152,27 +115,6 @@ class AppServiceMojomImpl : public apps::mojom::AppService {
   // Must come after the publisher and subscriber maps to ensure it is
   // destroyed first, closing the connection to avoid dangling callbacks.
   mojo::ReceiverSet<apps::mojom::AppService> receivers_;
-
-  PreferredAppsList preferred_apps_;
-
-  base::FilePath profile_dir_;
-
-  // True if need to write preferred apps to file after the current write is
-  // completed.
-  bool should_write_preferred_apps_to_file_;
-
-  // True if it is currently writing preferred apps to file.
-  bool writing_preferred_apps_;
-
-  // Task runner where the file operations takes place. This is to make sure the
-  // write operation will be operated in sequence.
-  scoped_refptr<base::SequencedTaskRunner> const task_runner_;
-
-  base::OnceClosure read_completed_for_testing_;
-
-  base::OnceClosure write_completed_for_testing_;
-
-  base::WeakPtrFactory<AppServiceMojomImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace apps

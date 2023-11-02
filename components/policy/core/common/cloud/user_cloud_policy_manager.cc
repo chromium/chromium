@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/account_id/account_id.h"
@@ -23,6 +24,19 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace em = enterprise_management;
+
+namespace {
+
+// Directory inside the profile directory where policy-related resources are
+// stored.
+const base::FilePath::CharType kPolicy[] = FILE_PATH_LITERAL("Policy");
+
+// Directory under `kPolicy`, in the user's profile dir, where policy for
+// components is cached.
+const base::FilePath::CharType kComponentsDir[] =
+    FILE_PATH_LITERAL("Components");
+
+}  // namespace
 
 namespace policy {
 
@@ -43,6 +57,28 @@ UserCloudPolicyManager::UserCloudPolicyManager(
 
 UserCloudPolicyManager::~UserCloudPolicyManager() {}
 
+std::unique_ptr<UserCloudPolicyManager> UserCloudPolicyManager::Create(
+    const base::FilePath& profile_path,
+    SchemaRegistry* schema_registry,
+    bool force_immediate_load,
+    const scoped_refptr<base::SequencedTaskRunner>& background_task_runner,
+    network::NetworkConnectionTrackerGetter network_connection_tracker_getter) {
+  std::unique_ptr<UserCloudPolicyStore> store =
+      UserCloudPolicyStore::Create(profile_path, background_task_runner);
+  if (force_immediate_load)
+    store->LoadImmediately();
+
+  const base::FilePath component_policy_cache_dir =
+      profile_path.Append(kPolicy).Append(kComponentsDir);
+
+  auto policy_manager = std::make_unique<UserCloudPolicyManager>(
+      std::move(store), component_policy_cache_dir,
+      std::unique_ptr<CloudExternalDataManager>(),
+      base::ThreadTaskRunnerHandle::Get(), network_connection_tracker_getter);
+  policy_manager->Init(schema_registry);
+  return policy_manager;
+}
+
 void UserCloudPolicyManager::Shutdown() {
   if (external_data_manager_)
     external_data_manager_->Disconnect();
@@ -56,6 +92,10 @@ void UserCloudPolicyManager::SetSigninAccountId(const AccountId& account_id) {
 void UserCloudPolicyManager::SetPoliciesRequired(bool required) {
   policies_required_ = required;
   RefreshPolicies();
+}
+
+bool UserCloudPolicyManager::ArePoliciesRequired() const {
+  return policies_required_;
 }
 
 void UserCloudPolicyManager::Connect(
@@ -118,7 +158,7 @@ void UserCloudPolicyManager::GetChromePolicy(PolicyMap* policy_map) {
   // user.
   SetEnterpriseUsersProfileDefaults(policy_map);
 #endif
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (store()->has_policy() &&
       !policy_map->Get(key::kNTPContentSuggestionsEnabled)) {
     policy_map->Set(key::kNTPContentSuggestionsEnabled, POLICY_LEVEL_MANDATORY,

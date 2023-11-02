@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -71,5 +71,9 @@ executable("viz_demo") {
 
   if (is_win) {
     deps += [ "//ui/platform_window/win" ]
+  }
+
+  if (use_ozone) {
+    deps += [ "//ui/ozone:ozone_gpu_test_support" ]
   }
 }

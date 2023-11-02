@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,7 @@
 
 namespace apps {
 
-// An publisher parent class (in the App Service sense) for all app publishers.
+// A publisher parent class (in the App Service sense) for all app publishers.
 // This class has NOTIMPLEMENTED() implementations of mandatory methods from the
 // apps::mojom::Publisher class to simplify the process of adding a new
 // publisher.
@@ -90,17 +90,13 @@ class PublisherBase : public apps::mojom::Publisher {
                                  const std::string& shortcut_id,
                                  int64_t display_id) override;
   void OpenNativeSettings(const std::string& app_id) override;
-  void OnPreferredAppSet(
-      const std::string& app_id,
-      apps::mojom::IntentFilterPtr intent_filter,
-      apps::mojom::IntentPtr intent,
-      apps::mojom::ReplacedAppPreferencesPtr replaced_app_preferences) override;
-  void OnSupportedLinksPreferenceChanged(const std::string& app_id,
-                                         bool open_in_app) override;
   void SetResizeLocked(const std::string& app_id,
                        apps::mojom::OptionalBool locked) override;
   void SetWindowMode(const std::string& app_id,
                      apps::mojom::WindowMode window_mode) override;
+  void SetRunOnOsLoginMode(
+      const std::string& app_id,
+      apps::mojom::RunOnOsLoginMode run_on_os_login_mode) override;
 
   mojo::Receiver<apps::mojom::Publisher> receiver_{this};
 };

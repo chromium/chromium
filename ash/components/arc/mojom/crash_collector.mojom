@@ -1,0 +1,44 @@
+// Copyright 2016 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Next MinVersion: 7
+
+module arc.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+
+// Next Method ID: 4
+interface CrashCollectorHost {
+  // Sends a dump for a non-native crash of the given |type|. The host reads
+  // the dump from |pipe|, or rejects the dump by closing |pipe|. Note that
+  // |type| is a string instead of an enum, because its value is not relevant
+  // to the host: it only serves as a tag in the report. |uptime| is the value
+  // of CLOCK_BOOTTIME of the guest at the time when crash happened.
+  DumpCrash@0(string type,
+              handle pipe,
+              [MinVersion=6] mojo_base.mojom.TimeDelta? uptime);
+
+  // Sets build properties included in every report.
+  [MinVersion=1] SetBuildProperties@1(string device,
+                                      string board,
+                                      string cpu_abi,
+                                      [MinVersion=3] string? fingerprint);
+
+  // Sends a dump for a native crash.
+  // TODO(kimiyuki): Add |uptime| parameter to DumpNativeCrash.
+  [MinVersion=4] DumpNativeCrash@2(string exec_name,
+                                   int32 pid,
+                                   int64 timestamp,
+                                   handle minidump_fd);
+
+  // Sends a dump for a kernel crash.
+  [MinVersion=5] DumpKernelCrash@3(handle ramoops_handle);
+};
+
+// Deprecated method IDs: 0
+// Next Method ID: 2
+interface CrashCollectorInstance {
+  // Establishes full-duplex communication with the host.
+  [MinVersion=2] Init@1(pending_remote<CrashCollectorHost> host_remote) => ();
+};

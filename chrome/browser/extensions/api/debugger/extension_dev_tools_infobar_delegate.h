@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 
 #include "base/callback_forward.h"
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 
@@ -61,7 +62,7 @@ class ExtensionDevToolsInfoBarDelegate : public ConfirmInfoBarDelegate {
   // infobar_ is set after attaching an extension and is deleted 5 seconds after
   // detaching the extension. |infobar_| owns this object and is therefore
   // guaranteed to outlive it.
-  GlobalConfirmInfoBar* infobar_ = nullptr;
+  raw_ptr<GlobalConfirmInfoBar> infobar_ = nullptr;
   CallbackList callback_list_;
   base::OneShotTimer timer_;
 };

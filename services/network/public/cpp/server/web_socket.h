@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/websockets/websocket_frame.h"
@@ -56,8 +56,8 @@ class WebSocket final {
       const std::string& message,
       const net::NetworkTrafficAnnotationTag traffic_annotation);
 
-  HttpServer* const server_;
-  HttpConnection* const connection_;
+  const raw_ptr<HttpServer> server_;
+  const raw_ptr<HttpConnection> connection_;
   std::unique_ptr<WebSocketEncoder> encoder_;
   bool closed_;
   std::unique_ptr<net::NetworkTrafficAnnotationTag> traffic_annotation_ =

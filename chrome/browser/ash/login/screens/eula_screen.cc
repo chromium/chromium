@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,8 +18,8 @@
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/chromeos/login/eula_screen_handler.h"
-#include "chromeos/dbus/dbus_method_call_status.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
+#include "chromeos/dbus/common/dbus_method_call_status.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 
@@ -93,50 +93,35 @@ std::string EulaScreen::GetResultString(Result result) {
     case Result::ACCEPTED_WITHOUT_USAGE_STATS_REPORTING:
       return "AcceptedWithoutStats";
     case Result::BACK:
+    case Result::BACK_DEMO_MODE:
       return "Back";
     case Result::ALREADY_ACCEPTED:
     case Result::ALREADY_ACCEPTED_DEMO_MODE:
-    case Result::NOT_APPLICABLE_CONSOLIDATED_CONSENT_REGULAR:
-    case Result::NOT_APPLICABLE_CONSOLIDATED_CONSENT_DEMO:
     case Result::NOT_APPLICABLE:
       return BaseScreen::kNotApplicable;
   }
 }
 
-EulaScreen::EulaScreen(EulaView* view, const ScreenExitCallback& exit_callback)
+EulaScreen::EulaScreen(base::WeakPtr<EulaView> view,
+                       const ScreenExitCallback& exit_callback)
     : BaseScreen(EulaView::kScreenId, OobeScreenPriority::DEFAULT),
-      view_(view),
+      view_(std::move(view)),
       exit_callback_(exit_callback) {
   DCHECK(view_);
-  if (view_)
-    view_->Bind(this);
 }
 
-EulaScreen::~EulaScreen() {
-  if (view_)
-    view_->Unbind();
-}
+EulaScreen::~EulaScreen() = default;
 
-bool EulaScreen::MaybeSkip(WizardContext* context) {
+bool EulaScreen::MaybeSkip(WizardContext& context) {
   // This should be kept in sync with `testapi_shouldSkipEula`. If the logic
   // became too complicated we need to consider extract and reuse parts of it.
-  if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
-    const auto* const demo_setup_controller =
-        WizardController::default_controller()->demo_setup_controller();
-    if (demo_setup_controller) {
-      exit_callback_.Run(Result::NOT_APPLICABLE_CONSOLIDATED_CONSENT_DEMO);
-    } else {
-      exit_callback_.Run(Result::NOT_APPLICABLE_CONSOLIDATED_CONSENT_REGULAR);
-    }
-    return true;
-  }
 
-  if (!context->is_branded_build) {
+  if (!context.is_branded_build) {
     exit_callback_.Run(Result::NOT_APPLICABLE);
     return true;
   }
 
-  if (StartupUtils::IsEulaAccepted()) {
+  if (StartupUtils::IsEulaAccepted() && !context.is_cloud_ready_update_flow) {
     const auto* const demo_setup_controller =
         WizardController::default_controller()->demo_setup_controller();
     exit_callback_.Run(demo_setup_controller
@@ -165,23 +150,22 @@ bool EulaScreen::IsUsageStatsEnabled() const {
   return g_usage_statistics_reporting_enabled;
 }
 
-void EulaScreen::OnViewDestroyed(EulaView* view) {
-  if (view_ == view)
-    view_ = NULL;
-}
-
 void EulaScreen::ShowImpl() {
   // Command to own the TPM.
   // When --tpm-is-dynamic switch is set pre-enrollment TPM check relies on the
   // TPM being un-owned until enrollment. b/187429309
   if (!switches::IsTpmDynamic()) {
-    TpmManagerClient::Get()->TakeOwnership(
+    chromeos::TpmManagerClient::Get()->TakeOwnership(
         ::tpm_manager::TakeOwnershipRequest(), base::DoNothing());
   }
-  if (WizardController::UsingHandsOffEnrollment())
-    OnUserAction(kUserActionAcceptButtonClicked);
-  else if (view_)
-    view_->Show();
+  if (WizardController::IsZeroTouchHandsOffOobeFlow()) {
+    base::Value::List args;
+    args.Append(kUserActionAcceptButtonClicked);
+    OnUserAction(args);
+  } else if (view_) {
+    view_->SetUsageStatsEnabled(IsUsageStatsEnabled());
+    view_->Show(context()->is_cloud_ready_update_flow);
+  }
 }
 
 void EulaScreen::HideImpl() {
@@ -189,9 +173,10 @@ void EulaScreen::HideImpl() {
     view_->Hide();
 }
 
-void EulaScreen::OnUserAction(const std::string& action_id) {
+void EulaScreen::OnUserAction(const base::Value::List& args) {
+  const std::string& action_id = args[0].GetString();
   if (!IsEulaUserAction(action_id)) {
-    BaseScreen::OnUserAction(action_id);
+    BaseScreen::OnUserAction(args);
     return;
   }
   RecordUserAction(action_id);
@@ -210,7 +195,10 @@ void EulaScreen::OnUserAction(const std::string& action_id) {
                            ? Result::ACCEPTED_WITH_USAGE_STATS_REPORTING
                            : Result::ACCEPTED_WITHOUT_USAGE_STATS_REPORTING);
   } else if (action_id == kUserActionBackButtonClicked) {
-    exit_callback_.Run(Result::BACK);
+    const auto* const demo_setup_controller =
+        WizardController::default_controller()->demo_setup_controller();
+    exit_callback_.Run(demo_setup_controller ? Result::BACK_DEMO_MODE
+                                             : Result::BACK);
   }
 }
 

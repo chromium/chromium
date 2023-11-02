@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@
 #include "ui/aura/window.h"
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/ime/input_method.h"
+#include "ui/base/ime/mojom/virtual_keyboard_types.mojom.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/display/display.h"
@@ -64,15 +65,13 @@ ChromeKeyboardBoundsObserver::~ChromeKeyboardBoundsObserver() {
 
 void ChromeKeyboardBoundsObserver::OnKeyboardVisibleBoundsChanged(
     const gfx::Rect& screen_bounds) {
-  if (base::FeatureList::IsEnabled(chromeos::features::kVirtualKeyboardApi)) {
-    std::unique_ptr<content::RenderWidgetHostIterator> hosts(
-        content::RenderWidgetHost::GetRenderWidgetHosts());
+  std::unique_ptr<content::RenderWidgetHostIterator> hosts(
+      content::RenderWidgetHost::GetRenderWidgetHosts());
 
-    while (content::RenderWidgetHost* host = hosts->GetNextHost()) {
-      content::RenderWidgetHostView* view = host->GetView();
-      if (view)
-        view->NotifyVirtualKeyboardOverlayRect(screen_bounds);
-    }
+  while (content::RenderWidgetHost* host = hosts->GetNextHost()) {
+    content::RenderWidgetHostView* view = host->GetView();
+    if (view)
+      view->NotifyVirtualKeyboardOverlayRect(screen_bounds);
   }
 }
 
@@ -180,7 +179,8 @@ void ChromeKeyboardBoundsObserver::OnWidgetDestroying(views::Widget* widget) {
 void ChromeKeyboardBoundsObserver::UpdateInsets(
     aura::Window* window,
     content::RenderWidgetHostView* view) {
-  if (view->ShouldVirtualKeyboardOverlayContent()) {
+  if (view->GetVirtualKeyboardMode() ==
+      ui::mojom::VirtualKeyboardMode::kOverlaysContent) {
     view->SetInsets(gfx::Insets());
     return;
   }
@@ -198,7 +198,7 @@ void ChromeKeyboardBoundsObserver::UpdateInsets(
            << " Bounds: " << view_bounds_in_screen.ToString()
            << " Overlap: " << overlap;
   if (overlap > 0 && overlap < view_bounds_in_screen.height())
-    view->SetInsets(gfx::Insets(0, 0, overlap, 0));
+    view->SetInsets(gfx::Insets::TLBR(0, 0, overlap, 0));
   else
     view->SetInsets(gfx::Insets());
 }

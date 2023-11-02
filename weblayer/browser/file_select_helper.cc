@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 #include "ui/shell_dialogs/select_file_policy.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "ui/android/view_android.h"
 #else
 #include "ui/aura/window.h"
@@ -54,6 +54,7 @@ void FileSelectHelper::RunFileChooser(
   DCHECK(!web_contents_);
   DCHECK(listener);
   DCHECK(!listener_);
+  DCHECK(!select_file_dialog_);
 
   listener_ = std::move(listener);
   web_contents_ = content::WebContents::FromRenderFrameHost(render_frame_host)
@@ -83,13 +84,13 @@ void FileSelectHelper::RunFileChooser(
   }
 
   gfx::NativeWindow owning_window;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   owning_window = web_contents_->GetNativeView()->GetWindowAndroid();
 #else
   owning_window = web_contents_->GetNativeView()->GetToplevelWindow();
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Android needs the original MIME types and an additional capture value.
   std::pair<std::vector<std::u16string>, bool> accept_types =
       std::make_pair(params->accept_types, params->use_media_capture);
@@ -100,7 +101,7 @@ void FileSelectHelper::RunFileChooser(
   select_file_dialog_->SelectFile(dialog_type_, std::u16string(),
                                   base::FilePath(), nullptr, 0,
                                   base::FilePath::StringType(), owning_window,
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
                                   &accept_types);
 #else
                                   nullptr);
@@ -117,6 +118,7 @@ void FileSelectHelper::RunFileChooser(
 void FileSelectHelper::RunFileChooserEnd() {
   if (listener_)
     listener_->FileSelectionCanceled();
+  select_file_dialog_.reset();
   Release();
 }
 

@@ -1,6 +1,6 @@
 # CRDTP - Chrome DevTools Protocol Library.
 
-[Canonical location for this library.](https://chromium.googlesource.com/deps/inspector_protocol/+/refs/heads/master)
+[Canonical location for this library.](https://chromium.googlesource.com/deps/inspector_protocol/+/refs/heads/main)
 
 This is a support library for the Chrome DevTools protocol implementation.
 

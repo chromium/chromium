@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/ranges/algorithm.h"
 #include "media/gpu/test/video_test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -111,9 +112,8 @@ void BitstreamFileWriter::ConstructSpatialIndices(
   CHECK_LE(spatial_layer_resolutions.size(), spatial_layer_resolutions_.size());
 
   original_spatial_indices_.resize(spatial_layer_resolutions.size());
-  auto begin = std::find(spatial_layer_resolutions_.begin(),
-                         spatial_layer_resolutions_.end(),
-                         spatial_layer_resolutions.front());
+  auto begin = base::ranges::find(spatial_layer_resolutions_,
+                                  spatial_layer_resolutions.front());
   CHECK(begin != spatial_layer_resolutions_.end());
   uint8_t sid_offset = begin - spatial_layer_resolutions_.begin();
   for (size_t i = 0; i < spatial_layer_resolutions.size(); ++i) {
@@ -144,10 +144,13 @@ void BitstreamFileWriter::ProcessBitstream(
 
   if (temporal_layer_index_to_write_) {
     uint8_t temporal_idx = 255;
-    if (bitstream->metadata.vp9)
-      temporal_idx = bitstream->metadata.vp9->temporal_idx;
-    else if (bitstream->metadata.h264)
+    if (bitstream->metadata.h264)
       temporal_idx = bitstream->metadata.h264->temporal_idx;
+    else if (bitstream->metadata.vp8)
+      temporal_idx = bitstream->metadata.vp8->temporal_idx;
+    else if (bitstream->metadata.vp9)
+      temporal_idx = bitstream->metadata.vp9->temporal_idx;
+
     CHECK_NE(temporal_idx, 255) << "No metadata about temporal idx";
 
     if (temporal_idx > *temporal_layer_index_to_write_) {

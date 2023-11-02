@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include "base/cxx17_backports.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -50,7 +49,7 @@ PepperIsolatedFileSystemMessageFilter::Create(PP_Instance instance,
   int unused_render_frame_id;
   if (!host->GetRenderFrameIDsForInstance(
           instance, &render_process_id, &unused_render_frame_id)) {
-    return NULL;
+    return nullptr;
   }
   return new PepperIsolatedFileSystemMessageFilter(
       render_process_id,
@@ -67,7 +66,7 @@ PepperIsolatedFileSystemMessageFilter::PepperIsolatedFileSystemMessageFilter(
     : render_process_id_(render_process_id),
       profile_directory_(profile_directory),
       document_url_(document_url) {
-  for (size_t i = 0; i < base::size(kPredefinedAllowedCrxFsOrigins); ++i)
+  for (size_t i = 0; i < std::size(kPredefinedAllowedCrxFsOrigins); ++i)
     allowed_crxfs_origins_.insert(kPredefinedAllowedCrxFsOrigins[i]);
 }
 
@@ -137,7 +136,7 @@ int32_t PepperIsolatedFileSystemMessageFilter::OpenCrxFileSystem(
     ppapi::host::HostMessageContext* context) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   Profile* profile = GetProfile();
-  const extensions::ExtensionSet* extension_set = NULL;
+  const extensions::ExtensionSet* extension_set = nullptr;
   if (profile) {
     extension_set =
         &extensions::ExtensionRegistry::Get(profile)->enabled_extensions();

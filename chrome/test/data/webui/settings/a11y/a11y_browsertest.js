@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@ GEN_INCLUDE([
 ]);
 
 GEN('#include "build/branding_buildflags.h"');
+GEN('#include "build/build_config.h"');
 GEN('#include "chrome/common/chrome_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
@@ -19,7 +20,7 @@ const axeOptionsExcludeLinkInTextBlock =
     Object.assign({}, SettingsAccessibilityV3Test.axeOptions, {
       'rules': Object.assign({}, SettingsAccessibilityV3Test.axeOptions.rules, {
         'link-in-text-block': {enabled: false},
-      })
+      }),
     });
 
 const violationFilterExcludeCustomInputAndTabindex =
@@ -41,22 +42,14 @@ const violationFilterExcludeCustomInputAndTabindex =
  ['Passwords', 'passwords_a11y_test.js'],
 ].forEach(test => defineTest(...test));
 
-GEN('#if !defined(OS_CHROMEOS)');
+GEN('#if !BUILDFLAG(IS_CHROMEOS)');
 [[
-  'ManageProfile', 'manage_profile_a11y_test.js',
-  {filter: violationFilterExcludeCustomInputAndTabindex}
+  'ManageProfile',
+  'manage_profile_a11y_test.js',
+  {filter: violationFilterExcludeCustomInputAndTabindex},
 ],
  ['Signout', 'sign_out_a11y_test.js'],
 ].forEach(test => defineTest(...test));
-GEN('#endif  // !defined(OS_CHROMEOS)');
-
-// Disable since the EDIT_DICTIONARY route does not exist on Mac.
-// TODO(crbug.com/1012370) flaky on Linux b/c assertTrue(!!languagesPage);
-// TODO(crbug.com/1012370) flaky on Win the same way
-GEN('#if !defined(OS_MAC) && !defined(OS_LINUX) && !defined(OS_CHROMEOS) && !defined(OS_WIN)');
-defineTest(
-    'EditDictionary', 'edit_dictionary_a11y_test.js',
-    {filter: violationFilterExcludeCustomInputAndTabindex});
 GEN('#endif');
 
 function defineTest(testName, module, config) {
@@ -64,7 +57,8 @@ function defineTest(testName, module, config) {
   this[className] = class extends SettingsAccessibilityV3Test {
     /** @override */
     get browsePreload() {
-      return `chrome://settings/test_loader.html?module=settings/a11y/${module}&host=webui-test`;
+      return `chrome://settings/test_loader.html?module=settings/a11y/${
+          module}`;
     }
   };
 

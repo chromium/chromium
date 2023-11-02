@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -58,6 +58,12 @@ public interface LayoutStateProvider {
      * @param layoutType whether the {@link Layout} give {@link LayoutType} is visible.
      */
     boolean isLayoutVisible(@LayoutType int layoutType);
+
+    /**
+     * @return Whether or not the {@link Layout} is starting to hide.
+     * @param layoutType whether the {@link Layout} give {@link LayoutType} is starting to hide.
+     */
+    boolean isLayoutStartingToHide(@LayoutType int layoutType);
 
     /**
      * Get the type of the layout that is currently active.

@@ -1,7 +1,8 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/screen_capture_notification_ui.h"
 
 #include <memory>
@@ -32,7 +33,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/views/win/hwnd_util.h"
 #endif
 
@@ -124,10 +125,10 @@ class ScreenCaptureNotificationUIViews : public ScreenCaptureNotificationUI,
   content::MediaStreamUI::SourceCallback source_callback_;
   base::ScopedMultiSourceObservation<views::View, views::ViewObserver>
       bounds_observations_{this};
-  NotificationBarClientView* client_view_ = nullptr;
-  views::View* source_button_ = nullptr;
-  views::View* stop_button_ = nullptr;
-  views::View* hide_link_ = nullptr;
+  raw_ptr<NotificationBarClientView> client_view_ = nullptr;
+  raw_ptr<views::View> source_button_ = nullptr;
+  raw_ptr<views::View> stop_button_ = nullptr;
+  raw_ptr<views::View> hide_link_ = nullptr;
 };
 
 ScreenCaptureNotificationUIViews::ScreenCaptureNotificationUIViews(
@@ -185,9 +186,9 @@ ScreenCaptureNotificationUIViews::ScreenCaptureNotificationUIViews(
 
   // The client rect for NotificationBarClientView uses the bounds for the
   // following views.
-  bounds_observations_.AddObservation(source_button_);
-  bounds_observations_.AddObservation(stop_button_);
-  bounds_observations_.AddObservation(hide_link_);
+  bounds_observations_.AddObservation(source_button_.get());
+  bounds_observations_.AddObservation(stop_button_.get());
+  bounds_observations_.AddObservation(hide_link_.get());
 }
 
 ScreenCaptureNotificationUIViews::~ScreenCaptureNotificationUIViews() {
@@ -269,13 +270,11 @@ views::ClientView* ScreenCaptureNotificationUIViews::CreateClientView(
 std::unique_ptr<views::NonClientFrameView>
 ScreenCaptureNotificationUIViews::CreateNonClientFrameView(
     views::Widget* widget) {
-  constexpr auto kPadding = gfx::Insets(5, 10);
+  constexpr auto kPadding = gfx::Insets::VH(5, 10);
   auto frame =
       std::make_unique<views::BubbleFrameView>(gfx::Insets(), kPadding);
-  SkColor color =
-      widget->GetColorProvider()->GetColor(ui::kColorDialogBackground);
   frame->SetBubbleBorder(std::make_unique<views::BubbleBorder>(
-      views::BubbleBorder::NONE, views::BubbleBorder::STANDARD_SHADOW, color));
+      views::BubbleBorder::NONE, views::BubbleBorder::STANDARD_SHADOW));
   return frame;
 }
 

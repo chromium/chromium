@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,8 +25,8 @@ id<GREYAction> ScrollElementToVisible(ElementSelector* selector) {
   return [ChromeActionsAppInterface scrollElementToVisible:selector];
 }
 
-id<GREYAction> TurnSettingsSwitchOn(BOOL on) {
-  return [ChromeActionsAppInterface turnSettingsSwitchOn:on];
+id<GREYAction> TurnTableViewSwitchOn(BOOL on) {
+  return [ChromeActionsAppInterface turnTableViewSwitchOn:on];
 }
 
 id<GREYAction> TurnSyncSwitchOn(BOOL on) {

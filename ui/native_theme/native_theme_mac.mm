@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,17 +7,18 @@
 #import <Cocoa/Cocoa.h>
 #include <MediaAccessibility/MediaAccessibility.h>
 #include <stddef.h>
+
 #include <vector>
 
 #include "base/command_line.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_block.h"
+#include "base/no_destructor.h"
 #include "cc/paint/paint_shader.h"
-#import "skia/ext/skia_utils_mac.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
+#include "ui/color/color_provider.h"
 #include "ui/color/mac/scoped_current_nsappearance.h"
-#include "ui/color/mac/system_color_utils.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
@@ -42,20 +43,9 @@ bool IsDarkMode() {
 }
 
 bool IsHighContrast() {
-  NSWorkspace* workspace = [NSWorkspace sharedWorkspace];
-  if ([workspace respondsToSelector:@selector
-                 (accessibilityDisplayShouldIncreaseContrast)]) {
-    return workspace.accessibilityDisplayShouldIncreaseContrast;
-  }
-  return false;
+  return NSWorkspace.sharedWorkspace.accessibilityDisplayShouldIncreaseContrast;
 }
 }  // namespace
-
-@interface NSWorkspace (Redeclarations)
-
-@property(readonly) BOOL accessibilityDisplayShouldIncreaseContrast;
-
-@end
 
 // Helper object to respond to light mode/dark mode changeovers.
 @interface NativeThemeEffectiveAppearanceObserver : NSObject
@@ -137,58 +127,6 @@ NativeThemeMac* NativeThemeMac::instance() {
   return s_native_theme.get();
 }
 
-// static
-SkColor NativeThemeMac::ApplySystemControlTint(SkColor color) {
-  return ui::IsSystemGraphiteTinted() ? ui::ColorToGrayscale(color) : color;
-}
-
-SkColor NativeThemeMac::GetSystemColorDeprecated(ColorId color_id,
-                                                 ColorScheme color_scheme,
-                                                 bool apply_processing) const {
-  if (GetPreferredContrast() == PreferredContrast::kMore) {
-    switch (color_id) {
-      case kColorId_FocusedMenuItemBackgroundColor:
-        return color_scheme == ColorScheme::kDark ? SK_ColorLTGRAY
-                                                  : SK_ColorDKGRAY;
-      default:
-        break;
-    }
-  }
-
-  absl::optional<SkColor> os_color = GetOSColor(color_id, color_scheme);
-  if (os_color.has_value())
-    return os_color.value();
-
-  SkColor color = NativeTheme::GetSystemColorDeprecated(color_id, color_scheme,
-                                                        apply_processing);
-  return apply_processing ? ApplySystemControlTint(color) : color;
-}
-
-absl::optional<SkColor> NativeThemeMac::GetOSColor(
-    ColorId color_id,
-    ColorScheme color_scheme) const {
-  ScopedCurrentNSAppearance scoped_nsappearance(
-      color_scheme == ColorScheme::kDark,
-      GetPreferredContrast() == PreferredContrast::kMore);
-
-  // Even with --secondary-ui-md, menus use the platform colors and styling, and
-  // Mac has a couple of specific color overrides, documented below.
-  switch (color_id) {
-    case kColorId_MenuSeparatorColor:
-      return color_scheme == ColorScheme::kDark
-                 ? SkColorSetA(gfx::kGoogleGrey800, 0xCC)
-                 : SkColorSetA(SK_ColorBLACK, 0x26);
-
-    case kColorId_FocusedBorderColor:
-      return SkColorSetA(
-          skia::NSSystemColorToSkColor([NSColor keyboardFocusIndicatorColor]),
-          0x66);
-
-    default:
-      return absl::nullopt;
-  }
-}
-
 NativeThemeAura::PreferredContrast NativeThemeMac::CalculatePreferredContrast()
     const {
   return IsHighContrast() ? NativeThemeAura::PreferredContrast::kMore
@@ -196,6 +134,7 @@ NativeThemeAura::PreferredContrast NativeThemeMac::CalculatePreferredContrast()
 }
 
 void NativeThemeMac::Paint(cc::PaintCanvas* canvas,
+                           const ColorProvider* color_provider,
                            Part part,
                            State state,
                            const gfx::Rect& rect,
@@ -225,8 +164,8 @@ void NativeThemeMac::Paint(cc::PaintCanvas* canvas,
                                      rect, color_scheme_updated, true);
       break;
     default:
-      NativeThemeBase::Paint(canvas, part, state, rect, extra, color_scheme,
-                             accent_color);
+      NativeThemeBase::Paint(canvas, color_provider, part, state, rect, extra,
+                             color_scheme, accent_color);
       break;
   }
 }
@@ -261,7 +200,8 @@ void ConstrainedInset(gfx::Rect* rect,
 
   ConstrainInsets(rect->width(), min_size.width(), &inset_left, &inset_right);
   ConstrainInsets(rect->height(), min_size.height(), &inset_top, &inset_bottom);
-  rect->Inset(inset_left, inset_top, inset_right, inset_bottom);
+  rect->Inset(
+      gfx::Insets::TLBR(inset_top, inset_left, inset_bottom, inset_right));
 }
 
 void NativeThemeMac::PaintMacScrollBarTrackOrCorner(
@@ -290,29 +230,29 @@ void NativeThemeMac::PaintScrollBarTrackGradient(
     ColorScheme color_scheme) const {
   gfx::Canvas paint_canvas(canvas, 1.0f);
   // Select colors.
-  std::vector<SkColor> gradient_colors;
+  std::vector<SkColor4f> gradient_colors;
   bool dark_mode = color_scheme == ColorScheme::kDark;
   if (extra_params.is_overlay) {
     if (dark_mode) {
-      gradient_colors = {SkColorSetARGB(0x28, 0xD8, 0xD8, 0xD8),
-                         SkColorSetARGB(0x26, 0xCC, 0xCC, 0xCC),
-                         SkColorSetARGB(0x26, 0xCC, 0xCC, 0xCC),
-                         SkColorSetARGB(0x26, 0xCC, 0xCC, 0xCC)};
+      gradient_colors = {SkColor4f{0.847f, 0.847f, 0.847f, 0.157f},
+                         SkColor4f{0.8f, 0.8f, 0.8f, 0.149f},
+                         SkColor4f{0.8f, 0.8f, 0.8f, 0.149f},
+                         SkColor4f{0.8f, 0.8f, 0.8f, 0.149f}};
     } else {
-      gradient_colors = {SkColorSetARGB(0xC6, 0xF8, 0xF8, 0xF8),
-                         SkColorSetARGB(0xC2, 0xF8, 0xF8, 0xF8),
-                         SkColorSetARGB(0xC2, 0xF8, 0xF8, 0xF8),
-                         SkColorSetARGB(0xC2, 0xF8, 0xF8, 0xF8)};
+      gradient_colors = {SkColor4f{0.973f, 0.973f, 0.973f, 0.776f},
+                         SkColor4f{0.973f, 0.973f, 0.973f, 0.761f},
+                         SkColor4f{0.973f, 0.973f, 0.973f, 0.761f},
+                         SkColor4f{0.973f, 0.973f, 0.973f, 0.761f}};
     }
   } else {
     // Non-overlay scroller track colors are not transparent. On Safari, they
     // are, but on all other macOS applications they are not.
     if (dark_mode) {
-      gradient_colors = {SkColorSetRGB(0x2D, 0x2D, 0x2D),
-                         SkColorSetRGB(0x2B, 0x2B, 0x2B)};
+      gradient_colors = {SkColor4f{0.176f, 0.176f, 0.176f, 1.0f},
+                         SkColor4f{0.169f, 0.169f, 0.169f, 1.0f}};
     } else {
-      gradient_colors = {SkColorSetRGB(0xFA, 0xFA, 0xFA),
-                         SkColorSetRGB(0xFA, 0xFA, 0xFA)};
+      gradient_colors = {SkColor4f{0.98f, 0.98f, 0.98f, 1.0f},
+                         SkColor4f{0.98f, 0.98f, 0.98f, 1.0f}};
     }
   }
 
@@ -517,12 +457,14 @@ SkColor NativeThemeMac::GetSystemButtonPressedColor(SkColor base_color) const {
 
 void NativeThemeMac::PaintMenuPopupBackground(
     cc::PaintCanvas* canvas,
+    const ColorProvider* color_provider,
     const gfx::Size& size,
     const MenuBackgroundExtraParams& menu_background,
     ColorScheme color_scheme) const {
+  DCHECK(color_provider);
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
-  flags.setColor(GetSystemColor(kColorId_MenuBackgroundColor, color_scheme));
+  flags.setColor(color_provider->GetColor(kColorMenuBackground));
   const SkScalar radius = SkIntToScalar(menu_background.corner_radius);
   SkRect rect = gfx::RectToSkRect(gfx::Rect(size));
   canvas->drawRoundRect(rect, radius, radius, flags);
@@ -530,6 +472,7 @@ void NativeThemeMac::PaintMenuPopupBackground(
 
 void NativeThemeMac::PaintMenuItemBackground(
     cc::PaintCanvas* canvas,
+    const ColorProvider* color_provider,
     State state,
     const gfx::Rect& rect,
     const MenuItemExtraParams& menu_item,
@@ -540,7 +483,7 @@ void NativeThemeMac::PaintMenuItemBackground(
       // Draw nothing over the regular background.
       break;
     case NativeTheme::kHovered:
-      PaintSelectedMenuItem(canvas, rect, color_scheme);
+      PaintSelectedMenuItem(canvas, color_provider, rect);
       break;
     default:
       NOTREACHED();
@@ -564,7 +507,7 @@ NativeThemeMac::NativeThemeMac(bool configure_web_instance,
     InitializeDarkModeStateAndObserver();
 
   if (!IsForcedHighContrast()) {
-    set_preferred_contrast(CalculatePreferredContrast());
+    SetPreferredContrast(CalculatePreferredContrast());
     __block auto theme = this;
     high_contrast_notification_token_ =
         [[[NSWorkspace sharedWorkspace] notificationCenter]
@@ -573,8 +516,7 @@ NativeThemeMac::NativeThemeMac(bool configure_web_instance,
                         object:nil
                          queue:nil
                     usingBlock:^(NSNotification* notification) {
-                      theme->set_preferred_contrast(
-                          CalculatePreferredContrast());
+                      theme->SetPreferredContrast(CalculatePreferredContrast());
                       theme->NotifyOnNativeThemeUpdated();
                     }];
   }
@@ -589,12 +531,12 @@ NativeThemeMac::~NativeThemeMac() {
 }
 
 void NativeThemeMac::PaintSelectedMenuItem(cc::PaintCanvas* canvas,
-                                           const gfx::Rect& rect,
-                                           ColorScheme color_scheme) const {
+                                           const ColorProvider* color_provider,
+                                           const gfx::Rect& rect) const {
+  DCHECK(color_provider);
   // Draw the background.
   cc::PaintFlags flags;
-  flags.setColor(
-      GetSystemColor(kColorId_FocusedMenuItemBackgroundColor, color_scheme));
+  flags.setColor(color_provider->GetColor(kColorMenuItemBackgroundSelected));
   canvas->drawRect(gfx::RectToSkRect(rect), flags);
 }
 
@@ -615,7 +557,7 @@ void NativeThemeMac::ConfigureWebInstance() {
   NativeTheme* web_instance = NativeTheme::GetInstanceForWeb();
   web_instance->set_use_dark_colors(IsDarkMode());
   web_instance->set_preferred_color_scheme(CalculatePreferredColorScheme());
-  web_instance->set_preferred_contrast(CalculatePreferredContrast());
+  web_instance->SetPreferredContrast(CalculatePreferredContrast());
 
   // Add the web native theme as an observer to stay in sync with color scheme
   // changes.
@@ -628,7 +570,7 @@ void NativeThemeMac::ConfigureWebInstance() {
   CFNotificationCenterAddObserver(
       CFNotificationCenterGetLocalCenter(), this,
       CaptionSettingsChangedNotificationCallback,
-      kMACaptionAppearanceSettingsChangedNotification, 0,
+      kMACaptionAppearanceSettingsChangedNotification, nullptr,
       CFNotificationSuspensionBehaviorDeliverImmediately);
 }
 

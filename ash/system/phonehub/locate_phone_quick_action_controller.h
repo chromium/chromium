@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,10 +17,10 @@ namespace ash {
 // Controller of a quick action item that toggles Locate phone mode.
 class LocatePhoneQuickActionController
     : public QuickActionControllerBase,
-      public chromeos::phonehub::FindMyDeviceController::Observer {
+      public phonehub::FindMyDeviceController::Observer {
  public:
   LocatePhoneQuickActionController(
-      chromeos::phonehub::FindMyDeviceController* find_my_device_controller);
+      phonehub::FindMyDeviceController* find_my_device_controller);
   ~LocatePhoneQuickActionController() override;
   LocatePhoneQuickActionController(LocatePhoneQuickActionController&) = delete;
   LocatePhoneQuickActionController operator=(
@@ -30,7 +30,7 @@ class LocatePhoneQuickActionController
   QuickActionItem* CreateItem() override;
   void OnButtonPressed(bool is_now_enabled) override;
 
-  // chromeos::phonehub::FindMyDeviceController::Observer:
+  // phonehub::FindMyDeviceController::Observer:
   void OnPhoneRingingStateChanged() override;
 
  private:
@@ -49,8 +49,7 @@ class LocatePhoneQuickActionController
   // phone. Make changes to item's state if necessary.
   void CheckRequestedState();
 
-  chromeos::phonehub::FindMyDeviceController* find_my_device_controller_ =
-      nullptr;
+  phonehub::FindMyDeviceController* find_my_device_controller_ = nullptr;
   QuickActionItem* item_ = nullptr;
 
   // Keep track the current state of the item.

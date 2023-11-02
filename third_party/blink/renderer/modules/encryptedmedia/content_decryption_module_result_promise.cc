@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -112,7 +113,7 @@ void ContentDecryptionModuleResultPromise::CompleteWithError(
   StringBuilder result;
   result.Append(error_message);
   if (system_code != 0) {
-    if (result.IsEmpty())
+    if (result.empty())
       result.Append("Rejected with system code");
     result.Append(" (");
     result.AppendNumber(system_code);
@@ -153,6 +154,10 @@ bool ContentDecryptionModuleResultPromise::IsValidToFulfillPromise() {
   // process of being destroyed. If it is, there is no need to fulfill this
   // promise which is about to go away anyway.
   return GetExecutionContext() && !GetExecutionContext()->IsContextDestroyed();
+}
+
+MediaKeysConfig ContentDecryptionModuleResultPromise::GetMediaKeysConfig() {
+  return config_;
 }
 
 void ContentDecryptionModuleResultPromise::Trace(Visitor* visitor) const {

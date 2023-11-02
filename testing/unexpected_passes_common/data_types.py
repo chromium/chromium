@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Various custom data types for use throughout the unexpected pass finder."""
@@ -9,6 +9,8 @@ import collections
 import copy
 import fnmatch
 import logging
+from typing import (Any, Dict, Generator, Iterable, List, Optional, Set, Tuple,
+                    Type, Union)
 
 import six
 
@@ -24,32 +26,37 @@ Result = None
 BuildStats = None
 TestExpectationMap = None
 
+# Type hinting aliases.
+ResultListType = List['BaseResult']
+ResultSetType = Set['BaseResult']
 
-def SetExpectationImplementation(impl):
+
+def SetExpectationImplementation(impl: Type['BaseExpectation']) -> None:
   global Expectation
   assert issubclass(impl, BaseExpectation)
   Expectation = impl
 
 
-def SetResultImplementation(impl):
+def SetResultImplementation(impl: Type['BaseResult']) -> None:
   global Result
   assert issubclass(impl, BaseResult)
   Result = impl
 
 
-def SetBuildStatsImplementation(impl):
+def SetBuildStatsImplementation(impl: Type['BaseBuildStats']) -> None:
   global BuildStats
   assert issubclass(impl, BaseBuildStats)
   BuildStats = impl
 
 
-def SetTestExpectationMapImplementation(impl):
+def SetTestExpectationMapImplementation(impl: Type['BaseTestExpectationMap']
+                                        ) -> None:
   global TestExpectationMap
   assert issubclass(impl, BaseTestExpectationMap)
   TestExpectationMap = impl
 
 
-class BaseExpectation(object):
+class BaseExpectation():
   """Container for a test expectation.
 
   Similar to typ's expectations_parser.Expectation class, but with unnecessary
@@ -59,7 +66,11 @@ class BaseExpectation(object):
   expectation file.
   """
 
-  def __init__(self, test, tags, expected_results, bug=None):
+  def __init__(self,
+               test: str,
+               tags: Iterable[str],
+               expected_results: Union[str, Iterable[str]],
+               bug: Optional[str] = None):
     self.test = test
     self.tags = frozenset(tags)
     self.bug = bug or ''
@@ -76,25 +87,25 @@ class BaseExpectation(object):
     else:
       self._comp = self._CompareNonWildcard
 
-  def __eq__(self, other):
+  def __eq__(self, other: Any) -> bool:
     return (isinstance(other, BaseExpectation) and self.test == other.test
             and self.tags == other.tags
             and self.expected_results == other.expected_results
             and self.bug == other.bug)
 
-  def __ne__(self, other):
+  def __ne__(self, other: Any) -> bool:
     return not self.__eq__(other)
 
-  def __hash__(self):
+  def __hash__(self) -> int:
     return hash((self.test, self.tags, self.expected_results, self.bug))
 
-  def _CompareWildcard(self, result_test_name):
+  def _CompareWildcard(self, result_test_name: str) -> bool:
     return fnmatch.fnmatch(result_test_name, self.test)
 
-  def _CompareNonWildcard(self, result_test_name):
+  def _CompareNonWildcard(self, result_test_name: str) -> bool:
     return result_test_name == self.test
 
-  def AppliesToResult(self, result):
+  def AppliesToResult(self, result: 'BaseResult') -> bool:
     """Checks whether this expectation should have applied to |result|.
 
     An expectation applies to a result if the test names match (including
@@ -110,7 +121,7 @@ class BaseExpectation(object):
     assert isinstance(result, BaseResult)
     return (self._comp(result.test) and self.tags <= result.tags)
 
-  def MaybeAppliesToTest(self, test_name):
+  def MaybeAppliesToTest(self, test_name: str) -> bool:
     """Similar to AppliesToResult, but used to do initial filtering.
 
     Args:
@@ -122,14 +133,15 @@ class BaseExpectation(object):
     return self._comp(test_name)
 
 
-class BaseResult(object):
+class BaseResult():
   """Container for a test result.
 
   Contains the minimal amount of data necessary to describe/identify a result
   from ResultDB for the purposes of the unexpected pass finder.
   """
 
-  def __init__(self, test, tags, actual_result, step, build_id):
+  def __init__(self, test: str, tags: Iterable[str], actual_result: str,
+               step: str, build_id: str):
     """
     Args:
       test: A string containing the name of the test.
@@ -145,21 +157,21 @@ class BaseResult(object):
     self.step = step
     self.build_id = build_id
 
-  def __eq__(self, other):
+  def __eq__(self, other: Any) -> bool:
     return (isinstance(other, BaseResult) and self.test == other.test
             and self.tags == other.tags
             and self.actual_result == other.actual_result
             and self.step == other.step and self.build_id == other.build_id)
 
-  def __ne__(self, other):
+  def __ne__(self, other: Any) -> bool:
     return not self.__eq__(other)
 
-  def __hash__(self):
+  def __hash__(self) -> int:
     return hash(
         (self.test, self.tags, self.actual_result, self.step, self.build_id))
 
 
-class BaseBuildStats(object):
+class BaseBuildStats():
   """Container for keeping track of a builder's pass/fail stats."""
 
   def __init__(self):
@@ -168,30 +180,31 @@ class BaseBuildStats(object):
     self.failure_links = frozenset()
 
   @property
-  def failed_builds(self):
+  def failed_builds(self) -> int:
     return self.total_builds - self.passed_builds
 
   @property
-  def did_fully_pass(self):
+  def did_fully_pass(self) -> bool:
     return self.passed_builds == self.total_builds
 
   @property
-  def did_never_pass(self):
+  def did_never_pass(self) -> bool:
     return self.failed_builds == self.total_builds
 
-  def AddPassedBuild(self):
+  def AddPassedBuild(self) -> None:
     self.passed_builds += 1
     self.total_builds += 1
 
-  def AddFailedBuild(self, build_id):
+  def AddFailedBuild(self, build_id: str) -> None:
     self.total_builds += 1
     build_link = BuildLinkFromBuildId(build_id)
     self.failure_links = frozenset([build_link]) | self.failure_links
 
-  def GetStatsAsString(self):
+  def GetStatsAsString(self) -> str:
     return '(%d/%d passed)' % (self.passed_builds, self.total_builds)
 
-  def NeverNeededExpectation(self, expectation):  # pylint:disable=unused-argument
+  # pylint:disable=unused-argument
+  def NeverNeededExpectation(self, expectation: BaseExpectation) -> bool:
     """Returns whether the results tallied in |self| never needed |expectation|.
 
     Args:
@@ -202,8 +215,10 @@ class BaseBuildStats(object):
       |expectation| being present. Otherwise, False.
     """
     return self.did_fully_pass
+  # pylint:enable=unused-argument
 
-  def AlwaysNeededExpectation(self, expectation):  # pylint:disable=unused-argument
+  # pylint:disable=unused-argument
+  def AlwaysNeededExpectation(self, expectation: BaseExpectation) -> bool:
     """Returns whether the results tallied in |self| always needed |expectation.
 
     Args:
@@ -214,18 +229,19 @@ class BaseBuildStats(object):
       |expectation| being present. Otherwise, False.
     """
     return self.did_never_pass
+  # pylint:enable=unused-argument
 
-  def __eq__(self, other):
+  def __eq__(self, other: Any) -> bool:
     return (isinstance(other, BuildStats)
             and self.passed_builds == other.passed_builds
             and self.total_builds == other.total_builds
             and self.failure_links == other.failure_links)
 
-  def __ne__(self, other):
+  def __ne__(self, other: Any) -> bool:
     return not self.__eq__(other)
 
 
-def BuildLinkFromBuildId(build_id):
+def BuildLinkFromBuildId(build_id: str) -> str:
   return 'http://ci.chromium.org/b/%s' % build_id
 
 
@@ -242,7 +258,7 @@ class BaseTypedMap(dict):
   def __init__(self, *args, **kwargs):  # pylint:disable=super-init-not-called
     self.update(*args, **kwargs)
 
-  def update(self, *args, **kwargs):
+  def update(self, *args, **kwargs) -> None:
     if args:
       assert len(args) == 1
       other = dict(args[0])
@@ -251,15 +267,15 @@ class BaseTypedMap(dict):
     for k, v in kwargs.items():
       self[k] = v
 
-  def setdefault(self, key, value=None):
+  def setdefault(self, key: Any, value: Any = None) -> Any:
     if key not in self:
       self[key] = value
     return self[key]
 
-  def _value_type(self):
+  def _value_type(self) -> type:
     raise NotImplementedError()
 
-  def IterToValueType(self, value_type):
+  def IterToValueType(self, value_type: type) -> Generator[tuple, None, None]:
     """Recursively iterates over contents until |value_type| is found.
 
     Used to get rid of nested loops, instead using a single loop that
@@ -286,7 +302,9 @@ class BaseTypedMap(dict):
         for nested_value in v.IterToValueType(value_type):
           yield (k, ) + nested_value
 
-  def Merge(self, other_map, reference_map=None):
+  def Merge(self,
+            other_map: 'BaseTypedMap',
+            reference_map: Optional[dict] = None) -> None:
     """Merges |other_map| into self.
 
     Args:
@@ -342,15 +360,17 @@ class BaseTestExpectationMap(BaseTypedMap):
   }
   """
 
-  def __setitem__(self, key, value):
+  def __setitem__(self, key: str, value: 'ExpectationBuilderMap') -> None:
     assert IsStringType(key)
     assert isinstance(value, ExpectationBuilderMap)
-    super(BaseTestExpectationMap, self).__setitem__(key, value)
+    super().__setitem__(key, value)
 
-  def _value_type(self):
+  def _value_type(self) -> type:
     return ExpectationBuilderMap
 
-  def IterBuilderStepMaps(self):
+  def IterBuilderStepMaps(
+      self
+  ) -> Generator[Tuple[str, BaseExpectation, 'BuilderStepMap'], None, None]:
     """Iterates over all BuilderStepMaps contained in the map.
 
     Returns:
@@ -359,7 +379,11 @@ class BaseTestExpectationMap(BaseTypedMap):
     """
     return self.IterToValueType(BuilderStepMap)
 
-  def AddResultList(self, builder, results, expectation_files=None):
+  def AddResultList(self,
+                    builder: str,
+                    results: ResultListType,
+                    expectation_files: Optional[Iterable[str]] = None
+                    ) -> ResultListType:
     """Adds |results| to |self|.
 
     Args:
@@ -408,7 +432,9 @@ class BaseTestExpectationMap(BaseTypedMap):
 
     return unmatched_results
 
-  def _AddGroupedResults(self, grouped_results, builder, expectation_files):
+  def _AddGroupedResults(self, grouped_results: Dict[str, ResultListType],
+                         builder: str, expectation_files: Optional[List[str]]
+                         ) -> ResultSetType:
     """Adds all results in |grouped_results| to |self|.
 
     Args:
@@ -440,7 +466,7 @@ class BaseTestExpectationMap(BaseTypedMap):
               self._AddSingleResult(r, stats)
     return matched_results
 
-  def _AddSingleResult(self, result, stats):
+  def _AddSingleResult(self, result: BaseResult, stats: BaseBuildStats) -> None:
     """Adds |result| to |self|.
 
     Args:
@@ -452,7 +478,9 @@ class BaseTestExpectationMap(BaseTypedMap):
     else:
       stats.AddFailedBuild(result.build_id)
 
-  def SplitByStaleness(self):
+  def SplitByStaleness(
+      self) -> Tuple['BaseTestExpectationMap', 'BaseTestExpectationMap',
+                     'BaseTestExpectationMap']:
     """Separates stored data based on expectation staleness.
 
     Returns:
@@ -510,6 +538,14 @@ class BaseTestExpectationMap(BaseTypedMap):
               expectation_file,
               ExpectationBuilderMap()).setdefault(expectation, BuilderStepMap())
           _CopyPassesIntoBuilderMap(builder_map, [NEVER_PASS, PARTIAL_PASS])
+        # Handle the case of a semi-stale expectation that should be considered
+        # active.
+        elif self._ShouldTreatSemiStaleAsActive(tmp_map):
+          builder_map = active_dict.setdefault(
+              expectation_file,
+              ExpectationBuilderMap()).setdefault(expectation, BuilderStepMap())
+          _CopyPassesIntoBuilderMap(builder_map,
+                                    [FULL_PASS, PARTIAL_PASS, NEVER_PASS])
         # Handle the case of a semi-stale expectation.
         else:
           # TODO(crbug.com/998329): Sort by pass percentage so it's easier to
@@ -521,7 +557,24 @@ class BaseTestExpectationMap(BaseTypedMap):
                                     [FULL_PASS, PARTIAL_PASS, NEVER_PASS])
     return stale_dict, semi_stale_dict, active_dict
 
-  def FilterOutUnusedExpectations(self):
+  def _ShouldTreatSemiStaleAsActive(self, pass_map: Dict[int, 'BuilderStepMap']
+                                    ) -> bool:
+    """Check if a semi-stale expectation should be treated as active.
+
+    Allows for implementation-specific workarounds.
+
+    Args:
+      pass_map: A dict mapping the FULL/NEVER/PARTIAL_PASS constants to
+          BuilderStepMaps, as used in self.SplitByStaleness().
+
+    Returns:
+      A boolean denoting whether the given results data should be treated as an
+      active expectation instead of a semi-stale one.
+    """
+    del pass_map
+    return False
+
+  def FilterOutUnusedExpectations(self) -> Dict[str, List[BaseExpectation]]:
     """Filters out any unused Expectations from stored data.
 
     An Expectation is considered unused if its corresponding dictionary is
@@ -529,8 +582,8 @@ class BaseTestExpectationMap(BaseTypedMap):
     empty dictionary, that test entry will also be removed.
 
     Returns:
-      A dict from expectation file name (str) to set of unused expectations
-      (str) from that file.
+      A dict from expectation file name (str) to list of unused
+      data_types.Expectation from that file.
     """
     logging.info('Filtering out unused expectations')
     unused = collections.defaultdict(list)
@@ -559,27 +612,30 @@ class BaseTestExpectationMap(BaseTypedMap):
 class ExpectationBuilderMap(BaseTypedMap):
   """Typed map for Expectation -> BuilderStepMap."""
 
-  def __setitem__(self, key, value):
+  def __setitem__(self, key: BaseExpectation, value: 'BuilderStepMap') -> None:
     assert isinstance(key, BaseExpectation)
     assert isinstance(value, self._value_type())
-    super(ExpectationBuilderMap, self).__setitem__(key, value)
+    super().__setitem__(key, value)
 
-  def _value_type(self):
+  def _value_type(self) -> type:
     return BuilderStepMap
 
 
 class BuilderStepMap(BaseTypedMap):
   """Typed map for string types -> StepBuildStatsMap."""
 
-  def __setitem__(self, key, value):
+  def __setitem__(self, key: str, value: 'StepBuildStatsMap') -> None:
     assert IsStringType(key)
     assert isinstance(value, self._value_type())
-    super(BuilderStepMap, self).__setitem__(key, value)
+    super().__setitem__(key, value)
 
-  def _value_type(self):
+  def _value_type(self) -> type:
     return StepBuildStatsMap
 
-  def SplitBuildStatsByPass(self, expectation):
+  def SplitBuildStatsByPass(
+      self, expectation: BaseExpectation
+  ) -> Dict[str, Tuple['StepBuildStatsMap', 'StepBuildStatsMap',
+                       'StepBuildStatsMap']]:
     """Splits the underlying BuildStats data by passing-ness.
 
     Args:
@@ -610,7 +666,8 @@ class BuilderStepMap(BaseTypedMap):
       retval[builder_name] = (fully_passed, never_passed, partially_passed)
     return retval
 
-  def IterBuildStats(self):
+  def IterBuildStats(
+      self) -> Generator[Tuple[str, str, BaseBuildStats], None, None]:
     """Iterates over all BuildStats contained in the map.
 
     Returns:
@@ -623,16 +680,48 @@ class BuilderStepMap(BaseTypedMap):
 class StepBuildStatsMap(BaseTypedMap):
   """Typed map for string types -> BuildStats"""
 
-  def __setitem__(self, key, value):
+  def __setitem__(self, key: str, value: BuildStats) -> None:
     assert IsStringType(key)
     assert isinstance(value, self._value_type())
-    super(StepBuildStatsMap, self).__setitem__(key, value)
+    super().__setitem__(key, value)
 
-  def _value_type(self):
+  def _value_type(self) -> type:
     return BuildStats
 
 
-def IsStringType(s):
+class BuilderEntry():
+  """Simple container for defining a builder."""
+
+  def __init__(self, name: str, builder_type: str, is_internal_builder: bool):
+    """
+    Args:
+      name: A string containing the name of the builder.
+      builder_type: A string containing the type of builder this is, either
+          "ci" or "try".
+      is_internal_builder: A boolean denoting whether the builder is internal or
+          not.
+    """
+    self.name = name
+    self.builder_type = builder_type
+    self.is_internal_builder = is_internal_builder
+
+  @property
+  def project(self) -> str:
+    return 'chrome' if self.is_internal_builder else 'chromium'
+
+  def __eq__(self, other: Any) -> bool:
+    return (isinstance(other, BuilderEntry) and self.name == other.name
+            and self.builder_type == other.builder_type
+            and self.is_internal_builder == other.is_internal_builder)
+
+  def __ne__(self, other: Any) -> bool:
+    return not self.__eq__(other)
+
+  def __hash__(self) -> int:
+    return hash((self.name, self.builder_type, self.is_internal_builder))
+
+
+def IsStringType(s: Any) -> bool:
   return isinstance(s, six.string_types)
 
 

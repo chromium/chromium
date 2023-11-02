@@ -1,17 +1,19 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/webcrypto/algorithms/secret_key_util.h"
 
+#include "base/record_replay.h"
 #include "components/webcrypto/algorithms/util.h"
 #include "components/webcrypto/blink_key_handle.h"
-#include "components/webcrypto/crypto_data.h"
 #include "components/webcrypto/generate_key_result.h"
 #include "components/webcrypto/jwk.h"
 #include "components/webcrypto/status.h"
 #include "crypto/openssl_util.h"
 #include "third_party/boringssl/src/include/openssl/rand.h"
+
+#include "crypto/random.h"
 
 namespace webcrypto {
 
@@ -26,19 +28,25 @@ Status GenerateWebCryptoSecretKey(const blink::WebCryptoKeyAlgorithm& algorithm,
   std::vector<uint8_t> random_bytes(keylen_bytes, 0);
 
   if (keylen_bytes > 0) {
-    if (!RAND_bytes(random_bytes.data(), keylen_bytes))
-      return Status::OperationError();
+    // Avoid calling RAND_bytes when recording/replaying as it can behave in
+    // non-deterministic ways.
+    if (recordreplay::IsRecordingOrReplaying()) {
+      crypto::RandBytes(random_bytes.data(), keylen_bytes);
+    } else {
+      if (!RAND_bytes(random_bytes.data(), keylen_bytes))
+        return Status::OperationError();
+    }
     TruncateToBitLength(keylen_bits, &random_bytes);
   }
 
   result->AssignSecretKey(blink::WebCryptoKey::Create(
-      CreateSymmetricKeyHandle(CryptoData(random_bytes)),
-      blink::kWebCryptoKeyTypeSecret, extractable, algorithm, usages));
+      CreateSymmetricKeyHandle(random_bytes), blink::kWebCryptoKeyTypeSecret,
+      extractable, algorithm, usages));
 
   return Status::Success();
 }
 
-Status CreateWebCryptoSecretKey(const CryptoData& key_data,
+Status CreateWebCryptoSecretKey(base::span<const uint8_t> key_data,
                                 const blink::WebCryptoKeyAlgorithm& algorithm,
                                 bool extractable,
                                 blink::WebCryptoKeyUsageMask usages,
@@ -49,7 +57,7 @@ Status CreateWebCryptoSecretKey(const CryptoData& key_data,
   return Status::Success();
 }
 
-void WriteSecretKeyJwk(const CryptoData& raw_key_data,
+void WriteSecretKeyJwk(base::span<const uint8_t> raw_key_data,
                        const std::string& algorithm,
                        bool extractable,
                        blink::WebCryptoKeyUsageMask usages,
@@ -60,7 +68,7 @@ void WriteSecretKeyJwk(const CryptoData& raw_key_data,
 }
 
 Status ReadSecretKeyNoExpectedAlgJwk(
-    const CryptoData& key_data,
+    base::span<const uint8_t> key_data,
     bool expected_extractable,
     blink::WebCryptoKeyUsageMask expected_usages,
     std::vector<uint8_t>* raw_key_data,
@@ -70,13 +78,7 @@ Status ReadSecretKeyNoExpectedAlgJwk(
   if (status.IsError())
     return status;
 
-  std::string jwk_k_value;
-  status = jwk->GetBytes("k", &jwk_k_value);
-  if (status.IsError())
-    return status;
-  raw_key_data->assign(jwk_k_value.begin(), jwk_k_value.end());
-
-  return Status::Success();
+  return jwk->GetBytes("k", raw_key_data);
 }
 
 }  // namespace webcrypto

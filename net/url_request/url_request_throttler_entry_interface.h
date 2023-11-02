@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "net/base/net_export.h"
@@ -20,7 +19,7 @@ class URLRequest;
 class NET_EXPORT URLRequestThrottlerEntryInterface
     : public base::RefCountedThreadSafe<URLRequestThrottlerEntryInterface> {
  public:
-  URLRequestThrottlerEntryInterface() {}
+  URLRequestThrottlerEntryInterface() = default;
 
   URLRequestThrottlerEntryInterface(const URLRequestThrottlerEntryInterface&) =
       delete;
@@ -62,7 +61,7 @@ class NET_EXPORT URLRequestThrottlerEntryInterface
 
  protected:
   friend class base::RefCountedThreadSafe<URLRequestThrottlerEntryInterface>;
-  virtual ~URLRequestThrottlerEntryInterface() {}
+  virtual ~URLRequestThrottlerEntryInterface() = default;
 
  private:
   friend class base::RefCounted<URLRequestThrottlerEntryInterface>;

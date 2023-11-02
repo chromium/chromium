@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,6 +34,18 @@ class CONTENT_EXPORT BrowserChildProcessObserver {
   // Called when a child process disappears unexpectedly as a result of being
   // killed.
   virtual void BrowserChildProcessKilled(
+      const ChildProcessData& data,
+      const ChildProcessTerminationInfo& info) {}
+
+  // Called when a child process never launches successfully. In this case,
+  // info.status will be TERMINATION_STATUS_LAUNCH_FAILED and info.exit_code
+  // will contain a platform specific launch failure error code.
+  virtual void BrowserChildProcessLaunchFailed(
+      const ChildProcessData& data,
+      const ChildProcessTerminationInfo& info) {}
+
+  // Called when a child process exits without crashing or being killed.
+  virtual void BrowserChildProcessExitedNormally(
       const ChildProcessData& data,
       const ChildProcessTerminationInfo& info) {}
 

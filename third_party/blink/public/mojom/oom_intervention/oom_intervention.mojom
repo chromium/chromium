@@ -1,10 +1,8 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 module blink.mojom;
-
-import "mojo/public/mojom/base/shared_memory.mojom";
 
 // There are two phases to estimate a near-OOM situation. First phase takes
 // place in the browser process. When the browser detects a high memory

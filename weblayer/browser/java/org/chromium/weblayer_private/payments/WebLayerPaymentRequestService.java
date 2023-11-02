@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,6 @@ import androidx.annotation.Nullable;
 import org.chromium.components.payments.BrowserPaymentRequest;
 import org.chromium.components.payments.JourneyLogger;
 import org.chromium.components.payments.PaymentApp;
-import org.chromium.components.payments.PaymentAppFactoryDelegate;
-import org.chromium.components.payments.PaymentAppService;
 import org.chromium.components.payments.PaymentAppType;
 import org.chromium.components.payments.PaymentRequestService;
 import org.chromium.components.payments.PaymentRequestService.Delegate;
@@ -107,13 +105,6 @@ public class WebLayerPaymentRequestService implements BrowserPaymentRequest {
 
     // Implements BrowserPaymentRequest:
     @Override
-    public void addPaymentAppFactories(
-            PaymentAppService service, PaymentAppFactoryDelegate delegate) {
-        // There's no WebLayer specific factories.
-    }
-
-    // Implements BrowserPaymentRequest:
-    @Override
     @Nullable
     public String showOrSkipAppSelector(boolean isShowWaitingForUpdatedDetails, PaymentItem total,
             boolean shouldSkipAppSelector) {
@@ -129,7 +120,7 @@ public class WebLayerPaymentRequestService implements BrowserPaymentRequest {
     // Implements BrowserPaymentRequest:
     @Override
     @Nullable
-    public String onShowCalledAndAppsQueriedAndDetailsFinalized(boolean isUserGestureShow) {
+    public String onShowCalledAndAppsQueriedAndDetailsFinalized() {
         assert !mAvailableApps.isEmpty()
             : "triggerPaymentAppUiSkipIfApplicable() should be called only when there is any "
                 + "available app.";

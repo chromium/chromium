@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define ASH_PUBLIC_CPP_WALLPAPER_WALLPAPER_CONTROLLER_OBSERVER_H_
 
 #include "ash/public/cpp/ash_public_export.h"
+#include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
 
 namespace ash {
 
@@ -18,11 +19,17 @@ class ASH_PUBLIC_EXPORT WallpaperControllerObserver {
   WallpaperControllerObserver& operator=(const WallpaperControllerObserver&) =
       delete;
 
+  // Invoked when the online wallpaper changes.
+  virtual void OnOnlineWallpaperSet(const OnlineWallpaperParams& params) {}
+
   // Invoked when the wallpaper is about to change.
   virtual void OnWallpaperChanging() {}
 
   // Invoked when the wallpaper is changed.
   virtual void OnWallpaperChanged() {}
+
+  // Invoked when the wallpaper is resized.
+  virtual void OnWallpaperResized() {}
 
   // Invoked when the colors extracted from the current wallpaper change.
   virtual void OnWallpaperColorsChanged() {}

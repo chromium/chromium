@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,7 +38,7 @@ class MockBrowserControlsOffsetManagerClient
         browser_controls_show_threshold_(browser_controls_show_threshold),
         browser_controls_hide_threshold_(browser_controls_hide_threshold) {
     active_tree_ = std::make_unique<LayerTreeImpl>(
-        &host_impl_, new SyncedScale, new SyncedBrowserControls,
+        host_impl_, new SyncedScale, new SyncedBrowserControls,
         new SyncedBrowserControls, new SyncedElasticOverscroll);
     root_scroll_layer_ = LayerImpl::Create(active_tree_.get(), 1);
   }
@@ -72,7 +72,7 @@ class MockBrowserControlsOffsetManagerClient
     return browser_controls_params_.only_expand_top_controls_at_page_top;
   }
 
-  gfx::Vector2dF ViewportScrollOffset() const override {
+  gfx::PointF ViewportScrollOffset() const override {
     return viewport_scroll_offset_;
   }
 
@@ -121,12 +121,12 @@ class MockBrowserControlsOffsetManagerClient
   }
 
   void SetViewportScrollOffset(float x, float y) {
-    viewport_scroll_offset_ = gfx::Vector2dF(x, y);
+    viewport_scroll_offset_ = gfx::PointF(x, y);
   }
 
   void ScrollVerticallyBy(float dy) {
     gfx::Vector2dF viewport_scroll_delta = manager()->ScrollBy({0.f, dy});
-    viewport_scroll_offset_.Add(viewport_scroll_delta);
+    viewport_scroll_offset_ += viewport_scroll_delta;
   }
 
  private:
@@ -144,7 +144,7 @@ class MockBrowserControlsOffsetManagerClient
   float top_controls_shown_ratio_;
   float browser_controls_show_threshold_;
   float browser_controls_hide_threshold_;
-  gfx::Vector2dF viewport_scroll_offset_;
+  gfx::PointF viewport_scroll_offset_;
 };
 
 TEST(BrowserControlsOffsetManagerTest, EnsureScrollThresholdApplied) {

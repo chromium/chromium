@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,6 +21,10 @@
 #include "chrome/services/keymaster/public/mojom/cert_store.mojom.h"
 #include "crypto/rsa_private_key.h"
 #include "net/cert/x509_util_nss.h"
+
+// Enable VLOG level 1.
+#undef ENABLED_VLOG_LEVEL
+#define ENABLED_VLOG_LEVEL 1
 
 namespace arc {
 
@@ -146,7 +150,7 @@ std::string ArcCertInstaller::InstallArcCert(
                          "}\"}",
                          pkcs12.c_str(), name.c_str(), der_cert64.c_str()));
   if (!job || !job->Init(queue_->GetNowTicks(), command_proto,
-                         nullptr /* signed_command */)) {
+                         enterprise_management::SignedData())) {
     LOG(ERROR) << "Initialization of remote command failed";
     known_cert_names_.erase(name);
     return "";

@@ -1,0 +1,11 @@
+<!--
+@SCRIPT:
+  document.accessibilityAttributeNames.has(AXLoaded)
+  document.accessibilityAttributeValue(AXLoaded)
+  not_applicable.accessibilityAttributeNames.has(AXLoaded)
+  // Test of AccessibilityAttributeValue for "not applicable" element is
+  // necessary because the value can be requested.
+  not_applicable.accessibilityAttributeValue(AXLoaded)
+-->
+<!DOCTYPE html>
+<div id="not_applicable">

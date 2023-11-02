@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <list>
 #include <string>
 
+#include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 
@@ -22,26 +23,18 @@ class BreadcrumbManagerObserver;
 // stale data.
 class BreadcrumbManager {
  public:
-  // |start_time| will be used to determine logged events' timestamps, and
-  // should almost always be breadcrumbs::GetStartTime(), with a few exceptions
-  // for tests that rely on specific start times.
-  explicit BreadcrumbManager(base::TimeTicks start_time);
+  // Returns the singleton BreadcrumbManager. Creates it if it does not exist.
+  static BreadcrumbManager& GetInstance();
+
   BreadcrumbManager(const BreadcrumbManager&) = delete;
   BreadcrumbManager& operator=(const BreadcrumbManager&) = delete;
-  ~BreadcrumbManager();
 
-  // Returns the number of collected breadcrumb events which are still relevant.
-  // Note: This method may drop old events so the value can change even when no
-  // new events have been added, but time has passed.
-  size_t GetEventCount();
-
-  // Returns a list of the collected breadcrumb events which are still relevant
-  // up to |event_count_limit|. Passing zero for |event_count_limit| signifies
-  // no limit. Events returned will have a timestamp prepended to the original
-  // |event| string representing when |AddEvent| was called.
+  // Returns a list of the collected breadcrumb events which are still relevant.
+  // Events returned will have a timestamp prepended to the original `event`
+  // string representing when `AddEvent` was called.
   // Note: This method may drop old events so the returned events can change
   // even if no new events have been added, but time has passed.
-  const std::list<std::string> GetEvents(size_t event_count_limit);
+  const std::list<std::string> GetEvents();
 
   // Logs a breadcrumb event with message data |event|.
   // NOTE: |event| must not include newline characters as newlines are used by
@@ -52,7 +45,16 @@ class BreadcrumbManager {
   void AddObserver(BreadcrumbManagerObserver* observer);
   void RemoveObserver(BreadcrumbManagerObserver* observer);
 
+  // Resets timestamps to 0:00:00 and removes all events. Does not remove
+  // observers or notify observers about removed events.
+  void ResetForTesting();
+
  private:
+  friend class base::NoDestructor<BreadcrumbManager>;
+
+  BreadcrumbManager();
+  ~BreadcrumbManager();
+
   // Drops events which are considered stale. Note that stale events are not
   // guaranteed to be removed. Explicitly, stale events will be retained while
   // newer events are limited.
@@ -63,7 +65,7 @@ class BreadcrumbManager {
 
   // The time when breadcrumbs logging started, used to calculate elapsed time
   // for event timestamps.
-  const base::TimeTicks start_time_;
+  base::TimeTicks start_time_ = base::TimeTicks::Now();
 
   // List of events, paired with the time they were logged in minutes. Newer
   // events are at the end of the list.

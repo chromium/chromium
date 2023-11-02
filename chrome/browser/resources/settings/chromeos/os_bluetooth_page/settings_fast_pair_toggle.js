@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,7 @@
 
 import '../../controls/settings_toggle_button.js';
 
-import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {getBluetoothConfig} from 'chrome://resources/cr_components/chromeos/bluetooth/cros_bluetooth_config.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /** @polymer */
 class SettingsFastPairToggleElement extends PolymerElement {
@@ -32,6 +31,11 @@ class SettingsFastPairToggleElement extends PolymerElement {
         notify: true,
       },
     };
+  }
+
+  /** @override */
+  focus() {
+    this.shadowRoot.querySelector('#toggle').focus();
   }
 }
 

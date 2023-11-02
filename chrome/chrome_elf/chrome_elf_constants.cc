@@ -1,19 +1,14 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/chrome_elf/chrome_elf_constants.h"
 
-namespace blacklist {
+namespace chrome {
 
-const wchar_t kRegistryBeaconKeyName[] = L"\\BLBeacon";
-const wchar_t kBeaconVersion[] = L"version";
-const wchar_t kBeaconState[] = L"state";
-const wchar_t kBeaconAttemptCount[] = L"failed_count";
+const wchar_t kWerDll[] = L"chrome_wer.dll";
 
-const DWORD kBeaconMaxAttempts = 2;
-
-}  // namespace blacklist
+}  // namespace chrome
 
 namespace elf_sec {
 

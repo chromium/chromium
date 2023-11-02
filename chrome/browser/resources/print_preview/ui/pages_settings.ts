@@ -1,23 +1,24 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
-import 'chrome://resources/cr_elements/md_select_css.m.js';
+import 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import 'chrome://resources/cr_elements/md_select.css.js';
 import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
-import './print_preview_shared_css.js';
+import './print_preview_shared.css.js';
 import './settings_section.js';
 import '../strings.m.js';
 
-import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {areRangesEqual, Range} from '../print_preview_utils.js';
 
 import {InputMixin} from './input_mixin.js';
+import {getTemplate} from './pages_settings.html.js';
 import {SelectMixin} from './select_mixin.js';
 import {SettingsMixin} from './settings_mixin.js';
 
@@ -28,7 +29,7 @@ enum PagesInputErrorState {
   EMPTY = 3,
 }
 
-enum PagesValue {
+export enum PagesValue {
   ALL = 0,
   ODDS = 1,
   EVENS = 2,
@@ -65,7 +66,7 @@ export class PrintPreviewPagesSettingsElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -158,7 +159,7 @@ export class PrintPreviewPagesSettingsElement extends
    */
   private resorationValue_: PagesValue = PagesValue.ALL;
 
-  ready() {
+  override ready() {
     super.ready();
 
     this.addEventListener('input-change', e => this.onInputChange_(e));
@@ -168,14 +169,14 @@ export class PrintPreviewPagesSettingsElement extends
    * Initialize |selectedValue| in connectedCallback() since this doesn't
    * observe settings.pages, because settings.pages is not sticky.
    */
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.selectedValue = PagesValue.ALL.toString();
   }
 
   /** The cr-input field element for InputMixin. */
-  getInput() {
+  override getInput() {
     return this.$.pageSettingsCustomInput;
   }
 
@@ -192,7 +193,7 @@ export class PrintPreviewPagesSettingsElement extends
     this.inputString_ = e.detail;
   }
 
-  onProcessSelectChange(value: string) {
+  override onProcessSelectChange(value: string) {
     this.selection_ = parseInt(value, 10);
   }
 
@@ -509,6 +510,12 @@ export class PrintPreviewPagesSettingsElement extends
     } else {
       this.updatePagesToPrint_();
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'print-preview-pages-settings': PrintPreviewPagesSettingsElement;
   }
 }
 

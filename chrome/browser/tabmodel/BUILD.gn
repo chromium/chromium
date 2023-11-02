@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -46,6 +46,7 @@ android_library("java") {
   ]
   deps = [
     "//base:base_java",
+    "//build/android:build_java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
     "//components/embedder_support/android:util_java",
@@ -65,19 +66,23 @@ android_library_factory("factory_java") {
   ]
 }
 
-android_library("javatests") {
-  testonly = true
-  sources = [ "android/java/src/org/chromium/chrome/browser/tabmodel/IncognitoTabModelTest.java" ]
+robolectric_library("junit") {
+  sources = [
+    "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelSelectorTabModelObserverUnitTest.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/TabWindowManagerTest.java",
+  ]
+
   deps = [
+    ":factory_java",
     ":java",
+    "//base:base_java",
     "//base:base_java_test_support",
-    "//chrome/android:chrome_java",
-    "//chrome/browser/flags:java",
+    "//base:base_junit_test_support",
     "//chrome/browser/tab:java",
-    "//chrome/test/android:chrome_java_test_support",
-    "//content/public/android:content_java",
-    "//content/public/test/android:content_java_test_support",
+    "//chrome/browser/tabmodel:java",
+    "//chrome/test/android:chrome_java_unit_test_support",
     "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_core_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
   ]

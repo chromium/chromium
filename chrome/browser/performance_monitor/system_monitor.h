@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,6 @@
 #include "base/observer_list.h"
 #include "base/process/process_metrics.h"
 #include "base/sequence_checker.h"
-#include "base/task/post_task.h"
 #include "base/timer/timer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -160,7 +159,7 @@ class SystemMonitor {
     using ObserverArgType =
         typename std::conditional<std::is_scalar<T>::value, T, const T&>::type;
 
-    MetricEvaluatorImpl<T>(
+    MetricEvaluatorImpl(
         Type type,
         base::OnceCallback<absl::optional<T>()> evaluate_function,
         void (SystemObserver::*notify_function)(ObserverArgType));

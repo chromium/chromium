@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,6 +29,8 @@ class WaylandDisplayObserver : public base::CheckedObserver {
   // to be followed by "done" event, |false| otherwise.
   virtual bool SendDisplayMetrics(const display::Display& display,
                                   uint32_t changed_metrics) = 0;
+  // Called when wl_output is destroyed.
+  virtual void OnOutputDestroyed() = 0;
 
  protected:
   ~WaylandDisplayObserver() override {}
@@ -46,6 +48,7 @@ class WaylandDisplayHandler : public display::DisplayObserver,
   ~WaylandDisplayHandler() override;
   void Initialize();
   void AddObserver(WaylandDisplayObserver* observer);
+  void RemoveObserver(WaylandDisplayObserver* observer);
   int64_t id() const;
 
   // Overridden from display::DisplayObserver:
@@ -58,17 +61,21 @@ class WaylandDisplayHandler : public display::DisplayObserver,
   // Unset the xdg output object.
   void UnsetXdgOutputResource();
 
+  size_t CountObserversForTesting() const;
+
  protected:
   wl_resource* output_resource() const { return output_resource_; }
+
+  // Overridable for testing.
+  virtual void XdgOutputSendLogicalPosition(const gfx::Point& position);
+  virtual void XdgOutputSendLogicalSize(const gfx::Size& size);
+  virtual void XdgOutputSendDescription(const std::string& desc);
 
  private:
   // Overridden from WaylandDisplayObserver:
   bool SendDisplayMetrics(const display::Display& display,
                           uint32_t changed_metrics) override;
-
-  // Returns the transform that a compositor will apply to a surface to
-  // compensate for the rotation of an output device.
-  wl_output_transform OutputTransform(display::Display::Rotation rotation);
+  void OnOutputDestroyed() override;
 
   // Output.
   WaylandDisplayOutput* output_;

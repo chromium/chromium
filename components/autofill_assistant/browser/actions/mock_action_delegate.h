@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill_assistant/browser/actions/action_delegate.h"
 #include "components/autofill_assistant/browser/client_settings.h"
+#include "components/autofill_assistant/browser/details.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/top_padding.h"
 #include "components/autofill_assistant/browser/user_action.h"
@@ -24,8 +25,14 @@
 #include "components/autofill_assistant/browser/web/fake_element_store.h"
 #include "components/autofill_assistant/browser/web/web_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace password_manager {
+class PasswordChangeSuccessTracker;
+}
 
 namespace autofill_assistant {
+class ElementFinderResult;
 class UserModel;
 
 class MockActionDelegate : public ActionDelegate {
@@ -43,7 +50,8 @@ class MockActionDelegate : public ActionDelegate {
   }
   void ShortWaitForElementWithSlowWarning(
       const Selector& selector,
-      base::OnceCallback<void(const ClientStatus&, base::TimeDelta)> callback) {
+      base::OnceCallback<void(const ClientStatus&, base::TimeDelta)> callback)
+      override {
     OnShortWaitForElement(selector, callback);
   }
   MOCK_METHOD2(
@@ -51,9 +59,10 @@ class MockActionDelegate : public ActionDelegate {
       void(const Selector& selector,
            base::OnceCallback<void(const ClientStatus&, base::TimeDelta)>&));
 
-  MOCK_METHOD5(
+  MOCK_METHOD6(
       WaitForDom,
       void(base::TimeDelta max_wait_time,
+           bool allow_observer_mode,
            bool allow_interrupt,
            WaitForDomObserver* observer,
            base::RepeatingCallback<void(
@@ -89,17 +98,18 @@ class MockActionDelegate : public ActionDelegate {
                     base::OnceCallback<void()> end_on_navigation_callback,
                     bool browse_mode,
                     bool browse_mode_invisible));
-  MOCK_METHOD0(CleanUpAfterPrompt, void());
+  MOCK_METHOD1(CleanUpAfterPrompt, void(bool));
   MOCK_METHOD1(SetBrowseDomainsAllowlist,
                void(std::vector<std::string> domains));
   MOCK_METHOD2(
       RetrieveElementFormAndFieldData,
       void(const Selector& selector,
            base::OnceCallback<void(const ClientStatus&,
+                                   content::RenderFrameHost* rfh,
                                    const autofill::FormData&,
                                    const autofill::FormFieldData&)> callback));
   MOCK_METHOD1(StoreScrolledToElement,
-               void(const ElementFinder::Result& element));
+               void(const ElementFinderResult& element));
   MOCK_METHOD1(SetTouchableElementArea,
                void(const ElementAreaProto& touchable_element_area));
   MOCK_METHOD1(CollectUserData,
@@ -109,9 +119,8 @@ class MockActionDelegate : public ActionDelegate {
       void(std::unique_ptr<CollectUserDataOptions> collect_user_data_options));
   MOCK_CONST_METHOD0(GetLastSuccessfulUserDataOptions,
                      CollectUserDataOptions*());
-  MOCK_METHOD1(
-      WriteUserData,
-      void(base::OnceCallback<void(UserData*, UserData::FieldChange*)>));
+  MOCK_METHOD1(WriteUserData,
+               void(base::OnceCallback<void(UserData*, UserDataFieldChange*)>));
   MOCK_METHOD2(GetFullCard,
                void(const autofill::CreditCard* credit_card,
                     ActionDelegate::GetFullCardCallback callback));
@@ -123,10 +132,17 @@ class MockActionDelegate : public ActionDelegate {
   MOCK_METHOD1(Shutdown, void(bool show_feedback_chip));
   MOCK_METHOD0(Close, void());
   MOCK_METHOD0(Restart, void());
+  MOCK_CONST_METHOD0(GetMutableUserData, UserData*());
   MOCK_CONST_METHOD0(GetUserData, UserData*());
   MOCK_CONST_METHOD0(GetPersonalDataManager, autofill::PersonalDataManager*());
   MOCK_CONST_METHOD0(GetWebsiteLoginManager, WebsiteLoginManager*());
+  MOCK_CONST_METHOD0(GetPasswordChangeSuccessTracker,
+                     password_manager::PasswordChangeSuccessTracker*());
   MOCK_CONST_METHOD0(GetWebContents, content::WebContents*());
+  MOCK_METHOD(JsFlowDevtoolsWrapper*,
+              GetJsFlowDevtoolsWrapper,
+              (),
+              (const override));
   MOCK_CONST_METHOD0(GetWebController, WebController*());
   MOCK_CONST_METHOD0(GetEmailAddressForAccessTokenAccount, std::string());
   MOCK_CONST_METHOD0(GetUkmRecorder, ukm::UkmRecorder*());
@@ -161,13 +177,19 @@ class MockActionDelegate : public ActionDelegate {
            base::RepeatingCallback<void(const FormProto::Result*)>
                changed_callback,
            base::OnceCallback<void(const ClientStatus&)> cancel_callback));
+  MOCK_METHOD2(ShowQrCodeScanUi,
+               void(std::unique_ptr<PromptQrCodeScanProto> qr_code_scan,
+                    base::OnceCallback<void(const ClientStatus&,
+                                            const absl::optional<ValueProto>&)>
+                        callback));
+  MOCK_METHOD0(ClearQrCodeScanUi, void());
   MOCK_CONST_METHOD0(GetUserModel, UserModel*());
   MOCK_METHOD1(WaitForWindowHeightChange,
                void(base::OnceCallback<void(const ClientStatus&)> callback));
   MOCK_METHOD4(WaitForDocumentReadyState,
                void(base::TimeDelta max_wait_time,
                     DocumentReadyState min_ready_state,
-                    const ElementFinder::Result& optional_frame_element,
+                    const ElementFinderResult& optional_frame_element,
                     base::OnceCallback<void(const ClientStatus&,
                                             DocumentReadyState,
                                             base::TimeDelta)> callback));
@@ -175,16 +197,25 @@ class MockActionDelegate : public ActionDelegate {
       WaitUntilDocumentIsInReadyState,
       void(base::TimeDelta,
            DocumentReadyState,
-           const ElementFinder::Result&,
+           const ElementFinderResult&,
            base::OnceCallback<void(const ClientStatus&, base::TimeDelta)>));
   MOCK_METHOD0(RequireUI, void());
   MOCK_METHOD0(SetExpandSheetForPromptAction, bool());
-  MOCK_METHOD3(
+  MOCK_METHOD5(
       SetGenericUi,
       void(std::unique_ptr<GenericUserInterfaceProto> generic_ui,
            base::OnceCallback<void(const ClientStatus&)> end_action_callback,
            base::OnceCallback<void(const ClientStatus&)>
-               view_inflation_finished_callback));
+               view_inflation_finished_callback,
+           base::RepeatingCallback<void(const RequestBackendDataProto&)>
+               request_backend_data_callback,
+           base::RepeatingCallback<void(const ShowAccountScreenProto&)>
+               show_account_screen_callback));
+  MOCK_METHOD(void,
+              ShowAccountScreen,
+              (const ShowAccountScreenProto& proto,
+               const std::string& email_address),
+              (override));
 
   MOCK_METHOD2(SetPersistentGenericUi,
                void(std::unique_ptr<GenericUserInterfaceProto> generic_ui,
@@ -200,8 +231,36 @@ class MockActionDelegate : public ActionDelegate {
   MOCK_METHOD0(MaybeShowSlowConnectionWarning, void());
   MOCK_METHOD0(GetLogInfo, ProcessedActionStatusDetailsProto&());
   MOCK_CONST_METHOD0(GetElementStore, ElementStore*());
+  MOCK_METHOD2(
+      RequestUserData,
+      void(const CollectUserDataOptions& options,
+           base::OnceCallback<void(bool, const GetUserDataResponseProto&)>
+               callback));
+  MOCK_METHOD2(SetCollectUserDataUiState,
+               void(bool loading, UserDataEventField event_field));
+  MOCK_METHOD0(SupportsExternalActions, bool());
+  MOCK_METHOD3(
+      RequestExternalAction,
+      void(const ExternalActionProto& external_action,
+           base::OnceCallback<void(ExternalActionDelegate::DomUpdateCallback)>
+               start_dom_checks_callback,
+           base::OnceCallback<void(const external::Result& result)>
+               end_action_callback));
+  MOCK_CONST_METHOD0(MustUseBackendData, bool());
+  MOCK_METHOD1(MaybeSetPreviousAction,
+               void(const ProcessedActionProto& processed_action));
+  MOCK_CONST_METHOD0(GetIntent, absl::optional<std::string>());
+  MOCK_CONST_METHOD0(GetLocale, const std::string());
+  MOCK_CONST_METHOD1(IsXmlSigned, bool(const std::string& xml_string));
+  MOCK_CONST_METHOD2(
+      ExtractValuesFromSingleTagXml,
+      const std::vector<std::string>(const std::string& xml_string,
+                                     const std::vector<std::string>& keys));
+  MOCK_METHOD2(ReportProgress,
+               void(const std::string& payload,
+                    base::OnceCallback<void(bool)> callback));
 
-  base::WeakPtr<ActionDelegate> GetWeakPtr() const override {
+  base::WeakPtr<ActionDelegate> GetWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
@@ -213,6 +272,7 @@ class MockActionDelegate : public ActionDelegate {
   FakeElementStore fake_element_store_;
   ClientSettings client_settings_;
   ProcessedActionStatusDetailsProto log_info_;
+  UserData user_data_;
 
   base::WeakPtrFactory<MockActionDelegate> weak_ptr_factory_{this};
 };

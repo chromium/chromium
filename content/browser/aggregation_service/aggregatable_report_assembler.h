@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,7 +19,6 @@
 #include "content/browser/aggregation_service/public_key.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "url/origin.h"
 
 template <class T>
 class scoped_refptr;
@@ -30,7 +29,7 @@ class SharedURLLoaderFactory;
 
 namespace content {
 
-class AggregatableReportManager;
+class AggregationServiceStorageContext;
 class StoragePartition;
 
 // This class provides an interface for assembling an aggregatable report. It is
@@ -38,29 +37,32 @@ class StoragePartition;
 // appropriate public keys, and generating and returning the AggregatableReport.
 class CONTENT_EXPORT AggregatableReportAssembler {
  public:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum class AssemblyStatus {
-    kOk,
+    kOk = 0,
 
     // The attempt to fetch a public key failed.
-    kPublicKeyFetchFailed,
+    kPublicKeyFetchFailed = 1,
 
     // An internal error occurred while attempting to construct the report.
-    kAssemblyFailed,
+    kAssemblyFailed = 2,
 
     // The limit on the number of simultenous requests has been reached.
-    kTooManySimultaneousRequests,
+    kTooManySimultaneousRequests = 3,
     kMaxValue = kTooManySimultaneousRequests,
   };
 
   using AssemblyCallback =
-      base::OnceCallback<void(absl::optional<AggregatableReport>,
+      base::OnceCallback<void(AggregatableReportRequest,
+                              absl::optional<AggregatableReport>,
                               AssemblyStatus)>;
 
   // While we shouldn't hit these limits in typical usage, we protect against
   // the possibility of unbounded memory growth
   static constexpr size_t kMaxSimultaneousRequests = 1000;
 
-  AggregatableReportAssembler(AggregatableReportManager* manager,
+  AggregatableReportAssembler(AggregationServiceStorageContext* storage_context,
                               StoragePartition* storage_partition);
   // Not copyable or movable.
   AggregatableReportAssembler(const AggregatableReportAssembler& other) =
@@ -76,21 +78,29 @@ class CONTENT_EXPORT AggregatableReportAssembler {
   // Used by the aggregation service tool to inject a `url_loader_factory` to
   // AggregationServiceNetworkFetcherImpl if one is provided.
   static std::unique_ptr<AggregatableReportAssembler> CreateForTesting(
-      AggregatableReportManager* manager,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+      AggregationServiceStorageContext* storage_context,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      bool enable_debug_logging);
 
   // Fetches the necessary public keys and uses it to construct an
   // AggregatableReport from the information in `report_request`. See the
   // AggregatableReport documentation for more detail on the returned report.
-  void AssembleReport(AggregatableReportRequest report_request,
-                      AssemblyCallback callback);
+  virtual void AssembleReport(AggregatableReportRequest report_request,
+                              AssemblyCallback callback);
+
+ protected:
+  // For testing only.
+  AggregatableReportAssembler(
+      AggregationServiceStorageContext* storage_context,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      bool enable_debug_logging = false);
 
  private:
   // Represents a request to assemble a report that has not completed.
   struct PendingRequest {
     PendingRequest(AggregatableReportRequest report_request,
                    AssemblyCallback callback,
-                   size_t num_processing_origins);
+                   size_t num_processing_urls);
     // Move-only.
     PendingRequest(PendingRequest&& other);
     PendingRequest& operator=(PendingRequest&& other);
@@ -103,30 +113,24 @@ class CONTENT_EXPORT AggregatableReportAssembler {
     size_t num_returned_key_fetches = 0;
 
     // The PublicKey returned for each key fetch request. Indices correspond to
-    // the ordering of `report_request.processing_origins`. Each element is
+    // the ordering of `report_request.processing_urls`. Each element is
     // `absl::nullopt` if that key fetch either has not yet returned or has
     // returned an error.
-    std::vector<absl::optional<PublicKey>> processing_origin_keys;
+    std::vector<absl::optional<PublicKey>> processing_url_keys;
   };
 
   AggregatableReportAssembler(
       std::unique_ptr<AggregationServiceKeyFetcher> fetcher,
       std::unique_ptr<AggregatableReport::Provider> report_provider);
 
-  // For testing only.
-  AggregatableReportAssembler(
-      AggregatableReportManager* manager,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
-
   // Called when a result is returned from the key fetcher. Handles throwing
   // errors on a failed fetch, waiting for both results to return and calling
-  // into `OnBothPublicKeysFetched()` when appropriate.
-  // `processing_origin_index` is an index into the corresponding
-  // AggregatableReportRequest's `processing_origins` vector, indicating which
-  // origin this fetch is for.
+  // into `OnAllPublicKeysFetched()` when appropriate. `processing_url_index` is
+  // an index into the corresponding AggregatableReportRequest's
+  // `processing_urls` vector, indicating which URL this fetch is for.
   void OnPublicKeyFetched(
       int64_t report_id,
-      size_t processing_origin_index,
+      size_t processing_url_index,
       absl::optional<PublicKey> key,
       AggregationServiceKeyFetcher::PublicKeyFetchStatus status);
 

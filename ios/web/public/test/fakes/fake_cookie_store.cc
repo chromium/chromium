@@ -1,12 +1,12 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ios/web/public/test/fakes/fake_cookie_store.h"
 
-#include "base/task/post_task.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web {
 
@@ -20,22 +20,23 @@ void FakeCookieStore::SetAllCookies(const net::CookieList& all_cookies) {
 
 void FakeCookieStore::GetAllCookiesAsync(GetAllCookiesCallback callback) {
   DCHECK_CURRENTLY_ON(WebThread::IO);
-  base::PostTask(FROM_HERE, {WebThread::IO},
-                 base::BindOnce(std::move(callback), all_cookies_));
+  GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), all_cookies_));
 }
 
 void FakeCookieStore::SetCanonicalCookieAsync(
     std::unique_ptr<net::CanonicalCookie> cookie,
     const GURL& source_url,
     const net::CookieOptions& options,
-    SetCookiesCallback callback) {
+    SetCookiesCallback callback,
+    absl::optional<net::CookieAccessResult> cookie_access_result) {
   NOTIMPLEMENTED() << "Implement this if necessary.";
 }
 
 void FakeCookieStore::GetCookieListWithOptionsAsync(
     const GURL& url,
     const net::CookieOptions& options,
-    const net::CookiePartitionKeychain& cookie_partition_keychain,
+    const net::CookiePartitionKeyCollection& cookie_partition_key_collection,
     GetCookieListCallback callback) {
   NOTIMPLEMENTED() << "Implement this if necessary.";
 }

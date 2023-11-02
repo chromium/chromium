@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -110,7 +110,7 @@ void GatherInlineContainerFragmentsFromItems(
 void InlineContainingBlockUtils::ComputeInlineContainerGeometry(
     InlineContainingBlockMap* inline_containing_block_map,
     NGBoxFragmentBuilder* container_builder) {
-  if (inline_containing_block_map->IsEmpty())
+  if (inline_containing_block_map->empty())
     return;
 
   // This function requires that we have the final size of the fragment set
@@ -171,7 +171,7 @@ void InlineContainingBlockUtils::ComputeInlineContainerGeometryForFragmentainer(
     const LayoutBox* box,
     PhysicalSize accumulated_containing_block_size,
     InlineContainingBlockMap* inline_containing_block_map) {
-  if (inline_containing_block_map->IsEmpty())
+  if (inline_containing_block_map->empty())
     return;
 #if DCHECK_IS_ON()
   // Make sure all entries are a continuation root.
@@ -224,8 +224,7 @@ void InlineContainingBlockUtils::ComputeInlineContainerGeometryForFragmentainer(
             &current_fragment_converter, &containing_block_converter);
       }
     }
-    if (auto* break_token =
-            To<NGBlockBreakToken>(physical_fragment.BreakToken()))
+    if (const NGBlockBreakToken* break_token = physical_fragment.BreakToken())
       current_block_offset = break_token->ConsumedBlockSize();
   }
 }

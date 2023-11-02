@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,6 +37,7 @@ std::string AXFormatValue(const base::Value& value) {
                          base::CompareCase::SENSITIVE)) {
       return value.GetString().substr(const_prefix.length());
     }
+    // TODO: escape quotation marks if any to make the output unambiguous.
     return "'" + value.GetString() + "'";
   }
 
@@ -53,7 +54,7 @@ std::string AXFormatValue(const base::Value& value) {
   // List: exposed as [value1, ..., valueN];
   if (value.is_list()) {
     std::string output;
-    for (const auto& item : value.GetList()) {
+    for (const auto& item : value.GetListDeprecated()) {
       if (!output.empty()) {
         output += ", ";
       }

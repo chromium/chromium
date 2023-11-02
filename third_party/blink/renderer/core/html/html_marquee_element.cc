@@ -48,7 +48,7 @@
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
@@ -143,7 +143,7 @@ bool HTMLMarqueeElement::IsHorizontal() const {
 unsigned HTMLMarqueeElement::scrollAmount() const {
   unsigned scroll_amount = 0;
   AtomicString value = FastGetAttribute(html_names::kScrollamountAttr);
-  if (value.IsEmpty() || !ParseHTMLNonNegativeInteger(value, scroll_amount) ||
+  if (value.empty() || !ParseHTMLNonNegativeInteger(value, scroll_amount) ||
       scroll_amount > 0x7fffffffu)
     return kDefaultScrollAmount;
   return scroll_amount;
@@ -157,7 +157,7 @@ void HTMLMarqueeElement::setScrollAmount(unsigned value) {
 unsigned HTMLMarqueeElement::scrollDelay() const {
   unsigned scroll_delay = 0;
   AtomicString value = FastGetAttribute(html_names::kScrolldelayAttr);
-  if (value.IsEmpty() || !ParseHTMLNonNegativeInteger(value, scroll_delay) ||
+  if (value.empty() || !ParseHTMLNonNegativeInteger(value, scroll_delay) ||
       scroll_delay > 0x7fffffffu)
     return kDefaultScrollDelayMS;
   return scroll_delay;
@@ -252,14 +252,14 @@ StringKeyframeEffectModel* HTMLMarqueeElement::CreateEffectModel(
   set_result = keyframe1->SetCSSPropertyValue(
       CSSPropertyID::kTransform, parameters.transform_begin,
       secure_context_mode, style_sheet_contents);
-  DCHECK(set_result.did_parse);
+  DCHECK_NE(MutableCSSPropertyValueSet::kParseError, set_result);
   keyframes.push_back(keyframe1);
 
   auto* keyframe2 = MakeGarbageCollected<StringKeyframe>();
   set_result = keyframe2->SetCSSPropertyValue(
       CSSPropertyID::kTransform, parameters.transform_end, secure_context_mode,
       style_sheet_contents);
-  DCHECK(set_result.did_parse);
+  DCHECK(set_result != MutableCSSPropertyValueSet::kParseError);
   keyframes.push_back(keyframe2);
 
   return MakeGarbageCollected<StringKeyframeEffectModel>(

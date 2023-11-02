@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,9 @@
 
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/test_data_util.h"
@@ -151,7 +153,7 @@ class AV1DecoderTest : public ::testing::Test {
   }
 
   // Owned by |decoder_|.
-  MockAV1Accelerator* mock_accelerator_;
+  raw_ptr<MockAV1Accelerator> mock_accelerator_;
 
   std::unique_ptr<AV1Decoder> decoder_;
   int32_t bitstream_id_ = 0;
@@ -511,7 +513,7 @@ TEST_F(AV1DecoderTest, ConfigChange) {
   constexpr gfx::Size kRenderSizes[] = {{320, 240}, {480, 360}};
   std::vector<DecodeResult> expected;
   std::vector<DecodeResult> results;
-  for (size_t i = 0; i < base::size(kSimpleStreams); ++i) {
+  for (size_t i = 0; i < std::size(kSimpleStreams); ++i) {
     std::vector<scoped_refptr<DecoderBuffer>> buffers =
         ReadWebm(kSimpleStreams[i]);
     ASSERT_FALSE(buffers.empty());
@@ -610,7 +612,7 @@ TEST_F(AV1DecoderTest, ResetAndConfigChange) {
   std::vector<DecodeResult> expected;
   std::vector<DecodeResult> results;
 
-  for (size_t i = 0; i < base::size(kSimpleStreams); ++i) {
+  for (size_t i = 0; i < std::size(kSimpleStreams); ++i) {
     std::vector<scoped_refptr<DecoderBuffer>> buffers =
         ReadWebm(kSimpleStreams[i]);
     ASSERT_FALSE(buffers.empty());
@@ -714,11 +716,11 @@ TEST_F(AV1DecoderTest, InconsistentReferenceFrameState) {
     // And to be consistent, all the reference frames tracked by the AV1Decoder
     // should also be valid and they should be pointing to the only AV1Picture
     // so far.
-    EXPECT_TRUE(
-        std::all_of(internal_ref_frames.begin(), internal_ref_frames.end(),
-                    [&av1_picture](const scoped_refptr<AV1Picture>& ref_frame) {
-                      return ref_frame.get() == av1_picture.get();
-                    }));
+    EXPECT_TRUE(base::ranges::all_of(
+        internal_ref_frames,
+        [&av1_picture](const scoped_refptr<AV1Picture>& ref_frame) {
+          return ref_frame.get() == av1_picture.get();
+        }));
     testing::Mock::VerifyAndClearExpectations(mock_accelerator_);
   }
 

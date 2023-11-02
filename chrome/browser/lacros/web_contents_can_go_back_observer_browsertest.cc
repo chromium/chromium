@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/lacros/window_utility.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -83,7 +84,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsCanGoBackObserverTest,
   aura::Window* window = BrowserView::GetBrowserViewForBrowser(browser())
                              ->frame()
                              ->GetNativeWindow();
-  std::string id = browser_test_util::GetWindowId(window->GetRootWindow());
+  std::string id =
+      lacros_window_utility::GetRootWindowUniqueId(window->GetRootWindow());
   browser_test_util::WaitForWindowCreation(id);
 
   EXPECT_FALSE(chrome::CanGoBack(browser()));
@@ -117,7 +119,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsCanGoBackObserverTest,
   aura::Window* window = BrowserView::GetBrowserViewForBrowser(browser())
                              ->frame()
                              ->GetNativeWindow();
-  std::string id = browser_test_util::GetWindowId(window->GetRootWindow());
+  std::string id =
+      lacros_window_utility::GetRootWindowUniqueId(window->GetRootWindow());
   browser_test_util::WaitForWindowCreation(id);
 
   EXPECT_FALSE(chrome::CanGoBack(browser()));
@@ -162,7 +165,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsCanGoBackObserverTest,
   // Switch to a different tab, and verify whether the `can go back` property
   // updates accordingly.
   browser()->tab_strip_model()->ActivateTabAt(
-      0, {TabStripModel::GestureType::kOther});
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
   EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
 
   EXPECT_TRUE(chrome::CanGoBack(browser()));

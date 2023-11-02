@@ -26,7 +26,6 @@
 <translation id="225614027745146050">Добре дојдовте</translation>
 <translation id="2320166752086256636">Сoкриј ја тастатурата</translation>
 <translation id="2329392777730037872">Не успеа да отвори <ph name="URL" /> на клиентот.</translation>
-<translation id="2333212046079545895">Авторски права за 2021 г. на Google LLC. Сите права се задржани.</translation>
 <translation id="2359808026110333948">Продолжи</translation>
 <translation id="2366718077645204424">Не може да се добие домаќинот. Тоа е веројатно поради конфигурацијата на мрежата што ја користите.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  Последен пат онлајн <ph name="RELATIVE_TIMESTAMP" />.</translation>
@@ -37,6 +36,7 @@
 <translation id="2599300881200251572">Уредот овозможува дојдовни врски од клиенти на Далечинска работна површина на Chrome.</translation>
 <translation id="2647232381348739934">Chromoting услуга</translation>
 <translation id="2676780859508944670">Работи…</translation>
+<translation id="2692522824157224199">Авторски права за 2022 г. на Google LLC. Сите права се задржани.</translation>
 <translation id="2699970397166997657">Chromoting</translation>
 <translation id="2758123043070977469">Проблем при проверката. Најавете се повторно.</translation>
 <translation id="2803375539583399270">Внесете PIN.</translation>
@@ -73,10 +73,10 @@
 <translation id="4257751272692708833">Проследувач на URL на <ph name="PRODUCT_NAME" /></translation>
 <translation id="4277736576214464567">Пристапната шифра е неважечка. Обидете се повторно.</translation>
 <translation id="4281844954008187215">Услови за користење</translation>
+<translation id="4372650392690220936">Авторски права за 2022 г. на The Chromium Authors. Сите права се задржани.</translation>
 <translation id="4405930547258349619">Основна библиотека</translation>
 <translation id="443560535555262820">Отвори поставки за „Пристапност“</translation>
 <translation id="4450893287417543264">Не прикажувај повторно</translation>
-<translation id="4512952200932940229">Copyright 2021 The Chromium Authors. All Rights Reserved.</translation>
 <translation id="4513946894732546136">Повратни информации</translation>
 <translation id="4563926062592110512">Клиентот не е поврзан: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="4618411825115957973">Конфигурацијата за <ph name="URL_FORWARDER_NAME" /> не е извршена правилно. Изберете друг стандарден прелистувач и повторно овозможете го проследувањето URL-адреса.</translation>

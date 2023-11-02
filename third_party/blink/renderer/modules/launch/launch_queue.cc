@@ -1,6 +1,6 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file
+// found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/launch/launch_queue.h"
 
@@ -26,7 +26,7 @@ void LaunchQueue::setConsumer(V8LaunchConsumer* consumer) {
   consumer_ = consumer;
 
   // Consume all launch params now we have a consumer.
-  while (!unconsumed_launch_params_.IsEmpty()) {
+  while (!unconsumed_launch_params_.empty()) {
     // Get the first launch params and the queue and remove it before invoking
     // the consumer, in case the consumer calls |setConsumer|. Each launchParams
     // should be consumed by the most recently set consumer.

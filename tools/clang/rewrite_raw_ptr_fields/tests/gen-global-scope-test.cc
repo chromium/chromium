@@ -1,10 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 // This file (and other gen-*-test.cc files) tests generation of output for
 // --field-filter-file and therefore the expectations file
-// (gen-global-destructor-expected.txt) needs to be compared against the raw
+// (gen-global-scope-expected.txt) needs to be compared against the raw
 // output of the rewriter (rather than against the actual edits result).  This
 // makes the test incompatible with other tests, which require passing
 // --apply-edits switch to test_tool.py and so to disable the test it is named

@@ -1,42 +1,60 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import 'chrome://resources/cr_elements/cr_icons_css.m.js';
+import 'chrome://resources/cr_elements/cr_icons.css.js';
+import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
 import 'chrome://resources/polymer/v3_0/paper-styles/color.js';
 
-import {assert} from 'chrome://resources/js/assert.m.js';
 import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {navigation, Page} from './navigation_helper.js';
+import {getTemplate} from './sidebar.html.js';
 
-interface ExtensionsSidebarElement {
+export interface ExtensionsSidebarElement {
   $: {
     sectionMenu: IronSelectorElement,
+    sectionsExtensions: HTMLElement,
+    sectionsShortcuts: HTMLElement,
   };
 }
 
-class ExtensionsSidebarElement extends PolymerElement {
+export class ExtensionsSidebarElement extends PolymerElement {
   static get is() {
     return 'extensions-sidebar';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
-  ready() {
+  static get properties() {
+    return {
+      enableEnhancedSiteControls: Boolean,
+    };
+  }
+
+  enableEnhancedSiteControls: boolean;
+
+  override ready() {
     super.ready();
     this.setAttribute('role', 'navigation');
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
-    this.$.sectionMenu.select(
-        navigation.getCurrentPage().page === Page.SHORTCUTS ? 1 : 0);
+    const page = navigation.getCurrentPage().page;
+    let selectIndex = 0;
+    if (page === Page.SITE_PERMISSIONS ||
+        page === Page.SITE_PERMISSIONS_ALL_SITES) {
+      selectIndex = 1;
+    } else if (page === Page.SHORTCUTS) {
+      selectIndex = 2;
+    }
+    this.$.sectionMenu.select(selectIndex);
   }
 
   private onLinkTap_(e: Event) {
@@ -49,6 +67,12 @@ class ExtensionsSidebarElement extends PolymerElement {
 
   private onMoreExtensionsTap_() {
     chrome.metricsPrivate.recordUserAction('Options_GetMoreExtensions');
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'extensions-sidebar': ExtensionsSidebarElement;
   }
 }
 

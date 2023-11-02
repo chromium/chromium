@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,5 +25,9 @@ absl::optional<SafeBaseName> SafeBaseName::Create(
 }
 
 SafeBaseName::SafeBaseName(const FilePath& path) : path_(path) {}
+
+bool SafeBaseName::operator==(const SafeBaseName& that) const {
+  return path_ == that.path_;
+}
 
 }  // namespace base

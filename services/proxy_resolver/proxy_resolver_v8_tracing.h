@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "net/base/completion_once_callback.h"
 #include "net/proxy_resolution/proxy_resolver.h"
@@ -15,7 +14,7 @@
 
 namespace net {
 class NetLogWithSource;
-class NetworkIsolationKey;
+class NetworkAnonymizationKey;
 }  // namespace net
 
 namespace proxy_resolver {
@@ -61,7 +60,7 @@ class ProxyResolverV8Tracing {
   // |*request|.
   virtual void GetProxyForURL(
       const GURL& url,
-      const net::NetworkIsolationKey& network_isolation_key,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
       net::ProxyInfo* results,
       net::CompletionOnceCallback callback,
       std::unique_ptr<net::ProxyResolver::Request>* request,

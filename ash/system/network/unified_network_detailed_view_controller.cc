@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,9 +24,9 @@ UnifiedNetworkDetailedViewController::~UnifiedNetworkDetailedViewController() =
 
 views::View* UnifiedNetworkDetailedViewController::CreateView() {
   DCHECK(!view_);
-  view_ = new tray::NetworkListView(
-      detailed_view_delegate_.get(),
-      Shell::Get()->session_controller()->login_status());
+  view_ =
+      new NetworkListView(detailed_view_delegate_.get(),
+                          Shell::Get()->session_controller()->login_status());
   view_->Init();
   return view_;
 }

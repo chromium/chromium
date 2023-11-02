@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -112,8 +112,7 @@ void UDPSocketPerfTest::WriteBenchmark(bool use_nonblocking_io) {
   // Setup the server to listen.
   IPEndPoint bind_address;
   CreateUDPAddress("127.0.0.1", kPort, &bind_address);
-  std::unique_ptr<UDPServerSocket> server(
-      new UDPServerSocket(nullptr, NetLogSource()));
+  auto server = std::make_unique<UDPServerSocket>(nullptr, NetLogSource());
   if (use_nonblocking_io)
     server->UseNonBlockingIO();
   int rv = server->Listen(bind_address);
@@ -122,8 +121,8 @@ void UDPSocketPerfTest::WriteBenchmark(bool use_nonblocking_io) {
   // Setup the client.
   IPEndPoint server_address;
   CreateUDPAddress("127.0.0.1", kPort, &server_address);
-  std::unique_ptr<UDPClientSocket> client(new UDPClientSocket(
-      DatagramSocket::DEFAULT_BIND, nullptr, NetLogSource()));
+  auto client = std::make_unique<UDPClientSocket>(DatagramSocket::DEFAULT_BIND,
+                                                  nullptr, NetLogSource());
   if (use_nonblocking_io)
     client->UseNonBlockingIO();
   rv = client->Connect(server_address);

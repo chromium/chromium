@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -33,7 +33,6 @@ if (is_android) {
   android_library("ukm_java_test_support") {
     testonly = true
     sources = _test_jni_sources
-    deps = [ "//base:base_java" ]
   }
 
   android_library("ukm_javatests") {
@@ -47,7 +46,7 @@ if (is_android) {
       "//chrome/android:chrome_java",
       "//chrome/browser/flags:java",
       "//chrome/browser/tab:java",
-      "//chrome/test/android:chrome_java_test_support",
+      "//chrome/test/android:chrome_java_integration_test_support",
       "//components/metrics:metrics_java",
       "//content/public/test/android:content_java_test_support",
       "//third_party/android_support_test_runner:rules_java",

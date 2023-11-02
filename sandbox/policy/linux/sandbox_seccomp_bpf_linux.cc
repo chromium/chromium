@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,6 @@
 
 #include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -37,6 +36,7 @@
 #include "sandbox/linux/seccomp-bpf-helpers/syscall_sets.h"
 #include "sandbox/linux/seccomp-bpf/sandbox_bpf.h"
 #include "sandbox/linux/system_headers/linux_syscalls.h"
+#include "sandbox/policy/chromecast_sandbox_allowlist_buildflags.h"
 #include "sandbox/policy/linux/bpf_audio_policy_linux.h"
 #include "sandbox/policy/linux/bpf_base_policy_linux.h"
 #include "sandbox/policy/linux/bpf_cdm_policy_linux.h"
@@ -52,16 +52,16 @@
 #include "sandbox/policy/linux/bpf_speech_recognition_policy_linux.h"
 #include "sandbox/policy/linux/bpf_utility_policy_linux.h"
 
-#if !defined(OS_NACL_NONSFI)
-#include "sandbox/policy/chromecast_sandbox_allowlist_buildflags.h"
-#endif  // !defined(OS_NACL_NONSFI)
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#include "sandbox/policy/linux/bpf_screen_ai_policy_linux.h"
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "sandbox/policy/features.h"
 #include "sandbox/policy/linux/bpf_ime_policy_linux.h"
 #include "sandbox/policy/linux/bpf_tts_policy_linux.h"
 
-#include "chromeos/assistant/buildflags.h"
+#include "chromeos/ash/components/assistant/buildflags.h"
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #include "sandbox/policy/linux/bpf_libassistant_policy_linux.h"
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
@@ -86,13 +86,11 @@ namespace policy {
 #if BUILDFLAG(USE_SECCOMP_BPF)
 namespace {
 
-#if !defined(OS_NACL_NONSFI)
-
 // nacl_helper needs to be tiny and includes only part of content/
 // in its dependencies. Make sure to not link things that are not needed.
 #if !defined(IN_NACL_HELPER)
 inline bool IsChromeOS() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return true;
 #else
   return false;
@@ -129,7 +127,6 @@ std::unique_ptr<BPFBasePolicy> GetGpuProcessSandbox(
   return std::make_unique<GpuProcessPolicy>();
 }
 #endif  // !defined(IN_NACL_HELPER)
-#endif  // !defined(OS_NACL_NONSFI)
 
 }  // namespace
 
@@ -156,8 +153,6 @@ bool SandboxSeccompBPF::SupportsSandbox() {
 #endif
 }
 
-#if !defined(OS_NACL_NONSFI)
-
 bool SandboxSeccompBPF::SupportsSandboxWithTsync() {
 #if BUILDFLAG(USE_SECCOMP_BPF)
   return SandboxBPF::SupportsSeccompSandbox(
@@ -175,7 +170,7 @@ std::unique_ptr<BPFBasePolicy> SandboxSeccompBPF::PolicyForSandboxType(
       return GetGpuProcessSandbox(options.use_amd_specific_policies);
     case sandbox::mojom::Sandbox::kRenderer:
       return std::make_unique<RendererProcessPolicy>();
-#if BUILDFLAG(ENABLE_PLUGINS)
+#if BUILDFLAG(ENABLE_PPAPI)
     case sandbox::mojom::Sandbox::kPpapi:
       return std::make_unique<PpapiProcessPolicy>();
 #endif
@@ -195,8 +190,21 @@ std::unique_ptr<BPFBasePolicy> SandboxSeccompBPF::PolicyForSandboxType(
       return std::make_unique<AudioProcessPolicy>();
     case sandbox::mojom::Sandbox::kService:
       return std::make_unique<ServiceProcessPolicy>();
+    case sandbox::mojom::Sandbox::kServiceWithJit:
+      return std::make_unique<ServiceProcessPolicy>();
     case sandbox::mojom::Sandbox::kSpeechRecognition:
       return std::make_unique<SpeechRecognitionProcessPolicy>();
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+    case sandbox::mojom::Sandbox::kScreenAI:
+      return std::make_unique<ScreenAIProcessPolicy>();
+#endif
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
+    case sandbox::mojom::Sandbox::kHardwareVideoDecoding:
+      // TODO(b/195769334): we're using the GPU process sandbox policy for now
+      // as a transition step. However, we should create a policy that's tighter
+      // just for hardware video decoding.
+      return GetGpuProcessSandbox(options.use_amd_specific_policies);
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     case sandbox::mojom::Sandbox::kIme:
       return std::make_unique<ImeProcessPolicy>();
@@ -221,7 +229,7 @@ void SandboxSeccompBPF::RunSandboxSanityChecks(
   switch (sandbox_type) {
     case sandbox::mojom::Sandbox::kRenderer:
     case sandbox::mojom::Sandbox::kGpu:
-#if BUILDFLAG(ENABLE_PLUGINS)
+#if BUILDFLAG(ENABLE_PPAPI)
     case sandbox::mojom::Sandbox::kPpapi:
 #endif
     case sandbox::mojom::Sandbox::kPrintCompositor:
@@ -253,6 +261,9 @@ void SandboxSeccompBPF::RunSandboxSanityChecks(
       CHECK_EQ(EPERM, errno);
 #endif  // !defined(NDEBUG)
     } break;
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
+    case sandbox::mojom::Sandbox::kHardwareVideoDecoding:
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     case sandbox::mojom::Sandbox::kIme:
     case sandbox::mojom::Sandbox::kTts:
@@ -260,8 +271,12 @@ void SandboxSeccompBPF::RunSandboxSanityChecks(
     case sandbox::mojom::Sandbox::kLibassistant:
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+    case sandbox::mojom::Sandbox::kScreenAI:
+#endif
     case sandbox::mojom::Sandbox::kAudio:
     case sandbox::mojom::Sandbox::kService:
+    case sandbox::mojom::Sandbox::kServiceWithJit:
     case sandbox::mojom::Sandbox::kSpeechRecognition:
     case sandbox::mojom::Sandbox::kNetwork:
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
@@ -274,7 +289,6 @@ void SandboxSeccompBPF::RunSandboxSanityChecks(
       break;
   }
 }
-#endif  // !defined(OS_NACL_NONSFI)
 
 bool SandboxSeccompBPF::StartSandboxWithExternalPolicy(
     std::unique_ptr<bpf_dsl::Policy> policy,
@@ -304,7 +318,6 @@ bool SandboxSeccompBPF::StartSandboxWithExternalPolicy(
   return false;
 }
 
-#if !defined(OS_NACL_NONSFI)
 std::unique_ptr<bpf_dsl::Policy> SandboxSeccompBPF::GetBaselinePolicy() {
 #if BUILDFLAG(USE_SECCOMP_BPF)
   return std::make_unique<BaselinePolicy>();
@@ -312,7 +325,6 @@ std::unique_ptr<bpf_dsl::Policy> SandboxSeccompBPF::GetBaselinePolicy() {
   return nullptr;
 #endif  // BUILDFLAG(USE_SECCOMP_BPF)
 }
-#endif  // !defined(OS_NACL_NONSFI)
 
 }  // namespace policy
 }  // namespace sandbox

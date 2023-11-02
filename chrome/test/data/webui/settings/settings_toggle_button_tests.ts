@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 import 'chrome://settings/settings.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {SettingsToggleButtonElement} from 'chrome://settings/settings.js';
+import {DEFAULT_CHECKED_VALUE, DEFAULT_UNCHECKED_VALUE, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 // clang-format on
 
@@ -25,9 +25,10 @@ suite('SettingsToggleButton', () => {
     const pref = {
       key: 'test',
       type: chrome.settingsPrivate.PrefType.BOOLEAN,
-      value: true
+      value: true,
     };
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     testElement = document.createElement('settings-toggle-button');
     testElement.set('pref', pref);
     document.body.appendChild(testElement);
@@ -102,7 +103,7 @@ suite('SettingsToggleButton', () => {
     testElement.set('pref', {
       key: 'test',
       type: chrome.settingsPrivate.PrefType.BOOLEAN,
-      value: true
+      value: true,
     });
 
     assertTrue(testElement.pref!.value);
@@ -121,7 +122,7 @@ suite('SettingsToggleButton', () => {
     const prefNum = {
       key: 'test',
       type: chrome.settingsPrivate.PrefType.NUMBER,
-      value: 1
+      value: DEFAULT_CHECKED_VALUE,
     };
 
     testElement.set('pref', prefNum);
@@ -129,42 +130,48 @@ suite('SettingsToggleButton', () => {
 
     testElement.click();
     assertFalse(testElement.checked);
-    assertEquals(0, prefNum.value);
+    assertEquals(DEFAULT_UNCHECKED_VALUE, prefNum.value);
 
     testElement.click();
     assertTrue(testElement.checked);
-    assertEquals(1, prefNum.value);
+    assertEquals(DEFAULT_CHECKED_VALUE, prefNum.value);
   });
+
+  const CUSTOM_UNCHECKED_VALUE = 5;
+  const CUSTOM_CHECKED_VALUE = 2;
+  const UNKNOWN_VALUE = 3;
 
   test('numerical pref with custom values', () => {
     const prefNum = {
       key: 'test',
       type: chrome.settingsPrivate.PrefType.NUMBER,
-      value: 5
+      value: CUSTOM_UNCHECKED_VALUE,
     };
 
-    testElement.numericUncheckedValue = 5;
+    testElement.numericUncheckedValue = CUSTOM_UNCHECKED_VALUE;
+    testElement.numericCheckedValue = CUSTOM_CHECKED_VALUE;
 
     testElement.set('pref', prefNum);
     assertFalse(testElement.checked);
 
     testElement.click();
     assertTrue(testElement.checked);
-    assertEquals(1, prefNum.value);
+    assertEquals(CUSTOM_CHECKED_VALUE, prefNum.value);
 
     testElement.click();
     assertFalse(testElement.checked);
-    assertEquals(5, prefNum.value);
+    assertEquals(CUSTOM_UNCHECKED_VALUE, prefNum.value);
   });
 
   test('numerical pref with unknown initial value', () => {
     const prefNum = {
       key: 'test',
       type: chrome.settingsPrivate.PrefType.NUMBER,
-      value: 3
+      value: UNKNOWN_VALUE,
     };
 
-    testElement.numericUncheckedValue = 5;
+    testElement.numericUncheckedValue = CUSTOM_UNCHECKED_VALUE;
+    testElement.numericCheckedValue = CUSTOM_CHECKED_VALUE;
 
     testElement.set('pref', prefNum);
 
@@ -172,17 +179,17 @@ suite('SettingsToggleButton', () => {
     assertTrue(testElement.checked);
 
     // The control should not clobber an existing unknown value.
-    assertEquals(3, prefNum.value);
+    assertEquals(UNKNOWN_VALUE, prefNum.value);
 
     // Unchecking should still send the unchecked value to prefs.
     testElement.click();
     assertFalse(testElement.checked);
-    assertEquals(5, prefNum.value);
+    assertEquals(CUSTOM_UNCHECKED_VALUE, prefNum.value);
 
     // Checking should still send the normal checked value to prefs.
     testElement.click();
     assertTrue(testElement.checked);
-    assertEquals(1, prefNum.value);
+    assertEquals(CUSTOM_CHECKED_VALUE, prefNum.value);
   });
 
   test('shows controlled indicator when pref is controlled', () => {
@@ -192,9 +199,9 @@ suite('SettingsToggleButton', () => {
     const pref = {
       key: 'test',
       type: chrome.settingsPrivate.PrefType.NUMBER,
-      value: 3,
+      value: UNKNOWN_VALUE,
       enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
-      controlledBy: chrome.settingsPrivate.ControlledBy.EXTENSION
+      controlledBy: chrome.settingsPrivate.ControlledBy.EXTENSION,
     };
 
     testElement.set('pref', pref);
@@ -212,9 +219,9 @@ suite('SettingsToggleButton', () => {
     const pref = {
       key: 'test',
       type: chrome.settingsPrivate.PrefType.NUMBER,
-      value: 3,
+      value: UNKNOWN_VALUE,
       enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
-      controlledBy: chrome.settingsPrivate.ControlledBy.EXTENSION
+      controlledBy: chrome.settingsPrivate.ControlledBy.EXTENSION,
     };
 
     testElement.set('pref', pref);
@@ -229,7 +236,7 @@ suite('SettingsToggleButton', () => {
       key: 'test',
       type: chrome.settingsPrivate.PrefType.BOOLEAN,
       value: false,
-      userControlDisabled: true
+      userControlDisabled: true,
     };
 
     assertFalse(testElement.$.control.disabled);
@@ -282,7 +289,7 @@ suite('SettingsToggleButton', () => {
     assertEquals(crToggle!.getAttribute('aria-label'), testAriaLabel);
   });
 
-  // <if expr="chromeos">
+  // <if expr="chromeos_ash">
   test('click on sub label link should not toggle the button', () => {
     let subLabelTextWithLink =
         testElement.shadowRoot!.querySelector('#sub-label-text-with-link');
@@ -320,6 +327,23 @@ suite('SettingsToggleButton', () => {
 
     subLabelTextWithLink!.click();
     assertFalse(testElement.checked);
+  });
+
+  test('sub label with action link should have proper role', () => {
+    let subLabelTextWithLink =
+        testElement.shadowRoot!.querySelector<HTMLElement>(
+            '#sub-label-text-with-link');
+    testElement.set('subLabelWithLink', `<a is="action-link"></a>`);
+    flush();
+
+    subLabelTextWithLink = testElement.shadowRoot!.querySelector<HTMLElement>(
+        '#sub-label-text-with-link');
+    assertTrue(!!subLabelTextWithLink);
+    flush();
+
+    const actionLink = subLabelTextWithLink!.querySelector('a');
+    assertTrue(!!actionLink);
+    assertEquals(actionLink.getAttribute('role'), 'link');
   });
   // </if>
 });

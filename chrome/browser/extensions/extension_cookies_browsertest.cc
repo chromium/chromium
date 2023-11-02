@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -25,6 +26,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -63,17 +65,6 @@ const char* kNotPermittedSubdomain = "notallowedsub.a.example";
 const char* kPermissionPattern1 = "https://a.example/*";
 const char* kPermissionPattern1Sub = "https://sub.a.example/*";
 const char* kPermissionPattern2 = "https://b.example/*";
-const char* kPermissionPattern3 = "https://d.example/*";
-
-// Constants for SameParty tests. We reuse some of the above definitions, but
-// give them more meaningful names in the context of SameParty.
-const char* kPermittedOwner = kPermittedHost;
-const char* kPermittedOwnerSubdomain = kPermittedSubdomain;
-const char* kNotPermittedOwnerSubdomain = kNotPermittedSubdomain;
-const char* kPermittedMember = kOtherPermittedHost;
-const char* kNotPermittedMember = kNotPermittedHost;
-const char* kPermittedNonMember = "d.example";
-const char* kNotPermittedNonMember = "e.example";
 
 // Path for URL of custom ControllableHttpResponse
 const char* kFetchCookiesPath = "/respondwithcookies";
@@ -91,15 +82,6 @@ const char* kUnspecifiedCookie = "unspecified=1";
 const char* kSameSiteNoneAttribute = "; SameSite=None; Secure";
 const char* kSameSiteLaxAttribute = "; SameSite=Lax";
 const char* kSameSiteStrictAttribute = "; SameSite=Strict";
-
-const char* kSamePartyCookie = "sameparty=1";
-const char* kSamePartyAttribute = "; SameParty; Secure; SameSite=None";
-
-const char* kSamePartyCookies[] = {
-    kSamePartyCookie,
-    kNoneCookie,
-};
-const char* kNoSamePartyCookies[] = {kNoneCookie};
 
 using testing::UnorderedElementsAreArray;
 
@@ -148,7 +130,7 @@ class ExtensionCookiesTest : public ExtensionBrowserTest {
   content::RenderFrameHost* NavigateMainFrameToExtensionPage() {
     EXPECT_TRUE(content::NavigateToURL(
         web_contents(), extension_->GetResourceURL("/empty.html")));
-    return web_contents()->GetMainFrame();
+    return web_contents()->GetPrimaryMainFrame();
   }
 
   // Appends a child iframe via JS and waits for it to load. Returns a pointer
@@ -326,7 +308,7 @@ class ExtensionCookiesTest : public ExtensionBrowserTest {
   net::EmbeddedTestServer test_server_;
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<TestExtensionDir> extension_dir_;
-  const Extension* extension_ = nullptr;
+  raw_ptr<const Extension> extension_ = nullptr;
 };
 
 // Tests for special handling of SameSite cookies for extensions:
@@ -652,7 +634,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
       ProcessManager::Get(profile())
           ->GetBackgroundHostForExtension(extension->id())
           ->host_contents()
-          ->GetMainFrame();
+          ->GetPrimaryMainFrame();
 
   // Set up a test scenario:
   // - top-level frame: kActiveTabHost
@@ -833,7 +815,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
 
     // Use `fetch_script` to ask the service worker to perform a `fetch` and
     // reply with the response.
-    content::DOMMessageQueue queue;
+    content::DOMMessageQueue queue(extension_frame);
     content::ExecuteScriptAsync(extension_frame, fetch_script);
 
     // Provide the HTTP response.
@@ -865,7 +847,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
   extension_dir.WriteFile(FILE_PATH_LITERAL("bg_worker.js"), kServiceWorker);
   extension_dir.WriteFile(FILE_PATH_LITERAL("frame.html"),
                           "<p>Extension frame</p>");
-  ExtensionTestMessageListener worker_listener("WORKER_RUNNING", false);
+  ExtensionTestMessageListener worker_listener("WORKER_RUNNING");
   const Extension* extension = LoadExtension(extension_dir.UnpackedPath());
   ASSERT_TRUE(extension);
   EXPECT_TRUE(worker_listener.WaitUntilSatisfied());
@@ -878,8 +860,9 @@ IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
   GURL original_document_url =
       test_server()->GetURL(kActiveTabHost, "/title1.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), original_document_url));
-  EXPECT_EQ(kActiveTabHost,
-            web_contents()->GetMainFrame()->GetLastCommittedURL().host());
+  EXPECT_EQ(
+      kActiveTabHost,
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL().host());
   SetCookies(kActiveTabHost);
   GURL extension_frame_url = extension->GetResourceURL("frame.html");
   ui_test_utils::NavigateToURLWithDisposition(
@@ -887,7 +870,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP |
           ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
   content::RenderFrameHost* extension_frame =
-      browser()->tab_strip_model()->GetWebContentsAt(1)->GetMainFrame();
+      browser()->tab_strip_model()->GetWebContentsAt(1)->GetPrimaryMainFrame();
   EXPECT_EQ(extension_frame_url, extension_frame->GetLastCommittedURL());
 
   // Based on activeTab, the extension shouldn't be initially granted access to
@@ -960,306 +943,6 @@ IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
 }
 
 INSTANTIATE_TEST_SUITE_P(All, ExtensionSameSiteCookiesTest, ::testing::Bool());
-
-// Tests for special handling of SameParty cookies for extensions: A request
-// should be treated as first-party for the purposes of SameParty cookies if the
-// top frame is an extension with access to the requested URL; the extension has
-// access to all the sites in the party context; and all the sites in
-// party_context are same-party to the request URL/site.
-//
-// See URLLoader::ShouldForceIgnoreTopFrameParty().
-class ExtensionSamePartyCookiesTest : public ExtensionCookiesTest {
- public:
-  ExtensionSamePartyCookiesTest()
-      : same_party_cookies_(std::begin(kSamePartyCookies),
-                            std::end(kSamePartyCookies)),
-        no_same_party_cookies_(std::begin(kNoSamePartyCookies),
-                               std::end(kNoSamePartyCookies)) {
-    feature_list_.InitAndEnableFeature(net::features::kFirstPartySets);
-  }
-  ~ExtensionSamePartyCookiesTest() override = default;
-  ExtensionSamePartyCookiesTest(const ExtensionSamePartyCookiesTest&) = delete;
-  ExtensionSamePartyCookiesTest& operator=(
-      const ExtensionSamePartyCookiesTest&) = delete;
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    ExtensionCookiesTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(network::switches::kUseFirstPartySet,
-                                    base::StrCat({
-                                        "https://", kPermittedOwner,       //
-                                        ",https://", kPermittedMember,     //
-                                        ",https://", kNotPermittedMember,  //
-                                    }));
-  }
-
- protected:
-  // Sets an array of cookies with various SameParty values.
-  void SetCookies(const std::string& host) {
-    ExtensionCookiesTest::SetCookies(
-        host, {
-                  base::StrCat({kSamePartyCookie, kSamePartyAttribute}),
-                  base::StrCat({kNoneCookie, kSameSiteNoneAttribute}),
-              });
-  }
-
-  const Extension* MakeExtension() override {
-    return ExtensionCookiesTest::MakeExtension({
-        kPermissionPattern1,
-        kPermissionPattern1Sub,
-        kPermissionPattern2,
-        kPermissionPattern3,
-    });
-  }
-
-  const std::vector<const char*>& same_party_cookies() {
-    return same_party_cookies_;
-  }
-  const std::vector<const char*>& no_same_party_cookies() {
-    return no_same_party_cookies_;
-  }
-
- private:
-  const std::vector<const char*> same_party_cookies_;
-  const std::vector<const char*> no_same_party_cookies_;
-};
-
-// Tests where the extension page initiates the request. The party_context is
-// empty in these cases, so these tests verify that the extension has
-// permissions for the request URL.
-IN_PROC_BROWSER_TEST_F(ExtensionSamePartyCookiesTest,
-                       ExtensionInitiated_Fetch) {
-  const struct {
-    const char* requested_host;
-    const std::vector<const char*> expected_cookies;
-  } test_cases[] = {
-      {kPermittedOwner, same_party_cookies()},
-      {kPermittedOwnerSubdomain, same_party_cookies()},
-      {kNotPermittedOwnerSubdomain, no_same_party_cookies()},
-      {kPermittedMember, same_party_cookies()},
-      {kNotPermittedMember, no_same_party_cookies()},
-      {kPermittedNonMember, same_party_cookies()},
-  };
-
-  for (const auto& test : test_cases) {
-    SetCookies(test.requested_host);
-    content::RenderFrameHost* frame = NavigateMainFrameToExtensionPage();
-    EXPECT_THAT(AsCookies(FetchCookies(frame, test.requested_host)),
-                UnorderedElementsAreArray(test.expected_cookies))
-        << test.requested_host;
-  }
-}
-
-// Tests with one frame on an extension page which makes the request.
-IN_PROC_BROWSER_TEST_F(ExtensionSamePartyCookiesTest, OneEmbeddedFrame_Fetch) {
-  const struct {
-    const char* child_frame_host;
-    const char* requested_host;
-    const std::vector<const char*> expected_cookies;
-  } test_cases[] = {
-      {kPermittedOwner, kPermittedOwner, same_party_cookies()},
-      {kPermittedOwner, kPermittedMember, same_party_cookies()},
-      {kPermittedOwner, kNotPermittedMember, no_same_party_cookies()},
-      {kPermittedOwner, kPermittedNonMember, same_party_cookies()},
-      {kPermittedOwner, kNotPermittedOwnerSubdomain, no_same_party_cookies()},
-      {kPermittedMember, kPermittedOwnerSubdomain, same_party_cookies()},
-      {kPermittedNonMember, kPermittedOwner, no_same_party_cookies()},
-      {kNotPermittedMember, kPermittedOwner, no_same_party_cookies()},
-      {kNotPermittedMember, kPermittedMember, no_same_party_cookies()},
-      {kNotPermittedMember, kNotPermittedMember, no_same_party_cookies()},
-      {kPermittedOwnerSubdomain, kPermittedMember, same_party_cookies()},
-      {kPermittedOwnerSubdomain, kPermittedOwner, same_party_cookies()},
-      {kNotPermittedOwnerSubdomain, kNotPermittedMember,
-       no_same_party_cookies()},
-      // We expect the SameParty cookie below because we only look at the
-      // registrable domains of the party context, rather than the whole host.
-      // So kNotPermittedOwnerSubdomain is treated the same as kPermittedOwner
-      // when it's a member of the party context, and therefore the SameParty
-      // cookie is sent.
-      {kNotPermittedOwnerSubdomain, kPermittedMember, same_party_cookies()},
-  };
-
-  for (const auto& test : test_cases) {
-    SetCookies(test.requested_host);
-    content::RenderFrameHost* main_frame = NavigateMainFrameToExtensionPage();
-    content::RenderFrameHost* child_frame =
-        MakeChildFrame(main_frame, test.child_frame_host);
-    EXPECT_THAT(AsCookies(FetchCookies(child_frame, test.requested_host)),
-                UnorderedElementsAreArray(test.expected_cookies))
-        << test.child_frame_host << ", " << test.requested_host;
-  }
-}
-
-// Tests with one frame on an extension page which navigates to another page.
-// The party context is empty here, so it should not matter what the
-// initiator-site is.
-IN_PROC_BROWSER_TEST_F(ExtensionSamePartyCookiesTest,
-                       OneEmbeddedFrame_Navigation) {
-  const struct {
-    const char* child_frame_host;
-    const char* requested_host;
-    const std::vector<const char*>& expected_cookies;
-  } test_cases[] = {
-      {kPermittedOwner, kPermittedOwner, same_party_cookies()},
-      {kPermittedOwner, kPermittedMember, same_party_cookies()},
-      {kPermittedOwner, kNotPermittedMember, no_same_party_cookies()},
-      // SameParty cookies are sent below because the SameParty attribute is
-      // ignored for sites that are not members of a First-Party Set.
-      {kPermittedOwner, kPermittedNonMember, same_party_cookies()},
-
-      {kPermittedOwner, kNotPermittedMember, no_same_party_cookies()},
-      {kPermittedOwner, kNotPermittedOwnerSubdomain, no_same_party_cookies()},
-      {kPermittedMember, kPermittedOwnerSubdomain, same_party_cookies()},
-      {kPermittedNonMember, kPermittedOwner, same_party_cookies()},
-      {kNotPermittedMember, kPermittedOwner, same_party_cookies()},
-      {kNotPermittedMember, kPermittedMember, same_party_cookies()},
-      {kNotPermittedMember, kNotPermittedMember, no_same_party_cookies()},
-      {kPermittedOwnerSubdomain, kPermittedMember, same_party_cookies()},
-      {kNotPermittedOwnerSubdomain, kNotPermittedMember,
-       no_same_party_cookies()},
-  };
-
-  for (const auto& test : test_cases) {
-    SetCookies(test.requested_host);
-    content::RenderFrameHost* main_frame = NavigateMainFrameToExtensionPage();
-    content::RenderFrameHost* child_frame =
-        MakeChildFrame(main_frame, test.child_frame_host);
-    EXPECT_THAT(
-        AsCookies(NavigateChildAndGetCookies(child_frame, test.requested_host)),
-        UnorderedElementsAreArray(test.expected_cookies))
-        << test.child_frame_host << ", " << test.requested_host;
-  }
-}
-
-// Tests where the current frame is a nested frame, which fetches from another
-// URL. Here it doesn't actually matter what *host* the current frame is nested
-// in (as long as the site is permitted), because we only check the ETLD+1.
-IN_PROC_BROWSER_TEST_F(ExtensionSamePartyCookiesTest, NestedFrames_Fetch) {
-  const struct {
-    const char* middle_frame_host;
-    const char* leaf_frame_host;
-    const char* requested_host;
-    const std::vector<const char*> expected_cookies;
-  } test_cases[] = {
-      {
-          kPermittedOwner,
-          kPermittedMember,
-          kPermittedMember,
-          same_party_cookies(),
-      },
-      {
-          kNotPermittedMember,
-          kPermittedMember,
-          kPermittedMember,
-          no_same_party_cookies(),
-      },
-      // In this case, the extension does not have access to the middle frame's
-      // host, but does have access to the middle frame's ETLD+1. We expect
-      // SameParty cookies to be sent only because we check the ETLD+1, rather
-      // than the host.
-      {
-          kNotPermittedOwnerSubdomain,
-          kPermittedMember,
-          kPermittedMember,
-          same_party_cookies(),
-      },
-      {
-          kNotPermittedNonMember,
-          kPermittedOwner,
-          kPermittedMember,
-          no_same_party_cookies(),
-      },
-      {
-          kPermittedNonMember,
-          kPermittedOwner,
-          kPermittedOwner,
-          no_same_party_cookies(),
-      },
-  };
-
-  for (const auto& test : test_cases) {
-    SetCookies(test.requested_host);
-    content::RenderFrameHost* main_frame = NavigateMainFrameToExtensionPage();
-    content::RenderFrameHost* middle_frame =
-        MakeChildFrame(main_frame, test.middle_frame_host);
-    content::RenderFrameHost* leaf_frame =
-        MakeChildFrame(middle_frame, test.leaf_frame_host);
-
-    EXPECT_THAT(AsCookies(FetchCookies(leaf_frame, test.requested_host)),
-                UnorderedElementsAreArray(test.expected_cookies))
-        << test.middle_frame_host << ", " << test.leaf_frame_host << ", "
-        << test.requested_host;
-  }
-}
-
-// Tests where the current frame is a nested frame, which navigates to another
-// URL. Here it doesn't actually matter what *host* the current frame is nested
-// in (as long as the domain is permitted), because we only check the domain.
-IN_PROC_BROWSER_TEST_F(ExtensionSamePartyCookiesTest, NestedFrames_Navigation) {
-  const struct {
-    const char* middle_frame_host;
-    const char* leaf_frame_host;
-    const char* requested_host;
-    const std::vector<const char*> expected_cookies;
-  } test_cases[] = {
-      {
-          kPermittedOwner,
-          kPermittedMember,
-          kPermittedMember,
-          same_party_cookies(),
-      },
-      {
-          kNotPermittedMember,
-          kPermittedMember,
-          kPermittedMember,
-          no_same_party_cookies(),
-      },
-      {
-          kNotPermittedOwnerSubdomain,
-          kPermittedMember,
-          kPermittedMember,
-          same_party_cookies(),
-      },
-      {
-          kNotPermittedNonMember,
-          kPermittedOwner,
-          kPermittedMember,
-          no_same_party_cookies(),
-      },
-      {
-          kPermittedNonMember,
-          kPermittedOwner,
-          kPermittedOwner,
-          no_same_party_cookies(),
-      },
-      {
-          kPermittedOwner,
-          kNotPermittedMember,
-          kPermittedMember,
-          same_party_cookies(),
-      },
-      {
-          kPermittedOwner,
-          kPermittedNonMember,
-          kPermittedMember,
-          same_party_cookies(),
-      },
-  };
-
-  for (const auto& test : test_cases) {
-    SetCookies(test.requested_host);
-    content::RenderFrameHost* main_frame = NavigateMainFrameToExtensionPage();
-    content::RenderFrameHost* middle_frame =
-        MakeChildFrame(main_frame, test.middle_frame_host);
-    content::RenderFrameHost* leaf_frame =
-        MakeChildFrame(middle_frame, test.leaf_frame_host);
-
-    EXPECT_THAT(
-        AsCookies(NavigateChildAndGetCookies(leaf_frame, test.requested_host)),
-        UnorderedElementsAreArray(test.expected_cookies))
-        << test.middle_frame_host << ", " << test.leaf_frame_host << ", "
-        << test.requested_host;
-  }
-}
 
 }  // namespace
 

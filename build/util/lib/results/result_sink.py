@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 from __future__ import absolute_import
@@ -175,13 +175,12 @@ def _TruncateToUTF8Bytes(s, length):
     s: The string to truncate.
     length: the length (in bytes) to truncate to.
   """
-  # TODO(crbug.com/1260506): Remove the try except block after resolving
-  # the encode/decode issue.
   try:
     encoded = s.encode('utf-8')
+  # When encode throws UnicodeDecodeError in py2, it usually means the str is
+  # already encoded and has non-ascii chars. So skip re-encoding it.
   except UnicodeDecodeError:
-    logging.exception('UnicodeDecodeError for the string: %s', s)
-    raise
+    encoded = s
   if len(encoded) > length:
     # Truncate, leaving space for trailing ellipsis (...).
     encoded = encoded[:length - 3]

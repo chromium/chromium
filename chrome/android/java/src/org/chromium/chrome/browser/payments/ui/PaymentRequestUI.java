@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,7 +38,6 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.prefeditor.EditorDialog;
-import org.chromium.chrome.browser.autofill.prefeditor.EditorObserverForTest;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.payments.ShippingStrings;
 import org.chromium.chrome.browser.payments.ui.PaymentRequestSection.LineItemBreakdownSection;
@@ -47,13 +46,11 @@ import org.chromium.chrome.browser.payments.ui.PaymentRequestSection.SectionSepa
 import org.chromium.chrome.browser.payments.ui.PaymentUiService.PaymentUisShowStateReconciler;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.chrome.browser.version.ChromeVersionInfo;
 import org.chromium.components.autofill.EditableOption;
+import org.chromium.components.autofill.prefeditor.EditorObserverForTest;
 import org.chromium.components.browser_ui.widget.FadingEdgeScrollView;
 import org.chromium.components.browser_ui.widget.animation.FocusAnimator;
 import org.chromium.components.browser_ui.widget.animation.Interpolators;
-import org.chromium.components.payments.PaymentApp;
-import org.chromium.components.payments.PaymentAppType;
 import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -302,7 +299,6 @@ public class PaymentRequestUI implements DimmingDialog.OnDismissListener, View.O
      */
     private final DimmingDialog mDialog;
     private final EditorDialog mEditorDialog;
-    private final EditorDialog mCardEditorDialog;
     private final ViewGroup mRequestView;
     private final Callback<PaymentInformation> mUpdateSectionsCallback;
     private final ShippingStrings mShippingStrings;
@@ -346,10 +342,6 @@ public class PaymentRequestUI implements DimmingDialog.OnDismissListener, View.O
      *
      * @param activity              The activity on top of which the UI should be displayed.
      * @param client                The consumer of the PaymentRequest UI.
-     * @param canAddCards           Whether the UI should show the [+ADD CARD] button. This can be
-     *                              false, for example, when the merchant does not accept credit
-     *                              cards, so there's no point in adding cards within PaymentRequest
-     *                              UI.
      * @param showDataSource        Whether the UI should describe the source of Autofill data.
      * @param title                 The title to show at the top of the UI. This can be, for
      *                              example, the &lt;title&gt; of the merchant website. If the
@@ -362,9 +354,8 @@ public class PaymentRequestUI implements DimmingDialog.OnDismissListener, View.O
      * @param shippingStrings The string resource identifiers to use in the shipping sections.
      * @param profile         The current profile that creates the PaymentRequestUI.
      */
-    public PaymentRequestUI(Activity activity, Client client, boolean canAddCards,
-            boolean showDataSource, String title, String origin, int securityLevel,
-            ShippingStrings shippingStrings,
+    public PaymentRequestUI(Activity activity, Client client, boolean showDataSource, String title,
+            String origin, int securityLevel, ShippingStrings shippingStrings,
             PaymentUisShowStateReconciler paymentUisShowStateReconciler, Profile profile) {
         mContext = activity;
         mClient = client;
@@ -413,18 +404,10 @@ public class PaymentRequestUI implements DimmingDialog.OnDismissListener, View.O
 
         mRequestView =
                 (ViewGroup) LayoutInflater.from(mContext).inflate(R.layout.payment_request, null);
-        prepareRequestView(mContext, title, origin, securityLevel, canAddCards, profile);
+        prepareRequestView(mContext, title, origin, securityLevel, profile);
 
         mEditorDialog = new EditorDialog(activity, /*deleteRunnable =*/null, profile);
         DimmingDialog.setVisibleStatusBarIconColor(mEditorDialog.getWindow());
-
-        mCardEditorDialog = new EditorDialog(activity, /*deleteRunnable =*/null, profile);
-        DimmingDialog.setVisibleStatusBarIconColor(mCardEditorDialog.getWindow());
-
-        // Allow screenshots of the credit card number in Canary, Dev, and developer builds.
-        if (ChromeVersionInfo.isBetaBuild() || ChromeVersionInfo.isStableBuild()) {
-            mCardEditorDialog.disableScreenshots();
-        }
 
         mDialog = new DimmingDialog(activity, this);
         mPaymentUisShowStateReconciler = paymentUisShowStateReconciler;
@@ -488,11 +471,10 @@ public class PaymentRequestUI implements DimmingDialog.OnDismissListener, View.O
      * @param title         Title of the page.
      * @param origin        The RFC6454 origin of the page.
      * @param securityLevel The security level of the page that invoked PaymentRequest.
-     * @param canAddCards   Whether new cards can be added.
      * @param profile       The current profile to pass PaymentRequestHeader.
      */
-    private void prepareRequestView(Context context, String title, String origin, int securityLevel,
-            boolean canAddCards, Profile profile) {
+    private void prepareRequestView(
+            Context context, String title, String origin, int securityLevel, Profile profile) {
         mSpinnyLayout = mRequestView.findViewById(R.id.payment_request_spinny);
         assert mSpinnyLayout.getVisibility() == View.VISIBLE;
         mIsShowingSpinner = true;
@@ -510,6 +492,7 @@ public class PaymentRequestUI implements DimmingDialog.OnDismissListener, View.O
         mBottomBar = (ViewGroup) mRequestView.findViewById(R.id.bottom_bar);
         mPayButton = (Button) mBottomBar.findViewById(R.id.button_primary);
         mPayButton.setOnClickListener(this);
+        mPayButton.setText(R.string.payments_continue_button);
         mEditButton = (Button) mBottomBar.findViewById(R.id.button_secondary);
         mEditButton.setOnClickListener(this);
 
@@ -538,9 +521,9 @@ public class PaymentRequestUI implements DimmingDialog.OnDismissListener, View.O
         // the cost in the right summary text view on bottom sheet.
         mShippingOptionSection.setSplitSummaryInDisplayModeNormal(true);
 
-        // Some sections conditionally allow adding new options.
+        // The user cannot add new shipping options or payment methods.
         mShippingOptionSection.setCanAddItems(false);
-        mPaymentMethodSection.setCanAddItems(canAddCards);
+        mPaymentMethodSection.setCanAddItems(false);
 
         // Put payment method section on top of address section for
         // WEB_PAYMENTS_METHOD_SECTION_ORDER_V2.
@@ -616,15 +599,6 @@ public class PaymentRequestUI implements DimmingDialog.OnDismissListener, View.O
         if (sPaymentRequestObserverForTest != null) {
             sPaymentRequestObserverForTest.onPaymentRequestResultReady(this);
         }
-    }
-
-    /**
-     * Disables adding new cards during retry.
-     */
-    public void disableAddingNewCardsDuringRetry() {
-        assert mPaymentMethodSection != null;
-        mPaymentMethodSection.setCanAddItems(false);
-        mPaymentMethodSection.update(mPaymentMethodSectionInformation);
     }
 
     /**
@@ -885,12 +859,6 @@ public class PaymentRequestUI implements DimmingDialog.OnDismissListener, View.O
         return mEditorDialog;
     }
 
-    /** @return The card editor user interface. Distinct from the common editor user interface,
-     * because the credit card editor can launch the address editor. */
-    public EditorDialog getCardEditorDialog() {
-        return mCardEditorDialog;
-    }
-
     /**
      * Called when user clicks anything in the dialog.
      */
@@ -1041,13 +1009,6 @@ public class PaymentRequestUI implements DimmingDialog.OnDismissListener, View.O
                 && mPaymentMethodSectionInformation.getSelectedItem() != null
                 && !mIsClientCheckingSelection && !mIsEditingPaymentItem && !mIsClosing);
 
-        PaymentApp selectedApp = mPaymentMethodSectionInformation == null
-                ? null
-                : (PaymentApp) mPaymentMethodSectionInformation.getSelectedItem();
-        mPayButton.setText(
-                selectedApp != null && selectedApp.getPaymentAppType() != PaymentAppType.AUTOFILL
-                        ? R.string.payments_continue_button
-                        : R.string.payments_pay_button);
         mReadyToPayNotifierForTest.run();
     }
 
@@ -1134,7 +1095,7 @@ public class PaymentRequestUI implements DimmingDialog.OnDismissListener, View.O
         if (!mShowDataSource) {
             message = mContext.getString(R.string.payments_card_and_address_settings);
         } else {
-            String email = getEmail();
+            String email = getSignedInUsersEmail();
             if (email != null) {
                 message = mContext.getString(
                         R.string.payments_card_and_address_settings_signed_in, email);
@@ -1145,7 +1106,7 @@ public class PaymentRequestUI implements DimmingDialog.OnDismissListener, View.O
         }
 
         NoUnderlineClickableSpan settingsSpan = new NoUnderlineClickableSpan(
-                mContext.getResources(), (widget) -> mClient.onCardAndAddressSettingsClicked());
+                mContext, (widget) -> mClient.onCardAndAddressSettingsClicked());
         SpannableString spannableMessage = SpanApplier.applySpans(
                 message, new SpanInfo("BEGIN_LINK", "END_LINK", settingsSpan));
 
@@ -1162,9 +1123,19 @@ public class PaymentRequestUI implements DimmingDialog.OnDismissListener, View.O
         parent.addView(view);
     }
 
-    /** @return The email of signed in user or null. */
+    /**
+     * Get the email of the signed-in user, if possible. This is not necessarily the email shown or
+     * being used for contact details (if they were requested), but is the email that
+     * cards/addresses are being synced to.
+     *
+     * @return The email of signed in user or null.
+     */
     @Nullable
-    private String getEmail() {
+    private String getSignedInUsersEmail() {
+        if (mProfile.isOffTheRecord()) {
+            return null;
+        }
+
         IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(mProfile);
         if (identityManager == null) return null;
@@ -1236,7 +1207,6 @@ public class PaymentRequestUI implements DimmingDialog.OnDismissListener, View.O
     public void onDismiss() {
         mIsClosing = true;
         if (mEditorDialog.isShowing()) mEditorDialog.dismiss();
-        if (mCardEditorDialog.isShowing()) mCardEditorDialog.dismiss();
         if (sEditorObserverForTest != null) sEditorObserverForTest.onEditorDismiss();
         if (!mIsClientClosing) mClient.onDismiss();
     }

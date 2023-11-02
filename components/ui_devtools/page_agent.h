@@ -1,12 +1,12 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_UI_DEVTOOLS_PAGE_AGENT_H_
 #define COMPONENTS_UI_DEVTOOLS_PAGE_AGENT_H_
 
-#include "components/ui_devtools/Page.h"
 #include "components/ui_devtools/dom_agent.h"
+#include "components/ui_devtools/page.h"
 
 namespace ui_devtools {
 

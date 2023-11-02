@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/span.h"
+#include "device/fido/cable/v2_authenticator.h"
 #include "device/fido/cable/v2_constants.h"
 #include "device/fido/cable/v2_discovery.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
@@ -38,14 +39,35 @@ std::unique_ptr<network::mojom::NetworkContext> NewMockTunnelServer(
 
 namespace authenticator {
 
-class Platform;
+// Observer is an interface that can be implemented by tests that wish to see
+// certain platform events.
+class Observer {
+ public:
+  // See `Platform::OnStatus`.
+  virtual void OnStatus(Platform::Status) = 0;
+
+  // See `Platform::OnCompleted`.
+  virtual void OnCompleted(absl::optional<Platform::Error>) = 0;
+};
 
 // NewMockPlatform returns a |Platform| that implements the makeCredential
 // operation by forwarding it to |ctap2_device|. Transmitted BLE adverts are
-// forwarded to |ble_advert_callback|.
+// forwarded to |ble_advert_callback|. |observer| may be |nullptr| but, if not,
+// then corresponding calls to the mock `Platform` are forwarded to the
+// observer.
 std::unique_ptr<Platform> NewMockPlatform(
     Discovery::AdvertEventStream::Callback ble_advert_callback,
-    device::VirtualCtap2Device* ctap2_device);
+    device::VirtualCtap2Device* ctap2_device,
+    Observer* observer);
+
+// NewLateLinkingDevice returns a caBLEv2 device that fails all CTAP requests
+// but sends linking information after the transaction.
+std::unique_ptr<Transaction> NewLateLinkingDevice(
+    CtapDeviceResponseCode ctap_error,
+    std::unique_ptr<Platform> platform,
+    network::mojom::NetworkContext* network_context,
+    base::span<const uint8_t> qr_secret,
+    base::span<const uint8_t, kP256X962Length> peer_identity);
 
 }  // namespace authenticator
 

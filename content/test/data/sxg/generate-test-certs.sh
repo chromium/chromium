@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -82,7 +82,7 @@ openssl ca -batch \
 openssl ecparam -out secp384r1.key -name secp384r1 -genkey
 
 openssl req -new -sha256 -key secp384r1.key -out secp384r1-sha256.csr \
-  --subj '/CN=test.example.org/O=Test/C=US'
+  -subj '/CN=test.example.org/O=Test/C=US'
 
 # Generate a certificate with the secp384r1-sha256 key.
 openssl ca -batch \

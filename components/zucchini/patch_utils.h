@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,19 +11,9 @@
 #include <type_traits>
 
 #include "components/zucchini/image_utils.h"
+#include "components/zucchini/version_info.h"
 
 namespace zucchini {
-
-// A change in major version indicates breaking changes such that a patch
-// definitely cannot be applied by a zucchini binary whose major version doesn't
-// match.
-enum : uint16_t { kMajorVersion = 1 };
-// A change in minor version indicates possibly breaking changes at the element
-// level, such that it may not be possible to apply a patch whose minor version
-// doesn't match this version. To determine if a given patch may be applied with
-// this version, VerifyPatch() should be called.
-enum : uint16_t { kMinorVersion = 0 };
-enum : uint16_t { kInvalidVersion = 0xffff };
 
 // A Zucchini 'ensemble' patch is the concatenation of a patch header with a
 // list of patch 'elements', each containing data for patching individual

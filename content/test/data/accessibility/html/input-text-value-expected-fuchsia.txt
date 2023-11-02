@@ -1,0 +1,41 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN
+++++++UNKNOWN
+++++++++STATIC_TEXT label='l1'
+++++++++++UNKNOWN label='l1'
+++++++TEXT_FIELD focusable label='l1' actions='{DEFAULT, SET_VALUE}'
+++++++++UNKNOWN
+++++++UNKNOWN
+++++++++STATIC_TEXT label='l2'
+++++++++++UNKNOWN label='l2'
+++++++TEXT_FIELD focusable label='l2' actions='{DEFAULT, SET_VALUE}' value='value'
+++++++++UNKNOWN
+++++++++++STATIC_TEXT label='value'
+++++++++++++UNKNOWN label='value'
+++++++TEXT_FIELD focusable label='l2' actions='{DEFAULT, SET_VALUE}'
+++++++++UNKNOWN
+++++++TEXT_FIELD focusable label='l2' actions='{DEFAULT, SET_VALUE}' value='value  *'
+++++++++UNKNOWN
+++++++++++STATIC_TEXT label='value  *'
+++++++++++++UNKNOWN label='value  *'
+++++++UNKNOWN
+++++++++STATIC_TEXT label='Email'
+++++++++++UNKNOWN label='Email'
+++++++UNKNOWN
+++++++TEXT_FIELD focusable label='Email' actions='{DEFAULT, SET_VALUE}'
+++++++++UNKNOWN
+++++++TEXT_FIELD focusable label='Email' actions='{DEFAULT, SET_VALUE}' value='value'
+++++++++UNKNOWN
+++++++++++STATIC_TEXT label='value'
+++++++++++++UNKNOWN label='value'
+++++++TEXT_FIELD focusable label='l5' actions='{DEFAULT, SET_VALUE}'
+++++++++UNKNOWN
+++++++TEXT_FIELD focusable label='l6' actions='{DEFAULT, SET_VALUE}' value='Value'
+++++++++UNKNOWN
+++++++++++STATIC_TEXT label='Value'
+++++++++++++UNKNOWN label='Value'
+++++++TEXT_FIELD focusable label='Name' actions='{DEFAULT, SET_VALUE}' secondary_label='Description' value='value'
+++++++++UNKNOWN
+++++++++++STATIC_TEXT label='value'
+++++++++++++UNKNOWN label='value'

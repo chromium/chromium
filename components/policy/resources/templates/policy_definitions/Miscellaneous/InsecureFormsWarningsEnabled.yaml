@@ -1,0 +1,23 @@
+caption: Enable warnings for insecure forms
+default: true
+desc: |-
+  This policy controls the treatment for insecure forms (forms that submit over HTTP) embedded in secure (HTTPS) sites in the browser.
+         If the policy is enabled or unset, a full page warning will be shown when an insecure form is submitted. Additionally, a warning bubble will be shown next to the form fields when they are focused, and autofill will be disabled for those forms.
+         If the policy is disabled, warnings will not be shown for insecure forms, and autofill will work normally.
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- fuchsia
+owners:
+- carlosil@chromium.org
+- estark@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome.*:86-
+- chrome_os:86-
+- android:86-
+tags: []
+type: main

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/no_destructor.h"
 #include "build/chromeos_buildflags.h"
@@ -29,7 +28,7 @@ DlpContentRestrictionSet::DlpContentRestrictionSet(
     DlpContentRestriction restriction,
     DlpRulesManager::Level level) {
   restrictions_.fill(RestrictionLevelAndUrl());
-  restrictions_[restriction].level = level;
+  restrictions_[static_cast<int>(restriction)].level = level;
 }
 
 DlpContentRestrictionSet::DlpContentRestrictionSet(
@@ -53,19 +52,25 @@ bool DlpContentRestrictionSet::operator!=(
 void DlpContentRestrictionSet::SetRestriction(DlpContentRestriction restriction,
                                               DlpRulesManager::Level level,
                                               const GURL& url) {
-  if (level > restrictions_[restriction].level) {
-    restrictions_[restriction] = RestrictionLevelAndUrl(level, url);
+  if (level > restrictions_[static_cast<int>(restriction)].level) {
+    restrictions_[static_cast<int>(restriction)] =
+        RestrictionLevelAndUrl(level, url);
   }
 }
 
 DlpRulesManager::Level DlpContentRestrictionSet::GetRestrictionLevel(
     DlpContentRestriction restriction) const {
-  return restrictions_[restriction].level;
+  return restrictions_[static_cast<int>(restriction)].level;
+}
+
+const GURL& DlpContentRestrictionSet::GetRestrictionUrl(
+    DlpContentRestriction restriction) const {
+  return restrictions_[static_cast<int>(restriction)].url;
 }
 
 RestrictionLevelAndUrl DlpContentRestrictionSet::GetRestrictionLevelAndUrl(
     DlpContentRestriction restriction) const {
-  return restrictions_[restriction];
+  return restrictions_[static_cast<int>(restriction)];
 }
 
 bool DlpContentRestrictionSet::IsEmpty() const {
@@ -106,21 +111,17 @@ DlpContentRestrictionSet DlpContentRestrictionSet::GetForURL(const GURL& url) {
 
   DlpContentRestrictionSet set;
 
-// TODO(crbug.com/1254329) Enable on LaCros once DlpRulesManager is available.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   DlpRulesManager* dlp_rules_manager =
       DlpRulesManagerFactory::GetForPrimaryProfile();
   if (!dlp_rules_manager)
     return set;
 
-  const size_t kRestrictionsCount = 5;
+  const size_t kRestrictionsCount = 4;
   static constexpr std::array<
       std::pair<DlpRulesManager::Restriction, DlpContentRestriction>,
       kRestrictionsCount>
       kRestrictionsArray = {{{DlpRulesManager::Restriction::kScreenshot,
                               DlpContentRestriction::kScreenshot},
-                             {DlpRulesManager::Restriction::kScreenshot,
-                              DlpContentRestriction::kVideoCapture},
                              {DlpRulesManager::Restriction::kPrivacyScreen,
                               DlpContentRestriction::kPrivacyScreen},
                              {DlpRulesManager::Restriction::kPrinting,
@@ -136,7 +137,6 @@ DlpContentRestrictionSet DlpContentRestrictionSet::GetForURL(const GURL& url) {
       continue;
     set.SetRestriction(restriction.second, level, url);
   }
-#endif
 
   return set;
 }

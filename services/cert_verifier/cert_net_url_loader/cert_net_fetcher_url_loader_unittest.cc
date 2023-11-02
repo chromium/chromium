@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/synchronization/lock.h"
@@ -32,6 +32,7 @@
 #include "services/cert_verifier/cert_net_url_loader/cert_net_fetcher_test.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "services/network/url_loader.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
@@ -235,7 +236,7 @@ class SecureDnsInterceptor : public net::URLRequestInterceptor {
     return nullptr;
   }
 
-  bool* invoked_interceptor_;
+  raw_ptr<bool> invoked_interceptor_;
 };
 
 class CertNetFetcherURLLoaderTestWithSecureDnsInterceptor
@@ -262,7 +263,7 @@ class CertNetFetcherURLLoaderTestWithSecureDnsInterceptor
 };
 
 // Helper to start an AIA fetch using default parameters.
-WARN_UNUSED_RESULT std::unique_ptr<net::CertNetFetcher::Request> StartRequest(
+[[nodiscard]] std::unique_ptr<net::CertNetFetcher::Request> StartRequest(
     net::CertNetFetcher* fetcher,
     const GURL& url) {
   return fetcher->FetchCaIssuers(url, net::CertNetFetcher::DEFAULT,

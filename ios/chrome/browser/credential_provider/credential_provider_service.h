@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,16 @@
 
 #include "base/memory/ref_counted.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_store_backend_error.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/prefs/pref_member.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/driver/sync_service_observer.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
+
+class FaviconLoader;
 
 @protocol MutableCredentialStore;
 
@@ -41,7 +45,8 @@ class CredentialProviderService
       id<MutableCredentialStore> credential_store,
       signin::IdentityManager* identity_manager,
       syncer::SyncService* sync_service,
-      password_manager::AffiliationService* affiliation_service);
+      password_manager::AffiliationService* affiliation_service,
+      FaviconLoader* favicon_loader);
 
   CredentialProviderService(const CredentialProviderService&) = delete;
   CredentialProviderService& operator=(const CredentialProviderService&) =
@@ -66,18 +71,20 @@ class CredentialProviderService
   void RequestSyncAllCredentialsIfNeeded();
 
   // Replaces all data with credentials created from the passed forms and then
-  // syncs to disk.
+  // syncs to disk. Errors are treated as an empty list of credentials.
   void SyncAllCredentials(
-      std::vector<std::unique_ptr<password_manager::PasswordForm>> forms);
+      absl::variant<
+          std::vector<std::unique_ptr<password_manager::PasswordForm>>,
+          password_manager::PasswordStoreBackendError> forms_or_error);
 
   // Syncs the credential store to disk.
   void SyncStore(bool set_first_time_sync_flag);
 
-  // Add credentials from |forms|.
+  // Add credentials from `forms`.
   void AddCredentials(
       std::vector<std::unique_ptr<password_manager::PasswordForm>> forms);
 
-  // Removes credentials from |forms|.
+  // Removes credentials from `forms`.
   void RemoveCredentials(
       std::vector<std::unique_ptr<password_manager::PasswordForm>> forms);
 
@@ -102,15 +109,18 @@ class CredentialProviderService
                             retained_passwords) override;
 
   // Completion called after the affiliations are injected in the added forms.
-  // If no affiliation matcher is available, it is called right away.
+  // If no affiliation matcher is available, it is called right away. Errors are
+  // treated as an empty list of credentials.
   void OnInjectedAffiliationAfterLoginsChanged(
-      std::vector<std::unique_ptr<password_manager::PasswordForm>> forms);
+      absl::variant<
+          std::vector<std::unique_ptr<password_manager::PasswordForm>>,
+          password_manager::PasswordStoreBackendError> forms_or_error);
 
   // syncer::SyncServiceObserver:
   void OnSyncConfigurationCompleted(syncer::SyncService* sync) override;
   void OnStateChanged(syncer::SyncService* sync) override;
 
-  // Observer for when |saving_passwords_enabled_| changes.
+  // Observer for when `saving_passwords_enabled_` changes.
   void OnSavingPasswordsEnabledChanged();
 
   // The interface for getting and manipulating a user's saved passwords.
@@ -128,6 +138,10 @@ class CredentialProviderService
   // Affiliation service to provide affiliations.
   password_manager::AffiliationService* affiliation_service_ = nullptr;
 
+  // FaviconLoader is a keyed service that uses LargeIconService to retrieve
+  // favicon images.
+  FaviconLoader* favicon_loader_ = nullptr;
+
   // The interface for saving and updating credentials.
   id<MutableCredentialStore> credential_store_ = nil;
 
@@ -139,7 +153,7 @@ class CredentialProviderService
   BooleanPrefMember saving_passwords_enabled_;
 
   // Weak pointer factory.
-  base::WeakPtrFactory<CredentialProviderService> weak_factory_{this};
+  base::WeakPtrFactory<CredentialProviderService> weak_ptr_factory_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_CREDENTIAL_PROVIDER_CREDENTIAL_PROVIDER_SERVICE_H_

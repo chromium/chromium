@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -51,7 +51,7 @@ class WebBundleLoader : public GarbageCollected<WebBundleLoader>,
   void OnWebBundleLoadFinished(bool success) override;
 
   const KURL& url() const { return url_; }
-  scoped_refptr<SecurityOrigin> GetSecurityOrigin() const {
+  scoped_refptr<const SecurityOrigin> GetSecurityOrigin() const {
     return security_origin_;
   }
   const base::UnguessableToken& WebBundleToken() const {
@@ -69,7 +69,7 @@ class WebBundleLoader : public GarbageCollected<WebBundleLoader>,
   Member<ThreadableLoader> loader_;
   LoadState load_state_ = LoadState::kInProgress;
   KURL url_;
-  scoped_refptr<SecurityOrigin> security_origin_;
+  scoped_refptr<const SecurityOrigin> security_origin_;
   base::UnguessableToken web_bundle_token_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   // We need ReceiverSet here because WebBundleHandle is cloned when

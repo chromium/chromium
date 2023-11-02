@@ -27,6 +27,25 @@
         [0, 999, 205, 22]
       ],
       "transform": 2
+    },
+    {
+      "name": "Caret",
+      "bounds": [1, 15],
+      "contentsOpaque": true,
+      "invalidations": [
+        [0, 0, 1, 15]
+      ],
+      "transform": 3
+    },
+    {
+      "name": "LayoutNGTextControlSingleLine INPUT id='text'",
+      "position": [0, 999],
+      "bounds": [205, 22],
+      "contentsOpaqueForText": true,
+      "invalidations": [
+        [0, 0, 205, 22]
+      ],
+      "transform": 2
     }
   ],
   "transforms": [
@@ -47,6 +66,16 @@
         [0, 1, 0, 0],
         [0, 0, 1, 0],
         [0, -921, 0, 1]
+      ]
+    },
+    {
+      "id": 3,
+      "parent": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [3, 1003, 0, 1]
       ]
     }
   ]

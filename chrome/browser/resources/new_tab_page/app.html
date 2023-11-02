@@ -1,11 +1,13 @@
 <style include="cr-shared-style">
   :host {
-    --ntp-theme-text-color: var(--google-grey-800);
     --ntp-theme-text-shadow: none;
     --ntp-one-google-bar-height: 56px;
     --ntp-search-box-width: 337px;
     --ntp-module-width: var(--ntp-search-box-width);
+    --ntp-module-layout-width: var(--ntp-search-box-width);
     --ntp-module-border-radius: 5px;
+    --ntp-protected-icon-background-color: transparent;
+    --ntp-protected-icon-background-color-hovered: rgba(255, 255, 255, .1);
   }
 
   @media (min-width: 560px) {
@@ -20,19 +22,37 @@
     }
   }
 
-  @media (prefers-color-scheme: dark) {
-    :host {
-      --ntp-theme-text-color: white;
+  :host([modules-redesigned-enabled_]) {
+    --ntp-module-border-radius: 24px;
+    --ntp-module-layout-width: 360px;
+    --ntp-module-width: 360px;
+  }
+
+  :host([modules-redesigned-layout-enabled_]) {
+    --ntp-module-layout-width: 360px;
+  }
+
+  @media (min-width: 960px) {
+    :host([modules-redesigned-layout-enabled_]) {
+      --ntp-module-layout-width: 780px;
     }
   }
 
-  :host([modules-redesigned-enabled_]) {
-    --ntp-module-border-radius: 24px;
-    --ntp-module-width: 360px;
+  @media (min-width: 1440px) {
+    :host([modules-redesigned-layout-enabled_]) {
+      --ntp-module-layout-width: 1170px;
+    }
   }
 
   :host([show-background-image_]) {
     --ntp-theme-text-shadow: 0 0 16px rgba(0, 0, 0, .3);
+  }
+
+  :host([show-background-image_][remove-scrim_]) {
+    --ntp-theme-text-shadow: 0.5px 0.5px 1px rgba(0, 0, 0, 0.5),
+        0px 0px 4px rgba(0, 0, 0, 0.3), 0px 0px 16px rgba(0, 0, 0, 0.2);
+    --ntp-protected-icon-background-color: rgba(0, 0, 0, .1);
+    --ntp-protected-icon-background-color-hovered: rgba(0, 0, 0, .2);
   }
 
   #oneGoogleBar {
@@ -58,18 +78,15 @@
     z-index: 1;  /* Needed so it layers on top of OneGoogleBar. */
   }
 
-  ntp-realbox {
+  #realboxContainer {
+    display: inherit;
     margin-bottom: 16px;
-  }
-
-  ntp-realbox {
-    flex-shrink: 0;
-    width: var(--ntp-search-box-width);
+    position: relative;
   }
 
   ntp-modules {
     flex-shrink: 0;
-    width: var(--ntp-module-width);
+    width: var(--ntp-module-layout-width);
   }
 
   ntp-middle-slot-promo {
@@ -78,6 +95,7 @@
 
   ntp-realbox {
     visibility: hidden;
+    width: var(--ntp-search-box-width);
   }
 
   ntp-realbox[shown] {
@@ -86,7 +104,7 @@
 
   cr-most-visited {
     --most-visited-focus-shadow: var(--ntp-focus-shadow);
-    --most-visited-text-color: var(--ntp-theme-text-color);
+    --most-visited-text-color: var(--color-new-tab-page-most-visited-foreground);
     --most-visited-text-shadow: var(--ntp-theme-text-shadow);
   }
 
@@ -97,7 +115,7 @@
   }
 
   #customizeButtonContainer {
-    background-color: var(--ntp-background-override-color);
+    background-color: var(--color-new-tab-page-background-override);
     border-radius: calc(.5 * var(--cr-button-height));
     bottom: 16px;
     position: fixed;
@@ -112,11 +130,11 @@
   }
 
   :host([show-background-image_]) #customizeButtonContainer {
-    background-color: transparent;
+    background-color: var(--ntp-protected-icon-background-color);
   }
 
   :host([show-background-image_]) #customizeButtonContainer:hover {
-    background-color: rgba(255, 255, 255, .1);
+    background-color: var(--ntp-protected-icon-background-color-hovered);
   }
 
   #customizeButton {
@@ -165,10 +183,38 @@
     }
   }
 
+  @media (max-width: 970px) {
+    :host([modules-shown-to-user]) #customizeButton {
+      padding: 0;
+    }
+
+    :host([modules-shown-to-user]) #customizeIcon {
+      margin: 0;
+    }
+
+    :host([modules-shown-to-user]) #customizeText {
+      display: none;
+    }
+  }
+
+  @media (max-width: 1020px) {
+    :host([modules-fre-shown]) #customizeButton {
+      padding: 0;
+    }
+
+    :host([modules-fre-shown]) #customizeIcon {
+      margin: 0;
+    }
+
+    :host([modules-fre-shown]) #customizeText {
+      display: none;
+    }
+  }
+
   #themeAttribution {
     align-self: flex-start;
     bottom: 16px;
-    color: var(--cr-secondary-text-color);
+    color: var(--color-new-tab-page-secondary-foreground);
     margin-inline-start: 16px;
     position: fixed;
   }
@@ -176,13 +222,22 @@
   #backgroundImageAttribution {
     border-radius: 8px;
     bottom: 16px;
-    color: var(--ntp-theme-text-color);
+    color: var(--color-new-tab-page-attribution-foreground);
     line-height: 20px;
     max-width: 50vw;
     padding: 8px;
     position: fixed;
     text-shadow: var(--ntp-theme-text-shadow);
     z-index: -1;
+  }
+
+  :host([remove-scrim_]) #backgroundImageAttribution {
+    background-color: var(--ntp-protected-icon-background-color);
+    text-shadow: none;
+  }
+
+  :host([remove-scrim_]) #backgroundImageAttribution:hover {
+    background-color: var(--ntp-protected-icon-background-color-hovered);
   }
 
   :host-context([dir='ltr']) #backgroundImageAttribution {
@@ -207,7 +262,7 @@
     -webkit-mask-image: url(icons/link.svg);
     -webkit-mask-repeat: no-repeat;
     -webkit-mask-size: 100%;
-    background-color: var(--ntp-theme-text-color);
+    background-color: var(--color-new-tab-page-attribution-foreground);
     height: 16px;
     margin-inline-end: 8px;
     width: 16px;
@@ -237,14 +292,24 @@
   svg {
     position: fixed;
   }
+
+  ntp-lens-upload-dialog {
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    z-index: 101;
+  }
 </style>
 <div id="content" style="
-        --ntp-theme-text-color: [[rgbaOrInherit_(theme_.textColor)]];
+        --color-new-tab-page-attribution-foreground: [[rgbaOrInherit_(theme_.textColor)]];
+        --color-new-tab-page-most-visited-foreground: [[rgbaOrInherit_(theme_.textColor)]];
         --ntp-logo-color: [[rgbaOrInherit_(logoColor_)]];">
   <template is="dom-if" if="[[lazyRender_]]">
     <template is="dom-if" if="[[oneGoogleBarEnabled_]]">
       <ntp-iframe id="oneGoogleBar" src="[[oneGoogleBarIframePath_]]"
-          hidden$="[[!oneGoogleBarLoaded_]]">
+          hidden$="[[!oneGoogleBarLoaded_]]"
+          allow="camera [[oneGoogleBarIframeOrigin_]]; display-capture [[oneGoogleBarIframeOrigin_]]"> <!-- presubmit: ignore-long-line -->
       </ntp-iframe>
     </template>
   </template>
@@ -256,9 +321,17 @@
       dark="[[theme_.isDark]]" background-color="[[backgroundColor_]]"
       hidden$="[[!logoEnabled_]]">
   </ntp-logo>
-  <ntp-realbox id="realbox" on-open-voice-search="onOpenVoiceSearch_"
-      theme="[[theme_.searchBox]]" shown$="[[realboxShown_]]">
-  </ntp-realbox>
+  <div id="realboxContainer">
+    <ntp-realbox id="realbox" is-dark="[[theme_.isDark]]"
+        on-open-lens-search="onOpenLensSearch_"
+        on-open-voice-search="onOpenVoiceSearch_" shown$="[[realboxShown_]]">
+    </ntp-realbox>
+    <template is="dom-if" if="[[realboxLensSearchEnabled_]]">
+      <ntp-lens-upload-dialog id="lensUploadDialog" 
+          on-close-lens-search="onCloseLensSearch_">
+      </ntp-lens-upload-dialog>
+    </template>
+  </div>
   <dom-if if="[[lazyRender_]]" on-dom-change="onLazyRendered_">
     <template>
       <template is="dom-if" if="[[shortcutsEnabled_]]">
@@ -271,10 +344,12 @@
             hidden="[[!promoAndModulesLoaded_]]">
         </ntp-middle-slot-promo>
       </template>
-      <template is="dom-if" if="[[modulesEnabled_]]" >
+      <template is="dom-if" if="[[modulesEnabled_]]">
         <ntp-modules id="modules"
-            on-modules-loaded="onModulesLoaded_"
+            modules-fre-shown="{{modulesFreShown}}"
+            modules-shown-to-user="{{modulesShownToUser}}"
             on-customize-module="onCustomizeModule_"
+            on-modules-loaded="onModulesLoaded_"
             hidden="[[!promoAndModulesLoaded_]]">
         </ntp-modules>
       </template>
@@ -282,7 +357,7 @@
           href="[[backgroundImageAttributionUrl_]]"
           hidden="[[!backgroundImageAttribution1_]]">
         <div id="backgroundImageAttribution1Container">
-          <div id="linkIcon"></div>
+          <div id="linkIcon" hidden="[[!backgroundImageAttributionUrl_]]"></div>
           <div id="backgroundImageAttribution1">
             [[backgroundImageAttribution1_]]
           </div>
@@ -294,19 +369,20 @@
       </a>
       <!-- cr-button has a transparent background. This leads to incorrect
            results when a custom background is set. Therefore, wrap customize
-           button in container to enfore solid background color. -->
-      <div id="customizeButtonContainer">
+           button in container to enforce solid background color. -->
+      <div id="customizeButtonContainer"
+          hidden="[[customizeChromeSidePanelShowing_]]">
         <cr-button id="customizeButton" on-click="onCustomizeClick_"
-            title="[[i18n('customizeThisPage')]]">
+            title="$i18n{customizeThisPage}">
           <div id="customizeIcon"></div>
           <div id="customizeText" hidden$="[[showBackgroundImage_]]">
-            [[i18n('customizeButton')]]
+            $i18n{customizeButton}
           </div>
         </cr-button>
       </div>
       <div id="themeAttribution"
           hidden$="[[!theme_.backgroundImage.attributionUrl]]">
-        <div>[[i18n('themeCreatedBy')]]</div>
+        <div>$i18n{themeCreatedBy}</div>
         <img src="[[theme_.backgroundImage.attributionUrl.url]]"><img>
       </div>
     </template>

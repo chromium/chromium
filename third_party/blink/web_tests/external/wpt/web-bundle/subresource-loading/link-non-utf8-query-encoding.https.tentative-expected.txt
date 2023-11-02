@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Query encoding should be correctly handled in non utf-8 encoding document. promise_test: Unhandled rejection with value: object "ReferenceError: resources_script_result is not defined"
-Harness: the test ran to completion.
-

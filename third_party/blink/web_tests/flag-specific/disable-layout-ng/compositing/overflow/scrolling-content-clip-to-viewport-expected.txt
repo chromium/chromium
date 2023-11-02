@@ -20,7 +20,8 @@
     {
       "name": "VerticalScrollbar",
       "position": [305, 0],
-      "bounds": [15, 325]
+      "bounds": [15, 325],
+      "contentsOpaque": true
     },
     {
       "name": "LayoutBlockFlow (relative positioned) DIV class='column'",

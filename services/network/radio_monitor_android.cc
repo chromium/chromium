@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,37 +6,44 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
-#include "services/network/public/cpp/features.h"
+#include "net/android/radio_activity_tracker.h"
+#include "net/base/load_flags.h"
+#include "net/base/request_priority.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
 
 namespace network {
 
-// static
-RadioMonitorAndroid& RadioMonitorAndroid::GetInstance() {
-  static base::NoDestructor<RadioMonitorAndroid> s_instance;
-  return *s_instance;
-}
-
-RadioMonitorAndroid::RadioMonitorAndroid() = default;
-
-void RadioMonitorAndroid::MaybeRecordURLLoaderAnnotationId(
+void MaybeRecordURLLoaderCreationForWakeupTrigger(
+    const ResourceRequest& request,
     const net::NetworkTrafficAnnotationTag& traffic_annotation) {
-  DCHECK(base::FeatureList::IsEnabled(features::kRecordRadioWakeupTrigger));
-  if (!ShouldRecordRadioWakeupTrigger())
+  if (!net::android::RadioActivityTracker::GetInstance()
+           .ShouldRecordActivityForWakeupTrigger())
     return;
 
   TRACE_EVENT_INSTANT1("loading", "RadioMonitorAndroid::URLLoaderWakeupRadio",
                        TRACE_EVENT_SCOPE_THREAD, "traffic_annotation",
                        traffic_annotation.unique_id_hash_code);
 
-  base::UmaHistogramSparse(kUmaNamePossibleWakeupTriggerURLLoader,
+  base::UmaHistogramEnumeration(
+      kUmaNamePossibleWakeupTriggerURLLoaderRequestDestination,
+      request.destination);
+  base::UmaHistogramEnumeration(
+      kUmaNamePossibleWakeupTriggerURLLoaderRequestPriority, request.priority,
+      static_cast<net::RequestPriority>(
+          net::RequestPrioritySize::NUM_PRIORITIES));
+  base::UmaHistogramBoolean(
+      kUmaNamePossibleWakeupTriggerURLLoaderRequestIsPrefetch,
+      request.load_flags & net::LOAD_PREFETCH);
+  base::UmaHistogramSparse(kUmaNamePossibleWakeupTriggerURLLoaderAnnotationId,
                            traffic_annotation.unique_id_hash_code);
 }
 
-void RadioMonitorAndroid::MaybeRecordResolveHost(
+void MaybeRecordResolveHostForWakeupTrigger(
     const mojom::ResolveHostParametersPtr& parameters) {
-  DCHECK(base::FeatureList::IsEnabled(features::kRecordRadioWakeupTrigger));
-  if (!ShouldRecordRadioWakeupTrigger())
+  if (!net::android::RadioActivityTracker::GetInstance()
+           .ShouldRecordActivityForWakeupTrigger())
     return;
 
   mojom::ResolveHostParameters::Purpose purpose =
@@ -49,31 +56,6 @@ void RadioMonitorAndroid::MaybeRecordResolveHost(
 
   base::UmaHistogramEnumeration(kUmaNamePossibleWakeupTriggerResolveHost,
                                 purpose);
-}
-
-bool RadioMonitorAndroid::IsRadioUtilsSupported() {
-  return base::android::RadioUtils::IsSupported() ||
-         radio_activity_override_for_testing_.has_value() ||
-         radio_type_override_for_testing_.has_value();
-}
-
-bool RadioMonitorAndroid::ShouldRecordRadioWakeupTrigger() {
-  if (!IsRadioUtilsSupported())
-    return false;
-
-  base::android::RadioConnectionType radio_type =
-      radio_type_override_for_testing_.value_or(
-          base::android::RadioUtils::GetConnectionType());
-  if (radio_type != base::android::RadioConnectionType::kCell)
-    return false;
-
-  absl::optional<base::android::RadioDataActivity> radio_activity =
-      radio_activity_override_for_testing_.has_value()
-          ? radio_activity_override_for_testing_
-          : base::android::RadioUtils::GetCellDataActivity();
-
-  return radio_activity.has_value() &&
-         *radio_activity == base::android::RadioDataActivity::kDormant;
 }
 
 }  // namespace network

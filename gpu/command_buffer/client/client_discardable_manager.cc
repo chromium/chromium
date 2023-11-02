@@ -1,4 +1,4 @@
-// Copyright (c) 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include "base/containers/flat_set.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/system/sys_info.h"
+#include "build/build_config.h"
 
 namespace gpu {
 namespace {
@@ -111,7 +112,7 @@ void FreeOffsetSet::ReturnFreeOffset(uint32_t offset) {
 // sub-allocate from. This should be at least as big as the minimum shared
 // memory allocation size.
 size_t AllocationSize() {
-#if defined(OS_NACL)
+#if BUILDFLAG(IS_NACL)
   // base::SysInfo isn't available under NaCl.
   size_t system_allocation_size = getpagesize();
 #else

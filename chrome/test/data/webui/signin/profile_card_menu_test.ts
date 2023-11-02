@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,10 @@ import 'chrome://profile-picker/profile_picker.js';
 import {ManageProfilesBrowserProxyImpl, ProfileCardMenuElement, ProfileState, Statistics, StatisticsResult} from 'chrome://profile-picker/profile_picker.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {waitBeforeNextRender} from 'chrome://webui-test/test_util.js';
+import {waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
+// <if expr="chromeos_lacros">
+import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+// </if>
 
 import {TestManageProfilesBrowserProxy} from './test_manage_profiles_browser_proxy.js';
 
@@ -26,7 +29,8 @@ suite('ProfileCardMenuTest', function() {
   setup(function() {
     browserProxy = new TestManageProfilesBrowserProxy();
     ManageProfilesBrowserProxyImpl.setInstance(browserProxy);
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     profileCardMenuElement = document.createElement('profile-card-menu');
     document.body.appendChild(profileCardMenuElement);
     const testProfileState: ProfileState = {
@@ -38,7 +42,7 @@ suite('ProfileCardMenuTest', function() {
       userName: `User@gmail.com`,
       isManaged: false,
       avatarIcon: `AvatarUrl`,
-      // <if expr="lacros">
+      // <if expr="chromeos_lacros">
       isPrimaryLacrosProfile: false,
       // </if>
     };
@@ -188,16 +192,17 @@ suite('ProfileCardMenuTest', function() {
   });
 });
 
-// <if expr="lacros">
+// <if expr="chromeos_lacros">
 suite('ProfileCardMenuLacrosTest', function() {
   let primaryProfileCardMenuElement: ProfileCardMenuElement;
   let secondaryProfileCardMenuElement: ProfileCardMenuElement;
   let browserProxy: TestManageProfilesBrowserProxy;
 
-  setup(function() {
+  setup(async function() {
     browserProxy = new TestManageProfilesBrowserProxy();
     ManageProfilesBrowserProxyImpl.setInstance(browserProxy);
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     primaryProfileCardMenuElement = document.createElement('profile-card-menu');
     document.body.appendChild(primaryProfileCardMenuElement);
     const testPrimaryProfileState: ProfileState = {
@@ -212,7 +217,7 @@ suite('ProfileCardMenuLacrosTest', function() {
       isPrimaryLacrosProfile: true,
     };
     primaryProfileCardMenuElement.profileState = testPrimaryProfileState;
-    waitBeforeNextRender(primaryProfileCardMenuElement);
+    await waitAfterNextRender(primaryProfileCardMenuElement);
     secondaryProfileCardMenuElement =
         document.createElement('profile-card-menu');
     document.body.appendChild(secondaryProfileCardMenuElement);
@@ -228,17 +233,25 @@ suite('ProfileCardMenuLacrosTest', function() {
       isPrimaryLacrosProfile: false,
     };
     secondaryProfileCardMenuElement.profileState = testSecondaryProfileState;
-    return waitBeforeNextRender(secondaryProfileCardMenuElement);
+    return waitAfterNextRender(secondaryProfileCardMenuElement);
   });
 
   // The primary profile cannot be deleted in Lacros. The delete button should
-  // be disabled.
+  // just open a notification about that.
   test('PrimaryProfileCannotBeDeleted', async function() {
     primaryProfileCardMenuElement.$.moreActionsButton.click();
     const menuButtons = primaryProfileCardMenuElement.shadowRoot!
                             .querySelectorAll<HTMLButtonElement>(
                                 '#actionMenu > .dropdown-item');
-    assertTrue(menuButtons[MenuButtonIndex.DELETE]!.disabled);
+    assertFalse(menuButtons[MenuButtonIndex.DELETE]!.disabled);
+    menuButtons[MenuButtonIndex.DELETE]!.click();
+    assertFalse(primaryProfileCardMenuElement.$.actionMenu.open);
+    const dialog =
+        primaryProfileCardMenuElement.$.removePrimaryLacrosProfileDialog;
+    assertTrue(dialog.open);
+    dialog.querySelector<HTMLElement>('.action-button')!.click();
+    waitBeforeNextRender(primaryProfileCardMenuElement);
+    assertFalse(dialog.open);
   });
 
   // All other profiles can be deleted as normal.
@@ -252,5 +265,18 @@ suite('ProfileCardMenuLacrosTest', function() {
     assertFalse(secondaryProfileCardMenuElement.$.actionMenu.open);
     assertTrue(secondaryProfileCardMenuElement.$.removeConfirmationDialog.open);
   });
+
+  // Check that the confirmation dialog has a clickable link.
+  test('RemoveConfirmationDialogLink', async function() {
+    const dialog = secondaryProfileCardMenuElement.$.removeConfirmationDialog;
+    dialog.showModal();
+    assertTrue(dialog.open);
+
+    const settingsLink = dialog.querySelector<HTMLElement>(
+        '#removeWarningHeader a[is="action-link"]');
+    settingsLink!.click();
+    await browserProxy.whenCalled('openAshAccountSettingsPage');
+  });
+
 });
 // </if>

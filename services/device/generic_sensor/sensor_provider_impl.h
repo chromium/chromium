@@ -1,11 +1,11 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef SERVICES_DEVICE_GENERIC_SENSOR_SENSOR_PROVIDER_IMPL_H_
 #define SERVICES_DEVICE_GENERIC_SENSOR_SENSOR_PROVIDER_IMPL_H_
 
-#include "base/macros.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -39,7 +39,7 @@ class SensorProviderImpl final : public mojom::SensorProvider {
 
   // Helper callback method to return created sensors.
   void SensorCreated(mojom::SensorType type,
-                     mojo::ScopedSharedBufferHandle cloned_handle,
+                     base::ReadOnlySharedMemoryRegion cloned_region,
                      GetSensorCallback callback,
                      scoped_refptr<PlatformSensor> sensor);
 

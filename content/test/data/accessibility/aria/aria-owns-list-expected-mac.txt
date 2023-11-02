@@ -1,5 +1,5 @@
 AXWebArea
-++AXList AXSize={w: 400, h: 400}
+++AXList AXSubrole=AXContentList AXSize={w: 400, h: 400}
 ++++AXGroup AXSize={w: 400, h: 200}
 ++++++AXStaticText AXValue='One'
 ++++AXGroup AXSize={w: 400, h: 200}

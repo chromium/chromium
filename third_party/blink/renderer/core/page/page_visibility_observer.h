@@ -28,7 +28,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_PAGE_VISIBILITY_OBSERVER_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
 
@@ -36,6 +37,8 @@ class Page;
 
 class CORE_EXPORT PageVisibilityObserver : public GarbageCollectedMixin {
  public:
+  ~PageVisibilityObserver();
+
   virtual void PageVisibilityChanged() = 0;
 
   // Call before clearing an observer list.

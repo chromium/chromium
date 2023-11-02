@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,7 +35,7 @@ enum DisallowActivationReasonId : uint64_t {
   kAXSetFocus = 11,
   kAXGetNativeView = 12,
   kAXGetNativeViewForWindow = 13,
-  kAXWebContents = 14,
+  // kAXWebContents = 14 is no longer blocking.
   kCertificateErrors = 15,
   kCreateChildFrame = 16,
   kCommitSameDocumentNavigation = 17,

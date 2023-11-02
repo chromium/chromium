@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,8 @@
 #include "ash/assistant/ui/main_stage/element_animator.h"
 #include "ash/public/cpp/assistant/controller/assistant_interaction_controller.h"
 #include "base/bind.h"
-#include "chromeos/services/assistant/public/cpp/features.h"
+#include "base/ranges/algorithm.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/callback_layer_animation_observer.h"
 #include "ui/compositor/layer.h"
@@ -125,8 +126,11 @@ void AnimatedContainerView::RemoveAllViews() {
   // their views immediately and we want to ensure that any animation observers
   // will be notified of an abort, not an animation completion.  Otherwise there
   // is potential to enter into a bad state (see crbug/952996).
-  for (const auto& animator : animators_)
+  for (const auto& animator : animators_) {
     animator->AbortAnimation();
+    // TODO(b/237704325): Fix ChromeVox focusing on removed chip views
+    animator->view()->SetVisible(false);
+  }
 
   animators_.clear();
 
@@ -232,10 +236,10 @@ void AnimatedContainerView::AddResponse(
 }
 
 bool AnimatedContainerView::IsAnimatingViews() const {
-  return std::any_of(animators_.begin(), animators_.end(),
-                     [](const std::unique_ptr<ElementAnimator>& animator) {
-                       return animator->layer()->GetAnimator()->is_animating();
-                     });
+  return base::ranges::any_of(
+      animators_, [](const std::unique_ptr<ElementAnimator>& animator) {
+        return animator->layer()->GetAnimator()->is_animating();
+      });
 }
 
 void AnimatedContainerView::AddElementAnimatorAndAnimateInView(

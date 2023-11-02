@@ -1,7 +1,9 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -12,7 +14,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
-#include "chrome/browser/web_applications/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -32,10 +34,6 @@
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/views/controls/button/image_button.h"
-
-#if defined(OS_LINUX)
-#include "ui/ozone/public/ozone_switches.h"
-#endif
 
 namespace {
 
@@ -77,8 +75,8 @@ class TestTitleObserver : public TabStripModelObserver {
  private:
   bool seen_target_title_ = false;
 
-  content::WebContents* contents_;
-  Browser* browser_;
+  raw_ptr<content::WebContents> contents_;
+  raw_ptr<Browser> browser_;
   std::u16string target_title_;
   base::RunLoop awaiter_;
 };
@@ -86,6 +84,9 @@ class TestTitleObserver : public TabStripModelObserver {
 // Opens a new popup window from |web_contents| on |target_url| and returns
 // the Browser it opened in.
 Browser* OpenPopup(content::WebContents* web_contents, const GURL& target_url) {
+  ui_test_utils::BrowserChangeObserver browser_change_observer(
+      /*browser=*/nullptr,
+      ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
   content::TestNavigationObserver nav_observer(target_url);
   nav_observer.StartWatchingNewWebContents();
 
@@ -94,7 +95,7 @@ Browser* OpenPopup(content::WebContents* web_contents, const GURL& target_url) {
   EXPECT_TRUE(content::ExecuteScript(web_contents, script));
   nav_observer.Wait();
 
-  return chrome::FindLastActive();
+  return browser_change_observer.Wait();
 }
 
 // Navigates to |target_url| and waits for navigation to complete.
@@ -144,7 +145,8 @@ class UrlHidingInterstitialPage
   bool ShouldDisplayURL() const override { return false; }
 
  protected:
-  void PopulateInterstitialStrings(base::Value* load_time_data) override {}
+  void PopulateInterstitialStrings(base::Value::Dict& load_time_data) override {
+  }
 };
 
 // An observer that associates a URL-hiding interstitial when a page loads when
@@ -207,29 +209,29 @@ class CustomTabBarViewBrowserTest
   }
 
   void InstallPWA(const GURL& start_url) {
-    auto web_app_info = std::make_unique<WebApplicationInfo>();
+    auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->start_url = start_url;
     web_app_info->scope = start_url.GetWithoutFilename();
-    web_app_info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
+    web_app_info->user_display_mode = web_app::UserDisplayMode::kStandalone;
     Install(std::move(web_app_info));
   }
 
   void InstallBookmark(const GURL& start_url) {
-    auto web_app_info = std::make_unique<WebApplicationInfo>();
+    auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->start_url = start_url;
     web_app_info->scope = start_url.DeprecatedGetOriginAsURL();
-    web_app_info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
+    web_app_info->user_display_mode = web_app::UserDisplayMode::kStandalone;
     Install(std::move(web_app_info));
   }
 
-  BrowserView* browser_view_;
-  LocationBarView* location_bar_;
-  CustomTabBarView* custom_tab_bar_;
-  Browser* app_browser_ = nullptr;
-  web_app::AppBrowserController* app_controller_ = nullptr;
+  raw_ptr<BrowserView> browser_view_;
+  raw_ptr<LocationBarView> location_bar_;
+  raw_ptr<CustomTabBarView> custom_tab_bar_;
+  raw_ptr<Browser> app_browser_ = nullptr;
+  raw_ptr<web_app::AppBrowserController> app_controller_ = nullptr;
 
  private:
-  void Install(std::unique_ptr<WebApplicationInfo> web_app_info) {
+  void Install(std::unique_ptr<WebAppInstallInfo> web_app_info) {
     const GURL start_url = web_app_info->start_url;
     web_app::AppId app_id = InstallWebApp(std::move(web_app_info));
 
@@ -256,26 +258,7 @@ IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest,
   EXPECT_FALSE(custom_tab_bar_);
 }
 
-// Check the custom tab bar is not instantiated for a popup window.
-// Flaky on linux: crbug.com/1186608, crbug.com/1179071
-#if defined(OS_LINUX)
-#define MAYBE_IsNotCreatedInPopup DISABLED_IsNotCreatedInPopup
-#else
-#define MAYBE_IsNotCreatedInPopup IsNotCreatedInPopup
-#endif
-IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest, MAYBE_IsNotCreatedInPopup) {
-#if defined(OS_LINUX)
-  {
-    auto* command_line = base::CommandLine::ForCurrentProcess();
-    if (command_line->HasSwitch(switches::kOzonePlatform) &&
-        command_line->GetSwitchValueASCII(switches::kOzonePlatform) ==
-            "wayland") {
-      // TODO(crbug.com/1179071): Test is flaky on Linux Wayland configuration.
-      GTEST_SKIP() << "Flaky on Linux Wayland";
-    }
-  }
-#endif
-
+IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest, IsNotCreatedInPopup) {
   Browser* popup = OpenPopup(browser_view_->GetActiveWebContents(),
                              GURL("http://example.com"));
   EXPECT_TRUE(popup);
@@ -292,16 +275,8 @@ IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest, MAYBE_IsNotCreatedInPopup) {
   EXPECT_FALSE(popup_view->toolbar()->custom_tab_bar());
 }
 
-// Flaky on linux: crbug.com/1202694
-#if defined(OS_LINUX)
-#define MAYBE_BackToAppButtonIsNotVisibleInOutOfScopePopups \
-  DISABLED_BackToAppButtonIsNotVisibleInOutOfScopePopups
-#else
-#define MAYBE_BackToAppButtonIsNotVisibleInOutOfScopePopups \
-  BackToAppButtonIsNotVisibleInOutOfScopePopups
-#endif
 IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest,
-                       MAYBE_BackToAppButtonIsNotVisibleInOutOfScopePopups) {
+                       BackToAppButtonIsNotVisibleInOutOfScopePopups) {
   const GURL app_url = https_server()->GetURL("app.com", "/ssl/google.html");
   const GURL out_of_scope_url = GURL("https://example.com");
 
@@ -457,7 +432,7 @@ IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest,
 
 // Right-click menu on CustomTabBar should have Copy URL option.
 // Disabled on Mac because Mac's native menu is synchronous.
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest,
                        RightClickMenuShowsCopyUrl) {
   const GURL app_url = https_server()->GetURL("app.com", "/ssl/google.html");
@@ -488,7 +463,7 @@ IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest,
                       &result);
   EXPECT_EQ(result, u"http://example.test/");
 }
-#endif  // !defined(OS_MAC)
+#endif  // !BUILDFLAG(IS_MAC)
 
 // Paths above the launch url should be out of scope and should be closable from
 // the CustomTabBar.

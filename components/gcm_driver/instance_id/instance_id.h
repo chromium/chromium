@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 
@@ -29,7 +30,7 @@ extern const char kGCMScope[];
 class InstanceID {
  public:
   // Used in UMA. Can add enum values, but never renumber or delete and reuse.
-  enum Result {
+  enum Result : uint8_t {
     // Successful operation.
     SUCCESS = 0,
     // Invalid parameter.
@@ -169,7 +170,7 @@ class InstanceID {
 
   // Owned by GCMProfileServiceFactory, which is a dependency of
   // InstanceIDProfileServiceFactory, which owns this.
-  gcm::GCMDriver* gcm_driver_;
+  raw_ptr<gcm::GCMDriver> gcm_driver_;
 
   std::string app_id_;
 

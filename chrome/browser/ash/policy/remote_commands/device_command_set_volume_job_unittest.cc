@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,21 +6,22 @@
 
 #include <memory>
 
-#include "ash/components/audio/cras_audio_handler.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace policy {
 
-namespace em = enterprise_management;
-
 namespace {
+
+namespace em = ::enterprise_management;
 
 const RemoteCommandJob::UniqueIDType kUniqueID = 123456789;
 
@@ -30,13 +31,12 @@ const char kVolumeFieldName[] = "volume";
 em::RemoteCommand GenerateSetVolumeCommandProto(base::TimeDelta age_of_command,
                                                 int volume) {
   em::RemoteCommand command_proto;
-  command_proto.set_type(
-      enterprise_management::RemoteCommand_Type_DEVICE_SET_VOLUME);
+  command_proto.set_type(em::RemoteCommand_Type_DEVICE_SET_VOLUME);
   command_proto.set_command_id(kUniqueID);
   command_proto.set_age_of_command(age_of_command.InMilliseconds());
   std::string payload;
   base::DictionaryValue root_dict;
-  root_dict.SetInteger(kVolumeFieldName, volume);
+  root_dict.SetIntKey(kVolumeFieldName, volume);
   base::JSONWriter::Write(root_dict, &payload);
   command_proto.set_payload(payload);
   return command_proto;
@@ -49,8 +49,8 @@ std::unique_ptr<RemoteCommandJob> CreateSetVolumeJob(
       base::WrapUnique<RemoteCommandJob>(new DeviceCommandSetVolumeJob());
   auto set_volume_command_proto = GenerateSetVolumeCommandProto(
       base::TimeTicks::Now() - issued_time, volume);
-  EXPECT_TRUE(
-      job->Init(base::TimeTicks::Now(), set_volume_command_proto, nullptr));
+  EXPECT_TRUE(job->Init(base::TimeTicks::Now(), set_volume_command_proto,
+                        em::SignedData()));
   EXPECT_EQ(kUniqueID, job->unique_id());
   EXPECT_EQ(RemoteCommandJob::NOT_STARTED, job->status());
   return job;
@@ -118,8 +118,8 @@ TEST_F(DeviceCommandSetVolumeTest, VolumeOutOfRange) {
   std::unique_ptr<RemoteCommandJob> job(new DeviceCommandSetVolumeJob());
   auto set_volume_command_proto = GenerateSetVolumeCommandProto(
       base::TimeTicks::Now() - test_start_time_, kVolume);
-  EXPECT_FALSE(
-      job->Init(base::TimeTicks::Now(), set_volume_command_proto, nullptr));
+  EXPECT_FALSE(job->Init(base::TimeTicks::Now(), set_volume_command_proto,
+                         em::SignedData()));
   EXPECT_EQ(RemoteCommandJob::INVALID, job->status());
 }
 

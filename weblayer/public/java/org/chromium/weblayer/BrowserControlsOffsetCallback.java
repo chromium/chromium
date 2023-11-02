@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@ package org.chromium.weblayer;
  *
  * @since 88
  */
-public abstract class BrowserControlsOffsetCallback {
+abstract class BrowserControlsOffsetCallback {
     /**
      * Called when the vertical location of the top view changes. The value varies from 0
      * (completely shown) to -(height - minHeight), where height is the preferred height of the view

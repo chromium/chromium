@@ -1,14 +1,15 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_CALLBACK_INTERFACE_BASE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_CALLBACK_INTERFACE_BASE_H_
 
+#include "third_party/blink/public/common/scheduler/task_attribution_id.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -56,7 +57,7 @@ class PLATFORM_EXPORT CallbackInterfaceBase
   // Returns the ScriptState of the relevant realm of the callback object.
   //
   // NOTE: This function must be used only when it's pretty sure that the
-  // callcack object is the same origin-domain. Otherwise,
+  // callback object is the same origin-domain. Otherwise,
   // |CallbackRelevantScriptStateOrReportError| or
   // |CallbackRelevantScriptStateOrThrowException| must be used instead.
   ScriptState* CallbackRelevantScriptState() {
@@ -81,6 +82,10 @@ class PLATFORM_EXPORT CallbackInterfaceBase
   ScriptState* IncumbentScriptState() { return incumbent_script_state_; }
 
   DOMWrapperWorld& GetWorld() const { return incumbent_script_state_->World(); }
+
+  absl::optional<scheduler::TaskAttributionId> GetParentTaskId() const {
+    return absl::nullopt;
+  }
 
  protected:
   explicit CallbackInterfaceBase(v8::Local<v8::Object> callback_object,

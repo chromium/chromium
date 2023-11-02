@@ -173,7 +173,10 @@ static void compute_allocation_table(CELTMode *mode)
    mode->nbAllocVectors = BITALLOC_SIZE;
    allocVectors = opus_alloc(sizeof(unsigned char)*(BITALLOC_SIZE*mode->nbEBands));
    if (allocVectors==NULL)
+   {
+      mode->allocVectors = NULL;
       return;
+   }
 
    /* Check for standard mode */
    if (mode->Fs == 400*(opus_int32)mode->shortMdctSize)

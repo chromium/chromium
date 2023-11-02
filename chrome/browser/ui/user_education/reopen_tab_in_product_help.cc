@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,10 +13,10 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/user_education/feature_promo_controller.h"
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
+#include "components/user_education/common/feature_promo_controller.h"
 
 ReopenTabInProductHelp::ReopenTabInProductHelp(Profile* profile,
                                                const base::TickClock* clock)
@@ -67,12 +67,7 @@ void ReopenTabInProductHelp::OnShowHelp() {
   if (!browser)
     return;
 
-  auto* feature_promo_controller =
-      browser->window()->GetFeaturePromoController();
-  if (!feature_promo_controller)
-    return;
-
-  feature_promo_controller->MaybeShowPromo(
+  browser->window()->MaybeShowFeaturePromo(
       feature_engagement::kIPHReopenTabFeature);
 }
 

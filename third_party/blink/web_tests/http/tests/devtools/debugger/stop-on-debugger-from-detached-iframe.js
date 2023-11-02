@@ -16,6 +16,7 @@
     w.eval('debugger;window');
   `;
 
+  ProtocolClient.test.suppressRequestErrors = true;
   SourcesTestRunner.runDebuggerTestSuite([function (next) {
     SourcesTestRunner.waitUntilPaused(paused);
     TestRunner.evaluateInPage(script);

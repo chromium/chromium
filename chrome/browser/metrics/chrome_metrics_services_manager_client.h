@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -26,9 +27,13 @@ class MetricsStateManager;
 // Used only for testing.
 namespace internal {
 // TODO(crbug.com/1068796): Replace kMetricsReportingFeature with a better name.
-extern const base::Feature kMetricsReportingFeature;
-}
-}
+BASE_DECLARE_FEATURE(kMetricsReportingFeature);
+#if BUILDFLAG(IS_ANDROID)
+BASE_DECLARE_FEATURE(kPostFREFixMetricsReportingFeature);
+#endif  // BUILDFLAG(IS_ANDROID)
+extern const char kRateParamName[];
+}  // namespace internal
+}  // namespace metrics
 
 namespace version_info {
 enum class Channel;
@@ -48,16 +53,6 @@ class ChromeMetricsServicesManagerClient
   ~ChromeMetricsServicesManagerClient() override;
 
   metrics::MetricsStateManager* GetMetricsStateManagerForTesting();
-
-  // Unconditionally attempts to create a field trial to control client side
-  // metrics/crash sampling to use as a fallback when one hasn't been
-  // provided. This is expected to occur on first-run on platforms that don't
-  // have first-run variations support. This should only be called when there is
-  // no existing field trial controlling the sampling feature, and on the
-  // correct platform. |channel| will affect the sampling rates that are
-  // applied. Stable will be sampled at 10%, other channels at 99%.
-  static void CreateFallbackSamplingTrial(version_info::Channel channel,
-                                          base::FeatureList* feature_list);
 
   // Determines if this client is eligible to send metrics. If they are, and
   // there was user consent, then metrics and crashes would be reported.
@@ -93,10 +88,10 @@ class ChromeMetricsServicesManagerClient
   bool IsMetricsReportingEnabled() override;
   bool IsMetricsConsentGiven() override;
   bool IsOffTheRecordSessionActive() override;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On Windows, the client controls whether Crashpad can upload crash reports.
   void UpdateRunningServices(bool may_record, bool may_upload) override;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   // MetricsStateManager which is passed as a parameter to service constructors.
   std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager_;
@@ -109,7 +104,7 @@ class ChromeMetricsServicesManagerClient
   THREAD_CHECKER(thread_checker_);
 
   // Weak pointer to the local state prefs store.
-  PrefService* const local_state_;
+  const raw_ptr<PrefService> local_state_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   base::CallbackListSubscription reporting_setting_subscription_;

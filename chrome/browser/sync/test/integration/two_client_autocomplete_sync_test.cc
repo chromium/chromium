@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,6 @@ namespace {
 using autofill::AutofillKey;
 using autofill_helper::AddKeys;
 using autofill_helper::GetAllKeys;
-using autofill_helper::KeysMatch;
 using autofill_helper::RemoveKey;
 
 class TwoClientAutocompleteSyncTest : public SyncTest {
@@ -25,7 +24,7 @@ class TwoClientAutocompleteSyncTest : public SyncTest {
   TwoClientAutocompleteSyncTest& operator=(
       const TwoClientAutocompleteSyncTest&) = delete;
 
-  ~TwoClientAutocompleteSyncTest() override {}
+  ~TwoClientAutocompleteSyncTest() override = default;
 
   bool TestUsesSelfNotifications() override { return false; }
 };

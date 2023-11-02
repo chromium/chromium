@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,11 +21,9 @@ class ArcTermsOfServiceScreen : public BaseScreen,
   enum class Result {
     ACCEPTED,
     ACCEPTED_DEMO_ONLINE,
-    ACCEPTED_DEMO_OFFLINE,
     BACK,
     NOT_APPLICABLE,
     NOT_APPLICABLE_DEMO_ONLINE,
-    NOT_APPLICABLE_DEMO_OFFLINE,
     NOT_APPLICABLE_CONSOLIDATED_CONSENT_ARC_ENABLED,
   };
 
@@ -75,10 +73,10 @@ class ArcTermsOfServiceScreen : public BaseScreen,
 
  protected:
   // BaseScreen:
-  bool MaybeSkip(WizardContext* context) override;
+  bool MaybeSkip(WizardContext& context) override;
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserAction(const std::string& action_id) override;
+  void OnUserActionDeprecated(const std::string& action_id) override;
 
   ScreenExitCallback* exit_callback() { return &exit_callback_; }
 

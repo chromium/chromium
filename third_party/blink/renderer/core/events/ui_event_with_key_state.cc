@@ -76,7 +76,7 @@ void UIEventWithKeyState::DidCreateEventInIsolatedWorld(bool ctrl_key,
                                                         bool shift_key,
                                                         bool alt_key,
                                                         bool meta_key) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   const bool new_tab_modifier_set = meta_key;
 #else
   const bool new_tab_modifier_set = ctrl_key;
@@ -121,7 +121,7 @@ bool UIEventWithKeyState::getModifierState(const String& key_identifier) const {
       {"Meta", WebInputEvent::kMetaKey},
       {"AltGraph", WebInputEvent::kAltGrKey},
       {"Accel",
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
        WebInputEvent::kMetaKey
 #else
        WebInputEvent::kControlKey

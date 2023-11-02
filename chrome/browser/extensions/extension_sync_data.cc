@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/extension_service.h"
-#include "chrome/common/extensions/manifest_handlers/linked_app_icons.h"
 #include "components/crx_file/id_util.h"
 #include "components/sync/model/sync_data.h"
 #include "components/sync/protocol/app_specifics.pb.h"
@@ -110,26 +109,12 @@ ExtensionSyncData::ExtensionSyncData(const Extension& extension,
       disable_reasons_(disable_reasons),
       incognito_enabled_(incognito_enabled),
       remote_install_(remote_install),
-      version_(extension.from_bookmark() ? base::Version("0")
-                                         : extension.version()),
+      version_(extension.version()),
       update_url_(update_url),
       name_(extension.non_localized_name()),
       app_launch_ordinal_(app_launch_ordinal),
       page_ordinal_(page_ordinal),
-      launch_type_(launch_type) {
-  if (is_app_ && extension.from_bookmark()) {
-    // TODO(crbug/1065748): remove this dead code.
-    NOTREACHED();
-    extensions::LinkedAppIcons icons =
-        LinkedAppIcons::GetLinkedAppIcons(&extension);
-    for (const auto& icon : icons.icons) {
-      LinkedAppIconInfo linked_icon;
-      linked_icon.url = icon.url;
-      linked_icon.size = icon.size;
-      linked_icons_.push_back(linked_icon);
-    }
-  }
-}
+      launch_type_(launch_type) {}
 
 ExtensionSyncData::ExtensionSyncData(const ExtensionSyncData& other) = default;
 

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,13 +6,11 @@
 
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/common/pref_names.h"
-#include "components/app_restore/features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
-namespace ash {
-namespace full_restore {
+namespace ash::full_restore {
 
 // Prefs to define whether the features are enabled by policy.
 const char kRestoreAppsEnabled[] = "settings.restore_apps_enabled";
@@ -25,9 +23,6 @@ const char kRestoreAppsAndPagesPrefName[] = "settings.restore_apps_and_pages";
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kRestoreAppsEnabled, true);
   registry->RegisterBooleanPref(kGhostWindowEnabled, true);
-
-  if (!::full_restore::features::IsFullRestoreEnabled())
-    return;
 
   registry->RegisterIntegerPref(
       kRestoreAppsAndPagesPrefName,
@@ -79,7 +74,7 @@ void UpdateRestorePrefIfNecessary(PrefService* prefs) {
 
   SessionStartupPref session_startup_pref =
       SessionStartupPref::GetStartupPref(prefs);
-  if (session_startup_pref.type == SessionStartupPref::LAST) {
+  if (session_startup_pref.ShouldRestoreLastSession()) {
     prefs->SetInteger(kRestoreAppsAndPagesPrefName,
                       static_cast<int>(RestoreOption::kAlways));
   } else {
@@ -88,5 +83,4 @@ void UpdateRestorePrefIfNecessary(PrefService* prefs) {
   }
 }
 
-}  // namespace full_restore
-}  // namespace ash
+}  // namespace ash::full_restore

@@ -1,10 +1,12 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/events/platform/x11/x11_event_watcher_glib.h"
 
 #include <glib.h>
+
+#include "base/memory/raw_ptr.h"
 
 namespace ui {
 
@@ -13,8 +15,8 @@ namespace {
 struct GLibX11Source : public GSource {
   // Note: The GLibX11Source is created and destroyed by GLib. So its
   // constructor/destructor may or may not get called.
-  x11::Connection* connection;
-  GPollFD* poll_fd;
+  raw_ptr<x11::Connection> connection;
+  raw_ptr<GPollFD> poll_fd;
 };
 
 gboolean XSourcePrepare(GSource* source, gint* timeout_ms) {
@@ -27,7 +29,7 @@ gboolean XSourcePrepare(GSource* source, gint* timeout_ms) {
   //      requests.
   //   2. A request was made after XSourceDispatch() when running tasks from
   //      the task queue.
-  auto* connection = static_cast<GLibX11Source*>(source)->connection;
+  auto* connection = static_cast<GLibX11Source*>(source)->connection.get();
   connection->Flush();
 
   // Read a pre-buffered response if available to prevent a deadlock where we
@@ -51,7 +53,7 @@ gboolean XSourceCheck(GSource* source) {
 gboolean XSourceDispatch(GSource* source,
                          GSourceFunc unused_func,
                          gpointer data) {
-  auto* connection = static_cast<GLibX11Source*>(source)->connection;
+  auto* connection = static_cast<GLibX11Source*>(source)->connection.get();
   connection->Dispatch();
 
   // Flushing here is not strictly required, but when this function returns,
@@ -110,7 +112,11 @@ void X11EventWatcherGlib::StopWatching() {
     return;
 
   g_source_destroy(x_source_);
-  g_source_unref(x_source_);
+  // `g_source_unref` decreases the reference count on `x_source_`. The
+  // underlying memory is freed if the reference count goes to zero. We use
+  // ExtractAsDangling() here to avoid holding a briefly dangling ptr in case
+  // the memory is freed.
+  g_source_unref(x_source_.ExtractAsDangling());
   started_ = false;
 }
 

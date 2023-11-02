@@ -3,10 +3,14 @@
     margin: 0;
   }
 </style>
-<img src="images/blue96x96.png" />
+<img src="/images/blue96x96.png" />
 <script>
   new PerformanceObserver(e => {
-    const entries = e.getEntries();
+    // We only care about entry with url, i.e. for images, not any spurrious
+    // text entry.
+    const entries = e.getEntries().filter(e => e.url != '');
+    if (entries.length === 0)
+      return;
     const entry = entries[entries.length - 1];
     window.parent.postMessage({
       startTime: entry.startTime, timeOrigin: performance.timeOrigin

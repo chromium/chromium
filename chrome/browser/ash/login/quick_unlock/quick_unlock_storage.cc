@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/login_types.h"
 #include "chrome/browser/ash/login/quick_unlock/auth_token.h"
 #include "chrome/browser/ash/login/quick_unlock/fingerprint_storage.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_storage_prefs.h"
@@ -56,20 +57,24 @@ base::Time QuickUnlockStorage::TimeOfNextStrongAuth() const {
   return last_strong_auth_ + GetStrongAuthTimeout(profile_->GetPrefs());
 }
 
-bool QuickUnlockStorage::IsFingerprintAuthenticationAvailable() const {
-  return HasStrongAuth() && fingerprint_storage_->IsFingerprintAvailable();
+bool QuickUnlockStorage::IsFingerprintAuthenticationAvailable(
+    Purpose purpose) const {
+  return HasStrongAuth() &&
+         fingerprint_storage_->IsFingerprintAvailable(purpose);
 }
 
-bool QuickUnlockStorage::IsPinAuthenticationAvailable() const {
-  return HasStrongAuth() && pin_storage_prefs_->IsPinAuthenticationAvailable();
+bool QuickUnlockStorage::IsPinAuthenticationAvailable(Purpose purpose) const {
+  return HasStrongAuth() &&
+         pin_storage_prefs_->IsPinAuthenticationAvailable(purpose);
 }
 
-bool QuickUnlockStorage::TryAuthenticatePin(const Key& key) {
-  return HasStrongAuth() && pin_storage_prefs()->TryAuthenticatePin(key);
+bool QuickUnlockStorage::TryAuthenticatePin(const Key& key, Purpose purpose) {
+  return HasStrongAuth() &&
+         pin_storage_prefs()->TryAuthenticatePin(key, purpose);
 }
 
 std::string QuickUnlockStorage::CreateAuthToken(
-    const chromeos::UserContext& user_context) {
+    const UserContext& user_context) {
   auth_token_ = std::make_unique<AuthToken>(user_context);
   DCHECK(auth_token_->Identifier().has_value());
   return *auth_token_->Identifier();
@@ -83,9 +88,50 @@ AuthToken* QuickUnlockStorage::GetAuthToken() {
 
 const UserContext* QuickUnlockStorage::GetUserContext(
     const std::string& auth_token) {
-  if (GetAuthToken() && GetAuthToken()->Identifier() != auth_token)
+  if (!auth_token_ || auth_token_->Identifier() != auth_token)
     return nullptr;
+
   return auth_token_->user_context();
+}
+
+void QuickUnlockStorage::ReplaceUserContext(
+    const std::string& auth_token,
+    std::unique_ptr<UserContext> user_context) {
+  if (!auth_token_ || auth_token_->Identifier() != auth_token) {
+    // See the comment in `AuthToken::ReplaceUserContext` for a situation in
+    // which this might happen.
+    LOG(WARNING)
+        << "Replacement user context is ignored because auth token is gone";
+    return;
+  }
+
+  auth_token_->ReplaceUserContext(std::move(user_context));
+}
+
+FingerprintState QuickUnlockStorage::GetFingerprintState(Purpose purpose) {
+  // Fingerprint is not registered for this account.
+  if (!fingerprint_storage_->HasRecord())
+    return FingerprintState::UNAVAILABLE;
+
+  // This should not happen, but could in theory (see
+  // ExceedAttemptsAndBiodRestart test) in the following scenario:
+  // -fingerprint is available, user fails to authenticate multiple times
+  // -biod restarts and gives a different (although positive) number of records
+  // The change in the number of records would trigger a fingerprint state
+  // update for the primary user.
+  if (fingerprint_storage_->ExceededUnlockAttempts())
+    return FingerprintState::DISABLED_FROM_ATTEMPTS;
+
+  // It has been too long since the last authentication.
+  if (!HasStrongAuth())
+    return FingerprintState::DISABLED_FROM_TIMEOUT;
+
+  // Auth is available.
+  if (IsFingerprintAuthenticationAvailable(purpose))
+    return FingerprintState::AVAILABLE_DEFAULT;
+
+  // Default to unavailabe.
+  return FingerprintState::UNAVAILABLE;
 }
 
 void QuickUnlockStorage::Shutdown() {

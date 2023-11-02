@@ -1,4 +1,4 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2022 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -14,10 +14,14 @@ cargo_crate("lib") {
   visibility = [ "//third_party/rust/*" ]
   crate_root = "crate/src/lib.rs"
 
-  # Unit tests skipped. Generate with --with-tests to include them
-  skip_unit_tests = true
+  # Unit tests skipped. Generate with --with-tests to include them.
+  build_native_rust_unit_tests = false
   sources = [ "crate/src/lib.rs" ]
   edition = "2018"
+  cargo_pkg_version = "1.0.5"
+  cargo_pkg_authors = "David Tolnay <dtolnay@gmail.com>"
+  cargo_pkg_name = "link-cplusplus"
+  cargo_pkg_description = "Link libstdc++ or libc++ automatically or manually"
   build_root = "crate/build.rs"
   build_sources = [ "crate/build.rs" ]
 }

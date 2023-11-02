@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,8 +21,7 @@ safe_browsing_private::ReferrerChainEntry ReferrerToReferrerChainEntry(
   // Add all referrer chain entry fields to the entry.
   entry.url = referrer.url();
   if (referrer.has_main_frame_url()) {
-    entry.main_frame_url =
-        std::make_unique<std::string>(referrer.main_frame_url());
+    entry.main_frame_url = referrer.main_frame_url();
   }
   // This url type value is deprecated and should not be used.
   DCHECK_NE(
@@ -53,31 +52,28 @@ safe_browsing_private::ReferrerChainEntry ReferrerToReferrerChainEntry(
       NOTREACHED();
   }
   if (referrer.ip_addresses_size() > 0) {
-    entry.ip_addresses = std::make_unique<std::vector<std::string>>();
+    entry.ip_addresses.emplace();
     entry.ip_addresses->reserve(referrer.ip_addresses_size());
     for (const std::string& ip_address : referrer.ip_addresses())
       entry.ip_addresses->emplace_back(ip_address);
   }
   if (referrer.has_referrer_url()) {
-    entry.referrer_url = std::make_unique<std::string>(referrer.referrer_url());
+    entry.referrer_url = referrer.referrer_url();
   }
   if (referrer.has_referrer_main_frame_url()) {
-    entry.referrer_main_frame_url =
-        std::make_unique<std::string>(referrer.referrer_main_frame_url());
+    entry.referrer_main_frame_url = referrer.referrer_main_frame_url();
   }
   if (referrer.has_is_retargeting())
-    entry.is_retargeting = std::make_unique<bool>(referrer.is_retargeting());
+    entry.is_retargeting = referrer.is_retargeting();
   if (referrer.has_navigation_time_msec()) {
-    entry.navigation_time_ms =
-        std::make_unique<double>(referrer.navigation_time_msec());
+    entry.navigation_time_ms = referrer.navigation_time_msec();
   }
   if (referrer.server_redirect_chain_size() > 0) {
-    entry.server_redirect_chain =
-        std::make_unique<std::vector<safe_browsing_private::ServerRedirect>>();
+    entry.server_redirect_chain.emplace();
     entry.server_redirect_chain->reserve(referrer.server_redirect_chain_size());
     for (const auto& server_redirect : referrer.server_redirect_chain()) {
       safe_browsing_private::ServerRedirect result;
-      result.url = std::make_unique<std::string>(server_redirect.url());
+      result.url = server_redirect.url();
       entry.server_redirect_chain->emplace_back(std::move(result));
     }
   }
@@ -105,16 +101,15 @@ safe_browsing_private::ReferrerChainEntry ReferrerToReferrerChainEntry(
     }
   }
   if (referrer.has_maybe_launched_by_external_application()) {
-    entry.maybe_launched_by_external_app = std::make_unique<bool>(
-        referrer.maybe_launched_by_external_application());
+    entry.maybe_launched_by_external_app =
+        referrer.maybe_launched_by_external_application();
   }
   if (referrer.has_is_subframe_url_removed()) {
-    entry.is_subframe_url_removed =
-        std::make_unique<bool>(referrer.is_subframe_url_removed());
+    entry.is_subframe_url_removed = referrer.is_subframe_url_removed();
   }
   if (referrer.has_is_subframe_referrer_url_removed()) {
     entry.is_subframe_referrer_url_removed =
-        std::make_unique<bool>(referrer.is_subframe_referrer_url_removed());
+        referrer.is_subframe_referrer_url_removed();
   }
   entry.is_url_removed_by_policy = referrer.is_url_removed_by_policy();
 

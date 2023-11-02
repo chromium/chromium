@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,6 +27,10 @@ DropTargetEvent::DropTargetEvent(const DropTargetEvent& other)
     : LocatedEvent(other),
       data_(other.data_),
       source_operations_(other.source_operations_) {}
+
+std::unique_ptr<Event> DropTargetEvent::Clone() const {
+  return std::make_unique<DropTargetEvent>(*this);
+}
 
 }  // namespace ui
 

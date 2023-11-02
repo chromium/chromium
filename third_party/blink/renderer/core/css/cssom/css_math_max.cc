@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@ namespace blink {
 
 CSSMathMax* CSSMathMax::Create(const HeapVector<Member<V8CSSNumberish>>& args,
                                ExceptionState& exception_state) {
-  if (args.IsEmpty()) {
+  if (args.empty()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
                                       "Arguments can't be empty");
     return nullptr;
@@ -72,8 +72,8 @@ void CSSMathMax::BuildCSSText(Nested, ParenLess, StringBuilder& result) const {
 }
 
 CSSMathExpressionNode* CSSMathMax::ToCalcExpressionNode() const {
-  CSSMathExpressionVariadicOperation::Operands operands;
-  operands.ReserveCapacity(NumericValues().size());
+  CSSMathExpressionOperation::Operands operands;
+  operands.reserve(NumericValues().size());
   for (const auto& value : NumericValues()) {
     CSSMathExpressionNode* operand = value->ToCalcExpressionNode();
     if (!operand) {
@@ -90,8 +90,8 @@ CSSMathExpressionNode* CSSMathMax::ToCalcExpressionNode() const {
     NOTREACHED();
     return nullptr;
   }
-  return CSSMathExpressionVariadicOperation::Create(std::move(operands),
-                                                    CSSMathOperator::kMax);
+  return CSSMathExpressionOperation::CreateComparisonFunction(
+      std::move(operands), CSSMathOperator::kMax);
 }
 
 }  // namespace blink

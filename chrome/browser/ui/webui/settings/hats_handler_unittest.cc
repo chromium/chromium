@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,9 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
@@ -19,6 +21,7 @@
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
+#include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -37,11 +40,11 @@ class HatsHandlerTest : public ChromeRenderViewHostTestHarness {
     base::test::ScopedFeatureList::FeatureAndParams privacy_sandbox{
         features::kHappinessTrackingSurveysForDesktopPrivacySandbox,
         {{"settings-time", "10s"}}};
-    base::test::ScopedFeatureList::FeatureAndParams privacy_review{
-        features::kHappinessTrackingSurveysForDesktopPrivacyReview,
+    base::test::ScopedFeatureList::FeatureAndParams privacy_guide{
+        features::kHappinessTrackingSurveysForDesktopPrivacyGuide,
         {{"settings-time", "15s"}}};
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {settings_privacy, privacy_sandbox, privacy_review}, {});
+        {settings_privacy, privacy_sandbox, privacy_guide}, {});
   }
 
   void SetUp() override {
@@ -77,8 +80,8 @@ class HatsHandlerTest : public ChromeRenderViewHostTestHarness {
 
   content::TestWebUI* web_ui() { return web_ui_.get(); }
   HatsHandler* handler() { return handler_.get(); }
-  MockHatsService* mock_hats_service_;
-  MockTrustSafetySentimentService* mock_sentiment_service_;
+  raw_ptr<MockHatsService> mock_hats_service_;
+  raw_ptr<MockTrustSafetySentimentService> mock_sentiment_service_;
 
  protected:
   // This should only be accessed in the test constructor, to avoid race
@@ -91,7 +94,8 @@ class HatsHandlerTest : public ChromeRenderViewHostTestHarness {
 };
 
 TEST_F(HatsHandlerTest, PrivacySettingsHats) {
-  profile()->GetPrefs()->SetBoolean(prefs::kPrivacySandboxApisEnabled, false);
+  PrivacySandboxSettingsFactory::GetForProfile(profile())
+      ->SetPrivacySandboxEnabled(false);
   profile()->GetPrefs()->SetInteger(
       prefs::kCookieControlsMode,
       static_cast<int>(content_settings::CookieControlsMode::kBlockThirdParty));
@@ -108,28 +112,25 @@ TEST_F(HatsHandlerTest, PrivacySettingsHats) {
   base::Value args(base::Value::Type::LIST);
   args.Append(
       static_cast<int>(HatsHandler::TrustSafetyInteraction::USED_PRIVACY_CARD));
-  handler()->HandleTrustSafetyInteractionOccurred(
-      &base::Value::AsListValue(args));
+  handler()->HandleTrustSafetyInteractionOccurred(args.GetList());
   task_environment()->RunUntilIdle();
 
   args.GetList()[0] = base::Value(
       static_cast<int>(HatsHandler::TrustSafetyInteraction::RAN_SAFETY_CHECK));
-  handler()->HandleTrustSafetyInteractionOccurred(
-      &base::Value::AsListValue(args));
+  handler()->HandleTrustSafetyInteractionOccurred(args.GetList());
   task_environment()->RunUntilIdle();
 }
 
-TEST_F(HatsHandlerTest, PrivacyReviewHats) {
-  // Check that completing a privacy review triggers a privacy review hats.
+TEST_F(HatsHandlerTest, PrivacyGuideHats) {
+  // Check that completing a privacy guide triggers a privacy guide hats.
   EXPECT_CALL(*mock_hats_service_, LaunchDelayedSurveyForWebContents(
-                                       kHatsSurveyTriggerPrivacyReview,
+                                       kHatsSurveyTriggerPrivacyGuide,
                                        web_contents(), 15000, _, _, true))
       .Times(1);
   base::Value args(base::Value::Type::LIST);
   args.Append(static_cast<int>(
       HatsHandler::TrustSafetyInteraction::COMPLETED_PRIVACY_GUIDE));
-  handler()->HandleTrustSafetyInteractionOccurred(
-      &base::Value::AsListValue(args));
+  handler()->HandleTrustSafetyInteractionOccurred(args.GetList());
   task_environment()->RunUntilIdle();
 }
 
@@ -145,7 +146,8 @@ class HatsHandlerNoSandboxTest : public HatsHandlerTest {
 };
 
 TEST_F(HatsHandlerNoSandboxTest, PrivacySettings) {
-  profile()->GetPrefs()->SetBoolean(prefs::kPrivacySandboxApisEnabled, false);
+  PrivacySandboxSettingsFactory::GetForProfile(profile())
+      ->SetPrivacySandboxEnabled(false);
   profile()->GetPrefs()->SetInteger(
       prefs::kCookieControlsMode,
       static_cast<int>(content_settings::CookieControlsMode::kBlockThirdParty));
@@ -162,15 +164,15 @@ TEST_F(HatsHandlerNoSandboxTest, PrivacySettings) {
   base::Value args(base::Value::Type::LIST);
   args.Append(
       static_cast<int>(HatsHandler::TrustSafetyInteraction::USED_PRIVACY_CARD));
-  handler()->HandleTrustSafetyInteractionOccurred(
-      &base::Value::AsListValue(args));
+  handler()->HandleTrustSafetyInteractionOccurred(args.GetList());
   task_environment()->RunUntilIdle();
 }
 
 TEST_F(HatsHandlerTest, PrivacySandboxHats) {
   // Check that the handler correctly forwards the survey request to the
   // HaTS service and also includes the appropriate product specific data.
-  profile()->GetPrefs()->SetBoolean(prefs::kPrivacySandboxApisEnabled, false);
+  PrivacySandboxSettingsFactory::GetForProfile(profile())
+      ->SetPrivacySandboxEnabled(false);
   profile()->GetPrefs()->SetInteger(
       prefs::kCookieControlsMode,
       static_cast<int>(content_settings::CookieControlsMode::kBlockThirdParty));
@@ -183,8 +185,7 @@ TEST_F(HatsHandlerTest, PrivacySandboxHats) {
   base::Value args(base::Value::Type::LIST);
   args.Append(static_cast<int>(
       HatsHandler::TrustSafetyInteraction::OPENED_PRIVACY_SANDBOX));
-  handler()->HandleTrustSafetyInteractionOccurred(
-      &base::Value::AsListValue(args));
+  handler()->HandleTrustSafetyInteractionOccurred(args.GetList());
   task_environment()->RunUntilIdle();
 }
 
@@ -197,14 +198,12 @@ TEST_F(HatsHandlerTest, TrustSafetySentimentInteractions) {
   base::Value args(base::Value::Type::LIST);
   args.Append(
       static_cast<int>(HatsHandler::TrustSafetyInteraction::USED_PRIVACY_CARD));
-  handler()->HandleTrustSafetyInteractionOccurred(
-      &base::Value::AsListValue(args));
+  handler()->HandleTrustSafetyInteractionOccurred(args.GetList());
 
   EXPECT_CALL(*mock_sentiment_service_, RanSafetyCheck()).Times(1);
   args.GetList()[0] = base::Value(
       static_cast<int>(HatsHandler::TrustSafetyInteraction::RAN_SAFETY_CHECK));
-  handler()->HandleTrustSafetyInteractionOccurred(
-      &base::Value::AsListValue(args));
+  handler()->HandleTrustSafetyInteractionOccurred(args.GetList());
 }
 
 TEST_F(HatsHandlerNoSandboxTest, TrustSafetySentimentInteractions) {
@@ -218,14 +217,12 @@ TEST_F(HatsHandlerNoSandboxTest, TrustSafetySentimentInteractions) {
   args.Append(
       static_cast<int>(HatsHandler::TrustSafetyInteraction::RAN_SAFETY_CHECK));
   profile()->GetPrefs()->SetBoolean(prefs::kPrivacySandboxPageViewed, true);
-  handler()->HandleTrustSafetyInteractionOccurred(
-      &base::Value::AsListValue(args));
+  handler()->HandleTrustSafetyInteractionOccurred(args.GetList());
 
   EXPECT_CALL(*mock_sentiment_service_, OpenedPasswordManager(web_contents()));
   args.GetList()[0] = base::Value(static_cast<int>(
       HatsHandler::TrustSafetyInteraction::OPENED_PASSWORD_MANAGER));
-  handler()->HandleTrustSafetyInteractionOccurred(
-      &base::Value::AsListValue(args));
+  handler()->HandleTrustSafetyInteractionOccurred(args.GetList());
 }
 
 }  // namespace settings

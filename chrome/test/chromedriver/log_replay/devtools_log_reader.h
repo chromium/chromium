@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #ifndef CHROME_TEST_CHROMEDRIVER_LOG_REPLAY_DEVTOOLS_LOG_READER_H_
@@ -53,6 +53,7 @@ class LogEntry {
   std::string command_name;
   std::string payload;
   int id;
+  std::string session_id;
   std::string socket_id;
   bool error;
 };

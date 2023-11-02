@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -58,7 +58,7 @@ std::string GenerateChildName(const std::string& base_name, int64_t child_id) {
 // Returns NetLog parameters for the creation of a MemEntryImpl. A separate
 // function is needed because child entries don't store their key().
 base::Value NetLogEntryCreationParams(const MemEntryImpl* entry) {
-  base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value::Dict dict;
   std::string key;
   switch (entry->type()) {
     case MemEntryImpl::EntryType::kParent:
@@ -68,9 +68,9 @@ base::Value NetLogEntryCreationParams(const MemEntryImpl* entry) {
       key = GenerateChildName(entry->parent()->key(), entry->child_id());
       break;
   }
-  dict.SetStringKey("key", key);
-  dict.SetBoolKey("created", true);
-  return dict;
+  dict.Set("key", key);
+  dict.Set("created", true);
+  return base::Value(std::move(dict));
 }
 
 }  // namespace
@@ -289,14 +289,11 @@ MemEntryImpl::MemEntryImpl(base::WeakPtr<MemBackendImpl> backend,
                            MemEntryImpl* parent,
                            net::NetLog* net_log)
     : key_(key),
-      ref_count_(0),
       child_id_(child_id),
-      child_first_pos_(0),
       parent_(parent),
       last_modified_(MemBackendImpl::Now(backend)),
       last_used_(last_modified_),
-      backend_(backend),
-      doomed_(false) {
+      backend_(backend) {
   backend_->OnEntryInserted(this);
   net_log_ = net::NetLogWithSource::Make(
       net_log, net::NetLogSourceType::MEMORY_CACHE_ENTRY);

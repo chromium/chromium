@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -129,14 +129,7 @@ class BatteryMetricsBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<MockBatteryMonitor> mock_battery_monitor_;
 };
 
-#if defined(OS_WIN)
-#define DISABLED_ON_WIN(name) DISABLED##name
-#else
-#define DISABLED_ON_WIN(name) name
-#endif
-
-IN_PROC_BROWSER_TEST_F(BatteryMetricsBrowserTest,
-                       DISABLED_ON_WIN(BatteryDropUMA)) {
+IN_PROC_BROWSER_TEST_F(BatteryMetricsBrowserTest, BatteryDropUMA) {
   // Verify that drops in battery level are recorded, and drops by less than 1%
   // are aggregated together until there is a full percentage drop.
   device::mojom::BatteryStatus status;

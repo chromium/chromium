@@ -1,0 +1,274 @@
+This is a testharness.js-based test.
+Found 270 tests; 264 PASS, 6 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS textarea: select()
+PASS textarea: select() a second time (must not fire select)
+PASS textarea: select() disconnected node
+PASS textarea: select() event queue
+PASS textarea: select() twice in disconnected node (must fire select only once)
+PASS textarea: selectionStart
+PASS textarea: selectionStart a second time (must not fire select)
+PASS textarea: selectionStart disconnected node
+PASS textarea: selectionStart event queue
+PASS textarea: selectionStart twice in disconnected node (must fire select only once)
+PASS textarea: selectionEnd
+PASS textarea: selectionEnd a second time (must not fire select)
+PASS textarea: selectionEnd disconnected node
+PASS textarea: selectionEnd event queue
+PASS textarea: selectionEnd twice in disconnected node (must fire select only once)
+PASS textarea: selectionDirection
+FAIL textarea: selectionDirection a second time (must not fire select) assert_unreached: the select event must not fire the second time Reached unreachable code
+PASS textarea: selectionDirection disconnected node
+PASS textarea: selectionDirection event queue
+PASS textarea: selectionDirection twice in disconnected node (must fire select only once)
+PASS textarea: setSelectionRange()
+PASS textarea: setSelectionRange() a second time (must not fire select)
+PASS textarea: setSelectionRange() disconnected node
+PASS textarea: setSelectionRange() event queue
+PASS textarea: setSelectionRange() twice in disconnected node (must fire select only once)
+PASS textarea: setRangeText()
+PASS textarea: setRangeText() a second time (must not fire select)
+PASS textarea: setRangeText() disconnected node
+PASS textarea: setRangeText() event queue
+PASS textarea: setRangeText() twice in disconnected node (must fire select only once)
+PASS textarea: selectionStart out of range
+PASS textarea: selectionStart out of range a second time (must not fire select)
+PASS textarea: selectionStart out of range disconnected node
+PASS textarea: selectionStart out of range event queue
+PASS textarea: selectionStart out of range twice in disconnected node (must fire select only once)
+PASS textarea: selectionEnd out of range
+PASS textarea: selectionEnd out of range a second time (must not fire select)
+PASS textarea: selectionEnd out of range disconnected node
+PASS textarea: selectionEnd out of range event queue
+PASS textarea: selectionEnd out of range twice in disconnected node (must fire select only once)
+PASS textarea: setSelectionRange out of range
+PASS textarea: setSelectionRange out of range a second time (must not fire select)
+PASS textarea: setSelectionRange out of range disconnected node
+PASS textarea: setSelectionRange out of range event queue
+PASS textarea: setSelectionRange out of range twice in disconnected node (must fire select only once)
+PASS input type text: select()
+PASS input type text: select() a second time (must not fire select)
+PASS input type text: select() disconnected node
+PASS input type text: select() event queue
+PASS input type text: select() twice in disconnected node (must fire select only once)
+PASS input type text: selectionStart
+PASS input type text: selectionStart a second time (must not fire select)
+PASS input type text: selectionStart disconnected node
+PASS input type text: selectionStart event queue
+PASS input type text: selectionStart twice in disconnected node (must fire select only once)
+PASS input type text: selectionEnd
+PASS input type text: selectionEnd a second time (must not fire select)
+PASS input type text: selectionEnd disconnected node
+PASS input type text: selectionEnd event queue
+PASS input type text: selectionEnd twice in disconnected node (must fire select only once)
+PASS input type text: selectionDirection
+FAIL input type text: selectionDirection a second time (must not fire select) assert_unreached: the select event must not fire the second time Reached unreachable code
+PASS input type text: selectionDirection disconnected node
+PASS input type text: selectionDirection event queue
+PASS input type text: selectionDirection twice in disconnected node (must fire select only once)
+PASS input type text: setSelectionRange()
+PASS input type text: setSelectionRange() a second time (must not fire select)
+PASS input type text: setSelectionRange() disconnected node
+PASS input type text: setSelectionRange() event queue
+PASS input type text: setSelectionRange() twice in disconnected node (must fire select only once)
+PASS input type text: setRangeText()
+PASS input type text: setRangeText() a second time (must not fire select)
+PASS input type text: setRangeText() disconnected node
+PASS input type text: setRangeText() event queue
+PASS input type text: setRangeText() twice in disconnected node (must fire select only once)
+PASS input type text: selectionStart out of range
+PASS input type text: selectionStart out of range a second time (must not fire select)
+PASS input type text: selectionStart out of range disconnected node
+PASS input type text: selectionStart out of range event queue
+PASS input type text: selectionStart out of range twice in disconnected node (must fire select only once)
+PASS input type text: selectionEnd out of range
+PASS input type text: selectionEnd out of range a second time (must not fire select)
+PASS input type text: selectionEnd out of range disconnected node
+PASS input type text: selectionEnd out of range event queue
+PASS input type text: selectionEnd out of range twice in disconnected node (must fire select only once)
+PASS input type text: setSelectionRange out of range
+PASS input type text: setSelectionRange out of range a second time (must not fire select)
+PASS input type text: setSelectionRange out of range disconnected node
+PASS input type text: setSelectionRange out of range event queue
+PASS input type text: setSelectionRange out of range twice in disconnected node (must fire select only once)
+PASS input type search: select()
+PASS input type search: select() a second time (must not fire select)
+PASS input type search: select() disconnected node
+PASS input type search: select() event queue
+PASS input type search: select() twice in disconnected node (must fire select only once)
+PASS input type search: selectionStart
+PASS input type search: selectionStart a second time (must not fire select)
+PASS input type search: selectionStart disconnected node
+PASS input type search: selectionStart event queue
+PASS input type search: selectionStart twice in disconnected node (must fire select only once)
+PASS input type search: selectionEnd
+PASS input type search: selectionEnd a second time (must not fire select)
+PASS input type search: selectionEnd disconnected node
+PASS input type search: selectionEnd event queue
+PASS input type search: selectionEnd twice in disconnected node (must fire select only once)
+PASS input type search: selectionDirection
+FAIL input type search: selectionDirection a second time (must not fire select) assert_unreached: the select event must not fire the second time Reached unreachable code
+PASS input type search: selectionDirection disconnected node
+PASS input type search: selectionDirection event queue
+PASS input type search: selectionDirection twice in disconnected node (must fire select only once)
+PASS input type search: setSelectionRange()
+PASS input type search: setSelectionRange() a second time (must not fire select)
+PASS input type search: setSelectionRange() disconnected node
+PASS input type search: setSelectionRange() event queue
+PASS input type search: setSelectionRange() twice in disconnected node (must fire select only once)
+PASS input type search: setRangeText()
+PASS input type search: setRangeText() a second time (must not fire select)
+PASS input type search: setRangeText() disconnected node
+PASS input type search: setRangeText() event queue
+PASS input type search: setRangeText() twice in disconnected node (must fire select only once)
+PASS input type search: selectionStart out of range
+PASS input type search: selectionStart out of range a second time (must not fire select)
+PASS input type search: selectionStart out of range disconnected node
+PASS input type search: selectionStart out of range event queue
+PASS input type search: selectionStart out of range twice in disconnected node (must fire select only once)
+PASS input type search: selectionEnd out of range
+PASS input type search: selectionEnd out of range a second time (must not fire select)
+PASS input type search: selectionEnd out of range disconnected node
+PASS input type search: selectionEnd out of range event queue
+PASS input type search: selectionEnd out of range twice in disconnected node (must fire select only once)
+PASS input type search: setSelectionRange out of range
+PASS input type search: setSelectionRange out of range a second time (must not fire select)
+PASS input type search: setSelectionRange out of range disconnected node
+PASS input type search: setSelectionRange out of range event queue
+PASS input type search: setSelectionRange out of range twice in disconnected node (must fire select only once)
+PASS input type tel: select()
+PASS input type tel: select() a second time (must not fire select)
+PASS input type tel: select() disconnected node
+PASS input type tel: select() event queue
+PASS input type tel: select() twice in disconnected node (must fire select only once)
+PASS input type tel: selectionStart
+PASS input type tel: selectionStart a second time (must not fire select)
+PASS input type tel: selectionStart disconnected node
+PASS input type tel: selectionStart event queue
+PASS input type tel: selectionStart twice in disconnected node (must fire select only once)
+PASS input type tel: selectionEnd
+PASS input type tel: selectionEnd a second time (must not fire select)
+PASS input type tel: selectionEnd disconnected node
+PASS input type tel: selectionEnd event queue
+PASS input type tel: selectionEnd twice in disconnected node (must fire select only once)
+PASS input type tel: selectionDirection
+FAIL input type tel: selectionDirection a second time (must not fire select) assert_unreached: the select event must not fire the second time Reached unreachable code
+PASS input type tel: selectionDirection disconnected node
+PASS input type tel: selectionDirection event queue
+PASS input type tel: selectionDirection twice in disconnected node (must fire select only once)
+PASS input type tel: setSelectionRange()
+PASS input type tel: setSelectionRange() a second time (must not fire select)
+PASS input type tel: setSelectionRange() disconnected node
+PASS input type tel: setSelectionRange() event queue
+PASS input type tel: setSelectionRange() twice in disconnected node (must fire select only once)
+PASS input type tel: setRangeText()
+PASS input type tel: setRangeText() a second time (must not fire select)
+PASS input type tel: setRangeText() disconnected node
+PASS input type tel: setRangeText() event queue
+PASS input type tel: setRangeText() twice in disconnected node (must fire select only once)
+PASS input type tel: selectionStart out of range
+PASS input type tel: selectionStart out of range a second time (must not fire select)
+PASS input type tel: selectionStart out of range disconnected node
+PASS input type tel: selectionStart out of range event queue
+PASS input type tel: selectionStart out of range twice in disconnected node (must fire select only once)
+PASS input type tel: selectionEnd out of range
+PASS input type tel: selectionEnd out of range a second time (must not fire select)
+PASS input type tel: selectionEnd out of range disconnected node
+PASS input type tel: selectionEnd out of range event queue
+PASS input type tel: selectionEnd out of range twice in disconnected node (must fire select only once)
+PASS input type tel: setSelectionRange out of range
+PASS input type tel: setSelectionRange out of range a second time (must not fire select)
+PASS input type tel: setSelectionRange out of range disconnected node
+PASS input type tel: setSelectionRange out of range event queue
+PASS input type tel: setSelectionRange out of range twice in disconnected node (must fire select only once)
+PASS input type url: select()
+PASS input type url: select() a second time (must not fire select)
+PASS input type url: select() disconnected node
+PASS input type url: select() event queue
+PASS input type url: select() twice in disconnected node (must fire select only once)
+PASS input type url: selectionStart
+PASS input type url: selectionStart a second time (must not fire select)
+PASS input type url: selectionStart disconnected node
+PASS input type url: selectionStart event queue
+PASS input type url: selectionStart twice in disconnected node (must fire select only once)
+PASS input type url: selectionEnd
+PASS input type url: selectionEnd a second time (must not fire select)
+PASS input type url: selectionEnd disconnected node
+PASS input type url: selectionEnd event queue
+PASS input type url: selectionEnd twice in disconnected node (must fire select only once)
+PASS input type url: selectionDirection
+FAIL input type url: selectionDirection a second time (must not fire select) assert_unreached: the select event must not fire the second time Reached unreachable code
+PASS input type url: selectionDirection disconnected node
+PASS input type url: selectionDirection event queue
+PASS input type url: selectionDirection twice in disconnected node (must fire select only once)
+PASS input type url: setSelectionRange()
+PASS input type url: setSelectionRange() a second time (must not fire select)
+PASS input type url: setSelectionRange() disconnected node
+PASS input type url: setSelectionRange() event queue
+PASS input type url: setSelectionRange() twice in disconnected node (must fire select only once)
+PASS input type url: setRangeText()
+PASS input type url: setRangeText() a second time (must not fire select)
+PASS input type url: setRangeText() disconnected node
+PASS input type url: setRangeText() event queue
+PASS input type url: setRangeText() twice in disconnected node (must fire select only once)
+PASS input type url: selectionStart out of range
+PASS input type url: selectionStart out of range a second time (must not fire select)
+PASS input type url: selectionStart out of range disconnected node
+PASS input type url: selectionStart out of range event queue
+PASS input type url: selectionStart out of range twice in disconnected node (must fire select only once)
+PASS input type url: selectionEnd out of range
+PASS input type url: selectionEnd out of range a second time (must not fire select)
+PASS input type url: selectionEnd out of range disconnected node
+PASS input type url: selectionEnd out of range event queue
+PASS input type url: selectionEnd out of range twice in disconnected node (must fire select only once)
+PASS input type url: setSelectionRange out of range
+PASS input type url: setSelectionRange out of range a second time (must not fire select)
+PASS input type url: setSelectionRange out of range disconnected node
+PASS input type url: setSelectionRange out of range event queue
+PASS input type url: setSelectionRange out of range twice in disconnected node (must fire select only once)
+PASS input type password: select()
+PASS input type password: select() a second time (must not fire select)
+PASS input type password: select() disconnected node
+PASS input type password: select() event queue
+PASS input type password: select() twice in disconnected node (must fire select only once)
+PASS input type password: selectionStart
+PASS input type password: selectionStart a second time (must not fire select)
+PASS input type password: selectionStart disconnected node
+PASS input type password: selectionStart event queue
+PASS input type password: selectionStart twice in disconnected node (must fire select only once)
+PASS input type password: selectionEnd
+PASS input type password: selectionEnd a second time (must not fire select)
+PASS input type password: selectionEnd disconnected node
+PASS input type password: selectionEnd event queue
+PASS input type password: selectionEnd twice in disconnected node (must fire select only once)
+PASS input type password: selectionDirection
+FAIL input type password: selectionDirection a second time (must not fire select) assert_unreached: the select event must not fire the second time Reached unreachable code
+PASS input type password: selectionDirection disconnected node
+PASS input type password: selectionDirection event queue
+PASS input type password: selectionDirection twice in disconnected node (must fire select only once)
+PASS input type password: setSelectionRange()
+PASS input type password: setSelectionRange() a second time (must not fire select)
+PASS input type password: setSelectionRange() disconnected node
+PASS input type password: setSelectionRange() event queue
+PASS input type password: setSelectionRange() twice in disconnected node (must fire select only once)
+PASS input type password: setRangeText()
+PASS input type password: setRangeText() a second time (must not fire select)
+PASS input type password: setRangeText() disconnected node
+PASS input type password: setRangeText() event queue
+PASS input type password: setRangeText() twice in disconnected node (must fire select only once)
+PASS input type password: selectionStart out of range
+PASS input type password: selectionStart out of range a second time (must not fire select)
+PASS input type password: selectionStart out of range disconnected node
+PASS input type password: selectionStart out of range event queue
+PASS input type password: selectionStart out of range twice in disconnected node (must fire select only once)
+PASS input type password: selectionEnd out of range
+PASS input type password: selectionEnd out of range a second time (must not fire select)
+PASS input type password: selectionEnd out of range disconnected node
+PASS input type password: selectionEnd out of range event queue
+PASS input type password: selectionEnd out of range twice in disconnected node (must fire select only once)
+PASS input type password: setSelectionRange out of range
+PASS input type password: setSelectionRange out of range a second time (must not fire select)
+PASS input type password: setSelectionRange out of range disconnected node
+PASS input type password: setSelectionRange out of range event queue
+PASS input type password: setSelectionRange out of range twice in disconnected node (must fire select only once)
+Harness: the test ran to completion.
+

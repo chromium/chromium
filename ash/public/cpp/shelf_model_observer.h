@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -54,6 +54,9 @@ class ASH_PUBLIC_EXPORT ShelfModelObserver {
   // Invoked after an item that has been dragged off the shelf is dragged back
   // onto the shelf (it is still being dragged).
   virtual void ShelfItemReturnedFromRipOff(int index) {}
+
+  // Invoked when shelf party mode is toggled.
+  virtual void ShelfPartyToggled(bool in_shelf_party) {}
 
  protected:
   virtual ~ShelfModelObserver() {}

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,10 +41,8 @@ bool SetResponseCredential(
     const std::vector<PublicKeyCredentialDescriptor>& allow_list) {
   if (response->credential) {
     if (!allow_list.empty() &&
-        std::none_of(allow_list.cbegin(), allow_list.cend(),
-                     [&response](const auto& credential) {
-                       return credential.id() == response->credential->id();
-                     })) {
+        !base::Contains(allow_list, response->credential->id,
+                        &PublicKeyCredentialDescriptor::id)) {
       return false;
     }
 
@@ -173,7 +171,9 @@ void GetAssertionTask::GetAssertion() {
         device(), request_,
         base::BindOnce(&GetAssertionTask::HandleResponse,
                        weak_factory_.GetWeakPtr(), request_.allow_list),
-        base::BindOnce(&ReadCTAPGetAssertionResponse), StringFixupPredicate);
+        base::BindOnce(&ReadCTAPGetAssertionResponse,
+                       device()->DeviceTransport()),
+        StringFixupPredicate);
     sign_operation_->Start();
     return;
   }
@@ -214,7 +214,9 @@ void GetAssertionTask::GetAssertion() {
         device(), std::move(request),
         base::BindOnce(&GetAssertionTask::HandleResponse,
                        weak_factory_.GetWeakPtr(), request.allow_list),
-        base::BindOnce(&ReadCTAPGetAssertionResponse), StringFixupPredicate);
+        base::BindOnce(&ReadCTAPGetAssertionResponse,
+                       device()->DeviceTransport()),
+        StringFixupPredicate);
     sign_operation_->Start();
     return;
   }
@@ -228,7 +230,8 @@ void GetAssertionTask::GetAssertion() {
           device(), NextSilentRequest(),
           base::BindOnce(&GetAssertionTask::HandleResponseToSilentRequest,
                          weak_factory_.GetWeakPtr()),
-          base::BindOnce(&ReadCTAPGetAssertionResponse),
+          base::BindOnce(&ReadCTAPGetAssertionResponse,
+                         device()->DeviceTransport()),
           /*string_fixup_predicate=*/nullptr);
   sign_operation_->Start();
 }
@@ -269,6 +272,16 @@ void GetAssertionTask::HandleResponse(
   }
 
   if (response_code == CtapDeviceResponseCode::kSuccess) {
+    if (response_data->user_selected && !allow_list.empty()) {
+      // The userSelected signal is only valid if the request had an empty
+      // allowList.
+      FIDO_LOG(DEBUG)
+          << "Assertion response has userSelected for non-empty allowList";
+      std::move(callback_).Run(CtapDeviceResponseCode::kCtap2ErrOther,
+                               absl::nullopt);
+      return;
+    }
+
     if (!SetResponseCredential(&response_data.value(), allow_list)) {
       FIDO_LOG(DEBUG)
           << "Assertion response has invalid credential information";
@@ -332,14 +345,15 @@ void GetAssertionTask::HandleResponseToSilentRequest(
         *response_data->credential;
     request.allow_list = {matching_credential};
     MaybeSetPRFParameters(
-        &request, GetPRFInputForCredential(options_, matching_credential.id()));
+        &request, GetPRFInputForCredential(options_, matching_credential.id));
 
     sign_operation_ = std::make_unique<Ctap2DeviceOperation<
         CtapGetAssertionRequest, AuthenticatorGetAssertionResponse>>(
         device(), std::move(request),
         base::BindOnce(&GetAssertionTask::HandleResponse,
                        weak_factory_.GetWeakPtr(), request.allow_list),
-        base::BindOnce(&ReadCTAPGetAssertionResponse),
+        base::BindOnce(&ReadCTAPGetAssertionResponse,
+                       device()->DeviceTransport()),
         /*string_fixup_predicate=*/nullptr);
     sign_operation_->Start();
     return;
@@ -353,7 +367,8 @@ void GetAssertionTask::HandleResponseToSilentRequest(
         device(), NextSilentRequest(),
         base::BindOnce(&GetAssertionTask::HandleResponseToSilentRequest,
                        weak_factory_.GetWeakPtr()),
-        base::BindOnce(&ReadCTAPGetAssertionResponse),
+        base::BindOnce(&ReadCTAPGetAssertionResponse,
+                       device()->DeviceTransport()),
         /*string_fixup_predicate=*/nullptr);
     sign_operation_->Start();
     return;

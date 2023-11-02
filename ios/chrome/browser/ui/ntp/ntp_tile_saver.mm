@@ -1,20 +1,19 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/ui/ntp/ntp_tile_saver.h"
+#import "ios/chrome/browser/ui/ntp/ntp_tile_saver.h"
 
-#include "base/bind.h"
-#include "base/hash/md5.h"
-#include "base/logging.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/task/post_task.h"
-#include "base/task/thread_pool.h"
-#include "base/threading/scoped_blocking_call.h"
-#include "components/favicon/core/fallback_url_util.h"
-#include "components/ntp_tiles/ntp_tile.h"
+#import "base/bind.h"
+#import "base/hash/md5.h"
+#import "base/logging.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/task/thread_pool.h"
+#import "base/threading/scoped_blocking_call.h"
+#import "components/favicon/core/fallback_url_util.h"
+#import "components/ntp_tiles/ntp_tile.h"
 #import "ios/chrome/browser/ui/favicon/favicon_attributes_provider.h"
-#include "ios/chrome/common/app_group/app_group_constants.h"
+#import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/ntp_tile/ntp_tile.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "net/base/mac/url_conversions.h"
@@ -25,22 +24,22 @@
 
 namespace ntp_tile_saver {
 
-// Write the |most_visited_sites| to disk.
+// Write the `most_visited_sites` to disk.
 void WriteSavedMostVisited(NSDictionary<NSURL*, NTPTile*>* most_visited_sites);
 
-// Checks if every site in |tiles| has had its favicons fetched. If so, writes
-// the info to disk, saving the favicons to |favicons_directory|.
+// Checks if every site in `tiles` has had its favicons fetched. If so, writes
+// the info to disk, saving the favicons to `favicons_directory`.
 void WriteToDiskIfComplete(NSDictionary<NSURL*, NTPTile*>* tiles,
                            NSURL* favicons_directory);
 
 // Gets a name for the favicon file.
 NSString* GetFaviconFileName(const GURL& url);
 
-// If the sites currently saved include one with |tile|'s url, replace it by
-// |tile|.
+// If the sites currently saved include one with `tile`'s url, replace it by
+// `tile`.
 void WriteSingleUpdatedTileToDisk(NTPTile* tile);
 
-// Get the favicons using |favicon_provider| and writes them to disk.
+// Get the favicons using `favicon_provider` and writes them to disk.
 void GetFaviconsAndSave(const ntp_tiles::NTPTilesVector& most_visited_data,
                         FaviconAttributesProvider* favicon_provider,
                         NSURL* favicons_directory);
@@ -49,8 +48,8 @@ void GetFaviconsAndSave(const ntp_tiles::NTPTilesVector& most_visited_data,
 // widget.
 void UpdateTileList(const ntp_tiles::NTPTilesVector& most_visited_data);
 
-// Deletes icons contained in |favicons_directory| and corresponding to no URL
-// in |most_visited_data|.
+// Deletes icons contained in `favicons_directory` and corresponding to no URL
+// in `most_visited_data`.
 void ClearOutdatedIcons(const ntp_tiles::NTPTilesVector& most_visited_data,
                         NSURL* favicons_directory);
 
@@ -134,8 +133,8 @@ void SaveMostVisitedToDisk(const ntp_tiles::NTPTilesVector& most_visited_data,
       base::BindOnce(&ClearOutdatedIcons, most_visited_data,
                      favicons_directory),
       base::BindOnce(
-          ^(const ntp_tiles::NTPTilesVector& most_visited_data) {
-            GetFaviconsAndSave(most_visited_data, favicon_provider,
+          ^(const ntp_tiles::NTPTilesVector& inner_most_visited_data) {
+            GetFaviconsAndSave(inner_most_visited_data, favicon_provider,
                                favicons_directory);
           },
           most_visited_data));

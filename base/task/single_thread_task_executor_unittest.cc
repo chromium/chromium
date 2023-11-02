@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,8 +14,8 @@
 #include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/message_loop/message_pump_type.h"
@@ -24,7 +24,6 @@
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/current_thread.h"
-#include "base/task/post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_observer.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -43,13 +42,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/java_handler_thread.h"
 #include "base/android/jni_android.h"
 #include "base/test/android/java_handler_thread_helpers.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/message_loop/message_pump_win.h"
 #include "base/process/memory.h"
 #include "base/win/current_module.h"
@@ -300,7 +299,7 @@ void QuitFunc(TaskList* order, int cookie) {
   order->RecordEnd(QUITMESSAGELOOP, cookie);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 void SubPumpFunc(OnceClosure on_done) {
   CurrentThread::ScopedAllowApplicationTasksInNativeNestedLoop
@@ -383,7 +382,7 @@ void RecursiveFuncWin(scoped_refptr<SingleThreadTaskRunner> task_runner,
   }
 }
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 void Post128KTasksThenQuit(SingleThreadTaskRunner* executor_task_runner,
                            TimeTicks begin_ticks,
@@ -422,7 +421,7 @@ void Post128KTasksThenQuit(SingleThreadTaskRunner* executor_task_runner,
                num_posts_done + 1));
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 class TestIOHandler : public MessagePumpForIO::IOHandler {
  public:
@@ -449,14 +448,14 @@ TestIOHandler::TestIOHandler(const wchar_t* name, HANDLE signal)
 
   file_.Set(CreateFile(name, GENERIC_READ, 0, NULL, OPEN_EXISTING,
                        FILE_FLAG_OVERLAPPED, NULL));
-  EXPECT_TRUE(file_.IsValid());
+  EXPECT_TRUE(file_.is_valid());
 }
 
 void TestIOHandler::Init() {
-  CurrentIOThread::Get()->RegisterIOHandler(file_.Get(), this);
+  CurrentIOThread::Get()->RegisterIOHandler(file_.get(), this);
 
   DWORD read;
-  EXPECT_FALSE(ReadFile(file_.Get(), buffer_, size(), &read, context()));
+  EXPECT_FALSE(ReadFile(file_.get(), buffer_, size(), &read, context()));
   EXPECT_EQ(static_cast<DWORD>(ERROR_IO_PENDING), GetLastError());
 }
 
@@ -469,19 +468,19 @@ void TestIOHandler::OnIOCompleted(MessagePumpForIO::IOContext* context,
 
 void RunTest_IOHandler() {
   win::ScopedHandle callback_called(CreateEvent(NULL, TRUE, FALSE, NULL));
-  ASSERT_TRUE(callback_called.IsValid());
+  ASSERT_TRUE(callback_called.is_valid());
 
   const wchar_t* kPipeName = L"\\\\.\\pipe\\iohandler_pipe";
   win::ScopedHandle server(
       CreateNamedPipe(kPipeName, PIPE_ACCESS_OUTBOUND, 0, 1, 0, 0, 0, NULL));
-  ASSERT_TRUE(server.IsValid());
+  ASSERT_TRUE(server.is_valid());
 
   Thread thread("IOHandler test");
   Thread::Options options;
   options.message_pump_type = MessagePumpType::IO;
   ASSERT_TRUE(thread.StartWithOptions(std::move(options)));
 
-  TestIOHandler handler(kPipeName, callback_called.Get());
+  TestIOHandler handler(kPipeName, callback_called.get());
   thread.task_runner()->PostTask(
       FROM_HERE, BindOnce(&TestIOHandler::Init, Unretained(&handler)));
   // Make sure the thread runs and sleeps for lack of work.
@@ -489,15 +488,15 @@ void RunTest_IOHandler() {
 
   const char buffer[] = "Hello there!";
   DWORD written;
-  EXPECT_TRUE(WriteFile(server.Get(), buffer, sizeof(buffer), &written, NULL));
+  EXPECT_TRUE(WriteFile(server.get(), buffer, sizeof(buffer), &written, NULL));
 
-  DWORD result = WaitForSingleObject(callback_called.Get(), 1000);
+  DWORD result = WaitForSingleObject(callback_called.get(), 1000);
   EXPECT_EQ(WAIT_OBJECT_0, result);
 
   thread.Stop();
 }
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
 
@@ -530,18 +529,14 @@ class SingleThreadTaskExecutorTypedTest
         return "UI_pump";
       case MessagePumpType::CUSTOM:
         break;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       case MessagePumpType::JAVA:
         break;
-#endif  // defined(OS_ANDROID)
-#if defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_APPLE)
       case MessagePumpType::NS_RUNLOOP:
         break;
-#endif  // defined(OS_APPLE)
-#if defined(OS_WIN)
-      case MessagePumpType::UI_WITH_WM_QUIT_SUPPORT:
-        break;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_APPLE)
     }
     NOTREACHED();
     return "";
@@ -757,7 +752,7 @@ class RecordDeletionProbe : public RefCounted<RecordDeletionProbe> {
   }
 
   scoped_refptr<RecordDeletionProbe> post_on_delete_;
-  bool* was_deleted_;
+  raw_ptr<bool> was_deleted_;
 };
 
 }  // namespace
@@ -1290,7 +1285,7 @@ TEST_P(SingleThreadTaskExecutorTypedTest, RunLoopQuitOrderAfter) {
 // On Linux, the pipe buffer size is 64KiB by default. The bug caused one byte
 // accumulated in the pipe per two posts, so we should repeat 128K times to
 // reproduce the bug.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 // TODO(crbug.com/1188497): This test is unreasonably slow on CrOS and flakily
 // times out (100x slower than other platforms which take < 1s to complete
 // it).
@@ -1432,7 +1427,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                                            MessagePumpType::IO),
                          SingleThreadTaskExecutorTypedTest::ParamInfoToString);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 // Verifies that the SingleThreadTaskExecutor ignores WM_QUIT, rather than
 // quitting. Users of SingleThreadTaskExecutor typically expect to control when
@@ -1766,9 +1761,9 @@ void RunTest_NestingDenial2(MessagePumpType message_pump_type) {
   win::ScopedHandle event(CreateEvent(NULL, FALSE, FALSE, NULL));
   worker.task_runner()->PostTask(
       FROM_HERE, BindOnce(&RecursiveFuncWin, ThreadTaskRunnerHandle::Get(),
-                          event.Get(), true, &order, false));
+                          event.get(), true, &order, false));
   // Let the other thread execute.
-  WaitForSingleObject(event.Get(), INFINITE);
+  WaitForSingleObject(event.get(), INFINITE);
   RunLoop().Run();
 
   ASSERT_EQ(17u, order.Size());
@@ -1816,9 +1811,9 @@ TEST(SingleThreadTaskExecutorTest, NestingSupport2) {
   win::ScopedHandle event(CreateEvent(NULL, FALSE, FALSE, NULL));
   worker.task_runner()->PostTask(
       FROM_HERE, BindOnce(&RecursiveFuncWin, ThreadTaskRunnerHandle::Get(),
-                          event.Get(), false, &order, true));
+                          event.get(), false, &order, true));
   // Let the other thread execute.
-  WaitForSingleObject(event.Get(), INFINITE);
+  WaitForSingleObject(event.get(), INFINITE);
   RunLoop().Run();
 
   ASSERT_EQ(18u, order.Size());
@@ -1848,9 +1843,9 @@ TEST(SingleThreadTaskExecutorTest, NestingSupport2) {
   EXPECT_EQ(order.Get(17), TaskItem(RECURSIVE, 3, false));
 }
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST(SingleThreadTaskExecutorTest, IOHandler) {
   RunTest_IOHandler();
 }
@@ -1895,7 +1890,7 @@ TEST(SingleThreadTaskExecutorTest, HighResolutionTimer) {
   Time::ResetHighResolutionTimerUsage();
 }
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace {
 // Inject a test point for recording the destructor calls for Closure objects
@@ -1920,8 +1915,8 @@ class DestructionObserverProbe : public RefCounted<DestructionObserverProbe> {
     *task_destroyed_ = true;
   }
 
-  bool* task_destroyed_;
-  bool* destruction_observer_called_;
+  raw_ptr<bool> task_destroyed_;
+  raw_ptr<bool> destruction_observer_called_;
 };
 
 class MLDestructionObserver : public CurrentThread::DestructionObserver {
@@ -1939,8 +1934,8 @@ class MLDestructionObserver : public CurrentThread::DestructionObserver {
   }
 
  private:
-  bool* task_destroyed_;
-  bool* destruction_observer_called_;
+  raw_ptr<bool> task_destroyed_;
+  raw_ptr<bool> destruction_observer_called_;
   bool task_destroyed_before_message_loop_;
 };
 
@@ -1996,7 +1991,7 @@ TEST(SingleThreadTaskExecutorTest, type) {
   EXPECT_EQ(executor.type(), MessagePumpType::UI);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void EmptyFunction() {}
 
 void PostMultipleTasks() {
@@ -2089,7 +2084,7 @@ TEST(SingleThreadTaskExecutorTest, AlwaysHaveUserMessageWhenNesting) {
 
   ASSERT_TRUE(UnregisterClass(MAKEINTATOM(atom), instance));
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 // Verify that tasks posted to and code running in the scope of the same
 // SingleThreadTaskExecutor access the same SequenceLocalStorage values.

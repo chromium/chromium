@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,6 @@
 #include "base/test/task_environment.h"
 #import "ios/web/public/test/fakes/fake_download_task.h"
 #include "net/base/net_errors.h"
-#include "net/url_request/url_fetcher_response_writer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #include "testing/platform_test.h"
@@ -51,7 +50,7 @@ class CWVDownloadTaskTest : public PlatformTest {
   CWVDownloadTask* cwv_task_ = nil;
 
   // Waits until fake_internal_task_->Start() is called.
-  bool WaitUntilTaskStarts() WARN_UNUSED_RESULT {
+  [[nodiscard]] bool WaitUntilTaskStarts() {
     return WaitUntilConditionOrTimeout(kWaitForFileOperationTimeout, ^{
       task_environment_.RunUntilIdle();
       return fake_internal_task_->GetState() ==
@@ -145,7 +144,8 @@ TEST_F(CWVDownloadTaskTest, Properties) {
               cwv_task_.originalURL);
   EXPECT_NSEQ(@"text/plain", cwv_task_.MIMEType);
 
-  fake_internal_task_->SetSuggestedFilename(u"foo.txt");
+  fake_internal_task_->SetGeneratedFileName(
+      base::FilePath(FILE_PATH_LITERAL("foo.txt")));
   EXPECT_NSEQ(@"foo.txt", cwv_task_.suggestedFileName);
 
   fake_internal_task_->SetTotalBytes(1024);

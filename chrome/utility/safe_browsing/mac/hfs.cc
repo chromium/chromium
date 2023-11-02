@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,8 +13,8 @@
 #include <set>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/utility/safe_browsing/mac/convert_big_endian.h"
@@ -26,37 +26,48 @@ namespace dmg {
 // UTF-16 character for file path seprator.
 static const char16_t kFilePathSeparator = u'/';
 
+// We cannot pass pointers to members of packed structs directly to
+// ConvertBigEndian, since the alignment of the member may be lower than the
+// normally expected alignment of the type, which means an aligned load through
+// the pointer could fail.
+template <typename T>
+static T FromBigEndian(T big_endian_value) {
+  T value = big_endian_value;
+  ConvertBigEndian(&value);
+  return value;
+}
+
 static void ConvertBigEndian(HFSPlusForkData* fork) {
-  ConvertBigEndian(&fork->logicalSize);
-  ConvertBigEndian(&fork->clumpSize);
-  ConvertBigEndian(&fork->totalBlocks);
-  for (size_t i = 0; i < base::size(fork->extents); ++i) {
-    ConvertBigEndian(&fork->extents[i].startBlock);
-    ConvertBigEndian(&fork->extents[i].blockCount);
+  fork->logicalSize = FromBigEndian(fork->logicalSize);
+  fork->clumpSize = FromBigEndian(fork->clumpSize);
+  fork->totalBlocks = FromBigEndian(fork->totalBlocks);
+  for (size_t i = 0; i < std::size(fork->extents); ++i) {
+    fork->extents[i].startBlock = FromBigEndian(fork->extents[i].startBlock);
+    fork->extents[i].blockCount = FromBigEndian(fork->extents[i].blockCount);
   }
 }
 
 static void ConvertBigEndian(HFSPlusVolumeHeader* header) {
-  ConvertBigEndian(&header->signature);
-  ConvertBigEndian(&header->version);
-  ConvertBigEndian(&header->attributes);
-  ConvertBigEndian(&header->lastMountedVersion);
-  ConvertBigEndian(&header->journalInfoBlock);
-  ConvertBigEndian(&header->createDate);
-  ConvertBigEndian(&header->modifyDate);
-  ConvertBigEndian(&header->backupDate);
-  ConvertBigEndian(&header->checkedDate);
-  ConvertBigEndian(&header->fileCount);
-  ConvertBigEndian(&header->folderCount);
-  ConvertBigEndian(&header->blockSize);
-  ConvertBigEndian(&header->totalBlocks);
-  ConvertBigEndian(&header->freeBlocks);
-  ConvertBigEndian(&header->nextAllocation);
-  ConvertBigEndian(&header->rsrcClumpSize);
-  ConvertBigEndian(&header->dataClumpSize);
-  ConvertBigEndian(&header->nextCatalogID);
-  ConvertBigEndian(&header->writeCount);
-  ConvertBigEndian(&header->encodingsBitmap);
+  header->signature = FromBigEndian(header->signature);
+  header->version = FromBigEndian(header->version);
+  header->attributes = FromBigEndian(header->attributes);
+  header->lastMountedVersion = FromBigEndian(header->lastMountedVersion);
+  header->journalInfoBlock = FromBigEndian(header->journalInfoBlock);
+  header->createDate = FromBigEndian(header->createDate);
+  header->modifyDate = FromBigEndian(header->modifyDate);
+  header->backupDate = FromBigEndian(header->backupDate);
+  header->checkedDate = FromBigEndian(header->checkedDate);
+  header->fileCount = FromBigEndian(header->fileCount);
+  header->folderCount = FromBigEndian(header->folderCount);
+  header->blockSize = FromBigEndian(header->blockSize);
+  header->totalBlocks = FromBigEndian(header->totalBlocks);
+  header->freeBlocks = FromBigEndian(header->freeBlocks);
+  header->nextAllocation = FromBigEndian(header->nextAllocation);
+  header->rsrcClumpSize = FromBigEndian(header->rsrcClumpSize);
+  header->dataClumpSize = FromBigEndian(header->dataClumpSize);
+  header->nextCatalogID = FromBigEndian(header->nextCatalogID);
+  header->writeCount = FromBigEndian(header->writeCount);
+  header->encodingsBitmap = FromBigEndian(header->encodingsBitmap);
   ConvertBigEndian(&header->allocationFile);
   ConvertBigEndian(&header->extentsFile);
   ConvertBigEndian(&header->catalogFile);
@@ -65,61 +76,61 @@ static void ConvertBigEndian(HFSPlusVolumeHeader* header) {
 }
 
 static void ConvertBigEndian(BTHeaderRec* header) {
-  ConvertBigEndian(&header->treeDepth);
-  ConvertBigEndian(&header->rootNode);
-  ConvertBigEndian(&header->leafRecords);
-  ConvertBigEndian(&header->firstLeafNode);
-  ConvertBigEndian(&header->lastLeafNode);
-  ConvertBigEndian(&header->nodeSize);
-  ConvertBigEndian(&header->maxKeyLength);
-  ConvertBigEndian(&header->totalNodes);
-  ConvertBigEndian(&header->freeNodes);
-  ConvertBigEndian(&header->reserved1);
-  ConvertBigEndian(&header->clumpSize);
-  ConvertBigEndian(&header->attributes);
+  header->treeDepth = FromBigEndian(header->treeDepth);
+  header->rootNode = FromBigEndian(header->rootNode);
+  header->leafRecords = FromBigEndian(header->leafRecords);
+  header->firstLeafNode = FromBigEndian(header->firstLeafNode);
+  header->lastLeafNode = FromBigEndian(header->lastLeafNode);
+  header->nodeSize = FromBigEndian(header->nodeSize);
+  header->maxKeyLength = FromBigEndian(header->maxKeyLength);
+  header->totalNodes = FromBigEndian(header->totalNodes);
+  header->freeNodes = FromBigEndian(header->freeNodes);
+  header->reserved1 = FromBigEndian(header->reserved1);
+  header->clumpSize = FromBigEndian(header->clumpSize);
+  header->attributes = FromBigEndian(header->attributes);
 }
 
 static void ConvertBigEndian(BTNodeDescriptor* node) {
-  ConvertBigEndian(&node->fLink);
-  ConvertBigEndian(&node->bLink);
-  ConvertBigEndian(&node->numRecords);
+  node->fLink = FromBigEndian(node->fLink);
+  node->bLink = FromBigEndian(node->bLink);
+  node->numRecords = FromBigEndian(node->numRecords);
 }
 
 static void ConvertBigEndian(HFSPlusCatalogFolder* folder) {
-  ConvertBigEndian(&folder->recordType);
-  ConvertBigEndian(&folder->flags);
-  ConvertBigEndian(&folder->valence);
-  ConvertBigEndian(&folder->folderID);
-  ConvertBigEndian(&folder->createDate);
-  ConvertBigEndian(&folder->contentModDate);
-  ConvertBigEndian(&folder->attributeModDate);
-  ConvertBigEndian(&folder->accessDate);
-  ConvertBigEndian(&folder->backupDate);
-  ConvertBigEndian(&folder->bsdInfo.ownerID);
-  ConvertBigEndian(&folder->bsdInfo.groupID);
-  ConvertBigEndian(&folder->bsdInfo.fileMode);
-  ConvertBigEndian(&folder->textEncoding);
-  ConvertBigEndian(&folder->folderCount);
+  folder->recordType = FromBigEndian(folder->recordType);
+  folder->flags = FromBigEndian(folder->flags);
+  folder->valence = FromBigEndian(folder->valence);
+  folder->folderID = FromBigEndian(folder->folderID);
+  folder->createDate = FromBigEndian(folder->createDate);
+  folder->contentModDate = FromBigEndian(folder->contentModDate);
+  folder->attributeModDate = FromBigEndian(folder->attributeModDate);
+  folder->accessDate = FromBigEndian(folder->accessDate);
+  folder->backupDate = FromBigEndian(folder->backupDate);
+  folder->bsdInfo.ownerID = FromBigEndian(folder->bsdInfo.ownerID);
+  folder->bsdInfo.groupID = FromBigEndian(folder->bsdInfo.groupID);
+  folder->bsdInfo.fileMode = FromBigEndian(folder->bsdInfo.fileMode);
+  folder->textEncoding = FromBigEndian(folder->textEncoding);
+  folder->folderCount = FromBigEndian(folder->folderCount);
 }
 
 static void ConvertBigEndian(HFSPlusCatalogFile* file) {
-  ConvertBigEndian(&file->recordType);
-  ConvertBigEndian(&file->flags);
-  ConvertBigEndian(&file->reserved1);
-  ConvertBigEndian(&file->fileID);
-  ConvertBigEndian(&file->createDate);
-  ConvertBigEndian(&file->contentModDate);
-  ConvertBigEndian(&file->attributeModDate);
-  ConvertBigEndian(&file->accessDate);
-  ConvertBigEndian(&file->backupDate);
-  ConvertBigEndian(&file->bsdInfo.ownerID);
-  ConvertBigEndian(&file->bsdInfo.groupID);
-  ConvertBigEndian(&file->bsdInfo.fileMode);
-  ConvertBigEndian(&file->userInfo.fdType);
-  ConvertBigEndian(&file->userInfo.fdCreator);
-  ConvertBigEndian(&file->userInfo.fdFlags);
-  ConvertBigEndian(&file->textEncoding);
-  ConvertBigEndian(&file->reserved2);
+  file->recordType = FromBigEndian(file->recordType);
+  file->flags = FromBigEndian(file->flags);
+  file->reserved1 = FromBigEndian(file->reserved1);
+  file->fileID = FromBigEndian(file->fileID);
+  file->createDate = FromBigEndian(file->createDate);
+  file->contentModDate = FromBigEndian(file->contentModDate);
+  file->attributeModDate = FromBigEndian(file->attributeModDate);
+  file->accessDate = FromBigEndian(file->accessDate);
+  file->backupDate = FromBigEndian(file->backupDate);
+  file->bsdInfo.ownerID = FromBigEndian(file->bsdInfo.ownerID);
+  file->bsdInfo.groupID = FromBigEndian(file->bsdInfo.groupID);
+  file->bsdInfo.fileMode = FromBigEndian(file->bsdInfo.fileMode);
+  file->userInfo.fdType = FromBigEndian(file->userInfo.fdType);
+  file->userInfo.fdCreator = FromBigEndian(file->userInfo.fdCreator);
+  file->userInfo.fdFlags = FromBigEndian(file->userInfo.fdFlags);
+  file->textEncoding = FromBigEndian(file->textEncoding);
+  file->reserved2 = FromBigEndian(file->reserved2);
   ConvertBigEndian(&file->dataFork);
   ConvertBigEndian(&file->resourceFork);
 }
@@ -140,7 +151,7 @@ class HFSForkReadStream : public ReadStream {
   off_t Seek(off_t offset, int whence) override;
 
  private:
-  HFSIterator* const hfs_;  // The HFS+ iterator.
+  const raw_ptr<HFSIterator> hfs_;  // The HFS+ iterator.
   const HFSPlusForkData fork_;  // The fork to be read.
   uint8_t current_extent_;  // The current extent index in the fork.
   bool read_current_extent_;  // Whether the current_extent_ has been read.
@@ -191,7 +202,7 @@ class HFSBTreeIterator {
   // have it or its contents iterated over.
   bool IsKeyUnexported(const std::u16string& path);
 
-  ReadStream* stream_;  // The stream backing the catalog file.
+  raw_ptr<ReadStream> stream_;  // The stream backing the catalog file.
   BTHeaderRec header_;  // The header B-tree node.
 
   // Maps CNIDs to their full path. This is used to construct full paths for
@@ -216,7 +227,7 @@ class HFSBTreeIterator {
   size_t current_leaf_offset_;  // The offset in |leaf_data_|.
 
   // Pointer to |leaf_data_| as a BTNodeDescriptor.
-  const BTNodeDescriptor* current_leaf_;
+  raw_ptr<const BTNodeDescriptor> current_leaf_;
   Entry current_record_;  // The record read at |current_leaf_offset_|.
 
   // Constant, string16 versions of the __APPLE_API_PRIVATE values.
@@ -357,7 +368,7 @@ bool HFSForkReadStream::Read(uint8_t* buffer,
   if (fork_logical_offset_ == fork_.logicalSize)
     return true;
 
-  for (; current_extent_ < base::size(fork_.extents); ++current_extent_) {
+  for (; current_extent_ < std::size(fork_.extents); ++current_extent_) {
     // If the buffer is out of space, do not attempt any reads. Check this
     // here, so that current_extent_ is advanced by the loop if the last
     // extent was fully read.
@@ -430,7 +441,7 @@ off_t HFSForkReadStream::Seek(off_t offset, int whence) {
   DCHECK(offset == 0 || static_cast<uint64_t>(offset) < fork_.logicalSize);
   size_t target_block = offset / hfs_->block_size();
   size_t block_count = 0;
-  for (size_t i = 0; i < base::size(fork_.extents); ++i) {
+  for (size_t i = 0; i < std::size(fork_.extents); ++i) {
     const HFSPlusExtentDescriptor* extent = &fork_.extents[i];
 
     // An empty extent indicates end-of-fork.

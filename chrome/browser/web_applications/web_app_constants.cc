@@ -1,202 +1,88 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/web_applications/web_app_constants.h"
 
 #include <ostream>
+#include <string>
 
-#include "base/compiler_specific.h"
-#include "chrome/common/chrome_features.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
-#include "content/public/common/content_features.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 
 namespace web_app {
 
 const char kRunOnOsLoginModeWindowed[] = "windowed";
 
-namespace {
+static_assert(WebAppManagement::kMinValue == 0,
+              "Source enum should be zero based");
 
-// Note: This can never return kBrowser. This is because the user has
-// specified that the web app should be displayed in a window, and thus
-// the lowest fallback that we can go to is kMinimalUi.
-DisplayMode ResolveAppDisplayModeForStandaloneLaunchContainer(
-    DisplayMode app_display_mode) {
-  switch (app_display_mode) {
-    case DisplayMode::kBrowser:
-    case DisplayMode::kMinimalUi:
-      return DisplayMode::kMinimalUi;
-    case DisplayMode::kUndefined:
-      NOTREACHED();
-      FALLTHROUGH;
-    case DisplayMode::kStandalone:
-    case DisplayMode::kFullscreen:
-      return DisplayMode::kStandalone;
-    case DisplayMode::kWindowControlsOverlay:
-      return DisplayMode::kWindowControlsOverlay;
-    case DisplayMode::kTabbed:
-      if (base::FeatureList::IsEnabled(features::kDesktopPWAsTabStrip))
-        return DisplayMode::kTabbed;
-      else
-        return DisplayMode::kStandalone;
-  }
-}
-}  // namespace
-
-static_assert(Source::kMinValue == 0, "Source enum should be zero based");
-
-std::ostream& operator<<(std::ostream& os, Source::Type type) {
+namespace WebAppManagement {
+std::ostream& operator<<(std::ostream& os, WebAppManagement::Type type) {
   switch (type) {
-    case Source::Type::kSystem:
+    case WebAppManagement::Type::kSystem:
       return os << "System";
-    case Source::Type::kPolicy:
+    case WebAppManagement::Type::kKiosk:
+      return os << "Kiosk";
+    case WebAppManagement::Type::kPolicy:
       return os << "Policy";
-    case Source::Type::kSubApp:
+    case WebAppManagement::Type::kSubApp:
       return os << "SubApp";
-    case Source::Type::kWebAppStore:
+    case WebAppManagement::Type::kWebAppStore:
       return os << "WebAppStore";
-    case Source::Type::kSync:
+    case WebAppManagement::Type::kSync:
       return os << "Sync";
-    case Source::Type::kDefault:
+    case WebAppManagement::Type::kDefault:
       return os << "Default";
+    case WebAppManagement::Type::kCommandLine:
+      return os << "CommandLine";
   }
 }
+}  // namespace WebAppManagement
 
 static_assert(OsHookType::kShortcuts == 0,
               "OsHookType enum should be zero based");
 
-bool IsSuccess(InstallResultCode code) {
-  switch (code) {
-    case InstallResultCode::kSuccessNewInstall:
-    case InstallResultCode::kSuccessAlreadyInstalled:
-    case InstallResultCode::kSuccessOfflineOnlyInstall:
-    case InstallResultCode::kSuccessOfflineFallbackInstall:
-      return true;
-    default:
-      return false;
-  }
-}
-
-bool IsNewInstall(InstallResultCode code) {
-  return IsSuccess(code) && code != InstallResultCode::kSuccessAlreadyInstalled;
-}
-
-std::ostream& operator<<(std::ostream& os, InstallResultCode code) {
-  switch (code) {
-    case InstallResultCode::kSuccessNewInstall:
-      return os << "kSuccessNewInstall";
-    case InstallResultCode::kSuccessAlreadyInstalled:
-      return os << "kSuccessAlreadyInstalled";
-    case InstallResultCode::kGetWebApplicationInfoFailed:
-      return os << "kGetWebApplicationInfoFailed";
-    case InstallResultCode::kPreviouslyUninstalled:
-      return os << "kPreviouslyUninstalled";
-    case InstallResultCode::kWebContentsDestroyed:
-      return os << "kWebContentsDestroyed";
-    case InstallResultCode::kWriteDataFailed:
-      return os << "kWriteDataFailed";
-    case InstallResultCode::kUserInstallDeclined:
-      return os << "kUserInstallDeclined";
-    case InstallResultCode::kNotValidManifestForWebApp:
-      return os << "kNotValidManifestForWebApp";
-    case InstallResultCode::kIntentToPlayStore:
-      return os << "kIntentToPlayStore";
-    case InstallResultCode::kWebAppDisabled:
-      return os << "kWebAppDisabled";
-    case InstallResultCode::kInstallURLRedirected:
-      return os << "kInstallURLRedirected";
-    case InstallResultCode::kInstallURLLoadFailed:
-      return os << "kInstallURLLoadFailed";
-    case InstallResultCode::kExpectedAppIdCheckFailed:
-      return os << "kExpectedAppIdCheckFailed";
-    case InstallResultCode::kInstallURLLoadTimeOut:
-      return os << "kInstallURLLoadTimeOut";
-    case InstallResultCode::kFailedPlaceholderUninstall:
-      return os << "kFailedPlaceholderUninstall";
-    case InstallResultCode::kNotInstallable:
-      return os << "kNotInstallable";
-    case InstallResultCode::kApkWebAppInstallFailed:
-      return os << "kApkWebAppInstallFailed";
-    case InstallResultCode::kCancelledOnWebAppProviderShuttingDown:
-      return os << "kCancelledOnWebAppProviderShuttingDown";
-    case InstallResultCode::kWebAppProviderNotReady:
-      return os << "kWebAppProviderNotReady";
-    case InstallResultCode::kSuccessOfflineOnlyInstall:
-      return os << "kSuccessOfflineOnlyInstall";
-    case InstallResultCode::kSuccessOfflineFallbackInstall:
-      return os << "kSuccessOfflineFallbackInstall";
-  }
-}
-
-DisplayMode ResolveEffectiveDisplayMode(
-    DisplayMode app_display_mode,
-    const std::vector<DisplayMode>& app_display_mode_overrides,
-    DisplayMode user_display_mode) {
-  switch (user_display_mode) {
-    case DisplayMode::kBrowser:
-      return user_display_mode;
-    case DisplayMode::kUndefined:
-    case DisplayMode::kMinimalUi:
-    case DisplayMode::kFullscreen:
-    case DisplayMode::kWindowControlsOverlay:
-      NOTREACHED();
-      FALLTHROUGH;
-    case DisplayMode::kTabbed:
-      if (base::FeatureList::IsEnabled(features::kDesktopPWAsTabStripSettings))
-        return user_display_mode;
-      // Treat as standalone.
-      FALLTHROUGH;
-    case DisplayMode::kStandalone:
-      break;
-  }
-
-  for (const DisplayMode& app_display_mode_override :
-       app_display_mode_overrides) {
-    DisplayMode resolved_display_mode =
-        ResolveAppDisplayModeForStandaloneLaunchContainer(
-            app_display_mode_override);
-    if (resolved_display_mode == app_display_mode_override)
-      return resolved_display_mode;
-  }
-
-  return ResolveAppDisplayModeForStandaloneLaunchContainer(app_display_mode);
-}
-
-apps::mojom::LaunchContainer ConvertDisplayModeToAppLaunchContainer(
-    DisplayMode display_mode) {
-  switch (display_mode) {
-    case DisplayMode::kBrowser:
-      return apps::mojom::LaunchContainer::kLaunchContainerTab;
-    case DisplayMode::kMinimalUi:
-    case DisplayMode::kStandalone:
-    case DisplayMode::kFullscreen:
-    case DisplayMode::kWindowControlsOverlay:
-    case DisplayMode::kTabbed:
-      return apps::mojom::LaunchContainer::kLaunchContainerWindow;
-    case DisplayMode::kUndefined:
-      return apps::mojom::LaunchContainer::kLaunchContainerNone;
-  }
-}
-
-std::string RunOnOsLoginModeToString(RunOnOsLoginMode mode) {
-  switch (mode) {
-    case RunOnOsLoginMode::kWindowed:
-      return "windowed";
-    case RunOnOsLoginMode::kMinimized:
-      return "minimized";
-    case RunOnOsLoginMode::kNotRun:
-      return "not run";
-  }
-}
-
-const char* IconsDownloadedResultToString(IconsDownloadedResult result) {
-  switch (result) {
-    case IconsDownloadedResult::kCompleted:
-      return "Completed";
-    case IconsDownloadedResult::kPrimaryPageChanged:
-      return "PrimaryPageChanged";
-    case IconsDownloadedResult::kAbortedDueToFailure:
-      return "AbortedDueToFailure";
+std::string ConvertUninstallSourceToStringType(
+    const webapps::WebappUninstallSource& uninstall_source) {
+  switch (uninstall_source) {
+    case webapps::WebappUninstallSource::kUnknown:
+      return "Unknown";
+    case webapps::WebappUninstallSource::kAppMenu:
+      return "AppMenu";
+    case webapps::WebappUninstallSource::kAppsPage:
+      return "AppsPage";
+    case webapps::WebappUninstallSource::kOsSettings:
+      return "OS Settings";
+    case webapps::WebappUninstallSource::kSync:
+      return "Sync";
+    case webapps::WebappUninstallSource::kAppManagement:
+      return "App Management";
+    case webapps::WebappUninstallSource::kMigration:
+      return "Migration";
+    case webapps::WebappUninstallSource::kAppList:
+      return "App List";
+    case webapps::WebappUninstallSource::kShelf:
+      return "Shelf";
+    case webapps::WebappUninstallSource::kInternalPreinstalled:
+      return "Internal Preinstalled";
+    case webapps::WebappUninstallSource::kExternalPreinstalled:
+      return "External Preinstalled";
+    case webapps::WebappUninstallSource::kExternalPolicy:
+      return "External Policy";
+    case webapps::WebappUninstallSource::kSystemPreinstalled:
+      return "System Preinstalled";
+    case webapps::WebappUninstallSource::kPlaceholderReplacement:
+      return "Placeholder Replacement";
+    case webapps::WebappUninstallSource::kArc:
+      return "Arc";
+    case webapps::WebappUninstallSource::kSubApp:
+      return "SubApp";
+    case webapps::WebappUninstallSource::kStartupCleanup:
+      return "Startup Cleanup";
+    case webapps::WebappUninstallSource::kParentUninstall:
+      return "Parent App Uninstalled";
+    case webapps::WebappUninstallSource::kExternalLockScreen:
+      return "External Lock Screen";
   }
 }
 

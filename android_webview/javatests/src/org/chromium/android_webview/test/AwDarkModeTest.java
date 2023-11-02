@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 package org.chromium.android_webview.test;
@@ -7,7 +7,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import android.annotation.SuppressLint;
 import android.content.res.Configuration;
 import android.os.Build;
 
@@ -20,6 +19,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.AwContents;
+import org.chromium.android_webview.AwDarkMode;
+import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.DarkModeHelper;
 import org.chromium.android_webview.test.AwActivityTestRule.TestDependencyFactory;
 import org.chromium.base.test.util.CallbackHelper;
@@ -36,7 +37,6 @@ import java.util.concurrent.Callable;
  */
 @RunWith(AwJUnit4ClassRunner.class)
 @MinAndroidSdkLevel(Build.VERSION_CODES.P)
-@SuppressLint("NewApi")
 public class AwDarkModeTest {
     private static final String FILE = "/main.html";
     private static final String DATA =
@@ -91,10 +91,8 @@ public class AwDarkModeTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add({"disable-features=WebViewForceDarkModeMatchTheme",
-            "enable-features=WebViewDarkModeMatchTheme"})
-    public void
-    testLightThemeFalseWithMatchThemeDisabled() throws Throwable {
+    @CommandLineFlags.Add({"disable-features=WebViewForceDarkModeMatchTheme"})
+    public void testLightThemeFalseWithMatchThemeDisabled() throws Throwable {
         DarkModeHelper.setsLightThemeForTesting(DarkModeHelper.LightTheme.LIGHT_THEME_FALSE);
         final String url = mWebServer.setResponse(FILE, DATA, null);
         loadUrlSync(url);
@@ -105,8 +103,7 @@ public class AwDarkModeTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.
-    Add({"enable-features=WebViewForceDarkModeMatchTheme,WebViewDarkModeMatchTheme"})
+    @CommandLineFlags.Add({"enable-features=WebViewForceDarkModeMatchTheme"})
     public void testLightThemeFalse() throws Throwable {
         DarkModeHelper.setsLightThemeForTesting(DarkModeHelper.LightTheme.LIGHT_THEME_FALSE);
         final String url = mWebServer.setResponse(FILE, DATA, null);
@@ -118,7 +115,6 @@ public class AwDarkModeTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add({"enable-features=WebViewDarkModeMatchTheme"})
     public void testConfigurationChanged() throws Throwable {
         DarkModeHelper.setsLightThemeForTesting(DarkModeHelper.LightTheme.LIGHT_THEME_TRUE);
         final String url = mWebServer.setResponse(FILE, DATA, null);
@@ -130,6 +126,96 @@ public class AwDarkModeTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> mAwContents.onConfigurationChanged(newConfig));
         loadUrlSync(url);
         assertEquals("true", getPrefersColorSchemeDark());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testAlgorithmicDarkeningAllowedOnAndroidT() throws Throwable {
+        DarkModeHelper.setsLightThemeForTesting(DarkModeHelper.LightTheme.LIGHT_THEME_FALSE);
+        AwDarkMode.enableSimplifiedDarkMode();
+
+        // Check setForceDarkMode has noops, otherwise ForceDarkening will be turned off.
+        mAwContents.getSettings().setForceDarkMode(AwSettings.FORCE_DARK_OFF);
+        mAwContents.getSettings().setAlgorithmicDarkeningAllowed(true);
+        // Set force dark mode again to check no ordering issue.
+        mAwContents.getSettings().setForceDarkMode(AwSettings.FORCE_DARK_OFF);
+
+        final String url = mWebServer.setResponse(FILE, DATA, null);
+        loadUrlSync(url);
+        assertEquals("true", getPrefersColorSchemeDark());
+        assertTrue(isForceDarkening());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testAlgorithmicDarkeningAllowedWithLightThemeOnAndroidT() throws Throwable {
+        DarkModeHelper.setsLightThemeForTesting(DarkModeHelper.LightTheme.LIGHT_THEME_TRUE);
+        AwDarkMode.enableSimplifiedDarkMode();
+
+        // Check setForceDarkMode has noops, otherwise ForceDarkening will be turned off.
+        mAwContents.getSettings().setForceDarkMode(AwSettings.FORCE_DARK_OFF);
+        mAwContents.getSettings().setAlgorithmicDarkeningAllowed(true);
+        // Set force dark mode again to check no ordering issue.
+        mAwContents.getSettings().setForceDarkMode(AwSettings.FORCE_DARK_OFF);
+
+        final String url = mWebServer.setResponse(FILE, DATA, null);
+        loadUrlSync(url);
+        // Verify that prefers-color-scheme matches the theme.
+        assertEquals("false", getPrefersColorSchemeDark());
+        // Algorithmic darkening isn't enabled because app's light theme.
+        assertFalse(isForceDarkening());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testAlgorithmicDarkeningDisallowedByDefaultOnAndroidT() throws Throwable {
+        DarkModeHelper.setsLightThemeForTesting(DarkModeHelper.LightTheme.LIGHT_THEME_FALSE);
+        AwDarkMode.enableSimplifiedDarkMode();
+
+        // Check setForceDarkMode has noops, otherwise ForceDarkening will be turned on.
+        mAwContents.getSettings().setForceDarkMode(AwSettings.FORCE_DARK_ON);
+
+        final String url = mWebServer.setResponse(FILE, DATA, null);
+        loadUrlSync(url);
+        assertEquals("true", getPrefersColorSchemeDark());
+        assertFalse(isForceDarkening());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testPrefersColorSchemeDarkOnAndroidT() throws Throwable {
+        DarkModeHelper.setsLightThemeForTesting(DarkModeHelper.LightTheme.LIGHT_THEME_FALSE);
+        AwDarkMode.enableSimplifiedDarkMode();
+
+        // Check setForceDarkMode has noops, otherwise, prefers-color-scheme will be set to light.
+        mAwContents.getSettings().setForceDarkMode(AwSettings.FORCE_DARK_OFF);
+
+        final String url = mWebServer.setResponse(FILE, DATA, null);
+        loadUrlSync(url);
+        // Verify prefers-color-scheme matches isLightTheme.
+        assertEquals("true", getPrefersColorSchemeDark());
+        assertFalse(isForceDarkening());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testPrefersColorSchemeLightOnAndroidT() throws Throwable {
+        DarkModeHelper.setsLightThemeForTesting(DarkModeHelper.LightTheme.LIGHT_THEME_TRUE);
+        AwDarkMode.enableSimplifiedDarkMode();
+
+        // Check setForceDarkMode has noops, otherwise, prefers-color-scheme will be set to dark.
+        mAwContents.getSettings().setForceDarkMode(AwSettings.FORCE_DARK_OFF);
+
+        final String url = mWebServer.setResponse(FILE, DATA, null);
+        loadUrlSync(url);
+        // Verify prefers-color-scheme matches isLightTheme.
+        assertEquals("false", getPrefersColorSchemeDark());
+        assertFalse(isForceDarkening());
     }
 
     private void loadUrlSync(String url) throws Exception {
@@ -154,7 +240,7 @@ public class AwDarkModeTest {
         return TestThreadUtils.runOnUiThreadBlocking(new Callable<Boolean>() {
             @Override
             public Boolean call() {
-                return mAwContents.getSettings().isDarkMode();
+                return mAwContents.getSettings().isForceDarkApplied();
             }
         });
     }

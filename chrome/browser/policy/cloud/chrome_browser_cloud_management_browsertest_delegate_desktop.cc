@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/test/widget_test.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/browser/policy/cloud/chrome_browser_cloud_management_browsertest_mac_util.h"
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 namespace policy {
 
@@ -19,7 +19,7 @@ void ChromeBrowserCloudManagementBrowserTestDelegateDesktop::
     MaybeCheckDialogClosingAfterPolicyRegistration(bool popup_expected) const {
   if (popup_expected) {
     MaybeCheckTotalBrowserCount(0u);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     PostAppControllerNSNotifications();
 #endif
     // Close the error dialog.

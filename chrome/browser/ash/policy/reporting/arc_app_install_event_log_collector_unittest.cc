@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "ash/components/arc/mojom/app.mojom.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
@@ -17,10 +18,9 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/dbus/shill/shill_service_client.h"
+#include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
-#include "chromeos/dbus/shill/shill_service_client.h"
-#include "chromeos/network/network_handler_test_helper.h"
-#include "components/arc/mojom/app.mojom.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
@@ -83,19 +83,43 @@ class FakeAppInstallEventLogCollectorDelegate
                            package_name, *event);
   }
 
+  void UpdatePolicySuccessRate(const std::string& package_name,
+                               bool success) override {
+    ++update_policy_success_rate_count_;
+    auto event = std::make_unique<em::AppInstallReportLogEvent>();
+    event->set_event_type(
+        success ? em::AppInstallReportLogEvent::INSTALLATION_FINISHED
+                : em::AppInstallReportLogEvent::INSTALLATION_FAILED);
+
+    requests_.emplace_back(false /* for_all */, false /* add_disk_space_info */,
+                           package_name, *event);
+  }
+
   int add_for_all_count() const { return add_for_all_count_; }
 
   int add_count() const { return add_count_; }
+
+  int update_policy_success_rate_count() const {
+    return update_policy_success_rate_count_;
+  }
 
   const em::AppInstallReportLogEvent& last_event() const {
     return last_request().event;
   }
   const Request& last_request() const { return requests_.back(); }
+
+  const em::AppInstallReportLogEvent& event_at(int index) const {
+    return request_at(index).event;
+  }
+
+  const Request& request_at(int index) const { return requests_.at(index); }
+
   const std::vector<Request>& requests() const { return requests_; }
 
  private:
   int add_for_all_count_ = 0;
   int add_count_ = 0;
+  int update_policy_success_rate_count_ = 0;
   std::vector<Request> requests_;
 };
 
@@ -125,7 +149,7 @@ class ArcAppInstallEventLogCollectorTest : public testing::Test {
     arc_app_test_.SetUp(profile_.get());
 
     network_handler_test_helper_ =
-        std::make_unique<chromeos::NetworkHandlerTestHelper>();
+        std::make_unique<ash::NetworkHandlerTestHelper>();
     network_handler_test_helper_->service_test()->AddService(
         kEthernetServicePath, "eth1_guid", "eth1", shill::kTypeEthernet,
         shill::kStateOffline, true /* visible */);
@@ -180,8 +204,7 @@ class ArcAppInstallEventLogCollectorTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<chromeos::NetworkHandlerTestHelper>
-      network_handler_test_helper_;
+  std::unique_ptr<ash::NetworkHandlerTestHelper> network_handler_test_helper_;
   std::unique_ptr<TestingProfile> profile_;
   FakeAppInstallEventLogCollectorDelegate delegate_;
   TestingPrefServiceSimple pref_service_;
@@ -199,6 +222,7 @@ TEST_F(ArcAppInstallEventLogCollectorTest, NoEventsByDefault) {
 
   EXPECT_EQ(0, delegate()->add_count());
   EXPECT_EQ(0, delegate()->add_for_all_count());
+  EXPECT_EQ(0, delegate()->update_policy_success_rate_count());
 }
 
 TEST_F(ArcAppInstallEventLogCollectorTest, LoginLogout) {
@@ -248,7 +272,7 @@ TEST_F(ArcAppInstallEventLogCollectorTest, LoginTypes) {
     // Check login after restart. No log is expected.
     ArcAppInstallEventLogCollector collector(delegate(), profile(), packages_);
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        chromeos::switches::kLoginUser);
+        ash::switches::kLoginUser);
     collector.OnLogin();
     EXPECT_EQ(1, delegate()->add_for_all_count());
   }
@@ -420,17 +444,8 @@ TEST_F(ArcAppInstallEventLogCollectorTest, InstallPackages) {
 
   collector->OnPendingPackagesChanged({kPackageName, kPackageName2});
 
-  // Now kPackageName2 is in the pending set.
-  base::Time time = base::Time::Now();
-  collector->OnReportDirectInstall(time, {kPackageName2});
-  EXPECT_EQ(3, delegate()->add_count());
-  EXPECT_EQ(em::AppInstallReportLogEvent::DIRECT_INSTALL,
-            delegate()->last_event().event_type());
-  EXPECT_EQ(kPackageName2, delegate()->last_request().package_name);
-  EXPECT_TRUE(delegate()->last_request().add_disk_space_info);
-
   app_host->OnInstallationStarted(kPackageName2);
-  EXPECT_EQ(4, delegate()->add_count());
+  EXPECT_EQ(3, delegate()->add_count());
   EXPECT_EQ(em::AppInstallReportLogEvent::INSTALLATION_STARTED,
             delegate()->last_event().event_type());
   EXPECT_EQ(kPackageName2, delegate()->last_request().package_name);
@@ -440,21 +455,65 @@ TEST_F(ArcAppInstallEventLogCollectorTest, InstallPackages) {
   result.success = false;
   app_host->OnInstallationFinished(
       arc::mojom::InstallationResultPtr(result.Clone()));
-  EXPECT_EQ(5, delegate()->add_count());
+  EXPECT_EQ(4, delegate()->add_count());
   EXPECT_EQ(em::AppInstallReportLogEvent::INSTALLATION_FAILED,
             delegate()->last_event().event_type());
   EXPECT_EQ(kPackageName2, delegate()->last_request().package_name);
   EXPECT_TRUE(delegate()->last_request().add_disk_space_info);
 
-  time += base::Seconds(1);
+  base::Time time = base::Time::Now();
   collector->OnReportForceInstallMainLoopFailed(time, {kPackageName2});
-  EXPECT_EQ(6, delegate()->add_count());
+  EXPECT_EQ(5, delegate()->add_count());
   EXPECT_EQ(em::AppInstallReportLogEvent::CLOUDDPC_MAIN_LOOP_FAILED,
             delegate()->last_event().event_type());
   EXPECT_EQ(kPackageName2, delegate()->last_request().package_name);
   EXPECT_TRUE(delegate()->last_request().add_disk_space_info);
 
   EXPECT_EQ(0, delegate()->add_for_all_count());
+}
+
+TEST_F(ArcAppInstallEventLogCollectorTest, OnPlayStoreLocalPolicySet) {
+  std::unique_ptr<ArcAppInstallEventLogCollector> collector =
+      std::make_unique<ArcAppInstallEventLogCollector>(delegate(), profile(),
+                                                       packages_);
+  base::Time time = base::Time::Now();
+  collector->OnPlayStoreLocalPolicySet(time, packages_);
+  ASSERT_EQ(1, delegate()->add_count());
+  EXPECT_EQ(em::AppInstallReportLogEvent::PLAYSTORE_LOCAL_POLICY_SET,
+            delegate()->last_event().event_type());
+  EXPECT_EQ(TimeToTimestamp(time), delegate()->requests()[0].event.timestamp());
+  EXPECT_EQ(kPackageName, delegate()->last_request().package_name);
+  EXPECT_TRUE(delegate()->last_request().add_disk_space_info);
+}
+
+TEST_F(ArcAppInstallEventLogCollectorTest,
+       UpdatePolicySuccessRate_InstallSuccess) {
+  std::unique_ptr<ArcAppInstallEventLogCollector> collector =
+      std::make_unique<ArcAppInstallEventLogCollector>(delegate(), profile(),
+                                                       packages_);
+  collector->OnInstallationFinished(kPackageName, /* success */ true);
+
+  int second_to_last_request_index = delegate()->requests().size() - 2;
+  EXPECT_EQ(1, delegate()->update_policy_success_rate_count());
+  EXPECT_EQ(em::AppInstallReportLogEvent::INSTALLATION_FINISHED,
+            delegate()->event_at(second_to_last_request_index).event_type());
+  EXPECT_EQ(kPackageName,
+            delegate()->request_at(second_to_last_request_index).package_name);
+}
+
+TEST_F(ArcAppInstallEventLogCollectorTest,
+       UpdatePolicySuccessRate_InstallFailure) {
+  std::unique_ptr<ArcAppInstallEventLogCollector> collector =
+      std::make_unique<ArcAppInstallEventLogCollector>(delegate(), profile(),
+                                                       packages_);
+  collector->OnInstallationFinished(kPackageName, /* success */ false);
+
+  int second_to_last_request_index = delegate()->requests().size() - 2;
+  EXPECT_EQ(1, delegate()->update_policy_success_rate_count());
+  EXPECT_EQ(em::AppInstallReportLogEvent::INSTALLATION_FAILED,
+            delegate()->event_at(second_to_last_request_index).event_type());
+  EXPECT_EQ(kPackageName,
+            delegate()->request_at(second_to_last_request_index).package_name);
 }
 
 }  // namespace policy

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -55,7 +55,7 @@ class PendingChildFrameAdapter : public UniqueNameHelper::FrameAdapter {
   }
 
  private:
-  FrameAdapter* const parent_;
+  const raw_ptr<FrameAdapter> parent_;
 };
 
 constexpr char kFramePathPrefix[] = "<!--framePath /";
@@ -163,9 +163,9 @@ std::string CalculateFrameHash(base::StringPiece name) {
 
   std::string hashed_name;
   uint8_t result[crypto::kSHA256Length];
-  crypto::SHA256HashString(name, result, base::size(result));
+  crypto::SHA256HashString(name, result, std::size(result));
   hashed_name += "<!--frameHash";
-  hashed_name += base::HexEncode(result, base::size(result));
+  hashed_name += base::HexEncode(result, std::size(result));
   hashed_name += "-->";
   return hashed_name;
 }

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,30 +6,32 @@
  * @fileoverview
  * 'settings-menu' shows a menu with a hardcoded set of pages and subpages.
  */
-import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
-import 'chrome://resources/cr_elements/cr_icons_css.m.js';
+import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
-import 'chrome://resources/cr_elements/cr_nav_menu_item_style.js';
-import 'chrome://resources/cr_elements/icons.m.js';
-import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
+import 'chrome://resources/cr_elements/cr_nav_menu_item_style.css.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
-import '../icons.js';
-import '../settings_shared_css.js';
+import '../icons.html.js';
+import '../settings_shared.css.js';
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomIf, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {loadTimeData} from '../i18n_setup.js';
 import {PageVisibility} from '../page_visibility.js';
+import {routes} from '../route.js';
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
+
+import {getTemplate} from './settings_menu.html.js';
 
 export interface SettingsMenuElement {
   $: {
-    topMenu: IronSelectorElement,
-    subMenu: IronSelectorElement,
+    autofill: HTMLLinkElement,
+    menu: IronSelectorElement,
+    people: HTMLLinkElement,
   };
 }
 
@@ -42,35 +44,45 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
     return {
-      advancedOpened: {
-        type: Boolean,
-        value: false,
-        notify: true,
-      },
-
       /**
        * Dictionary defining page visibility.
        */
       pageVisibility: Object,
 
-      enableLandingPageRedesign_: {
+      performanceFeaturesAvailable_: {
         type: Boolean,
-        value: () => loadTimeData.getBoolean('enableLandingPageRedesign'),
+        value: function() {
+          return loadTimeData.getBoolean('highEfficiencyModeAvailable') ||
+              loadTimeData.getBoolean('batterySaverModeAvailable');
+        },
       },
-
     };
   }
 
-  advancedOpened: boolean;
   pageVisibility: PageVisibility;
-  private enableLandingPageRedesign_: boolean;
+  private performanceFeaturesAvailable_: boolean;
 
-  currentRouteChanged(newRoute: Route) {
+  override currentRouteChanged(newRoute: Route) {
+    if (this.performanceFeaturesAvailable_ && newRoute === routes.PERFORMANCE) {
+      // Add special handling for the Performance section, since the
+      // corresponding menu entry resides in a dom-if and is normally not
+      // present in the DOM during initial load. Force-render the dom-if
+      // instead.
+      const anchor = this.shadowRoot!.querySelector('#performance');
+      if (anchor === null) {
+        const domIf =
+            this.shadowRoot!.querySelector<DomIf>('#performanceDomIf');
+        assert(domIf);
+        assert(domIf.if);
+        domIf.render();
+      }
+    }
+
     // Focus the initially selected path.
     const anchors = this.shadowRoot!.querySelectorAll('a');
     for (let i = 0; i < anchors.length; ++i) {
@@ -93,10 +105,6 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
     }
   }
 
-  private onAdvancedButtonToggle_() {
-    this.advancedOpened = !this.advancedOpened;
-  }
-
   /**
    * Prevent clicks on sidebar items from navigating. These are only links for
    * accessibility purposes, taps are handled separately by <iron-selector>.
@@ -112,7 +120,7 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
    * |iron-list| uses the entire url. Using |getAttribute| will not work.
    */
   private setSelectedUrl_(url: string) {
-    this.$.topMenu.selected = this.$.subMenu.selected = url;
+    this.$.menu.selected = url;
   }
 
   private onSelectorActivate_(event: CustomEvent<{selected: string}>) {
@@ -125,21 +133,15 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
         route!, /* dynamicParams */ undefined, /* removeSearch */ true);
   }
 
-  /**
-   * @param opened Whether the menu is expanded.
-   * @return Which icon to use.
-   */
-  private arrowState_(opened: boolean): string {
-    return opened ? 'cr:arrow-drop-up' : 'cr:arrow-drop-down';
-  }
-
   private onExtensionsLinkClick_() {
     chrome.metricsPrivate.recordUserAction(
         'SettingsMenu_ExtensionsLinkClicked');
   }
+}
 
-  private boolToString_(bool: boolean): string {
-    return bool.toString();
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-menu': SettingsMenuElement;
   }
 }
 

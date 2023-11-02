@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/hash/hash.h"
 #include "base/logging.h"
+#include "base/observer_list.h"
 #include "base/strings/string_split.h"
 #include "base/time/time.h"
 #include "ui/display/display.h"
@@ -129,7 +130,8 @@ void FakeDisplayDelegate::GetDisplays(GetDisplaysCallback callback) {
 
 void FakeDisplayDelegate::Configure(
     const std::vector<display::DisplayConfigurationParams>& config_requests,
-    ConfigureCallback callback) {
+    ConfigureCallback callback,
+    uint32_t modeset_flag) {
   bool config_success = true;
   for (const auto& config : config_requests) {
     bool request_success = false;
@@ -196,7 +198,11 @@ bool FakeDisplayDelegate::SetGammaCorrection(
   return false;
 }
 
-void FakeDisplayDelegate::SetPrivacyScreen(int64_t display_id, bool enabled) {}
+void FakeDisplayDelegate::SetPrivacyScreen(int64_t display_id,
+                                           bool enabled,
+                                           SetPrivacyScreenCallback callback) {
+  std::move(callback).Run(false);
+}
 
 void FakeDisplayDelegate::AddObserver(NativeDisplayObserver* observer) {
   observers_.AddObserver(observer);

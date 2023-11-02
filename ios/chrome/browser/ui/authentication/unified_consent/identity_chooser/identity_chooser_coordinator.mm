@@ -1,13 +1,13 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_coordinator.h"
 
-#include <ostream>
+#import <ostream>
 
-#include "base/check_op.h"
-#include "base/notreached.h"
+#import "base/check_op.h"
+#import "base/notreached.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_coordinator_delegate.h"
@@ -104,11 +104,11 @@ typedef NS_ENUM(NSInteger, IdentityChooserCoordinatorState) {
 
 #pragma mark - Setters/Getters
 
-- (void)setSelectedIdentity:(ChromeIdentity*)selectedIdentity {
+- (void)setSelectedIdentity:(id<SystemIdentity>)selectedIdentity {
   self.identityChooserMediator.selectedIdentity = selectedIdentity;
 }
 
-- (ChromeIdentity*)selectedIdentity {
+- (id<SystemIdentity>)selectedIdentity {
   return self.identityChooserMediator.selectedIdentity;
 }
 
@@ -156,7 +156,7 @@ typedef NS_ENUM(NSInteger, IdentityChooserCoordinatorState) {
   DCHECK_EQ(IdentityChooserCoordinatorStateStarted, self.state);
   [self.identityChooserMediator selectIdentityWithGaiaID:gaiaID];
   // If the account refresh token is invalidated during this
-  // operation then |identity| will be nil.
+  // operation then `identity` will be nil.
   if (self.selectedIdentity) {
     self.state = IdentityChooserCoordinatorStateClosedBySelectingIdentity;
   }

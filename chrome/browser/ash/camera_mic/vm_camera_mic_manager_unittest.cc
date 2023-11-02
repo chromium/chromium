@@ -1,26 +1,40 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/camera_mic/vm_camera_mic_manager.h"
 
-#include <algorithm>
 #include <memory>
 #include <utility>
 
+#include "ash/constants/ash_constants.h"
+#include "ash/constants/ash_features.h"
+#include "ash/public/cpp/ash_prefs.h"
 #include "ash/public/cpp/vm_camera_mic_constants.h"
+#include "ash/root_window_controller.h"
+#include "ash/shell.h"
+#include "ash/system/privacy/privacy_indicators_tray_item_view.h"
+#include "ash/system/status_area_widget.h"
+#include "ash/system/unified/unified_system_tray.h"
+#include "ash/test/ash_test_helper.h"
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/users/mock_user_manager.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/account_id/account_id.h"
+#include "components/prefs/testing_pref_service.h"
+#include "components/services/app_service/public/cpp/features.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/display/test/display_manager_test_api.h"
 
 namespace {
 using testing::UnorderedElementsAre;
@@ -83,10 +97,16 @@ struct IsActiveTestParam {
   std::vector<NotificationType> notification_expectations;
 };
 
-template <typename T, typename V>
-bool contains(const T& container, const V& value) {
-  return std::find(container.begin(), container.end(), value) !=
-         container.end();
+// Check the visibility of privacy indicators in all displays.
+void ExpectPrivacyIndicatorsVisible(bool visible) {
+  for (ash::RootWindowController* root_window_controller :
+       ash::Shell::Get()->GetAllRootWindowControllers()) {
+    EXPECT_EQ(root_window_controller->GetStatusAreaWidget()
+                  ->unified_system_tray()
+                  ->privacy_indicators_view()
+                  ->GetVisible(),
+              visible);
+  }
 }
 
 }  // namespace
@@ -224,6 +244,73 @@ TEST_F(VmCameraMicManagerTest, CameraPrivacy) {
       vm_camera_mic_manager_->IsNotificationActive(kCameraNotification));
 }
 
+// Test when PrivacyIndicators feature is enabled.
+class VmCameraMicManagerPrivacyIndicatorsTest : public VmCameraMicManagerTest {
+ public:
+  // VmCameraMicManagerTest:
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        {apps::kAppServiceCapabilityAccessWithoutMojom,
+         ash::features::kPrivacyIndicators},
+        {});
+
+    // Setting ash prefs for testing multi-display.
+    ash::RegisterLocalStatePrefs(local_state_.registry(), /*for_test=*/true);
+
+    ash::AshTestHelper::InitParams params;
+    params.local_state = &local_state_;
+    ash_test_helper_.SetUp(std::move(params));
+  }
+
+  void TearDown() override { ash_test_helper_.TearDown(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+
+  // Use this for testing multi-display.
+  TestingPrefServiceSimple local_state_;
+
+  ash::AshTestHelper ash_test_helper_;
+};
+
+TEST_F(VmCameraMicManagerPrivacyIndicatorsTest, Notification) {
+  auto& notification_ids = fake_display_service_->notification_ids();
+  auto expected_id = ash::kPrivacyIndicatorsNotificationIdPrefix +
+                     GetNotificationId(VmType::kPluginVm, kCameraNotification);
+
+  SetCameraAccessing(kPluginVm, false);
+  SetCameraPrivacyIsOn(false);
+  ForwardToStable();
+  EXPECT_FALSE(vm_camera_mic_manager_->IsDeviceActive(kCamera));
+  EXPECT_FALSE(
+      vm_camera_mic_manager_->IsNotificationActive(kCameraNotification));
+  EXPECT_FALSE(base::Contains(notification_ids, expected_id));
+
+  SetCameraAccessing(kPluginVm, true);
+  SetCameraPrivacyIsOn(false);
+  ForwardToStable();
+  EXPECT_TRUE(vm_camera_mic_manager_->IsDeviceActive(kCamera));
+  EXPECT_TRUE(
+      vm_camera_mic_manager_->IsNotificationActive(kCameraNotification));
+  EXPECT_TRUE(base::Contains(notification_ids, expected_id));
+}
+
+TEST_F(VmCameraMicManagerPrivacyIndicatorsTest, PrivacyIndicatorsView) {
+  // Make sure privacy indicators work on multiple displays.
+  display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
+      .UpdateDisplay("800x800,801+0-800x800");
+
+  SetCameraAccessing(kPluginVm, false);
+  SetCameraPrivacyIsOn(false);
+  ForwardToStable();
+  ExpectPrivacyIndicatorsVisible(/*visible=*/false);
+
+  SetCameraAccessing(kPluginVm, true);
+  SetCameraPrivacyIsOn(false);
+  ForwardToStable();
+  ExpectPrivacyIndicatorsVisible(/*visible=*/true);
+}
+
 // Test `IsDeviceActive()` and `IsNotificationActive()`.
 class VmCameraMicManagerIsActiveTest
     : public VmCameraMicManagerTest,
@@ -234,13 +321,14 @@ TEST_P(VmCameraMicManagerIsActiveTest, IsNotificationActive) {
 
   for (auto device : {kCamera, kMic}) {
     EXPECT_EQ(vm_camera_mic_manager_->IsDeviceActive(device),
-              contains(GetParam().device_expectations, device));
+              base::Contains(GetParam().device_expectations, device));
   }
 
   for (auto notification :
        {kCameraNotification, kMicNotification, kCameraAndMicNotification}) {
-    EXPECT_EQ(vm_camera_mic_manager_->IsNotificationActive(notification),
-              contains(GetParam().notification_expectations, notification));
+    EXPECT_EQ(
+        vm_camera_mic_manager_->IsNotificationActive(notification),
+        base::Contains(GetParam().notification_expectations, notification));
   }
 }
 

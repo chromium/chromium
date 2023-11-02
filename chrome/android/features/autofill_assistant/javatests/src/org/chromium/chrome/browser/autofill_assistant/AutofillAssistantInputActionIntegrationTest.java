@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.checkElementExists;
+import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.getElementChecked;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.getElementValue;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.startAutofillAssistant;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntil;
@@ -27,6 +28,7 @@ import static org.chromium.chrome.browser.autofill_assistant.MiniActionTestUtil.
 import static org.chromium.chrome.browser.autofill_assistant.MiniActionTestUtil.addTapSteps;
 import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.toClientId;
 import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.toCssSelector;
+import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.toIFrameCssSelector;
 
 import androidx.test.filters.MediumTest;
 
@@ -335,9 +337,9 @@ public class AutofillAssistantInputActionIntegrationTest {
 
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(TEST_SCRIPT, list);
 
-        checkElementExists(mTestRule.getWebContents(), "touch_area_one");
-        checkElementExists(mTestRule.getWebContents(), "touch_area_five");
-        checkElementExists(mTestRule.getWebContents(), "touch_area_six");
+        assertThat(checkElementExists(mTestRule.getWebContents(), "touch_area_one"), is(true));
+        assertThat(checkElementExists(mTestRule.getWebContents(), "touch_area_five"), is(true));
+        assertThat(checkElementExists(mTestRule.getWebContents(), "touch_area_six"), is(true));
 
         runScript(script);
 
@@ -358,8 +360,8 @@ public class AutofillAssistantInputActionIntegrationTest {
     @Test
     @MediumTest
     public void clickOnButtonCoveredByOverlay() throws Exception {
-        checkElementExists(mTestRule.getWebContents(), "button");
-        checkElementExists(mTestRule.getWebContents(), "overlay");
+        assertThat(checkElementExists(mTestRule.getWebContents(), "button"), is(true));
+        assertThat(checkElementExists(mTestRule.getWebContents(), "overlay"), is(true));
         showOverlay();
 
         // This script attempts to click 2 times on #button:
@@ -474,6 +476,156 @@ public class AutofillAssistantInputActionIntegrationTest {
 
         waitUntilViewMatchesCondition(withText("Done"), isCompletelyDisplayed());
         assertThat(getElementValue(mTestRule.getWebContents(), "select"), is("three"));
+    }
+
+    @Test
+    @MediumTest
+    public void fillTextFieldWithNativeMethod() throws Exception {
+        ArrayList<ActionProto> list = new ArrayList<>();
+
+        SelectorProto input = toCssSelector("#input2");
+        SelectorProto inputInIFrame = toIFrameCssSelector("#iframe", "#input");
+
+        MiniActionTestUtil.addSetNativeValueSteps(input, "Value 1", list);
+        MiniActionTestUtil.addSetNativeValueSteps(inputInIFrame, "Value 2", list);
+        list.add(ActionProto.newBuilder()
+                         .setPrompt(PromptProto.newBuilder()
+                                            .setMessage("Set Value")
+                                            .addChoices(Choice.newBuilder().setChip(
+                                                    ChipProto.newBuilder()
+                                                            .setType(ChipType.HIGHLIGHTED_ACTION)
+                                                            .setText("Continue"))))
+                         .build());
+
+        AutofillAssistantTestScript script = new AutofillAssistantTestScript(TEST_SCRIPT, list);
+
+        assertThat(getElementValue(mTestRule.getWebContents(), "input2"), is("helloworld2"));
+        assertThat(getElementValue(mTestRule.getWebContents(), "iframe", "input"), is(""));
+
+        runScript(script);
+
+        waitUntilViewMatchesCondition(withText("Set Value"), isCompletelyDisplayed());
+        assertThat(getElementValue(mTestRule.getWebContents(), "input2"), is("Value 1"));
+        assertThat(getElementValue(mTestRule.getWebContents(), "iframe", "input"), is("Value 2"));
+    }
+
+    @Test
+    @MediumTest
+    public void fillTextareaWithNativeMethod() throws Exception {
+        ArrayList<ActionProto> list = new ArrayList<>();
+        SelectorProto selector = toCssSelector("#textarea1");
+
+        MiniActionTestUtil.addSetNativeValueSteps(selector, "New Value", list);
+        list.add(ActionProto.newBuilder()
+                         .setPrompt(PromptProto.newBuilder()
+                                            .setMessage("Set Value")
+                                            .addChoices(Choice.newBuilder().setChip(
+                                                    ChipProto.newBuilder()
+                                                            .setType(ChipType.HIGHLIGHTED_ACTION)
+                                                            .setText("Continue"))))
+                         .build());
+
+        AutofillAssistantTestScript script = new AutofillAssistantTestScript(TEST_SCRIPT, list);
+
+        assertThat(getElementValue(mTestRule.getWebContents(), "textarea1"),
+                is("Initial textarea value."));
+
+        runScript(script);
+
+        waitUntilViewMatchesCondition(withText("Set Value"), isCompletelyDisplayed());
+
+        assertThat(getElementValue(mTestRule.getWebContents(), "textarea1"), is("New Value"));
+    }
+
+    @Test
+    @MediumTest
+    public void fillDropdownWithNativeMethod() throws Exception {
+        ArrayList<ActionProto> list = new ArrayList<>();
+
+        SelectorProto selector = toCssSelector("#select");
+
+        MiniActionTestUtil.addSetNativeValueSteps(selector, "three", list);
+        list.add(ActionProto.newBuilder()
+                         .setPrompt(PromptProto.newBuilder()
+                                            .setMessage("Set Value")
+                                            .addChoices(Choice.newBuilder().setChip(
+                                                    ChipProto.newBuilder()
+                                                            .setType(ChipType.HIGHLIGHTED_ACTION)
+                                                            .setText("Continue"))))
+                         .build());
+
+        AutofillAssistantTestScript script = new AutofillAssistantTestScript(TEST_SCRIPT, list);
+
+        assertThat(getElementValue(mTestRule.getWebContents(), "select"), is("one"));
+
+        runScript(script);
+
+        waitUntilViewMatchesCondition(withText("Set Value"), isCompletelyDisplayed());
+
+        assertThat(getElementValue(mTestRule.getWebContents(), "select"), is("three"));
+    }
+
+    @Test
+    @MediumTest
+    public void fillCheckboxWithNativeMethod() throws Exception {
+        ArrayList<ActionProto> list = new ArrayList<>();
+
+        SelectorProto selectorOption2 = toCssSelector("#option2");
+        SelectorProto selectorOption3 = toCssSelector("#option3");
+
+        MiniActionTestUtil.addSetNativeCheckedSteps(selectorOption2, true, list);
+        MiniActionTestUtil.addSetNativeCheckedSteps(selectorOption3, false, list);
+        list.add(ActionProto.newBuilder()
+                         .setPrompt(PromptProto.newBuilder()
+                                            .setMessage("Set Value")
+                                            .addChoices(Choice.newBuilder().setChip(
+                                                    ChipProto.newBuilder()
+                                                            .setType(ChipType.HIGHLIGHTED_ACTION)
+                                                            .setText("Continue"))))
+                         .build());
+
+        AutofillAssistantTestScript script = new AutofillAssistantTestScript(TEST_SCRIPT, list);
+
+        assertThat(getElementChecked(mTestRule.getWebContents(), "option2"), is(false));
+        assertThat(getElementChecked(mTestRule.getWebContents(), "option3"), is(true));
+
+        runScript(script);
+
+        waitUntilViewMatchesCondition(withText("Set Value"), isCompletelyDisplayed());
+
+        assertThat(getElementChecked(mTestRule.getWebContents(), "option2"), is(true));
+        assertThat(getElementChecked(mTestRule.getWebContents(), "option3"), is(false));
+    }
+
+    @Test
+    @MediumTest
+    public void fillRadioButtonWithNativeMethod() throws Exception {
+        ArrayList<ActionProto> list = new ArrayList<>();
+
+        SelectorProto selectorRed = toCssSelector("#radio_red");
+        SelectorProto selectorBlue = toCssSelector("#radio_blue");
+
+        MiniActionTestUtil.addSetNativeCheckedSteps(selectorRed, true, list);
+        list.add(ActionProto.newBuilder()
+                         .setPrompt(PromptProto.newBuilder()
+                                            .setMessage("Set Value")
+                                            .addChoices(Choice.newBuilder().setChip(
+                                                    ChipProto.newBuilder()
+                                                            .setType(ChipType.HIGHLIGHTED_ACTION)
+                                                            .setText("Continue"))))
+                         .build());
+
+        AutofillAssistantTestScript script = new AutofillAssistantTestScript(TEST_SCRIPT, list);
+
+        assertThat(getElementChecked(mTestRule.getWebContents(), "radio_red"), is(false));
+        assertThat(getElementChecked(mTestRule.getWebContents(), "radio_blue"), is(false));
+
+        runScript(script);
+
+        waitUntilViewMatchesCondition(withText("Set Value"), isCompletelyDisplayed());
+
+        assertThat(getElementChecked(mTestRule.getWebContents(), "radio_red"), is(true));
+        assertThat(getElementChecked(mTestRule.getWebContents(), "radio_blue"), is(false));
     }
 
     private void runScript(AutofillAssistantTestScript script) {

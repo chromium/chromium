@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -36,16 +37,16 @@
 #include "chromeos/services/tts/tts_service.h"
 #endif  // IS_CHROMEOS_ASH
 
+using ::testing::_;
 using ::testing::AnyNumber;
 using ::testing::DoAll;
-using ::testing::Invoke;
 using ::testing::InSequence;
+using ::testing::Invoke;
 using ::testing::InvokeWithoutArgs;
 using ::testing::Return;
 using ::testing::SaveArg;
 using ::testing::SetArgPointee;
 using ::testing::StrictMock;
-using ::testing::_;
 
 namespace {
 int g_saved_utterance_id;
@@ -131,12 +132,18 @@ class MockTtsPlatformImpl : public content::TtsPlatform {
 
   void Shutdown() override {}
 
-  bool PreferEngineDelegateVoices() override { return true; }
+  void FinalizeVoiceOrdering(std::vector<content::VoiceData>& voices) override {
+    // Prefer non-native voices.
+    std::stable_partition(
+        voices.begin(), voices.end(),
+        [](const content::VoiceData& voice) { return !voice.native; });
+  }
 
-  void GetVoicesForBrowserContext(
-      content::BrowserContext* browser_context,
-      const GURL& source_url,
-      std::vector<content::VoiceData>* out_voices) override {}
+  void RefreshVoices() override {}
+
+  content::ExternalPlatformDelegate* GetExternalPlatformDelegate() override {
+    return nullptr;
+  }
 
   void set_should_fake_get_voices(bool val) { should_fake_get_voices_ = val; }
 
@@ -272,7 +279,7 @@ class EventRouterAddListenerWaiter : public EventRouter::Observer {
   }
 
  private:
-  EventRouter* const event_router_;
+  const raw_ptr<EventRouter> event_router_;
   base::RunLoop loop_runner_;
 };
 
@@ -505,7 +512,7 @@ IN_PROC_BROWSER_TEST_F(TtsApiTest, RegisterEngine) {
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // https://crbug.com/709115 tracks test flakiness.
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #define MAYBE_EngineError DISABLED_EngineError
 #else
 #define MAYBE_EngineError EngineError

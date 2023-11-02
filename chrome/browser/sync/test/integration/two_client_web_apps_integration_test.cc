@@ -1,11 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/sync/test/integration/two_client_web_apps_integration_test_base.h"
 #include "content/public/test/browser_test.h"
 
-namespace web_app {
+namespace web_app::integration_tests {
 namespace {
 
 // This test is a part of the web app integration test suite, which is
@@ -16,7 +16,7 @@ namespace {
 // TODO(dmurph): Integration tests will go here once all actions are
 // implemented.
 
-using TwoClientWebAppsIntegrationTest = TwoClientWebAppsIntegrationTestBase;
+using WebAppIntegration = TwoClientWebAppsIntegrationTestBase;
 
 }  // namespace
-}  // namespace web_app
+}  // namespace web_app::integration_tests

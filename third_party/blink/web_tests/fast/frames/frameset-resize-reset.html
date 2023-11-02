@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/testdriver.js"></script>
+<script src="../../resources/testdriver-actions.js"></script>
+<script src="../../resources/testdriver-vendor.js"></script>
+<style>
+body { margin: 0; }
+iframe { border: none; }
+</style>
+<iframe srcdoc="
+  <frameset border=10 rows='100,100' cols='100,100'>
+   <frame src='about:blank'></frame>
+   <frame src='about:blank'></frame>
+   <frame src='about:blank'></frame>
+   <frame src='about:blank'></frame>
+  </frameset>" style="width:210px; height:210px">
+</iframe>
+<script>
+promise_test(async () => {
+  await new Promise(resolve => { window.addEventListener('load', resolve, {once:true}); });
+  const frames = document.querySelector('iframe').contentDocument.querySelectorAll('frame');
+  assert_equals(frames[0].offsetHeight, 100);
+  assert_equals(frames[2].offsetHeight, 100);
+
+  // Drag-down the horizontal border.
+  await new test_driver.Actions()
+      .pointerMove(42, 105)
+      .pointerDown()
+      .pointerMove(42, 150)
+      .addTick().send();
+  assert_greater_than(frames[0].offsetHeight, 100);
+  assert_less_than(frames[2].offsetHeight, 100);
+
+  // Move under the bottom of frames[2] ==> Reset
+  await new test_driver.Actions()
+      .pointerMove(42, 220).addTick().send();
+  assert_equals(frames[0].offsetHeight, 100);
+  assert_equals(frames[2].offsetHeight, 100);
+
+  await new test_driver.Actions()
+      .pointerMove(42, 150).pointerUp().addTick().send();
+  assert_greater_than(frames[0].offsetHeight, 100);
+  assert_less_than(frames[2].offsetHeight, 100);
+}, 'Test resizing after over-resizing');
+</script>

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,6 +25,7 @@
 #include "content/public/common/content_descriptors.h"
 #include "sandbox/linux/services/namespace_sandbox.h"
 #include "third_party/crashpad/crashpad/client/crashpad_client.h"
+#include "third_party/crashpad/crashpad/client/crashpad_info.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "base/build_time.h"
@@ -67,16 +68,6 @@ bool GetHandlerSocket(int* fd, pid_t* pid) {
   return crashpad::CrashpadClient::GetHandlerSocket(fd, pid);
 }
 
-void SetPtracerAtFork() {
-  pid_t pid;
-  if (!GetHandlerSocket(nullptr, &pid)) {
-    return;
-  }
-  if (pid > 0 && prctl(PR_SET_PTRACER, pid, 0, 0, 0) != 0) {
-    PLOG(ERROR) << "prctl";
-  }
-}
-
 namespace internal {
 
 bool PlatformCrashpadInitialization(
@@ -110,8 +101,8 @@ bool PlatformCrashpadInitialization(
   }
 #endif
 
+  CrashReporterClient* crash_reporter_client = GetCrashReporterClient();
   if (initial_client) {
-    CrashReporterClient* crash_reporter_client = GetCrashReporterClient();
     base::FilePath metrics_path;
     crash_reporter_client->GetCrashDumpLocation(database_path);
     crash_reporter_client->GetCrashMetricsLocation(&metrics_path);
@@ -126,7 +117,7 @@ bool PlatformCrashpadInitialization(
     // to ChromeOS's /sbin/crash_reporter which in turn passes the dump to
     // crash_sender which handles the upload.
     std::string url;
-#if !(BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if !BUILDFLAG(IS_CHROMEOS)
     url = crash_reporter_client->GetUploadUrl();
 #else
     url = std::string();
@@ -165,7 +156,7 @@ bool PlatformCrashpadInitialization(
     annotations["build_time_millis"] = base::NumberToString(build_time);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
     // Chromium OS: save board and builder path for 'tast symbolize'.
     annotations["chromeos-board"] = base::SysInfo::GetLsbReleaseBoard();
     std::string builder_path;
@@ -190,7 +181,7 @@ bool PlatformCrashpadInitialization(
     // contain these annotations.
     arguments.push_back("--monitor-self-annotation=ptype=crashpad-handler");
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
     arguments.push_back("--use-cros-crash-reporter");
 
     if (crash_reporter_client->IsRunningUnattended()) {
@@ -200,33 +191,39 @@ bool PlatformCrashpadInitialization(
     }
 #endif
 
-    bool result =
-        client.StartHandler(handler_path, *database_path, metrics_path, url,
-                            annotations, arguments, false, false);
-    DCHECK(result);
+    CHECK(client.StartHandler(handler_path, *database_path, metrics_path, url,
+                              annotations, arguments, false, false));
+  } else {
+    int fd = base::GlobalDescriptors::GetInstance()->Get(kCrashDumpSignal);
 
-    pthread_atfork(nullptr, nullptr, SetPtracerAtFork);
-    return true;
+    pid_t pid = 0;
+    if (!sandbox::NamespaceSandbox::InNewUserNamespace()) {
+      std::string pid_string =
+          base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+              switches::kCrashpadHandlerPid);
+      bool parsed = base::StringToInt(pid_string, &pid);
+      DCHECK(parsed);
+    }
+
+    // SIGSYS handling is reserved for the sandbox.
+    client.SetUnhandledSignals({SIGSYS});
+
+    client.SetHandlerSocket(crashpad::ScopedFileHandle(fd), pid);
+
+    *database_path = base::FilePath();
   }
 
-  int fd = base::GlobalDescriptors::GetInstance()->Get(kCrashDumpSignal);
+  // In the not-large-dumps case record enough extra memory to be able to save
+  // dereferenced memory from all registers on the crashing thread. crashpad may
+  // save 512-bytes per register, and the largest register set (not including
+  // stack pointers) is ARM64 with 32 registers. Hence, 16 KiB.
+  const uint32_t kIndirectMemoryLimit =
+      crash_reporter_client->GetShouldDumpLargerDumps() ? 4 * 1024 * 1024
+                                                        : 16 * 1024;
+  crashpad::CrashpadInfo::GetCrashpadInfo()
+      ->set_gather_indirectly_referenced_memory(crashpad::TriState::kEnabled,
+                                                kIndirectMemoryLimit);
 
-  pid_t pid = 0;
-  if (!sandbox::NamespaceSandbox::InNewUserNamespace()) {
-    std::string pid_string =
-        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-            switches::kCrashpadHandlerPid);
-    bool parsed = base::StringToInt(pid_string, &pid);
-    DCHECK(parsed);
-  }
-
-  // SIGSYS handling is reserved for the sandbox.
-  client.SetUnhandledSignals({SIGSYS});
-
-  client.SetHandlerSocket(crashpad::ScopedFileHandle(fd), pid);
-
-  pthread_atfork(nullptr, nullptr, SetPtracerAtFork);
-  *database_path = base::FilePath();
   return true;
 }
 

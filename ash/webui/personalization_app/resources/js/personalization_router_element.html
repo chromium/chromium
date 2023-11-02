@@ -1,0 +1,76 @@
+<style include="common">
+  #container {
+    display: flex;
+    flex-flow: column nowrap;
+    position: relative;
+    width: 100%;
+  }
+  #breadcrumbArea {
+    background-color: var(--cros-bg-color);
+    display: grid;
+    grid-template-areas:
+      '. . breadcrumb . .';
+    grid-template-columns: 1fr 16px minmax(568px, 920px) 16px 1fr;
+    grid-template-rows: 56px;
+    position: sticky;
+    top: 0;
+    width: 100%;
+    /* z-index for breadcrumb should be higher than other elements 
+    (such as preview-image-border) so that it won't be overlapped 
+    during scrolling in hub subpages */
+    z-index: 3;
+  }
+  personalization-breadcrumb {
+    grid-area: breadcrumb;
+  }
+  personalization-toast {
+    bottom: 16px;
+    left: 16px;
+    max-width: 380px;
+    position: sticky;
+  }
+  wallpaper-fullscreen {
+    bottom: 0;
+    height: 100%;
+    left: 0;
+    pointer-events: none;
+    position: absolute;
+    width: 100%;
+  }
+  wallpaper-subpage {
+    flex-grow: 1;
+  }
+</style>
+<div id="container">
+  <!-- dwell-time is set to 200ms to populate history state more quickly while
+       still respecting the grace period defined in iron-location.  -->
+  <iron-location path="{{path_}}" query="{{query_}}" dwell-time="200">
+  </iron-location>
+  <iron-query-params params-object="{{queryParams_}}"
+    params-string="{{query_}}">
+  </iron-query-params>
+  <template is="dom-if" if="[[shouldShowBreadcrumb_(path_)]]">
+    <div id="breadcrumbArea">
+      <personalization-breadcrumb path="[[path_]]"
+          collection-id="[[queryParams_.id]]"
+          google-photos-album-id="[[queryParams_.googlePhotosAlbumId]]"
+          topic-source="[[queryParams_.topicSource]]">
+      </personalization-breadcrumb>
+    </div>
+  </template>
+  <template is="dom-if" if="[[shouldShowRootPage_(path_)]]">
+    <personalization-main path="[[path_]]"></personalization-main>
+  </template>
+  <template is="dom-if" if="[[shouldShowAmbientSubpage_(path_)]]" restamp>
+    <ambient-subpage path="[[path_]]" query-params="[[queryParams_]]">
+    </ambient-subpage>
+  </template>
+  <template is="dom-if" if="[[shouldShowUserSubpage_(path_)]]" restamp>
+    <user-subpage path="[[path_]]"></user-subpage>
+  </template>
+  <template is="dom-if" if="[[shouldShowWallpaperSubpage_(path_)]]" restamp>
+    <wallpaper-subpage path="[[path_]]" query-params="[[queryParams_]]">
+    </wallpaper-subpage>
+  </template>
+  <personalization-toast></personalization-toast>
+</div>

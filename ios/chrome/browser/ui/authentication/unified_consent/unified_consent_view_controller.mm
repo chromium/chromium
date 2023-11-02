@@ -1,31 +1,31 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/authentication/unified_consent/unified_consent_view_controller.h"
 
-#include <ostream>
+#import <ostream>
 
-#include "base/check_op.h"
-#include "base/ios/ns_range.h"
-#include "base/notreached.h"
-#include "components/google/core/common/google_util.h"
-#include "ios/chrome/browser/application_context.h"
-#include "ios/chrome/browser/chrome_url_constants.h"
+#import "base/check_op.h"
+#import "base/ios/ns_range.h"
+#import "base/notreached.h"
+#import "components/google/core/common/google_util.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/ui/authentication/authentication_constants.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/unified_consent_constants.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/unified_consent_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/authentication/views/identity_button_control.h"
-#import "ios/chrome/browser/ui/colors/MDCPalette+CrAdditions.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#include "ios/chrome/common/string_util.h"
+#import "ios/chrome/browser/url/chrome_url_constants.h"
+#import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
-#include "ios/chrome/grit/ios_chromium_strings.h"
-#include "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/common/ui/util/text_view_util.h"
+#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "net/base/mac/url_conversions.h"
-#include "ui/base/l10n/l10n_util_mac.h"
-#include "url/gurl.h"
+#import "ui/base/l10n/l10n_util_mac.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -49,10 +49,10 @@ const char* const kSettingsSyncURL = "internal://settings-sync";
 @interface UnifiedConsentViewController () <UIScrollViewDelegate,
                                             UITextViewDelegate> {
   std::vector<int> _consentStringIds;
+  // YES if the dialog is used for post restore sign-in promo.
+  BOOL _postRestoreSigninPromo;
 }
 
-// Read/write internal.
-@property(nonatomic, readwrite) int openSettingsStringId;
 // Main view.
 @property(nonatomic, strong) UIScrollView* scrollView;
 // Identity picker to change the identity to sign-in.
@@ -75,6 +75,14 @@ const char* const kSettingsSyncURL = "internal://settings-sync";
 @end
 
 @implementation UnifiedConsentViewController
+
+- (instancetype)initWithPostRestoreSigninPromo:(BOOL)postRestoreSigninPromo {
+  self = [super initWithNibName:nil bundle:nil];
+  if (self) {
+    _postRestoreSigninPromo = postRestoreSigninPromo;
+  }
+  return self;
+}
 
 - (const std::vector<int>&)consentStringIds {
   return _consentStringIds;
@@ -195,7 +203,7 @@ const char* const kSettingsSyncURL = "internal://settings-sync";
   [container addSubview:separator];
 
   // Sync settings description.
-  self.syncSettingsTextView = [[UITextView alloc] init];
+  self.syncSettingsTextView = CreateUITextViewWithTextKit1();
   self.syncSettingsTextView.scrollEnabled = NO;
   self.syncSettingsTextView.editable = NO;
   self.syncSettingsTextView.delegate = self;
@@ -205,11 +213,6 @@ const char* const kSettingsSyncURL = "internal://settings-sync";
   self.syncSettingsTextView.adjustsFontForContentSizeCategory = YES;
   self.syncSettingsTextView.translatesAutoresizingMaskIntoConstraints = NO;
   [container addSubview:self.syncSettingsTextView];
-
-  self.openSettingsStringId =
-      self.delegate.unifiedConsentCoordinatorHasManagedSyncDataType
-          ? IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SYNC_MANAGED_SETTINGS
-          : IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SETTINGS;
 
   // Layouts
   NSDictionary* views = @{
@@ -272,8 +275,8 @@ const char* const kSettingsSyncURL = "internal://settings-sync";
 
   // Adding constraints for header image.
   AddSameCenterXConstraint(self.view, headerImageView);
-  // |headerView| fills 20% of |view|, capped at
-  // |kAuthenticationHeaderImageHeight|.
+  // `headerView` fills 20% of `view`, capped at
+  // `kAuthenticationHeaderImageHeight`.
   [headerImageView.heightAnchor
       constraintLessThanOrEqualToAnchor:self.view.heightAnchor
                              multiplier:0.2]
@@ -296,7 +299,7 @@ const char* const kSettingsSyncURL = "internal://settings-sync";
   [container.widthAnchor constraintEqualToAnchor:safeArea.widthAnchor].active =
       YES;
 
-  // Adding constraints for |imageBackgroundView|.
+  // Adding constraints for `imageBackgroundView`.
   AddSameCenterXConstraint(self.view, imageBackgroundView);
   [imageBackgroundView.widthAnchor
       constraintEqualToAnchor:self.view.widthAnchor]
@@ -375,7 +378,7 @@ const char* const kSettingsSyncURL = "internal://settings-sync";
   if (_managementNoticeTextView)
     return _managementNoticeTextView;
 
-  _managementNoticeTextView = [[UITextView alloc] init];
+  _managementNoticeTextView = CreateUITextViewWithTextKit1();
   _managementNoticeTextView.scrollEnabled = NO;
   _managementNoticeTextView.editable = NO;
   _managementNoticeTextView.delegate = self;
@@ -402,7 +405,7 @@ const char* const kSettingsSyncURL = "internal://settings-sync";
   return _managementNoticeTextView;
 }
 
-// Adds label with title |stringId| into |parentView|.
+// Adds label with title `stringId` into `parentView`.
 - (UILabel*)addLabelWithStringId:(int)stringId
                        fontStyle:(UIFontTextStyle)fontStyle
                        textColor:(UIColor*)textColor
@@ -425,7 +428,20 @@ const char* const kSettingsSyncURL = "internal://settings-sync";
 // customize Settings is shown when there is at least one selected identity on
 // the device.
 - (void)setSettingsLinkURLShown:(BOOL)showLink {
-  NSString* text = l10n_util::GetNSString(self.openSettingsStringId);
+  int openSettingsStringId;
+  if (_postRestoreSigninPromo) {
+    openSettingsStringId =
+        self.delegate.unifiedConsentCoordinatorHasManagedSyncDataType
+            ? IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SYNC_MANAGED_SETTINGS_POST_RESTORE_PROMO
+            : IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SETTINGS_POST_RESTORE_PROMO;
+  } else {
+    openSettingsStringId =
+        self.delegate.unifiedConsentCoordinatorHasManagedSyncDataType
+            ? IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SYNC_MANAGED_SETTINGS
+            : IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SETTINGS;
+  }
+  NSString* text = l10n_util::GetNSString(openSettingsStringId);
+  _consentStringIds.push_back(openSettingsStringId);
   NSDictionary* textAttributes = @{
     NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor],
     NSFontAttributeName :
@@ -464,8 +480,8 @@ const char* const kSettingsSyncURL = "internal://settings-sync";
   return NO;
 }
 
-// Updates constraints and content insets for the |scrollView| and
-// |imageBackgroundView| related to non-safe area.
+// Updates constraints and content insets for the `scrollView` and
+// `imageBackgroundView` related to non-safe area.
 - (void)updateScrollViewAndImageBackgroundView {
   self.scrollView.contentInset = self.view.safeAreaInsets;
   self.imageBackgroundViewHeightConstraint.constant =
@@ -485,7 +501,7 @@ const char* const kSettingsSyncURL = "internal://settings-sync";
 }
 
 // Updates the header view constraints based on the height class traits of
-// |view|.
+// `view`.
 - (void)updateHeaderViewConstraints {
   if (IsCompactHeight(self)) {
     self.headerViewMaxHeightConstraint.constant = 0;

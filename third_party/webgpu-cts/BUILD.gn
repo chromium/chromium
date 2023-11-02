@@ -1,4 +1,4 @@
-# Copyright 2021 The Chromium Authors.  All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -19,7 +19,7 @@ foreach(file, list_from_ts_sources_txt) {
 }
 
 js_outputs = []
-foreach(ts_file, list_from_ts_sources_txt) {
+foreach(ts_file, filter_exclude(list_from_ts_sources_txt, [ "*.d.ts" ])) {
   js_file = string_replace(ts_file, ".ts", ".js")
   js_node_file = string_replace(js_file, "src/", "src-node/")
 
@@ -27,7 +27,9 @@ foreach(ts_file, list_from_ts_sources_txt) {
 
   if (js_node_file != "src-node/common/runtime/wpt.js" &&
       js_node_file != "src-node/common/runtime/standalone.js" &&
-      js_node_file != "src-node/common/runtime/helper/test_worker.js") {
+      js_node_file != "src-node/common/runtime/helper/test_worker.js" &&
+      js_node_file !=
+      "src-node/webgpu/web_platform/worker/worker_launcher.js") {
     js_outputs += [ "$target_gen_dir/$js_node_file" ]
   }
 }
@@ -39,6 +41,10 @@ action("compile_src") {
              "//third_party/node/node_modules/typescript/lib/tsc.js",
              "//third_party/node/node.py",
              "scripts/tsc_ignore_errors.py",
+
+             # If the only change is that a file is deleted, we still need to
+             # rebuild so that listing.js gets updated.
+             "ts_sources.txt",
            ] + ts_source_inputs
 
   outputs = js_outputs
@@ -69,6 +75,10 @@ copy("copy_resources") {
 
 action("verify_gen_ts_dep_list") {
   script = "scripts/gen_ts_dep_lists.py"
+  inputs = [
+    "resource_files.txt",
+    "ts_sources.txt",
+  ]
   outputs = [ "$target_out_dir/run_$target_name.stamp" ]
   args = [
     "--check",
@@ -78,19 +88,8 @@ action("verify_gen_ts_dep_list") {
 }
 
 action("verify_regenerate_internal_cts_html") {
-  # Call wrapper script run_regenerate_internal_cts_html because
-  # this script only works with vpython (not vpython3).
   script = "scripts/run_regenerate_internal_cts_html.py"
-  inputs = [
-             "scripts/compile_src.py",
-             "scripts/tsc_ignore_errors.py",
-             "scripts/regenerate_internal_cts_html.py",
-             "scripts/regenerate_internal_cts_html.bat",
-             "//third_party/node/node.py",
-             "//third_party/blink/web_tests/wpt_internal/webgpu/cts.https.html",
-             "//third_party/blink/web_tests/webgpu/ctshtml-template.txt",
-             "//third_party/blink/web_tests/webgpu/argsprefixes.txt",
-           ] + ts_source_inputs
+  inputs = [ "scripts/regenerate_internal_cts_html.py" ] + ts_source_inputs
 
   outputs = [ "$target_out_dir/run_$target_name.stamp" ]
 

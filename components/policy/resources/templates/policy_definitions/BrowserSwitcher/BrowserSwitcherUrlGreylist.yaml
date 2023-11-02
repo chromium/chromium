@@ -1,0 +1,27 @@
+caption: Websites that should never trigger a browser switch.
+desc: |-
+  Setting the policy controls the list of websites that will never cause a browser switch. Each item is treated as a rule. Those rules that match won't open an alternative browser. Unlike the <ph name="URL_LIST_POLICY_NAME">BrowserSwitcherUrlList</ph> policy, rules apply to both directions. When the <ph name="IE_PRODUCT_NAME">Internet Explorer®</ph> add-in is on, it also controls whether <ph name="IE_PRODUCT_NAME">Internet Explorer®</ph> should open these URLs in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
+
+        Leaving the policy unset adds no websites to the list.
+
+        Note: Elements can also be added to this list through the <ph name="EXTERNAL_SITELIST_URL_POLICY_NAME">BrowserSwitcherExternalGreylistUrl</ph> policy.
+example_value:
+- ie.com
+- '!open-in-chrome.ie.com'
+- foobar.com/ie-only/
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- fuchsia
+owners:
+- nicolaso@chromium.org
+- pastarmovj@chromium.org
+schema:
+  items:
+    type: string
+  type: array
+supported_on:
+- chrome.*:71-
+tags: []
+type: list

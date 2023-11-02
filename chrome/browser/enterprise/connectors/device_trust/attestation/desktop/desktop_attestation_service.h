@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,18 +8,22 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
+#include "base/task/task_runner.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/attestation_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/desktop/google_keys.h"
-#include "chrome/browser/enterprise/connectors/device_trust/key_management/core/signing_key_pair.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace policy {
+class BrowserDMTokenStorage;
+}  // namespace policy
 
 namespace enterprise_connectors {
 
-class DeviceTrustSignals;
-class EncryptedData;
-class KeyPersistenceDelegate;
-class KeyInfo;
+class DeviceTrustKeyManager;
 
 // This class is in charge of handling the key pair used for attestation. Also
 // provides the methods needed in the handshake between Chrome, an IdP and
@@ -27,56 +31,56 @@ class KeyInfo;
 class DesktopAttestationService : public AttestationService {
  public:
   explicit DesktopAttestationService(
-      std::unique_ptr<KeyPersistenceDelegate> key_persistence_delegate);
+      policy::BrowserDMTokenStorage* dm_token_storage,
+      DeviceTrustKeyManager* key_manager);
   ~DesktopAttestationService() override;
-
-  // Export the public key of `key_pair_` in SubjectPublicKeyInfo format.
-  std::string ExportPublicKey();
-
-  // Builds a challenge response for the given challenge `request` and
-  // `signals`, and wraps it into the `result`.
-  void SignEnterpriseChallenge(const SignEnterpriseChallengeRequest& request,
-                               std::unique_ptr<DeviceTrustSignals> signals,
-                               SignEnterpriseChallengeReply* result);
 
   // AttestationService:
   void BuildChallengeResponseForVAChallenge(
       const std::string& challenge,
-      std::unique_ptr<DeviceTrustSignals> signals,
+      base::Value::Dict signals,
       AttestationCallback callback) override;
 
  private:
-  // Verify challenge comes from Verify Access.
-  bool ChallengeComesFromVerifiedAccess(
-      const std::string& serialized_signed_data,
-      const std::string& public_key_modulus_hex);
+  void OnChallengeParsed(AttestationCallback callback,
+                         base::Value::Dict signals,
+                         const std::string& serialized_signed_challenge);
 
-  // Returns the challenge response proto.
-  std::string VerifyChallengeAndMaybeCreateChallengeResponse(
-      const std::string& serialized_signed_data,
-      const std::string& public_key_modulus_hex,
-      std::unique_ptr<DeviceTrustSignals> signals);
+  void OnPublicKeyExported(const std::string& serialized_signed_challenge,
+                           base::Value::Dict signals,
+                           AttestationCallback callback,
+                           absl::optional<std::string> exported_key);
 
-  // The KeyInfo message encrypted using a public encryption key, with
-  // the following parameters:
-  //   Key encryption: RSA-OAEP with no custom parameters.
-  //   Data encryption: 256-bit key, AES-CBC with PKCS5 padding.
-  //   MAC: HMAC-SHA-512 using the AES key.
-  bool EncryptEnterpriseKeyInfo(VAType va_type,
-                                const KeyInfo& key_info,
-                                EncryptedData* encrypted_data);
+  void OnChallengeValidated(const SignedData& signed_data,
+                            const std::string& exported_public_key,
+                            base::Value::Dict signals,
+                            AttestationCallback callback,
+                            bool is_va_challenge);
 
-  // Sign `data` using `key_pair_` and store that value in `signature`.
-  bool SignChallengeData(const std::string& data, std::string* response);
+  void OnResponseCreated(AttestationCallback callback,
+                         absl::optional<std::string> serialized_response);
 
-  void ParseChallengeResponseAndRunCallback(
-      const std::string& challenge,
+  void OnResponseSigned(
       AttestationCallback callback,
-      const std::string& challenge_response_proto);
+      const std::string& serialized_response,
+      absl::optional<std::vector<uint8_t>> encrypted_response);
 
   GoogleKeys google_keys_;
-  std::unique_ptr<KeyPersistenceDelegate> key_persistence_delegate_;
-  absl::optional<SigningKeyPair> key_pair_;
+
+  // Helper for handling DMToken and DeviceID.
+  const raw_ptr<policy::BrowserDMTokenStorage> dm_token_storage_;
+
+  // Owned by the CBCMController, which is eventually owned by the browser
+  // process. Since the current service is owned at the profile level, this
+  // respects the browser shutdown sequence.
+  raw_ptr<DeviceTrustKeyManager> key_manager_;
+
+  // Runner for tasks needed to be run in the background.
+  scoped_refptr<base::TaskRunner> background_task_runner_;
+
+  // Checker used to validate that non-background tasks should be
+  // running on the original sequence.
+  SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<DesktopAttestationService> weak_factory_{this};
 };

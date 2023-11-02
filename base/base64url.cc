@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <stddef.h>
 
 #include "base/base64.h"
-#include "base/macros.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/string_util.h"
 #include "third_party/modp_b64/modp_b64.h"

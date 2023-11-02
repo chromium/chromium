@@ -1,0 +1,4 @@
+HTTP/1.1 200 OK
+Content-Type: Application/JSON
+X-Allow-FLEDGE: true
+Data-Version: 1234

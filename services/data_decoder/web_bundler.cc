@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -114,8 +114,8 @@ void WebBundler::WriteWebBundleIndex() {
   }
 
   CHECK_EQ(resources.size(), bodies.size());
-  web_package::WebBundleBuilder builder(url.spec(), "",
-                                        web_package::BundleVersion::kB2);
+  web_package::WebBundleBuilder builder(web_package::BundleVersion::kB2);
+  builder.AddPrimaryURL(url.spec());
   for (size_t i = 0; i < resources.size(); ++i) {
     const auto& info = resources[i];
     const auto& body = bodies[i];
@@ -127,11 +127,10 @@ void WebBundler::WriteWebBundleIndex() {
                                 reinterpret_cast<const char*>(body->data()),
                                 body->size())
                           : "");
-    GURL url = info->url;
-    GURL::Replacements replacements;
-    replacements.ClearRef();
-    url = url.ReplaceComponents(replacements);
-    builder.AddIndexEntry(url.spec(), "", {response_location});
+    GURL::Replacements resource_replacements;
+    resource_replacements.ClearRef();
+    GURL resource_url = info->url.ReplaceComponents(resource_replacements);
+    builder.AddIndexEntry(resource_url.spec(), response_location);
   }
   std::vector<uint8_t> bundle = builder.CreateBundle();
   int written_size = file_.WriteAtCurrentPos(

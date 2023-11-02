@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,8 @@
 #include <memory>
 #include <ostream>
 #include <set>
+#include <sstream>
+#include <string>
 #include <utility>
 
 #include "base/check_op.h"
@@ -22,7 +24,9 @@
 #include "base/json/json_reader.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/values.h"
 #include "components/policy/core/common/json_schema_constants.h"
 #include "components/policy/core/common/schema_internal.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -36,6 +40,23 @@ using internal::PropertyNode;
 using internal::RestrictionNode;
 using internal::SchemaData;
 using internal::SchemaNode;
+
+std::string ErrorPathToString(const std::string& policy_name,
+                              PolicyErrorPath error_path) {
+  if (error_path.empty())
+    return std::string();
+
+  std::stringstream error_path_string{policy_name};
+  error_path_string << policy_name;
+  for (auto& entry : error_path) {
+    if (absl::holds_alternative<int>(entry)) {
+      error_path_string << "[" << absl::get<int>(entry) << "]";
+    } else if (absl::holds_alternative<std::string>(entry)) {
+      error_path_string << "." << absl::get<std::string>(entry);
+    }
+  }
+  return error_path_string.str();
+}
 
 namespace {
 
@@ -99,7 +120,7 @@ const SchemaKeyToValueType kSchemaTypesToValueTypes[] = {
     {schema::kString, base::Value::Type::STRING},
 };
 const SchemaKeyToValueType* kSchemaTypesToValueTypesEnd =
-    kSchemaTypesToValueTypes + base::size(kSchemaTypesToValueTypes);
+    kSchemaTypesToValueTypes + std::size(kSchemaTypesToValueTypes);
 
 // Allowed attributes and types for type 'array'. These are ordered
 // alphabetically to perform binary search.
@@ -112,7 +133,7 @@ const SchemaKeyToValueType kAttributesAndTypesForArray[] = {
     {schema::kType, base::Value::Type::STRING},
 };
 const SchemaKeyToValueType* kAttributesAndTypesForArrayEnd =
-    kAttributesAndTypesForArray + base::size(kAttributesAndTypesForArray);
+    kAttributesAndTypesForArray + std::size(kAttributesAndTypesForArray);
 
 // Allowed attributes and types for type 'boolean'. These are ordered
 // alphabetically to perform binary search.
@@ -124,7 +145,7 @@ const SchemaKeyToValueType kAttributesAndTypesForBoolean[] = {
     {schema::kType, base::Value::Type::STRING},
 };
 const SchemaKeyToValueType* kAttributesAndTypesForBooleanEnd =
-    kAttributesAndTypesForBoolean + base::size(kAttributesAndTypesForBoolean);
+    kAttributesAndTypesForBoolean + std::size(kAttributesAndTypesForBoolean);
 
 // Allowed attributes and types for type 'integer'. These are ordered
 // alphabetically to perform binary search.
@@ -139,7 +160,7 @@ const SchemaKeyToValueType kAttributesAndTypesForInteger[] = {
     {schema::kType, base::Value::Type::STRING},
 };
 const SchemaKeyToValueType* kAttributesAndTypesForIntegerEnd =
-    kAttributesAndTypesForInteger + base::size(kAttributesAndTypesForInteger);
+    kAttributesAndTypesForInteger + std::size(kAttributesAndTypesForInteger);
 
 // Allowed attributes and types for type 'number'. These are ordered
 // alphabetically to perform binary search.
@@ -151,7 +172,7 @@ const SchemaKeyToValueType kAttributesAndTypesForNumber[] = {
     {schema::kType, base::Value::Type::STRING},
 };
 const SchemaKeyToValueType* kAttributesAndTypesForNumberEnd =
-    kAttributesAndTypesForNumber + base::size(kAttributesAndTypesForNumber);
+    kAttributesAndTypesForNumber + std::size(kAttributesAndTypesForNumber);
 
 // Allowed attributes and types for type 'object'. These are ordered
 // alphabetically to perform binary search.
@@ -167,7 +188,7 @@ const SchemaKeyToValueType kAttributesAndTypesForObject[] = {
     {schema::kType, base::Value::Type::STRING},
 };
 const SchemaKeyToValueType* kAttributesAndTypesForObjectEnd =
-    kAttributesAndTypesForObject + base::size(kAttributesAndTypesForObject);
+    kAttributesAndTypesForObject + std::size(kAttributesAndTypesForObject);
 
 // Allowed attributes and types for $ref. These are ordered alphabetically to
 // perform binary search.
@@ -177,7 +198,7 @@ const SchemaKeyToValueType kAttributesAndTypesForRef[] = {
     {schema::kTitle, base::Value::Type::STRING},
 };
 const SchemaKeyToValueType* kAttributesAndTypesForRefEnd =
-    kAttributesAndTypesForRef + base::size(kAttributesAndTypesForRef);
+    kAttributesAndTypesForRef + std::size(kAttributesAndTypesForRef);
 
 // Allowed attributes and types for type 'string'. These are ordered
 // alphabetically to perform binary search.
@@ -191,7 +212,7 @@ const SchemaKeyToValueType kAttributesAndTypesForString[] = {
     {schema::kType, base::Value::Type::STRING},
 };
 const SchemaKeyToValueType* kAttributesAndTypesForStringEnd =
-    kAttributesAndTypesForString + base::size(kAttributesAndTypesForString);
+    kAttributesAndTypesForString + std::size(kAttributesAndTypesForString);
 
 // Helper for std::lower_bound.
 bool CompareToString(const SchemaKeyToValueType& entry,
@@ -231,30 +252,28 @@ bool StrategyAllowInvalidListEntry(SchemaOnErrorStrategy strategy) {
   return strategy == SCHEMA_ALLOW_UNKNOWN_AND_INVALID_LIST_ENTRY;
 }
 
-void SchemaErrorFound(std::string* out_error_path,
+bool StrategyAllowUnknownWithoutWarning(SchemaOnErrorStrategy strategy) {
+  return strategy == SCHEMA_ALLOW_UNKNOWN_WITHOUT_WARNING;
+}
+
+void SchemaErrorFound(PolicyErrorPath* out_error_path,
                       std::string* out_error,
                       const std::string& msg) {
   if (out_error_path)
-    *out_error_path = "";
+    *out_error_path = {};
   if (out_error)
     *out_error = msg;
 }
 
-void AddListIndexPrefixToPath(int index, std::string* path) {
+void AddListIndexPrefixToPath(int index, PolicyErrorPath* path) {
   if (path) {
-    if (path->empty())
-      *path = base::StringPrintf("items[%d]", index);
-    else
-      *path = base::StringPrintf("items[%d].", index) + *path;
+    path->emplace(path->begin(), index);
   }
 }
 
-void AddDictKeyPrefixToPath(const std::string& key, std::string* path) {
+void AddDictKeyPrefixToPath(const std::string& key, PolicyErrorPath* path) {
   if (path) {
-    if (path->empty())
-      *path = key;
-    else
-      *path = key + "." + *path;
+    path->emplace(path->begin(), key);
   }
 }
 
@@ -1193,7 +1212,7 @@ Schema Schema::Wrap(const SchemaData* data) {
 
 bool Schema::Validate(const base::Value& value,
                       SchemaOnErrorStrategy strategy,
-                      std::string* out_error_path,
+                      PolicyErrorPath* out_error_path,
                       std::string* out_error) const {
   if (!valid()) {
     SchemaErrorFound(out_error_path, out_error, "The schema is invalid.");
@@ -1207,8 +1226,12 @@ bool Schema::Validate(const base::Value& value,
       return true;
     }
 
-    SchemaErrorFound(out_error_path, out_error,
-                     "The value type doesn't match the schema type.");
+    SchemaErrorFound(
+        out_error_path, out_error,
+        base::StringPrintf(
+            "Policy type mismatch: expected: \"%s\", actual: \"%s\".",
+            base::Value::GetTypeName(type()),
+            base::Value::GetTypeName(value.type())));
     return false;
   }
 
@@ -1218,8 +1241,10 @@ bool Schema::Validate(const base::Value& value,
       SchemaList schema_list = GetMatchingProperties(dict_item.first);
       if (schema_list.empty()) {
         // Unknown property was detected.
-        SchemaErrorFound(out_error_path, out_error,
-                         "Unknown property: " + dict_item.first);
+        if (!StrategyAllowUnknownWithoutWarning(strategy)) {
+          SchemaErrorFound(out_error_path, out_error,
+                           "Unknown property: " + dict_item.first);
+        }
         if (!StrategyAllowUnknown(strategy))
           return false;
       } else {
@@ -1283,7 +1308,7 @@ bool Schema::Validate(const base::Value& value,
 
 bool Schema::Normalize(base::Value* value,
                        SchemaOnErrorStrategy strategy,
-                       std::string* out_error_path,
+                       PolicyErrorPath* out_error_path,
                        std::string* out_error,
                        bool* out_changed) const {
   if (!valid()) {
@@ -1298,8 +1323,12 @@ bool Schema::Normalize(base::Value* value,
       return true;
     }
 
-    SchemaErrorFound(out_error_path, out_error,
-                     "The value type doesn't match the schema type.");
+    SchemaErrorFound(
+        out_error_path, out_error,
+        base::StringPrintf(
+            "Policy type mismatch: expected: \"%s\", actual: \"%s\".",
+            base::Value::GetTypeName(type()),
+            base::Value::GetTypeName(value->type())));
     return false;
   }
 
@@ -1310,11 +1339,15 @@ bool Schema::Normalize(base::Value* value,
       SchemaList schema_list = GetMatchingProperties(dict_item.first);
       if (schema_list.empty()) {
         // Unknown property was detected.
-        SchemaErrorFound(out_error_path, out_error,
-                         "Unknown property: " + dict_item.first);
+        if (!StrategyAllowUnknownWithoutWarning(strategy)) {
+          SchemaErrorFound(out_error_path, out_error,
+                           "Unknown property: " + dict_item.first);
+        }
         if (!StrategyAllowUnknown(strategy))
           return false;
-        drop_list.push_back(dict_item.first);
+        if (!StrategyAllowUnknownWithoutWarning(strategy)) {
+          drop_list.push_back(dict_item.first);
+        }
       } else {
         for (const auto& subschema : schema_list) {
           std::string new_error;
@@ -1351,7 +1384,8 @@ bool Schema::Normalize(base::Value* value,
       value->RemoveKey(drop_key);
     return true;
   } else if (value->is_list()) {
-    base::Value::ListStorage list = std::move(*value).TakeList();
+    base::Value::List& list = value->GetList();
+
     // Instead of removing invalid list items afterwards, we push valid items
     // forward in the list by overriding invalid items. The next free position
     // is indicated by |write_index|, which gets increased for every valid item.
@@ -1379,8 +1413,9 @@ bool Schema::Normalize(base::Value* value,
     }
     if (out_changed && write_index < list.size())
       *out_changed = true;
-    list.resize(write_index);
-    *value = base::Value(std::move(list));
+    while (write_index < list.size()) {
+      list.erase(list.end() - 1);
+    }
     return true;
   }
 
@@ -1432,14 +1467,15 @@ absl::optional<base::Value> Schema::ParseToDictAndValidate(
     const std::string& schema,
     int validator_options,
     std::string* error) {
-  base::JSONReader::ValueWithError value_with_error =
-      base::JSONReader::ReadAndReturnValueWithError(
-          schema, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
-  *error = value_with_error.error_message;
+  auto value_with_error = base::JSONReader::ReadAndReturnValueWithError(
+      schema, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS |
+                  base::JSONParserOptions::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
-  if (!value_with_error.value)
+  if (!value_with_error.has_value()) {
+    *error = value_with_error.error().message;
     return absl::nullopt;
-  base::Value json = std::move(value_with_error.value.value());
+  }
+  base::Value json = std::move(*value_with_error);
   if (!json.is_dict()) {
     *error = "Schema must be a JSON object";
     return absl::nullopt;

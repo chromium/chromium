@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -103,7 +103,8 @@ TEST(IdleDetectorTest, StartIdleWithLongThreshold) {
                         /*screen_locked=*/false);
 
   auto* detector = IdleDetector::Create(scope.GetScriptState());
-  detector->SetTaskRunnerForTesting(task_runner);
+  detector->SetTaskRunnerForTesting(task_runner,
+                                    task_runner->GetMockTickClock());
 
   auto* listener = MakeGarbageCollected<MockEventListener>();
   detector->addEventListener(event_type_names::kChange, listener);
@@ -228,7 +229,8 @@ TEST(IdleDetectorTest, BecomeIdleAndLockScreenWithLongThreshold) {
   idle_manager->InitForTesting(idle_service.BindNewPipeAndPassRemote());
 
   auto* detector = IdleDetector::Create(scope.GetScriptState());
-  detector->SetTaskRunnerForTesting(task_runner);
+  detector->SetTaskRunnerForTesting(task_runner,
+                                    task_runner->GetMockTickClock());
 
   auto* options = IdleOptions::Create();
   options->setThreshold(90000);
@@ -269,7 +271,8 @@ TEST(IdleDetectorTest, BecomeIdleAndLockAfterWithLongThreshold) {
   idle_manager->InitForTesting(idle_service.BindNewPipeAndPassRemote());
 
   auto* detector = IdleDetector::Create(scope.GetScriptState());
-  detector->SetTaskRunnerForTesting(task_runner);
+  detector->SetTaskRunnerForTesting(task_runner,
+                                    task_runner->GetMockTickClock());
 
   auto* options = IdleOptions::Create();
   options->setThreshold(90000);
@@ -323,7 +326,8 @@ TEST(IdleDetectorTest, BecomeIdleThenActiveBeforeThreshold) {
   idle_manager->InitForTesting(idle_service.BindNewPipeAndPassRemote());
 
   auto* detector = IdleDetector::Create(scope.GetScriptState());
-  detector->SetTaskRunnerForTesting(task_runner);
+  detector->SetTaskRunnerForTesting(task_runner,
+                                    task_runner->GetMockTickClock());
 
   auto* options = IdleOptions::Create();
   options->setThreshold(90000);
@@ -363,7 +367,8 @@ TEST(IdleDetectorTest, SetAndClearOverrides) {
   idle_manager->InitForTesting(idle_service.BindNewPipeAndPassRemote());
 
   auto* detector = IdleDetector::Create(scope.GetScriptState());
-  detector->SetTaskRunnerForTesting(task_runner);
+  detector->SetTaskRunnerForTesting(task_runner,
+                                    task_runner->GetMockTickClock());
 
   auto* options = IdleOptions::Create();
   options->setThreshold(90000);

@@ -1,0 +1,6 @@
+{
+  "name": "Hello, WebAssembly!",
+  "description": "Verify wasm not allowed without explicit CSP",
+  "version": "0.1",
+  "manifest_version": 3
+}

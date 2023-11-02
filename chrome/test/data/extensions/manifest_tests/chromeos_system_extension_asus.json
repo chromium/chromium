@@ -1,0 +1,19 @@
+{
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAq5OLnSnlsdXfa6PJpsNne3dtyqUcGi5p/oZ2VY9m2HM4feuoh8hD9flPWGzvjJw7FMnoE3aQ1pSjx0+g/GbC7ALAORlJoF7v8xuArmQ+YmLprO3APd4BKxNQVagUGWwfsD29XUcOYAkvU7c2oJaueaJ9XJ1i2+68NNsAqvFhDjB3tCFHk9wC7jluDstXf32c83TdHwQlnN9KEd5t2qS/Bm7NlZurrozFqZkwGuTAct1h+Wok8kC98fRnynFNOC8ks45QsqsrhaXresy00/SIRvANGRFrPBLfnpe7tKQ9X0HCEn6kT1iGe5zMcNhD5oKF5Al1WaVUy/DBR4BfsNC8DwIDAQAB",
+  "name": "Test chromeos extension",
+  "version": "1.0",
+  "manifest_version": 3,
+  "permissions": [
+    "os.diagnostics",
+    "os.telemetry",
+    "os.telemetry.serial_number",
+    "os.telemetry.network_info"
+  ],
+  "chromeos_system_extension": {},
+  "externally_connectable": {
+    "matches": [
+      "https://dlcdnccls.asus.com/*"
+    ]
+  },
+  "options_page": "options.html"
+}

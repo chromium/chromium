@@ -1,8 +1,8 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/ios/ios_util.h"
+#import "base/ios/ios_util.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_constants.h"
@@ -15,9 +15,9 @@
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-#include "net/test/embedded_test_server/http_request.h"
-#include "net/test/embedded_test_server/http_response.h"
-#include "net/test/embedded_test_server/request_handler_util.h"
+#import "net/test/embedded_test_server/http_request.h"
+#import "net/test/embedded_test_server/http_response.h"
+#import "net/test/embedded_test_server/request_handler_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -216,6 +216,38 @@ id<GREYMatcher> cellWithLabel(NSString* label) {
                                           grey_ancestor(RegularTabGrid()), nil)]
       performAction:chrome_test_util::TapAtPointPercentage(trailingPercentage,
                                                            0.05)];
+
+  // Check that the thumb strip is indeed dismissed.
+  [[EarlGrey selectElementWithMatcher:cellWithLabel(@"Tab1")]
+      assertWithMatcher:grey_notVisible()];
+}
+
+- (void)testSwappingUpBackgroundClosesThumbStrip {
+  // The feature only works on iPad.
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Thumb strip is not enabled on iPhone");
+  }
+
+  [self setUpTestServer];
+
+  const GURL URL = self.testServer->GetURL("/querytitle?Tab1");
+  [ChromeEarlGrey loadURL:URL];
+  [ChromeEarlGrey waitForWebStateContainingText:"Tab1"];
+
+  // Swipe down to reveal the thumb strip.
+  [[EarlGrey selectElementWithMatcher:PrimaryToolbar()]
+      performAction:grey_swipeSlowInDirection(kGREYDirectionDown)];
+
+  // Make sure that the entire tab thumbnail is fully visible and not covered.
+  // This acts as a good proxy to the entire thumbstrip being visible.
+  [[EarlGrey selectElementWithMatcher:cellWithLabel(@"Tab1")]
+      assertWithMatcher:grey_minimumVisiblePercent(1)];
+
+  // Now swipe up the background. This should dismiss the thumb strip.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(TabGridBackground(),
+                                          grey_ancestor(RegularTabGrid()), nil)]
+      performAction:grey_swipeSlowInDirection(kGREYDirectionUp)];
 
   // Check that the thumb strip is indeed dismissed.
   [[EarlGrey selectElementWithMatcher:cellWithLabel(@"Tab1")]

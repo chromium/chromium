@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,13 +18,19 @@
 #include "ash/wm/splitview/split_view_divider_handler_view.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/window_properties.h"
 #include "ash/wm/window_util.h"
 #include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/aura/scoped_window_targeter.h"
 #include "ui/aura/window_targeter.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_type.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/views/background.h"
+#include "ui/views/highlight_border.h"
 #include "ui/views/view.h"
 #include "ui/views/view_targeter_delegate.h"
 #include "ui/views/widget/widget.h"
@@ -58,8 +64,8 @@ class AlwaysOnTopWindowTargeter : public aura::WindowTargeter {
     if (target == divider_window_) {
       *hit_test_rect_mouse = *hit_test_rect_touch = gfx::Rect(target->bounds());
       hit_test_rect_touch->Inset(
-          gfx::Insets(-SplitViewDivider::kDividerEdgeInsetForTouch,
-                      -SplitViewDivider::kDividerEdgeInsetForTouch));
+          gfx::Insets::VH(-SplitViewDivider::kDividerEdgeInsetForTouch,
+                          -SplitViewDivider::kDividerEdgeInsetForTouch));
       return true;
     }
     return aura::WindowTargeter::GetHitTestRects(target, hit_test_rect_mouse,
@@ -80,8 +86,11 @@ class DividerView : public views::View, public views::ViewTargeterDelegate {
                        SplitViewDivider* divider)
       : controller_(controller), divider_(divider) {
     divider_view_ = AddChildView(std::make_unique<views::View>());
-    divider_view_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
-
+    divider_view_->SetPaintToLayer(ui::LAYER_TEXTURED);
+    divider_view_->layer()->SetFillsBoundsOpaquely(false);
+    divider_view_->SetBackground(
+        views::CreateSolidBackground(AshColorProvider::Get()->GetBaseLayerColor(
+            AshColorProvider::BaseLayerType::kOpaque)));
     divider_handler_view_ =
         AddChildView(std::make_unique<SplitViewDividerHandlerView>());
     SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
@@ -189,8 +198,16 @@ class DividerView : public views::View, public views::ViewTargeterDelegate {
 
   void OnThemeChanged() override {
     views::View::OnThemeChanged();
-    divider_view_->layer()->SetColor(AshColorProvider::Get()->GetBaseLayerColor(
-        AshColorProvider::BaseLayerType::kOpaque));
+
+    divider_view_->background()->SetNativeControlColor(
+        AshColorProvider::Get()->GetBaseLayerColor(
+            AshColorProvider::BaseLayerType::kOpaque));
+
+    if (chromeos::features::IsDarkLightModeEnabled()) {
+      divider_view_->SetBorder(std::make_unique<views::HighlightBorder>(
+          /*corner_radius=*/0, views::HighlightBorder::Type::kHighlightBorder1,
+          /*use_light_colors=*/false));
+    }
   }
 
   // views::ViewTargeterDelegate:
@@ -256,8 +273,8 @@ SplitViewDivider::SplitViewDivider(SplitViewController* controller)
                                    divider_widget_->GetNativeWindow()));
 
   // Observe currently snapped windows.
-  for (auto snap_pos : {SplitViewController::SnapPosition::LEFT,
-                        SplitViewController::SnapPosition::RIGHT}) {
+  for (auto snap_pos : {SplitViewController::SnapPosition::kPrimary,
+                        SplitViewController::SnapPosition::kSecondary}) {
     auto* window = controller_->GetSnappedWindow(snap_pos);
     if (window)
       AddObservedWindow(window);
@@ -321,7 +338,7 @@ void SplitViewDivider::UpdateDividerBounds() {
 gfx::Rect SplitViewDivider::GetDividerBoundsInScreen(bool is_dragging) {
   const gfx::Rect work_area_bounds_in_screen =
       screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
-          Shell::GetPrimaryRootWindow()->GetChildById(
+          controller_->root_window()->GetChildById(
               desks_util::GetActiveDeskContainerId()));
   const int divider_position = controller_->divider_position();
   const bool landscape = IsCurrentScreenOrientationLandscape();
@@ -373,8 +390,7 @@ void SplitViewDivider::AddObservedWindow(aura::Window* window) {
 }
 
 void SplitViewDivider::RemoveObservedWindow(aura::Window* window) {
-  auto iter =
-      std::find(observed_windows_.begin(), observed_windows_.end(), window);
+  auto iter = base::ranges::find(observed_windows_, window);
   if (iter != observed_windows_.end()) {
     window->RemoveObserver(this);
     observed_windows_.erase(iter);
@@ -471,6 +487,7 @@ void SplitViewDivider::CreateDividerWidget(SplitViewController* controller) {
   params.parent = Shell::GetContainer(controller->root_window(),
                                       kShellWindowId_AlwaysOnTopContainer);
   params.init_properties_container.SetProperty(kHideInDeskMiniViewKey, true);
+  params.name = "SplitViewDivider";
   divider_widget_->set_focus_on_creation(false);
   divider_widget_->Init(std::move(params));
   divider_widget_->SetVisibilityAnimationTransition(
@@ -478,6 +495,7 @@ void SplitViewDivider::CreateDividerWidget(SplitViewController* controller) {
   divider_view_ = divider_widget_->SetContentsView(
       std::make_unique<DividerView>(controller, this));
   divider_widget_->SetBounds(GetDividerBoundsInScreen(false /* is_dragging */));
+  divider_widget_->GetNativeWindow()->SetProperty(kLockedToRootKey, true);
   divider_widget_->Show();
 }
 

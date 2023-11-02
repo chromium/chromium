@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -41,11 +42,11 @@ class CONTENT_EXPORT WebOTPService
   static bool Create(SmsFetcher*,
                      RenderFrameHost*,
                      mojo::PendingReceiver<blink::mojom::WebOTPService>);
-
-  WebOTPService(SmsFetcher*,
-                const OriginList&,
-                RenderFrameHost*,
-                mojo::PendingReceiver<blink::mojom::WebOTPService>);
+  static WebOTPService& CreateForTesting(
+      SmsFetcher*,
+      const OriginList&,
+      RenderFrameHost&,
+      mojo::PendingReceiver<blink::mojom::WebOTPService>);
 
   WebOTPService(const WebOTPService&) = delete;
   WebOTPService& operator=(const WebOTPService&) = delete;
@@ -55,6 +56,9 @@ class CONTENT_EXPORT WebOTPService
   using FailureType = SmsFetchFailureType;
   using SmsParsingStatus = SmsParser::SmsParsingStatus;
   using UserConsent = SmsFetcher::UserConsent;
+
+  // content::DocumentService:
+  void WillBeDestroyed(DocumentServiceDestructionReason) override;
 
   // blink::mojom::WebOTPService:
   void Receive(ReceiveCallback) override;
@@ -78,6 +82,11 @@ class CONTENT_EXPORT WebOTPService
   void OnUserConsentComplete(UserConsentResult);
 
  private:
+  WebOTPService(SmsFetcher*,
+                const OriginList&,
+                RenderFrameHost&,
+                mojo::PendingReceiver<blink::mojom::WebOTPService>);
+
   void CleanUp();
   UserConsentHandler* CreateConsentHandler(UserConsent);
   UserConsentHandler* GetConsentHandler();
@@ -86,7 +95,7 @@ class CONTENT_EXPORT WebOTPService
   // |fetcher_| is safe because all instances of SmsFetcher are owned
   // by the browser context, which transitively (through RenderFrameHost) owns
   // and outlives this class.
-  SmsFetcher* fetcher_;
+  raw_ptr<SmsFetcher> fetcher_;
 
   const OriginList origin_list_;
   ReceiveCallback callback_;
@@ -102,7 +111,7 @@ class CONTENT_EXPORT WebOTPService
   std::unique_ptr<UserConsentHandler> consent_handler_;
   // This is used to inject a mock consent handler for testing and it is owned
   // by test code.
-  UserConsentHandler* consent_handler_for_test_{nullptr};
+  raw_ptr<UserConsentHandler> consent_handler_for_test_{nullptr};
 
   SEQUENCE_CHECKER(sequence_checker_);
 

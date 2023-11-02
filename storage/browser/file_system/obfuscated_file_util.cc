@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,18 +13,23 @@
 
 #include "base/bind.h"
 #include "base/containers/queue.h"
+#include "base/files/file_error_or.h"
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
+#include "components/services/storage/public/cpp/buckets/bucket_init_params.h"
 #include "storage/browser/file_system/file_observers.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation_context.h"
+#include "storage/browser/file_system/file_system_util.h"
 #include "storage/browser/file_system/obfuscated_file_util_disk_delegate.h"
 #include "storage/browser/file_system/obfuscated_file_util_memory_delegate.h"
 #include "storage/browser/file_system/quota/quota_limit_type.h"
@@ -70,8 +75,6 @@ const int64_t kPathCreationQuotaCost = 146;  // Bytes per inode, basically.
 const int64_t kPathByteQuotaCost =
     2;  // Bytes per byte of path length in UTF-8.
 
-const char kDirectoryDatabaseKeySeparator = ' ';
-
 int64_t UsageForPath(size_t length) {
   return kPathCreationQuotaCost +
          static_cast<int64_t>(length) * kPathByteQuotaCost;
@@ -109,15 +112,41 @@ enum IsolatedOriginStatus {
 
 }  // namespace
 
-// TODO(https://crbug.com/1248104): This class will eventually interface with
-// Storage Buckets instead of directly interfacing with LevelDB. Thus, the below
-// functions were converted from url::Origin to blink::StorageKey to prepare for
-// Storage Partitioning of the FileSystem APIs. However, it is important to note
-// that, until the refactor to use Storage Buckets, the LevelDB structure above
-// is still used, and the entries are still keyed per-origin (achieved by
-// storage_key.origin()) and per-type. Going forward, OriginRecords will be
-// retrieved from the database and converted into StorageKey values until
-// Storage Buckets are implemented instead.
+// Implementing the DatabaseKey for the directories_ map.
+DatabaseKey::DatabaseKey() = default;
+DatabaseKey::~DatabaseKey() = default;
+
+// Copyable and moveable
+DatabaseKey::DatabaseKey(const DatabaseKey& other) = default;
+DatabaseKey& DatabaseKey::operator=(const DatabaseKey& other) = default;
+DatabaseKey::DatabaseKey(DatabaseKey&& other) = default;
+DatabaseKey& DatabaseKey::operator=(DatabaseKey&& other) = default;
+
+DatabaseKey::DatabaseKey(const blink::StorageKey& storage_key,
+                         const absl::optional<BucketLocator>& bucket,
+                         const std::string& type) {
+  storage_key_ = storage_key;
+  bucket_ = bucket;
+  type_ = type;
+}
+
+bool DatabaseKey::operator==(const DatabaseKey& other) const {
+  return std::tie(storage_key_, bucket_, type_) ==
+         std::tie(other.storage_key_, other.bucket_, other.type_);
+}
+
+bool DatabaseKey::operator!=(const DatabaseKey& other) const {
+  return std::tie(storage_key_, bucket_, type_) !=
+         std::tie(other.storage_key_, other.bucket_, other.type_);
+}
+
+bool DatabaseKey::operator<(const DatabaseKey& other) const {
+  return std::tie(storage_key_, bucket_, type_) <
+         std::tie(other.storage_key_, other.bucket_, other.type_);
+}
+
+// end DatabaseKey implementation.
+
 class ObfuscatedFileEnumerator final
     : public FileSystemFileUtil::AbstractFileEnumerator {
  public:
@@ -201,9 +230,10 @@ class ObfuscatedFileEnumerator final
     }
   }
 
-  SandboxDirectoryDatabase* db_;
-  FileSystemOperationContext* context_;
-  ObfuscatedFileUtil* obfuscated_file_util_;
+  raw_ptr<SandboxDirectoryDatabase> db_;
+  // TODO(crbug.com/1298696): Breaks storage_unittests.
+  raw_ptr<FileSystemOperationContext, DegradeToNoOpWhenMTE> context_;
+  raw_ptr<ObfuscatedFileUtil> obfuscated_file_util_;
   FileSystemURL root_url_;
   bool recursive_;
 
@@ -215,6 +245,14 @@ class ObfuscatedFileEnumerator final
   base::File::Info current_platform_file_info_;
 };
 
+// NOTE: currently, ObfuscatedFileUtil still relies on SandboxOriginDatabases
+// for first-party StorageKeys/default buckets. The AbstractStorageKeyEnumerator
+// class is only used in these cases. While this class stores and iterates
+// through StorageKeys types, it works by retrieving OriginRecords from the
+// SandboxOriginDatabase and converting those origins into first-party
+// StorageKey values (e.g. blink::StorageKey(origin)). The goal is to eventually
+// deprecate SandboxOriginDatabases and AbstractStorageKeyEnumerators and rely
+// entirely on Storage Buckets.
 class ObfuscatedStorageKeyEnumerator
     : public ObfuscatedFileUtil::AbstractStorageKeyEnumerator {
  public:
@@ -268,30 +306,34 @@ class ObfuscatedStorageKeyEnumerator
   base::WeakPtr<ObfuscatedFileUtilMemoryDelegate> memory_file_util_;
 };
 
+const base::FilePath::CharType ObfuscatedFileUtil::kFileSystemDirectory[] =
+    FILE_PATH_LITERAL("File System");
+
 ObfuscatedFileUtil::ObfuscatedFileUtil(
     scoped_refptr<SpecialStoragePolicy> special_storage_policy,
-    const base::FilePath& file_system_directory,
+    const base::FilePath& profile_path,
     leveldb::Env* env_override,
-    GetTypeStringForURLCallback get_type_string_for_url,
     const std::set<std::string>& known_type_strings,
     SandboxFileSystemBackendDelegate* sandbox_delegate,
     bool is_incognito)
     : special_storage_policy_(std::move(special_storage_policy)),
-      file_system_directory_(file_system_directory),
       env_override_(env_override),
       is_incognito_(is_incognito),
       db_flush_delay_seconds_(10 * 60),  // 10 mins.
-      get_type_string_for_url_(std::move(get_type_string_for_url)),
       known_type_strings_(known_type_strings),
       sandbox_delegate_(sandbox_delegate) {
-  DCHECK(!get_type_string_for_url_.is_null());
   DETACH_FROM_SEQUENCE(sequence_checker_);
   DCHECK(!is_incognito_ ||
          (env_override && leveldb_chrome::IsMemEnv(env_override)));
+  file_system_directory_ = profile_path.Append(kFileSystemDirectory);
 
   if (is_incognito_) {
-    delegate_ = std::make_unique<ObfuscatedFileUtilMemoryDelegate>(
-        file_system_directory_);
+    // profile_path is passed here, so that the delegate is able to accommodate
+    // both codepaths of {{profile_path}}/File System (first-party) and
+    // {{profile_path}}/WebStorage (buckets-based).
+    // See https://crrev.com/c/3817542 for more context.
+    delegate_ =
+        std::make_unique<ObfuscatedFileUtilMemoryDelegate>(profile_path);
   } else {
     delegate_ = std::make_unique<ObfuscatedFileUtilDiskDelegate>();
   }
@@ -787,7 +829,7 @@ base::File::Error ObfuscatedFileUtil::DeleteDirectory(
     return base::File::FILE_ERROR_NOT_FOUND;
   if (!file_id) {
     // Cannot remove the root directory.
-    return base::File::FILE_ERROR_FAILED;
+    return base::File::FILE_ERROR_ACCESS_DENIED;
   }
   FileInfo file_info;
   if (!db->GetFileInfo(file_id, &file_info)) {
@@ -862,53 +904,81 @@ bool ObfuscatedFileUtil::IsDirectoryEmpty(FileSystemOperationContext* context,
   return children.empty();
 }
 
-base::FilePath ObfuscatedFileUtil::GetDirectoryForStorageKeyAndType(
-    const blink::StorageKey& storage_key,
-    const std::string& type_string,
-    bool create,
-    base::File::Error* error_code) {
+base::FileErrorOr<base::FilePath>
+ObfuscatedFileUtil::GetDirectoryForBucketAndType(
+    const BucketLocator& bucket,
+    const absl::optional<FileSystemType>& type,
+    bool create) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::FilePath origin_dir =
-      GetDirectoryForStorageKey(storage_key, create, error_code);
-  if (origin_dir.empty())
-    return base::FilePath();
-  if (type_string.empty())
-    return origin_dir;
-  base::FilePath path = origin_dir.AppendASCII(type_string);
-  base::File::Error error = base::File::FILE_OK;
-  if (!delegate_->DirectoryExists(path) &&
-      (!create || delegate_->CreateDirectory(path, false /* exclusive */,
-                                             true /* recursive */) !=
-                      base::File::FILE_OK)) {
-    error = create ? base::File::FILE_ERROR_FAILED
-                   : base::File::FILE_ERROR_NOT_FOUND;
+  // A default bucket in a first-party context uses
+  // GetDirectoryForStorageKeyAndType() to determine its file path.
+  if (bucket.storage_key.IsFirstPartyContext() && bucket.is_default) {
+    return GetDirectoryForStorageKeyAndType(bucket.storage_key, type, create);
   }
+  // All other contexts use the provided bucket information to construct the
+  // file path.
+  base::FilePath path =
+      sandbox_delegate_->quota_manager_proxy()->GetClientBucketPath(
+          bucket, QuotaClientType::kFileSystem);
+  // Append the file system type and verify the path is valid.
+  if (type) {
+    path = path.AppendASCII(
+        SandboxFileSystemBackendDelegate::GetTypeString(type.value()));
+  }
+  base::File::Error error = GetDirectoryHelper(path, create);
+  if (error != base::File::FILE_OK)
+    return base::unexpected(error);
+  return path;
+}
 
-  if (error_code)
-    *error_code = error;
+base::FileErrorOr<base::FilePath>
+ObfuscatedFileUtil::GetDirectoryForStorageKeyAndType(
+    const blink::StorageKey& storage_key,
+    const absl::optional<FileSystemType>& type,
+    bool create) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::FileErrorOr<base::FilePath> dir =
+      GetDirectoryForStorageKey(storage_key, create);
+  if (!dir.has_value()) {
+    return dir;
+  }
+  DCHECK(!dir->empty());
+  if (!type) {
+    return dir;
+  }
+  // Append the file system type and verify the path is valid.
+  base::FilePath path = dir.value();
+  if (type) {
+    path = path.AppendASCII(
+        SandboxFileSystemBackendDelegate::GetTypeString(type.value()));
+  }
+  base::File::Error error = GetDirectoryHelper(path, create);
+  if (error != base::File::FILE_OK)
+    return base::unexpected(error);
   return path;
 }
 
 bool ObfuscatedFileUtil::DeleteDirectoryForStorageKeyAndType(
     const blink::StorageKey& storage_key,
-    const std::string& type_string) {
+    const absl::optional<FileSystemType>& type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DestroyDirectoryDatabase(storage_key, type_string);
+  DestroyDirectoryDatabaseForStorageKey(storage_key, type);
 
-  const base::FilePath origin_path =
-      GetDirectoryForStorageKey(storage_key, false, nullptr);
-  if (origin_path.empty())
+  base::FileErrorOr<base::FilePath> origin_path =
+      GetDirectoryForStorageKey(storage_key, false);
+  if (!origin_path.has_value() || origin_path->empty())
     return true;
 
-  if (!type_string.empty()) {
+  if (type) {
     // Delete the filesystem type directory.
-    base::File::Error error = base::File::FILE_OK;
-    const base::FilePath origin_type_path = GetDirectoryForStorageKeyAndType(
-        storage_key, type_string, false, &error);
-    if (error == base::File::FILE_ERROR_FAILED)
+    const base::FileErrorOr<base::FilePath> origin_type_path =
+        GetDirectoryForStorageKeyAndType(storage_key, type.value(), false);
+    if (!origin_type_path.has_value() &&
+        origin_type_path.error() == base::File::FILE_ERROR_FAILED) {
       return false;
-    if (error == base::File::FILE_OK && !origin_type_path.empty() &&
-        !delegate_->DeleteFileOrDirectory(origin_type_path,
+    }
+    if (origin_type_path.has_value() && !origin_type_path->empty() &&
+        !delegate_->DeleteFileOrDirectory(origin_type_path.value(),
                                           true /* recursive */)) {
       return false;
     }
@@ -916,40 +986,81 @@ bool ObfuscatedFileUtil::DeleteDirectoryForStorageKeyAndType(
     // At this point we are sure we had successfully deleted the origin/type
     // directory (i.e. we're ready to just return true).
     // See if we have other directories in this origin directory.
-    for (const std::string& type : known_type_strings_) {
-      if (type == type_string)
+    const std::string type_string =
+        SandboxFileSystemBackendDelegate::GetTypeString(type.value());
+    for (const std::string& known_type : known_type_strings_) {
+      if (known_type == type_string)
         continue;
-      if (delegate_->DirectoryExists(origin_path.AppendASCII(type))) {
+      if (delegate_->DirectoryExists(origin_path->AppendASCII(known_type))) {
         // Other type's directory exists; just return true here.
         return true;
       }
     }
   }
 
-  // No other directories seem exist. Try deleting the entire origin directory.
-  InitOriginDatabase(storage_key.origin(), false);
-  if (origin_database_) {
-    origin_database_->RemovePathForOrigin(
-        GetIdentifierFromOrigin(storage_key.origin()));
+  // No other directories seem exist. If we have a first-party StorageKey,
+  // try deleting the entire origin directory.
+  if (storage_key.IsFirstPartyContext()) {
+    InitOriginDatabase(storage_key.origin(), false);
+    if (origin_database_) {
+      origin_database_->RemovePathForOrigin(
+          GetIdentifierFromOrigin(storage_key.origin()));
+    }
   }
-  return delegate_->DeleteFileOrDirectory(origin_path, true /* recursive */);
+  return delegate_->DeleteFileOrDirectory(origin_path.value(),
+                                          true /* recursive */);
 }
 
-void ObfuscatedFileUtil::CloseFileSystemForStorageKeyAndType(
-    const blink::StorageKey& storage_key,
-    const std::string& type_string) {
+bool ObfuscatedFileUtil::DeleteDirectoryForBucketAndType(
+    const BucketLocator& bucket_locator,
+    const absl::optional<FileSystemType>& type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (bucket_locator.is_default &&
+      bucket_locator.storage_key.IsFirstPartyContext())
+    return DeleteDirectoryForStorageKeyAndType(bucket_locator.storage_key,
+                                               type);
 
-  const std::string key_prefix =
-      GetDirectoryDatabaseKey(storage_key, type_string);
-  for (auto iter = directories_.lower_bound(key_prefix);
-       iter != directories_.end();) {
-    if (!base::StartsWith(iter->first, key_prefix,
-                          base::CompareCase::SENSITIVE))
-      break;
-    DCHECK(type_string.empty() || iter->first == key_prefix);
-    directories_.erase(iter++);
+  DestroyDirectoryDatabaseForBucket(bucket_locator, type);
+
+  // Get the base path for the bucket without the type string appended.
+  base::FilePath path =
+      sandbox_delegate_->quota_manager_proxy()->GetClientBucketPath(
+          bucket_locator, QuotaClientType::kFileSystem);
+  base::File::Error error = GetDirectoryHelper(path, /*create=*/false);
+  if (error != base::File::FILE_OK || path.empty())
+    return true;
+
+  if (type) {
+    // Delete the filesystem type directory.
+    const base::FileErrorOr<base::FilePath> path_with_type =
+        GetDirectoryForBucketAndType(bucket_locator, type.value(), false);
+    if (!path_with_type.has_value())
+      return false;
+    if (!path_with_type->empty() &&
+        !delegate_->DeleteFileOrDirectory(path_with_type.value(),
+                                          true /* recursive */)) {
+      return false;
+    }
+
+    // At this point we are sure we had successfully deleted the bucket/type
+    // directory. Now we need to see if we have other sub-type-directories under
+    // the higher-level `path` directory. If so, we need to return early to
+    // avoid deleting the higher-level `path` directory.
+    const std::string type_string =
+        SandboxFileSystemBackendDelegate::GetTypeString(type.value());
+    for (const std::string& known_type : known_type_strings_) {
+      if (known_type == type_string)
+        continue;
+      if (delegate_->DirectoryExists(path.AppendASCII(known_type))) {
+        // Other type's directory exists; return to avoid deleting the higher
+        // level directory.
+        return true;
+      }
+    }
   }
+
+  // Delete the higher-level directory.
+  return delegate_->DeleteFileOrDirectory(path, true /* recursive */);
 }
 
 std::unique_ptr<ObfuscatedFileUtil::AbstractStorageKeyEnumerator>
@@ -967,27 +1078,67 @@ ObfuscatedFileUtil::CreateStorageKeyEnumerator() {
       origin_database_.get(), file_util_delegate, file_system_directory_);
 }
 
-void ObfuscatedFileUtil::DestroyDirectoryDatabase(
+void ObfuscatedFileUtil::DestroyDirectoryDatabaseForStorageKey(
     const blink::StorageKey& storage_key,
-    const std::string& type_string) {
+    const absl::optional<FileSystemType>& type) {
+  DestroyDirectoryDatabaseHelper(absl::nullopt, storage_key, type);
+}
+
+void ObfuscatedFileUtil::DestroyDirectoryDatabaseForBucket(
+    const BucketLocator& bucket_locator,
+    const absl::optional<FileSystemType>& type) {
+  DestroyDirectoryDatabaseHelper(bucket_locator, bucket_locator.storage_key,
+                                 type);
+}
+
+void ObfuscatedFileUtil::DestroyDirectoryDatabaseHelper(
+    const absl::optional<BucketLocator>& bucket_locator,
+    const blink::StorageKey& storage_key,
+    const absl::optional<FileSystemType>& type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // If `type_string` is empty, delete all filesystem types under `storage_key`.
-  const std::string key_prefix =
-      GetDirectoryDatabaseKey(storage_key, type_string);
+  DatabaseKey key_prefix;
+  const std::string type_string =
+      type ? SandboxFileSystemBackendDelegate::GetTypeString(type.value())
+           : std::string();
+  // `key.bucket()` is absl::nullopt for all non-kTemporary types.
+  if (type && (FileSystemTypeToQuotaStorageType(type.value()) ==
+               ::blink::mojom::StorageType::kTemporary)) {
+    if (bucket_locator.has_value()) {
+      key_prefix =
+          DatabaseKey(bucket_locator->storage_key, bucket_locator, type_string);
+    } else {
+      // If we are not provided a custom bucket value we must find the default
+      // bucket corresponding to the StorageKey.
+      QuotaErrorOr<BucketLocator> default_bucket =
+          GetOrCreateDefaultBucket(storage_key);
+      // If there is no default bucket for a given StorageKey, there is not a
+      // valid FileSystem to close, so we return.
+      if (!default_bucket.ok())
+        return;
+      key_prefix =
+          DatabaseKey(storage_key, default_bucket.value(), type_string);
+    }
+  } else {  // All other storage types.
+    key_prefix = DatabaseKey(storage_key, absl::nullopt, type_string);
+  }
+
+  // If `type` is empty, delete all filesystem types under `storage_key`.
   for (auto iter = directories_.lower_bound(key_prefix);
        iter != directories_.end();) {
-    if (!base::StartsWith(iter->first, key_prefix,
-                          base::CompareCase::SENSITIVE))
+    // If the key matches exactly or `type` is absl::nullopt and just the
+    // StorageKey and BucketLocator match exactly, delete the database.
+    if (iter->first == key_prefix ||
+        (type == absl::nullopt &&
+         iter->first.storage_key() == key_prefix.storage_key() &&
+         iter->first.bucket() == key_prefix.bucket())) {
+      std::unique_ptr<SandboxDirectoryDatabase> database =
+          std::move(iter->second);
+      directories_.erase(iter++);
+      database->DestroyDatabase();
+    } else {
       break;
-    DCHECK(type_string.empty() || iter->first == key_prefix);
-    std::unique_ptr<SandboxDirectoryDatabase> database =
-        std::move(iter->second);
-    directories_.erase(iter++);
-
-    // Continue to destroy databases even if it failed because it doesn't affect
-    // the final result.
-    database->DestroyDatabase();
+    }
   }
 }
 
@@ -996,19 +1147,44 @@ int64_t ObfuscatedFileUtil::ComputeFilePathCost(const base::FilePath& path) {
   return UsageForPath(VirtualPath::BaseName(path).value().size());
 }
 
-base::FilePath ObfuscatedFileUtil::GetDirectoryForURL(
+base::FileErrorOr<base::FilePath> ObfuscatedFileUtil::GetDirectoryForURL(
     const FileSystemURL& url,
-    bool create,
-    base::File::Error* error_code) {
+    bool create) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return GetDirectoryForStorageKeyAndType(
-      url.storage_key(), CallGetTypeStringForURL(url), create, error_code);
+  if (!url.bucket().has_value()) {
+    // Access the SandboxDirectoryDatabase to construct the file path.
+    return GetDirectoryForStorageKeyAndType(url.storage_key(), url.type(),
+                                            create);
+  }
+  // Construct the file path using the provided bucket information.
+  return GetDirectoryForBucketAndType(url.bucket().value(), url.type(), create);
 }
 
-std::string ObfuscatedFileUtil::CallGetTypeStringForURL(
-    const FileSystemURL& url) {
-  DCHECK(!get_type_string_for_url_.is_null());
-  return get_type_string_for_url_.Run(url);
+QuotaErrorOr<BucketLocator> ObfuscatedFileUtil::GetOrCreateDefaultBucket(
+    const blink::StorageKey& storage_key) {
+  // If we have already looked up this default bucket for this StorageKey,
+  // return the cached value.
+  auto iter = default_buckets_.find(storage_key);
+  if (iter != default_buckets_.end()) {
+    return iter->second;
+  }
+  // GetOrCreateBucketSync() called below requires the use of the
+  // base::WaitableEvent sync primitive. We must explicitly declare the usage
+  // of this primitive to avoid thread restriction errors.
+  base::ScopedAllowBaseSyncPrimitives allow_wait;
+  // Instead of crashing, return a QuotaError if the proxy is a nullptr.
+  if (!sandbox_delegate_->quota_manager_proxy()) {
+    LOG(WARNING) << "Failed to GetOrCreateBucket: QuotaManagerProxy is null";
+    return QuotaError::kUnknownError;
+  }
+  // Retrieve or create the default bucket for this StorageKey.
+  QuotaErrorOr<BucketInfo> bucket =
+      sandbox_delegate_->quota_manager_proxy()->GetOrCreateBucketSync(
+          BucketInitParams::ForDefaultBucket(storage_key));
+  if (!bucket.ok())
+    return bucket.error();
+  default_buckets_[storage_key] = bucket->ToBucketLocator();
+  return bucket->ToBucketLocator();
 }
 
 base::File::Error ObfuscatedFileUtil::GetFileInfoInternal(
@@ -1174,19 +1350,10 @@ base::FilePath ObfuscatedFileUtil::DataPathToLocalPath(
     const FileSystemURL& url,
     const base::FilePath& data_path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::File::Error error = base::File::FILE_OK;
-  base::FilePath root = GetDirectoryForURL(url, false, &error);
-  if (error != base::File::FILE_OK)
+  base::FileErrorOr<base::FilePath> root = GetDirectoryForURL(url, false);
+  if (!root.has_value())
     return base::FilePath();
-  return root.Append(data_path);
-}
-
-std::string ObfuscatedFileUtil::GetDirectoryDatabaseKey(
-    const blink::StorageKey& storage_key,
-    const std::string& type_string) {
-  // For isolated origin we just use a type string as a key.
-  return GetIdentifierFromOrigin(storage_key.origin()) +
-         kDirectoryDatabaseKeySeparator + type_string;
+  return root.value().Append(data_path);
 }
 
 // TODO(ericu): How to do the whole validation-without-creation thing?
@@ -1198,10 +1365,26 @@ SandboxDirectoryDatabase* ObfuscatedFileUtil::GetDirectoryDatabase(
     bool create) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  std::string key =
-      GetDirectoryDatabaseKey(url.storage_key(), CallGetTypeStringForURL(url));
-  if (key.empty())
-    return nullptr;
+  DatabaseKey key;
+  const std::string type_string =
+      SandboxFileSystemBackendDelegate::GetTypeString(url.type());
+  // `key.bucket()` is absl::nullopt for all non-kTemporary types.
+  if (FileSystemTypeToQuotaStorageType(url.type()) ==
+      ::blink::mojom::StorageType::kTemporary) {
+    if (url.bucket().has_value()) {
+      key = DatabaseKey(url.storage_key(), url.bucket().value(), type_string);
+    } else {
+      // If we are not provided a custom bucket value we must find the default
+      // bucket corresponding to the url's StorageKey.
+      QuotaErrorOr<BucketLocator> default_bucket =
+          GetOrCreateDefaultBucket(url.storage_key());
+      if (!default_bucket.ok())
+        return nullptr;
+      key = DatabaseKey(url.storage_key(), default_bucket.value(), type_string);
+    }
+  } else {  // All other storage types.
+    key = DatabaseKey(url.storage_key(), absl::nullopt, type_string);
+  }
 
   auto iter = directories_.find(key);
   if (iter != directories_.end()) {
@@ -1209,53 +1392,61 @@ SandboxDirectoryDatabase* ObfuscatedFileUtil::GetDirectoryDatabase(
     return iter->second.get();
   }
 
-  base::File::Error error = base::File::FILE_OK;
-  base::FilePath path = GetDirectoryForURL(url, create, &error);
-  if (error != base::File::FILE_OK) {
+  base::FileErrorOr<base::FilePath> path = GetDirectoryForURL(url, create);
+  if (!path.has_value()) {
     LOG(WARNING) << "Failed to get origin+type directory: " << url.DebugString()
-                 << " error:" << error;
+                 << " error:" << path.error();
     return nullptr;
   }
   MarkUsed();
   directories_[key] =
-      std::make_unique<SandboxDirectoryDatabase>(path, env_override_);
+      std::make_unique<SandboxDirectoryDatabase>(path.value(), env_override_);
   return directories_[key].get();
 }
 
-base::FilePath ObfuscatedFileUtil::GetDirectoryForStorageKey(
+base::FileErrorOr<base::FilePath> ObfuscatedFileUtil::GetDirectoryForStorageKey(
     const blink::StorageKey& storage_key,
-    bool create,
-    base::File::Error* error_code) {
+    bool create) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (storage_key.IsThirdPartyContext()) {
+    // Retrieve the default bucket value for `storage_key`.
+    QuotaErrorOr<BucketLocator> bucket = GetOrCreateDefaultBucket(storage_key);
+    if (!bucket.ok())
+      return base::unexpected(base::File::FILE_ERROR_FAILED);
+    // Get the path and verify it is valid.
+    base::FileErrorOr<base::FilePath> path =
+        sandbox_delegate_->quota_manager_proxy()->GetClientBucketPath(
+            bucket.value(), QuotaClientType::kFileSystem);
+    if (!path.has_value())
+      return base::unexpected(path.error());
+    base::File::Error error = GetDirectoryHelper(path.value(), create);
+    if (error != base::File::FILE_OK)
+      return base::unexpected(error);
+    return path;
+  }
+
   if (!InitOriginDatabase(storage_key.origin(), create)) {
-    if (error_code) {
-      *error_code = create ? base::File::FILE_ERROR_FAILED
-                           : base::File::FILE_ERROR_NOT_FOUND;
-    }
-    return base::FilePath();
+    return base::FileErrorOr<base::FilePath>(
+        base::unexpected(create ? base::File::FILE_ERROR_FAILED
+                                : base::File::FILE_ERROR_NOT_FOUND));
   }
   base::FilePath directory_name;
   std::string id = GetIdentifierFromOrigin(storage_key.origin());
 
   bool exists_in_db = origin_database_->HasOriginPath(id);
   if (!exists_in_db && !create) {
-    if (error_code)
-      *error_code = base::File::FILE_ERROR_NOT_FOUND;
-    return base::FilePath();
+    return base::unexpected(base::File::FILE_ERROR_NOT_FOUND);
   }
   if (!origin_database_->GetPathForOrigin(id, &directory_name)) {
-    if (error_code)
-      *error_code = base::File::FILE_ERROR_FAILED;
-    return base::FilePath();
+    return base::unexpected(base::File::FILE_ERROR_FAILED);
   }
 
   base::FilePath path = file_system_directory_.Append(directory_name);
   bool exists_in_fs = delegate_->DirectoryExists(path);
   if (!exists_in_db && exists_in_fs) {
     if (!delegate_->DeleteFileOrDirectory(path, true)) {
-      if (error_code)
-        *error_code = base::File::FILE_ERROR_FAILED;
-      return base::FilePath();
+      return base::unexpected(base::File::FILE_ERROR_FAILED);
     }
     exists_in_fs = false;
   }
@@ -1264,17 +1455,24 @@ base::FilePath ObfuscatedFileUtil::GetDirectoryForStorageKey(
     if (!create || delegate_->CreateDirectory(path, false /* exclusive */,
                                               true /* recursive */) !=
                        base::File::FILE_OK) {
-      if (error_code)
-        *error_code = create ? base::File::FILE_ERROR_FAILED
-                             : base::File::FILE_ERROR_NOT_FOUND;
-      return base::FilePath();
+      return base::unexpected(create ? base::File::FILE_ERROR_FAILED
+                                     : base::File::FILE_ERROR_NOT_FOUND);
     }
   }
-
-  if (error_code)
-    *error_code = base::File::FILE_OK;
-
   return path;
+}
+
+base::File::Error ObfuscatedFileUtil::GetDirectoryHelper(
+    const base::FilePath& path,
+    bool create) {
+  if (!delegate_->DirectoryExists(path) &&
+      (!create ||
+       delegate_->CreateDirectory(path, /*exclusive=*/false,
+                                  /*recursive=*/true) != base::File::FILE_OK)) {
+    return create ? base::File::FILE_ERROR_FAILED
+                  : base::File::FILE_ERROR_NOT_FOUND;
+  }
+  return base::File::FILE_OK;
 }
 
 void ObfuscatedFileUtil::InvalidateUsageCache(
@@ -1303,6 +1501,45 @@ void ObfuscatedFileUtil::RewriteDatabases() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (origin_database_)
     origin_database_->RewriteDatabase();
+}
+
+void ObfuscatedFileUtil::DeleteDefaultBucketForStorageKey(
+    const blink::StorageKey& storage_key) {
+  auto default_bucket_iter = default_buckets_.find(storage_key);
+  // If we are not already caching the bucket for that StorageKey, it does not
+  // need to be deleted.
+  if (default_bucket_iter == default_buckets_.end())
+    return;
+  BucketLocator default_bucket = default_buckets_[storage_key];
+  // Ensure that all directories with that StorageKey and bucket have been
+  // erased.
+  DCHECK(directories_.find(
+             DatabaseKey(storage_key, default_bucket,
+                         SandboxFileSystemBackendDelegate::GetTypeString(
+                             FileSystemType::kFileSystemTypeTemporary))) ==
+         directories_.end());
+  default_buckets_.erase(default_bucket_iter);
+}
+
+void ObfuscatedFileUtil::DeleteDefaultBucket(
+    const BucketLocator& bucket_locator) {
+  blink::StorageKey storage_key = bucket_locator.storage_key;
+  auto default_bucket_iter = default_buckets_.find(storage_key);
+  // If we are not already caching the bucket for that StorageKey, it does not
+  // need to be deleted.
+  if (default_bucket_iter == default_buckets_.end())
+    return;
+  BucketLocator default_bucket = default_buckets_[storage_key];
+  // Ensure that `default_bucket` matches `bucket_locator`
+  DCHECK(default_bucket == bucket_locator);
+  // Ensure that all directories with that StorageKey and bucket have been
+  // erased.
+  DCHECK(directories_.find(
+             DatabaseKey(storage_key, default_bucket,
+                         SandboxFileSystemBackendDelegate::GetTypeString(
+                             FileSystemType::kFileSystemTypeTemporary))) ==
+         directories_.end());
+  default_buckets_.erase(default_bucket_iter);
 }
 
 bool ObfuscatedFileUtil::InitOriginDatabase(const url::Origin& origin_hint,
@@ -1342,16 +1579,18 @@ base::File::Error ObfuscatedFileUtil::GenerateNewLocalPath(
   if (!db || !db->GetNextInteger(&number))
     return base::File::FILE_ERROR_FAILED;
 
-  base::File::Error error = base::File::FILE_OK;
-  *root = GetDirectoryForURL(url, false, &error);
-  if (error != base::File::FILE_OK)
-    return error;
+  base::FileErrorOr<base::FilePath> directory_for_url =
+      GetDirectoryForURL(url, false);
+  if (!directory_for_url.has_value())
+    return directory_for_url.error();
+  *root = directory_for_url.value();
 
   // We use the third- and fourth-to-last digits as the directory.
   int64_t directory_number = number % 10000 / 100;
   base::FilePath new_local_path =
       root->AppendASCII(base::StringPrintf("%02" PRId64, directory_number));
 
+  base::File::Error error = base::File::FILE_OK;
   error = delegate_->CreateDirectory(new_local_path, false /* exclusive */,
                                      false /* recursive */);
   if (error != base::File::FILE_OK)
@@ -1367,10 +1606,10 @@ base::File ObfuscatedFileUtil::CreateOrOpenInternal(
     const FileSystemURL& url,
     int file_flags) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(
-      !(file_flags &
-        (base::File::FLAG_DELETE_ON_CLOSE | base::File::FLAG_HIDDEN |
-         base::File::FLAG_EXCLUSIVE_READ | base::File::FLAG_EXCLUSIVE_WRITE)));
+  DCHECK(!(file_flags &
+           (base::File::FLAG_DELETE_ON_CLOSE | base::File::FLAG_WIN_HIDDEN |
+            base::File::FLAG_WIN_EXCLUSIVE_READ |
+            base::File::FLAG_WIN_EXCLUSIVE_WRITE)));
   SandboxDirectoryDatabase* db = GetDirectoryDatabase(url, true);
   if (!db)
     return base::File(base::File::FILE_ERROR_FAILED);

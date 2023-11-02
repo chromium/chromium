@@ -1,18 +1,19 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/login/demo_mode/demo_resources.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_paths.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check_op.h"
+#include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/image_loader/image_loader_client.h"
+#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 
 namespace ash {
 namespace {
@@ -86,11 +87,6 @@ void DemoResources::EnsureLoaded(base::OnceClosure load_callback) {
     return;
   load_requested_ = true;
 
-  if (config_ == DemoSession::DemoModeConfig::kOffline) {
-    LoadPreinstalledOfflineResources();
-    return;
-  }
-
   auto cros_component_manager =
       g_browser_process->platform_part()->cros_component_manager();
   // In unit tests, DemoModeTestHelper should set up a fake
@@ -121,15 +117,6 @@ void DemoResources::InstalledComponentLoaded(
     const base::FilePath& path) {
   component_error_ = error;
   OnDemoResourcesLoaded(absl::make_optional(path));
-}
-
-void DemoResources::LoadPreinstalledOfflineResources() {
-  chromeos::DBusThreadManager::Get()
-      ->GetImageLoaderClient()
-      ->LoadComponentAtPath(
-          kOfflineDemoModeResourcesComponentName, GetPreInstalledPath(),
-          base::BindOnce(&DemoResources::OnDemoResourcesLoaded,
-                         weak_ptr_factory_.GetWeakPtr()));
 }
 
 void DemoResources::OnDemoResourcesLoaded(

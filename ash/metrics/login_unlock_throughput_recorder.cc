@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -108,12 +108,21 @@ void LoginUnlockThroughputRecorder::LoggedInStateChanged() {
   if (login_state->IsUserLoggedIn() &&
       (logged_in_user == chromeos::LoginState::LOGGED_IN_USER_OWNER ||
        logged_in_user == chromeos::LoginState::LOGGED_IN_USER_REGULAR)) {
+    ui_recorder_.OnUserLoggedIn();
     auto* primary_root = Shell::GetPrimaryRootWindow();
     new ui::TotalAnimationThroughputReporter(
         primary_root->GetHost()->compositor(),
-        base::BindOnce(&ReportLogin, base::TimeTicks::Now()),
+        base::BindOnce(&LoginUnlockThroughputRecorder::OnLoginAnimationFinish,
+                       weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()),
         /*self_destruct=*/true);
   }
+}
+
+void LoginUnlockThroughputRecorder::OnLoginAnimationFinish(
+    base::TimeTicks start,
+    const cc::FrameSequenceMetrics::CustomReportData& data) {
+  ui_recorder_.OnPostLoginAnimationFinish();
+  ReportLogin(start, data);
 }
 
 }  // namespace ash

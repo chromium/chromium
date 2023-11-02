@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -52,7 +52,8 @@ void EncodePinnedTabs(Browser* browser, base::Value* serialized_tabs) {
 // on success.
 absl::optional<StartupTab> DecodeTab(const base::Value& value) {
   const std::string* const url_string = value.FindStringPath(kURL);
-  return url_string ? absl::make_optional(StartupTab(GURL(*url_string), true))
+  return url_string ? absl::make_optional(StartupTab(GURL(*url_string),
+                                                     StartupTab::Type::kPinned))
                     : absl::nullopt;
 }
 
@@ -86,11 +87,11 @@ void PinnedTabCodec::WritePinnedTabs(Profile* profile,
   if (!prefs)
     return;
 
-  ListPrefUpdate update(prefs, prefs::kPinnedTabs);
-  base::Value* values = update.Get();
-  values->ClearList();
+  ScopedListPrefUpdate update(prefs, prefs::kPinnedTabs);
+  base::Value::List& values = update.Get();
+  values.clear();
   for (const auto& tab : tabs)
-    values->Append(EncodeTab(tab.url));
+    values.Append(EncodeTab(tab.url));
 }
 
 // static
@@ -98,17 +99,10 @@ StartupTabs PinnedTabCodec::ReadPinnedTabs(Profile* profile) {
   PrefService* prefs = profile->GetPrefs();
   if (!prefs)
     return {};
-  return ReadPinnedTabs(prefs->GetList(prefs::kPinnedTabs));
-}
 
-// static
-StartupTabs PinnedTabCodec::ReadPinnedTabs(const base::Value* value) {
   StartupTabs results;
 
-  if (!value->is_list())
-    return results;
-
-  for (const auto& serialized_tab : value->GetList()) {
+  for (const auto& serialized_tab : prefs->GetList(prefs::kPinnedTabs)) {
     if (!serialized_tab.is_dict())
       continue;
     absl::optional<StartupTab> tab = DecodeTab(serialized_tab);

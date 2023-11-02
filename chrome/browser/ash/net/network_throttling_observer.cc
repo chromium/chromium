@@ -1,17 +1,17 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/net/network_throttling_observer.h"
 
-#include <memory>
+#include <algorithm>
 #include <string>
 
 #include "base/bind.h"
 #include "base/system/sys_info.h"
 #include "base/values.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/network/network_state_handler.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
 #include "components/prefs/pref_member.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -39,29 +39,16 @@ void NetworkThrottlingObserver::OnPreferenceChanged(
     const std::string& pref_name) {
   DCHECK(pref_name == prefs::kNetworkThrottlingEnabled);
 
-  const base::DictionaryValue* throttling_policy =
-      local_state_->GetDictionary(prefs::kNetworkThrottlingEnabled);
+  const base::Value::Dict& throttling_policy =
+      local_state_->GetDict(prefs::kNetworkThrottlingEnabled);
 
   // Default is to disable throttling if the policy is not found.
-  bool enabled = false;
-  uint32_t upload_rate = 0, download_rate = 0;
-  if (throttling_policy) {
-    int upload_rate_read = 0;
-    int download_rate_read = 0;
+  const bool enabled = throttling_policy.FindBool("enabled").value_or(false);
+  const uint32_t upload_rate =
+      std::max(0, throttling_policy.FindInt("upload_rate_kbits").value_or(0));
+  const uint32_t download_rate =
+      std::max(0, throttling_policy.FindInt("download_rate_kbits").value_or(0));
 
-    throttling_policy->GetBoolean("enabled", &enabled);
-
-    if (throttling_policy->GetInteger("upload_rate_kbits", &upload_rate_read) &&
-        upload_rate_read > 0) {
-      upload_rate = upload_rate_read;
-    }
-
-    if (throttling_policy->GetInteger("download_rate_kbits",
-                                      &download_rate_read) &&
-        download_rate_read > 0) {
-      download_rate = download_rate_read;
-    }
-  }
   NetworkHandler::Get()->network_state_handler()->SetNetworkThrottlingStatus(
       enabled, upload_rate, download_rate);
 }

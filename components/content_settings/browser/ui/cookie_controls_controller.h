@@ -1,11 +1,13 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_CONTENT_SETTINGS_BROWSER_UI_COOKIE_CONTROLS_CONTROLLER_H_
 #define COMPONENTS_CONTENT_SETTINGS_BROWSER_UI_COOKIE_CONTROLS_CONTROLLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
@@ -24,7 +26,9 @@ class CookieSettings;
 class CookieControlsView;
 
 // Handles the tab specific state for cookie controls.
-class CookieControlsController : content_settings::CookieSettings::Observer {
+class CookieControlsController
+    : content_settings::CookieSettings::Observer,
+      public base::SupportsWeakPtr<CookieControlsController> {
  public:
   CookieControlsController(
       scoped_refptr<content_settings::CookieSettings> cookie_settings,
@@ -69,7 +73,7 @@ class CookieControlsController : content_settings::CookieSettings::Observer {
     void OnSiteDataAccessed() override;
 
    private:
-    CookieControlsController* cookie_controls_;
+    raw_ptr<CookieControlsController> cookie_controls_;
   };
 
   void OnThirdPartyCookieBlockingChanged(

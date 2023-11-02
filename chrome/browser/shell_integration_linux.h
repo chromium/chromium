@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -118,6 +118,12 @@ std::string GetMimeTypesRegistrationFileContents(
 // them as a separate application.
 std::string GetWMClassFromAppName(std::string app_name);
 
+// Wayland version of GetWMClassFromAppName explained above.
+// The XDG application ID must match the name of the desktop entry file, where
+// the latter looks like 'chrome-<web app id>-<profile name>.desktop'.
+std::string GetXdgAppIdForWebApp(std::string app_name,
+                                 const base::FilePath& profile_path);
+
 // Helper to launch xdg scripts. We don't want them to ask any questions on the
 // terminal etc. The function returns true if the utility launches and exits
 // cleanly, in which case |exit_code| returns the utility's exit code.
@@ -141,6 +147,13 @@ bool GetNoDisplayFromDesktopFile(const std::string& shortcut_contents);
 // Returns an empty path if the executable path could not be found, which should
 // never happen.
 base::FilePath GetChromeExePath();
+
+// Get the value of |key| from the [Desktop Entry] section of a .desktop file,
+// given in |shortcut_contents|. If the key is not found, returns an empty
+// string.
+std::string GetDesktopEntryStringValueFromFromDesktopFileForTest(
+    const std::string& key,
+    const std::string& shortcut_contents);
 
 }  // namespace internal
 

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.accounts.Account;
 import android.app.Activity;
 import android.os.Bundle;
 
@@ -27,7 +26,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.multidex.ShadowMultiDex;
+import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.metrics.UmaRecorder;
 import org.chromium.base.metrics.UmaRecorderHolder;
@@ -35,12 +34,11 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettings;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
-import org.chromium.components.signin.ChildAccountStatus;
+import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 
@@ -49,17 +47,15 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
  * first run.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowMultiDex.class})
+@Config(manifest = Config.NONE)
+@LooperMode(LooperMode.Mode.LEGACY)
 public class FirstRunFlowSequencerTest {
-    private static final String ADULT_ACCOUNT = "adult.account@gmail.com";
-    private static final Account CHILD_ACCOUNT =
-            AccountManagerTestRule.createChildAccount(/*baseName=*/"account@gmail.com");
+    private static final String ADULT_ACCOUNT_NAME = "adult.account@gmail.com";
+    private static final String CHILD_ACCOUNT_NAME =
+            AccountManagerTestRule.generateChildEmail(/*baseName=*/"account@gmail.com");
 
     @Rule
     public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
-
-    @Rule
-    public final TestRule mCommandLindFlagRule = CommandLineFlags.getTestRule();
 
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -95,10 +91,11 @@ public class FirstRunFlowSequencerTest {
     private static class TestFirstRunFlowSequencer extends FirstRunFlowSequencer {
         public Bundle returnedBundle;
         public boolean calledOnFlowIsKnown;
-        public boolean calledSetFirstRunFlowSignInComplete;
 
         public TestFirstRunFlowSequencer(Activity activity) {
-            super(activity);
+            super(activity,
+                    new ChildAccountStatusSupplier(
+                            AccountManagerFacadeProvider.getInstance(), null));
         }
 
         @Override
@@ -107,15 +104,7 @@ public class FirstRunFlowSequencerTest {
             if (freProperties != null) updateFirstRunProperties(freProperties);
             returnedBundle = freProperties;
         }
-
-        @Override
-        protected void setFirstRunFlowSignInComplete() {
-            calledSetFirstRunFlowSignInComplete = true;
-        }
     }
-
-    @Mock
-    private DataReductionProxySettings mDataReductionProxySettingsMock;
 
     @Mock
     private UmaRecorder mUmaRecorderMock;
@@ -124,7 +113,7 @@ public class FirstRunFlowSequencerTest {
     private IdentityManager mIdentityManagerMock;
 
     private ActivityController<Activity> mActivityController;
-    private TestFirstRunFlowSequencer mSequencer;
+    private Activity mActivity;
     private TestFirstRunFlowSequencerDelegate mDelegate;
 
     @Before
@@ -136,17 +125,10 @@ public class FirstRunFlowSequencerTest {
                 .thenReturn(mIdentityManagerMock);
         when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SYNC)).thenReturn(false);
 
-        // Show data reduction page by default.
-        when(mDataReductionProxySettingsMock.isDataReductionProxyManaged()).thenReturn(false);
-        when(mDataReductionProxySettingsMock.isDataReductionProxyFREPromoAllowed())
-                .thenReturn(true);
-        DataReductionProxySettings.setInstanceForTesting(mDataReductionProxySettingsMock);
-
         mActivityController = Robolectric.buildActivity(Activity.class);
-        Activity activity = mActivityController.setup().get();
+        mActivity = mActivityController.setup().get();
         mDelegate = new TestFirstRunFlowSequencerDelegate();
         FirstRunFlowSequencer.setDelegateForTesting(mDelegate);
-        mSequencer = new TestFirstRunFlowSequencer(activity);
     }
 
     @After
@@ -159,72 +141,40 @@ public class FirstRunFlowSequencerTest {
     @Test
     @Feature({"FirstRun"})
     public void testStandardFlowTosNotSeen() {
-        when(mDataReductionProxySettingsMock.isDataReductionProxyFREPromoAllowed())
-                .thenReturn(false);
         mDelegate.isSyncAllowed = true;
         mDelegate.shouldSkipFirstUseHints = false;
 
-        mSequencer.start();
+        TestFirstRunFlowSequencer sequencer = new TestFirstRunFlowSequencer(mActivity);
+        sequencer.start();
 
         verifyNumberOfAccountsRecorded(0);
-        assertTrue(mSequencer.calledOnFlowIsKnown);
-        assertFalse(mSequencer.calledSetFirstRunFlowSignInComplete);
+        assertTrue(sequencer.calledOnFlowIsKnown);
 
-        Bundle bundle = mSequencer.returnedBundle;
+        Bundle bundle = sequencer.returnedBundle;
         assertTrue(bundle.getBoolean(FirstRunActivityBase.SHOW_SYNC_CONSENT_PAGE));
-        assertFalse(bundle.getBoolean(FirstRunActivityBase.SHOW_DATA_REDUCTION_PAGE));
         assertFalse(bundle.getBoolean(FirstRunActivityBase.SHOW_SEARCH_ENGINE_PAGE));
-        assertEquals(ChildAccountStatus.NOT_CHILD,
-                bundle.getInt(SyncConsentFirstRunFragment.CHILD_ACCOUNT_STATUS));
-        assertEquals(4, bundle.size());
+        assertFalse(bundle.getBoolean(SyncConsentFirstRunFragment.IS_CHILD_ACCOUNT));
+        assertEquals(3, bundle.size());
     }
 
     @Test
     @Feature({"FirstRun"})
     public void testStandardFlowOneChildAccount() {
-        mAccountManagerTestRule.addAccount(CHILD_ACCOUNT);
-        when(mDataReductionProxySettingsMock.isDataReductionProxyFREPromoAllowed())
-                .thenReturn(false);
+        mAccountManagerTestRule.addAccount(CHILD_ACCOUNT_NAME);
         mDelegate.isSyncAllowed = true;
         mDelegate.shouldSkipFirstUseHints = false;
 
-        mSequencer.start();
+        TestFirstRunFlowSequencer sequencer = new TestFirstRunFlowSequencer(mActivity);
+        sequencer.start();
 
         verifyNumberOfAccountsRecorded(1);
-        assertTrue(mSequencer.calledOnFlowIsKnown);
-        assertTrue(mSequencer.calledSetFirstRunFlowSignInComplete);
+        assertTrue(sequencer.calledOnFlowIsKnown);
 
-        Bundle bundle = mSequencer.returnedBundle;
+        Bundle bundle = sequencer.returnedBundle;
         assertTrue(bundle.getBoolean(FirstRunActivityBase.SHOW_SYNC_CONSENT_PAGE));
-        assertFalse(bundle.getBoolean(FirstRunActivityBase.SHOW_DATA_REDUCTION_PAGE));
         assertFalse(bundle.getBoolean(FirstRunActivityBase.SHOW_SEARCH_ENGINE_PAGE));
-        assertEquals(ChildAccountStatus.REGULAR_CHILD,
-                bundle.getInt(SyncConsentFirstRunFragment.CHILD_ACCOUNT_STATUS));
-        assertEquals(4, bundle.size());
-    }
-
-    @Test
-    @Feature({"FirstRun"})
-    public void testStandardFlowShowDataReductionPage() {
-        mAccountManagerTestRule.addAccount(ADULT_ACCOUNT);
-        mAccountManagerTestRule.addAccount("second.test.account@gmail.com");
-        mDelegate.isSyncAllowed = true;
-        mDelegate.shouldSkipFirstUseHints = false;
-        mDelegate.shouldShowSearchEnginePage = false;
-
-        mSequencer.start();
-
-        verifyNumberOfAccountsRecorded(2);
-        assertTrue(mSequencer.calledOnFlowIsKnown);
-        assertFalse(mSequencer.calledSetFirstRunFlowSignInComplete);
-
-        Bundle bundle = mSequencer.returnedBundle;
-        assertTrue(bundle.getBoolean(FirstRunActivityBase.SHOW_SYNC_CONSENT_PAGE));
-        assertTrue(bundle.getBoolean(FirstRunActivityBase.SHOW_DATA_REDUCTION_PAGE));
-        assertFalse(bundle.getBoolean(FirstRunActivityBase.SHOW_SEARCH_ENGINE_PAGE));
-        assertEquals(ChildAccountStatus.NOT_CHILD,
-                bundle.getInt(SyncConsentFirstRunFragment.CHILD_ACCOUNT_STATUS));
-        assertEquals(4, bundle.size());
+        assertTrue(bundle.getBoolean(SyncConsentFirstRunFragment.IS_CHILD_ACCOUNT));
+        assertEquals(3, bundle.size());
     }
 
     @Test
@@ -234,19 +184,17 @@ public class FirstRunFlowSequencerTest {
         mDelegate.shouldSkipFirstUseHints = false;
         mDelegate.shouldShowSearchEnginePage = true;
 
-        mSequencer.start();
+        TestFirstRunFlowSequencer sequencer = new TestFirstRunFlowSequencer(mActivity);
+        sequencer.start();
 
         verifyNumberOfAccountsRecorded(0);
-        assertTrue(mSequencer.calledOnFlowIsKnown);
-        assertFalse(mSequencer.calledSetFirstRunFlowSignInComplete);
+        assertTrue(sequencer.calledOnFlowIsKnown);
 
-        Bundle bundle = mSequencer.returnedBundle;
+        Bundle bundle = sequencer.returnedBundle;
         assertTrue(bundle.getBoolean(FirstRunActivityBase.SHOW_SYNC_CONSENT_PAGE));
-        assertTrue(bundle.getBoolean(FirstRunActivityBase.SHOW_DATA_REDUCTION_PAGE));
         assertTrue(bundle.getBoolean(FirstRunActivityBase.SHOW_SEARCH_ENGINE_PAGE));
-        assertEquals(ChildAccountStatus.NOT_CHILD,
-                bundle.getInt(SyncConsentFirstRunFragment.CHILD_ACCOUNT_STATUS));
-        assertEquals(4, bundle.size());
+        assertFalse(bundle.getBoolean(SyncConsentFirstRunFragment.IS_CHILD_ACCOUNT));
+        assertEquals(3, bundle.size());
     }
 
     @Test
@@ -258,42 +206,38 @@ public class FirstRunFlowSequencerTest {
         mDelegate.shouldSkipFirstUseHints = false;
         mDelegate.shouldShowSearchEnginePage = false;
 
-        mSequencer.start();
+        TestFirstRunFlowSequencer sequencer = new TestFirstRunFlowSequencer(mActivity);
+        sequencer.start();
 
         verifyNumberOfAccountsRecorded(0);
-        assertTrue(mSequencer.calledOnFlowIsKnown);
-        assertFalse(mSequencer.calledSetFirstRunFlowSignInComplete);
-        final Bundle bundle = mSequencer.returnedBundle;
+        assertTrue(sequencer.calledOnFlowIsKnown);
+        final Bundle bundle = sequencer.returnedBundle;
         assertFalse(bundle.getBoolean(FirstRunActivityBase.SHOW_SYNC_CONSENT_PAGE));
-        assertTrue(bundle.getBoolean(FirstRunActivityBase.SHOW_DATA_REDUCTION_PAGE));
         assertFalse(bundle.getBoolean(FirstRunActivityBase.SHOW_SEARCH_ENGINE_PAGE));
-        assertEquals(ChildAccountStatus.NOT_CHILD,
-                bundle.getInt(SyncConsentFirstRunFragment.CHILD_ACCOUNT_STATUS));
-        assertEquals(4, bundle.size());
+        assertFalse(bundle.getBoolean(SyncConsentFirstRunFragment.IS_CHILD_ACCOUNT));
+        assertEquals(3, bundle.size());
     }
 
     @Test
     @Feature({"FirstRun"})
     @CommandLineFlags.Add({ChromeSwitches.FORCE_ENABLE_SIGNIN_FRE})
     public void testFlowShowSyncConsentPageWhenUserIsSignedIn() {
-        mAccountManagerTestRule.addAccount(ADULT_ACCOUNT);
+        mAccountManagerTestRule.addAccount(ADULT_ACCOUNT_NAME);
         when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(true);
         mDelegate.isSyncAllowed = true;
         mDelegate.shouldSkipFirstUseHints = false;
         mDelegate.shouldShowSearchEnginePage = false;
 
-        mSequencer.start();
+        TestFirstRunFlowSequencer sequencer = new TestFirstRunFlowSequencer(mActivity);
+        sequencer.start();
 
         verifyNumberOfAccountsRecorded(1);
-        assertTrue(mSequencer.calledOnFlowIsKnown);
-        assertFalse(mSequencer.calledSetFirstRunFlowSignInComplete);
-        final Bundle bundle = mSequencer.returnedBundle;
+        assertTrue(sequencer.calledOnFlowIsKnown);
+        final Bundle bundle = sequencer.returnedBundle;
         assertTrue(bundle.getBoolean(FirstRunActivityBase.SHOW_SYNC_CONSENT_PAGE));
-        assertTrue(bundle.getBoolean(FirstRunActivityBase.SHOW_DATA_REDUCTION_PAGE));
         assertFalse(bundle.getBoolean(FirstRunActivityBase.SHOW_SEARCH_ENGINE_PAGE));
-        assertEquals(ChildAccountStatus.NOT_CHILD,
-                bundle.getInt(SyncConsentFirstRunFragment.CHILD_ACCOUNT_STATUS));
-        assertEquals(4, bundle.size());
+        assertFalse(bundle.getBoolean(SyncConsentFirstRunFragment.IS_CHILD_ACCOUNT));
+        assertEquals(3, bundle.size());
     }
 
     private void verifyNumberOfAccountsRecorded(int numberOfAccounts) {

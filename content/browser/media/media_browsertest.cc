@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,9 +27,18 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "url/url_util.h"
 
+// Proprietary codecs require acceleration on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define REQUIRE_ACCELERATION_ON_ANDROID() \
+  if (!is_accelerated())                  \
+  return
+#else
+#define REQUIRE_ACCELERATION_ON_ANDROID()
+#endif  // BUILDFLAG(IS_ANDROID)
+
 namespace content {
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Title set by android cleaner page after short timeout.
 const char16_t kClean[] = u"CLEAN";
 #endif
@@ -40,24 +49,24 @@ void MediaBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
       switches::autoplay::kNoUserGestureRequiredPolicy);
   command_line->AppendSwitch(switches::kExposeInternalsForTesting);
 
-  std::vector<base::Feature> enabled_features = {
-#if defined(OS_ANDROID)
+  std::vector<base::test::FeatureRef> enabled_features = {
+#if BUILDFLAG(IS_ANDROID)
     features::kLogJsConsoleMessages,
 #endif
   };
 
-  std::vector<base::Feature> disabled_features = {
+  std::vector<base::test::FeatureRef> disabled_features = {
     // Disable fallback after decode error to avoid unexpected test pass on
     // the fallback path.
     media::kFallbackAfterDecodeError,
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     // Disable out of process audio on Linux due to process spawn
     // failures. http://crbug.com/986021
     features::kAudioServiceOutOfProcess,
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
     media::kDeprecateLowUsageCodecs,
 #endif
   };
@@ -99,7 +108,7 @@ std::string MediaBrowserTest::RunTest(const GURL& gurl,
 }
 
 void MediaBrowserTest::CleanupTest() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // We only do this cleanup on Android, as a workaround for a test-only OOM
   // bug. See http://crbug.com/727542
   const std::u16string cleaner_title = kClean;
@@ -127,20 +136,28 @@ void MediaBrowserTest::AddTitlesToAwait(content::TitleWatcher* title_watcher) {
   title_watcher->AlsoWaitForTitle(base::ASCIIToUTF16(media::kFailedTitle));
 }
 
-// Tests playback and seeking of an audio or video file over file or http based
-// on a test parameter.  Test starts with playback, then, after X seconds or the
-// ended event fires, seeks near end of file; see player.html for details.  The
-// test completes when either the last 'ended' or an 'error' event fires.
+// Tests playback and seeking of an audio or video file. Test starts with
+// playback then, after X seconds or the ended event fires, seeks near end of
+// file; see player.html for details. The test completes when either the last
+// 'ended' or an 'error' event fires.
 class MediaTest : public testing::WithParamInterface<bool>,
                   public MediaBrowserTest {
  public:
+  bool is_accelerated() { return GetParam(); }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    if (!is_accelerated())
+      command_line->AppendSwitch(switches::kDisableAcceleratedVideoDecode);
+    MediaBrowserTest::SetUpCommandLine(command_line);
+  }
+
   // Play specified audio over http:// or file:// depending on |http| setting.
-  void PlayAudio(const std::string& media_file, bool http) {
+  void PlayAudio(const std::string& media_file, bool http = true) {
     PlayMedia("audio", media_file, http);
   }
 
   // Play specified video over http:// or file:// depending on |http| setting.
-  void PlayVideo(const std::string& media_file, bool http) {
+  void PlayVideo(const std::string& media_file, bool http = true) {
     PlayMedia("video", media_file, http);
   }
 
@@ -154,14 +171,13 @@ class MediaTest : public testing::WithParamInterface<bool>,
 
   void RunErrorMessageTest(const std::string& tag,
                            const std::string& media_file,
-                           const std::string& expected_error_substring,
-                           bool http) {
+                           const std::string& expected_error_substring) {
     base::StringPairs query_params;
     query_params.emplace_back(tag, media_file);
     query_params.emplace_back("error_substr",
                               EncodeErrorMessage(expected_error_substring));
     RunMediaTestPage("player.html", query_params, media::kErrorEventTitle,
-                     http);
+                     true);
   }
 
   void RunVideoSizeTest(const char* media_file, int width, int height) {
@@ -171,229 +187,230 @@ class MediaTest : public testing::WithParamInterface<bool>,
     base::StringPairs query_params;
     query_params.emplace_back("video", media_file);
     query_params.emplace_back("sizetest", "true");
-    RunMediaTestPage("player.html", query_params, expected_title, false);
+    RunMediaTestPage("player.html", query_params, expected_title, true);
   }
 };
-
-#if defined(OS_ANDROID)
-class AndroidPlayerMediaTest : public MediaTest {
- private:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    MediaTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(switches::kDisableAcceleratedVideoDecode);
-  }
-};
-
-// TODO(crbug.com/1094571): Flaky.
-IN_PROC_BROWSER_TEST_P(AndroidPlayerMediaTest, DISABLED_VideoBearMp4) {
-  PlayVideo("bear.mp4", GetParam());
-}
-
-INSTANTIATE_TEST_SUITE_P(File,
-                         AndroidPlayerMediaTest,
-                         ::testing::Values(false));
-INSTANTIATE_TEST_SUITE_P(Http, AndroidPlayerMediaTest, ::testing::Values(true));
-#endif  // defined(OS_ANDROID)
 
 // Android doesn't support Theora.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearTheora) {
-  PlayVideo("bear.ogv", GetParam());
+  PlayVideo("bear.ogv");
 }
 
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearSilentTheora) {
-  PlayVideo("bear_silent.ogv", GetParam());
+  PlayVideo("bear_silent.ogv");
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearWebm) {
-  PlayVideo("bear.webm", GetParam());
+  PlayVideo("bear.webm");
+}
+
+IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearWebm_FileProtocol) {
+  PlayVideo("bear.webm", false);
 }
 
 IN_PROC_BROWSER_TEST_P(MediaTest, AudioBearOpusWebm) {
-  PlayAudio("bear-opus.webm", GetParam());
+  PlayAudio("bear-opus.webm");
 }
 
 IN_PROC_BROWSER_TEST_P(MediaTest, AudioBearOpusMp4) {
-  PlayAudio("bear-opus.mp4", GetParam());
+  PlayAudio("bear-opus.mp4");
 }
 
 IN_PROC_BROWSER_TEST_P(MediaTest, AudioBearOpusOgg) {
-  PlayAudio("bear-opus.ogg", GetParam());
+  PlayAudio("bear-opus.ogg");
+}
+
+IN_PROC_BROWSER_TEST_P(MediaTest, AudioBearOpusOgg_FileProtocol) {
+  PlayAudio("bear-opus.ogg", false);
 }
 
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearSilentWebm) {
-  PlayVideo("bear_silent.webm", GetParam());
+  PlayVideo("bear_silent.webm");
 }
 
 // We don't expect android devices to support highbit yet.
-#if defined(ARCH_CPU_X86_FAMILY) && !defined(OS_ANDROID)
-IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearHighBitDepthVP9) {
-  PlayVideo("bear-320x180-hi10p-vp9.webm", GetParam());
+#if !BUILDFLAG(IS_ANDROID)
+
+// TODO(https://crbug.com/1373513): DEMUXER_ERROR_NO_SUPPORTED_STREAMS error on
+// Fuchsia Arm64.
+#if BUILDFLAG(IS_FUCHSIA) && defined(ARCH_CPU_ARM64)
+#define MAYBE_VideoBearHighBitDepthVP9 DISABLED_VideoBearHighBitDepthVP9
+#else
+#define MAYBE_VideoBearHighBitDepthVP9 VideoBearHighBitDepthVP9
+#endif
+IN_PROC_BROWSER_TEST_P(MediaTest, MAYBE_VideoBearHighBitDepthVP9) {
+  PlayVideo("bear-320x180-hi10p-vp9.webm");
 }
 
-// TODO(crbug.com/1222748): Flaky on Mac.
-#if defined(OS_MAC)
+// TODO(https://crbug.com/1373513): DEMUXER_ERROR_NO_SUPPORTED_STREAMS error on
+// Fuchsia Arm64.
+#if BUILDFLAG(IS_FUCHSIA) && defined(ARCH_CPU_ARM64)
 #define MAYBE_VideoBear12DepthVP9 DISABLED_VideoBear12DepthVP9
 #else
 #define MAYBE_VideoBear12DepthVP9 VideoBear12DepthVP9
 #endif
 IN_PROC_BROWSER_TEST_P(MediaTest, MAYBE_VideoBear12DepthVP9) {
-  PlayVideo("bear-320x180-hi12p-vp9.webm", GetParam());
+  // Hardware decode on does not reliably support 12-bit.
+  if (is_accelerated())
+    return;
+  PlayVideo("bear-320x180-hi12p-vp9.webm");
 }
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearMp4Vp9) {
-  PlayVideo("bear-320x240-v_frag-vp9.mp4", GetParam());
+  PlayVideo("bear-320x240-v_frag-vp9.mp4");
 }
 
 IN_PROC_BROWSER_TEST_P(MediaTest, AudioBearFlacMp4) {
-  PlayAudio("bear-flac.mp4", GetParam());
+  PlayAudio("bear-flac.mp4");
 }
 
 IN_PROC_BROWSER_TEST_P(MediaTest, AudioBearFlac192kHzMp4) {
-  PlayAudio("bear-flac-192kHz.mp4", GetParam());
+  PlayAudio("bear-flac-192kHz.mp4");
 }
 
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearMovPcmS16be) {
-  PlayAudio("bear_pcm_s16be.mov", GetParam());
+  PlayAudio("bear_pcm_s16be.mov");
 }
 
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearMovPcmS24be) {
-  PlayAudio("bear_pcm_s24be.mov", GetParam());
+  PlayAudio("bear_pcm_s24be.mov");
 }
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearMp4) {
-  PlayVideo("bear.mp4", GetParam());
+  REQUIRE_ACCELERATION_ON_ANDROID();
+  PlayVideo("bear.mp4");
 }
 
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearSilentMp4) {
-  PlayVideo("bear_silent.mp4", GetParam());
+  REQUIRE_ACCELERATION_ON_ANDROID();
+  PlayVideo("bear_silent.mp4");
 }
 
-IN_PROC_BROWSER_TEST_F(MediaTest, VideoBearRotated0) {
+IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearRotated0) {
+  REQUIRE_ACCELERATION_ON_ANDROID();
   RunVideoSizeTest("bear_rotate_0.mp4", 1280, 720);
 }
 
-IN_PROC_BROWSER_TEST_F(MediaTest, VideoBearRotated90) {
+IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearRotated90) {
+  REQUIRE_ACCELERATION_ON_ANDROID();
   RunVideoSizeTest("bear_rotate_90.mp4", 720, 1280);
 }
 
-IN_PROC_BROWSER_TEST_F(MediaTest, VideoBearRotated180) {
+IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearRotated180) {
+  REQUIRE_ACCELERATION_ON_ANDROID();
   RunVideoSizeTest("bear_rotate_180.mp4", 1280, 720);
 }
 
-IN_PROC_BROWSER_TEST_F(MediaTest, VideoBearRotated270) {
+IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearRotated270) {
+  REQUIRE_ACCELERATION_ON_ANDROID();
   RunVideoSizeTest("bear_rotate_270.mp4", 720, 1280);
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // Android devices usually only support baseline, main and high.
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearHighBitDepthMp4) {
-  PlayVideo("bear-320x180-hi10p.mp4", GetParam());
+  PlayVideo("bear-320x180-hi10p.mp4");
 }
 
 // Android can't reliably load lots of videos on a page.
 // See http://crbug.com/749265
 // TODO(crbug.com/1222852): Flaky on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_LoadManyVideos DISABLED_LoadManyVideos
 #else
 #define MAYBE_LoadManyVideos LoadManyVideos
 #endif
-IN_PROC_BROWSER_TEST_F(MediaTest, MAYBE_LoadManyVideos) {
+IN_PROC_BROWSER_TEST_P(MediaTest, MAYBE_LoadManyVideos) {
+  // Only run this test in one configuration.
+  if (is_accelerated())
+    return;
   base::StringPairs query_params;
   RunMediaTestPage("load_many_videos.html", query_params, media::kEndedTitle,
                    true);
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearAviMp3Mpeg4) {
-  PlayVideo("bear_mpeg4_mp3.avi", GetParam());
+  PlayVideo("bear_mpeg4_mp3.avi");
 }
 
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearAviMp3Mpeg4Asp) {
-  PlayVideo("bear_mpeg4asp_mp3.avi", GetParam());
+  PlayVideo("bear_mpeg4asp_mp3.avi");
 }
 
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearAviMp3Divx) {
-  PlayVideo("bear_divx_mp3.avi", GetParam());
+  PlayVideo("bear_divx_mp3.avi");
 }
 
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoBear3gpAacH264) {
-  PlayVideo("bear_h264_aac.3gp", GetParam());
+  PlayVideo("bear_h264_aac.3gp");
 }
 
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoBear3gpAmrnbMpeg4) {
-  PlayVideo("bear_mpeg4_amrnb.3gp", GetParam());
+  PlayVideo("bear_mpeg4_amrnb.3gp");
 }
 
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearWavGsmms) {
-  PlayAudio("bear_gsm_ms.wav", GetParam());
+  PlayAudio("bear_gsm_ms.wav");
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
 IN_PROC_BROWSER_TEST_P(MediaTest, AudioBearFlac) {
-  PlayAudio("bear.flac", GetParam());
+  PlayAudio("bear.flac");
 }
 
 IN_PROC_BROWSER_TEST_P(MediaTest, AudioBearFlacOgg) {
-  PlayAudio("bear-flac.ogg", GetParam());
+  PlayAudio("bear-flac.ogg");
 }
 
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearWavAlaw) {
-  PlayAudio("bear_alaw.wav", GetParam());
+  PlayAudio("bear_alaw.wav");
 }
 
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearWavMulaw) {
-  PlayAudio("bear_mulaw.wav", GetParam());
+  PlayAudio("bear_mulaw.wav");
 }
 
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearWavPcm) {
-  PlayAudio("bear_pcm.wav", GetParam());
+  PlayAudio("bear_pcm.wav");
 }
 
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearWavPcm3kHz) {
-  PlayAudio("bear_3kHz.wav", GetParam());
+  PlayAudio("bear_3kHz.wav");
 }
 
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearWavPcm192kHz) {
-  PlayAudio("bear_192kHz.wav", GetParam());
+  PlayAudio("bear_192kHz.wav");
 }
 
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoTulipWebm) {
-  PlayVideo("tulip2.webm", GetParam());
+  PlayVideo("tulip2.webm");
 }
 
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoErrorMissingResource) {
   RunErrorMessageTest("video", "nonexistent_file.webm",
-                      "MEDIA_ELEMENT_ERROR: Format error", GetParam());
+                      "MEDIA_ELEMENT_ERROR: Format error");
 }
 
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoErrorEmptySrcAttribute) {
-  RunErrorMessageTest("video", "", "MEDIA_ELEMENT_ERROR: Empty src attribute",
-                      GetParam());
+  RunErrorMessageTest("video", "", "MEDIA_ELEMENT_ERROR: Empty src attribute");
 }
 
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoErrorNoSupportedStreams) {
-  // The test doesn't work from file: scheme without AllowFileAccessFromFiles.
-  // TODO(wolenetz): https://crbug.com/1071473: Investigate and reenable the
-  // test.
-  if (!GetParam())
-    return;
-
   RunErrorMessageTest("video", "no_streams.webm",
                       "DEMUXER_ERROR_NO_SUPPORTED_STREAMS: FFmpegDemuxer: no "
-                      "supported streams",
-                      GetParam());
+                      "supported streams");
 }
 
 // Covers tear-down when navigating away as opposed to browser exiting.
-IN_PROC_BROWSER_TEST_F(MediaTest, Navigate) {
-  PlayVideo("bear.webm", false);
+IN_PROC_BROWSER_TEST_P(MediaTest, Navigate) {
+  PlayVideo("bear.webm");
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
   EXPECT_FALSE(shell()->web_contents()->IsCrashed());
 }
@@ -401,11 +418,10 @@ IN_PROC_BROWSER_TEST_F(MediaTest, Navigate) {
 IN_PROC_BROWSER_TEST_P(MediaTest, AudioOnly_XHE_AAC_MP4) {
   if (media::IsSupportedAudioType(
           {media::AudioCodec::kAAC, media::AudioCodecProfile::kXHE_AAC})) {
-    PlayAudio("noise-xhe-aac.mp4", GetParam());
+    PlayAudio("noise-xhe-aac.mp4");
   }
 }
 
-INSTANTIATE_TEST_SUITE_P(File, MediaTest, ::testing::Values(false));
-INSTANTIATE_TEST_SUITE_P(Http, MediaTest, ::testing::Values(true));
+INSTANTIATE_TEST_SUITE_P(Default, MediaTest, ::testing::Bool());
 
 }  // namespace content

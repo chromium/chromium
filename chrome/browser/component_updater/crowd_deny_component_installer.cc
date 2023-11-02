@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -82,8 +82,8 @@ void CrowdDenyComponentInstallerPolicy::ComponentReady(
   absl::optional<int> format =
       manifest.FindIntKey(kCrowdDenyManifestPreloadDataFormatKey);
   if (!format || *format != kCrowdDenyManifestPreloadDataCurrentFormat) {
-    DVLOG(1) << "Crowd Deny component bailing out. Future data version: "
-             << *format;
+    DVLOG(1) << "Crowd Deny component bailing out.";
+    DVLOG_IF(1, format) << "Future data version: " << *format;
     return;
   }
 
@@ -100,7 +100,7 @@ void CrowdDenyComponentInstallerPolicy::GetHash(
     std::vector<uint8_t>* hash) const {
   hash->assign(
       kCrowdDenyPublicKeySHA256,
-      kCrowdDenyPublicKeySHA256 + base::size(kCrowdDenyPublicKeySHA256));
+      kCrowdDenyPublicKeySHA256 + std::size(kCrowdDenyPublicKeySHA256));
 }
 
 std::string CrowdDenyComponentInstallerPolicy::GetName() const {

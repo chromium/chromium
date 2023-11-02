@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -49,10 +49,9 @@ import org.chromium.chrome.browser.toolbar.LocationBarModel;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
-import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.ClickUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.base.AndroidPermissionDelegate;
+import org.chromium.ui.permissions.AndroidPermissionDelegate;
 import org.chromium.ui.test.util.UiRestriction;
 
 import java.util.concurrent.Callable;
@@ -78,10 +77,12 @@ public class LocationBarLayoutTest {
     @Mock
     SearchEngineLogoUtils mSearchEngineLogoUtils;
 
+    private OmniboxTestUtils mOmnibox;
+
     public static final LocationBarModel.OfflineStatus OFFLINE_STATUS =
             new LocationBarModel.OfflineStatus() {
                 @Override
-                public boolean isShowingTrustedOfflinePage(WebContents webContents) {
+                public boolean isShowingTrustedOfflinePage(Tab tab) {
                     return false;
                 }
 
@@ -94,6 +95,7 @@ public class LocationBarLayoutTest {
     @Before
     public void setUp() throws InterruptedException {
         mActivityTestRule.startMainActivityOnBlankPage();
+        mOmnibox = new OmniboxTestUtils(mActivityTestRule.getActivity());
 
         doReturn(true).when(mAndroidPermissionDelegate).hasPermission(anyString());
         mActivityTestRule.getActivity().getWindowAndroid().setAndroidPermissionDelegate(
@@ -245,16 +247,14 @@ public class LocationBarLayoutTest {
         Callable<Integer> softInputModeCallable = () -> {
             return mActivityTestRule.getActivity().getWindow().getAttributes().softInputMode;
         };
-        OmniboxTestUtils.toggleUrlBarFocus(urlBar, true);
-        CriteriaHelper.pollUiThread(urlBar::hasFocus);
+        mOmnibox.requestFocus();
         CriteriaHelper.pollUiThread(() -> {
             int inputMode =
                     mActivityTestRule.getActivity().getWindow().getAttributes().softInputMode;
             Criteria.checkThat(inputMode, is(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN));
         });
 
-        OmniboxTestUtils.toggleUrlBarFocus(urlBar, false);
-        CriteriaHelper.pollUiThread(() -> !urlBar.hasFocus());
+        mOmnibox.clearFocus();
         CriteriaHelper.pollUiThread(() -> {
             int inputMode =
                     mActivityTestRule.getActivity().getWindow().getAttributes().softInputMode;
@@ -292,9 +292,7 @@ public class LocationBarLayoutTest {
             urlLayoutParams = (MarginLayoutParams) urlContainer.getLayoutParams();
             int endMarginWithIcon = MarginLayoutParamsCompat.getMarginEnd(urlLayoutParams);
 
-            Assert.assertEquals(endMarginNoIcon
-                            + locationBar.getStatusCoordinatorForTesting()
-                                      .getEndPaddingPixelSizeOnFocusDelta(),
+            Assert.assertEquals(endMarginNoIcon + locationBar.getEndPaddingPixelSizeOnFocusDelta(),
                     endMarginWithIcon);
         });
     }

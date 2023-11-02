@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -80,6 +80,9 @@ struct CONTENT_EXPORT DropData {
   // Whether this drag originated from a renderer.
   bool did_originate_from_renderer;
 
+  // Whether this drag is from a privileged Web Contents.
+  bool is_from_privileged = false;
+
   // User is dragging a link or image.
   GURL url;
   std::u16string url_title;  // The title associated with |url|.
@@ -115,7 +118,7 @@ struct CONTENT_EXPORT DropData {
 
   // User is dragging an image out of the WebView.
   std::string file_contents;
-  bool file_contents_accessible_from_start_frame = false;
+  bool file_contents_image_accessible = false;
   GURL file_contents_source_url;
   base::FilePath::StringType file_contents_filename_extension;
   std::string file_contents_content_disposition;

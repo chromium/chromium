@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 
 namespace base {
 class FilePath;
@@ -32,7 +31,7 @@ class ChromeBrowserStateManager {
   // necessary.
   virtual ChromeBrowserState* GetLastUsedBrowserState() = 0;
 
-  // Returns the ChromeBrowserState associated with |path|, creating one if
+  // Returns the ChromeBrowserState associated with `path`, creating one if
   // necessary.
   virtual ChromeBrowserState* GetBrowserState(const base::FilePath& path) = 0;
 

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,12 +14,12 @@ import org.chromium.shape_detection.mojom.TextDetection;
 
 @JNINamespace("shape_detection")
 class InterfaceRegistrar {
-    static MessagePipeHandle messagePipeHandleFromNative(int nativeHandle) {
+    static MessagePipeHandle messagePipeHandleFromNative(long nativeHandle) {
         return CoreImpl.getInstance().acquireNativeHandle(nativeHandle).toMessagePipeHandle();
     }
 
     @CalledByNative
-    static void bindBarcodeDetectionProvider(int nativeHandle) {
+    static void bindBarcodeDetectionProvider(long nativeHandle) {
         // Immediately wrap |nativeHandle| as it cannot be allowed to leak.
         MessagePipeHandle handle = messagePipeHandleFromNative(nativeHandle);
 
@@ -33,13 +33,13 @@ class InterfaceRegistrar {
     }
 
     @CalledByNative
-    static void bindFaceDetectionProvider(int nativeHandle) {
+    static void bindFaceDetectionProvider(long nativeHandle) {
         FaceDetectionProvider.MANAGER.bind(
                 new FaceDetectionProviderImpl(), messagePipeHandleFromNative(nativeHandle));
     }
 
     @CalledByNative
-    static void bindTextDetection(int nativeHandle) {
+    static void bindTextDetection(long nativeHandle) {
         // Immediately wrap |nativeHandle| as it cannot be allowed to leak.
         MessagePipeHandle handle = messagePipeHandleFromNative(nativeHandle);
 

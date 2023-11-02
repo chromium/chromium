@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,21 +8,16 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/run_loop.h"
-#include "base/task/sequenced_task_runner.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "chrome/browser/metrics/structured/chrome_structured_metrics_recorder.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chromeos/crosapi/mojom/structured_metrics_service.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
 #include "components/metrics/structured/event.h"
-#include "components/metrics/structured/structured_metrics_features.h"
-#include "components/metrics/structured/structured_mojo_events.h"
+#include "components/metrics/structured/structured_events.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace metrics {
 namespace structured {
@@ -67,10 +62,6 @@ class LacrosStructuredMetricsRecorderTest : public InProcessBrowserTest {
     RecordCallback record_callback_;
   };
 
-  void SetUpInProcessBrowserTestFixture() override {
-    feature_list_.InitAndEnableFeature(kUseCrosApiInterface);
-  }
-
   void TearDownInProcessBrowserTestFixture() override {
     if (observer_)
       recorder_->RemoveObserver(observer_.get());
@@ -94,10 +85,8 @@ class LacrosStructuredMetricsRecorderTest : public InProcessBrowserTest {
   LacrosStructuredMetricsRecorder* recorder() { return recorder_; }
 
  private:
-  LacrosStructuredMetricsRecorder* recorder_;
+  raw_ptr<LacrosStructuredMetricsRecorder> recorder_;
   std::unique_ptr<TestObserver> observer_;
-
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(LacrosStructuredMetricsRecorderTest,

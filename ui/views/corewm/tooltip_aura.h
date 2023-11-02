@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/views/corewm/tooltip.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -53,9 +54,11 @@ class VIEWS_EXPORT TooltipAura : public Tooltip, public WidgetObserver {
 
   // Adjusts the bounds given by the arguments to fit inside the desktop
   // and returns the adjusted bounds, and also sets anchor information to
-  // |anchor|.
+  // `anchor`.
+  // `anchor_point` is an absolute position, not relative to the window.
   gfx::Rect GetTooltipBounds(const gfx::Size& tooltip_size,
-                             const TooltipPosition& position,
+                             const gfx::Point& anchor_point,
+                             const TooltipTrigger trigger,
                              ui::OwnedWindowAnchor* anchor);
 
   // Sets |widget_| to a new instance of TooltipWidget. Additional information
@@ -70,7 +73,8 @@ class VIEWS_EXPORT TooltipAura : public Tooltip, public WidgetObserver {
   int GetMaxWidth(const gfx::Point& location) const override;
   void Update(aura::Window* window,
               const std::u16string& tooltip_text,
-              const TooltipPosition& position) override;
+              const gfx::Point& position,
+              const TooltipTrigger trigger) override;
   void Show() override;
   void Hide() override;
   bool IsVisible() override;
@@ -79,11 +83,11 @@ class VIEWS_EXPORT TooltipAura : public Tooltip, public WidgetObserver {
   void OnWidgetDestroying(Widget* widget) override;
 
   // The widget containing the tooltip. May be NULL.
-  TooltipWidget* widget_ = nullptr;
+  raw_ptr<TooltipWidget> widget_ = nullptr;
 
   // The window we're showing the tooltip for. Never NULL and valid while
   // showing.
-  aura::Window* tooltip_window_ = nullptr;
+  raw_ptr<aura::Window> tooltip_window_ = nullptr;
 };
 
 }  // namespace corewm

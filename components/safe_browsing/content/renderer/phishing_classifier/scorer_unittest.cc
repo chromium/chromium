@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,6 +27,7 @@
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
 
 namespace safe_browsing {
 
@@ -83,6 +84,7 @@ std::string GetFlatBufferString() {
   csd_model_builder.add_max_shingles_per_page(10);
   csd_model_builder.add_shingle_size(3);
   csd_model_builder.add_tflite_metadata(tflite_metadata_flat);
+  csd_model_builder.add_dom_model_version(123);
 
   builder.Finish(csd_model_builder.Finish());
   return std::string(reinterpret_cast<char*>(builder.GetBufferPointer()),
@@ -102,8 +104,6 @@ base::MappedReadOnlyRegion GetMappedReadOnlyRegionWithData(std::string data) {
 class PhishingScorerTest : public ::testing::Test {
  protected:
   void SetUp() override {
-    base::DiscardableMemoryAllocator::SetInstance(&test_allocator_);
-
     // Setup a simple model.  Note that the scorer does not care about
     // how features are encoded so we use readable strings here to make
     // the test simpler to follow.
@@ -140,35 +140,7 @@ class PhishingScorerTest : public ::testing::Test {
     model_.set_murmur_hash_seed(12345U);
     model_.set_max_shingles_per_page(10);
     model_.set_shingle_size(3);
-
-    // The first target hash is all 1-bits, except the first 8.
-    std::vector<unsigned char> target_hash;
-    target_hash.push_back('\x30');
-    for (int i = 0; i < 288; i++)
-      target_hash.push_back('\xff');
-    target_hash[1] = '\x00';
-    VisualTarget* target1 = model_.mutable_vision_model()->add_targets();
-    target1->set_digest("target1");
-    target1->set_hash(target_hash.data(), target_hash.size());
-    target1->mutable_match_config()->add_match_rule()->set_hash_distance(8.0);
-
-    // The second target hash is all 1-bits, except the second 8.
-    target_hash[1] = '\xff';
-    target_hash[2] = '\x00';
-    VisualTarget* target2 = model_.mutable_vision_model()->add_targets();
-    target2->set_digest("target2");
-    target2->set_hash(target_hash.data(), target_hash.size());
-    target2->mutable_match_config()->add_match_rule()->set_hash_distance(8.0);
-
-    // Allocate a bitmap for testing visual scoring
-    sk_sp<SkColorSpace> rec2020 = SkColorSpace::MakeRGB(
-        {2.22222f, 0.909672f, 0.0903276f, 0.222222f, 0.0812429f, 0, 0},
-        SkNamedGamut::kRec2020);
-    SkImageInfo bitmap_info =
-        SkImageInfo::Make(1000, 1000, SkColorType::kN32_SkColorType,
-                          SkAlphaType::kUnpremul_SkAlphaType, rec2020);
-
-    ASSERT_TRUE(bitmap_.tryAllocPixels(bitmap_info));
+    model_.set_dom_model_version(123);
   }
 
   void TearDown() override {
@@ -176,10 +148,6 @@ class PhishingScorerTest : public ::testing::Test {
   }
 
   ClientSideModel model_;
-  SkBitmap bitmap_;
-
-  // A DiscardableMemoryAllocator is needed for certain Skia operations.
-  base::TestDiscardableMemoryAllocator test_allocator_;
 };
 
 TEST_F(PhishingScorerTest, HasValidFlatBufferModel) {
@@ -187,36 +155,36 @@ TEST_F(PhishingScorerTest, HasValidFlatBufferModel) {
   std::string flatbuffer = GetFlatBufferString();
   base::MappedReadOnlyRegion mapped_region =
       GetMappedReadOnlyRegionWithData(flatbuffer);
-  scorer.reset(FlatBufferModelScorer::Create(mapped_region.region.Duplicate(),
-                                             base::File()));
+  scorer = FlatBufferModelScorer::Create(mapped_region.region.Duplicate(),
+                                         base::File());
   EXPECT_TRUE(scorer.get() != nullptr);
 
   // Invalid region.
-  scorer.reset(FlatBufferModelScorer::Create(base::ReadOnlySharedMemoryRegion(),
-                                             base::File()));
+  scorer = FlatBufferModelScorer::Create(base::ReadOnlySharedMemoryRegion(),
+                                         base::File());
   EXPECT_FALSE(scorer.get());
 
   // Invalid buffer in region.
   mapped_region = GetMappedReadOnlyRegionWithData("bogus string");
-  scorer.reset(FlatBufferModelScorer::Create(mapped_region.region.Duplicate(),
-                                             base::File()));
+  scorer = FlatBufferModelScorer::Create(mapped_region.region.Duplicate(),
+                                         base::File());
   EXPECT_FALSE(scorer.get());
 }
 
 TEST_F(PhishingScorerTest, HasValidModel) {
   std::unique_ptr<Scorer> scorer;
-  scorer.reset(
-      ProtobufModelScorer::Create(model_.SerializeAsString(), base::File()));
+  scorer =
+      ProtobufModelScorer::Create(model_.SerializeAsString(), base::File());
   EXPECT_TRUE(scorer.get() != nullptr);
 
   // Invalid model string.
-  scorer.reset(ProtobufModelScorer::Create("bogus string", base::File()));
+  scorer = ProtobufModelScorer::Create("bogus string", base::File());
   EXPECT_FALSE(scorer.get());
 
   // Mode is missing a required field.
   model_.clear_max_words_per_term();
-  scorer.reset(ProtobufModelScorer::Create(model_.SerializePartialAsString(),
-                                           base::File()));
+  scorer = ProtobufModelScorer::Create(model_.SerializePartialAsString(),
+                                       base::File());
   EXPECT_FALSE(scorer.get());
 }
 
@@ -255,8 +223,8 @@ TEST_F(PhishingScorerTest, PageTermsFlat) {
   std::string flatbuffer = GetFlatBufferString();
   base::MappedReadOnlyRegion mapped_region =
       GetMappedReadOnlyRegionWithData(flatbuffer);
-  scorer.reset(FlatBufferModelScorer::Create(mapped_region.region.Duplicate(),
-                                             base::File()));
+  scorer = FlatBufferModelScorer::Create(mapped_region.region.Duplicate(),
+                                         base::File());
   ASSERT_TRUE(scorer.get());
   base::RepeatingCallback<bool(const std::string&)> page_terms_callback(
       scorer->find_page_term_callback());
@@ -305,8 +273,8 @@ TEST_F(PhishingScorerTest, PageWordsFlat) {
   std::string flatbuffer = GetFlatBufferString();
   base::MappedReadOnlyRegion mapped_region =
       GetMappedReadOnlyRegionWithData(flatbuffer);
-  scorer.reset(FlatBufferModelScorer::Create(mapped_region.region.Duplicate(),
-                                             base::File()));
+  scorer = FlatBufferModelScorer::Create(mapped_region.region.Duplicate(),
+                                         base::File());
   ASSERT_TRUE(scorer.get());
   base::RepeatingCallback<bool(uint32_t)> page_words_callback(
       scorer->find_page_word_callback());
@@ -355,8 +323,8 @@ TEST_F(PhishingScorerTest, ComputeScoreFlat) {
   std::string flatbuffer = GetFlatBufferString();
   base::MappedReadOnlyRegion mapped_region =
       GetMappedReadOnlyRegionWithData(flatbuffer);
-  scorer.reset(FlatBufferModelScorer::Create(mapped_region.region.Duplicate(),
-                                             base::File()));
+  scorer = FlatBufferModelScorer::Create(mapped_region.region.Duplicate(),
+                                         base::File());
   EXPECT_TRUE(scorer.get() != nullptr);
 
   // An empty feature map should match the empty rule.
@@ -382,70 +350,23 @@ TEST_F(PhishingScorerTest, ComputeScoreFlat) {
   EXPECT_DOUBLE_EQ(0.77729986117469119, scorer->ComputeScore(features));
 }
 
-TEST_F(PhishingScorerTest, GetMatchingVisualTargetsMatchOne) {
-  std::unique_ptr<Scorer> scorer(
-      ProtobufModelScorer::Create(model_.SerializeAsString(), base::File()));
-
-  // Make the whole image white
-  for (int x = 0; x < 1000; x++)
-    for (int y = 0; y < 1000; y++)
-      *bitmap_.getAddr32(x, y) = 0xffffffff;
-
-  // Make the first 164 pixels black. This will make the first 8 bits of the
-  // hash 0.
-  for (int x = 0; x < 164; x++)
-    *bitmap_.getAddr32(x, 0) = 0xff000000;
-
-  base::test::TaskEnvironment task_environment;
-  base::RunLoop run_loop;
-  std::unique_ptr<ClientPhishingRequest> request =
-      std::make_unique<ClientPhishingRequest>();
-  scorer->GetMatchingVisualTargets(
-      bitmap_, std::move(request),
-      base::BindLambdaForTesting(
-          [&](std::unique_ptr<ClientPhishingRequest> request) {
-            ASSERT_EQ(request->vision_match_size(), 1);
-            EXPECT_EQ(request->vision_match(0).matched_target_digest(),
-                      "target1");
-            run_loop.Quit();
-          }));
-  run_loop.Run();
+TEST_F(PhishingScorerTest, DomModelVersionProtobuffer) {
+  std::unique_ptr<Scorer> scorer;
+  scorer =
+      ProtobufModelScorer::Create(model_.SerializeAsString(), base::File());
+  ASSERT_TRUE(scorer.get() != nullptr);
+  EXPECT_EQ(scorer->dom_model_version(), 123);
 }
 
-TEST_F(PhishingScorerTest, GetMatchingVisualTargetsMatchBoth) {
-  std::unique_ptr<Scorer> scorer(
-      ProtobufModelScorer::Create(model_.SerializeAsString(), base::File()));
-
-  // Make the whole image white
-  for (int x = 0; x < 1000; x++)
-    for (int y = 0; y < 1000; y++)
-      *bitmap_.getAddr32(x, y) = 0xffffffff;
-
-  // Create an alternating black/white pattern to match both targets. The
-  // pattern is 84 black pixels, then 84 white, then 84 black, then 84 white.
-  // This causes the hash to start 0F0F, for a distance of 8 from both targets.
-  for (int x = 0; x < 84; x++)
-    *bitmap_.getAddr32(x, 0) = 0xff000000;
-
-  for (int x = 168; x < 248; x++)
-    *bitmap_.getAddr32(x, 0) = 0xff000000;
-
-  base::test::TaskEnvironment task_environment;
-  base::RunLoop run_loop;
-  std::unique_ptr<ClientPhishingRequest> request =
-      std::make_unique<ClientPhishingRequest>();
-  scorer->GetMatchingVisualTargets(
-      bitmap_, std::move(request),
-      base::BindLambdaForTesting(
-          [&](std::unique_ptr<ClientPhishingRequest> request) {
-            ASSERT_EQ(request->vision_match_size(), 2);
-            EXPECT_EQ(request->vision_match(0).matched_target_digest(),
-                      "target1");
-            EXPECT_EQ(request->vision_match(1).matched_target_digest(),
-                      "target2");
-            run_loop.Quit();
-          }));
-  run_loop.Run();
+TEST_F(PhishingScorerTest, DomModelVersionFlatbuffer) {
+  std::unique_ptr<Scorer> scorer;
+  std::string flatbuffer = GetFlatBufferString();
+  base::MappedReadOnlyRegion mapped_region =
+      GetMappedReadOnlyRegionWithData(flatbuffer);
+  scorer = FlatBufferModelScorer::Create(mapped_region.region.Duplicate(),
+                                         base::File());
+  ASSERT_TRUE(scorer.get() != nullptr);
+  EXPECT_EQ(scorer->dom_model_version(), 123);
 }
 
 }  // namespace safe_browsing

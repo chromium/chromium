@@ -1,9 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/wm/desks/zero_state_button.h"
 
+#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/style_util.h"
@@ -12,6 +14,7 @@
 #include "ash/wm/desks/desk_preview_view.h"
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_controller.h"
+#include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/wm_highlight_item_border.h"
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
@@ -46,17 +49,20 @@ constexpr int kZeroStateDefaultDeskButtonMinWidth = 56;
 // -----------------------------------------------------------------------------
 // DeskButtonBase:
 
-DeskButtonBase::DeskButtonBase(const std::u16string& text)
-    : DeskButtonBase(text, kCornerRadius, kCornerRadius) {}
+DeskButtonBase::DeskButtonBase(const std::u16string& text, bool set_text)
+    : DeskButtonBase(text, set_text, kCornerRadius, kCornerRadius) {}
 
 DeskButtonBase::DeskButtonBase(const std::u16string& text,
-                               int border_corder_radius,
+                               bool set_text,
+                               int border_corner_radius,
                                int corner_radius)
     : LabelButton(base::BindRepeating(&DeskButtonBase::OnButtonPressed,
                                       base::Unretained(this)),
                   std::u16string()),
       corner_radius_(corner_radius) {
   DCHECK(!text.empty());
+  if (set_text)
+    SetText(text);
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
@@ -67,18 +73,30 @@ DeskButtonBase::DeskButtonBase(const std::u16string& text,
                                    /*highlight_on_hover=*/false,
                                    /*highlight_on_focus=*/false);
   SetFocusPainter(nullptr);
-  SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
+  SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
 
   SetAccessibleName(text);
   SetTooltipText(text);
 
-  auto border = std::make_unique<WmHighlightItemBorder>(border_corder_radius);
+  auto border = std::make_unique<WmHighlightItemBorder>(border_corner_radius);
   border_ptr_ = border.get();
   SetBorder(std::move(border));
   views::InstallRoundRectHighlightPathGenerator(this, GetInsets(),
-                                                border_corder_radius);
+                                                corner_radius);
+  SetInstallFocusRingOnFocus(false);
 
   UpdateBorderState();
+}
+
+void DeskButtonBase::OnFocus() {
+  UpdateOverviewHighlightForFocusAndSpokenFeedback(this);
+  UpdateBorderState();
+  View::OnFocus();
+}
+
+void DeskButtonBase::OnBlur() {
+  UpdateBorderState();
+  View::OnBlur();
 }
 
 void DeskButtonBase::OnPaintBackground(gfx::Canvas* canvas) {
@@ -98,6 +116,7 @@ void DeskButtonBase::OnThemeChanged() {
   background_color_ = AshColorProvider::Get()->GetControlsLayerColor(
       AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive);
   StyleUtil::ConfigureInkDropAttributes(this, StyleUtil::kBaseColor);
+  UpdateBorderState();
   SchedulePaint();
 }
 
@@ -109,9 +128,9 @@ void DeskButtonBase::MaybeActivateHighlightedView() {
   OnButtonPressed();
 }
 
-void DeskButtonBase::MaybeSwapHighlightedView(bool right) {}
+void DeskButtonBase::MaybeCloseHighlightedView(bool primary_action) {}
 
-void DeskButtonBase::MaybeCloseHighlightedView() {}
+void DeskButtonBase::MaybeSwapHighlightedView(bool right) {}
 
 void DeskButtonBase::OnViewHighlighted() {
   UpdateBorderState();
@@ -119,11 +138,6 @@ void DeskButtonBase::OnViewHighlighted() {
 
 void DeskButtonBase::OnViewUnhighlighted() {
   UpdateBorderState();
-}
-
-void DeskButtonBase::UpdateBorderState() {
-  border_ptr_->SetFocused(IsViewHighlighted() && GetEnabled());
-  SchedulePaint();
 }
 
 void DeskButtonBase::SetShouldPaintBackground(bool should_paint_background) {
@@ -134,6 +148,11 @@ void DeskButtonBase::SetShouldPaintBackground(bool should_paint_background) {
   SchedulePaint();
 }
 
+void DeskButtonBase::UpdateBorderState() {
+  border_ptr_->SetFocused(IsViewHighlighted() && GetEnabled());
+  SchedulePaint();
+}
+
 BEGIN_METADATA(DeskButtonBase, views::LabelButton)
 END_METADATA
 
@@ -141,7 +160,8 @@ END_METADATA
 // ZeroStateDefaultDeskButton:
 
 ZeroStateDefaultDeskButton::ZeroStateDefaultDeskButton(DesksBarView* bar_view)
-    : DeskButtonBase(DesksController::Get()->desks()[0]->name()),
+    : DeskButtonBase(DesksController::Get()->desks()[0]->name(),
+                     /*set_text=*/true),
       bar_view_(bar_view) {
   GetViewAccessibility().OverrideName(
       l10n_util::GetStringFUTF16(IDS_ASH_DESKS_DESK_ACCESSIBLE_NAME,
@@ -178,9 +198,9 @@ gfx::Size ZeroStateDefaultDeskButton::CalculatePreferredSize() const {
 }
 
 void ZeroStateDefaultDeskButton::OnButtonPressed() {
-  bar_view_->set_should_name_nudge(true);
   bar_view_->UpdateNewMiniViews(/*initializing_bar_view=*/false,
                                 /*expanding_bar_view=*/true);
+  bar_view_->NudgeDeskName(/*desk_index=*/0);
 }
 
 void ZeroStateDefaultDeskButton::UpdateLabelText() {
@@ -199,7 +219,7 @@ END_METADATA
 ZeroStateIconButton::ZeroStateIconButton(const gfx::VectorIcon* button_icon,
                                          const std::u16string& text,
                                          base::RepeatingClosure callback)
-    : DeskButtonBase(text),
+    : DeskButtonBase(text, /*set_text=*/false),
       button_icon_(button_icon),
       button_callback_(callback) {
   should_paint_background_ = false;

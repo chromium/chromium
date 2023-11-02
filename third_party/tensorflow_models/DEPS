@@ -1,0 +1,13 @@
+include_rules = [
+  "+absl",
+  "+flatbuffers",
+  "+icu4c",
+  "+libutf",
+  "+tensorflow",
+  "+third_party/icu",
+  "+third_party/utf",
+
+  # Relative includes within src/
+  "+tf_ops",
+  "+tflite_ops",
+]

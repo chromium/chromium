@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -67,7 +67,9 @@ TEST_F(BasicVulkanTest, EmptyVulkanSwaps) {
   scoped_write.reset();
 
   // First swap is a special case, call it first to get better errors.
-  EXPECT_EQ(gfx::SwapResult::SWAP_ACK, surface->SwapBuffers());
+  EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
+            surface->SwapBuffers(
+                base::DoNothingAs<void(const gfx::PresentationFeedback&)>()));
 
   vkQueueWaitIdle(GetDeviceQueue()->GetVulkanQueue());
   command_buffer->Destroy();
@@ -95,7 +97,9 @@ TEST_F(BasicVulkanTest, EmptyVulkanSwaps) {
     EXPECT_TRUE(command_buffer->Submit(1, &begin_semaphore, 1, &end_semaphore));
     scoped_write.reset();
 
-    EXPECT_EQ(gfx::SwapResult::SWAP_ACK, surface->SwapBuffers());
+    EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
+              surface->SwapBuffers(
+                  base::DoNothingAs<void(const gfx::PresentationFeedback&)>()));
     vkQueueWaitIdle(GetDeviceQueue()->GetVulkanQueue());
     command_buffer->Destroy();
     command_buffer.reset();

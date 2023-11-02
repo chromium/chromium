@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -25,7 +25,7 @@ class FindDependenciesTest(unittest.TestCase):
       cat_object_path = os.path.join(cat_module_path, 'cat_object.py')
       dependencies = set(
           p for p in find_dependencies.FindPythonDependencies(dog_object_path))
-      self.assertEquals(dependencies, {
+      self.assertEqual(dependencies, {
           dog_object_path, cat_module_path, cat_module_init_path,
           cat_object_path
       })
@@ -42,10 +42,11 @@ class FindDependenciesTest(unittest.TestCase):
       horn_module_path = os.path.join(moose_module_path, 'horn')
       horn_module_init_path = os.path.join(horn_module_path, '__init__.py')
       horn_object_path = os.path.join(horn_module_path, 'horn_object.py')
-      self.assertEquals(
-          set(p for p in
-              find_dependencies.FindPythonDependencies(moose_object_path)),
-          {moose_object_path,
-           horn_module_path, horn_module_init_path, horn_object_path})
+      self.assertEqual(
+          set(p for p in find_dependencies.FindPythonDependencies(
+              moose_object_path)), {
+                  moose_object_path, horn_module_path, horn_module_init_path,
+                  horn_object_path
+              })
     except ImportError:   # crbug.com/559527
       pass

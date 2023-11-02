@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/device_metrics.h"
 #include "chrome/test/chromedriver/chrome/devtools_http_client.h"
@@ -38,6 +39,8 @@ class Switches {
   void SetSwitch(const std::string& name);
   void SetSwitch(const std::string& name, const std::string& value);
   void SetSwitch(const std::string& name, const base::FilePath& value);
+
+  void SetMultivaluedSwitch(const std::string& name, const std::string& value);
 
   // In case of same key, |switches| will override.
   void SetFromSwitches(const Switches& switches);
@@ -189,7 +192,10 @@ struct Capabilities {
   bool webSocketUrl = false;
 };
 
-bool GetChromeOptionsDictionary(const base::DictionaryValue& params,
-                                const base::DictionaryValue** out);
+bool GetChromeOptionsDictionaryDeprecated(const base::DictionaryValue& params,
+                                          const base::DictionaryValue** out);
+
+bool GetChromeOptionsDictionary(const base::Value::Dict& params,
+                                const base::Value::Dict** out);
 
 #endif  // CHROME_TEST_CHROMEDRIVER_CAPABILITIES_H_

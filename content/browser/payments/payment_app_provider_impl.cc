@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/token.h"
@@ -295,9 +296,8 @@ void PaymentAppProviderImpl::SetOpenedWindow(
 void PaymentAppProviderImpl::CloseOpenedWindow() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (payment_handler_window_) {
+  if (payment_handler_window_)
     payment_handler_window_->Close();
-  }
 
   payment_handler_window_.reset();
 }
@@ -379,7 +379,9 @@ void PaymentAppProviderImpl::OnInstallPaymentApp(
 
 PaymentAppProviderImpl::PaymentAppProviderImpl(
     WebContents* payment_request_web_contents)
-    : payment_request_web_contents_(payment_request_web_contents),
+    : WebContentsUserData<PaymentAppProviderImpl>(
+          *payment_request_web_contents),
+      payment_request_web_contents_(payment_request_web_contents),
       event_dispatcher_(std::make_unique<PaymentEventDispatcher>()) {
   event_dispatcher_->set_payment_app_provider(weak_ptr_factory_.GetWeakPtr());
 }

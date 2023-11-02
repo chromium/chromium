@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.SystemClock;
 import android.provider.Browser;
 import android.text.TextUtils;
 
@@ -15,6 +16,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.AppHooks;
@@ -91,7 +93,7 @@ public class HelpAndFeedbackLauncherImpl implements HelpAndFeedbackLauncher {
         new ChromeFeedbackCollector(activity, null /* categoryTag */, null /* description */,
                 new ScreenshotTask(activity),
                 new ChromeFeedbackCollector.InitParams(profile, url, helpContext),
-                collector -> show(activity, helpContext, collector));
+                collector -> show(activity, helpContext, collector), profile);
     }
 
     /**
@@ -109,10 +111,17 @@ public class HelpAndFeedbackLauncherImpl implements HelpAndFeedbackLauncher {
     public void showFeedback(final Activity activity, Profile profile, @Nullable String url,
             @Nullable final String categoryTag, @ScreenshotMode int screenshotMode,
             @Nullable final String feedbackContext) {
+        long startTime = SystemClock.elapsedRealtime();
         new ChromeFeedbackCollector(activity, categoryTag, null /* description */,
                 new ScreenshotTask(activity, screenshotMode),
                 new ChromeFeedbackCollector.InitParams(profile, url, feedbackContext),
-                collector -> showFeedback(activity, collector));
+                (collector)
+                        -> {
+                    RecordHistogram.recordLongTimesHistogram("Feedback.Duration.FormOpenToSubmit",
+                            SystemClock.elapsedRealtime() - startTime);
+                    showFeedback(activity, collector);
+                },
+                profile);
     }
 
     /**
@@ -145,7 +154,7 @@ public class HelpAndFeedbackLauncherImpl implements HelpAndFeedbackLauncher {
         new FeedFeedbackCollector(activity, categoryTag, null /* description */,
                 new ScreenshotTask(activity),
                 new FeedFeedbackCollector.InitParams(profile, url, feedContext),
-                collector -> showFeedback(activity, collector));
+                collector -> showFeedback(activity, collector), profile);
     }
 
     /**

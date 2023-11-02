@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/at_exit.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/cxx20_erase_vector.h"
@@ -24,6 +25,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/singleton.h"
 #include "base/process/process_handle.h"
@@ -60,7 +62,6 @@ struct JsonKeyValue {
   CompareOp op;
 };
 
-const int kThreadId = 42;
 const int kAsyncId = 5;
 const char kAsyncIdStr[] = "0x5";
 const int kAsyncId2 = 6;
@@ -174,14 +175,14 @@ class TraceEventTestFixture : public testing::Test {
   void TearDown() override {
     if (TraceLog::GetInstance())
       EXPECT_FALSE(TraceLog::GetInstance()->IsEnabled());
-    PlatformThread::SetName(old_thread_name_ ? old_thread_name_ : "");
+    PlatformThread::SetName(old_thread_name_ ? old_thread_name_.get() : "");
     free(old_thread_name_);
     old_thread_name_ = nullptr;
     // We want our singleton torn down after each test.
     TraceLog::ResetForTesting();
   }
 
-  char* old_thread_name_;
+  raw_ptr<char> old_thread_name_;
   Value trace_parsed_;
   TraceResultBuffer trace_buffer_;
   TraceResultBuffer::SimpleOutput json_output_;
@@ -207,22 +208,21 @@ void TraceEventTestFixture::OnTraceDataCollected(
   trace_buffer_.AddFragment(events_str->data());
   trace_buffer_.Finish();
 
-  absl::optional<Value> root =
-      base::JSONReader::Read(json_output_.json_output, JSON_PARSE_RFC);
+  absl::optional<Value> root = base::JSONReader::Read(
+      json_output_.json_output, JSON_PARSE_RFC | JSON_ALLOW_CONTROL_CHARS);
 
   if (!root.has_value()) {
     LOG(ERROR) << json_output_.json_output;
   }
 
   ASSERT_TRUE(root->is_list());
-  Value::ListStorage root_storage = std::move(*root).TakeList();
+  Value::List& root_list = root->GetList();
 
   // Move items into our aggregate collection
-  Value::ListStorage storage = std::move(trace_parsed_).TakeList();
-  storage.reserve(storage.size() + root_storage.size());
-  std::move(root_storage.begin(), root_storage.end(),
-            std::back_inserter(storage));
-  trace_parsed_ = Value(std::move(storage));
+  Value::List& trace_parsed_list = trace_parsed_.GetList();
+  trace_parsed_list.reserve(trace_parsed_list.size() + root_list.size());
+  for (auto& value : root_list)
+    trace_parsed_list.Append(std::move(value));
 
   if (!has_more_events)
     flush_complete_event->Signal();
@@ -281,14 +281,12 @@ const Value* TraceEventTestFixture::FindMatchingTraceEntry(
 }
 
 void TraceEventTestFixture::DropTracedMetadataRecords() {
-  Value::ListStorage storage = std::move(trace_parsed_).TakeList();
-  base::EraseIf(storage, [](const Value& value) {
+  trace_parsed_.GetList().EraseIf([](const Value& value) {
     if (!value.is_dict())
       return false;
-    const std::string* ph = value.FindStringKey("ph");
+    const std::string* ph = value.GetDict().FindString("ph");
     return ph && *ph == "M";
   });
-  trace_parsed_ = Value(std::move(storage));
 }
 
 const Value* TraceEventTestFixture::FindNamePhase(const char* name,
@@ -438,26 +436,12 @@ void TraceWithAllMacroVariants(WaitableEvent* task_complete_event) {
     TRACE_COUNTER_ID2("test_all", "TRACE_COUNTER_ID2 call", 0x319009, "a",
                       30000, "b", 1415);
 
-    TRACE_EVENT_COPY_BEGIN_WITH_ID_TID_AND_TIMESTAMP0(
-        "test_all", "TRACE_EVENT_COPY_BEGIN_WITH_ID_TID_AND_TIMESTAMP0 call",
-        kAsyncId, kThreadId, TimeTicks::FromInternalValue(12345));
-    TRACE_EVENT_COPY_END_WITH_ID_TID_AND_TIMESTAMP0(
-        "test_all", "TRACE_EVENT_COPY_BEGIN_WITH_ID_TID_AND_TIMESTAMP0 call",
-        kAsyncId, kThreadId, TimeTicks::FromInternalValue(23456));
-
-    TRACE_EVENT_BEGIN_WITH_ID_TID_AND_TIMESTAMP0(
-        "test_all", "TRACE_EVENT_BEGIN_WITH_ID_TID_AND_TIMESTAMP0 call",
-        kAsyncId2, kThreadId, TimeTicks::FromInternalValue(34567));
     TRACE_EVENT_ASYNC_STEP_PAST0("test_all",
                                  "TRACE_EVENT_ASYNC_STEP_PAST0 call", kAsyncId2,
                                  "step_end1");
     TRACE_EVENT_ASYNC_STEP_PAST1("test_all",
                                  "TRACE_EVENT_ASYNC_STEP_PAST1 call", kAsyncId2,
                                  "step_end2", "name1", "value1");
-
-    TRACE_EVENT_END_WITH_ID_TID_AND_TIMESTAMP0(
-        "test_all", "TRACE_EVENT_END_WITH_ID_TID_AND_TIMESTAMP0 call",
-        kAsyncId2, kThreadId, TimeTicks::FromInternalValue(45678));
 
     TRACE_EVENT_OBJECT_CREATED_WITH_ID("test_all", "tracked object 1", 0x42);
     TRACE_EVENT_OBJECT_SNAPSHOT_WITH_ID("test_all", "tracked object 1", 0x42,
@@ -478,13 +462,6 @@ void TraceWithAllMacroVariants(WaitableEvent* task_complete_event) {
 
     TRACE_EVENT1(kControlCharacters, kControlCharacters,
                  kControlCharacters, kControlCharacters);
-
-    uint64_t context_id = 0x20151021;
-
-    TRACE_EVENT_ENTER_CONTEXT("test_all", "TRACE_EVENT_ENTER_CONTEXT call",
-                              TRACE_ID_WITH_SCOPE("scope", context_id));
-    TRACE_EVENT_LEAVE_CONTEXT("test_all", "TRACE_EVENT_LEAVE_CONTEXT call",
-                              TRACE_ID_WITH_SCOPE("scope", context_id));
 
     TRACE_EVENT_ASYNC_BEGIN0("test_all", "async default process scope", 0x1000);
     TRACE_EVENT_ASYNC_BEGIN0("test_all", "async local id",
@@ -654,24 +631,6 @@ void ValidateAllTraceMacrosCreatedData(const Value& trace_parsed) {
     EXPECT_EQ(*item->FindIntPath("args.b"), 1415);
   }
 
-  EXPECT_FIND_("TRACE_EVENT_COPY_BEGIN_WITH_ID_TID_AND_TIMESTAMP0 call");
-  {
-    EXPECT_EQ(*item->FindIntKey("ts"), 12345);
-
-    EXPECT_EQ(*item->FindIntKey("tid"), kThreadId);
-
-    EXPECT_EQ(*item->FindStringKey("id"), kAsyncIdStr);
-  }
-
-  EXPECT_FIND_("TRACE_EVENT_BEGIN_WITH_ID_TID_AND_TIMESTAMP0 call");
-  {
-    EXPECT_EQ(*item->FindIntKey("ts"), 34567);
-
-    EXPECT_EQ(*item->FindIntKey("tid"), kThreadId);
-
-    EXPECT_EQ(*item->FindStringKey("id"), kAsyncId2Str);
-  }
-
   EXPECT_FIND_("TRACE_EVENT_ASYNC_STEP_PAST0 call");
   {
     EXPECT_SUB_FIND_("id");
@@ -684,18 +643,6 @@ void ValidateAllTraceMacrosCreatedData(const Value& trace_parsed) {
     EXPECT_SUB_FIND_("name1");
     EXPECT_SUB_FIND_("value1");
   }
-
-  // Perfetto doesn't have separate begin and end events.
-#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-  EXPECT_FIND_("TRACE_EVENT_END_WITH_ID_TID_AND_TIMESTAMP0 call");
-  {
-    EXPECT_EQ(*item->FindIntKey("ts"), 45678);
-
-    EXPECT_EQ(*item->FindIntKey("tid"), kThreadId);
-
-    EXPECT_EQ(*item->FindStringKey("id"), kAsyncId2Str);
-  }
-#endif
 
   EXPECT_FIND_("tracked object 1");
   {
@@ -736,41 +683,31 @@ void ValidateAllTraceMacrosCreatedData(const Value& trace_parsed) {
 
   EXPECT_FIND_("tracked object 3");
   {
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+    auto* id_hash = "0x6a31ee0fa7951e05";
+#else
+    auto* id_hash = "0x42";
+#endif
     EXPECT_EQ(*item->FindStringKey("ph"), "N");
     EXPECT_EQ(*item->FindStringKey("scope"), "scope");
-    EXPECT_EQ(*item->FindStringKey("id"), "0x42");
+    EXPECT_EQ(*item->FindStringKey("id"), id_hash);
 
     item = FindTraceEntry(trace_parsed, "tracked object 3", item);
     EXPECT_TRUE(item);
     EXPECT_EQ(*item->FindStringKey("ph"), "O");
     EXPECT_EQ(*item->FindStringKey("scope"), "scope");
-    EXPECT_EQ(*item->FindStringKey("id"), "0x42");
+    EXPECT_EQ(*item->FindStringKey("id"), id_hash);
     EXPECT_EQ(*item->FindStringPath("args.snapshot"), "hello");
 
     item = FindTraceEntry(trace_parsed, "tracked object 3", item);
     EXPECT_TRUE(item);
     EXPECT_EQ(*item->FindStringKey("ph"), "D");
     EXPECT_EQ(*item->FindStringKey("scope"), "scope");
-    EXPECT_EQ(*item->FindStringKey("id"), "0x42");
+    EXPECT_EQ(*item->FindStringKey("id"), id_hash);
   }
 
   EXPECT_FIND_(kControlCharacters);
   EXPECT_SUB_FIND_(kControlCharacters);
-
-  EXPECT_FIND_("TRACE_EVENT_ENTER_CONTEXT call");
-  {
-    EXPECT_EQ(*item->FindStringKey("ph"), "(");
-    EXPECT_EQ(*item->FindStringKey("scope"), "scope");
-    EXPECT_EQ(*item->FindStringKey("id"), "0x20151021");
-  }
-
-  EXPECT_FIND_("TRACE_EVENT_LEAVE_CONTEXT call");
-  {
-    EXPECT_EQ(*item->FindStringKey("ph"), ")");
-
-    EXPECT_EQ(*item->FindStringKey("scope"), "scope");
-    EXPECT_EQ(*item->FindStringKey("id"), "0x20151021");
-  }
 
   EXPECT_FIND_("async default process scope");
   {
@@ -1009,13 +946,7 @@ class AfterStateChangeEnabledStateObserver
   }
 
   void OnTraceLogDisabled() override {
-    // Perfetto intentionally notifies observers before tracing is disabled so
-    // that final trace events may still be written.
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-    EXPECT_TRUE(TraceLog::GetInstance()->IsEnabled());
-#else
     EXPECT_FALSE(TraceLog::GetInstance()->IsEnabled());
-#endif
   }
 };
 
@@ -1147,7 +1078,7 @@ TEST_F(TraceEventTestFixture, AddMetadataEvent) {
     }
 
    private:
-    int* num_calls_;
+    raw_ptr<int> num_calls_;
   };
 
   std::unique_ptr<ConvertableToTraceFormat> conv1(new Convertable(&num_calls));
@@ -1351,24 +1282,20 @@ TEST_F(TraceEventTestFixture, StaticStringVsString) {
   {
     BeginTrace();
     // Test that string arguments are copied.
-    TraceEventHandle handle1 =
+    [[maybe_unused]] TraceEventHandle handle1 =
         trace_event_internal::AddTraceEvent(
             TRACE_EVENT_PHASE_INSTANT, category_group_enabled, "name1",
-            trace_event_internal::kGlobalScope, trace_event_internal::kNoId,
-            0, trace_event_internal::kNoId,
-            "arg1", std::string("argval"), "arg2", std::string("argval"));
+            trace_event_internal::kGlobalScope, trace_event_internal::kNoId, 0,
+            trace_event_internal::kNoId, "arg1", std::string("argval"), "arg2",
+            std::string("argval"));
     // Test that static TRACE_STR_COPY string arguments are copied.
-    TraceEventHandle handle2 =
+    [[maybe_unused]] TraceEventHandle handle2 =
         trace_event_internal::AddTraceEvent(
             TRACE_EVENT_PHASE_INSTANT, category_group_enabled, "name2",
-            trace_event_internal::kGlobalScope, trace_event_internal::kNoId,
-            0, trace_event_internal::kNoId,
-            "arg1", TRACE_STR_COPY("argval"),
+            trace_event_internal::kGlobalScope, trace_event_internal::kNoId, 0,
+            trace_event_internal::kNoId, "arg1", TRACE_STR_COPY("argval"),
             "arg2", TRACE_STR_COPY("argval"));
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-    (void)handle1;
-    (void)handle2;
-#else   // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
     EXPECT_GT(tracer->GetStatus().event_count, 1u);
     const TraceEvent* event1 = tracer->GetEventByHandle(handle1);
     const TraceEvent* event2 = tracer->GetEventByHandle(handle2);
@@ -1387,36 +1314,18 @@ TEST_F(TraceEventTestFixture, StaticStringVsString) {
   {
     BeginTrace();
     // Test that static literal string arguments are not copied.
-    TraceEventHandle handle1 =
+    [[maybe_unused]] TraceEventHandle handle1 =
         trace_event_internal::AddTraceEvent(
             TRACE_EVENT_PHASE_INSTANT, category_group_enabled, "name1",
-            trace_event_internal::kGlobalScope, trace_event_internal::kNoId,
-            0, trace_event_internal::kNoId,
-            "arg1", "argval", "arg2", "argval");
-    // Test that static TRACE_STR_COPY NULL string arguments are not copied.
-    const char* str1 = nullptr;
-    const char* str2 = nullptr;
-    TraceEventHandle handle2 =
-        trace_event_internal::AddTraceEvent(
-            TRACE_EVENT_PHASE_INSTANT, category_group_enabled, "name2",
-            trace_event_internal::kGlobalScope, trace_event_internal::kNoId,
-            0, trace_event_internal::kNoId,
-            "arg1", TRACE_STR_COPY(str1),
-            "arg2", TRACE_STR_COPY(str2));
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-    (void)handle1;
-    (void)handle2;
-#else   // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+            trace_event_internal::kGlobalScope, trace_event_internal::kNoId, 0,
+            trace_event_internal::kNoId, "arg1", "argval", "arg2", "argval");
+#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
     EXPECT_GT(tracer->GetStatus().event_count, 1u);
     const TraceEvent* event1 = tracer->GetEventByHandle(handle1);
-    const TraceEvent* event2 = tracer->GetEventByHandle(handle2);
     ASSERT_TRUE(event1);
-    ASSERT_TRUE(event2);
     EXPECT_STREQ("name1", event1->name());
-    EXPECT_STREQ("name2", event2->name());
     EXPECT_TRUE(event1->parameter_copy_storage().empty());
-    EXPECT_TRUE(event2->parameter_copy_storage().empty());
-#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+#endif
     EndTraceAndFlush();
   }
 }
@@ -1623,48 +1532,35 @@ TEST_F(TraceEventTestFixture, NormallyNoDeepCopy) {
 #endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 TEST_F(TraceEventTestFixture, DeepCopy) {
-  static const char kOriginalName1[] = "name1";
-  static const char kOriginalName2[] = "name2";
-  static const char kOriginalName3[] = "name3";
-  std::string name1(kOriginalName1);
-  std::string name2(kOriginalName2);
-  std::string name3(kOriginalName3);
+  static const char kOriginalName[] = "name1";
+  std::string name(kOriginalName);
   std::string arg1("arg1");
   std::string arg2("arg2");
-  std::string val1("val1");
-  std::string val2("val2");
+  std::string val("val");
 
   BeginTrace();
-  TRACE_EVENT_INSTANT_WITH_FLAGS0(
-      "category", name1.c_str(),
-      TRACE_EVENT_FLAG_COPY | TRACE_EVENT_SCOPE_THREAD);
-  TRACE_EVENT_BEGIN_WITH_FLAGS1("category", name2.c_str(),
-                                TRACE_EVENT_FLAG_COPY, arg1.c_str(), 5);
-  TRACE_EVENT_END_WITH_FLAGS0("category", name2.c_str(), TRACE_EVENT_FLAG_COPY);
-  TRACE_EVENT_COPY_BEGIN2("category", name3.c_str(), arg1.c_str(), val1,
-                          arg2.c_str(), val2);
+  TRACE_EVENT_COPY_BEGIN2("category", name.c_str(), arg1.c_str(), 5,
+                          arg2.c_str(), val);
+  TRACE_EVENT_COPY_BEGIN2("category", name.c_str(), arg1.c_str(), 5,
+                          arg2.c_str(), val);
 
   // As per NormallyNoDeepCopy, modify the strings in place.
-  name1[0] = name2[0] = name3[0] = arg1[0] = arg2[0] = val1[0] = val2[0] = '@';
+  name[0] = arg1[0] = arg2[0] = val[0] = '@';
 
   EndTraceAndFlush();
 
-  EXPECT_FALSE(FindTraceEntry(trace_parsed_, name1.c_str()));
-  EXPECT_FALSE(FindTraceEntry(trace_parsed_, name2.c_str()));
-  EXPECT_FALSE(FindTraceEntry(trace_parsed_, name3.c_str()));
+  EXPECT_FALSE(FindTraceEntry(trace_parsed_, name.c_str()));
 
-  const Value* entry1 = FindTraceEntry(trace_parsed_, kOriginalName1);
-  const Value* entry2 = FindTraceEntry(trace_parsed_, kOriginalName2);
-  const Value* entry3 = FindTraceEntry(trace_parsed_, kOriginalName3);
-  ASSERT_TRUE(entry1);
-  ASSERT_TRUE(entry2);
-  ASSERT_TRUE(entry3);
+  const Value* entry = FindTraceEntry(trace_parsed_, kOriginalName);
+  ASSERT_TRUE(entry);
 
-  EXPECT_FALSE(entry2->FindIntPath("args.@rg1"));
-  EXPECT_EQ(*entry2->FindIntPath("args.arg1"), 5);
+  EXPECT_FALSE(entry->FindIntPath("args.@rg1"));
 
-  EXPECT_EQ(*entry3->FindStringPath("args.arg1"), "val1");
-  EXPECT_EQ(*entry3->FindStringPath("args.arg2"), "val2");
+  ASSERT_TRUE(entry->FindIntPath("args.arg1"));
+  EXPECT_EQ(*entry->FindIntPath("args.arg1"), 5);
+
+  ASSERT_TRUE(entry->FindStringPath("args.arg2"));
+  EXPECT_EQ(*entry->FindStringPath("args.arg2"), "val");
 }
 
 // Test that TraceResultBuffer outputs the correct result whether it is added
@@ -1799,13 +1695,7 @@ TEST_F(TraceEventTestFixture, TraceWithDefaultCategoryFilters) {
   trace_log->SetDisabled();
 }
 
-// Flaky on iOS device, see crbug.com/908002
-#if defined(OS_IOS) && !(TARGET_OS_SIMULATOR)
-#define MAYBE_TraceWithDisabledByDefaultCategoryFilters DISABLED_TraceWithDisabledByDefaultCategoryFilters
-#else
-#define MAYBE_TraceWithDisabledByDefaultCategoryFilters TraceWithDisabledByDefaultCategoryFilters
-#endif  // defined(OS_IOS) && !(TARGET_OS_SIMULATOR)
-TEST_F(TraceEventTestFixture, MAYBE_TraceWithDisabledByDefaultCategoryFilters) {
+TEST_F(TraceEventTestFixture, TraceWithDisabledByDefaultCategoryFilters) {
   TraceLog* trace_log = TraceLog::GetInstance();
 
   trace_log->SetEnabled(TraceConfig("foo,disabled-by-default-foo", ""),
@@ -2478,13 +2368,7 @@ bool MockLogMessageHandler(int, const char*, int, size_t,
   return false;
 }
 
-// Flaky on iOS device, see crbug.com/908002
-#if defined(OS_IOS) && !(TARGET_OS_SIMULATOR)
-#define MAYBE_EchoToConsole DISABLED_EchoToConsole
-#else
-#define MAYBE_EchoToConsole EchoToConsole
-#endif  // defined(OS_IOS) && !(TARGET_OS_SIMULATOR)
-TEST_F(TraceEventTestFixture, MAYBE_EchoToConsole) {
+TEST_F(TraceEventTestFixture, EchoToConsole) {
   logging::LogMessageHandlerFunction old_log_message_handler =
       logging::GetLogMessageHandler();
   logging::SetLogMessageHandler(MockLogMessageHandler);
@@ -2578,13 +2462,7 @@ TEST_F(TraceEventTestFixture, TimeOffset) {
 
 // Runtime filtering isn't supported with Perfetto.
 #if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-// Flaky on iOS device, see crbug.com/908002
-#if defined(OS_IOS) && !(TARGET_OS_SIMULATOR)
-#define MAYBE_TraceFilteringMode DISABLED_TraceFilteringMode
-#else
-#define MAYBE_TraceFilteringMode TraceFilteringMode
-#endif  // defined(OS_IOS) && !(TARGET_OS_SIMULATOR)
-TEST_F(TraceEventTestFixture, MAYBE_TraceFilteringMode) {
+TEST_F(TraceEventTestFixture, TraceFilteringMode) {
   const char config_json[] =
       "{"
       "  \"event_filters\": ["
@@ -2675,13 +2553,7 @@ TEST_F(TraceEventTestFixture, MAYBE_TraceFilteringMode) {
   Clear();
 }
 
-// Flaky on iOS device, see crbug.com/908002
-#if defined(OS_IOS) && !(TARGET_OS_SIMULATOR)
-#define MAYBE_EventFiltering DISABLED_EventFiltering
-#else
-#define MAYBE_EventFiltering EventFiltering
-#endif  // defined(OS_IOS) && !(TARGET_OS_SIMULATOR)
-TEST_F(TraceEventTestFixture, MAYBE_EventFiltering) {
+TEST_F(TraceEventTestFixture, EventFiltering) {
   const char config_json[] =
       "{"
       "  \"included_categories\": ["
@@ -2725,13 +2597,7 @@ TEST_F(TraceEventTestFixture, MAYBE_EventFiltering) {
   EXPECT_EQ(1u, filter_hits_counter.end_event_hit_count);
 }
 
-// Flaky on iOS device, see crbug.com/908002
-#if defined(OS_IOS) && !(TARGET_OS_SIMULATOR)
-#define MAYBE_EventAllowlistFiltering DISABLED_EventAllowlistFiltering
-#else
-#define MAYBE_EventAllowlistFiltering EventAllowlistFiltering
-#endif  // defined(OS_IOS) && !(TARGET_OS_SIMULATOR)
-TEST_F(TraceEventTestFixture, MAYBE_EventAllowlistFiltering) {
+TEST_F(TraceEventTestFixture, EventAllowlistFiltering) {
   std::string config_json = StringPrintf(
       "{"
       "  \"included_categories\": ["

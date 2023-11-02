@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -66,13 +66,11 @@ HistoryItem GetHistoryItem(const history::URLRow& row) {
   HistoryItem history_item;
 
   history_item.id = base::NumberToString(row.id());
-  history_item.url = std::make_unique<std::string>(row.url().spec());
-  history_item.title =
-      std::make_unique<std::string>(base::UTF16ToUTF8(row.title()));
-  history_item.last_visit_time =
-      std::make_unique<double>(MilliSecondsFromTime(row.last_visit()));
-  history_item.typed_count = std::make_unique<int>(row.typed_count());
-  history_item.visit_count = std::make_unique<int>(row.visit_count());
+  history_item.url = row.url().spec();
+  history_item.title = base::UTF16ToUTF8(row.title());
+  history_item.last_visit_time = MilliSecondsFromTime(row.last_visit());
+  history_item.typed_count = row.typed_count();
+  history_item.visit_count = row.visit_count();
 
   return history_item;
 }
@@ -82,8 +80,7 @@ VisitItem GetVisitItem(const history::VisitRow& row) {
 
   visit_item.id = base::NumberToString(row.url_id);
   visit_item.visit_id = base::NumberToString(row.visit_id);
-  visit_item.visit_time =
-      std::make_unique<double>(MilliSecondsFromTime(row.visit_time));
+  visit_item.visit_time = MilliSecondsFromTime(row.visit_time);
   visit_item.referring_visit_id = base::NumberToString(row.referring_visit);
 
   api::history::TransitionType transition = api::history::TRANSITION_TYPE_LINK;
@@ -143,11 +140,9 @@ HistoryEventRouter::~HistoryEventRouter() {
 }
 
 void HistoryEventRouter::OnURLVisited(history::HistoryService* history_service,
-                                      ui::PageTransition transition,
-                                      const history::URLRow& row,
-                                      const history::RedirectList& redirects,
-                                      base::Time visit_time) {
-  auto args = OnVisited::Create(GetHistoryItem(row));
+                                      const history::URLRow& url_row,
+                                      const history::VisitRow& new_visit) {
+  auto args = OnVisited::Create(GetHistoryItem(url_row));
   DispatchEvent(profile_, events::HISTORY_ON_VISITED,
                 api::history::OnVisited::kEventName, std::move(args));
 }
@@ -158,10 +153,9 @@ void HistoryEventRouter::OnURLsDeleted(
   OnVisitRemoved::Removed removed;
   removed.all_history = deletion_info.IsAllHistory();
 
-  std::vector<std::string>* urls = new std::vector<std::string>();
+  removed.urls.emplace();
   for (const auto& row : deletion_info.deleted_rows())
-    urls->push_back(row.url().spec());
-  removed.urls.reset(urls);
+    removed.urls->push_back(row.url().spec());
 
   auto args = OnVisitRemoved::Create(removed);
   DispatchEvent(profile_, events::HISTORY_ON_VISIT_REMOVED,
@@ -171,7 +165,7 @@ void HistoryEventRouter::OnURLsDeleted(
 void HistoryEventRouter::DispatchEvent(Profile* profile,
                                        events::HistogramValue histogram_value,
                                        const std::string& event_name,
-                                       std::vector<base::Value> event_args) {
+                                       base::Value::List event_args) {
   if (profile && EventRouter::Get(profile)) {
     auto event = std::make_unique<Event>(histogram_value, event_name,
                                          std::move(event_args), profile);
@@ -298,11 +292,11 @@ ExtensionFunction::ResponseAction HistorySearchFunction::Run() {
   options.SetRecentDayRange(1);
   options.max_count = 100;
 
-  if (params->query.start_time.get())
+  if (params->query.start_time)
     options.begin_time = GetTime(*params->query.start_time);
-  if (params->query.end_time.get())
+  if (params->query.end_time)
     options.end_time = GetTime(*params->query.end_time);
-  if (params->query.max_results.get())
+  if (params->query.max_results)
     options.max_count = *params->query.max_results;
 
   history::HistoryService* hs = HistoryServiceFactory::GetForProfile(

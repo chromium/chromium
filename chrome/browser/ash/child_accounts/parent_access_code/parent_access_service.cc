@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include "base/no_destructor.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -28,8 +29,6 @@ namespace {
 
 // Returns true when the device owner is a child.
 bool IsDeviceOwnedByChild() {
-  // TODO(crbug.com/1143369): Owner id might not be available early after
-  // startup. Wait for it to be ready.
   AccountId owner_account_id =
       user_manager::UserManager::Get()->GetOwnerAccountId();
   if (owner_account_id.empty()) {
@@ -58,11 +57,10 @@ bool IsDeviceOwnedByChild() {
 bool IsParentCodeConfigAvailable() {
   const user_manager::UserList& users =
       user_manager::UserManager::Get()->GetUsers();
-  const base::Value* dictionary = nullptr;
+  user_manager::KnownUser known_user(g_browser_process->local_state());
   for (const auto* user : users) {
-    if (user_manager::known_user::GetPref(
-            user->GetAccountId(), prefs::kKnownUserParentAccessCodeConfig,
-            &dictionary)) {
+    if (known_user.FindPath(user->GetAccountId(),
+                            prefs::kKnownUserParentAccessCodeConfig)) {
       return true;
     }
   }

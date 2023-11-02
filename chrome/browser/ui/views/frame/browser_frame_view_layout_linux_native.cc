@@ -1,14 +1,14 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/frame/browser_frame_view_layout_linux_native.h"
 
-#include "ui/views/linux_ui/nav_button_provider.h"
+#include "ui/linux/nav_button_provider.h"
 
 BrowserFrameViewLayoutLinuxNative::BrowserFrameViewLayoutLinuxNative(
-    views::NavButtonProvider* nav_button_provider,
-    views::WindowFrameProvider* window_frame_provider)
+    ui::NavButtonProvider* nav_button_provider,
+    ui::WindowFrameProvider* window_frame_provider)
     : nav_button_provider_(nav_button_provider),
       window_frame_provider_(window_frame_provider) {}
 
@@ -54,20 +54,20 @@ int BrowserFrameViewLayoutLinuxNative::GetWindowCaptionSpacing(
   return spacing;
 }
 
-views::NavButtonProvider::FrameButtonDisplayType
+ui::NavButtonProvider::FrameButtonDisplayType
 BrowserFrameViewLayoutLinuxNative::GetButtonDisplayType(
     views::FrameButton button_id) const {
   switch (button_id) {
     case views::FrameButton::kMinimize:
-      return views::NavButtonProvider::FrameButtonDisplayType::kMinimize;
+      return ui::NavButtonProvider::FrameButtonDisplayType::kMinimize;
     case views::FrameButton::kMaximize:
       return delegate_->IsMaximized()
-                 ? views::NavButtonProvider::FrameButtonDisplayType::kRestore
-                 : views::NavButtonProvider::FrameButtonDisplayType::kMaximize;
+                 ? ui::NavButtonProvider::FrameButtonDisplayType::kRestore
+                 : ui::NavButtonProvider::FrameButtonDisplayType::kMaximize;
     case views::FrameButton::kClose:
-      return views::NavButtonProvider::FrameButtonDisplayType::kClose;
+      return ui::NavButtonProvider::FrameButtonDisplayType::kClose;
     default:
       NOTREACHED();
-      return views::NavButtonProvider::FrameButtonDisplayType::kClose;
+      return ui::NavButtonProvider::FrameButtonDisplayType::kClose;
   }
 }

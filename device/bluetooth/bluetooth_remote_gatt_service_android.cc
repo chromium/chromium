@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -61,18 +61,18 @@ BluetoothRemoteGattServiceAndroid::GetGattErrorCode(int bluetooth_gatt_code) {
   // android values not yet represented. http://crbug.com/548498
   switch (bluetooth_gatt_code) {  // android.bluetooth.BluetoothGatt values:
     case 0x00000101:              // GATT_FAILURE
-      return GATT_ERROR_FAILED;
+      return GattErrorCode::kFailed;
     case 0x0000000d:  // GATT_INVALID_ATTRIBUTE_LENGTH
-      return GATT_ERROR_INVALID_LENGTH;
+      return GattErrorCode::kInvalidLength;
     case 0x00000002:  // GATT_READ_NOT_PERMITTED
-      return GATT_ERROR_NOT_PERMITTED;
+      return GattErrorCode::kNotPermitted;
     case 0x00000006:  // GATT_REQUEST_NOT_SUPPORTED
-      return GATT_ERROR_NOT_SUPPORTED;
+      return GattErrorCode::kNotSupported;
     case 0x00000003:  // GATT_WRITE_NOT_PERMITTED
-      return GATT_ERROR_NOT_PERMITTED;
+      return GattErrorCode::kNotPermitted;
     default:
       DVLOG(1) << "Unhandled status: " << bluetooth_gatt_code;
-      return BluetoothGattService::GATT_ERROR_UNKNOWN;
+      return BluetoothGattService::GattErrorCode::kUnknown;
   }
 }
 
@@ -82,27 +82,27 @@ int BluetoothRemoteGattServiceAndroid::GetAndroidErrorCode(
   // TODO(scheib) Create new BluetoothGattService::GattErrorCode enums for
   // android values not yet represented. http://crbug.com/548498
   switch (error_code) {  // Return values from android.bluetooth.BluetoothGatt:
-    case GATT_ERROR_UNKNOWN:
+    case GattErrorCode::kUnknown:
       return 0x00000101;  // GATT_FAILURE. No good match.
-    case GATT_ERROR_FAILED:
+    case GattErrorCode::kFailed:
       return 0x00000101;  // GATT_FAILURE
-    case GATT_ERROR_IN_PROGRESS:
+    case GattErrorCode::kInProgress:
       return 0x00000101;  // GATT_FAILURE. No good match.
-    case GATT_ERROR_INVALID_LENGTH:
+    case GattErrorCode::kInvalidLength:
       return 0x0000000d;  // GATT_INVALID_ATTRIBUTE_LENGTH
-    case GATT_ERROR_NOT_PERMITTED:
+    case GattErrorCode::kNotPermitted:
       // Can't distinguish between:
       // 0x00000002:  // GATT_READ_NOT_PERMITTED
       // 0x00000003:  // GATT_WRITE_NOT_PERMITTED
       return 0x00000101;  // GATT_FAILURE. No good match.
-    case GATT_ERROR_NOT_AUTHORIZED:
+    case GattErrorCode::kNotAuthorized:
       return 0x00000101;  // GATT_FAILURE. No good match.
-    case GATT_ERROR_NOT_PAIRED:
+    case GattErrorCode::kNotPaired:
       return 0x00000101;  // GATT_FAILURE. No good match.
-    case GATT_ERROR_NOT_SUPPORTED:
+    case GattErrorCode::kNotSupported:
       return 0x00000006;  // GATT_REQUEST_NOT_SUPPORTED
   }
-  DVLOG(1) << "Unhandled error_code: " << error_code;
+  DVLOG(1) << "Unhandled error_code: " << static_cast<int>(error_code);
   return 0x00000101;  // GATT_FAILURE. No good match.
 }
 

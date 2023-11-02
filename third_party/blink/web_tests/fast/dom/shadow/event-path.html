@@ -10,19 +10,19 @@
 <script>
 var b = document.getElementById('b');
 b.addEventListener('click', function(event) {
-    var path = event.path;
+    var path = event.composedPath();
     test(function () {
         assert_event_path_for_b(path);
-    }, "event.path in click event");
+    }, "event.composedPath() in click event");
     path[1] = '';
     test(function () {
-        assert_event_path_for_b(event.path);
-    }, "Make sure that event.path returns static NodeList.");
+        assert_event_path_for_b(event.composedPath());
+    }, "Make sure that event.composedPath() returns static NodeList.");
 });
 var clickEvent = document.createEvent("MouseEvents");
 test(function () {
-    assert_equals(clickEvent.path.length, 0);
-}, "Make sure that event.path is empty before dispatching the event.");
+    assert_equals(clickEvent.composedPath().length, 0);
+}, "Make sure that event.composedPath() is empty before dispatching the event.");
 
 clickEvent.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
 b.dispatchEvent(clickEvent);
@@ -38,6 +38,6 @@ function assert_event_path_for_b(path) {
 }
 
 test(function () {
-    assert_event_path_for_b(clickEvent.path);
-}, "Make sure that event.path isn't emptified after dispatching the event.");
+    assert_equals(clickEvent.composedPath().length, 0);
+}, "Make sure that event.composedPath() is emptified after dispatching the event.");
 </script>

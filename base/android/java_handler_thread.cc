@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,13 +26,13 @@ namespace base {
 namespace android {
 
 JavaHandlerThread::JavaHandlerThread(const char* name,
-                                     base::ThreadPriority priority)
+                                     base::ThreadType thread_type)
     : JavaHandlerThread(
           name,
           Java_JavaHandlerThread_create(
               AttachCurrentThread(),
               ConvertUTF8ToJavaString(AttachCurrentThread(), name),
-              base::internal::ThreadPriorityToNiceValue(priority))) {}
+              base::internal::ThreadTypeToNiceValue(thread_type))) {}
 
 JavaHandlerThread::JavaHandlerThread(
     const char* name,
@@ -160,8 +160,9 @@ JavaHandlerThread::State::State()
           sequence_manager::SequenceManager::Settings::Builder()
               .SetMessagePumpType(base::MessagePumpType::JAVA)
               .Build())),
-      default_task_queue(sequence_manager->CreateTaskQueue(
-          sequence_manager::TaskQueue::Spec("default_tq"))) {
+      default_task_queue(
+          sequence_manager->CreateTaskQueue(sequence_manager::TaskQueue::Spec(
+              sequence_manager::QueueName::DEFAULT_TQ))) {
   // TYPE_JAVA to get the Android java style message loop.
   std::unique_ptr<MessagePump> message_pump =
       MessagePump::Create(base::MessagePumpType::JAVA);

@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_TABLE_LAYOUT_NG_TABLE_SECTION_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_TABLE_LAYOUT_NG_TABLE_SECTION_H_
 
+#include "base/notreached.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_block.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_section_interface.h"
@@ -26,7 +27,10 @@ class CORE_EXPORT LayoutNGTableSection : public LayoutNGBlock,
 
   // LayoutBlock methods start.
 
-  void UpdateBlockLayout(bool relayout_children) override { NOTREACHED(); }
+  void UpdateBlockLayout(bool relayout_children) override {
+    NOT_DESTROYED();
+    NOTREACHED();
+  }
 
   const char* GetName() const override {
     NOT_DESTROYED();
@@ -46,7 +50,7 @@ class CORE_EXPORT LayoutNGTableSection : public LayoutNGBlock,
   LayoutBox* CreateAnonymousBoxWithSameTypeAs(
       const LayoutObject* parent) const override;
 
-  bool AllowsNonVisibleOverflow() const override {
+  bool RespectsCSSOverflow() const override {
     NOT_DESTROYED();
     return false;
   }
@@ -75,12 +79,6 @@ class CORE_EXPORT LayoutNGTableSection : public LayoutNGBlock,
 
   // LayoutNGTableSectionInterface methods start.
 
-  const LayoutTableSection* ToLayoutTableSection() const final {
-    NOT_DESTROYED();
-    DCHECK(false);
-    return nullptr;
-  }
-
   const LayoutNGTableSectionInterface* ToLayoutNGTableSectionInterface()
       const final {
     NOT_DESTROYED();
@@ -93,11 +91,6 @@ class CORE_EXPORT LayoutNGTableSection : public LayoutNGBlock,
   }
 
   const LayoutObject* ToLayoutObject() const final {
-    NOT_DESTROYED();
-    return this;
-  }
-
-  LayoutObject* ToMutableLayoutObject() final {
     NOT_DESTROYED();
     return this;
   }

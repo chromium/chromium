@@ -1,10 +1,11 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/message_center/views/message_popup_collection.h"
 
 #include "base/containers/cxx20_erase.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -175,7 +176,7 @@ class MockMessagePopupView : public MessagePopupView {
   }
 
  private:
-  MockMessagePopupCollection* const popup_collection_;
+  const raw_ptr<MockMessagePopupCollection> popup_collection_;
 
   std::string id_;
   bool updated_ = false;
@@ -248,10 +249,9 @@ class MessagePopupCollectionTest : public views::ViewsTestBase,
   std::unique_ptr<Notification> CreateNotification(const std::string& id,
                                                    const std::string& title) {
     return std::make_unique<Notification>(
-        NOTIFICATION_TYPE_BASE_FORMAT, id, base::UTF8ToUTF16(title),
-        u"test message", gfx::Image(), std::u16string() /* display_source */,
-        GURL(), NotifierId(), RichNotificationData(),
-        new NotificationDelegate());
+        NOTIFICATION_TYPE_SIMPLE, id, base::UTF8ToUTF16(title), u"test message",
+        ui::ImageModel(), std::u16string() /* display_source */, GURL(),
+        NotifierId(), RichNotificationData(), new NotificationDelegate());
   }
 
   std::string AddNotification() {

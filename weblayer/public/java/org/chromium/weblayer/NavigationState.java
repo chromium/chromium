@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@ import java.lang.annotation.RetentionPolicy;
 @IntDef({NavigationState.WAITING_RESPONSE, NavigationState.RECEIVING_BYTES,
         NavigationState.COMPLETE, NavigationState.FAILED})
 @Retention(RetentionPolicy.SOURCE)
-public @interface NavigationState {
+@interface NavigationState {
     int WAITING_RESPONSE =
             org.chromium.weblayer_private.interfaces.NavigationState.WAITING_RESPONSE;
     int RECEIVING_BYTES = org.chromium.weblayer_private.interfaces.NavigationState.RECEIVING_BYTES;

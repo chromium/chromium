@@ -1,10 +1,8 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.base.jank_tracker;
-
-import org.chromium.base.library_loader.LibraryLoader;
 
 /**
  * This runnable receives a FrameMetricsStore instance and starts/stops tracking a given scenario.
@@ -33,9 +31,9 @@ class JankReportingRunnable implements Runnable {
                 return;
             }
 
-            if (!LibraryLoader.getInstance().isInitialized()) {
-                return;
-            }
+            // Confirm that the current call context is valid.
+            // Debug builds will assert and fail; release builds will optimize this out.
+            JankMetricUMARecorderJni.get();
 
             JankMetrics metrics = JankMetricCalculator.calculateJankMetrics(frames);
             // TODO(salg@): Cache metrics in case native takes >30s to initialize.

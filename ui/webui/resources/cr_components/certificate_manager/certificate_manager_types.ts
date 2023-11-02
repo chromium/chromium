@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
  */
 
 // clang-format off
-// <if expr="chromeos">
+// <if expr="is_chromeos">
 import {CertificateProvisioningProcess} from './certificate_provisioning_browser_proxy.js';
 // </if>
 import {CertificatesError, CertificatesImportError,CertificateSubnode, CertificateType, NewCertificateSubNode} from './certificates_browser_proxy.js';
@@ -16,20 +16,20 @@ import {CertificatesError, CertificatesImportError,CertificateSubnode, Certifica
 /**
  * The payload of the 'certificate-action' event.
  */
-export type CertificateActionEventDetail = {
-  action: CertificateAction,
-  subnode: CertificateSubnode|NewCertificateSubNode|null,
-  certificateType: CertificateType,
-  anchor: HTMLElement,
-};
+export interface CertificateActionEventDetail {
+  action: CertificateAction;
+  subnode: CertificateSubnode|NewCertificateSubNode|null;
+  certificateType: CertificateType;
+  anchor: HTMLElement;
+}
 
 /**
  * The payload of the 'certificates-error' event.
  */
-export type CertificatesErrorEventDetail = {
-  error: CertificatesError|CertificatesImportError|null,
-  anchor: HTMLElement|null,
-};
+export interface CertificatesErrorEventDetail {
+  error: CertificatesError|CertificatesImportError|null;
+  anchor: HTMLElement|null;
+}
 
 /**
  * Enumeration of actions that require a popup menu to be shown to the user.
@@ -47,14 +47,14 @@ export enum CertificateAction {
  */
 export const CertificateActionEvent = 'certificate-action';
 
-// <if expr="chromeos">
+// <if expr="is_chromeos">
 /**
  * The payload of the 'certificate-provisioning-view-details-action' event.
  */
-export type CertificateProvisioningActionEventDetail = {
-  model: CertificateProvisioningProcess,
-  anchor: HTMLElement,
-};
+export interface CertificateProvisioningActionEventDetail {
+  model: CertificateProvisioningProcess;
+  anchor: HTMLElement;
+}
 // </if>
 
 /**
@@ -69,7 +69,7 @@ declare global {
   interface HTMLElementEventMap {
     'certificates-error': CustomEvent<CertificatesErrorEventDetail>;
     'certificate-action': CustomEvent<CertificateActionEventDetail>;
-    // <if expr="chromeos">
+    // <if expr="is_chromeos">
     'certificate-provisioning-view-details-action':
         CustomEvent<CertificateProvisioningActionEventDetail>;
     // </if>

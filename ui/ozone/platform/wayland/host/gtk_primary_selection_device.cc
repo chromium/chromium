@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <gtk-primary-selection-client-protocol.h>
 
-#include "base/logging.h"
 #include "ui/ozone/platform/wayland/host/gtk_primary_selection_offer.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_source.h"
@@ -27,16 +26,12 @@ GtkPrimarySelectionDevice::GtkPrimarySelectionDevice(
 GtkPrimarySelectionDevice::~GtkPrimarySelectionDevice() = default;
 
 void GtkPrimarySelectionDevice::SetSelectionSource(
-    GtkPrimarySelectionSource* source) {
-  auto serial = GetSerialForSelection();
-  if (!serial.has_value()) {
-    LOG(ERROR) << "Failed to set selection. No serial found.";
-    return;
-  }
+    GtkPrimarySelectionSource* source,
+    uint32_t serial) {
   auto* data_source = source ? source->data_source() : nullptr;
   gtk_primary_selection_device_set_selection(data_device_.get(), data_source,
-                                             serial->value);
-  connection()->ScheduleFlush();
+                                             serial);
+  connection()->Flush();
 }
 
 // static

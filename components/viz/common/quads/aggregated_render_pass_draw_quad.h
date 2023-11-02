@@ -1,4 +1,4 @@
-// Copyright 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,6 +25,10 @@ class VIZ_COMMON_EXPORT AggregatedRenderPassDrawQuad
   AggregatedRenderPassDrawQuad(const AggregatedRenderPassDrawQuad& other);
   ~AggregatedRenderPassDrawQuad() override;
 
+  // No comparison for resources.ids. shared_quad_state is compared
+  // by calling Equals().
+  bool Equals(const AggregatedRenderPassDrawQuad& other) const;
+
   void SetNew(const SharedQuadState* shared_quad_state,
               const gfx::Rect& rect,
               const gfx::Rect& visible_rect,
@@ -37,6 +41,8 @@ class VIZ_COMMON_EXPORT AggregatedRenderPassDrawQuad
               const gfx::RectF& tex_coord_rect,
               bool force_anti_aliasing_off,
               float backdrop_filter_quality);
+
+  void SetAll(const AggregatedRenderPassDrawQuad& other);
 
   void SetAll(const SharedQuadState* shared_quad_state,
               const gfx::Rect& rect,

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,8 +38,8 @@ CreateAnimationAndPaintWorkletThread(
           Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
           window->GetReferrerPolicy(), window->GetSecurityOrigin(),
           window->IsSecureContext(), window->GetHttpsState(), clients,
-          nullptr /* content_settings_client */, window->AddressSpace(),
-          OriginTrialContext::GetTokens(window).get(),
+          nullptr /* content_settings_client */,
+          OriginTrialContext::GetInheritedTrialFeatures(window).get(),
           base::UnguessableToken::Create(), nullptr /* worker_settings */,
           mojom::blink::V8CacheOptions::kDefault,
           MakeGarbageCollected<WorkletModuleResponsesMap>(),

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,20 +13,25 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/trace_event/typed_macros.h"
 #include "components/leveldb_proto/public/proto_database.h"
-#include "components/segmentation_platform/internal/database/metadata_utils.h"
 #include "components/segmentation_platform/internal/database/signal_database.h"
 #include "components/segmentation_platform/internal/database/signal_key.h"
+#include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 #include "components/segmentation_platform/internal/proto/signal.pb.h"
 #include "components/segmentation_platform/internal/stats.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace segmentation_platform {
 namespace {
+
+BASE_FEATURE(kSegmentationCompactionFix,
+             "SegmentationCompactionFix",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // TODO(shaktisahu): May be make this a class member for ease of testing.
 bool FilterKeyBasedOnRange(proto::SignalType signal_type,
@@ -76,7 +81,10 @@ leveldb_proto::Enums::KeyIteratorAction GetSamplesIteratorController(
 
 SignalDatabaseImpl::SignalDatabaseImpl(std::unique_ptr<SignalProtoDb> database,
                                        base::Clock* clock)
-    : database_(std::move(database)), clock_(clock) {}
+    : database_(std::move(database)),
+      clock_(clock),
+      should_fix_compaction_(
+          base::FeatureList::IsEnabled(kSegmentationCompactionFix)) {}
 
 SignalDatabaseImpl::~SignalDatabaseImpl() = default;
 
@@ -225,14 +233,13 @@ void SignalDatabaseImpl::OnGetSamplesForDeletion(
 
 void SignalDatabaseImpl::CompactSamplesForDay(proto::SignalType signal_type,
                                               uint64_t name_hash,
-                                              base::Time day_start_time,
+                                              base::Time day_end_time,
                                               SuccessCallback callback) {
   TRACE_EVENT("segmentation_platform",
               "SignalDatabaseImpl::CompactSamplesForDay");
   DCHECK(initialized_);
   // Compact the signals between 00:00:00AM to 23:59:59PM.
-  day_start_time = day_start_time.UTCMidnight();
-  base::Time day_end_time = day_start_time + base::Days(1) - base::Seconds(1);
+  base::Time day_start_time = day_end_time.UTCMidnight();
   SignalKey compact_key(metadata_utils::SignalTypeToSignalKind(signal_type),
                         name_hash, day_end_time, day_start_time);
   database_->LoadKeysAndEntriesWithFilter(
@@ -250,7 +257,8 @@ void SignalDatabaseImpl::OnGetSamplesForCompaction(
     std::unique_ptr<std::map<std::string, proto::SignalData>> entries) {
   TRACE_EVENT("segmentation_platform",
               "SignalDatabaseImpl::OnGetSamplesForCompaction");
-  if (!success || !entries || entries->empty()) {
+  if (!success || !entries || entries->empty() ||
+      (should_fix_compaction_ && entries->size() == 1)) {
     std::move(callback).Run(success);
     return;
   }
@@ -267,7 +275,11 @@ void SignalDatabaseImpl::OnGetSamplesForCompaction(
       new_sample->CopyFrom(signal_data.samples(i));
     }
 
-    keys_to_delete->emplace_back(pair.first);
+    // If the database was already compacted, and some entry was added with
+    // older timestamp, then append signals, and do not delete the key.
+    if (!(should_fix_compaction_ && pair.first == compact_key)) {
+      keys_to_delete->emplace_back(pair.first);
+    }
   }
 
   // Write to DB.

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,7 +31,7 @@ IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest, MANUAL_Dialog_Basic) {
   ASSERT_EQ("Test Route", test_ui_->GetStatusTextForSink(receiver_));
 
   test_ui_->StopCasting(receiver_);
-  test_ui_->WaitUntilNoRoutes();
+  WaitUntilNoRoutes(GetActiveWebContents());
   // TODO(takumif): Remove the HideCastDialog() call once the dialog can close
   // on its own.
   test_ui_->HideDialog();
@@ -59,9 +59,9 @@ IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest,
   EXPECT_LE(elapsed - expected_timeout, base::Seconds(5));
 
   std::string issue_title = test_ui_->GetIssueTextForSink(receiver_);
-  // TODO(imcheng): Fix host name for file schemes (crbug.com/560576).
   ASSERT_EQ(l10n_util::GetStringFUTF8(
-                IDS_MEDIA_ROUTER_ISSUE_CREATE_ROUTE_TIMEOUT, u"file://"),
+                IDS_MEDIA_ROUTER_ISSUE_CREATE_ROUTE_TIMEOUT_WITH_HOSTNAME,
+                u"file://"),
             issue_title);
 
   ASSERT_EQ(test_ui_->GetRouteIdForSink(receiver_), "");

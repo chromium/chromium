@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,27 +8,37 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/arc/app/arc_playstore_search_request_state.h"
+#include "ash/constants/ash_features.h"
+#include "ash/public/cpp/app_list/app_list_features.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ash/arc/icon_decode_request.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/chromeos/arc/icon_decode_request.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/ui/app_list/app_list_test_util.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ui/app_list/search/arc/arc_playstore_search_result.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
+#include "chrome/browser/ui/app_list/search/test/test_search_controller.h"
 #include "chrome/browser/ui/app_list/test/test_app_list_controller_delegate.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/arc/app/arc_playstore_search_request_state.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/value_builder.h"
 
 namespace app_list {
 
-class ArcPlayStoreSearchProviderTest : public AppListTestBase {
+// Parameterized by feature ProductivityLauncher.
+class ArcPlayStoreSearchProviderTest
+    : public AppListTestBase,
+      public ::testing::WithParamInterface<bool> {
  public:
-  ArcPlayStoreSearchProviderTest() = default;
+  ArcPlayStoreSearchProviderTest() {
+    feature_list_.InitWithFeatureState(ash::features::kProductivityLauncher,
+                                       GetParam());
+  }
 
   ArcPlayStoreSearchProviderTest(const ArcPlayStoreSearchProviderTest&) =
       delete;
@@ -51,9 +61,26 @@ class ArcPlayStoreSearchProviderTest : public AppListTestBase {
   }
 
  protected:
-  std::unique_ptr<ArcPlayStoreSearchProvider> CreateSearch(int max_results) {
-    return std::make_unique<ArcPlayStoreSearchProvider>(
+  void CreateSearch(int max_results) {
+    search_controller_ = std::make_unique<TestSearchController>();
+    auto provider = std::make_unique<ArcPlayStoreSearchProvider>(
         max_results, profile_.get(), controller_.get());
+    provider_ = provider.get();
+    search_controller_->AddProvider(0, std::move(provider));
+  }
+
+  ArcPlayStoreSearchProvider* provider() { return provider_; }
+
+  const SearchProvider::Results& LastResults() {
+    if (app_list_features::IsCategoricalSearchEnabled()) {
+      return search_controller_->last_results();
+    } else {
+      return provider()->results();
+    }
+  }
+
+  void StartSearch(const std::u16string& query) {
+    search_controller_->StartSearch(query);
   }
 
   scoped_refptr<const extensions::Extension> CreateExtension(
@@ -66,24 +93,30 @@ class ArcPlayStoreSearchProviderTest : public AppListTestBase {
   }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<::test::TestAppListControllerDelegate> controller_;
+  std::unique_ptr<TestSearchController> search_controller_;
+  ArcPlayStoreSearchProvider* provider_ = nullptr;
   ArcAppTest arc_test_;
 };
 
-TEST_F(ArcPlayStoreSearchProviderTest, Basic) {
+INSTANTIATE_TEST_SUITE_P(ProductivityLauncher,
+                         ArcPlayStoreSearchProviderTest,
+                         testing::Bool());
+
+TEST_P(ArcPlayStoreSearchProviderTest, Basic) {
   constexpr size_t kMaxResults = 12;
   constexpr char16_t kQuery[] = u"Play App";
 
-  std::unique_ptr<ArcPlayStoreSearchProvider> provider =
-      CreateSearch(kMaxResults);
-  EXPECT_TRUE(provider->results().empty());
+  CreateSearch(kMaxResults);
+  EXPECT_TRUE(LastResults().empty());
   arc::IconDecodeRequest::DisableSafeDecodingForTesting();
 
   AddExtension(CreateExtension(extension_misc::kGmailAppId).get());
 
   // Check that the result size of a query doesn't exceed the |kMaxResults|.
-  provider->Start(kQuery);
-  const SearchProvider::Results& results = provider->results();
+  StartSearch(kQuery);
+  const SearchProvider::Results& results = LastResults();
   ASSERT_GT(results.size(), 0u);
   // Play Store returns |kMaxResults| results, but the first one (GMail) already
   // has Chrome extension installed, so it will be skipped.
@@ -108,12 +141,11 @@ TEST_F(ArcPlayStoreSearchProviderTest, Basic) {
 // non empty result list and PHONESKY_RESULT_INVALID_DATA status code (which can
 // happen if the Play Store returns a list of results that contains some invalid
 // items).
-TEST_F(ArcPlayStoreSearchProviderTest, PartiallyFailedQuery) {
+TEST_P(ArcPlayStoreSearchProviderTest, PartiallyFailedQuery) {
   constexpr size_t kMaxResults = 12;
 
-  std::unique_ptr<ArcPlayStoreSearchProvider> provider =
-      CreateSearch(kMaxResults);
-  EXPECT_TRUE(provider->results().empty());
+  CreateSearch(kMaxResults);
+  EXPECT_TRUE(LastResults().empty());
   arc::IconDecodeRequest::DisableSafeDecodingForTesting();
 
   AddExtension(CreateExtension(extension_misc::kGmailAppId).get());
@@ -123,9 +155,9 @@ TEST_F(ArcPlayStoreSearchProviderTest, PartiallyFailedQuery) {
       base::NumberToString16(static_cast<int>(
           arc::ArcPlayStoreSearchRequestState::PHONESKY_RESULT_INVALID_DATA));
 
-  provider->Start(kQuery);
+  StartSearch(kQuery);
 
-  const SearchProvider::Results& results = provider->results();
+  const SearchProvider::Results& results = LastResults();
   ASSERT_GT(results.size(), 0u);
   // Play Store returns |kMaxResults / 2| results, but the first one (GMail)
   // already has Chrome extension installed, so it will be skipped.
@@ -149,24 +181,23 @@ TEST_F(ArcPlayStoreSearchProviderTest, PartiallyFailedQuery) {
 
 // Tests that the search provider can handle Play Store suggestions without
 // rating and formatted price.
-TEST_F(ArcPlayStoreSearchProviderTest, ResultsWithoutPriceAndRating) {
+TEST_P(ArcPlayStoreSearchProviderTest, ResultsWithoutPriceAndRating) {
   constexpr size_t kMaxResults = 12;
 
-  std::unique_ptr<ArcPlayStoreSearchProvider> provider =
-      CreateSearch(kMaxResults);
-  EXPECT_TRUE(provider->results().empty());
+  CreateSearch(kMaxResults);
+  EXPECT_TRUE(LastResults().empty());
   arc::IconDecodeRequest::DisableSafeDecodingForTesting();
 
   AddExtension(CreateExtension(extension_misc::kGmailAppId).get());
 
   const std::u16string kQuery = u"QueryWithoutRatingAndPrice";
 
-  provider->Start(kQuery);
+  StartSearch(kQuery);
 
-  const SearchProvider::Results& results = provider->results();
+  const SearchProvider::Results& results = LastResults();
   ASSERT_GT(results.size(), 0u);
-  // Play Store returns |kMaxResults| results, but the first one (GMail) already
-  // has Chrome extension installed, so it will be skipped.
+  // Play Store returns |kMaxResults| results, but the first one (GMail)
+  // already has Chrome extension installed, so it will be skipped.
   ASSERT_EQ(kMaxResults - 1, results.size());
 
   // Check that information is correctly set in each result.
@@ -185,25 +216,25 @@ TEST_F(ArcPlayStoreSearchProviderTest, ResultsWithoutPriceAndRating) {
 }
 
 // Tests that results without icon are ignored.
-TEST_F(ArcPlayStoreSearchProviderTest, IgnoreResultsWithoutIcon) {
+TEST_P(ArcPlayStoreSearchProviderTest, IgnoreResultsWithoutIcon) {
   constexpr size_t kMaxResults = 12;
 
-  std::unique_ptr<ArcPlayStoreSearchProvider> provider =
-      CreateSearch(kMaxResults);
-  EXPECT_TRUE(provider->results().empty());
+  CreateSearch(kMaxResults);
+  EXPECT_TRUE(LastResults().empty());
   arc::IconDecodeRequest::DisableSafeDecodingForTesting();
 
   AddExtension(CreateExtension(extension_misc::kGmailAppId).get());
 
   const std::u16string kQuery = u"QueryWithSomeResultsMissingIcon";
 
-  provider->Start(kQuery);
+  StartSearch(kQuery);
 
-  const SearchProvider::Results& results = provider->results();
+  const SearchProvider::Results& results = LastResults();
   ASSERT_GT(results.size(), 0u);
-  // Play Store returns |kMaxResults| results, but the first one (GMail) already
-  // has Chrome extension installed, so it will be skipped, and items after
-  // kMaxResults / 2 are missing the icon and are expected to be ignored.
+  // Play Store returns |kMaxResults| results, but the first one (GMail)
+  // already has Chrome extension installed, so it will be skipped, and
+  // items after kMaxResults / 2 are missing the icon and are expected to be
+  // ignored.
   ASSERT_EQ(kMaxResults / 2, results.size());
 
   // Check that information is correctly set in each result.
@@ -222,23 +253,18 @@ TEST_F(ArcPlayStoreSearchProviderTest, IgnoreResultsWithoutIcon) {
   }
 }
 
-TEST_F(ArcPlayStoreSearchProviderTest, FailedQuery) {
+TEST_P(ArcPlayStoreSearchProviderTest, FailedQuery) {
   constexpr size_t kMaxResults = 12;
   constexpr char16_t kQuery[] = u"Play App";
 
-  std::unique_ptr<ArcPlayStoreSearchProvider> provider =
-      CreateSearch(kMaxResults);
-  EXPECT_TRUE(provider->results().empty());
+  CreateSearch(kMaxResults);
+  EXPECT_TRUE(LastResults().empty());
   arc::IconDecodeRequest::DisableSafeDecodingForTesting();
 
   // Test for empty queries.
   // Create a non-empty query.
-  provider->Start(kQuery);
-  EXPECT_GT(provider->results().size(), 0u);
-
-  // Create an empty query and it should clear the result list.
-  provider->Start(std::u16string());
-  EXPECT_EQ(0u, provider->results().size());
+  StartSearch(kQuery);
+  EXPECT_GT(LastResults().size(), 0u);
 
   // Test for queries with a failure state code.
   constexpr char16_t kFailedQueryPrefix[] = u"FailedQueryWithCode-";
@@ -265,13 +291,13 @@ TEST_F(ArcPlayStoreSearchProviderTest, FailedQuery) {
       "Missing entries");
   for (const auto& error_state : kErrorStates) {
     // Create a non-empty query.
-    provider->Start(kQuery);
-    EXPECT_GT(provider->results().size(), 0u);
+    StartSearch(kQuery);
+    EXPECT_GT(LastResults().size(), 0u);
 
     // Fabricate a failing query and it should clear the result list.
-    provider->Start(kFailedQueryPrefix +
-                    base::NumberToString16(static_cast<int>(error_state)));
-    EXPECT_EQ(0u, provider->results().size());
+    StartSearch(kFailedQueryPrefix +
+                base::NumberToString16(static_cast<int>(error_state)));
+    EXPECT_EQ(0u, LastResults().size());
   }
 }
 

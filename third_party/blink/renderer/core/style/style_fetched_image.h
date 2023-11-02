@@ -26,6 +26,9 @@
 
 #include "third_party/blink/renderer/core/loader/resource/image_resource_observer.h"
 #include "third_party/blink/renderer/core/style/style_image.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
@@ -35,8 +38,9 @@ class Document;
 
 // This class represents an <image> that loads a single image resource (the
 // url(...) function.)
-class StyleFetchedImage final : public StyleImage,
-                                public ImageResourceObserver {
+class CORE_EXPORT StyleFetchedImage final : public StyleImage,
+                                            public ImageResourceObserver {
+  USING_PRE_FINALIZER(StyleFetchedImage, Prefinalize);
 
  public:
   StyleFetchedImage(ImageResourceContent* image,
@@ -58,9 +62,9 @@ class StyleFetchedImage final : public StyleImage,
   bool ErrorOccurred() const override;
   bool IsAccessAllowed(String&) const override;
 
-  FloatSize ImageSize(float multiplier,
-                      const FloatSize& default_object_size,
-                      RespectImageOrientationEnum) const override;
+  gfx::SizeF ImageSize(float multiplier,
+                       const gfx::SizeF& default_object_size,
+                       RespectImageOrientationEnum) const override;
   bool HasIntrinsicSize() const override;
   void AddClient(ImageResourceObserver*) override;
   void RemoveClient(ImageResourceObserver*) override;
@@ -68,7 +72,7 @@ class StyleFetchedImage final : public StyleImage,
   scoped_refptr<Image> GetImage(const ImageResourceObserver&,
                                 const Document&,
                                 const ComputedStyle&,
-                                const FloatSize& target_size) const override;
+                                const gfx::SizeF& target_size) const override;
   bool KnownToBeOpaque(const Document&, const ComputedStyle&) const override;
   ImageResourceContent* CachedImage() const override;
 
@@ -79,8 +83,11 @@ class StyleFetchedImage final : public StyleImage,
 
   void Trace(Visitor*) const override;
 
+  bool IsOriginClean() const { return origin_clean_; }
+
  private:
   bool IsEqual(const StyleImage&) const override;
+  void Prefinalize();
 
   // ImageResourceObserver overrides
   void ImageNotifyFinished(ImageResourceContent*) override;

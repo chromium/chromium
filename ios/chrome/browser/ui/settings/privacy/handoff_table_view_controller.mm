@@ -1,21 +1,21 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/settings/privacy/handoff_table_view_controller.h"
 
 #import "base/mac/foundation_util.h"
-#include "components/handoff/pref_names_ios.h"
-#include "components/prefs/pref_member.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/ui/settings/cells/settings_switch_cell.h"
-#import "ios/chrome/browser/ui/settings/cells/settings_switch_item.h"
+#import "components/handoff/pref_names_ios.h"
+#import "components/prefs/pref_member.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_link_header_footer_item.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_switch_cell.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ui/base/l10n/l10n_util.h"
+#import "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -39,7 +39,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   PrefBackedBoolean* _handoffEnabled;
 
   // Item for displaying handoff switch.
-  SettingsSwitchItem* _handoffSwitchItem;
+  TableViewSwitchItem* _handoffSwitchItem;
 }
 
 @end
@@ -78,7 +78,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   TableViewModel* model = self.tableViewModel;
 
   [model addSectionWithIdentifier:SectionIdentifierSwitch];
-  _handoffSwitchItem = [[SettingsSwitchItem alloc] initWithType:ItemTypeSwitch];
+  _handoffSwitchItem =
+      [[TableViewSwitchItem alloc] initWithType:ItemTypeSwitch];
   _handoffSwitchItem.text =
       l10n_util::GetNSString(IDS_IOS_OPTIONS_ENABLE_HANDOFF_TO_OTHER_DEVICES);
   _handoffSwitchItem.on = _handoffEnabled.value;
@@ -103,8 +104,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [self.tableViewModel itemTypeForIndexPath:indexPath]);
 
   if (itemType == ItemTypeSwitch) {
-    SettingsSwitchCell* switchCell =
-        base::mac::ObjCCastStrict<SettingsSwitchCell>(cell);
+    TableViewSwitchCell* switchCell =
+        base::mac::ObjCCastStrict<TableViewSwitchCell>(cell);
     [switchCell.switchView addTarget:self
                               action:@selector(switchChanged:)
                     forControlEvents:UIControlEventValueChanged];

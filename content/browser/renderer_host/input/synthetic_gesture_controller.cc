@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,8 +26,11 @@ SyntheticGestureController::SyntheticGestureController(
 }
 
 SyntheticGestureController::~SyntheticGestureController() {
-  if (!pending_gesture_queue_.IsEmpty())
-    GestureCompleted(SyntheticGesture::GESTURE_FINISHED);
+  while (!pending_gesture_queue_.IsEmpty()) {
+    pending_gesture_queue_.FrontCallback().Run(
+        SyntheticGesture::GESTURE_FINISHED);
+    pending_gesture_queue_.Pop();
+  }
 }
 
 void SyntheticGestureController::EnsureRendererInitialized(

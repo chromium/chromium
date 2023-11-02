@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,13 +24,12 @@
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
-#include "chromeos/cryptohome/cryptohome_parameters.h"
-#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
-#include "chromeos/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
+#include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "components/ownership/mock_owner_key_util.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
-
 
 namespace ash {
 
@@ -54,8 +53,8 @@ class KioskCrashRestoreTest : public MixinBasedInProcessBrowserTest,
         *device_policy_.GetSigningKey());
 
     // SessionManagerClient will be destroyed in ChromeBrowserMain.
-    chromeos::SessionManagerClient::InitializeFakeInMemory();
-    chromeos::FakeSessionManagerClient::Get()->set_device_policy(
+    SessionManagerClient::InitializeFakeInMemory();
+    FakeSessionManagerClient::Get()->set_device_policy(
         device_policy_.GetBlob());
   }
 
@@ -69,7 +68,7 @@ class KioskCrashRestoreTest : public MixinBasedInProcessBrowserTest,
                                     cryptohome_id.account_id());
     command_line->AppendSwitchASCII(
         switches::kLoginProfile,
-        chromeos::UserDataAuthClient::GetStubSanitizedUsername(cryptohome_id));
+        UserDataAuthClient::GetStubSanitizedUsername(cryptohome_id));
   }
 
   void SetUpOnMainThread() override {

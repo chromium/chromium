@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@ import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.text.TextUtils;
 
@@ -20,7 +19,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.browser.trusted.TrustedWebActivityDisplayMode.ImmersiveMode;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.cc.input.BrowserControlsState;
@@ -29,7 +27,7 @@ import org.chromium.chrome.browser.app.tab_activity_glue.ActivityTabWebContentsD
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
-import org.chromium.chrome.browser.browserservices.permissiondelegation.TrustedWebActivityPermissionManager;
+import org.chromium.chrome.browser.browserservices.permissiondelegation.InstalledWebappPermissionManager;
 import org.chromium.chrome.browser.browserservices.ui.controller.Verifier;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
@@ -61,6 +59,7 @@ import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 import org.chromium.components.browser_ui.util.ComposedBrowserControlsVisibilityDelegate;
 import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.components.externalauth.ExternalAuthUtils;
@@ -69,6 +68,8 @@ import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.url.GURL;
+
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -95,8 +96,6 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         private final Verifier mVerifier;
         private final @ActivityType int mActivityType;
 
-        private boolean mHasActivityStarted;
-
         /**
          * Constructs a new instance of {@link CustomTabNavigationDelegate}.
          */
@@ -110,71 +109,33 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         }
 
         @Override
-        public void didStartActivity(Intent intent) {
-            mHasActivityStarted = true;
+        public boolean maybeSetTargetPackage(
+                Intent intent, Supplier<List<ResolveInfo>> resolveInfoSupplier) {
+            // If the client app can handle the intent, set it as the receiver.
+            if (!TextUtils.isEmpty(mClientPackageName)
+                    && ExternalNavigationHandler.isPackageSpecializedHandler(
+                            mClientPackageName, resolveInfoSupplier.get())) {
+                intent.setSelector(null);
+                intent.setPackage(mClientPackageName);
+                return true;
+            }
+            return false;
         }
 
         @Override
-        public @StartActivityIfNeededResult int maybeHandleStartActivityIfNeeded(
-                Intent intent, boolean proxy) {
-            // Note: This method will not be called if shouldDisableExternalIntentRequestsForUrl()
-            // returns false.
-
-            // TODO(https://crbug.com/1194706): This should probably be using intent#getData
-            // instead.
-            boolean isExternalProtocol = !UrlUtilities.isAcceptedScheme(intent.toUri(0));
-            boolean hasDefaultHandler = hasDefaultHandler(intent);
-            // For a URL chrome can handle and there is no default set, handle it ourselves.
-            if (!hasDefaultHandler) {
-                if (!TextUtils.isEmpty(mClientPackageName)
-                        && isPackageSpecializedHandler(mClientPackageName, intent)) {
-                    // Package and Selector cannot be set at the same time.
-                    intent.setSelector(null);
-                    intent.setPackage(mClientPackageName);
-                } else if (!isExternalProtocol) {
-                    return StartActivityIfNeededResult.HANDLED_WITHOUT_ACTIVITY_START;
-                }
-            }
-
-            if (proxy) {
-                dispatchAuthenticatedIntent(intent);
-                mHasActivityStarted = true;
-                return StartActivityIfNeededResult.HANDLED_WITH_ACTIVITY_START;
-            } else {
-                // Defer to ExternalNavigationHandler to call startActivityIfNeeded.
-                return StartActivityIfNeededResult.DID_NOT_HANDLE;
-            }
-        }
-
-        /**
-         * Resolve the default external handler of an intent.
-         * @return Whether the default external handler is found: if chrome turns out to be the
-         *         default handler, this method will return false.
-         */
-        private boolean hasDefaultHandler(Intent intent) {
-            ResolveInfo info =
-                    PackageManagerUtils.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY);
-            if (info == null) return false;
-
-            final String chromePackage = mApplicationContext.getPackageName();
-            // If a default handler is found and it is not chrome itself, fire the intent.
-            return info.match != 0 && !chromePackage.equals(info.activityInfo.packageName);
+        public boolean shouldAvoidDisambiguationDialog(Intent intent) {
+            // Don't show the disambiguation dialog if Chrome could handle the intent.
+            return UrlUtilities.isAcceptedScheme(intent.toUri(0));
         }
 
         @Override
-        public boolean isIntentForTrustedCallingApp(Intent intent) {
+        public boolean isIntentForTrustedCallingApp(
+                Intent intent, Supplier<List<ResolveInfo>> resolveInfoSupplier) {
             if (TextUtils.isEmpty(mClientPackageName)) return false;
             if (!mExternalAuthUtils.isGoogleSigned(mClientPackageName)) return false;
 
-            return isPackageSpecializedHandler(mClientPackageName, intent);
-        }
-
-        /**
-         * @return Whether an external activity has started to handle a url. For testing only.
-         */
-        @VisibleForTesting
-        public boolean hasExternalActivityStarted() {
-            return mHasActivityStarted;
+            return ExternalNavigationHandler.isPackageSpecializedHandler(
+                    mClientPackageName, resolveInfoSupplier.get());
         }
 
         @Override
@@ -285,7 +246,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
             if ((mActivity instanceof CustomTabActivity)
                     && ((CustomTabActivity) mActivity).isInTwaMode()) {
                 // Whether the corresponding TWA client app enrolled in location delegation.
-                return TrustedWebActivityPermissionManager.hasAndroidLocationPermission(
+                return InstalledWebappPermissionManager.hasAndroidLocationPermission(
                                ((CustomTabActivity) mActivity).getTwaPackage())
                         != null;
             }
@@ -485,6 +446,11 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
 
     @Override
     public NativePage createNativePage(String url, NativePage candidatePage, Tab tab) {
+        // Navigation comes from user pressing "Back to safety" on an interstitial so close the tab.
+        // See crbug.com/1270695
+        if (UrlConstants.NTP_URL.equals(url) && tab.isShowingErrorPage()) {
+            mActivity.finish();
+        }
         // Custom tab does not create native pages.
         return null;
     }
@@ -499,6 +465,10 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
 
     public WebContentsDelegateAndroid getWebContentsDelegate() {
         return mWebContentsDelegateAndroid;
+    }
+
+    public EphemeralTabCoordinator getEphemeralTabCoordinator() {
+        return mEphemeralTabCoordinator.get();
     }
 
     /**

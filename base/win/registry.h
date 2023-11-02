@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@
 
 #include "base/base_export.h"
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/win/windows_types.h"
 
 namespace base {
@@ -77,8 +76,11 @@ class BASE_EXPORT RegKey {
   // determined.
   DWORD GetValueCount() const;
 
+  // Returns the last write time or 0 on failure.
+  FILETIME GetLastWriteTime() const;
+
   // Determines the nth value's name.
-  LONG GetValueNameAt(int index, std::wstring* name) const;
+  LONG GetValueNameAt(DWORD index, std::wstring* name) const;
 
   // True while the key is valid.
   bool Valid() const { return key_ != nullptr; }
@@ -188,7 +190,7 @@ class BASE_EXPORT RegistryValueIterator {
   DWORD ValueSize() const { return value_size_; }
   DWORD Type() const { return type_; }
 
-  int Index() const { return index_; }
+  DWORD Index() const { return index_; }
 
  private:
   // Reads in the current values.
@@ -200,7 +202,7 @@ class BASE_EXPORT RegistryValueIterator {
   HKEY key_;
 
   // Current index of the iteration.
-  int index_;
+  DWORD index_;
 
   // Current values.
   std::wstring name_;
@@ -238,7 +240,7 @@ class BASE_EXPORT RegistryKeyIterator {
 
   const wchar_t* Name() const { return name_; }
 
-  int Index() const { return index_; }
+  DWORD Index() const { return index_; }
 
  private:
   // Reads in the current values.
@@ -250,7 +252,7 @@ class BASE_EXPORT RegistryKeyIterator {
   HKEY key_;
 
   // Current index of the iteration.
-  int index_;
+  DWORD index_;
 
   wchar_t name_[MAX_PATH];
 };

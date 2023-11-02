@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -9,6 +9,7 @@ assert(enable_extensions,
 
 source_set("file_system") {
   sources = [
+    "consent_provider.h",
     "file_system_api.cc",
     "file_system_api.h",
     "file_system_delegate.h",

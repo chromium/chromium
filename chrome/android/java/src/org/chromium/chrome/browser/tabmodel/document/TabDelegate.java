@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
+import org.chromium.chrome.browser.ActivityUtils;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.ServiceTabLauncher;
@@ -29,14 +30,13 @@ import org.chromium.chrome.browser.tab.TabBuilder;
 import org.chromium.chrome.browser.tab.TabIdManager;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
+import org.chromium.chrome.browser.tab.state.SerializedCriticalPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.AsyncTabCreationParams;
 import org.chromium.chrome.browser.tabmodel.AsyncTabCreator;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
-
-import java.nio.ByteBuffer;
 
 /**
  * Asynchronously creates Tabs by creating/starting up Activities.
@@ -76,7 +76,8 @@ public class TabDelegate extends AsyncTabCreator {
      * The index is ignored in DocumentMode because Android handles the ordering of Tabs.
      */
     @Override
-    public Tab createFrozenTab(TabState state, ByteBuffer criticalPersistedTabData, int id,
+    public Tab createFrozenTab(TabState state,
+            SerializedCriticalPersistedTabData criticalPersistedTabData, int id,
             boolean isIncognito, int index) {
         if (isIncognito != mIsIncognito) {
             throw new IllegalStateException("Incognito state mismatch. isIncognito: " + isIncognito
@@ -96,7 +97,7 @@ public class TabDelegate extends AsyncTabCreator {
 
     @Override
     public void createTabInOtherWindow(
-            LoadUrlParams loadUrlParams, Activity activity, int parentId) {
+            LoadUrlParams loadUrlParams, Activity activity, int parentId, Activity otherActivity) {
         Intent intent = createNewTabIntent(
                 new AsyncTabCreationParams(loadUrlParams), parentId, false);
 
@@ -106,7 +107,19 @@ public class TabDelegate extends AsyncTabCreator {
 
         MultiWindowUtils.setOpenInOtherWindowIntentExtras(intent, activity, targetActivity);
         IntentUtils.addTrustedIntentExtras(intent);
+
         MultiInstanceManager.onMultiInstanceModeStarted();
+        if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
+            // If there is a Chrome window running adjacently, open the link in it.
+            // Otherwise create a new window.
+            if (otherActivity != null) {
+                assert otherActivity instanceof ChromeTabbedActivity;
+                ((ChromeTabbedActivity) otherActivity).onNewIntent(intent);
+                return;
+            }
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+        }
         activity.startActivity(
                 intent, MultiWindowUtils.getOpenInOtherWindowActivityOptions(activity));
     }
@@ -156,7 +169,7 @@ public class TabDelegate extends AsyncTabCreator {
         if (componentName == null) {
             intent.setClass(ContextUtils.getApplicationContext(), ChromeLauncherActivity.class);
         } else {
-            ChromeTabbedActivity.setNonAliasedComponent(intent, componentName);
+            ActivityUtils.setNonAliasedComponentForMainBrowsingActivity(intent, componentName);
         }
         IntentHandler.setIntentExtraHeaders(
                 asyncParams.getLoadUrlParams().getExtraHeaders(), intent);

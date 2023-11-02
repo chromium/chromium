@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,24 +6,23 @@ package org.chromium.chrome.browser.ui.android.webid;
 
 import android.graphics.Bitmap;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
 import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 import org.chromium.url.GURL;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 
 /**
  * Properties defined here reflect the state of the AccountSelection-components.
  */
 class AccountSelectionProperties {
+    public static final int ITEM_TYPE_ACCOUNT = 1;
+
     /**
      * Properties for an account entry in AccountSelection sheet.
      */
@@ -41,32 +40,14 @@ class AccountSelectionProperties {
             }
         }
 
-        static class FaviconOrFallback {
-            final GURL mUrl;
-            final @Nullable Bitmap mIcon;
-            final int mFallbackColor;
-            final int mIconSize;
-
-            FaviconOrFallback(
-                    GURL originUrl, @Nullable Bitmap icon, int fallbackColor, int iconSize) {
-                mUrl = originUrl;
-                mIcon = icon;
-                mFallbackColor = fallbackColor;
-                mIconSize = iconSize;
-            }
-        }
-
         static final WritableObjectPropertyKey<Avatar> AVATAR =
                 new WritableObjectPropertyKey<>("avatar");
-        static final WritableObjectPropertyKey<FaviconOrFallback> FAVICON_OR_FALLBACK =
-                new WritableObjectPropertyKey<>("favicon");
         static final ReadableObjectPropertyKey<Account> ACCOUNT =
                 new ReadableObjectPropertyKey<>("account");
         static final ReadableObjectPropertyKey<Callback<Account>> ON_CLICK_LISTENER =
                 new ReadableObjectPropertyKey<>("on_click_listener");
 
-        static final PropertyKey[] ALL_KEYS = {
-                AVATAR, FAVICON_OR_FALLBACK, ACCOUNT, ON_CLICK_LISTENER};
+        static final PropertyKey[] ALL_KEYS = {AVATAR, ACCOUNT, ON_CLICK_LISTENER};
 
         private AccountProperties() {}
     }
@@ -76,15 +57,20 @@ class AccountSelectionProperties {
      * sheet.
      */
     static class HeaderProperties {
-        public enum HeaderType { SINGLE_ACCOUNT, MULTIPLE_ACCOUNT, SIGN_IN }
-        static final ReadableObjectPropertyKey<String> FORMATTED_IDP_URL =
-                new ReadableObjectPropertyKey<>("formatted_idp_url");
-        static final ReadableObjectPropertyKey<String> FORMATTED_RP_URL =
-                new ReadableObjectPropertyKey<>("formatted_rp_url");
+        public enum HeaderType { AUTO_SIGN_IN, SIGN_IN, VERIFY }
+        static final ReadableObjectPropertyKey<Runnable> CLOSE_ON_CLICK_LISTENER =
+                new ReadableObjectPropertyKey<>("close_on_click_listener");
+        static final ReadableObjectPropertyKey<String> IDP_FOR_DISPLAY =
+                new ReadableObjectPropertyKey<>("idp_for_display");
+        static final ReadableObjectPropertyKey<String> RP_FOR_DISPLAY =
+                new ReadableObjectPropertyKey<>("rp_for_display");
+        static final ReadableObjectPropertyKey<Bitmap> IDP_BRAND_ICON =
+                new ReadableObjectPropertyKey<>("brand_icon");
         static final ReadableObjectPropertyKey<HeaderType> TYPE =
                 new ReadableObjectPropertyKey<>("type");
 
-        static final PropertyKey[] ALL_KEYS = {FORMATTED_IDP_URL, FORMATTED_RP_URL, TYPE};
+        static final PropertyKey[] ALL_KEYS = {
+                CLOSE_ON_CLICK_LISTENER, IDP_FOR_DISPLAY, RP_FOR_DISPLAY, IDP_BRAND_ICON, TYPE};
 
         private HeaderProperties() {}
     }
@@ -95,10 +81,9 @@ class AccountSelectionProperties {
      */
     static class DataSharingConsentProperties {
         static class Properties {
-            public String mFormattedIdpUrl;
-            public String mFormattedRpUrl;
-            public String mTermsOfServiceUrl;
-            public String mPrivacyPolicyUrl;
+            public String mIdpForDisplay;
+            public GURL mTermsOfServiceUrl;
+            public GURL mPrivacyPolicyUrl;
         }
 
         static final ReadableObjectPropertyKey<Properties> PROPERTIES =
@@ -138,35 +123,23 @@ class AccountSelectionProperties {
         private AutoSignInCancelButtonProperties() {}
     }
 
-    @IntDef({ItemType.HEADER, ItemType.ACCOUNT, ItemType.CONTINUE_BUTTON,
-            ItemType.AUTO_SIGN_IN_CANCEL_BUTTON, ItemType.DATA_SHARING_CONSENT})
-    @Retention(RetentionPolicy.SOURCE)
-    @interface ItemType {
-        /**
-         * The header at the top of the accounts sheet.
-         */
-        int HEADER = 1;
+    /**
+     * Properties defined here reflect sections in the FedCM bottom sheet.
+     */
+    static class ItemProperties {
+        static final WritableObjectPropertyKey<PropertyModel> AUTO_SIGN_IN_CANCEL_BUTTON =
+                new WritableObjectPropertyKey<>("auto_sign_in_btn");
+        static final WritableObjectPropertyKey<PropertyModel> CONTINUE_BUTTON =
+                new WritableObjectPropertyKey<>("continue_btn");
+        static final WritableObjectPropertyKey<PropertyModel> DATA_SHARING_CONSENT =
+                new WritableObjectPropertyKey<>("data_sharing_consent");
+        static final WritableObjectPropertyKey<PropertyModel> HEADER =
+                new WritableObjectPropertyKey<>("header");
 
-        /**
-         * A section containing a user's name and email.
-         */
-        int ACCOUNT = 2;
+        static final PropertyKey[] ALL_KEYS = {
+                AUTO_SIGN_IN_CANCEL_BUTTON, CONTINUE_BUTTON, DATA_SHARING_CONSENT, HEADER};
 
-        /**
-         * The continue button at the end of the sheet when there is only one account.
-         */
-        int CONTINUE_BUTTON = 3;
-
-        /**
-         * The cancel button at the end of the sheet with auto sign in.
-         */
-        int AUTO_SIGN_IN_CANCEL_BUTTON = 4;
-
-        /**
-         * The user data sharing consent text when there is only one account and it is a sign-up
-         * moment.
-         */
-        int DATA_SHARING_CONSENT = 5;
+        private ItemProperties() {}
     }
 
     private AccountSelectionProperties() {}

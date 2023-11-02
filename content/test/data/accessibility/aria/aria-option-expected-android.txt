@@ -1,7 +1,7 @@
 android.webkit.WebView focusable focused scrollable
-++android.widget.ListView role_description='list box' clickable collection state_description='5 items' item_count=5 row_count=5
-++++android.view.View clickable collection_item focusable name='option 1' state_description='in list, item 1 of 5'
-++++android.view.View clickable collection_item focusable name='label 2' state_description='in list, item 2 of 5' item_index=1 row_index=1
-++++android.view.View clickable collection_item focusable name='caterpillar' state_description='in list, item 3 of 5' item_index=2 row_index=2
-++++android.view.View clickable collection_item focusable name='catfish' state_description='in list, item 4 of 5' item_index=3 row_index=3
-++++android.view.View clickable collection_item focusable name='medusa' state_description='in list, item 5 of 5' item_index=4 row_index=4
+++android.widget.ListView role_description='list box' clickable collection item_count=5 row_count=5 column_count=1
+++++android.view.View clickable collection_item focusable name='option 1' row_span=1 column_span=1
+++++android.view.View clickable collection_item focusable name='label 2' item_index=1 row_index=1 row_span=1 column_span=1
+++++android.view.View clickable collection_item focusable name='caterpillar' item_index=2 row_index=2 row_span=1 column_span=1
+++++android.view.View clickable collection_item focusable name='catfish' item_index=3 row_index=3 row_span=1 column_span=1
+++++android.view.View clickable collection_item focusable name='medusa' item_index=4 row_index=4 row_span=1 column_span=1

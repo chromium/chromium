@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,7 @@
 #include "base/command_line.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -40,7 +41,6 @@
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/compositor/test/test_image_transport_factory.h"
 #include "content/browser/gpu/compositor_util.h"
-#include "content/browser/renderer_host/agent_scheduling_group_host.h"
 #include "content/browser/renderer_host/delegated_frame_host.h"
 #include "content/browser/renderer_host/delegated_frame_host_client_aura.h"
 #include "content/browser/renderer_host/frame_token_message_queue.h"
@@ -55,6 +55,7 @@
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_event_handler.h"
 #include "content/browser/renderer_host/text_input_manager.h"
+#include "content/browser/site_instance_group.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/web_contents/web_contents_view_aura.h"
 #include "content/public/browser/context_menu_params.h"
@@ -100,6 +101,7 @@
 #include "ui/base/ime/mock_input_method.h"
 #include "ui/base/ime/mojom/text_input_state.mojom.h"
 #include "ui/base/ime/virtual_keyboard_controller.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/compositor/compositor.h"
@@ -122,14 +124,9 @@
 #include "ui/gfx/selection_bound.h"
 #include "ui/wm/core/window_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ui/base/ime/input_method.h"
-#endif
-
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/base/view_prop.h"
 #include "ui/base/win/window_event_target.h"
-#include "ui/display/win/test/scoped_screen_win.h"
 #endif
 
 using testing::_;
@@ -199,7 +196,7 @@ class TestWindowObserver : public aura::WindowObserver {
 
  private:
   // Window that we're observing, or nullptr if it's been destroyed.
-  aura::Window* window_;
+  raw_ptr<aura::Window> window_;
 
   // Was |window_| destroyed?
   bool destroyed_;
@@ -280,8 +277,10 @@ class FakeRenderWidgetHostViewAura : public RenderWidgetHostViewAura {
         metadata);
   }
 
+  bool ShouldSkipCursorUpdate() const override { return false; }
+
   gfx::Size last_frame_size_;
-  FakeWindowEventDispatcher* dispatcher_;
+  raw_ptr<FakeWindowEventDispatcher> dispatcher_;
 };
 
 // A layout manager that always resizes a child to the root window size.
@@ -314,7 +313,7 @@ class FullscreenLayoutManager : public aura::LayoutManager {
   }
 
  private:
-  aura::Window* owner_;
+  raw_ptr<aura::Window> owner_;
 };
 
 class MockRenderWidgetHostImpl : public RenderWidgetHostImpl {
@@ -373,16 +372,17 @@ class MockRenderWidgetHostImpl : public RenderWidgetHostImpl {
     return widget_.ReceivedScreenRects();
   }
 
-  // Instance self-delete when its |agent_scheduling_groups|'s process will
+  // Instance self-delete when its |site_instance_group|'s process will
   // exit.
   static MockRenderWidgetHostImpl* Create(
       FrameTree& frame_tree,
       RenderWidgetHostDelegate* delegate,
-      AgentSchedulingGroupHost& agent_scheduling_group,
+      base::SafeRef<SiteInstanceGroup> site_instance_group,
       int32_t routing_id,
       bool hidden) {
-    return new MockRenderWidgetHostImpl(
-        &frame_tree, delegate, agent_scheduling_group, routing_id, hidden);
+    return new MockRenderWidgetHostImpl(&frame_tree, delegate,
+                                        std::move(site_instance_group),
+                                        routing_id, hidden);
   }
 
   MockWidgetInputHandler* input_handler() { return &input_handler_; }
@@ -410,13 +410,13 @@ class MockRenderWidgetHostImpl : public RenderWidgetHostImpl {
  private:
   MockRenderWidgetHostImpl(FrameTree* frame_tree,
                            RenderWidgetHostDelegate* delegate,
-                           AgentSchedulingGroupHost& agent_scheduling_group,
+                           base::SafeRef<SiteInstanceGroup> site_instance_group,
                            int32_t routing_id,
                            bool hidden)
       : RenderWidgetHostImpl(frame_tree,
                              /*self_owned=*/true,
                              delegate,
-                             agent_scheduling_group,
+                             std::move(site_instance_group),
                              routing_id,
                              hidden,
                              /*renderer_initiated_creation=*/false,
@@ -504,8 +504,8 @@ class RenderWidgetHostViewAuraTest : public testing::Test {
     int32_t routing_id = process_host_->GetNextRoutingID();
     delegates_.push_back(std::make_unique<MockRenderWidgetHostDelegate>());
     auto* widget_host = MockRenderWidgetHostImpl::Create(
-        GetFrameTree(), delegates_.back().get(), *agent_scheduling_group_host_,
-        routing_id, hidden);
+        GetFrameTree(), delegates_.back().get(),
+        site_instance_group_->GetSafeRef(), routing_id, hidden);
     delegates_.back()->set_widget_host(widget_host);
 
     return new FakeRenderWidgetHostViewAura(widget_host);
@@ -536,19 +536,20 @@ class RenderWidgetHostViewAuraTest : public testing::Test {
     process_host_ =
         std::make_unique<MockRenderProcessHost>(browser_context_.get());
     process_host_->Init();
-    agent_scheduling_group_host_ =
-        std::make_unique<AgentSchedulingGroupHost>(*process_host_);
+    auto site_instance = SiteInstance::Create(browser_context_.get());
+    site_instance_group_ = base::WrapRefCounted(new SiteInstanceGroup(
+        site_instance->GetBrowsingInstanceId(), process_host_.get()));
 
     sink_ = &process_host_->sink();
 
-    web_contents_ = WebContents::Create(WebContents::CreateParams(
-        browser_context_.get(), SiteInstance::Create(browser_context_.get())));
+    web_contents_ = WebContents::Create(
+        WebContents::CreateParams(browser_context_.get(), site_instance));
 
     int32_t routing_id = process_host_->GetNextRoutingID();
     delegates_.push_back(std::make_unique<MockRenderWidgetHostDelegate>());
     parent_host_ = MockRenderWidgetHostImpl::Create(
-        GetFrameTree(), delegates_.back().get(), *agent_scheduling_group_host_,
-        routing_id, /*hidden = */ false);
+        GetFrameTree(), delegates_.back().get(),
+        site_instance_group_->GetSafeRef(), routing_id, /*hidden = */ false);
     delegates_.back()->set_widget_host(parent_host_);
 
     parent_view_ = new RenderWidgetHostViewAura(parent_host_);
@@ -616,7 +617,7 @@ class RenderWidgetHostViewAuraTest : public testing::Test {
     parent_view_->Destroy();
 
     process_host_->Cleanup();
-    agent_scheduling_group_host_ = nullptr;
+    site_instance_group_.reset();
     web_contents_ = nullptr;
     process_host_ = nullptr;
     browser_context_ = nullptr;
@@ -702,25 +703,29 @@ class RenderWidgetHostViewAuraTest : public testing::Test {
     view->TextInputStateChanged(state_with_type_text);
   }
 
-  BrowserTaskEnvironment task_environment_;
+  void RunTimerBasedWheelEventPhaseInfoTest(
+      bool percent_based_scrolling_enabled);
+
+  BrowserTaskEnvironment task_environment_{
+      base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<aura::test::AuraTestHelper> aura_test_helper_;
   std::unique_ptr<BrowserContext> browser_context_;
   std::unique_ptr<WebContents> web_contents_;
   std::vector<std::unique_ptr<MockRenderWidgetHostDelegate>> delegates_;
   std::unique_ptr<MockRenderProcessHost> process_host_;
-  std::unique_ptr<AgentSchedulingGroupHost> agent_scheduling_group_host_;
+  scoped_refptr<SiteInstanceGroup> site_instance_group_;
 
   // Tests should set these to nullptr if they've already triggered their
   // destruction.
-  RenderWidgetHostImpl* parent_host_;
-  RenderWidgetHostViewAura* parent_view_;
+  raw_ptr<RenderWidgetHostImpl> parent_host_;
+  raw_ptr<RenderWidgetHostViewAura> parent_view_;
 
   // Tests should set these to nullptr if they've already triggered their
   // destruction.
-  MockRenderWidgetHostImpl* widget_host_;
-  FakeRenderWidgetHostViewAura* view_;
+  raw_ptr<MockRenderWidgetHostImpl> widget_host_;
+  raw_ptr<FakeRenderWidgetHostViewAura> view_;
 
-  IPC::TestSink* sink_ = nullptr;
+  raw_ptr<IPC::TestSink> sink_ = nullptr;
   base::test::ScopedFeatureList mojo_feature_list_;
   base::test::ScopedFeatureList feature_list_;
 
@@ -1088,7 +1093,7 @@ TEST_F(RenderWidgetHostViewAuraTest, PositionChildPopup) {
   gfx::Rect bounds_in_screen = parent_view_->GetViewBounds();
   int horiz = bounds_in_screen.width() / 4;
   int vert = bounds_in_screen.height() / 4;
-  bounds_in_screen.Inset(horiz, vert);
+  bounds_in_screen.Inset(gfx::Insets::VH(vert, horiz));
 
   // Verify that when the popup is initialized for the first time, it correctly
   // treats the input bounds as screen coordinates.
@@ -1218,7 +1223,7 @@ TEST_F(RenderWidgetHostViewAuraTest, DestroyPopupTapOutsidePopup) {
 }
 #endif
 
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 // On Desktop Linux, select boxes need mouse capture in order to work. Test that
 // when a select box is opened via a mouse press that it retains mouse capture
 // after the mouse is released.
@@ -1727,6 +1732,22 @@ TEST_F(RenderWidgetHostViewAuraTest,
 }
 
 TEST_F(RenderWidgetHostViewAuraTest, TimerBasedWheelEventPhaseInfo) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kWindowsScrollingPersonality);
+  RunTimerBasedWheelEventPhaseInfoTest(false);
+}
+
+TEST_F(RenderWidgetHostViewAuraTest,
+       TimerBasedWheelEventPhaseInfoWithPercentBasedScrolling) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kWindowsScrollingPersonality);
+  RunTimerBasedWheelEventPhaseInfoTest(true);
+}
+
+void RenderWidgetHostViewAuraTest::RunTimerBasedWheelEventPhaseInfoTest(
+    bool percent_based_scrolling_enabled) {
   InitViewForFrame(nullptr);
   view_->Show();
   sink_->ClearMessages();
@@ -1759,7 +1780,11 @@ TEST_F(RenderWidgetHostViewAuraTest, TimerBasedWheelEventPhaseInfo) {
   EXPECT_EQ(WebInputEvent::Type::kGestureScrollUpdate,
             gesture_event->GetType());
   EXPECT_EQ(0U, gesture_event->data.scroll_update.delta_x);
-  EXPECT_EQ(5U, gesture_event->data.scroll_update.delta_y);
+  EXPECT_EQ(percent_based_scrolling_enabled
+                ? 5 * ui::kScrollPercentPerLineOrChar /
+                      ui::MouseWheelEvent::kWheelDelta
+                : 5U,
+            gesture_event->data.scroll_update.delta_y);
   events[1]->ToEvent()->CallCallback(
       blink::mojom::InputEventResultState::kConsumed);
 
@@ -1786,8 +1811,7 @@ TEST_F(RenderWidgetHostViewAuraTest, TimerBasedWheelEventPhaseInfo) {
 
   // Let the MouseWheelPhaseHandler::mouse_wheel_end_dispatch_timer_ fire. A
   // synthetic wheel event with zero deltas and kPhaseEnded will be sent.
-  base::PlatformThread::Sleep(base::Milliseconds(100));
-  base::RunLoop().RunUntilIdle();
+  task_environment_.FastForwardBy(base::Milliseconds(100));
 
   events = GetAndResetDispatchedMessages();
   const WebMouseWheelEvent* wheel_end_event =
@@ -2989,7 +3013,7 @@ TEST_F(RenderWidgetHostViewAuraTest, CursorVisibilityChange) {
   view_->Show();
   base::RunLoop().RunUntilIdle();
   auto events = GetAndResetDispatchedMessages();
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   // TODO(crbug.com/1164453): Investigate occasional extra mousemoves in CrOS.
   EXPECT_GE(1u, events.size());
 #else
@@ -3087,7 +3111,7 @@ TEST_F(RenderWidgetHostViewAuraTest, BackgroundColorMatchesCompositorFrame) {
   view_->SetSize(frame_size);
   view_->Show();
   cc::RenderFrameMetadata metadata;
-  metadata.root_background_color = SK_ColorRED;
+  metadata.root_background_color = SkColors::kRed;
   view_->SetRenderFrameMetadata(metadata);
   view_->OnRenderFrameMetadataChangedAfterActivation(base::TimeTicks::Now());
   ui::Layer* parent_layer = view_->GetNativeView()->layer();
@@ -3108,7 +3132,7 @@ TEST_F(RenderWidgetHostViewAuraTest, BackgroundColorOrder) {
   // If the content background color is available, ignore the default background
   // color setting.
   cc::RenderFrameMetadata metadata;
-  metadata.root_background_color = SK_ColorWHITE;
+  metadata.root_background_color = SkColors::kWhite;
   view_->SetRenderFrameMetadata(metadata);
   view_->OnRenderFrameMetadataChangedAfterActivation(base::TimeTicks::Now());
   ASSERT_TRUE(view_->GetBackgroundColor());
@@ -3228,8 +3252,8 @@ TEST_F(RenderWidgetHostViewAuraTest, DiscardDelegatedFrames) {
     int32_t routing_id = process_host_->GetNextRoutingID();
     delegates_.push_back(base::WrapUnique(new MockRenderWidgetHostDelegate));
     hosts[i] = MockRenderWidgetHostImpl::Create(
-        GetFrameTree(), delegates_.back().get(), *agent_scheduling_group_host_,
-        routing_id, /*hidden = */ false);
+        GetFrameTree(), delegates_.back().get(),
+        site_instance_group_->GetSafeRef(), routing_id, /*hidden = */ false);
     delegates_.back()->set_widget_host(hosts[i]);
 
     views[i] = new FakeRenderWidgetHostViewAura(hosts[i]);
@@ -3350,8 +3374,8 @@ TEST_F(RenderWidgetHostViewAuraTest, DiscardDelegatedFramesWithMemoryPressure) {
 
     delegates_.push_back(base::WrapUnique(new MockRenderWidgetHostDelegate));
     hosts[i] = MockRenderWidgetHostImpl::Create(
-        GetFrameTree(), delegates_.back().get(), *agent_scheduling_group_host_,
-        routing_id, /*hidden = */ false);
+        GetFrameTree(), delegates_.back().get(),
+        site_instance_group_->GetSafeRef(), routing_id, /*hidden = */ false);
     delegates_.back()->set_widget_host(hosts[i]);
 
     hosts[i]->BindWidgetInterfaces(
@@ -3460,7 +3484,7 @@ TEST_F(RenderWidgetHostViewAuraTest, VisibleViewportTest) {
   }
   widget_host_->ClearVisualProperties();
 
-  view_->SetInsets(gfx::Insets(0, 0, 40, 0));
+  view_->SetInsets(gfx::Insets::TLBR(0, 0, 40, 0));
   EXPECT_EQ(60, view_->GetVisibleViewportSize().height());
 
   // Update to the renderer has the inset size.
@@ -3736,11 +3760,6 @@ TEST_F(RenderWidgetHostViewAuraOverscrollTest,
        ScrollEventsOverscrollWithFling) {
   SetUpOverscrollEnvironment();
 
-#if defined(OS_WIN)
-  // Create a ScopedScreenWin.
-  display::win::test::ScopedScreenWin scoped_screen_win;
-#endif
-
   // Send a wheel event. ACK the event as not processed. This should not
   // initiate an overscroll gesture since it doesn't cross the threshold yet.
   SimulateWheelEvent(10, 0, 0, true, WebMouseWheelEvent::kPhaseBegan);
@@ -3817,11 +3836,6 @@ TEST_F(RenderWidgetHostViewAuraOverscrollTest,
        ScrollEventsOverscrollWithZeroFling) {
   SetUpOverscrollEnvironment();
 
-#if defined(OS_WIN)
-  // Create a ScopedScreenWin.
-  display::win::test::ScopedScreenWin scoped_screen_win;
-#endif
-
   // Send a wheel event. ACK the event as not processed. This should not
   // initiate an overscroll gesture since it doesn't cross the threshold yet.
   SimulateWheelEvent(10, 0, 0, true, WebMouseWheelEvent::kPhaseBegan);
@@ -3889,7 +3903,7 @@ TEST_F(RenderWidgetHostViewAuraOverscrollTest,
 // Tests that a fling in the opposite direction of the overscroll cancels the
 // overscroll instead of completing it.
 // Flaky on Fuchsia:  http://crbug.com/810690.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 #define MAYBE_ReverseFlingCancelsOverscroll \
   DISABLED_ReverseFlingCancelsOverscroll
 #else
@@ -3898,11 +3912,6 @@ TEST_F(RenderWidgetHostViewAuraOverscrollTest,
 TEST_F(RenderWidgetHostViewAuraOverscrollTest,
        MAYBE_ReverseFlingCancelsOverscroll) {
   SetUpOverscrollEnvironment();
-
-#if defined(OS_WIN)
-  // Create a ScopedScreenWin.
-  display::win::test::ScopedScreenWin scoped_screen_win;
-#endif
 
   {
     PressAndSetTouchActionAuto();
@@ -4261,8 +4270,7 @@ TEST_F(RenderWidgetHostViewAuraOverscrollTest,
   // enough overscroll to complete the gesture, the overscroll controller
   // will reset the state. The scroll-end should therefore be dispatched to the
   // renderer, and the gesture-event-filter should await an ACK for it.
-  base::PlatformThread::Sleep(base::Milliseconds(10));
-  base::RunLoop().RunUntilIdle();
+  task_environment_.FastForwardBy(base::Milliseconds(10));
   events = GetAndResetDispatchedMessages();
   EXPECT_EQ(OVERSCROLL_NONE, overscroll_mode());
   EXPECT_EQ(OverscrollSource::NONE, overscroll_source());
@@ -4386,8 +4394,7 @@ TEST_F(RenderWidgetHostViewAuraOverscrollTest, OverscrollWithTouchEvents) {
 
   SimulateGestureEvent(blink::WebInputEvent::Type::kGestureScrollEnd,
                        blink::WebGestureDevice::kTouchscreen);
-  base::PlatformThread::Sleep(base::Milliseconds(10));
-  base::RunLoop().RunUntilIdle();
+  task_environment_.FastForwardBy(base::Milliseconds(10));
   events = GetAndResetDispatchedMessages();
   EXPECT_EQ("GestureScrollEnd", GetMessageNames(events));
   EXPECT_EQ(OVERSCROLL_NONE, overscroll_mode());
@@ -4442,8 +4449,7 @@ TEST_F(RenderWidgetHostViewAuraOverscrollTest,
                        blink::WebGestureDevice::kTouchscreen);
   events = GetAndResetDispatchedMessages();
   EXPECT_EQ(0U, events.size());
-  base::PlatformThread::Sleep(base::Milliseconds(10));
-  base::RunLoop().RunUntilIdle();
+  task_environment_.FastForwardBy(base::Milliseconds(10));
   EXPECT_EQ(OVERSCROLL_NONE, overscroll_mode());
   EXPECT_EQ(OverscrollSource::NONE, overscroll_source());
   EXPECT_EQ(OVERSCROLL_NONE, overscroll_delegate()->current_mode());
@@ -4486,8 +4492,7 @@ TEST_F(RenderWidgetHostViewAuraOverscrollTest,
                        blink::WebGestureDevice::kTouchscreen);
   events = GetAndResetDispatchedMessages();
   EXPECT_EQ(0U, events.size());
-  base::PlatformThread::Sleep(base::Milliseconds(10));
-  base::RunLoop().RunUntilIdle();
+  task_environment_.FastForwardBy(base::Milliseconds(10));
   EXPECT_EQ(OVERSCROLL_NONE, overscroll_mode());
   EXPECT_EQ(OverscrollSource::NONE, overscroll_source());
   EXPECT_EQ(OVERSCROLL_NONE, overscroll_delegate()->current_mode());
@@ -4778,11 +4783,6 @@ TEST_F(RenderWidgetHostViewAuraOverscrollTest,
        OverscrollStateResetsAfterScroll) {
   SetUpOverscrollEnvironment();
 
-#if defined(OS_WIN)
-  // Create a ScopedScreenWin.
-  display::win::test::ScopedScreenWin scoped_screen_win;
-#endif
-
   SimulateWheelEvent(0, 5, 0, true,
                      WebMouseWheelEvent::kPhaseBegan);  // sent directly
   SimulateWheelEvent(0, 30, 0, true,
@@ -4969,7 +4969,7 @@ TEST_F(RenderWidgetHostViewAuraTest, VirtualKeyboardFocusEnsureCaretInRect) {
   EXPECT_EQ(view_->GetNativeView()->bounds(), orig_view_bounds);
 
   // Simulate virtual keyboard.
-  input_method->SetOnScreenKeyboardBounds(keyboard_view_bounds);
+  input_method->SetVirtualKeyboardBounds(keyboard_view_bounds);
 
   // Window should be shifted.
   EXPECT_EQ(view_->GetNativeView()->bounds(), shifted_view_bounds);
@@ -4994,10 +4994,10 @@ TEST_F(RenderWidgetHostViewAuraTest, UpdateInsetsWithVirtualKeyboardEnabled) {
   const gfx::Rect moved_view_bounds = gfx::Rect(100, 250, 400, 200);
   const gfx::Rect resized_view_bounds = gfx::Rect(100, 250, 300, 175);
 
-  const gfx::Insets origin_view_insets = gfx::Insets(0, 0, 100, 0);
-  const gfx::Insets shifted_view_insets = gfx::Insets(0, 0, 0, 0);
-  const gfx::Insets moved_view_insets = gfx::Insets(0, 0, 50, 0);
-  const gfx::Insets resized_view_insets = gfx::Insets(0, 0, 25, 0);
+  const auto origin_view_insets = gfx::Insets::TLBR(0, 0, 100, 0);
+  const auto shifted_view_insets = gfx::Insets();
+  const auto moved_view_insets = gfx::Insets::TLBR(0, 0, 50, 0);
+  const auto resized_view_insets = gfx::Insets::TLBR(0, 0, 25, 0);
 
   const gfx::Rect root_bounds = root_window->bounds();
   const int keyboard_height = 200;
@@ -5014,11 +5014,11 @@ TEST_F(RenderWidgetHostViewAuraTest, UpdateInsetsWithVirtualKeyboardEnabled) {
 
   // Simulate virtual keyboard. For chrome browser window, the window insets
   // will be changed.
-  view_->SetInsets(gfx::Insets(
+  view_->SetInsets(gfx::Insets::TLBR(
       0, 0,
       gfx::IntersectRects(orig_view_bounds, keyboard_view_bounds).height(), 0));
   EXPECT_EQ(view_->insets_, origin_view_insets);
-  input_method->SetOnScreenKeyboardBounds(keyboard_view_bounds);
+  input_method->SetVirtualKeyboardBounds(keyboard_view_bounds);
 
   // Window should be shifted. The insets will be updated.
   EXPECT_EQ(view_->GetNativeView()->bounds(), shifted_view_bounds);
@@ -5220,11 +5220,6 @@ TEST_F(RenderWidgetHostViewAuraTest, CorrectNumberOfAcksAreDispatched) {
 TEST_F(RenderWidgetHostViewAuraOverscrollTest, ScrollDeltasResetOnEnd) {
   SetUpOverscrollEnvironment();
 
-#if defined(OS_WIN)
-  // Create a ScopedScreenWin.
-  display::win::test::ScopedScreenWin scoped_screen_win;
-#endif
-
   PressAndSetTouchActionAuto();
   // Wheel event scroll ending with mouse move.
   SimulateWheelEvent(-30, -10, 0, true,
@@ -5351,7 +5346,7 @@ TEST_F(RenderWidgetHostViewAuraTest, ForwardMouseEvent) {
   view_ = nullptr;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 class MockWindowEventTarget : public ui::WindowEventTarget {
  public:
   MockWindowEventTarget() = default;
@@ -5634,7 +5629,7 @@ TEST_F(RenderWidgetHostViewAuraTest, GestureTapFromStylusHasPointerType) {
 // time passes without receiving a new compositor frame.
 // TODO(https://crbug.com/1225139): This test is flaky on "Linux ASan LSan Tests
 // (1)"
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_NewContentRenderingTimeout DISABLED_NewContentRenderingTimeout
 #else
 #define MAYBE_NewContentRenderingTimeout NewContentRenderingTimeout
@@ -5842,7 +5837,7 @@ class RenderWidgetHostViewAuraWithViewHarnessTest
   }
 
  private:
-  RenderWidgetHostViewAura* view_;
+  raw_ptr<RenderWidgetHostViewAura> view_;
 };
 
 // Provides a mock implementation of the WebContentsViewDelegate class.
@@ -5891,11 +5886,10 @@ class MockWebContentsViewDelegate : public WebContentsViewDelegate {
 // This test validates this behavior.
 TEST_F(RenderWidgetHostViewAuraWithViewHarnessTest,
        ContextMenuTest) {
-  // This instance will be destroyed when the WebContents instance is
-  // destroyed.
-  MockWebContentsViewDelegate* delegate = new MockWebContentsViewDelegate;
-  static_cast<WebContentsViewAura*>(
-      contents()->GetView())->SetDelegateForTesting(delegate);
+  auto delegate = std::make_unique<MockWebContentsViewDelegate>();
+  MockWebContentsViewDelegate* delegate_ptr = delegate.get();
+  static_cast<WebContentsViewAura*>(contents()->GetView())
+      ->SetDelegateForTesting(std::move(delegate));
 
   RenderViewHostFactory::set_is_real_render_view_host(true);
 
@@ -5907,41 +5901,41 @@ TEST_F(RenderWidgetHostViewAuraWithViewHarnessTest,
   contents()->ShowContextMenu(
       *contents()->GetRenderViewHost()->GetMainRenderFrameHost(),
       mojo::NullAssociatedRemote(), context_menu_params);
-  EXPECT_TRUE(delegate->context_menu_request_received());
-  EXPECT_EQ(delegate->context_menu_source_type(), ui::MENU_SOURCE_MOUSE);
+  EXPECT_TRUE(delegate_ptr->context_menu_request_received());
+  EXPECT_EQ(delegate_ptr->context_menu_source_type(), ui::MENU_SOURCE_MOUSE);
 
   // A context menu request with the MENU_SOURCE_TOUCH source type should
   // result in the MockWebContentsViewDelegate::ShowContextMenu method
   // getting called on all platforms. This means that the request worked
   // correctly.
-  delegate->ClearState();
+  delegate_ptr->ClearState();
   context_menu_params.source_type = ui::MENU_SOURCE_TOUCH;
   contents()->ShowContextMenu(
       *contents()->GetRenderViewHost()->GetMainRenderFrameHost(),
       mojo::NullAssociatedRemote(), context_menu_params);
-  EXPECT_TRUE(delegate->context_menu_request_received());
+  EXPECT_TRUE(delegate_ptr->context_menu_request_received());
 
   // A context menu request with the MENU_SOURCE_LONG_TAP source type should
   // result in the MockWebContentsViewDelegate::ShowContextMenu method
   // getting called on all platforms. This means that the request worked
   // correctly.
-  delegate->ClearState();
+  delegate_ptr->ClearState();
   context_menu_params.source_type = ui::MENU_SOURCE_LONG_TAP;
   contents()->ShowContextMenu(
       *contents()->GetRenderViewHost()->GetMainRenderFrameHost(),
       mojo::NullAssociatedRemote(), context_menu_params);
-  EXPECT_TRUE(delegate->context_menu_request_received());
+  EXPECT_TRUE(delegate_ptr->context_menu_request_received());
 
   // A context menu request with the MENU_SOURCE_LONG_PRESS source type should
   // result in the MockWebContentsViewDelegate::ShowContextMenu method
   // getting called on non Windows platforms. This means that the request
   //  worked correctly.
-  delegate->ClearState();
+  delegate_ptr->ClearState();
   context_menu_params.source_type = ui::MENU_SOURCE_LONG_PRESS;
   contents()->ShowContextMenu(
       *contents()->GetRenderViewHost()->GetMainRenderFrameHost(),
       mojo::NullAssociatedRemote(), context_menu_params);
-  EXPECT_TRUE(delegate->context_menu_request_received());
+  EXPECT_TRUE(delegate_ptr->context_menu_request_received());
 
   RenderViewHostFactory::set_is_real_render_view_host(false);
 }
@@ -5966,26 +5960,26 @@ class InputMethodAuraTestBase : public RenderWidgetHostViewAuraTest {
     InitializeAura();
 
     widget_host_for_first_process_ =
-        CreateRenderWidgetHostForAgentSchedulingGroup(
-            tab_agent_scheduling_group());
+        CreateRenderWidgetHostForSiteInstanceGroup(tab_site_instance_group());
     view_for_first_process_ =
         CreateViewForProcess(widget_host_for_first_process_);
 
     second_process_host_ = CreateNewProcessHost();
-    second_agent_scheduling_group_host_ =
-        std::make_unique<AgentSchedulingGroupHost>(*second_process_host_);
+    second_site_instance_group_ = base::WrapRefCounted(
+        new SiteInstanceGroup(tab_site_instance_group()->browsing_instance_id(),
+                              second_process_host_.get()));
     widget_host_for_second_process_ =
-        CreateRenderWidgetHostForAgentSchedulingGroup(
-            *second_agent_scheduling_group_host_);
+        CreateRenderWidgetHostForSiteInstanceGroup(
+            second_site_instance_group_.get());
     view_for_second_process_ =
         CreateViewForProcess(widget_host_for_second_process_);
 
     third_process_host_ = CreateNewProcessHost();
-    third_agent_scheduling_group_host_ =
-        std::make_unique<AgentSchedulingGroupHost>(*third_process_host_);
-    widget_host_for_third_process_ =
-        CreateRenderWidgetHostForAgentSchedulingGroup(
-            *third_agent_scheduling_group_host_);
+    third_site_instance_group_ = base::WrapRefCounted(
+        new SiteInstanceGroup(tab_site_instance_group()->browsing_instance_id(),
+                              third_process_host_.get()));
+    widget_host_for_third_process_ = CreateRenderWidgetHostForSiteInstanceGroup(
+        third_site_instance_group_.get());
     view_for_third_process_ =
         CreateViewForProcess(widget_host_for_third_process_);
 
@@ -6005,12 +5999,12 @@ class InputMethodAuraTestBase : public RenderWidgetHostViewAuraTest {
 
     view_for_second_process_->Destroy();
     second_process_host_->Cleanup();
-    second_agent_scheduling_group_host_.reset();
+    second_site_instance_group_.reset();
     second_process_host_.reset();
 
     view_for_third_process_->Destroy();
     third_process_host_->Cleanup();
-    third_agent_scheduling_group_host_.reset();
+    third_site_instance_group_.reset();
     third_process_host_.reset();
 
     RenderWidgetHostViewAuraTest::TearDown();
@@ -6027,12 +6021,12 @@ class InputMethodAuraTestBase : public RenderWidgetHostViewAuraTest {
     return std::make_unique<MockRenderProcessHost>(browser_context());
   }
 
-  MockRenderWidgetHostImpl* CreateRenderWidgetHostForAgentSchedulingGroup(
-      AgentSchedulingGroupHost& agent_scheduling_group_host) {
+  MockRenderWidgetHostImpl* CreateRenderWidgetHostForSiteInstanceGroup(
+      SiteInstanceGroup* site_instance_group) {
     return MockRenderWidgetHostImpl::Create(
         GetFrameTree(), render_widget_host_delegate(),
-        agent_scheduling_group_host,
-        agent_scheduling_group_host.GetProcess()->GetNextRoutingID(),
+        site_instance_group->GetSafeRef(),
+        site_instance_group->process()->GetNextRoutingID(),
         /*hidden = */ false);
   }
 
@@ -6052,8 +6046,8 @@ class InputMethodAuraTestBase : public RenderWidgetHostViewAuraTest {
 
   MockRenderProcessHost* tab_process() const { return process_host_.get(); }
 
-  AgentSchedulingGroupHost& tab_agent_scheduling_group() const {
-    return *agent_scheduling_group_host_;
+  SiteInstanceGroup* tab_site_instance_group() const {
+    return site_instance_group_.get();
   }
 
   RenderWidgetHostViewAura* tab_view() const { return view_; }
@@ -6075,16 +6069,16 @@ class InputMethodAuraTestBase : public RenderWidgetHostViewAuraTest {
     view_->Show();
   }
 
-  MockRenderWidgetHostImpl* widget_host_for_first_process_;
-  TestRenderWidgetHostView* view_for_first_process_;
+  raw_ptr<MockRenderWidgetHostImpl> widget_host_for_first_process_;
+  raw_ptr<TestRenderWidgetHostView> view_for_first_process_;
   std::unique_ptr<MockRenderProcessHost> second_process_host_;
-  std::unique_ptr<AgentSchedulingGroupHost> second_agent_scheduling_group_host_;
-  MockRenderWidgetHostImpl* widget_host_for_second_process_;
-  TestRenderWidgetHostView* view_for_second_process_;
+  scoped_refptr<SiteInstanceGroup> second_site_instance_group_;
+  raw_ptr<MockRenderWidgetHostImpl> widget_host_for_second_process_;
+  raw_ptr<TestRenderWidgetHostView> view_for_second_process_;
   std::unique_ptr<MockRenderProcessHost> third_process_host_;
-  std::unique_ptr<AgentSchedulingGroupHost> third_agent_scheduling_group_host_;
-  MockRenderWidgetHostImpl* widget_host_for_third_process_;
-  TestRenderWidgetHostView* view_for_third_process_;
+  scoped_refptr<SiteInstanceGroup> third_site_instance_group_;
+  raw_ptr<MockRenderWidgetHostImpl> widget_host_for_third_process_;
+  raw_ptr<TestRenderWidgetHostView> view_for_third_process_;
 };
 
 // A group of tests which verify that the IME method results are routed to the
@@ -6132,7 +6126,7 @@ TEST_F(InputMethodResultAuraTest, SetCompositionText) {
 
 // This test is for ui::TextInputClient::ConfirmCompositionText.
 TEST_F(InputMethodResultAuraTest, ConfirmCompositionText) {
-  base::RepeatingCallback<uint32_t()> ime_call = base::BindRepeating(
+  base::RepeatingCallback<size_t()> ime_call = base::BindRepeating(
       &ui::TextInputClient::ConfirmCompositionText,
       base::Unretained(text_input_client()), /** keep_selection */ true);
   for (auto index : active_view_sequence_) {
@@ -6639,12 +6633,11 @@ class RenderWidgetHostViewAuraInputMethodTest
   }
   void OnTextInputStateChanged(const ui::TextInputClient* client) override {}
   void OnInputMethodDestroyed(const ui::InputMethod* input_method) override {}
-  void OnShowVirtualKeyboardIfEnabled() override {}
 
  protected:
   // Not owned.
-  ui::MockInputMethod* input_method_ = nullptr;
-  const ui::TextInputClient* text_input_client_;
+  raw_ptr<ui::MockInputMethod> input_method_ = nullptr;
+  raw_ptr<const ui::TextInputClient> text_input_client_;
 };
 
 // This test is for notifying InputMethod for surrounding text changes.
@@ -6701,7 +6694,7 @@ TEST_F(RenderWidgetHostViewAuraInputMethodTest,
   input_method->RemoveObserver(this);
 }
 
-#if defined(OS_WIN) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 class MockVirtualKeyboardController final
     : public ui::VirtualKeyboardController {
  public:
@@ -6755,9 +6748,6 @@ class RenderWidgetHostViewAuraKeyboardMockInputMethod
   size_t keyboard_controller_observer_count() const {
     return keyboard_controller_.observer_count();
   }
-  void ShowVirtualKeyboardIfEnabled() override {
-    keyboard_controller_.DisplayVirtualKeyboard();
-  }
   void SetVirtualKeyboardVisibilityIfEnabled(bool should_show) override {
     if (should_show) {
       keyboard_controller_.DisplayVirtualKeyboard();
@@ -6796,11 +6786,12 @@ class RenderWidgetHostViewAuraKeyboardTest
 
  private:
   // Not owned.
-  RenderWidgetHostViewAuraKeyboardMockInputMethod* input_method_ = nullptr;
+  raw_ptr<RenderWidgetHostViewAuraKeyboardMockInputMethod> input_method_ =
+      nullptr;
 };
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(RenderWidgetHostViewAuraKeyboardTest,
        UpdateTextInputStateUpdatesVirtualKeyboardState) {
   ActivateViewForTextInputManager(parent_view_, ui::TEXT_INPUT_TYPE_TEXT);
@@ -6825,7 +6816,7 @@ TEST_F(RenderWidgetHostViewAuraKeyboardTest,
 }
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_F(RenderWidgetHostViewAuraKeyboardTest, KeyboardObserverDestroyed) {
   parent_view_->SetLastPointerType(ui::EventPointerType::kTouch);
   ActivateViewForTextInputManager(parent_view_, ui::TEXT_INPUT_TYPE_TEXT);
@@ -6909,6 +6900,6 @@ TEST_F(RenderWidgetHostViewAuraKeyboardTest,
   EXPECT_EQ(keyboard_controller_observer_count(), 0u);
 }
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace content

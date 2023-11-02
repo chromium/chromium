@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,6 +27,7 @@ public class BaseCarouselSuggestionView extends LinearLayout {
     private final HeaderView mHeader;
     private final RecyclerView mRecyclerView;
     private final BaseCarouselSuggestionSelectionManager mSelectionManager;
+    private int mItemSpacingPx;
 
     /**
      * Constructs a new carousel suggestion view.
@@ -59,20 +60,22 @@ public class BaseCarouselSuggestionView extends LinearLayout {
         mRecyclerView.setItemAnimator(null);
         mRecyclerView.setLayoutManager(
                 new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
+        mRecyclerView.setClipToPadding(false);
+        mRecyclerView.setPaddingRelative(
+                getResources().getDimensionPixelSize(R.dimen.omnibox_suggestion_side_spacing),
+                mRecyclerView.getPaddingTop(), mRecyclerView.getPaddingEnd(),
+                mRecyclerView.getPaddingBottom());
 
         mSelectionManager =
                 new BaseCarouselSuggestionSelectionManager(mRecyclerView.getLayoutManager());
         mRecyclerView.addOnChildAttachStateChangeListener(mSelectionManager);
 
-        final int itemSpacing = context.getResources().getDimensionPixelOffset(
-                R.dimen.omnibox_suggestion_carousel_horizontal_spacing);
-
         mRecyclerView.addItemDecoration(new ItemDecoration() {
             @Override
             public void getItemOffsets(
                     Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-                outRect.left = itemSpacing;
-                outRect.right = itemSpacing;
+                outRect.left = 0;
+                outRect.right = mItemSpacingPx;
             }
         });
 
@@ -122,5 +125,24 @@ public class BaseCarouselSuggestionView extends LinearLayout {
     /** @return Recycler view used by the Carousel suggestion. */
     public RecyclerView getRecyclerViewForTest() {
         return mRecyclerView;
+    }
+
+    /**
+     * Applies a new item spacing to the carousel.
+     *
+     * @param itemSpacingPx The requested item spacing, expressed in Pixels.
+     */
+    public void setItemSpacingPx(int itemSpacingPx) {
+        mItemSpacingPx = itemSpacingPx;
+        mRecyclerView.requestLayout();
+    }
+
+    /**
+     * Set the carousel to have horizontal fade effect.
+     *
+     * @param enableFade whether we should enable horizontal fade.
+     */
+    public void setCarouselHorizontalFade(boolean enableFade) {
+        mRecyclerView.setHorizontalFadingEdgeEnabled(enableFade);
     }
 }

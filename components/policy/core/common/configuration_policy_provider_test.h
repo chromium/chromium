@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "base/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/task_environment.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/core/common/schema.h"
@@ -18,11 +19,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
-class DictionaryValue;
-class ListValue;
 class SequencedTaskRunner;
-class Value;
-}
+}  // namespace base
 
 namespace policy {
 
@@ -96,12 +94,13 @@ class PolicyProviderTestHarness {
                                     bool policy_value) = 0;
   virtual void InstallStringListPolicy(const std::string& policy_name,
                                        const base::ListValue* policy_value) = 0;
-  virtual void InstallDictionaryPolicy(const std::string& policy_name,
-                                       const base::Value* policy_value) = 0;
+  virtual void InstallDictionaryPolicy(
+      const std::string& policy_name,
+      const base::Value::Dict& policy_value) = 0;
 
   // Not every provider supports installing 3rd party policy. Those who do
   // should override this method; the default just makes the test fail.
-  virtual void Install3rdPartyPolicy(const base::DictionaryValue* policies);
+  virtual void Install3rdPartyPolicy(const base::Value::Dict& policies);
 
  private:
   PolicyLevel level_;

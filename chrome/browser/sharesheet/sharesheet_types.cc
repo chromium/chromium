@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,5 +25,9 @@ TargetInfo::~TargetInfo() = default;
 TargetInfo::TargetInfo(TargetInfo&& other) = default;
 
 TargetInfo& TargetInfo::operator=(TargetInfo&& other) = default;
+
+TargetInfo::TargetInfo(const TargetInfo&) = default;
+
+TargetInfo& TargetInfo::operator=(const TargetInfo&) = default;
 
 }  // namespace sharesheet

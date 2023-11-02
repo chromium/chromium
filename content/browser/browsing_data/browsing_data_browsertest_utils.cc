@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "content/browser/browsing_data/browsing_data_test_utils.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -93,7 +92,7 @@ void SetIgnoreCertificateErrors(base::CommandLine* command_line) {
   }
 }
 
-void AddServiceWorker(const std::string& origin,
+GURL AddServiceWorker(const std::string& origin,
                       StoragePartition* storage_partition,
                       net::EmbeddedTestServer* https_server) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -117,6 +116,7 @@ void AddServiceWorker(const std::string& origin,
   ServiceWorkerActivationObserver::SignalActivation(service_worker_context,
                                                     run_loop.QuitClosure());
   run_loop.Run();
+  return scope_url;
 }
 
 std::vector<StorageUsageInfo> GetServiceWorkers(

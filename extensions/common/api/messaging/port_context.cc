@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,4 +40,27 @@ PortContext PortContext::ForNativeHost() {
   return PortContext();
 }
 
+namespace debug {
+
+namespace {
+
+base::debug::CrashKeyString* GetServiceWorkerExtensionIdCrashKey() {
+  static auto* crash_key = base::debug::AllocateCrashKeyString(
+      "PortContext-worker-extension_id", base::debug::CrashKeySize::Size64);
+  return crash_key;
+}
+
+}  // namespace
+
+ScopedPortContextCrashKeys::ScopedPortContextCrashKeys(
+    const PortContext& port_context) {
+  if (port_context.is_for_service_worker()) {
+    extension_id_.emplace(GetServiceWorkerExtensionIdCrashKey(),
+                          port_context.worker->extension_id);
+  }
+}
+
+ScopedPortContextCrashKeys::~ScopedPortContextCrashKeys() = default;
+
+}  // namespace debug
 }  // namespace extensions

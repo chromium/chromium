@@ -11,7 +11,7 @@
   await dp.Accessibility.enable();
 
   function logNode(axnode) {
-    testRunner.log(axnode, null, ['nodeId', 'backendDOMNodeId', 'childIds', 'frameId', 'parentId']);
+    testRunner.log(axnode, null, ['nodeId', 'backendDOMNodeId', 'childIds', 'frameId', 'parentId', 'properties']);
   }
 
   let {result} = await dp.Accessibility.getFullAXTree({depth: 2});

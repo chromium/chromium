@@ -1,4 +1,5 @@
 include_rules = [
+  "+components/guest_view/browser",
   "+components/web_modal",
   "+content/public/browser",
   "+ui/aura",

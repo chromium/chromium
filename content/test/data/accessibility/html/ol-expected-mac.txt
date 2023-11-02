@@ -1,5 +1,5 @@
 AXWebArea
-++AXList
+++AXList AXSubrole=AXContentList
 ++++AXGroup
 ++++++AXListMarker AXValue='1. '
 ++++++AXStaticText AXValue='Chrome'
@@ -9,7 +9,7 @@ AXWebArea
 ++++AXGroup
 ++++++AXListMarker AXValue='3. '
 ++++++AXStaticText AXValue='IE'
-++AXList
+++AXList AXSubrole=AXContentList
 ++++AXGroup
 ++++++AXListMarker AXValue='10. '
 ++++++AXStaticText AXValue='Android'

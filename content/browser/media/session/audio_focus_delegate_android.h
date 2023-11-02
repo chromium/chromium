@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <jni.h>
 
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "content/browser/media/session/audio_focus_delegate.h"
 
 namespace media_session {
@@ -67,7 +68,7 @@ class AudioFocusDelegateAndroid : public AudioFocusDelegate {
 
  private:
   // Weak pointer because |this| is owned by |media_session_|.
-  MediaSessionImpl* media_session_;
+  raw_ptr<MediaSessionImpl> media_session_;
   base::android::ScopedJavaGlobalRef<jobject> j_media_session_delegate_;
 };
 

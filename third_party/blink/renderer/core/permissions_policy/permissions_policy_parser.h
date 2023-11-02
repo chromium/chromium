@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PERMISSIONS_POLICY_PERMISSIONS_POLICY_PARSER_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/permissions_policy/policy_helper.h"
@@ -49,6 +50,21 @@ class CORE_EXPORT PermissionsPolicyParser {
   STATIC_ONLY(PermissionsPolicyParser);
 
  public:
+  // Following is the intermediate represetnation(IR) of permissions policy.
+  // Parsing of syntax structures is done in this IR, but semantic checks, e.g.
+  // whether feature_name is valid, are not yet performed.
+  struct Declaration {
+    String feature_name;
+    Vector<String> allowlist;
+  };
+  // We need to keep track of the source of the list of declarations as
+  // different features (e.g., wildcards) might be active per-context.
+  struct Node {
+    OriginWithPossibleWildcards::NodeType type{
+        OriginWithPossibleWildcards::NodeType::kUnknown};
+    Vector<Declaration> declarations;
+  };
+
   // Converts a header policy string into a vector of allowlists, one for each
   // feature specified. Unrecognized features are filtered out. The optional
   // ExecutionContext is used to determine if any origin trials affect the
@@ -71,6 +87,14 @@ class CORE_EXPORT PermissionsPolicyParser {
       const String& policy,
       scoped_refptr<const SecurityOrigin> self_origin,
       scoped_refptr<const SecurityOrigin> src_origin,
+      PolicyParserMessageBuffer& logger,
+      ExecutionContext* = nullptr);
+
+  // Converts a PermissionsPolicy::Node into a ParsedPermissionsPolicy
+  // Unrecognized features are filtered out.
+  static ParsedPermissionsPolicy ParsePolicyFromNode(
+      Node&,
+      scoped_refptr<const SecurityOrigin>,
       PolicyParserMessageBuffer& logger,
       ExecutionContext* = nullptr);
 

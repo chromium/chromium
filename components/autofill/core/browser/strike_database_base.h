@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -66,6 +66,9 @@ class StrikeDatabaseBase : public KeyedService {
   // Updates the StrikeData for |key| in the cache and ProtoDatabase to have
   // |num_strikes|, and the current time as timestamp.
   virtual void SetStrikeData(const std::string& key, int num_strikes) = 0;
+
+  // Returns the timestamp when the records for |key| were last updated.
+  virtual int64_t GetLastUpdatedTimestamp(const std::string& key) = 0;
 
  protected:
   friend class StrikeDatabaseIntegratorBase;

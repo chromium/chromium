@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,17 +12,11 @@
 #include "ash/assistant/model/assistant_ui_model.h"
 #include "ash/assistant/test/mocked_assistant_interaction.h"
 #include "ash/test/ash_test_base.h"
-#include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_prefs.h"
 
 namespace aura {
 class Window;
 }  // namespace aura
-
-namespace chromeos {
-namespace assistant {
-class ScopedAssistantBrowserDelegate;
-}  // namespace assistant
-}  // namespace chromeos
 
 namespace views {
 class Textfield;
@@ -31,6 +25,9 @@ class Widget;
 }  // namespace views
 
 namespace ash {
+namespace assistant {
+class ScopedAssistantBrowserDelegate;
+}
 
 class AppListView;
 class AssistantOnboardingSuggestionView;
@@ -43,11 +40,10 @@ class TestAshWebViewFactory;
 // Helper class to make testing the Assistant Ash UI easier.
 class AssistantAshTestBase : public AshTestBase {
  public:
-  using AssistantEntryPoint = chromeos::assistant::AssistantEntryPoint;
-  using AssistantExitPoint = chromeos::assistant::AssistantExitPoint;
-  using AssistantOnboardingMode =
-      chromeos::assistant::prefs::AssistantOnboardingMode;
-  using ConsentStatus = chromeos::assistant::prefs::ConsentStatus;
+  using AssistantEntryPoint = assistant::AssistantEntryPoint;
+  using AssistantExitPoint = assistant::AssistantExitPoint;
+  using AssistantOnboardingMode = assistant::prefs::AssistantOnboardingMode;
+  using ConsentStatus = assistant::prefs::ConsentStatus;
 
   AssistantAshTestBase();
   explicit AssistantAshTestBase(base::test::TaskEnvironment::TimeSource time);
@@ -152,7 +148,7 @@ class AssistantAshTestBase : public AshTestBase {
 
   // Return the current interaction. Returns |absl::nullopt| if no interaction
   // is in progress.
-  absl::optional<chromeos::assistant::AssistantInteractionMetadata>
+  absl::optional<ash::assistant::AssistantInteractionMetadata>
   current_interaction();
 
   // Create a new App window, and activate it.
@@ -223,8 +219,7 @@ class AssistantAshTestBase : public AshTestBase {
   std::vector<std::unique_ptr<aura::Window>> windows_;
   std::vector<std::unique_ptr<views::Widget>> widgets_;
 
-  std::unique_ptr<chromeos::assistant::ScopedAssistantBrowserDelegate>
-      delegate_;
+  std::unique_ptr<assistant::ScopedAssistantBrowserDelegate> delegate_;
 };
 
 }  // namespace ash

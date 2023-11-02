@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/page_load_metrics/browser/observers/page_load_metrics_observer_tester.h"
 
@@ -24,7 +25,14 @@ class PageLoadMetricsObserverTestHarness
   // Sample URL for resource loads.
   static const char kResourceUrl[];
 
-  PageLoadMetricsObserverTestHarness();
+  // Construct a PageLoadMetricsObserverTestHarness with zero or more arguments
+  // passed to ChromeRenderViewHostTestHarness.
+  template <typename... TaskEnvironmentTraits>
+  explicit PageLoadMetricsObserverTestHarness(TaskEnvironmentTraits&&... traits)
+      : ChromeRenderViewHostTestHarness(
+            std::forward<TaskEnvironmentTraits>(traits)...) {
+    InitializeFeatureList();
+  }
 
   PageLoadMetricsObserverTestHarness(
       const PageLoadMetricsObserverTestHarness&) = delete;
@@ -41,7 +49,10 @@ class PageLoadMetricsObserverTestHarness
   const PageLoadMetricsObserverTester* tester() const { return tester_.get(); }
 
  private:
+  void InitializeFeatureList();
+
   std::unique_ptr<PageLoadMetricsObserverTester> tester_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 }  // namespace page_load_metrics

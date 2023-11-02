@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,7 +19,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/first_run/first_run.h"
@@ -59,7 +58,7 @@ IN_PROC_BROWSER_TEST_F(FirstRunBrowserTest, SetShouldShowWelcomePage) {
   EXPECT_FALSE(ShouldShowWelcomePage());
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if !BUILDFLAG(IS_CHROMEOS)
 namespace {
 
 // A generic test class to be subclassed by test classes testing specific
@@ -101,7 +100,7 @@ class FirstRunMasterPrefsBrowserTestBase : public InProcessBrowserTest {
     extensions::ComponentLoader::EnableBackgroundExtensionsForTesting();
   }
 
-#if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   void SetUpInProcessBrowserTestFixture() override {
     InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
     // Suppress first run dialog since it blocks test progress.
@@ -149,7 +148,7 @@ int MaskExpectedImportState(int expected_import_state) {
       run_loop.QuitClosure());
   run_loop.Run();
   int source_profile_count = importer_list->count();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On Windows, the importer's DetectIEProfiles() will always add to the count.
   // Internet Explorer always exists and always has something to import.
   EXPECT_GT(source_profile_count, 0);
@@ -235,11 +234,9 @@ const char kWithTrackedPrefs[] =
     "  \"homepage_is_newtabpage\": false\n"
     "}\n";
 // A test fixture that will run in a first run scenario with master_preferences
-// set to kWithTrackedPrefs. Parameterizable on the SettingsEnforcement
-// experiment to be forced.
+// set to kWithTrackedPrefs.
 class FirstRunMasterPrefsWithTrackedPreferences
-    : public FirstRunMasterPrefsBrowserTestT<kWithTrackedPrefs>,
-      public testing::WithParamInterface<std::string> {
+    : public FirstRunMasterPrefsBrowserTestT<kWithTrackedPrefs> {
  public:
   FirstRunMasterPrefsWithTrackedPreferences() {}
 
@@ -251,10 +248,6 @@ class FirstRunMasterPrefsWithTrackedPreferences
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     FirstRunMasterPrefsBrowserTestT::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(
-        switches::kForceFieldTrials,
-        std::string(chrome_prefs::internals::kSettingsEnforcementTrialName) +
-            "/" + GetParam() + "/");
   }
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -266,7 +259,7 @@ class FirstRunMasterPrefsWithTrackedPreferences
   }
 };
 
-IN_PROC_BROWSER_TEST_P(FirstRunMasterPrefsWithTrackedPreferences,
+IN_PROC_BROWSER_TEST_F(FirstRunMasterPrefsWithTrackedPreferences,
                        TrackedPreferencesSurviveFirstRun) {
   const PrefService* user_prefs = browser()->profile()->GetPrefs();
   EXPECT_EQ("example.com", user_prefs->GetString(prefs::kHomePage));
@@ -280,16 +273,6 @@ IN_PROC_BROWSER_TEST_P(FirstRunMasterPrefsWithTrackedPreferences,
   ASSERT_TRUE(default_homepage_is_ntp_value->is_bool());
   EXPECT_TRUE(default_homepage_is_ntp_value->GetBool());
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    FirstRunMasterPrefsWithTrackedPreferencesInstance,
-    FirstRunMasterPrefsWithTrackedPreferences,
-    testing::Values(
-        chrome_prefs::internals::kSettingsEnforcementGroupNoEnforcement,
-        chrome_prefs::internals::kSettingsEnforcementGroupEnforceAlways,
-        chrome_prefs::internals::kSettingsEnforcementGroupEnforceAlwaysWithDSE,
-        chrome_prefs::internals::
-            kSettingsEnforcementGroupEnforceAlwaysWithExtensionsAndDSE));
 
 #define COMPRESSED_SEED_TEST_VALUE                                             \
   "H4sIAAAAAAAA/+LSME4xsTAySjYzSDQ1S01KSk1KMUg1SjI1Tk4yMjI2NDMzTzEySjRPMxA6xs" \
@@ -395,7 +378,7 @@ IN_PROC_BROWSER_TEST_P(FirstRunMasterPrefsVariationsSeedTest, Test) {
 // tests do not pass on other platforms due to the provisional client id logic
 // in metrics_state_manager.cc. See the comment there for details.
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 // The trial and groups encoded in the above seed.
 constexpr char kTrialName[] = "UMA-Uniformity-Trial-10-Percent";
@@ -425,12 +408,12 @@ IN_PROC_BROWSER_TEST_P(FirstRunMasterPrefsVariationsSeedTest, SecondRun) {
   // corresponding test file.
   EXPECT_EQ(group_name, ReadTrialGroupFromTestFile());
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 INSTANTIATE_TEST_SUITE_P(FirstRunMasterPrefsVariationsSeedTests,
                          FirstRunMasterPrefsVariationsSeedTest,
                          testing::Bool());
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace first_run

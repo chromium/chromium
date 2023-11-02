@@ -1,11 +1,13 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef SERVICES_TRACING_PUBLIC_CPP_PERFETTO_PERFETTO_TRACED_PROCESS_H_
 #define SERVICES_TRACING_PUBLIC_CPP_PERFETTO_PERFETTO_TRACED_PROCESS_H_
 
+#include "base/callback.h"
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
@@ -121,7 +123,7 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
    private:
     uint64_t data_source_id_ = 0;
     std::string name_;
-    PerfettoProducer* producer_ = nullptr;
+    raw_ptr<PerfettoProducer> producer_ = nullptr;
   };
 
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
@@ -206,7 +208,7 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
                            bool privacy_filtering_enabled);
 
   // Called on the process's main thread once the thread pool is ready.
-  void OnThreadPoolAvailable();
+  void OnThreadPoolAvailable(bool enable_consumer);
 
   // Set a callback that returns whether a system tracing session is allowed.
   // The callback will be executed on the sequence that set it. Only a single
@@ -278,6 +280,15 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
       base::OnceCallback<void(mojo::PendingRemote<mojom::ConsumerHost>)>)
       override;
 
+  // Indicate that startup tracing will need to start when thread pool becomes
+  // available. This is used in Perfetto client library build, because currently
+  // it requires a threadpool to run tracing tasks.
+  // TODO(khokhlov): Remove this method once startup tracing no longer depends
+  // on threadpool in client library build.
+  void RequestStartupTracing(
+      const perfetto::TraceConfig& config,
+      const perfetto::Tracing::SetupStartupTracingOpts& opts);
+
  protected:
   // protected for testing.
   PerfettoTracedProcess();
@@ -287,7 +298,9 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
 
   // Initialize the Perfetto client library (i.e., perfetto::Tracing) for this
   // process.
-  void SetupClientLibrary();
+  // |enable_consumer| should be true if the system consumer can be enabled.
+  // Currently this is only the case if this is running in the browser process.
+  void SetupClientLibrary(bool enable_consumer);
 
   // perfetto::TracingPolicy implementation:
   void ShouldAllowConsumerSession(
@@ -327,6 +340,10 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
 
   base::OnceCallback<void(mojo::PendingRemote<mojom::PerfettoService>)>
       pending_producer_callback_;
+
+  bool startup_tracing_needed_ = false;
+  perfetto::TraceConfig saved_config_;
+  perfetto::Tracing::SetupStartupTracingOpts saved_opts_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,11 +16,11 @@
 #include "net/cert/x509_certificate.h"
 #include "net/ssl/ssl_info.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "net/cert/cert_verify_proc_android.h"
 #endif
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include "net/cert/internal/trust_store_mac.h"
 #endif
 
@@ -105,7 +105,7 @@ void AddVerifyFlagsToReport(
   }
 }
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 void AddMacTrustFlagsToReport(
     int mac_trust_flags,
     ::google::protobuf::RepeatedField<int>* report_flags) {
@@ -151,25 +151,25 @@ void AddMacPlatformDebugInfoToReport(
 chrome_browser_ssl::TrialVerificationInfo::MacTrustImplType
 TrustImplTypeFromMojom(
     cert_verifier::mojom::CertVerifierDebugInfo::MacTrustImplType input) {
+  using mojom_MacTrustImplType =
+      cert_verifier::mojom::CertVerifierDebugInfo::MacTrustImplType;
+  using chrome_browser_ssl::TrialVerificationInfo;
   switch (input) {
-    case cert_verifier::mojom::CertVerifierDebugInfo::MacTrustImplType::
-        kUnknown:
-      return chrome_browser_ssl::TrialVerificationInfo::MAC_TRUST_IMPL_UNKNOWN;
-    case cert_verifier::mojom::CertVerifierDebugInfo::MacTrustImplType::
-        kDomainCache:
-      return chrome_browser_ssl::TrialVerificationInfo::
-          MAC_TRUST_IMPL_DOMAIN_CACHE;
-    case cert_verifier::mojom::CertVerifierDebugInfo::MacTrustImplType::kSimple:
-      return chrome_browser_ssl::TrialVerificationInfo::MAC_TRUST_IMPL_SIMPLE;
-    case cert_verifier::mojom::CertVerifierDebugInfo::MacTrustImplType::
-        kLruCache:
-      return chrome_browser_ssl::TrialVerificationInfo::
-          MAC_TRUST_IMPL_MRU_CACHE;
+    case mojom_MacTrustImplType::kUnknown:
+      return TrialVerificationInfo::MAC_TRUST_IMPL_UNKNOWN;
+    case mojom_MacTrustImplType::kDomainCache:
+      return TrialVerificationInfo::MAC_TRUST_IMPL_DOMAIN_CACHE;
+    case mojom_MacTrustImplType::kSimple:
+      return TrialVerificationInfo::MAC_TRUST_IMPL_SIMPLE;
+    case mojom_MacTrustImplType::kLruCache:
+      return TrialVerificationInfo::MAC_TRUST_IMPL_MRU_CACHE;
+    case mojom_MacTrustImplType::kDomainCacheFullCerts:
+      return TrialVerificationInfo::MAC_TRUST_IMPL_DOMAIN_CACHE_FULL_CERTS;
   }
 }
-#endif  // defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void AddWinPlatformDebugInfoToReport(
     const cert_verifier::mojom::WinPlatformVerifierDebugInfoPtr&
         win_platform_debug_info,
@@ -185,8 +185,23 @@ void AddWinPlatformDebugInfoToReport(
       std::begin(win_platform_debug_info->authroot_sequence_number),
       std::end(win_platform_debug_info->authroot_sequence_number));
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+void AddChromeRootStoreDebugInfoToReport(
+    const cert_verifier::mojom::ChromeRootStoreDebugInfoPtr&
+        chrome_root_store_debug_info,
+    chrome_browser_ssl::TrialVerificationInfo* trial_report) {
+  if (!chrome_root_store_debug_info) {
+    return;
+  }
+
+  chrome_browser_ssl::ChromeRootStoreDebugInfo* report_info =
+      trial_report->mutable_chrome_root_store_debug_info();
+  report_info->set_chrome_root_store_version(
+      chrome_root_store_debug_info->chrome_root_store_version);
+}
+#endif
 #endif  // BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED)
 
 bool CertificateChainToString(const net::X509Certificate& cert,
@@ -256,7 +271,7 @@ CertificateErrorReport::CertificateErrorReport(
   if (!sct_list.empty())
     trial_report->set_sct_list(sct_list);
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   AddMacPlatformDebugInfoToReport(debug_info->mac_platform_debug_info,
                                   trial_report);
   AddMacTrustFlagsToReport(
@@ -265,9 +280,13 @@ CertificateErrorReport::CertificateErrorReport(
   trial_report->set_mac_trust_impl(
       TrustImplTypeFromMojom(debug_info->mac_trust_impl));
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   AddWinPlatformDebugInfoToReport(debug_info->win_platform_debug_info,
                                   trial_report);
+#endif
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  AddChromeRootStoreDebugInfoToReport(debug_info->chrome_root_store_debug_info,
+                                      trial_report);
 #endif
   if (!debug_info->trial_verification_time.is_null()) {
     trial_report->set_trial_verification_time_usec(
@@ -459,7 +478,7 @@ CertificateErrorReport::CertificateErrorReport(
   AddCertStatusToReportErrors(cert_status, cert_report_->mutable_cert_error());
   AddCertStatusToReportStatus(cert_status, cert_report_->mutable_cert_status());
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   chrome_browser_ssl::CertLoggerFeaturesInfo* features_info =
       cert_report_->mutable_features_info();
   features_info->set_android_aia_fetching_status(

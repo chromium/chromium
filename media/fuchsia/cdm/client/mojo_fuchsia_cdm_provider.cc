@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,11 +20,12 @@ void MojoFuchsiaCdmProvider::CreateCdmInterface(
     const std::string& key_system,
     fidl::InterfaceRequest<fuchsia::media::drm::ContentDecryptionModule>
         cdm_request) {
-  if (!cdm_provider_) {
-    interface_broker_->GetInterface(cdm_provider_.BindNewPipeAndPassReceiver());
+  if (!media_resource_provider_) {
+    interface_broker_->GetInterface(
+        media_resource_provider_.BindNewPipeAndPassReceiver());
   }
 
-  cdm_provider_->CreateCdm(key_system, std::move(cdm_request));
+  media_resource_provider_->CreateCdm(key_system, std::move(cdm_request));
 }
 
 }  // namespace media

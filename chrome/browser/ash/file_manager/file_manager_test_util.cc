@@ -1,23 +1,26 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 
-#include "ash/constants/ash_features.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/ranges/algorithm.h"
 #include "base/test/bind.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
+#include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager_observer.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/common/chrome_paths.h"
+#include "components/services/app_service/public/cpp/intent_test_util.h"
 #include "extensions/browser/entry_info.h"
 #include "extensions/browser/extension_system.h"
 #include "net/base/mime_util.h"
@@ -55,10 +58,8 @@ void FolderInMyFiles::AddWithName(const base::FilePath& file,
 }
 
 OpenOperationResult FolderInMyFiles::Open(const base::FilePath& file) {
-  const auto& it = std::find_if(files_.begin(), files_.end(),
-                                [file](const base::FilePath& i) {
-                                  return i.BaseName() == file.BaseName();
-                                });
+  const auto& it =
+      base::ranges::find(files_, file.BaseName(), &base::FilePath::BaseName);
   EXPECT_FALSE(it == files_.end());
   if (it == files_.end())
     return platform_util::OPEN_FAILED_PATH_NOT_FOUND;
@@ -73,19 +74,6 @@ OpenOperationResult FolderInMyFiles::Open(const base::FilePath& file) {
         run_loop.Quit();
       }));
   run_loop.Run();
-
-  // On ChromeOS, the OpenOperationResult is determined in
-  // OpenFileMimeTypeAfterTasksListed() which also invokes
-  // ExecuteFileTaskForUrl(). For WebApps like chrome://media-app, that invokes
-  // WebApps::LaunchAppWithFiles() via AppServiceProxy.
-  // Depending how the mime type of |path| is determined (e.g. extension,
-  // metadata sniffing), there may be a number of asynchronous steps involved
-  // before the call to ExecuteFileTaskForUrl(). After that, the OpenItem
-  // callback is invoked, which exits the RunLoop above.
-  // That used to be enough to also launch a Browser for the WebApp. However,
-  // since https://crrev.com/c/2121860, ExecuteFileTaskForUrl() goes through the
-  // mojoAppService, so it's necessary to flush those calls for WebApps to open.
-  web_app::FlushSystemWebAppLaunchesForTesting(profile_);
 
   return open_result;
 }
@@ -119,20 +107,6 @@ void AddDefaultComponentExtensionsOnMainThread(Profile* profile) {
   // for the duration of the test. Note this may result in immediately
   // uninstalling an extension just installed above.
   service->UninstallMigratedExtensionsForTest();
-
-  if (!ash::features::IsFileManagerSwaEnabled()) {
-    // The File Manager component extension should have been added for loading
-    // into the user profile, but not into the sign-in profile.
-    CHECK(extensions::ExtensionSystem::Get(profile)
-              ->extension_service()
-              ->component_loader()
-              ->Exists(kFileManagerAppId));
-    CHECK(!extensions::ExtensionSystem::Get(
-               chromeos::ProfileHelper::GetSigninProfile())
-               ->extension_service()
-               ->component_loader()
-               ->Exists(kFileManagerAppId));
-  }
 }
 
 namespace {
@@ -148,7 +122,7 @@ class VolumeWaiter : public VolumeManagerObserver {
     VolumeManager::Get(profile_)->RemoveObserver(this);
   }
 
-  void OnVolumeMounted(chromeos::MountError error_code,
+  void OnVolumeMounted(ash::MountError error_code,
                        const Volume& volume) override {
     on_mount_.Run();
   }
@@ -219,8 +193,8 @@ std::vector<file_tasks::FullTaskDescriptor> GetTasksForFile(
   std::vector<file_tasks::FullTaskDescriptor> result;
   bool invoked_synchronously = false;
   auto callback = base::BindLambdaForTesting(
-      [&](std::unique_ptr<std::vector<file_tasks::FullTaskDescriptor>> tasks) {
-        result = *tasks;
+      [&](std::unique_ptr<file_tasks::ResultingTasks> resulting_tasks) {
+        result = std::move(resulting_tasks->tasks);
         invoked_synchronously = true;
       });
 
@@ -230,6 +204,37 @@ std::vector<file_tasks::FullTaskDescriptor> GetTasksForFile(
   // available, and is provided in this helper.
   CHECK(invoked_synchronously);
   return result;
+}
+
+void AddFakeAppWithIntentFilters(
+    const std::string& app_id,
+    std::vector<apps::IntentFilterPtr> intent_filters,
+    apps::AppType app_type,
+    absl::optional<bool> handles_intents,
+    apps::AppServiceProxy* app_service_proxy) {
+  std::vector<apps::AppPtr> apps;
+  auto app = std::make_unique<apps::App>(app_type, app_id);
+  app->app_id = app_id;
+  app->app_type = app_type;
+  app->handles_intents = handles_intents;
+  app->readiness = apps::Readiness::kReady;
+  app->intent_filters = std::move(intent_filters);
+  apps.push_back(std::move(app));
+  app_service_proxy->AppRegistryCache().OnApps(
+      std::move(apps), app_type, false /* should_notify_initialized */);
+}
+
+void AddFakeWebApp(const std::string& app_id,
+                   const std::string& mime_type,
+                   const std::string& file_extension,
+                   const std::string& activity_label,
+                   absl::optional<bool> handles_intents,
+                   apps::AppServiceProxy* app_service_proxy) {
+  std::vector<apps::IntentFilterPtr> filters;
+  filters.push_back(apps_util::MakeFileFilterForView(mime_type, file_extension,
+                                                     activity_label));
+  AddFakeAppWithIntentFilters(app_id, std::move(filters), apps::AppType::kWeb,
+                              handles_intents, app_service_proxy);
 }
 
 }  // namespace test

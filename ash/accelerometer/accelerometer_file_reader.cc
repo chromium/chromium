@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,6 @@
 #include "ash/shell.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
@@ -28,7 +27,6 @@
 #include "base/task/current_thread.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/platform_thread.h"
@@ -417,12 +415,12 @@ bool AccelerometerFileReader::InitializeAccelerometer(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   size_t config_index = 0;
-  for (; config_index < base::size(kLocationStrings); ++config_index) {
+  for (; config_index < std::size(kLocationStrings); ++config_index) {
     if (location == kLocationStrings[config_index])
       break;
   }
 
-  if (config_index >= base::size(kLocationStrings)) {
+  if (config_index >= std::size(kLocationStrings)) {
     LOG(ERROR) << "Unrecognized location: " << location << " for device "
                << name.MaybeAsASCII() << "\n";
     return false;
@@ -432,7 +430,7 @@ bool AccelerometerFileReader::InitializeAccelerometer(
   if (!ReadFileToDouble(iio_path.Append(kAccelerometerScaleFileName), &scale))
     return false;
 
-  const int kNumberAxes = base::size(kAccelerometerAxes);
+  const int kNumberAxes = std::size(kAccelerometerAxes);
   for (size_t i = 0; i < kNumberAxes; ++i) {
     std::string accelerometer_index_path = base::StringPrintf(
         kAccelerometerScanIndexPathFormatString, kAccelerometerAxes[i]);
@@ -468,7 +466,7 @@ bool AccelerometerFileReader::InitializeLegacyAccelerometers(
       base::FilePath(kAccelerometerDevicePath).Append(name.BaseName());
   // Read configuration of each accelerometer axis from each accelerometer from
   // /sys/bus/iio/devices/iio:deviceX/.
-  for (size_t i = 0; i < base::size(kLocationStrings); ++i) {
+  for (size_t i = 0; i < std::size(kLocationStrings); ++i) {
     configuration_.has[i] = false;
     // Read scale of accelerometer.
     std::string accelerometer_scale_path =
@@ -486,7 +484,7 @@ bool AccelerometerFileReader::InitializeLegacyAccelerometers(
     }
 
     configuration_.has[i] = true;
-    for (size_t j = 0; j < base::size(kLegacyAccelerometerAxes); ++j) {
+    for (size_t j = 0; j < std::size(kLegacyAccelerometerAxes); ++j) {
       configuration_.scale[i][j] = base::kMeanGravityFloat / scale_divisor;
       std::string accelerometer_index_path =
           base::StringPrintf(kLegacyAccelerometerScanIndexPathFormatString,

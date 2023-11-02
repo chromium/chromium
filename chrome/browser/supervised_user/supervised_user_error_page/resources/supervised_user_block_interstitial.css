@@ -1,6 +1,9 @@
-/* Copyright 2014 The Chromium Authors. All rights reserved.
+/* Copyright 2014 The Chromium Authors
    Use of this source code is governed by a BSD-style license that can be
    found in the LICENSE file. */
+
+/* This is the stylesheet for the interstitial when the
+   "WebFilterInterstitialRefresh" flag is disabled. */
 
 body {
   --avatar-stroke-color: var(--google-gray-50);
@@ -9,6 +12,8 @@ body {
   --focused-details-button-border: rgba(26, 115, 232, 0.4);
   --header-color: var(--google-gray-900);
   --paragraph-color: var(--google-gray-700);
+  --callout-text-color: var(--google-gray-900);
+  --callout-bg-color: var(--google-gray-100);
   font-family: "Roboto", sans-serif;
   padding: 24px 24px 20px 24px;
 }
@@ -59,7 +64,7 @@ button:active {
 .details-button:active {
   background: var(--google-gray-50);
   box-shadow: 0 1px 2px 0 rgba(60, 64, 67, 0.3),
-              0 2px 6px 2px rgba(60, 64, 67, 0.15);
+    0 2px 6px 2px rgba(60, 64, 67, 0.15);
 }
 
 .details-button:focus {
@@ -101,13 +106,12 @@ p {
 }
 
 #family-link-kite {
-  content: -webkit-image-set(
-      url(../../resources/supervised_user_icon.png) 1x);
+  content: -webkit-image-set(url(../../resources/supervised_user_icon.png) 1x);
   height: 72px;
   width: 72px;
 }
 
-#illustration {
+.illustration {
   display: none;
 }
 
@@ -148,8 +152,7 @@ p {
 .avatar-img {
   border: 1px solid var(--avatar-stroke-color);
   border-radius: 50%;
-  content: -webkit-image-set(
-      url(default_100_percent/logo_avatar_circle_blue_color.png) 1x,
+  content: -webkit-image-set(url(default_100_percent/logo_avatar_circle_blue_color.png) 1x,
       url(default_200_percent/logo_avatar_circle_blue_color.png) 2x);
   float: left;
   height: 40px;
@@ -189,76 +192,8 @@ p {
   font-weight: bold;
 }
 
-/* Styles for when the web filter interstitial refresh flag is enabled. */
-.interstitial-refresh-enabled button {
-  font-size: 13px;
-  font-weight: 500;
-  height: 32px;
-  line-height: normal;
-  padding: 6px 16px;
-}
-
-.interstitial-refresh-enabled .secondary-button {
-  background: var(--background-color);
-  border: 1px solid var(--google-gray-300);
-  color: var(--google-blue-600);
-}
-
-.interstitial-refresh-enabled .secondary-button:active {
-  background: var(--secondary-button-hover-fill-color);
-}
-
-.interstitial-refresh-enabled h1 {
-  font-family: "Google Sans", sans-serif;
-}
-
-.interstitial-refresh-enabled p {
-  color: var(--paragraph-color);
-  font-size: 14px;
-}
-
-.interstitial-refresh-enabled .icon {
-  display: none;
-}
-
 picture {
   margin: auto;
-}
-
-.interstitial-refresh-enabled #illustration {
-  display: inline;
-}
-
-.interstitial-refresh-enabled .frame-blocked {
-  display: flex;
-  flex-direction: column;
-  margin-top: 50px;
-  max-width: 432px;
-}
-
-.interstitial-refresh-enabled .go-back-button {
-  float: right;
-  margin-left: 24px;
-}
-
-.interstitial-refresh-enabled #custodians-information {
-  margin-top: 0;
-}
-
-.interstitial-refresh-enabled .custodian-information {
-  margin-top: 24px;
-}
-
-.interstitial-refresh-enabled .avatar-img {
-  border: none;
-}
-
-.interstitial-refresh-enabled .custodian-name {
-  display: none;
-}
-
-.interstitial-refresh-enabled .custodian-email {
-  font-size: 13px;
 }
 
 /* Local approvals button is only shown when the local web approvals flag
@@ -272,21 +207,18 @@ is enabled. */
   background: var(--primary-button-fill-color-active);
 }
 
+/* Remove focus-visible outline styles, because forced focus is used for
+screen reader and chrome vox provides its own focus style. */
+.frame-blocked:focus-visible,
+button:focus-visible {
+  outline: none;
+}
+
 @media (prefers-color-scheme: dark) {
   body.supervised-user-block {
     --avatar-stroke-color: var(--google-blue-100);
     --custodian-email-color: var(--google-gray-500);
     --custodian-name-color: var(--google-gray-500);
-  }
-
-  body.supervised-user-block.interstitial-refresh-enabled {
-    --header-color: #e9eaed;
-    --paragraph-color: var(--google-gray-500);
-  }
-
-  .interstitial-refresh-enabled .remote-approvals-button {
-    color: var(--google-blue-300);
-    border-color: var(--secondary-button-border-color);
   }
 }
 
@@ -299,6 +231,7 @@ margin to 0. This will be useful for subframes. */
 }
 
 @media (max-width: 420px) {
+
   button,
   [dir='rtl'] button,
   .small-link {
@@ -308,79 +241,5 @@ margin to 0. This will be useful for subframes. */
 
   .details-button {
     margin-top: 20px;
-  }
-}
-
-/* Narrow width styles when the web filter interstitial refresh flag is
-enabled. */
-@media (max-width: 480px) {
-  .interstitial-refresh-enabled {
-    padding: 0;
-    margin: auto;
-  }
-
-  .interstitial-refresh-enabled button,
-  .interstitial-refresh-enabled [dir='rtl'] button {
-    width: initial;
-  }
-
-  .interstitial-refresh-enabled button {
-    margin: 0 4px 16px 4px;
-  }
-
-  .interstitial-refresh-enabled #illustration{
-    display: none;
-  }
-
-  .interstitial-refresh-enabled .frame-blocked {
-    align-items: center;
-    background-color: rgba(232, 234, 237, .38);;
-    border-radius: 12px;
-    padding: 0 8px;
-    width: 284px;
-  }
-
-  .interstitial-refresh-enabled .message-container {
-    align-items: center;
-  }
-
-  .interstitial-refresh-enabled #main-message {
-    margin-top: 32px;
-    text-align: center;
-  }
-
-  .interstitial-refresh-enabled #custodians-information {
-    margin-top: 8px;
-  }
-
-  .interstitial-refresh-enabled .custodian-information {
-    margin-top: 8px;
-  }
-
-  .interstitial-refresh-enabled .custodian-contact {
-    height: 24px;
-  }
-
-  .interstitial-refresh-enabled .avatar-img {
-    height: 24px;
-    width: 24px;
-  }
-
-  .interstitial-refresh-enabled .button-container {
-    display: flex;
-    flex-direction: row-reverse;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin: 24px 0 16px;
-  }
-
-  .interstitial-refresh-enabled .go-back-button {
-    margin-left: 4px;
-  }
-}
-
-@media (prefers-color-scheme: dark) and (max-width: 480px) {
-  .interstitial-refresh-enabled .frame-blocked {
-    background-color: initial;
   }
 }

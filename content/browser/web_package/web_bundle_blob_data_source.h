@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -77,6 +77,10 @@ class CONTENT_EXPORT WebBundleBlobDataSource {
    private:
     // Implements web_package::mojom::BundleDataSource.
     void Read(uint64_t offset, uint64_t length, ReadCallback callback) override;
+
+    void Length(LengthCallback callback) override;
+
+    void IsRandomAccessContext(IsRandomAccessContextCallback callback) override;
 
     void StreamingBlobDone(storage::BlobBuilderFromStream* builder,
                            std::unique_ptr<storage::BlobDataHandle> result);

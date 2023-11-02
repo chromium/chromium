@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,12 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "chrome/browser/sharesheet/sharesheet_ui_delegate.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
+#include "chromeos/components/sharesheet/constants.h"
+#include "components/services/app_service/public/cpp/intent.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -60,21 +62,21 @@ class SharesheetServiceDelegator {
 
   // The following are called by the ShareService to communicate with the UI.
   void ShowBubble(std::vector<TargetInfo> targets,
-                  apps::mojom::IntentPtr intent,
+                  apps::IntentPtr intent,
                   DeliveredCallback delivered_callback,
                   CloseCallback close_callback);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Skips the generic Sharesheet bubble and directly displays the
   // NearbyShare bubble dialog.
-  void ShowNearbyShareBubbleForArc(apps::mojom::IntentPtr intent,
+  void ShowNearbyShareBubbleForArc(apps::IntentPtr intent,
                                    DeliveredCallback delivered_callback,
                                    CloseCallback close_callback);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Invoked immediately after an action has launched in the event that UI
   // changes need to occur at this point.
-  void OnActionLaunched();
+  void OnActionLaunched(bool has_action_view);
 
   void CloseBubble(SharesheetResult result);
 
@@ -85,7 +87,7 @@ class SharesheetServiceDelegator {
   void OnBubbleClosed(const std::u16string& active_action);
   void OnTargetSelected(const std::u16string& target_name,
                         const TargetType type,
-                        apps::mojom::IntentPtr intent,
+                        apps::IntentPtr intent,
                         views::View* share_action_view);
   bool OnAcceleratorPressed(const ui::Accelerator& accelerator,
                             const std::u16string& active_action);
@@ -96,7 +98,7 @@ class SharesheetServiceDelegator {
   // SharesheetServiceDelegator.
   gfx::NativeWindow native_window_;
 
-  SharesheetService* sharesheet_service_;
+  raw_ptr<SharesheetService> sharesheet_service_;
 
   std::unique_ptr<SharesheetUiDelegate> sharesheet_controller_;
 };

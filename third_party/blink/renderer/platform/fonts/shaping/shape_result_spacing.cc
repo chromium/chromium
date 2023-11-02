@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,13 +13,20 @@ namespace blink {
 template <typename TextContainerType>
 bool ShapeResultSpacing<TextContainerType>::SetSpacing(
     const FontDescription& font_description) {
-  if (!font_description.LetterSpacing() && !font_description.WordSpacing()) {
+  return SetSpacing(font_description.LetterSpacing(),
+                    font_description.WordSpacing());
+}
+
+template <typename TextContainerType>
+bool ShapeResultSpacing<TextContainerType>::SetSpacing(float letter_spacing,
+                                                       float word_spacing) {
+  if (!letter_spacing && !word_spacing) {
     has_spacing_ = false;
     return false;
   }
 
-  letter_spacing_ = font_description.LetterSpacing();
-  word_spacing_ = font_description.WordSpacing();
+  letter_spacing_ = letter_spacing;
+  word_spacing_ = word_spacing;
   DCHECK(!normalize_space_);
   allow_tabs_ = true;
   has_spacing_ = true;
@@ -30,13 +37,12 @@ template <typename TextContainerType>
 void ShapeResultSpacing<TextContainerType>::SetExpansion(
     float expansion,
     TextDirection direction,
-    TextJustify text_justify,
     bool allows_leading_expansion,
     bool allows_trailing_expansion) {
   DCHECK_GT(expansion, 0);
   expansion_ = expansion;
   ComputeExpansion(allows_leading_expansion, allows_trailing_expansion,
-                   direction, text_justify);
+                   direction);
   has_spacing_ |= HasExpansion();
 }
 
@@ -62,8 +68,7 @@ void ShapeResultSpacing<TextRun>::SetSpacingAndExpansion(
 
   if (expansion_) {
     ComputeExpansion(text_.AllowsLeadingExpansion(),
-                     text_.AllowsTrailingExpansion(), text_.Direction(),
-                     text_.GetTextJustify());
+                     text_.AllowsTrailingExpansion(), text_.Direction());
   }
 }
 
@@ -71,24 +76,17 @@ template <typename TextContainerType>
 void ShapeResultSpacing<TextContainerType>::ComputeExpansion(
     bool allows_leading_expansion,
     bool allows_trailing_expansion,
-    TextDirection direction,
-    TextJustify text_justify) {
+    TextDirection direction) {
   DCHECK_GT(expansion_, 0);
-
-  text_justify_ = text_justify;
-  if (text_justify_ == TextJustify::kNone) {
-    expansion_opportunity_count_ = 0;
-    return;
-  }
 
   is_after_expansion_ = !allows_leading_expansion;
   bool is_after_expansion = is_after_expansion_;
   if (text_.Is8Bit()) {
     expansion_opportunity_count_ = Character::ExpansionOpportunityCount(
-        text_.Span8(), direction, is_after_expansion, text_justify_);
+        text_.Span8(), direction, is_after_expansion);
   } else {
     expansion_opportunity_count_ = Character::ExpansionOpportunityCount(
-        text_.Span16(), direction, is_after_expansion, text_justify_);
+        text_.Span16(), direction, is_after_expansion);
   }
   if (is_after_expansion && !allows_trailing_expansion) {
     DCHECK_GT(expansion_opportunity_count_, 0u);
@@ -149,7 +147,7 @@ float ShapeResultSpacing<TextContainerType>::ComputeSpacing(
   if (treat_as_space)
     return spacing + NextExpansion();
 
-  if (text_.Is8Bit() || text_justify_ != TextJustify::kAuto)
+  if (text_.Is8Bit())
     return spacing;
 
   // isCJKIdeographOrSymbol() has expansion opportunities both before and

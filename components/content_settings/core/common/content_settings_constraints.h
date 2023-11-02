@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,6 +33,11 @@ struct ContentSettingConstraints {
   base::Time expiration;
   // Used to specify the lifetime model that should be used.
   SessionModel session_model = SessionModel::Durable;
+  // Set to true to keep track of the last visit to the origin of this
+  // permission.
+  // This is used for the Safety check permission module and unrelated to the "expiration" keyword
+  // above.
+  bool track_last_visit_for_autoexpiration = false;
 };
 
 }  // namespace content_settings

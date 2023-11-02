@@ -1,10 +1,11 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_EXCLUSIVE_ACCESS_EXCLUSIVE_ACCESS_BUBBLE_H_
 #define CHROME_BROWSER_UI_EXCLUSIVE_ACCESS_EXCLUSIVE_ACCESS_BUBBLE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_type.h"
 #include "ui/gfx/animation/animation_delegate.h"
@@ -56,9 +57,8 @@ class ExclusiveAccessBubble : public gfx::AnimationDelegate {
   static const int kSimplifiedPopupTopPx;
 
   // Returns the current desirable rect for the popup window in screen
-  // coordinates. If |ignore_animation_state| is true this returns the rect
-  // assuming the popup is fully onscreen.
-  virtual gfx::Rect GetPopupRect(bool ignore_animation_state) const = 0;
+  // coordinates.
+  virtual gfx::Rect GetPopupRect() const = 0;
   virtual gfx::Point GetCursorScreenPoint() = 0;
   virtual bool WindowContainsPoint(gfx::Point pos) = 0;
 
@@ -101,13 +101,19 @@ class ExclusiveAccessBubble : public gfx::AnimationDelegate {
   bool IsHideTimeoutRunning() const;
 
   // The Manager associated with this bubble.
-  ExclusiveAccessManager* const manager_;
+  const raw_ptr<ExclusiveAccessManager> manager_;
 
   // The host the bubble is for, can be empty.
   GURL url_;
 
   // The type of the bubble; controls e.g. which buttons to show.
   ExclusiveAccessBubbleType bubble_type_;
+
+  // The bubble should notify about downloads
+  bool notify_download_ = false;
+
+  // The bubble should notify about overriding another ExclusiveAccessBubble
+  bool notify_overridden_ = false;
 
  private:
   friend class ExclusiveAccessTest;

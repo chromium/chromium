@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <wrl/implements.h>
 
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
@@ -26,6 +27,7 @@
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gl/dc_renderer_layer_params.h"
 #include "ui/gl/direct_composition_child_surface_win.h"
+#include "ui/gl/direct_composition_support.h"
 #include "ui/gl/gl_angle_util_win.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
@@ -123,26 +125,25 @@ class DirectCompositionSurfaceTest : public testing::Test {
     fake_power_monitor_source_.SetOnBatteryPower(true);
 
     // Without this, the following check always fails.
-    gl::init::InitializeGLNoExtensionsOneOff(/*init_bindings*/ true);
-    if (!QueryDirectCompositionDevice(QueryD3D11DeviceObjectFromANGLE())) {
-      LOG(WARNING)
-          << "GL implementation not using DirectComposition, skipping test.";
+    display_ = gl::init::InitializeGLNoExtensionsOneOff(
+        /*init_bindings=*/true, /*system_device_id=*/0);
+    if (!DirectCompositionSupported()) {
+      LOG(WARNING) << "DirectComposition not supported, skipping test.";
       return;
     }
     surface_ = CreateDirectCompositionSurfaceWin();
     context_ = CreateGLContext(surface_);
     if (surface_)
       surface_->SetEnableDCLayers(true);
-    DirectCompositionSurfaceWin::SetScaledOverlaysSupportedForTesting(false);
-    DirectCompositionSurfaceWin::SetOverlayFormatUsedForTesting(
-        DXGI_FORMAT_NV12);
+    SetDirectCompositionScaledOverlaysSupportedForTesting(false);
+    SetDirectCompositionOverlayFormatUsedForTesting(DXGI_FORMAT_NV12);
   }
 
   void TearDown() override {
     context_ = nullptr;
     if (surface_)
       DestroySurface(std::move(surface_));
-    gl::init::ShutdownGL(false);
+    gl::init::ShutdownGL(display_, false);
   }
 
   scoped_refptr<DirectCompositionSurfaceWin>
@@ -150,8 +151,8 @@ class DirectCompositionSurfaceTest : public testing::Test {
     DirectCompositionSurfaceWin::Settings settings;
     scoped_refptr<DirectCompositionSurfaceWin> surface =
         base::MakeRefCounted<DirectCompositionSurfaceWin>(
-            parent_window_, DirectCompositionSurfaceWin::VSyncCallback(),
-            settings);
+            gl::GLSurfaceEGL::GetGLDisplayEGL(), parent_window_,
+            DirectCompositionSurfaceWin::VSyncCallback(), settings);
     EXPECT_TRUE(surface->Initialize(GLSurfaceFormat()));
 
     // ImageTransportSurfaceDelegate::DidCreateAcceleratedSurfaceChildWindow()
@@ -176,6 +177,7 @@ class DirectCompositionSurfaceTest : public testing::Test {
   scoped_refptr<DirectCompositionSurfaceWin> surface_;
   scoped_refptr<GLContext> context_;
   base::test::ScopedPowerMonitorTestSource fake_power_monitor_source_;
+  raw_ptr<GLDisplay> display_ = nullptr;
 };
 
 TEST_F(DirectCompositionSurfaceTest, TestMakeCurrent) {
@@ -192,7 +194,7 @@ TEST_F(DirectCompositionSurfaceTest, TestMakeCurrent) {
   EXPECT_FALSE(surface_->SetDrawRectangle(gfx::Rect(0, 0, 100, 100)));
 
   EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
-            surface_->SwapBuffers(base::DoNothing()));
+            surface_->SwapBuffers(base::DoNothing(), FrameData()));
 
   EXPECT_TRUE(context_->IsCurrent(surface_.get()));
 
@@ -244,7 +246,7 @@ TEST_F(DirectCompositionSurfaceTest, DXGIDCLayerSwitch) {
   EXPECT_FALSE(surface_->SetDrawRectangle(gfx::Rect(0, 0, 100, 100)));
 
   EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
-            surface_->SwapBuffers(base::DoNothing()));
+            surface_->SwapBuffers(base::DoNothing(), FrameData()));
   EXPECT_TRUE(context_->IsCurrent(surface_.get()));
 
   surface_->SetEnableDCLayers(true);
@@ -256,7 +258,7 @@ TEST_F(DirectCompositionSurfaceTest, DXGIDCLayerSwitch) {
   EXPECT_FALSE(surface_->GetBackbufferSwapChainForTesting());
 
   EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
-            surface_->SwapBuffers(base::DoNothing()));
+            surface_->SwapBuffers(base::DoNothing(), FrameData()));
   EXPECT_TRUE(context_->IsCurrent(surface_.get()));
 
   surface_->SetEnableDCLayers(false);
@@ -267,7 +269,7 @@ TEST_F(DirectCompositionSurfaceTest, DXGIDCLayerSwitch) {
   EXPECT_TRUE(surface_->GetBackbufferSwapChainForTesting());
 
   EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
-            surface_->SwapBuffers(base::DoNothing()));
+            surface_->SwapBuffers(base::DoNothing(), FrameData()));
   EXPECT_TRUE(context_->IsCurrent(surface_.get()));
 }
 
@@ -335,7 +337,7 @@ TEST_F(DirectCompositionSurfaceTest, NoPresentTwice) {
   ASSERT_FALSE(swap_chain);
 
   EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
-            surface_->SwapBuffers(base::DoNothing()));
+            surface_->SwapBuffers(base::DoNothing(), FrameData()));
 
   swap_chain = surface_->GetLayerSwapChainForTesting(0);
   ASSERT_TRUE(swap_chain);
@@ -357,7 +359,7 @@ TEST_F(DirectCompositionSurfaceTest, NoPresentTwice) {
   }
 
   EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
-            surface_->SwapBuffers(base::DoNothing()));
+            surface_->SwapBuffers(base::DoNothing(), FrameData()));
 
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain2 =
       surface_->GetLayerSwapChainForTesting(0);
@@ -384,7 +386,7 @@ TEST_F(DirectCompositionSurfaceTest, NoPresentTwice) {
   }
 
   EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
-            surface_->SwapBuffers(base::DoNothing()));
+            surface_->SwapBuffers(base::DoNothing(), FrameData()));
 
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain3 =
       surface_->GetLayerSwapChainForTesting(0);
@@ -412,7 +414,7 @@ TEST_F(DirectCompositionSurfaceTest, SwapchainSizeWithScaledOverlays) {
 
   // HW supports scaled overlays.
   // The input texture size is maller than the window size.
-  DirectCompositionSurfaceWin::SetScaledOverlaysSupportedForTesting(true);
+  SetDirectCompositionScaledOverlaysSupportedForTesting(true);
 
   // Onscreen quad.
   gfx::Rect quad_rect = gfx::Rect(100, 100);
@@ -427,7 +429,7 @@ TEST_F(DirectCompositionSurfaceTest, SwapchainSizeWithScaledOverlays) {
   }
 
   EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
-            surface_->SwapBuffers(base::DoNothing()));
+            surface_->SwapBuffers(base::DoNothing(), FrameData()));
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain =
       surface_->GetLayerSwapChainForTesting(0);
   ASSERT_TRUE(swap_chain);
@@ -442,7 +444,7 @@ TEST_F(DirectCompositionSurfaceTest, SwapchainSizeWithScaledOverlays) {
   // Must do Clear first because the swap chain won't resize immediately if
   // a new size is given unless this is the very first time after Clear.
   EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
-            surface_->SwapBuffers(base::DoNothing()));
+            surface_->SwapBuffers(base::DoNothing(), FrameData()));
 
   // The input texture size is bigger than the window size.
   quad_rect = gfx::Rect(32, 48);
@@ -457,7 +459,7 @@ TEST_F(DirectCompositionSurfaceTest, SwapchainSizeWithScaledOverlays) {
   }
 
   EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
-            surface_->SwapBuffers(base::DoNothing()));
+            surface_->SwapBuffers(base::DoNothing(), FrameData()));
 
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain2 =
       surface_->GetLayerSwapChainForTesting(0);
@@ -498,7 +500,7 @@ TEST_F(DirectCompositionSurfaceTest, SwapchainSizeWithoutScaledOverlays) {
   }
 
   EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
-            surface_->SwapBuffers(base::DoNothing()));
+            surface_->SwapBuffers(base::DoNothing(), FrameData()));
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain =
       surface_->GetLayerSwapChainForTesting(0);
   ASSERT_TRUE(swap_chain);
@@ -522,7 +524,7 @@ TEST_F(DirectCompositionSurfaceTest, SwapchainSizeWithoutScaledOverlays) {
   }
 
   EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
-            surface_->SwapBuffers(base::DoNothing()));
+            surface_->SwapBuffers(base::DoNothing(), FrameData()));
 
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain2 =
       surface_->GetLayerSwapChainForTesting(0);
@@ -563,7 +565,7 @@ TEST_F(DirectCompositionSurfaceTest, ProtectedVideos) {
 
     surface_->ScheduleDCLayer(std::move(params));
     EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
-              surface_->SwapBuffers(base::DoNothing()));
+              surface_->SwapBuffers(base::DoNothing(), FrameData()));
     Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain =
         surface_->GetLayerSwapChainForTesting(0);
     ASSERT_TRUE(swap_chain);
@@ -588,7 +590,7 @@ TEST_F(DirectCompositionSurfaceTest, ProtectedVideos) {
 
     surface_->ScheduleDCLayer(std::move(params));
     EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
-              surface_->SwapBuffers(base::DoNothing()));
+              surface_->SwapBuffers(base::DoNothing(), FrameData()));
     Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain =
         surface_->GetLayerSwapChainForTesting(0);
     ASSERT_TRUE(swap_chain);
@@ -700,7 +702,7 @@ class DirectCompositionPixelTest : public DirectCompositionSurfaceTest {
     surface_->ScheduleDCLayer(std::move(params));
 
     EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
-              surface_->SwapBuffers(base::DoNothing()));
+              surface_->SwapBuffers(base::DoNothing(), FrameData()));
 
     Sleep(1000);
   }
@@ -719,7 +721,7 @@ class DirectCompositionPixelTest : public DirectCompositionSurfaceTest {
     glClear(GL_COLOR_BUFFER_BIT);
 
     EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
-              surface_->SwapBuffers(base::DoNothing()));
+              surface_->SwapBuffers(base::DoNothing(), FrameData()));
 
     // Ensure DWM swap completed.
     Sleep(1000);
@@ -789,7 +791,7 @@ class DirectCompositionVideoPixelTest : public DirectCompositionPixelTest {
     }
 
     EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
-              surface_->SwapBuffers(base::DoNothing()));
+              surface_->SwapBuffers(base::DoNothing(), FrameData()));
 
     // Scaling up the swapchain with the same image should cause it to be
     // transformed again, but not presented again.
@@ -803,7 +805,7 @@ class DirectCompositionVideoPixelTest : public DirectCompositionPixelTest {
     }
 
     EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
-              surface_->SwapBuffers(base::DoNothing()));
+              surface_->SwapBuffers(base::DoNothing(), FrameData()));
     Sleep(1000);
 
     if (check_color) {
@@ -833,7 +835,7 @@ TEST_F(DirectCompositionVideoPixelTest, SRGB) {
 
 TEST_F(DirectCompositionVideoPixelTest, SCRGBLinear) {
   // SCRGB doesn't make sense on an NV12 input, but don't crash.
-  TestVideo(gfx::ColorSpace::CreateSCRGBLinear(), SK_ColorTRANSPARENT, false);
+  TestVideo(gfx::ColorSpace::CreateSRGBLinear(), SK_ColorTRANSPARENT, false);
 }
 
 TEST_F(DirectCompositionVideoPixelTest, InvalidColorSpace) {
@@ -876,7 +878,7 @@ TEST_F(DirectCompositionPixelTest, SoftwareVideoSwapchain) {
   surface_->ScheduleDCLayer(std::move(params));
 
   EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
-            surface_->SwapBuffers(base::DoNothing()));
+            surface_->SwapBuffers(base::DoNothing(), FrameData()));
   Sleep(1000);
 
   SkColor expected_color = SkColorSetRGB(0xff, 0xb7, 0xff);
@@ -930,7 +932,7 @@ TEST_F(DirectCompositionPixelTest, SkipVideoLayerEmptyContentsRect) {
     return;
   // Swap chain size is overridden to onscreen size only if scaled overlays
   // are supported.
-  DirectCompositionSurfaceWin::SetScaledOverlaysSupportedForTesting(true);
+  SetDirectCompositionScaledOverlaysSupportedForTesting(true);
 
   gfx::Size window_size(100, 100);
   EXPECT_TRUE(surface_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
@@ -963,7 +965,7 @@ TEST_F(DirectCompositionPixelTest, SkipVideoLayerEmptyContentsRect) {
   surface_->ScheduleDCLayer(std::move(params));
 
   EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
-            surface_->SwapBuffers(base::DoNothing()));
+            surface_->SwapBuffers(base::DoNothing(), FrameData()));
 
   Sleep(1000);
 
@@ -982,7 +984,7 @@ TEST_F(DirectCompositionPixelTest, NV12SwapChain) {
     return;
   // Swap chain size is overridden to onscreen rect size only if scaled overlays
   // are supported.
-  DirectCompositionSurfaceWin::SetScaledOverlaysSupportedForTesting(true);
+  SetDirectCompositionScaledOverlaysSupportedForTesting(true);
 
   gfx::Size window_size(100, 100);
   gfx::Size texture_size(50, 50);
@@ -1023,9 +1025,9 @@ TEST_F(DirectCompositionPixelTest, YUY2SwapChain) {
 
   // Swap chain size is overridden to onscreen rect size only if scaled overlays
   // are supported.
-  DirectCompositionSurfaceWin::SetScaledOverlaysSupportedForTesting(true);
+  SetDirectCompositionScaledOverlaysSupportedForTesting(true);
   // By default NV12 is used, so set it to YUY2 explicitly.
-  DirectCompositionSurfaceWin::SetOverlayFormatUsedForTesting(DXGI_FORMAT_YUY2);
+  SetDirectCompositionOverlayFormatUsedForTesting(DXGI_FORMAT_YUY2);
 
   gfx::Size window_size(100, 100);
   gfx::Size texture_size(50, 50);
@@ -1059,7 +1061,7 @@ TEST_F(DirectCompositionPixelTest, NonZeroBoundsOffset) {
     return;
   // Swap chain size is overridden to onscreen rect size only if scaled overlays
   // are supported.
-  DirectCompositionSurfaceWin::SetScaledOverlaysSupportedForTesting(true);
+  SetDirectCompositionScaledOverlaysSupportedForTesting(true);
 
   gfx::Size window_size(100, 100);
   gfx::Size texture_size(50, 50);
@@ -1097,7 +1099,7 @@ TEST_F(DirectCompositionPixelTest, ResizeVideoLayer) {
     return;
   // Swap chain size is overridden to onscreen rect size only if scaled overlays
   // are supported.
-  DirectCompositionSurfaceWin::SetScaledOverlaysSupportedForTesting(true);
+  SetDirectCompositionScaledOverlaysSupportedForTesting(true);
 
   gfx::Size window_size(100, 100);
   EXPECT_TRUE(surface_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
@@ -1133,7 +1135,7 @@ TEST_F(DirectCompositionPixelTest, ResizeVideoLayer) {
     surface_->ScheduleDCLayer(std::move(params));
 
     EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
-              surface_->SwapBuffers(base::DoNothing()));
+              surface_->SwapBuffers(base::DoNothing(), FrameData()));
   }
 
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain =
@@ -1157,7 +1159,7 @@ TEST_F(DirectCompositionPixelTest, ResizeVideoLayer) {
     surface_->ScheduleDCLayer(std::move(params));
 
     EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
-              surface_->SwapBuffers(base::DoNothing()));
+              surface_->SwapBuffers(base::DoNothing(), FrameData()));
   }
   swap_chain = surface_->GetLayerSwapChainForTesting(0);
   EXPECT_TRUE(SUCCEEDED(swap_chain->GetDesc1(&desc)));
@@ -1168,9 +1170,9 @@ TEST_F(DirectCompositionPixelTest, ResizeVideoLayer) {
   // (3) Test if swap chain is adjusted to fit the monitor when overlay scaling
   // is not supported and video on-screen size is slightly smaller than the
   // monitor. Clipping is on.
-  DirectCompositionSurfaceWin::SetScaledOverlaysSupportedForTesting(false);
+  SetDirectCompositionScaledOverlaysSupportedForTesting(false);
   gfx::Size monitor_size = window_size;
-  surface_->SetMonitorInfoForTesting(1, window_size);
+  SetDirectCompositionMonitorInfoForTesting(1, window_size);
   gfx::Rect on_screen_rect =
       gfx::Rect(0, 0, monitor_size.width() - 2, monitor_size.height() - 2);
   {
@@ -1184,7 +1186,7 @@ TEST_F(DirectCompositionPixelTest, ResizeVideoLayer) {
     surface_->ScheduleDCLayer(std::move(params));
 
     EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
-              surface_->SwapBuffers(base::DoNothing()));
+              surface_->SwapBuffers(base::DoNothing(), FrameData()));
   }
 
   // Swap chain is set to monitor/onscreen size.
@@ -1204,7 +1206,7 @@ TEST_F(DirectCompositionPixelTest, ResizeVideoLayer) {
   // (4) Test if the final on-screen size is adjusted to fit the monitor when
   // overlay scaling is supported and video on-screen size is slightly bigger
   // than the monitor. Clipping is off.
-  DirectCompositionSurfaceWin::SetScaledOverlaysSupportedForTesting(true);
+  SetDirectCompositionScaledOverlaysSupportedForTesting(true);
   on_screen_rect =
       gfx::Rect(0, 0, monitor_size.width() + 2, monitor_size.height() + 2);
   {
@@ -1217,7 +1219,7 @@ TEST_F(DirectCompositionPixelTest, ResizeVideoLayer) {
     surface_->ScheduleDCLayer(std::move(params));
 
     EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
-              surface_->SwapBuffers(base::DoNothing()));
+              surface_->SwapBuffers(base::DoNothing(), FrameData()));
   }
 
   // Swap chain is set to monitor size (100, 100).
@@ -1230,9 +1232,7 @@ TEST_F(DirectCompositionPixelTest, ResizeVideoLayer) {
   // chain to |new_on_screen_rect| which fits the monitor.
   surface_->GetSwapChainVisualInfoForTesting(0, &transform, &offset,
                                              &clip_rect);
-  gfx::RectF new_on_screen_rect = gfx::RectF(100, 100);
-  transform.TransformRect(&new_on_screen_rect);
-  EXPECT_EQ(gfx::Rect(monitor_size), gfx::ToEnclosingRect(new_on_screen_rect));
+  EXPECT_EQ(gfx::Rect(monitor_size), transform.MapRect(gfx::Rect(100, 100)));
 }
 
 TEST_F(DirectCompositionPixelTest, SwapChainImage) {
@@ -1327,7 +1327,7 @@ TEST_F(DirectCompositionPixelTest, SwapChainImage) {
 
     surface_->ScheduleDCLayer(std::move(dc_layer_params));
     EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
-              surface_->SwapBuffers(base::DoNothing()));
+              surface_->SwapBuffers(base::DoNothing(), FrameData()));
 
     SkColor expected_color = SK_ColorRED;
     SkColor actual_color =
@@ -1352,7 +1352,7 @@ TEST_F(DirectCompositionPixelTest, SwapChainImage) {
 
     surface_->ScheduleDCLayer(std::move(dc_layer_params));
     EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
-              surface_->SwapBuffers(base::DoNothing()));
+              surface_->SwapBuffers(base::DoNothing(), FrameData()));
 
     SkColor expected_color = SK_ColorGREEN;
     SkColor actual_color =
@@ -1375,7 +1375,7 @@ TEST_F(DirectCompositionPixelTest, SwapChainImage) {
 
     surface_->ScheduleDCLayer(std::move(dc_layer_params));
     EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
-              surface_->SwapBuffers(base::DoNothing()));
+              surface_->SwapBuffers(base::DoNothing(), FrameData()));
 
     SkColor expected_color = SK_ColorRED;
     SkColor actual_color =
@@ -1398,7 +1398,7 @@ TEST_F(DirectCompositionPixelTest, SwapChainImage) {
 
     surface_->ScheduleDCLayer(std::move(dc_layer_params));
     EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
-              surface_->SwapBuffers(base::DoNothing()));
+              surface_->SwapBuffers(base::DoNothing(), FrameData()));
 
     SkColor expected_color = SK_ColorRED;
     SkColor actual_color =
@@ -1463,7 +1463,7 @@ TEST_F(DirectCompositionPixelTest, RootSurfaceDrawOffset) {
   glClear(GL_COLOR_BUFFER_BIT);
 
   EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
-            surface_->SwapBuffers(base::DoNothing()));
+            surface_->SwapBuffers(base::DoNothing(), FrameData()));
 
   constexpr gfx::Point draw_offset(50, 50);
   auto root_surface = surface_->GetRootSurfaceForTesting();
@@ -1481,7 +1481,7 @@ TEST_F(DirectCompositionPixelTest, RootSurfaceDrawOffset) {
   glClear(GL_COLOR_BUFFER_BIT);
 
   EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
-            surface_->SwapBuffers(base::DoNothing()));
+            surface_->SwapBuffers(base::DoNothing(), FrameData()));
 
   Sleep(1000);
 
@@ -1509,7 +1509,7 @@ void RunBufferCountTest(scoped_refptr<DirectCompositionSurfaceWin> surface,
     return;
 
   if (for_video) {
-    DirectCompositionSurfaceWin::SetScaledOverlaysSupportedForTesting(true);
+    SetDirectCompositionScaledOverlaysSupportedForTesting(true);
     EXPECT_TRUE(surface->SetEnableDCLayers(true));
   } else {
     EXPECT_TRUE(surface->SetEnableDCLayers(false));
@@ -1543,7 +1543,8 @@ void RunBufferCountTest(scoped_refptr<DirectCompositionSurfaceWin> surface,
     EXPECT_TRUE(surface->ScheduleDCLayer(std::move(params)));
   }
 
-  EXPECT_EQ(gfx::SwapResult::SWAP_ACK, surface->SwapBuffers(base::DoNothing()));
+  EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
+            surface->SwapBuffers(base::DoNothing(), FrameData()));
 
   auto swap_chain = for_video ? surface->GetLayerSwapChainForTesting(0)
                               : surface->GetBackbufferSwapChainForTesting();

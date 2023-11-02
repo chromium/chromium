@@ -1,4 +1,4 @@
-// Copyright (c) 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,7 @@
 
 namespace blink {
 
-MODULES_EXPORT extern const base::Feature kWebRtcThermalResource;
+MODULES_EXPORT BASE_DECLARE_FEATURE(kWebRtcThermalResource);
 
 // The ThermalResource reports kOveruse or kUnderuse every 10 seconds(*) while
 // it has a registered listener and the DeviceThermalMeasurement is known.

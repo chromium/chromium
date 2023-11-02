@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
@@ -17,7 +18,6 @@
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
 #include "chrome/browser/ui/views/payments/payment_request_row_view.h"
 #include "chrome/browser/ui/views/payments/payment_request_views_util.h"
-#include "components/payments/content/autofill_payment_app.h"
 #include "components/payments/content/payment_app.h"
 #include "components/payments/content/payment_request_state.h"
 #include "components/payments/core/strings_util.h"
@@ -34,7 +34,6 @@
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
-#include "ui/views/layout/grid_layout.h"
 #include "ui/views/vector_icons.h"
 
 namespace payments {
@@ -52,13 +51,12 @@ class PaymentMethodListItem : public PaymentRequestItemList::Item {
                         PaymentRequestItemList* list,
                         base::WeakPtr<PaymentRequestDialogView> dialog,
                         bool selected)
-      : PaymentRequestItemList::Item(
-            spec,
-            state,
-            list,
-            selected,
-            /*clickable=*/true,
-            /*show_edit_button=*/app->type() == PaymentApp::Type::AUTOFILL),
+      : PaymentRequestItemList::Item(spec,
+                                     state,
+                                     list,
+                                     selected,
+                                     /*clickable=*/true,
+                                     /*show_edit_button=*/false),
         app_(app),
         dialog_(dialog) {
     Init();
@@ -70,34 +68,6 @@ class PaymentMethodListItem : public PaymentRequestItemList::Item {
   ~PaymentMethodListItem() override {}
 
  private:
-  void ShowEditor() {
-    if (!app_)
-      return;
-
-    switch (app_->type()) {
-      case PaymentApp::Type::AUTOFILL:
-        // Since we are a list item, we only care about the on_edited callback.
-        dialog_->ShowCreditCardEditor(
-            BackNavigationType::kPaymentSheet,
-            /*on_edited=*/
-            base::BindOnce(&PaymentRequestState::SetSelectedApp, state(), app_),
-            /*on_added=*/
-            base::OnceCallback<void(const autofill::CreditCard&)>(),
-            static_cast<AutofillPaymentApp*>(app_.get())->credit_card());
-        return;
-      case PaymentApp::Type::UNDEFINED:
-        // Intentionally fall through.
-      case PaymentApp::Type::NATIVE_MOBILE_APP:
-        // Intentionally fall through.
-      case PaymentApp::Type::SERVICE_WORKER_APP:
-        // Intentionally fall through.
-      case PaymentApp::Type::INTERNAL:
-        // We cannot edit these types of payment apps.
-        return;
-    }
-    NOTREACHED();
-  }
-
   // PaymentRequestItemList::Item:
   std::unique_ptr<views::View> CreateExtraView() override {
     return app_ ? CreateAppIconView(app_->icon_resource_id(),
@@ -116,7 +86,7 @@ class PaymentMethodListItem : public PaymentRequestItemList::Item {
 
     auto box_layout = std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical,
-        gfx::Insets(kPaymentRequestRowVerticalInsets, 0));
+        gfx::Insets::VH(kPaymentRequestRowVerticalInsets, 0));
     box_layout->set_cross_axis_alignment(
         views::BoxLayout::CrossAxisAlignment::kStart);
     card_info_container->SetLayoutManager(std::move(box_layout));
@@ -163,9 +133,9 @@ class PaymentMethodListItem : public PaymentRequestItemList::Item {
     return app_ && app_->IsCompleteForPayment();
   }
 
-  void PerformSelectionFallback() override { ShowEditor(); }
+  void PerformSelectionFallback() override {}
 
-  void EditButtonPressed() override { ShowEditor(); }
+  void EditButtonPressed() override {}
 
   base::WeakPtr<PaymentApp> app_;
   base::WeakPtr<PaymentRequestDialogView> dialog_;
@@ -178,9 +148,7 @@ PaymentMethodViewController::PaymentMethodViewController(
     base::WeakPtr<PaymentRequestState> state,
     base::WeakPtr<PaymentRequestDialogView> dialog)
     : PaymentRequestSheetController(spec, state, dialog),
-      payment_method_list_(dialog),
-      enable_add_card_(!state->is_retry_called() &&
-                       spec->supports_basic_card()) {
+      payment_method_list_(dialog) {
   const std::vector<std::unique_ptr<PaymentApp>>& available_apps =
       state->available_apps();
   for (const auto& app : available_apps) {
@@ -218,21 +186,11 @@ bool PaymentMethodViewController::ShouldShowPrimaryButton() {
 }
 
 bool PaymentMethodViewController::ShouldShowSecondaryButton() {
-  return enable_add_card_;
+  return false;
 }
 
 std::u16string PaymentMethodViewController::GetSecondaryButtonLabel() {
   return l10n_util::GetStringUTF16(IDS_PAYMENTS_ADD_CARD);
-}
-
-PaymentRequestSheetController::ButtonCallback
-PaymentMethodViewController::GetSecondaryButtonCallback() {
-  return base::BindRepeating(
-      &PaymentRequestDialogView::ShowCreditCardEditor, dialog(),
-      BackNavigationType::kPaymentSheet, base::RepeatingClosure(),
-      base::BindRepeating(&PaymentRequestState::AddAutofillPaymentApp, state(),
-                          true),
-      nullptr);
 }
 
 int PaymentMethodViewController::GetSecondaryButtonId() {

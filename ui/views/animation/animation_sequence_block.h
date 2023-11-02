@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -18,12 +19,10 @@
 #include "ui/views/animation/animation_key.h"
 #include "ui/views/views_export.h"
 
-// This AnimationBuilder API is currently in the experimental phase and only
-// used within ui/views/examples/.
-
 namespace gfx {
 class Rect;
 class RoundedCornersF;
+class LinearGradient;
 }  // namespace gfx
 
 namespace ui {
@@ -45,9 +44,10 @@ class VIEWS_EXPORT AnimationSequenceBlock {
  public:
   AnimationSequenceBlock(base::PassKey<AnimationBuilder> builder_key,
                          AnimationBuilder* owner,
-                         base::TimeDelta start);
-  AnimationSequenceBlock(AnimationSequenceBlock&& other);
-  AnimationSequenceBlock& operator=(AnimationSequenceBlock&& other);
+                         base::TimeDelta start,
+                         bool repeating);
+  AnimationSequenceBlock(AnimationSequenceBlock&& other) = delete;
+  AnimationSequenceBlock& operator=(AnimationSequenceBlock&& other) = delete;
   ~AnimationSequenceBlock();
 
   // Sets the duration of this block.  The duration may be set at most once and
@@ -120,6 +120,14 @@ class VIEWS_EXPORT AnimationSequenceBlock {
       ui::LayerOwner* target,
       const gfx::RoundedCornersF& rounded_corners,
       gfx::Tween::Type tween_type = gfx::Tween::LINEAR);
+  AnimationSequenceBlock& SetGradientMask(
+      ui::Layer* target,
+      const gfx::LinearGradient& gradient_mask,
+      gfx::Tween::Type tween_type = gfx::Tween::LINEAR);
+  AnimationSequenceBlock& SetGradientMask(
+      ui::LayerOwner* target,
+      const gfx::LinearGradient& gradient_mask,
+      gfx::Tween::Type tween_type = gfx::Tween::LINEAR);
   AnimationSequenceBlock& SetVisibility(
       ui::Layer* target,
       bool visible,
@@ -130,15 +138,16 @@ class VIEWS_EXPORT AnimationSequenceBlock {
       gfx::Tween::Type tween_type = gfx::Tween::LINEAR);
 
   // Creates a new block.
-  AnimationSequenceBlock At(base::TimeDelta since_sequence_start);
-  AnimationSequenceBlock Offset(base::TimeDelta since_last_block_start);
-  AnimationSequenceBlock Then();
+  AnimationSequenceBlock& At(base::TimeDelta since_sequence_start);
+  AnimationSequenceBlock& Offset(base::TimeDelta since_last_block_start);
+  AnimationSequenceBlock& Then();
 
  private:
   using AnimationValue = absl::variant<gfx::Rect,
                                        float,
                                        SkColor,
                                        gfx::RoundedCornersF,
+                                       gfx::LinearGradient,
                                        bool,
                                        gfx::Transform>;
 
@@ -159,7 +168,7 @@ class VIEWS_EXPORT AnimationSequenceBlock {
   void TerminateBlock();
 
   base::PassKey<AnimationBuilder> builder_key_;
-  AnimationBuilder* owner_;
+  raw_ptr<AnimationBuilder> owner_;
   base::TimeDelta start_;
 
   // The block duration.  This will contain nullopt (interpreted as zero) until
@@ -171,6 +180,9 @@ class VIEWS_EXPORT AnimationSequenceBlock {
   // support setting the duration after creating elements. The conversion is
   // done in TerminateBlock().
   std::map<AnimationKey, Element> elements_;
+
+  // Is this block part of a repeating sequence?
+  bool repeating_ = false;
 
   // True when this block has been terminated or used to create another block.
   // At this point, it's an error to use the block further.

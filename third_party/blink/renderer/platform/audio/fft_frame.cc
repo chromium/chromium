@@ -126,28 +126,28 @@ void FFTFrame::InterpolateFrequencyComponents(const FFTFrame& frame1,
     double mag2 = abs(c2);
 
     // Interpolate magnitudes in decibels
-    double mag1db = 20.0 * fdlibm::log10(mag1);
-    double mag2db = 20.0 * fdlibm::log10(mag2);
+    double db_mag1 = 20.0 * fdlibm::log10(mag1);
+    double db_mag2 = 20.0 * fdlibm::log10(mag2);
 
     double s1 = s1base;
     double s2 = s2base;
 
-    double magdbdiff = mag1db - mag2db;
+    double db_mag_diff = db_mag1 - db_mag2;
 
     // Empirical tweak to retain higher-frequency zeroes
     double threshold = (i > 16) ? 5.0 : 2.0;
 
-    if (magdbdiff < -threshold && mag1db < 0.0) {
+    if (db_mag_diff < -threshold && db_mag1 < 0.0) {
       s1 = fdlibm::pow(s1, 0.75);
       s2 = 1.0 - s1;
-    } else if (magdbdiff > threshold && mag2db < 0.0) {
+    } else if (db_mag_diff > threshold && db_mag2 < 0.0) {
       s2 = fdlibm::pow(s2, 0.75);
       s1 = 1.0 - s2;
     }
 
     // Average magnitude by decibels instead of linearly
-    double magdb = s1 * mag1db + s2 * mag2db;
-    double mag = fdlibm::pow(10.0, 0.05 * magdb);
+    double db_mag = s1 * db_mag1 + s2 * db_mag2;
+    double mag = fdlibm::pow(10.0, 0.05 * db_mag);
 
     // Now, deal with phase
     double phase1 = arg(c1);
@@ -159,14 +159,18 @@ void FFTFrame::InterpolateFrequencyComponents(const FFTFrame& frame1,
     last_phase2 = phase2;
 
     // Unwrap phase deltas
-    if (delta_phase1 > kPiDouble)
+    if (delta_phase1 > kPiDouble) {
       delta_phase1 -= kTwoPiDouble;
-    if (delta_phase1 < -kPiDouble)
+    }
+    if (delta_phase1 < -kPiDouble) {
       delta_phase1 += kTwoPiDouble;
-    if (delta_phase2 > kPiDouble)
+    }
+    if (delta_phase2 > kPiDouble) {
       delta_phase2 -= kTwoPiDouble;
-    if (delta_phase2 < -kPiDouble)
+    }
+    if (delta_phase2 < -kPiDouble) {
       delta_phase2 += kTwoPiDouble;
+    }
 
     // Blend group-delays
     double delta_phase_blend;
@@ -184,10 +188,12 @@ void FFTFrame::InterpolateFrequencyComponents(const FFTFrame& frame1,
     phase_accum += delta_phase_blend;
 
     // Unwrap
-    if (phase_accum > kPiDouble)
+    if (phase_accum > kPiDouble) {
       phase_accum -= kTwoPiDouble;
-    if (phase_accum < -kPiDouble)
+    }
+    if (phase_accum < -kPiDouble) {
       phase_accum += kTwoPiDouble;
+    }
 
     std::complex<double> c = std::polar(mag, phase_accum);
 
@@ -219,10 +225,12 @@ double FFTFrame::ExtractAverageGroupDelay() {
     last_phase = phase;
 
     // Unwrap
-    if (delta_phase < -kPiDouble)
+    if (delta_phase < -kPiDouble) {
       delta_phase += kTwoPiDouble;
-    if (delta_phase > kPiDouble)
+    }
+    if (delta_phase > kPiDouble) {
       delta_phase -= kTwoPiDouble;
+    }
 
     ave_sum += mag * delta_phase;
     weight_sum += mag;
@@ -234,8 +242,9 @@ double FFTFrame::ExtractAverageGroupDelay() {
   double ave_sample_delay = -ave / sample_phase_delay;
 
   // Leave 20 sample headroom (for leading edge of impulse)
-  if (ave_sample_delay > 20.0)
+  if (ave_sample_delay > 20.0) {
     ave_sample_delay -= 20.0;
+  }
 
   // Remove average group delay (minus 20 samples for headroom)
   AddConstantGroupDelay(-ave_sample_delay);

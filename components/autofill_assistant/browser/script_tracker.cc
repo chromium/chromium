@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/containers/flat_set.h"
+#include "components/autofill_assistant/browser/batch_element_checker.h"
 #include "components/autofill_assistant/browser/script.h"
 #include "components/autofill_assistant/browser/script_executor.h"
 #include "components/autofill_assistant/browser/trigger_context.h"
@@ -37,20 +38,22 @@ void SortScripts(std::vector<std::unique_ptr<Script>>* scripts) {
 // Creates a value containing a vector of a simple type, accepted by base::Value
 // constructor, from a container.
 template <typename T>
-base::Value ToValueArray(const T& v) {
-  std::vector<base::Value> values;
+base::Value::List ToValueList(const T& v) {
+  base::Value::List list;
   for (const auto& s : v) {
-    values.emplace_back(base::Value(s));
+    list.Append(s);
   }
-  return base::Value(values);
+  return list;
 }
 
 }  // namespace
 
 ScriptTracker::ScriptTracker(ScriptExecutorDelegate* delegate,
+                             ScriptExecutorUiDelegate* ui_delegate,
                              ScriptTracker::Listener* listener)
-    : delegate_(delegate), listener_(listener) {
+    : delegate_(delegate), ui_delegate_(ui_delegate), listener_(listener) {
   DCHECK(delegate_);
+  DCHECK(ui_delegate_);
   DCHECK(listener_);
 }
 
@@ -126,7 +129,8 @@ void ScriptTracker::ExecuteScript(const std::string& script_path,
   executor_ = std::make_unique<ScriptExecutor>(
       script_path, std::move(context), last_global_payload_,
       last_script_payload_,
-      /* listener= */ this, &interrupts_, delegate_);
+      /* listener= */ this, &interrupts_, delegate_, ui_delegate_,
+      /* is_interrupt_executor= */ false);
   ScriptExecutor::RunScriptCallback run_script_callback = base::BindOnce(
       &ScriptTracker::OnScriptRun, weak_ptr_factory_.GetWeakPtr(), script_path,
       std::move(callback));
@@ -143,42 +147,40 @@ void ScriptTracker::ClearRunnableScripts() {
 }
 
 base::Value ScriptTracker::GetDebugContext() const {
-  base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value::Dict dict;
 
   std::string last_global_payload_js = last_global_payload_;
   base::Base64Encode(last_global_payload_js, &last_global_payload_js);
-  dict.SetKey("last-global-payload", base::Value(last_global_payload_js));
+  dict.Set("last-global-payload", last_global_payload_js);
 
   std::string last_script_payload_js = last_script_payload_;
   base::Base64Encode(last_script_payload_js, &last_script_payload_js);
-  dict.SetKey("last-script-payload", base::Value(last_script_payload_js));
+  dict.Set("last-script-payload", last_script_payload_js);
 
-  std::vector<base::Value> available_scripts_js;
+  base::Value::List available_scripts_js;
   for (const std::unique_ptr<Script>& script : available_scripts_)
-    available_scripts_js.push_back(base::Value(script->handle.path));
-  dict.SetKey("available-scripts", base::Value(available_scripts_js));
+    available_scripts_js.Append(script->handle.path);
+  dict.Set("available-scripts", std::move(available_scripts_js));
 
-  std::vector<base::Value> runnable_scripts_js;
+  base::Value::List runnable_scripts_js;
   for (const auto& entry : runnable_scripts_) {
-    base::Value script_js = base::Value(base::Value::Type::DICTIONARY);
-    script_js.SetKey("path", base::Value(entry.path));
-    script_js.SetKey("autostart", base::Value(entry.autostart));
+    base::Value::Dict script_js;
+    script_js.Set("path", entry.path);
+    script_js.Set("autostart", entry.autostart);
 
-    base::Value direct_action_js = base::Value(base::Value::Type::DICTIONARY);
-    direct_action_js.SetKey("names", ToValueArray(entry.direct_action.names));
-    direct_action_js.SetKey(
-        "required_arguments",
-        ToValueArray(entry.direct_action.required_arguments));
-    direct_action_js.SetKey(
-        "optional_arguments",
-        ToValueArray(entry.direct_action.optional_arguments));
-    script_js.SetKey("direct_action", std::move(direct_action_js));
+    base::Value::Dict direct_action_js;
+    direct_action_js.Set("names", ToValueList(entry.direct_action.names));
+    direct_action_js.Set("required_arguments",
+                         ToValueList(entry.direct_action.required_arguments));
+    direct_action_js.Set("optional_arguments",
+                         ToValueList(entry.direct_action.optional_arguments));
+    script_js.Set("direct_action", std::move(direct_action_js));
 
-    runnable_scripts_js.push_back(std::move(script_js));
+    runnable_scripts_js.Append(std::move(script_js));
   }
-  dict.SetKey("runnable-scripts", base::Value(runnable_scripts_js));
+  dict.Set("runnable-scripts", std::move(runnable_scripts_js));
 
-  return dict;
+  return base::Value(std::move(dict));
 }
 
 void ScriptTracker::OnScriptRun(

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,10 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "extensions/browser/api/storage/settings_namespace.h"
 #include "extensions/browser/api/storage/settings_observer.h"
 #include "extensions/browser/api/storage/value_store_cache.h"
@@ -61,8 +63,8 @@ class StorageFrontend : public BrowserContextKeyedAPI {
   void DeleteStorageSoon(const std::string& extension_id,
                          base::OnceClosure done_callback);
 
-  // Gets the thread-safe observer list.
-  scoped_refptr<SettingsObserverList> GetObservers();
+  // Gets the Settings change callback.
+  SettingsChangedCallback GetObserver();
 
   void DisableStorageForTesting(
       settings_namespace::Namespace settings_namespace);
@@ -87,18 +89,18 @@ class StorageFrontend : public BrowserContextKeyedAPI {
 
   void Init(scoped_refptr<value_store::ValueStoreFactory> storage_factory);
 
+  void OnSettingsChanged(const std::string& extension_id,
+                         StorageAreaNamespace storage_area,
+                         base::Value changes);
+
   // The (non-incognito) browser context this Frontend belongs to.
-  content::BrowserContext* const browser_context_;
-
-  // List of observers to settings changes.
-  scoped_refptr<SettingsObserverList> observers_;
-
-  // Observer for |browser_context_|.
-  std::unique_ptr<SettingsObserver> browser_context_observer_;
+  const raw_ptr<content::BrowserContext> browser_context_;
 
   // Maps a known namespace to its corresponding ValueStoreCache. The caches
   // are owned by this object.
   CacheMap caches_;
+
+  base::WeakPtrFactory<StorageFrontend> weak_factory_{this};
 };
 
 }  // namespace extensions

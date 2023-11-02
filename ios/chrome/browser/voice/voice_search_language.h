@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 // language.
 @interface VoiceSearchLanguage : NSObject
 
-// Creates a VoiceSearchLanguageObject.  |localizationPreferences| can be nil.
+// Creates a VoiceSearchLanguageObject.  `localizationPreferences` can be nil.
 - (instancetype)initWithIdentifier:(NSString*)identifier
                        displayName:(NSString*)displayName
             localizationPreference:(NSString*)localizationPreference
@@ -27,7 +27,7 @@
 
 // A localization identifier for use with +[NSBundle
 // preferredLocalizationsFromArray:forPreferences:].  In general this is the
-// same as |identifier|, but in some cases e.g.  Chinese and Cantonese it
+// same as `identifier`, but in some cases e.g.  Chinese and Cantonese it
 // differs to facilitate the NSBundle method.
 @property(nonatomic, readonly, copy) NSString* localizationPreference;
 

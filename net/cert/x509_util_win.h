@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,9 +17,7 @@
 #include "net/base/net_export.h"
 #include "net/cert/x509_certificate.h"
 
-namespace net {
-
-namespace x509_util {
+namespace net::x509_util {
 
 // Creates an X509Certificate representing |os_cert| with intermediates
 // |os_chain|.
@@ -64,8 +62,6 @@ NET_EXPORT SHA256HashValue CalculateFingerprint256(PCCERT_CONTEXT cert);
 // Returns true if the certificate is self-signed.
 NET_EXPORT bool IsSelfSigned(PCCERT_CONTEXT cert_handle);
 
-}  // namespace x509_util
-
-}  // namespace net
+}  // namespace net::x509_util
 
 #endif  // NET_CERT_X509_UTIL_WIN_H_

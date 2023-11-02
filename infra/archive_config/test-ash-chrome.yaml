@@ -1,0 +1,28 @@
+package: chromium/testing/linux-ash-chromium/x86_64/ash.zip
+description: Prebuilt test binary.
+install_mode: copy
+data:
+  - file: chrome
+  - file: chrome-wrapper
+  - file: chrome_100_percent.pak
+  - file: chrome_200_percent.pak
+  - file: chrome_crashpad_handler
+  - file: icudtl.dat
+  - file: keyboard_resources.pak
+  - file: libEGL.so
+  - file: libGLESv2.so
+  - file: libminigbm.so
+  - file: MEIPreload/manifest.json
+  - file: MEIPreload/preloaded_data.pb
+  - file: nacl_helper
+  - file: nacl_helper_bootstrap
+  - file: nacl_irt_x86_64.nexe
+  - file: product_logo_48.png
+  - file: resources.pak
+  - file: snapshot_blob.bin
+  - file: test_ash_chrome
+  - file: xdg-mime
+  - file: xdg-settings
+  - dir: ClearKeyCdm/
+  - dir: locales/
+  - dir: resources/

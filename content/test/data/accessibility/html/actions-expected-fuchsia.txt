@@ -1,0 +1,7 @@
+UNKNOWN focusable has_input_focus label='Actions'
+++UNKNOWN hidden
+++++UNKNOWN
+++++++SLIDER focusable actions='{SET_VALUE}'
+++++++TEXT_FIELD focusable label='Test textfield' actions='{DEFAULT, SET_VALUE}'
+++++++++UNKNOWN hidden
+++++++++UNKNOWN

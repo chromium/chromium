@@ -9,6 +9,11 @@ Dumping inline style:
     margin-top: 33px !important; @[undefined-undefined]
 }
 Dumping matched rules: 
+@layer base
+    *#inspected* {    regular
+        background-color: blue; @[38:8-38:31]
+        background-color: blue; @[undefined-undefined]
+    }
 *#inspected* {    regular
     margin-left: 10px !important; @[1:4-1:33]
     margin-left: 10px !important; @[undefined-undefined]
@@ -31,7 +36,27 @@ Dumping matched rules:
         padding-left: 10px; @[undefined-undefined]
         margin-top: 15px !important; @[undefined-undefined]
     }
+@supports (display: grid) or (display: inline-grid)
+    *#inspected* {    regular
+        display: grid; @[32:8-32:22]
+        display: grid; @[undefined-undefined]
+    }
+@scope (html)
+    *#inspected* {    regular
+        color: red; @[50:8-50:19]
+        color: red; @[undefined-undefined]
+    }
+@scope (html) to (.child-div)
+    *#inspected* {    regular
+        color: lightcyan; @[56:6-56:23]
+        color: lightcyan; @[undefined-undefined]
+    }
 Dumping inherited rules: 
+@layer base.nested
+    *body* {    regular
+        background-color: green; @[42:12-42:36]
+        background-color: green; @[undefined-undefined]
+    }
 
 Running test: testBasicPropertyChange
 {
@@ -42,6 +67,11 @@ Running test: testBasicPropertyChange
     --x: foo; @[undefined-undefined]
     margin-top: 33px !important; @[undefined-undefined]
 }
+@layer base
+    *#inspected* {    regular
+        background-color: blue; @[38:8-38:31]
+        background-color: blue; @[undefined-undefined]
+    }
 *#inspected* {    regular
     margin-left: 10px !important; @[1:4-1:33]
     margin-left: 10px !important; @[undefined-undefined]
@@ -64,6 +94,26 @@ Running test: testBasicPropertyChange
         padding-left: 101px; @[undefined-undefined]
         margin-top: 15px !important; @[undefined-undefined]
     }
+@supports (display: grid) or (display: inline-grid)
+    *#inspected* {    regular
+        display: grid; @[32:8-32:22]
+        display: grid; @[undefined-undefined]
+    }
+@scope (html)
+    *#inspected* {    regular
+        color: red; @[50:8-50:19]
+        color: red; @[undefined-undefined]
+    }
+@scope (html) to (.child-div)
+    *#inspected* {    regular
+        color: lightcyan; @[56:6-56:23]
+        color: lightcyan; @[undefined-undefined]
+    }
+@layer base.nested
+    *body* {    regular
+        background-color: green; @[42:12-42:36]
+        background-color: green; @[undefined-undefined]
+    }
 
 Running test: testChangePropertyInShortHand
 {
@@ -74,6 +124,11 @@ Running test: testChangePropertyInShortHand
     --x: foo; @[undefined-undefined]
     margin-top: 33px !important; @[undefined-undefined]
 }
+@layer base
+    *#inspected* {    regular
+        background-color: blue; @[38:8-38:31]
+        background-color: blue; @[undefined-undefined]
+    }
 *#inspected* {    regular
     margin-left: 10px !important; @[1:4-1:33]
     margin-left: 10px !important; @[undefined-undefined]
@@ -96,6 +151,26 @@ Running test: testChangePropertyInShortHand
         padding-left: 10px; @[undefined-undefined]
         margin-top: 15px !important; @[undefined-undefined]
     }
+@supports (display: grid) or (display: inline-grid)
+    *#inspected* {    regular
+        display: grid; @[32:8-32:22]
+        display: grid; @[undefined-undefined]
+    }
+@scope (html)
+    *#inspected* {    regular
+        color: red; @[50:8-50:19]
+        color: red; @[undefined-undefined]
+    }
+@scope (html) to (.child-div)
+    *#inspected* {    regular
+        color: lightcyan; @[56:6-56:23]
+        color: lightcyan; @[undefined-undefined]
+    }
+@layer base.nested
+    *body* {    regular
+        background-color: green; @[42:12-42:36]
+        background-color: green; @[undefined-undefined]
+    }
 
 Running test: testChangeImportantProperty
 {
@@ -106,6 +181,11 @@ Running test: testChangeImportantProperty
     --x: foo; @[undefined-undefined]
     margin-top: 33px !important; @[undefined-undefined]
 }
+@layer base
+    *#inspected* {    regular
+        background-color: blue; @[38:8-38:31]
+        background-color: blue; @[undefined-undefined]
+    }
 *#inspected* {    regular
     margin-left: 101px !important; @[1:4-1:34]
     margin-left: 101px !important; @[undefined-undefined]
@@ -128,6 +208,26 @@ Running test: testChangeImportantProperty
         padding-left: 10px; @[undefined-undefined]
         margin-top: 15px !important; @[undefined-undefined]
     }
+@supports (display: grid) or (display: inline-grid)
+    *#inspected* {    regular
+        display: grid; @[32:8-32:22]
+        display: grid; @[undefined-undefined]
+    }
+@scope (html)
+    *#inspected* {    regular
+        color: red; @[50:8-50:19]
+        color: red; @[undefined-undefined]
+    }
+@scope (html) to (.child-div)
+    *#inspected* {    regular
+        color: lightcyan; @[56:6-56:23]
+        color: lightcyan; @[undefined-undefined]
+    }
+@layer base.nested
+    *body* {    regular
+        background-color: green; @[42:12-42:36]
+        background-color: green; @[undefined-undefined]
+    }
 
 Running test: testChangeInlineProperty
 {
@@ -138,6 +238,11 @@ Running test: testChangeInlineProperty
     --x: foo; @[undefined-undefined]
     margin-top: 33px !important; @[undefined-undefined]
 }
+@layer base
+    *#inspected* {    regular
+        background-color: blue; @[38:8-38:31]
+        background-color: blue; @[undefined-undefined]
+    }
 *#inspected* {    regular
     margin-left: 10px !important; @[1:4-1:33]
     margin-left: 10px !important; @[undefined-undefined]
@@ -160,6 +265,26 @@ Running test: testChangeInlineProperty
         padding-left: 10px; @[undefined-undefined]
         margin-top: 15px !important; @[undefined-undefined]
     }
+@supports (display: grid) or (display: inline-grid)
+    *#inspected* {    regular
+        display: grid; @[32:8-32:22]
+        display: grid; @[undefined-undefined]
+    }
+@scope (html)
+    *#inspected* {    regular
+        color: red; @[50:8-50:19]
+        color: red; @[undefined-undefined]
+    }
+@scope (html) to (.child-div)
+    *#inspected* {    regular
+        color: lightcyan; @[56:6-56:23]
+        color: lightcyan; @[undefined-undefined]
+    }
+@layer base.nested
+    *body* {    regular
+        background-color: green; @[42:12-42:36]
+        background-color: green; @[undefined-undefined]
+    }
 
 Running test: testChangeInlineImportantProperty
 {
@@ -170,6 +295,11 @@ Running test: testChangeInlineImportantProperty
     --x: foo; @[undefined-undefined]
     margin-top: 101px !important; @[undefined-undefined]
 }
+@layer base
+    *#inspected* {    regular
+        background-color: blue; @[38:8-38:31]
+        background-color: blue; @[undefined-undefined]
+    }
 *#inspected* {    regular
     margin-left: 10px !important; @[1:4-1:33]
     margin-left: 10px !important; @[undefined-undefined]
@@ -191,6 +321,26 @@ Running test: testChangeInlineImportantProperty
         margin-left: 20px; @[undefined-undefined]
         padding-left: 10px; @[undefined-undefined]
         margin-top: 15px !important; @[undefined-undefined]
+    }
+@supports (display: grid) or (display: inline-grid)
+    *#inspected* {    regular
+        display: grid; @[32:8-32:22]
+        display: grid; @[undefined-undefined]
+    }
+@scope (html)
+    *#inspected* {    regular
+        color: red; @[50:8-50:19]
+        color: red; @[undefined-undefined]
+    }
+@scope (html) to (.child-div)
+    *#inspected* {    regular
+        color: lightcyan; @[56:6-56:23]
+        color: lightcyan; @[undefined-undefined]
+    }
+@layer base.nested
+    *body* {    regular
+        background-color: green; @[42:12-42:36]
+        background-color: green; @[undefined-undefined]
     }
 
 Running test: testChangeMissingProperty
@@ -204,6 +354,11 @@ Running test: testChangeMissingProperty
     margin-bottom: 101px; @[undefined-undefined]
     margin-top: 33px !important; @[undefined-undefined]
 }
+@layer base
+    *#inspected* {    regular
+        background-color: blue; @[38:8-38:31]
+        background-color: blue; @[undefined-undefined]
+    }
 *#inspected* {    regular
     margin-left: 10px !important; @[1:4-1:33]
     margin-left: 10px !important; @[undefined-undefined]
@@ -226,6 +381,26 @@ Running test: testChangeMissingProperty
         padding-left: 10px; @[undefined-undefined]
         margin-top: 15px !important; @[undefined-undefined]
     }
+@supports (display: grid) or (display: inline-grid)
+    *#inspected* {    regular
+        display: grid; @[32:8-32:22]
+        display: grid; @[undefined-undefined]
+    }
+@scope (html)
+    *#inspected* {    regular
+        color: red; @[50:8-50:19]
+        color: red; @[undefined-undefined]
+    }
+@scope (html) to (.child-div)
+    *#inspected* {    regular
+        color: lightcyan; @[56:6-56:23]
+        color: lightcyan; @[undefined-undefined]
+    }
+@layer base.nested
+    *body* {    regular
+        background-color: green; @[42:12-42:36]
+        background-color: green; @[undefined-undefined]
+    }
 
 Running test: testAppendWithSeparator
 Dumping inline style: 
@@ -235,6 +410,11 @@ Dumping inline style:
 }
 Dumping matched rules: 
 Dumping inherited rules: 
+@layer base.nested
+    *body* {    regular
+        background-color: green; @[42:12-42:36]
+        background-color: green; @[undefined-undefined]
+    }
 Resulting styles
 {
     padding-left: 10px; @[0:0-0:19]
@@ -242,6 +422,11 @@ Resulting styles
     padding-left: 10px; @[undefined-undefined]
     padding-right: 101px; @[undefined-undefined]
 }
+@layer base.nested
+    *body* {    regular
+        background-color: green; @[42:12-42:36]
+        background-color: green; @[undefined-undefined]
+    }
 
 Running test: testChangeCustomProperty
 {
@@ -252,6 +437,11 @@ Running test: testChangeCustomProperty
     --x:  bar; @[undefined-undefined]
     margin-top: 33px !important; @[undefined-undefined]
 }
+@layer base
+    *#inspected* {    regular
+        background-color: blue; @[38:8-38:31]
+        background-color: blue; @[undefined-undefined]
+    }
 *#inspected* {    regular
     margin-left: 10px !important; @[1:4-1:33]
     margin-left: 10px !important; @[undefined-undefined]
@@ -273,5 +463,25 @@ Running test: testChangeCustomProperty
         margin-left: 20px; @[undefined-undefined]
         padding-left: 10px; @[undefined-undefined]
         margin-top: 15px !important; @[undefined-undefined]
+    }
+@supports (display: grid) or (display: inline-grid)
+    *#inspected* {    regular
+        display: grid; @[32:8-32:22]
+        display: grid; @[undefined-undefined]
+    }
+@scope (html)
+    *#inspected* {    regular
+        color: red; @[50:8-50:19]
+        color: red; @[undefined-undefined]
+    }
+@scope (html) to (.child-div)
+    *#inspected* {    regular
+        color: lightcyan; @[56:6-56:23]
+        color: lightcyan; @[undefined-undefined]
+    }
+@layer base.nested
+    *body* {    regular
+        background-color: green; @[42:12-42:36]
+        background-color: green; @[undefined-undefined]
     }
 

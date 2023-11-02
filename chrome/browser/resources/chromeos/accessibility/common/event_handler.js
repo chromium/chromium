@@ -1,21 +1,23 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+const AutomationEvent = chrome.automation.AutomationEvent;
+const AutomationNode = chrome.automation.AutomationNode;
+const EventType = chrome.automation.EventType;
 
 /**
  * This class wraps AutomationNode event listeners, adding some convenience
  * functions.
  */
-class EventHandler {
+export class EventHandler {
   /**
-   * @param {!chrome.automation.AutomationNode |
-   *         !Array<!chrome.automation.AutomationNode>} nodes
-   * @param {!chrome.automation.EventType |
-   *     !Array<!chrome.automation.EventType>} types
-   * @param {?function(!chrome.automation.AutomationEvent)} callback
+   * @param {!AutomationNode | !Array<!AutomationNode>} nodes
+   * @param {!EventType | !Array<!EventType>} types
+   * @param {?function(!AutomationEvent)} callback
    * @param {{capture: (boolean|undefined), exactMatch: (boolean|undefined),
    *     listenOnce: (boolean|undefined), predicate:
-   *     ((function(chrome.automation.AutomationEvent): boolean)|undefined)}}
+   *     ((function(AutomationEvent): boolean)|undefined)}}
    *     options
    *   exactMatch Whether to ignore events where the target is not the provided
    *       node.
@@ -26,13 +28,13 @@ class EventHandler {
    *   predicate A predicate for what events will be processed.
    */
   constructor(nodes, types, callback, options = {}) {
-    /** @private {!Array<!chrome.automation.AutomationNode>} */
+    /** @private {!Array<!AutomationNode>} */
     this.nodes_ = nodes instanceof Array ? nodes : [nodes];
 
-    /** @private {!Array<!chrome.automation.EventType>} */
+    /** @private {!Array<!EventType>} */
     this.types_ = types instanceof Array ? types : [types];
 
-    /** @private {?function(!chrome.automation.AutomationEvent)} */
+    /** @private {?function(!AutomationEvent)} */
     this.callback_ = callback;
 
     /** @private {boolean} */
@@ -46,14 +48,14 @@ class EventHandler {
 
     /**
      * Default is a function that always returns true.
-     * @private {!function(chrome.automation.AutomationEvent): boolean}
+     * @private {!function(AutomationEvent): boolean}
      */
-    this.predicate_ = options.predicate || ((e) => true);
+    this.predicate_ = options.predicate || (e => true);
 
     /** @private {boolean} */
     this.listening_ = false;
 
-    /** @private {!function(chrome.automation.AutomationEvent)} */
+    /** @private {!function(AutomationEvent)} */
     this.handler_ = event => this.handleEvent_(event);
   }
 
@@ -81,7 +83,7 @@ class EventHandler {
     this.listening_ = false;
   }
 
-  /** @param {?function(!chrome.automation.AutomationEvent)} callback */
+  /** @param {?function(!AutomationEvent)} callback */
   setCallback(callback) {
     this.callback_ = callback;
   }
@@ -89,8 +91,7 @@ class EventHandler {
   /**
    * Changes what nodes are being listened to. Removes listeners from existing
    *     nodes before adding listeners on new nodes.
-   * @param {!chrome.automation.AutomationNode |
-   *     !Array<!chrome.automation.AutomationNode>} nodes
+   * @param {!AutomationNode | !Array<!AutomationNode>} nodes
    */
   setNodes(nodes) {
     const wasListening = this.listening_;
@@ -103,7 +104,7 @@ class EventHandler {
 
   /**
    * Adds another node to the set of nodes being listened to.
-   * @param {!chrome.automation.AutomationNode} node
+   * @param {!AutomationNode} node
    */
   addNode(node) {
     this.nodes_.push(node);
@@ -117,10 +118,10 @@ class EventHandler {
 
   /**
    * Removes a specific node from the set of nodes being listened to.
-   * @param {!chrome.automation.AutomationNode} node
+   * @param {!AutomationNode} node
    */
   removeNode(node) {
-    this.nodes_ = this.nodes_.filter((n) => n !== node);
+    this.nodes_ = this.nodes_.filter(n => n !== node);
 
     if (this.listening_) {
       for (const type of this.types_) {

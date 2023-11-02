@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,7 +31,7 @@ TEST(NotificationPlatformBridgeChromeOsTest, Update) {
               &initial_delegate_clicks));
   message_center::Notification initial_notification(
       message_center::NOTIFICATION_TYPE_SIMPLE, id, std::u16string(),
-      std::u16string(), gfx::Image(), std::u16string(), GURL(),
+      std::u16string(), ui::ImageModel(), std::u16string(), GURL(),
       message_center::NotifierId(), {}, initial_delegate);
   bridge.Display(NotificationHandler::Type::TRANSIENT, &profile,
                  initial_notification, nullptr);
@@ -50,7 +50,7 @@ TEST(NotificationPlatformBridgeChromeOsTest, Update) {
               &updated_delegate_clicks));
   message_center::Notification updated_notification(
       message_center::NOTIFICATION_TYPE_SIMPLE, id, std::u16string(),
-      std::u16string(), gfx::Image(), std::u16string(), GURL(),
+      std::u16string(), ui::ImageModel(), std::u16string(), GURL(),
       message_center::NotifierId(), {}, updated_delegate);
   bridge.Display(NotificationHandler::Type::TRANSIENT, &profile,
                  updated_notification, nullptr);

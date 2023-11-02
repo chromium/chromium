@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,9 @@ module network.mojom;
 // See content/browser/renderer_host/sandbox_flags.md for more details about how
 // the web-layer components (i.e. //content and Blink) consume and apply these
 // flags.
+//
+// These values are persisted to disk, so any changes must be append-only and
+// not affect existing values.
 
 [Extensible]
 enum WebSandboxFlags {
@@ -44,6 +47,9 @@ enum WebSandboxFlags {
   kDownloads                             =  32768, // 1 << 15
 
   kStorageAccessByUserActivation         =  65536, // 1 << 16
+
+  // See https://github.com/whatwg/html/pull/7654
+  kTopNavigationToCustomProtocols        = 131072, // 1 << 17
 
   kAll                                   = -1, // Mask with all bits set.
 };

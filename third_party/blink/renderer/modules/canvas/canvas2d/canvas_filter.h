@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,7 +24,8 @@ class MODULES_EXPORT CanvasFilter final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static CanvasFilter* Create(const V8CanvasFilterInput* init,
+  static CanvasFilter* Create(ExecutionContext* execution_context,
+                              const V8CanvasFilterInput* init,
                               ExceptionState& exception_state);
 
   explicit CanvasFilter(FilterOperations filter_operations);

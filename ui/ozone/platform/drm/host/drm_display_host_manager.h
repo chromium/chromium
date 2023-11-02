@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/containers/queue.h"
-#include "base/file_descriptor_posix.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/display/types/native_display_delegate.h"
@@ -56,7 +55,8 @@ class DrmDisplayHostManager : public DeviceEventObserver, GpuThreadObserver {
   void UpdateDisplays(display::GetDisplaysCallback callback);
   void ConfigureDisplays(
       const std::vector<display::DisplayConfigurationParams>& config_requests,
-      display::ConfigureCallback callback);
+      display::ConfigureCallback callback,
+      uint32_t modeset_flag);
 
   // DeviceEventObserver overrides:
   void OnDeviceEvent(const DeviceEvent& event) override;
@@ -76,15 +76,20 @@ class DrmDisplayHostManager : public DeviceEventObserver, GpuThreadObserver {
   void GpuUpdatedHDCPState(int64_t display_id, bool status);
   void GpuTookDisplayControl(bool status);
   void GpuRelinquishedDisplayControl(bool status);
+  void GpuShouldDisplayEventTriggerConfiguration(bool should_trigger);
 
  private:
   struct DisplayEvent {
     DisplayEvent(DeviceEvent::ActionType action_type,
-                 const base::FilePath& path)
-        : action_type(action_type), path(path) {}
+                 const base::FilePath& path,
+                 const EventPropertyMap& properties);
+    DisplayEvent(const DisplayEvent&);
+    DisplayEvent& operator=(const DisplayEvent&);
+    ~DisplayEvent();
 
     DeviceEvent::ActionType action_type;
     base::FilePath path;
+    EventPropertyMap display_event_props;
   };
 
   // Handle hotplug events sequentially.
@@ -95,7 +100,7 @@ class DrmDisplayHostManager : public DeviceEventObserver, GpuThreadObserver {
   void OnAddGraphicsDevice(const base::FilePath& path,
                            const base::FilePath& sysfs_path,
                            std::unique_ptr<DrmDeviceHandle> handle);
-  void OnUpdateGraphicsDevice();
+  void OnUpdateGraphicsDevice(const EventPropertyMap& udev_event_props);
   void OnRemoveGraphicsDevice(const base::FilePath& path);
 
   void RunUpdateDisplaysCallback(display::GetDisplaysCallback callback) const;

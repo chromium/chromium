@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -83,7 +83,7 @@ bool BluetoothDevice::IsValidDescriptor(const String& descriptor_instance_id) {
 void BluetoothDevice::ClearAttributeInstanceMapAndFireEvent() {
   attribute_instance_map_->Clear();
   DispatchEvent(
-      *Event::CreateBubble(event_type_names::kGattserverdisconnected));
+      *Event::CreateBubble(event_type_names::kGattserverdisconnected), "BluetoothDevice::ClearAttributeInstanceMapAndFireEvent");
 }
 
 const WTF::AtomicString& BluetoothDevice::InterfaceName() const {
@@ -131,7 +131,7 @@ ScriptPromise BluetoothDevice::watchAdvertisements(
     // 1.2. Add the following abort steps to options.signal:
     // 1.2.1. Abort watchAdvertisements with this.
     // 1.2.2. Reject promise with AbortError.
-    options->signal()->AddAlgorithm(WTF::Bind(
+    options->signal()->AddAlgorithm(WTF::BindOnce(
         &BluetoothDevice::AbortWatchAdvertisements, WrapPersistent(this)));
   }
 
@@ -165,8 +165,8 @@ ScriptPromise BluetoothDevice::watchAdvertisements(
   // the same device.
   bluetooth_->Service()->WatchAdvertisementsForDevice(
       device_->id, std::move(client),
-      WTF::Bind(&BluetoothDevice::WatchAdvertisementsCallback,
-                WrapPersistent(this)));
+      WTF::BindOnce(&BluetoothDevice::WatchAdvertisementsCallback,
+                    WrapPersistent(this)));
   return watch_advertisements_resolver_->Promise();
 }
 
@@ -192,12 +192,29 @@ void BluetoothDevice::AbortWatchAdvertisements() {
   }
 }
 
+ScriptPromise BluetoothDevice::forget(ScriptState* script_state,
+                                      ExceptionState& exception_state) {
+  if (!GetExecutionContext()) {
+    exception_state.ThrowTypeError(kInactiveDocumentError);
+    return ScriptPromise();
+  }
+
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromise promise = resolver->Promise();
+  bluetooth_->Service()->ForgetDevice(
+      device_->id,
+      WTF::BindOnce(&BluetoothDevice::ForgetCallback, WrapPersistent(this),
+                    WrapPersistent(resolver)));
+
+  return promise;
+}
+
 void BluetoothDevice::AdvertisingEvent(
     mojom::blink::WebBluetoothAdvertisingEventPtr advertising_event) {
   auto* event = MakeGarbageCollected<BluetoothAdvertisingEvent>(
       event_type_names::kAdvertisementreceived, this,
       std::move(advertising_event));
-  DispatchEvent(*event);
+  DispatchEvent(*event, "BluetoothDevice::AdvertisingEvent");
 }
 
 bool BluetoothDevice::HasPendingActivity() const {
@@ -240,6 +257,10 @@ void BluetoothDevice::WatchAdvertisementsCallback(
   // 2.2.3.3. Resolve promise with undefined.
   watch_advertisements_resolver_->Resolve();
   watch_advertisements_resolver_.Clear();
+}
+
+void BluetoothDevice::ForgetCallback(ScriptPromiseResolver* resolver) {
+  resolver->Resolve();
 }
 
 }  // namespace blink

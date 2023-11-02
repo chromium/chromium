@@ -1,4 +1,4 @@
-// Copyright (c) 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,16 +7,15 @@
 #include <algorithm>
 #include <atomic>
 
+#include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/time/time.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_hooks.h"
 #include "base/allocator/partition_allocator/partition_lock.h"
+#include "base/allocator/partition_allocator/starscan/logging.h"
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
-#include "base/bind.h"
-#include "base/logging.h"
-#include "base/time/time.h"
 
-namespace base {
-namespace internal {
+namespace partition_alloc::internal {
 
 // static
 constexpr size_t QuarantineData::kQuarantineSizeMinLimit;
@@ -43,8 +42,8 @@ size_t PCScanSchedulingBackend::ScanStarted() {
   return data.current_size.exchange(0, std::memory_order_relaxed);
 }
 
-TimeDelta PCScanSchedulingBackend::UpdateDelayedSchedule() {
-  return TimeDelta();
+base::TimeDelta PCScanSchedulingBackend::UpdateDelayedSchedule() {
+  return base::TimeDelta();
 }
 
 // static
@@ -80,9 +79,11 @@ constexpr double MUAwareTaskBasedBackend::kTargetMutatorUtilizationPercent;
 
 MUAwareTaskBasedBackend::MUAwareTaskBasedBackend(
     PCScanScheduler& scheduler,
-    base::RepeatingCallback<void(TimeDelta)> schedule_delayed_scan)
+    ScheduleDelayedScanFunc schedule_delayed_scan)
     : PCScanSchedulingBackend(scheduler),
-      schedule_delayed_scan_(std::move(schedule_delayed_scan)) {}
+      schedule_delayed_scan_(schedule_delayed_scan) {
+  PA_DCHECK(schedule_delayed_scan_);
+}
 
 MUAwareTaskBasedBackend::~MUAwareTaskBasedBackend() = default;
 
@@ -90,7 +91,7 @@ bool MUAwareTaskBasedBackend::LimitReached() {
   bool should_reschedule = false;
   base::TimeDelta reschedule_delay;
   {
-    PartitionAutoLock guard(scheduler_lock_);
+    ScopedGuard guard(scheduler_lock_);
     // At this point we reached a limit where the schedule generally wants to
     // trigger a scan.
     if (hard_limit_) {
@@ -105,26 +106,26 @@ bool MUAwareTaskBasedBackend::LimitReached() {
 
       // 2. Unlikely case: If also above hard limit, start scan right away. This
       // ignores explicit PCScan disabling.
-      if (UNLIKELY(data.current_size.load(std::memory_order_relaxed) >
-                   data.size_limit.load(std::memory_order_relaxed))) {
+      if (PA_UNLIKELY(data.current_size.load(std::memory_order_relaxed) >
+                      data.size_limit.load(std::memory_order_relaxed))) {
         return true;
       }
 
       // 3. Check if PCScan was explicitly disabled.
-      if (UNLIKELY(!is_scheduling_enabled())) {
+      if (PA_UNLIKELY(!is_scheduling_enabled())) {
         return false;
       }
 
       // 4. Otherwise, the soft limit would trigger a scan immediately if the
       // mutator utilization requirement is satisfied.
       reschedule_delay = earliest_next_scan_time_ - base::TimeTicks::Now();
-      if (reschedule_delay <= TimeDelta()) {
+      if (reschedule_delay <= base::TimeDelta()) {
         // May invoke scan immediately.
         return true;
       }
 
-      VLOG(3) << "Rescheduling scan with delay: "
-              << reschedule_delay.InMillisecondsF() << " ms";
+      PA_PCSCAN_VLOG(3) << "Rescheduling scan with delay: "
+                        << reschedule_delay.InMillisecondsF() << " ms";
       // 5. If the MU requirement is not satisfied, schedule a delayed scan to
       // the time instance when MU is satisfied.
       should_reschedule = true;
@@ -133,14 +134,14 @@ bool MUAwareTaskBasedBackend::LimitReached() {
   // Don't reschedule under the lock as the callback can call free() and
   // recursively enter the lock.
   if (should_reschedule) {
-    schedule_delayed_scan_.Run(reschedule_delay);
+    schedule_delayed_scan_(reschedule_delay.InMicroseconds());
     return false;
   }
   return true;
 }
 
 size_t MUAwareTaskBasedBackend::ScanStarted() {
-  PartitionAutoLock guard(scheduler_lock_);
+  ScopedGuard guard(scheduler_lock_);
 
   return PCScanSchedulingBackend::ScanStarted();
 }
@@ -151,7 +152,7 @@ void MUAwareTaskBasedBackend::UpdateScheduleAfterScan(
     size_t heap_size) {
   scheduler_.AccountFreed(survived_bytes);
 
-  PartitionAutoLock guard(scheduler_lock_);
+  ScopedGuard guard(scheduler_lock_);
 
   // |heap_size| includes the current quarantine size, we intentionally leave
   // some slack till hitting the limit.
@@ -178,7 +179,7 @@ bool MUAwareTaskBasedBackend::NeedsToImmediatelyScan() {
   bool should_reschedule = false;
   base::TimeDelta reschedule_delay;
   {
-    PartitionAutoLock guard(scheduler_lock_);
+    ScopedGuard guard(scheduler_lock_);
     // If |hard_limit_| was set to zero, the soft limit was reached. Bail out if
     // it's not.
     if (hard_limit_)
@@ -186,30 +187,29 @@ bool MUAwareTaskBasedBackend::NeedsToImmediatelyScan() {
 
     // Check if mutator utilization requiremet is satisfied.
     reschedule_delay = earliest_next_scan_time_ - base::TimeTicks::Now();
-    if (reschedule_delay <= TimeDelta()) {
+    if (reschedule_delay <= base::TimeDelta()) {
       // May invoke scan immediately.
       return true;
     }
 
-    VLOG(3) << "Rescheduling scan with delay: "
-            << reschedule_delay.InMillisecondsF() << " ms";
+    PA_PCSCAN_VLOG(3) << "Rescheduling scan with delay: "
+                      << reschedule_delay.InMillisecondsF() << " ms";
     // Schedule a delayed scan to the time instance when MU is satisfied.
     should_reschedule = true;
   }
   // Don't reschedule under the lock as the callback can call free() and
   // recursively enter the lock.
   if (should_reschedule)
-    schedule_delayed_scan_.Run(reschedule_delay);
+    schedule_delayed_scan_(reschedule_delay.InMicroseconds());
   return false;
 }
 
-TimeDelta MUAwareTaskBasedBackend::UpdateDelayedSchedule() {
-  PartitionAutoLock guard(scheduler_lock_);
+base::TimeDelta MUAwareTaskBasedBackend::UpdateDelayedSchedule() {
+  ScopedGuard guard(scheduler_lock_);
   // TODO(1197479): Adjust schedule to current heap sizing.
   const auto delay = earliest_next_scan_time_ - base::TimeTicks::Now();
-  VLOG(3) << "Schedule is off by " << delay.InMillisecondsF() << "ms";
-  return delay >= TimeDelta() ? delay : TimeDelta();
+  PA_PCSCAN_VLOG(3) << "Schedule is off by " << delay.InMillisecondsF() << "ms";
+  return delay >= base::TimeDelta() ? delay : base::TimeDelta();
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace partition_alloc::internal

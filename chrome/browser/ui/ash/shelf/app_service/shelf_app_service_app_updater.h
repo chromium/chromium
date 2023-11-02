@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,7 +34,8 @@ class ShelfAppServiceAppUpdater : public ShelfAppUpdater,
       apps::AppRegistryCache* cache) override;
 
  private:
-  void OnShowInShelfChanged(const std::string& app_id, bool show_in_shelf);
+  void OnShowInShelfChangedForAppDisabledByPolicy(const std::string& app_id,
+                                                  bool show_in_shelf);
   std::set<std::string> installed_apps_;
 };
 

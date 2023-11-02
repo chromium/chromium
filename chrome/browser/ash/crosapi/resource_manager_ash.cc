@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,13 +11,13 @@ namespace crosapi {
 // ResourceManagerAsh
 
 ResourceManagerAsh::ResourceManagerAsh() {
-  chromeos::ResourcedClient* client = chromeos::ResourcedClient::Get();
+  ash::ResourcedClient* client = ash::ResourcedClient::Get();
   if (client)
     client->AddObserver(this);
 }
 
 ResourceManagerAsh::~ResourceManagerAsh() {
-  chromeos::ResourcedClient* client = chromeos::ResourcedClient::Get();
+  ash::ResourcedClient* client = ash::ResourcedClient::Get();
   if (client)
     client->RemoveObserver(this);
 }
@@ -28,7 +28,7 @@ void ResourceManagerAsh::BindReceiver(
 }
 
 void ResourceManagerAsh::OnMemoryPressure(
-    chromeos::ResourcedClient::PressureLevel level,
+    ash::ResourcedClient::PressureLevel level,
     uint64_t reclaim_target_kb) {
   for (auto& observer : observers_) {
     mojom::MemoryPressurePtr pressure = mojom::MemoryPressure::New();

@@ -1,10 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/components/phonehub/fake_connection_scheduler.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 FakeConnectionScheduler::FakeConnectionScheduler() = default;
@@ -15,4 +15,4 @@ void FakeConnectionScheduler::ScheduleConnectionNow() {
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

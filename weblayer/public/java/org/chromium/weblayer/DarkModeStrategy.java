@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@ import java.lang.annotation.RetentionPolicy;
 @IntDef({DarkModeStrategy.PREFER_WEB_THEME_OVER_USER_AGENT_DARKENING,
         DarkModeStrategy.WEB_THEME_DARKENING_ONLY, DarkModeStrategy.USER_AGENT_DARKENING_ONLY})
 @Retention(RetentionPolicy.SOURCE)
-public @interface DarkModeStrategy {
+@interface DarkModeStrategy {
     /**
      * Only render pages in dark mode if they provide a dark theme in their CSS. If no theme is
      * provided, the page will render with its default styling, which could be a light theme.

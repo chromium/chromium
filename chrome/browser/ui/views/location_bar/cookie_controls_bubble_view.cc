@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -108,7 +108,7 @@ CookieControlsBubbleView::CookieControlsBubbleView(
     content::WebContents* web_contents,
     content_settings::CookieControlsController* controller)
     : LocationBarBubbleDelegateView(anchor_view, web_contents),
-      controller_(controller) {
+      controller_(controller->AsWeakPtr()) {
   SetShowTitle(true);
   SetShowCloseButton(true);
   controller_observation_.Observe(controller);
@@ -217,15 +217,16 @@ void CookieControlsBubbleView::Init() {
   // TODO(crbug.com/1013092): The bubble should display a header view with full
   // width without having to tweak margins.
   gfx::Insets insets = margins();
-  set_margins(gfx::Insets(insets.top(), 0, insets.bottom(), 0));
-  SetBorder(views::CreateEmptyBorder(0, insets.left(), 0, insets.right()));
+  set_margins(gfx::Insets::TLBR(insets.top(), 0, insets.bottom(), 0));
+  SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(0, insets.left(), 0, insets.right())));
 }
 
 void CookieControlsBubbleView::AddedToWidget() {
   auto header_view = std::make_unique<NonAccessibleImageView>();
   header_view_ = header_view.get();
-  header_view_->SetBackground(views::CreateThemedSolidBackground(
-      header_view_, ui::kColorBubbleFooterBackground));
+  header_view_->SetBackground(
+      views::CreateThemedSolidBackground(ui::kColorBubbleFooterBackground));
   GetBubbleFrameView()->SetHeaderView(std::move(header_view));
 }
 
@@ -249,7 +250,7 @@ std::u16string CookieControlsBubbleView::GetWindowTitle() const {
   switch (status_) {
     case CookieControlsStatus::kEnabled:
       return l10n_util::GetPluralStringFUTF16(
-          (controller_->FirstPartyCookiesBlocked()
+          (controller_ && controller_->FirstPartyCookiesBlocked()
                ? IDS_COOKIE_CONTROLS_DIALOG_TITLE_ALL_BLOCKED
                : IDS_COOKIE_CONTROLS_DIALOG_TITLE),
           blocked_cookies_.value_or(0));
@@ -270,10 +271,14 @@ void CookieControlsBubbleView::WindowClosing() {
   if (this_bubble)
     g_instance = nullptr;
 
-  controller_->OnUiClosing();
+  if (controller_)
+    controller_->OnUiClosing();
 }
 
 void CookieControlsBubbleView::OnDialogAccepted() {
+  if (!controller_)
+    return;
+
   if (intermediate_step_ == IntermediateStep::kTurnOffButton) {
     controller_->OnCookieBlockingEnabledForSite(false);
   } else {

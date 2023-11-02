@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,9 +25,9 @@ import org.junit.runners.model.Statement;
 import org.chromium.base.CommandLine;
 import org.chromium.base.Log;
 import org.chromium.base.test.params.MethodParamAnnotationRule;
+import org.chromium.base.test.util.AndroidSdkLevelSkipCheck;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIfSkipCheck;
-import org.chromium.base.test.util.MinAndroidSdkLevelSkipCheck;
 import org.chromium.base.test.util.RestrictionSkipCheck;
 import org.chromium.base.test.util.SkipCheck;
 
@@ -163,7 +163,7 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
     @CallSuper
     protected List<SkipCheck> getSkipChecks() {
         return Arrays.asList(new RestrictionSkipCheck(InstrumentationRegistry.getTargetContext()),
-                new MinAndroidSdkLevelSkipCheck(), new DisableIfSkipCheck());
+                new AndroidSdkLevelSkipCheck(), new DisableIfSkipCheck());
     }
 
     /**
@@ -199,7 +199,7 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
      */
     @CallSuper
     protected List<TestHook> getPreTestHooks() {
-        return Arrays.asList(CommandLineFlags.getPreTestHook());
+        return Arrays.asList(CommandLineFlags.getPreTestHook(), new UnitTestNoBrowserProcessHook());
     }
 
     /**

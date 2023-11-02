@@ -139,18 +139,16 @@ WebString WebString::FromASCII(const std::string& s) {
   return FromLatin1(s);
 }
 
-WebString WebString::IsolatedCopy() const {
-  if (!impl_)
-    return WebString();
-  return String(impl_).IsolatedCopy();
-}
-
 bool WebString::Equals(const WebString& s) const {
   return Equal(impl_.get(), s.impl_.get());
 }
 
 bool WebString::Equals(const char* characters, size_t length) const {
   return Equal(impl_.get(), characters, base::checked_cast<wtf_size_t>(length));
+}
+
+bool WebString::operator<(const WebString& other) const {
+  return WTF::CodeUnitCompare(impl_.get(), other.impl_.get()) < 0;
 }
 
 WebString::WebString(const WTF::String& s) : impl_(s.Impl()) {}

@@ -1,14 +1,16 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "chrome/browser/ui/cocoa/applescript/window_applescript.h"
+#include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 
 #include <memory>
 
 #import "base/mac/foundation_util.h"
 #import "base/mac/scoped_nsobject.h"
 #include "base/notreached.h"
+#include "base/strings/sys_string_conversions.h"
 #include "base/time/time.h"
 #import "chrome/browser/app_controller_mac.h"
 #import "chrome/browser/chrome_browser_application_mac.h"
@@ -27,7 +29,9 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/common/url_constants.h"
 #include "content/public/browser/web_contents.h"
 
@@ -132,9 +136,18 @@
   int atIndex = [anActiveTabIndex intValue] - 1;
   if (atIndex >= 0 && atIndex < _browser->tab_strip_model()->count()) {
     _browser->tab_strip_model()->ActivateTabAt(
-        atIndex, {TabStripModel::GestureType::kOther});
+        atIndex, TabStripUserGestureDetails(
+                     TabStripUserGestureDetails::GestureType::kOther));
   } else
     AppleScript::SetError(AppleScript::errInvalidTabIndex);
+}
+
+- (NSString*)givenName {
+  return base::SysUTF8ToNSString(_browser->user_title());
+}
+
+- (void)setGivenName:(NSString*)name {
+  _browser->SetWindowUserTitle(base::SysNSStringToUTF8(name));
 }
 
 - (NSString*)mode {
@@ -221,7 +234,7 @@
   if (index < 0 || index >= _browser->tab_strip_model()->count())
     return;
   _browser->tab_strip_model()->CloseWebContentsAt(
-      index, TabStripModel::CLOSE_CREATE_HISTORICAL_TAB);
+      index, TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
 }
 
 - (NSNumber*)orderedIndex {
@@ -255,7 +268,7 @@
 }
 
 - (void)setValue:(id)value forUndefinedKey:(NSString*)key {
-  [[self nativeHandle] setValue:(id)value forKey:key];
+  [[self nativeHandle] setValue:value forKey:key];
 }
 
 - (void)handlesCloseScriptCommand:(NSCloseCommand*)command {

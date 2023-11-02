@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/safe_browsing/core/browser/safe_browsing_token_fetch_tracker.h"
@@ -47,7 +48,7 @@ class SafeBrowsingPrimaryAccountTokenFetcher : public SafeBrowsingTokenFetcher {
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Reference to the identity manager to fetch from.
-  signin::IdentityManager* identity_manager_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
 
   // Active fetchers, keyed by ID.
   base::flat_map<int, std::unique_ptr<signin::AccessTokenFetcher>>

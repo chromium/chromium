@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -217,7 +217,7 @@ TEST_F(NGInlineNodeTest, CollectInlinesFloat) {
             "</div>");
   NGInlineNodeForTest node = CreateInlineNode();
   node.CollectInlines();
-  EXPECT_EQ(u8"abc\uFFFCghi\uFFFCmno", node.Text())
+  EXPECT_EQ("abc\uFFFCghi\uFFFCmno", node.Text())
       << "floats are appeared as an object replacement character";
   HeapVector<NGInlineItem>& items = node.Items();
   ASSERT_EQ(5u, items.size());
@@ -235,7 +235,7 @@ TEST_F(NGInlineNodeTest, CollectInlinesInlineBlock) {
             "</div>");
   NGInlineNodeForTest node = CreateInlineNode();
   node.CollectInlines();
-  EXPECT_EQ(u8"abc\uFFFCjkl", node.Text())
+  EXPECT_EQ("abc\uFFFCjkl", node.Text())
       << "inline-block is appeared as an object replacement character";
   HeapVector<NGInlineItem>& items = node.Items();
   ASSERT_EQ(3u, items.size());
@@ -315,7 +315,7 @@ TEST_F(NGInlineNodeTest, CollectInlinesMixedTextEndWithON) {
 }
 
 TEST_F(NGInlineNodeTest, CollectInlinesTextCombineBR) {
-  ScopedLayoutNGTextCombineForTest enable_layout_ng_text_combine(true);
+  ScopedLayoutNGForTest enable_layout_ng(true);
   InsertStyleElement(
       "#t { text-combine-upright: all; writing-mode: vertical-rl; }");
   SetupHtml("t", u"<div id=t>a<br>z</div>");
@@ -332,7 +332,7 @@ TEST_F(NGInlineNodeTest, CollectInlinesTextCombineBR) {
 
 // http://crbug.com/1222633
 TEST_F(NGInlineNodeTest, CollectInlinesTextCombineListItemMarker) {
-  ScopedLayoutNGTextCombineForTest enable_layout_ng_text_combine(true);
+  ScopedLayoutNGForTest enable_layout_ng(true);
   InsertStyleElement(
       "#t { text-combine-upright: all; writing-mode: vertical-rl; }");
   SetupHtml("t", u"<li id=t>ab</li>");
@@ -345,7 +345,7 @@ TEST_F(NGInlineNodeTest, CollectInlinesTextCombineListItemMarker) {
   NGInlineNodeForTest node = CreateInlineNode(
       To<LayoutNGTextCombine>(layout_object_->SlowFirstChild()));
   node.CollectInlines();
-  EXPECT_EQ(u8"\u2022", node.Text());
+  EXPECT_EQ("\u2022", node.Text());
   HeapVector<NGInlineItem>& items = node.Items();
   ASSERT_EQ(1u, items.size());
   TEST_ITEM_TYPE_OFFSET(items[0], kText, 0u, 1u);
@@ -353,7 +353,7 @@ TEST_F(NGInlineNodeTest, CollectInlinesTextCombineListItemMarker) {
 }
 
 TEST_F(NGInlineNodeTest, CollectInlinesTextCombineNewline) {
-  ScopedLayoutNGTextCombineForTest enable_layout_ng_text_combine(true);
+  ScopedLayoutNGForTest enable_layout_ng(true);
   InsertStyleElement(
       "#t { text-combine-upright: all; writing-mode: vertical-rl; }");
   SetupHtml("t", u"<pre id=t>a\nz</pre>");
@@ -369,14 +369,14 @@ TEST_F(NGInlineNodeTest, CollectInlinesTextCombineNewline) {
 }
 
 TEST_F(NGInlineNodeTest, CollectInlinesTextCombineWBR) {
-  ScopedLayoutNGTextCombineForTest enable_layout_ng_text_combine(true);
+  ScopedLayoutNGForTest enable_layout_ng(true);
   InsertStyleElement(
       "#t { text-combine-upright: all; writing-mode: vertical-rl; }");
   SetupHtml("t", u"<div id=t>a<wbr>z</div>");
   NGInlineNodeForTest node =
       CreateInlineNode(To<LayoutNGBlockFlow>(layout_object_.Get()));
   node.CollectInlines();
-  EXPECT_EQ(u8"a\u200Bz", node.Text());
+  EXPECT_EQ("a\u200Bz", node.Text());
   HeapVector<NGInlineItem>& items = node.Items();
   ASSERT_EQ(3u, items.size());
   TEST_ITEM_TYPE_OFFSET(items[0], kText, 0u, 1u);
@@ -1183,7 +1183,7 @@ TEST_F(NGInlineNodeTest, RemoveInlineNodeDataIfBlockObtainsBlockChild) {
 // Test inline objects are initialized when |SplitFlow()| moves them.
 TEST_F(NGInlineNodeTest, ClearFirstInlineFragmentOnSplitFlow) {
   SetBodyInnerHTML(R"HTML(
-    <div>
+    <div id=container>
       <span id=outer_span>
         <span id=inner_span>1234</span>
       </span>
@@ -1210,8 +1210,14 @@ TEST_F(NGInlineNodeTest, ClearFirstInlineFragmentOnSplitFlow) {
   // no longer has an inline formatting context, the NGPaintFragment subtree is
   // destroyed, and should not be accessible.
   GetDocument().UpdateStyleAndLayoutTree();
-  EXPECT_FALSE(text->GetLayoutObject()->IsInLayoutNGInlineFormattingContext());
-  EXPECT_FALSE(text->GetLayoutObject()->HasInlineFragments());
+  const LayoutObject* layout_text = text->GetLayoutObject();
+  if (RuntimeEnabledFeatures::LayoutNGBlockInInlineEnabled()) {
+    EXPECT_TRUE(layout_text->IsInLayoutNGInlineFormattingContext());
+    EXPECT_TRUE(layout_text->HasInlineFragments());
+  } else {
+    EXPECT_FALSE(layout_text->IsInLayoutNGInlineFormattingContext());
+    EXPECT_FALSE(layout_text->HasInlineFragments());
+  }
 
   // Update layout. There should be a different instance of the text fragment.
   UpdateAllLifecyclePhasesForTest();
@@ -1220,15 +1226,25 @@ TEST_F(NGInlineNodeTest, ClearFirstInlineFragmentOnSplitFlow) {
   EXPECT_TRUE(after_layout);
 
   // Check it is the one owned by the new root inline formatting context.
-  LayoutBlock* anonymous_block =
-      inner_span->GetLayoutObject()->ContainingBlock();
-  EXPECT_TRUE(anonymous_block->IsAnonymous());
-  NGInlineCursor anonymous_block_cursor(*To<LayoutBlockFlow>(anonymous_block));
-  anonymous_block_cursor.MoveToFirstLine();
-  anonymous_block_cursor.MoveToFirstChild();
-  EXPECT_TRUE(anonymous_block_cursor);
-  EXPECT_EQ(anonymous_block_cursor.Current().GetLayoutObject(),
-            text->GetLayoutObject());
+  LayoutBlock* inner_span_cb = inner_span->GetLayoutObject()->ContainingBlock();
+  LayoutObject* container = GetLayoutObjectByElementId("container");
+  if (RuntimeEnabledFeatures::LayoutNGBlockInInlineEnabled()) {
+    EXPECT_EQ(inner_span_cb, container);
+  } else {
+    EXPECT_TRUE(inner_span_cb->IsAnonymous());
+    EXPECT_EQ(inner_span_cb->Parent(), container);
+  }
+  NGInlineCursor inner_span_cb_cursor(*To<LayoutBlockFlow>(inner_span_cb));
+  inner_span_cb_cursor.MoveToFirstLine();
+  inner_span_cb_cursor.MoveToFirstChild();
+  EXPECT_TRUE(inner_span_cb_cursor);
+  if (RuntimeEnabledFeatures::LayoutNGBlockInInlineEnabled()) {
+    EXPECT_EQ(inner_span_cb_cursor.Current().GetLayoutObject(),
+              outer_span->GetLayoutObject());
+  } else {
+    EXPECT_EQ(inner_span_cb_cursor.Current().GetLayoutObject(),
+              text->GetLayoutObject());
+  }
 }
 
 TEST_F(NGInlineNodeTest, AddChildToSVGRoot) {
@@ -1398,6 +1414,52 @@ TEST_F(NGInlineNodeTest, SegmentRanges) {
   EXPECT_EQ(ToEndOffsetList(segments->Ranges(9, 12, 1)), expect_9_12);
 }
 
+// https://crbug.com/1275383
+TEST_F(NGInlineNodeTest, ReusingWithPreservedCase1) {
+  SetupHtml("container",
+            "<div id=container>"
+            "a"
+            "<br id='remove'>"
+            "<span style='white-space: pre-wrap'> ijkl </span>"
+            "</div>");
+  EXPECT_EQ(String(u"a\n \u200Bijkl "), GetText());
+  GetElementById("remove")->remove();
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(String(u"a ijkl "), GetText());
+}
+
+// https://crbug.com/1275383
+TEST_F(NGInlineNodeTest, ReusingWithPreservedCase2) {
+  SetupHtml("container",
+            "<div id=container style='white-space: pre-wrap'>"
+            "a "
+            "<br id='remove'>"
+            "<span> ijkl </span>"
+            "</div>");
+  EXPECT_EQ(String(u"a \n \u200Bijkl "), GetText());
+  GetElementById("remove")->remove();
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(String(u"a  ijkl "), GetText());
+}
+
+// https://crbug.com/1275383
+TEST_F(NGInlineNodeTest, ReusingWithPreservedCase3) {
+  SetupHtml("container",
+            "<div id=container style='white-space: pre-wrap'>"
+            " "
+            "<br id='remove'>"
+            "<span> ijkl </span>"
+            "</div>");
+  EXPECT_EQ(String(u" \u200B\n \u200Bijkl "), GetText());
+  GetElementById("remove")->remove();
+  UpdateAllLifecyclePhasesForTest();
+  // TODO(jfernandez): This should be "  \u200Bijkl ", but there is clearly a
+  // bug that causes the first control item to be preserved, while the second is
+  // ignored (due to the presence of the previous control break).
+  // https://crbug.com/1276358
+  EXPECT_EQ(String(u" \u200B ijkl "), GetText());
+}
+
 // https://crbug.com/1021677
 TEST_F(NGInlineNodeTest, ReusingWithCollapsed) {
   SetupHtml("container",
@@ -1491,76 +1553,8 @@ TEST_F(NGInlineNodeTest, ReuseFirstNonSafeRtl) {
   EXPECT_TRUE(NGInlineNode::NeedsShapingForTesting(item_v));
 }
 
-TEST_F(NGInlineNodeTest, LetterSpacingUseCounterFalse) {
-  SetBodyInnerHTML(R"HTML(
-    <p id="p" style="letter-spacing: 1em; text-align: center">
-      text
-    </p>
-  )HTML");
-  auto* p = To<LayoutNGBlockFlow>(GetLayoutObjectByElementId("p"));
-  EXPECT_FALSE(NGInlineNode(p).ShouldReportLetterSpacingUseCounterForTesting(
-      p->FirstChild(), /* first_line */ false, p));
-}
-
-TEST_F(NGInlineNodeTest, LetterSpacingUseCounterCenterTextIndent) {
-  SetBodyInnerHTML(R"HTML(
-    <p id="p" style="letter-spacing: 1em; text-align: center; text-indent: 1em">
-      text
-    </p>
-  )HTML");
-  auto* p = To<LayoutNGBlockFlow>(GetLayoutObjectByElementId("p"));
-  EXPECT_TRUE(NGInlineNode(p).ShouldReportLetterSpacingUseCounterForTesting(
-      p->FirstChild(), /* first_line */ false, p));
-}
-
-TEST_F(NGInlineNodeTest, LetterSpacingUseCounterCenterPadding) {
-  SetBodyInnerHTML(R"HTML(
-    <p id="p" style="letter-spacing: 1em; text-align: center; padding-left: 1em">
-      text
-    </p>
-  )HTML");
-  auto* p = To<LayoutNGBlockFlow>(GetLayoutObjectByElementId("p"));
-  EXPECT_TRUE(NGInlineNode(p).ShouldReportLetterSpacingUseCounterForTesting(
-      p->FirstChild(), /* first_line */ false, p));
-}
-
-TEST_F(NGInlineNodeTest, LetterSpacingUseCounterRight) {
-  SetBodyInnerHTML(R"HTML(
-    <p id="p" style="letter-spacing: 1em; text-align: right; margin-right: -1em">
-      text
-    </p>
-  )HTML");
-  auto* p = To<LayoutNGBlockFlow>(GetLayoutObjectByElementId("p"));
-  EXPECT_TRUE(NGInlineNode(p).ShouldReportLetterSpacingUseCounterForTesting(
-      p->FirstChild(), /* first_line */ false, p));
-}
-
-TEST_F(NGInlineNodeTest, LetterSpacingUseCounterBorder) {
-  SetBodyInnerHTML(R"HTML(
-    <p id="p" style="letter-spacing: 1em">
-      <span id="span" style="border:1px solid; padding-left:1em">span</span>
-    </p>
-  )HTML");
-  auto* p = To<LayoutNGBlockFlow>(GetLayoutObjectByElementId("p"));
-  const LayoutObject* span = GetLayoutObjectByElementId("span");
-  EXPECT_TRUE(NGInlineNode(p).ShouldReportLetterSpacingUseCounterForTesting(
-      span->SlowFirstChild(), /* first_line */ false, p));
-}
-
-TEST_F(NGInlineNodeTest, LetterSpacingUseCounterUnderline) {
-  SetBodyInnerHTML(R"HTML(
-    <p id="p" style="letter-spacing: 1em">
-      <span id="span" style="text-decoration: underline">span</span>
-    </p>
-  )HTML");
-  auto* p = To<LayoutNGBlockFlow>(GetLayoutObjectByElementId("p"));
-  const LayoutObject* span = GetLayoutObjectByElementId("span");
-  EXPECT_TRUE(NGInlineNode(p).ShouldReportLetterSpacingUseCounterForTesting(
-      span->SlowFirstChild(), /* first_line */ false, p));
-}
-
 TEST_F(NGInlineNodeTest, TextCombineUsesScalingX) {
-  ScopedLayoutNGTextCombineForTest enable_layout_ng_text_combine(true);
+  ScopedLayoutNGForTest enable_layout_ng(true);
   LoadAhem();
   InsertStyleElement(
       "div {"
@@ -1582,7 +1576,7 @@ TEST_F(NGInlineNodeTest, TextCombineUsesScalingX) {
 
 // http://crbug.com/1226930
 TEST_F(NGInlineNodeTest, TextCombineWordSpacing) {
-  ScopedLayoutNGTextCombineForTest enable_layout_ng_text_combine(true);
+  ScopedLayoutNGForTest enable_layout_ng(true);
   LoadAhem();
   InsertStyleElement(
       "div {"

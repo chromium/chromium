@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,7 +25,7 @@ bool SyntheticGestureParams::IsGestureSourceTypeSupported(
 #if defined(USE_AURA)
   return gesture_source_type == mojom::GestureSourceType::kTouchInput ||
          gesture_source_type == mojom::GestureSourceType::kMouseInput;
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   // Android supports mouse wheel events, but mouse drag is not yet
   // supported. See crbug.com/468806.
   return gesture_source_type == mojom::GestureSourceType::kTouchInput ||

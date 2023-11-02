@@ -28,6 +28,8 @@
 #include "third_party/blink/renderer/core/editing/iterators/text_iterator.h"
 
 #include <unicode/utf16.h>
+#include "build/build_config.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -298,7 +300,8 @@ void TextIteratorAlgorithm<Strategy>::Advance() {
     return;
 
   while (node_ && (node_ != past_end_node_ || shadow_depth_)) {
-#if DCHECK_IS_ON()
+    // TODO(crbug.com/1296290): Disable this DCHECK as it's troubling CrOS engs.
+#if DCHECK_IS_ON() && !BUILDFLAG(IS_CHROMEOS)
     // |node_| shouldn't be after |past_end_node_|.
     if (past_end_node_) {
       DCHECK_LE(PositionTemplate<Strategy>(node_, 0),
@@ -1055,7 +1058,7 @@ static String CreatePlainText(const EphemeralRangeTemplate<Strategy>& range,
   for (; !it.AtEnd(); it.Advance())
     it.GetTextState().AppendTextToStringBuilder(builder);
 
-  if (builder.IsEmpty())
+  if (builder.empty())
     return g_empty_string;
 
   return builder.ToString();

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/resources/grit/blink_resources.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
@@ -18,12 +19,13 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/page/page_animator.h"
 #include "third_party/blink/renderer/core/page/page_popup_client.h"
 #include "third_party/blink/renderer/platform/data_resource_helper.h"
 #include "third_party/blink/renderer/platform/graphics/paint/cull_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record_builder.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
 
@@ -48,6 +50,7 @@ class ValidationMessageChromeClient : public EmptyChromeClient {
     // this overlay doesn't have an associated WebFrameWidget, which schedules
     // animation.
     main_chrome_client_->ScheduleAnimation(anchor_view_, delay);
+    anchor_view_->SetVisualViewportOrOverlayNeedsRepaint();
   }
 
   float WindowToViewportScalar(LocalFrame* local_frame,
@@ -94,7 +97,7 @@ LocalFrameView& ValidationMessageOverlayDelegate::FrameView() const {
 void ValidationMessageOverlayDelegate::PaintFrameOverlay(
     const FrameOverlay& overlay,
     GraphicsContext& context,
-    const IntSize& view_size) const {
+    const gfx::Size& view_size) const {
   if (IsHiding() && !page_)
     return;
 
@@ -102,23 +105,8 @@ void ValidationMessageOverlayDelegate::PaintFrameOverlay(
                                                   DisplayItem::kFrameOverlay))
     return;
   DrawingRecorder recorder(context, overlay, DisplayItem::kFrameOverlay,
-                           gfx::Rect(ToGfxSize(view_size)));
-
-  const_cast<ValidationMessageOverlayDelegate*>(this)->UpdateFrameViewState(
-      overlay, view_size);
-
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    context.DrawRecord(FrameView().GetPaintRecord());
-  } else {
-    // The overlay frame is has a standalone paint property tree. Paint it in
-    // its root space into a paint record, then draw the record into the proper
-    // target space in the overlaid frame.
-    auto* paint_record_builder =
-        MakeGarbageCollected<PaintRecordBuilder>(context);
-    FrameView().PaintOutsideOfLifecycle(paint_record_builder->Context(),
-                                        kGlobalPaintNormalPhase);
-    context.DrawRecord(paint_record_builder->EndRecording());
-  }
+                           gfx::Rect(view_size));
+  context.DrawRecord(FrameView().GetPaintRecord());
 }
 
 void ValidationMessageOverlayDelegate::ServiceScriptedAnimations(
@@ -127,15 +115,16 @@ void ValidationMessageOverlayDelegate::ServiceScriptedAnimations(
 }
 
 void ValidationMessageOverlayDelegate::UpdateFrameViewState(
-    const FrameOverlay& overlay,
-    const IntSize& view_size) {
+    const FrameOverlay& overlay) {
+  gfx::Size view_size = overlay.Size();
   if (FrameView().Size() != view_size) {
     FrameView().Resize(view_size);
     page_->GetVisualViewport().SetSize(view_size);
   }
-  IntRect intersection = overlay.Frame().RemoteViewportIntersection();
-  AdjustBubblePosition(intersection.IsEmpty() ? IntRect(gfx::Point(), view_size)
-                                              : intersection);
+  gfx::Rect intersection = overlay.Frame().RemoteViewportIntersection();
+  AdjustBubblePosition(intersection.IsEmpty()
+                           ? gfx::Rect(gfx::Point(), view_size)
+                           : intersection);
 
   // This manual invalidation is necessary to avoid a DCHECK failure in
   // FindVisualRectNeedingUpdateScopeBase::CheckVisualRect().
@@ -149,7 +138,7 @@ void ValidationMessageOverlayDelegate::CreatePage(const FrameOverlay& overlay) {
 
   // TODO(tkent): Can we share code with WebPagePopupImpl and
   // InspectorOverlayAgent?
-  IntSize view_size = overlay.Size();
+  gfx::Size view_size = overlay.Size();
   chrome_client_ = MakeGarbageCollected<ValidationMessageChromeClient>(
       main_page_->GetChromeClient(), anchor_->GetDocument().View());
   Settings& main_settings = main_page_->GetSettings();
@@ -165,18 +154,29 @@ void ValidationMessageOverlayDelegate::CreatePage(const FrameOverlay& overlay) {
       nullptr, FrameInsertType::kInsertInConstructor, LocalFrameToken(),
       nullptr, nullptr);
   frame->SetView(MakeGarbageCollected<LocalFrameView>(*frame, view_size));
-  frame->Init(/*opener=*/nullptr, /*policy_container=*/nullptr);
+  frame->Init(/*opener=*/nullptr, DocumentToken(), /*policy_container=*/nullptr,
+              StorageKey());
   frame->View()->SetCanHaveScrollbars(false);
   frame->View()->SetBaseBackgroundColor(Color::kTransparent);
   page_->GetVisualViewport().SetSize(view_size);
+
+  // Propagate dark mode settings from anchor document to allow CSS of
+  // overlay bubble to detect dark mode. See the comments in
+  // PagePopupClient::AdjustSettingsFromOwnerColorScheme for more information.
+  page_->GetSettings().SetForceDarkModeEnabled(false);
+  bool in_forced_colors_mode = anchor_->GetDocument().InForcedColorsMode();
+  LayoutObject* anchor_layout = anchor_->GetLayoutObject();
+  page_->GetSettings().SetPreferredColorScheme(
+      !in_forced_colors_mode && anchor_layout &&
+              anchor_layout->StyleRef().UsedColorScheme() ==
+                  mojom::blink::ColorScheme::kDark
+          ? mojom::blink::PreferredColorScheme::kDark
+          : mojom::blink::PreferredColorScheme::kLight);
 
   scoped_refptr<SharedBuffer> data = SharedBuffer::Create();
   WriteDocument(data.get());
   float zoom_factor = anchor_->GetDocument().GetFrame()->PageZoomFactor();
   frame->SetPageZoomFactor(zoom_factor);
-  // Propagate deprecated DSF for platforms without use-zoom-for-dsf.
-  page_->SetDeviceScaleFactorDeprecated(
-      main_page_->DeviceScaleFactorDeprecated());
   frame->ForceSynchronousDocumentInstall("text/html", data);
 
   Element& main_message = GetElementById("main-message");
@@ -195,7 +195,7 @@ void ValidationMessageOverlayDelegate::CreatePage(const FrameOverlay& overlay) {
   // Get the size to decide position later.
   // TODO(schenney): This says get size, so we only need to update to layout.
   FrameView().UpdateAllLifecyclePhases(DocumentUpdateReason::kOverlay);
-  bubble_size_ = container.VisibleBoundsInVisualViewport().size();
+  bubble_size_ = container.VisibleBoundsInLocalRoot().size();
   // Add one because the content sometimes exceeds the exact width due to
   // rounding errors.
   bubble_size_.Enlarge(1, 0);
@@ -208,7 +208,10 @@ void ValidationMessageOverlayDelegate::CreatePage(const FrameOverlay& overlay) {
 
 void ValidationMessageOverlayDelegate::WriteDocument(SharedBuffer* data) {
   DCHECK(data);
-  PagePopupClient::AddString("<!DOCTYPE html><html><head><style>", data);
+  PagePopupClient::AddString(
+      "<!DOCTYPE html><head><meta charset='UTF-8'><meta name='color-scheme' "
+      "content='light dark'><style>",
+      data);
   data->Append(UncompressResourceAsBinary(IDR_VALIDATION_BUBBLE_CSS));
   PagePopupClient::AddString("</style></head>", data);
   PagePopupClient::AddString(
@@ -249,11 +252,30 @@ Element& ValidationMessageOverlayDelegate::GetElementById(
 }
 
 void ValidationMessageOverlayDelegate::AdjustBubblePosition(
-    const IntRect& view_rect) {
+    const gfx::Rect& view_rect) {
   if (IsHiding())
     return;
   float zoom_factor = To<LocalFrame>(page_->MainFrame())->PageZoomFactor();
-  IntRect anchor_rect = anchor_->VisibleBoundsInVisualViewport();
+  gfx::Rect anchor_rect = anchor_->VisibleBoundsInLocalRoot();
+
+  Page* anchor_page = anchor_->GetDocument().GetPage();
+  // If the main frame is local the overlay is attached to it so we have to
+  // account for the anchor's position relative to the visual viewport. If the
+  // main frame is remote the overlay will be attached to the local root so the
+  // visual viewport transform will already be applied to the overlay.
+  if (auto* overlay_frame = DynamicTo<LocalFrame>(anchor_page->MainFrame())) {
+    PhysicalRect rect(anchor_rect);
+    anchor_->GetDocument()
+        .GetFrame()
+        ->LocalFrameRoot()
+        .ContentLayoutObject()
+        ->MapToVisualRectInAncestorSpace(nullptr, rect);
+    anchor_rect = ToPixelSnappedRect(rect);
+    anchor_rect =
+        anchor_page->GetVisualViewport().RootFrameToViewport(anchor_rect);
+    anchor_rect.Intersect(gfx::Rect(anchor_page->GetVisualViewport().Size()));
+  }
+
   bool show_bottom_arrow = false;
   double bubble_y = anchor_rect.bottom();
   if (view_rect.bottom() - anchor_rect.bottom() < bubble_size_.height()) {

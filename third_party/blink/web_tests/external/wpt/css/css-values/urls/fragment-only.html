@@ -6,10 +6,12 @@
 <style>
 #inline-unquoted {
     background-image: url(#foo);
+    cursor: url(#foo), pointer;
 }
 
 #inline-quoted {
     background-image: url("#foo");
+    cursor: url("#foo"), pointer;
 }
 </style>
 <link rel=stylesheet href=support/fragment-only-urls.css>
@@ -32,6 +34,7 @@ for (let id of ids) {
         const el = document.getElementById(id);
         const style = window.getComputedStyle(el);
         assert_equals(style["background-image"], 'url("#foo")');
+        assert_equals(style["cursor"], 'url("#foo"), pointer');
     }, "empty URL: " + id);
 }
 </script>

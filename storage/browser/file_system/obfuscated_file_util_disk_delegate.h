@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,7 +35,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ObfuscatedFileUtilDiskDelegate
   NativeFileUtil::CopyOrMoveMode CopyOrMoveModeForDestination(
       const FileSystemURL& dest_url,
       bool copy) override;
-  base::File CreateOrOpen(const base::FilePath& path, int file_flags) override;
+  base::File CreateOrOpen(const base::FilePath& path,
+                          uint32_t file_flags) override;
   base::File::Error EnsureFileExists(const base::FilePath& path,
                                      bool* created) override;
   base::File::Error CreateDirectory(const base::FilePath& path,

@@ -1,10 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import {getPropertyDescriptor, PropertyKind} from 'chrome://resources/js/cr.m.js';
-import {decorate} from 'chrome://resources/js/cr/ui.m.js';
-import {MenuItem} from 'chrome://resources/js/cr/ui/menu_item.m.js';
+import {decorate} from 'chrome://resources/js/cr/ui.js';
+import {MenuItem} from './menu_item.js';
 
 import {util} from '../../../common/js/util.js';
 
@@ -59,9 +59,13 @@ export class ComboButton extends MultiMenuButton {
     }
 
     menuitem.data = item;
+    // Move backgroundImage from the menu item container to the child icon.
+    menuitem.iconStartImage = menuitem.style.backgroundImage;
+    menuitem.style.backgroundImage = '';
+
     if (item.iconType) {
-      menuitem.style.backgroundImage = '';
-      menuitem.setAttribute('file-type-icon', item.iconType);
+      menuitem.iconStartImage = '';
+      menuitem.iconStartFileType = item.iconType;
     }
     if (item.bold) {
       menuitem.style.fontWeight = 'bold';
@@ -107,7 +111,7 @@ export class ComboButton extends MultiMenuButton {
         }
       },
       enumerable: true,
-      configurable: true
+      configurable: true,
     });
   }
 
@@ -144,7 +148,7 @@ export class ComboButton extends MultiMenuButton {
         this.setMenu_(menu);
       },
       enumerable: true,
-      configurable: true
+      configurable: true,
     });
     Object.defineProperty(el, 'defaultItem', {
       get() {
@@ -154,7 +158,7 @@ export class ComboButton extends MultiMenuButton {
         this.setDefaultItem_(defaultItem);
       },
       enumerable: true,
-      configurable: true
+      configurable: true,
     });
     el.addBooleanProperty_('multiple');
     el.addBooleanProperty_('disabled');

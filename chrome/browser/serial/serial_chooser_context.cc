@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "base/base64.h"
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -37,16 +38,16 @@ namespace {
 
 constexpr char kPortNameKey[] = "name";
 constexpr char kTokenKey[] = "token";
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 constexpr char kDeviceInstanceIdKey[] = "device_instance_id";
 #else
 constexpr char kVendorIdKey[] = "vendor_id";
 constexpr char kProductIdKey[] = "product_id";
 constexpr char kSerialNumberKey[] = "serial_number";
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 constexpr char kUsbDriverKey[] = "usb_driver";
-#endif  // defined(OS_MAC)
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_WIN)
 
 std::string EncodeToken(const base::UnguessableToken& token) {
   const uint64_t data[2] = {token.GetHighForSerialization(),
@@ -70,55 +71,55 @@ base::UnguessableToken DecodeToken(base::StringPiece input) {
 }
 
 base::Value PortInfoToValue(const device::mojom::SerialPortInfo& port) {
-  base::Value value(base::Value::Type::DICTIONARY);
+  base::Value::Dict value;
   if (port.display_name && !port.display_name->empty())
-    value.SetStringKey(kPortNameKey, *port.display_name);
+    value.Set(kPortNameKey, *port.display_name);
   else
-    value.SetStringKey(kPortNameKey, port.path.LossyDisplayName());
+    value.Set(kPortNameKey, port.path.LossyDisplayName());
 
   if (!SerialChooserContext::CanStorePersistentEntry(port)) {
-    value.SetStringKey(kTokenKey, EncodeToken(port.token));
-    return value;
+    value.Set(kTokenKey, EncodeToken(port.token));
+    return base::Value(std::move(value));
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Windows provides a handy device identifier which we can rely on to be
   // sufficiently stable for identifying devices across restarts.
-  value.SetStringKey(kDeviceInstanceIdKey, port.device_instance_id);
+  value.Set(kDeviceInstanceIdKey, port.device_instance_id);
 #else
   DCHECK(port.has_vendor_id);
-  value.SetIntKey(kVendorIdKey, port.vendor_id);
+  value.Set(kVendorIdKey, port.vendor_id);
   DCHECK(port.has_product_id);
-  value.SetIntKey(kProductIdKey, port.product_id);
+  value.Set(kProductIdKey, port.product_id);
   DCHECK(port.serial_number);
-  value.SetStringKey(kSerialNumberKey, *port.serial_number);
+  value.Set(kSerialNumberKey, *port.serial_number);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   DCHECK(port.usb_driver_name && !port.usb_driver_name->empty());
-  value.SetStringKey(kUsbDriverKey, *port.usb_driver_name);
-#endif  // defined(OS_MAC)
-#endif  // defined(OS_WIN)
-  return value;
+  value.Set(kUsbDriverKey, *port.usb_driver_name);
+#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_WIN)
+  return base::Value(std::move(value));
 }
 
 base::Value VendorAndProductIdsToValue(uint16_t vendor_id,
                                        uint16_t product_id) {
-  base::Value object(base::Value::Type::DICTIONARY);
+  base::Value::Dict object;
   const char* product_name =
       device::UsbIds::GetProductName(vendor_id, product_id);
   if (product_name) {
-    object.SetStringKey(kPortNameKey, product_name);
+    object.Set(kPortNameKey, product_name);
   } else {
     const char* vendor_name = device::UsbIds::GetVendorName(vendor_id);
     if (vendor_name) {
-      object.SetStringKey(
+      object.Set(
           kPortNameKey,
           l10n_util::GetStringFUTF16(
               IDS_SERIAL_POLICY_DESCRIPTION_FOR_USB_PRODUCT_ID_AND_VENDOR_NAME,
               base::ASCIIToUTF16(base::StringPrintf("%04X", product_id)),
               base::UTF8ToUTF16(vendor_name)));
     } else {
-      object.SetStringKey(
+      object.Set(
           kPortNameKey,
           l10n_util::GetStringFUTF16(
               IDS_SERIAL_POLICY_DESCRIPTION_FOR_USB_PRODUCT_ID_AND_VENDOR_ID,
@@ -126,25 +127,24 @@ base::Value VendorAndProductIdsToValue(uint16_t vendor_id,
               base::ASCIIToUTF16(base::StringPrintf("%04X", vendor_id))));
     }
   }
-  return object;
+  return base::Value(std::move(object));
 }
 
 base::Value VendorIdToValue(uint16_t vendor_id) {
-  base::Value object(base::Value::Type::DICTIONARY);
+  base::Value::Dict object;
   const char* vendor_name = device::UsbIds::GetVendorName(vendor_id);
   if (vendor_name) {
-    object.SetStringKey(kPortNameKey,
-                        l10n_util::GetStringFUTF16(
-                            IDS_SERIAL_POLICY_DESCRIPTION_FOR_USB_VENDOR_NAME,
-                            base::UTF8ToUTF16(vendor_name)));
+    object.Set(kPortNameKey,
+               l10n_util::GetStringFUTF16(
+                   IDS_SERIAL_POLICY_DESCRIPTION_FOR_USB_VENDOR_NAME,
+                   base::UTF8ToUTF16(vendor_name)));
   } else {
-    object.SetStringKey(
-        kPortNameKey,
-        l10n_util::GetStringFUTF16(
-            IDS_SERIAL_POLICY_DESCRIPTION_FOR_USB_VENDOR_ID,
-            base::ASCIIToUTF16(base::StringPrintf("%04X", vendor_id))));
+    object.Set(kPortNameKey,
+               l10n_util::GetStringFUTF16(
+                   IDS_SERIAL_POLICY_DESCRIPTION_FOR_USB_VENDOR_ID,
+                   base::ASCIIToUTF16(base::StringPrintf("%04X", vendor_id))));
   }
-  return object;
+  return base::Value(std::move(object));
 }
 
 void RecordPermissionRevocation(SerialPermissionRevoked type) {
@@ -160,6 +160,7 @@ SerialChooserContext::SerialChooserContext(Profile* profile)
           HostContentSettingsMapFactory::GetForProfile(profile)),
       profile_(profile) {
   DCHECK(profile_);
+  permission_observation_.Observe(this);
 }
 
 SerialChooserContext::~SerialChooserContext() = default;
@@ -167,18 +168,18 @@ SerialChooserContext::~SerialChooserContext() = default;
 std::string SerialChooserContext::GetKeyForObject(const base::Value& object) {
   if (!IsValidObject(object))
     return std::string();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return *(object.FindStringKey(kDeviceInstanceIdKey));
 #else
   std::vector<std::string> key_pieces{
       base::NumberToString(*(object.FindIntKey(kVendorIdKey))),
       base::NumberToString(*(object.FindIntKey(kProductIdKey))),
       *(object.FindStringKey(kSerialNumberKey))};
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   key_pieces.push_back(*(object.FindStringKey(kUsbDriverKey)));
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
   return base::JoinString(key_pieces, "|");
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 bool SerialChooserContext::IsValidObject(const base::Value& object) {
@@ -189,19 +190,19 @@ bool SerialChooserContext::IsValidObject(const base::Value& object) {
   if (token)
     return object.DictSize() == 2 && DecodeToken(*token);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return object.DictSize() == 2 && object.FindStringKey(kDeviceInstanceIdKey);
 #else
   if (!object.FindIntKey(kVendorIdKey) || !object.FindIntKey(kProductIdKey) ||
       !object.FindStringKey(kSerialNumberKey)) {
     return false;
   }
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   return object.DictSize() == 5 && object.FindStringKey(kUsbDriverKey);
 #else
   return object.DictSize() == 4;
-#endif  // defined(OS_MAC)
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 std::u16string SerialChooserContext::GetObjectDisplayName(
@@ -209,6 +210,11 @@ std::u16string SerialChooserContext::GetObjectDisplayName(
   const std::string* name = object.FindStringKey(kPortNameKey);
   DCHECK(name);
   return base::UTF8ToUTF16(*name);
+}
+
+void SerialChooserContext::OnPermissionRevoked(const url::Origin& origin) {
+  for (auto& observer : port_observer_list_)
+    observer.OnPermissionRevoked(origin);
 }
 
 std::vector<std::unique_ptr<permissions::ObjectPermissionContextBase::Object>>
@@ -225,7 +231,7 @@ SerialChooserContext::GetGrantedObjects(const url::Origin& origin) {
         if (port_it == port_info_.end())
           continue;
 
-        const base::Value& port = port_it->second;
+        const base::Value& port = PortInfoToValue(*port_it->second);
         objects.push_back(std::make_unique<Object>(
             origin, port.Clone(),
             content_settings::SettingSource::SETTING_SOURCE_USER,
@@ -260,13 +266,12 @@ SerialChooserContext::GetGrantedObjects(const url::Origin& origin) {
     }
 
     if (base::Contains(policy->all_ports_policy(), origin)) {
-      base::Value object(base::Value::Type::DICTIONARY);
-      object.SetStringKey(kPortNameKey,
-                          l10n_util::GetStringUTF16(
-                              IDS_SERIAL_POLICY_DESCRIPTION_FOR_ANY_PORT));
+      base::Value::Dict object;
+      object.Set(kPortNameKey, l10n_util::GetStringUTF16(
+                                   IDS_SERIAL_POLICY_DESCRIPTION_FOR_ANY_PORT));
       objects.push_back(std::make_unique<ObjectPermissionContextBase::Object>(
-          origin, std::move(object), content_settings::SETTING_SOURCE_POLICY,
-          IsOffTheRecord()));
+          origin, base::Value(std::move(object)),
+          content_settings::SETTING_SOURCE_POLICY, IsOffTheRecord()));
     }
   }
 
@@ -289,7 +294,7 @@ SerialChooserContext::GetAllGrantedObjects() {
         continue;
 
       objects.push_back(std::make_unique<Object>(
-          origin, it->second.Clone(),
+          origin, PortInfoToValue(*it->second),
           content_settings::SettingSource::SETTING_SOURCE_USER,
           IsOffTheRecord()));
     }
@@ -318,14 +323,13 @@ SerialChooserContext::GetAllGrantedObjects() {
       }
     }
 
-    base::Value object(base::Value::Type::DICTIONARY);
-    object.SetStringKey(
-        kPortNameKey,
-        l10n_util::GetStringUTF16(IDS_SERIAL_POLICY_DESCRIPTION_FOR_ANY_PORT));
+    base::Value::Dict object;
+    object.Set(kPortNameKey, l10n_util::GetStringUTF16(
+                                 IDS_SERIAL_POLICY_DESCRIPTION_FOR_ANY_PORT));
     for (const auto& origin : policy->all_ports_policy()) {
       objects.push_back(std::make_unique<ObjectPermissionContextBase::Object>(
-          origin, object.Clone(), content_settings::SETTING_SOURCE_POLICY,
-          IsOffTheRecord()));
+          origin, base::Value(object.Clone()),
+          content_settings::SETTING_SOURCE_POLICY, IsOffTheRecord()));
     }
   }
 
@@ -334,10 +338,30 @@ SerialChooserContext::GetAllGrantedObjects() {
 
 void SerialChooserContext::RevokeObjectPermission(const url::Origin& origin,
                                                   const base::Value& object) {
+  RevokeObjectPermissionInternal(origin, object, /*revoked_by_website=*/false);
+}
+
+void SerialChooserContext::RevokePortPermissionWebInitiated(
+    const url::Origin& origin,
+    const base::UnguessableToken& token) {
+  auto it = port_info_.find(token);
+  if (it == port_info_.end())
+    return;
+
+  return RevokeObjectPermissionInternal(origin, PortInfoToValue(*it->second),
+                                        /*revoked_by_website=*/true);
+}
+
+void SerialChooserContext::RevokeObjectPermissionInternal(
+    const url::Origin& origin,
+    const base::Value& object,
+    bool revoked_by_website = false) {
   const std::string* token = object.FindStringKey(kTokenKey);
   if (!token) {
     ObjectPermissionContextBase::RevokeObjectPermission(origin, object);
-    RecordPermissionRevocation(SerialPermissionRevoked::kPersistent);
+    RecordPermissionRevocation(
+        revoked_by_website ? SerialPermissionRevoked::kPersistentByWebsite
+                           : SerialPermissionRevoked::kPersistentByUser);
     return;
   }
 
@@ -348,17 +372,19 @@ void SerialChooserContext::RevokeObjectPermission(const url::Origin& origin,
 
   DCHECK(IsValidObject(object));
   ports.erase(DecodeToken(*token));
-  RecordPermissionRevocation(SerialPermissionRevoked::kEphemeralByUser);
+  RecordPermissionRevocation(revoked_by_website
+                                 ? SerialPermissionRevoked::kEphemeralByWebsite
+                                 : SerialPermissionRevoked::kEphemeralByUser);
   NotifyPermissionRevoked(origin);
 }
 
 void SerialChooserContext::GrantPortPermission(
     const url::Origin& origin,
     const device::mojom::SerialPortInfo& port) {
-  base::Value value = PortInfoToValue(port);
-  port_info_.insert({port.token, value.Clone()});
+  port_info_.insert({port.token, port.Clone()});
 
   if (CanStorePersistentEntry(port)) {
+    base::Value value = PortInfoToValue(port);
     GrantObjectPermission(origin, std::move(value));
     return;
   }
@@ -403,7 +429,7 @@ bool SerialChooserContext::HasPortPermission(
     // Objects provided by the parent class can be assumed valid.
     DCHECK(IsValidObject(device));
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     const std::string& device_instance_id =
         *device.FindStringKey(kDeviceInstanceIdKey);
     if (port.device_instance_id == device_instance_id)
@@ -422,15 +448,15 @@ bool SerialChooserContext::HasPortPermission(
       continue;
     }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     const std::string& usb_driver_name = *device.FindStringKey(kUsbDriverKey);
     if (port.usb_driver_name != usb_driver_name) {
       continue;
     }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
     return true;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   }
   return false;
 }
@@ -445,7 +471,7 @@ bool SerialChooserContext::CanStorePersistentEntry(
   if (!port.display_name || port.display_name->empty())
     return false;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return !port.device_instance_id.empty();
 #else
   if (!port.has_vendor_id || !port.has_product_id || !port.serial_number ||
@@ -453,7 +479,7 @@ bool SerialChooserContext::CanStorePersistentEntry(
     return false;
   }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // The combination of the standard USB vendor ID, product ID and serial
   // number properties should be enough to uniquely identify a device
   // however recent versions of macOS include built-in drivers for common
@@ -463,10 +489,17 @@ bool SerialChooserContext::CanStorePersistentEntry(
   // USB driver name allows us to distinguish between the two.
   if (!port.usb_driver_name || port.usb_driver_name->empty())
     return false;
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
   return true;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
+}
+
+const device::mojom::SerialPortInfo* SerialChooserContext::GetPortInfo(
+    const base::UnguessableToken& token) {
+  DCHECK(is_initialized_);
+  auto it = port_info_.find(token);
+  return it == port_info_.end() ? nullptr : it->second.get();
 }
 
 device::mojom::SerialPortManager* SerialChooserContext::GetPortManager() {
@@ -496,6 +529,10 @@ base::WeakPtr<SerialChooserContext> SerialChooserContext::AsWeakPtr() {
 }
 
 void SerialChooserContext::OnPortAdded(device::mojom::SerialPortInfoPtr port) {
+  if (!base::Contains(port_info_, port->token)) {
+    port_info_.insert({port->token, port->Clone()});
+  }
+
   for (auto& observer : port_observer_list_)
     observer.OnPortAdded(*port);
 }
@@ -545,6 +582,15 @@ void SerialChooserContext::SetUpPortManagerConnection(
                      base::Unretained(this)));
 
   port_manager_->SetClient(client_receiver_.BindNewPipeAndPassRemote());
+  port_manager_->GetDevices(base::BindOnce(&SerialChooserContext::OnGetDevices,
+                                           weak_factory_.GetWeakPtr()));
+}
+
+void SerialChooserContext::OnGetDevices(
+    std::vector<device::mojom::SerialPortInfoPtr> ports) {
+  for (auto& port : ports)
+    port_info_.insert({port->token, std::move(port)});
+  is_initialized_ = true;
 }
 
 void SerialChooserContext::OnPortManagerConnectionError() {
@@ -571,7 +617,7 @@ void SerialChooserContext::OnPortManagerConnectionError() {
 
 bool SerialChooserContext::CanApplyPortSpecificPolicy() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  auto* profile_helper = chromeos::ProfileHelper::Get();
+  auto* profile_helper = ash::ProfileHelper::Get();
   DCHECK(profile_helper);
   user_manager::User* user = profile_helper->GetUserByProfile(profile_);
   DCHECK(user);

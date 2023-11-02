@@ -1,5 +1,5 @@
 #!/usr/bin/env vpython3
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -24,6 +24,26 @@ class TestRunnerTest(unittest.TestCase):
 
   def tearDown(self):
     logging.disable(logging.NOTSET)
+
+  @mock.patch.object(os.path,
+                     'dirname',
+                     return_value='chromium/src/build/lacros')
+  def test_expand_filter_file(self, _):
+    args = ['--some_flag="flag"']
+    test_runner._ExpandFilterFileIfNeeded('browser_tests', args)
+    self.assertTrue(args[1].endswith(
+        'chromium/src/'
+        'testing/buildbot/filters/linux-lacros.browser_tests.filter'))
+    self.assertTrue(args[1].startswith('--test-launcher-filter-file='))
+
+    args = ['--some_flag="flag"']
+    test_runner._ExpandFilterFileIfNeeded('random_tests', args)
+    self.assertEqual(len(args), 1)
+
+    args = ['--test-launcher-filter-file=new/filter']
+    test_runner._ExpandFilterFileIfNeeded('browser_tests', args)
+    self.assertEqual(len(args), 1)
+    self.assertTrue(args[0].endswith('new/filter'))
 
   @parameterized.expand([
       'url_unittests',
@@ -53,13 +73,14 @@ class TestRunnerTest(unittest.TestCase):
   ])
   @mock.patch.object(os,
                      'listdir',
-                     return_value=['wayland-0', 'wayland-0.lock'])
+                     return_value=['wayland-exo', 'wayland-exo.lock'])
   @mock.patch.object(tempfile,
                      'mkdtemp',
                      side_effect=['/tmp/xdg', '/tmp/ash-data'])
   @mock.patch.object(os.environ, 'copy', side_effect=[{}, {}])
   @mock.patch.object(os.path, 'exists', return_value=True)
   @mock.patch.object(os.path, 'isfile', return_value=True)
+  @mock.patch.object(os.path, 'abspath', return_value='/a/b/filter')
   @mock.patch.object(test_runner,
                      '_GetLatestVersionOfAshChrome',
                      return_value='793554')
@@ -78,9 +99,14 @@ class TestRunnerTest(unittest.TestCase):
       self.assertTrue(ash_chrome_args[0].endswith(
           'build/lacros/prebuilt_ash_chrome/793554/test_ash_chrome'))
       expected_ash_chrome_args = [
-          '--user-data-dir=/tmp/ash-data', '--enable-wayland-server',
+          '--user-data-dir=/tmp/ash-data',
+          '--enable-wayland-server',
           '--no-startup-window',
-          '--ash-ready-file-path=/tmp/ash-data/ash_ready.txt'
+          '--disable-lacros-keep-alive',
+          '--disable-login-lacros-opening',
+          '--enable-features=LacrosSupport,LacrosPrimary,LacrosOnly',
+          '--ash-ready-file-path=/tmp/ash-data/ash_ready.txt',
+          '--wayland-server-socket=wayland-exo',
       ]
       if command == 'lacros_chrome_browsertests':
         expected_ash_chrome_args.append(
@@ -93,22 +119,23 @@ class TestRunnerTest(unittest.TestCase):
       if command == 'lacros_chrome_browsertests':
         self.assertListEqual([
             command,
-            '--lacros-mojo-socket-for-testing=/tmp/ash-data/lacros.sock'
+            '--test-launcher-filter-file=/a/b/filter',
+            '--lacros-mojo-socket-for-testing=/tmp/ash-data/lacros.sock',
         ], test_args)
       else:
-        self.assertListEqual([command], test_args)
+        self.assertListEqual([command], [test_args[0]])
 
       test_env = mock_popen.call_args_list[1][1].get('env', {})
       self.assertDictEqual(
           {
+              'WAYLAND_DISPLAY': 'wayland-exo',
               'XDG_RUNTIME_DIR': '/tmp/xdg',
               'EGL_PLATFORM': 'surfaceless'
           }, test_env)
 
-
   @mock.patch.object(os,
                      'listdir',
-                     return_value=['wayland-0', 'wayland-0.lock'])
+                     return_value=['wayland-exo', 'wayland-exo.lock'])
   @mock.patch.object(os.path, 'exists', return_value=True)
   @mock.patch.object(os.path, 'isfile', return_value=True)
   @mock.patch.object(test_runner,
@@ -128,7 +155,7 @@ class TestRunnerTest(unittest.TestCase):
 
   @mock.patch.object(os,
                      'listdir',
-                     return_value=['wayland-0', 'wayland-0.lock'])
+                     return_value=['wayland-exo', 'wayland-exo.lock'])
   @mock.patch.object(os.path, 'exists', return_value=True)
   @mock.patch.object(os.path, 'isfile', return_value=True)
   @mock.patch.object(test_runner, '_DownloadAshChromeIfNecessary')
@@ -149,7 +176,7 @@ class TestRunnerTest(unittest.TestCase):
 
   @mock.patch.object(os,
                      'listdir',
-                     return_value=['wayland-0', 'wayland-0.lock'])
+                     return_value=['wayland-exo', 'wayland-exo.lock'])
   @mock.patch.object(os.path, 'exists', return_value=True)
   @mock.patch.object(os.path, 'isfile', return_value=True)
   @mock.patch.object(test_runner, '_GetLatestVersionOfAshChrome')
@@ -189,7 +216,7 @@ class TestRunnerTest(unittest.TestCase):
   @mock.patch.dict(os.environ, {'ASH_WRAPPER': 'gdb --args'}, clear=False)
   @mock.patch.object(os,
                      'listdir',
-                     return_value=['wayland-0', 'wayland-0.lock'])
+                     return_value=['wayland-exo', 'wayland-exo.lock'])
   @mock.patch.object(tempfile,
                      'mkdtemp',
                      side_effect=['/tmp/xdg', '/tmp/ash-data'])

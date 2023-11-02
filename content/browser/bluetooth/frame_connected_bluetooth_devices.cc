@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,9 +28,9 @@ struct GATTConnectionAndServerClient {
 };
 
 FrameConnectedBluetoothDevices::FrameConnectedBluetoothDevices(
-    RenderFrameHost* rfh)
+    RenderFrameHost& rfh)
     : web_contents_impl_(static_cast<WebContentsImpl*>(
-          WebContents::FromRenderFrameHost(rfh))) {}
+          WebContents::FromRenderFrameHost(&rfh))) {}
 
 FrameConnectedBluetoothDevices::~FrameConnectedBluetoothDevices() {
   for (size_t i = 0; i < device_id_to_connection_map_.size(); i++) {

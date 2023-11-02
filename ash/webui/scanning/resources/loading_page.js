@@ -1,11 +1,12 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import 'chrome://resources/polymer/v3_0/paper-progress/paper-progress.js';
 
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AppState} from './scanning_app_types.js';
@@ -28,11 +29,36 @@ Polymer({
       observer: 'onAppStateChange_',
     },
 
+    /** @protected {boolean} */
+    isDarkModeEnabled_: {
+      type: Boolean,
+    },
+
     /** @private {boolean} */
     noScannersAvailable_: {
       type: Boolean,
       value: false,
     },
+  },
+
+  /**
+   * Determines correct SVG for "no scanners" based on dark mode.
+   * @protected
+   * @return {string}
+   */
+  getNoScannersSvgSrc_() {
+    return this.isDarkModeEnabled_ ? 'svg/no_scanners_dark.svg' :
+                                     'svg/no_scanners.svg';
+  },
+
+  /**
+   * Determines correct SVG for "scanners loading" based on dark mode.
+   * @protected
+   * @return {string}
+   */
+  getScannersLoadingSvgSrc_() {
+    return this.isDarkModeEnabled_ ? 'svg/scanners_loading_dark.svg' :
+                                     'svg/scanners_loading.svg';
   },
 
   /** @private */

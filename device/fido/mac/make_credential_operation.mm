@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,8 @@
 #import <Foundation/Foundation.h>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_logging.h"
 #include "base/mac/scoped_cftyperef.h"
@@ -18,6 +20,7 @@
 #include "device/fido/attestation_statement_formats.h"
 #include "device/fido/attested_credential_data.h"
 #include "device/fido/authenticator_data.h"
+#include "device/fido/features.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/fido_transport_protocol.h"
@@ -45,14 +48,10 @@ MakeCredentialOperation::~MakeCredentialOperation() = default;
 void MakeCredentialOperation::Run() {
   // Verify pubKeyCredParams contains ES-256, which is the only algorithm we
   // support.
-  auto is_es256 =
-      [](const PublicKeyCredentialParams::CredentialInfo& cred_info) {
-        return cred_info.algorithm ==
-               static_cast<int>(CoseAlgorithmIdentifier::kEs256);
-      };
-  const auto& key_params =
-      request_.public_key_credential_params.public_key_credential_params();
-  if (!std::any_of(key_params.begin(), key_params.end(), is_es256)) {
+  if (!base::Contains(
+          request_.public_key_credential_params.public_key_credential_params(),
+          static_cast<int>(CoseAlgorithmIdentifier::kEs256),
+          &PublicKeyCredentialParams::CredentialInfo::algorithm)) {
     DVLOG(1) << "No supported algorithm found.";
     std::move(callback_).Run(
         CtapDeviceResponseCode::kCtap2ErrUnsupportedAlgorithm, absl::nullopt);
@@ -98,33 +97,40 @@ void MakeCredentialOperation::PromptTouchIdDone(bool success) {
   }
 
   // Delete the key pair for this RP + user handle if one already exists.
-  //
-  // TODO(crbug/1025065): Decide whether we should evict non-resident
-  // credentials at all.
   if (!credential_store_->DeleteCredentialsForUserId(request_.rp.id,
                                                      request_.user.id)) {
+    FIDO_LOG(ERROR) << "DeleteCredentialsForUserId() failed";
     std::move(callback_).Run(CtapDeviceResponseCode::kCtap2ErrOther,
                              absl::nullopt);
     return;
   }
 
+  // New credentials are always discoverable. But older non-discoverable
+  // credentials may exist.
+  const bool resident_key =
+      base::FeatureList::IsEnabled(kWebAuthnNewDiscoverableCredentialsUi)
+          ? true
+          : request_.resident_key_required;
+
   // Generate the new key pair.
   absl::optional<std::pair<Credential, base::ScopedCFTypeRef<SecKeyRef>>>
-      credential = credential_store_->CreateCredential(
-          request_.rp.id, request_.user, request_.resident_key_required,
-          touch_id_context_->access_control());
-  if (!credential) {
+      credential_result = credential_store_->CreateCredential(
+          request_.rp.id, request_.user,
+          resident_key ? TouchIdCredentialStore::kDiscoverable
+                       : TouchIdCredentialStore::kNonDiscoverable);
+  if (!credential_result) {
     FIDO_LOG(ERROR) << "CreateCredential() failed";
     std::move(callback_).Run(CtapDeviceResponseCode::kCtap2ErrOther,
                              absl::nullopt);
     return;
   }
+  auto [credential, sec_key_ref] = std::move(*credential_result);
 
   // Create attestation object. There is no separate attestation key pair, so
   // we perform self-attestation.
   absl::optional<AttestedCredentialData> attested_credential_data =
-      MakeAttestedCredentialData(credential->first.credential_id,
-                                 SecKeyRefToECPublicKey(credential->second));
+      MakeAttestedCredentialData(credential.credential_id,
+                                 SecKeyRefToECPublicKey(sec_key_ref));
   if (!attested_credential_data) {
     FIDO_LOG(ERROR) << "MakeAttestedCredentialData failed";
     std::move(callback_).Run(CtapDeviceResponseCode::kCtap2ErrOther,
@@ -132,10 +138,10 @@ void MakeCredentialOperation::PromptTouchIdDone(bool success) {
     return;
   }
   AuthenticatorData authenticator_data = MakeAuthenticatorData(
-      request_.rp.id, std::move(*attested_credential_data));
-  absl::optional<std::vector<uint8_t>> signature =
-      GenerateSignature(authenticator_data, request_.client_data_hash,
-                        credential->first.private_key);
+      credential.metadata.sign_counter_type, request_.rp.id,
+      std::move(*attested_credential_data));
+  absl::optional<std::vector<uint8_t>> signature = GenerateSignature(
+      authenticator_data, request_.client_data_hash, credential.private_key);
   if (!signature) {
     FIDO_LOG(ERROR) << "MakeSignature failed";
     std::move(callback_).Run(CtapDeviceResponseCode::kCtap2ErrOther,
@@ -149,7 +155,9 @@ void MakeCredentialOperation::PromptTouchIdDone(bool success) {
           std::make_unique<PackedAttestationStatement>(
               CoseAlgorithmIdentifier::kEs256, std::move(*signature),
               /*x509_certificates=*/std::vector<std::vector<uint8_t>>())));
-  response.is_resident_key = request_.resident_key_required;
+  response.is_resident_key = resident_key;
+  response.transports.emplace();
+  response.transports->insert(FidoTransportProtocol::kInternal);
   std::move(callback_).Run(CtapDeviceResponseCode::kSuccess,
                            std::move(response));
 }

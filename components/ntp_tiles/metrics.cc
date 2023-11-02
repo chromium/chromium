@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -176,6 +176,12 @@ void RecordTileClick(const NTPTileImpression& impression) {
                            GetSourceHistogramName(impression.source).c_str()),
         impression.visual_type, LAST_RECORDED_TILE_TYPE + 1);
   }
+}
+
+void RecordsMigratedDefaultAppDeleted(
+    const DeletedTileType& most_visited_app_type) {
+  base::UmaHistogramEnumeration("NewTabPage.MostVisitedMigratedDefaultAppType",
+                                most_visited_app_type);
 }
 
 }  // namespace metrics

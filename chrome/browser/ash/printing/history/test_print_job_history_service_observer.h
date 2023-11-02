@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,14 +17,14 @@ class TestPrintJobHistoryServiceObserver
   TestPrintJobHistoryServiceObserver(
       PrintJobHistoryService* print_job_history_service,
       base::RepeatingClosure run_loop_closure);
-  ~TestPrintJobHistoryServiceObserver();
+  ~TestPrintJobHistoryServiceObserver() override;
 
   int num_print_jobs() { return num_print_jobs_; }
 
  private:
   // PrintJobHistoryService::Observer:
   void OnPrintJobFinished(
-      const chromeos::printing::proto::PrintJobInfo& print_job_info) override;
+      const printing::proto::PrintJobInfo& print_job_info) override;
 
   PrintJobHistoryService* print_job_history_service_;
   base::RepeatingClosure run_loop_closure_;

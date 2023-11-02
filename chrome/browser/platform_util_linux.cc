@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,11 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/callback.h"
+#include "base/callback_list.h"
 #include "base/containers/contains.h"
+#include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/process/kill.h"
@@ -18,7 +22,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/platform_util_internal.h"
 // This file gets pulled in in Chromecast builds, which causes "gn check" to
 // complain as Chromecast doesn't use (or depend on) //components/dbus.
@@ -26,9 +30,6 @@
 // on Chromecast and remove the nogncheck below.
 #include "components/dbus/thread_linux/dbus_thread_linux.h"  // nogncheck
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
-#include "content/public/browser/notification_service.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
@@ -55,32 +56,21 @@ const char kFreedesktopPortalOpenURI[] = "org.freedesktop.portal.OpenURI";
 
 const char kMethodOpenDirectory[] = "OpenDirectory";
 
-class ShowItemHelper : public content::NotificationObserver {
+class ShowItemHelper {
  public:
   static ShowItemHelper& GetInstance() {
     static base::NoDestructor<ShowItemHelper> instance;
     return *instance;
   }
 
-  ShowItemHelper() {
-    registrar_.Add(this, chrome::NOTIFICATION_APP_TERMINATING,
-                   content::NotificationService::AllSources());
-  }
+  ShowItemHelper()
+      : browser_shutdown_subscription_(
+            browser_shutdown::AddAppTerminatingCallback(
+                base::BindOnce(&ShowItemHelper::OnAppTerminating,
+                               base::Unretained(this)))) {}
 
   ShowItemHelper(const ShowItemHelper&) = delete;
   ShowItemHelper& operator=(const ShowItemHelper&) = delete;
-
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    DCHECK_EQ(chrome::NOTIFICATION_APP_TERMINATING, type);
-    // The browser process is about to exit. Clean up while we still can.
-    if (bus_)
-      bus_->ShutdownOnDBusThreadAndBlock();
-    bus_.reset();
-    object_proxy_ = nullptr;
-  }
 
   void ShowItemInFolder(Profile* profile, const base::FilePath& full_path) {
     if (!bus_) {
@@ -111,6 +101,15 @@ class ShowItemHelper : public content::NotificationObserver {
   }
 
  private:
+  void OnAppTerminating() {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    // The browser process is about to exit. Clean up while we still can.
+    if (bus_)
+      bus_->ShutdownOnDBusThreadAndBlock();
+    bus_.reset();
+    object_proxy_ = nullptr;
+  }
+
   void CheckFileManagerRunning(Profile* profile,
                                const base::FilePath& full_path) {
     dbus::MethodCall method_call(DBUS_INTERFACE_DBUS, kMethodNameHasOwner);
@@ -277,14 +276,13 @@ class ShowItemHelper : public content::NotificationObserver {
              OpenOperationCallback());
   }
 
-  content::NotificationRegistrar registrar_;
-
   scoped_refptr<dbus::Bus> bus_;
-  dbus::ObjectProxy* dbus_proxy_ = nullptr;
-  dbus::ObjectProxy* object_proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy> dbus_proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy> object_proxy_ = nullptr;
 
   absl::optional<bool> prefer_filemanager_interface_;
 
+  base::CallbackListSubscription browser_shutdown_subscription_;
   base::WeakPtrFactory<ShowItemHelper> weak_ptr_factory_{this};
 };
 
@@ -357,7 +355,7 @@ void ShowItemInFolder(Profile* profile, const base::FilePath& full_path) {
   ShowItemHelper::GetInstance().ShowItemInFolder(profile, full_path);
 }
 
-void OpenExternal(Profile* profile, const GURL& url) {
+void OpenExternal(const GURL& url) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (url.SchemeIs("mailto"))
     XDGEmail(url.spec());

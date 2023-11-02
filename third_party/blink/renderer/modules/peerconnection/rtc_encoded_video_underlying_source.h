@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,6 +39,8 @@ class MODULES_EXPORT RTCEncodedVideoUnderlyingSource
 
   const Member<ScriptState> script_state_;
   base::OnceClosure disconnect_callback_;
+  // Count of frames dropped due to the queue being full, for logging.
+  int dropped_frames_ = 0;
   THREAD_CHECKER(thread_checker_);
 };
 

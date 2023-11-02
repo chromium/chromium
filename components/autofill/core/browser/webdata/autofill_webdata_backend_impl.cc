@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,11 +10,13 @@
 #include "base/check_op.h"
 #include "base/location.h"
 #include "base/notreached.h"
+#include "base/observer_list.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
+#include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
@@ -72,13 +74,6 @@ AutofillWebDataBackendImpl::~AutofillWebDataBackendImpl() {
 void AutofillWebDataBackendImpl::SetAutofillProfileChangedCallback(
     base::RepeatingCallback<void(const AutofillProfileDeepChange&)> change_cb) {
   on_autofill_profile_changed_cb_ = std::move(change_cb);
-}
-
-void AutofillWebDataBackendImpl::SetCardArtImagesChangedCallback(
-    base::RepeatingCallback<void(const std::vector<std::string>&)>
-        on_card_art_image_change_callback) {
-  on_card_art_image_change_callback_ =
-      std::move(on_card_art_image_change_callback);
 }
 
 WebDatabase* AutofillWebDataBackendImpl::GetDatabase() {
@@ -151,19 +146,6 @@ void AutofillWebDataBackendImpl::NotifyThatSyncHasStarted(
   // UI sequence notification.
   ui_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(on_sync_started_callback_, model_type));
-}
-
-void AutofillWebDataBackendImpl::NotifyOfCreditCardArtImagesChanged(
-    const std::vector<std::string>& server_ids) {
-  DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
-
-  if (on_card_art_image_change_callback_.is_null())
-    return;
-
-  // UI sequence notification.
-  ui_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(on_card_art_image_change_callback_, server_ids));
 }
 
 base::SupportsUserData* AutofillWebDataBackendImpl::GetDBUserData() {
@@ -529,6 +511,73 @@ WebDatabase::State AutofillWebDataBackendImpl::UpdateServerCardMetadata(
         CreditCardChange(CreditCardChange::UPDATE, card.server_id(), &card));
   }
 
+  return WebDatabase::COMMIT_NEEDED;
+}
+
+std::unique_ptr<WDTypedResult> AutofillWebDataBackendImpl::GetIBANs(
+    WebDatabase* db) {
+  DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+  std::vector<std::unique_ptr<IBAN>> ibans;
+  AutofillTable::FromWebDatabase(db)->GetIBANs(&ibans);
+
+  return std::make_unique<WDResult<std::vector<std::unique_ptr<IBAN>>>>(
+      AUTOFILL_IBANS_RESULT, std::move(ibans));
+}
+
+WebDatabase::State AutofillWebDataBackendImpl::AddIBAN(const IBAN& iban,
+                                                       WebDatabase* db) {
+  DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+  if (!AutofillTable::FromWebDatabase(db)->AddIBAN(iban)) {
+    NOTREACHED();
+    return WebDatabase::COMMIT_NOT_NEEDED;
+  }
+
+  for (auto& db_observer : db_observer_list_) {
+    db_observer.IBANChanged(IBANChange(IBANChange::ADD, iban.guid(), &iban));
+  }
+  return WebDatabase::COMMIT_NEEDED;
+}
+
+WebDatabase::State AutofillWebDataBackendImpl::UpdateIBAN(const IBAN& iban,
+                                                          WebDatabase* db) {
+  DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+  // It is currently valid to try to update a missing IBAN. We simply drop
+  // the write and the caller will detect this on the next refresh.
+  std::unique_ptr<IBAN> original_iban =
+      AutofillTable::FromWebDatabase(db)->GetIBAN(iban.guid());
+  if (!original_iban)
+    return WebDatabase::COMMIT_NOT_NEEDED;
+
+  if (!AutofillTable::FromWebDatabase(db)->UpdateIBAN(iban)) {
+    NOTREACHED();
+    return WebDatabase::COMMIT_NOT_NEEDED;
+  }
+
+  for (auto& db_observer : db_observer_list_) {
+    db_observer.IBANChanged(IBANChange(IBANChange::UPDATE, iban.guid(), &iban));
+  }
+  return WebDatabase::COMMIT_NEEDED;
+}
+
+WebDatabase::State AutofillWebDataBackendImpl::RemoveIBAN(
+    const std::string& guid,
+    WebDatabase* db) {
+  DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+  std::unique_ptr<IBAN> iban =
+      AutofillTable::FromWebDatabase(db)->GetIBAN(guid);
+  if (!iban) {
+    NOTREACHED();
+    return WebDatabase::COMMIT_NOT_NEEDED;
+  }
+
+  if (!AutofillTable::FromWebDatabase(db)->RemoveIBAN(guid)) {
+    NOTREACHED();
+    return WebDatabase::COMMIT_NOT_NEEDED;
+  }
+
+  for (auto& db_observer : db_observer_list_) {
+    db_observer.IBANChanged(IBANChange(IBANChange::REMOVE, guid, iban.get()));
+  }
   return WebDatabase::COMMIT_NEEDED;
 }
 

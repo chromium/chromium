@@ -1,10 +1,9 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme_overlay_mobile.h"
 
-#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
@@ -13,6 +12,7 @@
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme_overlay_mock.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
+#include "third_party/blink/renderer/platform/theme/web_theme_engine_helper.h"
 
 namespace blink {
 
@@ -25,7 +25,8 @@ static const WebThemeEngine::ScrollbarStyle& ScrollbarStyle() {
     // be the mobile theme which can provide the overlay scrollbar styles.
     // In the case the following call will do nothing and we'll use the default
     // styles specified above.
-    Platform::Current()->ThemeEngine()->GetOverlayScrollbarStyle(&style);
+    WebThemeEngineHelper::GetNativeThemeEngine()->GetOverlayScrollbarStyle(
+        &style);
     DCHECK(style.thumb_thickness);
     initialized = true;
   }
@@ -33,7 +34,7 @@ static const WebThemeEngine::ScrollbarStyle& ScrollbarStyle() {
 }
 
 ScrollbarThemeOverlayMobile& ScrollbarThemeOverlayMobile::GetInstance() {
-  // For unit tests which don't have Platform::Current()->ThemeEngine().
+  // For unit tests.
   if (MockScrollbarsEnabled()) {
     DEFINE_STATIC_LOCAL(ScrollbarThemeOverlayMock, theme, ());
     return theme;
@@ -43,7 +44,8 @@ ScrollbarThemeOverlayMobile& ScrollbarThemeOverlayMobile::GetInstance() {
       ScrollbarThemeOverlayMobile, theme,
       (ScrollbarStyle().thumb_thickness, ScrollbarStyle().scrollbar_margin,
        ScrollbarStyle().thumb_thickness_thin,
-       ScrollbarStyle().scrollbar_margin_thin, ScrollbarStyle().color));
+       ScrollbarStyle().scrollbar_margin_thin,
+       Color::FromSkColor(ScrollbarStyle().color)));
   return theme;
 }
 
@@ -61,7 +63,7 @@ ScrollbarThemeOverlayMobile::ScrollbarThemeOverlayMobile(
 
 void ScrollbarThemeOverlayMobile::PaintThumb(GraphicsContext& context,
                                              const Scrollbar& scrollbar,
-                                             const IntRect& rect) {
+                                             const gfx::Rect& rect) {
   if (!scrollbar.Enabled())
     return;
 
@@ -70,7 +72,7 @@ void ScrollbarThemeOverlayMobile::PaintThumb(GraphicsContext& context,
     return;
 
   DrawingRecorder recorder(context, scrollbar, DisplayItem::kScrollbarThumb,
-                           ToGfxRect(rect));
+                           rect);
 
   const auto* box = scrollbar.GetScrollableArea()->GetLayoutBox();
   AutoDarkMode auto_dark_mode(PaintAutoDarkMode(

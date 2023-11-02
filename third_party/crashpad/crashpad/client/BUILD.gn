@@ -1,4 +1,4 @@
-# Copyright 2015 The Crashpad Authors. All rights reserved.
+# Copyright 2015 The Crashpad Authors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -170,6 +170,7 @@ source_set("client_test") {
     sources += [
       "crashpad_client_ios_test.mm",
       "ios_handler/exception_processor_test.mm",
+      "ios_handler/in_process_handler_test.cc",
       "ios_handler/in_process_intermediate_dump_handler_test.cc",
     ]
   }
@@ -194,7 +195,10 @@ source_set("client_test") {
   }
 
   if (crashpad_is_win) {
-    data_deps += [ "../handler:crashpad_handler_console" ]
+    data_deps += [
+      "../handler:crashpad_handler_console",
+      "../handler/win/wer:crashpad_wer_handler",
+    ]
   }
 }
 

@@ -1,7 +1,8 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/metrics/histogram_tester.h"
 #include "cc/input/main_thread_scrolling_reason.h"
 #include "cc/layers/picture_layer.h"
 #include "cc/trees/property_tree.h"
@@ -16,12 +17,9 @@
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/paint/compositing/composited_layer_mapping.h"
-#include "third_party/blink/renderer/core/paint/compositing/paint_layer_compositor.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
 #include "third_party/blink/renderer/platform/testing/find_cc_layer.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -76,7 +74,8 @@ class MainThreadScrollingReasonsTest : public PaintTestConfigurations,
   const cc::ScrollNode* GetScrollNode(const cc::Layer* layer) const {
     return layer->layer_tree_host()
         ->property_trees()
-        ->scroll_tree.FindNodeFromElementId(layer->element_id());
+        ->scroll_tree()
+        .FindNodeFromElementId(layer->element_id());
   }
 
   bool IsScrollable(const cc::Layer* layer) const {
@@ -106,13 +105,12 @@ class MainThreadScrollingReasonsTest : public PaintTestConfigurations,
 
  protected:
   String base_url_;
+  frame_test_helpers::WebViewHelper helper_;
 
  private:
   static void ConfigureSettings(WebSettings* settings) {
     settings->SetPreferCompositingToLCDTextEnabled(true);
   }
-
-  frame_test_helpers::WebViewHelper helper_;
 };
 
 INSTANTIATE_PAINT_TEST_SUITE_P(MainThreadScrollingReasonsTest);
@@ -234,6 +232,64 @@ TEST_P(MainThreadScrollingReasonsTest,
   EXPECT_MAIN_THREAD_SCROLLING_REASON(
       cc::MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects,
       GetMainThreadScrollingReasons(outer_scroll_layer));
+}
+
+TEST_P(MainThreadScrollingReasonsTest, ReportBackgroundAttachmentFixed) {
+  base::HistogramTester histogram_tester;
+  std::string html = R"HTML(
+    <style>
+      body { width: 900px; height: 900px; }
+      #bg { background: url('white-1x1.png') fixed; }
+    </style>
+    <div id=bg>x</div>
+  )HTML";
+
+  WebLocalFrameImpl* frame = helper_.LocalMainFrame();
+  frame_test_helpers::LoadHTMLString(frame, html,
+                                     url_test_helpers::ToKURL("about:blank"));
+
+  helper_.GetLayerTreeHost()->CompositeForTest(base::TimeTicks::Now(), false);
+
+  auto CreateEvent = [](WebInputEvent::Type type) {
+    return WebGestureEvent(type, WebInputEvent::kNoModifiers,
+                           base::TimeTicks::Now(),
+                           WebGestureDevice::kTouchscreen);
+  };
+
+  WebGestureEvent scroll_begin =
+      CreateEvent(WebInputEvent::Type::kGestureScrollBegin);
+  WebGestureEvent scroll_update =
+      CreateEvent(WebInputEvent::Type::kGestureScrollUpdate);
+  WebGestureEvent scroll_end =
+      CreateEvent(WebInputEvent::Type::kGestureScrollEnd);
+
+  scroll_begin.SetPositionInWidget(gfx::PointF(100, 100));
+  scroll_update.SetPositionInWidget(gfx::PointF(100, 100));
+  scroll_end.SetPositionInWidget(gfx::PointF(100, 100));
+
+  scroll_update.data.scroll_update.delta_y = -100;
+
+  auto* widget = helper_.GetMainFrameWidget();
+  widget->DispatchThroughCcInputHandler(scroll_begin);
+  widget->DispatchThroughCcInputHandler(scroll_update);
+  widget->DispatchThroughCcInputHandler(scroll_end);
+
+  helper_.GetLayerTreeHost()->CompositeForTest(base::TimeTicks::Now(), false);
+
+  uint32_t expected_reason =
+      cc::MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects;
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "Renderer4.MainThreadGestureScrollReason2"),
+      testing::ElementsAre(
+          base::Bucket(
+              base::HistogramBase::Sample(
+                  cc::MainThreadScrollingReason::kScrollingOnMainForAnyReason),
+              1),
+          base::Bucket(base::HistogramBase::Sample(
+                           cc::MainThreadScrollingReason::BucketIndexForTesting(
+                               expected_reason)),
+                       1)));
 }
 
 // Upon resizing the content size, the main thread scrolling reason
@@ -450,9 +506,8 @@ TEST_P(NonCompositedMainThreadScrollingReasonsTest, BorderRadiusTest) {
 TEST_P(NonCompositedMainThreadScrollingReasonsTest,
        ForcedComositingWithLCDRelatedReasons) {
   // With "will-change:transform" we composite elements with
-  // LCDTextRelatedReasons only. For elements with other
-  // NonCompositedReasons, we don't create scrollingLayer for their
-  // CompositedLayerMapping therefore they don't get composited.
+  // LCDTextRelatedReasons only. For elements with other NonCompositedReasons,
+  // we don't composite them.
   GetWebView()->GetSettings()->SetPreferCompositingToLCDTextEnabled(false);
   Document* document = GetFrame()->GetDocument();
   Element* container = document->getElementById("scroller1");

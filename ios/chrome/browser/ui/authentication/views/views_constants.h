@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,9 @@
 
 // Accessibility identifier for the identity picker view.
 extern NSString* const kIdentityButtonControlIdentifier;
+// Accessibility identifier for "Add Account" button in the identity picker
+// view.
+extern NSString* const kIdentityPickerAddAccountIdentifier;
 
 // Style for the identity view (modify the avatar size, font sizes and some
 // margins).

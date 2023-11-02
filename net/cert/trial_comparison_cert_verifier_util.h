@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,7 +29,8 @@ enum class TrialComparisonResult {
   kIgnoredBothAuthorityInvalid = 13,
   kIgnoredBothKnownRoot = 14,
   kIgnoredBuiltinAuthorityInvalidPlatformSymantec = 15,
-  kMaxValue = kIgnoredBuiltinAuthorityInvalidPlatformSymantec
+  kIgnoredLetsEncryptExpiredRoot = 16,
+  kMaxValue = kIgnoredLetsEncryptExpiredRoot
 };
 
 NET_EXPORT_PRIVATE bool CertVerifyResultEqual(const CertVerifyResult& a,

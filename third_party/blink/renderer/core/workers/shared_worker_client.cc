@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,13 +44,13 @@ void SharedWorkerClient::OnConnected(
 
 void SharedWorkerClient::OnScriptLoadFailed(const String& error_message) {
   worker_->SetIsBeingConnected(false);
-  if (!error_message.IsEmpty()) {
+  if (!error_message.empty()) {
     worker_->GetExecutionContext()->AddConsoleMessage(
         MakeGarbageCollected<ConsoleMessage>(
             mojom::blink::ConsoleMessageSource::kWorker,
             mojom::blink::ConsoleMessageLevel::kError, error_message));
   }
-  worker_->DispatchEvent(*Event::CreateCancelable(event_type_names::kError));
+  worker_->DispatchEvent(*Event::CreateCancelable(event_type_names::kError), "SharedWorkerClient::OnScriptLoadFailed");
   // |this| can be destroyed at this point, for example, when a frame hosting
   // this shared worker is detached in the error handler, and closes mojo's
   // strong bindings bound with |this| in

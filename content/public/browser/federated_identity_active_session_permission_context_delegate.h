@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,21 +19,22 @@ class FederatedIdentityActiveSessionPermissionContextDelegate {
   FederatedIdentityActiveSessionPermissionContextDelegate() = default;
   virtual ~FederatedIdentityActiveSessionPermissionContextDelegate() = default;
 
-  // Determine whether the relying_party has an existing active session for
-  // the specified account_identifier with the identity_provider.
-  virtual bool HasActiveSession(const url::Origin& relying_party,
+  // Determine whether the `relying_party_requester` has an existing active
+  // session for the specified `account_identifier` with the
+  // `identity_provider`.
+  virtual bool HasActiveSession(const url::Origin& relying_party_requester,
                                 const url::Origin& identity_provider,
                                 const std::string& account_identifier) = 0;
 
-  // Grant active session capabilities between the relying_party and
-  // identity_provider origins for the specified account.
-  virtual void GrantActiveSession(const url::Origin& relying_party,
+  // Grant active session capabilities between the `relying_party_requester` and
+  // `identity_provider` origins for the specified account.
+  virtual void GrantActiveSession(const url::Origin& relying_party_requester,
                                   const url::Origin& identity_provider,
                                   const std::string& account_identifier) = 0;
 
-  // Revoke a previously-provided grant from the relying_party to the provider
-  // for the specified account.
-  virtual void RevokeActiveSession(const url::Origin& relying_party,
+  // Revoke a previously-provided grant from the `relying_party_requester` to
+  // the `identity_provider` for the specified account.
+  virtual void RevokeActiveSession(const url::Origin& relying_party_requester,
                                    const url::Origin& identity_provider,
                                    const std::string& account_identifier) = 0;
 };

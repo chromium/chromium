@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 
 #include "ash/services/ime/public/mojom/input_method.mojom.h"
 
-namespace chromeos {
+namespace ash {
 namespace ime {
 namespace rulebased {
 
@@ -69,6 +69,6 @@ class Engine {
 
 }  // namespace rulebased
 }  // namespace ime
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_SERVICES_IME_PUBLIC_CPP_RULEBASED_ENGINE_H_

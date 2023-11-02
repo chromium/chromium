@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -67,7 +68,7 @@ DistillerImpl::~DistillerImpl() {
 
 bool DistillerImpl::DoesFetchImages() {
 // Only iOS makes use of the fetched image data.
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   return true;
 #else
   return false;
@@ -333,11 +334,9 @@ void DistillerImpl::OnFetchImageDone(int page_num,
   DistilledPageData* page_data = GetPageAtIndex(started_pages_index_[page_num]);
   DCHECK(page_data->distilled_page_proto);
   DCHECK(url_fetcher);
-  auto fetcher_it = std::find_if(
-      page_data->image_fetchers_.begin(), page_data->image_fetchers_.end(),
-      [url_fetcher](const std::unique_ptr<DistillerURLFetcher>& f) {
-        return url_fetcher == f.get();
-      });
+  auto fetcher_it =
+      base::ranges::find(page_data->image_fetchers_, url_fetcher,
+                         &std::unique_ptr<DistillerURLFetcher>::get);
 
   DCHECK(fetcher_it != page_data->image_fetchers_.end());
   // Delete the |url_fetcher| by DeleteSoon since the OnFetchImageDone

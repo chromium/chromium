@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,10 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "sandbox/features.h"
+#endif
 
 namespace policy {
 
@@ -39,18 +43,11 @@ class NetworkServiceSandboxEnabledTest
     policy_provider_.UpdateChromePolicy(values);
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
         &policy_provider_);
-#if defined(OS_WIN)
-    // On Windows, enabling network sandbox without also migrating data hits a
-    // (valid) DCHECK, so trigger the migration for this test.
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kTriggerNetworkDataMigration);
-#endif
     InProcessBrowserTest::SetUp();
   }
 
  private:
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(NetworkServiceSandboxEnabledTest, IsRespected) {
@@ -58,6 +55,12 @@ IN_PROC_BROWSER_TEST_P(NetworkServiceSandboxEnabledTest, IsRespected) {
   // Policy always overrides the default.
   bool expected_value =
       GetParam().value_or(content_client.ShouldSandboxNetworkService());
+#if BUILDFLAG(IS_WIN)
+  // On Windows, the policy is ignored if the platform does not support
+  // sandboxing at all, e.g. pre Windows 10.
+  if (!sandbox::features::IsAppContainerSandboxSupported())
+    expected_value = false;
+#endif
   ChromeContentBrowserClient client;
   EXPECT_EQ(expected_value, client.ShouldSandboxNetworkService());
 }

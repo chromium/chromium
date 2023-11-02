@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include "ash/components/phonehub/user_action_recorder.h"
 #include "base/gtest_prod_util.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 class FeatureStatusProvider;
@@ -24,8 +24,6 @@ class UserActionRecorderImpl : public UserActionRecorder {
  private:
   friend class UserActionRecorderImplTest;
   FRIEND_TEST_ALL_PREFIXES(UserActionRecorderImplTest, RecordActions);
-  FRIEND_TEST_ALL_PREFIXES(UserActionRecorderImplTest,
-                           UiOpenedOnlyRecordedWhenConnected);
 
   // Types of user actions; numerical value should not be reused or reordered
   // since this enum is used in metrics.
@@ -57,6 +55,6 @@ class UserActionRecorderImpl : public UserActionRecorder {
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_PHONEHUB_USER_ACTION_RECORDER_IMPL_H_

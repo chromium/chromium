@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,6 +38,13 @@ const char kDefaultSandboxedPageContentSecurityPolicy[] =
     "sandbox allow-scripts allow-forms allow-popups allow-modals; "
     "script-src 'self' 'unsafe-inline' 'unsafe-eval'; child-src 'self';";
 
+// The default CSP to be used if no CSP provided.
+static const char kDefaultMV3CSP[] = "script-src 'self'; object-src 'self';";
+
+// The minimum CSP to be used in order to prevent remote scripts.
+static const char kMinimumMV3CSP[] =
+    "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';";
+
 #define PLATFORM_APP_LOCAL_CSP_SOURCES "'self' blob: filesystem: data:"
 
 // clang-format off
@@ -58,22 +65,8 @@ const char kDefaultPlatformAppContentSecurityPolicy[] =
     //    streaming or partial buffering.
     " media-src * data: blob: filesystem:;"
     // Scripts are allowed to use WebAssembly
-    " script-src 'self' blob: filesystem: 'wasm-eval';";
+    " script-src 'self' blob: filesystem: 'wasm-unsafe-eval';";
 // clang-format on
-
-const char* GetDefaultMV3CSP(absl::optional<bool> allow_wasm = absl::nullopt) {
-  // The default CSP to be used in order to prevent remote scripts.
-  static const char kDefaultMV3CSP[] = "script-src 'self'; object-src 'self';";
-
-  // Same as `kDefaultMV3CSP` but allows web assembly usage.
-  static const char kDefaultMV3CSPWithWasmAllowed[] =
-      "script-src 'self' 'wasm-eval'; object-src 'self';";
-
-  return allow_wasm.value_or(
-             base::FeatureList::IsEnabled(extensions_features::kAllowWasmInMV3))
-             ? kDefaultMV3CSPWithWasmAllowed
-             : kDefaultMV3CSP;
-}
 
 int GetValidatorOptions(Extension* extension) {
   int options = csp_validator::OPTIONS_NONE;
@@ -101,13 +94,12 @@ std::u16string GetInvalidManifestKeyError(base::StringPiece key) {
 // corresponding Value.
 const base::Value* GetManifestPath(const Extension* extension,
                                    const char* path) {
-  const base::Value* value = nullptr;
-  return extension->manifest()->Get(path, &value) ? value : nullptr;
+  return extension->manifest()->FindPath(path);
 }
 
 const char* GetDefaultExtensionPagesCSP(Extension* extension) {
   if (extension->manifest_version() >= 3)
-    return GetDefaultMV3CSP();
+    return kDefaultMV3CSP;
 
   if (extension->GetType() == Manifest::TYPE_PLATFORM_APP)
     return kDefaultPlatformAppContentSecurityPolicy;
@@ -131,7 +123,7 @@ const std::string& CSPInfo::GetExtensionPagesCSP(const Extension* extension) {
 }
 
 // static
-const std::string* CSPInfo::GetDefaultCSPToAppend(
+const std::string* CSPInfo::GetMinimumCSPToAppend(
     const Extension& extension,
     const std::string& relative_path) {
   if (!extension.is_extension())
@@ -146,11 +138,12 @@ const std::string* CSPInfo::GetDefaultCSPToAppend(
   if (extension.manifest_version() <= 2)
     return &GetExtensionPagesCSP(&extension);
 
-  // For manifest V3 extensions, append the default secure CSP. This
+  // For manifest V3 extensions, append the minimum secure CSP. This
   // additionally helps protect against bugs in our CSP parsing code which may
   // cause the parsed CSP to not be as strong as the default one. For example,
   // see crbug.com/1042963.
-  static const base::NoDestructor<std::string> default_csp(GetDefaultMV3CSP());
+
+  static const base::NoDestructor<std::string> default_csp(kMinimumMV3CSP);
   return default_csp.get();
 }
 
@@ -160,7 +153,7 @@ const std::string* CSPInfo::GetIsolatedWorldCSP(const Extension& extension) {
     // The isolated world will use its own CSP which blocks remotely hosted
     // code.
     static const base::NoDestructor<std::string> default_isolated_world_csp(
-        GetDefaultMV3CSP(false /* allow_wasm */));
+        kMinimumMV3CSP);
     return default_isolated_world_csp.get();
   }
 
@@ -237,8 +230,8 @@ bool CSPHandler::ParseCSPDictionary(Extension* extension,
                                     std::u16string* error) {
   // keys::kSandboxedPagesCSP shouldn't be used when using
   // keys::kContentSecurityPolicy as a dictionary.
-  if (extension->manifest()->HasPath(keys::kSandboxedPagesCSP)) {
-    *error = base::ASCIIToUTF16(errors::kSandboxPagesCSPKeyNotAllowed);
+  if (extension->manifest()->FindPath(keys::kSandboxedPagesCSP)) {
+    *error = errors::kSandboxPagesCSPKeyNotAllowed;
     return false;
   }
 

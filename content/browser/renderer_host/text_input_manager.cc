@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/numerics/clamped_math.h"
+#include "base/observer_list.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
@@ -24,11 +25,11 @@ bool ShouldUpdateTextInputState(const ui::mojom::TextInputState& old_state,
          old_state.type != new_state.type || old_state.mode != new_state.mode ||
          old_state.flags != new_state.flags ||
          old_state.can_compose_inline != new_state.can_compose_inline;
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   return old_state.type != new_state.type ||
          old_state.flags != new_state.flags ||
          old_state.can_compose_inline != new_state.can_compose_inline;
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   // On Android, TextInputState update is sent only if there is some change in
   // the state. So the new state is always different.
   return true;
@@ -110,25 +111,6 @@ absl::optional<ui::GrammarFragment> TextInputManager::GetGrammarFragment(
   return absl::nullopt;
 }
 
-bool TextInputManager::OverlapsWithSpellCheckMarker(
-    const gfx::Range range) const {
-  if (!active_view_)
-    return false;
-
-  for (const auto& ime_text_span_info :
-       text_input_state_map_.at(active_view_)->ime_text_spans_info) {
-    if (ime_text_span_info->span.type ==
-        ui::ImeTextSpan::Type::kMisspellingSuggestion) {
-      auto span_range = gfx::Range(ime_text_span_info->span.start_offset,
-                                   ime_text_span_info->span.end_offset);
-      if (span_range.Intersects(range)) {
-        return true;
-      }
-    }
-  }
-  return false;
-}
-
 const TextInputManager::SelectionRegion* TextInputManager::GetSelectionRegion(
     RenderWidgetHostViewBase* view) const {
   DCHECK(!view || IsRegistered(view));
@@ -194,7 +176,7 @@ void TextInputManager::UpdateTextInputState(
     // calls necessary).
     // NOTE: Android requires state to be returned even when the current state
     // is/becomes NONE. Otherwise IME may become irresponsive.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     return;
 #endif
   }

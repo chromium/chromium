@@ -1,9 +1,9 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/css/css_ratio_value.h"
-#include "third_party/blink/renderer/core/style/data_equivalency.h"
+#include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -22,8 +22,8 @@ String CSSRatioValue::CustomCSSText() const {
 }
 
 bool CSSRatioValue::Equals(const CSSRatioValue& other) const {
-  return DataEquivalent(first_, other.first_) &&
-         DataEquivalent(second_, other.second_);
+  return base::ValuesEquivalent(first_, other.first_) &&
+         base::ValuesEquivalent(second_, other.second_);
 }
 
 }  // namespace cssvalue

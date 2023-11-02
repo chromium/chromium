@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <limits.h>
 #include <stddef.h>
 
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/rand_util.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -22,7 +21,7 @@ namespace {
 // in sandboxed scenarios as we might have by-name policies that allow pipe
 // creation. Also keep the secure random number generation.
 const wchar_t kPipeNameFormat[] = L"\\\\.\\pipe\\chrome.sync.%u.%u.%lu";
-const size_t kPipePathMax = base::size(kPipeNameFormat) + (3 * 10) + 1;
+const size_t kPipePathMax = std::size(kPipeNameFormat) + (3 * 10) + 1;
 
 // To avoid users sending negative message lengths to Send/Receive
 // we clamp message lengths, which are size_t, to no more than INT_MAX.
@@ -36,8 +35,8 @@ bool CreatePairImpl(ScopedHandle* socket_a,
                     ScopedHandle* socket_b,
                     bool overlapped) {
   DCHECK_NE(socket_a, socket_b);
-  DCHECK(!socket_a->IsValid());
-  DCHECK(!socket_b->IsValid());
+  DCHECK(!socket_a->is_valid());
+  DCHECK(!socket_b->is_valid());
 
   wchar_t name[kPipePathMax];
   ScopedHandle handle_a;
@@ -64,10 +63,9 @@ bool CreatePairImpl(ScopedHandle* socket_a,
         kInBufferSize,
         kDefaultTimeoutMilliSeconds,
         NULL));
-  } while (!handle_a.IsValid() &&
-           (GetLastError() == ERROR_PIPE_BUSY));
+  } while (!handle_a.is_valid() && (GetLastError() == ERROR_PIPE_BUSY));
 
-  if (!handle_a.IsValid()) {
+  if (!handle_a.is_valid()) {
     NOTREACHED();
     return false;
   }
@@ -86,12 +84,12 @@ bool CreatePairImpl(ScopedHandle* socket_a,
                                     OPEN_EXISTING,  // opens existing pipe.
                                     flags,
                                     NULL));     // no template file.
-  if (!handle_b.IsValid()) {
+  if (!handle_b.is_valid()) {
     DPLOG(ERROR) << "CreateFileW failed";
     return false;
   }
 
-  if (!ConnectNamedPipe(handle_a.Get(), NULL)) {
+  if (!ConnectNamedPipe(handle_a.get(), NULL)) {
     DWORD error = GetLastError();
     if (error != ERROR_PIPE_CONNECTED) {
       DPLOG(ERROR) << "ConnectNamedPipe failed";
@@ -154,8 +152,8 @@ size_t CancelableFileOperation(Function operation,
     if (!operation_ok) {
       if (::GetLastError() == ERROR_IO_PENDING) {
         HANDLE events[] = { io_event->handle(), cancel_event->handle() };
-        const int wait_result = WaitForMultipleObjects(
-            base::size(events), events, FALSE,
+        const DWORD wait_result = WaitForMultipleObjects(
+            std::size(events), events, FALSE,
             timeout_in_ms == INFINITE
                 ? timeout_in_ms
                 : static_cast<DWORD>(
@@ -263,15 +261,15 @@ size_t SyncSocket::Peek() {
 }
 
 bool SyncSocket::IsValid() const {
-  return handle_.IsValid();
+  return handle_.is_valid();
 }
 
 SyncSocket::Handle SyncSocket::handle() const {
-  return handle_.Get();
+  return handle_.get();
 }
 
 SyncSocket::Handle SyncSocket::Release() {
-  return handle_.Take();
+  return handle_.release();
 }
 
 bool CancelableSyncSocket::Shutdown() {

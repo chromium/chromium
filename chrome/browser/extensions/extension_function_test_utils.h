@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,12 +16,6 @@
 class Browser;
 class ExtensionFunction;
 
-namespace base {
-class Value;
-class DictionaryValue;
-class ListValue;
-}
-
 // TODO(ckehoe): Accept args as std::unique_ptr<base::Value>,
 // and migrate existing users to the new API.
 // This file is DEPRECATED. New tests should use the versions in
@@ -31,16 +25,16 @@ namespace extension_function_test_utils {
 // Parse JSON and return as a list Value, or nullopt if invalid.
 absl::optional<base::Value> ParseList(const std::string& data);
 
-// If |val| is a dictionary, return it as one, otherwise NULL.
-std::unique_ptr<base::DictionaryValue> ToDictionary(
-    std::unique_ptr<base::Value> val);
+// If |val| is a dictionary, return it as one, otherwise create an empty one.
+base::Value::Dict ToDictionary(std::unique_ptr<base::Value> val);
+base::Value::Dict ToDictionary(const base::Value& val);
 
-// If |val| is a list, return it as one, otherwise NULL.
-std::unique_ptr<base::ListValue> ToList(std::unique_ptr<base::Value> val);
+// If |val| is a list, return it as one, otherwise create an empty one.
+base::Value::List ToList(std::unique_ptr<base::Value> val);
 
 // Returns true if |val| contains any privacy information, e.g. url,
 // pendingUrl, title or faviconUrl.
-bool HasAnyPrivacySensitiveFields(base::DictionaryValue* val);
+bool HasAnyPrivacySensitiveFields(const base::Value::Dict& dict);
 
 // Run |function| with |args| and return the resulting error. Adds an error to
 // the current test if |function| returns a result. Takes ownership of

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,9 +17,14 @@ public interface DropdownItem {
     public static final int NO_ICON = 0;
 
     /**
-     * Returns the label that should be shown in the dropdown.
+     * Returns the first part of first line that should be shown in the dropdown.
      */
     String getLabel();
+    /**
+     * Returns the second part of first line that should be shown in the dropdown.
+     */
+    @Nullable
+    String getSecondaryLabel();
     /**
      * Returns the sublabel that should be shown in the dropdown.
      */

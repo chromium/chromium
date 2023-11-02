@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -68,6 +68,9 @@ const char TpmChallengeKeyResult::kAttestationServiceInternalErrorMsg[] =
     "OS platform service internal error.";
 const char TpmChallengeKeyResult::kUploadCertificateFailedErrorMsg[] =
     "Failed to upload machine certificate.";
+const char TpmChallengeKeyResult::kDeviceTrustURLConflictError[] =
+    "Both policies DeviceContextAwareAccessSignalsAllowlist and "
+    "DeviceWebBasedAttestationAllowedUrls are enabled for this URL.";
 
 // static
 TpmChallengeKeyResult TpmChallengeKeyResult::MakeChallengeResponse(
@@ -148,6 +151,8 @@ const char* TpmChallengeKeyResult::GetErrorMessage() const {
       return kAttestationServiceInternalErrorMsg;
     case TpmChallengeKeyResultCode::kUploadCertificateFailedError:
       return kUploadCertificateFailedErrorMsg;
+    case TpmChallengeKeyResultCode::kDeviceTrustURLConflictError:
+      return kDeviceTrustURLConflictError;
     case TpmChallengeKeyResultCode::kSuccess:
       // Not an error message.
       NOTREACHED();

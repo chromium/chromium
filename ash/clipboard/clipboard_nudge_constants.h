@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,11 +16,9 @@ enum ClipboardNudgeType {
   // Shows when the keyboard shortcut for clipboard is pressed with no items
   // in the history.
   kZeroStateNudge = 1,
-  // Blue new feature badge for clipboard history's context menu option.
-  kNewFeatureBadge = 2,
   // Shows the keyboard shortcut for clipboard history in the screenshot
   // notification nudge.
-  kScreenshotNotificationNudge = 3,
+  kScreenshotNotificationNudge = 2,
 };
 
 const char kOnboardingNudge_ShowCount[] =
@@ -35,12 +33,6 @@ const char kZeroStateNudge_OpenTime[] =
     "Ash.ClipboardHistory.Nudges.ZeroStateNudge.ToFeatureOpenTime";
 const char kZeroStateNudge_PasteTime[] =
     "Ash.ClipboardHistory.Nudges.ZeroStateNudge.ToFeaturePasteTime";
-const char kNewBadge_ShowCount[] =
-    "Ash.ClipboardHistory.Nudges.NewFeatureBadge.ShownCount";
-const char kNewBadge_OpenTime[] =
-    "Ash.ClipboardHistory.Nudges.NewFeatureBadge.ToFeatureOpenTime";
-const char kNewBadge_PasteTime[] =
-    "Ash.ClipboardHistory.Nudges.NewFeatureBadge.ToFeaturePasteTime";
 const char kScreenshotNotification_ShowCount[] =
     "Ash.ClipboardHistory.Nudges.ScreenshotNotificationNudge.ShownCount";
 const char kScreenshotNotification_OpenTime[] =

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,8 @@
 
 namespace ui {
 
-InputMethodMac::InputMethodMac(internal::InputMethodDelegate* delegate)
-    : InputMethodBase(delegate) {}
+InputMethodMac::InputMethodMac(ImeKeyEventDispatcher* ime_key_event_dispatcher)
+    : InputMethodBase(ime_key_event_dispatcher) {}
 
 InputMethodMac::~InputMethodMac() {
 }

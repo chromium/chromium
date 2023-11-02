@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -74,10 +74,12 @@ class FastInitiationScannerFeatureUsageMetricsTest : public ::testing::Test {
     task_environment_.FastForwardBy(base::Minutes(1));
 
     histograms.ExpectBucketCount(
-        kHistogramName, feature_usage::FeatureUsageMetrics::Event::kEligible,
+        kHistogramName,
+        ash::feature_usage::FeatureUsageMetrics::Event::kEligible,
         is_eligible ? 1 : 0);
     histograms.ExpectBucketCount(
-        kHistogramName, feature_usage::FeatureUsageMetrics::Event::kEnabled,
+        kHistogramName,
+        ash::feature_usage::FeatureUsageMetrics::Event::kEnabled,
         is_enabled ? 1 : 0);
   }
 
@@ -148,24 +150,24 @@ TEST_F(FastInitiationScannerFeatureUsageMetricsTest, RecordUsage) {
   base::HistogramTester histograms;
   histograms.ExpectBucketCount(
       kHistogramName,
-      feature_usage::FeatureUsageMetrics::Event::kUsedWithSuccess, 0);
+      ash::feature_usage::FeatureUsageMetrics::Event::kUsedWithSuccess, 0);
   histograms.ExpectBucketCount(
       kHistogramName,
-      feature_usage::FeatureUsageMetrics::Event::kUsedWithFailure, 0);
+      ash::feature_usage::FeatureUsageMetrics::Event::kUsedWithFailure, 0);
 
   feature_usage_metrics.RecordUsage(/*success=*/true);
   histograms.ExpectBucketCount(
       kHistogramName,
-      feature_usage::FeatureUsageMetrics::Event::kUsedWithSuccess, 1);
+      ash::feature_usage::FeatureUsageMetrics::Event::kUsedWithSuccess, 1);
   histograms.ExpectBucketCount(
       kHistogramName,
-      feature_usage::FeatureUsageMetrics::Event::kUsedWithFailure, 0);
+      ash::feature_usage::FeatureUsageMetrics::Event::kUsedWithFailure, 0);
 
   feature_usage_metrics.RecordUsage(/*success=*/false);
   histograms.ExpectBucketCount(
       kHistogramName,
-      feature_usage::FeatureUsageMetrics::Event::kUsedWithSuccess, 1);
+      ash::feature_usage::FeatureUsageMetrics::Event::kUsedWithSuccess, 1);
   histograms.ExpectBucketCount(
       kHistogramName,
-      feature_usage::FeatureUsageMetrics::Event::kUsedWithFailure, 1);
+      ash::feature_usage::FeatureUsageMetrics::Event::kUsedWithFailure, 1);
 }

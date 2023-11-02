@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
@@ -22,7 +22,7 @@
 #include "weblayer/browser/i18n_util.h"
 #include "weblayer/public/tab.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
 #include "weblayer/browser/browser_controls_navigation_state_handler_delegate.h"
 #endif
@@ -60,7 +60,7 @@ class NavigationControllerImpl;
 class NewTabDelegate;
 class ProfileImpl;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 class BrowserControlsContainerView;
 enum class ControlsVisibilityReason;
 #endif
@@ -68,7 +68,7 @@ enum class ControlsVisibilityReason;
 class TabImpl : public Tab,
                 public content::WebContentsDelegate,
                 public content::WebContentsObserver,
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
                 public BrowserControlsNavigationStateHandlerDelegate,
 #endif
                 public find_in_page::FindResultObserver {
@@ -97,7 +97,7 @@ class TabImpl : public Tab,
   };
 
   // TODO(sky): investigate a better way to not have so many ifdefs.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   TabImpl(ProfileImpl* profile,
           const base::android::JavaParamRef<jobject>& java_impl,
           std::unique_ptr<content::WebContents> web_contents);
@@ -135,7 +135,7 @@ class TabImpl : public Tab,
 
   void ShowContextMenu(const content::ContextMenuParams& params);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   base::android::ScopedJavaGlobalRef<jobject> GetJavaTab() {
     return java_impl_;
   }
@@ -232,7 +232,7 @@ class TabImpl : public Tab,
       FaviconFetcherDelegate* delegate) override;
   void SetTranslateTargetLanguage(
       const std::string& translate_target_lang) override;
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   void AttachToView(views::WebView* web_view) override;
 #endif
 
@@ -242,10 +242,10 @@ class TabImpl : public Tab,
   // Executes |script| with a user gesture.
   void ExecuteScriptWithUserGestureForTests(const std::u16string& script);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Initializes the autofill system for tests.
   void InitializeAutofillForTests();
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
  private:
   // content::WebContentsDelegate:
@@ -257,7 +257,7 @@ class TabImpl : public Tab,
                               content::InvalidateTypes changed_flags) override;
   content::JavaScriptDialogManager* GetJavaScriptDialogManager(
       content::WebContents* web_contents) override;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<content::ColorChooser> OpenColorChooser(
       content::WebContents* web_contents,
       SkColor color,
@@ -299,7 +299,7 @@ class TabImpl : public Tab,
                       std::unique_ptr<content::WebContents> new_contents,
                       const GURL& target_url,
                       WindowOpenDisposition disposition,
-                      const gfx::Rect& initial_rect,
+                      const blink::mojom::WindowFeatures& window_features,
                       bool user_gesture,
                       bool* was_blocked) override;
   void CloseContents(content::WebContents* source) override;
@@ -309,7 +309,7 @@ class TabImpl : public Tab,
                  const gfx::Rect& selection_rect,
                  int active_match_ordinal,
                  bool final_update) override;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void FindMatchRectsReply(content::WebContents* web_contents,
                            int version,
                            const std::vector<gfx::RectF>& rects,
@@ -336,7 +336,7 @@ class TabImpl : public Tab,
   // find_in_page::FindResultObserver:
   void OnFindResultAvailable(content::WebContents* web_contents) override;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // BrowserControlsNavigationStateHandlerDelegate:
   void OnBrowserControlsStateStateChanged(
       ControlsVisibilityReason reason,
@@ -356,7 +356,7 @@ class TabImpl : public Tab,
   static sessions::SessionTabHelperDelegate* GetSessionServiceTabHelperDelegate(
       content::WebContents* web_contents);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void InitializeAutofillDriver();
   void SetBrowserControlsConstraint(ControlsVisibilityReason reason,
                                     cc::BrowserControlsState constraint);
@@ -368,20 +368,21 @@ class TabImpl : public Tab,
 
   void EnterFullscreenImpl();
 
-  BrowserImpl* browser_ = nullptr;
-  ErrorPageDelegate* error_page_delegate_ = nullptr;
-  FullscreenDelegate* fullscreen_delegate_ = nullptr;
-  NewTabDelegate* new_tab_delegate_ = nullptr;
-  GoogleAccountsDelegate* google_accounts_delegate_ = nullptr;
-  ProfileImpl* profile_;
+  raw_ptr<BrowserImpl> browser_ = nullptr;
+  raw_ptr<ErrorPageDelegate> error_page_delegate_ = nullptr;
+  raw_ptr<FullscreenDelegate> fullscreen_delegate_ = nullptr;
+  raw_ptr<NewTabDelegate> new_tab_delegate_ = nullptr;
+  raw_ptr<GoogleAccountsDelegate> google_accounts_delegate_ = nullptr;
+  raw_ptr<ProfileImpl> profile_;
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<NavigationControllerImpl> navigation_controller_;
   base::ObserverList<TabObserver>::Unchecked observers_;
   base::CallbackListSubscription locale_change_subscription_;
 
-#if defined(OS_ANDROID)
-  BrowserControlsContainerView* top_controls_container_view_ = nullptr;
-  BrowserControlsContainerView* bottom_controls_container_view_ = nullptr;
+#if BUILDFLAG(IS_ANDROID)
+  raw_ptr<BrowserControlsContainerView> top_controls_container_view_ = nullptr;
+  raw_ptr<BrowserControlsContainerView> bottom_controls_container_view_ =
+      nullptr;
   base::android::ScopedJavaGlobalRef<jobject> java_impl_;
   std::unique_ptr<BrowserControlsNavigationStateHandler>
       browser_controls_navigation_state_handler_;

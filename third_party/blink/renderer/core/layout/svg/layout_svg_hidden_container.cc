@@ -46,7 +46,7 @@ void LayoutSVGHiddenContainer::UpdateLayout() {
 bool LayoutSVGHiddenContainer::NodeAtPoint(HitTestResult&,
                                            const HitTestLocation&,
                                            const PhysicalOffset&,
-                                           HitTestAction) {
+                                           HitTestPhase) {
   NOT_DESTROYED();
   return false;
 }

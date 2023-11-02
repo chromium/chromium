@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -133,7 +133,7 @@ DemuxerStream::Type DecryptingDemuxerStream::type() const {
   return demuxer_stream_->type();
 }
 
-DemuxerStream::Liveness DecryptingDemuxerStream::liveness() const {
+StreamLiveness DecryptingDemuxerStream::liveness() const {
   DCHECK(state_ != kUninitialized) << state_;
   return demuxer_stream_->liveness();
 }

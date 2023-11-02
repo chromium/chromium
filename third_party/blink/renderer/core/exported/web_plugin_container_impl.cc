@@ -49,7 +49,6 @@
 #include "third_party/blink/public/web/web_print_preset_options.h"
 #include "third_party/blink/public/web/web_view_client.h"
 #include "third_party/blink/renderer/bindings/core/v8/sanitize_script_errors.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_element.h"
 #include "third_party/blink/renderer/core/clipboard/clipboard_utilities.h"
@@ -68,7 +67,6 @@
 #include "third_party/blink/renderer/core/events/web_input_event_conversion.h"
 #include "third_party/blink/renderer/core/events/wheel_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/exported/web_document_loader_impl.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/event_handler_registry.h"
@@ -95,14 +93,14 @@
 #include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/scroll/scroll_animator_base.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
+#include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_response.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
 #include "third_party/blink/renderer/platform/graphics/paint/cull_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/foreign_layer_display_item.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -113,7 +111,7 @@ namespace blink {
 
 namespace {
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 const WebInputEvent::Modifiers kEditingModifier = WebInputEvent::kMetaKey;
 #else
 const WebInputEvent::Modifiers kEditingModifier = WebInputEvent::kControlKey;
@@ -166,37 +164,36 @@ void WebPluginContainerImpl::UpdateAllLifecyclePhases() {
 }
 
 void WebPluginContainerImpl::Paint(GraphicsContext& context,
-                                   const GlobalPaintFlags,
+                                   PaintFlags,
                                    const CullRect& cull_rect,
-                                   const IntSize& paint_offset) const {
+                                   const gfx::Vector2d& paint_offset) const {
   // Don't paint anything if the plugin doesn't intersect.
-  if (!cull_rect.Intersects(ToGfxRect(FrameRect())))
+  if (!cull_rect.Intersects(FrameRect()))
     return;
 
-  IntRect visual_rect = FrameRect();
+  gfx::Rect visual_rect = FrameRect();
   visual_rect.Offset(paint_offset);
 
   if (WantsWheelEvents()) {
-    context.GetPaintController().RecordHitTestData(*GetLayoutEmbeddedContent(),
-                                                   ToGfxRect(visual_rect),
-                                                   TouchAction::kAuto, true);
+    context.GetPaintController().RecordHitTestData(
+        *GetLayoutEmbeddedContent(), visual_rect, TouchAction::kAuto, true);
   }
 
   if (element_->GetRegionCaptureCropId()) {
     context.GetPaintController().RecordRegionCaptureData(
         *GetLayoutEmbeddedContent(), *(element_->GetRegionCaptureCropId()),
-        ToGfxRect(visual_rect));
+        visual_rect);
   }
 
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled() && layer_) {
-    layer_->SetBounds(ToGfxSize(Size()));
+  if (layer_) {
+    layer_->SetBounds(Size());
     layer_->SetIsDrawable(true);
     layer_->SetHitTestable(true);
-    // When compositing is after paint, composited plugins should have their
-    // layers inserted rather than invoking WebPlugin::paint.
+    // Composited plugins should have their layers inserted rather than invoking
+    // WebPlugin::paint.
     RecordForeignLayer(context, *element_->GetLayoutObject(),
                        DisplayItem::kForeignLayerPlugin, layer_,
-                       FrameRect().origin() + ToGfxVector2d(paint_offset));
+                       FrameRect().origin() + paint_offset);
     return;
   }
 
@@ -205,20 +202,20 @@ void WebPluginContainerImpl::Paint(GraphicsContext& context,
     return;
 
   DrawingRecorder recorder(context, *element_->GetLayoutObject(),
-                           DisplayItem::kWebPlugin, ToGfxRect(visual_rect));
+                           DisplayItem::kWebPlugin, visual_rect);
   context.Save();
 
   // The plugin is positioned in the root frame's coordinates, so it needs to
   // be painted in them too.
-  FloatPoint origin(ParentFrameView()->ConvertToRootFrame(gfx::Point()));
-  origin.Offset(-paint_offset);
+  gfx::PointF origin(ParentFrameView()->ConvertToRootFrame(gfx::Point()));
+  origin -= gfx::Vector2dF(paint_offset);
   context.Translate(-origin.x(), -origin.y());
 
   cc::PaintCanvas* canvas = context.Canvas();
 
-  IntRect window_rect =
-      ParentFrameView()->ConvertToRootFrame(IntRect(cull_rect.Rect()));
-  web_plugin_->Paint(canvas, ToGfxRect(window_rect));
+  gfx::Rect window_rect =
+      ParentFrameView()->ConvertToRootFrame(cull_rect.Rect());
+  web_plugin_->Paint(canvas, window_rect);
 
   context.Restore();
 }
@@ -322,25 +319,21 @@ void WebPluginContainerImpl::ReportFindInPageMatchCount(int identifier,
       WebLocalFrameImpl::FromFrame(element_->GetDocument().GetFrame());
   if (!frame)
     return;
+
   frame->GetFindInPage()->ReportFindInPageMatchCount(identifier, total,
                                                      final_update);
 }
 
 void WebPluginContainerImpl::ReportFindInPageSelection(int identifier,
-                                                       int index) {
+                                                       int index,
+                                                       bool final_update) {
   WebLocalFrameImpl* frame =
       WebLocalFrameImpl::FromFrame(element_->GetDocument().GetFrame());
   if (!frame)
     return;
-  frame->GetFindInPage()->ReportFindInPageSelection(
-      identifier, index, gfx::Rect(), false /* final_update */);
-}
 
-float WebPluginContainerImpl::DeviceScaleFactor() {
-  Page* page = element_->GetDocument().GetPage();
-  if (!page)
-    return 1.0;
-  return page->DeviceScaleFactorDeprecated();
+  frame->GetFindInPage()->ReportFindInPageSelection(identifier, index,
+                                                    gfx::Rect(), final_update);
 }
 
 float WebPluginContainerImpl::PageScaleFactor() {
@@ -384,8 +377,8 @@ bool WebPluginContainerImpl::IsMouseLocked() {
 bool WebPluginContainerImpl::LockMouse(bool request_unadjusted_movement) {
   if (Page* page = element_->GetDocument().GetPage()) {
     bool res = page->GetPointerLockController().RequestPointerLock(
-        element_, WTF::Bind(&WebPluginContainerImpl::HandleLockMouseResult,
-                            WrapWeakPersistent(this)));
+        element_, WTF::BindOnce(&WebPluginContainerImpl::HandleLockMouseResult,
+                                WrapWeakPersistent(this)));
     if (res) {
       mouse_lock_lost_listener_ =
           MakeGarbageCollected<MouseLockLostListener>(this);
@@ -441,7 +434,7 @@ void WebPluginContainerImpl::PrintPage(int page_number, GraphicsContext& gc) {
     return;
 
   DrawingRecorder recorder(gc, *element_->GetLayoutObject(),
-                           DisplayItem::kWebPlugin, ToGfxRect(FrameRect()));
+                           DisplayItem::kWebPlugin, FrameRect());
   gc.Save();
 
   cc::PaintCanvas* canvas = gc.Canvas();
@@ -519,7 +512,7 @@ void WebPluginContainerImpl::DispatchProgressEvent(const WebString& type,
     event = MakeGarbageCollected<ResourceProgressEvent>(type, length_computable,
                                                         loaded, total, url);
   }
-  element_->DispatchEvent(*event);
+  element_->DispatchEvent(*event, "WebPluginContainerImpl::DispatchProgressEvent");
 }
 
 void WebPluginContainerImpl::EnqueueMessageEvent(
@@ -540,10 +533,10 @@ void WebPluginContainerImpl::ReportGeometry() {
   if (!IsAttached())
     return;
 
-  IntRect window_rect, clip_rect, unobscured_rect;
+  gfx::Rect window_rect, clip_rect, unobscured_rect;
   CalculateGeometry(window_rect, clip_rect, unobscured_rect);
-  web_plugin_->UpdateGeometry(ToGfxRect(window_rect), ToGfxRect(clip_rect),
-                              ToGfxRect(unobscured_rect), IsSelfVisible());
+  web_plugin_->UpdateGeometry(window_rect, clip_rect, unobscured_rect,
+                              IsSelfVisible());
 }
 
 v8::Local<v8::Object> WebPluginContainerImpl::V8ObjectForElement() {
@@ -595,8 +588,8 @@ bool WebPluginContainerImpl::IsRectTopmost(const gfx::Rect& rect) {
   if (!frame)
     return false;
 
-  IntRect frame_rect(rect);
-  frame_rect.MoveBy(Location());
+  gfx::Rect frame_rect = rect;
+  frame_rect.Offset(Location().OffsetFromOrigin());
   HitTestLocation location((PhysicalRect(frame_rect)));
   HitTestResult result = frame->GetEventHandler().HitTestResultAtLocation(
       location, HitTestRequest::kReadOnly | HitTestRequest::kActive |
@@ -757,12 +750,9 @@ bool WebPluginContainerImpl::WantsWheelEvents() const {
 
 WebPluginContainerImpl::WebPluginContainerImpl(HTMLPlugInElement& element,
                                                WebPlugin* web_plugin)
-    : EmbeddedContentView(IntRect()),
+    : EmbeddedContentView(gfx::Rect()),
       element_(element),
-      web_plugin_(web_plugin),
-      layer_(nullptr),
-      touch_event_request_type_(kTouchEventRequestTypeNone),
-      wants_wheel_events_(false) {}
+      web_plugin_(web_plugin) {}
 
 WebPluginContainerImpl::~WebPluginContainerImpl() {
   // The plugin container must have been disposed of by now.
@@ -792,6 +782,8 @@ void WebPluginContainerImpl::Dispose() {
   }
 
   if (web_plugin_) {
+    // Plugins may execute script on being detached during the lifecycle update.
+    ScriptForbiddenScope::AllowUserAgentScript allow_script;
     CHECK(web_plugin_->Container() == this);
     web_plugin_->Destroy();
     web_plugin_ = nullptr;
@@ -800,8 +792,8 @@ void WebPluginContainerImpl::Dispose() {
   layer_ = nullptr;
 }
 
-void WebPluginContainerImpl::SetFrameRect(const IntRect& rect) {
-  IntRect old_rect(FrameRect());
+void WebPluginContainerImpl::SetFrameRect(const gfx::Rect& rect) {
+  gfx::Rect old_rect(FrameRect());
   EmbeddedContentView::SetFrameRect(rect);
   // We need to report every time SetFrameRect is called, even if there is no
   // change (if there is a change, FrameRectsChanged will do the reporting).
@@ -866,8 +858,8 @@ void WebPluginContainerImpl::HandleDragEvent(MouseEvent& event) {
   DragOperationsMask drag_operation_mask = data_transfer->SourceOperation();
   gfx::PointF drag_screen_location(event.screenX(), event.screenY());
   gfx::Point location(Location());
-  gfx::PointF drag_location(event.AbsoluteLocation().X() - location.x(),
-                            event.AbsoluteLocation().Y() - location.y());
+  gfx::PointF drag_location(event.AbsoluteLocation().x() - location.x(),
+                            event.AbsoluteLocation().y() - location.y());
 
   web_plugin_->HandleDragStatusUpdate(drag_status, drag_data,
                                       drag_operation_mask, drag_location,
@@ -875,15 +867,14 @@ void WebPluginContainerImpl::HandleDragEvent(MouseEvent& event) {
 }
 
 void WebPluginContainerImpl::HandleWheelEvent(WheelEvent& event) {
-  FloatPoint absolute_location =
-      FloatPoint(event.NativeEvent().PositionInRootFrame());
+  gfx::PointF absolute_location = event.NativeEvent().PositionInRootFrame();
 
   // Translate the root frame position to content coordinates.
   absolute_location =
       ParentFrameView()->ConvertFromRootFrame(absolute_location);
 
-  FloatPoint local_point =
-      element_->GetLayoutObject()->AbsoluteToLocalFloatPoint(absolute_location);
+  gfx::PointF local_point =
+      element_->GetLayoutObject()->AbsoluteToLocalPoint(absolute_location);
   WebMouseWheelEvent translated_event = event.NativeEvent().FlattenTransform();
   translated_event.SetPositionInWidget(local_point.x(), local_point.y());
 
@@ -965,16 +956,15 @@ WebTouchEvent WebPluginContainerImpl::TransformTouchEvent(
 
   LocalFrameView* parent = ParentFrameView();
   for (unsigned i = 0; i < transformed_event.touches_length; ++i) {
-    FloatPoint absolute_location =
-        FloatPoint(transformed_event.touches[i].PositionInWidget());
+    gfx::PointF absolute_location =
+        transformed_event.touches[i].PositionInWidget();
 
     // Translate the root frame position to content coordinates.
     absolute_location = parent->ConvertFromRootFrame(absolute_location);
 
-    FloatPoint local_point =
-        element_->GetLayoutObject()->AbsoluteToLocalFloatPoint(
-            absolute_location);
-    transformed_event.touches[i].SetPositionInWidget(ToGfxPointF(local_point));
+    gfx::PointF local_point =
+        element_->GetLayoutObject()->AbsoluteToLocalPoint(absolute_location);
+    transformed_event.touches[i].SetPositionInWidget(local_point);
   }
   return transformed_event;
 }
@@ -1034,11 +1024,10 @@ void WebPluginContainerImpl::HandleGestureEvent(GestureEvent& event) {
   WebGestureEvent translated_event = event.NativeEvent();
   gfx::PointF absolute_root_frame_location =
       event.NativeEvent().PositionInRootFrame();
-  FloatPoint local_point =
-      element_->GetLayoutObject()->AbsoluteToLocalFloatPoint(
-          FloatPoint(absolute_root_frame_location));
+  gfx::PointF local_point = element_->GetLayoutObject()->AbsoluteToLocalPoint(
+      absolute_root_frame_location);
   translated_event.FlattenTransform();
-  translated_event.SetPositionInWidget(ToGfxPointF(local_point));
+  translated_event.SetPositionInWidget(local_point);
 
   ui::Cursor dummy_cursor;
   if (web_plugin_->HandleInputEvent(
@@ -1071,14 +1060,14 @@ void WebPluginContainerImpl::FocusPlugin() {
 
 void WebPluginContainerImpl::ComputeClipRectsForPlugin(
     const HTMLFrameOwnerElement* owner_element,
-    IntRect& window_rect,
-    IntRect& clipped_local_rect,
-    IntRect& unclipped_int_local_rect) const {
+    gfx::Rect& window_rect,
+    gfx::Rect& clipped_local_rect,
+    gfx::Rect& unclipped_int_local_rect) const {
   DCHECK(owner_element);
 
   if (!owner_element->GetLayoutObject()) {
-    clipped_local_rect = IntRect();
-    unclipped_int_local_rect = IntRect();
+    clipped_local_rect = gfx::Rect();
+    unclipped_int_local_rect = gfx::Rect();
     return;
   }
 
@@ -1104,27 +1093,27 @@ void WebPluginContainerImpl::ComputeClipRectsForPlugin(
       element_->GetDocument().View()->GetLayoutView()->LocalToAbsoluteRect(
           PhysicalRect(window_rect), kTraverseDocumentBoundaries);
 
-  window_rect = PixelSnappedIntRect(layout_window_rect);
+  window_rect = ToPixelSnappedRect(layout_window_rect);
 
   PhysicalRect clipped_root_frame_rect = unclipped_root_frame_rect;
   clipped_root_frame_rect.Intersect(PhysicalRect(
       PhysicalOffset(), PhysicalSize(root_view->GetFrameView()->Size())));
 
-  unclipped_int_local_rect = EnclosingIntRect(box->AbsoluteToLocalRect(
+  unclipped_int_local_rect = ToEnclosingRect(box->AbsoluteToLocalRect(
       unclipped_root_frame_rect, kTraverseDocumentBoundaries));
   // As a performance optimization, map the clipped rect separately if is
   // different than the unclipped rect.
   if (clipped_root_frame_rect != unclipped_root_frame_rect) {
-    clipped_local_rect = EnclosingIntRect(box->AbsoluteToLocalRect(
+    clipped_local_rect = ToEnclosingRect(box->AbsoluteToLocalRect(
         clipped_root_frame_rect, kTraverseDocumentBoundaries));
   } else {
     clipped_local_rect = unclipped_int_local_rect;
   }
 }
 
-void WebPluginContainerImpl::CalculateGeometry(IntRect& window_rect,
-                                               IntRect& clip_rect,
-                                               IntRect& unobscured_rect) {
+void WebPluginContainerImpl::CalculateGeometry(gfx::Rect& window_rect,
+                                               gfx::Rect& clip_rect,
+                                               gfx::Rect& unobscured_rect) {
   // GetDocument().LayoutView() can be null when we receive messages from the
   // plugins while we are destroying a frame.
   // TODO: Can we just check element_->GetDocument().IsActive() ?

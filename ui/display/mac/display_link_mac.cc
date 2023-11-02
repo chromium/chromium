@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -128,7 +128,7 @@ bool DisplayLinkMac::GetVSyncParameters(base::TimeTicks* timebase,
   // second). If too much time has elapsed since the last time the vsync
   // parameters were calculated, re-calculate them (but still return the old
   // parameters -- the update will be asynchronous).
-  if (base::TimeTicks::Now() >= recalculate_time_)
+  if (IsVSyncPotentiallyStale())
     StartOrContinueDisplayLink();
 
   *timebase = timebase_;
@@ -145,6 +145,16 @@ double DisplayLinkMac::GetRefreshRate() {
                     static_cast<double>(cv_time.timeValue));
 
   return refresh_rate;
+}
+
+void DisplayLinkMac::RegisterCallbackForNextVSyncUpdate(
+    VSyncUpdatedCallback callback) {
+  vsync_updated_callbacks_.push_back(std::move(callback));
+}
+
+bool DisplayLinkMac::IsVSyncPotentiallyStale() const {
+  return !timebase_and_interval_valid_ ||
+         base::TimeTicks::Now() >= recalculate_time_;
 }
 
 DisplayLinkMac::DisplayLinkMac(
@@ -227,6 +237,11 @@ void DisplayLinkMac::UpdateVSyncParameters(const CVTimeStamp& cv_time) {
   // Don't restart the display link for 10 seconds.
   recalculate_time_ = base::TimeTicks::Now() + base::Seconds(10);
   StopDisplayLink();
+
+  std::vector<VSyncUpdatedCallback> vsync_updated_callbacks;
+  std::swap(vsync_updated_callbacks_, vsync_updated_callbacks);
+  for (auto& callback : vsync_updated_callbacks)
+    std::move(callback).Run(timebase_, interval_);
 }
 
 void DisplayLinkMac::StartOrContinueDisplayLink() {

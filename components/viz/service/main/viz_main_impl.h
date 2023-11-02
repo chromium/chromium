@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,9 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
+#include "base/memory/unsafe_shared_memory_region.h"
+#include "base/process/process_handle.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
@@ -14,8 +17,6 @@
 #include "components/viz/common/buildflags.h"
 #include "components/viz/service/gl/gpu_service_impl.h"
 #include "components/viz/service/main/viz_compositor_thread_runner_impl.h"
-#include "gpu/ipc/gpu_in_process_thread_service.h"
-#include "gpu/ipc/in_process_command_buffer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -23,36 +24,33 @@
 #include "services/viz/privileged/mojom/viz_main.mojom.h"
 #include "ui/gfx/font_render_params.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "components/viz/service/gl/info_collection_gpu_service_impl.h"
 #include "services/viz/privileged/mojom/gl/info_collection_gpu_service.mojom.h"
 #endif
 
 namespace base {
 class PowerMonitorSource;
+class WaitableEvent;
 }
 
 namespace gpu {
 class GpuInit;
-class SyncPointManager;
+class Scheduler;
 class SharedImageManager;
+class SyncPointManager;
 }  // namespace gpu
 
 namespace ukm {
 class MojoUkmRecorder;
 }
 
-namespace gfx {
-class RenderingPipeline;
-}
-
 namespace viz {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 class InfoCollectionGpuServiceImpl;
 #endif
 
-class VizMainImpl : public mojom::VizMain,
-                    public gpu::GpuInProcessThreadServiceDelegate {
+class VizMainImpl : public mojom::VizMain {
  public:
   class Delegate {
    public:
@@ -94,12 +92,13 @@ class VizMainImpl : public mojom::VizMain,
     // We use a |PowerMonitorSource| here instead of a boolean flag so that
     // tests can use mocks and fakes for testing.
     mutable std::unique_ptr<base::PowerMonitorSource> power_monitor_source;
-    gpu::SyncPointManager* sync_point_manager = nullptr;
-    gpu::SharedImageManager* shared_image_manager = nullptr;
-    base::WaitableEvent* shutdown_event = nullptr;
+    raw_ptr<gpu::SyncPointManager> sync_point_manager = nullptr;
+    raw_ptr<gpu::SharedImageManager> shared_image_manager = nullptr;
+    raw_ptr<gpu::Scheduler> scheduler = nullptr;
+    raw_ptr<base::WaitableEvent> shutdown_event = nullptr;
     scoped_refptr<base::SingleThreadTaskRunner> io_thread_task_runner;
     std::unique_ptr<ukm::MojoUkmRecorder> ukm_recorder;
-    VizCompositorThreadRunner* viz_compositor_thread_runner = nullptr;
+    raw_ptr<VizCompositorThreadRunner> viz_compositor_thread_runner = nullptr;
   };
 
   VizMainImpl(Delegate* delegate,
@@ -121,12 +120,15 @@ class VizMainImpl : public mojom::VizMain,
       mojo::PendingRemote<
           discardable_memory::mojom::DiscardableSharedMemoryManager>
           discardable_memory_manager,
-      mojo::ScopedSharedBufferHandle activity_flags,
+      base::UnsafeSharedMemoryRegion activity_flags_region,
       gfx::FontRenderParams::SubpixelRendering subpixel_rendering) override;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void CreateInfoCollectionGpuService(
       mojo::PendingReceiver<mojom::InfoCollectionGpuService> pending_receiver)
       override;
+#endif
+#if BUILDFLAG(IS_ANDROID)
+  void SetHostProcessId(int32_t pid) override;
 #endif
   void CreateFrameSinkManager(mojom::FrameSinkManagerParamsPtr params) override;
 #if BUILDFLAG(USE_VIZ_DEBUGGER)
@@ -135,10 +137,6 @@ class VizMainImpl : public mojom::VizMain,
       mojo::PendingRemote<mojom::VizDebugOutput> debug_output) override;
   void StopDebugStream() override;
 #endif
-
-  // gpu::GpuInProcessThreadServiceDelegate implementation:
-  scoped_refptr<gpu::SharedContextState> GetSharedContextState() override;
-  scoped_refptr<gl::GLShareGroup> GetShareGroup() override;
 
   GpuServiceImpl* gpu_service() { return gpu_service_.get(); }
   const GpuServiceImpl* gpu_service() const { return gpu_service_.get(); }
@@ -162,7 +160,7 @@ class VizMainImpl : public mojom::VizMain,
                       : dependencies_.io_thread_task_runner;
   }
 
-  Delegate* const delegate_;
+  const raw_ptr<Delegate> delegate_;
 
   const ExternalDependencies dependencies_;
 
@@ -173,27 +171,24 @@ class VizMainImpl : public mojom::VizMain,
 
   std::unique_ptr<gpu::GpuInit> gpu_init_;
   std::unique_ptr<GpuServiceImpl> gpu_service_;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   std::unique_ptr<InfoCollectionGpuServiceImpl> info_collection_gpu_service_;
 #endif
-
-  // Allows the display compositor to use InProcessCommandBuffer to send GPU
-  // commands to the GPU thread from the compositor thread. This must outlive
-  // |viz_compositor_thread_runner_|.
-  std::unique_ptr<gpu::CommandBufferTaskExecutor> task_executor_;
 
   // If the gpu service is not yet ready then we stash pending
   // FrameSinkManagerParams.
   mojom::FrameSinkManagerParamsPtr pending_frame_sink_manager_params_;
+
+  bool has_created_frame_sink_manager_ = false;
 
   // Runs the VizCompositorThread for the display compositor.
   std::unique_ptr<VizCompositorThreadRunnerImpl>
       viz_compositor_thread_runner_impl_;
   // Note under Android WebView where VizCompositorThreadRunner is not created
   // and owned by this, Viz does not interact with other objects in this class,
-  // such as GpuServiceImpl or CommandBufferTaskExecutor. Code should take care
-  // to avoid introducing such assumptions.
-  VizCompositorThreadRunner* viz_compositor_thread_runner_ = nullptr;
+  // such as GpuServiceImpl. Code should take care to avoid introducing such
+  // assumptions.
+  raw_ptr<VizCompositorThreadRunner> viz_compositor_thread_runner_ = nullptr;
 
   const scoped_refptr<base::SingleThreadTaskRunner> gpu_thread_task_runner_;
 
@@ -201,8 +196,6 @@ class VizMainImpl : public mojom::VizMain,
 
   scoped_refptr<discardable_memory::ClientDiscardableSharedMemoryManager>
       discardable_shared_memory_manager_;
-
-  std::unique_ptr<gfx::RenderingPipeline> gpu_pipeline_;
 };
 
 }  // namespace viz

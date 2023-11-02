@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -59,7 +59,7 @@ public class SyncConsentActivityLauncherImplTest {
 
     @Test
     public void testLaunchActivityIfAllowedWhenSigninIsAllowed() {
-        when(mSigninManagerMock.isSignInAllowed()).thenReturn(true);
+        when(mSigninManagerMock.isSyncOptInAllowed()).thenReturn(true);
         Assert.assertTrue(SyncConsentActivityLauncherImpl.get().launchActivityIfAllowed(
                 mContextMock, SigninAccessPoint.SETTINGS));
         verify(mContextMock).startActivity(notNull());
@@ -67,7 +67,7 @@ public class SyncConsentActivityLauncherImplTest {
 
     @Test
     public void testLaunchActivityIfAllowedWhenSigninIsNotAllowed() {
-        when(mSigninManagerMock.isSignInAllowed()).thenReturn(false);
+        when(mSigninManagerMock.isSyncOptInAllowed()).thenReturn(false);
         when(mSigninManagerMock.isSigninDisabledByPolicy()).thenReturn(false);
         Object toastBeforeCall = ShadowToast.getLatestToast();
         Assert.assertFalse(SyncConsentActivityLauncherImpl.get().launchActivityIfAllowed(
@@ -79,7 +79,7 @@ public class SyncConsentActivityLauncherImplTest {
 
     @Test
     public void testLaunchActivityIfAllowedWhenSigninIsDisabledByPolicy() {
-        when(mSigninManagerMock.isSignInAllowed()).thenReturn(false);
+        when(mSigninManagerMock.isSyncOptInAllowed()).thenReturn(false);
         when(mSigninManagerMock.isSigninDisabledByPolicy()).thenReturn(true);
         Assert.assertFalse(SyncConsentActivityLauncherImpl.get().launchActivityIfAllowed(
                 mContext, SigninAccessPoint.SETTINGS));

@@ -1,0 +1,54 @@
+Tests that vision deficiencies can be emulated.
+<p>Emulating "none":
+<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAAXNSR0IArs4c6QAAAFRJREFUWIXt18ENACAMw8DA5N0chnCQePgGiKz+ujI5aZru3K6uPWAgZSBlIGUgZSBlIGUgZSBlILWS030iyr6/oIGUgZSBlIGUgZSBlIGUgZSB1AXNwwVLtuf+dAAAAABJRU5ErkJggg==">
+<p>Emulating "achromatopsia":
+<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAAXNSR0IArs4c6QAAAFdJREFUWIXt18ENACAMw0BArNuVuwoM4SDx8A0QWf11VtUZQd2dnBsruvaAgZSBlIGUgZSBlIGUgZSBlIHUTv8Qad9f0EDKQMpAykDKQMpAykDKQMpA6gKkyAfMkeetfgAAAABJRU5ErkJggg==">
+<p>Emulating "blurredVision":
+<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAAXNSR0IArs4c6QAAAj1JREFUWIXtlt1O20AQhb/9iRMTQwBFkKfoS/e5eonEFQIlsWOz3unFbCCtCriskbjwkUaKlM3o02R3zjH8+Clc3MHiAYoaTAArgPC+liBzYAXhBvpbOGxgt4btCpoSHj1gYW8+6PW2PBd3cPULqnsoduA6MKL1riqQBcgGQgOdUSi3hHgGcQ6lwOHTbAmwfIDzezi/g8UT2A5M5OMJViArPRdm0F2BqyG0cOhhH+HzgzsBnNUw28H8CRaPCmiHAPZ6RCp4roEDFB34HnyEIh3LhPTYAL7Tv9Z24NqBgAVIqxUD+AAugpMEJSNN0EReyqYyccAdjCARRPRRGdLdzYf6E/BF8lpmyCuWfxR/fc6XHa3TF2kCzNUEmKsJMFcne7ACetSjhjhJmc66L0JTebgG1iAh7dhWHWKQ1S1AZlpYkp0wpp14ZAVxo5YlZQId4gYuwZ3r72IB0UE83ppxID39DfQN9HPod2r8gwKrBXFACeEa+qX2OEKGsQDDLbQG2ivgAC6kp/MRoAExIAWEJbRr6CroFtB5xpvgYaNJ2NbwnLKgHWj20QAOwhyeK9hfaq/WQ7DQ5EN6dmuN6aHVsOmGxP2jjP6d0enkmhL2Z3AoYOf0+20epGe7As40pvshOfANyN5D7RWu9jq9TLgEWEI3hyLq3fP/CXh8DMFCl6qxvK6dPBmWQShPknBOzybtwO14u9BA1JFVmT23Jy1HlElb+dvq24eFCTBXE2CuJsBcTYC5mgBzNQHm6tsD/ganw+eIciY5ZgAAAABJRU5ErkJggg==">
+<p>Emulating "none":
+<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAAXNSR0IArs4c6QAAAFRJREFUWIXt18ENACAMw8DA5N0chnCQePgGiKz+ujI5aZru3K6uPWAgZSBlIGUgZSBlIGUgZSBlILWS030iyr6/oIGUgZSBlIGUgZSBlIGUgZSB1AXNwwVLtuf+dAAAAABJRU5ErkJggg==">
+<p>Emulating "deuteranopia":
+<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAAXNSR0IArs4c6QAAAGNJREFUWIXt10ENgDAQBdFtReAGQzVQDdWHBlRwABHzSXqYJ+BnsrdtcxxvBa3rTs5Vj679wEDKQMpAykDKQMpAykDKQMpAqtX5RH+StO0vaCBlIGUgZSBlIGUgZSBlIGUg9QEgIQa9hKQMdAAAAABJRU5ErkJggg==">
+<p>Emulating "none":
+<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAAXNSR0IArs4c6QAAAFRJREFUWIXt18ENACAMw8DA5N0chnCQePgGiKz+ujI5aZru3K6uPWAgZSBlIGUgZSBlIGUgZSBlILWS030iyr6/oIGUgZSBlIGUgZSBlIGUgZSB1AXNwwVLtuf+dAAAAABJRU5ErkJggg==">
+<p>Emulating "protanopia":
+<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAAXNSR0IArs4c6QAAAFxJREFUWIXt17ENACEMBEFDldRB/hG90gYUsYf0wU4Bp5UztzXrVNC3o3PVo2sPGEgZSBlIGUgZSBlIGUgZSBlItRon+0SE/f6CBlIGUgZSBlIGUgZSBlIGUgZSF6dNBvu7bH4DAAAAAElFTkSuQmCC">
+<p>Emulating "tritanopia":
+<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAAXNSR0IArs4c6QAAAFlJREFUWIXt10ENACAQxEAgqEEbEhCNAxDRJeHREbBp7ne1rHlK0h7RuRZde8BAykDKQMpAykDKQMpAykDKQKqnf4i07y9oIGUgZSBlIGUgZSBlIGUgZSB1AS8fBG2mWYWcAAAAAElFTkSuQmCC">
+<p>Emulating "tritanopia":
+<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAAXNSR0IArs4c6QAAAFlJREFUWIXt10ENACAQxEAgqEEbEhCNAxDRJeHREbBp7ne1rHlK0h7RuRZde8BAykDKQMpAykDKQMpAykDKQKqnf4i07y9oIGUgZSBlIGUgZSBlIGUgZSB1AS8fBG2mWYWcAAAAAElFTkSuQmCC">
+<p>Emulating "some-invalid-deficiency":
+{
+  "code": -32602,
+  "message": "Unknown vision deficiency type"
+}
+<p>Emulating "":
+{
+  "code": -32602,
+  "message": "Unknown vision deficiency type"
+}
+<p>Emulating "achromatomaly":
+{
+  "code": -32602,
+  "message": "Unknown vision deficiency type"
+}
+<p>Emulating "deuteranomaly":
+{
+  "code": -32602,
+  "message": "Unknown vision deficiency type"
+}
+<p>Emulating "protanomaly":
+{
+  "code": -32602,
+  "message": "Unknown vision deficiency type"
+}
+<p>Emulating "tritanomaly":
+{
+  "code": -32602,
+  "message": "Unknown vision deficiency type"
+}
+<p>Navigating&mldr;
+<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAAXNSR0IArs4c6QAAAFlJREFUWIXt10ENACAQxEAgqEEbEhCNAxDRJeHREbBp7ne1rHlK0h7RuRZde8BAykDKQMpAykDKQMpAykDKQKqnf4i07y9oIGUgZSBlIGUgZSBlIGUgZSB1AS8fBG2mWYWcAAAAAElFTkSuQmCC">
+<p>Emulating "achromatopsia":
+<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAAXNSR0IArs4c6QAAAFdJREFUWIXt18ENACAMw0BArNuVuwoM4SDx8A0QWf11VtUZQd2dnBsruvaAgZSBlIGUgZSBlIGUgZSBlIHUTv8Qad9f0EDKQMpAykDKQMpAykDKQMpA6gKkyAfMkeetfgAAAABJRU5ErkJggg==">
+

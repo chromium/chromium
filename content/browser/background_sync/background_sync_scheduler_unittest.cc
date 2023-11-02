@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
@@ -105,7 +106,7 @@ class BackgroundSyncSchedulerTest : public testing::Test {
  protected:
   BrowserTaskEnvironment task_environment_;
   TestBrowserClient browser_client_;
-  ContentBrowserClient* original_client_;
+  raw_ptr<ContentBrowserClient> original_client_;
   TestBrowserContext test_browser_context_;
 };
 
@@ -189,7 +190,7 @@ TEST_F(BackgroundSyncSchedulerTest, ScheduleBothTypesOfSync) {
   run_loop_2.Run();
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(BackgroundSyncSchedulerTest, BrowserWakeupScheduled) {
   ScheduleDelayedProcessing(GURL(kUrl_1),
                             blink::mojom::BackgroundSyncType::ONE_SHOT,

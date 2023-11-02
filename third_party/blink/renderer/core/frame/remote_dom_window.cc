@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,10 +21,6 @@ void RemoteDOMWindow::Trace(Visitor* visitor) const {
   DOMWindow::Trace(visitor);
 }
 
-void RemoteDOMWindow::blur() {
-  // FIXME: Implement.
-}
-
 RemoteDOMWindow::RemoteDOMWindow(RemoteFrame& frame) : DOMWindow(frame) {}
 
 void RemoteDOMWindow::FrameDetached() {
@@ -44,9 +40,9 @@ void RemoteDOMWindow::SchedulePostMessage(PostedMessage* posted_message) {
   // further delaying postMessage forwarding until after the next BeginFrame.
   posted_message->source
       ->GetTaskRunner(TaskType::kInternalPostMessageForwarding)
-      ->PostTask(FROM_HERE, WTF::Bind(&RemoteDOMWindow::ForwardPostMessage,
-                                      WrapPersistent(this),
-                                      WrapPersistent(posted_message)));
+      ->PostTask(FROM_HERE, WTF::BindOnce(&RemoteDOMWindow::ForwardPostMessage,
+                                          WrapPersistent(this),
+                                          WrapPersistent(posted_message)));
 }
 
 void RemoteDOMWindow::ForwardPostMessage(PostedMessage* posted_message) {
@@ -54,6 +50,8 @@ void RemoteDOMWindow::ForwardPostMessage(PostedMessage* posted_message) {
   // don't deliver the message.
   if (!GetFrame())
     return;
+
+  mojo::internal::AutoRecordReplayAssertBufferAllocations rraba("RUN-885");
 
   LocalFrame* source_frame = posted_message->source->GetFrame();
   scoped_refptr<const SecurityOrigin> source_origin =

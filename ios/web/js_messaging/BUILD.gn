@@ -1,20 +1,20 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//ios/build/config.gni")
-import("//ios/web/js_compile.gni")
+import("//ios/web/public/js_messaging/optimize_js.gni")
 
 source_set("js_messaging") {
   configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
     ":frame_listeners_js",
     ":java_script_content_world_header",
+    ":java_script_feature_manager_header",
     ":scoped_wk_script_message_handler",
     ":setup_frame_js",
     ":web_frames_manager_impl_header",
     "//base",
-    "//crypto",
     "//ios/web/common:features",
     "//ios/web/navigation:wk_navigation_util",
     "//ios/web/public",
@@ -58,7 +58,10 @@ source_set("web_frames_manager_impl_header") {
 
 source_set("java_script_feature") {
   configs += [ "//build/config/compiler:enable_arc" ]
-  public_deps = [ ":java_script_content_world_header" ]
+  public_deps = [
+    ":java_script_content_world_header",
+    ":java_script_feature_manager_header",
+  ]
   deps = [
     ":js_messaging",
     ":scoped_wk_script_message_handler",
@@ -73,7 +76,6 @@ source_set("java_script_feature") {
   sources = [
     "java_script_content_world.mm",
     "java_script_feature.mm",
-    "java_script_feature_manager.h",
     "java_script_feature_manager.mm",
     "script_message.mm",
   ]
@@ -91,17 +93,29 @@ source_set("java_script_content_world_header") {
   sources = [ "java_script_content_world.h" ]
 }
 
+source_set("java_script_feature_manager_header") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  deps = [
+    ":java_script_content_world_header",
+    "//base",
+  ]
+
+  sources = [ "java_script_feature_manager.h" ]
+}
+
 source_set("java_script_feature_util") {
   configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
     ":js_messaging",
     "//base",
+    "//ios/web/annotations",
+    "//ios/web/common:features",
     "//ios/web/favicon",
     "//ios/web/find_in_page",
     "//ios/web/js_features/context_menu",
     "//ios/web/js_features/scroll_helper",
-    "//ios/web/js_features/web_performance_metrics",
     "//ios/web/js_features/window_error",
     "//ios/web/navigation:navigation_feature",
     "//ios/web/navigation:session_restore_feature",
@@ -127,17 +141,17 @@ source_set("scoped_wk_script_message_handler") {
   ]
 }
 
-js_compile_bundle("setup_frame_js") {
+optimize_js("setup_frame_js") {
   visibility = [ ":js_messaging" ]
-  closure_entry_point = "__crWeb.setupFrame"
 
+  primary_script = "resources/setup_frame.js"
   sources = [ "resources/setup_frame.js" ]
 }
 
-js_compile_bundle("frame_listeners_js") {
+optimize_js("frame_listeners_js") {
   visibility = [ ":js_messaging" ]
-  closure_entry_point = "__crWeb.frameListeners"
 
+  primary_script = "resources/frame_listeners.js"
   sources = [ "resources/frame_listeners.js" ]
 }
 
@@ -152,13 +166,15 @@ source_set("unittests") {
     ":web_frames_manager_impl_header",
     "//base",
     "//base/test:test_support",
-    "//crypto",
     "//ios/web/common:web_view_creation_util",
     "//ios/web/public/js_messaging",
     "//ios/web/public/test",
+    "//ios/web/public/test:test_fixture",
     "//ios/web/public/test/fakes",
+    "//ios/web/test:js_test_util_internal",
     "//ios/web/test/fakes",
     "//ios/web/web_state:web_state_impl_header",
+    "//ios/web/web_state/ui:web_controller_header",
     "//ios/web/web_state/ui:wk_web_view_configuration_provider",
     "//testing/gtest",
     "//third_party/ocmock",
@@ -195,10 +211,13 @@ source_set("inttests") {
     "//ios/web/public",
     "//ios/web/public/js_messaging",
     "//ios/web/public/test",
+    "//ios/web/public/test:test_fixture",
     "//ios/web/public/test:util",
     "//ios/web/public/test/fakes",
+    "//ios/web/test:js_test_util_internal",
     "//ios/web/test:test_support",
     "//ios/web/test/fakes",
+    "//ios/web/web_state/ui:web_controller_header",
     "//ios/web/web_state/ui:wk_web_view_configuration_provider_header",
     "//net:test_support",
     "//testing/gmock",

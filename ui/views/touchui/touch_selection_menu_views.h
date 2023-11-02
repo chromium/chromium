@@ -1,10 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_VIEWS_TOUCHUI_TOUCH_SELECTION_MENU_VIEWS_H_
 #define UI_VIEWS_TOUCHUI_TOUCH_SELECTION_MENU_VIEWS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/touchui/touch_selection_menu_runner_views.h"
 
@@ -24,7 +25,7 @@ class VIEWS_EXPORT TouchSelectionMenuViews : public BubbleDialogDelegateView {
   enum ButtonViewId : int { kEllipsisButton = 1 };
 
   TouchSelectionMenuViews(TouchSelectionMenuRunnerViews* owner,
-                          ui::TouchSelectionMenuClient* client,
+                          base::WeakPtr<ui::TouchSelectionMenuClient> client,
                           aura::Window* context);
 
   TouchSelectionMenuViews(const TouchSelectionMenuViews&) = delete;
@@ -64,8 +65,8 @@ class VIEWS_EXPORT TouchSelectionMenuViews : public BubbleDialogDelegateView {
   void OnPaint(gfx::Canvas* canvas) override;
   void WindowClosing() override;
 
-  TouchSelectionMenuRunnerViews* owner_;
-  ui::TouchSelectionMenuClient* const client_;
+  raw_ptr<TouchSelectionMenuRunnerViews> owner_;
+  const base::WeakPtr<ui::TouchSelectionMenuClient> client_;
 };
 
 }  // namespace views

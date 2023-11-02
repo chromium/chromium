@@ -1,13 +1,13 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <utility>
 
 #include "components/continuous_search/common/public/mojom/continuous_search.mojom.h"
+#include "components/continuous_search/renderer/config.h"
 #include "components/continuous_search/renderer/search_result_extractor_impl.h"
 #include "content/public/renderer/render_frame.h"
-#include "content/public/renderer/render_view.h"
 #include "content/public/test/render_view_test.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -127,6 +127,12 @@ TEST_F(SearchResultExtractorImplRenderViewTest, TestExtractResultsOnly) {
 }
 
 TEST_F(SearchResultExtractorImplRenderViewTest, TestExtractRelatedSearches) {
+  Config config;
+  config.related_searches_id = "someid";
+  config.related_searches_anchor_classname = "someanchor";
+  config.related_searches_title_classname = "sometitle";
+  SetConfigForTesting(config);
+
   auto result1 = mojom::SearchResult::New();
   result1->link = GURL("https://www.example1.com/");
   result1->title = u"Related 1";
@@ -147,21 +153,21 @@ TEST_F(SearchResultExtractorImplRenderViewTest, TestExtractRelatedSearches) {
   LoadHtmlAndExpectExtractedOutput(
       R"(<!doctype html>
          <body>
-           <div id="w3bYAd">
+           <div id="someid">
              <div class="foo">
-               <a href="https://www.example1.com/" class="k8XOCe bar">
-                 <div class="s75CSd bar">
+               <a href="https://www.example1.com/" class="someanchor bar">
+                 <div class="sometitle bar">
                    <span>Related 1</span>
                  </div>
                </a>
-               <a href="https://www.example2.com/" class="k8XOCe baz">
-                 <div class="s75CSd baz">
+               <a href="https://www.example2.com/" class="someanchor baz">
+                 <div class="sometitle baz">
                    <span>Related 2</span>
                  </div>
                </a>
              </div>
              <div class="mnr-c bar">
-               <a href="https://www.example1.com/" class="k8XOCe buz">
+               <a href="https://www.example1.com/" class="someanchor buz">
                  <div>
                    <span>Skipped</span>
                  </div>

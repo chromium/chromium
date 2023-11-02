@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/modules/breakout_box/pushable_media_stream_video_source.h"
 #include "third_party/blink/renderer/modules/breakout_box/stream_test_utils.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_track_impl.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_sink.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
@@ -35,24 +36,22 @@ namespace blink {
 class MediaStreamVideoTrackUnderlyingSourceTest : public testing::Test {
  public:
   MediaStreamVideoTrackUnderlyingSourceTest()
-      : media_stream_source_(MakeGarbageCollected<MediaStreamSource>(
+      : pushable_video_source_(new PushableMediaStreamVideoSource(
+            scheduler::GetSingleThreadTaskRunnerForTesting())),
+        media_stream_source_(MakeGarbageCollected<MediaStreamSource>(
             "dummy_source_id",
             MediaStreamSource::kTypeVideo,
             "dummy_source_name",
-            false /* remote */)),
-        pushable_video_source_(new PushableMediaStreamVideoSource(
-            scheduler::GetSingleThreadTaskRunnerForTesting())) {
-    media_stream_source_->SetPlatformSource(
-        base::WrapUnique(pushable_video_source_));
-  }
+            false /* remote */,
+            base::WrapUnique(pushable_video_source_))) {}
 
   ~MediaStreamVideoTrackUnderlyingSourceTest() override {
-    platform_->RunUntilIdle();
+    RunIOUntilIdle();
     WebHeap::CollectAllGarbageForTesting();
   }
 
   MediaStreamTrack* CreateTrack(ExecutionContext* execution_context) {
-    return MakeGarbageCollected<MediaStreamTrack>(
+    return MakeGarbageCollected<MediaStreamTrackImpl>(
         execution_context,
         MediaStreamVideoTrack::CreateVideoTrack(
             pushable_video_source_,
@@ -72,6 +71,16 @@ class MediaStreamVideoTrackUnderlyingSourceTest : public testing::Test {
     return CreateSource(script_state, track, 1u);
   }
 
+ private:
+  void RunIOUntilIdle() const {
+    // Make sure that tasks on IO thread are completed before moving on.
+    base::RunLoop run_loop;
+    Platform::Current()->GetIOTaskRunner()->PostTaskAndReply(
+        FROM_HERE, base::BindOnce([] {}), run_loop.QuitClosure());
+    run_loop.Run();
+    base::RunLoop().RunUntilIdle();
+  }
+
  protected:
   void PushFrame(
       const absl::optional<base::TimeDelta>& timestamp = absl::nullopt) {
@@ -80,28 +89,29 @@ class MediaStreamVideoTrackUnderlyingSourceTest : public testing::Test {
     if (timestamp)
       frame->set_timestamp(*timestamp);
     pushable_video_source_->PushFrame(frame, base::TimeTicks());
-    platform_->RunUntilIdle();
+    RunIOUntilIdle();
   }
 
-  static PushableMediaStreamVideoSource* CreateDevicePushableSource(
+  static MediaStreamSource* CreateDevicePushableSource(
       const std::string& device_id) {
+    auto pushable_video_source =
+        std::make_unique<PushableMediaStreamVideoSource>(
+            scheduler::GetSingleThreadTaskRunnerForTesting());
+    PushableMediaStreamVideoSource* pushable_video_source_ptr =
+        pushable_video_source.get();
     auto* media_stream_source = MakeGarbageCollected<MediaStreamSource>(
         "dummy_source_id", MediaStreamSource::kTypeVideo, "dummy_source_name",
-        false /* remote */);
-    auto* pushable_video_source = new PushableMediaStreamVideoSource(
-        scheduler::GetSingleThreadTaskRunnerForTesting());
+        false /* remote */, std::move(pushable_video_source));
     MediaStreamDevice device(mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE,
                              device_id, "My window device");
-    pushable_video_source->SetDevice(device);
-    media_stream_source->SetPlatformSource(
-        base::WrapUnique(pushable_video_source));
+    pushable_video_source_ptr->SetDevice(device);
 
-    return pushable_video_source;
+    return media_stream_source;
   }
 
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform_;
-  const Persistent<MediaStreamSource> media_stream_source_;
   PushableMediaStreamVideoSource* const pushable_video_source_;
+  const Persistent<MediaStreamSource> media_stream_source_;
 };
 
 TEST_F(MediaStreamVideoTrackUnderlyingSourceTest,
@@ -357,13 +367,16 @@ TEST_F(MediaStreamVideoTrackUnderlyingSourceTest,
 
 TEST_F(MediaStreamVideoTrackUnderlyingSourceTest, FrameLimiter) {
   const std::string device_id = "window:my-window";
-  auto* pushable_video_source = CreateDevicePushableSource(device_id);
+  auto* media_stream_source = CreateDevicePushableSource(device_id);
+  auto* platform_video_source =
+      static_cast<blink::PushableMediaStreamVideoSource*>(
+          media_stream_source->GetPlatformSource());
   V8TestingScope v8_scope;
   ScriptState* script_state = v8_scope.GetScriptState();
-  auto* track = MakeGarbageCollected<MediaStreamTrack>(
+  auto* track = MakeGarbageCollected<MediaStreamTrackImpl>(
       v8_scope.GetExecutionContext(),
       MediaStreamVideoTrack::CreateVideoTrack(
-          pushable_video_source,
+          platform_video_source,
           MediaStreamVideoSource::ConstraintsOnceCallback(),
           /*enabled=*/true));
   // Use a large buffer so that the effective buffer size is guaranteed to be
@@ -373,7 +386,7 @@ TEST_F(MediaStreamVideoTrackUnderlyingSourceTest, FrameLimiter) {
       MediaStreamVideoTrackUnderlyingSource::kMaxMonitoredFrameCount);
   const wtf_size_t max_frame_count =
       MediaStreamVideoTrackUnderlyingSource::GetFramePoolSize(
-          pushable_video_source->device());
+          platform_video_source->device());
 
   // This test assumes that |max_frame_count| is 2, for simplicity.
   ASSERT_EQ(max_frame_count, 2u);
@@ -390,7 +403,7 @@ TEST_F(MediaStreamVideoTrackUnderlyingSourceTest, FrameLimiter) {
     base::RunLoop sink_loop;
     EXPECT_CALL(mock_sink, OnVideoFrame(_))
         .WillOnce(base::test::RunOnceClosure(sink_loop.QuitClosure()));
-    pushable_video_source->PushFrame(std::move(video_frame),
+    platform_video_source->PushFrame(std::move(video_frame),
                                      base::TimeTicks::Now());
     sink_loop.Run();
   };
@@ -455,13 +468,16 @@ TEST_F(MediaStreamVideoTrackUnderlyingSourceTest, FrameLimiter) {
 
   // A new source connected to the same device is created and started in another
   // execution context.
-  auto* pushable_video_source2 = CreateDevicePushableSource(device_id);
+  auto* media_stream_source2 = CreateDevicePushableSource(device_id);
+  auto* platform_video_source2 =
+      static_cast<blink::PushableMediaStreamVideoSource*>(
+          media_stream_source2->GetPlatformSource());
   V8TestingScope v8_scope2;
   ScriptState* script_state2 = v8_scope2.GetScriptState();
-  auto* track2 = MakeGarbageCollected<MediaStreamTrack>(
+  auto* track2 = MakeGarbageCollected<MediaStreamTrackImpl>(
       v8_scope2.GetExecutionContext(),
       MediaStreamVideoTrack::CreateVideoTrack(
-          pushable_video_source2,
+          platform_video_source2,
           MediaStreamVideoSource::ConstraintsOnceCallback(),
           /*enabled=*/true));
   auto* source2 = CreateSource(
@@ -475,7 +491,7 @@ TEST_F(MediaStreamVideoTrackUnderlyingSourceTest, FrameLimiter) {
     base::RunLoop sink_loop;
     EXPECT_CALL(mock_sink2, OnVideoFrame(_))
         .WillOnce(base::test::RunOnceClosure(sink_loop.QuitClosure()));
-    pushable_video_source2->PushFrame(std::move(video_frame),
+    platform_video_source2->PushFrame(std::move(video_frame),
                                       base::TimeTicks::Now());
     sink_loop.Run();
   };

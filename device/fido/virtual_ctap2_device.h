@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/cbor/values.h"
 #include "device/fido/attested_credential_data.h"
@@ -74,12 +73,48 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualCtap2Device
     bool large_blob_support = false;
     // Support for setting a min PIN length and forcing pin change.
     bool min_pin_length_support = false;
+    // min_pin_length_extension_support, if true, enables support for the
+    // minPinLength extension. See
+    // https://fidoalliance.org/specs/fido-v2.1-ps-20210615/fido-client-to-authenticator-protocol-v2.1-ps-20210615.html#sctn-minpinlength-extension
+    bool min_pin_length_extension_support = false;
     bool always_uv = false;
     // The space available to store a large blob. In real authenticators this
     // may change depending on the number of resident credentials. We treat this
     // as a fixed size area for the large blob.
     size_t available_large_blob_storage = 1024;
     bool cred_blob_support = false;
+    // none_attestation causes a "none" attestation statement to be returned
+    // from makeCredential calls.
+    bool none_attestation = false;
+    // include_transports_in_attestation_certificate controls whether a
+    // transports extension will be included in the attestation certificate
+    // returned from a makeCredential operation.
+    bool include_transports_in_attestation_certificate = true;
+    // transports_in_get_info, if not empty, contains the transports that will
+    // be reported via getInfo.
+    std::vector<FidoTransportProtocol> transports_in_get_info;
+    // device_public_key_support controls whether the devicePubKey extension is
+    // supported. See https://github.com/w3c/webauthn/pull/1663
+    bool device_public_key_support = false;
+    // device_public_key_support_attestation controls whether a DPK attestation
+    // will ever be returned.
+    bool device_public_key_support_attestation = false;
+    // device_public_key_always_return_attestation causes the DPK response to
+    // always contain an attestation, no matter the request.
+    bool device_public_key_always_return_attestation = false;
+    // device_public_key_enterprise_attestation, if true, causes enterprise
+    // attestation requests to be honoured if the RP ID is in
+    // |enterprise_attestation_rps|.
+    bool device_public_key_support_enterprise_attestation = false;
+    // device_public_key_always_return_attestation causes the DPK response to
+    // always signal that an attestation is an enterprise attestation.
+    bool device_public_key_always_return_enterprise_attestation = false;
+    // device_public_key_drop_extension_response causes the extension output
+    // (but not the signature) to be omitted.
+    bool device_public_key_drop_extension_response = false;
+    // device_public_key_drop_signature causes the signature (but not the
+    // extension output) to be omitted.
+    bool device_public_key_drop_signature = false;
 
     IncludeCredential include_credential_in_assertion_response =
         IncludeCredential::ONLY_IF_NEEDED;
@@ -186,6 +221,12 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualCtap2Device
     // response.
     PINUVAuthProtocol pin_protocol = PINUVAuthProtocol::kV1;
 
+    // internal_account_chooser indicates that the authenticator has a screen
+    // and thus presents the account chooser for discoverable credential
+    // assertions itself. This causes userSelected to be asserted on those
+    // responses.
+    bool internal_account_chooser = false;
+
     // override_response_map allows overriding the response for a given command
     // with a given code. The actual command won't be executed.
     base::flat_map<CtapRequestCommand, CtapDeviceResponseCode>
@@ -283,6 +324,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualCtap2Device
       UserVerificationRequirement user_verification,
       bool user_presence_required,
       bool* out_user_verified);
+  absl::optional<cbor::Value> HandleDevicePublicKey(
+      const DevicePublicKeyRequest& request,
+      const std::string& rp_id,
+      const uint32_t primary_credential_cose_algorithm,
+      absl::optional<std::unique_ptr<PrivateKey>>* const private_key);
   absl::optional<CtapDeviceResponseCode> OnMakeCredential(
       base::span<const uint8_t> request,
       std::vector<uint8_t>* response);

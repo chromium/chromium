@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,10 @@
 #include <memory>
 #include <vector>
 
+#include "ash/services/secure_channel/public/mojom/nearby_connector.mojom.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
-#include "chromeos/services/nearby/public/cpp/mock_nearby_connections.h"
-#include "chromeos/services/secure_channel/public/mojom/nearby_connector.mojom.h"
+#include "chromeos/ash/services/nearby/public/cpp/mock_nearby_connections.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -19,10 +19,6 @@
 namespace ash {
 namespace secure_channel {
 namespace {
-
-// TODO(https://crbug.com/1164001): remove after
-// chromeos/services/secure_channel is moved to namespace ash.
-namespace mojom = ::chromeos::secure_channel::mojom;
 
 using ::location::nearby::connections::mojom::DiscoveredEndpointInfo;
 using ::location::nearby::connections::mojom::DiscoveredEndpointInfoPtr;
@@ -210,7 +206,8 @@ TEST_F(NearbyEndpointFinderImplTest, FailStartingDiscovery) {
   EXPECT_TRUE(has_failed_);
 }
 
-TEST_F(NearbyEndpointFinderImplTest, FailInjectingEndpoint) {
+// Failing on CrOS ASAN: crbug.com/1290882
+TEST_F(NearbyEndpointFinderImplTest, DISABLED_FailInjectingEndpoint) {
   FindEndpoint();
   InvokeStartDiscoveryCallback(/*success=*/true);
   InvokeInjectEndpointCallback(/*success=*/false);

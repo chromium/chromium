@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/passwords/credential_manager_dialog_controller.h"
-#include "chrome/browser/ui/passwords/manage_passwords_view_utils.h"
+#include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/passwords/credentials_item_view.h"
@@ -58,8 +57,7 @@ AccountChooserDialogView::AccountChooserDialogView(
     label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   }
   SetArrow(views::BubbleBorder::NONE);
-  set_margins(gfx::Insets(margins().top(), 0, margins().bottom(), 0));
-  chrome::RecordDialogCreation(chrome::DialogIdentifier::ACCOUNT_CHOOSER);
+  set_margins(gfx::Insets::TLBR(margins().top(), 0, margins().bottom(), 0));
 }
 
 AccountChooserDialogView::~AccountChooserDialogView() = default;
@@ -119,18 +117,16 @@ void AccountChooserDialogView::InitWindow() {
                 &AccountChooserDialogView::CredentialsItemPressed,
                 base::Unretained(this), base::Unretained(form.get())),
             titles.first, titles.second, form.get(),
-            web_contents_->GetBrowserContext()
-                ->GetDefaultStoragePartition()
-                ->GetURLLoaderFactoryForBrowserProcess()
-                .get()));
+            GetURLLoaderForMainFrame(web_contents_).get(),
+            web_contents_->GetPrimaryMainFrame()->GetLastCommittedOrigin()));
     credential_view->SetStoreIndicatorIcon(form->in_store);
     ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
     gfx::Insets insets =
         layout_provider->GetInsetsMetric(views::INSETS_DIALOG_SUBSECTION);
     const int vertical_padding = layout_provider->GetDistanceMetric(
         views::DISTANCE_RELATED_CONTROL_VERTICAL);
-    credential_view->SetBorder(views::CreateEmptyBorder(
-        vertical_padding, insets.left(), vertical_padding, insets.right()));
+    credential_view->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
+        vertical_padding, insets.left(), vertical_padding, insets.right())));
     item_height = std::max(item_height, credential_view->GetPreferredHeight());
   }
   constexpr float kMaxVisibleItems = 3.5;

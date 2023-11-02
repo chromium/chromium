@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -58,29 +58,49 @@ const char* CoopAccessReportTypeToString(mojom::CoopAccessReportType type) {
   }
 }
 
+// [spec]: https://html.spec.whatwg.org/C/#obtain-coop
 void AugmentCoopWithCoep(CrossOriginOpenerPolicy* coop,
                          const CrossOriginEmbedderPolicy& coep) {
-  // COOP:
+  // [spec]: 4.1.2. If coep's value is compatible with cross-origin isolation,
+  //                then set policy's value to "same-origin-plus-COEP".
+
+  // "COOP: same-origin" case.
   if (coop->value == mojom::CrossOriginOpenerPolicyValue::kSameOrigin &&
       CompatibleWithCrossOriginIsolated(coep.value)) {
     coop->value = mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep;
-  }
-
-  // COOP: SOAP by default
-  if (coop->soap_by_default_value ==
-          mojom::CrossOriginOpenerPolicyValue::kSameOrigin &&
-      CompatibleWithCrossOriginIsolated(coep.value)) {
     coop->soap_by_default_value =
         mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep;
   }
 
+  // "COOP: restrict-properties" case.
+  if (coop->value == mojom::CrossOriginOpenerPolicyValue::kRestrictProperties &&
+      CompatibleWithCrossOriginIsolated(coep.value)) {
+    coop->value =
+        mojom::CrossOriginOpenerPolicyValue::kRestrictPropertiesPlusCoep;
+    coop->soap_by_default_value =
+        mojom::CrossOriginOpenerPolicyValue::kRestrictPropertiesPlusCoep;
+  }
+
   // COOP-Report-Only:
+  //
+  // [spec]: 6.1.2. If coep's value is compatible with cross-origin isolation or
+  // coep's report-only value is compatible with cross-origin isolation, then
+  // set policy's report-only value to "same-origin-plus-COEP".
   if (coop->report_only_value ==
           mojom::CrossOriginOpenerPolicyValue::kSameOrigin &&
       (CompatibleWithCrossOriginIsolated(coep.value) ||
        CompatibleWithCrossOriginIsolated(coep.report_only_value))) {
     coop->report_only_value =
         mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep;
+  }
+
+  // COOP: restrict-properties report-only case.
+  if (coop->report_only_value ==
+          mojom::CrossOriginOpenerPolicyValue::kRestrictProperties &&
+      (CompatibleWithCrossOriginIsolated(coep.value) ||
+       CompatibleWithCrossOriginIsolated(coep.report_only_value))) {
+    coop->report_only_value =
+        mojom::CrossOriginOpenerPolicyValue::kRestrictPropertiesPlusCoep;
   }
 }
 

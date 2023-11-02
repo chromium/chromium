@@ -1,4 +1,4 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -6,11 +6,17 @@ import("//third_party/closure_compiler/compile_js.gni")
 
 js_type_check("closure_compile") {
   is_polymer3 = true
-  closure_flags = default_closure_args + [
-                    "browser_resolver_prefix_replacements=\"chrome://accessory-update/=../../ash/webui/firmware_update_ui/resources/\"",
-                    "js_module_root=../../chrome/test/data/webui/",
-                    "js_module_root=./gen/chrome/test/data/webui/",
-                  ]
+  closure_flags =
+      default_closure_args + [
+        "browser_resolver_prefix_replacements=\"chrome://accessory-update/=" +
+            rebase_path("//ash/webui/firmware_update_ui/resources/",
+                        root_build_dir) + "\"",
+        "browser_resolver_prefix_replacements=\"chrome://webui-test/=" +
+            "./gen/chrome/test/data/webui/tsc\"",
+        "js_module_root=" +
+            rebase_path("//chrome/test/data/webui/", root_build_dir),
+        "js_module_root=./gen/chrome/test/data/webui/",
+      ]
   deps = [
     ":fake_update_controller_test",
     ":fake_update_provider_test",
@@ -46,11 +52,16 @@ js_library("firmware_update_dialog_test") {
   deps = [
     "../..:chai_assert",
     "../..:test_util",
+    "//ash/webui/firmware_update_ui/resources:fake_data",
     "//ash/webui/firmware_update_ui/resources:firmware_update_dialog",
     "//ash/webui/firmware_update_ui/resources:firmware_update_types",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
+    "//ash/webui/firmware_update_ui/resources:mojo_utils",
+    "//ui/webui/resources/js:load_time_data.m",
   ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
+  externs_list = [
+    "$externs_path/mocha-2.5.js",
+    "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
+  ]
 }
 
 js_library("firmware_update_test") {
@@ -58,16 +69,21 @@ js_library("firmware_update_test") {
     "../..:chai_assert",
     "../..:test_util",
     "//ash/webui/firmware_update_ui/resources:fake_data",
+    "//ash/webui/firmware_update_ui/resources:fake_update_controller",
     "//ash/webui/firmware_update_ui/resources:fake_update_provider",
     "//ash/webui/firmware_update_ui/resources:firmware_update_app",
     "//ash/webui/firmware_update_ui/resources:firmware_update_dialog",
     "//ash/webui/firmware_update_ui/resources:firmware_update_types",
     "//ash/webui/firmware_update_ui/resources:mojo_interface_provider",
+    "//ash/webui/firmware_update_ui/resources:mojo_utils",
     "//ash/webui/firmware_update_ui/resources:update_card",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
+    "//ui/webui/resources/js:load_time_data.m",
   ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
+  externs_list = [
+    "$externs_path/mocha-2.5.js",
+    "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",
+    "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
+  ]
 }
 
 js_library("peripheral_updates_list_test") {
@@ -78,6 +94,7 @@ js_library("peripheral_updates_list_test") {
     "//ash/webui/firmware_update_ui/resources:fake_update_provider",
     "//ash/webui/firmware_update_ui/resources:firmware_update_types",
     "//ash/webui/firmware_update_ui/resources:mojo_interface_provider",
+    "//ash/webui/firmware_update_ui/resources:mojo_utils",
     "//ash/webui/firmware_update_ui/resources:peripheral_updates_list",
     "//ash/webui/firmware_update_ui/resources:update_card",
   ]
@@ -88,7 +105,9 @@ js_library("update_card_test") {
   deps = [
     "../..:chai_assert",
     "../..:test_util",
+    "//ash/webui/firmware_update_ui/resources:fake_data",
     "//ash/webui/firmware_update_ui/resources:firmware_update_types",
+    "//ash/webui/firmware_update_ui/resources:mojo_utils",
     "//ash/webui/firmware_update_ui/resources:update_card",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]

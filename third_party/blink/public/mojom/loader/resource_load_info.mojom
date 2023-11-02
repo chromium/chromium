@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,9 +17,12 @@ import "url/mojom/url.mojom";
 // in sync with "ContentResourceType2" in
 // src/tools/metrics/histograms/enums.xml.
 // DEPRECATED. Consider using network::mojom::RequestDestination instead.
+// TODO(bokan): Consider renaming kMainFrame and kSubFrame to better reflect
+// embedded frame trees like fenced frames (e.g. kMainFrame to
+// kOutermostMainFrame and kSubFrame to kEmbeddedFrame?)
 enum ResourceType {
   kMainFrame = 0,           // top level page
-  kSubFrame = 1,            // frame or iframe
+  kSubFrame = 1,            // frame or iframe (or fenced frame)
   kStylesheet = 2,          // a CSS stylesheet
   kScript = 3,              // an external script
   kImage = 4,               // an image (jpg/gif/png/etc)
@@ -75,6 +78,7 @@ struct ResourceLoadInfo {
   int64 request_id;
 
   // The final URL of the response (final = after all redirects).
+  // TODO(crbug.com/973885): use SchemeHostPort if applicable.
   url.mojom.Url final_url;
 
   // The response referrer.
@@ -96,8 +100,14 @@ struct ResourceLoadInfo {
   // The mime type.
   string mime_type;
 
-  // True if the response was fetched from the network cache.
+  // True if the response was fetched from the network cache (disk cache or
+  // in-memory cache).
+  // TODO(https://crbug.com/1339708): Rename this field to `was_in_any_cache`
+  // to represent what this field actually means.
   bool was_cached;
+
+  // True if the response was fetched from the network service in-memory cache.
+  bool was_in_network_service_memory_cache = false;
 
   // Various network related information.
   CommonNetworkInfo network_info;

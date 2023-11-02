@@ -1,6 +1,6 @@
 rootWebArea
 ++genericContainer ignored
-++++genericContainer ignored
+++++genericContainer
 ++++++link name='Header 1 List element 1 List element 2 List element 3'
 ++++++++heading name='Header 1' hierarchicalLevel=1
 ++++++++++staticText name='Header 1'

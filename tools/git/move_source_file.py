@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright (c) 2012 The Chromium Authors. All rights reserved.
+# Copyright 2012 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -80,7 +80,7 @@ def UpdateIncludes(from_path, to_path):
   # . Object-C imports
   # . Imports in mojom files.
   files_with_changed_includes = mffr.MultiFileFindReplace(
-      r'(#?(include|import)\s*["<])%s([>"]);?' % re.escape(from_path),
+      r'(#?(include|import)\s*["<])%s([>"])' % re.escape(from_path),
       r'\1%s\3' % to_path, ['*.cc', '*.h', '*.m', '*.mm', '*.cpp', '*.mojom'])
 
 
@@ -197,7 +197,7 @@ def UpdateIncludeGuard(old_path, new_path):
           'old guard is not per style guide? You will have to update the '
           'include guard manually. (%s)' % new_path)
 
-  with open(new_path, 'w') as f:
+  with open(new_path, 'w', newline='\n') as f:
     f.write(new_contents)
 
 def main():

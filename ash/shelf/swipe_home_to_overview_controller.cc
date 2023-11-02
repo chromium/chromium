@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,10 @@
 
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/constants/ash_features.h"
+#include "ash/controls/contextual_tooltip.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/session/session_controller_impl.h"
-#include "ash/shelf/contextual_tooltip.h"
 #include "ash/shelf/drag_window_from_shelf_controller.h"
 #include "ash/shelf/shelf_metrics.h"
 #include "ash/shell.h"
@@ -106,8 +106,6 @@ void SwipeHomeToOverviewController::Drag(const gfx::PointF& location_in_screen,
         display.bounds().y() +
         display.bounds().height() * kHomeScalingThresholdDisplayHeightRatio;
     state_ = State::kTrackingDrag;
-    home_screen_blur_disabler_ =
-        Shell::Get()->app_list_controller()->DisableHomeScreenBackgroundBlur();
   } else {
     if (location_in_screen.y() <= overview_transition_threshold_y_ &&
         std::abs(scroll_x) + std::abs(scroll_y) <= kMovementVelocityThreshold) {
@@ -196,11 +194,6 @@ void SwipeHomeToOverviewController::FinalizeDragAndShowOverview() {
   // that the overview is starting.
   Shell::Get()->overview_controller()->StartOverview(
       OverviewStartAction::kExitHomeLauncher);
-
-  // No need to keep blur disabled for the drag - note that blur might remain
-  // disabled at this point due to the started overview transition (which
-  // triggers home screen scale animation).
-  home_screen_blur_disabler_.reset();
 }
 
 void SwipeHomeToOverviewController::FinalizeDragAndStayOnHomeScreen(
@@ -224,10 +217,6 @@ void SwipeHomeToOverviewController::FinalizeDragAndStayOnHomeScreen(
   Shell::Get()->app_list_controller()->UpdateScaleAndOpacityForHomeLauncher(
       1.0f /*scale*/, 1.0f /*opacity*/, absl::nullopt /*animation_info*/,
       base::BindRepeating(&UpdateHomeAnimationForGestureCancel, go_back));
-
-  // No need to keep blur disabled for the drag - note that blur might remain
-  // disabled at this point due to the started home screen scale animation.
-  home_screen_blur_disabler_.reset();
 }
 
 }  // namespace ash

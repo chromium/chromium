@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,6 +27,8 @@
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/loader/base_fetch_context.h"
+#include "third_party/blink/renderer/core/loader/subresource_filter.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller_with_script_scope.h"
@@ -45,6 +47,8 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/unique_identifier.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -148,8 +152,8 @@ class WebTransport::DatagramUnderlyingSink final : public UnderlyingSinkBase {
     for (const auto& datagram : pending_datagrams_) {
       web_transport_->transport_remote_->SendDatagram(
           base::make_span(datagram),
-          WTF::Bind(&DatagramUnderlyingSink::OnDatagramProcessed,
-                    WrapWeakPersistent(this)));
+          WTF::BindOnce(&DatagramUnderlyingSink::OnDatagramProcessed,
+                        WrapWeakPersistent(this)));
     }
     pending_datagrams_.clear();
   }
@@ -176,8 +180,8 @@ class WebTransport::DatagramUnderlyingSink final : public UnderlyingSinkBase {
 
     if (web_transport_->transport_remote_.is_bound()) {
       web_transport_->transport_remote_->SendDatagram(
-          data, WTF::Bind(&DatagramUnderlyingSink::OnDatagramProcessed,
-                          WrapWeakPersistent(this)));
+          data, WTF::BindOnce(&DatagramUnderlyingSink::OnDatagramProcessed,
+                              WrapWeakPersistent(this)));
     } else {
       Vector<uint8_t> datagram;
       datagram.Append(data.data(), static_cast<wtf_size_t>(data.size()));
@@ -279,7 +283,6 @@ class WebTransport::DatagramUnderlyingSource final
     waiting_for_datagrams_ = false;
     canceled_ = true;
     DiscardQueue();
-    Controller()->NoteHasBeenCanceled();
 
     return ScriptPromise::CastUndefined(script_state);
   }
@@ -507,8 +510,8 @@ class WebTransport::StreamVendingUnderlyingSource final
       return ScriptPromise::CastUndefined(script_state);
     }
 
-    vendor_->RequestStream(WTF::Bind(&StreamVendingUnderlyingSource::Enqueue,
-                                     WrapWeakPersistent(this)));
+    vendor_->RequestStream(WTF::BindOnce(
+        &StreamVendingUnderlyingSource::Enqueue, WrapWeakPersistent(this)));
 
     return ScriptPromise::CastUndefined(script_state);
   }
@@ -553,9 +556,9 @@ class WebTransport::ReceiveStreamVendor final
       : script_state_(script_state), web_transport_(web_transport) {}
 
   void RequestStream(EnqueueCallback enqueue) override {
-    web_transport_->transport_remote_->AcceptUnidirectionalStream(
-        WTF::Bind(&ReceiveStreamVendor::OnAcceptUnidirectionalStreamResponse,
-                  WrapWeakPersistent(this), std::move(enqueue)));
+    web_transport_->transport_remote_->AcceptUnidirectionalStream(WTF::BindOnce(
+        &ReceiveStreamVendor::OnAcceptUnidirectionalStreamResponse,
+        WrapWeakPersistent(this), std::move(enqueue)));
   }
 
   void Trace(Visitor* visitor) const override {
@@ -576,7 +579,8 @@ class WebTransport::ReceiveStreamVendor final
     ExceptionState exception_state(
         isolate, ExceptionState::kConstructionContext, "ReceiveStream");
     v8::MicrotasksScope microtasks_scope(
-        isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
+        isolate, ToMicrotaskQueue(script_state_),
+        v8::MicrotasksScope::kDoNotRunMicrotasks);
     receive_stream->Init(exception_state);
 
     if (exception_state.HadException()) {
@@ -617,7 +621,7 @@ class WebTransport::BidirectionalStreamVendor final
       : script_state_(script_state), web_transport_(web_transport) {}
 
   void RequestStream(EnqueueCallback enqueue) override {
-    web_transport_->transport_remote_->AcceptBidirectionalStream(WTF::Bind(
+    web_transport_->transport_remote_->AcceptBidirectionalStream(WTF::BindOnce(
         &BidirectionalStreamVendor::OnAcceptBidirectionalStreamResponse,
         WrapWeakPersistent(this), std::move(enqueue)));
   }
@@ -643,7 +647,8 @@ class WebTransport::BidirectionalStreamVendor final
     ExceptionState exception_state(
         isolate, ExceptionState::kConstructionContext, "BidirectionalStream");
     v8::MicrotasksScope microtasks_scope(
-        isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
+        isolate, ToMicrotaskQueue(script_state_),
+        v8::MicrotasksScope::kDoNotRunMicrotasks);
     bidirectional_stream->Init(exception_state);
     if (exception_state.HadException()) {
       // Just throw away the stream.
@@ -671,7 +676,8 @@ WebTransport* WebTransport::Create(ScriptState* script_state,
                                    ExceptionState& exception_state) {
   DVLOG(1) << "WebTransport::Create() url=" << url;
   DCHECK(options);
-  ExecutionContext::From(script_state)->CountUse(WebFeature::kWebTransport);
+  UseCounter::Count(ExecutionContext::From(script_state),
+                    WebFeature::kWebTransport);
   auto* transport =
       MakeGarbageCollected<WebTransport>(PassKey(), script_state, url);
   transport->Init(url, *options, exception_state);
@@ -700,7 +706,8 @@ ScriptPromise WebTransport::createUnidirectionalStream(
     ExceptionState& exception_state) {
   DVLOG(1) << "WebTransport::createUnidirectionalStream() this=" << this;
 
-  GetExecutionContext()->CountUse(WebFeature::kQuicTransportStreamApis);
+  UseCounter::Count(GetExecutionContext(),
+                    WebFeature::kQuicTransportStreamApis);
   if (!transport_remote_.is_bound()) {
     // TODO(ricea): Should we wait if we're still connecting?
     exception_state.ThrowDOMException(DOMExceptionCode::kNetworkError,
@@ -720,15 +727,16 @@ ScriptPromise WebTransport::createUnidirectionalStream(
   create_stream_resolvers_.insert(resolver);
   transport_remote_->CreateStream(
       std::move(data_pipe_consumer), mojo::ScopedDataPipeProducerHandle(),
-      WTF::Bind(&WebTransport::OnCreateSendStreamResponse,
-                WrapWeakPersistent(this), WrapWeakPersistent(resolver),
-                std::move(data_pipe_producer)));
+      WTF::BindOnce(&WebTransport::OnCreateSendStreamResponse,
+                    WrapWeakPersistent(this), WrapWeakPersistent(resolver),
+                    std::move(data_pipe_producer)));
 
   return resolver->Promise();
 }
 
 ReadableStream* WebTransport::incomingUnidirectionalStreams() {
-  GetExecutionContext()->CountUse(WebFeature::kQuicTransportStreamApis);
+  UseCounter::Count(GetExecutionContext(),
+                    WebFeature::kQuicTransportStreamApis);
   return received_streams_;
 }
 
@@ -737,20 +745,14 @@ ScriptPromise WebTransport::createBidirectionalStream(
     ExceptionState& exception_state) {
   DVLOG(1) << "WebTransport::createBidirectionalStream() this=" << this;
 
-  GetExecutionContext()->CountUse(WebFeature::kQuicTransportStreamApis);
+  UseCounter::Count(GetExecutionContext(),
+                    WebFeature::kQuicTransportStreamApis);
   if (!transport_remote_.is_bound()) {
     // TODO(ricea): We should wait if we are still connecting.
     exception_state.ThrowDOMException(DOMExceptionCode::kNetworkError,
                                       "No connection.");
     return ScriptPromise();
   }
-
-  MojoCreateDataPipeOptions options;
-  options.struct_size = sizeof(MojoCreateDataPipeOptions);
-  options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
-  options.element_num_bytes = 1;
-  // TODO(ricea): Find an appropriate value for capacity_num_bytes.
-  options.capacity_num_bytes = 0;
 
   mojo::ScopedDataPipeProducerHandle outgoing_producer;
   mojo::ScopedDataPipeConsumerHandle outgoing_consumer;
@@ -770,30 +772,35 @@ ScriptPromise WebTransport::createBidirectionalStream(
   create_stream_resolvers_.insert(resolver);
   transport_remote_->CreateStream(
       std::move(outgoing_consumer), std::move(incoming_producer),
-      WTF::Bind(&WebTransport::OnCreateBidirectionalStreamResponse,
-                WrapWeakPersistent(this), WrapWeakPersistent(resolver),
-                std::move(outgoing_producer), std::move(incoming_consumer)));
+      WTF::BindOnce(&WebTransport::OnCreateBidirectionalStreamResponse,
+                    WrapWeakPersistent(this), WrapWeakPersistent(resolver),
+                    std::move(outgoing_producer),
+                    std::move(incoming_consumer)));
 
   return resolver->Promise();
 }
 
 ReadableStream* WebTransport::incomingBidirectionalStreams() {
-  GetExecutionContext()->CountUse(WebFeature::kQuicTransportStreamApis);
+  UseCounter::Count(GetExecutionContext(),
+                    WebFeature::kQuicTransportStreamApis);
   return received_bidirectional_streams_;
 }
 
 DatagramDuplexStream* WebTransport::datagrams() {
-  GetExecutionContext()->CountUse(WebFeature::kQuicTransportDatagramApis);
+  UseCounter::Count(GetExecutionContext(),
+                    WebFeature::kQuicTransportDatagramApis);
   return datagrams_;
 }
 
 WritableStream* WebTransport::datagramWritable() {
-  GetExecutionContext()->CountUse(WebFeature::kQuicTransportDatagramApis);
+  UseCounter::Count(GetExecutionContext(),
+                    WebFeature::kQuicTransportDatagramApis);
   return outgoing_datagrams_;
 }
 
 ReadableStream* WebTransport::datagramReadable() {
-  GetExecutionContext()->CountUse(WebFeature::kQuicTransportDatagramApis);
+  UseCounter::Count(GetExecutionContext(),
+                    WebFeature::kQuicTransportDatagramApis);
   return received_datagrams_;
 }
 
@@ -864,8 +871,8 @@ void WebTransport::OnConnectionEstablished(
       GetExecutionContext()->GetTaskRunner(TaskType::kNetworking);
 
   client_receiver_.Bind(std::move(client_receiver), task_runner);
-  client_receiver_.set_disconnect_handler(
-      WTF::Bind(&WebTransport::OnConnectionError, WrapWeakPersistent(this)));
+  client_receiver_.set_disconnect_handler(WTF::BindOnce(
+      &WebTransport::OnConnectionError, WrapWeakPersistent(this)));
 
   DCHECK(!transport_remote_.is_bound());
   transport_remote_.Bind(std::move(web_transport), task_runner);
@@ -1112,19 +1119,20 @@ void WebTransport::Init(const String& url,
 
   auto* execution_context = GetExecutionContext();
 
-  bool had_csp_failure = false;
+  bool is_url_blocked = false;
   if (!execution_context->GetContentSecurityPolicyForCurrentWorld()
            ->AllowConnectToSource(url_, url_, RedirectStatus::kNoRedirect)) {
-    auto dom_exception = V8ThrowDOMException::CreateOrEmpty(
-        script_state_->GetIsolate(), DOMExceptionCode::kSecurityError,
-        "Failed to connect to '" + url_.ElidedString() + "'",
+    v8::Local<v8::Value> error = WebTransportError::Create(
+        script_state_->GetIsolate(),
+        /*stream_error_code=*/absl::nullopt,
         "Refused to connect to '" + url_.ElidedString() +
-            "' because it violates the document's Content Security Policy");
+            "' because it violates the document's Content Security Policy",
+        WebTransportError::Source::kSession);
 
-    ready_resolver_->Reject(dom_exception);
-    closed_resolver_->Reject(dom_exception);
+    ready_resolver_->Reject(error);
+    closed_resolver_->Reject(error);
 
-    had_csp_failure = true;
+    is_url_blocked = true;
   }
 
   Vector<network::mojom::blink::WebTransportCertificateFingerprintPtr>
@@ -1159,6 +1167,10 @@ void WebTransport::Init(const String& url,
               hash->algorithm(), value_builder.ToString()));
     }
   }
+  if (!fingerprints.empty()) {
+    execution_context->CountUse(
+        WebFeature::kWebTransportServerCertificateHashes);
+  }
 
   if (auto* scheduler = execution_context->GetScheduler()) {
     feature_handle_for_scheduler_ = scheduler->RegisterFeature(
@@ -1167,10 +1179,17 @@ void WebTransport::Init(const String& url,
                          SchedulingPolicy::DisableBackForwardCache()});
   }
 
-  // TODO(ricea): Check the SubresourceFilter and fail asynchronously if
-  // disallowed. Must be done before shipping.
+  if (DoesSubresourceFilterBlockConnection(url_)) {
+    // SubresourceFilter::ReportLoad() may report an actual message.
+    auto dom_exception = V8ThrowDOMException::CreateOrEmpty(
+        script_state_->GetIsolate(), DOMExceptionCode::kNetworkError, "");
 
-  if (!had_csp_failure) {
+    ready_resolver_->Reject(dom_exception);
+    closed_resolver_->Reject(dom_exception);
+    is_url_blocked = true;
+  }
+
+  if (!is_url_blocked) {
     execution_context->GetBrowserInterfaceBroker().GetInterface(
         connector_.BindNewPipeAndPassReceiver(
             execution_context->GetTaskRunner(TaskType::kNetworking)));
@@ -1180,8 +1199,8 @@ void WebTransport::Init(const String& url,
         handshake_client_receiver_.BindNewPipeAndPassRemote(
             execution_context->GetTaskRunner(TaskType::kNetworking)));
 
-    handshake_client_receiver_.set_disconnect_handler(
-        WTF::Bind(&WebTransport::OnConnectionError, WrapWeakPersistent(this)));
+    handshake_client_receiver_.set_disconnect_handler(WTF::BindOnce(
+        &WebTransport::OnConnectionError, WrapWeakPersistent(this)));
   }
 
   probe::WebTransportCreated(execution_context, inspector_transport_id_, url_);
@@ -1221,6 +1240,15 @@ void WebTransport::Init(const String& url,
   received_bidirectional_streams_ =
       ReadableStream::CreateWithCountQueueingStrategy(
           script_state_, received_bidirectional_streams_underlying_source_, 1);
+}
+
+bool WebTransport::DoesSubresourceFilterBlockConnection(const KURL& url) {
+  ResourceFetcher* resource_fetcher = GetExecutionContext()->Fetcher();
+  SubresourceFilter* subresource_filter =
+      static_cast<BaseFetchContext*>(&resource_fetcher->Context())
+          ->GetSubresourceFilter();
+  return subresource_filter &&
+         !subresource_filter->AllowWebTransportConnection(url);
 }
 
 void WebTransport::Dispose() {
@@ -1294,10 +1322,11 @@ void WebTransport::OnConnectionError() {
 }
 
 void WebTransport::RejectPendingStreamResolvers(v8::Local<v8::Value> error) {
-  for (ScriptPromiseResolver* resolver : create_stream_resolvers_) {
+  HeapHashSet<Member<ScriptPromiseResolver>> create_stream_resolvers;
+  create_stream_resolvers_.swap(create_stream_resolvers);
+  for (ScriptPromiseResolver* resolver : create_stream_resolvers) {
     resolver->Reject(error);
   }
-  create_stream_resolvers_.clear();
 }
 
 void WebTransport::OnCreateSendStreamResponse(
@@ -1331,7 +1360,8 @@ void WebTransport::OnCreateSendStreamResponse(
   ExceptionState exception_state(isolate, ExceptionState::kConstructionContext,
                                  "SendStream");
   v8::MicrotasksScope microtasks_scope(
-      isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
+      isolate, ToMicrotaskQueue(script_state_),
+      v8::MicrotasksScope::kDoNotRunMicrotasks);
   send_stream->Init(exception_state);
   if (exception_state.HadException()) {
     resolver->Reject(exception_state.GetException());
@@ -1379,7 +1409,8 @@ void WebTransport::OnCreateBidirectionalStreamResponse(
   ExceptionState exception_state(isolate, ExceptionState::kConstructionContext,
                                  "BidirectionalStream");
   v8::MicrotasksScope microtasks_scope(
-      isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
+      isolate, ToMicrotaskQueue(script_state_),
+      v8::MicrotasksScope::kDoNotRunMicrotasks);
   bidirectional_stream->Init(exception_state);
   if (exception_state.HadException()) {
     resolver->Reject(exception_state.GetException());

@@ -1,11 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_READ_LATER_READING_LIST_MODEL_FACTORY_H_
 #define CHROME_BROWSER_UI_READ_LATER_READING_LIST_MODEL_FACTORY_H_
 
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace base {
 template <typename T>
@@ -16,7 +16,7 @@ class ReadingListModel;
 
 // Singleton that owns all ReadingListModels and associates them with
 // BrowserContexts.
-class ReadingListModelFactory : public BrowserContextKeyedServiceFactory {
+class ReadingListModelFactory : public ProfileKeyedServiceFactory {
  public:
   ReadingListModelFactory(const ReadingListModelFactory&) = delete;
   ReadingListModelFactory& operator=(const ReadingListModelFactory&) = delete;
@@ -40,8 +40,6 @@ class ReadingListModelFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   void RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
   bool ServiceIsNULLWhileTesting() const override;
 };
 

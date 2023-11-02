@@ -1,10 +1,11 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_ANDROID_COMPOSITOR_LAYER_TAB_HANDLE_LAYER_H_
 #define CHROME_BROWSER_ANDROID_COMPOSITOR_LAYER_TAB_HANDLE_LAYER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "cc/layers/nine_patch_layer.h"
 #include "cc/layers/solid_color_layer.h"
 #include "cc/layers/ui_resource_layer.h"
@@ -55,7 +56,7 @@ class TabHandleLayer : public Layer {
   ~TabHandleLayer() override;
 
  private:
-  LayerTitleCache* layer_title_cache_;
+  raw_ptr<LayerTitleCache> layer_title_cache_;
 
   scoped_refptr<cc::Layer> layer_;
   scoped_refptr<cc::UIResourceLayer> close_button_;

@@ -1,13 +1,13 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/system/audio/audio_detailed_view.h"
 
 #include "ash/accessibility/accessibility_controller_impl.h"
-#include "ash/components/audio/cras_audio_handler.h"
 #include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
@@ -19,6 +19,9 @@
 #include "ash/system/tray/tri_view.h"
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
+#include "components/live_caption/caption_util.h"
+#include "components/live_caption/pref_names.h"
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -35,11 +38,11 @@ namespace {
 
 const int kLabelFontSizeDelta = 1;
 const int kToggleButtonRowViewSpacing = 18;
-constexpr gfx::Insets kToggleButtonRowLabelPadding(16, 0, 15, 0);
-constexpr gfx::Insets kToggleButtonRowViewPadding(0, 56, 8, 0);
+constexpr auto kToggleButtonRowLabelPadding = gfx::Insets::TLBR(16, 0, 15, 0);
+constexpr auto kToggleButtonRowViewPadding = gfx::Insets::TLBR(0, 56, 8, 0);
 
 // This callback is only used for tests.
-tray::AudioDetailedView::NoiseCancellationCallback*
+AudioDetailedView::NoiseCancellationCallback*
     g_noise_cancellation_toggle_callback = nullptr;
 
 std::u16string GetAudioDeviceName(const AudioDevice& device) {
@@ -59,7 +62,7 @@ std::u16string GetAudioDeviceName(const AudioDevice& device) {
       return l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_AUDIO_USB_DEVICE,
                                         base::UTF8ToUTF16(device.display_name));
     case AudioDeviceType::kBluetooth:
-      FALLTHROUGH;
+      [[fallthrough]];
     case AudioDeviceType::kBluetoothNbMic:
       return l10n_util::GetStringFUTF16(
           IDS_ASH_STATUS_TRAY_AUDIO_BLUETOOTH_DEVICE,
@@ -75,26 +78,41 @@ std::u16string GetAudioDeviceName(const AudioDevice& device) {
   }
 }
 
-}  // namespace
+speech::LanguageCode GetLiveCaptionLocale() {
+  std::string live_caption_locale = speech::kUsEnglishLocale;
+  PrefService* pref_service =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  if (pref_service) {
+    live_caption_locale = ::prefs::GetLiveCaptionLanguageCode(pref_service);
+  }
+  return speech::GetLanguageCode(live_caption_locale);
+}
 
-namespace tray {
+}  // namespace
 
 AudioDetailedView::AudioDetailedView(DetailedViewDelegate* delegate)
     : TrayDetailedView(delegate) {
   CreateItems();
 
-  if (features::IsInputNoiseCancellationUiEnabled()) {
-    CrasAudioHandler::Get()->RequestNoiseCancellationSupported(
-        base::BindOnce(&AudioDetailedView::Update, base::Unretained(this)));
-  } else {
-    Update();
-  }
-
   Shell::Get()->accessibility_controller()->AddObserver(this);
+
+  if (!captions::IsLiveCaptionFeatureSupported())
+    return;
+  speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
+  if (soda_installer)
+    soda_installer->AddObserver(this);
 }
 
 AudioDetailedView::~AudioDetailedView() {
   Shell::Get()->accessibility_controller()->RemoveObserver(this);
+  if (!captions::IsLiveCaptionFeatureSupported())
+    return;
+  speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
+  // `soda_installer` is not guaranteed to be valid, since it's possible for
+  // this class to out-live it. This means that this class cannot use
+  // ScopedObservation and needs to manage removing the observer itself.
+  if (soda_installer)
+    soda_installer->RemoveObserver(this);
 }
 
 void AudioDetailedView::Update() {
@@ -203,8 +221,7 @@ void AudioDetailedView::UpdateScrollableList() {
   CrasAudioHandler* audio_handler = CrasAudioHandler::Get();
 
   // Set the input noise cancellation state.
-  if (features::IsInputNoiseCancellationUiEnabled() &&
-      audio_handler->noise_cancellation_supported()) {
+  if (audio_handler->noise_cancellation_supported()) {
     for (const auto& device : input_devices_) {
       if (device.type == AudioDeviceType::kInternalMic) {
         audio_handler->SetNoiseCancellationState(
@@ -220,14 +237,12 @@ void AudioDetailedView::UpdateScrollableList() {
         AddScrollListCheckableItem(GetAudioDeviceName(device), device.active);
     device_map_[container] = device;
 
-    if (features::IsInputNoiseCancellationUiEnabled()) {
-      // Add the input noise cancellation toggle.
-      if (audio_handler->GetPrimaryActiveInputNode() == device.id &&
-          audio_handler->noise_cancellation_supported()) {
-        if (device.audio_effect & cras::EFFECT_TYPE_NOISE_CANCELLATION) {
-          AddScrollListChild(
-              AudioDetailedView::CreateNoiseCancellationToggleRow(device));
-        }
+    // Add the input noise cancellation toggle.
+    if (audio_handler->GetPrimaryActiveInputNode() == device.id &&
+        audio_handler->noise_cancellation_supported()) {
+      if (device.audio_effect & cras::EFFECT_TYPE_NOISE_CANCELLATION) {
+        AddScrollListChild(
+            AudioDetailedView::CreateNoiseCancellationToggleRow(device));
       }
     }
 
@@ -241,7 +256,6 @@ void AudioDetailedView::UpdateScrollableList() {
 
 std::unique_ptr<views::View>
 AudioDetailedView::CreateNoiseCancellationToggleRow(const AudioDevice& device) {
-  DCHECK(features::IsInputNoiseCancellationUiEnabled());
   CrasAudioHandler* audio_handler = CrasAudioHandler::Get();
   auto noise_cancellation_toggle = std::make_unique<TrayToggleButton>(
       base::BindRepeating(
@@ -337,5 +351,56 @@ void AudioDetailedView::OnAccessibilityStatusChanged() {
   }
 }
 
-}  // namespace tray
+// SodaInstaller::Observer:
+void AudioDetailedView::OnSodaInstalled(speech::LanguageCode language_code) {
+  std::u16string message = l10n_util::GetStringUTF16(
+      IDS_ASH_ACCESSIBILITY_SETTING_SUBTITLE_SODA_DOWNLOAD_COMPLETE);
+  MaybeShowSodaMessage(language_code, message);
+}
+
+void AudioDetailedView::OnSodaInstallError(
+    speech::LanguageCode language_code,
+    speech::SodaInstaller::ErrorCode error_code) {
+  std::u16string error_message;
+  switch (error_code) {
+    case speech::SodaInstaller::ErrorCode::kUnspecifiedError: {
+      error_message = l10n_util::GetStringUTF16(
+          IDS_ASH_ACCESSIBILITY_SETTING_SUBTITLE_SODA_DOWNLOAD_ERROR);
+      break;
+    }
+    case speech::SodaInstaller::ErrorCode::kNeedsReboot: {
+      error_message = l10n_util::GetStringUTF16(
+          IDS_ASH_ACCESSIBILITY_SETTING_SUBTITLE_SODA_DOWNLOAD_ERROR_REBOOT_REQUIRED);
+      break;
+    }
+  }
+
+  MaybeShowSodaMessage(language_code, error_message);
+}
+
+void AudioDetailedView::OnSodaProgress(speech::LanguageCode language_code,
+                                       int progress) {
+  std::u16string message = l10n_util::GetStringFUTF16Int(
+      IDS_ASH_ACCESSIBILITY_SETTING_SUBTITLE_SODA_DOWNLOAD_PROGRESS, progress);
+  MaybeShowSodaMessage(language_code, message);
+}
+
+void AudioDetailedView::MaybeShowSodaMessage(speech::LanguageCode language_code,
+                                             std::u16string message) {
+  AccessibilityControllerImpl* controller =
+      Shell::Get()->accessibility_controller();
+  bool is_live_caption_enabled = controller->live_caption().enabled();
+  bool is_live_caption_in_tray =
+      live_caption_view_ && controller->IsLiveCaptionSettingVisibleInTray();
+  // Only show updates for this feature if the language code applies to the SODA
+  // binary (encoded by by LanguageCode::kNone) or the language pack matching
+  // the feature locale.
+  bool live_caption_has_update = language_code == speech::LanguageCode::kNone ||
+                                 language_code == GetLiveCaptionLocale();
+  if (is_live_caption_enabled && is_live_caption_in_tray &&
+      live_caption_has_update) {
+    live_caption_view_->SetSubText(message);
+  }
+}
+
 }  // namespace ash

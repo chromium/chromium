@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,8 @@
 #include <set>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/record_replay.h"
 #include "base/synchronization/lock.h"
 #include "mojo/core/dispatcher.h"
 #include "mojo/core/handle_signals_state.h"
@@ -59,7 +59,7 @@ class WatcherDispatcher : public Dispatcher {
  private:
   friend class Watch;
 
-  using WatchSet = std::set<const Watch*>;
+  using WatchSet = std::set<const Watch*, recordreplay::CompareByPointerId>;
 
   ~WatcherDispatcher() override;
 
@@ -92,9 +92,11 @@ class WatcherDispatcher : public Dispatcher {
   // ensure consistent round-robin behavior in the event that multiple Watches
   // remain ready over the span of several Arm() attempts.
   //
-  // NOTE: This pointer is only used to index |ready_watches_| and may point to
-  // an invalid object. It must therefore never be dereferenced.
-  const Watch* last_watch_to_block_arming_ = nullptr;
+  // NOTE: This can point toward a deleted Watch, so it must never be
+  // dereferenced. This is only used to do arithmetical comparisons in the
+  // |ready_watches_| set, so it is represented by a uintptr_t. Using a raw_ptr
+  // would force the allocator to quarantine the allocation and delay its reuse.
+  uintptr_t last_watch_to_block_arming_ = 0;
 };
 
 }  // namespace core

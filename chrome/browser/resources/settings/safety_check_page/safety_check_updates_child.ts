@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,24 +7,31 @@
  * 'settings-safety-updates-child' is the settings page containing the safety
  * check child showing the browser's update status.
  */
-import {assertNotReached} from 'chrome://resources/js/assert.m.js';
-import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
-import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {LifetimeBrowserProxyImpl} from '../lifetime_browser_proxy.js';
+// <if expr="not chromeos_ash">
+import '../relaunch_confirmation_dialog.js';
+
+// </if>
+
+import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {WebUIListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl, SafetyCheckInteractions} from '../metrics_browser_proxy.js';
+import {RelaunchMixin, RestartType} from '../relaunch_mixin.js';
 
 import {SafetyCheckCallbackConstants, SafetyCheckUpdatesStatus} from './safety_check_browser_proxy.js';
 import {SafetyCheckIconStatus} from './safety_check_child.js';
+import {getTemplate} from './safety_check_updates_child.html.js';
 
-type UpdatesChangedEvent = {
-  newState: SafetyCheckUpdatesStatus,
-  displayString: string,
-};
+interface UpdatesChangedEvent {
+  newState: SafetyCheckUpdatesStatus;
+  displayString: string;
+}
 
 const SettingsSafetyCheckUpdatesChildElementBase =
-    WebUIListenerMixin(I18nMixin(PolymerElement));
+    RelaunchMixin(WebUIListenerMixin(I18nMixin(PolymerElement)));
 
 export class SettingsSafetyCheckUpdatesChildElement extends
     SettingsSafetyCheckUpdatesChildElementBase {
@@ -33,7 +40,7 @@ export class SettingsSafetyCheckUpdatesChildElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -58,7 +65,7 @@ export class SettingsSafetyCheckUpdatesChildElement extends
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     // Register for safety check status updates.
@@ -88,7 +95,6 @@ export class SettingsSafetyCheckUpdatesChildElement extends
         return SafetyCheckIconStatus.WARNING;
       default:
         assertNotReached();
-        return SafetyCheckIconStatus.WARNING;
     }
   }
 
@@ -108,7 +114,7 @@ export class SettingsSafetyCheckUpdatesChildElement extends
     this.metricsBrowserProxy_.recordAction(
         'Settings.SafetyCheck.RelaunchAfterUpdates');
 
-    LifetimeBrowserProxyImpl.getInstance().relaunch();
+    this.performRestart(RestartType.RELAUNCH);
   }
 
   private getManagedIcon_(): string|null {

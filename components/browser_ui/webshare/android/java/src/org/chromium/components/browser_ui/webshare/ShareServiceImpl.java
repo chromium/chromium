@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -72,6 +72,7 @@ public class ShareServiceImpl implements ShareService {
     // clang-format off
     private static final Set<String> PERMITTED_EXTENSIONS =
             Collections.unmodifiableSet(CollectionUtil.newHashSet(
+                    "avif", // image/avif
                     "bmp", // image/bmp / image/x-ms-bmp
                     "css", // text/css
                     "csv", // text/csv / text/comma-separated-values
@@ -124,6 +125,7 @@ public class ShareServiceImpl implements ShareService {
                      "audio/wav",
                      "audio/webm",
                      "audio/x-m4a",
+                     "image/avif",
                      "image/bmp",
                      "image/gif",
                      "image/jpeg",
@@ -217,7 +219,8 @@ public class ShareServiceImpl implements ShareService {
         }
 
         for (SharedFile file : files) {
-            if (isDangerousFilename(file.name) || isDangerousMimeType(file.blob.contentType)) {
+            if (isDangerousFilename(file.name.path.path)
+                    || isDangerousMimeType(file.blob.contentType)) {
                 Log.i(TAG,
                         "Cannot share potentially dangerous \"" + file.blob.contentType
                                 + "\" file \"" + file.name + "\".");
@@ -247,7 +250,8 @@ public class ShareServiceImpl implements ShareService {
 
                     for (int index = 0; index < files.length; ++index) {
                         File tempFile = File.createTempFile("share",
-                                "." + FileUtils.getExtension(files[index].name), sharePath);
+                                "." + FileUtils.getExtension(files[index].name.path.path),
+                                sharePath);
                         fileUris.add(ContentUriUtils.getContentUriFromFile(tempFile));
                         blobReceivers.add(new BlobReceiver(
                                 new FileOutputStream(tempFile), MAX_SHARED_FILE_BYTES));

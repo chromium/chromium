@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,7 @@ namespace net {
 
 // Note these lines must be kept in sync with
 // services/network/public/mojom/ssl_config.mojom.
-const uint16_t kDefaultSSLVersionMin = SSL_PROTOCOL_VERSION_TLS1;
-const uint16_t kDefaultSSLVersionMinWarn = SSL_PROTOCOL_VERSION_TLS1_2;
+const uint16_t kDefaultSSLVersionMin = SSL_PROTOCOL_VERSION_TLS1_2;
 const uint16_t kDefaultSSLVersionMax = SSL_PROTOCOL_VERSION_TLS1_3;
 
 SSLConfig::CertAndStatus::CertAndStatus() = default;

@@ -1,4 +1,4 @@
-// Copyright (c) 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,8 @@
 
 #include <string>
 
+#include "ash/constants/ash_features.h"
+#include "ash/system/diagnostics/diagnostics_log_controller.h"
 #include "ash/webui/diagnostics_ui/url_constants.h"
 #include "base/strings/strcat.h"
 #include "ui/display/display.h"
@@ -36,6 +38,13 @@ const float kDiagnosticsDialogScale = .8;
 void DiagnosticsDialog::ShowDialog(DiagnosticsDialog::DiagnosticsPage page,
                                    gfx::NativeWindow parent) {
   DiagnosticsDialog* dialog = new DiagnosticsDialog(page);
+
+  // Ensure log controller configuration matches current session.
+  if (ash::features::IsLogControllerForDiagnosticsAppEnabled()) {
+    ash::diagnostics::DiagnosticsLogController::Get()
+        ->ResetAndInitializeLogWriters();
+  }
+
   dialog->ShowSystemDialog(parent);
 }
 

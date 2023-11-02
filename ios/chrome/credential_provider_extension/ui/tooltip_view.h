@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,12 +21,12 @@
 // Delegate for a tooltip view instance.
 @property(nonatomic, weak) id<TooltipViewDelegate> delegate;
 
-// Init with the target and |action| parameter-less selector.
+// Init with the target and `action` parameter-less selector.
 - (instancetype)initWithKeyWindow:(UIView*)keyWindow
                            target:(NSObject*)target
                            action:(SEL)action;
 
-// Shows the tooltip with given |message| below the |view|.
+// Shows the tooltip with given `message` below the `view`.
 - (void)showMessage:(NSString*)message atBottomOf:(UIView*)view;
 
 // Hides this tooltip.

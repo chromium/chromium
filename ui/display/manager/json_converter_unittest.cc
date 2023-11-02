@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,8 +28,8 @@ TEST(JsonConverterTest, JsonFromToDisplayLayout) {
   layout.placement_list[1].position = DisplayPlacement::LEFT;
   layout.placement_list[1].offset = 30;
 
-  base::Value value(base::Value::Type::DICTIONARY);
-  DisplayLayoutToJson(layout, &value);
+  base::Value::Dict value;
+  DisplayLayoutToJson(layout, value);
 
   const char data[] =
       "{\n"
@@ -47,14 +47,14 @@ TEST(JsonConverterTest, JsonFromToDisplayLayout) {
       "    \"offset\": 30\n"
       "  }]\n"
       "}";
-  base::JSONReader::ValueWithError result =
-      base::JSONReader::ReadAndReturnValueWithError(data, 0);
-  ASSERT_TRUE(result.value) << result.error_message << " at "
-                            << result.error_line << ":" << result.error_column;
-  EXPECT_EQ(value, result.value.value());
+  auto result = base::JSONReader::ReadAndReturnValueWithError(data, 0);
+  ASSERT_TRUE(result.has_value())
+      << result.error().message << " at " << result.error().line << ":"
+      << result.error().column;
+  EXPECT_EQ(base::Value(std::move(value)), *result);
 
   DisplayLayout read_layout;
-  EXPECT_TRUE(JsonToDisplayLayout(result.value.value(), &read_layout));
+  EXPECT_TRUE(JsonToDisplayLayout(*result, &read_layout));
   EXPECT_EQ(read_layout.primary_id, layout.primary_id);
   EXPECT_EQ(read_layout.default_unified, layout.default_unified);
   EXPECT_TRUE(read_layout.HasSamePlacementList(layout));
@@ -68,13 +68,13 @@ TEST(JsonConverterTest, OldJsonToDisplayLayout) {
       "  \"position\": \"bottom\",\n"
       "  \"offset\": 20\n"
       "}";
-  base::JSONReader::ValueWithError result =
-      base::JSONReader::ReadAndReturnValueWithError(data, 0);
-  ASSERT_TRUE(result.value) << result.error_message << " at "
-                            << result.error_line << ":" << result.error_column;
+  auto result = base::JSONReader::ReadAndReturnValueWithError(data, 0);
+  ASSERT_TRUE(result.has_value())
+      << result.error().message << " at " << result.error().line << ":"
+      << result.error().column;
 
   DisplayLayout read_layout;
-  EXPECT_TRUE(JsonToDisplayLayout(result.value.value(), &read_layout));
+  EXPECT_TRUE(JsonToDisplayLayout(*result, &read_layout));
   EXPECT_EQ(1, read_layout.primary_id);
   EXPECT_FALSE(read_layout.default_unified);
   ASSERT_EQ(1u, read_layout.placement_list.size());

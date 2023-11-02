@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/aura/client/screen_position_client.h"
 #include "ui/aura/test/test_cursor_client.h"
@@ -24,7 +25,6 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/render_text.h"
-#include "ui/views/accessibility/accessibility_paint_checks.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_test_api.h"
 #include "ui/views/test/views_test_base.h"
@@ -95,17 +95,19 @@ class TouchSelectionControllerImplTest : public ViewsTestBase {
 
   void CreateTextfield() {
     textfield_ = new Textfield();
-    // TODO(crbug.com/1218186): Remove this, this is in place temporarily to be
-    // able to submit accessibility checks, but this focusable View needs to
-    // add a name so that the screen reader knows what to announce.
-    textfield_->SetProperty(views::kSkipAccessibilityPaintChecks, true);
+
+    // Focusable views must have an accessible name in order to pass the
+    // accessibility paint checks. The name can be literal text, placeholder
+    // text or an associated label.
+    textfield_->SetPlaceholderText(u"Foo");
+
     textfield_widget_ = new Widget;
     Widget::InitParams params =
         CreateParams(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
     params.bounds = gfx::Rect(0, 0, 200, 200);
     textfield_widget_->Init(std::move(params));
     textfield_widget_->SetContentsView(std::make_unique<View>())
-        ->AddChildView(textfield_);
+        ->AddChildView(textfield_.get());
 
     textfield_->SetBoundsRect(gfx::Rect(0, 0, 200, 21));
     textfield_->SetID(1);
@@ -312,10 +314,10 @@ class TouchSelectionControllerImplTest : public ViewsTestBase {
               textfield_->GetSelectedRange());
   }
 
-  Widget* textfield_widget_ = nullptr;
-  Widget* widget_ = nullptr;
+  raw_ptr<Widget> textfield_widget_ = nullptr;
+  raw_ptr<Widget> widget_ = nullptr;
 
-  Textfield* textfield_ = nullptr;
+  raw_ptr<Textfield> textfield_ = nullptr;
   std::unique_ptr<TextfieldTestApi> textfield_test_api_;
   std::unique_ptr<ViewsTouchEditingControllerFactory> views_tsc_factory_;
   std::unique_ptr<aura::test::TestCursorClient> test_cursor_client_;
@@ -705,7 +707,7 @@ class TestTouchEditable : public ui::TouchEditable {
     NOTREACHED();
   }
 
-  aura::Window* window_;
+  raw_ptr<aura::Window> window_;
 
   // Boundaries of the client view.
   gfx::Rect bounds_;

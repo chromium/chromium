@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/ash/crosapi/window_util.h"
 #include "chrome/browser/ui/views/select_file_dialog_extension.h"
+#include "chromeos/crosapi/mojom/select_file.mojom-shared.h"
 #include "chromeos/crosapi/mojom/select_file.mojom.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/select_file_policy.h"
@@ -70,8 +71,12 @@ class SelectFileDialogHolder : public ui::SelectFileDialog::Listener {
         SelectFileDialogExtension::Create(this, /*policy=*/nullptr);
 
     SelectFileDialogExtension::Owner owner;
+    owner.is_lacros = true;
     owner.window = owner_window;
     owner.lacros_window_id = options->owning_shell_window_id;
+    if (options->caller.has_value()) {
+      owner.dialog_caller.emplace(options->caller.value().spec());
+    }
 
     int file_type_index = 0;
     if (options->file_types) {
@@ -92,6 +97,7 @@ class SelectFileDialogHolder : public ui::SelectFileDialog::Listener {
       file_types_->allowed_paths =
           GetUiAllowedPaths(options->file_types->allowed_paths);
     }
+
     // |default_extension| is unused on Chrome OS.
     select_file_dialog_->SelectFileWithFileManagerParams(
         GetUiType(options->type), options->title, options->default_path,

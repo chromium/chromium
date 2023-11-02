@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,16 +7,11 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "ios/web/public/download/download_task_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
 @protocol ARQuickLookTabHelperDelegate;
-
-namespace base {
-class FilePath;
-}  // namespace base
 
 namespace web {
 class DownloadTask;
@@ -56,16 +51,10 @@ class ARQuickLookTabHelper
       public web::DownloadTaskObserver,
       public web::WebStateUserData<ARQuickLookTabHelper> {
  public:
-  ARQuickLookTabHelper(web::WebState* web_state);
-
   ARQuickLookTabHelper(const ARQuickLookTabHelper&) = delete;
   ARQuickLookTabHelper& operator=(const ARQuickLookTabHelper&) = delete;
 
   ~ARQuickLookTabHelper() override;
-
-  // Creates TabHelper. |delegate| is not retained by this instance. |web_state|
-  // must not be null.
-  static void CreateForWebState(web::WebState* web_state);
 
   id<ARQuickLookTabHelperDelegate> delegate() { return delegate_; }
 
@@ -73,11 +62,13 @@ class ARQuickLookTabHelper
     delegate_ = delegate;
   }
 
-  // Downloads and previews the USDZ file given by |download_task|. Takes
-  // ownership of |download_task|.
+  // Downloads and previews the USDZ file given by `download_task`. Takes
+  // ownership of `download_task`.
   virtual void Download(std::unique_ptr<web::DownloadTask> download_task);
 
-  web::WebState* web_state() { return web_state_; }
+ protected:
+  // Allow subclassing from ARQuickLookTabHelper for testing purposes.
+  explicit ARQuickLookTabHelper(web::WebState* web_state);
 
  private:
   friend class web::WebStateUserData<ARQuickLookTabHelper>;
@@ -90,17 +81,13 @@ class ARQuickLookTabHelper
   // web::DownloadTaskObserver:
   void OnDownloadUpdated(web::DownloadTask* download_task) override;
 
-  // Asynchronously starts download operation in |destination_dir|.
-  void DownloadWithDestinationDir(const base::FilePath& destination_dir,
-                                  web::DownloadTask* download_task,
-                                  bool directory_created);
-
   // Previews the downloaded USDZ file or confirms the download if download has
   // not started.
   void ConfirmOrPreviewDownload(web::DownloadTask* download_task);
 
   web::WebState* web_state_ = nullptr;
   __weak id<ARQuickLookTabHelperDelegate> delegate_ = nil;
+
   // The current download task.
   std::unique_ptr<web::DownloadTask> download_task_;
 

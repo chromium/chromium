@@ -1,12 +1,14 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_EXTENSIONS_OMAHA_ATTRIBUTES_HANDLER_H_
 #define CHROME_BROWSER_EXTENSIONS_OMAHA_ATTRIBUTES_HANDLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/blocklist.h"
 #include "extensions/browser/blocklist_state.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension_id.h"
 
 namespace base {
@@ -39,6 +41,7 @@ enum class ExtensionUpdateCheckDataKey {
 class OmahaAttributesHandler {
  public:
   OmahaAttributesHandler(ExtensionPrefs* extension_prefs,
+                         ExtensionRegistry* registry,
                          ExtensionService* extension_service);
   OmahaAttributesHandler(const OmahaAttributesHandler&) = delete;
   OmahaAttributesHandler& operator=(const OmahaAttributesHandler&) = delete;
@@ -56,18 +59,18 @@ class OmahaAttributesHandler {
   void HandleMalwareOmahaAttribute(const ExtensionId& extension_id,
                                    const base::Value& attributes);
   // Performs action based on `attributes` for the `extension_id`. If the
-  // extension is not in the `greylist_state` or the `feature_flag` is disabled,
-  // remove it from the Omaha blocklist state and maybe re-enable it. Otherwise,
-  // add it to the Omaha blocklist state and maybe disable it. `reason` is used
-  // for logging UMA metrics.
+  // extension is not in the `greylist_state`, remove it from the Omaha
+  // blocklist state and maybe re-enable it. Otherwise, add it to the Omaha
+  // blocklist state and maybe disable it. `reason` is used for logging UMA
+  // metrics.
   void HandleGreylistOmahaAttribute(const ExtensionId& extension_id,
                                     const base::Value& attributes,
-                                    const base::Feature& feature_flag,
                                     BitMapBlocklistState greylist_state,
                                     ExtensionUpdateCheckDataKey reason);
 
-  ExtensionPrefs* extension_prefs_ = nullptr;
-  ExtensionService* extension_service_ = nullptr;
+  raw_ptr<ExtensionPrefs> extension_prefs_ = nullptr;
+  raw_ptr<ExtensionRegistry> registry_ = nullptr;
+  raw_ptr<ExtensionService> extension_service_ = nullptr;
 };
 
 }  // namespace extensions

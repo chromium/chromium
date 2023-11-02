@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 #include <string>
 
 #include "base/callback_helpers.h"
-#include "base/metrics/histogram_functions.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -15,9 +15,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/user_education/feature_promo_controller.h"
-#include "chrome/browser/ui/user_education/feature_promo_specification.h"
-#include "chrome/browser/ui/views/user_education/feature_promo_controller_views.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/web_apps/pwa_confirmation_bubble_view.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -27,8 +25,10 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/site_engagement/content/site_engagement_service.h"
+#include "components/user_education/common/feature_promo_controller.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "content/public/browser/browser_thread.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/view_class_properties.h"
@@ -52,7 +52,8 @@ PwaInstallView::PwaInstallView(
     : PageActionIconView(nullptr,
                          0,
                          icon_label_bubble_delegate,
-                         page_action_icon_delegate),
+                         page_action_icon_delegate,
+                         "PWAInstall"),
       browser_(browser) {
   SetVisible(false);
   SetLabel(l10n_util::GetStringUTF16(IDS_OMNIBOX_PWA_INSTALL_ICON_LABEL));
@@ -75,9 +76,8 @@ void PwaInstallView::OnTabStripModelChanged(
   bool web_content_replaced =
       change.type() == TabStripModelChange::Type::kReplaced;
   if ((active_tab_changed || web_content_replaced)) {
-    FeaturePromoControllerViews* controller =
-        FeaturePromoControllerViews::GetForView(this);
-    controller->CloseBubble(feature_engagement::kIPHDesktopPwaInstallFeature);
+    browser_->window()->CloseFeaturePromo(
+        feature_engagement::kIPHDesktopPwaInstallFeature);
   }
 }
 
@@ -108,18 +108,15 @@ void PwaInstallView::UpdateImpl() {
   // that view is set to visible but not drawn in fullscreen mode.
   if (is_probably_promotable && ShouldShowIph(web_contents, manager) &&
       IsDrawn()) {
-    FeaturePromoControllerViews* controller =
-        FeaturePromoControllerViews::GetForView(this);
-    if (controller) {
+    const bool iph_shown = browser_->window()->MaybeShowFeaturePromo(
+        feature_engagement::kIPHDesktopPwaInstallFeature,
+        {webapps::AppBannerManager::GetInstallableWebAppName(web_contents)},
+        base::BindOnce(&PwaInstallView::OnIphClosed,
+                       weak_ptr_factory_.GetWeakPtr()));
+    if (iph_shown) {
       // Reset the iph flag when it's shown again.
       install_icon_clicked_after_iph_shown_ = false;
-      bool iph_shown = controller->MaybeShowPromo(
-          feature_engagement::kIPHDesktopPwaInstallFeature,
-          {webapps::AppBannerManager::GetInstallableWebAppName(web_contents)},
-          base::BindOnce(&PwaInstallView::OnIphClosed,
-                         weak_ptr_factory_.GetWeakPtr()));
-      if (iph_shown)
-        SetHighlighted(true);
+      SetHighlighted(true);
     }
   }
 }
@@ -141,8 +138,7 @@ void PwaInstallView::OnIphClosed() {
   PrefService* prefs =
       Profile::FromBrowserContext(web_contents->GetBrowserContext())
           ->GetPrefs();
-  base::UmaHistogramEnumeration("WebApp.InstallIphPromo.Result",
-                                web_app::InstallIphResult::kIgnored);
+
   web_app::RecordInstallIphIgnored(
       prefs, web_app::GenerateAppIdFromManifest(manager->manifest()),
       base::Time::Now());
@@ -152,18 +148,12 @@ void PwaInstallView::OnExecuting(PageActionIconView::ExecuteSource source) {
   base::RecordAction(base::UserMetricsAction("PWAInstallIcon"));
 
   // Close PWA install IPH if it is showing.
-  FeaturePromoControllerViews* controller =
-      FeaturePromoControllerViews::GetForView(this);
   chrome::PwaInProductHelpState iph_state =
       chrome::PwaInProductHelpState::kNotShown;
-  if (controller) {
-    install_icon_clicked_after_iph_shown_ = controller->BubbleIsShowing(
-        feature_engagement::kIPHDesktopPwaInstallFeature);
-    if (install_icon_clicked_after_iph_shown_)
-      iph_state = chrome::PwaInProductHelpState::kShown;
-
-    controller->CloseBubble(feature_engagement::kIPHDesktopPwaInstallFeature);
-  }
+  install_icon_clicked_after_iph_shown_ = browser_->window()->CloseFeaturePromo(
+      feature_engagement::kIPHDesktopPwaInstallFeature);
+  if (install_icon_clicked_after_iph_shown_)
+    iph_state = chrome::PwaInProductHelpState::kShown;
 
   web_app::CreateWebAppFromManifest(
       GetWebContents(),
@@ -204,7 +194,7 @@ bool PwaInstallView::ShouldShowIph(content::WebContents* web_contents,
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   auto score = site_engagement::SiteEngagementService::Get(profile)->GetScore(
-      web_contents->GetURL());
+      web_contents->GetVisibleURL());
   return score > kIphSiteEngagementThresholdParam.Get() &&
          web_app::ShouldShowIph(profile->GetPrefs(), app_id);
 }

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -54,27 +54,27 @@ void CameraAppDeviceProviderImpl::IsSupported(IsSupportedCallback callback) {
   bridge_->IsSupported(std::move(callback));
 }
 
-void CameraAppDeviceProviderImpl::SetMultipleStreamsEnabled(
+void CameraAppDeviceProviderImpl::SetVirtualDeviceEnabled(
     const std::string& source_id,
     bool enabled,
-    SetMultipleStreamsEnabledCallback callback) {
+    SetVirtualDeviceEnabledCallback callback) {
   mapping_callback_.Run(
       source_id,
       media::BindToCurrentLoop(base::BindOnce(
-          &CameraAppDeviceProviderImpl::SetMultipleStreamsEnabledWithDeviceId,
+          &CameraAppDeviceProviderImpl::SetVirtualDeviceEnabledWithDeviceId,
           weak_ptr_factory_.GetWeakPtr(), enabled, std::move(callback))));
 }
 
-void CameraAppDeviceProviderImpl::SetMultipleStreamsEnabledWithDeviceId(
+void CameraAppDeviceProviderImpl::SetVirtualDeviceEnabledWithDeviceId(
     bool enabled,
-    SetMultipleStreamsEnabledCallback callback,
+    SetVirtualDeviceEnabledCallback callback,
     const absl::optional<std::string>& device_id) {
   if (!device_id.has_value()) {
     std::move(callback).Run(false);
     return;
   }
 
-  bridge_->SetMultipleStreamsEnabled(*device_id, enabled, std::move(callback));
+  bridge_->SetVirtualDeviceEnabled(*device_id, enabled, std::move(callback));
 }
 
 }  // namespace media

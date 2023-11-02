@@ -26,7 +26,6 @@ Jei parinktis „<ph name="SERVICE_SCRIPT_NAME" />“ jau pažymėta, atžymėki
 <translation id="225614027745146050">Sveiki</translation>
 <translation id="2320166752086256636">Slėpti klaviatūrą</translation>
 <translation id="2329392777730037872">Nepavyko atidaryti <ph name="URL" /> kliento programoje.</translation>
-<translation id="2333212046079545895">Autorių teisės „Google LLC“, 2021 m. Visos teisės saugomos.</translation>
 <translation id="2359808026110333948">Tęskite</translation>
 <translation id="2366718077645204424">Neįmanoma pasiekti prieglobos. Taip greičiausiai nutiko dėl naudojamo tinklo konfigūracijos.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" /> Paskutinį kartą matyta prisijungus <ph name="RELATIVE_TIMESTAMP" />.</translation>
@@ -37,6 +36,7 @@ Jei parinktis „<ph name="SERVICE_SCRIPT_NAME" />“ jau pažymėta, atžymėki
 <translation id="2599300881200251572">Naudojant šią paslaugą įgalinami „Chrome“ nuotolinio kompiuterio valdymo klientų prisijungimai.</translation>
 <translation id="2647232381348739934">„Chrome“ nuotolinio ryšio paslauga</translation>
 <translation id="2676780859508944670">Apdorojama…</translation>
+<translation id="2692522824157224199">Autorių teisės „Google LLC“, 2022 m. Visos teisės saugomos.</translation>
 <translation id="2699970397166997657">„Chrome“ nuotolinis ryšys</translation>
 <translation id="2758123043070977469">Nustatant tapatybę iškilo problema. Prisijunkite dar kartą.</translation>
 <translation id="2803375539583399270">Įveskite PIN kodą</translation>
@@ -73,10 +73,10 @@ Jei parinktis „<ph name="SERVICE_SCRIPT_NAME" />“ jau pažymėta, atžymėki
 <translation id="4257751272692708833">„<ph name="PRODUCT_NAME" />“ URL peradresavimo priemonė</translation>
 <translation id="4277736576214464567">Netinkamas prieigos kodas. Bandykite dar kartą.</translation>
 <translation id="4281844954008187215">Paslaugų teikimo sąlygos</translation>
+<translation id="4372650392690220936">Autorių teisės „The Chromium Authors“, 2022 m. Visos teisės saugomos.</translation>
 <translation id="4405930547258349619">Pagrindinė biblioteka</translation>
 <translation id="443560535555262820">Atidaryti pritaikomumo nuostatas</translation>
 <translation id="4450893287417543264">Daugiau neberodyti</translation>
-<translation id="4512952200932940229">Autorių teisės „The Chromium Authors“, 2021 m. Visos teisės saugomos.</translation>
 <translation id="4513946894732546136">Atsiliepimai</translation>
 <translation id="4563926062592110512">Atjungtas klientas: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> netinkamai sukonfigūruota. Pasirinkite kitą numatytąją žiniatinklio naršyklę, tada vėl įgalinkite URL peradresavimą.</translation>

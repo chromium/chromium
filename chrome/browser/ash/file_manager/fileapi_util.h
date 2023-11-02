@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -15,6 +15,7 @@
 #include "base/files/file.h"
 #include "base/files/file_error_or.h"
 #include "base/files/file_path.h"
+#include "base/values.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/isolated_context.h"
 #include "third_party/blink/public/mojom/choosers/file_chooser.mojom-forward.h"
@@ -22,11 +23,6 @@
 #include "url/origin.h"
 
 class Profile;
-
-namespace base {
-class DictionaryValue;
-class ListValue;
-}  // namespace base
 
 namespace content {
 class RenderFrameHost;
@@ -59,7 +55,7 @@ struct EntryDefinition {
 
   std::string file_system_root_url;  // Used to create DOMFileSystem.
   std::string file_system_name;      // Value of DOMFileSystem.name.
-  base::FilePath full_path;    // Value of Entry.fullPath.
+  base::FilePath full_path;          // Value of Entry.fullPath.
   // Whether to create FileEntry or DirectoryEntry when the corresponding entry
   // is not found.
   bool is_directory;
@@ -164,10 +160,10 @@ void ConvertSelectedFileInfoListToFileChooserFileInfoList(
     FileChooserFileInfoListCallback callback);
 
 // Converts EntryDefinition to something File API stack can understand.
-std::unique_ptr<base::DictionaryValue> ConvertEntryDefinitionToValue(
+base::Value::Dict ConvertEntryDefinitionToValue(
     const EntryDefinition& entry_definition);
 
-std::unique_ptr<base::ListValue> ConvertEntryDefinitionListToListValue(
+base::Value::List ConvertEntryDefinitionListToListValue(
     const EntryDefinitionList& entry_definition_list);
 
 // Checks if a directory exists at |directory_path| absolute path.

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,12 +11,16 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "skia/ext/legacy_display_globals.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkImageInfo.h"
+#include "third_party/skia/include/core/SkPixmap.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSurface.h"
+#include "third_party/skia/include/core/SkSurfaceProps.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -30,6 +34,10 @@
 #include "ui/ozone/platform/headless/headless_window_manager.h"
 #include "ui/ozone/public/surface_ozone_canvas.h"
 
+#if BUILDFLAG(ENABLE_VULKAN) && (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_FUCHSIA))
+#include "ui/ozone/platform/headless/vulkan_implementation_headless.h"
+#endif
+
 namespace ui {
 
 namespace {
@@ -41,15 +49,8 @@ base::FilePath GetPathForWidget(const base::FilePath& base_path,
   if (base_path.empty() || base_path == base::FilePath(kDevNull))
     return base_path;
 
-    // Disambiguate multiple window output files with the window id.
-#if defined(OS_WIN)
-  std::string path =
-      base::NumberToString(reinterpret_cast<int>(widget)) + ".png";
-  std::wstring wpath(path.begin(), path.end());
-  return base_path.Append(wpath);
-#else
+  // Disambiguate multiple window output files with the window id.
   return base_path.Append(base::NumberToString(widget) + ".png");
-#endif
 }
 
 void WriteDataToFile(const base::FilePath& location, const SkBitmap& bitmap) {
@@ -106,8 +107,8 @@ class FileSurface : public SurfaceOzoneCanvas {
 
 class FileGLSurface : public GLSurfaceEglReadback {
  public:
-  explicit FileGLSurface(const base::FilePath& location)
-      : location_(location) {}
+  FileGLSurface(gl::GLDisplayEGL* display, const base::FilePath& location)
+      : GLSurfaceEglReadback(display), location_(location) {}
 
   FileGLSurface(const FileGLSurface&) = delete;
   FileGLSurface& operator=(const FileGLSurface&) = delete;
@@ -156,6 +157,7 @@ class TestPixmap : public gfx::NativePixmap {
   size_t GetNumberOfPlanes() const override {
     return gfx::NumberOfPlanesForLinearBufferFormat(format_);
   }
+  bool SupportsZeroCopyWebGPUImport() const override { return false; }
   gfx::Size GetBufferSize() const override { return gfx::Size(); }
   uint32_t GetUniqueId() const override { return 0; }
   bool ScheduleOverlayPlane(
@@ -186,15 +188,19 @@ class GLOzoneEGLHeadless : public GLOzoneEGL {
 
   // GLOzone:
   scoped_refptr<gl::GLSurface> CreateViewGLSurface(
+      gl::GLDisplay* display,
       gfx::AcceleratedWidget window) override {
     return gl::InitializeGLSurface(base::MakeRefCounted<FileGLSurface>(
+        display->GetAs<gl::GLDisplayEGL>(),
         GetPathForWidget(base_path_, window)));
   }
 
   scoped_refptr<gl::GLSurface> CreateOffscreenGLSurface(
+      gl::GLDisplay* display,
       const gfx::Size& size) override {
     return gl::InitializeGLSurface(
-        base::MakeRefCounted<gl::PbufferGLSurfaceEGL>(size));
+        base::MakeRefCounted<gl::PbufferGLSurfaceEGL>(
+            display->GetAs<gl::GLDisplayEGL>(), size));
   }
 
  protected:
@@ -226,15 +232,16 @@ HeadlessSurfaceFactory::~HeadlessSurfaceFactory() = default;
 std::vector<gl::GLImplementationParts>
 HeadlessSurfaceFactory::GetAllowedGLImplementations() {
   return std::vector<gl::GLImplementationParts>{
-      gl::GLImplementationParts(gl::kGLImplementationSwiftShaderGL),
-      gl::GLImplementationParts(gl::ANGLEImplementation::kSwiftShader)};
+      gl::GLImplementationParts(gl::ANGLEImplementation::kSwiftShader),
+      gl::GLImplementationParts(gl::kGLImplementationEGLGLES2),
+      gl::GLImplementationParts(gl::ANGLEImplementation::kDefault),
+  };
 }
 
 GLOzone* HeadlessSurfaceFactory::GetGLOzone(
     const gl::GLImplementationParts& implementation) {
   switch (implementation.gl) {
     case gl::kGLImplementationEGLGLES2:
-    case gl::kGLImplementationSwiftShaderGL:
     case gl::kGLImplementationEGLANGLE:
       return swiftshader_implementation_.get();
 
@@ -269,5 +276,18 @@ void HeadlessSurfaceFactory::CheckBasePath() const {
   if (!base::PathIsWritable(base_path_))
     PLOG(FATAL) << "Unable to write to output location";
 }
+
+#if BUILDFLAG(ENABLE_VULKAN)
+std::unique_ptr<gpu::VulkanImplementation>
+HeadlessSurfaceFactory::CreateVulkanImplementation(
+    bool use_swiftshader,
+    bool allow_protected_memory) {
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_FUCHSIA)
+  return std::make_unique<VulkanImplementationHeadless>(use_swiftshader);
+#else
+  return nullptr;
+#endif
+}
+#endif  // BUILDFLAG(ENABLE_VULKAN)
 
 }  // namespace ui

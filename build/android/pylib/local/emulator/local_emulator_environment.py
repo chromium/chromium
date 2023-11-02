@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -8,7 +8,6 @@ import logging
 from six.moves import range  # pylint: disable=redefined-builtin
 from devil import base_error
 from devil.android import device_errors
-from devil.android import device_utils
 from devil.utils import parallelizer
 from devil.utils import reraiser_thread
 from devil.utils import timeout_retry
@@ -19,6 +18,9 @@ from pylib.local.emulator import avd
 _MAX_ANDROID_EMULATORS = 16
 
 
+# TODO(1262303): After Telemetry is supported by python3 we can re-add
+# super without arguments in this script.
+# pylint: disable=super-with-arguments
 class LocalEmulatorEnvironment(local_device_environment.LocalDeviceEnvironment):
 
   def __init__(self, args, output_manager, error_func):
@@ -59,16 +61,15 @@ class LocalEmulatorEnvironment(local_device_environment.LocalDeviceEnvironment):
         except avd.AvdException:
           logging.exception('Failed to start emulator instance.')
           return None
-        try:
-          device_utils.DeviceUtils(e.serial).WaitUntilFullyBooted()
         except base_error.BaseError:
           e.Stop()
           raise
         return e
 
       def retry_on_timeout(exc):
-        return (isinstance(exc, device_errors.CommandTimeoutError)
-                or isinstance(exc, reraiser_thread.TimeoutError))
+        return isinstance(
+            exc,
+            (device_errors.CommandTimeoutError, reraiser_thread.TimeoutError))
 
       return timeout_retry.Run(
           impl,
@@ -87,7 +88,7 @@ class LocalEmulatorEnvironment(local_device_environment.LocalDeviceEnvironment):
 
     if not self._emulator_instances:
       raise Exception('Failed to start any instances of the emulator.')
-    elif len(self._emulator_instances) < self._emulator_count:
+    if len(self._emulator_instances) < self._emulator_count:
       logging.warning(
           'Running with fewer emulator instances than requested (%d vs %d)',
           len(self._emulator_instances), self._emulator_count)

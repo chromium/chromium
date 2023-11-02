@@ -24,5 +24,13 @@ Please consult our API documentation and app development guides:
 
 See our [Chromium developer documentation](docs/README.md).
 
+## Public mailing lists
+
+* [android-webview-dev@chromium.org](https://groups.google.com/a/chromium.org/g/android-webview-dev):
+  external discussion group for WebView developers and interested community
+  members.
+* [android-webview-reviews@chromium.org](https://groups.google.com/a/chromium.org/g/android-webview-reviews):
+  subscribe to code reviews affecting Android WebView code.
+
 [1]: https://developer.android.com/reference/android/webkit/package-summary
 [2]: https://developer.android.com/reference/androidx/webkit/package-summary

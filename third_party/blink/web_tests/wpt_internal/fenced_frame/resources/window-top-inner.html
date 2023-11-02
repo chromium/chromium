@@ -12,14 +12,12 @@ async function init() { // Needed in order to use top-level await.
   //   2.) Nested iframes inside a fenced frame
   //   3.) Nested fenced frames
   const url = new URL(location.href);
-  const is_nested_fenced_frame = (url.search == "?nested");
 
-  const window_top_key = KEYS["window.top"];
-  const window_top_ack_key = KEYS["window.top ACK"];
+  const [window_top_key, window_top_ack_key, nested] = parseKeylist();
 
   // Report whether or not `window.top` was correct.
   let pass_string = "";
-  if (is_nested_fenced_frame)
+  if (nested == "nested")
     pass_string = "pass: fenced frame > fenced frame";
   else
     pass_string = "pass: fenced frame";
@@ -29,7 +27,7 @@ async function init() { // Needed in order to use top-level await.
 
   // If this page is a nested fenced frame, all we need to do is report the
   // top-level value.
-  if (is_nested_fenced_frame)
+  if (nested == "nested")
     return;
 
   // Wait for ACK, so we know that the outer page has read the last value from
@@ -56,7 +54,8 @@ async function init() { // Needed in order to use top-level await.
   // the `window_top_key` stash and we can write to it again.
   await nextValueFromServer(window_top_ack_key);
 
-  attachFencedFrame("window-top-inner.html?nested");
+  attachFencedFrame(generateURL("window-top-inner.html",
+      [window_top_key, window_top_ack_key, "nested"]));
 }
 
 init();

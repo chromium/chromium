@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,11 +13,14 @@
 #include "chromeos/crosapi/mojom/authentication.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
-namespace chromeos {
+namespace ash {
 class ExtendedAuthenticator;
-}  // namespace chromeos
+class AuthenticationError;
+}  // namespace ash
 
 namespace extensions {
+class QuickUnlockPrivateGetAuthTokenHelper;
+
 namespace api {
 namespace quick_unlock_private {
 struct TokenInfo;
@@ -50,13 +53,23 @@ class AuthenticationAsh : public mojom::Authentication {
 
  private:
   // Continuation of CreateQuickUnlockPrivateTokenInfo(). Last 3 params match
-  // extensions::QuickUnlockPrivateGetAuthTokenHelper::ResultCallback.
-  void OnCreateQuickUnlockPrivateTokenInfoResults(
+  // extensions::LegacyQuickUnlockPrivateGetAuthTokenHelper::ResultCallback.
+  void OnLegacyCreateQuickUnlockPrivateTokenInfoResults(
       CreateQuickUnlockPrivateTokenInfoCallback callback,
-      scoped_refptr<chromeos::ExtendedAuthenticator> extended_authenticator,
+      scoped_refptr<ash::ExtendedAuthenticator> extended_authenticator,
       bool success,
       std::unique_ptr<TokenInfo> token_info,
       const std::string& error_message);
+
+  // Continuation of CreateQuickUnlockPrivateTokenInfo(). The last 2 params
+  // match extensions::QuickUnlockPrivateGetAuthTokenHelper::ResultCallback.
+  // The first argument is ignored; it is only there so that we can keep the
+  // token helper alive.
+  void OnCreateQuickUnlockPrivateTokenInfoResults(
+      std::unique_ptr<extensions::QuickUnlockPrivateGetAuthTokenHelper>,
+      CreateQuickUnlockPrivateTokenInfoCallback callback,
+      absl::optional<TokenInfo>,
+      absl::optional<ash::AuthenticationError>);
 
   mojo::ReceiverSet<mojom::Authentication> receivers_;
 

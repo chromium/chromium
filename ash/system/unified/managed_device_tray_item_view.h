@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,15 +30,18 @@ class ManagedDeviceTrayItemView : public TrayItemView,
   void OnLoginStatusChanged(LoginStatus status) override;
 
   // EnterpriseDomainObserver:
-  void OnEnterpriseDomainChanged() override;
+  void OnDeviceEnterpriseInfoChanged() override;
   void OnEnterpriseAccountDomainChanged() override;
 
   // views::TrayItemView:
   const char* GetClassName() const override;
+  void OnThemeChanged() override;
   void HandleLocaleChange() override;
 
  private:
   void Update();
+  void UpdateIcon();
+  void UpdateTooltipText();
 };
 
 }  // namespace ash

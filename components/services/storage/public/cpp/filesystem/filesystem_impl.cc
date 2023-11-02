@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,7 +19,7 @@
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -81,7 +81,7 @@ class FileLockImpl : public mojom::FileLock {
       return;
     }
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
     std::move(callback).Run(base::File::FILE_OK);
 #else
     std::move(callback).Run(file_.Unlock());
@@ -117,19 +117,18 @@ void FilesystemImpl::GetEntries(const base::FilePath& path,
   const base::FilePath full_path = MakeAbsolute(path);
   base::FileErrorOr<std::vector<base::FilePath>> result =
       GetDirectoryEntries(full_path, mode);
-  if (result.is_error()) {
+  if (!result.has_value()) {
     std::move(callback).Run(result.error(), std::vector<base::FilePath>());
     return;
   }
 
   // Fix up the absolute paths to be relative to |path|.
   std::vector<base::FilePath> entries;
-  std::vector<base::FilePath::StringType> root_components;
-  full_path.GetComponents(&root_components);
+  std::vector<base::FilePath::StringType> root_components =
+      full_path.GetComponents();
   const size_t num_components_to_strip = root_components.size();
   for (const auto& entry : result.value()) {
-    std::vector<base::FilePath::StringType> components;
-    entry.GetComponents(&components);
+    std::vector<base::FilePath::StringType> components = entry.GetComponents();
     base::FilePath relative_path;
     for (size_t i = num_components_to_strip; i < components.size(); ++i)
       relative_path = relative_path.Append(components[i]);
@@ -256,7 +255,7 @@ void FilesystemImpl::RenameFile(const base::FilePath& old_path,
 void FilesystemImpl::LockFile(const base::FilePath& path,
                               LockFileCallback callback) {
   base::FileErrorOr<base::File> result = LockFileLocal(MakeAbsolute(path));
-  if (result.is_error()) {
+  if (!result.has_value()) {
     std::move(callback).Run(result.error(), mojo::NullRemote());
     return;
   }
@@ -283,15 +282,15 @@ base::FileErrorOr<base::File> FilesystemImpl::LockFileLocal(
   base::File file(path, base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_READ |
                             base::File::FLAG_WRITE);
   if (!file.IsValid())
-    return file.error_details();
+    return base::unexpected(file.error_details());
 
   if (!GetLockTable().AddLock(path))
-    return base::File::FILE_ERROR_IN_USE;
+    return base::unexpected(base::File::FILE_ERROR_IN_USE);
 
-#if !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
   base::File::Error error = file.Lock(base::File::LockMode::kExclusive);
   if (error != base::File::FILE_OK)
-    return error;
+    return base::unexpected(error);
 #endif
 
   return file;
@@ -306,7 +305,7 @@ void FilesystemImpl::UnlockFileLocal(const base::FilePath& path) {
 mojom::PathAccessInfoPtr FilesystemImpl::GetPathAccessLocal(
     const base::FilePath& path) {
   mojom::PathAccessInfoPtr info;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   uint32_t attributes = ::GetFileAttributes(path.value().c_str());
   if (attributes != INVALID_FILE_ATTRIBUTES) {
     info = mojom::PathAccessInfo::New();
@@ -314,7 +313,7 @@ mojom::PathAccessInfoPtr FilesystemImpl::GetPathAccessLocal(
     if ((attributes & FILE_ATTRIBUTE_READONLY) == 0)
       info->can_write = true;
   }
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   const char* const c_path = path.value().c_str();
   if (!access(c_path, F_OK)) {
     info = mojom::PathAccessInfo::New();
@@ -344,7 +343,7 @@ FilesystemImpl::GetDirectoryEntries(const base::FilePath& path,
     entries.push_back(entry);
   }
   if (enumerator.GetError() != base::File::FILE_OK)
-    return enumerator.GetError();
+    return base::unexpected(enumerator.GetError());
   return entries;
 }
 

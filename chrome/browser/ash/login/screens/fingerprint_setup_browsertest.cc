@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ui/webui/chromeos/login/fingerprint_setup_screen_handler.h"
-#include "chromeos/dbus/biod/fake_biod_client.h"
+#include "chromeos/ash/components/dbus/biod/fake_biod_client.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -39,7 +39,7 @@ const test::UIPath kAddAnotherFingerButton = {"fingerprint-setup",
 constexpr char kTestFingerprintDataString[] = "testFinger";
 constexpr char kAnimationUrlAttribute[] = "animationUrl";
 constexpr char kCheckmarkAnimationUrl[] =
-    "chrome://theme/IDR_FINGERPRINT_COMPLETE_TICK";
+    "chrome://theme/IDR_FINGERPRINT_COMPLETE_CHECK_LIGHT";
 
 int kMaxAllowedFingerprints = 3;
 
@@ -55,7 +55,9 @@ class FingerprintSetupTest : public OobeBaseTest {
 
   void SetUpOnMainThread() override {
     // Enable fingerprint for testing.
-    quick_unlock::EnabledForTesting(true);
+    test_api_ = std::make_unique<quick_unlock::TestApi>(
+        /*override_quick_unlock=*/true);
+    test_api_->EnableFingerprintByPolicy(quick_unlock::Purpose::kUnlock);
 
     // Override the screen exit callback with our own method.
     FingerprintSetupScreen* fingerprint_screen =
@@ -143,6 +145,7 @@ class FingerprintSetupTest : public OobeBaseTest {
   FingerprintSetupScreen::ScreenExitCallback original_callback_;
   base::RepeatingClosure screen_exit_callback_;
   LoginManagerMixin login_manager_{&mixin_host_};
+  std::unique_ptr<quick_unlock::TestApi> test_api_;
 };
 
 IN_PROC_BROWSER_TEST_F(FingerprintSetupTest, FingerprintEnrollHalf) {
@@ -204,8 +207,9 @@ IN_PROC_BROWSER_TEST_F(FingerprintSetupTest, FingerprintEnrollLimit) {
 IN_PROC_BROWSER_TEST_F(FingerprintSetupTest, FingerprintDisabled) {
   PerformLogin();
 
-  // Disable fingerprint
-  quick_unlock::EnabledForTesting(false);
+  // Disable fingerprint (resetting flags).
+  auto test_api = std::make_unique<quick_unlock::TestApi>(
+      /*override_quick_unlock=*/true);
 
   WizardController::default_controller()->AdvanceToScreen(
       FingerprintSetupScreenView::kScreenId);

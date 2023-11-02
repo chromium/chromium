@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,12 +6,12 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
-#include "chrome/browser/profiles/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_controller_win.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/mock_chrome_cleaner_controller_win.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/srt_field_trial_win.h"
@@ -34,8 +34,6 @@ using ::testing::InvokeWithoutArgs;
 using ::testing::StrictMock;
 using ::testing::Return;
 
-constexpr char kSRTPromptGroup[] = "SRTGroup";
-
 class MockChromeCleanerPromptDelegate : public ChromeCleanerPromptDelegate {
  public:
   MOCK_METHOD3(ShowChromeCleanerPrompt,
@@ -57,9 +55,6 @@ class ChromeCleanerPromptUserTest
   }
 
   void SetUpInProcessBrowserTestFixture() override {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        kChromeCleanupInBrowserPromptFeature,
-        {{"Seed", incoming_seed_}, {"Group", kSRTPromptGroup}});
 // dialog_controller_ expects that the cleaner controller would be on
 // scanning state.
 #if DCHECK_IS_ON()
@@ -67,6 +62,9 @@ class ChromeCleanerPromptUserTest
         .WillOnce(Return(ChromeCleanerController::State::kScanning));
 #endif
     EXPECT_CALL(mock_cleaner_controller_, AddObserver(_));
+    EXPECT_CALL(mock_cleaner_controller_, GetIncomingPromptSeed())
+        .WillRepeatedly(Return(incoming_seed_));
+
     dialog_controller_ =
         new ChromeCleanerDialogControllerImpl(&mock_cleaner_controller_);
     dialog_controller_->SetPromptDelegateForTests(&mock_delegate_);
@@ -87,13 +85,11 @@ class ChromeCleanerPromptUserTest
 
  protected:
   MockChromeCleanerController mock_cleaner_controller_;
-  ChromeCleanerDialogControllerImpl* dialog_controller_;
+  raw_ptr<ChromeCleanerDialogControllerImpl> dialog_controller_;
   StrictMock<MockChromeCleanerPromptDelegate> mock_delegate_;
 
   std::string old_seed_;
   std::string incoming_seed_;
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(ChromeCleanerPromptUserTest,
@@ -128,8 +124,9 @@ IN_PROC_BROWSER_TEST_P(ChromeCleanerPromptUserTest,
 IN_PROC_BROWSER_TEST_P(ChromeCleanerPromptUserTest, AllBrowsersClosed) {
   auto keep_alive = std::make_unique<ScopedKeepAlive>(
       KeepAliveOrigin::BROWSER, KeepAliveRestartOption::DISABLED);
+  Profile* profile = browser()->profile();
   auto profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
-      browser()->profile(), ProfileKeepAliveOrigin::kBrowserWindow);
+      profile, ProfileKeepAliveOrigin::kBrowserWindow);
 
   CloseAllBrowsers();
   base::RunLoop().RunUntilIdle();
@@ -141,7 +138,7 @@ IN_PROC_BROWSER_TEST_P(ChromeCleanerPromptUserTest, AllBrowsersClosed) {
   EXPECT_CALL(mock_delegate_, ShowChromeCleanerPrompt(_, _, _))
       .WillOnce(InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
 
-  CreateBrowser(ProfileManager::GetActiveUserProfile());
+  CreateBrowser(profile);
   run_loop.Run();
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/hover_button.h"
 
 namespace test {
@@ -47,7 +48,7 @@ class PageInfoHoverButton : public HoverButton {
   // concatenated with the |title_resource_id|, it is shown separately on right
   // side before the |action_image_icon|.
   // *-------------------------------------------------------------------------*
-  // | Icon | |title_resource_id|               |secondary_text| | Action icon |
+  // | Icon | |title_resource_id|   |secondary_text| State image | Action icon |
   // |-------------------------------------------------------------------------|
   // |      | |subtitle_text|                                                  |
   // *-------------------------------------------------------------------------*
@@ -59,7 +60,8 @@ class PageInfoHoverButton : public HoverButton {
       int click_target_id,
       const std::u16string& tooltip_text,
       const std::u16string& subtitle_text,
-      absl::optional<ui::ImageModel> action_image_icon = absl::nullopt);
+      absl::optional<ui::ImageModel> action_image_icon = absl::nullopt,
+      absl::optional<ui::ImageModel> state_icon = absl::nullopt);
 
   PageInfoHoverButton(const PageInfoHoverButton&) = delete;
   PageInfoHoverButton& operator=(const PageInfoHoverButton&) = delete;
@@ -72,6 +74,8 @@ class PageInfoHoverButton : public HoverButton {
                     const std::u16string& secondary_text);
 
   void SetTitleText(const std::u16string& title_text);
+
+  void SetSubtitleText(const std::u16string& subtitle_text);
 
   void SetSubtitleMultiline(bool is_multiline);
 
@@ -90,10 +94,10 @@ class PageInfoHoverButton : public HoverButton {
 
   void UpdateAccessibleName();
 
-  views::StyledLabel* title_ = nullptr;
+  raw_ptr<views::StyledLabel> title_ = nullptr;
   // Shows secondary text on right side. Used for page info v2 only.
-  views::Label* secondary_label_ = nullptr;
-  views::Label* subtitle_ = nullptr;
+  raw_ptr<views::Label> secondary_label_ = nullptr;
+  raw_ptr<views::Label> subtitle_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_HOVER_BUTTON_H_

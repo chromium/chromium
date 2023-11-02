@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,14 +8,11 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "cc/metrics/compositor_frame_reporting_controller.h"
 #include "cc/metrics/frame_sequence_tracker_collection.h"
-#include "cc/metrics/throughput_ukm_reporter.h"
-#include "cc/trees/ukm_manager.h"
-#include "components/ukm/test_ukm_recorder.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -45,18 +42,19 @@ class FrameSequenceTrackerTest : public testing::Test {
   FrameSequenceTrackerTest()
       : compositor_frame_reporting_controller_(
             std::make_unique<CompositorFrameReportingController>(
-                /*should_report_metrics=*/true,
+                /*should_report_histograms=*/true,
+                /*should_report_ukm=*/false,
                 /*layer_tree_host_id=*/1)),
         collection_(/*is_single_threaded=*/false,
                     compositor_frame_reporting_controller_.get()) {
     tracker_ = collection_.StartScrollSequence(
         FrameSequenceTrackerType::kTouchScroll,
-        FrameSequenceMetrics::ThreadType::kCompositor);
+        FrameInfo::SmoothEffectDrivingThread::kCompositor);
   }
   ~FrameSequenceTrackerTest() override = default;
 
-  void CreateNewTracker(FrameSequenceMetrics::ThreadType thread_type =
-                            FrameSequenceMetrics::ThreadType::kCompositor) {
+  void CreateNewTracker(FrameInfo::SmoothEffectDrivingThread thread_type =
+                            FrameInfo::SmoothEffectDrivingThread::kCompositor) {
     tracker_ = collection_.StartScrollSequence(
         FrameSequenceTrackerType::kTouchScroll, thread_type);
   }
@@ -109,13 +107,15 @@ class FrameSequenceTrackerTest : public testing::Test {
 
   // Check whether a type of tracker exists in |frame_trackers_| or not.
   bool TrackerExists(FrameSequenceTrackerType type) const {
-    auto key = std::make_pair(type, FrameSequenceMetrics::ThreadType::kUnknown);
+    auto key =
+        std::make_pair(type, FrameInfo::SmoothEffectDrivingThread::kUnknown);
     if (type == FrameSequenceTrackerType::kTouchScroll ||
         type == FrameSequenceTrackerType::kWheelScroll ||
         type == FrameSequenceTrackerType::kScrollbarScroll) {
-      key = std::make_pair(type, FrameSequenceMetrics::ThreadType::kCompositor);
+      key = std::make_pair(type,
+                           FrameInfo::SmoothEffectDrivingThread::kCompositor);
       if (!collection_.frame_trackers_.contains(key))
-        key = std::make_pair(type, FrameSequenceMetrics::ThreadType::kMain);
+        key = std::make_pair(type, FrameInfo::SmoothEffectDrivingThread::kMain);
     }
     return collection_.frame_trackers_.contains(key);
   }
@@ -305,7 +305,7 @@ class FrameSequenceTrackerTest : public testing::Test {
   std::unique_ptr<CompositorFrameReportingController>
       compositor_frame_reporting_controller_;
   FrameSequenceTrackerCollection collection_;
-  FrameSequenceTracker* tracker_;
+  raw_ptr<FrameSequenceTracker> tracker_;
 };
 
 // Tests that the tracker works correctly when the source-id for the
@@ -433,6 +433,7 @@ TEST_F(FrameSequenceTrackerTest, TestJankWithZeroIntervalInFeedback) {
 // followed by a non-checkerboard frame.
 TEST_F(FrameSequenceTrackerTest, CheckerboardingSimple) {
   CreateNewTracker();
+  base::HistogramTester histogram_tester;
 
   const uint64_t source_1 = 1;
   uint64_t sequence_1 = 0;
@@ -458,12 +459,21 @@ TEST_F(FrameSequenceTrackerTest, CheckerboardingSimple) {
   collection_.NotifyFramePresented(frame_token, feedback);
 
   EXPECT_EQ(1u, NumberOfFramesCheckerboarded());
+
+  // ImplThroughput().frames_expected is set to 100 since in ReportMetrics(),
+  // in order to report checkerboarding histogram, the minimum frames for
+  // ThroughputMetric is 100.
+  ImplThroughput().frames_expected = 100u;
+  ReportMetrics();
+  histogram_tester.ExpectTotalCount(
+      "Graphics.Smoothness.Checkerboarding.AllSequences", 1u);
 }
 
 // Present a single frame with checkerboarding, followed by a non-checkerboard
 // frame after a few vsyncs.
 TEST_F(FrameSequenceTrackerTest, CheckerboardingMultipleFrames) {
   CreateNewTracker();
+  base::HistogramTester histogram_tester;
 
   const uint64_t source_1 = 1;
   uint64_t sequence_1 = 0;
@@ -489,12 +499,21 @@ TEST_F(FrameSequenceTrackerTest, CheckerboardingMultipleFrames) {
   collection_.NotifyFramePresented(frame_token, feedback);
 
   EXPECT_EQ(3u, NumberOfFramesCheckerboarded());
+
+  // ImplThroughput().frames_expected is set to 100 since in ReportMetrics(),
+  // in order to report checkerboarding histogram, the minimum frames for
+  // ThroughputMetric is 100.
+  ImplThroughput().frames_expected = 100u;
+  ReportMetrics();
+  histogram_tester.ExpectTotalCount(
+      "Graphics.Smoothness.Checkerboarding.AllSequences", 1u);
 }
 
 // Present multiple checkerboarded frames, followed by a non-checkerboard
 // frame.
 TEST_F(FrameSequenceTrackerTest, MultipleCheckerboardingFrames) {
   CreateNewTracker();
+  base::HistogramTester histogram_tester;
 
   const uint32_t kFrames = 3;
   const uint64_t source_1 = 1;
@@ -527,6 +546,14 @@ TEST_F(FrameSequenceTrackerTest, MultipleCheckerboardingFrames) {
   collection_.NotifyFramePresented(frame_token, feedback);
 
   EXPECT_EQ(kFrames, NumberOfFramesCheckerboarded());
+
+  // ImplThroughput().frames_expected is set to 100 since in ReportMetrics(),
+  // in order to report checkerboarding histogram, the minimum frames for
+  // ThroughputMetric is 100.
+  ImplThroughput().frames_expected = 100u;
+  ReportMetrics();
+  histogram_tester.ExpectTotalCount(
+      "Graphics.Smoothness.Checkerboarding.AllSequences", 1u);
 }
 
 TEST_F(FrameSequenceTrackerTest, ReportMetrics) {
@@ -725,7 +752,7 @@ TEST_F(FrameSequenceTrackerTest, ScrollingThreadMetricCompositorThread) {
 }
 
 TEST_F(FrameSequenceTrackerTest, ScrollingThreadMetricMainThread) {
-  CreateNewTracker(FrameSequenceMetrics::ThreadType::kMain);
+  CreateNewTracker(FrameInfo::SmoothEffectDrivingThread::kMain);
 
   // Start with a bunch of frames so that the metric does get reported at the
   // end of the test.
@@ -1729,7 +1756,7 @@ TEST_F(FrameSequenceTrackerTest, MergeTrackersScrollOnSameThread) {
   GenerateSequence(first_sequence);
   collection_.StopSequence(FrameSequenceTrackerType::kTouchScroll);
 
-  CreateNewTracker(FrameSequenceMetrics::ThreadType::kCompositor);
+  CreateNewTracker(FrameInfo::SmoothEffectDrivingThread::kCompositor);
   const char second_sequence[] = "b(81)s(3)e(81,0)P(3)b(101)s(4)e(101,0)P(4)";
   GenerateSequence(second_sequence);
   collection_.StopSequence(FrameSequenceTrackerType::kTouchScroll);
@@ -1750,7 +1777,7 @@ TEST_F(FrameSequenceTrackerTest, MergeTrackersScrollOnDifferentThreads) {
   GenerateSequence(compscroll_sequence);
   collection_.StopSequence(FrameSequenceTrackerType::kTouchScroll);
 
-  CreateNewTracker(FrameSequenceMetrics::ThreadType::kMain);
+  CreateNewTracker(FrameInfo::SmoothEffectDrivingThread::kMain);
   const char mainscroll_sequence[] =
       "b(81)s(3)e(81,0)P(3)b(101)s(4)e(101,0)P(4)";
   GenerateSequence(mainscroll_sequence);

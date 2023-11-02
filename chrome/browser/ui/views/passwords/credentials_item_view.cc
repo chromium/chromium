@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,7 @@
 #include <utility>
 
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/ui/passwords/manage_passwords_view_utils.h"
+#include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/grit/theme_resources.h"
@@ -70,6 +69,7 @@ CredentialsItemView::CredentialsItemView(
     const std::u16string& lower_text,
     const password_manager::PasswordForm* form,
     network::mojom::URLLoaderFactory* loader_factory,
+    const url::Origin& initiator,
     int upper_text_style,
     int lower_text_style)
     : Button(std::move(callback)) {
@@ -96,7 +96,7 @@ CredentialsItemView::CredentialsItemView(
     // Fetch the actual avatar.
     AccountAvatarFetcher* fetcher = new AccountAvatarFetcher(
         form->icon_url, weak_ptr_factory_.GetWeakPtr());
-    fetcher->Start(loader_factory);
+    fetcher->Start(loader_factory, initiator);
   }
   AddChildView(std::move(image_view));
 
@@ -155,7 +155,7 @@ void CredentialsItemView::SetStoreIndicatorIcon(
     store_indicator_icon_view_->SetCanProcessEventsWithinSubtree(false);
     store_indicator_icon_view_->SetImage(gfx::CreateVectorIcon(
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-        kGoogleGLogoIcon,
+        vector_icons::kGoogleGLogoIcon,
 #else
         vector_icons::kSyncIcon,
 #endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)

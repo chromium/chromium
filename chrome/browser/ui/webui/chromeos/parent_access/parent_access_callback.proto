@@ -27,20 +27,43 @@ message Timestamp {
 // string to the listener. i.e.
 //     postMessage(base64.encodeByteArray(callback.serializeBinary()))
 //
-// Next ID: 3
+// Next ID: 5
 message ParentAccessCallback {
   oneof callback {
     OnParentVerified on_parent_verified = 1;
     OnConsentDeclined on_consent_declined = 2;
+    OnPageSizeChanged on_page_size_changed = 3;
+    OnCommunicationEstablished on_communication_established = 4;
   }
 }
 
+// Callback invoked when the communication mechanism is verified. Currently this
+// callback is only sent when Android WebMessageChannel is specified.
+message OnCommunicationEstablished {}
+
+// This callback is invoked when the page size has changed, for example when an
+// expandable button is clicked, so the client knows if size adjustments are
+// needed to their container.
+message OnPageSizeChanged {
+  // Width and height of the content area of the parent access view.
+  int32 content_width = 1;
+  int32 content_height = 2;
+}
+
 // Callback invoked when the user has passed the parent presence verification.
-// Next ID: 2
+// Next ID: 3
 message OnParentVerified {
-  // Proof of the verification that the caller should consume later when
-  // performing the privileged action. See go/warpstar-sspv.
-  ParentAccessToken parent_access_token = 1;
+  oneof verification_proof {
+    // Proof of the verification that the caller should consume later when
+    // performing the privileged action. See go/warpstar-sspv.
+    ParentAccessToken parent_access_token = 1;
+
+    // This empty proto is a success signal returned to the caller when no token
+    // is needed.
+    ParentAccessTokenNotRequested parent_access_token_not_requested = 2;
+  }
+
+  message ParentAccessTokenNotRequested {}
 }
 
 // Next ID: 3

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/constants/ash_features.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/login/login_screen_controller.h"
 #include "ash/public/cpp/new_window_delegate.h"
@@ -16,6 +17,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/system_shadow.h"
 #include "ash/system/power/power_button_menu_item_view.h"
 #include "ash/system/power/power_button_menu_metrics_type.h"
 #include "ash/system/user/login_status.h"
@@ -23,13 +25,16 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/time/time.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/compositor_extra/shadow.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
+#include "ui/views/highlight_border.h"
 
 namespace ash {
 
@@ -39,11 +44,35 @@ namespace {
 constexpr int kMenuItemHorizontalPadding = 16;
 constexpr int kMenuItemVerticalPadding = 16;
 
-// The amount of rounding applied to the corners of the menu view.
-constexpr gfx::RoundedCornersF kMenuViewRoundRectRadiusDp{16.f};
+// The rounded corner radius of menu.
+constexpr int kMenuCornerRadius = 16;
 
 // Horizontal padding between two menu items.
 constexpr int kPaddingBetweenMenuItems = 8;
+
+// Set show/hide animation for layer.
+void SetLayerAnimation(ui::Layer* layer,
+                       ui::ImplicitAnimationObserver* observer,
+                       bool show,
+                       const gfx::Transform& transform) {
+  DCHECK(layer);
+
+  auto* animator = layer->GetAnimator();
+  animator->AbortAllAnimations();
+
+  ui::ScopedLayerAnimationSettings animation_settings(animator);
+  animation_settings.SetTweenType(show ? gfx::Tween::EASE_IN
+                                       : gfx::Tween::FAST_OUT_LINEAR_IN);
+  animation_settings.SetTransitionDuration(
+      PowerButtonMenuView::kMenuAnimationDuration);
+  animation_settings.SetPreemptionStrategy(
+      ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
+  if (observer)
+    animation_settings.AddObserver(observer);
+
+  layer->SetOpacity(show ? 1.0f : 0.f);
+  layer->SetTransform(transform);
+}
 
 }  // namespace
 
@@ -52,17 +81,29 @@ using PowerButtonPosition = PowerButtonController::PowerButtonPosition;
 constexpr base::TimeDelta PowerButtonMenuView::kMenuAnimationDuration;
 
 PowerButtonMenuView::PowerButtonMenuView(
+    ShutdownReason shutdown_reason,
     PowerButtonPosition power_button_position)
-    : power_button_position_(power_button_position) {
+    : shutdown_reason_(shutdown_reason),
+      power_button_position_(power_button_position) {
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetPaintToLayer();
+  if (features::IsDarkLightModeEnabled()) {
+    SetBorder(std::make_unique<views::HighlightBorder>(
+        kMenuCornerRadius, views::HighlightBorder::Type::kHighlightBorder1,
+        /*use_light_colors=*/false));
+  }
   layer()->SetFillsBoundsOpaquely(false);
-  layer()->SetRoundedCornerRadius(kMenuViewRoundRectRadiusDp);
+  layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(kMenuCornerRadius));
   layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
   GetViewAccessibility().OverrideRole(ax::mojom::Role::kMenu);
   GetViewAccessibility().OverrideName(
       l10n_util::GetStringUTF16(IDS_ASH_POWER_BUTTON_MENU_ACCESSIBLE));
   RecreateItems();
+
+  // Create a system shadow for current view.
+  shadow_ = SystemShadow::CreateShadowOnNinePatchLayerForView(
+      this, SystemShadow::Type::kElevation12);
+  shadow_->SetRoundedCornerRadius(kMenuCornerRadius);
 }
 
 PowerButtonMenuView::~PowerButtonMenuView() = default;
@@ -74,30 +115,19 @@ void PowerButtonMenuView::FocusPowerOffButton() {
 void PowerButtonMenuView::ScheduleShowHideAnimation(bool show) {
   // Set initial state.
   SetVisible(true);
-  layer()->GetAnimator()->AbortAllAnimations();
 
-  ui::ScopedLayerAnimationSettings animation(layer()->GetAnimator());
-  animation.AddObserver(this);
-  animation.SetTweenType(show ? gfx::Tween::EASE_IN
-                              : gfx::Tween::FAST_OUT_LINEAR_IN);
-  animation.SetTransitionDuration(kMenuAnimationDuration);
-  animation.SetPreemptionStrategy(
-      ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
-  layer()->SetOpacity(show ? 1.0f : 0.f);
-
-  // Animation of the menu view bounds change.
+  // Calculate transform of menu view and shadow bounds.
+  gfx::Transform transform;
   if (show) {
-    gfx::Transform transform;
     TransformDisplacement transform_displacement = GetTransformDisplacement();
     if (transform_displacement.direction == TransformDirection::X)
       transform.Translate(transform_displacement.distance, 0);
     else if (transform_displacement.direction == TransformDirection::Y)
       transform.Translate(0, transform_displacement.distance);
-
-    layer()->SetTransform(transform);
-  } else {
-    layer()->SetTransform(gfx::Transform());
   }
+
+  SetLayerAnimation(layer(), this, show, transform);
+  SetLayerAnimation(shadow_->GetLayer(), nullptr, show, transform);
 }
 
 PowerButtonMenuView::TransformDisplacement
@@ -189,7 +219,7 @@ void PowerButtonMenuView::RecreateItems() {
       base::BindRepeating(
           &LockStateController::StartShutdownAnimation,
           base::Unretained(Shell::Get()->lock_state_controller()),
-          ShutdownReason::POWER_BUTTON),
+          shutdown_reason_),
       kSystemPowerButtonMenuPowerOffIcon,
       l10n_util::GetStringUTF16(IDS_ASH_POWER_BUTTON_MENU_POWER_OFF_BUTTON),
       &power_off_item_);

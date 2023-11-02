@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_DEVICE_API_DEVICE_SERVICE_IMPL_H_
 #define CHROME_BROWSER_DEVICE_API_DEVICE_SERVICE_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "content/public/browser/document_service.h"
@@ -44,7 +45,7 @@ class DeviceServiceImpl final
 
  private:
   DeviceServiceImpl(
-      content::RenderFrameHost* host,
+      content::RenderFrameHost& host,
       mojo::PendingReceiver<blink::mojom::DeviceAPIService> receiver);
 
   void GetDeviceAttribute(
@@ -53,7 +54,6 @@ class DeviceServiceImpl final
 
   void OnDisposingIfNeeded();
 
-  content::RenderFrameHost* const host_;
   PrefChangeRegistrar pref_change_registrar_;
 };
 

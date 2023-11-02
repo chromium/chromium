@@ -26,7 +26,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_ID_TARGET_OBSERVER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_ID_TARGET_OBSERVER_H_
 
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
@@ -35,6 +36,8 @@ class IdTargetObserverRegistry;
 
 class IdTargetObserver : public GarbageCollected<IdTargetObserver> {
  public:
+  HAS_RECORD_REPLAY_ID();
+
   virtual ~IdTargetObserver();
   virtual void Trace(Visitor*) const;
   virtual void IdTargetChanged() = 0;

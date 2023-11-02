@@ -36,6 +36,17 @@
   textarea.AXSelectedTextRange = {loc: 20, len: 5}
   wait for AXSelectedTextChanged on AXTextArea
   textarea.AXSelectedText
+
+@SCRIPT:
+  // Put cursor after the 2nd word.
+  textarea.AXSelectedTextRange = {loc: 10, len: 0}
+  wait for AXSelectedTextChanged on AXTextArea
+  // Force line break.
+  press Enter
+  // Select text on the 2nd line (fox).
+  textarea.AXSelectedTextRange = {loc: 17, len: 3}
+  wait for AXSelectedTextChanged on AXTextArea
+  textarea.AXSelectedText
 -->
 <!DOCTYPE html>
 <html>

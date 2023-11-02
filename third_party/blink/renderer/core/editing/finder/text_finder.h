@@ -32,14 +32,16 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_FINDER_TEXT_FINDER_H_
 
 #include "base/cancelable_callback.h"
+#include "build/build_config.h"
 #include "third_party/blink/public/mojom/frame/find_in_page.mojom-blink.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 
@@ -61,9 +63,11 @@ class CORE_EXPORT TextFinder final : public GarbageCollected<TextFinder> {
   void StopFindingAndClearSelection();
   void IncreaseMatchCount(int identifier, int count);
   int FindMatchMarkersVersion() const { return find_match_markers_version_; }
+#if BUILDFLAG(IS_ANDROID)
   gfx::RectF ActiveFindMatchRect();
   Vector<gfx::RectF> FindMatchRects();
   int SelectNearestFindMatch(const gfx::PointF&, gfx::Rect* selection_rect);
+#endif
 
   // Starts brand new scoping request: resets the scoping state and
   // asynchronously calls scopeStringMatches().
@@ -78,11 +82,13 @@ class CORE_EXPORT TextFinder final : public GarbageCollected<TextFinder> {
   // the scoping effort.
   void ResetMatchCount();
 
+#if BUILDFLAG(IS_ANDROID)
   // Return the index in the find-in-page cache of the match closest to the
   // provided point in find-in-page coordinates, or -1 in case of error.
   // The squared distance to the closest match is returned in the
   // |distanceSquared| parameter.
-  int NearestFindMatch(const FloatPoint&, float* distance_squared);
+  int NearestFindMatch(const gfx::PointF&, float* distance_squared);
+#endif
 
   // Returns whether this frame has the active match.
   bool ActiveMatchFrame() const { return current_active_match_frame_; }
@@ -135,7 +141,7 @@ class CORE_EXPORT TextFinder final : public GarbageCollected<TextFinder> {
 
     // In find-in-page coordinates.
     // Lazily calculated by updateFindMatchRects.
-    FloatRect rect_;
+    gfx::RectF rect_;
   };
 
   void Trace(Visitor*) const;
@@ -154,10 +160,6 @@ class CORE_EXPORT TextFinder final : public GarbageCollected<TextFinder> {
     // Range to fire beforematch on and scroll to. active_match_ may get
     // unassigned during the async steps, so we need to save it here.
     Persistent<Range> range;
-
-    // If the match had the content-visibility: hidden-matchable property in the
-    // ancestor chain at the time of finding the matching text.
-    bool was_match_hidden;
   };
 
   // Same as Find but with extra internal parameters used to track incremental
@@ -187,11 +189,13 @@ class CORE_EXPORT TextFinder final : public GarbageCollected<TextFinder> {
   // the matches cache.
   void InvalidateFindMatchRects();
 
+#if BUILDFLAG(IS_ANDROID)
   // Select a find-in-page match marker in the current frame using a cache
   // match index returned by nearestFindMatch. Returns the ordinal of the new
   // selected match or -1 in case of error. Also provides the bounding box of
   // the marker in window coordinates if selectionRect is not null.
   int SelectFindMatch(unsigned index, gfx::Rect* selection_rect);
+#endif
 
   // Compute and cache the rects for FindMatches if required.
   // Rects are automatically invalidated in case of content size changes.
@@ -223,7 +227,6 @@ class CORE_EXPORT TextFinder final : public GarbageCollected<TextFinder> {
     return *owner_frame_;
   }
 
-  void FireBeforematchEvent(std::unique_ptr<AsyncScrollContext> context);
   void Scroll(std::unique_ptr<AsyncScrollContext> context);
 
   Member<WebLocalFrameImpl> owner_frame_;
@@ -264,7 +267,7 @@ class CORE_EXPORT TextFinder final : public GarbageCollected<TextFinder> {
 
   // Contents size when find-in-page match rects were last computed for this
   // frame's cache.
-  IntSize document_size_for_current_find_match_rects_;
+  gfx::Size document_size_for_current_find_match_rects_;
 
   // This flag is used by the scoping effort to determine if we need to figure
   // out which rectangle is the active match. Once we find the active

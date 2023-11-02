@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,8 @@ class CSSLayerBlockRule final : public CSSGroupingRule {
  public:
   CSSLayerBlockRule(StyleRuleLayerBlock*, CSSStyleSheet*);
   ~CSSLayerBlockRule() override;
+
+  String name() const;
 
   void Reattach(StyleRuleBase*) override;
   String cssText() const override;

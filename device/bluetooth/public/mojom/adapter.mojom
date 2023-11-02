@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,6 +42,9 @@ struct AdapterInfo {
   string address;
   string name;
   string system_name;
+  // Whether the new CrOS Bluetooth stack (aka floss) is in use. See
+  // go/project-floss for more info.
+  bool floss;
   bool initialized;
   bool present;
   bool powered;
@@ -202,10 +205,14 @@ interface Adapter {
   // bonding (pairing) to the remote device. If the connection attempt fails,
   // the returned |result| will be null. See Socket for details on how to close
   // the connection.
+  //
+  // If the local device is already bonded and the connection attempt fails,
+  // when |should_unbond_on_error| is true the local device will forget the
+  // remote device. (see b/204274786)
   // TODO(crbug.com/1112886): Use fixed-size array, not string, for address.
   [Sync]
-  ConnectToServiceInsecurely(string address, UUID service_uuid)
-      => (ConnectToServiceResult? result);
+  ConnectToServiceInsecurely(string address, UUID service_uuid,
+      bool should_unbond_on_error) => (ConnectToServiceResult? result);
 
   // Creates an RFCOMM service on this adapter advertised with |service_name|
   // and |service_uuid|. This method is marked as "Insecurely" because the local

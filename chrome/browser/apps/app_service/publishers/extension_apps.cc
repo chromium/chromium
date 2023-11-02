@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,10 +11,8 @@
 
 namespace apps {
 
-ExtensionApps::ExtensionApps(AppServiceProxy* proxy)
-    : ExtensionAppsBase(proxy) {
-  Initialize(proxy->AppService());
-}
+ExtensionApps::ExtensionApps(AppServiceProxy* proxy, AppType app_type)
+    : ExtensionAppsBase(proxy, app_type) {}
 
 ExtensionApps::~ExtensionApps() = default;
 
@@ -34,7 +32,7 @@ bool ExtensionApps::Accepts(const extensions::Extension* extension) {
     return false;
   }
 
-  return !extension->from_bookmark();
+  return true;
 }
 
 bool ExtensionApps::ShouldShownInLauncher(
@@ -42,12 +40,13 @@ bool ExtensionApps::ShouldShownInLauncher(
   return true;
 }
 
-std::unique_ptr<App> ExtensionApps::CreateApp(
-    const extensions::Extension* extension,
-    Readiness readiness) {
-  std::unique_ptr<App> app = CreateAppImpl(extension, readiness);
+AppPtr ExtensionApps::CreateApp(const extensions::Extension* extension,
+                                Readiness readiness) {
+  auto app = CreateAppImpl(extension, readiness);
   app->icon_key =
       std::move(*icon_key_factory().CreateIconKey(GetIconEffects(extension)));
+  app->has_badge = false;
+  app->paused = false;
   return app;
 }
 

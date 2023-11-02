@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define MEDIA_FILTERS_DECRYPTING_DEMUXER_STREAM_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -65,7 +66,7 @@ class MEDIA_EXPORT DecryptingDemuxerStream : public DemuxerStream {
   AudioDecoderConfig audio_decoder_config() override;
   VideoDecoderConfig video_decoder_config() override;
   Type type() const override;
-  Liveness liveness() const override;
+  StreamLiveness liveness() const override;
   void EnableBitstreamConverter() override;
   bool SupportsConfigChanges() override;
 
@@ -154,7 +155,7 @@ class MEDIA_EXPORT DecryptingDemuxerStream : public DemuxerStream {
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   SEQUENCE_CHECKER(sequence_checker_);
-  MediaLog* const media_log_;
+  const raw_ptr<MediaLog> media_log_;
   WaitingCB waiting_cb_;
 
   State state_ = kUninitialized;
@@ -164,12 +165,12 @@ class MEDIA_EXPORT DecryptingDemuxerStream : public DemuxerStream {
   base::OnceClosure reset_cb_;
 
   // Pointer to the input demuxer stream that will feed us encrypted buffers.
-  DemuxerStream* demuxer_stream_ = nullptr;
+  raw_ptr<DemuxerStream> demuxer_stream_ = nullptr;
 
   AudioDecoderConfig audio_config_;
   VideoDecoderConfig video_config_;
 
-  Decryptor* decryptor_ = nullptr;
+  raw_ptr<Decryptor> decryptor_ = nullptr;
 
   absl::optional<bool> has_clear_lead_;
 

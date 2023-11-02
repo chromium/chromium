@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -197,11 +197,12 @@ void ConnectionFactoryImpl::SignalConnectionReset(
     return;
   }
 
-  if (listener_)
+  if (listener_) {
+    DVLOG(1) << "Notifying listener of disconnect due to connection reset.";
     listener_->OnDisconnected();
+  }
 
-  UMA_HISTOGRAM_ENUMERATION("GCM.ConnectionResetReason",
-                            reason,
+  UMA_HISTOGRAM_ENUMERATION("GCM.ConnectionResetReason", reason,
                             CONNECTION_RESET_COUNT);
   recorder_->RecordConnectionResetSignaled(reason);
   if (!last_login_time_.is_null()) {
@@ -359,13 +360,14 @@ void ConnectionFactoryImpl::StartConnection() {
   network::mojom::ProxyResolvingSocketOptionsPtr options =
       network::mojom::ProxyResolvingSocketOptions::New();
   options->use_tls = true;
-  // |current_endpoint| is always a Google URL, so this NetworkIsolationKey will
-  // be the same for all callers, and will allow pooling all connections to GCM
-  // in one socket connection, if an H2 or QUIC proxy is in use.
-  auto origin = url::Origin::Create(current_endpoint);
-  net::NetworkIsolationKey network_isolation_key(origin, origin);
+  // |current_endpoint| is always a Google URL, so this NetworkAnonymizationKey
+  // will be the same for all callers, and will allow pooling all connections to
+  // GCM in one socket connection, if an H2 or QUIC proxy is in use.
+  auto site = net::SchemefulSite(current_endpoint);
+  net::NetworkAnonymizationKey network_anonymization_key(site, site);
   socket_factory_->CreateProxyResolvingSocket(
-      current_endpoint, std::move(network_isolation_key), std::move(options),
+      current_endpoint, std::move(network_anonymization_key),
+      std::move(options),
       net::MutableNetworkTrafficAnnotationTag(traffic_annotation),
       socket_.BindNewPipeAndPassReceiver(), mojo::NullRemote() /* observer */,
       base::BindOnce(&ConnectionFactoryImpl::OnConnectDone,
@@ -467,6 +469,7 @@ void ConnectionFactoryImpl::ConnectionHandlerCallback(int result) {
   if (result != net::OK) {
     // TODO(zea): Consider how to handle errors that may require some sort of
     // user intervention (login page, etc.).
+    LOG(ERROR) << "ConnectionHandler failed with net error: " << result;
     base::UmaHistogramSparse("GCM.ConnectionDisconnectErrorCode", result);
     SignalConnectionReset(SOCKET_FAILURE);
     return;

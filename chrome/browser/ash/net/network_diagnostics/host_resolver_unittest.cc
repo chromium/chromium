@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -50,10 +50,13 @@ class HostResolverTest : public ::testing::Test {
 TEST_F(HostResolverTest, TestSuccessfulResolution) {
   auto address_list = net::AddressList(kFakeIPAddress);
   auto fake_dns_result = std::make_unique<FakeHostResolver::DnsResult>(
-      net::OK, net::ResolveErrorInfo(net::OK), address_list);
+      net::OK, net::ResolveErrorInfo(net::OK), address_list,
+      /*endpoint_results_with_metadata=*/absl::nullopt);
   InitializeNetworkContext(std::move(fake_dns_result));
   HostResolver::ResolutionResult resolution_result{
-      net::ERR_FAILED, net::ResolveErrorInfo(net::OK), absl::nullopt};
+      net::ERR_FAILED, net::ResolveErrorInfo(net::OK),
+      /*resolved_addresses=*/absl::nullopt,
+      /*endpoint_results_with_metadata=*/absl::nullopt};
   base::RunLoop run_loop;
   host_resolver_ = std::make_unique<HostResolver>(
       kFakeHostPortPair, fake_network_context(),
@@ -66,6 +69,8 @@ TEST_F(HostResolverTest, TestSuccessfulResolution) {
                 res_result.resolve_error_info;
             resolution_result->resolved_addresses =
                 res_result.resolved_addresses;
+            resolution_result->endpoint_results_with_metadata =
+                res_result.endpoint_results_with_metadata;
             std::move(quit_closure).Run();
           },
           &resolution_result, run_loop.QuitClosure()));
@@ -74,7 +79,7 @@ TEST_F(HostResolverTest, TestSuccessfulResolution) {
   EXPECT_EQ(resolution_result.result, net::OK);
   EXPECT_EQ(resolution_result.resolve_error_info,
             net::ResolveErrorInfo(net::OK));
-  EXPECT_EQ(resolution_result.resolved_addresses.value().size(), 1);
+  EXPECT_EQ(resolution_result.resolved_addresses.value().size(), 1u);
   EXPECT_EQ(resolution_result.resolved_addresses.value().front(),
             address_list.front());
 }
@@ -82,10 +87,14 @@ TEST_F(HostResolverTest, TestSuccessfulResolution) {
 TEST_F(HostResolverTest, TestFailedHostResolution) {
   auto fake_dns_result = std::make_unique<FakeHostResolver::DnsResult>(
       net::ERR_NAME_NOT_RESOLVED,
-      net::ResolveErrorInfo(net::ERR_NAME_NOT_RESOLVED), absl::nullopt);
+      net::ResolveErrorInfo(net::ERR_NAME_NOT_RESOLVED),
+      /*resolved_addresses=*/absl::nullopt,
+      /*endpoint_results_with_metadata=*/absl::nullopt);
   InitializeNetworkContext(std::move(fake_dns_result));
   HostResolver::ResolutionResult resolution_result{
-      net::ERR_FAILED, net::ResolveErrorInfo(net::OK), absl::nullopt};
+      net::ERR_FAILED, net::ResolveErrorInfo(net::OK),
+      /*resolved_addresses=*/absl::nullopt,
+      /*endpoint_results_with_metadata=*/absl::nullopt};
   base::RunLoop run_loop;
   host_resolver_ = std::make_unique<HostResolver>(
       kFakeHostPortPair, fake_network_context(),
@@ -98,6 +107,8 @@ TEST_F(HostResolverTest, TestFailedHostResolution) {
                 res_result.resolve_error_info;
             resolution_result->resolved_addresses =
                 res_result.resolved_addresses;
+            resolution_result->endpoint_results_with_metadata =
+                res_result.endpoint_results_with_metadata;
             std::move(quit_closure).Run();
           },
           &resolution_result, run_loop.QuitClosure()));
@@ -113,7 +124,9 @@ TEST_F(HostResolverTest, TestMojoDisconnectDuringHostResolution) {
   InitializeNetworkContext(/*fake_dns_result=*/{});
   fake_network_context()->set_disconnect_during_host_resolution(true);
   HostResolver::ResolutionResult resolution_result{
-      net::ERR_FAILED, net::ResolveErrorInfo(net::OK), absl::nullopt};
+      net::ERR_FAILED, net::ResolveErrorInfo(net::OK),
+      /*resolved_addresses=*/absl::nullopt,
+      /*endpoint_results_with_metadata=*/absl::nullopt};
   base::RunLoop run_loop;
   host_resolver_ = std::make_unique<HostResolver>(
       kFakeHostPortPair, fake_network_context(),
@@ -126,6 +139,8 @@ TEST_F(HostResolverTest, TestMojoDisconnectDuringHostResolution) {
                 res_result.resolve_error_info;
             resolution_result->resolved_addresses =
                 res_result.resolved_addresses;
+            resolution_result->endpoint_results_with_metadata =
+                res_result.endpoint_results_with_metadata;
             std::move(quit_closure).Run();
           },
           &resolution_result, run_loop.QuitClosure()));

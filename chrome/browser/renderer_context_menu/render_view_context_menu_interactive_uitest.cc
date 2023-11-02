@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,7 +37,7 @@ class ContextMenuUiTest : public InProcessBrowserTest {
 // The test is compiled out on Mac, because RenderViewContextMenuMacCocoa::Show
 // requires running a nested message loop - this would undesirably yield control
 // over the next steps to the OS.
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(ContextMenuUiTest,
                        ContextMenuNavigationToAboutBlankUrlInSubframe) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -48,7 +48,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuUiTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), start_url));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  content::RenderFrameHost* main_frame = web_contents->GetMainFrame();
+  content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
   content::RenderFrameHost* subframe = content::ChildFrameAt(main_frame, 0);
   ASSERT_NE(main_frame->GetLastCommittedOrigin(),
             subframe->GetLastCommittedOrigin());
@@ -81,8 +81,8 @@ IN_PROC_BROWSER_TEST_F(ContextMenuUiTest,
   // because this wouldn't exercise the product code responsible for the
   // https://crbug.com/1257907 bug (it wouldn't go through
   // ChromeWebContentsViewDelegateViews::ShowContextMenu).
-  std::unique_ptr<content::WebContentsViewDelegate> view_delegate(
-      CreateWebContentsViewDelegate(web_contents));
+  std::unique_ptr<content::WebContentsViewDelegate> view_delegate =
+      CreateWebContentsViewDelegate(web_contents);
   view_delegate->ShowContextMenu(*subframe, params);
 
   // Simulate using the context menu to "Open link in new tab".
@@ -101,7 +101,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuUiTest,
   // SiteInstance.
   EXPECT_TRUE(WaitForLoadStop(new_web_contents));
   EXPECT_EQ(link_url, new_web_contents->GetLastCommittedURL());
-  EXPECT_EQ(new_web_contents->GetMainFrame()->GetSiteInstance(),
+  EXPECT_EQ(new_web_contents->GetPrimaryMainFrame()->GetSiteInstance(),
             subframe->GetSiteInstance());
 }
-#endif  // !defined(OS_MAC)
+#endif  // !BUILDFLAG(IS_MAC)

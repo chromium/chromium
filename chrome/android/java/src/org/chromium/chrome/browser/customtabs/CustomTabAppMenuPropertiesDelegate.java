@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -22,7 +23,9 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.DefaultBrowserInfo;
 import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl;
-import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
+import org.chromium.chrome.browser.app.appmenu.DividerLineMenuItemViewBinder;
+import org.chromium.chrome.browser.bookmarks.BookmarkModel;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.browserservices.ui.controller.Verifier;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
@@ -37,7 +40,7 @@ import org.chromium.chrome.browser.ui.appmenu.CustomViewBinder;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.url.GURL;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,12 +58,11 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
     private final boolean mShowDownload;
     private final boolean mIsOpenedByChrome;
     private final boolean mIsIncognito;
+    private final boolean mIsStartIconMenu;
 
     private final List<String> mMenuEntries;
     private final Map<String, Integer> mTitleToItemIdMap = new HashMap<String, Integer>();
     private final Map<Integer, Integer> mItemIdToIndexMap = new HashMap<Integer, Integer>();
-
-    private boolean mIsCustomEntryAdded;
 
     /**
      * Creates an {@link CustomTabAppMenuPropertiesDelegate} instance.
@@ -69,11 +71,12 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
             ActivityTabProvider activityTabProvider,
             MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
             TabModelSelector tabModelSelector, ToolbarManager toolbarManager, View decorView,
-            ObservableSupplier<BookmarkBridge> bookmarkBridgeSupplier, Verifier verifier,
+            ObservableSupplier<BookmarkModel> bookmarkModelSupplier, Verifier verifier,
             @CustomTabsUiType final int uiType, List<String> menuEntries, boolean isOpenedByChrome,
-            boolean showShare, boolean showStar, boolean showDownload, boolean isIncognito) {
+            boolean showShare, boolean showStar, boolean showDownload, boolean isIncognito,
+            boolean isStartIconMenu) {
         super(context, activityTabProvider, multiWindowModeStateDispatcher, tabModelSelector,
-                toolbarManager, decorView, null, null, bookmarkBridgeSupplier);
+                toolbarManager, decorView, null, null, bookmarkModelSupplier, null);
         mVerifier = verifier;
         mUiType = uiType;
         mMenuEntries = menuEntries;
@@ -82,6 +85,7 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
         mShowStar = showStar;
         mShowDownload = showDownload;
         mIsIncognito = isIncognito;
+        mIsStartIconMenu = isStartIconMenu;
     }
 
     @Override
@@ -91,7 +95,9 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
 
     @Override
     public @Nullable List<CustomViewBinder> getCustomViewBinders() {
-        return Collections.EMPTY_LIST;
+        List<CustomViewBinder> customViewBinders = new ArrayList<>();
+        customViewBinders.add(new DividerLineMenuItemViewBinder());
+        return customViewBinders;
     }
 
     @Override
@@ -186,7 +192,7 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
 
             MenuItem bookmarkItem = menu.findItem(R.id.bookmark_this_page_id);
             if (bookmarkItemVisible) {
-                updateBookmarkMenuItemShortcut(bookmarkItem, currentTab);
+                updateBookmarkMenuItemShortcut(bookmarkItem, currentTab, /*fromCCT=*/true);
             } else {
                 bookmarkItem.setVisible(false);
             }
@@ -205,14 +211,15 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
                 openInChromeItem.setVisible(false);
             }
 
-            // Add custom menu items. Make sure they are only added once.
-            if (!mIsCustomEntryAdded) {
-                mIsCustomEntryAdded = true;
-                for (int i = 0; i < mMenuEntries.size(); i++) {
-                    MenuItem item = menu.add(0, 0, 1, mMenuEntries.get(i));
-                    mTitleToItemIdMap.put(mMenuEntries.get(i), item.getItemId());
-                    mItemIdToIndexMap.put(item.getItemId(), i);
-                }
+            // Add custom menu items.
+            for (int i = 0; i < mMenuEntries.size(); i++) {
+                MenuItem item = menu.add(0, i, 1, mMenuEntries.get(i));
+                mTitleToItemIdMap.put(mMenuEntries.get(i), item.getItemId());
+                mItemIdToIndexMap.put(item.getItemId(), i);
+            }
+
+            if (mMenuEntries.size() == 0) {
+                menu.removeItem(R.id.divider_line_id);
             }
 
             updateRequestDesktopSiteMenuItem(
@@ -255,6 +262,19 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
         return R.layout.powered_by_chrome_footer;
     }
 
+    @Override
+    public void onFooterViewInflated(AppMenuHandler appMenuHandler, View view) {
+        super.onFooterViewInflated(appMenuHandler, view);
+
+        TextView footerTextView = view.findViewById(R.id.running_in_chrome_footer_text);
+        if (footerTextView != null) {
+            String appName = view.getResources().getString(R.string.app_name);
+            String footerText =
+                    view.getResources().getString(R.string.twa_running_in_chrome_template, appName);
+            footerTextView.setText(footerText);
+        }
+    }
+
     /**
      * Get the menu item's id object associated with the given title. If multiple menu items have
      * the same title, a random one will be returned. If the menu item is not found, return -1. This
@@ -266,5 +286,10 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
             return mTitleToItemIdMap.get(title).intValue();
         }
         return AppMenuPropertiesDelegate.INVALID_ITEM_ID;
+    }
+
+    @Override
+    public boolean isMenuIconAtStart() {
+        return mIsStartIconMenu;
     }
 }

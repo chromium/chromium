@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@ class MockKeyRotationCommand : public KeyRotationCommand {
   ~MockKeyRotationCommand() override;
 
   // KeyRotationCommand:
-  MOCK_METHOD(bool, Trigger, (const Params&), (override));
+  MOCK_METHOD(void, Trigger, (const Params&, Callback), (override));
 };
 
 }  // namespace test

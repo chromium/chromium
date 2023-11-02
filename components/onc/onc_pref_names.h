@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,6 @@
 #include "base/component_export.h"
 
 class PrefRegistrySimple;
-
-namespace user_prefs {
-class PrefRegistrySyncable;
-}
 
 namespace onc {
 
@@ -25,7 +21,7 @@ COMPONENT_EXPORT(ONC) extern const char kOpenNetworkConfiguration[];
 COMPONENT_EXPORT(ONC) void RegisterPrefs(PrefRegistrySimple* registry);
 
 COMPONENT_EXPORT(ONC)
-void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
+void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
 }  // namespace onc
 

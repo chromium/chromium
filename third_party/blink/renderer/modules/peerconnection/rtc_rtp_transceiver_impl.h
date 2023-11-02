@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -63,7 +63,6 @@ class MODULES_EXPORT RtpTransceiverState {
       absl::optional<blink::RtpSenderState> sender_state,
       absl::optional<blink::RtpReceiverState> receiver_state,
       absl::optional<std::string> mid,
-      bool stopped,
       webrtc::RtpTransceiverDirection direction,
       absl::optional<webrtc::RtpTransceiverDirection> current_direction,
       absl::optional<webrtc::RtpTransceiverDirection> fired_direction,
@@ -91,7 +90,6 @@ class MODULES_EXPORT RtpTransceiverState {
   blink::RtpReceiverState MoveReceiverState();
   absl::optional<std::string> mid() const;
   void set_mid(absl::optional<std::string>);
-  bool stopped() const;
   webrtc::RtpTransceiverDirection direction() const;
   void set_direction(webrtc::RtpTransceiverDirection);
   absl::optional<webrtc::RtpTransceiverDirection> current_direction() const;
@@ -107,7 +105,6 @@ class MODULES_EXPORT RtpTransceiverState {
   absl::optional<blink::RtpSenderState> sender_state_;
   absl::optional<blink::RtpReceiverState> receiver_state_;
   absl::optional<std::string> mid_;
-  bool stopped_;
   webrtc::RtpTransceiverDirection direction_;
   absl::optional<webrtc::RtpTransceiverDirection> current_direction_;
   absl::optional<webrtc::RtpTransceiverDirection> fired_direction_;
@@ -158,8 +155,7 @@ class MODULES_EXPORT RTCRtpTransceiverImpl : public RTCRtpTransceiverPlatform {
       scoped_refptr<webrtc::PeerConnectionInterface> native_peer_connection,
       scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap> track_map,
       RtpTransceiverState state,
-      bool force_encoded_audio_insertable_streams,
-      bool force_encoded_video_insertable_streams);
+      bool encoded_insertable_streams);
   RTCRtpTransceiverImpl(const RTCRtpTransceiverImpl& other);
   ~RTCRtpTransceiverImpl() override;
 
@@ -172,14 +168,11 @@ class MODULES_EXPORT RTCRtpTransceiverImpl : public RTCRtpTransceiverPlatform {
   blink::RTCRtpSenderImpl* content_sender();
   blink::RTCRtpReceiverImpl* content_receiver();
 
-  RTCRtpTransceiverPlatformImplementationType ImplementationType()
-      const override;
   uintptr_t Id() const override;
   String Mid() const override;
   void SetMid(absl::optional<String>) override;
   std::unique_ptr<RTCRtpSenderPlatform> Sender() const override;
   std::unique_ptr<RTCRtpReceiverPlatform> Receiver() const override;
-  bool Stopped() const override;
   webrtc::RtpTransceiverDirection Direction() const override;
   webrtc::RTCError SetDirection(
       webrtc::RtpTransceiverDirection direction) override;

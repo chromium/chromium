@@ -65,8 +65,8 @@ struct SVGTextFragment {
     return BuildNormalFragmentTransform().MapRect(fragment_rect);
   }
 
-  FloatQuad BoundingQuad(float baseline) const {
-    FloatQuad fragment_quad(FloatRect(x, y - baseline, width, height));
+  gfx::QuadF BoundingQuad(float baseline) const {
+    gfx::QuadF fragment_quad(gfx::RectF(x, y - baseline, width, height));
     if (!IsTransformed())
       return fragment_quad;
     return BuildNormalFragmentTransform().MapQuad(fragment_quad);
@@ -163,7 +163,7 @@ struct SVGTextFragment {
 
     AffineTransform result = transform;
     TransformAroundOrigin(result);
-    result.PreMultiply(LengthAdjustTransform());
+    result.PostConcat(LengthAdjustTransform());
     return result;
   }
 };

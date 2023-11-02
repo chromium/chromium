@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/containers/span.h"
+#include "content/common/content_export.h"
 #include "url/gurl.h"
 #include "v8/include/v8-forward.h"
 #include "v8/include/v8-isolate.h"
@@ -15,9 +16,9 @@
 
 namespace shared_storage_worklet {
 
-class WorkletV8Helper {
+class CONTENT_EXPORT WorkletV8Helper {
  public:
-  class HandleScope {
+  class CONTENT_EXPORT HandleScope {
    public:
     explicit HandleScope(v8::Isolate* isolate);
     explicit HandleScope(const HandleScope&) = delete;

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,8 @@
 #include <queue>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/send_tab_to_self/receiving_ui_handler.h"
 #include "components/messages/android/message_wrapper.h"
 
@@ -57,9 +59,10 @@ class AndroidNotificationHandler : public ReceivingUiHandler {
   // messages::MessageDispatcherBridge.
   std::vector<std::unique_ptr<messages::MessageWrapper>> queued_messages_;
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   base::WeakPtr<content::WebContents> web_contents_;
+  base::WeakPtrFactory<AndroidNotificationHandler> weak_factory_{this};
 };
 
 }  // namespace send_tab_to_self

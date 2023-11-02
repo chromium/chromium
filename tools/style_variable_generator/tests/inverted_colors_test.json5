@@ -1,0 +1,33 @@
+{
+  options: {
+    CSS: {
+      prefix: 'cros'
+    },
+  },
+  colors: {
+    bg_color: {
+      light: "$white",
+      dark: "rgba($google_grey_900.rgb, 0.7)",
+      generate_inverted: true,
+    },
+    toggle_color: {
+      light: "rgba($google_grey_900.rgb, 0.1)",
+      dark: "rgba($black.rgb, $reference_opacity)",
+      debug: "$white",
+      generate_per_mode: true,
+    },
+    toast_color: "$bg_color_inverted",
+    composite_color: {
+      light: "rgba($toggle_color_dark.rgb, 0.3)",
+      dark: "rgba($bg_color_inverted.rgb, $disabled_opacity)",
+      generate_inverted: true,
+    }
+  },
+  opacities: {
+    disabled_opacity: 0.38,
+    reference_opacity: {
+        light: '$disabled_opacity',
+        dark: 1,
+    },
+  },
+}

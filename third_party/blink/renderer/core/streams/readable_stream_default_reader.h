@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -59,6 +59,14 @@ class CORE_EXPORT ReadableStreamDefaultReader
   // https://streams.spec.whatwg.org/#readable-stream-default-reader-read
   static StreamPromiseResolver* Read(ScriptState*,
                                      ReadableStreamDefaultReader* reader);
+
+  // https://streams.spec.whatwg.org/#abstract-opdef-readablestreamdefaultreadererrorreadrequests
+  static void ErrorReadRequests(ScriptState*,
+                                ReadableStreamDefaultReader* reader,
+                                v8::Local<v8::Value> e);
+
+  // https://streams.spec.whatwg.org/#abstract-opdef-readablestreamdefaultreaderrelease
+  static void Release(ScriptState*, ReadableStreamDefaultReader* reader);
 
   void Trace(Visitor*) const override;
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,6 +22,9 @@
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
 #include "media/formats/mp4/aac.h"
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+#include "media/formats/mp4/hevc.h"
+#endif
 #endif
 
 namespace media {
@@ -32,6 +35,14 @@ EncryptionScheme GetEncryptionScheme(const AVStream* stream) {
   AVDictionaryEntry* key =
       av_dict_get(stream->metadata, "enc_key_id", nullptr, 0);
   return key ? EncryptionScheme::kCenc : EncryptionScheme::kUnencrypted;
+}
+
+VideoDecoderConfig::AlphaMode GetAlphaMode(const AVStream* stream) {
+  AVDictionaryEntry* alpha_mode =
+      av_dict_get(stream->metadata, "alpha_mode", nullptr, 0);
+  return alpha_mode && !strcmp(alpha_mode->value, "1")
+             ? VideoDecoderConfig::AlphaMode::kHasAlpha
+             : VideoDecoderConfig::AlphaMode::kIsOpaque;
 }
 
 }  // namespace
@@ -342,12 +353,12 @@ bool AVCodecContextToAudioDecoderConfig(const AVCodecContext* codec_context,
       codec_context->sample_fmt, codec_context->codec_id);
 
   ChannelLayout channel_layout =
-      codec_context->channels > 8
+      codec_context->ch_layout.nb_channels > 8
           ? CHANNEL_LAYOUT_DISCRETE
-          : ChannelLayoutToChromeChannelLayout(codec_context->channel_layout,
-                                               codec_context->channels);
+          : ChannelLayoutToChromeChannelLayout(
+                codec_context->ch_layout.u.mask,
+                codec_context->ch_layout.nb_channels);
 
-  int sample_rate = codec_context->sample_rate;
   switch (codec) {
     // For AC3/EAC3 we enable only demuxing, but not decoding, so FFmpeg does
     // not fill |sample_fmt|.
@@ -394,11 +405,11 @@ bool AVCodecContextToAudioDecoderConfig(const AVCodecContext* codec_context,
                       codec_context->extradata + codec_context->extradata_size);
   }
 
-  config->Initialize(codec, sample_format, channel_layout, sample_rate,
+  config->Initialize(codec, sample_format, channel_layout, codec_context->sample_rate,
                      extra_data, encryption_scheme, seek_preroll,
                      codec_context->delay);
   if (channel_layout == CHANNEL_LAYOUT_DISCRETE)
-    config->SetChannelsForDiscrete(codec_context->channels);
+    config->SetChannelsForDiscrete(codec_context->ch_layout.nb_channels);
 
 #if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
   // These are bitstream formats unknown to ffmpeg, so they don't have
@@ -467,7 +478,7 @@ void AudioDecoderConfigToAVCodecContext(const AudioDecoderConfig& config,
 
   // TODO(scherkus): should we set |channel_layout|? I'm not sure if FFmpeg uses
   // said information to decode.
-  codec_context->channels = config.channels();
+  codec_context->ch_layout.nb_channels = config.channels();
   codec_context->sample_rate = config.samples_per_second();
 
   if (config.extra_data().empty()) {
@@ -495,6 +506,7 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
   // for now, but may not always be true forever. Fix this in the future.
   gfx::Rect visible_rect(codec_context->width, codec_context->height);
   gfx::Size coded_size = visible_rect.size();
+  gfx::HDRMetadata hdr_metadata;
 
   // In some cases a container may have a DAR but no PAR, but FFmpeg translates
   // everything to PAR. It is possible to get the render width and height, but I
@@ -523,6 +535,17 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
   // TODO(chcunningham): We need real profiles for all of the codecs below to
   // actually handle capabilities requests correctly. http://crbug.com/784610
   VideoCodecProfile profile = VIDEO_CODEC_PROFILE_UNKNOWN;
+
+  // Prefer the color space found by libavcodec if available
+  VideoColorSpace color_space =
+      VideoColorSpace(codec_context->color_primaries, codec_context->color_trc,
+                      codec_context->colorspace,
+                      codec_context->color_range == AVCOL_RANGE_JPEG
+                          ? gfx::ColorSpace::RangeID::FULL
+                          : gfx::ColorSpace::RangeID::LIMITED);
+
+  VideoDecoderConfig::AlphaMode alpha_mode = GetAlphaMode(stream);
+
   switch (codec) {
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
     case VideoCodec::kH264: {
@@ -542,7 +565,75 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
         profile = H264PROFILE_BASELINE;
       break;
     }
-#endif
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+    case VideoCodec::kHEVC: {
+      int hevc_profile = -1;
+      // We need to parse extradata each time, because we wont add ffmpeg
+      // hevc decoder & parser to chromium and codec_context->profile
+      // should always be FF_PROFILE_UNKNOWN (-99) here
+      if (codec_context->extradata && codec_context->extradata_size) {
+        mp4::HEVCDecoderConfigurationRecord hevc_config;
+        if (hevc_config.Parse(codec_context->extradata,
+                              codec_context->extradata_size)) {
+          hevc_profile = hevc_config.general_profile_idc;
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+          if (!color_space.IsSpecified()) {
+            // We should try to parsed color space from SPS if the
+            // result from libavcodec is not specified in case
+            // that some encoder not write extra colorspace info to
+            // the container
+            color_space = hevc_config.GetColorSpace();
+          }
+          hdr_metadata = hevc_config.GetHDRMetadata();
+          alpha_mode = hevc_config.GetAlphaMode();
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+        }
+      }
+      // The values of general_profile_idc are taken from the HEVC standard, see
+      // the latest https://www.itu.int/rec/T-REC-H.265/en
+      switch (hevc_profile) {
+        case 1:
+          profile = HEVCPROFILE_MAIN;
+          break;
+        case 2:
+          profile = HEVCPROFILE_MAIN10;
+          break;
+        case 3:
+          profile = HEVCPROFILE_MAIN_STILL_PICTURE;
+          break;
+        case 4:
+          profile = HEVCPROFILE_REXT;
+          break;
+        case 5:
+          profile = HEVCPROFILE_HIGH_THROUGHPUT;
+          break;
+        case 6:
+          profile = HEVCPROFILE_MULTIVIEW_MAIN;
+          break;
+        case 7:
+          profile = HEVCPROFILE_SCALABLE_MAIN;
+          break;
+        case 8:
+          profile = HEVCPROFILE_3D_MAIN;
+          break;
+        case 9:
+          profile = HEVCPROFILE_SCREEN_EXTENDED;
+          break;
+        case 10:
+          profile = HEVCPROFILE_SCALABLE_REXT;
+          break;
+        case 11:
+          profile = HEVCPROFILE_HIGH_THROUGHPUT_SCREEN_EXTENDED;
+          break;
+        default:
+          // Always assign a default if all heuristics fail.
+          profile = HEVCPROFILE_MAIN;
+          break;
+      }
+      break;
+    }
+#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
+#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
     case VideoCodec::kVP8:
       profile = VP8PROFILE_ANY;
       break;
@@ -568,11 +659,6 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
     case VideoCodec::kAV1:
       profile = AV1PROFILE_PROFILE_MAIN;
       break;
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-    case VideoCodec::kHEVC:
-      profile = HEVCPROFILE_MAIN;
-      break;
-#endif
     case VideoCodec::kTheora:
       profile = THEORAPROFILE_ANY;
       break;
@@ -580,40 +666,15 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
       profile = ProfileIDToVideoCodecProfile(codec_context->profile);
   }
 
-  auto* alpha_mode = av_dict_get(stream->metadata, "alpha_mode", nullptr, 0);
-  const bool has_alpha = alpha_mode && !strcmp(alpha_mode->value, "1");
+  void* display_matrix =
+      av_stream_get_side_data(stream, AV_PKT_DATA_DISPLAYMATRIX, nullptr);
 
-  VideoRotation video_rotation = VIDEO_ROTATION_0;
-  int rotation = 0;
-  AVDictionaryEntry* rotation_entry = NULL;
-  rotation_entry = av_dict_get(stream->metadata, "rotate", nullptr, 0);
-  if (rotation_entry && rotation_entry->value && rotation_entry->value[0])
-    base::StringToInt(rotation_entry->value, &rotation);
-
-  switch (rotation) {
-    case 0:
-      break;
-    case 90:
-      video_rotation = VIDEO_ROTATION_90;
-      break;
-    case 180:
-      video_rotation = VIDEO_ROTATION_180;
-      break;
-    case 270:
-      video_rotation = VIDEO_ROTATION_270;
-      break;
-    default:
-      DLOG(ERROR) << "Unsupported video rotation metadata: " << rotation;
-      break;
+  VideoTransformation video_transformation = VideoTransformation();
+  if (display_matrix) {
+    video_transformation = VideoTransformation::FromFFmpegDisplayMatrix(
+        static_cast<int32_t*>(display_matrix));
   }
 
-  // Prefer the color space found by libavcodec if available.
-  VideoColorSpace color_space =
-      VideoColorSpace(codec_context->color_primaries, codec_context->color_trc,
-                      codec_context->colorspace,
-                      codec_context->color_range == AVCOL_RANGE_JPEG
-                          ? gfx::ColorSpace::RangeID::FULL
-                          : gfx::ColorSpace::RangeID::LIMITED);
   if (!color_space.IsSpecified()) {
     // VP9 frames may have color information, but that information cannot
     // express new color spaces, like HDR. For that reason, color space
@@ -657,12 +718,9 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
                       codec_context->extradata + codec_context->extradata_size);
   }
   // TODO(tmathmeyer) ffmpeg can't provide us with an actual video rotation yet.
-  config->Initialize(codec, profile,
-                     has_alpha ? VideoDecoderConfig::AlphaMode::kHasAlpha
-                               : VideoDecoderConfig::AlphaMode::kIsOpaque,
-                     color_space, VideoTransformation(video_rotation),
-                     coded_size, visible_rect, natural_size, extra_data,
-                     GetEncryptionScheme(stream));
+  config->Initialize(codec, profile, alpha_mode, color_space,
+                     video_transformation, coded_size, visible_rect,
+                     natural_size, extra_data, GetEncryptionScheme(stream));
   // Set the aspect ratio explicitly since our version hasn't been rounded.
   config->set_aspect_ratio(aspect_ratio);
 
@@ -672,7 +730,6 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
       if (side_data.type != AV_PKT_DATA_MASTERING_DISPLAY_METADATA)
         continue;
 
-      gfx::HDRMetadata hdr_metadata{};
       AVMasteringDisplayMetadata* metadata =
           reinterpret_cast<AVMasteringDisplayMetadata*>(side_data.data);
       if (metadata->has_primaries) {
@@ -694,8 +751,11 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
         hdr_metadata.color_volume_metadata.luminance_min =
             av_q2d(metadata->min_luminance);
       }
-      config->set_hdr_metadata(hdr_metadata);
     }
+  }
+
+  if (hdr_metadata.IsValid()) {
+    config->set_hdr_metadata(hdr_metadata);
   }
 
   return true;

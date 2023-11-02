@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -102,6 +102,9 @@ GPU_GLES2_EXPORT GrVkYcbcrConversionInfo CreateGrVkYcbcrConversionInfo(
 // to free released memory immediately.
 GPU_GLES2_EXPORT bool ShouldVulkanSyncCpuForSkiaSubmit(
     viz::VulkanContextProvider* context_provider);
+
+GPU_GLES2_EXPORT uint64_t
+GrBackendTextureTracingID(const GrBackendTexture& backend_texture);
 
 }  // namespace gpu
 

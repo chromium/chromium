@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,61 +11,43 @@
 #include "components/breadcrumbs/core/application_breadcrumbs_not_user_action.inc"
 #include "components/breadcrumbs/core/breadcrumb_manager.h"
 #include "components/breadcrumbs/core/breadcrumb_persistent_storage_manager.h"
-#include "components/breadcrumbs/core/crash_reporter_breadcrumb_observer.h"
 
 namespace breadcrumbs {
 
+namespace {
+
+void AddEvent(const std::string& event) {
+  breadcrumbs::BreadcrumbManager::GetInstance().AddEvent(event);
+}
+
+}  // namespace
+
 ApplicationBreadcrumbsLogger::ApplicationBreadcrumbsLogger(
-    BreadcrumbManager* breadcrumb_manager)
-    : breadcrumb_manager_(breadcrumb_manager),
-      user_action_callback_(
+    const base::FilePath& storage_dir,
+    base::RepeatingCallback<bool()> is_metrics_enabled_callback)
+    : user_action_callback_(
           base::BindRepeating(&ApplicationBreadcrumbsLogger::OnUserAction,
                               base::Unretained(this))),
       memory_pressure_listener_(std::make_unique<base::MemoryPressureListener>(
           FROM_HERE,
           base::BindRepeating(&ApplicationBreadcrumbsLogger::OnMemoryPressure,
-                              base::Unretained(this)))) {
+                              base::Unretained(this)))),
+      persistent_storage_manager_(
+          std::make_unique<BreadcrumbPersistentStorageManager>(
+              storage_dir,
+              std::move(is_metrics_enabled_callback))) {
   base::AddActionCallback(user_action_callback_);
-
-  // Start crash reporter listening for breadcrumbs logged to
-  // |breadcrumb_manager_|. Collected breadcrumbs will be attached to crash
-  // reports.
-  CrashReporterBreadcrumbObserver::GetInstance().ObserveBreadcrumbManager(
-      breadcrumb_manager_);
-
   AddEvent("Startup");
 }
 
 ApplicationBreadcrumbsLogger::~ApplicationBreadcrumbsLogger() {
   AddEvent("Shutdown");
   base::RemoveActionCallback(user_action_callback_);
-  CrashReporterBreadcrumbObserver::GetInstance().StopObservingBreadcrumbManager(
-      breadcrumb_manager_);
-  if (persistent_storage_manager_) {
-    persistent_storage_manager_->StopMonitoringBreadcrumbManager(
-        breadcrumb_manager_);
-  }
-}
-
-void ApplicationBreadcrumbsLogger::SetPersistentStorageManager(
-    std::unique_ptr<BreadcrumbPersistentStorageManager>
-        persistent_storage_manager) {
-  if (persistent_storage_manager_) {
-    persistent_storage_manager_->StopMonitoringBreadcrumbManager(
-        breadcrumb_manager_);
-  }
-
-  persistent_storage_manager_ = std::move(persistent_storage_manager);
-  persistent_storage_manager_->MonitorBreadcrumbManager(breadcrumb_manager_);
 }
 
 BreadcrumbPersistentStorageManager*
 ApplicationBreadcrumbsLogger::GetPersistentStorageManager() const {
   return persistent_storage_manager_.get();
-}
-
-void ApplicationBreadcrumbsLogger::AddEvent(const std::string& event) {
-  breadcrumb_manager_->AddEvent(event);
 }
 
 void ApplicationBreadcrumbsLogger::OnUserAction(const std::string& action,
@@ -86,7 +68,7 @@ void ApplicationBreadcrumbsLogger::OnUserAction(const std::string& action,
 
 void ApplicationBreadcrumbsLogger::OnMemoryPressure(
     base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
-  std::string pressure_string = "";
+  const char* pressure_string = "";
   switch (memory_pressure_level) {
     case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE:
       pressure_string = "None";
@@ -99,7 +81,7 @@ void ApplicationBreadcrumbsLogger::OnMemoryPressure(
       break;
   }
 
-  AddEvent(base::StringPrintf("Memory Pressure: %s", pressure_string.c_str()));
+  AddEvent(base::StringPrintf("Memory Pressure: %s", pressure_string));
 }
 
 bool ApplicationBreadcrumbsLogger::IsUserTriggeredAction(

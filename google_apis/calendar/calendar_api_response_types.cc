@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,11 @@
 
 #include <stddef.h>
 
+#include <map>
 #include <memory>
+#include <string>
 
+#include "base/containers/fixed_flat_map.h"
 #include "base/json/json_value_converter.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -16,6 +19,7 @@
 #include "base/values.h"
 #include "google_apis/common/parser_util.h"
 #include "google_apis/common/time_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace google_apis {
 
@@ -24,20 +28,145 @@ namespace calendar {
 namespace {
 
 // EventList
-const char kTimeZone[] = "timeZone";
-const char kCalendarEventListKind[] = "calendar#events";
+constexpr char kCalendarEventListKind[] = "calendar#events";
+constexpr char kTimeZone[] = "timeZone";
 
 // DateTime
-const char kDateTime[] = "dateTime";
+constexpr char kDateTime[] = "dateTime";
+
+// Date
+constexpr char kDate[] = "date";
 
 // CalendarEvent
-const char kSummary[] = "summary";
-const char kStart[] = "start";
-const char kEnd[] = "end";
-const char kColorId[] = "colorId";
-const char kStatus[] = "status";
-const char kHtmlLink[] = "htmlLink";
-const char kCalendarEventKind[] = "calendar#event";
+constexpr char kAttendees[] = "attendees";
+constexpr char kAttendeesOmitted[] = "attendeesOmitted";
+constexpr char kAttendeesResponseStatus[] = "responseStatus";
+constexpr char kAttendeesSelf[] = "self";
+constexpr char kCalendarEventKind[] = "calendar#event";
+constexpr char kColorId[] = "colorId";
+constexpr char kEnd[] = "end";
+constexpr char kHtmlLink[] = "htmlLink";
+constexpr char kPathToCreatorSelf[] = "creator.self";
+constexpr char kStart[] = "start";
+constexpr char kStatus[] = "status";
+constexpr char kSummary[] = "summary";
+
+constexpr auto kEventStatuses =
+    base::MakeFixedFlatMap<base::StringPiece, CalendarEvent::EventStatus>(
+        {{"cancelled", CalendarEvent::EventStatus::kCancelled},
+         {"confirmed", CalendarEvent::EventStatus::kConfirmed},
+         {"tentative", CalendarEvent::EventStatus::kTentative}});
+
+constexpr auto kAttendeesResponseStatuses =
+    base::MakeFixedFlatMap<base::StringPiece, CalendarEvent::ResponseStatus>(
+        {{"accepted", CalendarEvent::ResponseStatus::kAccepted},
+         {"declined", CalendarEvent::ResponseStatus::kDeclined},
+         {"needsAction", CalendarEvent::ResponseStatus::kNeedsAction},
+         {"tentative", CalendarEvent::ResponseStatus::kTentative}});
+
+// Converts the `items` field from the response. This method helps to use the
+// custom conversion entrypoint `CalendarEvent::CreateFrom`.
+// Returns false when it fails (e.g. the value is structurally different from
+// expected).
+bool ConvertResponseItems(const base::Value* value,
+                          std::vector<std::unique_ptr<CalendarEvent>>* result) {
+  const auto* items = value->GetIfList();
+  if (!items)
+    return false;
+
+  result->reserve(items->size());
+  for (const auto& item : *items) {
+    auto event = CalendarEvent::CreateFrom(item);
+    if (!event)
+      return false;
+    result->push_back(std::move(event));
+  }
+
+  return true;
+}
+
+// Converts the event status to `EventStatus`. Returns false when it fails
+// (e.g. the value is structurally different from expected).
+bool ConvertEventStatus(const base::Value* value,
+                        CalendarEvent::EventStatus* result) {
+  DCHECK(value);
+  DCHECK(result);
+
+  const auto* status = value->GetIfString();
+  if (!status) {
+    return false;
+  }
+
+  const auto* it = kEventStatuses.find(*status);
+  if (it != kEventStatuses.end()) {
+    *result = it->second;
+  } else {
+    *result = CalendarEvent::EventStatus::kUnknown;
+  }
+  return true;
+}
+
+// Returns user's self response status on the event, or `absl::nullopt` in case
+// the passed value is structurally different from expected.
+absl::optional<CalendarEvent::ResponseStatus> CalculateSelfResponseStatus(
+    const base::Value& value) {
+  const auto* event = value.GetIfDict();
+  if (!event)
+    return absl::nullopt;
+
+  const auto* attendees_raw_value = event->Find(kAttendees);
+  if (!attendees_raw_value) {
+    // It's okay not to have `attendees` field in the response, it's possible
+    // in two cases:
+    // - this is a personal event of the `default` type without other
+    // attendees;
+    // - user invited 2+ guests and removed themselves from the event (also,
+    // the `attendeesOmitted` flag will be set to true).
+
+    const bool is_self_created =
+        event->FindBoolByDottedPath(kPathToCreatorSelf).value_or(false);
+    const bool has_omitted_attendees =
+        event->FindBool(kAttendeesOmitted).value_or(false);
+
+    if (is_self_created && !has_omitted_attendees) {
+      // It's not possible to create a personal event and mark it as
+      // tentative or declined.
+      return CalendarEvent::ResponseStatus::kAccepted;
+    }
+
+    return CalendarEvent::ResponseStatus::kUnknown;
+  }
+
+  const auto* attendees = attendees_raw_value->GetIfList();
+  if (!attendees)
+    return absl::nullopt;
+
+  for (const auto& x : *attendees) {
+    const auto* attendee = x.GetIfDict();
+    if (!attendee)
+      return absl::nullopt;
+
+    const bool is_self = attendee->FindBool(kAttendeesSelf).value_or(false);
+    if (!is_self) {
+      // A special case when user invited 1 more guest and removed themselves
+      // from the event. In this case that user will be returned as an
+      // attendee (the total number of attendees <= the requested number), safe
+      // to ignore this item.
+      continue;
+    }
+
+    const auto* responseStatus = attendee->FindString(kAttendeesResponseStatus);
+    if (!responseStatus)
+      return absl::nullopt;
+
+    const auto* it = kAttendeesResponseStatuses.find(*responseStatus);
+    if (it != kAttendeesResponseStatuses.end()) {
+      return it->second;
+    }
+  }
+
+  return CalendarEvent::ResponseStatus::kUnknown;
+}
 
 }  // namespace
 
@@ -54,6 +183,8 @@ void DateTime::RegisterJSONConverter(
     base::JSONValueConverter<DateTime>* converter) {
   converter->RegisterCustomField<base::Time>(kDateTime, &DateTime::date_time_,
                                              &util::GetTimeFromString);
+  converter->RegisterCustomField<base::Time>(kDate, &DateTime::date_time_,
+                                             &util::GetDateOnlyFromString);
 }
 
 // static
@@ -82,7 +213,8 @@ void CalendarEvent::RegisterJSONConverter(
   converter->RegisterStringField(kSummary, &CalendarEvent::summary_);
   converter->RegisterStringField(kHtmlLink, &CalendarEvent::html_link_);
   converter->RegisterStringField(kColorId, &CalendarEvent::color_id_);
-  converter->RegisterStringField(kStatus, &CalendarEvent::status_);
+  converter->RegisterCustomValueField(kStatus, &CalendarEvent::status_,
+                                      &ConvertEventStatus);
   converter->RegisterCustomValueField(kStart, &CalendarEvent::start_time_,
                                       &DateTime::CreateDateTimeFromValue);
   converter->RegisterCustomValueField(kEnd, &CalendarEvent::end_time_,
@@ -100,7 +232,15 @@ std::unique_ptr<CalendarEvent> CalendarEvent::CreateFrom(
     return nullptr;
   }
 
-  return event;
+  auto self_response_status = CalculateSelfResponseStatus(value);
+  if (self_response_status.has_value()) {
+    event->set_self_response_status(self_response_status.value());
+    return event;
+  }
+
+  DVLOG(1) << "Unable to calculate self response status: Invalid "
+              "CalendarEvent JSON!";
+  return nullptr;
 }
 
 int CalendarEvent::GetApproximateSizeInBytes() const {
@@ -111,7 +251,8 @@ int CalendarEvent::GetApproximateSizeInBytes() const {
   total_bytes += summary_.length();
   total_bytes += html_link_.length();
   total_bytes += color_id_.length();
-  total_bytes += status_.length();
+  total_bytes += sizeof(status_);
+  total_bytes += sizeof(self_response_status_);
 
   return total_bytes;
 }
@@ -126,8 +267,8 @@ void EventList::RegisterJSONConverter(
   converter->RegisterStringField(kTimeZone, &EventList::time_zone_);
   converter->RegisterStringField(kApiResponseETagKey, &EventList::etag_);
   converter->RegisterStringField(kApiResponseKindKey, &EventList::kind_);
-  converter->RegisterRepeatedMessage<CalendarEvent>(kApiResponseItemsKey,
-                                                    &EventList::items_);
+  converter->RegisterCustomValueField(kApiResponseItemsKey, &EventList::items_,
+                                      &ConvertResponseItems);
 }
 
 // static

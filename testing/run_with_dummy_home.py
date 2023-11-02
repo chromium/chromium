@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-# Copyright 2018 The Chromium Authors. All rights reserved.
+#!/usr/bin/env python3
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -9,8 +9,6 @@ Helper for running a test with a dummy $HOME, populated with just enough for
 tests to run and pass. Useful for isolating tests from the real $HOME, which
 can contain config files that negatively affect test performance.
 """
-
-from __future__ import print_function
 
 import os
 import shutil

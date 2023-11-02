@@ -1,11 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef PPAPI_HOST_INSTANCE_MESSAGE_FILTER_H_
 #define PPAPI_HOST_INSTANCE_MESSAGE_FILTER_H_
 
-#include "base/macros.h"
 #include "ppapi/host/ppapi_host_export.h"
 
 namespace IPC {

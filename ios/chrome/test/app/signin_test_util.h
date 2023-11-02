@@ -1,11 +1,11 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef IOS_CHROME_TEST_APP_SIGNIN_TEST_UTIL_H_
 #define IOS_CHROME_TEST_APP_SIGNIN_TEST_UTIL_H_
 
-@class ChromeIdentity;
+@protocol SystemIdentity;
 
 namespace chrome_test_util {
 
@@ -35,7 +35,10 @@ void ResetUserApprovedAccountListManager();
 
 // Revokes the Sync consent of the primary account. The user will be in the
 // signed-in state.
-void SignInWithoutSync(ChromeIdentity* identity);
+void SignInWithoutSync(id<SystemIdentity> identity);
+
+// Resets all the selected data types to be turned on in the sync engine.
+void ResetSyncSelectedDataTypes();
 
 }  // namespace chrome_test_util
 

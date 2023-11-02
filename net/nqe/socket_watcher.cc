@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,11 +12,7 @@
 #include "net/base/address_list.h"
 #include "net/base/ip_address.h"
 
-namespace net {
-
-namespace nqe {
-
-namespace internal {
+namespace net::nqe::internal {
 
 namespace {
 
@@ -71,7 +67,6 @@ SocketWatcher::SocketWatcher(
                         (!address_list.empty() &&
                          address_list.front().address().IsPubliclyRoutable())),
       tick_clock_(tick_clock),
-      first_quic_rtt_notification_received_(false),
       host_(CalculateIPHash(address_list)) {
   DCHECK(tick_clock_);
   DCHECK(last_rtt_notification_.is_null());
@@ -130,8 +125,4 @@ void SocketWatcher::OnConnectionChanged() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-}  // namespace internal
-
-}  // namespace nqe
-
-}  // namespace net
+}  // namespace net::nqe::internal

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <cstdint>
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/owned_window_anchor.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
@@ -29,7 +30,7 @@ struct ShellPopupParams {
 
   // This parameter is temporarily optional. Later, when all the clients
   // start to pass these parameters, absl::optional type will be removed.
-  absl::optional<ui::OwnedWindowAnchor> anchor;
+  absl::optional<OwnedWindowAnchor> anchor;
 };
 
 // A wrapper around different versions of xdg popups.
@@ -60,6 +61,13 @@ class ShellPopupWrapper {
                       OwnedWindowAnchorPosition* anchor_position,
                       OwnedWindowAnchorGravity* anchor_gravity,
                       OwnedWindowConstraintAdjustment* constraints) const;
+
+  // Whether the protocol supports surface decoration.
+  virtual bool SupportsDecoration() = 0;
+
+  // Must only be called if SupportsDecoration() returns true.
+  // Decorates the surface with a drop shadow.
+  virtual void Decorate() = 0;
 
  protected:
   // Asks the compositor to take explicit-grab for this popup.

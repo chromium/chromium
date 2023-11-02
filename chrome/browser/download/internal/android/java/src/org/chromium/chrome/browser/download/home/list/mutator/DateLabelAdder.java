@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -97,9 +97,6 @@ public class DateLabelAdder implements ListConsumer {
 
     private @SectionHeaderType int getSectionHeaderType(@Nullable OfflineItem offlineItem) {
         if (offlineItem == null) return SectionHeaderType.INVALID;
-
-        // Scheduled for later section shows at the top.
-        if (offlineItem.schedule != null) return SectionHeaderType.SCHEDULED_LATER;
 
         // Just now section follows the scheduled for later section.
         boolean isJustNow = mJustNowProvider != null && mJustNowProvider.isJustNowItem(offlineItem);

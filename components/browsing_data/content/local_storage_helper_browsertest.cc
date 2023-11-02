@@ -1,7 +1,8 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/browsing_data/content/local_storage_helper.h"
 
@@ -105,11 +106,11 @@ class StopTestOnCallback {
     ASSERT_EQ(2u, local_storage_info.size());
     bool origin1_found = false, origin2_found = false;
     for (const auto& info : local_storage_info) {
-      if (info.origin.Serialize() == kOrigin1) {
+      if (info.storage_key.origin().Serialize() == kOrigin1) {
         EXPECT_FALSE(origin1_found);
         origin1_found = true;
       } else {
-        ASSERT_EQ(info.origin.Serialize(), kOrigin2);
+        ASSERT_EQ(info.storage_key.origin().Serialize(), kOrigin2);
         EXPECT_FALSE(origin2_found);
         origin2_found = true;
       }
@@ -120,7 +121,7 @@ class StopTestOnCallback {
   }
 
  private:
-  LocalStorageHelper* local_storage_helper_;
+  raw_ptr<LocalStorageHelper> local_storage_helper_;
 };
 
 IN_PROC_BROWSER_TEST_F(LocalStorageHelperTest, CallbackCompletes) {
@@ -159,11 +160,11 @@ IN_PROC_BROWSER_TEST_F(LocalStorageHelperTest, DeleteSingleOrigin) {
   ASSERT_EQ(2u, usage_infos.size());
   bool origin2_found = false, origin3_found = false;
   for (const auto& info : usage_infos) {
-    if (info->origin.Serialize() == kOrigin2) {
+    if (info->storage_key.origin().Serialize() == kOrigin2) {
       EXPECT_FALSE(origin2_found);
       origin2_found = true;
     } else {
-      ASSERT_EQ(info->origin.Serialize(), kOrigin3);
+      ASSERT_EQ(info->storage_key.origin().Serialize(), kOrigin3);
       EXPECT_FALSE(origin3_found);
       origin3_found = true;
     }
@@ -191,9 +192,9 @@ IN_PROC_BROWSER_TEST_F(LocalStorageHelperTest, CannedAddLocalStorage) {
 
   ASSERT_EQ(2u, result.size());
   auto info = result.begin();
-  EXPECT_EQ(storage_key1.origin(), info->origin);
+  EXPECT_EQ(storage_key1, info->storage_key);
   info++;
-  EXPECT_EQ(storage_key2.origin(), info->origin);
+  EXPECT_EQ(storage_key2, info->storage_key);
 }
 
 IN_PROC_BROWSER_TEST_F(LocalStorageHelperTest, CannedUnique) {
@@ -212,7 +213,7 @@ IN_PROC_BROWSER_TEST_F(LocalStorageHelperTest, CannedUnique) {
   std::list<content::StorageUsageInfo> result = callback.result();
 
   ASSERT_EQ(1u, result.size());
-  EXPECT_EQ(storage_key.origin(), result.begin()->origin);
+  EXPECT_EQ(storage_key, result.begin()->storage_key);
 }
 
 IN_PROC_BROWSER_TEST_F(LocalStorageHelperTest, CannedEmptyIgnored) {
@@ -265,11 +266,11 @@ IN_PROC_BROWSER_TEST_F(LocalStorageHelperTest, CannedEmptyIgnored) {
   result = callback2.result();
   ASSERT_EQ(2u, result.size());
 
-  // Sanity check the origins are as expected.
+  // Sanity check the storage keys are as expected.
   auto info = result.begin();
-  EXPECT_EQ(storage_key1.origin(), info->origin);
+  EXPECT_EQ(storage_key1, info->storage_key);
   info++;
-  EXPECT_EQ(storage_key2.origin(), info->origin);
+  EXPECT_EQ(storage_key2, info->storage_key);
 }
 
 }  // namespace

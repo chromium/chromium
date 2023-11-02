@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,12 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string>
 
+#include "ash/components/arc/mojom/file_system.mojom-forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/arc/fileapi/arc_file_system_operation_runner_util.h"
 #include "mojo/public/cpp/system/handle.h"
 #include "net/base/completion_once_callback.h"
 #include "storage/browser/file_system/file_stream_writer.h"
@@ -39,27 +42,32 @@ class ArcContentFileSystemFileStreamWriter : public storage::FileStreamWriter {
 
   ~ArcContentFileSystemFileStreamWriter() override;
 
-  // storage::FileStreamReader override:
+  // storage::FileStreamWriter override:
   int Write(net::IOBuffer* buffer,
-            int bufffer_length,
+            int buffer_length,
             net::CompletionOnceCallback callback) override;
   int Cancel(net::CompletionOnceCallback callback) override;
   int Flush(net::CompletionOnceCallback callback) override;
 
  private:
-  // Actually performs read.
+  using CloseStatus = file_system_operation_runner_util::CloseStatus;
+
+  // Called to close the ARC file descriptor when operations are completed.
+  void CloseInternal(const CloseStatus status);
+
+  // Actually performs write.
   void WriteInternal(net::IOBuffer* buffer,
                      int buffer_length,
                      net::CompletionOnceCallback callback);
 
-  // Called when read completes.
+  // Called when write completes.
   void OnWrite(net::CompletionOnceCallback callback, int result);
 
-  // Called when opening file completes.
-  void OnOpenFile(scoped_refptr<net::IOBuffer> buf,
-                  int buffer_length,
-                  net::CompletionOnceCallback callback,
-                  mojo::ScopedHandle handle);
+  // Called when opening file session completes.
+  void OnOpenFileSession(scoped_refptr<net::IOBuffer> buf,
+                         int buffer_length,
+                         net::CompletionOnceCallback callback,
+                         mojom::FileSessionPtr maybe_file_handle);
 
   // Called when seek completes.
   void OnSeekFile(scoped_refptr<net::IOBuffer> buf,
@@ -76,6 +84,7 @@ class ArcContentFileSystemFileStreamWriter : public storage::FileStreamWriter {
 
   const GURL arc_url_;
   const int64_t offset_;
+  std::string session_id_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 

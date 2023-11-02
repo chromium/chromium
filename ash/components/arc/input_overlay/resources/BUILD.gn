@@ -1,0 +1,21 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//tools/grit/grit_rule.gni")
+
+# TODO(b/207518736): This target will be changed to proto soon. When that
+# happens, also add assert(is_chromeos_ash) for compliance.
+
+grit("resources") {
+  source = "input_overlay_resources.grd"
+  output_name = "input_overlay_resources"
+
+  # TODO(b/207518736): Input overlay resources will be changed to proto soon,
+  # thus not moving this output path for now.
+  output_dir = "$root_gen_dir/components/arc"
+  outputs = [
+    "grit/input_overlay_resources.h",
+    "input_overlay_resources.pak",
+  ]
+}

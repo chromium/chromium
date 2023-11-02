@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -158,6 +158,9 @@ void FormActivityTabHelper::FormSubmissionHandler(
   if (!sender_frame) {
     return;
   }
+  if (sender_frame->IsMainFrame() != message.is_main_frame()) {
+    return;
+  }
 
   std::string href;
   if (!message_body->GetString("href", &href)) {
@@ -177,7 +180,7 @@ void FormActivityTabHelper::FormSubmissionHandler(
 
   for (auto& observer : observers_)
     observer.DocumentSubmitted(web_state, sender_frame, form_name, form_data,
-                               submitted_by_user, message.is_main_frame());
+                               submitted_by_user);
 }
 
 bool FormActivityTabHelper::GetBaseFormActivityParams(

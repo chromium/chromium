@@ -1,9 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/metrics/ukm_background_recorder_service.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/browser.h"
@@ -65,7 +66,7 @@ class UkmBackgroundRecorderBrowserTest : public InProcessBrowserTest {
   }
 
  private:
-  ukm::UkmBackgroundRecorderService* background_recorder_service_;
+  raw_ptr<ukm::UkmBackgroundRecorderService> background_recorder_service_;
 };
 
 IN_PROC_BROWSER_TEST_F(UkmBackgroundRecorderBrowserTest,

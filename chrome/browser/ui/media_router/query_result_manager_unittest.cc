@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,9 +31,9 @@ namespace {
 
 const char kOrigin[] = "https://origin.com";
 
-class MockObserver : public QueryResultManager::Observer {
+class MockObserver : public MediaSinkWithCastModesObserver {
  public:
-  MOCK_METHOD1(OnResultsUpdated,
+  MOCK_METHOD1(OnSinksUpdated,
                void(const std::vector<MediaSinkWithCastModes>& sinks));
 };
 
@@ -50,7 +50,7 @@ class QueryResultManagerTest : public ::testing::Test {
   void DiscoverSinks(MediaCastMode cast_mode, const MediaSource& source) {
     EXPECT_CALL(mock_router_, RegisterMediaSinksObserver(_))
         .WillOnce(Return(true));
-    EXPECT_CALL(mock_observer_, OnResultsUpdated(_));
+    EXPECT_CALL(mock_observer_, OnSinksUpdated(_));
     query_result_manager_.SetSourcesForCastMode(
         cast_mode, {source}, url::Origin::Create(GURL(kOrigin)));
   }
@@ -97,12 +97,12 @@ TEST_F(QueryResultManagerTest, Observers) {
   query_result_manager_.AddObserver(&ob1);
   query_result_manager_.AddObserver(&ob2);
 
-  EXPECT_CALL(ob1, OnResultsUpdated(_));
-  EXPECT_CALL(ob2, OnResultsUpdated(_));
+  EXPECT_CALL(ob1, OnSinksUpdated(_));
+  EXPECT_CALL(ob2, OnSinksUpdated(_));
   query_result_manager_.NotifyOnResultsUpdated();
 
   query_result_manager_.RemoveObserver(&ob2);
-  EXPECT_CALL(ob1, OnResultsUpdated(_));
+  EXPECT_CALL(ob1, OnSinksUpdated(_));
   query_result_manager_.NotifyOnResultsUpdated();
 
   query_result_manager_.RemoveObserver(&ob1);
@@ -179,9 +179,9 @@ TEST_F(QueryResultManagerTest, MultipleQueries) {
   std::vector<MediaSinkWithCastModes> expected_sinks = {
       {sink1, {}}, {sink2, {}}, {sink3, {}}, {sink4, {}}};
   const auto& sinks_observers = query_result_manager_.sinks_observers_;
-  auto* any_sink_observer = sinks_observers.find(MediaSource())->second.get();
-  EXPECT_CALL(mock_observer_,
-              OnResultsUpdated(VectorSetEquals(expected_sinks)));
+  auto* any_sink_observer =
+      sinks_observers.find(absl::optional<MediaSource>())->second.get();
+  EXPECT_CALL(mock_observer_, OnSinksUpdated(VectorSetEquals(expected_sinks)));
   any_sink_observer->OnSinksUpdated(sinks_query_result, {});
 
   // Action: PRESENTATION -> [1, 2, 3].
@@ -192,8 +192,7 @@ TEST_F(QueryResultManagerTest, MultipleQueries) {
                     {sink4, {}}};
   auto* presentation1_sinks_observer =
       sinks_observers.find(presentation_source1)->second.get();
-  EXPECT_CALL(mock_observer_,
-              OnResultsUpdated(VectorSetEquals(expected_sinks)));
+  EXPECT_CALL(mock_observer_, OnSinksUpdated(VectorSetEquals(expected_sinks)));
   presentation1_sinks_observer->OnSinksUpdated(sinks_query_result, {});
 
   // Action: TAB_MIRROR -> [2, 3, 4].
@@ -204,8 +203,7 @@ TEST_F(QueryResultManagerTest, MultipleQueries) {
       {sink3, {MediaCastMode::PRESENTATION, MediaCastMode::TAB_MIRROR}},
       {sink4, {MediaCastMode::TAB_MIRROR}}};
   auto* tab_sinks_observer = sinks_observers.find(tab_source)->second.get();
-  EXPECT_CALL(mock_observer_,
-              OnResultsUpdated(VectorSetEquals(expected_sinks)));
+  EXPECT_CALL(mock_observer_, OnSinksUpdated(VectorSetEquals(expected_sinks)));
   tab_sinks_observer->OnSinksUpdated(sinks_query_result,
                                      {url::Origin::Create(GURL(kOrigin))});
 
@@ -219,8 +217,7 @@ TEST_F(QueryResultManagerTest, MultipleQueries) {
   // The observer for the new source will be registered.
   EXPECT_CALL(mock_router_, RegisterMediaSinksObserver(_))
       .WillOnce(Return(true));
-  EXPECT_CALL(mock_observer_,
-              OnResultsUpdated(VectorSetEquals(expected_sinks)));
+  EXPECT_CALL(mock_observer_, OnSinksUpdated(VectorSetEquals(expected_sinks)));
   query_result_manager_.SetSourcesForCastMode(
       MediaCastMode::PRESENTATION, {presentation_source2},
       url::Origin::Create(GURL(kOrigin)));
@@ -230,8 +227,7 @@ TEST_F(QueryResultManagerTest, MultipleQueries) {
   sinks_query_result = {sink1};
   auto* presentation2_sinks_observer =
       sinks_observers.find(presentation_source2)->second.get();
-  EXPECT_CALL(mock_observer_,
-              OnResultsUpdated(VectorSetEquals(expected_sinks)));
+  EXPECT_CALL(mock_observer_, OnSinksUpdated(VectorSetEquals(expected_sinks)));
   presentation2_sinks_observer->OnSinksUpdated(
       sinks_query_result,
       {url::Origin::Create(GURL("https://differentOrigin.com"))});
@@ -242,15 +238,13 @@ TEST_F(QueryResultManagerTest, MultipleQueries) {
   expected_sinks = {{sink2, {MediaCastMode::TAB_MIRROR}},
                     {sink3, {MediaCastMode::TAB_MIRROR}},
                     {sink4, {MediaCastMode::TAB_MIRROR}}};
-  EXPECT_CALL(mock_observer_,
-              OnResultsUpdated(VectorSetEquals(expected_sinks)));
+  EXPECT_CALL(mock_observer_, OnSinksUpdated(VectorSetEquals(expected_sinks)));
   any_sink_observer->OnSinksUpdated(sinks_query_result, {});
 
   // Action: Remove TAB_MIRROR observer.
   // |sink4| gets removed because none of the sink observers see it.
   expected_sinks = {{sink2, {}}, {sink3, {}}};
-  EXPECT_CALL(mock_observer_,
-              OnResultsUpdated(VectorSetEquals(expected_sinks)));
+  EXPECT_CALL(mock_observer_, OnSinksUpdated(VectorSetEquals(expected_sinks)));
   EXPECT_CALL(mock_router_, UnregisterMediaSinksObserver(_));
   query_result_manager_.RemoveSourcesForCastMode(MediaCastMode::TAB_MIRROR);
 

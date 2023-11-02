@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,15 @@
 
 namespace blink {
 
+class ServiceWorkerGlobalScope;
+
 class EXTENSIONS_CHROMEOS_EXPORT ChromeOSExtensions {
  public:
   // Should be called by clients before trying to create Frames.
   static void Initialize();
+
+  // Registers Mojo interfaces with ServiceWorkerGlobalScope.
+  static void InitServiceWorkerGlobalScope(ServiceWorkerGlobalScope&);
 };
 
 }  // namespace blink

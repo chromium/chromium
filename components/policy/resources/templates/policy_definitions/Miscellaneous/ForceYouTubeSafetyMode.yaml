@@ -1,0 +1,35 @@
+arc_support: This policy has no effect on the Android YouTube app. If Safety Mode
+  on YouTube should be enforced, installation of the Android YouTube app should be
+  disallowed.
+caption: Force YouTube Safety Mode
+deprecated: true
+desc: |-
+  This policy is deprecated. Consider using <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME">ForceYouTubeRestrict</ph>, which overrides this policy and allows more fine-grained tuning.
+
+        Forces YouTube Moderate Restricted Mode and prevents users from changing this setting.
+
+        If this setting is enabled, Restricted Mode on YouTube is always enforced to be at least Moderate.
+
+        If this setting is disabled or no value is set, Restricted Mode on YouTube is not enforced by <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>. External policies such as YouTube policies might still enforce Restricted Mode, though.
+example_value: false
+features:
+  can_be_recommended: false
+  dynamic_refresh: true
+  per_profile: true
+items:
+- caption: Force YouTube Restricted Mode to be at least Moderate
+  value: true
+- caption: Do not enforce YouTube Restricted Mode
+  value: false
+owners:
+- treib@chromium.org
+- igorcov@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome.*:41-
+- chrome_os:41-
+- android:41-
+tags:
+- filtering
+type: main

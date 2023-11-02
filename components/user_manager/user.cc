@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
 #include "components/account_id/account_id.h"
-#include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
@@ -51,6 +50,12 @@ std::string GetUserName(const std::string& email) {
 bool User::TypeHasGaiaAccount(UserType user_type) {
   return user_type == USER_TYPE_REGULAR ||
          user_type == USER_TYPE_CHILD;
+}
+
+// static
+bool User::TypeIsKiosk(UserType type) {
+  return type == USER_TYPE_KIOSK_APP || type == USER_TYPE_ARC_KIOSK_APP ||
+         type == USER_TYPE_WEB_KIOSK_APP;
 }
 
 // Also used for regular supervised users.
@@ -301,9 +306,7 @@ bool User::IsDeviceLocalAccount() const {
 }
 
 bool User::IsKioskType() const {
-  UserType type = GetType();
-  return type == USER_TYPE_KIOSK_APP || type == USER_TYPE_ARC_KIOSK_APP ||
-         type == USER_TYPE_WEB_KIOSK_APP;
+  return TypeIsKiosk(GetType());
 }
 
 User* User::CreateRegularUser(const AccountId& account_id,
@@ -406,10 +409,6 @@ void RegularUser::UpdateType(UserType user_type) {
       return;
     const bool old_is_child = is_child_;
     is_child_ = user_type == user_manager::USER_TYPE_CHILD;
-
-    // Clear information about profile policy requirements to enforce setting it
-    // again for the new account type.
-    user_manager::known_user::ClearProfileRequiresPolicy(GetAccountId());
 
     LOG(WARNING) << "User type has changed: " << current_type
                  << " (is_child=" << old_is_child << ") => " << user_type

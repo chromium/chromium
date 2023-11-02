@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
 #include "chrome/browser/ash/login/login_wizard.h"
 #include "chrome/browser/ash/login/screens/error_screen.h"
@@ -26,14 +27,15 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
-#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
-#include "chromeos/dbus/session_manager/session_manager_client.h"
-#include "chromeos/dbus/shill/shill_profile_client.h"
-#include "chromeos/network/network_state_test_helper.h"
+#include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/dbus/shill/shill_profile_client.h"
+#include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -76,6 +78,7 @@ class NetworkErrorScreenTest : public InProcessBrowserTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(
         switches::kDisableOOBEChromeVoxHintTimerForTesting);
+    command_line->AppendSwitch(switches::kLoginManager);
   }
 
   void ShowErrorScreenWithNetworkList() {
@@ -207,7 +210,9 @@ IN_PROC_BROWSER_TEST_F(NetworkErrorScreenTest, HideCallback) {
   EXPECT_TRUE(callback_called);
 }
 
-class GuestErrorScreenTest : public MixinBasedInProcessBrowserTest {
+class GuestErrorScreenTest
+    : public MixinBasedInProcessBrowserTest,
+      public testing::WithParamInterface<DeviceStateMixin::State> {
  public:
   GuestErrorScreenTest() { login_manager_.set_session_restore_enabled(); }
 
@@ -226,11 +231,12 @@ class GuestErrorScreenTest : public MixinBasedInProcessBrowserTest {
  protected:
   std::unique_ptr<WizardContext> wizard_context_;
   LoginManagerMixin login_manager_{&mixin_host_};
+  DeviceStateMixin device_state_{&mixin_host_, GetParam()};
 };
 
 // Test that guest signin option is shown when enabled and that clicking on it
 // starts a guest session.
-IN_PROC_BROWSER_TEST_F(GuestErrorScreenTest, PRE_GuestLogin) {
+IN_PROC_BROWSER_TEST_P(GuestErrorScreenTest, PRE_GuestLogin) {
   GetScreen()->AllowGuestSignin(true);
   GetScreen()->SetUIState(NetworkError::UI_STATE_UPDATE);
   GetScreen()->Show(wizard_context_.get());
@@ -246,11 +252,19 @@ IN_PROC_BROWSER_TEST_F(GuestErrorScreenTest, PRE_GuestLogin) {
   restart_job_waiter.Run();
 }
 
-IN_PROC_BROWSER_TEST_F(GuestErrorScreenTest, GuestLogin) {
+IN_PROC_BROWSER_TEST_P(GuestErrorScreenTest, GuestLogin) {
   login_manager_.WaitForActiveSession();
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
   EXPECT_TRUE(user_manager->IsLoggedInAsGuest());
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    GuestErrorScreenTest,
+    testing::Values(DeviceStateMixin::State::BEFORE_OOBE,
+                    // We use OOBE completed and cloud enrolled to trigger the
+                    // Gaia dialog right away.
+                    DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED));
 
 class KioskErrorScreenTest : public MixinBasedInProcessBrowserTest {
  public:

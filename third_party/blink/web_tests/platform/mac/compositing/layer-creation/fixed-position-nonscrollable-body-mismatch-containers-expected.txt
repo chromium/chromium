@@ -16,6 +16,13 @@ Even though the fixed-position element's container is nonscrollable, it should s
       "transform": 1
     },
     {
+      "name": "LayoutNGBlockFlow DIV class='scrollable bigBox'",
+      "position": [1, 1],
+      "bounds": [285, 800],
+      "contentsOpaqueForText": true,
+      "transform": 1
+    },
+    {
       "name": "HorizontalScrollbar",
       "position": [1, 286],
       "bounds": [300, 15],
@@ -26,21 +33,15 @@ Even though the fixed-position element's container is nonscrollable, it should s
       "name": "VerticalScrollbar",
       "position": [286, 1],
       "bounds": [15, 285],
-      "transform": 1
-    },
-    {
-      "name": "LayoutNGBlockFlow DIV class='scrollable bigBox'",
-      "position": [1, 1],
-      "bounds": [285, 800],
       "contentsOpaque": true,
       "transform": 1
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='fixed lime box'",
-      "position": [10, 100],
       "bounds": [100, 100],
       "contentsOpaque": true,
-      "backgroundColor": "#00FF00"
+      "backgroundColor": "#00FF00",
+      "transform": 2
     }
   ],
   "transforms": [
@@ -51,6 +52,15 @@ Even though the fixed-position element's container is nonscrollable, it should s
         [0, 1, 0, 0],
         [0, 0, 1, 0],
         [8, 68, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [10, 100, 0, 1]
       ]
     }
   ]

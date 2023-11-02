@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -85,7 +85,7 @@ scoped_refptr<DrmFramebuffer> DrmFramebuffer::AddFramebuffer(
   return base::MakeRefCounted<DrmFramebuffer>(
       std::move(drm_device), framebuffer_id, drm_format, opaque_framebuffer_id,
       opaque_format, params.modifier, params.preferred_modifiers,
-      gfx::Size(params.width, params.height));
+      gfx::Size(params.width, params.height), params.is_original_buffer);
 }
 
 // static
@@ -93,7 +93,8 @@ scoped_refptr<DrmFramebuffer> DrmFramebuffer::AddFramebuffer(
     scoped_refptr<DrmDevice> drm,
     const GbmBuffer* buffer,
     const gfx::Size& framebuffer_size,
-    std::vector<uint64_t> preferred_modifiers) {
+    std::vector<uint64_t> preferred_modifiers,
+    bool is_original_buffer) {
   DCHECK(gfx::Rect(buffer->GetSize()).Contains(gfx::Rect(framebuffer_size)));
   AddFramebufferParams params;
   params.format = buffer->GetFormat();
@@ -101,6 +102,7 @@ scoped_refptr<DrmFramebuffer> DrmFramebuffer::AddFramebuffer(
   params.width = framebuffer_size.width();
   params.height = framebuffer_size.height();
   params.num_planes = buffer->GetNumPlanes();
+  params.is_original_buffer = is_original_buffer;
   params.preferred_modifiers = preferred_modifiers;
   for (size_t i = 0; i < params.num_planes; ++i) {
     params.handles[i] = buffer->GetPlaneHandle(i);
@@ -128,13 +130,15 @@ DrmFramebuffer::DrmFramebuffer(scoped_refptr<DrmDevice> drm_device,
                                uint32_t opaque_framebuffer_pixel_format,
                                uint64_t format_modifier,
                                std::vector<uint64_t> modifiers,
-                               const gfx::Size& size)
+                               const gfx::Size& size,
+                               bool is_original_buffer)
     : drm_device_(std::move(drm_device)),
       framebuffer_id_(framebuffer_id),
       framebuffer_pixel_format_(framebuffer_pixel_format),
       opaque_framebuffer_id_(opaque_framebuffer_id),
       opaque_framebuffer_pixel_format_(opaque_framebuffer_pixel_format),
       format_modifier_(format_modifier),
+      is_original_buffer_(is_original_buffer),
       preferred_modifiers_(modifiers),
       size_(size),
       modeset_sequence_id_at_allocation_(drm_device_->modeset_sequence_id()) {}

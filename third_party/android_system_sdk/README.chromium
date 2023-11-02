@@ -2,7 +2,7 @@ Name: Android System SDK
 URL: https://android.googlesource.com/platform/frameworks/base
 Short Name:  Android System SDK
 Version: 0
-Revision: SPB3.210618.010
+Revision: TPB3.220513.017
 License: GPL v2
 License File: LICENSE
 Security Critical: No

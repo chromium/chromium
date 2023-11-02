@@ -1,16 +1,14 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/discardable_memory/common/discardable_shared_memory_heap.h"
 
-#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
 
 #include "base/bits.h"
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/format_macros.h"
 #include "base/memory/aligned_memory.h"
@@ -18,13 +16,17 @@
 #include "base/memory/page_size.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/memory_dump_manager.h"
 
+#include "base/record_replay.h"
+
 namespace discardable_memory {
 
-const base::Feature kReleaseDiscardableFreeListPages{
-    "ReleaseDiscardableFreeListPages", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kReleaseDiscardableFreeListPages,
+             "ReleaseDiscardableFreeListPages",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
 
@@ -152,7 +154,7 @@ DiscardableSharedMemoryHeap::~DiscardableSharedMemoryHeap() {
   memory_segments_.clear();
   DCHECK_EQ(num_blocks_, 0u);
   DCHECK_EQ(num_free_blocks_, 0u);
-  DCHECK_EQ(std::count_if(free_spans_, free_spans_ + base::size(free_spans_),
+  DCHECK_EQ(std::count_if(free_spans_, free_spans_ + std::size(free_spans_),
                           [](const base::LinkedList<Span>& free_spans) {
                             return !free_spans.empty();
                           }),
@@ -222,9 +224,15 @@ void DiscardableSharedMemoryHeap::MergeIntoFreeListsClean(
   // First add length of |span| to |num_free_blocks_|.
   num_free_blocks_ += span->length_;
 
+  recordreplay::Assert(
+      "[RUN-1877-2481] DiscardableSharedMemoryHeap::MergeIntoFreeListsClean A");
+
   // Merge with previous span if possible.
   auto prev_it = spans_.find(span->start_ - 1);
   if (prev_it != spans_.end() && IsInFreeList(prev_it->second)) {
+    recordreplay::Assert(
+        "[RUN-1877-2481] DiscardableSharedMemoryHeap::MergeIntoFreeListsClean "
+        "B");
     std::unique_ptr<Span> prev = RemoveFromFreeList(prev_it->second);
     DCHECK_EQ(prev->start_ + prev->length_, span->start_);
     UnregisterSpan(prev.get());
@@ -238,6 +246,9 @@ void DiscardableSharedMemoryHeap::MergeIntoFreeListsClean(
   // Merge with next span if possible.
   auto next_it = spans_.find(span->start_ + span->length_);
   if (next_it != spans_.end() && IsInFreeList(next_it->second)) {
+    recordreplay::Assert(
+        "[RUN-1877-2481] DiscardableSharedMemoryHeap::MergeIntoFreeListsClean "
+        "C");
     std::unique_ptr<Span> next = RemoveFromFreeList(next_it->second);
     DCHECK_EQ(next->start_, span->start_ + span->length_);
     UnregisterSpan(next.get());
@@ -246,6 +257,9 @@ void DiscardableSharedMemoryHeap::MergeIntoFreeListsClean(
     span->length_ += next->length_;
     spans_[span->start_ + span->length_ - 1] = span.get();
   }
+
+  recordreplay::Assert(
+      "[RUN-1877-2481] DiscardableSharedMemoryHeap::MergeIntoFreeListsClean D");
 
   InsertIntoFreeList(std::move(span));
 }
@@ -274,7 +288,7 @@ DiscardableSharedMemoryHeap::SearchFreeLists(size_t blocks, size_t slack) {
   size_t max_length = blocks + slack;
 
   // Search array of free lists for a suitable span.
-  while (length - 1 < base::size(free_spans_) - 1) {
+  while (length - 1 < std::size(free_spans_) - 1) {
     const base::LinkedList<Span>& free_spans = free_spans_[length - 1];
     if (!free_spans.empty()) {
       // Return the most recently used span located in tail.
@@ -287,7 +301,7 @@ DiscardableSharedMemoryHeap::SearchFreeLists(size_t blocks, size_t slack) {
   }
 
   const base::LinkedList<Span>& overflow_free_spans =
-      free_spans_[base::size(free_spans_) - 1];
+      free_spans_[std::size(free_spans_) - 1];
 
   // Search overflow free list for a suitable span. Starting with the most
   // recently used span located in tail and moving towards head.
@@ -392,10 +406,11 @@ bool DiscardableSharedMemoryHeap::OnMemoryDump(
     // This iterates over all the memory allocated by the heap, and calls
     // |OnMemoryDump| for each. It does not contain any information about the
     // DiscardableSharedMemoryHeap itself.
-    std::for_each(memory_segments_.begin(), memory_segments_.end(),
-                  [pmd](const std::unique_ptr<ScopedMemorySegment>& segment) {
-                    segment->OnMemoryDump(pmd);
-                  });
+    base::ranges::for_each(
+        memory_segments_,
+        [pmd](const std::unique_ptr<ScopedMemorySegment>& segment) {
+          segment->OnMemoryDump(pmd);
+        });
   }
 
   return true;
@@ -404,7 +419,11 @@ bool DiscardableSharedMemoryHeap::OnMemoryDump(
 void DiscardableSharedMemoryHeap::InsertIntoFreeList(
     std::unique_ptr<DiscardableSharedMemoryHeap::Span> span) {
   DCHECK(!IsInFreeList(span.get()));
-  size_t index = std::min(span->length_, base::size(free_spans_)) - 1;
+  size_t index = std::min(span->length_, std::size(free_spans_)) - 1;
+
+  recordreplay::Assert(
+      "[RUN-1877-2453] DiscardableSharedMemoryHeap::InsertIntoFreeList %d %zu",
+      recordreplay::PointerId(span->shared_memory()), index);
 
   free_spans_[index].Append(span.release());
 }
@@ -412,6 +431,11 @@ void DiscardableSharedMemoryHeap::InsertIntoFreeList(
 std::unique_ptr<DiscardableSharedMemoryHeap::Span>
 DiscardableSharedMemoryHeap::RemoveFromFreeList(Span* span) {
   DCHECK(IsInFreeList(span));
+
+  recordreplay::Assert(
+      "[RUN-1877-2453] DiscardableSharedMemoryHeap::RemoveFromFreeList %d",
+      recordreplay::PointerId(span->shared_memory()));
+
   span->RemoveFromList();
   return base::WrapUnique(span);
 }
@@ -455,6 +479,11 @@ void DiscardableSharedMemoryHeap::RegisterSpan(Span* span) {
 void DiscardableSharedMemoryHeap::UnregisterSpan(Span* span) {
   DCHECK(spans_.find(span->start_) != spans_.end());
   DCHECK_EQ(spans_[span->start_], span);
+
+  recordreplay::Assert(
+      "[RUN-1877-2481] DiscardableSharedMemoryHeap::UnregisterSpan %d %zu",
+      recordreplay::PointerId(span->shared_memory()), span->length_);
+
   spans_.erase(span->start_);
   if (span->length_ > 1) {
     DCHECK(spans_.find(span->start_ + span->length_ - 1) != spans_.end());
@@ -571,11 +600,11 @@ DiscardableSharedMemoryHeap::CreateMemoryAllocatorDump(
     return dump;
   }
 
-  auto it =
-      std::find_if(memory_segments_.begin(), memory_segments_.end(),
-                   [span](const std::unique_ptr<ScopedMemorySegment>& segment) {
-                     return segment->ContainsSpan(span);
-                   });
+  auto it = base::ranges::find_if(
+      memory_segments_,
+      [span](const std::unique_ptr<ScopedMemorySegment>& segment) {
+        return segment->ContainsSpan(span);
+      });
   DCHECK(it != memory_segments_.end());
   return (*it)->CreateMemoryAllocatorDump(span, block_size_, name, pmd);
 }

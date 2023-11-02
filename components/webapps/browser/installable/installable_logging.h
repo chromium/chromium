@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -64,6 +64,10 @@ enum InstallableStatusCode {
   MANIFEST_DISPLAY_OVERRIDE_NOT_SUPPORTED = 39,
   WARN_NOT_OFFLINE_CAPABLE = 40,
   PIPELINE_RESTARTED = 41,
+  DATA_TIMED_OUT = 42,
+  WEBAPK_INSTALL_FAILED = 43,
+  MANIFEST_URL_SCHEME_NOT_SUPPORTED_FOR_WEBAPK = 44,
+  SERVICE_WORKER_NOT_REQUIRED = 45,
   MAX_ERROR_CODE,
 };
 

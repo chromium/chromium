@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,18 +6,15 @@
 
 #include "base/check.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/profiles/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/signin/signin_features.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_manager_facade.h"
-#include "components/signin/public/identity_manager/account_info.h"
-#include "components/signin/public/identity_manager/primary_account_mutator.h"
+#include "components/signin/public/identity_manager/primary_account_change_event.h"
 
-ProfilePickerLacrosSignInProvider::ProfilePickerLacrosSignInProvider() {
-  DCHECK(base::FeatureList::IsEnabled(kMultiProfileAccountConsistency));
-}
+ProfilePickerLacrosSignInProvider::ProfilePickerLacrosSignInProvider() =
+    default;
 
 ProfilePickerLacrosSignInProvider::~ProfilePickerLacrosSignInProvider() =
     default;
@@ -56,10 +53,15 @@ void ProfilePickerLacrosSignInProvider::
               weak_ptr_factory_.GetWeakPtr()));
 }
 
-void ProfilePickerLacrosSignInProvider::OnRefreshTokenUpdatedForAccount(
-    const CoreAccountInfo& account_info) {
+void ProfilePickerLacrosSignInProvider::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event_details) {
+  if (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin) !=
+      signin::PrimaryAccountChangeEvent::Type::kSet) {
+    return;
+  }
+
   identity_manager_observation_.Reset();
-  OnLacrosAccountLoaded(account_info);
+  OnProfileSignedIn();
 }
 
 void ProfilePickerLacrosSignInProvider::OnLacrosProfileCreated(
@@ -75,30 +77,22 @@ void ProfilePickerLacrosSignInProvider::OnLacrosProfileCreated(
       result->profile_path);
   DCHECK(profile);
   profile_ = profile;
-  profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
-      profile_, ProfileKeepAliveOrigin::kProfileCreationFlow);
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile_);
-  auto accounts = identity_manager->GetAccountsWithRefreshTokens();
-  if (!accounts.empty()) {
-    DCHECK_EQ(accounts.size(), 1u);
-    OnLacrosAccountLoaded(accounts[0]);
+
+  if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    OnProfileSignedIn();
     return;
   }
 
   // Listen for sign-in getting completed.
+  profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
+      profile_, ProfileKeepAliveOrigin::kProfileCreationFlow);
   identity_manager_observation_.Observe(identity_manager);
 }
 
-void ProfilePickerLacrosSignInProvider::OnLacrosAccountLoaded(
-    const CoreAccountInfo& account) {
-  DCHECK(!account.IsEmpty());
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile_);
-  identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
-      account.account_id, signin::ConsentLevel::kSignin);
-
-  std::move(callback_).Run(profile_);
+void ProfilePickerLacrosSignInProvider::OnProfileSignedIn() {
+  std::move(callback_).Run(profile_.get());
   // The object gets deleted now.
 }

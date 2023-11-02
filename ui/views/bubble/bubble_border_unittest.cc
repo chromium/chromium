@@ -1,16 +1,16 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+#include "ui/views/bubble/bubble_border.h"
 
 #include <stddef.h>
 
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/stringprintf.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_border_arrow_utils.h"
 #include "ui/views/test/views_test_base.h"
 
@@ -211,8 +211,8 @@ TEST_F(BubbleBorderTest, IsArrowAtCenter) {
 }
 
 TEST_F(BubbleBorderTest, GetSizeForContentsSizeTest) {
-  views::BubbleBorder border(BubbleBorder::NONE, BubbleBorder::NO_SHADOW_LEGACY,
-                             SK_ColorWHITE);
+  views::BubbleBorder border(BubbleBorder::NONE,
+                             BubbleBorder::NO_SHADOW_LEGACY);
 
   const gfx::Insets kInsets = border.GetInsets();
 
@@ -280,7 +280,7 @@ TEST_F(BubbleBorderTest, GetSizeForContentsSizeTest) {
       {BubbleBorder::NONE, kMediumSize, kMediumNoArrow},
       {BubbleBorder::FLOAT, kMediumSize, kMediumNoArrow}};
 
-  for (size_t i = 0; i < base::size(cases); ++i) {
+  for (size_t i = 0; i < std::size(cases); ++i) {
     SCOPED_TRACE(base::StringPrintf("i=%d arrow=%d", static_cast<int>(i),
                                     cases[i].arrow));
 
@@ -294,7 +294,7 @@ TEST_F(BubbleBorderTest, GetBoundsOriginTest) {
   for (int i = 0; i < BubbleBorder::SHADOW_COUNT; ++i) {
     const BubbleBorder::Shadow shadow = static_cast<BubbleBorder::Shadow>(i);
     SCOPED_TRACE(testing::Message() << "BubbleBorder::Shadow: " << shadow);
-    views::BubbleBorder border(BubbleBorder::TOP_LEFT, shadow, SK_ColorWHITE);
+    views::BubbleBorder border(BubbleBorder::TOP_LEFT, shadow);
 
     const gfx::Rect kAnchor(100, 100, 20, 30);
     const gfx::Size kContentSize(500, 600);
@@ -363,7 +363,7 @@ TEST_F(BubbleBorderTest, GetBoundsOriginTest) {
          kAnchor.y() + (kAnchor.height() - kTotalSize.height()) / 2},
     };
 
-    for (size_t j = 0; j < base::size(cases); ++j) {
+    for (size_t j = 0; j < std::size(cases); ++j) {
       SCOPED_TRACE(base::StringPrintf("shadow=%d j=%d arrow=%d",
                                       static_cast<int>(shadow),
                                       static_cast<int>(j), cases[j].arrow));
@@ -378,7 +378,7 @@ TEST_F(BubbleBorderTest, GetBoundsOriginTest) {
 
 TEST_F(BubbleBorderTest, BubblePositionedCorrectlyWithVisibleArrow) {
   views::BubbleBorder border(BubbleBorder::TOP_LEFT,
-                             BubbleBorder::STANDARD_SHADOW, SK_ColorWHITE);
+                             BubbleBorder::STANDARD_SHADOW);
   const gfx::Insets kInsets = border.GetInsets();
   border.set_visible_arrow(true);
 
@@ -870,7 +870,7 @@ TEST_F(BubbleBorderTest, AddArrowToBubbleCornerAndPointTowardsAnchor) {
     gfx::Point element_origin;
     BubbleBorder::Arrow supplied_arrow;
     gfx::Point expected_arrow_position;
-    bool expected_arrow_visibility;
+    bool expected_arrow_visibility_and_return_value;
   } test_cases[]{
       // First are using the following scenario:
       //
@@ -1026,11 +1026,14 @@ TEST_F(BubbleBorderTest, AddArrowToBubbleCornerAndPointTowardsAnchor) {
   for (auto test_case : test_cases) {
     gfx::Rect bubble_bounds_copy = bubble_bounds;
     views::BubbleBorder border(BubbleBorder::Arrow::NONE,
-                               BubbleBorder::STANDARD_SHADOW, SK_ColorWHITE);
+                               BubbleBorder::STANDARD_SHADOW);
     border.set_arrow(test_case.supplied_arrow);
-    border.AddArrowToBubbleCornerAndPointTowardsAnchor(
-        {test_case.element_origin, element_size}, true, bubble_bounds_copy);
-    EXPECT_EQ(border.visible_arrow(), test_case.expected_arrow_visibility);
+    EXPECT_EQ(
+        border.AddArrowToBubbleCornerAndPointTowardsAnchor(
+            {test_case.element_origin, element_size}, true, bubble_bounds_copy),
+        test_case.expected_arrow_visibility_and_return_value);
+    EXPECT_EQ(border.visible_arrow(),
+              test_case.expected_arrow_visibility_and_return_value);
     EXPECT_EQ(border.GetVisibibleArrowRectForTesting().origin(),
               test_case.expected_arrow_position);
     EXPECT_EQ(GetVisibleArrowSize(test_case.supplied_arrow),
@@ -1038,8 +1041,47 @@ TEST_F(BubbleBorderTest, AddArrowToBubbleCornerAndPointTowardsAnchor) {
   }
 }
 
-// Tests that BubbleBorder::IsVerticalArrow() correctly returns if the arrow is
-// placed on the top or on the bottom of the bubble.
+TEST_F(BubbleBorderTest,
+       AddArrowToBubbleCornerAndPointTowardsAnchorWithInsufficientSpave) {
+  // This bubble bound has uinsufficient width to place an arrow on the top or
+  // the bottom.
+  const gfx::Rect insufficient_width_bubble_bounds(0, 0, 10, 200);
+
+  // This bound has insufficient height to place an arrow on the left or right.
+  const gfx::Rect insufficient_height_bubble_bounds(0, 0, 100, 10);
+
+  // Create bounds for the element, the specifics do no matter.
+  const gfx::Rect element_bounds(0, 0, 350, 100);
+
+  struct TestCase {
+    gfx::Rect bubble_bounds;
+    BubbleBorder::Arrow supplied_arrow;
+    bool expected_arrow_visibility_and_return_value;
+  } test_cases[]{
+      // Bubble is placeable on top because there is sufficient width.
+      {insufficient_height_bubble_bounds, BubbleBorder::Arrow::TOP_CENTER,
+       true},
+      // Bubble is not placeable on top because the width is insufficient.
+      {insufficient_width_bubble_bounds, BubbleBorder::Arrow::TOP_CENTER,
+       false},
+      // Bubble is not placeable on the side because the height is insufficient.
+      {insufficient_height_bubble_bounds, BubbleBorder::Arrow::LEFT_CENTER,
+       false},
+      // Bubble is placeable on the side because the height is sufficient.
+      {insufficient_width_bubble_bounds, BubbleBorder::Arrow::LEFT_CENTER,
+       true},
+  };
+
+  for (auto test_case : test_cases) {
+    views::BubbleBorder border(BubbleBorder::Arrow::NONE,
+                               BubbleBorder::STANDARD_SHADOW);
+    border.set_arrow(test_case.supplied_arrow);
+    EXPECT_EQ(border.AddArrowToBubbleCornerAndPointTowardsAnchor(
+                  element_bounds, true, test_case.bubble_bounds),
+              test_case.expected_arrow_visibility_and_return_value);
+  }
+}
+
 TEST_F(BubbleBorderTest, IsVerticalArrow) {
   struct TestCase {
     BubbleBorder::Arrow arrow;
@@ -1135,8 +1177,7 @@ TEST_F(BubbleBorderTest, MoveContentsBoundsToPlaceVisibleArrow) {
 
   for (const auto& test_case : test_cases) {
     // Create a bubble border with a visible arrow.
-    views::BubbleBorder border(test_case.arrow, BubbleBorder::STANDARD_SHADOW,
-                               SK_ColorWHITE);
+    views::BubbleBorder border(test_case.arrow, BubbleBorder::STANDARD_SHADOW);
     border.set_visible_arrow(true);
 
     // Create, move and verify the contents bounds.

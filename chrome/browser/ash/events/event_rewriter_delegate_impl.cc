@@ -1,9 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/events/event_rewriter_delegate_impl.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/window_properties.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/notifications/deprecation_notification_controller.h"
@@ -76,7 +77,7 @@ bool EventRewriterDelegateImpl::TopRowKeysAreFunctionKeys() const {
   const PrefService* pref_service = GetPrefService();
   if (!pref_service)
     return false;
-  return pref_service->GetBoolean(prefs::kLanguageSendFunctionKeys);
+  return pref_service->GetBoolean(prefs::kSendFunctionKeys);
 }
 
 bool EventRewriterDelegateImpl::IsExtensionCommandRegistered(
@@ -115,10 +116,6 @@ bool EventRewriterDelegateImpl::IsSearchKeyAcceleratorReserved() const {
 
 bool EventRewriterDelegateImpl::NotifyDeprecatedRightClickRewrite() {
   return deprecation_controller_->NotifyDeprecatedRightClickRewrite();
-}
-
-bool EventRewriterDelegateImpl::NotifyDeprecatedFKeyRewrite() {
-  return deprecation_controller_->NotifyDeprecatedFKeyRewrite();
 }
 
 bool EventRewriterDelegateImpl::NotifyDeprecatedSixPackKeyRewrite(

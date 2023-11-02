@@ -1,16 +1,16 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/components/phonehub/connection_scheduler_impl.h"
 
 #include "ash/components/phonehub/feature_status.h"
+#include "ash/services/secure_channel/public/cpp/client/connection_manager.h"
 #include "base/bind.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "chromeos/components/multidevice/logging/logging.h"
-#include "chromeos/services/secure_channel/public/cpp/client/connection_manager.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 constexpr net::BackoffEntry::Policy kRetryBackoffPolicy = {
@@ -63,15 +63,15 @@ void ConnectionSchedulerImpl::OnFeatureStatusChanged() {
     // from initiating a connection. Disconnect the existing connection, reset
     // backoffs, and return early.
     case FeatureStatus::kNotEligibleForFeature:
-      FALLTHROUGH;
+      [[fallthrough]];
     case FeatureStatus::kEligiblePhoneButNotSetUp:
-      FALLTHROUGH;
+      [[fallthrough]];
     case FeatureStatus::kPhoneSelectedAndPendingSetup:
-      FALLTHROUGH;
+      [[fallthrough]];
     case FeatureStatus::kDisabled:
-      FALLTHROUGH;
+      [[fallthrough]];
     case FeatureStatus::kUnavailableBluetoothOff:
-      FALLTHROUGH;
+      [[fallthrough]];
     case FeatureStatus::kLockOrSuspended:
       DisconnectAndClearBackoffAttempts();
       return;
@@ -136,4 +136,4 @@ int ConnectionSchedulerImpl::GetBackoffFailureCountForTesting() {
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

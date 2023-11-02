@@ -1,12 +1,11 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_RASTER_INVALIDATION_TRACKING_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_RASTER_INVALIDATION_TRACKING_H_
 
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
-#include "third_party/blink/renderer/platform/geometry/region.h"
+#include "cc/base/region.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
 #include "third_party/blink/renderer/platform/graphics/paint_invalidation_reason.h"
@@ -14,6 +13,7 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace cc {
 struct LayerDebugInfo;
@@ -55,13 +55,15 @@ struct RasterUnderInvalidation {
   DISALLOW_NEW();
   int x;
   int y;
+  // TODO(https://crbug.com/1351544): This class should use SkColor4f.
   SkColor old_pixel;
   SkColor new_pixel;
 };
 
 class PLATFORM_EXPORT RasterInvalidationTracking {
- public:
+  USING_FAST_MALLOC(RasterInvalidationTracking);
 
+ public:
   // When RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled() and
   // SimulateRasterUnderInvalidation(true) is called, all changed pixels will
   // be reported as raster under-invalidations. Used to visually test raster
@@ -79,7 +81,7 @@ class PLATFORM_EXPORT RasterInvalidationTracking {
                        const String& debug_name,
                        const gfx::Rect&,
                        PaintInvalidationReason);
-  bool HasInvalidations() const { return !invalidations_.IsEmpty(); }
+  bool HasInvalidations() const { return !invalidations_.empty(); }
   const Vector<RasterInvalidationInfo>& Invalidations() const {
     return invalidations_;
   }
@@ -109,7 +111,7 @@ class PLATFORM_EXPORT RasterInvalidationTracking {
   // The following fields are for raster under-invalidation detection.
   sk_sp<PaintRecord> last_painted_record_;
   gfx::Rect last_interest_rect_;
-  Region invalidation_region_since_last_paint_;
+  cc::Region invalidation_region_since_last_paint_;
   Vector<RasterUnderInvalidation> under_invalidations_;
   sk_sp<PaintRecord> under_invalidation_record_;
 };

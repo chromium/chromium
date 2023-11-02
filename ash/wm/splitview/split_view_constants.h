@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define ASH_WM_SPLITVIEW_SPLIT_VIEW_CONSTANTS_H_
 
 #include "ash/ash_export.h"
+#include "chromeos/ui/wm/constants.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace ash {
@@ -29,7 +30,8 @@ constexpr int kSplitviewLabelPreferredHeightDp = 36;
 constexpr int kSplitviewLabelRoundRectRadiusDp = 18;
 
 // The thickness of the divider when it is not being dragged.
-constexpr int kSplitviewDividerShortSideLength = 8;
+constexpr int kSplitviewDividerShortSideLength =
+    chromeos::wm::kSplitviewDividerShortSideLength;
 
 // The thickness of the divider during dragging.
 constexpr int kSplitviewDividerEnlargedShortSideLength = 16;

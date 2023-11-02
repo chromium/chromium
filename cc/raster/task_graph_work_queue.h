@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,13 @@
 
 #include <stdint.h>
 
-#include <algorithm>
 #include <map>
+#include <utility>
 #include <vector>
 
+#include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "cc/cc_export.h"
 #include "cc/raster/task_graph_runner.h"
 
@@ -43,7 +46,7 @@ class CC_EXPORT TaskGraphWorkQueue {
     PrioritizedTask& operator=(PrioritizedTask&& other) = default;
 
     scoped_refptr<Task> task;
-    TaskNamespace* task_namespace;
+    raw_ptr<TaskNamespace> task_namespace;
     uint16_t category;
     uint16_t priority;
   };
@@ -52,7 +55,8 @@ class CC_EXPORT TaskGraphWorkQueue {
 
   // Helper classes and static methods used by dependent classes.
   struct TaskNamespace {
-    typedef std::vector<TaskNamespace*> Vector;
+    using Vector = std::vector<TaskNamespace*>;
+    using ReadyTasks = std::map<uint16_t, PrioritizedTask::Vector>;
 
     TaskNamespace();
     TaskNamespace(const TaskNamespace&) = delete;
@@ -67,7 +71,7 @@ class CC_EXPORT TaskGraphWorkQueue {
 
     // Map from category to a vector of tasks that are ready to run for that
     // category.
-    std::map<uint16_t, PrioritizedTask::Vector> ready_to_run_tasks;
+    ReadyTasks ready_to_run_tasks;
 
     // Completed tasks not yet collected by origin thread.
     Task::Vector completed_tasks;
@@ -75,6 +79,8 @@ class CC_EXPORT TaskGraphWorkQueue {
     // This set contains all currently running tasks.
     std::vector<CategorizedTask> running_tasks;
   };
+
+  using ReadyNamespaces = std::map<uint16_t, TaskNamespace::Vector>;
 
   TaskGraphWorkQueue();
   TaskGraphWorkQueue(const TaskGraphWorkQueue&) = delete;
@@ -114,13 +120,9 @@ class CC_EXPORT TaskGraphWorkQueue {
 
   static bool HasReadyToRunTasksInNamespace(
       const TaskNamespace* task_namespace) {
-    return std::find_if(
-               task_namespace->ready_to_run_tasks.begin(),
-               task_namespace->ready_to_run_tasks.end(),
-               [](const std::pair<const uint16_t, PrioritizedTask::Vector>&
-                      ready_to_run_tasks) {
-                 return !ready_to_run_tasks.second.empty();
-               }) != task_namespace->ready_to_run_tasks.end();
+    return !base::ranges::all_of(
+        task_namespace->ready_to_run_tasks, &PrioritizedTask::Vector::empty,
+        &TaskNamespace::ReadyTasks::value_type::second);
   }
 
   static bool HasFinishedRunningTasksInNamespace(
@@ -130,12 +132,9 @@ class CC_EXPORT TaskGraphWorkQueue {
   }
 
   bool HasReadyToRunTasks() const {
-    return std::find_if(
-               ready_to_run_namespaces_.begin(), ready_to_run_namespaces_.end(),
-               [](const std::pair<const uint16_t, TaskNamespace::Vector>&
-                      ready_to_run_namespaces) {
-                 return !ready_to_run_namespaces.second.empty();
-               }) != ready_to_run_namespaces_.end();
+    return !base::ranges::all_of(ready_to_run_namespaces_,
+                                 &TaskNamespace::Vector::empty,
+                                 &ReadyNamespaces::value_type::second);
   }
 
   bool HasReadyToRunTasksForCategory(uint16_t category) const {
@@ -146,15 +145,13 @@ class CC_EXPORT TaskGraphWorkQueue {
   bool HasAnyNamespaces() const { return !namespaces_.empty(); }
 
   bool HasFinishedRunningTasksInAllNamespaces() {
-    return std::find_if(
-               namespaces_.begin(), namespaces_.end(),
-               [](const TaskNamespaceMap::value_type& entry) {
-                 return !HasFinishedRunningTasksInNamespace(&entry.second);
-               }) == namespaces_.end();
+    return base::ranges::all_of(
+        namespaces_, [](const TaskNamespaceMap::value_type& entry) {
+          return HasFinishedRunningTasksInNamespace(&entry.second);
+        });
   }
 
-  const std::map<uint16_t, TaskNamespace::Vector>& ready_to_run_namespaces()
-      const {
+  const ReadyNamespaces& ready_to_run_namespaces() const {
     return ready_to_run_namespaces_;
   }
 
@@ -167,6 +164,19 @@ class CC_EXPORT TaskGraphWorkQueue {
           ++count;
         }
       }
+    }
+    return count;
+  }
+
+  size_t NumReadyTasksForCategory(uint16_t category) const {
+    auto found = ready_to_run_namespaces_.find(category);
+    if (found == ready_to_run_namespaces_.end())
+      return 0;
+    size_t count = 0;
+    for (auto* task_namespace_entry : found->second) {
+      DCHECK(
+          base::Contains(task_namespace_entry->ready_to_run_tasks, category));
+      count += task_namespace_entry->ready_to_run_tasks.at(category).size();
     }
     return count;
   }

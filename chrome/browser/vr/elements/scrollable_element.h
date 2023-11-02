@@ -1,10 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_VR_ELEMENTS_SCROLLABLE_ELEMENT_H_
 #define CHROME_BROWSER_VR_ELEMENTS_SCROLLABLE_ELEMENT_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/vr/elements/ui_element.h"
 #include "chrome/browser/vr/vr_ui_export.h"
 
@@ -62,7 +63,7 @@ class VR_UI_EXPORT ScrollableElement : public UiElement {
   float ComputeScrollSpan() const;
   void SetInitialScroll();
 
-  UiElement* inner_element_;
+  raw_ptr<UiElement> inner_element_;
 
   Orientation orientation_ = kVertical;
   LayoutAlignment scrolling_anchoring_ = NONE;

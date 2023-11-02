@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,15 +11,17 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/common/chrome_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
 namespace web_app {
@@ -92,14 +94,45 @@ class WebAppShimManagerDelegateTest : public WebAppTest {
 
     auto* provider = web_app::FakeWebAppProvider::Get(profile());
 
-    // FakeWebAppProvider should not wait for a test extension system, that is
-    // never started, to be ready.
-    provider->SkipAwaitingExtensionSystem();
+    provider->SetOsIntegrationManager(
+        std::make_unique<FakeOsIntegrationManager>(
+            profile(),
+            /*app_shortcut_manager=*/nullptr,
+            /*file_handler_manager=*/nullptr,
+            /*protocol_handler_manager=*/nullptr,
+            /*url_handler_manager*/ nullptr));
+
     web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
 
     // Install a dummy app
-    app_id_ = web_app::test::InstallDummyWebApp(profile(), "WebAppTest",
-                                                GURL("https://testpwa.com/"));
+    auto web_app_info = std::make_unique<WebAppInstallInfo>();
+    web_app_info->title = u"WebAppTest";
+    web_app_info->start_url = GURL("https://testpwa.com/");
+    web_app_info->scope = GURL("https://testpwa.com/");
+    web_app_info->display_mode = blink::mojom::DisplayMode::kStandalone;
+
+    // Basic plain text format.
+    {
+      apps::FileHandler entry;
+      entry.action = GURL("https://testpwa.com/files-txt");
+      entry.accept.emplace_back();
+      entry.accept[0].mime_type = "text/*";
+      entry.accept[0].file_extensions.insert(".txt");
+      web_app_info->file_handlers.push_back(std::move(entry));
+    }
+
+    // Png handler.
+    {
+      apps::FileHandler entry;
+      entry.action = GURL("https://testpwa.com/files-png");
+      entry.accept.emplace_back();
+      entry.accept[0].mime_type = "image/png";
+      entry.accept[0].file_extensions.insert(".png");
+      entry.launch_type = apps::FileHandler::LaunchType::kMultipleClients;
+      web_app_info->file_handlers.push_back(std::move(entry));
+    }
+
+    app_id_ = test::InstallWebApp(profile(), std::move(web_app_info));
   }
 
  protected:
@@ -108,10 +141,10 @@ class WebAppShimManagerDelegateTest : public WebAppTest {
       const absl::optional<GURL>& url_handler_launch_url,
       const absl::optional<GURL>& protocol_handler_launch_url,
       const GURL& override_url) {
-    apps::AppLaunchParams params(
-        app_id_, apps::mojom::LaunchContainer::kLaunchContainerWindow,
-        WindowOpenDisposition::NEW_WINDOW,
-        apps::mojom::LaunchSource::kFromCommandLine);
+    apps::AppLaunchParams params(app_id_,
+                                 apps::LaunchContainer::kLaunchContainerWindow,
+                                 WindowOpenDisposition::NEW_WINDOW,
+                                 apps::LaunchSource::kFromCommandLine);
 
     params.launch_files = launch_files;
     params.url_handler_launch_url = url_handler_launch_url;
@@ -152,6 +185,8 @@ class WebAppShimManagerDelegateTest : public WebAppTest {
 
  private:
   web_app::AppId app_id_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      blink::features::kFileHandlingAPI};
 };
 
 TEST_F(WebAppShimManagerDelegateTest, LaunchApp) {
@@ -178,8 +213,7 @@ TEST_F(WebAppShimManagerDelegateTest, LaunchApp_ProtocolWebPrefix) {
   apps::AppLaunchParams expected_results =
       CreateLaunchParams(std::vector<base::FilePath>(), absl::nullopt,
                          protocol_handler_launch_url, GURL());
-  expected_results.launch_source =
-      apps::mojom::LaunchSource::kFromProtocolHandler;
+  expected_results.launch_source = apps::LaunchSource::kFromProtocolHandler;
 
   std::unique_ptr<MockDelegate> delegate = std::make_unique<MockDelegate>();
   WebAppShimManagerDelegate shim_manager(std::move(delegate));
@@ -201,8 +235,7 @@ TEST_F(WebAppShimManagerDelegateTest, LaunchApp_ProtocolMailTo) {
   apps::AppLaunchParams expected_results =
       CreateLaunchParams(std::vector<base::FilePath>(), absl::nullopt,
                          protocol_handler_launch_url, GURL());
-  expected_results.launch_source =
-      apps::mojom::LaunchSource::kFromProtocolHandler;
+  expected_results.launch_source = apps::LaunchSource::kFromProtocolHandler;
 
   std::unique_ptr<MockDelegate> delegate = std::make_unique<MockDelegate>();
   WebAppShimManagerDelegate shim_manager(std::move(delegate));
@@ -221,9 +254,9 @@ TEST_F(WebAppShimManagerDelegateTest, LaunchApp_ProtocolMailTo) {
 TEST_F(WebAppShimManagerDelegateTest, LaunchApp_ProtocolFile) {
   GURL protocol_handler_launch_url("file:///test_app_path/test_app_file.txt");
 
-  apps::AppLaunchParams expected_results =
-      CreateLaunchParams({base::FilePath("/test_app_path/test_app_file.txt")},
-                         absl::nullopt, absl::nullopt, GURL());
+  apps::AppLaunchParams expected_results = CreateLaunchParams(
+      {base::FilePath("/test_app_path/test_app_file.txt")}, absl::nullopt,
+      absl::nullopt, GURL("https://testpwa.com/files-txt"));
 
   std::unique_ptr<MockDelegate> delegate = std::make_unique<MockDelegate>();
   WebAppShimManagerDelegate shim_manager(std::move(delegate));
@@ -265,7 +298,8 @@ TEST_F(WebAppShimManagerDelegateTest, LaunchApp_FileFullPath) {
   base::FilePath test_path(kTestPath);
 
   apps::AppLaunchParams expected_results =
-      CreateLaunchParams({test_path}, absl::nullopt, absl::nullopt, GURL());
+      CreateLaunchParams({test_path}, absl::nullopt, absl::nullopt,
+                         GURL("https://testpwa.com/files-txt"));
 
   std::unique_ptr<MockDelegate> delegate = std::make_unique<MockDelegate>();
   WebAppShimManagerDelegate shim_manager(std::move(delegate));
@@ -287,7 +321,8 @@ TEST_F(WebAppShimManagerDelegateTest, LaunchApp_FileRelativePath) {
   base::FilePath test_path(kTestPath);
 
   apps::AppLaunchParams expected_results =
-      CreateLaunchParams({test_path}, absl::nullopt, absl::nullopt, GURL());
+      CreateLaunchParams({test_path}, absl::nullopt, absl::nullopt,
+                         GURL("https://testpwa.com/files-txt"));
 
   std::unique_ptr<MockDelegate> delegate = std::make_unique<MockDelegate>();
   WebAppShimManagerDelegate shim_manager(std::move(delegate));
@@ -303,6 +338,40 @@ TEST_F(WebAppShimManagerDelegateTest, LaunchApp_FileRelativePath) {
                          chrome::mojom::AppShimLoginItemRestoreState::kNone);
 }
 
+TEST_F(WebAppShimManagerDelegateTest, LaunchApp_FileHandlersLaunchType) {
+  const base::FilePath::CharType kTestPathTxt[] =
+      FILE_PATH_LITERAL("test_app_path/test_app_file.txt");
+  const base::FilePath::CharType kTestPathTxt2[] =
+      FILE_PATH_LITERAL("test_app_path/test_app_file2.txt");
+  const base::FilePath::CharType kTestPathPng[] =
+      FILE_PATH_LITERAL("test_app_path/test_app_file.png");
+  const base::FilePath::CharType kTestPathPng2[] =
+      FILE_PATH_LITERAL("test_app_path/test_app_file2.png");
+
+  std::unique_ptr<MockDelegate> delegate = std::make_unique<MockDelegate>();
+  WebAppShimManagerDelegate shim_manager(std::move(delegate));
+  int launches = 0;
+
+  SetBrowserAppLauncherForTesting(base::BindLambdaForTesting(
+      [&](const apps::AppLaunchParams& result) -> content::WebContents* {
+        if (result.launch_files.size() == 1u) {
+          EXPECT_EQ(GURL("https://testpwa.com/files-png"), result.override_url);
+        } else {
+          EXPECT_EQ(2U, result.launch_files.size());
+          EXPECT_EQ(GURL("https://testpwa.com/files-txt"), result.override_url);
+        }
+        ++launches;
+        return nullptr;
+      }));
+
+  shim_manager.LaunchApp(
+      profile(), AppId(),
+      {base::FilePath(kTestPathTxt), base::FilePath(kTestPathPng),
+       base::FilePath(kTestPathTxt2), base::FilePath(kTestPathPng2)},
+      {}, GURL(), chrome::mojom::AppShimLoginItemRestoreState::kNone);
+  EXPECT_EQ(3, launches);
+}
+
 TEST_F(WebAppShimManagerDelegateTest, LaunchApp_ProtocolAndFileHandlerMixed) {
   GURL protocol_handler_launch_url("web+test://test");
   const base::FilePath::CharType kTestPath[] =
@@ -310,9 +379,8 @@ TEST_F(WebAppShimManagerDelegateTest, LaunchApp_ProtocolAndFileHandlerMixed) {
   base::FilePath test_path(kTestPath);
 
   apps::AppLaunchParams expected_results = CreateLaunchParams(
-      {test_path}, absl::nullopt, protocol_handler_launch_url, GURL());
-  expected_results.launch_source =
-      apps::mojom::LaunchSource::kFromProtocolHandler;
+      {}, absl::nullopt, protocol_handler_launch_url, GURL());
+  expected_results.launch_source = apps::LaunchSource::kFromProtocolHandler;
 
   std::unique_ptr<MockDelegate> delegate = std::make_unique<MockDelegate>();
   WebAppShimManagerDelegate shim_manager(std::move(delegate));
@@ -337,10 +405,8 @@ TEST_F(WebAppShimManagerDelegateTest,
   base::FilePath test_path(kTestPath);
 
   apps::AppLaunchParams expected_results = CreateLaunchParams(
-      {test_path, base::FilePath("/test_app_path/test_app_file.txt")},
-      absl::nullopt, protocol_handler_launch_url, GURL());
-  expected_results.launch_source =
-      apps::mojom::LaunchSource::kFromProtocolHandler;
+      {}, absl::nullopt, protocol_handler_launch_url, GURL());
+  expected_results.launch_source = apps::LaunchSource::kFromProtocolHandler;
 
   std::unique_ptr<MockDelegate> delegate = std::make_unique<MockDelegate>();
   WebAppShimManagerDelegate shim_manager(std::move(delegate));
@@ -381,45 +447,27 @@ TEST_F(WebAppShimManagerDelegateTest, GetAppShortcutsMenuItemInfos) {
   std::unique_ptr<MockDelegate> delegate = std::make_unique<MockDelegate>();
   WebAppShimManagerDelegate shim_manager(std::move(delegate));
 
-  // Validate empty array when feature flag is off.
+  // Validate empty array when app does not have shortcut menus declared in the
+  // manifest.
   {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(
-        features::kDesktopPWAsAppIconShortcutsMenuUI);
     auto shortcut_menu_items =
         shim_manager.GetAppShortcutsMenuItemInfos(profile(), AppId());
     EXPECT_EQ(0U, shortcut_menu_items.size());
   }
 
-  // Validate empty array when feature flag is on, and app does not have
-  // shortcut menus declared in the manifest.
+  // Validate array when app does declare shortcut menus in the manifest.
   {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(
-        features::kDesktopPWAsAppIconShortcutsMenuUI);
-    auto shortcut_menu_items =
-        shim_manager.GetAppShortcutsMenuItemInfos(profile(), AppId());
-    EXPECT_EQ(0U, shortcut_menu_items.size());
-  }
-
-  // Validate array when feature flag is on, and app does declare shortcut menus
-  // in the manifest.
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(
-        features::kDesktopPWAsAppIconShortcutsMenuUI);
-
     // Install a dummy app with shortcut menu items
-    auto web_app_info = std::make_unique<WebApplicationInfo>();
-    WebApplicationShortcutsMenuItemInfo shortcut_info1;
-    WebApplicationShortcutsMenuItemInfo shortcut_info2;
-    WebApplicationShortcutsMenuItemInfo shortcut_info3;
+    auto web_app_info = std::make_unique<WebAppInstallInfo>();
+    WebAppShortcutsMenuItemInfo shortcut_info1;
+    WebAppShortcutsMenuItemInfo shortcut_info2;
+    WebAppShortcutsMenuItemInfo shortcut_info3;
 
     web_app_info->start_url = GURL("https://mytestpwa.com/");
     web_app_info->title = u"WebAppTestWithShortcutMenuItems";
     web_app_info->scope = web_app_info->start_url;
     web_app_info->description = web_app_info->title;
-    web_app_info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
+    web_app_info->user_display_mode = web_app::UserDisplayMode::kStandalone;
 
     shortcut_info1.name = u"shortcut_info1";
     shortcut_info1.url = GURL(".");

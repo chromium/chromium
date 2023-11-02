@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,9 +15,9 @@ HttpAuthCacheCopier::~HttpAuthCacheCopier() = default;
 base::UnguessableToken HttpAuthCacheCopier::SaveHttpAuthCache(
     const net::HttpAuthCache& cache) {
   base::UnguessableToken key = base::UnguessableToken::Create();
-  auto cache_it = caches_.emplace(std::make_pair(
+  auto cache_it = caches_.emplace(
       key, std::make_unique<net::HttpAuthCache>(
-               cache.key_server_entries_by_network_isolation_key())));
+               cache.key_server_entries_by_network_anonymization_key()));
   DCHECK(cache_it.second);
   cache_it.first->second->CopyProxyEntriesFrom(cache);
   return key;
@@ -32,8 +32,8 @@ void HttpAuthCacheCopier::LoadHttpAuthCache(const base::UnguessableToken& key,
   }
 
   // Source and destination caches must have the same configuration.
-  DCHECK_EQ(cache->key_server_entries_by_network_isolation_key(),
-            it->second->key_server_entries_by_network_isolation_key());
+  DCHECK_EQ(cache->key_server_entries_by_network_anonymization_key(),
+            it->second->key_server_entries_by_network_anonymization_key());
 
   cache->CopyProxyEntriesFrom(*it->second);
   caches_.erase(it);

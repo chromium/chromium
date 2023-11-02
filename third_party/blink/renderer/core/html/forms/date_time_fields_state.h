@@ -58,7 +58,7 @@ class DateTimeFieldsState {
   AMPMValue Ampm() const { return ampm_; }
   unsigned DayOfMonth() const { return day_of_month_; }
   unsigned Hour() const { return hour_; }
-  unsigned Hour23() const;
+  unsigned Hour24() const;
   unsigned Millisecond() const { return millisecond_; }
   unsigned Minute() const { return minute_; }
   unsigned Month() const { return month_; }
@@ -79,6 +79,7 @@ class DateTimeFieldsState {
   void SetAMPM(AMPMValue ampm) { ampm_ = ampm; }
   void SetDayOfMonth(unsigned day_of_month) { day_of_month_ = day_of_month; }
   void SetHour(unsigned hour12) { hour_ = hour12; }
+  void SetHour24(unsigned hour24);
   void SetMillisecond(unsigned millisecond) { millisecond_ = millisecond; }
   void SetMinute(unsigned minute) { minute_ = minute; }
   void SetMonth(unsigned month) { month_ = month; }

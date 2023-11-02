@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,7 @@
 #include "remoting/proto/video_stats.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class FrameStatsTest : public testing::Test {};
 
@@ -42,5 +41,4 @@ TEST_F(FrameStatsTest, ToStatsMessageAndBack_RestoresFrameStats) {
   EXPECT_EQ(stats.frame_quality, newStats.frame_quality);
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

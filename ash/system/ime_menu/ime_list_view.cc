@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -286,12 +286,12 @@ void ImeListView::AppendImeListAndProperties(
       const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
           AshColorProvider::ContentLayerType::kIconColorPrimary);
       // Adds the property items.
-      for (size_t i = 0; i < property_list.size(); i++) {
+      for (const auto& property : property_list) {
         ImeListItemView* property_view =
-            new ImeListItemView(this, std::u16string(), property_list[i].label,
-                                property_list[i].checked, icon_color);
+            new ImeListItemView(this, std::u16string(), property.label,
+                                property.checked, icon_color);
         scroll_content()->AddChildView(property_view);
-        property_map_[property_view] = property_list[i].key;
+        property_map_[property_view] = property.key;
       }
 
       // Adds a separator on the bottom of property items if there are still

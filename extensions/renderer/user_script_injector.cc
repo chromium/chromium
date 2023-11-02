@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,10 @@
 
 #include "base/check.h"
 #include "base/lazy_instance.h"
+#include "base/no_destructor.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
-#include "content/public/renderer/render_view.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/mojom/guest_view.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -138,16 +138,21 @@ mojom::InjectionType UserScriptInjector::script_type() const {
   return mojom::InjectionType::kContentScript;
 }
 
-bool UserScriptInjector::IsUserGesture() const {
-  return false;
+blink::mojom::UserActivationOption UserScriptInjector::IsUserGesture() const {
+  return blink::mojom::UserActivationOption::kDoNotActivate;
 }
 
 mojom::ExecutionWorld UserScriptInjector::GetExecutionWorld() const {
-  return mojom::ExecutionWorld::kIsolated;
+  return script_->execution_world();
 }
 
-bool UserScriptInjector::ExpectsResults() const {
-  return false;
+blink::mojom::WantResultOption UserScriptInjector::ExpectsResults() const {
+  return blink::mojom::WantResultOption::kNoResult;
+}
+
+blink::mojom::PromiseResultOption UserScriptInjector::ShouldWaitForPromise()
+    const {
+  return blink::mojom::PromiseResultOption::kDoNotWait;
 }
 
 mojom::CSSOrigin UserScriptInjector::GetCssOrigin() const {
@@ -188,8 +193,8 @@ PermissionsData::PageAccess UserScriptInjector::CanExecuteOnFrame(
 
   if (script_->consumer_instance_type() ==
           UserScript::ConsumerInstanceType::WEBVIEW) {
-    int routing_id = content::RenderView::FromWebView(web_frame->Top()->View())
-                         ->GetRoutingID();
+    int routing_id =
+        content::RenderFrame::FromWebFrame(web_frame)->GetRoutingID();
 
     RoutingInfoKey key(routing_id, script_->id());
 
@@ -287,7 +292,7 @@ std::vector<ScriptInjector::CSSSource> UserScriptInjector::GetCssSources(
 }
 
 void UserScriptInjector::OnInjectionComplete(
-    std::unique_ptr<base::Value> execution_result,
+    absl::optional<base::Value> execution_result,
     mojom::RunLocation run_location) {}
 
 void UserScriptInjector::OnWillNotInject(InjectFailureReason reason) {}

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink-forward.h"
 #include "third_party/blink/public/web/web_remote_frame.h"
-#include "third_party/blink/public/web/web_remote_frame_client.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/remote_frame.h"
 #include "third_party/blink/renderer/platform/heap/self_keep_alive.h"
@@ -33,25 +32,25 @@ class CORE_EXPORT WebRemoteFrameImpl final
  public:
   static WebRemoteFrameImpl* CreateMainFrame(
       WebView*,
-      WebRemoteFrameClient*,
-      InterfaceRegistry*,
-      AssociatedInterfaceProvider*,
       const RemoteFrameToken& frame_token,
       const base::UnguessableToken& devtools_frame_token,
-      WebFrame* opener);
+      WebFrame* opener,
+      mojo::PendingAssociatedRemote<mojom::blink::RemoteFrameHost>
+          remote_frame_host,
+      mojo::PendingAssociatedReceiver<mojom::blink::RemoteFrame> receiver,
+      mojom::blink::FrameReplicationStatePtr replicated_state);
+
   static WebRemoteFrameImpl* CreateForPortalOrFencedFrame(
       mojom::blink::TreeScopeType,
-      WebRemoteFrameClient*,
-      InterfaceRegistry*,
-      AssociatedInterfaceProvider*,
       const RemoteFrameToken& frame_token,
       const base::UnguessableToken& devtools_frame_token,
-      const WebElement& frame_owner);
+      HTMLFrameOwnerElement* frame_owner,
+      mojo::PendingAssociatedRemote<mojom::blink::RemoteFrameHost>
+          remote_frame_host,
+      mojo::PendingAssociatedReceiver<mojom::blink::RemoteFrame> receiver,
+      mojom::blink::FrameReplicationStatePtr replicated_state);
 
   WebRemoteFrameImpl(mojom::blink::TreeScopeType,
-                     WebRemoteFrameClient*,
-                     InterfaceRegistry*,
-                     AssociatedInterfaceProvider*,
                      const RemoteFrameToken& frame_token);
   ~WebRemoteFrameImpl() override;
 
@@ -70,57 +69,50 @@ class CORE_EXPORT WebRemoteFrameImpl final
       const WebFrameOwnerProperties&,
       const LocalFrameToken& frame_token,
       WebFrame* opener,
+      const DocumentToken& document_token,
       std::unique_ptr<blink::WebPolicyContainer> policy_container) override;
-  WebRemoteFrame* CreateRemoteChild(
-      mojom::blink::TreeScopeType,
-      const WebString& name,
-      const FramePolicy&,
-      WebRemoteFrameClient*,
-      InterfaceRegistry*,
-      AssociatedInterfaceProvider*,
-      const RemoteFrameToken& frame_token,
-      const base::UnguessableToken& devtools_frame_token,
-      WebFrame* opener) override;
   void SetReplicatedOrigin(
       const WebSecurityOrigin&,
       bool is_potentially_trustworthy_opaque_origin) override;
-  void SetReplicatedSandboxFlags(
-      network::mojom::blink::WebSandboxFlags) override;
-  void SetReplicatedName(const WebString& name,
-                         const WebString& unique_name) override;
-  void SetReplicatedPermissionsPolicyHeader(
-      const ParsedPermissionsPolicy& parsed_header) override;
-  void SetReplicatedInsecureRequestPolicy(
-      mojom::blink::InsecureRequestPolicy) override;
-  void SetReplicatedInsecureNavigationsSet(const WebVector<unsigned>&) override;
-  void SetReplicatedIsAdSubframe(bool is_ad_subframe) override;
   void DidStartLoading() override;
-  void UpdateUserActivationState(
-      mojom::blink::UserActivationUpdateType update_type,
-      mojom::blink::UserActivationNotificationType notification_type) override;
-  void SetHadStickyUserActivationBeforeNavigation(bool value) override;
   v8::Local<v8::Object> GlobalProxy() const override;
   WebString UniqueName() const override;
   const FrameVisualProperties& GetPendingVisualPropertiesForTesting()
       const override;
-  bool IsAdSubframe() const override;
-  void InitializeCoreFrame(Page&,
-                           FrameOwner*,
-                           WebFrame* parent,
-                           WebFrame* previous_sibling,
-                           FrameInsertType,
-                           const AtomicString& name,
-                           WindowAgentFactory*,
-                           const base::UnguessableToken& devtools_frame_token);
+  bool IsAdFrame() const override;
+  void InitializeCoreFrame(
+      Page&,
+      FrameOwner*,
+      WebFrame* parent,
+      WebFrame* previous_sibling,
+      FrameInsertType,
+      const AtomicString& name,
+      WindowAgentFactory*,
+      const base::UnguessableToken& devtools_frame_token,
+      mojo::PendingAssociatedRemote<mojom::blink::RemoteFrameHost>
+          remote_frame_host,
+      mojo::PendingAssociatedReceiver<mojom::blink::RemoteFrame> receiver);
   RemoteFrame* GetFrame() const { return frame_.Get(); }
 
-  WebRemoteFrameClient* Client() const { return client_; }
+  WebRemoteFrameImpl* CreateRemoteChild(
+      mojom::blink::TreeScopeType,
+      const RemoteFrameToken& frame_token,
+      const base::UnguessableToken& devtools_frame_token,
+      WebFrame* opener,
+      mojo::PendingAssociatedRemote<mojom::blink::RemoteFrameHost>
+          remote_frame_host,
+      mojo::PendingAssociatedReceiver<mojom::blink::RemoteFrame> receiver,
+      mojom::blink::FrameReplicationStatePtr replicated_state);
 
   static WebRemoteFrameImpl* FromFrame(RemoteFrame&);
 
   void Trace(Visitor*) const;
 
   gfx::Rect GetCompositingRect();
+
+  void SetReplicatedState(mojom::FrameReplicationStatePtr replicated_state);
+  void SetReplicatedState(
+      mojom::blink::FrameReplicationStatePtr replicated_state);
 
  private:
   friend class RemoteFrameClientImpl;
@@ -138,13 +130,9 @@ class CORE_EXPORT WebRemoteFrameImpl final
   WebRemoteFrame* ToWebRemoteFrame() override;
   const WebRemoteFrame* ToWebRemoteFrame() const override;
 
-  WebRemoteFrameClient* client_;
   // TODO(dcheng): Inline this field directly rather than going through Member.
   Member<RemoteFrameClientImpl> frame_client_;
   Member<RemoteFrame> frame_;
-
-  InterfaceRegistry* const interface_registry_;
-  AssociatedInterfaceProvider* const associated_interface_provider_;
 
   // Oilpan: WebRemoteFrameImpl must remain alive until close() is called.
   // Accomplish that by keeping a self-referential Persistent<>. It is

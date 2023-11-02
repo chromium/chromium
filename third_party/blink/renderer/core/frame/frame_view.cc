@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,11 +14,13 @@
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/page/page_animator.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/transform.h"
 
 namespace blink {
 
-FrameView::FrameView(const IntRect& frame_rect)
+FrameView::FrameView(const gfx::Rect& frame_rect)
     : EmbeddedContentView(frame_rect),
       frame_visibility_(blink::mojom::FrameVisibility::kRenderedInViewport) {}
 
@@ -32,7 +34,7 @@ bool FrameView::CanThrottleRenderingForPropagation() const {
   if (CanThrottleRendering())
     return true;
   Frame& frame = GetFrame();
-  if (!frame.IsCrossOriginToMainFrame())
+  if (!frame.IsCrossOriginToNearestMainFrame())
     return false;
   if (frame.IsLocalFrame() && To<LocalFrame>(frame).IsHidden())
     return true;
@@ -68,7 +70,7 @@ void FrameView::UpdateViewportIntersection(unsigned flags,
     return;
 
   Document& owner_document = owner_element->GetDocument();
-  IntRect viewport_intersection, mainframe_intersection;
+  gfx::Rect viewport_intersection, mainframe_intersection;
   TransformationMatrix main_frame_transform_matrix;
   DocumentLifecycle::LifecycleState parent_lifecycle_state =
       owner_document.Lifecycle().GetState();
@@ -82,11 +84,14 @@ void FrameView::UpdateViewportIntersection(unsigned flags,
 
   LayoutEmbeddedContent* owner_layout_object =
       owner_element->GetLayoutEmbeddedContent();
+  bool display_locked_in_parent_frame = DisplayLockedInParentFrame();
   if (!owner_layout_object || owner_layout_object->ContentSize().IsEmpty() ||
-      (flags & IntersectionObservation::kAncestorFrameIsDetachedFromLayout)) {
+      (flags & IntersectionObservation::kAncestorFrameIsDetachedFromLayout) ||
+      display_locked_in_parent_frame) {
     // The frame, or an ancestor frame, is detached from layout, not visible, or
-    // zero size; leave viewport_intersection empty, and signal the frame as
-    // occluded if necessary.
+    // zero size, or it's display locked in parent frame; leave
+    // viewport_intersection empty, and signal the frame as occluded if
+    // necessary.
     occlusion_state = mojom::blink::FrameOcclusionState::kPossiblyOccluded;
   } else if (parent_lifecycle_state >= DocumentLifecycle::kLayoutClean &&
              !owner_document.View()->NeedsLayout()) {
@@ -129,15 +134,16 @@ void FrameView::UpdateViewportIntersection(unsigned flags,
             .Inverse();
     if (geometry.IsIntersecting()) {
       PhysicalRect intersection_rect = PhysicalRect::EnclosingRect(
-          matrix.ProjectQuad(FloatRect(geometry.IntersectionRect()))
+          matrix
+              .ProjectQuad(gfx::QuadF(gfx::RectF(geometry.IntersectionRect())))
               .BoundingBox());
 
       // Don't let EnclosingRect turn an empty rect into a non-empty one.
       if (intersection_rect.IsEmpty()) {
         viewport_intersection =
-            IntRect(ToFlooredPoint(intersection_rect.offset), IntSize());
+            gfx::Rect(ToFlooredPoint(intersection_rect.offset), gfx::Size());
       } else {
-        viewport_intersection = EnclosingIntRect(intersection_rect);
+        viewport_intersection = ToEnclosingRect(intersection_rect);
       }
 
       // Because the geometry code uses enclosing rects, we may end up with an
@@ -145,43 +151,52 @@ void FrameView::UpdateViewportIntersection(unsigned flags,
       // the size of the viewport intersection to the bounds of the iframe's
       // content rect.
       // TODO(crbug.com/1266532): This should be
-      //   viewport_intersection.Intersect(IntRect(gfx::Point(),
+      //   viewport_intersection.Intersect(gfx::Rect(gfx::Point(),
       //       owner_layout_object->ContentSize()));
       // but it exposes a bug of incorrect origin of viewport_intersection in
       // multicol.
       gfx::Point origin = viewport_intersection.origin();
       origin.SetToMax(gfx::Point());
       viewport_intersection.set_origin(origin);
-      viewport_intersection.set_size(viewport_intersection.size().ShrunkTo(
-          RoundedIntSize(owner_layout_object->ContentSize())));
+      gfx::Size size = viewport_intersection.size();
+      size.SetToMin(ToRoundedSize(owner_layout_object->ContentSize()));
+      viewport_intersection.set_size(size);
     }
 
     PhysicalRect mainframe_intersection_rect;
     if (!geometry.UnclippedIntersectionRect().IsEmpty()) {
       mainframe_intersection_rect = PhysicalRect::EnclosingRect(
-          matrix.ProjectQuad(FloatRect(geometry.UnclippedIntersectionRect()))
+          matrix
+              .ProjectQuad(
+                  gfx::QuadF(gfx::RectF(geometry.UnclippedIntersectionRect())))
               .BoundingBox());
 
       if (mainframe_intersection_rect.IsEmpty()) {
-        mainframe_intersection = IntRect(
-            ToFlooredPoint(mainframe_intersection_rect.offset), IntSize());
+        mainframe_intersection = gfx::Rect(
+            ToFlooredPoint(mainframe_intersection_rect.offset), gfx::Size());
       } else {
-        mainframe_intersection = EnclosingIntRect(mainframe_intersection_rect);
+        mainframe_intersection = ToEnclosingRect(mainframe_intersection_rect);
       }
       // TODO(crbug.com/1266532): This should be
-      //   mainframe_intersection.Intersect(IntRect(gfx::Point(),
+      //   mainframe_intersection.Intersect(gfx::Rect(gfx::Point(),
       //       owner_layout_object->ContentSize()));
       // but it exposes a bug of incorrect origin of mainframe_intersection in
       // multicol.
       gfx::Point origin = mainframe_intersection.origin();
       origin.SetToMax(gfx::Point());
       mainframe_intersection.set_origin(origin);
-      mainframe_intersection.set_size(mainframe_intersection.size().ShrunkTo(
-          RoundedIntSize(owner_layout_object->ContentSize())));
+      gfx::Size size = mainframe_intersection.size();
+      size.SetToMin(ToRoundedSize(owner_layout_object->ContentSize()));
+      mainframe_intersection.set_size(size);
     }
 
     TransformState child_frame_to_root_frame(
         TransformState::kUnapplyInverseTransformDirection);
+    // TODO: Should this be IsOutermostMainFrame()?
+    if (owner_document.GetFrame()->LocalFrameRoot().IsMainFrame()) {
+      child_frame_to_root_frame.Move(PhysicalOffset::FromPointFRound(
+          gfx::PointF(frame.GetOutermostMainFrameScrollPosition())));
+    }
     if (owner_layout_object) {
       owner_layout_object->MapAncestorToLocal(
           nullptr, child_frame_to_root_frame,
@@ -201,45 +216,50 @@ void FrameView::UpdateViewportIntersection(unsigned flags,
   // An iframe's content is always pixel-snapped, even if the iframe element has
   // non-pixel-aligned location.
   gfx::Transform main_frame_gfx_transform =
-      TransformationMatrix::ToTransform(main_frame_transform_matrix);
+      main_frame_transform_matrix.ToTransform();
   main_frame_gfx_transform.RoundTranslationComponents();
 
   SetViewportIntersection(mojom::blink::ViewportIntersectionState(
-      ToGfxRect(viewport_intersection), ToGfxRect(mainframe_intersection),
-      gfx::Rect(), occlusion_state, ToGfxSize(frame.GetMainFrameViewportSize()),
-      frame.GetMainFrameScrollOffset(), main_frame_gfx_transform));
+      viewport_intersection, mainframe_intersection, gfx::Rect(),
+      occlusion_state, frame.GetOutermostMainFrameSize(),
+      frame.GetOutermostMainFrameScrollPosition(), main_frame_gfx_transform));
 
   UpdateFrameVisibility(!viewport_intersection.IsEmpty());
 
   if (ShouldReportMainFrameIntersection()) {
-    IntRect projected_rect = EnclosingIntRect(PhysicalRect::EnclosingRect(
+    gfx::Rect projected_rect = gfx::ToEnclosingRect(
         main_frame_transform_matrix
-            .ProjectQuad(FloatRect(IntRect(mainframe_intersection)))
-            .BoundingBox()));
+            .ProjectQuad(gfx::QuadF(gfx::RectF(mainframe_intersection)))
+            .BoundingBox());
     // Return <0, 0, 0, 0> if there is no area.
     if (projected_rect.IsEmpty())
       projected_rect.set_origin(gfx::Point(0, 0));
     GetFrame().Client()->OnMainFrameIntersectionChanged(projected_rect);
   }
 
-  // We don't throttle zero-area or display:none iframes unless they are
-  // cross-origin and ThrottleCrossOriginIframes is enabled, because in practice
-  // they are sometimes used to drive UI logic.
-  bool hidden_for_throttling = viewport_intersection.IsEmpty();
+  // We don't throttle display:none iframes unless they are cross-origin and
+  // ThrottleCrossOriginIframes is enabled, because in practice they are
+  // sometimes used to drive UI logic. Zero-area iframes are only throttled if
+  // they are also display:none.
+  bool zero_viewport_intersection = viewport_intersection.IsEmpty();
   bool is_display_none = !owner_layout_object;
   bool has_zero_area = FrameRect().IsEmpty();
   bool has_flag = RuntimeEnabledFeatures::
       ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframesEnabled();
-  if (!has_flag && (is_display_none || has_zero_area))
-    hidden_for_throttling = false;
+
+  bool should_throttle =
+      has_flag
+          ? (is_display_none || (zero_viewport_intersection && !has_zero_area))
+          : (!is_display_none && zero_viewport_intersection && !has_zero_area);
+
   bool subtree_throttled = false;
   Frame* parent_frame = GetFrame().Tree().Parent();
   if (parent_frame && parent_frame->View()) {
     subtree_throttled =
         parent_frame->View()->CanThrottleRenderingForPropagation();
   }
-  UpdateRenderThrottlingStatus(hidden_for_throttling, subtree_throttled,
-                               DisplayLockedInParentFrame());
+  UpdateRenderThrottlingStatus(should_throttle, subtree_throttled,
+                               display_locked_in_parent_frame);
 }
 
 void FrameView::UpdateFrameVisibility(bool intersects_viewport) {

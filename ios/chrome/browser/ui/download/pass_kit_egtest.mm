@@ -1,26 +1,25 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import <PassKit/PassKit.h>
 
-#include <memory>
+#import <memory>
 
-#include "base/bind.h"
+#import "base/bind.h"
 #import "base/test/ios/wait_util.h"
-#include "ios/chrome/browser/download/download_test_util.h"
-#include "ios/chrome/browser/download/mime_type_util.h"
+#import "ios/chrome/browser/download/download_test_util.h"
+#import "ios/chrome/browser/download/mime_type_util.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_constants.h"
-#include "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
-#include "net/test/embedded_test_server/http_request.h"
-#include "net/test/embedded_test_server/http_response.h"
-#include "ui/base/l10n/l10n_util_mac.h"
-
+#import "net/test/embedded_test_server/embedded_test_server.h"
+#import "net/test/embedded_test_server/http_request.h"
+#import "net/test/embedded_test_server/http_response.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -95,9 +94,7 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
 
 // Tests that Chrome PassKit dialog is shown for sucessfully downloaded pkpass
 // file.
-//
-// Flaky https://crbug.com/1109131.
-- (void)DISABLED_testPassKitDownload {
+- (void)testPassKitDownload {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Wallet app is not supported on iPads.");
   }
@@ -112,9 +109,10 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
   // presentation.
   XCUIApplication* app = [[XCUIApplication alloc] init];
   XCUIElement* title = nil;
-  title = app.staticTexts[@"Toy Town Membership"];
-  GREYAssert([title waitForExistenceWithTimeout:kWaitForDownloadTimeout],
-             @"PassKit dialog UI was not presented");
+  title = app.staticTexts[@"Toy Town"];
+  GREYAssert(
+      [title waitForExistenceWithTimeout:kWaitForDownloadTimeout.InSecondsF()],
+      @"PassKit dialog UI was not presented");
 }
 
 @end

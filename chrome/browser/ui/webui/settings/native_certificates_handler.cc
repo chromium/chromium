@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@ NativeCertificatesHandler::NativeCertificatesHandler() {}
 NativeCertificatesHandler::~NativeCertificatesHandler() {}
 
 void NativeCertificatesHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "showManageSSLCertificates",
       base::BindRepeating(
           &NativeCertificatesHandler::HandleShowManageSSLCertificates,
@@ -25,7 +25,7 @@ void NativeCertificatesHandler::RegisterMessages() {
 }
 
 void NativeCertificatesHandler::HandleShowManageSSLCertificates(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   base::RecordAction(base::UserMetricsAction("Options_ManageSSLCertificates"));
   settings_utils::ShowManageSSLCertificates(web_ui()->GetWebContents());
 }

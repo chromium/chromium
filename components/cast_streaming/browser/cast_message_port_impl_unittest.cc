@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include "base/test/task_environment.h"
 #include "components/cast/message_port/platform_message_port.h"
 #include "components/cast/message_port/test_message_port_receiver.h"
-#include "components/cast_streaming/browser/message_serialization.h"
+#include "components/cast_streaming/common/message_serialization.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace cast_streaming {
@@ -38,7 +38,7 @@ class CastMessagePortImplTest : public testing::Test,
         std::move(receiver),
         base::BindOnce(&CastMessagePortImplTest::OnCastChannelClosed,
                        base::Unretained(this)));
-    receiver_message_port_->SetClient(this, kSenderId);
+    receiver_message_port_->SetClient(*this);
   }
 
  protected:
@@ -92,6 +92,7 @@ class CastMessagePortImplTest : public testing::Test,
       std::move(error_closure_).Run();
     }
   }
+  const std::string& source_id() override { return source_id_; }
 
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
@@ -105,6 +106,7 @@ class CastMessagePortImplTest : public testing::Test,
   std::unique_ptr<CastMessagePortImpl> receiver_message_port_;
   std::unique_ptr<cast_api_bindings::MessagePort> sender_message_port_;
   cast_api_bindings::TestMessagePortReceiver sender_message_port_receiver_;
+  std::string source_id_ = kSenderId;
 };
 
 // Tests basic connection between the sender and receiver message port is

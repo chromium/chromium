@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,9 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
 #include "chrome/browser/chrome_browser_main.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
 #include "chrome/browser/extensions/browsertest_util.h"
@@ -81,7 +81,7 @@ class TestChromeBrowserMainExtraParts : public ChromeBrowserMainExtraParts {
   void PreProfileInit() override { test_->SetUpNetworkInterceptors(); }
 
  private:
-  ExtensionUpdateClientBaseTest* test_;
+  raw_ptr<ExtensionUpdateClientBaseTest> test_;
 };
 
 class UpdateClientCompleteEventWaiter
@@ -101,9 +101,10 @@ class UpdateClientCompleteEventWaiter
 
   void OnEvent(update_client::UpdateClient::Observer::Events event,
                const std::string& id) final {
-    if (id_ == id && (event == UpdateClientEvents::COMPONENT_UPDATED ||
-                      event == UpdateClientEvents::COMPONENT_NOT_UPDATED ||
-                      event == UpdateClientEvents::COMPONENT_UPDATE_ERROR)) {
+    if (id_ == id &&
+        (event == UpdateClientEvents::COMPONENT_UPDATED ||
+         event == UpdateClientEvents::COMPONENT_ALREADY_UP_TO_DATE ||
+         event == UpdateClientEvents::COMPONENT_UPDATE_ERROR)) {
       event_ = event;
       run_loop_.Quit();
     }

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,9 +13,9 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Function;
-import org.chromium.base.PackageManagerUtils;
+import org.chromium.base.supplier.Supplier;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.external_intents.ExternalNavigationDelegate;
-import org.chromium.components.external_intents.ExternalNavigationDelegate.StartActivityIfNeededResult;
 import org.chromium.components.external_intents.ExternalNavigationParams;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
@@ -24,6 +24,8 @@ import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 import org.chromium.weblayer_private.interfaces.APICallException;
 import org.chromium.weblayer_private.interfaces.ExternalIntentInIncognitoUserDecision;
+
+import java.util.List;
 
 /**
  * WebLayer's implementation of the {@link ExternalNavigationDelegate}.
@@ -64,21 +66,14 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
     @Override
     public void dispatchAuthenticatedIntent(Intent intent) {
         // This method should never be invoked in WebLayer as this class always returns false for
-        // isIntentToInstantApp().
+        // handlesInstantAppLaunchingInternally().
         assert false;
     }
 
     @Override
-    public void didStartActivity(Intent intent) {}
-
-    @Override
-    public @StartActivityIfNeededResult int maybeHandleStartActivityIfNeeded(
-            Intent intent, boolean proxy) {
-        assert !proxy
-            : "|proxy| should be true only for instant apps, which WebLayer doesn't handle";
-
-        // Defer to ExternalNavigationHandler's default logic.
-        return StartActivityIfNeededResult.DID_NOT_HANDLE;
+    public boolean shouldAvoidDisambiguationDialog(Intent intent) {
+        // Don't show the disambiguation dialog if WebLayer can handle the intent.
+        return UrlUtilities.isAcceptedScheme(intent.toUri(0));
     }
 
     @Override
@@ -158,8 +153,8 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
     public void maybeSetPendingIncognitoUrl(Intent intent) {}
 
     @Override
-    public boolean maybeLaunchInstantApp(
-            GURL url, GURL referrerUrl, boolean isIncomingRedirect, boolean isSerpReferrer) {
+    public boolean maybeLaunchInstantApp(GURL url, GURL referrerUrl, boolean isIncomingRedirect,
+            boolean isSerpReferrer, Supplier<List<ResolveInfo>> resolveInfoSupplier) {
         return false;
     }
 
@@ -185,12 +180,8 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
     }
 
     @Override
-    public boolean isIntentForTrustedCallingApp(Intent intent) {
-        return false;
-    }
-
-    @Override
-    public boolean isIntentToInstantApp(Intent intent) {
+    public boolean isIntentForTrustedCallingApp(
+            Intent intent, Supplier<List<ResolveInfo>> resolveInfoSupplier) {
         return false;
     }
 
@@ -217,13 +208,19 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
         return false;
     }
 
-    /**
-     * Resolve the default external handler of an intent.
-     * @return Whether the default external handler is found.
-     */
-    private boolean hasDefaultHandler(Intent intent) {
-        ResolveInfo info = PackageManagerUtils.resolveActivity(intent, 0);
-        if (info == null) return false;
-        return info.match != 0;
+    @Override
+    public boolean maybeSetTargetPackage(
+            Intent intent, Supplier<List<ResolveInfo>> resolveInfoSupplier) {
+        return false;
+    }
+
+    @Override
+    public boolean shouldEmbedderInitiatedNavigationsStayInBrowser() {
+        // WebLayer already has APIs that allow the embedder to specify that a navigation shouldn't
+        // result in an external intent (Navigation#disableIntentProcessing() and
+        // NavigateParams#disableIntentProcessing()), and historically embedder-initiated
+        // navigations have been allowed to leave the browser on the initial navigation, so we need
+        // to maintain that behavior.
+        return false;
     }
 }

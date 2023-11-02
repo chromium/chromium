@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,14 +9,16 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/threading/thread.h"
+#include "base/time/time.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/base/backoff_entry.h"
+#include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/host/client_session.h"
-#include "remoting/host/desktop_environment_options.h"
 #include "remoting/host/host_extension.h"
 #include "remoting/host/host_status_monitor.h"
 #include "remoting/host/host_status_observer.h"
@@ -127,8 +129,9 @@ class ChromotingHost : public ClientSession::EventHandler,
                             const protocol::TransportRoute& route) override;
 
   // mojom::ChromotingHostServices implementation.
-  void BindWebAuthnProxy(
-      mojo::PendingReceiver<mojom::WebAuthnProxy> receiver) override;
+  void BindSessionServices(
+      mojo::PendingReceiver<mojom::ChromotingSessionServices> receiver)
+      override;
 
   // Callback for SessionManager to accept incoming sessions.
   void OnIncomingSession(
@@ -161,7 +164,7 @@ class ChromotingHost : public ClientSession::EventHandler,
   // used on the network thread only.
 
   // Parameters specified when the host was created.
-  DesktopEnvironmentFactory* desktop_environment_factory_;
+  raw_ptr<DesktopEnvironmentFactory> desktop_environment_factory_;
   std::unique_ptr<protocol::SessionManager> session_manager_;
   scoped_refptr<protocol::TransportContext> transport_context_;
   scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner_;

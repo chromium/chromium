@@ -1,10 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/web/common/features.h"
+#import "ios/web/common/features.h"
 
-#include "base/metrics/field_trial_params.h"
+#import "base/metrics/field_trial_params.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -13,89 +13,76 @@
 namespace web {
 namespace features {
 
-const base::Feature kCrashOnUnexpectedURLChange{
-    "CrashOnUnexpectedURLChange", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kCrashOnUnexpectedURLChange,
+             "CrashOnUnexpectedURLChange",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kHistoryClobberWorkaround{
-    "WKWebViewHistoryClobberWorkaround", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kBlockUniversalLinksInOffTheRecordMode,
+             "BlockUniversalLinksInOffTheRecord",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kBlockUniversalLinksInOffTheRecordMode{
-    "BlockUniversalLinksInOffTheRecord", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kKeepsRenderProcessAlive,
+             "KeepsRenderProcessAlive",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kKeepsRenderProcessAlive{"KeepsRenderProcessAlive",
-                                             base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kClearOldNavigationRecordsWorkaround,
+             "ClearOldNavigationRecordsWorkaround",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kClearOldNavigationRecordsWorkaround{
-    "ClearOldNavigationRecordsWorkaround", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kEnablePersistentDownloads,
+             "EnablePersistentDownloads",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kEnablePersistentDownloads{
-    "EnablePersistentDownloads", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kPreserveScrollViewProperties,
+             "PreserveScrollViewProperties",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kUseDefaultUserAgentInWebClient{
-    "UseDefaultUserAgentInWebClient", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kRecordSnapshotSize,
+             "RecordSnapshotSize",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kPreserveScrollViewProperties{
-    "PreserveScrollViewProperties", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kSetRequestAttribution,
+             "SetRequestAttribution",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kIOSLegacyTLSInterstitial{"IOSLegacyTLSInterstitial",
-                                              base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kIOSSharedHighlightingColorChange,
+             "IOSSharedHighlightingColorChange",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kRecordSnapshotSize{"RecordSnapshotSize",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kSynthesizedRestoreSession,
+             "SynthesizedRestoreSession",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kSetRequestAttribution{"SetRequestAttribution",
-                                           base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kEnableFullscreenAPI,
+             "EnableFullscreenAPI",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kWebViewNativeContextMenu{"WebViewNativeContextMenu",
-                                              base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kMediaPermissionsControl,
+             "MediaPermissionsControl",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kWebViewNativeContextMenuPhase2{
-    "WebViewNativeContextMenuPhase2", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kUseLoadSimulatedRequestForOfflinePage,
+             "UseLoadSimulatedRequestForErrorPageNavigation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kDefaultWebViewContextMenu{
-    "DefaultWebViewContextMenu", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kEnableWebPageAnnotations,
+             "EnableWebPageAnnotations",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kDisableNonHTMLScreenshotOnIOS15{
-    "DisableNonHTMLScreenshotOnIOS15", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kLongPressSurroundingText,
+             "LongPressSurroundingText",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kIOSSharedHighlightingColorChange{
-    "IOSSharedHighlightingColorChange", base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kCreatePendingItemForPostFormSubmission{
-    "CreatePendingItemForPostFormSubmission",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kEnableNewDownloadAPI{"EnableNewDownloadAPI",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kSynthesizedRestoreSession{
-    "SynthesizedRestoreSession", base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kEnableUnrealizedWebStates{"EnableUnrealizedWebStates"};
-
-bool UseWebClientDefaultUserAgent() {
-  return base::FeatureList::IsEnabled(kUseDefaultUserAgentInWebClient);
-}
-
-bool UseWebViewNativeContextMenuWeb() {
-  return base::FeatureList::IsEnabled(kDefaultWebViewContextMenu);
-}
-
-bool UseWebViewNativeContextMenuSystem() {
-  return base::FeatureList::IsEnabled(kWebViewNativeContextMenu) ||
-         base::FeatureList::IsEnabled(kWebViewNativeContextMenuPhase2);
-}
-
-bool ShouldTakeScreenshotOnNonHTMLContent() {
+bool IsMediaPermissionsControlEnabled() {
   if (@available(iOS 15, *)) {
-    return !base::FeatureList::IsEnabled(kDisableNonHTMLScreenshotOnIOS15);
+    return base::FeatureList::IsEnabled(kMediaPermissionsControl);
   }
-  return true;
+  return false;
 }
 
-bool IsNewDownloadAPIEnabled() {
+bool IsLoadSimulatedRequestAPIEnabled() {
   if (@available(iOS 15, *)) {
-    return base::FeatureList::IsEnabled(kEnableNewDownloadAPI);
+    return base::FeatureList::IsEnabled(kUseLoadSimulatedRequestForOfflinePage);
   }
   return false;
 }

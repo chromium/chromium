@@ -23,9 +23,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_LENGTH_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_LENGTH_H_
 
+#include <cmath>
 #include <cstring>
 
+#include "base/check_op.h"
 #include "base/notreached.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/renderer/platform/geometry/anchor_query_enums.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -82,16 +86,19 @@ class PLATFORM_EXPORT Length {
 
   Length(LayoutUnit v, Length::Type t, bool q = false)
       : float_value_(v.ToFloat()), quirk_(q), type_(t), is_float_(true) {
+    DCHECK(std::isfinite(v.ToFloat()));
     DCHECK_NE(t, kCalculated);
   }
 
   Length(float v, Length::Type t, bool q = false)
       : float_value_(v), quirk_(q), type_(t), is_float_(true) {
+    DCHECK(std::isfinite(v));
     DCHECK_NE(t, kCalculated);
   }
 
   Length(double v, Length::Type t, bool q = false)
       : quirk_(q), type_(t), is_float_(true) {
+    DCHECK(std::isfinite(v));
     float_value_ = ClampTo<float>(v);
   }
 
@@ -264,9 +271,14 @@ class PLATFORM_EXPORT Length {
   bool IsPercentOrCalc() const {
     return GetType() == kPercent || GetType() == kCalculated;
   }
+  bool IsPercentOrCalcOrStretch() const {
+    return GetType() == kPercent || GetType() == kCalculated ||
+           GetType() == kFillAvailable;
+  }
   bool IsExtendToZoom() const { return GetType() == kExtendToZoom; }
   bool IsDeviceWidth() const { return GetType() == kDeviceWidth; }
   bool IsDeviceHeight() const { return GetType() == kDeviceHeight; }
+  bool HasAnchorQueries() const;
 
   Length Blend(const Length& from, double progress, ValueRange range) const {
     DCHECK(IsSpecified());
@@ -294,7 +306,20 @@ class PLATFORM_EXPORT Length {
     DCHECK(!IsNone());
     return is_float_ ? float_value_ : int_value_;
   }
-  float NonNanCalculatedValue(LayoutUnit max_value) const;
+
+  class PLATFORM_EXPORT AnchorEvaluator {
+   public:
+    // Evaluate the |anchor_name| for the |anchor_value|. Returns |nullopt| if
+    // the query is invalid (e.g., no targets or wrong axis.)
+    virtual absl::optional<LayoutUnit> EvaluateAnchor(
+        const AtomicString& anchor_name,
+        AnchorValue anchor_value) const;
+    virtual absl::optional<LayoutUnit> EvaluateAnchorSize(
+        const AtomicString& anchor_name,
+        AnchorSizeValue anchor_size_value) const;
+  };
+  float NonNanCalculatedValue(LayoutUnit max_value,
+                              const AnchorEvaluator* = nullptr) const;
 
   Length SubtractFromOneHundredPercent() const;
 

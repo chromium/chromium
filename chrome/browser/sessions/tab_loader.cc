@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/memory/memory_pressure_monitor.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/system/sys_info.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -36,10 +37,10 @@ void BackgroundTracingTrigger() {
   static content::BackgroundTracingManager::TriggerHandle trigger_handle_ = -1;
   if (trigger_handle_ == -1) {
     trigger_handle_ =
-        content::BackgroundTracingManager::GetInstance()->RegisterTriggerType(
+        content::BackgroundTracingManager::GetInstance().RegisterTriggerType(
             "session-restore-config");
   }
-  content::BackgroundTracingManager::GetInstance()->TriggerNamedEvent(
+  content::BackgroundTracingManager::GetInstance().TriggerNamedEvent(
       trigger_handle_,
       content::BackgroundTracingManager::StartedFinalizingCallback());
 }
@@ -110,7 +111,7 @@ class TabLoader::ReentrancyHelper {
 
   void DestroyTabLoader() { tab_loader_->this_retainer_ = nullptr; }
 
-  TabLoader* tab_loader_;
+  raw_ptr<TabLoader> tab_loader_;
 };
 
 // static

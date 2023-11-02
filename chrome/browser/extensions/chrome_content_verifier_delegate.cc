@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@
 #include "base/containers/contains.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/no_destructor.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/syslog_logging.h"
@@ -23,6 +23,7 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "build/config/chromebox_for_meetings/buildflags.h"
 #include "chrome/browser/extensions/corrupted_extension_reinstaller.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/install_verifier.h"
@@ -38,8 +39,8 @@
 #include "extensions/common/extensions_client.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_url_handlers.h"
+#include "extensions/common/switches.h"
 #include "net/base/backoff_entry.h"
-#include "net/base/escape.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/extensions/extension_assets_manager_chromeos.h"
@@ -73,8 +74,14 @@ ChromeContentVerifierDelegate::VerifyInfo::Mode
 ChromeContentVerifierDelegate::GetDefaultMode() {
   if (GetModeForTesting())
     return *GetModeForTesting();
-
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+
+#if BUILDFLAG(PLATFORM_CFM)
+  if (command_line->HasSwitch(
+          extensions::switches::kDisableAppContentVerification)) {
+    return VerifyInfo::Mode::NONE;
+  }
+#endif  // BUILDFLAG(PLATFORM_CFM)
 
   VerifyInfo::Mode experiment_value;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -139,10 +146,7 @@ void ChromeContentVerifierDelegate::SetDefaultModeForTesting(
 
 ChromeContentVerifierDelegate::ChromeContentVerifierDelegate(
     content::BrowserContext* context)
-    : context_(context),
-      default_mode_(GetDefaultMode()),
-      corrupted_extension_reinstaller_(
-          std::make_unique<CorruptedExtensionReinstaller>(context_)) {}
+    : context_(context), default_mode_(GetDefaultMode()) {}
 
 ChromeContentVerifierDelegate::~ChromeContentVerifierDelegate() {
 }
@@ -170,7 +174,7 @@ GURL ChromeContentVerifierDelegate::GetSignatureFetchUrl(
   // ManifestFetchData class that can be shared for use here.
   std::string id_part = "id=" + extension_id;
   std::string version_part = "v=" + version.GetString();
-  std::string x_value = net::EscapeQueryParamValue(
+  std::string x_value = base::EscapeQueryParamValue(
       base::JoinString({"uc", "installsource=signature", id_part, version_part},
                        "&"),
       true);
@@ -178,7 +182,7 @@ GURL ChromeContentVerifierDelegate::GetSignatureFetchUrl(
 
   GURL base_url = extension_urls::GetWebstoreUpdateUrl();
   GURL::Replacements replacements;
-  replacements.SetQuery(query.c_str(), url::Component(0, query.length()));
+  replacements.SetQueryStr(query);
   return base_url.ReplaceComponents(replacements);
 }
 
@@ -204,8 +208,8 @@ void ChromeContentVerifierDelegate::VerifyFailed(
   }
 
   ExtensionService* service = system->extension_service();
-  PendingExtensionManager* pending_manager =
-      service->pending_extension_manager();
+  CorruptedExtensionReinstaller* corrupted_extension_reinstaller =
+      service->corrupted_extension_reinstaller();
 
   const VerifyInfo info = GetVerifyInfo(*extension);
 
@@ -228,8 +232,8 @@ void ChromeContentVerifierDelegate::VerifyFailed(
     // TODO(https://crbug.com/1044572): Schedule the extension for reinstall.
     if (!info.is_from_webstore) {
       if (!base::Contains(would_be_reinstalled_ids_, extension_id)) {
-        pending_manager->RecordPolicyReinstallReason(
-            PendingExtensionManager::PolicyReinstallReason::
+        corrupted_extension_reinstaller->RecordPolicyReinstallReason(
+            CorruptedExtensionReinstaller::PolicyReinstallReason::
                 NO_UNSIGNED_HASHES_FOR_NON_WEBSTORE_SKIP);
         would_be_reinstalled_ids_.insert(extension_id);
       }
@@ -251,18 +255,20 @@ void ChromeContentVerifierDelegate::VerifyFailed(
   }
 
   if (info.should_repair) {
-    if (pending_manager->IsReinstallForCorruptionExpected(extension_id))
+    if (corrupted_extension_reinstaller->IsReinstallForCorruptionExpected(
+            extension_id))
       return;
-    pending_manager->ExpectReinstallForCorruption(
+    corrupted_extension_reinstaller->ExpectReinstallForCorruption(
         extension_id,
-        info.is_from_webstore ? PendingExtensionManager::PolicyReinstallReason::
-                                    CORRUPTION_DETECTED_WEBSTORE
-                              : PendingExtensionManager::PolicyReinstallReason::
-                                    CORRUPTION_DETECTED_NON_WEBSTORE,
+        info.is_from_webstore
+            ? CorruptedExtensionReinstaller::PolicyReinstallReason::
+                  CORRUPTION_DETECTED_WEBSTORE
+            : CorruptedExtensionReinstaller::PolicyReinstallReason::
+                  CORRUPTION_DETECTED_NON_WEBSTORE,
         extension->location());
     service->DisableExtension(extension_id, disable_reason::DISABLE_CORRUPTED);
     // Attempt to reinstall.
-    corrupted_extension_reinstaller_->NotifyExtensionDisabledDueToCorruption();
+    corrupted_extension_reinstaller->NotifyExtensionDisabledDueToCorruption();
     return;
   }
 
@@ -275,12 +281,7 @@ void ChromeContentVerifierDelegate::VerifyFailed(
                             ContentVerifyJob::FAILURE_REASON_MAX);
 }
 
-void ChromeContentVerifierDelegate::Shutdown() {
-  // Shut down |corrupted_extension_reinstaller_| on its creation thread. |this|
-  // can be destroyed through InfoMap on IO thread, we do not want to destroy
-  // |corrupted_extension_reinstaller_| there.
-  corrupted_extension_reinstaller_.reset();
-}
+void ChromeContentVerifierDelegate::Shutdown() {}
 
 bool ChromeContentVerifierDelegate::IsFromWebstore(
     const Extension& extension) const {

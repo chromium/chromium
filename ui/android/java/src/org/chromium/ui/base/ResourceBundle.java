@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -47,6 +47,10 @@ public final class ResourceBundle {
     public static void setAvailablePakLocales(String[] locales) {
         assert sAvailableLocales == null;
         sAvailableLocales = locales;
+    }
+
+    public static void clearAvailablePakLocalesForTesting() {
+        sAvailableLocales = null;
     }
 
     /**

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,12 +15,15 @@
 #include "components/feed/core/proto/v2/wire/client_info.pb.h"
 #include "components/feed/core/proto/v2/wire/feed_request.pb.h"
 #include "components/feed/core/proto/v2/wire/request.pb.h"
+#include "components/feed/core/v2/config.h"
+#include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/feed_network.h"
 #include "components/feed/core/v2/feed_stream.h"
 #include "components/feed/core/v2/feedstore_util.h"
 #include "components/feed/core/v2/proto_util.h"
 #include "components/feed/core/v2/protocol_translator.h"
 #include "components/feed/core/v2/stream_model.h"
+#include "components/feed/core/v2/tasks/load_stream_task.h"
 #include "components/feed/core/v2/tasks/upload_actions_task.h"
 #include "components/feed/core/v2/wire_response_translator.h"
 #include "components/feed/feed_feature_list.h"
@@ -80,26 +83,26 @@ void LoadMoreTask::UploadActionsComplete(UploadActionsTask::Result result) {
   // content determines the sign-in state of the subsequent load more requests.
   // This avoids a possible situation where there would be a mix of signed-in
   // and signed-out content, which we don't want.
-  std::string gaia =
-      model->signed_in() ? stream_.GetSyncSignedInGaia() : std::string();
+  AccountInfo account_info =
+      model->signed_in() ? stream_.GetAccountInfo() : AccountInfo{};
   // Send network request.
   fetch_start_time_ = base::TimeTicks::Now();
 
-  feedwire::Request request = CreateFeedQueryLoadMoreRequest(
+  RequestMetadata request_metadata =
       stream_.GetRequestMetadata(stream_type_,
-                                 /*is_for_next_page=*/true),
-      stream_.GetMetadata().consistency_token(),
+                                 /*is_for_next_page=*/true);
+  feedwire::Request request = CreateFeedQueryLoadMoreRequest(
+      request_metadata, stream_.GetMetadata().consistency_token(),
       stream_.GetModel(stream_type_)->GetNextPageToken());
 
-  // TODO(crbug/1152592): Send a different network request type for
-  // WebFeeds.
-  if (base::FeatureList::IsEnabled(kDiscoFeedEndpoint)) {
+  if (base::FeatureList::IsEnabled(kDiscoFeedEndpoint) &&
+      !GetFeedConfig().use_feed_query_requests) {
     stream_.GetNetwork().SendApiRequest<QueryNextPageDiscoverApi>(
-        request, gaia,
+        request, account_info, std::move(request_metadata),
         base::BindOnce(&LoadMoreTask::QueryApiRequestComplete, GetWeakPtr()));
   } else {
     stream_.GetNetwork().SendQueryRequest(
-        NetworkRequestType::kNextPage, request, gaia,
+        NetworkRequestType::kNextPage, request, account_info,
         base::BindOnce(&LoadMoreTask::QueryRequestComplete, GetWeakPtr()));
   }
 }
@@ -122,13 +125,16 @@ void LoadMoreTask::ProcessNetworkResponse(
   StreamModel* model = stream_.GetModel(stream_type_);
   DCHECK(model) << "Model was unloaded outside of a Task";
 
-  if (!response_body)
-    return Done(LoadStreamStatus::kNoResponseBody);
+  LoadStreamStatus network_status = LoadStreamTask::LaunchResultFromNetworkInfo(
+                                        response_info, response_body != nullptr)
+                                        .load_stream_status;
+  if (network_status != LoadStreamStatus::kNoStatus)
+    return Done(network_status);
 
   RefreshResponseData translated_response =
       stream_.GetWireResponseTranslator().TranslateWireResponse(
           *response_body, StreamModelUpdateRequest::Source::kNetworkLoadMore,
-          response_info.was_signed_in, base::Time::Now());
+          response_info.account_info, base::Time::Now());
 
   if (!translated_response.model_update_request)
     return Done(LoadStreamStatus::kProtoTranslationFailed);
@@ -137,7 +143,8 @@ void LoadMoreTask::ProcessNetworkResponse(
       !translated_response.model_update_request->stream_structures.empty();
 
   auto updated_metadata = stream_.GetMetadata();
-  SetLastFetchTime(updated_metadata, stream_type_, base::Time::Now());
+  SetLastFetchTime(updated_metadata, stream_type_,
+                   translated_response.last_fetch_timestamp);
   if (translated_response.session_id) {
     feedstore::MaybeUpdateSessionId(updated_metadata,
                                     translated_response.session_id);

@@ -1,14 +1,14 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/browser/cookie_store/cookie_store_manager.h"
 
-#include <algorithm>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "content/browser/cookie_store/cookie_change_subscriptions.pb.h"
 #include "content/browser/service_worker/embedded_worker_status.h"
@@ -189,8 +189,7 @@ void CookieStoreManager::AddSubscriptions(
     return;
   }
 
-  if (!origin.IsSameOriginWith(
-          url::Origin::Create(service_worker_registration->scope()))) {
+  if (!origin.IsSameOriginWith(service_worker_registration->key().origin())) {
     std::move(bad_message_callback).Run("Invalid service worker");
     std::move(callback).Run(false);
     return;
@@ -232,11 +231,9 @@ void CookieStoreManager::AddSubscriptions(
     auto new_subscription = std::make_unique<CookieChangeSubscription>(
         std::move(mojo_subscription), service_worker_registration->id());
 
-    auto existing_subscription_it = std::find_if(
-        subscriptions.begin(), subscriptions.end(),
-        [&](const std::unique_ptr<CookieChangeSubscription>& other) -> bool {
-          return *new_subscription == *other;
-        });
+    auto existing_subscription_it = base::ranges::find(
+        subscriptions, *new_subscription,
+        &std::unique_ptr<CookieChangeSubscription>::operator*);
     if (existing_subscription_it == subscriptions.end())
       subscriptions.push_back(std::move(new_subscription));
   }
@@ -287,8 +284,7 @@ void CookieStoreManager::RemoveSubscriptions(
     return;
   }
 
-  if (!origin.IsSameOriginWith(
-          url::Origin::Create(service_worker_registration->scope()))) {
+  if (!origin.IsSameOriginWith(service_worker_registration->key().origin())) {
     std::move(bad_message_callback).Run("Invalid service worker");
     std::move(callback).Run(false);
     return;
@@ -332,11 +328,9 @@ void CookieStoreManager::RemoveSubscriptions(
   }
 
   for (auto& subscription : all_subscriptions) {
-    auto target_subscription_it = std::find_if(
-        target_subscriptions.begin(), target_subscriptions.end(),
-        [&](const std::unique_ptr<CookieChangeSubscription>& other) -> bool {
-          return *subscription == *other;
-        });
+    auto target_subscription_it = base::ranges::find(
+        target_subscriptions, *subscription,
+        &std::unique_ptr<CookieChangeSubscription>::operator*);
     if (target_subscription_it == target_subscriptions.end()) {
       // The subscription is not marked for deletion.
       live_subscriptions.push_back(std::move(subscription));
@@ -387,16 +381,15 @@ void CookieStoreManager::GetSubscriptions(
     return;
   }
 
-  const url::Origin first_origin = url::Origin::Create(it->second[0]->url());
+  const GURL& first_url = it->second[0]->url();
 #if DCHECK_IS_ON()
   for (const auto& subscription : it->second) {
-    DCHECK(
-        first_origin.IsSameOriginWith(url::Origin::Create(subscription->url())))
+    DCHECK(url::IsSameOriginWith(first_url, subscription->url()))
         << "Service worker's change subscriptions don't have the same origin";
   }
 #endif  // DCHECK_IS_ON()
 
-  if (!origin.IsSameOriginWith(first_origin)) {
+  if (!origin.IsSameOriginWith(first_url)) {
     std::move(bad_message_callback).Run("Invalid service worker");
     std::move(callback).Run(
         std::vector<blink::mojom::CookieChangeSubscriptionPtr>(), false);

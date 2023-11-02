@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -9,26 +9,20 @@ source_set("clients") {
 
     # Mirroring Service needs the video accelerated encoder mojom interfaces.
     "//components/mirroring/service:mirroring_service",
-
     "//content/renderer:*",
 
     # TODO(xhwang): Only allow //media/mojo/services:unit_tests
-    "//media/mojo/services:*",
-
-    "//media/mojo:test_support",
-
-    "//media/test/*",
-
-    "//content/browser:*",
     "//chrome/browser:*",
-
     "//chrome/browser/thumbnail/generator",
-
+    "//content/browser:*",
     "//content/gpu:*",
+    "//media/mojo:test_support",
+    "//media/mojo/services:*",
+    "//media/test/*",
 
     # TODO(liberato): can we avoid this?
     "//content/test/*",
-
+    "//third_party/blink/renderer/modules/mediarecorder",
     "//third_party/blink/renderer/modules/webcodecs",
   ]
 
@@ -82,7 +76,6 @@ source_set("clients") {
     "//build:chromeos_buildflags",
     "//media/gpu",
     "//media/mojo/common",
-    "//media/mojo/common:mojo_shared_buffer_video_frame",
     "//services/service_manager/public/cpp",
   ]
 

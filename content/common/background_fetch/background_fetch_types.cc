@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -58,7 +58,8 @@ blink::mojom::FetchAPIRequestPtr BackgroundFetchSettledFetch::CloneRequest(
       request->referrer.Clone(), request->credentials_mode, request->cache_mode,
       request->redirect_mode, request->integrity, request->priority,
       request->fetch_window_id, request->keepalive, request->is_reload,
-      request->is_history_navigation, request->devtools_stack_id);
+      request->is_history_navigation, request->devtools_stack_id,
+      request->trust_token_params.Clone(), request->target_address_space);
 }
 
 }  // namespace content

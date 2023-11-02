@@ -25,7 +25,7 @@
 
 <script>
 if (window.internals)
-  internals.runtimeFlags.overscrollCustomizationEnabled = true;
+  internals.runtimeFlags.scrollEndEventsEnabled = true;
 
 var scrolling_div = document.getElementById('scrollableDiv');
 var rect = scrolling_div.getBoundingClientRect();
@@ -62,9 +62,16 @@ async function test_overscroll_event_fire(source_device,
   overscrolled_y_delta = 0;
   await waitForCompositorCommit();
 
+  // When PBS is enabled, the number of 'pixels to scroll' is significantly distorted
+  // (~10k with current params), causing this test to take longer and time out
+  // Adjusting speed by the distortion means the scroll anomations take the same
+  // time whether PBS is on or off
+  const scroll_speed_factor_x = pixelsToScrollX / pixelsToScroll;
+  const scroll_speed_factor_y = pixelsToScrollY / pixelsToScroll;
+
   // Do a horizontal scroll and wait for overscroll event.
   await smoothScroll(
-    pixelsToScrollX, x, y, source_device, "right", pixelsPerSec,
+    pixelsToScrollX, x, y, source_device, "right", pixelsPerSec * scroll_speed_factor_x,
     precise_scrolling_delta
   );
   await waitFor(() => { return overscrolled_x_delta > 0; },
@@ -78,7 +85,7 @@ async function test_overscroll_event_fire(source_device,
 
   // Do a vertical scroll and wait for overscroll event.
   await smoothScroll(
-    pixelsToScrollY, x, y, source_device, "down", pixelsPerSec,
+    pixelsToScrollY, x, y, source_device, "down", pixelsPerSec * scroll_speed_factor_y,
     precise_scrolling_delta
   );
   await waitFor(() => { return overscrolled_y_delta > 0; },

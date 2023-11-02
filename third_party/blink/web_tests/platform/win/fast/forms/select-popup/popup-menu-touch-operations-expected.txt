@@ -1,0 +1,66 @@
+PASS picker.selectElement_.value is "1"
+PASS menuElement.value is "bar"
+PASS picker.selectElement_.value is "0"
+PASS picker.selectElement_.value is "2"
+PASS internals.pagePopupWindow is null
+PASS menuElement.value is "baz"
+==> Test disabled option
+PASS picker.selectElement_.value is "2"
+PASS menuElement.value is "baz"
+PASS picker.selectElement_.value is "2"
+PASS picker.selectElement_.value is "2"
+PASS internals.pagePopupWindow is not null
+PASS menuElement.value is "baz"
+==> Test scrollable popup
+PASS picker.selectElement_.value is "1"
+PASS menuElement2.value is "2"
+PASS picker.selectElement_.value is "2"
+PASS picker.selectElement_.value is "3"
+PASS picker.selectElement_.value is "0"
+PASS internals.pagePopupWindow is not null
+PASS menuElement2.value is "2"
+==> Test popup closes on outside GestureTapDawn
+PASS internals.pagePopupWindow is null
+==> Test popup doesn't reopen immediately after closing
+PASS internals.pagePopupWindow is null
+PASS internals.pagePopupWindow is null
+PASS internals.pagePopupWindow is not null
+PASS internals.pagePopupWindow is null
+PASS internals.pagePopupWindow is null
+PASS successfullyParsed is true
+
+TEST COMPLETE
+
+foo
+bar
+baz
+ 
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29

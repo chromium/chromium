@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 <head>
     <script src="resources/cross-frame-access.js"></script>
@@ -250,19 +251,6 @@
                 var property = windowAttributesPropertiesAllowed[i];
                 shouldBeTrue("canGetDescriptor(targetWindow, '" + property + "')");
             }
-            log("----- tests access to cross domain location object -----");
-            window.targetLocation = targetWindow.location;
-            var locationProperties = [
-                "protocol", "host", "hostname", "port", "pathname", "search", "hash", "toString", "valueOf", "customProperty", "assign", "reload"
-            ];
-            for (var i = 0; i < locationProperties.length; i++)
-                shouldBeFalse("canGetDescriptor(targetLocation, '" + locationProperties[i] + "')");
-            var locationPropertiesAllowed = [
-                "replace"
-            ];
-            for (var i = 0; i < locationPropertiesAllowed.length; i++)
-                shouldBeTrue("canGetDescriptor(targetLocation, '" + locationPropertiesAllowed[i] + "')");
-
             log("----- tests access to cross domain history object -----");
             shouldThrowException("targetWindow.history");
 

@@ -36,7 +36,7 @@ inline void SpaceSplitString::Data::CreateVector(
     const CharacterType* characters,
     unsigned length) {
   DCHECK_EQ(0u, vector_.size());
-  HashSet<AtomicString> token_set;
+  HashSet<StringImpl*> token_set;
   unsigned start = 0;
   while (true) {
     while (start < length && IsHTMLSpace<CharacterType>(characters[start]))
@@ -57,15 +57,15 @@ inline void SpaceSplitString::Data::CreateVector(
     // cost of HashSet<>::insert(), and adjust |token_set| when the second
     // unique token is found.
     if (vector_.size() == 0) {
-      vector_.push_back(token);
+      vector_.push_back(std::move(token));
     } else if (vector_.size() == 1) {
       if (vector_[0] != token) {
-        token_set.insert(vector_[0]);
-        token_set.insert(token);
-        vector_.push_back(token);
+        token_set.insert(vector_[0].Impl());
+        token_set.insert(token.Impl());
+        vector_.push_back(std::move(token));
       }
-    } else if (token_set.insert(token).is_new_entry) {
-      vector_.push_back(token);
+    } else if (token_set.insert(token.Impl()).is_new_entry) {
+      vector_.push_back(std::move(token));
     }
 
     start = end + 1;
@@ -183,12 +183,13 @@ void SpaceSplitString::Set(const AtomicString& input_string) {
 
 SpaceSplitString::Data::~Data() {
   if (!key_string_.IsNull())
-    SharedDataMap().erase(key_string_);
+    SharedDataMap().erase(key_string_.Impl());
 }
 
 scoped_refptr<SpaceSplitString::Data> SpaceSplitString::Data::Create(
     const AtomicString& string) {
-  Data*& data = SharedDataMap().insert(string, nullptr).stored_value->value;
+  Data*& data =
+      SharedDataMap().insert(string.Impl(), nullptr).stored_value->value;
   if (!data) {
     data = new Data(string);
     return base::AdoptRef(data);

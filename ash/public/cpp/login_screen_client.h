@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "base/callback_forward.h"
 #include "base/time/time.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/views/widget/widget.h"
 
 class AccountId;
 
@@ -167,6 +168,10 @@ class ASH_PUBLIC_EXPORT LoginScreenClient {
 
   // Used by Ash to signal that user activity occurred on the login screen.
   virtual void OnUserActivity() = 0;
+
+  // Get login screen widget. Currently used to set proper accessibility
+  // navigation.
+  virtual views::Widget* GetLoginWindowWidget() = 0;
 
  protected:
   virtual ~LoginScreenClient() = default;

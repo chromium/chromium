@@ -369,6 +369,19 @@ one provider is defined, they will be considered in the order listed in the
 file, and the first valid provider chosen by default. A menu is provided in the
 Android developer settings UI to allow the user to choose a different provider.
 
+You can print the base64-encoded signature of a compiled APK with the following
+(look for `Full Signature:` in the output):
+
+```shell
+# For an APK or Bundle target compiled from chromium (replace
+# "system_webview_apk" with your build target):
+$ out/Default/bin/system_webview_apk print-certs --full-cert
+
+# For a pre-compiled APK or Bundle:
+$ build/android/apk_operations.py print-certs --full-cert \
+  --apk-path /path/to/AndroidWebview.apk
+```
+
 *** note
 On `userdebug` and `eng` builds of Android, the WebView's signature,
 preinstallation, and version code checks are not performed, to simplify
@@ -408,7 +421,9 @@ Here's a commented example XML file:
       signatures.
 
       Each signature tag contains the entire public certificate corresponding
-      to the private key used to sign the APK, encoded as base64. -->
+      to the private key used to sign the APK, encoded as base64. See the
+      documentation above for instructions to print the signature of an APK in
+      the correct format. -->
 
 
   <!-- This provider is listed first and has "availableByDefault" set to true,

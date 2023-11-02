@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!-- This manifest is required for tests using
+     androidx.test.core.app.ActivityScenario to work.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="org.chromium.chrome">
+
+  <application android:theme="@style/Theme.AppCompat.Light">
+    <activity android:name="androidx.fragment.app.FragmentActivity" />
+    <activity android:name="org.chromium.ui.base.TestActivity"
+              android:theme="@style/Theme.Chromium.Activity"/>
+    <activity android:name="org.chromium.chrome.browser.ChromeTabbedActivity"
+            android:theme="@style/Theme.Chromium.TabbedMode"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:supportsPictureInPicture="true"
+            android:resizeableActivity="true"
+            android:windowSoftInputMode="adjustResize"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|density"
+            android:hardwareAccelerated="false" >
+            <meta-data
+                android:name="android.activity.launch_mode"
+                android:value="singleInstancePerTask"/>
+      </activity>
+      <activity android:name="org.chromium.chrome.browser.customtabs.CustomTabActivity"
+          android:theme="@style/Theme.Chromium.Activity"
+          android:exported="false" />
+  </application>
+</manifest>

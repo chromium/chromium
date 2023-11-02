@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,19 +9,19 @@
 #include "ash/system/network/tray_network_state_observer.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tri_view.h"
-#include "ash/system/unified/top_shortcut_button.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
+#include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/view.h"
 
 namespace ash {
 
+class IconButton;
 class TrayNetworkStateModel;
-
-namespace tray {
 
 // A header row for sections in network detailed view which contains a title and
 // a toggle button to turn on/off the section. Subclasses are given the
@@ -115,8 +115,9 @@ class MobileSectionHeaderView : public NetworkSectionHeaderView,
 
   // TrayNetworkStateObserver:
   void DeviceStateListChanged() override;
+  void GlobalPolicyChanged() override;
 
-  void PerformAddExtraButtons(bool enabled);
+  void UpdateAddESimButtonVisibility();
 
   void AddCellularButtonPressed();
 
@@ -132,23 +133,29 @@ class MobileSectionHeaderView : public NetworkSectionHeaderView,
 
   // Button that navigates to the Settings mobile data subpage with the eSIM
   // setup dialog open. This is null when the device is not eSIM-capable.
-  TopShortcutButton* add_esim_button_ = nullptr;
+  IconButton* add_esim_button_ = nullptr;
 
   // Indicates whether add_esim_button_ should be enabled when the device is
   // not inhibited.
   bool can_add_esim_button_be_enabled_ = false;
 
+  // CrosBluetoothConfig remote that is only bound if the Bluetooth
+  // Revamp flag is enabled.
+  mojo::Remote<bluetooth_config::mojom::CrosBluetoothConfig>
+      remote_cros_bluetooth_config_;
+
   base::WeakPtrFactory<MobileSectionHeaderView> weak_ptr_factory_{this};
 };
 
-class WifiSectionHeaderView : public NetworkSectionHeaderView {
+class WifiSectionHeaderView : public NetworkSectionHeaderView,
+                              public TrayNetworkStateObserver {
  public:
   WifiSectionHeaderView();
 
   WifiSectionHeaderView(const WifiSectionHeaderView&) = delete;
   WifiSectionHeaderView& operator=(const WifiSectionHeaderView&) = delete;
 
-  ~WifiSectionHeaderView() override = default;
+  ~WifiSectionHeaderView() override;
 
   // NetworkSectionHeaderView:
   void SetToggleState(bool toggle_enabled, bool is_on) override;
@@ -157,17 +164,21 @@ class WifiSectionHeaderView : public NetworkSectionHeaderView {
   const char* GetClassName() const override;
 
  private:
+  // TrayNetworkStateObserver:
+  void DeviceStateListChanged() override;
+  void GlobalPolicyChanged() override;
+
   // NetworkSectionHeaderView:
   void OnToggleToggled(bool is_on) override;
   void AddExtraButtons(bool enabled) override;
+  void UpdateJoinButtonVisibility();
 
   void JoinButtonPressed();
 
   // A button to invoke "Join Wi-Fi network" dialog.
-  views::Button* join_button_ = nullptr;
+  IconButton* join_button_ = nullptr;
 };
 
-}  // namespace tray
 }  // namespace ash
 
 #endif  // ASH_SYSTEM_NETWORK_NETWORK_SECTION_HEADER_VIEW_H_

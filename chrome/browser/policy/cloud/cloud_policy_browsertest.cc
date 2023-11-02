@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -61,22 +61,21 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
-#include "chromeos/cryptohome/cryptohome_parameters.h"
+#include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
+#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/dbus/constants/dbus_paths.h"  // nogncheck
-#include "chromeos/dbus/userdataauth/userdataauth_client.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_names.h"
 #else
 #include "chrome/browser/net/system_network_context_manager.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #endif
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 using testing::_;
 using testing::AnyNumber;
@@ -204,6 +203,7 @@ class CloudPolicyTest : public PlatformBrowserTest,
 
   void CreatedBrowserMainParts(
       content::BrowserMainParts* browser_main_parts) override {
+    PlatformBrowserTest::CreatedBrowserMainParts(browser_main_parts);
     invalidation::ProfileInvalidationProviderFactory::GetInstance()
         ->RegisterTestingFactory(
             base::BindRepeating(&BuildFakeProfileInvalidationProvider));
@@ -298,7 +298,7 @@ class CloudPolicyTest : public PlatformBrowserTest,
     ASSERT_TRUE(base::PathService::Get(
         chromeos::dbus_paths::DIR_USER_POLICY_KEYS, &user_policy_key_dir));
     std::string sanitized_username =
-        chromeos::UserDataAuthClient::GetStubSanitizedUsername(
+        ash::UserDataAuthClient::GetStubSanitizedUsername(
             cryptohome::CreateAccountIdentifierFromAccountId(
                 AccountId::FromUserEmail(GetTestUser())));
     user_policy_key_file_ = user_policy_key_dir.AppendASCII(sanitized_username)
@@ -413,7 +413,8 @@ IN_PROC_BROWSER_TEST_F(CloudPolicyTest, EnsureDefaultPoliciesSet) {
   GetExpectedDefaultPolicy(&default_policy);
   // Make sure the expected policy has at least one of the policies we're
   // expecting.
-  EXPECT_TRUE(default_policy.GetValue(key::kEasyUnlockAllowed));
+  EXPECT_TRUE(default_policy.GetValue(key::kEasyUnlockAllowed,
+                                      base::Value::Type::BOOLEAN));
 
   // Now make sure that these default policies are actually getting injected.
   EXPECT_TRUE(default_policy.Equals(policy_service->GetPolicies(

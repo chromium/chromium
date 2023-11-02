@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,7 +23,6 @@ import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUi
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewAssertionTrue;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewMatchesCondition;
 import static org.chromium.chrome.browser.autofill_assistant.MiniActionTestUtil.addClickSteps;
-import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.buildValueExpression;
 import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.toCssSelector;
 
 import androidx.test.filters.MediumTest;
@@ -36,20 +35,22 @@ import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantTestService.ScriptsReturnMode;
 import org.chromium.chrome.browser.autofill_assistant.proto.ActionProto;
-import org.chromium.chrome.browser.autofill_assistant.proto.AutofillFormatProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.BooleanNotProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.CallbackProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ChipProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ChipType;
 import org.chromium.chrome.browser.autofill_assistant.proto.ComputeValueProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ConfigureUiStateProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ConfigureUiStateProto.OverlayBehavior;
+import org.chromium.chrome.browser.autofill_assistant.proto.ElementAreaProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.ElementAreaProto.Rectangle;
 import org.chromium.chrome.browser.autofill_assistant.proto.ElementConditionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ElementConditionsProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.EndActionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.EventProto;
-import org.chromium.chrome.browser.autofill_assistant.proto.ForEachProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.GenericUserInterfaceProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.InteractionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.InteractionsProto;
@@ -61,12 +62,13 @@ import org.chromium.chrome.browser.autofill_assistant.proto.PromptProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ScriptPreconditionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SelectorProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SetUserActionsProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.ShowCastProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ShowGenericUiProto;
-import org.chromium.chrome.browser.autofill_assistant.proto.StringList;
+import org.chromium.chrome.browser.autofill_assistant.proto.ShowGenericUiProto.PeriodicElementChecks;
+import org.chromium.chrome.browser.autofill_assistant.proto.ShowGenericUiProto.PeriodicElementChecks.ElementCheck;
 import org.chromium.chrome.browser.autofill_assistant.proto.SupportedScriptProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SupportedScriptProto.PresentationProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.TextViewProto;
-import org.chromium.chrome.browser.autofill_assistant.proto.ToStringProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.UserActionList;
 import org.chromium.chrome.browser.autofill_assistant.proto.UserActionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ValueProto;
@@ -458,16 +460,24 @@ public class AutofillAssistantInterruptIntegrationTest {
 
     @Test
     @MediumTest
-    public void testPersonalDataUpdateDuringInterruptIsRegisteredByGenericUi() throws Exception {
+    @DisabledTest(message = "https://crbug.com/1272997")
+    public void testStateRestoredAfterInterrupt() throws Exception {
         ArrayList<AutofillAssistantTestScript> scripts = new ArrayList<>();
         SelectorProto touch_area_one = toCssSelector("#touch_area_one");
         SelectorProto touch_area_four = toCssSelector("#touch_area_four");
+        SelectorProto touch_area_three = toCssSelector("#touch_area_three");
 
-        // Main script
         ArrayList<ActionProto> list = new ArrayList<>();
         list.add(ActionProto.newBuilder()
-                         .setConfigureUiState(ConfigureUiStateProto.newBuilder().setOverlayBehavior(
-                                 OverlayBehavior.HIDDEN))
+                         .setShowCast(
+                                 ShowCastProto.newBuilder()
+                                         .setElementToPresent(touch_area_one)
+                                         .setTouchableElementArea(
+                                                 ElementAreaProto.newBuilder().addTouchable(
+                                                         Rectangle.newBuilder()
+                                                                 .addElements(touch_area_one)
+                                                                 .addElements(touch_area_four)
+                                                                 .addElements(touch_area_three))))
                          .build());
 
         List<InteractionProto> interactions = new ArrayList<>();
@@ -481,86 +491,74 @@ public class AutofillAssistantInterruptIntegrationTest {
                                         ValueReferenceProto.newBuilder().setModelIdentifier(
                                                 "chips"))))
                         .build());
-        interactions.add(InteractionProto.newBuilder()
-                                 .addTriggerEvent(EventProto.newBuilder().setOnUserActionCalled(
-                                         OnUserActionCalled.newBuilder().setUserActionIdentifier(
-                                                 "done_chip")))
-                                 .addCallbacks(CallbackProto.newBuilder().setEndAction(
-                                         EndActionProto.newBuilder().setStatus(
-                                                 ProcessedActionStatusProto.ACTION_APPLIED)))
-                                 .build());
-
-        // This interaction sets the first cards's cardholder name in the textView whenever a change
-        // to the cards list is registered.
-        ToStringProto.Builder toString =
-                ToStringProto.newBuilder()
-                        .setValue(ValueReferenceProto.newBuilder().setModelIdentifier(
-                                "credit_cards[0]"))
-                        .setAutofillFormat(AutofillFormatProto.newBuilder().setValueExpression(
-                                buildValueExpression(51)));
-        CallbackProto autofillFormatCallback =
+        // When element three disappears, the ShowGenericUiAction ends.
+        CallbackProto notCallback =
                 CallbackProto.newBuilder()
-                        .setComputeValue(ComputeValueProto.newBuilder()
-                                                 .setResultModelIdentifier("text")
-                                                 .setToString(toString))
+                        .setComputeValue(
+                                ComputeValueProto.newBuilder()
+                                        .setBooleanNot(BooleanNotProto.newBuilder().setValue(
+                                                ValueReferenceProto.newBuilder().setModelIdentifier(
+                                                        "touch_area_three_present")))
+                                        .setResultModelIdentifier("end_action"))
                         .build();
         interactions.add(
                 InteractionProto.newBuilder()
                         .addTriggerEvent(EventProto.newBuilder().setOnValueChanged(
                                 OnModelValueChangedEventProto.newBuilder().setModelIdentifier(
-                                        "credit_cards")))
-                        .addCallbacks(
-                                CallbackProto
-                                        .newBuilder()
-                                        // The for each is just a quick way to make sure the array
-                                        // is not empty. In this test the array will have at most
-                                        // one element.
-                                        .setForEach(
-                                                ForEachProto.newBuilder()
-                                                        .setLoopCounter("i")
-                                                        .setLoopValueModelIdentifier("credit_cards")
-                                                        .addCallbacks(autofillFormatCallback)))
+                                        "touch_area_three_present")))
+                        .addCallbacks(notCallback)
+                        .build());
+        interactions.add(
+                InteractionProto.newBuilder()
+                        .addTriggerEvent(EventProto.newBuilder().setOnValueChanged(
+                                OnModelValueChangedEventProto.newBuilder().setModelIdentifier(
+                                        "end_action")))
+                        .addCallbacks(CallbackProto.newBuilder()
+                                              .setEndAction(EndActionProto.newBuilder().setStatus(
+                                                      ProcessedActionStatusProto.ACTION_APPLIED))
+                                              .setConditionModelIdentifier("end_action"))
                         .build());
 
         List<ModelProto.ModelValue> modelValues = new ArrayList<>();
         modelValues.add(
-                (ModelProto.ModelValue) ModelProto.ModelValue.newBuilder()
+                ModelProto.ModelValue.newBuilder()
                         .setIdentifier("chips")
                         .setValue(ValueProto.newBuilder().setUserActions(
                                 UserActionList.newBuilder().addValues(
                                         UserActionProto.newBuilder()
                                                 .setChip(ChipProto.newBuilder()
-                                                                 .setText("Continue")
+                                                                 .setText("Done")
                                                                  .setType(ChipType.NORMAL_ACTION))
                                                 .setIdentifier("done_chip"))))
                         .build());
-        modelValues.add((ModelProto.ModelValue) ModelProto.ModelValue.newBuilder()
-                                .setIdentifier("text")
-                                .setValue(ValueProto.newBuilder().setStrings(
-                                        StringList.newBuilder().addValues("Text")))
-                                .build());
+
+        ElementCheck touch_area_three_present =
+                ElementCheck.newBuilder()
+                        .setModelIdentifier("touch_area_three_present")
+                        .setElementCondition(
+                                ElementConditionProto.newBuilder().setMatch(touch_area_three))
+                        .build();
 
         GenericUserInterfaceProto genericUserInterface =
                 GenericUserInterfaceProto.newBuilder()
                         .setRootView(
                                 ViewProto.newBuilder()
-                                        .setTextView(TextViewProto.newBuilder().setModelIdentifier(
-                                                "text"))
+                                        .setTextView(TextViewProto.newBuilder().setText("Text"))
                                         .setIdentifier("textView"))
                         .setInteractions(
                                 InteractionsProto.newBuilder().addAllInteractions(interactions))
                         .setModel(ModelProto.newBuilder().addAllValues(modelValues))
                         .build();
-        list.add(ActionProto.newBuilder()
-                         .setShowGenericUi(
-                                 ShowGenericUiProto.newBuilder()
-                                         .setAllowInterrupt(true)
-                                         .setGenericUserInterface(genericUserInterface)
-                                         .setRequestCreditCards(
-                                                 ShowGenericUiProto.RequestAutofillCreditCards
-                                                         .newBuilder()
-                                                         .setModelIdentifier("credit_cards")))
-                         .build());
+        list.add(
+                ActionProto.newBuilder()
+                        .setShowGenericUi(
+                                ShowGenericUiProto.newBuilder()
+                                        .setAllowInterrupt(true)
+                                        .setGenericUserInterface(genericUserInterface)
+                                        .setPeriodicElementChecks(
+                                                PeriodicElementChecks.newBuilder().addElementChecks(
+                                                        touch_area_three_present)))
+                        .build());
         list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder().addChoices(
                                  PromptProto.Choice.newBuilder().setChip(
@@ -575,18 +573,12 @@ public class AutofillAssistantInterruptIntegrationTest {
                 list);
         scripts.add(script);
 
-        // Interrupt script
         ArrayList<ActionProto> interruptActionList = new ArrayList<>();
-        interruptActionList.add(
-                ActionProto.newBuilder()
-                        .setPrompt(PromptProto.newBuilder().addChoices(
-                                PromptProto.Choice.newBuilder().setChip(
-                                        ChipProto.newBuilder().setText("Interrupt"))))
-                        .build());
+        addClickSteps(touch_area_one, interruptActionList);
 
         // The interrupt triggers when touch_area_one is present but touch_area_four is gone, so
         // that we can trigger it manually.
-        ScriptPreconditionProto precondition =
+        ScriptPreconditionProto interruptPrecondition =
                 ScriptPreconditionProto.newBuilder()
                         .setElementCondition(ElementConditionProto.newBuilder().setAllOf(
                                 ElementConditionsProto.newBuilder()
@@ -603,7 +595,7 @@ public class AutofillAssistantInterruptIntegrationTest {
                         .setPath(INTERRUPT_SCRIPT_PATH)
                         .setPresentation(
                                 PresentationProto.newBuilder().setInterrupt(true).setPrecondition(
-                                        precondition))
+                                        interruptPrecondition))
                         .build(),
                 interruptActionList);
         scripts.add(interruptScript);
@@ -612,43 +604,21 @@ public class AutofillAssistantInterruptIntegrationTest {
                 new AutofillAssistantTestService(scripts, ScriptsReturnMode.ALL_AT_ONCE);
         startAutofillAssistant(mTestRule.getActivity(), testService);
 
-        waitUntilViewMatchesCondition(withText("Continue"), isDisplayingAtLeast(90));
-        onView(withText("Text")).check(matches(isDisplayed()));
+        waitUntilViewMatchesCondition(withText("Text"), isDisplayingAtLeast(90));
 
-        String johnCardId = mHelper.addDummyCreditCard(
-                mHelper.addDummyProfile("John Doe", "johndoe@google.com"), "4111111111111111");
-
-        waitUntilViewMatchesCondition(withText("John Doe"), isDisplayingAtLeast(90));
         // Tapping touch_area_four will make it disappear, which triggers the interrupt.
         tapElement(mTestRule, "touch_area_four");
+        waitUntil(() -> !checkElementExists(mTestRule.getWebContents(), "touch_area_four"));
 
-        // The interrupt prompt appears.
-        waitUntilViewMatchesCondition(withText("Interrupt"), isDisplayingAtLeast(90));
-        // The UI should be gone at this point.
-        onView(withText("John Doe")).check(doesNotExist());
+        // The interrupt should click on touch_area_one, making it disappear.
+        waitUntil(() -> !checkElementExists(mTestRule.getWebContents(), "touch_area_one"));
 
-        mHelper.deleteCreditCard(johnCardId);
-        String janeCardId = mHelper.addDummyCreditCard(
-                mHelper.addDummyProfile("Jane Doe", "johndoe@google.com"), "4111111111111111");
+        // Once the interrupt is done, the UI should appear again.
+        waitUntilViewMatchesCondition(withText("Text"), isDisplayingAtLeast(90));
 
-        // Hide element one so that the interrupt does not trigger again right away after it
-        // finishes.
-        tapElement(mTestRule, "touch_area_one");
-        // End interrupt
-        onView(withText("Interrupt")).perform(click());
-
-        // Once the interrupt is done, the chip and the UI should appear again.
-        waitUntilViewMatchesCondition(withText("Continue"), isDisplayingAtLeast(90));
-        onView(withText("Jane Doe")).check(matches(isDisplayed()));
-
-        mHelper.deleteCreditCard(janeCardId);
-        mHelper.addDummyCreditCard(
-                mHelper.addDummyProfile("Jim Doe", "johndoe@google.com"), "4111111111111111");
-
-        waitUntilViewMatchesCondition(withText("Jim Doe"), isDisplayingAtLeast(90));
-
-        // Clicking "Continue" should end the action.
-        onView(withText("Continue")).perform(click());
+        // If the state has been correctly set to PROMPT again, we should have the touchable window
+        // in the overlay again. In that case, tapping this element will end the action.
+        tapElement(mTestRule, "touch_area_three");
         waitUntilViewMatchesCondition(withText("End"), isDisplayingAtLeast(90));
     }
 }

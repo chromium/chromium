@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/win/windows_version.h"
@@ -16,7 +17,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gl/gl_context_egl.h"
 #include "ui/gl/gl_egl_api_implementation.h"
-#include "ui/gl/gl_image.h"
 #include "ui/gl/gl_share_group.h"
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/init/gl_factory.h"
@@ -44,9 +44,9 @@ class D3D11TextureWrapperUnittest : public ::testing::Test {
 
     task_runner_ = task_environment_.GetMainThreadTaskRunner();
 
-    gl::GLSurfaceTestSupport::InitializeOneOffImplementation(
+    display_ = gl::GLSurfaceTestSupport::InitializeOneOffImplementation(
         gl::GLImplementationParts(gl::ANGLEImplementation::kD3D11), false);
-    surface_ = gl::init::CreateOffscreenGLSurface(gfx::Size());
+    surface_ = gl::init::CreateOffscreenGLSurface(display_, gfx::Size());
     share_group_ = new gl::GLShareGroup();
     context_ = gl::init::CreateGLContext(share_group_.get(), surface_.get(),
                                          gl::GLContextAttribs());
@@ -66,7 +66,7 @@ class D3D11TextureWrapperUnittest : public ::testing::Test {
     context_ = nullptr;
     share_group_ = nullptr;
     surface_ = nullptr;
-    gl::init::ShutdownGL(false);
+    gl::GLSurfaceTestSupport::ShutdownGL(display_);
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -83,6 +83,8 @@ class D3D11TextureWrapperUnittest : public ::testing::Test {
   // a wrapper.
   scoped_refptr<FakeCommandBufferHelper> fake_command_buffer_helper_;
   GetCommandBufferHelperCB get_helper_cb_;
+
+  raw_ptr<gl::GLDisplay> display_ = nullptr;
 };
 
 TEST_F(D3D11TextureWrapperUnittest, NV12InitSucceeds) {

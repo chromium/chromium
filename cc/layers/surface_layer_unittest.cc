@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -47,15 +47,16 @@ class SurfaceLayerTest : public testing::Test {
 
   // Synchronizes |layer_tree_host_| and |host_impl_| and pushes surface ids.
   void SynchronizeTrees() {
-    auto* commit_state = layer_tree_host_->ActivateCommitState();
-    TreeSynchronizer::PushLayerProperties(commit_state,
+    auto& unsafe_state = layer_tree_host_->GetThreadUnsafeCommitState();
+    std::unique_ptr<CommitState> commit_state =
+        layer_tree_host_->ActivateCommitState();
+    TreeSynchronizer::PushLayerProperties(*commit_state, unsafe_state,
                                           host_impl_.pending_tree());
     if (commit_state->needs_surface_ranges_sync) {
       host_impl_.pending_tree()->ClearSurfaceRanges();
       host_impl_.pending_tree()->SetSurfaceRanges(
           commit_state->SurfaceRanges());
     }
-    layer_tree_host_->ClearActiveCommitStateForTesting();
   }
 
  protected:
@@ -137,12 +138,12 @@ TEST_F(SurfaceLayerTest, PushProperties) {
   layer->SetSurfaceId(primary_id, DeadlinePolicy::UseSpecifiedDeadline(2u));
   layer->SetSurfaceId(primary_id, DeadlinePolicy::UseExistingDeadline());
   layer->SetOldestAcceptableFallback(primary_id);
-  layer->SetBackgroundColor(SK_ColorBLUE);
+  layer->SetBackgroundColor(SkColors::kBlue);
   layer->SetStretchContentToFillBounds(true);
 
   EXPECT_TRUE(
-      layer_tree_host_->pending_commit_state()->needs_surface_ranges_sync);
-  EXPECT_EQ(layer_tree_host_->pending_commit_state()->SurfaceRanges().size(),
+      layer_tree_host_->GetPendingCommitState()->needs_surface_ranges_sync);
+  EXPECT_EQ(layer_tree_host_->GetPendingCommitState()->SurfaceRanges().size(),
             1u);
 
   // Verify that pending tree has no surface ids already.
@@ -160,12 +161,12 @@ TEST_F(SurfaceLayerTest, PushProperties) {
 
   // Verify we have reset the state on layer tree host.
   EXPECT_FALSE(
-      layer_tree_host_->pending_commit_state()->needs_surface_ranges_sync);
+      layer_tree_host_->GetPendingCommitState()->needs_surface_ranges_sync);
 
   // Verify that the primary and fallback SurfaceIds are pushed through.
   EXPECT_EQ(primary_id, layer_impl->range().end());
   EXPECT_EQ(primary_id, layer_impl->range().start());
-  EXPECT_EQ(SK_ColorBLUE, layer_impl->background_color());
+  EXPECT_EQ(SkColors::kBlue, layer_impl->background_color());
   EXPECT_TRUE(layer_impl->stretch_content_to_fill_bounds());
   EXPECT_EQ(2u, layer_impl->deadline_in_frames());
 
@@ -174,14 +175,14 @@ TEST_F(SurfaceLayerTest, PushProperties) {
       viz::LocalSurfaceId(2, base::UnguessableToken::Create()));
   layer->SetOldestAcceptableFallback(fallback_id);
   layer->SetSurfaceId(fallback_id, DeadlinePolicy::UseExistingDeadline());
-  layer->SetBackgroundColor(SK_ColorGREEN);
+  layer->SetBackgroundColor(SkColors::kGreen);
   layer->SetStretchContentToFillBounds(false);
 
   // Verify that fallback surface id is not recorded on the layer tree host as
   // surface synchronization is not enabled.
   EXPECT_TRUE(
-      layer_tree_host_->pending_commit_state()->needs_surface_ranges_sync);
-  EXPECT_EQ(layer_tree_host_->pending_commit_state()->SurfaceRanges().size(),
+      layer_tree_host_->GetPendingCommitState()->needs_surface_ranges_sync);
+  EXPECT_EQ(layer_tree_host_->GetPendingCommitState()->SurfaceRanges().size(),
             1u);
 
   SynchronizeTrees();
@@ -192,7 +193,7 @@ TEST_F(SurfaceLayerTest, PushProperties) {
   // fallback viz::SurfaceId is pushed through.
   EXPECT_EQ(fallback_id, layer_impl->range().end());
   EXPECT_EQ(fallback_id, layer_impl->range().start());
-  EXPECT_EQ(SK_ColorGREEN, layer_impl->background_color());
+  EXPECT_EQ(SkColors::kGreen, layer_impl->background_color());
   // The deadline resets back to 0 (no deadline) after the first commit.
   EXPECT_EQ(0u, layer_impl->deadline_in_frames());
   EXPECT_FALSE(layer_impl->stretch_content_to_fill_bounds());
@@ -228,7 +229,7 @@ TEST_F(SurfaceLayerTest, CheckSurfaceReferencesForClonedLayer) {
   SynchronizeTrees();
 
   // Verify that only |old_surface_id| is going to be referenced.
-  EXPECT_THAT(layer_tree_host_->pending_commit_state()->SurfaceRanges(),
+  EXPECT_THAT(layer_tree_host_->GetPendingCommitState()->SurfaceRanges(),
               ElementsAre(viz::SurfaceRange(old_surface_id)));
   EXPECT_THAT(host_impl_.pending_tree()->SurfaceRanges(),
               ElementsAre(viz::SurfaceRange(old_surface_id)));
@@ -244,7 +245,7 @@ TEST_F(SurfaceLayerTest, CheckSurfaceReferencesForClonedLayer) {
   SynchronizeTrees();
 
   // Verify that both surface ids are going to be referenced.
-  EXPECT_THAT(layer_tree_host_->pending_commit_state()->SurfaceRanges(),
+  EXPECT_THAT(layer_tree_host_->GetPendingCommitState()->SurfaceRanges(),
               ElementsAre(viz::SurfaceRange(old_surface_id),
                           viz::SurfaceRange(new_surface_id)));
   EXPECT_THAT(host_impl_.pending_tree()->SurfaceRanges(),
@@ -257,7 +258,7 @@ TEST_F(SurfaceLayerTest, CheckSurfaceReferencesForClonedLayer) {
   SynchronizeTrees();
 
   // Verify that only |new_surface_id| is going to be referenced.
-  EXPECT_THAT(layer_tree_host_->pending_commit_state()->SurfaceRanges(),
+  EXPECT_THAT(layer_tree_host_->GetPendingCommitState()->SurfaceRanges(),
               ElementsAre(viz::SurfaceRange(new_surface_id)));
   EXPECT_THAT(host_impl_.pending_tree()->SurfaceRanges(),
               ElementsAre(viz::SurfaceRange(new_surface_id)));
@@ -281,8 +282,8 @@ TEST_F(SurfaceLayerTest, CheckNeedsSurfaceIdsSyncForClonedLayers) {
   // Verify the surface id is in SurfaceLayerIds() and
   // needs_surface_ranges_sync() is true.
   EXPECT_TRUE(
-      layer_tree_host_->pending_commit_state()->needs_surface_ranges_sync);
-  EXPECT_THAT(layer_tree_host_->pending_commit_state()->SurfaceRanges(),
+      layer_tree_host_->GetPendingCommitState()->needs_surface_ranges_sync);
+  EXPECT_THAT(layer_tree_host_->GetPendingCommitState()->SurfaceRanges(),
               SizeIs(1));
 
   std::unique_ptr<SurfaceLayerImpl> layer_impl1 =
@@ -291,7 +292,7 @@ TEST_F(SurfaceLayerTest, CheckNeedsSurfaceIdsSyncForClonedLayers) {
 
   // After syncchronizing trees verify needs_surface_ranges_sync() is false.
   EXPECT_FALSE(
-      layer_tree_host_->pending_commit_state()->needs_surface_ranges_sync);
+      layer_tree_host_->GetPendingCommitState()->needs_surface_ranges_sync);
 
   // Create the second layer that is a clone of the first.
   scoped_refptr<SurfaceLayer> layer2 = SurfaceLayer::Create();
@@ -302,8 +303,8 @@ TEST_F(SurfaceLayerTest, CheckNeedsSurfaceIdsSyncForClonedLayers) {
   // Verify that after creating the second layer with the same surface id that
   // needs_surface_ranges_sync is still false.
   EXPECT_TRUE(
-      layer_tree_host_->pending_commit_state()->needs_surface_ranges_sync);
-  EXPECT_THAT(layer_tree_host_->pending_commit_state()->SurfaceRanges(),
+      layer_tree_host_->GetPendingCommitState()->needs_surface_ranges_sync);
+  EXPECT_THAT(layer_tree_host_->GetPendingCommitState()->SurfaceRanges(),
               SizeIs(1));
 
   std::unique_ptr<SurfaceLayerImpl> layer_impl2 =
@@ -313,22 +314,22 @@ TEST_F(SurfaceLayerTest, CheckNeedsSurfaceIdsSyncForClonedLayers) {
   // Verify needs_surface_ranges_sync is still false after synchronizing
   // trees.
   EXPECT_FALSE(
-      layer_tree_host_->pending_commit_state()->needs_surface_ranges_sync);
+      layer_tree_host_->GetPendingCommitState()->needs_surface_ranges_sync);
 
   // Destroy one of the layers, leaving one layer with the surface id.
   layer1->SetLayerTreeHost(nullptr);
 
   // Verify needs_surface_ranges_sync is still false.
   EXPECT_FALSE(
-      layer_tree_host_->pending_commit_state()->needs_surface_ranges_sync);
+      layer_tree_host_->GetPendingCommitState()->needs_surface_ranges_sync);
 
   // Destroy the last layer, this should change the set of layer surface ids.
   layer2->SetLayerTreeHost(nullptr);
 
   // Verify SurfaceLayerIds() is empty and needs_surface_ranges_sync is true.
   EXPECT_TRUE(
-      layer_tree_host_->pending_commit_state()->needs_surface_ranges_sync);
-  EXPECT_THAT(layer_tree_host_->pending_commit_state()->SurfaceRanges(),
+      layer_tree_host_->GetPendingCommitState()->needs_surface_ranges_sync);
+  EXPECT_THAT(layer_tree_host_->GetPendingCommitState()->SurfaceRanges(),
               SizeIs(0));
 }
 

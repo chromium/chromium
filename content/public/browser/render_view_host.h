@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,12 @@
 #include "content/public/common/drop_data.h"
 #include "content/public/common/page_zoom.h"
 #include "ipc/ipc_sender.h"
-#include "mojo/public/cpp/system/core.h"
 #include "third_party/blink/public/common/page/drag_operation.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-forward.h"
+
+namespace perfetto::protos::pbzero {
+class RenderViewHost;
+}  // namespace perfetto::protos::pbzero
 
 namespace content {
 
@@ -20,13 +23,13 @@ class RenderFrameHost;
 class RenderProcessHost;
 class RenderWidgetHost;
 
-// A RenderViewHost is responsible for creating and talking to a RenderView
-// object in a child process. It exposes a high level API to users, for things
-// like loading pages, adjusting the display and other browser functionality,
-// which it translates into IPC messages sent over the IPC channel with the
-// RenderView. It responds to all IPC messages sent by that RenderView and
-// cracks them, calling a delegate object back with higher level types where
-// possible.
+// A RenderViewHost is responsible for creating and talking to a
+// `blink::WebView` object in a child process. It exposes a high level API to
+// users, for things like loading pages, adjusting the display and other browser
+// functionality, which it translates into IPC messages sent over the IPC
+// channel with the `blink::WebView`. It responds to all IPC messages sent by
+// that `blink::WebView` and cracks them, calling a delegate object back with
+// higher level types where possible.
 //
 // The intent of this interface is to provide a view-agnostic communication
 // conduit with a renderer. This is so we can build HTML views not only as
@@ -52,10 +55,10 @@ class CONTENT_EXPORT RenderViewHost {
   virtual ~RenderViewHost() {}
 
   // Returns the RenderWidgetHost for this RenderViewHost.
-  virtual RenderWidgetHost* GetWidget() = 0;
+  virtual RenderWidgetHost* GetWidget() const = 0;
 
   // Returns the RenderProcessHost for this RenderViewHost.
-  virtual RenderProcessHost* GetProcess() = 0;
+  virtual RenderProcessHost* GetProcess() const = 0;
 
   // Returns the routing id for IPC use for this RenderViewHost.
   //
@@ -63,16 +66,15 @@ class CONTENT_EXPORT RenderViewHost {
   // and shared its IPC channel and its routing ID. Although this inheritance is
   // no longer so, the IPC channel is currently still shared. Expect this to
   // change.
-  virtual int GetRoutingID() = 0;
+  virtual int GetRoutingID() const = 0;
 
-  // Instructs the RenderView to send back updates to the preferred size.
+  // Instructs the `blink::WebView` to send back updates to the preferred size.
   virtual void EnablePreferredSizeMode() = 0;
 
-  // Returns true if the RenderView is active and has not crashed.
-  virtual bool IsRenderViewLive() = 0;
-
+  using TraceProto = perfetto::protos::pbzero::RenderViewHost;
   // Write a representation of this object into a trace.
-  virtual void WriteIntoTrace(perfetto::TracedValue context) = 0;
+  virtual void WriteIntoTrace(
+      perfetto::TracedProto<TraceProto> context) const = 0;
 
  private:
   // This interface should only be implemented inside content.

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -146,6 +146,7 @@ const char kTechnologyHspaPlus[] = "HSPAPlus";
 const char kTechnologyLte[] = "LTE";
 const char kTechnologyLteAdvanced[] = "LTEAdvanced";
 const char kTechnologyUmts[] = "UMTS";
+const char kTechnology5gNr[] = "5GNR";
 }  // namespace cellular
 
 namespace cellular_provider {
@@ -163,6 +164,22 @@ const char kAuthentication[] = "Authentication";
 const char kLocalizedName[] = "LocalizedName";
 const char kLanguage[] = "Language";
 const char kAttach[] = "Attach";
+const char kId[] = "Id";
+const char kState[] = "State";
+const char kStateEnabled[] = "Enabled";
+const char kStateDisabled[] = "Disabled";
+const char kAuthenticationType[] = "AuthenticationType";
+const char kAuthenticationTypeAutomatic[] = "";
+const char kAuthenticationTypePap[] = "PAP";
+const char kAuthenticationTypeChap[] = "CHAP";
+const char kIpType[] = "IpType";
+const char kIpTypeAutomatic[] = "";
+const char kIpTypeIpv4[] = "IPv4";
+const char kIpTypeIpv6[] = "IPv6";
+const char kIpTypeIpv4Ipv6[] = "IPv4orIPv6";
+const char kApnTypes[] = "ApnTypes";
+const char kApnTypeDefault[] = "Default";
+const char kApnTypeAttach[] = "Attach";
 }  // namespace cellular_apn
 
 namespace cellular_found_network {
@@ -233,6 +250,7 @@ const char kSSID[] = "SSID";
 const char kSecurity[] = "Security";
 const char kSecurityNone[] = "None";
 const char kSignalStrength[] = "SignalStrength";
+const char kSignalStrengthRssi[] = "SignalStrengthRssi";
 const char kWEP_8021X[] = "WEP-8021X";
 const char kWEP_PSK[] = "WEP-PSK";
 const char kWPA_EAP[] = "WPA-EAP";
@@ -365,7 +383,9 @@ const char kCert[] = "Cert";
 const char kEAP[] = "EAP";
 const char kGroup[] = "Group";
 const char kIKEVersion[] = "IKEVersion";
+const char kLocalIdentity[] = "LocalIdentity";
 const char kPSK[] = "PSK";
+const char kRemoteIdentity[] = "RemoteIdentity";
 const char kServerCAPEMs[] = "ServerCAPEMs";
 const char kServerCARef[] = "ServerCARef";
 const char kServerCARefs[] = "ServerCARefs";
@@ -499,6 +519,7 @@ const char kPasswordPlaceholderVerbatim[] = "${PASSWORD}";
 }  // namespace substitutes
 
 namespace global_network_config {
+const char kAllowCellularSimLock[] = "AllowCellularSimLock";
 const char kAllowOnlyPolicyCellularNetworks[] =
     "AllowOnlyPolicyCellularNetworks";
 const char kAllowOnlyPolicyNetworksToAutoconnect[] =
@@ -511,8 +532,9 @@ const char kAllowOnlyPolicyNetworksToConnectIfAvailable[] =
 // AllowOnlyPolicyNetworksToConnectIfAvailable field are currently only applied
 // to WiFi networks. TODO(crbug.com/1234561): Fix this when ONC field is
 // updated.
-const char* kAllowOnlyPolicyWiFiToConnect = kAllowOnlyPolicyNetworksToConnect;
-const char* kAllowOnlyPolicyWiFiToConnectIfAvailable =
+const char* const kAllowOnlyPolicyWiFiToConnect =
+    kAllowOnlyPolicyNetworksToConnect;
+const char* const kAllowOnlyPolicyWiFiToConnectIfAvailable =
     kAllowOnlyPolicyNetworksToConnectIfAvailable;
 
 const char kBlacklistedHexSSIDs[] = "BlacklistedHexSSIDs";  // Deprecated

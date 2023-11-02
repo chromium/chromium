@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,9 +14,9 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/memory/memory_pressure_monitor.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/process/process.h"
@@ -25,8 +25,8 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
-#include "base/task/post_task.h"
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "build/build_config.h"
@@ -38,7 +38,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/resource_coordinator/resource_coordinator_parts.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
-#include "chrome/browser/resource_coordinator/tab_manager.h"
 #include "chrome/browser/resource_coordinator/tab_manager_features.h"
 #include "chrome/browser/resource_coordinator/tab_manager_resource_coordinator_signal_observer.h"
 #include "chrome/browser/resource_coordinator/tab_manager_stats_collector.h"
@@ -112,7 +111,7 @@ class TabManager::TabManagerSessionRestoreObserver final
   }
 
  private:
-  TabManager* tab_manager_;
+  raw_ptr<TabManager> tab_manager_;
 };
 
 TabManager::TabManager(TabLoadTracker* tab_load_tracker)
@@ -137,33 +136,25 @@ TabManager::~TabManager() {
 }
 
 void TabManager::Start() {
+  // On Linux, there is no tab discarding because MemoryPressureMonitor is not
+  // reliable. On Windows, Mac and ChromeOS Lacros, urgent discarding is
+  // handled by Performance Manager.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   delegate_->StartPeriodicOOMScoreUpdate();
-#endif
 
-// MemoryPressureMonitor is not implemented on Linux so far and tabs are never
-// discarded.
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_CHROMEOS)
-  // Don't handle memory pressure events here if this is done by
-  // PerformanceManager.
-  if (!base::FeatureList::IsEnabled(
-          performance_manager::features::
-              kUrgentDiscardingFromPerformanceManager)) {
-    // Create a |MemoryPressureListener| to listen for memory events when
-    // MemoryCoordinator is disabled. When MemoryCoordinator is enabled
-    // it asks TabManager to do tab discarding.
-    base::MemoryPressureMonitor* monitor = base::MemoryPressureMonitor::Get();
-    if (monitor) {
-      RegisterMemoryPressureListener();
-      base::MemoryPressureListener::MemoryPressureLevel level =
-          monitor->GetCurrentPressureLevel();
-      if (level ==
-          base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL) {
-        OnMemoryPressure(level);
-      }
+  // Create a |MemoryPressureListener| to listen for memory events when
+  // MemoryCoordinator is disabled. When MemoryCoordinator is enabled
+  // it asks TabManager to do tab discarding.
+  base::MemoryPressureMonitor* monitor = base::MemoryPressureMonitor::Get();
+  if (monitor) {
+    RegisterMemoryPressureListener();
+    base::MemoryPressureListener::MemoryPressureLevel level =
+        monitor->GetCurrentPressureLevel();
+    if (level == base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL) {
+      OnMemoryPressure(level);
     }
   }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Create the graph observer. This is the source of page almost idle data and
   // EQT measurements.
@@ -222,11 +213,8 @@ WebContents* TabManager::DiscardTabByExtension(content::WebContents* contents) {
   return DiscardTabImpl(LifecycleUnitDiscardReason::EXTERNAL);
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void TabManager::DiscardTabFromMemoryPressure() {
-  DCHECK(!base::FeatureList::IsEnabled(
-      performance_manager::features::kUrgentDiscardingFromPerformanceManager));
-
-#if defined(OS_CHROMEOS)
   // Output a log with per-process memory usage and number of file descriptors,
   // as well as GPU memory details. Discard happens without waiting for the log
   // (https://crbug.com/850545) Per comment at
@@ -235,7 +223,6 @@ void TabManager::DiscardTabFromMemoryPressure() {
   // platforms since it is not used and data shows it can create IO thread hangs
   // (https://crbug.com/1040522).
   memory::OomMemoryDetails::Log("Tab Discards Memory details");
-#endif  // defined(OS_CHROMEOS)
 
   // Start handling memory pressure. Suppress further notifications before
   // completion in case a slow handler queues up multiple dispatches of this
@@ -246,6 +233,7 @@ void TabManager::DiscardTabFromMemoryPressure() {
       &TabManager::OnTabDiscardDone, weak_ptr_factory_.GetWeakPtr()));
   DiscardTab(LifecycleUnitDiscardReason::URGENT, std::move(tab_discard_done));
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void TabManager::AddObserver(TabLifecycleObserver* observer) {
   TabLifecycleUnitExternal::AddTabLifecycleObserver(observer);
@@ -284,7 +272,7 @@ bool TabManager::IsInternalPage(const GURL& url) {
       chrome::kChromeUINewTabURL, chrome::kChromeUISettingsURL};
   // Prefix-match against the table above. Use strncmp to avoid allocating
   // memory to convert the URL prefix constants into std::strings.
-  for (size_t i = 0; i < base::size(kInternalPagePrefixes); ++i) {
+  for (size_t i = 0; i < std::size(kInternalPagePrefixes); ++i) {
     if (!strncmp(url.spec().c_str(), kInternalPagePrefixes[i],
                  strlen(kInternalPagePrefixes[i])))
       return true;
@@ -292,6 +280,7 @@ bool TabManager::IsInternalPage(const GURL& url) {
   return false;
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void TabManager::OnMemoryPressure(
     base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
   // If Chrome is shutting down, do not do anything.
@@ -335,6 +324,7 @@ void TabManager::UnregisterMemoryPressureListener() {
   // Destroying the memory pressure listener to unregister from the observer.
   memory_pressure_listener_.reset();
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void TabManager::OnActiveTabChanged(content::WebContents* old_contents,
                                     content::WebContents* new_contents) {

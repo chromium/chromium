@@ -1,0 +1,32 @@
+import("//build/config/linux/pkg_config.gni")
+import("//build/shim_headers.gni")
+
+pkg_config("system_SPIRV-Tools") {
+  packages = [ "SPIRV-Tools" ]
+}
+
+shim_headers("SPIRV-Tools_shim") {
+  root_path = "../../../../third_party/SPIRV-Tools/include"
+  headers = [
+    "spirv-tools/instrument.hpp",
+    "spirv-tools/libspirv.h",
+    "spirv-tools/libspirv.hpp",
+    "spirv-tools/linker.hpp",
+    "spirv-tools/optimizer.hpp",
+  ]
+}
+
+source_set("spvtools_headers") {
+  deps = [ ":SPIRV-Tools_shim" ]
+  public_configs = [ ":system_SPIRV-Tools" ]
+}
+
+source_set("spvtools_opt") {
+  deps = [ ":SPIRV-Tools_shim" ]
+  public_configs = [ ":system_SPIRV-Tools" ]
+}
+
+source_set("spvtools_val") {
+  deps = [ ":SPIRV-Tools_shim" ]
+  public_configs = [ ":system_SPIRV-Tools" ]
+}

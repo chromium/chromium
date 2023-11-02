@@ -45,8 +45,8 @@
   <message name="IDS_FLAGS_UI_NOT_AVAILABLE_ON_PLATFORM" translateable="false" desc="Message stating that an experiment is not available for the current platform.">
     Not available on your platform.
   </message>
-  <if expr="chromeos">
-    <message name="IDS_FLAGS_UI_RELAUNCH" translateable="false" desc="Label for button that restarts chrome os.">
+  <if expr="chromeos_ash">
+    <message name="IDS_FLAGS_UI_RELAUNCH" translateable="false" desc="Label for button that restarts ChromeOS.">
       Restart
     </message>
     <message name="IDS_FLAGS_UI_OS_FLAGS_TEXT1" translateable="false" desc="Begin label text which directs a user to a second dialog in ChromeOS showing OS specific flags - enclosing url link.">
@@ -59,7 +59,7 @@
       chrome://flags
     </message>
   </if>
-  <if expr="lacros">
+  <if expr="chromeos_lacros">
     <message name="IDS_FLAGS_UI_OS_FLAGS_TEXT1" translateable="false" desc="Begin label text which directs a user to a second dialog in ChromeOS showing OS specific flags - enclosing url link.">
       Looking for the ChromeOS flags? Visit
     </message>
@@ -70,7 +70,7 @@
       os://flags
     </message>
   </if>
-  <if expr="not chromeos">
+  <if expr="not chromeos_ash">
     <message name="IDS_FLAGS_UI_RELAUNCH" translateable="false" desc="Label for button that relaunches chrome.">
       Relaunch
     </message>
@@ -119,8 +119,8 @@
   <message name="IDS_DEPRECATED_FEATURES_NOT_AVAILABLE_ON_PLATFORM" desc="Message stating that an experiment is not available for the current platform.">
     Not available on your platform.
   </message>
-  <if expr="chromeos">
-    <message name="IDS_DEPRECATED_FEATURES_RELAUNCH" desc="Label for button that restarts chrome os.">
+  <if expr="chromeos_ash">
+    <message name="IDS_DEPRECATED_FEATURES_RELAUNCH" desc="Label for button that restarts ChromeOS.">
       Restart
     </message>
     <message name="IDS_DEPRECATED_FLAGS_UI_OS_FLAGS_TEXT1" desc="Begin label text which directs a user to a second dialog in ChromeOS showing OS specific flags - enclosing url link.">
@@ -133,7 +133,7 @@
       chrome://flags
     </message>
   </if>
-  <if expr="lacros">
+  <if expr="chromeos_lacros">
     <message name="IDS_DEPRECATED_FLAGS_UI_OS_FLAGS_TEXT1" desc="Begin label text which directs a user to a second dialog in ChromeOS showing OS specific flags - enclosing url link.">
       Looking for the ChromeOS flags? Visit
     </message>
@@ -144,7 +144,7 @@
       os://flags
     </message>
   </if>
-  <if expr="not chromeos">
+  <if expr="not chromeos_ash">
     <message name="IDS_DEPRECATED_FEATURES_RELAUNCH" desc="Label for button that relaunches chrome.">
       Relaunch
     </message>

@@ -1,0 +1,26 @@
+<!--
+@EXECUTE-AND-WAIT-FOR:addAriaPressed()
+@EXECUTE-AND-WAIT-FOR:removeAriaPressed()
+-->
+<html>
+<body>
+<button id="test">Test</button>
+<div id="done"></div>
+<script>
+function addAriaPressed() {
+    document
+        .getElementById("test")
+        .setAttribute("aria-pressed", "true");
+    document.getElementById('done').innerText = 'Test 1';
+    return 'Test 1';
+}
+function removeAriaPressed() {
+    document
+        .getElementById("test")
+        .removeAttribute("aria-pressed");
+    document.getElementById('done').innerText = 'Test 2';
+    return 'Test 2';
+}
+</script>
+</body>
+</html>

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include "base/android/path_utils.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/message_loop/message_pump.h"
 #include "base/message_loop/message_pump_android.h"
@@ -28,7 +28,7 @@ struct RunState {
         should_quit(false) {
   }
 
-  base::MessagePump::Delegate* delegate;
+  raw_ptr<base::MessagePump::Delegate> delegate;
 
   // Used to count how many Run() invocations are on the stack.
   int run_depth;
@@ -160,11 +160,12 @@ class MessagePumpForUIStub : public base::MessagePumpForUI {
     }
   }
 
-  void ScheduleDelayedWork(const base::TimeTicks& delayed_work_time) override {
+  void ScheduleDelayedWork(
+      const Delegate::NextWorkInfo& next_work_info) override {
     if (g_state && g_state->run_depth > 1) {
       Waitable::GetInstance()->Signal();
     } else {
-      MessagePumpForUI::ScheduleDelayedWork(delayed_work_time);
+      MessagePumpForUI::ScheduleDelayedWork(next_work_info);
     }
   }
 };

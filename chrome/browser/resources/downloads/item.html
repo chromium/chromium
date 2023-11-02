@@ -91,7 +91,7 @@
 
   @media (prefers-color-scheme: dark) {
     #content:not(.is-active) #details {
-      color: rgba(var(--google-grey-refresh-500-rgb), .6);
+      color: rgba(var(--google-grey-500-rgb), .6);
     }
   }
 
@@ -101,7 +101,7 @@
 
   @media (prefers-color-scheme: dark) {
     #content:not(.is-active) :-webkit-any(#name, #tag) {
-      color: var(--google-grey-refresh-500);
+      color: var(--google-grey-500);
     }
   }
 
@@ -148,7 +148,7 @@
 
   @media (prefers-color-scheme: dark) {
     #file-icon-wrapper iron-icon[icon-color='red'] {
-      color: var(--google-red-refresh-300);
+      color: var(--google-red-300);
     }
   }
 
@@ -225,7 +225,7 @@
 
   @media (prefers-color-scheme: dark) {
     #progress {
-      --paper-progress-active-color: var(--google-blue-refresh-300);
+      --paper-progress-active-color: var(--google-blue-300);
       --paper-progress-container-color: var(--google-grey-800);
     }
   }
@@ -277,7 +277,6 @@
 
   #pauseOrResume,
   #dangerous .action-button,
-  #incognito-warning .action-button,
   #openNow {
     margin-inline-end: 8px;
   }
@@ -341,11 +340,12 @@
       </div>
     </template>
 
-    <div id="safe" class="controls" hidden="[[!isDownloadItemSafe_]]">
+    <div id="safe" class="controls" hidden="[[isDangerous_]]">
       <span role="gridcell" hidden="[[!hasShowInFolderLink_]]">
         <a is="action-link" id="show" on-click="onShowTap_"
             focus-row-control
-            focus-type="show">[[data.showInFolderText]]</a>
+            focus-type="show"
+            title="[[data.filePath]]">[[data.showInFolderText]]</a>
       </span>
       <template is="dom-if" if="[[data.retry]]">
         <span role="gridcell">
@@ -384,49 +384,50 @@
 
     <template is="dom-if" if="[[isDangerous_]]">
       <div id="dangerous" class="controls">
-        <!-- Dangerous file types (e.g. .exe, .jar). -->
-        <template is="dom-if" if="[[!isMalware_]]">
-          <span role="gridcell">
-            <cr-button on-click="onDiscardDangerousTap_"
-                class="action-button" focus-row-control
-                focus-type="discard">$i18n{dangerDiscard}</cr-button>
-          </span>
-          <span role="gridcell">
-            <cr-button on-click="onSaveDangerousTap_" focus-row-control
-                focus-type="save">
-              $i18n{dangerSave}</cr-button>
-          </span>
+        <!-- Files that enterprise policies allow to be reviewed. -->
+        <template is="dom-if" if="[[isReviewable_]]">
+            <span role="gridcell">
+              <cr-button on-click="onDiscardDangerousTap_"
+                  class="action-button" focus-row-control
+                  focus-type="discard">$i18n{dangerDiscard}</cr-button>
+            </span>
+            <span role="gridcell">
+              <cr-button on-click="onReviewDangerousTap_" focus-row-control
+                  focus-type="save">
+                $i18n{dangerReview}</cr-button>
+            </span>
         </template>
 
-        <!-- Things that safe browsing has determined to be dangerous. -->
-        <template is="dom-if" if="[[isMalware_]]">
-          <span role="gridcell">
-            <cr-button on-click="onDiscardDangerousTap_"
-                class="action-button"
-                focus-row-control focus-type="discard">
-              $i18n{controlRemoveFromList}</cr-button>
-          </span>
-          <span role="gridcell">
-            <cr-button on-click="onSaveDangerousTap_" focus-row-control
-                focus-type="save">
-              $i18n{dangerRestore}</cr-button>
-          </span>
-        </template>
-      </div>
-    </template>
+        <template is="dom-if" if="[[!isReviewable_]]">
+          <!-- Dangerous file types (e.g. .exe, .jar). -->
+          <template is="dom-if" if="[[!isMalware_]]">
+            <span role="gridcell">
+              <cr-button on-click="onDiscardDangerousTap_"
+                  class="action-button" focus-row-control
+                  focus-type="discard">$i18n{dangerDiscard}</cr-button>
+            </span>
+            <span role="gridcell">
+              <cr-button on-click="onSaveDangerousTap_" focus-row-control
+                  focus-type="save">
+                $i18n{dangerSave}</cr-button>
+            </span>
+          </template>
 
-    <template is="dom-if" if="[[shouldShowIncognitoWarning_]]">
-      <div id="incognito-warning" class="controls">
-        <span role="gridcell">
-          <cr-button on-click="onIncognitoWarningAccepted_"
-              class="action-button" focus-row-control
-              focus-type="save">$i18n{downloadAnyway}</cr-button>
-        </span>
-        <span role="gridcell">
-          <cr-button on-click="onCancelTap_" focus-row-control
-              focus-type="cancel">
-            $i18n{controlCancel}</cr-button>
-        </span>
+          <!-- Things that safe browsing has determined to be dangerous. -->
+          <template is="dom-if" if="[[isMalware_]]">
+            <span role="gridcell">
+              <cr-button on-click="onDiscardDangerousTap_"
+                  class="action-button"
+                  focus-row-control focus-type="discard">
+                $i18n{controlRemoveFromList}</cr-button>
+            </span>
+            <span role="gridcell">
+              <cr-button on-click="onSaveDangerousTap_" focus-row-control
+                  focus-type="save">
+                $i18n{dangerRestore}</cr-button>
+            </span>
+          </template>
+        </template>
       </div>
     </template>
   </div>

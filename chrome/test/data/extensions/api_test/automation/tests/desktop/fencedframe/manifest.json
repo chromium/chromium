@@ -1,0 +1,17 @@
+{
+  "name": "chrome.automation.sanityCheck",
+  "version": "0.1",
+  "manifest_version": 2,
+  "description": "Tests for the Automation API in FencedFrame",
+  "permissions": [ "windows" ],
+  "automation": {"desktop": true},
+  "content_scripts": [
+    {
+      "all_frames": true,
+      "matches": [
+         "http://*/*fencedframe_inner.html"
+      ],
+      "js": ["content_script.js"]
+    }
+  ]
+}

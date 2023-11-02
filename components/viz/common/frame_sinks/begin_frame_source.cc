@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -247,8 +247,9 @@ void BackToBackBeginFrameSource::RemoveObserver(BeginFrameObserver* obs) {
   DCHECK(base::Contains(observers_, obs));
   observers_.erase(obs);
   pending_begin_frame_observers_.erase(obs);
-  if (pending_begin_frame_observers_.empty())
+  if (pending_begin_frame_observers_.empty()) {
     time_source_->SetActive(false);
+  }
 }
 
 void BackToBackBeginFrameSource::DidFinishFrame(BeginFrameObserver* obs) {
@@ -318,7 +319,7 @@ void DelayBasedBeginFrameSource::AddObserver(BeginFrameObserver* obs) {
 
   observers_.insert(obs);
   obs->OnBeginFrameSourcePausedChanged(false);
-  time_source_->SetActive(true);
+  SetActive(true);
 
   // Missed args should correspond to |last_begin_frame_args_| (particularly,
   // have the same sequence number) if |last_begin_frame_args_| still correspond
@@ -345,7 +346,7 @@ void DelayBasedBeginFrameSource::RemoveObserver(BeginFrameObserver* obs) {
 
   observers_.erase(obs);
   if (observers_.empty())
-    time_source_->SetActive(false);
+    SetActive(false);
 }
 
 void DelayBasedBeginFrameSource::OnGpuNoLongerBusy() {
@@ -362,7 +363,12 @@ void DelayBasedBeginFrameSource::SetDynamicBeginFrameDeadlineOffsetSource(
 void DelayBasedBeginFrameSource::OnTimerTick() {
   if (RequestCallbackOnGpuAvailable())
     return;
-  last_begin_frame_args_ = CreateBeginFrameArgs(time_source_->LastTickTime());
+  // In case of gpu back pressure LastTickTime can fall behind, and in case of
+  // a change in vsync using (NextTickTime-interval) could be before
+  // LastTickTime, so should use the latest of the two.
+  last_begin_frame_args_ = CreateBeginFrameArgs(
+      std::max(time_source_->LastTickTime(),
+               time_source_->NextTickTime() - time_source_->Interval()));
   TRACE_EVENT2(
       "viz", "DelayBasedBeginFrameSource::OnTimerTick", "frame_time",
       last_begin_frame_args_.frame_time.since_origin().InMicroseconds(),
@@ -385,6 +391,12 @@ void DelayBasedBeginFrameSource::IssueBeginFrameToObserver(
     }
     FilterAndIssueBeginFrame(obs, args);
   }
+}
+
+void DelayBasedBeginFrameSource::SetActive(bool active) {
+  if (time_source_->Active() == active)
+    return;
+  time_source_->SetActive(active);
 }
 
 // ExternalBeginFrameSource -----------------------------------------------
@@ -414,8 +426,9 @@ void ExternalBeginFrameSource::AddObserver(BeginFrameObserver* obs) {
   DCHECK(obs);
   DCHECK(!base::Contains(observers_, obs));
 
-  if (observers_.empty())
+  if (observers_.empty()) {
     client_->OnNeedsBeginFrames(true);
+  }
 
   observers_.insert(obs);
   obs->OnBeginFrameSourcePausedChanged(paused_);
@@ -433,8 +446,9 @@ void ExternalBeginFrameSource::RemoveObserver(BeginFrameObserver* obs) {
   DCHECK(base::Contains(observers_, obs));
 
   observers_.erase(obs);
-  if (observers_.empty())
+  if (observers_.empty()) {
     client_->OnNeedsBeginFrames(false);
+  }
 }
 
 void ExternalBeginFrameSource::OnGpuNoLongerBusy() {

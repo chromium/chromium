@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,12 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/i18n/char_iterator.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_offset_string_conversions.h"
@@ -21,11 +23,9 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "cc/layers/texture_layer.h"
 #include "content/common/content_constants_internal.h"
 #include "content/public/common/content_constants.h"
-#include "content/public/common/use_zoom_for_dsf_policy.h"
 #include "content/public/renderer/content_renderer_client.h"
 #include "content/public/renderer/ppapi_gfx_conversion.h"
 #include "content/renderer/pepper/event_conversion.h"
@@ -49,8 +49,6 @@
 #include "content/renderer/pepper/url_request_info_util.h"
 #include "content/renderer/pepper/url_response_info_util.h"
 #include "content/renderer/render_frame_impl.h"
-#include "content/renderer/render_thread_impl.h"
-#include "content/renderer/render_view_impl.h"
 #include "content/renderer/sad_plugin.h"
 #include "device/gamepad/public/cpp/gamepads.h"
 #include "ppapi/c/dev/ppp_text_input_dev.h"
@@ -62,10 +60,7 @@
 #include "ppapi/c/ppp_instance.h"
 #include "ppapi/c/ppp_messaging.h"
 #include "ppapi/c/ppp_mouse_lock.h"
-#include "ppapi/c/private/ppb_find_private.h"
-#include "ppapi/c/private/ppp_find_private.h"
 #include "ppapi/c/private/ppp_instance_private.h"
-#include "ppapi/c/private/ppp_pdf.h"
 #include "ppapi/host/ppapi_host.h"
 #include "ppapi/proxy/ppapi_messages.h"
 #include "ppapi/proxy/serialized_var.h"
@@ -100,7 +95,7 @@
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_error.h"
 #include "third_party/blink/public/platform/web_url_request.h"
-#include "third_party/blink/public/web/modules/media/audio/web_audio_device_factory.h"
+#include "third_party/blink/public/web/modules/media/audio/audio_device_factory.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_document_loader.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
@@ -108,7 +103,6 @@
 #include "third_party/blink/public/web/web_plugin_container.h"
 #include "third_party/blink/public/web/web_plugin_script_forbidden_scope.h"
 #include "third_party/blink/public/web/web_print_params.h"
-#include "third_party/blink/public/web/web_print_preset_options.h"
 #include "third_party/blink/public/web/web_script_source.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "third_party/khronos/GLES2/gl2.h"
@@ -116,10 +110,10 @@
 #include "ui/events/blink/blink_event_util.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/point_conversions.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/geometry/vector2d_conversions.h"
-#include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/range/range.h"
@@ -133,7 +127,7 @@
 #include "printing/metafile_skia.h"          // nogncheck
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #endif
 
@@ -322,7 +316,7 @@ std::unique_ptr<const char* []> StringVectorToArgArray(
 // all keys sent to them. This can prevent keystrokes from working for things
 // like screen brightness and volume control.
 bool IsReservedSystemInputEvent(const blink::WebInputEvent& event) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (event.GetType() != WebInputEvent::Type::kKeyDown &&
       event.GetType() != WebInputEvent::Type::kKeyUp)
     return false;
@@ -342,7 +336,7 @@ bool IsReservedSystemInputEvent(const blink::WebInputEvent& event) {
   }
 #else
   return false;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void PrintPDFOutput(PP_Resource print_output,
@@ -362,29 +356,6 @@ void PrintPDFOutput(PP_Resource print_output,
 
   metafile->InitFromData(mapper);
 #endif  // BUILDFLAG(ENABLE_PRINTING)
-}
-
-constexpr char kChromePrint[] = "chrome://print/";
-
-bool IsPrintPreviewUrl(const GURL& document_url) {
-  return url::Origin::Create(document_url.DeprecatedGetOriginAsURL()) ==
-         url::Origin::Create(GURL(kChromePrint));
-}
-
-WebElement FindPdfViewerScroller(const WebLocalFrame* frame,
-                                 const WebElement& plugin) {
-  if (!plugin.HasAttribute("pdf-viewer-update-enabled"))
-    return WebElement();
-
-  WebElement viewer = frame->GetDocument().GetElementById("viewer");
-  if (viewer.IsNull())
-    return WebElement();
-
-  blink::WebNode shadow_root = viewer.ShadowRoot();
-  if (shadow_root.IsNull())
-    return WebElement();
-
-  return shadow_root.QuerySelector("#scroller");
 }
 
 }  // namespace
@@ -509,14 +480,11 @@ PepperPluginInstanceImpl::PepperPluginInstanceImpl(
       bound_graphics_2d_platform_(nullptr),
       has_webkit_focus_(false),
       find_identifier_(-1),
-      plugin_find_interface_(nullptr),
       plugin_input_event_interface_(nullptr),
       plugin_mouse_lock_interface_(nullptr),
-      plugin_pdf_interface_(nullptr),
       plugin_private_interface_(nullptr),
       plugin_textinput_interface_(nullptr),
       checked_for_plugin_input_event_interface_(false),
-      checked_for_plugin_pdf_interface_(false),
       metafile_(nullptr),
       gamepad_impl_(new GamepadImpl()),
       uma_private_impl_(nullptr),
@@ -823,9 +791,6 @@ bool PepperPluginInstanceImpl::Initialize(
   if (success && !module_->renderer_ppapi_host()->IsExternalPluginHost())
     message_channel_->Start();
 
-  if (success)
-    HandleAccessibilityChange();
-
   initialized_ = success;
   return success;
 }
@@ -944,9 +909,8 @@ bool PepperPluginInstanceImpl::
   // Set the composition target.
   for (size_t i = 0; i < ime_text_spans.size(); ++i) {
     if (ime_text_spans[i].thickness == ui::ImeTextSpan::Thickness::kThick) {
-      auto it = std::find(event.composition_segment_offsets.begin(),
-                          event.composition_segment_offsets.end(),
-                          utf8_offsets[2 * i + 2]);
+      auto it = base::ranges::find(event.composition_segment_offsets,
+                                   utf8_offsets[2 * i + 2]);
       if (it != event.composition_segment_offsets.end()) {
         event.composition_target_segment =
             it - event.composition_segment_offsets.begin();
@@ -1187,27 +1151,24 @@ void PepperPluginInstanceImpl::ViewChanged(
 
   view_data_.rect = PP_FromGfxRect(window);
   view_data_.clip_rect = PP_FromGfxRect(new_clip);
-  view_data_.device_scale = container_->DeviceScaleFactor();
+  // TODO(chrishtr): remove device_scale
+  view_data_.device_scale = 1;
   view_data_.css_scale =
       container_->PageZoomFactor() * container_->PageScaleFactor();
-  if (IsUseZoomForDSFEnabled()) {
-    WebWidget* widget = render_frame()->GetLocalRootWebFrameWidget();
+  WebWidget* widget = render_frame()->GetLocalRootWebFrameWidget();
 
-    viewport_to_dip_scale_ =
-        1.0f / widget->GetOriginalScreenInfo().device_scale_factor;
-  } else {
-    viewport_to_dip_scale_ = 1.0f;
-  }
+  viewport_to_dip_scale_ =
+      1.0f / widget->GetOriginalScreenInfo().device_scale_factor;
   ConvertRectToDIP(&view_data_.rect);
   ConvertRectToDIP(&view_data_.clip_rect);
   view_data_.css_scale *= viewport_to_dip_scale_;
   view_data_.device_scale /= viewport_to_dip_scale_;
 
-  gfx::Vector2dF scroll_offset =
+  gfx::PointF scroll_offset =
       container_->GetDocument().GetFrame()->GetScrollOffset();
   scroll_offset.Scale(viewport_to_dip_scale_);
 
-  gfx::Vector2d floored_scroll_offset = gfx::ToFlooredVector2d(scroll_offset);
+  gfx::Point floored_scroll_offset = gfx::ToFlooredPoint(scroll_offset);
   view_data_.scroll_offset =
       PP_MakePoint(floored_scroll_offset.x(), floored_scroll_offset.y());
 
@@ -1327,145 +1288,6 @@ std::u16string PepperPluginInstanceImpl::GetSelectedText(bool html) {
   return selected_text_;
 }
 
-std::u16string PepperPluginInstanceImpl::GetLinkAtPosition(
-    const gfx::Point& point) {
-  // Keep a reference on the stack. See NOTE above.
-  scoped_refptr<PepperPluginInstanceImpl> ref(this);
-  if (!LoadPdfInterface()) {
-    // TODO(koz): Change the containing function to GetLinkUnderCursor(). We can
-    // return |link_under_cursor_| here because this is only ever called with
-    // the current mouse coordinates.
-    return link_under_cursor_;
-  }
-
-  PP_Point p;
-  p.x = point.x();
-  p.y = point.y();
-  PP_Var rv = plugin_pdf_interface_->GetLinkAtPosition(pp_instance(), p);
-  // If the plugin returns undefined for this function it has switched to
-  // providing us with the link under the cursor eagerly.
-  if (rv.type == PP_VARTYPE_UNDEFINED)
-    return link_under_cursor_;
-  StringVar* string = StringVar::FromPPVar(rv);
-  std::u16string link;
-  if (string)
-    link = base::UTF8ToUTF16(string->value());
-  // Release the ref the plugin transfered to us.
-  PpapiGlobals::Get()->GetVarTracker()->ReleaseVar(rv);
-  return link;
-}
-
-void PepperPluginInstanceImpl::SetCaretPosition(const gfx::PointF& position) {
-  if (!LoadPdfInterface())
-    return;
-
-  PP_FloatPoint p;
-  p.x = position.x();
-  p.y = position.y();
-  plugin_pdf_interface_->SetCaretPosition(pp_instance(), &p);
-}
-
-void PepperPluginInstanceImpl::MoveRangeSelectionExtent(
-    const gfx::PointF& extent) {
-  if (!LoadPdfInterface())
-    return;
-
-  PP_FloatPoint p;
-  p.x = extent.x();
-  p.y = extent.y();
-  plugin_pdf_interface_->MoveRangeSelectionExtent(pp_instance(), &p);
-}
-
-void PepperPluginInstanceImpl::SetSelectionBounds(const gfx::PointF& base,
-                                                  const gfx::PointF& extent) {
-  if (!LoadPdfInterface())
-    return;
-
-  PP_FloatPoint p_base;
-  p_base.x = base.x();
-  p_base.y = base.y();
-
-  PP_FloatPoint p_extent;
-  p_extent.x = extent.x();
-  p_extent.y = extent.y();
-  plugin_pdf_interface_->SetSelectionBounds(pp_instance(), &p_base, &p_extent);
-}
-
-bool PepperPluginInstanceImpl::CanEditText() {
-  if (!LoadPdfInterface())
-    return false;
-  // No reference to |this| on the stack. Do not do any more work after this.
-  // See NOTE above.
-  return PP_ToBool(plugin_pdf_interface_->CanEditText(pp_instance()));
-}
-
-bool PepperPluginInstanceImpl::HasEditableText() {
-  if (!LoadPdfInterface())
-    return false;
-
-  // No reference to |this| on the stack. Do not do any more work after this.
-  // See NOTE above.
-  return PP_ToBool(plugin_pdf_interface_->HasEditableText(pp_instance()));
-}
-
-void PepperPluginInstanceImpl::ReplaceSelection(const std::string& text) {
-  if (!LoadPdfInterface())
-    return;
-
-  // No reference to |this| on the stack. Do not do any more work after this.
-  // See NOTE above.
-  plugin_pdf_interface_->ReplaceSelection(pp_instance(), text.c_str());
-}
-
-void PepperPluginInstanceImpl::SelectAll() {
-  if (!LoadPdfInterface())
-    return;
-
-  plugin_pdf_interface_->SelectAll(pp_instance());
-}
-
-bool PepperPluginInstanceImpl::CanUndo() {
-  if (!LoadPdfInterface())
-    return false;
-
-  // No reference to |this| on the stack. Do not do any more work after this.
-  // See NOTE above.
-  return PP_ToBool(plugin_pdf_interface_->CanUndo(pp_instance()));
-}
-
-bool PepperPluginInstanceImpl::CanRedo() {
-  if (!LoadPdfInterface())
-    return false;
-
-  // No reference to |this| on the stack. Do not do any more work after this.
-  // See NOTE above.
-  return PP_ToBool(plugin_pdf_interface_->CanRedo(pp_instance()));
-}
-
-void PepperPluginInstanceImpl::Undo() {
-  if (!LoadPdfInterface())
-    return;
-
-  // No reference to |this| on the stack. Do not do any more work after this.
-  // See NOTE above.
-  plugin_pdf_interface_->Undo(pp_instance());
-}
-
-void PepperPluginInstanceImpl::Redo() {
-  if (!LoadPdfInterface())
-    return;
-
-  plugin_pdf_interface_->Redo(pp_instance());
-}
-
-void PepperPluginInstanceImpl::HandleAccessibilityAction(
-    const PP_PdfAccessibilityActionData& action_data) {
-  if (!LoadPdfInterface())
-    return;
-
-  plugin_pdf_interface_->HandleAccessibilityAction(pp_instance(), action_data);
-}
-
 void PepperPluginInstanceImpl::RequestSurroundingText(
     size_t desired_number_of_characters) {
   // Keep a reference on the stack. See NOTE above.
@@ -1474,47 +1296,6 @@ void PepperPluginInstanceImpl::RequestSurroundingText(
     return;
   plugin_textinput_interface_->RequestSurroundingText(
       pp_instance(), desired_number_of_characters);
-}
-
-bool PepperPluginInstanceImpl::StartFind(const std::string& search_text,
-                                         bool case_sensitive,
-                                         int identifier) {
-  // Keep a reference on the stack. See NOTE above.
-  scoped_refptr<PepperPluginInstanceImpl> ref(this);
-  if (!LoadFindInterface())
-    return false;
-  find_identifier_ = identifier;
-  return PP_ToBool(plugin_find_interface_->StartFind(
-      pp_instance(), search_text.c_str(), PP_FromBool(case_sensitive)));
-}
-
-void PepperPluginInstanceImpl::SelectFindResult(bool forward, int identifier) {
-  // Keep a reference on the stack. See NOTE above.
-  scoped_refptr<PepperPluginInstanceImpl> ref(this);
-  if (!LoadFindInterface())
-    return;
-  find_identifier_ = identifier;
-  plugin_find_interface_->SelectFindResult(pp_instance(), PP_FromBool(forward));
-}
-
-void PepperPluginInstanceImpl::StopFind() {
-  // Keep a reference on the stack. See NOTE above.
-  scoped_refptr<PepperPluginInstanceImpl> ref(this);
-  if (!LoadFindInterface())
-    return;
-  find_identifier_ = -1;
-  plugin_find_interface_->StopFind(pp_instance());
-}
-
-bool PepperPluginInstanceImpl::LoadFindInterface() {
-  if (!module_->permissions().HasPermission(ppapi::PERMISSION_PDF))
-    return false;
-  if (!plugin_find_interface_) {
-    plugin_find_interface_ = static_cast<const PPP_Find_Private*>(
-        module_->GetPluginInterface(PPP_FIND_PRIVATE_INTERFACE));
-  }
-
-  return !!plugin_find_interface_;
 }
 
 bool PepperPluginInstanceImpl::LoadInputEventInterface() {
@@ -1533,16 +1314,6 @@ bool PepperPluginInstanceImpl::LoadMouseLockInterface() {
   }
 
   return !!plugin_mouse_lock_interface_;
-}
-
-bool PepperPluginInstanceImpl::LoadPdfInterface() {
-  if (!checked_for_plugin_pdf_interface_) {
-    checked_for_plugin_pdf_interface_ = true;
-    plugin_pdf_interface_ = static_cast<const PPP_Pdf*>(
-        module_->GetPluginInterface(PPP_PDF_INTERFACE_1));
-  }
-
-  return !!plugin_pdf_interface_;
 }
 
 bool PepperPluginInstanceImpl::LoadPrintInterface() {
@@ -1805,7 +1576,6 @@ int PepperPluginInstanceImpl::PrintBegin(const WebPrintParams& print_params) {
     return 0;
   }
 
-  int num_pages;
   PP_PrintSettings_Dev print_settings;
   print_settings.printable_area = PP_FromGfxRect(print_params.printable_area);
   print_settings.content_area = PP_FromGfxRect(print_params.print_content_area);
@@ -1817,21 +1587,14 @@ int PepperPluginInstanceImpl::PrintBegin(const WebPrintParams& print_params) {
       static_cast<PP_PrintScalingOption_Dev>(print_params.print_scaling_option);
   print_settings.format = format;
 
-  if (LoadPdfInterface()) {
-    PP_PdfPrintSettings_Dev pdf_print_settings;
-    pdf_print_settings.pages_per_sheet = print_params.pages_per_sheet;
-    pdf_print_settings.scale_factor = print_params.scale_factor;
+  // "fit to paper" should have never been a scaling option for the user to
+  // begin with, since it was only supported by the PDF plugin, which has been
+  // deleted.
+  DCHECK_NE(print_settings.print_scaling_option,
+            PP_PRINTSCALINGOPTION_FIT_TO_PAPER);
 
-    num_pages = plugin_pdf_interface_->PrintBegin(
-        pp_instance(), &print_settings, &pdf_print_settings);
-  } else {
-    // If the content is not from the PDF plugin, "fit to paper" should have
-    // never been a scaling option for the user to begin with.
-    DCHECK_NE(print_settings.print_scaling_option,
-              PP_PRINTSCALINGOPTION_FIT_TO_PAPER);
-
-    num_pages = plugin_print_interface_->Begin(pp_instance(), &print_settings);
-  }
+  int num_pages =
+      plugin_print_interface_->Begin(pp_instance(), &print_settings);
   if (!num_pages)
     return 0;
 
@@ -1891,61 +1654,6 @@ void PepperPluginInstanceImpl::PrintEnd() {
 
   plugin_print_interface_->End(pp_instance());
   memset(&current_print_settings_, 0, sizeof(current_print_settings_));
-}
-
-bool PepperPluginInstanceImpl::GetPrintPresetOptionsFromDocument(
-    blink::WebPrintPresetOptions* preset_options) {
-  // Keep a reference on the stack. See NOTE above.
-  scoped_refptr<PepperPluginInstanceImpl> ref(this);
-  if (!LoadPdfInterface())
-    return false;
-
-  PP_PdfPrintPresetOptions_Dev options;
-  if (!plugin_pdf_interface_->GetPrintPresetOptionsFromDocument(pp_instance(),
-                                                                &options)) {
-    return false;
-  }
-
-  preset_options->is_scaling_disabled = PP_ToBool(options.is_scaling_disabled);
-  switch (options.duplex) {
-    case PP_PRIVATEDUPLEXMODE_SIMPLEX:
-      preset_options->duplex_mode = printing::mojom::DuplexMode::kSimplex;
-      break;
-    case PP_PRIVATEDUPLEXMODE_SHORT_EDGE:
-      preset_options->duplex_mode = printing::mojom::DuplexMode::kShortEdge;
-      break;
-    case PP_PRIVATEDUPLEXMODE_LONG_EDGE:
-      preset_options->duplex_mode = printing::mojom::DuplexMode::kLongEdge;
-      break;
-    default:
-      preset_options->duplex_mode =
-          printing::mojom::DuplexMode::kUnknownDuplexMode;
-      break;
-  }
-  preset_options->copies = options.copies;
-
-  if (options.is_page_size_uniform) {
-    preset_options->uniform_page_size = gfx::Size(
-        options.uniform_page_size.width, options.uniform_page_size.height);
-  }
-
-  return true;
-}
-
-bool PepperPluginInstanceImpl::CanRotateView() {
-  return LoadPdfInterface() && !module()->is_crashed() &&
-         !IsPrintPreviewUrl(document_url_);
-}
-
-void PepperPluginInstanceImpl::RotateView(WebPlugin::RotationType type) {
-  if (!LoadPdfInterface())
-    return;
-  PP_PrivatePageTransformType transform_type =
-      type == WebPlugin::RotationType::k90Clockwise
-          ? PP_PRIVATEPAGETRANSFORMTYPE_ROTATE_90_CW
-          : PP_PRIVATEPAGETRANSFORMTYPE_ROTATE_90_CCW;
-  plugin_pdf_interface_->Transform(pp_instance(), transform_type);
-  // NOTE: plugin instance may have been deleted.
 }
 
 bool PepperPluginInstanceImpl::IsFullscreenOrPending() {
@@ -2055,19 +1763,8 @@ bool PepperPluginInstanceImpl::PrepareTransferableResource(
       bitmap_registrar, transferable_resource, release_callback);
 }
 
-void PepperPluginInstanceImpl::AccessibilityModeChanged(
-    const ui::AXMode& mode) {
-  HandleAccessibilityChange();
-}
-
 void PepperPluginInstanceImpl::OnDestruct() {
   render_frame_ = nullptr;
-}
-
-bool PepperPluginInstanceImpl::SupportsKeyboardFocus() {
-  // Only PDF plugin supports keyboard focus. PDF plugin shouldn't be focusable
-  // if it's embedded in Print Preview.
-  return LoadPdfInterface() && !IsPrintPreviewUrl(document_url_);
 }
 
 void PepperPluginInstanceImpl::AddPluginObject(PluginObject* plugin_object) {
@@ -2328,9 +2025,10 @@ PP_Var PepperPluginInstanceImpl::ExecuteScript(PP_Instance instance,
 uint32_t PepperPluginInstanceImpl::GetAudioHardwareOutputSampleRate(
     PP_Instance instance) {
   return render_frame()
-             ? blink::WebAudioDeviceFactory::GetOutputDeviceInfo(
-                   render_frame()->GetWebFrame()->GetLocalFrameToken(),
-                   media::AudioSinkParameters())
+             ? blink::AudioDeviceFactory::GetInstance()
+                   ->GetOutputDeviceInfo(
+                       render_frame()->GetWebFrame()->GetLocalFrameToken(),
+                       media::AudioSinkParameters())
                    .output_params()
                    .sample_rate()
              : 0;
@@ -2339,9 +2037,10 @@ uint32_t PepperPluginInstanceImpl::GetAudioHardwareOutputSampleRate(
 uint32_t PepperPluginInstanceImpl::GetAudioHardwareOutputBufferSize(
     PP_Instance instance) {
   return render_frame()
-             ? blink::WebAudioDeviceFactory::GetOutputDeviceInfo(
-                   render_frame()->GetWebFrame()->GetLocalFrameToken(),
-                   media::AudioSinkParameters())
+             ? blink::AudioDeviceFactory::GetInstance()
+                   ->GetOutputDeviceInfo(
+                       render_frame()->GetWebFrame()->GetLocalFrameToken(),
+                       media::AudioSinkParameters())
                    .output_params()
                    .frames_per_buffer()
              : 0;
@@ -2354,63 +2053,6 @@ PP_Var PepperPluginInstanceImpl::GetDefaultCharSet(PP_Instance instance) {
                                       ->View()
                                       ->GetWebPreferences()
                                       .default_encoding);
-}
-
-void PepperPluginInstanceImpl::SetPluginToHandleFindRequests(
-    PP_Instance instance) {
-  if (!LoadFindInterface())
-    return;
-  bool is_main_frame = render_frame_ && render_frame_->IsMainFrame();
-  if (!is_main_frame)
-    return;
-  container_->UsePluginAsFindHandler();
-}
-
-void PepperPluginInstanceImpl::NumberOfFindResultsChanged(
-    PP_Instance instance,
-    int32_t total,
-    PP_Bool final_result) {
-  // After stopping search and setting find_identifier_ to -1 there still may be
-  // a NumberOfFindResultsChanged notification pending from plug-in. Just ignore
-  // them.
-  if (find_identifier_ == -1)
-    return;
-  if (!container_)
-    return;
-  container_->ReportFindInPageMatchCount(find_identifier_, total,
-                                         PP_ToBool(final_result));
-}
-
-void PepperPluginInstanceImpl::SelectedFindResultChanged(PP_Instance instance,
-                                                         int32_t index) {
-  if (find_identifier_ == -1)
-    return;
-  if (!container_)
-    return;
-  container_->ReportFindInPageSelection(find_identifier_, index + 1);
-}
-
-void PepperPluginInstanceImpl::SetTickmarks(PP_Instance instance,
-                                            const PP_Rect* tickmarks,
-                                            uint32_t count) {
-  if (!render_frame_ || !render_frame_->GetWebFrame())
-    return;
-
-  blink::WebVector<gfx::Rect> tickmarks_converted(static_cast<size_t>(count));
-  for (uint32_t i = 0; i < count; ++i) {
-    gfx::RectF tickmark(tickmarks[i].point.x,
-                        tickmarks[i].point.y,
-                        tickmarks[i].size.width,
-                        tickmarks[i].size.height);
-    tickmark.Scale(1 / viewport_to_dip_scale_);
-    tickmarks_converted[i] = gfx::ToEnclosedRect(tickmark);
-  }
-
-  WebLocalFrame* frame = render_frame_->GetWebFrame();
-  WebElement target;
-  if (LoadPdfInterface())
-    target = FindPdfViewerScroller(frame, container_->GetElement());
-  frame->SetTickmarks(target, tickmarks_converted);
 }
 
 PP_Bool PepperPluginInstanceImpl::IsFullscreen(PP_Instance instance) {
@@ -2439,10 +2081,8 @@ ppapi::Resource* PepperPluginInstanceImpl::GetSingletonResource(
   // Some APIs aren't implemented in-process.
   switch (id) {
     case ppapi::BROWSER_FONT_SINGLETON_ID:
-    case ppapi::FLASH_FULLSCREEN_SINGLETON_ID:
     case ppapi::ISOLATED_FILESYSTEM_SINGLETON_ID:
     case ppapi::NETWORK_PROXY_SINGLETON_ID:
-    case ppapi::PDF_SINGLETON_ID:
       NOTIMPLEMENTED();
       return nullptr;
     case ppapi::GAMEPAD_SINGLETON_ID:
@@ -2718,12 +2358,9 @@ PP_ExternalPluginResult PepperPluginInstanceImpl::ResetAsProxied(
 
   instance_interface_.reset(ppp_instance_combined);
   // Clear all PPP interfaces we may have cached.
-  plugin_find_interface_ = nullptr;
   plugin_input_event_interface_ = nullptr;
   checked_for_plugin_input_event_interface_ = false;
   plugin_mouse_lock_interface_ = nullptr;
-  plugin_pdf_interface_ = nullptr;
-  checked_for_plugin_pdf_interface_ = false;
   plugin_private_interface_ = nullptr;
   plugin_textinput_interface_ = nullptr;
 
@@ -2920,10 +2557,6 @@ void PepperPluginInstanceImpl::SetSizeAttributesForFullscreen() {
   if (!render_frame_)
     return;
 
-  // TODO(miu): Revisit this logic.  If the style must be modified for correct
-  // behavior, the width and height should probably be set to 100%, rather than
-  // a fixed screen size.
-
   display::ScreenInfo info =
       render_frame_->GetLocalRootWebFrameWidget()->GetScreenInfo();
   screen_size_for_fullscreen_ = info.rect.size();
@@ -3020,10 +2653,8 @@ void PepperPluginInstanceImpl::ConvertDIPToViewport(gfx::Rect* rect) const {
 void PepperPluginInstanceImpl::IncrementTextureReferenceCount(
     const viz::TransferableResource& resource) {
   auto it =
-      std::find_if(texture_ref_counts_.begin(), texture_ref_counts_.end(),
-                   [&resource](const MailboxRefCount& ref_count) {
-                     return ref_count.first == resource.mailbox_holder.mailbox;
-                   });
+      base::ranges::find(texture_ref_counts_, resource.mailbox_holder.mailbox,
+                         &MailboxRefCount::first);
   if (it == texture_ref_counts_.end()) {
     texture_ref_counts_.emplace_back(resource.mailbox_holder.mailbox, 1);
     return;
@@ -3035,10 +2666,8 @@ void PepperPluginInstanceImpl::IncrementTextureReferenceCount(
 bool PepperPluginInstanceImpl::DecrementTextureReferenceCount(
     const viz::TransferableResource& resource) {
   auto it =
-      std::find_if(texture_ref_counts_.begin(), texture_ref_counts_.end(),
-                   [&resource](const MailboxRefCount& ref_count) {
-                     return ref_count.first == resource.mailbox_holder.mailbox;
-                   });
+      base::ranges::find(texture_ref_counts_, resource.mailbox_holder.mailbox,
+                         &MailboxRefCount::first);
   DCHECK(it != texture_ref_counts_.end());
 
   if (it->second == 1) {
@@ -3052,19 +2681,8 @@ bool PepperPluginInstanceImpl::DecrementTextureReferenceCount(
 
 bool PepperPluginInstanceImpl::IsTextureInUse(
     const viz::TransferableResource& resource) const {
-  auto it =
-      std::find_if(texture_ref_counts_.begin(), texture_ref_counts_.end(),
-                   [&resource](const MailboxRefCount& ref_count) {
-                     return ref_count.first == resource.mailbox_holder.mailbox;
-                   });
-  return it != texture_ref_counts_.end();
-}
-
-void PepperPluginInstanceImpl::HandleAccessibilityChange() {
-  if (render_frame_ && render_frame_->GetRenderAccessibility() &&
-      LoadPdfInterface()) {
-    plugin_pdf_interface_->EnableAccessibility(pp_instance());
-  }
+  return base::Contains(texture_ref_counts_, resource.mailbox_holder.mailbox,
+                        &MailboxRefCount::first);
 }
 
 void PepperPluginInstanceImpl::OnImeSetComposition(

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,6 +36,15 @@ class FileDataSource final : public mojom::BundleDataSource {
     } else {
       std::move(callback).Run(absl::nullopt);
     }
+  }
+
+  void Length(LengthCallback callback) override {
+    const int64_t length = file_.GetLength();
+    std::move(callback).Run(length);
+  }
+
+  void IsRandomAccessContext(IsRandomAccessContextCallback callback) override {
+    std::move(callback).Run(true);
   }
 
   mojo::Receiver<mojom::BundleDataSource> receiver_;

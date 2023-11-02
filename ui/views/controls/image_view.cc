@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,13 +9,14 @@
 #include "base/check_op.h"
 #include "base/i18n/rtl.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/trace_event/trace_event.h"
 #include "cc/paint/paint_flags.h"
 #include "skia/ext/image_operations.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/themed_vector_icon.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/native_theme/themed_vector_icon.h"
-#include "ui/views/image_model_utils.h"
 
 namespace views {
 
@@ -50,7 +51,7 @@ void ImageView::SetImage(const ui::ImageModel& image_model) {
 }
 
 gfx::ImageSkia ImageView::GetImage() const {
-  return views::GetImageSkiaFromImageModel(image_model_, GetColorProvider());
+  return image_model_.Rasterize(GetColorProvider());
 }
 
 ui::ImageModel ImageView::GetImageModel() const {
@@ -85,8 +86,13 @@ gfx::Size ImageView::GetImageSize() const {
 }
 
 void ImageView::OnPaint(gfx::Canvas* canvas) {
-  View::OnPaint(canvas);
+  // This inlines View::OnPaint in order to OnPaintBorder() after OnPaintImage
+  // so the border can paint over content (for rounded corners that overlap
+  // content).
+  TRACE_EVENT1("views", "ImageView::OnPaint", "class", GetClassName());
+  OnPaintBackground(canvas);
   OnPaintImage(canvas);
+  OnPaintBorder(canvas);
 }
 
 void ImageView::OnThemeChanged() {
@@ -130,13 +136,12 @@ gfx::ImageSkia ImageView::GetPaintImage(float scale) {
     return gfx::ImageSkia();
 
   if (image_model_.IsImage() || image_model_.IsImageGenerator()) {
-    const gfx::ImageSkia image =
-        views::GetImageSkiaFromImageModel(image_model_, GetColorProvider());
+    const gfx::ImageSkia image = image_model_.Rasterize(GetColorProvider());
     if (image.isNull())
       return image;
 
     const gfx::ImageSkiaRep& rep = image.GetRepresentation(scale);
-    if (rep.scale() == scale)
+    if (rep.scale() == scale || rep.unscaled())
       return image;
 
     if (scaled_image_.HasRepresentation(scale))
@@ -153,8 +158,7 @@ gfx::ImageSkia ImageView::GetPaintImage(float scale) {
             scaled_size.width(), scaled_size.height()),
         scale));
   } else if (scaled_image_.isNull()) {
-    scaled_image_ =
-        views::GetImageSkiaFromImageModel(image_model_, GetColorProvider());
+    scaled_image_ = image_model_.Rasterize(GetColorProvider());
   }
   return scaled_image_;
 }

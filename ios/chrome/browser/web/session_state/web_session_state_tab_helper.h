@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/macros.h"
 #include "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
@@ -28,12 +27,10 @@ class WebSessionStateTabHelper
 
   ~WebSessionStateTabHelper() override;
 
-  static void CreateForWebState(web::WebState* web_state);
-
   // Returns true if the feature is enabled and running iOS 15 or newer.
   static bool IsEnabled();
 
-  // If kRestoreSessionFromCache is enabled restore |web_state|'s WKWebView
+  // If kRestoreSessionFromCache is enabled restore `web_state`'s WKWebView
   // using the previously saved sessionState data via the WebSessionStateCache.
   // Returns true if the session could be restored.
   bool RestoreSessionFromCache();
@@ -66,7 +63,7 @@ class WebSessionStateTabHelper
   // SaveSessionState().
   bool stale_ = false;
 
-  // Cache the values of this |web_state|'s navigation manager GetItemCount()
+  // Cache the values of this `web_state`'s navigation manager GetItemCount()
   // and GetLastCommittedItemIndex().
   int item_count_ = 0;
   int last_committed_item_index_ = 0;

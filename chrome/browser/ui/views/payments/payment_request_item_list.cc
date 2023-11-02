@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,7 +33,7 @@ namespace {
 
 constexpr SkColor kCheckmarkColor = 0xFF609265;
 
-constexpr gfx::Insets kRowInsets = gfx::Insets(
+constexpr auto kRowInsets = gfx::Insets::TLBR(
     kPaymentRequestRowVerticalInsets,
     kPaymentRequestRowHorizontalInsets,
     kPaymentRequestRowVerticalInsets,
@@ -96,12 +96,16 @@ void PaymentRequestItemList::Item::Init() {
     auto edit_button = views::CreateVectorImageButton(
         base::BindRepeating(&Item::EditButtonPressed, base::Unretained(this)));
     edit_button->SetBorder(nullptr);
-    const SkColor icon_color =
-        color_utils::DeriveDefaultIconColor(SK_ColorBLACK);
-    edit_button->SetImage(views::Button::STATE_NORMAL,
-                          gfx::CreateVectorIcon(vector_icons::kEditIcon,
-                                                kEditIconSize, icon_color));
-    views::InkDrop::Get(edit_button.get())->SetBaseColor(icon_color);
+    edit_button->SetImageModel(
+        views::Button::STATE_NORMAL,
+        ui::ImageModel::FromVectorIcon(vector_icons::kEditIcon, ui::kColorIcon,
+                                       kEditIconSize));
+    views::InkDrop::Get(edit_button.get())
+        ->SetBaseColorCallback(base::BindRepeating(
+            [](views::View* host) {
+              return host->GetColorProvider()->GetColor(ui::kColorIcon);
+            },
+            edit_button.get()));
     edit_button->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
     edit_button->SetID(static_cast<int>(DialogViewID::EDIT_ITEM_BUTTON));
     edit_button->SetAccessibleName(
@@ -196,7 +200,7 @@ std::unique_ptr<views::View> PaymentRequestItemList::CreateListView() {
 
   content_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
-      gfx::Insets(kPaymentRequestRowVerticalInsets, 0), 0));
+      gfx::Insets::VH(kPaymentRequestRowVerticalInsets, 0), 0));
 
   for (auto& item : items_)
     content_view->AddChildView(item.release());

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,14 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_ui.h"
+#include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "google_apis/gaia/core_account_id.h"
@@ -38,9 +41,11 @@ class EnterpriseProfileWelcomeHandler
   EnterpriseProfileWelcomeHandler(
       Browser* browser,
       EnterpriseProfileWelcomeUI::ScreenType type,
+      bool profile_creation_required_by_policy,
+      bool show_link_data_option,
       const AccountInfo& account_info,
       absl::optional<SkColor> profile_color,
-      base::OnceCallback<void(bool)> proceed_callback);
+      signin::SigninChoiceCallback proceed_callback);
   ~EnterpriseProfileWelcomeHandler() override;
 
   EnterpriseProfileWelcomeHandler(const EnterpriseProfileWelcomeHandler&) =
@@ -68,16 +73,18 @@ class EnterpriseProfileWelcomeHandler
 
   // Access to construction parameters for tests.
   EnterpriseProfileWelcomeUI::ScreenType GetTypeForTesting();
-  void CallProceedCallbackForTesting(bool proceed);
+  void CallProceedCallbackForTesting(signin::SigninChoice choice);
+  void HandleProceedForTesting(bool should_link_data);
+  void set_web_ui_for_test(content::WebUI* web_ui) { set_web_ui(web_ui); }
 
  private:
-  void HandleInitialized(const base::ListValue* args);
+  void HandleInitialized(const base::Value::List& args);
   // Handles the web ui message sent when the html content is done being laid
   // out and it's time to resize the native view hosting it to fit. |args| is
   // a single integer value for the height the native view should resize to.
-  void HandleInitializedWithSize(const base::ListValue* args);
-  void HandleProceed(const base::ListValue* args);
-  void HandleCancel(const base::ListValue* args);
+  void HandleInitializedWithSize(const base::Value::List& args);
+  void HandleProceed(const base::Value::List& args);
+  void HandleCancel(const base::Value::List& args);
 
   // Sends an updated profile info (avatar and colors) to the WebUI.
   // `profile_path` is the path of the profile being updated, this function does
@@ -85,12 +92,16 @@ class EnterpriseProfileWelcomeHandler
   void UpdateProfileInfo(const base::FilePath& profile_path);
 
   // Computes the profile info (avatar and colors) to be sent to the WebUI.
-  base::Value GetProfileInfoValue();
+  base::Value::Dict GetProfileInfoValue();
 
   // Returns the ProfilesAttributesEntry associated with the current profile.
   ProfileAttributesEntry* GetProfileEntry() const;
 
   std::string GetPictureUrl();
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  std::string GetLacrosWelcomeTitle();
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   base::FilePath profile_path_;
   base::ScopedObservation<ProfileAttributesStorage,
@@ -101,13 +112,17 @@ class EnterpriseProfileWelcomeHandler
                           signin::IdentityManager::Observer>
       observed_account_{this};
 
-  Browser* browser_ = nullptr;
+  raw_ptr<Browser> browser_ = nullptr;
   const EnterpriseProfileWelcomeUI::ScreenType type_;
+  const bool profile_creation_required_by_policy_;
+#if !BUILDFLAG(IS_CHROMEOS)
+  const bool show_link_data_option_;
+#endif
   const std::u16string email_;
   const std::string domain_name_;
   const CoreAccountId account_id_;
   absl::optional<SkColor> profile_color_;
-  base::OnceCallback<void(bool)> proceed_callback_;
+  signin::SigninChoiceCallback proceed_callback_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_ENTERPRISE_PROFILE_WELCOME_HANDLER_H_

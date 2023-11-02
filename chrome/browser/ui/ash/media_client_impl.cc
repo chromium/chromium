@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,14 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/media_controller.h"
 #include "ash/public/cpp/notification_utils.h"
-#include "ash/public/cpp/toast_data.h"
-#include "ash/public/cpp/toast_manager.h"
+#include "ash/public/cpp/system/toast_data.h"
+#include "ash/public/cpp/system/toast_manager.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
@@ -104,10 +108,6 @@ constexpr char kCameraPrivacySwitchOnToastId[] =
 // The ID for the toast shown when the camera privacy switch is turned off.
 constexpr char kCameraPrivacySwitchOffToastId[] =
     "ash.media.camera.privacy_switch_off";
-
-// The amount of time for which the camera privacy switch toasts will remain
-// displayed.
-constexpr int kCameraPrivacySwitchToastDurationMs = 6 * 1000;
 
 MediaCaptureState& operator|=(MediaCaptureState& lhs, MediaCaptureState rhs) {
   lhs = static_cast<MediaCaptureState>(static_cast<int>(lhs) |
@@ -323,7 +323,7 @@ void MediaClientImpl::RequestCaptureState() {
   auto* manager = user_manager::UserManager::Get();
   for (user_manager::User* user : manager->GetLRULoggedInUsers()) {
     capture_states[user->GetAccountId()] = GetMediaCaptureStateOfAllWebContents(
-        chromeos::ProfileHelper::Get()->GetProfileByUser(user));
+        ash::ProfileHelper::Get()->GetProfileByUser(user));
   }
 
   const user_manager::User* primary_user = manager->GetPrimaryUser();
@@ -375,7 +375,8 @@ void MediaClientImpl::OnVmCameraMicActiveChanged(
           ash::VmCameraMicManager::kCameraAndMicNotification));
 }
 
-void MediaClientImpl::OnCameraPrivacySwitchStatusChanged(
+void MediaClientImpl::OnCameraHWPrivacySwitchStatusChanged(
+    int32_t camera_id,
     cros::mojom::CameraPrivacySwitchState state) {
   // Show camera privacy switch toast.
   switch (state) {
@@ -401,9 +402,9 @@ void MediaClientImpl::OnCameraPrivacySwitchStatusChanged(
       ash::ToastManager::Get()->Cancel(kCameraPrivacySwitchOffToastId);
       ash::ToastData toast(
           kCameraPrivacySwitchOnToastId,
+          ash::ToastCatalogName::kCameraPrivacySwitchOn,
           l10n_util::GetStringUTF16(IDS_CAMERA_PRIVACY_SWITCH_ON_TOAST),
-          kCameraPrivacySwitchToastDurationMs,
-          /*dismiss_text=*/absl::nullopt,
+          ash::ToastData::kDefaultToastDuration,
           /*visible_on_lock_screen=*/true);
       ash::ToastManager::Get()->Show(toast);
       break;
@@ -437,9 +438,9 @@ void MediaClientImpl::OnCameraPrivacySwitchStatusChanged(
       ash::ToastManager::Get()->Cancel(kCameraPrivacySwitchOnToastId);
       ash::ToastData toast(
           kCameraPrivacySwitchOffToastId,
+          ash::ToastCatalogName::kCameraPrivacySwitchOff,
           l10n_util::GetStringUTF16(IDS_CAMERA_PRIVACY_SWITCH_OFF_TOAST),
-          kCameraPrivacySwitchToastDurationMs,
-          /*dismiss_text=*/absl::nullopt,
+          ash::ToastData::kDefaultToastDuration,
           /*visible_on_lock_screen=*/true);
       ash::ToastManager::Get()->Show(toast);
       break;
@@ -458,9 +459,11 @@ void MediaClientImpl::OnActiveClientChange(cros::mojom::CameraClientType type,
                                            bool is_active) {
   is_camera_active_ = is_active;
 
-  if (is_active && camera_privacy_switch_state_ ==
-                       cros::mojom::CameraPrivacySwitchState::ON) {
-    ShowCameraOffNotification();
+  if (is_active) {
+    if (camera_privacy_switch_state_ ==
+        cros::mojom::CameraPrivacySwitchState::ON) {
+      ShowCameraOffNotification();
+    }
   }
 }
 
@@ -597,7 +600,8 @@ void MediaClientImpl::ShowCameraOffNotification() {
           message, std::u16string(), GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
-              kCameraPrivacySwitchNotifierId),
+              kCameraPrivacySwitchNotifierId,
+              ash::NotificationCatalogName::kCameraPrivacySwitch),
           message_center::RichNotificationData(),
           new message_center::HandleNotificationClickDelegate(
               base::DoNothingAs<void()>()),

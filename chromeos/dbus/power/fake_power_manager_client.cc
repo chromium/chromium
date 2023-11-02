@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -151,7 +151,9 @@ void FakePowerManagerClient::GetScreenBrightnessPercent(
 
 void FakePowerManagerClient::DecreaseKeyboardBrightness() {}
 
-void FakePowerManagerClient::IncreaseKeyboardBrightness() {}
+void FakePowerManagerClient::IncreaseKeyboardBrightness() {
+  ++num_increase_keyboard_brightness_calls_;
+}
 
 void FakePowerManagerClient::GetKeyboardBrightnessPercent(
     DBusMethodCallback<double> callback) {
@@ -159,6 +161,11 @@ void FakePowerManagerClient::GetKeyboardBrightnessPercent(
       FROM_HERE,
       base::BindOnce(std::move(callback), keyboard_brightness_percent_));
 }
+
+void FakePowerManagerClient::SetKeyboardBacklightToggledOff(bool toggled_off) {}
+
+void FakePowerManagerClient::GetKeyboardBacklightToggledOff(
+    DBusMethodCallback<bool> callback) {}
 
 const absl::optional<power_manager::PowerSupplyProperties>&
 FakePowerManagerClient::GetLastStatus() {
@@ -184,6 +191,8 @@ void FakePowerManagerClient::RequestRestart(
     power_manager::RequestRestartReason reason,
     const std::string& description) {
   ++num_request_restart_calls_;
+  if (restart_callback_)
+    std::move(restart_callback_).Run();
 }
 
 void FakePowerManagerClient::RequestShutdown(
@@ -412,6 +421,16 @@ void FakePowerManagerClient::GetExternalDisplayALSBrightness(
                                 external_display_als_brightness_enabled_));
 }
 
+// The real implementation of ChargeNowForAdaptiveCharging is just a simple
+// Dbus call without any callback, so there is not much to test for now.
+void FakePowerManagerClient::ChargeNowForAdaptiveCharging() {}
+
+void FakePowerManagerClient::GetChargeHistoryForAdaptiveCharging(
+    DBusMethodCallback<power_manager::ChargeHistoryState> callback) {
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), charge_history_));
+}
+
 bool FakePowerManagerClient::PopVideoActivityReport() {
   CHECK(!video_activity_reports_.empty());
   bool fullscreen = video_activity_reports_.front();
@@ -487,9 +506,12 @@ void FakePowerManagerClient::SetInactivityDelays(
 }
 
 void FakePowerManagerClient::UpdatePowerProperties(
-    const power_manager::PowerSupplyProperties& power_props) {
+    absl::optional<power_manager::PowerSupplyProperties> power_props) {
   props_ = power_props;
-  NotifyObservers();
+  // Only notify observer when power supply properties are available.
+  if (props_.has_value()) {
+    NotifyObservers();
+  }
 }
 
 void FakePowerManagerClient::NotifyObservers() {
@@ -526,6 +548,11 @@ bool FakePowerManagerClient::ApplyPendingScreenBrightnessChange() {
   screen_brightness_percent_ = change.percent();
   SendScreenBrightnessChanged(change);
   return true;
+}
+
+void FakePowerManagerClient::SetChargeHistoryForAdaptiveCharging(
+    const power_manager::ChargeHistoryState& charge_history) {
+  charge_history_ = charge_history;
 }
 
 // Returns time ticks from boot including time ticks spent during sleeping.

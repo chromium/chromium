@@ -1,0 +1,17 @@
+<!--
+@SCRIPT:
+  tableAuto.accessibilityAttributeNames.has(AXARIARowCount)
+  tableAuto.accessibilityAttributeValue(AXARIARowCount)
+  table.accessibilityAttributeNames.has(AXARIARowCount)
+  table.accessibilityAttributeValue(AXARIARowCount)
+  div.accessibilityAttributeNames.has(AXARIARowCount)
+  div.accessibilityAttributeValue(AXARIARowCount)
+-->
+<!DOCTYPE html>
+<div id="tableAuto" role="table">
+  <div role="row">
+    <span role="cell">column 1</span>
+  </div>
+</div>
+<div id="table" role="table" aria-rowcount="2"></div>
+<div id="div" aria-rowcount="3"></div>

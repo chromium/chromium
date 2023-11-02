@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -118,9 +118,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionInputMethodApiTest, DISABLED_Typing) {
 
 IN_PROC_BROWSER_TEST_F(ExtensionInputMethodApiTest, ImeMenuActivation) {
   // Listener for IME menu initial state ready.
-  ExtensionTestMessageListener config_listener("config_ready", false);
+  ExtensionTestMessageListener config_listener("config_ready");
   // Listener for IME menu event ready.
-  ExtensionTestMessageListener event_listener("event_ready", false);
+  ExtensionTestMessageListener event_listener("event_ready");
 
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kLanguageImeMenuActivated,
                                                true);
@@ -138,11 +138,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionInputMethodApiTest, ImeMenuActivation) {
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionInputMethodApiTest, ImeMenuAPITest) {
-  ExtensionTestMessageListener activated_listener("activated", false);
-  ExtensionTestMessageListener menu_listener("get_menu_update", false);
-  ExtensionTestMessageListener item_activated_listenter("get_menu_activated",
-                                                        false);
-  ExtensionTestMessageListener list_listenter("list_change", false);
+  ExtensionTestMessageListener activated_listener("activated");
+  ExtensionTestMessageListener menu_listener("get_menu_update");
+  ExtensionTestMessageListener item_activated_listenter("get_menu_activated");
+  ExtensionTestMessageListener list_listenter("list_change");
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kLanguageImeMenuActivated,
                                                true);
   ASSERT_TRUE(
@@ -158,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionInputMethodApiTest, ImeMenuAPITest) {
       &extension_imes);
   InputMethodManager::Get()->GetActiveIMEState()->ChangeInputMethod(
       kTestIMEID, false /* show_message */);
-  ui::IMEEngineHandlerInterface* engine_handler =
+  ui::TextInputMethod* engine_handler =
       ui::IMEBridge::Get()->GetCurrentEngineHandler();
   ASSERT_TRUE(engine_handler);
   engine_handler->Enable("test");

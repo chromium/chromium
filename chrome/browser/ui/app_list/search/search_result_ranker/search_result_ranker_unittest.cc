@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,6 @@
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/files/file_util.h"
-#include "base/files/scoped_temp_dir.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -24,12 +23,13 @@
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/mixer.h"
 #include "chrome/browser/ui/app_list/search/ranking/launch_data.h"
+#include "chrome/browser/ui/app_list/search/ranking/ranking_item_util.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
 #include "chrome/browser/ui/app_list/search/search_controller_impl.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/histogram_util.h"
-#include "chrome/browser/ui/app_list/search/search_result_ranker/ranking_item_util.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/recurrence_predictor.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/recurrence_ranker.h"
+#include "chrome/browser/ui/app_list/search/test/ranking_test_util.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/history/core/browser/history_database_params.h"
 #include "components/history/core/browser/history_service.h"
@@ -46,36 +46,11 @@ namespace {
 
 using ResultType = ash::AppListSearchResultType;
 
-using base::ScopedTempDir;
 using base::test::ScopedFeatureList;
 using testing::ElementsAre;
 using testing::StrEq;
 using testing::UnorderedElementsAre;
 using testing::WhenSorted;
-
-class TestSearchResult : public ChromeSearchResult {
- public:
-  TestSearchResult(const std::string& id, ResultType type)
-      : instance_id_(instantiation_count++) {
-    set_id(id);
-    SetTitle(base::UTF8ToUTF16(id));
-    SetResultType(type);
-  }
-
-  TestSearchResult(const TestSearchResult&) = delete;
-  TestSearchResult& operator=(const TestSearchResult&) = delete;
-
-  ~TestSearchResult() override {}
-
-  // ChromeSearchResult overrides:
-  void Open(int event_flags) override {}
-
- private:
-  static int instantiation_count;
-
-  int instance_id_;
-};
-int TestSearchResult::instantiation_count = 0;
 
 MATCHER_P(HasId, id, "") {
   bool match = base::UTF16ToUTF8(arg.result->title()) == id;
@@ -119,12 +94,6 @@ std::unique_ptr<KeyedService> BuildHistoryService(
   return nullptr;
 }
 
-class SearchControllerFake : public SearchControllerImpl {
- public:
-  explicit SearchControllerFake(Profile* profile)
-      : SearchControllerImpl(nullptr, nullptr, nullptr, profile) {}
-};
-
 }  // namespace
 
 class SearchResultRankerTest : public testing::Test {
@@ -139,10 +108,8 @@ class SearchResultRankerTest : public testing::Test {
 
   // testing::Test overrides:
   void SetUp() override {
-    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     TestingProfile::Builder profile_builder;
     profile_builder.SetProfileName("testuser@gmail.com");
-    profile_builder.SetPath(temp_dir_.GetPath().AppendASCII("TestProfile"));
     profile_builder.AddTestingFactory(
         HistoryServiceFactory::GetInstance(),
         base::BindRepeating(&BuildHistoryService));
@@ -157,9 +124,9 @@ class SearchResultRankerTest : public testing::Test {
 
   void EnableOneFeature(const base::Feature& feature,
                         const std::map<std::string, std::string>& params = {}) {
-    std::vector<base::Feature> disabled;
+    std::vector<base::test::FeatureRef> disabled;
     for (const auto& f : all_feature_flags_) {
-      if (f.name != feature.name)
+      if (f->name != feature.name)
         disabled.push_back(f);
     }
     scoped_feature_list_.InitWithFeaturesAndParameters({{feature, params}},
@@ -181,18 +148,13 @@ class SearchResultRankerTest : public testing::Test {
     return results;
   }
 
-  SearchController* MakeSearchController() {
-    return new SearchControllerFake(profile_.get());
-  }
-
   void Wait() { task_environment_.RunUntilIdle(); }
 
-  // This is used only to make the ownership clear for the TestSearchResult
+  // This is used only to make the ownership clear for the TestResult
   // objects that the return value of MakeSearchResults() contains raw pointers
   // to.
-  std::list<TestSearchResult> test_search_results_;
+  std::list<TestResult> test_search_results_;
 
-  ScopedTempDir temp_dir_;
   content::BrowserTaskEnvironment task_environment_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 
@@ -205,7 +167,7 @@ class SearchResultRankerTest : public testing::Test {
  private:
   // All the relevant feature flags for the SearchResultRanker. New experiments
   // should add their flag here.
-  std::vector<base::Feature> all_feature_flags_ = {
+  std::vector<base::test::FeatureRef> all_feature_flags_ = {
       app_list_features::kEnableAppRanker,
       app_list_features::kEnableZeroStateMixedTypesRanker};
 };
@@ -213,7 +175,7 @@ class SearchResultRankerTest : public testing::Test {
 TEST_F(SearchResultRankerTest, MixedTypesRankersAreDisabledWithFlag) {
   DisableAllFeatures();
   auto ranker = MakeRanker();
-  ranker->InitializeRankers(MakeSearchController());
+  ranker->InitializeRankers();
   Wait();
 
   LaunchData launch_data;
@@ -253,7 +215,7 @@ TEST_F(SearchResultRankerTest, AppModelImprovesScores) {
   EnableOneFeature(app_list_features::kEnableAppRanker,
                    {{"use_recurrence_ranker", "true"}, {"config", json}});
   auto ranker = MakeRanker();
-  ranker->InitializeRankers(MakeSearchController());
+  ranker->InitializeRankers();
   Wait();
 
   LaunchData app_A;
@@ -287,7 +249,7 @@ TEST_F(SearchResultRankerTest, AppModelImprovesScores) {
 TEST_F(SearchResultRankerTest, ZeroStateGroupModelDisabledWithFlag) {
   DisableAllFeatures();
   auto ranker = MakeRanker();
-  ranker->InitializeRankers(MakeSearchController());
+  ranker->InitializeRankers();
   Wait();
 
   // TODO(959679): Update the types used in this test once zero-state-related
@@ -323,7 +285,7 @@ TEST_F(SearchResultRankerTest, ZeroStateGroupTrainingImprovesScores) {
                        {"paired_coeff", "0.0"},
                    });
   auto ranker = MakeRanker();
-  ranker->InitializeRankers(MakeSearchController());
+  ranker->InitializeRankers();
   Wait();
 
   LaunchData launch;
@@ -358,7 +320,7 @@ TEST_F(SearchResultRankerTest, ZeroStateColdStart) {
                        {"paired_coeff", "0.0"},
                    });
   auto ranker = MakeRanker();
-  ranker->InitializeRankers(MakeSearchController());
+  ranker->InitializeRankers();
   Wait();
 
   ranker->FetchRankings(std::u16string());
@@ -383,7 +345,7 @@ TEST_F(SearchResultRankerTest, ZeroStateAllGroupsPresent) {
                        {"paired_coeff", "0.0"},
                    });
   auto ranker = MakeRanker();
-  ranker->InitializeRankers(MakeSearchController());
+  ranker->InitializeRankers();
   Wait();
 
   auto results = MakeSearchResults(
@@ -410,7 +372,7 @@ TEST_F(SearchResultRankerTest, ZeroStateMissingGroupAdded) {
                        {"paired_coeff", "0.0"},
                    });
   auto ranker = MakeRanker();
-  ranker->InitializeRankers(MakeSearchController());
+  ranker->InitializeRankers();
   Wait();
 
   // Train on files enough that they should dominate the zero state results.
@@ -450,7 +412,7 @@ TEST_F(SearchResultRankerTest, ZeroStateTwoMissingGroupsAdded) {
                        {"paired_coeff", "0.0"},
                    });
   auto ranker = MakeRanker();
-  ranker->InitializeRankers(MakeSearchController());
+  ranker->InitializeRankers();
   Wait();
 
   // Train on files enough that they should dominate the zero state results.
@@ -472,9 +434,12 @@ TEST_F(SearchResultRankerTest, ZeroStateTwoMissingGroupsAdded) {
 
   ranker->Rank(&results);
   ranker->OverrideZeroStateResults(&results);
-  EXPECT_THAT(results, WhenSorted(ElementsAre(
-                           HasId("Z1"), HasId("Z2"), HasId("Z3"), HasId("D1"),
-                           HasId("O1"), HasId("Z4"), HasId("Z5"))));
+  // Z4 and Z5 have equal order so use std::stable_sort instead of WhenSorted(),
+  // which uses std::sort.
+  std::stable_sort(results.begin(), results.end());
+  EXPECT_THAT(results,
+              ElementsAre(HasId("Z1"), HasId("Z2"), HasId("Z3"), HasId("D1"),
+                          HasId("O1"), HasId("Z4"), HasId("Z5")));
 }
 
 // If one group won't have shown results and has a new result in the list, but
@@ -487,7 +452,7 @@ TEST_F(SearchResultRankerTest, ZeroStateStaleResultIgnored) {
                        {"paired_coeff", "0.0"},
                    });
   auto ranker = MakeRanker();
-  ranker->InitializeRankers(MakeSearchController());
+  ranker->InitializeRankers();
   Wait();
 
   // Train on files enough that they should dominate the zero state results.
@@ -539,7 +504,7 @@ TEST_F(SearchResultRankerTest, ZeroStateCacheResetWhenTopResultChanges) {
                        {"paired_coeff", "0.0"},
                    });
   auto ranker = MakeRanker();
-  ranker->InitializeRankers(MakeSearchController());
+  ranker->InitializeRankers();
   Wait();
 
   // Train on files enough that they should dominate the zero state results.
@@ -620,7 +585,7 @@ TEST_F(SearchResultRankerTest, ZeroStateGroupRankerUsesFinchConfig) {
                    {{"config", json}});
 
   auto ranker = MakeRanker();
-  ranker->InitializeRankers(MakeSearchController());
+  ranker->InitializeRankers();
   Wait();
 
   // We expect a FakePredictor to have been loaded because predictor_type is set
@@ -640,7 +605,7 @@ TEST_F(SearchResultRankerTest, ZeroStateClickedTypeMetrics) {
                        {"default_group_score", "0.1"},
                    });
   auto ranker = MakeRanker();
-  ranker->InitializeRankers(MakeSearchController());
+  ranker->InitializeRankers();
   Wait();
 
   // Zero state types should be logged during training.

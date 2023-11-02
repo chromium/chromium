@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -355,9 +355,7 @@ EnumerateCredentialsResponse::EnumerateCredentialsResponse(
     size_t credential_count_)
     : user(std::move(user_)),
       credential_id(std::move(credential_id_)),
-      credential_count(credential_count_) {
-  credential_id_cbor_bytes = *cbor::Writer::Write(AsCBOR(credential_id));
-}
+      credential_count(credential_count_) {}
 
 AggregatedEnumerateCredentialsResponse::AggregatedEnumerateCredentialsResponse(
     PublicKeyCredentialRpEntity rp_)

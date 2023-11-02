@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 #include "url/gurl.h"
 #include "weblayer/browser/no_state_prefetch/no_state_prefetch_manager_factory.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_string.h"
 #include "weblayer/browser/java/jni/PrerenderControllerImpl_jni.h"
 #endif
@@ -27,7 +27,7 @@ PrerenderControllerImpl::PrerenderControllerImpl(
 
 PrerenderControllerImpl::~PrerenderControllerImpl() = default;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void PrerenderControllerImpl::Prerender(
     JNIEnv* env,
     const base::android::JavaParamRef<jstring>& url) {

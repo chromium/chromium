@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,12 @@
 #include <sstream>
 
 #include "base/check.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_util.h"
-#include "net/base/escape.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "storage/common/file_system/file_system_util.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace storage {
@@ -69,10 +70,9 @@ FileSystemURL::FileSystemURL(const GURL& url,
   GURL origin_url;
   // URL should be able to be parsed and the parsed origin should match the
   // StorageKey's origin member.
-  is_valid_ =
-      ParseFileSystemSchemeURL(url, &origin_url, &mount_type_,
-                               &virtual_path_) &&
-      storage_key.origin().IsSameOriginWith(url::Origin::Create(origin_url));
+  is_valid_ = ParseFileSystemSchemeURL(url, &origin_url, &mount_type_,
+                                       &virtual_path_) &&
+              storage_key.origin().IsSameOriginWith(origin_url);
   storage_key_ = storage_key;
   path_ = virtual_path_;
   type_ = mount_type_;
@@ -113,22 +113,23 @@ GURL FileSystemURL::ToGURL() const {
   if (!is_valid_)
     return GURL();
 
-  std::string url =
-      GetFileSystemRootURI(storage_key_.origin().GetURL(), mount_type_).spec();
-  if (url.empty())
+  GURL url = GetFileSystemRootURI(storage_key_.origin().GetURL(), mount_type_);
+  if (!url.is_valid())
     return GURL();
+
+  std::string url_string = url.spec();
 
   // Exactly match with DOMFileSystemBase::createFileSystemURL()'s encoding
   // behavior, where the path is escaped by KURL::encodeWithURLEscapeSequences
   // which is essentially encodeURIComponent except '/'.
-  std::string escaped = net::EscapeQueryParamValue(
+  std::string escaped = base::EscapeQueryParamValue(
       virtual_path_.NormalizePathSeparatorsTo('/').AsUTF8Unsafe(),
       false /* use_plus */);
   base::ReplaceSubstringsAfterOffset(&escaped, 0, "%2F", "/");
-  url.append(escaped);
+  url_string.append(escaped);
 
   // Build nested GURL.
-  return GURL(url);
+  return GURL(url_string);
 }
 
 std::string FileSystemURL::DebugString() const {
@@ -161,6 +162,9 @@ std::string FileSystemURL::DebugString() const {
     ss << path_.value();
   }
   ss << ", storage key: " << storage_key_.GetDebugString();
+  if (bucket_.has_value()) {
+    ss << ", bucket id: " << bucket_->id;
+  }
   ss << " }";
   return ss.str();
 }
@@ -171,7 +175,7 @@ bool FileSystemURL::IsParent(const FileSystemURL& child) const {
 
 bool FileSystemURL::IsInSameFileSystem(const FileSystemURL& other) const {
   return origin() == other.origin() && type() == other.type() &&
-         filesystem_id() == other.filesystem_id();
+         filesystem_id() == other.filesystem_id() && bucket() == other.bucket();
 }
 
 bool FileSystemURL::operator==(const FileSystemURL& that) const {
@@ -180,7 +184,7 @@ bool FileSystemURL::operator==(const FileSystemURL& that) const {
   } else {
     return storage_key() == that.storage_key() && type_ == that.type_ &&
            path_ == that.path_ && filesystem_id_ == that.filesystem_id_ &&
-           is_valid_ == that.is_valid_;
+           is_valid_ == that.is_valid_ && bucket_ == that.bucket_;
   }
 }
 
@@ -193,6 +197,8 @@ bool FileSystemURL::Comparator::operator()(const FileSystemURL& lhs,
     return lhs.type_ < rhs.type_;
   if (lhs.filesystem_id_ != rhs.filesystem_id_)
     return lhs.filesystem_id_ < rhs.filesystem_id_;
+  if (lhs.bucket_ != rhs.bucket_)
+    return lhs.bucket_ < rhs.bucket_;
   return lhs.path_ < rhs.path_;
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,15 +45,19 @@ void PrefetchImagesTask::Run() {
     TaskComplete();
     return;
   }
-  if (stream_.GetModel(kForYouStream)) {
-    PrefetchImagesFromModel(*stream_.GetModel(kForYouStream));
+  StreamType for_you_stream = StreamType(StreamKind::kForYou);
+  if (stream_.GetModel(for_you_stream)) {
+    PrefetchImagesFromModel(*stream_.GetModel(for_you_stream));
     return;
   }
 
+  // Web feed subscriber is set to true so we don't use the less restrictive
+  // staleness number for when there are no subscriptions.
   load_from_store_task_ = std::make_unique<LoadStreamFromStoreTask>(
-      LoadStreamFromStoreTask::LoadType::kFullLoad, &stream_, kForYouStream,
+      LoadStreamFromStoreTask::LoadType::kFullLoad, &stream_, for_you_stream,
       &stream_.GetStore(),
       /*missed_last_refresh=*/false,
+      /*is_web_feed_subscriber=*/true,
       base::BindOnce(&PrefetchImagesTask::LoadStreamComplete,
                      base::Unretained(this)));
 
@@ -72,7 +76,7 @@ void PrefetchImagesTask::LoadStreamComplete(
   // surfaces to update. For this reason, we're not going to retain the loaded
   // model for use outside of this task.
   StreamModel::Context model_context;
-  StreamModel model(&model_context);
+  StreamModel model(&model_context, LoggingParameters{});
   model.Update(std::move(result.update_request));
   PrefetchImagesFromModel(model);
 }

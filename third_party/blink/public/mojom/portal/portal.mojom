@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,6 +34,9 @@ enum PortalActivateResult {
   // browser shutdown). This error code is never sent as an IPC response, but
   // is synthesized by the renderer.
   kDisconnected,
+
+  // Activation has not yet been implemented for the current platform.
+  kNotImplemented,
 
   // The activation was attempted but was aborted due to a logic error, such as
   // a nonsensical reply from the other renderer. This should never happen; it

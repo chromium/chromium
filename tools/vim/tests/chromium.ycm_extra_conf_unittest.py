@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Tests for chromium.ycm_extra_conf.
@@ -314,6 +314,8 @@ class Chromium_ycmExtraConfTest(unittest.TestCase):
         '-Wno-unknown-warning-option', '-I[OUT]/a', '-I[OUT]/tag-default'
     ])
 
+  @unittest.skipIf(os.name == "nt", "Test fails with path differences on "
+                   "Windows.")
   def testGetFlagsForSysrootAbsPath(self):
     result = self.ycm_extra_conf.FlagsForFile(
         os.path.join(self.chrome_root, 'six.cc'))
@@ -354,6 +356,8 @@ class Chromium_ycmExtraConfTest(unittest.TestCase):
         '[SRC]/build/mac.sdk',
     ])
 
+  @unittest.skipIf(os.name == "nt", "Test fails with path differences on "
+                   "Windows.")
   def testGetFlagsForIsystem(self):
     result = self.ycm_extra_conf.FlagsForFile(
         os.path.join(self.chrome_root, 'ten.cc'))

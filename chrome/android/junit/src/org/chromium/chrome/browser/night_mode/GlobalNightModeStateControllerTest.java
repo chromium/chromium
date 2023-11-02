@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,6 +19,8 @@ import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.UI_TH
 
 import android.os.Build;
 
+import androidx.appcompat.app.AppCompatDelegate;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,17 +29,31 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.stubbing.VoidAnswer1;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.Implementation;
+import org.robolectric.annotation.Implements;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.MaxAndroidSdkLevel;
+import org.chromium.chrome.browser.night_mode.GlobalNightModeStateControllerTest.ShadowAppCompatDelegate;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 
 /**
  * Unit tests for {@link GlobalNightModeStateController}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+@Config(manifest = Config.NONE, shadows = ShadowAppCompatDelegate.class)
 public class GlobalNightModeStateControllerTest {
+    /**
+     * Shadow implementation of {@link androidx.appcompat.app.AppCompatDelegate} that bypass
+     * activity recreation. Used as a stop gap to stop test failure due to activity leaks.
+     * See https://crbug.com/1347906.
+     */
+    @Implements(AppCompatDelegate.class)
+    public static class ShadowAppCompatDelegate {
+        @Implementation
+        public static void setDefaultNightMode(int mode) {}
+    }
+
     @Mock
     private NightModeStateProvider.Observer mObserver;
 
@@ -107,8 +123,10 @@ public class GlobalNightModeStateControllerTest {
     }
 
     @Test
-    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.P)
-    public void testUpdateNightMode_PowerSaveMode_DefaultsToLight() {
+    @MaxAndroidSdkLevel(value = Build.VERSION_CODES.P,
+            reason = "Default to light parameter is only applicable pre-Q.")
+    public void
+    testUpdateNightMode_PowerSaveMode_DefaultsToLight() {
         // Enable power save mode and verify night mode is not enabled.
         setIsPowerSaveMode(true);
         assertFalse(mGlobalNightModeStateController.isInNightMode());
@@ -130,8 +148,10 @@ public class GlobalNightModeStateControllerTest {
     }
 
     @Test
-    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.P)
-    public void testUpdateNightMode_SystemNightMode_DefaultsToLight() {
+    @MaxAndroidSdkLevel(value = Build.VERSION_CODES.P,
+            reason = "Default to light parameter is only applicable pre-Q.")
+    public void
+    testUpdateNightMode_SystemNightMode_DefaultsToLight() {
         // Enable system night mode and verify night mode is not enabled.
         setSystemNightMode(true);
         assertFalse(mGlobalNightModeStateController.isInNightMode());

@@ -1,9 +1,10 @@
 #![cfg(not(syn_disable_nightly_tests))]
+#![cfg(not(miri))]
 #![recursion_limit = "1024"]
 #![feature(rustc_private)]
 #![allow(
     clippy::explicit_deref_methods,
-    clippy::if_then_panic,
+    clippy::manual_assert,
     clippy::match_wildcard_for_single_variants,
     clippy::too_many_lines
 )]
@@ -134,16 +135,16 @@ fn test_rustc_precedence() {
                 l_failed
             );
 
-            passed.fetch_add(l_passed, Ordering::SeqCst);
-            let prev_failed = failed.fetch_add(l_failed, Ordering::SeqCst);
+            passed.fetch_add(l_passed, Ordering::Relaxed);
+            let prev_failed = failed.fetch_add(l_failed, Ordering::Relaxed);
 
             if prev_failed + l_failed >= abort_after {
                 process::exit(1);
             }
         });
 
-    let passed = passed.load(Ordering::SeqCst);
-    let failed = failed.load(Ordering::SeqCst);
+    let passed = passed.load(Ordering::Relaxed);
+    let failed = failed.load(Ordering::Relaxed);
 
     errorf!("\n===== Precedence Test Results =====\n");
     errorf!("{} passed | {} failed\n", passed, failed);
@@ -195,7 +196,7 @@ fn librustc_parse_and_rewrite(input: &str) -> Option<P<ast::Expr>> {
 }
 
 /// Wrap every expression which is not already wrapped in parens with parens, to
-/// reveal the precidence of the parsed expressions, and produce a stringified
+/// reveal the precedence of the parsed expressions, and produce a stringified
 /// form of the resulting expression.
 ///
 /// This method operates on librustc objects.
@@ -425,7 +426,7 @@ fn syn_brackets(syn_expr: syn::Expr) -> syn::Expr {
 fn collect_exprs(file: syn::File) -> Vec<syn::Expr> {
     use syn::fold::Fold;
     use syn::punctuated::Punctuated;
-    use syn::{token, Expr, ExprTuple};
+    use syn::{token, Expr, ExprTuple, Path};
 
     struct CollectExprs(Vec<Expr>);
     impl Fold for CollectExprs {
@@ -440,6 +441,11 @@ fn collect_exprs(file: syn::File) -> Vec<syn::Expr> {
                 elems: Punctuated::new(),
                 paren_token: token::Paren::default(),
             })
+        }
+
+        fn fold_path(&mut self, path: Path) -> Path {
+            // Skip traversing into const generic path arguments
+            path
         }
     }
 

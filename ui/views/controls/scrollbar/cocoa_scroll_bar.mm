@@ -1,6 +1,8 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+#include "base/memory/raw_ptr.h"
 
 #import "ui/views/controls/scrollbar/cocoa_scroll_bar.h"
 
@@ -61,7 +63,7 @@ class CocoaScrollBarThumb : public BaseScrollBarThumb {
 
  private:
   // The CocoaScrollBar that owns us.
-  CocoaScrollBar* cocoa_scroll_bar_;  // weak.
+  raw_ptr<CocoaScrollBar> cocoa_scroll_bar_;  // weak.
 };
 
 CocoaScrollBarThumb::CocoaScrollBarThumb(CocoaScrollBar* scroll_bar)
@@ -107,7 +109,7 @@ void CocoaScrollBarThumb::OnPaint(gfx::Canvas* canvas) {
               ui::NativeTheme::ScrollbarOrientation::kHorizontal
           ? ui::NativeTheme::kScrollbarHorizontalThumb
           : ui::NativeTheme::kScrollbarVerticalThumb;
-  GetNativeTheme()->Paint(canvas->sk_canvas(), thumb_part,
+  GetNativeTheme()->Paint(canvas->sk_canvas(), GetColorProvider(), thumb_part,
                           ui::NativeTheme::kNormal, GetLocalBounds(), params);
 }
 
@@ -220,7 +222,7 @@ void CocoaScrollBar::OnPaint(gfx::Canvas* canvas) {
               ui::NativeTheme::ScrollbarOrientation::kHorizontal
           ? ui::NativeTheme::kScrollbarHorizontalTrack
           : ui::NativeTheme::kScrollbarVerticalTrack;
-  GetNativeTheme()->Paint(canvas->sk_canvas(), track_part,
+  GetNativeTheme()->Paint(canvas->sk_canvas(), GetColorProvider(), track_part,
                           ui::NativeTheme::kNormal, GetLocalBounds(), params);
 }
 

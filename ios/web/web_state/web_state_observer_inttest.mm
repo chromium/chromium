@@ -1,27 +1,26 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
-#include <string>
+#import <memory>
+#import <string>
 
-#include "base/base_paths.h"
-#include "base/bind.h"
-#include "base/files/file_path.h"
-#include "base/ios/ios_util.h"
+#import "base/base_paths.h"
+#import "base/bind.h"
+#import "base/files/file_path.h"
+#import "base/ios/ios_util.h"
 #import "base/ios/ns_error_util.h"
-#include "base/mac/foundation_util.h"
-#include "base/path_service.h"
-#include "base/scoped_observation.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/test/gmock_callback_support.h"
+#import "base/mac/foundation_util.h"
+#import "base/path_service.h"
+#import "base/scoped_observation.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
+#import "base/test/gmock_callback_support.h"
 #import "base/test/ios/wait_util.h"
-#include "base/test/scoped_feature_list.h"
 #import "ios/net/protocol_handler_util.h"
-#include "ios/testing/embedded_test_server_handlers.h"
-#include "ios/web/common/features.h"
-#include "ios/web/navigation/wk_navigation_util.h"
+#import "ios/testing/embedded_test_server_handlers.h"
+#import "ios/web/common/features.h"
+#import "ios/web/navigation/wk_navigation_util.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -31,31 +30,31 @@
 #import "ios/web/public/test/error_test_util.h"
 #import "ios/web/public/test/fakes/async_web_state_policy_decider.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
-#include "ios/web/public/test/fakes/fake_web_state_observer.h"
+#import "ios/web/public/test/fakes/fake_web_state_observer.h"
 #import "ios/web/public/test/navigation_test_util.h"
 #import "ios/web/public/test/web_view_content_test_util.h"
 #import "ios/web/public/test/web_view_interaction_test_util.h"
 #import "ios/web/public/web_client.h"
-#include "ios/web/public/web_state_observer.h"
-#include "ios/web/test/test_url_constants.h"
+#import "ios/web/public/web_state_observer.h"
+#import "ios/web/test/test_url_constants.h"
 #import "ios/web/test/web_int_test.h"
 #import "ios/web/web_state/ui/crw_web_controller.h"
 #import "ios/web/web_state/web_state_impl.h"
-#include "ios/web/web_state/web_state_policy_decider_test_util.h"
+#import "ios/web/web_state/web_state_policy_decider_test_util.h"
 #import "net/base/mac/url_conversions.h"
 #import "net/base/net_errors.h"
-#include "net/http/http_response_headers.h"
-#include "net/test/embedded_test_server/default_handlers.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
-#include "net/test/embedded_test_server/http_request.h"
-#include "net/test/embedded_test_server/http_response.h"
-#include "net/test/embedded_test_server/request_handler_util.h"
-#include "testing/gmock/include/gmock/gmock.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import "net/http/http_response_headers.h"
+#import "net/test/embedded_test_server/default_handlers.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
+#import "net/test/embedded_test_server/http_request.h"
+#import "net/test/embedded_test_server/http_response.h"
+#import "net/test/embedded_test_server/request_handler_util.h"
+#import "testing/gmock/include/gmock/gmock.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
-#include "ui/base/page_transition_types.h"
-#include "url/gurl.h"
-#include "url/scheme_host_port.h"
+#import "ui/base/page_transition_types.h"
+#import "url/gurl.h"
+#import "url/scheme_host_port.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -76,12 +75,13 @@ const char16_t kFailedTitle[] = u"failed_title";
 // Location of a test page.
 const char kTestPageURL[] = "/pony.html";
 
-// A text string from the test HTML page at |kTestPageURL|.
+// A text string from the test HTML page at `kTestPageURL`.
 const char kTestSessionStoragePageText[] = "pony";
 
 // Returns a session storage with a single committed entry of a test HTML page.
 CRWSessionStorage* GetTestSessionStorage(const GURL& testUrl) {
   CRWSessionStorage* result = [[CRWSessionStorage alloc] init];
+  result.stableIdentifier = [[NSUUID UUID] UUIDString];
   result.lastCommittedItemIndex = 0;
   CRWNavigationItemStorage* item = [[CRWNavigationItemStorage alloc] init];
   [item setURL:testUrl];
@@ -108,8 +108,8 @@ ACTION_P(VerifyTitle, expected_title) {
   EXPECT_EQ(expected_title, base::UTF16ToASCII(web_state->GetTitle()));
 }
 
-// Verifies correctness of |NavigationContext| (|arg1|) for new page navigation
-// passed to |DidStartNavigation|. Stores |NavigationContext| in |context|
+// Verifies correctness of `NavigationContext` (`arg1`) for new page navigation
+// passed to `DidStartNavigation`. Stores `NavigationContext` in `context`
 // pointer.
 ACTION_P5(VerifyPageStartedContext,
           web_state,
@@ -141,8 +141,8 @@ ACTION_P5(VerifyPageStartedContext,
   EXPECT_EQ(url, item->GetURL());
 }
 
-// Verifies correctness of |NavigationContext| (|arg1|) for new page navigation
-// passed to |DidStartNavigation|. Stores |NavigationContext| in |context|
+// Verifies correctness of `NavigationContext` (`arg1`) for new page navigation
+// passed to `DidStartNavigation`. Stores `NavigationContext` in `context`
 // pointer. This action is used to verify one of multiple pending navigations.
 ACTION_P6(VerifyPageConcurrentlyStartedContext,
           web_state,
@@ -177,8 +177,8 @@ ACTION_P6(VerifyPageConcurrentlyStartedContext,
   EXPECT_EQ(item_url, item->GetURL());
 }
 
-// Verifies correctness of |NavigationContext| (|arg1|) for data navigation
-// passed to |DidStartNavigation|. Stores |NavigationContext| in |context|
+// Verifies correctness of `NavigationContext` (`arg1`) for data navigation
+// passed to `DidStartNavigation`. Stores `NavigationContext` in `context`
 // pointer.
 ACTION_P5(VerifyDataStartedContext,
           web_state,
@@ -210,8 +210,8 @@ ACTION_P5(VerifyDataStartedContext,
   EXPECT_EQ(url, item->GetURL());
 }
 
-// Verifies correctness of |NavigationContext| (|arg1|) for navigation for
-// stopped load. Stores |NavigationContext| in |context| pointer.
+// Verifies correctness of `NavigationContext` (`arg1`) for navigation for
+// stopped load. Stores `NavigationContext` in `context` pointer.
 ACTION_P5(VerifyAbortedNavigationStartedContext,
           web_state,
           url,
@@ -241,9 +241,9 @@ ACTION_P5(VerifyAbortedNavigationStartedContext,
   EXPECT_FALSE(web_state->GetNavigationManager()->GetPendingItem());
 }
 
-// Verifies correctness of |NavigationContext| (|arg1|) for new page navigation
-// passed to |DidFinishNavigation|. Asserts that |NavigationContext| the same as
-// |context|.
+// Verifies correctness of `NavigationContext` (`arg1`) for new page navigation
+// passed to `DidFinishNavigation`. Asserts that `NavigationContext` the same as
+// `context`.
 ACTION_P6(VerifyNewPageFinishedContext,
           web_state,
           url,
@@ -282,9 +282,9 @@ ACTION_P6(VerifyNewPageFinishedContext,
   EXPECT_EQ(url, item->GetURL());
 }
 
-// Verifies correctness of |NavigationContext| (|arg1|) for file:// URL
-// navigation passed to |DidFinishNavigation|. Asserts that |NavigationContext|
-// the same as |context|.
+// Verifies correctness of `NavigationContext` (`arg1`) for file:// URL
+// navigation passed to `DidFinishNavigation`. Asserts that `NavigationContext`
+// the same as `context`.
 ACTION_P4(VerifyPdfFileUrlFinishedContext, web_state, url, context, nav_id) {
   ASSERT_EQ(*context, arg1);
   EXPECT_EQ(web_state, arg0);
@@ -312,9 +312,9 @@ ACTION_P4(VerifyPdfFileUrlFinishedContext, web_state, url, context, nav_id) {
   EXPECT_EQ(url, item->GetURL());
 }
 
-// Verifies correctness of |NavigationContext| (|arg1|) for data navigation
-// passed to |DidFinishNavigation|. Asserts that |NavigationContext| the same as
-// |context|.
+// Verifies correctness of `NavigationContext` (`arg1`) for data navigation
+// passed to `DidFinishNavigation`. Asserts that `NavigationContext` the same as
+// `context`.
 ACTION_P5(VerifyDataFinishedContext,
           web_state,
           url,
@@ -347,9 +347,9 @@ ACTION_P5(VerifyDataFinishedContext,
   EXPECT_EQ(url, item->GetURL());
 }
 
-// Verifies correctness of |NavigationContext| (|arg1|) for failed navigation
-// passed to |DidFinishNavigation|. Asserts that |NavigationContext| the same as
-// |context|.
+// Verifies correctness of `NavigationContext` (`arg1`) for failed navigation
+// passed to `DidFinishNavigation`. Asserts that `NavigationContext` the same as
+// `context`.
 ACTION_P6(VerifyErrorFinishedContext,
           web_state,
           url,
@@ -390,9 +390,9 @@ ACTION_P6(VerifyErrorFinishedContext,
   }
 }
 
-// Verifies correctness of |NavigationContext| (|arg1|) passed to
-// |DidFinishNavigation| for navigation canceled due to a rejected response.
-// Asserts that |NavigationContext| the same as |context|.
+// Verifies correctness of `NavigationContext` (`arg1`) passed to
+// `DidFinishNavigation` for navigation canceled due to a rejected response.
+// Asserts that `NavigationContext` the same as `context`.
 ACTION_P4(VerifyResponseRejectedFinishedContext,
           web_state,
           url,
@@ -421,9 +421,9 @@ ACTION_P4(VerifyResponseRejectedFinishedContext,
   ASSERT_FALSE(web_state->ContentIsHTML());
 }
 
-// Verifies correctness of |NavigationContext| (|arg1|) for navigations via POST
-// HTTP methods passed to |DidStartNavigation|. Stores |NavigationContext| in
-// |context| pointer.
+// Verifies correctness of `NavigationContext` (`arg1`) for navigations via POST
+// HTTP methods passed to `DidStartNavigation`. Stores `NavigationContext` in
+// `context` pointer.
 ACTION_P6(VerifyPostStartedContext,
           web_state,
           url,
@@ -452,9 +452,9 @@ ACTION_P6(VerifyPostStartedContext,
   EXPECT_EQ(url, item->GetURL());
 }
 
-// Verifies correctness of |NavigationContext| (|arg1|) for navigations via POST
-// HTTP methods passed to |DidFinishNavigation|. Stores |NavigationContext| in
-// |context| pointer.
+// Verifies correctness of `NavigationContext` (`arg1`) for navigations via POST
+// HTTP methods passed to `DidFinishNavigation`. Stores `NavigationContext` in
+// `context` pointer.
 ACTION_P6(VerifyPostFinishedContext,
           web_state,
           url,
@@ -482,8 +482,8 @@ ACTION_P6(VerifyPostFinishedContext,
   EXPECT_EQ(url, item->GetURL());
 }
 
-// Verifies correctness of |NavigationContext| (|arg1|) for same page navigation
-// passed to |DidFinishNavigation|. Stores |NavigationContext| in |context|
+// Verifies correctness of `NavigationContext` (`arg1`) for same page navigation
+// passed to `DidFinishNavigation`. Stores `NavigationContext` in `context`
 // pointer.
 ACTION_P7(VerifySameDocumentStartedContext,
           web_state,
@@ -511,9 +511,9 @@ ACTION_P7(VerifySameDocumentStartedContext,
   EXPECT_FALSE((*context)->GetResponseHeaders());
 }
 
-// Verifies correctness of |NavigationContext| (|arg1|) for same page navigation
-// passed to |DidFinishNavigation|. Asserts that |NavigationContext| the same as
-// |context|.
+// Verifies correctness of `NavigationContext` (`arg1`) for same page navigation
+// passed to `DidFinishNavigation`. Asserts that `NavigationContext` the same as
+// `context`.
 ACTION_P7(VerifySameDocumentFinishedContext,
           web_state,
           url,
@@ -543,8 +543,8 @@ ACTION_P7(VerifySameDocumentFinishedContext,
   EXPECT_EQ(url, item->GetURL());
 }
 
-// Verifies correctness of |NavigationContext| (|arg1|) for reload navigation
-// passed to |DidStartNavigation|. Stores |NavigationContext| in |context|
+// Verifies correctness of `NavigationContext` (`arg1`) for reload navigation
+// passed to `DidStartNavigation`. Stores `NavigationContext` in `context`
 // pointer.
 ACTION_P4(VerifyReloadStartedContext, web_state, url, context, nav_id) {
   *context = arg1;
@@ -569,9 +569,9 @@ ACTION_P4(VerifyReloadStartedContext, web_state, url, context, nav_id) {
   EXPECT_EQ(url, item->GetURL());
 }
 
-// Verifies correctness of |NavigationContext| (|arg1|) for reload navigation
-// passed to |DidFinishNavigation|. Asserts that |NavigationContext| the same as
-// |context|.
+// Verifies correctness of `NavigationContext` (`arg1`) for reload navigation
+// passed to `DidFinishNavigation`. Asserts that `NavigationContext` the same as
+// `context`.
 ACTION_P5(VerifyReloadFinishedContext,
           web_state,
           url,
@@ -607,9 +607,9 @@ ACTION_P5(VerifyReloadFinishedContext,
   EXPECT_EQ(url, item->GetURL());
 }
 
-// Verifies correctness of |NavigationContext| (|arg1|) for download navigation
-// passed to |DidFinishNavigation|. Asserts that |NavigationContext| the same as
-// |context|.
+// Verifies correctness of `NavigationContext` (`arg1`) for download navigation
+// passed to `DidFinishNavigation`. Asserts that `NavigationContext` the same as
+// `context`.
 ACTION_P4(VerifyDownloadFinishedContext, web_state, url, context, nav_id) {
   ASSERT_EQ(*context, arg1);
   EXPECT_EQ(web_state, arg0);
@@ -629,9 +629,9 @@ ACTION_P4(VerifyDownloadFinishedContext, web_state, url, context, nav_id) {
   EXPECT_FALSE((*context)->IsRendererInitiated());
 }
 
-// Verifies correctness of |NavigationContext| (|arg1|) for restoration
-// navigation passed to |DidStartNavigation|. Stores |NavigationContext| in
-// |context| pointer.
+// Verifies correctness of `NavigationContext` (`arg1`) for restoration
+// navigation passed to `DidStartNavigation`. Stores `NavigationContext` in
+// `context` pointer.
 ACTION_P4(VerifyRestorationStartedContext, web_state, url, context, nav_id) {
   *context = arg1;
   ASSERT_TRUE(*context);
@@ -663,9 +663,9 @@ ACTION_P4(VerifyRestorationStartedContext, web_state, url, context, nav_id) {
   EXPECT_EQ(url, navigation_manager->GetPendingItem()->GetURL());
 }
 
-// Verifies correctness of |NavigationContext| (|arg1|) for restoration
-// navigation passed to |DidFinishNavigation|. Asserts that |NavigationContext|
-// the same as |context|.
+// Verifies correctness of `NavigationContext` (`arg1`) for restoration
+// navigation passed to `DidFinishNavigation`. Asserts that `NavigationContext`
+// the same as `context`.
 ACTION_P5(VerifyRestorationFinishedContext,
           web_state,
           url,
@@ -718,7 +718,7 @@ MATCHER_P(ResponseInfoMatch, expected_response_info, /*description=*/"") {
   return ::web::ResponseInfoMatch(expected_response_info, arg);
 }
 
-// A GMock matcher that matches |URL| member of |arg| with |expected_url|. |arg|
+// A GMock matcher that matches `URL` member of `arg` with `expected_url`. `arg`
 // is expected to be either an NSURLRequest or NSURLResponse.
 MATCHER_P(URLMatch, expected_url, /*description=*/"") {
   return expected_url == net::GURLWithNSURL(arg.URL);
@@ -956,14 +956,14 @@ TEST_F(WebStateObserverTest, AboutNewTabNavigation) {
   // Perform about://newtab navigation and immediately perform the second
   // navigation without waiting until the first navigation finishes.
 
-  // Load |first_url|.
+  // Load `first_url`.
   NavigationContext* context = nullptr;
   int32_t nav_id = 0;
   EXPECT_CALL(observer_, DidStartLoading(web_state()));
 
-  // WKWebView.URL will change from |first_url| to |second_url|, then to nil
+  // WKWebView.URL will change from `first_url` to `second_url`, then to nil
   // while WKWebView.loading changing to false and back to true immediately,
-  // then to |first_url| again and the first navigation will finish.
+  // then to `first_url` again and the first navigation will finish.
   EXPECT_CALL(observer_, DidStopLoading(web_state()));
   EXPECT_CALL(observer_, DidStartLoading(web_state()));
 
@@ -994,7 +994,7 @@ TEST_F(WebStateObserverTest, AboutNewTabNavigation) {
   EXPECT_CALL(observer_,
               PageLoaded(web_state(), PageLoadCompletionStatus::SUCCESS));
 
-  // Load |second_url|.
+  // Load `second_url`.
   EXPECT_CALL(*decider_, MockShouldAllowRequest(
                              _, RequestInfoMatch(expected_request_info), _))
       .WillOnce(
@@ -1015,7 +1015,7 @@ TEST_F(WebStateObserverTest, AboutNewTabNavigation) {
           &context, &nav_id));
   EXPECT_CALL(observer_, DidStopLoading(web_state()));
 
-  // Finish loading |second_url|.
+  // Finish loading `second_url`.
   __block bool page_loaded = false;
   EXPECT_CALL(observer_,
               PageLoaded(web_state(), PageLoadCompletionStatus::SUCCESS))
@@ -1862,10 +1862,10 @@ TEST_F(WebStateObserverTest, ReloadPostNavigation) {
   EXPECT_CALL(observer_, DidStopLoading(web_state()));
   EXPECT_CALL(observer_,
               PageLoaded(web_state(), PageLoadCompletionStatus::SUCCESS));
-  // TODO(crbug.com/700958): ios/web ignores |check_for_repost| flag and current
+  // TODO(crbug.com/700958): ios/web ignores `check_for_repost` flag and current
   // delegate does not run callback for ShowRepostFormWarningDialog. Clearing
   // the delegate will allow form resubmission. Remove this workaround (clearing
-  // the delegate, once |check_for_repost| is supported).
+  // the delegate, once `check_for_repost` is supported).
   web_state()->SetDelegate(nullptr);
   ASSERT_TRUE(ExecuteBlockAndWaitForLoad(action, ^{
     navigation_manager()->Reload(ReloadType::NORMAL,
@@ -1981,10 +1981,10 @@ TEST_F(WebStateObserverTest, ForwardPostNavigation) {
   EXPECT_CALL(observer_, DidStopLoading(web_state()));
   EXPECT_CALL(observer_,
               PageLoaded(web_state(), PageLoadCompletionStatus::SUCCESS));
-  // TODO(crbug.com/700958): ios/web ignores |check_for_repost| flag and current
+  // TODO(crbug.com/700958): ios/web ignores `check_for_repost` flag and current
   // delegate does not run callback for ShowRepostFormWarningDialog. Clearing
   // the delegate will allow form resubmission. Remove this workaround (clearing
-  // the delegate, once |check_for_repost| is supported).
+  // the delegate, once `check_for_repost` is supported).
   web_state()->SetDelegate(nullptr);
   ASSERT_TRUE(ExecuteBlockAndWaitForLoad(action, ^{
     navigation_manager()->GoForward();
@@ -2159,12 +2159,12 @@ TEST_F(WebStateObserverTest, FailedSslConnection) {
   NavigationContext* context = nullptr;
   int32_t nav_id = 0;
   EXPECT_CALL(observer_, DidStartLoading(web_state()));
-  const WebStatePolicyDecider::RequestInfo request_info(
+  const WebStatePolicyDecider::RequestInfo request_info_explicit(
       ui::PageTransition::PAGE_TRANSITION_TYPED,
       /*target_main_frame=*/true, /*target_frame_is_cross_origin=*/false,
       /*has_user_gesture=*/false);
-  EXPECT_CALL(*decider_,
-              MockShouldAllowRequest(_, RequestInfoMatch(request_info), _))
+  EXPECT_CALL(*decider_, MockShouldAllowRequest(
+                             _, RequestInfoMatch(request_info_explicit), _))
       .WillOnce(
           RunOnceCallback<2>(WebStatePolicyDecider::PolicyDecision::Allow()));
   EXPECT_CALL(observer_, DidStartNavigation(web_state(), _))
@@ -2215,6 +2215,7 @@ TEST_F(WebStateObserverTest, DisallowRequestAndShowError) {
       ui::PageTransition::PAGE_TRANSITION_TYPED,
       /*target_main_frame=*/true, /*target_frame_is_cross_origin=*/false,
       /*has_user_gesture=*/false);
+
   NSError* error = [NSError errorWithDomain:net::kNSErrorDomain
                                        code:net::ERR_BLOCKED_BY_ADMINISTRATOR
                                    userInfo:nil];
@@ -2446,12 +2447,6 @@ TEST_F(WebStateObserverTest, StopFinishedNavigation) {
 
 // Tests that iframe navigation triggers DidChangeBackForwardState.
 TEST_F(WebStateObserverTest, IframeNavigation) {
-  // This test fails in iOS 13.4 but is fixed in iOS 14. See crbug.com//1076233.
-  if (base::ios::IsRunningOnOrLater(13, 4, 0) &&
-      !base::ios::IsRunningOnIOS14OrLater()) {
-    return;
-  }
-
   GURL url = test_server_->GetURL("/iframe_host.html");
 
   // Callbacks due to loading of the main frame.
@@ -2745,6 +2740,11 @@ TEST_F(WebStateObserverTest, NewPageLoadDestroysForwardItems) {
 // Tests callbacks for restoring session and subsequently going back to
 // about:blank.
 TEST_F(WebStateObserverTest, RestoreSessionOnline) {
+  if (@available(iOS 15, *)) {
+    // The bulk of this test is for managing the various client side redirects
+    // in legacy session restore, which is now deprecated in iOS15.
+    return;
+  }
   // Create a session of 3 items. Current item is at index 1.
   const GURL url0("about:blank");
   auto item0 = std::make_unique<NavigationItemImpl>();
@@ -2802,7 +2802,7 @@ TEST_F(WebStateObserverTest, RestoreSessionOnline) {
 
   EXPECT_CALL(observer_, DidStopLoading(web_state()));
 
-  // Client-side redirect to |url1|.
+  // Client-side redirect to `url1`.
   EXPECT_CALL(*decider_, MockShouldAllowRequest(URLMatch(url1), _, _))
       .WillOnce(
           RunOnceCallback<2>(WebStatePolicyDecider::PolicyDecision::Allow()));
@@ -2830,7 +2830,7 @@ TEST_F(WebStateObserverTest, RestoreSessionOnline) {
   ASSERT_TRUE(navigation_manager()->CanGoBack());
   ASSERT_TRUE(navigation_manager()->CanGoForward());
 
-  // Go back to |item0|.
+  // Go back to `item0`.
 
   EXPECT_CALL(observer_, DidStartLoading(web_state()));
   // Only CanGoBackward changes state on this navigation.
@@ -2849,7 +2849,7 @@ TEST_F(WebStateObserverTest, RestoreSessionOnline) {
 
   EXPECT_CALL(observer_, DidStopLoading(web_state()));
 
-  // Client-side redirect to |url0|.
+  // Client-side redirect to `url0`.
   EXPECT_CALL(*decider_, MockShouldAllowRequest(URLMatch(url0), _, _))
       .WillOnce(
           RunOnceCallback<2>(WebStatePolicyDecider::PolicyDecision::Allow()));

@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 #include <string>
 
 #include "chrome/browser/ash/attestation/tpm_challenge_key.h"
-#include "chromeos/dbus/constants/attestation_constants.h"
+#include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/common/extension.h"
 
@@ -35,7 +35,7 @@ class EPKPChallengeKey {
 
   // Asynchronously run the flow to challenge a key in the |caller|
   // context.
-  void Run(chromeos::attestation::AttestationKeyType type,
+  void Run(ash::attestation::AttestationKeyType type,
            scoped_refptr<ExtensionFunction> caller,
            ash::attestation::TpmChallengeKeyCallback callback,
            const std::string& challenge,

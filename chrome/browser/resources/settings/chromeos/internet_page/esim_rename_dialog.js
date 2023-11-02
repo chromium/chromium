@@ -1,6 +1,22 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+/**
+ * @fileoverview Polymer element to rename eSIM profile name
+ */
+
+import 'chrome://resources/ash/common/cellular_setup/cellular_setup_icons.html.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
+
+import {getESimProfile} from 'chrome://resources/ash/common/cellular_setup/esim_manager_utils.js';
+import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {ESimOperationResult, ESimProfileRemote} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
+import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /** @type {number} */
 const MAX_INPUT_LENGTH = 20;
@@ -13,84 +29,88 @@ const EMOJI_REGEX_EXP =
     /(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])/gi;
 
 /**
- * @fileoverview Polymer element to rename eSIM profile name
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
  */
+const EsimRenameDialogElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
-import {afterNextRender, Polymer, html, flush, Templatizer, TemplateInstanceBase} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+/** @polymer */
+class EsimRenameDialogElement extends EsimRenameDialogElementBase {
+  static get is() {
+    return 'esim-rename-dialog';
+  }
 
-import '//resources/cr_components/chromeos/cellular_setup/cellular_setup_icons.m.js';
-import {getPendingESimProfiles, getNonPendingESimProfiles, getNumESimProfiles, getEuicc, getESimProfile, getESimProfileProperties} from '//resources/cr_components/chromeos/cellular_setup/esim_manager_utils.m.js';
-import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
-import '//resources/cr_elements/cr_input/cr_input.m.js';
-import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
-import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'esim-rename-dialog',
+  static get properties() {
+    return {
+      /** Used to reference the MAX_INPUT_LENGTH constant in HTML. */
+      MAX_INPUT_LENGTH: {
+        type: Number,
+        value: MAX_INPUT_LENGTH,
+      },
 
-  behaviors: [
-    I18nBehavior,
-  ],
+      /** @type {?OncMojo.NetworkStateProperties} */
+      networkState: {
+        type: Object,
+        value: null,
+      },
 
-  properties: {
-    /** Used to reference the MAX_INPUT_LENGTH constant in HTML. */
-    MAX_INPUT_LENGTH: {
-      type: Number,
-      value: MAX_INPUT_LENGTH,
-    },
+      /** @type {boolean} */
+      showCellularDisconnectWarning: {
+        type: Boolean,
+        value: false,
+      },
 
-    /** @type {?OncMojo.NetworkStateProperties} */
-    networkState: {
-      type: Object,
-      value: null,
-    },
+      /** @private {string} */
+      esimProfileName_: {
+        type: String,
+        value: '',
+        observer: 'onEsimProfileNameChanged_',
+      },
 
-    /** @type {boolean} */
-    showCellularDisconnectWarning: {
-      type: Boolean,
-      value: false,
-    },
+      /** @private {string} */
+      errorMessage_: {
+        type: String,
+        value: '',
+      },
 
-    /** @private {string} */
-    esimProfileName_: {
-      type: String,
-      value: '',
-      observer: 'onEsimProfileNameChanged_',
-    },
+      /** @private {boolean} */
+      isRenameInProgress_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /** @private {string} */
-    errorMessage_: {
-      type: String,
-      value: '',
-    },
+      /** @private {boolean} */
+      isInputInvalid_: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
 
-    /** @private {boolean} */
-    isRenameInProgress_: {
-      type: Boolean,
-      value: false,
-    },
+  constructor() {
+    super();
 
-    /** @private {boolean} */
-    isInputInvalid_: {
-      type: Boolean,
-      value: false,
-    },
-  },
-
-  /** @private {?chromeos.cellularSetup.mojom.ESimProfileRemote} */
-  esimProfileRemote_: null,
+    /** @private {?ESimProfileRemote} */
+    this.esimProfileRemote_ = null;
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     this.init_();
-  },
+  }
 
   /** @private */
   async init_() {
     if (!(this.networkState &&
-          this.networkState.type ===
-              chromeos.networkConfig.mojom.NetworkType.kCellular)) {
+          this.networkState.type === NetworkType.kCellular)) {
       return;
     }
     this.esimProfileRemote_ =
@@ -102,9 +122,9 @@ Polymer({
     this.esimProfileName_ = this.networkState.name;
 
     if (!this.errorMessage_) {
-      this.$$('#eSimprofileName').focus();
+      this.shadowRoot.querySelector('#eSimprofileName').focus();
     }
-  },
+  }
 
   /**
    * Converts a mojoBase.mojom.String16 to a JavaScript String.
@@ -113,7 +133,7 @@ Polymer({
    */
   convertString16ToJSString_(str) {
     return str.data.map(ch => String.fromCodePoint(ch)).join('');
-  },
+  }
 
   /**
    * @param {Event} event
@@ -135,20 +155,24 @@ Polymer({
     this.esimProfileRemote_.setProfileNickname(name).then(response => {
       this.handleSetProfileNicknameResponse_(response.result);
     });
-  },
+  }
 
   /**
-   * @param {chromeos.cellularSetup.mojom.ESimOperationResult} result
+   * @param {ESimOperationResult} result
    * @private
    */
   handleSetProfileNicknameResponse_(result) {
     this.isRenameInProgress_ = false;
-    if (result === chromeos.cellularSetup.mojom.ESimOperationResult.kFailure) {
-      this.fire(
-          'show-error-toast', this.i18n('eSimRenameProfileDialogErrorToast'));
+    if (result === ESimOperationResult.kFailure) {
+      const showErrorToastEvent = new CustomEvent('show-error-toast', {
+        bubbles: true,
+        composed: true,
+        detail: this.i18n('eSimRenameProfileDialogError'),
+      });
+      this.dispatchEvent(showErrorToastEvent);
     }
     this.$.profileRenameDialog.close();
-  },
+  }
 
   /**
    * @param {Event} event
@@ -156,7 +180,7 @@ Polymer({
    */
   onCancelTap_(event) {
     this.$.profileRenameDialog.close();
-  },
+  }
 
   /**
    * Observer for esimProfileName_ that sanitizes its value by removing any
@@ -183,7 +207,7 @@ Polymer({
 
     // Truncate the name to MAX_INPUT_LENGTH.
     this.esimProfileName_ = sanitizedProfileName.substring(0, MAX_INPUT_LENGTH);
-  },
+  }
 
   /**
    * @param {boolean} isInputInvalid
@@ -192,7 +216,7 @@ Polymer({
    */
   getInputInfoClass_(isInputInvalid) {
     return isInputInvalid ? 'error' : '';
-  },
+  }
 
   /**
    * Returns a formatted string containing the current number of characters
@@ -209,7 +233,7 @@ Polymer({
         esimProfileName.length.toLocaleString(
             /*locales=*/ undefined, {minimumIntegerDigits: 2}),
         MAX_INPUT_LENGTH.toLocaleString());
-  },
+  }
 
   /**
    * @param {boolean} isRenameInProgress
@@ -222,7 +246,7 @@ Polymer({
       return true;
     }
     return esimProfileName.length < MIN_INPUT_LENGTH;
-  },
+  }
 
   /**
    * @param {string} esimProfileName
@@ -232,4 +256,6 @@ Polymer({
   getDoneBtnA11yLabel_(esimProfileName) {
     return this.i18n('eSimRenameProfileDoneBtnA11yLabel', esimProfileName);
   }
-});
+}
+
+customElements.define(EsimRenameDialogElement.is, EsimRenameDialogElement);

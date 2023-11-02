@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -74,11 +74,7 @@ public class CustomTabCompositorContentInitializer implements NativeInitObserver
         // clang-format off
         LayoutManagerImpl layoutDriver = new LayoutManagerImpl(mCompositorViewHolder.get(),
                 contentContainer, mTabContentManagerSupplier,
-                () -> {
-                    if (mCompositorViewHolder.get() == null) return null;
-                    return mCompositorViewHolder.get().getLayerTitleCache();
-                },
-                () -> mTopUiThemeColorProvider);
+            () -> mTopUiThemeColorProvider);
         // clang-format on
 
         mCompositorViewHolderInitializer.initializeCompositorContent(layoutDriver,

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,27 +7,14 @@
 #include <memory>
 
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/page_load_metrics/observers/page_load_metrics_observer_test_harness.h"
-#include "components/data_reduction_proxy/core/browser/data_reduction_proxy_settings.h"
-#include "components/data_reduction_proxy/core/common/data_reduction_proxy_switches.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
 #include "components/page_load_metrics/common/test/page_load_metrics_test_util.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source.h"
-
-namespace {
-
-page_load_metrics::mojom::ResourceDataUpdatePtr CreateBaseResource(
-    bool was_cached,
-    bool is_complete) {
-  return CreateResource(was_cached, 1234 /* delta_bytes */,
-                        1234 /* encoded_body_length */,
-                        1234 /* decoded_body_length */, is_complete);
-}
-
-}  // namespace
 
 class TestPrefetchProxyPageLoadMetricsObserver
     : public PrefetchProxyPageLoadMetricsObserver {
@@ -86,42 +73,6 @@ class PrefetchProxyPageLoadMetricsObserverTest
     EXPECT_EQ(*value, expected_value.value());
   }
 
-  page_load_metrics::mojom::ResourceDataUpdatePtr CreateCSSResource(
-      bool was_cached,
-      bool is_complete,
-      bool completed_before_fcp) {
-    page_load_metrics::mojom::ResourceDataUpdatePtr update =
-        CreateBaseResource(was_cached, is_complete);
-    update->mime_type = "text/css";
-    update->is_main_frame_resource = in_main_frame_;
-    update->completed_before_fcp = completed_before_fcp;
-    return update;
-  }
-
-  page_load_metrics::mojom::ResourceDataUpdatePtr CreateJSResource(
-      bool was_cached,
-      bool is_complete,
-      bool completed_before_fcp) {
-    page_load_metrics::mojom::ResourceDataUpdatePtr update =
-        CreateBaseResource(was_cached, is_complete);
-    update->mime_type = "text/javascript";
-    update->is_main_frame_resource = in_main_frame_;
-    update->completed_before_fcp = completed_before_fcp;
-    return update;
-  }
-
-  page_load_metrics::mojom::ResourceDataUpdatePtr CreateOtherResource(
-      bool was_cached,
-      bool is_complete,
-      bool completed_before_fcp) {
-    page_load_metrics::mojom::ResourceDataUpdatePtr update =
-        CreateBaseResource(was_cached, is_complete);
-    update->mime_type = "other";
-    update->is_main_frame_resource = in_main_frame_;
-    update->completed_before_fcp = completed_before_fcp;
-    return update;
-  }
-
  protected:
   void RegisterObservers(page_load_metrics::PageLoadTracker* tracker) override {
     std::unique_ptr<TestPrefetchProxyPageLoadMetricsObserver> observer =
@@ -146,306 +97,19 @@ class PrefetchProxyPageLoadMetricsObserverTest
     PopulateRequiredTimingFields(&timing_);
   }
 
-  TestPrefetchProxyPageLoadMetricsObserver* plm_observer_ = nullptr;
+  raw_ptr<TestPrefetchProxyPageLoadMetricsObserver> plm_observer_ = nullptr;
   page_load_metrics::mojom::PageLoadTiming timing_;
 
   GURL navigation_url_{"https://chromium.org"};
   bool in_main_frame_ = true;
 };
 
-TEST_F(PrefetchProxyPageLoadMetricsObserverTest, BeforeFCP_CSS) {
-  StartTest();
-
-  std::vector<page_load_metrics::mojom::ResourceDataUpdatePtr> resources;
-  resources.push_back(CreateCSSResource(true /* was_cached */,
-                                        true /* is_complete */,
-                                        true /* completed_before_fcp */));
-  resources.push_back(CreateCSSResource(true /* was_cached */,
-                                        true /* is_complete */,
-                                        true /* completed_before_fcp */));
-  resources.push_back(CreateCSSResource(true /* was_cached */,
-                                        true /* is_complete */,
-                                        true /* completed_before_fcp */));
-
-  resources.push_back(CreateCSSResource(false /* was_cached */,
-                                        true /* is_complete */,
-                                        true /* completed_before_fcp */));
-  resources.push_back(CreateCSSResource(false /* was_cached */,
-                                        true /* is_complete */,
-                                        true /* completed_before_fcp */));
-
-  tester()->SimulateResourceDataUseUpdate(resources);
-  tester()->NavigateToUntrackedUrl();
-
-  tester()->histogram_tester().ExpectUniqueSample(
-      "PageLoad.Clients.SubresourceLoading.LoadedCSSJSBeforeFCP.Noncached", 2,
-      1);
-  tester()->histogram_tester().ExpectUniqueSample(
-      "PageLoad.Clients.SubresourceLoading.LoadedCSSJSBeforeFCP.Cached", 3, 1);
-
-  using UkmEntry = ukm::builders::PrefetchProxy;
-  VerifyUKMEntry(UkmEntry::kcount_css_js_loaded_network_before_fcpName, 2);
-  VerifyUKMEntry(UkmEntry::kcount_css_js_loaded_cache_before_fcpName, 3);
-}
-
-TEST_F(PrefetchProxyPageLoadMetricsObserverTest, BeforeFCP_JS) {
-  StartTest();
-
-  std::vector<page_load_metrics::mojom::ResourceDataUpdatePtr> resources;
-  resources.push_back(CreateJSResource(true /* was_cached */,
-                                       true /* is_complete */,
-                                       true /* completed_before_fcp */));
-  resources.push_back(CreateJSResource(true /* was_cached */,
-                                       true /* is_complete */,
-                                       true /* completed_before_fcp */));
-  resources.push_back(CreateJSResource(true /* was_cached */,
-                                       true /* is_complete */,
-                                       true /* completed_before_fcp */));
-
-  resources.push_back(CreateJSResource(false /* was_cached */,
-                                       true /* is_complete */,
-                                       true /* completed_before_fcp */));
-  resources.push_back(CreateJSResource(false /* was_cached */,
-                                       true /* is_complete */,
-                                       true /* completed_before_fcp */));
-
-  tester()->SimulateResourceDataUseUpdate(resources);
-  tester()->NavigateToUntrackedUrl();
-
-  tester()->histogram_tester().ExpectUniqueSample(
-      "PageLoad.Clients.SubresourceLoading.LoadedCSSJSBeforeFCP.Noncached", 2,
-      1);
-  tester()->histogram_tester().ExpectUniqueSample(
-      "PageLoad.Clients.SubresourceLoading.LoadedCSSJSBeforeFCP.Cached", 3, 1);
-
-  using UkmEntry = ukm::builders::PrefetchProxy;
-  VerifyUKMEntry(UkmEntry::kcount_css_js_loaded_network_before_fcpName, 2);
-  VerifyUKMEntry(UkmEntry::kcount_css_js_loaded_cache_before_fcpName, 3);
-}
-
-TEST_F(PrefetchProxyPageLoadMetricsObserverTest, BeforeFCP_Other) {
-  StartTest();
-
-  std::vector<page_load_metrics::mojom::ResourceDataUpdatePtr> resources;
-  resources.push_back(CreateOtherResource(true /* was_cached */,
-                                          true /* is_complete */,
-                                          true /* completed_before_fcp */));
-  resources.push_back(CreateOtherResource(true /* was_cached */,
-                                          true /* is_complete */,
-                                          true /* completed_before_fcp */));
-  resources.push_back(CreateOtherResource(true /* was_cached */,
-                                          true /* is_complete */,
-                                          true /* completed_before_fcp */));
-
-  resources.push_back(CreateOtherResource(false /* was_cached */,
-                                          true /* is_complete */,
-                                          true /* completed_before_fcp */));
-  resources.push_back(CreateOtherResource(false /* was_cached */,
-                                          true /* is_complete */,
-                                          true /* completed_before_fcp */));
-
-  tester()->SimulateResourceDataUseUpdate(resources);
-  tester()->NavigateToUntrackedUrl();
-
-  tester()->histogram_tester().ExpectUniqueSample(
-      "PageLoad.Clients.SubresourceLoading.LoadedCSSJSBeforeFCP.Noncached", 0,
-      1);
-  tester()->histogram_tester().ExpectUniqueSample(
-      "PageLoad.Clients.SubresourceLoading.LoadedCSSJSBeforeFCP.Cached", 0, 1);
-
-  using UkmEntry = ukm::builders::PrefetchProxy;
-  VerifyUKMEntry(UkmEntry::kcount_css_js_loaded_network_before_fcpName, 0);
-  VerifyUKMEntry(UkmEntry::kcount_css_js_loaded_cache_before_fcpName, 0);
-}
-
-TEST_F(PrefetchProxyPageLoadMetricsObserverTest, BeforeFCP_NotComplete) {
-  StartTest();
-
-  std::vector<page_load_metrics::mojom::ResourceDataUpdatePtr> resources;
-  resources.push_back(CreateCSSResource(true /* was_cached */,
-                                        false /* is_complete */,
-                                        false /* completed_before_fcp */));
-  resources.push_back(CreateCSSResource(true /* was_cached */,
-                                        false /* is_complete */,
-                                        false /* completed_before_fcp */));
-  resources.push_back(CreateCSSResource(true /* was_cached */,
-                                        false /* is_complete */,
-                                        false /* completed_before_fcp */));
-
-  resources.push_back(CreateCSSResource(false /* was_cached */,
-                                        false /* is_complete */,
-                                        false /* completed_before_fcp */));
-  resources.push_back(CreateCSSResource(false /* was_cached */,
-                                        false /* is_complete */,
-                                        false /* completed_before_fcp */));
-
-  tester()->SimulateResourceDataUseUpdate(resources);
-  tester()->NavigateToUntrackedUrl();
-
-  tester()->histogram_tester().ExpectUniqueSample(
-      "PageLoad.Clients.SubresourceLoading.LoadedCSSJSBeforeFCP.Noncached", 0,
-      1);
-  tester()->histogram_tester().ExpectUniqueSample(
-      "PageLoad.Clients.SubresourceLoading.LoadedCSSJSBeforeFCP.Cached", 0, 1);
-
-  using UkmEntry = ukm::builders::PrefetchProxy;
-  VerifyUKMEntry(UkmEntry::kcount_css_js_loaded_network_before_fcpName, 0);
-  VerifyUKMEntry(UkmEntry::kcount_css_js_loaded_cache_before_fcpName, 0);
-}
-
-TEST_F(PrefetchProxyPageLoadMetricsObserverTest, BeforeFCP_Subframe) {
-  StartTest();
-  set_in_main_frame(false);
-
-  std::vector<page_load_metrics::mojom::ResourceDataUpdatePtr> resources;
-  resources.push_back(CreateCSSResource(true /* was_cached */,
-                                        true /* is_complete */,
-                                        true /* completed_before_fcp */));
-  resources.push_back(CreateCSSResource(true /* was_cached */,
-                                        true /* is_complete */,
-                                        true /* completed_before_fcp */));
-  resources.push_back(CreateCSSResource(true /* was_cached */,
-                                        true /* is_complete */,
-                                        true /* completed_before_fcp */));
-
-  resources.push_back(CreateCSSResource(false /* was_cached */,
-                                        true /* is_complete */,
-                                        true /* completed_before_fcp */));
-  resources.push_back(CreateCSSResource(false /* was_cached */,
-                                        true /* is_complete */,
-                                        true /* completed_before_fcp */));
-
-  tester()->SimulateResourceDataUseUpdate(resources);
-  tester()->NavigateToUntrackedUrl();
-
-  tester()->histogram_tester().ExpectUniqueSample(
-      "PageLoad.Clients.SubresourceLoading.LoadedCSSJSBeforeFCP.Noncached", 0,
-      1);
-  tester()->histogram_tester().ExpectUniqueSample(
-      "PageLoad.Clients.SubresourceLoading.LoadedCSSJSBeforeFCP.Cached", 0, 1);
-
-  using UkmEntry = ukm::builders::PrefetchProxy;
-  VerifyUKMEntry(UkmEntry::kcount_css_js_loaded_network_before_fcpName, 0);
-  VerifyUKMEntry(UkmEntry::kcount_css_js_loaded_cache_before_fcpName, 0);
-}
-
-TEST_F(PrefetchProxyPageLoadMetricsObserverTest, AfterFCP) {
-  StartTest();
-
-  std::vector<page_load_metrics::mojom::ResourceDataUpdatePtr> resources;
-  resources.push_back(CreateCSSResource(true /* was_cached */,
-                                        true /* is_complete */,
-                                        false /* completed_before_fcp */));
-  resources.push_back(CreateCSSResource(true /* was_cached */,
-                                        true /* is_complete */,
-                                        false /* completed_before_fcp */));
-  resources.push_back(CreateCSSResource(true /* was_cached */,
-                                        true /* is_complete */,
-                                        false /* completed_before_fcp */));
-
-  resources.push_back(CreateCSSResource(false /* was_cached */,
-                                        true /* is_complete */,
-                                        false /* completed_before_fcp */));
-  resources.push_back(CreateCSSResource(false /* was_cached */,
-                                        true /* is_complete */,
-                                        false /* completed_before_fcp */));
-
-  tester()->SimulateResourceDataUseUpdate(resources);
-  tester()->NavigateToUntrackedUrl();
-
-  tester()->histogram_tester().ExpectUniqueSample(
-      "PageLoad.Clients.SubresourceLoading.LoadedCSSJSBeforeFCP.Noncached", 0,
-      1);
-  tester()->histogram_tester().ExpectUniqueSample(
-      "PageLoad.Clients.SubresourceLoading.LoadedCSSJSBeforeFCP.Cached", 0, 1);
-
-  using UkmEntry = ukm::builders::PrefetchProxy;
-  VerifyUKMEntry(UkmEntry::kcount_css_js_loaded_network_before_fcpName, 0);
-  VerifyUKMEntry(UkmEntry::kcount_css_js_loaded_cache_before_fcpName, 0);
-}
-
-TEST_F(PrefetchProxyPageLoadMetricsObserverTest, BeforeFCP_MaxUKM) {
-  StartTest();
-
-  std::vector<page_load_metrics::mojom::ResourceDataUpdatePtr> resources;
-  resources.push_back(CreateCSSResource(true /* was_cached */,
-                                        true /* is_complete */,
-                                        true /* completed_before_fcp */));
-  resources.push_back(CreateCSSResource(true /* was_cached */,
-                                        true /* is_complete */,
-                                        true /* completed_before_fcp */));
-  resources.push_back(CreateCSSResource(true /* was_cached */,
-                                        true /* is_complete */,
-                                        true /* completed_before_fcp */));
-  resources.push_back(CreateCSSResource(true /* was_cached */,
-                                        true /* is_complete */,
-                                        true /* completed_before_fcp */));
-  resources.push_back(CreateCSSResource(true /* was_cached */,
-                                        true /* is_complete */,
-                                        true /* completed_before_fcp */));
-  resources.push_back(CreateCSSResource(true /* was_cached */,
-                                        true /* is_complete */,
-                                        true /* completed_before_fcp */));
-  resources.push_back(CreateCSSResource(true /* was_cached */,
-                                        true /* is_complete */,
-                                        true /* completed_before_fcp */));
-  resources.push_back(CreateCSSResource(true /* was_cached */,
-                                        true /* is_complete */,
-                                        true /* completed_before_fcp */));
-  resources.push_back(CreateCSSResource(true /* was_cached */,
-                                        true /* is_complete */,
-                                        true /* completed_before_fcp */));
-  resources.push_back(CreateCSSResource(true /* was_cached */,
-                                        true /* is_complete */,
-                                        true /* completed_before_fcp */));
-  resources.push_back(CreateCSSResource(true /* was_cached */,
-                                        true /* is_complete */,
-                                        true /* completed_before_fcp */));
-
-  tester()->SimulateResourceDataUseUpdate(resources);
-  tester()->NavigateToUntrackedUrl();
-
-  tester()->histogram_tester().ExpectUniqueSample(
-      "PageLoad.Clients.SubresourceLoading.LoadedCSSJSBeforeFCP.Noncached", 0,
-      1);
-  tester()->histogram_tester().ExpectUniqueSample(
-      "PageLoad.Clients.SubresourceLoading.LoadedCSSJSBeforeFCP.Cached", 11, 1);
-
-  using UkmEntry = ukm::builders::PrefetchProxy;
-  VerifyUKMEntry(UkmEntry::kcount_css_js_loaded_network_before_fcpName, 0);
-  VerifyUKMEntry(UkmEntry::kcount_css_js_loaded_cache_before_fcpName, 10);
-}
-
 TEST_F(PrefetchProxyPageLoadMetricsObserverTest, DontRecordForNonHttp) {
   set_navigation_url(GURL("chrome://version"));
 
   StartTest();
 
-  std::vector<page_load_metrics::mojom::ResourceDataUpdatePtr> resources;
-  resources.push_back(CreateCSSResource(true /* was_cached */,
-                                        true /* is_complete */,
-                                        true /* completed_before_fcp */));
-  resources.push_back(CreateCSSResource(true /* was_cached */,
-                                        true /* is_complete */,
-                                        true /* completed_before_fcp */));
-  resources.push_back(CreateCSSResource(true /* was_cached */,
-                                        true /* is_complete */,
-                                        true /* completed_before_fcp */));
-
-  resources.push_back(CreateCSSResource(false /* was_cached */,
-                                        true /* is_complete */,
-                                        true /* completed_before_fcp */));
-  resources.push_back(CreateCSSResource(false /* was_cached */,
-                                        true /* is_complete */,
-                                        true /* completed_before_fcp */));
-
-  tester()->SimulateResourceDataUseUpdate(resources);
   tester()->NavigateToUntrackedUrl();
-
-  tester()->histogram_tester().ExpectTotalCount(
-      "PageLoad.Clients.SubresourceLoading.LoadedCSSJSBeforeFCP.Noncached", 0);
-  tester()->histogram_tester().ExpectTotalCount(
-      "PageLoad.Clients.SubresourceLoading.LoadedCSSJSBeforeFCP.Cached", 0);
 
   VerifyNoUKM();
 }

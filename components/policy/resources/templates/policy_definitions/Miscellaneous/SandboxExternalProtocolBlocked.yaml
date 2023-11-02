@@ -1,0 +1,35 @@
+caption: Allow Chrome to block navigations toward external protocols in sandboxed
+  iframes
+default: true
+desc: "Chrome will block navigations toward external protocols inside\n      sandboxed\
+  \ iframe. See https://chromestatus.com/features/5680742077038592.\n\n      When\
+  \ True, this lets Chrome blocks those navigations.\n\n      When False, this prevents\
+  \ Chrome from blocking those navigations.\n\n      This defaults to True: security\
+  \ feature enabled.\n\n      This can be used by administrators who need more time\
+  \ to update their internal website affected by this new restriction. This Enterprise\
+  \ policy is temporary; it's intended to be removed after <ph name=\"PRODUCT_NAME\"\
+  >$1<ex>Google Chrome</ex></ph> version 117.\n      "
+device_only: false
+example_value: true
+features:
+  dynamic_refresh: false
+  per_profile: true
+future_on:
+- fuchsia
+items:
+- caption: Allow Chrome to block navigations to external protocols inside sandboxed
+    iframe
+  value: true
+- caption: Prevent Chrome to block navigations to external protocols inside sandboxed
+    iframe
+  value: false
+owners:
+- arthursonzogni@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome.*:96-
+- chrome_os:96-
+tags:
+- system-security
+type: main

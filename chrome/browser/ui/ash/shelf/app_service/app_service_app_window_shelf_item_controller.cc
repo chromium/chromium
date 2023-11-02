@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "components/favicon/content/content_favicon_driver.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/app_window/native_app_window.h"
@@ -50,10 +50,12 @@ void AppServiceAppWindowShelfItemController::ItemSelected(
         Profile* profile = ChromeShelfController::instance()->profile();
         arc::ArcPipBridge* pip_bridge =
             arc::ArcPipBridge::GetForBrowserContext(profile);
-        // ClosePip() actually expands PIP.
-        pip_bridge->ClosePip();
-        std::move(callback).Run(ash::SHELF_ACTION_NONE, {});
-        return;
+        if (pip_bridge) {
+          // ClosePip() actually expands PIP.
+          pip_bridge->ClosePip();
+          std::move(callback).Run(ash::SHELF_ACTION_NONE, {});
+          return;
+        }
       }
     }
     AppWindowShelfItemController::ItemSelected(std::move(event), display_id,
@@ -189,5 +191,5 @@ bool AppServiceAppWindowShelfItemController::IsChromeApp() {
   Profile* const profile = ChromeShelfController::instance()->profile();
   return apps::AppServiceProxyFactory::GetForProfile(profile)
              ->AppRegistryCache()
-             .GetAppType(shelf_id().app_id) == apps::mojom::AppType::kExtension;
+             .GetAppType(shelf_id().app_id) == apps::AppType::kChromeApp;
 }

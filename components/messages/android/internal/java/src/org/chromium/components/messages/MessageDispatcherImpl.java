@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,7 +42,9 @@ public class MessageDispatcherImpl implements ManagedMessageDispatcher {
             MessageAutodismissDurationProvider autodismissDurationProvider,
             Callback<Animator> animatorStartCallback, WindowAndroid windowAndroid) {
         this(messageContainer, messageMaxTranslation, autodismissDurationProvider,
-                animatorStartCallback, windowAndroid, new MessageQueueManager());
+                animatorStartCallback, windowAndroid,
+                new MessageQueueManager(
+                        new MessageAnimationCoordinator(messageContainer, animatorStartCallback)));
     }
 
     @VisibleForTesting

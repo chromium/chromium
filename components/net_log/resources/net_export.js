@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@ import 'chrome://resources/js/ios/web_ui.js';
 // </if>
 
 import {addSingletonGetter, addWebUIListener} from 'chrome://resources/js/cr.m.js';
-import {$} from 'chrome://resources/js/util.m.js';
+import {$} from 'chrome://resources/js/util.js';
 
 /**
  * Main entry point called once the page has loaded.
@@ -284,8 +284,10 @@ class NetExportView {
 
   showStateDiv_(divId) {
     const kAllDivIds = [
-      kIdStateDivUninitialized, kIdStateDivInitial, kIdStateDivLogging,
-      kIdStateDivStopped
+      kIdStateDivUninitialized,
+      kIdStateDivInitial,
+      kIdStateDivLogging,
+      kIdStateDivStopped,
     ];
 
     for (const curDivId of kAllDivIds) {

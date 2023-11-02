@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,7 +27,9 @@ GpuMemoryBufferFactoryDXGI::~GpuMemoryBufferFactoryDXGI() = default;
 Microsoft::WRL::ComPtr<ID3D11Device>
 GpuMemoryBufferFactoryDXGI::GetOrCreateD3D11Device() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (!d3d11_device_) {
+  if (!d3d11_device_ || FAILED(d3d11_device_->GetDeviceRemovedReason())) {
+    // Reset device if it was removed.
+    d3d11_device_ = nullptr;
     // Use same adapter as ANGLE device.
     auto angle_d3d11_device = gl::QueryD3D11DeviceObjectFromANGLE();
     if (!angle_d3d11_device) {
@@ -66,7 +68,7 @@ GpuMemoryBufferFactoryDXGI::GetOrCreateD3D11Device() {
 
     hr = D3D11CreateDevice(dxgi_adapter.Get(), driver_type,
                            /*Software=*/nullptr, flags, feature_levels,
-                           base::size(feature_levels), D3D11_SDK_VERSION,
+                           std::size(feature_levels), D3D11_SDK_VERSION,
                            &d3d11_device_, /*pFeatureLevel=*/nullptr,
                            /*ppImmediateContext=*/nullptr);
     if (FAILED(hr)) {
@@ -168,9 +170,13 @@ bool GpuMemoryBufferFactoryDXGI::FillSharedMemoryRegionWithBufferContents(
   if (!d3d11_device)
     return false;
 
+  base::WritableSharedMemoryMapping mapping = shared_memory.Map();
+  if (!mapping.IsValid())
+    return false;
+
   return CopyDXGIBufferToShMem(buffer_handle.dxgi_handle.Get(),
-                               std::move(shared_memory), d3d11_device.Get(),
-                               &staging_texture_);
+                               mapping.GetMemoryAsSpan<uint8_t>(),
+                               d3d11_device.Get(), &staging_texture_);
 }
 
 ImageFactory* GpuMemoryBufferFactoryDXGI::AsImageFactory() {
@@ -182,6 +188,7 @@ GpuMemoryBufferFactoryDXGI::CreateImageForGpuMemoryBuffer(
     gfx::GpuMemoryBufferHandle handle,
     const gfx::Size& size,
     gfx::BufferFormat format,
+    const gfx::ColorSpace& color_space,
     gfx::BufferPlane plane,
     int client_id,
     SurfaceHandle surface_handle) {
@@ -191,6 +198,8 @@ GpuMemoryBufferFactoryDXGI::CreateImageForGpuMemoryBuffer(
     return nullptr;
   // Transfer ownership of handle to GLImageDXGI.
   auto image = base::MakeRefCounted<gl::GLImageDXGI>(size, nullptr);
+  if (color_space.IsValid())
+    image->SetColorSpace(color_space);
   if (!image->InitializeHandle(std::move(handle.dxgi_handle), 0, format))
     return nullptr;
   return image;

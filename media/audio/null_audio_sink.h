@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,8 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "media/base/audio_renderer_sink.h"
 
 namespace base {
@@ -59,7 +61,7 @@ class MEDIA_EXPORT NullAudioSink : public SwitchableAudioRendererSink {
   bool initialized_;
   bool started_;
   bool playing_;
-  RenderCallback* callback_;
+  raw_ptr<RenderCallback> callback_;
 
   // Controls whether or not a running hash is computed for audio frames.
   std::unique_ptr<AudioHash> audio_hash_;

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -48,7 +48,6 @@ void NormalGetUpdatesDelegate::HelpPopulateGuMessage(
     DCHECK(!nudge_tracker_.IsTypeBlocked(type))
         << "Throttled types should have been removed from the request_types.";
 
-    nudge_tracker_.SetLegacyNotificationHint(type, progress_marker);
     nudge_tracker_.FillProtoMessage(
         type, progress_marker->mutable_get_update_triggers());
   }

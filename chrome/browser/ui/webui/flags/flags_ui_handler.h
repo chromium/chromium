@@ -1,4 +1,4 @@
-// Copyright (c) 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,23 +43,23 @@ class FlagsUIHandler : public content::WebUIMessageHandler {
   void RegisterMessages() override;
 
   // Callback for the "requestExperimentFeatures" message.
-  void HandleRequestExperimentalFeatures(const base::ListValue* args);
+  void HandleRequestExperimentalFeatures(const base::Value::List& args);
 
   // Callback for the "enableExperimentalFeature" message.
-  void HandleEnableExperimentalFeatureMessage(const base::ListValue* args);
+  void HandleEnableExperimentalFeatureMessage(const base::Value::List& args);
 
   // Callback for the "setOriginListFlag" message.
-  void HandleSetOriginListFlagMessage(const base::ListValue* args);
+  void HandleSetOriginListFlagMessage(const base::Value::List& args);
 
   // Callback for the "restartBrowser" message. Restores all tabs on restart.
-  void HandleRestartBrowser(const base::ListValue* args);
+  void HandleRestartBrowser(const base::Value::List& args);
 
   // Callback for the "resetAllFlags" message.
-  void HandleResetAllFlags(const base::ListValue* args);
+  void HandleResetAllFlags(const base::Value::List& args);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   // Callback for the "CrosUrlFlagsRedirect" message.
-  void HandleCrosUrlFlagsRedirect(const base::ListValue* args);
+  void HandleCrosUrlFlagsRedirect(const base::Value::List& args);
 #endif
 
  private:

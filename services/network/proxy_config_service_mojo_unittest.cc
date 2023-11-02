@@ -1,10 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "services/network/proxy_config_service_mojo.h"
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "net/proxy_resolution/proxy_config.h"
 #include "net/proxy_resolution/proxy_config_service.h"
@@ -62,7 +62,7 @@ class TestProxyConfigServiceObserver
  private:
   net::ProxyConfigWithAnnotation observed_config_;
 
-  net::ProxyConfigService* const service_;
+  const raw_ptr<net::ProxyConfigService> service_;
   int config_changes_ = 0;
 };
 

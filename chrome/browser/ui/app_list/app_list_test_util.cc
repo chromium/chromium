@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include "base/files/file_path.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager_impl.h"
-#include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/test_web_app_url_loader.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -17,6 +16,8 @@
 #include "components/crx_file/id_util.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension_set.h"
+
+namespace app_list {
 
 const char AppListTestBase::kHostedAppId[] = "dceacbkfkmllgmjmbhgkpjegnodmildf";
 const char AppListTestBase::kPackagedApp1Id[] =
@@ -29,6 +30,10 @@ AppListTestBase::AppListTestBase() {}
 AppListTestBase::~AppListTestBase() {}
 
 void AppListTestBase::SetUp() {
+  SetUp(/*guest_mode=*/false);
+}
+
+void AppListTestBase::SetUp(bool guest_mode) {
   extensions::ExtensionServiceTestBase::SetUp();
 
   // Load "app_list" extensions test profile.
@@ -40,7 +45,9 @@ void AppListTestBase::SetUp() {
       data_dir().AppendASCII("app_list").AppendASCII("Extensions");
   base::FilePath pref_path =
       source_install_dir.DirName().Append(chrome::kPreferencesFilename);
-  InitializeInstalledExtensionService(pref_path, source_install_dir);
+  ExtensionServiceInitParams params;
+  params.profile_is_guest = guest_mode;
+  InitializeInstalledExtensionService(pref_path, source_install_dir, params);
   service_->Init();
 
   ConfigureWebAppProvider();
@@ -53,19 +60,20 @@ void AppListTestBase::SetUp() {
 }
 
 void AppListTestBase::ConfigureWebAppProvider() {
-  Profile* const profile = testing_profile();
+  Profile* testing_profile = profile();
 
   auto url_loader = std::make_unique<web_app::TestWebAppUrlLoader>();
   url_loader_ = url_loader.get();
 
   auto externally_managed_app_manager =
-      std::make_unique<web_app::ExternallyManagedAppManagerImpl>(profile);
+      std::make_unique<web_app::ExternallyManagedAppManagerImpl>(
+          testing_profile);
   externally_managed_app_manager->SetUrlLoaderForTesting(std::move(url_loader));
 
-  auto* const provider = web_app::FakeWebAppProvider::Get(profile);
+  auto* const provider = web_app::FakeWebAppProvider::Get(testing_profile);
   provider->SetExternallyManagedAppManager(
       std::move(externally_managed_app_manager));
-  web_app::test::AwaitStartWebAppProviderAndSubsystems(profile);
+  web_app::test::AwaitStartWebAppProviderAndSubsystems(testing_profile);
 }
 
 // Test util constants ---------------------------------------------------------
@@ -83,9 +91,9 @@ scoped_refptr<extensions::Extension> MakeApp(
     extensions::Extension::InitFromValueFlags flags) {
   std::string err;
   base::DictionaryValue value;
-  value.SetString("name", name);
-  value.SetString("version", "0.0");
-  value.SetString("app.launch.web_url", "http://google.com");
+  value.SetStringKey("name", name);
+  value.SetStringKey("version", "0.0");
+  value.SetStringPath("app.launch.web_url", "http://google.com");
   scoped_refptr<extensions::Extension> app = extensions::Extension::Create(
       base::FilePath(), extensions::mojom::ManifestLocation::kInternal, value,
       flags, id, &err);
@@ -129,3 +137,5 @@ syncer::SyncData CreateAppRemoteData(
   return syncer::SyncData::CreateRemoteData(
       specifics, syncer::ClientTagHash::FromHashed("unused"));
 }
+
+}  // namespace app_list

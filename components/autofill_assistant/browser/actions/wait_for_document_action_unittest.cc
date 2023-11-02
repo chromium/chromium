@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -50,11 +50,11 @@ class WaitForDocumentActionTest : public testing::Test {
     *action_proto.mutable_wait_for_document() = proto_;
     action_ = std::make_unique<WaitForDocumentAction>(&mock_action_delegate_,
                                                       action_proto);
-    action_->ProcessAction(base::BindOnce(base::BindLambdaForTesting(
+    action_->ProcessAction(base::BindLambdaForTesting(
         [&](std::unique_ptr<ProcessedActionProto> result) {
           LOG(ERROR) << "Got Processed action Result";
           processed_action_ = *result;
-        })));
+        }));
   }
 
  protected:
@@ -62,6 +62,8 @@ class WaitForDocumentActionTest : public testing::Test {
   MockWebController mock_web_controller_;
   WaitForDocumentProto proto_;
   ProcessedActionProto processed_action_;
+
+ private:
   std::unique_ptr<WaitForDocumentAction> action_;
 };
 

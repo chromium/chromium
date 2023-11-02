@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_WORKERS_WORKER_OR_WORKLET_GLOBAL_SCOPE_H_
 
 #include <bitset>
+
 #include "base/task/single_thread_task_runner.h"
 #include "base/unguessable_token.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink-forward.h"
@@ -13,18 +14,19 @@
 #include "third_party/blink/public/mojom/loader/code_cache.mojom-forward.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
+#include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
-#include "third_party/blink/renderer/core/frame/deprecation.h"
+#include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/frame/web_feature_forward.h"
 #include "third_party/blink/renderer/core/loader/back_forward_cache_loader_helper_impl.h"
 #include "third_party/blink/renderer/core/script/modulator.h"
-#include "third_party/blink/renderer/core/workers/global_scope_creation_params.h"
 #include "third_party/blink/renderer/core/workers/worker_clients.h"
 #include "third_party/blink/renderer/core/workers/worker_navigator.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_scheduler.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
 #include "third_party/blink/renderer/platform/scheduler/public/worker_scheduler.h"
@@ -39,6 +41,7 @@ class ModuleTreeClient;
 class ResourceFetcher;
 class WorkerResourceTimingNotifier;
 class SubresourceFilter;
+class WebContentSettingsClient;
 class WebWorkerFetchContext;
 class WorkerOrWorkletScriptController;
 class WorkerReportingProxy;
@@ -53,6 +56,7 @@ class CORE_EXPORT WorkerOrWorkletGlobalScope
   WorkerOrWorkletGlobalScope(
       v8::Isolate*,
       scoped_refptr<SecurityOrigin> origin,
+      bool is_creator_secure_context,
       Agent* agent,
       const String& name,
       const base::UnguessableToken& parent_devtools_token,
@@ -78,7 +82,9 @@ class CORE_EXPORT WorkerOrWorkletGlobalScope
   bool IsWorkerOrWorkletGlobalScope() const final { return true; }
   bool IsJSExecutionForbidden() const final;
   void DisableEval(const String& error_message) final;
+  void SetWasmEvalErrorMessage(const String& error_message) final;
   bool CanExecuteScripts(ReasonForCallingCanExecuteScripts) final;
+  bool HasInsecureContextInAncestors() const override;
 
   // scheduler::WorkerScheduler::Delegate
   void UpdateBackForwardCacheDisablingFeatures(
@@ -88,7 +94,6 @@ class CORE_EXPORT WorkerOrWorkletGlobalScope
   void EvictFromBackForwardCache(
       mojom::blink::RendererEvictionReason reason) override {}
   void DidBufferLoadWhileInBackForwardCache(size_t num_bytes) override {}
-  bool CanContinueBufferingWhileInBackForwardCache() override { return false; }
 
   // Returns true when the WorkerOrWorkletGlobalScope is closing (e.g. via
   // WorkerGlobalScope#close() method). If this returns true, the worker is
@@ -182,6 +187,9 @@ class CORE_EXPORT WorkerOrWorkletGlobalScope
 
   Deprecation& GetDeprecation() { return deprecation_; }
 
+  // Returns the current list of user preferred languages.
+  String GetAcceptLanguages() const;
+
  protected:
   // Sets outside's CSP used for off-main-thread top-level worker script
   // fetch.
@@ -223,6 +231,8 @@ class CORE_EXPORT WorkerOrWorkletGlobalScope
   // change such that a different ThrottleOptionOverride should be applied.
   void UpdateFetcherThrottleOptionOverride();
 
+  bool IsCreatorSecureContext() const { return is_creator_secure_context_; }
+
  private:
   void InitializeWebFetchContextIfNeeded();
   ResourceFetcher* CreateFetcherInternal(const FetchClientSettingsObject&,
@@ -230,6 +240,9 @@ class CORE_EXPORT WorkerOrWorkletGlobalScope
                                          WorkerResourceTimingNotifier&);
 
   bool web_fetch_context_initialized_ = false;
+
+  // Whether the creator execution context is secure.
+  const bool is_creator_secure_context_ = false;
 
   const String name_;
   const base::UnguessableToken parent_devtools_token_;
@@ -274,10 +287,6 @@ class CORE_EXPORT WorkerOrWorkletGlobalScope
 
   // This tracks deprecation features that have been used.
   Deprecation deprecation_;
-
-  // LocalDOMWindow::modulator_ workaround equivalent.
-  // TODO(kouhei): Remove this.
-  Member<Modulator> modulator_;
 };
 
 template <>

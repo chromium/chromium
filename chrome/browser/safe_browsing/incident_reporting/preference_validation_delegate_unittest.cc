@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,11 @@
 #include "base/values.h"
 #include "chrome/browser/safe_browsing/incident_reporting/incident.h"
 #include "chrome/browser/safe_browsing/incident_reporting/mock_incident_receiver.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -37,20 +41,27 @@ const char kPrefPath[] = "atomic.pref";
 // incidents. Tests can push data to the delegate and verify that the test
 // instance was provided with the expected data.
 class PreferenceValidationDelegateTest : public testing::Test {
+ public:
+  PreferenceValidationDelegateTest()
+      : testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {}
+
  protected:
   typedef std::vector<std::unique_ptr<safe_browsing::Incident>> IncidentVector;
 
   void SetUp() override {
     testing::Test::SetUp();
+    ASSERT_TRUE(testing_profile_manager_.SetUp());
+    Profile* profile =
+        testing_profile_manager_.CreateTestingProfile("profile 1");
     invalid_keys_.push_back(std::string("one"));
     invalid_keys_.push_back(std::string("two"));
     external_validation_invalid_keys_.push_back(std::string("three"));
     std::unique_ptr<safe_browsing::MockIncidentReceiver> receiver(
         new NiceMock<safe_browsing::MockIncidentReceiver>());
-    ON_CALL(*receiver, DoAddIncidentForProfile(IsNull(), _))
+    ON_CALL(*receiver, DoAddIncidentForProfile(_, _))
         .WillByDefault(WithArg<1>(TakeIncidentToVector(&incidents_)));
     instance_ = std::make_unique<safe_browsing::PreferenceValidationDelegate>(
-        nullptr, std::move(receiver));
+        profile, std::move(receiver));
   }
 
   static void ExpectValueStatesEquate(
@@ -92,10 +103,12 @@ class PreferenceValidationDelegateTest : public testing::Test {
     }
   }
 
+  content::BrowserTaskEnvironment task_environment_;
   IncidentVector incidents_;
   std::vector<std::string> invalid_keys_;
   std::vector<std::string> external_validation_invalid_keys_;
   std::unique_ptr<prefs::mojom::TrackedPreferenceValidationDelegate> instance_;
+  TestingProfileManager testing_profile_manager_;
 };
 
 // Tests that a NULL value results in an incident with no value.
@@ -170,6 +183,14 @@ TEST_P(PreferenceValidationDelegateValues, Value) {
       incidents_.back()->TakePayload());
   EXPECT_EQ(std::string(expected_value_),
             incident->tracked_preference().atomic_value());
+}
+
+TEST_P(PreferenceValidationDelegateValues, OnProfileDestroyed) {
+  testing_profile_manager_.DeleteTestingProfile("profile 1");
+  instance_->OnAtomicPreferenceValidation(
+      kPrefPath, MakeValue(value_type_), ValueState::CLEARED,
+      ValueState::UNSUPPORTED, false /* is_personal */);
+  ASSERT_EQ(0U, incidents_.size());
 }
 
 INSTANTIATE_TEST_SUITE_P(

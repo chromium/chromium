@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,7 @@ Exif.Mark = {
   // APP0 block, most commonly JFIF data.
   APP0: 0xffe0,
   // Start of exif block.
-  EXIF: 0xffe1
+  EXIF: 0xffe1,
 };
 
 /**
@@ -31,7 +31,7 @@ Exif.Align = {
   // Indicates little endian exif data.
   LITTLE: 0x4949,
   // Indicates big endian exif data.
-  BIG: 0x4d4d
+  BIG: 0x4d4d,
 };
 
 /**

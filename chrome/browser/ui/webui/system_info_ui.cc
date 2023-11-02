@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -33,7 +34,6 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "net/base/directory_lister.h"
-#include "net/base/escape.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/webui/jstemplate_builder.h"
@@ -87,7 +87,7 @@ class SystemInfoHandler : public WebUIMessageHandler {
 
   // Callback for the "requestSystemInfo" message. This asynchronously requests
   // system info and eventually returns it to the front end.
-  void HandleRequestSystemInfo(const base::ListValue* args);
+  void HandleRequestSystemInfo(const base::Value::List& args);
 
   void OnSystemInfo(std::unique_ptr<SystemLogsResponse> sys_info);
 
@@ -111,15 +111,15 @@ void SystemInfoHandler::OnJavascriptDisallowed() {
 }
 
 void SystemInfoHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "requestSystemInfo",
       base::BindRepeating(&SystemInfoHandler::HandleRequestSystemInfo,
                           base::Unretained(this)));
 }
 
-void SystemInfoHandler::HandleRequestSystemInfo(const base::ListValue* args) {
+void SystemInfoHandler::HandleRequestSystemInfo(const base::Value::List& args) {
   AllowJavascript();
-  callback_id_ = args->GetList()[0].GetString();
+  callback_id_ = args[0].GetString();
 
   system_logs::SystemLogsFetcher* fetcher =
       system_logs::BuildAboutSystemLogsFetcher();
@@ -132,12 +132,12 @@ void SystemInfoHandler::OnSystemInfo(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!sys_info)
     return;
-  base::ListValue data;
+  base::Value::List data;
   for (SystemLogsResponse::const_iterator it = sys_info->begin();
        it != sys_info->end(); ++it) {
-    auto val = std::make_unique<base::DictionaryValue>();
-    val->SetString("statName", it->first);
-    val->SetString("statValue", it->second);
+    base::Value::Dict val;
+    val.Set("statName", it->first);
+    val.Set("statValue", it->second);
     data.Append(std::move(val));
   }
   ResolveJavascriptCallback(base::Value(callback_id_), data);

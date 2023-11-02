@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_WEB_TEST_BROWSER_WEB_TEST_SHELL_PLATFORM_DELEGATE_H_
 #define CONTENT_WEB_TEST_BROWSER_WEB_TEST_SHELL_PLATFORM_DELEGATE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "content/shell/browser/shell_platform_delegate.h"
 
@@ -40,7 +41,7 @@ class WebTestShellPlatformDelegate : public ShellPlatformDelegate {
   bool ShouldAllowRunningInsecureContent(Shell* shell) override;
   bool DestroyShell(Shell* shell) override;
   void ResizeWebContent(Shell* shell, const gfx::Size& content_size) override;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   void ActivateContents(Shell* shell, WebContents* top_contents) override;
   void DidNavigatePrimaryMainFramePostCommit(Shell*,
                                              WebContents* contents) override;
@@ -67,9 +68,9 @@ class WebTestShellPlatformDelegate : public ShellPlatformDelegate {
   struct WebTestPlatformData;
   std::unique_ptr<WebTestPlatformData> web_test_platform_;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // The last headless shell that called ActivateContents().
-  Shell* activated_headless_shell_ = nullptr;
+  raw_ptr<Shell> activated_headless_shell_ = nullptr;
 #endif
 };
 

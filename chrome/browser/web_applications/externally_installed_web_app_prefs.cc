@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,14 @@
 #include <utility>
 #include <vector>
 
-#include "base/values.h"
-#include "chrome/browser/web_applications/web_app_registrar.h"
+#include "base/containers/contains.h"
+#include "base/metrics/histogram_functions.h"
+#include "chrome/browser/web_applications/externally_installed_prefs_migration_metrics.h"
+#include "chrome/browser/web_applications/user_uninstalled_preinstalled_web_app_prefs.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_install_utils.h"
+#include "chrome/browser/web_applications/web_app_prefs_utils.h"
+#include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -49,21 +55,23 @@ constexpr char kExtensionId[] = "extension_id";
 constexpr char kInstallSource[] = "install_source";
 constexpr char kIsPlaceholder[] = "is_placeholder";
 
+constexpr char kAppIdDeleted[] =
+    "WebApp.ExternalPrefs.CorruptionFixedRemovedAppId";
+constexpr char kInstallUrlsDeleted[] =
+    "WebApp.ExternalPrefs.CorruptionFixedInstallUrlsDeleted";
+
 // Returns the base::Value in |pref_service| corresponding to our stored dict
 // for |app_id|, or nullptr if it doesn't exist.
 const base::Value* GetPreferenceValue(const PrefService* pref_service,
                                       const AppId& app_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  const base::DictionaryValue* urls_to_dicts =
-      pref_service->GetDictionary(prefs::kWebAppsExtensionIDs);
-  if (!urls_to_dicts) {
-    return nullptr;
-  }
+  const base::Value::Dict& urls_to_dicts =
+      pref_service->GetDict(prefs::kWebAppsExtensionIDs);
   // Do a simple O(N) scan for app_id being a value in each dictionary's
   // key/value pairs. We expect both N and the number of times
   // GetPreferenceValue is called to be relatively small in practice. If they
   // turn out to be large, we can write a more sophisticated implementation.
-  for (auto it : urls_to_dicts->DictItems()) {
+  for (auto it : urls_to_dicts) {
     const base::Value* root = &it.second;
     const base::Value* v = root;
     if (v->is_dict()) {
@@ -74,6 +82,41 @@ const base::Value* GetPreferenceValue(const PrefService* pref_service,
     }
   }
   return nullptr;
+}
+// Correct any corruption that has occurred due to Lacros processes starting in
+// inconsistent ways. https://crbug.com/1359205.
+void FixMigrationCorruptionFromLacrosSwitch(PrefService* pref_service,
+                                            const WebAppRegistrar& registrar) {
+  UserUninstalledPreinstalledWebAppPrefs preinstalled_prefs(pref_service);
+  int install_urls_fixed = 0;
+  int app_ids_removed = 0;
+  for (const AppId& app_id : registrar.GetAppIds()) {
+    if (!registrar.IsInstalledByDefaultManagement(app_id)) {
+      continue;
+    }
+    const WebApp* web_app = registrar.GetAppById(app_id);
+    DCHECK(web_app);
+    auto default_config_it = web_app->management_to_external_config_map().find(
+        WebAppManagement::kDefault);
+    // If there is no external config or the install urls are empty, just treat
+    // it as a valid install. The preinstall manager should add to the install
+    // urls when it synchronizes.
+    if (default_config_it ==
+            web_app->management_to_external_config_map().end() ||
+        default_config_it->second.install_urls.empty()) {
+      if (preinstalled_prefs.RemoveByAppId(app_id))
+        ++app_ids_removed;
+      continue;
+    }
+    // Remove all install urls that are legitimately installed. If they are all
+    // removed, then the pref is removed entirely.
+    for (const GURL& install_url : default_config_it->second.install_urls) {
+      if (preinstalled_prefs.RemoveByInstallUrl(app_id, install_url))
+        ++install_urls_fixed;
+    }
+  }
+  base::UmaHistogramCounts100(kAppIdDeleted, app_ids_removed);
+  base::UmaHistogramCounts100(kInstallUrlsDeleted, install_urls_fixed);
 }
 
 }  // namespace
@@ -91,14 +134,6 @@ bool ExternallyInstalledWebAppPrefs::HasAppId(const PrefService* pref_service,
 }
 
 // static
-// TODO(crbug.com/1236159): Can be removed after M99.
-void ExternallyInstalledWebAppPrefs::RemoveTerminalPWA(
-    PrefService* pref_service) {
-  DictionaryPrefUpdate update(pref_service, prefs::kWebAppsExtensionIDs);
-  update->RemoveKey("chrome-untrusted://terminal/html/pwa.html");
-}
-
-// static
 bool ExternallyInstalledWebAppPrefs::HasAppIdWithInstallSource(
     const PrefService* pref_service,
     const AppId& app_id,
@@ -112,19 +147,16 @@ bool ExternallyInstalledWebAppPrefs::HasAppIdWithInstallSource(
 }
 
 // static
-std::map<AppId, GURL> ExternallyInstalledWebAppPrefs::BuildAppIdsMap(
+base::flat_map<AppId, base::flat_set<GURL>>
+ExternallyInstalledWebAppPrefs::BuildAppIdsMap(
     const PrefService* pref_service,
     ExternalInstallSource install_source) {
-  const base::DictionaryValue* urls_to_dicts =
-      pref_service->GetDictionary(prefs::kWebAppsExtensionIDs);
+  const base::Value::Dict& urls_to_dicts =
+      pref_service->GetDict(prefs::kWebAppsExtensionIDs);
 
-  std::map<AppId, GURL> ids_to_urls;
+  base::flat_map<AppId, base::flat_set<GURL>> ids_to_urls;
 
-  if (!urls_to_dicts) {
-    return ids_to_urls;
-  }
-
-  for (auto it : urls_to_dicts->DictItems()) {
+  for (auto it : urls_to_dicts) {
     const base::Value* v = &it.second;
     if (!v->is_dict()) {
       continue;
@@ -144,7 +176,7 @@ std::map<AppId, GURL> ExternallyInstalledWebAppPrefs::BuildAppIdsMap(
 
     GURL url(it.first);
     DCHECK(url.is_valid() && !url.is_empty());
-    ids_to_urls[v->GetString()] = url;
+    ids_to_urls[v->GetString()] = {url};
   }
 
   return ids_to_urls;
@@ -164,8 +196,13 @@ void ExternallyInstalledWebAppPrefs::Insert(
   dict.SetKey(kExtensionId, base::Value(app_id));
   dict.SetKey(kInstallSource, base::Value(static_cast<int>(install_source)));
 
-  DictionaryPrefUpdate update(pref_service_, prefs::kWebAppsExtensionIDs);
-  update->SetKey(url.spec(), std::move(dict));
+  ScopedDictPrefUpdate update(pref_service_, prefs::kWebAppsExtensionIDs);
+  update->Set(url.spec(), std::move(dict));
+}
+
+bool ExternallyInstalledWebAppPrefs::Remove(const GURL& url) {
+  ScopedDictPrefUpdate update(pref_service_, prefs::kWebAppsExtensionIDs);
+  return update->Remove(url.spec());
 }
 
 absl::optional<AppId> ExternallyInstalledWebAppPrefs::LookupAppId(
@@ -173,8 +210,7 @@ absl::optional<AppId> ExternallyInstalledWebAppPrefs::LookupAppId(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   const base::Value* v =
-      pref_service_->GetDictionary(prefs::kWebAppsExtensionIDs)
-          ->FindKey(url.spec());
+      pref_service_->GetDict(prefs::kWebAppsExtensionIDs).Find(url.spec());
   if (v && v->is_dict()) {
     v = v->FindKey(kExtensionId);
     if (v && v->is_string()) {
@@ -184,21 +220,12 @@ absl::optional<AppId> ExternallyInstalledWebAppPrefs::LookupAppId(
   return absl::nullopt;
 }
 
-bool ExternallyInstalledWebAppPrefs::HasNoApps() const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  const base::DictionaryValue* dict =
-      pref_service_->GetDictionary(prefs::kWebAppsExtensionIDs);
-  return dict->DictEmpty();
-}
-
 absl::optional<AppId> ExternallyInstalledWebAppPrefs::LookupPlaceholderAppId(
     const GURL& url) const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   const base::Value* entry =
-      pref_service_->GetDictionary(prefs::kWebAppsExtensionIDs)
-          ->FindKey(url.spec());
+      pref_service_->GetDict(prefs::kWebAppsExtensionIDs).Find(url.spec());
   if (!entry)
     return absl::nullopt;
 
@@ -213,15 +240,14 @@ void ExternallyInstalledWebAppPrefs::SetIsPlaceholder(const GURL& url,
                                                       bool is_placeholder) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  DCHECK(pref_service_->GetDictionary(prefs::kWebAppsExtensionIDs)
-             ->HasKey(url.spec()));
-  DictionaryPrefUpdate update(pref_service_, prefs::kWebAppsExtensionIDs);
-  base::Value* map = update.Get();
+  DCHECK(pref_service_->GetDict(prefs::kWebAppsExtensionIDs).Find(url.spec()));
+  ScopedDictPrefUpdate update(pref_service_, prefs::kWebAppsExtensionIDs);
+  base::Value::Dict& map = update.Get();
 
-  auto* app_entry = map->FindKey(url.spec());
+  auto* app_entry = map.FindDict(url.spec());
   DCHECK(app_entry);
 
-  app_entry->SetBoolKey(kIsPlaceholder, is_placeholder);
+  app_entry->Set(kIsPlaceholder, is_placeholder);
 }
 
 bool ExternallyInstalledWebAppPrefs::IsPlaceholderApp(
@@ -232,6 +258,194 @@ bool ExternallyInstalledWebAppPrefs::IsPlaceholderApp(
   if (!app_prefs || !app_prefs->is_dict())
     return false;
   return app_prefs->FindBoolKey(kIsPlaceholder).value_or(false);
+}
+
+// static
+ExternallyInstalledWebAppPrefs::ParsedPrefs
+ExternallyInstalledWebAppPrefs::ParseExternalPrefsToWebAppData(
+    PrefService* pref_service) {
+  const base::Value::Dict& urls_to_dicts =
+      pref_service->GetDict(prefs::kWebAppsExtensionIDs);
+  ParsedPrefs ids_to_parsed_data;
+
+  for (auto it : urls_to_dicts) {
+    const base::Value* v = &it.second;
+    if (!v->is_dict()) {
+      continue;
+    }
+
+    auto* app_id = v->FindKey(kExtensionId);
+    if (!app_id || !app_id->is_string()) {
+      continue;
+    }
+
+    auto* source = v->FindKey(kInstallSource);
+    if (!source) {
+      continue;
+    }
+
+    WebAppManagement::Type source_type = ConvertExternalInstallSourceToSource(
+        static_cast<ExternalInstallSource>(source->GetInt()));
+    WebApp::ExternalManagementConfig& config =
+        ids_to_parsed_data[app_id->GetString()][source_type];
+    config.is_placeholder = v->FindBoolKey(kIsPlaceholder).value_or(false);
+    config.install_urls.emplace(GURL(it.first));
+  }
+
+  return ids_to_parsed_data;
+}
+
+// static
+void ExternallyInstalledWebAppPrefs::MigrateExternalPrefData(
+    PrefService* pref_service,
+    WebAppSyncBridge* sync_bridge) {
+  ExternallyInstalledWebAppPrefs::ParsedPrefs pref_to_app_data =
+      ParseExternalPrefsToWebAppData(pref_service);
+
+  const WebAppRegistrar& registrar = sync_bridge->registrar();
+
+  LogDataMetrics(pref_to_app_data.size() != 0,
+                 registrar.AppsExistWithExternalConfigData());
+
+  // First migrate data to UserUninstalledPreinstalledWebAppPrefs.
+  MigrateExternalPrefDataToPreinstalledPrefs(pref_service, &registrar,
+                                             pref_to_app_data);
+  ScopedRegistryUpdate update(sync_bridge);
+  for (auto it : pref_to_app_data) {
+    const WebApp* web_app = registrar.GetAppById(it.first);
+    if (web_app) {
+      // Sync data across externally installed prefs and web_app DB.
+      for (auto parsed_info : it.second) {
+        WebAppManagement::Type& source = parsed_info.first;
+        if (!web_app->GetSources().test(source))
+          continue;
+
+        const WebApp::ExternalConfigMap& config_map =
+            web_app->management_to_external_config_map();
+        auto map_it = config_map.find(source);
+        // Placeholder migration and metrics logging.
+        if (map_it != config_map.end() &&
+            map_it->second.is_placeholder ==
+                parsed_info.second.is_placeholder) {
+          LogPlaceholderMigrationState(
+              PlaceholderMigrationState::kPlaceholderInfoAlreadyInSync);
+        } else {
+          WebApp* updated_app = update->UpdateApp(it.first);
+          updated_app->AddPlaceholderInfoToManagementExternalConfigMap(
+              source, parsed_info.second.is_placeholder);
+          LogPlaceholderMigrationState(
+              PlaceholderMigrationState::kPlaceholderInfoMigrated);
+        }
+
+        // Install URL migration and metrics logging.
+        for (auto url : parsed_info.second.install_urls) {
+          DCHECK(url.is_valid());
+          if (map_it != config_map.end() &&
+              base::Contains(map_it->second.install_urls, url)) {
+            LogInstallURLMigrationState(
+                InstallURLMigrationState::kInstallURLAlreadyInSync);
+          } else {
+            WebApp* updated_app = update->UpdateApp(it.first);
+            updated_app->AddInstallURLToManagementExternalConfigMap(
+                parsed_info.first, url);
+            LogInstallURLMigrationState(
+                InstallURLMigrationState::kInstallURLMigrated);
+          }
+        }
+      }
+    }
+  }
+
+  FixMigrationCorruptionFromLacrosSwitch(pref_service, registrar);
+}
+
+// static
+void ExternallyInstalledWebAppPrefs::MigrateExternalPrefDataToPreinstalledPrefs(
+    PrefService* pref_service,
+    const WebAppRegistrar* registrar,
+    const ExternallyInstalledWebAppPrefs::ParsedPrefs& parsed_data) {
+  UserUninstalledPreinstalledWebAppPrefs preinstalled_prefs(pref_service);
+  for (auto pair : parsed_data) {
+    const AppId& app_id = pair.first;
+    const WebApp::ExternalConfigMap& source_to_config_map = pair.second;
+    const auto& it = source_to_config_map.find(WebAppManagement::kDefault);
+    // Migration will happen in the following cases:
+    // 1. If app_id exists in the external prefs that had source as
+    // kDefault but the app is no longer installed in the registry or if it
+    // is no longer preinstalled, that means
+    // it was preinstalled and then uninstalled by user.
+    if (!registrar->IsInstalledByDefaultManagement(app_id) &&
+        it != source_to_config_map.end()) {
+      if (preinstalled_prefs.AppIdContainsAllUrls(app_id, source_to_config_map,
+                                                  /*only_default=*/true)) {
+        LogUserUninstalledPreinstalledAppMigration(
+            UserUninstalledPreinstalledAppMigrationState::
+                kPreinstalledAppDataAlreadyInSync);
+      } else {
+        preinstalled_prefs.Add(app_id, std::move(it->second.install_urls));
+        LogUserUninstalledPreinstalledAppMigration(
+            UserUninstalledPreinstalledAppMigrationState::
+                kPreinstalledAppDataMigratedByUser);
+      }
+    }
+    // 2. If the value corresponding to the app_id in
+    // kWasExternalAppUninstalledByUser is true, then it was previously
+    // a preinstalled app that was user uninstalled. In this case, we migrate
+    // ALL install URLs for that corresponding app_id, because a preinstalled
+    // app could have been installed as an app with a different source now.
+    if (GetBoolWebAppPref(pref_service, app_id,
+                          kWasExternalAppUninstalledByUser)) {
+      if (preinstalled_prefs.AppIdContainsAllUrls(app_id, source_to_config_map,
+                                                  /*only_default=*/false)) {
+        LogUserUninstalledPreinstalledAppMigration(
+            UserUninstalledPreinstalledAppMigrationState::
+                kPreinstalledAppDataAlreadyInSync);
+      } else {
+        base::flat_set<GURL> urls_to_migrate =
+            MergeAllUrls(source_to_config_map);
+        preinstalled_prefs.Add(app_id, std::move(urls_to_migrate));
+        LogUserUninstalledPreinstalledAppMigration(
+            UserUninstalledPreinstalledAppMigrationState::
+                kPreinstalledAppDataMigratedByOldPref);
+      }
+    }
+  }
+}
+
+// static
+base::flat_set<GURL> ExternallyInstalledWebAppPrefs::MergeAllUrls(
+    const WebApp::ExternalConfigMap& source_config_map) {
+  std::vector<GURL> urls;
+  for (auto it : source_config_map) {
+    for (const GURL& url : it.second.install_urls) {
+      DCHECK(url.is_valid());
+      urls.push_back(url);
+    }
+  }
+  return urls;
+}
+
+// static
+void ExternallyInstalledWebAppPrefs::LogDataMetrics(
+    bool data_exists_in_pref,
+    bool data_exists_in_registrar) {
+  // Data in registry refers to the data stored in
+  // management_to_external_config_map per web_app. See
+  // WebApps::management_to_external_config_map() for more info.
+  if (!data_exists_in_pref && !data_exists_in_registrar) {
+    // Case 1: No external apps installed (prefs empty, empty data per web_app
+    // in the registry).
+    base::UmaHistogramBoolean(kPrefDataAbsentDBDataAbsent, /*sample=*/true);
+  } else if (!data_exists_in_pref && data_exists_in_registrar) {
+    // Case 2: prefs are empty, but data exists in registry.
+    base::UmaHistogramBoolean(kPrefDataAbsentDBDataPresent, /*sample=*/true);
+  } else if (data_exists_in_pref && !data_exists_in_registrar) {
+    // Case 3: prefs contain data, but data does not exist in the registry.
+    base::UmaHistogramBoolean(kPrefDataPresentDBDataAbsent, /*sample=*/true);
+  } else {
+    // Case 4: Data exists in both prefs and in the registry.
+    base::UmaHistogramBoolean(kPrefDataPresentDBDataPresent, /*sample=*/true);
+  }
 }
 
 }  // namespace web_app

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,11 +15,11 @@
 #include "chrome/browser/ash/attestation/attestation_ca_client.h"
 #include "chrome/browser/ash/attestation/attestation_key_payload.pb.h"
 #include "chrome/browser/chrome_notification_types.h"
-#include "chromeos/cryptohome/cryptohome_parameters.h"
-#include "chromeos/dbus/attestation/attestation_client.h"
-#include "chromeos/dbus/attestation/interface.pb.h"
-#include "chromeos/dbus/dbus_method_call_status.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
+#include "chromeos/ash/components/dbus/attestation/attestation_client.h"
+#include "chromeos/ash/components/dbus/attestation/interface.pb.h"
+#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
+#include "chromeos/dbus/common/dbus_method_call_status.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
@@ -118,6 +118,14 @@ void EnrollmentIdUploadManager::OnEnrollmentCertificateUploaded(
     case EnrollmentCertificateUploader::Status::kFailedToUpload:
       // Enrollment certificate was fetched but not uploaded. It can be uploaded
       // later so we will not proceed with computed EID.
+      RunCallbacks(/*status=*/false);
+      break;
+    case EnrollmentCertificateUploader::Status::kInvalidClient:
+      // Enrollment certificate was not uploaded due to invalid
+      // `CloudPolicyClient`. The certificate can be uploaded later when the
+      // client is working again. The manager is also not able to upload EID
+      // with invalid `CloudPolicyClient` so there is no reason to fall back to
+      // EID computation.
       RunCallbacks(/*status=*/false);
       break;
   }

@@ -1,9 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/system/phonehub/phone_hub_recent_apps_view.h"
 
+#include <memory>
 #include <numeric>
 #include <vector>
 
@@ -24,14 +25,18 @@ namespace ash {
 
 namespace {
 
+using RecentAppsUiState =
+    ::ash::phonehub::RecentAppsInteractionHandler::RecentAppsUiState;
+
 // Appearance constants in DIPs.
 constexpr gfx::Insets kRecentAppButtonFocusPadding(4);
-constexpr gfx::Insets kContentTextLabelInsetsDip = {0, 4, 0, 4};
-constexpr int kHeaderLabelLineHeight = 30;
+constexpr auto kContentTextLabelInsetsDip = gfx::Insets::TLBR(0, 4, 0, 4);
+constexpr int kHeaderLabelLineHeight = 48;
 constexpr int kRecentAppButtonDefaultSpacing = 42;
-constexpr int kRecentAppButtonMinSpacing = 4;
-constexpr int kRecentAppButtonSize = 32;
-constexpr int kRecentAppButtonsViewTopPadding = 12;
+constexpr int kRecentAppButtonMinSpacing = 20;
+constexpr int kRecentAppButtonSize = 36;
+constexpr int kRecentAppButtonsViewTopPadding = 4;
+constexpr int kRecentAppButtonsViewHorizontalPadding = 6;
 constexpr int kContentLabelLineHeightDip = 20;
 
 // Typography.
@@ -61,7 +66,9 @@ class HeaderView : public views::Label {
   const char* GetClassName() const override { return "HeaderView"; }
 };
 
-class PlaceholderView : public views::Label {
+}  // namespace
+
+class PhoneHubRecentAppsView::PlaceholderView : public views::Label {
  public:
   PlaceholderView() {
     SetText(
@@ -83,11 +90,8 @@ class PlaceholderView : public views::Label {
   const char* GetClassName() const override { return "ContentView"; }
 };
 
-}  // namespace
-
 PhoneHubRecentAppsView::PhoneHubRecentAppsView(
-    chromeos::phonehub::RecentAppsInteractionHandler*
-        recent_apps_interaction_handler)
+    phonehub::RecentAppsInteractionHandler* recent_apps_interaction_handler)
     : recent_apps_interaction_handler_(recent_apps_interaction_handler) {
   SetID(PhoneHubViewID::kPhoneHubRecentAppsView);
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -97,11 +101,15 @@ PhoneHubRecentAppsView::PhoneHubRecentAppsView(
   AddChildView(std::make_unique<HeaderView>());
   recent_app_buttons_view_ =
       AddChildView(std::make_unique<RecentAppButtonsView>());
+  placeholder_view_ = AddChildView(std::make_unique<PlaceholderView>());
 
   Update();
+  recent_apps_interaction_handler_->AddObserver(this);
 }
 
-PhoneHubRecentAppsView::~PhoneHubRecentAppsView() {}
+PhoneHubRecentAppsView::~PhoneHubRecentAppsView() {
+  recent_apps_interaction_handler_->RemoveObserver(this);
+}
 
 const char* PhoneHubRecentAppsView::GetClassName() const {
   return "PhoneHubRecentAppsView";
@@ -111,9 +119,14 @@ PhoneHubRecentAppsView::RecentAppButtonsView::RecentAppButtonsView() = default;
 
 PhoneHubRecentAppsView::RecentAppButtonsView::~RecentAppButtonsView() = default;
 
-void PhoneHubRecentAppsView::RecentAppButtonsView::AddRecentAppButton(
-    views::View* recent_app_button) {
-  AddChildView(recent_app_button);
+views::View* PhoneHubRecentAppsView::RecentAppButtonsView::AddRecentAppButton(
+    std::unique_ptr<views::View> recent_app_button) {
+  return AddChildView(std::move(recent_app_button));
+}
+
+// phonehub::RecentAppsInteractionHandler::Observer:
+void PhoneHubRecentAppsView::OnRecentAppsUiStateUpdated() {
+  Update();
 }
 
 // views::View:
@@ -141,22 +154,22 @@ void PhoneHubRecentAppsView::RecentAppButtonsView::Layout() {
                       });
   int spacing = 0;
   if (visible_children.size() > 1) {
-    spacing = (child_area.width() - visible_child_width) /
+    spacing = (child_area.width() - visible_child_width -
+               kRecentAppButtonsViewHorizontalPadding * 2) /
               (static_cast<int>(visible_children.size()) - 1);
     spacing = base::clamp(spacing, kRecentAppButtonMinSpacing,
                           kRecentAppButtonDefaultSpacing);
   }
 
-  int x_delta = child_area.x();
+  int child_x = child_area.x() + kRecentAppButtonsViewHorizontalPadding;
   int child_y = child_area.y() + kRecentAppButtonsViewTopPadding +
                 kRecentAppButtonFocusPadding.bottom();
   for (auto* child : visible_children) {
-    // Most recent apps be added to the right and shift left as the other apps
+    // Most recent apps be added to the left and shift right as the other apps
     // are streamed.
-    int child_x = child_area.width() - x_delta - kRecentAppButtonSize;
     int width = child->GetPreferredSize().width();
     child->SetBounds(child_x, child_y, width, child->GetHeightForWidth(width));
-    x_delta += width + spacing;
+    child_x += width + spacing;
   }
 }
 
@@ -172,27 +185,39 @@ void PhoneHubRecentAppsView::Update() {
   recent_app_buttons_view_->Reset();
   recent_app_button_list_.clear();
 
-  std::vector<chromeos::phonehub::Notification::AppMetadata> recent_apps_list =
-      recent_apps_interaction_handler_->FetchRecentAppMetadataList();
-  if (recent_apps_list.empty()) {
-    recent_app_buttons_view_->SetVisible(false);
-    AddChildView(std::make_unique<PlaceholderView>());
-    return;
-  }
+  RecentAppsUiState current_ui_state =
+      recent_apps_interaction_handler_->ui_state();
 
-  for (const auto& recent_app : recent_apps_list) {
-    auto pressed_callback = base::BindRepeating(
-        &chromeos::phonehub::RecentAppsInteractionHandler::
-            NotifyRecentAppClicked,
-        base::Unretained(recent_apps_interaction_handler_), recent_app);
-    recent_app_button_list_.push_back(std::make_unique<PhoneHubRecentAppButton>(
-        recent_app.icon, recent_app.visible_app_name, pressed_callback));
-    recent_app_buttons_view_->AddRecentAppButton(
-        recent_app_button_list_.back().get());
-  }
+  switch (current_ui_state) {
+    case RecentAppsUiState::HIDDEN:
+      placeholder_view_->SetVisible(false);
+      SetVisible(false);
+      break;
+    case RecentAppsUiState::PLACEHOLDER_VIEW:
+      recent_app_buttons_view_->SetVisible(false);
+      placeholder_view_->SetVisible(true);
+      SetVisible(true);
+      break;
+    case RecentAppsUiState::ITEMS_VISIBLE:
+      std::vector<phonehub::Notification::AppMetadata> recent_apps_list =
+          recent_apps_interaction_handler_->FetchRecentAppMetadataList();
 
+      for (const auto& recent_app : recent_apps_list) {
+        auto pressed_callback = base::BindRepeating(
+            &phonehub::RecentAppsInteractionHandler::NotifyRecentAppClicked,
+            base::Unretained(recent_apps_interaction_handler_), recent_app);
+        recent_app_button_list_.push_back(
+            recent_app_buttons_view_->AddRecentAppButton(
+                std::make_unique<PhoneHubRecentAppButton>(
+                    recent_app.icon, recent_app.visible_app_name,
+                    pressed_callback)));
+      }
+      recent_app_buttons_view_->SetVisible(true);
+      placeholder_view_->SetVisible(false);
+      SetVisible(true);
+      break;
+  }
   PreferredSizeChanged();
-  SetVisible(true);
 }
 
 }  // namespace ash

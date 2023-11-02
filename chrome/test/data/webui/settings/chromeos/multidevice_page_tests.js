@@ -1,30 +1,28 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/os_settings.js';
+import {MultiDeviceBrowserProxyImpl, MultiDeviceFeature, MultiDeviceFeatureState, MultiDevicePageContentData, MultiDeviceSettingsMode, PhoneHubFeatureAccessStatus, Router, routes, setContactManagerForTesting, setNearbyShareSettingsForTesting} from 'chrome://os-settings/chromeos/os_settings.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {isChildVisible} from 'chrome://webui-test/test_util.js';
 
-// #import {TestLifetimeBrowserProxy} from './test_os_lifetime_browser_proxy.m.js';
-// #import {MultiDeviceSettingsMode, MultiDeviceFeature, MultiDeviceFeatureState, MultiDevicePageContentData, MultiDeviceBrowserProxyImpl, PhoneHubNotificationAccessStatus, Router, routes, setNearbyShareSettingsForTesting, setContactManagerForTesting} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {TestOsResetBrowserProxy} from './test_os_reset_browser_proxy.m.js';
-// #import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {TestMultideviceBrowserProxy, createFakePageContentData, HOST_DEVICE} from './test_multidevice_browser_proxy.m.js';
-// #import {isChildVisible, waitAfterNextRender} from 'chrome://test/test_util.js';
-// import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-// #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
-// #import {FakeNearbyShareSettings} from '../../nearby_share/shared/fake_nearby_share_settings.m.js';
-// #import {FakeContactManager} from '../../nearby_share/shared/fake_nearby_contact_manager.m.js';
-// clang-format on
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
+import {FakeContactManager} from '../../nearby_share/shared/fake_nearby_contact_manager.js';
+import {FakeNearbyShareSettings} from '../../nearby_share/shared/fake_nearby_share_settings.js';
+
+import {createFakePageContentData, HOST_DEVICE, TestMultideviceBrowserProxy} from './test_multidevice_browser_proxy.js';
 
 suite('Multidevice', function() {
   let multidevicePage = null;
   let browserProxy = null;
   let ALL_MODES;
-  /** @type {!nearby_share.FakeContactManager} */
+  /** @type {!FakeContactManager} */
   let fakeContactManager = null;
-  /** @type {!nearby_share.FakeNearbyShareSettings} */
+  /** @type {!FakeNearbyShareSettings} */
   let fakeSettings = null;
 
   /**
@@ -32,13 +30,22 @@ suite('Multidevice', function() {
    * @param {!MultiDevicePageContentData}
    */
   function setPageContentData(newPageContentData) {
-    cr.webUIListenerCallback(
+    webUIListenerCallback(
         'settings.updateMultidevicePageContentData', newPageContentData);
-    Polymer.dom.flush();
+    flush();
+  }
+
+  /**
+   * Sets screen lock status via WebUI Listener and flushes.
+   */
+  function setScreenLockStatus(chromeStatus, phoneStatus) {
+    webUIListenerCallback('settings.OnEnableScreenLockChanged', chromeStatus);
+    webUIListenerCallback('settings.OnScreenLockStatusChanged', phoneStatus);
+    flush();
   }
 
   function flushAsync() {
-    Polymer.dom.flush();
+    flush();
     // Use setTimeout to wait for the next macrotask.
     return new Promise(resolve => setTimeout(resolve));
   }
@@ -46,18 +53,18 @@ suite('Multidevice', function() {
   /**
    * Sets pageContentData to the specified mode. If it is a mode corresponding
    * to a set host, it will set the hostDeviceName to the provided name or else
-   * default to multidevice.HOST_DEVICE.
-   * @param {settings.MultiDeviceSettingsMode} newMode
+   * default to HOST_DEVICE.
+   * @param {MultiDeviceSettingsMode} newMode
    * @param {string=} opt_newHostDeviceName Overrides default if |newMode|
    *     corresponds to a set host.
    */
   function setHostData(newMode, opt_newHostDeviceName) {
     setPageContentData(
-        multidevice.createFakePageContentData(newMode, opt_newHostDeviceName));
+        createFakePageContentData(newMode, opt_newHostDeviceName));
   }
 
   /**
-   * @param {settings.MultiDeviceFeatureState} newState
+   * @param {MultiDeviceFeatureState} newState
    */
   function setSuiteState(newState) {
     setPageContentData(Object.assign(
@@ -65,7 +72,7 @@ suite('Multidevice', function() {
   }
 
   /**
-   * @param {settings.MultiDeviceFeatureState} newState
+   * @param {MultiDeviceFeatureState} newState
    */
   function setSmartLockState(newState) {
     setPageContentData(Object.assign(
@@ -73,7 +80,7 @@ suite('Multidevice', function() {
   }
 
   /**
-   * @param {settings.MultiDeviceFeatureState} newState
+   * @param {MultiDeviceFeatureState} newState
    */
   function setPhoneHubNotificationsState(newState) {
     setPageContentData(Object.assign(
@@ -86,8 +93,8 @@ suite('Multidevice', function() {
    */
   function setPhoneHubNotificationAccessGranted(accessGranted) {
     const accessState = accessGranted ?
-        settings.PhoneHubNotificationAccessStatus.ACCESS_GRANTED :
-        settings.PhoneHubNotificationAccessStatus.AVAILABLE_BUT_NOT_GRANTED;
+        PhoneHubFeatureAccessStatus.ACCESS_GRANTED :
+        PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED;
     setPageContentData(Object.assign(
         {}, multidevicePage.pageContentData,
         {notificationAccessStatus: accessState}));
@@ -99,7 +106,7 @@ suite('Multidevice', function() {
   function setNearbyShareIsOnboardingComplete(isOnboardingComplete) {
     multidevicePage.setPrefValue(
         'nearby_sharing.onboarding_complete', isOnboardingComplete);
-    Polymer.dom.flush();
+    flush();
   }
 
   /**
@@ -107,7 +114,7 @@ suite('Multidevice', function() {
    */
   function setNearbyShareEnabled(enabled) {
     multidevicePage.setPrefValue('nearby_sharing.enabled', enabled);
-    Polymer.dom.flush();
+    flush();
   }
 
   /**
@@ -129,7 +136,7 @@ suite('Multidevice', function() {
   }
 
   /**
-   * @param {!settings.MultiDeviceFeature} feature The feature to change.
+   * @param {!MultiDeviceFeature} feature The feature to change.
    * @param {boolean} enabled Whether to enable or disable the feature.
    * @param {boolean} authRequired Whether authentication is required for the
    *     change.
@@ -140,38 +147,40 @@ suite('Multidevice', function() {
   function simulateFeatureStateChangeRequest(feature, enabled, authRequired) {
     // When the user requets a feature state change, an event with the relevant
     // details is handled.
-    multidevicePage.fire(
-        'feature-toggle-clicked', {feature: feature, enabled: enabled});
-    Polymer.dom.flush();
+    multidevicePage.dispatchEvent(new CustomEvent('feature-toggle-clicked', {
+      bubbles: true,
+      composed: true,
+      detail: {feature: feature, enabled: enabled},
+    }));
+    flush();
 
     if (authRequired) {
       assertTrue(multidevicePage.showPasswordPromptDialog_);
       // Simulate the user entering a valid password, then closing the dialog.
-      multidevicePage.$$('#multidevicePasswordPrompt')
+      multidevicePage.shadowRoot.querySelector('#multidevicePasswordPrompt')
           .dispatchEvent(new CustomEvent('token-obtained', {
             bubbles: true,
             composed: true,
-            detail: {token: 'validAuthToken', lifetimeSeconds: 300}
+            detail: {token: 'validAuthToken', lifetimeSeconds: 300},
           }));
       // Simulate closing the password prompt dialog
-      multidevicePage.$$('#multidevicePasswordPrompt')
+      multidevicePage.shadowRoot.querySelector('#multidevicePasswordPrompt')
           .dispatchEvent(
               new CustomEvent('close', {bubbles: true, composed: true}));
-      Polymer.dom.flush();
+      flush();
     }
 
-    if (enabled &&
-        feature === settings.MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS) {
+    if (enabled && feature === MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS) {
       const accessDialog =
           multidevicePage.pageContentData.isPhoneHubPermissionsDialogSupported ?
-          multidevicePage.$$('settings-multidevice-permissions-setup-dialog') :
-          multidevicePage.$$(
+          multidevicePage.shadowRoot.querySelector(
+              'settings-multidevice-permissions-setup-dialog') :
+          multidevicePage.shadowRoot.querySelector(
               'settings-multidevice-notification-access-setup-dialog');
       assertEquals(
           !!accessDialog,
           multidevicePage.pageContentData.notificationAccessStatus ===
-              settings.PhoneHubNotificationAccessStatus
-                  .AVAILABLE_BUT_NOT_GRANTED);
+              PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED);
       return;
     }
 
@@ -187,24 +196,30 @@ suite('Multidevice', function() {
   }
 
   suiteSetup(function() {
-    ALL_MODES = Object.values(settings.MultiDeviceSettingsMode);
+    ALL_MODES = Object.values(MultiDeviceSettingsMode);
   });
 
   setup(function() {
-    fakeContactManager = new nearby_share.FakeContactManager();
-    nearby_share.setContactManagerForTesting(fakeContactManager);
+    fakeContactManager = new FakeContactManager();
+    setContactManagerForTesting(fakeContactManager);
     fakeContactManager.setupContactRecords();
 
-    fakeSettings = new nearby_share.FakeNearbyShareSettings();
+    fakeSettings = new FakeNearbyShareSettings();
     fakeSettings.setEnabled(true);
-    nearby_share.setNearbyShareSettingsForTesting(fakeSettings);
+    setNearbyShareSettingsForTesting(fakeSettings);
 
     PolymerTest.clearBody();
-    browserProxy = new multidevice.TestMultideviceBrowserProxy();
-    settings.MultiDeviceBrowserProxyImpl.instance_ = browserProxy;
+    browserProxy = new TestMultideviceBrowserProxy();
+    MultiDeviceBrowserProxyImpl.setInstanceForTesting(browserProxy);
 
     loadTimeData.overrideValues({
       isNearbyShareSupported: true,
+    });
+    loadTimeData.overrideValues({
+      isChromeosScreenLockEnabled: false,
+    });
+    loadTimeData.overrideValues({
+      isPhoneScreenLockEnabled: false,
     });
 
     multidevicePage = document.createElement('settings-multidevice-page');
@@ -222,57 +237,59 @@ suite('Multidevice', function() {
     };
 
     document.body.appendChild(multidevicePage);
-    Polymer.dom.flush();
+    flush();
 
     return browserProxy.whenCalled('getPageContentData');
   });
 
   teardown(function() {
     multidevicePage.remove();
-    settings.Router.getInstance().resetRouteForTesting();
+    Router.getInstance().resetRouteForTesting();
   });
 
   const getLabel = () => {
-    return multidevicePage.$$('#multidevice-label').textContent.trim();
+    return multidevicePage.shadowRoot.querySelector('#multidevice-label')
+        .textContent.trim();
   };
 
-  const getSubpage = () => multidevicePage.$$('settings-multidevice-subpage');
+  const getSubpage = () =>
+      multidevicePage.shadowRoot.querySelector('settings-multidevice-subpage');
 
   test('clicking setup shows multidevice setup dialog', function() {
-    setHostData(settings.MultiDeviceSettingsMode.NO_HOST_SET);
-    const button = multidevicePage.$$('cr-button');
+    setHostData(MultiDeviceSettingsMode.NO_HOST_SET);
+    const button = multidevicePage.shadowRoot.querySelector('cr-button');
     assertTrue(!!button);
     button.click();
     return browserProxy.whenCalled('showMultiDeviceSetupDialog');
   });
 
   test('Deep link to multidevice setup', async () => {
-    setHostData(settings.MultiDeviceSettingsMode.NO_HOST_SET);
+    setHostData(MultiDeviceSettingsMode.NO_HOST_SET);
 
-    const params = new URLSearchParams;
+    const params = new URLSearchParams();
     params.append('settingId', '200');
-    settings.Router.getInstance().navigateTo(
-        settings.routes.MULTIDEVICE, params);
+    Router.getInstance().navigateTo(routes.MULTIDEVICE, params);
 
-    Polymer.dom.flush();
+    flush();
 
-    const deepLinkElement = multidevicePage.$$('cr-button');
-    await test_util.waitAfterNextRender(deepLinkElement);
+    const deepLinkElement =
+        multidevicePage.shadowRoot.querySelector('cr-button');
+    await waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
         'Setup multidevice button should be focused for settingId=200.');
   });
 
   test('Open notification access setup dialog route param', async () => {
-    settings.Router.getInstance().navigateTo(
-        settings.routes.MULTIDEVICE_FEATURES,
-        new URLSearchParams('showNotificationAccessSetupDialog=true'));
+    Router.getInstance().navigateTo(
+        routes.MULTIDEVICE_FEATURES,
+        new URLSearchParams('showPhonePermissionSetupDialog=true'));
 
     PolymerTest.clearBody();
-    browserProxy = new multidevice.TestMultideviceBrowserProxy();
-    settings.MultiDeviceBrowserProxyImpl.instance_ = browserProxy;
+    browserProxy = new TestMultideviceBrowserProxy();
+    MultiDeviceBrowserProxyImpl.setInstanceForTesting(browserProxy);
     browserProxy.data.notificationAccessStatus =
-        settings.PhoneHubNotificationAccessStatus.AVAILABLE_BUT_NOT_GRANTED;
+        PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED;
 
     multidevicePage = document.createElement('settings-multidevice-page');
     assertTrue(!!multidevicePage);
@@ -291,33 +308,33 @@ suite('Multidevice', function() {
     document.body.appendChild(multidevicePage);
     await browserProxy.whenCalled('getPageContentData');
 
-    Polymer.dom.flush();
-    assertTrue(!!multidevicePage.$$(
+    flush();
+    assertTrue(!!multidevicePage.shadowRoot.querySelector(
         'settings-multidevice-notification-access-setup-dialog'));
 
     // Close the dialog.
     multidevicePage.showPhonePermissionSetupDialog_ = false;
-    Polymer.dom.flush();
+    flush();
 
     // A change in pageContentData will not cause the notification access
     // setup dialog to reappaear
     setPageContentData({});
-    Polymer.dom.flush();
+    flush();
 
-    assertFalse(!!multidevicePage.$$(
+    assertFalse(!!multidevicePage.shadowRoot.querySelector(
         'settings-multidevice-notification-access-setup-dialog'));
   });
 
   test('Open multidevice permissions setup dialog route param', async () => {
-    settings.Router.getInstance().navigateTo(
-        settings.routes.MULTIDEVICE_FEATURES,
-        new URLSearchParams('showNotificationAccessSetupDialog=true'));
+    Router.getInstance().navigateTo(
+        routes.MULTIDEVICE_FEATURES,
+        new URLSearchParams('showPhonePermissionSetupDialog&mode=1'));
 
     PolymerTest.clearBody();
-    browserProxy = new multidevice.TestMultideviceBrowserProxy();
-    settings.MultiDeviceBrowserProxyImpl.instance_ = browserProxy;
+    browserProxy = new TestMultideviceBrowserProxy();
+    MultiDeviceBrowserProxyImpl.setInstanceForTesting(browserProxy);
     browserProxy.data.notificationAccessStatus =
-        settings.PhoneHubNotificationAccessStatus.AVAILABLE_BUT_NOT_GRANTED;
+        PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED;
     browserProxy.data.isPhoneHubPermissionsDialogSupported = true;
 
     multidevicePage = document.createElement('settings-multidevice-page');
@@ -337,37 +354,35 @@ suite('Multidevice', function() {
     document.body.appendChild(multidevicePage);
     await browserProxy.whenCalled('getPageContentData');
 
-    Polymer.dom.flush();
-    assertTrue(
-        !!multidevicePage.$$('settings-multidevice-permissions-setup-dialog'));
+    flush();
+    assertTrue(!!multidevicePage.shadowRoot.querySelector(
+        'settings-multidevice-permissions-setup-dialog'));
 
     // Close the dialog.
     multidevicePage.showPhonePermissionSetupDialog_ = false;
-    Polymer.dom.flush();
+    flush();
 
     // A change in pageContentData will not cause the multidevice permissions
     // setup dialog to reappaear.
     setPageContentData({});
-    Polymer.dom.flush();
+    flush();
 
-    assertFalse(
-        !!multidevicePage.$$('settings-multidevice-permissions-setup-dialog'));
+    assertFalse(!!multidevicePage.shadowRoot.querySelector(
+        'settings-multidevice-permissions-setup-dialog'));
   });
 
   test('headings render based on mode and host', function() {
     for (const mode of ALL_MODES) {
       setHostData(mode);
-      assertEquals(
-          multidevicePage.isHostSet(), getLabel() === multidevice.HOST_DEVICE);
+      assertEquals(multidevicePage.isHostSet(), getLabel() === HOST_DEVICE);
     }
   });
 
   test('changing host device changes header', function() {
-    setHostData(settings.MultiDeviceSettingsMode.HOST_SET_VERIFIED);
-    assertEquals(getLabel(), multidevice.HOST_DEVICE);
-    const anotherHost = 'Super Duper ' + multidevice.HOST_DEVICE;
-    setHostData(
-        settings.MultiDeviceSettingsMode.HOST_SET_VERIFIED, anotherHost);
+    setHostData(MultiDeviceSettingsMode.HOST_SET_VERIFIED);
+    assertEquals(getLabel(), HOST_DEVICE);
+    const anotherHost = 'Super Duper ' + HOST_DEVICE;
+    setHostData(MultiDeviceSettingsMode.HOST_SET_VERIFIED, anotherHost);
     assertEquals(getLabel(), anotherHost);
   });
 
@@ -376,52 +391,57 @@ suite('Multidevice', function() {
       setHostData(mode);
       assertEquals(
           multidevicePage.isHostSet(),
-          !!multidevicePage.$$('#suiteLinkWrapper').hasAttribute('actionable'));
+          !!multidevicePage.shadowRoot.querySelector('#suiteLinkWrapper')
+                .hasAttribute('actionable'));
     }
   });
 
   test(
       'clicking item with verified host opens subpage with features',
       function() {
-        setHostData(settings.MultiDeviceSettingsMode.HOST_SET_VERIFIED);
+        setHostData(MultiDeviceSettingsMode.HOST_SET_VERIFIED);
         assertFalse(!!getSubpage());
-        multidevicePage.$$('#suiteLinkWrapper').click();
+        multidevicePage.shadowRoot.querySelector('#suiteLinkWrapper').click();
         assertTrue(!!getSubpage());
-        assertTrue(!!getSubpage().$$('settings-multidevice-feature-item'));
+        assertTrue(!!getSubpage().shadowRoot.querySelector(
+            'settings-multidevice-feature-item'));
       });
 
   test(
       'clicking item with unverified set host opens subpage without features',
       function() {
         setHostData(
-            settings.MultiDeviceSettingsMode.HOST_SET_WAITING_FOR_VERIFICATION,
-            multidevice.HOST_DEVICE);
+            MultiDeviceSettingsMode.HOST_SET_WAITING_FOR_VERIFICATION,
+            HOST_DEVICE);
         assertFalse(!!getSubpage());
-        multidevicePage.$$('#suiteLinkWrapper').click();
+        multidevicePage.shadowRoot.querySelector('#suiteLinkWrapper').click();
         assertTrue(!!getSubpage());
-        assertFalse(!!getSubpage().$$('settings-multidevice-feature-item'));
+        assertFalse(!!getSubpage().shadowRoot.querySelector(
+            'settings-multidevice-feature-item'));
       });
 
   test('policy prohibited suite shows policy indicator', function() {
-    setHostData(settings.MultiDeviceSettingsMode.NO_ELIGIBLE_HOSTS);
-    assertFalse(!!multidevicePage.$$('#suitePolicyIndicator'));
+    setHostData(MultiDeviceSettingsMode.NO_ELIGIBLE_HOSTS);
+    assertFalse(
+        !!multidevicePage.shadowRoot.querySelector('#suitePolicyIndicator'));
     // Prohibit suite by policy.
-    setSuiteState(settings.MultiDeviceFeatureState.PROHIBITED_BY_POLICY);
-    assertTrue(!!multidevicePage.$$('#suitePolicyIndicator'));
+    setSuiteState(MultiDeviceFeatureState.PROHIBITED_BY_POLICY);
+    assertTrue(
+        !!multidevicePage.shadowRoot.querySelector('#suitePolicyIndicator'));
     // Reallow suite.
-    setSuiteState(settings.MultiDeviceFeatureState.DISABLED_BY_USER);
-    assertFalse(!!multidevicePage.$$('#suitePolicyIndicator'));
+    setSuiteState(MultiDeviceFeatureState.DISABLED_BY_USER);
+    assertFalse(
+        !!multidevicePage.shadowRoot.querySelector('#suitePolicyIndicator'));
   });
 
   test('Multidevice permissions setup dialog', () => {
-    setPhoneHubNotificationsState(
-        settings.MultiDeviceFeatureState.DISABLED_BY_USER);
-    assertFalse(!!multidevicePage.$$(
+    setPhoneHubNotificationsState(MultiDeviceFeatureState.DISABLED_BY_USER);
+    assertFalse(!!multidevicePage.shadowRoot.querySelector(
         'settings-multidevice-notification-access-setup-dialog'));
 
     setPhoneHubNotificationAccessGranted(false);
     simulateFeatureStateChangeRequest(
-        settings.MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS,
+        MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS,
         /*enabled=*/ true, /*authRequired=*/ false);
 
     // Close the dialog.
@@ -429,30 +449,29 @@ suite('Multidevice', function() {
 
     setPhoneHubNotificationAccessGranted(false);
     simulateFeatureStateChangeRequest(
-        settings.MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS,
+        MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS,
         /*enabled=*/ false, /*authRequired=*/ false);
 
     setPhoneHubNotificationAccessGranted(true);
     simulateFeatureStateChangeRequest(
-        settings.MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS,
+        MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS,
         /*enabled=*/ true, /*authRequired=*/ false);
 
     multidevicePage.pageContentData.isNotificationAccessGranted = true;
     simulateFeatureStateChangeRequest(
-        settings.MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS,
+        MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS,
         /*enabled=*/ false, /*authRequired=*/ false);
   });
 
   test('New multidevice permissions setup dialog', () => {
     setPhoneHubPermissionsDialogSupported(true);
-    setPhoneHubNotificationsState(
-        settings.MultiDeviceFeatureState.DISABLED_BY_USER);
-    assertFalse(
-        !!multidevicePage.$$('settings-multidevice-permissions-setup-dialog'));
+    setPhoneHubNotificationsState(MultiDeviceFeatureState.DISABLED_BY_USER);
+    assertFalse(!!multidevicePage.shadowRoot.querySelector(
+        'settings-multidevice-permissions-setup-dialog'));
 
     setPhoneHubNotificationAccessGranted(false);
     simulateFeatureStateChangeRequest(
-        settings.MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS,
+        MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS,
         /*enabled=*/ true, /*authRequired=*/ false);
 
     // Close the dialog.
@@ -460,22 +479,22 @@ suite('Multidevice', function() {
 
     setPhoneHubNotificationAccessGranted(false);
     simulateFeatureStateChangeRequest(
-        settings.MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS,
+        MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS,
         /*enabled=*/ false, /*authRequired=*/ false);
 
     setPhoneHubNotificationAccessGranted(true);
     simulateFeatureStateChangeRequest(
-        settings.MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS,
+        MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS,
         /*enabled=*/ true, /*authRequired=*/ false);
 
     multidevicePage.pageContentData.isNotificationAccessGranted = true;
     simulateFeatureStateChangeRequest(
-        settings.MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS,
+        MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS,
         /*enabled=*/ false, /*authRequired=*/ false);
   });
 
   test('Disabling features never requires authentication', () => {
-    const Feature = settings.MultiDeviceFeature;
+    const Feature = MultiDeviceFeature;
 
     const disableFeatureFn = feature => {
       return simulateFeatureStateChangeRequest(
@@ -495,8 +514,8 @@ suite('Multidevice', function() {
   });
 
   test('Enabling some features requires authentication; others do not', () => {
-    const Feature = settings.MultiDeviceFeature;
-    const FeatureState = settings.MultiDeviceFeatureState;
+    const Feature = MultiDeviceFeature;
+    const FeatureState = MultiDeviceFeatureState;
 
     const enableFeatureWithoutAuthFn = feature => {
       return simulateFeatureStateChangeRequest(
@@ -542,128 +561,136 @@ suite('Multidevice', function() {
 
   test('Nearby setup button shown before onboarding is complete', async () => {
     setNearbyShareDisallowedByPolicy(false);
-    assertTrue(test_util.isChildVisible(
+    assertTrue(isChildVisible(
         multidevicePage, '#nearbySetUp', /*checkLightDom=*/ false));
-    assertFalse(test_util.isChildVisible(
+    assertFalse(isChildVisible(
         multidevicePage, '#nearbySharingToggleButton',
         /*checkLightDom=*/ false));
 
     setNearbyShareIsOnboardingComplete(true);
-    assertFalse(test_util.isChildVisible(
+    assertFalse(isChildVisible(
         multidevicePage, '#nearbySetUp', /*checkLightDom=*/ false));
-    assertTrue(test_util.isChildVisible(
+    assertTrue(isChildVisible(
         multidevicePage, '#nearbySharingToggleButton',
         /*checkLightDom=*/ false));
-    assertFalse(multidevicePage.$$('#nearbySharingToggleButton').disabled);
+    assertFalse(
+        multidevicePage.shadowRoot.querySelector('#nearbySharingToggleButton')
+            .disabled);
   });
 
   test('Nearby disabled toggle shown if disallowed by policy', async () => {
     setNearbyShareDisallowedByPolicy(false);
-    assertTrue(test_util.isChildVisible(
+    assertTrue(isChildVisible(
         multidevicePage, '#nearbySetUp', /*checkLightDom=*/ false));
-    assertFalse(test_util.isChildVisible(
+    assertFalse(isChildVisible(
         multidevicePage, '#nearbySharingToggleButton',
         /*checkLightDom=*/ false));
 
     setNearbyShareDisallowedByPolicy(true);
-    assertFalse(test_util.isChildVisible(
+    assertFalse(isChildVisible(
         multidevicePage, '#nearbySetUp', /*checkLightDom=*/ false));
-    assertTrue(test_util.isChildVisible(
+    assertTrue(isChildVisible(
         multidevicePage, '#nearbySharingToggleButton',
         /*checkLightDom=*/ false));
-    assertTrue(multidevicePage.$$('#nearbySharingToggleButton').disabled);
+    assertTrue(
+        multidevicePage.shadowRoot.querySelector('#nearbySharingToggleButton')
+            .disabled);
   });
 
   test('Nearby description shown before onboarding is completed', async () => {
     setNearbyShareDisallowedByPolicy(false);
-    assertTrue(test_util.isChildVisible(
+    assertTrue(isChildVisible(
         multidevicePage, '#nearbyShareSecondary > localized-link',
         /*checkLightDom=*/ false));
 
     setNearbyShareIsOnboardingComplete(true);
-    assertFalse(test_util.isChildVisible(
+    assertFalse(isChildVisible(
         multidevicePage, '#nearbyShareSecondary > localized-link',
         /*checkLightDom=*/ false));
     assertEquals(
-        multidevicePage.$$('#nearbyShareSecondary').textContent.trim(), 'Off');
+        multidevicePage.shadowRoot.querySelector('#nearbyShareSecondary')
+            .textContent.trim(),
+        'Off');
   });
 
   test('Nearby description shown if disallowed by policy', async () => {
     setNearbyShareDisallowedByPolicy(false);
     setNearbyShareIsOnboardingComplete(true);
-    assertFalse(test_util.isChildVisible(
+    assertFalse(isChildVisible(
         multidevicePage, '#nearbyShareSecondary > localized-link',
         /*checkLightDom=*/ false));
     assertEquals(
-        multidevicePage.$$('#nearbyShareSecondary').textContent.trim(), 'Off');
+        multidevicePage.shadowRoot.querySelector('#nearbyShareSecondary')
+            .textContent.trim(),
+        'Off');
 
     setNearbyShareDisallowedByPolicy(true);
-    assertTrue(test_util.isChildVisible(
+    assertTrue(isChildVisible(
         multidevicePage, '#nearbyShareSecondary > localized-link',
         /*checkLightDom=*/ false));
   });
 
   test('Nearby policy indicator shown when disallowed by policy', async () => {
     setNearbyShareDisallowedByPolicy(false);
-    assertFalse(test_util.isChildVisible(
+    assertFalse(isChildVisible(
         multidevicePage, '#nearbyPolicyIndicator',
         /*checkLightDom=*/ false));
 
     setNearbyShareDisallowedByPolicy(true);
-    assertTrue(test_util.isChildVisible(
+    assertTrue(isChildVisible(
         multidevicePage, '#nearbyPolicyIndicator',
         /*checkLightDom=*/ false));
 
     setNearbyShareDisallowedByPolicy(false);
-    assertFalse(test_util.isChildVisible(
+    assertFalse(isChildVisible(
         multidevicePage, '#nearbyPolicyIndicator',
         /*checkLightDom=*/ false));
   });
 
   test('Nearby subpage not available when disallowed by policy', async () => {
     setNearbyShareDisallowedByPolicy(true);
-    assertFalse(
-        !!multidevicePage.$$('#nearbyLinkWrapper').hasAttribute('actionable'));
+    assertFalse(!!multidevicePage.shadowRoot.querySelector('#nearbyLinkWrapper')
+                      .hasAttribute('actionable'));
 
     setNearbyShareDisallowedByPolicy(false);
-    assertTrue(
-        !!multidevicePage.$$('#nearbyLinkWrapper').hasAttribute('actionable'));
+    assertTrue(!!multidevicePage.shadowRoot.querySelector('#nearbyLinkWrapper')
+                     .hasAttribute('actionable'));
   });
 
   test('Better Together Suite icon visible when there is no host set', () => {
-    setHostData(settings.MultiDeviceSettingsMode.NO_HOST_SET);
-    assertTrue(test_util.isChildVisible(
+    setHostData(MultiDeviceSettingsMode.NO_HOST_SET);
+    assertTrue(isChildVisible(
         multidevicePage, '#betterTogetherSuiteIcon',
         /*checkLightDom=*/ false));
   });
 
   test('Better Together Suite icon visible when there is a host set', () => {
-    setHostData(settings.MultiDeviceSettingsMode.HOST_SET_VERIFIED);
-    assertTrue(test_util.isChildVisible(
+    setHostData(MultiDeviceSettingsMode.HOST_SET_VERIFIED);
+    assertTrue(isChildVisible(
         multidevicePage, '#betterTogetherSuiteIcon',
         /*checkLightDom=*/ false));
   });
 
   test('Better Together Suite icon remains visible when host added', () => {
-    setHostData(settings.MultiDeviceSettingsMode.NO_HOST_SET);
-    assertTrue(test_util.isChildVisible(
+    setHostData(MultiDeviceSettingsMode.NO_HOST_SET);
+    assertTrue(isChildVisible(
         multidevicePage, '#betterTogetherSuiteIcon',
         /*checkLightDom=*/ false));
 
-    setHostData(settings.MultiDeviceSettingsMode.HOST_SET_VERIFIED);
-    assertTrue(test_util.isChildVisible(
+    setHostData(MultiDeviceSettingsMode.HOST_SET_VERIFIED);
+    assertTrue(isChildVisible(
         multidevicePage, '#betterTogetherSuiteIcon',
         /*checkLightDom=*/ false));
   });
 
   test('Better Together Suite icon remains visible when host removed', () => {
-    setHostData(settings.MultiDeviceSettingsMode.HOST_SET_VERIFIED);
-    assertTrue(test_util.isChildVisible(
+    setHostData(MultiDeviceSettingsMode.HOST_SET_VERIFIED);
+    assertTrue(isChildVisible(
         multidevicePage, '#betterTogetherSuiteIcon',
         /*checkLightDom=*/ false));
 
-    setHostData(settings.MultiDeviceSettingsMode.NO_HOST_SET);
-    assertTrue(test_util.isChildVisible(
+    setHostData(MultiDeviceSettingsMode.NO_HOST_SET);
+    assertTrue(isChildVisible(
         multidevicePage, '#betterTogetherSuiteIcon',
         /*checkLightDom=*/ false));
   });
@@ -672,16 +699,16 @@ suite('Multidevice', function() {
       'Nearby share sub page arrow is not visible before onboarding',
       async () => {
         setNearbyShareDisallowedByPolicy(false);
-        assertTrue(test_util.isChildVisible(
+        assertTrue(isChildVisible(
             multidevicePage, '#nearbySetUp', /*checkLightDom=*/ false));
-        assertFalse(test_util.isChildVisible(
+        assertTrue(isChildVisible(
             multidevicePage, '#nearbyShareSubpageArrow',
             /*checkLightDom=*/ false));
 
         setNearbyShareIsOnboardingComplete(true);
         setNearbyShareEnabled(true);
-        Polymer.dom.flush();
-        assertTrue(test_util.isChildVisible(
+        flush();
+        assertTrue(isChildVisible(
             multidevicePage, '#nearbyShareSubpageArrow',
             /*checkLightDom=*/ false));
       });
@@ -690,38 +717,38 @@ suite('Multidevice', function() {
       'Clicking nearby subpage before onboarding initiates onboarding',
       async () => {
         setNearbyShareDisallowedByPolicy(false);
-        assertTrue(test_util.isChildVisible(
+        assertTrue(isChildVisible(
             multidevicePage, '#nearbySetUp', /*checkLightDom=*/ false));
-        assertFalse(test_util.isChildVisible(
+        assertTrue(isChildVisible(
             multidevicePage, '#nearbyShareSubpageArrow',
             /*checkLightDom=*/ false));
 
-        const router = settings.Router.getInstance();
-        multidevicePage.$$('#nearbyLinkWrapper').click();
+        const router = Router.getInstance();
+        multidevicePage.shadowRoot.querySelector('#nearbyLinkWrapper').click();
         await flushAsync();
-        assertEquals(settings.routes.NEARBY_SHARE, router.getCurrentRoute());
-        assertTrue(router.getQueryParameters().has('onboarding'));
+        assertEquals(routes.NEARBY_SHARE, router.getCurrentRoute());
+        assertFalse(router.getQueryParameters().has('onboarding'));
       });
 
   test('Clicking nearby subpage after onboarding enters subpage', async () => {
     setNearbyShareDisallowedByPolicy(false);
-    assertTrue(test_util.isChildVisible(
+    assertTrue(isChildVisible(
         multidevicePage, '#nearbySetUp', /*checkLightDom=*/ false));
-    assertFalse(test_util.isChildVisible(
+    assertTrue(isChildVisible(
         multidevicePage, '#nearbyShareSubpageArrow',
         /*checkLightDom=*/ false));
 
     setNearbyShareIsOnboardingComplete(true);
     setNearbyShareEnabled(true);
-    Polymer.dom.flush();
+    flush();
 
-    assertTrue(test_util.isChildVisible(
+    assertTrue(isChildVisible(
         multidevicePage, '#nearbyShareSubpageArrow',
         /*checkLightDom=*/ false));
-    const router = settings.Router.getInstance();
-    multidevicePage.$$('#nearbyLinkWrapper').click();
+    const router = Router.getInstance();
+    multidevicePage.shadowRoot.querySelector('#nearbyLinkWrapper').click();
     await flushAsync();
-    assertEquals(settings.routes.NEARBY_SHARE, router.getCurrentRoute());
+    assertEquals(routes.NEARBY_SHARE, router.getCurrentRoute());
     assertFalse(router.getQueryParameters().has('onboarding'));
   });
 
@@ -744,73 +771,69 @@ suite('Multidevice', function() {
     assertEquals(newEnabledState, multidevicePage.get('settings.enabled'));
   });
 
-  suite('Background Scanning Enabled', function() {
-    suiteSetup(function() {
-      loadTimeData.overrideValues({
-        isNearbyShareBackgroundScanningEnabled: true,
-      });
-    });
+  test('Screen lock changes propagate to settings property', () => {
+    setScreenLockStatus(/* chromeStatus= */ true, /* phoneStatus= */ true);
 
-    test(
-        'Nearby share sub page arrow is visible before onboarding',
-        async () => {
-          // Arrow only visible if background scanning feature flag is enabled
-          // and hardware offloading is supported.
-          await flushAsync();
-          setNearbyShareDisallowedByPolicy(false);
-          multidevicePage.set(
-              'settings.isFastInitiationHardwareSupported', true);
+    assertTrue(multidevicePage.isChromeosScreenLockEnabled_);
+    assertTrue(multidevicePage.isPhoneScreenLockEnabled_);
+  });
 
-          setNearbyShareDisallowedByPolicy(false);
-          assertTrue(test_util.isChildVisible(
-              multidevicePage, '#nearbySetUp', /*checkLightDom=*/ false));
-          assertTrue(test_util.isChildVisible(
-              multidevicePage, '#nearbyShareSubpageArrow',
-              /*checkLightDom=*/ false));
+  test('Nearby share sub page arrow is visible before onboarding', async () => {
+    // Arrow only visible if background scanning feature flag is enabled
+    // and hardware offloading is supported.
+    await flushAsync();
+    setNearbyShareDisallowedByPolicy(false);
+    multidevicePage.set('settings.isFastInitiationHardwareSupported', true);
 
-          setNearbyShareIsOnboardingComplete(true);
-          setNearbyShareEnabled(true);
-          await flushAsync();
-          assertTrue(test_util.isChildVisible(
-              multidevicePage, '#nearbyShareSubpageArrow',
-              /*checkLightDom=*/ false));
-        });
+    setNearbyShareDisallowedByPolicy(false);
+    assertTrue(isChildVisible(
+        multidevicePage, '#nearbySetUp', /*checkLightDom=*/ false));
+    assertTrue(isChildVisible(
+        multidevicePage, '#nearbyShareSubpageArrow',
+        /*checkLightDom=*/ false));
 
-    test('No Background Scanning hardware support', async () => {
-      // Ensure initial nearby settings values are set before overriding.
-      await flushAsync();
-      setNearbyShareDisallowedByPolicy(false);
-      multidevicePage.set('settings.isFastInitiationHardwareSupported', false);
-      await flushAsync();
+    setNearbyShareIsOnboardingComplete(true);
+    setNearbyShareEnabled(true);
+    await flushAsync();
+    assertTrue(isChildVisible(
+        multidevicePage, '#nearbyShareSubpageArrow',
+        /*checkLightDom=*/ false));
+  });
 
-      assertTrue(test_util.isChildVisible(
-          multidevicePage, '#nearbySetUp', /*checkLightDom=*/ false));
-      assertFalse(test_util.isChildVisible(
-          multidevicePage, '#nearbyShareSubpageArrow',
-          /*checkLightDom=*/ false));
+  test('No Background Scanning hardware support', async () => {
+    // Ensure initial nearby settings values are set before overriding.
+    await flushAsync();
+    setNearbyShareDisallowedByPolicy(false);
+    multidevicePage.set('settings.isFastInitiationHardwareSupported', false);
+    await flushAsync();
 
-      // Clicking on Nearby Subpage row should initiate onboarding.
-      const router = settings.Router.getInstance();
-      assertTrue(!!multidevicePage.$$('#nearbyLinkWrapper'));
-      multidevicePage.$$('#nearbyLinkWrapper').click();
-      await flushAsync();
-      assertEquals(settings.routes.NEARBY_SHARE, router.getCurrentRoute());
-      assertTrue(router.getQueryParameters().has('onboarding'));
-    });
+    assertTrue(isChildVisible(
+        multidevicePage, '#nearbySetUp', /*checkLightDom=*/ false));
+    assertFalse(isChildVisible(
+        multidevicePage, '#nearbyShareSubpageArrow',
+        /*checkLightDom=*/ false));
 
-    test(
-        'Clicking nearby subpage before onboarding enters subpage',
-        async () => {
-          setNearbyShareDisallowedByPolicy(false);
-          await flushAsync();
+    // Clicking on Nearby Subpage row should initiate onboarding.
+    const router = Router.getInstance();
+    assertTrue(
+        !!multidevicePage.shadowRoot.querySelector('#nearbyLinkWrapper'));
+    multidevicePage.shadowRoot.querySelector('#nearbyLinkWrapper').click();
+    await flushAsync();
+    assertEquals(routes.NEARBY_SHARE, router.getCurrentRoute());
+    assertTrue(router.getQueryParameters().has('onboarding'));
+  });
 
-          const router = settings.Router.getInstance();
-          assertTrue(!!multidevicePage.$$('#nearbyLinkWrapper'));
+  test('Clicking nearby subpage before onboarding enters subpage', async () => {
+    setNearbyShareDisallowedByPolicy(false);
+    await flushAsync();
 
-          multidevicePage.$$('#nearbyLinkWrapper').click();
-          await flushAsync();
-          assertEquals(settings.routes.NEARBY_SHARE, router.getCurrentRoute());
-          assertFalse(router.getQueryParameters().has('onboarding'));
-        });
+    const router = Router.getInstance();
+    assertTrue(
+        !!multidevicePage.shadowRoot.querySelector('#nearbyLinkWrapper'));
+
+    multidevicePage.shadowRoot.querySelector('#nearbyLinkWrapper').click();
+    await flushAsync();
+    assertEquals(routes.NEARBY_SHARE, router.getCurrentRoute());
+    assertFalse(router.getQueryParameters().has('onboarding'));
   });
 });

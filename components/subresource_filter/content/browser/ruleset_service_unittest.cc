@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,6 +19,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
@@ -70,7 +71,7 @@ class ScopedFunctionOverride {
   ~ScopedFunctionOverride() { std::swap(*target_, replacement_); }
 
  private:
-  Fun* target_;
+  raw_ptr<Fun> target_;
   Fun replacement_;
 };
 
@@ -145,7 +146,7 @@ class MockRulesetPublisherImpl : public RulesetPublisher {
     return RulesetFilePtr(
         new base::File(file_path, base::File::FLAG_OPEN |
                                       base::File::FLAG_READ |
-                                      base::File::FLAG_SHARE_DELETE),
+                                      base::File::FLAG_WIN_SHARE_DELETE),
         base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get()));
   }
 

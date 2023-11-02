@@ -39,9 +39,6 @@ pub const O_DIRECT: ::c_int = 0x8000;
 pub const O_DIRECTORY: ::c_int = 0x10000;
 pub const O_NOFOLLOW: ::c_int = 0x20000;
 
-pub const RLIMIT_NLIMITS: ::c_int = 15;
-pub const RLIM_NLIMITS: ::c_int = RLIMIT_NLIMITS;
-
 pub const O_APPEND: ::c_int = 8;
 pub const O_CREAT: ::c_int = 256;
 pub const O_EXCL: ::c_int = 1024;
@@ -154,10 +151,6 @@ pub const SOCK_STREAM: ::c_int = 2;
 pub const SOCK_DGRAM: ::c_int = 1;
 pub const SOCK_SEQPACKET: ::c_int = 5;
 
-pub const FIOCLEX: ::c_ulong = 0x6601;
-pub const FIONCLEX: ::c_ulong = 0x6602;
-pub const FIONBIO: ::c_ulong = 0x667e;
-
 pub const SA_ONSTACK: ::c_uint = 0x08000000;
 pub const SA_SIGINFO: ::c_uint = 0x00000008;
 pub const SA_NOCLDWAIT: ::c_int = 0x00010000;
@@ -209,9 +202,6 @@ pub const F_SETLK: ::c_int = 6;
 pub const F_SETLKW: ::c_int = 7;
 
 pub const SFD_NONBLOCK: ::c_int = 0x80;
-
-pub const TIOCGWINSZ: ::c_ulong = 0x40087468;
-pub const TIOCSWINSZ: ::c_ulong = 0x80087467;
 
 pub const RTLD_GLOBAL: ::c_int = 0x4;
 

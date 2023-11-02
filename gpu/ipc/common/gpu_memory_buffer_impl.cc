@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,10 +36,6 @@ gfx::BufferFormat GpuMemoryBufferImpl::GetFormat() const {
 
 gfx::GpuMemoryBufferId GpuMemoryBufferImpl::GetId() const {
   return id_;
-}
-
-ClientBuffer GpuMemoryBufferImpl::AsClientBuffer() {
-  return reinterpret_cast<ClientBuffer>(this);
 }
 
 void GpuMemoryBufferImpl::OnMemoryDump(

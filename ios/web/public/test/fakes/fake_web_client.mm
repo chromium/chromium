@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,15 +6,14 @@
 
 #import <UIKit/UIKit.h>
 
-#include "base/strings/sys_string_conversions.h"
-#include "base/task/post_task.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/web/common/uikit_ui_util.h"
-#include "ios/web/public/test/error_test_util.h"
+#import "ios/web/public/test/error_test_util.h"
 #import "ios/web/public/test/js_test_util.h"
-#include "ios/web/public/thread/web_task_traits.h"
-#include "ios/web/test/test_url_constants.h"
-#include "ui/base/resource/resource_bundle.h"
-#include "url/gurl.h"
+#import "ios/web/public/thread/web_task_traits.h"
+#import "ios/web/test/test_url_constants.h"
+#import "ui/base/resource/resource_bundle.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -65,7 +64,7 @@ NSString* FakeWebClient::GetDocumentStartScriptForMainFrame(
 
 NSString* FakeWebClient::GetDocumentStartScriptForAllFrames(
     BrowserState* browser_state) const {
-  return web::test::GetPageScript(@"all_frames_web_test_bundle");
+  return web::test::GetPageScript(@"cookie_test");
 }
 
 void FakeWebClient::SetPluginNotSupportedText(const std::u16string& text) {
@@ -99,9 +98,8 @@ UIView* FakeWebClient::GetWindowedContainer() {
   return GetAnyKeyWindow().rootViewController.view;
 }
 
-UserAgentType FakeWebClient::GetDefaultUserAgent(
-    id<UITraitEnvironment> web_view,
-    const GURL& url) {
+UserAgentType FakeWebClient::GetDefaultUserAgent(web::WebState* web_state,
+                                                 const GURL& url) const {
   return default_user_agent_;
 }
 

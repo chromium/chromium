@@ -1,10 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_IMAGE_FETCHER_CORE_REDUCED_MODE_IMAGE_FETCHER_H_
 #define COMPONENTS_IMAGE_FETCHER_CORE_REDUCED_MODE_IMAGE_FETCHER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/image_fetcher/core/image_fetcher.h"
 #include "url/gurl.h"
@@ -36,7 +37,7 @@ class ReducedModeImageFetcher : public ImageFetcher {
 
  private:
   // Owned by ImageFetcherService.
-  ImageFetcher* image_fetcher_;
+  raw_ptr<ImageFetcher> image_fetcher_;
 
   // Used to ensure that operations are performed on the sequence that this
   // object was created on.

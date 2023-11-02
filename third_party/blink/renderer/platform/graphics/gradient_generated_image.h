@@ -36,31 +36,30 @@ class PLATFORM_EXPORT GradientGeneratedImage final : public GeneratedImage {
  public:
   static scoped_refptr<GradientGeneratedImage> Create(
       scoped_refptr<Gradient> generator,
-      const FloatSize& size) {
+      const gfx::SizeF& size) {
     return base::AdoptRef(
         new GradientGeneratedImage(std::move(generator), size));
   }
 
   ~GradientGeneratedImage() override = default;
 
-  bool ApplyShader(PaintFlags&,
+  bool ApplyShader(cc::PaintFlags&,
                    const SkMatrix&,
-                   const FloatRect& dst_rect,
-                   const FloatRect& src_rect,
+                   const gfx::RectF& src_rect,
                    const ImageDrawOptions&) override;
 
  protected:
   void Draw(cc::PaintCanvas*,
-            const PaintFlags&,
-            const FloatRect& dest_rect,
-            const FloatRect& src_rect,
+            const cc::PaintFlags&,
+            const gfx::RectF& dest_rect,
+            const gfx::RectF& src_rect,
             const ImageDrawOptions&) override;
   void DrawTile(GraphicsContext&,
-                const FloatRect&,
+                const gfx::RectF&,
                 const ImageDrawOptions& draw_options) override;
 
   GradientGeneratedImage(scoped_refptr<Gradient> generator,
-                         const FloatSize& size)
+                         const gfx::SizeF& size)
       : GeneratedImage(size), gradient_(std::move(generator)) {}
 
   scoped_refptr<Gradient> gradient_;

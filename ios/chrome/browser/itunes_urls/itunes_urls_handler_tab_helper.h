@@ -1,11 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef IOS_CHROME_BROWSER_ITUNES_URLS_ITUNES_URLS_HANDLER_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_ITUNES_URLS_ITUNES_URLS_HANDLER_TAB_HELPER_H_
 
-#include "base/macros.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "ios/web/public/web_state_user_data.h"
 
@@ -44,7 +43,7 @@ class ITunesUrlsHandlerTabHelper
   ~ITunesUrlsHandlerTabHelper() override;
   explicit ITunesUrlsHandlerTabHelper(web::WebState* web_state);
 
-  // Returns true, if ITunesUrlsHandlerTabHelper can handle the given |url|.
+  // Returns true, if ITunesUrlsHandlerTabHelper can handle the given `url`.
   static bool CanHandleUrl(const GURL& url);
 
   // web::WebStatePolicyDecider implementation
@@ -56,7 +55,7 @@ class ITunesUrlsHandlerTabHelper
  private:
   friend class web::WebStateUserData<ITunesUrlsHandlerTabHelper>;
 
-  // Opens the StoreKit for the given iTunes app |url|.
+  // Opens the StoreKit for the given iTunes app `url`.
   void HandleITunesUrl(const GURL& url);
 
   WEB_STATE_USER_DATA_KEY_DECL();

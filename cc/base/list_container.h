@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <utility>
 
 #include "base/check.h"
 #include "cc/base/list_container_helper.h"
@@ -26,6 +27,8 @@ namespace cc {
 template <class BaseElementType>
 class ListContainer {
  public:
+  using value_type = const BaseElementType*;
+
   // This constructor reserves the requested memory up front so only single
   // allocation is needed. When num_of_elements_to_reserve_for is zero, use the
   // default size.

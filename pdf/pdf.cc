@@ -1,4 +1,4 @@
-// Copyright (c) 2010 The Chromium Authors. All rights reserved.
+// Copyright 2010 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include <utility>
 
+#include "build/build_config.h"
 #include "pdf/pdf_engine.h"
 #include "pdf/pdf_init.h"
 #include "ui/gfx/geometry/rect.h"
@@ -35,17 +36,17 @@ class ScopedSdkInitializer {
 
 }  // namespace
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 std::vector<uint8_t> CreateFlattenedPdf(
     base::span<const uint8_t> input_buffer) {
   ScopedSdkInitializer scoped_sdk_initializer(/*enable_v8=*/false);
   return PDFEngineExports::Get()->CreateFlattenedPdf(input_buffer);
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 bool RenderPDFPageToDC(base::span<const uint8_t> pdf_buffer,
-                       int page_number,
+                       int page_index,
                        HDC dc,
                        int dpi_x,
                        int dpi_y,
@@ -66,23 +67,14 @@ bool RenderPDFPageToDC(base::span<const uint8_t> pdf_buffer,
       gfx::Rect(bounds_origin_x, bounds_origin_y, bounds_width, bounds_height),
       fit_to_bounds, stretch_to_bounds, keep_aspect_ratio, center_in_bounds,
       autorotate, use_color, /*render_for_printing=*/true);
-  return engine_exports->RenderPDFPageToDC(pdf_buffer, page_number, settings,
+  return engine_exports->RenderPDFPageToDC(pdf_buffer, page_index, settings,
                                            dc);
-}
-
-void SetPDFEnsureTypefaceCharactersAccessible(
-    PDFEnsureTypefaceCharactersAccessible func) {
-  PDFEngineExports::Get()->SetPDFEnsureTypefaceCharactersAccessible(func);
-}
-
-void SetPDFUseGDIPrinting(bool enable) {
-  PDFEngineExports::Get()->SetPDFUseGDIPrinting(enable);
 }
 
 void SetPDFUsePrintMode(int mode) {
   PDFEngineExports::Get()->SetPDFUsePrintMode(mode);
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 bool GetPDFDocInfo(base::span<const uint8_t> pdf_buffer,
                    int* page_count,
@@ -107,15 +99,15 @@ base::Value GetPDFStructTreeForPage(base::span<const uint8_t> pdf_buffer,
 
 absl::optional<gfx::SizeF> GetPDFPageSizeByIndex(
     base::span<const uint8_t> pdf_buffer,
-    int page_number) {
+    int page_index) {
   ScopedSdkInitializer scoped_sdk_initializer(/*enable_v8=*/true);
   chrome_pdf::PDFEngineExports* engine_exports =
       chrome_pdf::PDFEngineExports::Get();
-  return engine_exports->GetPDFPageSizeByIndex(pdf_buffer, page_number);
+  return engine_exports->GetPDFPageSizeByIndex(pdf_buffer, page_index);
 }
 
 bool RenderPDFPageToBitmap(base::span<const uint8_t> pdf_buffer,
-                           int page_number,
+                           int page_index,
                            void* bitmap_buffer,
                            const gfx::Size& bitmap_size,
                            const gfx::Size& dpi,
@@ -128,8 +120,8 @@ bool RenderPDFPageToBitmap(base::span<const uint8_t> pdf_buffer,
       options.keep_aspect_ratio,
       /*center_in_bounds=*/true, options.autorotate, options.use_color,
       options.render_device_type == RenderDeviceType::kPrinter);
-  return engine_exports->RenderPDFPageToBitmap(pdf_buffer, page_number,
-                                               settings, bitmap_buffer);
+  return engine_exports->RenderPDFPageToBitmap(pdf_buffer, page_index, settings,
+                                               bitmap_buffer);
 }
 
 std::vector<uint8_t> ConvertPdfPagesToNupPdf(

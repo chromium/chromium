@@ -1,4 +1,4 @@
-// Copyright (c) 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,9 @@
 
 #include "base/feature_list.h"
 #include "base/files/memory_mapped_file.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece_forward.h"
-#include "base/task/post_task.h"
+#include "base/strings/string_piece.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/file_util_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
@@ -68,10 +68,10 @@ std::string GetFileMimeType(const base::FilePath& path,
 
 std::pair<BinaryUploadService::Result, BinaryUploadService::Request::Data>
 GetFileDataBlocking(const base::FilePath& path, bool detect_mime_type) {
-  // FLAG_SHARE_DELETE is necessary to allow the file to be renamed by the user
-  // clicking "Open Now" without causing download errors.
+  // FLAG_WIN_SHARE_DELETE is necessary to allow the file to be renamed by the
+  // user clicking "Open Now" without causing download errors.
   base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ |
-                            base::File::FLAG_SHARE_DELETE);
+                            base::File::FLAG_WIN_SHARE_DELETE);
 
   if (!file.IsValid()) {
     return std::make_pair(BinaryUploadService::Result::UNKNOWN,
@@ -113,14 +113,14 @@ GetFileDataBlocking(const base::FilePath& path, bool detect_mime_type) {
   }
 
   file_data.hash.resize(crypto::kSHA256Length);
-  secure_hash->Finish(base::data(file_data.hash), crypto::kSHA256Length);
+  secure_hash->Finish(std::data(file_data.hash), crypto::kSHA256Length);
   file_data.hash =
       base::HexEncode(base::as_bytes(base::make_span(file_data.hash)));
 
   return {file_size <= BinaryUploadService::kMaxUploadSizeBytes
               ? BinaryUploadService::Result::SUCCESS
               : BinaryUploadService::Result::FILE_TOO_LARGE,
-          file_data};
+          std::move(file_data)};
 }
 
 bool IsZipFile(const base::FilePath::StringType& extension,
@@ -146,9 +146,9 @@ FileAnalysisRequest::FileAnalysisRequest(
     std::string mime_type,
     bool delay_opening_file,
     BinaryUploadService::ContentAnalysisCallback callback)
-    : Request(std::move(callback), analysis_settings.analysis_url),
+    : Request(std::move(callback), analysis_settings.cloud_or_local_settings),
       has_cached_result_(false),
-      block_unsupported_types_(analysis_settings.block_unsupported_file_types),
+      tag_settings_(analysis_settings.tags),
       path_(std::move(path)),
       file_name_(std::move(file_name)),
       delay_opening_file_(delay_opening_file) {
@@ -192,25 +192,6 @@ void FileAnalysisRequest::OpenFile() {
                      weakptr_factory_.GetWeakPtr(), std::move(file_data)));
 }
 
-bool FileAnalysisRequest::FileSupportedByDlp(
-    const std::string& mime_type) const {
-  for (const std::string& tag : content_analysis_request().tags()) {
-    if (tag == "dlp") {
-      if (FileTypeSupportedForDlp(file_name_)) {
-        return true;
-      } else if (base::FeatureList::IsEnabled(
-                     safe_browsing::kFileAnalysisMimeTypeSniff)) {
-        return MimeTypeSupportedForDlp(mime_type);
-      }
-      return false;
-    }
-  }
-
-  // This function's default is true when there is no "dlp" tag so that the
-  // unsupported DLP path isn't used.
-  return true;
-}
-
 bool FileAnalysisRequest::HasMalwareRequest() const {
   for (const std::string& tag : content_analysis_request().tags()) {
     if (tag == "malware")
@@ -231,21 +212,6 @@ void FileAnalysisRequest::OnGotFileData(
   const std::string& mime_type = cached_data_.mime_type.empty()
                                      ? result_and_data.second.mime_type
                                      : cached_data_.mime_type;
-  if (!FileSupportedByDlp(mime_type)) {
-    // Abort the request early if settings say to block unsupported types or if
-    // there was no malware request to be done, otherwise proceed with the
-    // malware request only.
-    if (block_unsupported_types_ || !HasMalwareRequest()) {
-      CacheResultAndData(
-          BinaryUploadService::Result::DLP_SCAN_UNSUPPORTED_FILE_TYPE,
-          std::move(result_and_data.second));
-      RunCallback();
-      return;
-    } else {
-      clear_dlp_scan_request();
-    }
-  }
-
   base::FilePath::StringType ext(file_name_.FinalExtension());
   std::transform(ext.begin(), ext.end(), ext.begin(), tolower);
   if (IsZipFile(ext, mime_type)) {
@@ -274,10 +240,9 @@ void FileAnalysisRequest::OnGotFileData(
 void FileAnalysisRequest::OnCheckedForEncryption(
     Data data,
     const ArchiveAnalyzerResults& analyzer_result) {
-  bool encrypted =
-      std::any_of(analyzer_result.archived_binary.begin(),
-                  analyzer_result.archived_binary.end(),
-                  [](const auto& binary) { return binary.is_encrypted(); });
+  bool encrypted = base::ranges::any_of(
+      analyzer_result.archived_binary,
+      [](const auto& binary) { return binary.is_encrypted(); });
 
   BinaryUploadService::Result result =
       encrypted ? BinaryUploadService::Result::FILE_ENCRYPTED
@@ -303,7 +268,14 @@ void FileAnalysisRequest::CacheResultAndData(BinaryUploadService::Result result,
 
 void FileAnalysisRequest::RunCallback() {
   if (!data_callback_.is_null()) {
-    std::move(data_callback_).Run(cached_result_, cached_data_);
+    // Manually copy `cached_data_` since it is move-only.
+    BinaryUploadService::Request::Data data;
+    data.hash = cached_data_.hash;
+    data.mime_type = cached_data_.mime_type;
+    data.path = cached_data_.path;
+    data.size = cached_data_.size;
+
+    std::move(data_callback_).Run(cached_result_, std::move(data));
   }
 }
 

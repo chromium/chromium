@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -46,10 +46,12 @@ void FindInPageClient::SetActiveMatch(
   HandleUpdateType(request_id, update_type);
 }
 
+#if BUILDFLAG(IS_ANDROID)
 void FindInPageClient::ActivateNearestFindResult(int request_id,
                                                  const gfx::PointF& point) {
   frame_->GetFindInPage()->ActivateNearestFindResult(request_id, point);
 }
+#endif
 
 void FindInPageClient::HandleUpdateType(
     int request_id,

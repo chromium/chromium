@@ -7,5 +7,5 @@
 ++++[link] name='read '
 ++++++[static] name='read '
 ++++[link] name='read'
-++++++[image]
+++++++[image] name='To get missing image descriptions, open the context menu.'
 ++++++[static] name='read'

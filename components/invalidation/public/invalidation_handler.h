@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,8 +32,6 @@ class INVALIDATION_EXPORT InvalidationHandler {
 
   // Returned value must be unique for the handlers using the same invalidation
   // service.
-  // TODO(crbug.com/1049591): this is currently not the case for
-  // CloudPolicyInvalidator.
   virtual std::string GetOwnerName() const = 0;
 
   // Called on change of |client_id|. Client id is used to identify the

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -133,9 +133,8 @@ void UnifiedConsentService::StopObservingServicePrefChanges() {
 
 void UnifiedConsentService::ServicePrefChanged(const std::string& name) {
   DCHECK(sync_service_->IsSetupInProgress());
-  const base::Value* value = pref_service_->Get(name);
-  DCHECK(value);
-  service_pref_changes_[name] = value->Clone();
+  const base::Value& value = pref_service_->GetValue(name);
+  service_pref_changes_[name] = value.Clone();
 }
 
 MigrationState UnifiedConsentService::GetMigrationState() {

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,8 +22,9 @@ public class BasePartnerBrowserCustomizationIntegrationTestRule
         return super.apply(new Statement() {
             @Override
             public void evaluate() throws Throwable {
-                PartnerBrowserCustomizations.ignoreBrowserProviderSystemPackageCheckForTests(true);
-                PartnerBrowserCustomizations.setProviderAuthorityForTests(
+                CustomizationProviderDelegateUpstreamImpl
+                        .ignoreBrowserProviderSystemPackageCheckForTesting(true);
+                CustomizationProviderDelegateUpstreamImpl.setProviderAuthorityForTesting(
                         TestPartnerBrowserCustomizationsProvider.class.getName());
                 base.evaluate();
             }

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.share.qrcode;
 
 import com.google.android.material.tabs.TabLayout;
 
-import org.chromium.ui.base.AndroidPermissionDelegate;
+import org.chromium.ui.base.WindowAndroid;
 
 import java.util.ArrayList;
 
@@ -60,9 +60,9 @@ public class TabLayoutPageListener extends TabLayout.TabLayoutOnPageChangeListen
     /**
      * Called when the fragment's underlying AndroidPermissionDelegate is updated.
      * Propagates the given AndroidPermissionDelegate to all of the tabs.
-     * @param windowAndroid The updated AndroidPermissionDelegate.
+     * @param windowAndroid The updated WindowAndroid.
      */
-    public void updatePermissions(AndroidPermissionDelegate windowAndroid) {
+    public void updatePermissions(WindowAndroid windowAndroid) {
         for (QrCodeDialogTab tab : mTabs) {
             tab.updatePermissions(windowAndroid);
         }

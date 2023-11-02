@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,7 +34,8 @@ DownloadUrlParameters::DownloadUrlParameters(
       traffic_annotation_(traffic_annotation),
       download_source_(DownloadSource::UNKNOWN),
       require_safety_checks_(true),
-      has_user_gesture_(false) {}
+      has_user_gesture_(false),
+      update_first_party_url_on_redirect_(true) {}
 
 DownloadUrlParameters::~DownloadUrlParameters() = default;
 

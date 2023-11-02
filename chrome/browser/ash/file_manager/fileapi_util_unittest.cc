@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,14 @@
 #include <memory>
 #include <string>
 
-#include "ash/constants/ash_features.h"
 #include "base/bind.h"
+#include "base/files/file_error_or.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/file_system_provider/fake_extension_provider.h"
+#include "chrome/browser/ash/file_system_provider/fake_provided_file_system.h"
 #include "chrome/browser/ash/file_system_provider/service.h"
 #include "chrome/browser/ash/file_system_provider/service_factory.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -100,22 +101,8 @@ class TempFileSystem {
   base::ScopedTempDir temp_dir_;
 };
 
-// Parameter for the unit test to allow us to test both System Files App case
-// and Extension Files app.
-enum FilesAppMode {
-  EXTENSION_FILES_APP,
-  SYSTEM_FILES_APP,
-};
-
-class FileManagerFileAPIUtilTest
-    : public ::testing::TestWithParam<FilesAppMode> {
+class FileManagerFileAPIUtilTest : public ::testing::Test {
  public:
-  FileManagerFileAPIUtilTest() {
-    if (GetParam() == SYSTEM_FILES_APP) {
-      feature_list_.InitAndEnableFeature(chromeos::features::kFilesSWA);
-    }
-  }
-
   // Carries information on how to create a FileSystemURL for a given file name.
   // For !valid orders we create a test URL. Otherwise, we use temp file system.
   struct FileSystemURLOrder {
@@ -212,7 +199,7 @@ void PassFileChooserFileInfoList(FileChooserFileInfoList* output,
     output->push_back(file->Clone());
 }
 
-TEST_P(FileManagerFileAPIUtilTest,
+TEST_F(FileManagerFileAPIUtilTest,
        ConvertSelectedFileInfoListToFileChooserFileInfoList) {
   Profile* const profile = GetProfile();
   const std::string extension_id = "abc";
@@ -292,7 +279,7 @@ TEST_P(FileManagerFileAPIUtilTest,
   EXPECT_EQ(55u, result[2]->get_file_system()->length);
 }
 
-TEST_P(FileManagerFileAPIUtilTest,
+TEST_F(FileManagerFileAPIUtilTest,
        ConvertFileDefinitionListToEntryDefinitionListExtension) {
   std::vector<FileSystemURLOrder> orders = {
       {.file_name = "x.txt", .valid = true},
@@ -307,7 +294,7 @@ TEST_P(FileManagerFileAPIUtilTest,
       "chrome-extension://abc/efg", orders);
 }
 
-TEST_P(FileManagerFileAPIUtilTest,
+TEST_F(FileManagerFileAPIUtilTest,
        ConvertFileDefinitionListToEntryDefinitionListApp) {
   std::vector<FileSystemURLOrder> orders = {
       {.file_name = "a.txt", .valid = false},
@@ -322,7 +309,7 @@ TEST_P(FileManagerFileAPIUtilTest,
       "chrome://file-manager/abc", orders);
 }
 
-TEST_P(FileManagerFileAPIUtilTest,
+TEST_F(FileManagerFileAPIUtilTest,
        ConvertFileDefinitionListToEntryDefinitionNullContext) {
   Profile* const profile = GetProfile();
   const GURL appURL("chrome-extension://abc/");
@@ -339,7 +326,7 @@ TEST_P(FileManagerFileAPIUtilTest,
       [](std::unique_ptr<TempFileSystem> temp_file_system,
          base::OnceClosure quit_closure,
          std::unique_ptr<EntryDefinitionList> entries) {
-        ASSERT_EQ(1, entries->size());
+        ASSERT_EQ(1u, entries->size());
         EXPECT_EQ(base::File::FILE_ERROR_INVALID_OPERATION,
                   entries->at(0).error);
         EXPECT_TRUE(temp_file_system->TearDown());
@@ -352,7 +339,7 @@ TEST_P(FileManagerFileAPIUtilTest,
   run_loop.Run();
 }
 
-TEST_P(FileManagerFileAPIUtilTest,
+TEST_F(FileManagerFileAPIUtilTest,
        ConvertFileDefinitionListToEntryDefinitionContextReset) {
   Profile* const profile = GetProfile();
   const GURL appURL("chrome-extension://abc/");
@@ -369,7 +356,7 @@ TEST_P(FileManagerFileAPIUtilTest,
       [](std::unique_ptr<TempFileSystem> temp_file_system,
          base::OnceClosure quit_closure,
          std::unique_ptr<EntryDefinitionList> entries) {
-        ASSERT_EQ(1, entries->size());
+        ASSERT_EQ(1u, entries->size());
         EXPECT_EQ(base::File::FILE_OK, entries->at(0).error);
         EXPECT_TRUE(temp_file_system->TearDown());
         std::move(quit_closure).Run();
@@ -388,7 +375,7 @@ TEST_P(FileManagerFileAPIUtilTest,
   run_loop.Run();
 }
 
-TEST_P(FileManagerFileAPIUtilTest, IsFileManagerURL) {
+TEST_F(FileManagerFileAPIUtilTest, IsFileManagerURL) {
   EXPECT_TRUE(IsFileManagerURL(GetFileManagerURL()));
   EXPECT_TRUE(IsFileManagerURL(GetFileManagerURL().Resolve("/some/path")));
   EXPECT_TRUE(IsFileManagerURL(
@@ -431,12 +418,12 @@ void FileManagerFileAPIUtilTest::TestGenerateUnusedFilename(
       root_url, base::FilePath(target_filename), file_system_context,
       base::BindLambdaForTesting(
           [&](base::FileErrorOr<storage::FileSystemURL> result) {
-            if (expected.is_error()) {
-              EXPECT_TRUE(result.is_error())
+            if (!expected.has_value()) {
+              EXPECT_FALSE(result.has_value())
                   << "Unexpected result " << result->ToGURL();
               EXPECT_EQ(expected.error(), result.error());
             } else {
-              EXPECT_FALSE(result.is_error())
+              EXPECT_TRUE(result.has_value())
                   << "Unexpected error " << result.error();
               EXPECT_EQ(temp_file_system->CreateFileSystemURL(expected.value())
                             .ToGURL(),
@@ -447,7 +434,7 @@ void FileManagerFileAPIUtilTest::TestGenerateUnusedFilename(
   run_loop.Run();
 }
 
-TEST_P(FileManagerFileAPIUtilTest, GenerateUnusedFilenameBasic) {
+TEST_F(FileManagerFileAPIUtilTest, GenerateUnusedFilenameBasic) {
   TestGenerateUnusedFilename({}, "foo.bar", {"foo.bar"});
   TestGenerateUnusedFilename({"foo.bar"}, "foo.bar", {"foo (1).bar"});
   TestGenerateUnusedFilename({"foo.bar/"}, "foo.bar", {"foo (1).bar"});
@@ -471,13 +458,13 @@ TEST_P(FileManagerFileAPIUtilTest, GenerateUnusedFilenameBasic) {
   TestGenerateUnusedFilename({"foo.bar"}, " foo.bar", {" foo.bar"});
 }
 
-TEST_P(FileManagerFileAPIUtilTest, GenerateUnusedFilenameUnicode) {
+TEST_F(FileManagerFileAPIUtilTest, GenerateUnusedFilenameUnicode) {
   TestGenerateUnusedFilename({}, "é è ê ô œ.txt€", {"é è ê ô œ.txt€"});
   TestGenerateUnusedFilename({"é è ê ô œ.txt€"}, "é è ê ô œ.txt€",
                              {"é è ê ô œ (1).txt€"});
 }
 
-TEST_P(FileManagerFileAPIUtilTest, GenerateUnusedFilenameNoExtension) {
+TEST_F(FileManagerFileAPIUtilTest, GenerateUnusedFilenameNoExtension) {
   TestGenerateUnusedFilename({}, "no-ext", {"no-ext"});
   TestGenerateUnusedFilename({"no-ext"}, "no-ext", {"no-ext (1)"});
   TestGenerateUnusedFilename({"no-ext/"}, "no-ext", {"no-ext (1)"});
@@ -488,7 +475,7 @@ TEST_P(FileManagerFileAPIUtilTest, GenerateUnusedFilenameNoExtension) {
   TestGenerateUnusedFilename({"a/"}, "a", {"a (1)"});
 }
 
-TEST_P(FileManagerFileAPIUtilTest, GenerateUnusedFilenameDoubleExtension) {
+TEST_F(FileManagerFileAPIUtilTest, GenerateUnusedFilenameDoubleExtension) {
   TestGenerateUnusedFilename({}, "double.ext.10.13.txt",
                              {"double.ext.10.13.txt"});
   TestGenerateUnusedFilename({"double.ext.10.13.txt"}, "double.ext.10.13.txt",
@@ -501,16 +488,69 @@ TEST_P(FileManagerFileAPIUtilTest, GenerateUnusedFilenameDoubleExtension) {
                              {"archive (1).tar.gz"});
 }
 
-TEST_P(FileManagerFileAPIUtilTest, GenerateUnusedFilenameInvalidFilename) {
-  TestGenerateUnusedFilename({}, "", base::File::FILE_ERROR_INVALID_OPERATION);
-  TestGenerateUnusedFilename({}, "path/with/slashes",
-                             base::File::FILE_ERROR_INVALID_OPERATION);
+TEST_F(FileManagerFileAPIUtilTest, GenerateUnusedFilenameInvalidFilename) {
+  TestGenerateUnusedFilename(
+      {}, "", base::unexpected(base::File::FILE_ERROR_INVALID_OPERATION));
+  TestGenerateUnusedFilename(
+      {}, "path/with/slashes",
+      base::unexpected(base::File::FILE_ERROR_INVALID_OPERATION));
 }
 
-INSTANTIATE_TEST_SUITE_P(FilesAppMode,
-                         FileManagerFileAPIUtilTest,
-                         ::testing::Values(EXTENSION_FILES_APP,
-                                           SYSTEM_FILES_APP));
+TEST_F(FileManagerFileAPIUtilTest, GenerateUnusedFilenameFileSystemProvider) {
+  Profile* const profile = GetProfile();
+  const std::string extension_id = "abc";
+
+  // Create and mount the FileSystemProvider.
+  auto fake_provider =
+      ash::file_system_provider::FakeExtensionProvider::Create(extension_id);
+  const auto kProviderId = fake_provider->GetId();
+  auto* service = ash::file_system_provider::Service::Get(profile);
+  service->RegisterProvider(std::move(fake_provider));
+  const base::File::Error result = service->MountFileSystem(
+      kProviderId, ash::file_system_provider::MountOptions(file_system_id_,
+                                                           "Test FileSystem"));
+  ASSERT_EQ(base::File::FILE_OK, result);
+
+  auto* provided_file_system =
+      static_cast<ash::file_system_provider::FakeProvidedFileSystem*>(
+          service->GetProvidedFileSystem(kProviderId, file_system_id_));
+  ASSERT_TRUE(provided_file_system);
+  const base::FilePath mount_point_name =
+      provided_file_system->GetFileSystemInfo().mount_path().BaseName();
+
+  const std::string origin = "chrome-extension://abc/";
+  storage::FileSystemContext* const context =
+      GetFileSystemContextForSourceURL(profile, GURL(origin));
+  ASSERT_TRUE(context);
+
+  // Make sure we can access the filesystem from the above origin.
+  context->external_backend()->GrantFileAccessToOrigin(
+      url::Origin::Create(GURL(origin)), base::FilePath(mount_point_name));
+
+  const storage::ExternalMountPoints* const mount_points =
+      storage::ExternalMountPoints::GetSystemInstance();
+  auto destination_folder_url = mount_points->CreateCrackedFileSystemURL(
+      blink::StorageKey::CreateFromStringForTesting(origin),
+      storage::kFileSystemTypeExternal, mount_point_name);
+  auto expected_url = mount_points->CreateCrackedFileSystemURL(
+      blink::StorageKey::CreateFromStringForTesting(origin),
+      storage::kFileSystemTypeExternal,
+      mount_point_name.Append("hello (1).txt"));
+
+  base::RunLoop run_loop;
+  GenerateUnusedFilename(
+      destination_folder_url,
+      base::FilePath(ash::file_system_provider::kFakeFilePath).BaseName(),
+      context,
+      base::BindLambdaForTesting(
+          [&](base::FileErrorOr<storage::FileSystemURL> result) {
+            EXPECT_TRUE(result.has_value())
+                << "Unexpected error " << result.error();
+            EXPECT_EQ(expected_url.ToGURL(), result->ToGURL());
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+}
 
 }  // namespace
 }  // namespace util

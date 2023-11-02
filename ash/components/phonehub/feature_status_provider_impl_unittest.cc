@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,20 +7,20 @@
 #include <memory>
 #include <vector>
 
+#include "ash/services/device_sync/public/cpp/fake_device_sync_client.h"
+#include "ash/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
+#include "ash/services/secure_channel/public/cpp/client/fake_connection_manager.h"
 #include "base/test/task_environment.h"
-#include "chromeos/components/multidevice/remote_device_test_util.h"
+#include "chromeos/ash/components/multidevice/remote_device_test_util.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
-#include "chromeos/services/device_sync/public/cpp/fake_device_sync_client.h"
-#include "chromeos/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
-#include "chromeos/services/secure_channel/public/cpp/client/fake_connection_manager.h"
 #include "components/session_manager/core/session_manager.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 namespace {
 
@@ -107,7 +107,8 @@ class FeatureStatusProviderImplTest : public testing::Test {
     fake_device_sync_client_.NotifyReady();
 
     session_manager_ = std::make_unique<session_manager::SessionManager>();
-    fake_power_manager_client_ = std::make_unique<FakePowerManagerClient>();
+    fake_power_manager_client_ =
+        std::make_unique<chromeos::FakePowerManagerClient>();
     provider_ = std::make_unique<FeatureStatusProviderImpl>(
         &fake_device_sync_client_, &fake_multidevice_setup_client_,
         &fake_connection_manager_, session_manager_.get(),
@@ -217,7 +218,7 @@ class FeatureStatusProviderImplTest : public testing::Test {
 
   FakeObserver fake_observer_;
   std::unique_ptr<session_manager::SessionManager> session_manager_;
-  std::unique_ptr<FakePowerManagerClient> fake_power_manager_client_;
+  std::unique_ptr<chromeos::FakePowerManagerClient> fake_power_manager_client_;
   std::unique_ptr<FeatureStatusProvider> provider_;
 };
 
@@ -327,17 +328,18 @@ TEST_F(FeatureStatusProviderImplTest, NotEligibleForFeature) {
 
 TEST_F(FeatureStatusProviderImplTest, EligiblePhoneButNotSetUp) {
   SetEligibleSyncedDevices();
-  SetMultiDeviceState(HostStatus::kEligibleHostExistsButNoHostSet,
-                      FeatureState::kUnavailableNoVerifiedHost,
-                      /*supports_better_together_host=*/true,
-                      /*supports_phone_hub=*/true,
-                      /*has_bluetooth_address=*/true);
+  SetMultiDeviceState(
+      HostStatus::kEligibleHostExistsButNoHostSet,
+      FeatureState::kUnavailableNoVerifiedHost_HostExistsButNotSetAndVerified,
+      /*supports_better_together_host=*/true,
+      /*supports_phone_hub=*/true,
+      /*has_bluetooth_address=*/true);
   EXPECT_EQ(FeatureStatus::kEligiblePhoneButNotSetUp, GetStatus());
 }
 
 TEST_F(FeatureStatusProviderImplTest, NoEligiblePhones) {
   SetMultiDeviceState(HostStatus::kNoEligibleHosts,
-                      FeatureState::kUnavailableNoVerifiedHost,
+                      FeatureState::kUnavailableNoVerifiedHost_NoEligibleHosts,
                       /*supports_better_together_host=*/true,
                       /*supports_phone_hub=*/true,
                       /*has_bluetooth_address=*/true);
@@ -355,25 +357,28 @@ TEST_F(FeatureStatusProviderImplTest, MultiPhoneEligibility) {
                     CreatePhoneDevice(/*supports_better_together_host=*/false,
                                       /*supports_phone_hub_host=*/false,
                                       /*has_bluetooth_address=*/true)});
-  SetMultiDeviceState(HostStatus::kEligibleHostExistsButNoHostSet,
-                      FeatureState::kUnavailableNoVerifiedHost,
-                      /*supports_better_together_host=*/true,
-                      /*supports_phone_hub=*/false,
-                      /*has_bluetooth_address=*/true);
+  SetMultiDeviceState(
+      HostStatus::kEligibleHostExistsButNoHostSet,
+      FeatureState::kUnavailableNoVerifiedHost_HostExistsButNotSetAndVerified,
+      /*supports_better_together_host=*/true,
+      /*supports_phone_hub=*/false,
+      /*has_bluetooth_address=*/true);
   EXPECT_EQ(FeatureStatus::kNotEligibleForFeature, GetStatus());
 
-  SetMultiDeviceState(HostStatus::kEligibleHostExistsButNoHostSet,
-                      FeatureState::kUnavailableNoVerifiedHost,
-                      /*supports_better_together_host=*/false,
-                      /*supports_phone_hub=*/true,
-                      /*has_bluetooth_address=*/true);
+  SetMultiDeviceState(
+      HostStatus::kEligibleHostExistsButNoHostSet,
+      FeatureState::kUnavailableNoVerifiedHost_HostExistsButNotSetAndVerified,
+      /*supports_better_together_host=*/false,
+      /*supports_phone_hub=*/true,
+      /*has_bluetooth_address=*/true);
   EXPECT_EQ(FeatureStatus::kNotEligibleForFeature, GetStatus());
 
-  SetMultiDeviceState(HostStatus::kEligibleHostExistsButNoHostSet,
-                      FeatureState::kUnavailableNoVerifiedHost,
-                      /*supports_better_together_host=*/true,
-                      /*supports_phone_hub=*/true,
-                      /*has_bluetooth_address=*/false);
+  SetMultiDeviceState(
+      HostStatus::kEligibleHostExistsButNoHostSet,
+      FeatureState::kUnavailableNoVerifiedHost_HostExistsButNotSetAndVerified,
+      /*supports_better_together_host=*/true,
+      /*supports_phone_hub=*/true,
+      /*has_bluetooth_address=*/false);
   EXPECT_EQ(FeatureStatus::kNotEligibleForFeature, GetStatus());
 
   // Simulate no host device connected and expect to detect one eligible host.
@@ -387,17 +392,18 @@ TEST_F(FeatureStatusProviderImplTest, PhoneSelectedAndPendingSetup) {
 
   SetMultiDeviceState(
       HostStatus::kHostSetLocallyButWaitingForBackendConfirmation,
-      FeatureState::kUnavailableNoVerifiedHost,
+      FeatureState::kUnavailableNoVerifiedHost_HostExistsButNotSetAndVerified,
       /*supports_better_together_host=*/true,
       /*supports_phone_hub=*/true,
       /*has_bluetooth_address=*/true);
   EXPECT_EQ(FeatureStatus::kPhoneSelectedAndPendingSetup, GetStatus());
 
-  SetMultiDeviceState(HostStatus::kHostSetButNotYetVerified,
-                      FeatureState::kUnavailableNoVerifiedHost,
-                      /*supports_better_together_host=*/true,
-                      /*supports_phone_hub=*/true,
-                      /*has_bluetooth_address=*/true);
+  SetMultiDeviceState(
+      HostStatus::kHostSetButNotYetVerified,
+      FeatureState::kUnavailableNoVerifiedHost_HostExistsButNotSetAndVerified,
+      /*supports_better_together_host=*/true,
+      /*supports_phone_hub=*/true,
+      /*has_bluetooth_address=*/true);
   EXPECT_EQ(FeatureStatus::kPhoneSelectedAndPendingSetup, GetStatus());
 
   SetMultiDeviceState(HostStatus::kHostVerified,
@@ -456,17 +462,18 @@ TEST_F(FeatureStatusProviderImplTest, TransitionBetweenAllStatuses) {
   EXPECT_EQ(FeatureStatus::kNotEligibleForFeature, GetStatus());
 
   SetMultiDeviceState(HostStatus::kNoEligibleHosts,
-                      FeatureState::kUnavailableNoVerifiedHost,
+                      FeatureState::kUnavailableNoVerifiedHost_NoEligibleHosts,
                       /*supports_better_together_host=*/true,
                       /*supports_phone_hub=*/true,
                       /*has_bluetooth_address=*/true);
   EXPECT_EQ(FeatureStatus::kNotEligibleForFeature, GetStatus());
 
-  SetMultiDeviceState(HostStatus::kEligibleHostExistsButNoHostSet,
-                      FeatureState::kUnavailableNoVerifiedHost,
-                      /*supports_better_together_host=*/true,
-                      /*supports_phone_hub=*/true,
-                      /*has_bluetooth_address=*/true);
+  SetMultiDeviceState(
+      HostStatus::kEligibleHostExistsButNoHostSet,
+      FeatureState::kUnavailableNoVerifiedHost_HostExistsButNotSetAndVerified,
+      /*supports_better_together_host=*/true,
+      /*supports_phone_hub=*/true,
+      /*has_bluetooth_address=*/true);
   SetEligibleSyncedDevices();
   EXPECT_EQ(FeatureStatus::kEligiblePhoneButNotSetUp, GetStatus());
   EXPECT_EQ(1u, GetNumObserverCalls());
@@ -614,4 +621,4 @@ TEST_F(FeatureStatusProviderImplTest, HandlePowerSuspend) {
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
+#include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -112,6 +113,11 @@ class IsolatedWorldCSPDelegate final
                                                                error_message);
   }
 
+  void SetWasmEvalErrorMessage(const String& error_message) override {
+    window_->GetScriptController().SetWasmEvalErrorMessageForIsolatedWorld(
+        world_id_, error_message);
+  }
+
   void ReportBlockedScriptExecutionToInspector(
       const String& directive_text) override {
     // This allows users to set breakpoints in the Devtools for the case when
@@ -183,7 +189,7 @@ ContentSecurityPolicy* IsolatedWorldCSP::CreateIsolatedWorldCSP(
   IsolatedWorldCSPDelegate* delegate =
       MakeGarbageCollected<IsolatedWorldCSPDelegate>(
           window, self_origin, world_id,
-          policy.IsEmpty() ? CSPType::kEmpty : CSPType::kNonEmpty);
+          policy.empty() ? CSPType::kEmpty : CSPType::kNonEmpty);
   csp->BindToDelegate(*delegate);
   csp->AddPolicies(ParseContentSecurityPolicies(
       policy, network::mojom::blink::ContentSecurityPolicyType::kEnforce,

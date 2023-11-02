@@ -1,22 +1,35 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/webui/eche_app_ui/apps_access_manager_impl.h"
 
+#include "ash/components/phonehub/multidevice_feature_access_manager.h"
 #include "ash/constants/ash_features.h"
+#include "ash/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
+#include "ash/services/multidevice_setup/public/cpp/prefs.h"
+#include "ash/services/secure_channel/public/cpp/client/fake_connection_manager.h"
 #include "ash/webui/eche_app_ui/apps_access_setup_operation.h"
 #include "ash/webui/eche_app_ui/fake_eche_connector.h"
 #include "ash/webui/eche_app_ui/fake_eche_message_receiver.h"
 #include "ash/webui/eche_app_ui/fake_feature_status_provider.h"
 #include "ash/webui/eche_app_ui/pref_names.h"
 #include "ash/webui/eche_app_ui/proto/exo_messages.pb.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
 namespace eche_app {
+
+using AccessStatus =
+    ash::phonehub::MultideviceFeatureAccessManager::AccessStatus;
+
+using OnboardingUserActionMetric =
+    AppsAccessManagerImpl::OnboardingUserActionMetric;
+
 namespace {
 class FakeObserver : public AppsAccessManager::Observer {
  public:
@@ -51,6 +64,9 @@ class FakeOperationDelegate : public AppsAccessSetupOperation::Delegate {
 };
 }  // namespace
 
+using multidevice_setup::mojom::Feature;
+using multidevice_setup::mojom::FeatureState;
+
 class AppsAccessManagerImplTest : public testing::Test {
  protected:
   AppsAccessManagerImplTest() = default;
@@ -61,10 +77,10 @@ class AppsAccessManagerImplTest : public testing::Test {
 
   void SetUp() override {
     AppsAccessManagerImpl::RegisterPrefs(pref_service_.registry());
+    multidevice_setup::RegisterFeaturePrefs(pref_service_.registry());
+
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{chromeos::features::kEcheSWA,
-                              chromeos::features::
-                                  kEchePhoneHubPermissionsOnboarding},
+        /*enabled_features=*/{chromeos::features::kEcheSWA},
         /*disabled_features=*/{});
 
     fake_eche_connector_ = std::make_unique<FakeEcheConnector>();
@@ -81,12 +97,13 @@ class AppsAccessManagerImplTest : public testing::Test {
     fake_feature_status_provider_.reset();
   }
 
-  void Initialize(AppsAccessManager::AccessStatus expected_status) {
+  void Initialize(AccessStatus expected_status) {
     pref_service_.SetInteger(prefs::kAppsAccessStatus,
                              static_cast<int>(expected_status));
     apps_access_manager_ = std::make_unique<AppsAccessManagerImpl>(
         fake_eche_connector_.get(), fake_eche_message_receiver_.get(),
-        fake_feature_status_provider_.get(), &pref_service_);
+        fake_feature_status_provider_.get(), &pref_service_,
+        &fake_multidevice_setup_client_, &fake_connection_manager_);
     apps_access_manager_->AddObserver(&fake_observer_);
   }
 
@@ -100,6 +117,11 @@ class AppsAccessManagerImplTest : public testing::Test {
     fake_eche_message_receiver_->FakeSendAppsSetupResponse(result, status);
   }
 
+  void FakeSendAppsPolicyStateChange(
+      eche_app::proto::AppStreamingPolicy app_policy_state) {
+    fake_eche_message_receiver_->FakeAppPolicyStateChange(app_policy_state);
+  }
+
   void SetFeatureStatus(FeatureStatus status) {
     fake_feature_status_provider_->SetStatus(status);
   }
@@ -108,8 +130,11 @@ class AppsAccessManagerImplTest : public testing::Test {
     return fake_feature_status_provider_->GetStatus();
   }
 
-  void VerifyAppsAccessGrantedState(
-      AppsAccessManager::AccessStatus expected_status) {
+  void SetConnectionStatus(secure_channel::ConnectionManager::Status status) {
+    fake_connection_manager_.SetStatus(status);
+  }
+
+  void VerifyAppsAccessGrantedState(AccessStatus expected_status) {
     EXPECT_EQ(static_cast<int>(expected_status),
               pref_service_.GetInteger(prefs::kAppsAccessStatus));
     EXPECT_EQ(expected_status, apps_access_manager_->GetAccessStatus());
@@ -141,6 +166,23 @@ class AppsAccessManagerImplTest : public testing::Test {
     return fake_eche_connector_->attempt_nearby_connection_count();
   }
 
+  void SetFeatureState(Feature feature, FeatureState feature_state) {
+    fake_multidevice_setup_client_.SetFeatureState(feature, feature_state);
+  }
+
+  void NotifyAppsAccessCanceled() {
+    return apps_access_manager_->NotifyAppsAccessCanceled();
+  }
+
+  void SetFeatureEnabledState(const std::string& pref_name, bool enabled) {
+    pref_service_.SetBoolean(pref_name, enabled);
+  }
+
+  multidevice_setup::FakeMultiDeviceSetupClient*
+  fake_multidevice_setup_client() {
+    return &fake_multidevice_setup_client_;
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   FakeObserver fake_observer_;
@@ -150,11 +192,13 @@ class AppsAccessManagerImplTest : public testing::Test {
   std::unique_ptr<FakeEcheConnector> fake_eche_connector_;
   std::unique_ptr<FakeEcheMessageReceiver> fake_eche_message_receiver_;
   std::unique_ptr<FakeFeatureStatusProvider> fake_feature_status_provider_;
+  secure_channel::FakeConnectionManager fake_connection_manager_;
+  multidevice_setup::FakeMultiDeviceSetupClient fake_multidevice_setup_client_;
 };
 
 TEST_F(AppsAccessManagerImplTest, InitiallyGranted) {
-  Initialize(AppsAccessManager::AccessStatus::kAccessGranted);
-  VerifyAppsAccessGrantedState(AppsAccessManager::AccessStatus::kAccessGranted);
+  Initialize(AccessStatus::kAccessGranted);
+  VerifyAppsAccessGrantedState(AccessStatus::kAccessGranted);
 
   // Cannot start the apps access setup flow if access has already been
   // granted.
@@ -163,11 +207,19 @@ TEST_F(AppsAccessManagerImplTest, InitiallyGranted) {
 }
 
 TEST_F(AppsAccessManagerImplTest, OnFeatureStatusChanged) {
-  Initialize(AppsAccessManager::AccessStatus::kAvailableButNotGranted);
-  VerifyAppsAccessGrantedState(
-      AppsAccessManager::AccessStatus::kAvailableButNotGranted);
+  Initialize(AccessStatus::kAvailableButNotGranted);
+  VerifyAppsAccessGrantedState(AccessStatus::kAvailableButNotGranted);
 
-  // Set initial state to disconnected.
+  // Set initial state to kIneligible.
+  SetConnectionStatus(secure_channel::ConnectionManager::Status::kDisconnected);
+  SetFeatureStatus(FeatureStatus::kIneligible);
+  EXPECT_EQ(0u, GetAttemptNearbyConnectionCount());
+  EXPECT_EQ(0u, GetAppsAccessStateRequestCount());
+  EXPECT_EQ(AppsAccessSetupOperation::Status::kConnecting,
+            GetAppsAccessSetupOperationStatus());
+
+  //  Simulate feature status to be enabled and disconnected.
+  SetConnectionStatus(secure_channel::ConnectionManager::Status::kDisconnected);
   SetFeatureStatus(FeatureStatus::kDisconnected);
   EXPECT_EQ(1u, GetAttemptNearbyConnectionCount());
   EXPECT_EQ(0u, GetAppsAccessStateRequestCount());
@@ -176,6 +228,7 @@ TEST_F(AppsAccessManagerImplTest, OnFeatureStatusChanged) {
 
   // Simulate feature status to be enabled and connected. SetupOperation is also
   // not in progress, so expect no new requests to be sent.
+  SetConnectionStatus(secure_channel::ConnectionManager::Status::kConnected);
   SetFeatureStatus(FeatureStatus::kConnected);
   EXPECT_EQ(1u, GetAppsAccessStateRequestCount());
   EXPECT_EQ(0u, GetAppsSetupRequestCount());
@@ -189,34 +242,39 @@ TEST_F(AppsAccessManagerImplTest, OnFeatureStatusChanged) {
   EXPECT_EQ(AppsAccessSetupOperation::Status::
                 kSentMessageToPhoneAndWaitingForResponse,
             GetAppsAccessSetupOperationStatus());
+  EXPECT_TRUE(IsSetupOperationInProgress());
 
   // Set another feature status, expect status to be updated.
   SetFeatureStatus(FeatureStatus::kIneligible);
   SetFeatureStatus(FeatureStatus::kConnected);
+  SetConnectionStatus(secure_channel::ConnectionManager::Status::kConnecting);
   SetFeatureStatus(FeatureStatus::kConnecting);
   EXPECT_EQ(2u, GetAppsSetupRequestCount());
   EXPECT_EQ(AppsAccessSetupOperation::Status::kConnectionDisconnected,
             GetAppsAccessSetupOperationStatus());
+  EXPECT_FALSE(IsSetupOperationInProgress());
 
   auto operation1 = StartSetupOperation();
   EXPECT_TRUE(operation1);
   EXPECT_EQ(2u, GetAppsSetupRequestCount());
   EXPECT_EQ(AppsAccessSetupOperation::Status::kConnecting,
             GetAppsAccessSetupOperationStatus());
+  EXPECT_TRUE(IsSetupOperationInProgress());
 
   SetFeatureStatus(FeatureStatus::kDisconnected);
   EXPECT_EQ(2u, GetAppsSetupRequestCount());
   EXPECT_EQ(AppsAccessSetupOperation::Status::kTimedOutConnecting,
             GetAppsAccessSetupOperationStatus());
+  EXPECT_FALSE(IsSetupOperationInProgress());
 }
 
 TEST_F(AppsAccessManagerImplTest, StartDisconnectedAndNoAccess) {
   // Set initial state to disconnected.
+  SetConnectionStatus(secure_channel::ConnectionManager::Status::kDisconnected);
   SetFeatureStatus(FeatureStatus::kDisconnected);
 
-  Initialize(AppsAccessManager::AccessStatus::kAvailableButNotGranted);
-  VerifyAppsAccessGrantedState(
-      AppsAccessManager::AccessStatus::kAvailableButNotGranted);
+  Initialize(AccessStatus::kAvailableButNotGranted);
+  VerifyAppsAccessGrantedState(AccessStatus::kAvailableButNotGranted);
 
   // Start a setup operation with enabled but disconnected status and access
   // not granted.
@@ -225,7 +283,9 @@ TEST_F(AppsAccessManagerImplTest, StartDisconnectedAndNoAccess) {
   EXPECT_EQ(1u, GetAttemptNearbyConnectionCount());
 
   // Simulate changing states from connecting to connected.
+  SetConnectionStatus(secure_channel::ConnectionManager::Status::kConnecting);
   SetFeatureStatus(FeatureStatus::kConnecting);
+  SetConnectionStatus(secure_channel::ConnectionManager::Status::kConnected);
   SetFeatureStatus(FeatureStatus::kConnected);
 
   // Verify that the request message has been sent and our operation status
@@ -234,22 +294,26 @@ TEST_F(AppsAccessManagerImplTest, StartDisconnectedAndNoAccess) {
   EXPECT_EQ(AppsAccessSetupOperation::Status::
                 kSentMessageToPhoneAndWaitingForResponse,
             GetAppsAccessSetupOperationStatus());
+  EXPECT_TRUE(IsSetupOperationInProgress());
 
   // Simulate getting a response back from the phone.
   FakeSendAppsSetupResponse(eche_app::proto::Result::RESULT_NO_ERROR,
                             eche_app::proto::AppsAccessState::ACCESS_GRANTED);
-  VerifyAppsAccessGrantedState(AppsAccessManager::AccessStatus::kAccessGranted);
+  VerifyAppsAccessGrantedState(AccessStatus::kAccessGranted);
   EXPECT_EQ(AppsAccessSetupOperation::Status::kCompletedSuccessfully,
             GetAppsAccessSetupOperationStatus());
+  EXPECT_FALSE(IsSetupOperationInProgress());
 }
 
 TEST_F(AppsAccessManagerImplTest, StartConnectingAndNoAccess) {
+  base::HistogramTester histograms;
+
   // Set initial state to connecting.
+  SetConnectionStatus(secure_channel::ConnectionManager::Status::kConnecting);
   SetFeatureStatus(FeatureStatus::kConnecting);
 
-  Initialize(AppsAccessManager::AccessStatus::kAvailableButNotGranted);
-  VerifyAppsAccessGrantedState(
-      AppsAccessManager::AccessStatus::kAvailableButNotGranted);
+  Initialize(AccessStatus::kAvailableButNotGranted);
+  VerifyAppsAccessGrantedState(AccessStatus::kAvailableButNotGranted);
 
   // Start a setup operation with enabled and connecting status and access
   // not granted.
@@ -257,6 +321,7 @@ TEST_F(AppsAccessManagerImplTest, StartConnectingAndNoAccess) {
   EXPECT_TRUE(operation);
 
   // Simulate changing states from connecting to connected.
+  SetConnectionStatus(secure_channel::ConnectionManager::Status::kConnected);
   SetFeatureStatus(FeatureStatus::kConnected);
 
   // Verify that the request message has been sent and our operation status
@@ -265,22 +330,27 @@ TEST_F(AppsAccessManagerImplTest, StartConnectingAndNoAccess) {
   EXPECT_EQ(AppsAccessSetupOperation::Status::
                 kSentMessageToPhoneAndWaitingForResponse,
             GetAppsAccessSetupOperationStatus());
+  EXPECT_TRUE(IsSetupOperationInProgress());
 
   // Simulate getting a response back from the phone.
   FakeSendAppsSetupResponse(eche_app::proto::Result::RESULT_NO_ERROR,
                             eche_app::proto::AppsAccessState::ACCESS_GRANTED);
-  VerifyAppsAccessGrantedState(AppsAccessManager::AccessStatus::kAccessGranted);
+  VerifyAppsAccessGrantedState(AccessStatus::kAccessGranted);
   EXPECT_EQ(AppsAccessSetupOperation::Status::kCompletedSuccessfully,
             GetAppsAccessSetupOperationStatus());
+  EXPECT_FALSE(IsSetupOperationInProgress());
+  histograms.ExpectBucketCount(
+      kEcheOnboardingHistogramName,
+      OnboardingUserActionMetric::kUserActionPermissionGranted, 1);
 }
 
 TEST_F(AppsAccessManagerImplTest, StartConnectedAndNoAccess) {
   // Set initial state to connected.
+  SetConnectionStatus(secure_channel::ConnectionManager::Status::kConnected);
   SetFeatureStatus(FeatureStatus::kConnected);
 
-  Initialize(AppsAccessManager::AccessStatus::kAvailableButNotGranted);
-  VerifyAppsAccessGrantedState(
-      AppsAccessManager::AccessStatus::kAvailableButNotGranted);
+  Initialize(AccessStatus::kAvailableButNotGranted);
+  VerifyAppsAccessGrantedState(AccessStatus::kAvailableButNotGranted);
 
   // Start a setup operation with enabled and connected status and access
   // not granted.
@@ -297,70 +367,286 @@ TEST_F(AppsAccessManagerImplTest, StartConnectedAndNoAccess) {
   // Simulate getting a response back from the phone.
   FakeSendAppsSetupResponse(eche_app::proto::Result::RESULT_NO_ERROR,
                             eche_app::proto::AppsAccessState::ACCESS_GRANTED);
-  VerifyAppsAccessGrantedState(AppsAccessManager::AccessStatus::kAccessGranted);
+  VerifyAppsAccessGrantedState(AccessStatus::kAccessGranted);
   EXPECT_EQ(AppsAccessSetupOperation::Status::kCompletedSuccessfully,
             GetAppsAccessSetupOperationStatus());
+  EXPECT_FALSE(IsSetupOperationInProgress());
+}
+
+TEST_F(AppsAccessManagerImplTest, SimulateUserRejectedError) {
+  base::HistogramTester histograms;
+
+  // Set initial state to connected.
+  SetConnectionStatus(secure_channel::ConnectionManager::Status::kConnected);
+  SetFeatureStatus(FeatureStatus::kConnected);
+
+  Initialize(AccessStatus::kAvailableButNotGranted);
+  VerifyAppsAccessGrantedState(AccessStatus::kAvailableButNotGranted);
+
+  // Start a setup operation with enabled and connected status and access
+  // not granted.
+  auto operation = StartSetupOperation();
+  EXPECT_TRUE(operation);
+
+  // Verify that the request message has been sent and our operation status
+  // is updated.
+  EXPECT_EQ(1u, GetAppsSetupRequestCount());
+  EXPECT_EQ(AppsAccessSetupOperation::Status::
+                kSentMessageToPhoneAndWaitingForResponse,
+            GetAppsAccessSetupOperationStatus());
+
+  // Simulate getting a response back from the phone.
+  FakeSendAppsSetupResponse(
+      eche_app::proto::Result::RESULT_ERROR_USER_REJECTED,
+      eche_app::proto::AppsAccessState::ACCESS_NOT_GRANTED);
+  VerifyAppsAccessGrantedState(AccessStatus::kAvailableButNotGranted);
+  EXPECT_EQ(AppsAccessSetupOperation::Status::kCompletedUserRejected,
+            GetAppsAccessSetupOperationStatus());
+  EXPECT_FALSE(IsSetupOperationInProgress());
+  histograms.ExpectBucketCount(
+      kEcheOnboardingHistogramName,
+      OnboardingUserActionMetric::kUserActionPermissionRejected, 1);
+}
+
+TEST_F(AppsAccessManagerImplTest, SimulateReceivesAppsSetupAck) {
+  base::HistogramTester histograms;
+
+  // Set initial state to connected.
+  SetConnectionStatus(secure_channel::ConnectionManager::Status::kConnected);
+  SetFeatureStatus(FeatureStatus::kConnected);
+
+  Initialize(AccessStatus::kAvailableButNotGranted);
+  VerifyAppsAccessGrantedState(AccessStatus::kAvailableButNotGranted);
+
+  // Start a setup operation with enabled and connected status and access
+  // not granted.
+  auto operation = StartSetupOperation();
+  EXPECT_TRUE(operation);
+
+  // Verify that the request message has been sent and our operation status
+  // is updated.
+  EXPECT_EQ(1u, GetAppsSetupRequestCount());
+  EXPECT_EQ(AppsAccessSetupOperation::Status::
+                kSentMessageToPhoneAndWaitingForResponse,
+            GetAppsAccessSetupOperationStatus());
+
+  // Simulate getting a response back from the phone.
+  FakeSendAppsSetupResponse(
+      eche_app::proto::Result::RESULT_ACK_BY_EXO,
+      eche_app::proto::AppsAccessState::ACCESS_NOT_GRANTED);
+  VerifyAppsAccessGrantedState(AccessStatus::kAvailableButNotGranted);
+
+  EXPECT_TRUE(IsSetupOperationInProgress());
+  histograms.ExpectBucketCount(kEcheOnboardingHistogramName,
+                               OnboardingUserActionMetric::kAckByExo, 1);
+}
+
+TEST_F(AppsAccessManagerImplTest, SimulateOperationFailedOrCanceled) {
+  base::HistogramTester histograms;
+
+  // Set initial state to connected.
+  SetConnectionStatus(secure_channel::ConnectionManager::Status::kConnected);
+  SetFeatureStatus(FeatureStatus::kConnected);
+
+  Initialize(AccessStatus::kAvailableButNotGranted);
+  VerifyAppsAccessGrantedState(AccessStatus::kAvailableButNotGranted);
+
+  // Start a setup operation with enabled and connected status and access
+  // not granted.
+  auto operation = StartSetupOperation();
+  EXPECT_TRUE(operation);
+
+  // Verify that the request message has been sent and our operation status
+  // is updated.
+  EXPECT_EQ(1u, GetAppsSetupRequestCount());
+  EXPECT_EQ(AppsAccessSetupOperation::Status::
+                kSentMessageToPhoneAndWaitingForResponse,
+            GetAppsAccessSetupOperationStatus());
+
+  // Simulate getting a response back from the phone.
+  FakeSendAppsSetupResponse(
+      eche_app::proto::Result::RESULT_ERROR_ACTION_TIMEOUT,
+      eche_app::proto::AppsAccessState::ACCESS_NOT_GRANTED);
+  VerifyAppsAccessGrantedState(AccessStatus::kAvailableButNotGranted);
+  EXPECT_EQ(AppsAccessSetupOperation::Status::kOperationFailedOrCancelled,
+            GetAppsAccessSetupOperationStatus());
+  EXPECT_FALSE(IsSetupOperationInProgress());
+  histograms.ExpectBucketCount(kEcheOnboardingHistogramName,
+                               OnboardingUserActionMetric::kUserActionTimeout,
+                               1);
+
+  // Simulate flipping the access state to not granted.
+  FakeGetAppsAccessStateResponse(
+      eche_app::proto::Result::RESULT_NO_ERROR,
+      eche_app::proto::AppsAccessState::ACCESS_NOT_GRANTED);
+
+  // Start a setup operation with enabled and connected status and access
+  // not granted.
+  auto operation1 = StartSetupOperation();
+  EXPECT_TRUE(operation1);
+
+  // Verify that the request message has been sent and our operation status
+  // is updated.
+  EXPECT_EQ(2u, GetAppsSetupRequestCount());
+  EXPECT_EQ(AppsAccessSetupOperation::Status::
+                kSentMessageToPhoneAndWaitingForResponse,
+            GetAppsAccessSetupOperationStatus());
+
+  // Simulate getting a response back from the phone.
+  FakeSendAppsSetupResponse(
+      eche_app::proto::Result::RESULT_ERROR_ACTION_CANCELED,
+      eche_app::proto::AppsAccessState::ACCESS_NOT_GRANTED);
+  VerifyAppsAccessGrantedState(AccessStatus::kAvailableButNotGranted);
+  EXPECT_EQ(AppsAccessSetupOperation::Status::kOperationFailedOrCancelled,
+            GetAppsAccessSetupOperationStatus());
+  EXPECT_FALSE(IsSetupOperationInProgress());
+  histograms.ExpectBucketCount(
+      kEcheOnboardingHistogramName,
+      OnboardingUserActionMetric::kUserActionRemoteInterrupt, 1);
+
+  // Simulate flipping the access state to not granted.
+  FakeGetAppsAccessStateResponse(
+      eche_app::proto::Result::RESULT_NO_ERROR,
+      eche_app::proto::AppsAccessState::ACCESS_NOT_GRANTED);
+
+  // Start a setup operation with enabled and connected status and access
+  // not granted.
+  auto operation2 = StartSetupOperation();
+  EXPECT_TRUE(operation2);
+
+  // Verify that the request message has been sent and our operation status
+  // is updated.
+  EXPECT_EQ(3u, GetAppsSetupRequestCount());
+  EXPECT_EQ(AppsAccessSetupOperation::Status::
+                kSentMessageToPhoneAndWaitingForResponse,
+            GetAppsAccessSetupOperationStatus());
+
+  // Simulate getting a response back from the phone.
+  FakeSendAppsSetupResponse(
+      eche_app::proto::Result::RESULT_ERROR_SYSTEM,
+      eche_app::proto::AppsAccessState::ACCESS_NOT_GRANTED);
+  VerifyAppsAccessGrantedState(AccessStatus::kAvailableButNotGranted);
+  EXPECT_EQ(AppsAccessSetupOperation::Status::kOperationFailedOrCancelled,
+            GetAppsAccessSetupOperationStatus());
+  EXPECT_FALSE(IsSetupOperationInProgress());
+  histograms.ExpectBucketCount(kEcheOnboardingHistogramName,
+                               OnboardingUserActionMetric::kSystemError, 1);
 }
 
 TEST_F(AppsAccessManagerImplTest, SimulateConnectingToDisconnected) {
-  Initialize(AppsAccessManager::AccessStatus::kAvailableButNotGranted);
-  VerifyAppsAccessGrantedState(
-      AppsAccessManager::AccessStatus::kAvailableButNotGranted);
+  // Set initial state to disconnected.
+  SetConnectionStatus(secure_channel::ConnectionManager::Status::kDisconnected);
+  SetFeatureStatus(FeatureStatus::kDisconnected);
+  Initialize(AccessStatus::kAvailableButNotGranted);
+  VerifyAppsAccessGrantedState(AccessStatus::kAvailableButNotGranted);
 
   auto operation = StartSetupOperation();
   EXPECT_TRUE(operation);
 
   // Simulate a disconnection and expect that status has been updated.
+  SetConnectionStatus(secure_channel::ConnectionManager::Status::kConnecting);
   SetFeatureStatus(FeatureStatus::kConnecting);
+  SetConnectionStatus(secure_channel::ConnectionManager::Status::kDisconnected);
   SetFeatureStatus(FeatureStatus::kDisconnected);
   EXPECT_EQ(AppsAccessSetupOperation::Status::kTimedOutConnecting,
             GetAppsAccessSetupOperationStatus());
+  EXPECT_FALSE(IsSetupOperationInProgress());
 }
 
 TEST_F(AppsAccessManagerImplTest, SimulateConnectedToDisconnected) {
-  Initialize(AppsAccessManager::AccessStatus::kAvailableButNotGranted);
-  VerifyAppsAccessGrantedState(
-      AppsAccessManager::AccessStatus::kAvailableButNotGranted);
+  // Set initial state to disconnected.
+  SetConnectionStatus(secure_channel::ConnectionManager::Status::kDisconnected);
+  SetFeatureStatus(FeatureStatus::kDisconnected);
+  Initialize(AccessStatus::kAvailableButNotGranted);
+  VerifyAppsAccessGrantedState(AccessStatus::kAvailableButNotGranted);
 
   auto operation = StartSetupOperation();
   EXPECT_TRUE(operation);
 
   // Simulate connected state.
+  SetConnectionStatus(secure_channel::ConnectionManager::Status::kConnected);
   SetFeatureStatus(FeatureStatus::kConnected);
   EXPECT_EQ(1u, GetAppsSetupRequestCount());
+
   // Simulate a disconnection, expect status update.
+  SetConnectionStatus(secure_channel::ConnectionManager::Status::kDisconnected);
   SetFeatureStatus(FeatureStatus::kDisconnected);
   EXPECT_EQ(AppsAccessSetupOperation::Status::kConnectionDisconnected,
             GetAppsAccessSetupOperationStatus());
+  EXPECT_FALSE(IsSetupOperationInProgress());
 }
 
-TEST_F(AppsAccessManagerImplTest, SimulateConnectedToDisabled) {
-  Initialize(AppsAccessManager::AccessStatus::kAvailableButNotGranted);
-  VerifyAppsAccessGrantedState(
-      AppsAccessManager::AccessStatus::kAvailableButNotGranted);
+TEST_F(AppsAccessManagerImplTest, OnConnectionStatusChanged) {
+  Initialize(AccessStatus::kAvailableButNotGranted);
+  VerifyAppsAccessGrantedState(AccessStatus::kAvailableButNotGranted);
+
+  // Simulate disabling the feature and connection is disconnected.
+  SetConnectionStatus(secure_channel::ConnectionManager::Status::kDisconnected);
+  SetFeatureStatus(FeatureStatus::kDisabled);
+
+  EXPECT_EQ(1u, GetAttemptNearbyConnectionCount());
+  EXPECT_EQ(0u, GetAppsAccessStateRequestCount());
+
+  SetConnectionStatus(secure_channel::ConnectionManager::Status::kConnected);
+  EXPECT_EQ(1u, GetAppsAccessStateRequestCount());
+
+  // Simulate flipping the access state to granted.
+  FakeGetAppsAccessStateResponse(
+      eche_app::proto::Result::RESULT_NO_ERROR,
+      eche_app::proto::AppsAccessState::ACCESS_GRANTED);
+
+  SetConnectionStatus(secure_channel::ConnectionManager::Status::kDisconnected);
+  EXPECT_EQ(1u, GetAttemptNearbyConnectionCount());
+}
+
+TEST_F(AppsAccessManagerImplTest,
+       SimulateDisabledWithDifferentConnectionStatus) {
+  Initialize(AccessStatus::kAvailableButNotGranted);
+  VerifyAppsAccessGrantedState(AccessStatus::kAvailableButNotGranted);
+
+  // Simulate disabling the feature and connection is disconnected.
+  SetConnectionStatus(secure_channel::ConnectionManager::Status::kDisconnected);
+  SetFeatureStatus(FeatureStatus::kDisabled);
 
   auto operation = StartSetupOperation();
   EXPECT_TRUE(operation);
 
-  // Simulate connected state.
-  SetFeatureStatus(FeatureStatus::kConnected);
+  EXPECT_EQ(AppsAccessSetupOperation::Status::kConnecting,
+            GetAppsAccessSetupOperationStatus());
+  EXPECT_EQ(2u, GetAttemptNearbyConnectionCount());
+  EXPECT_EQ(0u, GetAppsSetupRequestCount());
+
+  SetConnectionStatus(secure_channel::ConnectionManager::Status::kConnecting);
+  EXPECT_EQ(AppsAccessSetupOperation::Status::kConnecting,
+            GetAppsAccessSetupOperationStatus());
+  EXPECT_EQ(0u, GetAppsSetupRequestCount());
+
+  SetConnectionStatus(secure_channel::ConnectionManager::Status::kConnected);
+  EXPECT_EQ(AppsAccessSetupOperation::Status::
+                kSentMessageToPhoneAndWaitingForResponse,
+            GetAppsAccessSetupOperationStatus());
   EXPECT_EQ(1u, GetAppsSetupRequestCount());
 
-  // Simulate disabling the feature, expect status update.
-  SetFeatureStatus(FeatureStatus::kDisabled);
-  EXPECT_EQ(AppsAccessSetupOperation::Status::kConnectionDisconnected,
+  // Simulate getting a response back from the phone.
+  FakeSendAppsSetupResponse(eche_app::proto::Result::RESULT_NO_ERROR,
+                            eche_app::proto::AppsAccessState::ACCESS_GRANTED);
+  VerifyAppsAccessGrantedState(AccessStatus::kAccessGranted);
+  EXPECT_EQ(AppsAccessSetupOperation::Status::kCompletedSuccessfully,
             GetAppsAccessSetupOperationStatus());
 }
 
 TEST_F(AppsAccessManagerImplTest, SimulateConnectedToDependentFeature) {
-  Initialize(AppsAccessManager::AccessStatus::kAvailableButNotGranted);
-  VerifyAppsAccessGrantedState(
-      AppsAccessManager::AccessStatus::kAvailableButNotGranted);
+  // Set initial state to disconnected.
+  SetConnectionStatus(secure_channel::ConnectionManager::Status::kDisconnected);
+  SetFeatureStatus(FeatureStatus::kDisconnected);
+  Initialize(AccessStatus::kAvailableButNotGranted);
+  VerifyAppsAccessGrantedState(AccessStatus::kAvailableButNotGranted);
 
   auto operation = StartSetupOperation();
   EXPECT_TRUE(operation);
 
   // Simulate connected state.
+  SetConnectionStatus(secure_channel::ConnectionManager::Status::kConnected);
   SetFeatureStatus(FeatureStatus::kConnected);
   EXPECT_EQ(1u, GetAppsSetupRequestCount());
 
@@ -371,14 +657,17 @@ TEST_F(AppsAccessManagerImplTest, SimulateConnectedToDependentFeature) {
 }
 
 TEST_F(AppsAccessManagerImplTest, SimulateConnectedToDependentFeaturePending) {
-  Initialize(AppsAccessManager::AccessStatus::kAvailableButNotGranted);
-  VerifyAppsAccessGrantedState(
-      AppsAccessManager::AccessStatus::kAvailableButNotGranted);
+  // Set initial state to disconnected.
+  SetConnectionStatus(secure_channel::ConnectionManager::Status::kDisconnected);
+  SetFeatureStatus(FeatureStatus::kDisconnected);
+  Initialize(AccessStatus::kAvailableButNotGranted);
+  VerifyAppsAccessGrantedState(AccessStatus::kAvailableButNotGranted);
 
   auto operation = StartSetupOperation();
   EXPECT_TRUE(operation);
 
   // Simulate connected state.
+  SetConnectionStatus(secure_channel::ConnectionManager::Status::kConnected);
   SetFeatureStatus(FeatureStatus::kConnected);
   EXPECT_EQ(1u, GetAppsSetupRequestCount());
 
@@ -389,44 +678,273 @@ TEST_F(AppsAccessManagerImplTest, SimulateConnectedToDependentFeaturePending) {
 }
 
 TEST_F(AppsAccessManagerImplTest, FlipAccessNotGrantedToGranted) {
-  Initialize(AppsAccessManager::AccessStatus::kAvailableButNotGranted);
-  VerifyAppsAccessGrantedState(
-      AppsAccessManager::AccessStatus::kAvailableButNotGranted);
-
-  // Simulate flipping the access state to no granted.
-  FakeGetAppsAccessStateResponse(
-      eche_app::proto::Result::RESULT_NO_ERROR,
-      eche_app::proto::AppsAccessState::ACCESS_GRANTED);
-
-  VerifyAppsAccessGrantedState(AppsAccessManager::AccessStatus::kAccessGranted);
-  EXPECT_EQ(1u, GetNumObserverCalls());
-}
-
-TEST_F(AppsAccessManagerImplTest, FlipAccessGrantedToNotGranted) {
-  Initialize(AppsAccessManager::AccessStatus::kAccessGranted);
-  VerifyAppsAccessGrantedState(AppsAccessManager::AccessStatus::kAccessGranted);
-
-  // Simulate flipping the access state to no granted.
-  FakeGetAppsAccessStateResponse(
-      eche_app::proto::Result::RESULT_NO_ERROR,
-      eche_app::proto::AppsAccessState::ACCESS_NOT_GRANTED);
-
-  VerifyAppsAccessGrantedState(
-      AppsAccessManager::AccessStatus::kAvailableButNotGranted);
-  EXPECT_EQ(1u, GetNumObserverCalls());
-}
-
-TEST_F(AppsAccessManagerImplTest, AccessNotChanged) {
-  Initialize(AppsAccessManager::AccessStatus::kAccessGranted);
-  VerifyAppsAccessGrantedState(AppsAccessManager::AccessStatus::kAccessGranted);
+  SetFeatureState(Feature::kPhoneHub, FeatureState::kEnabledByUser);
+  Initialize(AccessStatus::kAvailableButNotGranted);
+  VerifyAppsAccessGrantedState(AccessStatus::kAvailableButNotGranted);
 
   // Simulate flipping the access state to granted.
   FakeGetAppsAccessStateResponse(
       eche_app::proto::Result::RESULT_NO_ERROR,
       eche_app::proto::AppsAccessState::ACCESS_GRANTED);
 
-  VerifyAppsAccessGrantedState(AppsAccessManager::AccessStatus::kAccessGranted);
+  VerifyAppsAccessGrantedState(AccessStatus::kAccessGranted);
+  EXPECT_EQ(1u, GetNumObserverCalls());
+
+  fake_multidevice_setup_client()->InvokePendingSetFeatureEnabledStateCallback(
+      /*expected_feature=*/Feature::kEche,
+      /*expected_enabled=*/true, /*expected_auth_token=*/absl::nullopt,
+      /*success=*/true);
+}
+
+TEST_F(AppsAccessManagerImplTest, FlipAccessGrantedToNotGranted) {
+  SetFeatureState(Feature::kPhoneHub, FeatureState::kEnabledByUser);
+  SetFeatureState(Feature::kEche, FeatureState::kDisabledByUser);
+  Initialize(AccessStatus::kAccessGranted);
+  VerifyAppsAccessGrantedState(AccessStatus::kAccessGranted);
+
+  // Simulate flipping the access state to not granted.
+  FakeGetAppsAccessStateResponse(
+      eche_app::proto::Result::RESULT_NO_ERROR,
+      eche_app::proto::AppsAccessState::ACCESS_NOT_GRANTED);
+
+  VerifyAppsAccessGrantedState(AccessStatus::kAvailableButNotGranted);
+  EXPECT_EQ(1u, GetNumObserverCalls());
+}
+
+TEST_F(AppsAccessManagerImplTest, AccessNotChanged) {
+  SetFeatureState(Feature::kPhoneHub, FeatureState::kEnabledByUser);
+  SetFeatureState(Feature::kEche, FeatureState::kEnabledByUser);
+  Initialize(AccessStatus::kAccessGranted);
+  VerifyAppsAccessGrantedState(AccessStatus::kAccessGranted);
+
+  // Simulate flipping the access state granted.
+  FakeGetAppsAccessStateResponse(
+      eche_app::proto::Result::RESULT_NO_ERROR,
+      eche_app::proto::AppsAccessState::ACCESS_GRANTED);
+
+  VerifyAppsAccessGrantedState(AccessStatus::kAccessGranted);
   EXPECT_EQ(0u, GetNumObserverCalls());
+
+  fake_multidevice_setup_client()->InvokePendingSetFeatureEnabledStateCallback(
+      /*expected_feature=*/Feature::kEche,
+      /*expected_enabled=*/true, /*expected_auth_token=*/absl::nullopt,
+      /*success=*/true);
+}
+
+TEST_F(AppsAccessManagerImplTest,
+       ShouleNotEnableEcheFeatureWhenPhoneHubIsDisabled) {
+  // Explicitly disable Phone Hub, all sub feature should be disabled
+  SetFeatureState(Feature::kPhoneHub, FeatureState::kDisabledByUser);
+  SetFeatureState(Feature::kEche, FeatureState::kDisabledByUser);
+  Initialize(AccessStatus::kAvailableButNotGranted);
+  VerifyAppsAccessGrantedState(AccessStatus::kAvailableButNotGranted);
+
+  // No action after access is granted
+  // Simulate flipping the access state granted.
+  FakeGetAppsAccessStateResponse(
+      eche_app::proto::Result::RESULT_NO_ERROR,
+      eche_app::proto::AppsAccessState::ACCESS_GRANTED);
+
+  EXPECT_EQ(
+      0u,
+      fake_multidevice_setup_client()->NumPendingSetFeatureEnabledStateCalls());
+}
+
+TEST_F(AppsAccessManagerImplTest, InitiallyEnableApps) {
+  SetFeatureState(Feature::kPhoneHub, FeatureState::kEnabledByUser);
+  Initialize(AccessStatus::kAvailableButNotGranted);
+
+  // Simulate flipping the access state granted.
+  FakeGetAppsAccessStateResponse(
+      eche_app::proto::Result::RESULT_NO_ERROR,
+      eche_app::proto::AppsAccessState::ACCESS_GRANTED);
+
+  // If the kEche feature has not been explicitly set yet, enable it
+  // when Phone Hub is enabled and access has been granted.
+  fake_multidevice_setup_client()->InvokePendingSetFeatureEnabledStateCallback(
+      /*expected_feature=*/Feature::kEche,
+      /*expected_enabled=*/true, /*expected_auth_token=*/absl::nullopt,
+      /*success=*/true);
+}
+
+TEST_F(AppsAccessManagerImplTest,
+       SimulateAccessNotGrantedShouleDisableEcheFeature) {
+  SetFeatureState(Feature::kPhoneHub, FeatureState::kEnabledByUser);
+  SetFeatureState(Feature::kEche, FeatureState::kEnabledByUser);
+  Initialize(AccessStatus::kAccessGranted);
+  VerifyAppsAccessGrantedState(AccessStatus::kAccessGranted);
+
+  // Test that there is a call to disable kEche when apps access has been
+  // revoked. Simulate flipping the access state to not granted.
+  FakeGetAppsAccessStateResponse(
+      eche_app::proto::Result::RESULT_NO_ERROR,
+      eche_app::proto::AppsAccessState::ACCESS_NOT_GRANTED);
+
+  fake_multidevice_setup_client()->InvokePendingSetFeatureEnabledStateCallback(
+      /*expected_feature=*/Feature::kEche,
+      /*expected_enabled=*/false, /*expected_auth_token=*/absl::nullopt,
+      /*success=*/true);
+}
+
+TEST_F(AppsAccessManagerImplTest,
+       InitiallyEnableEcheFeature_OnlyEnableFromDefaultState) {
+  SetFeatureState(Feature::kPhoneHub, FeatureState::kEnabledByUser);
+  Initialize(AccessStatus::kAccessGranted);
+
+  // If the Eche feature has not been explicitly set yet, enable it
+  // when Phone Hub is enabled and access has been granted.
+  FakeGetAppsAccessStateResponse(
+      eche_app::proto::Result::RESULT_NO_ERROR,
+      eche_app::proto::AppsAccessState::ACCESS_GRANTED);
+
+  fake_multidevice_setup_client()->InvokePendingSetFeatureEnabledStateCallback(
+      /*expected_feature=*/Feature::kEche,
+      /*expected_enabled=*/true, /*expected_auth_token=*/absl::nullopt,
+      /*success=*/true);
+}
+
+TEST_F(AppsAccessManagerImplTest,
+       ShouldNotEnableEcheFeatureIfFeatureIsNotDefaultState) {
+  SetFeatureState(Feature::kPhoneHub, FeatureState::kEnabledByUser);
+
+  // Simulate the Eche feature has been changed by user.
+  SetFeatureEnabledState(ash::multidevice_setup::kEcheEnabledPrefName, false);
+  Initialize(AccessStatus::kAccessGranted);
+
+  // We take no action after access is granted because the Eche feature
+  // state was already explicitly set; we respect the user's choice.
+  FakeGetAppsAccessStateResponse(
+      eche_app::proto::Result::RESULT_NO_ERROR,
+      eche_app::proto::AppsAccessState::ACCESS_GRANTED);
+
+  EXPECT_EQ(
+      0u,
+      fake_multidevice_setup_client()->NumPendingSetFeatureEnabledStateCalls());
+}
+
+TEST_F(AppsAccessManagerImplTest,
+       ShouleNotEnableEcheFeatureWhenAppsPolicyDisabled) {
+  // Explicitly disable Phone Hub, all sub feature should be disabled
+  SetFeatureState(Feature::kPhoneHub, FeatureState::kDisabledByUser);
+  SetFeatureState(Feature::kEche, FeatureState::kDisabledByUser);
+  Initialize(AccessStatus::kAvailableButNotGranted);
+  VerifyAppsAccessGrantedState(AccessStatus::kAvailableButNotGranted);
+
+  // Simulate flipping the policy state is disabled.
+  FakeSendAppsPolicyStateChange(
+      eche_app::proto::AppStreamingPolicy::APP_POLICY_DISABLED);
+  // No action after access is granted.
+  // Simulate flipping the access state granted.
+  FakeGetAppsAccessStateResponse(
+      eche_app::proto::Result::RESULT_NO_ERROR,
+      eche_app::proto::AppsAccessState::ACCESS_GRANTED);
+
+  EXPECT_EQ(
+      0u,
+      fake_multidevice_setup_client()->NumPendingSetFeatureEnabledStateCalls());
+}
+
+TEST_F(AppsAccessManagerImplTest,
+       SimulateAppsPolicyDisabledShouldDisableEcheFeature) {
+  SetFeatureState(Feature::kPhoneHub, FeatureState::kEnabledByUser);
+  SetFeatureState(Feature::kEche, FeatureState::kEnabledByUser);
+  Initialize(AccessStatus::kAccessGranted);
+  VerifyAppsAccessGrantedState(AccessStatus::kAccessGranted);
+
+  // Test that there is a call to disable kEche when apps polcy state has been
+  // changed. Simulate flipping the policy state is disabled.
+  FakeSendAppsPolicyStateChange(
+      eche_app::proto::AppStreamingPolicy::APP_POLICY_DISABLED);
+
+  // No action is taken until get apps access state response is received.
+  EXPECT_EQ(0u, GetNumObserverCalls());
+
+  FakeGetAppsAccessStateResponse(
+      eche_app::proto::Result::RESULT_NO_ERROR,
+      eche_app::proto::AppsAccessState::ACCESS_GRANTED);
+
+  fake_multidevice_setup_client()->InvokePendingSetFeatureEnabledStateCallback(
+      /*expected_feature=*/Feature::kEche,
+      /*expected_enabled=*/false, /*expected_auth_token=*/absl::nullopt,
+      /*success=*/true);
+  EXPECT_EQ(1u, GetNumObserverCalls());
+}
+
+TEST_F(AppsAccessManagerImplTest, LogSetupCancelWhenAppsAccessCanceled) {
+  base::HistogramTester histograms;
+
+  // Set initial state to connecting.
+  SetConnectionStatus(secure_channel::ConnectionManager::Status::kConnecting);
+  SetFeatureStatus(FeatureStatus::kConnecting);
+
+  Initialize(AccessStatus::kAvailableButNotGranted);
+  VerifyAppsAccessGrantedState(AccessStatus::kAvailableButNotGranted);
+
+  // Start a setup operation with enabled and connecting status and access
+  // not granted.
+  auto operation = StartSetupOperation();
+  EXPECT_TRUE(operation);
+
+  // Simulate changing states from connecting to connected.
+  SetConnectionStatus(secure_channel::ConnectionManager::Status::kConnected);
+  SetFeatureStatus(FeatureStatus::kConnected);
+
+  // Verify that the request message has been sent and our operation status
+  // is updated.
+  EXPECT_EQ(1u, GetAppsSetupRequestCount());
+  EXPECT_EQ(AppsAccessSetupOperation::Status::
+                kSentMessageToPhoneAndWaitingForResponse,
+            GetAppsAccessSetupOperationStatus());
+  EXPECT_TRUE(IsSetupOperationInProgress());
+
+  // Notify the apps access setup operation is canceled.
+  NotifyAppsAccessCanceled();
+
+  // Verify the metric logs the expected event.
+  histograms.ExpectBucketCount(kEcheOnboardingHistogramName,
+                               OnboardingUserActionMetric::kUserActionCanceled,
+                               1);
+}
+
+TEST_F(AppsAccessManagerImplTest,
+       LogFailConnectionWhenCanceledAndDisconnected) {
+  base::HistogramTester histograms;
+
+  // Set initial state to connecting.
+  SetConnectionStatus(secure_channel::ConnectionManager::Status::kConnecting);
+  SetFeatureStatus(FeatureStatus::kConnecting);
+
+  Initialize(AccessStatus::kAvailableButNotGranted);
+  VerifyAppsAccessGrantedState(AccessStatus::kAvailableButNotGranted);
+
+  // Start a setup operation with enabled and connecting status and access
+  // not granted.
+  auto operation = StartSetupOperation();
+  EXPECT_TRUE(operation);
+
+  // Simulate changing states from connecting to connected.
+  SetConnectionStatus(secure_channel::ConnectionManager::Status::kConnected);
+  SetFeatureStatus(FeatureStatus::kConnected);
+
+  // Verify that the request message has been sent and our operation status
+  // is updated.
+  EXPECT_EQ(1u, GetAppsSetupRequestCount());
+  EXPECT_EQ(AppsAccessSetupOperation::Status::
+                kSentMessageToPhoneAndWaitingForResponse,
+            GetAppsAccessSetupOperationStatus());
+  EXPECT_TRUE(IsSetupOperationInProgress());
+
+  // Simulate changing states from connected to disconnected.
+  SetConnectionStatus(secure_channel::ConnectionManager::Status::kDisconnected);
+  SetFeatureStatus(FeatureStatus::kDisconnected);
+
+  // Notify the apps access setup operation is canceled.
+  NotifyAppsAccessCanceled();
+
+  // Verify the metric logs the expected event.
+  histograms.ExpectBucketCount(kEcheOnboardingHistogramName,
+                               OnboardingUserActionMetric::kFailedConnection,
+                               1);
 }
 
 }  // namespace eche_app

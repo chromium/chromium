@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,21 +25,23 @@ namespace cc {
 struct CompositorCommitData;
 class LayerTreeHostImpl;
 class LayerTreeSettings;
+class MutatorHost;
 class ScrollTree;
 enum class ScrollbarOrientation;
 
 // This is the interface that LayerTreeHostImpl and the "graphics" side of the
-// compositor uses to talk to the compositor ThreadedInputHandler. This
-// interface is two-way; it's used used both to communicate state changes from
-// the LayerTree to the input handler and also to query and update state in the
-// input handler.
+// compositor uses to talk to the compositor InputHandler. This interface is
+// two-way; it's used used both to communicate state changes from the LayerTree
+// to the input handler and also to query and update state in the input handler.
 class InputDelegateForCompositor {
  public:
   virtual ~InputDelegateForCompositor() = default;
 
   // Called during a commit to fill in the changes that have occurred since the
   // last commit.
-  virtual void ProcessCommitDeltas(CompositorCommitData* commit_data) = 0;
+  virtual void ProcessCommitDeltas(
+      CompositorCommitData* commit_data,
+      const MutatorHost* main_thread_mutator_host) = 0;
 
   // Called to let the input handler perform animations.
   virtual void TickAnimations(base::TimeTicks monotonic_time) = 0;
@@ -56,6 +58,10 @@ class InputDelegateForCompositor {
   // scroll limits, page scale, page scale limits.
   virtual void RootLayerStateMayHaveChanged() = 0;
 
+  // Called to let the input handler know that a scrollbar for the given
+  // elementId has been added.
+  virtual void DidRegisterScrollbar(ElementId scroll_element_id,
+                                    ScrollbarOrientation orientation) = 0;
   // Called to let the input handler know that a scrollbar for the given
   // elementId has been removed.
   virtual void DidUnregisterScrollbar(ElementId scroll_element_id,
@@ -83,6 +89,12 @@ class InputDelegateForCompositor {
   // the touchmoves. In that case, we latch and have a CurrentlyScrollingNode()
   // but will never receive a ScrollUpdate.
   virtual ActivelyScrollingType GetActivelyScrollingType() const = 0;
+
+  // Returns true if we're currently scrolling and the scroll must be realized
+  // on the main thread (see ScrollTree::CanRealizeScrollsOnCompositor).
+  // TODO(skobes): Combine IsCurrentlyScrolling, GetActivelyScrollingType, and
+  // IsCurrentScrollMainRepainted into a single method returning everything.
+  virtual bool IsCurrentScrollMainRepainted() const = 0;
 };
 
 // This is the interface that's exposed by the LayerTreeHostImpl to the input
@@ -98,6 +110,7 @@ class CompositorDelegateForInput {
   virtual bool HasAnimatedScrollbars() const = 0;
   virtual void SetNeedsCommit() = 0;
   virtual void SetNeedsFullViewportRedraw() = 0;
+  virtual void SetDeferBeginMainFrame(bool defer_begin_main_frame) const = 0;
   virtual void DidUpdateScrollAnimationCurve() = 0;
   virtual void AccumulateScrollDeltaForTracing(const gfx::Vector2dF& delta) = 0;
   virtual void DidStartPinchZoom() = 0;

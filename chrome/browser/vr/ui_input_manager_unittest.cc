@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/vr/content_input_delegate.h"
@@ -160,8 +161,8 @@ class UiInputManagerContentTest : public UiTest {
  protected:
   RenderInfo CreateRenderInfo() {
     RenderInfo render_info;
-    gfx::Transform projection_matrix(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, -1, 0, 0, 0,
-                                     -1, 0.5);
+    auto projection_matrix = gfx::Transform::RowMajor(1, 0, 0, 0, 0, 1, 0, 0, 0,
+                                                      0, -1, 0, 0, 0, -1, 0.5);
     projection_matrix.Scale(
         1.0f, static_cast<float>(kWindowSize.width()) / kWindowSize.height());
 
@@ -177,7 +178,7 @@ class UiInputManagerContentTest : public UiTest {
   }
 
   gfx::Transform head_pose_;
-  UiInputManager* input_manager_;
+  raw_ptr<UiInputManager> input_manager_;
 };
 
 TEST_F(UiInputManagerTest, FocusedElement) {

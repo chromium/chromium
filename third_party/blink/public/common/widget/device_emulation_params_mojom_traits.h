@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,7 +25,7 @@ struct BLINK_COMMON_EXPORT
     return r.screen_size;
   }
 
-  static absl::optional<gfx::Point> view_position(
+  static const absl::optional<gfx::Point>& view_position(
       const blink::DeviceEmulationParams& r) {
     return r.view_position;
   }

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,25 +33,26 @@
  *   </div>
  */
 
-import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
-import '../settings_shared_css.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import '../settings_shared.css.js';
 
-import {assertNotReached} from 'chrome://resources/js/assert.m.js';
-import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {getTemplate} from './incompatible_application_item.html.js';
 import {ActionTypes, IncompatibleApplicationsBrowserProxy, IncompatibleApplicationsBrowserProxyImpl} from './incompatible_applications_browser_proxy.js';
 
 const IncompatibleApplicationItemElementBase = I18nMixin(PolymerElement);
 
-class IncompatibleApplicationItemElement extends
+export class IncompatibleApplicationItemElement extends
     IncompatibleApplicationItemElementBase {
   static get is() {
     return 'incompatible-application-item';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -114,7 +115,6 @@ class IncompatibleApplicationItemElement extends
       return this.i18n('incompatibleApplicationsUpdateButton');
     }
     assertNotReached();
-    return '';
   }
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/shell.h"
+#include "base/barrier_callback.h"
 #include "base/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
@@ -30,10 +31,10 @@ namespace {
 const char* const kResultFieldName = "result";
 
 // Template string constant for populating the name field.
-const char* const kNameFieldTemplate = "Screen %d";
+const char* const kNameFieldTemplate = "Screen %zu";
 
 // Template string constant for populating the name field.
-const char* const kFilenameFieldTemplate = "screen%d.png";
+const char* const kFilenameFieldTemplate = "screen%zu.png";
 
 // String constant identifying the header field which stores the command id.
 const char* const kCommandIdHeaderName = "Command-ID";
@@ -50,14 +51,13 @@ const char* const kFileTypeScreenshotFile = "screenshot_file";
 // String constant identifying the upload url field in the command payload.
 const char* const kUploadUrlFieldName = "fileUploadUrl";
 
-// A helper function which invokes |store_screenshot_callback| on |task_runner|.
-void RunStoreScreenshotOnTaskRunner(
-    ui::GrabWindowSnapshotAsyncPNGCallback store_screenshot_callback,
-    scoped_refptr<base::TaskRunner> task_runner,
+// Helper method to hide the |screen_index| and `std::make_pair` from the
+// |DeviceCommandScreenshotJob::Delegate|.
+void CallCollectAndUpload(
+    base::OnceCallback<void(ScreenshotData)> collect_and_upload,
+    size_t screen_index,
     scoped_refptr<base::RefCountedMemory> png_data) {
-  task_runner->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(store_screenshot_callback), png_data));
+  std::move(collect_and_upload).Run(std::make_pair(screen_index, png_data));
 }
 
 }  // namespace
@@ -82,7 +82,7 @@ class DeviceCommandScreenshotJob::Payload
 DeviceCommandScreenshotJob::Payload::Payload(ResultCode result_code) {
   base::DictionaryValue root_dict;
   if (result_code != SUCCESS)
-    root_dict.SetInteger(kResultFieldName, result_code);
+    root_dict.SetIntKey(kResultFieldName, result_code);
   base::JSONWriter::Write(root_dict, &payload_);
 }
 
@@ -92,8 +92,7 @@ std::unique_ptr<std::string> DeviceCommandScreenshotJob::Payload::Serialize() {
 
 DeviceCommandScreenshotJob::DeviceCommandScreenshotJob(
     std::unique_ptr<Delegate> screenshot_delegate)
-    : num_pending_screenshots_(0),
-      screenshot_delegate_(std::move(screenshot_delegate)) {
+    : screenshot_delegate_(std::move(screenshot_delegate)) {
   DCHECK(screenshot_delegate_);
 }
 
@@ -132,31 +131,39 @@ void DeviceCommandScreenshotJob::OnFailure(UploadJob::ErrorCode error_code) {
 bool DeviceCommandScreenshotJob::ParseCommandPayload(
     const std::string& command_payload) {
   absl::optional<base::Value> root(base::JSONReader::Read(command_payload));
-  if (!root)
+  if (!root || !root->is_dict())
     return false;
-  base::DictionaryValue* payload = nullptr;
-  if (!root->GetAsDictionary(&payload))
+  const std::string* upload_url =
+      root->GetDict().FindString(kUploadUrlFieldName);
+  if (!upload_url)
     return false;
-  std::string upload_url;
-  if (!payload->GetString(kUploadUrlFieldName, &upload_url))
-    return false;
-  upload_url_ = GURL(upload_url);
+  upload_url_ = GURL(*upload_url);
   return true;
 }
 
-void DeviceCommandScreenshotJob::StoreScreenshot(
-    size_t screen,
-    scoped_refptr<base::RefCountedMemory> png_data) {
-  screenshots_.insert(std::make_pair(screen, png_data));
-  DCHECK_LT(0, num_pending_screenshots_);
-  --num_pending_screenshots_;
-
-  if (num_pending_screenshots_ == 0)
-    StartScreenshotUpload();
+void DeviceCommandScreenshotJob::OnScreenshotsReady(
+    scoped_refptr<base::TaskRunner> task_runner,
+    std::vector<ScreenshotData> upload_data) {
+  // TODO(https://crbug.com/1297571) Do we really need to re-post here?
+  // Can we add guarantees to
+  // `DeviceCommandScreenshotJob::Delegate::TakeSnapshot`?
+  task_runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(&DeviceCommandScreenshotJob::StartScreenshotUpload,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(upload_data)));
 }
 
-void DeviceCommandScreenshotJob::StartScreenshotUpload() {
-  for (const auto& screenshot_entry : screenshots_) {
+void DeviceCommandScreenshotJob::StartScreenshotUpload(
+    std::vector<ScreenshotData> upload_data) {
+  std::sort(begin(upload_data), end(upload_data),
+            [](const auto& l, const auto& r) { return l.first < r.first; });
+
+  for (const auto& screenshot_entry : upload_data) {
+    if (!screenshot_entry.second) {
+      LOG(WARNING) << "not uploading empty screenshot at index "
+                   << screenshot_entry.first;
+      continue;
+    }
     std::map<std::string, std::string> header_fields;
     header_fields.insert(
         std::make_pair(kFileTypeHeaderName, kFileTypeScreenshotFile));
@@ -218,17 +225,18 @@ void DeviceCommandScreenshotJob::RunImpl(CallbackWithResult succeeded_callback,
 
   // Post tasks to the sequenced worker pool for taking screenshots on each
   // attached screen.
-  num_pending_screenshots_ = root_windows.size();
-  for (size_t screen = 0; screen < root_windows.size(); ++screen) {
-    aura::Window* root_window = root_windows[screen];
+  auto collect_and_upload = base::BarrierCallback<ScreenshotData>(
+      root_windows.size(),
+      base::BindOnce(&DeviceCommandScreenshotJob::OnScreenshotsReady,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     base::ThreadTaskRunnerHandle::Get()));
+  for (size_t screen_index = 0; screen_index < root_windows.size();
+       ++screen_index) {
+    aura::Window* root_window = root_windows[screen_index];
     gfx::Rect rect = root_window->bounds();
     screenshot_delegate_->TakeSnapshot(
         root_window, rect,
-        base::BindOnce(
-            &RunStoreScreenshotOnTaskRunner,
-            base::BindOnce(&DeviceCommandScreenshotJob::StoreScreenshot,
-                           weak_ptr_factory_.GetWeakPtr(), screen),
-            base::ThreadTaskRunnerHandle::Get()));
+        base::BindOnce(CallCollectAndUpload, collect_and_upload, screen_index));
   }
 }
 

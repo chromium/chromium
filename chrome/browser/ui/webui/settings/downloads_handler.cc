@@ -1,4 +1,4 @@
-// Copyright (c) 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,26 +42,26 @@ DownloadsHandler::~DownloadsHandler() {
 }
 
 void DownloadsHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "initializeDownloads",
       base::BindRepeating(&DownloadsHandler::HandleInitialize,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "resetAutoOpenFileTypes",
       base::BindRepeating(&DownloadsHandler::HandleResetAutoOpenFileTypes,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "selectDownloadLocation",
       base::BindRepeating(&DownloadsHandler::HandleSelectDownloadLocation,
                           base::Unretained(this)));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getDownloadLocationText",
       base::BindRepeating(&DownloadsHandler::HandleGetDownloadLocationText,
                           base::Unretained(this)));
 #endif
 
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "setDownloadsConnectionAccountLink",
       base::BindRepeating(
           &DownloadsHandler::HandleSetDownloadsConnectionAccountLink,
@@ -85,7 +85,7 @@ void DownloadsHandler::OnJavascriptDisallowed() {
   pref_registrar_.RemoveAll();
 }
 
-void DownloadsHandler::HandleInitialize(const base::ListValue* args) {
+void DownloadsHandler::HandleInitialize(const base::Value::List& args) {
   AllowJavascript();
   SendDownloadsConnectionPolicyToJavascript();
   SendAutoOpenDownloadsToJavascript();
@@ -100,14 +100,14 @@ void DownloadsHandler::SendAutoOpenDownloadsToJavascript() {
 }
 
 void DownloadsHandler::HandleResetAutoOpenFileTypes(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   base::RecordAction(UserMetricsAction("Options_ResetAutoOpenFiles"));
   content::DownloadManager* manager = profile_->GetDownloadManager();
   DownloadPrefs::FromDownloadManager(manager)->ResetAutoOpenByUser();
 }
 
 void DownloadsHandler::HandleSelectDownloadLocation(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   // Early return if the select folder dialog is already active.
   if (select_folder_dialog_)
     return;
@@ -123,7 +123,7 @@ void DownloadsHandler::HandleSelectDownloadLocation(
       l10n_util::GetStringUTF16(IDS_SETTINGS_DOWNLOAD_LOCATION),
       pref_service->GetFilePath(prefs::kDownloadDefaultDirectory), &info, 0,
       base::FilePath::StringType(),
-      web_ui()->GetWebContents()->GetTopLevelNativeWindow(), NULL);
+      web_ui()->GetWebContents()->GetTopLevelNativeWindow(), nullptr);
 }
 
 void DownloadsHandler::FileSelected(const base::FilePath& path,
@@ -143,11 +143,11 @@ void DownloadsHandler::FileSelectionCanceled(void* params) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void DownloadsHandler::HandleGetDownloadLocationText(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   AllowJavascript();
-  CHECK_EQ(2U, args->GetList().size());
-  const std::string& callback_id = args->GetList()[0].GetString();
-  const std::string& path = args->GetList()[1].GetString();
+  CHECK_EQ(2U, args.size());
+  const std::string& callback_id = args[0].GetString();
+  const std::string& path = args[1].GetString();
 
   ResolveJavascriptCallback(
       base::Value(callback_id),
@@ -183,10 +183,10 @@ void DownloadsHandler::SendDownloadsConnectionPolicyToJavascript() {
 }
 
 void DownloadsHandler::HandleSetDownloadsConnectionAccountLink(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   DCHECK(IsDownloadsConnectionPolicyEnabled());
-  CHECK_EQ(1U, args->GetList().size());
-  bool enable_link = args->GetList()[0].GetBool();
+  CHECK_EQ(1U, args.size());
+  bool enable_link = args[0].GetBool();
   ec::SetFileSystemConnectorAccountLinkForSettingsPage(
       enable_link, profile_,
       base::BindOnce(&DownloadsHandler::OnDownloadsConnectionAccountLinkSet,
@@ -210,17 +210,17 @@ void DownloadsHandler::SendDownloadsConnectionInfoToJavascript() {
                                    settings.value(), profile_->GetPrefs()))
                                   .has_value();
   // Dict to match the fields used in downloads_page.html.
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetBoolKey("linked", got_linked_account);
+  base::Value::Dict dict;
+  dict.Set("linked", got_linked_account);
   if (got_linked_account) {
-    base::Value account(base::Value::Type::DICTIONARY);
-    account.SetStringKey("name", info->account_name);
-    account.SetStringKey("login", info->account_login);
-    dict.SetKey("account", std::move(account));
-    base::Value folder(base::Value::Type::DICTIONARY);
-    folder.SetStringKey("name", info->folder_name);
-    folder.SetStringKey("link", info->folder_link);
-    dict.SetKey("folder", std::move(folder));
+    base::Value::Dict account;
+    account.Set("name", info->account_name);
+    account.Set("login", info->account_login);
+    dict.Set("account", std::move(account));
+    base::Value::Dict folder;
+    folder.Set("name", info->folder_name);
+    folder.Set("link", info->folder_link);
+    dict.Set("folder", std::move(folder));
   }
   FireWebUIListener("downloads-connection-link-changed", dict);
 }

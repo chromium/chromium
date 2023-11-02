@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,12 +11,13 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_errors.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/dns/public/dns_query_type.h"
 #include "net/dns/public/host_resolver_source.h"
 #include "net/proxy_resolution/proxy_resolve_dns_operation.h"
@@ -38,12 +39,12 @@ class HostResolverMojo::RequestImpl : public ProxyHostResolver::Request,
  public:
   RequestImpl(const std::string& hostname,
               net::ProxyResolveDnsOperation operation,
-              const net::NetworkIsolationKey& network_isolation_key,
+              const net::NetworkAnonymizationKey& network_anonymization_key,
               base::WeakPtr<ProxyHostResolverCache> host_cache,
               Impl* impl)
       : hostname_(hostname),
         operation_(operation),
-        network_isolation_key_(network_isolation_key),
+        network_anonymization_key_(network_anonymization_key),
         host_cache_(std::move(host_cache)),
         impl_(impl) {}
 
@@ -65,7 +66,7 @@ class HostResolverMojo::RequestImpl : public ProxyHostResolver::Request,
     // could allow reducing async returns even further.
     DCHECK(host_cache_);
     const std::vector<net::IPAddress>* cached_result = host_cache_->LookupEntry(
-        hostname_, network_isolation_key_, IsExOperation(operation_));
+        hostname_, network_anonymization_key_, IsExOperation(operation_));
     if (cached_result) {
       results_ = *cached_result;
       DVLOG(1) << "Resolved " << hostname_ << " from cache";
@@ -73,7 +74,7 @@ class HostResolverMojo::RequestImpl : public ProxyHostResolver::Request,
     }
 
     callback_ = std::move(callback);
-    impl_->ResolveDns(hostname_, operation_, network_isolation_key_,
+    impl_->ResolveDns(hostname_, operation_, network_anonymization_key_,
                       receiver_.BindNewPipeAndPassRemote());
     receiver_.set_disconnect_handler(
         base::BindOnce(&RequestImpl::OnDisconnect, base::Unretained(this)));
@@ -92,7 +93,7 @@ class HostResolverMojo::RequestImpl : public ProxyHostResolver::Request,
     if (error == net::OK) {
       results_ = result;
       if (host_cache_) {
-        host_cache_->StoreEntry(hostname_, network_isolation_key_,
+        host_cache_->StoreEntry(hostname_, network_anonymization_key_,
                                 IsExOperation(operation_), result);
       }
     }
@@ -105,13 +106,13 @@ class HostResolverMojo::RequestImpl : public ProxyHostResolver::Request,
 
   const std::string hostname_;
   const net::ProxyResolveDnsOperation operation_;
-  const net::NetworkIsolationKey network_isolation_key_;
+  const net::NetworkAnonymizationKey network_anonymization_key_;
 
   mojo::Receiver<mojom::HostResolverRequestClient> receiver_{this};
   net::CompletionOnceCallback callback_;
 
   base::WeakPtr<ProxyHostResolverCache> host_cache_;
-  Impl* const impl_;
+  const raw_ptr<Impl> impl_;
   std::vector<net::IPAddress> results_;
 
   THREAD_CHECKER(thread_checker_);
@@ -124,10 +125,10 @@ HostResolverMojo::~HostResolverMojo() = default;
 std::unique_ptr<ProxyHostResolver::Request> HostResolverMojo::CreateRequest(
     const std::string& hostname,
     net::ProxyResolveDnsOperation operation,
-    const net::NetworkIsolationKey& network_isolation_key) {
+    const net::NetworkAnonymizationKey& network_anonymization_key) {
   DCHECK(thread_checker_.CalledOnValidThread());
   return std::make_unique<RequestImpl>(
-      hostname, operation, network_isolation_key,
+      hostname, operation, network_anonymization_key,
       host_cache_weak_factory_.GetWeakPtr(), impl_);
 }
 

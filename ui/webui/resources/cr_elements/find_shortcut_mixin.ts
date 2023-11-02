@@ -1,13 +1,13 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import {dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {assert, assertNotReached} from '../js/assert.m.js';
+import {assert, assertNotReached} from '../js/assert.js';
 import {isMac} from '../js/cr.m.js';
-import {KeyboardShortcutList} from '../js/cr/ui/keyboard_shortcut_list.m.js';
-import {isTextInputElement} from '../js/util.m.js';
+import {KeyboardShortcutList} from '../js/keyboard_shortcut_list.js';
+import {isTextInputElement} from '../js/util.js';
 
 /**
  * @fileoverview Listens for a find keyboard shortcut (i.e. Ctrl/Cmd+f or /)
@@ -19,7 +19,7 @@ export const FindShortcutManager = (() => {
   /**
    * Stack of listeners. Only the top listener will handle the shortcut.
    */
-  const listeners: Array<FindShortcutMixinInterface> = [];
+  const listeners: FindShortcutMixinInterface[] = [];
 
   /**
    * Tracks if any modal context is open in settings. This assumes only one
@@ -86,14 +86,14 @@ export const FindShortcutMixin = dedupingMixin(
           FindShortcutMixinInterface {
         findShortcutListenOnAttach: boolean = true;
 
-        connectedCallback() {
+        override connectedCallback() {
           super.connectedCallback();
           if (this.findShortcutListenOnAttach) {
             this.becomeActiveFindShortcutListener();
           }
         }
 
-        disconnectedCallback() {
+        override disconnectedCallback() {
           super.disconnectedCallback();
           if (this.findShortcutListenOnAttach) {
             this.removeSelfAsFindShortcutListener();

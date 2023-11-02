@@ -1,4 +1,4 @@
-// Copyright (c) 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@
 #include "base/callback_helpers.h"
 #include "base/component_export.h"
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "gpu/vulkan/vma_wrapper.h"
 
@@ -125,7 +125,7 @@ class COMPONENT_EXPORT(VULKAN) VulkanFenceHelper {
  private:
   void PerformImmediateCleanup();
 
-  VulkanDeviceQueue* const device_queue_;
+  const raw_ptr<VulkanDeviceQueue> device_queue_;
 
   std::vector<CleanupTask> tasks_pending_fence_;
   uint64_t next_generation_ = 1;
@@ -155,6 +155,8 @@ class COMPONENT_EXPORT(VULKAN) VulkanFenceHelper {
 template <typename T>
 void VulkanFenceHelper::EnqueueVulkanObjectCleanupForSubmittedWork(
     std::unique_ptr<T> obj) {
+  if (!obj)
+    return;
   EnqueueCleanupTaskForSubmittedWork(
       base::BindOnce([](std::unique_ptr<T> obj, VulkanDeviceQueue* device_queue,
                         bool device_lost) { obj->Destroy(); },

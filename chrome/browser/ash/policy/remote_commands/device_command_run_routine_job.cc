@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,8 +16,9 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/syslog_logging.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "base/values.h"
-#include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
+#include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -40,12 +41,11 @@ constexpr char kParamsFieldName[] = "params";
 
 // Returns a RunRoutineResponse with an id of kFailedToStartId and a status of
 // kFailedToStart.
-chromeos::cros_healthd::mojom::RunRoutineResponsePtr
+ash::cros_healthd::mojom::RunRoutineResponsePtr
 MakeInvalidParametersResponse() {
-  return chromeos::cros_healthd::mojom::RunRoutineResponse::New(
-      chromeos::cros_healthd::mojom::kFailedToStartId,
-      chromeos::cros_healthd::mojom::DiagnosticRoutineStatusEnum::
-          kFailedToStart);
+  return ash::cros_healthd::mojom::RunRoutineResponse::New(
+      ash::cros_healthd::mojom::kFailedToStartId,
+      ash::cros_healthd::mojom::DiagnosticRoutineStatusEnum::kFailedToStart);
 }
 
 template <typename T>
@@ -56,7 +56,7 @@ bool PopulateMojoEnumValueIfValid(int possible_enum, T* valid_enum_out) {
     return false;
   }
   T enum_to_check = static_cast<T>(possible_enum);
-  if (!chromeos::cros_healthd::mojom::IsKnownEnumValue(enum_to_check))
+  if (!ash::cros_healthd::mojom::IsKnownEnumValue(enum_to_check))
     return false;
   *valid_enum_out = enum_to_check;
   return true;
@@ -67,8 +67,7 @@ bool PopulateMojoEnumValueIfValid(int possible_enum, T* valid_enum_out) {
 class DeviceCommandRunRoutineJob::Payload
     : public RemoteCommandJob::ResultPayload {
  public:
-  explicit Payload(
-      chromeos::cros_healthd::mojom::RunRoutineResponsePtr response);
+  explicit Payload(ash::cros_healthd::mojom::RunRoutineResponsePtr response);
   Payload(const Payload&) = delete;
   Payload& operator=(const Payload&) = delete;
   ~Payload() override = default;
@@ -77,11 +76,11 @@ class DeviceCommandRunRoutineJob::Payload
   std::unique_ptr<std::string> Serialize() override;
 
  private:
-  chromeos::cros_healthd::mojom::RunRoutineResponsePtr response_;
+  ash::cros_healthd::mojom::RunRoutineResponsePtr response_;
 };
 
 DeviceCommandRunRoutineJob::Payload::Payload(
-    chromeos::cros_healthd::mojom::RunRoutineResponsePtr response)
+    ash::cros_healthd::mojom::RunRoutineResponsePtr response)
     : response_(std::move(response)) {}
 
 std::unique_ptr<std::string> DeviceCommandRunRoutineJob::Payload::Serialize() {
@@ -139,28 +138,27 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
                << routine_enum_;
 
   switch (routine_enum_) {
-    case chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::kUnknown: {
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kUnknown: {
       NOTREACHED() << "This default value should not be used.";
       break;
     }
-    case chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::
-        kBatteryCapacity: {
-      chromeos::cros_healthd::ServiceConnection::GetInstance()
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryCapacity: {
+      ash::cros_healthd::ServiceConnection::GetInstance()
           ->RunBatteryCapacityRoutine(base::BindOnce(
               &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
               weak_ptr_factory_.GetWeakPtr(), std::move(succeeded_callback),
               std::move(failed_callback)));
       break;
     }
-    case chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryHealth: {
-      chromeos::cros_healthd::ServiceConnection::GetInstance()
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryHealth: {
+      ash::cros_healthd::ServiceConnection::GetInstance()
           ->RunBatteryHealthRoutine(base::BindOnce(
               &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
               weak_ptr_factory_.GetWeakPtr(), std::move(succeeded_callback),
               std::move(failed_callback)));
       break;
     }
-    case chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::kUrandom: {
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kUrandom: {
       constexpr char kLengthSecondsFieldName[] = "lengthSeconds";
       absl::optional<int> length_seconds =
           params_dict_.FindIntKey(kLengthSecondsFieldName);
@@ -178,24 +176,23 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
         }
         routine_parameter = base::Seconds(value);
       }
-      chromeos::cros_healthd::ServiceConnection::GetInstance()
-          ->RunUrandomRoutine(
-              routine_parameter,
-              base::BindOnce(
-                  &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
-                  weak_ptr_factory_.GetWeakPtr(), std::move(succeeded_callback),
-                  std::move(failed_callback)));
+      ash::cros_healthd::ServiceConnection::GetInstance()->RunUrandomRoutine(
+          routine_parameter,
+          base::BindOnce(
+              &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
+              weak_ptr_factory_.GetWeakPtr(), std::move(succeeded_callback),
+              std::move(failed_callback)));
       break;
     }
-    case chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::kSmartctlCheck: {
-      chromeos::cros_healthd::ServiceConnection::GetInstance()
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kSmartctlCheck: {
+      ash::cros_healthd::ServiceConnection::GetInstance()
           ->RunSmartctlCheckRoutine(base::BindOnce(
               &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
               weak_ptr_factory_.GetWeakPtr(), std::move(succeeded_callback),
               std::move(failed_callback)));
       break;
     }
-    case chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::kAcPower: {
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kAcPower: {
       constexpr char kExpectedStatusFieldName[] = "expectedStatus";
       // Note that expectedPowerType is an optional parameter.
       constexpr char kExpectedPowerTypeFieldName[] = "expectedPowerType";
@@ -203,7 +200,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
           params_dict_.FindIntKey(kExpectedStatusFieldName);
       std::string* expected_power_type =
           params_dict_.FindStringKey(kExpectedPowerTypeFieldName);
-      chromeos::cros_healthd::mojom::AcPowerStatusEnum expected_status_enum;
+      ash::cros_healthd::mojom::AcPowerStatusEnum expected_status_enum;
       // The AC power routine expects a valid ACPowerStatusEnum, and optionally
       // a string.
       if (!expected_status.has_value() ||
@@ -216,19 +213,18 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
                                           MakeInvalidParametersResponse())));
         break;
       }
-      chromeos::cros_healthd::ServiceConnection::GetInstance()
-          ->RunAcPowerRoutine(
-              expected_status_enum,
-              expected_power_type
-                  ? absl::optional<std::string>(*expected_power_type)
-                  : absl::nullopt,
-              base::BindOnce(
-                  &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
-                  weak_ptr_factory_.GetWeakPtr(), std::move(succeeded_callback),
-                  std::move(failed_callback)));
+      ash::cros_healthd::ServiceConnection::GetInstance()->RunAcPowerRoutine(
+          expected_status_enum,
+          expected_power_type
+              ? absl::optional<std::string>(*expected_power_type)
+              : absl::nullopt,
+          base::BindOnce(
+              &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
+              weak_ptr_factory_.GetWeakPtr(), std::move(succeeded_callback),
+              std::move(failed_callback)));
       break;
     }
-    case chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::kCpuCache: {
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kCpuCache: {
       constexpr char kLengthSecondsFieldName[] = "lengthSeconds";
       absl::optional<int> length_seconds =
           params_dict_.FindIntKey(kLengthSecondsFieldName);
@@ -246,16 +242,15 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
         }
         routine_duration = base::Seconds(value);
       }
-      chromeos::cros_healthd::ServiceConnection::GetInstance()
-          ->RunCpuCacheRoutine(
-              routine_duration,
-              base::BindOnce(
-                  &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
-                  weak_ptr_factory_.GetWeakPtr(), std::move(succeeded_callback),
-                  std::move(failed_callback)));
+      ash::cros_healthd::ServiceConnection::GetInstance()->RunCpuCacheRoutine(
+          routine_duration,
+          base::BindOnce(
+              &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
+              weak_ptr_factory_.GetWeakPtr(), std::move(succeeded_callback),
+              std::move(failed_callback)));
       break;
     }
-    case chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::kCpuStress: {
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kCpuStress: {
       constexpr char kLengthSecondsFieldName[] = "lengthSeconds";
       absl::optional<int> length_seconds =
           params_dict_.FindIntKey(kLengthSecondsFieldName);
@@ -273,16 +268,15 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
         }
         routine_duration = base::Seconds(value);
       }
-      chromeos::cros_healthd::ServiceConnection::GetInstance()
-          ->RunCpuStressRoutine(
-              routine_duration,
-              base::BindOnce(
-                  &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
-                  weak_ptr_factory_.GetWeakPtr(), std::move(succeeded_callback),
-                  std::move(failed_callback)));
+      ash::cros_healthd::ServiceConnection::GetInstance()->RunCpuStressRoutine(
+          routine_duration,
+          base::BindOnce(
+              &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
+              weak_ptr_factory_.GetWeakPtr(), std::move(succeeded_callback),
+              std::move(failed_callback)));
       break;
     }
-    case chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::
         kFloatingPointAccuracy: {
       constexpr char kLengthSecondsFieldName[] = "lengthSeconds";
       absl::optional<int> length_seconds =
@@ -302,7 +296,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
         }
         routine_duration = base::Seconds(value);
       }
-      chromeos::cros_healthd::ServiceConnection::GetInstance()
+      ash::cros_healthd::ServiceConnection::GetInstance()
           ->RunFloatingPointAccuracyRoutine(
               routine_duration,
               base::BindOnce(
@@ -311,7 +305,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
                   std::move(failed_callback)));
       break;
     }
-    case chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::kNvmeWearLevel: {
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kNvmeWearLevel: {
       constexpr char kWearLevelThresholdFieldName[] = "wearLevelThreshold";
       absl::optional<int> wear_level_threshold =
           params_dict_.FindIntKey(kWearLevelThresholdFieldName);
@@ -325,7 +319,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
                                           MakeInvalidParametersResponse())));
         break;
       }
-      chromeos::cros_healthd::ServiceConnection::GetInstance()
+      ash::cros_healthd::ServiceConnection::GetInstance()
           ->RunNvmeWearLevelRoutine(
               wear_level_threshold.value(),
               base::BindOnce(
@@ -334,12 +328,11 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
                   std::move(failed_callback)));
       break;
     }
-    case chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::kNvmeSelfTest: {
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kNvmeSelfTest: {
       constexpr char kNvmeSelfTestTypeFieldName[] = "nvmeSelfTestType";
       absl::optional<int> nvme_self_test_type =
           params_dict_.FindIntKey(kNvmeSelfTestTypeFieldName);
-      chromeos::cros_healthd::mojom::NvmeSelfTestTypeEnum
-          nvme_self_test_type_enum;
+      ash::cros_healthd::mojom::NvmeSelfTestTypeEnum nvme_self_test_type_enum;
       // The NVMe self-test routine expects a valid NvmeSelfTestTypeEnum.
       if (!nvme_self_test_type.has_value() ||
           !PopulateMojoEnumValueIfValid(nvme_self_test_type.value(),
@@ -351,7 +344,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
                                           MakeInvalidParametersResponse())));
         break;
       }
-      chromeos::cros_healthd::ServiceConnection::GetInstance()
+      ash::cros_healthd::ServiceConnection::GetInstance()
           ->RunNvmeSelfTestRoutine(
               nvme_self_test_type_enum,
               base::BindOnce(
@@ -360,7 +353,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
                   std::move(failed_callback)));
       break;
     }
-    case chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::kDiskRead: {
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kDiskRead: {
       constexpr char kTypeFieldName[] = "type";
       constexpr char kLengthSecondsFieldName[] = "lengthSeconds";
       constexpr char kFileSizeMbFieldName[] = "fileSizeMb";
@@ -369,7 +362,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
           params_dict_.FindIntKey(kLengthSecondsFieldName);
       absl::optional<int> file_size_mb =
           params_dict_.FindIntKey(kFileSizeMbFieldName);
-      chromeos::cros_healthd::mojom::DiskReadRoutineTypeEnum type_enum;
+      ash::cros_healthd::mojom::DiskReadRoutineTypeEnum type_enum;
       if (!length_seconds.has_value() || length_seconds.value() < 0 ||
           !file_size_mb.has_value() || file_size_mb.value() < 0 ||
           !type.has_value() ||
@@ -382,16 +375,15 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
         break;
       }
       auto exec_duration = base::Seconds(length_seconds.value());
-      chromeos::cros_healthd::ServiceConnection::GetInstance()
-          ->RunDiskReadRoutine(
-              type_enum, exec_duration, file_size_mb.value(),
-              base::BindOnce(
-                  &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
-                  weak_ptr_factory_.GetWeakPtr(), std::move(succeeded_callback),
-                  std::move(failed_callback)));
+      ash::cros_healthd::ServiceConnection::GetInstance()->RunDiskReadRoutine(
+          type_enum, exec_duration, file_size_mb.value(),
+          base::BindOnce(
+              &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
+              weak_ptr_factory_.GetWeakPtr(), std::move(succeeded_callback),
+              std::move(failed_callback)));
       break;
     }
-    case chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::kPrimeSearch: {
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kPrimeSearch: {
       constexpr char kLengthSecondsFieldName[] = "lengthSeconds";
       absl::optional<int> length_seconds =
           params_dict_.FindIntKey(kLengthSecondsFieldName);
@@ -409,7 +401,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
         }
         routine_duration = base::Seconds(value);
       }
-      chromeos::cros_healthd::ServiceConnection::GetInstance()
+      ash::cros_healthd::ServiceConnection::GetInstance()
           ->RunPrimeSearchRoutine(
               routine_duration,
               base::BindOnce(
@@ -418,8 +410,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
                   std::move(failed_callback)));
       break;
     }
-    case chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::
-        kBatteryDischarge: {
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryDischarge: {
       constexpr char kLengthSecondsFieldName[] = "lengthSeconds";
       constexpr char kMaximumDischargePercentAllowedFieldName[] =
           "maximumDischargePercentAllowed";
@@ -439,7 +430,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
                                           MakeInvalidParametersResponse())));
         break;
       }
-      chromeos::cros_healthd::ServiceConnection::GetInstance()
+      ash::cros_healthd::ServiceConnection::GetInstance()
           ->RunBatteryDischargeRoutine(
               base::Seconds(length_seconds.value()),
               maximum_discharge_percent_allowed.value(),
@@ -449,7 +440,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
                   std::move(failed_callback)));
       break;
     }
-    case chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryCharge: {
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryCharge: {
       constexpr char kLengthSecondsFieldName[] = "lengthSeconds";
       constexpr char kMinimumChargePercentRequiredFieldName[] =
           "minimumChargePercentRequired";
@@ -469,7 +460,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
                                           MakeInvalidParametersResponse())));
         break;
       }
-      chromeos::cros_healthd::ServiceConnection::GetInstance()
+      ash::cros_healthd::ServiceConnection::GetInstance()
           ->RunBatteryChargeRoutine(
               base::Seconds(length_seconds.value()),
               minimum_charge_percent_required.value(),
@@ -479,112 +470,107 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
                   std::move(failed_callback)));
       break;
     }
-    case chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::kMemory: {
-      chromeos::cros_healthd::ServiceConnection::GetInstance()
-          ->RunMemoryRoutine(base::BindOnce(
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kMemory: {
+      ash::cros_healthd::ServiceConnection::GetInstance()->RunMemoryRoutine(
+          base::BindOnce(
               &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
               weak_ptr_factory_.GetWeakPtr(), std::move(succeeded_callback),
               std::move(failed_callback)));
       break;
     }
-    case chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::
-        kLanConnectivity: {
-      chromeos::cros_healthd::ServiceConnection::GetInstance()
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kLanConnectivity: {
+      ash::cros_healthd::ServiceConnection::GetInstance()
           ->RunLanConnectivityRoutine(base::BindOnce(
               &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
               weak_ptr_factory_.GetWeakPtr(), std::move(succeeded_callback),
               std::move(failed_callback)));
       break;
     }
-    case chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::
-        kSignalStrength: {
-      chromeos::cros_healthd::ServiceConnection::GetInstance()
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kSignalStrength: {
+      ash::cros_healthd::ServiceConnection::GetInstance()
           ->RunSignalStrengthRoutine(base::BindOnce(
               &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
               weak_ptr_factory_.GetWeakPtr(), std::move(succeeded_callback),
               std::move(failed_callback)));
       break;
     }
-    case chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::
-        kGatewayCanBePinged: {
-      chromeos::cros_healthd::ServiceConnection::GetInstance()
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kGatewayCanBePinged: {
+      ash::cros_healthd::ServiceConnection::GetInstance()
           ->RunGatewayCanBePingedRoutine(base::BindOnce(
               &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
               weak_ptr_factory_.GetWeakPtr(), std::move(succeeded_callback),
               std::move(failed_callback)));
       break;
     }
-    case chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::
         kHasSecureWiFiConnection: {
-      chromeos::cros_healthd::ServiceConnection::GetInstance()
+      ash::cros_healthd::ServiceConnection::GetInstance()
           ->RunHasSecureWiFiConnectionRoutine(base::BindOnce(
               &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
               weak_ptr_factory_.GetWeakPtr(), std::move(succeeded_callback),
               std::move(failed_callback)));
       break;
     }
-    case chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::
-        kDnsResolverPresent: {
-      chromeos::cros_healthd::ServiceConnection::GetInstance()
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kDnsResolverPresent: {
+      ash::cros_healthd::ServiceConnection::GetInstance()
           ->RunDnsResolverPresentRoutine(base::BindOnce(
               &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
               weak_ptr_factory_.GetWeakPtr(), std::move(succeeded_callback),
               std::move(failed_callback)));
       break;
     }
-    case chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::kDnsLatency: {
-      chromeos::cros_healthd::ServiceConnection::GetInstance()
-          ->RunDnsLatencyRoutine(base::BindOnce(
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kDnsLatency: {
+      ash::cros_healthd::ServiceConnection::GetInstance()->RunDnsLatencyRoutine(
+          base::BindOnce(
               &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
               weak_ptr_factory_.GetWeakPtr(), std::move(succeeded_callback),
               std::move(failed_callback)));
       break;
     }
-    case chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::kDnsResolution: {
-      chromeos::cros_healthd::ServiceConnection::GetInstance()
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kDnsResolution: {
+      ash::cros_healthd::ServiceConnection::GetInstance()
           ->RunDnsResolutionRoutine(base::BindOnce(
               &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
               weak_ptr_factory_.GetWeakPtr(), std::move(succeeded_callback),
               std::move(failed_callback)));
       break;
     }
-    case chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::kCaptivePortal: {
-      chromeos::cros_healthd::ServiceConnection::GetInstance()
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kCaptivePortal: {
+      ash::cros_healthd::ServiceConnection::GetInstance()
           ->RunCaptivePortalRoutine(base::BindOnce(
               &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
               weak_ptr_factory_.GetWeakPtr(), std::move(succeeded_callback),
               std::move(failed_callback)));
       break;
     }
-    case chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::kHttpFirewall: {
-      chromeos::cros_healthd::ServiceConnection::GetInstance()
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kHttpFirewall: {
+      ash::cros_healthd::ServiceConnection::GetInstance()
           ->RunHttpFirewallRoutine(base::BindOnce(
               &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
               weak_ptr_factory_.GetWeakPtr(), std::move(succeeded_callback),
               std::move(failed_callback)));
       break;
     }
-    case chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::kHttpsFirewall: {
-      chromeos::cros_healthd::ServiceConnection::GetInstance()
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kHttpsFirewall: {
+      ash::cros_healthd::ServiceConnection::GetInstance()
           ->RunHttpsFirewallRoutine(base::BindOnce(
               &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
               weak_ptr_factory_.GetWeakPtr(), std::move(succeeded_callback),
               std::move(failed_callback)));
       break;
     }
-    case chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::kHttpsLatency: {
-      chromeos::cros_healthd::ServiceConnection::GetInstance()
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kHttpsLatency: {
+      ash::cros_healthd::ServiceConnection::GetInstance()
           ->RunHttpsLatencyRoutine(base::BindOnce(
               &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
               weak_ptr_factory_.GetWeakPtr(), std::move(succeeded_callback),
               std::move(failed_callback)));
       break;
     }
-    case chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::
-        kVideoConferencing: {
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kVideoConferencing: {
       std::string* stun_server_hostname =
           params_dict_.FindStringKey(kStunServerHostnameFieldName);
-      chromeos::cros_healthd::ServiceConnection::GetInstance()
+      ash::cros_healthd::ServiceConnection::GetInstance()
           ->RunVideoConferencingRoutine(
               stun_server_hostname
                   ? absl::make_optional<std::string>(*stun_server_hostname)
@@ -595,25 +581,24 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
                   std::move(failed_callback)));
       break;
     }
-    case chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::kArcHttp: {
-      chromeos::cros_healthd::ServiceConnection::GetInstance()
-          ->RunArcHttpRoutine(base::BindOnce(
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kArcHttp: {
+      ash::cros_healthd::ServiceConnection::GetInstance()->RunArcHttpRoutine(
+          base::BindOnce(
               &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
               weak_ptr_factory_.GetWeakPtr(), std::move(succeeded_callback),
               std::move(failed_callback)));
       break;
     }
-    case chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::kArcPing: {
-      chromeos::cros_healthd::ServiceConnection::GetInstance()
-          ->RunArcPingRoutine(base::BindOnce(
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kArcPing: {
+      ash::cros_healthd::ServiceConnection::GetInstance()->RunArcPingRoutine(
+          base::BindOnce(
               &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
               weak_ptr_factory_.GetWeakPtr(), std::move(succeeded_callback),
               std::move(failed_callback)));
       break;
     }
-    case chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::
-        kArcDnsResolution: {
-      chromeos::cros_healthd::ServiceConnection::GetInstance()
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kArcDnsResolution: {
+      ash::cros_healthd::ServiceConnection::GetInstance()
           ->RunArcDnsResolutionRoutine(base::BindOnce(
               &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
               weak_ptr_factory_.GetWeakPtr(), std::move(succeeded_callback),
@@ -626,7 +611,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
 void DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived(
     CallbackWithResult succeeded_callback,
     CallbackWithResult failed_callback,
-    chromeos::cros_healthd::mojom::RunRoutineResponsePtr response) {
+    ash::cros_healthd::mojom::RunRoutineResponsePtr response) {
   if (!response) {
     SYSLOG(ERROR) << "No RunRoutineResponse received from cros_healthd.";
     base::ThreadTaskRunnerHandle::Get()->PostTask(

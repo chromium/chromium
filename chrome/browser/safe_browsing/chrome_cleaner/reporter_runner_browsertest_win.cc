@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,7 +21,6 @@
 #include "base/process/process.h"
 #include "base/run_loop.h"
 #include "base/synchronization/lock.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/version.h"
@@ -58,8 +57,6 @@ using ::testing::Eq;
 using ::testing::InvokeWithoutArgs;
 using ::testing::Return;
 using ::testing::SaveArg;
-
-constexpr char kSRTPromptGroup[] = "SRTGroup";
 
 class Waiter {
  public:
@@ -207,10 +204,6 @@ class ReporterRunnerTest
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
         &policy_provider_);
 
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        kChromeCleanupInBrowserPromptFeature,
-        {{"Seed", incoming_seed_}, {"Group", kSRTPromptGroup}});
-
     switch (policy_state_) {
       case PolicyState::kNoLogs:
         break;
@@ -229,6 +222,9 @@ class ReporterRunnerTest
         break;
       }
     }
+
+    EXPECT_CALL(mock_chrome_cleaner_controller_, GetIncomingPromptSeed())
+        .WillRepeatedly(Return(incoming_seed_));
   }
 
   void SetUpOnMainThread() override {
@@ -250,8 +246,7 @@ class ReporterRunnerTest
   // |invocation|.
   base::Process LaunchReporterProcess(
       const SwReporterInvocation& invocation,
-      const base::LaunchOptions& options) override {
-    ANALYZER_ALLOW_UNUSED(options);
+      [[maybe_unused]] const base::LaunchOptions& options) override {
     ++reporter_launch_count_;
     reporter_launch_parameters_.push_back(invocation);
     if (first_launch_callback_)
@@ -260,9 +255,18 @@ class ReporterRunnerTest
     return base::Process::Current();
   }
 
-  int WaitForReporterExit(const base::Process& reporter_process) const {
-    ANALYZER_ALLOW_UNUSED(reporter_process);
-    return exit_code_to_report_;
+  bool WaitForReporterExit(
+      [[maybe_unused]] const base::Process& reporter_process,
+      base::TimeDelta timeout,
+      int* exit_code) override {
+    if (reporter_wait_count_++ < 2 * reporter_launch_count_) {
+      // Simulate a timeout to test the path where ReporterRunner waits more
+      // than once.
+      return false;
+    }
+    if (exit_code)
+      *exit_code = exit_code_to_report_;
+    return true;
   }
 
   // Returns the test's idea of the current time.
@@ -291,6 +295,7 @@ class ReporterRunnerTest
   void ResetReporterRuns(int exit_code_to_report) {
     exit_code_to_report_ = exit_code_to_report;
     reporter_launch_count_ = 0;
+    reporter_wait_count_ = 0;
     reporter_launch_parameters_.clear();
     dialog_controller_created_ = false;
   }
@@ -585,6 +590,7 @@ class ReporterRunnerTest
 
   bool dialog_controller_created_ = false;
   int reporter_launch_count_ = 0;
+  int reporter_wait_count_ = 0;
   std::vector<SwReporterInvocation> reporter_launch_parameters_;
   int exit_code_to_report_ = kReporterNotLaunchedExitCode;
 
@@ -599,8 +605,6 @@ class ReporterRunnerTest
   // can be used to perform actions in the middle of a queue of reporters which
   // all launch on the same mock clock tick.
   base::OnceClosure first_launch_callback_;
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 }  // namespace

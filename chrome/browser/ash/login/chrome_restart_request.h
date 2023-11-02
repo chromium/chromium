@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,7 @@ class CommandLine;
 namespace ash {
 
 // Keep in sync with RestartJobReason in
-// chromeos/dbus/session_manager/session_manager_client.h
+// chromeos/ash/components/dbus/session_manager/session_manager_client.h
 enum class RestartChromeReason : uint32_t {
   // Restart browser for Guest session.
   kGuest = 0,

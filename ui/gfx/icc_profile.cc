@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@
 #include "base/logging.h"
 #include "base/synchronization/lock.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
-#include "third_party/skia/include/third_party/skcms/skcms.h"
+#include "third_party/skia/modules/skcms/skcms.h"
 #include "ui/gfx/skia_color_space_util.h"
 
 namespace gfx {
@@ -173,8 +173,7 @@ ColorSpace ICCProfile::GetPrimariesOnlyColorSpace() const {
   if (!internals_ || !internals_->is_valid_)
     return ColorSpace();
 
-  return ColorSpace(ColorSpace::PrimaryID::CUSTOM,
-                    ColorSpace::TransferID::IEC61966_2_1,
+  return ColorSpace(ColorSpace::PrimaryID::CUSTOM, ColorSpace::TransferID::SRGB,
                     ColorSpace::MatrixID::RGB, ColorSpace::RangeID::FULL,
                     &internals_->to_XYZD50_, nullptr);
 }

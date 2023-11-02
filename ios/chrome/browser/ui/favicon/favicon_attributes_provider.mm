@@ -1,22 +1,22 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/favicon/favicon_attributes_provider.h"
 
-#include "base/bind.h"
-#include "base/check.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/task/cancelable_task_tracker.h"
-#include "components/favicon/core/fallback_url_util.h"
-#include "components/favicon/core/large_icon_service.h"
-#include "components/favicon_base/fallback_icon_style.h"
-#include "components/favicon_base/favicon_types.h"
-#include "ios/chrome/browser/favicon/large_icon_cache.h"
+#import "base/bind.h"
+#import "base/check.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
+#import "base/task/cancelable_task_tracker.h"
+#import "components/favicon/core/fallback_url_util.h"
+#import "components/favicon/core/large_icon_service.h"
+#import "components/favicon_base/fallback_icon_style.h"
+#import "components/favicon_base/favicon_types.h"
+#import "ios/chrome/browser/favicon/large_icon_cache.h"
 #import "ios/chrome/browser/ui/favicon/favicon_attributes_with_payload.h"
-#include "skia/ext/skia_utils_ios.h"
-#include "url/gurl.h"
+#import "skia/ext/skia_utils_ios.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

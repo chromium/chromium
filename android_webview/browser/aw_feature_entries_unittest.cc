@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,37 +17,39 @@ namespace android_webview {
 
 namespace {
 
-const base::Feature kTestFeature{"AwFeatureEntriesTest",
-                                 base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kTestFeature,
+             "AwFeatureEntriesTest",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kTestFeature2{"AwFeatureEntriesTest2",
-                                  base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kTestFeature2,
+             "AwFeatureEntriesTest2",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const flags_ui::FeatureEntry::FeatureParam kForceDark_SimpleHsl[] = {
     {"inversion_method", "hsl_based"},
     {"image_behavior", "none"},
-    {"text_lightness_threshold", "256"},
+    {"foreground_lightness_threshold", "255"},
     {"background_lightness_threshold", "0"}};
 
 const flags_ui::FeatureEntry::FeatureParam kForceDark_SimpleCielab[] = {
     {"inversion_method", "cielab_based"},
     {"image_behavior", "none"},
-    {"text_lightness_threshold", "256"},
+    {"foreground_lightness_threshold", "255"},
     {"background_lightness_threshold", "0"}};
 
 const flags_ui::FeatureEntry::FeatureParam kForceDark_SimpleRgb[] = {
     {"inversion_method", "rgb_based"},
     {"image_behavior", "none"},
-    {"text_lightness_threshold", "256"},
+    {"foreground_lightness_threshold", "255"},
     {"background_lightness_threshold", "0"}};
 
 const flags_ui::FeatureEntry::FeatureVariation kForceDarkVariations[] = {
     {"with simple HSL-based inversion", kForceDark_SimpleHsl,
-     base::size(kForceDark_SimpleHsl), nullptr},
+     std::size(kForceDark_SimpleHsl), nullptr},
     {"with simple CIELAB-based inversion", kForceDark_SimpleCielab,
-     base::size(kForceDark_SimpleCielab), nullptr},
+     std::size(kForceDark_SimpleCielab), nullptr},
     {"with simple RGB-based inversion", kForceDark_SimpleRgb,
-     base::size(kForceDark_SimpleRgb), nullptr}};
+     std::size(kForceDark_SimpleRgb), nullptr}};
 
 // Not for display, set the descriptions to empty.
 flags_ui::FeatureEntry kForceDark = {

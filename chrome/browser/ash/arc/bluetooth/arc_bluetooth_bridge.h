@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,9 @@
 #include <unordered_set>
 #include <vector>
 
+#include "ash/components/arc/mojom/bluetooth.mojom.h"
+#include "ash/components/arc/mojom/intent_helper.mojom-forward.h"
+#include "ash/components/arc/session/connection_observer.h"
 #include "base/callback_forward.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/files/file.h"
@@ -22,9 +25,6 @@
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/arc/bluetooth/arc_bluetooth_task_queue.h"
-#include "components/arc/mojom/bluetooth.mojom.h"
-#include "components/arc/mojom/intent_helper.mojom-forward.h"
-#include "components/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
@@ -270,9 +270,6 @@ class ArcBluetoothBridge
   void ReadRemoteRssi(mojom::BluetoothAddressPtr remote_addr,
                       ReadRemoteRssiCallback callback) override;
 
-  void OpenBluetoothSocketDeprecated(
-      OpenBluetoothSocketDeprecatedCallback callback) override;
-
   // Bluetooth Mojo host interface - Bluetooth Gatt Server functions
   // Android counterpart link:
   // https://source.android.com/devices/halref/bt__gatt__server_8h.html
@@ -318,16 +315,6 @@ class ArcBluetoothBridge
                        CreateSdpRecordCallback callback) override;
   void RemoveSdpRecord(uint32_t service_handle,
                        RemoveSdpRecordCallback callback) override;
-
-  // Bluetooth Mojo host interface - Bluetooth RFCOMM functions
-  void RfcommListenDeprecated(int32_t channel,
-                              int32_t optval,
-                              RfcommListenDeprecatedCallback callback) override;
-  void RfcommConnectDeprecated(
-      mojom::BluetoothAddressPtr remote_addr,
-      int32_t channel,
-      int32_t optval,
-      RfcommConnectDeprecatedCallback callback) override;
 
   // Bluetooth Mojo host interface - Bluetooth socket functions
   void BluetoothSocketListen(mojom::BluetoothSocketType sock_type,

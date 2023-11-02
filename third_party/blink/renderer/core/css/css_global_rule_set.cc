@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,7 +44,7 @@ void CSSGlobalRuleSet::Update(Document& document) {
   default_style_sheets.CollectFeaturesTo(document, features_);
 
   if (watched_selectors_rule_set_)
-    features_.Add(watched_selectors_rule_set_->Features());
+    features_.Merge(watched_selectors_rule_set_->Features());
 
   document.GetStyleEngine().CollectFeaturesTo(features_);
 }

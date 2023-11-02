@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/display/projecting_observer.h"
 #include "ash/login_status.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
@@ -21,13 +22,17 @@
 #include "base/location.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chromeos/components/feature_usage/feature_usage_metrics.h"
+#include "chromeos/ash/components/feature_usage/feature_usage_metrics.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/compositor_observer.h"
 #include "ui/display/manager/display_configurator.h"
+
+// TODO(b/248107965): Remove after figuring out the root cause of the bug
+#undef ENABLED_VLOG_LEVEL
+#define ENABLED_VLOG_LEVEL 1
 
 namespace ash {
 
@@ -242,6 +247,9 @@ PowerEventObserver::PowerEventObserver()
                       ? LockState::kLocked
                       : LockState::kUnlocked),
       session_observer_(this) {
+  VLOG(1) << "PowerEventObserver::PowerEventObserver lock="
+          << static_cast<int>(lock_state_) << ", can_lock="
+          << Shell::Get()->session_controller()->CanLockScreen();
   chromeos::PowerManagerClient::Get()->AddObserver(this);
 
   if (Shell::Get()->session_controller()->CanLockScreen())
@@ -253,7 +261,9 @@ PowerEventObserver::~PowerEventObserver() {
 }
 
 void PowerEventObserver::OnLockAnimationsComplete() {
-  VLOG(1) << "Screen locker animations have completed.";
+  VLOG(1) << "Screen locker animations have completed, lock="
+          << static_cast<int>(lock_state_) << " , block_suspend_token="
+          << static_cast<int>(!block_suspend_token_);
   if (lock_state_ != LockState::kLocking)
     return;
 
@@ -274,6 +284,8 @@ void PowerEventObserver::OnLockAnimationsComplete() {
 
 void PowerEventObserver::SuspendImminent(
     power_manager::SuspendImminent::Reason reason) {
+  VLOG(1) << "PowerEventObserver::SuspendImminent: reason=" << reason
+          << ", lock=" << static_cast<int>(lock_state_);
   suspend_in_progress_ = true;
 
   block_suspend_token_ = base::UnguessableToken::Create();
@@ -285,12 +297,14 @@ void PowerEventObserver::SuspendImminent(
   // * screen is not locked, and should remain unlocked during suspend
   if (lock_state_ == LockState::kLocked ||
       (lock_state_ == LockState::kUnlocked && !ShouldLockOnSuspend())) {
+    VLOG(1) << "Requesting StopCompositingAndSuspendDisplays from "
+               "PowerEventObserver suspend";
     StopCompositingAndSuspendDisplays();
   } else {
     // If screen is getting locked during suspend, delay suspend until screen
     // lock finishes, and post-lock frames get picked up by display compositors.
     if (lock_state_ == LockState::kUnlocked) {
-      VLOG(1) << "Requesting screen lock from PowerEventObserver";
+      VLOG(1) << "Requesting screen lock from PowerEventObserver suspend";
       lock_state_ = LockState::kLocking;
       Shell::Get()->lock_state_controller()->LockWithoutAnimation();
       if (lock_on_suspend_usage_)
@@ -299,12 +313,18 @@ void PowerEventObserver::SuspendImminent(
       // If the screen is still being locked (i.e. in kLocking state),
       // EndPendingWallpaperAnimations() will be called in
       // OnLockAnimationsComplete().
+      VLOG(1) << "Requesting EndPendingWallpaperAnimations from "
+                 "PowerEventObserver suspend";
       EndPendingWallpaperAnimations();
     }
   }
 }
 
-void PowerEventObserver::SuspendDone(base::TimeDelta sleep_duration) {
+void PowerEventObserver::SuspendDoneEx(
+    const power_manager::SuspendDone& proto) {
+  VLOG(1) << "PowerEventObserver::SuspendDoneEx, suspend_in_progress="
+          << static_cast<int>(suspend_in_progress_)
+          << " cleared, deepest_state=" << proto.deepest_state();
   suspend_in_progress_ = false;
 
   Shell::Get()->display_configurator()->ResumeDisplays();
@@ -317,6 +337,44 @@ void PowerEventObserver::SuspendDone(base::TimeDelta sleep_duration) {
   block_suspend_token_ = {};
 
   StartRootWindowCompositors();
+  // If this is a resume from hibernation, the user just authenticated in order
+  // to launch the resume image. Dismiss the lock screen here to avoid making
+  // them log in twice.
+  if (proto.deepest_state() ==
+      power_manager::SuspendDone_SuspendState_TO_DISK) {
+    Shell::Get()->session_controller()->HideLockScreen();
+  }
+}
+
+void PowerEventObserver::LidEventReceived(
+    chromeos::PowerManagerClient::LidState state,
+    base::TimeTicks timestamp) {
+  VLOG(1) << "PowerEventObserver::LidEventReceived, state="
+          << static_cast<int>(state);
+  lid_state_ = state;
+  MaybeLockOnLidClose(
+      ash::Shell::Get()->projecting_observer()->is_projecting());
+}
+
+void PowerEventObserver::SetIsProjecting(bool is_projecting) {
+  MaybeLockOnLidClose(is_projecting);
+}
+
+void PowerEventObserver::MaybeLockOnLidClose(bool is_projecting) {
+  SessionControllerImpl* controller = ash::Shell::Get()->session_controller();
+  VLOG(1) << "Lock screen on lid close: lid=" << static_cast<int>(lid_state_)
+          << ", lock=" << static_cast<int>(lock_state_)
+          << ", projecting=" << is_projecting
+          << ", policy=" << controller->ShouldLockScreenAutomatically()
+          << ", can_lock=" << controller->CanLockScreen();
+  if (lid_state_ == chromeos::PowerManagerClient::LidState::CLOSED &&
+      lock_state_ == LockState::kUnlocked && !is_projecting &&
+      controller->ShouldLockScreenAutomatically() &&
+      controller->CanLockScreen()) {
+    VLOG(1) << "Screen locked due to lid close";
+    lock_state_ = LockState::kLocking;
+    Shell::Get()->lock_state_controller()->LockWithoutAnimation();
+  }
 }
 
 void PowerEventObserver::OnLoginStatusChanged(LoginStatus) {
@@ -330,6 +388,9 @@ void PowerEventObserver::OnLoginStatusChanged(LoginStatus) {
 }
 
 void PowerEventObserver::OnLockStateChanged(bool locked) {
+  VLOG(1) << "PowerEventObserver::OnLockStateChanged, locked="
+          << static_cast<int>(locked)
+          << " ,lock_state=" << static_cast<int>(lock_state_);
   if (locked) {
     lock_state_ = LockState::kLocking;
 
@@ -360,9 +421,12 @@ void PowerEventObserver::OnLockStateChanged(bool locked) {
       }
     }
   }
+  VLOG(1) << "PowerEventObserver::OnLockStateChanged finieshed, new lock_state="
+          << static_cast<int>(lock_state_);
 }
 
 void PowerEventObserver::StartRootWindowCompositors() {
+  VLOG(1) << "PowerEventObserver::StartRootWindowCompositors";
   for (aura::Window* window : Shell::GetAllRootWindows()) {
     ui::Compositor* compositor = window->GetHost()->compositor();
     if (!compositor->IsVisible())
@@ -371,6 +435,7 @@ void PowerEventObserver::StartRootWindowCompositors() {
 }
 
 void PowerEventObserver::StopCompositingAndSuspendDisplays() {
+  VLOG(1) << "PowerEventObserver::StopCompositingAndSuspendDisplays";
   DCHECK(block_suspend_token_);
   DCHECK(!compositor_watcher_.get());
   for (aura::Window* window : Shell::GetAllRootWindows()) {
@@ -386,6 +451,7 @@ void PowerEventObserver::StopCompositingAndSuspendDisplays() {
 }
 
 void PowerEventObserver::EndPendingWallpaperAnimations() {
+  VLOG(1) << "PowerEventObserver::EndPendingWallpaperAnimations";
   for (aura::Window* window : Shell::GetAllRootWindows()) {
     WallpaperWidgetController* wallpaper_widget_controller =
         RootWindowController::ForWindow(window)->wallpaper_widget_controller();
@@ -395,6 +461,9 @@ void PowerEventObserver::EndPendingWallpaperAnimations() {
 }
 
 void PowerEventObserver::OnCompositorsReadyForSuspend() {
+  VLOG(1)
+      << "PowerEventObserver::OnCompositorsReadyForSuspend, has_suspend_token="
+      << static_cast<int>(!block_suspend_token_.is_empty());
   compositor_watcher_.reset();
   lock_state_ = LockState::kLocked;
 

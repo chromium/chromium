@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,7 +43,7 @@ public class NoProtectionConfirmationDialog {
                         .with(ModalDialogProperties.CONTROLLER, makeController())
                         .with(ModalDialogProperties.TITLE, resources,
                                 R.string.safe_browsing_no_protection_confirmation_dialog_title)
-                        .with(ModalDialogProperties.MESSAGE,
+                        .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1,
                                 resources.getString(
                                         R.string.safe_browsing_no_protection_confirmation_dialog_message))
                         .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, resources,

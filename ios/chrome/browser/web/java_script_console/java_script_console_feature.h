@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,11 +20,11 @@ class JavaScriptConsoleFeature : public KeyedService,
                                  public web::JavaScriptFeature {
  public:
   // Creates a feature to listen for JavaScript console messages and send
-  // details about those messages to |delegate_|.
+  // details about those messages to `delegate_`.
   JavaScriptConsoleFeature();
   ~JavaScriptConsoleFeature() override;
 
-  // Sets the current delegate to |delegate|. If |delegate| is null, any current
+  // Sets the current delegate to `delegate`. If `delegate` is null, any current
   // delegate will be removed.
   void SetDelegate(JavaScriptConsoleFeatureDelegate* delegate);
 

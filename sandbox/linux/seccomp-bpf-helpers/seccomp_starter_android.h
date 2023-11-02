@@ -1,11 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef SANDBOX_LINUX_SECCOMP_BPF_HELPERS_SECCOMP_STARTER_ANDROID_H_
 #define SANDBOX_LINUX_SECCOMP_BPF_HELPERS_SECCOMP_STARTER_ANDROID_H_
 
-#include "base/macros.h"
 #include "sandbox/sandbox_buildflags.h"
 #include "sandbox/sandbox_export.h"
 
@@ -13,6 +12,7 @@
 #include <memory>
 
 #include "sandbox/linux/bpf_dsl/policy.h"
+#include "sandbox/linux/seccomp-bpf-helpers/baseline_policy_android.h"
 #endif
 
 namespace sandbox {
@@ -44,6 +44,12 @@ class SANDBOX_EXPORT SeccompStarterAndroid {
   SeccompStarterAndroid& operator=(const SeccompStarterAndroid&) = delete;
 
   ~SeccompStarterAndroid();
+
+#if BUILDFLAG(USE_SECCOMP_BPF)
+  // Returns the default runtime-configured options for the baseline Android
+  // seccomp policy.
+  BaselinePolicyAndroid::RuntimeOptions GetDefaultBaselineOptions() const;
+#endif
 
   // Sets the BPF policy to apply. This must be called before StartSandbox()
   // if BUILDFLAG(USE_SECCOMP_BPF) is true.

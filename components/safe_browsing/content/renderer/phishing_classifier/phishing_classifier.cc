@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/compiler_specific.h"
+#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -20,15 +21,18 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
 #include "cc/paint/paint_recorder.h"
 #include "cc/paint/skia_paint_canvas.h"
 #include "components/paint_preview/common/paint_preview_tracker.h"
 #include "components/safe_browsing/buildflags.h"
+#include "components/safe_browsing/content/common/visual_utils.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/features.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/phishing_dom_feature_extractor.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/phishing_term_feature_extractor.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/phishing_url_feature_extractor.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/scorer.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
@@ -72,7 +76,7 @@ const float PhishingClassifier::kInvalidScore = -1.0;
 const float PhishingClassifier::kPhishyThreshold = 0.5;
 
 PhishingClassifier::PhishingClassifier(content::RenderFrame* render_frame)
-    : render_frame_(render_frame), scorer_(nullptr) {
+    : render_frame_(render_frame) {
   Clear();
 }
 
@@ -83,28 +87,8 @@ PhishingClassifier::~PhishingClassifier() {
   DCHECK(!page_text_);
 }
 
-void PhishingClassifier::set_phishing_scorer(const Scorer* scorer) {
-  DCHECK(done_callback_.is_null());
-  DCHECK(!page_text_);
-  scorer_ = scorer;
-  if (scorer_) {
-    url_extractor_ = std::make_unique<PhishingUrlFeatureExtractor>();
-    dom_extractor_ = std::make_unique<PhishingDOMFeatureExtractor>();
-    term_extractor_ = std::make_unique<PhishingTermFeatureExtractor>(
-        scorer_->find_page_term_callback(), scorer_->find_page_word_callback(),
-        scorer_->max_words_per_term(), scorer_->murmurhash3_seed(),
-        scorer_->max_shingles_per_page(), scorer_->shingle_size());
-  } else {
-    // We're disabling client-side phishing detection, so tear down all
-    // of the relevant objects.
-    url_extractor_.reset();
-    dom_extractor_.reset();
-    term_extractor_.reset();
-  }
-}
-
 bool PhishingClassifier::is_ready() const {
-  return !!scorer_;
+  return !!ScorerStorage::GetInstance()->GetScorer();
 }
 
 void PhishingClassifier::BeginClassification(const std::u16string* page_text,
@@ -121,6 +105,13 @@ void PhishingClassifier::BeginClassification(const std::u16string* page_text,
   // classification so that we can start in a known state.
   CancelPendingClassification();
 
+  Scorer* scorer = ScorerStorage::GetInstance()->GetScorer();
+  url_extractor_ = std::make_unique<PhishingUrlFeatureExtractor>();
+  dom_extractor_ = std::make_unique<PhishingDOMFeatureExtractor>();
+  term_extractor_ = std::make_unique<PhishingTermFeatureExtractor>(
+      scorer->find_page_term_callback(), scorer->find_page_word_callback(),
+      scorer->max_words_per_term(), scorer->murmurhash3_seed(),
+      scorer->max_shingles_per_page(), scorer->shingle_size());
   page_text_ = page_text;
   done_callback_ = std::move(done_callback);
 
@@ -168,8 +159,8 @@ void PhishingClassifier::CancelPendingClassification() {
   // Note that cancelling the feature extractors is simply a no-op if they
   // were not running.
   DCHECK(is_ready());
-  dom_extractor_->CancelPendingExtraction();
-  term_extractor_->CancelPendingExtraction();
+  dom_extractor_.reset();
+  term_extractor_.reset();
   weak_factory_.InvalidateWeakPtrs();
   Clear();
 }
@@ -193,7 +184,7 @@ void PhishingClassifier::TermExtractionFinished(bool success) {
 #if BUILDFLAG(FULL_SAFE_BROWSING)
     ExtractVisualFeatures();
 #else
-    if (scorer_->HasVisualTfLiteModel()) {
+    if (ScorerStorage::GetInstance()->GetScorer()->HasVisualTfLiteModel()) {
       ExtractVisualFeatures();
     } else {
       VisualExtractionFinished(true);
@@ -243,10 +234,22 @@ void PhishingClassifier::ExtractVisualFeatures() {
 void PhishingClassifier::OnPlaybackDone(std::unique_ptr<SkBitmap> bitmap) {
   if (bitmap) {
     bitmap_ = std::move(bitmap);
-    VisualExtractionFinished(/*success=*/true);
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE,
+        {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+         base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+        base::BindOnce(&visual_utils::ExtractVisualFeatures, *bitmap_),
+        base::BindOnce(&PhishingClassifier::OnVisualFeaturesExtracted,
+                       weak_factory_.GetWeakPtr()));
   } else {
     VisualExtractionFinished(/*success=*/false);
   }
+}
+
+void PhishingClassifier::OnVisualFeaturesExtracted(
+    std::unique_ptr<VisualFeatures> visual_features) {
+  visual_features_ = std::move(visual_features);
+  VisualExtractionFinished(/*success=*/true);
 }
 
 void PhishingClassifier::VisualExtractionFinished(bool success) {
@@ -260,10 +263,12 @@ void PhishingClassifier::VisualExtractionFinished(bool success) {
 
   // Hash all of the features so that they match the model, then compute
   // the score.
+  Scorer* scorer = ScorerStorage::GetInstance()->GetScorer();
   FeatureMap hashed_features;
   std::unique_ptr<ClientPhishingRequest> verdict =
       std::make_unique<ClientPhishingRequest>();
-  verdict->set_model_version(scorer_->model_version());
+  verdict->set_model_version(scorer->model_version());
+  verdict->set_dom_model_version(scorer->dom_model_version());
   verdict->set_url(main_frame->GetDocument().Url().GetString().Utf8());
   for (const auto& it : features_->features()) {
     bool result = hashed_features.AddRealFeature(
@@ -276,38 +281,17 @@ void PhishingClassifier::VisualExtractionFinished(bool success) {
   for (const auto& it : *shingle_hashes_) {
     verdict->add_shingle_hashes(it);
   }
-  float score = static_cast<float>(scorer_->ComputeScore(hashed_features));
+  float score = static_cast<float>(scorer->ComputeScore(hashed_features));
   verdict->set_client_score(score);
-  bool is_dom_match = (score >= scorer_->threshold_probability());
+  bool is_dom_match = (score >= scorer->threshold_probability());
   verdict->set_is_phishing(is_dom_match);
   verdict->set_is_dom_match(is_dom_match);
-
-#if BUILDFLAG(FULL_SAFE_BROWSING)
-  visual_matching_start_ = base::TimeTicks::Now();
-  scorer_->GetMatchingVisualTargets(
-      *bitmap_, std::move(verdict),
-      base::BindOnce(&PhishingClassifier::OnVisualTargetsMatched,
-                     weak_factory_.GetWeakPtr()));
-#elif BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  scorer_->ApplyVisualTfLiteModel(
-      *bitmap_, base::BindOnce(&PhishingClassifier::OnVisualTfLiteModelDone,
-                               weak_factory_.GetWeakPtr(), std::move(verdict)));
-#else
-  RunCallback(*verdict);
-#endif
-}
-
-void PhishingClassifier::OnVisualTargetsMatched(
-    std::unique_ptr<ClientPhishingRequest> verdict) {
-  DCHECK(content::RenderThread::IsMainThread());
-  if (!verdict->vision_match().empty()) {
-    verdict->set_is_phishing(true);
+  if (visual_features_) {
+    verdict->mutable_visual_features()->Swap(visual_features_.get());
   }
-  base::UmaHistogramTimes("SBClientPhishing.VisualComparisonTime",
-                          base::TimeTicks::Now() - visual_matching_start_);
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  scorer_->ApplyVisualTfLiteModel(
+  ScorerStorage::GetInstance()->GetScorer()->ApplyVisualTfLiteModel(
       *bitmap_, base::BindOnce(&PhishingClassifier::OnVisualTfLiteModelDone,
                                weak_factory_.GetWeakPtr(), std::move(verdict)));
 #else
@@ -318,20 +302,21 @@ void PhishingClassifier::OnVisualTargetsMatched(
 void PhishingClassifier::OnVisualTfLiteModelDone(
     std::unique_ptr<ClientPhishingRequest> verdict,
     std::vector<double> result) {
-  if (static_cast<int>(result.size()) > scorer_->tflite_thresholds().size()) {
+  Scorer* scorer = ScorerStorage::GetInstance()->GetScorer();
+  if (static_cast<int>(result.size()) > scorer->tflite_thresholds().size()) {
     // Model is misconfigured, so bail out.
     RunFailureCallback();
     return;
   }
 
-  verdict->set_tflite_model_version(scorer_->tflite_model_version());
+  verdict->set_tflite_model_version(scorer->tflite_model_version());
   for (size_t i = 0; i < result.size(); i++) {
     ClientPhishingRequest::CategoryScore* category =
         verdict->add_tflite_model_scores();
-    category->set_label(scorer_->tflite_thresholds().at(i).label());
+    category->set_label(scorer->tflite_thresholds().at(i).label());
     category->set_value(result[i]);
 
-    if (result[i] >= scorer_->tflite_thresholds().at(i).threshold()) {
+    if (result[i] >= scorer->tflite_thresholds().at(i).threshold()) {
       verdict->set_is_phishing(true);
       verdict->set_is_tflite_match(true);
     }

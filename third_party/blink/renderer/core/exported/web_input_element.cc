@@ -30,6 +30,7 @@
 
 #include "third_party/blink/public/web/web_input_element.h"
 
+#include "build/build_config.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_element_collection.h"
 #include "third_party/blink/public/web/web_option_element.h"
@@ -107,15 +108,18 @@ bool WebInputElement::IsValidValue(const WebString& value) const {
   return ConstUnwrap<HTMLInputElement>()->IsValidValue(value);
 }
 
-void WebInputElement::SetChecked(bool now_checked, bool send_events) {
-  Unwrap<HTMLInputElement>()->setChecked(
-      now_checked, send_events
-                       ? TextFieldEventBehavior::kDispatchInputAndChangeEvent
-                       : TextFieldEventBehavior::kDispatchNoEvent);
+void WebInputElement::SetChecked(bool now_checked,
+                                 bool send_events,
+                                 WebAutofillState autofill_state) {
+  Unwrap<HTMLInputElement>()->SetChecked(
+      now_checked,
+      send_events ? TextFieldEventBehavior::kDispatchInputAndChangeEvent
+                  : TextFieldEventBehavior::kDispatchNoEvent,
+      autofill_state);
 }
 
 bool WebInputElement::IsChecked() const {
-  return ConstUnwrap<HTMLInputElement>()->checked();
+  return ConstUnwrap<HTMLInputElement>()->Checked();
 }
 
 bool WebInputElement::IsMultiple() const {
@@ -144,6 +148,16 @@ bool WebInputElement::ShouldRevealPassword() const {
   return ConstUnwrap<HTMLInputElement>()->ShouldRevealPassword();
 }
 
+#if BUILDFLAG(IS_ANDROID)
+bool WebInputElement::IsLastInputElementInForm() {
+  return Unwrap<HTMLInputElement>()->IsLastInputElementInForm();
+}
+
+void WebInputElement::DispatchSimulatedEnter() {
+  Unwrap<HTMLInputElement>()->DispatchSimulatedEnter();
+}
+#endif
+
 WebInputElement::WebInputElement(HTMLInputElement* elem)
     : WebFormControlElement(elem) {}
 
@@ -159,10 +173,4 @@ WebInputElement::operator HTMLInputElement*() const {
   return blink::To<HTMLInputElement>(private_.Get());
 }
 
-WebInputElement* ToWebInputElement(WebElement* web_element) {
-  if (!IsA<HTMLInputElement>(*web_element->Unwrap<Element>()))
-    return nullptr;
-
-  return static_cast<WebInputElement*>(web_element);
-}
 }  // namespace blink

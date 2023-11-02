@@ -1,0 +1,32 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+assert(is_chromeos_ash,
+       "Non-Chrome-OS builds must not depend on //chromeos/ash")
+
+component("anomaly_detector") {
+  output_name = "ash_anomaly_detector"
+  defines = [ "IS_ASH_DBUS_ANOMALY_DETECTOR_IMPL" ]
+  deps = [
+    ":proto",
+    "//base",
+    "//chromeos/dbus/common",
+    "//dbus",
+  ]
+  sources = [
+    "anomaly_detector_client.cc",
+    "anomaly_detector_client.h",
+    "fake_anomaly_detector_client.cc",
+    "fake_anomaly_detector_client.h",
+  ]
+}
+
+proto_library("proto") {
+  sources = [ "//third_party/cros_system_api/dbus/anomaly_detector/anomaly_detector.proto" ]
+
+  proto_out_dir = "chromeos/ash/components/dbus/anomaly_detector"
+}

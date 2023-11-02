@@ -1,12 +1,12 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/alert_view/alert_view_controller.h"
 
-#include <ostream>
+#import <ostream>
 
-#include "base/notreached.h"
+#import "base/notreached.h"
 #import "ios/chrome/browser/ui/alert_view/alert_action.h"
 #import "ios/chrome/browser/ui/elements/gray_highlight_button.h"
 #import "ios/chrome/browser/ui/elements/text_field_configuration.h"
@@ -68,7 +68,7 @@ constexpr NSUInteger kUIViewAnimationCurveToOptionsShift = 16;
 @interface AlertViewController () <UITextFieldDelegate,
                                    UIGestureRecognizerDelegate>
 
-// The actions for to this alert. |copy| for safety against mutable objects.
+// The actions for to this alert. `copy` for safety against mutable objects.
 @property(nonatomic, copy) NSArray<AlertAction*>* actions;
 
 // This maps UIButtons' tags with AlertActions' uniqueIdentifiers.
@@ -83,7 +83,7 @@ constexpr NSUInteger kUIViewAnimationCurveToOptionsShift = 16;
 @property(nonatomic, copy) NSString* message;
 
 // Text field configurations for this alert. One text field will be created for
-// each |TextFieldConfiguration|. |copy| for safety against mutable objects.
+// each `TextFieldConfiguration`. `copy` for safety against mutable objects.
 @property(nonatomic, copy)
     NSArray<TextFieldConfiguration*>* textFieldConfigurations;
 
@@ -101,7 +101,7 @@ constexpr NSUInteger kUIViewAnimationCurveToOptionsShift = 16;
 @property(nonatomic, strong) UISwipeGestureRecognizer* swipeRecognizer;
 
 // This is the last focused text field, the gestures to dismiss the keyboard
-// will end up calling |resignFirstResponder| on this.
+// will end up calling `resignFirstResponder` on this.
 @property(nonatomic, weak) UITextField* lastFocusedTextField;
 
 // This holds the text field stack view. A reference is needed because its
@@ -277,7 +277,7 @@ constexpr NSUInteger kUIViewAnimationCurveToOptionsShift = 16;
   }
 
   if (self.textFieldConfigurations.count) {
-    // |stackHolder| has the background, border and round corners of the stacked
+    // `stackHolder` has the background, border and round corners of the stacked
     // fields.
     UIView* stackHolder = [[UIView alloc] init];
     stackHolder.layer.cornerRadius = kTextFieldCornerRadius;

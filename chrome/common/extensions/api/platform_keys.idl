@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -120,7 +120,7 @@ namespace platformKeys {
     // |certificate|: The certificate of a $(ref:Match) returned by
     // $(ref:selectClientCertificates).
     // |parameters|: Determines signature/hash algorithm parameters additionally
-    // to the parameters fixed by the key itself. The same parameters are
+    // to the parameters fixed by the key itself. The same parameters are
     // accepted as by WebCrypto's <a
     // href="http://www.w3.org/TR/WebCryptoAPI/#SubtleCrypto-method-importKey">importKey</a>
     // function, e.g. <code>RsaHashedImportParams</code> for a RSASSA-PKCS1-v1_5

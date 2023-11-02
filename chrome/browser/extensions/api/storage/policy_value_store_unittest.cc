@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -50,7 +50,7 @@ std::string ValueStoreChangeToJson(value_store::ValueStoreChangeList changes) {
       value_store::ValueStoreChange::ToValue(std::move(changes)));
 }
 
-class MockSettingsObserver : public SettingsObserver {
+class MockSettingsObserver {
  public:
   MOCK_METHOD3(OnSettingsChangedJSON,
                void(const std::string& extension_id,
@@ -59,8 +59,9 @@ class MockSettingsObserver : public SettingsObserver {
 
   void OnSettingsChanged(const std::string& extension_id,
                          StorageAreaNamespace storage_area,
-                         const base::Value& changes) override {
-    OnSettingsChangedJSON(extension_id, storage_area, ValueToJson(changes));
+                         base::Value changes) {
+    OnSettingsChangedJSON(extension_id, storage_area,
+                          ValueToJson(std::move(changes)));
   }
 };
 
@@ -70,11 +71,12 @@ class MockSettingsObserver : public SettingsObserver {
 class MutablePolicyValueStore : public PolicyValueStore {
  public:
   explicit MutablePolicyValueStore(const base::FilePath& path)
-      : PolicyValueStore(kTestExtensionId,
-                         base::MakeRefCounted<SettingsObserverList>(),
-                         std::make_unique<value_store::LeveldbValueStore>(
-                             kDatabaseUMAClientName,
-                             path)) {}
+      : PolicyValueStore(
+            kTestExtensionId,
+            SequenceBoundSettingsChangedCallback(base::DoNothing()),
+            std::make_unique<value_store::LeveldbValueStore>(
+                kDatabaseUMAClientName,
+                path)) {}
 
   MutablePolicyValueStore(const MutablePolicyValueStore&) = delete;
   MutablePolicyValueStore& operator=(const MutablePolicyValueStore&) = delete;
@@ -88,7 +90,7 @@ class MutablePolicyValueStore : public PolicyValueStore {
   }
 
   WriteResult Set(WriteOptions options,
-                  const base::DictionaryValue& values) override {
+                  const base::Value::Dict& values) override {
     return delegate()->Set(options, values);
   }
 
@@ -120,18 +122,16 @@ class PolicyValueStoreTest : public testing::Test {
 
   void SetUp() override {
     ASSERT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());
-    observers_ = new SettingsObserverList();
-    observers_->AddObserver(&observer_);
     store_ = std::make_unique<PolicyValueStore>(
-        kTestExtensionId, observers_,
+        kTestExtensionId,
+        SequenceBoundSettingsChangedCallback(
+            base::BindRepeating(&MockSettingsObserver::OnSettingsChanged,
+                                base::Unretained(&observer_))),
         std::make_unique<value_store::LeveldbValueStore>(
             kDatabaseUMAClientName, scoped_temp_dir_.GetPath()));
   }
 
-  void TearDown() override {
-    observers_->RemoveObserver(&observer_);
-    store_.reset();
-  }
+  void TearDown() override { store_.reset(); }
 
  protected:
   void SetCurrentPolicy(const policy::PolicyMap& policies) {
@@ -151,7 +151,6 @@ class PolicyValueStoreTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<PolicyValueStore> store_;
   NiceMock<MockSettingsObserver> observer_;
-  scoped_refptr<SettingsObserverList> observers_;
 };
 
 TEST_F(PolicyValueStoreTest, DontProvideRecommendedPolicies) {
@@ -167,10 +166,11 @@ TEST_F(PolicyValueStoreTest, DontProvideRecommendedPolicies) {
 
   ValueStore::ReadResult result = store_->Get();
   ASSERT_TRUE(result.status().ok());
-  EXPECT_EQ(1u, result.settings().DictSize());
-  base::Value* value = NULL;
-  EXPECT_FALSE(result.settings().Get("may", &value));
-  EXPECT_TRUE(result.settings().Get("must", &value));
+  EXPECT_EQ(1u, result.settings().size());
+  base::Value* value = result.settings().Find("may");
+  EXPECT_FALSE(value);
+  value = result.settings().Find("must");
+  ASSERT_TRUE(value);
   EXPECT_EQ(expected, *value);
 }
 
@@ -180,8 +180,8 @@ TEST_F(PolicyValueStoreTest, ReadOnly) {
   base::Value string_value("value");
   EXPECT_FALSE(store_->Set(options, "key", string_value).status().ok());
 
-  base::DictionaryValue dict;
-  dict.SetString("key", "value");
+  base::Value::Dict dict;
+  dict.Set("key", "value");
   EXPECT_FALSE(store_->Set(options, dict).status().ok());
 
   EXPECT_FALSE(store_->Remove("key").status().ok());

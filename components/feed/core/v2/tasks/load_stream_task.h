@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,11 @@
 #define COMPONENTS_FEED_CORE_V2_TASKS_LOAD_STREAM_TASK_H_
 
 #include <memory>
+#include <utility>
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "components/feed/core/proto/v2/wire/reliability_logging_enums.pb.h"
 #include "components/feed/core/proto/v2/wire/response.pb.h"
 #include "components/feed/core/v2/enums.h"
@@ -35,6 +37,14 @@ class FeedStream;
 // This task has three modes, see |LoadType| in enums.h.
 class LoadStreamTask : public offline_pages::Task {
  public:
+  // Returns the `LaunchResult` that contains the terminal failure result if the
+  // parameters do not represent a successful Feed response. Returns a
+  // `load_stream_status` of `LoadStreamStatus::kNoStatus` if there was no
+  // failure.
+  static LaunchResult LaunchResultFromNetworkInfo(
+      const NetworkResponseInfo& network_response_info,
+      bool has_parsed_body);
+
   struct Options {
     // The stream type to load.
     StreamType stream_type;
@@ -59,7 +69,7 @@ class LoadStreamTask : public offline_pages::Task {
     // Age of content loaded from local storage. Zero if none was loaded.
     base::TimeDelta stored_content_age;
     // Set of content IDs present in the feed.
-    ContentIdSet content_ids;
+    ContentHashSet content_ids;
     LoadType load_type = LoadType::kInitialLoad;
     std::unique_ptr<StreamModelUpdateRequest> update_request;
     absl::optional<RequestSchedule> request_schedule;
@@ -68,7 +78,6 @@ class LoadStreamTask : public offline_pages::Task {
     absl::optional<NetworkResponseInfo> network_response_info;
     bool loaded_new_content_from_network = false;
     std::unique_ptr<LoadLatencyTimes> latencies;
-    absl::optional<bool> fetched_content_has_notice_card;
 
     // Result of the upload actions task.
     std::unique_ptr<UploadActionsTask::Result> upload_actions_result;
@@ -121,7 +130,7 @@ class LoadStreamTask : public offline_pages::Task {
   absl::optional<NetworkResponseInfo> network_response_info_;
   bool loaded_new_content_from_network_ = false;
   base::TimeDelta stored_content_age_;
-  ContentIdSet content_ids_;
+  ContentHashSet content_ids_;
   Experiments experiments_;
   std::unique_ptr<StreamModelUpdateRequest> update_request_;
   absl::optional<RequestSchedule> request_schedule_;
@@ -134,10 +143,10 @@ class LoadStreamTask : public offline_pages::Task {
   base::OnceCallback<void(Result)> done_callback_;
   std::unique_ptr<UploadActionsTask> upload_actions_task_;
   std::unique_ptr<UploadActionsTask::Result> upload_actions_result_;
-  absl::optional<bool> fetched_content_has_notice_card_;
   LaunchReliabilityLogger& launch_reliability_logger_;
   int64_t server_receive_timestamp_ns_ = 0l;
   int64_t server_send_timestamp_ns_ = 0l;
+  bool is_web_feed_subscriber_ = false;
   base::WeakPtrFactory<LoadStreamTask> weak_ptr_factory_{this};
 };
 

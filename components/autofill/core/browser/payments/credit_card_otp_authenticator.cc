@@ -1,10 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
 
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/payments/otp_unmask_result.h"
 #include "components/autofill/core/common/autofill_tick_clock.h"
 
@@ -32,12 +33,14 @@ void CreditCardOtpAuthenticator::OnUnmaskPromptAccepted(
   unmask_request_->otp = otp_;
 
   if (card_->record_type() == CreditCard::VIRTUAL_CARD) {
-    absl::optional<GURL> last_committed_url_origin;
-    if (autofill_client_->GetLastCommittedURL().is_valid()) {
-      last_committed_url_origin =
-          autofill_client_->GetLastCommittedURL().DeprecatedGetOriginAsURL();
+    absl::optional<GURL> last_committed_primary_main_frame_origin;
+    if (autofill_client_->GetLastCommittedPrimaryMainFrameURL().is_valid()) {
+      last_committed_primary_main_frame_origin =
+          autofill_client_->GetLastCommittedPrimaryMainFrameURL()
+              .DeprecatedGetOriginAsURL();
     }
-    unmask_request_->last_committed_url_origin = last_committed_url_origin;
+    unmask_request_->last_committed_primary_main_frame_origin =
+        last_committed_primary_main_frame_origin;
   }
 
   // Populating risk data and showing OTP dialog may occur asynchronously.
@@ -56,9 +59,12 @@ void CreditCardOtpAuthenticator::OnUnmaskPromptClosed(bool user_closed_dialog) {
   if (!user_closed_dialog)
     return;
 
-  requester_->OnOtpAuthenticationComplete(
-      OtpAuthenticationResponse().with_result(
-          OtpAuthenticationResponse::Result::kFlowCancelled));
+  if (requester_) {
+    requester_->OnOtpAuthenticationComplete(
+        OtpAuthenticationResponse().with_result(
+            OtpAuthenticationResponse::Result::kFlowCancelled));
+  }
+
   AutofillMetrics::LogOtpAuthResult(
       AutofillMetrics::OtpAuthEvent::kFlowCancelled);
   Reset();
@@ -144,8 +150,8 @@ void CreditCardOtpAuthenticator::OnDidSelectChallengeOption(
   }
 
   bool server_success = result == AutofillClient::PaymentsRpcResult::kSuccess;
-  // Dismiss the pending authentication selection dialog so that other dialogs
-  // can be shown.
+  // Dismiss the pending authentication selection dialog if it is visible so
+  // that other dialogs can be shown.
   autofill_client_->DismissUnmaskAuthenticatorSelectionDialog(server_success);
   if (server_success) {
     DCHECK(!context_token.empty());
@@ -156,28 +162,37 @@ void CreditCardOtpAuthenticator::OnDidSelectChallengeOption(
     return;
   }
 
+  // If the OTP input dialog is visible, also dismiss it. The two dialogs will
+  // not be shown at the same time but either one of them can be visible when
+  // this function is invoked.
+  autofill_client_->OnUnmaskOtpVerificationResult(
+      OtpUnmaskResult::kPermanentFailure);
   // Show the virtual card permanent error dialog if server explicitly returned
   // vcn permanent error, show temporary error dialog for the rest failure cases
   // since currently only virtual card is supported.
   autofill_client_->ShowVirtualCardErrorDialog(
-      /*is_permanent_error=*/result ==
-      AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure);
-  OtpAuthenticationResponse response;
-  if (result ==
-          AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure ||
-      result ==
-          AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure) {
-    AutofillMetrics::LogOtpAuthResult(
-        AutofillMetrics::OtpAuthEvent::
-            kSelectedChallengeOptionVirtualCardRetrievalError);
-    response.result =
-        OtpAuthenticationResponse::Result::kVirtualCardRetrievalError;
-  } else {
-    AutofillMetrics::LogOtpAuthResult(
-        AutofillMetrics::OtpAuthEvent::kSelectedChallengeOptionGenericError);
-    response.result = OtpAuthenticationResponse::Result::kAuthenticationError;
+      AutofillErrorDialogContext::WithPermanentOrTemporaryError(
+          /*is_permanent_error=*/result ==
+          AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure));
+  if (requester_) {
+    OtpAuthenticationResponse response;
+    if (result ==
+            AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure ||
+        result ==
+            AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure) {
+      AutofillMetrics::LogOtpAuthResult(
+          AutofillMetrics::OtpAuthEvent::
+              kSelectedChallengeOptionVirtualCardRetrievalError);
+      response.result =
+          OtpAuthenticationResponse::Result::kVirtualCardRetrievalError;
+    } else {
+      AutofillMetrics::LogOtpAuthResult(
+          AutofillMetrics::OtpAuthEvent::kSelectedChallengeOptionGenericError);
+      response.result = OtpAuthenticationResponse::Result::kAuthenticationError;
+    }
+    requester_->OnOtpAuthenticationComplete(response);
   }
-  requester_->OnOtpAuthenticationComplete(response);
+
   Reset();
 }
 
@@ -185,8 +200,6 @@ void CreditCardOtpAuthenticator::ShowOtpDialog() {
   // Before showing OTP dialog, let's load required risk data if it's not
   // prepared. Risk data is only required for unmask request. Not required for
   // select challenge option request.
-  // TODO(crbug.com/1243475): Explore the possibility of sending one
-  // LoadRiskData request per session.
   if (risk_data_.empty()) {
     autofill_client_->LoadRiskData(
         base::BindOnce(&CreditCardOtpAuthenticator::OnDidGetUnmaskRiskData,
@@ -194,7 +207,8 @@ void CreditCardOtpAuthenticator::ShowOtpDialog() {
   }
 
   autofill_client_->ShowCardUnmaskOtpInputDialog(
-      selected_challenge_option_.otp_length, weak_ptr_factory_.GetWeakPtr());
+      selected_challenge_option_.challenge_input_length,
+      weak_ptr_factory_.GetWeakPtr());
 }
 
 void CreditCardOtpAuthenticator::OnDidGetUnmaskRiskData(
@@ -231,9 +245,12 @@ void CreditCardOtpAuthenticator::OnDidGetRealPan(
         AutofillClient::PaymentsRpcCardType::kVirtualCard) {
       // Currently we offer OTP authentication only for virtual cards.
       NOTREACHED();
-      requester_->OnOtpAuthenticationComplete(
-          OtpAuthenticationResponse().with_result(
-              OtpAuthenticationResponse::Result::kGenericError));
+      if (requester_) {
+        requester_->OnOtpAuthenticationComplete(
+            OtpAuthenticationResponse().with_result(
+                OtpAuthenticationResponse::Result::kGenericError));
+      }
+
       Reset();
       return;
     }
@@ -279,11 +296,13 @@ void CreditCardOtpAuthenticator::OnDidGetRealPan(
     unmask_request_->card.SetExpirationYearFromString(
         base::UTF8ToUTF16(response_details.expiration_year));
 
-    auto response = OtpAuthenticationResponse().with_result(
-        OtpAuthenticationResponse::Result::kSuccess);
-    response.card = &(unmask_request_->card);
-    response.cvc = base::UTF8ToUTF16(response_details.dcvv);
-    requester_->OnOtpAuthenticationComplete(response);
+    if (requester_) {
+      auto response = OtpAuthenticationResponse().with_result(
+          OtpAuthenticationResponse::Result::kSuccess);
+      response.card = &(unmask_request_->card);
+      response.cvc = base::UTF8ToUTF16(response_details.dcvv);
+      requester_->OnOtpAuthenticationComplete(response);
+    }
 
     autofill_client_->OnUnmaskOtpVerificationResult(OtpUnmaskResult::kSuccess);
 
@@ -295,26 +314,38 @@ void CreditCardOtpAuthenticator::OnDidGetRealPan(
   // Show the virtual card permanent error dialog if server explicitly returned
   // vcn permanent error, show temporary error dialog for the remaining failure
   // cases since currently only virtual card is supported.
-  OtpAuthenticationResponse response;
-  if (result ==
-          AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure ||
-      result ==
-          AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure) {
-    response.result =
-        OtpAuthenticationResponse::Result::kVirtualCardRetrievalError;
-    AutofillMetrics::LogOtpAuthResult(
-        AutofillMetrics::OtpAuthEvent::kUnmaskCardVirtualCardRetrievalError);
-  } else {
-    response.result = OtpAuthenticationResponse::Result::kAuthenticationError;
-    AutofillMetrics::LogOtpAuthResult(
-        AutofillMetrics::OtpAuthEvent::kUnmaskCardAuthError);
+  if (requester_) {
+    OtpAuthenticationResponse response;
+    if (result ==
+            AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure ||
+        result ==
+            AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure) {
+      response.result =
+          OtpAuthenticationResponse::Result::kVirtualCardRetrievalError;
+      AutofillMetrics::LogOtpAuthResult(
+          AutofillMetrics::OtpAuthEvent::kUnmaskCardVirtualCardRetrievalError);
+    } else {
+      response.result = OtpAuthenticationResponse::Result::kAuthenticationError;
+      AutofillMetrics::LogOtpAuthResult(
+          AutofillMetrics::OtpAuthEvent::kUnmaskCardAuthError);
+    }
+    requester_->OnOtpAuthenticationComplete(response);
   }
-  requester_->OnOtpAuthenticationComplete(response);
+
   autofill_client_->OnUnmaskOtpVerificationResult(
       OtpUnmaskResult::kPermanentFailure);
-  autofill_client_->ShowVirtualCardErrorDialog(
-      /*is_permanent_error=*/result ==
-      AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure);
+
+  // If the server returned error dialog fields to be displayed, we prefer them
+  // since they will be more detailed to the specific error that occurred.
+  if (response_details.autofill_error_dialog_context) {
+    autofill_client_->ShowVirtualCardErrorDialog(
+        *response_details.autofill_error_dialog_context);
+  } else {
+    autofill_client_->ShowVirtualCardErrorDialog(
+        AutofillErrorDialogContext::WithPermanentOrTemporaryError(
+            /*is_permanent_error=*/result ==
+            AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure));
+  }
   Reset();
 }
 

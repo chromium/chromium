@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include "gin/arguments.h"
 #include "gin/function_template.h"
 #include "v8/include/v8-context.h"
+#include "v8/include/v8-exception.h"
 #include "v8/include/v8-function.h"
 #include "v8/include/v8-object.h"
 #include "v8/include/v8-promise.h"
@@ -15,81 +16,65 @@
 
 namespace shared_storage_worklet {
 
+namespace {
+
+const char kErrorMessageReturnValueNotUint32[] =
+    "Promise did not resolve to an uint32 number.";
+
+const char kErrorMessageReturnValueOutOfRange[] =
+    "Promise resolved to a number outside the length of the input urls.";
+
+// Convert ECMAScript value to IDL unsigned long (i.e. uint32):
+// https://webidl.spec.whatwg.org/#es-unsigned-long
+bool ToIDLUnsignedLong(v8::Isolate* isolate,
+                       v8::Local<v8::Value> val,
+                       uint32_t& out) {
+  v8::Local<v8::Context> context = isolate->GetCurrentContext();
+
+  WorkletV8Helper::HandleScope scope(isolate);
+  v8::TryCatch try_catch(isolate);
+
+  v8::Local<v8::Uint32> uint32_val;
+  if (!val->ToUint32(context).ToLocal(&uint32_val))
+    return false;
+
+  out = uint32_val->Value();
+  return true;
+}
+
+}  // namespace
+
 struct UrlSelectionOperationHandler::PendingRequest {
   explicit PendingRequest(
+      size_t urls_size,
       mojom::SharedStorageWorkletService::RunURLSelectionOperationCallback
           callback);
 
   ~PendingRequest();
 
+  size_t urls_size;
   mojom::SharedStorageWorkletService::RunURLSelectionOperationCallback callback;
 };
 
 UrlSelectionOperationHandler::PendingRequest::PendingRequest(
+    size_t urls_size,
     mojom::SharedStorageWorkletService::RunURLSelectionOperationCallback
         callback)
-    : callback(std::move(callback)) {}
+    : urls_size(urls_size), callback(std::move(callback)) {}
 
 UrlSelectionOperationHandler::PendingRequest::~PendingRequest() = default;
 
-UrlSelectionOperationHandler::UrlSelectionOperationHandler() = default;
+UrlSelectionOperationHandler::UrlSelectionOperationHandler(
+    const std::map<std::string, v8::Global<v8::Function>>&
+        operation_definition_map)
+    : operation_definition_map_(operation_definition_map) {}
 
 UrlSelectionOperationHandler::~UrlSelectionOperationHandler() = default;
-
-void UrlSelectionOperationHandler::RegisterOperation(gin::Arguments* args) {
-  std::string name;
-  if (!args->GetNext(&name)) {
-    args->ThrowTypeError("Missing \"name\" argument in operation registration");
-    return;
-  }
-
-  if (name.empty()) {
-    args->ThrowTypeError("Operation name cannot be empty");
-    return;
-  }
-
-  if (operation_definition_map_.count(name)) {
-    args->ThrowTypeError("Operation name already registered");
-    return;
-  }
-
-  v8::Local<v8::Object> class_definition;
-  if (!args->GetNext(&class_definition)) {
-    args->ThrowTypeError(
-        "Missing class name argument in operation registration");
-    return;
-  }
-
-  if (!class_definition->IsConstructor()) {
-    args->ThrowTypeError("Unexpected class argument: not a constructor");
-    return;
-  }
-
-  v8::Isolate* isolate = args->isolate();
-  v8::Local<v8::Context> context = args->GetHolderCreationContext();
-
-  v8::Local<v8::Value> class_prototype =
-      class_definition->Get(context, gin::StringToV8(isolate, "prototype"))
-          .ToLocalChecked();
-
-  v8::Local<v8::Value> run_function =
-      class_prototype.As<v8::Object>()
-          ->Get(context, gin::StringToV8(isolate, "run"))
-          .ToLocalChecked();
-
-  if (run_function->IsUndefined() || !run_function->IsFunction()) {
-    args->ThrowTypeError("Missing \"run()\" function in the class");
-    return;
-  }
-
-  operation_definition_map_.emplace(
-      name, v8::Global<v8::Function>(isolate, run_function.As<v8::Function>()));
-}
 
 void UrlSelectionOperationHandler::RunOperation(
     v8::Local<v8::Context> context,
     const std::string& name,
-    const std::vector<std::string>& urls,
+    const std::vector<GURL>& urls,
     const std::vector<uint8_t>& serialized_data,
     mojom::SharedStorageWorkletService::RunURLSelectionOperationCallback
         callback) {
@@ -106,8 +91,12 @@ void UrlSelectionOperationHandler::RunOperation(
 
   v8::Local<v8::Function> run_function = it->second.Get(isolate);
 
+  std::vector<std::string> string_urls;
+  std::transform(urls.cbegin(), urls.cend(), std::back_inserter(string_urls),
+                 [](const GURL& url) { return url.spec(); });
+
   v8::Local<v8::Array> js_urls =
-      gin::Converter<std::vector<std::string>>::ToV8(isolate, urls)
+      gin::Converter<std::vector<std::string>>::ToV8(isolate, string_urls)
           .As<v8::Array>();
 
   v8::Local<v8::Object> js_data;
@@ -148,13 +137,22 @@ void UrlSelectionOperationHandler::RunOperation(
   // directly.
   if (result_promise->State() == v8::Promise::PromiseState::kFulfilled) {
     v8::Local<v8::Value> result_value = result_promise->Result();
-    if (!result_value->IsUint32()) {
+
+    uint32_t result_index = 0;
+    if (!ToIDLUnsignedLong(isolate, result_value, result_index)) {
       std::move(callback).Run(/*success=*/false,
-                              "Promise did not resolve to an uint32 number.",
+                              kErrorMessageReturnValueNotUint32,
                               /*index=*/0);
       return;
     }
-    uint32_t result_index = result_value->Uint32Value(context).FromJust();
+
+    if (result_index >= urls.size()) {
+      std::move(callback).Run(
+          /*success=*/false, kErrorMessageReturnValueOutOfRange,
+          /*index=*/0);
+      return;
+    }
+
     std::move(callback).Run(/*success=*/true,
                             /*error_message=*/{}, result_index);
     return;
@@ -172,7 +170,8 @@ void UrlSelectionOperationHandler::RunOperation(
 
   // If the promise is pending, install callback functions that will be
   // triggered when it completes.
-  auto pending_request = std::make_unique<PendingRequest>(std::move(callback));
+  auto pending_request =
+      std::make_unique<PendingRequest>(urls.size(), std::move(callback));
   PendingRequest* pending_request_raw = pending_request.get();
   pending_requests_.emplace(pending_request_raw, std::move(pending_request));
 
@@ -198,10 +197,24 @@ void UrlSelectionOperationHandler::RunOperation(
 
 void UrlSelectionOperationHandler::OnPromiseFulfilled(PendingRequest* request,
                                                       gin::Arguments* args) {
+  std::vector<v8::Local<v8::Value>> v8_args = args->GetAll();
+
   uint32_t result_index = 0;
-  if (!args->GetNext(&result_index)) {
+
+  // We are guaranteed to have a single argument here.
+  CHECK_EQ(v8_args.size(), 1u);
+
+  if (!ToIDLUnsignedLong(args->isolate(), v8_args[0], result_index)) {
     std::move(request->callback)
-        .Run(/*success=*/false, "Promise did not resolve to an uint32 number.",
+        .Run(/*success=*/false, kErrorMessageReturnValueNotUint32,
+             /*index=*/0);
+    pending_requests_.erase(request);
+    return;
+  }
+
+  if (result_index >= request->urls_size) {
+    std::move(request->callback)
+        .Run(/*success=*/false, kErrorMessageReturnValueOutOfRange,
              /*index=*/0);
     pending_requests_.erase(request);
     return;

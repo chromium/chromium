@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,6 +45,7 @@ base::scoped_nsobject<NSMenu> BuildMainMenu() {
 @synthesize window = _window;
 
 - (void)dealloc {
+  [_window release];
   [super dealloc];
 }
 
@@ -54,7 +55,7 @@ base::scoped_nsobject<NSMenu> BuildMainMenu() {
 
   NSRect frame = NSMakeRect(0, 0, 499, 112);
   self.window = [[[NSWindow alloc] initWithContentRect:frame
-                                             styleMask:NSTitledWindowMask
+                                             styleMask:NSWindowStyleMaskTitled
                                                backing:NSBackingStoreBuffered
                                                  defer:NO] autorelease];
   self.window.title = @"Chrome Remote Desktop Uninstaller";
@@ -101,8 +102,8 @@ base::scoped_nsobject<NSMenu> BuildMainMenu() {
   base::scoped_nsobject<NSAlert> alert([[NSAlert alloc] init]);
   [alert setMessageText:summary];
   [alert setInformativeText:message];
-  [alert setAlertStyle:(success ? NSInformationalAlertStyle
-                                : NSCriticalAlertStyle)];
+  [alert setAlertStyle:(success ? NSAlertStyleInformational
+                                : NSAlertStyleCritical)];
   // This line crashes the app because ui::ResourceBundle::GetSharedInstance()
   // cannot find a shared instance. https://crbug.com/968257.
   [alert addButtonWithTitle:l10n_util::GetNSString(IDS_OK)];

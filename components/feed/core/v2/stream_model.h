@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,11 +11,13 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/proto/v2/wire/content_id.pb.h"
 #include "components/feed/core/v2/proto_util.h"
+#include "components/feed/core/v2/public/logging_parameters.h"
 #include "components/feed/core/v2/public/stream_type.h"
 #include "components/feed/core/v2/stream_model/ephemeral_change.h"
 #include "components/feed/core/v2/stream_model/feature_tree.h"
@@ -89,7 +91,7 @@ class StreamModel {
     virtual void OnStoreChange(StoreUpdate update) = 0;
   };
 
-  explicit StreamModel(Context* context);
+  StreamModel(Context* context, const LoggingParameters& logging_parameters);
   ~StreamModel();
 
   StreamModel(const StreamModel& src) = delete;
@@ -102,6 +104,10 @@ class StreamModel {
 
   // Data access.
 
+  const LoggingParameters& GetLoggingParameters() const {
+    return logging_parameters_;
+  }
+
   // Was this feed signed in.
   bool signed_in() const { return stream_data_.signed_in(); }
 
@@ -111,6 +117,12 @@ class StreamModel {
   // Has the privacy notice been fulfilled?
   bool privacy_notice_fulfilled() const {
     return stream_data_.privacy_notice_fulfilled();
+  }
+
+  // The client timestamp, in milliseconds from the Epoch, when the content
+  // from the response is retrieved.
+  int64_t last_added_time_millis() const {
+    return stream_data_.last_added_time_millis();
   }
 
   // Returns the full list of content in the order it should be presented.
@@ -149,7 +161,7 @@ class StreamModel {
   base::Time GetLastAddedTime() const;
   // Returns a set of content IDs contained. This remains constant even
   // after data operations or next-page requests.
-  ContentIdSet GetContentIds() const;
+  ContentHashSet GetContentIds() const;
 
   // Outputs a string representing the model state for debugging or testing.
   std::string DumpStateForTesting();
@@ -158,6 +170,8 @@ class StreamModel {
   bool HasVisibleContent();
 
   ContentStats GetContentStats() const;
+
+  const std::string& GetRootEventId() const;
 
  private:
   struct SharedState {
@@ -172,12 +186,13 @@ class StreamModel {
 
   void UpdateFlattenedTree();
 
+  const LoggingParameters logging_parameters_;
   // The stream type for which this model is used. Used only for forwarding to
   // observers.
   StreamType stream_type_;
 
   base::ObserverList<Observer> observers_;
-  StoreObserver* store_observer_ = nullptr;  // Unowned.
+  raw_ptr<StoreObserver> store_observer_ = nullptr;  // Unowned.
   stream_model::ContentMap content_map_;
   stream_model::FeatureTree base_feature_tree_{&content_map_};
   // |base_feature_tree_| with |ephemeral_changes_| applied.

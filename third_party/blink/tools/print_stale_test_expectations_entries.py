@@ -1,4 +1,4 @@
-#!/usr/bin/env vpython
+#!/usr/bin/env vpython3
 #
 # Copyright (C) 2013 Google Inc. All rights reserved.
 #
@@ -33,11 +33,12 @@ import csv
 import datetime
 import json
 import optparse
-import StringIO
+from six import StringIO
 import sys
-import urllib2
+from six.moves import urllib
 
 from blinkpy.common.host import Host
+# pylint: disable=no-name-in-module
 from blinkpy.web_tests.models.test_expectations import TestExpectationParser
 
 # FIXME: Make this a direct request to Monorail.
@@ -105,22 +106,23 @@ class StaleTestPrinter(object):
                     self.populate_bug_info(bug_link, test_name)
                 # Return the stale bug's information.
                 if all(self.is_stale(bug_link) for bug_link in bug_links):
-                    print line.original_string.strip()
+                    print(line.original_string.strip())
                     return [
                         bug_links[0], self.bug_info[bug_links[0]].filename,
                         self.bug_info[bug_links[0]].days_since_last_update,
                         self.bug_info[bug_links[0]].owner,
                         self.bug_info[bug_links[0]].status
                     ]
-        except urllib2.HTTPError as error:
+        except urllib.error.HTTPError as error:
             if error.code == 404:
                 message = 'got 404, bug does not exist.'
             elif error.code == 403:
                 message = 'got 403, not accessible. Not able to tell if it\'s stale.'
             else:
                 message = str(error)
-            print >> sys.stderr, 'Error when checking %s: %s' % (
-                ','.join(bug_links), message)
+            print(
+                'Error when checking %s: %s' % (','.join(bug_links), message),
+                sys.stderr)
         return None
 
     def populate_bug_info(self, bug_link, test_name):
@@ -129,7 +131,7 @@ class StaleTestPrinter(object):
         # In case there's an error in the request, don't make the same request again.
         bug_number = bug_link.strip(CRBUG_PREFIX)
         url = GOOGLE_CODE_URL % bug_number
-        response = urllib2.urlopen(url)
+        response = urllib.request.urlopen(url)
         parsed = json.loads(response.read())
         parsed_time = datetime.datetime.strptime(
             parsed['updated'].split(".")[0] + "UTC", "%Y-%m-%dT%H:%M:%S%Z")

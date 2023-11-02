@@ -1,11 +1,11 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_INSTALL_UI_DEFAULT_H_
 #define CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_INSTALL_UI_DEFAULT_H_
 
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "extensions/browser/install/extension_install_ui.h"
 
 namespace content {
@@ -42,7 +42,7 @@ class ExtensionInstallUIDefault : public extensions::ExtensionInstallUI {
       const SkBitmap& icon);
 
  private:
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // Whether or not to show the default UI after completing the installation.
   bool skip_post_install_ui_;

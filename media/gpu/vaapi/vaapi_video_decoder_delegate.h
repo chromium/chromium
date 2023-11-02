@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -23,7 +24,9 @@
 #include "third_party/libva_protected_content/va_protected_content.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/components/cdm_factory_daemon/chromeos_cdm_context.h"
+namespace chromeos {
+class ChromeOsCdmContext;
+}  // namespace chromeos
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace media {
@@ -130,7 +133,7 @@ class VaapiVideoDecoderDelegate {
   std::string GetDecryptKeyId() const;
 
   // Both owned by caller.
-  DecodeSurfaceHandler<VASurface>* const vaapi_dec_;
+  const raw_ptr<DecodeSurfaceHandler<VASurface>> vaapi_dec_;
   scoped_refptr<VaapiWrapper> vaapi_wrapper_;
 
   SEQUENCE_CHECKER(sequence_checker_);
@@ -140,13 +143,15 @@ class VaapiVideoDecoderDelegate {
   void OnGetHwKeyData(const std::string& key_id,
                       Decryptor::Status status,
                       const std::vector<uint8_t>& key_data);
+  void RecoverProtectedSession();
 
   // All members below pertain to protected content playback.
   ProtectedSessionUpdateCB on_protected_session_update_cb_;
+  EncryptionScheme encryption_scheme_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::ChromeOsCdmContext* chromeos_cdm_context_{nullptr};  // Not owned.
+  EncryptionScheme last_used_encryption_scheme_{EncryptionScheme::kUnencrypted};
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  EncryptionScheme encryption_scheme_;
   ProtectedSessionState protected_session_state_;
   std::unique_ptr<DecryptConfig> decrypt_config_;
   std::vector<uint8_t> hw_identifier_;

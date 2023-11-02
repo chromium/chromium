@@ -1,11 +1,11 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <stddef.h>
 
-#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -13,6 +13,7 @@
 #include "chrome/browser/task_manager/mock_web_contents_task_manager.h"
 #include "chrome/browser/task_manager/providers/web_contents/web_contents_tags_manager.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/grit/generated_resources.h"
@@ -24,7 +25,9 @@
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/favicon_status.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/site_instance.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -72,7 +75,7 @@ const TestPageData kTestPages[] = {
     },
 };
 
-const size_t kTestPagesLength = base::size(kTestPages);
+const size_t kTestPagesLength = std::size(kTestPages);
 
 // Blocks till the current page uses a specific icon URL.
 class FaviconWaiter : public favicon::FaviconDriverObserver {
@@ -119,7 +122,7 @@ class FaviconWaiter : public favicon::FaviconDriverObserver {
     }
   }
 
-  favicon::ContentFaviconDriver* driver_;
+  raw_ptr<favicon::ContentFaviconDriver> driver_;
   GURL target_favicon_url_;
   base::RepeatingClosure quit_closure_;
 };
@@ -133,12 +136,12 @@ class TabContentsTagTest : public InProcessBrowserTest {
   TabContentsTagTest() { EXPECT_TRUE(embedded_test_server()->Start()); }
   TabContentsTagTest(const TabContentsTagTest&) = delete;
   TabContentsTagTest& operator=(const TabContentsTagTest&) = delete;
-  ~TabContentsTagTest() override {}
+  ~TabContentsTagTest() override = default;
 
   void AddNewTestTabAt(int index, const char* test_page_file) {
     int tabs_count_before = tabs_count();
     GURL url = GetUrlOfFile(test_page_file);
-    AddTabAtIndex(index, url, ui::PAGE_TRANSITION_TYPED);
+    ASSERT_TRUE(AddTabAtIndex(index, url, ui::PAGE_TRANSITION_TYPED));
     EXPECT_EQ(++tabs_count_before, tabs_count());
   }
 
@@ -149,7 +152,7 @@ class TabContentsTagTest : public InProcessBrowserTest {
 
   void CloseTabAt(int index) {
     browser()->tab_strip_model()->CloseWebContentsAt(index,
-                                                     TabStripModel::CLOSE_NONE);
+                                                     TabCloseTypes::CLOSE_NONE);
   }
 
   std::u16string GetTestPageExpectedTitle(const TestPageData& page_data) const {
@@ -296,6 +299,11 @@ IN_PROC_BROWSER_TEST_F(TabContentsTagTest, NavigateToPageNoFavicon) {
           browser()->tab_strip_model()->GetActiveWebContents());
   FaviconWaiter waiter(favicon_driver);
   waiter.WaitForFaviconWithURL(GetUrlOfFile("/favicon/icon.png"));
+  const auto favicon_url = browser()
+                               ->tab_strip_model()
+                               ->GetActiveWebContents()
+                               ->GetSiteInstance()
+                               ->GetSiteURL();
 
   // Check that the task manager uses the specified favicon for the page.
   base::FilePath test_dir;
@@ -322,22 +330,77 @@ IN_PROC_BROWSER_TEST_F(TabContentsTagTest, NavigateToPageNoFavicon) {
     // When ProactivelySwapBrowsingInstance or RenderDocument is enabled on
     // same-site main frame navigations, we'll get a new task because we are
     // changing RenderFrameHosts. Note that the previous page's task might still
-    // be around if the previous page is saved in the back-forward cache.
-    ASSERT_EQ(
-        content::BackForwardCache::IsSameSiteBackForwardCacheFeatureEnabled()
-            ? 2U
-            : 1U,
-        task_manager.tasks().size());
-    task = task_manager.tasks().front();
+    // be around if the previous page is saved in the back/forward cache.
+    if (content::BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
+      ASSERT_EQ(2U, task_manager.tasks().size());
+      ASSERT_EQ(
+          l10n_util::GetStringFUTF16(IDS_TASK_MANAGER_BACK_FORWARD_CACHE_PREFIX,
+                                     base::UTF8ToUTF16(favicon_url.spec())),
+          task_manager.tasks().front()->title());
+    } else {
+      ASSERT_EQ(1U, task_manager.tasks().size());
+    }
   }
+
+  task = task_manager.tasks().back();
   ASSERT_EQ(GetDefaultTitleForUrl(no_favicon_page_url), task->title());
 
   // Check that the task manager uses the default favicon for the page.
   gfx::Image default_favicon_image =
       ui::ResourceBundle::GetSharedInstance().GetNativeImageNamed(
           IDR_DEFAULT_FAVICON);
+  gfx::Image default_dark_favicon_image =
+      ui::ResourceBundle::GetSharedInstance().GetNativeImageNamed(
+          IDR_DEFAULT_FAVICON_DARK);
   EXPECT_TRUE(gfx::test::AreImagesEqual(default_favicon_image,
+                                        gfx::Image(task->icon())) ||
+              gfx::test::AreImagesEqual(default_dark_favicon_image,
                                         gfx::Image(task->icon())));
+}
+
+class TabContentsTagFencedFrameTest : public TabContentsTagTest {
+ public:
+  TabContentsTagFencedFrameTest() = default;
+  ~TabContentsTagFencedFrameTest() override = default;
+
+  content::WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return fenced_frame_helper_;
+  }
+
+ private:
+  content::test::FencedFrameTestHelper fenced_frame_helper_;
+};
+
+// Tests that a fenced frame doesn't update the title of its web contents' task
+// via WebContentsTaskProvider::WebContentsEntry.
+IN_PROC_BROWSER_TEST_F(TabContentsTagFencedFrameTest,
+                       FencedFrameDoesNotUpdateTitle) {
+  MockWebContentsTaskManager task_manager;
+  EXPECT_TRUE(task_manager.tasks().empty());
+  task_manager.StartObserving();
+  ASSERT_EQ(1U, task_manager.tasks().size());
+
+  const GURL initial_url = embedded_test_server()->GetURL("/title3.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
+  const Task* primary_mainframe_task = task_manager.tasks().front();
+  EXPECT_EQ(Task::RENDERER, primary_mainframe_task->GetType());
+  EXPECT_EQ(primary_mainframe_task->title(), u"Tab: Title Of More Awesomeness");
+
+  // Create a fenced frame and load a URL.
+  const GURL kFencedFrameUrl =
+      embedded_test_server()->GetURL("/fenced_frames/title2.html");
+  content::RenderFrameHost* fenced_frame_host =
+      fenced_frame_test_helper().CreateFencedFrame(
+          GetWebContents()->GetPrimaryMainFrame(), kFencedFrameUrl);
+  EXPECT_NE(nullptr, fenced_frame_host);
+
+  // The navigation in the fenced frame should not change the title of the
+  // primary mainframe's task to "Title Of Awesomeness".
+  EXPECT_EQ(primary_mainframe_task->title(), u"Tab: Title Of More Awesomeness");
 }
 
 }  // namespace task_manager

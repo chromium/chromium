@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -151,7 +151,8 @@ export class DisplayPanel extends HTMLElement {
     if (this.items_.length == 0) {
       return;
     }
-    let errors = 0, progressCount = 0;
+    let errors = 0;
+    let progressCount = 0;
     const connectedPanels = this.connectedPanelItems_();
     for (const panel of connectedPanels) {
       // Only sum progress for attached progress panels.

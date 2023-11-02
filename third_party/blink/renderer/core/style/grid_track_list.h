@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -49,6 +49,8 @@ class CORE_EXPORT NGGridTrackList {
   // if the repeater is auto.
   wtf_size_t RepeatCount(const wtf_size_t index,
                          const wtf_size_t auto_value) const;
+  // Returns the position of the first track size in the repeater at |index|.
+  wtf_size_t RepeatIndex(const wtf_size_t index) const;
   // Returns the number of tracks in the repeater at |index|.
   wtf_size_t RepeatSize(const wtf_size_t index) const;
   // Returns the repeat type of the repeater at |index|.
@@ -59,10 +61,10 @@ class CORE_EXPORT NGGridTrackList {
 
   // Returns the count of repeaters.
   wtf_size_t RepeaterCount() const;
-  // Returns the total count of all the tracks in this list.
-  wtf_size_t TotalTrackCount() const;
+  // Returns the count of all tracks ignoring those within an auto repeater.
+  wtf_size_t TrackCountWithoutAutoRepeat() const;
   // Returns the number of tracks in the auto repeater, or 0 if there is none.
-  wtf_size_t AutoRepeatSize() const;
+  wtf_size_t AutoRepeatTrackCount() const;
   // Adds a repeater.
   bool AddRepeater(const Vector<GridTrackSize, 1>& repeater_track_sizes,
                    NGGridTrackRepeater::RepeatType repeat_type =
@@ -78,6 +80,7 @@ class CORE_EXPORT NGGridTrackList {
 
   void operator=(const NGGridTrackList& o);
   bool operator==(const NGGridTrackList& o) const;
+  bool operator!=(const NGGridTrackList& o) const { return !(*this == o); }
 
  private:
   // Returns the amount of tracks available before overflow.
@@ -92,8 +95,8 @@ class CORE_EXPORT NGGridTrackList {
   // The index of the automatic repeater, if there is one; |kInvalidRangeIndex|
   // otherwise.
   wtf_size_t auto_repeater_index_ = kNotFound;
-  // Total count of tracks.
-  wtf_size_t total_track_count_ = 0;
+  // Count of tracks ignoring those within an auto repeater.
+  wtf_size_t track_count_without_auto_repeat_ = 0;
 };
 
 // This class wraps both legacy grid track list type, and the GridNG version:
@@ -115,6 +118,8 @@ class GridTrackList {
   NGGridTrackList& NGTrackList();
   const NGGridTrackList& NGTrackList() const;
 
+  void SetNGGridTrackList(const NGGridTrackList& other);
+
   void operator=(const GridTrackList& other);
   bool operator==(const GridTrackList& other) const;
   bool operator!=(const GridTrackList& other) const;
@@ -126,5 +131,7 @@ class GridTrackList {
 };
 
 }  // namespace blink
+
+WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(blink::NGGridTrackRepeater)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_GRID_TRACK_LIST_H_

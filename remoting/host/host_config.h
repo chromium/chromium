@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,10 @@
 #include <memory>
 #include <string>
 
+#include "base/values.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
-class Value;
 class FilePath;
 }  // namespace base
 
@@ -50,13 +50,14 @@ extern const char kEnableH264ConfigPath[];
 extern const char kFrameRecorderBufferKbConfigPath[];
 
 // Helpers for serializing/deserializing Host configuration dictionaries.
-absl::optional<base::Value> HostConfigFromJson(const std::string& serialized);
-std::string HostConfigToJson(const base::Value& host_config);
+absl::optional<base::Value::Dict> HostConfigFromJson(
+    const std::string& serialized);
+std::string HostConfigToJson(const base::Value::Dict& host_config);
 
 // Helpers for loading/saving host configurations from/to files.
-absl::optional<base::Value> HostConfigFromJsonFile(
+absl::optional<base::Value::Dict> HostConfigFromJsonFile(
     const base::FilePath& config_file);
-bool HostConfigToJsonFile(const base::Value& host_config,
+bool HostConfigToJsonFile(const base::Value::Dict& host_config,
                           const base::FilePath& config_file);
 
 }  // namespace remoting

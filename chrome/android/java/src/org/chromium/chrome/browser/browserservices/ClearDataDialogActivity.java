@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -88,8 +88,9 @@ public class ClearDataDialogActivity extends AppCompatActivity {
 
     private void recordDecision(boolean accepted) {
         boolean appUninstalled = getIsAppUninstalledFromIntent(getIntent());
-        ChromeApplicationImpl.getComponent().resolveTwaClearDataDialogRecorder().handleDialogResult(
-                accepted, appUninstalled);
+        ChromeApplicationImpl.getComponent()
+                .resolveClearDataDialogResultRecorder()
+                .handleDialogResult(accepted, appUninstalled);
     }
 
     @VisibleForTesting

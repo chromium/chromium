@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_tick_clock.h"
 #include "base/unguessable_token.h"
@@ -36,7 +35,7 @@
 #include "chrome/browser/ui/webui/chromeos/smb_shares/smb_credentials_dialog.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
@@ -104,26 +103,6 @@ void RecordAuthenticationMethod(AuthMethod method) {
   UMA_HISTOGRAM_ENUMERATION("NativeSmbFileShare.AuthenticationMethod", method);
 }
 
-base::ScopedFD MakeFdWithContents(const std::string& contents) {
-  const size_t content_size = contents.size();
-
-  base::ScopedFD read_fd;
-  base::ScopedFD write_fd;
-  if (!base::CreatePipe(&read_fd, &write_fd, true /* non_blocking */)) {
-    LOG(ERROR) << "Unable to create pipe";
-    return {};
-  }
-  bool success =
-      base::WriteFileDescriptor(
-          write_fd.get(), base::as_bytes(base::make_span(&content_size, 1))) &&
-      base::WriteFileDescriptor(write_fd.get(), contents);
-  if (!success) {
-    PLOG(ERROR) << "Unable to write contents to pipe";
-    return {};
-  }
-  return read_fd;
-}
-
 }  // namespace
 
 bool SmbService::disable_share_discovery_for_testing_ = false;
@@ -149,12 +128,13 @@ SmbService::SmbService(Profile* profile,
 
   KerberosCredentialsManager* credentials_manager =
       KerberosCredentialsManagerFactory::GetExisting(profile);
-  if (credentials_manager && credentials_manager->IsKerberosEnabled()) {
-    smb_credentials_updater_ = std::make_unique<SmbKerberosCredentialsUpdater>(
-        credentials_manager,
-        base::BindRepeating(&SmbService::UpdateKerberosCredentials,
-                            AsWeakPtr()));
-    SetupKerberos(smb_credentials_updater_->active_account_name());
+  if (credentials_manager) {
+    kerberos_credentials_updater_ =
+        std::make_unique<SmbKerberosCredentialsUpdater>(
+            credentials_manager,
+            base::BindRepeating(&SmbService::UpdateKerberosCredentials,
+                                AsWeakPtr()));
+    SetupKerberos(kerberos_credentials_updater_->active_account_name());
     return;
   }
 
@@ -329,7 +309,7 @@ void SmbService::Mount(const std::string& display_name,
 
   std::vector<uint8_t> salt;
   if (save_credentials && !password.empty()) {
-    // Only generate a salt if threre's a password and we've been asked to save
+    // Only generate a salt if there's a password and we've been asked to save
     // credentials. If there is no password, there's nothing for smbfs to store
     // and the salt is unused.
     salt.resize(kSaltLength);
@@ -373,6 +353,12 @@ void SmbService::MountInternal(
     bool save_credentials,
     bool skip_connect,
     MountInternalCallback callback) {
+  // Preconfigured or persisted share information could be invalid.
+  if (!info.share_url().IsValid() || info.share_url().GetShare().empty()) {
+    std::move(callback).Run(SmbMountResult::kInvalidUrl, {});
+    return;
+  }
+
   user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(profile_);
   DCHECK(user);
 
@@ -395,11 +381,11 @@ void SmbService::MountInternal(
           absl::make_optional<SmbFsShare::KerberosOptions>(
               SmbFsShare::KerberosOptions::Source::kActiveDirectory,
               user->GetAccountId().GetObjGuid());
-    } else if (smb_credentials_updater_) {
+    } else if (kerberos_credentials_updater_) {
       smbfs_options.kerberos_options =
           absl::make_optional<SmbFsShare::KerberosOptions>(
               SmbFsShare::KerberosOptions::Source::kKerberos,
-              smb_credentials_updater_->active_account_name());
+              kerberos_credentials_updater_->active_account_name());
     } else {
       LOG(WARNING) << "No Kerberos credential source available";
       std::move(callback).Run(SmbMountResult::kAuthenticationFailed, {});
@@ -446,13 +432,7 @@ file_system_provider::Service* SmbService::GetProviderService() const {
 }
 
 SmbProviderClient* SmbService::GetSmbProviderClient() const {
-  // If the DBusThreadManager or the SmbProviderClient aren't available,
-  // there isn't much we can do. This should only happen when running tests.
-  if (!chromeos::DBusThreadManager::IsInitialized() ||
-      !chromeos::DBusThreadManager::Get()) {
-    return nullptr;
-  }
-  return chromeos::DBusThreadManager::Get()->GetSmbProviderClient();
+  return SmbProviderClient::Get();
 }
 
 void SmbService::RestoreMounts() {
@@ -512,8 +492,8 @@ void SmbService::OnMountPreconfiguredShareDone(
 }
 
 bool SmbService::IsKerberosEnabledViaPolicy() const {
-  return smb_credentials_updater_ &&
-         smb_credentials_updater_->IsKerberosEnabled();
+  return kerberos_credentials_updater_ &&
+         kerberos_credentials_updater_->IsKerberosEnabled();
 }
 
 void SmbService::SetupKerberos(const std::string& account_identifier) {
@@ -642,10 +622,10 @@ std::vector<SmbUrl> SmbService::GetPreconfiguredSharePaths(
     const std::string& policy_mode) const {
   std::vector<SmbUrl> preconfigured_urls;
 
-  const base::Value* preconfigured_shares = profile_->GetPrefs()->GetList(
+  const base::Value::List& preconfigured_shares = profile_->GetPrefs()->GetList(
       prefs::kNetworkFileSharesPreconfiguredShares);
 
-  for (const base::Value& info : preconfigured_shares->GetList()) {
+  for (const base::Value& info : preconfigured_shares) {
     // |info| is a dictionary with entries for |share_url| and |mode|.
     const base::Value* share_url = info.FindKey(kShareUrlKey);
     const base::Value* mode = info.FindKey(kModeKey);

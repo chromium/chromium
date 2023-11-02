@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/one_shot_event.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
@@ -27,33 +28,46 @@ class PrefRegistrySyncable;
 
 namespace web_app {
 
-class WebAppDatabaseFactory;
-class WebAppMover;
+class AbstractWebAppDatabaseFactory;
 class WebAppSyncBridge;
 class WebAppIconManager;
 class PreinstalledWebAppManager;
 class WebAppInstallFinalizer;
 class ManifestUpdateManager;
-class SystemWebAppManager;
 class WebAppAudioFocusIdMap;
 class WebAppInstallManager;
 class WebAppPolicyManager;
 class WebAppUiManager;
 class OsIntegrationManager;
+class WebAppTranslationManager;
+class WebAppCommandManager;
+class WebAppCommandScheduler;
 
+// WebAppProvider is the heart of Chrome web app code.
+//
 // Connects Web App features, such as the installation of default and
 // policy-managed web apps, with Profiles (as WebAppProvider is a
 // Profile-linked KeyedService) and their associated PrefService.
 //
 // Lifecycle notes:
-// All subsystems are constructed independently of each other in the
-// WebAppProvider constructor.
-// Subsystem construction should have no side effects and start no tasks.
-// Tests can replace any of the subsystems before Start() is called.
-// Similarly, in destruction, subsystems should not refer to each other.
+// - WebAppProvider and its sub-managers are not ready for use until the
+//   on_registry_ready() event has fired. Its database must be loaded from
+//   disk before it can be interacted with.
+//   Example of waiting for on_registry_ready():
+//   WebAppProvider* provider = WebAppProvider::GetForWebApps(profile);
+//   provider->on_registry_ready().Post(
+//       FROM_HERE,
+//       base::BindOnce([](WebAppProvider& provider) {
+//         ...
+//       }, std::ref(*provider));
+// - All subsystems are constructed independently of each other in the
+//   WebAppProvider constructor.
+// - Subsystem construction should have no side effects and start no tasks.
+// - Tests can replace any of the subsystems before Start() is called.
+// - Similarly, in destruction, subsystems should not refer to each other.
 class WebAppProvider : public KeyedService {
  public:
-  // Deprecated: Use GetForWebApps or GetForSystemWebApps instead.
+  // Deprecated: Use GetForWebApps instead.
   static WebAppProvider* GetDeprecated(Profile* profile);
 
   // On Chrome OS: if Lacros Web App (WebAppsCrosapi) is enabled, returns
@@ -62,21 +76,15 @@ class WebAppProvider : public KeyedService {
   // returns a WebAppProvider.
   static WebAppProvider* GetForWebApps(Profile* profile);
 
-  // On Chrome OS: returns the WebAppProvider that hosts System Web Apps in Ash;
-  // In Lacros, returns nullptr (unless EnableSystemWebAppInLacrosForTesting).
-  // On other platforms, always returns a WebAppProvider.
-  static WebAppProvider* GetForSystemWebApps(Profile* profile);
-
-  // Return the WebAppProvider for the current process. In particular:
+  // Returns the WebAppProvider for the current process. In particular:
   // In Ash: Returns the WebAppProvider that hosts System Web Apps.
   // In Lacros and other platforms: Returns the WebAppProvider that hosts
   // non-system Web Apps.
   //
-  // Avoid using this function where possible and prefer GetForWebApps or
-  // GetForSystemWebApps which provide a guarantee they are being called from
-  // the correct process. Only use this if the calling code is shared between
-  // Ash and Lacros and expects the PWA WebAppProvider in Lacros and the SWA
-  // WebAppProvider in Ash.
+  // Avoid using this function where possible and prefer GetForWebApps which
+  // provides a guarantee they are being called from the correct process. Only
+  // use this if the calling code is shared between Ash and Lacros and expects
+  // the PWA WebAppProvider in Lacros and the SWA WebAppProvider in Ash.
   static WebAppProvider* GetForLocalAppsUnchecked(Profile* profile);
 
   // Return the WebAppProvider for tests, regardless of whether this is running
@@ -97,6 +105,13 @@ class WebAppProvider : public KeyedService {
 
   // Start the Web App system. This will run subsystem startup tasks.
   void Start();
+
+  // Read/write to web app system should use `scheduler()` to guarantee safe
+  // access. This is safe to access even if the `WebAppProvider` is not ready.
+  WebAppCommandScheduler& scheduler();
+
+  // Web App sub components. These should only be accessed after
+  // `on_registry_ready()` is signaled.
 
   // The app registry model.
   WebAppRegistrar& registrar();
@@ -123,20 +138,24 @@ class WebAppProvider : public KeyedService {
   // Implements fetching of app icons.
   WebAppIconManager& icon_manager();
 
-  SystemWebAppManager& system_web_app_manager();
+  WebAppTranslationManager& translation_manager();
 
   // Manage all OS hooks that need to be deployed during Web Apps install
   OsIntegrationManager& os_integration_manager();
+  const OsIntegrationManager& os_integration_manager() const;
+
+  WebAppCommandManager& command_manager();
 
   // KeyedService:
   void Shutdown() override;
-
-  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   // Signals when app registry becomes ready.
   const base::OneShotEvent& on_registry_ready() const {
     return on_registry_ready_;
   }
+
+  // Returns whether the app registry is ready.
+  bool is_registry_ready() const { return is_registry_ready_; }
 
   PreinstalledWebAppManager& preinstalled_web_app_manager() {
     return *preinstalled_web_app_manager_;
@@ -144,8 +163,6 @@ class WebAppProvider : public KeyedService {
 
  protected:
   virtual void StartImpl();
-  void WaitForExtensionSystemReady();
-  void OnExtensionSystemReady();
 
   void CreateSubsystems(Profile* profile);
 
@@ -158,31 +175,36 @@ class WebAppProvider : public KeyedService {
 
   void CheckIsConnected() const;
 
-  std::unique_ptr<WebAppDatabaseFactory> database_factory_;
-  std::unique_ptr<WebAppMover> web_app_mover_;
+  // Performs a migration of some entries from the `web_app_ids` pref
+  // dictionary to the web app database. This should be safe to delete one year
+  // after 02-2022.
+  void DoMigrateProfilePrefs(Profile* profile);
+
+  std::unique_ptr<AbstractWebAppDatabaseFactory> database_factory_;
   std::unique_ptr<WebAppRegistrar> registrar_;
   std::unique_ptr<WebAppSyncBridge> sync_bridge_;
   std::unique_ptr<PreinstalledWebAppManager> preinstalled_web_app_manager_;
   std::unique_ptr<WebAppIconManager> icon_manager_;
+  std::unique_ptr<WebAppTranslationManager> translation_manager_;
   std::unique_ptr<WebAppInstallFinalizer> install_finalizer_;
   std::unique_ptr<ManifestUpdateManager> manifest_update_manager_;
   std::unique_ptr<ExternallyManagedAppManager> externally_managed_app_manager_;
-  std::unique_ptr<SystemWebAppManager> system_web_app_manager_;
   std::unique_ptr<WebAppAudioFocusIdMap> audio_focus_id_map_;
   std::unique_ptr<WebAppInstallManager> install_manager_;
   std::unique_ptr<WebAppPolicyManager> web_app_policy_manager_;
   std::unique_ptr<WebAppUiManager> ui_manager_;
   std::unique_ptr<OsIntegrationManager> os_integration_manager_;
+  std::unique_ptr<WebAppCommandManager> command_manager_;
+  std::unique_ptr<WebAppCommandScheduler> command_scheduler_;
 
   base::OneShotEvent on_registry_ready_;
 
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
 
   // Ensures that ConnectSubsystems() is not called after Start().
   bool started_ = false;
   bool connected_ = false;
-
-  bool skip_awaiting_extension_system_ = false;
+  bool is_registry_ready_ = false;
 
   base::WeakPtrFactory<WebAppProvider> weak_ptr_factory_{this};
 };

@@ -1,4 +1,4 @@
-// Copyright (c) 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,24 +8,33 @@
 #define UI_GL_GL_UTILS_H_
 
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "ui/gl/gl_export.h"
+#include "ui/gl/gpu_preference.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <dxgi1_6.h>
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/files/scoped_file.h"
 #endif
 
 namespace gl {
 class GLApi;
+#if defined(USE_EGL)
+class GLDisplayEGL;
+#endif  // USE_EGL
+#if defined(USE_GLX)
+class GLDisplayX11;
+#endif  // USE_GLX
+class GLDisplay;
 
 GL_EXPORT void Crash();
 GL_EXPORT void Hang();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 GL_EXPORT base::ScopedFD MergeFDs(base::ScopedFD a, base::ScopedFD b);
 #endif
 
@@ -34,20 +43,12 @@ GL_EXPORT bool UsePassthroughCommandDecoder(
 
 GL_EXPORT bool PassthroughCommandDecoderSupported();
 
-#if defined(OS_WIN)
-GL_EXPORT bool AreOverlaysSupportedWin();
-
+#if BUILDFLAG(IS_WIN)
 // Calculates present during in 100 ns from number of frames per second.
 GL_EXPORT unsigned int FrameRateToPresentDuration(float frame_rate);
 
-GL_EXPORT UINT GetOverlaySupportFlags(DXGI_FORMAT format);
-
 // BufferCount for the root surface swap chain.
 GL_EXPORT unsigned int DirectCompositionRootSurfaceBufferCount();
-
-// Whether to use full damage when direct compostion root surface presents.
-// This function is thread safe.
-GL_EXPORT bool ShouldForceDirectCompositionRootSurfaceFullDamage();
 
 // Labels swapchain with the name_prefix and ts buffers buffers with the string
 // name_prefix + _Buffer_ + <buffer_number>.
@@ -58,6 +59,36 @@ void LabelSwapChainAndBuffers(IDXGISwapChain* swap_chain,
 // operations.
 void LabelSwapChainBuffers(IDXGISwapChain* swap_chain, const char* name_prefix);
 #endif
+
+// The following functions expose functionalities from GLDisplayManagerEGL
+// and GLDisplayManagerX11 for access outside the ui/gl module. This is because
+// the two GLDisplayManager classes are singletons and in component build,
+// calling GetInstance() directly returns different instances in different
+// components.
+#if defined(USE_EGL)
+// Add an entry <preference, system_device_id> to GLDisplayManagerEGL.
+GL_EXPORT void SetGpuPreferenceEGL(GpuPreference preference,
+                                   uint64_t system_device_id);
+
+// Query the default GLDisplay. May return either a GLDisplayEGL or
+// GLDisplayX11.
+GL_EXPORT GLDisplay* GetDefaultDisplay();
+
+// Query the GLDisplay by |gpu_preference|. May return either a GLDisplayEGL or
+// GLDisplayX11.
+GL_EXPORT GLDisplay* GetDisplay(GpuPreference gpu_preference);
+
+// Query the default GLDisplayEGL.
+GL_EXPORT GLDisplayEGL* GetDefaultDisplayEGL();
+
+// Query the GLDisplayEGL by |system_device_id|.
+GL_EXPORT GLDisplayEGL* GetDisplayEGL(uint64_t system_device_id);
+#endif  // USE_EGL
+
+#if defined(USE_GLX)
+// Query the GLDisplayX11 by |system_device_id|.
+GL_EXPORT GLDisplayX11* GetDisplayX11(uint64_t system_device_id);
+#endif  // USE_GLX
 
 // Temporarily allows compilation of shaders that use the
 // ARB_texture_rectangle/ANGLE_texture_rectangle extension. We don't want to
@@ -72,7 +103,7 @@ class GL_EXPORT ScopedEnableTextureRectangleInShaderCompiler {
       const ScopedEnableTextureRectangleInShaderCompiler&) = delete;
 
   // This class is a no-op except on macOS.
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   explicit ScopedEnableTextureRectangleInShaderCompiler(gl::GLApi* gl_api) {}
 
 #else
@@ -80,7 +111,7 @@ class GL_EXPORT ScopedEnableTextureRectangleInShaderCompiler {
   ~ScopedEnableTextureRectangleInShaderCompiler();
 
  private:
-  gl::GLApi* gl_api_;
+  raw_ptr<gl::GLApi> gl_api_;
 #endif
 };
 

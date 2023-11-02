@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,8 +23,8 @@ class TextFragmentsJavaScriptFeature : public JavaScriptFeature {
   static TextFragmentsJavaScriptFeature* GetInstance();
 
   // For a given WebState, invokes the JS-side handlers needed to highlight the
-  // text fragments described in |parsed_fragments|. Will use the colors in
-  // the |*_color_hex_rgb| args to style the highlight in the page, or a default
+  // text fragments described in `parsed_fragments`. Will use the colors in
+  // the `*_color_hex_rgb` args to style the highlight in the page, or a default
   // coloring if empty strings are passed.
   virtual void ProcessTextFragments(WebState* web_state,
                                     base::Value parsed_fragments,
@@ -32,7 +32,7 @@ class TextFragmentsJavaScriptFeature : public JavaScriptFeature {
                                     std::string foreground_color_hex_rgb);
 
   // Removes all highlights that are currently being displayed on the page as a
-  // result of invoking ProcessTextFragments. Updates the page URL to |new_url|.
+  // result of invoking ProcessTextFragments. Updates the page URL to `new_url`.
   virtual void RemoveHighlights(WebState* web_state, const GURL& new_url);
 
  protected:

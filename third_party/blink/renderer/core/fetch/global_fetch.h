@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,9 @@
 
 namespace blink {
 
-class LocalDOMWindow;
 class ExceptionState;
+class LocalDOMWindow;
+class NavigatorBase;
 class RequestInit;
 class ScriptState;
 class WorkerGlobalScope;
@@ -37,6 +38,7 @@ class CORE_EXPORT GlobalFetch {
 
     static ScopedFetcher* From(LocalDOMWindow&);
     static ScopedFetcher* From(WorkerGlobalScope&);
+    static ScopedFetcher* From(NavigatorBase& navigator);
 
     void Trace(Visitor*) const override;
   };

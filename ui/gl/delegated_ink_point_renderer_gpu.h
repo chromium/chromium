@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,8 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -30,13 +32,6 @@ struct DCompositionInkTrailPoint;
 namespace gl {
 
 namespace {
-
-// Maximum number of points that can be drawn. This is used to limit the total
-// number of ink trail tokens that we will store, and the total number of points
-// that we will store to provide to the Direct Composition APIs. It should match
-// the exact number of points that the OS Compositor will store to draw as part
-// of a trail.
-constexpr int kMaximumNumberOfPoints = 128;
 
 // Maximum number of pointer ids that will be considered for drawing. Number is
 // chosen arbitrarily, as it seems unlikely that the total number of input
@@ -249,9 +244,11 @@ class DelegatedInkPointRendererGpu<InkTrailDevice,
 
   void SetDelegatedInkTrailStartPoint(
       std::unique_ptr<gfx::DelegatedInkMetadata> metadata) {
-    TRACE_EVENT1("gpu",
-                 "DelegatedInkPointRendererGpu::SetDelegatedInkTrailStartPoint",
-                 "metadata", metadata->ToString());
+    TRACE_EVENT_WITH_FLOW1(
+        "delegated_ink_trails",
+        "DelegatedInkPointRendererGpu::SetDelegatedInkTrailStartPoint",
+        TRACE_ID_GLOBAL(metadata_->trace_id()), TRACE_EVENT_FLAG_FLOW_IN,
+        "metadata", metadata_->ToString());
 
     DCHECK(ink_visual_);
     DCHECK(delegated_ink_trail_);
@@ -339,8 +336,12 @@ class DelegatedInkPointRendererGpu<InkTrailDevice,
   }
 
   void StoreDelegatedInkPoint(const gfx::DelegatedInkPoint& point) override {
-    TRACE_EVENT1("gpu", "DelegatedInkPointRendererGpu::StoreDelegatedInkPoint",
-                 "delegated ink point", point.ToString());
+    TRACE_EVENT_WITH_FLOW1(
+        "delegated_ink_trails",
+        "DelegatedInkPointRendererGpu::StoreDelegatedInkPoint",
+        TRACE_ID_GLOBAL(point.trace_id()),
+        TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "point",
+        point.ToString());
 
     const int32_t pointer_id = point.pointer_id();
 
@@ -362,7 +363,7 @@ class DelegatedInkPointRendererGpu<InkTrailDevice,
     // StartNewTrail is called. If we get to the maximum number of points that
     // we will store, start erasing the oldest ones first. This matches what the
     // OS compositor does internally when it hits the max number of points.
-    if (token_map.size() == kMaximumNumberOfPoints)
+    if (token_map.size() == gfx::kMaximumNumberOfDelegatedInkPoints)
       token_map.erase(token_map.begin());
     token_map.insert({point, absl::nullopt});
 
@@ -437,7 +438,8 @@ class DelegatedInkPointRendererGpu<InkTrailDevice,
     if (SUCCEEDED(hr))
       return false;
 
-    TRACE_EVENT_INSTANT1("gpu", name, TRACE_EVENT_SCOPE_THREAD, "hr", hr);
+    TRACE_EVENT_INSTANT1("delegated_ink_trails", name, TRACE_EVENT_SCOPE_THREAD,
+                         "hr", hr);
     return true;
   }
 
@@ -546,7 +548,7 @@ class DelegatedInkPointRendererGpu<InkTrailDevice,
 
   void DrawSavedTrailPoints() {
     DCHECK(metadata_);
-    TRACE_EVENT0("gpu", "DrawSavedTrailPoints");
+    TRACE_EVENT0("delegated_ink_trails", "DrawSavedTrailPoints");
 
     // Remove all points that have a timestamp earlier than |metadata_|'s, since
     // we know that we won't need to draw them. This is subtly different than
@@ -588,7 +590,8 @@ class DelegatedInkPointRendererGpu<InkTrailDevice,
         }
       }
     } else {
-      TRACE_EVENT_INSTANT0("gpu", "DrawSavedTrailPoints failed - no pointer id",
+      TRACE_EVENT_INSTANT0("delegated_ink_trails",
+                           "DrawSavedTrailPoints failed - no pointer id",
                            TRACE_EVENT_SCOPE_THREAD);
     }
   }
@@ -628,10 +631,12 @@ class DelegatedInkPointRendererGpu<InkTrailDevice,
       return false;
     }
 
-    TRACE_EVENT_INSTANT1("gpu",
-                         "DelegatedInkPointRendererGpu::DrawDelegatedInkPoint "
-                         "- Point added to trail",
-                         TRACE_EVENT_SCOPE_THREAD, "point", point.ToString());
+    TRACE_EVENT_WITH_FLOW1(
+        "delegated_ink_trails",
+        "DelegatedInkPointRendererGpu::DrawDelegatedInkPoint "
+        "- Point added to trail",
+        TRACE_ID_GLOBAL(point.trace_id()), TRACE_EVENT_FLAG_FLOW_IN, "point",
+        point.ToString());
     delegated_ink_points_[point.pointer_id()][point] = token;
     return true;
   }
@@ -647,8 +652,8 @@ class DelegatedInkPointRendererGpu<InkTrailDevice,
   // Remember the dcomp device and swap chain used to create
   // |delegated_ink_trail_| and |ink_visual_| so that we can avoid recreating
   // them when it isn't necessary.
-  IDCompositionDevice2* dcomp_device_ = nullptr;
-  IDXGISwapChain1* swap_chain_ = nullptr;
+  raw_ptr<IDCompositionDevice2> dcomp_device_ = nullptr;
+  raw_ptr<IDXGISwapChain1> swap_chain_ = nullptr;
 
   // The most recent metadata received. The metadata marks the last point of
   // the app rendered stroke, which corresponds to the first point of the

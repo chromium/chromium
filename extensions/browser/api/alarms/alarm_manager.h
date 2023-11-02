@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,9 +12,10 @@
 #include "base/callback.h"
 #include "base/containers/queue.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_registry.h"
@@ -195,7 +196,7 @@ class AlarmManager : public BrowserContextKeyedAPI,
   void WriteToStorage(const std::string& extension_id);
   void ReadFromStorage(const std::string& extension_id,
                        bool is_unpacked,
-                       std::unique_ptr<base::Value> value);
+                       absl::optional<base::Value> value);
 
   // Set the timer to go off at the specified |time|, and set |next_poll_time|
   // appropriately.
@@ -224,8 +225,8 @@ class AlarmManager : public BrowserContextKeyedAPI,
   static const char* service_name() { return "AlarmManager"; }
   static const bool kServiceHasOwnInstanceInIncognito = true;
 
-  content::BrowserContext* const browser_context_;
-  base::Clock* clock_;
+  const raw_ptr<content::BrowserContext> browser_context_;
+  raw_ptr<base::Clock> clock_;
   std::unique_ptr<Delegate> delegate_;
 
   // Listen to extension load notifications.

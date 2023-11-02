@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_VIZ_COMMON_QUADS_COMPOSITOR_FRAME_TRANSITION_DIRECTIVE_H_
 #define COMPONENTS_VIZ_COMMON_QUADS_COMPOSITOR_FRAME_TRANSITION_DIRECTIVE_H_
 
+#include <string>
 #include <vector>
 
 #include "base/time/time.h"
@@ -28,53 +29,14 @@ class VIZ_COMMON_EXPORT CompositorFrameTransitionDirective {
   //   the renderer or Viz process. This directive must be followed by the
   //   Animate or AnimateRenderer directive.
   //
-  // - Animate means that this frame should be used as a (new) destination frame
-  //   of the animation, using the previously saved frame as the source.
-  //
   // - AnimateRenderer means that content in the current and subsequent frames
-  //   will use cached resources from the frame with the Save directive. This is
-  //   used when the content animation is driven by the renderer process.
+  //   will use cached resources from the frame with the Save directive.
   //   Ownership of the cached resources is passed to the renderer process. This
   //   directive must be followed by Release to delete the cached resources.
   //
   // - Release means that cached textures in the Viz process can be deleted.
   //   This is used in the mode where the renderer is driving this animation.
-  enum class Type { kSave, kAnimate, kAnimateRenderer, kRelease };
-
-  // The type of an effect that should be used in the animation.
-  enum class Effect {
-    kNone,
-    kCoverDown,
-    kCoverLeft,
-    kCoverRight,
-    kCoverUp,
-    kExplode,
-    kFade,
-    kImplode,
-    kRevealDown,
-    kRevealLeft,
-    kRevealRight,
-    kRevealUp
-  };
-
-  // This provides configuration options for the root transition and for each
-  // shared element transition.
-  struct VIZ_COMMON_EXPORT TransitionConfig {
-    TransitionConfig();
-
-    // The duration for the transform and/or size animation. Opacity will be a
-    // subset of this duration.
-    base::TimeDelta duration;
-
-    // The delay in starting all animations for this element's transition. The
-    // offset is from the time when the frame with the kStart directive is
-    // drawn.
-    base::TimeDelta delay;
-
-    // Returns true if the config is valid. If |error| is not null, it's
-    // populated with an error message when the config is invalid.
-    bool IsValid(std::string* error = nullptr) const;
-  };
+  enum class Type { kSave, kAnimateRenderer, kRelease };
 
   struct VIZ_COMMON_EXPORT SharedElement {
     SharedElement();
@@ -93,8 +55,6 @@ class VIZ_COMMON_EXPORT CompositorFrameTransitionDirective {
     // An identifier to tag the cached texture for this shared element in the
     // Viz process.
     SharedElementResourceId shared_element_resource_id;
-
-    TransitionConfig config;
   };
 
   CompositorFrameTransitionDirective();
@@ -105,8 +65,6 @@ class VIZ_COMMON_EXPORT CompositorFrameTransitionDirective {
   CompositorFrameTransitionDirective(
       uint32_t sequence_id,
       Type type,
-      Effect effect = Effect::kNone,
-      const TransitionConfig& root_config = TransitionConfig(),
       std::vector<SharedElement> shared_elements = {});
 
   CompositorFrameTransitionDirective(const CompositorFrameTransitionDirective&);
@@ -123,11 +81,6 @@ class VIZ_COMMON_EXPORT CompositorFrameTransitionDirective {
   // The type of this directive.
   Type type() const { return type_; }
 
-  // The effect for the transition.
-  Effect effect() const { return effect_; }
-
-  const TransitionConfig& root_config() const { return root_config_; }
-
   // Shared elements.
   const std::vector<SharedElement>& shared_elements() const {
     return shared_elements_;
@@ -137,10 +90,6 @@ class VIZ_COMMON_EXPORT CompositorFrameTransitionDirective {
   uint32_t sequence_id_ = 0;
 
   Type type_ = Type::kSave;
-
-  Effect effect_ = Effect::kNone;
-
-  TransitionConfig root_config_;
 
   std::vector<SharedElement> shared_elements_;
 };

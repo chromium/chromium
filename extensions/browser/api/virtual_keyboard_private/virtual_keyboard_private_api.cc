@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -128,10 +128,9 @@ VirtualKeyboardPrivateGetKeyboardConfigFunction::Run() {
 }
 
 void VirtualKeyboardPrivateGetKeyboardConfigFunction::OnKeyboardConfig(
-    std::unique_ptr<base::DictionaryValue> results) {
-  Respond(results
-              ? OneArgument(base::Value::FromUniquePtrValue(std::move(results)))
-              : Error(kUnknownError));
+    absl::optional<base::Value::Dict> results) {
+  Respond(results ? OneArgument(base::Value(std::move(*results)))
+                  : Error(kUnknownError));
 }
 
 ExtensionFunction::ResponseAction

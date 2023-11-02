@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,7 +37,8 @@ int g_http_port_for_testing = 0;
 // proceeding through the interstitial.
 bool ShouldCreateLoader(const network::ResourceRequest& resource_request,
                         HttpsOnlyModeTabHelper* tab_helper) {
-  if (resource_request.is_main_frame && resource_request.method == "GET" &&
+  if (resource_request.is_outermost_main_frame &&
+      resource_request.method == "GET" &&
       !net::IsLocalhost(resource_request.url) &&
       (resource_request.url.SchemeIs(url::kHttpScheme) ||
        tab_helper->is_navigation_fallback())) {
@@ -116,8 +117,18 @@ void HttpsOnlyModeUpgradeInterceptor::MaybeCreateLoader(
         static_cast<StatefulSSLHostStateDelegate*>(
             profile->GetSSLHostStateDelegate());
     // StatefulSSLHostStateDelegate can be null during tests.
-    if (state && state->IsHttpAllowedForHost(
-                     tentative_resource_request.url.host(), web_contents)) {
+    auto* storage_partition =
+        web_contents->GetPrimaryMainFrame()->GetStoragePartition();
+    if (state &&
+        state->IsHttpAllowedForHost(tentative_resource_request.url.host(),
+                                    storage_partition)) {
+      // Renew the allowlist expiration for this host as the user is still
+      // actively using it. This means that the allowlist entry will stay valid
+      // until the user stops visiting this host for the entire expiration
+      // period (one week).
+      state->AllowHttpForHost(tentative_resource_request.url.host(),
+                              storage_partition);
+
       std::move(callback).Run({});
       return;
     }

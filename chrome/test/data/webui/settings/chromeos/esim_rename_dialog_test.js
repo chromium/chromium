@@ -1,20 +1,21 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/os_settings.js';
+import 'chrome://os-settings/chromeos/os_settings.js';
 
-// #import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.m.js';
-// #import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
-// #import {setESimManagerRemoteForTesting} from 'chrome://resources/cr_components/chromeos/cellular_setup/mojo_interface_provider.m.js';
-// #import {FakeESimManagerRemote} from 'chrome://test/cr_components/chromeos/cellular_setup/fake_esim_manager_remote.m.js';
-// #import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {assertEquals, assertTrue} from '../../chai_assert.js';
-// #import {eventToPromise} from 'chrome://test/test_util.js';
-// #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
-// clang-format on
+import {setESimManagerRemoteForTesting} from 'chrome://resources/ash/common/cellular_setup/mojo_interface_provider.js';
+import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
+import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.js';
+import {ESimOperationResult} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
+import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.js';
+import {FakeESimManagerRemote} from 'chrome://test/cr_components/chromeos/cellular_setup/fake_esim_manager_remote.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
+
+import {assertEquals, assertTrue} from '../../chai_assert.js';
 
 suite('EsimRenameDialog', function() {
   const TEST_CELLULAR_GUID = 'cellular_guid';
@@ -24,11 +25,11 @@ suite('EsimRenameDialog', function() {
   let mojoApi_;
 
   setup(function() {
-    eSimManagerRemote = new cellular_setup.FakeESimManagerRemote();
-    cellular_setup.setESimManagerRemoteForTesting(eSimManagerRemote);
+    eSimManagerRemote = new FakeESimManagerRemote();
+    setESimManagerRemoteForTesting(eSimManagerRemote);
 
     mojoApi_ = new FakeNetworkConfig();
-    network_config.MojoInterfaceProviderImpl.getInstance().remote_ = mojoApi_;
+    MojoInterfaceProviderImpl.getInstance().remote_ = mojoApi_;
     mojoApi_.resetForTest();
     return flushAsync();
   });
@@ -41,7 +42,7 @@ suite('EsimRenameDialog', function() {
     assertTrue(!!esimRenameDialog);
     await flushAsync();
     assertEquals(
-        esimRenameDialog.$$('#eSimprofileName')
+        esimRenameDialog.shadowRoot.querySelector('#eSimprofileName')
             .shadowRoot.querySelector('input'),
         getDeepActiveElement());
   }
@@ -56,15 +57,14 @@ suite('EsimRenameDialog', function() {
   }
 
   function flushAsync() {
-    Polymer.dom.flush();
+    flush();
     // Use setTimeout to wait for the next macrotask.
     return new Promise(resolve => setTimeout(resolve));
   }
 
   function addEsimCellularNetwork(guid, iccid) {
     const cellular = OncMojo.getDefaultManagedProperties(
-        chromeos.networkConfig.mojom.NetworkType.kCellular, guid,
-        'profile' + iccid);
+        NetworkType.kCellular, guid, 'profile' + iccid);
     cellular.typeProperties.cellular.iccid = iccid;
     cellular.typeProperties.cellular.eid = iccid + 'eid';
     mojoApi_.setManagedPropertiesForTest(cellular);
@@ -77,8 +77,9 @@ suite('EsimRenameDialog', function() {
    *     format, with 2 digits
    */
   function assertInput(value, invalid, valueLength) {
-    const inputBox = esimRenameDialog.$$('#eSimprofileName');
-    const inputCount = esimRenameDialog.$$('#inputCount');
+    const inputBox =
+        esimRenameDialog.shadowRoot.querySelector('#eSimprofileName');
+    const inputCount = esimRenameDialog.shadowRoot.querySelector('#inputCount');
     assertTrue(!!inputBox);
     assertTrue(!!inputCount);
 
@@ -99,7 +100,8 @@ suite('EsimRenameDialog', function() {
     await init();
 
     return flushAsync().then(async () => {
-      const inputBox = esimRenameDialog.$$('#eSimprofileName');
+      const inputBox =
+          esimRenameDialog.shadowRoot.querySelector('#eSimprofileName');
       assertTrue(!!inputBox);
       const profileName = inputBox.value;
 
@@ -108,7 +110,7 @@ suite('EsimRenameDialog', function() {
       inputBox.value = 'new profile nickname';
       await flushAsync();
 
-      const doneBtn = esimRenameDialog.$$('#done');
+      const doneBtn = esimRenameDialog.shadowRoot.querySelector('#done');
       assertTrue(!!doneBtn);
       doneBtn.click();
       await flushAsync();
@@ -135,17 +137,19 @@ suite('EsimRenameDialog', function() {
     esimRenameDialog.networkState.typeState.cellular.iccid = null;
     document.body.appendChild(esimRenameDialog);
     assertTrue(!!esimRenameDialog);
-    Polymer.dom.flush();
+    flush();
 
     return flushAsync().then(async () => {
       await flushAsync();
-      const doneBtn = esimRenameDialog.$$('#done');
+      const doneBtn = esimRenameDialog.shadowRoot.querySelector('#done');
 
       assertTrue(!!doneBtn);
       assertFalse(doneBtn.disabled);
       assertEquals(
           'block',
-          window.getComputedStyle(esimRenameDialog.$$('#errorMessage'))
+          window
+              .getComputedStyle(
+                  esimRenameDialog.shadowRoot.querySelector('#errorMessage'))
               .display);
     });
   });
@@ -157,7 +161,8 @@ suite('EsimRenameDialog', function() {
     await init();
 
     return flushAsync().then(async () => {
-      const inputBox = esimRenameDialog.$$('#eSimprofileName');
+      const inputBox =
+          esimRenameDialog.shadowRoot.querySelector('#eSimprofileName');
       assertTrue(!!inputBox);
       const profileName = inputBox.value;
 
@@ -165,23 +170,24 @@ suite('EsimRenameDialog', function() {
 
       assertEquals(
           'none',
-          window.getComputedStyle(esimRenameDialog.$$('#errorMessage'))
+          window
+              .getComputedStyle(
+                  esimRenameDialog.shadowRoot.querySelector('#errorMessage'))
               .display);
 
       const euicc = (await eSimManagerRemote.getAvailableEuiccs()).euiccs[0];
       const profile = (await euicc.getProfileList()).profiles[0];
 
-      profile.setEsimOperationResultForTest(
-          chromeos.cellularSetup.mojom.ESimOperationResult.kFailure);
+      profile.setEsimOperationResultForTest(ESimOperationResult.kFailure);
 
       inputBox.value = 'new profile nickname';
       await flushAsync();
 
       const showErrorToastPromise =
-          test_util.eventToPromise('show-error-toast', esimRenameDialog);
+          eventToPromise('show-error-toast', esimRenameDialog);
 
-      const doneBtn = esimRenameDialog.$$('#done');
-      const cancelBtn = esimRenameDialog.$$('#cancel');
+      const doneBtn = esimRenameDialog.shadowRoot.querySelector('#done');
+      const cancelBtn = esimRenameDialog.shadowRoot.querySelector('#cancel');
       assertTrue(!!doneBtn);
       assertTrue(!!cancelBtn);
       assertFalse(doneBtn.disabled);
@@ -213,7 +219,8 @@ suite('EsimRenameDialog', function() {
   });
 
   test('Warning message visibility', function() {
-    const warningMessage = esimRenameDialog.$$('#warningMessage');
+    const warningMessage =
+        esimRenameDialog.shadowRoot.querySelector('#warningMessage');
     assertTrue(!!warningMessage);
 
     esimRenameDialog.showCellularDisconnectWarning = false;
@@ -230,7 +237,8 @@ suite('EsimRenameDialog', function() {
     await init();
 
     await flushAsync();
-    const inputBox = esimRenameDialog.$$('#eSimprofileName');
+    const inputBox =
+        esimRenameDialog.shadowRoot.querySelector('#eSimprofileName');
     assertTrue(!!inputBox);
     const profileName = inputBox.value;
     assertEquals(profileName, 'profile1');
@@ -301,7 +309,7 @@ suite('EsimRenameDialog', function() {
 
     // Set name with emojis, above character limit
     inputBox.value = '12345678901234567890🧟';
-    const doneBtn = esimRenameDialog.$$('#done');
+    const doneBtn = esimRenameDialog.shadowRoot.querySelector('#done');
     assertTrue(!!doneBtn);
     doneBtn.click();
     await flushAsync();
@@ -321,8 +329,9 @@ suite('EsimRenameDialog', function() {
     await flushAsync();
     await init();
 
-    const inputBox = esimRenameDialog.$$('#eSimprofileName');
-    const doneBtn = esimRenameDialog.$$('#done');
+    const inputBox =
+        esimRenameDialog.shadowRoot.querySelector('#eSimprofileName');
+    const doneBtn = esimRenameDialog.shadowRoot.querySelector('#done');
     assertTrue(!!inputBox);
     assertTrue(!!doneBtn);
 

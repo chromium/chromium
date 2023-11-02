@@ -1,5 +1,5 @@
 # encoding: utf-8
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -709,6 +709,168 @@ class YouTubeDesktopStory2019(_MediaBrowsingStory):
   TAGS = [story_tags.JAVASCRIPT_HEAVY, story_tags.YEAR_2019]
 
 
+class PhotoshopDesktopStory2021(_MediaBrowsingStory):
+  """Photoshop desktop story,
+  Measure the time it takes to open a shared Photoshop file.
+  """
+  NAME = 'browse:tools:photoshop:2021'
+  URL = 'https://photoshop.adobe.com/id/urn:aaid:sc:EU:1856a1e7-f397-4616-b399-9cd3b3d8c029'
+  SUPPORTED_PLATFORMS = platforms.DESKTOP_ONLY
+  TAGS = [story_tags.YEAR_2021, story_tags.WEBASSEMBLY]
+
+  # This map translates page-specific event names to event names needed for
+  # the reported_by_page:* metric.
+  EVENTS_REPORTED_BY_PAGE = '''
+    window.__telemetry_reported_page_events = {
+      'Doc.open':
+          'telemetry:reported_by_page:benchmark_begin',
+      'Doc.open complete':
+          'telemetry:reported_by_page:benchmark_end',
+      'open document end':
+          'telemetry:reported_by_page:interactive'
+    };
+  '''
+
+  # Patch performance.mark to get notified about page events.
+  PERFORMANCE_MARK_PATCH = '''
+    window.__telemetry_observed_page_events = new Set();
+    (function () {
+      let reported = window.__telemetry_reported_page_events;
+      let observed = window.__telemetry_observed_page_events;
+      let performance_mark = window.performance.mark;
+      window.performance.mark = function (label) {
+        performance_mark.call(window.performance, label);
+        if (reported.hasOwnProperty(label)) {
+          performance_mark.call(
+              window.performance, reported[label]);
+          observed.add(reported[label]);
+        }
+      }
+    })();
+  '''
+
+  # Page event queries.
+  FINISHED_EVENT = '''
+    (window.__telemetry_observed_page_events.has(
+        "telemetry:reported_by_page:benchmark_end"))
+  '''
+
+  def __init__(self, story_set, take_memory_measurement):
+    super(PhotoshopDesktopStory2021, self).__init__(story_set,
+                                                    take_memory_measurement)
+    self.script_to_evaluate_on_commit = js_template.Render(
+        '''{{@events_reported_by_page}}
+        {{@performance_mark}}''',
+        events_reported_by_page=self.EVENTS_REPORTED_BY_PAGE,
+        performance_mark=self.PERFORMANCE_MARK_PATCH)
+
+  def _DidLoadDocument(self, action_runner):
+    action_runner.WaitForJavaScriptCondition(self.FINISHED_EVENT)
+
+
+class PhotoshopWarmStartupDesktopStory2021(_MediaBrowsingStory):
+  """Photoshop desktop story, measuring warm startup,
+  Open Photoshop, wait for it to load, then navigate to a different url to
+  get rid of the original renderer process, and then navigate back to Photoshop
+  to do the actual measurement. The story then measures the time it takes to
+  open a shared Photoshop file.
+  """
+  NAME = 'browse:tools:photoshop_warm:2021'
+  URL = 'https://photoshop.adobe.com/id/urn:aaid:sc:EU:1856a1e7-f397-4616-b399-9cd3b3d8c029'
+  SUPPORTED_PLATFORMS = platforms.DESKTOP_ONLY
+  TAGS = [story_tags.YEAR_2021, story_tags.WEBASSEMBLY]
+
+  # This map translates page-specific event names to event names needed for
+  # the reported_by_page:* metric.
+  EVENTS_REPORTED_BY_PAGE = '''
+    window.__telemetry_reported_page_events = {
+      'Apollo.init()':
+          'telemetry:reported_by_page:benchmark_begin',
+      'Doc.open complete':
+          'telemetry:reported_by_page:benchmark_end'
+    };
+  '''
+
+  # Patch performance.mark to get notified about page events.
+  PERFORMANCE_MARK_PATCH = '''
+    window.__telemetry_observed_page_events = new Set();
+    (function () {
+      let reported = window.__telemetry_reported_page_events;
+      let observed = window.__telemetry_observed_page_events;
+      let performance_mark = window.performance.mark;
+      window.performance.mark = function (label) {
+        performance_mark.call(window.performance, label);
+        if (reported.hasOwnProperty(label)) {
+          performance_mark.call(
+              window.performance, reported[label]);
+          observed.add(reported[label]);
+        }
+      }
+    })();
+  '''
+
+  WARMUP_RUNS_SCRIPT = '''
+      let performance_mark = window.performance.mark;
+      window.__telemetry_first_load_finished = false;
+      window.performance.mark = function (label) {
+        performance_mark.call(window.performance, label);
+        if (label == 'Doc.open complete') {
+          window.__telemetry_first_load_finished = true;
+        }
+      }
+  '''
+
+  # Page event queries.
+  FINISHED_EVENT = '''
+    (window.__telemetry_observed_page_events.has(
+        "telemetry:reported_by_page:benchmark_end"))
+  '''
+
+  def __init__(self, story_set, take_memory_measurement):
+    super(PhotoshopWarmStartupDesktopStory2021,
+          self).__init__(story_set, take_memory_measurement)
+    self.script_to_evaluate_on_commit = js_template.Render(
+        self.WARMUP_RUNS_SCRIPT)
+
+  def _DidLoadDocument(self, action_runner):
+    action_runner.Wait(2)
+    # The first navigation to photoshop initializes caching.
+    action_runner.WaitForJavaScriptCondition(
+        'window.__telemetry_first_load_finished')
+    # Navigate to a different page to start a new renderer process. The
+    # original process stores the wasm module of photoshop in an in-process
+    # cache.
+    action_runner.Navigate('https://www.google.com/')
+    action_runner.Wait(1)
+    warmup_script = js_template.Render(self.WARMUP_RUNS_SCRIPT)
+    # The second navigation to photoshop stores the compiled wasm module in the
+    # cache.
+    action_runner.Navigate(
+        'https://photoshop.adobe.com/id/urn:aaid:sc:EU:1856a1e7-f397-4616-b399-9cd3b3d8c029',
+        warmup_script)
+    action_runner.Wait(2)
+    action_runner.WaitForJavaScriptCondition(
+        'window.__telemetry_first_load_finished')
+    # Wait for the optimizing compiler to finish compilation and to write the
+    # compiled module into the cache.
+    action_runner.Wait(30)
+    # Reset the renderer process again.
+    action_runner.Navigate('https://www.google.com/')
+    action_runner.Wait(1)
+    measurement_script = js_template.Render(
+        '''{{@events_reported_by_page}}
+        {{@performance_mark}}''',
+        events_reported_by_page=self.EVENTS_REPORTED_BY_PAGE,
+        performance_mark=self.PERFORMANCE_MARK_PATCH)
+    # The third navigation loads photoshop from the cache. This is the page
+    # load we want to measure.
+    action_runner.Navigate(
+        'https://photoshop.adobe.com/id/urn:aaid:sc:EU:1856a1e7-f397-4616-b399-9cd3b3d8c029',
+        measurement_script)
+    action_runner.Wait(2)
+    action_runner.WaitForJavaScriptCondition(self.FINISHED_EVENT)
+
+
 class AutoCADDesktopStory2021(_MediaBrowsingStory):
   """AutoCAD desktop story,
   TODO: add a description here.
@@ -747,79 +909,6 @@ class AutoCADDesktopStory2021(_MediaBrowsingStory):
     action_runner.EnterText('-3,1')
     action_runner.PressKey('Return')
 
-    action_runner.Wait(5)
-
-
-class EarthDesktopStory2020(_MediaBrowsingStory):
-  """Load Google Earth and search for the Empire State Building. Watch the
-  Empire State Building for a few seconds.
-  """
-  NAME = 'browse:tools:earth:2020'
-  URL = 'https://earth.google.com/web/'
-  SUPPORTED_PLATFORMS = platforms.DESKTOP_ONLY
-  TAGS = [
-      story_tags.YEAR_2020, story_tags.WEBASSEMBLY, story_tags.WEBGL,
-      story_tags.KEYBOARD_INPUT
-  ]
-
-  def __init__(self, story_set, take_memory_measurement):
-    super(EarthDesktopStory2020, self).__init__(story_set,
-                                                take_memory_measurement)
-
-    # This script sets values in localStorage that suggest that Google Earth has
-    # already been visited before. Thereby we can avoid the tutorial at startup.
-    self.script_to_evaluate_on_commit = '''
-    localStorage.setItem('earth.out_of_box.url:',
-      'https://www.google.com/earth/clientassets/oobe/rev0/oobe_r0__$[hl].kml');
-    localStorage.setItem('earth.out_of_box.major_revision:', '0');
-    localStorage.setItem('earth.out_of_box.client_version:', '9.3.99.1');
-    '''
-
-  def _DidLoadDocument(self, action_runner):
-
-    CHECK_LOADED = (
-        'document.querySelector("body > earth-app").shadowRoot'
-        '.querySelector("#earthRelativeElements > earth-view-status")'
-        '.shadowRoot.querySelector("#percentageText").textContent === {{target}}'
-    )
-
-    action_runner.WaitForJavaScriptCondition(CHECK_LOADED, target="100%")
-
-    search_selector = ('(() => document.querySelector("body > earth-app")'
-                       '.shadowRoot.querySelector("#toolbar").shadowRoot'
-                       '.querySelector("#search"))()')
-    action_runner.ClickElement(element_function=search_selector)
-
-    search_text_selector = (
-        '(() => document.querySelector("body > earth-app")'
-        '.shadowRoot.querySelector("#drawerContainer").shadowRoot'
-        '.querySelector("#search").shadowRoot.querySelector("#omnibox")'
-        '.shadowRoot.querySelector("#queryInput"))()')
-
-    action_runner.WaitForElement(element_function=search_text_selector)
-    action_runner.ClickElement(element_function=search_text_selector)
-
-    action_runner.EnterText('Empire State Building')
-    action_runner.PressKey('Return')
-    # Wait for 20 seconds so that the Empire State Building is reached and fully
-    # loaded.
-    action_runner.Wait(20)
-
-    compass_selector = (
-        '(() => document.querySelector("body > earth-app").shadowRoot'
-        '.querySelector("#compass").shadowRoot'
-        '.querySelector("#compassIcon"))()')
-
-    action_runner.ClickElement(element_function=compass_selector)
-    action_runner.Wait(5)
-
-    zoom_2d_selector = (
-        '(() => document.querySelector("body > earth-app").shadowRoot'
-        '.querySelector("#hoverButton").shadowRoot'
-        '.querySelector("#hoverButton"))()')
-    action_runner.ClickElement(element_function=zoom_2d_selector)
-    # Wait for 5 seconds to load everything. We cannot wait for 100% because of
-    # the non-deterministic nature of the benchmark.
     action_runner.Wait(5)
 
 
@@ -1713,17 +1802,8 @@ class GoogleSheetsDesktopStory(system_health_story.SystemHealthStory):
   '''
 
   def __init__(self, story_set, take_memory_measurement):
-    # TODO(crbug.com/1256844): Disable the ForceSynchronousHTMLParsing and
-    # LoaderDataPipeTuning experiments, because they cause failures and
-    # flakiness for this story as-recorded in 2019.
-    extra_browser_args = [
-        '--disable-features=ForceSynchronousHTMLParsing,LoaderDataPipeTuning'
-    ]
-
-    super(GoogleSheetsDesktopStory,
-          self).__init__(story_set,
-                         take_memory_measurement,
-                         extra_browser_args=extra_browser_args)
+    super(GoogleSheetsDesktopStory, self).__init__(story_set,
+                                                   take_memory_measurement)
     self.script_to_evaluate_on_commit = js_template.Render(
         '''{{@events_reported_by_page}}
         {{@performance_mark}}
@@ -1970,15 +2050,7 @@ class TumblrStory2018(_InfiniteScrollStory):
   ]
 
   def __init__(self, story_set, take_memory_measurement):
-    # TODO(crbug.com/1256844): Disable the ForceSynchronousHTMLParsing and
-    # LoaderDataPipeTuning experiments, because they cause failures and
-    # flakiness for this story as-recorded in 2018.
-    extra_browser_args = [
-        '--disable-features=ForceSynchronousHTMLParsing,LoaderDataPipeTuning'
-    ]
-    super(TumblrStory2018, self).__init__(story_set,
-                                          take_memory_measurement,
-                                          extra_browser_args=extra_browser_args)
+    super(TumblrStory2018, self).__init__(story_set, take_memory_measurement)
 
   def _Login(self, action_runner):
     tumblr_login.LoginDesktopAccount(action_runner, 'tumblr')

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "ui/gfx/mojom/presentation_feedback.mojom-blink.h"
 
@@ -42,34 +43,49 @@ enum {
 struct CanvasResourceDispatcher::FrameResource {
   FrameResource() = default;
   ~FrameResource() {
-    if (release_callback)
-      std::move(release_callback).Run(sync_token, is_lost);
+    if (release_callback) {
+      std::move(release_callback)
+          .Run(std::move(canvas_resource), sync_token, is_lost);
+    }
   }
 
-  // TODO(junov):  What does this do?
+  // This is to ensure the resource only gets reclaimed for real at the second
+  // reclaim attempt.  This is because the resource needs to be returned by
+  // both the compositor and the placeholder canvas before it is safe to
+  // reclaim it.
   bool spare_lock = true;
 
-  viz::ReleaseCallback release_callback;
+  // The 'canvas_resource' field is not set at construction time: It gets set
+  // when the placeholder canvas returns it. This makes it simpler to write
+  // DCHECKs that detect potential concurrency issues by checking
+  // RefCounted::HasOneRef() in critical places. This also allows
+  // OffscreenCanvasPlaceholder to detect when to return a resource by using
+  // CanvasResource::SetLastUnrefCallback.
+  scoped_refptr<CanvasResource> canvas_resource;
+  CanvasResource::ReleaseCallback release_callback;
   gpu::SyncToken sync_token;
   bool is_lost = false;
 };
 
 CanvasResourceDispatcher::CanvasResourceDispatcher(
     CanvasResourceDispatcherClient* client,
+    scoped_refptr<base::SingleThreadTaskRunner>
+        agent_group_scheduler_compositor_task_runner,
     uint32_t client_id,
     uint32_t sink_id,
     int canvas_id,
-    const IntSize& size)
+    const gfx::Size& size)
     : frame_sink_id_(viz::FrameSinkId(client_id, sink_id)),
       size_(size),
       change_size_for_next_commit_(false),
-      needs_begin_frame_(false),
       placeholder_canvas_id_(canvas_id),
       num_unreclaimed_frames_posted_(0),
       client_(client),
       animation_power_mode_voter_(
           power_scheduler::PowerModeArbiter::GetInstance()->NewVoter(
-              "PowerModeVoter.Animation.Canvas")) {
+              "PowerModeVoter.Animation.Canvas")),
+      agent_group_scheduler_compositor_task_runner_(
+          std::move(agent_group_scheduler_compositor_task_runner)) {
   // Frameless canvas pass an invalid |frame_sink_id_|; don't create mojo
   // channel for this special case.
   if (!frame_sink_id_.is_valid())
@@ -94,7 +110,7 @@ namespace {
 
 void UpdatePlaceholderImage(
     int placeholder_canvas_id,
-    scoped_refptr<blink::CanvasResource> canvas_resource,
+    scoped_refptr<blink::CanvasResource>&& canvas_resource,
     viz::ResourceId resource_id) {
   DCHECK(IsMainThread());
   OffscreenCanvasPlaceholder* placeholder_canvas =
@@ -122,10 +138,10 @@ void UpdatePlaceholderDispatcher(
 }  // namespace
 
 void CanvasResourceDispatcher::PostImageToPlaceholderIfNotBlocked(
-    scoped_refptr<CanvasResource> canvas_resource,
+    scoped_refptr<CanvasResource>&& canvas_resource,
     viz::ResourceId resource_id) {
   if (placeholder_canvas_id_ == kInvalidPlaceholderCanvasId) {
-    ReclaimResourceInternal(resource_id);
+    ReclaimResourceInternal(resource_id, std::move(canvas_resource));
     return;
   }
   // Determines whether the main thread may be blocked. If unblocked, post
@@ -137,7 +153,8 @@ void CanvasResourceDispatcher::PostImageToPlaceholderIfNotBlocked(
     DCHECK(num_unreclaimed_frames_posted_ == kMaxUnreclaimedPlaceholderFrames);
     if (latest_unposted_image_) {
       // The previous unposted resource becomes obsolete now.
-      ReclaimResourceInternal(latest_unposted_resource_id_);
+      ReclaimResourceInternal(latest_unposted_resource_id_,
+                              std::move(latest_unposted_image_));
     }
 
     latest_unposted_image_ = std::move(canvas_resource);
@@ -146,19 +163,24 @@ void CanvasResourceDispatcher::PostImageToPlaceholderIfNotBlocked(
 }
 
 void CanvasResourceDispatcher::PostImageToPlaceholder(
-    scoped_refptr<CanvasResource> canvas_resource,
+    scoped_refptr<CanvasResource>&& canvas_resource,
     viz::ResourceId resource_id) {
   // After this point, |canvas_resource| can only be used on the main thread,
   // until it is returned.
   canvas_resource->Transfer();
+
+  // `agent_group_scheduler_compositor_task_runner_` may be null if this
+  // was created from a SharedWorker.
+  if (!agent_group_scheduler_compositor_task_runner_)
+    return;
   PostCrossThreadTask(
-      *Thread::MainThread()->Scheduler()->CompositorTaskRunner(), FROM_HERE,
+      *agent_group_scheduler_compositor_task_runner_, FROM_HERE,
       CrossThreadBindOnce(UpdatePlaceholderImage, placeholder_canvas_id_,
                           std::move(canvas_resource), resource_id));
 }
 
 void CanvasResourceDispatcher::DispatchFrameSync(
-    scoped_refptr<CanvasResource> canvas_resource,
+    scoped_refptr<CanvasResource>&& canvas_resource,
     base::TimeTicks commit_start_time,
     const SkIRect& damage_rect,
     bool needs_vertical_flip,
@@ -179,7 +201,7 @@ void CanvasResourceDispatcher::DispatchFrameSync(
 }
 
 void CanvasResourceDispatcher::DispatchFrame(
-    scoped_refptr<CanvasResource> canvas_resource,
+    scoped_refptr<CanvasResource>&& canvas_resource,
     base::TimeTicks commit_start_time,
     const SkIRect& damage_rect,
     bool needs_vertical_flip,
@@ -198,7 +220,7 @@ void CanvasResourceDispatcher::DispatchFrame(
 }
 
 bool CanvasResourceDispatcher::PrepareFrame(
-    scoped_refptr<CanvasResource> canvas_resource,
+    scoped_refptr<CanvasResource>&& canvas_resource,
     base::TimeTicks commit_start_time,
     const SkIRect& damage_rect,
     bool needs_vertical_flip,
@@ -267,7 +289,7 @@ bool CanvasResourceDispatcher::PrepareFrame(
   resources_.insert(resource_id, std::move(frame_resource));
 
   // TODO(crbug.com/869913): add unit testing for this.
-  const gfx::Size canvas_resource_size = ToGfxSize(canvas_resource->Size());
+  const gfx::Size canvas_resource_size = canvas_resource->Size();
 
   PostImageToPlaceholderIfNotBlocked(std::move(canvas_resource), resource_id);
 
@@ -291,8 +313,8 @@ bool CanvasResourceDispatcher::PrepareFrame(
       SharedGpuContext::IsGpuCompositingEnabled() && needs_vertical_flip;
   quad->SetAll(sqs, bounds, bounds, needs_blending, resource_id,
                canvas_resource_size, kPremultipliedAlpha, uv_top_left,
-               uv_bottom_right, SK_ColorTRANSPARENT, vertex_opacity, yflipped,
-               nearest_neighbor, /*secure_output_only=*/false,
+               uv_bottom_right, SkColors::kTransparent, vertex_opacity,
+               yflipped, nearest_neighbor, /*secure_output=*/false,
                gfx::ProtectedVideoType::kClear);
 
   frame->render_pass_list.push_back(std::move(pass));
@@ -407,8 +429,10 @@ void CanvasResourceDispatcher::ReclaimResources(
   }
 }
 
-void CanvasResourceDispatcher::ReclaimResource(viz::ResourceId resource_id) {
-  ReclaimResourceInternal(resource_id);
+void CanvasResourceDispatcher::ReclaimResource(
+    viz::ResourceId resource_id,
+    scoped_refptr<CanvasResource>&& canvas_resource) {
+  ReclaimResourceInternal(resource_id, std::move(canvas_resource));
 
   num_unreclaimed_frames_posted_--;
 
@@ -419,15 +443,19 @@ void CanvasResourceDispatcher::ReclaimResource(viz::ResourceId resource_id) {
            kMaxUnreclaimedPlaceholderFrames - 1);
     PostImageToPlaceholderIfNotBlocked(std::move(latest_unposted_image_),
                                        latest_unposted_resource_id_);
+    // To make it safe to use/check latest_unposted_image_ after using
+    // std::move on it, we need to force a reset because the move above is
+    // elide-able.
+    latest_unposted_image_.reset();
     latest_unposted_resource_id_ = viz::kInvalidResourceId;
   }
 }
 
-bool CanvasResourceDispatcher::VerifyImageSize(const IntSize image_size) {
+bool CanvasResourceDispatcher::VerifyImageSize(const gfx::Size& image_size) {
   return image_size == size_;
 }
 
-void CanvasResourceDispatcher::Reshape(const IntSize& size) {
+void CanvasResourceDispatcher::Reshape(const gfx::Size& size) {
   if (size_ != size) {
     size_ = size;
     change_size_for_next_commit_ = true;
@@ -454,8 +482,13 @@ void CanvasResourceDispatcher::SetFilterQuality(
 
 void CanvasResourceDispatcher::SetPlaceholderCanvasDispatcher(
     int placeholder_canvas_id) {
+  // `agent_group_scheduler_compositor_task_runner_` may be null if this
+  // was created from a SharedWorker.
+  if (!agent_group_scheduler_compositor_task_runner_)
+    return;
+
   scoped_refptr<base::SingleThreadTaskRunner> dispatcher_task_runner =
-      Thread::Current()->GetTaskRunner();
+      Thread::Current()->GetDeprecatedTaskRunner();
 
   // If the offscreencanvas is in the same tread as the canvas, we will update
   // the canvas resource dispatcher directly. So Offscreen Canvas can behave in
@@ -465,7 +498,7 @@ void CanvasResourceDispatcher::SetPlaceholderCanvasDispatcher(
                                 placeholder_canvas_id);
   } else {
     PostCrossThreadTask(
-        *Thread::MainThread()->Scheduler()->CompositorTaskRunner(), FROM_HERE,
+        *agent_group_scheduler_compositor_task_runner_, FROM_HERE,
         CrossThreadBindOnce(UpdatePlaceholderDispatcher, GetWeakPtr(),
                             std::move(dispatcher_task_runner),
                             placeholder_canvas_id));
@@ -473,10 +506,13 @@ void CanvasResourceDispatcher::SetPlaceholderCanvasDispatcher(
 }
 
 void CanvasResourceDispatcher::ReclaimResourceInternal(
-    viz::ResourceId resource_id) {
+    viz::ResourceId resource_id,
+    scoped_refptr<CanvasResource>&& canvas_resource) {
   auto it = resources_.find(resource_id);
-  if (it != resources_.end())
+  if (it != resources_.end()) {
+    it->value->canvas_resource = std::move(canvas_resource);
     ReclaimResourceInternal(it);
+  }
 }
 
 void CanvasResourceDispatcher::ReclaimResourceInternal(
@@ -485,6 +521,7 @@ void CanvasResourceDispatcher::ReclaimResourceInternal(
     it->value->spare_lock = false;
     return;
   }
+  DCHECK(it->value->canvas_resource);
   resources_.erase(it);
 }
 

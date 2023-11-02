@@ -22,6 +22,7 @@ namespace {
 
 const int FLAG_ARG_1_AND_2_ARE_WORDS = 1 << 0;
 const int FLAG_WE_HAVE_INSTRUCTIONS = 1 << 8;
+const int FLAG_OVERLAP_SIMPLE_BITMAP = 1 << 0;
 
 void WriteBytes(std::vector<uint8_t>* out, const uint8_t* data, size_t len) {
   if (len == 0) return;
@@ -69,7 +70,10 @@ class GlyfEncoder {
   }
 
   void GetTransformedGlyfBytes(std::vector<uint8_t>* result) {
-    WriteLong(result, 0);  // version
+    WriteUShort(result, 0);  // Version
+    WriteUShort(result, overlap_bitmap_.empty()
+                            ? 0x00
+                            : FLAG_OVERLAP_SIMPLE_BITMAP);  // Flags
     WriteUShort(result, n_glyphs_);
     WriteUShort(result, 0);  // index_format, will be set later
     WriteLong(result, n_contour_stream_.size());
@@ -87,6 +91,9 @@ class GlyfEncoder {
     WriteBytes(result, bbox_bitmap_);
     WriteBytes(result, bbox_stream_);
     WriteBytes(result, instruction_stream_);
+    if (!overlap_bitmap_.empty()) {
+      WriteBytes(result, overlap_bitmap_);
+    }
   }
 
  private:
@@ -127,6 +134,10 @@ class GlyfEncoder {
   }
 
   void WriteSimpleGlyph(int glyph_id, const Glyph& glyph) {
+    if (glyph.overlap_simple_flag_set) {
+      EnsureOverlapBitmap();
+      overlap_bitmap_[glyph_id >> 3] |= 0x80 >> (glyph_id & 7);
+    }
     int num_contours = glyph.contours.size();
     WriteUShort(&n_contour_stream_, num_contours);
     if (ShouldWriteSimpleGlyphBbox(glyph)) {
@@ -214,6 +225,12 @@ class GlyfEncoder {
     }
   }
 
+  void EnsureOverlapBitmap() {
+    if (overlap_bitmap_.empty()) {
+      overlap_bitmap_.resize((n_glyphs_ + 7) >> 3);
+    }
+  }
+
   std::vector<uint8_t> n_contour_stream_;
   std::vector<uint8_t> n_points_stream_;
   std::vector<uint8_t> flag_byte_stream_;
@@ -222,6 +239,7 @@ class GlyfEncoder {
   std::vector<uint8_t> bbox_stream_;
   std::vector<uint8_t> glyph_stream_;
   std::vector<uint8_t> instruction_stream_;
+  std::vector<uint8_t> overlap_bitmap_;
   int n_glyphs_;
 };
 

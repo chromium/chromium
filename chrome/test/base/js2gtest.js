@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,13 +9,13 @@
  * @author scr@chromium.org (Sheridan Rawlins)
  * @see WebUI testing: http://goo.gl/ZWFXF
  * @see gtest documentation: http://goo.gl/Ujj3H
- * @see chrome/chrome_tests.gypi
+ * @see chrome/test/base/js2gtest.gni
  * @see chrome/test/base/js2gtest.js
- * @see tools/gypv8sh.py
+ * @see chrome/test/base/v8sh.py
  */
 
-// Arguments from rules in chrome_tests.gypi are passed in through
-// python script gypv8sh.py.
+// Arguments from the js2gtest template in chrome/test/base/js2gtest.gni
+// are passed in through python script v8sh.py.
 if (arguments.length != 6) {
   print(
       'usage: ' + arguments[0] +
@@ -168,7 +168,8 @@ ${argHint}
     addSetPreloadInfo = true;
   }
   output(`
-#include "base/macros.h"
+#include <tuple>
+
 #include "url/gurl.h"
 #include "testing/gtest/include/gtest/gtest.h"`);
   // Add includes specified by test fixture.
@@ -473,7 +474,7 @@ class ${testFixture} : public ${typedefCppFixture} {
         }
         if (testServer) {
           output(`
-    ignore_result(embedded_test_server()->Start());`);
+    std::ignore = embedded_test_server()->Start();`);
         }
         output(`
   }`);
@@ -538,10 +539,7 @@ ${testF}(${testFixture}, ${testFunction}) {
   set_preload_test_fixture("${testFixture}");
   set_preload_test_name("${testFunction}");`);
   }
-  if (testType == 'mojo_lite_webui') {
-    output(`
-  set_use_mojo_lite_bindings();`);
-  } else if (testType == 'mojo_webui') {
+  if (testType == 'mojo_webui') {
     output(`
   set_use_mojo_modules();`);
   }

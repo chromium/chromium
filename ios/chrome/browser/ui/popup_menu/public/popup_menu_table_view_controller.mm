@@ -1,20 +1,17 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_table_view_controller.h"
 
-#include "base/ios/ios_util.h"
-#include "base/mac/foundation_util.h"
-#include "base/metrics/user_metrics.h"
-#include "base/metrics/user_metrics_action.h"
-#import "ios/chrome/browser/ui/popup_menu/cells/popup_menu_tools_item.h"
+#import "base/ios/ios_util.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
+#import "ios/chrome/browser/ui/popup_menu/popup_menu_metrics_handler.h"
 #import "ios/chrome/browser/ui/popup_menu/public/cells/popup_menu_footer_item.h"
 #import "ios/chrome/browser/ui/popup_menu/public/cells/popup_menu_item.h"
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_table_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_ui_constants.h"
-#import "ios/chrome/browser/ui/reading_list/reading_list_constants.h"
-#import "ios/chrome/browser/ui/reading_list/reading_list_features.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -33,7 +30,7 @@ const CGFloat kScrollIndicatorVerticalInsets = 11;
 @interface PopupMenuTableViewController ()
 // Whether the -viewDidAppear: callback has been called.
 @property(nonatomic, assign) BOOL viewDidAppear;
-// A cached copy of |self.view.bounds|, made during calls to
+// A cached copy of `self.view.bounds`, made during calls to
 // viewDidLayoutSubviews, and used to reduce the number of calls to
 // calculatePreferredContentSize. which can be an expensive operation.
 @property(nonatomic, assign) CGRect cachedBounds;
@@ -185,7 +182,7 @@ const CGFloat kScrollIndicatorVerticalInsets = 11;
   for (NSInteger section = 0; section < [self.tableViewModel numberOfSections];
        section++) {
     NSInteger sectionIdentifier =
-        [self.tableViewModel sectionIdentifierForSection:section];
+        [self.tableViewModel sectionIdentifierForSectionIndex:section];
     for (TableViewItem<PopupMenuItem>* item in
          [self.tableViewModel itemsInSectionWithIdentifier:sectionIdentifier]) {
       CGSize sizeForCell = [item cellSizeForWidth:self.view.bounds.size.width];
@@ -200,55 +197,17 @@ const CGFloat kScrollIndicatorVerticalInsets = 11;
   return CGSizeMake(width, ceil(height));
 }
 
+#pragma mark - UIScrollViewDelegate
+
+- (void)scrollViewDidScroll:(UIScrollView*)scrollView {
+  [self.metricsHandler popupMenuScrolledVertically];
+}
+
 #pragma mark - UITableViewDelegate
 
 - (void)tableView:(UITableView*)tableView
-      willDisplayCell:(UITableViewCell*)cell
-    forRowAtIndexPath:(NSIndexPath*)indexPath {
-  TableViewItem<PopupMenuItem>* item =
-      [self.tableViewModel itemAtIndexPath:indexPath];
-  PopupMenuToolsItem* popupToolsItem =
-      base::mac::ObjCCast<PopupMenuToolsItem>(item);
-  // Only consider doing animation if the Reading List badge is visible.
-  if (item.actionIdentifier != PopupMenuActionReadingList ||
-      popupToolsItem.badgeNumber == 0) {
-    return;
-  }
-  // Show display animation of Reading List Unread Badge if the Reading List
-  // Messages experiment is enabled and a page was added by the Messages
-  // recently.
-  BOOL shouldShowUnreadBadgeAnimation =
-      IsReadingListMessagesEnabled() &&
-      [[NSUserDefaults standardUserDefaults]
-          boolForKey:kShouldAnimateReadingListOverflowMenuUnreadCountBadge];
-  if (shouldShowUnreadBadgeAnimation) {
-    PopupMenuToolsCell* readingListCell =
-        base::mac::ObjCCast<PopupMenuToolsCell>(cell);
-    readingListCell.numberBadgeView.alpha = 0;
-    readingListCell.numberBadgeView.transform =
-        CGAffineTransformMakeScale(0.1, 0.1);
-    __weak PopupMenuToolsCell* weakCell = readingListCell;
-    [UIView animateWithDuration:kReadingListUnreadCountBadgeAnimationDuration
-        delay:0.1
-        options:UIViewAnimationOptionBeginFromCurrentState
-        animations:^{
-          if (weakCell) {
-            weakCell.numberBadgeView.transform = CGAffineTransformIdentity;
-            weakCell.numberBadgeView.alpha = 1;
-          }
-        }
-        completion:^(BOOL finished) {
-          if (finished) {
-            [[NSUserDefaults standardUserDefaults]
-                setBool:NO
-                 forKey:kShouldAnimateReadingListOverflowMenuUnreadCountBadge];
-          }
-        }];
-  }
-}
-
-- (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
+  [self.metricsHandler popupMenuTookAction];
   UIView* cell = [self.tableView cellForRowAtIndexPath:indexPath];
   CGPoint center = [cell convertPoint:cell.center toView:nil];
   [self.delegate popupMenuTableViewController:self
@@ -286,8 +245,8 @@ const CGFloat kScrollIndicatorVerticalInsets = 11;
 
 #pragma mark - Private
 
-// Returns the index path identifying the the row at the position |point|.
-// |point| must be in the window coordinates. Returns nil if |point| is outside
+// Returns the index path identifying the the row at the position `point`.
+// `point` must be in the window coordinates. Returns nil if `point` is outside
 // the bounds of the table view.
 - (NSIndexPath*)indexPathForInnerRowAtPoint:(CGPoint)point {
   CGPoint pointInTableViewCoordinates = [self.tableView convertPoint:point
@@ -306,7 +265,7 @@ const CGFloat kScrollIndicatorVerticalInsets = 11;
   return indexPath;
 }
 
-// Highlights the |item| and |repeat| the highlighting once.
+// Highlights the `item` and `repeat` the highlighting once.
 - (void)highlightItem:(TableViewItem<PopupMenuItem>*)item repeat:(BOOL)repeat {
   NSIndexPath* indexPath = [self.tableViewModel indexPathForItem:item];
   [self.tableView selectRowAtIndexPath:indexPath
@@ -320,7 +279,7 @@ const CGFloat kScrollIndicatorVerticalInsets = 11;
       });
 }
 
-// Removes the highlight from |item| and |repeat| the highlighting once.
+// Removes the highlight from `item` and `repeat` the highlighting once.
 - (void)unhighlightItem:(TableViewItem<PopupMenuItem>*)item
                  repeat:(BOOL)repeat {
   NSIndexPath* indexPath = [self.tableViewModel indexPathForItem:item];

@@ -1,11 +1,11 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -69,7 +69,7 @@ class OriginTest : public ::testing::Test {
     return Origin::Nonce(nonce);
   }
 
-  absl::optional<base::UnguessableToken> GetNonce(const Origin& origin) {
+  const base::UnguessableToken* GetNonce(const Origin& origin) {
     return origin.GetNonceForSerialization();
   }
 
@@ -172,6 +172,7 @@ TEST_F(OriginTest, OpaqueOriginComparison) {
   EXPECT_LT(opaque_a, url::Origin::Create(GURL("http://www.google.com")));
   EXPECT_LT(opaque_b, url::Origin::Create(GURL("http://www.google.com")));
 
+  EXPECT_EQ(opaque_b, url::Origin::Resolve(GURL(), opaque_b));
   EXPECT_EQ(opaque_b, url::Origin::Resolve(GURL("about:blank"), opaque_b));
   EXPECT_EQ(opaque_b, url::Origin::Resolve(GURL("about:srcdoc"), opaque_b));
   EXPECT_EQ(opaque_b,
@@ -363,7 +364,7 @@ TEST_F(OriginTest, UnsafelyCreateUniqueOnInvalidInput) {
       << "UnsafelyCreateOpaqueOriginWithoutNormalization, so long as it is "
       << "the canonical form of the invalid tuple.";
   EXPECT_TRUE(anonymous_opaque->opaque());
-  EXPECT_EQ(GetNonce(anonymous_opaque.value()), token);
+  EXPECT_EQ(*GetNonce(anonymous_opaque.value()), token);
   EXPECT_EQ(anonymous_opaque->GetTupleOrPrecursorTupleIfOpaque(),
             url::SchemeHostPort());
 }
@@ -495,7 +496,7 @@ TEST_F(OriginTest, CanBeDerivedFrom) {
   // and ensure that it returns |expected_value|
   const struct {
     const char* url;
-    Origin* origin;
+    raw_ptr<Origin> origin;
     bool expected_value;
   } kTestCases[] = {
       {"https://a.com", &regular_origin, true},
@@ -744,6 +745,29 @@ TEST_F(OriginTest, DeserializeValidNonce) {
 
   EXPECT_TRUE(DoEqualityComparisons(opaque, deserialized.value(), true));
   EXPECT_EQ(opaque.GetDebugString(), deserialized.value().GetDebugString());
+}
+
+TEST_F(OriginTest, IsSameOriginWith) {
+  url::Origin opaque_origin;
+  GURL foo_url = GURL("https://foo.com/path");
+  url::Origin foo_origin = url::Origin::Create(foo_url);
+  GURL bar_url = GURL("https://bar.com/path");
+  url::Origin bar_origin = url::Origin::Create(bar_url);
+
+  EXPECT_FALSE(opaque_origin.IsSameOriginWith(foo_origin));
+  EXPECT_FALSE(opaque_origin.IsSameOriginWith(foo_url));
+
+  EXPECT_TRUE(foo_origin.IsSameOriginWith(foo_origin));
+  EXPECT_TRUE(foo_origin.IsSameOriginWith(foo_url));
+
+  EXPECT_FALSE(foo_origin.IsSameOriginWith(bar_origin));
+  EXPECT_FALSE(foo_origin.IsSameOriginWith(bar_url));
+
+  // Documenting legacy behavior.  This doesn't necessarily mean that the legacy
+  // behavior is correct (or desirable in the long-term).
+  EXPECT_FALSE(foo_origin.IsSameOriginWith(GURL("about:blank")));
+  EXPECT_FALSE(foo_origin.IsSameOriginWith(GURL()));  // Invalid GURL.
+  EXPECT_TRUE(foo_origin.IsSameOriginWith(GURL("blob:https://foo.com/guid")));
 }
 
 INSTANTIATE_TYPED_TEST_SUITE_P(UrlOrigin,

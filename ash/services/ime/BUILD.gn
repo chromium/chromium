@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -35,13 +35,14 @@ source_set("decoder") {
 
 source_set("lib") {
   sources = [
+    "connection_factory.cc",
+    "connection_factory.h",
     "decoder/decoder_engine.cc",
     "decoder/decoder_engine.h",
     "decoder/system_engine.cc",
     "decoder/system_engine.h",
     "ime_service.cc",
     "ime_service.h",
-    "input_engine.h",
     "rule_based_engine.cc",
     "rule_based_engine.h",
   ]
@@ -53,7 +54,6 @@ source_set("lib") {
     "//ash/services/ime/public/cpp:rulebased",
     "//ash/services/ime/public/cpp/shared_lib:interfaces",
     "//ash/services/ime/public/mojom",
-    "//ash/services/ime/public/proto:messages_proto",
     "//base",
   ]
 }
@@ -86,7 +86,6 @@ source_set("services_unittests") {
     "//ash/constants",
     "//ash/services/ime:decoder",
     "//ash/services/ime/public/mojom",
-    "//ash/services/ime/public/proto:messages_proto",
     "//base",
     "//base/test:test_support",
     "//mojo/public/cpp/bindings",

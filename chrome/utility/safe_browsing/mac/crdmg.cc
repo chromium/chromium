@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -172,15 +172,11 @@ bool SafeDMG::ParseDMG() {
     printf("=== Partition #%zu: %s ===\n", i,
            udif_parser.GetPartitionName(i).c_str());
 
-    std::string partition_type = udif_parser.GetPartitionType(i);
-    if (partition_type != "Apple_HFS" && partition_type != "Apple_HFSX")
-      continue;
-
     std::unique_ptr<safe_browsing::dmg::ReadStream> partition_stream(
         udif_parser.GetPartitionReadStream(i));
     safe_browsing::dmg::HFSIterator iterator(partition_stream.get());
     if (!iterator.Open()) {
-      LOG(ERROR) << "Failed to open HFS partition";
+      VLOG(1) << "Skipped since this is not an HFS partition";
       continue;
     }
 

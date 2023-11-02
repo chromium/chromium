@@ -1,10 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_AUTOFILL_CONTENT_BROWSER_CONTENT_AUTOFILL_DRIVER_TEST_API_H_
 #define COMPONENTS_AUTOFILL_CONTENT_BROWSER_CONTENT_AUTOFILL_DRIVER_TEST_API_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 
 namespace autofill {
@@ -31,9 +32,11 @@ class ContentAutofillDriverTestApi {
     return driver_->GetFormWithFrameAndFormMetaData(form);
   }
 
+  bool should_suppress_keyboard() { return driver_->should_suppress_keyboard_; }
+
  private:
   // Non-null pointer to wrapped ContentAutofillDriver.
-  ContentAutofillDriver* driver_;
+  raw_ptr<ContentAutofillDriver> driver_;
 };
 
 }  // namespace autofill

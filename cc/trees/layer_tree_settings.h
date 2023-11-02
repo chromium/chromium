@@ -1,4 +1,4 @@
-// Copyright 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "cc/cc_export.h"
 #include "cc/debug/layer_tree_debug_state.h"
 #include "cc/scheduler/scheduler_settings.h"
+#include "cc/tiles/image_decode_cache_utils.h"
 #include "cc/tiles/tile_manager_settings.h"
 #include "cc/trees/managed_memory_policy.h"
 #include "components/viz/common/display/renderer_settings.h"
@@ -55,7 +56,7 @@ class CC_EXPORT LayerTreeSettings {
   base::TimeDelta scrollbar_fade_duration;
   base::TimeDelta scrollbar_thinning_duration;
   bool scrollbar_flash_after_any_scroll_update = false;
-  SkColor solid_color_scrollbar_color = SK_ColorWHITE;
+  SkColor4f solid_color_scrollbar_color = SkColors::kWhite;
   base::TimeDelta scroll_animation_duration_for_testing;
   bool timeout_and_draw_when_animation_checkerboards = true;
   bool layers_always_allowed_lcd_text = false;
@@ -88,7 +89,9 @@ class CC_EXPORT LayerTreeSettings {
   bool use_layer_lists = false;
   int max_staging_buffer_usage_in_bytes = 32 * 1024 * 1024;
   ManagedMemoryPolicy memory_policy;
-  size_t decoded_image_working_set_budget_bytes = 128 * 1024 * 1024;
+  size_t decoded_image_working_set_budget_bytes =
+      ImageDecodeCacheUtils::GetWorkingSetBytesForImageDecode(
+          /*for_renderer=*/false);
   int max_preraster_distance_in_screen_pixels = 1000;
   bool use_rgba_4444 = false;
   bool unpremultiply_and_dither_low_bit_depth_tiles = false;
@@ -114,7 +117,11 @@ class CC_EXPORT LayerTreeSettings {
 
   // Indicates the case when a sub-frame gets its own LayerTree because it's
   // rendered in a different process from its ancestor frames.
-  bool is_layer_tree_for_subframe = false;
+  bool is_for_embedded_frame = false;
+
+  // Indicates when the LayerTree is for a portal element, GuestView, or top
+  // level frame. In all these cases we may have a page scale.
+  bool is_for_scalable_page = true;
 
   // Determines whether we disallow non-exact matches when finding resources
   // in ResourcePool. Only used for layout or pixel tests, as non-deterministic
@@ -126,9 +133,6 @@ class CC_EXPORT LayerTreeSettings {
   // completed the current BeginFrame before triggering their own BeginFrame
   // deadlines.
   bool wait_for_all_pipeline_stages_before_draw = false;
-
-  // Determines whether the zoom needs to be applied to the device scale factor.
-  bool use_zoom_for_dsf = false;
 
   // Determines whether mouse interactions on composited scrollbars are handled
   // on the compositor thread.
@@ -201,6 +205,27 @@ class CC_EXPORT LayerTreeSettings {
 
   // Whether it is a LayerTree for ui.
   bool is_layer_tree_for_ui = false;
+
+  // Whether tile resources are dropped for hidden layers. In terms of code,
+  // this uses PictureLayerImpl::HasValidTilePriorities(), which may return true
+  // even if the layer is not drawn. For example, if the layer is occluded it is
+  // still considered drawn and will not be impacted by this feature.
+  bool release_tile_resources_for_hidden_layers = false;
+
+  // Whether Fluent scrollbar is enabled. Please check https://crbug.com/1292117
+  // to find the link to the Fluent Scrollbar spec and related CLs.
+  bool enable_fluent_scrollbar = false;
+
+  // This corresponds to the ScrollUpdateOptimizations feature.
+  bool enable_scroll_update_optimizations = false;
+
+  // Whether to disable the frame rate limit in the scheduler.
+  bool disable_frame_rate_limit = false;
+
+  // When enabled commits are aborted if scroll and viewport state from CC could
+  // not be synchronized at the beginning of the frame because main frames were
+  // being deferred.
+  bool skip_commits_if_not_synchronizing_compositor_state = true;
 };
 
 class CC_EXPORT LayerListSettings : public LayerTreeSettings {

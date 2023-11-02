@@ -28,13 +28,14 @@
           deep-link-focus-id$="[[Setting.kForgetWifiNetwork]]">
         <template is="dom-if" if="[[isPolicySource(item.source))]]">
           <cr-policy-indicator on-click="doNothing_"
-              indicator-type="[[getIndicatorTypeForSource(item.source)]]">
+              indicator-type="[[getIndicatorTypeForSource(item.source)]]"
+              icon-aria-label="[[getEnterpriseIconAriaLabel_(item)]]">
           </cr-policy-indicator>
         </template>
       </cr-link-row>
       <div class="separator"></div>
       <cr-icon-button class="icon-more-vert" tabindex$="[[tabindex]]"
-          on-click="onMenuButtonTap_" title="$i18n{moreActions}">
+          on-click="onMenuButtonTap_" title="[[getMenuButtonTitle_(item)]]">
       </cr-icon-button>
     </div>
   </template>
@@ -55,13 +56,14 @@
               [[Setting.kForgetWifiNetwork]]">
         <template is="dom-if" if="[[isPolicySource(item.source))]]">
           <cr-policy-indicator on-click="doNothing_"
-              indicator-type="[[getIndicatorTypeForSource(item.source)]]">
+              indicator-type="[[getIndicatorTypeForSource(item.source)]]"
+              icon-aria-label="[[getEnterpriseIconAriaLabel_(item)]]">
           </cr-policy-indicator>
         </template>
       </cr-link-row>
       <div class="separator"></div>
       <cr-icon-button class="icon-more-vert" tabindex$="[[tabindex]]"
-          on-click="onMenuButtonTap_" title="$i18n{moreActions}">
+          on-click="onMenuButtonTap_" title="[[getMenuButtonTitle_(item)]]">
       </cr-icon-button>
     </div>
   </template>

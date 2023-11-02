@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,11 +35,12 @@ export class MpegParser extends MetadataParser {
     const size = br.readScalar(4, false, opt_end);
 
     if (size < MpegParser.HEADER_SIZE) {
-      throw 'atom too short (' + size + ') @' + pos;
+      throw new Error('atom too short (' + size + ') @' + pos);
     }
 
     if (opt_end && pos + size > opt_end) {
-      throw 'atom too long (' + size + '>' + (opt_end - pos) + ') @' + pos;
+      throw new Error(
+          'atom too long (' + size + '>' + (opt_end - pos) + ') @' + pos);
     }
 
     return size;
@@ -114,9 +115,9 @@ export class MpegParser extends MetadataParser {
         '©nam': {data: parseDataString.bind(null, 'title')},
         '©alb': {data: parseDataString.bind(null, 'album')},
         '©art': {data: parseDataString.bind(null, 'artist')},
-        'covr': {data: parseCovr}
+        'covr': {data: parseCovr},
       },
-      versioned: true
+      versioned: true,
     };
 
     // main parser for the entire file structure.
@@ -131,14 +132,14 @@ export class MpegParser extends MetadataParser {
               stbl: {stsd: parseStsd},
             },
           },
-          meta: parseMeta
+          meta: parseMeta,
         },
         udta: {
           meta: parseMeta,
         },
-        meta: parseMeta
+        meta: parseMeta,
       },
-      meta: parseMeta
+      meta: parseMeta,
     };
   }
 
@@ -211,7 +212,8 @@ export class MpegParser extends MetadataParser {
     for (let offset = parentAtom.start; offset != parentAtom.end;) {
       if (count++ > 100) {
         // Most likely we are looping through a corrupt file.
-        throw 'too many child atoms in ' + parentAtom.name + ' @' + offset;
+        throw new Error(
+            'too many child atoms in ' + parentAtom.name + ' @' + offset);
       }
 
       br.seek(offset);
@@ -223,7 +225,7 @@ export class MpegParser extends MetadataParser {
             start: offset + MpegParser.HEADER_SIZE,
             end: offset + size,
             name: name,
-            parent: parentAtom
+            parent: parentAtom,
           },
           filePos);
 
@@ -276,8 +278,9 @@ export class MpegParser extends MetadataParser {
       // Check the available data size. It should be either exactly
       // what we requested or HEADER_SIZE bytes less (for the last atom).
       if (bufLength != atomEnd && bufLength != size) {
-        throw 'Read failure @' + filePos + ', ' +
-            'requested ' + size + ', read ' + bufLength;
+        throw new Error(
+            'Read failure @' + filePos + ', ' +
+            'requested ' + size + ', read ' + bufLength);
       }
 
       // Process the top level atom.

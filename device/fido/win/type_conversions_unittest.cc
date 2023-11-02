@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -114,17 +114,16 @@ TEST(TypeConversionsTest, ToAuthenticatorMakeCredentialResponse) {
     if (!response)
       return;
 
-    EXPECT_EQ(response->attestation_object()
-                  .authenticator_data()
+    EXPECT_EQ(response->attestation_object.authenticator_data()
                   .SerializeToByteArray(),
               test.authenticator_data);
     EXPECT_EQ(
-        response->attestation_object().attestation_statement().format_name(),
+        response->attestation_object.attestation_statement().format_name(),
         base::WideToUTF8(test.format));
-    EXPECT_EQ(cbor::Writer::Write(AsCBOR(
-                  response->attestation_object().attestation_statement())),
+    EXPECT_EQ(cbor::Writer::Write(
+                  AsCBOR(response->attestation_object.attestation_statement())),
               test.cbor_attestation_statement);
-    EXPECT_EQ(response->transport_used(), test.expected_transport);
+    EXPECT_EQ(response->transport_used, test.expected_transport);
   }
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,14 +9,17 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/field_trial.h"
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_simple_task_runner.h"
+#include "components/metrics/clean_exit_beacon.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_service.h"
+#include "components/metrics/metrics_state_manager.h"
 #include "components/metrics/metrics_switches.h"
 #include "components/metrics/persistent_histograms.h"
 #include "components/prefs/testing_pref_service.h"
@@ -42,10 +45,6 @@ class TestClient : public AndroidMetricsServiceClient {
   TestClient& operator=(const TestClient&) = delete;
 
   ~TestClient() override = default;
-
-  void Initialize(PrefService* pref_service) {
-    AndroidMetricsServiceClient::Initialize(base::FilePath(), pref_service);
-  }
 
   bool IsRecordingActive() {
     auto* service = GetMetricsService();
@@ -154,6 +153,29 @@ class AndroidMetricsServiceClientTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
 };
+
+// Verify that Chrome does not start watching for browser crashes before setting
+// up field trials. For Android embedders, Chrome should not watch for crashes
+// then because, at the time of field trial set-up, it is not possible to know
+// whether the embedder will come to foreground. The embedder may remain in the
+// background for the browser process lifetime, and in this case, Chrome should
+// not watch for crashes so that exiting is not considered a crash. Embedders
+// start watching for crashes when foregrounding via
+// MetricsService::OnAppEnterForeground().
+TEST_F(AndroidMetricsServiceClientTest,
+       DoNotWatchForCrashesBeforeFieldTrialSetUp) {
+  auto prefs = CreateTestPrefs();
+  auto client = std::make_unique<TestClient>();
+  client->Initialize(prefs.get());
+  EXPECT_TRUE(client->metrics_state_manager()
+                  ->clean_exit_beacon()
+                  ->GetUserDataDirForTesting()
+                  .empty());
+  EXPECT_TRUE(client->metrics_state_manager()
+                  ->clean_exit_beacon()
+                  ->GetBeaconFilePathForTesting()
+                  .empty());
+}
 
 TEST_F(AndroidMetricsServiceClientTest, TestSetConsentTrueBeforeInit) {
   auto prefs = CreateTestPrefs();

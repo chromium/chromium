@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -6,11 +6,17 @@ import("//third_party/closure_compiler/compile_js.gni")
 
 js_type_check("closure_compile") {
   is_polymer3 = true
-  closure_flags = default_closure_args + [
-                    "browser_resolver_prefix_replacements=\"chrome://scanning/=../../ash/webui/scanning/resources/\"",
-                    "js_module_root=../../chrome/test/data/webui/",
-                    "js_module_root=./gen/chrome/test/data/webui/",
-                  ]
+  closure_flags =
+      default_closure_args + [
+        "browser_resolver_prefix_replacements=\"chrome://scanning/=" +
+            rebase_path("//ash/webui/scanning/resources/", root_build_dir) +
+            "\"",
+        "browser_resolver_prefix_replacements=\"chrome://webui-test/=" +
+            "./gen/chrome/test/data/webui/tsc\"",
+        "js_module_root=" +
+            rebase_path("//chrome/test/data/webui/", root_build_dir),
+        "js_module_root=./gen/chrome/test/data/webui/",
+      ]
   deps = [
     ":action_toolbar_test",
     ":color_mode_select_test",
@@ -138,9 +144,11 @@ js_library("scanning_app_test") {
     "../..:test_util",
     "//ash/webui/scanning/resources:scanning_app",
     "//third_party/polymer/v3_0/components-chromium/iron-collapse:iron-collapse",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
   ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
+  externs_list = [
+    "$externs_path/mocha-2.5.js",
+    "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",
+  ]
 }
 
 js_library("scanning_app_test_utils") {

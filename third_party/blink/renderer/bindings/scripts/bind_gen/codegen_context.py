@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -6,19 +6,44 @@ import copy
 
 import web_idl
 
-from . import name_style
 from .codegen_format import NonRenderable
-from .path_manager import PathManager
 
 
 class CodeGenContext(object):
     """
     Represents a context of code generation.
 
-    Note that this is not relevant to Mako template context or any contexts.
-    Also note that CodeGenContext's attributes will be global template
-    variables.  |CodeGenContext.interface| will be available in templates as
-    "${interface}".
+    Note that this is not Mako template context itself, however
+    CodeGenContext's attributes will be bound as Mako's global template
+    variables as below.
+
+      code_node.set_base_template_vars(cg_context.template_bindings())
+
+    Then, |CodeGenContext.interface| will be available in template text as
+    "${interface}".  So, an instance of CodeGenContext represents a set of
+    global template variables.
+
+    CodeGenContext is immutable.  A new state should be created via
+    |make_copy|.
+
+      new_cg_context = old_cg_context.make_copy(
+          var1=new_value1, var2=new_value2, ...)
+
+    The immutability is important because CodeNodes may be created lazily from
+    an instance of CodeGenContext.  For example,
+
+      def foo(cg_context):
+        def define_symbol(symbol_node):
+          node = SymbolDefinitionNode(symbol_node)
+          node.append(TextNode("{}".format(cg_context.class_name)))
+          return node
+        symbol = SymbolNode("sym", definition_constructor=define_symbol)
+        ...
+
+    in this case, |define_symbol| may be run after the execution of |foo|
+    completes.  |define_symbol| is a closure which captures |cg_context|.
+    So, it's important that CodeGenContext is immutable in order to avoid any
+    surprising side effect.
     """
 
     # "for_world" attribute values

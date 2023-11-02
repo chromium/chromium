@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -69,6 +69,8 @@ class ASH_EXPORT AppListAssistantMainStage
       absl::optional<AssistantEntryPoint> entry_point,
       absl::optional<AssistantExitPoint> exit_point) override;
 
+  void InitializeUIForBubbleView();
+
  private:
   void InitLayout();
   std::unique_ptr<views::View> CreateContentLayoutContainer();
@@ -80,11 +82,9 @@ class ASH_EXPORT AppListAssistantMainStage
   void AnimateInFooter();
 
   void MaybeHideZeroState();
+  void InitializeUIForStartingSession(bool from_search);
 
   AssistantViewDelegate* const delegate_;  // Owned by Shell.
-
-  // Whether to use dark/light mode colors, which default to dark.
-  const bool use_dark_light_mode_colors_;
 
   // Owned by view hierarchy.
   AssistantProgressIndicator* progress_indicator_;

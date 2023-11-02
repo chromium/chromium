@@ -33,6 +33,7 @@
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -63,7 +64,7 @@ class CORE_EXPORT DevToolsHost final : public ScriptWrappable {
                        float x,
                        float y,
                        WebVector<MenuItemInfo> items);
-  void sendMessageToEmbedder(base::Value message);
+  void sendMessageToEmbedder(base::Value::Dict message);
   void sendMessageToEmbedder(const String& message);
 
   bool isHostedMode();

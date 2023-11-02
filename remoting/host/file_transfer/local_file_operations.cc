@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/path_service.h"
 #include "base/sequence_checker.h"
-#include "base/task/post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
@@ -45,7 +44,7 @@ remoting::protocol::FileTransfer_Error_Type FileErrorToResponseErrorType(
 }
 
 scoped_refptr<base::SequencedTaskRunner> CreateFileTaskRunner() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On Windows, we use user impersonation to write files as the currently
   // logged-in user, while the process as a whole runs as SYSTEM. Since user
   // impersonation is per-thread on Windows, we need a dedicated thread to
@@ -78,7 +77,7 @@ class LocalFileReader : public FileOperations::Reader {
 
  private:
   void OnEnsureUserResult(OpenCallback callback,
-                          protocol::FileTransferResult<Monostate> result);
+                          protocol::FileTransferResult<absl::monostate> result);
   void OnFileChooserResult(OpenCallback callback, FileChooser::Result result);
   void OnOpenResult(OpenCallback callback, base::File::Error error);
   void OnGetInfoResult(OpenCallback callback,
@@ -197,7 +196,7 @@ FileOperations::State LocalFileReader::state() const {
 
 void LocalFileReader::OnEnsureUserResult(
     FileOperations::Reader::OpenCallback callback,
-    protocol::FileTransferResult<Monostate> result) {
+    protocol::FileTransferResult<absl::monostate> result) {
   if (!result) {
     SetState(FileOperations::kFailed);
     std::move(callback).Run(std::move(result.error()));
@@ -314,7 +313,7 @@ void LocalFileWriter::Open(const base::FilePath& filename, Callback callback) {
   base::PostTaskAndReplyWithResult(
       file_task_runner_.get(), FROM_HERE, base::BindOnce([] {
         return EnsureUserContext().AndThen(
-            [](Monostate) { return GetDesktopDirectory(); });
+            [](absl::monostate) { return GetDesktopDirectory(); });
       }),
       base::BindOnce(&LocalFileWriter::OnGetTargetDirectoryResult,
                      weak_ptr_factory_.GetWeakPtr(), filename,
@@ -365,9 +364,8 @@ void LocalFileWriter::Cancel() {
   file_proxy_.reset();
   // And finally, queue deletion of the temp file.
   if (!temp_filepath_.empty()) {
-    file_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(base::GetDeleteFileCallback(), temp_filepath_));
+    file_task_runner_->PostTask(FROM_HERE,
+                                base::GetDeleteFileCallback(temp_filepath_));
   }
   SetState(FileOperations::kFailed);
 }
@@ -415,13 +413,14 @@ void LocalFileWriter::CreateTempFile(Callback callback,
 
   temp_filepath_ = std::move(temp_filepath);
 
-  // FLAG_SHARE_DELETE allows the file to be marked as deleted on Windows while
-  // the handle is still open. (Other OS's allow this by default.) This allows
-  // Cancel to clean up the temporary file even if there are writes pending.
+  // FLAG_WIN_SHARE_DELETE allows the file to be marked as deleted on Windows
+  // while the handle is still open. (Other OS's allow this by default.) This
+  // allows Cancel to clean up the temporary file even if there are writes
+  // pending.
   file_proxy_->CreateOrOpen(
       temp_filepath_,
       base::File::FLAG_CREATE | base::File::FLAG_WRITE |
-          base::File::FLAG_SHARE_DELETE,
+          base::File::FLAG_WIN_SHARE_DELETE,
       base::BindOnce(&LocalFileWriter::OnCreateResult,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }

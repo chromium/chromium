@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,13 +32,16 @@ class DISPLAY_MANAGER_EXPORT UpdateDisplayConfigurationTask
       /*new_display_state=*/MultipleDisplayState,
       /*new_power_state=*/chromeos::DisplayPowerState)>;
 
-  UpdateDisplayConfigurationTask(NativeDisplayDelegate* delegate,
-                                 DisplayLayoutManager* layout_manager,
-                                 MultipleDisplayState new_display_state,
-                                 chromeos::DisplayPowerState new_power_state,
-                                 int power_flags,
-                                 bool force_configure,
-                                 ResponseCallback callback);
+  UpdateDisplayConfigurationTask(
+      NativeDisplayDelegate* delegate,
+      DisplayLayoutManager* layout_manager,
+      MultipleDisplayState new_display_state,
+      chromeos::DisplayPowerState new_power_state,
+      int power_flags,
+      RefreshRateThrottleState refresh_rate_throttle_state,
+      bool force_configure,
+      ConfigurationType configuration_type,
+      ResponseCallback callback);
 
   UpdateDisplayConfigurationTask(const UpdateDisplayConfigurationTask&) =
       delete;
@@ -96,7 +99,15 @@ class DISPLAY_MANAGER_EXPORT UpdateDisplayConfigurationTask
   // DisplayConfigurator.
   int power_flags_;
 
+  // Whether the configuration task should select a low refresh rate
+  // for the internal display.
+  RefreshRateThrottleState refresh_rate_throttle_state_;
+
   bool force_configure_;
+
+  // Whether the configuration task should be done without blanking the
+  // displays.
+  const ConfigurationType configuration_type_;
 
   // Used to signal that the task has finished.
   ResponseCallback callback_;

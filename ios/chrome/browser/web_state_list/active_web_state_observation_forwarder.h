@@ -1,11 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef IOS_CHROME_BROWSER_WEB_STATE_LIST_ACTIVE_WEB_STATE_OBSERVATION_FORWARDER_H_
 #define IOS_CHROME_BROWSER_WEB_STATE_LIST_ACTIVE_WEB_STATE_OBSERVATION_FORWARDER_H_
 
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "ios/chrome/browser/web_state_list/web_state_list.h"
 #include "ios/chrome/browser/web_state_list/web_state_list_observer.h"
@@ -17,9 +16,9 @@
 // changes.
 class ActiveWebStateObservationForwarder : public WebStateListObserver {
  public:
-  // Creates an object which forwards observation methods to |observer| and
-  // tracks |web_state_list| to keep track of the currently-active WebState.
-  // |web_state_list| and |observer| must both outlive this object.
+  // Creates an object which forwards observation methods to `observer` and
+  // tracks `web_state_list` to keep track of the currently-active WebState.
+  // `web_state_list` and `observer` must both outlive this object.
   ActiveWebStateObservationForwarder(WebStateList* web_state_list,
                                      web::WebStateObserver* observer);
 

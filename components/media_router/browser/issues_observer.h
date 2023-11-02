@@ -1,10 +1,11 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_MEDIA_ROUTER_BROWSER_ISSUES_OBSERVER_H_
 #define COMPONENTS_MEDIA_ROUTER_BROWSER_ISSUES_OBSERVER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/media_router/common/issue.h"
 
 namespace media_router {
@@ -37,7 +38,7 @@ class IssuesObserver {
   virtual void OnIssuesCleared() {}
 
  private:
-  IssueManager* const issue_manager_;
+  const raw_ptr<IssueManager> issue_manager_;
   bool initialized_;
 };
 

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include "base/callback_forward.h"
 #include "base/component_export.h"
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -20,6 +19,7 @@
 #include "device/fido/authenticator_supported_options.h"
 #include "device/fido/bio/enrollment.h"
 #include "device/fido/credential_management.h"
+#include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_transport_protocol.h"
@@ -51,6 +51,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoAuthenticator {
   using GetAssertionCallback = base::OnceCallback<void(
       CtapDeviceResponseCode,
       absl::optional<AuthenticatorGetAssertionResponse>)>;
+  using GetCredentialInformationForRequestCallback = base::OnceCallback<void(
+      std::vector<DiscoverableCredentialMetadata> credentials,
+      bool has_credentials)>;
+
   using GetRetriesCallback =
       base::OnceCallback<void(CtapDeviceResponseCode,
                               absl::optional<pin::RetriesResponse>)>;
@@ -80,7 +84,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoAuthenticator {
                               absl::optional<BioEnrollmentResponse>)>;
   using LargeBlobReadCallback = base::OnceCallback<void(
       CtapDeviceResponseCode,
-      absl::optional<std::vector<std::pair<LargeBlobKey, std::vector<uint8_t>>>>
+      absl::optional<std::vector<std::pair<LargeBlobKey, LargeBlob>>>
           callback)>;
 
   FidoAuthenticator() = default;
@@ -118,6 +122,13 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoAuthenticator {
   // GetNextAssertion fetches the next assertion from a device that indicated in
   // the response to |GetAssertion| that multiple results were available.
   virtual void GetNextAssertion(GetAssertionCallback callback);
+  // GetCredentialInformationForRequest returns a boolean indicating whether
+  // there are credentials applicable for |request|, and if supported, a list of
+  // the corresponding resident credential metadata for empty allow list
+  // requests.
+  virtual void GetCredentialInformationForRequest(
+      const CtapGetAssertionRequest& request,
+      GetCredentialInformationForRequestCallback callback);
   // GetTouch causes an (external) authenticator to flash and wait for a touch.
   virtual void GetTouch(base::OnceCallback<void()> callback);
   // GetPinRetries gets the number of PIN attempts remaining before an
@@ -212,6 +223,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoAuthenticator {
       const PublicKeyCredentialDescriptor& credential_id,
       DeleteCredentialCallback callback);
 
+  virtual bool SupportsUpdateUserInformation() const;
   virtual void UpdateUserInformation(
       const pin::TokenResponse& pin_token,
       const PublicKeyCredentialDescriptor& credential_id,
@@ -240,7 +252,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoAuthenticator {
   // Attempts to write a |large_blob| into the credential. If there is an
   // existing credential for the |large_blob_key|, it will be overwritten.
   virtual void WriteLargeBlob(
-      const std::vector<uint8_t>& large_blob,
+      LargeBlob large_blob,
       const LargeBlobKey& large_blob_key,
       absl::optional<pin::TokenResponse> pin_uv_auth_token,
       base::OnceCallback<void(CtapDeviceResponseCode)> callback);
@@ -266,6 +278,16 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoAuthenticator {
   // stored resident keys and any configured PIN.
   virtual void Reset(ResetCallback callback);
   virtual void Cancel() = 0;
+
+  enum class Type {
+    kWinNative,  // i.e. webauthn.dll
+    kTouchID,    // the Chrome-native Touch ID integration on macOS
+    kChromeOS,   // the platform authenticator on Chrome OS
+    kOther,
+  };
+  // GetType returns the type of the authenticator.
+  virtual Type GetType() const;
+
   // GetId returns a unique string representing this device. This string should
   // be distinct from all other devices concurrently discovered.
   virtual std::string GetId() const = 0;
@@ -279,6 +301,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoAuthenticator {
   virtual bool SupportsHMACSecretExtension() const;
   virtual bool SupportsEnterpriseAttestation() const;
   virtual bool SupportsCredBlobOfSize(size_t num_bytes) const;
+  virtual bool SupportsDevicePublicKey() const;
   virtual const absl::optional<AuthenticatorSupportedOptions>& Options()
       const = 0;
   virtual absl::optional<FidoTransportProtocol> AuthenticatorTransport()
@@ -286,15 +309,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoAuthenticator {
   virtual bool IsInPairingMode() const = 0;
   virtual bool IsPaired() const = 0;
   virtual bool RequiresBlePairingPin() const = 0;
-#if defined(OS_WIN)
-  virtual bool IsWinNativeApiAuthenticator() const = 0;
-#endif  // defined(OS_WIN)
-#if defined(OS_MAC)
-  virtual bool IsTouchIdAuthenticator() const = 0;
-#endif  // defined(OS_MAC)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  virtual bool IsChromeOSAuthenticator() const = 0;
-#endif
   virtual base::WeakPtr<FidoAuthenticator> GetWeakPtr() = 0;
 };
 

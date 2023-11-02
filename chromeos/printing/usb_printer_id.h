@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,14 +11,14 @@
 #include <utility>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/containers/span.h"
-#include "chromeos/chromeos_export.h"
 
 namespace chromeos {
 
 // This class parses and holds the IEEE 1284 Device ID string as queried
 // from a USB-connected printer.
-class CHROMEOS_EXPORT UsbPrinterId {
+class COMPONENT_EXPORT(CHROMEOS_PRINTING) UsbPrinterId {
  public:
   UsbPrinterId();
   UsbPrinterId(const UsbPrinterId& other);
@@ -53,8 +53,9 @@ class CHROMEOS_EXPORT UsbPrinterId {
 
 // Expects data to hold a IEEE 1284 Device ID. Parses |data| and returns the
 // resulting key-value(s) pairs.
-CHROMEOS_EXPORT std::map<std::string, std::vector<std::string>>
-BuildDeviceIdMapping(base::span<const uint8_t> data);
+COMPONENT_EXPORT(CHROMEOS_PRINTING)
+std::map<std::string, std::vector<std::string>> BuildDeviceIdMapping(
+    base::span<const uint8_t> data);
 
 }  // namespace chromeos
 

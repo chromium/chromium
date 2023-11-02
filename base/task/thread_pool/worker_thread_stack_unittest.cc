@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,15 +38,15 @@ class ThreadPoolWorkerStackTest : public testing::Test {
  protected:
   void SetUp() override {
     worker_a_ = MakeRefCounted<WorkerThread>(
-        ThreadPriority::NORMAL, std::make_unique<MockWorkerThreadDelegate>(),
+        ThreadType::kDefault, std::make_unique<MockWorkerThreadDelegate>(),
         task_tracker_.GetTrackedRef());
     ASSERT_TRUE(worker_a_);
     worker_b_ = MakeRefCounted<WorkerThread>(
-        ThreadPriority::NORMAL, std::make_unique<MockWorkerThreadDelegate>(),
+        ThreadType::kDefault, std::make_unique<MockWorkerThreadDelegate>(),
         task_tracker_.GetTrackedRef());
     ASSERT_TRUE(worker_b_);
     worker_c_ = MakeRefCounted<WorkerThread>(
-        ThreadPriority::NORMAL, std::make_unique<MockWorkerThreadDelegate>(),
+        ThreadType::kDefault, std::make_unique<MockWorkerThreadDelegate>(),
         task_tracker_.GetTrackedRef());
     ASSERT_TRUE(worker_c_);
   }

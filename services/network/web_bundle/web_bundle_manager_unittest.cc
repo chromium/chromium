@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,7 +35,7 @@ const int32_t process_id1 = 100;
 const int32_t process_id2 = 200;
 
 std::string CreateSmallBundleString() {
-  web_package::WebBundleBuilder builder(kResourceUrl, "" /* manifest_url */);
+  web_package::WebBundleBuilder builder;
   builder.AddExchange(kResourceUrl,
                       {{":status", "200"}, {"content-type", "text/plain"}},
                       "body");
@@ -126,10 +126,10 @@ StartSubresourceLoad(WebBundleURLLoaderFactory& factory) {
   request.request_initiator = url::Origin::Create(GURL(kInitiatorUrl));
   request.web_bundle_token_params = ResourceRequest::WebBundleTokenParams();
   request.web_bundle_token_params->bundle_url = GURL(kBundleUrl);
-  factory.StartSubresourceRequest(loader.BindNewPipeAndPassReceiver(), request,
-                                  client->CreateRemote(),
-                                  mojo::Remote<mojom::TrustedHeaderClient>(),
-                                  base::Time::Now(), base::TimeTicks::Now());
+  factory.StartLoader(WebBundleURLLoaderFactory::CreateURLLoader(
+      loader.BindNewPipeAndPassReceiver(), request, client->CreateRemote(),
+      mojo::Remote<mojom::TrustedHeaderClient>(), base::Time::Now(),
+      base::TimeTicks::Now(), base::DoNothing()));
   return std::forward_as_tuple(std::move(loader), std::move(client));
 }
 
@@ -146,11 +146,17 @@ class WebBundleManagerTest : public testing::Test {
     manager.set_max_memory_per_process_for_testing(max_memory_per_process);
   }
 
+  bool IsPendingLoadersEmpty(const WebBundleManager& manager,
+                             WebBundleManager::Key key) const {
+    return manager.IsPendingLoadersEmptyForTesting(key);
+  }
+
   base::WeakPtr<WebBundleURLLoaderFactory> GetWebBundleURLLoaderFactory(
       WebBundleManager& manager,
       const ResourceRequest::WebBundleTokenParams& params,
       int32_t process_id) {
-    return manager.GetWebBundleURLLoaderFactory(params, process_id);
+    return manager.GetWebBundleURLLoaderFactory(
+        manager.GetKey(params, process_id));
   }
 
  private:
@@ -241,16 +247,19 @@ TEST_F(WebBundleManagerTest,
   //
   // For example, given that we have the following main document:
   //
-  // <link rel=webbundle href="https://example.com/bundle.wbn"
-  // resources="https://example.com/a.txt">
-  // <img src="https://example.com/a.txt">  # Please ignore that a.txt is weird
-  // for <img>.
+  // <script type=webbundle>
+  //   {
+  //     "source": "bundle.wbn",
+  //     "resources": ["a.png", ...]
+  //   }
+  // </script>
+  // <img src="a.png">
   //
   // In this case, a network service should receive the following two resource
   // requests:
   //
   // 1. A request for a bundle, "bundle.wbn"
-  // 2. A request for a subresource, "a.txt".
+  // 2. A request for a subresource, "a.png".
   //
   // Usually, the request 1 arrives earlier than the request 2,
   // however, the arrival order is not guaranteed. The subresource should be
@@ -265,22 +274,36 @@ TEST_F(WebBundleManagerTest,
 
   WebBundleManager manager;
 
-  // Simulate that a subresource request arrives at first,
-  // calling WebBundleManager::StartSubresourceRequest.
+  // Simulate that two subresource requests arrives at first, one directly from
+  // a renderer and one through the browser, calling
+  // WebBundleManager::StartSubresourceRequest.
   base::UnguessableToken token = base::UnguessableToken::Create();
-  network::ResourceRequest request;
-  request.url = GURL(kResourceUrl);
-  request.method = "GET";
-  request.request_initiator = url::Origin::Create(GURL(kInitiatorUrl));
-  request.web_bundle_token_params = ResourceRequest::WebBundleTokenParams(
-      GURL(kBundleUrl), token, mojom::kInvalidProcessId);
 
-  mojo::Remote<network::mojom::URLLoader> loader;
-  auto client = std::make_unique<network::TestURLLoaderClient>();
+  struct TestRequest {
+    int32_t request_process_id;
+    int32_t token_params_process_id;
+    mojo::Remote<network::mojom::URLLoader> loader;
+    std::unique_ptr<network::TestURLLoaderClient> client;
+  } test_requests[] = {
+      {process_id1, mojom::kInvalidProcessId},
+      {mojom::kBrowserProcessId, process_id1},
+  };
 
-  manager.StartSubresourceRequest(loader.BindNewPipeAndPassReceiver(), request,
-                                  client->CreateRemote(), process_id1,
-                                  mojo::Remote<mojom::TrustedHeaderClient>());
+  for (TestRequest& req : test_requests) {
+    network::ResourceRequest request;
+    request.url = GURL(kResourceUrl);
+    request.method = "GET";
+    request.request_initiator = url::Origin::Create(GURL(kInitiatorUrl));
+    request.web_bundle_token_params = ResourceRequest::WebBundleTokenParams(
+        GURL(kBundleUrl), token, req.token_params_process_id);
+
+    req.client = std::make_unique<network::TestURLLoaderClient>();
+
+    manager.StartSubresourceRequest(req.loader.BindNewPipeAndPassReceiver(),
+                                    request, req.client->CreateRemote(),
+                                    req.request_process_id,
+                                    mojo::Remote<mojom::TrustedHeaderClient>());
+  }
 
   // Simulate that a webbundle request arrives, calling
   // WebBundleManager::CreateWebBundleURLLoaderFactory.
@@ -308,15 +331,57 @@ TEST_F(WebBundleManagerTest,
 
   producer.reset();
 
-  client->RunUntilComplete();
+  // Confirm that subresources are correctly loaded.
+  for (const TestRequest& req : test_requests) {
+    req.client->RunUntilComplete();
 
-  // Confirm that a subresource is correctly loaded.
-  EXPECT_EQ(net::OK, client->completion_status().error_code);
-  EXPECT_EQ(client->response_head()->web_bundle_url, GURL(kBundleUrl));
-  std::string body;
-  EXPECT_TRUE(
-      mojo::BlockingCopyToString(client->response_body_release(), &body));
-  EXPECT_EQ("body", body);
+    EXPECT_EQ(net::OK, req.client->completion_status().error_code);
+    EXPECT_EQ(req.client->response_head()->web_bundle_url, GURL(kBundleUrl));
+    std::string body;
+    EXPECT_TRUE(
+        mojo::BlockingCopyToString(req.client->response_body_release(), &body));
+    EXPECT_EQ("body", body);
+  }
+}
+
+TEST_F(WebBundleManagerTest, CleanUpPendingLoadersIfWebBundleRequestIsBlocked) {
+  // The test is similar to
+  // WebBundleManagerTest::SubresourceRequestArrivesEarlierThanBundleRequest.
+  // The difference is that a request for a WebBundle doesn't reach to Network
+  // Service. See crbug.com/1355162 for the context.
+  //
+  // Ensure that pending subresource URL Loaders are surely cleaned up from
+  // WebBundleManager even if a request for the WebBundle never comes to the
+  // Network Service.
+
+  WebBundleManager manager;
+  base::UnguessableToken token = base::UnguessableToken::Create();
+  int32_t process_id = mojom::kInvalidProcessId;
+
+  network::ResourceRequest request;
+  request.url = GURL(kResourceUrl);
+  request.method = "GET";
+  request.request_initiator = url::Origin::Create(GURL(kInitiatorUrl));
+  request.web_bundle_token_params = ResourceRequest::WebBundleTokenParams(
+      GURL(kBundleUrl), token, process_id);
+
+  mojo::Remote<network::mojom::URLLoader> loader;
+  auto client = std::make_unique<network::TestURLLoaderClient>();
+
+  manager.StartSubresourceRequest(
+      loader.BindNewPipeAndPassReceiver(), request, client->CreateRemote(),
+      mojom::kInvalidProcessId, mojo::Remote<mojom::TrustedHeaderClient>());
+
+  ASSERT_FALSE(IsPendingLoadersEmpty(manager, {process_id, token}));
+
+  // Let the subresource request fails, simulating that a renderer cancels a
+  // subresource loader when they know the bundle is blocked before the bundle
+  // request reaches to the Network Service.
+  loader.reset();
+
+  client->RunUntilDisconnect();
+
+  EXPECT_TRUE(IsPendingLoadersEmpty(manager, {process_id, token}));
 }
 
 TEST_F(WebBundleManagerTest, MemoryQuota_StartRequestAfterError) {
@@ -327,10 +392,7 @@ TEST_F(WebBundleManagerTest, MemoryQuota_StartRequestAfterError) {
   SetMaxMemoryPerProces(manager, bundle.size() - 1);
 
   // Start loading the bundle which size is larger than the quota.
-  base::WeakPtr<WebBundleURLLoaderFactory> factory;
-  std::unique_ptr<TestWebBundleHandle> handle;
-  std::tie(factory, handle) =
-      CreateWebBundleLoaderFactory(manager, process_id1);
+  auto [factory, handle] = CreateWebBundleLoaderFactory(manager, process_id1);
   // Input the bundle to the factory.
   auto producer = SetBundleStream(*factory);
   mojo::BlockingCopyFromString(bundle, producer);
@@ -348,9 +410,7 @@ TEST_F(WebBundleManagerTest, MemoryQuota_StartRequestAfterError) {
       1);
 
   // Start the subresource request after triggering the quota error.
-  mojo::Remote<network::mojom::URLLoader> loader;
-  std::unique_ptr<network::TestURLLoaderClient> client;
-  std::tie(loader, client) = StartSubresourceLoad(*factory);
+  auto [loader, client] = StartSubresourceLoad(*factory);
   // The subresource request must fail.
   client->RunUntilComplete();
   EXPECT_EQ(net::ERR_INVALID_WEB_BUNDLE,
@@ -364,15 +424,10 @@ TEST_F(WebBundleManagerTest, MemoryQuota_StartRequestBeforeReceivingBundle) {
   SetMaxMemoryPerProces(manager, bundle.size() - 1);
 
   // Start loading the bundle which size is larger than the quota.
-  base::WeakPtr<WebBundleURLLoaderFactory> factory;
-  std::unique_ptr<TestWebBundleHandle> handle;
-  std::tie(factory, handle) =
-      CreateWebBundleLoaderFactory(manager, process_id1);
+  auto [factory, handle] = CreateWebBundleLoaderFactory(manager, process_id1);
 
   // Start the subresource request.
-  mojo::Remote<network::mojom::URLLoader> loader;
-  std::unique_ptr<network::TestURLLoaderClient> client;
-  std::tie(loader, client) = StartSubresourceLoad(*factory);
+  auto [loader, client] = StartSubresourceLoad(*factory);
 
   // Input the bundle to the factory after starting the subresource load.
   auto producer = SetBundleStream(*factory);
@@ -397,7 +452,7 @@ TEST_F(WebBundleManagerTest, MemoryQuota_QuotaErrorWhileReadingBody) {
 
   // Create a not small size bundle to trigger the quota error while reading the
   // body of the subresource.
-  web_package::WebBundleBuilder builder(kResourceUrl, "" /* manifest_url */);
+  web_package::WebBundleBuilder builder;
   builder.AddExchange(kResourceUrl,
                       {{":status", "200"}, {"content-type", "text/plain"}},
                       std::string(10000, 'X'));
@@ -424,15 +479,10 @@ TEST_F(WebBundleManagerTest, MemoryQuota_QuotaErrorWhileReadingBody) {
   ASSERT_GT(bundle_string.size(), required_bytes_for_parsing_metadata);
 
   // Start loading the bundle.
-  base::WeakPtr<WebBundleURLLoaderFactory> factory;
-  std::unique_ptr<TestWebBundleHandle> handle;
-  std::tie(factory, handle) =
-      CreateWebBundleLoaderFactory(manager, process_id1);
+  auto [factory, handle] = CreateWebBundleLoaderFactory(manager, process_id1);
 
   // Start the subresource request.
-  mojo::Remote<network::mojom::URLLoader> loader;
-  std::unique_ptr<network::TestURLLoaderClient> client;
-  std::tie(loader, client) = StartSubresourceLoad(*factory);
+  auto [loader, client] = StartSubresourceLoad(*factory);
 
   // Input the first |required_bytes_for_parsing_metadata| bytes of the bundle
   // to the factory.
@@ -472,10 +522,7 @@ TEST_F(WebBundleManagerTest, MemoryQuota_QuotaErrorWhileParsingManifest) {
   SetMaxMemoryPerProces(manager, 10);
 
   // Start loading the bundle.
-  base::WeakPtr<WebBundleURLLoaderFactory> factory;
-  std::unique_ptr<TestWebBundleHandle> handle;
-  std::tie(factory, handle) =
-      CreateWebBundleLoaderFactory(manager, process_id1);
+  auto [factory, handle] = CreateWebBundleLoaderFactory(manager, process_id1);
 
   // Input the bundle to the factory byte by byte.
   auto producer = SetBundleStream(*factory);
@@ -495,9 +542,7 @@ TEST_F(WebBundleManagerTest, MemoryQuota_QuotaErrorWhileParsingManifest) {
   EXPECT_EQ(handle->last_bundle_error()->second, kQuotaExceededErrorMessage);
 
   // Start the subresource request.
-  mojo::Remote<network::mojom::URLLoader> loader;
-  std::unique_ptr<network::TestURLLoaderClient> client;
-  std::tie(loader, client) = StartSubresourceLoad(*factory);
+  auto [loader, client] = StartSubresourceLoad(*factory);
 
   // The subresource request must fail.
   client->RunUntilComplete();
@@ -517,18 +562,14 @@ TEST_F(WebBundleManagerTest, MemoryQuota_ProcessIsolation) {
   SetMaxMemoryPerProces(manager, bundle.size() * 2.5);
 
   // Start loading the first web bundle in the process 1.
-  base::WeakPtr<WebBundleURLLoaderFactory> factory1_1;
-  std::unique_ptr<TestWebBundleHandle> handle1_1;
-  std::tie(factory1_1, handle1_1) =
+  auto [factory1_1, handle1_1] =
       CreateWebBundleLoaderFactory(manager, process_id1);
   auto producer1_1 = SetBundleStream(*factory1_1);
   mojo::BlockingCopyFromString(bundle, producer1_1);
   producer1_1.reset();
 
   // Start loading the subresource from the first web bundle.
-  mojo::Remote<network::mojom::URLLoader> loader1_1;
-  std::unique_ptr<network::TestURLLoaderClient> client1_1;
-  std::tie(loader1_1, client1_1) = StartSubresourceLoad(*factory1_1);
+  auto [loader1_1, client1_1] = StartSubresourceLoad(*factory1_1);
   // Confirm that the subresource is correctly loaded.
   client1_1->RunUntilComplete();
   EXPECT_EQ(net::OK, client1_1->completion_status().error_code);
@@ -544,18 +585,14 @@ TEST_F(WebBundleManagerTest, MemoryQuota_ProcessIsolation) {
       WebBundleURLLoaderFactory::SubresourceWebBundleLoadResult::kSuccess, 1);
 
   // Start loading the second web bundle in the process 1.
-  base::WeakPtr<WebBundleURLLoaderFactory> factory1_2;
-  std::unique_ptr<TestWebBundleHandle> handle1_2;
-  std::tie(factory1_2, handle1_2) =
+  auto [factory1_2, handle1_2] =
       CreateWebBundleLoaderFactory(manager, process_id1);
   auto producer1_2 = SetBundleStream(*factory1_2);
   mojo::BlockingCopyFromString(bundle, producer1_2);
   producer1_2.reset();
 
   // Start loading the subresource from the second web bundle.
-  mojo::Remote<network::mojom::URLLoader> loader1_2;
-  std::unique_ptr<network::TestURLLoaderClient> client1_2;
-  std::tie(loader1_2, client1_2) = StartSubresourceLoad(*factory1_2);
+  auto [loader1_2, client1_2] = StartSubresourceLoad(*factory1_2);
   // Confirm that the subresource is correctly loaded.
   client1_2->RunUntilComplete();
   EXPECT_EQ(net::OK, client1_2->completion_status().error_code);
@@ -571,9 +608,7 @@ TEST_F(WebBundleManagerTest, MemoryQuota_ProcessIsolation) {
       WebBundleURLLoaderFactory::SubresourceWebBundleLoadResult::kSuccess, 2);
 
   // Start loading the third web bundle in the process 1.
-  base::WeakPtr<WebBundleURLLoaderFactory> factory1_3;
-  std::unique_ptr<TestWebBundleHandle> handle1_3;
-  std::tie(factory1_3, handle1_3) =
+  auto [factory1_3, handle1_3] =
       CreateWebBundleLoaderFactory(manager, process_id1);
   auto producer1_3 = SetBundleStream(*factory1_3);
   mojo::BlockingCopyFromString(bundle, producer1_3);
@@ -586,9 +621,7 @@ TEST_F(WebBundleManagerTest, MemoryQuota_ProcessIsolation) {
   EXPECT_EQ(handle1_3->last_bundle_error()->second, kQuotaExceededErrorMessage);
 
   // Start loading the subresource from the second web bundle.
-  mojo::Remote<network::mojom::URLLoader> loader1_3;
-  std::unique_ptr<network::TestURLLoaderClient> client1_3;
-  std::tie(loader1_3, client1_3) = StartSubresourceLoad(*factory1_3);
+  auto [loader1_3, client1_3] = StartSubresourceLoad(*factory1_3);
   // The subresource request must fail.
   client1_3->RunUntilComplete();
   EXPECT_EQ(net::ERR_INVALID_WEB_BUNDLE,
@@ -600,17 +633,12 @@ TEST_F(WebBundleManagerTest, MemoryQuota_ProcessIsolation) {
       1);
 
   // Start loading the third web bundle in the process 2.
-  base::WeakPtr<WebBundleURLLoaderFactory> factory2;
-  std::unique_ptr<TestWebBundleHandle> handle2;
-  std::tie(factory2, handle2) =
-      CreateWebBundleLoaderFactory(manager, process_id2);
+  auto [factory2, handle2] = CreateWebBundleLoaderFactory(manager, process_id2);
   auto producer2 = SetBundleStream(*factory2);
   mojo::BlockingCopyFromString(bundle, producer2);
   producer2.reset();
   // Start loading the subresource from the third web bundle.
-  mojo::Remote<network::mojom::URLLoader> loader2;
-  std::unique_ptr<network::TestURLLoaderClient> client2;
-  std::tie(loader2, client2) = StartSubresourceLoad(*factory2);
+  auto [loader2, client2] = StartSubresourceLoad(*factory2);
   // Confirm that the subresource is correctly loaded.
   client2->RunUntilComplete();
   EXPECT_EQ(net::OK, client2->completion_status().error_code);
@@ -673,9 +701,7 @@ TEST_F(WebBundleManagerTest, WebBundleURLRedirection) {
       1);
 
   // Subresource request must fail.
-  mojo::Remote<network::mojom::URLLoader> loader;
-  std::unique_ptr<network::TestURLLoaderClient> client;
-  std::tie(loader, client) = StartSubresourceLoad(*factory);
+  auto [loader, client] = StartSubresourceLoad(*factory);
   client->RunUntilComplete();
   EXPECT_EQ(net::ERR_INVALID_WEB_BUNDLE,
             client->completion_status().error_code);

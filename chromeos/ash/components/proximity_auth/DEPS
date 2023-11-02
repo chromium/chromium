@@ -1,0 +1,16 @@
+include_rules = [
+  "+ash/public/cpp",
+  "+ash/services/device_sync/proto",
+  "+ash/services/multidevice_setup/public/cpp",
+  "+ash/services/secure_channel/public",
+  "+chromeos/ash/components/dbus/session_manager",
+  "+chromeos/ash/components/multidevice",
+  "+device/bluetooth",
+]
+
+specific_include_rules = {
+  ".*unittest\.cc": [
+    "+ash/services/secure_channel",
+    "+components/sync_preferences/testing_pref_service_syncable.h",
+  ]
+}

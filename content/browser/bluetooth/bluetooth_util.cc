@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,6 +42,22 @@ bool AreScanFiltersSame(
   if (filter_1.manufacturer_data != filter_2.manufacturer_data)
     return false;
 
+  return true;
+}
+
+bool MatchesBluetoothDataFilter(
+    const std::vector<blink::mojom::WebBluetoothDataFilterPtr>& prefix,
+    const device::BluetoothDevice::ManufacturerData& data) {
+  if (prefix.size() > data.size())
+    return false;
+  // For each bit in mask, check the corresponding bit in device
+  // manufacturer data is equal to the corresponding bit in expected data.
+  size_t i = 0;
+  for (const auto& byte : prefix) {
+    if ((byte->mask & byte->data) != (byte->mask & data.at(i++))) {
+      return false;
+    }
+  }
   return true;
 }
 

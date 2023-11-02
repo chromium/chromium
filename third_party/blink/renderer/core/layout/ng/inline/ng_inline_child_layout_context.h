@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,16 +25,11 @@ class CORE_EXPORT NGInlineChildLayoutContext {
   STACK_ALLOCATED();
 
  public:
-  NGInlineChildLayoutContext();
+  NGInlineChildLayoutContext(const NGInlineNode& node,
+                             NGBoxFragmentBuilder* container_builder);
   ~NGInlineChildLayoutContext();
 
-  NGFragmentItemsBuilder* ItemsBuilder() { return items_builder_; }
-  void SetItemsBuilder(NGFragmentItemsBuilder* builder) {
-    DCHECK(!items_builder_ || !builder);
-    items_builder_ = builder;
-    if (builder)
-      builder->AddLogicalLineItemsPool(&logical_line_items_);
-  }
+  NGFragmentItemsBuilder* ItemsBuilder() { return &items_builder_; }
 
   // Returns an instance of |NGLogicalLineItems|. This is reused when laying out
   // the next line.
@@ -67,11 +62,11 @@ class CORE_EXPORT NGInlineChildLayoutContext {
   void PropagateBreakToken(const NGBlockBreakToken*);
 
  private:
-  // TODO(kojii): Probably better to own |NGInlineChildLayoutContext|. While we
-  // transit, allocating separately is easier.
-  NGFragmentItemsBuilder* items_builder_ = nullptr;
+  NGBoxFragmentBuilder* container_builder_ = nullptr;
+  NGFragmentItemsBuilder items_builder_;
 
-  NGLogicalLineItems logical_line_items_;
+  NGLogicalLineItems& logical_line_items_ =
+      *MakeGarbageCollected<NGLogicalLineItems>();
 
   absl::optional<NGInlineLayoutStateStack> box_states_;
 

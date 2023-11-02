@@ -1,20 +1,23 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef BASE_BIT_CAST_H_
 #define BASE_BIT_CAST_H_
 
+#include <type_traits>
+
 #include "base/compiler_specific.h"
 
 #if !HAS_BUILTIN(__builtin_bit_cast)
-#include <string.h>
-#include "base/template_util.h"
+#include <string.h>  // memcpy
 #endif
 
-// This is C++20's std::bit_cast<>().
-// It morally does what `*reinterpret_cast<Dest*>(&source)` does, but the cast/deref pair
-// is undefined behavior, while bit_cast<>() isn't.
+namespace base {
+
+// This is C++20's std::bit_cast<>(). It morally does what
+// `*reinterpret_cast<Dest*>(&source)` does, but the cast/deref pair is
+// undefined behavior, while bit_cast<>() isn't.
 template <class Dest, class Source>
 #if HAS_BUILTIN(__builtin_bit_cast)
 constexpr
@@ -29,9 +32,9 @@ inline
 #else
   static_assert(sizeof(Dest) == sizeof(Source),
                 "bit_cast requires source and destination to be the same size");
-  static_assert(base::is_trivially_copyable<Dest>::value,
+  static_assert(std::is_trivially_copyable_v<Dest>,
                 "bit_cast requires the destination type to be copyable");
-  static_assert(base::is_trivially_copyable<Source>::value,
+  static_assert(std::is_trivially_copyable_v<Source>,
                 "bit_cast requires the source type to be copyable");
 
   Dest dest;
@@ -39,5 +42,7 @@ inline
   return dest;
 #endif
 }
+
+}  // namespace base
 
 #endif  // BASE_BIT_CAST_H_

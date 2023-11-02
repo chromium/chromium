@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -144,7 +144,7 @@ gfx::Insets OpaqueBrowserFrameViewLayout::FrameBorderInsets(
 
 int OpaqueBrowserFrameViewLayout::FrameTopBorderThickness(bool restored) const {
   int thickness = FrameBorderInsets(restored).top();
-  if (restored || !delegate_->IsFrameCondensed())
+  if ((restored || !delegate_->IsFrameCondensed()) && thickness > 0)
     thickness += NonClientExtraTopThickness();
   return thickness;
 }
@@ -206,9 +206,10 @@ gfx::Rect OpaqueBrowserFrameViewLayout::CalculateClientAreaBounds(
     int width,
     int height) const {
   auto border_thickness = FrameBorderInsets(false);
-  int top_height = is_window_controls_overlay_enabled_
-                       ? border_thickness.top()
-                       : NonClientTopHeight(false);
+  int top_height =
+      (is_window_controls_overlay_enabled_ || is_borderless_mode_enabled_)
+          ? border_thickness.top()
+          : NonClientTopHeight(false);
   return gfx::Rect(
       border_thickness.left(), top_height,
       std::max(0, width - border_thickness.width()),
@@ -271,6 +272,11 @@ void OpaqueBrowserFrameViewLayout::SetWindowControlsOverlayEnabled(
   }
 }
 
+void OpaqueBrowserFrameViewLayout::SetBorderlessModeEnabled(bool enabled,
+                                                            views::View* host) {
+  is_borderless_mode_enabled_ = enabled;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // OpaqueBrowserFrameViewLayout, protected:
 
@@ -287,8 +293,8 @@ gfx::Insets OpaqueBrowserFrameViewLayout::RestoredFrameBorderInsets() const {
 }
 
 gfx::Insets OpaqueBrowserFrameViewLayout::RestoredFrameEdgeInsets() const {
-  return gfx::Insets(kTopFrameEdgeThickness, kSideFrameEdgeThickness,
-                     kSideFrameEdgeThickness, kSideFrameEdgeThickness);
+  return gfx::Insets::TLBR(kTopFrameEdgeThickness, kSideFrameEdgeThickness,
+                           kSideFrameEdgeThickness, kSideFrameEdgeThickness);
 }
 
 int OpaqueBrowserFrameViewLayout::NonClientExtraTopThickness() const {
@@ -322,8 +328,8 @@ void OpaqueBrowserFrameViewLayout::LayoutWindowControls() {
     }
   }
 
-  for (const auto& button : buttons_not_shown)
-    HideButton(button);
+  for (const auto& button_id : buttons_not_shown)
+    HideButton(button_id);
 }
 
 void OpaqueBrowserFrameViewLayout::LayoutTitleBar() {
@@ -434,22 +440,31 @@ void OpaqueBrowserFrameViewLayout::ConfigureButton(views::FrameButton button_id,
                                                    ButtonAlignment alignment) {
   switch (button_id) {
     case views::FrameButton::kMinimize: {
-      SetViewVisibility(minimize_button_, true);
-      SetBoundsForButton(button_id, minimize_button_, alignment);
+      if (delegate_->CanMinimize()) {
+        SetViewVisibility(minimize_button_, true);
+        SetBoundsForButton(button_id, minimize_button_, alignment);
+      } else {
+        HideButton(button_id);
+      }
       break;
     }
     case views::FrameButton::kMaximize: {
-      // When the window is restored, we show a maximized button; otherwise, we
-      // show a restore button.
-      bool is_restored = !delegate_->IsMaximized() && !delegate_->IsMinimized();
-      views::Button* invisible_button =
-          is_restored ? restore_button_ : maximize_button_;
-      SetViewVisibility(invisible_button, false);
+      if (delegate_->CanMaximize()) {
+        // When the window is restored, we show a maximized button; otherwise,
+        // we show a restore button.
+        bool is_restored =
+            !delegate_->IsMaximized() && !delegate_->IsMinimized();
+        views::Button* invisible_button =
+            is_restored ? restore_button_ : maximize_button_;
+        SetViewVisibility(invisible_button, false);
 
-      views::Button* visible_button =
-          is_restored ? maximize_button_ : restore_button_;
-      SetViewVisibility(visible_button, true);
-      SetBoundsForButton(button_id, visible_button, alignment);
+        views::Button* visible_button =
+            is_restored ? maximize_button_ : restore_button_;
+        SetViewVisibility(visible_button, true);
+        SetBoundsForButton(button_id, visible_button, alignment);
+      } else {
+        HideButton(button_id);
+      }
       break;
     }
     case views::FrameButton::kClose: {
@@ -652,10 +667,11 @@ void OpaqueBrowserFrameViewLayout::LayoutTitleBarForWindowControlsOverlay(
 
   caption_button_placeholder_container_->SetBounds(
       container_x, insets.top(), minimum_size_for_buttons_ - insets.width(),
-      height);
+      height - insets.top());
 
   web_app_frame_toolbar_->LayoutForWindowControlsOverlay(
-      gfx::Rect(x, insets.top(), web_app_frame_toolbar_view_width, height));
+      gfx::Rect(x, insets.top(), web_app_frame_toolbar_view_width,
+                height - insets.top()));
 
   int bounding_rect_width =
       web_app_frame_toolbar_->bounds().x() - available_space_leading_x_;

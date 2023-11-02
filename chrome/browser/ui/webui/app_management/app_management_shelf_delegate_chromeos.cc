@@ -1,24 +1,22 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webui/app_management/app_management_shelf_delegate_chromeos.h"
 
-#include <algorithm>
-
 #include "ash/public/cpp/shelf_item.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_types.h"
+#include "base/containers/contains.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
 #include "chrome/browser/ui/ash/shelf/app_shortcut_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
 #include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
 #include "chrome/browser/ui/webui/app_management/app_management_page_handler.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 
-using apps::mojom::OptionalBool;
+using app_management::mojom::OptionalBool;
 
 AppManagementShelfDelegate::AppManagementShelfDelegate(
     AppManagementPageHandler* page_handler,
@@ -77,8 +75,7 @@ bool AppManagementShelfDelegate::IsPolicyPinned(
   std::vector<std::string> policy_pinned_apps =
       shelf_controller->shelf_prefs()->GetAppsPinnedByPolicy(
           shelf_controller_helper_.get());
-  return std::any_of(policy_pinned_apps.begin(), policy_pinned_apps.end(),
-                     [app_id](std::string app) { return app_id == app; });
+  return base::Contains(policy_pinned_apps, app_id);
 }
 
 void AppManagementShelfDelegate::SetPinned(const std::string& app_id,

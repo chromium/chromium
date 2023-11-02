@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "gin/runner.h"
 
 namespace gin {
@@ -47,16 +48,16 @@ class GIN_EXPORT ShellRunner : public Runner {
   // context by creating an instance of Runner::Scope on the stack.
 
   // Runner overrides:
-  void Run(const std::string& source,
-           const std::string& resource_name) override;
+  v8::MaybeLocal<v8::Value> Run(const std::string& source,
+                                const std::string& resource_name) override;
   ContextHolder* GetContextHolder() override;
 
  private:
   friend class Scope;
 
-  void Run(v8::Local<v8::Script> script);
+  v8::MaybeLocal<v8::Value> Run(v8::Local<v8::Script> script);
 
-  ShellRunnerDelegate* delegate_;
+  raw_ptr<ShellRunnerDelegate> delegate_;
 
   std::unique_ptr<ContextHolder> context_holder_;
 };

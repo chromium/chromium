@@ -1,9 +1,9 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "net/proxy_resolution/proxy_config.h"
-#include "base/cxx17_backports.h"
+
 #include "base/json/json_writer.h"
 #include "base/values.h"
 #include "net/base/proxy_string_util.h"
@@ -436,19 +436,19 @@ TEST(ProxyConfigTest, ParseProxyRules) {
 
   ProxyConfig config;
 
-  for (size_t i = 0; i < base::size(tests); ++i) {
-    config.proxy_rules().ParseFromString(tests[i].proxy_rules);
+  for (const auto& test : tests) {
+    config.proxy_rules().ParseFromString(test.proxy_rules);
 
-    EXPECT_EQ(tests[i].type, config.proxy_rules().type);
-    ExpectProxyServerEquals(tests[i].single_proxy,
+    EXPECT_EQ(test.type, config.proxy_rules().type);
+    ExpectProxyServerEquals(test.single_proxy,
                             config.proxy_rules().single_proxies);
-    ExpectProxyServerEquals(tests[i].proxy_for_http,
+    ExpectProxyServerEquals(test.proxy_for_http,
                             config.proxy_rules().proxies_for_http);
-    ExpectProxyServerEquals(tests[i].proxy_for_https,
+    ExpectProxyServerEquals(test.proxy_for_https,
                             config.proxy_rules().proxies_for_https);
-    ExpectProxyServerEquals(tests[i].proxy_for_ftp,
+    ExpectProxyServerEquals(test.proxy_for_ftp,
                             config.proxy_rules().proxies_for_ftp);
-    ExpectProxyServerEquals(tests[i].fallback_proxy,
+    ExpectProxyServerEquals(test.fallback_proxy,
                             config.proxy_rules().fallback_proxies);
   }
 }

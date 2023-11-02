@@ -1,30 +1,34 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//components/feed/features.gni")
 
 feed_deps = [
-  "//base:base_java",
   "//chrome/android/feed:chrome_feed_java_resources",
-  "//third_party/android_deps:android_support_v7_appcompat_java",
   "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
   "//third_party/android_deps:javax_inject_javax_inject_java",
   "//third_party/android_deps:protobuf_lite_runtime_java",
   "//third_party/androidx:androidx_annotation_annotation_java",
+  "//third_party/androidx:androidx_appcompat_appcompat_java",
+  "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
   "//third_party/androidx:androidx_cardview_cardview_java",
   "//third_party/androidx:androidx_collection_collection_java",
-  "//third_party/androidx:androidx_interpolator_interpolator_java",
+  "//third_party/androidx:androidx_core_core_java",
+  "//third_party/androidx:androidx_fragment_fragment_java",
+  "//third_party/androidx:androidx_lifecycle_lifecycle_common_java",
+  "//third_party/androidx:androidx_media_media_java",
   "//third_party/androidx:androidx_recyclerview_recyclerview_java",
   "//third_party/androidx:androidx_swiperefreshlayout_swiperefreshlayout_java",
+  "//third_party/androidx:androidx_vectordrawable_vectordrawable_java",
 ]
 
 feed_java_sources = [
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedSurfaceCoordinator.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedSurfaceMediator.java",
+  "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/HasContentListener.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/NtpFeedSurfaceLifecycleManager.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/shared/ui/MaterialSpinnerView.java",
-  "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v2/FeedServiceBridgeDelegateImpl.java",
 ]
 
 feed_srcjar_deps = []

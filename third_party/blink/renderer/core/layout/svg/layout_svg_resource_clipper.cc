@@ -191,10 +191,9 @@ sk_sp<const PaintRecord> LayoutSVGResourceClipper::CreatePaintRecord() {
   // - masker/filter not applied when laying out the children
   // - fill is set to the initial fill paint server (solid, black)
   // - stroke is set to the initial stroke paint server (none)
-  PaintInfo info(builder->Context(), CullRect::Infinite(),
-                 PaintPhase::kForeground, kGlobalPaintNormalPhase,
-                 kPaintLayerPaintingRenderingClipPathAsMask |
-                     kPaintLayerPaintingRenderingResourceSubtree);
+  PaintInfo info(
+      builder->Context(), CullRect::Infinite(), PaintPhase::kForeground,
+      PaintFlag::kPaintingClipPathAsMask | PaintFlag::kPaintingResourceSubtree);
 
   for (const SVGElement& child_element :
        Traversal<SVGElement>::ChildrenOf(*GetElement())) {
@@ -268,7 +267,7 @@ bool LayoutSVGResourceClipper::HitTestClipContent(
            !To<LayoutBoxModelObject>(layout_object)->HasSelfPaintingLayer());
 
     if (layout_object->NodeAtPoint(result, *local_location, PhysicalOffset(),
-                                   kHitTestForeground))
+                                   HitTestPhase::kForeground))
       return true;
   }
   return false;

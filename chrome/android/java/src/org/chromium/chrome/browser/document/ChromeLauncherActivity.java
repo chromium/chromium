@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,11 @@ package org.chromium.chrome.browser.document;
 import android.app.Activity;
 import android.os.Bundle;
 
-import org.chromium.base.ApiCompatibilityUtils;
+import com.google.android.material.color.DynamicColors;
+
 import org.chromium.base.TraceEvent;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
-import org.chromium.chrome.browser.theme.ThemeUtils;
-import org.chromium.chrome.browser.ui.theme.ColorDelegateImpl;
 import org.chromium.chrome.browser.vr.VrModuleProvider;
 
 /**
@@ -43,7 +42,7 @@ public class ChromeLauncherActivity extends Activity {
                 finish();
                 break;
             case LaunchIntentDispatcher.Action.FINISH_ACTIVITY_REMOVE_TASK:
-                ApiCompatibilityUtils.finishAndRemoveTask(this);
+                this.finishAndRemoveTask();
                 break;
             default:
                 assert false : "Intent dispatcher finished with action " + dispatchAction
@@ -59,8 +58,6 @@ public class ChromeLauncherActivity extends Activity {
 
         // The effect of this activity's theme is currently limited to CCTs, so we should only apply
         // dynamic colors when we enable them everywhere.
-        if (ThemeUtils.ENABLE_FULL_DYNAMIC_COLORS.getValue()) {
-            new ColorDelegateImpl().applyDynamicColorsIfAvailable(this);
-        }
+        DynamicColors.applyToActivityIfAvailable(this);
     }
 }

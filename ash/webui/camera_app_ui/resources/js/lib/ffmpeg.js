@@ -1,16 +1,9 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// @ts-nocheck
-
-/**
- * @fileoverview
- * @suppress {checkTypes|missingProperties|suspiciousCode}
- * @suppress {undefinedVars|uselessCode}
- */
-
 /* eslint-disable */
+// @ts-nocheck
 
 var Module = (function() {
   var _scriptDir = typeof document !== 'undefined' && document.currentScript ? document.currentScript.src : undefined;

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,11 +14,12 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/page_info/page_info.h"
 #include "components/permissions/object_permission_context_base.h"
+#include "components/privacy_sandbox/canonical_topic.h"
 #include "components/safe_browsing/buildflags.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/native_widget_types.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "ui/gfx/image/image_skia.h"
 #endif
 
@@ -71,6 +72,8 @@ class PageInfoUI {
 
   // |CookieInfo| contains information about the cookies from a specific source.
   // A source can for example be a specific origin or an entire wildcard domain.
+  // TODO(crbug.com/1346305): Remove after finishing cookies subpage
+  // implementation.
   struct CookieInfo {
     CookieInfo();
 
@@ -82,6 +85,41 @@ class PageInfoUI {
     // Whether these cookies are from the current top-level origin as seen by
     // the user, or from third-party origins.
     bool is_first_party;
+  };
+
+  // |CookiesFpsInfo| contains information about a specific First-Party Set.
+  struct CookiesFpsInfo {
+    explicit CookiesFpsInfo(const std::u16string& owner_name);
+    ~CookiesFpsInfo();
+
+    // The name of the owner of the FPS.
+    std::u16string owner_name;
+
+    // Whether the Fps are managed by the company.
+    bool is_managed = false;
+  };
+
+  // |CookiesNewInfo| contains information about the sites that are allowed
+  // to access cookies and fps cookies info for new UI.
+  // TODO(crbug.com/1346305):  Change the name to "CookieInfo" after finishing
+  // cookies subpage implementation
+  struct CookiesNewInfo {
+    CookiesNewInfo();
+    ~CookiesNewInfo();
+
+    // The number of third-party sites blocked.
+    int blocked_sites_count = -1;
+
+    // The number of sites allowed to access cookies.
+    int allowed_sites_count = -1;
+
+    // The status of blocking third-party cookies.
+    CookieControlsStatus status;
+
+    // The status of enforcement of blocking third-party cookies.
+    CookieControlsEnforcement enforcement;
+
+    absl::optional<CookiesFpsInfo> fps_info;
   };
 
   // |ChosenObjectInfo| contains information about a single |chooser_object| of
@@ -119,7 +157,7 @@ class PageInfoUI {
     // Textual description of the Safe Browsing status.
     std::u16string safe_browsing_details;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // Textual description of the site's identity status that is displayed to
     // the user.
     std::string identity_status_description_android;
@@ -158,6 +196,15 @@ class PageInfoUI {
     int string_id_mid_sentence;
   };
 
+  struct AdPersonalizationInfo {
+    AdPersonalizationInfo();
+    ~AdPersonalizationInfo();
+    bool is_empty() const;
+
+    bool has_joined_user_to_interest_group;
+    std::vector<privacy_sandbox::CanonicalTopic> accessed_topics;
+  };
+
   using CookieInfoList = std::vector<CookieInfo>;
   using PermissionInfoList = std::vector<PageInfo::PermissionInfo>;
   using ChosenObjectInfoList = std::vector<std::unique_ptr<ChosenObjectInfo>>;
@@ -185,12 +232,6 @@ class PageInfoUI {
       content_settings::SettingSource source,
       bool is_one_time);
 
-  // Returns a string indicating whether the permission was blocked via an
-  // extension, enterprise policy, or embargo.
-  static std::u16string PermissionDecisionReasonToUIString(
-      PageInfoUiDelegate* delegate,
-      const PageInfo::PermissionInfo& permission);
-
   static std::u16string PermissionStateToUIString(
       PageInfoUiDelegate* delegate,
       const PageInfo::PermissionInfo& permission);
@@ -217,7 +258,7 @@ class PageInfoUI {
   // Returns the color to use for the permission decision reason strings.
   static SkColor GetSecondaryTextColor();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Returns the identity icon ID for the given identity |status|.
   static int GetIdentityIconID(PageInfo::SiteIdentityStatus status);
 
@@ -229,7 +270,7 @@ class PageInfoUI {
 
   // Returns the connection icon color ID for the given connection |status|.
   static int GetConnectionIconColorID(PageInfo::SiteConnectionStatus status);
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Return true if the given ContentSettingsType is in PageInfoUI.
   static bool ContentSettingsTypeInPageInfo(ContentSettingsType type);
@@ -237,12 +278,11 @@ class PageInfoUI {
   static std::unique_ptr<SecurityDescription>
   CreateSafetyTipSecurityDescription(const security_state::SafetyTipInfo& info);
 
-  // Ensures the cookie information UI is present, with placeholder information
-  // if necessary.
-  virtual void EnsureCookieInfo() {}
-
   // Sets cookie information.
+  // TODO(crbug.com/1346305) remove unused function overload after finished
+  // project. Sets cookie information.
   virtual void SetCookieInfo(const CookieInfoList& cookie_info_list) {}
+  virtual void SetCookieInfo(const CookiesNewInfo& cookie_info) {}
 
   // Sets permission information.
   virtual void SetPermissionInfo(const PermissionInfoList& permission_info_list,
@@ -255,6 +295,10 @@ class PageInfoUI {
   // Sets feature related information; for now only if VR content is being
   // presented in a headset.
   virtual void SetPageFeatureInfo(const PageFeatureInfo& page_feature_info) {}
+
+  // Sets ad personalization information.
+  virtual void SetAdPersonalizationInfo(
+      const AdPersonalizationInfo& ad_personalization_info) {}
 
   // Helper to get security description info to display to the user.
   std::unique_ptr<SecurityDescription> GetSecurityDescription(

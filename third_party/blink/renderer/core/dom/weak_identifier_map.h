@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_WEAK_IDENTIFIER_MAP_H_
 
 #include <limits>
-#include "third_party/blink/renderer/platform/heap/handle.h"
+
+#include "base/check_op.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace blink {
 
@@ -39,6 +41,10 @@ class WeakIdentifierMap final
       result = it->value;
     }
     return result;
+  }
+
+  static bool HasIdentifier(T* object) {
+    return Instance().object_to_identifier_.Contains(object);
   }
 
   static IdentifierType ExistingIdentifier(T* object) {

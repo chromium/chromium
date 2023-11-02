@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -151,6 +151,34 @@ bool GetTimeFromString(base::StringPiece raw_value, base::Time* parsed_time) {
       return false;
   }
 
+  return true;
+}
+
+bool GetDateOnlyFromString(base::StringPiece raw_value,
+                           base::Time* parsed_time) {
+  base::Time::Exploded exploded = {0};
+  base::Time time;
+
+  // Parses the date part only.
+  {
+    std::vector<base::StringPiece> parts = base::SplitStringPiece(
+        raw_value, "-", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+    if (parts.size() != 3)
+      return false;
+
+    if (!base::StringToInt(parts[0], &exploded.year) ||
+        !base::StringToInt(parts[1], &exploded.month) ||
+        !base::StringToInt(parts[2], &exploded.day_of_month)) {
+      return false;
+    }
+  }
+
+  if (!base::Time::FromUTCExploded(exploded, &time))
+    return false;
+
+  // Ensure that the time section (everything after the "yyyy-mm-dd" date) is
+  // zeros.
+  *parsed_time = time.UTCMidnight();
   return true;
 }
 

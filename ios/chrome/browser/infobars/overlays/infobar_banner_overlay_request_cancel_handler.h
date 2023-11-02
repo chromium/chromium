@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,9 +15,9 @@
 class InfobarBannerOverlayRequestCancelHandler
     : public InfobarOverlayRequestCancelHandler {
  public:
-  // Constructor for a handler that cancels |request| from |queue|.  |inserter|
+  // Constructor for a handler that cancels `request` from `queue`.  `inserter`
   // is used to insert replacement requests when an infobar is replaced.
-  // |modal_completion_notifier| is used to detect the completion of any modal
+  // `modal_completion_notifier` is used to detect the completion of any modal
   // UI that was presented from the banner.
   InfobarBannerOverlayRequestCancelHandler(
       OverlayRequest* request,
@@ -80,7 +80,7 @@ class InfobarBannerOverlayRequestCancelHandler
   void ModalPresentedFromBanner() { presenting_modal_ = true; }
 
   // Indicates that a modal completed. Only called for modal completions of
-  // infobars that match the one used to configure |request|.
+  // infobars that match the one used to configure `request`.
   void ModalCompleted();
 
   // InfobarOverlayRequestCancelHandler:

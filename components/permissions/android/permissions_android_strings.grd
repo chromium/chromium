@@ -84,6 +84,9 @@
     <output filename="values-zh-rHK/permissions_android_strings.xml" lang="zh-HK" type="android" />
     <output filename="values-zh-rTW/permissions_android_strings.xml" lang="zh-TW" type="android" />
     <output filename="values-zu/permissions_android_strings.xml" lang="zu" type="android" />
+    <!-- Pseudolocales -->
+    <output filename="values-ar-rXB/permissions_android_strings.xml" lang="ar-XB" type="android" />
+    <output filename="values-en-rXA/permissions_android_strings.xml" lang="en-XA" type="android" />
   </outputs>
   <translations>
     <file path="translations/permissions_android_strings_af.xtb" lang="af" />
@@ -97,6 +100,7 @@
     <file path="translations/permissions_android_strings_bs.xtb" lang="bs" />
     <file path="translations/permissions_android_strings_ca.xtb" lang="ca" />
     <file path="translations/permissions_android_strings_cs.xtb" lang="cs" />
+    <file path="translations/permissions_android_strings_cy.xtb" lang="cy" />
     <file path="translations/permissions_android_strings_da.xtb" lang="da" />
     <file path="translations/permissions_android_strings_de.xtb" lang="de" />
     <file path="translations/permissions_android_strings_el.xtb" lang="el" />
@@ -170,19 +174,19 @@
   <release seq="1">
     <messages fallback_to_english="true">
       <message name="IDS_INFOBAR_MISSING_AR_CAMERA_PERMISSION_TEXT" desc="Text shown in an infobar when a website has requested access to augmented reality capabilities, but Chrome is missing the Android camera permission.">
-        Chrome needs permission to access your camera to create a 3D map of your surroundings.
+        <ph name="APP_NAME">%1$s<ex>Chrome</ex></ph> needs permission to access your camera to create a 3D map of your surroundings.
       </message>
       <message name="IDS_INFOBAR_MISSING_CAMERA_PERMISSION_TEXT" desc="Text shown in an infobar when a website has requested access to the camera capabilities, but Chrome is missing the Android camera permission.">
-        Chrome needs permission to access your camera for this site.
+        <ph name="APP_NAME">%1$s<ex>Chrome</ex></ph> needs permission to access your camera for this site.
       </message>
       <message name="IDS_INFOBAR_MISSING_MICROPHONE_PERMISSION_TEXT" desc="Text shown in an infobar when a website has requested access to the microphone capabilities, but Chrome is missing the Android microphone permission.">
-        Chrome needs permission to access your microphone for this site.
+        <ph name="APP_NAME">%1$s<ex>Chrome</ex></ph> needs permission to access your microphone for this site.
       </message>
       <message name="IDS_INFOBAR_MISSING_MICROPHONE_CAMERA_PERMISSIONS_TEXT" desc="Text shown in an infobar when a website has requested access to the microphone and camera capabilities, but Chrome is missing the Android microphone and camera permissions.">
-        Chrome needs permission to access your camera and microphone for this site.
+        <ph name="APP_NAME">%1$s<ex>Chrome</ex></ph> needs permission to access your camera and microphone for this site.
       </message>
       <message name="IDS_INFOBAR_MISSING_LOCATION_PERMISSION_TEXT" desc="Text shown in an infobar when a website has requested access to the location capabilities, but Chrome is missing the Android location permission.">
-        Chrome needs access to your location to share your location with this site.
+        <ph name="APP_NAME">%1$s<ex>Chrome</ex></ph> needs access to your location to share your location with this site.
       </message>
       <message name="IDS_INFOBAR_UPDATE_PERMISSIONS_BUTTON_TEXT" desc="Button text shown when Chrome does not have the necessary permission required to complete the requested tasks (e.g. a website has request location information, but Chrome is missing that Android permission).">
         Continue

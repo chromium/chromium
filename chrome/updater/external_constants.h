@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,17 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/values.h"
 
 class GURL;
+
+namespace base {
+class TimeDelta;
+}
+
+namespace crx_file {
+enum class VerifierFormat;
+}
 
 namespace updater {
 
@@ -34,6 +43,15 @@ class ExternalConstants : public base::RefCountedThreadSafe<ExternalConstants> {
 
   // Minimum number of of seconds the server needs to stay alive.
   virtual int ServerKeepAliveSeconds() const = 0;
+
+  // CRX format verification requirements.
+  virtual crx_file::VerifierFormat CrxVerifierFormat() const = 0;
+
+  // Overrides for the `GroupPolicyManager`.
+  virtual base::Value::Dict GroupPolicies() const = 0;
+
+  // Overrides the overinstall timeout.
+  virtual base::TimeDelta OverinstallTimeout() const = 0;
 
  protected:
   friend class base::RefCountedThreadSafe<ExternalConstants>;

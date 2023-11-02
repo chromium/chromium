@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include <memory>
 #include <queue>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "mojo/core/atomic_flag.h"
 #include "mojo/core/dispatcher.h"
 #include "mojo/core/ports/port_ref.h"
@@ -92,7 +92,9 @@ class MessagePipeDispatcher : public Dispatcher {
   void OnPortStatusChanged();
 
   // These are safe to access from any thread without locking.
-  NodeController* const node_controller_;
+  // `node_controller_` is not a raw_ptr<...> for performance reasons (based on
+  // analysis of sampling profiler data).
+  RAW_PTR_EXCLUSION NodeController* const node_controller_;
   const ports::PortRef port_;
   const uint64_t pipe_id_;
   const int endpoint_;

@@ -1,11 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef WEBLAYER_TEST_LOAD_COMPLETION_OBSERVER_H_
 #define WEBLAYER_TEST_LOAD_COMPLETION_OBSERVER_H_
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "weblayer/public/navigation_observer.h"
 
@@ -31,9 +31,9 @@ class LoadCompletionObserver : public NavigationObserver {
 
  private:
   // NavigationObserver implementation:
-  void LoadStateChanged(bool is_loading, bool to_different_document) override;
+  void LoadStateChanged(bool is_loading, bool should_show_loading_ui) override;
 
-  Tab* tab_;
+  raw_ptr<Tab> tab_;
   base::RunLoop run_loop_;
 };
 

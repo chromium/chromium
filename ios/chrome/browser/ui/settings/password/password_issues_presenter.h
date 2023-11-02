@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,14 +9,14 @@
 
 @protocol PasswordIssue;
 
-// Presenter which handles commands from |PasswordsIssuesTableViewController|.
+// Presenter which handles commands from `PasswordsIssuesTableViewController`.
 @protocol PasswordIssuesPresenter
 
 // Called when view controller is removed.
 - (void)dismissPasswordIssuesTableViewController;
 
 // Called when Password Details screen should be shown.
-- (void)presentPasswordIssueDetails:(id<PasswordIssue>)password;
+- (void)presentPasswordIssueDetails:(PasswordIssue*)password;
 
 @end
 

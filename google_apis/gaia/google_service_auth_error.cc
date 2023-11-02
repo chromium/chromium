@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -82,6 +82,20 @@ GoogleServiceAuthError GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
 }
 
 // static
+GoogleServiceAuthError GoogleServiceAuthError::FromServiceUnavailable(
+    const std::string& error_message) {
+  return GoogleServiceAuthError(SERVICE_UNAVAILABLE, error_message);
+}
+
+// static
+GoogleServiceAuthError
+GoogleServiceAuthError::FromScopeLimitedUnrecoverableError(
+    const std::string& error_message) {
+  return GoogleServiceAuthError(SCOPE_LIMITED_UNRECOVERABLE_ERROR,
+                                error_message);
+}
+
+// static
 GoogleServiceAuthError GoogleServiceAuthError::FromServiceError(
     const std::string& error_message) {
   return GoogleServiceAuthError(SERVICE_ERROR, error_message);
@@ -109,6 +123,7 @@ bool GoogleServiceAuthError::IsValid(State state) {
     case REQUEST_CANCELED:
     case UNEXPECTED_SERVICE_RESPONSE:
     case SERVICE_ERROR:
+    case SCOPE_LIMITED_UNRECOVERABLE_ERROR:
       return true;
     case NUM_STATES:
       return false;
@@ -157,6 +172,9 @@ std::string GoogleServiceAuthError::ToString() const {
     case SERVICE_ERROR:
       return base::StringPrintf("Service responded with error: '%s'",
                                 error_message_.c_str());
+    case SCOPE_LIMITED_UNRECOVERABLE_ERROR:
+      return base::StringPrintf("Service responded with error: '%s'",
+                                error_message_.c_str());
     case NUM_STATES:
       NOTREACHED();
       return std::string();
@@ -166,6 +184,10 @@ std::string GoogleServiceAuthError::ToString() const {
 bool GoogleServiceAuthError::IsPersistentError() const {
   if (state_ == GoogleServiceAuthError::NONE) return false;
   return !IsTransientError();
+}
+
+bool GoogleServiceAuthError::IsScopePersistentError() const {
+  return state_ == GoogleServiceAuthError::SCOPE_LIMITED_UNRECOVERABLE_ERROR;
 }
 
 bool GoogleServiceAuthError::IsTransientError() const {

@@ -1,15 +1,16 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/overlays/infobar_modal/infobar_modal_overlay_coordinator.h"
 #import "ios/chrome/browser/ui/overlays/infobar_modal/infobar_modal_overlay_coordinator+modal_configuration.h"
 
-#include "base/mac/foundation_util.h"
-#include "base/notreached.h"
+#import "base/mac/foundation_util.h"
+#import "base/notreached.h"
 #import "ios/chrome/browser/ui/infobars/presentation/infobar_modal_positioner.h"
 #import "ios/chrome/browser/ui/infobars/presentation/infobar_modal_transition_driver.h"
 #import "ios/chrome/browser/ui/overlays/infobar_modal/infobar_modal_overlay_mediator.h"
+#import "ios/chrome/browser/ui/overlays/overlay_presentation_util.h"
 #import "ios/chrome/browser/ui/overlays/overlay_request_coordinator+subclassing.h"
 #import "ios/chrome/browser/ui/overlays/overlay_request_coordinator_delegate.h"
 
@@ -34,10 +35,11 @@
     return;
   [self configureModal];
   [self configureViewController];
+  __weak InfobarModalOverlayCoordinator* weakSelf = self;
   [self.baseViewController presentViewController:self.viewController
                                         animated:animated
                                       completion:^{
-                                        [self finishPresentation];
+                                        [weakSelf finishPresentation];
                                       }];
   self.started = YES;
 }
@@ -48,9 +50,10 @@
   // Mark started as NO before calling dismissal callback to prevent dup
   // stopAnimated: executions.
   self.started = NO;
+  __weak InfobarModalOverlayCoordinator* weakSelf = self;
   [self.baseViewController dismissViewControllerAnimated:animated
                                               completion:^{
-                                                [self finishDismissal];
+                                                [weakSelf finishDismissal];
                                               }];
 }
 
@@ -77,6 +80,13 @@
          CGRectGetHeight(self.modalNavController.navigationBar.bounds);
 }
 
+#pragma mark - InfobarModalPresentationHandler
+
+- (void)resizeInfobarModal {
+  UIView* containerView = self.modalNavController.view;
+  containerView.frame = ContainedModalFrameThatFit(self, containerView);
+}
+
 #pragma mark - Private
 
 // Called when the presentation of the modal UI is completed.
@@ -84,7 +94,9 @@
   // Notify the presentation context that the presentation has finished.  This
   // is necessary to synchronize OverlayPresenter scheduling logic with the UI
   // layer.
-  self.delegate->OverlayUIDidFinishPresentation(self.request);
+  if (self.delegate) {
+    self.delegate->OverlayUIDidFinishPresentation(self.request);
+  }
 }
 
 // Called when the dismissal of the modal UI is finished.
@@ -94,7 +106,9 @@
   // Notify the presentation context that the dismissal has finished.  This
   // is necessary to synchronize OverlayPresenter scheduling logic with the UI
   // layer.
-  self.delegate->OverlayUIDidFinishDismissal(self.request);
+  if (self.delegate) {
+    self.delegate->OverlayUIDidFinishDismissal(self.request);
+  }
 }
 
 @end

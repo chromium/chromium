@@ -3,6 +3,7 @@ include_rules = [
   "+components/embedder_support/android",
   "+content/public/android",
   "+net",
+  "+services/data_decoder/public/cpp",
   "+services/network/public/cpp",
   "+services/network/public/mojom",
   "+services/network/test",

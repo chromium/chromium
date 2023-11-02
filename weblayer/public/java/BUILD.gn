@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -40,9 +40,13 @@ android_library("java") {
     "org/chromium/weblayer/BroadcastReceiver.java",
     "org/chromium/weblayer/Browser.java",
     "org/chromium/weblayer/BrowserControlsOffsetCallback.java",
-    "org/chromium/weblayer/BrowserEmbeddabilityMode.java",
-    "org/chromium/weblayer/BrowserFragment.java",
     "org/chromium/weblayer/BrowserFragmentCreateParams.java",
+    "org/chromium/weblayer/BrowserFragmentDelegate.java",
+    "org/chromium/weblayer/BrowserFragmentEventHandler.java",
+    "org/chromium/weblayer/BrowserFragmentNavigationDelegate.java",
+    "org/chromium/weblayer/BrowserFragmentNavigationParams.java",
+    "org/chromium/weblayer/BrowserFragmentTabDelegate.java",
+    "org/chromium/weblayer/BrowserFragmentTabListDelegate.java",
     "org/chromium/weblayer/BrowserRestoreCallback.java",
     "org/chromium/weblayer/BrowsingDataType.java",
     "org/chromium/weblayer/Callback.java",
@@ -52,6 +56,7 @@ android_library("java") {
     "org/chromium/weblayer/CookieChangeCause.java",
     "org/chromium/weblayer/CookieChangedCallback.java",
     "org/chromium/weblayer/CookieManager.java",
+    "org/chromium/weblayer/CookieManagerDelegate.java",
     "org/chromium/weblayer/CrashReporterCallback.java",
     "org/chromium/weblayer/CrashReporterController.java",
     "org/chromium/weblayer/DarkModeStrategy.java",
@@ -78,7 +83,7 @@ android_library("java") {
     "org/chromium/weblayer/MediaCaptureCallback.java",
     "org/chromium/weblayer/MediaCaptureController.java",
     "org/chromium/weblayer/MediaPlaybackBaseService.java",
-    "org/chromium/weblayer/MediaRouteDialogFragment.java",
+    "org/chromium/weblayer/MediaRouteDialogFragmentEventHandler.java",
     "org/chromium/weblayer/MediaSessionService.java",
     "org/chromium/weblayer/NavigateParams.java",
     "org/chromium/weblayer/Navigation.java",
@@ -94,17 +99,18 @@ android_library("java") {
     "org/chromium/weblayer/PaymentDetailsUpdateServiceWrapper.java",
     "org/chromium/weblayer/PrerenderController.java",
     "org/chromium/weblayer/Profile.java",
-    "org/chromium/weblayer/RemoteFragment.java",
+    "org/chromium/weblayer/RemoteFragmentEventHandler.java",
     "org/chromium/weblayer/RemoteMediaService.java",
     "org/chromium/weblayer/ScrollNotificationType.java",
     "org/chromium/weblayer/ScrollOffsetCallback.java",
     "org/chromium/weblayer/SettingType.java",
-    "org/chromium/weblayer/SettingsActivity.java",
-    "org/chromium/weblayer/SettingsFragment.java",
-    "org/chromium/weblayer/SiteSettingsActivity.java",
+    "org/chromium/weblayer/SettingsFragmentEventHandler.java",
     "org/chromium/weblayer/Tab.java",
     "org/chromium/weblayer/TabCallback.java",
     "org/chromium/weblayer/TabListCallback.java",
+    "org/chromium/weblayer/TabNavigationControllerProxy.java",
+    "org/chromium/weblayer/TabParams.java",
+    "org/chromium/weblayer/TabProxy.java",
     "org/chromium/weblayer/ThreadCheck.java",
     "org/chromium/weblayer/UnsupportedVersionException.java",
     "org/chromium/weblayer/UrlBarController.java",
@@ -117,12 +123,14 @@ android_library("java") {
     "org/chromium/weblayer/WebMessage.java",
     "org/chromium/weblayer/WebMessageCallback.java",
     "org/chromium/weblayer/WebMessageReplyProxy.java",
+    "org/chromium/weblayer/WebMessageReplyProxyProxy.java",
     "org/chromium/weblayer/WebViewCompatibilityHelper.java",
     _version_constants_java_file,
   ]
 
   resources_package = "org.chromium.weblayer"
   deps = [
+    ":browserfragment_interfaces_java",
     ":client_resources",
     ":client_version",
     ":weblayer_client_manifest",
@@ -141,6 +149,7 @@ android_library("java") {
 
 dist_aar("client_aar") {
   deps = [
+    ":browserfragment_java",
     ":java",
     ":weblayer_client_manifest",
   ]
@@ -172,4 +181,96 @@ process_version("client_version") {
       "org/chromium/weblayer/WebLayerClientVersionConstants.java.version"
   output = _version_constants_java_file
   sources = [ "//chrome/VERSION" ]
+}
+
+android_aidl("browserfragment_aidl") {
+  import_include = [
+    ".",
+    "../../browser/java",
+  ]
+  sources = [
+    "org/chromium/browserfragment/interfaces/IBooleanCallback.aidl",
+    "org/chromium/browserfragment/interfaces/IBrowserFragmentDelegate.aidl",
+    "org/chromium/browserfragment/interfaces/IBrowserFragmentDelegateClient.aidl",
+    "org/chromium/browserfragment/interfaces/IBrowserSandboxCallback.aidl",
+    "org/chromium/browserfragment/interfaces/IBrowserSandboxService.aidl",
+    "org/chromium/browserfragment/interfaces/ICookieManagerDelegate.aidl",
+    "org/chromium/browserfragment/interfaces/IFragmentParams.aidl",
+    "org/chromium/browserfragment/interfaces/INavigationObserverDelegate.aidl",
+    "org/chromium/browserfragment/interfaces/INavigationParams.aidl",
+    "org/chromium/browserfragment/interfaces/IStringCallback.aidl",
+    "org/chromium/browserfragment/interfaces/ITabCallback.aidl",
+    "org/chromium/browserfragment/interfaces/ITabListObserverDelegate.aidl",
+    "org/chromium/browserfragment/interfaces/ITabNavigationControllerProxy.aidl",
+    "org/chromium/browserfragment/interfaces/ITabObserverDelegate.aidl",
+    "org/chromium/browserfragment/interfaces/ITabParams.aidl",
+    "org/chromium/browserfragment/interfaces/ITabProxy.aidl",
+    "org/chromium/browserfragment/interfaces/IWebMessageCallback.aidl",
+    "org/chromium/browserfragment/interfaces/IWebMessageReplyProxy.aidl",
+  ]
+}
+
+android_library("browserfragment_interfaces_java") {
+  deps = [
+    "//base:base_java",
+    "//weblayer/browser/java:base_module_interfaces_java",
+  ]
+  srcjar_deps = [ ":browserfragment_aidl" ]
+}
+
+android_library("browserfragment_java") {
+  sources = [
+    "org/chromium/browserfragment/Browser.java",
+    "org/chromium/browserfragment/BrowserFragment.java",
+    "org/chromium/browserfragment/CookieManager.java",
+    "org/chromium/browserfragment/FragmentParams.java",
+    "org/chromium/browserfragment/Navigation.java",
+    "org/chromium/browserfragment/NavigationObserver.java",
+    "org/chromium/browserfragment/NavigationObserverDelegate.java",
+    "org/chromium/browserfragment/Tab.java",
+    "org/chromium/browserfragment/TabListObserver.java",
+    "org/chromium/browserfragment/TabListObserverDelegate.java",
+    "org/chromium/browserfragment/TabManager.java",
+    "org/chromium/browserfragment/TabNavigationController.java",
+    "org/chromium/browserfragment/TabObserver.java",
+    "org/chromium/browserfragment/TabObserverDelegate.java",
+    "org/chromium/browserfragment/TabRegistry.java",
+    "org/chromium/browserfragment/ThreadCheck.java",
+    "org/chromium/browserfragment/WebMessageCallback.java",
+    "org/chromium/browserfragment/WebMessageReplyProxy.java",
+  ]
+
+  resources_package = "org.chromium.browserfragment"
+  deps = [
+    ":browserfragment_interfaces_java",
+    ":java",
+    "//base:base_java",
+    "//third_party/android_deps:com_google_guava_guava_android_java",
+    "//third_party/android_deps:com_google_guava_listenablefuture_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_concurrent_concurrent_futures_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
+    "//third_party/androidx:androidx_lifecycle_lifecycle_viewmodel_java",
+    "//weblayer/browser/java:base_module_interfaces_java",
+  ]
+
+  proguard_configs = [ "proguard.flags" ]
+}
+
+android_library("service_provider_java") {
+  testonly = true
+  resources_package = "org.chromium.weblayer"
+
+  sources = [
+    "org/chromium/weblayer/BrowserInProcessService.java",
+    "org/chromium/weblayer/BrowserProcessBinder.java",
+    "org/chromium/weblayer/BrowserSandboxService.java",
+  ]
+  deps = [
+    ":browserfragment_interfaces_java",
+    ":java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//weblayer/browser/java:base_module_interfaces_java",
+  ]
 }

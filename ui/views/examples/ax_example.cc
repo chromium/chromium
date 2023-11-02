@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,18 +9,19 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/md_text_button.h"
+#include "ui/views/examples/examples_color_id.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/view_class_properties.h"
 
-namespace views {
-namespace examples {
+namespace views::examples {
 
 AxExample::AxExample() : ExampleBase("Accessibility Features") {}
 
 AxExample::~AxExample() = default;
 
 void AxExample::CreateExampleView(View* container) {
-  container->SetBackground(CreateSolidBackground(SK_ColorWHITE));
+  container->SetBackground(CreateThemedSolidBackground(
+      ExamplesColorIds::kColorAccessibilityExampleBackground));
   FlexLayout* const layout =
       container->SetLayoutManager(std::make_unique<FlexLayout>());
   layout->SetCollapseMargins(true);
@@ -39,5 +40,4 @@ void AxExample::CreateExampleView(View* container) {
       u"AnnounceText"));
 }
 
-}  // namespace examples
-}  // namespace views
+}  // namespace views::examples

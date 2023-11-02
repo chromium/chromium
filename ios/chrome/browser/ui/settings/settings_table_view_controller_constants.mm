@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -50,3 +50,14 @@ NSString* const kSettingsClearBrowsingDataCellId =
     @"kSettingsClearBrowsingDataCellId";
 NSString* const kSettingsHandoffCellId = @"kSettingsHandoffCellId";
 NSString* const kSettingsCookiesCellId = @"kSettingsCookiesCellId";
+NSString* const kSettingsDefaultSiteModeCellId =
+    @"kSettingsDefaultSiteModeCellId";
+NSString* const kDefaultBrowserSettingsTableViewId =
+    @"kDefaultBrowserSettingsTableViewId";
+NSString* const kSettingsHttpsOnlyModeCellId = @"kSettingsHttpsOnlyModeCellId";
+NSString* const kSettingsIncognitoInterstitialId =
+    @"kSettingsIncognitoInterstitialId";
+NSString* const kSettingsIncognitoInterstitialDisabledId =
+    @"kSettingsIncognitoInterstitialDisabledId";
+NSString* const kSettingsPriceNotificationsId =
+    @"kSettingsPriceNotificationsId";

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,18 +27,18 @@ class AllWebStateListObservationRegistrar : public BrowserListObserver {
     INCOGNITO = 1 << 1,        // Only register incognito web states.
     ALL = REGULAR | INCOGNITO  // Register all web states.
   };
-  // Constructs an object that registers the given |web_state_list_observer| as
-  // a WebStateListObserver for any Browsers associated with |browser_state| or
-  // |browser_state|'s OTR browser state, according to the value of |mode|.
+  // Constructs an object that registers the given `web_state_list_observer` as
+  // a WebStateListObserver for any Browsers associated with `browser_state` or
+  // `browser_state`'s OTR browser state, according to the value of `mode`.
   // Keeps observer registration up to date as Browsers are added and
-  // removed from |browser_state|'s BrowserList.
+  // removed from `browser_state`'s BrowserList.
   AllWebStateListObservationRegistrar(
       ChromeBrowserState* browser_state,
       std::unique_ptr<WebStateListObserver> web_state_list_observer,
       Mode mode);
 
   // Convenience constructor; creates a registrar as described above, with a
-  // |mode| of ALL.
+  // `mode` of ALL.
   AllWebStateListObservationRegistrar(
       ChromeBrowserState* browser_state,
       std::unique_ptr<WebStateListObserver> web_state_list_observer);

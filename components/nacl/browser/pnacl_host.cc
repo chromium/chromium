@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_math.h"
 #include "components/nacl/browser/nacl_browser.h"
 #include "components/nacl/browser/pnacl_translation_cache.h"
@@ -49,7 +50,7 @@ class FileProxy {
 
  private:
   std::unique_ptr<base::File> file_;
-  PnaclHost* host_;
+  raw_ptr<PnaclHost> host_;
 };
 
 FileProxy::FileProxy(std::unique_ptr<base::File> file, PnaclHost* host)
@@ -191,10 +192,9 @@ void PnaclHost::DoCreateTemporaryFile(base::FilePath temp_dir,
     PLOG(ERROR) << "Temp file creation failed.";
   } else {
     file.Initialize(
-        file_path,
-        base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_READ |
-            base::File::FLAG_WRITE | base::File::FLAG_TEMPORARY |
-            base::File::FLAG_DELETE_ON_CLOSE);
+        file_path, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_READ |
+                       base::File::FLAG_WRITE | base::File::FLAG_WIN_TEMPORARY |
+                       base::File::FLAG_DELETE_ON_CLOSE);
 
     if (!file.IsValid())
       PLOG(ERROR) << "Temp file open failed: " << file.error_details();

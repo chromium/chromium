@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -626,6 +626,39 @@ TEST_F(TouchTest, TouchMultiple2Surfaces) {
 
   EXPECT_CALL(delegate, OnTouchDestroying(touch.get()));
   touch.reset();
+}
+
+TEST_F(TouchTest, IgnoresHandledEvents) {
+  // A very dumb handler that simply marks all events as handled. This is needed
+  // allows us to mark a mouse event as handled as it gets processed by the
+  // event processor.
+  class SetHandledHandler : public ui::EventHandler {
+    void OnTouchEvent(ui::TouchEvent* event) override { event->SetHandled(); }
+  };
+  SetHandledHandler handler;
+  ash::Shell::Get()->AddPreTargetHandler(&handler);
+
+  Seat seat(std::make_unique<TestDataExchangeDelegate>());
+
+  testing::NiceMock<MockTouchDelegate> touch_delegate;
+  std::unique_ptr<Touch> touch(new Touch(&touch_delegate, &seat));
+
+  // Make origin into a real window so the touch can click it
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
+
+  ui::test::EventGenerator generator(ash::Shell::GetPrimaryRootWindow());
+
+  // The SetHandlerHandler should have marked the event as processed. Therefore
+  // the event should simply be ignored.
+  EXPECT_CALL(touch_delegate, OnTouchFrame()).Times(0);
+
+  generator.GestureTapAt(shell_surface->surface_for_testing()
+                             ->window()
+                             ->GetBoundsInScreen()
+                             .CenterPoint());
+
+  ash::Shell::Get()->RemovePreTargetHandler(&handler);
 }
 
 }  // namespace

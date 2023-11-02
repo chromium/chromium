@@ -1,9 +1,11 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_BASE_CURSOR_CURSOR_H_
 #define UI_BASE_CURSOR_CURSOR_H_
+
+#include <vector>
 
 #include "base/component_export.h"
 #include "base/memory/scoped_refptr.h"
@@ -14,8 +16,22 @@
 
 namespace ui {
 
+struct COMPONENT_EXPORT(UI_BASE_CURSOR) CursorData {
+ public:
+  CursorData();
+  CursorData(std::vector<SkBitmap> bitmaps, gfx::Point hotspot);
+  CursorData(const CursorData&);
+  ~CursorData();
+
+  // `bitmaps` contains at least 1 element. Animated cursors (e.g.
+  // `CursorType::kWait`, `CursorType::kProgress`) are represented as a list
+  // of images, so a bigger number is expected.
+  std::vector<SkBitmap> bitmaps;
+  gfx::Point hotspot;
+};
+
 // Ref-counted cursor that supports both default and custom cursors.
-class COMPONENT_EXPORT(UI_BASE_CURSOR_BASE) Cursor {
+class COMPONENT_EXPORT(UI_BASE_CURSOR) Cursor {
  public:
   Cursor();
   Cursor(mojom::CursorType type);

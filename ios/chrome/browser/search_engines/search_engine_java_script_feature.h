@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@ class WebState;
 
 class SearchEngineJavaScriptFeatureDelegate {
  public:
-  // Saves the page |url| generated from a <form> submission to create the
+  // Saves the page `url` generated from a <form> submission to create the
   // TemplateURL when the submission leads to a successful navigation.
   virtual void SetSearchableUrl(web::WebState* web_state, GURL url) = 0;
 
@@ -30,7 +30,7 @@ class SearchEngineJavaScriptFeature : public web::JavaScriptFeature {
  public:
   static SearchEngineJavaScriptFeature* GetInstance();
 
-  // Sets |delegate| as the receiver for search engine url messages.
+  // Sets `delegate` as the receiver for search engine url messages.
   void SetDelegate(SearchEngineJavaScriptFeatureDelegate* delegate);
 
  private:

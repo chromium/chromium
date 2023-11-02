@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,9 +13,9 @@ import java.nio.ByteBuffer;
  */
 class SharedBufferHandleImpl extends HandleBase implements SharedBufferHandle {
     /**
-     * @see HandleBase#HandleBase(CoreImpl, int)
+     * @see HandleBase#HandleBase(CoreImpl, long)
      */
-    SharedBufferHandleImpl(CoreImpl core, int mojoHandle) {
+    SharedBufferHandleImpl(CoreImpl core, long mojoHandle) {
         super(core, mojoHandle);
     }
 

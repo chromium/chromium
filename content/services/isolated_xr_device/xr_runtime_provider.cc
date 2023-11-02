@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/compiler_specific.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "content/public/common/content_switches.h"
 #include "device/base/features.h"
@@ -74,9 +74,9 @@ void SetRuntimeStatus(
 
 // If none of the runtimes are enabled, this function will be unused.
 // This is a bit more scalable than wrapping it in all the typedefs
-bool ALLOW_UNUSED_TYPE IsEnabled(const base::CommandLine* command_line,
-                                 const base::Feature& feature,
-                                 const std::string& name) {
+[[maybe_unused]] bool IsEnabled(const base::CommandLine* command_line,
+                                const base::Feature& feature,
+                                const std::string& name) {
   if (!command_line->HasSwitch(switches::kWebXrForceRuntime))
     return base::FeatureList::IsEnabled(feature);
 
@@ -92,11 +92,9 @@ bool ALLOW_UNUSED_TYPE IsEnabled(const base::CommandLine* command_line,
 // runtime) should be enabled at once, so this chooses the most preferred among
 // available options.
 void IsolatedXRRuntimeProvider::PollForDeviceChanges() {
-  bool preferred_device_enabled = false;
-
-  // If none of the following runtimes are enabled,
-  // we'll get an error for 'preferred_device_enabled' being unused.
-  ALLOW_UNUSED_LOCAL(preferred_device_enabled);
+  // If none of the following runtimes are enabled, we'll get an error for
+  // 'preferred_device_enabled' being unused, thus [[maybe_unused]].
+  [[maybe_unused]] bool preferred_device_enabled = false;
 
 #if BUILDFLAG(ENABLE_OPENXR)
   if (!preferred_device_enabled && IsOpenXrHardwareAvailable()) {
@@ -117,11 +115,10 @@ void IsolatedXRRuntimeProvider::PollForDeviceChanges() {
 
 void IsolatedXRRuntimeProvider::SetupPollingForDeviceChanges() {
   bool any_runtimes_available = false;
-  const base::CommandLine* command_line =
+  [[maybe_unused]] const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();
-  // If none of the following runtimes are enabled,
-  // we'll get an error for 'command_line' being unused.
-  ALLOW_UNUSED_LOCAL(command_line);
+  // If none of the following runtimes are enabled, we'll get an error for
+  // 'command_line' being unused, thus [[maybe_unused]].
 
 #if BUILDFLAG(ENABLE_OPENXR)
   if (IsEnabled(command_line, device::features::kOpenXR,

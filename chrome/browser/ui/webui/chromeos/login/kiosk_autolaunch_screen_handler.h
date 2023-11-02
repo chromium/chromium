@@ -1,30 +1,30 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_KIOSK_AUTOLAUNCH_SCREEN_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_KIOSK_AUTOLAUNCH_SCREEN_HANDLER_H_
 
-#include "base/compiler_specific.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_observer.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
-
-namespace ash {
-class KioskAutolaunchScreen;
-}
 
 namespace chromeos {
 
 // Interface between reset screen and its representation.
 // Note, do not forget to call OnViewDestroyed in the dtor.
-class KioskAutolaunchScreenView {
+class KioskAutolaunchScreenView
+    : public base::SupportsWeakPtr<KioskAutolaunchScreenView> {
  public:
-  constexpr static StaticOobeScreenId kScreenId{"autolaunch"};
+  inline constexpr static StaticOobeScreenId kScreenId{"autolaunch",
+                                                       "AutolaunchScreen"};
 
-  virtual ~KioskAutolaunchScreenView() {}
+  virtual ~KioskAutolaunchScreenView() = default;
 
   virtual void Show() = 0;
-  virtual void SetDelegate(ash::KioskAutolaunchScreen* delegate) = 0;
+  virtual void HandleOnCancel() = 0;
+  virtual void HandleOnConfirm() = 0;
+  virtual void HandleOnVisible() = 0;
 };
 
 // WebUI implementation of KioskAutolaunchScreenActor.
@@ -34,7 +34,7 @@ class KioskAutolaunchScreenHandler : public KioskAutolaunchScreenView,
  public:
   using TView = KioskAutolaunchScreenView;
 
-  explicit KioskAutolaunchScreenHandler(JSCallsContainer* js_calls_container);
+  KioskAutolaunchScreenHandler();
 
   KioskAutolaunchScreenHandler(const KioskAutolaunchScreenHandler&) = delete;
   KioskAutolaunchScreenHandler& operator=(const KioskAutolaunchScreenHandler&) =
@@ -44,7 +44,9 @@ class KioskAutolaunchScreenHandler : public KioskAutolaunchScreenView,
 
   // KioskAutolaunchScreenView:
   void Show() override;
-  void SetDelegate(ash::KioskAutolaunchScreen* delegate) override;
+  void HandleOnCancel() override;
+  void HandleOnConfirm() override;
+  void HandleOnVisible() override;
 
   // KioskAppManagerObserver:
   void OnKioskAppsSettingsChanged() override;
@@ -53,24 +55,13 @@ class KioskAutolaunchScreenHandler : public KioskAutolaunchScreenView,
   // BaseScreenHandler:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void Initialize() override;
 
-  // WebUIMessageHandler:
-  void RegisterMessages() override;
+  void DeclareJSCallbacks() override;
 
  private:
   // Updates auto-start UI assets on JS side.
   void UpdateKioskApp();
 
-  // JS messages handlers.
-  void HandleOnCancel();
-  void HandleOnConfirm();
-  void HandleOnVisible();
-
-  ash::KioskAutolaunchScreen* delegate_ = nullptr;
-
-  // Keeps whether screen should be shown right after initialization.
-  bool show_on_init_ = false;
   bool is_visible_ = false;
 };
 

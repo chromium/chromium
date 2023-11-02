@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -14,19 +14,15 @@ source_set("overscroll_actions") {
   ]
   deps = [
     "resources:ptr_close",
-    "resources:ptr_close_active",
     "resources:ptr_new_tab",
-    "resources:ptr_new_tab_active",
     "resources:ptr_reload",
-    "resources:ptr_reload_active",
     "//base",
-    "//ios/chrome/app/strings:ios_chromium_strings_grit",
-    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/app/strings",
     "//ios/chrome/app/theme",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_constant",
     "//ios/chrome/browser/ui/fullscreen",
-    "//ios/chrome/browser/ui/fullscreen:feature_flags",
+    "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/ntp:logo",
     "//ios/chrome/browser/ui/page_info:constants",
     "//ios/chrome/browser/ui/side_swipe",
@@ -34,7 +30,7 @@ source_set("overscroll_actions") {
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/ui/voice",
     "//ios/chrome/common/ui/colors",
-    "//ios/public/provider/chrome/browser",
+    "//ios/public/provider/chrome/browser/fullscreen:fullscreen_api",
     "//ios/web/common",
     "//ios/web/public",
     "//ui/base",

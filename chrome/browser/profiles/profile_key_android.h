@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <jni.h>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 
 class ProfileKey;
 
@@ -36,7 +36,7 @@ class ProfileKeyAndroid {
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
  private:
-  ProfileKey* key_;
+  raw_ptr<ProfileKey> key_;
   base::android::ScopedJavaGlobalRef<jobject> obj_;
 };
 

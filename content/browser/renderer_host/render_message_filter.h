@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,12 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <list>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner_helpers.h"
+#include "base/threading/platform_thread.h"
 #include "build/build_config.h"
 #include "content/common/render_message_filter.mojom.h"
 #include "content/public/browser/browser_associated_interface.h"
@@ -28,7 +29,7 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/surface/transport_dib.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -45,7 +46,7 @@ class RenderWidgetHelper;
 
 // This class filters out incoming IPC messages for the renderer process on the
 // IPC thread.
-class CONTENT_EXPORT RenderMessageFilter
+class RenderMessageFilter
     : public BrowserMessageFilter,
       public BrowserAssociatedInterface<mojom::RenderMessageFilter> {
  public:
@@ -77,16 +78,15 @@ class CONTENT_EXPORT RenderMessageFilter
   void GenerateRoutingID(GenerateRoutingIDCallback routing_id) override;
   void GenerateFrameRoutingID(GenerateFrameRoutingIDCallback callback) override;
   void HasGpuProcess(HasGpuProcessCallback callback) override;
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-  void SetThreadPriority(int32_t ns_tid,
-                         base::ThreadPriority priority) override;
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  void SetThreadType(int32_t ns_tid, base::ThreadType thread_type) override;
 #endif
 
   void OnResolveProxy(const GURL& url, IPC::Message* reply_msg);
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-  void SetThreadPriorityOnFileThread(base::PlatformThreadId ns_tid,
-                                     base::ThreadPriority priority);
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  void SetThreadTypeOnWorkerThread(base::PlatformThreadId ns_tid,
+                                   base::ThreadType thread_type);
 #endif
 
   void OnMediaLogRecords(const std::vector<media::MediaLogRecord>&);
@@ -98,7 +98,7 @@ class CONTENT_EXPORT RenderMessageFilter
 
   int render_process_id_;
 
-  MediaInternals* media_internals_;
+  raw_ptr<MediaInternals> media_internals_;
 
   base::WeakPtrFactory<RenderMessageFilter> weak_ptr_factory_{this};
 };

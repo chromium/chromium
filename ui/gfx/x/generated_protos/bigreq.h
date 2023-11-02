@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,9 +41,11 @@
 #ifndef UI_GFX_X_GENERATED_PROTOS_BIGREQ_H_
 #define UI_GFX_X_GENERATED_PROTOS_BIGREQ_H_
 
+#include <array>
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <vector>
 
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,9 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/chromeos/extensions/speech/speech_recognition_private_recognizer.h"
+#include "chrome/browser/profiles/incognito_helpers.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/common/extensions/api/speech_recognition_private.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/event_router_factory.h"
@@ -48,7 +48,7 @@ absl::optional<int> GetClientIdFromKey(const std::string& key) {
 // Factory to get or create an instance of SpeechRecognitionPrivateManager from
 // a browser context.
 class SpeechRecognitionPrivateManagerFactory
-    : public BrowserContextKeyedServiceFactory {
+    : public ProfileKeyedServiceFactory {
  public:
   SpeechRecognitionPrivateManagerFactory(
       const SpeechRecognitionPrivateManagerFactory&) = delete;
@@ -68,8 +68,6 @@ class SpeechRecognitionPrivateManagerFactory
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
 };
 
 // static
@@ -88,22 +86,17 @@ SpeechRecognitionPrivateManagerFactory::GetInstance() {
 }
 
 SpeechRecognitionPrivateManagerFactory::SpeechRecognitionPrivateManagerFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "SpeechRecognitionApiManager",
-          BrowserContextDependencyManager::GetInstance()) {
+          // Incognito profiles should use their own instance of the browser
+          // context.
+          ProfileSelections::BuildForRegularAndIncognito()) {
   DependsOn(EventRouterFactory::GetInstance());
 }
 
 KeyedService* SpeechRecognitionPrivateManagerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   return new SpeechRecognitionPrivateManager(context);
-}
-
-content::BrowserContext*
-SpeechRecognitionPrivateManagerFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  // Redirected in incognito.
-  return ExtensionsBrowserClient::Get()->GetOriginalContext(context);
 }
 
 }  // namespace
@@ -132,13 +125,13 @@ void SpeechRecognitionPrivateManager::HandleStart(
     const std::string& key,
     absl::optional<std::string> locale,
     absl::optional<bool> interim_results,
-    ApiCallback callback) {
+    OnStartCallback callback) {
   GetSpeechRecognizer(key)->HandleStart(locale, interim_results,
                                         std::move(callback));
 }
 
 void SpeechRecognitionPrivateManager::HandleStop(const std::string& key,
-                                                 ApiCallback callback) {
+                                                 OnStopCallback callback) {
   GetSpeechRecognizer(key)->HandleStop(std::move(callback));
 }
 
@@ -148,12 +141,12 @@ void SpeechRecognitionPrivateManager::HandleSpeechRecognitionStopped(
   absl::optional<int> client_id = GetClientIdFromKey(key);
   EventRouter* event_router = EventRouter::Get(context_);
 
-  base::Value return_dict(base::Value::Type::DICTIONARY);
+  base::Value::Dict return_dict;
   if (client_id.has_value())
-    return_dict.SetIntKey("clientId", client_id.value());
+    return_dict.Set("clientId", client_id.value());
 
-  auto event_args = std::vector<base::Value>();
-  event_args.push_back(std::move(return_dict));
+  base::Value::List event_args;
+  event_args.Append(std::move(return_dict));
   std::unique_ptr<Event> event = std::make_unique<Event>(
       events::SPEECH_RECOGNITION_PRIVATE_ON_STOP,
       api::speech_recognition_private::OnStop::kEventName,
@@ -173,8 +166,7 @@ void SpeechRecognitionPrivateManager::HandleSpeechRecognitionResult(
   api::speech_recognition_private::SpeechRecognitionResultEvent event;
   event.transcript = base::UTF16ToUTF8(transcript);
   event.is_final = is_final;
-  if (client_id)
-    event.client_id = std::make_unique<int>(*client_id);
+  event.client_id = client_id;
 
   auto event_args = api::speech_recognition_private::OnResult::Create(event);
   std::unique_ptr<Event> event_ptr = std::make_unique<Event>(
@@ -194,8 +186,7 @@ void SpeechRecognitionPrivateManager::HandleSpeechRecognitionError(
 
   api::speech_recognition_private::SpeechRecognitionErrorEvent event;
   event.message = message;
-  if (client_id)
-    event.client_id = std::make_unique<int>(*client_id);
+  event.client_id = client_id;
 
   auto event_args = api::speech_recognition_private::OnError::Create(event);
   std::unique_ptr<Event> event_ptr = std::make_unique<Event>(

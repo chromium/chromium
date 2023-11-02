@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,10 +10,17 @@
 #include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/callback.h"
-#include "chrome/browser/enterprise/connectors/device_trust/attestation/common/signals_type.h"
+#include "base/values.h"
+#include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/metrics_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/signals_decorator.h"
 
 namespace enterprise_connectors {
+
+namespace {
+
+constexpr char kLatencyHistogramVariant[] = "Full";
+
+}  // namespace
 
 SignalsServiceImpl::SignalsServiceImpl(
     std::vector<std::unique_ptr<SignalsDecorator>> signals_decorators)
@@ -22,14 +29,15 @@ SignalsServiceImpl::SignalsServiceImpl(
 SignalsServiceImpl::~SignalsServiceImpl() = default;
 
 void SignalsServiceImpl::CollectSignals(CollectSignalsCallback callback) {
-  auto signals = std::make_unique<SignalsType>();
+  auto start_time = base::TimeTicks::Now();
+  auto signals = std::make_unique<base::Value::Dict>();
   auto* signals_ptr = signals.get();
 
   auto barrier_closure = base::BarrierClosure(
       signals_decorators_.size(),
       base::BindOnce(&SignalsServiceImpl::OnSignalsDecorated,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     std::move(signals)));
+                     start_time, std::move(signals)));
 
   for (const auto& decorator : signals_decorators_) {
     decorator->Decorate(*signals_ptr, barrier_closure);
@@ -38,8 +46,16 @@ void SignalsServiceImpl::CollectSignals(CollectSignalsCallback callback) {
 
 void SignalsServiceImpl::OnSignalsDecorated(
     CollectSignalsCallback callback,
-    std::unique_ptr<SignalsType> signals) {
-  std::move(callback).Run(std::move(signals));
+    base::TimeTicks start_time,
+    std::unique_ptr<base::Value::Dict> signals) {
+  LogSignalsCollectionLatency(kLatencyHistogramVariant, start_time);
+
+  if (!signals) {
+    base::Value::Dict empty_dictionary;
+    std::move(callback).Run(std::move(empty_dictionary));
+  } else {
+    std::move(callback).Run(std::move(*signals));
+  }
 }
 
 }  // namespace enterprise_connectors

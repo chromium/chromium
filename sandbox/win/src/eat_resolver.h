@@ -1,4 +1,4 @@
-// Copyright (c) 2010 The Chromium Authors. All rights reserved.
+// Copyright 2010 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "sandbox/win/src/nt_internals.h"
 #include "sandbox/win/src/resolver.h"
 
@@ -43,7 +43,9 @@ class EatResolverThunk : public ResolverThunk {
 
  private:
   // The entry to patch.
-  DWORD* eat_entry_;
+  // The field is accessed too early during the process startup to support
+  // raw_ptr<T>.
+  RAW_PTR_EXCLUSION DWORD* eat_entry_;
 };
 
 }  // namespace sandbox

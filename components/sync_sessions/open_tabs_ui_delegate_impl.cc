@@ -1,33 +1,16 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/sync_sessions/open_tabs_ui_delegate_impl.h"
 
-#include <algorithm>
 #include <memory>
 
+#include "base/ranges/algorithm.h"
 #include "components/sync_sessions/sync_sessions_client.h"
 #include "components/sync_sessions/synced_session_tracker.h"
 
 namespace sync_sessions {
-namespace {
-
-// Comparator function for use with std::sort that will sort tabs by
-// descending timestamp (i.e., most recent first).
-bool TabsRecencyComparator(const sessions::SessionTab* t1,
-                           const sessions::SessionTab* t2) {
-  return t1->timestamp > t2->timestamp;
-}
-
-// Comparator function for use with std::sort that will sort sessions by
-// descending modified_time (i.e., most recent first).
-bool SessionsRecencyComparator(const SyncedSession* s1,
-                               const SyncedSession* s2) {
-  return s1->modified_time > s2->modified_time;
-}
-
-}  // namespace
 
 OpenTabsUIDelegateImpl::OpenTabsUIDelegateImpl(
     const SyncSessionsClient* sessions_client,
@@ -43,7 +26,9 @@ bool OpenTabsUIDelegateImpl::GetAllForeignSessions(
     std::vector<const SyncedSession*>* sessions) {
   *sessions = session_tracker_->LookupAllForeignSessions(
       SyncedSessionTracker::PRESENTABLE);
-  std::sort(sessions->begin(), sessions->end(), SessionsRecencyComparator);
+  base::ranges::sort(
+      *sessions, std::greater(),
+      [](const SyncedSession* session) { return session->modified_time; });
   return !sessions->empty();
 }
 
@@ -64,24 +49,29 @@ bool OpenTabsUIDelegateImpl::GetForeignSessionTabs(
     const std::string& tag,
     std::vector<const sessions::SessionTab*>* tabs) {
   std::vector<const sessions::SessionWindow*> windows;
-  if (!session_tracker_->LookupSessionWindows(tag, &windows))
+  if (!session_tracker_->LookupSessionWindows(tag, &windows)) {
     return false;
+  }
 
   // Prune those tabs that are not syncable or are NewTabPage, then sort them
   // from most recent to least recent, independent of which window the tabs were
   // from.
   for (const sessions::SessionWindow* window : windows) {
     for (const std::unique_ptr<sessions::SessionTab>& tab : window->tabs) {
-      if (tab->navigations.empty())
+      if (tab->navigations.empty()) {
         continue;
+      }
       const sessions::SerializedNavigationEntry& current_navigation =
           tab->navigations.at(tab->normalized_navigation_index());
-      if (!sessions_client_->ShouldSyncURL(current_navigation.virtual_url()))
+      if (!sessions_client_->ShouldSyncURL(current_navigation.virtual_url())) {
         continue;
+      }
       tabs->push_back(tab.get());
     }
   }
-  std::stable_sort(tabs->begin(), tabs->end(), TabsRecencyComparator);
+  base::ranges::stable_sort(
+      *tabs, std::greater(),
+      [](const sessions::SessionTab* tab) { return tab->timestamp; });
   return true;
 }
 

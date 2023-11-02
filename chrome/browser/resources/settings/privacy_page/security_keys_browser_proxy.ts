@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,11 +21,12 @@ export enum Ctap2Status {
  * Credential represents a CTAP2 resident credential enumerated from a
  * security key.
  *
- * id: (required) The hex encoding of the CBOR-serialized
- *     PublicKeyCredentialDescriptor of the credential.
+ * credentialId: (required) The hex encoding of the credential ID.
  *
  * relyingPartyId: (required) The RP ID (i.e. the site that created the
  *     credential; eTLD+n)
+ *
+ * userHandle: userName: (required) The PublicKeyCredentialUserEntity.id
  *
  * userName: (required) The PublicKeyCredentialUserEntity.name
  *
@@ -33,20 +34,21 @@ export enum Ctap2Status {
  *
  * @see chrome/browser/ui/webui/settings/settings_security_key_handler.cc
  */
-export type Credential = {
-  id: string,
-  relyingPartyId: string,
-  userName: string,
-  userDisplayName: string,
-};
+export interface Credential {
+  credentialId: string;
+  relyingPartyId: string;
+  userHandle: string;
+  userName: string;
+  userDisplayName: string;
+}
 
 /**
  * Encapsulates information about an authenticator's biometric sensor.
  */
-export type SensorInfo = {
-  maxTemplateFriendlyName: number,
-  maxSamplesForEnroll: number|null,
-};
+export interface SensorInfo {
+  maxTemplateFriendlyName: number;
+  maxSamplesForEnroll: number|null;
+}
 
 /**
  * SampleStatus is the result for reading an individual sample ("touch")
@@ -63,20 +65,20 @@ export enum SampleStatus {
  *
  * @see chrome/browser/ui/webui/settings/settings_security_key_handler.cc
  */
-export type SampleResponse = {
-  status: SampleStatus,
-  remaining: number,
-};
+export interface SampleResponse {
+  status: SampleStatus;
+  remaining: number;
+}
 
 /**
  * EnrollmentResponse is the final response to an enrollment suboperation,
  *
  * @see chrome/browser/ui/webui/settings/settings_security_key_handler.cc
  */
-export type EnrollmentResponse = {
-  code: Ctap2Status,
-  enrollment: Enrollment|null,
-};
+export interface EnrollmentResponse {
+  code: Ctap2Status;
+  enrollment: Enrollment|null;
+}
 
 /**
  * Enrollment represents a valid fingerprint template stored on a security
@@ -84,25 +86,47 @@ export type EnrollmentResponse = {
  *
  * @see chrome/browser/ui/webui/settings/settings_security_key_handler.cc
  */
-export type Enrollment = {
-  name: string,
-  id: string,
-};
+export interface Enrollment {
+  name: string;
+  id: string;
+}
 
 /**
- * SetPINResponse represents the response to startSetPIN and setPIN requests.
+ * SetPinResponse represents the response to startSetPIN and setPIN requests.
  *
  * @see chrome/browser/ui/webui/settings/settings_security_key_handler.cc
  */
-export type SetPINResponse = {
-  done: boolean,
-  error?: number,
-  currentMinPinLength?: number,
-  newMinPinLength?: number,
-  retries?: number,
-};
+export interface SetPinResponse {
+  done: boolean;
+  error?: number;
+  currentMinPinLength?: number;
+  newMinPinLength?: number;
+  retries?: number;
+}
 
-export interface SecurityKeysPINBrowserProxy {
+/**
+ * StartCredentialManagementResponse is the response to
+ * startCredentialManagement.
+ *
+ * @see chrome/browser/ui/webui/settings/settings_security_key_handler.cc
+ */
+export interface StartCredentialManagementResponse {
+  minPinLength: number;
+  supportsUpdateUserInformation: boolean;
+}
+
+/**
+ * CredentialManagementResponse is the response to a deleteCredential or
+ * updateUserInfo suboperation.
+ *
+ * @see chrome/browser/ui/webui/settings/settings_security_key_handler.cc
+ */
+export interface CredentialManagementResponse {
+  success: boolean;
+  message: string;
+}
+
+export interface SecurityKeysPinBrowserProxy {
   /**
    * Starts a PIN set/change operation by flashing all security keys. Resolves
    * with a pair of numbers. The first is one if the process has immediately
@@ -112,7 +136,7 @@ export interface SecurityKeysPINBrowserProxy {
    * remaining to correctly specify the current PIN, or else null to indicate
    * that no PIN is currently set.
    */
-  startSetPIN(): Promise<SetPINResponse>;
+  startSetPIN(): Promise<SetPinResponse>;
 
   /**
    * Attempts a PIN set/change operation. Resolves with a pair of numbers
@@ -120,7 +144,7 @@ export interface SecurityKeysPINBrowserProxy {
    * always be 1 to indicate that the process has completed and thus the
    * second will be the CTAP error code.
    */
-  setPIN(oldPIN: string, newPIN: string): Promise<SetPINResponse>;
+  setPIN(oldPIN: string, newPIN: string): Promise<SetPinResponse>;
 
   /** Cancels all outstanding operations. */
   close(): void;
@@ -138,7 +162,7 @@ export interface SecurityKeysCredentialBrowserProxy {
    * @return A promise that resolves when the handler is ready for
    *     the authenticator PIN to be provided.
    */
-  startCredentialManagement(): Promise<Array<number>>;
+  startCredentialManagement(): Promise<StartCredentialManagementResponse>;
 
   /**
    * Provides a PIN for a credential management operation. The
@@ -154,14 +178,24 @@ export interface SecurityKeysCredentialBrowserProxy {
    * previously been supplied via providePIN() before this
    * method may be called.
    */
-  enumerateCredentials(): Promise<Array<Credential>>;
+  enumerateCredentials(): Promise<Credential[]>;
 
   /**
    * Deletes the credentials with the given IDs from the security key.
-   * @return A localized response message to display to
-   *     the user (on either success or error)
+   * @return An object with a success boolean and a localized response
+   *     message to display to the user (on either success or error)
    */
-  deleteCredentials(ids: Array<string>): Promise<string>;
+  deleteCredentials(ids: string[]): Promise<CredentialManagementResponse>;
+
+  /**
+   * Updates the credentials with the given ID from the security key
+   * to a new username (and/or) displayname
+   * @return An object with a success boolean and a localized response
+   *     message to display to the user (on either success or error)
+   */
+  updateUserInformation(
+      credentialId: string, userHandle: string, newUsername: string,
+      newDisplayname: string): Promise<CredentialManagementResponse>;
 
   /** Cancels all outstanding operations. */
   close(): void;
@@ -197,7 +231,7 @@ export interface SecurityKeysBioEnrollProxy {
    * @return Resolves when the handler is ready for the
    *     authentcation PIN to be provided.
    */
-  startBioEnroll(): Promise<Array<number>>;
+  startBioEnroll(): Promise<number[]>;
 
   /**
    * Provides a PIN for a biometric enrollment operation. The startBioEnroll()
@@ -218,7 +252,7 @@ export interface SecurityKeysBioEnrollProxy {
    * Enumerates enrollments on the authenticator. A correct PIN must have
    * previously been supplied via providePIN() before this method may be called.
    */
-  enumerateEnrollments(): Promise<Array<Enrollment>>;
+  enumerateEnrollments(): Promise<Enrollment[]>;
 
   /**
    * Move the operation into enrolling mode, which instructs the authenticator
@@ -247,21 +281,60 @@ export interface SecurityKeysBioEnrollProxy {
    *
    * @return The remaining enrollments.
    */
-  deleteEnrollment(id: string): Promise<Array<Enrollment>>;
+  deleteEnrollment(id: string): Promise<Enrollment[]>;
 
   /**
    * Renames the enrollment with the given ID.
    *
    * @return The updated list of enrollments.
    */
-  renameEnrollment(id: string, name: string): Promise<Array<Enrollment>>;
+  renameEnrollment(id: string, name: string): Promise<Enrollment[]>;
 
   /** Cancels all outstanding operations. */
   close(): void;
 }
 
-export class SecurityKeysPINBrowserProxyImpl implements
-    SecurityKeysPINBrowserProxy {
+/**
+ * An object that represents a known phone. The name will not contain any
+ * new-line characters and is suitable for showing in UI. The publicKey is a
+ * base64-encoded X9.62 P-256 point, but should be treated as an opaque string.
+ * It can be passed to functions in |SecurityKeysPhonesBrowserProxy| to identify
+ * a specific phone.
+ */
+export interface SecurityKeysPhone {
+  name: string;
+  publicKey: string;
+}
+
+/**
+ * A pair of lists of |SecurityKeysPhone|s. The first is a list of phones known
+ * because they are syncing to the same account. The second are phones that have
+ * been linked by scanning a QR code. Only elements from the latter can be
+ * passed to |delete| or |rename| in |SecurityKeysPhonesBrowserProxy|.
+ */
+export type SecurityKeysPhonesList = [SecurityKeysPhone[], SecurityKeysPhone[]];
+
+export interface SecurityKeysPhonesBrowserProxy {
+  /**
+   * Enumerates known phones.
+   */
+  enumerate(): Promise<SecurityKeysPhonesList>;
+
+  /**
+   * Deletes a linked phone by public key.
+   */
+  delete(publicKey: string): Promise<SecurityKeysPhonesList>;
+
+  /**
+   * Rename a linked phone.
+   *
+   * Rename the phone the given public key so that it is now known as |newName|.
+   */
+  rename(publicKey: string, newName: string): Promise<void>;
+}
+
+export class SecurityKeysPinBrowserProxyImpl implements
+    SecurityKeysPinBrowserProxy {
   startSetPIN() {
     return sendWithPromise('securityKeyStartSetPIN');
   }
@@ -274,17 +347,17 @@ export class SecurityKeysPINBrowserProxyImpl implements
     return chrome.send('securityKeyPINClose');
   }
 
-  static getInstance(): SecurityKeysPINBrowserProxy {
+  static getInstance(): SecurityKeysPinBrowserProxy {
     return pinBrowserProxyInstance ||
-        (pinBrowserProxyInstance = new SecurityKeysPINBrowserProxyImpl());
+        (pinBrowserProxyInstance = new SecurityKeysPinBrowserProxyImpl());
   }
 
-  static setInstance(obj: SecurityKeysPINBrowserProxy) {
+  static setInstance(obj: SecurityKeysPinBrowserProxy) {
     pinBrowserProxyInstance = obj;
   }
 }
 
-let pinBrowserProxyInstance: SecurityKeysPINBrowserProxy|null = null;
+let pinBrowserProxyInstance: SecurityKeysPinBrowserProxy|null = null;
 
 export class SecurityKeysCredentialBrowserProxyImpl implements
     SecurityKeysCredentialBrowserProxy {
@@ -300,8 +373,16 @@ export class SecurityKeysCredentialBrowserProxyImpl implements
     return sendWithPromise('securityKeyCredentialManagementEnumerate');
   }
 
-  deleteCredentials(ids: Array<string>) {
+  deleteCredentials(ids: string[]) {
     return sendWithPromise('securityKeyCredentialManagementDelete', ids);
+  }
+
+  updateUserInformation(
+      credentialId: string, userHandle: string, newUsername: string,
+      newDisplayname: string) {
+    return sendWithPromise(
+        'securityKeyCredentialManagementUpdate', credentialId, userHandle,
+        newUsername, newDisplayname);
   }
 
   close() {
@@ -397,3 +478,29 @@ export class SecurityKeysBioEnrollProxyImpl implements
 }
 
 let bioEnrollProxyInstance: SecurityKeysBioEnrollProxy|null = null;
+
+export class SecurityKeysPhonesBrowserProxyImpl implements
+    SecurityKeysPhonesBrowserProxy {
+  enumerate() {
+    return sendWithPromise('securityKeyPhonesEnumerate');
+  }
+
+  delete(name: string) {
+    return sendWithPromise('securityKeyPhonesDelete', name);
+  }
+
+  rename(publicKey: string, newName: string) {
+    return sendWithPromise('securityKeyPhonesRename', publicKey, newName);
+  }
+
+  static getInstance(): SecurityKeysPhonesBrowserProxy {
+    return phonesProxyInstance ||
+        (phonesProxyInstance = new SecurityKeysPhonesBrowserProxyImpl());
+  }
+
+  static setInstance(obj: SecurityKeysPhonesBrowserProxy) {
+    phonesProxyInstance = obj;
+  }
+}
+
+let phonesProxyInstance: SecurityKeysPhonesBrowserProxy|null = null;

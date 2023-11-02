@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,8 +26,8 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
  * system back button.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.
-Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "enable-experimental-web-platform-features"})
+@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+        "enable-experimental-web-platform-features", "enable-blink-features=CloseWatcher"})
 public class CloseWatcherTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -51,6 +51,17 @@ public class CloseWatcherTest {
     public void testBackButtonTriggersCloseWatcher() throws Throwable {
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
         mActivityTestRule.loadUrl(TEST_URL);
+        TestThreadUtils.runOnUiThreadBlocking(() -> activity.onBackPressed());
+        new TabTitleObserver(mTab, "SUCCESS").waitForTitleUpdate(3);
+    }
+
+    @Test
+    @MediumTest
+    public void testBackButtonClosesDialogElement() throws Throwable {
+        ChromeTabbedActivity activity = mActivityTestRule.getActivity();
+        mActivityTestRule.loadUrl(UrlUtils.encodeHtmlDataUri("<dialog id=mydialog>hello</dialog>"
+                + "<script>mydialog.showModal();"
+                + "mydialog.onclose = () => window.document.title = 'SUCCESS';</script>"));
         TestThreadUtils.runOnUiThreadBlocking(() -> activity.onBackPressed());
         new TabTitleObserver(mTab, "SUCCESS").waitForTitleUpdate(3);
     }

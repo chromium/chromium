@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,12 @@
 
 #include "build/build_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_capture_start_focus_behavior.h"
-#include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_track_impl.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 
 namespace blink {
 
-class MODULES_EXPORT FocusableMediaStreamTrack : public MediaStreamTrack {
+class MODULES_EXPORT FocusableMediaStreamTrack : public MediaStreamTrackImpl {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -29,7 +29,7 @@ class MODULES_EXPORT FocusableMediaStreamTrack : public MediaStreamTrack {
                             const String& descriptor_id,
                             bool is_clone = false);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   void CloseFocusWindowOfOpportunity() override;
 #endif
 
@@ -38,7 +38,7 @@ class MODULES_EXPORT FocusableMediaStreamTrack : public MediaStreamTrack {
              ExceptionState& exception_state);
 
   // Clones raise an error if focus() is called.
-  FocusableMediaStreamTrack* clone(ScriptState*) override;
+  FocusableMediaStreamTrack* clone(ExecutionContext*) override;
 
  protected:
   // Given a partially built FocusableMediaStreamTrack, finishes the job
@@ -50,13 +50,12 @@ class MODULES_EXPORT FocusableMediaStreamTrack : public MediaStreamTrack {
   const String& descriptor_id() const { return descriptor_id_; }
 
  private:
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Clones may not be focus()-ed.
   const bool is_clone_;
 
-  // Calling focus() after the microtask on which getDisplayMedia()'s Promise
-  // was settled raises an exception.
-  bool promise_settled_ = false;
+  // Track whether the window of opportunity to call focus() is still open.
+  bool focus_window_of_opportunity_is_open_ = true;
 
   // First call to focus() is allowed. Subsequent calls produce an error.
   bool focus_called_ = false;

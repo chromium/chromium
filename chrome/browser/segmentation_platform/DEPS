@@ -1,3 +1,5 @@
 include_rules = [
+  "+components/commerce/core",
+  "+components/segmentation_platform/embedder",
   "+components/segmentation_platform/internal",
 ]

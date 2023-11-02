@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,7 +41,8 @@ void SetContentCommandLineFlags(bool single_process) {
       base::android::SDK_VERSION_MARSHMALLOW) {
     parsed_command_line->AppendSwitch(switches::kEnableLongpressDragSelection);
     parsed_command_line->AppendSwitchASCII(
-        blink::switches::kTouchTextSelectionStrategy, "direction");
+        blink::switches::kTouchTextSelectionStrategy,
+        blink::switches::kTouchTextSelectionStrategy_Direction);
   }
 
   // On legacy low-memory devices the behavior has not been studied with regard
@@ -50,9 +51,6 @@ void SetContentCommandLineFlags(bool single_process) {
   // on such systems.
   if (base::SysInfo::IsLowEndDevice())
     parsed_command_line->AppendSwitch(switches::kInProcessGPU);
-
-  parsed_command_line->AppendSwitch(
-      switches::kMainFrameResizesAreOrientationChanges);
 
   // Disable anti-aliasing.
   parsed_command_line->AppendSwitch(

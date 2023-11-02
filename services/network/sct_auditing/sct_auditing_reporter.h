@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,16 +7,21 @@
 
 #include <memory>
 
+#include "base/callback_forward.h"
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/backoff_entry.h"
 #include "net/base/hash_value.h"
 #include "net/cert/signed_certificate_timestamp_and_status.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/mojom/network_service.mojom-forward.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/proto/sct_audit_report.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -25,6 +30,7 @@ class HttpResponseHeaders;
 
 namespace network {
 
+class NetworkContext;
 class SimpleURLLoader;
 
 // Owns an SCT auditing report and handles sending it and retrying on failures.
@@ -44,26 +50,79 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingReporter {
   // Callback to notify the SCTAuditingHandler that this reporter has completed.
   // The SHA256HashValue `reporter_key` is passed to uniquely identify this
   // reporter instance.
-  using ReporterDoneCallback = base::OnceCallback<void(net::SHA256HashValue)>;
+  using ReporterDoneCallback = base::OnceCallback<void(net::HashValue)>;
+  // Callback to notify the SCTAuditingHandler that the reporter has updated
+  // (e.g., the retry counter has been incremented).
+  using ReporterUpdatedCallback = base::RepeatingCallback<void()>;
 
-  SCTAuditingReporter(
-      net::SHA256HashValue reporter_key,
-      std::unique_ptr<sct_auditing::SCTClientReport> report,
-      mojom::URLLoaderFactory& url_loader_factory,
-      const GURL& report_uri,
-      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
-      ReporterDoneCallback done_callback);
-  ~SCTAuditingReporter();
+  // For hashdance requests, the client must select an SCT and set its metadata
+  // when building an SCTAuditingReporter.
+  struct COMPONENT_EXPORT(NETWORK_SERVICE) SCTHashdanceMetadata {
+    // Construct an SCTHashdanceMetadata from the given |value|. Returns
+    // absl::nullopt if |value| cannot be parsed into a valid
+    // SCTHashdanceMetadata.
+    static absl::optional<SCTHashdanceMetadata> FromValue(
+        const base::Value& value);
 
-  SCTAuditingReporter(const SCTAuditingReporter&) = delete;
-  SCTAuditingReporter& operator=(const SCTAuditingReporter&) = delete;
+    SCTHashdanceMetadata();
+    ~SCTHashdanceMetadata();
+    SCTHashdanceMetadata(const SCTHashdanceMetadata&) = delete;
+    SCTHashdanceMetadata operator=(const SCTHashdanceMetadata&) = delete;
+    SCTHashdanceMetadata(SCTHashdanceMetadata&&);
+    SCTHashdanceMetadata& operator=(SCTHashdanceMetadata&&);
 
-  static const net::BackoffEntry::Policy kDefaultBackoffPolicy;
+    // Returns a base::Value from which the SCTHashdanceMetadata can be
+    // reconstructed.
+    base::Value ToValue() const;
 
-  void Start();
+    // Merkle tree leaf hash.
+    std::string leaf_hash;
 
-  net::SHA256HashValue key() { return reporter_key_; }
-  sct_auditing::SCTClientReport* report() { return report_.get(); }
+    // Date and time when this SCT was issued.
+    base::Time issued;
+
+    // Corresponding CT Log ID.
+    std::string log_id;
+
+    // Corresponding CT Log Maximum Merge Delay.
+    base::TimeDelta log_mmd;
+
+    // The certificate expiry date.
+    base::Time certificate_expiry;
+  };
+
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class LookupQueryResult {
+    // Indicates a network status other than 200 OK.
+    kHTTPError = 0,
+
+    // The content returned by the server either did not parse as valid JSON or
+    // was missing required fields.
+    kInvalidJson = 1,
+
+    // The server returned a `responseStatus` field other than "OK".
+    kStatusNotOk = 2,
+
+    // The certificate has expired according to the timestamp returned by the
+    // server.
+    kCertificateExpired = 3,
+
+    // The server does not know about the log corresponding to the SCT.
+    kLogNotFound = 4,
+
+    // The log has not yet ingested the SCT.
+    kLogNotYetIngested = 5,
+
+    // The SCT suffix was found in the suffix list, so it should not be
+    // reported.
+    kSCTSuffixFound = 6,
+
+    // The SCT suffix was NOT found in the suffix list, so it should be
+    // reported.
+    kSCTSuffixNotFound = 7,
+    kMaxValue = kSCTSuffixNotFound,
+  };
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -74,26 +133,76 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingReporter {
     kMaxValue = kRetriesExhausted,
   };
 
+  SCTAuditingReporter(
+      NetworkContext* owner_network_context_,
+      net::HashValue reporter_key,
+      std::unique_ptr<sct_auditing::SCTClientReport> report,
+      bool is_hashdance,
+      absl::optional<SCTHashdanceMetadata> hashdance_metadata,
+      mojom::SCTAuditingConfigurationPtr configuration,
+      mojom::URLLoaderFactory* url_loader_factory,
+      ReporterUpdatedCallback update_callback,
+      ReporterDoneCallback done_callback,
+      std::unique_ptr<net::BackoffEntry> backoff_entry = nullptr,
+      bool counted_towards_report_limit = false);
+  ~SCTAuditingReporter();
+
+  SCTAuditingReporter(const SCTAuditingReporter&) = delete;
+  SCTAuditingReporter& operator=(const SCTAuditingReporter&) = delete;
+
+  static const net::BackoffEntry::Policy kDefaultBackoffPolicy;
+
+  void Start();
+
+  net::HashValue key() { return reporter_key_; }
+  sct_auditing::SCTClientReport* report() { return report_.get(); }
+  net::BackoffEntry* backoff_entry() { return backoff_entry_.get(); }
+  const absl::optional<SCTHashdanceMetadata>& sct_hashdance_metadata() {
+    return sct_hashdance_metadata_;
+  }
+  bool counted_towards_report_limit() { return counted_towards_report_limit_; }
+
   static void SetRetryDelayForTesting(absl::optional<base::TimeDelta> delay);
 
  private:
-  void ScheduleReport();
+  void OnCheckReportAllowedStatusComplete(bool allowed);
+  // Schedules a |request| using the backoff delay or |minimum_delay|, whichever
+  // is greatest.
+  void ScheduleRequestWithBackoff(base::OnceClosure request,
+                                  base::TimeDelta minimum_delay);
+  void SendLookupQuery();
+  void OnSendLookupQueryComplete(std::unique_ptr<std::string> response_body);
   void SendReport();
   void OnSendReportComplete(scoped_refptr<net::HttpResponseHeaders> headers);
+  void MaybeRetryRequest();
 
-  net::SHA256HashValue reporter_key_;
+  // The NetworkContext which owns the SCTAuditingHandler that created this
+  // Reporter.
+  raw_ptr<NetworkContext> owner_network_context_;
+
+  net::HashValue reporter_key_;
   std::unique_ptr<sct_auditing::SCTClientReport> report_;
+  bool is_hashdance_;
+  // If |is_hashdance_| is true, |sct_hashdance_metadata_| will contain metadata
+  // for a randomly selected SCT from the report.
+  absl::optional<SCTHashdanceMetadata> sct_hashdance_metadata_;
   mojo::Remote<mojom::URLLoaderFactory> url_loader_factory_remote_;
   std::unique_ptr<SimpleURLLoader> url_loader_;
-  net::NetworkTrafficAnnotationTag traffic_annotation_;
-  GURL report_uri_;
+  mojom::SCTAuditingConfigurationPtr configuration_;
+  ReporterUpdatedCallback update_callback_;
   ReporterDoneCallback done_callback_;
 
   net::BackoffEntry::Policy backoff_policy_;
   std::unique_ptr<net::BackoffEntry> backoff_entry_;
 
-  size_t num_retries_;
-  size_t max_retries_;
+  int max_retries_;
+
+  // Whether the report has been counted towards the max-reports limit. This is
+  // used to determine whether to notify the embedder that a new report is being
+  // sent by the client, to avoid overcounting how many unique reports have been
+  // sent. (Without this flag, this could happen on retries if the hashdance
+  // lookup query succeeds but then the full report upload fails.)
+  bool counted_towards_report_limit_;
 
   base::WeakPtrFactory<SCTAuditingReporter> weak_factory_{this};
 };

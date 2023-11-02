@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,6 +24,8 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.widget.ChromeImageView;
 
 /**
@@ -86,12 +88,12 @@ public class AccessibilityTabModelWrapper extends LinearLayout {
     public void setup(AccessibilityTabModelAdapterListener listener) {
         mTabIconDarkColor = AppCompatResources.getColorStateList(
                 getContext(), R.color.default_icon_color_tint_list);
-        mTabIconSelectedDarkColor = AppCompatResources.getColorStateList(
-                getContext(), R.color.default_control_color_active);
+        mTabIconSelectedDarkColor = ColorStateList.valueOf(
+                SemanticColorUtils.getDefaultControlColorActive(getContext()));
         mTabIconLightColor =
                 AppCompatResources.getColorStateList(getContext(), R.color.white_alpha_70);
-        mTabIconSelectedLightColor =
-                AppCompatResources.getColorStateList(getContext(), R.color.white_mode_tint);
+        mTabIconSelectedLightColor = AppCompatResources.getColorStateList(
+                getContext(), R.color.default_icon_color_white_tint_list);
         // Setting scaleY here to make sure the icons are not flipped due to the scaleY of its
         // container layout.
         mStandardButtonIcon = new ChromeImageView(getContext());
@@ -160,16 +162,14 @@ public class AccessibilityTabModelWrapper extends LinearLayout {
 
         updateVisibilityForLayoutOrStackButton();
         if (incognitoSelected) {
-            setBackgroundColor(
-                    ApiCompatibilityUtils.getColor(getResources(), R.color.default_bg_color_dark));
+            setBackgroundColor(getContext().getColor(R.color.default_bg_color_dark));
             mStackButtonWrapper.setSelectedTabIndicatorColor(
                     mTabIconSelectedLightColor.getDefaultColor());
             ApiCompatibilityUtils.setImageTintList(mStandardButtonIcon, mTabIconLightColor);
             ApiCompatibilityUtils.setImageTintList(
                     mIncognitoButtonIcon, mTabIconSelectedLightColor);
         } else {
-            setBackgroundColor(
-                    ApiCompatibilityUtils.getColor(getResources(), R.color.default_bg_color));
+            setBackgroundColor(SemanticColorUtils.getDefaultBgColor(getContext()));
             mStackButtonWrapper.setSelectedTabIndicatorColor(
                     mTabIconSelectedDarkColor.getDefaultColor());
             ApiCompatibilityUtils.setImageTintList(mStandardButtonIcon, mTabIconSelectedDarkColor);
@@ -194,6 +194,16 @@ public class AccessibilityTabModelWrapper extends LinearLayout {
 
     private AccessibilityTabModelAdapter getAdapter() {
         return (AccessibilityTabModelAdapter) mAccessibilityView.getAdapter();
+    }
+
+    /**
+     * Scroll to and focus a tab.
+     * @param tabId The id of the tab.
+     */
+    void scrollToTabAndFocus(int tabId) {
+        final int index = TabModelUtils.getTabIndexById(mTabModelSelector.getCurrentModel(), tabId);
+        mAccessibilityView.smoothScrollToPosition(index);
+        getAdapter().focusTabWithId(tabId);
     }
 
     /**

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -546,6 +546,27 @@ class FileManagerPrivateInternalGetRecentFilesFunction
           entry_definition_list);
 };
 
+// Implements the chrome.fileManagerPrivate.getFrameColor method.
+// Returns the Chrome app frame color to launch foreground windows.
+// TODO(crbug.com/1212768): Remove this once Files app SWA has fully launched.
+class FileManagerPrivateGetFrameColorFunction : public LoggedExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("fileManagerPrivate.getFrameColor",
+                             FILEMANAGERPRIVATE_GETFRAMECOLOR)
+  FileManagerPrivateGetFrameColorFunction() = default;
+
+  FileManagerPrivateGetFrameColorFunction(
+      const FileManagerPrivateGetFrameColorFunction&) = delete;
+  FileManagerPrivateGetFrameColorFunction operator=(
+      const FileManagerPrivateGetFrameColorFunction&) = delete;
+
+ protected:
+  ~FileManagerPrivateGetFrameColorFunction() override = default;
+
+ private:
+  ResponseAction Run() override;
+};
+
 // Implements the chrome.fileManagerPrivate.isTabletModeEnabled method.
 class FileManagerPrivateIsTabletModeEnabledFunction : public ExtensionFunction {
  public:
@@ -559,6 +580,19 @@ class FileManagerPrivateIsTabletModeEnabledFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
+// Implements the chrome.fileManagerPrivate.openURL method.
+class FileManagerPrivateOpenURLFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("fileManagerPrivate.openURL",
+                             FILEMANAGERPRIVATE_OPENURL)
+
+ protected:
+  ~FileManagerPrivateOpenURLFunction() override = default;
+
+ private:
+  ResponseAction Run() override;
+};
+
 // Implements the chrome.fileManagerPrivate.openWindow method.
 class FileManagerPrivateOpenWindowFunction : public LoggedExtensionFunction {
  public:
@@ -567,6 +601,19 @@ class FileManagerPrivateOpenWindowFunction : public LoggedExtensionFunction {
 
  protected:
   ~FileManagerPrivateOpenWindowFunction() override = default;
+
+ private:
+  ResponseAction Run() override;
+};
+
+// Implements the chrome.fileManagerPrivate.sendFeedback method.
+class FileManagerPrivateSendFeedbackFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("fileManagerPrivate.sendFeedback",
+                             FILEMANAGERPRIVATE_SENDFEEDBACK)
+
+ protected:
+  ~FileManagerPrivateSendFeedbackFunction() override = default;
 
  private:
   ResponseAction Run() override;

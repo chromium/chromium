@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,9 +18,10 @@ namespace content {
 void ExposeChildInterfacesToBrowser(
     scoped_refptr<base::SequencedTaskRunner> io_task_runner,
     mojo::BinderMap* binders) {
-  binders->Add(base::BindRepeating(&ChildHistogramFetcherFactoryImpl::Create),
-               io_task_runner);
-  binders->Add(
+  binders->Add<mojom::ChildHistogramFetcherFactory>(
+      base::BindRepeating(&ChildHistogramFetcherFactoryImpl::Create),
+      io_task_runner);
+  binders->Add<tracing::mojom::TracedProcess>(
       base::BindRepeating(&tracing::TracedProcess::OnTracedProcessRequest),
       base::SequencedTaskRunnerHandle::Get());
 

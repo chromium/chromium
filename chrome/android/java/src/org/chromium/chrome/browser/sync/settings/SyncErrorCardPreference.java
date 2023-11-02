@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -55,7 +55,7 @@ public class SyncErrorCardPreference extends Preference
 
         mProfileDataCache = ProfileDataCache.createWithDefaultImageSize(
                 context, R.drawable.ic_sync_badge_error_20dp);
-        setLayoutResource(R.layout.personalized_signin_promo_view_settings);
+        setLayoutResource(R.layout.sync_promo_view_settings);
         mSyncError = SyncError.NO_ERROR;
     }
 
@@ -119,14 +119,15 @@ public class SyncErrorCardPreference extends Preference
         Drawable accountImage =
                 mProfileDataCache.getProfileDataOrDefault(signedInAccount).getImage();
         errorCardView.getImage().setImageDrawable(accountImage);
+        errorCardView.getIllustration().setVisibility(View.GONE);
 
         errorCardView.getDismissButton().setVisibility(View.GONE);
         if (mSyncError == SyncError.SYNC_SETUP_INCOMPLETE) {
-            errorCardView.getStatusMessage().setVisibility(View.GONE);
+            errorCardView.getTitle().setVisibility(View.GONE);
         } else {
-            errorCardView.getStatusMessage().setVisibility(View.VISIBLE);
+            errorCardView.getTitle().setVisibility(View.VISIBLE);
         }
-        errorCardView.getStatusMessage().setText(
+        errorCardView.getTitle().setText(
                 SyncSettingsUtils.getSyncErrorCardTitle(getContext(), mSyncError));
 
         errorCardView.getDescription().setText(

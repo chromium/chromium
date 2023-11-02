@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -48,9 +48,13 @@ class TestStyleSheet {
 
 CSSStyleSheet* CreateStyleSheet(Document& document);
 
-// Create a PropertyRegistration for the given name. The syntax, initial value,
-// and inherited status are all undefined.
-PropertyRegistration* CreatePropertyRegistration(const String& name);
+// Create a PropertyRegistration with the given name. An initial value must
+// be provided when the syntax is not "*".
+PropertyRegistration* CreatePropertyRegistration(
+    const String& name,
+    String syntax = "*",
+    const CSSValue* initial_value = nullptr,
+    bool is_inherited = false);
 
 // Create a non-inherited PropertyRegistration with syntax <length>, and the
 // given value in pixels as the initial value.

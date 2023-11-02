@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/views/accessibility/ax_aura_obj_cache.h"
 #include "ui/views/accessibility/ax_aura_obj_wrapper.h"
 #include "ui/views/views_export.h"
@@ -35,7 +36,7 @@ class AXVirtualViewWrapper : public AXAuraObjWrapper {
 
  private:
   // Weak.
-  AXVirtualView* virtual_view_;
+  raw_ptr<AXVirtualView> virtual_view_;
 };
 
 }  // namespace views

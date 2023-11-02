@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,8 +45,8 @@ ResultExpr CdmProcessPolicy::EvaluateSyscall(int sysno) const {
     case __NR_times:
     case __NR_uname:
       return Allow();
-    case __NR_sched_getaffinity:
-      return RestrictSchedTarget(GetPolicyPid(), sysno);
+    case __NR_prlimit64:
+      return RestrictPrlimitToGetrlimit(GetPolicyPid());
     default:
       // Default on the content baseline policy.
       return BPFBasePolicy::EvaluateSyscall(sysno);

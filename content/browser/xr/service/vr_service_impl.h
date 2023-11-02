@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <set>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "content/browser/xr/metrics/session_metrics_helper.h"
@@ -23,6 +24,10 @@
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-forward.h"
+
+namespace blink {
+enum class PermissionType;
+}
 
 namespace content {
 class RenderFrameHost;
@@ -78,7 +83,6 @@ class CONTENT_EXPORT VRServiceImpl : public device::mojom::VRService,
   void OnExitPresent();
   void OnVisibilityStateChanged(
       device::mojom::XRVisibilityState visibility_state);
-  void OnDisplayInfoChanged();
   void RuntimesChanged();
   void OnMakeXrCompatibleComplete(device::mojom::XrCompatibleResult result);
 
@@ -144,8 +148,14 @@ class CONTENT_EXPORT VRServiceImpl : public device::mojom::VRService,
   void GetPermissionStatus(SessionRequestData request,
                            BrowserXRRuntimeImpl* runtime);
 
-  void OnPermissionResults(
+  void OnPermissionResultsForMode(
       SessionRequestData request,
+      const std::vector<blink::PermissionType>& permissions,
+      const std::vector<blink::mojom::PermissionStatus>& permission_statuses);
+
+  void OnPermissionResultsForFeatures(
+      SessionRequestData request,
+      const std::vector<blink::PermissionType>& permissions,
       const std::vector<blink::mojom::PermissionStatus>& permission_statuses);
 
   void EnsureRuntimeInstalled(SessionRequestData request,
@@ -169,7 +179,7 @@ class CONTENT_EXPORT VRServiceImpl : public device::mojom::VRService,
   scoped_refptr<XRRuntimeManagerImpl> runtime_manager_;
   mojo::RemoteSet<device::mojom::XRSessionClient> session_clients_;
   mojo::Remote<device::mojom::VRServiceClient> service_client_;
-  content::RenderFrameHost* render_frame_host_;
+  raw_ptr<content::RenderFrameHost> render_frame_host_;
   mojo::SelfOwnedReceiverRef<device::mojom::VRService> receiver_;
   mojo::RemoteSet<device::mojom::XRSessionController> magic_window_controllers_;
   device::mojom::XRVisibilityState visibility_state_ =

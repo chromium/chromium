@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #define CHROME_BROWSER_BROWSER_FEATURES_H_
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
@@ -17,49 +18,63 @@ namespace features {
 // All features in alphabetical order. The features should be documented
 // alongside the definition of their values in the .cc file.
 
-extern const base::Feature kClosedTabCache;
+BASE_DECLARE_FEATURE(kClosedTabCache);
 
-extern const base::Feature kColorProviderRedirectionForThemeProvider;
+BASE_DECLARE_FEATURE(kColorProviderRedirectionForThemeProvider);
 
-extern const base::Feature kDestroyProfileOnBrowserClose;
+BASE_DECLARE_FEATURE(kDestroyProfileOnBrowserClose);
+BASE_DECLARE_FEATURE(kDestroySystemProfiles);
 
-extern const base::Feature kPromoBrowserCommands;
+BASE_DECLARE_FEATURE(kDevToolsTabTarget);
+
+BASE_DECLARE_FEATURE(kNukeProfileBeforeCreateMultiAsync);
+
+BASE_DECLARE_FEATURE(kPromoBrowserCommands);
 extern const char kBrowserCommandIdParam[];
 
+BASE_DECLARE_FEATURE(kUseManagementService);
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-extern const base::Feature kDoubleTapToZoomInTabletMode;
-extern const base::Feature kQuickSettingsPWANotifications;
+BASE_DECLARE_FEATURE(kQuickSettingsPWANotifications);
 #endif
 
-#if defined(OS_MAC)
-extern const base::Feature kEnableUniveralLinks;
+#if BUILDFLAG(IS_CHROMEOS)
+BASE_DECLARE_FEATURE(kDoubleTapToZoomInTabletMode);
 #endif
 
-#if !defined(OS_ANDROID)
-extern const base::Feature kCopyLinkToText;
-extern const base::Feature kMuteNotificationSnoozeAction;
+#if BUILDFLAG(IS_MAC)
+BASE_DECLARE_FEATURE(kEnableUniveralLinks);
 #endif
 
-extern const base::Feature kPwaUpdateDialogForNameAndIcon;
-
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
-extern const base::Feature kUserDataSnapshot;
+#if !BUILDFLAG(IS_ANDROID)
+BASE_DECLARE_FEATURE(kCopyLinkToText);
+BASE_DECLARE_FEATURE(kMuteNotificationSnoozeAction);
 #endif
 
-extern const base::Feature kSandboxExternalProtocolBlocked;
-extern const base::Feature kTriggerNetworkDataMigration;
+BASE_DECLARE_FEATURE(kSandboxExternalProtocolBlocked);
+BASE_DECLARE_FEATURE(kSandboxExternalProtocolBlockedWarning);
+BASE_DECLARE_FEATURE(kTriggerNetworkDataMigration);
 
-// Returns true if network context data should be migrated to the new data path.
-// Prefer using this function over querying the kTriggerNetworkDataMigration
-// feature directly, as there might be other platform specific factors that
-// determine whether data migration should occur or not.
-bool ShouldTriggerNetworkDataMigration();
+BASE_DECLARE_FEATURE(kWebUsbDeviceDetection);
 
-extern const base::Feature kWebUsbDeviceDetection;
-
-#if defined(OS_ANDROID)
-extern const base::Feature kCertificateTransparencyAndroid;
+#if BUILDFLAG(IS_ANDROID)
+BASE_DECLARE_FEATURE(kCertificateTransparencyAndroid);
 #endif
+
+BASE_DECLARE_FEATURE(kLargeFaviconFromGoogle);
+extern const base::FeatureParam<int> kLargeFaviconFromGoogleSizeInDip;
+
+BASE_DECLARE_FEATURE(kObserverBasedPostProfileInit);
+
+BASE_DECLARE_FEATURE(kRestartNetworkServiceUnsandboxedForFailedLaunch);
+
+BASE_DECLARE_FEATURE(kKeyPinningComponentUpdater);
+
+#if BUILDFLAG(IS_WIN)
+BASE_DECLARE_FEATURE(kAppBoundEncryptionMetrics);
+#endif
+
+BASE_DECLARE_FEATURE(kFlexOrgManagementDisclosure);
 
 }  // namespace features
 

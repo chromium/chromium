@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -219,6 +219,84 @@ TEST_F(HistogramTesterTest, MissingHistogramMeansEmptyBuckets) {
   EXPECT_EQ(0, tester.GetBucketCount(kHistogram, 42));
   EXPECT_EQ(0,
             tester.GetHistogramSamplesSinceCreation(kHistogram)->TotalCount());
+}
+
+TEST_F(HistogramTesterTest, BucketsAre) {
+  // Auxiliary functions for keeping the lines short.
+  auto a = [](std::vector<Bucket> b) { return b; };
+  auto b = [](base::Histogram::Sample min, base::Histogram::Count count) {
+    return Bucket(min, count);
+  };
+  using ::testing::Not;
+
+  EXPECT_THAT(a({}), BucketsAre());
+  EXPECT_THAT(a({}), BucketsAre(b(0, 0)));
+  EXPECT_THAT(a({}), BucketsAre(b(1, 0)));
+  EXPECT_THAT(a({}), BucketsAre(b(0, 0), b(1, 0)));
+  EXPECT_THAT(a({}), Not(BucketsAre(b(1, 1))));
+
+  EXPECT_THAT(a({b(1, 1)}), BucketsAre(b(1, 1)));
+  EXPECT_THAT(a({b(1, 1)}), BucketsAre(b(0, 0), b(1, 1)));
+  EXPECT_THAT(a({b(1, 1)}), Not(BucketsAre()));
+  EXPECT_THAT(a({b(1, 1)}), Not(BucketsAre(b(0, 0))));
+  EXPECT_THAT(a({b(1, 1)}), Not(BucketsAre(b(1, 0))));
+  EXPECT_THAT(a({b(1, 1)}), Not(BucketsAre(b(2, 1))));
+  EXPECT_THAT(a({b(1, 1)}), Not(BucketsAre(b(2, 2))));
+  EXPECT_THAT(a({b(1, 1)}), Not(BucketsAre(b(0, 0), b(1, 0))));
+  EXPECT_THAT(a({b(1, 1)}), Not(BucketsAre(b(0, 0), b(1, 1), b(2, 2))));
+  EXPECT_THAT(a({b(1, 1)}), Not(BucketsAre(b(0, 0), b(1, 0), b(2, 0))));
+
+  EXPECT_THAT(a({b(1, 1), b(2, 2)}), BucketsAre(b(1, 1), b(2, 2)));
+  EXPECT_THAT(a({b(1, 1), b(2, 2)}), BucketsAre(b(0, 0), b(1, 1), b(2, 2)));
+  EXPECT_THAT(a({b(1, 1), b(2, 2)}), Not(BucketsAre()));
+  EXPECT_THAT(a({b(1, 1), b(2, 2)}), Not(BucketsAre(b(0, 0))));
+  EXPECT_THAT(a({b(1, 1), b(2, 2)}), Not(BucketsAre(b(1, 1))));
+  EXPECT_THAT(a({b(1, 1), b(2, 2)}), Not(BucketsAre(b(2, 2))));
+  EXPECT_THAT(a({b(1, 1), b(2, 2)}), Not(BucketsAre(b(0, 0), b(1, 1))));
+  EXPECT_THAT(a({b(1, 1), b(2, 2)}), Not(BucketsAre(b(1, 0))));
+  EXPECT_THAT(a({b(1, 1), b(2, 2)}), Not(BucketsAre(b(2, 1))));
+  EXPECT_THAT(a({b(1, 1), b(2, 2)}), Not(BucketsAre(b(0, 0), b(1, 0))));
+  EXPECT_THAT(a({b(1, 1), b(2, 2)}),
+              Not(BucketsAre(b(0, 0), b(1, 0), b(2, 0))));
+}
+
+TEST_F(HistogramTesterTest, BucketsInclude) {
+  // Auxiliary function for the "actual" values to shorten lines.
+  auto a = [](std::vector<Bucket> b) { return b; };
+  auto b = [](base::Histogram::Sample min, base::Histogram::Count count) {
+    return Bucket(min, count);
+  };
+  using ::testing::Not;
+
+  EXPECT_THAT(a({}), BucketsInclude());
+  EXPECT_THAT(a({}), BucketsInclude(b(0, 0)));
+  EXPECT_THAT(a({}), BucketsInclude(b(1, 0)));
+  EXPECT_THAT(a({}), BucketsInclude(b(0, 0), b(1, 0)));
+  EXPECT_THAT(a({}), Not(BucketsInclude(b(1, 1))));
+
+  EXPECT_THAT(a({b(1, 1)}), BucketsInclude());
+  EXPECT_THAT(a({b(1, 1)}), BucketsInclude(b(0, 0)));
+  EXPECT_THAT(a({b(1, 1)}), BucketsInclude(b(1, 1)));
+  EXPECT_THAT(a({b(1, 1)}), BucketsInclude(b(0, 0), b(1, 1)));
+  EXPECT_THAT(a({b(1, 1)}), Not(BucketsInclude(b(1, 0))));
+  EXPECT_THAT(a({b(1, 1)}), Not(BucketsInclude(b(2, 1))));
+  EXPECT_THAT(a({b(1, 1)}), Not(BucketsInclude(b(2, 2))));
+  EXPECT_THAT(a({b(1, 1)}), Not(BucketsInclude(b(0, 0), b(1, 0))));
+  EXPECT_THAT(a({b(1, 1)}), Not(BucketsInclude(b(0, 0), b(1, 1), b(2, 2))));
+  EXPECT_THAT(a({b(1, 1)}), Not(BucketsInclude(b(0, 0), b(1, 0), b(2, 0))));
+
+  EXPECT_THAT(a({b(1, 1), b(2, 2)}), BucketsInclude());
+  EXPECT_THAT(a({b(1, 1), b(2, 2)}), BucketsInclude(b(0, 0)));
+  EXPECT_THAT(a({b(1, 1), b(2, 2)}), BucketsInclude(b(1, 1)));
+  EXPECT_THAT(a({b(1, 1), b(2, 2)}), BucketsInclude(b(2, 2)));
+  EXPECT_THAT(a({b(1, 1), b(2, 2)}), BucketsInclude(b(0, 0), b(1, 1)));
+  EXPECT_THAT(a({b(1, 1), b(2, 2)}), BucketsInclude(b(1, 1), b(2, 2)));
+  EXPECT_THAT(a({b(1, 1), b(2, 2)}), BucketsInclude(b(0, 0), b(1, 1), b(2, 2)));
+  EXPECT_THAT(a({b(1, 1), b(2, 2)}), Not(BucketsInclude(b(1, 0))));
+  EXPECT_THAT(a({b(1, 1), b(2, 2)}), Not(BucketsInclude(b(2, 1))));
+  EXPECT_THAT(a({b(1, 1), b(2, 2)}), Not(BucketsInclude(b(0, 0), b(1, 0))));
+  EXPECT_THAT(a({b(1, 1), b(2, 2)}),
+              Not(BucketsInclude(b(0, 0), b(1, 0), b(2, 0))));
 }
 
 }  // namespace base

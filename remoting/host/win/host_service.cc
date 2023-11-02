@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -26,11 +26,11 @@
 #include "base/win/scoped_com_initializer.h"
 #include "remoting/base/auto_thread.h"
 #include "remoting/base/cpu_utils.h"
+#include "remoting/base/logging.h"
 #include "remoting/base/scoped_sc_handle_win.h"
+#include "remoting/host/base/host_exit_codes.h"
 #include "remoting/host/branding.h"
 #include "remoting/host/daemon_process.h"
-#include "remoting/host/host_exit_codes.h"
-#include "remoting/host/logging.h"
 #include "remoting/host/win/com_security.h"
 #include "remoting/host/win/core_resource.h"
 #include "remoting/host/win/wts_terminal_observer.h"

@@ -1,5 +1,4 @@
-
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +14,9 @@ MockInputMethodEngine::MockInputMethodEngine() = default;
 MockInputMethodEngine::~MockInputMethodEngine() = default;
 
 void MockInputMethodEngine::FocusIn(
-    const IMEEngineHandlerInterface::InputContext& input_context) {}
+    const TextInputMethod::InputContext& input_context) {}
+
+void MockInputMethodEngine::OnTouch(ui::EventPointerType pointerType) {}
 
 void MockInputMethodEngine::FocusOut() {}
 
@@ -40,6 +41,8 @@ void MockInputMethodEngine::SetSurroundingText(const std::u16string& text,
 void MockInputMethodEngine::SetCompositionBounds(
     const std::vector<gfx::Rect>& bounds) {}
 
+void MockInputMethodEngine::SetCaretBounds(const gfx::Rect& caret_bounds) {}
+
 ui::VirtualKeyboardController*
 MockInputMethodEngine::GetVirtualKeyboardController() const {
   return nullptr;
@@ -54,6 +57,10 @@ void MockInputMethodEngine::CandidateClicked(uint32_t index) {}
 void MockInputMethodEngine::SetMirroringEnabled(bool mirroring_enabled) {}
 
 void MockInputMethodEngine::SetCastingEnabled(bool casting_enabled) {}
+
+bool MockInputMethodEngine::IsReadyForTesting() {
+  return true;
+}
 
 const std::string& MockInputMethodEngine::GetActiveComponentId() const {
   return active_component_id_;

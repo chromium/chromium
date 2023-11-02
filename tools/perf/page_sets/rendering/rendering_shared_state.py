@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 import logging
@@ -40,22 +40,22 @@ class RenderingSharedState(shared_page_state.SharedPageState):
         vendor_id = primary_gpu.vendor_id
         if vendor_string:
           return vendor_string.split(' ')[0]
-        elif vendor_id == 0x10DE:
+        if vendor_id == 0x10DE:
           return 'nvidia'
-        elif vendor_id == 0x1002:
+        if vendor_id == 0x1002:
           return 'amd'
-        elif vendor_id == 0x8086:
+        if vendor_id == 0x8086:
           return 'intel'
-        elif vendor_id == 0x15AD:
+        if vendor_id == 0x15AD:
           return 'vmware'
 
     return 'unknown_gpu'
 
-  def WillRunStory(self, page):
-    super(RenderingSharedState, self).WillRunStory(page)
+  def WillRunStory(self, story):
+    super(RenderingSharedState, self).WillRunStory(story)
     if not self._finder_options.allow_software_compositing:
       self._EnsureNotSwiftShader()
-    if page.TAGS and story_tags.KEY_IDLE_POWER in page.TAGS:
+    if story.TAGS and story_tags.KEY_IDLE_POWER in story.TAGS:
       self._EnsureScreenOn()
 
   def DidRunStory(self, results):

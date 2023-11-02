@@ -104,35 +104,35 @@ void NumberInputType::SetValue(const String& sanitized_value,
                                bool value_changed,
                                TextFieldEventBehavior event_behavior,
                                TextControlSetValueSelection selection) {
-  if (!value_changed && sanitized_value.IsEmpty() &&
-      !GetElement().InnerEditorValue().IsEmpty())
+  if (!value_changed && sanitized_value.empty() &&
+      !GetElement().InnerEditorValue().empty())
     GetElement().UpdateView();
   TextFieldInputType::SetValue(sanitized_value, value_changed, event_behavior,
                                selection);
 }
 
 double NumberInputType::ValueAsDouble() const {
-  return ParseToDoubleForNumberType(GetElement().value());
+  return ParseToDoubleForNumberType(GetElement().Value());
 }
 
 void NumberInputType::SetValueAsDouble(double new_value,
                                        TextFieldEventBehavior event_behavior,
                                        ExceptionState& exception_state) const {
-  GetElement().setValue(SerializeForNumberType(new_value), event_behavior);
+  GetElement().SetValue(SerializeForNumberType(new_value), event_behavior);
 }
 
 void NumberInputType::SetValueAsDecimal(const Decimal& new_value,
                                         TextFieldEventBehavior event_behavior,
                                         ExceptionState& exception_state) const {
-  GetElement().setValue(SerializeForNumberType(new_value), event_behavior);
+  GetElement().SetValue(SerializeForNumberType(new_value), event_behavior);
 }
 
 bool NumberInputType::TypeMismatchFor(const String& value) const {
-  return !value.IsEmpty() && !std::isfinite(ParseToDoubleForNumberType(value));
+  return !value.empty() && !std::isfinite(ParseToDoubleForNumberType(value));
 }
 
 bool NumberInputType::TypeMismatch() const {
-  DCHECK(!TypeMismatchFor(GetElement().value()));
+  DCHECK(!TypeMismatchFor(GetElement().Value()));
   return false;
 }
 
@@ -176,10 +176,6 @@ bool NumberInputType::SizeShouldIncludeDecoration(int default_size,
                    size.size_afte_decimal_point +
                    (size.size_afte_decimal_point ? 1 : 0);
 
-  return true;
-}
-
-bool NumberInputType::IsSteppable() const {
   return true;
 }
 
@@ -260,10 +256,10 @@ void NumberInputType::HandleBeforeTextInsertedEvent(
     // - Reject if the editing value contains 'e' + a sign, and the caret is
     // placed between them.
     else if (locale.IsDigit(c)) {
-      if ((left_half.IsEmpty() && !right_half.IsEmpty() &&
+      if ((left_half.empty() && !right_half.empty() &&
            locale.IsSignPrefix(right_half[0])) ||
-          (!left_half.IsEmpty() && IsE(left_half[left_half.length() - 1]) &&
-           !right_half.IsEmpty() && locale.IsSignPrefix(right_half[0])))
+          (!left_half.empty() && IsE(left_half[left_half.length() - 1]) &&
+           !right_half.empty() && locale.IsSignPrefix(right_half[0])))
         continue;
     }
 
@@ -286,7 +282,7 @@ String NumberInputType::Serialize(const Decimal& value) const {
 }
 
 String NumberInputType::LocalizeValue(const String& proposed_value) const {
-  if (proposed_value.IsEmpty())
+  if (proposed_value.empty())
     return proposed_value;
   // We don't localize scientific notations.
   if (proposed_value.Find(IsE) != kNotFound)
@@ -295,12 +291,12 @@ String NumberInputType::LocalizeValue(const String& proposed_value) const {
 }
 
 String NumberInputType::VisibleValue() const {
-  return LocalizeValue(GetElement().value());
+  return LocalizeValue(GetElement().Value());
 }
 
 String NumberInputType::ConvertFromVisibleValue(
     const String& visible_value) const {
-  if (visible_value.IsEmpty())
+  if (visible_value.empty())
     return visible_value;
   // We don't localize scientific notations.
   if (visible_value.Find(IsE) != kNotFound)
@@ -309,7 +305,7 @@ String NumberInputType::ConvertFromVisibleValue(
 }
 
 String NumberInputType::SanitizeValue(const String& proposed_value) const {
-  if (proposed_value.IsEmpty())
+  if (proposed_value.empty())
     return proposed_value;
   return std::isfinite(ParseToDoubleForNumberType(proposed_value))
              ? proposed_value
@@ -317,7 +313,7 @@ String NumberInputType::SanitizeValue(const String& proposed_value) const {
 }
 
 void NumberInputType::WarnIfValueIsInvalid(const String& value) const {
-  if (value.IsEmpty() || !GetElement().SanitizeValue(value).IsEmpty())
+  if (value.empty() || !GetElement().SanitizeValue(value).empty())
     return;
   AddWarningToConsole(
       "The specified value %s cannot be parsed, or is out of range.", value);
@@ -326,7 +322,7 @@ void NumberInputType::WarnIfValueIsInvalid(const String& value) const {
 bool NumberInputType::HasBadInput() const {
   String standard_value =
       ConvertFromVisibleValue(GetElement().InnerEditorValue());
-  return !standard_value.IsEmpty() &&
+  return !standard_value.empty() &&
          !std::isfinite(ParseToDoubleForNumberType(standard_value));
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@
 @interface NewPasswordCoordinator : NSObject
 
 // Default initializer. When the coordinator is started it will present on
-// |baseViewController|.
+// `baseViewController`.
 - (instancetype)
     initWithBaseViewController:(UIViewController*)baseViewController
                        context:(ASCredentialProviderExtensionContext*)context

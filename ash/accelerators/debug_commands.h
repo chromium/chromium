@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,12 @@
 // available at run time.
 namespace ash {
 namespace debug {
+
+// Returns true if the active window can be floated.
+ASH_EXPORT bool CanToggleFloatingWindow();
+
+// Returns true if there is a floating window that can be tucked.
+ASH_EXPORT bool CanTuckFloatedWindow();
 
 // Print the views::View, ui::Layer and aura::Window hierarchies. This may be
 // useful in debugging user reported bugs.

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,10 +14,10 @@
 #include "base/check.h"
 #include "base/cxx17_backports.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_shader.h"
+#include "skia/ext/skia_utils_base.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/effects/SkGradientShader.h"
@@ -30,6 +30,7 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -39,7 +40,6 @@
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/layout/grid_layout.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
@@ -54,9 +54,7 @@ constexpr int kBorderWidth = 1;
 constexpr int kTextfieldLengthInChars = 14;
 
 std::u16string GetColorText(SkColor color) {
-  return base::ASCIIToUTF16(
-      base::StringPrintf("#%02x%02x%02x", SkColorGetR(color),
-                         SkColorGetG(color), SkColorGetB(color)));
+  return base::ASCIIToUTF16(skia::SkColorToHexString(color));
 }
 
 bool GetColorFromText(const std::u16string& text, SkColor* result) {
@@ -117,7 +115,9 @@ void DrawGradientRect(const gfx::Rect& rect,
                       SkColor end_color,
                       bool is_horizontal,
                       gfx::Canvas* canvas) {
-  SkColor colors[2] = {start_color, end_color};
+  // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
+  SkColor4f colors[2] = {SkColor4f::FromColor(start_color),
+                         SkColor4f::FromColor(end_color)};
   SkPoint points[2];
   points[0].iset(0, 0);
   if (is_horizontal)
@@ -283,14 +283,23 @@ class SaturationValueView : public LocatedEventHandlerView {
   gfx::Size CalculatePreferredSize() const override;
   void OnPaint(gfx::Canvas* canvas) override;
 
+  void UpdateMarkerColor();
+
   SaturationValueChangedCallback changed_callback_;
   SkScalar hue_;
+  SkScalar saturation_;
+  SkScalar value_;
   gfx::Point marker_position_;
+  SkColor marker_color_;
 };
 
 SaturationValueView::SaturationValueView(
     const SaturationValueChangedCallback& changed_callback)
-    : changed_callback_(changed_callback), hue_(0) {
+    : changed_callback_(changed_callback),
+      hue_(0),
+      saturation_(0),
+      value_(0),
+      marker_color_(gfx::kPlaceholderColor) {
   SetBorder(CreateSolidBorder(kBorderWidth, gfx::kPlaceholderColor));
 }
 
@@ -304,12 +313,18 @@ void SaturationValueView::OnThemeChanged() {
 void SaturationValueView::OnHueChanged(SkScalar hue) {
   if (hue_ != hue) {
     hue_ = hue;
+    UpdateMarkerColor();
     SchedulePaint();
   }
 }
 
 void SaturationValueView::OnSaturationValueChanged(SkScalar saturation,
                                                    SkScalar value) {
+  if (saturation_ == saturation && value_ == value)
+    return;
+
+  saturation_ = saturation;
+  value_ = value;
   SkScalar scalar_size = SkIntToScalar(kSaturationValueSize - 1);
   int x = SkScalarFloorToInt(saturation * scalar_size) + kBorderWidth;
   int y = SkScalarFloorToInt((SK_Scalar1 - value) * scalar_size) + kBorderWidth;
@@ -318,6 +333,9 @@ void SaturationValueView::OnSaturationValueChanged(SkScalar saturation,
 
   marker_position_.set_x(x);
   marker_position_.set_y(y);
+
+  UpdateMarkerColor();
+
   SchedulePaint();
 }
 
@@ -353,21 +371,22 @@ void SaturationValueView::OnPaint(gfx::Canvas* canvas) {
                    canvas);
 
   // Draw the crosshair marker.
-  // The background is very dark at the bottom of the view.  Use a white
-  // marker in that case.
-  SkColor indicator_color =
-      (marker_position_.y() > width() * 3 / 4) ? SK_ColorWHITE : SK_ColorBLACK;
   canvas->FillRect(
       gfx::Rect(marker_position_.x(),
                 marker_position_.y() - kSaturationValueIndicatorSize, 1,
                 kSaturationValueIndicatorSize * 2 + 1),
-      indicator_color);
+      marker_color_);
   canvas->FillRect(
       gfx::Rect(marker_position_.x() - kSaturationValueIndicatorSize,
                 marker_position_.y(), kSaturationValueIndicatorSize * 2 + 1, 1),
-      indicator_color);
+      marker_color_);
 
   OnPaintBorder(canvas);
+}
+
+void SaturationValueView::UpdateMarkerColor() {
+  SkScalar hsv[3] = {hue_, saturation_, value_};
+  marker_color_ = color_utils::GetColorWithMaxContrast(SkHSVToColor(hsv));
 }
 
 BEGIN_METADATA(SaturationValueView, LocatedEventHandlerView)
@@ -385,22 +404,13 @@ class SelectedColorPatchView : public views::View {
   SelectedColorPatchView& operator=(const SelectedColorPatchView&) = delete;
   ~SelectedColorPatchView() override = default;
 
-  // views::View
-  void OnThemeChanged() override;
-
   void SetColor(SkColor color);
 };
 
 SelectedColorPatchView::SelectedColorPatchView() {
   SetVisible(true);
-  SetBorder(CreateSolidBorder(kBorderWidth, gfx::kPlaceholderColor));
-}
-
-void SelectedColorPatchView::OnThemeChanged() {
-  views::View::OnThemeChanged();
-  GetBorder()->set_color(
-      GetColorProvider()->GetColor(ui::kColorFocusableBorderUnfocused));
-  SchedulePaint();
+  SetBorder(CreateThemedSolidBorder(kBorderWidth,
+                                    ui::kColorFocusableBorderUnfocused));
 }
 
 void SelectedColorPatchView::SetColor(SkColor color) {
@@ -417,8 +427,7 @@ END_METADATA
 std::unique_ptr<View> ColorChooser::BuildView() {
   auto view = std::make_unique<View>();
   tracker_.SetView(view.get());
-  view->SetBackground(
-      CreateThemedSolidBackground(view.get(), ui::kColorWindowBackground));
+  view->SetBackground(CreateThemedSolidBackground(ui::kColorWindowBackground));
   view->SetLayoutManager(
       std::make_unique<BoxLayout>(BoxLayout::Orientation::kVertical,
                                   gfx::Insets(kMarginWidth), kMarginWidth));
@@ -434,23 +443,18 @@ std::unique_ptr<View> ColorChooser::BuildView() {
   view->AddChildView(std::move(container));
 
   auto container2 = std::make_unique<View>();
-  GridLayout* layout =
-      container2->SetLayoutManager(std::make_unique<views::GridLayout>());
-  ColumnSet* columns = layout->AddColumnSet(0);
-  columns->AddColumn(GridLayout::LEADING, GridLayout::FILL, 0,
-                     GridLayout::ColumnSize::kUsePreferred, 0, 0);
-  columns->AddPaddingColumn(0, kMarginWidth);
-  columns->AddColumn(GridLayout::FILL, GridLayout::FILL, 1,
-                     GridLayout::ColumnSize::kUsePreferred, 0, 0);
-  layout->StartRow(0, 0);
+  BoxLayout* layout =
+      container2->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          BoxLayout::Orientation::kHorizontal, gfx::Insets(), kMarginWidth));
   auto textfield = std::make_unique<Textfield>();
   textfield->set_controller(this);
   textfield->SetDefaultWidthInChars(kTextfieldLengthInChars);
   textfield->SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_APP_ACCNAME_COLOR_CHOOSER_HEX_INPUT));
-  textfield_ = layout->AddView(std::move(textfield));
+  textfield_ = container2->AddChildView(std::move(textfield));
   selected_color_patch_ =
-      layout->AddView(std::make_unique<SelectedColorPatchView>());
+      container2->AddChildView(std::make_unique<SelectedColorPatchView>());
+  layout->SetFlexForView(selected_color_patch_, 1);
   view->AddChildView(std::move(container2));
 
   OnColorChanged(initial_color_);

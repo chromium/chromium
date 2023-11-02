@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,23 +30,17 @@ class StatusController {
 
   ~StatusController();
 
-  // The types included in the get updates client to server requests.
-  const ModelTypeSet get_updates_request_types() const;
-  void set_get_updates_request_types(ModelTypeSet value);
+  // The types which had non-deletion updates in the GetUpdates during the
+  // last sync cycle.
+  ModelTypeSet get_updated_types() const;
+  void add_updated_type(ModelType type);
+  void clear_updated_types();
 
   // Various conflict counters.
-  int num_encryption_conflicts() const;
-  int num_hierarchy_conflicts() const;
   int num_server_conflicts() const;
 
   // Aggregate sum of all conflicting items over all conflict types.
   int TotalNumConflictingItems() const;
-
-  // Number of successfully applied updates.
-  int num_updates_applied() const;
-
-  int num_server_overwrites() const;
-  int num_local_overwrites() const;
 
   // The time at which we started the most recent sync cycle.
   base::Time sync_start_time() const { return sync_start_time_; }
@@ -64,15 +58,9 @@ class StatusController {
   // Download counters.
   void increment_num_updates_downloaded_by(int value);
   void increment_num_tombstone_updates_downloaded_by(int value);
-  void increment_num_reflected_updates_downloaded_by(int value);
 
   // Update application and conflict resolution counters.
-  void increment_num_updates_applied_by(int value);
-  void increment_num_encryption_conflicts_by(int value);
-  void increment_num_hierarchy_conflicts_by(int value);
   void increment_num_server_conflicts();
-  void increment_num_local_overwrites();
-  void increment_num_server_overwrites();
 
   // Commit counters.
   void increment_num_successful_commits();

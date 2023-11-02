@@ -1,9 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/subresource_filter/content/browser/ads_blocked_message_delegate.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/messages/android/mock_message_dispatcher_bridge.h"
@@ -25,7 +26,7 @@ static const char kSubresourceFilterActionMetric[] =
 
 class MockAdsBlockedDialog : public AdsBlockedDialogBase {
  public:
-  MOCK_METHOD(void, Show, (), (override));
+  MOCK_METHOD(void, Show, (bool should_post_dialog), (override));
   MOCK_METHOD(void, Dismiss, (), (override));
   MOCK_METHOD(void, Destroy, ());
   ~MockAdsBlockedDialog() override { Destroy(); }
@@ -81,7 +82,7 @@ class AdsBlockedMessageDelegateTest
   }
 
  private:
-  AdsBlockedMessageDelegate* ads_blocked_message_delegate_;
+  raw_ptr<AdsBlockedMessageDelegate> ads_blocked_message_delegate_;
   messages::MockMessageDispatcherBridge message_dispatcher_bridge_;
   std::unique_ptr<MockAdsBlockedDialog> mock_ads_blocked_dialog_;
   base::OnceClosure allow_ads_clicked_callback_;
@@ -154,6 +155,9 @@ AdsBlockedMessageDelegateTest::CreateAdsBlockedDialog(
   allow_ads_clicked_callback_ = std::move(allow_ads_clicked_callback);
   learn_more_clicked_callback_ = std::move(learn_more_clicked_callback);
   dialog_dismissed_callback_ = std::move(dialog_dismissed_callback);
+  // PrepareAdsBlockedDialog() should always be invoked before the dialog is
+  // constructed.
+  EXPECT_TRUE(mock_ads_blocked_dialog_);
   return std::move(mock_ads_blocked_dialog_);
 }
 
@@ -209,7 +213,7 @@ TEST_F(AdsBlockedMessageDelegateTest, DialogTriggered_OnManageClicked) {
 
   ExpectDismissMessageCall();
   MockAdsBlockedDialog* mock_dialog = PrepareAdsBlockedDialog();
-  EXPECT_CALL(*mock_dialog, Show);
+  EXPECT_CALL(*mock_dialog, Show(false));
   TriggerMessageManageClicked();
   EXPECT_EQ(GetMessageWrapper(), nullptr);
 
@@ -226,7 +230,7 @@ TEST_F(AdsBlockedMessageDelegateTest, MetricsRecorded_OnLearnMoreClicked) {
 
   ExpectDismissMessageCall();
   MockAdsBlockedDialog* mock_dialog = PrepareAdsBlockedDialog();
-  EXPECT_CALL(*mock_dialog, Show);
+  EXPECT_CALL(*mock_dialog, Show(false));
   TriggerMessageManageClicked();
   EXPECT_EQ(GetMessageWrapper(), nullptr);
 
@@ -246,7 +250,7 @@ TEST_F(AdsBlockedMessageDelegateTest, RestoreDialog_OnLearnMoreClicked) {
 
   ExpectDismissMessageCall();
   MockAdsBlockedDialog* mock_dialog = PrepareAdsBlockedDialog();
-  EXPECT_CALL(*mock_dialog, Show);
+  EXPECT_CALL(*mock_dialog, Show(false));
   TriggerMessageManageClicked();
   EXPECT_EQ(GetMessageWrapper(), nullptr);
   EXPECT_FALSE(GetDelegate()->reprompt_required_flag_for_testing());
@@ -256,6 +260,9 @@ TEST_F(AdsBlockedMessageDelegateTest, RestoreDialog_OnLearnMoreClicked) {
   TriggerDialogDismissedCallback();
   EXPECT_TRUE(GetDelegate()->reprompt_required_flag_for_testing());
 
+  // Prepare the dialog to be re-shown on navigation back to the original tab.
+  mock_dialog = PrepareAdsBlockedDialog();
+  EXPECT_CALL(*mock_dialog, Show(true));
   OnWebContentsFocused();
   EXPECT_FALSE(GetDelegate()->reprompt_required_flag_for_testing());
 }
@@ -267,7 +274,7 @@ TEST_F(AdsBlockedMessageDelegateTest, DismissDialog_OnDelegateDestroyed) {
 
   ExpectDismissMessageCall();
   MockAdsBlockedDialog* mock_dialog = PrepareAdsBlockedDialog();
-  EXPECT_CALL(*mock_dialog, Show);
+  EXPECT_CALL(*mock_dialog, Show(false));
   TriggerMessageManageClicked();
 
   // Verify that the AdsBlockedDialog destructor is invoked when the

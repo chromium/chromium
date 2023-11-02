@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/budget_pool.h"
 
 #include "base/gtest_prod_util.h"
+#include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/scheduler/common/tracing_helper.h"
 
@@ -92,7 +93,7 @@ class PLATFORM_EXPORT CPUTimeBudgetPool : public BudgetPool {
   // that at least one task will be run every max_throttling_delay.
   absl::optional<base::TimeDelta> max_throttling_delay_;
 
-  TraceableCounter<base::TimeDelta, TracingCategoryName::kInfo>
+  TraceableCounter<base::TimeDelta, TracingCategory::kInfo>
       current_budget_level_;
   base::TimeTicks last_checkpoint_;
   double cpu_percentage_;

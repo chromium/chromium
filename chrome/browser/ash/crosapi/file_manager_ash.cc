@@ -1,8 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/crosapi/file_manager_ash.h"
+
+#include <utility>
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -10,6 +12,7 @@
 #include "base/notreached.h"
 #include "chrome/browser/ash/file_manager/open_util.h"
 #include "chrome/browser/platform_util.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/crosapi/mojom/file_manager.mojom.h"
 

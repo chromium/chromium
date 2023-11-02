@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,19 +11,17 @@
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_switches.h"
 #include "gpu/config/skia_limits.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/GrContextThreadSafeProxy.h"
 #include "third_party/skia/include/gpu/gl/GrGLTypes.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_gl_api_implementation.h"
 #include "ui/gl/gl_version_info.h"
-
-#if defined(OS_ANDROID)
-#include "gpu/config/gpu_finch_features.h"
-#endif
 
 #if BUILDFLAG(ENABLE_VULKAN)
 #include "components/viz/common/gpu/vulkan_context_provider.h"
@@ -89,12 +87,18 @@ GrContextOptions GetDefaultGrContextOptions(GrContextType type) {
   // in a more granular way.  For OOPR-Canvas we want 8, but for other purposes,
   // a texture atlas with sample count of 4 would be sufficient
   options.fInternalMultisampleCount = 8;
+  options.fAllowMSAAOnNewIntel =
+      base::FeatureList::IsEnabled(features::kEnableMSAAOnNewIntelGPUs);
+
   if (type == GrContextType::kMetal)
     options.fRuntimeProgramCacheSize = 1024;
 
   options.fSuppressMipmapSupport =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableMipmapGeneration);
+
+  // fSupportBilerpFromGlyphAtlas is needed for Raw Draw.
+  options.fSupportBilerpFromGlyphAtlas = features::IsUsingRawDraw();
 
   return options;
 }
@@ -105,10 +109,13 @@ GLuint GetGrGLBackendTextureFormat(
     sk_sp<GrContextThreadSafeProxy> gr_context_thread_safe) {
   const gl::GLVersionInfo* version_info = &feature_info->gl_version_info();
   GLuint internal_format = gl::GetInternalFormat(
-      version_info, viz::TextureStorageFormat(resource_format));
+      version_info,
+      viz::TextureStorageFormat(
+          resource_format,
+          feature_info->feature_flags().angle_rgbx_internal_format));
 
   bool use_version_es2 = false;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   use_version_es2 = base::FeatureList::IsEnabled(features::kUseGles2ForOopR);
 #endif
 
@@ -257,8 +264,22 @@ GrVkImageInfo CreateGrVkImageInfo(VulkanImage* image) {
   GrVkImageInfo image_info;
   image_info.fImage = image->image();
   image_info.fAlloc = alloc;
-  image_info.fImageTiling = image->image_tiling();
-  image_info.fImageLayout = image->image_layout();
+  // TODO(hitawala, https://crbug.com/1310028): Skia assumes that all VkImages
+  // with DRM modifier extensions are only for reads. When using Vulkan with
+  // OzoneImageBackings on Skia, when importing buffer we create SkSurface and
+  // write to it which fails. To fix this, we add checks for tiling with DRM
+  // modifiers and set it to optimal. This will be removed once skia adds write
+  // support.
+  if (image->image_tiling() == VK_IMAGE_TILING_DRM_FORMAT_MODIFIER_EXT &&
+      (image->format() == VK_FORMAT_R8G8B8A8_UNORM ||
+       image->format() == VK_FORMAT_R8G8B8_UNORM ||
+       image->format() == VK_FORMAT_B8G8R8A8_UNORM ||
+       image->format() == VK_FORMAT_B8G8R8_UNORM)) {
+    image_info.fImageTiling = VK_IMAGE_TILING_OPTIMAL;
+  } else {
+    image_info.fImageTiling = image->image_tiling();
+  }
+  image_info.fImageLayout = VK_IMAGE_LAYOUT_UNDEFINED;
   image_info.fFormat = image->format();
   image_info.fImageUsageFlags = image->usage();
   image_info.fSampleCount = 1;
@@ -343,6 +364,44 @@ bool ShouldVulkanSyncCpuForSkiaSubmit(
   }
 #endif
   return false;
+}
+
+uint64_t GrBackendTextureTracingID(const GrBackendTexture& backend_texture) {
+  switch (backend_texture.backend()) {
+    case GrBackendApi::kOpenGL: {
+      GrGLTextureInfo tex_info;
+      if (backend_texture.getGLTextureInfo(&tex_info))
+        return tex_info.fID;
+      break;
+    }
+#if BUILDFLAG(IS_MAC)
+    case GrBackendApi::kMetal: {
+      GrMtlTextureInfo image_info;
+      if (backend_texture.getMtlTextureInfo(&image_info))
+        return reinterpret_cast<uint64_t>(image_info.fTexture.get());
+      break;
+    }
+#endif
+#if BUILDFLAG(ENABLE_VULKAN)
+    case GrBackendApi::kVulkan: {
+      GrVkImageInfo image_info;
+      if (backend_texture.getVkImageInfo(&image_info))
+        return reinterpret_cast<uint64_t>(image_info.fImage);
+      break;
+    }
+#endif
+#if BUILDFLAG(SKIA_USE_DAWN)
+    case GrBackendApi::kDawn: {
+      GrDawnTextureInfo tex_info;
+      if (backend_texture.getDawnTextureInfo(&tex_info))
+        return reinterpret_cast<uint64_t>(tex_info.fTexture.Get());
+      break;
+    }
+#endif
+    default:
+      break;
+  }
+  return 0;
 }
 
 }  // namespace gpu

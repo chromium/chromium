@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include <ostream>
 
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -65,9 +66,10 @@ struct UpdateActiveSetupVersionWorkItemTestCase {
 void PrintTo(const UpdateActiveSetupVersionWorkItemTestCase& test_case,
              ::std::ostream* os) {
   *os << "Initial value: "
-      << (test_case.initial_value ? test_case.initial_value : L"(empty)")
+      << (test_case.initial_value ? base::WideToUTF8(test_case.initial_value)
+                                  : "(empty)")
       << ", bump_selective_trigger: " << test_case.bump_selective_trigger
-      << ", expected result: " << test_case.expected_result;
+      << ", expected result: " << base::WideToUTF8(test_case.expected_result);
 }
 
 }  // namespace

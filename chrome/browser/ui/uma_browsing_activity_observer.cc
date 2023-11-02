@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -33,7 +34,8 @@
 namespace chrome {
 namespace {
 
-UMABrowsingActivityObserver* g_uma_browsing_activity_observer_instance = NULL;
+UMABrowsingActivityObserver* g_uma_browsing_activity_observer_instance =
+    nullptr;
 
 }  // namespace
 
@@ -48,8 +50,8 @@ void UMABrowsingActivityObserver::Init() {
 UMABrowsingActivityObserver::UMABrowsingActivityObserver() {
   registrar_.Add(this, content::NOTIFICATION_NAV_ENTRY_COMMITTED,
                  content::NotificationService::AllSources());
-  registrar_.Add(this, chrome::NOTIFICATION_APP_TERMINATING,
-                 content::NotificationService::AllSources());
+  subscription_ = browser_shutdown::AddAppTerminatingCallback(base::BindOnce(
+      &UMABrowsingActivityObserver::OnAppTerminating, base::Unretained(this)));
 }
 
 UMABrowsingActivityObserver::~UMABrowsingActivityObserver() {}
@@ -67,16 +69,18 @@ void UMABrowsingActivityObserver::Observe(
     // Track whether the page loaded is a search results page (SRP). Track
     // the non-SRP navigations as well so there is a control.
     base::RecordAction(base::UserMetricsAction("NavEntryCommitted"));
-    // Attempting to determine the cause of a crash originating from
-    // IsSearchResultsPageFromDefaultSearchProvider but manifesting in
-    // TemplateURLRef::ExtractSearchTermsFromURL(...).
-    // See http://crbug.com/291348.
+
     CHECK(load.entry);
-    if (TemplateURLServiceFactory::GetForProfile(
-            Profile::FromBrowserContext(controller->GetBrowserContext()))
-            ->IsSearchResultsPageFromDefaultSearchProvider(
-                load.entry->GetURL())) {
-      base::RecordAction(base::UserMetricsAction("NavEntryCommitted.SRP"));
+    // If the user is allowed to do searches in this profile (e.g., it's a
+    // regular profile, not something like a "system" profile), then record if
+    // this navigation appeared to go the default search engine.
+    auto* turl_service = TemplateURLServiceFactory::GetForProfile(
+        Profile::FromBrowserContext(controller->GetBrowserContext()));
+    if (turl_service) {
+      if (turl_service->IsSearchResultsPageFromDefaultSearchProvider(
+              load.entry->GetURL())) {
+        base::RecordAction(base::UserMetricsAction("NavEntryCommitted.SRP"));
+      }
     }
 
     if (!load.is_navigation_to_different_page())
@@ -84,11 +88,13 @@ void UMABrowsingActivityObserver::Observe(
 
     LogRenderProcessHostCount();
     LogBrowserTabCount();
-  } else if (type == chrome::NOTIFICATION_APP_TERMINATING) {
-    LogTimeBeforeUpdate();
-    delete g_uma_browsing_activity_observer_instance;
-    g_uma_browsing_activity_observer_instance = NULL;
   }
+}
+
+void UMABrowsingActivityObserver::OnAppTerminating() const {
+  LogTimeBeforeUpdate();
+  delete g_uma_browsing_activity_observer_instance;
+  g_uma_browsing_activity_observer_instance = nullptr;
 }
 
 void UMABrowsingActivityObserver::LogTimeBeforeUpdate() const {
@@ -123,6 +129,7 @@ void UMABrowsingActivityObserver::LogBrowserTabCount() const {
   int app_window_count = 0;
   int popup_window_count = 0;
   int tabbed_window_count = 0;
+  int pinned_tab_count = 0;
   std::map<base::StringPiece, int> unique_domain;
 
   for (auto* browser : *BrowserList::GetInstance()) {
@@ -137,21 +144,26 @@ void UMABrowsingActivityObserver::LogBrowserTabCount() const {
       base::StringPiece domain = tab_strip_model->GetWebContentsAt(i)
                                      ->GetLastCommittedURL()
                                      .host_piece();
-      unique_domain[domain] += 1;
+      unique_domain[domain]++;
+
+      if (tab_strip_model->IsTabPinned(i))
+        pinned_tab_count++;
     }
 
-    const std::vector<tab_groups::TabGroupId>& groups =
-        tab_strip_model->group_model()->ListTabGroups();
-    tab_group_count += groups.size();
-    for (const tab_groups::TabGroupId& group_id : groups) {
-      const TabGroup* const tab_group =
-          tab_strip_model->group_model()->GetTabGroup(group_id);
-      if (tab_group->IsCustomized() ||
-          !tab_group->visual_data()->title().empty()) {
-        ++customized_tab_group_count;
-      }
-      if (tab_group->visual_data()->is_collapsed()) {
-        ++collapsed_tab_group_count;
+    if (tab_strip_model->group_model()) {
+      const std::vector<tab_groups::TabGroupId>& groups =
+          tab_strip_model->group_model()->ListTabGroups();
+      tab_group_count += groups.size();
+      for (const tab_groups::TabGroupId& group_id : groups) {
+        const TabGroup* const tab_group =
+            tab_strip_model->group_model()->GetTabGroup(group_id);
+        if (tab_group->IsCustomized() ||
+            !tab_group->visual_data()->title().empty()) {
+          ++customized_tab_group_count;
+        }
+        if (tab_group->visual_data()->is_collapsed()) {
+          ++collapsed_tab_group_count;
+        }
       }
     }
 
@@ -184,26 +196,25 @@ void UMABrowsingActivityObserver::LogBrowserTabCount() const {
   // Record how many tab groups (including zero) are open across all windows.
   UMA_HISTOGRAM_COUNTS_100("TabGroups.UserGroupCountPerLoad", tab_group_count);
 
-  // Record how many tab groups are open across all windows.
-  if (tab_group_count != 0) {
-    UMA_HISTOGRAM_COUNTS_100("TabGroups.NonZeroUserGroupCountPerLoad",
-                             tab_group_count);
-  }
+  UMA_HISTOGRAM_COUNTS_100("TabGroups.UserPinnedTabCountPerLoad",
+                           std::min(pinned_tab_count, 100));
 
   // Record how many tabs are in the current group. Records 0 if the active tab
   // is not in a group.
   const Browser* current_browser = BrowserList::GetInstance()->GetLastActive();
   if (current_browser) {
     TabStripModel* const tab_strip_model = current_browser->tab_strip_model();
-    const absl::optional<tab_groups::TabGroupId> active_group =
-        tab_strip_model->GetTabGroupForTab(tab_strip_model->active_index());
-    UMA_HISTOGRAM_COUNTS_100("Tabs.TabCountInGroupPerLoad",
-                             active_group.has_value()
-                                 ? tab_strip_model->group_model()
-                                       ->GetTabGroup(active_group.value())
-                                       ->ListTabs()
-                                       .length()
-                                 : 0);
+    if (tab_strip_model->group_model()) {
+      const absl::optional<tab_groups::TabGroupId> active_group =
+          tab_strip_model->GetTabGroupForTab(tab_strip_model->active_index());
+      UMA_HISTOGRAM_COUNTS_100("Tabs.TabCountInGroupPerLoad",
+                               active_group.has_value()
+                                   ? tab_strip_model->group_model()
+                                         ->GetTabGroup(active_group.value())
+                                         ->ListTabs()
+                                         .length()
+                                   : 0);
+    }
   }
 
   // Record how many tab groups with a user-set name or color are open across

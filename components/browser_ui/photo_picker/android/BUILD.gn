@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -42,10 +42,13 @@ android_library("java") {
   deps = [
     ":java_resources",
     "//base:base_java",
+    "//base:jni_java",
+    "//build/android:build_java",
     "//components/browser_ui/util/android:java",
     "//components/browser_ui/widget/android:java",
     "//content/public/android:content_java",
     "//net/android:net_java",
+    "//third_party/androidx:androidx_activity_activity_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
@@ -65,8 +68,7 @@ generate_jni("photo_picker_jni_headers") {
 }
 
 android_aidl("photo_picker_aidl") {
-  import_include =
-      [ "java/src/org/chromium/components/browser_ui/photo_picker" ]
+  import_include = [ "java/src/" ]
   sources = [
     "java/src/org/chromium/components/browser_ui/photo_picker/IDecoderService.aidl",
     "java/src/org/chromium/components/browser_ui/photo_picker/IDecoderServiceCallback.aidl",
@@ -105,10 +107,7 @@ android_resources("java_resources") {
   ]
 }
 
-java_library("junit") {
-  # Skip platform checks since Robolectric depends on requires_android targets.
-  bypass_platform_checks = true
-  testonly = true
+robolectric_library("junit") {
   sources = [
     "java/src/org/chromium/components/browser_ui/photo_picker/FileEnumWorkerTaskTest.java",
     "java/src/org/chromium/components/browser_ui/photo_picker/PickerBitmapViewTest.java",
@@ -120,7 +119,6 @@ java_library("junit") {
     "//base:base_junit_test_support",
     "//base/test:test_support_java",
     "//net/android:net_java",
-    "//third_party/android_deps:robolectric_all_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
@@ -129,28 +127,41 @@ java_library("junit") {
   ]
 }
 
-android_library("javatests") {
+android_library("test_support_java") {
+  testonly = true
+
+  sources = [ "java/src/org/chromium/components/browser_ui/photo_picker/TestImageDecoderService.java" ]
+
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//build/android:build_java",
+  ]
+}
+
+android_library("unit_device_javatests") {
   testonly = true
 
   sources = [
     "java/src/org/chromium/components/browser_ui/photo_picker/DecoderServiceHostTest.java",
     "java/src/org/chromium/components/browser_ui/photo_picker/ImageDecoderTest.java",
     "java/src/org/chromium/components/browser_ui/photo_picker/PhotoPickerDialogTest.java",
-    "java/src/org/chromium/components/browser_ui/photo_picker/TestImageDecoderService.java",
   ]
   deps = [
     ":java",
     ":java_resources",
+    ":test_support_java",
     "//base:base_java",
     "//base:base_java_test_support",
-    "//chrome/test/android:chrome_java_test_support",
+    "//build/android:build_java",
+    "//chrome/test/android:chrome_java_integration_test_support",
     "//components/browser_ui/test/android:test_support_java",
     "//components/browser_ui/widget/android:java",
     "//components/browser_ui/widget/android:test_support_java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_support_test_runner:rules_java",
     "//third_party/android_support_test_runner:runner_java",
-    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_activity_activity_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_core_core_java",

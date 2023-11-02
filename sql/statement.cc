@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,10 +12,12 @@
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "sql/sqlite_result_code.h"
+#include "sql/sqlite_result_code_values.h"
 #include "third_party/sqlite/sqlite3.h"
 
 namespace sql {
@@ -64,17 +66,17 @@ bool Statement::CheckValid() const {
   return is_valid();
 }
 
-int Statement::StepInternal() {
+SqliteResultCode Statement::StepInternal() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!CheckValid())
-    return SQLITE_ERROR;
+    return SqliteResultCode::kError;
 
   absl::optional<base::ScopedBlockingCall> scoped_blocking_call;
   ref_->InitScopedBlockingCall(FROM_HERE, &scoped_blocking_call);
 
-  int ret = sqlite3_step(ref_->stmt());
-  return CheckError(ret);
+  auto sqlite_result_code = ToSqliteResultCode(sqlite3_step(ref_->stmt()));
+  return CheckSqliteResultCode(sqlite_result_code);
 }
 
 bool Statement::Run() {
@@ -85,7 +87,7 @@ bool Statement::Run() {
   run_called_ = true;
   DCHECK(!step_called_) << "Run() must not be mixed with Step()";
 #endif  // DCHECK_IS_ON()
-  return StepInternal() == SQLITE_DONE;
+  return StepInternal() == SqliteResultCode::kDone;
 }
 
 bool Statement::Step() {
@@ -95,7 +97,7 @@ bool Statement::Step() {
   DCHECK(!run_called_) << "Run() must not be mixed with Step()";
   step_called_ = true;
 #endif  // DCHECK_IS_ON()
-  return StepInternal() == SQLITE_ROW;
+  return StepInternal() == SqliteResultCode::kRow;
 }
 
 void Statement::Reset(bool clear_bound_vars) {
@@ -146,8 +148,8 @@ void Statement::BindNull(int param_index) {
   DCHECK_GE(param_index, 0);
   DCHECK_LT(param_index, sqlite3_bind_parameter_count(ref_->stmt()))
       << "Invalid parameter index";
-  int sqlite_error_code = sqlite3_bind_null(ref_->stmt(), param_index + 1);
-  DCHECK_EQ(sqlite_error_code, SQLITE_OK);
+  int sqlite_result_code = sqlite3_bind_null(ref_->stmt(), param_index + 1);
+  DCHECK_EQ(sqlite_result_code, SQLITE_OK);
 }
 
 void Statement::BindBool(int param_index, bool val) {
@@ -170,8 +172,8 @@ void Statement::BindInt(int param_index, int val) {
   DCHECK_GE(param_index, 0);
   DCHECK_LT(param_index, sqlite3_bind_parameter_count(ref_->stmt()))
       << "Invalid parameter index";
-  int sqlite_error_code = sqlite3_bind_int(ref_->stmt(), param_index + 1, val);
-  DCHECK_EQ(sqlite_error_code, SQLITE_OK);
+  int sqlite_result_code = sqlite3_bind_int(ref_->stmt(), param_index + 1, val);
+  DCHECK_EQ(sqlite_result_code, SQLITE_OK);
 }
 
 void Statement::BindInt64(int param_index, int64_t val) {
@@ -188,9 +190,9 @@ void Statement::BindInt64(int param_index, int64_t val) {
   DCHECK_GE(param_index, 0);
   DCHECK_LT(param_index, sqlite3_bind_parameter_count(ref_->stmt()))
       << "Invalid parameter index";
-  int sqlite_error_code =
+  int sqlite_result_code =
       sqlite3_bind_int64(ref_->stmt(), param_index + 1, val);
-  DCHECK_EQ(sqlite_error_code, SQLITE_OK);
+  DCHECK_EQ(sqlite_result_code, SQLITE_OK);
 }
 
 void Statement::BindDouble(int param_index, double val) {
@@ -207,9 +209,9 @@ void Statement::BindDouble(int param_index, double val) {
   DCHECK_GE(param_index, 0);
   DCHECK_LT(param_index, sqlite3_bind_parameter_count(ref_->stmt()))
       << "Invalid parameter index";
-  int sqlite_error_code =
+  int sqlite_result_code =
       sqlite3_bind_double(ref_->stmt(), param_index + 1, val);
-  DCHECK_EQ(sqlite_error_code, SQLITE_OK);
+  DCHECK_EQ(sqlite_result_code, SQLITE_OK);
 }
 
 void Statement::BindTime(int param_index, base::Time val) {
@@ -227,9 +229,9 @@ void Statement::BindTime(int param_index, base::Time val) {
   DCHECK_LT(param_index, sqlite3_bind_parameter_count(ref_->stmt()))
       << "Invalid parameter index";
   int64_t int_value = val.ToDeltaSinceWindowsEpoch().InMicroseconds();
-  int sqlite_error_code =
+  int sqlite_result_code =
       sqlite3_bind_int64(ref_->stmt(), param_index + 1, int_value);
-  DCHECK_EQ(sqlite_error_code, SQLITE_OK);
+  DCHECK_EQ(sqlite_result_code, SQLITE_OK);
 }
 
 void Statement::BindCString(int param_index, const char* val) {
@@ -255,9 +257,9 @@ void Statement::BindCString(int param_index, const char* val) {
   // default (1 billion bytes) in Chrome's SQLite build, so this is an unlilely
   // issue.
 
-  int sqlite_error_code = sqlite3_bind_text(ref_->stmt(), param_index + 1, val,
-                                            -1, SQLITE_TRANSIENT);
-  DCHECK_EQ(sqlite_error_code, SQLITE_OK);
+  int sqlite_result_code = sqlite3_bind_text(ref_->stmt(), param_index + 1, val,
+                                             -1, SQLITE_TRANSIENT);
+  DCHECK_EQ(sqlite_result_code, SQLITE_OK);
 }
 
 void Statement::BindString(int param_index, base::StringPiece value) {
@@ -291,9 +293,9 @@ void Statement::BindString(int param_index, base::StringPiece value) {
   // default (1 billion bytes) in Chrome's SQLite build, so this is an unlilely
   // issue.
 
-  int sqlite_error_code = sqlite3_bind_text(ref_->stmt(), param_index + 1, data,
-                                            value.size(), SQLITE_TRANSIENT);
-  DCHECK_EQ(sqlite_error_code, SQLITE_OK);
+  int sqlite_result_code = sqlite3_bind_text(
+      ref_->stmt(), param_index + 1, data, value.size(), SQLITE_TRANSIENT);
+  DCHECK_EQ(sqlite_result_code, SQLITE_OK);
 }
 
 void Statement::BindString16(int param_index, base::StringPiece16 value) {
@@ -337,9 +339,9 @@ void Statement::BindBlob(int param_index, base::span<const uint8_t> value) {
   // default (1 billion bytes) in Chrome's SQLite build, so this is an unlilely
   // issue.
 
-  int sqlite_error_code = sqlite3_bind_blob(ref_->stmt(), param_index + 1, data,
-                                            value.size(), SQLITE_TRANSIENT);
-  DCHECK_EQ(sqlite_error_code, SQLITE_OK);
+  int sqlite_result_code = sqlite3_bind_blob(
+      ref_->stmt(), param_index + 1, data, value.size(), SQLITE_TRANSIENT);
+  DCHECK_EQ(sqlite_result_code, SQLITE_OK);
 }
 
 int Statement::ColumnCount() const {
@@ -572,20 +574,41 @@ bool Statement::ColumnBlobAsVector(int column_index,
                             reinterpret_cast<std::vector<char>*>(result));
 }
 
-const char* Statement::GetSQLStatement() {
+std::string Statement::GetSQLStatement() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  // SQLite promises to keep the returned buffer alive until the statement is
+  // finalized. We immediately copy the buffer contents into a std::string so we
+  // don't need to worry about its lifetime. The performance overhead is
+  // acceptable because this method should only be invoked for logging details
+  // about SQLite errors.
+  //
+  // We use sqlite3_sql() instead of sqlite3_expanded_sql() because:
+  //  - The returned SQL string matches the source code, making it easy to
+  //    search.
+  //  - This works with SQL statements that work with large data, such as BLOBS
+  //    storing images.
+  //  - The returned string is free of bound values, so it does not contain any
+  //    PII that would raise privacy concerns around logging.
+  //
+  // Do not change this to use sqlite3_expanded_sql(). If that need ever arises
+  // in the future, make a new function instead listing the above caveats.
+  //
+  // See https://www.sqlite.org/c3ref/expanded_sql.html for more details on the
+  // difference between sqlite3_sql() and sqlite3_expanded_sql().
   return sqlite3_sql(ref_->stmt());
 }
 
-int Statement::CheckError(int err) {
+SqliteResultCode Statement::CheckSqliteResultCode(
+    SqliteResultCode sqlite_result_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Please don't add DCHECKs here, OnSqliteError() already has them.
-  succeeded_ = (err == SQLITE_OK || err == SQLITE_ROW || err == SQLITE_DONE);
-  if (!succeeded_ && ref_.get() && ref_->database())
-    return ref_->database()->OnSqliteError(err, this, nullptr);
-  return err;
+  succeeded_ = IsSqliteSuccessCode(sqlite_result_code);
+  if (!succeeded_ && ref_.get() && ref_->database()) {
+    auto sqlite_error_code = ToSqliteErrorCode(sqlite_result_code);
+    ref_->database()->OnSqliteError(sqlite_error_code, this, nullptr);
+  }
+  return sqlite_result_code;
 }
 
 }  // namespace sql

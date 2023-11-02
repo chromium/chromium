@@ -9,6 +9,15 @@
         [38, 78, 152, 102],
         [39, 79, 152, 100]
       ]
+    },
+    {
+      "name": "Caret",
+      "position": [39, 79],
+      "bounds": [1, 19],
+      "contentsOpaque": true,
+      "invalidations": [
+        [0, 0, 1, 19]
+      ]
     }
   ]
 }

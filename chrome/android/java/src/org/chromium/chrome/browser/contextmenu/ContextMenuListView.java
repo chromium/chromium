@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,8 +16,12 @@ import org.chromium.chrome.R;
  * constrained to make sure the view fits the screen size with margins.
  */
 public class ContextMenuListView extends ListView {
+    // Whether the max width of this list view is limited by screen width.
+    private final boolean mLimitedByScreenWidth;
+
     public ContextMenuListView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        mLimitedByScreenWidth = ContextMenuUtils.forcePopupStyleEnabled();
     }
 
     @Override
@@ -34,7 +38,8 @@ public class ContextMenuListView extends ListView {
      */
     private int calculateWidth() {
         final int windowWidthPx = getResources().getDisplayMetrics().widthPixels;
-        final int maxWidth = getResources().getDimensionPixelSize(R.dimen.context_menu_max_width);
+        final int maxWidthFromRes =
+                getResources().getDimensionPixelSize(R.dimen.context_menu_max_width);
         final int lateralMargin =
                 getResources().getDimensionPixelSize(R.dimen.context_menu_lateral_margin);
 
@@ -44,8 +49,13 @@ public class ContextMenuListView extends ListView {
         final View frame = ((View) getParent());
         assert frame.getId() == R.id.context_menu_frame;
         final int parentLateralPadding = frame.getPaddingLeft();
+        final int maxWidth = Math.min(maxWidthFromRes, frame.getMeasuredWidth());
 
-        return Math.min(maxWidth - 2 * parentLateralPadding,
-                windowWidthPx - 2 * lateralMargin - 2 * parentLateralPadding);
+        // When context menu is a popup, the max width with windowWidth - 2 * lateralMargin does not
+        // applied since it is presented in a popup window. See https://crbug.com/1314675.
+        if (mLimitedByScreenWidth) {
+            return maxWidth - 2 * parentLateralPadding;
+        }
+        return Math.min(maxWidth, windowWidthPx - 2 * lateralMargin) - 2 * parentLateralPadding;
     }
 }

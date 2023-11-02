@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -123,6 +123,13 @@ struct TrustTokenParams {
   // redeem a new token, evicting the RR currently stored.
   TrustTokenRefreshPolicy refresh_policy = kUseCached;
 
+  // "custom_key_commitment" stores a custom key commitment that should be
+  // used for this operation if set.
+  string? custom_key_commitment;
+
+  // "custom_issuer" specifies what issuer to use for this operation if set.
+  url.mojom.Origin? custom_issuer;
+
   // The remaining members are used only when "type" is "kSigning": these
   // parameters specify the manner in which the outgoing request should be
   // signed, including optionally specifying additional data to add in
@@ -147,14 +154,20 @@ struct HasTrustTokensResult {
   bool has_trust_tokens;
 };
 
+// Result struct for a HasRedemptionRecord (see below) call:
+struct HasRedemptionRecordResult {
+  TrustTokenOperationStatus status;
+  bool has_redemption_record;
+};
+
 // This interface is implicitly scoped to a top-level origin that is
 // (1) potentially trustworthy and (2) either HTTP or HTTPS. (All Trust Tokens
 // state is keyed by origins satisfying those two conditions.)
-interface HasTrustTokensAnswerer {
+interface TrustTokenQueryAnswerer {
   // Returns whether the user has any trust tokens issued by |issuer|. While
   // these tokens' storage is globally- (or, at least, NetworkContext-) scoped,
   // the method will only return a yes/no result if |issuer| is associated with
-  // the top-level origin implicit in this instance of HasTrustTokensAnswerer.
+  // the top-level origin implicit in this instance of TrustTokenQueryAnswerer.
   //
   // Concretely, this method:
   //
@@ -163,11 +176,22 @@ interface HasTrustTokensAnswerer {
   // if not;
   // - checks if internal storage is initialized, returning kUnavailable if not;
   // - attempts to associate |issuer| with the top-level origin to which this
-  // HasTrustTokensAnswerer is scoped, returning kResourceExhausted on failure;
+  // TrustTokenQueryAnswerer is scoped, returning kResourceExhausted on failure;
   // and
   // - if all of these conditions pass, returns kOk alongside a boolean
   // denoting whether the user possesses any trust tokens issued by |issuer|.
   HasTrustTokens(url.mojom.Origin issuer) => (HasTrustTokensResult result);
+
+  // Returns whether the user has a redemption record of redemption of an
+  // |issuer| issued token redeemed by the underlying top level origin.
+  //
+  // This method verifies that |issuer| is HTTP(S) and potentially trustworthy,
+  // which are preconditions for a Trust Tokens issuer origin, returns
+  // kInvalidArgument if not. It returns kOk alongside a boolean denoting
+  // whether the user possesses a valid redemption record issued by |issuer|
+  // and redeemed from the underlying top level origin.
+  HasRedemptionRecord(url.mojom.Origin issuer) =>
+                                       (HasRedemptionRecordResult result);
 };
 
 // Struct TrustTokenKeyCommitmentResult represents a trust token issuer's

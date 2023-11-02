@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -125,11 +125,6 @@ bool AllowCrossRendererResourceLoadHelper(bool is_guest,
                                           ui::PageTransition page_transition,
                                           bool* allowed) {
   if (is_guest) {
-    if (AllowSpecialCaseExtensionURLInGuest(extension, resource_path)) {
-      *allowed = true;
-      return true;
-    }
-
     // An extension's resources should only be accessible to WebViews owned by
     // that extension.
     if (owner_extension != extension) {
@@ -142,33 +137,6 @@ bool AllowCrossRendererResourceLoadHelper(bool is_guest,
     return true;
   }
 
-  return false;
-}
-
-bool AllowSpecialCaseExtensionURLInGuest(
-    const Extension* extension,
-    absl::optional<base::StringPiece> resource_path) {
-  // Allow mobile setup web UI (chrome://mobilesetup) to embed resources from
-  // the component mobile activation extension in a webview. This is needed
-  // because the activation web UI relies on the activation extension to
-  // provide parts of its UI, and to redirect POST requests to the network
-  // payment URL during mobile device initialization.
-  //
-  // TODO(http://crbug.com/778021): Fix mobile activation UI not to require
-  // this workaround.
-  bool is_mobile_activation_extension =
-      extension && extension->id() == "iadeocfgjdjdmpenejdbfeaocpbikmab";
-  if (is_mobile_activation_extension) {
-    if (!resource_path.has_value())
-      return true;
-    if (resource_path.value() == "/activation.html" ||
-        resource_path.value() == "/portal_offline.html" ||
-        resource_path.value() == "/invalid_device_info.html") {
-      return true;
-    }
-  }
-
-  // Otherwise this isn't a special case, and the normal logic should apply.
   return false;
 }
 

@@ -28,10 +28,10 @@
 
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
+#include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -65,7 +65,7 @@ class PLATFORM_EXPORT UnicodeRangeSet : public RefCounted<UnicodeRangeSet> {
 
   bool Contains(UChar32) const;
   bool IntersectsWith(const String&) const;
-  bool IsEntireRange() const { return ranges_.IsEmpty(); }
+  bool IsEntireRange() const { return ranges_.empty(); }
   wtf_size_t size() const { return ranges_.size(); }
   const UnicodeRange& RangeAt(wtf_size_t i) const { return ranges_[i]; }
   bool operator==(const UnicodeRangeSet& other) const;

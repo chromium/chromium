@@ -23,7 +23,7 @@ Rendered version of this file: https://chromium.googlesource.com/chromium/src/+/
       `chrome-file-type-policies-pushers@google.com`, since that's required for
       access to the GCS bucket.
     * The Component Updater system will notice those files and push them to
-      users withing ~6 hours. If not, contact `waffles@.`
+      users within ~6 hours. If not, contact `waffles@.`
 
 ## Procedure for rollback
 While Omaha allows rollback through the release manager, the Chrome client will

@@ -1,4 +1,4 @@
-// Copyright 2014 The Crashpad Authors. All rights reserved.
+// Copyright 2014 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,10 +17,10 @@
 #include <stdint.h>
 #include <string.h>
 
+#include <iterator>
 #include <string>
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "build/build_config.h"
 #include "gtest/gtest.h"
 #include "minidump/minidump_stream_writer.h"
@@ -156,7 +156,7 @@ TEST(MinidumpFileWriter, AddUserExtensionStream) {
   minidump_file.SetTimestamp(kTimestamp);
 
   static constexpr uint8_t kStreamData[] = "Hello World!";
-  constexpr size_t kStreamSize = base::size(kStreamData);
+  constexpr size_t kStreamSize = std::size(kStreamData);
   constexpr MinidumpStreamType kStreamType =
       static_cast<MinidumpStreamType>(0x4d);
 
@@ -418,12 +418,13 @@ TEST(MinidumpFileWriter, InitializeFromSnapshot_Exception) {
   // but the test should complete without failure.
   constexpr uint32_t kSnapshotTime = 0xfd469ab8;
   constexpr timeval kSnapshotTimeval = {
-#ifdef OS_WIN
-      static_cast<long>(kSnapshotTime),
+#if BUILDFLAG(IS_WIN)
+    static_cast<long>(kSnapshotTime),
 #else
-      static_cast<time_t>(kSnapshotTime),
+    static_cast<time_t>(kSnapshotTime),
 #endif
-      0};
+    0
+  };
 
   TestProcessSnapshot process_snapshot;
   process_snapshot.SetSnapshotTime(kSnapshotTimeval);

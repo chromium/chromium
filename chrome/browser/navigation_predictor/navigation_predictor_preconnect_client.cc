@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,15 +31,17 @@
 namespace {
 
 // Experiment with which event triggers the preconnect after commit.
-const base::Feature kPreconnectOnDidFinishNavigation{
-    "PreconnectOnDidFinishNavigation", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kPreconnectOnDidFinishNavigation,
+             "PreconnectOnDidFinishNavigation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace
 
 NavigationPredictorPreconnectClient::NavigationPredictorPreconnectClient(
     content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
-      web_contents_(web_contents),
+      content::WebContentsUserData<NavigationPredictorPreconnectClient>(
+          *web_contents),
       browser_context_(web_contents->GetBrowserContext()),
       current_visibility_(web_contents->GetVisibility()) {}
 
@@ -47,7 +49,7 @@ NavigationPredictorPreconnectClient::~NavigationPredictorPreconnectClient() {
   NavigationPredictorKeyedService* navigation_predictor_service =
       GetNavigationPredictorKeyedService();
   if (navigation_predictor_service) {
-    navigation_predictor_service->OnWebContentsDestroyed(web_contents_);
+    navigation_predictor_service->OnWebContentsDestroyed(web_contents());
   }
 }
 
@@ -67,7 +69,7 @@ void NavigationPredictorPreconnectClient::DidFinishNavigation(
       GetNavigationPredictorKeyedService();
   if (navigation_predictor_service) {
     navigation_predictor_service->OnWebContentsVisibilityChanged(
-        web_contents_, current_visibility_ == content::Visibility::VISIBLE);
+        web_contents(), current_visibility_ == content::Visibility::VISIBLE);
   }
 
   if (!navigation_handle->IsInPrimaryMainFrame() ||
@@ -123,7 +125,7 @@ void NavigationPredictorPreconnectClient::OnVisibilityChanged(
       GetNavigationPredictorKeyedService();
   if (navigation_predictor_service) {
     navigation_predictor_service->OnWebContentsVisibilityChanged(
-        web_contents_, visibility == content::Visibility::VISIBLE);
+        web_contents(), visibility == content::Visibility::VISIBLE);
   }
 
   // Check for same state.
@@ -183,7 +185,7 @@ void NavigationPredictorPreconnectClient::MaybePreconnectNow(
     return;
 
   url::Origin preconnect_origin =
-      web_contents()->GetMainFrame()->GetLastCommittedOrigin();
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin();
   if (preconnect_origin.scheme() != url::kHttpScheme &&
       preconnect_origin.scheme() != url::kHttpsScheme) {
     return;

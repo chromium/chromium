@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,6 +27,11 @@
 #define PAGE_BYTES_HISTOGRAM(histogram_name, bytes) \
   UMA_HISTOGRAM_CUSTOM_COUNTS(                      \
       histogram_name, static_cast<int>((bytes) / 1024), 1, 500 * 1024, 50)
+
+// Up to 1 minute with 50 buckets.
+#define INPUT_DELAY_HISTOGRAM(name, sample)                       \
+  UMA_HISTOGRAM_CUSTOM_TIMES(name, sample, base::Milliseconds(1), \
+                             base::Seconds(60), 50)
 
 #define PAGE_RESOURCE_COUNT_HISTOGRAM UMA_HISTOGRAM_COUNTS_10000
 
@@ -94,6 +99,12 @@ struct PageAbortInfo {
   const base::TimeDelta time_to_abort;
 };
 
+// UMA histogram function for logging the max cumulative shift score. Adjusts
+// the layout shift score to 10000x for better bucketing at the low end in UMA.
+void UmaMaxCumulativeShiftScoreHistogram10000x(
+    const std::string& name,
+    const page_load_metrics::NormalizedCLSData& normalized_cls_data);
+
 // Returns true if:
 // - We have timing information for the event.
 // - The page load started while the page was in the foreground.
@@ -134,6 +145,46 @@ bool WasStartedInBackgroundOptionalEventInForeground(
 // Returns true if |delegate| started in the foreground or became foregrounded
 // at some point in time.
 bool WasInForeground(const PageLoadMetricsObserverDelegate& delegate);
+
+// Returns (navigation start origined) "non prerendering background start" if
+// it exists, or nullopt. Here, "non prerendering background start" is the
+// minimum timing `x` satisfying:
+//
+// - The page is background at `x`; and
+// - `x` as TimeDelta is greater than or equal to navigation start (resp.
+//   activation start) if the page is not prerendered (resp. is prerendered).
+//
+// Note that this can be different from the return value of
+// `PageLoadMetricsObserverDelegate::GetTimeToFirstBackground`.
+absl::optional<base::TimeDelta> GetNonPrerenderingBackgroundStartTiming(
+    const PageLoadMetricsObserverDelegate& delegate);
+
+// Returns true iff event occurred in prerendered before activation or before
+// background start.
+//
+// Precondition: `HasInvalidActivationStart` must not hold.
+// In this case, arbitrary value will be returned.
+bool EventOccurredBeforeNonPrerenderingBackgroundStart(
+    const PageLoadMetricsObserverDelegate& delegate,
+    const base::TimeDelta& event);
+bool EventOccurredBeforeNonPrerenderingBackgroundStart(
+    const PageLoadMetricsObserverDelegate& delegate,
+    const page_load_metrics::mojom::PageLoadTiming& timing,
+    const base::TimeDelta& event);
+
+// Corrects an event with navigation start origin as navigation/activation
+// start origin.
+//
+// If the page is not prerendered, returns the event as is. If the page is
+// prerendered, returns activation start origined time delta. Negative values
+// are truncated as zero.
+base::TimeDelta CorrectEventAsNavigationOrActivationOrigined(
+    const PageLoadMetricsObserverDelegate& delegate,
+    const base::TimeDelta& event);
+base::TimeDelta CorrectEventAsNavigationOrActivationOrigined(
+    const PageLoadMetricsObserverDelegate& delegate,
+    const page_load_metrics::mojom::PageLoadTiming& timing,
+    const base::TimeDelta& event);
 
 PageAbortInfo GetPageAbortInfo(const PageLoadMetricsObserverDelegate& delegate);
 

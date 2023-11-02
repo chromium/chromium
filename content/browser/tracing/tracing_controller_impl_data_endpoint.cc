@@ -1,14 +1,15 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <memory>
+#include <tuple>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/json/json_writer.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/pattern.h"
 #include "base/task/sequenced_task_runner.h"
@@ -88,7 +89,7 @@ class FileTraceDataEndpoint : public TracingController::TraceDataEndpoint {
   void ReceiveTraceChunkOnBlockingThread(std::unique_ptr<std::string> chunk) {
     if (!OpenFileIfNeededOnBlockingThread())
       return;
-    ignore_result(fwrite(chunk->c_str(), chunk->size(), 1, file_));
+    std::ignore = fwrite(chunk->c_str(), chunk->size(), 1, file_.get());
   }
 
   bool OpenFileIfNeededOnBlockingThread() {
@@ -104,13 +105,13 @@ class FileTraceDataEndpoint : public TracingController::TraceDataEndpoint {
       // it's still owned by base::File. So we have to close it first and then
       // reopen as FILE*.
       temp_file.Close();
-      file_ = base::OpenFile(pending_file_path_, "w");
+      file_.reset(base::OpenFile(pending_file_path_, "w"));
     } else {
       LOG(WARNING) << "Unable to use temporary file " << pending_file_path_
                    << ": "
                    << base::File::ErrorToString(temp_file.error_details());
       pending_file_path_.clear();
-      file_ = base::OpenFile(file_path_, "w");
+      file_.reset(base::OpenFile(file_path_, "w"));
       LOG_IF(ERROR, file_ == nullptr)
           << "Failed to open " << file_path_.value();
     }
@@ -119,7 +120,6 @@ class FileTraceDataEndpoint : public TracingController::TraceDataEndpoint {
 
   void CloseOnBlockingThread() {
     if (OpenFileIfNeededOnBlockingThread()) {
-      base::CloseFile(file_);
       file_ = nullptr;
     }
 
@@ -143,7 +143,7 @@ class FileTraceDataEndpoint : public TracingController::TraceDataEndpoint {
   base::FilePath file_path_;
   base::FilePath pending_file_path_;
   base::OnceClosure completion_callback_;
-  FILE* file_ = nullptr;
+  base::ScopedFILE file_ = nullptr;
   const scoped_refptr<base::SequencedTaskRunner> may_block_task_runner_;
 };
 

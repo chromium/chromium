@@ -36,6 +36,11 @@ else
 OPUS_SOURCES += $(OPUS_SOURCES_FLOAT)
 endif
 
+if CPU_X86
+if HAVE_RTCD
+CELT_SOURCES += $(CELT_SOURCES_X86_RTCD)
+SILK_SOURCES += $(SILK_SOURCES_X86_RTCD)
+endif
 if HAVE_SSE
 CELT_SOURCES += $(CELT_SOURCES_SSE)
 endif
@@ -45,10 +50,13 @@ endif
 if HAVE_SSE4_1
 CELT_SOURCES += $(CELT_SOURCES_SSE4_1)
 endif
+endif
 
 if CPU_ARM
-CELT_SOURCES += $(CELT_SOURCES_ARM)
-SILK_SOURCES += $(SILK_SOURCES_ARM)
+if HAVE_RTCD
+CELT_SOURCES += $(CELT_SOURCES_ARM_RTCD)
+SILK_SOURCES += $(SILK_SOURCES_ARM_RTCD)
+endif
 
 if HAVE_ARM_NEON_INTR
 CELT_SOURCES += $(CELT_SOURCES_ARM_NEON_INTR)
@@ -225,6 +233,8 @@ EXTRA_DIST = opus.pc.in \
              cmake/RunTest.cmake \
              cmake/config.h.cmake.in \
              cmake/vla.c \
+             cmake/cpu_info_by_asm.c \
+             cmake/cpu_info_by_c.c \
              meson/get-version.py \
              meson/read-sources-list.py \
              meson.build \

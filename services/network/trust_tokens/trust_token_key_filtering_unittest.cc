@@ -1,9 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <vector>
 
+#include "base/ranges/algorithm.h"
 #include "base/test/task_environment.h"
 #include "services/network/public/mojom/trust_tokens.mojom-forward.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
@@ -117,16 +118,14 @@ TEST(TrustTokenKeyFiltering, MixOfPastAndFutureKeys) {
   RetainSoonestToExpireTrustTokenKeys(&keys, 3);
 
   EXPECT_EQ(keys.size(), 2u);
-  EXPECT_TRUE(
-      std::any_of(keys.begin(), keys.end(),
-                  [&early_key](const mojom::TrustTokenVerificationKeyPtr& key) {
-                    return mojo::Equals(key, early_key);
-                  }));
-  EXPECT_TRUE(
-      std::any_of(keys.begin(), keys.end(),
-                  [&late_key](const mojom::TrustTokenVerificationKeyPtr& key) {
-                    return mojo::Equals(key, late_key);
-                  }));
+  EXPECT_TRUE(base::ranges::any_of(
+      keys, [&early_key](const mojom::TrustTokenVerificationKeyPtr& key) {
+        return mojo::Equals(key, early_key);
+      }));
+  EXPECT_TRUE(base::ranges::any_of(
+      keys, [&late_key](const mojom::TrustTokenVerificationKeyPtr& key) {
+        return mojo::Equals(key, late_key);
+      }));
 
   // This should drop the key with the latest expiry.
   RetainSoonestToExpireTrustTokenKeys(&keys, 1);
@@ -160,21 +159,18 @@ TEST(TrustTokenKeyFiltering, BreaksTiesBasedOnBody) {
   RetainSoonestToExpireTrustTokenKeys(&keys, 3);
 
   EXPECT_EQ(keys.size(), 3u);
-  EXPECT_TRUE(
-      std::any_of(keys.begin(), keys.end(),
-                  [&a_key](const mojom::TrustTokenVerificationKeyPtr& key) {
-                    return mojo::Equals(key, a_key);
-                  }));
-  EXPECT_TRUE(
-      std::any_of(keys.begin(), keys.end(),
-                  [&b_key](const mojom::TrustTokenVerificationKeyPtr& key) {
-                    return mojo::Equals(key, b_key);
-                  }));
-  EXPECT_TRUE(
-      std::any_of(keys.begin(), keys.end(),
-                  [&early_key](const mojom::TrustTokenVerificationKeyPtr& key) {
-                    return mojo::Equals(key, early_key);
-                  }));
+  EXPECT_TRUE(base::ranges::any_of(
+      keys, [&a_key](const mojom::TrustTokenVerificationKeyPtr& key) {
+        return mojo::Equals(key, a_key);
+      }));
+  EXPECT_TRUE(base::ranges::any_of(
+      keys, [&b_key](const mojom::TrustTokenVerificationKeyPtr& key) {
+        return mojo::Equals(key, b_key);
+      }));
+  EXPECT_TRUE(base::ranges::any_of(
+      keys, [&early_key](const mojom::TrustTokenVerificationKeyPtr& key) {
+        return mojo::Equals(key, early_key);
+      }));
 
   // Breaking the tie on expiry time should return the single key with the
   // earliest expiry.

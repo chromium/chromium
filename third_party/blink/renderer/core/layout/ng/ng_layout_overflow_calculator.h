@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,6 +40,8 @@ class CORE_EXPORT NGLayoutOverflowCalculator {
   // Adds layout-overflow from |child_fragment|, at |offset|.
   void AddChild(const NGPhysicalBoxFragment& child_fragment,
                 PhysicalOffset offset) {
+    if (is_view_ && child_fragment.IsFixedPositioned())
+      return;
     PhysicalRect child_overflow = LayoutOverflowForPropagation(child_fragment);
     child_overflow.offset += offset;
     AddOverflow(child_overflow, child_fragment.IsFragmentainerBox());
@@ -50,7 +52,7 @@ class CORE_EXPORT NGLayoutOverflowCalculator {
   void AddItems(const LayoutObject*,
                 const NGFragmentItemsBuilder::ItemWithOffsetList&);
 
-  void AddTableCollapsedBorders(const NGTableBorders&);
+  void AddTableSelfRect();
 
  private:
   template <typename Items>
@@ -77,6 +79,7 @@ class CORE_EXPORT NGLayoutOverflowCalculator {
   const NGBlockNode node_;
   const WritingDirectionMode writing_direction_;
   const bool is_scroll_container_;
+  const bool is_view_;
   const bool has_left_overflow_;
   const bool has_top_overflow_;
   const bool has_non_visible_overflow_;

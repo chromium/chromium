@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -53,6 +53,8 @@ class PageUserData : public base::SupportsUserData::Data {
     }
   }
 
+  // TODO(crbug.com/1335845): Due to a unresolved bug, this can return nullptr
+  // even after CreateForPage() or GetOrCreateForPage() has been called.
   static T* GetForPage(Page& page) {
     return static_cast<T*>(page.GetUserData(UserDataKey()));
   }
@@ -88,7 +90,7 @@ class PageUserData : public base::SupportsUserData::Data {
 // This macro declares a static variable inside the class that inherits from
 // PageUserData. The address of this static variable is used as
 // the key to store/retrieve an instance of the class.
-#define PAGE_USER_DATA_KEY_DECL() static constexpr int kUserDataKey = 0
+#define PAGE_USER_DATA_KEY_DECL() static const int kUserDataKey = 0
 
 // This macro instantiates the static variable declared by the previous macro.
 // It must live in a .cc file to ensure that there is only one instantiation

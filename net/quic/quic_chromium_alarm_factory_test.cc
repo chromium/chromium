@@ -1,20 +1,19 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "net/quic/quic_chromium_alarm_factory.h"
 
 #include "net/quic/test_task_runner.h"
-#include "net/third_party/quiche/src/quic/test_tools/mock_clock.h"
+#include "net/third_party/quiche/src/quiche/quic/test_tools/mock_clock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace net {
-namespace test {
+namespace net::test {
 namespace {
 
 class TestDelegate : public quic::QuicAlarm::DelegateWithoutContext {
  public:
-  TestDelegate() : fired_(false) {}
+  TestDelegate() = default;
 
   void OnAlarm() override { fired_ = true; }
 
@@ -22,13 +21,13 @@ class TestDelegate : public quic::QuicAlarm::DelegateWithoutContext {
   void Clear() { fired_ = false; }
 
  private:
-  bool fired_;
+  bool fired_ = false;
 };
 
 class QuicChromiumAlarmFactoryTest : public ::testing::Test {
  protected:
   QuicChromiumAlarmFactoryTest()
-      : runner_(new TestTaskRunner(&clock_)),
+      : runner_(base::MakeRefCounted<TestTaskRunner>(&clock_)),
         alarm_factory_(runner_.get(), &clock_) {}
 
   scoped_refptr<TestTaskRunner> runner_;
@@ -226,5 +225,4 @@ TEST_F(QuicChromiumAlarmFactoryTest, CreateAlarmAndUpdate) {
 }
 
 }  // namespace
-}  // namespace test
-}  // namespace net
+}  // namespace net::test

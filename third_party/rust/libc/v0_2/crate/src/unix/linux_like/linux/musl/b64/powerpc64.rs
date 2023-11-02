@@ -601,9 +601,6 @@ pub const SYS_process_madvise: ::c_long = 440;
 pub const SYS_epoll_pwait2: ::c_long = 441;
 pub const SYS_mount_setattr: ::c_long = 442;
 
-pub const FIOCLEX: ::c_int = 0x20006601;
-pub const FIONCLEX: ::c_int = 0x20006602;
-pub const FIONBIO: ::c_int = 0x8004667e;
 pub const EDEADLK: ::c_int = 58;
 pub const EDEADLOCK: ::c_int = EDEADLK;
 
@@ -614,53 +611,7 @@ pub const VMIN: usize = 5;
 pub const IEXTEN: ::tcflag_t = 0x00000400;
 pub const TOSTOP: ::tcflag_t = 0x00400000;
 pub const FLUSHO: ::tcflag_t = 0x00800000;
-pub const TCGETS: ::c_int = 0x403c7413;
-pub const TCSETS: ::c_int = 0x803c7414;
-pub const TCSETSW: ::c_int = 0x803c7415;
-pub const TCSETSF: ::c_int = 0x803c7416;
-pub const TCGETA: ::c_int = 0x40147417;
-pub const TCSETA: ::c_int = 0x80147418;
-pub const TCSETAW: ::c_int = 0x80147419;
-pub const TCSETAF: ::c_int = 0x8014741c;
-pub const TCSBRK: ::c_int = 0x2000741d;
-pub const TCXONC: ::c_int = 0x2000741e;
-pub const TCFLSH: ::c_int = 0x2000741f;
-pub const TIOCGSOFTCAR: ::c_int = 0x5419;
-pub const TIOCSSOFTCAR: ::c_int = 0x541A;
-pub const TIOCLINUX: ::c_int = 0x541C;
-pub const TIOCGSERIAL: ::c_int = 0x541E;
-pub const TIOCEXCL: ::c_int = 0x540C;
-pub const TIOCNXCL: ::c_int = 0x540D;
-pub const TIOCSCTTY: ::c_int = 0x540E;
-pub const TIOCGPGRP: ::c_int = 0x40047477;
-pub const TIOCSPGRP: ::c_int = 0x80047476;
-pub const TIOCOUTQ: ::c_int = 0x40047473;
-pub const TIOCGWINSZ: ::c_int = 0x40087468;
-pub const TIOCSWINSZ: ::c_int = 0x80087467;
-pub const TIOCMGET: ::c_int = 0x5415;
-pub const TIOCMBIS: ::c_int = 0x5416;
-pub const TIOCMBIC: ::c_int = 0x5417;
-pub const TIOCMSET: ::c_int = 0x5418;
-pub const FIONREAD: ::c_int = 0x4004667f;
-pub const TIOCCONS: ::c_int = 0x541D;
-pub const TIOCM_LE: ::c_int = 0x001;
-pub const TIOCM_DTR: ::c_int = 0x002;
-pub const TIOCM_RTS: ::c_int = 0x004;
-pub const TIOCM_ST: ::c_int = 0x008;
-pub const TIOCM_SR: ::c_int = 0x010;
-pub const TIOCM_CTS: ::c_int = 0x020;
-pub const TIOCM_CAR: ::c_int = 0x040;
-pub const TIOCM_RNG: ::c_int = 0x080;
-pub const TIOCM_DSR: ::c_int = 0x100;
-pub const TIOCM_CD: ::c_int = TIOCM_CAR;
-pub const TIOCM_RI: ::c_int = TIOCM_RNG;
 
-pub const TIOCGRS485: ::c_int = 0x542E;
-pub const TIOCSRS485: ::c_int = 0x542F;
-
-pub const RLIMIT_NLIMITS: ::c_int = 15;
-pub const RLIM_NLIMITS: ::c_int = RLIMIT_NLIMITS;
-pub const TIOCINQ: ::c_int = ::FIONREAD;
 pub const MCL_CURRENT: ::c_int = 0x2000;
 pub const MCL_FUTURE: ::c_int = 0x4000;
 pub const CBAUD: ::tcflag_t = 0xff;
@@ -732,7 +683,3 @@ pub const B2500000: ::speed_t = 0o00033;
 pub const B3000000: ::speed_t = 0o00034;
 pub const B3500000: ::speed_t = 0o00035;
 pub const B4000000: ::speed_t = 0o00036;
-
-extern "C" {
-    pub fn ioctl(fd: ::c_int, request: ::c_int, ...) -> ::c_int;
-}

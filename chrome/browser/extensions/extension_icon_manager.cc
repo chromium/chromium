@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -88,6 +88,6 @@ void ExtensionIconManager::OnImageLoaded(const std::string& extension_id,
 void ExtensionIconManager::EnsureDefaultIcon() {
   if (default_icon_.IsEmpty()) {
     default_icon_ = gfx::Image(gfx::CreateVectorIcon(
-        vector_icons::kExtensionIcon, gfx::kFaviconSize, gfx::kChromeIconGrey));
+        vector_icons::kExtensionIcon, gfx::kFaviconSize, gfx::kGoogleGrey700));
   }
 }

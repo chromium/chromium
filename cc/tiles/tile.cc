@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/numerics/safe_conversions.h"
+#include "base/record_replay.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "cc/base/math_util.h"
@@ -25,7 +26,7 @@ Tile::Tile(TileManager* tile_manager,
            int source_frame_number,
            int flags)
     : tile_manager_(tile_manager),
-      tiling_(info.tiling),
+      tiling_(info.tiling.get()),
       content_rect_(info.content_rect),
       enclosing_layer_rect_(info.enclosing_layer_rect),
       raster_transform_(info.raster_transform),
@@ -40,6 +41,7 @@ Tile::Tile(TileManager* tile_manager,
       can_use_lcd_text_(info.can_use_lcd_text),
       raster_task_scheduled_with_checker_images_(false),
       id_(tile_manager->GetUniqueTileId()) {
+  recordreplay::RegisterPointer("Tile", this);
   raster_rects_.emplace_back(info.content_rect, info.raster_transform);
 }
 
@@ -47,6 +49,7 @@ Tile::~Tile() {
   TRACE_EVENT_OBJECT_DELETED_WITH_ID(
       TRACE_DISABLED_BY_DEFAULT("cc.debug"),
       "cc::Tile", this);
+  recordreplay::UnregisterPointer(this);
   tile_manager_->Release(this);
 }
 
@@ -81,6 +84,10 @@ void Tile::AsValueInto(base::trace_event::TracedValue* value) const {
   value->SetBoolean("use_picture_analysis", use_picture_analysis());
   value->SetInteger("gpu_memory_usage",
                     base::saturated_cast<int>(GPUMemoryUsageInBytes()));
+}
+
+bool Tile::HasMissingLCPCandidateImages() const {
+  return HasRasterTask() && raster_task_->TaskContainsLCPCandidateImages();
 }
 
 size_t Tile::GPUMemoryUsageInBytes() const {

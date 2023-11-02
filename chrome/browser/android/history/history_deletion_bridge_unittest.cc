@@ -1,9 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/android/history/history_deletion_bridge.h"
 
+#include "base/containers/contains.h"
 #include "base/time/time.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/url_row.h"
@@ -25,6 +26,5 @@ TEST(HistoryDeletionBridge, TestSanitizeDeletionInfo) {
   EXPECT_EQ(expected.size(), actual.size());
 
   for (auto row : actual)
-    EXPECT_NE(expected.end(),
-              std::find(expected.begin(), expected.end(), row.url()));
+    EXPECT_TRUE(base::Contains(expected, row.url()));
 }

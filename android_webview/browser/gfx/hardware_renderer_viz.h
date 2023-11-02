@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include "android_webview/browser/gfx/hardware_renderer.h"
 #include "android_webview/browser/gfx/output_surface_provider_webview.h"
 #include "android_webview/browser/gfx/root_frame_sink.h"
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 
 #include "base/base_export.h"
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/task/common/checked_lock.h"
 #include "base/task/post_job.h"
@@ -21,6 +22,8 @@
 #include "base/task/thread_pool/task.h"
 #include "base/task/thread_pool/task_source.h"
 #include "base/task/thread_pool/task_source_sort_key.h"
+
+#include "base/record_replay_ordered_atomic.h"
 
 namespace base {
 namespace internal {
@@ -70,8 +73,8 @@ class BASE_EXPORT JobTaskSource : public TaskSource {
   // TaskSource:
   ExecutionEnvironment GetExecutionEnvironment() override;
   size_t GetRemainingConcurrency() const override;
-  TaskSourceSortKey GetSortKey(
-      bool disable_fair_scheduling = false) const override;
+  TaskSourceSortKey GetSortKey() const override;
+  TimeTicks GetDelayedSortKey() const override;
 
   bool IsActive() const;
   size_t GetWorkerCount() const;
@@ -102,7 +105,9 @@ class BASE_EXPORT JobTaskSource : public TaskSource {
                                                       << kWorkerCountBitOffset;
 
     struct Value {
-      size_t worker_count() const { return value >> kWorkerCountBitOffset; }
+      uint8_t worker_count() const {
+        return static_cast<uint8_t>(value >> kWorkerCountBitOffset);
+      }
       // Returns true if canceled.
       bool is_canceled() const { return value & kCanceledMask; }
 
@@ -125,8 +130,14 @@ class BASE_EXPORT JobTaskSource : public TaskSource {
     // Loads and returns the state.
     Value Load() const;
 
+    // [RecordReplay] RUN-2080 (https://linear.app/replay/issue/RUN-2080)
+    // This lock can be acquired in non-deterministic contexts when computing
+    // max concurrency.  This is a variant of `Load` above that doesn't
+    // record its thread acquisition.
+    Value RecordReplayLoadUnordered() const;
+
    private:
-    std::atomic<uint32_t> value_{0};
+    recordreplay::OrderedAtomic<uint32_t> value_{0};
   };
 
   // Atomic flag that indicates if the joining thread is currently waiting on
@@ -190,6 +201,9 @@ class BASE_EXPORT JobTaskSource : public TaskSource {
   Task TakeTask(TaskSource::Transaction* transaction) override;
   Task Clear(TaskSource::Transaction* transaction) override;
   bool DidProcessTask(TaskSource::Transaction* transaction) override;
+  bool WillReEnqueue(TimeTicks now,
+                     TaskSource::Transaction* transaction) override;
+  void OnBecomeReady() override;
 
   // Synchronizes access to workers state.
   mutable CheckedLock worker_lock_{UniversalSuccessor()};
@@ -215,7 +229,7 @@ class BASE_EXPORT JobTaskSource : public TaskSource {
   RepeatingClosure primary_task_;
 
   const TimeTicks ready_time_;
-  PooledTaskRunnerDelegate* delegate_;
+  raw_ptr<PooledTaskRunnerDelegate> delegate_;
 };
 
 }  // namespace internal

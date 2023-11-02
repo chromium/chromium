@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,13 @@
 #define MOJO_CORE_WATCHER_SET_H_
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "mojo/core/handle_signals_state.h"
 #include "mojo/core/watcher_dispatcher.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+#include "base/record_replay.h"
 
 namespace mojo {
 namespace core {
@@ -63,8 +65,8 @@ class WatcherSet {
     ContextSet contexts;
   };
 
-  Dispatcher* const owner_;
-  base::flat_map<WatcherDispatcher*, Entry> watchers_;
+  const raw_ptr<Dispatcher> owner_;
+  base::flat_map<WatcherDispatcher*, Entry, recordreplay::CompareByPointerId> watchers_;
   absl::optional<HandleSignalsState> last_known_state_;
 };
 

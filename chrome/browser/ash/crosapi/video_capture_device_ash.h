@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,6 +21,11 @@ class VideoFrameHandlerAsh;
 // video_capture::Device.
 class VideoCaptureDeviceAsh : public crosapi::mojom::VideoCaptureDevice {
  public:
+  // Primarily for use by code that wants to create this as a self-owned
+  // receiver.
+  explicit VideoCaptureDeviceAsh(
+      mojo::PendingRemote<video_capture::mojom::Device> device_remote);
+
   VideoCaptureDeviceAsh(
       mojo::PendingReceiver<crosapi::mojom::VideoCaptureDevice> proxy_receiver,
       mojo::PendingRemote<video_capture::mojom::Device> device_remote,
@@ -41,6 +46,7 @@ class VideoCaptureDeviceAsh : public crosapi::mojom::VideoCaptureDevice {
                        SetPhotoOptionsCallback callback) override;
   void TakePhoto(TakePhotoCallback callback) override;
   void ProcessFeedback(const media::VideoCaptureFeedback& feedback) override;
+  void RequestRefreshFrame() override;
 
   std::unique_ptr<VideoFrameHandlerAsh> handler_;
 

@@ -1,10 +1,11 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_VIEWS_CONTROLS_LINK_H_
 #define UI_VIEWS_CONTROLS_LINK_H_
 
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -60,9 +61,10 @@ class VIEWS_EXPORT Link : public Label {
   SkColor GetColor() const;
 
   void SetForceUnderline(bool force_underline);
+  bool GetForceUnderline() const;
 
   // Label:
-  gfx::NativeCursor GetCursor(const ui::MouseEvent& event) override;
+  ui::Cursor GetCursor(const ui::MouseEvent& event) override;
   bool GetCanProcessEventsWithinSubtree() const override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
@@ -83,11 +85,11 @@ class VIEWS_EXPORT Link : public Label {
   bool IsSelectionSupported() const override;
 
  private:
+  virtual void RecalculateFont();
+
   void SetPressed(bool pressed);
 
   void OnClick(const ui::Event& event);
-
-  void RecalculateFont();
 
   void ConfigureFocus();
 
@@ -107,6 +109,9 @@ class VIEWS_EXPORT Link : public Label {
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, Link, Label)
+VIEW_BUILDER_OVERLOAD_METHOD(SetCallback, base::RepeatingClosure)
+VIEW_BUILDER_OVERLOAD_METHOD(SetCallback, Link::ClickedCallback)
+VIEW_BUILDER_PROPERTY(bool, ForceUnderline)
 END_VIEW_BUILDER
 
 }  // namespace views

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,17 +6,17 @@
 
 #import <UIKit/UIKit.h>
 
-#include <algorithm>
+#import <algorithm>
 
-#include "base/files/file_enumerator.h"
-#include "base/files/file_path.h"
-#include "base/files/file_util.h"
-#include "base/files/scoped_temp_dir.h"
-#include "base/ios/ios_util.h"
-#include "base/time/time.h"
+#import "base/files/file_enumerator.h"
+#import "base/files/file_path.h"
+#import "base/files/file_util.h"
+#import "base/files/scoped_temp_dir.h"
+#import "base/ios/ios_util.h"
+#import "base/time/time.h"
 #import "ios/chrome/browser/sessions/scene_util_test_support.h"
 #import "testing/gtest_mac.h"
-#include "testing/platform_test.h"
+#import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -29,7 +29,7 @@ namespace {
 const base::FilePath::CharType kRoot[] = FILE_PATH_LITERAL("root");
 const char kName[] = "filename";
 
-// Creates a temporary directory with |filenames| files below. The file names
+// Creates a temporary directory with `filenames` files below. The file names
 // may contain path separator in which case the whole directory structure will
 // be created. The file themselves will be created empty with default access.
 base::ScopedTempDir CreateScopedTempDirWithContent(
@@ -50,8 +50,8 @@ base::ScopedTempDir CreateScopedTempDirWithContent(
   return temp_directory;
 }
 
-// Returns the list of files recursively found below |directory|. The path will
-// be relative to |directory|.
+// Returns the list of files recursively found below `directory`. The path will
+// be relative to `directory`.
 std::vector<base::FilePath> GetDirectoryContent(
     const base::FilePath& directory) {
   base::FileEnumerator enumerator(directory, /*recursive=*/true,

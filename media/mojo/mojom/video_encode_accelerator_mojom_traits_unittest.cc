@@ -1,9 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "media/mojo/mojom/video_encode_accelerator_mojom_traits.h"
 
+#include "media/base/video_bitrate_allocation.h"
 #include "media/mojo/mojom/video_encode_accelerator.mojom.h"
 #include "media/mojo/mojom/video_encoder_info_mojom_traits.h"
 #include "media/video/video_encode_accelerator.h"
@@ -12,6 +13,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
+
 TEST(VideoEncodeAcceleratorSupportedProfile, RoundTrip) {
   ::media::VideoEncodeAccelerator::SupportedProfile input;
   input.profile = VP9PROFILE_PROFILE0;
@@ -19,6 +21,8 @@ TEST(VideoEncodeAcceleratorSupportedProfile, RoundTrip) {
   input.max_resolution = gfx::Size(4096, 4096);
   input.max_framerate_numerator = 30;
   input.max_framerate_denominator = 1;
+  input.rate_control_modes = VideoEncodeAccelerator::kConstantMode |
+                             VideoEncodeAccelerator::kVariableMode;
   input.scalability_modes.push_back(::media::SVCScalabilityMode::kL1T3);
   input.scalability_modes.push_back(::media::SVCScalabilityMode::kL3T3Key);
 
@@ -49,6 +53,81 @@ TEST(VideoEncoderInfoStructTraitTest, RoundTrip) {
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::VideoEncoderInfo>(
       input, output));
   EXPECT_EQ(input, output);
+}
+
+TEST(VideoBitrateAllocationStructTraitTest, ConstantBitrate_RoundTrip) {
+  ::media::VideoBitrateAllocation input_allocation;
+  ASSERT_TRUE(input_allocation.SetBitrate(0, 0, 1000u));
+  ASSERT_TRUE(input_allocation.SetBitrate(1, 0, 3500u));
+  ASSERT_TRUE(input_allocation.SetBitrate(0, 1, 2000u));
+  ASSERT_TRUE(input_allocation.SetBitrate(1, 1, 5000u));
+  ::media::VideoBitrateAllocation output_allocation;
+
+  ASSERT_TRUE(
+      mojo::test::SerializeAndDeserialize<mojom::VideoBitrateAllocation>(
+          input_allocation, output_allocation));
+
+  EXPECT_EQ(input_allocation, output_allocation);
+}
+
+TEST(VideoBitrateAllocationStructTraitTest,
+     VariableBitrate_PeakGreaterThanSum_RoundTrip) {
+  ::media::VideoBitrateAllocation input_allocation(Bitrate::Mode::kVariable);
+  input_allocation.SetBitrate(0, 0, 5000u);
+  input_allocation.SetPeakBps(654321u);
+  ::media::VideoBitrateAllocation output_allocation;
+
+  ASSERT_TRUE(
+      mojo::test::SerializeAndDeserialize<mojom::VideoBitrateAllocation>(
+          input_allocation, output_allocation));
+
+  EXPECT_EQ(input_allocation, output_allocation);
+}
+
+TEST(VideoBitrateAllocationStructTraitTest,
+     VariableBitrate_PeakEqualsSum_RoundTrip) {
+  ::media::VideoBitrateAllocation input_allocation(Bitrate::Mode::kVariable);
+  input_allocation.SetBitrate(0, 0, 5000u);
+  input_allocation.SetPeakBps(5000u);
+  ::media::VideoBitrateAllocation output_allocation;
+
+  ASSERT_TRUE(
+      mojo::test::SerializeAndDeserialize<mojom::VideoBitrateAllocation>(
+          input_allocation, output_allocation));
+
+  EXPECT_EQ(input_allocation, output_allocation);
+}
+
+TEST(VideoBitrateAllocationStructTraitTest,
+     VariableBitrate_InvalidTooLowPeak_Fails) {
+  mojom::VideoBitrateAllocationPtr mojom_allocation =
+      mojom::VideoBitrateAllocation::New();
+  std::vector<uint32_t> bitrates = {1000u, 2500u, 3000u};
+  mojom_allocation->bitrates = bitrates;
+  mojom::VariableBitratePeakPtr mojom_peak = mojom::VariableBitratePeak::New();
+  mojom_peak->bps = 6499u;  // invalid: must be >=6500u
+  mojom_allocation->variable_bitrate_peak = std::move(mojom_peak);
+  VideoBitrateAllocation output;
+
+  EXPECT_FALSE(
+      mojo::test::SerializeAndDeserialize<mojom::VideoBitrateAllocation>(
+          mojom_allocation, output));
+}
+
+TEST(VideoBitrateAllocationStructTraitTest,
+     VariableBitrate_InvalidZeroPeak_Fails) {
+  mojom::VideoBitrateAllocationPtr mojom_allocation =
+      mojom::VideoBitrateAllocation::New();
+  std::vector<uint32_t> bitrates = {0u};
+  mojom_allocation->bitrates = bitrates;
+  mojom::VariableBitratePeakPtr mojom_peak = mojom::VariableBitratePeak::New();
+  mojom_peak->bps = 0u;
+  mojom_allocation->variable_bitrate_peak = std::move(mojom_peak);
+  VideoBitrateAllocation output;
+
+  EXPECT_FALSE(
+      mojo::test::SerializeAndDeserialize<mojom::VideoBitrateAllocation>(
+          mojom_allocation, output));
 }
 
 TEST(SpatialLayerStructTraitTest, RoundTrip) {
@@ -103,7 +182,7 @@ TEST(VideoEncodeAcceleratorConfigStructTraitTest, RoundTripVariableBitrate) {
   constexpr gfx::Size kBaseSize(320, 180);
   constexpr uint32_t kBaseBitrateBps = 123456u;
   constexpr uint32_t kMaximumBitrate = 999999u;
-  constexpr ::media::Bitrate kBitrate =
+  const ::media::Bitrate kBitrate =
       ::media::Bitrate::VariableBitrate(kBaseBitrateBps, kMaximumBitrate);
   ::media::VideoEncodeAccelerator::Config input_config(
       ::media::PIXEL_FORMAT_NV12, kBaseSize, ::media::VP9PROFILE_PROFILE0,
@@ -114,6 +193,30 @@ TEST(VideoEncodeAcceleratorConfigStructTraitTest, RoundTripVariableBitrate) {
       mojo::test::SerializeAndDeserialize<mojom::VideoEncodeAcceleratorConfig>(
           input_config, output_config));
   EXPECT_EQ(input_config, output_config);
+}
+
+TEST(VariableBitrateStructTraitTest, PeakZeroBps_Rejected) {
+  mojom::VariableBitratePtr mojom_variable_bitrate =
+      mojom::VariableBitrate::New();
+  mojom_variable_bitrate->target_bps = 0u;
+  mojom_variable_bitrate->peak_bps = 0u;
+  Bitrate output;
+
+  bool result = mojo::test::SerializeAndDeserialize<mojom::VariableBitrate>(
+      mojom_variable_bitrate, output);
+  EXPECT_FALSE(result);
+}
+
+TEST(VariableBitrateStructTraitTest, PeakLessThanTarget_Rejected) {
+  mojom::VariableBitratePtr mojom_variable_bitrate =
+      mojom::VariableBitrate::New();
+  mojom_variable_bitrate->target_bps = 6000u;
+  mojom_variable_bitrate->peak_bps = 5999u;
+  Bitrate output;
+
+  bool result = mojo::test::SerializeAndDeserialize<mojom::VariableBitrate>(
+      mojom_variable_bitrate, output);
+  EXPECT_FALSE(result);
 }
 
 TEST(BitstreamBufferMetadataTraitTest, RoundTrip) {

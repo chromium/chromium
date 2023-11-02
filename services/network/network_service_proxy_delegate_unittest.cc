@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -13,6 +14,8 @@
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "net/url_request/url_request_context.h"
+#include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -75,8 +78,7 @@ class NetworkServiceProxyDelegateTest : public testing::Test {
   NetworkServiceProxyDelegateTest() {}
 
   void SetUp() override {
-    context_ = std::make_unique<net::TestURLRequestContext>(true);
-    context_->Init();
+    context_ = net::CreateTestURLRequestContextBuilder()->Build();
   }
 
  protected:
@@ -115,8 +117,8 @@ class NetworkServiceProxyDelegateTest : public testing::Test {
  private:
   mojo::Remote<mojom::CustomProxyConfigClient> client_;
   // Owned by the proxy delegate returned by |CreateDelegate|.
-  TestCustomProxyConnectionObserver* observer_ = nullptr;
-  std::unique_ptr<net::TestURLRequestContext> context_;
+  raw_ptr<TestCustomProxyConnectionObserver> observer_ = nullptr;
+  std::unique_ptr<net::URLRequestContext> context_;
   base::test::TaskEnvironment task_environment_;
 };
 

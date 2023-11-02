@@ -29,6 +29,7 @@
 
 #include <unicode/utf16.h>
 
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/integer_to_string_conversion.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
@@ -85,7 +86,7 @@ class WTF_EXPORT StringBuilder {
   }
 
   void Append(const StringView& string) {
-    if (string.IsEmpty())
+    if (string.empty())
       return;
 
     // If we're appending to an empty builder, and there is not a buffer
@@ -176,7 +177,7 @@ class WTF_EXPORT StringBuilder {
   }
 
   unsigned length() const { return length_; }
-  bool IsEmpty() const { return !length_; }
+  bool empty() const { return !length_; }
 
   unsigned Capacity() const;
   // Increase the capacity of the backing buffer to at least |new_capacity|. The
@@ -303,8 +304,9 @@ bool DeprecatedEqualIgnoringCase(const StringBuilder& s,
 // EqualIgnoringUnicodeCase(). See crbug.com/627682
 inline bool DeprecatedEqualIgnoringCase(const StringBuilder& s,
                                         const char* string) {
-  return DeprecatedEqualIgnoringCase(s, reinterpret_cast<const LChar*>(string),
-                                     SafeCast<wtf_size_t>(strlen(string)));
+  return DeprecatedEqualIgnoringCase(
+      s, reinterpret_cast<const LChar*>(string),
+      base::checked_cast<wtf_size_t>(strlen(string)));
 }
 
 template <typename StringType>

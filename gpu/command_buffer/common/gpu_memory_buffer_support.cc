@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,9 +17,9 @@
 
 namespace gpu {
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 static uint32_t macos_specific_texture_target = GL_TEXTURE_RECTANGLE_ARB;
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 bool IsImageFromGpuMemoryBufferFormatSupported(
     gfx::BufferFormat format,
@@ -47,19 +47,19 @@ bool IsImageSizeValidForGpuMemoryBufferFormat(const gfx::Size& size,
     case gfx::BufferFormat::YVU_420:
     case gfx::BufferFormat::YUV_420_BIPLANAR:
     case gfx::BufferFormat::P010:
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
       // Allow odd size for CrOS.
       // TODO(https://crbug.com/1208788, https://crbug.com/1224781): Merge this
-      // with the path that uses gfx::AllowOddHeightMultiPlanarBuffers.
+      // with the path that uses gfx::IsOddHeightMultiPlanarBuffersAllowed.
       return true;
 #else
       // U and V planes are subsampled by a factor of 2.
-      if (size.width() % 2)
+      if (size.width() % 2 && !gfx::IsOddWidthMultiPlanarBuffersAllowed())
         return false;
-      if (size.height() % 2 && !gfx::AllowOddHeightMultiPlanarBuffers())
+      if (size.height() % 2 && !gfx::IsOddHeightMultiPlanarBuffersAllowed())
         return false;
       return true;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
   NOTREACHED();
@@ -68,6 +68,16 @@ bool IsImageSizeValidForGpuMemoryBufferFormat(const gfx::Size& size,
 
 GPU_EXPORT bool IsPlaneValidForGpuMemoryBufferFormat(gfx::BufferPlane plane,
                                                      gfx::BufferFormat format) {
+#if BUILDFLAG(IS_MAC)
+  // On macOS each plane of a YUV GpuMemoryBuffer must be sampled separately.
+  switch (format) {
+    case gfx::BufferFormat::YUV_420_BIPLANAR:
+    case gfx::BufferFormat::P010:
+      return plane == gfx::BufferPlane::Y || plane == gfx::BufferPlane::UV;
+    default:
+      return plane == gfx::BufferPlane::DEFAULT;
+  }
+#else
   switch (format) {
     case gfx::BufferFormat::YVU_420:
       return plane == gfx::BufferPlane::DEFAULT ||
@@ -79,6 +89,7 @@ GPU_EXPORT bool IsPlaneValidForGpuMemoryBufferFormat(gfx::BufferPlane plane,
     default:
       return plane == gfx::BufferPlane::DEFAULT;
   }
+#endif
   NOTREACHED();
   return false;
 }
@@ -96,7 +107,6 @@ gfx::BufferFormat GetPlaneBufferFormat(gfx::BufferPlane plane,
       if (format == gfx::BufferFormat::P010) {
         return gfx::BufferFormat::R_16;
       }
-      NOTREACHED();
       break;
     case gfx::BufferPlane::UV:
       if (format == gfx::BufferFormat::YUV_420_BIPLANAR)
@@ -131,14 +141,14 @@ gfx::Size GetPlaneSize(gfx::BufferPlane plane, const gfx::Size& size) {
 }
 
 uint32_t GetPlatformSpecificTextureTarget() {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   return macos_specific_texture_target;
-#elif defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
-    defined(OS_WIN)
+#elif BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
   return GL_TEXTURE_EXTERNAL_OES;
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
   return GL_TEXTURE_2D;
-#elif defined(OS_NACL)
+#elif BUILDFLAG(IS_NACL)
   NOTREACHED();
   return 0;
 #else
@@ -146,13 +156,13 @@ uint32_t GetPlatformSpecificTextureTarget() {
 #endif
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 GPU_EXPORT void SetMacOSSpecificTextureTarget(uint32_t texture_target) {
   DCHECK(texture_target == GL_TEXTURE_2D ||
          texture_target == GL_TEXTURE_RECTANGLE_ARB);
   macos_specific_texture_target = texture_target;
 }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 GPU_EXPORT uint32_t GetBufferTextureTarget(gfx::BufferUsage usage,
                                            gfx::BufferFormat format,
@@ -165,8 +175,8 @@ GPU_EXPORT uint32_t GetBufferTextureTarget(gfx::BufferUsage usage,
 GPU_EXPORT bool NativeBufferNeedsPlatformSpecificTextureTarget(
     gfx::BufferFormat format,
     gfx::BufferPlane plane) {
-#if defined(USE_OZONE) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
-    defined(OS_WIN)
+#if defined(USE_OZONE) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_WIN)
   // Always use GL_TEXTURE_2D as the target for RGB textures.
   // https://crbug.com/916728
   if (format == gfx::BufferFormat::R_8 || format == gfx::BufferFormat::RG_88 ||
@@ -178,7 +188,7 @@ GPU_EXPORT bool NativeBufferNeedsPlatformSpecificTextureTarget(
       format == gfx::BufferFormat::BGRA_1010102) {
     return false;
   }
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   // Use GL_TEXTURE_2D when importing the NV12 DMA-buf as two GL textures, Y
   // plane as gfx::BufferFormat::R_8, UV plane as gfx::BufferFormat::RG_88, then
   // we can sample and write to NV12 DMA-buf through the two GL textures.
@@ -187,7 +197,7 @@ GPU_EXPORT bool NativeBufferNeedsPlatformSpecificTextureTarget(
     return false;
   }
 #endif
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   if (format == gfx::BufferFormat::BGR_565 ||
       format == gfx::BufferFormat::RGBA_8888) {
     return false;

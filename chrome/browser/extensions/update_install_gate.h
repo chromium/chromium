@@ -1,10 +1,11 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_EXTENSIONS_UPDATE_INSTALL_GATE_H_
 #define CHROME_BROWSER_EXTENSIONS_UPDATE_INSTALL_GATE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/install_gate.h"
 
 class Profile;
@@ -24,7 +25,7 @@ class UpdateInstallGate : public InstallGate {
 
  private:
   // Not owned.
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
 };
 
 }  // namespace extensions

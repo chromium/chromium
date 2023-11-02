@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,14 @@
 
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
+namespace gfx {
+class Rect;
+}
+
 namespace blink {
 
 struct PaintInfo;
 struct PhysicalOffset;
-class IntRect;
 class NGPhysicalBoxFragment;
 
 class NGMathMLPainter {
@@ -23,7 +26,7 @@ class NGMathMLPainter {
   void Paint(const PaintInfo&, PhysicalOffset);
 
  private:
-  void PaintBar(const PaintInfo&, const IntRect&);
+  void PaintBar(const PaintInfo&, const gfx::Rect&);
   void PaintFractionBar(const PaintInfo&, PhysicalOffset);
   void PaintOperator(const PaintInfo&, PhysicalOffset);
   void PaintRadicalSymbol(const PaintInfo&, PhysicalOffset);

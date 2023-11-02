@@ -1,12 +1,12 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef IOS_CHROME_BROWSER_TABS_TAB_PARENTING_BROWSER_AGENT_H_
 #define IOS_CHROME_BROWSER_TABS_TAB_PARENTING_BROWSER_AGENT_H_
 
-#include "ios/chrome/browser/main/browser_observer.h"
-#include "ios/chrome/browser/main/browser_user_data.h"
+#import "ios/chrome/browser/main/browser_observer.h"
+#import "ios/chrome/browser/main/browser_user_data.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer.h"
 
 class TabParentingBrowserAgent
@@ -32,10 +32,10 @@ class TabParentingBrowserAgent
                           int index) override;
 
  private:
-  explicit TabParentingBrowserAgent(Browser* browser);
-
   friend class BrowserUserData<TabParentingBrowserAgent>;
   BROWSER_USER_DATA_KEY_DECL();
+
+  explicit TabParentingBrowserAgent(Browser* browser);
 };
 
 #endif  // IOS_CHROME_BROWSER_TABS_TAB_PARENTING_BROWSER_AGENT_H_

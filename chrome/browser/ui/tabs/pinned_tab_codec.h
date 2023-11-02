@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,6 @@
 #include "url/gurl.h"
 
 class Profile;
-
-namespace base {
-class Value;
-}
 
 namespace user_prefs {
 class PrefRegistrySyncable;
@@ -41,7 +37,6 @@ class PinnedTabCodec {
 
   // Reads and returns the set of pinned tabs to restore from preferences.
   static StartupTabs ReadPinnedTabs(Profile* profile);
-  static StartupTabs ReadPinnedTabs(const base::Value* value);
 
  private:
   PinnedTabCodec();

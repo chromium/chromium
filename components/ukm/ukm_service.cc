@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,8 @@
 #include "base/rand_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
+#include "components/metrics/log_decoder.h"
 #include "components/metrics/metrics_log.h"
 #include "components/metrics/metrics_service_client.h"
 #include "components/metrics/ukm_demographic_metrics_provider.h"
@@ -31,7 +33,6 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/metrics_proto/ukm/report.pb.h"
 #include "third_party/metrics_proto/user_demographics.pb.h"
-#include "third_party/zlib/google/compression_utils.h"
 
 namespace ukm {
 
@@ -49,7 +50,15 @@ uint64_t GenerateAndStoreClientId(PrefService* pref_service) {
   return client_id;
 }
 
-uint64_t LoadOrGenerateAndStoreClientId(PrefService* pref_service) {
+uint64_t LoadOrGenerateAndStoreClientId(PrefService* pref_service,
+                                        uint64_t external_client_id) {
+  // If external_client_id is present, save to pref service for
+  // consistency purpose and return it as client id.
+  if (external_client_id) {
+    pref_service->SetUint64(prefs::kUkmClientId, external_client_id);
+    return external_client_id;
+  }
+
   uint64_t client_id = pref_service->GetUint64(prefs::kUkmClientId);
   // The pref is stored as a string and GetUint64() uses base::StringToUint64()
   // to convert it. base::StringToUint64() will treat a negative value as
@@ -111,19 +120,11 @@ template <typename Predicate>
 void PurgeDataFromUnsentLogStore(metrics::UnsentLogStore* ukm_log_store,
                                  Predicate source_purging_condition) {
   for (size_t index = 0; index < ukm_log_store->size(); index++) {
-    // Uncompress log data from store back into a Report.
-    const std::string& compressed_log_data =
-        ukm_log_store->GetLogAtIndex(index);
-    std::string uncompressed_log_data;
-    // TODO(crbug/1086910): Use the utilities in log_decoder.h instead.
-    const bool uncompress_successful = compression::GzipUncompress(
-        compressed_log_data, &uncompressed_log_data);
-    DCHECK(uncompress_successful);
+    // Decode log data from store back into a Report.
     Report report;
-
-    const bool report_parse_successful =
-        report.ParseFromString(uncompressed_log_data);
-    DCHECK(report_parse_successful);
+    bool decode_success = metrics::DecodeLogDataToProto(
+        ukm_log_store->GetLogAtIndex(index), &report);
+    DCHECK(decode_success);
 
     std::unordered_set<SourceId> relevant_source_ids;
 
@@ -167,8 +168,9 @@ void PurgeDataFromUnsentLogStore(metrics::UnsentLogStore* ukm_log_store,
 }  // namespace
 
 // static
-const base::Feature UkmService::kReportUserNoisedUserBirthYearAndGender = {
-    "UkmReportNoisedUserBirthYearAndGender", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kReportUserNoisedUserBirthYearAndGender,
+             "UkmReportNoisedUserBirthYearAndGender",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool UkmService::LogCanBeParsed(const std::string& serialized_data) {
   Report report;
@@ -195,11 +197,10 @@ std::string UkmService::SerializeReportProtoToString(Report* report) {
 UkmService::UkmService(PrefService* pref_service,
                        metrics::MetricsServiceClient* client,
                        std::unique_ptr<metrics::UkmDemographicMetricsProvider>
-                           demographics_provider)
+                           demographics_provider,
+                       uint64_t external_client_id)
     : pref_service_(pref_service),
-      // We only need to restrict to whitelisted Entries if metrics reporting is
-      // not forced.
-      restrict_to_whitelist_entries_(!client->IsMetricsReportingForceEnabled()),
+      external_client_id_(external_client_id),
       client_(client),
       demographics_provider_(std::move(demographics_provider)),
       reporting_service_(client, pref_service) {
@@ -219,7 +220,7 @@ UkmService::UkmService(PrefService* pref_service,
   bool fast_startup_for_testing = client_->ShouldStartUpFastForTesting();
   scheduler_ = std::make_unique<UkmRotationScheduler>(
       rotate_callback, fast_startup_for_testing, get_upload_interval_callback);
-  StoreWhitelistedEntries();
+  InitDecodeMap();
 
   DelegatingUkmRecorder::Get()->AddDelegate(self_ptr_factory_.GetWeakPtr());
 }
@@ -239,7 +240,8 @@ void UkmService::Initialize() {
   if (client_->ShouldResetClientIdsOnClonedInstall()) {
     ResetClientState(ResetReason::kClonedInstall);
   } else {
-    client_id_ = LoadOrGenerateAndStoreClientId(pref_service_);
+    client_id_ =
+        LoadOrGenerateAndStoreClientId(pref_service_, external_client_id_);
     session_id_ = LoadAndIncrementSessionId(pref_service_);
   }
 
@@ -275,7 +277,7 @@ void UkmService::DisableReporting() {
   Flush();
 }
 
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 void UkmService::OnAppEnterForeground() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(1) << "UkmService::OnAppEnterForeground";
@@ -308,7 +310,8 @@ void UkmService::Flush() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (initialize_complete_)
     BuildAndStoreLog();
-  reporting_service_.ukm_log_store()->TrimAndPersistUnsentLogs();
+  reporting_service_.ukm_log_store()->TrimAndPersistUnsentLogs(
+      /*overwrite_in_memory_store=*/true);
 }
 
 void UkmService::Purge() {
@@ -370,7 +373,13 @@ void UkmService::ResetClientState(ResetReason reason) {
 
   UMA_HISTOGRAM_ENUMERATION("UKM.ResetReason", reason);
 
-  client_id_ = GenerateAndStoreClientId(pref_service_);
+  if (external_client_id_) {
+    client_id_ = external_client_id_;
+    pref_service_->SetUint64(prefs::kUkmClientId, client_id_);
+  } else {
+    client_id_ = GenerateAndStoreClientId(pref_service_);
+  }
+
   // Note: the session_id has already been cleared by GenerateAndStoreClientId.
   session_id_ = LoadAndIncrementSessionId(pref_service_);
   report_count_ = 0;
@@ -469,10 +478,6 @@ void UkmService::BuildAndStoreLog() {
       UkmService::SerializeReportProtoToString(&report);
   metrics::LogMetadata log_metadata;
   reporting_service_.ukm_log_store()->StoreLog(serialized_log, log_metadata);
-}
-
-bool UkmService::ShouldRestrictToWhitelistedEntries() const {
-  return restrict_to_whitelist_entries_;
 }
 
 void UkmService::SetInitializationCompleteCallbackForTesting(

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,8 +43,6 @@ class ASH_PUBLIC_EXPORT SharedAppListConfig {
     return max_assistant_search_result_list_items_;
   }
 
-  size_t num_start_page_tiles() const { return num_start_page_tiles_; }
-
   int search_tile_icon_dimension() const { return search_tile_icon_dimension_; }
 
   gfx::Size search_tile_icon_size() const {
@@ -68,42 +66,6 @@ class ASH_PUBLIC_EXPORT SharedAppListConfig {
 
   gfx::Size search_list_icon_size() const {
     return gfx::Size(search_list_icon_dimension_, search_list_icon_dimension_);
-  }
-
-  int search_list_answer_icon_dimension() const {
-    return search_list_answer_icon_dimension_;
-  }
-
-  gfx::Size search_list_answer_icon_size() const {
-    return gfx::Size(search_list_answer_icon_dimension_,
-                     search_list_answer_icon_dimension_);
-  }
-
-  int search_list_image_icon_dimension() const {
-    return search_list_image_icon_dimension_;
-  }
-
-  gfx::Size search_list_image_icon_size() const {
-    return gfx::Size(search_list_image_icon_dimension_,
-                     search_list_image_icon_dimension_);
-  }
-
-  int search_list_favicon_dimension() const {
-    return search_list_favicon_dimension_;
-  }
-
-  gfx::Size search_list_favicon_size() const {
-    return gfx::Size(search_list_favicon_dimension_,
-                     search_list_favicon_dimension_);
-  }
-
-  int search_list_thumbnail_dimension() const {
-    return search_list_thumbnail_dimension_;
-  }
-
-  gfx::Size search_list_thumbnail_size() const {
-    return gfx::Size(search_list_thumbnail_dimension_,
-                     search_list_thumbnail_dimension_);
   }
 
   int search_list_icon_vertical_bar_dimension() const {
@@ -159,9 +121,6 @@ class ASH_PUBLIC_EXPORT SharedAppListConfig {
   // window. Appears in the list after normal search results.
   const size_t max_assistant_search_result_list_items_ = 1;
 
-  // The number of apps shown in the start page app grid.
-  const size_t num_start_page_tiles_ = 5;
-
   // The icon dimension of tile views in search result page view.
   const int search_tile_icon_dimension_ = 48;
 
@@ -173,18 +132,6 @@ class ASH_PUBLIC_EXPORT SharedAppListConfig {
 
   // The icon dimension of list views in search result page view.
   const int search_list_icon_dimension_ = 20;
-
-  // The icon dimension of answer list views in search result page view.
-  const int search_list_answer_icon_dimension_ = 24;
-
-  // The dimension of image icons for list views in search result page view.
-  const int search_list_image_icon_dimension_ = 32;
-
-  // The favicon dimension of list views in search result page view.
-  const int search_list_favicon_dimension_ = 18;
-
-  // The icon dimension of file thumbnail views in search result page view.
-  const int search_list_thumbnail_dimension_ = 28;
 
   // The vertical bar icon dimension of list views in search result page view.
   const int search_list_icon_vertical_bar_dimension_ = 48;
@@ -292,10 +239,10 @@ class ASH_PUBLIC_EXPORT AppListConfig {
   gfx::Insets folder_icon_insets() const {
     int folder_icon_dimension_diff =
         folder_unclipped_icon_dimension_ - folder_icon_dimension_;
-    return gfx::Insets(folder_icon_dimension_diff / 2,
-                       folder_icon_dimension_diff / 2,
-                       (folder_icon_dimension_diff + 1) / 2,
-                       (folder_icon_dimension_diff + 1) / 2);
+    return gfx::Insets::TLBR(folder_icon_dimension_diff / 2,
+                             folder_icon_dimension_diff / 2,
+                             (folder_icon_dimension_diff + 1) / 2,
+                             (folder_icon_dimension_diff + 1) / 2);
   }
 
   gfx::Size item_icon_in_folder_icon_size() const {

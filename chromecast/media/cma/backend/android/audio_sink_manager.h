@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <map>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "chromecast/media/cma/backend/android/audio_sink_android.h"
 
@@ -23,14 +22,6 @@ class AudioSinkManager {
 
   AudioSinkManager(const AudioSinkManager&) = delete;
   AudioSinkManager& operator=(const AudioSinkManager&) = delete;
-
-  static AudioSinkAndroid::SinkType GetDefaultSinkType();
-
-  // Gets the Android audio session ids used for media and communication (TTS)
-  // tracks.
-  // Set a return value pointer to null if that id is not needed.
-  // Returns true if the ids populated are valid.
-  static bool GetSessionIds(int* media_id, int* communication_id);
 
   // Adds the given sink instance to the vector.
   void Add(AudioSinkAndroid* sink);

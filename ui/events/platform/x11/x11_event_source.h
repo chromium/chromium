@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 
 #include "base/auto_reset.h"
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/events_export.h"
 #include "ui/events/platform/platform_event_source.h"
@@ -90,7 +91,7 @@ class EVENTS_EXPORT X11EventSource : public PlatformEventSource,
   std::unique_ptr<X11EventWatcher> watcher_;
 
   // The connection to the X11 server used to receive the events.
-  x11::Connection* connection_;
+  raw_ptr<x11::Connection> connection_;
 
   // State necessary for UpdateLastSeenServerTime
   bool dummy_initialized_;

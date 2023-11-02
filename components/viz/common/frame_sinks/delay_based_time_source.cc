@@ -1,4 +1,4 @@
-// Copyright 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,7 +30,7 @@ DelayBasedTimeSource::DelayBasedTimeSource(
       task_runner_(task_runner),
       tick_closure_(base::BindRepeating(&DelayBasedTimeSource::OnTimerTick,
                                         base::Unretained(this))) {
-  timer_.SetTaskRunner(task_runner_);
+  timer_.SetTaskRunner(task_runner_.get());
 }
 
 DelayBasedTimeSource::~DelayBasedTimeSource() = default;
@@ -46,7 +46,7 @@ void DelayBasedTimeSource::SetActive(bool active) {
   if (active_) {
     PostNextTickTask(Now());
   } else {
-    timer_.AbandonAndStop();
+    timer_.Stop();
     last_tick_time_ = base::TimeTicks();
     next_tick_time_ = base::TimeTicks();
   }
@@ -157,7 +157,8 @@ void DelayBasedTimeSource::PostNextTickTask(base::TimeTicks now) {
       next_tick_time_ += interval_;
     DCHECK_GT(next_tick_time_, now);
   }
-  timer_.Start(FROM_HERE, next_tick_time_ - now, tick_closure_);
+  timer_.Start(FROM_HERE, next_tick_time_, tick_closure_,
+               base::ExactDeadline(true));
 }
 
 std::string DelayBasedTimeSource::TypeString() const {

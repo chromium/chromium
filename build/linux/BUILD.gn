@@ -1,4 +1,4 @@
-# Copyright (c) 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -17,7 +17,7 @@ if (use_gio) {
 # Looking for libspeechd? Use //third_party/speech-dispatcher
 
 if (use_system_freetype) {
-  assert(!is_chromecast)
+  assert(!is_castos)
 
   # Only provided for distributions which prefer to keep linking to FreeType on
   # the system, use with caution,for details see build/config/freetype/BUILD.gn.

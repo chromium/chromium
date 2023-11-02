@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,11 +15,11 @@
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "components/sync/engine/cycle/entity_change_metric_recording.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 using preferences_helper::BooleanPrefMatches;
-using preferences_helper::BuildPrefStoreFromPrefsFile;
 using preferences_helper::ChangeBooleanPref;
 using preferences_helper::ChangeIntegerPref;
 using preferences_helper::ChangeListPref;
@@ -28,7 +28,6 @@ using preferences_helper::ClearPref;
 using preferences_helper::GetPrefs;
 using preferences_helper::GetRegistry;
 using testing::Eq;
-using user_prefs::PrefRegistrySyncable;
 
 namespace {
 
@@ -40,7 +39,7 @@ class TwoClientPreferencesSyncTest : public SyncTest {
   TwoClientPreferencesSyncTest& operator=(const TwoClientPreferencesSyncTest&) =
       delete;
 
-  ~TwoClientPreferencesSyncTest() override {}
+  ~TwoClientPreferencesSyncTest() override = default;
 };
 
 IN_PROC_BROWSER_TEST_F(TwoClientPreferencesSyncTest, E2E_ENABLED(Sanity)) {
@@ -59,12 +58,12 @@ IN_PROC_BROWSER_TEST_F(TwoClientPreferencesSyncTest, E2E_ENABLED(Sanity)) {
 
   EXPECT_EQ(0, histogram_tester.GetBucketCount(
                    "Sync.ModelTypeEntityChange3.PREFERENCE",
-                   /*REMOTE_INITIAL_UPDATE=*/5));
+                   syncer::ModelTypeEntityChange::kRemoteInitialUpdate));
   // Client 0 may or may not see its own reflection during the test, but at
   // least client 1 should have received one update.
   EXPECT_NE(0, histogram_tester.GetBucketCount(
                    "Sync.ModelTypeEntityChange3.PREFERENCE",
-                   /*REMOTE_NON_INITIAL_UPDATE=*/4));
+                   syncer::ModelTypeEntityChange::kRemoteNonInitialUpdate));
 
   EXPECT_NE(
       0U, histogram_tester
@@ -153,7 +152,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPreferencesSyncTest,
   ChangeIntegerPref(0, prefs::kRestoreOnStartup, 0);
   ASSERT_TRUE(IntegerPrefMatchChecker(prefs::kRestoreOnStartup).Wait());
 
-  base::ListValue urls;
+  base::Value::List urls;
   urls.Append("http://www.google.com/");
   urls.Append("http://www.flickr.com/");
   ChangeIntegerPref(0, prefs::kRestoreOnStartup, 4);

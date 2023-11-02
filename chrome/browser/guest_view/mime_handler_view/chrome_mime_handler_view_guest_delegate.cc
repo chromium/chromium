@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/tab_contents/chrome_web_contents_menu_helper.h"
 #include "chrome/common/pdf_util.h"
 #include "components/renderer_context_menu/context_menu_delegate.h"
+#include "content/public/browser/web_contents.h"
 
 namespace extensions {
 
@@ -36,12 +37,12 @@ bool ChromeMimeHandlerViewGuestDelegate::HandleContextMenu(
 }
 
 void ChromeMimeHandlerViewGuestDelegate::RecordLoadMetric(
-    bool in_main_frame,
+    bool is_full_page,
     const std::string& mime_type) {
   if (mime_type != kPDFMimeType)
     return;
 
-  ReportPDFLoadStatus(in_main_frame
+  ReportPDFLoadStatus(is_full_page
                           ? PDFLoadStatus::kLoadedFullPagePdfWithPdfium
                           : PDFLoadStatus::kLoadedEmbeddedPdfWithPdfium);
 }

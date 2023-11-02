@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,6 +33,19 @@ enum PushEventStatus {
   // The event could not be delivered because permission was auto-revoked due
   // to origin marked as abusive.
   PERMISSION_REVOKED_ABUSIVE = 8,
+
+  // The event could not be delivered because the browser has no app-level
+  // Notifications permission. The push message was ignored.
+  NO_APP_LEVEL_PERMISSION_IGNORE = 9,
+
+  // The event could not be delivered because the browser has no app-level
+  // Notifications permission. The push message was ignored. The site-level
+  // Notifications permission and FCM were revoked.
+  NO_APP_LEVEL_PERMISSION_UNSUBSCRIBE = 10,
+
+  // The event could not be delivered because permission was auto-revoked as the
+  // origin may be disruptive.
+  PERMISSION_REVOKED_DISRUPTIVE = 11,
 
   // NOTE: Do not renumber or delete these as that would confuse interpretation
   // of previously logged data. When making changes, also update the enum list
@@ -196,6 +209,14 @@ enum PushUnregistrationReason {
 
   // Unregistering because permissions was auto-revoked due to abuse.
   PERMISSION_REVOKED_ABUSIVE = 13,
+
+  // Unregistering because no app-level Notifications permission after the grace
+  // period is over.
+  NO_APP_LEVEL_PERMISSION = 14,
+
+  // Unregistering because permissions was auto-revoked as the origin may be
+  // disruptive.
+  PERMISSION_REVOKED_DISRUPTIVE = 15,
 
   // NOTE: Do not renumber or delete these as that would confuse interpretation
   // of previously logged data. When making changes, also update the enum list

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "url/gurl.h"
 
@@ -53,7 +52,7 @@ class IOSSendTabToSelfInfoBarDelegate : public ConfirmInfoBarDelegate {
   // The entry that was share to this device. Must outlive this instance.
   const SendTabToSelfEntry* entry_ = nullptr;
 
-  // The SendTabToSelfModel that holds the |entry_|. Must outlive this instance.
+  // The SendTabToSelfModel that holds the `entry_`. Must outlive this instance.
   SendTabToSelfModel* model_ = nullptr;
 
   // Registration with NSNotificationCenter for this window.

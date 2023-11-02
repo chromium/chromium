@@ -2,15 +2,6 @@
 #include "../include/libxml/xmlversion.h"
 LIBRARY libxml2
 EXPORTS
-#ifdef LIBXML_THREAD_ENABLED
-#ifdef LIBXML_DOCB_ENABLED
-__docbDefaultSAXHandler
-#endif
-#else
-#ifdef LIBXML_DOCB_ENABLED
-docbDefaultSAXHandler DATA
-#endif
-#endif
 #ifdef LIBXML_REGEXP_ENABLED
 emptyExp DATA
 #endif
@@ -191,39 +182,6 @@ cdataBlock
 characters
 checkNamespace
 comment
-#ifdef LIBXML_DOCB_ENABLED
-docbCreateFileParserCtxt
-#endif
-#ifdef LIBXML_DOCB_ENABLED
-docbCreatePushParserCtxt
-#endif
-#ifdef LIBXML_DOCB_ENABLED
-docbDefaultSAXHandlerInit
-#endif
-#ifdef LIBXML_DOCB_ENABLED
-docbEncodeEntities
-#endif
-#ifdef LIBXML_DOCB_ENABLED
-docbFreeParserCtxt
-#endif
-#ifdef LIBXML_DOCB_ENABLED
-docbParseChunk
-#endif
-#ifdef LIBXML_DOCB_ENABLED
-docbParseDoc
-#endif
-#ifdef LIBXML_DOCB_ENABLED
-docbParseDocument
-#endif
-#ifdef LIBXML_DOCB_ENABLED
-docbParseFile
-#endif
-#ifdef LIBXML_DOCB_ENABLED
-docbSAXParseDoc
-#endif
-#ifdef LIBXML_DOCB_ENABLED
-docbSAXParseFile
-#endif
 elementDecl
 endDocument
 endElement
@@ -246,7 +204,9 @@ htmlAttrAllowed
 htmlAutoCloseTag
 #endif
 #ifdef LIBXML_HTML_ENABLED
+#ifdef LIBXML_HTML_ENABLED
 htmlCreateFileParserCtxt
+#endif
 #endif
 #ifdef LIBXML_HTML_ENABLED
 htmlCreateMemoryParserCtxt
@@ -318,7 +278,9 @@ htmlGetMetaEncoding
 htmlHandleOmittedElem
 #endif
 #ifdef LIBXML_HTML_ENABLED
+#ifdef LIBXML_HTML_ENABLED
 htmlInitAutoClose
+#endif
 #endif
 #ifdef LIBXML_HTML_ENABLED
 htmlIsAutoClosed
@@ -337,6 +299,9 @@ htmlNewDocNoDtD
 #endif
 #ifdef LIBXML_HTML_ENABLED
 htmlNewParserCtxt
+#endif
+#ifdef LIBXML_HTML_ENABLED
+htmlNewSAXParserCtxt
 #endif
 #ifdef LIBXML_HTML_ENABLED
 htmlNodeDump
@@ -415,9 +380,6 @@ htmlTagLookup
 #endif
 ignorableWhitespace
 initGenericErrorDefaultFunc
-#ifdef LIBXML_DOCB_ENABLED
-initdocbDefaultSAXHandler
-#endif
 #ifdef LIBXML_HTML_ENABLED
 inithtmlDefaultSAXHandler
 #endif
@@ -802,7 +764,6 @@ xmlElemDump
 xmlEncodeEntities
 xmlEncodeEntitiesReentrant
 xmlEncodeSpecialChars
-xmlErrMemory
 #ifdef LIBXML_REGEXP_ENABLED
 xmlExpCtxtNbCons
 #endif
@@ -1259,6 +1220,7 @@ xmlNewParserCtxt
 xmlNewProp
 xmlNewRMutex
 xmlNewReference
+xmlNewSAXParserCtxt
 xmlNewStringInputStream
 xmlNewText
 xmlNewTextChild
@@ -1410,6 +1372,7 @@ xmlPatterncompile
 xmlPedanticParserDefault
 xmlPopInput
 xmlPopInputCallbacks
+xmlPopOutputCallbacks
 xmlPreviousElementSibling
 xmlPrintURI
 xmlPushInput
@@ -1579,7 +1542,6 @@ xmlSAX2HasExternalSubset
 xmlSAX2HasInternalSubset
 xmlSAX2IgnorableWhitespace
 xmlSAX2InitDefaultSAXHandler
-xmlSAX2InitDocbDefaultSAXHandler
 xmlSAX2InitHtmlDefaultSAXHandler
 xmlSAX2InternalSubset
 xmlSAX2IsStandalone

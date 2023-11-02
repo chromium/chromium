@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,6 @@ enum SameDocumentNavigationType {
   kFragment = 0,
   // Navigating with window.history
   kHistoryApi = 1,
-  // Navigating with AppHistoryNavigateEvent's transitionWhile()
-  kAppHistoryTransitionWhile = 2,
+  // Navigating with the navigation API's NavigateEvent's intercept()
+  kNavigationApiIntercept = 2,
 };

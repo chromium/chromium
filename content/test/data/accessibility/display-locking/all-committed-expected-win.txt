@@ -8,7 +8,6 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++++++ROLE_SYSTEM_STATICTEXT name='nested activatable locked element will be in AX tree but without layout'
 ++ROLE_SYSTEM_STATICTEXT name='normal text 1'
 ++IA2_ROLE_SECTION
-++++ROLE_SYSTEM_STATICTEXT name='nested non-viewport-activatable locked element will not be in AX tree'
 ++ROLE_SYSTEM_STATICTEXT name='normal text 2'
 ++IA2_ROLE_SECTION
 ++++ROLE_SYSTEM_STATICTEXT name='nested non-activatable locked element will not be in AX tree'

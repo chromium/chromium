@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -260,6 +260,13 @@ public final class NavigationImpl extends INavigation.Stub {
         return NavigationImplJni.get().getNavigationEntryOffset(mNativeNavigationImpl);
     }
 
+    @Override
+    public boolean wasFetchedFromCache() {
+        StrictModeWorkaround.apply();
+        throwIfNativeDestroyed();
+        return NavigationImplJni.get().wasFetchedFromCache(mNativeNavigationImpl);
+    }
+
     public void setIntentLaunched() {
         mIntentLaunched = true;
     }
@@ -333,5 +340,6 @@ public final class NavigationImpl extends INavigation.Stub {
         String getReferrer(long nativeNavigationImpl);
         long getPage(long nativeNavigationImpl);
         int getNavigationEntryOffset(long nativeNavigationImpl);
+        boolean wasFetchedFromCache(long nativeNavigationImpl);
     }
 }

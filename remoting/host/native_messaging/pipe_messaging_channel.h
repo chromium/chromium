@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 
 #include "base/callback.h"
 #include "base/files/file.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -65,7 +65,7 @@ class PipeMessagingChannel : public extensions::NativeMessagingChannel {
   NativeMessagingReader native_messaging_reader_;
   std::unique_ptr<NativeMessagingWriter> native_messaging_writer_;
 
-  EventHandler* event_handler_;
+  raw_ptr<EventHandler> event_handler_;
   base::WeakPtr<PipeMessagingChannel> weak_ptr_;
 
   SEQUENCE_CHECKER(sequence_checker_);

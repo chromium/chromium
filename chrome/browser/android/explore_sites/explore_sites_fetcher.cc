@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -158,16 +158,6 @@ void ExploreSitesFetcher::Start() {
   if (!accept_languages_.empty()) {
     resource_request->headers.SetHeader(
         net::HttpRequestHeaders::kAcceptLanguage, accept_languages_);
-  }
-
-  // Get field trial value, if any.
-  std::string tag = base::GetFieldTrialParamValueByFeature(
-      chrome::android::kExploreSites,
-      chrome::android::explore_sites::
-          kExploreSitesHeadersExperimentParameterName);
-
-  if (!tag.empty()) {
-    resource_request->headers.SetHeader("X-Goog-Chrome-Experiment-Tag", tag);
   }
 
   url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),

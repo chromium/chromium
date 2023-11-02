@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,7 +31,7 @@ class SpellCheckerTest : public SpellCheckTestBase {
 
 void SpellCheckerTest::ForceLayout() {
   LocalFrameView& frame_view = Page().GetFrameView();
-  IntRect frame_rect = frame_view.FrameRect();
+  gfx::Rect frame_rect = frame_view.FrameRect();
   frame_rect.set_width(frame_rect.width() + 1);
   frame_rect.set_height(frame_rect.height() + 1);
   Page().GetFrameView().SetFrameRect(frame_rect);
@@ -42,7 +42,7 @@ TEST_F(SpellCheckerTest, AdvanceToNextMisspellingWithEmptyInputNoCrash) {
   SetBodyContent("<input placeholder='placeholder'>abc");
   UpdateAllLifecyclePhasesForTest();
   Element* input = GetDocument().QuerySelector("input");
-  input->focus();
+  input->Focus();
   // Do not crash in advanceToNextMisspelling.
   GetSpellChecker().AdvanceToNextMisspelling(false);
 }
@@ -56,7 +56,7 @@ TEST_F(SpellCheckerTest, AdvanceToNextMisspellingWithImageInTableNoCrash) {
       "</td></tr></table>"
       "zz zz zz"
       "</div>");
-  GetDocument().QuerySelector("div")->focus();
+  GetDocument().QuerySelector("div")->Focus();
   UpdateAllLifecyclePhasesForTest();
 
   // Do not crash in advanceToNextMisspelling.
@@ -68,7 +68,7 @@ TEST_F(SpellCheckerTest, AdvancedToNextMisspellingWrapSearchNoCrash) {
   SetBodyContent("<div contenteditable>  zz zz zz  </div>");
 
   Element* div = GetDocument().QuerySelector("div");
-  div->focus();
+  div->Focus();
   Selection().SetSelectionAndEndTyping(
       SelectionInDOMTree::Builder()
           .Collapse(Position::LastPositionInNode(*div))
@@ -81,8 +81,8 @@ TEST_F(SpellCheckerTest, AdvancedToNextMisspellingWrapSearchNoCrash) {
 TEST_F(SpellCheckerTest, SpellCheckDoesNotCauseUpdateLayout) {
   SetBodyContent("<input>");
   auto* input = To<HTMLInputElement>(GetDocument().QuerySelector("input"));
-  input->focus();
-  input->setValue("Hello, input field");
+  input->Focus();
+  input->SetValue("Hello, input field");
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
   Position new_position(input->InnerEditorElement()->firstChild(), 3);
@@ -434,6 +434,32 @@ TEST_F(SpellCheckerTest, GetSpellCheckMarkerUnderSelection_MultiNodeMisspell) {
   ASSERT_NE(nullptr, third_marker);
   EXPECT_EQ(0u, third_marker->StartOffset());
   EXPECT_EQ(3u, third_marker->EndOffset());
+}
+
+TEST_F(SpellCheckerTest, PasswordFieldsAreIgnored) {
+  // Check that spellchecking is enabled for an input type="text".
+  SetBodyContent("<input type=\"text\">");
+  auto* input = To<HTMLInputElement>(GetDocument().QuerySelector("input"));
+  input->Focus();
+  input->SetValue("spllchck");
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  EXPECT_TRUE(SpellChecker::IsSpellCheckingEnabledAt(
+      Position(input->InnerEditorElement()->firstChild(), 0)));
+
+  // But if this turns into a password field, this disables spellchecking.
+  // input->setType(input_type_names::kPassword);
+  input->setType("password");
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  EXPECT_FALSE(SpellChecker::IsSpellCheckingEnabledAt(
+      Position(input->InnerEditorElement()->firstChild(), 0)));
+
+  // Some websites toggle between <input type="password"> and
+  // <input type="text"> via a reveal/hide button. In this case, spell
+  // checking should remain disabled.
+  input->setType("text");
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  EXPECT_FALSE(SpellChecker::IsSpellCheckingEnabledAt(
+      Position(input->InnerEditorElement()->firstChild(), 0)));
 }
 
 }  // namespace blink

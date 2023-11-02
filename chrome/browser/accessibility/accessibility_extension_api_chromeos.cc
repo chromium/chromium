@@ -1,10 +1,11 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/accessibility/accessibility_extension_api_chromeos.h"
 
 #include <stddef.h>
+
 #include <memory>
 #include <set>
 #include <vector>
@@ -15,6 +16,7 @@
 #include "ash/public/cpp/event_rewriter_controller.h"
 #include "ash/public/cpp/window_tree_host_lookup.h"
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/json/json_writer.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -25,7 +27,6 @@
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
 #include "chrome/browser/ash/arc/accessibility/arc_accessibility_helper_bridge.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -51,7 +52,7 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/base_event_utils.h"
-#include "ui/events/keycodes/dom/dom_codes.h"
+#include "ui/events/keycodes/dom/dom_codes_array.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine.h"
@@ -63,19 +64,244 @@ namespace {
 namespace accessibility_private = ::extensions::api::accessibility_private;
 using ::ash::AccessibilityManager;
 
+ash::DictationBubbleHintType ConvertDictationHintType(
+    accessibility_private::DictationBubbleHintType hint_type) {
+  switch (hint_type) {
+    case accessibility_private::DictationBubbleHintType::
+        DICTATION_BUBBLE_HINT_TYPE_TRYSAYING:
+      return ash::DictationBubbleHintType::kTrySaying;
+    case accessibility_private::DictationBubbleHintType::
+        DICTATION_BUBBLE_HINT_TYPE_TYPE:
+      return ash::DictationBubbleHintType::kType;
+    case accessibility_private::DictationBubbleHintType::
+        DICTATION_BUBBLE_HINT_TYPE_DELETE:
+      return ash::DictationBubbleHintType::kDelete;
+    case accessibility_private::DictationBubbleHintType::
+        DICTATION_BUBBLE_HINT_TYPE_SELECTALL:
+      return ash::DictationBubbleHintType::kSelectAll;
+    case accessibility_private::DictationBubbleHintType::
+        DICTATION_BUBBLE_HINT_TYPE_UNDO:
+      return ash::DictationBubbleHintType::kUndo;
+    case accessibility_private::DictationBubbleHintType::
+        DICTATION_BUBBLE_HINT_TYPE_HELP:
+      return ash::DictationBubbleHintType::kHelp;
+    case accessibility_private::DictationBubbleHintType::
+        DICTATION_BUBBLE_HINT_TYPE_UNSELECT:
+      return ash::DictationBubbleHintType::kUnselect;
+    case accessibility_private::DictationBubbleHintType::
+        DICTATION_BUBBLE_HINT_TYPE_COPY:
+      return ash::DictationBubbleHintType::kCopy;
+    case accessibility_private::DictationBubbleHintType::
+        DICTATION_BUBBLE_HINT_TYPE_NONE:
+      NOTREACHED();
+      return ash::DictationBubbleHintType::kTrySaying;
+  }
+}
+
 }  // namespace
 
 ExtensionFunction::ResponseAction
-AccessibilityPrivateSetNativeAccessibilityEnabledFunction::Run() {
+AccessibilityPrivateDarkenScreenFunction::Run() {
+  EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
+  EXTENSION_FUNCTION_VALIDATE(args()[0].is_bool());
+  bool darken = args()[0].GetBool();
+  AccessibilityManager::Get()->SetDarkenScreen(darken);
+  return RespondNow(WithArguments());
+}
+
+ExtensionFunction::ResponseAction
+AccessibilityPrivateEnableMouseEventsFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
   EXTENSION_FUNCTION_VALIDATE(args()[0].is_bool());
   bool enabled = args()[0].GetBool();
-  if (enabled) {
-    content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
-  } else {
-    content::BrowserAccessibilityState::GetInstance()->DisableAccessibility();
+  ash::EventRewriterController::Get()->SetSendMouseEvents(enabled);
+  return RespondNow(WithArguments());
+}
+
+ExtensionFunction::ResponseAction
+AccessibilityPrivateForwardKeyEventsToSwitchAccessFunction::Run() {
+  std::unique_ptr<accessibility_private::ForwardKeyEventsToSwitchAccess::Params>
+      params =
+          accessibility_private::ForwardKeyEventsToSwitchAccess::Params::Create(
+              args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  return RespondNow(Error("Forwarding key events is no longer supported."));
+}
+
+AccessibilityPrivateGetBatteryDescriptionFunction::
+    AccessibilityPrivateGetBatteryDescriptionFunction() {}
+
+AccessibilityPrivateGetBatteryDescriptionFunction::
+    ~AccessibilityPrivateGetBatteryDescriptionFunction() {}
+
+ExtensionFunction::ResponseAction
+AccessibilityPrivateGetBatteryDescriptionFunction::Run() {
+  return RespondNow(WithArguments(
+      ash::AccessibilityController::Get()->GetBatteryDescription()));
+}
+
+ExtensionFunction::ResponseAction
+AccessibilityPrivateGetDlcContentsFunction::Run() {
+  std::unique_ptr<accessibility_private::GetDlcContents::Params> params(
+      accessibility_private::GetDlcContents::Params::Create(args()));
+  EXTENSION_FUNCTION_VALIDATE(params);
+  accessibility_private::DlcType dlc = params->dlc;
+
+  AccessibilityManager::Get()->GetDlcContents(
+      dlc,
+      base::BindOnce(
+          &AccessibilityPrivateGetDlcContentsFunction::OnDlcContentsRetrieved,
+          base::RetainedRef(this)));
+  return RespondLater();
+}
+
+void AccessibilityPrivateGetDlcContentsFunction::OnDlcContentsRetrieved(
+    const std::vector<uint8_t>& contents,
+    absl::optional<std::string> error) {
+  if (error.has_value()) {
+    Respond(Error(error.value()));
+    return;
   }
-  return RespondNow(NoArguments());
+
+  Respond(WithArguments(base::Value(contents)));
+}
+
+ExtensionFunction::ResponseAction
+AccessibilityPrivateGetLocalizedDomKeyStringForKeyCodeFunction::Run() {
+  std::unique_ptr<
+      accessibility_private::GetLocalizedDomKeyStringForKeyCode::Params>
+      params = accessibility_private::GetLocalizedDomKeyStringForKeyCode::
+          Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  ui::KeyboardCode key_code = static_cast<ui::KeyboardCode>(params->key_code);
+  ui::DomKey dom_key;
+  ui::KeyboardCode key_code_to_compare = ui::VKEY_UNKNOWN;
+  const ui::KeyboardLayoutEngine* layout_engine =
+      ui::KeyboardLayoutEngineManager::GetKeyboardLayoutEngine();
+  ui::DomCode dom_code_for_key_code =
+      ui::KeycodeConverter::MapUSPositionalShortcutKeyToDomCode(key_code);
+  if (dom_code_for_key_code != ui::DomCode::NONE) {
+    if (layout_engine->Lookup(dom_code_for_key_code,
+                              /*event_flags=*/ui::EF_NONE, &dom_key,
+                              &key_code_to_compare)) {
+      if (dom_key.IsDeadKey() || !dom_key.IsValid()) {
+        return RespondNow(Error("Invalid key code"));
+      }
+      return RespondNow(
+          WithArguments(ui::KeycodeConverter::DomKeyToKeyString(dom_key)));
+    }
+  }
+
+  for (const auto& dom_code : ui::kDomCodesArray) {
+    if (!layout_engine->Lookup(dom_code, /*event_flags=*/ui::EF_NONE, &dom_key,
+                               &key_code_to_compare)) {
+      continue;
+    }
+    if (key_code_to_compare != key_code || !dom_key.IsValid() ||
+        dom_key.IsDeadKey()) {
+      continue;
+    }
+    return RespondNow(
+        WithArguments(ui::KeycodeConverter::DomKeyToKeyString((dom_key))));
+  }
+
+  return RespondNow(WithArguments(std::string()));
+}
+
+ExtensionFunction::ResponseAction
+AccessibilityPrivateHandleScrollableBoundsForPointFoundFunction::Run() {
+  std::unique_ptr<
+      accessibility_private::HandleScrollableBoundsForPointFound::Params>
+      params = accessibility_private::HandleScrollableBoundsForPointFound::
+          Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+  gfx::Rect bounds(params->rect.left, params->rect.top, params->rect.width,
+                   params->rect.height);
+  ash::AccessibilityController::Get()->HandleAutoclickScrollableBoundsFound(
+      bounds);
+  return RespondNow(WithArguments());
+}
+
+ExtensionFunction::ResponseAction
+AccessibilityPrivateInstallPumpkinForDictationFunction::Run() {
+  AccessibilityManager::Get()->InstallPumpkinForDictation(
+      base::BindOnce(&AccessibilityPrivateInstallPumpkinForDictationFunction::
+                         OnPumpkinInstallFinished,
+                     base::RetainedRef(this)));
+  return RespondLater();
+}
+
+void AccessibilityPrivateInstallPumpkinForDictationFunction::
+    OnPumpkinInstallFinished(
+        std::unique_ptr<accessibility_private::PumpkinData> data) {
+  if (!data) {
+    Respond(Error("Couldn't retrieve Pumpkin data."));
+    return;
+  }
+
+  Respond(OneArgument(base::Value(data->ToValue())));
+}
+
+ExtensionFunction::ResponseAction
+AccessibilityPrivateIsFeatureEnabledFunction::Run() {
+  std::unique_ptr<accessibility_private::IsFeatureEnabled::Params> params =
+      accessibility_private::IsFeatureEnabled::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+  accessibility_private::AccessibilityFeature params_feature = params->feature;
+  bool enabled;
+  switch (params_feature) {
+    case accessibility_private::AccessibilityFeature::
+        ACCESSIBILITY_FEATURE_ENHANCEDNETWORKVOICES:
+      enabled = ::features::IsEnhancedNetworkVoicesEnabled();
+      break;
+    case accessibility_private::AccessibilityFeature::
+        ACCESSIBILITY_FEATURE_GOOGLETTSLANGUAGEPACKS:
+      enabled = ::features::
+          IsExperimentalAccessibilityGoogleTtsLanguagePacksEnabled();
+      break;
+    case accessibility_private::AccessibilityFeature::
+        ACCESSIBILITY_FEATURE_DICTATIONPUMPKINPARSING:
+      enabled =
+          ::features::IsExperimentalAccessibilityDictationWithPumpkinEnabled();
+      break;
+    case accessibility_private::AccessibilityFeature::
+        ACCESSIBILITY_FEATURE_NONE:
+      return RespondNow(Error("Unrecognized feature"));
+  }
+
+  return RespondNow(WithArguments(enabled));
+}
+
+ExtensionFunction::ResponseAction
+AccessibilityPrivateMagnifierCenterOnPointFunction::Run() {
+  std::unique_ptr<accessibility_private::MagnifierCenterOnPoint::Params>
+      params =
+          accessibility_private::MagnifierCenterOnPoint::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+  gfx::Point point_in_screen(params->point.x, params->point.y);
+
+  auto* magnification_manager = ash::MagnificationManager::Get();
+  DCHECK(magnification_manager);
+  magnification_manager->HandleMagnifierCenterOnPointIfEnabled(point_in_screen);
+
+  return RespondNow(WithArguments());
+}
+
+ExtensionFunction::ResponseAction
+AccessibilityPrivateMoveMagnifierToRectFunction::Run() {
+  std::unique_ptr<accessibility_private::MoveMagnifierToRect::Params> params =
+      accessibility_private::MoveMagnifierToRect::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+  gfx::Rect bounds(params->rect.left, params->rect.top, params->rect.width,
+                   params->rect.height);
+
+  auto* magnification_manager = ash::MagnificationManager::Get();
+  DCHECK(magnification_manager);
+  magnification_manager->HandleMoveMagnifierToRectIfEnabled(bounds);
+
+  return RespondNow(WithArguments());
 }
 
 ExtensionFunction::ResponseAction
@@ -87,13 +313,178 @@ AccessibilityPrivateOpenSettingsSubpageFunction::Run() {
   // TODO(chrome-a11y-core): we can't open a settings page when you're on the
   // signin profile, but maybe we should notify the user and explain why?
   Profile* profile = AccessibilityManager::Get()->profile();
-  if (!chromeos::ProfileHelper::IsSigninProfile(profile) &&
+  if (!ash::ProfileHelper::IsSigninProfile(profile) &&
       chromeos::settings::IsOSSettingsSubPage(params->subpage)) {
     chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
         profile, params->subpage);
   }
 
-  return RespondNow(NoArguments());
+  return RespondNow(WithArguments());
+}
+
+ExtensionFunction::ResponseAction
+AccessibilityPrivatePerformAcceleratorActionFunction::Run() {
+  std::unique_ptr<accessibility_private::PerformAcceleratorAction::Params>
+      params = accessibility_private::PerformAcceleratorAction::Params::Create(
+          args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+  ash::AcceleratorAction accelerator_action;
+  switch (params->accelerator_action) {
+    case accessibility_private::ACCELERATOR_ACTION_FOCUSPREVIOUSPANE:
+      accelerator_action = ash::FOCUS_PREVIOUS_PANE;
+      break;
+    case accessibility_private::ACCELERATOR_ACTION_FOCUSNEXTPANE:
+      accelerator_action = ash::FOCUS_NEXT_PANE;
+      break;
+    case accessibility_private::ACCELERATOR_ACTION_NONE:
+      NOTREACHED();
+      return RespondNow(Error("Invalid accelerator action."));
+  }
+
+  ash::AccessibilityController::Get()->PerformAcceleratorAction(
+      accelerator_action);
+  return RespondNow(WithArguments());
+}
+
+ExtensionFunction::ResponseAction
+AccessibilityPrivateSendSyntheticKeyEventFunction::Run() {
+  std::unique_ptr<accessibility_private::SendSyntheticKeyEvent::Params> params =
+      accessibility_private::SendSyntheticKeyEvent::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+  accessibility_private::SyntheticKeyboardEvent* key_data = &params->key_event;
+
+  int modifiers = 0;
+  if (key_data->modifiers) {
+    if (key_data->modifiers->ctrl && *key_data->modifiers->ctrl)
+      modifiers |= ui::EF_CONTROL_DOWN;
+    if (key_data->modifiers->alt && *key_data->modifiers->alt)
+      modifiers |= ui::EF_ALT_DOWN;
+    if (key_data->modifiers->search && *key_data->modifiers->search)
+      modifiers |= ui::EF_COMMAND_DOWN;
+    if (key_data->modifiers->shift && *key_data->modifiers->shift)
+      modifiers |= ui::EF_SHIFT_DOWN;
+  }
+
+  ui::KeyboardCode keyboard_code =
+      static_cast<ui::KeyboardCode>(key_data->key_code);
+  std::unique_ptr<ui::KeyEvent> synthetic_key_event =
+      std::make_unique<ui::KeyEvent>(
+          key_data->type ==
+                  accessibility_private::SYNTHETIC_KEYBOARD_EVENT_TYPE_KEYUP
+              ? ui::ET_KEY_RELEASED
+              : ui::ET_KEY_PRESSED,
+          keyboard_code, ui::UsLayoutKeyboardCodeToDomCode(keyboard_code),
+          modifiers);
+
+  auto* host = ash::GetWindowTreeHostForDisplay(
+      display::Screen::GetScreen()->GetPrimaryDisplay().id());
+  DCHECK(host);
+  // This skips rewriters.
+  host->DeliverEventToSink(synthetic_key_event.get());
+  return RespondNow(WithArguments());
+}
+
+ExtensionFunction::ResponseAction
+AccessibilityPrivateSendSyntheticMouseEventFunction::Run() {
+  std::unique_ptr<accessibility_private::SendSyntheticMouseEvent::Params>
+      params = accessibility_private::SendSyntheticMouseEvent::Params::Create(
+          args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+  accessibility_private::SyntheticMouseEvent* mouse_data = &params->mouse_event;
+
+  ui::EventType type = ui::ET_UNKNOWN;
+  switch (mouse_data->type) {
+    case accessibility_private::SYNTHETIC_MOUSE_EVENT_TYPE_PRESS:
+      type = ui::ET_MOUSE_PRESSED;
+      break;
+    case accessibility_private::SYNTHETIC_MOUSE_EVENT_TYPE_RELEASE:
+      type = ui::ET_MOUSE_RELEASED;
+      break;
+    case accessibility_private::SYNTHETIC_MOUSE_EVENT_TYPE_DRAG:
+      type = ui::ET_MOUSE_DRAGGED;
+      break;
+    case accessibility_private::SYNTHETIC_MOUSE_EVENT_TYPE_MOVE:
+      type = ui::ET_MOUSE_MOVED;
+      break;
+    case accessibility_private::SYNTHETIC_MOUSE_EVENT_TYPE_ENTER:
+      type = ui::ET_MOUSE_ENTERED;
+      break;
+    case accessibility_private::SYNTHETIC_MOUSE_EVENT_TYPE_EXIT:
+      type = ui::ET_MOUSE_EXITED;
+      break;
+    default:
+      NOTREACHED();
+  }
+
+  int flags = 0;
+  if (type != ui::ET_MOUSE_MOVED) {
+    switch (mouse_data->mouse_button) {
+      case accessibility_private::SYNTHETIC_MOUSE_EVENT_BUTTON_LEFT:
+        flags |= ui::EF_LEFT_MOUSE_BUTTON;
+        break;
+      case accessibility_private::SYNTHETIC_MOUSE_EVENT_BUTTON_MIDDLE:
+        flags |= ui::EF_MIDDLE_MOUSE_BUTTON;
+        break;
+      case accessibility_private::SYNTHETIC_MOUSE_EVENT_BUTTON_RIGHT:
+        flags |= ui::EF_RIGHT_MOUSE_BUTTON;
+        break;
+      case accessibility_private::SYNTHETIC_MOUSE_EVENT_BUTTON_BACK:
+        flags |= ui::EF_BACK_MOUSE_BUTTON;
+        break;
+      case accessibility_private::SYNTHETIC_MOUSE_EVENT_BUTTON_FOWARD:
+        flags |= ui::EF_FORWARD_MOUSE_BUTTON;
+        break;
+      default:
+        flags |= ui::EF_LEFT_MOUSE_BUTTON;
+    }
+  }
+
+  int changed_button_flags = flags;
+
+  flags |= ui::EF_IS_SYNTHESIZED;
+  if (mouse_data->touch_accessibility && *(mouse_data->touch_accessibility))
+    flags |= ui::EF_TOUCH_ACCESSIBILITY;
+
+  // Locations are assumed to be in screen coordinates.
+  gfx::Point location_in_screen(mouse_data->x, mouse_data->y);
+  const display::Display& display =
+      display::Screen::GetScreen()->GetDisplayNearestPoint(location_in_screen);
+  auto* host = ash::GetWindowTreeHostForDisplay(display.id());
+  if (!host)
+    return RespondNow(WithArguments());
+
+  aura::Window* root_window = host->window();
+  if (!root_window)
+    return RespondNow(WithArguments());
+
+  aura::client::CursorClient* cursor_client =
+      aura::client::GetCursorClient(root_window);
+
+  bool is_mouse_events_enabled = cursor_client->IsMouseEventsEnabled();
+  if (!is_mouse_events_enabled) {
+    cursor_client->EnableMouseEvents();
+  }
+
+  ::wm::ConvertPointFromScreen(root_window, &location_in_screen);
+
+  std::unique_ptr<ui::MouseEvent> synthetic_mouse_event =
+      std::make_unique<ui::MouseEvent>(
+          type, location_in_screen, location_in_screen, ui::EventTimeForNow(),
+          flags, changed_button_flags);
+
+  // Transforming the coordinate to the root will apply the screen scale factor
+  // to the event's location and also the screen rotation degree.
+  synthetic_mouse_event->UpdateForRootTransform(
+      host->GetRootTransform(),
+      host->GetRootTransformForLocalEventCoordinates());
+  // This skips rewriters.
+  host->DeliverEventToSink(synthetic_mouse_event.get());
+
+  if (!is_mouse_events_enabled) {
+    cursor_client->DisableMouseEvents();
+  }
+
+  return RespondNow(WithArguments());
 }
 
 ExtensionFunction::ResponseAction
@@ -180,7 +571,7 @@ AccessibilityPrivateSetFocusRingsFunction::Run() {
     accessibility_manager->SetFocusRing(id, std::move(focus_ring));
   }
 
-  return RespondNow(NoArguments());
+  return RespondNow(WithArguments());
 }
 
 ExtensionFunction::ResponseAction
@@ -201,7 +592,7 @@ AccessibilityPrivateSetHighlightsFunction::Run() {
   // Set the highlights to cover all of these rects.
   AccessibilityManager::Get()->SetHighlights(rects, color);
 
-  return RespondNow(NoArguments());
+  return RespondNow(WithArguments());
 }
 
 ExtensionFunction::ResponseAction
@@ -226,16 +617,20 @@ AccessibilityPrivateSetKeyboardListenerFunction::Run() {
 
   ash::EventRewriterController::Get()->CaptureAllKeysForSpokenFeedback(
       enabled && capture);
-  return RespondNow(NoArguments());
+  return RespondNow(WithArguments());
 }
 
 ExtensionFunction::ResponseAction
-AccessibilityPrivateDarkenScreenFunction::Run() {
+AccessibilityPrivateSetNativeAccessibilityEnabledFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
   EXTENSION_FUNCTION_VALIDATE(args()[0].is_bool());
-  bool darken = args()[0].GetBool();
-  AccessibilityManager::Get()->SetDarkenScreen(darken);
-  return RespondNow(NoArguments());
+  bool enabled = args()[0].GetBool();
+  if (enabled) {
+    content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
+  } else {
+    content::BrowserAccessibilityState::GetInstance()->DisableAccessibility();
+  }
+  return RespondNow(WithArguments());
 }
 
 ExtensionFunction::ResponseAction
@@ -253,159 +648,51 @@ AccessibilityPrivateSetNativeChromeVoxArcSupportForCurrentAppFunction::Run() {
     EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
     EXTENSION_FUNCTION_VALIDATE(args()[0].is_bool());
     bool enabled = args()[0].GetBool();
-    bridge->SetNativeChromeVoxArcSupport(enabled);
+    bridge->SetNativeChromeVoxArcSupport(
+        enabled,
+        base::BindOnce(
+            &AccessibilityPrivateSetNativeChromeVoxArcSupportForCurrentAppFunction::
+                OnResponse,
+            this));
+    return did_respond() ? AlreadyResponded() : RespondLater();
   }
-  return RespondNow(NoArguments());
+  return RespondNow(ArgumentList(
+      extensions::api::accessibility_private::
+          SetNativeChromeVoxArcSupportForCurrentApp::Results::Create(
+              extensions::api::accessibility_private::
+                  SetNativeChromeVoxResponse::
+                      SET_NATIVE_CHROME_VOX_RESPONSE_FAILURE)));
+}
+
+void AccessibilityPrivateSetNativeChromeVoxArcSupportForCurrentAppFunction::
+    OnResponse(
+        extensions::api::accessibility_private::SetNativeChromeVoxResponse
+            response) {
+  Respond(ArgumentList(
+      extensions::api::accessibility_private::
+          SetNativeChromeVoxArcSupportForCurrentApp::Results::Create(
+              response)));
 }
 
 ExtensionFunction::ResponseAction
-AccessibilityPrivateSendSyntheticKeyEventFunction::Run() {
-  std::unique_ptr<accessibility_private::SendSyntheticKeyEvent::Params> params =
-      accessibility_private::SendSyntheticKeyEvent::Params::Create(args());
+AccessibilityPrivateSetPointScanStateFunction::Run() {
+  std::unique_ptr<accessibility_private::SetPointScanState::Params> params =
+      accessibility_private::SetPointScanState::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
-  accessibility_private::SyntheticKeyboardEvent* key_data = &params->key_event;
+  accessibility_private::PointScanState params_state = params->state;
 
-  int modifiers = 0;
-  if (key_data->modifiers.get()) {
-    if (key_data->modifiers->ctrl && *key_data->modifiers->ctrl)
-      modifiers |= ui::EF_CONTROL_DOWN;
-    if (key_data->modifiers->alt && *key_data->modifiers->alt)
-      modifiers |= ui::EF_ALT_DOWN;
-    if (key_data->modifiers->search && *key_data->modifiers->search)
-      modifiers |= ui::EF_COMMAND_DOWN;
-    if (key_data->modifiers->shift && *key_data->modifiers->shift)
-      modifiers |= ui::EF_SHIFT_DOWN;
+  switch (params_state) {
+    case accessibility_private::PointScanState::POINT_SCAN_STATE_START:
+      ash::AccessibilityController::Get()->StartPointScan();
+      break;
+    case accessibility_private::PointScanState::POINT_SCAN_STATE_STOP:
+      ash::AccessibilityController::Get()->StopPointScan();
+      break;
+    case accessibility_private::PointScanState::POINT_SCAN_STATE_NONE:
+      break;
   }
 
-  ui::KeyboardCode keyboard_code =
-      static_cast<ui::KeyboardCode>(key_data->key_code);
-  std::unique_ptr<ui::KeyEvent> synthetic_key_event =
-      std::make_unique<ui::KeyEvent>(
-          key_data->type ==
-                  accessibility_private::SYNTHETIC_KEYBOARD_EVENT_TYPE_KEYUP
-              ? ui::ET_KEY_RELEASED
-              : ui::ET_KEY_PRESSED,
-          keyboard_code, ui::UsLayoutKeyboardCodeToDomCode(keyboard_code),
-          modifiers);
-
-  auto* host = ash::GetWindowTreeHostForDisplay(
-      display::Screen::GetScreen()->GetPrimaryDisplay().id());
-  DCHECK(host);
-  // This skips rewriters.
-  host->DeliverEventToSink(synthetic_key_event.get());
-  return RespondNow(NoArguments());
-}
-
-ExtensionFunction::ResponseAction
-AccessibilityPrivateEnableMouseEventsFunction::Run() {
-  EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
-  EXTENSION_FUNCTION_VALIDATE(args()[0].is_bool());
-  bool enabled = args()[0].GetBool();
-  ash::EventRewriterController::Get()->SetSendMouseEvents(enabled);
-  return RespondNow(NoArguments());
-}
-
-ExtensionFunction::ResponseAction
-AccessibilityPrivateSendSyntheticMouseEventFunction::Run() {
-  std::unique_ptr<accessibility_private::SendSyntheticMouseEvent::Params>
-      params = accessibility_private::SendSyntheticMouseEvent::Params::Create(
-          args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-  accessibility_private::SyntheticMouseEvent* mouse_data = &params->mouse_event;
-
-  ui::EventType type = ui::ET_UNKNOWN;
-  switch (mouse_data->type) {
-    case accessibility_private::SYNTHETIC_MOUSE_EVENT_TYPE_PRESS:
-      type = ui::ET_MOUSE_PRESSED;
-      break;
-    case accessibility_private::SYNTHETIC_MOUSE_EVENT_TYPE_RELEASE:
-      type = ui::ET_MOUSE_RELEASED;
-      break;
-    case accessibility_private::SYNTHETIC_MOUSE_EVENT_TYPE_DRAG:
-      type = ui::ET_MOUSE_DRAGGED;
-      break;
-    case accessibility_private::SYNTHETIC_MOUSE_EVENT_TYPE_MOVE:
-      type = ui::ET_MOUSE_MOVED;
-      break;
-    case accessibility_private::SYNTHETIC_MOUSE_EVENT_TYPE_ENTER:
-      type = ui::ET_MOUSE_ENTERED;
-      break;
-    case accessibility_private::SYNTHETIC_MOUSE_EVENT_TYPE_EXIT:
-      type = ui::ET_MOUSE_EXITED;
-      break;
-    default:
-      NOTREACHED();
-  }
-
-  int flags = 0;
-  if (type != ui::ET_MOUSE_MOVED) {
-    switch (mouse_data->mouse_button) {
-      case accessibility_private::SYNTHETIC_MOUSE_EVENT_BUTTON_LEFT:
-        flags |= ui::EF_LEFT_MOUSE_BUTTON;
-        break;
-      case accessibility_private::SYNTHETIC_MOUSE_EVENT_BUTTON_MIDDLE:
-        flags |= ui::EF_MIDDLE_MOUSE_BUTTON;
-        break;
-      case accessibility_private::SYNTHETIC_MOUSE_EVENT_BUTTON_RIGHT:
-        flags |= ui::EF_RIGHT_MOUSE_BUTTON;
-        break;
-      case accessibility_private::SYNTHETIC_MOUSE_EVENT_BUTTON_BACK:
-        flags |= ui::EF_BACK_MOUSE_BUTTON;
-        break;
-      case accessibility_private::SYNTHETIC_MOUSE_EVENT_BUTTON_FOWARD:
-        flags |= ui::EF_FORWARD_MOUSE_BUTTON;
-        break;
-      default:
-        flags |= ui::EF_LEFT_MOUSE_BUTTON;
-    }
-  }
-
-  int changed_button_flags = flags;
-
-  flags |= ui::EF_IS_SYNTHESIZED;
-  if (mouse_data->touch_accessibility && *(mouse_data->touch_accessibility))
-    flags |= ui::EF_TOUCH_ACCESSIBILITY;
-
-  // Locations are assumed to be in screen coordinates.
-  gfx::Point location_in_screen(mouse_data->x, mouse_data->y);
-  const display::Display& display =
-      display::Screen::GetScreen()->GetDisplayNearestPoint(location_in_screen);
-  auto* host = ash::GetWindowTreeHostForDisplay(display.id());
-  if (!host)
-    return RespondNow(NoArguments());
-
-  aura::Window* root_window = host->window();
-  if (!root_window)
-    return RespondNow(NoArguments());
-
-  aura::client::CursorClient* cursor_client =
-      aura::client::GetCursorClient(root_window);
-
-  bool is_mouse_events_enabled = cursor_client->IsMouseEventsEnabled();
-  if (!is_mouse_events_enabled) {
-    cursor_client->EnableMouseEvents();
-  }
-
-  ::wm::ConvertPointFromScreen(root_window, &location_in_screen);
-
-  std::unique_ptr<ui::MouseEvent> synthetic_mouse_event =
-      std::make_unique<ui::MouseEvent>(
-          type, location_in_screen, location_in_screen, ui::EventTimeForNow(),
-          flags, changed_button_flags);
-
-  // Transforming the coordinate to the root will apply the screen scale factor
-  // to the event's location and also the screen rotation degree.
-  synthetic_mouse_event->UpdateForRootTransform(
-      host->GetRootTransform(),
-      host->GetRootTransformForLocalEventCoordinates());
-  // This skips rewriters.
-  host->DeliverEventToSink(synthetic_mouse_event.get());
-
-  if (!is_mouse_events_enabled) {
-    cursor_client->DisableMouseEvents();
-  }
-
-  return RespondNow(NoArguments());
+  return RespondNow(WithArguments());
 }
 
 ExtensionFunction::ResponseAction
@@ -433,160 +720,7 @@ AccessibilityPrivateSetSelectToSpeakStateFunction::Run() {
   auto* accessibility_manager = AccessibilityManager::Get();
   accessibility_manager->SetSelectToSpeakState(state);
 
-  return RespondNow(NoArguments());
-}
-
-ExtensionFunction::ResponseAction
-AccessibilityPrivateHandleScrollableBoundsForPointFoundFunction::Run() {
-  std::unique_ptr<
-      accessibility_private::HandleScrollableBoundsForPointFound::Params>
-      params = accessibility_private::HandleScrollableBoundsForPointFound::
-          Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-  gfx::Rect bounds(params->rect.left, params->rect.top, params->rect.width,
-                   params->rect.height);
-  ash::AccessibilityController::Get()->HandleAutoclickScrollableBoundsFound(
-      bounds);
-  return RespondNow(NoArguments());
-}
-
-ExtensionFunction::ResponseAction
-AccessibilityPrivateMoveMagnifierToRectFunction::Run() {
-  std::unique_ptr<accessibility_private::MoveMagnifierToRect::Params> params =
-      accessibility_private::MoveMagnifierToRect::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-  gfx::Rect bounds(params->rect.left, params->rect.top, params->rect.width,
-                   params->rect.height);
-
-  auto* magnification_manager = ash::MagnificationManager::Get();
-  DCHECK(magnification_manager);
-  magnification_manager->HandleMoveMagnifierToRectIfEnabled(bounds);
-
-  return RespondNow(NoArguments());
-}
-
-ExtensionFunction::ResponseAction
-AccessibilityPrivateMagnifierCenterOnPointFunction::Run() {
-  std::unique_ptr<accessibility_private::MagnifierCenterOnPoint::Params>
-      params =
-          accessibility_private::MagnifierCenterOnPoint::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-  gfx::Point point_in_screen(params->point.x, params->point.y);
-
-  auto* magnification_manager = ash::MagnificationManager::Get();
-  DCHECK(magnification_manager);
-  magnification_manager->HandleMagnifierCenterOnPointIfEnabled(point_in_screen);
-
-  return RespondNow(NoArguments());
-}
-
-ExtensionFunction::ResponseAction
-AccessibilityPrivateToggleDictationFunction::Run() {
-  ash::DictationToggleSource source = ash::DictationToggleSource::kChromevox;
-  if (extension()->id() == extension_misc::kSwitchAccessExtensionId)
-    source = ash::DictationToggleSource::kSwitchAccess;
-  else if (extension()->id() == extension_misc::kChromeVoxExtensionId)
-    source = ash::DictationToggleSource::kChromevox;
-  else if (extension()->id() == extension_misc::kAccessibilityCommonExtensionId)
-    source = ash::DictationToggleSource::kAccessibilityCommon;
-  else
-    NOTREACHED();
-
-  ash::AccessibilityController::Get()->ToggleDictationFromSource(source);
-
-  return RespondNow(NoArguments());
-}
-
-ExtensionFunction::ResponseAction
-AccessibilityPrivateForwardKeyEventsToSwitchAccessFunction::Run() {
-  std::unique_ptr<accessibility_private::ForwardKeyEventsToSwitchAccess::Params>
-      params =
-          accessibility_private::ForwardKeyEventsToSwitchAccess::Params::Create(
-              args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-
-  return RespondNow(Error("Forwarding key events is no longer supported."));
-}
-
-ExtensionFunction::ResponseAction
-AccessibilityPrivateUpdateSwitchAccessBubbleFunction::Run() {
-  std::unique_ptr<accessibility_private::UpdateSwitchAccessBubble::Params>
-      params = accessibility_private::UpdateSwitchAccessBubble::Params::Create(
-          args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-
-  if (!params->show) {
-    if (params->bubble ==
-        accessibility_private::SWITCH_ACCESS_BUBBLE_BACKBUTTON)
-      ash::AccessibilityController::Get()->HideSwitchAccessBackButton();
-    else if (params->bubble == accessibility_private::SWITCH_ACCESS_BUBBLE_MENU)
-      ash::AccessibilityController::Get()->HideSwitchAccessMenu();
-    return RespondNow(NoArguments());
-  }
-
-  if (!params->anchor)
-    return RespondNow(Error("An anchor rect is required to show a bubble."));
-
-  gfx::Rect anchor(params->anchor->left, params->anchor->top,
-                   params->anchor->width, params->anchor->height);
-
-  if (params->bubble ==
-      accessibility_private::SWITCH_ACCESS_BUBBLE_BACKBUTTON) {
-    ash::AccessibilityController::Get()->ShowSwitchAccessBackButton(anchor);
-    return RespondNow(NoArguments());
-  }
-
-  if (!params->actions)
-    return RespondNow(Error("The menu cannot be shown without actions."));
-
-  std::vector<std::string> actions_to_show;
-  for (accessibility_private::SwitchAccessMenuAction extension_action :
-       *(params->actions)) {
-    std::string action = accessibility_private::ToString(extension_action);
-    // Check that this action is not already in our actions list.
-    if (std::find(actions_to_show.begin(), actions_to_show.end(), action) !=
-        actions_to_show.end()) {
-      continue;
-    }
-    actions_to_show.push_back(action);
-  }
-
-  ash::AccessibilityController::Get()->ShowSwitchAccessMenu(anchor,
-                                                            actions_to_show);
-  return RespondNow(NoArguments());
-}
-
-ExtensionFunction::ResponseAction
-AccessibilityPrivateSetPointScanStateFunction::Run() {
-  std::unique_ptr<accessibility_private::SetPointScanState::Params> params =
-      accessibility_private::SetPointScanState::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-  accessibility_private::PointScanState params_state = params->state;
-
-  switch (params_state) {
-    case accessibility_private::PointScanState::POINT_SCAN_STATE_START:
-      ash::AccessibilityController::Get()->StartPointScan();
-      break;
-    case accessibility_private::PointScanState::POINT_SCAN_STATE_STOP:
-      ash::AccessibilityController::Get()->StopPointScan();
-      break;
-    case accessibility_private::PointScanState::POINT_SCAN_STATE_NONE:
-      break;
-  }
-
-  return RespondNow(NoArguments());
-}
-
-AccessibilityPrivateGetBatteryDescriptionFunction::
-    AccessibilityPrivateGetBatteryDescriptionFunction() {}
-
-AccessibilityPrivateGetBatteryDescriptionFunction::
-    ~AccessibilityPrivateGetBatteryDescriptionFunction() {}
-
-ExtensionFunction::ResponseAction
-AccessibilityPrivateGetBatteryDescriptionFunction::Run() {
-  return RespondNow(OneArgument(base::Value(
-      ash::AccessibilityController::Get()->GetBatteryDescription())));
+  return RespondNow(WithArguments());
 }
 
 ExtensionFunction::ResponseAction
@@ -599,80 +733,7 @@ AccessibilityPrivateSetVirtualKeyboardVisibleFunction::Run() {
   ash::AccessibilityController::Get()->SetVirtualKeyboardVisible(
       params->is_visible);
 
-  return RespondNow(NoArguments());
-}
-
-ExtensionFunction::ResponseAction
-AccessibilityPrivatePerformAcceleratorActionFunction::Run() {
-  std::unique_ptr<accessibility_private::PerformAcceleratorAction::Params>
-      params = accessibility_private::PerformAcceleratorAction::Params::Create(
-          args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-  ash::AcceleratorAction accelerator_action;
-  switch (params->accelerator_action) {
-    case accessibility_private::ACCELERATOR_ACTION_FOCUSPREVIOUSPANE:
-      accelerator_action = ash::FOCUS_PREVIOUS_PANE;
-      break;
-    case accessibility_private::ACCELERATOR_ACTION_FOCUSNEXTPANE:
-      accelerator_action = ash::FOCUS_NEXT_PANE;
-      break;
-    case accessibility_private::ACCELERATOR_ACTION_NONE:
-      NOTREACHED();
-      return RespondNow(Error("Invalid accelerator action."));
-  }
-
-  ash::AccessibilityController::Get()->PerformAcceleratorAction(
-      accelerator_action);
-  return RespondNow(NoArguments());
-}
-
-ExtensionFunction::ResponseAction
-AccessibilityPrivateIsFeatureEnabledFunction::Run() {
-  std::unique_ptr<accessibility_private::IsFeatureEnabled::Params> params =
-      accessibility_private::IsFeatureEnabled::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-  accessibility_private::AccessibilityFeature params_feature = params->feature;
-  bool enabled;
-  switch (params_feature) {
-    case accessibility_private::AccessibilityFeature::
-        ACCESSIBILITY_FEATURE_ENHANCEDNETWORKVOICES:
-      enabled = ::features::IsEnhancedNetworkVoicesEnabled();
-      break;
-    case accessibility_private::AccessibilityFeature::
-        ACCESSIBILITY_FEATURE_DICTATIONCOMMANDS:
-      enabled =
-          ::features::IsExperimentalAccessibilityDictationCommandsEnabled();
-      break;
-    case accessibility_private::AccessibilityFeature::
-        ACCESSIBILITY_FEATURE_NONE:
-      return RespondNow(Error("Unrecognized feature"));
-  }
-
-  return RespondNow(OneArgument(base::Value(enabled)));
-}
-
-ExtensionFunction::ResponseAction
-AccessibilityPrivateUpdateSelectToSpeakPanelFunction::Run() {
-  std::unique_ptr<accessibility_private::UpdateSelectToSpeakPanel::Params>
-      params = accessibility_private::UpdateSelectToSpeakPanel::Params::Create(
-          args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-
-  if (!params->show) {
-    ash::AccessibilityController::Get()->HideSelectToSpeakPanel();
-    return RespondNow(NoArguments());
-  }
-
-  if (!params->anchor || !params->is_paused || !params->speed)
-    return RespondNow(Error("Required parameters missing to show panel."));
-
-  const gfx::Rect anchor =
-      gfx::Rect(params->anchor->left, params->anchor->top,
-                params->anchor->width, params->anchor->height);
-  ash::AccessibilityController::Get()->ShowSelectToSpeakPanel(
-      anchor, *params->is_paused, *params->speed);
-
-  return RespondNow(NoArguments());
+  return RespondNow(WithArguments());
 }
 
 ExtensionFunction::ResponseAction
@@ -701,47 +762,156 @@ AccessibilityPrivateShowConfirmationDialogFunction::Run() {
 
 void AccessibilityPrivateShowConfirmationDialogFunction::OnDialogResult(
     bool confirmed) {
-  Respond(OneArgument(base::Value(confirmed)));
+  Respond(WithArguments(confirmed));
 }
 
 ExtensionFunction::ResponseAction
-AccessibilityPrivateGetLocalizedDomKeyStringForKeyCodeFunction::Run() {
-  std::unique_ptr<
-      accessibility_private::GetLocalizedDomKeyStringForKeyCode::Params>
-      params = accessibility_private::GetLocalizedDomKeyStringForKeyCode::
-          Params::Create(args());
+AccessibilityPrivateSilenceSpokenFeedbackFunction::Run() {
+  ash::AccessibilityController::Get()->SilenceSpokenFeedback();
+  return RespondNow(WithArguments());
+}
+
+ExtensionFunction::ResponseAction
+AccessibilityPrivateToggleDictationFunction::Run() {
+  ash::DictationToggleSource source = ash::DictationToggleSource::kChromevox;
+  if (extension()->id() == extension_misc::kSwitchAccessExtensionId)
+    source = ash::DictationToggleSource::kSwitchAccess;
+  else if (extension()->id() == extension_misc::kChromeVoxExtensionId)
+    source = ash::DictationToggleSource::kChromevox;
+  else if (extension()->id() == extension_misc::kAccessibilityCommonExtensionId)
+    source = ash::DictationToggleSource::kAccessibilityCommon;
+  else
+    NOTREACHED();
+
+  ash::AccessibilityController::Get()->ToggleDictationFromSource(source);
+
+  return RespondNow(WithArguments());
+}
+
+ExtensionFunction::ResponseAction
+AccessibilityPrivateUpdateDictationBubbleFunction::Run() {
+  std::unique_ptr<accessibility_private::UpdateDictationBubble::Params> params(
+      accessibility_private::UpdateDictationBubble::Params::Create(args()));
+  EXTENSION_FUNCTION_VALIDATE(params);
+  accessibility_private::DictationBubbleProperties& properties =
+      params->properties;
+
+  // Extract the icon type.
+  ash::DictationBubbleIconType icon = ash::DictationBubbleIconType::kHidden;
+  switch (properties.icon) {
+    case accessibility_private::DictationBubbleIconType::
+        DICTATION_BUBBLE_ICON_TYPE_HIDDEN:
+      icon = ash::DictationBubbleIconType::kHidden;
+      break;
+    case accessibility_private::DictationBubbleIconType::
+        DICTATION_BUBBLE_ICON_TYPE_STANDBY:
+      icon = ash::DictationBubbleIconType::kStandby;
+      break;
+    case accessibility_private::DictationBubbleIconType::
+        DICTATION_BUBBLE_ICON_TYPE_MACROSUCCESS:
+      icon = ash::DictationBubbleIconType::kMacroSuccess;
+      break;
+    case accessibility_private::DictationBubbleIconType::
+        DICTATION_BUBBLE_ICON_TYPE_MACROFAIL:
+      icon = ash::DictationBubbleIconType::kMacroFail;
+      break;
+    case accessibility_private::DictationBubbleIconType::
+        DICTATION_BUBBLE_ICON_TYPE_NONE:
+      NOTREACHED();
+      break;
+  }
+
+  // Extract text.
+  absl::optional<std::u16string> text;
+  if (properties.text)
+    text = base::UTF8ToUTF16(*properties.text);
+
+  // Extract hints.
+  absl::optional<std::vector<ash::DictationBubbleHintType>> hints;
+  if (properties.hints) {
+    std::vector<ash::DictationBubbleHintType> converted_hints;
+    for (size_t i = 0; i < (*properties.hints).size(); ++i) {
+      converted_hints.push_back(
+          ConvertDictationHintType((*properties.hints)[i]));
+    }
+    hints = converted_hints;
+  }
+
+  if (hints.has_value() && hints.value().size() > 5)
+    return RespondNow(Error("Should not provide more than five hints."));
+
+  ash::AccessibilityController::Get()->UpdateDictationBubble(properties.visible,
+                                                             icon, text, hints);
+  return RespondNow(WithArguments());
+}
+
+ExtensionFunction::ResponseAction
+AccessibilityPrivateUpdateSelectToSpeakPanelFunction::Run() {
+  std::unique_ptr<accessibility_private::UpdateSelectToSpeakPanel::Params>
+      params = accessibility_private::UpdateSelectToSpeakPanel::Params::Create(
+          args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  ui::KeyboardCode key_code = static_cast<ui::KeyboardCode>(params->key_code);
-  ui::DomKey dom_key;
-  ui::KeyboardCode key_code_to_compare = ui::VKEY_UNKNOWN;
-  const ui::KeyboardLayoutEngine* layout_engine =
-      ui::KeyboardLayoutEngineManager::GetKeyboardLayoutEngine();
-  ui::DomCode dom_code =
-      ui::KeycodeConverter::MapUSPositionalShortcutKeyToDomCode(key_code);
-  if (dom_code != ui::DomCode::NONE) {
-    if (layout_engine->Lookup(dom_code, /*flags=*/ui::EF_NONE, &dom_key,
-                              &key_code_to_compare)) {
-      if (dom_key.IsDeadKey() || !dom_key.IsValid()) {
-        return RespondNow(Error("Invalid key code"));
-      }
-      return RespondNow(OneArgument(
-          base::Value(ui::KeycodeConverter::DomKeyToKeyString(dom_key))));
-    }
+  if (!params->show) {
+    ash::AccessibilityController::Get()->HideSelectToSpeakPanel();
+    return RespondNow(WithArguments());
   }
 
-  for (const auto& dom_code : ui::dom_codes) {
-    if (!layout_engine->Lookup(dom_code, /*flags=*/ui::EF_NONE, &dom_key,
-                               &key_code_to_compare)) {
-      continue;
-    }
-    if (key_code_to_compare != key_code || !dom_key.IsValid() ||
-        dom_key.IsDeadKey()) {
-      continue;
-    }
-    return RespondNow(OneArgument(
-        base::Value(ui::KeycodeConverter::DomKeyToKeyString((dom_key)))));
+  if (!params->anchor || !params->is_paused || !params->speed)
+    return RespondNow(Error("Required parameters missing to show panel."));
+
+  const gfx::Rect anchor =
+      gfx::Rect(params->anchor->left, params->anchor->top,
+                params->anchor->width, params->anchor->height);
+  ash::AccessibilityController::Get()->ShowSelectToSpeakPanel(
+      anchor, *params->is_paused, *params->speed);
+
+  return RespondNow(WithArguments());
+}
+
+ExtensionFunction::ResponseAction
+AccessibilityPrivateUpdateSwitchAccessBubbleFunction::Run() {
+  std::unique_ptr<accessibility_private::UpdateSwitchAccessBubble::Params>
+      params = accessibility_private::UpdateSwitchAccessBubble::Params::Create(
+          args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  if (!params->show) {
+    if (params->bubble ==
+        accessibility_private::SWITCH_ACCESS_BUBBLE_BACKBUTTON)
+      ash::AccessibilityController::Get()->HideSwitchAccessBackButton();
+    else if (params->bubble == accessibility_private::SWITCH_ACCESS_BUBBLE_MENU)
+      ash::AccessibilityController::Get()->HideSwitchAccessMenu();
+    return RespondNow(WithArguments());
   }
 
-  return RespondNow(OneArgument(base::Value(std::string())));
+  if (!params->anchor)
+    return RespondNow(Error("An anchor rect is required to show a bubble."));
+
+  gfx::Rect anchor(params->anchor->left, params->anchor->top,
+                   params->anchor->width, params->anchor->height);
+
+  if (params->bubble ==
+      accessibility_private::SWITCH_ACCESS_BUBBLE_BACKBUTTON) {
+    ash::AccessibilityController::Get()->ShowSwitchAccessBackButton(anchor);
+    return RespondNow(WithArguments());
+  }
+
+  if (!params->actions)
+    return RespondNow(Error("The menu cannot be shown without actions."));
+
+  std::vector<std::string> actions_to_show;
+  for (accessibility_private::SwitchAccessMenuAction extension_action :
+       *(params->actions)) {
+    std::string action = accessibility_private::ToString(extension_action);
+    // Check that this action is not already in our actions list.
+    if (base::Contains(actions_to_show, action)) {
+      continue;
+    }
+    actions_to_show.push_back(action);
+  }
+
+  ash::AccessibilityController::Get()->ShowSwitchAccessMenu(anchor,
+                                                            actions_to_show);
+  return RespondNow(WithArguments());
 }

@@ -24,7 +24,7 @@
       aria-hidden="true">
     $i18n{crostiniExtraContainersTableTitle}
   </div>
-  <cr-button on-click="onCreateClick_" disabled="[[!enableButtons_]]">
+  <cr-button id="create" on-click="onCreateClick_" disabled="[[!enableButtons_]]">
     $i18n{crostiniExtraContainersCreate}
   </cr-button>
 </div>
@@ -46,8 +46,12 @@
         aria-hidden="true">
       $i18n{crostiniExtraContainersContainerIpLabel}
     </div>
+    <div id="color"
+        class="column-title vm-column"
+        aria-hidden="true">
+    </div>
   </div>
-  <template is="dom-repeat" items="[[allContainers_]]">
+  <template is="dom-repeat" items="[[allContainers_]]" mutable-data>
     <div class="list-item">
       <div class="start" aria-hidden="true">
         [[item.id.container_name]]
@@ -57,6 +61,13 @@
       </div>
        <div class="vm-column" aria-hidden="true">
         [[item.ipv4]]
+      </div>
+      <div class="vm-column"
+          aria-hidden="true">
+        <input type="color"
+            data-container-id="[[item.id]]"
+            value="[[item.badge_color]]"
+            on-change="onContainerColorChange_">
       </div>
       <cr-icon-button id="showContainerMenu[[index]]"
           class="icon-more-vert"
@@ -90,6 +101,20 @@
           disabled="[[shouldDisableDeleteContainer_(lastMenuContainerInfo_)]]"
           on-click="onDeleteContainerClick_">
         $i18n{crostiniExtraContainersDelete}
+      </button>
+      <button id="exportContainerButton"
+          class="dropdown-item"
+          role="menuitem"
+          on-click="onExportContainerClick_"
+          disabled="[[!enableButtons_]]">
+          $i18n{crostiniExport}
+      </button>
+      <button id="importContainerButton"
+          class="dropdown-item"
+          role="menuitem"
+          on-click="onImportContainerClick_"
+          disabled="[[!enableButtons_]]">
+          $i18n{crostiniImport}
       </button>
     </cr-action-menu>
   </template>

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,16 +7,18 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <algorithm>
 #include <utility>
 
 #include "base/containers/adapters.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/containers/queue.h"
 #include "base/logging.h"
+#include "base/observer_list.h"
+#include "base/ranges/algorithm.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/trace_event.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "components/viz/common/surfaces/surface_info.h"
 #include "components/viz/service/surfaces/surface.h"
@@ -37,12 +39,14 @@ constexpr base::TimeDelta kExpireInterval = base::Seconds(10);
 
 SurfaceManager::SurfaceManager(
     SurfaceManagerDelegate* delegate,
-    absl::optional<uint32_t> activation_deadline_in_frames)
+    absl::optional<uint32_t> activation_deadline_in_frames,
+    size_t max_uncommitted_frames)
     : delegate_(delegate),
       activation_deadline_in_frames_(activation_deadline_in_frames),
       root_surface_id_(FrameSinkId(0u, 0u),
                        LocalSurfaceId(1u, base::UnguessableToken::Create())),
-      tick_clock_(base::DefaultTickClock::GetInstance()) {
+      tick_clock_(base::DefaultTickClock::GetInstance()),
+      max_uncommitted_frames_(max_uncommitted_frames) {
   thread_checker_.DetachFromThread();
 
   // Android WebView doesn't have a task runner and doesn't need the timer.
@@ -112,8 +116,9 @@ Surface* SurfaceManager::CreateSurface(
   if (!allocation_group)
     return nullptr;
 
-  std::unique_ptr<Surface> surface = std::make_unique<Surface>(
-      surface_info, this, allocation_group, surface_client);
+  std::unique_ptr<Surface> surface =
+      std::make_unique<Surface>(surface_info, this, allocation_group,
+                                surface_client, max_uncommitted_frames_);
   surface->SetDependencyDeadline(
       std::make_unique<SurfaceDependencyDeadline>(tick_clock_));
   surface_map_[surface_info.id()] = std::move(surface);
@@ -349,11 +354,10 @@ void SurfaceManager::RemoveTemporaryReferenceImpl(const SurfaceId& surface_id,
   // Find the iterator to the range tracking entry for |surface_id|. Use that
   // iterator to find the right end iterator for the temporary references we
   // want to remove.
-  auto end_iter =
-      std::find_if(frame_sink_temp_refs.begin(), frame_sink_temp_refs.end(),
-                   [&surface_id](const LocalSurfaceId& id) {
-                     return id.IsNewerThan(surface_id.local_surface_id());
-                   });
+  auto end_iter = base::ranges::find_if(
+      frame_sink_temp_refs, [&surface_id](const LocalSurfaceId& id) {
+        return id.IsNewerThan(surface_id.local_surface_id());
+      });
   auto begin_iter = frame_sink_temp_refs.begin();
 
   // Remove temporary references and range tracking information.
@@ -423,6 +427,11 @@ void SurfaceManager::ExpireOldTemporaryReferences() {
 
   for (auto& surface_id : temporary_references_to_delete)
     RemoveTemporaryReferenceImpl(surface_id, RemovedReason::EXPIRED);
+
+  // Some surfaces may have become eligible to garbage collection, since we
+  // just removed temporary references.
+  if (base::FeatureList::IsEnabled(features::kEagerSurfaceGarbageCollection))
+    GarbageCollectSurfaces();
 }
 
 Surface* SurfaceManager::GetSurfaceForId(const SurfaceId& surface_id) const {
@@ -447,6 +456,11 @@ void SurfaceManager::FirstSurfaceActivation(const SurfaceInfo& surface_info) {
 
   for (auto& observer : observer_list_)
     observer.OnFirstSurfaceActivation(surface_info);
+}
+
+void SurfaceManager::OnSurfaceHasNewUncommittedFrame(Surface* surface) {
+  for (auto& observer : observer_list_)
+    observer.OnSurfaceHasNewUncommittedFrame(surface->surface_id());
 }
 
 void SurfaceManager::SurfaceActivated(Surface* surface) {
@@ -626,6 +640,35 @@ bool SurfaceManager::HasBlockedEmbedder(
 void SurfaceManager::AggregatedFrameSinksChanged() {
   if (delegate_)
     delegate_->AggregatedFrameSinksChanged();
+}
+
+void SurfaceManager::CommitFramesInRangeRecursively(
+    const SurfaceRange& range,
+    const CommitPredicate& predicate) {
+  // Technically we need only latest active surface, but because activation will
+  // happen during commit, it's impossible to predict which one will be active,
+  // so we're committing all surfaces in range.
+
+  // If start of the range is in a different allocation group, process it first
+  // to keep activation in order.
+  if (range.start() && range.start()->local_surface_id().embed_token() !=
+                           range.end().local_surface_id().embed_token()) {
+    if (auto* allocation_group =
+            GetAllocationGroupForSurfaceId(*range.start())) {
+      for (auto* surface : allocation_group->surfaces()) {
+        if (range.IsInRangeInclusive(surface->surface_id()))
+          surface->CommitFramesRecursively(predicate);
+      }
+    }
+  }
+
+  // Process the allocation group of the end of the range.
+  if (auto* allocation_group = GetAllocationGroupForSurfaceId(range.end())) {
+    for (auto* surface : allocation_group->surfaces()) {
+      if (range.IsInRangeInclusive(surface->surface_id()))
+        surface->CommitFramesRecursively(predicate);
+    }
+  }
 }
 
 }  // namespace viz

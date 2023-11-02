@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@
 #include "base/syslog_logging.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
-#include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
+#include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
 namespace policy {
@@ -31,7 +31,7 @@ class DeviceCommandGetAvailableRoutinesJob::Payload
     : public RemoteCommandJob::ResultPayload {
  public:
   explicit Payload(
-      const std::vector<chromeos::cros_healthd::mojom::DiagnosticRoutineEnum>&
+      const std::vector<ash::cros_healthd::mojom::DiagnosticRoutineEnum>&
           available_routines);
   Payload(const Payload&) = delete;
   Payload& operator=(const Payload&) = delete;
@@ -41,12 +41,12 @@ class DeviceCommandGetAvailableRoutinesJob::Payload
   std::unique_ptr<std::string> Serialize() override;
 
  private:
-  std::vector<chromeos::cros_healthd::mojom::DiagnosticRoutineEnum>
+  std::vector<ash::cros_healthd::mojom::DiagnosticRoutineEnum>
       available_routines_;
 };
 
 DeviceCommandGetAvailableRoutinesJob::Payload::Payload(
-    const std::vector<chromeos::cros_healthd::mojom::DiagnosticRoutineEnum>&
+    const std::vector<ash::cros_healthd::mojom::DiagnosticRoutineEnum>&
         available_routines)
     : available_routines_(available_routines) {}
 
@@ -77,8 +77,8 @@ void DeviceCommandGetAvailableRoutinesJob::RunImpl(
     CallbackWithResult failed_callback) {
   SYSLOG(INFO) << "Executing GetAvailableRoutines command.";
 
-  chromeos::cros_healthd::ServiceConnection::GetInstance()
-      ->GetAvailableRoutines(base::BindOnce(
+  ash::cros_healthd::ServiceConnection::GetInstance()->GetAvailableRoutines(
+      base::BindOnce(
           &DeviceCommandGetAvailableRoutinesJob::OnCrosHealthdResponseReceived,
           weak_ptr_factory_.GetWeakPtr(), std::move(succeeded_callback),
           std::move(failed_callback)));
@@ -87,7 +87,7 @@ void DeviceCommandGetAvailableRoutinesJob::RunImpl(
 void DeviceCommandGetAvailableRoutinesJob::OnCrosHealthdResponseReceived(
     CallbackWithResult succeeded_callback,
     CallbackWithResult failed_callback,
-    const std::vector<chromeos::cros_healthd::mojom::DiagnosticRoutineEnum>&
+    const std::vector<ash::cros_healthd::mojom::DiagnosticRoutineEnum>&
         available_routines) {
   if (available_routines.empty()) {
     SYSLOG(ERROR) << "No routines received from cros_healthd.";

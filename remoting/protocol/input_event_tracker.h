@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,13 +10,12 @@
 #include <set>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "remoting/protocol/input_stub.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 // Filtering InputStub which tracks mouse and keyboard input events before
 // passing them on to |input_stub|, and can dispatch release events to
@@ -58,7 +57,7 @@ class InputEventTracker : public InputStub {
   void InjectTouchEvent(const TouchEvent& event) override;
 
  private:
-  InputStub* input_stub_ = nullptr;
+  raw_ptr<InputStub> input_stub_ = nullptr;
 
   std::set<ui::DomCode> pressed_keys_;
 
@@ -68,7 +67,6 @@ class InputEventTracker : public InputStub {
   std::set<uint32_t> touch_point_ids_;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_INPUT_EVENT_TRACKER_H_

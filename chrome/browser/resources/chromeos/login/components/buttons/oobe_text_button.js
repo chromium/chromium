@@ -1,55 +1,34 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-Polymer({
-    is: 'oobe-text-button',
+/* #js_imports_placeholder */
 
-    behaviors: [OobeI18nBehavior],
+/**
+ * @polymer
+ */
+/* #export */ class OobeTextButton extends OobeBaseButton {
 
-    properties: {
-      disabled: {type: Boolean, value: false, reflectToAttribute: true},
+  static get is() {
+    return 'oobe-text-button';
+  }
 
+  /* #html_template_placeholder */
+
+  static get properties() {
+    return {
       inverse: {
         type: Boolean,
         observer: 'onInverseChanged_',
       },
 
-      /* The ID of the localized string to be used as button text.
-       */
-      textKey: {
-        type: String,
-      },
-
       border: Boolean,
+    };
+  }
 
-      labelForAria: {
-        type: String,
-      },
+  onInverseChanged_() {
+    this.$.button.classList.toggle('action-button', this.inverse);
+  }
+}
 
-      labelForAriaText_: {
-        type: String,
-        computed: 'ariaLabel_(labelForAria, locale, textKey)',
-      },
-    },
-
-    focus() {
-      this.$.button.focus();
-    },
-
-    onClick_(e) {
-      if (this.disabled)
-        e.stopPropagation();
-    },
-
-    onInverseChanged_() {
-      this.$.button.classList.toggle('action-button', this.inverse);
-    },
-
-    ariaLabel_(labelForAria, locale, textKey) {
-      if ((typeof labelForAria !== 'undefined') && (labelForAria !== '')) {
-        return labelForAria;
-      }
-      return this.i18n(textKey);
-    },
-  });
+customElements.define(OobeTextButton.is, OobeTextButton);

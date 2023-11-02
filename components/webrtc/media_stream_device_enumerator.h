@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <string>
 
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
-#include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom-forward.h"
 
 namespace content {
 class BrowserContext;
@@ -34,7 +34,7 @@ class MediaStreamDeviceEnumerator {
       content::BrowserContext* context,
       bool audio,
       bool video,
-      blink::MediaStreamDevices* devices) = 0;
+      blink::mojom::StreamDevices& devices) = 0;
 
   // Helpers for picking particular requested devices, identified by raw id.
   // If the device requested is not available it will return nullptr.

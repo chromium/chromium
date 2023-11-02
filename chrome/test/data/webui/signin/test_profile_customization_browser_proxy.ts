@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,14 @@ export class TestProfileCustomizationBrowserProxy extends TestBrowserProxy
   private profileInfo_: ProfileInfo;
 
   constructor() {
-    super(['done', 'initialized']);
+    super([
+      'done',
+      'initialized',
+      'getAvailableIcons',
+      'skip',
+      'deleteProfile',
+      'setAvatarIcon',
+    ]);
 
     this.profileInfo_ = {
       backgroundColor: '',
@@ -29,7 +36,46 @@ export class TestProfileCustomizationBrowserProxy extends TestBrowserProxy
     return Promise.resolve(this.profileInfo_);
   }
 
+  getAvailableIcons() {
+    this.methodCalled('getAvailableIcons');
+    return Promise.resolve([
+      {
+        url: 'fake-icon-0.png',
+        label: 'fake-icon-0',
+        index: 0,
+        selected: true,
+        isGaiaAvatar: false,
+      },
+      {
+        url: 'fake-icon-1.png',
+        label: 'fake-icon-1',
+        index: 1,
+        selected: false,
+        isGaiaAvatar: false,
+      },
+      {
+        url: 'fake-icon-2.png',
+        label: 'fake-icon-2',
+        index: 2,
+        selected: false,
+        isGaiaAvatar: false,
+      },
+    ]);
+  }
+
   done(profileName: string) {
     this.methodCalled('done', profileName);
+  }
+
+  skip() {
+    this.methodCalled('skip');
+  }
+
+  deleteProfile() {
+    this.methodCalled('deleteProfile');
+  }
+
+  setAvatarIcon(avatarIndex: number) {
+    this.methodCalled('setAvatarIcon', avatarIndex);
   }
 }

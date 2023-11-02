@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,8 +22,8 @@ class GPUSupportedLimits final : public ScriptWrappable {
  public:
   explicit GPUSupportedLimits(const WGPUSupportedLimits& limits);
 
-  static void MakeUndefined(WGPUSupportedLimits* out);
-  static DOMException* Populate(WGPUSupportedLimits* out,
+  static void MakeUndefined(WGPURequiredLimits* out);
+  static DOMException* Populate(WGPURequiredLimits* out,
                                 const Vector<std::pair<String, uint64_t>>& in);
 
   GPUSupportedLimits(const GPUSupportedLimits&) = delete;
@@ -46,9 +46,12 @@ class GPUSupportedLimits final : public ScriptWrappable {
   unsigned minUniformBufferOffsetAlignment() const;
   unsigned minStorageBufferOffsetAlignment() const;
   unsigned maxVertexBuffers() const;
+  uint64_t maxBufferSize() const;
   unsigned maxVertexAttributes() const;
   unsigned maxVertexBufferArrayStride() const;
   unsigned maxInterStageShaderComponents() const;
+  unsigned maxInterStageShaderVariables() const;
+  unsigned maxColorAttachments() const;
   unsigned maxComputeWorkgroupStorageSize() const;
   unsigned maxComputeInvocationsPerWorkgroup() const;
   unsigned maxComputeWorkgroupSizeX() const;

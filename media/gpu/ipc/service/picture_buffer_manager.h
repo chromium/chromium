@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,6 +22,10 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
+namespace gfx {
+struct GpuMemoryBufferHandle;
+}  // namespace gfx
+
 namespace media {
 
 class PictureBufferManager
@@ -33,9 +37,14 @@ class PictureBufferManager
 
   // Creates a PictureBufferManager.
   //
+  // |allocate_gpu_memory_buffers|: If true, the PictureBufferManager will
+  //     allocate a GpuMemoryBuffer for each PictureBuffer in
+  //     CreatePictureBuffers(), and CreateVideoFrame() will return VideoFrames
+  //     backed by the allocated GpuMemoryBuffers.
   // |reuse_picture_buffer_cb|: Called when a picture is returned to the pool
   //     after its VideoFrame has been destructed.
   static scoped_refptr<PictureBufferManager> Create(
+      bool allocate_gpu_memory_buffers,
       ReusePictureBufferCB reuse_picture_buffer_cb);
 
   // Provides access to a CommandBufferHelper. This must be done before calling
@@ -53,7 +62,8 @@ class PictureBufferManager
   // preroll than to hang waiting for an output that can never come.
   virtual bool CanReadWithoutStalling() = 0;
 
-  // Creates and returns a vector of picture buffers, or an empty vector on
+  // Creates and returns a vector of picture buffers and the corresponding
+  // GpuMemoryBuffer (if applicable, see constructor), or an empty vector on
   // failure.
   //
   // |count|: Number of picture buffers to create.
@@ -72,13 +82,13 @@ class PictureBufferManager
   // are not automatically allocated.)
   // TODO(sandersd): The current implementation makes the context current.
   // Consider requiring that the context is already current.
-  virtual std::vector<PictureBuffer> CreatePictureBuffers(
-      uint32_t count,
-      VideoPixelFormat pixel_format,
-      uint32_t planes,
-      gfx::Size texture_size,
-      uint32_t texture_target,
-      VideoDecodeAccelerator::TextureAllocationMode mode) = 0;
+  virtual std::vector<std::pair<PictureBuffer, gfx::GpuMemoryBufferHandle>>
+  CreatePictureBuffers(uint32_t count,
+                       VideoPixelFormat pixel_format,
+                       uint32_t planes,
+                       gfx::Size texture_size,
+                       uint32_t texture_target,
+                       VideoDecodeAccelerator::TextureAllocationMode mode) = 0;
 
   // Dismisses a picture buffer from the pool.
   //

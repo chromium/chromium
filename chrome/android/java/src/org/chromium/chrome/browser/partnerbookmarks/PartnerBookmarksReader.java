@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,7 +23,7 @@ import javax.annotation.concurrent.GuardedBy;
 
 /**
  * Reads bookmarks from the partner content provider (if any).
-*/
+ */
 public class PartnerBookmarksReader {
     private static final String TAG = "PartnerBMReader";
     private static Set<FaviconUpdateObserver> sFaviconUpdateObservers = new HashSet<>();
@@ -270,16 +270,15 @@ public class PartnerBookmarksReader {
 
                 // Check for duplicate ids.
                 if (idMap.containsKey(bookmark.mId)) {
-                    Log.i(TAG, "Duplicate bookmark id: "
-                            +  bookmark.mId + ". Dropping bookmark.");
+                    Log.i(TAG, "Duplicate bookmark id: " + bookmark.mId + ". Dropping bookmark.");
                     continue;
                 }
 
                 // Check for duplicate URLs.
                 if (!bookmark.mIsFolder && urlSet.contains(bookmark.mUrl)) {
-                    Log.i(TAG, "More than one bookmark pointing to "
-                            + bookmark.mUrl
-                            + ". Keeping only the first one for consistency with Chromium.");
+                    Log.i(TAG,
+                            "More than one bookmark pointing to " + bookmark.mUrl + ". "
+                                    + "Keeping only the first one for consistency with Chromium.");
                     continue;
                 }
 
@@ -349,10 +348,8 @@ public class PartnerBookmarksReader {
                 try {
                     synchronized (mRootSync) {
                         bookmark.mNativeId =
-                                onBookmarkPush(
-                                        bookmark.mUrl, bookmark.mTitle,
-                                        bookmark.mIsFolder, bookmark.mParentId,
-                                        bookmark.mFavicon, bookmark.mTouchicon);
+                                onBookmarkPush(bookmark.mUrl, bookmark.mTitle, bookmark.mIsFolder,
+                                        bookmark.mParentId, bookmark.mFavicon, bookmark.mTouchicon);
                     }
                 } catch (IllegalArgumentException e) {
                     Log.w(TAG, "Error inserting bookmark " + bookmark.mTitle, e);
@@ -366,8 +363,8 @@ public class PartnerBookmarksReader {
             if (bookmark.mIsFolder) {
                 for (PartnerBookmark entry : bookmark.mEntries) {
                     if (entry.mParent != bookmark) {
-                        Log.w(TAG, "Hierarchy error in bookmark '"
-                                + bookmark.mTitle + "'. Skipping.");
+                        Log.w(TAG,
+                                "Hierarchy error in bookmark '" + bookmark.mTitle + "'. Skipping.");
                         continue;
                     }
                     entry.mParentId = bookmark.mNativeId;

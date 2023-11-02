@@ -44,7 +44,7 @@
 #include "third_party/blink/renderer/modules/indexeddb/idb_value.h"
 #include "third_party/blink/renderer/modules/indexeddb/web_idb_cursor.h"
 #include "third_party/blink/renderer/modules/indexeddb/web_idb_database.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
@@ -54,8 +54,8 @@ WebIDBCallbacksImpl::WebIDBCallbacksImpl(IDBRequest* request)
     : request_(request) {
   task_runner_ =
       request_->GetExecutionContext()->GetTaskRunner(TaskType::kDatabaseAccess);
-  probe::AsyncTaskScheduled(request_->GetExecutionContext(),
-                            indexed_db_names::kIndexedDB, &async_task_id_);
+  async_task_context_.Schedule(request_->GetExecutionContext(),
+                               indexed_db_names::kIndexedDB);
 }
 
 WebIDBCallbacksImpl::~WebIDBCallbacksImpl() {
@@ -69,7 +69,7 @@ void WebIDBCallbacksImpl::Detach() {
 
 void WebIDBCallbacksImpl::DetachCallbackFromRequest() {
   if (request_) {
-    probe::AsyncTaskCanceled(request_->GetExecutionContext(), &async_task_id_);
+    async_task_context_.Cancel();
 #if DCHECK_IS_ON()
     DCHECK_EQ(static_cast<WebIDBCallbacks*>(this), request_->WebCallbacks());
 #endif  // DCHECK_IS_ON()
@@ -101,8 +101,8 @@ void WebIDBCallbacksImpl::Error(mojom::blink::IDBException code,
     return;
   }
 
-  probe::AsyncTask async_task(request_->GetExecutionContext(), &async_task_id_,
-                              "error");
+  probe::AsyncTask async_task(request_->GetExecutionContext(),
+                              &async_task_context_, "error");
   IDBRequest* request = request_.Get();
   Detach();
   request->HandleResponse(MakeGarbageCollected<DOMException>(
@@ -134,8 +134,8 @@ void WebIDBCallbacksImpl::SuccessCursor(
   }
   DCHECK(value);
 
-  probe::AsyncTask async_task(request_->GetExecutionContext(), &async_task_id_,
-                              "success");
+  probe::AsyncTask async_task(request_->GetExecutionContext(),
+                              &async_task_context_, "success");
   value->SetIsolate(request_->GetIsolate());
   IDBRequest* request = request_.Get();
   Detach();
@@ -165,7 +165,7 @@ void WebIDBCallbacksImpl::SuccessDatabase(
   }
   if (request_) {
     probe::AsyncTask async_task(request_->GetExecutionContext(),
-                                &async_task_id_, "success");
+                                &async_task_context_, "success");
 #if DCHECK_IS_ON()
     DCHECK(!request_->TransactionHasQueuedResults());
 #endif  // DCHECK_IS_ON()
@@ -181,8 +181,8 @@ void WebIDBCallbacksImpl::SuccessKey(std::unique_ptr<IDBKey> key) {
   if (!request_)
     return;
 
-  probe::AsyncTask async_task(request_->GetExecutionContext(), &async_task_id_,
-                              "success");
+  probe::AsyncTask async_task(request_->GetExecutionContext(),
+                              &async_task_context_, "success");
   IDBRequest* request = request_.Get();
   Detach();
   request->HandleResponse(std::move(key));
@@ -194,8 +194,8 @@ void WebIDBCallbacksImpl::SuccessValue(
     return;
 
   std::unique_ptr<IDBValue> value = IDBValue::ConvertReturnValue(return_value);
-  probe::AsyncTask async_task(request_->GetExecutionContext(), &async_task_id_,
-                              "success");
+  probe::AsyncTask async_task(request_->GetExecutionContext(),
+                              &async_task_context_, "success");
   value->SetIsolate(request_->GetIsolate());
   IDBRequest* request = request_.Get();
   Detach();
@@ -207,8 +207,8 @@ void WebIDBCallbacksImpl::SuccessArray(
   if (!request_)
     return;
 
-  probe::AsyncTask async_task(request_->GetExecutionContext(), &async_task_id_,
-                              "success");
+  probe::AsyncTask async_task(request_->GetExecutionContext(),
+                              &async_task_context_, "success");
   Vector<std::unique_ptr<IDBValue>> idb_values;
   idb_values.ReserveInitialCapacity(values.size());
   for (const mojom::blink::IDBReturnValuePtr& value : values) {
@@ -221,12 +221,35 @@ void WebIDBCallbacksImpl::SuccessArray(
   request->HandleResponse(std::move(idb_values));
 }
 
+void WebIDBCallbacksImpl::SuccessArrayArray(
+    Vector<Vector<mojom::blink::IDBReturnValuePtr>> all_values) {
+  if (!request_)
+    return;
+
+  probe::AsyncTask async_task(request_->GetExecutionContext(),
+                              &async_task_context_, "success");
+  Vector<Vector<std::unique_ptr<IDBValue>>> all_idb_values;
+  for (const auto& values : all_values) {
+    Vector<std::unique_ptr<IDBValue>> idb_values;
+    idb_values.ReserveInitialCapacity(values.size());
+    for (const mojom::blink::IDBReturnValuePtr& value : values) {
+      std::unique_ptr<IDBValue> idb_value = IDBValue::ConvertReturnValue(value);
+      idb_value->SetIsolate(request_->GetIsolate());
+      idb_values.push_back(std::move(idb_value));
+    }
+    all_idb_values.push_back(std::move(idb_values));
+  }
+  IDBRequest* request = request_.Get();
+  Detach();
+  request->HandleResponse(std::move(all_idb_values));
+}
+
 void WebIDBCallbacksImpl::SuccessInteger(int64_t value) {
   if (!request_)
     return;
 
-  probe::AsyncTask async_task(request_->GetExecutionContext(), &async_task_id_,
-                              "success");
+  probe::AsyncTask async_task(request_->GetExecutionContext(),
+                              &async_task_context_, "success");
   IDBRequest* request = request_.Get();
   Detach();
   request->HandleResponse(value);
@@ -236,8 +259,8 @@ void WebIDBCallbacksImpl::Success() {
   if (!request_)
     return;
 
-  probe::AsyncTask async_task(request_->GetExecutionContext(), &async_task_id_,
-                              "success");
+  probe::AsyncTask async_task(request_->GetExecutionContext(),
+                              &async_task_context_, "success");
   IDBRequest* request = request_.Get();
   Detach();
   request->HandleResponse();
@@ -250,8 +273,8 @@ void WebIDBCallbacksImpl::SuccessCursorContinue(
   if (!request_)
     return;
 
-  probe::AsyncTask async_task(request_->GetExecutionContext(), &async_task_id_,
-                              "success");
+  probe::AsyncTask async_task(request_->GetExecutionContext(),
+                              &async_task_context_, "success");
   std::unique_ptr<IDBValue> value;
   if (optional_value.has_value()) {
     value = std::move(optional_value.value());
@@ -274,8 +297,8 @@ void WebIDBCallbacksImpl::ReceiveGetAllResults(
     return;
 
   // This may turn into an error, but treat this like a success for now.
-  probe::AsyncTask async_task(request_->GetExecutionContext(), &async_task_id_,
-                              "success");
+  probe::AsyncTask async_task(request_->GetExecutionContext(),
+                              &async_task_context_, "success");
   IDBRequest* request = request_.Get();
   Detach();
   request->HandleResponse(key_only, std::move(receiver));
@@ -285,8 +308,8 @@ void WebIDBCallbacksImpl::Blocked(int64_t old_version) {
   if (!request_)
     return;
 
-  probe::AsyncTask async_task(request_->GetExecutionContext(), &async_task_id_,
-                              "blocked");
+  probe::AsyncTask async_task(request_->GetExecutionContext(),
+                              &async_task_context_, "blocked");
 #if DCHECK_IS_ON()
   DCHECK(!request_->TransactionHasQueuedResults());
 #endif  // DCHECK_IS_ON()
@@ -309,7 +332,7 @@ void WebIDBCallbacksImpl::UpgradeNeeded(
   }
   if (request_) {
     probe::AsyncTask async_task(request_->GetExecutionContext(),
-                                &async_task_id_, "upgradeNeeded");
+                                &async_task_context_, "upgradeNeeded");
 #if DCHECK_IS_ON()
     DCHECK(!request_->TransactionHasQueuedResults());
 #endif  // DCHECK_IS_ON()

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/test/test_layout_manager.h"
 #include "ui/views/test/test_views.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -24,7 +25,7 @@ std::unique_ptr<views::LayoutManager> CreatePreferredSizeLayoutManager() {
       views::BoxLayout::Orientation::kHorizontal);
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kStart);
-  return std::move(layout);
+  return layout;
 }
 
 }  // namespace
@@ -89,7 +90,7 @@ TEST_F(TriViewTest, PaddingBetweenContainers) {
   tri_view_->AddView(TriView::Container::CENTER, center_child);
   tri_view_->AddView(TriView::Container::END, end_child);
 
-  tri_view_->Layout();
+  views::test::RunScheduledLayout(tri_view_.get());
 
   EXPECT_EQ(kStartChildExpectedX, GetBoundsInHost(start_child).x());
   EXPECT_EQ(kCenterChildExpectedX, GetBoundsInHost(center_child).x());
@@ -112,7 +113,7 @@ TEST_F(TriViewTest, VerticalOrientation) {
   tri_view_->AddView(TriView::Container::CENTER, center_child);
   tri_view_->AddView(TriView::Container::END, end_child);
 
-  tri_view_->Layout();
+  views::test::RunScheduledLayout(tri_view_.get());
 
   EXPECT_EQ(0, GetBoundsInHost(start_child).y());
   EXPECT_EQ(kViewWidth, GetBoundsInHost(center_child).y());
@@ -126,7 +127,7 @@ TEST_F(TriViewTest, MainAxisMinSize) {
   views::View* child = new views::StaticSizedView(gfx::Size(10, 10));
   tri_view_->AddView(TriView::Container::CENTER, child);
 
-  tri_view_->Layout();
+  views::test::RunScheduledLayout(tri_view_.get());
 
   EXPECT_EQ(kMinSize.width(), GetBoundsInHost(child).x());
 }
@@ -142,7 +143,7 @@ TEST_F(TriViewTest, MainAxisMaxSize) {
   views::View* center_child = new views::StaticSizedView(gfx::Size(10, 10));
   tri_view_->AddView(TriView::Container::CENTER, center_child);
 
-  tri_view_->Layout();
+  views::test::RunScheduledLayout(tri_view_.get());
 
   EXPECT_EQ(kMaxSize.width(), GetBoundsInHost(center_child).x());
 }
@@ -198,7 +199,7 @@ TEST_F(TriViewTest, Insets) {
   tri_view_->AddView(TriView::Container::END, end_child);
 
   tri_view_->SetFlexForContainer(TriView::Container::CENTER, 1.f);
-  tri_view_->Layout();
+  views::test::RunScheduledLayout(tri_view_.get());
 
   EXPECT_EQ(
       gfx::Rect(kInset, kInset, kStartViewSize.width(), kExpectedViewHeight),
@@ -229,14 +230,14 @@ TEST_F(TriViewTest, InvisibleContainerDoesntTakeUpSpace) {
   tri_view_->AddView(TriView::Container::END, end_child);
 
   tri_view_->SetContainerVisible(TriView::Container::START, false);
-  tri_view_->Layout();
+  views::test::RunScheduledLayout(tri_view_.get());
 
   EXPECT_EQ(gfx::Rect(0, 0, 0, 0), GetBoundsInHost(start_child));
   EXPECT_EQ(0, GetBoundsInHost(center_child).x());
   EXPECT_EQ(kViewWidth, GetBoundsInHost(end_child).x());
 
   tri_view_->SetContainerVisible(TriView::Container::START, true);
-  tri_view_->Layout();
+  views::test::RunScheduledLayout(tri_view_.get());
 
   EXPECT_EQ(0, GetBoundsInHost(start_child).x());
   EXPECT_EQ(kViewWidth, GetBoundsInHost(center_child).x());
@@ -261,7 +262,7 @@ TEST_F(TriViewTest, NonZeroFlex) {
   tri_view_->AddView(TriView::Container::END, end_child);
 
   tri_view_->SetFlexForContainer(TriView::Container::CENTER, 1.f);
-  tri_view_->Layout();
+  views::test::RunScheduledLayout(tri_view_.get());
 
   EXPECT_EQ(kDefaultViewSize, GetBoundsInHost(start_child).size());
   EXPECT_EQ(kExpectedCenterViewSize, GetBoundsInHost(center_child).size());
@@ -286,7 +287,7 @@ TEST_F(TriViewTest, NonZeroFlexTakesPrecedenceOverMinSize) {
 
   tri_view_->SetFlexForContainer(TriView::Container::CENTER, 1.f);
   tri_view_->SetMinSize(TriView::Container::CENTER, kMinCenterSize);
-  tri_view_->Layout();
+  views::test::RunScheduledLayout(tri_view_.get());
 
   EXPECT_EQ(kViewSize, GetBoundsInHost(start_child).size());
   EXPECT_EQ(kExpectedCenterSize,
@@ -312,7 +313,7 @@ TEST_F(TriViewTest, NonZeroFlexTakesPrecedenceOverMaxSize) {
 
   tri_view_->SetFlexForContainer(TriView::Container::CENTER, 1.f);
   tri_view_->SetMaxSize(TriView::Container::CENTER, kMaxCenterSize);
-  tri_view_->Layout();
+  views::test::RunScheduledLayout(tri_view_.get());
 
   EXPECT_EQ(kViewSize, GetBoundsInHost(start_child).size());
   EXPECT_EQ(kExpectedCenterSize,
@@ -329,16 +330,19 @@ TEST_F(TriViewTest, ChildViewsPreferredSizeChanged) {
   tri_view_->SetContainerLayout(TriView::Container::START,
                                 CreatePreferredSizeLayoutManager());
   tri_view_->SetFlexForContainer(TriView::Container::CENTER, 1.f);
-  tri_view_->Layout();
 
   views::ProportionallySizedView* child_view =
       new views::ProportionallySizedView(1);
   tri_view_->AddView(TriView::Container::START, child_view);
+  // Adding a child view invalidates the layout. Run scheduled layouts.
+  views::test::RunScheduledLayout(tri_view_.get());
 
   child_view->SetPreferredWidth(1);
+  views::test::RunScheduledLayout(child_view);
   EXPECT_EQ(child_view->GetPreferredSize(), child_view->size());
 
   child_view->SetPreferredWidth(2);
+  views::test::RunScheduledLayout(child_view);
   EXPECT_EQ(child_view->GetPreferredSize(), child_view->size());
 }
 
@@ -377,7 +381,7 @@ TEST_F(TriViewTest, ChangingContainersVisibilityPerformsLayout) {
   tri_view_->AddView(TriView::Container::CENTER, center_child);
   tri_view_->AddView(TriView::Container::END, end_child);
 
-  tri_view_->Layout();
+  views::test::RunScheduledLayout(tri_view_.get());
 
   EXPECT_EQ(gfx::Size(kViewWidth, kViewHeight), center_child->size());
 

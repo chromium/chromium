@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/android/media_codec_bridge_impl.h"
 #include "media/base/android/media_codec_util.h"
@@ -140,17 +141,25 @@ std::vector<SupportedVideoDecoderConfig> GetSupportedConfigsInternal(
   }
 
   if (device_info->IsAv1DecoderAvailable()) {
-    // Technically we should check which profiles are supported, but since we
-    // don't have an AV1 SW decoder, just allow them all. See notes below for
-    // H264 profiles on the reasons why.
-    supported_configs.emplace_back(AV1PROFILE_MIN, AV1PROFILE_MAX,
-                                   gfx::Size(0, 0), gfx::Size(3840, 2160),
-                                   true,    // allow_encrypted
-                                   false);  // require_encrypted
-    supported_configs.emplace_back(AV1PROFILE_MIN, AV1PROFILE_MAX,
-                                   gfx::Size(0, 0), gfx::Size(2160, 3840),
-                                   true,    // allow_encrypted
-                                   false);  // require_encrypted
+    if (device_info->IsDecoderKnownUnaccelerated(VideoCodec::kAV1)) {
+      supported_configs.emplace_back(AV1PROFILE_MIN, AV1PROFILE_MAX,
+                                     gfx::Size(0, 0), gfx::Size(3840, 2160),
+                                     true,   // allow_encrypted
+                                     true);  // require_encrypted
+      supported_configs.emplace_back(AV1PROFILE_MIN, AV1PROFILE_MAX,
+                                     gfx::Size(0, 0), gfx::Size(2160, 3840),
+                                     true,   // allow_encrypted
+                                     true);  // require_encrypted
+    } else {
+      supported_configs.emplace_back(AV1PROFILE_MIN, AV1PROFILE_MAX,
+                                     gfx::Size(0, 0), gfx::Size(3840, 2160),
+                                     true,    // allow_encrypted
+                                     false);  // require_encrypted
+      supported_configs.emplace_back(AV1PROFILE_MIN, AV1PROFILE_MAX,
+                                     gfx::Size(0, 0), gfx::Size(2160, 3840),
+                                     true,    // allow_encrypted
+                                     false);  // require_encrypted
+    }
   }
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
@@ -168,10 +177,12 @@ std::vector<SupportedVideoDecoderConfig> GetSupportedConfigsInternal(
                                  false);  // require_encrypted
 
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-  supported_configs.emplace_back(HEVCPROFILE_MIN, HEVCPROFILE_MAX,
-                                 gfx::Size(0, 0), gfx::Size(3840, 2160),
-                                 true,    // allow_encrypted
-                                 false);  // require_encrypted
+  if (base::FeatureList::IsEnabled(kPlatformHEVCDecoderSupport)) {
+    supported_configs.emplace_back(HEVCPROFILE_MIN, HEVCPROFILE_MAX,
+                                   gfx::Size(0, 0), gfx::Size(3840, 2160),
+                                   true,    // allow_encrypted
+                                   false);  // require_encrypted
+  }
 #endif
 #if BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
   // Technically we should check which profiles are supported, but we can
@@ -309,7 +320,7 @@ void MediaCodecVideoDecoder::DestroyAsync(
 
   // Cancel callbacks we no longer want.
   self->codec_allocator_weak_factory_.InvalidateWeakPtrs();
-  self->CancelPendingDecodes(DecodeStatus::ABORTED);
+  self->CancelPendingDecodes(DecoderStatus::Codes::kAborted);
   self->StartDrainingCodec(DrainType::kForDestroy);
 
   // Per the WARNING above. Validate that no draining work remains.
@@ -336,7 +347,7 @@ void MediaCodecVideoDecoder::Initialize(const VideoDecoderConfig& config,
                                 << config.AsHumanReadableString();
     DVLOG(1) << "Invalid configuration.";
     BindToCurrentLoop(std::move(init_cb))
-        .Run(StatusCode::kDecoderUnsupportedConfig);
+        .Run(DecoderStatus::Codes::kUnsupportedConfig);
     return;
   }
 
@@ -351,7 +362,7 @@ void MediaCodecVideoDecoder::Initialize(const VideoDecoderConfig& config,
     MEDIA_LOG(INFO, media_log_) << "Video configuration is not valid: "
                                 << config.AsHumanReadableString();
     BindToCurrentLoop(std::move(init_cb))
-        .Run(StatusCode::kDecoderUnsupportedConfig);
+        .Run(DecoderStatus::Codes::kUnsupportedConfig);
     return;
   }
 
@@ -362,7 +373,7 @@ void MediaCodecVideoDecoder::Initialize(const VideoDecoderConfig& config,
                                 << decoder_config_.AsHumanReadableString()
                                 << " -> " << config.AsHumanReadableString();
     BindToCurrentLoop(std::move(init_cb))
-        .Run(StatusCode::kDecoderCantChangeCodec);
+        .Run(DecoderStatus::Codes::kCantChangeCodec);
     return;
   }
   decoder_config_ = config;
@@ -381,8 +392,10 @@ void MediaCodecVideoDecoder::Initialize(const VideoDecoderConfig& config,
   // We only support setting CDM at first initialization. Even if the initial
   // config is clear, we'll still try to set CDM since we may switch to an
   // encrypted config later.
+  const int width = decoder_config_.coded_size().width();
   if (first_init && cdm_context && cdm_context->GetMediaCryptoContext()) {
     DCHECK(media_crypto_.is_null());
+    last_width_ = width;
     SetCdm(cdm_context, std::move(init_cb));
     return;
   }
@@ -391,14 +404,13 @@ void MediaCodecVideoDecoder::Initialize(const VideoDecoderConfig& config,
     DVLOG(1) << "No MediaCrypto to handle encrypted config";
     MEDIA_LOG(INFO, media_log_) << "No MediaCrypto to handle encrypted config";
     BindToCurrentLoop(std::move(init_cb))
-        .Run(StatusCode::kDecoderMissingCdmForEncryptedContent);
+        .Run(DecoderStatus::Codes::kUnsupportedEncryptionMode);
     return;
   }
 
   // Do the rest of the initialization lazily on the first decode.
-  BindToCurrentLoop(std::move(init_cb)).Run(OkStatus());
+  BindToCurrentLoop(std::move(init_cb)).Run(DecoderStatus::Codes::kOk);
 
-  const int width = decoder_config_.coded_size().width();
   // On re-init, reallocate the codec if the size has changed too much.
   // Restrict this behavior to Q, where the behavior changed.
   if (first_init) {
@@ -413,6 +425,9 @@ void MediaCodecVideoDecoder::Initialize(const VideoDecoderConfig& config,
     // sure, request a deferred flush.
     deferred_flush_pending_ = true;
     deferred_reallocation_pending_ = true;
+    // Since this will re-use the same surface, allow a retry to work around a
+    // race condition in the android framework.
+    should_retry_codec_allocation_ = true;
     last_width_ = width;
   }  // else leave |last_width_| unmodified, since we're re-using the codec.
 }
@@ -451,14 +466,14 @@ void MediaCodecVideoDecoder::OnMediaCryptoReady(
     if (decoder_config_.is_encrypted()) {
       LOG(ERROR) << "MediaCrypto is not available";
       EnterTerminalState(State::kError, "MediaCrypto is not available");
-      std::move(init_cb).Run(StatusCode::kDecoderMissingCdmForEncryptedContent);
+      std::move(init_cb).Run(DecoderStatus::Codes::kUnsupportedEncryptionMode);
       return;
     }
 
     // MediaCrypto is not available, but the stream is clear. So we can still
     // play the current stream. But if we switch to an encrypted stream playback
     // will fail.
-    std::move(init_cb).Run(OkStatus());
+    std::move(init_cb).Run(DecoderStatus::Codes::kOk);
     return;
   }
 
@@ -473,7 +488,7 @@ void MediaCodecVideoDecoder::OnMediaCryptoReady(
           : SurfaceChooserHelper::SecureSurfaceMode::kRequested);
 
   // Signal success, and create the codec lazily on the first decode.
-  std::move(init_cb).Run(OkStatus());
+  std::move(init_cb).Run(DecoderStatus::Codes::kOk);
 }
 
 void MediaCodecVideoDecoder::OnCdmContextEvent(CdmContext::Event event) {
@@ -703,6 +718,21 @@ void MediaCodecVideoDecoder::OnCodecConfigured(
     std::unique_ptr<MediaCodecBridge> codec) {
   DCHECK(!codec_);
   DCHECK_EQ(state_, State::kRunning);
+  bool should_retry_codec_allocation = should_retry_codec_allocation_;
+  should_retry_codec_allocation_ = false;
+
+  // In rare cases, the framework can fail transiently when trying to re-use a
+  // surface.  If we're in one of those cases, then retry codec allocation.
+  // This only happens on R and S, so skip it otherwise.
+  if (!codec && should_retry_codec_allocation &&
+      device_info_->SdkVersion() >= base::android::SDK_VERSION_R &&
+      device_info_->SdkVersion() <= 32 /* SDK_VERSION_S_V2 */
+  ) {
+    // We might want to post this with a short delay, but there is already quite
+    // a lot of overhead in codec allocation.
+    CreateCodec();
+    return;
+  }
 
   if (!codec) {
     EnterTerminalState(State::kError, "Unable to allocate codec");
@@ -716,7 +746,7 @@ void MediaCodecVideoDecoder::OnCodecConfigured(
                           BindToCurrentLoop(base::BindRepeating(
                               &MediaCodecVideoDecoder::StartTimerOrPumpCodec,
                               weak_factory_.GetWeakPtr()))),
-      base::SequencedTaskRunnerHandle::Get());
+      base::SequencedTaskRunnerHandle::Get(), decoder_config_.coded_size());
 
   // If the target surface changed while codec creation was in progress,
   // transition to it immediately.
@@ -736,7 +766,7 @@ void MediaCodecVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
                                     DecodeCB decode_cb) {
   DVLOG(3) << __func__ << ": " << buffer->AsHumanReadableString();
   if (state_ == State::kError) {
-    std::move(decode_cb).Run(DecodeStatus::DECODE_ERROR);
+    std::move(decode_cb).Run(DecoderStatus::Codes::kFailed);
     return;
   }
   pending_decodes_.emplace_back(std::move(buffer), std::move(decode_cb));
@@ -774,6 +804,8 @@ void MediaCodecVideoDecoder::FlushCodec() {
   if (deferred_reallocation_pending_) {
     deferred_reallocation_pending_ = false;
     ReleaseCodec();
+    // Re-initializing the codec with the same surface may need to retry.
+    should_retry_codec_allocation_ = !SurfaceTransitionPending();
     CreateCodec();
   }
 
@@ -932,7 +964,7 @@ bool MediaCodecVideoDecoder::QueueInput() {
     DCHECK(!eos_decode_cb_);
     eos_decode_cb_ = std::move(pending_decode.decode_cb);
   } else {
-    std::move(pending_decode.decode_cb).Run(DecodeStatus::OK);
+    std::move(pending_decode.decode_cb).Run(DecoderStatus::Codes::kOk);
   }
   pending_decodes_.pop_front();
   return true;
@@ -1039,7 +1071,7 @@ void MediaCodecVideoDecoder::RunEosDecodeCb(int reset_generation) {
   //  * After a Reset(), the reset generations won't match, but we might already
   //    have a new |eos_decode_cb_| for the new generation.
   if (reset_generation == reset_generation_ && eos_decode_cb_)
-    std::move(eos_decode_cb_).Run(DecodeStatus::OK);
+    std::move(eos_decode_cb_).Run(DecoderStatus::Codes::kOk);
 }
 
 void MediaCodecVideoDecoder::ForwardVideoFrame(
@@ -1055,6 +1087,12 @@ void MediaCodecVideoDecoder::ForwardVideoFrame(
   UMA_HISTOGRAM_CUSTOM_TIMES("Media.MCVD.ForwardVideoFrameTiming", duration,
                              base::Milliseconds(1), base::Milliseconds(100),
                              25);
+
+  // Attach the HDR metadata if the color space got this far and is still an HDR
+  // color space.  Note that it might be converted to something else along the
+  // way, often sRGB.  In that case, don't confuse things with HDR metadata.
+  if (frame->ColorSpace().IsHDR() && decoder_config_.hdr_metadata())
+    frame->set_hdr_metadata(decoder_config_.hdr_metadata());
 
   // No |frame| indicates an error creating it.
   if (!frame) {
@@ -1080,7 +1118,7 @@ void MediaCodecVideoDecoder::Reset(base::OnceClosure closure) {
   DCHECK(!reset_cb_);
   reset_generation_++;
   reset_cb_ = std::move(closure);
-  CancelPendingDecodes(DecodeStatus::ABORTED);
+  CancelPendingDecodes(DecoderStatus::Codes::kAborted);
   StartDrainingCodec(DrainType::kForReset);
 }
 
@@ -1163,7 +1201,7 @@ void MediaCodecVideoDecoder::EnterTerminalState(State state,
   target_surface_bundle_ = nullptr;
   texture_owner_bundle_ = nullptr;
   if (state == State::kError)
-    CancelPendingDecodes(DecodeStatus::DECODE_ERROR);
+    CancelPendingDecodes({DecoderStatus::Codes::kFailed, reason});
   if (drain_type_)
     OnCodecDrained();
 }
@@ -1172,7 +1210,7 @@ bool MediaCodecVideoDecoder::InTerminalState() {
   return state_ == State::kSurfaceDestroyed || state_ == State::kError;
 }
 
-void MediaCodecVideoDecoder::CancelPendingDecodes(DecodeStatus status) {
+void MediaCodecVideoDecoder::CancelPendingDecodes(DecoderStatus status) {
   for (auto& pending_decode : pending_decodes_)
     std::move(pending_decode.decode_cb).Run(status);
   pending_decodes_.clear();

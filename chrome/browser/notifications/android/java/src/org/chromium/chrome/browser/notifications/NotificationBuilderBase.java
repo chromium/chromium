@@ -1,10 +1,9 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.notifications;
 
-import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -19,6 +18,7 @@ import android.os.Build;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.app.NotificationCompat;
 import androidx.core.graphics.drawable.IconCompat;
@@ -508,7 +508,7 @@ public abstract class NotificationBuilderBase {
      * provided and the API level is high enough, otherwise the resource id is used.
      * @param iconBitmap should be used only on devices that support bitmap icons.
      */
-    @TargetApi(Build.VERSION_CODES.M) // For the Icon class.
+    @RequiresApi(Build.VERSION_CODES.M) // For the Icon class.
     protected static void setStatusBarIcon(
             NotificationWrapperBuilder builder, int iconId, @Nullable Bitmap iconBitmap) {
         if (iconBitmap != null) {

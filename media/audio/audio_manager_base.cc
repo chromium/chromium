@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,10 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/observer_list.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
@@ -26,7 +29,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #include "base/logging.h"
-#include "build/chromeos_buildflags.h"
 #include "media/audio/audio_input_stream_data_interceptor.h"
 
 namespace media {
@@ -95,26 +97,6 @@ struct AudioManagerBase::DispatcherParams {
   const AudioParameters output_params;
   const std::string output_device_id;
   std::unique_ptr<AudioOutputDispatcher> dispatcher;
-};
-
-class AudioManagerBase::CompareByParams {
- public:
-  explicit CompareByParams(const DispatcherParams* dispatcher)
-      : dispatcher_(dispatcher) {}
-  bool operator()(
-      const std::unique_ptr<DispatcherParams>& dispatcher_in) const {
-    // We will reuse the existing dispatcher when:
-    // 1) Unified IO is not used, input_params and output_params of the
-    //    existing dispatcher are the same as the requested dispatcher.
-    // 2) Unified IO is used, input_params and output_params of the existing
-    //    dispatcher are the same as the request dispatcher.
-    return (dispatcher_->input_params.Equals(dispatcher_in->input_params) &&
-            dispatcher_->output_params.Equals(dispatcher_in->output_params) &&
-            dispatcher_->output_device_id == dispatcher_in->output_device_id);
-  }
-
- private:
-  const DispatcherParams* dispatcher_;
 };
 
 AudioManagerBase::AudioManagerBase(std::unique_ptr<AudioThread> audio_thread,
@@ -228,6 +210,10 @@ AudioOutputStream* AudioManagerBase::MakeAudioOutputStream(
       break;
     case AudioParameters::AUDIO_BITSTREAM_AC3:
     case AudioParameters::AUDIO_BITSTREAM_EAC3:
+    case AudioParameters::AUDIO_BITSTREAM_DTS:
+    case AudioParameters::AUDIO_BITSTREAM_DTS_HD:
+    case AudioParameters::AUDIO_BITSTREAM_DTSX_P2:
+    case AudioParameters::AUDIO_BITSTREAM_IEC61937:
       stream = MakeBitstreamOutputStream(params, device_id, log_callback);
       break;
     case AudioParameters::AUDIO_FAKE:
@@ -343,7 +329,7 @@ AudioOutputStream* AudioManagerBase::MakeAudioOutputStreamProxy(
   std::string output_device_id =
       AudioDeviceDescription::IsDefaultDevice(device_id)
           ?
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
           // On ChromeOS, it is expected that, if the default device is given,
           // no specific device ID should be used since the actual output device
           // should change dynamically if the system default device changes.
@@ -419,12 +405,21 @@ AudioOutputStream* AudioManagerBase::MakeAudioOutputStreamProxy(
     NOTREACHED();
   }
 
-  std::unique_ptr<DispatcherParams> dispatcher_params =
-      std::make_unique<DispatcherParams>(params, output_params,
-                                         output_device_id);
+  auto dispatcher_params = std::make_unique<DispatcherParams>(
+      params, output_params, output_device_id);
 
-  auto it = std::find_if(output_dispatchers_.begin(), output_dispatchers_.end(),
-                         CompareByParams(dispatcher_params.get()));
+  auto it = base::ranges::find_if(
+      output_dispatchers_,
+      [&](const std::unique_ptr<DispatcherParams>& dispatcher) {
+        // We will reuse the existing dispatcher when:
+        // 1) Unified IO is not used, input_params and output_params of the
+        //    existing dispatcher are the same as the requested dispatcher.
+        // 2) Unified IO is used, input_params and output_params of the existing
+        //    dispatcher are the same as the request dispatcher.
+        return params.Equals(dispatcher->input_params) &&
+               output_params.Equals(dispatcher->output_params) &&
+               output_device_id == dispatcher->output_device_id;
+      });
   if (it != output_dispatchers_.end())
     return (*it)->dispatcher->CreateStreamProxy();
 
@@ -615,18 +610,22 @@ void AudioManagerBase::InitializeDebugRecording() {
   }
 
   DCHECK(!debug_recording_manager_);
-  debug_recording_manager_ = CreateAudioDebugRecordingManager(GetTaskRunner());
+  debug_recording_manager_ = CreateAudioDebugRecordingManager();
 }
 
 std::unique_ptr<AudioDebugRecordingManager>
-AudioManagerBase::CreateAudioDebugRecordingManager(
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  return std::make_unique<AudioDebugRecordingManager>(std::move(task_runner));
+AudioManagerBase::CreateAudioDebugRecordingManager() {
+  return std::make_unique<AudioDebugRecordingManager>();
 }
 
 AudioDebugRecordingManager* AudioManagerBase::GetAudioDebugRecordingManager() {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
   return debug_recording_manager_.get();
+}
+
+void AudioManagerBase::SetAecDumpRecordingManager(
+    base::WeakPtr<AecdumpRecordingManager>) {
+  // This is no-op by default.
 }
 
 }  // namespace media

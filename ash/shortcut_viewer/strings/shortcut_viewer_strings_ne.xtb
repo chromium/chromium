@@ -5,7 +5,7 @@
 <translation id="104962181688258143">फाइल एप खोल्नुहोस्‌</translation>
 <translation id="1122869341872663659"><ph name="QUERY" /> का <ph name="N" /> खोजका परिणाम देखाइँदै</translation>
 <translation id="1195667586424773550">लिंकलाई ट्याबको ठेगाना पट्टीमा ड्र्याग गर्नुहोस्</translation>
-<translation id="1251638888133819822">पूर्ण स्क्रिनसम्बन्धी म्याग्निफायरलाई सक्रिय गर्नुहोस्‌ वा निष्क्रिय पार्नुहोस्</translation>
+<translation id="1251638888133819822">पूर्ण स्क्रिनसम्बन्धी म्याग्निफायरलाई अन गर्नुहोस्‌ वा निष्क्रिय पार्नुहोस्</translation>
 <translation id="1290373024480130896"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="MODIFIER3" /><ph name="SEPARATOR3" /><ph name="KEY" /></translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1299858300159559687">आफ्नो हालको पृष्ठ प्रिन्ट गर्नुहोस्</translation>
@@ -17,6 +17,7 @@
 <translation id="1516966594427080024">इन्कोग्निटो मोडमा नयाँ विन्डो खोलियोस्</translation>
 <translation id="152892567002884378">भोल्युम बढाउनुहोस्</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, त्यसपछि <ph name="ESC" /></translation>
+<translation id="1586324912145647027">डेस्क १ देखि ८ मा जानुहोस्</translation>
 <translation id="1652741121070700329">अघिल्लो शब्दको सुरुमा सार्नुहोस्‌</translation>
 <translation id="1679841710523778799">उज्यालोपना बढाउनुहोस्‌</translation>
 <translation id="168356808214100546"><ph name="ALT" /> थिचिराख्नुहोस्, आफूले खोल्न चाहेको विन्डोमा नपुगुन्जेल <ph name="TAB" /> मा ट्याप गर्नुहोस्‌, त्यसपछि छाड्नुहोस्‌।</translation>
@@ -41,12 +42,12 @@
 <translation id="2354531887393764880">अवधि</translation>
 <translation id="2382644247745281995">किबोर्डको हालको लेआउटमा समर्थित छैन</translation>
 <translation id="2397416548179033562">Chrome मेनु देखाउनुहोस्</translation>
-<translation id="2424073332829844142">क्याप्स लक सक्रिय गर्नुहोस् र निष्क्रिय पार्नुहोस्</translation>
+<translation id="2424073332829844142">क्याप्स लक अन गर्नुहोस् र निष्क्रिय पार्नुहोस्</translation>
 <translation id="2441202986792279177">द्रुत गतिमा विन्डोहरूका बीचमा बदल्नुहोस्</translation>
 <translation id="2454251766545114447">जुम आउट गर्ने विकल्प देखाउनुहोस्</translation>
-<translation id="2478303094958140141">ChromeVox (बोली प्रतिक्रिया) सक्रिय गर्नुहोस् वा निष्क्रिय पार्नुहोस्</translation>
+<translation id="2478303094958140141">ChromeVox (बोली प्रतिक्रिया) अन गर्नुहोस् वा निष्क्रिय पार्नुहोस्</translation>
 <translation id="2480851840841871861">Google सहायक खोल्नुहोस्</translation>
-<translation id="2488661730534396940">बायाँतिरको डेस्क सक्रिय गर्नुहोस्</translation>
+<translation id="2488661730534396940">बायाँतिरको डेस्क अन गर्नुहोस्</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2516999188535378855">Diagnostics एप खोल्नुहोस्</translation>
 <translation id="2530339807289914946">वेब पृष्ठमा तलतिर स्क्रोल गर्नुहोस्</translation>
@@ -70,6 +71,7 @@
 <translation id="3140353188828248647">फोकस ठेगाना पट्टी</translation>
 <translation id="3256109297135787951">आफ्नो सेल्फमा भएको कुनै वस्तुबाट हाइलाइट हटाउनुहोस्‌</translation>
 <translation id="3288816184963444640">हालको विन्डो बन्द गर्नुहोस्</translation>
+<translation id="3322797428033495633">Picture-in-picture विन्डोमा फोकस गर्नुहोस्</translation>
 <translation id="3350805006883559974">सक्रिय विन्डो सबैभन्दा माथि देखाइयोस्</translation>
 <translation id="3407560819924487926">कार्य प्रबन्धकलाई अगाडि ल्याउनुहोस्‌</translation>
 <translation id="3417835166382867856">ट्याब खोज्नुहोस्</translation>
@@ -91,6 +93,7 @@
 <translation id="3949671998904569433">अल्पविराम</translation>
 <translation id="3976863468609830880">आफ्नो सेल्फमा भएको अन्तिम आइकनमा क्लिक गर्नुहोस्‌</translation>
 <translation id="3994783594793697310">जुमको स्तर देखाउनुहोस् नामक विकल्प रिसेट गर्नुहोस्</translation>
+<translation id="4026837045671473537">कलर इन्भर्सन मोड अन गर्नुहोस्</translation>
 <translation id="4026843240379844265">सक्रिय विन्डोलाई एउटा प्रदर्शनबाट अर्कोमा सार्नुहोस्</translation>
 <translation id="4035482366624727273">पृष्ठमा भएका सबै कुराहरू चयन गर्नुहोस्</translation>
 <translation id="4060703249685950734">आफूले पछिल्लोपटक बन्द गरेको ट्याब वा विन्डो पुनः खोल्नुहोस्‌</translation>
@@ -110,7 +113,7 @@
 <translation id="4628718545549558538">वस्तुस्थिति क्षेत्र खोल्नुहोस् (यो तपाईंको खाताको तस्बिर देखिने ठाउँ हो)</translation>
 <translation id="4698850295812410683">स्टाइलस उपकरणहरू देखाउनुहोस्</translation>
 <translation id="4801989101741319327">अर्को शब्दको अन्त्यमा सार्नुहोस्</translation>
-<translation id="4866066940972151697">दायाँतिरको डेस्क सक्रिय गर्नुहोस्</translation>
+<translation id="4866066940972151697">दायाँतिरको डेस्क अन गर्नुहोस्</translation>
 <translation id="4916163929714267752">यो लिंकलाई नयाँ विन्डोमा खोल्नुहोस्</translation>
 <translation id="492453977506755176">क्याप्चर मोड की</translation>
 <translation id="5030659775136592441">पुस्तक चिन्ह प्रबन्धक देखाउनुहोस्‌</translation>
@@ -122,13 +125,14 @@
 <translation id="5236674127086649162">क्यास गरिएका सामग्री प्रयोग नगरिकन आफ्नो हालको पृष्ठ पुनः लोड गर्नुहोस्</translation>
 <translation id="526651782186312376">हरफको सुरुवातसम्मको पाठ चयन गर्नुहोस्</translation>
 <translation id="5316716239522500219">दर्पण मनिटर</translation>
-<translation id="539072479502328326">डक गरिएको म्याग्निफायरलाई सक्रिय गर्नुहोस्‌ वा निष्क्रिय पार्नुहोस्</translation>
+<translation id="539072479502328326">डक गरिएको म्याग्निफायरलाई अन गर्नुहोस्‌ वा निष्क्रिय पार्नुहोस्</translation>
 <translation id="5466615362193675484">लक मोडको आकार बदल्न यो मेनु टगल गर्नुहोस्</translation>
 <translation id="5541719484267030947">ट्याब ड्र्याग गर्दा <ph name="ESC" /> थिच्नुहोस्</translation>
 <translation id="5554139136362089836">हालको पृष्ठमा खोज्नुहोस्</translation>
 <translation id="5563050856984839829"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" /> थिचेर कुनै लिंकमा क्लिक गर्नुहोस्</translation>
 <translation id="561814908794220892">वेबपृष्ठलाई नयाँ ट्याबमा खोल्नुहोस्</translation>
 <translation id="5620219513321115856">सक्रिय विन्डो दायाँपट्टीको डेस्कमा सार्नुहोस्</translation>
+<translation id="5699366815052349604">सबै डेस्कमा सक्रिय विन्डो असाइन गर्नुहोस्</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> वा <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">लिंकलाई ट्याबमा खोल्नुहोस्</translation>
 <translation id="5757474750054631686">किबोर्डको उज्यालो कम गर्नुहोस्‌ (पछाडिको भागमा प्रकाशको सुविधा भएका किबोर्डहरूका लागि मात्र)</translation>
@@ -138,7 +142,6 @@
 <translation id="5921745308587794300">विन्डोलाई घुमाउनुहोस्</translation>
 <translation id="5926306472221400972">फुल स्क्रिनको स्क्रिनसट खिच्नुहोस्</translation>
 <translation id="6022924867608035986">खोजबाकसको पाठ खाली गर्नुहोस्</translation>
-<translation id="6045998054441862242">उच्च कन्ट्रास्ट मोड सक्रिय गर्नुहोस्‌</translation>
 <translation id="6052614013050385269">कुनै लिंकमा दायाँ क्लिक गर्नुहोस्‌</translation>
 <translation id="6129953537138746214">क्षेत्र</translation>
 <translation id="6143669479988153888">पृष्ठमा जुम इन गर्नुहोस्</translation>
@@ -155,6 +158,7 @@
 <translation id="6445033640292336367">ट्याबलाई यसको मूल स्थितिमा फर्काउनुहोस्</translation>
 <translation id="6474744297082284761">जुम आउट गर्नुहोस्‌ (डक गरिँदा वा पूर्ण स्क्रिनसम्बन्धी म्याग्निफायरहरूलाई सक्षम पारिँदा)</translation>
 <translation id="649811797655257835">फाइल चयन गर्नुहोस्, त्यसपछि <ph name="SPACE" /> थिच्नुहोस्</translation>
+<translation id="6515089016094047210">पात्रो विजेट खोल्नुहोस् वा बन्द गर्नुहोस्।</translation>
 <translation id="6551886416582667425">स्क्रिनको केही भागको स्क्रिनसट खिच्नुहोस्/रेकर्डिङ गर्नुहोस्</translation>
 <translation id="6556040137485212400">धेरै लामो समय सम्म प्रयोग नगरिएको विन्डो खोल्नुहोस्‌</translation>
 <translation id="666343722268997814">हाइलाइट गरिएको वस्तुमा दायाँ क्लिक गर्दा खुल्ने मेनु खोल्नुहोस्</translation>
@@ -198,12 +202,12 @@
 <translation id="8388247778047144397">लिंकलाई ट्याब स्ट्रिपमा रहेको खाली क्षेत्रमा ड्र्याग गर्नुहोस्</translation>
 <translation id="8389638407792712197">नयाँ विन्डो खोल्नुहोस्</translation>
 <translation id="8429696719963529183">F कुञ्जीहरू प्रयोग गर्नुहोस्‌ (F1 देखि F12 सम्म)</translation>
-<translation id="8537650670971624753">खोज मोडबाट बाहिर निस्कनुहोस्</translation>
 <translation id="85690795166292698">लिंकलाई नयाँ ट्याबमा खोल्नुहोस्</translation>
 <translation id="8609384513243082612">नयाँ ट्याब खोल्नुहोस्</translation>
 <translation id="8644639153978066712">लुकाइएका फाइलहरूलाई फाइल एपमा देखाउनुहोस्‌</translation>
 <translation id="8717459106217102612">अघिल्लो शब्द वा अक्षर चयन गर्नुहोस्</translation>
 <translation id="8727232706774971183">आफ्ना सूचनाहरू हेर्नुहोस्</translation>
+<translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> १ देखि ८ सम्म</translation>
 <translation id="8855885154700222542">फुल स्क्रिन नामक कुञ्जी</translation>
 <translation id="8881584919399569791">सक्रिय विन्डो बायाँपट्टीको डेस्कमा सार्नुहोस्</translation>
 <translation id="88986195241502842">पृष्ठ तल</translation>

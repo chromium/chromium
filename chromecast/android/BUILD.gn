@@ -1,26 +1,21 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/config/android/abi.gni")
 import("//build/config/sysroot.gni")
+import("//build/partitioned_shared_library.gni")
 import("//chromecast/chromecast.gni")
 import("//media/media_options.gni")
 
 # These targets shall only be referenced on Android builds.
 assert(is_android)
 
-cast_shared_library("libcast_shell_android") {
-  # TODO: Remove the ldflags after migrating away from protobuf_lite to
-  # protobuf_full.
-  ldflags = [ "-Wl,-z,muldefs" ]
-
-  sources = [ "//chromecast/app/android/cast_jni_loader.cc" ]
-
-  deps = [
+# Deps shared by libcast_browser_android and libcast_shell_android.
+group("common_apk_deps") {
+  public_deps = [
     "//base",
     "//chromecast:cast_shell_jni_registration",
-    "//chromecast:cast_shell_lib",
     "//chromecast:chromecast_buildflags",
     "//chromecast/app",
     "//chromecast/app:cast_crash_client",
@@ -32,6 +27,7 @@ cast_shared_library("libcast_shell_android") {
     "//chromecast/media/cma/backend/android:cast_media_android",
     "//components/crash/android:crash_android",
     "//components/minidump_uploader",
+    "//components/module_installer/android:native",
     "//content/public/app",
     "//content/public/browser",
     "//skia",
@@ -40,7 +36,7 @@ cast_shared_library("libcast_shell_android") {
   # Explicit dependencies required for JNI registration to be able to find the
   # native side functions.
   if (is_component_build) {
-    deps += [
+    public_deps += [
       "//device/bluetooth",
       "//device/gamepad",
       "//media/midi",
@@ -49,6 +45,56 @@ cast_shared_library("libcast_shell_android") {
       "//ui/shell_dialogs",
     ]
   }
+}
+
+shared_library("libcast_shell_android") {
+  # TODO: Remove the ldflags after migrating away from protobuf_lite to
+  # protobuf_full.
+  ldflags = [ "-Wl,-z,muldefs" ]
+
+  sources = [ "//chromecast/app/android/cast_jni_loader.cc" ]
+  configs += [ "//chromecast:cast_config" ]
+  configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
+
+  deps = [
+    ":common_apk_deps",
+    "//chromecast:cast_shell_lib",
+  ]
+}
+
+shared_library("libcast_browser_android") {
+  # TODO: Remove the ldflags after migrating away from protobuf_lite to
+  # protobuf_full.
+  ldflags = [ "-Wl,-z,muldefs" ]
+
+  sources = [ "//chromecast/app/android/cast_jni_loader.cc" ]
+  configs += [ "//chromecast:cast_config" ]
+  configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
+
+  deps = [
+    ":common_apk_deps",
+    "//chromecast:cast_shell_lib_simple",
+    "//components/module_installer/android:native",
+  ]
+}
+
+group("native") {
+  deps = [ ":cast_browser" ]
+}
+
+component("cast_browser") {
+  # TODO: Remove the ldflags after migrating away from protobuf_lite to
+  # protobuf_full.
+  ldflags = [ "-Wl,-z,muldefs" ]
+
+  sources = [ "//chromecast/app/android/cast_browser_module_entrypoint.cc" ]
+
+  deps = [
+    ":common_apk_deps",
+    "//chromecast:cast_shell_lib_simple",
+  ]
+
+  cflags = [ "-fsymbol-partition=cast_browser_partition" ]
 }
 
 # These are all known //third_party/android_deps targets that chromecast
@@ -63,17 +109,17 @@ cast_shared_library("libcast_shell_android") {
 group("internal_android_deps") {
   testonly = true
   public_deps = [
-    "//third_party/android_deps:android_support_v4_java",
-    "//third_party/android_deps:android_support_v7_appcompat_java",
     "//third_party/android_deps:com_android_support_design_java",
-    "//third_party/android_deps:com_android_support_support_annotations_java",
-    "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
     "//third_party/android_deps:protobuf_lite_runtime_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
-    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_leanback_leanback_preference_java",
     "//third_party/androidx:androidx_legacy_legacy_support_v4_java",
+    "//third_party/androidx:androidx_lifecycle_lifecycle_common_java",
+    "//third_party/androidx:androidx_lifecycle_lifecycle_viewmodel_java",
     "//third_party/androidx:androidx_localbroadcastmanager_localbroadcastmanager_java",
+    "//third_party/androidx:androidx_media_media_java",
     "//third_party/androidx:androidx_mediarouter_mediarouter_java",
     "//third_party/androidx:androidx_preference_preference_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",

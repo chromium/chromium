@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -141,15 +141,27 @@ void FakeNavigationManager::Reload(ReloadType reload_type,
 
 void FakeNavigationManager::ReloadWithUserAgentType(
     UserAgentType user_agent_type) {
-  NOTREACHED();
+  if (user_agent_type == web::UserAgentType::MOBILE) {
+    request_mobile_site_was_called_ = true;
+  } else if (user_agent_type == web::UserAgentType::DESKTOP) {
+    request_desktop_site_was_called_ = true;
+  }
 }
 
 std::vector<NavigationItem*> FakeNavigationManager::GetBackwardItems() const {
-  return std::vector<NavigationItem*>();
+  std::vector<NavigationItem*> back_items;
+  for (int i = static_cast<int>(items_index_ - 1); i >= 0; --i) {
+    back_items.push_back(items_[i].get());
+  }
+  return back_items;
 }
 
 std::vector<NavigationItem*> FakeNavigationManager::GetForwardItems() const {
-  return std::vector<NavigationItem*>();
+  std::vector<NavigationItem*> forward_items;
+  for (unsigned int i = items_index_ + 1; i < items_.size(); ++i) {
+    forward_items.push_back(items_[i].get());
+  }
+  return forward_items;
 }
 
 void FakeNavigationManager::Restore(
@@ -167,7 +179,7 @@ void FakeNavigationManager::AddRestoreCompletionCallback(
   NOTREACHED();
 }
 
-// Adds a new navigation item of |transition| type at the end of this
+// Adds a new navigation item of `transition` type at the end of this
 // navigation manager.
 void FakeNavigationManager::AddItem(const GURL& url,
                                     ui::PageTransition transition) {
@@ -191,6 +203,14 @@ bool FakeNavigationManager::LoadIfNecessaryWasCalled() {
 
 bool FakeNavigationManager::ReloadWasCalled() {
   return reload_was_called_;
+}
+
+bool FakeNavigationManager::RequestDesktopSiteWasCalled() {
+  return request_desktop_site_was_called_;
+}
+
+bool FakeNavigationManager::RequestMobileSiteWasCalled() {
+  return request_mobile_site_was_called_;
 }
 
 }  // namespace web

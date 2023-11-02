@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,7 +27,7 @@ TEST(BrowsingDataLifetimePolicyHandler, SyncDisabledNotSet) {
       policy::Schema::Wrap(policy::GetChromeSchemaData()));
 
   handler.CheckPolicySettings(policy_map, &errors);
-  EXPECT_EQ(errors.GetErrors(policy::key::kBrowsingDataLifetime),
+  EXPECT_EQ(errors.GetErrorMessages(policy::key::kBrowsingDataLifetime),
             l10n_util::GetStringFUTF16(
                 IDS_POLICY_DEPENDENCY_ERROR,
                 base::UTF8ToUTF16(policy::key::kSyncDisabled), u"true"));
@@ -50,7 +50,7 @@ TEST(BrowsingDataLifetimePolicyHandler, SyncDisabledFalse) {
       policy::Schema::Wrap(policy::GetChromeSchemaData()));
 
   handler.CheckPolicySettings(policy_map, &errors);
-  EXPECT_EQ(errors.GetErrors(policy::key::kBrowsingDataLifetime),
+  EXPECT_EQ(errors.GetErrorMessages(policy::key::kBrowsingDataLifetime),
             l10n_util::GetStringFUTF16(
                 IDS_POLICY_DEPENDENCY_ERROR,
                 base::UTF8ToUTF16(policy::key::kSyncDisabled), u"true"));

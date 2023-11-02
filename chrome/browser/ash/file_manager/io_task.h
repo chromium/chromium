@@ -1,4 +1,4 @@
-// Copyright (c) 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,15 +13,16 @@
 #include "storage/browser/file_system/file_system_url.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace file_manager {
+class Profile;
 
-namespace io_task {
-
-class IOTaskController;
+namespace file_manager::io_task {
 
 enum class State {
   // Task has been queued, but not yet started.
   kQueued,
+
+  // Task has started, but some initial scanning is performed.
+  kScanning,
 
   // Task is currently running.
   kInProgress,
@@ -32,14 +33,30 @@ enum class State {
   // Task has completed with errors.
   kError,
 
+  // Task has failed to finish due to missing password.
+  kNeedPassword,
+
   // Task has been canceled without finishing.
   kCancelled,
 };
 
 enum class OperationType {
   kCopy,
-  kMove,
   kDelete,
+  kEmptyTrash,
+  kExtract,
+  kMove,
+
+  // This restores to the location supplied in the .trashinfo folder, recreating
+  // the parent hierarchy as required. As .Trash folders reside on the same
+  // filesystem as trashed files, this implies an intra filesystem move.
+  kRestore,
+
+  // This restores to a supplied destination only extracting the file name to
+  // properly name the destination file. The destination folder is expected to
+  // exist and items can be restored cross filesystem.
+  kRestoreToDestination,
+  kTrash,
   kZip,
 };
 
@@ -72,6 +89,12 @@ struct ProgressStatus {
   ProgressStatus(ProgressStatus&& other);
   ProgressStatus& operator=(ProgressStatus&& other);
 
+  // True if the task is in a terminal state and won't receive further updates.
+  bool IsCompleted() const;
+
+  // Returns a default method for obtaining the source name.
+  std::string GetSourceName(Profile* profile) const;
+
   // Task state.
   State state;
 
@@ -80,6 +103,9 @@ struct ProgressStatus {
 
   // Files the operation processes.
   std::vector<EntryStatus> sources;
+
+  // The file name to use when reporting progress.
+  std::string source_name;
 
   // Entries created by the I/O task. These files aren't necessarily related to
   // |sources|.
@@ -100,12 +126,18 @@ struct ProgressStatus {
 
   // The estimate time to finish the operation.
   double remaining_seconds = 0;
+
+  // Whether notifications should be shown on progress status.
+  bool show_notification = true;
 };
 
 // An IOTask represents an I/O operation over multiple files, and is responsible
 // for executing the operation and providing progress/completion reports.
 class IOTask {
  public:
+  IOTask() = delete;
+  IOTask(const IOTask& other) = delete;
+  IOTask& operator=(const IOTask& other) = delete;
   virtual ~IOTask() = default;
 
   using ProgressCallback = base::RepeatingCallback<void(const ProgressStatus&)>;
@@ -126,15 +158,15 @@ class IOTask {
   // Gets the current progress status of the task.
   const ProgressStatus& progress() { return progress_; }
 
+  // Sets the task id.
+  void SetTaskID(IOTaskId task_id) { progress_.task_id = task_id; }
+
  protected:
-  IOTask() = default;
-  IOTask(const IOTask& other) = delete;
-  IOTask& operator=(const IOTask& other) = delete;
+  explicit IOTask(bool show_notification) {
+    progress_.show_notification = show_notification;
+  }
 
   ProgressStatus progress_;
-
-  // Task Controller can update `progress_`.
-  friend class IOTaskController;
 };
 
 // No-op IO Task for testing.
@@ -144,7 +176,8 @@ class DummyIOTask : public IOTask {
  public:
   DummyIOTask(std::vector<storage::FileSystemURL> source_urls,
               storage::FileSystemURL destination_folder,
-              OperationType type);
+              OperationType type,
+              bool show_notification = true);
   ~DummyIOTask() override;
 
   void Execute(ProgressCallback progress_callback,
@@ -162,8 +195,6 @@ class DummyIOTask : public IOTask {
   base::WeakPtrFactory<DummyIOTask> weak_ptr_factory_{this};
 };
 
-}  // namespace io_task
-
-}  // namespace file_manager
+}  // namespace file_manager::io_task
 
 #endif  // CHROME_BROWSER_ASH_FILE_MANAGER_IO_TASK_H_

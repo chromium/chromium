@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,12 @@
 void RecordSideSearchAvailabilityChanged(
     SideSearchAvailabilityChangeType type) {
   base::UmaHistogramEnumeration("SideSearch.AvailabilityChanged", type);
+}
+
+void RecordSideSearchPageActionLabelVisibilityOnToggle(
+    SideSearchPageActionLabelVisibility label_visibility) {
+  base::UmaHistogramEnumeration(
+      "SideSearch.PageActionIcon.LabelVisibleWhenToggled", label_visibility);
 }
 
 void RecordSideSearchOpenAction(SideSearchOpenActionType action) {
@@ -23,12 +29,48 @@ void RecordSideSearchNavigation(SideSearchNavigationType type) {
   base::UmaHistogramEnumeration("SideSearch.Navigation", type);
 }
 
-void RecordNavigationCommittedWithinSideSearchCountPerJourney(int count) {
+void RecordNavigationCommittedWithinSideSearchCountPerJourney(
+    bool is_side_contents_helper_created_from_menu_option,
+    int count,
+    bool was_auto_triggered) {
+  if (is_side_contents_helper_created_from_menu_option) {
+    base::UmaHistogramCounts100(
+        "SideSearch."
+        "NavigationCommittedWithinSideSearchCountPerJourneyFromMenuOption",
+        count);
+  } else if (was_auto_triggered) {
+    base::UmaHistogramCounts100(
+        "SideSearch.AutoTrigger."
+        "NavigationCommittedWithinSideSearchCountPerJourney",
+        count);
+  }
   base::UmaHistogramCounts100(
-      "SideSearch.NavigationCommittedWithinSideSearchCountPerJourney", count);
+      "SideSearch.NavigationCommittedWithinSideSearchCountPerJourney2", count);
 }
 
-void RecordRedirectionToTabCountPerJourney(int count) {
-  base::UmaHistogramCounts100("SideSearch.RedirectionToTabCountPerJourney",
+void RecordRedirectionToTabCountPerJourney(
+    bool is_side_contents_helper_created_from_menu_option,
+    int count,
+    bool was_auto_triggered) {
+  if (is_side_contents_helper_created_from_menu_option) {
+    base::UmaHistogramCounts100(
+        "SideSearch.RedirectionToTabCountPerJourneyFromMenuOption", count);
+  } else if (was_auto_triggered) {
+    base::UmaHistogramCounts100(
+        "SideSearch.AutoTrigger.RedirectionToTabCountPerJourney", count);
+  }
+  base::UmaHistogramCounts100("SideSearch.RedirectionToTabCountPerJourney2",
                               count);
+}
+
+void RecordSideSearchSidePanelTimeShown(bool shown_via_entrypoint,
+                                        base::TimeDelta sample) {
+  base::UmaHistogramMediumTimes(
+      shown_via_entrypoint ? "SideSearch.SidePanel.TimeShownOpenedViaEntrypoint"
+                           : "SideSearch.SidePanel.TimeShownOpenedViaTabSwitch",
+      sample);
+}
+
+void RecordSideSearchNumTimesReturnedBackToSRP(int count) {
+  base::UmaHistogramCounts100("SideSearch.TimesReturnedBackToSRP", count);
 }

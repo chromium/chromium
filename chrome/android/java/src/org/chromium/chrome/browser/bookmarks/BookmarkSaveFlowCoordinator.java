@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,21 +7,26 @@ package org.chromium.chrome.browser.bookmarks;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.accessibility.AccessibilityManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.CallbackController;
 import org.chromium.base.lifetime.DestroyChecker;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkMeta;
+import org.chromium.chrome.browser.commerce.ShoppingFeatures;
 import org.chromium.chrome.browser.subscriptions.SubscriptionsManager;
+import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
+import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -37,14 +42,12 @@ public class BookmarkSaveFlowCoordinator {
             PropertyKey> mChangeProcessor;
     private final DestroyChecker mDestroyChecker;
 
-    private CallbackController mCallbackController = new CallbackController();
     private BottomSheetController mBottomSheetController;
     private BookmarkSaveFlowBottomSheetContent mBottomSheetContent;
     private BookmarkSaveFlowMediator mMediator;
     private View mBookmarkSaveFlowView;
-
     private BookmarkModel mBookmarkModel;
-
+    private UserEducationHelper mUserEducationHelper;
     private boolean mClosedViaRunnable;
 
     /**
@@ -52,12 +55,15 @@ public class BookmarkSaveFlowCoordinator {
      * @param bottomSheetController Allows displaying content in the bottom sheet.
      * @param subscriptionsManager Allows un/subscribing for product updates, used for
      *         price-tracking.
+     * @param userEducationHelper A means of triggering IPH.
      */
     public BookmarkSaveFlowCoordinator(@NonNull Context context,
             @NonNull BottomSheetController bottomSheetController,
-            @NonNull SubscriptionsManager subscriptionsManager) {
+            @Nullable SubscriptionsManager subscriptionsManager,
+            @NonNull UserEducationHelper userEducationHelper) {
         mContext = context;
         mBottomSheetController = bottomSheetController;
+        mUserEducationHelper = userEducationHelper;
         mBookmarkModel = new BookmarkModel();
         mDestroyChecker = new DestroyChecker();
 
@@ -75,7 +81,7 @@ public class BookmarkSaveFlowCoordinator {
      * @param bookmarkId The {@link BookmarkId} which was saved.
      */
     public void show(BookmarkId bookmarkId) {
-        show(bookmarkId, /*fromExplicitTrackUi=*/false);
+        show(bookmarkId, /*fromExplicitTrackUi=*/false, /*wasBookmarkMoved=*/false);
     }
 
     /**
@@ -85,25 +91,64 @@ public class BookmarkSaveFlowCoordinator {
      *         point. This will change the UI of the bookmark save flow, either adding type-specific
      *         text (e.g. price tracking text) or adding UI bits to allow users to upgrade a regular
      *         bookmark. This will be false when adding a normal bookmark.
+     * @param wasBookmarkMoved Whether the save flow is shown as a reslult of a moved bookmark.
      */
-    public void show(BookmarkId bookmarkId, boolean fromExplicitTrackUi) {
-        assert mBookmarkModel.isBookmarkModelLoaded();
-        show(bookmarkId, fromExplicitTrackUi, mBookmarkModel.getPowerBookmarkMeta(bookmarkId));
+    public void show(BookmarkId bookmarkId, boolean fromExplicitTrackUi, boolean wasBookmarkMoved) {
+        mBookmarkModel.finishLoadingBookmarkModel(() -> {
+            show(bookmarkId, fromExplicitTrackUi, wasBookmarkMoved,
+                    mBookmarkModel.getPowerBookmarkMeta(bookmarkId));
+        });
     }
 
-    void show(
-            BookmarkId bookmarkId, boolean fromExplicitTrackUi, @Nullable PowerBookmarkMeta meta) {
+    void show(BookmarkId bookmarkId, boolean fromExplicitTrackUi, boolean wasBookmarkMoved,
+            @Nullable PowerBookmarkMeta meta) {
         mDestroyChecker.checkNotDestroyed();
         mBottomSheetContent = new BookmarkSaveFlowBottomSheetContent(mBookmarkSaveFlowView);
-        mBottomSheetController.requestShowContent(mBottomSheetContent, /* animate= */ true);
-        mMediator.show(bookmarkId, meta, fromExplicitTrackUi);
+        // Order matters here: Calling show on the mediator first allows the height to be fully
+        // determined before the sheet is shown.
+        mMediator.show(bookmarkId, meta, fromExplicitTrackUi, wasBookmarkMoved);
+        boolean shown =
+                mBottomSheetController.requestShowContent(mBottomSheetContent, /* animate= */ true);
 
-        setupAutodismiss();
+        AccessibilityManager am =
+                (AccessibilityManager) mContext.getSystemService(Context.ACCESSIBILITY_SERVICE);
+        if (!am.isTouchExplorationEnabled()) {
+            setupAutodismiss();
+        }
+
+        if (ShoppingFeatures.isShoppingListEnabled()
+                && PowerBookmarkUtils.isBookmarkPriceTracked(mBookmarkModel, bookmarkId)) {
+            if (shown) {
+                showShoppingSaveFlowIPH();
+            } else {
+                mBottomSheetController.addObserver(new EmptyBottomSheetObserver() {
+                    @Override
+                    public void onSheetContentChanged(BottomSheetContent newContent) {
+                        if (newContent == mBottomSheetContent) showShoppingSaveFlowIPH();
+
+                        mBottomSheetController.removeObserver(this);
+                    }
+                });
+            }
+        }
     }
 
-    private void close() {
-        mDestroyChecker.checkNotDestroyed();
+    /**
+     * Show the IPH for the save flow that tells a user that they can organize their products from
+     * the bookmarks surface.
+     */
+    private void showShoppingSaveFlowIPH() {
+        mUserEducationHelper.requestShowIPH(
+                new IPHCommandBuilder(mBookmarkSaveFlowView.getResources(),
+                        FeatureConstants.SHOPPING_LIST_SAVE_FLOW_FEATURE,
+                        R.string.iph_shopping_list_save_flow, R.string.iph_shopping_list_save_flow)
+                        .setAnchorView(
+                                mBookmarkSaveFlowView.findViewById(R.id.bookmark_select_folder))
+                        .build());
+    }
 
+    @VisibleForTesting
+    void close() {
         mClosedViaRunnable = true;
         mBottomSheetController.hideContent(mBottomSheetContent, true);
     }
@@ -111,8 +156,7 @@ public class BookmarkSaveFlowCoordinator {
     private void setupAutodismiss() {
         if (!BookmarkFeatures.isImprovedSaveFlowAutodismissEnabled()) return;
 
-        PostTask.postDelayedTask(UiThreadTaskTraits.USER_VISIBLE,
-                mCallbackController.makeCancelable(this::close),
+        PostTask.postDelayedTask(UiThreadTaskTraits.USER_VISIBLE, this::close,
                 BookmarkFeatures.getImprovedSaveFlowAutodismissTimeMs());
     }
 
@@ -124,7 +168,6 @@ public class BookmarkSaveFlowCoordinator {
         if (mClosedViaRunnable) {
             RecordUserAction.record("MobileBookmark.SaveFlow.ClosedWithoutEditAction");
         }
-        mCallbackController.destroy();
 
         mMediator.destroy();
         mMediator = null;
@@ -204,10 +247,19 @@ public class BookmarkSaveFlowCoordinator {
         public int getSheetFullHeightAccessibilityStringId() {
             return R.string.bookmarks_save_flow_opened_full;
         }
+
+        @Override
+        public boolean hasCustomScrimLifecycle() {
+            return true;
+        }
     }
 
     @VisibleForTesting
     View getViewForTesting() {
         return mBookmarkSaveFlowView;
+    }
+
+    boolean getIsDestroyedForTesting() {
+        return mDestroyChecker.isDestroyed();
     }
 }

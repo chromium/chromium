@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,10 @@
 #include <memory>
 
 #include "components/prefs/pref_service.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_data_source.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_gesture_commands.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_commands.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_consumer.h"
+#import "ios/chrome/browser/ui/content_suggestions/start_suggest_service_response_bridge.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_recent_tab_removal_observer_bridge.h"
 
 namespace favicon {
@@ -25,27 +28,24 @@ namespace user_prefs {
 class PrefRegistrySyncable;
 }  // namespace user_prefs
 
-@protocol ContentSuggestionsCommands;
-@protocol ContentSuggestionsConsumer;
-@protocol ContentSuggestionsGestureCommands;
-@protocol ContentSuggestionsHeaderProvider;
-@protocol DiscoverFeedDelegate;
+@protocol ApplicationCommands;
+class Browser;
+@protocol BrowserCoordinatorCommands;
+@protocol FeedDelegate;
 class GURL;
 class LargeIconCache;
-class NotificationPromoWhatsNew;
 class ReadingListModel;
+@protocol SnackbarCommands;
 class WebStateList;
 
 // Mediator for ContentSuggestions.
-// TODO(crbug.com/1200303): Update comment once this file has been cleaned up.
-// This means removing legacy Feed and non refactored NTP code.
 @interface ContentSuggestionsMediator
-    : NSObject <ContentSuggestionsDataSource,
-                StartSurfaceRecentTabObserving>
+    : NSObject <ContentSuggestionsCommands,
+                ContentSuggestionsGestureCommands,
+                StartSurfaceRecentTabObserving,
+                StartSuggestServiceResponseDelegating>
 
 // Default initializer.
-// TODO(crbug.com/1200303): Update comment once this file has been cleaned up.
-// This means removing legacy Feed and non refactored NTP code.
 - (instancetype)
          initWithLargeIconService:(favicon::LargeIconService*)largeIconService
                    largeIconCache:(LargeIconCache*)largeIconCache
@@ -54,39 +54,51 @@ class WebStateList;
                  readingListModel:(ReadingListModel*)readingListModel
                       prefService:(PrefService*)prefService
     isGoogleDefaultSearchProvider:(BOOL)isGoogleDefaultSearchProvider
-    NS_DESIGNATED_INITIALIZER;
+                          browser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
 // Registers the feature preferences.
 + (void)registerBrowserStatePrefs:(user_prefs::PrefRegistrySyncable*)registry;
 
+// Dispatcher.
+@property(nonatomic, weak)
+    id<ApplicationCommands, BrowserCoordinatorCommands, SnackbarCommands>
+        dispatcher;
+
 // Command handler for the mediator.
 @property(nonatomic, weak)
     id<ContentSuggestionsCommands, ContentSuggestionsGestureCommands>
         commandHandler;
 
-@property(nonatomic, weak) id<ContentSuggestionsHeaderProvider> headerProvider;
+// Delegate used to communicate to communicate events to the feed.
+@property(nonatomic, weak) id<FeedDelegate> feedDelegate;
 
-// Delegate used to communicate to communicate events to the DiscoverFeed.
-@property(nonatomic, weak) id<DiscoverFeedDelegate> discoverFeedDelegate;
+// The consumer that will be notified when the data change.
+@property(nonatomic, weak) id<ContentSuggestionsConsumer> consumer;
+
+// YES if the Start Surface is being shown.
+@property(nonatomic, assign) BOOL showingStartSurface;
 
 // WebStateList associated with this mediator.
 @property(nonatomic, assign) WebStateList* webStateList;
 
+// The web state associated with this NTP.
+@property(nonatomic, assign) web::WebState* webState;
+
 // Disconnects the mediator.
 - (void)disconnect;
 
-// Reloads content suggestions.
+// Reloads content suggestions with most updated model state.
 - (void)reloadAllData;
 
-// The notification promo owned by this mediator.
-- (NotificationPromoWhatsNew*)notificationPromo;
+// Trigger a refresh of the Content Suggestions Most Visited tiles.
+- (void)refreshMostVisitedTiles;
 
-// Block |URL| from Most Visited sites.
+// Block `URL` from Most Visited sites.
 - (void)blockMostVisitedURL:(GURL)URL;
 
-// Always allow |URL| in Most Visited sites.
+// Always allow `URL` in Most Visited sites.
 - (void)allowMostVisitedURL:(GURL)URL;
 
 // Get the maximum number of sites shown.
@@ -96,7 +108,7 @@ class WebStateList;
 // configureMostRecentTabItemWithWebState: has been called.
 - (BOOL)mostRecentTabStartSurfaceTileIsShowing;
 
-// Configures the most recent tab item with |webState| and |timeLabel|.
+// Configures the most recent tab item with `webState` and `timeLabel`.
 - (void)configureMostRecentTabItemWithWebState:(web::WebState*)webState
                                      timeLabel:(NSString*)timeLabel;
 

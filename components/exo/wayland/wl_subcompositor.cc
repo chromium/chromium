@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,7 +26,7 @@ void subsurface_set_position(wl_client* client,
                              wl_resource* resource,
                              int32_t x,
                              int32_t y) {
-  GetUserDataAs<SubSurface>(resource)->SetPosition(gfx::Point(x, y));
+  GetUserDataAs<SubSurface>(resource)->SetPosition(gfx::PointF(x, y));
 }
 
 void subsurface_place_above(wl_client* client,

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -136,7 +136,7 @@ RemotingAuthenticationStatus oauthStatusToRemotingAuthenticationStatus(
           }));
   // Stimulate the oAuth Token Getter to fetch and access token, this forces it
   // to convert the authorization code into a refresh token, and saving the
-  // refresh token will happen automaticly in the above block.
+  // refresh token will happen automatically in the above block.
   [self callbackWithAccessToken:^(RemotingAuthenticationStatus status,
                                   NSString* user_email,
                                   NSString* access_token) {

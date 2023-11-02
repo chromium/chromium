@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,11 +31,13 @@ namespace extension_urls {
 // the active extensions embedder may provide its own webstore URLs.
 extern const char kChromeWebstoreBaseURL[];
 extern const char kChromeWebstoreUpdateURL[];
+extern const char kNewChromeWebstoreBaseURL[];
 
 // Returns the URL prefix for the extension/apps gallery. Can be set via the
 // --apps-gallery-url switch. The URL returned will not contain a trailing
 // slash. Do not use this as a prefix/extent for the store.
 GURL GetWebstoreLaunchURL();
+GURL GetNewWebstoreLaunchURL();
 
 // Returns the URL to the extensions category on the Web Store. This is
 // derived from GetWebstoreLaunchURL().
@@ -63,12 +65,21 @@ GURL GetWebstoreUpdateUrl();
 GURL GetWebstoreReportAbuseUrl(const std::string& extension_id,
                                const std::string& referrer_id);
 
+// Returns whether the URL's host matches or is in the same domain as any of the
+// webstore URLs. Note: This includes any subdomains of the webstore URLs.
+// TODO(crbug.com/1355623): We should move the domain checks for the webstore to
+// use the IsSameOrigin version below where appropriate.
+bool IsWebstoreDomain(const GURL& url);
+
+// Returns whether the origin is the same origin as any of the webstore URLs.
+bool IsWebstoreOrigin(const url::Origin& origin);
+
 // Returns whether the URL is the webstore update URL (just considering host
 // and path, not scheme, query, etc.)
 bool IsWebstoreUpdateUrl(const GURL& update_url);
 
-// Returns true if the URL points to an extension blacklist.
-bool IsBlacklistUpdateUrl(const GURL& url);
+// Returns true if the URL points to an extension blocklist.
+bool IsBlocklistUpdateUrl(const GURL& url);
 
 // Returns true if the origin points to an URL used for safebrowsing.
 // TODO(devlin): Update other methods to also take an url::Origin?

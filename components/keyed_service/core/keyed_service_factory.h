@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,6 +28,10 @@ class KEYED_SERVICE_EXPORT KeyedServiceFactory
  public:
   KeyedServiceFactory(const KeyedServiceFactory&) = delete;
   KeyedServiceFactory& operator=(const KeyedServiceFactory&) = delete;
+
+  // Returns the number of KeyedServices that are currently active for a given
+  // context.
+  static int GetServicesCount(void* context);
 
  protected:
   KeyedServiceFactory(const char* name, DependencyManager* manager, Type type);
@@ -80,6 +84,7 @@ class KEYED_SERVICE_EXPORT KeyedServiceFactory
 
   void SetEmptyTestingFactory(void* context) override;
   bool HasTestingFactory(void* context) override;
+  bool IsServiceCreated(void* context) const override;
 
  private:
   friend class DependencyManager;

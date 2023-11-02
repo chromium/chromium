@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,22 +6,22 @@
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "components/favicon/core/favicon_database.h"
 #include "components/history/core/browser/history_backend_client.h"
 #include "components/history/core/browser/history_backend_notifier.h"
@@ -168,9 +168,9 @@ class ExpireHistoryTest : public testing::Test, public HistoryBackendNotifier {
     TopSitesImpl::RegisterPrefs(pref_service_->registry());
 
     expirer_.SetDatabases(main_db_.get(), thumb_db_.get());
-    top_sites_ =
-        new TopSitesImpl(pref_service_.get(), nullptr, PrepopulatedPageList(),
-                         base::BindRepeating(MockCanAddURLToHistory));
+    top_sites_ = new TopSitesImpl(pref_service_.get(), nullptr, nullptr,
+                                  PrepopulatedPageList(),
+                                  base::BindRepeating(MockCanAddURLToHistory));
     WaitTopSitesLoadedObserver wait_top_sites_observer(top_sites_);
     top_sites_->Init(path().Append(kTopSitesFilename));
     wait_top_sites_observer.Run();
@@ -199,10 +199,8 @@ class ExpireHistoryTest : public testing::Test, public HistoryBackendNotifier {
   // HistoryBackendNotifier:
   void NotifyFaviconsChanged(const std::set<GURL>& page_urls,
                              const GURL& icon_url) override {}
-  void NotifyURLVisited(ui::PageTransition transition,
-                        const URLRow& row,
-                        const RedirectList& redirects,
-                        base::Time visit_time) override {}
+  void NotifyURLVisited(const URLRow& url_row,
+                        const VisitRow& visit_row) override {}
   void NotifyURLsModified(const URLRows& rows,
                           bool is_from_expiration) override {
     urls_modified_notifications_.push_back(
@@ -211,6 +209,7 @@ class ExpireHistoryTest : public testing::Test, public HistoryBackendNotifier {
   void NotifyURLsDeleted(DeletionInfo deletion_info) override {
     urls_deleted_notifications_.push_back(std::move(deletion_info));
   }
+  void NotifyVisitUpdated(const VisitRow& visit) override {}
   void NotifyVisitDeleted(const VisitRow& visit) override {}
 };
 
@@ -323,8 +322,8 @@ void ExpireHistoryTest::EnsureURLInfoGone(const URLRow& row, bool expired) {
   for (const auto& info : urls_deleted_notifications_) {
     EXPECT_EQ(expired, info.is_from_expiration());
     const history::URLRows& rows(info.deleted_rows());
-    auto it_row = std::find_if(rows.begin(), rows.end(),
-                               history::URLRow::URLRowHasURL(row.url()));
+    auto it_row =
+        base::ranges::find_if(rows, history::URLRow::URLRowHasURL(row.url()));
     if (it_row != rows.end()) {
       // Further verify that the ID is set to what had been in effect in the
       // main database before the deletion. The InMemoryHistoryBackend relies
@@ -335,9 +334,8 @@ void ExpireHistoryTest::EnsureURLInfoGone(const URLRow& row, bool expired) {
   }
   for (const auto& pair : urls_modified_notifications_) {
     const auto& rows = pair.second;
-    EXPECT_TRUE(std::find_if(rows.begin(), rows.end(),
-                             history::URLRow::URLRowHasURL(row.url())) ==
-                rows.end());
+    EXPECT_TRUE(
+        base::ranges::none_of(rows, history::URLRow::URLRowHasURL(row.url())));
   }
   EXPECT_TRUE(found_delete_notification);
 }
@@ -359,8 +357,7 @@ bool ExpireHistoryTest::ModifiedNotificationSent(
     const bool is_from_expiration = pair.first;
     const auto& rows = pair.second;
     if (is_from_expiration == should_be_from_expiration &&
-        std::find_if(rows.begin(), rows.end(),
-                     history::URLRow::URLRowHasURL(url)) != rows.end()) {
+        base::ranges::any_of(rows, history::URLRow::URLRowHasURL(url))) {
       return true;
     }
   }
@@ -607,7 +604,7 @@ TEST_F(ExpireHistoryTest, DeleteURLs) {
   std::vector<GURL> urls;
   // Push back a bogus URL (which shouldn't change anything).
   urls.push_back(GURL());
-  for (size_t i = 0; i < base::size(rows); ++i) {
+  for (size_t i = 0; i < std::size(rows); ++i) {
     ASSERT_TRUE(main_db_->GetURLRow(url_ids[i], &rows[i]));
     favicon_ids[i] =
         GetFavicon(rows[i].url(), favicon_base::IconType::kFavicon);

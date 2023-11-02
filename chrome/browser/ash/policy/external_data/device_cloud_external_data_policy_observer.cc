@@ -1,10 +1,12 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/policy/external_data/device_cloud_external_data_policy_observer.h"
 
 #include "base/bind.h"
+#include "chrome/browser/ash/policy/handlers/configuration_policy_handler_ash.h"
+#include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/external_data_fetcher.h"
 
 namespace policy {
@@ -53,7 +55,9 @@ void DeviceCloudExternalDataPolicyObserver::OnPolicyUpdated(
 
 void DeviceCloudExternalDataPolicyObserver::HandleExternalDataPolicyUpdate(
     const PolicyMap::Entry* entry) {
-  if (!entry) {
+  PolicyErrorMap error_map;
+  if (!entry || !ExternalDataPolicyHandler::CheckPolicySettings(
+                    policy_.c_str(), entry, &error_map)) {
     delegate_->OnDeviceExternalDataCleared(policy_);
     return;
   }

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/containers/flat_set.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest_handler.h"
@@ -32,7 +32,8 @@ struct WebAccessibleResourcesInfo : public Extension::ManifestData {
     Entry(URLPatternSet resources,
           URLPatternSet matches,
           std::vector<ExtensionId> extension_ids,
-          bool use_dynamic_url);
+          bool use_dynamic_url,
+          bool allow_all_extensions);
 
     // List of web accessible extension resources.
     URLPatternSet resources;
@@ -41,10 +42,13 @@ struct WebAccessibleResourcesInfo : public Extension::ManifestData {
     URLPatternSet matches;
 
     // List of extension ids allowed to access resources.
-    std::vector<ExtensionId> extension_ids;
+    base::flat_set<ExtensionId> extension_ids;
 
     // Optionally true to require dynamic urls from sites not in |matches|.
     bool use_dynamic_url;
+
+    // True if "*" is defined as an extension id in the manifest.
+    bool allow_all_extensions;
   };
 
   // Returns true if the specified resource is web accessible.
@@ -55,6 +59,10 @@ struct WebAccessibleResourcesInfo : public Extension::ManifestData {
 
   // Returns true when 'web_accessible_resources' are defined for the extension.
   static bool HasWebAccessibleResources(const Extension* extension);
+
+  // Accessor for use_dynamic_url.
+  static bool ShouldUseDynamicUrl(const Extension* extension,
+                                  const std::string& resource);
 
   // The list of entries for the web-accessible resources of the extension.
   std::vector<Entry> web_accessible_resources;

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,10 +13,6 @@ namespace global_media_controls {
 
 class MediaSessionItemProducerObserver : public base::CheckedObserver {
  public:
-  virtual void OnMediaSessionItemCreated(const std::string& id) = 0;
-
-  virtual void OnMediaSessionItemDestroyed(const std::string& id) = 0;
-
   virtual void OnMediaSessionActionButtonPressed(
       const std::string& id,
       media_session::mojom::MediaSessionAction action) = 0;

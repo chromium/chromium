@@ -1,126 +1,151 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
+import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
+import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 
-import {CalibrationComponentStatus, CalibrationStatus, Component, ComponentRepairStatus, ComponentType, Network, QrCode, RmadErrorCode, RmaState, StateResult} from './shimless_rma_types.js';
+import {CalibrationComponentStatus, CalibrationStatus, Component, ComponentRepairStatus, ComponentType, Network, QrCode, RmadErrorCode, State, StateResult} from './shimless_rma_types.js';
 
 /** @type {!Array<!StateResult>} */
 export const fakeStates = [
   {
-    state: RmaState.kWelcomeScreen,
-    canCancel: true,
+    state: State.kWelcomeScreen,
+    canExit: true,
     canGoBack: false,
-    error: RmadErrorCode.kOk
+    error: RmadErrorCode.kOk,
   },
   {
-    state: RmaState.kConfigureNetwork,
-    canCancel: true,
+    state: State.kConfigureNetwork,
+    canExit: true,
     canGoBack: true,
-    error: RmadErrorCode.kOk
+    error: RmadErrorCode.kOk,
   },
   {
-    state: RmaState.kUpdateOs,
-    canCancel: true,
+    state: State.kUpdateOs,
+    canExit: true,
     canGoBack: true,
-    error: RmadErrorCode.kOk
+    error: RmadErrorCode.kOk,
   },
   {
-    state: RmaState.kSelectComponents,
-    canCancel: true,
+    state: State.kSelectComponents,
+    canExit: true,
     canGoBack: true,
-    error: RmadErrorCode.kOk
+    error: RmadErrorCode.kOk,
   },
   {
-    state: RmaState.kChooseDestination,
-    canCancel: true,
+    state: State.kChooseDestination,
+    canExit: true,
     canGoBack: true,
-    error: RmadErrorCode.kOk
+    error: RmadErrorCode.kOk,
   },
   {
-    state: RmaState.kChooseWriteProtectDisableMethod,
-    canCancel: true,
+    state: State.kChooseWipeDevice,
+    canExit: true,
     canGoBack: true,
-    error: RmadErrorCode.kOk
+    error: RmadErrorCode.kOk,
   },
   {
-    state: RmaState.kEnterRSUWPDisableCode,
-    canCancel: true,
+    state: State.kChooseWriteProtectDisableMethod,
+    canExit: true,
     canGoBack: true,
-    error: RmadErrorCode.kOk
+    error: RmadErrorCode.kOk,
   },
   {
-    state: RmaState.kWaitForManualWPDisable,
-    canCancel: true,
+    state: State.kEnterRSUWPDisableCode,
+    canExit: true,
     canGoBack: true,
-    error: RmadErrorCode.kOk
+    error: RmadErrorCode.kOk,
   },
   {
-    state: RmaState.kWPDisableComplete,
-    canCancel: true,
+    state: State.kWaitForManualWPDisable,
+    canExit: true,
     canGoBack: true,
-    error: RmadErrorCode.kOk
+    error: RmadErrorCode.kOk,
   },
   {
-    state: RmaState.kChooseFirmwareReimageMethod,
-    canCancel: true,
+    state: State.kWPDisableComplete,
+    canExit: true,
     canGoBack: true,
-    error: RmadErrorCode.kOk
+    error: RmadErrorCode.kOk,
   },
   {
-    state: RmaState.kUpdateDeviceInformation,
-    canCancel: true,
+    state: State.kUpdateRoFirmware,
+    canExit: true,
     canGoBack: true,
-    error: RmadErrorCode.kOk
+    error: RmadErrorCode.kOk,
   },
   {
-    state: RmaState.kRestock,
-    canCancel: true,
+    state: State.kUpdateDeviceInformation,
+    canExit: true,
     canGoBack: true,
-    error: RmadErrorCode.kOk
+    error: RmadErrorCode.kOk,
   },
   {
-    state: RmaState.kCheckCalibration,
-    canCancel: true,
+    state: State.kRestock,
+    canExit: true,
     canGoBack: true,
-    error: RmadErrorCode.kOk
+    error: RmadErrorCode.kOk,
   },
   {
-    state: RmaState.kSetupCalibration,
-    canCancel: true,
+    state: State.kCheckCalibration,
+    canExit: true,
     canGoBack: true,
-    error: RmadErrorCode.kOk
+    error: RmadErrorCode.kOk,
   },
   {
-    state: RmaState.kRunCalibration,
-    canCancel: true,
+    state: State.kSetupCalibration,
+    canExit: true,
     canGoBack: true,
-    error: RmadErrorCode.kOk
+    error: RmadErrorCode.kOk,
   },
   {
-    state: RmaState.kProvisionDevice,
-    canCancel: true,
+    state: State.kRunCalibration,
+    canExit: true,
     canGoBack: true,
-    error: RmadErrorCode.kOk
+    error: RmadErrorCode.kOk,
   },
   {
-    state: RmaState.kWaitForManualWPEnable,
-    canCancel: true,
+    state: State.kProvisionDevice,
+    canExit: true,
     canGoBack: true,
-    error: RmadErrorCode.kOk
+    error: RmadErrorCode.kOk,
   },
   {
-    state: RmaState.kFinalize,
-    canCancel: true,
+    state: State.kWaitForManualWPEnable,
+    canExit: true,
     canGoBack: true,
-    error: RmadErrorCode.kOk
+    error: RmadErrorCode.kOk,
   },
   {
-    state: RmaState.kRepairComplete,
-    canCancel: true,
+    state: State.kFinalize,
+    canExit: true,
     canGoBack: true,
-    error: RmadErrorCode.kOk
+    error: RmadErrorCode.kOk,
+  },
+  {
+    state: State.kRepairComplete,
+    canExit: true,
+    canGoBack: true,
+    error: RmadErrorCode.kOk,
+  },
+  {
+    state: State.kUnknown,
+    canExit: false,
+    canGoBack: false,
+    error: RmadErrorCode.kOk,
+  },
+  {
+    state: State.kHardwareError,
+    canExit: false,
+    canGoBack: false,
+    error: RmadErrorCode.kOk,
+  },
+  {
+    state: State.kReboot,
+    canExit: false,
+    canGoBack: false,
+    error: RmadErrorCode.kOk,
   },
 ];
 
@@ -143,61 +168,156 @@ export const fakeRsuChallengeQrCode = {
 
 /** @type {!Array<!Component>} */
 export const fakeComponents = [
-  {component: ComponentType.kCamera, state: ComponentRepairStatus.kOriginal},
-  {component: ComponentType.kBattery, state: ComponentRepairStatus.kMissing},
-  {component: ComponentType.kTouchpad, state: ComponentRepairStatus.kOriginal},
+  {
+    component: ComponentType.kCamera,
+    state: ComponentRepairStatus.kOriginal,
+    identifier: 'Camera_XYZ_1',
+  },
+  {
+    component: ComponentType.kBattery,
+    state: ComponentRepairStatus.kMissing,
+    identifier: 'Battery_XYZ_Lithium',
+  },
+  {
+    component: ComponentType.kTouchpad,
+    state: ComponentRepairStatus.kOriginal,
+    identifier: 'Touchpad_XYZ_2',
+  },
 ];
 
 // onboarding_select_components_page_test needs a components list covering all
 // possible repair states.
 /** @type {!Array<!Component>} */
 export const fakeComponentsForRepairStateTest = [
-  {component: ComponentType.kCamera, state: ComponentRepairStatus.kOriginal},
-  {component: ComponentType.kBattery, state: ComponentRepairStatus.kMissing},
-  {component: ComponentType.kTouchpad, state: ComponentRepairStatus.kReplaced},
+  {
+    component: ComponentType.kAudioCodec,
+    state: ComponentRepairStatus.kMissing,
+    identifier: 'Audio_XYZ',
+  },
+  {
+    component: ComponentType.kCamera,
+    state: ComponentRepairStatus.kOriginal,
+    identifier: 'Camera_XYZ_1',
+  },
+  {
+    component: ComponentType.kBattery,
+    state: ComponentRepairStatus.kMissing,
+    identifier: 'Battery_XYZ_Lithium',
+  },
+  {
+    component: ComponentType.kTouchpad,
+    state: ComponentRepairStatus.kReplaced,
+    identifier: 'Touchpad_XYZ_2',
+  },
+  {
+    component: ComponentType.kStorage,
+    state: ComponentRepairStatus.kMissing,
+    identifier: 'Storage_XYZ',
+  },
+  {
+    component: ComponentType.kVpdCached,
+    state: ComponentRepairStatus.kMissing,
+    identifier: 'VpdCached_XYZ',
+  },
+  {
+    component: ComponentType.kNetwork,
+    state: ComponentRepairStatus.kOriginal,
+    identifier: 'Network_XYZ',
+  },
+  {
+    component: ComponentType.kCamera,
+    state: ComponentRepairStatus.kOriginal,
+    identifier: 'Camera_XYZ_2',
+  },
+  {
+    component: ComponentType.kTouchsreen,
+    state: ComponentRepairStatus.kMissing,
+    identifier: 'Touchscreen_XYZ',
+  },
 ];
 
 /** @type {!Array<!CalibrationComponentStatus>} */
-export const fakeCalibrationComponents = [
+export const fakeCalibrationComponentsWithFails = [
   {
     component: ComponentType.kCamera,
     status: CalibrationStatus.kCalibrationWaiting,
-    progress: 0.0
+    progress: 0.0,
   },
   {
     component: ComponentType.kBattery,
     status: CalibrationStatus.kCalibrationComplete,
-    progress: 1.0
-  },
-  {
-    component: ComponentType.kBaseAccelerometer,
-    status: CalibrationStatus.kCalibrationInProgress,
-    progress: 1.0
+    progress: 1.0,
   },
   {
     component: ComponentType.kLidAccelerometer,
     status: CalibrationStatus.kCalibrationFailed,
-    progress: 1.0
+    progress: 1.0,
+  },
+  {
+    component: ComponentType.kBaseAccelerometer,
+    status: CalibrationStatus.kCalibrationInProgress,
+    progress: 1.0,
   },
   {
     component: ComponentType.kTouchpad,
     status: CalibrationStatus.kCalibrationSkip,
-    progress: 0.0
+    progress: 0.0,
+  },
+  {
+    component: ComponentType.kScreen,
+    status: CalibrationStatus.kCalibrationFailed,
+    progress: 1.0,
+  },
+  {
+    component: ComponentType.kScreen,
+    status: CalibrationStatus.kCalibrationFailed,
+    progress: 1.0,
+  },
+];
+
+/** @type {!Array<!CalibrationComponentStatus>} */
+export const fakeCalibrationComponentsWithoutFails = [
+  {
+    component: ComponentType.kCamera,
+    status: CalibrationStatus.kCalibrationComplete,
+    progress: 0.0,
+  },
+  {
+    component: ComponentType.kBattery,
+    status: CalibrationStatus.kCalibrationComplete,
+    progress: 1.0,
+  },
+  {
+    component: ComponentType.kBaseAccelerometer,
+    status: CalibrationStatus.kCalibrationComplete,
+    progress: 1.0,
+  },
+  {
+    component: ComponentType.kLidAccelerometer,
+    status: CalibrationStatus.kCalibrationComplete,
+    progress: 1.0,
+  },
+  {
+    component: ComponentType.kTouchpad,
+    status: CalibrationStatus.kCalibrationComplete,
+    progress: 0.0,
   },
 ];
 
 /** @type {!Array<!Network>} */
 export const fakeNetworks = [
-  OncMojo.getDefaultNetworkState(
-      chromeos.networkConfig.mojom.NetworkType.kWiFi, 'wifi0'),
+  OncMojo.getDefaultNetworkState(NetworkType.kWiFi, 'wifi0'),
 ];
 
 /** @type {!Array<string>} */
 export const fakeDeviceRegions = ['EMEA', 'APAC', 'AMER'];
 
-/** @type {!Array<string>} */
-export const fakeDeviceSkus = ['SKU 1', 'SKU 2', 'SKU 3'];
+/** @type {!Array<bigint>} */
+export const fakeDeviceSkus = [1, 2, 3];
 
+/** @type {!Array<string>} */
+export const fakeDeviceWhiteLabels =
+    ['White-label 1', 'White-label 2', 'White-label 3', ''];
 
 /** @type {string} */
 export const fakeLog =
@@ -377,3 +497,6 @@ export const fakeLog =
     'tristique risus nec. Scelerisque eu ultrices vitae auctor eu augue ut ' +
     'lectus. Tellus pellentesque eu tincidunt tortor aliquam. Fermentum leo ' +
     'vel orci porta non pulvinar neque laoreet suspendisse.\n';
+
+/** @type {string} */
+export const fakeLogSavePath = 'fake/save/path';

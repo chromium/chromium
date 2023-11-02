@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -145,26 +145,14 @@ bool ForceSigninVerifier::ShouldSendRequest() {
 }
 
 void ForceSigninVerifier::CloseAllBrowserWindows() {
-  if (base::FeatureList::IsEnabled(features::kForceSignInReauth)) {
-    // Do not sign the user out to allow them to reauthenticate from the profile
-    // picker.
-    BrowserList::CloseAllBrowsersWithProfile(
-        profile_,
-        base::BindRepeating(&ForceSigninVerifier::OnCloseBrowsersSuccess,
-                            weak_factory_.GetWeakPtr()),
-        base::DoNothing(),
-        /*skip_beforeunload=*/true);
-  } else {
-    // Do not close window if there is ongoing reauth. If it fails later, the
-    // signin process should take care of the signout.
-    auto* primary_account_mutator =
-        identity_manager_->GetPrimaryAccountMutator();
-    if (!primary_account_mutator)
-      return;
-    primary_account_mutator->ClearPrimaryAccount(
-        signin_metrics::AUTHENTICATION_FAILED_WITH_FORCE_SIGNIN,
-        signin_metrics::SignoutDelete::kIgnoreMetric);
-  }
+  // Do not sign the user out to allow them to reauthenticate from the profile
+  // picker.
+  BrowserList::CloseAllBrowsersWithProfile(
+      profile_,
+      base::BindRepeating(&ForceSigninVerifier::OnCloseBrowsersSuccess,
+                          weak_factory_.GetWeakPtr()),
+      /*on_close_aborted=*/base::DoNothing(),
+      /*skip_beforeunload=*/true);
 }
 
 void ForceSigninVerifier::OnCloseBrowsersSuccess(
@@ -178,7 +166,8 @@ void ForceSigninVerifier::OnCloseBrowsersSuccess(
   if (!entry)
     return;
   entry->LockForceSigninProfile(true);
-  ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileLocked);
+  ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+      ProfilePicker::EntryPoint::kProfileLocked));
 }
 
 signin::PrimaryAccountAccessTokenFetcher*

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,13 +16,13 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
-#include "ash/public/cpp/style/color_provider.h"
-#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "chromeos/services/assistant/public/cpp/features.h"
+#include "ash/style/ash_color_id.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/styles/cros_styles.h"
+#include "ui/color/color_provider.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
@@ -73,9 +73,8 @@ void AssistantZeroStateView::OnThemeChanged() {
   greeting_label_->SetBackgroundColor(ash::assistant::ResolveAssistantColor(
       assistant_colors::ColorName::kBgAssistantPlate));
 
-  ScopedAssistantLightModeAsDefault scoped_light_mode_as_default;
-  greeting_label_->SetEnabledColor(ColorProvider::Get()->GetContentLayerColor(
-      ColorProvider::ContentLayerType::kTextColorPrimary));
+  greeting_label_->SetEnabledColor(
+      GetColorProvider()->GetColor(kColorAshAssistantTextColorPrimary));
 }
 
 void AssistantZeroStateView::OnAssistantControllerDestroying() {
@@ -102,15 +101,15 @@ void AssistantZeroStateView::InitLayout() {
   // Onboarding.
   onboarding_view_ =
       AddChildView(std::make_unique<AssistantOnboardingView>(delegate_));
-  onboarding_view_->SetBorder(
-      views::CreateEmptyBorder(kOnboardingViewTopMarginDip, 0, 0, 0));
+  onboarding_view_->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(kOnboardingViewTopMarginDip, 0, 0, 0)));
 
   // Greeting.
   greeting_label_ = AddChildView(std::make_unique<views::Label>());
   greeting_label_->SetID(AssistantViewID::kGreetingLabel);
   greeting_label_->SetAutoColorReadabilityEnabled(false);
-  greeting_label_->SetBorder(
-      views::CreateEmptyBorder(kGreetingLabelTopMarginDip, 0, 0, 0));
+  greeting_label_->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(kGreetingLabelTopMarginDip, 0, 0, 0)));
   greeting_label_->SetFontList(
       assistant::ui::GetDefaultFontList()
           .DeriveWithSizeDelta(8)

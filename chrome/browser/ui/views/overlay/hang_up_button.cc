@@ -1,24 +1,20 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/overlay/hang_up_button.h"
 
+#include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/views/overlay/constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/paint_vector_icon.h"
 
-namespace {
-
-constexpr SkColor kHangUpButtonColor = gfx::kGoogleRed300;
-
-}  // namespace
-
 HangUpButton::HangUpButton(PressedCallback callback)
-    : ImageButton(std::move(callback)) {
-  SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
-  SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
+    : OverlayWindowImageButton(std::move(callback)) {
   SetTooltipText(
       l10n_util::GetStringUTF16(IDS_PICTURE_IN_PICTURE_HANG_UP_TEXT));
   UpdateImage();
@@ -32,7 +28,12 @@ void HangUpButton::OnBoundsChanged(const gfx::Rect& previous_bounds) {
 }
 
 void HangUpButton::UpdateImage() {
-  SetImage(views::Button::STATE_NORMAL,
-           gfx::CreateVectorIcon(vector_icons::kCallEndIcon, width(),
-                                 kHangUpButtonColor));
+  const int icon_size = std::max(0, width() - (2 * kPipWindowIconPadding));
+  SetImageModel(views::Button::STATE_NORMAL,
+                ui::ImageModel::FromVectorIcon(
+                    vector_icons::kCallEndIcon,
+                    kColorPipWindowHangUpButtonForeground, icon_size));
 }
+
+BEGIN_METADATA(HangUpButton, OverlayWindowImageButton)
+END_METADATA

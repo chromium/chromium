@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 The Chromium Authors. All rights reserved.
+ * Copyright 2016 The Chromium Authors
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file.
  */
@@ -181,12 +181,14 @@ function androidPaySkipUiBuy() { // eslint-disable-line no-unused-vars
 /**
  * Launches the PaymentRequest UI which accepts only an unsupported payment
  * method.
+ * @return {Promise<string>} - Either payment response as a JSON string or the
+ * error message.
  */
-function noSupported() { // eslint-disable-line no-unused-vars
+async function noSupportedPromise() { // eslint-disable-line no-unused-vars
   try {
-    request = new PaymentRequest(
+    const request = new PaymentRequest(
         [{
-          supportedMethods: 'https://randompay.com',
+          supportedMethods: window.location.href + '/randompay',
         }],
         {
           total: {
@@ -209,18 +211,11 @@ function noSupported() { // eslint-disable-line no-unused-vars
         {
           requestShipping: true,
         });
-    request.show()
-        .then(function(resp) {
-          return resp.complete('success');
-        })
-        .then(function() {
-          print(JSON.stringify(resp, undefined, 2));
-        })
-        .catch(function(error) {
-          print(error);
-        });
+    const response = await request.show();
+    await response.complete('success');
+    return JSON.stringify(response);
   } catch (error) {
-    print(error.message);
+    return error.toString();
   }
 }
 

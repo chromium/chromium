@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <map>
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/guest_view/common/guest_view_constants.h"
 #include "content/public/browser/media_stream_request.h"
@@ -62,10 +62,11 @@ class WebViewPermissionHelper {
                         PermissionResponseCallback callback,
                         bool allowed_by_default);
 
-  static WebViewPermissionHelper* FromWebContents(
-      content::WebContents* web_contents);
-  static WebViewPermissionHelper* FromFrameID(int render_process_id,
-                                              int render_frame_id);
+  static WebViewPermissionHelper* FromRenderFrameHost(
+      content::RenderFrameHost* rfh);
+  static WebViewPermissionHelper* FromRenderFrameHostId(
+      const content::GlobalRenderFrameHostId& rfh_id);
+
   void RequestMediaAccessPermission(content::WebContents* source,
                                     const content::MediaStreamRequest& request,
                                     content::MediaResponseCallback callback);
@@ -130,7 +131,7 @@ class WebViewPermissionHelper {
   std::unique_ptr<WebViewPermissionHelperDelegate>
       web_view_permission_helper_delegate_;
 
-  WebViewGuest* const web_view_guest_;
+  const raw_ptr<WebViewGuest> web_view_guest_;
 
   bool default_media_access_permission_;
 

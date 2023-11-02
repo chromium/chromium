@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -148,19 +148,19 @@ TEST_F(BatterySamplerTest, MaybeComputeAvgPowerConsumption) {
 }
 
 TEST_F(BatterySamplerTest, ReturnsSamplesAndComputesPower) {
-  set_battery_data(TestBatterySampler::BatteryData{});
-  std::unique_ptr<BatterySampler> sampler(
-      TestBatterySampler::CreateForTesting());
-
-  ASSERT_NE(nullptr, sampler.get());
-  base::TimeTicks now = base::TimeTicks::Now();
-
   TestBatterySampler::BatteryData battery_data{
       .external_connected = true,
       .voltage_mv = 11100,           // 11.1V.
       .current_capacity_mah = 2001,  // 2.001 Ah remaining.
       .max_capacity_mah = 5225       // Corresponds to 58Wh/11.1V in mAh.
   };
+  set_battery_data(battery_data);
+  std::unique_ptr<BatterySampler> sampler(
+      TestBatterySampler::CreateForTesting());
+
+  ASSERT_NE(nullptr, sampler.get());
+  base::TimeTicks now = base::TimeTicks::Now();
+
   set_battery_data(battery_data);
   Sampler::Sample datums = sampler->GetSample(now);
 
@@ -170,16 +170,29 @@ TEST_F(BatterySamplerTest, ReturnsSamplesAndComputesPower) {
                                     std::make_pair("current_capacity", 2.001),
                                     std::make_pair("max_capacity", 5.225)});
 
-  battery_data.voltage_mv = 11200;  // 11.2V.
+  battery_data.current_capacity_mah -= 1;
   set_battery_data(battery_data);
   constexpr base::TimeDelta kOneMinute = base::Minutes(1);
 
   now += kOneMinute;
   datums = sampler->GetSample(now);
+  // There's no power estimate because the consumed capacity in the previous
+  // sample is identical to the initial state. Since the consumed capacity in
+  // this sample is different than the initial state, it will be considered for
+  // a power estimate in a future sample.
+  ExpectSampleMatchesArray(datums, {std::make_pair("external_connected", true),
+                                    std::make_pair("voltage", 11.1),
+                                    std::make_pair("current_capacity", 2),
+                                    std::make_pair("max_capacity", 5.225)});
+
+  battery_data.voltage_mv = 11200;  // 11.2V.
+  set_battery_data(battery_data);
+  now += kOneMinute;
+  datums = sampler->GetSample(now);
   // So long as there's no current consumption, there's no power estimate.
   ExpectSampleMatchesArray(datums, {std::make_pair("external_connected", true),
                                     std::make_pair("voltage", 11.2),
-                                    std::make_pair("current_capacity", 2.001),
+                                    std::make_pair("current_capacity", 2),
                                     std::make_pair("max_capacity", 5.225)});
 
   battery_data.current_capacity_mah -= 1;
@@ -193,12 +206,12 @@ TEST_F(BatterySamplerTest, ReturnsSamplesAndComputesPower) {
       120.0;                     // 2 minutes (s).
   // The above makes roughly 330mW.
   EXPECT_DOUBLE_EQ(expected_power_w, 0.3345);
-  ExpectSampleMatchesArray(
-      datums,
-      {std::make_pair("external_connected", true),
-       std::make_pair("voltage", 11.2), std::make_pair("current_capacity", 2),
-       std::make_pair("max_capacity", 5.225),
-       std::make_pair("avg_power", expected_power_w)});
+  ExpectSampleMatchesArray(datums,
+                           {std::make_pair("external_connected", true),
+                            std::make_pair("voltage", 11.2),
+                            std::make_pair("current_capacity", 1.999),
+                            std::make_pair("max_capacity", 5.225),
+                            std::make_pair("avg_power", expected_power_w)});
 }
 
 }  // namespace power_sampler

@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-# Copyright 2020 The Chromium Authors. All rights reserved.
+#!/usr/bin/env python3
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Generates extra flags needed to allow temporarily reverting flag expiry.
@@ -40,7 +40,7 @@ def recent_mstones(mstone):
 
 def file_header(prog_name):
   """Returns the header to use on generated files."""
-  return """// Copyright 2020 The Chromium Authors. All rights reserved.
+  return """// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -68,10 +68,9 @@ namespace flags {
 
   features = [(m, 'UnexpireFlagsM' + str(m)) for m in recent_mstones(mstone)]
   for feature in features:
-    body += 'const base::Feature k{f} {{\n'.format(f=feature[1])
-    body += '  "{f}",\n'.format(f=feature[1])
-    body += '  base::FEATURE_DISABLED_BY_DEFAULT\n'
-    body += '};\n\n'
+    body += f'BASE_FEATURE(k{feature[1]},\n'
+    body += f'             "{feature[1]}",\n'
+    body += f'             base::FEATURE_DISABLED_BY_DEFAULT);\n\n'
 
   body += """// Returns the unexpire feature for the given mstone, if any.
 const base::Feature* GetUnexpireFeatureForMilestone(int milestone) {
@@ -107,7 +106,7 @@ namespace flags {
 """
 
   for m in recent_mstones(mstone):
-    body += 'extern const base::Feature kUnexpireFlagsM{m};\n'.format(m=m)
+    body += f'BASE_DECLARE_FEATURE(kUnexpireFlagsM{m});\n'
 
   body += """
 // Returns the base::Feature used to decide whether flag expiration is enabled

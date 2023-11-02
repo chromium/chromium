@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,7 @@
 #include "ui/gtk/gtk_ui.h"
 #include "ui/gtk/gtk_ui_platform.h"
 #include "ui/gtk/gtk_util.h"
-#include "ui/views/linux_ui/linux_ui.h"
+#include "ui/linux/linux_ui.h"
 
 namespace gtk {
 
@@ -65,27 +65,36 @@ GdkEvent* GdkEventFromImeKeyEvent(const ui::KeyEvent& key_event) {
 }  // namespace
 
 InputMethodContextImplGtk::InputMethodContextImplGtk(
-    ui::LinuxInputMethodContextDelegate* delegate,
-    bool is_simple)
-    : delegate_(delegate), is_simple_(is_simple) {
+    ui::LinuxInputMethodContextDelegate* delegate)
+    : delegate_(delegate) {
   CHECK(delegate_);
 
-  gtk_context_ =
-      is_simple ? gtk_im_context_simple_new() : gtk_im_multicontext_new();
+  gtk_context_ = gtk_im_multicontext_new();
+  gtk_simple_context_ = gtk_im_context_simple_new();
 
   g_signal_connect(gtk_context_, "commit", G_CALLBACK(OnCommitThunk), this);
+  g_signal_connect(gtk_simple_context_, "commit", G_CALLBACK(OnCommitThunk),
+                   this);
   g_signal_connect(gtk_context_, "preedit-changed",
+                   G_CALLBACK(OnPreeditChangedThunk), this);
+  g_signal_connect(gtk_simple_context_, "preedit-changed",
                    G_CALLBACK(OnPreeditChangedThunk), this);
   g_signal_connect(gtk_context_, "preedit-end", G_CALLBACK(OnPreeditEndThunk),
                    this);
+  g_signal_connect(gtk_simple_context_, "preedit-end",
+                   G_CALLBACK(OnPreeditEndThunk), this);
   g_signal_connect(gtk_context_, "preedit-start",
+                   G_CALLBACK(OnPreeditStartThunk), this);
+  g_signal_connect(gtk_simple_context_, "preedit-start",
                    G_CALLBACK(OnPreeditStartThunk), this);
   // TODO(shuchen): Handle operations on surrounding text.
   // "delete-surrounding" and "retrieve-surrounding" signals should be
   // handled.
 
-  if (GtkCheckVersion(4))
+  if (GtkCheckVersion(4)) {
     gtk_im_context_set_client_widget(gtk_context_, GetDummyWindow());
+    gtk_im_context_set_client_widget(gtk_simple_context_, GetDummyWindow());
+  }
 }
 
 InputMethodContextImplGtk::~InputMethodContextImplGtk() {
@@ -93,12 +102,17 @@ InputMethodContextImplGtk::~InputMethodContextImplGtk() {
     g_object_unref(gtk_context_);
     gtk_context_ = nullptr;
   }
+  if (gtk_simple_context_) {
+    g_object_unref(gtk_simple_context_);
+    gtk_simple_context_ = nullptr;
+  }
 }
 
 // Overridden from ui::LinuxInputMethodContext
 bool InputMethodContextImplGtk::DispatchKeyEvent(
     const ui::KeyEvent& key_event) {
-  if (!gtk_context_)
+  auto* gtk_context = GetIMContext();
+  if (!gtk_context)
     return false;
 
   GdkEvent* event = nullptr;
@@ -115,13 +129,15 @@ bool InputMethodContextImplGtk::DispatchKeyEvent(
       return false;
     }
 
-    SetContextClientWindow(target_window);
+    SetContextClientWindow(target_window, gtk_context);
   }
 
   // Convert the last known caret bounds relative to the screen coordinates
   // to a GdkRectangle relative to the client window.
   aura::Window* window = static_cast<aura::Window*>(key_event.target());
-  gfx::Rect caret_bounds = last_caret_bounds_;
+  gfx::Rect caret_bounds;
+  if (gtk_context == gtk_context_)
+    caret_bounds = last_caret_bounds_;
   caret_bounds -= window->GetBoundsInScreen().OffsetFromOrigin();
 
   // Chrome's DIPs may be different from GTK's DIPs if
@@ -131,11 +147,11 @@ bool InputMethodContextImplGtk::DispatchKeyEvent(
       GetDeviceScaleFactor() / gtk_widget_get_scale_factor(GetDummyWindow()));
   GdkRectangle gdk_rect = {caret_bounds.x(), caret_bounds.y(),
                            caret_bounds.width(), caret_bounds.height()};
-  gtk_im_context_set_cursor_location(gtk_context_, &gdk_rect);
+  gtk_im_context_set_cursor_location(gtk_context, &gdk_rect);
 
   if (!GtkCheckVersion(4)) {
     const bool handled =
-        GtkImContextFilterKeypress(gtk_context_, GdkEventToKey(event));
+        GtkImContextFilterKeypress(gtk_context, GdkEventToKey(event));
     gdk_event_free(event);
     return handled;
   }
@@ -153,7 +169,7 @@ bool InputMethodContextImplGtk::DispatchKeyEvent(
   auto keycode = GetKeyEventProperty(key_event, ui::kPropertyKeyboardHwKeyCode);
   auto state = GtkUi::GetPlatform()->GetGdkKeyEventState(key_event);
   auto group = GtkUi::GetPlatform()->GetGdkKeyEventGroup(key_event);
-  return gtk_im_context_filter_key(gtk_context_, press, surface, device, time,
+  return gtk_im_context_filter_key(gtk_context, press, surface, device, time,
                                    keycode, state, group);
 }
 
@@ -165,23 +181,34 @@ bool InputMethodContextImplGtk::IsPeekKeyEvent(const ui::KeyEvent& key_event) {
 
 void InputMethodContextImplGtk::Reset() {
   gtk_im_context_reset(gtk_context_);
+  gtk_im_context_reset(gtk_simple_context_);
 
   // Some input methods may not honour the reset call.
   // Focusing out/in the to make sure it gets reset correctly.
-  if (!is_simple_ && has_focus_) {
-    Blur();
-    Focus();
+  if (type_ != ui::TEXT_INPUT_TYPE_NONE) {
+    gtk_im_context_focus_out(gtk_context_);
+    gtk_im_context_focus_in(gtk_context_);
   }
 }
 
-void InputMethodContextImplGtk::Focus() {
-  gtk_im_context_focus_in(gtk_context_);
-  has_focus_ = true;
-}
+void InputMethodContextImplGtk::UpdateFocus(bool has_client,
+                                            ui::TextInputType old_type,
+                                            ui::TextInputType new_type) {
+  type_ = new_type;
 
-void InputMethodContextImplGtk::Blur() {
-  gtk_im_context_focus_out(gtk_context_);
-  has_focus_ = false;
+  // We only focus when the focus is in a textfield.
+  if (old_type != ui::TEXT_INPUT_TYPE_NONE)
+    gtk_im_context_focus_out(gtk_context_);
+  if (new_type != ui::TEXT_INPUT_TYPE_NONE)
+    gtk_im_context_focus_in(gtk_context_);
+
+  // simple context can be used in any textfield, including password box, and
+  // even if the focused text input client's text input type is
+  // ui::TEXT_INPUT_TYPE_NONE.
+  if (has_client)
+    gtk_im_context_focus_in(gtk_simple_context_);
+  else
+    gtk_im_context_focus_out(gtk_simple_context_);
 }
 
 void InputMethodContextImplGtk::SetCursorLocation(const gfx::Rect& rect) {
@@ -202,14 +229,14 @@ void InputMethodContextImplGtk::SetSurroundingText(
 // GtkIMContext event handlers.
 
 void InputMethodContextImplGtk::OnCommit(GtkIMContext* context, gchar* text) {
-  if (context != gtk_context_)
+  if (context != GetIMContext())
     return;
 
   delegate_->OnCommit(base::UTF8ToUTF16(text));
 }
 
 void InputMethodContextImplGtk::OnPreeditChanged(GtkIMContext* context) {
-  if (context != gtk_context_)
+  if (context != GetIMContext())
     return;
 
   gchar* str = nullptr;
@@ -226,29 +253,58 @@ void InputMethodContextImplGtk::OnPreeditChanged(GtkIMContext* context) {
 }
 
 void InputMethodContextImplGtk::OnPreeditEnd(GtkIMContext* context) {
-  if (context != gtk_context_)
+  if (context != GetIMContext())
     return;
 
   delegate_->OnPreeditEnd();
 }
 
 void InputMethodContextImplGtk::OnPreeditStart(GtkIMContext* context) {
-  if (context != gtk_context_)
+  if (context != GetIMContext())
     return;
 
   delegate_->OnPreeditStart();
 }
 
-void InputMethodContextImplGtk::SetContextClientWindow(GdkWindow* window) {
+void InputMethodContextImplGtk::SetContextClientWindow(
+    GdkWindow* window,
+    GtkIMContext* gtk_context) {
+  gpointer& gdk_last_set_client_window =
+      gtk_context == gtk_simple_context_
+          ? gdk_last_set_client_window_for_simple_
+          : gdk_last_set_client_window_;
+
   DCHECK(!GtkCheckVersion(4));
-  if (window == gdk_last_set_client_window_)
+  if (window == gdk_last_set_client_window)
     return;
-  gtk_im_context_set_client_window(gtk_context_, window);
+  gtk_im_context_set_client_window(gtk_context, window);
 
   // Prevent leaks when overriding last client window
-  if (gdk_last_set_client_window_)
-    g_object_unref(gdk_last_set_client_window_);
-  gdk_last_set_client_window_ = window;
+  if (gdk_last_set_client_window)
+    g_object_unref(gdk_last_set_client_window);
+  gdk_last_set_client_window = window;
+}
+
+void InputMethodContextImplGtk::SetContentType(ui::TextInputType type,
+                                               ui::TextInputMode mode,
+                                               uint32_t flags,
+                                               bool should_do_learning) {
+  // Do nothing.
+}
+
+ui::VirtualKeyboardController*
+InputMethodContextImplGtk::GetVirtualKeyboardController() {
+  return nullptr;
+}
+
+GtkIMContext* InputMethodContextImplGtk::GetIMContext() {
+  switch (type_) {
+    case ui::TEXT_INPUT_TYPE_NONE:
+    case ui::TEXT_INPUT_TYPE_PASSWORD:
+      return gtk_simple_context_;
+    default:
+      return gtk_context_;
+  }
 }
 
 }  // namespace gtk

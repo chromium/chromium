@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,14 +7,13 @@
 
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "chrome/browser/ash/login/users/supervised_user_manager.h"
 
 namespace ash {
 class ChromeUserManagerImpl;
 class CrosSettings;
 
-// TODO(crbug.com/1155729): Check this entire class is not used anymore for
+// TODO(b/231321563): Check this entire class is not used anymore for
 // deprecated supervised users and remove it with all dependencies.
 // Implementation of the UserManager.
 class SupervisedUserManagerImpl : public SupervisedUserManager {
@@ -31,10 +30,9 @@ class SupervisedUserManagerImpl : public SupervisedUserManager {
   std::string GetManagerUserId(const std::string& user_id) const override;
   std::string GetManagerDisplayEmail(const std::string& user_id) const override;
   void GetPasswordInformation(const std::string& user_id,
-                              base::DictionaryValue* result) override;
-  void SetPasswordInformation(
-      const std::string& user_id,
-      const base::DictionaryValue* password_info) override;
+                              base::Value::Dict* result) override;
+  void SetPasswordInformation(const std::string& user_id,
+                              const base::Value::Dict* password_info) override;
 
  private:
   friend class ChromeUserManagerImpl;

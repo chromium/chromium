@@ -1,11 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/signin/internal/identity_manager/account_capabilities_constants.h"
 
-const char kCanOfferExtendedChromeSyncPromosCapabilityName[] =
-    "accountcapabilities/gi2tklldmfya";
-
-const char kCanOfferExtendedChromeSyncPromosCapabilityPrefsPath[] =
-    "accountcapabilities.can_offer_extended_chrome_sync_promos";
+#define ACCOUNT_CAPABILITY(cpp_label, java_label, name) \
+  const char cpp_label[] = name;
+#include "components/signin/internal/identity_manager/account_capabilities_list.h"
+#undef ACCOUNT_CAPABILITY

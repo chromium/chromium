@@ -223,14 +223,10 @@ limit, and the DNS lookups are also misbehaving in some fashion.
 These are just miscellaneous things you may notice when looking through the
 logs.
 
-* URLRequests that look to start twice for no obvious reason.  These are
-typically main frame requests, and the first request is AppCache.  Can just
-ignore it and move on with your life.
-
 * Some HTTP requests are not handled by URLRequestHttpJobs.  These include
-things like HSTS redirects (URLRequestRedirectJob), AppCache, ServiceWorker,
-etc.  These generally don't log as much information, so it can be tricky to
-figure out what's going on with these.
+things like HSTS redirects (URLRequestRedirectJob), ServiceWorker, etc.  These
+generally don't log as much information, so it can be tricky to figure out
+what's going on with these.
 
 * Non-HTTP requests also appear in the log, and also generally don't log much
 (blob URLs, chrome URLs, etc).

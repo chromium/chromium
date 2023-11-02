@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,8 +13,8 @@ namespace content {
 void WakeLockServiceImpl::Create(
     RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::WakeLockService> receiver) {
-  DCHECK(render_frame_host);
-  new WakeLockServiceImpl(render_frame_host, std::move(receiver));
+  CHECK(render_frame_host);
+  new WakeLockServiceImpl(*render_frame_host, std::move(receiver));
 }
 
 void WakeLockServiceImpl::GetWakeLock(
@@ -23,7 +23,7 @@ void WakeLockServiceImpl::GetWakeLock(
     const std::string& description,
     mojo::PendingReceiver<device::mojom::WakeLock> receiver) {
   device::mojom::WakeLockContext* wake_lock_context =
-      WebContents::FromRenderFrameHost(render_frame_host())
+      WebContents::FromRenderFrameHost(&render_frame_host())
           ->GetWakeLockContext();
 
   if (!wake_lock_context)
@@ -34,7 +34,7 @@ void WakeLockServiceImpl::GetWakeLock(
 }
 
 WakeLockServiceImpl::WakeLockServiceImpl(
-    RenderFrameHost* render_frame_host,
+    RenderFrameHost& render_frame_host,
     mojo::PendingReceiver<blink::mojom::WakeLockService> receiver)
     : DocumentService(render_frame_host, std::move(receiver)) {}
 

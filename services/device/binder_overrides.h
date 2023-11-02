@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,14 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
+#include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/device/public/mojom/geolocation_context.mojom.h"
+#include "services/device/public/mojom/pressure_manager.mojom.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "services/device/public/mojom/nfc_provider.mojom.h"
+#endif
 
 namespace device {
 namespace internal {
@@ -17,6 +23,18 @@ using GeolocationContextBinder = base::RepeatingCallback<void(
     mojo::PendingReceiver<device::mojom::GeolocationContext>)>;
 COMPONENT_EXPORT(DEVICE_SERVICE_BINDER_OVERRIDES)
 GeolocationContextBinder& GetGeolocationContextBinderOverride();
+
+using PressureManagerBinder = base::RepeatingCallback<void(
+    mojo::PendingReceiver<device::mojom::PressureManager>)>;
+COMPONENT_EXPORT(DEVICE_SERVICE_BINDER_OVERRIDES)
+PressureManagerBinder& GetPressureManagerBinderOverride();
+
+#if BUILDFLAG(IS_ANDROID)
+using NFCProviderBinder = base::RepeatingCallback<void(
+    mojo::PendingReceiver<device::mojom::NFCProvider>)>;
+COMPONENT_EXPORT(DEVICE_SERVICE_BINDER_OVERRIDES)
+NFCProviderBinder& GetNFCProviderBinderOverride();
+#endif
 
 }  // namespace internal
 }  // namespace device

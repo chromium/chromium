@@ -1,24 +1,25 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_GL_SWAP_CHAIN_PRESENTER_H_
 #define UI_GL_SWAP_CHAIN_PRESENTER_H_
 
-#include <windows.h>
 #include <d3d11.h>
 #include <dcomp.h>
+#include <windows.h>
 #include <wrl/client.h>
 
 #include "base/containers/circular_deque.h"
+#include "base/memory/raw_ptr.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/time/time.h"
 #include "base/win/scoped_handle.h"
 #include "ui/gfx/color_space.h"
+#include "ui/gl/dc_layer_tree.h"
 #include "ui/gl/dc_renderer_layer_params.h"
 
 namespace gl {
-class DCLayerTree;
 class GLImageMemory;
 
 // SwapChainPresenter holds a swap chain, direct composition visuals, and other
@@ -36,26 +37,23 @@ class SwapChainPresenter : public base::PowerStateObserver {
 
   ~SwapChainPresenter() override;
 
-  // Present the given overlay to swap chain.  Returns true on success.
-  bool PresentToSwapChain(ui::DCRendererLayerParams& overlay);
+  // Present the given overlay to swap chain. The backing content may not match
+  // |overlay.quad_rect| (e.g. in the case of full screen) so this method
+  // returns a modified |visual_transform| and |visual_clip_rect| that should be
+  // used instead of the ones on |overlay|.
+  // Returns true on success.
+  bool PresentToSwapChain(const ui::DCRendererLayerParams& overlay,
+                          gfx::Transform* visual_transform,
+                          gfx::Rect* visual_clip_rect);
 
   const Microsoft::WRL::ComPtr<IDXGISwapChain1>& swap_chain() const {
     return swap_chain_;
   }
 
-  const Microsoft::WRL::ComPtr<IDCompositionVisual2>& visual() const {
-    return clip_visual_;
-  }
+  DCLayerTree::VisualSubtree& visual_subtree() { return visual_subtree_; }
+  const Microsoft::WRL::ComPtr<IUnknown>& content() const { return content_; }
 
   void SetFrameRate(float frame_rate);
-
-  void GetSwapChainVisualInfoForTesting(gfx::Transform* transform,
-                                        gfx::Point* offset,
-                                        gfx::Rect* clip_rect) const {
-    *transform = visual_info_.transform;
-    *offset = visual_info_.offset;
-    *clip_rect = visual_info_.clip_rect.value_or(gfx::Rect());
-  }
 
  private:
   // Mapped to DirectCompositonVideoPresentationMode UMA enum.  Do not remove or
@@ -145,23 +143,26 @@ class SwapChainPresenter : public base::PowerStateObserver {
   // If the swap chain size is very close to the screen size but not exactly the
   // same, the swap chain should be adjusted to fit the screen size in order to
   // get the fullscreen DWM optimizations.
-  void AdjustSwapChainToFullScreenSizeIfNeeded(
+  bool AdjustSwapChainToFullScreenSizeIfNeeded(
+      const gfx::Size& monitor_size,
       const ui::DCRendererLayerParams& params,
       const gfx::Rect& overlay_onscreen_rect,
       gfx::Size* swap_chain_size,
-      gfx::Transform* transform,
-      gfx::Rect* clip_rect);
+      gfx::Transform* visual_transform,
+      gfx::Rect* visual_clip_rect);
+
+  void AdjustSwapChainForFullScreenLetterboxing(
+      const gfx::Size& monitor_size,
+      const ui::DCRendererLayerParams& params,
+      const gfx::Rect& overlay_onscreen_rect,
+      gfx::Size* swap_chain_size,
+      gfx::Transform* visual_transform,
+      gfx::Rect* visual_clip_rect);
 
   // Returns optimal swap chain size for given layer.
   gfx::Size CalculateSwapChainSize(const ui::DCRendererLayerParams& params,
-                                   gfx::Transform* transform,
-                                   gfx::Rect* clip_rect);
-
-  // Update direct composition visuals for layer with given swap chain size.
-  void UpdateVisuals(const ui::DCRendererLayerParams& params,
-                     const gfx::Size& swap_chain_size,
-                     const gfx::Transform& transform,
-                     const gfx::Rect& clip_rect);
+                                   gfx::Transform* visual_transform,
+                                   gfx::Rect* visual_clip_rect);
 
   // Try presenting to a decode swap chain based on various conditions such as
   // global state (e.g. finch, NV12 support), texture flags, and transform.
@@ -172,7 +173,8 @@ class SwapChainPresenter : public base::PowerStateObserver {
       const gfx::ColorSpace& color_space,
       const gfx::Rect& content_rect,
       const gfx::Size& swap_chain_size,
-      DXGI_FORMAT swap_chain_format);
+      DXGI_FORMAT swap_chain_format,
+      const gfx::Transform& transform_to_root);
 
   // Present to a decode swap chain created from compatible video decoder
   // buffers using given |nv12_image| with destination size |swap_chain_size|.
@@ -203,8 +205,9 @@ class SwapChainPresenter : public base::PowerStateObserver {
   // whichever is currently used.
   Microsoft::WRL::ComPtr<IDXGISwapChainMedia> GetSwapChainMedia() const;
 
-  // Present the Direct Compositon surface from MediaFoundationRenderer.
-  bool PresentDCOMPSurface(const ui::DCRendererLayerParams& overlay);
+  // Present the Direct Composition surface from MediaFoundationRenderer.
+  bool PresentDCOMPSurface(const ui::DCRendererLayerParams& overlay,
+                           gfx::Transform* visual_transform);
 
   // Release resources related to `PresentDCOMPSurface()`.
   void ReleaseDCOMPSurfaceResourcesIfNeeded();
@@ -213,7 +216,7 @@ class SwapChainPresenter : public base::PowerStateObserver {
   HANDLE dcomp_surface_handle_ = INVALID_HANDLE_VALUE;
 
   // Layer tree instance that owns this swap chain presenter.
-  DCLayerTree* layer_tree_ = nullptr;
+  raw_ptr<DCLayerTree> layer_tree_ = nullptr;
 
   const HWND window_;
 
@@ -245,26 +248,13 @@ class SwapChainPresenter : public base::PowerStateObserver {
   // which we won't attempt to use decode swap chain again.
   bool failed_to_present_decode_swapchain_ = false;
 
-  // This struct is used to cache information about what visuals are currently
-  // being presented so that properties that aren't changed aren't sent to
-  // DirectComposition.
-  struct VisualInfo {
-    VisualInfo();
-    ~VisualInfo();
+  // Contains the visuals for the overlay that uses this SwapChainPresenter.
+  DCLayerTree::VisualSubtree visual_subtree_;
 
-    gfx::Point offset;
-    gfx::Transform transform;
-    absl::optional<gfx::Rect> clip_rect;
-    int z_order = 0;
-  } visual_info_;
-
-  // Direct composition visual containing the swap chain content.  Child of
-  // |clip_visual_|.
-  Microsoft::WRL::ComPtr<IDCompositionVisual2> content_visual_;
-
-  // Direct composition visual that applies the clip rect.  Parent of
-  // |content_visual_|, and root of the visual tree for this layer.
-  Microsoft::WRL::ComPtr<IDCompositionVisual2> clip_visual_;
+  // The swap chain content, sometimes a IDCompositionSurface. This is updated
+  // during |PresentToSwapChain| and copied to |visual_subtree_| and set as the
+  // content of the content visual when the subtree is updated.
+  Microsoft::WRL::ComPtr<IUnknown> content_;
 
   // GLImages that were presented in the last frame.
   ui::DCRendererLayerParams::OverlayImages last_presented_images_;

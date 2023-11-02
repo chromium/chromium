@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<title>Tests mouse autoscroll interactions on a non-custom composited div scrollbar.</title>
+<script src="../../../../../resources/testharness.js"></script>
+<script src="../../../../../resources/testharnessreport.js"></script>
+<script src="../../../../../resources/gesture-util.js"></script>
+<script src="../../../../../resources/scrollbar-util.js"></script>
+<style>
+.appearance {
+  width: 100px;
+  height: 100px;
+  overflow: scroll;
+  border: 1px solid black;
+}
+.location {
+  position: absolute;
+  top: 100px;
+  left: 100px;
+}
+.space {
+  height: 2000px;
+  width: 2000px;
+}
+
+</style>
+
+<!-- Composited non-custom scroller -->
+<div id="scroller" class="appearance location">
+  <div id="divContent" class="space"></div>
+</div>
+
+<script>
+  // Turn off animated scrolling. The "conditionHolds" API expects the scrollTop to
+  // *not* change for 10 frames. This will fail since the last GSU would still be
+  // animating if animated scrolling were on.
+  if (window.internals)
+    internals.settings.setScrollAnimatorEnabled(false);
+
+  const scroller = document.getElementById("scroller");
+  const scrollerRect = scroller.getBoundingClientRect();
+  const onMacPlatform =  navigator.userAgent.search(/\bMac OS X\b/) != -1;
+
+  const TRACK_WIDTH = calculateScrollbarThickness();
+  const BUTTON_WIDTH = TRACK_WIDTH;
+  const SCROLL_CORNER = TRACK_WIDTH;
+  const SCROLL_DELTA = (internals.runtimeFlags.percentBasedScrollingEnabled) ? 
+      Math.floor(scroller.clientHeight * SCROLLBAR_SCROLL_PERCENTAGE) * 10 :
+      SCROLLBAR_SCROLL_PIXELS * 10;
+  const MAX_SCROLLER_OFFSET = 1915;
+
+  promise_test (async () => {
+    if(onMacPlatform)
+      return;
+
+    await waitForCompositorCommit();
+    scroller.scrollTop = 0;
+
+    const down_arrow_x = scrollerRect.right - BUTTON_WIDTH / 2;
+    const down_arrow_y = scrollerRect.bottom - SCROLL_CORNER - BUTTON_WIDTH / 2;
+
+    await mouseMoveTo(down_arrow_x, down_arrow_y);
+    await mouseDownAt(down_arrow_x, down_arrow_y);
+    await waitUntil(() => { return scroller.scrollTop > SCROLL_DELTA; },
+    `scroller.scrollTop = ${scroller.scrollTop} never went beyond ${SCROLL_DELTA}`);
+    await mouseUpAt(down_arrow_x, down_arrow_y);
+
+    // Since autoscroll for arrows happens at 800 px per second, verify that the
+    // scrollTop has not reached the end.
+    assert_less_than(scroller.scrollTop, MAX_SCROLLER_OFFSET, "Reached scroller end.");
+
+    await waitForCompositorCommit();
+    const current_offset = scroller.scrollTop;
+    await conditionHolds(() => { return scroller.scrollTop == current_offset; },
+    `scroller.scrollTop = ${scroller.scrollTop} current_offset = ${current_offset}`);
+  },"Test arrow autoscroll down and autoscroll stop.");
+
+  promise_test (async () => {
+    await waitForCompositorCommit();
+    scroller.scrollTop = 0;
+
+    const trackscroll_x = scrollerRect.right - BUTTON_WIDTH / 2;
+    const trackscroll_y = scrollerRect.bottom - SCROLL_CORNER - BUTTON_WIDTH;
+
+    await mouseMoveTo(trackscroll_x, trackscroll_y);
+    await mouseDownAt(trackscroll_x, trackscroll_y);
+    await waitUntil(() => { return scroller.scrollTop > SCROLL_DELTA; },
+    `scroller.scrollTop = ${scroller.scrollTop} never went beyond ${SCROLL_DELTA}`);
+    await mouseUpAt(trackscroll_x, trackscroll_y);
+
+    // Verify that the track autoscroll actually stops as expected. Autoscroll velocity
+    // in this particular case is 1480 px/sec (i.e 74 * 20). There is currently a bug in
+    // the main thread autoscrolling code that causes autoscrolling to happen at a
+    // much lower velocity (crbug.com/1053398)
+    assert_less_than(scroller.scrollTop, 800, "Track autosroll did not end.");
+
+    const current_offset = scroller.scrollTop;
+    await conditionHolds(() => { return scroller.scrollTop == current_offset; }, 
+    `scroller.scrollTop = ${scroller.scrollTop} current_offset = ${current_offset}`);
+  },"Test track autoscroll down and autoscroll stop.");
+
+  promise_test (async () => {
+    // Scrollbars on Mac don't have arrows. This test is irrelevant. Infinite auto
+    // scroll can't be tested for track scrolls since autoscrolling aborts the as
+    // soon as the thumb reaches the pointer. Regular autoscrolling still has coverage
+    // on all platforms.
+    if(onMacPlatform)
+      return;
+
+    await waitForCompositorCommit();
+    scroller.scrollTop = MAX_SCROLLER_OFFSET;
+
+    const content = document.getElementById("divContent");
+    const originalDivHeight = content.clientHeight;
+    const extendedDivHeight = originalDivHeight + 500;
+    setTimeout(function() {
+      content.setAttribute("style","height:" + extendedDivHeight + "px");
+    }, 500);
+
+    const down_arrow_x = scrollerRect.right - BUTTON_WIDTH / 2;
+    const down_arrow_y = scrollerRect.bottom - SCROLL_CORNER - BUTTON_WIDTH / 2;
+
+    // Keep the mouse pressed. The previously scheduled scroller height increment kicks in
+    // and at this point, the autoscrolling is expected to take place. This should prove
+    // that scrolling occured *after* the scroller length was extended.
+    await mouseMoveTo(down_arrow_x, down_arrow_y);
+    await mouseDownAt(down_arrow_x, down_arrow_y);
+
+    // Verify that autoscroll took place beyond the old bounds. If there is a regression here,
+    // the scroller.scrollTop would've stayed at MAX_SCROLLER_OFFSET.
+    await waitUntil(() => { return scroller.scrollTop > MAX_SCROLLER_OFFSET; },
+    `Infinite autoscroll down failed (scroller.scrollTop = ${scroller.scrollTop})`);
+
+    await mouseUpAt(down_arrow_x, down_arrow_y);
+
+    // Reset the scroller dimensions.
+    content.setAttribute("style","height:" + originalDivHeight + "px");
+  },"Test infinite scrolling when content is extended dynamically.");
+
+  promise_test (async () => {
+    // Scrollbars on Mac don't have arrows. This test is irrelevant.
+    if(onMacPlatform)
+      return;
+
+    scroller.scrollTop = 0;
+    const SCROLL_TOP = 100;
+
+    const down_arrow_x = scrollerRect.right - BUTTON_WIDTH / 2;
+    const down_arrow_y = scrollerRect.bottom - SCROLL_CORNER - BUTTON_WIDTH / 2;
+
+    // Keep the mouse pressed on the down arrow.
+    await mouseMoveTo(down_arrow_x, down_arrow_y);
+    await mouseDownAt(down_arrow_x, down_arrow_y);
+
+    // Wait for a bit for the autoscroll to start. In the call below, the first 250ms
+    // is spent waiting for the autoscroll to start. After 250ms, autoscroll initiates
+    // with a velocity of 800px/sec. So, in the remaining time (of 250ms), the duration
+    // should be enough to take the scroller beyond the expected threshold (SCROLL_TOP).
+    // Note that the expected SCROLL_TOP here is 100px. If scrolling crosses this value,
+    // it should suffice as proof that autoscrolling works as expected.
+    await waitForMs(500);
+    await waitFor(() => { return scroller.scrollTop >= SCROLL_TOP; },
+    `scroller.scrollTop = ${scroller.scrollTop} never reached ${SCROLL_TOP}`);
+
+    // Without releasing the mouse, move away from the arrow.
+    await mouseMoveTo(down_arrow_x, down_arrow_y - 20);
+
+    // Now that the mouse is away, record the scrolltop and ensure that no scrolling happens.
+    const current_scrolltop = scroller.scrollTop;
+    await conditionHolds(() => { return current_scrolltop == scroller.scrollTop; },
+    `Condition did not hold [scroller.scrollTop = ${scroller.scrollTop}]`);
+
+    // Now move back on the arrow and verify that auto-scrolling starts immediately. There
+    // should not be the 250ms pause before starting autoscroll since the mouse was never released.
+    await mouseMoveTo(down_arrow_x, down_arrow_y);
+
+    // Allow some time for queued GSU's to fire.
+    await waitFor(() => { return scroller.scrollTop >= current_scrolltop; },
+    `Animation did not restart [scroller.scrollTop = ${scroller.scrollTop}]`);
+
+    await mouseUpAt(down_arrow_x, down_arrow_y);
+  },"Test autoscroll play/pause when pointer moves in and out of arrow bounds.");
+</script>

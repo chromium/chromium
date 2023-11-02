@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ash {
-namespace tray {
 
 // The detailed view to show when the locale feature button is clicked.
 class LocaleDetailedView : public TrayDetailedView {
@@ -34,7 +33,6 @@ class LocaleDetailedView : public TrayDetailedView {
   base::flat_map<int, std::string> id_to_locale_;
 };
 
-}  // namespace tray
 }  // namespace ash
 
 #endif  // ASH_SYSTEM_LOCALE_LOCALE_DETAILED_VIEW_H_

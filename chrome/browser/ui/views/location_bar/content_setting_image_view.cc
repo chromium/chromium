@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,11 +14,11 @@
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model.h"
 #include "chrome/browser/ui/content_settings/content_setting_image_model.h"
-#include "chrome/browser/ui/user_education/feature_promo_specification.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/content_setting_bubble_contents.h"
-#include "chrome/browser/ui/views/user_education/feature_promo_controller_views.h"
+#include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/user_education/common/feature_promo_specification.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -27,11 +27,13 @@
 #include "ui/events/event_utils.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -90,7 +92,7 @@ ContentSettingImageView::ContentSettingImageView(
     SetID(*view_id);
 }
 
-ContentSettingImageView::~ContentSettingImageView() {}
+ContentSettingImageView::~ContentSettingImageView() = default;
 
 void ContentSettingImageView::Update() {
   content::WebContents* web_contents =
@@ -103,7 +105,7 @@ void ContentSettingImageView::Update() {
 
   if (!content_setting_image_model_->is_visible()) {
     SetVisible(false);
-    current_iph_id_for_testing_.reset();
+    critical_promo_bubble_.reset();
     return;
   }
   DCHECK(web_contents);
@@ -111,8 +113,17 @@ void ContentSettingImageView::Update() {
   SetVisible(true);
 
   if (content_setting_image_model_->ShouldNotifyAccessibility(web_contents)) {
-    GetViewAccessibility().OverrideName(l10n_util::GetStringUTF16(
-        content_setting_image_model_->explanatory_string_id()));
+    auto name = l10n_util::GetStringUTF16(
+        content_setting_image_model_->AccessibilityAnnouncementStringId());
+    auto desc = l10n_util::GetStringUTF16(IDS_A11Y_OMNIBOX_CHIP_HINT);
+    GetViewAccessibility().OverrideName(name);
+    GetViewAccessibility().OverrideDescription(desc);
+#if BUILDFLAG(IS_MAC)
+    NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+#else
+    GetViewAccessibility().AnnounceText(l10n_util::GetStringFUTF16(
+        IDS_CONCAT_TWO_STRINGS_WITH_COMMA, name, desc));
+#endif
     NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
     content_setting_image_model_->AccessibilityWasNotified(web_contents);
   }
@@ -225,11 +236,18 @@ ContentSettingImageModel::ImageType ContentSettingImageView::GetTypeForTesting()
   return content_setting_image_model_->image_type();
 }
 
+views::Widget* ContentSettingImageView::GetBubbleWidgetForTesting() const {
+  if (!bubble_view_)
+    return nullptr;
+
+  return bubble_view_->GetWidget();
+}
+
 void ContentSettingImageView::OnWidgetDestroying(views::Widget* widget) {
   if (!bubble_view_ || bubble_view_->GetWidget() != widget)
     return;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (content_setting_image_model_->image_type() ==
           ContentSettingImageModel::ImageType::GEOLOCATION &&
       content_setting_image_model_->explanatory_string_id() ==
@@ -237,7 +255,7 @@ void ContentSettingImageView::OnWidgetDestroying(views::Widget* widget) {
     base::RecordAction(
         base::UserMetricsAction("ContentSettings.GeolocationDialog.Closed"));
   }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
   DCHECK(observation_.IsObservingSource(widget));
   observation_.Reset();
@@ -262,16 +280,14 @@ void ContentSettingImageView::AnimationEnded(const gfx::Animation* animation) {
   // directly after the animation is shown.
   if (web_contents &&
       content_setting_image_model_->ShouldShowPromo(web_contents)) {
-    current_iph_id_for_testing_ =
-        FeaturePromoControllerViews::GetForView(this)->ShowCriticalPromo(
-            FeaturePromoSpecification::CreateForLegacyPromo(
+    critical_promo_bubble_ =
+        BrowserFeaturePromoController::GetForView(this)->ShowCriticalPromo(
+            user_education::FeaturePromoSpecification::CreateForLegacyPromo(
                 /* feature =*/nullptr, ui::ElementIdentifier(),
                 IDS_NOTIFICATIONS_QUIET_PERMISSION_NEW_REQUEST_PROMO),
-            this);
+            views::ElementTrackerViews::GetInstance()->GetElementForView(this,
+                                                                         true));
     content_setting_image_model_->SetPromoWasShown(web_contents);
-  } else {
-    // Set a token that is is_zero() to make it not empty for testing.
-    current_iph_id_for_testing_.emplace(0, 0);
   }
 }
 

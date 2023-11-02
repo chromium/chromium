@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace net {
-namespace test_server {
+namespace net::test_server {
 
 TEST(HttpRequestTest, ParseRequest) {
   HttpRequestParser parser;
@@ -159,5 +158,4 @@ TEST(HttpRequestTest, GetURLFallback) {
   EXPECT_EQ("http://localhost/foobar.html?q=foo", request.GetURL().spec());
 }
 
-}  // namespace test_server
-}  // namespace net
+}  // namespace net::test_server

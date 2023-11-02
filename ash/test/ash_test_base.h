@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include "ash/constants/app_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/session/test_session_controller_client.h"
+#include "ash/test/ash_pixel_test_init_params.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/overview/overview_types.h"
 #include "base/compiler_specific.h"
@@ -68,6 +69,7 @@ namespace ash {
 
 class AmbientAshTestHelper;
 class AppListTestHelper;
+class AshPixelDiffTestHelper;
 class AshTestHelper;
 class Shelf;
 class TestAppListClient;
@@ -141,10 +143,13 @@ class AshTestBase : public testing::Test {
   // window, otherwise the window is added to the display matching
   // |bounds_in_screen|. |shell_window_id| is the shell window id to give to
   // the new window.
+  // If |delegate| is empty, a new |TestWidgetDelegate| instance will be set as
+  // this widget's delegate.
   std::unique_ptr<aura::Window> CreateAppWindow(
       const gfx::Rect& bounds_in_screen = gfx::Rect(),
       AppType app_type = AppType::SYSTEM_APP,
-      int shell_window_id = kShellWindowId_Invalid);
+      int shell_window_id = kShellWindowId_Invalid,
+      views::WidgetDelegate* delegate = nullptr);
 
   // Creates a visible window in the appropriate container. If
   // |bounds_in_screen| is empty the window is added to the primary root
@@ -180,6 +185,24 @@ class AshTestBase : public testing::Test {
   // Attach |window| to the current shell's root window.
   void ParentWindowInPrimaryRootWindow(aura::Window* window);
 
+  // Prepares for the pixel diff test. `screenshot_prefix` is the prefix of the
+  // screenshot names; `init_params` indicates how a pixel test should be set
+  // up; `corpus` specifies the result group that will be used to store
+  // screenshots in Skia Gold. For `screenshot_prefix` and `corpus`, read the
+  // comment of `SKiaGoldPixelDiff::Init()` for more details.
+  // NOTE: this function should be called before `setup_called_` becomes true.
+  void PrepareForPixelDiffTest(const std::string& screenshot_prefix,
+                               const pixel_test::InitParams& init_params,
+                               const std::string& corpus = std::string());
+
+  // Returns the raw pointer carried by `pixel_test_helper_`.
+  AshPixelDiffTestHelper* GetPixelDiffer();
+
+  // Stabilizes the variable UI components (such as the battery view). It should
+  // be called after the active user changes since some UI components are
+  // associated with the active account.
+  void StabilizeUIForPixelTest();
+
   // Returns the EventGenerator that uses screen coordinates and works
   // across multiple displays. It creates a new generator if it
   // hasn't been created yet.
@@ -199,10 +222,16 @@ class AshTestBase : public testing::Test {
   // Presses and releases a key to simulate typing one character.
   void PressAndReleaseKey(ui::KeyboardCode key_code, int flags = ui::EF_NONE);
 
-  // Moves the mouse to the center of the view and generates a left button click
-  // event.
-  void SimulateMouseClickAt(ui::test::EventGenerator* event_generator,
-                            const views::View* target_view);
+  // Moves the mouse to the center of the view and generates a left mouse button
+  // click event.
+  void LeftClickOn(const views::View* view);
+
+  // Moves the mouse to the center of the view and generates a right mouse
+  // button click event.
+  void RightClickOn(const views::View* view);
+
+  // Generates a tap event on the center of `view`.
+  void GestureTapOn(const views::View* view);
 
   // Enters/Exits overview mode with the given animation type `type`.
   bool EnterOverview(
@@ -258,23 +287,33 @@ class AshTestBase : public testing::Test {
   // behavior where |AccountId|s are compared, prefer the method of the same
   // name that takes an |AccountId| created with a valid storage key instead.
   // See the documentation for|AccountId::GetUserEmail| for discussion.
+  // NOTE: call `StabilizeUIForPixelTest()` after using this function in a pixel
+  // test.
   void SimulateUserLogin(
       const std::string& user_email,
       user_manager::UserType user_type = user_manager::USER_TYPE_REGULAR);
 
   // Simulates a user sign-in. It creates a new user session, adds it to
   // existing user sessions and makes it the active user session.
+  // NOTE: call `StabilizeUIForPixelTest()` after using this function in a pixel
+  // test.
   void SimulateUserLogin(
       const AccountId& account_id,
       user_manager::UserType user_type = user_manager::USER_TYPE_REGULAR);
 
   // Simular to SimulateUserLogin but for a newly created user first ever login.
+  // NOTE: call `StabilizeUIForPixelTest()` after using this function in a pixel
+  // test.
   void SimulateNewUserFirstLogin(const std::string& user_email);
 
   // Similar to SimulateUserLogin but for a guest user.
+  // NOTE: call `StabilizeUIForPixelTest()` after using this function in a pixel
+  // test.
   void SimulateGuestLogin();
 
   // Simulates kiosk mode. |user_type| must correlate to a kiosk type user.
+  // NOTE: call `StabilizeUIForPixelTest()` after using this function in a pixel
+  // test.
   void SimulateKioskMode(user_manager::UserType user_type);
 
   // Simulates setting height of the accessibility panel.
@@ -319,12 +358,20 @@ class AshTestBase : public testing::Test {
   // SetUp() doesn't activate session if this is set to false.
   bool start_session_ = true;
 
+  // The parameters to initialize the pixel diff test. Used only when the ash
+  // test is also a pixel diff test.
+  absl::optional<pixel_test::InitParams> pixel_diff_init_params_;
+
   // |task_environment_| is initialized-once at construction time but
   // subclasses may elect to provide their own.
   std::unique_ptr<base::test::TaskEnvironment> task_environment_;
 
   // A pref service used for local state.
   TestingPrefServiceSimple local_state_;
+
+  // A helper class to take screen shots then compare with benchmarks. Set by
+  // `PrepareForPixelDiffTest()`.
+  std::unique_ptr<AshPixelDiffTestHelper> pixel_test_helper_;
 
   // Must be constructed after |task_environment_|.
   std::unique_ptr<AshTestHelper> ash_test_helper_;

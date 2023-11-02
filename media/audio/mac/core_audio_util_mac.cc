@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -321,7 +321,8 @@ bool IsInputDevice(AudioObjectID device_id) {
     auto direction =
         GetDeviceUint32Property(stream_id, kAudioStreamPropertyDirection,
                                 kAudioObjectPropertyScopeGlobal);
-    DCHECK(direction.has_value());
+    if (!direction.has_value())
+      continue;
     const UInt32 kDirectionOutput = 0;
     const UInt32 kDirectionInput = 1;
     if (direction == kDirectionOutput) {

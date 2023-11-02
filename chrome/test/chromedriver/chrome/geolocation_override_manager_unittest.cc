@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,11 +16,11 @@ void AssertGeolocationCommand(const Command& command,
   ASSERT_EQ("Page.setGeolocationOverride", command.method);
 
   ASSERT_EQ(geoposition.latitude,
-            command.params.FindDoubleKey("latitude").value());
+            command.params.FindDouble("latitude").value());
   ASSERT_EQ(geoposition.longitude,
-            command.params.FindDoubleKey("longitude").value());
+            command.params.FindDouble("longitude").value());
   ASSERT_EQ(geoposition.accuracy,
-            command.params.FindDoubleKey("accuracy").value());
+            command.params.FindDouble("accuracy").value());
 }
 
 }  // namespace

@@ -1,5 +1,0 @@
-include_rules = [
-  "+device/bluetooth/public/cpp",
-  "+mojo/public/cpp",
-  "+third_party/securemessage",
-]

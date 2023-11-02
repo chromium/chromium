@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,39 +29,20 @@ class NativeThemeGtk : public ui::NativeThemeBase {
   NativeThemeGtk& operator=(const NativeThemeGtk&) = delete;
 
   // ui::NativeThemeBase:
-  void PaintArrowButton(cc::PaintCanvas* canvas,
-                        const gfx::Rect& rect,
-                        Part direction,
-                        State state,
-                        ColorScheme color_scheme,
-                        const ScrollbarArrowExtraParams& arrow) const override;
-  void PaintScrollbarTrack(cc::PaintCanvas* canvas,
-                           Part part,
-                           State state,
-                           const ScrollbarTrackExtraParams& extra_params,
-                           const gfx::Rect& rect,
-                           ColorScheme color_scheme) const override;
-  void PaintScrollbarThumb(cc::PaintCanvas* canvas,
-                           Part part,
-                           State state,
-                           const gfx::Rect& rect,
-                           NativeTheme::ScrollbarOverlayColorTheme theme,
-                           ColorScheme color_scheme) const override;
-  void PaintScrollbarCorner(cc::PaintCanvas* canvas,
-                            State state,
-                            const gfx::Rect& rect,
-                            ColorScheme color_scheme) const override;
   void PaintMenuPopupBackground(
       cc::PaintCanvas* canvas,
+      const ui::ColorProvider* color_provider,
       const gfx::Size& size,
       const MenuBackgroundExtraParams& menu_background,
       ColorScheme color_scheme) const override;
-  void PaintMenuSeparator(cc::PaintCanvas* canvas,
-                          State state,
-                          const gfx::Rect& rect,
-                          const MenuSeparatorExtraParams& menu_separator,
-                          ColorScheme color_scheme) const override;
+  void PaintMenuSeparator(
+      cc::PaintCanvas* canvas,
+      const ui::ColorProvider* color_provider,
+      State state,
+      const gfx::Rect& rect,
+      const MenuSeparatorExtraParams& menu_separator) const override;
   void PaintMenuItemBackground(cc::PaintCanvas* canvas,
+                               const ui::ColorProvider* color_provider,
                                State state,
                                const gfx::Rect& rect,
                                const MenuItemExtraParams& menu_item,
@@ -75,13 +56,6 @@ class NativeThemeGtk : public ui::NativeThemeBase {
 
   void OnThemeChanged(GtkSettings* settings, GtkParamSpec* param);
 
- protected:
-  // ui::NativeThemeBase:
-  bool AllowColorPipelineRedirection(ColorScheme color_scheme) const override;
-  SkColor GetSystemColorDeprecated(ColorId color_id,
-                                   ColorScheme color_scheme,
-                                   bool apply_processing) const override;
-
  private:
   friend class base::NoDestructor<NativeThemeGtk>;
 
@@ -89,8 +63,6 @@ class NativeThemeGtk : public ui::NativeThemeBase {
   ~NativeThemeGtk() override;
 
   void SetThemeCssOverride(ScopedCssProvider provider);
-
-  mutable absl::optional<SkColor> color_cache_[kColorId_NumColors];
 
   ScopedCssProvider theme_css_override_;
 };

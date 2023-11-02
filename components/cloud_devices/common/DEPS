@@ -1,4 +1,3 @@
 include_rules = [
-  "+google_apis/gaia",
-  "+net/base",
+  "+ui/gfx/geometry",
 ]

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,7 +21,7 @@ class VersionHandlerWindows : public VersionHandler {
   ~VersionHandlerWindows() override;
 
   // VersionHandler overrides:
-  void HandleRequestVersionInfo(const base::ListValue* args) override;
+  void HandleRequestVersionInfo(const base::Value::List& args) override;
 
   // Callbacks from windows::VersionLoader.
   void OnVersion(const std::string& version);

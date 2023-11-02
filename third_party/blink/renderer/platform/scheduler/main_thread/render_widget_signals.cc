@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,9 @@
 
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
-#include "third_party/blink/public/platform/scheduler/web_render_widget_scheduling_state.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
+
+#include "base/record_replay.h"
 
 namespace blink {
 namespace scheduler {
@@ -16,11 +17,6 @@ RenderWidgetSignals::RenderWidgetSignals(Observer* observer)
     : observer_(observer),
       num_visible_render_widgets_(0),
       num_visible_render_widgets_with_touch_handlers_(0) {}
-
-std::unique_ptr<WebRenderWidgetSchedulingState>
-RenderWidgetSignals::NewRenderWidgetSchedulingState() {
-  return base::WrapUnique(new WebRenderWidgetSchedulingState(this));
-}
 
 void RenderWidgetSignals::IncNumVisibleRenderWidgets() {
   num_visible_render_widgets_++;
@@ -38,6 +34,10 @@ void RenderWidgetSignals::DecNumVisibleRenderWidgets() {
 }
 
 void RenderWidgetSignals::IncNumVisibleRenderWidgetsWithTouchHandlers() {
+  recordreplay::Assert(
+      "[RUN-2300] "
+      "RenderWidgetSignals::IncNumVisibleRenderWidgetsWithTouchHandlers %d",
+      num_visible_render_widgets_with_touch_handlers_);
   num_visible_render_widgets_with_touch_handlers_++;
 
   if (num_visible_render_widgets_with_touch_handlers_ == 1)

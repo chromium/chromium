@@ -107,11 +107,11 @@ String DateTimeLocalInputType::LocalizeValue(
                                        ? Locale::kFormatTypeMedium
                                        : Locale::kFormatTypeShort;
   String localized = GetElement().GetLocale().FormatDateTime(date, format_type);
-  return localized.IsEmpty() ? proposed_value : localized;
+  return localized.empty() ? proposed_value : localized;
 }
 
 void DateTimeLocalInputType::WarnIfValueIsInvalid(const String& value) const {
-  if (value != GetElement().SanitizeValue(value))
+  if (!value.empty() && GetElement().SanitizeValue(value).empty())
     AddWarningToConsole(
         "The specified value %s does not conform to the required format.  The "
         "format is \"yyyy-MM-ddThh:mm\" followed by optional \":ss\" or "
@@ -129,27 +129,35 @@ String DateTimeLocalInputType::FormatDateTimeFieldsState(
 
   if (date_time_fields_state.HasMillisecond() &&
       date_time_fields_state.Millisecond()) {
+    // According to WPTs and other browsers, we should remove trailing zeros
+    // from the milliseconds field.
+    auto milliseconds =
+        String::Format("%03u", date_time_fields_state.Millisecond());
+    while (milliseconds.length() &&
+           milliseconds[milliseconds.length() - 1] == '0') {
+      milliseconds.Truncate(milliseconds.length() - 1);
+    }
     return String::Format(
-        "%04u-%02u-%02uT%02u:%02u:%02u.%03u", date_time_fields_state.Year(),
+        "%04u-%02u-%02uT%02u:%02u:%02u.%s", date_time_fields_state.Year(),
         date_time_fields_state.Month(), date_time_fields_state.DayOfMonth(),
-        date_time_fields_state.Hour23(), date_time_fields_state.Minute(),
+        date_time_fields_state.Hour24(), date_time_fields_state.Minute(),
         date_time_fields_state.HasSecond() ? date_time_fields_state.Second()
                                            : 0,
-        date_time_fields_state.Millisecond());
+        milliseconds.Ascii().c_str());
   }
 
   if (date_time_fields_state.HasSecond() && date_time_fields_state.Second()) {
     return String::Format(
         "%04u-%02u-%02uT%02u:%02u:%02u", date_time_fields_state.Year(),
         date_time_fields_state.Month(), date_time_fields_state.DayOfMonth(),
-        date_time_fields_state.Hour23(), date_time_fields_state.Minute(),
+        date_time_fields_state.Hour24(), date_time_fields_state.Minute(),
         date_time_fields_state.Second());
   }
 
   return String::Format(
       "%04u-%02u-%02uT%02u:%02u", date_time_fields_state.Year(),
       date_time_fields_state.Month(), date_time_fields_state.DayOfMonth(),
-      date_time_fields_state.Hour23(), date_time_fields_state.Minute());
+      date_time_fields_state.Hour24(), date_time_fields_state.Minute());
 }
 
 void DateTimeLocalInputType::SetupLayoutParameters(
@@ -193,6 +201,26 @@ bool DateTimeLocalInputType::IsValidFormat(bool has_year,
 
 String DateTimeLocalInputType::AriaLabelForPickerIndicator() const {
   return GetLocale().QueryString(IDS_AX_CALENDAR_SHOW_DATE_TIME_LOCAL_PICKER);
+}
+
+String DateTimeLocalInputType::SanitizeValue(
+    const String& proposed_string) const {
+  if (BaseTemporalInputType::SanitizeValue(proposed_string) == g_empty_string)
+    return g_empty_string;
+
+  DateComponents components;
+  if (!ParseToDateComponents(proposed_string, &components))
+    return g_empty_string;
+
+  DateTimeFieldsState fields;
+  fields.SetMillisecond(components.Millisecond());
+  fields.SetSecond(components.Second());
+  fields.SetMinute(components.Minute());
+  fields.SetHour24(components.Hour());
+  fields.SetDayOfMonth(components.MonthDay());
+  fields.SetMonth(components.Month() + 1);
+  fields.SetYear(components.FullYear());
+  return FormatDateTimeFieldsState(fields);
 }
 
 }  // namespace blink

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,8 @@ suite('CrCollapseRadioButton', function() {
   let collapseRadioButton: SettingsCollapseRadioButtonElement;
 
   setup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     collapseRadioButton =
         document.createElement('settings-collapse-radio-button');
     document.body.appendChild(collapseRadioButton);

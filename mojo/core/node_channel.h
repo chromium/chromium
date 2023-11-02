@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 
 #include "base/callback.h"
 #include "base/containers/queue.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
@@ -66,7 +66,7 @@ class MOJO_SYSTEM_IMPL_EXPORT NodeChannel
                              const uint64_t remote_capabilities) = 0;
     virtual void OnBroadcast(const ports::NodeName& from_node,
                              Channel::MessagePtr message) = 0;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     virtual void OnRelayEventMessage(const ports::NodeName& from_node,
                                      base::ProcessHandle from_process,
                                      const ports::NodeName& destination,
@@ -160,7 +160,7 @@ class MOJO_SYSTEM_IMPL_EXPORT NodeChannel
   bool HasLocalCapability(const uint64_t capability) const;
   void SetLocalCapabilities(const uint64_t capability);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Relay the message to the specified node via this channel.  This is used to
   // pass windows handles between two processes that do not have permission to
   // duplicate handles into the other's address space. The relay process is
@@ -176,6 +176,8 @@ class MOJO_SYSTEM_IMPL_EXPORT NodeChannel
 #endif
 
   void OfferChannelUpgrade();
+
+  void Release();
 
  private:
   friend class base::RefCountedDeleteOnSequence<NodeChannel>;
@@ -208,7 +210,7 @@ class MOJO_SYSTEM_IMPL_EXPORT NodeChannel
   // for this channel.
   void InitializeLocalCapabilities();
 
-  Delegate* const delegate_;
+  const raw_ptr<Delegate> delegate_;
   const ProcessErrorCallback process_error_callback_;
 
   base::Lock channel_lock_;

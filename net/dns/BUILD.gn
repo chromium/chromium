@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -50,8 +50,6 @@ source_set("dns") {
     "dns_server_iterator.h",
     "dns_session.cc",
     "dns_session.h",
-    "dns_socket_allocator.cc",
-    "dns_socket_allocator.h",
     "dns_transaction.cc",
     "dns_udp_tracker.cc",
     "dns_udp_tracker.h",
@@ -64,14 +62,19 @@ source_set("dns") {
     "host_resolver_mdns_listener_impl.h",
     "host_resolver_mdns_task.cc",
     "host_resolver_mdns_task.h",
+    "host_resolver_nat64_task.cc",
+    "host_resolver_nat64_task.h",
     "host_resolver_proc.cc",
     "host_resolver_proc.h",
+    "host_resolver_system_task.cc",
+    "host_resolver_system_task.h",
     "https_record_rdata.cc",
     "httpssvc_metrics.cc",
     "httpssvc_metrics.h",
     "mapped_host_resolver.cc",
     "nsswitch_reader.cc",
     "nsswitch_reader.h",
+    "opt_record_rdata.cc",
     "record_parsed.cc",
     "record_rdata.cc",
     "resolve_context.cc",
@@ -80,6 +83,8 @@ source_set("dns") {
     "serial_worker.h",
     "system_dns_config_change_notifier.cc",
     "system_dns_config_change_notifier.h",
+    "test_dns_config_service.cc",
+    "test_dns_config_service.h",
   ]
 
   if (is_win) {
@@ -195,8 +200,7 @@ source_set("host_resolver") {
 
     # Tests and test support.
     "//chrome/browser:test_support",
-    "//chrome/test:browser_tests",
-    "//chrome/test:unit_tests",
+    "//chrome/test/*",
     "//components/grpc_support/test:unit_tests",
     "//content/shell:content_shell_lib",
     "//content/test:*",
@@ -294,7 +298,7 @@ source_set("dns_client") {
     # chrome/browser/ash/smb_client/discovery/mdns_host_locator.cc
     # Result parsing for results read through MdnsClient.
     # TODO(crbug.com/902531): Remove once migrated to network service.
-    "//chrome/browser/chromeos",
+    "//chrome/browser/ash",
 
     # Tests and test support
     "//chrome/browser:test_support",
@@ -311,6 +315,7 @@ source_set("dns_client") {
     "dns_response.h",
     "dns_transaction.h",
     "https_record_rdata.h",
+    "opt_record_rdata.h",
     "record_parsed.h",
     "record_rdata.h",
   ]
@@ -354,7 +359,7 @@ source_set("mdns_client") {
     # chrome/browser/ash/smb_client/discovery/mdns_host_locator.cc
     # Makes MDNS queries using MDnsClient.
     # TODO(crbug.com/902531): Remove once migrated to network service.
-    "//chrome/browser/chromeos",
+    "//chrome/browser/ash",
 
     # Tests and test support
     "//chrome/browser:test_support",
@@ -390,7 +395,6 @@ source_set("tests") {
     "dns_query_unittest.cc",
     "dns_response_result_extractor_unittest.cc",
     "dns_response_unittest.cc",
-    "dns_socket_allocator_unittest.cc",
     "dns_transaction_unittest.cc",
     "dns_udp_tracker_unittest.cc",
     "dns_util_unittest.cc",
@@ -400,6 +404,7 @@ source_set("tests") {
     "httpssvc_metrics_unittest.cc",
     "mapped_host_resolver_unittest.cc",
     "nsswitch_reader_unittest.cc",
+    "opt_record_rdata_unittest.cc",
     "record_parsed_unittest.cc",
     "record_rdata_unittest.cc",
     "resolve_context_unittest.cc",
@@ -449,16 +454,14 @@ source_set("test_support") {
   visibility = [ "//net:test_support" ]
   testonly = true
   sources = [
-    "address_info_test_util.cc",
     "dns_test_util.cc",
+    "host_resolver_results_test_util.cc",
     "mock_host_resolver.cc",
-    "test_dns_config_service.cc",
   ]
   public = [
-    "address_info_test_util.h",
     "dns_test_util.h",
+    "host_resolver_results_test_util.h",
     "mock_host_resolver.h",
-    "test_dns_config_service.h",
   ]
 
   if (enable_mdns) {
@@ -535,15 +538,6 @@ fuzzer_test("net_dns_https_record_rdata_fuzzer") {
     "//net:net_fuzzer_test_support",
   ]
   dict = "//net/data/fuzzer_dictionaries/net_dns_record_fuzzer.dict"
-}
-
-fuzzer_test("net_dns_integrity_record_fuzzer") {
-  sources = [ "integrity_record_fuzzer.cc" ]
-  deps = [
-    "//base",
-    "//net",
-    "//net:net_fuzzer_test_support",
-  ]
 }
 
 fuzzer_test("net_dns_nsswitch_reader_fuzzer") {

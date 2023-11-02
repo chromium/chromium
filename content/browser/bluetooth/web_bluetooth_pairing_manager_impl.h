@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/bluetooth/web_bluetooth_pairing_manager.h"
 #include "content/browser/bluetooth/web_bluetooth_pairing_manager_delegate.h"
@@ -27,6 +28,9 @@ class CONTENT_EXPORT WebBluetoothPairingManagerImpl
   // The maximum number of Bluetooth pairing attempts during a single
   // read/write operation.
   static constexpr int kMaxPairAttempts = 10;
+
+  // Passkey/Pin has to be exact 6 digits
+  static constexpr int kPairingPinSize = 6;
 
   explicit WebBluetoothPairingManagerImpl(
       WebBluetoothPairingManagerDelegate* pairing_manager_delegate);
@@ -71,6 +75,14 @@ class CONTENT_EXPORT WebBluetoothPairingManagerImpl
                            CredentialPromptPINCancelled);
   FRIEND_TEST_ALL_PREFIXES(BluetoothPairingManagerTest,
                            CredentialPromptPasskeyCancelled);
+  FRIEND_TEST_ALL_PREFIXES(BluetoothPairingManagerTest,
+                           PairConfirmPromptSuccess);
+  FRIEND_TEST_ALL_PREFIXES(BluetoothPairingManagerTest,
+                           PairConfirmPromptCancelled);
+  FRIEND_TEST_ALL_PREFIXES(BluetoothPairingManagerTest,
+                           PairConfirmPinPromptSuccess);
+  FRIEND_TEST_ALL_PREFIXES(BluetoothPairingManagerTest,
+                           PairConfirmPinPromptCancelled);
 
   // Pair the Bluetooth device identified by |device_id|. |num_pair_attempts|
   // represents the number of pairing attempts for the specified device which
@@ -90,10 +102,11 @@ class CONTENT_EXPORT WebBluetoothPairingManagerImpl
       device::BluetoothDevice::ConnectCallback callback,
       absl::optional<device::BluetoothDevice::ConnectErrorCode> error_code);
 
-  void OnPinCodeResult(
-      blink::WebBluetoothDeviceId device_id,
-      WebBluetoothPairingManagerDelegate::CredentialPromptResult status,
-      const std::string& result);
+  void OnPinCodeResult(blink::WebBluetoothDeviceId device_id,
+                       const BluetoothDelegate::PairPromptResult& result);
+
+  void OnPairConfirmResult(blink::WebBluetoothDeviceId device_id,
+                           const BluetoothDelegate::PairPromptResult& result);
 
   // device::BluetoothDevice::PairingDelegate implementation:
   void RequestPinCode(device::BluetoothDevice* device) override;
@@ -115,7 +128,7 @@ class CONTENT_EXPORT WebBluetoothPairingManagerImpl
   // implementation also owns this class (and thus will outlive it). The
   // contract is that the delegate provider is responsible for ensuring it
   // outlives the manager to which it is provided.
-  WebBluetoothPairingManagerDelegate* pairing_manager_delegate_;
+  raw_ptr<WebBluetoothPairingManagerDelegate> pairing_manager_delegate_;
   base::WeakPtrFactory<WebBluetoothPairingManagerImpl> weak_ptr_factory_{this};
 };
 

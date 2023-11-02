@@ -32,10 +32,9 @@ body { margin: 0 }
 <script>
 let scroller = document.getElementById("scroller");
 let target = document.getElementById("target");
-test(() => {
+test(t => {
   scroller.scrollTo(0, 0);
   target.focus();
-
   assert_true(scroller.scrollTop > 0, "Visibility check should not account for margin");
   assert_true(scroller.scrollLeft > 0, "Visibility check should not account for margin");
 });

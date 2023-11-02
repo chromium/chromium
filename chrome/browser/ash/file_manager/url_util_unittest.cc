@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,12 +9,15 @@
 #include "base/files/file_path.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "extensions/common/constants.h"
-#include "net/base/escape.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/origin.h"
 
 namespace file_manager {
 namespace util {
@@ -22,8 +25,8 @@ namespace {
 
 // Parse a JSON query string into a base::Value.
 base::Value ParseJsonQueryString(const std::string& query) {
-  const std::string json = net::UnescapeBinaryURLComponent(query);
-  std::unique_ptr<base::Value> value = base::JSONReader::ReadDeprecated(json);
+  const std::string json = base::UnescapeBinaryURLComponent(query);
+  absl::optional<base::Value> value = base::JSONReader::Read(json);
   return value ? std::move(*value) : base::Value();
 }
 
@@ -37,8 +40,11 @@ std::string PrettyPrintEscapedJson(const std::string& query) {
 }
 
 TEST(FileManagerUrlUtilTest, GetFileManagerMainPageUrl) {
-  EXPECT_EQ("chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/main.html",
-            GetFileManagerMainPageUrl().spec());
+  EXPECT_EQ(url::Origin::Create(GetFileManagerMainPageUrl()).GetURL(),
+            file_manager::util::GetFileManagerURL());
+  EXPECT_THAT(
+      GetFileManagerMainPageUrl().spec(),
+      ::testing::StartsWith(file_manager::util::GetFileManagerURL().spec()));
 }
 
 TEST(FileManagerUrlUtilTest, GetFileManagerMainPageUrlWithParams_NoFileTypes) {
@@ -49,11 +55,12 @@ TEST(FileManagerUrlUtilTest, GetFileManagerMainPageUrlWithParams_NoFileTypes) {
       nullptr,  // No file types
       0,        // Hence no file type index.
       "",       // search_query
-      false     // show_android_picker_apps
+      false,    // show_android_picker_apps
+      {}        // volume_filter
   );
-  EXPECT_EQ(extensions::kExtensionScheme, url.scheme());
-  EXPECT_EQ("hhaomjibdihmijegdhdafkllkbggdgoj", url.host());
-  EXPECT_EQ("/main.html", url.path());
+
+  EXPECT_EQ(url::Origin::Create(url).GetURL(),
+            file_manager::util::GetFileManagerURL());
   // Confirm that "%20" is used instead of "+" in the query.
   EXPECT_TRUE(url.query().find("+") == std::string::npos);
   EXPECT_TRUE(url.query().find("%20") != std::string::npos);
@@ -96,11 +103,15 @@ TEST(FileManagerUrlUtilTest,
       &file_types,
       1,  // The file type index is 1-based.
       "search query",
-      true  // show_android_picker_apps
-  );
-  EXPECT_EQ(extensions::kExtensionScheme, url.scheme());
-  EXPECT_EQ("hhaomjibdihmijegdhdafkllkbggdgoj", url.host());
-  EXPECT_EQ("/main.html", url.path());
+      true,  // show_android_picker_apps
+      // Add meaningless volume filter names so we can test they are added
+      // to the file manager URL launch parameters.
+      {"foo", "bar"});
+
+  EXPECT_EQ(file_manager::util::GetFileManagerURL().scheme(), url.scheme());
+  // URL path can be / or /main.html depending on which version of the app is
+  // launched. For the legacy, we'd expect /main.html, otherwise, just /.
+  EXPECT_THAT(url.path(), ::testing::StartsWith("/"));
   // Confirm that "%20" is used instead of "+" in the query.
   EXPECT_TRUE(url.query().find("+") == std::string::npos);
   EXPECT_TRUE(url.query().find("%20") != std::string::npos);
@@ -126,7 +137,8 @@ TEST(FileManagerUrlUtilTest,
       "      \"description\": \"TEXT\",\n"
       "      \"extensions\": [ \"txt\" ],\n"
       "      \"selected\": false\n"
-      "   } ]\n"
+      "   } ],\n"
+      "   \"volumeFilter\": [ \"foo\", \"bar\" ]\n"
       "}\n",
       PrettyPrintEscapedJson(url.query()));
 }

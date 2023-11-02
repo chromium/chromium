@@ -1,9 +1,0 @@
-# These two are disabled until crbug.com/851083 is fixed
--DiskCachePerfTest.CacheBackendPerformance
--DiskCachePerfTest.SimpleCacheBackendPerformance
-
-# Flaky test blocked until crbug.com/852937 is fixed
--URLRequestQuicPerfTest.TestGetRequest
-
-# Too long-running for repeat execution
--SimpleIndexPerfTest.EvictionPerformance

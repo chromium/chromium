@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include <memory>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -24,8 +25,8 @@
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 #include "third_party/blink/public/mojom/input/synchronous_compositor.mojom.h"
 #include "ui/android/view_android.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/size_f.h"
-#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace ui {
 struct DidOverscrollParams;
@@ -66,12 +67,14 @@ class CONTENT_EXPORT SynchronousCompositorHost
   bool DemandDrawSw(SkCanvas* canvas, bool software_canvas) override;
   void ReturnResources(uint32_t layer_tree_frame_sink_id,
                        std::vector<viz::ReturnedResource> resources) override;
+  void OnCompositorFrameTransitionDirectiveProcessed(
+      uint32_t layer_tree_frame_sink_id,
+      uint32_t sequence_id) override;
   void DidPresentCompositorFrames(viz::FrameTimingDetailsMap timing_details,
                                   uint32_t frame_token) override;
   void SetMemoryPolicy(size_t bytes_limit) override;
   void DidBecomeActive() override;
-  void DidChangeRootLayerScrollOffset(
-      const gfx::Vector2dF& root_offset) override;
+  void DidChangeRootLayerScrollOffset(const gfx::PointF& root_offset) override;
   void SynchronouslyZoomBy(float zoom_delta, const gfx::Point& anchor) override;
   void OnComputeScroll(base::TimeTicks animation_time) override;
   void SetBeginFrameSource(viz::BeginFrameSource* begin_frame_source) override;
@@ -142,17 +145,16 @@ class CONTENT_EXPORT SynchronousCompositorHost
   // handle blocking calls.
   bool IsReadyForSynchronousCall();
   void UpdateRootLayerStateOnClient();
-  void UpdatePresentedFrameToken(uint32_t frame_token);
 
   void SendBeginFramePaused();
   void SendBeginFrame(viz::BeginFrameArgs args);
   void AddBeginFrameRequest(BeginFrameRequestType request);
   void ClearBeginFrameRequest(BeginFrameRequestType request);
 
-  RenderWidgetHostViewAndroid* const rwhva_;
-  SynchronousCompositorClient* const client_;
+  const raw_ptr<RenderWidgetHostViewAndroid> rwhva_;
+  const raw_ptr<SynchronousCompositorClient> client_;
   const viz::FrameSinkId frame_sink_id_;
-  viz::HostFrameSinkManager* const host_frame_sink_manager_;
+  const raw_ptr<viz::HostFrameSinkManager> host_frame_sink_manager_;
   const bool use_in_process_zero_copy_software_draw_;
   mojo::AssociatedRemote<blink::mojom::SynchronousCompositor> sync_compositor_;
   mojo::AssociatedReceiver<blink::mojom::SynchronousCompositorHost>
@@ -175,9 +177,8 @@ class CONTENT_EXPORT SynchronousCompositorHost
   // Indicates begin frames are paused from the browser.
   bool begin_frame_paused_ = false;
 
-  // Updated by both renderer and browser. This is in physical pixel when
-  // use-zoom-for-dsf is enabled, otherwise in dip.
-  gfx::Vector2dF root_scroll_offset_;
+  // Updated by both renderer and browser. This is in physical pixels.
+  gfx::PointF root_scroll_offset_;
 
   // Indicates that whether OnComputeScroll is called or overridden. The
   // fling_controller should advance the fling only when OnComputeScroll is not
@@ -191,7 +192,7 @@ class CONTENT_EXPORT SynchronousCompositorHost
   uint32_t did_activate_pending_tree_count_;
   uint32_t frame_metadata_version_ = 0u;
   // Physical pixel when use-zoom-for-dsf is enabled, otherwise in dip.
-  gfx::Vector2dF max_scroll_offset_;
+  gfx::PointF max_scroll_offset_;
   gfx::SizeF scrollable_size_;
   float page_scale_factor_ = 0.f;
   float min_page_scale_factor_ = 0.f;
@@ -206,8 +207,11 @@ class CONTENT_EXPORT SynchronousCompositorHost
   // issued. Used to control action dispatch at the next |OnBeginFrame()| call.
   uint32_t outstanding_begin_frame_requests_ = 0;
 
+  uint32_t num_invalidates_since_last_draw_ = 0u;
+  uint32_t num_begin_frames_to_skip_ = 0u;
+
   // The begin frame source being observed.  Null if none.
-  viz::BeginFrameSource* begin_frame_source_ = nullptr;
+  raw_ptr<viz::BeginFrameSource> begin_frame_source_ = nullptr;
   viz::BeginFrameArgs last_begin_frame_args_;
   viz::FrameTimingDetailsMap timing_details_;
 };

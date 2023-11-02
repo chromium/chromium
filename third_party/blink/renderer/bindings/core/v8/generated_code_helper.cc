@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_css_style_declaration.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_element.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_set_return_value_for_core.h"
+#include "third_party/blink/renderer/core/css/css_style_declaration.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/range.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -89,6 +90,15 @@ bool IsCallbackFunctionRunnableIgnoringPause(
                                             IgnorePause::kIgnore);
 }
 
+void ExceptionToRejectPromiseScope::ConvertExceptionToRejectPromise() {
+  // As exceptions must always be created in the current realm, reject
+  // promises must also be created in the current realm while regular promises
+  // are created in the relevant realm of the context object.
+  ScriptState* script_state = ScriptState::ForCurrentRealm(info_);
+  V8SetReturnValue(
+      info_, ScriptPromise::Reject(script_state, exception_state_).V8Value());
+}
+
 namespace bindings {
 
 void SetupIDLInterfaceTemplate(
@@ -143,27 +153,6 @@ void SetupIDLObservableArrayBackingListTemplate(
       V8AtomicString(isolate, wrapper_type_info->interface_name));
 
   instance_template->SetInternalFieldCount(kV8DefaultWrapperInternalFieldCount);
-
-  // https://tc39.es/ecma262/#sec-proxy-object-internal-methods-and-internal-slots-getownproperty-p
-  // "length" property must be
-  //   {configurable: false, enumerable: false, writable: true},
-  // so the target object must have a property of {configurable: false}.
-  instance_template->Set(
-      V8AtomicString(isolate, "length"), v8::Undefined(isolate),
-      static_cast<v8::PropertyAttribute>(v8::DontEnum | v8::DontDelete));
-
-  // The target object of an observable array exotic object (= JS Proxy) must
-  // be a JS Array object.  Hence, make the object look like a JS Array.
-  // https://webidl.spec.whatwg.org/#creating-an-observable-array-exotic-object
-  v8::Local<v8::FunctionTemplate> intrinsic_array_prototype_interface_template =
-      v8::FunctionTemplate::New(isolate, /*callback=*/nullptr,
-                                /*data=*/v8::Local<v8::Value>(),
-                                v8::Local<v8::Signature>(), /*length=*/0,
-                                v8::ConstructorBehavior::kThrow);
-  intrinsic_array_prototype_interface_template->SetIntrinsicDataProperty(
-      V8AtomicString(isolate, "prototype"), v8::kArrayPrototype);
-  interface_template->SetPrototypeProviderTemplate(
-      intrinsic_array_prototype_interface_template);
 }
 
 absl::optional<size_t> FindIndexInEnumStringTable(
@@ -214,7 +203,7 @@ void ReportInvalidEnumSetToAttribute(v8::Isolate* isolate,
   execution_context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
       mojom::blink::ConsoleMessageSource::kJavaScript,
       mojom::blink::ConsoleMessageLevel::kWarning, message,
-      SourceLocation::Capture(execution_context)));
+      CaptureSourceLocation(execution_context)));
 }
 
 bool IsEsIterableObject(v8::Isolate* isolate,
@@ -348,7 +337,7 @@ void InstallUnscopablePropertyNames(
 v8::Local<v8::Array> EnumerateIndexedProperties(v8::Isolate* isolate,
                                                 uint32_t length) {
   Vector<v8::Local<v8::Value>> elements;
-  elements.ReserveCapacity(length);
+  elements.reserve(length);
   for (uint32_t i = 0; i < length; ++i)
     elements.UncheckedAppend(v8::Integer::New(isolate, i));
   return v8::Array::New(isolate, elements.data(), elements.size());
@@ -412,13 +401,13 @@ void CSSPropertyAttributeSet(const v8::FunctionCallbackInfo<v8::Value>& info) {
   CSSStyleDeclaration* blink_receiver =
       V8CSSStyleDeclaration::ToWrappableUnsafe(v8_receiver);
   v8::Local<v8::Value> v8_property_value = info[0];
-  auto&& arg1_value =
-      NativeValueTraits<IDLStringTreatNullAsEmptyString>::NativeValue(
-          isolate, v8_property_value, exception_state);
+  auto&& arg1_value = NativeValueTraits<IDLAny>::NativeValue(
+      isolate, v8_property_value, exception_state);
   if (UNLIKELY(exception_state.HadException())) {
     return;
   }
-  v8::Local<v8::Context> receiver_context = v8_receiver->CreationContext();
+  v8::Local<v8::Context> receiver_context =
+      v8_receiver->GetCreationContextChecked();
   ScriptState* receiver_script_state = ScriptState::From(receiver_context);
   // TODO(andruud): AnonymousNamedSetter is not the best function.  Change the
   // function to a more appropriate one.  It's better to pass |exception_state|

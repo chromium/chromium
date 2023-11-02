@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,12 +10,12 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "chrome/browser/safe_browsing/download_protection/ppapi_download_request.h"
@@ -23,6 +23,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/content/common/file_type_policies.h"
+#include "components/safe_browsing/core/browser/sync/sync_utils.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/utils.h"
@@ -32,6 +33,7 @@
 #include "net/base/load_flags.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
@@ -65,6 +67,21 @@ std::string SanitizeUrl(const std::string& url) {
   return GURL(url).DeprecatedGetOriginAsURL().spec();
 }
 
+void MaybeLogDocumentMetrics(const std::string& request_data,
+                             DownloadCheckResultReason reason) {
+  ClientDownloadRequest request;
+  if (!request.ParseFromString(request_data))
+    return;
+
+  if (request.has_document_summary()) {
+    base::UmaHistogramBoolean(
+        "SBClientDownload.DocumentContainsMacros",
+        request.document_summary().metadata().contains_macros());
+    base::UmaHistogramEnumeration("SBClientDownload.DocumentCheckDownloadStats",
+                                  reason, REASON_MAX);
+  }
+}
+
 }  // namespace
 
 CheckClientDownloadRequestBase::CheckClientDownloadRequestBase(
@@ -93,7 +110,8 @@ CheckClientDownloadRequestBase::CheckClientDownloadRequestBase(
         profile && IsEnhancedProtectionEnabled(*profile->GetPrefs());
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(profile);
-    if (!profile->IsOffTheRecord() && identity_manager) {
+    if (!profile->IsOffTheRecord() && identity_manager &&
+        safe_browsing::SyncUtils::IsPrimaryAccountSignedIn(identity_manager)) {
       token_fetcher_ = std::make_unique<SafeBrowsingPrimaryAccountTokenFetcher>(
           identity_manager);
     }
@@ -128,8 +146,8 @@ void CheckClientDownloadRequestBase::FinishRequest(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (!request_start_time_.is_null()) {
-    UMA_HISTOGRAM_ENUMERATION("SBClientDownload.DownloadRequestNetworkStats",
-                              reason, REASON_MAX);
+    base::UmaHistogramEnumeration(
+        "SBClientDownload.DownloadRequestNetworkStats", reason, REASON_MAX);
   }
 
   auto settings = ShouldUploadBinary(reason);
@@ -141,8 +159,15 @@ void CheckClientDownloadRequestBase::FinishRequest(
         FROM_HERE, base::BindOnce(std::move(callback_), result));
   }
 
-  UMA_HISTOGRAM_ENUMERATION("SBClientDownload.CheckDownloadStats", reason,
-                            REASON_MAX);
+  if (FileTypePolicies::GetInstance()
+          ->PolicyForFile(target_file_path_, GURL{}, nullptr)
+          .extension() == "exe") {
+    base::UmaHistogramEnumeration("SBClientDownload.CheckDownloadStats.Exe",
+                                  reason, REASON_MAX);
+  }
+  base::UmaHistogramEnumeration("SBClientDownload.CheckDownloadStats", reason,
+                                REASON_MAX);
+  MaybeLogDocumentMetrics(client_download_request_data_, reason);
 
   NotifyRequestFinished(result, reason);
   service()->RequestFinished(this, GetBrowserContext(), result);
@@ -192,7 +217,7 @@ void CheckClientDownloadRequestBase::OnUrlAllowlistCheckDone(
   if (is_allowlisted) {
     DVLOG(2) << source_url_ << " is on the download allowlist.";
     if (ShouldSampleAllowlistedDownload()) {
-      skipped_url_whitelist_ = true;
+      skipped_url_allowlist_ = true;
     } else {
       // TODO(grt): Continue processing without uploading so that
       // ClientDownloadRequest callbacks can be run even for this type of safe
@@ -263,11 +288,12 @@ void CheckClientDownloadRequestBase::OnRequestBuilt(
   if ((client_download_request_->download_type() ==
            ClientDownloadRequest::ZIPPED_EXECUTABLE ||
        client_download_request_->download_type() ==
-           ClientDownloadRequest::RAR_COMPRESSED_EXECUTABLE) &&
+           ClientDownloadRequest::RAR_COMPRESSED_EXECUTABLE ||
+       client_download_request_->download_type() ==
+           ClientDownloadRequest::SEVEN_ZIP_COMPRESSED_EXECUTABLE) &&
       client_download_request_->archive_valid() &&
-      std::all_of(
-          client_download_request_->archived_binary().begin(),
-          client_download_request_->archived_binary().end(),
+      base::ranges::all_of(
+          client_download_request_->archived_binary(),
           [](const ClientDownloadRequest::ArchivedBinary& archived_binary) {
             return !archived_binary.is_executable() &&
                    !archived_binary.is_archive();
@@ -324,9 +350,9 @@ void CheckClientDownloadRequestBase::SendRequest() {
     return;
   }
 
-  client_download_request_->set_skipped_url_whitelist(skipped_url_whitelist_);
-  client_download_request_->set_skipped_certificate_whitelist(
-      skipped_certificate_whitelist_);
+  client_download_request_->set_skipped_url_allowlist(skipped_url_allowlist_);
+  client_download_request_->set_skipped_certificate_allowlist(
+      skipped_certificate_allowlist_);
 
   if (!client_download_request_->SerializeToString(
           &client_download_request_data_)) {
@@ -503,7 +529,8 @@ void CheckClientDownloadRequestBase::OnURLLoaderComplete(
             std::make_unique<ClientDownloadResponse>(response)));
 
     if (!token.empty())
-      SetDownloadPingToken(token);
+      SetDownloadProtectionData(token, response.verdict(),
+                                response.tailored_verdict());
 
     bool upload_requested = response.upload();
     MaybeStorePingsForDownload(result, upload_requested,
@@ -527,10 +554,44 @@ void CheckClientDownloadRequestBase::OnURLLoaderComplete(
 
   // We don't need the loader anymore.
   loader_.reset();
-  UMA_HISTOGRAM_TIMES("SBClientDownload.DownloadRequestDuration",
-                      base::TimeTicks::Now() - start_time_);
-  UMA_HISTOGRAM_TIMES("SBClientDownload.DownloadRequestNetworkDuration",
-                      base::TimeTicks::Now() - request_start_time_);
+
+  DownloadFileType::InspectionType inspection_type =
+      FileTypePolicies::GetInstance()
+          ->PolicyForFile(target_file_path_, GURL{}, nullptr)
+          .inspection_type();
+  std::string metrics_suffix = "";
+  base::TimeDelta duration = base::TimeTicks::Now() - start_time_;
+  switch (inspection_type) {
+    case DownloadFileType::NONE:
+      metrics_suffix = ".None";
+      break;
+    case DownloadFileType::ZIP:
+      metrics_suffix = ".Zip";
+      break;
+    case DownloadFileType::RAR:
+      metrics_suffix = ".Rar";
+      break;
+    case DownloadFileType::DMG:
+      metrics_suffix = ".Dmg";
+      break;
+    case DownloadFileType::OFFICE_DOCUMENT:
+      metrics_suffix = ".Document";
+      break;
+    case DownloadFileType::SEVEN_ZIP:
+      if (base::FeatureList::IsEnabled(kSevenZipEvaluationEnabled))
+        metrics_suffix = ".SevenZip";
+      else
+        metrics_suffix = ".None";
+      break;
+  }
+  base::UmaHistogramTimes("SBClientDownload.DownloadRequestDuration", duration);
+  base::UmaHistogramTimes(
+      "SBClientDownload.DownloadRequestDuration" + metrics_suffix, duration);
+  base::UmaHistogramMediumTimes(
+      "SBClientDownload.DownloadRequestDurationMedium" + metrics_suffix,
+      duration);
+  base::UmaHistogramTimes("SBClientDownload.DownloadRequestNetworkDuration",
+                          base::TimeTicks::Now() - request_start_time_);
 
   FinishRequest(result, reason);
 }

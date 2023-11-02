@@ -1,6 +1,6 @@
 rootWebArea
 ++genericContainer ignored
-++++genericContainer ignored
+++++genericContainer
 ++++++genericContainer ignored
 ++++++++splitter horizontal name='Control: elements that are not in tree'
 ++++++++genericContainer ignored

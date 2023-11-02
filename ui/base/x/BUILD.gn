@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -48,10 +48,6 @@ component("x") {
     "x11_shm_image_pool.h",
     "x11_software_bitmap_presenter.cc",
     "x11_software_bitmap_presenter.h",
-    "x11_topmost_window_finder.cc",
-    "x11_topmost_window_finder.h",
-    "x11_ui_thread.cc",
-    "x11_ui_thread.h",
     "x11_user_input_monitor.cc",
     "x11_user_input_monitor.h",
     "x11_util.cc",
@@ -66,7 +62,10 @@ component("x") {
 
   defines = [ "IS_UI_BASE_X_IMPL" ]
 
-  public_deps = [ "//ui/base/cursor:cursor_base" ]
+  public_deps = [
+    "//ui/base/cursor",
+    "//ui/base/cursor/mojom:cursor_type_shared",
+  ]
   deps = [
     "//base",
     "//base:i18n",
@@ -77,8 +76,6 @@ component("x") {
     "//ui/base:features",
     "//ui/base/clipboard:clipboard_types",
     "//ui/base/clipboard:file_info",
-    "//ui/base/cursor:theme_manager",
-    "//ui/base/cursor/mojom:cursor_type",
     "//ui/display/util",
     "//ui/display/util:gpu_info_util",
     "//ui/events",
@@ -92,8 +89,12 @@ component("x") {
     "//ui/gfx/geometry",
     "//ui/gfx/x",
     "//ui/platform_window/common",
+    "//ui/strings:ui_strings_grit",
   ]
 
+  if (is_linux) {
+    public_deps += [ "//ui/linux:linux_ui" ]
+  }
   if (is_linux || is_chromeos) {
     sources += [
       "selection_owner.cc",
@@ -164,6 +165,7 @@ source_set("unittests") {
     "//skia",
     "//testing/gtest",
     "//ui/base/cursor",
+    "//ui/base/cursor/mojom:cursor_type_shared",
     "//ui/gfx/geometry",
     "//ui/gfx/x",
   ]

@@ -1,0 +1,160 @@
+/* Copyright 2017 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  font-family: "Roboto", sans-serif;
+  display: flex;
+}
+
+header {
+  min-height: 50px;
+  font-size: 24px;
+  background-color: #069BDE;
+  display: flex;
+  padding: 0 20px;
+  color: #f4f4f4;
+  text-align: center;
+  align-items: center;
+  border-bottom: 1px solid rgba(0,0,0,0.12);
+}
+
+.hidden {
+  display: none;
+}
+
+/** CSS for controls panel */
+#controls {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  overflow-y: hidden;
+}
+
+.logo {
+  font-size: 30px;
+  margin-right: 12px;
+}
+
+#controls-panel {
+  padding: 40px;
+  overflow-y: auto;
+}
+
+.control {
+  padding: 20px;
+  margin-bottom: 60px;
+  box-shadow: 0 3px 10px 0 rgba(0, 0, 0, 0.2),
+              0 3px 10px 0 rgba(0, 0, 0, 0.2),
+              4px 4px 6px 0 rgba(0, 0, 0, 0.5)
+}
+
+.control-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.control button {
+  border: 1px solid rgba(0,0,0,0.12);
+  color: #fff;
+  background-color: #7496c8;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  height: 24px;
+  min-width: 80px;
+}
+
+.control button:hover {
+  background-color: #446392;
+}
+
+.control button:active {
+  background-color: #37496d;
+}
+
+/** CSS for logs panel */
+#logs-panel {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid rgba(0,0,0,0.12);
+}
+
+#logs-panel > header {
+  flex-direction: row-reverse;
+}
+
+#save-logs-button,
+#clear-logs-button {
+  background-color: rgba(0,0,0,0);
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  font-size: 20px;
+  height: 100%;
+  padding: 0 25px;
+}
+
+#save-logs-button:hover,
+#clear-logs-button:hover {
+  cursor: pointer;
+  color: #535553;
+}
+
+#save-logs-button:focus,
+#clear-logs-button:focus {
+  outline: 0;
+}
+
+#logs-list {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
+.log-item {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  font-family: monospace;
+  font-size: 12px;
+  padding: 12px 26px;
+}
+
+.log-item[severity="1"] {
+  background-color: #fffcef;
+  color: #312200;
+}
+
+.log-item[severity="2"] {
+  background-color: #fff1f1;
+  color: #ef0000;
+}
+
+.item-metadata {
+  color: #888888;
+  font-size: 10px;
+  display: flex;
+  margin-bottom: 4px;
+}
+
+.item-metadata > .flex {
+  flex: 1;
+}
+
+.item-text {
+  margin: 0;
+  display: inline-block;
+  width: 100%;
+  text-overflow: clip;
+  overflow-x: auto;
+  white-space: pre-wrap;
+}

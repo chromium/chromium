@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2019 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2019 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -34,17 +36,17 @@
             android:id="@+id/expand_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.TextMedium.Blue"/>
+            android:textAppearance="@style/TextAppearance.TextMedium.Accent1"/>
         <TextView
             android:id="@+id/minimize_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.TextMedium.Blue"/>
+            android:textAppearance="@style/TextAppearance.TextMedium.Accent1"/>
         <org.chromium.ui.widget.ChromeImageView
             android:id="@+id/chevron"
             android:layout_width="16dp"
             android:layout_height="16dp"
-            android:tint="@color/blue_when_enabled"
+            android:tint="@color/blue_when_enabled_list"
             app:srcCompat="@drawable/ic_expand_more_black_24dp"
             tools:ignore="ContentDescription"/>
     </LinearLayout>

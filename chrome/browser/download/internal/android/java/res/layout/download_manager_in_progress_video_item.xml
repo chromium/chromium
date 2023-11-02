@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2018 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file.
+<!--
+Copyright 2018 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
 -->
 
 <org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow
@@ -82,7 +83,7 @@
                 android:background="?attr/selectableItemBackground"
                 android:contentDescription="@string/download_notification_cancel_button"
                 android:src="@drawable/btn_close"
-                app:tint="?attr/default_icon_color" />
+                app:tint="@macro/default_icon_color" />
 
         </LinearLayout>
 

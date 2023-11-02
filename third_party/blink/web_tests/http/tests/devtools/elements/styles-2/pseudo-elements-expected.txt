@@ -41,16 +41,17 @@ element.style { ()
 
 ======== Pseudo ::grammar-error element ========
 [expanded] 
-#inspected::grammar-error { (<style>)
+[$#inspected::grammar-error$] { (<style>)
     color: teal;
 
-======== Pseudo ::highlight element ========
+======== Pseudo ::highlight(bar) element ========
 [expanded] 
-#inspected::highlight(bar) { (<style>)
+[$#inspected::highlight(bar)$] { (<style>)
     color: cyan;
 
+======== Pseudo ::highlight(foo) element ========
 [expanded] 
-#inspected::highlight(foo) { (<style>)
+[$#inspected::highlight(foo)$] { (<style>)
     color: fuchsia;
 
 ======== Pseudo ::marker element ========
@@ -69,12 +70,12 @@ element.style { ()
 
 ======== Pseudo ::spelling-error element ========
 [expanded] 
-#inspected::spelling-error { (<style>)
+[$#inspected::spelling-error$] { (<style>)
     color: orange;
 
 ======== Pseudo ::target-text element ========
 [expanded] 
-#inspected::target-text { (<style>)
+[$#inspected::target-text$] { (<style>)
     color: green;
 
 

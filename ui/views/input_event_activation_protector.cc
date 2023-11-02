@@ -1,4 +1,4 @@
-// Copyright (c) 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,10 @@
 
 namespace views {
 
+namespace {
+bool g_disable_for_testing = false;
+}  // namespace
+
 void InputEventActivationProtector::VisibilityChanged(bool is_visible) {
   if (is_visible)
     view_shown_time_stamp_ = base::TimeTicks::Now();
@@ -16,6 +20,9 @@ void InputEventActivationProtector::VisibilityChanged(bool is_visible) {
 
 bool InputEventActivationProtector::IsPossiblyUnintendedInteraction(
     const ui::Event& event) {
+  if (g_disable_for_testing)
+    return false;
+
   if (view_shown_time_stamp_ == base::TimeTicks()) {
     // The UI was never shown, ignore. This can happen in tests.
     return false;
@@ -50,6 +57,10 @@ void InputEventActivationProtector::ResetForTesting() {
   view_shown_time_stamp_ = base::TimeTicks();
   last_event_timestamp_ = base::TimeTicks();
   repeated_event_count_ = 0;
+}
+
+void InputEventActivationProtector::DisableForTesting() {
+  g_disable_for_testing = true;
 }
 
 }  // namespace views

@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -63,36 +63,6 @@
     public static **[] values();
 }
 
-# Allows Proguard freedom in removing these log related calls.
--assumenosideeffects class android.util.Log {
-  static int d(...);
-  static int v(...);
-  static boolean isLoggable(...);
-}
-
--assumenosideeffects class java.util.logging.Logger {
-    void finest(...);
-    void finer(...);
-    void fine(...);
-    void info(...);
-    void warning(...);
-    void severe(...);
-    void throwing(...);
-    void log(...);
-    void logp(...);
-    static java.util.logging.Logger getLogger(...) return null;
-    boolean isLoggable(...) return false;
-}
-
--assumenosideeffects class java.util.logging.Level {
-  int intValue() return 0;
-}
-
-# Makes try-with-resources less inefficient. Saved 3.8kb when added.
--assumenosideeffects class java.lang.Throwable {
-  void addSuppressed(...);
-}
-
 # This is to workaround crbug.com/1204690 - an old GMS app version crashes when
 # ObjectWrapper contains > 1 fields, and this prevents R8 from inserting a
 # synthetic field.
@@ -100,13 +70,17 @@
   <fields>;
 }
 
-# Workaround for crbug/1002847. Methods of BaseGmsClient are incorrectly
-# removed even though they are required for the derived class GmsClient
-# to correctly implement Api$Client.
-# TODO: remove once crbug/1002847 resolved.
--keep public class com.google.android.gms.common.internal.BaseGmsClient {
-  public void disconnect();
-  public void dump(java.lang.String,java.io.FileDescriptor,java.io.PrintWriter,java.lang.String[]);
-  public int getMinApkVersion();
-  public boolean requiresSignIn();
+# Remove calls to String.format() where the result goes unused. This can mask
+# exceptions if the parameters to String.format() are invalid, but such cases
+# are generally programming bugs anyways.
+# Not using the return value generally occurs due to logging being stripped.
+-assumenosideeffects class java.lang.String {
+  static java.lang.String format(...);
+}
+
+# Allows R8 to remove static field accesses to library APIs when the results
+# are unused (E.g. tell it that it's okay to not trigger <clinit>).
+# Not using the return value generally occurs due to logging being stripped.
+-assumenosideeffects class android.**, java.** {
+  static <fields>;
 }

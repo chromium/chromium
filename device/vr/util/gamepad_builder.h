@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #ifndef DEVICE_VR_UTIL_GAMEPAD_BUILDER_H_
@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "device/gamepad/public/cpp/gamepads.h"
 #include "device/vr/public/mojom/isolated_xr_service.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

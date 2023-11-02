@@ -1,17 +1,21 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import 'chrome://diagnostics/cpu_card.js';
 
-import {CpuUsage, RoutineType, SystemDataProviderInterface, SystemInfo} from 'chrome://diagnostics/diagnostics_types.js';
+import {CpuCardElement} from 'chrome://diagnostics/cpu_card.js';
 import {fakeCpuUsage, fakeSystemInfo} from 'chrome://diagnostics/fake_data.js';
 import {FakeSystemDataProvider} from 'chrome://diagnostics/fake_system_data_provider.js';
 import {getSystemDataProvider, setSystemDataProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
+import {RoutineSectionElement} from 'chrome://diagnostics/routine_section.js';
+import {CpuUsage, SystemDataProviderInterface, SystemInfo} from 'chrome://diagnostics/system_data_provider.mojom-webui.js';
+import {RoutineType} from 'chrome://diagnostics/system_routine_controller.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks, isChildVisible} from '../../test_util.js';
+import {isChildVisible} from '../../test_util.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';
 
@@ -67,7 +71,7 @@ export function cpuCardTestSuite() {
   function getRoutineSection() {
     const routineSection =
         /** @type {!RoutineSectionElement} */ (
-            cpuElement.$$('routine-section'));
+            cpuElement.shadowRoot.querySelector('routine-section'));
     assertTrue(!!routineSection);
     return routineSection;
   }
@@ -109,11 +113,13 @@ export function cpuCardTestSuite() {
           dx_utils.getDataPointValue(cpuElement, '#cpuSpeed'),
           `${convertkhzToGhz(fakeCpuUsage[0].scalingCurrentFrequencyKhz)}`);
       dx_utils.assertElementContainsText(
-          cpuElement.$$('#cpuChipInfo'), `${fakeSystemInfo.cpuModelName}`);
+          cpuElement.shadowRoot.querySelector('#cpuChipInfo'),
+          `${fakeSystemInfo.cpuModelName}`);
       dx_utils.assertElementContainsText(
-          cpuElement.$$('#cpuChipInfo'), `${fakeSystemInfo.cpuThreadsCount}`);
+          cpuElement.shadowRoot.querySelector('#cpuChipInfo'),
+          `${fakeSystemInfo.cpuThreadsCount}`);
       dx_utils.assertElementContainsText(
-          cpuElement.$$('#cpuChipInfo'),
+          cpuElement.shadowRoot.querySelector('#cpuChipInfo'),
           `${fakeSystemInfo.cpuMaxClockSpeedKhz}`);
 
       const cpuChart = dx_utils.getRealtimeCpuChartElement(cpuElement);

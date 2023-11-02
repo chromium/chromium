@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 
 // An app agent that montitors the number of visible (that is: active) scenes
 // and provides accessibility notifications when this count changes.
-@interface WindowAccessibityChangeNotifierAppAgent : NSObject <AppStateAgent>
+@interface WindowAccessibilityChangeNotifierAppAgent : NSObject <AppStateAgent>
 @end
 
 #endif  // IOS_CHROME_BROWSER_ACCESSIBILITY_WINDOW_ACCESSIBILITY_CHANGE_NOTIFIER_APP_AGENT_H_

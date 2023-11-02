@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,9 +31,16 @@ public class PasswordEditDialogBridge implements PasswordEditDialogCoordinator.D
     }
 
     @CalledByNative
-    void show(@NonNull String[] usernames, int selectedUsernameIndex, @NonNull String password,
-            @NonNull String origin, @Nullable String account) {
-        mDialogCoordinator.show(usernames, selectedUsernameIndex, password, origin, account);
+    void showUpdatePasswordDialog(@NonNull String[] usernames, int selectedUsernameIndex,
+            @NonNull String password, @Nullable String account) {
+        mDialogCoordinator.showUpdatePasswordDialog(
+                usernames, selectedUsernameIndex, password, account);
+    }
+
+    @CalledByNative
+    void showSavePasswordDialog(
+            @NonNull String username, @NonNull String password, @Nullable String account) {
+        mDialogCoordinator.showSavePasswordDialog(username, password, account);
     }
 
     @CalledByNative
@@ -42,9 +49,9 @@ public class PasswordEditDialogBridge implements PasswordEditDialogCoordinator.D
     }
 
     @Override
-    public void onDialogAccepted(int selectedUsernameIndex) {
+    public void onDialogAccepted(String username, String password) {
         assert mNativeDialog != 0;
-        PasswordEditDialogBridgeJni.get().onDialogAccepted(mNativeDialog, selectedUsernameIndex);
+        PasswordEditDialogBridgeJni.get().onDialogAccepted(mNativeDialog, username, password);
     }
 
     @Override
@@ -56,7 +63,8 @@ public class PasswordEditDialogBridge implements PasswordEditDialogCoordinator.D
 
     @NativeMethods
     interface Natives {
-        void onDialogAccepted(long nativePasswordEditDialogBridge, int selectedUsernameIndex);
+        void onDialogAccepted(
+                long nativePasswordEditDialogBridge, String username, String password);
         void onDialogDismissed(long nativePasswordEditDialogBridge, boolean dialogAccepted);
     }
 }

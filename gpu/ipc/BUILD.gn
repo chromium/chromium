@@ -1,29 +1,20 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/config/ui.gni")
 
 component("gl_in_process_context") {
+  testonly = true
+
   sources = [
-    "command_buffer_task_executor.cc",
-    "command_buffer_task_executor.h",
-    "display_compositor_memory_and_task_controller_on_gpu.cc",
-    "display_compositor_memory_and_task_controller_on_gpu.h",
     "gl_in_process_context.cc",
     "gl_in_process_context.h",
     "gl_in_process_context_export.h",
     "gpu_in_process_thread_service.cc",
     "gpu_in_process_thread_service.h",
-    "gpu_task_scheduler_helper.cc",
-    "gpu_task_scheduler_helper.h",
     "in_process_command_buffer.cc",
     "in_process_command_buffer.h",
-    "scheduler_sequence.cc",
-    "scheduler_sequence.h",
-    "shared_image_interface_in_process.cc",
-    "shared_image_interface_in_process.h",
-    "single_task_sequence.h",
   ]
 
   defines = [ "GL_IN_PROCESS_CONTEXT_IMPLEMENTATION" ]
@@ -31,12 +22,6 @@ component("gl_in_process_context") {
   deps = [
     "//base",
     "//base/third_party/dynamic_annotations",
-
-    # crbug.com/799267: crash_key needs to be added explicitly for Windows and
-    # Mac even though it's not directly referenced, because it's being
-    # implicitly depended upon by gpu/config/gpu_crash_keys.h but deps (even
-    # public ones) are not transitive for static libraries.
-    "//components/crash/core/common:crash_key",
     "//gpu/command_buffer/client",
     "//gpu/command_buffer/client:gles2_cmd_helper",
     "//gpu/command_buffer/client:gles2_implementation",

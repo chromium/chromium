@@ -1,61 +1,30 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_PLUGINS_PLUGIN_METADATA_H_
 #define CHROME_BROWSER_PLUGINS_PLUGIN_METADATA_H_
 
-#include <map>
-#include <memory>
 #include <string>
-#include <vector>
 
-#include "base/version.h"
 #include "ppapi/buildflags/buildflags.h"
-#include "url/gurl.h"
 
 #if !BUILDFLAG(ENABLE_PLUGINS)
 #error "Plugins should be enabled"
 #endif
 
-namespace content {
-struct WebPluginInfo;
-}
-
+// TODO(crbug.com/1064647): Remove this class.
 class PluginMetadata {
  public:
-  // Information about a certain version of the plugin.
+  // Security status of the plugin.
   enum SecurityStatus {
-    SECURITY_STATUS_UP_TO_DATE,
-    SECURITY_STATUS_OUT_OF_DATE,
     SECURITY_STATUS_REQUIRES_AUTHORIZATION,
     SECURITY_STATUS_FULLY_TRUSTED,
-    // Similar to SECURITY_STATUS_OUT_OF_DATE, but with no hope of updating and
-    // running. This is distinct to allow for separate UI treatment.
-    SECURITY_STATUS_DEPRECATED,
   };
-
-  // Used by about:plugins to disable Reader plugin when internal PDF viewer is
-  // enabled.
-  static const char kAdobeReaderGroupName[];
-  static const char kJavaGroupName[];
-  static const char kQuickTimeGroupName[];
-  static const char kShockwaveGroupName[];
-  static const char kAdobeFlashPlayerGroupName[];
-  static const char kRealPlayerGroupName[];
-  static const char kSilverlightGroupName[];
-  static const char kWindowsMediaPlayerGroupName[];
-  static const char kGoogleTalkGroupName[];
-  static const char kGoogleEarthGroupName[];
 
   PluginMetadata(const std::string& identifier,
                  const std::u16string& name,
-                 bool url_for_display,
-                 const GURL& plugin_url,
-                 const GURL& help_url,
-                 const std::u16string& group_name_matcher,
-                 const std::string& language,
-                 bool plugin_is_deprecated);
+                 SecurityStatus security_status);
 
   PluginMetadata(const PluginMetadata&) = delete;
   PluginMetadata& operator=(const PluginMetadata&) = delete;
@@ -68,60 +37,13 @@ class PluginMetadata {
   // Human-readable name of the plugin.
   const std::u16string& name() const { return name_; }
 
-  // If |url_for_display| is false, |plugin_url| is the URL of the download page
-  // for the plugin, which should be opened in a new tab. If it is true,
-  // |plugin_url| is the URL of the plugin installer binary, which can be
-  // directly downloaded.
-  bool url_for_display() const { return url_for_display_; }
-  const GURL& plugin_url() const { return plugin_url_; }
-
-  // URL to open when the user clicks on the "Problems installing?" link.
-  const GURL& help_url() const { return help_url_; }
-
-  const std::string& language() const { return language_; }
-
-  // Returns whether the plugin has been deprecated and cannot be updated.
-  bool plugin_is_deprecated() const { return plugin_is_deprecated_; }
-
-  bool HasMimeType(const std::string& mime_type) const;
-  void AddMimeType(const std::string& mime_type);
-  void AddMatchingMimeType(const std::string& mime_type);
-
-  // Adds information about a plugin version.
-  void AddVersion(const base::Version& version, SecurityStatus status);
-
-  // Checks if |plugin| mime types match all |matching_mime_types_|.
-  // If there is no |matching_mime_types_|, |group_name_matcher_| is used
-  // for matching.
-  bool MatchesPlugin(const content::WebPluginInfo& plugin);
-
-  // If |status_str| describes a valid security status, writes it to |status|
-  // and returns true, else returns false and leaves |status| unchanged.
-  static bool ParseSecurityStatus(const std::string& status_str,
-                                  SecurityStatus* status);
-
-  // Returns the security status for the given plugin (i.e. whether it is
-  // considered out-of-date, etc.)
-  SecurityStatus GetSecurityStatus(const content::WebPluginInfo& plugin) const;
-
-  std::unique_ptr<PluginMetadata> Clone() const;
+  // Returns the security status for the given plugin.
+  SecurityStatus security_status() const { return security_status_; }
 
  private:
-  struct VersionComparator {
-    bool operator()(const base::Version& lhs, const base::Version& rhs) const;
-  };
-
   std::string identifier_;
   std::u16string name_;
-  std::u16string group_name_matcher_;
-  bool url_for_display_;
-  GURL plugin_url_;
-  GURL help_url_;
-  std::string language_;
-  std::map<base::Version, SecurityStatus, VersionComparator> versions_;
-  std::vector<std::string> all_mime_types_;
-  std::vector<std::string> matching_mime_types_;
-  const bool plugin_is_deprecated_;
+  const SecurityStatus security_status_;
 };
 
 #endif  // CHROME_BROWSER_PLUGINS_PLUGIN_METADATA_H_

@@ -47,14 +47,13 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
 class PaintLayer;
-class PaintLayerCompositor;
 class ComputedStyle;
 
 // This class is only for PaintLayer, PaintLayerPaintOrderIterator and
@@ -63,7 +62,7 @@ class ComputedStyle;
 // PaintLayerStackingNode represents a stacked element which is either a
 // stacking context or a positioned element.
 // See
-// https://chromium.googlesource.com/chromium/src.git/+/master/third_party/blink/renderer/core/paint/README.md
+// https://chromium.googlesource.com/chromium/src.git/+/main/third_party/blink/renderer/core/paint/README.md
 // for more details of stacked elements.
 //
 // Stacked elements are the basis for the CSS painting algorithm. The paint
@@ -138,10 +137,6 @@ class CORE_EXPORT PaintLayerStackingNode
   struct HighestLayers;
   void CollectLayers(PaintLayer&, HighestLayers*);
 
-  PaintLayerCompositor* Compositor() const;
-
-  Member<PaintLayer> layer_;
-
   // Holds a sorted list of all the descendant nodes within that have z-indices
   // of 0 (or is treated as 0 for positioned objects) or greater.
   PaintLayers pos_z_order_list_;
@@ -196,6 +191,8 @@ class CORE_EXPORT PaintLayerStackingNode
   // will have their own list) that have overlay overflow controls that should
   // paint reordered. For the above example, this has one entry {target}.
   PaintLayers overlay_overflow_controls_reordered_list_;
+
+  Member<PaintLayer> layer_;
 
   // Indicates whether the z-order lists above are dirty.
   bool z_order_lists_dirty_ = true;

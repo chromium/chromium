@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,31 +10,14 @@
 
 namespace chromeos {
 
-constexpr StaticOobeScreenId GestureNavigationScreenView::kScreenId;
-
-GestureNavigationScreenHandler::GestureNavigationScreenHandler(
-    JSCallsContainer* js_calls_container)
-    : BaseScreenHandler(kScreenId, js_calls_container) {
-  set_user_acted_method_path("login.GestureNavigationScreen.userActed");
-}
+GestureNavigationScreenHandler::GestureNavigationScreenHandler()
+    : BaseScreenHandler(kScreenId) {}
 
 GestureNavigationScreenHandler::~GestureNavigationScreenHandler() = default;
 
 void GestureNavigationScreenHandler::Show() {
-  if (!page_is_ready()) {
-    show_on_init_ = true;
-    return;
-  }
-
-  ShowScreen(kScreenId);
+  ShowInWebUI();
 }
-
-void GestureNavigationScreenHandler::Bind(GestureNavigationScreen* screen) {
-  screen_ = screen;
-  BaseScreenHandler::SetBaseScreen(screen);
-}
-
-void GestureNavigationScreenHandler::Hide() {}
 
 void GestureNavigationScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
@@ -60,24 +43,6 @@ void GestureNavigationScreenHandler::DeclareLocalizedValues(
                IDS_OOBE_GESTURE_NAVIGATION_OVERVIEW_TITLE);
   builder->Add("gestureNavigationOverviewDescription",
                IDS_OOBE_GESTURE_NAVIGATION_OVERVIEW_DESCRIPTION);
-}
-
-void GestureNavigationScreenHandler::Initialize() {
-  if (show_on_init_) {
-    Show();
-    show_on_init_ = false;
-  }
-}
-
-void GestureNavigationScreenHandler::RegisterMessages() {
-  AddCallback("handleGesturePageChange",
-              &GestureNavigationScreenHandler::HandleGesturePageChange);
-  BaseScreenHandler::RegisterMessages();
-}
-
-void GestureNavigationScreenHandler::HandleGesturePageChange(
-    const std::string& new_page) {
-  screen_->GesturePageChange(new_page);
 }
 
 }  // namespace chromeos

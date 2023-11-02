@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,6 +28,14 @@ const char kDriveFsPinnedMigrated[] = "drivefs.pinned_migrated";
 // A boolean pref containing whether DriveFS was ever successfully launched.
 const char kDriveFsWasLaunchedAtLeastOnce[] =
     "drivefs.was_launched_at_least_once";
+
+// A boolean pref toggling MirrorSync functionality.
+const char kDriveFsEnableMirrorSync[] = "drivefs.enable_mirror_sync";
+
+// A string pref containing the machine ID that, when set, ensures existing
+// MirrorSync Computers roots are reassociated to the current device.
+const char kDriveFsMirrorSyncMachineRootId[] =
+    "drivefs.mirror_sync_machine_root_id";
 
 }  // namespace prefs
 }  // namespace drive

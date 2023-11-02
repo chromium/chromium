@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/values.h"
 #include "components/payments/core/payment_details_modifier.h"
 #include "components/payments/core/payment_item.h"
 #include "components/payments/core/payment_shipping_option.h"
@@ -16,10 +17,6 @@
 // C++ bindings for the PaymentRequest API PaymentDetails. Conforms to the
 // following spec:
 // https://w3c.github.io/payment-request/#payment-details-dictionaries
-
-namespace base {
-class Value;
-}
 
 namespace payments {
 
@@ -34,10 +31,10 @@ class PaymentDetails {
   bool operator==(const PaymentDetails& other) const;
   bool operator!=(const PaymentDetails& other) const;
 
-  // Populates the properties of this PaymentDetails from |value|. Returns true
+  // Populates the properties of this PaymentDetails from |dict|. Returns true
   // if the required values are present. If |requires_total| is true, the total
   // property has to be present.
-  bool FromValue(const base::Value& value, bool requires_total);
+  bool FromValueDict(const base::Value::Dict& dict, bool requires_total);
 
   // The unique free-form identifier for this payment request.
   std::string id;

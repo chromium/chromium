@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,7 +30,7 @@ bool DeskUuidChecker::IsExitConditionSatisfied(std::ostream* os) {
              "' to be added/updated.";
 
   desks_storage::DeskModel* model = service_->GetDeskModel();
-  for (auto const& uuid : model->GetAllEntryUuids()) {
+  for (const base::GUID& uuid : model->GetAllEntryUuids()) {
     if (uuid == uuid_) {
       return true;
     }
@@ -48,7 +48,7 @@ void DeskUuidChecker::EntriesAddedOrUpdatedRemotely(
 }
 
 void DeskUuidChecker::EntriesRemovedRemotely(
-    const std::vector<std::string>& uuids) {
+    const std::vector<base::GUID>& uuids) {
   CheckExitCondition();
 }
 
@@ -70,7 +70,7 @@ bool DeskUuidDeletedChecker::IsExitConditionSatisfied(std::ostream* os) {
              "' to be deleted.";
 
   desks_storage::DeskModel* model = service_->GetDeskModel();
-  for (auto const& uuid : model->GetAllEntryUuids()) {
+  for (const base::GUID& uuid : model->GetAllEntryUuids()) {
     if (uuid == uuid_) {
       return false;
     }
@@ -88,7 +88,7 @@ void DeskUuidDeletedChecker::EntriesAddedOrUpdatedRemotely(
 }
 
 void DeskUuidDeletedChecker::EntriesRemovedRemotely(
-    const std::vector<std::string>& uuids) {
+    const std::vector<base::GUID>& uuids) {
   CheckExitCondition();
 }
 
@@ -119,7 +119,7 @@ void DeskModelReadyChecker::EntriesAddedOrUpdatedRemotely(
 }
 
 void DeskModelReadyChecker::EntriesRemovedRemotely(
-    const std::vector<std::string>& uuids) {
+    const std::vector<base::GUID>& uuids) {
   CheckExitCondition();
 }
 

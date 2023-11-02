@@ -1,10 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "media/video/h264_level_limits.h"
 
 #include "base/logging.h"
+#include "base/numerics/checked_math.h"
 #include "media/video/h264_parser.h"
 
 namespace media {

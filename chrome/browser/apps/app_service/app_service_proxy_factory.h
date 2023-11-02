@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,8 +17,21 @@ namespace apps {
 // Singleton that owns all AppServiceProxy's and associates them with Profile.
 class AppServiceProxyFactory : public BrowserContextKeyedServiceFactory {
  public:
+  // Returns true if App Service is available for use in the given `profile`.
+  // App Service is unavailable in profiles which do not run apps (e.g.
+  // non-guest Incognito profiles).
+  // All client code which uses AppServiceProxy should verify that App Service
+  // is available before calling GetForProfile. When App Service is unavailable,
+  // a common pattern is to fall back to an associated real profile (e.g. the
+  // parent of the incognito profile). As this constitutes a data leak out of
+  // Incognito, it is up to individual client teams to decide whether this is
+  // appropriate behavior for their feature. Alternatively, feature teams can
+  // disable the App Service integration in these profiles.
   static bool IsAppServiceAvailableForProfile(Profile* profile);
 
+  // Returns the AppServiceProxy instance for the given `profile`. Should only
+  // be called with a profile for which IsAppServiceAvailableForProfile returns
+  // true.
   static AppServiceProxy* GetForProfile(Profile* profile);
 
   static AppServiceProxyFactory* GetInstance();

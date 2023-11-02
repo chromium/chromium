@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# Copyright 2013 The Chromium Authors. All rights reserved.
+# Copyright 2013 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -10,6 +10,7 @@ import logging
 import os
 import re
 import shutil
+import shlex
 import sys
 import tempfile
 import zipfile
@@ -18,35 +19,29 @@ from util import build_utils
 from util import md5_check
 from util import zipalign
 
-sys.path.insert(1, os.path.join(os.path.dirname(__file__), os.path.pardir))
-
-import convert_dex_profile
-
 
 _DEX_XMX = '2G'  # Increase this when __final_dex OOMs.
 
 _IGNORE_WARNINGS = (
-    # Caused by Play Services:
-    r'Type `libcore.io.Memory` was not found',
-    # Caused by flogger supporting these as fallbacks. Not needed at runtime.
-    r'Type `dalvik.system.VMStack` was not found',
-    r'Type `sun.misc.JavaLangAccess` was not found',
-    r'Type `sun.misc.SharedSecrets` was not found',
-    # Caused by jacoco code coverage:
-    r'Type `java.lang.management.ManagementFactory` was not found',
-    # TODO(wnwen): Remove this after R8 version 3.0.26-dev:
-    r'Missing class sun.misc.Unsafe',
-    # Caused when the test apk and the apk under test do not having native libs.
+    # E.g. Triggers for weblayer_instrumentation_test_apk since both it and its
+    # apk_under_test have no shared_libraries.
+    # https://crbug.com/1364192 << To fix this in a better way.
     r'Missing class org.chromium.build.NativeLibraries',
-    # Caused by internal annotation: https://crbug.com/1180222
-    r'Missing class com.google.errorprone.annotations.RestrictedInheritance',
     # Caused by internal protobuf package: https://crbug.com/1183971
     r'referenced from: com.google.protobuf.GeneratedMessageLite$GeneratedExtension',  # pylint: disable=line-too-long
-    # Caused by using Bazel desugar instead of D8 for desugar, since Bazel
-    # desugar doesn't preserve interfaces in the same way. This should be
-    # removed when D8 is used for desugaring.
-    r'Warning: Cannot emulate interface ',
-    # Only relevant for R8 when optimizing an app that doesn't use proto.
+    # Desugaring configs may occasionally not match types in our program. This
+    # may happen temporarily until we move over to the new desugared library
+    # json flags. See crbug.com/1302088 - this should be removed when this bug
+    # is fixed.
+    r'Warning: Specification conversion: The following',
+    # Caused by protobuf runtime using -identifiernamestring in a way that
+    # doesn't work with R8. Looks like:
+    # Rule matches the static final field `...`, which may have been inlined...
+    # com.google.protobuf.*GeneratedExtensionRegistryLite {
+    #   static java.lang.String CONTAINING_TYPE_*;
+    # }
+    r'GeneratedExtensionRegistryLite.CONTAINING_TYPE_',
+    # Relevant for R8 when optimizing an app that doesn't use protobuf.
     r'Ignoring -shrinkunusedprotofields since the protobuf-lite runtime is',
 )
 
@@ -124,6 +119,8 @@ def _ParseArgs(args):
   parser.add_argument('--force-enable-assertions',
                       action='store_true',
                       help='Forcefully enable javac generated assertion code.')
+  parser.add_argument('--assertion-handler',
+                      help='The class name of the assertion handler class.')
   parser.add_argument('--warnings-as-errors',
                       action='store_true',
                       help='Treat all warnings as errors.')
@@ -131,39 +128,14 @@ def _ParseArgs(args):
                       action='store_true',
                       help='Use when filing D8 bugs to capture inputs.'
                       ' Stores inputs to d8inputs.zip')
-
-  group = parser.add_argument_group('Dexlayout')
-  group.add_argument(
-      '--dexlayout-profile',
-      help=('Text profile for dexlayout. If present, a dexlayout '
-            'pass will happen'))
-  group.add_argument(
-      '--profman-path',
-      help=('Path to ART profman binary. There should be a lib/ directory at '
-            'the same path with shared libraries (shared with dexlayout).'))
-  group.add_argument(
-      '--dexlayout-path',
-      help=('Path to ART dexlayout binary. There should be a lib/ directory at '
-            'the same path with shared libraries (shared with dexlayout).'))
-  group.add_argument('--dexdump-path', help='Path to dexdump binary.')
-  group.add_argument(
-      '--proguard-mapping-path',
-      help=('Path to proguard map from obfuscated symbols in the jar to '
-            'unobfuscated symbols present in the code. If not present, the jar '
-            'is assumed not to be obfuscated.'))
-
   options = parser.parse_args(args)
-
-  if options.dexlayout_profile:
-    build_utils.CheckOptions(
-        options,
-        parser,
-        required=('profman_path', 'dexlayout_path', 'dexdump_path'))
-  elif options.proguard_mapping_path is not None:
-    parser.error('Unexpected proguard mapping without dexlayout')
 
   if options.main_dex_rules_path and not options.multi_dex:
     parser.error('--main-dex-rules-path is unused if multidex is not enabled')
+
+  if options.force_enable_assertions and options.assertion_handler:
+    parser.error('Cannot use both --force-enable-assertions and '
+                 '--assertion-handler')
 
   options.class_inputs = build_utils.ParseGnList(options.class_inputs)
   options.class_inputs_filearg = build_utils.ParseGnList(
@@ -179,28 +151,27 @@ def _ParseArgs(args):
 
 def CreateStderrFilter(show_desugar_default_interface_warnings):
   def filter_stderr(output):
+    # Set this when debugging R8 output.
+    if os.environ.get('R8_SHOW_ALL_OUTPUT', '0') != '0':
+      return output
+
+    warnings = re.split(r'^(?=Warning)', output, flags=re.MULTILINE)
+    preamble, *warnings = warnings
+
     patterns = list(_IGNORE_WARNINGS)
 
-    # When using Bazel's Desugar tool to desugar lambdas and interface methods,
-    # we do not provide D8 with a classpath, which causes a lot of warnings from
-    # D8's default interface desugaring pass. Not having a classpath makes
-    # incremental dexing much more effective. D8 still does backported method
-    # desugaring.
-    # These warnings are also turned off when bytecode checks are turned off.
+    # Missing deps can happen for prebuilts that are missing transitive deps
+    # and have set enable_bytecode_checks=false.
     if not show_desugar_default_interface_warnings:
       patterns += ['default or static interface methods']
 
     combined_pattern = '|'.join(re.escape(p) for p in patterns)
-    output = build_utils.FilterLines(output, combined_pattern)
+    preamble = build_utils.FilterLines(preamble, combined_pattern)
 
-    # Each warning has a prefix line of the file it's from. If we've filtered
-    # out the warning, then also filter out the file header.
-    # E.g.:
-    # Warning in path/to/Foo.class:
-    #   Error message #1 indented here.
-    #   Error message #2 indented here.
-    output = re.sub(r'^Warning in .*?:\n(?!  )', '', output, flags=re.MULTILINE)
-    return output
+    compiled_re = re.compile(combined_pattern)
+    warnings = [w for w in warnings if not compiled_re.search(w)]
+
+    return preamble + ''.join(warnings)
 
   return filter_stderr
 
@@ -211,142 +182,35 @@ def _RunD8(dex_cmd, input_paths, output_path, warnings_as_errors,
 
   stderr_filter = CreateStderrFilter(show_desugar_default_interface_warnings)
 
-  with tempfile.NamedTemporaryFile(mode='w') as flag_file:
+  is_debug = logging.getLogger().isEnabledFor(logging.DEBUG)
+
+  # Avoid deleting the flag file when DEX_DEBUG is set in case the flag file
+  # needs to be examined after the build.
+  with tempfile.NamedTemporaryFile(mode='w', delete=not is_debug) as flag_file:
     # Chosen arbitrarily. Needed to avoid command-line length limits.
     MAX_ARGS = 50
+    orig_dex_cmd = dex_cmd
     if len(dex_cmd) > MAX_ARGS:
-      flag_file.write('\n'.join(dex_cmd[MAX_ARGS:]))
-      flag_file.flush()
-      dex_cmd = dex_cmd[:MAX_ARGS]
-      dex_cmd.append('@' + flag_file.name)
+      # Add all flags to D8 (anything after the first --) as well as all
+      # positional args at the end to the flag file.
+      for idx, cmd in enumerate(dex_cmd):
+        if cmd.startswith('--'):
+          flag_file.write('\n'.join(dex_cmd[idx:]))
+          flag_file.flush()
+          dex_cmd = dex_cmd[:idx]
+          dex_cmd.append('@' + flag_file.name)
+          break
 
     # stdout sometimes spams with things like:
     # Stripped invalid locals information from 1 method.
-    build_utils.CheckOutput(dex_cmd,
-                            stderr_filter=stderr_filter,
-                            fail_on_output=warnings_as_errors)
-
-
-def _EnvWithArtLibPath(binary_path):
-  """Return an environment dictionary for ART host shared libraries.
-
-  Args:
-    binary_path: the path to an ART host binary.
-
-  Returns:
-    An environment dictionary where LD_LIBRARY_PATH has been augmented with the
-    shared library path for the binary. This assumes that there is a lib/
-    directory in the same location as the binary.
-  """
-  lib_path = os.path.join(os.path.dirname(binary_path), 'lib')
-  env = os.environ.copy()
-  libraries = [l for l in env.get('LD_LIBRARY_PATH', '').split(':') if l]
-  libraries.append(lib_path)
-  env['LD_LIBRARY_PATH'] = ':'.join(libraries)
-  return env
-
-
-def _CreateBinaryProfile(text_profile, input_dex, profman_path, temp_dir):
-  """Create a binary profile for dexlayout.
-
-  Args:
-    text_profile: The ART text profile that will be converted to a binary
-        profile.
-    input_dex: The input dex file to layout.
-    profman_path: Path to the profman binary.
-    temp_dir: Directory to work in.
-
-  Returns:
-    The name of the binary profile, which will live in temp_dir.
-  """
-  binary_profile = os.path.join(
-      temp_dir, 'binary_profile-for-' + os.path.basename(text_profile))
-  open(binary_profile, 'w').close()  # Touch binary_profile.
-  profman_cmd = [profman_path,
-                 '--apk=' + input_dex,
-                 '--dex-location=' + input_dex,
-                 '--create-profile-from=' + text_profile,
-                 '--reference-profile-file=' + binary_profile]
-  build_utils.CheckOutput(
-    profman_cmd,
-    env=_EnvWithArtLibPath(profman_path),
-    stderr_filter=lambda output:
-        build_utils.FilterLines(output, '|'.join(
-            [r'Could not find (method_id|proto_id|name):',
-             r'Could not create type list'])))
-  return binary_profile
-
-
-def _LayoutDex(binary_profile, input_dex, dexlayout_path, temp_dir):
-  """Layout a dexfile using a profile.
-
-  Args:
-    binary_profile: An ART binary profile, eg output from _CreateBinaryProfile.
-    input_dex: The dex file used to create the binary profile.
-    dexlayout_path: Path to the dexlayout binary.
-    temp_dir: Directory to work in.
-
-  Returns:
-    List of output files produced by dexlayout. This will be one if the input
-    was a single dexfile, or multiple files if the input was a multidex
-    zip. These output files are located in temp_dir.
-  """
-  dexlayout_output_dir = os.path.join(temp_dir, 'dexlayout_output')
-  os.mkdir(dexlayout_output_dir)
-  dexlayout_cmd = [ dexlayout_path,
-                    '-u',  # Update checksum
-                    '-p', binary_profile,
-                    '-w', dexlayout_output_dir,
-                    input_dex ]
-  build_utils.CheckOutput(
-      dexlayout_cmd,
-      env=_EnvWithArtLibPath(dexlayout_path),
-      stderr_filter=lambda output:
-          build_utils.FilterLines(output,
-                                  r'Can.t mmap dex file.*please zipalign'))
-  output_files = os.listdir(dexlayout_output_dir)
-  if not output_files:
-    raise Exception('dexlayout unexpectedly produced no output')
-  return sorted([os.path.join(dexlayout_output_dir, f) for f in output_files])
-
-
-def _ZipMultidex(file_dir, dex_files):
-  """Zip dex files into a multidex.
-
-  Args:
-    file_dir: The directory into which to write the output.
-    dex_files: The dexfiles forming the multizip. Their names must end with
-      classes.dex, classes2.dex, ...
-
-  Returns:
-    The name of the multidex file, which will live in file_dir.
-  """
-  ordered_files = []  # List of (archive name, file name)
-  for f in dex_files:
-    if f.endswith('dex.jar'):
-      ordered_files.append(('classes.dex', f))
-      break
-  if not ordered_files:
-    raise Exception('Could not find classes.dex multidex file in %s',
-                    dex_files)
-  for dex_idx in range(2, len(dex_files) + 1):
-    archive_name = 'classes%d.dex' % dex_idx
-    for f in dex_files:
-      if f.endswith(archive_name):
-        ordered_files.append((archive_name, f))
-        break
-    else:
-      raise Exception('Could not find classes%d.dex multidex file in %s',
-                      dex_files)
-  if len(set(f[1] for f in ordered_files)) != len(ordered_files):
-    raise Exception('Unexpected clashing filenames for multidex in %s',
-                    dex_files)
-
-  zip_name = os.path.join(file_dir, 'multidex_classes.zip')
-  build_utils.DoZip(((archive_name, os.path.join(file_dir, file_name))
-                     for archive_name, file_name in ordered_files),
-                    zip_name)
-  return zip_name
+    try:
+      build_utils.CheckOutput(dex_cmd,
+                              stderr_filter=stderr_filter,
+                              fail_on_output=warnings_as_errors)
+    except Exception:
+      if orig_dex_cmd is not dex_cmd:
+        sys.stderr.write('Full command: ' + shlex.join(orig_dex_cmd) + '\n')
+      raise
 
 
 def _ZipAligned(dex_files, output_path):
@@ -360,30 +224,6 @@ def _ZipAligned(dex_files, output_path):
     for i, dex_file in enumerate(dex_files):
       name = 'classes{}.dex'.format(i + 1 if i > 0 else '')
       zipalign.AddToZipHermetic(z, name, src_path=dex_file, alignment=4)
-
-
-def _PerformDexlayout(tmp_dir, tmp_dex_output, options):
-  if options.proguard_mapping_path is not None:
-    matching_profile = os.path.join(tmp_dir, 'obfuscated_profile')
-    convert_dex_profile.ObfuscateProfile(
-        options.dexlayout_profile, tmp_dex_output,
-        options.proguard_mapping_path, options.dexdump_path, matching_profile)
-  else:
-    logging.warning('No obfuscation for %s', options.dexlayout_profile)
-    matching_profile = options.dexlayout_profile
-  binary_profile = _CreateBinaryProfile(matching_profile, tmp_dex_output,
-                                        options.profman_path, tmp_dir)
-  output_files = _LayoutDex(binary_profile, tmp_dex_output,
-                            options.dexlayout_path, tmp_dir)
-  if len(output_files) > 1:
-    return _ZipMultidex(tmp_dir, output_files)
-
-  if zipfile.is_zipfile(output_files[0]):
-    return output_files[0]
-
-  final_output = os.path.join(tmp_dir, 'dex_classes.zip')
-  _ZipAligned(output_files, final_output)
-  return final_output
 
 
 def _CreateFinalDex(d8_inputs, output, tmp_dir, dex_cmd, options=None):
@@ -416,9 +256,6 @@ def _CreateFinalDex(d8_inputs, output, tmp_dir, dex_cmd, options=None):
     _ZipAligned(sorted(d8_inputs), tmp_dex_output)
     logging.debug('Quick-zipped %d files', len(d8_inputs))
 
-  if options and options.dexlayout_profile:
-    tmp_dex_output = _PerformDexlayout(tmp_dir, tmp_dex_output, options)
-
   # The dex file is complete and can be moved out of tmp_dir.
   shutil.move(tmp_dex_output, output)
 
@@ -445,12 +282,34 @@ def _DeleteStaleIncrementalDexFiles(dex_dir, dex_files):
 
 
 def _ParseDesugarDeps(desugar_dependencies_file):
+  # pylint: disable=line-too-long
+  """Returns a dict of dependent/dependency mapping parsed from the file.
+
+  Example file format:
+  $ tail out/Debug/gen/base/base_java__dex.desugardeps
+  org/chromium/base/task/SingleThreadTaskRunnerImpl.class
+    <-  org/chromium/base/task/SingleThreadTaskRunner.class
+    <-  org/chromium/base/task/TaskRunnerImpl.class
+  org/chromium/base/task/TaskRunnerImpl.class
+    <-  org/chromium/base/task/TaskRunner.class
+  org/chromium/base/task/TaskRunnerImplJni$1.class
+    <-  obj/base/jni_java.turbine.jar:org/chromium/base/JniStaticTestMocker.class
+  org/chromium/base/task/TaskRunnerImplJni.class
+    <-  org/chromium/base/task/TaskRunnerImpl$Natives.class
+  """
+  # pylint: enable=line-too-long
   dependents_from_dependency = collections.defaultdict(set)
   if desugar_dependencies_file and os.path.exists(desugar_dependencies_file):
     with open(desugar_dependencies_file, 'r') as f:
+      dependent = None
       for line in f:
-        dependent, dependency = line.rstrip().split(' -> ')
-        dependents_from_dependency[dependency].add(dependent)
+        line = line.rstrip()
+        if line.startswith('  <-  '):
+          dependency = line[len('  <-  '):]
+          # Note that this is a reversed mapping from the one in CustomD8.java.
+          dependents_from_dependency[dependency].add(dependent)
+        else:
+          dependent = line
   return dependents_from_dependency
 
 
@@ -510,14 +369,14 @@ def _CreateIntermediateDexFiles(changes, options, tmp_dir, dex_cmd):
                   strings_changed, non_direct_input_changed)
     changes = None
 
-  if changes:
+  if changes is None:
+    required_desugar_classes_set = set()
+  else:
     required_desugar_classes_set = _ComputeRequiredDesugarClasses(
         changes, options.desugar_dependencies, options.class_inputs,
         options.classpath)
     logging.debug('Class files needing re-desugar: %d',
                   len(required_desugar_classes_set))
-  else:
-    required_desugar_classes_set = set()
   class_files = _ExtractClassFiles(changes, tmp_extract_dir,
                                    options.class_inputs,
                                    required_desugar_classes_set)
@@ -528,7 +387,13 @@ def _CreateIntermediateDexFiles(changes, options, tmp_dir, dex_cmd):
     # Dex necessary classes into intermediate dex files.
     dex_cmd = dex_cmd + ['--intermediate', '--file-per-class-file']
     if options.desugar_dependencies and not options.skip_custom_d8:
-      dex_cmd += ['--file-tmp-prefix', tmp_extract_dir]
+      # Adding os.sep to remove the entire prefix.
+      dex_cmd += ['--file-tmp-prefix', tmp_extract_dir + os.sep]
+      if changes is None and os.path.exists(options.desugar_dependencies):
+        # Since incremental dexing only ever adds to the desugar_dependencies
+        # file, whenever full dexes are required the .desugardeps files need to
+        # be manually removed.
+        os.unlink(options.desugar_dependencies)
     _RunD8(dex_cmd, class_files, options.incremental_dir,
            options.warnings_as_errors,
            options.show_desugar_default_interface_warnings)
@@ -640,6 +505,9 @@ def main(args):
 
   if options.desugar_jdk_libs_json:
     dex_cmd += ['--desugared-lib', options.desugar_jdk_libs_json]
+    input_paths += [options.desugar_jdk_libs_json]
+  if options.assertion_handler:
+    dex_cmd += ['--force-assertions-handler:' + options.assertion_handler]
   if options.force_enable_assertions:
     dex_cmd += ['--force-enable-assertions']
 
@@ -649,7 +517,7 @@ def main(args):
       lambda changes: _OnStaleMd5(changes, options, final_dex_inputs, dex_cmd),
       options,
       input_paths=input_paths,
-      input_strings=dex_cmd + [bool(options.incremental_dir)],
+      input_strings=dex_cmd + [str(bool(options.incremental_dir))],
       output_paths=output_paths,
       pass_changes=True,
       track_subpaths_allowlist=track_subpaths_allowlist,

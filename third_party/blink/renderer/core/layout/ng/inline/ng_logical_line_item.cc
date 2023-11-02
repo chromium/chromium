@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -75,7 +75,7 @@ const NGLayoutResult* NGLogicalLineItems::BlockInInlineLayoutResult() const {
   for (const NGLogicalLineItem& item : *this) {
     if (item.layout_result &&
         item.layout_result->PhysicalFragment().IsBlockInInline())
-      return item.layout_result.get();
+      return item.layout_result;
   }
   return nullptr;
 }
@@ -113,6 +113,17 @@ void NGLogicalLineItems::MoveInBlockDirection(LayoutUnit delta,
                                               unsigned end) {
   for (unsigned index = start; index < end; index++)
     children_[index].rect.offset.block_offset += delta;
+}
+
+void NGLogicalLineItem::Trace(Visitor* visitor) const {
+  visitor->Trace(layout_result);
+  visitor->Trace(layout_object);
+  visitor->Trace(out_of_flow_positioned_box);
+  visitor->Trace(unpositioned_float);
+}
+
+void NGLogicalLineItems::Trace(Visitor* visitor) const {
+  visitor->Trace(children_);
 }
 
 }  // namespace blink

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -114,17 +114,31 @@ class COMPONENT_EXPORT(X11) Sync {
   };
 
   struct Int64 {
+    bool operator==(const Int64& other) const {
+      return hi == other.hi && lo == other.lo;
+    }
+
     int32_t hi{};
     uint32_t lo{};
   };
 
   struct SystemCounter {
+    bool operator==(const SystemCounter& other) const {
+      return counter == other.counter && resolution == other.resolution &&
+             name == other.name;
+    }
+
     Counter counter{};
     Int64 resolution{};
     std::string name{};
   };
 
   struct Trigger {
+    bool operator==(const Trigger& other) const {
+      return counter == other.counter && wait_type == other.wait_type &&
+             wait_value == other.wait_value && test_type == other.test_type;
+    }
+
     Counter counter{};
     Valuetype wait_type{};
     Int64 wait_value{};
@@ -132,6 +146,11 @@ class COMPONENT_EXPORT(X11) Sync {
   };
 
   struct WaitCondition {
+    bool operator==(const WaitCondition& other) const {
+      return trigger == other.trigger &&
+             event_threshold == other.event_threshold;
+    }
+
     Trigger trigger{};
     Int64 event_threshold{};
   };
@@ -157,7 +176,6 @@ class COMPONENT_EXPORT(X11) Sync {
   struct CounterNotifyEvent {
     static constexpr int type_id = 16;
     static constexpr uint8_t opcode = 0;
-    bool send_event{};
     uint8_t kind{};
     uint16_t sequence{};
     Counter counter{};
@@ -173,7 +191,6 @@ class COMPONENT_EXPORT(X11) Sync {
   struct AlarmNotifyEvent {
     static constexpr int type_id = 17;
     static constexpr uint8_t opcode = 1;
-    bool send_event{};
     uint8_t kind{};
     uint16_t sequence{};
     Alarm alarm{};

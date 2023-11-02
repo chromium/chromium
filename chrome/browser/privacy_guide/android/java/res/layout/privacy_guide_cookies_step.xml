@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cookies_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/welcome_main_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:animateLayoutChanges="true"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/image"
+            android:layout_marginVertical="16dp"
+            android:layout_height="@dimen/privacy_guide_illustration_height"
+            android:layout_width="@dimen/privacy_guide_illustration_width"
+            android:src="@drawable/privacy_guide_cookies_image"
+            android:importantForAccessibility="no" />
+
+        <TextView
+            android:drawablePadding="16dp"
+            android:layout_gravity="start"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginVertical="8dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/privacy_guide_cookies_intro"
+            style="@style/TextAppearance.TextLarge.Primary" />
+
+        <org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout
+            android:id="@+id/cookies_radio_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:focusable="false">
+
+            <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
+                android:id="@+id/block_third_party_incognito"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:primaryText="@string/privacy_guide_cookies_block_incognito_title"
+                app:descriptionText="@string/privacy_guide_cookies_block_incognito_description" />
+
+            <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
+                android:id="@+id/block_third_party"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:primaryText="@string/privacy_guide_cookies_block_always_title"
+                app:descriptionText="@string/privacy_guide_cookies_block_always_description" />
+
+        </org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout>
+
+    </LinearLayout>
+
+</ScrollView>

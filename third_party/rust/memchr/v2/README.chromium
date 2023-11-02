@@ -1,0 +1,6 @@
+Name: memchr
+URL: https://crates.io/crates/memchr
+Description: Safe interface to memchr.
+Version: 2.4.1
+Security Critical: no
+License: MIT

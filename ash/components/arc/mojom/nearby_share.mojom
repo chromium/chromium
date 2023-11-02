@@ -1,0 +1,65 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+//
+// Next MinVersion: 1
+
+module arc.mojom;
+
+import "url/mojom/url.mojom";
+
+// This mojo file defines the interface that Android apps on ChromeOS will use
+// to allow users to share data (text/files) to nearby share targets, using
+// ChromeOS's NearbyShare view. Nearby share is the ability for a user to share
+// data from a ChromeOS device to another ChromeOS or Android device.
+
+// Represents details about a shared file.
+struct FileInfo {
+  url.mojom.Url content_uri;  // Content URI for the shared file
+  string mime_type;           // MIME type for the file
+  string name;                // File name
+  int64 size;                 // Match Long type in ARC for file size in bytes
+};
+
+// Represents the share information received from an Android app.
+struct ShareIntentInfo {
+  string title;                 // Title of share intent
+  string mime_type;             // MIME type for the data.
+                                // (e.g. text/*, text/plain, image/*, etc)
+  map<string, string>? extras;  // (optional) Metadata from the Android intent
+  array<FileInfo>? files;       // (optional) Shared file information
+};
+
+// Represents the Chrome side of NearbyShare session. Used by ARC to send
+// NearbyShare messages to Chrome and interact with the ARC Window used
+// for NearbyShare.
+// Closing the interface will close the ARC Window.
+// Next method ID: 0
+interface NearbyShareSessionHost {
+};
+
+// Represents the ARC side of a NearbyShare session. Used by Chrome to send
+// share-related messages to ARC.
+// Next method ID: 1
+interface NearbyShareSessionInstance {
+  // Called when Chrome NearbyShare view is closed.
+  OnNearbyShareViewClosed@0();
+};
+
+// Interface for Android to communicate with Chrome.
+// Next method ID: 1
+interface NearbyShareHost {
+  // Used to create a NearbyShare session.
+  StartNearbyShare@0(
+      uint32 task_id,
+      ShareIntentInfo info,
+      pending_remote<NearbyShareSessionInstance> instance)
+      => (pending_remote<NearbyShareSessionHost> host);
+};
+
+// Interface for Chrome to communicate with Android.
+// Next method ID: 1
+interface NearbyShareInstance {
+  // Establishes full-duplex communication with the host.
+  Init@0(pending_remote<NearbyShareHost> host_remote) => ();
+};

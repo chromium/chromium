@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,11 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "weblayer/public/navigation.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
 #endif
 
@@ -70,7 +71,7 @@ class NavigationImpl : public Navigation {
 
   void set_finished() { finished_ = true; }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   int GetState(JNIEnv* env) { return static_cast<int>(GetState()); }
   base::android::ScopedJavaLocalRef<jstring> GetUri(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jobjectArray> GetRedirectChain(JNIEnv* env);
@@ -101,6 +102,7 @@ class NavigationImpl : public Navigation {
   base::android::ScopedJavaLocalRef<jstring> GetReferrer(JNIEnv* env);
   jlong GetPage(JNIEnv* env);
   int GetNavigationEntryOffset(JNIEnv* env);
+  jboolean WasFetchedFromCache(JNIEnv* env);
 
   void SetResponse(
       std::unique_ptr<embedder_support::WebResourceResponse> response);
@@ -136,9 +138,10 @@ class NavigationImpl : public Navigation {
   GURL GetReferrer() override;
   Page* GetPage() override;
   int GetNavigationEntryOffset() override;
+  bool WasFetchedFromCache() override;
 
  private:
-  content::NavigationHandle* navigation_handle_;
+  raw_ptr<content::NavigationHandle> navigation_handle_;
 
   // The NavigationEntry's unique ID for this navigation, or -1 if there isn't
   // one.
@@ -176,7 +179,7 @@ class NavigationImpl : public Navigation {
   // Whether this navigation has finished.
   bool finished_ = false;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   base::android::ScopedJavaGlobalRef<jobject> java_navigation_;
   std::unique_ptr<embedder_support::WebResourceResponse> response_;
 #endif

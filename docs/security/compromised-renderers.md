@@ -213,19 +213,21 @@ Compromised renderers shouldn’t be able to:
 - Spoof the `MessageEvent.origin` seen by a recipient of a `postMessage`.
 - Bypass enforcement of the `targetOrigin` argument of `postMessage`.
 - Send or receive `BroadcastChannel` messages for another origin.
-- Spoof the `MessageSender.origin` seen by a recipient of a
-  `chrome.runtime.sendMessage`
-  (see also [MessageSender documentation](https://developers.chrome.com/extensions/runtime#type-MessageSender) and [content script security guidance](https://groups.google.com/a/chromium.org/forum/#!topic/chromium-extensions/0ei-UCHNm34)).
+- Spoof the `MessageSender.origin`, nor `MessageSender.id` (i.e. an
+  extension id which can differ from the origin when the message is sent
+  from a content script), as seen by a recipient of a
+  `chrome.runtime.sendMessage`.
+  See also [MessageSender documentation](https://developers.chrome.com/extensions/runtime#type-MessageSender) and [content script security guidance](https://groups.google.com/a/chromium.org/forum/#!topic/chromium-extensions/0ei-UCHNm34).
+- Spoof the id of a Chrome extension initiating
+  [native messaging](https://developer.chrome.com/docs/apps/nativeMessaging/)
+  communication.
 
 Protection techniques:
 - Using `CanAccessDataForOrigin` to verify IPCs sent by a renderer process
   (e.g. in `RenderFrameProxyHost::OnRouteMessageEvent` or
   `BroadcastChannelProvider::ConnectToChannel`).
-
-**Known gaps in protection**:
-- Spoofing of `MessageSender.id` object
-  (see [the MessageSender documentation](https://developers.chrome.com/extensions/runtime#type-MessageSender)
-  and https://crbug.com/982361).
+- Using `ContentScriptTracker` to check if IPCs from a given renderer process
+  can legitimately claim to act on behalf content scripts of a given extension.
 
 
 ## JavaScript code cache

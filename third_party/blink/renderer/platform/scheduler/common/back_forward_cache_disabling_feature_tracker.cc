@@ -1,10 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/scheduler/common/back_forward_cache_disabling_feature_tracker.h"
 
-#include "third_party/blink/renderer/platform/scheduler/common/thread_scheduler_impl.h"
+#include "third_party/blink/renderer/platform/scheduler/common/thread_scheduler_base.h"
 
 namespace blink {
 namespace scheduler {
@@ -12,7 +12,7 @@ namespace scheduler {
 BackForwardCacheDisablingFeatureTracker::
     BackForwardCacheDisablingFeatureTracker(
         TraceableVariableController* tracing_controller,
-        ThreadSchedulerImpl* scheduler)
+        ThreadSchedulerBase* scheduler)
     : opted_out_from_back_forward_cache_{false,
                                          "FrameScheduler."
                                          "OptedOutFromBackForwardCache",

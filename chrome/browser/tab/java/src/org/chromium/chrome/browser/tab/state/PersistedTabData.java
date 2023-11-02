@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
-import org.chromium.base.FeatureList;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
@@ -18,7 +17,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 
@@ -43,8 +41,6 @@ public abstract class PersistedTabData implements UserData {
     private static final Map<String, List<Callback>> sCachedCallbacks = new HashMap<>();
     private static final long NEEDS_UPDATE_DISABLED = Long.MAX_VALUE;
     private static final long LAST_UPDATE_UNKNOWN = 0;
-    private static final String ENABLE_PERSISTED_TAB_DATA_MAINTENANCE =
-            "enable_persisted_tab_data_maintenance";
     private static Set<Class<? extends PersistedTabData>> sSupportedMaintenanceClasses =
             new HashSet<>();
     protected final Tab mTab;
@@ -113,7 +109,7 @@ public abstract class PersistedTabData implements UserData {
             if (persistedTabDataFromTab.needsUpdate()) {
                 tabDataCreator.onResult((tabData) -> {
                     if (tab.isDestroyed()) {
-                        PostTask.runOrPostTask(
+                        PostTask.postTask(
                                 UiThreadTaskTraits.DEFAULT, () -> { callback.onResult(null); });
                         return;
                     }
@@ -121,11 +117,11 @@ public abstract class PersistedTabData implements UserData {
                     if (tabData != null) {
                         setUserData(tab, clazz, tabData);
                     }
-                    PostTask.runOrPostTask(
+                    PostTask.postTask(
                             UiThreadTaskTraits.DEFAULT, () -> { callback.onResult(tabData); });
                 });
             } else {
-                PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
+                PostTask.postTask(UiThreadTaskTraits.DEFAULT,
                         () -> { callback.onResult(persistedTabDataFromTab); });
             }
             return;
@@ -152,7 +148,7 @@ public abstract class PersistedTabData implements UserData {
             PersistedTabDataConfiguration config, PersistedTabDataFactory<T> factory,
             Callback<Callback<T>> tabDataCreator, Tab tab, Class<T> clazz, String key) {
         factory.create(data, config.getStorage(), config.getId(), (persistedTabDataFromStorage) -> {
-            if (persistedTabDataFromStorage.needsUpdate()) {
+            if (persistedTabDataFromStorage != null && persistedTabDataFromStorage.needsUpdate()) {
                 tabDataCreator.onResult((tabData) -> {
                     updateLastUpdatedMs(tabData);
                     onPersistedTabDataResult(tabData, tab, clazz, key);
@@ -183,15 +179,14 @@ public abstract class PersistedTabData implements UserData {
     }
 
     private static <T extends PersistedTabData> void onPersistedTabDataResult(
-            T persistedTabData, Tab tab, Class<T> clazz, String key) {
-        if (tab.isDestroyed()) {
-            persistedTabData = null;
-        }
+            T pPersistedTabData, Tab tab, Class<T> clazz, String key) {
+        final T persistedTabData = tab.isDestroyed() ? null : pPersistedTabData;
         if (persistedTabData != null) {
             setUserData(tab, clazz, persistedTabData);
         }
         for (Callback cachedCallback : sCachedCallbacks.get(key)) {
-            cachedCallback.onResult(persistedTabData);
+            PostTask.postTask(
+                    UiThreadTaskTraits.DEFAULT, () -> cachedCallback.onResult(persistedTabData));
         }
         sCachedCallbacks.remove(key);
     }
@@ -254,37 +249,71 @@ public abstract class PersistedTabData implements UserData {
 
     /**
      * Save {@link PersistedTabData} to storage
-     * @param callback callback indicating success/failure
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     protected void save() {
         if (mIsTabSaveEnabledSupplier != null && mIsTabSaveEnabledSupplier.get()) {
-            mPersistedTabDataStorage.save(mTab.getId(), mPersistedTabDataId,
-                    getOomAndMetricsWrapper(getSerializeSupplier()));
+            mPersistedTabDataStorage.save(
+                    mTab.getId(), mPersistedTabDataId, getOomAndMetricsWrapper());
+        }
+    }
+
+    /**
+     * Save {@link PersistedTabData} to storage
+     * @param callback called after save is completed
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    public void save(Callback<Integer> onComplete) {
+        if (mIsTabSaveEnabledSupplier != null && mIsTabSaveEnabledSupplier.get()) {
+            mPersistedTabDataStorage.save(
+                    mTab.getId(), mPersistedTabDataId, getOomAndMetricsWrapper(), onComplete);
         }
     }
 
     /**
      * @return {@link Supplier} for {@link PersistedTabData} in serialized form.
      */
-    abstract Supplier<ByteBuffer> getSerializeSupplier();
+    abstract Serializer<ByteBuffer> getSerializer();
 
     @VisibleForTesting
-    protected Supplier<ByteBuffer> getOomAndMetricsWrapper(Supplier<ByteBuffer> serializeSupplier) {
-        return () -> {
-            ByteBuffer res;
-            try (TraceEvent e = TraceEvent.scoped("PersistedTabData.Serialize")) {
-                res = serializeSupplier.get();
-            } catch (OutOfMemoryError oe) {
-                Log.e(TAG, "Out of memory error when attempting to save PersistedTabData");
-                res = null;
+    protected Serializer<ByteBuffer> getOomAndMetricsWrapper() {
+        final Serializer<ByteBuffer> serializer = getSerializerWithOomSoftFallback();
+        return new Serializer<ByteBuffer>() {
+            @Override
+            public ByteBuffer get() {
+                if (serializer == null) return null;
+                ByteBuffer res;
+                try (TraceEvent e = TraceEvent.scoped("PersistedTabData.Serialize")) {
+                    res = serializer.get();
+                } catch (OutOfMemoryError oe) {
+                    Log.e(TAG,
+                            "Out of memory error when attempting to save PersistedTabData."
+                                    + " Details: " + oe.getMessage());
+                    res = null;
+                }
+                // TODO(crbug.com/1162293) convert to enum histogram and differentiate null/not
+                // null/out of memory
+                RecordHistogram.recordBooleanHistogram(
+                        "Tabs.PersistedTabData.Serialize." + getUmaTag(), res != null);
+                return res;
             }
-            // TODO(crbug.com/1162293) convert to enum histogram and differentiate null/not null/out
-            // of memory
-            RecordHistogram.recordBooleanHistogram(
-                    "Tabs.PersistedTabData.Serialize." + getUmaTag(), res != null);
-            return res;
+
+            @Override
+            public void preSerialize() {
+                serializer.preSerialize();
+            }
         };
+    }
+
+    private Serializer<ByteBuffer> getSerializerWithOomSoftFallback() {
+        try {
+            return getSerializer();
+        } catch (OutOfMemoryError oe) {
+            Log.e(TAG,
+                    "Out of memory error when attempting to save PersistedTabData "
+                            + oe.getMessage());
+        }
+        return null;
     }
 
     /**
@@ -294,7 +323,8 @@ public abstract class PersistedTabData implements UserData {
      */
     abstract boolean deserialize(@Nullable ByteBuffer bytes);
 
-    protected void deserializeAndLog(@Nullable ByteBuffer bytes) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    public void deserializeAndLog(@Nullable ByteBuffer bytes) {
         boolean success;
         try (TraceEvent e = TraceEvent.scoped("PersistedTabData.Deserialize")) {
             success = deserialize(bytes);
@@ -404,9 +434,6 @@ public abstract class PersistedTabData implements UserData {
      */
     public static void performStorageMaintenance(List<Integer> liveTabIds) {
         ThreadUtils.assertOnUiThread();
-        if (!isPersistedTabDataStorageMaintenanceEnabled()) {
-            return;
-        }
         for (Class<? extends PersistedTabData> clazz : sSupportedMaintenanceClasses) {
             PersistedTabDataConfiguration config = PersistedTabDataConfiguration.get(
                     clazz, false /** Maintenance is only supported for regular Tabs */);
@@ -415,18 +442,16 @@ public abstract class PersistedTabData implements UserData {
         }
     }
 
-    private static boolean isPersistedTabDataStorageMaintenanceEnabled() {
-        if (FeatureList.isInitialized()) {
-            return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                    ChromeFeatureList.COMMERCE_PRICE_TRACKING,
-                    ENABLE_PERSISTED_TAB_DATA_MAINTENANCE, false);
-        }
-        return false;
-    }
-
     @VisibleForTesting
     protected static Set<Class<? extends PersistedTabData>>
     getSupportedMaintenanceClassesForTesting() {
         return sSupportedMaintenanceClasses;
+    }
+
+    /**
+     * Signal to {@link PersistedTabData} that deferred startup is complete.
+     */
+    public static void onDeferredStartup() {
+        PersistedTabDataConfiguration.getFilePersistedTabDataStorage().onDeferredStartup();
     }
 }

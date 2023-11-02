@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,13 +8,12 @@
 #include <memory>
 #include <utility>
 
-#include "base/auto_reset.h"
+#include "base/check_op.h"
 #include "base/dcheck_is_on.h"
 #include "base/memory/ptr_util.h"
 #include "cc/input/layer_selection_bound.h"
 #include "cc/paint/element_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_point.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_list.h"
@@ -22,12 +21,12 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunk.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunker.h"
 #include "third_party/blink/renderer/platform/graphics/paint/region_capture_data.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
-#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace blink {
 
@@ -49,7 +48,10 @@ enum class PaintBenchmarkMode {
 // corresponding frame. They are never reset to false. First-paint is defined in
 // https://github.com/WICG/paint-timing. It excludes default background paint.
 struct FrameFirstPaint {
-  FrameFirstPaint(const void* frame)
+  DISALLOW_NEW();
+
+ public:
+  explicit FrameFirstPaint(const void* frame)
       : frame(frame),
         first_painted(false),
         text_painted(false),
@@ -87,34 +89,7 @@ class PLATFORM_EXPORT PaintController {
   Usage GetUsage() const { return usage_; }
 #endif
 
-  class PLATFORM_EXPORT CycleScope {
-    STACK_ALLOCATED();
-
-   public:
-    explicit CycleScope(bool record_debug_info = false)
-        : record_debug_info_(record_debug_info) {
-      clients_to_validate_ =
-          MakeGarbageCollected<HeapVector<Member<const DisplayItemClient>>>();
-    }
-    explicit CycleScope(PaintController& controller,
-                        bool record_debug_info = false)
-        : CycleScope(record_debug_info) {
-      AddController(controller);
-    }
-    void AddController(PaintController& controller) {
-      controller.StartCycle(*clients_to_validate_, record_debug_info_);
-      controllers_.push_back(&controller);
-    }
-    ~CycleScope();
-
-   protected:
-    Vector<PaintController*> controllers_;
-
-   private:
-    HeapVector<Member<const DisplayItemClient>>* clients_to_validate_;
-    bool record_debug_info_;
-  };
-  friend class CycleScope;
+  friend class PaintControllerCycleScope;
 
   // These methods are called during painting.
 
@@ -143,11 +118,6 @@ class PLATFORM_EXPORT PaintController {
   }
   void EnsureChunk();
 
-  void SetShouldComputeContentsOpaque(bool should_compute) {
-    DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
-    paint_chunker_.SetShouldComputeContentsOpaque(should_compute);
-  }
-
   void RecordHitTestData(const DisplayItemClient&,
                          const gfx::Rect&,
                          TouchAction,
@@ -165,6 +135,9 @@ class PLATFORM_EXPORT PaintController {
 
   void RecordSelection(absl::optional<PaintedSelectionBound> start,
                        absl::optional<PaintedSelectionBound> end);
+  void RecordAnySelectionWasPainted() {
+    paint_chunker_.RecordAnySelectionWasPainted();
+  }
 
   wtf_size_t NumNewChunks() const {
     return new_paint_artifact_->PaintChunks().size();
@@ -313,24 +286,25 @@ class PLATFORM_EXPORT PaintController {
   friend class PaintControllerTestBase;
   friend class PaintControllerPaintTestBase;
   friend class PaintUnderInvalidationChecker;
-  friend class GraphicsLayer;  // Temporary for ClientCacheIsValid().
 
   // Called before painting to optimize memory allocation by reserving space in
   // |new_paint_artifact_| and |new_subsequences_| based on the size of the
   // previous ones (|current_paint_artifact_| and |current_subsequences_|).
   void ReserveCapacity();
 
-  // Called at the beginning of a paint cycle, as defined by CycleScope.
+  // Called at the beginning of a paint cycle, as defined by
+  // PaintControllerCycleScope.
   void StartCycle(
       HeapVector<Member<const DisplayItemClient>>& clients_to_validate,
       bool record_debug_info);
 
-  // Called at the end of a paint cycle, as defined by CycleScope.
-  // The PaintController will cleanup data that will no longer be used for the
-  // next cycle, and update status to be ready for the next cycle.
-  // It updates caching status of DisplayItemClients, so if there are
-  // DisplayItemClients painting on multiple PaintControllers, we should call
-  // there FinishCycle() at the same time to ensure consistent caching status.
+  // Called at the end of a paint cycle, as defined by
+  // PaintControllerCycleScope. The PaintController will cleanup data that will
+  // no longer be used for the next cycle, and update status to be ready for the
+  // next cycle. It updates caching status of DisplayItemClients, so if there
+  // are DisplayItemClients painting on multiple PaintControllers, we should
+  // call there FinishCycle() at the same time to ensure consistent caching
+  // status.
   void FinishCycle();
 
   // True if all display items associated with the client are validly cached.
@@ -379,6 +353,7 @@ class PLATFORM_EXPORT PaintController {
     wtf_size_t start_chunk_index = 0;
     wtf_size_t end_chunk_index = 0;
     bool is_moved_from_cached_subsequence = false;
+    DISALLOW_NEW();
   };
 
   wtf_size_t GetSubsequenceIndex(DisplayItemClientId) const;
@@ -467,6 +442,7 @@ class PLATFORM_EXPORT PaintController {
     HashMap<DisplayItemClientId, wtf_size_t> map;
     // A pre-order list of the subsequence tree.
     Vector<SubsequenceMarkers> tree;
+    DISALLOW_NEW();
   };
   SubsequencesData current_subsequences_;
   SubsequencesData new_subsequences_;
@@ -478,6 +454,34 @@ class PLATFORM_EXPORT PaintController {
   static CounterForTesting* counter_for_testing_;
 
   class PaintArtifactAsJSON;
+};
+
+class PLATFORM_EXPORT PaintControllerCycleScope {
+  STACK_ALLOCATED();
+
+ public:
+  explicit PaintControllerCycleScope(bool record_debug_info)
+      : record_debug_info_(record_debug_info) {
+    clients_to_validate_ =
+        MakeGarbageCollected<HeapVector<Member<const DisplayItemClient>>>();
+  }
+  explicit PaintControllerCycleScope(PaintController& controller,
+                                     bool record_debug_info)
+      : PaintControllerCycleScope(record_debug_info) {
+    AddController(controller);
+  }
+  void AddController(PaintController& controller) {
+    controller.StartCycle(*clients_to_validate_, record_debug_info_);
+    controllers_.push_back(&controller);
+  }
+  ~PaintControllerCycleScope();
+
+ protected:
+  Vector<PaintController*> controllers_;
+
+ private:
+  HeapVector<Member<const DisplayItemClient>>* clients_to_validate_;
+  bool record_debug_info_;
 };
 
 }  // namespace blink

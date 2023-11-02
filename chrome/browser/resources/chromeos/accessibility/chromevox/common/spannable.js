@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,7 @@
  * @fileoverview Class which allows construction of annotated strings.
  */
 
-goog.provide('MultiSpannable');
-goog.provide('Spannable');
-
-Spannable = class {
+export class Spannable {
   /**
    * @param {string|!Spannable=} opt_string Initial value of the spannable.
    * @param {*=} opt_annotation Initial annotation for the entire string.
@@ -108,10 +105,10 @@ Spannable = class {
       const otherSpannable = /** @type {!Spannable} */ (other);
       const originalLength = this.length;
       this.string_ += otherSpannable.string_;
-      other.spans_.forEach(function(span) {
-        this.setSpan(
-            span.value, span.start + originalLength, span.end + originalLength);
-      }.bind(this));
+      other.spans_.forEach(
+          span => this.setSpan(
+              span.value, span.start + originalLength,
+              span.end + originalLength));
     } else if (typeof other === 'string') {
       this.string_ += /** @type {string} */ (other);
     }
@@ -190,13 +187,9 @@ Spannable = class {
    * @return {!Array<{start: number, end: number}>}
    */
   getSpanIntervals(value) {
-    return this.spans_
-        .filter(function(s) {
-          return s.value === value;
-        })
-        .map(function(s) {
-          return {start: s.start, end: s.end};
-        });
+    return this.spans_.filter(span => span.value === value).map(span => {
+      return {start: span.start, end: span.end};
+    });
   }
 
   /**
@@ -243,7 +236,7 @@ Spannable = class {
     }
 
     const result = new Spannable(this.string_.substring(start, end));
-    this.spans_.forEach(function(span) {
+    this.spans_.forEach(span => {
       if (span.start <= end && span.end >= start) {
         const newStart = Math.max(0, span.start - start);
         const newEnd = Math.min(end - start, span.end - start);
@@ -315,14 +308,14 @@ Spannable = class {
     const result = {};
     result.string = this.string_;
     result.spans = [];
-    this.spans_.forEach(function(span) {
+    this.spans_.forEach(span => {
       const serializeInfo =
           serializableSpansByConstructor.get(span.value.constructor);
       if (serializeInfo) {
         const spanObj = {
           type: serializeInfo.name,
           start: span.start,
-          end: span.end
+          end: span.end,
         };
         if (serializeInfo.toJson) {
           spanObj.value = serializeInfo.toJson.apply(span.value);
@@ -348,7 +341,7 @@ Spannable = class {
       throw new Error('Invalid spannable json object: no spans array');
     }
     const result = new Spannable(obj.string);
-    result.spans_ = obj.spans.map(function(span) {
+    result.spans_ = obj.spans.map(span => {
       if (typeof span.type !== 'string') {
         throw new Error(
             'Invalid span in spannable json object: type not a string');
@@ -401,7 +394,7 @@ Spannable = class {
     serializableSpansByName.set(name, obj);
     serializableSpansByConstructor.set(constructor, obj);
   }
-};
+}
 
 
 /**
@@ -410,7 +403,7 @@ Spannable = class {
  * Note that most methods that assume a span value is unique such as
  * |getSpanStart| will use the first span value.
  */
-MultiSpannable = class extends Spannable {
+export class MultiSpannable extends Spannable {
   /**
    * @param {string|!Spannable=} opt_string Initial value of the spannable.
    * @param {*=} opt_annotation Initial annotation for the entire string.
@@ -429,7 +422,7 @@ MultiSpannable = class extends Spannable {
     const ret = Spannable.prototype.substring.call(this, start, opt_end);
     return new MultiSpannable(ret);
     }
-};
+}
 
 
 /**

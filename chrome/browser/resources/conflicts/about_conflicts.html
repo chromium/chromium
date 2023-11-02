@@ -27,8 +27,7 @@ a {
 }
 
 #header {
-  background: url(../../../../ui/webui/resources/images/warning.svg)
-      left center / 48px no-repeat;
+  background: url(./warning.svg) left center / 48px no-repeat;
   box-sizing: border-box;
   margin-bottom: 1.05em;
   overflow: hidden;
@@ -145,113 +144,112 @@ html[dir=rtl] .clearing {
        modules registered to load at a <a href="#None">later</a> point.</span>
   </div>
 
-  <div id="modulesTemplate">
-
-    <div id="third-party-conflicts-status">
-      Third-Party Module Features Status
-      <div>
-        <span jscontent="thirdPartyFeatureStatus">STATUS</span>
-      </div>
-    </div>
-
-    <div id="container" class="vbox-container">
-      <div id="top" class="wbox">
-        <div class="section-header">
-              <span class="section-header-title"
-                    jscontent="moduleCount">COUNT</span> modules
+  <dom-bind>
+    <template>
+      <div id="third-party-conflicts-status">
+        Third-Party Module Features Status
+        <div>
+          <span>[[data.thirdPartyFeatureStatus]]</span>
         </div>
       </div>
-    </div>
 
-    <div class="content">
-      <div class="module-name no-modules"
-           jsdisplay="moduleList.length === 0">
-        <div>Unable to detect any modules loaded.</div>
+      <div id="container" class="vbox-container">
+        <div id="top" class="wbox">
+          <div class="section-header">
+            <span class="section-header-title">[[data.moduleCount]]</span>
+            <span>modules</span>
+          </div>
+        </div>
       </div>
 
-      <div jsdisplay="moduleList.length &gt; 0">
-      <table width="100%" cellpadding="0" cellspacing="0">
-      <tr class="module-loaded">
-      <td valign="top">
-        <table cellpadding="2" cellspacing="0" border="0">
-          <tr>
-            <td class="datacell">
-              <span dir="ltr">Software</span>
-            </td>
-            <td class="datacell">
-              <span dir="ltr">Signed by</span>
-            </td>
-            <td class="datacell">
-              <span dir="ltr">Version</span>
-            </td>
-            <td class="datacell">
-              <span dir="ltr">Code Id</span>
-            </td>
-            <td class="datacell">
-              <span dir="ltr">Process types</span>
-            </td>
-            <td class="datacell">
-              <span dir="ltr">Location</span>
-            </td>
-            <td jsdisplay="thirdPartyFeatureEnabled" class="datacell">
-              <span dir="ltr">Conflicts Status</span>
-            </td>
-          </tr>
-          <tr jsvalues="data-process:process_types.toLowerCase()"
-            jsselect="moduleList" class="module">
-            <td valign="top" class="datacell">
-              <span dir="ltr"
-                    jsvalues=".textContent:description"
-                    class="clearing nowrap"></span>
-            </td>
-            <td valign="top" class="datacell">
-              <span dir="ltr" jscontent="digital_signer" class="nowrap">
-                SIGNER
-              </span>
-            </td>
-            <td valign="top" class="datacell">
-              <span dir="ltr" jscontent="version" class="nowrap">VERSION</span>
-            </td>
-            <td valign="top" class="datacell">
-              <span dir="ltr" jscontent="code_id" class="nowrap">CODE_ID</span>
-            </td>
-            <td valign="top" class="datacell">
-              <span dir="ltr" jscontent="process_types" class="nowrap">
-                PROCESS_TYPES
-              </span>
-            </td>
-            <td valign="top" class="datacell">
-              <span class="nowrap">
-                <span dir="ltr" jscontent="location">LOCATION</span>
-                <strong>
-                  <span dir="ltr" jscontent="name">NAME</span>
-                </strong>
-                <span dir="ltr" jsdisplay="type_description.length &gt; 0">
-                    (
-                    <span dir="ltr" jscontent="type_description">
-                      MODULE_TYPE
-                    </span>
-                    )
-                </span>
-              </span>
-            </td>
-            <span jsdisplay="third_party_module_status.length &gt; 0">
-              <td valign="top" class="datacell nowrap">
-                <span jscontent="third_party_module_status">
-                  THIRD_PARTY_MODULE_STATUS
-                </span>
+      <div class="content">
+        <div class="module-name no-modules" hidden$="[[data.hasModules]]">
+          <div>Unable to detect any modules loaded.</div>
+        </div>
+
+        <div hidden$="[[!data.hasModules]]">
+          <table width="100%" cellpadding="0" cellspacing="0">
+            <tr class="module-loaded">
+              <td valign="top">
+                <table cellpadding="2" cellspacing="0" border="0">
+                  <tr>
+                    <td class="datacell">
+                      <span dir="ltr">Software</span>
+                    </td>
+                    <td class="datacell">
+                      <span dir="ltr">Signed by</span>
+                    </td>
+                    <td class="datacell">
+                      <span dir="ltr">Version</span>
+                    </td>
+                    <td class="datacell">
+                      <span dir="ltr">Code Id</span>
+                    </td>
+                    <td class="datacell">
+                      <span dir="ltr">Process types</span>
+                    </td>
+                    <td class="datacell">
+                      <span dir="ltr">Location</span>
+                    </td>
+                    <td hidden$="[[!data.thirdPartyFeatureEnabled]]"
+                        class="datacell">
+                      <span dir="ltr">Conflicts Status</span>
+                    </td>
+                  </tr>
+
+                  <template is="dom-repeat" items="[[data.moduleList]]">
+                    <tr data-process$="[[item.process_types]]"
+                        class="module">
+                      <td valign="top" class="datacell">
+                        <span dir="ltr" class="clearing nowrap">
+                          [[item.description]]
+                        </span>
+                      </td>
+                      <td valign="top" class="datacell">
+                        <span dir="ltr" class="nowrap">
+                          [[item.digital_signer]]
+                        </span>
+                      </td>
+                      <td valign="top" class="datacell">
+                        <span dir="ltr" class="nowrap">[[item.version]]</span>
+                      </td>
+                      <td valign="top" class="datacell">
+                        <span dir="ltr"class="nowrap">[[item.code_id]]</span>
+                      </td>
+                      <td valign="top" class="datacell">
+                        <span dir="ltr" class="nowrap">
+                          [[item.process_types]]
+                        </span>
+                      </td>
+                      <td valign="top" class="datacell">
+                        <span class="nowrap">
+                          <span dir="ltr">[[item.location]]</span>
+                          <strong>
+                            <span dir="ltr">[[item.name]]</span>
+                          </strong>
+                          <span dir="ltr"
+                              hidden$="[[!item.type_description.length]]">
+                              (
+                              <span dir="ltr">[[item.type_description]]</span>
+                              )
+                          </span>
+                        </span>
+                      </td>
+                      <td valign="top" class="datacell nowrap"
+                          hidden$="[[!item.third_party_module_status.length]]">
+                        <span>[[item.third_party_module_status]]</span>
+                      </td>
+                    </tr>
+                  </template>
+                </table>
               </td>
-            </span>
-          </tr>
-        </table>
-      </td>
-      </tr>
-      </table>
-      </div>
-    </div>
-  </div>
+            </tr>
+          </table>
+        </div>
+      </div> <!-- content -->
+    </template>
+  </dom-bind>
 </div>
-<script src="chrome://resources/js/jstemplate_compiled.js"></script>
 <script type="module" src="chrome://conflicts/conflicts.js"></script>
 </body>
 </html>

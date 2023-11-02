@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "services/device/public/mojom/usb_device.mojom.h"
@@ -30,8 +30,8 @@ class SequencedTaskRunner;
 namespace device {
 
 struct EndpointMapValue {
-  const mojom::UsbInterfaceInfo* interface;
-  const mojom::UsbEndpointInfo* endpoint;
+  raw_ptr<const mojom::UsbInterfaceInfo> interface;
+  raw_ptr<const mojom::UsbEndpointInfo> endpoint;
 };
 
 class UsbDeviceImpl;

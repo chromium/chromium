@@ -1,0 +1,4 @@
+include_rules = [
+    "+services/device/public/mojom/hid.mojom-blink.h",
+    "+services/device/public/mojom/hid.mojom-blink-forward.h",
+]

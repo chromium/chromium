@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -77,9 +77,9 @@ v8::Local<v8::Array> EnumerateCrossOriginProperties(
       v8::Symbol::GetIsConcatSpreadable(isolate),
   };
   const uint32_t length = static_cast<uint32_t>(
-      attributes.size() + operations.size() + base::size(default_supported));
+      attributes.size() + operations.size() + std::size(default_supported));
   Vector<v8::Local<v8::Value>> elements;
-  elements.ReserveCapacity(length);
+  elements.reserve(length);
   for (const auto& attribute : attributes)
     elements.UncheckedAppend(V8AtomicString(isolate, attribute.name));
   for (const auto& operation : operations)

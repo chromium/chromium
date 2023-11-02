@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,11 +16,11 @@ gfx::Size GetMaximumWebVrSize(gvr::GvrApi* gvr_api) {
   // Get the default, unscaled size for the WebVR transfer surface
   // based on the optimal 1:1 render resolution. A scalar will be applied to
   // this value in the renderer to reduce the render load. This size will also
-  // be reported to the client via CreateVRDisplayInfo as the
-  // client-recommended render_width/render_height and for the GVR
-  // framebuffer. If the client chooses a different size or resizes it
-  // while presenting, we'll resize the transfer surface and GVR
-  // framebuffer to match.
+  // be reported to the client via XRViews (initially on XRSessionDeviceConfig,
+  // and then on XRFrameData) as the client-recommended
+  // render_width/render_height and for the GVR framebuffer. If the client
+  // chooses a different size or resizes it while presenting, we'll resize the
+  // transfer surface and GVR framebuffer to match.
   gvr::Sizei render_target_size =
       gvr_api->GetMaximumEffectiveRenderTargetSize();
 
@@ -47,14 +47,17 @@ device::mojom::XRViewPtr CreateView(
 
   if (eye == GVR_LEFT_EYE) {
     view->eye = device::mojom::XREye::kLeft;
+    view->viewport =
+        gfx::Rect(0, 0, maximum_size.width() / 2, maximum_size.height());
   } else if (eye == GVR_RIGHT_EYE) {
     view->eye = device::mojom::XREye::kRight;
+    view->viewport = gfx::Rect(maximum_size.width() / 2, 0,
+                               maximum_size.width() / 2, maximum_size.height());
   } else {
     NOTREACHED();
   }
 
   view->field_of_view = device::mojom::VRFieldOfView::New();
-  view->viewport = gfx::Size(maximum_size.width() / 2, maximum_size.height());
 
   gvr::BufferViewport eye_viewport = gvr_api->CreateBufferViewport();
   buffers.GetBufferViewport(eye, &eye_viewport);
@@ -86,10 +89,10 @@ namespace device {
 namespace gvr_utils {
 
 void GvrMatToTransform(const gvr::Mat4f& in, gfx::Transform* out) {
-  *out = gfx::Transform(in.m[0][0], in.m[0][1], in.m[0][2], in.m[0][3],
-                        in.m[1][0], in.m[1][1], in.m[1][2], in.m[1][3],
-                        in.m[2][0], in.m[2][1], in.m[2][2], in.m[2][3],
-                        in.m[3][0], in.m[3][1], in.m[3][2], in.m[3][3]);
+  *out = gfx::Transform::RowMajor(
+      in.m[0][0], in.m[0][1], in.m[0][2], in.m[0][3], in.m[1][0], in.m[1][1],
+      in.m[1][2], in.m[1][3], in.m[2][0], in.m[2][1], in.m[2][2], in.m[2][3],
+      in.m[3][0], in.m[3][1], in.m[3][2], in.m[3][3]);
 }
 
 std::vector<device::mojom::XRViewPtr> CreateViews(

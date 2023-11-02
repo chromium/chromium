@@ -1,19 +1,20 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_WORKING_SET_TRIMMER_POLICY_ARCVM_H_
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_WORKING_SET_TRIMMER_POLICY_ARCVM_H_
 
+#include "ash/components/arc/metrics/arc_metrics_service.h"
+#include "ash/components/arc/mojom/app.mojom.h"
+#include "ash/components/arc/mojom/intent_helper.mojom.h"
+#include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/components/arc/session/connection_holder.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
 #include "chrome/browser/performance_manager/policies/working_set_trimmer_policy_chromeos.h"
-#include "components/arc/metrics/arc_metrics_service.h"
-#include "components/arc/mojom/app.mojom.h"
-#include "components/arc/session/arc_bridge_service.h"
-#include "components/arc/session/connection_holder.h"
 #include "ui/wm/public/activation_change_observer.h"
 
 namespace aura {
@@ -35,6 +36,7 @@ class WorkingSetTrimmerPolicyArcVm
       public arc::ArcMetricsService::UserInteractionObserver,
       public arc::ArcSessionManagerObserver,
       public arc::ConnectionObserver<arc::mojom::AppInstance>,
+      public arc::ConnectionObserver<arc::mojom::IntentHelperInstance>,
       public wm::ActivationChangeObserver {
  public:
   // Gets an instance of WorkingSetTrimmerPolicyArcVm.
@@ -52,8 +54,12 @@ class WorkingSetTrimmerPolicyArcVm
   ~WorkingSetTrimmerPolicyArcVm() override;
 
   // WorkingSetTrimmerPolicyChromeOS::ArcVmDelegate overrides.
-  bool IsEligibleForReclaim(const base::TimeDelta& arcvm_inactivity_time,
-                            bool trim_once_after_arcvm_boot) override;
+  static constexpr bool kYesFirstReclaimPostBoot = true;
+  static constexpr bool kNotFirstReclaimPostBoot = false;
+  mechanism::ArcVmReclaimType IsEligibleForReclaim(
+      const base::TimeDelta& arcvm_inactivity_time,
+      mechanism::ArcVmReclaimType trim_once_type_after_arcvm_boot,
+      bool* is_first_trim_post_boot) override;
 
   // ArcMetricsService::UserInteractionObserver overrides.
   void OnUserInteraction(arc::UserInteractionType type) override;
@@ -63,6 +69,7 @@ class WorkingSetTrimmerPolicyArcVm
   void OnArcSessionRestarting() override;
 
   // arc::ConnectionObserver<arc::mojom::AppInstance> overrides.
+  // arc::ConnectionObserver<arc::mojom::IntentHelperInstance> overrides.
   void OnConnectionReady() override;
 
   // wm::ActivationChangeObserver overrides.
@@ -70,11 +77,14 @@ class WorkingSetTrimmerPolicyArcVm
                          aura::Window* gained_active,
                          aura::Window* lost_active) override;
 
+  static const base::TimeDelta& GetArcVmBootDelayForTesting();
+
  private:
   friend class base::NoDestructor<WorkingSetTrimmerPolicyArcVm>;
   WorkingSetTrimmerPolicyArcVm();
 
   void StartObservingUserInteractions();
+  void OnConnectionReadyInternal();
 
   content::BrowserContext* context_for_testing_ = nullptr;
 
@@ -91,6 +101,8 @@ class WorkingSetTrimmerPolicyArcVm
   bool trimmed_at_boot_ = false;
   // True if observing the user's interactions with ARCVM via ArcMetricsService.
   bool observing_user_interactions_ = false;
+
+  base::OneShotTimer timer_;
 };
 
 }  // namespace policies

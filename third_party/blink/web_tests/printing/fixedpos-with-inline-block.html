@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<script>
+  testRunner.setPrinting();
+  internals.settings.setShouldPrintBackgrounds(true);
+</script>
+<style>
+  body { margin: 0; }
+</style>
+<div style="position:fixed; right:0; top:0;">
+  <div style="display:inline-block; vertical-align:top; width:100px; height:100px; background:green;"></div>
+</div>
+<div style="break-after:page;">
+  There should be two pages. Both pages should have a green square in the top
+  right corner.
+</div>
+Page 2. Green square there? &rarr;

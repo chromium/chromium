@@ -61,7 +61,7 @@ TokenizerResult BertTokenizer::Tokenize(const std::string& input) {
 }
 
 WordpieceTokenizerResult BertTokenizer::TokenizeWordpiece(
-    const std::string& input) {
+    const std::string& input) const {
   WordpieceTokenizerResult result;
   std::vector<std::string>& subwords = result.subwords;
   std::vector<int>& wp_absolute_begin_offset = result.wp_begin_offset;

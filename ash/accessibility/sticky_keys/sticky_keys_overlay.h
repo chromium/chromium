@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,6 +36,8 @@ class ASH_EXPORT StickyKeysOverlay : public ui::ImplicitAnimationObserver {
 
   // Shows or hides the overlay.
   void Show(bool visible);
+
+  void UpdateBoundsIfVisible();
 
   void SetModifierVisible(ui::EventFlags modifier, bool visible);
 

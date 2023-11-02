@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -57,6 +57,12 @@ void V4L2DecodeSurface::SetVisibleRect(const gfx::Rect& visible_rect) {
   visible_rect_ = visible_rect;
 }
 
+void V4L2DecodeSurface::SetColorSpace(const VideoColorSpace& color_space) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  color_space_ = color_space;
+}
+
 void V4L2DecodeSurface::SetReferenceSurfaces(
     std::vector<scoped_refptr<V4L2DecodeSurface>> ref_surfaces) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -97,6 +103,8 @@ std::string V4L2DecodeSurface::ToString() const {
   return out;
 }
 
+// ConfigStore is ChromeOS-specific legacy stuff
+#if BUILDFLAG(IS_CHROMEOS)
 void V4L2ConfigStoreDecodeSurface::PrepareSetCtrls(
     struct v4l2_ext_controls* ctrls) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -134,6 +142,7 @@ bool V4L2ConfigStoreDecodeSurface::Submit() {
 
   return false;
 }
+#endif
 
 void V4L2RequestDecodeSurface::PrepareSetCtrls(
     struct v4l2_ext_controls* ctrls) const {

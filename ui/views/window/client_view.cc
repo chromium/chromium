@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -86,7 +86,7 @@ void ClientView::ViewHierarchyChanged(
     // (the OK/Cancel buttons are inserted before contents_view_)
     // TODO(weili): This seems fragile and can be refactored.
     // Tracked at https://crbug.com/1012466.
-    AddChildViewAt(contents_view_, 0);
+    AddChildViewAt(contents_view_.get(), 0);
   }
 }
 

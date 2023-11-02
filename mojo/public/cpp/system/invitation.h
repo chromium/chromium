@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/process/process_handle.h"
 #include "base/strings/string_piece.h"
 #include "mojo/public/c/system/invitation.h"
@@ -63,6 +62,8 @@ class MOJO_CPP_SYSTEM_EXPORT OutgoingInvitation {
   ~OutgoingInvitation();
 
   OutgoingInvitation& operator=(OutgoingInvitation&& other);
+
+  void set_extra_flags(MojoSendInvitationFlags flags) { extra_flags_ = flags; }
 
   // Creates a new message pipe, attaching one end to this invitation and
   // returning the other end to the caller. The invitee can extract the
@@ -150,6 +151,7 @@ class MOJO_CPP_SYSTEM_EXPORT OutgoingInvitation {
       base::StringPiece connection_name = {});
 
  private:
+  MojoSendInvitationFlags extra_flags_ = MOJO_SEND_INVITATION_FLAG_NONE;
   ScopedInvitationHandle handle_;
 };
 

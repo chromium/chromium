@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,15 +29,15 @@ NSError* CreateConnectionLostError();
 // same format and structure as errors provided in ios/web callbacks.
 NSError* CreateTestNetError(NSError* error);
 
-// Creates an NSError using the domains and codes in |domain_code_pairs|.  The
+// Creates an NSError using the domains and codes in `domain_code_pairs`.  The
 // returned NSError will use the domain and code from the first pair in the
 // list.  Each subsequent pair in the list will be used to create the underlying
-// error for the previous pair in the list.  Returns nil if |domain_code_pairs|
+// error for the previous pair in the list.  Returns nil if `domain_code_pairs`
 // is empty.
 NSError* CreateErrorWithUnderlyingErrorChain(
     const std::vector<std::pair<NSErrorDomain, NSInteger>>& domain_code_pairs);
 
-// Builds the text for an error page in TestWebClient.  |error| must be
+// Builds the text for an error page in TestWebClient.  `error` must be
 // non-null.
 std::string GetErrorText(WebState* web_state,
                          const GURL& url,

@@ -1,4 +1,4 @@
-// Copyright 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,9 @@
 #include <stdint.h>
 
 #include <memory>
+#include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "components/viz/test/begin_frame_args_test.h"
 #include "components/viz/test/begin_frame_source_test.h"
@@ -81,7 +83,8 @@ class BackToBackBeginFrameSourceTest : public ::testing::Test {
   scoped_refptr<TestTaskRunner> task_runner_;
   std::unique_ptr<BackToBackBeginFrameSource> source_;
   std::unique_ptr<MockBeginFrameObserver> obs_;
-  FakeDelayBasedTimeSource* delay_based_time_source_;  // Owned by |source_|.
+  raw_ptr<FakeDelayBasedTimeSource>
+      delay_based_time_source_;  // Owned by |source_|.
 };
 
 const int64_t BackToBackBeginFrameSourceTest::kDeadline =
@@ -532,6 +535,28 @@ TEST_F(DelayBasedBeginFrameSourceTest, VSyncChangeTimebaseBetweenTicks) {
   EXPECT_BEGIN_FRAME_USED(*obs_, source_->source_id(), 9, 59000, 69000, 10000);
   EXPECT_BEGIN_FRAME_USED(*obs_, source_->source_id(), 10, 69000, 79000, 10000);
   task_runner_->FastForwardTo(TicksFromMicroseconds(70000));
+}
+
+TEST_F(DelayBasedBeginFrameSourceTest, VSyncSkipped) {
+  EXPECT_BEGIN_FRAME_SOURCE_PAUSED(*obs_, false);
+  EXPECT_BEGIN_FRAME_USED_MISSED(*obs_, source_->source_id(), 1, 0, 10000,
+                                 10000);
+  source_->AddObserver(obs_.get());
+
+  EXPECT_BEGIN_FRAME_USED(*obs_, source_->source_id(), 2, 10000, 20000, 10000);
+  EXPECT_BEGIN_FRAME_USED(*obs_, source_->source_id(), 3, 20000, 30000, 10000);
+  EXPECT_BEGIN_FRAME_USED(*obs_, source_->source_id(), 4, 30000, 40000, 10000);
+  task_runner_->FastForwardTo(TicksFromMicroseconds(30000));
+
+  // Advancing tick time without creating begin frames.
+  task_runner_->AdvanceMockTickClock(base::Microseconds(40000));
+  source_->OnUpdateVSyncParameters(TicksFromMicroseconds(40000),
+                                   base::Microseconds(11000));
+  // By advancing tick time to 40000, we would be skipping sequence_number 5 at
+  // 40000 and sequence_number 6 at 51000.
+  EXPECT_BEGIN_FRAME_USED(*obs_, source_->source_id(), 7, 62000, 73000, 11000);
+  EXPECT_BEGIN_FRAME_USED(*obs_, source_->source_id(), 8, 73000, 84000, 11000);
+  task_runner_->FastForwardTo(TicksFromMicroseconds(75000));
 }
 
 TEST_F(DelayBasedBeginFrameSourceTest, MultipleObservers) {

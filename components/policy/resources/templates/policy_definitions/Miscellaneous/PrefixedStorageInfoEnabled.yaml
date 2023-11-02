@@ -1,0 +1,29 @@
+caption: Re-enable the deprecated window.webkitStorageInfo API
+default: false
+desc: "Non-standard API window.webkitStorageInfo is deprecated and is planned for\
+  \ removal.\n      This policy re-enables the API.\n      If this policy is set to\
+  \ Enabled, the window.webkitStorageInfo API will be available.\n      If this policy\
+  \ is set to Disabled or not set, the window.webkitStorageInfo API will be unavailable.\n\
+  \      "
+example_value: false
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- fuchsia
+items:
+- caption: window.webkitStorageInfo will be available.
+  value: true
+- caption: window.webkitStorageInfo will be unavailable.
+  value: false
+owners:
+- ayui@chromium.org
+- chrome-owp-storage@google.com
+schema:
+  type: boolean
+supported_on:
+- chrome.*:106-
+- chrome_os:106-
+- android:106-
+tags: []
+type: main

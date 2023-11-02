@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,7 +19,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -32,11 +31,13 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.ThemeTestUtils;
 import org.chromium.components.browser_ui.styles.ChromeColors;
@@ -70,7 +71,7 @@ public class StatusBarColorControllerTest {
 
     @Before
     public void setUp() {
-        mScrimColor = ApiCompatibilityUtils.getColor(sActivityTestRule.getActivity().getResources(),
+        mScrimColor = sActivityTestRule.getActivity().getColor(
                 org.chromium.chrome.R.color.default_scrim_color);
     }
 
@@ -94,8 +95,9 @@ public class StatusBarColorControllerTest {
         TabModelSelector tabModelSelector = activity.getTabModelSelector();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { tabModelSelector.selectModel(true /* incognito */); });
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { activity.getLayoutManager().showOverview(false /* animate */); });
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            activity.getLayoutManager().showLayout(LayoutType.TAB_SWITCHER, false /* animate */);
+        });
 
         waitForStatusBarColor(activity, expectedOverviewIncognitoColor);
         TestThreadUtils.runOnUiThreadBlocking(
@@ -122,8 +124,9 @@ public class StatusBarColorControllerTest {
         ThemeTestUtils.waitForThemeColor(activity, Color.RED);
         waitForStatusBarColor(activity, Color.RED);
 
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { activity.getLayoutManager().showOverview(false /* animate */); });
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            activity.getLayoutManager().showLayout(LayoutType.TAB_SWITCHER, false /* animate */);
+        });
         waitForStatusBarColor(activity, expectedDefaultStandardColor);
     }
 
@@ -193,6 +196,32 @@ public class StatusBarColorControllerTest {
         Assert.assertEquals(
                 "Wrong status bar color after the status indicator color is set to default.",
                 initialColor, statusBarColor.get().intValue());
+    }
+
+    /**
+     * Test that the theme color is cleared when the Omnibox gains focus.
+     */
+    @Test
+    @LargeTest
+    @Feature({"StatusBar"})
+    @MinAndroidSdkLevel(Build.VERSION_CODES.LOLLIPOP_MR1)
+    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE}) // Status bar is always black on tablets
+    public void testBrandColorIgnoredWhenOmniboxIsFocused() throws Exception {
+        ChromeTabbedActivity activity = sActivityTestRule.getActivity();
+        final int expectedDefaultStandardColor =
+                defaultColorFallbackToBlack(ChromeColors.getDefaultThemeColor(activity, false));
+
+        String pageWithBrandColorUrl = sActivityTestRule.getTestServer().getURL(
+                "/chrome/test/data/android/theme_color_test.html");
+        sActivityTestRule.loadUrl(pageWithBrandColorUrl);
+        ThemeTestUtils.waitForThemeColor(activity, Color.RED);
+        waitForStatusBarColor(activity, Color.RED);
+
+        var omniboxUtils = new OmniboxTestUtils(activity);
+        omniboxUtils.requestFocus();
+        waitForStatusBarColor(activity, expectedDefaultStandardColor);
+        omniboxUtils.clearFocus();
+        waitForStatusBarColor(activity, Color.RED);
     }
 
     private int defaultColorFallbackToBlack(int color) {

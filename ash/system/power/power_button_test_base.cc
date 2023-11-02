@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -71,6 +71,10 @@ void PowerButtonTestBase::SetTabletModeSwitchState(
           tablet_mode_switch_state});
 
   screenshot_controller_ = power_button_test_api_->GetScreenshotController();
+}
+
+void PowerButtonTestBase::LaunchArcPowerButtonEvent() {
+  power_button_controller_->OnArcPowerButtonMenuEvent();
 }
 
 void PowerButtonTestBase::PressPowerButton() {

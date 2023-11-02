@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include "base/feature_list.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/infobars/content/content_infobar_manager.h"
@@ -103,12 +102,20 @@ void SubresourceFilterTestHarness::SetUp() {
   NavigateAndCommit(GURL("https://example.first"));
 
   base::RunLoop().RunUntilIdle();
+#if BUILDFLAG(IS_ANDROID)
+  message_dispatcher_bridge_.SetMessagesEnabledForEmbedder(true);
+  messages::MessageDispatcherBridge::SetInstanceForTesting(
+      &message_dispatcher_bridge_);
+#endif
 }
 
 void SubresourceFilterTestHarness::TearDown() {
   ruleset_service_.reset();
 
   content::RenderViewHostTestHarness::TearDown();
+#if BUILDFLAG(IS_ANDROID)
+  messages::MessageDispatcherBridge::SetInstanceForTesting(nullptr);
+#endif
 }
 
 // content::WebContentsObserver:
@@ -168,12 +175,12 @@ SubresourceFilterTestHarness::GetSettingsManager() {
   return throttle_manager_test_support_->profile_context()->settings_manager();
 }
 
-void SubresourceFilterTestHarness::SetIsAdSubframe(
+void SubresourceFilterTestHarness::SetIsAdFrame(
     content::RenderFrameHost* render_frame_host,
-    bool is_ad_subframe) {
+    bool is_ad_frame) {
   ContentSubresourceFilterThrottleManager::FromPage(
       render_frame_host->GetPage())
-      ->SetIsAdSubframeForTesting(render_frame_host, is_ad_subframe);
+      ->SetIsAdFrameForTesting(render_frame_host, is_ad_frame);
 }
 
 }  // namespace subresource_filter

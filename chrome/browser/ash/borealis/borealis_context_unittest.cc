@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,20 +13,20 @@
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/borealis/borealis_disk_manager_dispatcher.h"
+#include "chrome/browser/ash/borealis/borealis_launch_options.h"
 #include "chrome/browser/ash/borealis/borealis_metrics.h"
 #include "chrome/browser/ash/borealis/borealis_service_fake.h"
 #include "chrome/browser/ash/borealis/borealis_shutdown_monitor.h"
 #include "chrome/browser/ash/borealis/borealis_window_manager.h"
 #include "chrome/browser/ash/borealis/borealis_window_manager_test_helper.h"
 #include "chrome/browser/ash/borealis/testing/apps.h"
-#include "chrome/browser/ash/borealis/testing/dbus.h"
+#include "chrome/browser/ash/guest_os/dbus_test_helper.h"
 #include "chrome/browser/ash/guest_os/guest_os_stability_monitor.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/dbus/chunneld/fake_chunneld_client.h"
-#include "chromeos/dbus/cicerone/fake_cicerone_client.h"
-#include "chromeos/dbus/concierge/fake_concierge_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/seneschal/fake_seneschal_client.h"
+#include "chromeos/ash/components/dbus/chunneld/fake_chunneld_client.h"
+#include "chromeos/ash/components/dbus/cicerone/fake_cicerone_client.h"
+#include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
+#include "chromeos/ash/components/dbus/seneschal/fake_seneschal_client.h"
 #include "components/exo/shell_surface_util.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -34,7 +34,7 @@
 namespace borealis {
 
 class BorealisContextTest : public testing::Test,
-                            protected FakeVmServicesHelper {
+                            protected guest_os::FakeVmServicesHelper {
  public:
   BorealisContextTest()
       : new_window_provider_(std::make_unique<ash::TestNewWindowDelegate>()) {
@@ -94,7 +94,7 @@ class BorealisContextTest : public testing::Test,
 };
 
 TEST_F(BorealisContextTest, ConciergeFailure) {
-  auto* concierge_client = chromeos::FakeConciergeClient::Get();
+  auto* concierge_client = ash::FakeConciergeClient::Get();
 
   concierge_client->NotifyConciergeStopped();
   histogram_tester_.ExpectUniqueSample(
@@ -108,7 +108,7 @@ TEST_F(BorealisContextTest, ConciergeFailure) {
 }
 
 TEST_F(BorealisContextTest, CiceroneFailure) {
-  auto* cicerone_client = chromeos::FakeCiceroneClient::Get();
+  auto* cicerone_client = ash::FakeCiceroneClient::Get();
 
   cicerone_client->NotifyCiceroneStopped();
   histogram_tester_.ExpectUniqueSample(
@@ -122,7 +122,7 @@ TEST_F(BorealisContextTest, CiceroneFailure) {
 }
 
 TEST_F(BorealisContextTest, SeneschalFailure) {
-  auto* seneschal_client = chromeos::FakeSeneschalClient::Get();
+  auto* seneschal_client = ash::FakeSeneschalClient::Get();
 
   seneschal_client->NotifySeneschalStopped();
   histogram_tester_.ExpectUniqueSample(
@@ -136,8 +136,8 @@ TEST_F(BorealisContextTest, SeneschalFailure) {
 }
 
 TEST_F(BorealisContextTest, ChunneldFailure) {
-  auto* chunneld_client = static_cast<chromeos::FakeChunneldClient*>(
-      chromeos::DBusThreadManager::Get()->GetChunneldClient());
+  auto* chunneld_client =
+      static_cast<ash::FakeChunneldClient*>(ash::ChunneldClient::Get());
 
   chunneld_client->NotifyChunneldStopped();
   histogram_tester_.ExpectUniqueSample(
@@ -148,23 +148,6 @@ TEST_F(BorealisContextTest, ChunneldFailure) {
   histogram_tester_.ExpectUniqueSample(
       kBorealisStabilityHistogram, guest_os::FailureClasses::ChunneldStopped,
       1);
-}
-
-TEST_F(BorealisContextTest, MainAppHasSelfActivationPermission) {
-  CreateFakeMainApp(profile_.get());
-  std::string window_name;
-  ASSERT_TRUE(base::Base64Decode(
-      "b3JnLmNocm9taXVtLmJvcmVhbGlzLndtY2xhc3MuU3RlYW0=", &window_name));
-  std::unique_ptr<ScopedTestWindow> window =
-      MakeAndTrackWindow(window_name, borealis_window_manager_.get());
-  EXPECT_TRUE(exo::HasPermissionToActivate(window->window()));
-}
-
-TEST_F(BorealisContextTest, NormalAppDoesNotHaveSelfActivationPermission) {
-  CreateFakeApp(profile_.get(), "some_app", "borealis/123");
-  std::unique_ptr<ScopedTestWindow> window = MakeAndTrackWindow(
-      "org.chromium.borealis.wmclass.some_app", borealis_window_manager_.get());
-  EXPECT_FALSE(exo::HasPermissionToActivate(window->window()));
 }
 
 }  // namespace borealis

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <wayland-server-protocol.h>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/ozone/platform/wayland/test/global_object.h"
 
 namespace wl {
@@ -37,8 +38,8 @@ class TestDataDeviceManager : public GlobalObject {
   }
 
  private:
-  TestDataDevice* data_device_ = nullptr;
-  TestDataSource* data_source_ = nullptr;
+  raw_ptr<TestDataDevice> data_device_ = nullptr;
+  raw_ptr<TestDataSource> data_source_ = nullptr;
 };
 
 }  // namespace wl

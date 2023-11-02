@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "services/network/public/mojom/chunked_data_pipe_getter.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
@@ -49,8 +50,9 @@ class BytesUploaderTest : public ::testing::Test {
   void InitializeBytesUploader(MockBytesConsumer* mock_bytes_consumer,
                                uint32_t capacity = 100u) {
     bytes_uploader_ = MakeGarbageCollected<BytesUploader>(
-        mock_bytes_consumer, remote_.BindNewPipeAndPassReceiver(),
-        Thread::Current()->GetTaskRunner());
+        nullptr, mock_bytes_consumer, remote_.BindNewPipeAndPassReceiver(),
+        blink::scheduler::GetSingleThreadTaskRunnerForTesting(),
+        /*client=*/nullptr);
 
     const MojoCreateDataPipeOptions data_pipe_options{
         sizeof(MojoCreateDataPipeOptions), MOJO_CREATE_DATA_PIPE_FLAG_NONE, 1,
@@ -85,8 +87,10 @@ TEST_F(BytesUploaderTest, Create) {
   checkpoint.Call(1);
   mojo::PendingRemote<ChunkedDataPipeGetter> pending_remote;
   BytesUploader* bytes_uploader_ = MakeGarbageCollected<BytesUploader>(
-      mock_bytes_consumer, pending_remote.InitWithNewPipeAndPassReceiver(),
-      Thread::Current()->GetTaskRunner());
+      nullptr, mock_bytes_consumer,
+      pending_remote.InitWithNewPipeAndPassReceiver(),
+      blink::scheduler::GetSingleThreadTaskRunnerForTesting(),
+      /*client=*/nullptr);
   ASSERT_TRUE(bytes_uploader_);
 }
 

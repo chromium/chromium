@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,7 +29,7 @@
     : UINavigationController <ConsistencyLayoutDelegate>
 
 // Returns the desired size related to the current view controller shown by
-// |ConsistencySheetNavigationController|, based on |width|.
+// `ConsistencySheetNavigationController`, based on `width`.
 - (CGSize)layoutFittingSizeForWidth:(CGFloat)width;
 
 // Updates internal views according to the consistency sheet view position.

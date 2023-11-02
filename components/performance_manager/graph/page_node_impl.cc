@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/graph/graph_impl_operations.h"
 #include "components/performance_manager/graph/process_node_impl.h"
+#include "components/performance_manager/public/graph/graph_operations.h"
 
 namespace performance_manager {
 
@@ -112,6 +113,11 @@ void PageNodeImpl::RemoveFrame(base::PassKey<FrameNodeImpl>,
 void PageNodeImpl::SetLoadingState(LoadingState loading_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   loading_state_.SetAndMaybeNotify(this, loading_state);
+}
+
+void PageNodeImpl::SetType(PageType type) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  type_.SetAndMaybeNotify(this, type);
 }
 
 void PageNodeImpl::SetIsVisible(bool is_visible) {
@@ -216,6 +222,11 @@ PageNodeImpl::EmbeddingType PageNodeImpl::embedding_type() const {
   return embedding_type_;
 }
 
+PageType PageNodeImpl::type() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return type_.value();
+}
+
 bool PageNodeImpl::is_visible() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return is_visible_.value();
@@ -308,7 +319,7 @@ void PageNodeImpl::SetOpenerFrameNode(FrameNodeImpl* opener) {
   DCHECK(graph()->NodeInGraph(opener));
   DCHECK_NE(this, opener->page_node());
 
-  auto* previous_opener = opener_frame_node_;
+  auto* previous_opener = opener_frame_node_.get();
   if (previous_opener)
     previous_opener->RemoveOpenedPage(PassKey(), this);
   opener_frame_node_ = opener;
@@ -322,7 +333,7 @@ void PageNodeImpl::ClearOpenerFrameNode() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_NE(nullptr, opener_frame_node_);
 
-  auto* previous_opener = opener_frame_node_;
+  auto* previous_opener = opener_frame_node_.get();
 
   opener_frame_node_->RemoveOpenedPage(PassKey(), this);
   opener_frame_node_ = nullptr;
@@ -340,7 +351,7 @@ void PageNodeImpl::SetEmbedderFrameNodeAndEmbeddingType(
   DCHECK_NE(this, embedder->page_node());
   DCHECK_NE(EmbeddingType::kInvalid, embedding_type);
 
-  auto* previous_embedder = embedder_frame_node_;
+  auto* previous_embedder = embedder_frame_node_.get();
   auto previous_type = embedding_type_;
 
   if (previous_embedder)
@@ -359,7 +370,7 @@ void PageNodeImpl::ClearEmbedderFrameNodeAndEmbeddingType() {
   DCHECK_NE(nullptr, embedder_frame_node_);
   DCHECK_NE(EmbeddingType::kInvalid, embedding_type_);
 
-  auto* previous_embedder = embedder_frame_node_;
+  auto* previous_embedder = embedder_frame_node_.get();
   auto previous_type = embedding_type_;
 
   embedder_frame_node_->RemoveEmbeddedPage(PassKey(), this);
@@ -451,6 +462,11 @@ const FrameNode* PageNodeImpl::GetEmbedderFrameNode() const {
 PageNodeImpl::EmbeddingType PageNodeImpl::GetEmbeddingType() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return embedding_type();
+}
+
+PageType PageNodeImpl::GetType() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return type();
 }
 
 bool PageNodeImpl::IsVisible() const {
@@ -552,6 +568,18 @@ const absl::optional<freezing::FreezingVote>& PageNodeImpl::GetFreezingVote()
 PageState PageNodeImpl::GetPageState() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return page_state();
+}
+
+uint64_t PageNodeImpl::EstimateResidentSetSize() const {
+  uint64_t total = 0;
+  performance_manager::GraphOperations::VisitFrameTreePreOrder(
+      this, base::BindRepeating(
+                [](uint64_t* total, const FrameNode* frame_node) {
+                  *total += frame_node->GetResidentSetKbEstimate();
+                  return true;
+                },
+                &total));
+  return total;
 }
 
 void PageNodeImpl::SetLifecycleState(LifecycleState lifecycle_state) {

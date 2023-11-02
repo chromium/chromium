@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,8 +42,6 @@ class MediaRouterCastUiForTest
   void WaitForAnyRoute() override;
   void WaitForDialogShown() override;
   void WaitForDialogHidden() override;
-  void SetLocalFile(const GURL& file_url) override;
-  void SetLocalFileSelectionIssue(const IssueInfo& issue) override;
   void OnDialogCreated() override;
 
  private:
@@ -65,6 +63,9 @@ class MediaRouterCastUiForTest
   void ObserveDialog(
       WatchType watch_type,
       absl::optional<std::string> sink_name = absl::nullopt) override;
+
+  const CastDialogView* GetDialogView() const;
+  CastDialogView* GetDialogView();
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

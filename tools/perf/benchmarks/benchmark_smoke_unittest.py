@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -27,6 +27,7 @@ from py_utils import tempfile_ext
 
 from benchmarks import jetstream
 from benchmarks import jetstream2
+from benchmarks import kraken
 from benchmarks import octane
 from benchmarks import rasterize_and_record_micro
 from benchmarks import speedometer
@@ -56,7 +57,7 @@ def SmokeTestGenerator(benchmark_class, num_pages=1, story_tag_filter=None):
   # than is usually intended. Instead, if a particular benchmark is failing,
   # disable it in tools/perf/benchmarks/*.
   @decorators.Disabled('android')  # crbug.com/641934
-  def BenchmarkSmokeTest(self):
+  def BenchmarkSmokeTestFunc(self):
     # Some benchmarks are running multiple iterations
     # which is not needed for a smoke test
     if hasattr(benchmark_class, 'enable_smoke_test_mode'):
@@ -89,27 +90,37 @@ def SmokeTestGenerator(benchmark_class, num_pages=1, story_tag_filter=None):
           return_code, 0,
           msg='Result processing failed: %s' % benchmark_class.Name())
 
-  return BenchmarkSmokeTest
+  # Set real_test_func as benchmark_class to make typ
+  # write benchmark_class source filepath to trace instead of
+  # path to this file
+  BenchmarkSmokeTestFunc.real_test_func = benchmark_class
+
+  return BenchmarkSmokeTestFunc
 
 
 # The list of benchmark modules to be excluded from our smoke tests.
-_BLACK_LIST_TEST_MODULES = {
+_BLOCK_LIST_TEST_MODULES = {
     octane,  # Often fails & take long time to timeout on cq bot.
     rasterize_and_record_micro,  # Always fails on cq bot.
     speedometer,  # Takes 101 seconds.
     jetstream,  # Take 206 seconds.
     jetstream2, # Causes CQ shard to timeout, crbug.com/992837
     v8_browsing, # Flaky on Android, crbug.com/628368.
+    kraken, # Crashes on CQ blocking LKGM, b/243415984
 }
 
 # The list of benchmark names to be excluded from our smoke tests.
-_BLACK_LIST_TEST_NAMES = [
+_BLOCK_LIST_TEST_NAMES = [
     'memory.long_running_idle_gmail_background_tbmv2',
     'tab_switching.typical_25',
+    'tracing.tracing_with_background_memory_infra',  # crbug.com/1301865
     'UNSCHEDULED_oortonline_tbmv2',
     'webrtc',  # crbug.com/932036
     'v8.runtime_stats.top_25',  # Fails in Windows, crbug.com/1043048
     'wasmpspdfkit',  # Fails in Chrome OS, crbug.com/1191938
+    'memory.desktop' if sys.platform == 'darwin' else None,  # crbug.com/1277277
+    'desktop_ui' if sys.platform == 'darwin' else None,  # crbug.com/1370958
+    'power.desktop' if sys.platform == 'darwin' else None,  # crbug.com/1370958
 ]
 
 
@@ -119,6 +130,10 @@ def MergeDecorators(method, method_attribute, benchmark, benchmark_attribute):
       getattr(benchmark, benchmark_attribute, set()))
   if merged_attributes:
     setattr(method, method_attribute, merged_attributes)
+
+
+class BenchmarkSmokeTest(unittest.TestCase):
+  pass
 
 
 def load_tests(loader, standard_tests, pattern):
@@ -134,13 +149,10 @@ def load_tests(loader, standard_tests, pattern):
       benchmarks_dir, top_level_dir, benchmark_module.Benchmark,
       index_by_class_name=False).values()
   for benchmark in all_benchmarks:
-    if sys.modules[benchmark.__module__] in _BLACK_LIST_TEST_MODULES:
+    if sys.modules[benchmark.__module__] in _BLOCK_LIST_TEST_MODULES:
       continue
-    if benchmark.Name() in _BLACK_LIST_TEST_NAMES:
+    if benchmark.Name() in _BLOCK_LIST_TEST_NAMES:
       continue
-
-    class BenchmarkSmokeTest(unittest.TestCase):
-      pass
 
     # tab_switching needs more than one page to test correctly.
     if 'tab_switching' in benchmark.Name():

@@ -28,10 +28,10 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_buffer.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/text/text_run.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 
@@ -53,7 +53,7 @@ class PLATFORM_EXPORT CachingWordShaper final {
 
   float Width(const TextRun&,
               HashSet<const SimpleFontData*>* fallback_fonts,
-              FloatRect* glyph_bounds);
+              gfx::RectF* glyph_bounds);
   int OffsetForPosition(const TextRun&,
                         float target_x,
                         IncludePartialGlyphsOption,

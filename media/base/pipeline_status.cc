@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,106 +8,12 @@
 
 namespace media {
 
-absl::optional<PipelineStatus> StatusCodeToPipelineStatus(StatusCode status) {
-  switch (status) {
-    case StatusCode::kOk:
-      return PIPELINE_OK;
-    case StatusCode::kPipelineErrorNetwork:
-      return PIPELINE_ERROR_NETWORK;
-    case StatusCode::kPipelineErrorDecode:
-      return PIPELINE_ERROR_DECODE;
-    case StatusCode::kPipelineErrorAbort:
-      return PIPELINE_ERROR_ABORT;
-    case StatusCode::kPipelineErrorInitializationFailed:
-      return PIPELINE_ERROR_INITIALIZATION_FAILED;
-    case StatusCode::kPipelineErrorCouldNotRender:
-      return PIPELINE_ERROR_COULD_NOT_RENDER;
-    case StatusCode::kPipelineErrorRead:
-      return PIPELINE_ERROR_READ;
-    case StatusCode::kPipelineErrorInvalidState:
-      return PIPELINE_ERROR_INVALID_STATE;
-    case StatusCode::kPipelineErrorDemuxerErrorCouldNotOpen:
-      return DEMUXER_ERROR_COULD_NOT_OPEN;
-    case StatusCode::kPipelineErrorDemuxerErrorCouldNotParse:
-      return DEMUXER_ERROR_COULD_NOT_PARSE;
-    case StatusCode::kPipelineErrorDemuxerErrorNoSupportedStreams:
-      return DEMUXER_ERROR_NO_SUPPORTED_STREAMS;
-    case StatusCode::kPipelineErrorDecoderErrorNotSupported:
-      return DECODER_ERROR_NOT_SUPPORTED;
-    case StatusCode::kPipelineErrorChuckDemuxerErrorAppendFailed:
-      return CHUNK_DEMUXER_ERROR_APPEND_FAILED;
-    case StatusCode::kPipelineErrorChunkDemuxerErrorEosStatusDecodeError:
-      return CHUNK_DEMUXER_ERROR_EOS_STATUS_DECODE_ERROR;
-    case StatusCode::kPipelineErrorChunkDemuxerErrorEosStatusNetworkError:
-      return CHUNK_DEMUXER_ERROR_EOS_STATUS_NETWORK_ERROR;
-    case StatusCode::kPipelineErrorAudioRendererError:
-      return AUDIO_RENDERER_ERROR;
-    case StatusCode::kPipelineErrorExternalRendererFailed:
-      return PIPELINE_ERROR_EXTERNAL_RENDERER_FAILED;
-    case StatusCode::kPipelineErrorDemuxerErrorDetectedHLS:
-      return DEMUXER_ERROR_DETECTED_HLS;
-    case StatusCode::kPipelineErrorHardwareContextReset:
-      return PIPELINE_ERROR_HARDWARE_CONTEXT_RESET;
-    default:
-      NOTREACHED();
-      return absl::nullopt;
-  }
-}
-
-StatusCode PipelineStatusToStatusCode(PipelineStatus status) {
-  switch (status) {
-    case PIPELINE_OK:
-      return StatusCode::kOk;
-    case PIPELINE_ERROR_NETWORK:
-      return StatusCode::kPipelineErrorNetwork;
-    case PIPELINE_ERROR_DECODE:
-      return StatusCode::kPipelineErrorDecode;
-    case PIPELINE_ERROR_ABORT:
-      return StatusCode::kPipelineErrorAbort;
-    case PIPELINE_ERROR_INITIALIZATION_FAILED:
-      return StatusCode::kPipelineErrorInitializationFailed;
-    case PIPELINE_ERROR_COULD_NOT_RENDER:
-      return StatusCode::kPipelineErrorCouldNotRender;
-    case PIPELINE_ERROR_READ:
-      return StatusCode::kPipelineErrorRead;
-    case PIPELINE_ERROR_INVALID_STATE:
-      return StatusCode::kPipelineErrorInvalidState;
-    case DEMUXER_ERROR_COULD_NOT_OPEN:
-      return StatusCode::kPipelineErrorDemuxerErrorCouldNotOpen;
-    case DEMUXER_ERROR_COULD_NOT_PARSE:
-      return StatusCode::kPipelineErrorDemuxerErrorCouldNotParse;
-    case DEMUXER_ERROR_NO_SUPPORTED_STREAMS:
-      return StatusCode::kPipelineErrorDemuxerErrorNoSupportedStreams;
-    case DECODER_ERROR_NOT_SUPPORTED:
-      return StatusCode::kPipelineErrorDecoderErrorNotSupported;
-    case CHUNK_DEMUXER_ERROR_APPEND_FAILED:
-      return StatusCode::kPipelineErrorChuckDemuxerErrorAppendFailed;
-    case CHUNK_DEMUXER_ERROR_EOS_STATUS_DECODE_ERROR:
-      return StatusCode::kPipelineErrorChunkDemuxerErrorEosStatusDecodeError;
-    case CHUNK_DEMUXER_ERROR_EOS_STATUS_NETWORK_ERROR:
-      return StatusCode::kPipelineErrorChunkDemuxerErrorEosStatusNetworkError;
-    case AUDIO_RENDERER_ERROR:
-      return StatusCode::kPipelineErrorAudioRendererError;
-    case PIPELINE_ERROR_EXTERNAL_RENDERER_FAILED:
-      return StatusCode::kPipelineErrorExternalRendererFailed;
-    case DEMUXER_ERROR_DETECTED_HLS:
-      return StatusCode::kPipelineErrorDemuxerErrorDetectedHLS;
-    case PIPELINE_ERROR_HARDWARE_CONTEXT_RESET:
-      return StatusCode::kPipelineErrorHardwareContextReset;
-  }
-
-  NOTREACHED();
-  // TODO(crbug.com/1153465): Log pipeline status that failed to convert.
-  // Return a generic decode error.
-  return StatusCode::kPipelineErrorDecode;
-}
-
-std::string PipelineStatusToString(PipelineStatus status) {
+std::string PipelineStatusToString(const PipelineStatus& status) {
 #define STRINGIFY_STATUS_CASE(status) \
   case status:                        \
     return #status
 
-  switch (status) {
+  switch (status.code()) {
     STRINGIFY_STATUS_CASE(PIPELINE_OK);
     STRINGIFY_STATUS_CASE(PIPELINE_ERROR_NETWORK);
     STRINGIFY_STATUS_CASE(PIPELINE_ERROR_DECODE);
@@ -118,6 +24,7 @@ std::string PipelineStatusToString(PipelineStatus status) {
     STRINGIFY_STATUS_CASE(PIPELINE_ERROR_READ);
     STRINGIFY_STATUS_CASE(PIPELINE_ERROR_INVALID_STATE);
     STRINGIFY_STATUS_CASE(PIPELINE_ERROR_HARDWARE_CONTEXT_RESET);
+    STRINGIFY_STATUS_CASE(PIPELINE_ERROR_DISCONNECTED);
     STRINGIFY_STATUS_CASE(DEMUXER_ERROR_COULD_NOT_OPEN);
     STRINGIFY_STATUS_CASE(DEMUXER_ERROR_COULD_NOT_PARSE);
     STRINGIFY_STATUS_CASE(DEMUXER_ERROR_NO_SUPPORTED_STREAMS);
@@ -135,7 +42,7 @@ std::string PipelineStatusToString(PipelineStatus status) {
   return "";
 }
 
-std::ostream& operator<<(std::ostream& out, PipelineStatus status) {
+std::ostream& operator<<(std::ostream& out, const PipelineStatus& status) {
   return out << PipelineStatusToString(status);
 }
 

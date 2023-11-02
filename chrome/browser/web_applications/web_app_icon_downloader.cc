@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,13 +18,13 @@ namespace web_app {
 
 WebAppIconDownloader::WebAppIconDownloader(
     content::WebContents* web_contents,
-    const std::vector<GURL>& extra_favicon_urls,
+    base::flat_set<GURL> extra_favicon_urls,
     WebAppIconDownloaderCallback callback)
     : content::WebContentsObserver(web_contents),
-      need_favicon_urls_(true),
-      fail_all_if_any_fail_(false),
-      extra_favicon_urls_(extra_favicon_urls),
-      callback_(std::move(callback)) {}
+      extra_favicon_urls_(std::move(extra_favicon_urls)),
+      callback_(std::move(callback)) {
+  DCHECK(web_contents);
+}
 
 WebAppIconDownloader::~WebAppIconDownloader() = default;
 
@@ -37,6 +37,7 @@ void WebAppIconDownloader::FailAllIfAnyFail() {
 }
 
 void WebAppIconDownloader::Start() {
+  CHECK(!web_contents()->IsBeingDestroyed());
   // Favicons are supported only in HTTP or HTTPS WebContents.
   const GURL& url = web_contents()->GetLastCommittedURL();
   if (!url.is_empty() && !url.inner_url() && !url.SchemeIsHTTPOrHTTPS())
@@ -77,6 +78,9 @@ WebAppIconDownloader::GetFaviconURLsFromWebContents() {
 
 void WebAppIconDownloader::FetchIcons(
     const std::vector<blink::mojom::FaviconURLPtr>& favicon_urls) {
+  if (!web_contents())
+    return;
+
   std::vector<GURL> urls;
   for (const auto& favicon_url : favicon_urls) {
     if (favicon_url->icon_type != blink::mojom::FaviconIconType::kInvalid)
@@ -85,7 +89,7 @@ void WebAppIconDownloader::FetchIcons(
   FetchIcons(urls);
 }
 
-void WebAppIconDownloader::FetchIcons(const std::vector<GURL>& urls) {
+void WebAppIconDownloader::FetchIcons(const base::flat_set<GURL>& urls) {
   // Download icons; put their download ids into |in_progress_requests_| and
   // their urls into |processed_urls_|.
   for (const GURL& url : urls) {
@@ -147,6 +151,12 @@ void WebAppIconDownloader::DidUpdateFaviconURL(
   FetchIcons(candidates);
 }
 
+void WebAppIconDownloader::WebContentsDestroyed() {
+  Observe(nullptr);
+  CancelDownloads(IconsDownloadedResult::kPrimaryPageChanged,
+                  DownloadedIconsHttpResults{});
+}
+
 void WebAppIconDownloader::CompleteCallback() {
   DCHECK(callback_);
   base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -163,6 +173,7 @@ void WebAppIconDownloader::CancelDownloads(
   in_progress_requests_.clear();
   icons_map_.clear();
   icons_http_results_.clear();
+  need_favicon_urls_ = false;
 
   if (callback_) {
     std::move(callback_).Run(result, IconsMap{}, std::move(icons_http_results));

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "remoting/signaling/signal_strategy.h"
 
 namespace remoting {
@@ -39,7 +39,7 @@ class FtlEchoMessageListener : public SignalStrategy::Listener {
 
  private:
   std::string host_owner_;
-  SignalStrategy* signal_strategy_;
+  raw_ptr<SignalStrategy> signal_strategy_;
 };
 
 }  // namespace remoting

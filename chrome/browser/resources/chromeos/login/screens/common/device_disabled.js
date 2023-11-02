@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -71,9 +71,7 @@ class DeviceDisabled extends DeviceDisabledElementBase {
 
   ready() {
     super.ready();
-    this.initializeLoginScreen('DeviceDisabledScreen', {
-      resetAllowed: false,
-    });
+    this.initializeLoginScreen('DeviceDisabledScreen');
   }
 
   /** @override */
@@ -98,12 +96,15 @@ class DeviceDisabled extends DeviceDisabledElementBase {
    * @param {Object} data Screen init payload
    */
   onBeforeShow(data) {
-    if ('serial' in data)
+    if ('serial' in data) {
       this.serial_ = data.serial;
-    if ('domain' in data)
+    }
+    if ('domain' in data) {
       this.enrollmentDomain_ = data.domain;
-    if ('message' in data)
+    }
+    if ('message' in data) {
       this.message_ = data.message;
+    }
   }
 
   /**

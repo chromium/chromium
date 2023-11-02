@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -72,12 +72,14 @@ window.addEventListener('message', event => {
       contentUrl = URL.createObjectURL(sourceContent.data);
       break;
     default:
-      contentUrl = '';
+      contentUrl = 'about:blank';
   }
   if (browsable && subtype === 'PDF') {
     contentUrl += '#view=FitH';
   }
 
   type = subtype;
+  contentUrl = contentUrl || 'about:blank';
+  console.log('Setting iframe.src to: ' + contentUrl);
   contentsIframe.src = contentUrl;
 });

@@ -1,0 +1,291 @@
+<style include="iron-positioning">
+  :host([expanded_]) #pageBody {
+    height: 340px;
+    transition-duration: 200ms;
+  }
+  :host(:not([expanded_])) #pageBody {
+    height: 282px;
+    transition-duration: 150ms;
+  }
+
+  :host([expanded_]) #esimQrCodeDetection {
+    height: 190px;
+    transition-duration: 200ms;
+  }
+  :host(:not([expanded_])) #esimQrCodeDetection {
+    height: 140px;
+    transition-duration: 150ms;
+  }
+
+  :host cr-button {
+    --ripple-opacity: 0;
+  }
+
+  #esimQrCodeDetection {
+    background-color: var(--cros-bg-color-dropped-elevation-1);
+    border-radius: 4px;
+    margin: 20px 0 15px 0;
+    overflow: hidden;
+    position: relative;
+  }
+
+  paper-spinner-lite {
+    height: 20px;
+    margin-inline-end: 6px;
+    margin-top: 6px;
+    width: 20px;
+  }
+
+  cr-button:not(:focus) {
+    border: none;
+    box-shadow: none;
+  }
+
+  cr-button:hover {
+    background-color: transparent;
+  }
+
+  cr-button[disabled] {
+    background-color: transparent;
+  }
+
+  cr-button[disabled] > iron-icon {
+    --iron-icon-fill-color: var(--cros-icon-color-disabled);
+  }
+
+  .animate {
+    transition-property: height;
+    transition-timing-function: cubic-bezier(0.00, 0.00, 0.20, 1.00);
+  }
+
+  .center {
+    left: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%) translateX(-50%);
+  }
+
+  .width-92 {
+    width: 92%;
+  }
+
+  .label {
+    font-weight: 500;
+  }
+
+  .button-image {
+    margin-inline-end: 8px;
+  }
+
+  .scan-finish-image {
+    position: absolute;
+    }
+
+  .scan-finish-message {
+    padding-inline-end: 0;
+    padding-inline-start: 30px;
+  }
+
+  .scan-finish-message:hover {
+    cursor: default;
+  }
+
+  .scan-error-header {
+    --iron-icon-fill-color: var(--cros-icon-color-alert);
+  }
+
+  .scan-error-message {
+    color: var(--cros-text-color-alert);
+  }
+
+  .blue-icon {
+    --iron-icon-fill-color: var(--cros-icon-color-prominent);
+  }
+
+  .hidden {
+    visibility: hidden;
+  }
+
+  .visually-hidden {
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    height: 1px;
+    overflow: hidden;
+    position: absolute;
+    white-space: nowrap;
+    width: 1px;
+  }
+
+  #scanSucessHeader {
+    --iron-icon-fill-color: var(--cros-icon-color-positive);
+    margin-bottom: 8px;
+  }
+
+  #scanSuccessMessage {
+    color: var(--cros-text-color-positive);
+    font-size: medium;
+  }
+
+  #scanFailureHeader {
+    margin-bottom: 4px;
+  }
+
+  #useCameraAgainButton {
+    display: block;
+    font-weight: 500;
+    text-align: center;
+  }
+
+  #tryAgainButton {
+    display: block;
+    text-align: center;
+  }
+
+  #switchCameraButton {
+    background-color: var(--cros-tooltip-background-color);
+    border-radius: 16px;
+    color: var(--cros-tooltip-label-color);
+    margin: 8px;
+    padding: 8px;
+    position: absolute;
+    right: 0;
+    z-index: 2;
+  }
+
+  #switchCameraButton iron-icon {
+    --iron-icon-fill-color: var(--cros-tooltip-icon-color);
+    filter: brightness(2.1);
+  }
+
+  #inputSubtitle {
+    bottom: 0;
+    color: var(--cros-text-color-secondary);
+    font-size: var(--cr-form-field-label-font-size);
+    letter-spacing: .4px;
+    line-height: var(--cr-form-field-label-line-height);
+    position: absolute;
+  }
+
+  #video {
+    height: inherit;
+    transform: rotateY(180deg);
+  }
+
+  #pageBody {
+    margin-top: -20px;
+  }
+
+  #startScanningButton {
+    max-width: 470px;
+    min-width: 345px;
+    text-align: center;
+    width: auto;
+  }
+</style>
+<base-page>
+  <div slot="page-body" id="pageBody" class="animate">
+    <span aria-live="polite">
+      [[getDescription_(cameraCount_, qrCodeDetector_)]]
+    </span>
+    <template is="dom-if"
+        if="[[isScanningAvailable_(cameraCount_, qrCodeDetector_.*)]]" restamp>
+      <div id="esimQrCodeDetection" class="animate">
+        <cr-button id="switchCameraButton"
+            on-click="onSwitchCameraButtonPressed_"
+            hidden$="[[isUiElementHidden_(UiElement.SWITCH_CAMERA, state_, cameraCount_)]]"
+            disabled="[[isUiElementDisabled_(UiElement.SWITCH_CAMERA, state_, showBusy)]]">
+          <iron-icon class="button-image" icon="cellular-setup:switch-camera"></iron-icon>
+          [[i18n('switchCamera')]]
+        </cr-button>
+        <video id="video" autoplay muted
+            hidden$="[[isUiElementHidden_(UiElement.VIDEO, state_)]]">
+        </video>
+        <template is="dom-if" if="[[qrCodeCameraA11yString_]]" restamp>
+          <div class="visually-hidden" aria-live="polite">
+            [[qrCodeCameraA11yString_]]
+          </div>
+        </template>
+        <div class="center blue-icon" id="startScanningContainer"
+            hidden$="[[isUiElementHidden_(UiElement.START_SCANNING, state_)]]">
+          <cr-button class="label"
+              id="startScanningButton"
+              on-click="startScanning_"
+              disabled="[[isUiElementDisabled_(UiElement.START_SCANNING, state_, showBusy)]]">
+            <iron-icon class="button-image" icon="cellular-setup:camera"></iron-icon>
+            [[i18n('useCamera')]]
+          </cr-button>
+        </div>
+        <div class="center" id="scanFinishContainer"
+            hidden$="[[isUiElementHidden_(UiElement.SCAN_FINISH, state_)]]">
+          <div>
+            <div id="scanSuccessContainer"
+                hidden$="[[isUiElementHidden_(UiElement.SCAN_SUCCESS, state_)]]">
+              <div id=scanSucessHeader
+                  hidden$="[[isUiElementHidden_(UiElement.CODE_DETECTED, state_)]]">
+                <iron-icon class="scan-finish-image" icon="cellular-setup:checked"></iron-icon>
+                <span class="label scan-finish-message" id="scanSuccessMessage">
+                  [[i18n('scanQRCodeSuccess')]]
+                </span>
+              </div>
+              <div id="scanInstallFailureHeader" class="scan-error-header"
+                  hidden$="[[isUiElementHidden_(UiElement.SCAN_INSTALL_FAILURE, state_)]]">
+                <iron-icon class="scan-finish-image" icon="cellular-setup:error"></iron-icon>
+                <span class="label scan-finish-message scan-error-message">
+                  [[i18n('scanQrCodeInvalid')]]
+                </span>
+              </div>
+              <template is="dom-if" restamp
+                  if="[[!isUiElementHidden_(UiElement.SCAN_INSTALL_FAILURE, state_)]]">
+                <cr-button id="useCameraAgainButton" class="blue-icon"
+                    on-click="startScanning_">
+                  <iron-icon class="button-image" icon="cellular-setup:camera">
+                  </iron-icon>
+                  [[i18n('qrCodeUseCameraAgain')]]
+                </cr-button>
+              </template>
+            </div>
+            <div id="scanFailureContainer"
+                hidden$="[[isUiElementHidden_(UiElement.SCAN_FAILURE, state_)]]">
+              <div id="scanFailureHeader" class="scan-error-header">
+                <iron-icon class="scan-finish-image" icon="cellular-setup:error"></iron-icon>
+                <span class="label scan-finish-message scan-error-message">
+                  [[i18n('scanQrCodeError')]]
+                </span>
+              </div>
+              <cr-button id="tryAgainButton" class="blue-icon"
+                  on-click="startScanning_"
+                  disabled="[[isUiElementDisabled_(UiElement.SCAN_FAILURE, state_, showBusy)]]">
+                <iron-icon class="button-image" icon="cellular-setup:try-again"></iron-icon>
+                [[i18n('qrCodeRetry')]]
+              </cr-button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </template>
+    <div id="activationCodeContainer" class$="[[computeActivationCodeClass_(
+          cameraCount_, qrCodeDetector_.*)]]">
+      <cr-input id="activationCode"
+          label="[[i18n('activationCode')]]"
+          value="{{activationCode}}"
+          disabled="[[showBusy]]"
+          on-keydown="onKeyDown_"
+          invalid="[[shouldActivationCodeInputBeInvalid_(state_,
+              isActivationCodeInvalidFormat_)]]"
+          error-message="[[getInputErrorMessage_()]]"
+          aria-description="[[getInputSubtitle_(showBusy)]]">
+        <template is="dom-if" if="[[showBusy]]">
+          <div slot="suffix">
+            <paper-spinner-lite active>
+            </paper-spinner-lite>
+          </div>
+        </template>
+      </cr-input>
+      <div id="inputSubtitle"
+          hidden$="[[shouldActivationCodeInputBeInvalid_(state_,
+              isActivationCodeInvalidFormat_)]]">
+        [[getInputSubtitle_(showBusy)]]
+      </div>
+    </div>
+  </div>
+</base-page>

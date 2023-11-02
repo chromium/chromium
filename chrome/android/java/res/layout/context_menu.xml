@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2019 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2019 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 
 <!-- We need an extra FrameLayout around the menu for the background because it is a 9-patch and has
      extra padding automatically. The ListView's clipToPadding is false to avoid the items being cut
@@ -24,6 +26,7 @@
         android:layout_width="@dimen/context_menu_max_width"
         android:layout_height="wrap_content"
         android:paddingBottom="@dimen/context_menu_bottom_padding"
+        android:fadeScrollbars="false"
         android:divider="@null"
         android:listSelector="@android:color/transparent"
         android:clipToPadding="false" />

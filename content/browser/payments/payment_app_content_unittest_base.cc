@@ -1,8 +1,9 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/browser/payments/payment_app_content_unittest_base.h"
+#include "base/memory/raw_ptr.h"
 
 #include <stdint.h>
 
@@ -94,7 +95,7 @@ class PaymentAppContentUnitTestBase::PaymentAppForWorkerTestHelper
     }
 
    private:
-    PaymentAppForWorkerTestHelper* const worker_helper_;
+    const raw_ptr<PaymentAppForWorkerTestHelper> worker_helper_;
   };
 
   class ServiceWorker : public FakeServiceWorker {
@@ -150,7 +151,7 @@ class PaymentAppContentUnitTestBase::PaymentAppForWorkerTestHelper
     }
 
    private:
-    PaymentAppForWorkerTestHelper* const worker_helper_;
+    const raw_ptr<PaymentAppForWorkerTestHelper> worker_helper_;
   };
 
   std::unique_ptr<FakeEmbeddedWorkerInstanceClient> CreateInstanceClient()
@@ -205,7 +206,8 @@ PaymentManager* PaymentAppContentUnitTestBase::CreatePaymentManager(
       sw_script_url, key, registration_opt,
       blink::mojom::FetchClientSettingsObject::New(),
       base::BindOnce(&RegisterServiceWorkerCallback, &called, &registration_id),
-      /*requesting_frame_id=*/GlobalRenderFrameHostId());
+      /*requesting_frame_id=*/GlobalRenderFrameHostId(),
+      PolicyContainerPolicies());
 
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(called);

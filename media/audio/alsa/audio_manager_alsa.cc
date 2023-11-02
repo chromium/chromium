@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <stddef.h>
 
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/memory/free_deleter.h"
 #include "base/metrics/histogram.h"
@@ -74,7 +73,7 @@ AudioParameters AudioManagerAlsa::GetInputStreamParameters(
   static const int kDefaultInputBufferSize = 1024;
 
   return AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                         CHANNEL_LAYOUT_STEREO, kDefaultSampleRate,
+                         ChannelLayoutConfig::Stereo(), kDefaultSampleRate,
                          kDefaultInputBufferSize);
 }
 
@@ -171,7 +170,7 @@ bool AudioManagerAlsa::IsAlsaDeviceAvailable(
   // it or not.
   if (type == kStreamCapture) {
     // Check if the device is in the list of invalid devices.
-    for (size_t i = 0; i < base::size(kInvalidAudioInputDevices); ++i) {
+    for (size_t i = 0; i < std::size(kInvalidAudioInputDevices); ++i) {
       if (strncmp(kInvalidAudioInputDevices[i], device_name,
                   strlen(kInvalidAudioInputDevices[i])) == 0)
         return false;
@@ -186,7 +185,7 @@ bool AudioManagerAlsa::IsAlsaDeviceAvailable(
   // TODO(joi): Should we prefer "hw" instead?
   static const char kDeviceTypeDesired[] = "plughw";
   return strncmp(kDeviceTypeDesired, device_name,
-                 base::size(kDeviceTypeDesired) - 1) == 0;
+                 std::size(kDeviceTypeDesired) - 1) == 0;
 }
 
 // static
@@ -204,7 +203,7 @@ bool AudioManagerAlsa::HasAnyAlsaAudioDevice(
   int card = -1;
 
   // Loop through the sound cards.
-  // Don't use snd_device_name_hint(-1,..) since there is a access violation
+  // Don't use snd_device_name_hint(-1,..) since there is an access violation
   // inside this ALSA API with libasound.so.2.0.0.
   while (!wrapper_->CardNext(&card) && (card >= 0) && !has_device) {
     int error = wrapper_->DeviceNameHint(card, kPcmInterfaceName, &hints);
@@ -273,7 +272,7 @@ AudioParameters AudioManagerAlsa::GetPreferredOutputStreamParameters(
   // TODO(tommi): Support |output_device_id|.
   DLOG_IF(ERROR, !output_device_id.empty()) << "Not implemented!";
   static const int kDefaultOutputBufferSize = 2048;
-  ChannelLayout channel_layout = CHANNEL_LAYOUT_STEREO;
+  ChannelLayoutConfig channel_layout_config = ChannelLayoutConfig::Stereo();
   int sample_rate = kDefaultSampleRate;
   int buffer_size = kDefaultOutputBufferSize;
   if (input_params.IsValid()) {
@@ -283,7 +282,7 @@ AudioParameters AudioManagerAlsa::GetPreferredOutputStreamParameters(
     // TODO(dalecurtis): This should include bits per channel and channel layout
     // eventually.
     sample_rate = input_params.sample_rate();
-    channel_layout = input_params.channel_layout();
+    channel_layout_config = input_params.channel_layout_config();
     buffer_size = std::min(input_params.frames_per_buffer(), buffer_size);
   }
 
@@ -291,8 +290,8 @@ AudioParameters AudioManagerAlsa::GetPreferredOutputStreamParameters(
   if (user_buffer_size)
     buffer_size = user_buffer_size;
 
-  return AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY, channel_layout,
-                         sample_rate, buffer_size);
+  return AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                         channel_layout_config, sample_rate, buffer_size);
 }
 
 AudioOutputStream* AudioManagerAlsa::MakeOutputStream(

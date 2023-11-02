@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,6 +28,8 @@
 //  class Worker {
 //   public:
 //    static void StartNew(WeakPtr<Controller> controller) {
+//      // Move WeakPtr when possible to avoid atomic refcounting churn on its
+//      // internal state.
 //      Worker* worker = new Worker(std::move(controller));
 //      // Kick off asynchronous processing...
 //    }
@@ -75,8 +77,8 @@
 
 #include "base/base_export.h"
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/atomic_flag.h"
@@ -92,7 +94,7 @@ namespace internal {
 // These classes are part of the WeakPtr implementation.
 // DO NOT USE THESE CLASSES DIRECTLY YOURSELF.
 
-class BASE_EXPORT WeakReference {
+class BASE_EXPORT TRIVIAL_ABI WeakReference {
  public:
   // Although Flag is bound to a specific SequencedTaskRunner, it may be
   // deleted from another via base::WeakPtr::~WeakPtr().
@@ -153,7 +155,7 @@ class BASE_EXPORT WeakReferenceOwner {
 // constructor by avoiding the need for a public accessor for ref_.  A
 // WeakPtr<T> cannot access the private members of WeakPtr<U>, so this
 // base class gives us a way to access ref_ in a protected fashion.
-class BASE_EXPORT WeakPtrBase {
+class BASE_EXPORT TRIVIAL_ABI WeakPtrBase {
  public:
   WeakPtrBase();
   ~WeakPtrBase();
@@ -232,26 +234,31 @@ template <typename T> class WeakPtrFactory;
 //     foo->method();
 //
 template <typename T>
-class WeakPtr : public internal::WeakPtrBase {
+class TRIVIAL_ABI WeakPtr : public internal::WeakPtrBase {
  public:
   WeakPtr() = default;
   WeakPtr(std::nullptr_t) {}
 
   // Allow conversion from U to T provided U "is a" T. Note that this
   // is separate from the (implicit) copy and move constructors.
-  template <typename U>
-  WeakPtr(const WeakPtr<U>& other) : WeakPtrBase(other) {
+  template <typename U,
+            typename = std::enable_if_t<std::is_convertible_v<U*, T*>>>
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  /*implicit*/ WeakPtr(const WeakPtr<U>& other) : WeakPtrBase(other) {
     // Need to cast from U* to T* to do pointer adjustment in case of multiple
-    // inheritance. This also enforces the "U is a T" rule.
-    T* t = reinterpret_cast<U*>(other.ptr_);
-    ptr_ = reinterpret_cast<uintptr_t>(t);
+    // inheritance.
+    T* t_ptr = reinterpret_cast<U*>(ptr_);
+    ptr_ = reinterpret_cast<uintptr_t>(t_ptr);
   }
-  template <typename U>
-  WeakPtr(WeakPtr<U>&& other) noexcept : WeakPtrBase(std::move(other)) {
+  template <typename U,
+            typename = std::enable_if_t<std::is_convertible_v<U*, T*>>>
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  /*implicit*/ WeakPtr(WeakPtr<U>&& other) noexcept
+      : WeakPtrBase(std::move(other)) {
     // Need to cast from U* to T* to do pointer adjustment in case of multiple
-    // inheritance. This also enforces the "U is a T" rule.
-    T* t = reinterpret_cast<U*>(other.ptr_);
-    ptr_ = reinterpret_cast<uintptr_t>(t);
+    // inheritance.
+    T* t_ptr = reinterpret_cast<U*>(ptr_);
+    ptr_ = reinterpret_cast<uintptr_t>(t_ptr);
   }
 
   T* get() const {
@@ -260,11 +267,11 @@ class WeakPtr : public internal::WeakPtrBase {
 
   T& operator*() const {
     CHECK(ref_.IsValid());
-    return *get();
+    return *reinterpret_cast<T*>(ptr_);
   }
   T* operator->() const {
     CHECK(ref_.IsValid());
-    return get();
+    return reinterpret_cast<T*>(ptr_);
   }
 
   // Allow conditionals to test validity, e.g. if (weak_ptr) {...};
@@ -344,7 +351,16 @@ class WeakPtrFactory : public internal::WeakPtrFactoryBase {
 
   ~WeakPtrFactory() = default;
 
-  WeakPtr<T> GetWeakPtr() const {
+  // TODO(crbug.com/1366168): Replace all uses of this with GetMutableWeakPtr()
+  // in the codebase and make this return WeakPtr<const T>.
+  WeakPtr<T> GetWeakPtr() const { return GetMutableWeakPtr(); }
+
+  WeakPtr<T> GetWeakPtr() {
+    return WeakPtr<T>(weak_reference_owner_.GetRef(),
+                      reinterpret_cast<T*>(ptr_));
+  }
+
+  WeakPtr<T> GetMutableWeakPtr() const {
     return WeakPtr<T>(weak_reference_owner_.GetRef(),
                       reinterpret_cast<T*>(ptr_));
   }

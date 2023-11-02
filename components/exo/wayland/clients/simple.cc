@@ -1,15 +1,16 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/exo/wayland/clients/simple.h"
 
 #include <presentation-time-client-protocol.h>
+
 #include <iostream>
 
 #include "base/command_line.h"
 #include "base/containers/circular_deque.h"
-#include "base/cxx17_backports.h"
+#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "components/exo/wayland/clients/client_helper.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -70,10 +71,9 @@ void FeedbackPresented(void* data,
 void FeedbackDiscarded(void* data, struct wp_presentation_feedback* feedback) {
   Presentation* presentation = static_cast<Presentation*>(data);
   DCHECK_GT(presentation->submitted_frames.size(), 0u);
-  auto it = std::find_if(
-      presentation->submitted_frames.begin(),
-      presentation->submitted_frames.end(),
-      [feedback](Frame& frame) { return frame.feedback.get() == feedback; });
+  auto it =
+      base::ranges::find(presentation->submitted_frames, feedback,
+                         [](Frame& frame) { return frame.feedback.get(); });
   DCHECK(it != presentation->submitted_frames.end());
   presentation->submitted_frames.erase(it);
 }
@@ -141,7 +141,7 @@ void Simple::Run(int frames,
     SkCanvas* canvas = buffer->sk_surface->getCanvas();
 
     static const SkColor kColors[] = {SK_ColorRED, SK_ColorBLACK};
-    canvas->clear(kColors[++frame_count % base::size(kColors)]);
+    canvas->clear(kColors[++frame_count % std::size(kColors)]);
 
     if (gr_context_) {
       gr_context_->flushAndSubmit();

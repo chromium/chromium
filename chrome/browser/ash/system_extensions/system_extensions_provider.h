@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,33 +8,62 @@
 #include <memory>
 
 #include "chrome/browser/ash/system_extensions/system_extensions_install_manager.h"
+#include "chrome/browser/ash/system_extensions/system_extensions_registry_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class Profile;
-class SystemExtensionsInstallManager;
 
-// Name of the directory, under the user profile directory, where System
-// Extensions are installed.
-extern const char kSystemExtensionsProfileDirectory[];
+namespace ash {
+
+class SystemExtensionsPersistentStorage;
+class SystemExtensionsServiceWorkerManager;
 
 // Manages the installation, storage, and execution of System Extensions.
 class SystemExtensionsProvider : public KeyedService {
  public:
-  // May return nullptr if there is no provider associated with this profile.
-  static SystemExtensionsProvider* Get(Profile* profile);
-  static bool IsEnabled();
+  // Returns the provider associated with `profile`. Should only be called if
+  // System Extensions is enabled for the profile i.e. if
+  // IsSystemExtensionsEnabled() returns true.
+  static SystemExtensionsProvider& Get(Profile* profile);
 
-  SystemExtensionsProvider();
+  explicit SystemExtensionsProvider(Profile* profile);
   SystemExtensionsProvider(const SystemExtensionsProvider&) = delete;
   SystemExtensionsProvider& operator=(const SystemExtensionsProvider&) = delete;
   ~SystemExtensionsProvider() override;
+
+  SystemExtensionsRegistry& registry() { return registry_manager_->registry(); }
+
+  SystemExtensionsRegistryManager& registry_manager() {
+    return *registry_manager_;
+  }
+
+  SystemExtensionsServiceWorkerManager& service_worker_manager() {
+    return *service_worker_manager_;
+  }
+
+  SystemExtensionsPersistentStorage& persistent_storage() {
+    return *persistent_storage_;
+  }
 
   SystemExtensionsInstallManager& install_manager() {
     return *install_manager_;
   }
 
+  // Called when a service worker will be started to enable Blink runtime
+  // features based on system extension type. Currently System Extensions run on
+  // chrome-untrusted:// which is process isolated, so this method should be
+  // called.
+  void UpdateEnabledBlinkRuntimeFeaturesInIsolatedWorker(
+      const GURL& script_url,
+      std::vector<std::string>& out_forced_enabled_runtime_features);
+
  private:
+  std::unique_ptr<SystemExtensionsRegistryManager> registry_manager_;
+  std::unique_ptr<SystemExtensionsServiceWorkerManager> service_worker_manager_;
+  std::unique_ptr<SystemExtensionsPersistentStorage> persistent_storage_;
   std::unique_ptr<SystemExtensionsInstallManager> install_manager_;
 };
+
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_SYSTEM_EXTENSIONS_SYSTEM_EXTENSIONS_PROVIDER_H_

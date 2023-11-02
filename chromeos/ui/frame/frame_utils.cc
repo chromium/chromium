@@ -1,15 +1,17 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chromeos/ui/frame/frame_utils.h"
 
 #include "chromeos/ui/base/chromeos_ui_constants.h"
+#include "chromeos/ui/base/display_util.h"
 #include "chromeos/ui/base/tablet_state.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/base/hit_test.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -27,7 +29,7 @@ int FrameBorderNonClientHitTest(views::NonClientFrameView* view,
 
   if (aura::Env::GetInstance()->is_touch_down())
     outside_bounds *= chromeos::kResizeOutsideBoundsScaleForTouch;
-  expanded_bounds.Inset(-outside_bounds, -outside_bounds);
+  expanded_bounds.Inset(-outside_bounds);
 
   if (!expanded_bounds.Contains(point_in_widget))
     return HTNOWHERE;
@@ -93,6 +95,18 @@ bool ShouldUseRestoreFrame(const views::Widget* widget) {
     return false;
 
   return true;
+}
+
+SnapDirection GetSnapDirectionForWindow(aura::Window* window, bool left_top) {
+  const bool is_primary_display_layout = chromeos::IsDisplayLayoutPrimary(
+      display::Screen::GetScreen()->GetDisplayNearestWindow(window));
+  if (left_top) {
+    return is_primary_display_layout ? SnapDirection::kPrimary
+                                     : SnapDirection::kSecondary;
+  } else {
+    return is_primary_display_layout ? SnapDirection::kSecondary
+                                     : SnapDirection::kPrimary;
+  }
 }
 
 }  // namespace chromeos

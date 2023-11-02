@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,6 +29,10 @@ AudioCodec ToCastAudioCodec(const ::media::AudioCodec codec) {
       return kCodecEAC3;
     case ::media::AudioCodec::kAC3:
       return kCodecAC3;
+    case ::media::AudioCodec::kDTS:
+      return kCodecDTS;
+    case ::media::AudioCodec::kDTSXP2:
+      return kCodecDTSXP2;
     case ::media::AudioCodec::kFLAC:
       return kCodecFLAC;
     case ::media::AudioCodec::kMpegHAudio:
@@ -101,6 +105,22 @@ VideoProfile ToCastVideoProfile(
       return kHEVCMain10;
     case ::media::HEVCPROFILE_MAIN_STILL_PICTURE:
       return kHEVCMainStillPicture;
+    case ::media::HEVCPROFILE_REXT:
+      return kHEVCRext;
+    case ::media::HEVCPROFILE_HIGH_THROUGHPUT:
+      return kHEVCHighThroughput;
+    case ::media::HEVCPROFILE_MULTIVIEW_MAIN:
+      return kHEVCMultiviewMain;
+    case ::media::HEVCPROFILE_SCALABLE_MAIN:
+      return kHEVCScalableMain;
+    case ::media::HEVCPROFILE_3D_MAIN:
+      return kHEVC3dMain;
+    case ::media::HEVCPROFILE_SCREEN_EXTENDED:
+      return kHEVCScreenExtended;
+    case ::media::HEVCPROFILE_SCALABLE_REXT:
+      return kHEVCScalableRext;
+    case ::media::HEVCPROFILE_HIGH_THROUGHPUT_SCREEN_EXTENDED:
+      return kHEVCHighThroughputScreenExtended;
     case ::media::VP8PROFILE_ANY:
       return kVP8ProfileAny;
     case ::media::VP9PROFILE_PROFILE0:
@@ -112,13 +132,17 @@ VideoProfile ToCastVideoProfile(
     case ::media::VP9PROFILE_PROFILE3:
       return kVP9Profile3;
     case ::media::DOLBYVISION_PROFILE0:
-      return kDolbyVisionCompatible_EL_MD;
+      return kDolbyVisionProfile0;
     case ::media::DOLBYVISION_PROFILE4:
-      return kDolbyVisionCompatible_EL_MD;
+      return kDolbyVisionProfile4;
     case ::media::DOLBYVISION_PROFILE5:
-      return kDolbyVisionNonCompatible_BL_MD;
+      return kDolbyVisionProfile5;
     case ::media::DOLBYVISION_PROFILE7:
-      return kDolbyVisionNonCompatible_BL_EL_MD;
+      return kDolbyVisionProfile7;
+    case ::media::DOLBYVISION_PROFILE8:
+      return kDolbyVisionProfile8;
+    case ::media::DOLBYVISION_PROFILE9:
+      return kDolbyVisionProfile9;
     case ::media::AV1PROFILE_PROFILE_MAIN:
       return kAV1ProfileMain;
     case ::media::AV1PROFILE_PROFILE_HIGH:

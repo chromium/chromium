@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,9 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/enrollment/enterprise_enrollment_helper.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
+#include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/dm_auth.h"
 #include "components/policy/core/common/cloud/enterprise_metrics.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -39,14 +41,14 @@ class EnterpriseEnrollmentHelperImpl : public EnterpriseEnrollmentHelper {
   void EnrollUsingAuthCode(const std::string& auth_code) override;
   void EnrollUsingToken(const std::string& token) override;
   void EnrollUsingAttestation() override;
-  void EnrollForOfflineDemo() override;
   void ClearAuth(base::OnceClosure callback) override;
   void GetDeviceAttributeUpdatePermission() override;
   void UpdateDeviceAttributes(const std::string& asset_id,
                               const std::string& location) override;
   void Setup(policy::ActiveDirectoryJoinDelegate* ad_join_delegate,
              const policy::EnrollmentConfig& enrollment_config,
-             const std::string& enrolling_user_domain) override;
+             const std::string& enrolling_user_domain,
+             policy::LicenseType license_type) override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(EnterpriseEnrollmentTest,
@@ -81,8 +83,14 @@ class EnterpriseEnrollmentHelperImpl : public EnterpriseEnrollmentHelper {
   // `callback` is a callback, that was passed to ClearAuth() before.
   void OnSigninProfileCleared(base::OnceClosure callback);
 
+  // Returns either OAuth token or DM token needed for the device attribute
+  // update permission request.
+  absl::optional<policy::DMAuth> GetDMAuthForDeviceAttributeUpdate(
+      policy::CloudPolicyClient* device_cloud_policy_client);
+
   policy::EnrollmentConfig enrollment_config_;
   std::string enrolling_user_domain_;
+  policy::LicenseType license_type_;
 
   enum {
     OAUTH_NOT_STARTED,

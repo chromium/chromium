@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,9 @@
 namespace memory {
 
 namespace {
-const base::Feature kMemoryAblationStudy{"MemoryAblationStudy",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kMemoryAblationStudy,
+             "MemoryAblationStudy",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace
 
 class MemoryAblationStudyTest : public testing::Test {
@@ -24,7 +25,7 @@ class MemoryAblationStudyTest : public testing::Test {
 };
 
 // Tests basic functionality of the MemoryAblationStudy class.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // TODO(https://crbug.com/1245173) Flaky on Win7
 #define MAYBE_Basic DISABLED_Basic
 #else

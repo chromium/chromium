@@ -1,8 +1,8 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next min version: 7
+// Next min version: 10
 
 module cros.mojom;
 
@@ -17,7 +17,7 @@ import "mojo/public/mojom/base/unguessable_token.mojom";
 // It should be kept in sync with the ChromeOSCameraClientType enum in
 // tools/metrics/histograms/enums.xml in chromium.
 [Extensible]
-enum CameraClientType{
+enum CameraClientType {
   UNKNOWN = 0,
   TESTING = 1,
   CHROME = 2,
@@ -28,10 +28,13 @@ enum CameraClientType{
 };
 
 // CameraPrivacySwitchState indicates the state of the camera privacy switch.
-enum CameraPrivacySwitchState{
-  // For devices which can only read the privacy switch status while the camera
-  // is streaming, it is possible that the state of privacy switch is currently
-  // unknown.
+// This can represent both software and hardware privacy switch statuses.
+enum CameraPrivacySwitchState {
+  // [HW] For devices which can only read the privacy switch status while the
+  // camera is streaming, it is possible that the state of privacy switch is
+  // currently unknown.
+  // [SW] If the CrOS Camera Service is not reachable, UNKNOWN will be returned
+  // as the result of GetCameraSWPrivacySwitchState.
   UNKNOWN = 0,
 
   // State when the privacy switch is on, which means the black frames will be
@@ -41,6 +44,22 @@ enum CameraPrivacySwitchState{
   // State when the privacy switch is off, which means camera should stream
   // normally.
   OFF = 2,
+};
+
+// CameraAutoFramingState indicates the state of the camera autozoom feature.
+// Note that this enum is saved into user prefs, so enum values should not be
+// reordered, deleted or repurposed.
+[Stable, Extensible]
+enum CameraAutoFramingState {
+  // Auto framing is disabled.
+  [Default]
+  OFF = 0,
+
+  // Auto framing is enabled and set to single person mode.
+  ON_SINGLE = 1,
+
+  // Auto framing is enabled and set to multi people mode.
+  ON_MULTI = 2,
 };
 
 // The CrOS camera HAL v3 Mojo dispatcher.  The dispatcher acts as a proxy and
@@ -101,7 +120,7 @@ interface CameraHalDispatcher {
 
 // The CrOS camera HAL v3 Mojo server.
 //
-// Next method ID: 2
+// Next method ID: 6
 interface CameraHalServer {
   // A caller calls CreateChannel to create a new Mojo channel to the camera
   // HAL v3 adapter.  Upon successfully binding of |camera_module_receiver|, the
@@ -113,24 +132,45 @@ interface CameraHalServer {
   // Enable or disable tracing.
   [MinVersion=3]
   SetTracingEnabled@1(bool enabled);
+
+  // Enable or disable auto framing.
+  [MinVersion=7]
+  SetAutoFramingState@2(CameraAutoFramingState state);
+
+  // Get the current camera software privacy switch state.
+  [MinVersion=8]
+  GetCameraSWPrivacySwitchState@3() => (CameraPrivacySwitchState state);
+
+  // Enable or disable the camera software privacy switch.
+  [MinVersion=8]
+  SetCameraSWPrivacySwitchState@4(CameraPrivacySwitchState state);
+
+  // Get if the HAL supports auto framing.
+  [MinVersion=9]
+  GetAutoFramingSupported@5() => (bool supported);
 };
 
 // CameraHalServerCallbacks is an interface for CameraHalServer to notify
 // CameraHalDispatcher for any changes on the server side, for example when a
 // CameraHalClient opens or closes a camera device.
 //
-// Next method ID: 2
+// Next method ID: 3
 interface CameraHalServerCallbacks {
-  // Fired when a CameraHalClient opens or closes a camera device. When a
-  // CameraHalClient loses mojo connection to CameraHalServer, CameraHalServer
-  // would also use this to notify that cameras are closed (not being used).
+  // Fired when a CameraHalClient opens or closes a camera device. |camera_id|
+  // is always >=0, which represents a unique id of a physical camera.
   CameraDeviceActivityChange@0(int32 camera_id,
                                bool opened,
                                CameraClientType type);
 
   // Fired when the camera privacy switch status is changed. If the device has
   // such switch, this callback will be fired immediately for once to notify its
-  // current status when the callbacks are registered.
+  // current status when the callbacks are registered. |camera_id| is always
+  // >=0, which represents a unique id of a physical camera.
   [MinVersion=5]
-  CameraPrivacySwitchStateChange@1(CameraPrivacySwitchState state);
+  CameraPrivacySwitchStateChange@1(CameraPrivacySwitchState state,
+                                   [MinVersion=9] int32 camera_id);
+
+  // Fired when the camera software privacy switch status is changed.
+  [MinVersion=8]
+  CameraSWPrivacySwitchStateChange@2(CameraPrivacySwitchState state);
 };

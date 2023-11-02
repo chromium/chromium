@@ -1,13 +1,13 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
-import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
 /**
  * @fileoverview A helper object used from the "CUPS printing" section to
  * interact with the browser. Used only on Chrome OS.
  */
+
+import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
 /**
  * @typedef {{
@@ -82,7 +82,7 @@ export let PrinterPpdMakeModel;
 /**
  *  @enum {number}
  *  These values must be kept in sync with the PrinterSetupResult enum in
- *  chrome/browser/chromeos/printing/printer_configurer.h.
+ *  chrome/browser/ash/printing/printer_configurer.h.
  */
 export const PrinterSetupResult = {
   FATAL_ERROR: 0,
@@ -227,10 +227,23 @@ export class CupsPrintersBrowserProxy {
   openScanningApp() {}
 }
 
+/** @type {?CupsPrintersBrowserProxy} */
+let instance = null;
+
 /**
  * @implements {CupsPrintersBrowserProxy}
  */
 export class CupsPrintersBrowserProxyImpl {
+  /** @return {!CupsPrintersBrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new CupsPrintersBrowserProxyImpl());
+  }
+
+  /** @param {!CupsPrintersBrowserProxy} obj */
+  static setInstanceForTesting(obj) {
+    instance = obj;
+  }
+
   /** @override */
   getCupsSavedPrintersList() {
     return sendWithPromise('getCupsSavedPrintersList');
@@ -326,5 +339,3 @@ export class CupsPrintersBrowserProxyImpl {
     chrome.send('openScanningApp');
   }
 }
-
-addSingletonGetter(CupsPrintersBrowserProxyImpl);

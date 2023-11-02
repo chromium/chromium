@@ -1,10 +1,11 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/policy/core/browser/configuration_policy_handler_list.h"
 
 #include "base/bind.h"
+#include "base/check_is_test.h"
 #include "base/logging.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
 #include "components/policy/core/browser/configuration_policy_handler_parameters.h"
@@ -54,9 +55,10 @@ void ConfigurationPolicyHandlerList::ApplyPolicySettings(
   // applying the policies.
   PolicyMap filtered_policies = policies.Clone();
   base::flat_set<std::string> enabled_future_policies =
-      allow_future_policies_ ? base::flat_set<std::string>()
-                             : ValueToStringSet(policies.GetValue(
-                                   key::kEnableExperimentalPolicies));
+      allow_future_policies_
+          ? base::flat_set<std::string>()
+          : ValueToStringSet(policies.GetValue(key::kEnableExperimentalPolicies,
+                                               base::Value::Type::LIST));
   filtered_policies.EraseMatching(base::BindRepeating(
       &ConfigurationPolicyHandlerList::FilterOutUnsupportedPolicies,
       base::Unretained(this), enabled_future_policies, future_policies));
@@ -97,6 +99,7 @@ bool ConfigurationPolicyHandlerList::FilterOutUnsupportedPolicies(
     const PolicyMap::const_iterator iter) const {
   // Callback might be missing in tests.
   if (!details_callback_) {
+    CHECK_IS_TEST();
     return false;
   }
 

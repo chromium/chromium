@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #ifndef CHROME_BROWSER_CART_CART_DISCOUNT_FETCHER_H_
@@ -7,11 +7,12 @@
 #include <memory>
 #include <unordered_map>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/cart/cart_db.h"
-#include "chrome/browser/cart/cart_db_content.pb.h"
-#include "chrome/browser/commerce/coupons/coupon_db_content.pb.h"
-#include "chrome/browser/endpoint_fetcher/endpoint_fetcher.h"
+#include "components/commerce/core/proto/cart_db_content.pb.h"
+#include "components/commerce/core/proto/coupon_db_content.pb.h"
+#include "components/endpoint_fetcher/endpoint_fetcher.h"
 
 namespace network {
 class PendingSharedURLLoaderFactory;

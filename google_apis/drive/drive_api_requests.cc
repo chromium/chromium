@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/values.h"
 #include "google_apis/common/request_sender.h"
 #include "google_apis/common/time_util.h"
@@ -94,9 +93,9 @@ void AttachProperties(const Properties& properties,
   if (properties.empty())
     return;
 
-  base::ListValue properties_value;
+  base::Value::List properties_value;
   for (const auto& property : properties) {
-    auto property_value = std::make_unique<base::DictionaryValue>();
+    base::Value::Dict property_value;
     std::string visibility_as_string;
     switch (property.visibility()) {
       case Property::VISIBILITY_PRIVATE:
@@ -106,12 +105,12 @@ void AttachProperties(const Properties& properties,
         visibility_as_string = "PUBLIC";
         break;
     }
-    property_value->SetString("visibility", visibility_as_string);
-    property_value->SetString("key", property.key());
-    property_value->SetString("value", property.value());
+    property_value.Set("visibility", visibility_as_string);
+    property_value.Set("key", property.key());
+    property_value.Set("value", property.value());
     properties_value.Append(std::move(property_value));
   }
-  request_body->SetKey("properties", std::move(properties_value));
+  request_body->SetKey("properties", base::Value(std::move(properties_value)));
 }
 
 // Creates metadata JSON string for multipart uploading.
@@ -129,9 +128,10 @@ std::string CreateMultipartUploadMetadataJson(
 
   // Fill parent link.
   if (!parent_resource_id.empty()) {
-    base::ListValue parents;
-    parents.Append(google_apis::util::CreateParentValue(parent_resource_id));
-    root.SetKey("parents", std::move(parents));
+    base::Value::List parents;
+    parents.Append(base::Value::FromUniquePtrValue(
+        google_apis::util::CreateParentValue(parent_resource_id)));
+    root.SetKey("parents", base::Value(std::move(parents)));
   }
 
   if (!modified_date.is_null()) {
@@ -352,13 +352,13 @@ bool FilesInsertRequest::GetContentData(std::string* upload_content_type,
     root.SetString("modifiedDate", util::FormatTimeAsString(modified_date_));
 
   if (!parents_.empty()) {
-    base::ListValue parents_value;
+    base::Value::List parents_value;
     for (size_t i = 0; i < parents_.size(); ++i) {
-      auto parent = std::make_unique<base::DictionaryValue>();
-      parent->SetString("id", parents_[i]);
+      base::Value::Dict parent;
+      parent.Set("id", parents_[i]);
       parents_value.Append(std::move(parent));
     }
-    root.SetKey("parents", std::move(parents_value));
+    root.SetKey("parents", base::Value(std::move(parents_value)));
   }
 
   if (!title_.empty())
@@ -425,13 +425,13 @@ bool FilesPatchRequest::GetContentData(std::string* upload_content_type,
   }
 
   if (!parents_.empty()) {
-    base::ListValue parents_value;
+    base::Value::List parents_value;
     for (size_t i = 0; i < parents_.size(); ++i) {
-      auto parent = std::make_unique<base::DictionaryValue>();
-      parent->SetString("id", parents_[i]);
+      base::Value::Dict parent;
+      parent.Set("id", parents_[i]);
       parents_value.Append(std::move(parent));
     }
-    root.SetKey("parents", std::move(parents_value));
+    root.SetKey("parents", base::Value(std::move(parents_value)));
   }
 
   AttachProperties(properties_, &root);
@@ -475,13 +475,13 @@ bool FilesCopyRequest::GetContentData(std::string* upload_content_type,
     root.SetString("modifiedDate", util::FormatTimeAsString(modified_date_));
 
   if (!parents_.empty()) {
-    base::ListValue parents_value;
+    base::Value::List parents_value;
     for (size_t i = 0; i < parents_.size(); ++i) {
-      auto parent = std::make_unique<base::DictionaryValue>();
-      parent->SetString("id", parents_[i]);
+      base::Value::Dict parent;
+      parent.Set("id", parents_[i]);
       parents_value.Append(std::move(parent));
     }
-    root.SetKey("parents", std::move(parents_value));
+    root.SetKey("parents", base::Value(std::move(parents_value)));
   }
 
   if (!title_.empty())
@@ -732,9 +732,10 @@ bool InitiateUploadNewFileRequest::GetContentData(
   root.SetString("title", title_);
 
   // Fill parent link.
-  base::ListValue parents;
-  parents.Append(util::CreateParentValue(parent_resource_id_));
-  root.SetKey("parents", std::move(parents));
+  base::Value::List parents;
+  parents.Append(base::Value::FromUniquePtrValue(
+      util::CreateParentValue(parent_resource_id_)));
+  root.SetKey("parents", base::Value(std::move(parents)));
 
   if (!modified_date_.is_null())
     root.SetString("modifiedDate", util::FormatTimeAsString(modified_date_));
@@ -794,9 +795,10 @@ bool InitiateUploadExistingFileRequest::GetContentData(
     std::string* upload_content) {
   base::DictionaryValue root;
   if (!parent_resource_id_.empty()) {
-    base::ListValue parents;
-    parents.Append(util::CreateParentValue(parent_resource_id_));
-    root.SetKey("parents", std::move(parents));
+    base::Value::List parents;
+    parents.Append(base::Value::FromUniquePtrValue(
+        util::CreateParentValue(parent_resource_id_)));
+    root.SetKey("parents", base::Value(std::move(parents)));
   }
 
   if (!title_.empty())
@@ -1126,8 +1128,8 @@ BatchUploadRequest::BatchUploadRequest(
     const DriveApiUrlGenerator& url_generator)
     : DriveUrlFetchRequestBase(
           sender,
-          // Safe to not retain as the SimpleURLoader is owned by our base class
-          // and cannot outlive this instance.
+          // Safe to not retain as the SimpleURLLoader is owned by our base
+          // class and cannot outlive this instance.
           base::BindRepeating(&BatchUploadRequest::OnUploadProgress,
                               base::Unretained(this)),
           ProgressCallback()),

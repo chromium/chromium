@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,6 +21,7 @@
 #include "base/values.h"
 #include "content/public/browser/ax_inspect_factory.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_scenario.h"
+#include "ui/accessibility/platform/inspect/ax_script_instruction.h"
 
 using ui::AXTreeFormatter;
 using ui::AXTreeSelector;
@@ -28,49 +29,48 @@ using ui::AXTreeSelector;
 namespace content {
 
 AXTreeServer::AXTreeServer(const AXTreeSelector& selector,
-                           const base::FilePath& filters_path) {
-  std::unique_ptr<AXTreeFormatter> formatter(
-      AXInspectFactory::CreatePlatformFormatter());
+                           const ui::AXInspectScenario& scenario,
+                           ui::AXApiType::Type api) {
+  // If an API is not supplied, use the default API for this platform.
+  std::unique_ptr<AXTreeFormatter> formatter =
+      api != ui::AXApiType::kNone ? AXInspectFactory::CreateFormatter(api)
+                                  : AXInspectFactory::CreatePlatformFormatter();
 
-  // Get filters from optional filters file.
-  absl::optional<ui::AXInspectScenario> scenario =
-      GetInspectScenario(filters_path);
-  if (!scenario) {
-    LOG(ERROR) << "Failed to parse filter file";
+  // If there are script instructions, execute the script.
+  if (!scenario.script_instructions.empty()) {
+    std::string results = formatter->EvaluateScript(selector, scenario);
+
+    if (results.empty()) {
+      LOG(ERROR) << "Failed to find application or execute script.";
+      error = true;
+      return;
+    }
+    printf("%s", results.c_str());
     return;
   }
 
-  // Use optional filters with the default filter set
-  formatter->SetPropertyFilters(scenario->property_filters,
+  // Otherwise, dump the tree.
+  // Use user provided filters with the default filter set.
+  std::vector<ui::AXPropertyFilter> property_filters_ext(
+      {{"AXRoleDescription", ui::AXPropertyFilter::ALLOW}});
+  property_filters_ext.insert(property_filters_ext.end(),
+                              scenario.property_filters.begin(),
+                              scenario.property_filters.end());
+
+  formatter->SetPropertyFilters(property_filters_ext,
                                 AXTreeFormatter::kFiltersDefaultSet);
 
   // Get accessibility tree as a nested dictionary.
-  base::Value dict = formatter->BuildTreeForSelector(selector);
-  if (dict.DictEmpty()) {
-    LOG(ERROR) << "Failed to get accessibility tree";
+  base::Value::Dict dict = formatter->BuildTreeForSelector(selector);
+
+  if (dict.empty()) {
+    LOG(ERROR) << "Failed to get accessibility tree.";
+    error = true;
     return;
   }
 
   // Write to console.
   printf("%s", formatter->FormatTree(dict).c_str());
-}
-
-absl::optional<ui::AXInspectScenario> AXTreeServer::GetInspectScenario(
-    const base::FilePath& filters_path) {
-  // Return with the default filter scenario if no file is provided
-  if (filters_path.empty()) {
-    return ui::AXInspectScenario::From("@", std::vector<std::string>());
-  }
-
-  absl::optional<ui::AXInspectScenario> scenario =
-      ui::AXInspectScenario::From("@", filters_path);
-  if (!scenario) {
-    LOG(ERROR) << "Failed to open filters file " << filters_path
-               << ". Note: path traversal components ('..') are not allowed "
-                  "for security reasons";
-    return absl::nullopt;
-  }
-  return scenario;
 }
 
 }  // namespace content

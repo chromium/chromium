@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,6 @@
 
 #include "base/atomicops.h"
 #include "base/base_export.h"
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -173,10 +172,9 @@ class BASE_EXPORT HistogramBase {
   // Whether the histogram has construction arguments as parameters specified.
   // For histograms that don't have the concept of minimum, maximum or
   // bucket_count, this function always returns false.
-  virtual bool HasConstructionArguments(
-      Sample expected_minimum,
-      Sample expected_maximum,
-      uint32_t expected_bucket_count) const = 0;
+  virtual bool HasConstructionArguments(Sample expected_minimum,
+                                        Sample expected_maximum,
+                                        size_t expected_bucket_count) const = 0;
 
   virtual void Add(Sample value) = 0;
 
@@ -257,7 +255,7 @@ class BASE_EXPORT HistogramBase {
   // with the following format:
   // {"header": "Name of the histogram with samples, mean, and/or flags",
   // "body": "ASCII histogram representation"}
-  virtual base::Value ToGraphDict() const = 0;
+  virtual base::Value::Dict ToGraphDict() const = 0;
 
   // TODO(bcwhite): Remove this after https://crbug/836875.
   virtual void ValidateHistogramContents() const;
@@ -274,9 +272,9 @@ class BASE_EXPORT HistogramBase {
   struct BASE_EXPORT CountAndBucketData {
     Count count;
     int64_t sum;
-    Value buckets;
+    Value::List buckets;
 
-    CountAndBucketData(Count count, int64_t sum, Value buckets);
+    CountAndBucketData(Count count, int64_t sum, Value::List buckets);
     ~CountAndBucketData();
 
     CountAndBucketData(CountAndBucketData&& other);
@@ -287,7 +285,7 @@ class BASE_EXPORT HistogramBase {
   virtual void SerializeInfoImpl(base::Pickle* pickle) const = 0;
 
   // Writes information about the construction parameters in |params|.
-  virtual Value GetParameters() const = 0;
+  virtual Value::Dict GetParameters() const = 0;
 
   // Returns information about the current (non-empty) buckets and their sample
   // counts to |buckets|, the total sample count to |count| and the total sum
@@ -330,7 +328,7 @@ class BASE_EXPORT HistogramBase {
   const char* const histogram_name_;
 
   // Additional information about the histogram.
-  std::atomic<uint32_t> flags_{0};
+  std::atomic<int32_t> flags_{0};
 };
 
 }  // namespace base

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,10 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom-forward.h"
 #include "third_party/blink/public/platform/web_common.h"
+
+namespace v8 {
+class Isolate;
+}  // namespace v8
 
 namespace blink {
 class AgentGroupScheduler;
@@ -47,6 +51,9 @@ class BLINK_PLATFORM_EXPORT WebAgentGroupScheduler {
 
   // The main thread scheduler related to this WebAgentGroupScheduler.
   virtual WebThreadScheduler& GetMainThreadScheduler() = 0;
+
+  // The isolate for this WebAgentGroupScheduler.
+  virtual v8::Isolate* Isolate() = 0;
 };
 
 }  // namespace scheduler

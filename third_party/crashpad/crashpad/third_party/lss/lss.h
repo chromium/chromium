@@ -1,4 +1,4 @@
-// Copyright 2019 The Crashpad Authors. All rights reserved.
+// Copyright 2019 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@
 #elif defined(CRASHPAD_LSS_SOURCE_EMBEDDED)
 #include "third_party/lss/lss/linux_syscall_support.h"
 #elif defined(CRASHPAD_LSS_SOURCE_FUCHSIA)
-#include "../../../../third_party/lss/linux_syscall_support.h"
+#include "../../../../third_party/linux-syscall-support/linux_syscall_support.h"
 #else
 #error Unknown lss source
 #endif

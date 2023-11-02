@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/single_thread_task_runner.h"
 #include "content/public/browser/url_data_source.h"
@@ -30,7 +30,7 @@ class ThemeSource : public content::URLDataSource {
       const GURL& url,
       const content::WebContents::Getter& wc_getter,
       content::URLDataSource::GotDataCallback callback) override;
-  std::string GetMimeType(const std::string& path) override;
+  std::string GetMimeType(const GURL& url) override;
   bool AllowCaching() override;
   bool ShouldServiceRequest(const GURL& url,
                             content::BrowserContext* browser_context,
@@ -53,8 +53,15 @@ class ThemeSource : public content::URLDataSource {
                       int resource_id,
                       float scale);
 
+  // Generates and sends a CSS stylesheet with colors from the |ColorProvider|.
+  // A 'sets' query parameter must be specified to indicate which colors should
+  // be in the stylesheet. e.g chrome://theme/colors.css?sets=ui,chrome
+  void SendColorsCss(const GURL& url,
+                     const content::WebContents::Getter& wc_getter,
+                     content::URLDataSource::GotDataCallback callback);
+
   // The profile this object was initialized with.
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // Whether this source services chrome-unstrusted://theme.
   bool serve_untrusted_;

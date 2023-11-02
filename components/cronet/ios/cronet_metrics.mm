@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -133,10 +133,10 @@ CronetTransactionMetrics* NativeToIOSMetrics(Metrics& metrics)
       [NSDate dateWithTimeIntervalSince1970:load_timing_info.request_start_time
                                                 .ToDoubleT()];
 
-  transaction_metrics.domainLookupStartDate =
-      TicksToDate(load_timing_info, load_timing_info.connect_timing.dns_start);
-  transaction_metrics.domainLookupEndDate =
-      TicksToDate(load_timing_info, load_timing_info.connect_timing.dns_end);
+  transaction_metrics.domainLookupStartDate = TicksToDate(
+      load_timing_info, load_timing_info.connect_timing.domain_lookup_start);
+  transaction_metrics.domainLookupEndDate = TicksToDate(
+      load_timing_info, load_timing_info.connect_timing.domain_lookup_end);
 
   transaction_metrics.connectStartDate = TicksToDate(
       load_timing_info, load_timing_info.connect_timing.connect_start);

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,45 +25,29 @@ namespace speech {
 // trying to access the SodaInstaller instance.
 class COMPONENT_EXPORT(SODA_INSTALLER) SodaInstaller {
  public:
+  // Error codes passed to the observers.
+  enum class ErrorCode {
+    kUnspecifiedError,  // a default error.
+    kNeedsReboot,       // libsoda requires an OS reboot on ChromeOS.
+  };
+
   // Observer of the SODA (Speech On-Device API) installation.
   class Observer : public base::CheckedObserver {
    public:
-    ////////////////////////////////////////////////////////////////////////////
-    // Main SODA update functions. Use these when informing the user about
-    // the availability of speech on device. This means that the general binary
-    // is ready and at least one language is available. For example, these might
-    // be used to display download progress next to the feature name in
-    // settings.
+    // Called when the SODA binary component and the language pack for this
+    // language code are installed.
+    virtual void OnSodaInstalled(LanguageCode language_code) = 0;
 
-    // Called when the SODA binary component and at least one language pack is
-    // installed.
-    virtual void OnSodaInstalled() = 0;
-
-    // Called if there is an error in the SODA binary or language pack
-    // installation.
-    virtual void OnSodaError() = 0;
+    // Called if there is an error in the SODA installation. If the language
+    // code is LanguageCode::kNone, the error is for the SODA binary; otherwise
+    // it is for the language pack.
+    virtual void OnSodaInstallError(LanguageCode language_code,
+                                    ErrorCode error_code) = 0;
 
     // Called during the SODA installation. Progress is the weighted average of
-    // the download percentage of the SODA binary and at least one language
-    // pack.
-    virtual void OnSodaProgress(int combined_progress) = 0;
-
-    ////////////////////////////////////////////////////////////////////////////
-    // Language-specific SODA update functions. Use these when informing the
-    // user about the availability of a specific language. For example, these
-    // might be used to display download progress of a particular language next
-    // to the language list item.
-
-    // Called when a SODA language pack component is installed.
-    virtual void OnSodaLanguagePackInstalled(LanguageCode language_code) {}
-
-    // Called if there is an error in a SODA language pack installation.
-    virtual void OnSodaLanguagePackError(LanguageCode language_code) {}
-
-    // Called during the SODA installation. Progress is the download percentage
-    // out of 100.
-    virtual void OnSodaLanguagePackProgress(int language_progress,
-                                            LanguageCode language_code) {}
+    // the combined download percentage of the SODA binary and the language pack
+    // for this language code.
+    virtual void OnSodaProgress(LanguageCode language_code, int progress) = 0;
   };
 
   SodaInstaller();
@@ -128,14 +112,21 @@ class COMPONENT_EXPORT(SODA_INSTALLER) SodaInstaller {
 
   // TODO(crbug.com/1237462): Consider creating a MockSodaInstaller class that
   // implements these test-specific methods.
-  void NotifySodaInstalledForTesting();
-  void NotifySodaErrorForTesting();
+  void NeverDownloadSodaForTesting() {
+    never_download_soda_for_testing_ = true;
+  }
+
+  // The soda binary is encoded as LanguageCode::kNone.
+  void NotifySodaInstalledForTesting(
+      LanguageCode language_code = LanguageCode::kNone);
+  void NotifySodaErrorForTesting(
+      LanguageCode language_code = LanguageCode::kNone,
+      ErrorCode error = ErrorCode::kUnspecifiedError);
   void UninstallSodaForTesting();
-  void NotifySodaDownloadProgressForTesting(int percentage);
-  void NotifyOnSodaLanguagePackInstalledForTesting(LanguageCode language_code);
-  void NotifyOnSodaLanguagePackProgressForTesting(int progress,
-                                                  LanguageCode language_code);
-  void NotifyOnSodaLanguagePackErrorForTesting(LanguageCode language_code);
+  void NotifySodaProgressForTesting(
+      int progress,
+      LanguageCode language_code = LanguageCode::kNone);
+  bool IsAnyLanguagePackInstalledForTesting() const;
 
  protected:
   // Registers the preference tracking the installed SODA language packs.
@@ -149,31 +140,20 @@ class COMPONENT_EXPORT(SODA_INSTALLER) SodaInstaller {
   // space may not be freed immediately.
   virtual void UninstallSoda(PrefService* global_prefs) = 0;
 
-  // Notifies the observers that the installation of the SODA binary and at
-  // least one language pack has completed.
-  void NotifyOnSodaInstalled();
+  // Notifies the observers that the installation of the SODA binary and the
+  // language pack for this language code has completed.
+  void NotifyOnSodaInstalled(LanguageCode language_code);
 
-  // Notifies the observers that a SODA language pack installation has
-  // completed.
-  void NotifyOnSodaLanguagePackInstalled(LanguageCode language_code);
-
-  // Notifies the observers that there is an error in the SODA binary
-  // installation.
-  void NotifyOnSodaError();
-
-  // Notifies the observers that there is an error in a SODA language pack
-  // installation.
-  void NotifyOnSodaLanguagePackError(LanguageCode language_code);
+  // Notifies the observers that there is an error in the SODA installation.
+  // If the language code is LanguageCode::kNone, the error is for the SODA
+  // binary; otherwise it is for the language pack.
+  void NotifyOnSodaInstallError(LanguageCode language_code,
+                                ErrorCode error_code);
 
   // Notifies the observers of the combined progress as the SODA binary and
   // language pack are installed. Progress is the download percentage out of
   // 100.
-  void NotifyOnSodaProgress(int combined_progress);
-
-  // Notifies the observers of the progress percentage the SODA language pack is
-  // installed. Progress is the download percentage out of 100.
-  void NotifyOnSodaLanguagePackProgress(int language_progress,
-                                        LanguageCode language_code);
+  void NotifyOnSodaProgress(LanguageCode language_code, int progress);
 
   // Registers a language pack by adding it to the preference tracking the
   // installed SODA language packs.
@@ -187,12 +167,11 @@ class COMPONENT_EXPORT(SODA_INSTALLER) SodaInstaller {
   // installed. The language should be localized in BCP-47, e.g. "en-US".
   bool IsLanguageInstalled(LanguageCode language_code) const;
 
-  bool IsAnyLanguagePackInstalled() const;
-
   base::ObserverList<Observer> observers_;
   bool soda_binary_installed_ = false;
   bool soda_installer_initialized_ = false;
   bool is_soda_downloading_ = false;
+  bool never_download_soda_for_testing_ = false;
 
   // Tracks all downloaded language packs.
   std::set<LanguageCode> installed_languages_;

@@ -31,9 +31,9 @@
 #include "third_party/blink/renderer/core/dom/static_node_list.h"
 #include "third_party/blink/renderer/core/dom/xml_document.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
-#include "third_party/blink/renderer/core/frame/deprecation.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -59,12 +59,12 @@
 #include "third_party/blink/renderer/core/svg/svg_view_element.h"
 #include "third_party/blink/renderer/core/svg/svg_view_spec.h"
 #include "third_party/blink/renderer/core/svg_names.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 
@@ -322,7 +322,7 @@ bool SVGSVGElement::CheckIntersectionOrEnclosure(
   LayoutObject* layout_object = element.GetLayoutObject();
   DCHECK(!layout_object || layout_object->Style());
   if (!layout_object ||
-      layout_object->StyleRef().PointerEvents() == EPointerEvents::kNone)
+      layout_object->StyleRef().UsedPointerEvents() == EPointerEvents::kNone)
     return false;
 
   if (!IsIntersectionOrEnclosureTarget(layout_object))
@@ -478,12 +478,12 @@ AffineTransform SVGSVGElement::LocalCoordinateSpaceTransform(
 
       // Apply transforms from our ancestor coordinate space, including any
       // non-SVG ancestor transforms.
-      matrix.Multiply(layout_object->LocalToAbsoluteTransform());
+      matrix.PreConcat(layout_object->LocalToAbsoluteTransform());
 
       // At the SVG/HTML boundary (aka LayoutSVGRoot), we need to apply the
       // localToBorderBoxTransform to map an element from SVG viewport
       // coordinates to CSS box coordinates.
-      matrix.Multiply(TransformationMatrix(
+      matrix.PreConcat(TransformationMatrix(
           To<LayoutSVGRoot>(layout_object)->LocalToBorderBoxTransform()));
       // Drop any potential non-affine parts, because we're not able to convey
       // that information further anyway until getScreenCTM returns a DOMMatrix
@@ -492,7 +492,7 @@ AffineTransform SVGSVGElement::LocalCoordinateSpaceTransform(
     }
   }
   if (!HasEmptyViewBox())
-    transform.Multiply(ViewBoxToViewTransform(CurrentViewportSize()));
+    transform.PreConcat(ViewBoxToViewTransform(CurrentViewportSize()));
   return transform;
 }
 
@@ -518,7 +518,6 @@ void SVGSVGElement::AttachLayoutTree(AttachContext& context) {
 
 LayoutObject* SVGSVGElement::CreateLayoutObject(const ComputedStyle&,
                                                 LegacyLayout) {
-  UseCounter::Count(GetDocument(), WebFeature::kLegacyLayoutBySVG);
   if (IsOutermostSVGSVGElement())
     return MakeGarbageCollected<LayoutSVGRoot>(this);
 
@@ -584,13 +583,8 @@ bool SVGSVGElement::SelfHasRelativeLengths() const {
          height_->CurrentValue()->IsRelative();
 }
 
-bool SVGSVGElement::HasValidViewBox() const {
-  return viewBox()->CurrentValue()->IsValid();
-}
-
 bool SVGSVGElement::HasEmptyViewBox() const {
-  const SVGRect* view_box = viewBox()->CurrentValue();
-  return view_box->IsValid() && view_box->Rect().IsEmpty();
+  return HasValidViewBox() && viewBox()->CurrentValue()->Rect().IsEmpty();
 }
 
 bool SVGSVGElement::ShouldSynthesizeViewBox() const {

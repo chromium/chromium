@@ -1,5 +1,5 @@
-#!/usr/bin/env vpython
-# Copyright 2015 The Chromium Authors. All rights reserved.
+#!/usr/bin/env vpython3
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -31,7 +31,7 @@ SectionTestSymbol = collections.namedtuple(
 
 class TestObjectFileProcessor(cyglog_to_orderfile.ObjectFileProcessor):
   def __init__(self, symbol_to_sections):
-    super(TestObjectFileProcessor, self).__init__(None)
+    super().__init__(None)
     self._symbol_to_sections_map = symbol_to_sections
 
 

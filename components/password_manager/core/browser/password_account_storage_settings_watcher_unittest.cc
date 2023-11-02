@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/sync/driver/test_sync_service.h"
+#include "components/sync/test/test_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -24,7 +24,8 @@ TEST(PasswordAccountStorageSettingsWatcherTest, NotifiesOnChanges) {
   TestingPrefServiceSimple pref_service;
   syncer::TestSyncService sync_service;
 
-  PasswordFeatureManagerImpl feature_manager(&pref_service, &sync_service);
+  PasswordFeatureManagerImpl feature_manager(
+      &pref_service, /*local_state=*/nullptr, &sync_service);
 
   pref_service.registry()->RegisterDictionaryPref(
       prefs::kAccountStoragePerAccountSettings);
@@ -55,14 +56,8 @@ TEST(PasswordAccountStorageSettingsWatcherTest, NotifiesOnChanges) {
   EXPECT_CALL(change_callback, Run()).WillOnce([&]() {
     EXPECT_FALSE(feature_manager.IsOptedInForAccountStorage());
     EXPECT_FALSE(feature_manager.IsDefaultPasswordStoreSet());
-    if (base::FeatureList::IsEnabled(
-            features::kPasswordsAccountStorageRevisedOptInFlow)) {
-      EXPECT_EQ(feature_manager.GetDefaultPasswordStore(),
-                PasswordForm::Store::kProfileStore);
-    } else {
-      EXPECT_EQ(feature_manager.GetDefaultPasswordStore(),
-                PasswordForm::Store::kAccountStore);
-    }
+    EXPECT_EQ(feature_manager.GetDefaultPasswordStore(),
+              PasswordForm::Store::kProfileStore);
   });
   sync_service.FireStateChanged();
 

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include "ash/components/phonehub/fake_user_action_recorder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 namespace {
 
@@ -154,4 +154,4 @@ TEST_F(DoNotDisturbControllerImplTest, RequestNewDoNotDisturbState) {
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

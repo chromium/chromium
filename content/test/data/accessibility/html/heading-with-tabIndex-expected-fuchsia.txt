@@ -1,0 +1,15 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN hidden
+++++++UNKNOWN label='Heading 2, no tabIndex'
+++++++++STATIC_TEXT label='Heading 2, no tabIndex'
+++++++++++UNKNOWN label='Heading 2, no tabIndex'
+++++++UNKNOWN focusable label='Heading 1, tabIndex of negative 1'
+++++++++STATIC_TEXT label='Heading 1, tabIndex of negative 1'
+++++++++++UNKNOWN label='Heading 1, tabIndex of negative 1'
+++++++UNKNOWN focusable label='Heading 3, tabIndex of 0'
+++++++++STATIC_TEXT label='Heading 3, tabIndex of 0'
+++++++++++UNKNOWN label='Heading 3, tabIndex of 0'
+++++++UNKNOWN focusable label='Heading 4, tabIndex of 1'
+++++++++STATIC_TEXT label='Heading 4, tabIndex of 1'
+++++++++++UNKNOWN label='Heading 4, tabIndex of 1'

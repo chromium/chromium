@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,9 +17,10 @@
 #include <vector>
 
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
-#include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_flags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkFont.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -41,6 +42,10 @@
 class SkDrawLooper;
 struct SkPoint;
 class SkTypeface;
+
+namespace cc {
+class PaintCanvas;
+}
 
 namespace gfx {
 namespace test {
@@ -80,8 +85,8 @@ class GFX_EXPORT SkiaTextRenderer {
  private:
   friend class test::RenderTextTestApi;
 
-  Canvas* canvas_;
-  cc::PaintCanvas* canvas_skia_;
+  raw_ptr<Canvas> canvas_;
+  raw_ptr<cc::PaintCanvas> canvas_skia_;
   cc::PaintFlags flags_;
   SkFont font_;
 };
@@ -126,11 +131,11 @@ class StyleIterator {
  private:
   // Pointers to the breaklists to iterate through. These pointers can't be
   // nullptr and the breaklists must outlive this object.
-  const BreakList<SkColor>* colors_;
-  const BreakList<BaselineStyle>* baselines_;
-  const BreakList<int>* font_size_overrides_;
-  const BreakList<Font::Weight>* weights_;
-  const StyleArray* styles_;
+  raw_ptr<const BreakList<SkColor>> colors_;
+  raw_ptr<const BreakList<BaselineStyle>> baselines_;
+  raw_ptr<const BreakList<int>> font_size_overrides_;
+  raw_ptr<const BreakList<Font::Weight>> weights_;
+  raw_ptr<const StyleArray> styles_;
 
   BreakList<SkColor>::const_iterator color_;
   BreakList<BaselineStyle>::const_iterator baseline_;
@@ -210,7 +215,7 @@ void ApplyRenderParams(const FontRenderParams& params,
 // for rendering and translation between logical and visual data.
 class GFX_EXPORT RenderText {
  public:
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   // On Mac, while selecting text if the cursor is outside the vertical text
   // bounds, drag to the end of the text.
   static constexpr bool kDragToEndIfOutsideVerticalBounds = true;
@@ -292,10 +297,10 @@ class GFX_EXPORT RenderText {
 
   // Makes a char in obscured text at |index| to be revealed. |index| should be
   // a UTF16 text index. If there is a previous revealed index, the previous one
-  // is cleared and only the last set index will be revealed. If |index| is -1
-  // or out of range, no char will be revealed. The revealed index is also
-  // cleared when SetText or SetObscured is called.
-  void SetObscuredRevealIndex(int index);
+  // is cleared and only the last set index will be revealed. If |index| is
+  // nullopt or out of range, no char will be revealed. The revealed index is
+  // also cleared when SetText or SetObscured is called.
+  void SetObscuredRevealIndex(absl::optional<size_t> index);
 
   // For obscured (password) fields, the extra spacing between glyphs.
   int obscured_glyph_spacing() const { return obscured_glyph_spacing_; }
@@ -763,9 +768,6 @@ class GFX_EXPORT RenderText {
   // Update the display text.
   void UpdateDisplayText(float text_width);
 
-  // Returns display text positions that are suitable for breaking lines.
-  const BreakList<size_t>& GetLineBreaks();
-
   // Convert points from the text space to the view space. Handles the display
   // area, display offset, application LTR/RTL mode and multiline. |line| is the
   // index of the line in which |point| is found, and is required to be passed
@@ -966,7 +968,7 @@ class GFX_EXPORT RenderText {
   // A flag to obscure actual text with asterisks for password fields.
   bool obscured_ = false;
   // The index at which the char should be revealed in the obscured text.
-  int obscured_reveal_index_ = -1;
+  absl::optional<size_t> obscured_reveal_index_;
 
   // The maximum length of text to display, 0 forgoes a hard limit.
   size_t truncate_length_ = 0;
@@ -1032,9 +1034,6 @@ class GFX_EXPORT RenderText {
 
   // Text shadows to be drawn.
   ShadowValues shadows_;
-
-  // A list of valid display text line break positions.
-  BreakList<size_t> line_breaks_;
 
   // Text shaping computed by EnsureLayout. This should be invalidated upon
   // OnLayoutTextAttributeChanged and OnDisplayTextAttributeChanged calls.

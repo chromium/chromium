@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+FAIL Serialization of conditionText assert_equals: expected "\\!-name (inline-size > 200px)" but got "(inline-size > 200px)"
+PASS Serialization of inner @container rule
+PASS Serialization of nested @container rule
+PASS Serialization of boolean condition syntax
+PASS Serialization of colon condition syntax
+PASS Serialization of range condition syntax
+PASS Serialization of calc()
+Harness: the test ran to completion.
+

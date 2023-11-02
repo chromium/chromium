@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,15 +10,12 @@
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/task/post_task.h"
-#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/service_worker/service_worker_cache_writer.h"
 #include "content/browser/service_worker/service_worker_consts.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_loader_helpers.h"
 #include "content/browser/service_worker/service_worker_version.h"
-#include "content/common/service_worker/service_worker_utils.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
@@ -165,7 +162,9 @@ void ServiceWorkerUpdatedScriptLoader::OnReceiveEarlyHints(
 }
 
 void ServiceWorkerUpdatedScriptLoader::OnReceiveResponse(
-    network::mojom::URLResponseHeadPtr response_head) {
+    network::mojom::URLResponseHeadPtr response_head,
+    mojo::ScopedDataPipeConsumerHandle body,
+    absl::optional<mojo_base::BigBuffer> cached_metadata) {
   NOTREACHED();
 }
 
@@ -182,19 +181,9 @@ void ServiceWorkerUpdatedScriptLoader::OnUploadProgress(
   NOTREACHED();
 }
 
-void ServiceWorkerUpdatedScriptLoader::OnReceiveCachedMetadata(
-    mojo_base::BigBuffer data) {
-  client_->OnReceiveCachedMetadata(std::move(data));
-}
-
 void ServiceWorkerUpdatedScriptLoader::OnTransferSizeUpdated(
     int32_t transfer_size_diff) {
   client_->OnTransferSizeUpdated(transfer_size_diff);
-}
-
-void ServiceWorkerUpdatedScriptLoader::OnStartLoadingResponseBody(
-    mojo::ScopedDataPipeConsumerHandle consumer) {
-  NOTREACHED();
 }
 
 void ServiceWorkerUpdatedScriptLoader::OnComplete(
@@ -245,8 +234,6 @@ int ServiceWorkerUpdatedScriptLoader::WillWriteResponseHead(
     client_response->ssl_info.reset();
   }
 
-  client_->OnReceiveResponse(std::move(client_response));
-
   mojo::ScopedDataPipeConsumerHandle client_consumer;
   if (mojo::CreateDataPipe(nullptr, client_producer_, client_consumer) !=
       MOJO_RESULT_OK) {
@@ -256,7 +243,9 @@ int ServiceWorkerUpdatedScriptLoader::WillWriteResponseHead(
   }
 
   // Pass the consumer handle to the client.
-  client_->OnStartLoadingResponseBody(std::move(client_consumer));
+  client_->OnReceiveResponse(std::move(client_response),
+                             std::move(client_consumer), absl::nullopt);
+
   client_producer_watcher_.Watch(
       client_producer_.get(), MOJO_HANDLE_SIGNAL_WRITABLE,
       base::BindRepeating(&ServiceWorkerUpdatedScriptLoader::OnClientWritable,

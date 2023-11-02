@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -74,7 +74,9 @@ NGInlineItem::NGInlineItem(NGInlineItemType type,
                            LayoutObject* layout_object)
     : start_offset_(start),
       end_offset_(end),
-      layout_object_(layout_object),
+      // Use atomic construction to allow for concurrently marking NGInlineItem.
+      layout_object_(layout_object,
+                     Member<LayoutObject>::AtomicInitializerTag{}),
       type_(type),
       text_type_(static_cast<unsigned>(NGTextType::kNormal)),
       style_variant_(static_cast<unsigned>(NGStyleVariant::kStandard)),
@@ -96,7 +98,9 @@ NGInlineItem::NGInlineItem(const NGInlineItem& other,
     : start_offset_(start),
       end_offset_(end),
       shape_result_(shape_result),
-      layout_object_(other.layout_object_),
+      // Use atomic construction to allow for concurrently marking NGInlineItem.
+      layout_object_(other.layout_object_,
+                     Member<LayoutObject>::AtomicInitializerTag{}),
       type_(other.type_),
       text_type_(other.text_type_),
       style_variant_(other.style_variant_),

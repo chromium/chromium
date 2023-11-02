@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -58,8 +58,6 @@ component("gl") {
   sources = [
     "buffer_format_utils.cc",
     "buffer_format_utils.h",
-    "ca_renderer_layer_params.cc",
-    "ca_renderer_layer_params.h",
     "dc_renderer_layer_params.cc",
     "dc_renderer_layer_params.h",
     "dual_gpu_state.cc",
@@ -73,6 +71,10 @@ component("gl") {
     "gl_context.h",
     "gl_context_stub.cc",
     "gl_context_stub.h",
+    "gl_display.cc",
+    "gl_display.h",
+    "gl_display_manager.cc",
+    "gl_display_manager.h",
     "gl_enums.cc",
     "gl_enums.h",
     "gl_enums_implementation_autogen.h",
@@ -137,6 +139,8 @@ component("gl") {
     "scoped_binders.h",
     "scoped_make_current.cc",
     "scoped_make_current.h",
+    "scoped_restore_texture.cc",
+    "scoped_restore_texture.h",
     "shader_tracking.cc",
     "shader_tracking.h",
     "sync_control_vsync_provider.cc",
@@ -188,7 +192,10 @@ component("gl") {
 
   data_deps = []
   if (enable_swiftshader) {
-    data_deps += [ "//third_party/swiftshader" ]
+    data_deps += [
+      "//third_party/swiftshader/src/Vulkan:icd_file",
+      "//third_party/swiftshader/src/Vulkan:swiftshader_libvulkan",
+    ]
   }
   if (use_egl) {
     sources += [
@@ -210,6 +217,8 @@ component("gl") {
       "gl_image_egl.h",
       "gl_surface_egl.cc",
       "gl_surface_egl.h",
+      "scoped_egl_image.cc",
+      "scoped_egl_image.h",
       "shared_gl_fence_egl.cc",
       "shared_gl_fence_egl.h",
     ]
@@ -218,6 +227,8 @@ component("gl") {
       sources += [
         "gl_angle_util_vulkan.cc",
         "gl_angle_util_vulkan.h",
+        "gl_image_egl_angle_vulkan.cc",
+        "gl_image_egl_angle_vulkan.h",
       ]
     }
 
@@ -250,12 +261,6 @@ component("gl") {
 
       deps += [ "//third_party/libsync" ]
     }
-  }
-  if (is_mac || use_egl) {
-    sources += [
-      "yuv_to_rgb_converter.cc",
-      "yuv_to_rgb_converter.h",
-    ]
   }
 
   if (use_ozone) {
@@ -329,11 +334,14 @@ component("gl") {
       "child_window_win.h",
       "dc_layer_tree.cc",
       "dc_layer_tree.h",
+      "dcomp_surface_proxy.h",
       "dcomp_surface_registry.cc",
       "dcomp_surface_registry.h",
       "delegated_ink_point_renderer_gpu.h",
       "direct_composition_child_surface_win.cc",
       "direct_composition_child_surface_win.h",
+      "direct_composition_support.cc",
+      "direct_composition_support.h",
       "direct_composition_surface_win.cc",
       "direct_composition_surface_win.h",
       "gl_angle_util_win.cc",
@@ -342,8 +350,6 @@ component("gl") {
       "gl_fence_win.h",
       "gl_image_d3d.cc",
       "gl_image_d3d.h",
-      "gl_image_dcomp_surface.cc",
-      "gl_image_dcomp_surface.h",
       "gl_image_dxgi.cc",
       "gl_image_dxgi.h",
       "hdr_metadata_helper_win.cc",
@@ -365,13 +371,17 @@ component("gl") {
       "/DELAYLOAD:dwmapi.dll",
       "/DELAYLOAD:dxgi.dll",
     ]
-    deps += [ "//media/base/win:media_foundation_util" ]
+    deps += [
+      "//media/base/win:media_foundation_util",
+      "//ui/gfx/mojom:dxgi_info",
+    ]
 
     assert(use_egl)
     data_deps += [
       "//third_party/angle:libEGL",
       "//third_party/angle:libGLESv2",
-      "//third_party/swiftshader",
+      "//third_party/swiftshader/src/Vulkan:icd_file",
+      "//third_party/swiftshader/src/Vulkan:swiftshader_libvulkan",
     ]
     if (angle_shared_libvulkan && !is_chromeos) {
       data_deps += [ "//third_party/vulkan-deps/vulkan-loader/src:libvulkan" ]
@@ -379,8 +389,12 @@ component("gl") {
   }
   if (is_mac) {
     sources += [
+      "ca_renderer_layer_params.cc",
+      "ca_renderer_layer_params.h",
       "dual_gpu_state_mac.cc",
       "dual_gpu_state_mac.h",
+      "egl_surface_io_surface.cc",
+      "egl_surface_io_surface.h",
       "gl_context_cgl.cc",
       "gl_context_cgl.h",
       "gl_fence_apple.cc",
@@ -399,18 +413,16 @@ component("gl") {
     ]
 
     if (use_egl) {
-      sources += [
-        "gl_image_io_surface_egl.h",
-        "gl_image_io_surface_egl.mm",
-      ]
-
       data_deps += [
         "//third_party/angle:libEGL",
         "//third_party/angle:libGLESv2",
         "//third_party/mesa_headers",
       ]
       if (enable_swiftshader) {
-        data_deps += [ "//third_party/swiftshader" ]
+        data_deps += [
+          "//third_party/swiftshader/src/Vulkan:icd_file",
+          "//third_party/swiftshader/src/Vulkan:swiftshader_libvulkan",
+        ]
       }
     }
   }
@@ -424,9 +436,8 @@ component("gl") {
 
     deps += [ ":gl_jni_headers" ]
   }
-
-  if (is_chromecast) {
-    defines += [ "CHROMECAST_BUILD" ]
+  if (is_linux) {
+    deps += [ "//third_party/angle:angle_gpu_info_util" ]
   }
 }
 
@@ -449,17 +460,6 @@ if (is_mac && use_egl) {
   }
 
   if (enable_swiftshader) {
-    copy("swiftshader_egl_library_copy") {
-      sources = [
-        "$root_out_dir/libswiftshader_libEGL.dylib",
-        "$root_out_dir/libswiftshader_libGLESv2.dylib",
-      ]
-      outputs = [ "$root_out_dir/egl_intermediates/{{source_file_part}}" ]
-      deps = [
-        "//third_party/swiftshader/src/OpenGL/libEGL:swiftshader_libEGL",
-        "//third_party/swiftshader/src/OpenGL/libGLESv2:swiftshader_libGLESv2",
-      ]
-    }
     copy("swiftshader_vk_library_copy") {
       sources = [
         "$root_out_dir/libvk_swiftshader.dylib",
@@ -584,6 +584,7 @@ test("gl_unittests") {
   if (use_egl) {
     sources += [
       "egl_api_unittest.cc",
+      "gl_display_manager_unittest.cc",
       "test/egl_initialization_displays_unittest.cc",
     ]
   }
@@ -635,7 +636,10 @@ test("gl_unittests") {
     "//ui/platform_window:platform_impls",
   ]
 
-  data_deps = [ "//third_party/mesa_headers" ]
+  data_deps = [
+    "//testing/buildbot/filters:gl_unittests_filters",
+    "//third_party/mesa_headers",
+  ]
 
   # TODO(https://crbug.com/789065): this must be moved to Ozone.
   if (ozone_platform_x11) {

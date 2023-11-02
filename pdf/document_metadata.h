@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -63,10 +63,6 @@ struct DocumentMetadata {
   // Whether the document contains file attachments (see section 12.5.6.15 "File
   // Attachment Annotations" of the ISO 32000-1:2008 spec).
   bool has_attachments = false;
-
-  // Whether the document is tagged (see section 14.8 "Tagged PDF" of the ISO
-  // 32000-1:2008 spec).
-  bool tagged = false;
 
   // The type of form contained in the document.
   FormType form_type = FormType::kNone;

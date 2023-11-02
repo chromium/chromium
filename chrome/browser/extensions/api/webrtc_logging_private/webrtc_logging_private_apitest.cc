@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/json/json_writer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_command_line.h"
@@ -87,17 +88,16 @@ std::string ParamsToString(const base::ListValue& parameters) {
 }
 
 void InitializeTestMetaData(base::ListValue* parameters) {
-  std::unique_ptr<base::DictionaryValue> meta_data_entry(
-      new base::DictionaryValue());
-  meta_data_entry->SetString("key", kTestLoggingSessionIdKey);
-  meta_data_entry->SetString("value", kTestLoggingSessionIdValue);
-  std::unique_ptr<base::ListValue> meta_data(new base::ListValue());
-  meta_data->Append(std::move(meta_data_entry));
-  meta_data_entry = std::make_unique<base::DictionaryValue>();
-  meta_data_entry->SetString("key", "url");
-  meta_data_entry->SetString("value", kTestLoggingUrl);
-  meta_data->Append(std::move(meta_data_entry));
-  parameters->Append(std::move(meta_data));
+  base::Value::Dict meta_data_entry;
+  meta_data_entry.Set("key", kTestLoggingSessionIdKey);
+  meta_data_entry.Set("value", kTestLoggingSessionIdValue);
+  base::Value::List meta_data;
+  meta_data.Append(meta_data_entry.Clone());
+  meta_data_entry.clear();
+  meta_data_entry.Set("key", "url");
+  meta_data_entry.Set("value", kTestLoggingUrl);
+  meta_data.Append(std::move(meta_data_entry));
+  parameters->Append(base::Value(std::move(meta_data)));
 }
 
 class WebrtcLoggingPrivateApiTest : public extensions::ExtensionApiTest {
@@ -147,11 +147,10 @@ class WebrtcLoggingPrivateApiTest : public extensions::ExtensionApiTest {
   }
 
   void AppendTabIdAndUrl(base::ListValue* parameters) {
-    std::unique_ptr<base::DictionaryValue> request_info(
-        new base::DictionaryValue());
-    request_info->SetInteger(
-        "tabId", extensions::ExtensionTabUtil::GetTabId(web_contents()));
-    parameters->Append(std::move(request_info));
+    base::Value::Dict request_info;
+    request_info.Set("tabId",
+                     extensions::ExtensionTabUtil::GetTabId(web_contents()));
+    parameters->Append(base::Value(std::move(request_info)));
     parameters->Append(web_contents()
                            ->GetLastCommittedURL()
                            .DeprecatedGetOriginAsURL()
@@ -402,7 +401,7 @@ class WebrtcLoggingPrivateApiTest : public extensions::ExtensionApiTest {
     auto* manager = WebRtcEventLogManager::GetInstance();
 
     content::RenderFrameHost* render_frame_host =
-        web_contents()->GetMainFrame();
+        web_contents()->GetPrimaryMainFrame();
     const content::GlobalRenderFrameHostId frame_id =
         render_frame_host->GetGlobalId();
     const base::ProcessId pid =
@@ -672,7 +671,7 @@ IN_PROC_BROWSER_TEST_F(WebrtcLoggingPrivateApiTest,
   ASSERT_TRUE(StartAudioDebugRecordings(1));
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 
 // Fixture for various tests over StartEventLogging. Intended to be sub-classed
 // to test different scenarios.
@@ -688,8 +687,8 @@ class WebrtcLoggingPrivateApiStartEventLoggingTestBase
   }
 
   void SetUpFeatures() {
-    std::vector<base::Feature> enabled;
-    std::vector<base::Feature> disabled;
+    std::vector<base::test::FeatureRef> enabled;
+    std::vector<base::test::FeatureRef> disabled;
 
     if (WebRtcEventLogCollectionFeature()) {
       enabled.push_back(features::kWebRtcRemoteEventLog);
@@ -995,7 +994,7 @@ class WebrtcLoggingPrivateApiStartEventLoggingTestInIncognitoMode
   bool WebRtcEventLogCollectionPolicy() const override { return true; }
 
  private:
-  Browser* browser_{nullptr};  // Does not own the object.
+  raw_ptr<Browser> browser_{nullptr};  // Does not own the object.
 };
 
 IN_PROC_BROWSER_TEST_F(
@@ -1010,4 +1009,4 @@ IN_PROC_BROWSER_TEST_F(
                     error_message);
 }
 
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)

@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef EXTENSIONS_BROWSER_API_DECLARATIVE_NET_REQUEST_WEB_CONTENTS_HELPER_H_
 #define EXTENSIONS_BROWSER_API_DECLARATIVE_NET_REQUEST_WEB_CONTENTS_HELPER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
 
 namespace extensions {
@@ -27,7 +28,7 @@ class WebContentsHelper : public content::WebContentsObserver {
 
  private:
   // Non-owned pointer.
-  RulesetManager* const ruleset_manager_ = nullptr;
+  const raw_ptr<RulesetManager> ruleset_manager_ = nullptr;
 };
 
 }  // namespace declarative_net_request

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,8 @@
 #include <string>
 #include <vector>
 
-#include "ash/public/mojom/cros_display_config.mojom-forward.h"
 #include "chrome/browser/ash/policy/display/display_settings_handler.h"
+#include "chromeos/crosapi/mojom/cros_display_config.mojom-forward.h"
 #include "ui/display/display.h"
 
 namespace policy {
@@ -40,8 +40,9 @@ class DisplayRotationDefaultHandler : public DisplaySettingsPolicyHandler {
   const char* SettingName() override;
   void OnSettingUpdate() override;
   void ApplyChanges(
-      ash::mojom::CrosDisplayConfigController* cros_display_config,
-      const std::vector<ash::mojom::DisplayUnitInfoPtr>& info_list) override;
+      crosapi::mojom::CrosDisplayConfigController* cros_display_config,
+      const std::vector<crosapi::mojom::DisplayUnitInfoPtr>& info_list)
+      override;
 
  private:
   bool policy_enabled_ = false;

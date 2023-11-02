@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 #include "ash/services/ime/public/cpp/rulebased/rules_data.h"
 #include "base/strings/utf_string_conversions.h"
 
-namespace chromeos {
+namespace ash {
 namespace ime {
 namespace rulebased {
 
@@ -148,4 +148,4 @@ ProcessKeyResult Engine::ProcessBackspace() {
 
 }  // namespace rulebased
 }  // namespace ime
-}  // namespace chromeos
+}  // namespace ash

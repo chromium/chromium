@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,6 @@
 #include "base/location.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "base/time/time.h"
 #include "components/apdu/apdu_command.h"
 #include "components/apdu/apdu_response.h"
 #include "components/cbor/reader.h"
@@ -177,8 +176,8 @@ absl::optional<std::vector<uint8_t>> VirtualU2fDevice::DoRegister(
   // The spec says that the other bits of P1 should be zero. However, Chrome
   // sends Test User Presence (0x03) so we ignore those bits.
   bool individual_attestation_requested = p1 & kP1IndividualAttestation;
-  const auto attestation_cert =
-      GenerateAttestationCertificate(individual_attestation_requested);
+  const auto attestation_cert = GenerateAttestationCertificate(
+      individual_attestation_requested, /*include_transports=*/true);
   if (!attestation_cert)
     return ErrorStatus(apdu::ApduResponse::Status::SW_INS_NOT_SUPPORTED);
 

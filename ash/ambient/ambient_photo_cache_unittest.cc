@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,7 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -106,9 +107,12 @@ TEST_F(AmbientPhotoCacheTest, ReadsBackWrittenFiles) {
     // Read the files back using photo cache.
     ambient::PhotoCacheEntry cache_read;
     photo_cache()->ReadPhotoCache(
-        cache_index, &cache_read,
-        base::BindOnce([](base::OnceClosure done) { std::move(done).Run(); },
-                       loop.QuitClosure()));
+        cache_index,
+        base::BindLambdaForTesting(
+            [&cache_read, &loop](ambient::PhotoCacheEntry cache_entry_in) {
+              cache_read = std::move(cache_entry_in);
+              loop.Quit();
+            }));
     loop.Run();
 
     EXPECT_EQ(cache_read.primary_photo().image(), "image");
@@ -127,9 +131,12 @@ TEST_F(AmbientPhotoCacheTest, SetsDataToEmptyStringWhenFilesMissing) {
     base::RunLoop loop;
     ambient::PhotoCacheEntry cache_read;
     photo_cache()->ReadPhotoCache(
-        /*cache_index=*/1, &cache_read,
-        base::BindOnce([](base::OnceClosure done) { std::move(done).Run(); },
-                       loop.QuitClosure()));
+        /*cache_index=*/1,
+        base::BindLambdaForTesting(
+            [&cache_read, &loop](ambient::PhotoCacheEntry cache_entry_in) {
+              cache_read = std::move(cache_entry_in);
+              loop.Quit();
+            }));
     loop.Run();
 
     EXPECT_TRUE(cache_read.primary_photo().image().empty());
@@ -141,30 +148,8 @@ TEST_F(AmbientPhotoCacheTest, SetsDataToEmptyStringWhenFilesMissing) {
   }
 }
 
-TEST_F(AmbientPhotoCacheTest, DisableNewUrlDisablesTokenFetch) {
+TEST_F(AmbientPhotoCacheTest, AttachTokenToDownloadRequest) {
   std::string fake_url = "https://faketesturl/";
-
-  // not token request if new url feature is not enabled.
-  base::test::ScopedFeatureList feature;
-  feature.InitAndDisableFeature(features::kAmbientModeNewUrl);
-
-  EXPECT_FALSE(IsAccessTokenRequestPending());
-  photo_cache()->DownloadPhoto(fake_url, base::BindOnce([](std::string&&) {}));
-
-  RunUntilIdle();
-  EXPECT_FALSE(IsAccessTokenRequestPending());
-
-  photo_cache()->DownloadPhotoToFile(fake_url, /*cache_index=*/1,
-                                     base::BindOnce([](bool) {}));
-
-  RunUntilIdle();
-  EXPECT_FALSE(IsAccessTokenRequestPending());
-}
-
-TEST_F(AmbientPhotoCacheTest, EnableNewUrlAttachesTokenToDownloadRequest) {
-  std::string fake_url = "https://faketesturl/";
-  base::test::ScopedFeatureList feature;
-  feature.InitAndEnableFeature(features::kAmbientModeNewUrl);
 
   photo_cache()->DownloadPhoto(fake_url, base::BindOnce([](std::string&&) {}));
   RunUntilIdle();
@@ -182,11 +167,8 @@ TEST_F(AmbientPhotoCacheTest, EnableNewUrlAttachesTokenToDownloadRequest) {
             std::string("Bearer ") + TestAmbientClient::kTestAccessToken);
 }
 
-TEST_F(AmbientPhotoCacheTest,
-       EnableNewUrlAttachesTokenToDownloadToFileRequest) {
+TEST_F(AmbientPhotoCacheTest, AttachTokenToDownloadToFileRequest) {
   std::string fake_url = "https://faketesturl/";
-  base::test::ScopedFeatureList feature;
-  feature.InitAndEnableFeature(features::kAmbientModeNewUrl);
 
   photo_cache()->DownloadPhotoToFile(fake_url, /*cache_index=*/1,
                                      base::BindOnce([](bool) {}));

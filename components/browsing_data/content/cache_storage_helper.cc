@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,10 +32,10 @@ void GetAllStorageKeysInfoForCacheStorageCallback(
 
   std::list<content::StorageUsageInfo> result;
   for (const storage::mojom::StorageUsageInfoPtr& usage : usage_info) {
-    if (!HasWebScheme(usage->origin.GetURL()))
+    if (!HasWebScheme(usage->storage_key.origin().GetURL()))
       continue;  // Non-websafe state is not considered browsing data.
-    result.emplace_back(content::StorageUsageInfo(
-        usage->origin, usage->total_size_bytes, usage->last_modified));
+    result.emplace_back(usage->storage_key, usage->total_size_bytes,
+                        usage->last_modified);
   }
 
   std::move(callback).Run(result);
@@ -101,7 +101,7 @@ void CannedCacheStorageHelper::StartFetching(FetchCallback callback) {
 
   std::list<StorageUsageInfo> result;
   for (const auto& origin : pending_origins_)
-    result.emplace_back(origin, 0, base::Time());
+    result.emplace_back(blink::StorageKey(origin), 0, base::Time());
 
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), result));

@@ -18,8 +18,8 @@
           label="$i18n{appNotificationsTitle}"
           on-click="onClickAppNotifications_"
           role-description="$i18n{subpageArrowRoleDescription}"
-          sub-label=
-              "[[getAppListCountDescription_(appsWithNotifications_.*)]]">
+          sub-label= "[[getAppListCountDescription_(
+              appsWithNotifications_.*, isDndEnabled_)]]">
       </cr-link-row>
     </template>
     <template is="dom-if" if="[[showAndroidApps]]">
@@ -51,7 +51,7 @@
                 disabled="[[isEnforced_(prefs.arc.enabled)]]"
                 on-click="onEnableAndroidAppsTap_"
                 aria-label="$i18n{androidAppsPageTitle}"
-                aria-describedby="secondaryText"
+                aria-roledescription="$i18n{androidAppsEnableButtonRole}"
                 deep-link-focus-id$="[[Setting.kTurnOnPlayStore]]">
               $i18n{androidAppsEnable}
             </cr-button>
@@ -103,7 +103,10 @@
     <settings-subpage
         page-title="[[app_.title]]"
         title-icon="[[iconUrlFromId_(app_)]]">
-      <app-management-uninstall-button slot="subpage-title-extra">
+      <app-management-uninstall-button slot="subpage-title-extra"
+          app="[[app_]]"
+          uninstall-label="$i18n{appManagementUninstallLabel}"
+          policy-label="$i18n{appManagementAppInstalledByPolicyLabel}">
       </app-management-uninstall-button>
       <app-management-app-detail-view>
       </app-management-app-detail-view>
@@ -115,8 +118,19 @@
     <template is="dom-if" route-path="/androidAppsDetails">
       <settings-subpage page-title="$i18n{androidAppsPageLabel}">
         <settings-android-apps-subpage
-            android-apps-info="[[androidAppsInfo]]" prefs="{{prefs}}">
+          android-apps-info="[[androidAppsInfo]]"
+          prefs="{{prefs}}"
+          show-arcvm-manage-usb="[[showArcvmManageUsb]]">
         </settings-android-apps-subpage>
+      </settings-subpage>
+    </template>
+  </template>
+
+  <template is="dom-if" if="[[showArcvmManageUsb]]" restamp>
+    <template is="dom-if" route-path="/androidAppsDetails/sharedUsbDevices">
+      <settings-subpage page-title="$i18n{guestOsSharedUsbDevicesLabel}">
+         <settings-guest-os-shared-usb-devices guest-os-type="arcvm">
+         </settings-guest-os-shared-usb-devices>
       </settings-subpage>
     </template>
   </template>

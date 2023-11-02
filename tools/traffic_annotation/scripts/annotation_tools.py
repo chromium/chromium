@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -83,35 +83,6 @@ class NetworkTrafficAnnotationTools():
     return all(os.path.exists(
         os.path.join(path, item)) for item in ('gen', 'build.ninja'))
 
-  def GetCurrentPlatform(self):
-    """Return the target platform of |self.build_path| based on heuristics."""
-    # Use host platform as the source of truth (in most cases).
-    current_platform = {
-        'linux': 'linux',
-        'linux2': 'linux',
-        'win32': 'windows',
-    }[sys.platform]
-
-    if current_platform == 'linux' and self.build_path is not None:
-      # It could be an Android build directory, being compiled from a Linux
-      # host. Look for a target_os='android' line in args.gn.
-      try:
-        with open(os.path.join(self.build_path, 'args.gn')) as f:
-          gn_args = f.read()
-        pattern = re.compile(r'^\s*target_os\s*=\s*"android"\s*$', re.MULTILINE)
-        if pattern.search(gn_args):
-          current_platform = 'android'
-      except (ValueError, OSError) as e:
-        print(e)
-        # Maybe the file's absent, or it can't be decoded as UTF-8, or
-        # something. It's probably not Android in that case.
-        pass
-
-    if current_platform not in SUPPORTED_PLATFORMS:
-      raise ValueError('Unsupported platform {}'.format(current_platform))
-
-    return current_platform
-
   def GetCompDBFiles(self, generate_compdb):
     """Gets the list of files.
 
@@ -156,13 +127,15 @@ class NetworkTrafficAnnotationTools():
 
     # Change directory to src (two levels upper than build path).
     os.chdir(os.path.join(self.build_path, "..", ".."))
-    command = subprocess.Popen(args, stdout=subprocess.PIPE,
-                               stderr=subprocess.PIPE)
+    command = subprocess.Popen(args,
+                               stdout=subprocess.PIPE,
+                               stderr=subprocess.PIPE,
+                               encoding="utf-8")
     stdout_text, stderr_text = command.communicate()
 
     if stderr_text:
       print("Could not run '%s' to get the list of changed files "
-            "beacuse: %s" % (" ".join(args), stderr_text))
+            "because: %s" % (" ".join(args), stderr_text))
       os.chdir(original_path)
       return None
 
@@ -199,8 +172,10 @@ class NetworkTrafficAnnotationTools():
       command_line = [self.auditor_path, "--build-path=" + self.build_path
                       ] + args
 
-    command = subprocess.Popen(
-        command_line, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    command = subprocess.Popen(command_line,
+                               stdout=subprocess.PIPE,
+                               stderr=subprocess.PIPE,
+                               encoding="utf-8")
     stdout_text, stderr_text = command.communicate()
     return_code = command.returncode
 

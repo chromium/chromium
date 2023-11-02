@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,11 @@ namespace network {
 // https://fetch.spec.whatwg.org/#concept-request-destination.
 COMPONENT_EXPORT(NETWORK_CPP)
 const char* RequestDestinationToString(network::mojom::RequestDestination dest);
+
+// Returns a string representation of the `destination` for histogram recording.
+COMPONENT_EXPORT(NETWORK_CPP)
+const char* RequestDestinationToStringForHistogram(
+    network::mojom::RequestDestination dest);
 
 // Returns whether the destination is a frame embedded in the document.
 COMPONENT_EXPORT(NETWORK_CPP)

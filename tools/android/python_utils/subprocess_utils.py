@@ -1,19 +1,20 @@
 # Lint as: python3
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Helper functions for running commands as subprocesses."""
 
 import logging
+import pathlib
 import subprocess
 
-from typing import Optional, Sequence
+from typing import Optional, Sequence, Union
 
 
 def run_command(
         command: Sequence[str],
         *,  # Ensures that the rest of the args are passed explicitly.
-        cwd: Optional[str] = None,
+        cwd: Optional[Union[str, pathlib.Path]] = None,
         cmd_input: Optional[str] = None,
         exitcode_only: bool = False) -> str:
     """Runs a command and returns the output as a string.

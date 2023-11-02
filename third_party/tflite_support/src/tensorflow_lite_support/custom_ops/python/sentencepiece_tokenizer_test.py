@@ -13,7 +13,6 @@
 # limitations under the License.
 # ==============================================================================
 
-# Lint as: python3
 """Tests for sentencepiece_tokenizer."""
 
 import os
@@ -33,7 +32,7 @@ if hasattr(sys, "setdlopenflags") and hasattr(sys, "getdlopenflags"):
 from tensorflow.lite.python import interpreter as interpreter_wrapper  # pylint: disable=g-direct-tensorflow-import
 from tensorflow.python.platform import resource_loader
 from tensorflow_lite_support.custom_ops.python import sentencepiece_tokenizer
-from tensorflow_lite_support.custom_ops.kernel.sentencepiece import pywrap_tflite_registerer
+from tensorflow_lite_support.custom_ops.kernel.sentencepiece.py import pywrap_tflite_registerer
 
 FLAGS = flags.FLAGS
 

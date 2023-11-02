@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "extensions/browser/api/declarative_net_request/extension_url_pattern_index_matcher.h"
 #include "extensions/browser/api/declarative_net_request/flat/extension_ruleset_generated.h"
 #include "extensions/browser/api/declarative_net_request/regex_rules_matcher.h"
@@ -77,7 +78,7 @@ class RulesetMatcher {
  private:
   const std::string ruleset_data_;
 
-  const flat::ExtensionIndexedRuleset* const root_;
+  const raw_ptr<const flat::ExtensionIndexedRuleset> root_;
 
   const RulesetID id_;
 

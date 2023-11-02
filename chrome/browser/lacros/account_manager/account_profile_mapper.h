@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,14 +10,16 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/containers/flat_map.h"
-#include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/lacros/account_manager/account_cache.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "components/account_manager_core/account_manager_facade.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
@@ -26,9 +28,13 @@ struct Account;
 class AccountKey;
 }  // namespace account_manager
 
+namespace base {
+class FilePath;
+}
+
 class AddAccountHelper;
-class ProfileAttributesStorage;
 class ProfileAttributesEntry;
+class PrefService;
 
 // `AccountProfileMapper` is the main class maintaining the mapping between
 // accounts and profiles. There is only one global `AccountProfileMapper` (it is
@@ -50,7 +56,8 @@ class ProfileAttributesEntry;
 //   system accounts with the storage accounts. Then, it updates the storage
 //   accordingly, and notifies the observers.
 class AccountProfileMapper
-    : public account_manager::AccountManagerFacade::Observer {
+    : public account_manager::AccountManagerFacade::Observer,
+      public ProfileAttributesStorage::Observer {
  public:
   // Result type for `ShowAddAccountDialog()`.
   // If the account was added to the system, but could not be added to the
@@ -70,14 +77,22 @@ class AccountProfileMapper
   class Observer : public base::CheckedObserver {
    public:
     // `profile_path` is empty if the account is not assigned to a profile.
+    // Note: to avoid sending too many notifications, the notification with an
+    // empty path may not always be sent. For example if an account is added to
+    // the facade and to a profile at the same time, only the notification with
+    // a non-empty path is sent.
     virtual void OnAccountUpserted(const base::FilePath& profile_path,
                                    const account_manager::Account& account) {}
     virtual void OnAccountRemoved(const base::FilePath& profile_path,
                                   const account_manager::Account& account) {}
+    virtual void OnAuthErrorChanged(const base::FilePath& profile_path,
+                                    const account_manager::AccountKey& account,
+                                    const GoogleServiceAuthError& error) {}
   };
 
   AccountProfileMapper(account_manager::AccountManagerFacade* facade,
-                       ProfileAttributesStorage* storage);
+                       ProfileAttributesStorage* storage,
+                       PrefService* local_state);
   ~AccountProfileMapper() override;
 
   AccountProfileMapper(const AccountProfileMapper& other) = delete;
@@ -98,8 +113,10 @@ class AccountProfileMapper
   std::unique_ptr<OAuth2AccessTokenFetcher> CreateAccessTokenFetcher(
       const base::FilePath& profile_path,
       const account_manager::AccountKey& account,
-      const std::string& oauth_consumer_name,
       OAuth2AccessTokenConsumer* consumer);
+  void ReportAuthError(const base::FilePath& profile_path,
+                       const account_manager::AccountKey& account,
+                       const GoogleServiceAuthError& error);
 
   // Returns the whole map of accounts per profile. An empty path is used as the
   // key for unassigned accounts (this key is not set if there are no unassigned
@@ -134,9 +151,19 @@ class AccountProfileMapper
   void CreateNewProfileWithAccount(const account_manager::AccountKey& account,
                                    AddAccountCallback callback);
 
+  // Remove all accounts from profile with profile_path.
+  void RemoveAllAccounts(const base::FilePath& profile_path);
+  void RemoveAccount(const base::FilePath& profile_path,
+                     const account_manager::AccountKey& account_key);
+
   // account_manager::AccountManagerFacade::Observer:
   void OnAccountUpserted(const account_manager::Account& account) override;
   void OnAccountRemoved(const account_manager::Account& account) override;
+  void OnAuthErrorChanged(const account_manager::AccountKey& account,
+                          const GoogleServiceAuthError& error) override;
+
+  // ProfileAttributesStorage::Observer:
+  void OnProfileWillBeRemoved(const base::FilePath& profile_path) override;
 
   // Adds or updates an account programmatically without user interaction
   // Should only be used in tests.
@@ -164,7 +191,7 @@ class AccountProfileMapper
       AddAccountCallback callback);
 
   // Callback for `AddAccountHelper`, end of the flow starting with
-  // `AddAccounInternal()`.
+  // `AddAccountInternal()`.
   void OnAddAccountCompleted(AddAccountHelper* helper,
                              AddAccountCallback callback,
                              const absl::optional<AddAccountResult>& result);
@@ -179,6 +206,7 @@ class AccountProfileMapper
   // the accounts are left unassigned.
   std::vector<const account_manager::Account*> AddNewGaiaAccounts(
       const std::vector<account_manager::Account>& system_accounts,
+      AccountCache::AccountIdSet lacros_account_ids,
       ProfileAttributesEntry* entry_for_new_accounts);
 
   // Update the `ProfileAttributesStorage` to match the system accounts.
@@ -187,6 +215,9 @@ class AccountProfileMapper
   // Returns whether the profile at `profile_path` contains `account`.
   bool ProfileContainsAccount(const base::FilePath& profile_path,
                               const account_manager::AccountKey& account) const;
+
+  // Returns whether the `account_cache_` contains `account`.
+  bool IsAccountInCache(const account_manager::Account& account);
 
   // If there is only a single profile in Lacros, new accounts are added there
   // by default and this returns the corresponding entry. Otherwise, new
@@ -205,21 +236,27 @@ class AccountProfileMapper
   // profiles were converted.
   void MigrateOldProfiles();
 
+  // Remove accounts from a profile.
+  void RemoveAccountsInternal(const base::FilePath& profile_path,
+                              const base::flat_set<std::string>& gaia_ids);
+
   // All requests are delayed until the first `GetAccounts()` call completes.
   bool initialized_ = false;
   std::vector<base::OnceClosure> initialization_callbacks_;
 
   std::vector<std::unique_ptr<AddAccountHelper>> add_account_helpers_;
 
-  account_manager::AccountManagerFacade* const account_manager_facade_;
-  ProfileAttributesStorage* const profile_attributes_storage_;
+  const raw_ptr<account_manager::AccountManagerFacade> account_manager_facade_;
+  const raw_ptr<ProfileAttributesStorage> profile_attributes_storage_;
   base::ObserverList<Observer> observers_;
   base::ScopedObservation<account_manager::AccountManagerFacade,
                           account_manager::AccountManagerFacade::Observer>
       account_manager_facade_observation_{this};
+  base::ScopedObservation<ProfileAttributesStorage,
+                          ProfileAttributesStorage::Observer>
+      profile_attributes_storage_observation_{this};
 
-  // Map of account_manager::Account keyed by GaiaID.
-  base::flat_map<std::string, account_manager::Account> account_cache_;
+  AccountCache account_cache_;
 
   base::WeakPtrFactory<AccountProfileMapper> weak_factory_{this};
 };

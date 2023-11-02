@@ -1,10 +1,9 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/autofill/credit_card_accessory_controller_impl.h"
 
-#include <algorithm>
 #include <iterator>
 #include <utility>
 #include <vector>
@@ -13,7 +12,9 @@
 #include "base/containers/cxx20_erase_vector.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/memory/ptr_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/android/preferences/autofill/autofill_profile_bridge.h"
 #include "chrome/browser/autofill/manual_filling_controller.h"
 #include "chrome/browser/autofill/manual_filling_utils.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/autofill_browser_util.h"
+#include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -68,8 +70,7 @@ void AddCardDetailsToUserInfo(const CreditCard& card,
   }
 
   if (card.HasNameOnCard()) {
-    AddSimpleField(card.GetRawInfo(autofill::CREDIT_CARD_NAME_FULL), user_info,
-                   enabled);
+    AddSimpleField(card.GetRawInfo(CREDIT_CARD_NAME_FULL), user_info, enabled);
   } else {
     AddSimpleField(std::u16string(), user_info, enabled);
   }
@@ -99,7 +100,7 @@ UserInfo TranslateCachedCard(const CachedServerCardInfo* data, bool enabled) {
 
   const CreditCard& card = data->card;
   UserInfo user_info(card.network(), GetCardArtUrl(card));
-  std::u16string card_number = card.GetRawInfo(autofill::CREDIT_CARD_NUMBER);
+  std::u16string card_number = card.GetRawInfo(CREDIT_CARD_NUMBER);
   user_info.add_field(AccessorySheetField(
       card.FullDigitsForDisplay(), card_number, card_number,
       /*id=*/std::string(), /*is_password=*/false, enabled));
@@ -109,9 +110,7 @@ UserInfo TranslateCachedCard(const CachedServerCardInfo* data, bool enabled) {
 }
 
 bool ShouldCreateVirtualCard(const CreditCard* card) {
-  return base::FeatureList::IsEnabled(
-             autofill::features::kAutofillEnableMerchantBoundVirtualCards) &&
-         card->virtual_card_enrollment_state() == CreditCard::ENROLLED;
+  return card->virtual_card_enrollment_state() == CreditCard::ENROLLED;
 }
 
 const CreditCard* UnwrapCardOrVirtualCard(
@@ -126,9 +125,9 @@ PromoCodeInfo TranslateOffer(const AutofillOfferData* data) {
   DCHECK(data);
   DCHECK(data->IsPromoCodeOffer());
 
-  std::u16string promo_code = base::ASCIIToUTF16(data->promo_code);
+  std::u16string promo_code = base::ASCIIToUTF16(data->GetPromoCode());
   std::u16string details_text =
-      base::ASCIIToUTF16(data->display_strings.value_prop_text);
+      base::ASCIIToUTF16(data->GetDisplayStrings().value_prop_text);
   PromoCodeInfo promo_code_info(promo_code, details_text);
 
   return promo_code_info;
@@ -146,16 +145,21 @@ void CreditCardAccessoryControllerImpl::RegisterFillingSourceObserver(
   source_observer_ = std::move(observer);
 }
 
-absl::optional<autofill::AccessorySheetData>
+absl::optional<AccessorySheetData>
 CreditCardAccessoryControllerImpl::GetSheetData() const {
   // Note that also GetManager() can return nullptr.
-  autofill::BrowserAutofillManager* autofill_manager =
-      web_contents_->GetFocusedFrame() ? GetManager() : nullptr;
+  AutofillManager* autofill_manager =
+      GetWebContents().GetFocusedFrame() ? GetManager() : nullptr;
+  // This cast is safe because the Chrome embedder only uses
+  // BrowserAutofillManager.
+  auto* browser_autofill_manager =
+      static_cast<BrowserAutofillManager*>(autofill_manager);
+
   std::vector<UserInfo> info_to_add;
   bool allow_filling =
-      autofill_manager &&
-      ShouldAllowCreditCardFallbacks(autofill_manager->client(),
-                                     autofill_manager->last_query_form());
+      autofill_manager && ShouldAllowCreditCardFallbacks(
+                              autofill_manager->client(),
+                              browser_autofill_manager->last_query_form());
 
   std::vector<const CachedServerCardInfo*> unmasked_cards =
       GetUnmaskedCreditCards();
@@ -173,7 +177,7 @@ CreditCardAccessoryControllerImpl::GetSheetData() const {
   bool add_all_cards = unmasked_cards.empty() || !autofill_manager;
   for (const CardOrVirtualCard& card_or_virtual : GetAllCreditCards()) {
     const CreditCard* card = UnwrapCardOrVirtualCard(card_or_virtual);
-    if (add_all_cards || !autofill_manager->credit_card_access_manager()
+    if (add_all_cards || !autofill_manager->GetCreditCardAccessManager()
                               ->IsCardPresentInUnmaskedCache(*card)) {
       info_to_add.push_back(TranslateCard(card, allow_filling));
     }
@@ -186,7 +190,7 @@ CreditCardAccessoryControllerImpl::GetSheetData() const {
 
   bool has_suggestions = !info_to_add.empty();
 
-  AccessorySheetData data = autofill::CreateAccessorySheetData(
+  AccessorySheetData data = CreateAccessorySheetData(
       AccessoryTabType::CREDIT_CARDS, GetTitle(has_suggestions),
       std::move(info_to_add), std::move(footer_commands));
 
@@ -207,7 +211,7 @@ CreditCardAccessoryControllerImpl::GetSheetData() const {
 void CreditCardAccessoryControllerImpl::OnFillingTriggered(
     FieldGlobalId focused_field_id,
     const AccessorySheetField& selection) {
-  content::RenderFrameHost* rfh = web_contents_->GetFocusedFrame();
+  content::RenderFrameHost* rfh = GetWebContents().GetFocusedFrame();
   if (!rfh)
     return;  // Without focused frame, driver and manager will be undefined.
   if (!GetDriver() || !GetManager()) {
@@ -226,8 +230,8 @@ void CreditCardAccessoryControllerImpl::OnFillingTriggered(
   }
 
   std::vector<CardOrVirtualCard> cards = GetAllCreditCards();
-  auto card_iter = std::find_if(
-      cards.begin(), cards.end(), [&selection](const auto& card_or_virtual) {
+  auto card_iter =
+      base::ranges::find_if(cards, [&selection](const auto& card_or_virtual) {
         const CreditCard* card = UnwrapCardOrVirtualCard(card_or_virtual);
         return card && card->guid() == selection.id();
       });
@@ -242,7 +246,7 @@ void CreditCardAccessoryControllerImpl::OnFillingTriggered(
     case CreditCard::RecordType::MASKED_SERVER_CARD:
     case CreditCard::RecordType::VIRTUAL_CARD:
       last_focused_field_id_ = focused_field_id;
-      GetManager()->credit_card_access_manager()->FetchCreditCard(matching_card,
+      GetManager()->GetCreditCardAccessManager()->FetchCreditCard(matching_card,
                                                                   AsWeakPtr());
       break;
     case CreditCard::RecordType::LOCAL_CARD:
@@ -256,7 +260,7 @@ void CreditCardAccessoryControllerImpl::OnFillingTriggered(
 void CreditCardAccessoryControllerImpl::OnOptionSelected(
     AccessoryAction selected_action) {
   if (selected_action == AccessoryAction::MANAGE_CREDIT_CARDS) {
-    autofill::ShowAutofillCreditCardSettings(web_contents_);
+    ShowAutofillCreditCardSettings(&GetWebContents());
     return;
   }
   NOTREACHED() << "Unhandled selected action: "
@@ -277,6 +281,29 @@ bool CreditCardAccessoryController::AllowedForWebContents(
   if (vr::VrTabHelper::IsInVr(web_contents)) {
     return false;  // TODO(crbug.com/902305): Re-enable if possible.
   }
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableManualFallbackForVirtualCards)) {
+    PersonalDataManager* personal_data_manager =
+        PersonalDataManagerFactory::GetForBrowserContext(
+            web_contents->GetBrowserContext());
+    if (personal_data_manager) {
+      std::vector<CreditCard*> cards =
+          personal_data_manager->GetCreditCardsToSuggest(
+              /*include_server_cards=*/true);
+      bool has_virtual_card = base::ranges::any_of(cards, [](const auto& card) {
+        return card->virtual_card_enrollment_state() ==
+               CreditCard::VirtualCardEnrollmentState::ENROLLED;
+      });
+      if (has_virtual_card) {
+        // Virtual cards are available. We should always show manual fallback
+        // for virtual cards.
+        return true;
+      }
+    }
+  }
+
+  // For non-virtual cards show the credit card accessory sheet only
+  // when both keyboard accessory and manual fallback flags are enabled.
   return features::IsAutofillManualFallbackEnabled();
 }
 
@@ -296,12 +323,16 @@ CreditCardAccessoryController* CreditCardAccessoryController::GetIfExisting(
 }
 
 void CreditCardAccessoryControllerImpl::RefreshSuggestions() {
-  absl::optional<AccessorySheetData> data = GetSheetData();
+  TRACE_EVENT0("passwords",
+               "CreditCardAccessoryControllerImpl::RefreshSuggestions");
   if (source_observer_) {
-    source_observer_.Run(this, IsFillingSourceAvailable(data.has_value()));
+    source_observer_.Run(
+        this, IsFillingSourceAvailable(!GetAllCreditCards().empty() ||
+                                       !GetPromoCodeOffers().empty()));
   } else {
     // TODO(crbug.com/1169167): Remove once filling controller pulls this
     // information instead of waiting to get it pushed.
+    absl::optional<AccessorySheetData> data = GetSheetData();
     DCHECK(data.has_value());
     GetManualFillingController()->RefreshSuggestions(std::move(data.value()));
   }
@@ -317,10 +348,10 @@ void CreditCardAccessoryControllerImpl::OnCreditCardFetched(
     const std::u16string& cvc) {
   if (result != CreditCardFetchResult::kSuccess)
     return;
-  content::RenderFrameHost* rfh = web_contents_->GetFocusedFrame();
+  content::RenderFrameHost* rfh = GetWebContents().GetFocusedFrame();
   if (!rfh || !last_focused_field_id_ ||
       last_focused_field_id_.frame_token !=
-          autofill::LocalFrameToken(rfh->GetFrameToken().value())) {
+          LocalFrameToken(rfh->GetFrameToken().value())) {
     last_focused_field_id_ = {};
     return;  // If frame isn't focused anymore, don't attempt to fill.
   }
@@ -336,9 +367,9 @@ void CreditCardAccessoryControllerImpl::OnCreditCardFetched(
 void CreditCardAccessoryControllerImpl::CreateForWebContentsForTesting(
     content::WebContents* web_contents,
     base::WeakPtr<ManualFillingController> mf_controller,
-    autofill::PersonalDataManager* personal_data_manager,
-    autofill::BrowserAutofillManager* af_manager,
-    autofill::AutofillDriver* af_driver) {
+    PersonalDataManager* personal_data_manager,
+    BrowserAutofillManager* af_manager,
+    AutofillDriver* af_driver) {
   DCHECK(web_contents) << "Need valid WebContents to attach controller to!";
   DCHECK(!FromWebContents(web_contents)) << "Controller already attached!";
   DCHECK(mf_controller);
@@ -351,11 +382,10 @@ void CreditCardAccessoryControllerImpl::CreateForWebContentsForTesting(
 
 CreditCardAccessoryControllerImpl::CreditCardAccessoryControllerImpl(
     content::WebContents* web_contents)
-    : web_contents_(web_contents),
-      personal_data_manager_(
-          autofill::PersonalDataManagerFactory::GetForProfile(
-              Profile::FromBrowserContext(
-                  web_contents_->GetBrowserContext()))) {
+    : content::WebContentsUserData<CreditCardAccessoryControllerImpl>(
+          *web_contents),
+      personal_data_manager_(PersonalDataManagerFactory::GetForProfile(
+          Profile::FromBrowserContext(web_contents->GetBrowserContext()))) {
   if (personal_data_manager_)
     personal_data_manager_->AddObserver(this);
 }
@@ -364,9 +394,10 @@ CreditCardAccessoryControllerImpl::CreditCardAccessoryControllerImpl(
     content::WebContents* web_contents,
     base::WeakPtr<ManualFillingController> mf_controller,
     PersonalDataManager* personal_data_manager,
-    autofill::BrowserAutofillManager* af_manager,
-    autofill::AutofillDriver* af_driver)
-    : web_contents_(web_contents),
+    BrowserAutofillManager* af_manager,
+    AutofillDriver* af_driver)
+    : content::WebContentsUserData<CreditCardAccessoryControllerImpl>(
+          *web_contents),
       mf_controller_(mf_controller),
       personal_data_manager_(personal_data_manager),
       af_manager_for_testing_(af_manager),
@@ -377,7 +408,7 @@ CreditCardAccessoryControllerImpl::CreditCardAccessoryControllerImpl(
 
 std::vector<CreditCardAccessoryControllerImpl::CardOrVirtualCard>
 CreditCardAccessoryControllerImpl::GetAllCreditCards() const {
-  if (!web_contents_->GetFocusedFrame() || !personal_data_manager_)
+  if (!GetWebContents().GetFocusedFrame() || !personal_data_manager_)
     return std::vector<CardOrVirtualCard>();
 
   std::vector<CardOrVirtualCard> cards;
@@ -395,20 +426,19 @@ CreditCardAccessoryControllerImpl::GetAllCreditCards() const {
 
 std::vector<const CachedServerCardInfo*>
 CreditCardAccessoryControllerImpl::GetUnmaskedCreditCards() const {
-  if (!web_contents_->GetFocusedFrame())
+  if (!GetWebContents().GetFocusedFrame())
     return std::vector<const CachedServerCardInfo*>();
-  autofill::BrowserAutofillManager* autofill_manager = GetManager();
-  if (!autofill_manager || !autofill_manager->credit_card_access_manager())
+  AutofillManager* autofill_manager = GetManager();
+  if (!autofill_manager || !autofill_manager->GetCreditCardAccessManager())
     return std::vector<const CachedServerCardInfo*>();
   std::vector<const CachedServerCardInfo*> unmasked_cards =
-      autofill_manager->credit_card_access_manager()->GetCachedUnmaskedCards();
+      autofill_manager->GetCreditCardAccessManager()->GetCachedUnmaskedCards();
   // If the feature to show unmasked cards in manual filling view is
   // enabled, show all cards in the view. Even if not, still show
   // virtual cards in the manual filling view if they exist. All other cards
   // are dropped.
   if (base::FeatureList::IsEnabled(
-          autofill::features::
-              kAutofillShowUnmaskedCachedCardInManualFillingView)) {
+          features::kAutofillShowUnmaskedCachedCardInManualFillingView)) {
     return unmasked_cards;
   }
   auto not_virtual_card = [](const CachedServerCardInfo* card_info) {
@@ -420,42 +450,49 @@ CreditCardAccessoryControllerImpl::GetUnmaskedCreditCards() const {
 
 std::vector<const AutofillOfferData*>
 CreditCardAccessoryControllerImpl::GetPromoCodeOffers() const {
-  autofill::BrowserAutofillManager* autofill_manager = GetManager();
-  if (!web_contents_->GetFocusedFrame() || !personal_data_manager_ ||
-      !autofill_manager)
+  AutofillManager* autofill_manager =
+      GetWebContents().GetFocusedFrame() ? GetManager() : nullptr;
+  if (!personal_data_manager_ || !autofill_manager)
     return std::vector<const AutofillOfferData*>();
 
   return personal_data_manager_->GetActiveAutofillPromoCodeOffersForOrigin(
       autofill_manager->client()
-          ->GetLastCommittedURL()
+          ->GetLastCommittedPrimaryMainFrameURL()
           .DeprecatedGetOriginAsURL());
 }
 
 base::WeakPtr<ManualFillingController>
 CreditCardAccessoryControllerImpl::GetManualFillingController() {
   if (!mf_controller_)
-    mf_controller_ = ManualFillingController::GetOrCreate(web_contents_);
+    mf_controller_ = ManualFillingController::GetOrCreate(&GetWebContents());
   DCHECK(mf_controller_);
   return mf_controller_;
 }
 
-autofill::AutofillDriver* CreditCardAccessoryControllerImpl::GetDriver() {
-  DCHECK(web_contents_->GetFocusedFrame());
-  return af_driver_for_testing_
-             ? af_driver_for_testing_
-             : autofill::ContentAutofillDriver::GetForRenderFrameHost(
-                   web_contents_->GetFocusedFrame());
+AutofillDriver* CreditCardAccessoryControllerImpl::GetDriver() {
+  DCHECK(GetWebContents().GetFocusedFrame());
+  return af_driver_for_testing_ ? af_driver_for_testing_.get()
+                                : ContentAutofillDriver::GetForRenderFrameHost(
+                                      GetWebContents().GetFocusedFrame());
 }
 
-autofill::BrowserAutofillManager*
-CreditCardAccessoryControllerImpl::GetManager() const {
-  DCHECK(web_contents_->GetFocusedFrame());
+AutofillManager* CreditCardAccessoryControllerImpl::GetManager() const {
+  DCHECK(GetWebContents().GetFocusedFrame());
   if (af_manager_for_testing_)
     return af_manager_for_testing_;
-  autofill::ContentAutofillDriver* driver =
-      autofill::ContentAutofillDriver::GetForRenderFrameHost(
-          web_contents_->GetFocusedFrame());
-  return driver ? driver->browser_autofill_manager() : nullptr;
+  ContentAutofillDriver* driver = ContentAutofillDriver::GetForRenderFrameHost(
+      GetWebContents().GetFocusedFrame());
+  return driver ? driver->autofill_manager() : nullptr;
+}
+
+content::WebContents& CreditCardAccessoryControllerImpl::GetWebContents()
+    const {
+  // While a const_cast is not ideal. The Autofill API uses const in various
+  // spots and the content public API doesn't have const accessors. So the const
+  // cast is the lesser of two evils.
+  return const_cast<content::WebContents&>(
+      content::WebContentsUserData<
+          CreditCardAccessoryControllerImpl>::GetWebContents());
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(CreditCardAccessoryControllerImpl);

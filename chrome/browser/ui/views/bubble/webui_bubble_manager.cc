@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,9 @@
 
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "ui/base/interaction/element_identifier.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -21,15 +24,24 @@ WebUIBubbleManager::WebUIBubbleManager()
           base::BindRepeating(&WebUIBubbleManager::ResetContentsWrapper,
                               base::Unretained(this)))) {}
 
-WebUIBubbleManager::~WebUIBubbleManager() = default;
+WebUIBubbleManager::~WebUIBubbleManager() {
+  // The bubble manager may be destroyed before the bubble in certain
+  // situations. Ensure we forcefully close the managed bubble during
+  // destruction to mitigate the risk of UAFs (see crbug.com/1345546).
+  if (bubble_view_) {
+    DCHECK(bubble_view_->GetWidget());
+    bubble_view_->GetWidget()->CloseNow();
+  }
+}
 
-bool WebUIBubbleManager::ShowBubble() {
+bool WebUIBubbleManager::ShowBubble(const absl::optional<gfx::Rect>& anchor,
+                                    ui::ElementIdentifier identifier) {
   if (bubble_view_)
     return false;
 
   cache_timer_->Stop();
 
-  bubble_view_ = CreateWebUIBubbleDialog();
+  bubble_view_ = CreateWebUIBubbleDialog(anchor);
 
   bubble_widget_observation_.Observe(bubble_view_->GetWidget());
   // Some bubbles can be triggered when there is no active browser (e.g. emoji
@@ -40,6 +52,10 @@ bool WebUIBubbleManager::ShowBubble() {
     close_bubble_helper_ = std::make_unique<CloseBubbleOnTabActivationHelper>(
         bubble_view_.get(), BrowserList::GetInstance()->GetLastActive());
   }
+
+  if (identifier)
+    bubble_view_->SetProperty(views::kElementIdentifierKey, identifier);
+
   return true;
 }
 

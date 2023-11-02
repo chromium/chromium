@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,15 +13,15 @@
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/common/mailbox.h"
-#include "skia/ext/skia_matrix_44.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "third_party/skia/include/core/SkRefCnt.h"
+#include "ui/gfx/ca_layer_result.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rrect_f.h"
+#include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/hdr_metadata.h"
 #include "ui/gfx/video_types.h"
 #include "ui/gl/ca_renderer_layer_params.h"
-
-class SkDeferredDisplayList;
 
 namespace viz {
 class AggregatedRenderPassDrawQuad;
@@ -42,11 +42,8 @@ class VIZ_SERVICE_EXPORT CALayerOverlaySharedState
   bool is_clipped = false;
   gfx::RectF clip_rect;
   gfx::RRectF rounded_corner_bounds;
-  // The opacity property for the CAayer.
-  float opacity = 1;
   // The transform to apply to the CALayer.
-  skia::Matrix44 transform =
-      skia::Matrix44(skia::Matrix44::kIdentity_Constructor);
+  gfx::Transform transform;
 
  private:
   friend class base::RefCountedThreadSafe<CALayerOverlaySharedState>;
@@ -73,20 +70,22 @@ class VIZ_SERVICE_EXPORT CALayerOverlay {
   gfx::RectF contents_rect;
   // The bounds for the CALayer in pixels.
   gfx::RectF bounds_rect;
+  // The opacity property for the CAayer.
+  float opacity = 1;
   // The background color property for the CALayer.
-  SkColor background_color = SK_ColorTRANSPARENT;
+  SkColor4f background_color = SkColors::kTransparent;
   // The edge anti-aliasing mask property for the CALayer.
   unsigned edge_aa_mask = 0;
   // The minification and magnification filters for the CALayer.
   unsigned filter = 0;
+  // The HDR metadata for this quad.
+  absl::optional<gfx::HDRMetadata> hdr_metadata;
   // The protected video status of the AVSampleBufferDisplayLayer.
   gfx::ProtectedVideoType protected_video_type =
       gfx::ProtectedVideoType::kClear;
   // If |rpdq| is present, then the renderer must draw the filter effects and
   // copy the result into an IOSurface.
   const AggregatedRenderPassDrawQuad* rpdq = nullptr;
-  // The DDL for generating render pass overlay buffer with SkiaRenderer.
-  sk_sp<SkDeferredDisplayList> ddl;
 };
 
 typedef std::vector<CALayerOverlay> CALayerOverlayList;
@@ -95,13 +94,15 @@ typedef std::vector<CALayerOverlay> CALayerOverlayList;
 // CALayerOverlay into OverlayCandidate.
 class VIZ_SERVICE_EXPORT CALayerOverlayProcessor {
  public:
-  explicit CALayerOverlayProcessor(bool enable_ca_overlay);
-
+  CALayerOverlayProcessor();
   CALayerOverlayProcessor(const CALayerOverlayProcessor&) = delete;
   CALayerOverlayProcessor& operator=(const CALayerOverlayProcessor&) = delete;
 
   virtual ~CALayerOverlayProcessor() = default;
 
+  void SetIsVideoCaptureEnabled(bool enabled) {
+    video_capture_enabled_ = enabled;
+  }
   bool AreClipSettingsValid(const CALayerOverlay& ca_layer_overlay,
                             CALayerOverlayList* ca_layer_overlay_list) const;
   void PutForcedOverlayContentIntoUnderlays(
@@ -127,7 +128,7 @@ class VIZ_SERVICE_EXPORT CALayerOverlayProcessor {
           render_pass_backdrop_filters,
       CALayerOverlayList* ca_layer_overlays);
 
-  int ca_layer_result() { return ca_layer_result_; }
+  gfx::CALayerResult ca_layer_result() { return ca_layer_result_; }
 
  private:
   // Returns whether future candidate quads should be considered
@@ -144,11 +145,27 @@ class VIZ_SERVICE_EXPORT CALayerOverlayProcessor {
       gfx::ProtectedVideoType protected_video_type,
       CALayerOverlayList* ca_layer_overlays) const;
 
-  void SaveCALayerResult(int result);
+  void SaveCALayerResult(gfx::CALayerResult result);
 
-  const bool enable_ca_overlay_;
-  size_t max_quad_list_size_ = 0;
-  int ca_layer_result_ = 0;
+  // Set to false if the APIs required for overlays are not present, or the
+  // feature has been disabled.
+  const bool overlays_allowed_;
+
+  // Controls the feature of replacying all quads with overlays is enabled.
+  const bool enable_ca_renderer_;
+
+  // Controls the feature of putting HDR videos into underlays if the
+  // CARenderer fails (so that we can use the tone mapping provided by macOS).
+  const bool enable_hdr_underlays_;
+
+  // The CARenderer is disabled when video capture is enabled.
+  // https://crbug.com/836351, https://crbug.com/1290384
+  bool video_capture_enabled_ = false;
+
+  size_t max_quad_list_size_for_videos_ = 0;
+
+  // The error code in ProcessForCALayerOverlays()
+  gfx::CALayerResult ca_layer_result_ = gfx::kCALayerSuccess;
 };
 
 }  // namespace viz

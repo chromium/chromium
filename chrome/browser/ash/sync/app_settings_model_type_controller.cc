@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/model_type.h"
@@ -30,14 +29,8 @@ AppSettingsModelTypeController::AppSettingsModelTypeController(
           /*allow_transport_mode=*/true),
       profile_(profile),
       sync_service_(sync_service) {
-  DCHECK(chromeos::features::IsSyncSettingsCategorizationEnabled());
   DCHECK(profile_);
   DCHECK(sync_service_);
-  pref_registrar_.Init(profile_->GetPrefs());
-  pref_registrar_.Add(
-      syncer::prefs::kOsSyncFeatureEnabled,
-      base::BindRepeating(&AppSettingsModelTypeController::OnUserPrefChanged,
-                          base::Unretained(this)));
 }
 
 AppSettingsModelTypeController::~AppSettingsModelTypeController() = default;
@@ -50,17 +43,4 @@ void AppSettingsModelTypeController::LoadModels(
       /*extensions_enabled=*/true);
   NonUiSyncableServiceBasedModelTypeController::LoadModels(configure_context,
                                                            model_load_callback);
-}
-
-syncer::DataTypeController::PreconditionState
-AppSettingsModelTypeController::GetPreconditionState() const {
-  DCHECK(CalledOnValidThread());
-  return profile_->GetPrefs()->GetBoolean(syncer::prefs::kOsSyncFeatureEnabled)
-             ? PreconditionState::kPreconditionsMet
-             : PreconditionState::kMustStopAndClearData;
-}
-
-void AppSettingsModelTypeController::OnUserPrefChanged() {
-  DCHECK(CalledOnValidThread());
-  sync_service_->DataTypePreconditionChanged(type());
 }

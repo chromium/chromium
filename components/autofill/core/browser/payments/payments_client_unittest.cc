@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -19,9 +20,11 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/payments/credit_card_save_manager.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
 #include "components/autofill/core/browser/payments/payments_client.h"
+#include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -37,8 +40,7 @@
 #include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace autofill {
-namespace payments {
+namespace autofill::payments {
 namespace {
 
 int kAllDetectableValues =
@@ -93,6 +95,16 @@ struct CardUnmaskOptions {
     return *this;
   }
 
+  CardUnmaskOptions& with_only_non_legacy_id() {
+    use_only_non_legacy_id = true;
+    return *this;
+  }
+
+  CardUnmaskOptions& with_only_legacy_id() {
+    use_only_legacy_id = true;
+    return *this;
+  }
+
   // By default, use cvc authentication.
   bool use_cvc = true;
   // If true, use FIDO authentication.
@@ -108,6 +120,10 @@ struct CardUnmaskOptions {
   bool virtual_card = false;
   // If true, set context_token in the request.
   bool set_context_token = true;
+  // If true, use only non-legacy instrument id.
+  bool use_only_non_legacy_id = false;
+  // If true, use only legacy instrument id.
+  bool use_only_legacy_id = false;
 };
 
 }  // namespace
@@ -127,7 +143,6 @@ class PaymentsClientTest : public testing::Test {
         switches::kWalletServiceUseSandbox, "0");
 
     result_ = AutofillClient::PaymentsRpcResult::kNone;
-    server_id_.clear();
     unmask_response_details_ = nullptr;
     legal_message_.reset();
     has_variations_header_ = false;
@@ -148,7 +163,7 @@ class PaymentsClientTest : public testing::Test {
         identity_test_env_.MakePrimaryAccountAvailable(
             "example@gmail.com", signin::ConsentLevel::kSync));
     scoped_feature_list_.InitAndEnableFeature(
-        features::kAutofillEnableVirtualCardsRiskBasedAuthentication);
+        features::kAutofillEnableSendingBcnInGetUploadDetails);
   }
 
   void TearDown() override { client_.reset(); }
@@ -161,7 +176,7 @@ class PaymentsClientTest : public testing::Test {
     variations::AssociateGoogleVariationID(
         variations::GOOGLE_WEB_PROPERTIES_ANY_CONTEXT, trial_name, group_name,
         static_cast<variations::VariationID>(variation_id));
-    base::FieldTrialList::CreateFieldTrial(trial_name, group_name)->group();
+    base::FieldTrialList::CreateFieldTrial(trial_name, group_name)->Activate();
   }
 
   void OnDidGetUnmaskDetails(
@@ -199,12 +214,13 @@ class PaymentsClientTest : public testing::Test {
   }
 
   void OnDidUploadCard(AutofillClient::PaymentsRpcResult result,
-                       const std::string& server_id) {
+                       const PaymentsClient::UploadCardResponseDetails&
+                           upload_card_respone_details) {
     result_ = result;
-    server_id_ = server_id;
+    upload_card_response_details_ = upload_card_respone_details;
   }
 
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   void OnDidMigrateLocalCards(
       AutofillClient::PaymentsRpcResult result,
       std::unique_ptr<std::unordered_map<std::string, std::string>>
@@ -214,12 +230,26 @@ class PaymentsClientTest : public testing::Test {
     migration_save_results_ = std::move(migration_save_results);
     display_text_ = display_text;
   }
-#endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   void OnDidSelectChallengeOption(AutofillClient::PaymentsRpcResult result,
                                   const std::string& updated_context_token) {
     result_ = result;
     context_token_ = updated_context_token;
+  }
+
+  void OnDidGetVirtualCardEnrollmentDetails(
+      AutofillClient::PaymentsRpcResult result,
+      const payments::PaymentsClient::GetDetailsForEnrollmentResponseDetails&
+          get_details_for_enrollment_response_fields) {
+    result_ = result;
+    get_details_for_enrollment_response_fields_ =
+        get_details_for_enrollment_response_fields;
+  }
+
+  void OnDidGetUpdateVirtualCardEnrollmentResponse(
+      AutofillClient::PaymentsRpcResult result) {
+    result_ = result;
   }
 
  protected:
@@ -240,7 +270,12 @@ class PaymentsClientTest : public testing::Test {
     PaymentsClient::UnmaskRequestDetails request_details;
     request_details.billing_customer_number = 111222333444;
 
-    request_details.card = test::GetMaskedServerCard();
+    request_details.card = options.use_only_non_legacy_id
+                               ? test::GetMaskedServerCardWithNonLegacyId()
+                               : options.use_only_legacy_id
+                                     ? test::GetMaskedServerCardWithLegacyId()
+                                     : test::GetMaskedServerCard();
+
     request_details.risk_data = "some risk data";
     if (options.use_fido) {
       request_details.fido_assertion_info =
@@ -250,8 +285,15 @@ class PaymentsClientTest : public testing::Test {
       request_details.user_response.cvc = base::ASCIIToUTF16(options.cvc);
     if (options.virtual_card) {
       request_details.card.set_record_type(CreditCard::VIRTUAL_CARD);
-      request_details.last_committed_url_origin =
+      request_details.last_committed_primary_main_frame_origin =
           GURL("https://www.example.com");
+      if (options.use_cvc) {
+        request_details.selected_challenge_option = CardUnmaskChallengeOption{
+            .id = "123",
+            .type = CardUnmaskChallengeOptionType::kCvc,
+            .challenge_input_length = 3,
+            .cvc_position = CvcPosition::kBackOfCard};
+      }
     }
     if (options.set_context_token)
       request_details.context_token = "fake context token";
@@ -277,13 +319,15 @@ class PaymentsClientTest : public testing::Test {
   // Issue a GetUploadDetails request.
   void StartGettingUploadDetails(
       PaymentsClient::UploadCardSource upload_card_source =
-          PaymentsClient::UploadCardSource::UNKNOWN_UPLOAD_CARD_SOURCE) {
+          PaymentsClient::UploadCardSource::UNKNOWN_UPLOAD_CARD_SOURCE,
+      long long billing_customer_number = 111222333444L) {
     client_->GetUploadDetails(
         BuildTestProfiles(), kAllDetectableValues, std::vector<const char*>(),
         "language-LOCALE",
         base::BindOnce(&PaymentsClientTest::OnDidGetUploadDetails,
                        weak_ptr_factory_.GetWeakPtr()),
-        /*billable_service_number=*/12345, upload_card_source);
+        /*billable_service_number=*/12345, billing_customer_number,
+        upload_card_source);
   }
 
   // Issue an UploadCard request. This requires an OAuth token before starting
@@ -307,7 +351,7 @@ class PaymentsClientTest : public testing::Test {
                                        weak_ptr_factory_.GetWeakPtr()));
   }
 
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   void StartMigrating(bool has_cardholder_name,
                       bool set_nickname_for_first_card = false) {
     PaymentsClient::MigrationRequestDetails request_details;
@@ -324,14 +368,14 @@ class PaymentsClientTest : public testing::Test {
       card1.SetRawInfo(CREDIT_CARD_NAME_FULL, u"");
       card2.SetRawInfo(CREDIT_CARD_NAME_FULL, u"");
     }
-    migratable_credit_cards_.push_back(MigratableCreditCard(card1));
-    migratable_credit_cards_.push_back(MigratableCreditCard(card2));
+    migratable_credit_cards_.emplace_back(card1);
+    migratable_credit_cards_.emplace_back(card2);
     client_->MigrateCards(
         request_details, migratable_credit_cards_,
         base::BindOnce(&PaymentsClientTest::OnDidMigrateLocalCards,
                        weak_ptr_factory_.GetWeakPtr()));
   }
-#endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   void StartSelectingChallengeOption(
       CardUnmaskChallengeOptionType challenge_type =
@@ -430,14 +474,18 @@ class PaymentsClientTest : public testing::Test {
 
   AutofillClient::PaymentsRpcResult result_ =
       AutofillClient::PaymentsRpcResult::kNone;
-  payments::PaymentsClient::UnmaskDetails* unmask_details_;
+  raw_ptr<payments::PaymentsClient::UnmaskDetails> unmask_details_;
 
   // Server ID of a saved card via credit card upload save.
-  std::string server_id_;
+  PaymentsClient::UploadCardResponseDetails upload_card_response_details_;
   // The OptChangeResponseDetails retrieved from an OptChangeRequest.
   PaymentsClient::OptChangeResponseDetails opt_change_response_;
+  // The response details retrieved from an GetDetailsForEnrollmentRequest.
+  PaymentsClient::GetDetailsForEnrollmentResponseDetails
+      get_details_for_enrollment_response_fields_;
   // The UnmaskResponseDetails retrieved from an UnmaskRequest.  Includes PAN.
-  PaymentsClient::UnmaskResponseDetails* unmask_response_details_ = nullptr;
+  raw_ptr<PaymentsClient::UnmaskResponseDetails> unmask_response_details_ =
+      nullptr;
   // The legal message returned from a GetDetails upload save preflight call.
   std::unique_ptr<base::Value> legal_message_;
   // A list of card BIN ranges supported by Google Payments, returned from a
@@ -448,7 +496,7 @@ class PaymentsClientTest : public testing::Test {
   // The opaque token used to chain consecutive payments requests together.
   std::string context_token_;
 
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Credit cards to be upload saved during a local credit card migration call.
   std::vector<MigratableCreditCard> migratable_credit_cards_;
   // A mapping of results from a local credit card migration call.
@@ -456,7 +504,7 @@ class PaymentsClientTest : public testing::Test {
       migration_save_results_;
   // A tip message to be displayed during local card migration.
   std::string display_text_;
-#endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   base::test::TaskEnvironment task_environment_;
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
@@ -573,16 +621,10 @@ TEST_F(PaymentsClientTest, UnmaskSuccessViaFIDO) {
 TEST_F(PaymentsClientTest, UnmaskSuccessViaCVCWithCreationOptions) {
   StartUnmasking(CardUnmaskOptions().with_cvc("111"));
   IssueOAuthToken();
-  ReturnResponse(
-      net::HTTP_OK,
-      "{ \"pan\": \"1234\", \"dcvv\": \"321\", \"fido_creation_options\": "
-      "{\"relying_party_id\": \"google.com\"}}");
+  ReturnResponse(net::HTTP_OK, "{ \"pan\": \"1234\", \"dcvv\": \"321\"}");
   EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
   EXPECT_EQ("1234", unmask_response_details_->real_pan);
   EXPECT_EQ("321", unmask_response_details_->dcvv);
-  EXPECT_EQ("google.com",
-            *unmask_response_details_->fido_creation_options->FindStringKey(
-                "relying_party_id"));
 }
 
 TEST_F(PaymentsClientTest, UnmaskSuccessAccountFromSyncTest) {
@@ -601,6 +643,10 @@ TEST_F(PaymentsClientTest, UnmaskSuccessWithVirtualCardCvcAuth) {
                  "\"expiration\": { \"month\":12, \"year\":2099 } }");
 
   assertCvcIncludedInRequest("222");
+  assertIncludedInRequest("cvc_challenge_option");
+  assertIncludedInRequest("challenge_id");
+  assertIncludedInRequest("cvc_length");
+  assertIncludedInRequest("cvc_position");
   EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
   EXPECT_EQ("4111111111111111", unmask_response_details_->real_pan);
   EXPECT_EQ("999", unmask_response_details_->dcvv);
@@ -616,6 +662,7 @@ TEST_F(PaymentsClientTest, UnmaskSuccessWithVirtualCardFidoAuth) {
                  "\"expiration\": { \"month\":12, \"year\":2099 } }");
 
   assertCvcNotIncludedInRequest();
+  assertNotIncludedInRequest("cvc_challenge_option");
   EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
   EXPECT_EQ("4111111111111111", unmask_response_details_->real_pan);
   EXPECT_EQ("999", unmask_response_details_->dcvv);
@@ -633,6 +680,7 @@ TEST_F(PaymentsClientTest, VirtualCardRiskBasedGreenPathResponse) {
   // Verify that Cvc/FIDO/OTP are not included in the request.
   assertCvcNotIncludedInRequest();
   assertOtpNotIncludedInRequest();
+  assertNotIncludedInRequest("cvc_challenge_option");
   EXPECT_TRUE(GetUploadData().find("fido_assertion_info") == std::string::npos);
   // Only merchant_domain is included.
   EXPECT_TRUE(GetUploadData().find("merchant_domain") != std::string::npos);
@@ -663,7 +711,10 @@ TEST_F(PaymentsClientTest,
   EXPECT_EQ(AutofillClient::PaymentsRpcResult::kPermanentFailure, result_);
 }
 
-TEST_F(PaymentsClientTest, VirtualCardRiskBasedYellowPathResponse) {
+TEST_F(PaymentsClientTest, VirtualCardRiskBasedYellowPathResponse_CvcFlagOff) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillEnableCvcForVcnYellowPath);
   StartUnmasking(CardUnmaskOptions().with_virtual_card_risk_based());
   IssueOAuthToken();
   ReturnResponse(
@@ -674,7 +725,9 @@ TEST_F(PaymentsClientTest, VirtualCardRiskBasedYellowPathResponse) {
       "\"fake_challenge_id_1\", \"masked_phone_number\": \"(***)-***-1234\" } "
       "}, { \"sms_otp_challenge_option\": { \"challenge_id\": "
       "\"fake_challenge_id_2\", \"masked_phone_number\": \"(***)-***-5678\" } "
-      "}] }");
+      "}, { \"cvc_challenge_option\": { \"challenge_id\": "
+      "\"fake_challenge_id_3\", \"cvc_length\": 3, \"cvc_position\": "
+      "\"CVC_POSITION_BACK\"}}]}");
 
   // Ensure that it's not treated as failure when no pan is returned.
   EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
@@ -685,7 +738,7 @@ TEST_F(PaymentsClientTest, VirtualCardRiskBasedYellowPathResponse) {
                 "challenge"));
   // Verify the two idv challenge options are both sms challenge and fields can
   // be correctly parsed.
-  EXPECT_EQ(2u, unmask_response_details_->card_unmask_challenge_options.size());
+  ASSERT_EQ(2u, unmask_response_details_->card_unmask_challenge_options.size());
   const CardUnmaskChallengeOption& challenge_option_1 =
       unmask_response_details_->card_unmask_challenge_options[0];
   EXPECT_EQ(CardUnmaskChallengeOptionType::kSmsOtp, challenge_option_1.type);
@@ -696,6 +749,53 @@ TEST_F(PaymentsClientTest, VirtualCardRiskBasedYellowPathResponse) {
   EXPECT_EQ(CardUnmaskChallengeOptionType::kSmsOtp, challenge_option_2.type);
   EXPECT_EQ("fake_challenge_id_2", challenge_option_2.id);
   EXPECT_EQ(u"(***)-***-5678", challenge_option_2.challenge_info);
+}
+
+TEST_F(PaymentsClientTest, VirtualCardRiskBasedYellowPathResponse_CvcFlagOn) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillEnableCvcForVcnYellowPath);
+  StartUnmasking(CardUnmaskOptions().with_virtual_card_risk_based());
+  IssueOAuthToken();
+  ReturnResponse(
+      net::HTTP_OK,
+      "{ \"fido_request_options\": { \"challenge\": \"fake_fido_challenge\" }, "
+      "\"context_token\": \"fake_context_token\", \"idv_challenge_options\": "
+      "[{ \"sms_otp_challenge_option\": { \"challenge_id\": "
+      "\"fake_challenge_id_1\", \"masked_phone_number\": \"(***)-***-1234\" } "
+      "}, { \"sms_otp_challenge_option\": { \"challenge_id\": "
+      "\"fake_challenge_id_2\", \"masked_phone_number\": \"(***)-***-5678\" } "
+      "}, { \"cvc_challenge_option\": { \"challenge_id\": "
+      "\"fake_challenge_id_3\", \"cvc_length\": 3, \"cvc_position\": "
+      "\"CVC_POSITION_BACK\"}}]}");
+
+  // Ensure that it's not treated as failure when no pan is returned.
+  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
+  EXPECT_EQ("fake_context_token", unmask_response_details_->context_token);
+  // Verify the FIDO request challenge is correctly parsed.
+  EXPECT_EQ("fake_fido_challenge",
+            *unmask_response_details_->fido_request_options->FindStringKey(
+                "challenge"));
+  // Verify the three challenge options are two sms challenge options and one
+  // cvc challenge option, and fields can be correctly parsed.
+  ASSERT_EQ(3u, unmask_response_details_->card_unmask_challenge_options.size());
+  const CardUnmaskChallengeOption& challenge_option_1 =
+      unmask_response_details_->card_unmask_challenge_options[0];
+  EXPECT_EQ(CardUnmaskChallengeOptionType::kSmsOtp, challenge_option_1.type);
+  EXPECT_EQ("fake_challenge_id_1", challenge_option_1.id);
+  EXPECT_EQ(u"(***)-***-1234", challenge_option_1.challenge_info);
+  const CardUnmaskChallengeOption& challenge_option_2 =
+      unmask_response_details_->card_unmask_challenge_options[1];
+  EXPECT_EQ(CardUnmaskChallengeOptionType::kSmsOtp, challenge_option_2.type);
+  EXPECT_EQ("fake_challenge_id_2", challenge_option_2.id);
+  EXPECT_EQ(u"(***)-***-5678", challenge_option_2.challenge_info);
+  const CardUnmaskChallengeOption& challenge_option_3 =
+      unmask_response_details_->card_unmask_challenge_options[2];
+  EXPECT_EQ(CardUnmaskChallengeOptionType::kCvc, challenge_option_3.type);
+  EXPECT_EQ("fake_challenge_id_3", challenge_option_3.id);
+  EXPECT_TRUE(challenge_option_3.challenge_info.empty());
+  EXPECT_EQ(3u, challenge_option_3.challenge_input_length);
+  EXPECT_EQ(CvcPosition::kBackOfCard, challenge_option_3.cvc_position);
 }
 
 TEST_F(PaymentsClientTest,
@@ -739,6 +839,7 @@ TEST_F(PaymentsClientTest, VirtualCardRiskBasedThenFido) {
   // Verify that Cvc/OTP are not included in the request.
   assertCvcNotIncludedInRequest();
   assertOtpNotIncludedInRequest();
+  assertNotIncludedInRequest("cvc_challenge_option");
   // Verify the fido assertion and context token is included.
   EXPECT_TRUE(GetUploadData().find("fido_assertion_info") != std::string::npos);
   EXPECT_TRUE(GetUploadData().find("context_token") != std::string::npos);
@@ -763,6 +864,7 @@ TEST_F(PaymentsClientTest, VirtualCardRiskBasedThenOtpSuccess) {
   assertOtpIncludedInRequest(otp);
   // Verify that Cvc/FIDO are not included in the request.
   assertCvcNotIncludedInRequest();
+  assertNotIncludedInRequest("cvc_challenge_option");
   EXPECT_TRUE(GetUploadData().find("fido_assertion_info") == std::string::npos);
   // Verify the context token is also included.
   EXPECT_TRUE(GetUploadData().find("context_token") != std::string::npos);
@@ -785,6 +887,8 @@ TEST_F(PaymentsClientTest, ExpiredOtp) {
                  "\"flow_status\": \"FLOW_STATUS_EXPIRED_OTP\" }");
 
   assertOtpIncludedInRequest(otp);
+  assertCvcNotIncludedInRequest();
+  assertNotIncludedInRequest("cvc_challenge_option");
   // Verify the context token is also included.
   EXPECT_TRUE(GetUploadData().find("context_token") != std::string::npos);
   EXPECT_TRUE(GetUploadData().find("merchant_domain") != std::string::npos);
@@ -803,6 +907,8 @@ TEST_F(PaymentsClientTest, IncorrectOtp) {
                  "\"flow_status\": \"FLOW_STATUS_INCORRECT_OTP\" }");
 
   assertOtpIncludedInRequest(otp);
+  assertCvcNotIncludedInRequest();
+  assertNotIncludedInRequest("cvc_challenge_option");
   // Verify the context token is also included.
   EXPECT_TRUE(GetUploadData().find("context_token") != std::string::npos);
   EXPECT_TRUE(GetUploadData().find("merchant_domain") != std::string::npos);
@@ -825,6 +931,67 @@ TEST_F(PaymentsClientTest, UnmaskIncludesChromeUserContext) {
   EXPECT_TRUE(GetUploadData().find("full_sync_enabled") != std::string::npos);
 }
 
+TEST_F(PaymentsClientTest, UnmaskIncludesLegacyAndNonLegacyId) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kAutofillEnableUnmaskCardRequestSetInstrumentId);
+
+  StartUnmasking(CardUnmaskOptions());
+  IssueOAuthToken();
+  ReturnResponse(net::HTTP_OK, "{}");
+
+  // Non-legacy Instrument id and legacy server id are both set.
+  EXPECT_TRUE(GetUploadData().find("%22instrument_id%22:%221%22") !=
+              std::string::npos);
+  EXPECT_TRUE(GetUploadData().find("%22credit_card_id%22:%22a123%22") !=
+              std::string::npos);
+}
+
+TEST_F(PaymentsClientTest, UnmaskIncludesOnlyLegacyId) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kAutofillEnableUnmaskCardRequestSetInstrumentId);
+
+  StartUnmasking(CardUnmaskOptions().with_only_legacy_id());
+  IssueOAuthToken();
+  ReturnResponse(net::HTTP_OK, "{}");
+
+  // Only legacy server id is set.
+  EXPECT_TRUE(GetUploadData().find("instrument_id") == std::string::npos);
+  EXPECT_TRUE(GetUploadData().find("%22credit_card_id%22:%22a123%22") !=
+              std::string::npos);
+}
+
+TEST_F(PaymentsClientTest, UnmaskIncludesOnlyNonLegacyId) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kAutofillEnableUnmaskCardRequestSetInstrumentId);
+
+  StartUnmasking(CardUnmaskOptions().with_only_non_legacy_id());
+  IssueOAuthToken();
+  ReturnResponse(net::HTTP_OK, "{}");
+
+  // Only non-legacy instrument id is set.
+  EXPECT_TRUE(GetUploadData().find("%22instrument_id%22:%221%22") !=
+              std::string::npos);
+  EXPECT_TRUE(GetUploadData().find("credit_card_id") == std::string::npos);
+}
+
+TEST_F(PaymentsClientTest, UnmaskDoesNotIncludeInstrumentIdIfFlagDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kAutofillEnableUnmaskCardRequestSetInstrumentId);
+
+  StartUnmasking(CardUnmaskOptions());
+  IssueOAuthToken();
+  ReturnResponse(net::HTTP_OK, "{}");
+
+  // Instrument id is not set if flag is disabled.
+  EXPECT_TRUE(GetUploadData().find("instrument_id") == std::string::npos);
+  EXPECT_TRUE(GetUploadData().find("%22credit_card_id%22:%22a123%22") !=
+              std::string::npos);
+}
+
 TEST_F(PaymentsClientTest,
        UnmaskIncludesChromeUserContextIfWalletStorageFlagEnabled) {
   base::test::ScopedFeatureList feature_list;
@@ -845,8 +1012,94 @@ TEST_F(PaymentsClientTest, UnmaskIncludesMerchantDomain) {
   IssueOAuthToken();
   ReturnResponse(net::HTTP_OK, "{}");
 
-  // last_committed_url_origin was set.
+  // last_committed_primary_main_frame_origin was set.
   EXPECT_TRUE(GetUploadData().find("merchant_domain") != std::string::npos);
+}
+
+TEST_F(PaymentsClientTest, UnmaskResponseIncludesDeclineDetails_FlagOn) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kAutofillEnableMerchantOptOutErrorDialog);
+
+  StartUnmasking(CardUnmaskOptions().with_virtual_card());
+  IssueOAuthToken();
+  ReturnResponse(net::HTTP_OK,
+                 "{\"error\": {\"code\": \"ANYTHING_ELSE\", "
+                 "\"api_error_reason\": \"virtual_card_temporary_error\"}, "
+                 "\"decline_details\": {\"user_message_title\": "
+                 "\"test_user_message_title\", \"user_message_description\": "
+                 "\"test_user_message_description\"}}");
+
+  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure,
+            result_);
+  EXPECT_TRUE(
+      unmask_response_details_->autofill_error_dialog_context.has_value());
+  AutofillErrorDialogContext autofill_error_dialog_context =
+      *unmask_response_details_->autofill_error_dialog_context;
+  EXPECT_EQ(*autofill_error_dialog_context.server_returned_title,
+            "test_user_message_title");
+  EXPECT_EQ(*autofill_error_dialog_context.server_returned_description,
+            "test_user_message_description");
+}
+
+TEST_F(PaymentsClientTest, UnmaskResponseIncludesDeclineDetails_FlagOff) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kAutofillEnableMerchantOptOutErrorDialog);
+
+  StartUnmasking(CardUnmaskOptions().with_virtual_card());
+  IssueOAuthToken();
+  ReturnResponse(net::HTTP_OK,
+                 "{\"error\": {\"code\": \"ANYTHING_ELSE\", "
+                 "\"api_error_reason\": \"virtual_card_temporary_error\"}, "
+                 "\"decline_details\": {\"user_message_title\": "
+                 "\"test_user_message_title\", \"user_message_description\": "
+                 "\"test_user_message_description\"}}");
+
+  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure,
+            result_);
+  EXPECT_FALSE(
+      unmask_response_details_->autofill_error_dialog_context.has_value());
+}
+
+TEST_F(PaymentsClientTest, UnmaskResponseIncludesEmptyDeclineDetails_FlagOn) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kAutofillEnableMerchantOptOutErrorDialog);
+
+  StartUnmasking(CardUnmaskOptions().with_virtual_card());
+  IssueOAuthToken();
+  ReturnResponse(net::HTTP_OK,
+                 "{\"error\": {\"code\": \"ANYTHING_ELSE\", "
+                 "\"api_error_reason\": \"virtual_card_temporary_error\"}, "
+                 "\"decline_details\": {\"user_message_title\": "
+                 "\"\", \"user_message_description\": "
+                 "\"\"}}");
+
+  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure,
+            result_);
+  EXPECT_FALSE(
+      unmask_response_details_->autofill_error_dialog_context.has_value());
+}
+
+TEST_F(PaymentsClientTest, UnmaskResponseIncludesEmptyDeclineDetails_FlagOff) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kAutofillEnableMerchantOptOutErrorDialog);
+
+  StartUnmasking(CardUnmaskOptions().with_virtual_card());
+  IssueOAuthToken();
+  ReturnResponse(net::HTTP_OK,
+                 "{\"error\": {\"code\": \"ANYTHING_ELSE\", "
+                 "\"api_error_reason\": \"virtual_card_temporary_error\"}, "
+                 "\"decline_details\": {\"user_message_title\": "
+                 "\"\", \"user_message_description\": "
+                 "\"\"}}");
+
+  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure,
+            result_);
+  EXPECT_FALSE(
+      unmask_response_details_->autofill_error_dialog_context.has_value());
 }
 
 TEST_F(PaymentsClientTest, OptInSuccess) {
@@ -1040,6 +1293,51 @@ TEST_F(PaymentsClientTest, GetDetailsIncludeBillableServiceNumber) {
               std::string::npos);
 }
 
+TEST_F(PaymentsClientTest, GetDetailsIncludeBillingCustomerNumber) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kAutofillEnableSendingBcnInGetUploadDetails);
+
+  StartGettingUploadDetails();
+
+  // Verify that the billing customer number is included in the request if flag
+  // is enabled.
+  EXPECT_TRUE(
+      GetUploadData().find("\"external_customer_id\":\"111222333444\"") !=
+      std::string::npos);
+}
+
+TEST_F(PaymentsClientTest,
+       GetDetailsExcludesBillingCustomerNumberIfNoBcnExists) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kAutofillEnableSendingBcnInGetUploadDetails);
+
+  StartGettingUploadDetails(
+      PaymentsClient::UploadCardSource::UNKNOWN_UPLOAD_CARD_SOURCE, 0L);
+  // Verify that the billing customer number is not included in the request if
+  // billing customer number is 0.
+  EXPECT_TRUE(GetUploadData().find("\"external_customer_id\"") ==
+              std::string::npos);
+  EXPECT_TRUE(GetUploadData().find("\"customer_context\"") ==
+              std::string::npos);
+}
+
+TEST_F(PaymentsClientTest,
+       GetDetailsExcludesBillingCustomerNumberIfFlagDisabled) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndDisableFeature(
+      features::kAutofillEnableSendingBcnInGetUploadDetails);
+
+  StartGettingUploadDetails();
+  // Verify that the billing customer number is not included in the request if
+  // flag is disabled.
+  EXPECT_TRUE(GetUploadData().find("\"external_customer_id\"") ==
+              std::string::npos);
+  EXPECT_TRUE(GetUploadData().find("\"customer_context\"") ==
+              std::string::npos);
+}
+
 TEST_F(PaymentsClientTest, GetDetailsFollowedByUploadSuccess) {
   StartGettingUploadDetails();
   ReturnResponse(
@@ -1133,20 +1431,113 @@ TEST_F(PaymentsClientTest, UnmaskCardVariationsTest) {
   EXPECT_TRUE(HasVariationsHeader());
 }
 
-TEST_F(PaymentsClientTest, UploadSuccessWithoutServerId) {
+TEST_F(PaymentsClientTest, UploadSuccessEmptyResponse) {
   StartUploading(/*include_cvc=*/true);
   IssueOAuthToken();
   ReturnResponse(net::HTTP_OK, "{}");
   EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
-  EXPECT_TRUE(server_id_.empty());
+  EXPECT_FALSE(upload_card_response_details_.instrument_id.has_value());
+  EXPECT_TRUE(upload_card_response_details_.virtual_card_enrollment_state ==
+              CreditCard::VirtualCardEnrollmentState::UNSPECIFIED);
+  EXPECT_TRUE(upload_card_response_details_.card_art_url.is_empty());
 }
 
-TEST_F(PaymentsClientTest, UploadSuccessWithServerId) {
+TEST_F(PaymentsClientTest, UploadSuccessInstrumentIdPresent) {
   StartUploading(/*include_cvc=*/true);
   IssueOAuthToken();
-  ReturnResponse(net::HTTP_OK, "{ \"credit_card_id\": \"InstrumentData:1\" }");
+  upload_card_response_details_.instrument_id = absl::nullopt;
+
+  // Test the conversion from string to int64_t using the max value for int64_t.
+  ReturnResponse(net::HTTP_OK,
+                 "{ \"instrument_id\": \"9223372036854775807\" }");
   EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
-  EXPECT_EQ("InstrumentData:1", server_id_);
+  EXPECT_EQ(upload_card_response_details_.instrument_id, 9223372036854775807);
+}
+
+TEST_F(PaymentsClientTest, UploadSuccessVirtualCardEnrollmentStatePresent) {
+  bool oauth_token_issued = false;
+  for (CreditCard::VirtualCardEnrollmentState virtual_card_enrollment_state :
+       {CreditCard::VirtualCardEnrollmentState::UNENROLLED_AND_NOT_ELIGIBLE,
+        CreditCard::VirtualCardEnrollmentState::UNENROLLED_AND_ELIGIBLE,
+        CreditCard::VirtualCardEnrollmentState::ENROLLED}) {
+    StartUploading(/*include_cvc=*/true);
+    // An OAuthToken needs to be issued to initiate the first UploadCard call
+    // from PaymentsClientTest::StartUploading(), but only for the first call.
+    // All future calls will use the first OAuthToken. If multiple OAuthTokens
+    // are issued this test will time out.
+    if (!oauth_token_issued) {
+      IssueOAuthToken();
+      oauth_token_issued = true;
+    }
+    switch (virtual_card_enrollment_state) {
+      case CreditCard::VirtualCardEnrollmentState::UNENROLLED_AND_NOT_ELIGIBLE:
+        ReturnResponse(net::HTTP_OK,
+                       "{ \"virtual_card_metadata\": { \"status\": "
+                       "\"ENROLLMENT_STATUS_UNSPECIFIED\" } }");
+        break;
+      case CreditCard::VirtualCardEnrollmentState::UNENROLLED_AND_ELIGIBLE:
+        ReturnResponse(net::HTTP_OK,
+                       "{ \"virtual_card_metadata\": { \"status\": "
+                       "\"ENROLLMENT_ELIGIBLE\" } }");
+        break;
+      case CreditCard::VirtualCardEnrollmentState::ENROLLED:
+        ReturnResponse(
+            net::HTTP_OK,
+            "{ \"virtual_card_metadata\": { \"status\": \"ENROLLED\" } }");
+        break;
+      case CreditCard::VirtualCardEnrollmentState::UNENROLLED:
+      case CreditCard::VirtualCardEnrollmentState::UNSPECIFIED:
+        break;
+    }
+    EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
+    EXPECT_EQ(upload_card_response_details_.virtual_card_enrollment_state,
+              virtual_card_enrollment_state);
+  }
+}
+
+TEST_F(PaymentsClientTest,
+       UploadSuccessGetDetailsForEnrollmentResponseDetailsPresent) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kAutofillEnableGetDetailsForEnrollParsingInUploadCardResponse);
+  StartUploading(/*include_cvc=*/true);
+  IssueOAuthToken();
+  ReturnResponse(net::HTTP_OK,
+                 "{ \"virtual_card_metadata\": "
+                 "{\"status\": \"ENROLLMENT_ELIGIBLE\", "
+                 "\"virtual_card_enrollment_data\": { "
+                 "\"google_legal_message\": { \"line\" : [{ "
+                 "\"template\": \"This is the entire message.\" }] }, "
+                 "\"external_legal_message\": {},"
+                 "\"context_token\": \"some_token\"} } }");
+  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
+  EXPECT_EQ(upload_card_response_details_.virtual_card_enrollment_state,
+            CreditCard::VirtualCardEnrollmentState::UNENROLLED_AND_ELIGIBLE);
+  EXPECT_EQ(
+      upload_card_response_details_.get_details_for_enrollment_response_details
+          .value()
+          .google_legal_message[0]
+          .text(),
+      u"This is the entire message.");
+  EXPECT_TRUE(
+      upload_card_response_details_.get_details_for_enrollment_response_details
+          .value()
+          .issuer_legal_message.empty());
+  EXPECT_EQ(
+      upload_card_response_details_.get_details_for_enrollment_response_details
+          .value()
+          .vcn_context_token,
+      "some_token");
+}
+
+TEST_F(PaymentsClientTest, UploadSuccessCardArtUrlPresent) {
+  StartUploading(/*include_cvc=*/true);
+  IssueOAuthToken();
+  ReturnResponse(net::HTTP_OK,
+                 "{ \"card_art_url\": \"https://www.example.com/\" }");
+  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
+  EXPECT_EQ(upload_card_response_details_.card_art_url.spec(),
+            "https://www.example.com/");
 }
 
 TEST_F(PaymentsClientTest, UploadIncludesNonLocationData) {
@@ -1290,7 +1681,7 @@ TEST_F(PaymentsClientTest, ReauthNeeded) {
     ReturnResponse(net::HTTP_UNAUTHORIZED, "");
     // No response yet.
     EXPECT_EQ(AutofillClient::PaymentsRpcResult::kNone, result_);
-    EXPECT_EQ(nullptr, unmask_response_details_);
+    EXPECT_EQ(nullptr, unmask_response_details_.get());
 
     // Second HTTP_UNAUTHORIZED causes permanent failure.
     IssueOAuthToken();
@@ -1311,7 +1702,7 @@ TEST_F(PaymentsClientTest, ReauthNeeded) {
     ReturnResponse(net::HTTP_UNAUTHORIZED, "");
     // No response yet.
     EXPECT_EQ(AutofillClient::PaymentsRpcResult::kNone, result_);
-    EXPECT_EQ(nullptr, unmask_response_details_);
+    EXPECT_EQ(nullptr, unmask_response_details_.get());
 
     // HTTP_OK after first HTTP_UNAUTHORIZED results in success.
     IssueOAuthToken();
@@ -1379,7 +1770,7 @@ TEST_F(PaymentsClientTest, UnmaskPermanentFailureWhenVcnMissingCvv) {
 }
 
 // Tests for the local card migration flow. Desktop only.
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 TEST_F(PaymentsClientTest, GetDetailsFollowedByMigrationSuccess) {
   StartGettingUploadDetails();
   ReturnResponse(
@@ -1485,7 +1876,7 @@ TEST_F(PaymentsClientTest,
 
 TEST_F(PaymentsClientTest, MigrationRequestIncludesCardNickname) {
   StartMigrating(/*has_cardholder_name=*/true,
-                 /*set_nickname_to_first_card=*/true);
+                 /*set_nickname_for_first_card=*/true);
   IssueOAuthToken();
 
   // Nickname was set for the first card.
@@ -1545,6 +1936,7 @@ TEST_F(PaymentsClientTest, SelectChallengeOptionWithSmsOtpMethod) {
 
   EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
   assertIncludedInRequest("context_token");
+  assertIncludedInRequest("external_customer_id");
   assertIncludedInRequest("selected_idv_challenge_option");
   assertIncludedInRequest("sms_otp_challenge_option");
   // We should only set the challenge id. No need to send the masked phone
@@ -1593,5 +1985,214 @@ TEST_F(PaymentsClientTest, SelectChallengeOptionResponseMissingContextToken) {
   EXPECT_EQ(AutofillClient::PaymentsRpcResult::kPermanentFailure, result_);
 }
 
-}  // namespace payments
-}  // namespace autofill
+typedef std::tuple<VirtualCardEnrollmentSource,
+                   VirtualCardEnrollmentRequestType,
+                   AutofillClient::PaymentsRpcResult>
+    UpdateVirtualCardEnrollmentTestData;
+
+class UpdateVirtualCardEnrollmentTest
+    : public PaymentsClientTest,
+      public ::testing::WithParamInterface<
+          UpdateVirtualCardEnrollmentTestData> {
+ public:
+  UpdateVirtualCardEnrollmentTest() = default;
+  ~UpdateVirtualCardEnrollmentTest() override = default;
+
+  void TriggerFlow() {
+    VirtualCardEnrollmentSource virtual_card_enrollment_source =
+        std::get<0>(GetParam());
+    VirtualCardEnrollmentRequestType virtual_card_enrollment_request_type =
+        std::get<1>(GetParam());
+    StartUpdateVirtualCardEnrollment(virtual_card_enrollment_source,
+                                     virtual_card_enrollment_request_type);
+    IssueOAuthToken();
+
+    // |response_type_for_test| is the AutofillClient::PaymentsRpcResult
+    // response type we want to test for the combination of
+    // |virtual_card_enrollment_source| and
+    // |virtual_card_enrollment_request_type| we are currently on.
+    AutofillClient::PaymentsRpcResult response_type_for_test =
+        std::get<2>(GetParam());
+    switch (response_type_for_test) {
+      case AutofillClient::PaymentsRpcResult::kSuccess:
+        if (virtual_card_enrollment_request_type ==
+            VirtualCardEnrollmentRequestType::kEnroll) {
+          ReturnResponse(net::HTTP_OK,
+                         "{ \"enroll_result\": \"ENROLL_SUCCESS\" }");
+        } else if (virtual_card_enrollment_request_type ==
+                   VirtualCardEnrollmentRequestType::kUnenroll) {
+          ReturnResponse(net::HTTP_OK, "{}");
+        }
+        break;
+      case AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure:
+        ReturnResponse(
+            net::HTTP_OK,
+            "{ \"error\": { \"code\": \"ANYTHING_ELSE\", "
+            "\"api_error_reason\": \"virtual_card_temporary_error\"} }");
+        break;
+      case AutofillClient::PaymentsRpcResult::kTryAgainFailure:
+        ReturnResponse(net::HTTP_OK,
+                       "{ \"error\": { \"code\": \"INTERNAL\", "
+                       "\"api_error_reason\": \"ANYTHING_ELSE\"} }");
+        break;
+      case AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure:
+        ReturnResponse(
+            net::HTTP_OK,
+            "{ \"error\": { \"code\": \"ANYTHING_ELSE\", "
+            "\"api_error_reason\": \"virtual_card_permanent_error\"} }");
+        break;
+      case AutofillClient::PaymentsRpcResult::kPermanentFailure:
+        ReturnResponse(net::HTTP_OK,
+                       "{ \"error\": { \"code\": \"ANYTHING_ELSE\" } }");
+        break;
+      case AutofillClient::PaymentsRpcResult::kNetworkError:
+        ReturnResponse(net::HTTP_REQUEST_TIMEOUT, "");
+        break;
+      case AutofillClient::PaymentsRpcResult::kNone:
+        NOTREACHED();
+        break;
+    }
+    EXPECT_EQ(response_type_for_test, result_);
+  }
+
+ private:
+  void StartUpdateVirtualCardEnrollment(
+      VirtualCardEnrollmentSource virtual_card_enrollment_source,
+      VirtualCardEnrollmentRequestType virtual_card_enrollment_request_type) {
+    PaymentsClient::UpdateVirtualCardEnrollmentRequestDetails request_details;
+    request_details.virtual_card_enrollment_request_type =
+        virtual_card_enrollment_request_type;
+    request_details.virtual_card_enrollment_source =
+        virtual_card_enrollment_source;
+    request_details.billing_customer_number = 555666777888;
+    if (virtual_card_enrollment_request_type ==
+        VirtualCardEnrollmentRequestType::kEnroll) {
+      request_details.vcn_context_token = "fake context token";
+    }
+    request_details.instrument_id = 12345678;
+    client_->UpdateVirtualCardEnrollment(
+        request_details,
+        base::BindOnce(
+            &PaymentsClientTest::OnDidGetUpdateVirtualCardEnrollmentResponse,
+            weak_ptr_factory_.GetWeakPtr()));
+  }
+};
+
+// Initializes the parameterized test suite with all possible values of
+// VirtualCardEnrollmentSource, VirtualCardEnrollmentRequestType, and
+// AutofillClient::PaymentsRpcResult.
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    UpdateVirtualCardEnrollmentTest,
+    testing::Combine(
+        testing::Values(VirtualCardEnrollmentSource::kUpstream,
+                        VirtualCardEnrollmentSource::kDownstream,
+                        VirtualCardEnrollmentSource::kSettingsPage),
+        testing::Values(VirtualCardEnrollmentRequestType::kEnroll,
+                        VirtualCardEnrollmentRequestType::kUnenroll),
+        testing::Values(
+            AutofillClient::PaymentsRpcResult::kSuccess,
+            AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure,
+            AutofillClient::PaymentsRpcResult::kTryAgainFailure,
+            AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure,
+            AutofillClient::PaymentsRpcResult::kPermanentFailure,
+            AutofillClient::PaymentsRpcResult::kNetworkError)));
+
+// Parameterized test that tests all combinations of
+// VirtualCardEnrollmentSource and VirtualCardEnrollmentRequestType against all
+// possible server responses in the UpdateVirtualCardEnrollmentFlow. This test
+// will be run once for each combination.
+TEST_P(UpdateVirtualCardEnrollmentTest,
+       UpdateVirtualCardEnrollmentTest_TestAllFlows) {
+  TriggerFlow();
+}
+
+class GetVirtualCardEnrollmentDetailsTest
+    : public PaymentsClientTest,
+      public ::testing::WithParamInterface<
+          std::tuple<VirtualCardEnrollmentSource,
+                     AutofillClient::PaymentsRpcResult>> {
+ public:
+  GetVirtualCardEnrollmentDetailsTest() = default;
+  ~GetVirtualCardEnrollmentDetailsTest() override = default;
+};
+
+// Initializes the parameterized test suite with all possible combinations of
+// VirtualCardEnrollmentSource and AutofillClient::PaymentsRpcResult.
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    GetVirtualCardEnrollmentDetailsTest,
+    testing::Combine(
+        testing::Values(VirtualCardEnrollmentSource::kUpstream,
+                        VirtualCardEnrollmentSource::kDownstream,
+                        VirtualCardEnrollmentSource::kSettingsPage),
+        testing::Values(
+            AutofillClient::PaymentsRpcResult::kSuccess,
+            AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure,
+            AutofillClient::PaymentsRpcResult::kTryAgainFailure,
+            AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure,
+            AutofillClient::PaymentsRpcResult::kPermanentFailure,
+            AutofillClient::PaymentsRpcResult::kNetworkError)));
+
+// Parameterized test that tests all combinations of
+// VirtualCardEnrollmentSource and server PaymentsRpcResult. This test
+// will be run once for each combination.
+TEST_P(GetVirtualCardEnrollmentDetailsTest,
+       GetVirtualCardEnrollmentDetailsTest_TestAllFlows) {
+  VirtualCardEnrollmentSource source = std::get<0>(GetParam());
+
+  PaymentsClient::GetDetailsForEnrollmentRequestDetails request_details;
+  request_details.source = source;
+  request_details.instrument_id = 12345678;
+  request_details.billing_customer_number = 555666777888;
+  request_details.risk_data = "fake risk data";
+  request_details.app_locale = "en";
+
+  client_->GetVirtualCardEnrollmentDetails(
+      request_details,
+      base::BindOnce(&PaymentsClientTest::OnDidGetVirtualCardEnrollmentDetails,
+                     weak_ptr_factory_.GetWeakPtr()));
+  IssueOAuthToken();
+
+  // Ensures the PaymentsRpcResult is set correctly.
+  AutofillClient::PaymentsRpcResult result = std::get<1>(GetParam());
+  switch (result) {
+    case AutofillClient::PaymentsRpcResult::kSuccess:
+      ReturnResponse(
+          net::HTTP_OK,
+          "{ \"google_legal_message\": { \"line\" : [{ \"template\": \"This is "
+          "the entire message.\" }] }, \"external_legal_message\": {}, "
+          "\"context_token\": \"some_token\" }");
+      break;
+    case AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure:
+      ReturnResponse(
+          net::HTTP_OK,
+          "{ \"error\": { \"code\": \"ANYTHING_ELSE\", "
+          "\"api_error_reason\": \"virtual_card_temporary_error\"} }");
+      break;
+    case AutofillClient::PaymentsRpcResult::kTryAgainFailure:
+      ReturnResponse(net::HTTP_OK,
+                     "{ \"error\": { \"code\": \"INTERNAL\", "
+                     "\"api_error_reason\": \"ANYTHING_ELSE\"} }");
+      break;
+    case AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure:
+      ReturnResponse(
+          net::HTTP_OK,
+          "{ \"error\": { \"code\": \"ANYTHING_ELSE\", "
+          "\"api_error_reason\": \"virtual_card_permanent_error\"} }");
+      break;
+    case AutofillClient::PaymentsRpcResult::kPermanentFailure:
+      ReturnResponse(net::HTTP_OK,
+                     "{ \"error\": { \"code\": \"ANYTHING_ELSE\" } }");
+      break;
+    case AutofillClient::PaymentsRpcResult::kNetworkError:
+      ReturnResponse(net::HTTP_REQUEST_TIMEOUT, "");
+      break;
+    case AutofillClient::PaymentsRpcResult::kNone:
+      NOTREACHED();
+      break;
+  }
+  EXPECT_EQ(result, result_);
+}
+
+}  // namespace autofill::payments

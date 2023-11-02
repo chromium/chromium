@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -47,7 +47,7 @@ views::View* AppListPage::GetLastFocusableView() {
       this, GetWidget(), true /* reverse */, false /* dont_loop */);
 }
 
-void AppListPage::AnimateOpacity(float current_progress,
+void AppListPage::AnimateOpacity(AppListViewState current_view_state,
                                  AppListViewState target_view_state,
                                  const OpacityAnimator& animator) {
   animator.Run(this, target_view_state != AppListViewState::kClosed);
@@ -57,26 +57,6 @@ void AppListPage::AnimateYPosition(AppListViewState target_view_state,
                                    const TransformAnimator& animator,
                                    float default_offset) {
   animator.Run(default_offset, layer());
-}
-
-gfx::Rect AppListPage::GetAboveContentsOffscreenBounds(
-    const gfx::Size& size) const {
-  gfx::Rect rect(size);
-  rect.set_y(-rect.height());
-  return rect;
-}
-
-gfx::Rect AppListPage::GetBelowContentsOffscreenBounds(
-    const gfx::Size& size) const {
-  DCHECK(contents_view_);
-  gfx::Rect rect(size);
-  rect.set_y(contents_view_->GetContentsBounds().height());
-  return rect;
-}
-
-gfx::Rect AppListPage::GetFullContentsBounds() const {
-  DCHECK(contents_view_);
-  return contents_view_->GetContentsBounds();
 }
 
 gfx::Rect AppListPage::GetDefaultContentsBounds() const {

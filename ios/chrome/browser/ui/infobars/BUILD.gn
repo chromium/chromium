@@ -1,9 +1,9 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 source_set("public") {
-  sources = [ "infobar_positioner.h" ]
+  sources = []
 }
 
 source_set("constants") {
@@ -12,6 +12,7 @@ source_set("constants") {
     "infobar_constants.h",
     "infobar_constants.mm",
   ]
+  deps = [ "//base" ]
 }
 
 source_set("eg2_tests") {
@@ -28,17 +29,17 @@ source_set("eg2_tests") {
     ":eg_test_support+eg2",
     "//base",
     "//base/test:test_support",
-    "//components/strings:components_strings_grit",
+    "//components/strings",
     "//components/translate/core/browser:translate_pref_names",
     "//components/translate/core/common",
-    "//ios/chrome/app/strings:ios_strings_grit",
-    "//ios/chrome/browser:chrome_url_constants",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/translate:eg_test_support+eg2",
     "//ios/chrome/browser/ui/badges:public",
     "//ios/chrome/browser/ui/infobars:constants",
     "//ios/chrome/browser/ui/infobars/banners:public",
     "//ios/chrome/browser/ui/infobars/modals:public",
     "//ios/chrome/browser/ui/popup_menu:constants",
+    "//ios/chrome/browser/url:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/components/webui:url_constants",
     "//ios/testing/earl_grey:eg_test_support+eg2",
@@ -56,6 +57,8 @@ source_set("test_support") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
+    "test_infobar_badge_tab_helper_delegate.h",
+    "test_infobar_badge_tab_helper_delegate.mm",
     "test_infobar_delegate.h",
     "test_infobar_delegate.mm",
   ]
@@ -63,6 +66,9 @@ source_set("test_support") {
     "//base",
     "//components/infobars/core",
     "//ios/chrome/browser/infobars",
+    "//ios/chrome/browser/infobars:badge",
+    "//ios/chrome/browser/infobars:public",
+    "//ios/chrome/browser/ui/badges",
   ]
 }
 

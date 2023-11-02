@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,8 @@
 
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chromeos/network/network_state.h"
-#include "chromeos/network/network_state_handler.h"
+#include "chromeos/ash/components/network/network_state.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
@@ -16,8 +16,8 @@ namespace ui {
 
 namespace {
 
-const chromeos::NetworkState* GetNetworkState(const std::string& network_id) {
-  return chromeos::NetworkHandler::Get()
+const ash::NetworkState* GetNetworkState(const std::string& network_id) {
+  return ash::NetworkHandler::Get()
       ->network_state_handler()
       ->GetNetworkStateFromGuid(network_id);
 }
@@ -77,7 +77,7 @@ std::u16string GetShillErrorString(const std::string& error,
         IDS_CHROMEOS_NETWORK_ERROR_CERT_AUTH_FAILED);
   }
   if (error == shill::kErrorEapAuthenticationFailed) {
-    const chromeos::NetworkState* network =
+    const ash::NetworkState* network =
         network_id.empty() ? nullptr : GetNetworkState(network_id);
     // TLS always requires a client certificate, so show a cert auth
     // failed message for TLS. Other EAP methods do not generally require
@@ -117,6 +117,13 @@ std::u16string GetShillErrorString(const std::string& error,
   }
   if (error == shill::kErrorResultWrongState) {
     return l10n_util::GetStringUTF16(IDS_CHROMEOS_NETWORK_ERROR_WRONG_STATE);
+  }
+  if (error == shill::kErrorResultWepNotSupported) {
+    return l10n_util::GetStringUTF16(
+        IDS_CHROMEOS_NETWORK_ERROR_WEP_NOT_SUPPORTED);
+  }
+  if (error == shill::kErrorTooManySTAs) {
+    return l10n_util::GetStringUTF16(IDS_NETWORK_NETWORK_TO_MANY_STAS_ERROR);
   }
 
   if (base::ToLowerASCII(error) == base::ToLowerASCII(shill::kUnknownString)) {

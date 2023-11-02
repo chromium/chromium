@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -183,8 +183,7 @@ void TabHoverCardMetrics::CardFadeComplete() {
 
 void TabHoverCardMetrics::CardFadeCanceled() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (throughput_tracker_.has_value())
-    throughput_tracker_->Cancel();
+  throughput_tracker_.reset();
 #endif
 }
 

@@ -1,10 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/util/named_guide.h"
 
-#include "base/check.h"
+#import "base/check.h"
 #import "base/mac/foundation_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
@@ -19,17 +19,17 @@ NSString* const kActiveKeyPath = @"active";
 
 @interface NamedGuide ()
 
-// The constraints used to connect the guide to |constrainedView| or
-// |constrainedFrame|.
+// The constraints used to connect the guide to `constrainedView` or
+// `constrainedFrame`.
 @property(nonatomic, strong) NSArray* constraints;
-// A dummy view that is used to support |constrainedFrame|.
+// A dummy view that is used to support `constrainedFrame`.
 @property(nonatomic, strong) UIView* constrainedFrameView;
 
-// Updates |constraints| to constrain the guide to |view|.
+// Updates `constraints` to constrain the guide to `view`.
 - (void)updateConstraintsWithView:(UIView*)view;
 
-// Updates |constrainedFrameView| according to |constrainedFrame| and
-// |autoresizingMask|.  This function will lazily instantiate the view if
+// Updates `constrainedFrameView` according to `constrainedFrame` and
+// `autoresizingMask`.  This function will lazily instantiate the view if
 // necessary and set up constraints so that this layout guide follows the view.
 - (void)updateConstrainedFrameView;
 
@@ -136,8 +136,6 @@ NSString* const kActiveKeyPath = @"active";
   // hierarchy in an effort to minimize additional rendering costs.
   if (_constrainedFrameView)
     [self.owningView insertSubview:_constrainedFrameView atIndex:0];
-
-  [self updateConstraintsWithView:_constrainedFrameView];
 }
 
 #pragma mark - Public
@@ -188,7 +186,7 @@ NSString* const kActiveKeyPath = @"active";
 }
 
 - (void)updateConstrainedFrameView {
-  // Remove the dummy view if |constrainedFrame| is null.
+  // Remove the dummy view if `constrainedFrame` is null.
   if (CGRectIsNull(self.constrainedFrame)) {
     self.constrainedFrameView = nil;
     return;
@@ -196,8 +194,8 @@ NSString* const kActiveKeyPath = @"active";
 
   // Lazily create the view if necessary and set it up using the specified frame
   // and autoresizing mask.
-  // NOTE: The view's |translatesAutoresizingMaskIntoConstraints| remains set to
-  // the default value of |YES| in order to leverage UIKit's built in frame =>
+  // NOTE: The view's `translatesAutoresizingMaskIntoConstraints` remains set to
+  // the default value of `YES` in order to leverage UIKit's built in frame =>
   // constraint conversion.
   if (!self.constrainedFrameView) {
     self.constrainedFrameView = [[UIView alloc] init];
@@ -206,6 +204,7 @@ NSString* const kActiveKeyPath = @"active";
   }
   self.constrainedFrameView.frame = self.constrainedFrame;
   self.constrainedFrameView.autoresizingMask = self.autoresizingMask;
+  [self updateConstraintsWithView:self.constrainedFrameView];
 }
 
 - (void)checkForInactiveConstraints {

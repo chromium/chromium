@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/containers/circular_deque.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -80,10 +81,10 @@ class BulkLeakCheckImpl : public BulkLeakCheck {
                           AnalyzeResponseResult result);
 
   // Delegate for the instance. Should outlive |this|.
-  BulkLeakCheckDelegateInterface* const delegate_;
+  const raw_ptr<BulkLeakCheckDelegateInterface> delegate_;
 
   // Identity manager for the profile.
-  signin::IdentityManager* const identity_manager_;
+  const raw_ptr<signin::IdentityManager> identity_manager_;
 
   // URL loader factory required for the network request to the identity
   // endpoint.

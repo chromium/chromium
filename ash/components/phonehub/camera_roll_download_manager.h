@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,11 @@
 #define ASH_COMPONENTS_PHONEHUB_CAMERA_ROLL_DOWNLOAD_MANAGER_H_
 
 #include "ash/components/phonehub/proto/phonehub_api.pb.h"
+#include "ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "base/callback.h"
-#include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 // Manages photo and videos files downloaded via Camera Roll. Files will be
@@ -33,7 +33,10 @@ class CameraRollDownloadManager {
     kPayloadAlreadyExists,
     // The payload files cannot be created because there is not enough free disk
     // space for the item requested.
-    kInsufficientDiskSpace
+    kInsufficientDiskSpace,
+    // The payload files cannot be created because a file already exists at the
+    // target path, likely a result of some race conditions.
+    kNotUniqueFilePath,
   };
 
   // Creates payload files that can be used to receive an incoming file transfer
@@ -45,7 +48,7 @@ class CameraRollDownloadManager {
   // error.
   using CreatePayloadFilesCallback = base::OnceCallback<void(
       CreatePayloadFilesResult,
-      absl::optional<chromeos::secure_channel::mojom::PayloadFilesPtr>)>;
+      absl::optional<secure_channel::mojom::PayloadFilesPtr>)>;
   virtual void CreatePayloadFiles(
       int64_t payload_id,
       const proto::CameraRollItemMetadata& item_metadata,
@@ -55,7 +58,7 @@ class CameraRollDownloadManager {
   // |update| in the Holding Space tray. The backfile file will be deleted if
   // the transfer was canceled or has failed.
   virtual void UpdateDownloadProgress(
-      chromeos::secure_channel::mojom::FileTransferUpdatePtr update) = 0;
+      secure_channel::mojom::FileTransferUpdatePtr update) = 0;
 
   // Deletes the file created for the given |payload_id|.
   virtual void DeleteFile(int64_t payload_id) = 0;
@@ -65,6 +68,6 @@ class CameraRollDownloadManager {
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_PHONEHUB_CAMERA_ROLL_DOWNLOAD_MANAGER_H_

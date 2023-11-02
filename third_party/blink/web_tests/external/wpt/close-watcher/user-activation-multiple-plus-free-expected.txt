@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Multiple CloseWatchers created from a single user activation close together, but original free CloseWatcher closes separately promise_test: Unhandled rejection with value: object "ReferenceError: CloseWatcher is not defined"
+Harness: the test ran to completion.
+

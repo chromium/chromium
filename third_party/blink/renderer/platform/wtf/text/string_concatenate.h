@@ -110,7 +110,7 @@ class WTF_EXPORT StringTypeAdapter<char*> {
   void WriteTo(UChar* destination) const;
 
  private:
-  StringTypeAdapter<char*>(char* buffer, size_t length);
+  StringTypeAdapter(char* buffer, size_t length);
 
   const char* buffer_;
   unsigned length_;

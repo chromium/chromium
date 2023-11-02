@@ -1,13 +1,11 @@
 [package]
 name = "syn"
-version = "1.0.81" # don't forget to update html_root_url and syn.json
+version = "1.0.99" # don't forget to update html_root_url and syn.json
 authors = ["David Tolnay <dtolnay@gmail.com>"]
-license = "MIT OR Apache-2.0"
+categories = ["development-tools::procedural-macro-helpers", "parser-implementations"]
 description = "Parser for Rust source code"
-repository = "https://github.com/dtolnay/syn"
 documentation = "https://docs.rs/syn"
-categories = ["development-tools::procedural-macro-helpers"]
-readme = "README.md"
+edition = "2018"
 include = [
     "/benches/**",
     "/build.rs",
@@ -18,7 +16,10 @@ include = [
     "/src/**",
     "/tests/**",
 ]
-edition = "2018"
+keywords = ["macros", "syn"]
+license = "MIT OR Apache-2.0"
+readme = "README.md"
+repository = "https://github.com/dtolnay/syn"
 rust-version = "1.31"
 
 [features]
@@ -36,12 +37,13 @@ proc-macro = ["proc-macro2/proc-macro", "quote/proc-macro"]
 test = ["syn-test-suite/all-features"]
 
 [dependencies]
-proc-macro2 = { version = "1.0.32", default-features = false }
+proc-macro2 = { version = "1.0.39", default-features = false }
 quote = { version = "1.0", optional = true, default-features = false }
-unicode-xid = "0.2"
+unicode-ident = "1.0"
 
 [dev-dependencies]
 anyhow = "1.0"
+automod = "1.0"
 flate2 = "1.0"
 insta = "1.0"
 rayon = "1.0"
@@ -71,4 +73,17 @@ rustdoc-args = ["--cfg", "doc_cfg"]
 features = ["full", "visit", "visit-mut", "fold", "extra-traits"]
 
 [workspace]
-members = ["dev", "json", "tests/crates", "tests/features"]
+members = [
+    "dev",
+    "examples/dump-syntax",
+    "examples/heapsize/example",
+    "examples/heapsize/heapsize",
+    "examples/heapsize/heapsize_derive",
+    "examples/lazy-static/example",
+    "examples/lazy-static/lazy-static",
+    "examples/trace-var/example",
+    "examples/trace-var/trace-var",
+    "json",
+    "tests/crates",
+    "tests/features",
+]

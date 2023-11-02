@@ -1,0 +1,15 @@
+Check if an OPTION style is serialized with comparison with the parent OPTGROUP style.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+PASS params.children[1].type is "optgroup"
+PASS params.children[1].children[0].type is undefined.
+PASS params.children[1].children[0].style.color is "rgb(0, 0, 0)"
+PASS params.children[1].children[0].style.backgroundColor is "rgb(255, 255, 255)"
+PASS successfullyParsed is true
+
+TEST COMPLETE
+
+foo
+bar
+baz

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,8 +18,10 @@
 #include "net/base/net_export.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_inclusion_status.h"
-#include "net/cookies/same_party_context.h"
 #include "net/cookies/site_for_cookies.h"
+#include "net/first_party_sets/first_party_set_metadata.h"
+#include "net/first_party_sets/first_party_sets_cache_filter.h"
+#include "net/first_party_sets/same_party_context.h"
 #include "net/proxy_resolution/proxy_retry_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -45,6 +47,7 @@ class CookieOptions;
 class HttpRequestHeaders;
 class HttpResponseHeaders;
 class IPEndPoint;
+class SchemefulSite;
 class URLRequest;
 
 class NET_EXPORT NetworkDelegate {
@@ -78,17 +81,33 @@ class NET_EXPORT NetworkDelegate {
   void NotifyPACScriptError(int line_number, const std::u16string& error);
   bool AnnotateAndMoveUserBlockedCookies(
       const URLRequest& request,
+      const net::FirstPartySetMetadata& first_party_set_metadata,
       CookieAccessResultList& maybe_included_cookies,
-      CookieAccessResultList& excluded_cookies,
-      bool allowed_from_caller);
+      CookieAccessResultList& excluded_cookies);
   bool CanSetCookie(const URLRequest& request,
                     const net::CanonicalCookie& cookie,
-                    CookieOptions* options,
-                    bool allowed_from_caller);
-  bool ForcePrivacyMode(const GURL& url,
-                        const SiteForCookies& site_for_cookies,
-                        const absl::optional<url::Origin>& top_frame_origin,
-                        SamePartyContext::Type same_party_context_type) const;
+                    CookieOptions* options);
+
+  // PrivacySetting is kStateDisallowed iff the given |url| has to be
+  // requested over connection that is not tracked by the server.
+  //
+  // Usually PrivacySetting is kStateAllowed, unless user privacy settings
+  // block cookies from being get or set.
+  //
+  // It may be set to kPartitionedStateAllowedOnly if the request allows
+  // partitioned state to be sent over the connection, but unpartitioned
+  // state should be blocked.
+  enum class PrivacySetting {
+    kStateAllowed,
+    kStateDisallowed,
+    // First-party requests will never have this setting.
+    kPartitionedStateAllowedOnly,
+  };
+  PrivacySetting ForcePrivacyMode(
+      const GURL& url,
+      const SiteForCookies& site_for_cookies,
+      const absl::optional<url::Origin>& top_frame_origin,
+      SamePartyContext::Type same_party_context_type) const;
 
   bool CancelURLRequestWithPolicyViolatingReferrerHeader(
       const URLRequest& request,
@@ -103,6 +122,20 @@ class NET_EXPORT NetworkDelegate {
                              const GURL& endpoint) const;
   bool CanUseReportingClient(const url::Origin& origin,
                              const GURL& endpoint) const;
+
+  // Gets the First-Party Sets cache filter info, which is used to mark the
+  // cache and determine if the previously stored cache of `request_site` can be
+  // accessed.
+  //
+  // The result may be returned synchronously, or `callback` may be invoked
+  // asynchronously with the result. The callback will be invoked iff the return
+  // value is nullopt; i.e. a result will be provided via return value or
+  // callback, but not both, and not neither.
+  absl::optional<FirstPartySetsCacheFilter::MatchInfo>
+  GetFirstPartySetsCacheFilterMatchInfoMaybeAsync(
+      const SchemefulSite& request_site,
+      base::OnceCallback<void(FirstPartySetsCacheFilter::MatchInfo)> callback)
+      const;
 
  protected:
   // Adds the given ExclusionReason to all cookies in
@@ -231,25 +264,18 @@ class NET_EXPORT NetworkDelegate {
   // otherwise.
   virtual bool OnAnnotateAndMoveUserBlockedCookies(
       const URLRequest& request,
+      const net::FirstPartySetMetadata& first_party_set_metadata,
       net::CookieAccessResultList& maybe_included_cookies,
-      net::CookieAccessResultList& excluded_cookies,
-      bool allowed_from_caller) = 0;
+      net::CookieAccessResultList& excluded_cookies) = 0;
 
   // Called when a cookie is set to allow the network delegate to block access
   // to the cookie. This method will never be invoked when
   // LOAD_DO_NOT_SAVE_COOKIES is specified.
-  // The |allowed_from_caller| param is used to pass whether this operation is
-  // allowed from any higher level delegates (for example, in a
-  // LayeredNetworkDelegate). Any custom logic should be ANDed with this bool.
   virtual bool OnCanSetCookie(const URLRequest& request,
                               const CanonicalCookie& cookie,
-                              CookieOptions* options,
-                              bool allowed_from_caller) = 0;
+                              CookieOptions* options) = 0;
 
-  // Returns true if the given |url| has to be requested over connection that
-  // is not tracked by the server. Usually is false, unless user privacy
-  // settings block cookies from being get or set.
-  virtual bool OnForcePrivacyMode(
+  virtual PrivacySetting OnForcePrivacyMode(
       const GURL& url,
       const SiteForCookies& site_for_cookies,
       const absl::optional<url::Origin>& top_frame_origin,
@@ -277,6 +303,12 @@ class NET_EXPORT NetworkDelegate {
 
   virtual bool OnCanUseReportingClient(const url::Origin& origin,
                                        const GURL& endpoint) const = 0;
+
+  virtual absl::optional<FirstPartySetsCacheFilter::MatchInfo>
+  OnGetFirstPartySetsCacheFilterMatchInfoMaybeAsync(
+      const SchemefulSite& request_site,
+      base::OnceCallback<void(FirstPartySetsCacheFilter::MatchInfo)> callback)
+      const = 0;
 };
 
 }  // namespace net

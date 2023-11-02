@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,7 +28,7 @@ class BackgroundSyncDelegate {
  public:
   virtual ~BackgroundSyncDelegate() = default;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Keeps the browser and profile alive to allow a one-shot Background Sync
   // registration to finish firing one sync event.
   virtual std::unique_ptr<
@@ -63,7 +63,7 @@ class BackgroundSyncDelegate {
   // Returns 0 if the engagement level is blink::mojom::EngagementLevel::NONE.
   virtual int GetSiteEngagementPenalty(const GURL& url) = 0;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Schedules the browser to be woken up when the device is online to process
   // registrations of type |sync| after a minimum delay |delay|.
   virtual void ScheduleBrowserWakeUpWithDelay(

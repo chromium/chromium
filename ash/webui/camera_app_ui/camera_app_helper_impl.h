@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,8 @@
 #include "ash/webui/camera_app_ui/camera_app_ui.h"
 #include "ash/webui/camera_app_ui/camera_app_window_state_controller.h"
 #include "ash/webui/camera_app_ui/document_scanner_service_client.h"
+#include "chromeos/services/machine_learning/public/mojom/document_scanner.mojom.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
@@ -69,6 +71,7 @@ class CameraAppHelperImpl : public TabletModeObserver,
       SetExternalScreenMonitorCallback callback) override;
   void OpenFileInGallery(const std::string& name) override;
   void OpenFeedbackDialog(const std::string& placeholder) override;
+  void OpenUrlInBrowser(const GURL& url) override;
   void SetCameraUsageMonitor(
       mojo::PendingRemote<CameraUsageOwnershipMonitor> usage_monitor,
       SetCameraUsageMonitorCallback callback) override;
@@ -77,16 +80,20 @@ class CameraAppHelperImpl : public TabletModeObserver,
   void SendNewCaptureBroadcast(bool is_video, const std::string& name) override;
   void MonitorFileDeletion(const std::string& name,
                            MonitorFileDeletionCallback callback) override;
-  void IsDocumentModeSupported(
-      IsDocumentModeSupportedCallback callback) override;
+  void GetDocumentScannerReadyState(
+      GetDocumentScannerReadyStateCallback callback) override;
+  void CheckDocumentModeReadiness(
+      CheckDocumentModeReadinessCallback callback) override;
   void ScanDocumentCorners(const std::vector<uint8_t>& jpeg_data,
                            ScanDocumentCornersCallback callback) override;
   void ConvertToDocument(const std::vector<uint8_t>& jpeg_data,
                          const std::vector<gfx::PointF>& corners,
+                         chromeos::machine_learning::mojom::Rotation rotation,
                          camera_app::mojom::DocumentOutputFormat output_format,
                          ConvertToDocumentCallback callback) override;
-  void ConvertToPdf(const std::vector<uint8_t>& jpeg_data,
+  void ConvertToPdf(const std::vector<std::vector<uint8_t>>& jpegs_data,
                     ConvertToPdfCallback callback) override;
+  void MaybeTriggerSurvey() override;
 
  private:
   void CheckExternalScreenState();

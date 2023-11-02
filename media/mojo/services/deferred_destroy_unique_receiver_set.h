@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -75,8 +75,8 @@ class DeferredDestroyUniqueReceiverSet {
   DeferredDestroyUniqueReceiverSet& operator=(
       const DeferredDestroyUniqueReceiverSet&) = delete;
 
-  void AddReceiver(std::unique_ptr<DeferredDestroy<Interface>> impl,
-                   mojo::PendingReceiver<Interface> receiver) {
+  void Add(std::unique_ptr<DeferredDestroy<Interface>> impl,
+           mojo::PendingReceiver<Interface> receiver) {
     // Wrap the pointer into a unique_ptr with a deleter.
     Deleter deleter(base::BindRepeating(
         &DeferredDestroyUniqueReceiverSet::OnReceiverRemoved,

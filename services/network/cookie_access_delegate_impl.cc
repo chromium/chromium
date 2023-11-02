@@ -1,13 +1,18 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "services/network/cookie_access_delegate_impl.h"
 
+#include <set>
+
+#include "base/callback_forward.h"
+#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
+#include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_util.h"
-#include "net/cookies/same_party_context.h"
-#include "services/network/first_party_sets/first_party_sets.h"
+#include "net/first_party_sets/first_party_set_metadata.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -15,11 +20,11 @@ namespace network {
 
 CookieAccessDelegateImpl::CookieAccessDelegateImpl(
     mojom::CookieAccessDelegateType type,
-    const FirstPartySets* first_party_sets,
+    FirstPartySetsAccessDelegate* const first_party_sets_access_delegate,
     const CookieSettings* cookie_settings)
     : type_(type),
       cookie_settings_(cookie_settings),
-      first_party_sets_(first_party_sets) {
+      first_party_sets_access_delegate_(first_party_sets_access_delegate) {
   if (type == mojom::CookieAccessDelegateType::USE_CONTENT_SETTINGS) {
     DCHECK(cookie_settings);
   }
@@ -55,36 +60,27 @@ bool CookieAccessDelegateImpl::ShouldIgnoreSameSiteRestrictions(
   return false;
 }
 
-net::SamePartyContext CookieAccessDelegateImpl::ComputeSamePartyContext(
+absl::optional<net::FirstPartySetMetadata>
+CookieAccessDelegateImpl::ComputeFirstPartySetMetadataMaybeAsync(
     const net::SchemefulSite& site,
     const net::SchemefulSite* top_frame_site,
-    const std::set<net::SchemefulSite>& party_context) const {
-  return first_party_sets_ ? first_party_sets_->ComputeContext(
-                                 site, top_frame_site, party_context)
-                           : net::SamePartyContext();
+    const std::set<net::SchemefulSite>& party_context,
+    base::OnceCallback<void(net::FirstPartySetMetadata)> callback) const {
+  if (!first_party_sets_access_delegate_)
+    return {net::FirstPartySetMetadata()};
+  return first_party_sets_access_delegate_->ComputeMetadata(
+      site, top_frame_site, party_context, std::move(callback));
 }
 
-net::FirstPartySetsContextType
-CookieAccessDelegateImpl::ComputeFirstPartySetsContextType(
-    const net::SchemefulSite& site,
-    const absl::optional<net::SchemefulSite>& top_frame_site,
-    const std::set<net::SchemefulSite>& party_context) const {
-  return first_party_sets_ ? first_party_sets_->ComputeContextType(
-                                 site, top_frame_site, party_context)
-                           : net::FirstPartySetsContextType::kUnknown;
-}
-
-bool CookieAccessDelegateImpl::IsInNontrivialFirstPartySet(
-    const net::SchemefulSite& site) const {
-  return first_party_sets_ &&
-         first_party_sets_->IsInNontrivialFirstPartySet(site);
-}
-
-base::flat_map<net::SchemefulSite, std::set<net::SchemefulSite>>
-CookieAccessDelegateImpl::RetrieveFirstPartySets() const {
-  if (!first_party_sets_)
-    return {};
-  return first_party_sets_->Sets();
+absl::optional<FirstPartySetsAccessDelegate::EntriesResult>
+CookieAccessDelegateImpl::FindFirstPartySetEntries(
+    const base::flat_set<net::SchemefulSite>& sites,
+    base::OnceCallback<void(FirstPartySetsAccessDelegate::EntriesResult)>
+        callback) const {
+  if (!first_party_sets_access_delegate_)
+    return {{}};
+  return first_party_sets_access_delegate_->FindEntries(sites,
+                                                        std::move(callback));
 }
 
 }  // namespace network

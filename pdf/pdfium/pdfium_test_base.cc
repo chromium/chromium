@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,15 +13,15 @@
 #include "base/check_op.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
+#include "pdf/loader/url_loader.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/pdfium/pdfium_form_filler.h"
-#include "pdf/ppapi_migration/url_loader.h"
 #include "pdf/test/test_client.h"
 #include "pdf/test/test_document_loader.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/size.h"
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "base/environment.h"
 #endif
 
@@ -29,7 +29,7 @@ namespace chrome_pdf {
 
 namespace {
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 base::FilePath GetTestFontsDir() {
   // base::TestSuite::Initialize() should have already set this.
   std::unique_ptr<base::Environment> env(base::Environment::Create());
@@ -37,7 +37,7 @@ base::FilePath GetTestFontsDir() {
   CHECK(env->GetVar("FONTCONFIG_SYSROOT", &fontconfig_sysroot));
   return base::FilePath(fontconfig_sysroot).AppendASCII("test_fonts");
 }
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -47,7 +47,7 @@ PDFiumTestBase::~PDFiumTestBase() = default;
 
 // static
 bool PDFiumTestBase::UsingTestFonts() {
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   return true;
 #else
   return false;
@@ -105,7 +105,7 @@ PDFiumTestBase::InitializeEngineWithoutLoading(
 
 void PDFiumTestBase::InitializePDFium() {
   font_paths_.clear();
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   test_fonts_path_ = GetTestFontsDir();
   font_paths_.push_back(test_fonts_path_.value().c_str());
   // When non-empty, `font_paths_` has to be terminated with a nullptr.

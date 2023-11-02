@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,11 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "components/viz/common/quads/compositor_frame.h"
@@ -35,9 +36,12 @@
 #include "third_party/khronos/GLES2/gl2.h"
 
 using testing::_;
+using testing::Contains;
 using testing::Eq;
 using testing::Invoke;
 using testing::IsEmpty;
+using testing::Key;
+using testing::Ne;
 using testing::SizeIs;
 using testing::UnorderedElementsAre;
 
@@ -96,12 +100,17 @@ class MockFrameSinkManagerClient : public mojom::FrameSinkManagerClient {
 
 class CompositorFrameSinkSupportTest : public testing::Test {
  public:
-  CompositorFrameSinkSupportTest()
+  explicit CompositorFrameSinkSupportTest(
+      bool override_throttled_frame_rate_params = false)
       : manager_(FrameSinkManagerImpl::InitParams(&shared_bitmap_manager_)),
         begin_frame_source_(0.f, false),
         local_surface_id_(3, kArbitraryToken),
         frame_sync_token_(GenTestSyncToken(4)),
         consumer_sync_token_(GenTestSyncToken(5)) {
+    if (override_throttled_frame_rate_params) {
+      scoped_feature_list_.InitAndEnableFeature(
+          features::kOverrideThrottledFrameRateParams);
+    }
     manager_.SetLocalClient(&frame_sink_manager_client_);
     now_src_ = std::make_unique<base::SimpleTestTickClock>();
     manager_.surface_manager()->SetTickClockForTesting(now_src_.get());
@@ -241,6 +250,7 @@ class CompositorFrameSinkSupportTest : public testing::Test {
   }
 
  protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<base::SimpleTestTickClock> now_src_;
   ServerSharedBitmapManager shared_bitmap_manager_;
   FrameSinkManagerImpl manager_;
@@ -260,12 +270,20 @@ class CompositorFrameSinkSupportTest : public testing::Test {
   const gpu::SyncToken consumer_sync_token_;
 };
 
+class ThrottledBeginFrameCompositorFrameSinkSupportTest
+    : public CompositorFrameSinkSupportTest {
+ protected:
+  ThrottledBeginFrameCompositorFrameSinkSupportTest()
+      : CompositorFrameSinkSupportTest(
+            /*override_throttled_frame_rate_params=*/true) {}
+};
+
 // Tests submitting a frame with resources followed by one with no resources
 // with no resource provider action in between.
 TEST_F(CompositorFrameSinkSupportTest, ResourceLifetimeSimple) {
   ResourceId first_frame_ids[] = {ResourceId(1), ResourceId(2), ResourceId(3)};
   SubmitCompositorFrameWithResources(first_frame_ids,
-                                     base::size(first_frame_ids));
+                                     std::size(first_frame_ids));
 
   // All of the resources submitted in the first frame are still in use at this
   // time by virtue of being in the pending frame, so none can be returned to
@@ -283,11 +301,11 @@ TEST_F(CompositorFrameSinkSupportTest, ResourceLifetimeSimple) {
   // Resources were never consumed so no sync token should be set.
   CheckReturnedResourcesMatchExpected(
       expected_returned_ids, expected_returned_counts,
-      base::size(expected_returned_counts), gpu::SyncToken());
+      std::size(expected_returned_counts), gpu::SyncToken());
 
   ResourceId third_frame_ids[] = {ResourceId(4), ResourceId(5), ResourceId(6)};
   SubmitCompositorFrameWithResources(third_frame_ids,
-                                     base::size(third_frame_ids));
+                                     std::size(third_frame_ids));
 
   // All of the resources submitted in the third frame are still in use at this
   // time by virtue of being in the pending frame, so none can be returned to
@@ -299,7 +317,7 @@ TEST_F(CompositorFrameSinkSupportTest, ResourceLifetimeSimple) {
   // make all resources of third frame available to be returned.
   ResourceId forth_frame_ids[] = {ResourceId(7), ResourceId(8), ResourceId(9)};
   SubmitCompositorFrameWithResources(forth_frame_ids,
-                                     base::size(forth_frame_ids));
+                                     std::size(forth_frame_ids));
 
   ResourceId forth_expected_returned_ids[] = {ResourceId(4), ResourceId(5),
                                               ResourceId(6)};
@@ -307,7 +325,7 @@ TEST_F(CompositorFrameSinkSupportTest, ResourceLifetimeSimple) {
   // Resources were never consumed so no sync token should be set.
   CheckReturnedResourcesMatchExpected(
       forth_expected_returned_ids, forth_expected_returned_counts,
-      base::size(forth_expected_returned_counts), gpu::SyncToken());
+      std::size(forth_expected_returned_counts), gpu::SyncToken());
 }
 
 // Tests submitting a frame with resources followed by one with no resources
@@ -316,7 +334,7 @@ TEST_F(CompositorFrameSinkSupportTest,
        ResourceLifetimeSimpleWithProviderHoldingAlive) {
   ResourceId first_frame_ids[] = {ResourceId(1), ResourceId(2), ResourceId(3)};
   SubmitCompositorFrameWithResources(first_frame_ids,
-                                     base::size(first_frame_ids));
+                                     std::size(first_frame_ids));
 
   // All of the resources submitted in the first frame are still in use at this
   // time by virtue of being in the pending frame, so none can be returned to
@@ -335,7 +353,7 @@ TEST_F(CompositorFrameSinkSupportTest,
   fake_support_client_.clear_returned_resources();
 
   int release_counts[] = {1, 1, 1};
-  UnrefResources(first_frame_ids, release_counts, base::size(first_frame_ids));
+  UnrefResources(first_frame_ids, release_counts, std::size(first_frame_ids));
 
   // None is returned to the client since DidReceiveCompositorAck is not
   // invoked.
@@ -349,7 +367,7 @@ TEST_F(CompositorFrameSinkSupportTest,
   int expected_returned_counts[] = {1, 1, 1};
   CheckReturnedResourcesMatchExpected(
       expected_returned_ids, expected_returned_counts,
-      base::size(expected_returned_counts), consumer_sync_token_);
+      std::size(expected_returned_counts), consumer_sync_token_);
 }
 
 // Tests referencing a resource, unref'ing it to zero, then using it again
@@ -357,14 +375,14 @@ TEST_F(CompositorFrameSinkSupportTest,
 TEST_F(CompositorFrameSinkSupportTest, ResourceReusedBeforeReturn) {
   ResourceId first_frame_ids[] = {ResourceId(7)};
   SubmitCompositorFrameWithResources(first_frame_ids,
-                                     base::size(first_frame_ids));
+                                     std::size(first_frame_ids));
 
   // This removes all references to resource id 7.
   SubmitCompositorFrameWithResources(nullptr, 0);
 
   // This references id 7 again.
   SubmitCompositorFrameWithResources(first_frame_ids,
-                                     base::size(first_frame_ids));
+                                     std::size(first_frame_ids));
 
   // This removes it again.
   SubmitCompositorFrameWithResources(nullptr, 0);
@@ -387,7 +405,7 @@ TEST_F(CompositorFrameSinkSupportTest, ResourceReusedBeforeReturn) {
 TEST_F(CompositorFrameSinkSupportTest, ResourceRefMultipleTimes) {
   ResourceId first_frame_ids[] = {ResourceId(3), ResourceId(4)};
   SubmitCompositorFrameWithResources(first_frame_ids,
-                                     base::size(first_frame_ids));
+                                     std::size(first_frame_ids));
 
   // Ref resources from the first frame twice.
   RefCurrentFrameResources();
@@ -395,7 +413,7 @@ TEST_F(CompositorFrameSinkSupportTest, ResourceRefMultipleTimes) {
 
   ResourceId second_frame_ids[] = {ResourceId(4), ResourceId(5)};
   SubmitCompositorFrameWithResources(second_frame_ids,
-                                     base::size(second_frame_ids));
+                                     std::size(second_frame_ids));
 
   // Ref resources from the second frame 3 times.
   RefCurrentFrameResources();
@@ -417,18 +435,18 @@ TEST_F(CompositorFrameSinkSupportTest, ResourceRefMultipleTimes) {
     SCOPED_TRACE("unref all 3");
     ResourceId ids_to_unref[] = {ResourceId(3), ResourceId(4), ResourceId(5)};
     int counts[] = {1, 1, 1};
-    UnrefResources(ids_to_unref, counts, base::size(ids_to_unref));
+    UnrefResources(ids_to_unref, counts, std::size(ids_to_unref));
 
     EXPECT_EQ(0u, fake_support_client_.returned_resources().size());
     fake_support_client_.clear_returned_resources();
 
-    UnrefResources(ids_to_unref, counts, base::size(ids_to_unref));
+    UnrefResources(ids_to_unref, counts, std::size(ids_to_unref));
     SubmitCompositorFrameWithResources(nullptr, 0);
     ResourceId expected_returned_ids[] = {ResourceId(3)};
     int expected_returned_counts[] = {1};
     CheckReturnedResourcesMatchExpected(
         expected_returned_ids, expected_returned_counts,
-        base::size(expected_returned_counts), consumer_sync_token_);
+        std::size(expected_returned_counts), consumer_sync_token_);
   }
 
   // Expected refs remaining:
@@ -438,14 +456,14 @@ TEST_F(CompositorFrameSinkSupportTest, ResourceRefMultipleTimes) {
     SCOPED_TRACE("unref 4 and 5");
     ResourceId ids_to_unref[] = {ResourceId(4), ResourceId(5)};
     int counts[] = {1, 1};
-    UnrefResources(ids_to_unref, counts, base::size(ids_to_unref));
+    UnrefResources(ids_to_unref, counts, std::size(ids_to_unref));
     SubmitCompositorFrameWithResources(nullptr, 0);
 
     ResourceId expected_returned_ids[] = {ResourceId(5)};
     int expected_returned_counts[] = {1};
     CheckReturnedResourcesMatchExpected(
         expected_returned_ids, expected_returned_counts,
-        base::size(expected_returned_counts), consumer_sync_token_);
+        std::size(expected_returned_counts), consumer_sync_token_);
   }
 
   // Now, just 2 refs remaining on resource 4. Unref both at once and make sure
@@ -454,21 +472,21 @@ TEST_F(CompositorFrameSinkSupportTest, ResourceRefMultipleTimes) {
     SCOPED_TRACE("unref only 4");
     ResourceId ids_to_unref[] = {ResourceId(4)};
     int counts[] = {2};
-    UnrefResources(ids_to_unref, counts, base::size(ids_to_unref));
+    UnrefResources(ids_to_unref, counts, std::size(ids_to_unref));
     SubmitCompositorFrameWithResources(nullptr, 0);
 
     ResourceId expected_returned_ids[] = {ResourceId(4)};
     int expected_returned_counts[] = {2};
     CheckReturnedResourcesMatchExpected(
         expected_returned_ids, expected_returned_counts,
-        base::size(expected_returned_counts), consumer_sync_token_);
+        std::size(expected_returned_counts), consumer_sync_token_);
   }
 }
 
 TEST_F(CompositorFrameSinkSupportTest, ResourceLifetime) {
   ResourceId first_frame_ids[] = {ResourceId(1), ResourceId(2), ResourceId(3)};
   SubmitCompositorFrameWithResources(first_frame_ids,
-                                     base::size(first_frame_ids));
+                                     std::size(first_frame_ids));
 
   // All of the resources submitted in the first frame are still in use at this
   // time by virtue of being in the pending frame, so none can be returned to
@@ -481,14 +499,14 @@ TEST_F(CompositorFrameSinkSupportTest, ResourceLifetime) {
   // only referenced by the first frame.
   ResourceId second_frame_ids[] = {ResourceId(2), ResourceId(3), ResourceId(4)};
   SubmitCompositorFrameWithResources(second_frame_ids,
-                                     base::size(second_frame_ids));
+                                     std::size(second_frame_ids));
   {
     SCOPED_TRACE("second frame");
     ResourceId expected_returned_ids[] = {ResourceId(1)};
     int expected_returned_counts[] = {1};
     CheckReturnedResourcesMatchExpected(
         expected_returned_ids, expected_returned_counts,
-        base::size(expected_returned_counts), gpu::SyncToken());
+        std::size(expected_returned_counts), gpu::SyncToken());
   }
 
   // The third frame references a disjoint set of resources, so we expect to
@@ -498,7 +516,7 @@ TEST_F(CompositorFrameSinkSupportTest, ResourceLifetime) {
   ResourceId third_frame_ids[] = {ResourceId(10), ResourceId(11),
                                   ResourceId(12), ResourceId(13)};
   SubmitCompositorFrameWithResources(third_frame_ids,
-                                     base::size(third_frame_ids));
+                                     std::size(third_frame_ids));
 
   {
     SCOPED_TRACE("third frame");
@@ -507,7 +525,7 @@ TEST_F(CompositorFrameSinkSupportTest, ResourceLifetime) {
     int expected_returned_counts[] = {2, 2, 1};
     CheckReturnedResourcesMatchExpected(
         expected_returned_ids, expected_returned_counts,
-        base::size(expected_returned_counts), gpu::SyncToken());
+        std::size(expected_returned_counts), gpu::SyncToken());
   }
 
   // Simulate a ResourceProvider taking a ref on all of the resources.
@@ -515,7 +533,7 @@ TEST_F(CompositorFrameSinkSupportTest, ResourceLifetime) {
 
   ResourceId fourth_frame_ids[] = {ResourceId(12), ResourceId(13)};
   SubmitCompositorFrameWithResources(fourth_frame_ids,
-                                     base::size(fourth_frame_ids));
+                                     std::size(fourth_frame_ids));
 
   EXPECT_EQ(0u, fake_support_client_.returned_resources().size());
 
@@ -531,7 +549,7 @@ TEST_F(CompositorFrameSinkSupportTest, ResourceLifetime) {
     ResourceId ids_to_unref[] = {ResourceId(10), ResourceId(11), ResourceId(12),
                                  ResourceId(13)};
     int counts[] = {1, 1, 1, 1};
-    UnrefResources(ids_to_unref, counts, base::size(ids_to_unref));
+    UnrefResources(ids_to_unref, counts, std::size(ids_to_unref));
   }
 
   // Nothing is returned to the client yet since DidReceiveCompositorFrameAck
@@ -545,7 +563,7 @@ TEST_F(CompositorFrameSinkSupportTest, ResourceLifetime) {
   {
     ResourceId ids_to_unref[] = {ResourceId(12), ResourceId(13)};
     int counts[] = {1, 1};
-    UnrefResources(ids_to_unref, counts, base::size(ids_to_unref));
+    UnrefResources(ids_to_unref, counts, std::size(ids_to_unref));
   }
 
   // Resources 12 and 13 are still in use by the current frame, so they
@@ -563,7 +581,7 @@ TEST_F(CompositorFrameSinkSupportTest, ResourceLifetime) {
     int expected_returned_counts[] = {1, 1, 2, 2};
     CheckReturnedResourcesMatchExpected(
         expected_returned_ids, expected_returned_counts,
-        base::size(expected_returned_counts), consumer_sync_token_);
+        std::size(expected_returned_counts), consumer_sync_token_);
   }
 }
 
@@ -673,7 +691,7 @@ TEST_F(CompositorFrameSinkSupportTest, ProhibitsUnprivilegedCopyRequests) {
   ResourceId frame_resource_ids[] = {ResourceId(1), ResourceId(2),
                                      ResourceId(3)};
   AddResourcesToFrame(&frame, frame_resource_ids,
-                      base::size(frame_resource_ids));
+                      std::size(frame_resource_ids));
 
   EXPECT_FALSE(SubmitCompositorFrameWithCopyRequest(std::move(frame),
                                                     std::move(request)));
@@ -682,7 +700,7 @@ TEST_F(CompositorFrameSinkSupportTest, ProhibitsUnprivilegedCopyRequests) {
 
   // All the resources in the rejected frame should have been returned.
   CheckReturnedResourcesMatchExpected(frame_resource_ids,
-                                      base::size(frame_resource_ids));
+                                      std::size(frame_resource_ids));
 
   manager_.InvalidateFrameSinkId(kAnotherArbitraryFrameSinkId);
 }
@@ -975,7 +993,7 @@ TEST_F(CompositorFrameSinkSupportTest, FrameSizeMismatch) {
   ResourceId frame_resource_ids[] = {ResourceId(1), ResourceId(2),
                                      ResourceId(3)};
   AddResourcesToFrame(&frame, frame_resource_ids,
-                      base::size(frame_resource_ids));
+                      std::size(frame_resource_ids));
 
   result = support_->MaybeSubmitCompositorFrame(
       local_surface_id_, std::move(frame), absl::nullopt, 0,
@@ -985,7 +1003,7 @@ TEST_F(CompositorFrameSinkSupportTest, FrameSizeMismatch) {
 
   // All the resources in the rejected frame should have been returned.
   CheckReturnedResourcesMatchExpected(frame_resource_ids,
-                                      base::size(frame_resource_ids));
+                                      std::size(frame_resource_ids));
 }
 
 // Check that if the device scale factor of a CompositorFrame doesn't match the
@@ -1049,7 +1067,7 @@ TEST_F(CompositorFrameSinkSupportTest, PassesOnBeginFrameAcks) {
   support_->SetNeedsBeginFrame(false);
 }
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
 // https://crbug.com/1223023
 #define MAYBE_NeedsBeginFrameResetAfterPresentationFeedback \
   DISABLED_NeedsBeginFrameResetAfterPresentationFeedback
@@ -1554,7 +1572,7 @@ TEST_F(CompositorFrameSinkSupportTest, ThrottleUnresponsiveClient) {
 // Verifies that when CompositorFrameSinkSupport has its |begin_frame_interval_|
 // set, any BeginFrame would be sent only after this interval has passed from
 // the time when the last BeginFrame was sent.
-TEST_F(CompositorFrameSinkSupportTest, BeginFrameInterval) {
+TEST_F(ThrottledBeginFrameCompositorFrameSinkSupportTest, BeginFrameInterval) {
   FakeExternalBeginFrameSource begin_frame_source(0.f, false);
 
   testing::NiceMock<MockCompositorFrameSinkClient> mock_client;
@@ -1583,9 +1601,14 @@ TEST_F(CompositorFrameSinkSupportTest, BeginFrameInterval) {
       EXPECT_CALL(mock_client, OnBeginFrame(_, _)).Times(0);
       ++frames_throttled_since_last;
     } else {
-      args.frames_throttled_since_last = frames_throttled_since_last;
+      BeginFrameArgs expected_args(args);
+      expected_args.interval = throttled_interval;
+      expected_args.deadline =
+          frame_time + throttled_interval -
+          BeginFrameArgs::DefaultEstimatedDisplayDrawTime(interval);
+      expected_args.frames_throttled_since_last = frames_throttled_since_last;
       frames_throttled_since_last = 0;
-      EXPECT_CALL(mock_client, OnBeginFrame(args, _)).WillOnce([&]() {
+      EXPECT_CALL(mock_client, OnBeginFrame(expected_args, _)).WillOnce([&]() {
         support->SubmitCompositorFrame(local_surface_id_,
                                        MakeDefaultCompositorFrame());
         GetSurfaceForId(id)->MarkAsDrawn();
@@ -1601,6 +1624,48 @@ TEST_F(CompositorFrameSinkSupportTest, BeginFrameInterval) {
   // In total 10 frames should have been sent (5fps x 2 seconds).
   EXPECT_EQ(sent_frames, 10);
   support->SetNeedsBeginFrame(false);
+}
+
+TEST_F(ThrottledBeginFrameCompositorFrameSinkSupportTest,
+       UsesThrottledIntervalInPresentationFeedback) {
+  static constexpr base::TimeDelta kThrottledFrameInterval = base::Hertz(5);
+  // Request BeginFrames.
+  support_->SetNeedsBeginFrame(true);
+  support_->ThrottleBeginFrame(kThrottledFrameInterval);
+  ASSERT_THAT(BeginFrameArgs::DefaultInterval(), Ne(kThrottledFrameInterval));
+
+  base::TimeTicks frame_time = base::TimeTicks::Now();
+
+  // Issue a BeginFrame.
+  BeginFrameArgs args =
+      CreateBeginFrameArgsForTesting(BEGINFRAME_FROM_HERE, 0, 1, frame_time);
+  begin_frame_source_.TestOnBeginFrame(args);
+
+  // Client submits a compositor frame in response.
+  BeginFrameAck ack(args, true);
+  CompositorFrame frame = CompositorFrameBuilder()
+                              .AddDefaultRenderPass()
+                              .SetBeginFrameAck(ack)
+                              .Build();
+  auto token = frame.metadata.frame_token;
+  support_->SubmitCompositorFrame(local_surface_id_, std::move(frame));
+
+  // The presentation-feedback from the last submitted frame arrives.
+  SendPresentationFeedback(support_.get(), token);
+
+  // Issue a new BeginFrame. The frame timing details with submitted
+  // presentation feedback should be received with the throttled interval.
+  frame_time += kThrottledFrameInterval;
+  args = CreateBeginFrameArgsForTesting(BEGINFRAME_FROM_HERE, 1, 2, frame_time);
+  begin_frame_source_.TestOnBeginFrame(args);
+
+  ASSERT_THAT(fake_support_client_.all_frame_timing_details(), SizeIs(1));
+  ASSERT_THAT(fake_support_client_.all_frame_timing_details(),
+              Contains(Key(token)));
+  EXPECT_THAT(fake_support_client_.all_frame_timing_details()
+                  .at(token)
+                  .presentation_feedback.interval,
+              Eq(kThrottledFrameInterval));
 }
 
 TEST_F(CompositorFrameSinkSupportTest, ForceFullFrameToActivateSurface) {
@@ -1632,17 +1697,16 @@ TEST_F(CompositorFrameSinkSupportTest, ForceFullFrameToActivateSurface) {
 
 TEST_F(CompositorFrameSinkSupportTest, GetCopyOutputRequestRegion) {
   // No surface with active frame.
-  EXPECT_EQ((gfx::Rect{}), support_->GetCopyOutputRequestRegion(
-                               CapturableFrameSink::RegionSpecifier()));
+  EXPECT_EQ((gfx::Rect{}),
+            support_->GetCopyOutputRequestRegion(VideoCaptureSubTarget()));
 
   // Surface with active frame but no capture identifier.
   ResourceId first_frame_ids[] = {ResourceId(1), ResourceId(2), ResourceId(3),
                                   ResourceId(4), ResourceId(5)};
   SubmitCompositorFrameWithResources(first_frame_ids,
-                                     base::size(first_frame_ids));
+                                     std::size(first_frame_ids));
   EXPECT_EQ((gfx::Rect{0, 0, 20, 20}),
-            (support_->GetCopyOutputRequestRegion(
-                CapturableFrameSink::RegionSpecifier())));
+            (support_->GetCopyOutputRequestRegion(VideoCaptureSubTarget())));
 
   // Render pass with subtree size.
   const SurfaceId surface_id(support_->frame_sink_id(), local_surface_id_);
@@ -1704,8 +1768,11 @@ TEST_F(CompositorFrameSinkSupportTest, GetCopyOutputRequestRegion) {
       gfx::Rect{0, 0, 20, 20};
   frame_with_crop_id_and_bounds.metadata.capture_bounds =
       RegionCaptureBounds{{{crop_id, gfx::Rect{0, 0, 13, 13}}}};
-  support_->SubmitCompositorFrame(local_surface_id_,
-                                  std::move(frame_with_crop_id_and_bounds));
+
+  // mark the surface as damaged to update the capture bounds.
+  support_->OnSurfaceAggregatedDamage(
+      /*surface*/ nullptr, local_surface_id_, frame_with_crop_id_and_bounds,
+      gfx::Rect{0, 0, 20, 20}, base::TimeTicks::Now());
 
   EXPECT_EQ((gfx::Rect{0, 0, 13, 13}),
             support_->GetCopyOutputRequestRegion(crop_id));

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,21 @@
  * @fileoverview Polymer element for displaying encryption migration screen.
  */
 
-/* #js_imports_placeholder */
+import {afterNextRender, Polymer, PolymerElement, html, flush, mixinBehaviors, dom} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '//resources/polymer/v3_0/paper-progress/paper-progress.js';
+import '//resources/polymer/v3_0/paper-styles/color.js';
+
+import {OOBE_UI_STATE, SCREEN_GAIA_SIGNIN} from '../../components/display_manager_types.m.js';
+import '../../components/oobe_icons.m.js';
+import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.m.js';
+import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.m.js';
+import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.m.js';
+import {OobeTextButton} from '../../components/buttons/oobe_text_button.m.js';
+import '../../components/common_styles/oobe_dialog_host_styles.m.js';
+import '../../components/dialogs/oobe_adaptive_dialog.m.js';
+
 
 /**
  * Enum for the UI states corresponding to sub steps inside migration screen.
@@ -30,16 +44,18 @@ var EncryptionMigrationUIState = {
  * @implements {OobeI18nBehaviorInterface}
  * @implements {MultiStepBehaviorInterface}
  */
-const EncryptionMigrationBase = Polymer.mixinBehaviors(
+const EncryptionMigrationBase = mixinBehaviors(
     [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior],
-    Polymer.Element);
+    PolymerElement);
 
 class EncryptionMigration extends EncryptionMigrationBase {
   static get is() {
     return 'encryption-migration-element';
   }
 
-  /* #html_template_placeholder */
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
   static get properties() {
     return {
@@ -102,7 +118,6 @@ class EncryptionMigration extends EncryptionMigrationBase {
     this.isSkipped = false;
     this.availableSpaceInString = '';
     this.necessarySpaceInString = '';
-    this.ignoreAccelerators = true;
   }
 
   get UI_STEPS() {
@@ -134,9 +149,7 @@ class EncryptionMigration extends EncryptionMigrationBase {
 
   ready() {
     super.ready();
-    this.initializeLoginScreen('EncryptionMigrationScreen', {
-      resetAllowed: false,
-    });
+    this.initializeLoginScreen('EncryptionMigrationScreen');
   }
 
   /**

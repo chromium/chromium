@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -130,8 +130,7 @@ class ManualFillingController {
   // Called by the UI to explicitly request a new sheet of the given type.
   virtual void RequestAccessorySheet(
       autofill::AccessoryTabType tab_type,
-      base::OnceCallback<void(const autofill::AccessorySheetData&)>
-          callback) = 0;
+      base::OnceCallback<void(autofill::AccessorySheetData)> callback) = 0;
 
   // -----------------
   // Member accessors:

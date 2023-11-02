@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,8 +37,15 @@ FakeContentLayerClient::SkottieData::SkottieData(
     scoped_refptr<SkottieWrapper> skottie,
     const gfx::Rect& dst,
     float t,
-    SkottieFrameDataMap images)
-    : skottie(std::move(skottie)), dst(dst), t(t), images(std::move(images)) {}
+    SkottieFrameDataMap images,
+    SkottieColorMap color_map,
+    SkottieTextPropertyValueMap text_map)
+    : skottie(std::move(skottie)),
+      dst(dst),
+      t(t),
+      images(std::move(images)),
+      color_map(std::move(color_map)),
+      text_map(std::move(text_map)) {}
 
 FakeContentLayerClient::SkottieData::SkottieData(const SkottieData& other) =
     default;
@@ -77,7 +84,7 @@ FakeContentLayerClient::PaintContentsToDisplayList() {
     if (!it->transform.IsIdentity()) {
       display_list->StartPaint();
       display_list->push<SaveOp>();
-      display_list->push<ConcatOp>(it->transform.GetMatrixAsSkM44());
+      display_list->push<ConcatOp>(gfx::TransformToSkM44(it->transform));
       display_list->EndPaintOfPairedBegin();
     }
 
@@ -103,9 +110,10 @@ FakeContentLayerClient::PaintContentsToDisplayList() {
 
   for (const SkottieData& skottie_data : skottie_data_) {
     display_list->StartPaint();
-    display_list->push<DrawSkottieOp>(skottie_data.skottie,
-                                      gfx::RectToSkRect(skottie_data.dst),
-                                      skottie_data.t, skottie_data.images);
+    display_list->push<DrawSkottieOp>(
+        skottie_data.skottie, gfx::RectToSkRect(skottie_data.dst),
+        skottie_data.t, skottie_data.images, skottie_data.color_map,
+        skottie_data.text_map);
     display_list->EndPaintOfUnpaired(PaintableRegion());
   }
 
@@ -129,7 +137,7 @@ FakeContentLayerClient::PaintContentsToDisplayList() {
     display_list->StartPaint();
     while (!draw_rect.IsEmpty()) {
       display_list->push<DrawIRectOp>(gfx::RectToSkIRect(draw_rect), flags);
-      draw_rect.Inset(1, 1);
+      draw_rect.Inset(1);
     }
     display_list->EndPaintOfUnpaired(PaintableRegion());
   }

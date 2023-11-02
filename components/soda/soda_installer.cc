@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/observer_list.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "components/live_caption/pref_names.h"
@@ -23,6 +24,14 @@
 namespace {
 
 constexpr int kSodaCleanUpDelayInDays = 30;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+
+inline std::string GetProjectorLanguageCode(PrefService* pref_service) {
+  return pref_service->GetString(ash::prefs::kProjectorCreationFlowLanguage);
+}
+
+#endif  // IS_CHROMEOS_ASH
 
 }  // namespace
 
@@ -73,10 +82,10 @@ void SodaInstaller::Init(PrefService* profile_prefs,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!base::FeatureList::IsEnabled(
           ash::features::kOnDeviceSpeechRecognition) ||
-#else  // !BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption) ||
-#endif
       soda_installer_initialized_) {
+#else  // !BUILDFLAG(IS_CHROMEOS_ASH)
+  if (soda_installer_initialized_) {
+#endif
     return;
   }
 
@@ -87,20 +96,20 @@ void SodaInstaller::Init(PrefService* profile_prefs,
     global_prefs->SetTime(prefs::kSodaScheduledDeletionTime, base::Time());
     SodaInstaller::GetInstance()->InstallSoda(global_prefs);
 
-    if (global_prefs->GetList(prefs::kSodaRegisteredLanguagePacks)
-            ->GetList()
-            .empty()) {
+    if (global_prefs->GetList(prefs::kSodaRegisteredLanguagePacks).empty()) {
       // TODO(crbug.com/1200667): Register the default language used by
       // Dictation on ChromeOS.
-      // TODO(crbug.com/1165437): Register the default language used by
-      // Projector on ChromeOS.
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      RegisterLanguage(GetProjectorLanguageCode(profile_prefs), global_prefs);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
       RegisterLanguage(prefs::GetLiveCaptionLanguageCode(profile_prefs),
                        global_prefs);
     }
 
     for (const auto& language :
-         global_prefs->GetList(prefs::kSodaRegisteredLanguagePacks)
-             ->GetList()) {
+         global_prefs->GetList(prefs::kSodaRegisteredLanguagePacks)) {
       SodaInstaller::GetInstance()->InstallLanguage(language.GetString(),
                                                     global_prefs);
     }
@@ -131,12 +140,8 @@ bool SodaInstaller::IsSodaInstalled(LanguageCode language_code) const {
   return (soda_binary_installed_ && IsLanguageInstalled(language_code));
 }
 
-bool SodaInstaller::IsAnyLanguagePackInstalled() const {
-  return !installed_languages_.empty();
-}
-
 bool SodaInstaller::IsLanguageInstalled(LanguageCode language_code) const {
-  return installed_languages_.find(language_code) != installed_languages_.end();
+  return base::Contains(installed_languages_, language_code);
 }
 
 void SodaInstaller::AddObserver(Observer* observer) {
@@ -147,20 +152,44 @@ void SodaInstaller::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void SodaInstaller::NotifySodaInstalledForTesting() {
-  soda_binary_installed_ = true;
-  is_soda_downloading_ = false;
-  installed_languages_.insert(LanguageCode::kEnUs);
-  language_pack_progress_.clear();
-  NotifyOnSodaInstalled();
+void SodaInstaller::NotifySodaInstalledForTesting(LanguageCode language_code) {
+  // TODO: Call the actual functions in SodaInstallerImpl and
+  // SodaInstallerImpleChromeOS that do this logic
+  // (e.g. SodaInstallerImpl::OnSodaBinaryInstalled) rather than faking it.
+
+  // If language code is none, this signifies that the SODA binary installed.
+  if (language_code == LanguageCode::kNone) {
+    soda_binary_installed_ = true;
+    is_soda_downloading_ = false;
+    for (LanguageCode installed_language : installed_languages_) {
+      NotifyOnSodaInstalled(installed_language);
+    }
+    return;
+  }
+
+  // Otherwise, this means a language pack installed.
+  installed_languages_.insert(language_code);
+  if (base::Contains(language_pack_progress_, language_code))
+    language_pack_progress_.erase(language_code);
+  if (soda_binary_installed_)
+    NotifyOnSodaInstalled(language_code);
 }
 
-void SodaInstaller::NotifySodaErrorForTesting() {
-  soda_binary_installed_ = false;
-  is_soda_downloading_ = false;
-  installed_languages_.clear();
-  language_pack_progress_.clear();
-  NotifyOnSodaError();
+void SodaInstaller::NotifySodaErrorForTesting(LanguageCode language_code,
+                                              ErrorCode error_code) {
+  // TODO: Call the actual functions in SodaInstallerImpl and
+  // SodaInstallerImpleChromeOS that do this logic rather than faking it.
+  if (language_code == LanguageCode::kNone) {
+    // Error with the SODA binary download.
+    soda_binary_installed_ = false;
+    is_soda_downloading_ = false;
+    language_pack_progress_.clear();
+  } else {
+    // Error with the language pack download.
+    if (base::Contains(language_pack_progress_, language_code))
+      language_pack_progress_.erase(language_code);
+  }
+  NotifyOnSodaInstallError(language_code, error_code);
 }
 
 void SodaInstaller::UninstallSodaForTesting() {
@@ -171,99 +200,72 @@ void SodaInstaller::UninstallSodaForTesting() {
   language_pack_progress_.clear();
 }
 
-void SodaInstaller::NotifySodaDownloadProgressForTesting(int progress) {
-  soda_binary_installed_ = false;
-  is_soda_downloading_ = true;
-  installed_languages_.clear();
-  NotifyOnSodaProgress(progress);
+void SodaInstaller::NotifySodaProgressForTesting(int progress,
+                                                 LanguageCode language_code) {
+  // TODO: Call the actual functions in SodaInstallerImpl and
+  // SodaInstallerImpleChromeOS that do this logic rather than faking it.
+  if (language_code == LanguageCode::kNone) {
+    // SODA binary download progress.
+    soda_binary_installed_ = false;
+    is_soda_downloading_ = true;
+  } else {
+    // Language pack download progress.
+    if (base::Contains(language_pack_progress_, language_code))
+      language_pack_progress_.insert({language_code, progress});
+    else
+      language_pack_progress_[language_code] = progress;
+  }
+  NotifyOnSodaProgress(language_code, progress);
 }
 
-void SodaInstaller::NotifyOnSodaLanguagePackInstalledForTesting(
-    LanguageCode language_code) {
-  installed_languages_.insert(language_code);
-  auto it = language_pack_progress_.find(language_code);
-  if (it != language_pack_progress_.end())
-    language_pack_progress_.erase(language_code);
-  NotifyOnSodaLanguagePackInstalled(language_code);
-}
-
-void SodaInstaller::NotifyOnSodaLanguagePackProgressForTesting(
-    int progress,
-    LanguageCode language_code) {
-  auto it = language_pack_progress_.find(language_code);
-  if (it == language_pack_progress_.end())
-    language_pack_progress_.insert({language_code, progress});
-  else
-    language_pack_progress_[language_code] = progress;
-  NotifyOnSodaLanguagePackProgress(progress, language_code);
-}
-
-void SodaInstaller::NotifyOnSodaLanguagePackErrorForTesting(
-    LanguageCode language_code) {
-  auto it = language_pack_progress_.find(language_code);
-  if (it != language_pack_progress_.end())
-    language_pack_progress_.erase(language_code);
-  NotifyOnSodaLanguagePackError(language_code);
+bool SodaInstaller::IsAnyLanguagePackInstalledForTesting() const {
+  return !installed_languages_.empty();
 }
 
 void SodaInstaller::RegisterRegisteredLanguagePackPref(
     PrefRegistrySimple* registry) {
   // TODO: Default to one of the user's languages.
-  base::Value::ListStorage default_languages;
-  default_languages.push_back(base::Value(kUsEnglishLocale));
+  base::Value::List default_languages;
+  default_languages.Append(base::Value(kUsEnglishLocale));
   registry->RegisterListPref(prefs::kSodaRegisteredLanguagePacks,
-                             base::Value(std::move(default_languages)));
+                             std::move(default_languages));
 }
 
-void SodaInstaller::NotifyOnSodaInstalled() {
+void SodaInstaller::NotifyOnSodaInstalled(LanguageCode language_code) {
   for (Observer& observer : observers_)
-    observer.OnSodaInstalled();
+    observer.OnSodaInstalled(language_code);
 }
 
-void SodaInstaller::NotifyOnSodaLanguagePackInstalled(
-    LanguageCode language_code) {
+void SodaInstaller::NotifyOnSodaInstallError(LanguageCode language_code,
+                                             ErrorCode error_code) {
   for (Observer& observer : observers_)
-    observer.OnSodaLanguagePackInstalled(language_code);
+    observer.OnSodaInstallError(language_code, error_code);
 }
 
-void SodaInstaller::NotifyOnSodaError() {
+void SodaInstaller::NotifyOnSodaProgress(LanguageCode language_code,
+                                         int progress) {
   for (Observer& observer : observers_)
-    observer.OnSodaError();
-}
-
-void SodaInstaller::NotifyOnSodaLanguagePackError(LanguageCode language_code) {
-  for (Observer& observer : observers_)
-    observer.OnSodaLanguagePackError(language_code);
-}
-
-void SodaInstaller::NotifyOnSodaProgress(int combined_progress) {
-  for (Observer& observer : observers_)
-    observer.OnSodaProgress(combined_progress);
-}
-
-void SodaInstaller::NotifyOnSodaLanguagePackProgress(
-    int language_progress,
-    LanguageCode language_code) {
-  for (Observer& observer : observers_)
-    observer.OnSodaLanguagePackProgress(language_progress, language_code);
+    observer.OnSodaProgress(language_code, progress);
 }
 
 void SodaInstaller::RegisterLanguage(const std::string& language,
                                      PrefService* global_prefs) {
-  ListPrefUpdate update(global_prefs, prefs::kSodaRegisteredLanguagePacks);
-  if (!base::Contains(update->GetList(), base::Value(language))) {
+  ScopedListPrefUpdate update(global_prefs,
+                              prefs::kSodaRegisteredLanguagePacks);
+  if (!base::Contains(*update, base::Value(language))) {
     update->Append(language);
   }
 }
 
 void SodaInstaller::UnregisterLanguages(PrefService* global_prefs) {
-  ListPrefUpdate update(global_prefs, prefs::kSodaRegisteredLanguagePacks);
-  update->ClearList();
+  ScopedListPrefUpdate update(global_prefs,
+                              prefs::kSodaRegisteredLanguagePacks);
+  update->clear();
 }
 
 bool SodaInstaller::IsSodaDownloading(LanguageCode language_code) const {
-  return is_soda_downloading_ || language_pack_progress_.find(language_code) !=
-                                     language_pack_progress_.end();
+  return is_soda_downloading_ ||
+         base::Contains(language_pack_progress_, language_code);
 }
 
 bool SodaInstaller::IsAnyFeatureUsingSodaEnabled(PrefService* prefs) {

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,17 @@ option optimize_for = LITE_RUNTIME;
 
 package segmentation_platform.proto;
 
-import "components/segmentation_platform/internal/proto/types.proto";
+import "components/segmentation_platform/public/proto/types.proto";
 
 // Contains storage related information about a particular signal useful for
 // determining eligibility for model evaluation and DB cleanups.
 message SignalStorageConfig {
-  // The name (hash) of the user action or histogram.
+  // The name hash of the user action/histogram or the metric hash of the ukm
+  // event.
   optional uint64 name_hash = 1;
+
+  // The event hash of the ukm event. Only filled if signal type is UKM_EVENT.
+  optional uint64 event_hash = 5;
 
   // The type of the signal.
   optional SignalType signal_type = 2;

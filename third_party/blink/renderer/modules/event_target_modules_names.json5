@@ -13,7 +13,6 @@
     "Bluetooth",
     "BluetoothDevice",
     "BluetoothRemoteGATTCharacteristic",
-    "CloseWatcher",
     "CookieStore",
     "DelegatedInkTrail",
     "EyeDropper",
@@ -85,5 +84,10 @@
     },
     "USB",
     "WakeLockSentinel",
+    "WindowControlsOverlay",
+    "AudioEncoder",
+    "VideoEncoder",
+    "AudioDecoder",
+    "VideoDecoder",
   ],
 }

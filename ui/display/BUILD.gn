@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -97,6 +97,7 @@ component("display") {
 
   deps = [
     "//base",
+    "//base:i18n",
     "//build:chromeos_buildflags",
     "//mojo/public/cpp/bindings:struct_traits",
     "//ui/display/mojom:mojom_shared_cpp_sources",
@@ -108,6 +109,7 @@ component("display") {
   if (is_win) {
     # Don't conflict with Windows' "display.dll".
     output_name = "ui_display"
+    deps += [ "//ui/gfx/mojom:dxgi_info" ]
   }
 
   if (use_aura) {
@@ -119,6 +121,7 @@ component("display") {
       "AppKit.framework",
       "CoreGraphics.framework",
       "QuartzCore.framework",
+      "IOKit.framework",
     ]
   }
 }
@@ -140,6 +143,7 @@ if (is_chromeos_ash) {
       "//build:chromeos_buildflags",
       "//ui/display",
       "//ui/display/types",
+      "//ui/display/util",
     ]
   }
 }
@@ -160,6 +164,7 @@ static_library("test_support") {
     "//base",
     "//testing/gmock",
     "//ui/display/types",
+    "//ui/display/util",
     "//ui/events/devices",
     "//ui/gfx",
     "//ui/gfx:test_support",
@@ -179,6 +184,8 @@ static_library("test_support") {
     sources += [
       "mac/test/test_screen_mac.h",
       "mac/test/test_screen_mac.mm",
+      "mac/test/virtual_display_mac_util.h",
+      "mac/test/virtual_display_mac_util.mm",
     ]
   }
 
@@ -258,8 +265,8 @@ test("display_unittests") {
       "manager/content_protection_manager_unittest.cc",
       "manager/display_change_observer_unittest.cc",
       "manager/display_configurator_unittest.cc",
+      "manager/display_manager_util_unittest.cc",
       "manager/display_manager_utilities_unittest.cc",
-      "manager/display_utils_unittest.cc",
       "manager/json_converter_unittest.cc",
       "manager/managed_display_info_unittest.cc",
       "manager/query_content_protection_task_unittest.cc",
@@ -271,6 +278,22 @@ test("display_unittests") {
       ":display_manager_test_api",
       "//ash/constants",
       "//ui/display/manager",
+    ]
+  }
+}
+
+# This target is added as a dependency of browser interactive_ui_tests. It must
+# be source_set, otherwise the linker will drop the tests as dead code.
+source_set("display_interactive_ui_tests") {
+  testonly = true
+  if (is_mac) {
+    sources = [ "mac/test/virtual_display_mac_util_interactive_uitest.mm" ]
+
+    deps = [
+      ":display",
+      ":test_support",
+      "//base/test:test_support",
+      "//testing/gtest",
     ]
   }
 }

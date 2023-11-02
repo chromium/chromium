@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -9,6 +9,7 @@ import subprocess
 import time
 
 import common
+import ffx_session
 import remote_cmd
 
 from log_manager import LogManager
@@ -17,7 +18,6 @@ from symbolizer import BuildIdsPaths, RunSymbolizer
 
 _SHUTDOWN_CMD = ['dm', 'poweroff']
 _ATTACH_RETRY_INTERVAL = 1
-_ATTACH_RETRY_SECONDS = 120
 
 # Amount of time to wait for a complete package installation, as a
 # mitigation against hangs due to pkg/network-related failures.
@@ -73,9 +73,8 @@ class Target(object):
     self._log_listener_proc = None
     self._dry_run = False
     self._started = False
-    self._ffx_path = os.path.join(common.SDK_ROOT, 'tools',
-                                  common.GetHostArchFromPlatform(), 'ffx')
     self._log_manager = LogManager(logs_dir)
+    self._ffx_runner = ffx_session.FfxRunner(self._log_manager)
 
   @staticmethod
   def CreateFromArgs(args):
@@ -89,16 +88,31 @@ class Target(object):
   def __enter__(self):
     return self
   def __exit__(self, exc_type, exc_val, exc_tb):
-    self.Stop()
+    try:
+      self.Stop()
+    finally:
+      # Stop the ffx daemon, since the target device is going / has gone away.
+      # This ensures that the daemon does not become "hung" if the target device
+      # stops responding to network I/O (e.g., due to emulator instance
+      # teardown). The daemon will be automatically restarted by the next `ffx`
+      # call.
+      self._ffx_runner.daemon_stop()
+      # Stop the log manager only after the last use of _ffx_runner.
+      self._log_manager.Stop()
 
   def Start(self):
     """Handles the instantiation and connection process for the Fuchsia
     target instance."""
+    raise NotImplementedError()
 
   def IsStarted(self):
     """Returns True if the Fuchsia target instance is ready to accept
     commands."""
     return self._started
+
+  def GetFfxTarget(self):
+    """Returns the FfxTarget instance to use to interact with this target."""
+    raise NotImplementedError()
 
   def Stop(self):
     """Stop all subprocesses and close log streams."""
@@ -106,7 +120,6 @@ class Target(object):
       self._symbolizer_proc.kill()
     if self._log_listener_proc:
       self._log_listener_proc.kill()
-    self._log_manager.Stop()
 
   def IsNewInstance(self):
     """Returns True if the connected target instance is newly provisioned."""
@@ -161,9 +174,7 @@ class Target(object):
 
     Returns the exit code of the command.
     """
-    logging.debug('running \'%s\'.', ' '.join(command))
-    return self.GetCommandRunner().RunCommand(command, silent,
-                                              timeout_secs=timeout_secs)
+    return self.GetCommandRunner().RunCommand(command, silent, timeout_secs)
 
   def EnsureIsolatedPathsExist(self, for_package, for_realms):
     """Ensures that the package's isolated /data and /tmp exist."""
@@ -272,9 +283,9 @@ class Target(object):
                                     stdout=subprocess.PIPE,
                                     stderr=subprocess.STDOUT)
     stdout, _ = cat_proc.communicate()
-    if cat_proc.return_code != 0:
+    if cat_proc.returncode != 0:
       raise Exception('Could not read file %s on device.', source)
-    return stdout
+    return stdout.decode('utf-8')
 
   def _GetEndpoint(self):
     """Returns a (host, port) tuple for the SSH connection to the target."""
@@ -289,11 +300,11 @@ class Target(object):
   def _AssertIsStarted(self):
     assert self.IsStarted()
 
-  def _WaitUntilReady(self):
+  def _ConnectToTarget(self):
     logging.info('Connecting to Fuchsia using SSH.')
 
     host, port = self._GetEndpoint()
-    end_time = time.time() + _ATTACH_RETRY_SECONDS
+    end_time = time.time() + common.ATTACH_RETRY_SECONDS
     ssh_diagnostic_log = self._log_manager.Open('ssh_diagnostic_log')
     while time.time() < end_time:
       runner = remote_cmd.CommandRunner(self._GetSshConfigPath(), host, port)
@@ -304,12 +315,16 @@ class Target(object):
       if ssh_proc.wait() == 0:
         logging.info('Connected!')
         self._started = True
+        self._command_runner = runner
         return True
       time.sleep(_ATTACH_RETRY_INTERVAL)
 
     logging.error('Timeout limit reached.')
 
     raise FuchsiaTargetException('Couldn\'t connect using SSH.')
+
+  def _DisconnectFromTarget(self):
+    pass
 
   def _GetSshConfigPath(self, path):
     raise NotImplementedError()
@@ -339,7 +354,7 @@ class Target(object):
         logging.info('Installing %s...', package_name)
         return_code = self.RunCommand(
             ['pkgctl', 'resolve',
-             _GetPackageUri(package_name), '>/dev/null'],
+             _GetPackageUri(package_name)],
             timeout_secs=_INSTALL_TIMEOUT_SECS)
         if return_code != 0:
           raise Exception(
@@ -355,24 +370,14 @@ class Target(object):
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE)
         pkgctl_out, pkgctl_err = pkgctl.communicate()
+        pkgctl_out = pkgctl_out.strip()
 
         # Read the expected version from the meta.far Merkel hash file alongside
         # the package's FAR.
         meta_far_path = os.path.join(os.path.dirname(package_path), 'meta.far')
-        meta_far_merkel = subprocess.check_output(
+        meta_far_merkle = subprocess.check_output(
             [common.GetHostToolPathFromPlatform('merkleroot'),
              meta_far_path]).split()[0]
-        if pkgctl_out != meta_far_merkel:
+        if pkgctl_out != meta_far_merkle:
           raise Exception('Hash mismatch for %s after resolve (%s vs %s).' %
-                          (package_name, pkgctl_out, meta_far_merkel))
-
-  def RunFFXCommand(self, ffx_args, **kwargs):
-    """Automatically gets the FFX path and runs FFX based on the
-    arguments provided. Extra args can be added to be used with Popen.
-
-    ffx_args: The arguments for a ffx command.
-    kwargs: A dictionary of parameters to be passed to subprocess.Popen().
-
-    Returns a Popen object for the command."""
-    command = [self._ffx_path] + ffx_args
-    return subprocess.Popen(command, **kwargs)
+                          (package_name, pkgctl_out, meta_far_merkle))

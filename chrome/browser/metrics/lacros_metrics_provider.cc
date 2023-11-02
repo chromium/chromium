@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,14 +8,13 @@
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/metrics/enrollment_status.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
+#include "chromeos/startup/browser_params_proxy.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 
 namespace {
 
 EnrollmentStatus GetEnrollmentStatus() {
-  auto* service = chromeos::LacrosService::Get();
-  switch (service->init_params()->device_mode) {
+  switch (chromeos::BrowserParamsProxy::Get()->DeviceMode()) {
     case crosapi::mojom::DeviceMode::kUnknown:
       return EnrollmentStatus::kErrorGettingStatus;
     case crosapi::mojom::DeviceMode::kNotSet:

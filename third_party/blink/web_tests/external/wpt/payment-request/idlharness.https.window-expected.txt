@@ -31,7 +31,7 @@ PASS PaymentResponse interface: operation toJSON()
 PASS PaymentResponse interface: attribute requestId
 PASS PaymentResponse interface: attribute methodName
 PASS PaymentResponse interface: attribute details
-PASS PaymentResponse interface: operation complete(optional PaymentComplete)
+PASS PaymentResponse interface: operation complete(optional PaymentComplete, optional PaymentCompleteDetails)
 PASS PaymentResponse interface: operation retry(optional PaymentValidationErrors)
 PASS PaymentMethodChangeEvent interface: existence and properties of interface object
 PASS PaymentMethodChangeEvent interface object length

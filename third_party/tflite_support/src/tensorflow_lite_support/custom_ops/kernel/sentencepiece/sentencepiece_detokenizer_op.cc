@@ -37,7 +37,7 @@ REGISTER_OP("TFSentencepieceDetokenizeOp")
       shape_inference::DimensionHandle dim;
       TF_RETURN_IF_ERROR(c->Subtract(c->NumElements(c->input(2)), 1, &dim));
       c->set_output(0, c->Vector(dim));
-      return Status::OK();
+      return OkStatus();
     });
 
 template <typename Tsplits>

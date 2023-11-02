@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,28 +30,6 @@
 
 namespace extensions {
 
-// Notifies an ExtensionViewHost when a WebContents is destroyed.
-class ExtensionViewHost::AssociatedWebContentsObserver
-    : public content::WebContentsObserver {
- public:
-  AssociatedWebContentsObserver(ExtensionViewHost* host,
-                                content::WebContents* web_contents)
-      : WebContentsObserver(web_contents), host_(host) {}
-  AssociatedWebContentsObserver(const AssociatedWebContentsObserver&) = delete;
-  AssociatedWebContentsObserver& operator=(
-      const AssociatedWebContentsObserver&) = delete;
-  ~AssociatedWebContentsObserver() override = default;
-
-  // content::WebContentsObserver:
-  void WebContentsDestroyed() override {
-    // Deleting |this| from here is safe.
-    host_->SetAssociatedWebContents(nullptr);
-  }
-
- private:
-  ExtensionViewHost* host_;
-};
-
 ExtensionViewHost::ExtensionViewHost(const Extension* extension,
                                      content::SiteInstance* site_instance,
                                      const GURL& url,
@@ -77,8 +55,10 @@ ExtensionViewHost::ExtensionViewHost(const Extension* extension,
   autofill::ContentAutofillDriverFactory::CreateForWebContentsAndDelegate(
       host_contents(),
       autofill::ChromeAutofillClient::FromWebContents(host_contents()),
-      g_browser_process->GetApplicationLocale(),
-      autofill::BrowserAutofillManager::ENABLE_AUTOFILL_DOWNLOAD_MANAGER);
+      base::BindRepeating(
+          &autofill::BrowserDriverInitHook,
+          autofill::ChromeAutofillClient::FromWebContents(host_contents()),
+          g_browser_process->GetApplicationLocale()));
 
   // The popup itself cannot be zoomed, but we must specify a zoom level to use.
   // Otherwise, if a user zooms a page of the same extension, the popup would
@@ -87,11 +67,11 @@ ExtensionViewHost::ExtensionViewHost(const Extension* extension,
     content::HostZoomMap* zoom_map =
         content::HostZoomMap::GetForWebContents(host_contents());
     zoom_map->SetTemporaryZoomLevel(
+        host_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
         host_contents()
-            ->GetMainFrame()
-            ->GetProcess()
-            ->GetID(),
-        host_contents()->GetMainFrame()->GetRenderViewHost()->GetRoutingID(),
+            ->GetPrimaryMainFrame()
+            ->GetRenderViewHost()
+            ->GetRoutingID(),
         zoom_map->GetDefaultZoomLevel());
   }
 }
@@ -108,15 +88,8 @@ ExtensionViewHost::~ExtensionViewHost() {
 
 void ExtensionViewHost::SetAssociatedWebContents(
     content::WebContents* web_contents) {
-  associated_web_contents_ = web_contents;
-  if (associated_web_contents_) {
-    // Observe the new WebContents for deletion.
-    associated_web_contents_observer_ =
-        std::make_unique<AssociatedWebContentsObserver>(
-            this, associated_web_contents_);
-  } else {
-    associated_web_contents_observer_.reset();
-  }
+  associated_web_contents_ =
+      web_contents ? web_contents->GetWeakPtr() : nullptr;
 }
 
 bool ExtensionViewHost::UnhandledKeyboardEvent(
@@ -176,11 +149,11 @@ content::WebContents* ExtensionViewHost::OpenURLFromTab(
 }
 
 bool ExtensionViewHost::ShouldAllowRendererInitiatedCrossProcessNavigation(
-    bool is_main_frame_navigation) {
+    bool is_outermost_main_frame_navigation) {
   // Block navigations that cause main frame of an extension pop-up (or
   // background page) to navigate to non-extension content (i.e. to web
   // content).
-  return !is_main_frame_navigation;
+  return !is_outermost_main_frame_navigation;
 }
 
 content::KeyboardEventProcessingResult
@@ -278,12 +251,12 @@ WindowController* ExtensionViewHost::GetExtensionWindowController() const {
 }
 
 content::WebContents* ExtensionViewHost::GetAssociatedWebContents() const {
-  return associated_web_contents_;
+  return associated_web_contents_.get();
 }
 
 content::WebContents* ExtensionViewHost::GetVisibleWebContents() const {
   if (associated_web_contents_)
-    return associated_web_contents_;
+    return associated_web_contents_.get();
   return (extension_host_type() == mojom::ViewType::kExtensionPopup)
              ? host_contents()
              : nullptr;

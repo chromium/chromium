@@ -1,0 +1,5 @@
+WebView focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++ToggleButton text:"Toggle button, pressed, collapsed" stateDescription:"On" canOpenPopUp checkable checked clickable actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS, EXPAND] bundle:[chromeRole="toggleButton", roleDescription="toggle button"]
+++ToggleButton text:"Toggle button, not pressed, collapsed" stateDescription:"Off" canOpenPopUp checkable clickable actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS, EXPAND] bundle:[chromeRole="toggleButton", roleDescription="toggle button"]
+++ToggleButton text:"Toggle button, pressed, expanded" stateDescription:"On" canOpenPopUp checkable checked clickable actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS, COLLAPSE] bundle:[chromeRole="toggleButton", roleDescription="toggle button"]
+++ToggleButton text:"Toggle button, not pressed, collapsed"" stateDescription:"Off" canOpenPopUp checkable clickable actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS, COLLAPSE] bundle:[chromeRole="toggleButton", roleDescription="toggle button"]

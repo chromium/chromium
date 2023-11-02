@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,13 @@ import {fakeFirmwareUpdates} from 'chrome://accessory-update/fake_data.js';
 import {FakeUpdateProvider} from 'chrome://accessory-update/fake_update_provider.js';
 import {FirmwareUpdate} from 'chrome://accessory-update/firmware_update_types.js';
 import {setUpdateProviderForTesting} from 'chrome://accessory-update/mojo_interface_provider.js';
+import {mojoString16ToString} from 'chrome://accessory-update/mojo_utils.js';
 import {PeripheralUpdateListElement} from 'chrome://accessory-update/peripheral_updates_list.js';
 import {UpdateCardElement} from 'chrome://accessory-update/update_card.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks} from '../../test_util.js';
+import {isVisible} from '../../test_util.js';
 
 export function peripheralUpdatesListTest() {
   /** @type {?PeripheralUpdateListElement} */
@@ -19,7 +21,7 @@ export function peripheralUpdatesListTest() {
   /** @type {?FakeUpdateProvider} */
   let provider = null;
 
-  suiteSetup(() => {
+  setup(() => {
     provider = new FakeUpdateProvider();
     setUpdateProviderForTesting(provider);
   });
@@ -52,6 +54,15 @@ export function peripheralUpdatesListTest() {
 
   /**
    * @suppress {visibility}
+   * @return {!Promise}
+   */
+  function clearFirmwareUpdates() {
+    peripheralUpdateListElement.firmwareUpdates_ = [];
+    return flushTasks();
+  }
+
+  /**
+   * @suppress {visibility}
    * @return {!Array<!FirmwareUpdate>}
    */
   function getFirmwareUpdates() {
@@ -70,8 +81,20 @@ export function peripheralUpdatesListTest() {
     return initializeUpdateList().then(() => {
       const updateCards = getUpdateCards();
       getFirmwareUpdates().forEach((u, i) => {
-        assertEquals(u.deviceName, updateCards[i].$.name.innerText);
+        assertEquals(
+            mojoString16ToString(u.deviceName),
+            updateCards[i].$.name.innerText);
       });
     });
+  });
+
+  test('EmptyState', () => {
+    return initializeUpdateList()
+        .then(() => clearFirmwareUpdates())
+        .then(() => {
+          assertTrue(isVisible(/** @type {!HTMLDivElement} */ (
+              peripheralUpdateListElement.shadowRoot.querySelector(
+                  '#upToDateText'))));
+        });
   });
 }

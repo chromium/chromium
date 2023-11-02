@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@ import android.app.Activity;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.TraceEvent;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -76,7 +77,10 @@ public class NtpFeedSurfaceLifecycleManager extends FeedSurfaceLifecycleManager 
 
             @Override
             public void onPageLoadStarted(Tab tab, GURL url) {
-                saveInstanceState();
+                try (TraceEvent e = TraceEvent.scoped(
+                             "NtpFeedSurfaceLifecycleManager.saveInstanceState")) {
+                    saveInstanceState();
+                }
             }
         };
         mTab.addObserver(mTabObserver);
@@ -119,8 +123,10 @@ public class NtpFeedSurfaceLifecycleManager extends FeedSurfaceLifecycleManager 
         // committed entry is for the NTP. The extra data must only be set in the latter case.
         if (!UrlUtilities.isNTPUrl(entry.getUrl())) return;
 
-        controller.setEntryExtraData(
-                index, FEED_SAVED_INSTANCE_STATE_KEY, mCoordinator.getSavedInstanceStateString());
+        try (TraceEvent e = TraceEvent.scoped("setEntryExtraData")) {
+            controller.setEntryExtraData(index, FEED_SAVED_INSTANCE_STATE_KEY,
+                    mCoordinator.getSavedInstanceStateString());
+        }
     }
 
     /**

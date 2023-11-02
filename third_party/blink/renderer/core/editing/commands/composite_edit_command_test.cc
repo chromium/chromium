@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -285,6 +285,66 @@ TEST_F(CompositeEditCommandTest, MoveParagraphsWithInlineBlocks) {
   EXPECT_FALSE(editing_state.IsAborted());
   EXPECT_EQ("<div><span></span><span></span> </div><br>",
             GetDocument().body()->innerHTML());
+}
+
+TEST_F(CompositeEditCommandTest, MoveParagraphsWithTableAndCaption) {
+  Document& document = GetDocument();
+  document.setDesignMode("on");
+  InsertStyleElement(
+      "table { writing-mode: vertical-lr; }"
+      "caption { appearance: radio; }");
+  SetBodyInnerHTML("<table><caption><div><br></div><input></caption></table>");
+
+  EditingState editing_state;
+  SampleCommand& sample = *MakeGarbageCollected<SampleCommand>(GetDocument());
+  Element* br = document.QuerySelector("br");
+  Element* input = document.QuerySelector("input");
+
+  const VisiblePosition& start = VisiblePosition::FirstPositionInNode(*input);
+  const VisiblePosition& end = VisiblePosition::AfterNode(*input);
+  const VisiblePosition& destination = VisiblePosition::BeforeNode(*br);
+  EXPECT_EQ(start.DeepEquivalent(), Position(input, 0));
+  EXPECT_EQ(end.DeepEquivalent(), Position::AfterNode(*input));
+  EXPECT_EQ(destination.DeepEquivalent(), Position::BeforeNode(*br));
+
+  // Should not crash. See http://crbug.com/1310613
+  sample.MoveParagraphs(start, end, destination, &editing_state);
+  EXPECT_FALSE(editing_state.IsAborted());
+  EXPECT_EQ("<table><caption><div><input></div></caption></table>",
+            GetDocument().body()->innerHTML());
+}
+
+TEST_F(CompositeEditCommandTest,
+       MoveParagraphContentsToNewBlockWithNullVisiblePosition1) {
+  EditingState editing_state;
+  Document& document = GetDocument();
+  Element* body = document.body();
+  document.setDesignMode("on");
+  SetBodyInnerHTML("<div contenteditable=false><br></div>");
+  SampleCommand& sample = *MakeGarbageCollected<SampleCommand>(GetDocument());
+
+  // Should not crash. See http://crbug.com/1351899
+  sample.MoveParagraphContentsToNewBlockIfNecessary(Position(body, 0),
+                                                    &editing_state);
+  EXPECT_TRUE(editing_state.IsAborted());
+  EXPECT_EQ("<div contenteditable=\"false\"><br></div>", body->innerHTML());
+}
+
+TEST_F(CompositeEditCommandTest,
+       MoveParagraphContentsToNewBlockWithNullVisiblePosition2) {
+  EditingState editing_state;
+  Document& document = GetDocument();
+  Element* body = document.body();
+  document.setDesignMode("on");
+  InsertStyleElement("div, input {-webkit-user-modify: read-only}");
+  SetBodyInnerHTML("<input>");
+  SampleCommand& sample = *MakeGarbageCollected<SampleCommand>(GetDocument());
+
+  // Should not crash. See http://crbug.com/1351899
+  sample.MoveParagraphContentsToNewBlockIfNecessary(Position(body, 0),
+                                                    &editing_state);
+  EXPECT_TRUE(editing_state.IsAborted());
+  EXPECT_EQ("<div><br></div><input>", body->innerHTML());
 }
 
 }  // namespace blink

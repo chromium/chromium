@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,36 +21,42 @@
 #include "ui/gfx/image/image_png_rep.h"
 #include "ui/gfx/image/image_skia.h"
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 #include "base/mac/foundation_util.h"
 #include "ui/gfx/image/image_skia_util_ios.h"
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
 #include "ui/gfx/image/image_skia_util_mac.h"
 #endif
 
-namespace gfx {
-namespace internal {
+namespace gfx::internal {
 
-#if defined(OS_IOS)
+class ImageRep;
+class ImageRepCocoa;
+class ImageRepCocoaTouch;
+
+#if BUILDFLAG(IS_IOS)
 scoped_refptr<base::RefCountedMemory> Get1xPNGBytesFromUIImage(
     UIImage* uiimage);
 UIImage* UIImageFromPNG(const std::vector<ImagePNGRep>& image_png_reps);
-gfx::Size UIImageSize(UIImage* image);
-#elif defined(OS_MAC)
+
+UIImage* UIImageOfImageRepCocoaTouch(const ImageRepCocoaTouch* image_rep);
+std::unique_ptr<ImageRep> MakeImageRepCocoaTouch(UIImage* image);
+#elif BUILDFLAG(IS_MAC)
 scoped_refptr<base::RefCountedMemory> Get1xPNGBytesFromNSImage(
     NSImage* nsimage);
 NSImage* NSImageFromPNG(const std::vector<ImagePNGRep>& image_png_reps,
                         CGColorSpaceRef color_space);
-gfx::Size NSImageSize(NSImage* image);
-#endif  // defined(OS_MAC)
+
+NSImage* NSImageOfImageRepCocoa(const ImageRepCocoa* image_rep);
+std::unique_ptr<ImageRep> MakeImageRepCocoa(NSImage* image);
+#endif
 
 ImageSkia ImageSkiaFromPNG(const std::vector<ImagePNGRep>& image_png_reps);
 scoped_refptr<base::RefCountedMemory> Get1xPNGBytesFromImageSkia(
     const ImageSkia* image_skia);
 
-}  // namespace internal
-}  // namespace gfx
+}  // namespace gfx::internal
 
 #endif  // UI_GFX_IMAGE_IMAGE_PLATFORM_H_

@@ -1,9 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #include "components/reporting/compression/decompression.h"
 
-#include "base/feature_list.h"
+#include <string>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -38,7 +39,6 @@ std::string Decompression::DecompressRecord(
   switch (compression_information.compression_algorithm()) {
     case CompressionInformation::COMPRESSION_NONE: {
       // Don't decompress, simply return serialized record
-      LOG(ERROR) << "RETURN RAW RECORD";
       return record;
     }
     case CompressionInformation::COMPRESSION_SNAPPY: {

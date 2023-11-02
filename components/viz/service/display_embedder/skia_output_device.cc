@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,12 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/notreached.h"
+#include "base/task/task_features.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
-#include "components/viz/service/display/dc_layer_overlay.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "services/tracing/public/cpp/perfetto/flow_event_utils.h"
@@ -24,14 +25,26 @@
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/latency/latency_tracker.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "components/viz/service/display/dc_layer_overlay.h"
+#endif
+
 namespace viz {
 namespace {
+
+BASE_FEATURE(kAsyncGpuLatencyReporting,
+             "AsyncGpuLatencyReporting",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 using ::perfetto::protos::pbzero::ChromeLatencyInfo;
 
 scoped_refptr<base::SequencedTaskRunner> CreateLatencyTracerRunner() {
   if (!base::ThreadPoolInstance::Get())
     return nullptr;
+
+  if (!base::FeatureList::IsEnabled(kAsyncGpuLatencyReporting))
+    return nullptr;
+
   return base::ThreadPool::CreateSequencedTaskRunner(
       {base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
@@ -104,6 +117,7 @@ SkiaOutputDevice::SkiaOutputDevice(
       latency_tracker_runner_(CreateLatencyTracerRunner()) {
   DCHECK(gr_context);
   capabilities_.max_render_target_size = gr_context->maxRenderTargetSize();
+  capabilities_.max_texture_size = gr_context->maxTextureSize();
 }
 
 SkiaOutputDevice::~SkiaOutputDevice() {
@@ -112,15 +126,17 @@ SkiaOutputDevice::~SkiaOutputDevice() {
 }
 
 std::unique_ptr<SkiaOutputDevice::ScopedPaint>
-SkiaOutputDevice::BeginScopedPaint(bool allocate_frame_buffer) {
+SkiaOutputDevice::BeginScopedPaint() {
   std::vector<GrBackendSemaphore> end_semaphores;
-  SkSurface* sk_surface = BeginPaint(allocate_frame_buffer, &end_semaphores);
+  SkSurface* sk_surface = BeginPaint(&end_semaphores);
   if (!sk_surface) {
     return nullptr;
   }
   return std::make_unique<SkiaOutputDevice::ScopedPaint>(
       std::move(end_semaphores), this, sk_surface);
 }
+
+void SkiaOutputDevice::SetViewportSize(const gfx::Size& viewport_size) {}
 
 void SkiaOutputDevice::Submit(bool sync_cpu, base::OnceClosure callback) {
   gr_context_->submit(sync_cpu);
@@ -138,8 +154,9 @@ void SkiaOutputDevice::PostSubBuffer(const gfx::Rect& rect,
   NOTREACHED();
 }
 
-void SkiaOutputDevice::ReleaseOneFrameBuffer() {
+bool SkiaOutputDevice::EnsureMinNumberOfBuffers(size_t n) {
   NOTREACHED();
+  return false;
 }
 
 bool SkiaOutputDevice::SetDrawRectangle(const gfx::Rect& draw_rectangle) {
@@ -186,8 +203,7 @@ void SkiaOutputDevice::SetDependencyTimings(base::TimeTicks task_ready) {
 
 void SkiaOutputDevice::StartSwapBuffers(BufferPresentedCallback feedback) {
   DCHECK_LT(static_cast<int>(pending_swaps_.size()),
-            std::max(capabilities_.max_frames_pending,
-                     capabilities_.max_frames_pending_120hz.value_or(0)));
+            capabilities_.pending_swap_params.GetMax());
 
   pending_swaps_.emplace(++swap_id_, std::move(feedback), viz_scheduled_draw_,
                          gpu_started_draw_, gpu_task_ready_);

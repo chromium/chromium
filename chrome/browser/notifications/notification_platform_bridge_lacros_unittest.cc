@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "chromeos/crosapi/mojom/message_center.mojom.h"
 #include "chromeos/crosapi/mojom/notification.mojom.h"
 #include "content/public/test/browser_task_environment.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -157,8 +158,9 @@ TEST_F(NotificationPlatformBridgeLacrosTest, SerializationSimple) {
 
   message_center::Notification ui_notification(
       message_center::NOTIFICATION_TYPE_SIMPLE, "test_id", u"title", u"message",
-      icon, u"display_source", GURL("http://example.com/"),
-      message_center::NotifierId(), rich_data, nullptr);
+      ui::ImageModel::FromImage(icon), u"display_source",
+      GURL("http://example.com/"), message_center::NotifierId(), rich_data,
+      nullptr);
 
   // Show the notification.
   bridge_.Display(NotificationHandler::Type::TRANSIENT, /*profile=*/nullptr,
@@ -204,7 +206,7 @@ TEST_F(NotificationPlatformBridgeLacrosTest, SerializationImage) {
   rich_data.image = image;
   message_center::Notification ui_notification(
       message_center::NOTIFICATION_TYPE_IMAGE, "test_id", std::u16string(),
-      std::u16string(), gfx::Image(), std::u16string(), GURL(),
+      std::u16string(), ui::ImageModel(), std::u16string(), GURL(),
       message_center::NotifierId(), rich_data, nullptr);
 
   // Show the notification.
@@ -232,7 +234,7 @@ TEST_F(NotificationPlatformBridgeLacrosTest, SerializationList) {
   rich_data.items = {item1, item2};
   message_center::Notification ui_notification(
       message_center::NOTIFICATION_TYPE_MULTIPLE, "test_id", std::u16string(),
-      std::u16string(), gfx::Image(), std::u16string(), GURL(),
+      std::u16string(), ui::ImageModel(), std::u16string(), GURL(),
       message_center::NotifierId(), rich_data, nullptr);
 
   // Show the notification.
@@ -258,7 +260,7 @@ TEST_F(NotificationPlatformBridgeLacrosTest, SerializationProgress) {
   rich_data.progress_status = u"status";
   message_center::Notification ui_notification(
       message_center::NOTIFICATION_TYPE_PROGRESS, "test_id", std::u16string(),
-      std::u16string(), gfx::Image(), std::u16string(), GURL(),
+      std::u16string(), ui::ImageModel(), std::u16string(), GURL(),
       message_center::NotifierId(), rich_data, nullptr);
 
   // Show the notification.
@@ -272,13 +274,33 @@ TEST_F(NotificationPlatformBridgeLacrosTest, SerializationProgress) {
   ASSERT_TRUE(last_notification);
   EXPECT_EQ(55, last_notification->progress);
   EXPECT_EQ(u"status", last_notification->progress_status);
+
+  // Update progress by creating a new notification with the same ID.
+  message_center::RichNotificationData rich_data2;
+  rich_data2.progress = 66;
+  rich_data2.progress_status = u"status2";
+  message_center::Notification ui_notification2(
+      message_center::NOTIFICATION_TYPE_PROGRESS, "test_id", std::u16string(),
+      std::u16string(), ui::ImageModel(), std::u16string(), GURL(),
+      message_center::NotifierId(), rich_data2, nullptr);
+
+  // Update the notification.
+  bridge_.Display(NotificationHandler::Type::TRANSIENT, /*profile=*/nullptr,
+                  ui_notification2, /*metadata=*/nullptr);
+  message_center_remote_.FlushForTesting();
+
+  // Updated notification was sent.
+  last_notification = test_message_center_.last_notification_.get();
+  ASSERT_TRUE(last_notification);
+  EXPECT_EQ(66, last_notification->progress);
+  EXPECT_EQ(u"status2", last_notification->progress_status);
 }
 
 TEST_F(NotificationPlatformBridgeLacrosTest, UserActions) {
   // Create a test notification.
   message_center::Notification ui_notification(
       message_center::NOTIFICATION_TYPE_SIMPLE, "test_id", std::u16string(),
-      std::u16string(), gfx::Image(), std::u16string(), GURL(),
+      std::u16string(), ui::ImageModel(), std::u16string(), GURL(),
       message_center::NotifierId(), {}, nullptr);
 
   // Show the notification.

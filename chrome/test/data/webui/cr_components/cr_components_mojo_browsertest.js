@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,15 +7,14 @@
 // Polymer BrowserTest fixture.
 GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
+GEN('#include "build/build_config.h"');
 GEN('#include "content/public/test/browser_test.h"');
-
-/* eslint-disable no-var */
 
 /** Test fixture for shared Polymer 3 components using Mojo. */
 var CrComponentsMojoBrowserTest = class extends PolymerTest {
   /** @override */
   get browsePreload() {
-    throw 'this is abstract and should be overriden by subclasses';
+    throw new Error('this is abstract and should be overriden by subclasses');
   }
 };
 
@@ -31,6 +30,41 @@ TEST_F('CrComponentsCustomizeThemesTest', 'All', function() {
   mocha.run();
 });
 
+var CrComponentsHelpBubbleMixinTest =
+    class extends CrComponentsMojoBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://new-tab-page/test_loader.html?module=cr_components/help_bubble_mixin_test.js';
+  }
+};
+
+TEST_F('CrComponentsHelpBubbleMixinTest', 'All', function() {
+  mocha.run();
+});
+
+var CrComponentsHelpBubbleTest = class extends CrComponentsMojoBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://new-tab-page/test_loader.html?module=cr_components/help_bubble_test.js';
+  }
+};
+
+TEST_F('CrComponentsHelpBubbleTest', 'All', function() {
+  mocha.run();
+});
+
+var CrComponentsHistoryClustersTest =
+    class extends CrComponentsMojoBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://history/test_loader.html?module=cr_components/history_clusters_test.js';
+  }
+};
+
+TEST_F('CrComponentsHistoryClustersTest', 'All', function() {
+  mocha.run();
+});
+
 var CrComponentsMostVisitedTest = class extends CrComponentsMojoBrowserTest {
   /** @override */
   get browsePreload() {
@@ -43,7 +77,7 @@ TEST_F('CrComponentsMostVisitedTest', 'General', function() {
 });
 
 // crbug.com/1226996
-GEN('#if defined(OS_LINUX) && !defined(NDEBUG)');
+GEN('#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)');
 GEN('#define MAYBE_Modification DISABLED_Modification');
 GEN('#else');
 GEN('#define MAYBE_Modification Modification');

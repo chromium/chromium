@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,13 +12,15 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
+#include "base/record_replay.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/synchronization/lock.h"
 #include "base/task/current_thread.h"
 #include "base/threading/sequence_local_storage_slot.h"
@@ -118,7 +120,7 @@ class Connector::RunLoopNestingObserver
  private:
   friend class ActiveDispatchTracker;
 
-  ActiveDispatchTracker* top_tracker_ = nullptr;
+  raw_ptr<ActiveDispatchTracker> top_tracker_ = nullptr;
 };
 
 Connector::ActiveDispatchTracker::ActiveDispatchTracker(
@@ -156,9 +158,20 @@ Connector::Connector(ScopedMessagePipeHandle message_pipe,
       force_immediate_dispatch_(!EnableTaskPerMessage()),
       outgoing_serialization_mode_(g_default_outgoing_serialization_mode),
       incoming_serialization_mode_(g_default_incoming_serialization_mode),
-      interface_name_(interface_name) {
+      interface_name_(interface_name),
+      header_validator_(
+          base::JoinString({interface_name ? interface_name : "Generic",
+                            "MessageHeaderValidator"},
+                           "")) {
+  // https://linear.app/replay/issue/RUN-999
+  CHECK(!recordreplay::AreEventsDisallowed() ||
+        recordreplay::HasDivergedFromRecording() ||
+        recordreplay::HasDisabledFeatures());
+
+  recordreplay::RegisterPointer("Connector", this);
+
   if (config == MULTI_THREADED_SEND)
-    lock_.emplace();
+    lock_.emplace("Connector.lock_");
 
 #if defined(ENABLE_IPC_FUZZER)
   if (!MessageDumper::GetMessageDumpDirectory().empty())
@@ -188,6 +201,8 @@ Connector::~Connector() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     CancelWait();
   }
+
+  recordreplay::UnregisterPointer(this);
 }
 
 void Connector::SetOutgoingSerializationMode(OutgoingSerializationMode mode) {
@@ -265,14 +280,13 @@ bool Connector::WaitForIncomingMessage() {
     return false;
   }
 
-  Message message;
-  if ((rv = ReadMessage(&message)) != MOJO_RESULT_OK) {
+  ScopedMessageHandle message;
+  if ((rv = ReadMessage(message)) != MOJO_RESULT_OK) {
     HandleError(rv != MOJO_RESULT_FAILED_PRECONDITION /* force_pipe_reset */,
                 false /* force_async_handler */);
     return false;
   }
 
-  DCHECK(!message.IsNull());
   return DispatchMessage(std::move(message));
 }
 
@@ -316,6 +330,8 @@ bool Connector::PrefersSerializedMessages() {
 }
 
 bool Connector::Accept(Message* message) {
+  recordreplay::Assert("[RUN-1209-1800] Connector::Accept A %d %d %d",
+                       !!lock_, !!task_runner_, !!error_);
   if (!lock_ && task_runner_)
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -324,6 +340,9 @@ bool Connector::Accept(Message* message) {
 
   internal::MayAutoLock locker(&lock_);
 
+  recordreplay::Assert("[RUN-1209-1800] Connector::Accept B %d %d %d",
+                       message_pipe_.is_valid(), drop_writes_,
+                       message->is_serialized());
   if (!message_pipe_.is_valid() || drop_writes_)
     return true;
 
@@ -410,6 +429,10 @@ void Connector::OverrideDefaultSerializationBehaviorForTesting(
   g_default_incoming_serialization_mode = incoming_mode;
 }
 
+bool Connector::SimulateReadMessage(ScopedMessageHandle message) {
+  return DispatchMessage(std::move(message));
+}
+
 void Connector::OnWatcherHandleReady(MojoResult result) {
   OnHandleReadyInternal(result);
 }
@@ -488,34 +511,29 @@ uint64_t Connector::QueryPendingMessageCount() const {
   return pending_message_count;
 }
 
-MojoResult Connector::ReadMessage(Message* message) {
-  ScopedMessageHandle handle;
-  MojoResult result =
-      ReadMessageNew(message_pipe_.get(), &handle, MOJO_READ_MESSAGE_FLAG_NONE);
-  if (result != MOJO_RESULT_OK)
-    return result;
+MojoResult Connector::ReadMessage(ScopedMessageHandle& message) {
+  return ReadMessageNew(message_pipe_.get(), &message,
+                        MOJO_READ_MESSAGE_FLAG_NONE);
+}
 
-  *message = Message::CreateFromMessageHandle(&handle);
-  if (message->IsNull()) {
-    // Even if the read was successful, the Message may still be null if there
-    // was a problem extracting handles from it. We treat this essentially as
-    // a bad IPC because we don't really have a better option.
-    //
-    // We include |interface_name_| in the error message since it usually
-    // (via this Connector's owner) provides useful information about which
-    // binding interface is using this Connector.
+bool Connector::DispatchMessage(ScopedMessageHandle handle) {
+  DCHECK(!paused_);
+
+  Message message = Message::CreateFromMessageHandle(&handle);
+  if (message.IsNull()) {
+    // If the Message is null, there was a problem extracting handles from it.
     NotifyBadMessage(
         handle.get(),
         base::StrCat({interface_name_,
                       " One or more handle attachments were invalid."}));
-    return MOJO_RESULT_ABORTED;
+    HandleError(/*force_pipe_reset=*/true, /*force_async_handler=*/false);
+    return false;
   }
 
-  return MOJO_RESULT_OK;
-}
-
-bool Connector::DispatchMessage(Message message) {
-  DCHECK(!paused_);
+  if (!header_validator_.Accept(&message)) {
+    HandleError(/*force_pipe_reset=*/true, /*force_async_handler=*/false);
+    return false;
+  }
 
   base::WeakPtr<Connector> weak_self = weak_self_;
   absl::optional<ActiveDispatchTracker> dispatch_tracker;
@@ -536,9 +554,11 @@ bool Connector::DispatchMessage(Message message) {
   // the category is "toplevel" if full tracing isn't available. If it's
   // available, it's emitted under "disabled-by-default-mojom" for debugging
   // purposes.
+  // TODO(altimin): This event is temporarily kept as a debug fallback. Remove
+  // it once the new implementation proves to be stable.
   TRACE_EVENT(
-      TRACE_CATEGORY_OR_DISABLED_BY_DEFAULT_MOJOM("toplevel"),
-      "Connector::DispatchMessage", [&](perfetto::EventContext& ctx) {
+      TRACE_DISABLED_BY_DEFAULT("mojom"), "Connector::DispatchMessage",
+      [&](perfetto::EventContext& ctx) {
         ctx.event()->set_chrome_mojo_event_info()->set_mojo_interface_tag(
             interface_name_);
 
@@ -552,8 +572,19 @@ bool Connector::DispatchMessage(Message message) {
 
   if (connection_group_)
     message.set_receiver_connection_group(&connection_group_);
-  bool receiver_result =
-      incoming_receiver_ && incoming_receiver_->Accept(&message);
+
+  // Whether there is a receiver or not can vary when replaying due to different
+  // MessagePort GC behavior. For now we hack around this by only notifying the
+  // receiver if it was present while recording.
+  bool recorded_has_receiver =
+    recordreplay::RecordReplayValue("Connector::DispatchMessage has_receiver", !!incoming_receiver_);
+
+  bool receiver_result = false;
+  if (recorded_has_receiver) {
+    recordreplay::Assert("Connector::DispatchMessage has_receiver %d", !!incoming_receiver_);
+    receiver_result = incoming_receiver_ && incoming_receiver_->Accept(&message);
+  }
+
   if (!weak_self)
     return receiver_result;
 
@@ -599,21 +630,20 @@ void Connector::ScheduleDispatchOfPendingMessagesOrWaitForMore(
 }
 
 void Connector::ReadAllAvailableMessages() {
-  if (paused_ || error_)
+  if (paused_ || error_) {
     return;
+  }
 
   base::WeakPtr<Connector> weak_self = weak_self_;
 
   do {
-    Message message;
-    MojoResult rv = ReadMessage(&message);
+    ScopedMessageHandle message;
+    MojoResult rv = ReadMessage(message);
 
     switch (rv) {
       case MOJO_RESULT_OK:
-        DCHECK(!message.IsNull());
-        if (!DispatchMessage(std::move(message)) || !weak_self || paused_) {
+        if (!DispatchMessage(std::move(message)) || !weak_self || paused_)
           return;
-        }
         break;
 
       case MOJO_RESULT_SHOULD_WAIT:
@@ -652,6 +682,7 @@ void Connector::CancelWait() {
 }
 
 void Connector::HandleError(bool force_pipe_reset, bool force_async_handler) {
+  recordreplay::Assert("[RUN-1209-1900] Connector::HandleError A %d", !!paused_);
   if (error_ || !message_pipe_.is_valid())
     return;
 
@@ -679,6 +710,7 @@ void Connector::HandleError(bool force_pipe_reset, bool force_async_handler) {
     if (!paused_)
       WaitToReadMore();
   } else {
+    recordreplay::Assert("[RUN-1209-1900] Connector::HandleError B");
     error_ = true;
     if (connection_error_handler_)
       std::move(connection_error_handler_).Run();

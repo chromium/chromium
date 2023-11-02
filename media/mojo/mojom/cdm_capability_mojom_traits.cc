@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,6 +22,20 @@ bool AreUnique(const std::vector<T>& values) {
 }  // namespace
 
 // static
+bool StructTraits<media::mojom::VideoCodecInfoDataView, media::VideoCodecInfo>::
+    Read(media::mojom::VideoCodecInfoDataView input,
+         media::VideoCodecInfo* output) {
+  std::vector<media::VideoCodecProfile> supported_profiles;
+  if (!input.ReadSupportedProfiles(&supported_profiles)) {
+    return false;
+  }
+
+  *output = media::VideoCodecInfo(std::move(supported_profiles),
+                                  input.supports_clear_lead());
+  return true;
+}
+
+// static
 bool StructTraits<media::mojom::CdmCapabilityDataView, media::CdmCapability>::
     Read(media::mojom::CdmCapabilityDataView input,
          media::CdmCapability* output) {
@@ -29,19 +43,9 @@ bool StructTraits<media::mojom::CdmCapabilityDataView, media::CdmCapability>::
   if (!input.ReadAudioCodecs(&audio_codecs))
     return false;
 
-  // Ensure that the AudioCodecs are unique.
-  if (!AreUnique(audio_codecs))
-    return false;
-
   media::CdmCapability::VideoCodecMap video_codecs;
   if (!input.ReadVideoCodecs(&video_codecs))
     return false;
-
-  // Ensure that the VideoCodecProfiles in each entry are unique.
-  for (const auto& codec : video_codecs) {
-    if (!AreUnique(codec.second))
-      return false;
-  }
 
   std::vector<media::EncryptionScheme> encryption_schemes;
   if (!input.ReadEncryptionSchemes(&encryption_schemes))
@@ -51,8 +55,8 @@ bool StructTraits<media::mojom::CdmCapabilityDataView, media::CdmCapability>::
   if (!input.ReadSessionTypes(&session_types))
     return false;
 
-  // |encryption_schemes| and |session_types| are convert to a base::flat_map
-  // implicitly.
+  // |encryption_schemes|, |session_types| and |audio_codecs| are converted
+  // to a base::flat_map implicitly.
   *output = media::CdmCapability(
       std::move(audio_codecs), std::move(video_codecs),
       std::move(encryption_schemes), std::move(session_types));

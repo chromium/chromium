@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -62,6 +62,9 @@ class AppBannerManagerAndroid : public AppBannerManager,
   base::android::ScopedJavaLocalRef<jstring> GetInstallableWebAppName(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& java_web_contents);
+  base::android::ScopedJavaLocalRef<jstring> GetInstallableWebAppManifestId(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& java_web_contents);
 
   // Returns true if the banner pipeline is currently running.
   bool IsRunningForTesting(JNIEnv* env,
@@ -97,6 +100,11 @@ class AppBannerManagerAndroid : public AppBannerManager,
 
   // Returns the appropriate app name based on whether we have a native/web app.
   std::u16string GetAppName() const override;
+
+  // Returns false if the bottom sheet can't be shown. In that case an
+  // alternative UI should be shown.
+  bool MaybeShowPwaBottomSheetController(bool expand_sheet,
+                                         WebappInstallSource install_source);
 
  protected:
   // AppBannerManager overrides.
@@ -179,7 +187,7 @@ class AppBannerManagerAndroid : public AppBannerManager,
   base::android::ScopedJavaGlobalRef<jobject> java_banner_manager_;
 
   // Message controller for the ambient badge.
-  InstallableAmbientBadgeMessageController message_controller_;
+  InstallableAmbientBadgeMessageController message_controller_{this};
 
   // App package name for a native app banner.
   std::string native_app_package_;

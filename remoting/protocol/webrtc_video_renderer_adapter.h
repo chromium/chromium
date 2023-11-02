@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,10 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "remoting/protocol/client_video_stats_dispatcher.h"
 #include "remoting/protocol/video_stats_stub.h"
 #include "third_party/webrtc/api/media_stream_interface.h"
@@ -25,8 +27,7 @@ class DesktopFrame;
 class VideoFrameBuffer;
 }  // namespace webrtc
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class MessagePipe;
 class VideoRenderer;
@@ -49,7 +50,8 @@ class WebrtcVideoRendererAdapter
 
   std::string label() const { return label_; }
 
-  void SetMediaStream(scoped_refptr<webrtc::MediaStreamInterface> media_stream);
+  void SetMediaStream(
+      rtc::scoped_refptr<webrtc::MediaStreamInterface> media_stream);
   void SetVideoStatsChannel(std::unique_ptr<MessagePipe> message_pipe);
 
   // rtc::VideoSinkInterface implementation.
@@ -75,8 +77,8 @@ class WebrtcVideoRendererAdapter
 
   std::string label_;
 
-  scoped_refptr<webrtc::MediaStreamInterface> media_stream_;
-  VideoRenderer* video_renderer_;
+  rtc::scoped_refptr<webrtc::MediaStreamInterface> media_stream_;
+  raw_ptr<VideoRenderer> video_renderer_;
 
   std::unique_ptr<ClientVideoStatsDispatcher> video_stats_dispatcher_;
 
@@ -88,7 +90,6 @@ class WebrtcVideoRendererAdapter
   base::WeakPtrFactory<WebrtcVideoRendererAdapter> weak_factory_{this};
 };
 
-}  // namespace remoting
-}  // namespace protocol
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_WEBRTC_VIDEO_RENDERER_ADAPTER_H_

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,8 +21,7 @@ class NGColumnLayoutAlgorithmTest
   NGColumnLayoutAlgorithmTest()
       : ScopedLayoutNGBlockFragmentationForTest(true) {}
 
-  scoped_refptr<const NGPhysicalBoxFragment> RunBlockLayoutAlgorithm(
-      Element* element) {
+  const NGPhysicalBoxFragment* RunBlockLayoutAlgorithm(Element* element) {
     NGBlockNode container(element->GetLayoutBox());
     NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
         {WritingMode::kHorizontalTb, TextDirection::kLtr},
@@ -40,8 +39,8 @@ class NGColumnLayoutAlgorithmTest
   }
 
   String DumpFragmentTree(Element* element) {
-    auto fragment = RunBlockLayoutAlgorithm(element);
-    return DumpFragmentTree(fragment.get());
+    auto* fragment = RunBlockLayoutAlgorithm(element);
+    return DumpFragmentTree(fragment);
   }
 };
 
@@ -97,9 +96,9 @@ TEST_F(NGColumnLayoutAlgorithmTest, EmptyMulticol) {
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
       LogicalSize(LayoutUnit(1000), kIndefiniteSize));
-  scoped_refptr<const NGPhysicalBoxFragment> parent_fragment =
+  const NGPhysicalBoxFragment* parent_fragment =
       NGBaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(container, space);
-  FragmentChildIterator iterator(parent_fragment.get());
+  FragmentChildIterator iterator(parent_fragment);
   const auto* fragment = iterator.NextChild();
   ASSERT_TRUE(fragment);
   EXPECT_EQ(PhysicalSize(210, 100), fragment->Size());
@@ -137,9 +136,9 @@ TEST_F(NGColumnLayoutAlgorithmTest, EmptyBlock) {
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
       LogicalSize(LayoutUnit(1000), kIndefiniteSize));
-  scoped_refptr<const NGPhysicalBoxFragment> parent_fragment =
+  const NGPhysicalBoxFragment* parent_fragment =
       NGBaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(container, space);
-  FragmentChildIterator iterator(parent_fragment.get());
+  FragmentChildIterator iterator(parent_fragment);
   const auto* fragment = iterator.NextChild();
   EXPECT_EQ(PhysicalSize(210, 100), fragment->Size());
   ASSERT_TRUE(fragment);
@@ -186,10 +185,10 @@ TEST_F(NGColumnLayoutAlgorithmTest, BlockInOneColumn) {
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
       LogicalSize(LayoutUnit(1000), kIndefiniteSize));
-  scoped_refptr<const NGPhysicalBoxFragment> parent_fragment =
+  const NGPhysicalBoxFragment* parent_fragment =
       NGBaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(container, space);
 
-  FragmentChildIterator iterator(parent_fragment.get());
+  FragmentChildIterator iterator(parent_fragment);
   const auto* fragment = iterator.NextChild();
   ASSERT_TRUE(fragment);
   EXPECT_EQ(PhysicalSize(310, 100), fragment->Size());
@@ -2762,7 +2761,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, MinMax) {
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
       LogicalSize(LayoutUnit(1000), kIndefiniteSize));
   NGFragmentGeometry fragment_geometry =
-      CalculateInitialFragmentGeometry(space, node);
+      CalculateInitialFragmentGeometry(space, node, /* break_token */ nullptr);
   NGColumnLayoutAlgorithm algorithm({node, fragment_geometry, space});
   absl::optional<MinMaxSizes> sizes;
 
@@ -3071,10 +3070,10 @@ TEST_F(NGColumnLayoutAlgorithmTest, ColumnBalancing100By3) {
     </div>
   )HTML");
 
-  scoped_refptr<const NGPhysicalBoxFragment> parent_fragment =
+  const NGPhysicalBoxFragment* parent_fragment =
       RunBlockLayoutAlgorithm(GetElementById("container"));
 
-  FragmentChildIterator iterator(parent_fragment.get());
+  FragmentChildIterator iterator(parent_fragment);
   const auto* multicol = iterator.NextChild();
   ASSERT_TRUE(multicol);
 
@@ -4214,7 +4213,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, NestedUnbalancedInnerAutoHeight) {
             offset:0,0 size:45x20
             offset:0,20 size:45x20
       offset:110,0 size:100x50
-        offset:0,0 size:100x50
+        offset:0,0 size:100x40
           offset:0,0 size:45x50
             offset:0,0 size:45x20
             offset:0,20 size:45x20

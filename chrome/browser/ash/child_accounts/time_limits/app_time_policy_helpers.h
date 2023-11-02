@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,12 @@
 #include <map>
 #include <string>
 
-#include "components/services/app_service/public/mojom/types.mojom.h"
+#include "base/values.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class TimeDelta;
-class Value;
 }  // namespace base
 
 namespace ash {
@@ -40,10 +40,9 @@ extern const char kHourInt[];
 extern const char kMinInt[];
 extern const char kActivityReportingEnabled[];
 
-// Converts between apps::mojom::AppType and string used by app time limits
-// policies.
-apps::mojom::AppType PolicyStringToAppType(const std::string& app_type);
-std::string AppTypeToPolicyString(apps::mojom::AppType app_type);
+// Converts between apps::AppType and string used by app time limits policies.
+apps::AppType PolicyStringToAppType(const std::string& app_type);
+std::string AppTypeToPolicyString(apps::AppType app_type);
 
 // Converts between AppRestriction and string used by app time limits policies.
 AppRestriction PolicyStringToAppRestriction(const std::string& restriction);
@@ -63,25 +62,27 @@ absl::optional<AppId> AppIdFromAppInfoDict(const base::Value& dict);
 
 // Deserializes AppLimit from |dict|.
 // Returns value if |dict| contains valid app limit information.
-absl::optional<AppLimit> AppLimitFromDict(const base::Value& dict);
+absl::optional<AppLimit> AppLimitFromDict(const base::Value::Dict& dict);
 
 // Serializes AppLimit to the dictionary.
 base::Value AppLimitToDict(const AppLimit& limit);
 
 // Deserializes daily limits reset time from |dict|.
 // Returns value if |dict| contains valid reset time information.
-absl::optional<base::TimeDelta> ResetTimeFromDict(const base::Value& dict);
+absl::optional<base::TimeDelta> ResetTimeFromDict(
+    const base::Value::Dict& dict);
 
 // Serializes daily limits reset to the dictionary.
 base::Value ResetTimeToDict(int hour, int minutes);
 
 // Deserializes activity reporting enabled boolean from |dict|.
 // Returns value if |dict| contains a valid entry.
-absl::optional<bool> ActivityReportingEnabledFromDict(const base::Value& dict);
+absl::optional<bool> ActivityReportingEnabledFromDict(
+    const base::Value::Dict& dict);
 
 // Deserializes app limits data from the |dict|.
 // Will return empty map if |dict| is invalid.
-std::map<AppId, AppLimit> AppLimitsFromDict(const base::Value& dict);
+std::map<AppId, AppLimit> AppLimitsFromDict(const base::Value::Dict& dict);
 
 }  // namespace policy
 }  // namespace app_time

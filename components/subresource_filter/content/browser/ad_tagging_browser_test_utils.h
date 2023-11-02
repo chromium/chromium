@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,9 +31,21 @@ content::RenderFrameHost* CreateSrcFrameFromAdScript(
     const content::ToRenderFrameHost& adapter,
     const GURL& url);
 
+// Create a fencedframe that navigates via the src attribute. It's created by ad
+// script. Returns after navigation has completed.
+content::RenderFrameHost* CreateFencedFrameFromAdScript(
+    const content::ToRenderFrameHost& adapter,
+    const GURL& url);
+
 // Create a frame that navigates via the src attribute. Returns after
 // navigation has completed.
 content::RenderFrameHost* CreateSrcFrame(
+    const content::ToRenderFrameHost& adapter,
+    const GURL& url);
+
+// Create a fencedframe that navigates via the src attribute. Returns after
+// navigation has completed.
+content::RenderFrameHost* CreateFencedFrame(
     const content::ToRenderFrameHost& adapter,
     const GURL& url);
 

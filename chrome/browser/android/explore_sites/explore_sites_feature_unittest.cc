@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,16 +28,6 @@ TEST(ExploreSitesFeatureTest, ExploreSitesDisabled) {
   EXPECT_EQ(ExploreSitesVariation::DISABLED, GetExploreSitesVariation());
 }
 
-TEST(ExploreSitesFeatureTest, ExploreSitesEnabledWithExperiment) {
-  std::map<std::string, std::string> parameters;
-  parameters[kExploreSitesVariationParameterName] =
-      kExploreSitesVariationExperimental;
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(kExploreSites,
-                                                         parameters);
-  EXPECT_EQ(ExploreSitesVariation::EXPERIMENT, GetExploreSitesVariation());
-}
-
 TEST(ExploreSitesFeatureTest, ExploreSitesEnabledWithDenseTitleBottom) {
   std::map<std::string, std::string> parameters;
   parameters[kExploreSitesDenseVariationParameterName] =
@@ -62,16 +52,6 @@ TEST(ExploreSitesFeatureTest, ExploreSitesDenseVariationOriginal) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(kExploreSites);
   EXPECT_EQ(DenseVariation::ORIGINAL, GetDenseVariation());
-}
-
-TEST(ExploreSitesFeatureTest, ExploreSitesEnabledWithBogus) {
-  const char bogusParamValue[] = "bogus";
-  std::map<std::string, std::string> parameters;
-  parameters[kExploreSitesVariationParameterName] = bogusParamValue;
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(kExploreSites,
-                                                         parameters);
-  EXPECT_EQ(ExploreSitesVariation::ENABLED, GetExploreSitesVariation());
 }
 
 }  // namespace explore_sites

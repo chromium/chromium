@@ -1,14 +1,16 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/app_restore/arc_window_utils.h"
 
+#include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "components/app_restore/features.h"
 #include "components/exo/wm_helper.h"
 #include "components/exo/wm_helper_chromeos.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/display.h"
@@ -21,8 +23,7 @@ const int TEST_DISPLAY_HEIGHT = 1440;
 const double TEST_SCALE_FACTOR = 2.0;
 }  // namespace
 
-namespace ash {
-namespace full_restore {
+namespace ash::full_restore {
 
 class ArcWindowUtilsTest : public testing::Test {
  protected:
@@ -48,10 +49,6 @@ class ArcWindowUtilsTest : public testing::Test {
   }
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {::full_restore::features::kFullRestore,
-         ::full_restore::features::kArcGhostWindow},
-        {});
     wm_helper_ = std::make_unique<exo::WMHelperChromeOS>();
   }
 
@@ -65,40 +62,34 @@ class ArcWindowUtilsTest : public testing::Test {
 };
 
 TEST_F(ArcWindowUtilsTest, ArcWindowInfoInvalidDisplayValidBoundsTest) {
-  apps::mojom::WindowInfoPtr window_info = apps::mojom::WindowInfo::New();
+  apps::WindowInfoPtr window_info = std::make_unique<apps::WindowInfo>();
 
   window_info->display_id = display::kInvalidDisplayId;
-  window_info->bounds = apps::mojom::Rect::New();
 
   auto arc_window_info = HandleArcWindowInfo(std::move(window_info));
-  EXPECT_TRUE(arc_window_info->bounds.is_null());
+  EXPECT_FALSE(arc_window_info->bounds.has_value());
 }
 
 TEST_F(ArcWindowUtilsTest, ArcWindowInfoValidDisplayInvalidBoundsTest) {
-  apps::mojom::WindowInfoPtr window_info = apps::mojom::WindowInfo::New();
+  apps::WindowInfoPtr window_info = std::make_unique<apps::WindowInfo>();
 
   window_info->display_id = TEST_DISPLAY_ID;
 
   auto arc_window_info = HandleArcWindowInfo(std::move(window_info));
-  EXPECT_TRUE(arc_window_info->bounds.is_null());
+  EXPECT_FALSE(arc_window_info->bounds.has_value());
 }
 
 TEST_F(ArcWindowUtilsTest, ArcWindowInfoValidDisplayAndBoundsTest) {
-  apps::mojom::WindowInfoPtr window_info = apps::mojom::WindowInfo::New();
+  apps::WindowInfoPtr window_info = std::make_unique<apps::WindowInfo>();
   window_info->display_id = TEST_DISPLAY_ID;
-  window_info->bounds = apps::mojom::Rect::New();
-  window_info->bounds->x = 100;
-  window_info->bounds->y = 200;
-  window_info->bounds->width = 300;
-  window_info->bounds->height = 400;
+  window_info->bounds = gfx::Rect(100, 200, 300, 400);
 
   auto arc_window_info = HandleArcWindowInfo(std::move(window_info));
-  EXPECT_FALSE(arc_window_info->bounds.is_null());
-  EXPECT_EQ(arc_window_info->bounds->x, 200);
-  EXPECT_EQ(arc_window_info->bounds->y, 400);
-  EXPECT_EQ(arc_window_info->bounds->width, 600);
-  EXPECT_EQ(arc_window_info->bounds->height, 800);
+  EXPECT_TRUE(arc_window_info->bounds.has_value());
+  EXPECT_EQ(arc_window_info->bounds->x(), 200);
+  EXPECT_EQ(arc_window_info->bounds->y(), 400);
+  EXPECT_EQ(arc_window_info->bounds->width(), 600);
+  EXPECT_EQ(arc_window_info->bounds->height(), 800);
 }
 
-}  // namespace full_restore
-}  // namespace ash
+}  // namespace ash::full_restore

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,8 @@
 
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
-#include "net/base/network_isolation_key.h"
+#include "base/memory/raw_ptr.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/http/transport_security_state.h"
 #include "net/url_request/url_request.h"
 
@@ -56,7 +56,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ExpectCTReporter
       const net::X509Certificate* served_certificate_chain,
       const net::SignedCertificateTimestampAndStatusList&
           signed_certificate_timestamps,
-      const net::NetworkIsolationKey& network_isolation_key) override;
+      const net::NetworkAnonymizationKey& network_anonymization_key) override;
 
   // net::URLRequest::Delegate:
   void OnResponseStarted(net::URLRequest* request, int net_error) override;
@@ -67,10 +67,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ExpectCTReporter
   // completes successfully and the CORS check passes, |serialized_report| will
   // be sent to |report_uri| using |report_sender_|.
   struct PreflightInProgress {
-    PreflightInProgress(std::unique_ptr<net::URLRequest> request,
-                        const std::string& serialized_report,
-                        const GURL& report_uri,
-                        const net::NetworkIsolationKey& network_isolation_key);
+    PreflightInProgress(
+        std::unique_ptr<net::URLRequest> request,
+        const std::string& serialized_report,
+        const GURL& report_uri,
+        const net::NetworkAnonymizationKey& network_anonymization_key);
     ~PreflightInProgress();
 
     // The preflight request.
@@ -79,7 +80,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ExpectCTReporter
     // succeeds.
     const std::string serialized_report;
     const GURL report_uri;
-    const net::NetworkIsolationKey network_isolation_key;
+    const net::NetworkAnonymizationKey network_anonymization_key;
   };
 
   FRIEND_TEST_ALL_PREFIXES(ExpectCTReporterTest, FeatureDisabled);
@@ -89,7 +90,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ExpectCTReporter
                            PreflightUsesNetworkIsolationKey);
   FRIEND_TEST_ALL_PREFIXES(ExpectCTReporterTest, PreflightContainsWhitespace);
   FRIEND_TEST_ALL_PREFIXES(ExpectCTReporterTest,
+                           PreflightMethodsContainsWildcard);
+  FRIEND_TEST_ALL_PREFIXES(ExpectCTReporterTest,
+                           PreflightHeadersContainsWildcard);
+  FRIEND_TEST_ALL_PREFIXES(ExpectCTReporterTest,
                            BadCorsPreflightResponseOrigin);
+  FRIEND_TEST_ALL_PREFIXES(ExpectCTReporterTest,
+                           CorsPreflightWithNoAllowMethods);
   FRIEND_TEST_ALL_PREFIXES(ExpectCTReporterTest,
                            BadCorsPreflightResponseMethods);
   FRIEND_TEST_ALL_PREFIXES(ExpectCTReporterTest,
@@ -99,9 +106,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ExpectCTReporter
   // send a report with Content-Type: application/expect-ct-report+json. The
   // preflight result is checked in OnResponseStarted(), and an actual report is
   // sent with |report_sender_| if the preflight succeeds.
-  void SendPreflight(const GURL& report_uri,
-                     const std::string& serialized_report,
-                     const net::NetworkIsolationKey& network_isolation_key);
+  void SendPreflight(
+      const GURL& report_uri,
+      const std::string& serialized_report,
+      const net::NetworkAnonymizationKey& network_anonymization_key);
 
   // When a report fails to send, this method records an UMA histogram and calls
   // |failure_callback_|.
@@ -111,7 +119,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ExpectCTReporter
 
   std::unique_ptr<net::ReportSender> report_sender_;
 
-  net::URLRequestContext* request_context_;
+  raw_ptr<net::URLRequestContext> request_context_;
 
   base::RepeatingClosure success_callback_;
   base::RepeatingClosure failure_callback_;

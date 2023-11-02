@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,7 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
-#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 #include "ui/shell_dialogs/selected_file_info.h"
@@ -21,40 +18,24 @@ const SelectFileDialogExtension::RoutingID kDefaultRoutingID =
 
 }  // namespace
 
-// Enumerates possible version of tests. We support extension mode (Chrome App)
-// and System App (SWA) mode.
-enum TestMode {
-  EXTENSION_FILES_APP_MODE,
-  SYSTEM_FILES_APP_MODE,
-};
-
 // Must be a class so it can be a friend of SelectFileDialogExtension.
-class SelectFileDialogExtensionTest
-    : public ::testing::TestWithParam<TestMode> {
+class SelectFileDialogExtensionTest : public ::testing::Test {
  public:
-  SelectFileDialogExtensionTest() {
-    if (GetParam() == SYSTEM_FILES_APP_MODE) {
-      feature_list_.InitAndEnableFeature(ash::features::kFilesSWA);
-    }
-  }
-
+  SelectFileDialogExtensionTest() = default;
   SelectFileDialogExtensionTest(const SelectFileDialogExtensionTest&) = delete;
   SelectFileDialogExtensionTest& operator=(
       const SelectFileDialogExtensionTest&) = delete;
 
   static SelectFileDialogExtension* CreateDialog(
       ui::SelectFileDialog::Listener* listener) {
-    SelectFileDialogExtension* dialog = new SelectFileDialogExtension(listener,
-                                                                      NULL);
+    SelectFileDialogExtension* dialog =
+        new SelectFileDialogExtension(listener, nullptr);
     // Simulate the dialog opening.
     EXPECT_FALSE(SelectFileDialogExtension::PendingExists(kDefaultRoutingID));
     dialog->AddPending(kDefaultRoutingID);
     EXPECT_TRUE(SelectFileDialogExtension::PendingExists(kDefaultRoutingID));
     return dialog;
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Test listener for a SelectFileDialog.
@@ -109,7 +90,7 @@ class SelfDeletingClient : public ui::SelectFileDialog::Listener {
   scoped_refptr<SelectFileDialogExtension> dialog_;
 };
 
-TEST_P(SelectFileDialogExtensionTest, FileSelected) {
+TEST_F(SelectFileDialogExtensionTest, FileSelected) {
   const int kFileIndex = 5;
   auto listener = std::make_unique<TestListener>();
   scoped_refptr<SelectFileDialogExtension> dialog =
@@ -119,34 +100,29 @@ TEST_P(SelectFileDialogExtensionTest, FileSelected) {
   SelectFileDialogExtension::OnFileSelected(kDefaultRoutingID, info,
                                             kFileIndex);
   // Simulate closing the dialog so the listener gets invoked.
-  dialog->ExtensionDialogClosing(nullptr);
+  dialog->OnSystemDialogWillClose();
   EXPECT_TRUE(listener->selected());
   EXPECT_EQ(kFileIndex, listener->file_index());
 }
 
-TEST_P(SelectFileDialogExtensionTest, FileSelectionCanceled) {
+TEST_F(SelectFileDialogExtensionTest, FileSelectionCanceled) {
   auto listener = std::make_unique<TestListener>();
   scoped_refptr<SelectFileDialogExtension> dialog =
       CreateDialog(listener.get());
   // Simulate cancelling the dialog.
   SelectFileDialogExtension::OnFileSelectionCanceled(kDefaultRoutingID);
   // Simulate closing the dialog so the listener gets invoked.
-  dialog->ExtensionDialogClosing(nullptr);
+  dialog->OnSystemDialogWillClose();
   EXPECT_FALSE(listener->selected());
   EXPECT_EQ(-1, listener->file_index());
 }
 
-TEST_P(SelectFileDialogExtensionTest, SelfDeleting) {
+TEST_F(SelectFileDialogExtensionTest, SelfDeleting) {
   SelfDeletingClient* client = new SelfDeletingClient();
   // Ensure we don't crash or trip an Address Sanitizer warning about
   // use-after-free.
   ui::SelectedFileInfo file_info;
   SelectFileDialogExtension::OnFileSelected(kDefaultRoutingID, file_info, 0);
   // Simulate closing the dialog so the listener gets invoked.
-  client->dialog()->ExtensionDialogClosing(nullptr);
+  client->dialog()->OnSystemDialogWillClose();
 }
-
-INSTANTIATE_TEST_SUITE_P(SelectFileDialogExtension,
-                         SelectFileDialogExtensionTest,
-                         ::testing::Values(EXTENSION_FILES_APP_MODE,
-                                           SYSTEM_FILES_APP_MODE));

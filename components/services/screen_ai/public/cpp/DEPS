@@ -1,0 +1,7 @@
+include_rules = [
+  "+content/public/browser",
+  "+components/keyed_service/core",
+  "+components/keyed_service/content",
+  "+components/prefs",
+  "+components/component_updater"
+]

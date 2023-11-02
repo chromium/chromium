@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,15 +15,6 @@ class WebMouseWheelEvent;
 namespace ui {
 struct DidOverscrollParams;
 }
-
-@class HistorySwiper;
-@protocol HistorySwiperDelegate
-// Return NO from this method if the view/render_widget_host should not
-// allow history swiping.
-- (BOOL)shouldAllowHistorySwiping;
-// The history overlay is added to the view returned from this method.
-- (NSView*)viewThatWantsHistoryOverlay;
-@end
 
 namespace history_swiper {
 enum NavigationDirection {
@@ -58,6 +49,22 @@ enum RecognitionState {
   kCancelled,
 };
 } // history_swiper
+
+@class HistorySwiper;
+@protocol HistorySwiperDelegate
+// Return NO from this method if the view/render_widget_host should not
+// allow history swiping.
+- (BOOL)shouldAllowHistorySwiping;
+// The history overlay is added to the view returned from this method.
+- (NSView*)viewThatWantsHistoryOverlay;
+// Check whether can navigate in direction.
+- (BOOL)canNavigateInDirection:(history_swiper::NavigationDirection)direction
+                      onWindow:(NSWindow*)window;
+// Navigate in direction.
+- (void)navigateInDirection:(history_swiper::NavigationDirection)direction
+                   onWindow:(NSWindow*)window;
+
+@end
 
 // History swiping is the feature wherein a horizontal 2-finger swipe of of a
 // trackpad causes the browser to navigate forwards or backwards.
@@ -185,8 +192,8 @@ enum RecognitionState {
 }
 
 // Many event types are passed in, but the only one we care about is
-// NSScrollWheel. We look at the phase to determine whether to trigger history
-// swiping
+// NSEventTypeScrollWheel. We look at the phase to determine whether to trigger
+// history swiping
 - (BOOL)handleEvent:(NSEvent*)event;
 - (void)rendererHandledWheelEvent:(const blink::WebMouseWheelEvent&)event
                          consumed:(BOOL)consumed;

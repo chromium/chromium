@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,20 @@
  * @fileoverview Oobe reset screen implementation.
  */
 
-/* #js_imports_placeholder */
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '../../components/oobe_icons.m.js';
+import '../../components/common_styles/common_styles.m.js';
+import '../../components/common_styles/oobe_dialog_host_styles.m.js';
+import '../../components/dialogs/oobe_adaptive_dialog.m.js';
+import '../../components/buttons/oobe_text_button.m.js';
+
+import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.m.js';
+import {OobeDialogHostBehavior} from '../../components/behaviors/oobe_dialog_host_behavior.m.js';
+import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.m.js';
+
+
 
 /**
  * @constructor
@@ -14,9 +27,9 @@
  * @implements {LoginScreenBehaviorInterface}
  * @implements {OobeI18nBehaviorInterface}
  */
-const AutolaunchBase = Polymer.mixinBehaviors(
+const AutolaunchBase = mixinBehaviors(
     [OobeI18nBehavior, LoginScreenBehavior, OobeDialogHostBehavior],
-    Polymer.Element);
+    PolymerElement);
 
 /**
  * @polymer
@@ -26,7 +39,9 @@ class Autolaunch extends AutolaunchBase {
     return 'autolaunch-element';
   }
 
-  /* #html_template_placeholder */
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
   static get properties() {
     return {
@@ -52,17 +67,15 @@ class Autolaunch extends AutolaunchBase {
 
   ready() {
     super.ready();
-    this.initializeLoginScreen('AutolaunchScreen', {
-      resetAllowed: true,
-    });
+    this.initializeLoginScreen('AutolaunchScreen');
   }
 
   onConfirm_() {
-    chrome.send('autolaunchOnConfirm');
+    this.userActed('confirm');
   }
 
   onCancel_() {
-    chrome.send('autolaunchOnCancel');
+    this.userActed('cancel');
   }
 
   /**
@@ -76,7 +89,7 @@ class Autolaunch extends AutolaunchBase {
    * Cancels the reset and drops the user back to the login screen.
    */
   cancel() {
-    chrome.send('autolaunchOnCancel');
+    this.userActed('cancel');
   }
 
   /**
@@ -85,8 +98,9 @@ class Autolaunch extends AutolaunchBase {
    */
   updateApp(app) {
     this.appName_ = app.appName;
-    if (app.appIconUrl && app.appIconUrl.length)
+    if (app.appIconUrl && app.appIconUrl.length) {
       this.appIconUrl_ = app.appIconUrl;
+    }
   }
 }
 

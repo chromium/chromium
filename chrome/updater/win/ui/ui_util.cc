@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,11 @@
 
 #include "base/i18n/message_formatter.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/win/atl.h"
-#include "chrome/updater/win/ui/resources/resources.grh"
+#include "chrome/updater/win/ui/l10n_util.h"
+#include "chrome/updater/win/ui/resources/updater_installer_strings.h"
 #include "chrome/updater/win/win_util.h"
 
 namespace updater {
@@ -19,7 +21,7 @@ namespace {
 struct FindProcessWindowsRecord {
   uint32_t process_id = 0;
   uint32_t window_flags = 0;
-  std::vector<HWND>* windows = nullptr;
+  raw_ptr<std::vector<HWND>> windows = nullptr;
 };
 
 BOOL CALLBACK FindProcessWindowsEnumProc(HWND hwnd, LPARAM lparam) {
@@ -110,20 +112,8 @@ HRESULT SetWindowIcon(HWND hwnd, WORD icon_id, HICON* hicon) {
 std::wstring GetInstallerDisplayName(const std::u16string& bundle_name) {
   std::wstring display_name = base::AsWString(bundle_name);
   if (display_name.empty())
-    LoadString(IDS_FRIENDLY_COMPANY_NAME, &display_name);
-  std::wstring installer_name;
-  LoadString(IDS_INSTALLER_DISPLAY_NAME, &installer_name);
-  return base::AsWString(base::i18n::MessageFormatter::FormatWithNumberedArgs(
-      base::AsString16(installer_name), base::AsString16(display_name)));
-}
-
-// TODO(sorin): use resource bundles and remove the dependency on ATL::CString.
-// https://crbug.com/1015602
-bool LoadString(int id, std::wstring* s) {
-  CString tmp;
-  auto result = tmp.LoadString(id);
-  *s = tmp;
-  return result;
+    display_name = GetLocalizedString(IDS_FRIENDLY_COMPANY_NAME_BASE);
+  return GetLocalizedStringF(IDS_INSTALLER_DISPLAY_NAME_BASE, display_name);
 }
 
 bool GetDlgItemText(HWND dlg, int item_id, std::wstring* text) {
@@ -139,6 +129,15 @@ bool GetDlgItemText(HWND dlg, int item_id, std::wstring* text) {
     return false;
   text->assign(tmp.begin(), tmp.end());
   return true;
+}
+
+bool IsHighContrastOn() {
+  HIGHCONTRAST hc = {0};
+  hc.cbSize = sizeof(HIGHCONTRAST);
+  if (!::SystemParametersInfo(SPI_GETHIGHCONTRAST, 0, &hc, 0)) {
+    return false;
+  }
+  return hc.dwFlags & HCF_HIGHCONTRASTON;
 }
 
 }  // namespace ui

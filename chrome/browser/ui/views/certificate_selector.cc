@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
-#include "components/guest_view/browser/guest_view_base.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/web_contents.h"
@@ -33,8 +32,8 @@
 #include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/certificate_provider/certificate_provider_service.h"
-#include "chrome/browser/ash/certificate_provider/certificate_provider_service_factory.h"
+#include "chrome/browser/certificate_provider/certificate_provider_service.h"
+#include "chrome/browser/certificate_provider/certificate_provider_service_factory.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_factory.h"
 #endif
@@ -54,8 +53,8 @@ class CertificateSelector::CertificateTableModel : public ui::TableModel {
   CertificateTableModel& operator=(const CertificateTableModel&) = delete;
 
   // ui::TableModel:
-  int RowCount() override;
-  std::u16string GetText(int index, int column_id) override;
+  size_t RowCount() override;
+  std::u16string GetText(size_t index, int column_id) override;
   void SetObserver(ui::TableModelObserver* observer) override;
 
  private:
@@ -86,15 +85,14 @@ CertificateSelector::CertificateTableModel::CertificateTableModel(
   }
 }
 
-int CertificateSelector::CertificateTableModel::RowCount() {
+size_t CertificateSelector::CertificateTableModel::RowCount() {
   return rows_.size();
 }
 
 std::u16string CertificateSelector::CertificateTableModel::GetText(
-    int index,
+    size_t index,
     int column_id) {
-  DCHECK_GE(index, 0);
-  DCHECK_LT(static_cast<size_t>(index), rows_.size());
+  DCHECK_LT(index, rows_.size());
 
   const Row& row = rows_[index];
   switch (column_id) {
@@ -180,9 +178,8 @@ CertificateSelector::~CertificateSelector() {
 
 // static
 bool CertificateSelector::CanShow(content::WebContents* web_contents) {
-  // GetTopLevelWebContents returns |web_contents| if it is not a guest.
   content::WebContents* top_level_web_contents =
-      guest_view::GuestViewBase::GetTopLevelWebContents(web_contents);
+      constrained_window::GetTopLevelWebContents(web_contents);
   return web_modal::WebContentsModalDialogManager::FromWebContents(
              top_level_web_contents) != nullptr;
 }
@@ -229,6 +226,9 @@ void CertificateSelector::InitWithText(
   }
   columns.push_back(ui::TableColumn(IDS_CERT_SELECTOR_SERIAL_COLUMN,
                                     ui::TableColumn::LEFT, -1, 0.2f));
+  for (auto& column : columns) {
+    column.sortable = true;
+  }
   auto table = std::make_unique<views::TableView>(
       model_.get(), columns, views::TEXT_ONLY, true /* single_selection */);
   table_ = table.get();
@@ -243,20 +243,20 @@ ui::TableModel* CertificateSelector::table_model_for_testing() const {
 }
 
 net::ClientCertIdentity* CertificateSelector::GetSelectedCert() const {
-  const int selected = table_->GetFirstSelectedRow();
-  if (selected < 0)  // Nothing is selected in |table_|.
+  const absl::optional<size_t> selected = table_->GetFirstSelectedRow();
+  if (!selected.has_value())
     return nullptr;
-  DCHECK_LT(static_cast<size_t>(selected), identities_.size());
-  return identities_[selected].get();
+  DCHECK_LT(selected.value(), identities_.size());
+  return identities_[selected.value()].get();
 }
 
 bool CertificateSelector::Accept() {
-  const int selected = table_->GetFirstSelectedRow();
-  if (selected < 0)  // Nothing is selected in |table_|.
+  const absl::optional<size_t> selected = table_->GetFirstSelectedRow();
+  if (!selected.has_value())
     return false;
 
-  DCHECK_LT(static_cast<size_t>(selected), identities_.size());
-  AcceptCertificate(std::move(identities_[selected]));
+  DCHECK_LT(selected.value(), identities_.size());
+  AcceptCertificate(std::move(identities_[selected.value()]));
   return true;
 }
 
@@ -277,8 +277,9 @@ void CertificateSelector::ViewCertButtonPressed() {
   net::ClientCertIdentity* const cert = GetSelectedCert();
   if (!cert)
     return;
-  ShowCertificateViewer(web_contents_, web_contents_->GetTopLevelNativeWindow(),
-                        cert->certificate());
+  ShowCertificateViewerForClientAuth(web_contents_,
+                                     web_contents_->GetTopLevelNativeWindow(),
+                                     cert->certificate());
 }
 
 void CertificateSelector::OnSelectionChanged() {

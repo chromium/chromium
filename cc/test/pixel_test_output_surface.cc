@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,18 +20,8 @@
 namespace cc {
 
 PixelTestOutputSurface::PixelTestOutputSurface(
-    scoped_refptr<viz::ContextProvider> context_provider,
-    gfx::SurfaceOrigin origin)
-    : OutputSurface(std::move(context_provider)) {
-  capabilities_.output_surface_origin = origin;
-  capabilities_.supports_stencil = true;
-}
-
-PixelTestOutputSurface::PixelTestOutputSurface(
     std::unique_ptr<viz::SoftwareOutputDevice> software_device)
-    : OutputSurface(std::move(software_device)) {
-  capabilities_.supports_stencil = true;
-}
+    : OutputSurface(std::move(software_device)) {}
 
 PixelTestOutputSurface::~PixelTestOutputSurface() = default;
 
@@ -43,32 +33,9 @@ void PixelTestOutputSurface::EnsureBackbuffer() {}
 
 void PixelTestOutputSurface::DiscardBackbuffer() {}
 
-void PixelTestOutputSurface::BindFramebuffer() {
-  context_provider()->ContextGL()->BindFramebuffer(GL_FRAMEBUFFER, 0);
+void PixelTestOutputSurface::Reshape(const ReshapeParams& params) {
+  software_device()->Resize(params.size, params.device_scale_factor);
 }
-
-void PixelTestOutputSurface::Reshape(const gfx::Size& size,
-                                     float device_scale_factor,
-                                     const gfx::ColorSpace& color_space,
-                                     gfx::BufferFormat format,
-                                     bool use_stencil) {
-  // External stencil test cannot be tested at the same time as |use_stencil|.
-  DCHECK(!use_stencil || !external_stencil_test_);
-  if (context_provider()) {
-    const bool has_alpha = gfx::AlphaBitsForBufferFormat(format);
-    context_provider()->ContextGL()->ResizeCHROMIUM(
-        size.width(), size.height(), device_scale_factor,
-        color_space.AsGLColorSpace(), has_alpha);
-  } else {
-    software_device()->Resize(size, device_scale_factor);
-  }
-}
-
-bool PixelTestOutputSurface::HasExternalStencilTest() const {
-  return external_stencil_test_;
-}
-
-void PixelTestOutputSurface::ApplyExternalStencil() {}
 
 void PixelTestOutputSurface::SwapBuffers(viz::OutputSurfaceFrame frame) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -87,21 +54,6 @@ void PixelTestOutputSurface::SwapBuffersCallback() {
 
 bool PixelTestOutputSurface::IsDisplayedAsOverlayPlane() const {
   return false;
-}
-
-unsigned PixelTestOutputSurface::GetOverlayTextureId() const {
-  return 0;
-}
-
-uint32_t PixelTestOutputSurface::GetFramebufferCopyTextureFormat() {
-  // This format will work if the |context_provider| has an RGB or RGBA
-  // framebuffer. For now assume tests do not want/care about alpha in
-  // the root render pass.
-  return GL_RGB;
-}
-
-unsigned PixelTestOutputSurface::UpdateGpuFence() {
-  return 0;
 }
 
 void PixelTestOutputSurface::SetUpdateVSyncParametersCallback(

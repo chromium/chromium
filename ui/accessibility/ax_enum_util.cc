@@ -1,13 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/accessibility/ax_enum_util.h"
 
+#include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_enums.mojom.h"
-
-#include "ui/base/l10n/l10n_util.h"
-#include "ui/strings/grit/ui_strings.h"
 
 namespace ui {
 
@@ -182,6 +180,8 @@ const char* ToString(ax::mojom::Role role) {
       return "comboBoxGrouping";
     case ax::mojom::Role::kComboBoxMenuButton:
       return "comboBoxMenuButton";
+    case ax::mojom::Role::kComboBoxSelect:
+      return "comboBoxSelect";
     case ax::mojom::Role::kComment:
       return "comment";
     case ax::mojom::Role::kComplementary:
@@ -684,6 +684,8 @@ const char* ToString(ax::mojom::Action action) {
       return "stopDuckingMedia";
     case ax::mojom::Action::kSuspendMedia:
       return "suspendMedia";
+    case ax::mojom::Action::kLongClick:
+      return "longClick";
   }
 
   return "";
@@ -750,33 +752,6 @@ const char* ToString(ax::mojom::DefaultActionVerb default_action_verb) {
   return "";
 }
 
-std::string ToLocalizedString(ax::mojom::DefaultActionVerb action_verb) {
-  switch (action_verb) {
-    case ax::mojom::DefaultActionVerb::kNone:
-      return "";
-    case ax::mojom::DefaultActionVerb::kActivate:
-      return l10n_util::GetStringUTF8(IDS_AX_ACTIVATE_ACTION_VERB);
-    case ax::mojom::DefaultActionVerb::kCheck:
-      return l10n_util::GetStringUTF8(IDS_AX_CHECK_ACTION_VERB);
-    case ax::mojom::DefaultActionVerb::kClick:
-      return l10n_util::GetStringUTF8(IDS_AX_CLICK_ACTION_VERB);
-    case ax::mojom::DefaultActionVerb::kClickAncestor:
-      return l10n_util::GetStringUTF8(IDS_AX_CLICK_ANCESTOR_ACTION_VERB);
-    case ax::mojom::DefaultActionVerb::kJump:
-      return l10n_util::GetStringUTF8(IDS_AX_JUMP_ACTION_VERB);
-    case ax::mojom::DefaultActionVerb::kOpen:
-      return l10n_util::GetStringUTF8(IDS_AX_OPEN_ACTION_VERB);
-    case ax::mojom::DefaultActionVerb::kPress:
-      return l10n_util::GetStringUTF8(IDS_AX_PRESS_ACTION_VERB);
-    case ax::mojom::DefaultActionVerb::kSelect:
-      return l10n_util::GetStringUTF8(IDS_AX_SELECT_ACTION_VERB);
-    case ax::mojom::DefaultActionVerb::kUncheck:
-      return l10n_util::GetStringUTF8(IDS_AX_UNCHECK_ACTION_VERB);
-  }
-
-  return "";
-}
-
 const char* ToString(ax::mojom::Mutation mutation) {
   switch (mutation) {
     case ax::mojom::Mutation::kNone:
@@ -789,6 +764,10 @@ const char* ToString(ax::mojom::Mutation mutation) {
       return "nodeChanged";
     case ax::mojom::Mutation::kNodeRemoved:
       return "nodeRemoved";
+    case ax::mojom::Mutation::kTextChanged:
+      return "textChanged";
+    case ax::mojom::Mutation::kSubtreeUpdateEnd:
+      return "subtreeUpdateEnd";
   }
 
   return "";
@@ -804,6 +783,10 @@ const char* ToString(ax::mojom::StringAttribute string_attribute) {
       return "ariaInvalidValue";
     case ax::mojom::StringAttribute::kAutoComplete:
       return "autoComplete";
+    case ax::mojom::StringAttribute::kAriaBrailleLabel:
+      return "ariaBrailleLabel";
+    case ax::mojom::StringAttribute::kAriaBrailleRoleDescription:
+      return "ariaBrailleRoleDescription";
     case ax::mojom::StringAttribute::kCheckedStateDescription:
       return "checkedStateDescription";
     case ax::mojom::StringAttribute::kChildTreeId:
@@ -820,6 +803,8 @@ const char* ToString(ax::mojom::StringAttribute string_attribute) {
       return "description";
     case ax::mojom::StringAttribute::kDisplay:
       return "display";
+    case ax::mojom::StringAttribute::kDoDefaultLabel:
+      return "doDefaultLabel";
     case ax::mojom::StringAttribute::kFontFamily:
       return "fontFamily";
     case ax::mojom::StringAttribute::kHtmlTag:
@@ -850,6 +835,8 @@ const char* ToString(ax::mojom::StringAttribute string_attribute) {
       return "role";
     case ax::mojom::StringAttribute::kRoleDescription:
       return "roleDescription";
+    case ax::mojom::StringAttribute::kLongClickLabel:
+      return "longClickLabel";
     case ax::mojom::StringAttribute::kTooltip:
       return "tooltip";
     case ax::mojom::StringAttribute::kUrl:
@@ -1061,6 +1048,8 @@ const char* ToString(ax::mojom::BoolAttribute bool_attribute) {
       return "hasAriaAttribute";
     case ax::mojom::BoolAttribute::kTouchPassthrough:
       return "touchPassthrough";
+    case ax::mojom::BoolAttribute::kLongClickable:
+      return "longClickable";
   }
 
   return "";
@@ -1552,8 +1541,6 @@ const char* ToString(ax::mojom::NameFrom name_from) {
   switch (name_from) {
     case ax::mojom::NameFrom::kNone:
       return "none";
-    case ax::mojom::NameFrom::kUninitialized:
-      return "uninitialized";
     case ax::mojom::NameFrom::kAttribute:
       return "attribute";
     case ax::mojom::NameFrom::kAttributeExplicitlyEmpty:
@@ -1581,8 +1568,12 @@ const char* ToString(ax::mojom::DescriptionFrom description_from) {
       return "none";
     case ax::mojom::DescriptionFrom::kAriaDescription:
       return "ariaDescription";
+    case ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty:
+      return "attributeExplicitlyEmpty";
     case ax::mojom::DescriptionFrom::kButtonLabel:
       return "buttonLabel";
+    case ax::mojom::DescriptionFrom::kPopupElement:
+      return "popupElement";
     case ax::mojom::DescriptionFrom::kRelatedElement:
       return "relatedElement";
     case ax::mojom::DescriptionFrom::kRubyAnnotation:

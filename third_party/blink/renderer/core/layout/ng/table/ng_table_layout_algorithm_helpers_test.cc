@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,23 +16,23 @@ class NGTableAlgorithmHelpersTest : public RenderingTest {
                                   int max_width,
                                   absl::optional<float> percent = absl::nullopt,
                                   bool is_constrained = false) {
-    return NGTableTypes::Column{LayoutUnit(min_width),
-                                LayoutUnit(max_width),
-                                percent,
-                                /* border_padding */ LayoutUnit(),
-                                is_constrained,
-                                /* is_collapsed */ false,
-                                /* is_table_fixed */ false,
-                                /* is_mergeable */ false};
+    return {LayoutUnit(min_width),
+            LayoutUnit(max_width),
+            percent,
+            /* border_padding */ LayoutUnit(),
+            is_constrained,
+            /* is_collapsed */ false,
+            /* is_table_fixed */ false,
+            /* is_mergeable */ false};
   }
 
   NGTableTypes::Row MakeRow(int block_size,
                             bool is_constrained = false,
                             bool has_rowspan_start = false,
                             absl::optional<float> percent = absl::nullopt) {
-    return NGTableTypes::Row{
-        LayoutUnit(block_size), LayoutUnit(), percent,           0,    0,
-        is_constrained,         false,        has_rowspan_start, false};
+    return {LayoutUnit(block_size), 0,       0,
+            absl::nullopt,          percent, is_constrained,
+            has_rowspan_start,      false};
   }
 
   NGTableTypes::Section MakeSection(
@@ -172,8 +172,7 @@ TEST_F(NGTableAlgorithmHelpersTest, DistributeColspanAutoExactMaxSize) {
       column_widths[0] + column_widths[1] + column_widths[2] + column_widths[3];
   Vector<LayoutUnit> column_sizes =
       NGTableAlgorithmHelpers::SynchronizeAssignableTableInlineSizeAndColumns(
-          assignable_table_inline_size, LayoutUnit(), false,
-          *column_constraints);
+          assignable_table_inline_size, false, *column_constraints);
   EXPECT_EQ(column_sizes[0], column_widths[0]);
   EXPECT_EQ(column_sizes[1], column_widths[1]);
   EXPECT_EQ(column_sizes[2], column_widths[2]);
@@ -194,7 +193,6 @@ TEST_F(NGTableAlgorithmHelpersTest, ComputeGridInlineMinMax) {
   LayoutUnit undistributable_space;
   bool is_fixed_layout = false;
   bool is_layout_pass = true;
-  bool skip_collapsed_columns = false;
 
   // No percentages, just sums up min/max.
   column_constraints->data.push_back(MakeColumn(10, 100));
@@ -203,7 +201,7 @@ TEST_F(NGTableAlgorithmHelpersTest, ComputeGridInlineMinMax) {
 
   MinMaxSizes minmax = NGTableAlgorithmHelpers::ComputeGridInlineMinMax(
       node, *column_constraints, undistributable_space, is_fixed_layout,
-      is_layout_pass, skip_collapsed_columns);
+      is_layout_pass);
   EXPECT_EQ(minmax.min_size, LayoutUnit(60));
   EXPECT_EQ(minmax.max_size, LayoutUnit(600));
 
@@ -215,14 +213,14 @@ TEST_F(NGTableAlgorithmHelpersTest, ComputeGridInlineMinMax) {
   column_constraints->data.push_back(MakeColumn(10, 10));
   minmax = NGTableAlgorithmHelpers::ComputeGridInlineMinMax(
       node, *column_constraints, undistributable_space, is_fixed_layout,
-      is_layout_pass, skip_collapsed_columns);
+      is_layout_pass);
   EXPECT_EQ(minmax.min_size, LayoutUnit(30));
   EXPECT_EQ(minmax.max_size, LayoutUnit(990));
 
   is_layout_pass = false;
   minmax = NGTableAlgorithmHelpers::ComputeGridInlineMinMax(
       node, *column_constraints, undistributable_space, is_fixed_layout,
-      is_layout_pass, skip_collapsed_columns);
+      is_layout_pass);
   EXPECT_EQ(minmax.min_size, LayoutUnit(30));
   EXPECT_EQ(minmax.max_size, LayoutUnit(119));
 
@@ -235,16 +233,13 @@ TEST_F(NGTableAlgorithmHelpersTest, ComputeGridInlineMinMax) {
   column_constraints->data.push_back(MakeColumn(10, 800));
   minmax = NGTableAlgorithmHelpers::ComputeGridInlineMinMax(
       node, *column_constraints, undistributable_space, is_fixed_layout,
-      is_layout_pass, skip_collapsed_columns);
+      is_layout_pass);
   EXPECT_EQ(minmax.min_size, LayoutUnit(30));
   EXPECT_EQ(minmax.max_size, LayoutUnit(1000));
 }
 
 TEST_F(NGTableAlgorithmHelpersTest, DistributeRowspanCellToRows) {
-  NGTableTypes::CellBlockConstraint cell_block_constraint{
-      LayoutUnit(300), NGBoxStrut(), 0, 0, 3, true};
-  NGTableTypes::RowspanCell rowspan_cell = NGTableTypes::CreateRowspanCell(
-      0, 3, &cell_block_constraint, absl::nullopt);
+  NGTableTypes::RowspanCell rowspan_cell = {0, 3, LayoutUnit(300)};
   NGTableTypes::Rows rows;
 
   // Distribute to regular rows, rows grow in proportion to size.

@@ -1,9 +1,9 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.m.js';
-import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
 
 import {AsyncUtil} from '../../common/js/async_util.js';
 import {util} from '../../common/js/util.js';
@@ -55,7 +55,7 @@ export class FileWatcher extends EventTarget {
 
       if (eventURL === watchedDirURL) {
         fireWatcherDirectoryChanged(event.changedFiles);
-      } else if (watchedDirURL.match(new RegExp('^' + eventURL))) {
+      } else if (watchedDirURL.startsWith(eventURL)) {
         // When watched directory is deleted by the change in parent directory,
         // notify it as watcher directory changed.
         this.watchedDirectoryEntry_.getDirectory(
@@ -96,9 +96,11 @@ export class FileWatcher extends EventTarget {
           chrome.fileManagerPrivate.removeFileWatch(
               this.watchedDirectoryEntry_, result => {
                 if (chrome.runtime.lastError) {
-                  console.error(
-                      'Failed to remove the watcher because of: ' +
-                      chrome.runtime.lastError.message);
+                  console.warn(`Cannot remove watcher for (redacted): ${
+                      chrome.runtime.lastError.message}`);
+                  console.info(`Cannot remove watcher for '${
+                      this.watchedDirectoryEntry_.toURL()}': ${
+                      chrome.runtime.lastError.message}`);
                 }
                 // Even on error reset the watcher locally, so at least the
                 // notifications are discarded.
@@ -129,7 +131,8 @@ export class FileWatcher extends EventTarget {
             if (chrome.runtime.lastError) {
               // Most probably setting the watcher is not supported on the
               // file system type.
-              console.info('File watchers not supported for: ' + entry.toURL());
+              console.info(`Cannot add watcher for '${entry.toURL()}': ${
+                  chrome.runtime.lastError.message}`);
               this.watchedDirectoryEntry_ = null;
               fulfill();
             } else {

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,13 @@
 #include <string>
 
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
+#include "base/strings/escape.h"
 #include "chrome/browser/sync_file_system/drive_backend/fake_drive_service_helper.h"
 #include "components/drive/drive_uploader.h"
 #include "components/drive/service/fake_drive_service.h"
 #include "google_apis/common/api_error_codes.h"
 #include "google_apis/common/test_util.h"
-#include "net/base/escape.h"
 
 namespace sync_file_system {
 namespace drive_backend {
@@ -81,7 +82,7 @@ class FakeDriveUploader : public drive::DriveUploaderInterface {
   void set_make_file_conflict(bool enable) { make_file_conflict_ = enable; }
 
  private:
-  FakeDriveServiceWrapper* fake_drive_service_;
+  raw_ptr<FakeDriveServiceWrapper> fake_drive_service_;
   bool make_file_conflict_;
 };
 

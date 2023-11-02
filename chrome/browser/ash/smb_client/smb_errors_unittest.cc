@@ -1,11 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/smb_client/smb_errors.h"
 
 #include "base/files/file.h"
-#include "chromeos/dbus/smbprovider/directory_entry.pb.h"
+#include "chromeos/ash/components/dbus/smbprovider/directory_entry.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {

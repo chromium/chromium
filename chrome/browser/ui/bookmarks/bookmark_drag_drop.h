@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/gfx/geometry/point.h"
@@ -55,7 +56,7 @@ struct BookmarkDragParams {
   int drag_node_index;
 
   // The web contents that initiated the drag.
-  content::WebContents* web_contents;
+  raw_ptr<content::WebContents> web_contents;
 
   // The source of the drag.
   ui::mojom::DragEventSource source;

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/time/default_tick_clock.h"
 #include "components/blocked_content/popup_opener_tab_helper.h"
-#include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
@@ -47,10 +46,11 @@ PopupTracker::PopupTracker(content::WebContents* contents,
                            content::WebContents* opener,
                            WindowOpenDisposition disposition)
     : content::WebContentsObserver(contents),
+      content::WebContentsUserData<PopupTracker>(*contents),
       visibility_tracker_(
           base::DefaultTickClock::GetInstance(),
           contents->GetVisibility() != content::Visibility::HIDDEN),
-      opener_source_id_(ukm::GetSourceIdForWebContentsDocument(opener)),
+      opener_source_id_(opener->GetPrimaryMainFrame()->GetPageUkmSourceId()),
       window_open_disposition_(disposition) {
   if (auto* popup_opener = PopupOpenerTabHelper::FromWebContents(opener))
     popup_opener->OnOpenedPopup(this);

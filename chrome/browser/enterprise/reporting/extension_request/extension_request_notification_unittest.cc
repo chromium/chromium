@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -112,7 +112,7 @@ TEST_P(ExtensionRequestNotificationTest, HasExtensionAndClickedByUser) {
   std::string expected_url =
       std::string(kChromeWebstoreUrl) + std::string(kFakeExtensionId);
   EXPECT_EQ(GURL(expected_url),
-            browser()->tab_strip_model()->GetWebContentsAt(0)->GetURL());
+            browser()->tab_strip_model()->GetWebContentsAt(0)->GetVisibleURL());
 }
 
 TEST_P(ExtensionRequestNotificationTest, HasExtensionAndClosedByBrowser) {

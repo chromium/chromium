@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -19,6 +19,7 @@ def _CommonChecks(input_api, output_api):
 
   if any(f for f in files if f.startswith('clean_json_attrs')):
     tests = [path.join(cwd, 'clean_json_attrs_test.py')]
-    return input_api.canned_checks.RunUnitTests(input_api, output_api, tests)
+    return input_api.canned_checks.RunUnitTests(
+        input_api, output_api, tests, run_on_python2=False)
 
   return []

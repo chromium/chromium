@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2015 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2015 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 
 <!-- The toolbar containing the URL bar, back button, and NTP button.
 -->
@@ -14,7 +16,7 @@
     android:layout_width="match_parent"
     android:layout_height="@dimen/toolbar_height_no_shadow"
     android:layout_marginTop="@dimen/tab_strip_height"
-    android:background="?attr/default_bg_color_dynamic"
+    android:background="@macro/default_bg_color"
     android:paddingStart="@dimen/tablet_toolbar_start_padding" >
 
     <LinearLayout
@@ -28,6 +30,9 @@
             android:src="@drawable/btn_toolbar_home"
             android:contentDescription="@string/accessibility_toolbar_btn_home"
             android:visibility="gone"
+            app:menuMaxWidth="@dimen/home_button_list_menu_width"
+            app:menuPositionedAtEnd="false"
+            app:menuVerticalOverlapAnchor="false"
             app:tint="@color/default_icon_color_tint_list" />
 
         <org.chromium.ui.widget.ChromeImageButton
@@ -55,11 +60,10 @@
         <org.chromium.chrome.browser.omnibox.LocationBarTablet
             android:id="@+id/location_bar"
             android:layout_width="0dp"
-            android:layout_height="@dimen/modern_toolbar_background_size"
+            android:layout_height="@dimen/modern_toolbar_tablet_background_size"
             android:layout_weight="1"
             android:layout_gravity="center_vertical"
-            android:background="@drawable/modern_toolbar_text_box_background"
-            android:paddingStart="@dimen/location_bar_lateral_padding"
+            android:background="@drawable/modern_toolbar_tablet_text_box_background"
             android:paddingEnd="@dimen/location_bar_lateral_padding" />
 
         <ViewStub
@@ -73,31 +77,11 @@
         <org.chromium.chrome.browser.toolbar.top.ToggleTabStackButton
             android:id="@+id/tab_switcher_button"
             style="@style/ToolbarButton"
+            android:paddingStart="8dp"
+            android:layout_gravity="top"
             android:contentDescription="@string/accessibility_toolbar_btn_tabswitcher_toggle_default"
             android:visibility="gone" />
 
-        <org.chromium.chrome.browser.toolbar.menu_button.MenuButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/menu_button_wrapper" >
-
-            <org.chromium.ui.widget.ChromeImageButton
-                android:id="@+id/menu_button"
-                style="@style/ToolbarMenuButtonTablet"
-                android:src="@drawable/ic_more_vert_24dp"
-                android:contentDescription="@string/accessibility_toolbar_btn_menu"
-                android:layout_gravity="center"
-                app:tint="@color/default_icon_color_tint_list" />
-
-            <ImageView
-                android:id="@+id/menu_badge"
-                style="@style/ToolbarMenuButtonTablet"
-                android:src="@drawable/badge_update_dark"
-                tools:ignore="ContentDescription"
-                android:importantForAccessibility="no"
-                android:layout_gravity="center"
-                android:visibility="invisible" />
-
-        </org.chromium.chrome.browser.toolbar.menu_button.MenuButton>
+        <include layout="@layout/menu_button"/>
     </LinearLayout>
 </org.chromium.chrome.browser.toolbar.top.ToolbarTablet>

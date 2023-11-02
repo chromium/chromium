@@ -1,139 +1,128 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
+<style>
+  #device-name {
+    -webkit-box-orient: vertical;
+    color: var(--cros-text-color-primary);
+    display: -webkit-box;
+    letter-spacing: 0.25px;
+    line-height: 154%;
+    overflow: hidden;
+    overflow-wrap: break-word;
+    text-align: center;
+    width: 116px;
+  }
 
-<link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_icons_css.html">
-<link rel="import" href="nearby_shared_icons.html">
-<link rel="import" href="nearby_device_icon.html">
+  #icon {
+    height: var(--target-image-size);
+    margin: auto;
+    width: var(--target-image-size);
+  }
 
-<dom-module id="nearby-progress">
-  <template>
-    <style>
-      #device-name {
-        -webkit-box-orient: vertical;
-        color: var(--cros-text-color-primary);
-        display: -webkit-box;
-        letter-spacing: 0.25px;
-        line-height: 154%;
-        overflow: hidden;
-        overflow-wrap: break-word;
-        text-align: center;
-        width: 116px;
-      }
+  .has-error #icon {
+    --nearby-device-icon-color: var(--cros-color-disabled);
+    --nearby-device-icon-background-color: var(
+        --cros-shortcut-background-color);
+  }
 
-      #icon {
-        height: var(--target-image-size);
-        margin: auto;
-        width: var(--target-image-size);
-      }
+  #progress-container {
+    display: flex;
+    height: 76px;
+    margin: 8px auto 20px auto;
+    position: relative;
+    width: 76px;
+  }
 
-      .has-error #icon {
-        --nearby-device-icon-color: var(--google-grey-600);
-        --nearby-device-icon-background-color: var(--google-grey-200);
-      }
+  #share-target-image {
+    border-radius: 50%;
+    /* Hide the image until it's downloaded. */
+    display: none;
+    flex-shrink: 0;
+    height: var(--target-image-size);
+    margin: 4px;
+    width: var(--target-image-size);
+  }
 
-      #progress-container {
-        display: flex;
-        height: 76px;
-        margin: 8px auto 20px auto;
-        position: relative;
-        width: 76px;
-      }
+  #wheel {
+    fill: none;
+    stroke: var(--cros-icon-color-prominent);
+    stroke-dasharray: 100;
+    stroke-linecap: round;
+    stroke-width: 2px;
+    transform: rotate(-90deg);
+    transform-origin: 50% 50%;
+    transition: stroke-dashoffset 400ms ease;
+  }
 
-      #share-target-image {
-        border-radius: 50%;
-        /* Hide the image until it's downloaded. */
-        display: none;
-        flex-shrink: 0;
-        height: var(--target-image-size);
-        margin: 4px;
-        width: var(--target-image-size);
-      }
+  .indeterminate-progress #wheel {
+    animation: 1.4s ease-in-out infinite both
+        indeterminate-progress-animation;
+    stroke-dasharray: 116;
+  }
 
-      #wheel {
-        fill: none;
-        stroke: var(--cros-icon-color-prominent);
-        stroke-dasharray: 100;
-        stroke-linecap: round;
-        stroke-width: 2px;
-        transform: rotate(-90deg);
-        transform-origin: 50% 50%;
-        transition: stroke-dashoffset 400ms ease;
-      }
+  .has-error #wheel {
+    animation: none;
+    stroke: var(--cros-icon-color-alert);
+    stroke-dashoffset: 0;
+  }
 
-      .indeterminate-progress #wheel {
-        animation: 1.4s ease-in-out infinite both
-            indeterminate-progress-animation;
-        stroke-dasharray: 116;
-      }
+  #svg {
+    left: 0;
+    position: absolute;
+    top: 0;
+  }
 
-      .has-error #wheel {
-        animation: none;
-        stroke: var(--cros-icon-color-alert);
-        stroke-dashoffset: 0;
-      }
+  .indeterminate-progress #svg {
+    animation: 2s linear infinite svg-animation;
+  }
 
-      #svg {
-        left: 0;
-        position: absolute;
-        top: 0;
-      }
+  .has-error #svg {
+    animation: none;
+  }
 
-      .indeterminate-progress #svg {
-        animation: 2s linear infinite svg-animation;
-      }
+  .hidden #svg {
+    display: none;
+  }
 
-      .has-error #svg {
-        animation: none;
-      }
+  @keyframes indeterminate-progress-animation {
+    0%,
+    25% {
+      stroke-dashoffset: 115;
+      transform: rotate(0);
+    }
+    50%,
+    75% {
+      stroke-dashoffset: 30;
+      transform: rotate(45deg);
+    }
+    100% {
+      stroke-dashoffset: 115;
+      transform: rotate(360deg);
+    }
+  }
 
-      .hidden #svg {
-        display: none;
-      }
+  @keyframes svg-animation {
+    0% { transform: rotateZ(0deg); }
+    100% { transform: rotateZ(360deg); }
+  }
+</style>
 
-      @keyframes indeterminate-progress-animation {
-        0%,
-        25% {
-          stroke-dashoffset: 115;
-          transform: rotate(0);
-        }
-        50%,
-        75% {
-          stroke-dashoffset: 30;
-          transform: rotate(45deg);
-        }
-        100% {
-          stroke-dashoffset: 115;
-          transform: rotate(360deg);
-        }
-      }
-
-      @keyframes svg-animation {
-        0% { transform: rotateZ(0deg); }
-        100% { transform: rotateZ(360deg); }
-      }
-    </style>
-
-    <div id="progress-container" role="progressbar" aria-valuemin="0"
-        aria-valuemax="100" aria-valuenow$="[[progress]]"
-        tabindex$="[[getProgressBarTabIndex_(progress)]]"
-        class$="[[getProgressWheelClass_(progress, hasError)]]">
-      <!-- This svg is inlined so that it can be styled with css; otherwise,
-          it would be better to put it in an iron-icon. -->
-      <svg id="svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80">
-        <circle id="wheel"
-            cx="40" cy="40" r="39" pathLength="100">
-        </circle>
-      </svg>
-      <img is="cr-auto-img" id="share-target-image"
-          auto-src="[[getTargetImageUrl_(shareTarget)]]">
-      </img>
-      <nearby-device-icon id="icon" share-target="[[shareTarget]]">
-      </nearby-device-icon>
-    </div>
-    <div id="device-name"
-        aria-label="$i18n{nearbyShareOnboardingPageDeviceName}">
-      [[shareTarget.name]]
-    </div>
-  </template>
-  <script src="nearby_progress.js"></script>
-</dom-module>
+<div id="progress-container" role="progressbar" aria-valuemin="0"
+    aria-valuemax="100" aria-valuenow$="[[progress]]"
+    tabindex$="[[getProgressBarTabIndex_(progress)]]"
+    class$="[[getProgressWheelClass_(progress, hasError)]]">
+  <!-- This svg is inlined so that it can be styled with css; otherwise,
+      it would be better to put it in an iron-icon. -->
+  <svg id="svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80">
+    <circle id="wheel"
+        cx="40" cy="40" r="39" pathLength="100">
+    </circle>
+  </svg>
+  <img is="cr-auto-img" id="share-target-image"
+      auto-src="[[getTargetImageUrl_(shareTarget)]]">
+  </img>
+  <nearby-device-icon id="icon" share-target="[[shareTarget]]">
+  </nearby-device-icon>
+</div>
+<div id="device-name"
+    aria-label="$i18n{nearbyShareOnboardingPageDeviceName}">
+  [[shareTarget.name]]
+</div>

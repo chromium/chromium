@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -23,16 +24,16 @@
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_input_event_router.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/input/synthetic_pinch_gesture_params.h"
 #include "content/common/input/synthetic_smooth_scroll_gesture_params.h"
 #include "content/common/input/synthetic_tap_gesture_params.h"
-#include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
+#include "third_party/blink/public/common/page/page_zoom.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/blink/web_input_event_traits.h"
 #include "ui/events/gesture_detection/gesture_provider_config_helper.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
-#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/range/range.h"
 
 namespace content {
@@ -40,14 +41,12 @@ namespace protocol {
 
 namespace {
 
-gfx::PointF CssPixelsToPointF(double x, double y, float page_scale_factor) {
-  return gfx::PointF(x * page_scale_factor, y * page_scale_factor);
+gfx::PointF CssPixelsToPointF(double x, double y, float scale_factor) {
+  return gfx::PointF(x * scale_factor, y * scale_factor);
 }
 
-gfx::Vector2dF CssPixelsToVector2dF(double x,
-                                    double y,
-                                    float page_scale_factor) {
-  return gfx::Vector2dF(x * page_scale_factor, y * page_scale_factor);
+gfx::Vector2dF CssPixelsToVector2dF(double x, double y, float scale_factor) {
+  return gfx::Vector2dF(x * scale_factor, y * scale_factor);
 }
 
 bool StringToGestureSourceType(Maybe<std::string> in,
@@ -117,22 +116,26 @@ base::TimeTicks GetEventTimeTicks(const Maybe<double>& timestamp) {
                             : base::TimeTicks::Now();
 }
 
-bool SetKeyboardEventText(char16_t* to, Maybe<std::string> from) {
+bool SetKeyboardEventText(
+    char16_t (&to)[blink::WebKeyboardEvent::kTextLengthCap],
+    Maybe<std::string> from) {
   if (!from.isJust())
     return true;
 
   std::u16string text16 = base::UTF8ToUTF16(from.fromJust());
-  if (text16.size() > blink::WebKeyboardEvent::kTextLengthCap)
+  if (text16.size() >= blink::WebKeyboardEvent::kTextLengthCap)
     return false;
 
   for (size_t i = 0; i < text16.size(); ++i)
     to[i] = text16[i];
+  to[text16.size()] = 0;
   return true;
 }
 
 bool GetMouseEventButton(const std::string& button,
                          blink::WebPointerProperties::Button* event_button,
                          int* event_modifiers) {
+  *event_modifiers = blink::WebInputEvent::kFromDebugger;
   if (button.empty())
     return true;
 
@@ -140,19 +143,19 @@ bool GetMouseEventButton(const std::string& button,
     *event_button = blink::WebMouseEvent::Button::kNoButton;
   } else if (button == Input::MouseButtonEnum::Left) {
     *event_button = blink::WebMouseEvent::Button::kLeft;
-    *event_modifiers = blink::WebInputEvent::kLeftButtonDown;
+    *event_modifiers |= blink::WebInputEvent::kLeftButtonDown;
   } else if (button == Input::MouseButtonEnum::Middle) {
     *event_button = blink::WebMouseEvent::Button::kMiddle;
-    *event_modifiers = blink::WebInputEvent::kMiddleButtonDown;
+    *event_modifiers |= blink::WebInputEvent::kMiddleButtonDown;
   } else if (button == Input::MouseButtonEnum::Right) {
     *event_button = blink::WebMouseEvent::Button::kRight;
-    *event_modifiers = blink::WebInputEvent::kRightButtonDown;
+    *event_modifiers |= blink::WebInputEvent::kRightButtonDown;
   } else if (button == Input::MouseButtonEnum::Back) {
     *event_button = blink::WebMouseEvent::Button::kBack;
-    *event_modifiers = blink::WebInputEvent::kBackButtonDown;
+    *event_modifiers |= blink::WebInputEvent::kBackButtonDown;
   } else if (button == Input::MouseButtonEnum::Forward) {
     *event_button = blink::WebMouseEvent::Button::kForward;
-    *event_modifiers = blink::WebInputEvent::kForwardButtonDown;
+    *event_modifiers |= blink::WebInputEvent::kForwardButtonDown;
   } else {
     return false;
   }
@@ -525,12 +528,13 @@ class InputHandler::InputInjector
   base::WeakPtrFactory<InputHandler::InputInjector> weak_ptr_factory_{this};
 };
 
-InputHandler::InputHandler(bool allow_file_access)
+InputHandler::InputHandler(bool allow_file_access,
+                           bool allow_sending_input_to_browser)
     : DevToolsDomainHandler(Input::Metainfo::domainName),
       host_(nullptr),
-      page_scale_factor_(1.0),
       last_id_(0),
-      allow_file_access_(allow_file_access) {}
+      allow_file_access_(allow_file_access),
+      allow_sending_input_to_browser_(allow_sending_input_to_browser) {}
 
 InputHandler::~InputHandler() = default;
 
@@ -546,17 +550,9 @@ void InputHandler::SetRenderer(int process_host_id,
     return;
   ClearInputState();
 
-  // When navigating, the new renderer might have a different page scale.
-  // It emits a changed event iff the new page scale is not 1
-  // (see crbug.com/929806)
-  // If attaching to a new host, we've got OnPageScaleFactorChanged(),
-  // so don't override it.
-  if (host_)
-    page_scale_factor_ = 1.0;
-
-  WebContents* old_web_contents = WebContents::FromRenderFrameHost(host_);
+  auto* old_web_contents = WebContentsImpl::FromRenderFrameHostImpl(host_);
   host_ = frame_host;
-  web_contents_ = WebContents::FromRenderFrameHost(host_);
+  web_contents_ = WebContentsImpl::FromRenderFrameHostImpl(host_);
 
   if (ignore_input_events_ && old_web_contents != web_contents_) {
     if (old_web_contents)
@@ -569,10 +565,6 @@ void InputHandler::SetRenderer(int process_host_id,
 void InputHandler::Wire(UberDispatcher* dispatcher) {
   frontend_ = std::make_unique<Input::Frontend>(dispatcher->channel());
   Input::Dispatcher::wire(dispatcher, this);
-}
-
-void InputHandler::OnPageScaleFactorChanged(float page_scale_factor) {
-  page_scale_factor_ = page_scale_factor;
 }
 
 Response InputHandler::Disable() {
@@ -668,7 +660,7 @@ void InputHandler::DispatchKeyEvent(
 
   // We do not pass events to browser if there is no native key event
   // due to Mac needing the actual os_event.
-  if (event.native_key_code)
+  if (event.native_key_code && allow_sending_input_to_browser_)
     event.os_event = NativeInputEventBuilder::CreateEvent(event);
   else
     event.skip_in_browser = true;
@@ -710,29 +702,41 @@ void InputHandler::ImeSetComposition(
     Maybe<int> replacement_end,
     std::unique_ptr<ImeSetCompositionCallback> callback) {
   std::u16string text16 = base::UTF8ToUTF16(text);
-  if (!host_ || !host_->GetRenderWidgetHost()) {
+  if (!host_ || !host_->GetRenderWidgetHost() || !web_contents_) {
     callback->sendFailure(Response::InternalError());
     return;
   }
+  // Currently no DevTools target for Prerender.
+  if (host_->GetLifecycleState() ==
+      RenderFrameHost::LifecycleState::kPrerendering) {
+    NOTREACHED();
+  }
+  // Portal cannot be focused.
+  if (web_contents_->IsPortal()) {
+    callback->sendFailure(
+        Response::InvalidRequest("A Portal cannot be focused."));
+    return;
+  }
 
+  // |RenderFrameHostImpl::GetRenderWidgetHost| returns the RWHImpl of the
+  // nearest local root of |host_|.
   RenderWidgetHostImpl* widget_host = host_->GetRenderWidgetHost();
-  if (!host_->GetParent() && widget_host->delegate()) {
+  if (widget_host->delegate()) {
     RenderWidgetHostImpl* target_host =
         widget_host->delegate()->GetFocusedRenderWidgetHost(widget_host);
     if (target_host)
       widget_host = target_host;
   }
 
-  // If replacement start and end are not specified, then they are -1,
+  // If replacement start and end are not specified, then the range is invalid,
   // so no replacing will be done.
-  int replacement_start_out = -1;
-  int replacement_end_out = -1;
+  gfx::Range replacement_range = gfx::Range::InvalidRange();
 
   // Check if replacement_start and end parameters were passed in
   if (replacement_start.isJust()) {
-    replacement_start_out = replacement_start.fromJust();
+    replacement_range.set_start(replacement_start.fromJust());
     if (replacement_end.isJust()) {
-      replacement_end_out = replacement_end.fromJust();
+      replacement_range.set_end(replacement_end.fromJust());
     } else {
       callback->sendFailure(Response::InvalidParams(
           "Either both replacement start/end are specified or neither."));
@@ -746,9 +750,8 @@ void InputHandler::ImeSetComposition(
   widget_host->Focus();
 
   widget_host->GetWidgetInputHandler()->ImeSetComposition(
-      text16, std::vector<ui::ImeTextSpan>(),
-      gfx::Range(replacement_start_out, replacement_end_out), selection_start,
-      selection_end, std::move(closure));
+      text16, std::vector<ui::ImeTextSpan>(), replacement_range,
+      selection_start, selection_end, std::move(closure));
 }
 
 void InputHandler::DispatchMouseEvent(
@@ -849,7 +852,7 @@ void InputHandler::DispatchMouseEvent(
             ->GetInputEventRouter()
             ->GetRenderWidgetHostAtPointAsynchronously(
                 widget_host->GetView(),
-                CssPixelsToPointF(x, y, self->page_scale_factor_),
+                CssPixelsToPointF(x, y, self->ScaleFactor()),
                 base::BindOnce(&InputHandler::OnWidgetForDispatchMouseEvent,
                                self, std::move(callback),
                                std::move(mouse_event), wheel_event));
@@ -891,7 +894,7 @@ void InputHandler::DispatchDragEvent(
   widget_host->delegate()
       ->GetInputEventRouter()
       ->GetRenderWidgetHostAtPointAsynchronously(
-          widget_host->GetView(), CssPixelsToPointF(x, y, page_scale_factor_),
+          widget_host->GetView(), CssPixelsToPointF(x, y, ScaleFactor()),
           base::BindOnce(&InputHandler::OnWidgetForDispatchDragEvent,
                          weak_factory_.GetWeakPtr(), event_type, x, y,
                          std::move(data), std::move(modifiers),
@@ -982,6 +985,14 @@ void InputHandler::OnWidgetForDispatchDragEvent(
         base::StringPrintf("Unexpected event type '%s'", event_type.c_str())));
   }
 }
+
+float InputHandler::ScaleFactor() {
+  DCHECK(web_contents_);
+  return blink::PageZoomLevelToZoomFactor(
+             web_contents_->GetPendingPageZoomLevel()) *
+         web_contents_->GetPrimaryPage().GetPageScaleFactor();
+}
+
 void InputHandler::StartDragging(const blink::mojom::DragData& drag_data,
                                  blink::DragOperationsMask drag_operations_mask,
                                  bool* intercepted) {
@@ -1116,10 +1127,10 @@ void InputHandler::DispatchWebTouchEvent(
     points[id].rotation_angle = point->GetRotationAngle(0.0);
     points[id].force = point->GetForce(1.0);
     points[id].pointer_type = blink::WebPointerProperties::PointerType::kTouch;
-    points[id].SetPositionInWidget(point->GetX() * page_scale_factor_,
-                                   point->GetY() * page_scale_factor_);
-    points[id].SetPositionInScreen(point->GetX() * page_scale_factor_,
-                                   point->GetY() * page_scale_factor_);
+    points[id].SetPositionInWidget(point->GetX() * ScaleFactor(),
+                                   point->GetY() * ScaleFactor());
+    points[id].SetPositionInScreen(point->GetX() * ScaleFactor(),
+                                   point->GetY() * ScaleFactor());
     points[id].tilt_x = point->GetTiltX(0);
     points[id].tilt_y = point->GetTiltY(0);
     points[id].tangential_pressure = point->GetTangentialPressure(0);
@@ -1368,7 +1379,7 @@ void InputHandler::DispatchSyntheticPointerActionTouch(
 
   if (!synthetic_pointer_driver_) {
     synthetic_pointer_driver_ =
-        SyntheticPointerDriver::Create(gesture_source_type);
+        SyntheticPointerDriver::Create(gesture_source_type, true);
   }
   std::unique_ptr<SyntheticPointerAction> synthetic_gesture =
       std::make_unique<SyntheticPointerAction>(action_list_params);
@@ -1402,7 +1413,7 @@ SyntheticPointerActionParams InputHandler::PrepareSyntheticPointerActionParams(
   switch (pointer_action_type) {
     case SyntheticPointerActionParams::PointerActionType::PRESS:
       action_params.set_position(
-          gfx::PointF(x * page_scale_factor_, y * page_scale_factor_));
+          gfx::PointF(x * ScaleFactor(), y * ScaleFactor()));
       action_params.set_button(button);
       action_params.set_key_modifiers(key_modifiers);
       action_params.set_width(radius_x * 2.f);
@@ -1412,7 +1423,7 @@ SyntheticPointerActionParams InputHandler::PrepareSyntheticPointerActionParams(
       break;
     case SyntheticPointerActionParams::PointerActionType::MOVE:
       action_params.set_position(
-          gfx::PointF(x * page_scale_factor_, y * page_scale_factor_));
+          gfx::PointF(x * ScaleFactor(), y * ScaleFactor()));
       action_params.set_key_modifiers(key_modifiers);
       action_params.set_width(radius_x * 2.f);
       action_params.set_height(radius_y * 2.f);
@@ -1564,8 +1575,9 @@ void InputHandler::SynthesizePinchGesture(
   SyntheticPinchGestureParams gesture_params;
   const int kDefaultRelativeSpeed = 800;
 
+  gesture_params.from_devtools_debugger = true;
   gesture_params.scale_factor = scale_factor;
-  gesture_params.anchor = CssPixelsToPointF(x, y, page_scale_factor_);
+  gesture_params.anchor = CssPixelsToPointF(x, y, ScaleFactor());
   if (!PointIsWithinContents(gesture_params.anchor)) {
     callback->sendFailure(Response::InvalidParams("Position out of bounds"));
     return;
@@ -1613,29 +1625,29 @@ void InputHandler::SynthesizeScrollGesture(
   }
 
   SyntheticSmoothScrollGestureParams gesture_params;
-  const bool kDefaultPreventFling = true;
-  const int kDefaultSpeed = 800;
+  gesture_params.from_devtools_debugger = true;
+  gesture_params.granularity = ui::ScrollGranularity::kScrollByPrecisePixel;
 
-  gesture_params.anchor = CssPixelsToPointF(x, y, page_scale_factor_);
+  gesture_params.anchor = CssPixelsToPointF(x, y, ScaleFactor());
   if (!PointIsWithinContents(gesture_params.anchor)) {
     callback->sendFailure(Response::InvalidParams("Position out of bounds"));
     return;
   }
 
+  const bool kDefaultPreventFling = true;
+  const int kDefaultSpeed = 800;
   gesture_params.prevent_fling =
       prevent_fling.fromMaybe(kDefaultPreventFling);
   gesture_params.speed_in_pixels_s = speed.fromMaybe(kDefaultSpeed);
 
   if (x_distance.isJust() || y_distance.isJust()) {
-    gesture_params.distances.push_back(
-        CssPixelsToVector2dF(x_distance.fromMaybe(0),
-                             y_distance.fromMaybe(0), page_scale_factor_));
+    gesture_params.distances.push_back(CssPixelsToVector2dF(
+        x_distance.fromMaybe(0), y_distance.fromMaybe(0), ScaleFactor()));
   }
 
   if (x_overscroll.isJust() || y_overscroll.isJust()) {
     gesture_params.distances.push_back(CssPixelsToVector2dF(
-        -x_overscroll.fromMaybe(0), -y_overscroll.fromMaybe(0),
-        page_scale_factor_));
+        -x_overscroll.fromMaybe(0), -y_overscroll.fromMaybe(0), ScaleFactor()));
   }
 
   if (!StringToGestureSourceType(
@@ -1723,7 +1735,8 @@ void InputHandler::SynthesizeTapGesture(
   const int kDefaultDuration = 50;
   const int kDefaultTapCount = 1;
 
-  gesture_params.position = CssPixelsToPointF(x, y, page_scale_factor_);
+  gesture_params.position = CssPixelsToPointF(x, y, ScaleFactor());
+  gesture_params.from_devtools_debugger = true;
   if (!PointIsWithinContents(gesture_params.position)) {
     callback->sendFailure(Response::InvalidParams("Position out of bounds"));
     return;

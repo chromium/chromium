@@ -1,0 +1,10 @@
+CONSOLE MESSAGE: forcing layout on c-v:hidden should make a console warning.
+CONSOLE DEBUG: Rendering was performed in a subtree hidden by content-visibility.
+CONSOLE MESSAGE: forcing layout on c-v:auto should NOT make a console warning.
+CONSOLE MESSAGE: calling isVisible should NOT make a console warning.
+CONSOLE MESSAGE: forcing layout via range APIs on c-v:hidden should make a console warning.
+CONSOLE DEBUG: Rendering was performed in a subtree hidden by content-visibility.
+CONSOLE MESSAGE: forcing layout via range APIs on c-v:auto should NOT make a console warning.
+CONSOLE MESSAGE: forcing layout on c-v:hidden inside c-v:auto should make a console warning.
+CONSOLE DEBUG: Rendering was performed in a subtree hidden by content-visibility.
+

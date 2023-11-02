@@ -1,10 +1,9 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.components.strictmode;
 
-import android.annotation.TargetApi;
 import android.app.ApplicationErrorReport;
 import android.os.Build;
 import android.os.StrictMode;
@@ -15,6 +14,7 @@ import android.os.strictmode.ResourceMismatchViolation;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 
 import org.chromium.base.Consumer;
 import org.chromium.base.Function;
@@ -107,7 +107,7 @@ final class ReflectiveThreadStrictModeInterceptor implements ThreadStrictModeInt
     }
 
     /** @param o {@code android.os.StrictMode.ViolationInfo} */
-    @SuppressWarnings({"unchecked", "DiscouragedPrivateApi", "PrivateApi"})
+    @SuppressWarnings({"unchecked", "DiscouragedPrivateApi", "PrivateApi", "BlockedPrivateApi"})
     private int getViolationType(Object violationInfo) {
         try {
             Class<?> violationInfoClass = Class.forName("android.os.StrictMode$ViolationInfo");
@@ -147,7 +147,7 @@ final class ReflectiveThreadStrictModeInterceptor implements ThreadStrictModeInt
     /**
      * Computes the violation type based on the class of the passed-in violation.
      */
-    @TargetApi(29)
+    @RequiresApi(29)
     private static int computeViolationTypeAndroid10(Class<?> violationClass) {
         if (DiskReadViolation.class.isAssignableFrom(violationClass)) {
             return Violation.DETECT_DISK_READ;

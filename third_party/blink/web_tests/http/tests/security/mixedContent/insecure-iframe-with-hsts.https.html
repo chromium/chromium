@@ -1,22 +1,30 @@
-<!DOCTYPE html>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<body>
-<script>
-  testRunner.dumpFrameLoadCallbacks();
+<script type="module">
 
-  async_test(t => {
-    fetch("https://hsts-example.test:8443/security/resources/hsts.php?as-fetch")
-      .then(t.step_func(_ => {
-        var i = document.createElement('iframe');
+// TODO(https://github.com/web-platform-tests/wpt/issues/4880): Move this tests
+// into the WPT repository.
 
-        // Note: HTTP, not HTTPS:
-        i.src = "http://hsts-example.test:8443/security/resources/hsts.php";
-        window.onmessage = t.unreached_func("No message should be received from the frame.");
+// Check HSTS does not bypass MIX.
 
-        // Give the message a chance to get through.
-        document.body.appendChild(i);
-        requestAnimationFrame(_ => t.done());
-      }));
-  }, "HSTS does not bypass MIX.");
+// Dump into expectation console messages. We are expecting this message:
+//   CONSOLE ERROR: [...] Mixed Content: The page at [...] was loaded over
+//   HTTPS, but requested an insecure frame [...]. This request has been
+//   blocked; the content must be served over HTTPS.
+testRunner.waitUntilDone();
+testRunner.dumpAsText();
+
+await fetch("https://hsts-example.test:8443/security/resources/hsts.php?as-fetch");
+
+// Note: HTTP, not HTTPS:
+const iframe = document.createElement('iframe');
+iframe.src = "http://hsts-example.test:8443/security/resources/hsts.php";
+onmessage = () => console.log("Error: message received from the frame.");
+
+// Wait for the iframe to navigate and commit the error page. Purposefully,
+// there are no APIs to know when an error happens, as it would otherwise
+// reveals whether the user is logged in a cross-origin website.
+document.body.appendChild(iframe);
+await new Promise(r => setTimeout(r, 3000));
+
+testRunner.notifyDone();
+
 </script>

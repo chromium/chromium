@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 namespace blink {
 
 PaintRenderingContext2D::PaintRenderingContext2D(
-    const IntSize& container_size,
+    const gfx::Size& container_size,
     const PaintRenderingContext2DSettings* context_settings,
     float zoom,
     float device_scale_factor,
@@ -24,8 +24,8 @@ PaintRenderingContext2D::PaintRenderingContext2D(
   clip_antialiasing_ = kAntiAliased;
   GetState().SetShouldAntialias(true);
 
-  GetPaintCanvas()->clear(context_settings->alpha() ? SK_ColorTRANSPARENT
-                                                    : SK_ColorBLACK);
+  GetPaintCanvas()->clear(context_settings->alpha() ? SkColors::kTransparent
+                                                    : SkColors::kBlack);
   did_record_draw_commands_in_paint_recorder_ = true;
 }
 
@@ -120,12 +120,14 @@ void PaintRenderingContext2D::ValidateStateStackWithCanvas(
 }
 
 sk_sp<PaintFilter> PaintRenderingContext2D::StateGetFilter() {
-  return GetState().GetFilterForOffscreenCanvas(IntSize(Width(), Height()),
-                                                this);
+  return GetState().GetFilterForOffscreenCanvas(container_size_, this);
 }
 
-CanvasColorParams PaintRenderingContext2D::GetCanvas2DColorParams() const {
-  return CanvasColorParams();
+PredefinedColorSpace PaintRenderingContext2D::GetDefaultImageDataColorSpace()
+    const {
+  // PaintRenderingContext2D does not call getImageData or createImageData.
+  NOTREACHED();
+  return PredefinedColorSpace::kSRGB;
 }
 
 void PaintRenderingContext2D::WillOverwriteCanvas() {
@@ -138,7 +140,7 @@ void PaintRenderingContext2D::WillOverwriteCanvas() {
 }
 
 DOMMatrix* PaintRenderingContext2D::getTransform() {
-  const TransformationMatrix& t = GetState().GetTransform();
+  const AffineTransform& t = GetState().GetTransform();
   DOMMatrix* m = DOMMatrix::Create();
   m->setA(t.A() / effective_zoom_);
   m->setB(t.B() / effective_zoom_);

@@ -1,10 +1,11 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/sync/driver/sync_policy_handler.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
@@ -14,11 +15,6 @@
 #include "components/prefs/pref_value_map.h"
 #include "components/sync/base/pref_names.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
-#include "base/test/scoped_feature_list.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace syncer {
 namespace {
@@ -71,13 +67,14 @@ TEST(SyncPolicyHandlerTest, SyncTypesListDisabled) {
 
   // Create a policy that disables some types.
   policy::PolicyMap policy;
-  base::ListValue disabled_types;
+  base::Value::List disabled_types;
   disabled_types.Append("bookmarks");
   disabled_types.Append("readingList");
   disabled_types.Append("preferences");
   policy.Set(policy::key::kSyncTypesListDisabled,
              policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-             policy::POLICY_SOURCE_CLOUD, disabled_types.Clone(), nullptr);
+             policy::POLICY_SOURCE_CLOUD,
+             base::Value(std::move(disabled_types)), nullptr);
   SyncPolicyHandler handler;
   handler.ApplyPolicySettings(policy, &prefs);
 
@@ -98,17 +95,8 @@ TEST(SyncPolicyHandlerTest, SyncTypesListDisabled) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-class SyncPolicyHandlerOsTest : public testing::Test {
- public:
-  SyncPolicyHandlerOsTest() {
-    feature_list_.InitAndEnableFeature(
-        chromeos::features::kSyncSettingsCategorization);
-  }
 
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(SyncPolicyHandlerOsTest, SyncTypesListDisabled_OsTypes) {
+TEST(SyncPolicyHandlerOsTest, SyncTypesListDisabled_OsTypes) {
   // Start with prefs enabled so we can sense that they have changed.
   PrefValueMap prefs;
   prefs.SetBoolean(prefs::kSyncOsApps, true);
@@ -117,13 +105,14 @@ TEST_F(SyncPolicyHandlerOsTest, SyncTypesListDisabled_OsTypes) {
 
   // Create a policy that disables the types.
   policy::PolicyMap policy;
-  base::ListValue disabled_types;
+  base::Value::List disabled_types;
   disabled_types.Append("osApps");
   disabled_types.Append("osPreferences");
   disabled_types.Append("osWifiConfigurations");
   policy.Set(policy::key::kSyncTypesListDisabled,
              policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-             policy::POLICY_SOURCE_CLOUD, disabled_types.Clone(), nullptr);
+             policy::POLICY_SOURCE_CLOUD,
+             base::Value(std::move(disabled_types)), nullptr);
   SyncPolicyHandler handler;
   handler.ApplyPolicySettings(policy, &prefs);
 
@@ -137,7 +126,7 @@ TEST_F(SyncPolicyHandlerOsTest, SyncTypesListDisabled_OsTypes) {
   EXPECT_FALSE(enabled);
 }
 
-TEST_F(SyncPolicyHandlerOsTest, SyncTypesListDisabled_MigratedTypes) {
+TEST(SyncPolicyHandlerOsTest, SyncTypesListDisabled_MigratedTypes) {
   // Start with prefs enabled so we can sense that they have changed.
   PrefValueMap prefs;
   prefs.SetBoolean(prefs::kSyncOsApps, true);
@@ -146,13 +135,14 @@ TEST_F(SyncPolicyHandlerOsTest, SyncTypesListDisabled_MigratedTypes) {
   // Create a policy that disables the types, but using the original browser
   // policy names from before the SplitSettingsSync launch.
   policy::PolicyMap policy;
-  base::ListValue disabled_types;
+  base::Value::List disabled_types;
   disabled_types.Append("apps");
   disabled_types.Append("wifiConfigurations");
   disabled_types.Append("preferences");
   policy.Set(policy::key::kSyncTypesListDisabled,
              policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-             policy::POLICY_SOURCE_CLOUD, disabled_types.Clone(), nullptr);
+             policy::POLICY_SOURCE_CLOUD,
+             base::Value(std::move(disabled_types)), nullptr);
   SyncPolicyHandler handler;
   handler.ApplyPolicySettings(policy, &prefs);
 

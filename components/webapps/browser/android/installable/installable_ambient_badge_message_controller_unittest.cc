@@ -1,11 +1,13 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/webapps/browser/android/installable/installable_ambient_badge_message_controller.h"
 
+#include "base/android/jni_android.h"
 #include "components/messages/android/mock_message_dispatcher_bridge.h"
 #include "components/webapps/browser/android/installable/installable_ambient_badge_client.h"
+#include "components/webapps/browser/android/webapps_icon_utils.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -36,6 +38,8 @@ class InstallableAmbientBadgeMessageControllerTest
   void TearDown() override;
 
   void EnqueueMessage();
+  void EnqueueMessage(bool maskable);
+  void EnqueueMessageWithExpectNotCalled();
   void DismissMessage(bool expected);
 
   void TriggerActionClick();
@@ -43,6 +47,16 @@ class InstallableAmbientBadgeMessageControllerTest
 
   InstallableAmbientBadgeMessageController* message_controller() {
     return &message_controller_;
+  }
+
+  void ExpectedIconChanged() {
+    SkBitmap bitmap = message_wrapper_->GetIconBitmap();
+    EXPECT_NE(bitmap.bounds(), test_icon.bounds());
+  }
+
+  void ExpectedIconUnchanged() {
+    SkBitmap bitmap = message_wrapper_->GetIconBitmap();
+    EXPECT_EQ(bitmap.bounds(), test_icon.bounds());
   }
 
   messages::MessageWrapper* message_wrapper() { return message_wrapper_; }
@@ -53,6 +67,7 @@ class InstallableAmbientBadgeMessageControllerTest
   MockInstallableAmbientBadgeClient client_mock_;
   InstallableAmbientBadgeMessageController message_controller_;
   messages::MessageWrapper* message_wrapper_ = nullptr;
+  SkBitmap test_icon;
 };
 
 InstallableAmbientBadgeMessageControllerTest::
@@ -71,13 +86,26 @@ void InstallableAmbientBadgeMessageControllerTest::TearDown() {
 }
 
 void InstallableAmbientBadgeMessageControllerTest::EnqueueMessage() {
+  EnqueueMessage(false);
+}
+
+void InstallableAmbientBadgeMessageControllerTest::EnqueueMessage(
+    bool maskable) {
   EXPECT_CALL(message_dispatcher_bridge_, EnqueueMessage)
       .WillOnce(testing::DoAll(testing::SaveArg<0>(&message_wrapper_),
                                testing::Return(true)));
-  SkBitmap test_icon;
-  test_icon.allocPixels(
-      SkImageInfo::Make(1, 1, kRGBA_8888_SkColorType, kUnpremul_SkAlphaType));
+  test_icon.allocPixels(SkImageInfo::Make(100, 100, kRGBA_8888_SkColorType,
+                                          kUnpremul_SkAlphaType));
   message_controller_.EnqueueMessage(web_contents(), kAppName, test_icon,
+                                     maskable, GURL("https://example.com/"));
+}
+
+void InstallableAmbientBadgeMessageControllerTest::
+    EnqueueMessageWithExpectNotCalled() {
+  EXPECT_CALL(message_dispatcher_bridge_, EnqueueMessage).Times(0);
+  test_icon.allocPixels(SkImageInfo::Make(100, 100, kRGBA_8888_SkColorType,
+                                          kUnpremul_SkAlphaType));
+  message_controller_.EnqueueMessage(web_contents(), kAppName, test_icon, false,
                                      GURL("https://example.com/"));
 }
 
@@ -140,6 +168,20 @@ TEST_F(InstallableAmbientBadgeMessageControllerTest, AddToHomeSceen) {
   EnqueueMessage();
   EXPECT_CALL(client_mock(), AddToHomescreenFromBadge);
   EXPECT_CALL(client_mock(), BadgeDismissed).Times(0);
+  ExpectedIconUnchanged();
+  TriggerActionClick();
+}
+
+// Tests that message is using an adaptive icon when icon is maskable.
+TEST_F(InstallableAmbientBadgeMessageControllerTest, MaskableIcon) {
+  EnqueueMessage(true);
+  EXPECT_CALL(client_mock(), AddToHomescreenFromBadge);
+  EXPECT_CALL(client_mock(), BadgeDismissed).Times(0);
+  if (WebappsIconUtils::DoesAndroidSupportMaskableIcons()) {
+    ExpectedIconChanged();
+  } else {
+    ExpectedIconUnchanged();
+  }
   TriggerActionClick();
 }
 
@@ -150,6 +192,17 @@ TEST_F(InstallableAmbientBadgeMessageControllerTest, Dismiss) {
   EXPECT_CALL(client_mock(), AddToHomescreenFromBadge).Times(0);
   EXPECT_CALL(client_mock(), BadgeDismissed);
   TriggerMessageDismissedWithGesture();
+}
+
+// Tests that when the user dismisses the message with a gesture, client's
+// BadgeDismissed method is called and the message is not enqueued
+// because of throttling.
+TEST_F(InstallableAmbientBadgeMessageControllerTest, Throttle) {
+  EnqueueMessage();
+  EXPECT_CALL(client_mock(), AddToHomescreenFromBadge).Times(0);
+  DismissMessage(true);
+  EnqueueMessageWithExpectNotCalled();
+  ASSERT_FALSE(message_controller()->IsMessageEnqueued());
 }
 
 }  // namespace webapps

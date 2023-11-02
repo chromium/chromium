@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -9,11 +9,9 @@ android_library("java") {
     "java/src/org/chromium/chrome/modules/cablev2_authenticator/Module.java",
   ]
   deps = [
-    "//base:base_java",
     "//components/module_installer/android:module_installer_java",
     "//components/module_installer/android:module_interface_java",
-    "//third_party/android_deps:android_support_v7_appcompat_java",
-    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
   ]
   annotation_processor_deps =
       [ "//components/module_installer/android:module_interface_processor" ]

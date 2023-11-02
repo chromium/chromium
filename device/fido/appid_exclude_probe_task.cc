@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -65,7 +65,8 @@ void AppIdExcludeProbeTask::NextSilentSignOperation() {
       device(), std::move(request),
       base::BindOnce(&AppIdExcludeProbeTask::HandleResponseToSilentSignRequest,
                      weak_factory_.GetWeakPtr()),
-      base::BindOnce(&ReadCTAPGetAssertionResponse),
+      base::BindOnce(&ReadCTAPGetAssertionResponse,
+                     device()->DeviceTransport()),
       /*string_fixup_predicate=*/nullptr);
   silent_sign_operation_->Start();
 }

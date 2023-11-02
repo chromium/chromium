@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,7 +43,7 @@ bool CompletionInfo::operator==(const CompletionInfo& other) const {
          url_chain == other.url_chain &&
          AreResponseHeadersEqual(response_headers.get(),
                                  other.response_headers.get()) &&
-         hash256 == other.hash256;
+         hash256 == other.hash256 && custom_data == other.custom_data;
 }
 
 DownloadMetaData::DownloadMetaData() : current_size(0u), paused(false) {}

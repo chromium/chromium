@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -130,6 +130,8 @@ class CAPTURE_EXPORT CameraAppDeviceImpl : public cros::mojom::CameraAppDevice {
   void MaybeDetectDocumentCorners(std::unique_ptr<gpu::GpuMemoryBufferImpl> gmb,
                                   VideoRotation rotation);
 
+  bool IsMultipleStreamsEnabled();
+
   // cros::mojom::CameraAppDevice implementations.
   void GetCameraInfo(GetCameraInfoCallback callback) override;
   void SetReprocessOptions(
@@ -157,6 +159,9 @@ class CAPTURE_EXPORT CameraAppDeviceImpl : public cros::mojom::CameraAppDevice {
   void RegisterDocumentCornersObserver(
       mojo::PendingRemote<cros::mojom::DocumentCornersObserver> observer,
       RegisterDocumentCornersObserverCallback callback) override;
+  void SetMultipleStreamsEnabled(
+      bool enabled,
+      SetMultipleStreamsEnabledCallback callback) override;
 
  private:
   static void DisableEeNr(ReprocessTask* task);
@@ -226,14 +231,18 @@ class CAPTURE_EXPORT CameraAppDeviceImpl : public cros::mojom::CameraAppDevice {
   CameraDeviceContext* camera_device_context_
       GUARDED_BY(camera_device_context_lock_);
 
+  base::Lock document_corners_observers_lock_;
   mojo::RemoteSet<cros::mojom::DocumentCornersObserver>
-      document_corners_observers_;
+      document_corners_observers_ GUARDED_BY(document_corners_observers_lock_);
   bool has_ongoing_document_detection_task_ = false;
   std::unique_ptr<base::ElapsedTimer> document_detection_timer_ = nullptr;
 
   // Client to connect to document detection service. It should only be
   // used/destructed on the Mojo thread.
   std::unique_ptr<ash::DocumentScannerServiceClient> document_scanner_service_;
+
+  base::Lock multi_stream_lock_;
+  bool multi_stream_enabled_ GUARDED_BY(multi_stream_lock_) = false;
 
   // The weak pointers should be dereferenced and invalidated on camera device
   // ipc thread.

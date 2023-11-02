@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Chromium presubmit script for Web Bluetooth layout tests.
@@ -14,7 +14,7 @@ def CheckGeneratedFiles(input_api, output_api):
     test_path = input_api.os_path.join(input_api.PresubmitLocalPath(),
                                        'generate_test.py')
     cmd_name = 'generate_test'
-    cmd = [input_api.python_executable, test_path]
+    cmd = [input_api.python3_executable, test_path]
 
     test_cmd = input_api.Command(name=cmd_name,
                                  cmd=cmd,

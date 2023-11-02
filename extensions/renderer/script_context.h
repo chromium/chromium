@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "base/unguessable_token.h"
 #include "extensions/common/features/feature.h"
@@ -21,7 +20,7 @@
 #include "extensions/common/script_constants.h"
 #include "extensions/renderer/module_system.h"
 #include "extensions/renderer/safe_builtins.h"
-#include "extensions/renderer/script_injection_callback.h"
+#include "third_party/blink/public/web/web_script_execution_callback.h"
 #include "url/gurl.h"
 #include "v8-exception.h"
 #include "v8/include/v8-context.h"
@@ -130,7 +129,7 @@ class ScriptContext {
   void SafeCallFunction(const v8::Local<v8::Function>& function,
                         int argc,
                         v8::Local<v8::Value> argv[],
-                        ScriptInjectionCallback::CompleteCallback callback);
+                        blink::WebScriptExecutionCallback callback);
 
   // Returns the availability of the API |api_name|.
   Feature::Availability GetAvailability(const std::string& api_name);
@@ -269,6 +268,9 @@ class ScriptContext {
   // Gets the current stack trace as a multi-line string to be logged.
   std::string GetStackTraceAsString() const;
 
+  // Generate a unique integer value. This is only unique within this instance.
+  int32_t GetNextIdFromCounter() { return id_counter++; }
+
   // Runs |code|, labelling the script that gets created as |name| (the name is
   // used in the devtools and stack traces). |exception_handler| will be called
   // re-entrantly if an exception is thrown during the script's execution.
@@ -280,11 +282,6 @@ class ScriptContext {
           v8::ScriptCompiler::NoCacheReason::kNoCacheNoReason);
 
  private:
-  // DEPRECATED.
-  v8::Local<v8::Value> CallFunction(const v8::Local<v8::Function>& function,
-                                    int argc,
-                                    v8::Local<v8::Value> argv[]) const;
-
   // Whether this context is valid.
   bool is_valid_;
 
@@ -333,6 +330,9 @@ class ScriptContext {
   GURL service_worker_scope_;
 
   int64_t service_worker_version_id_;
+
+  // A counter to generate unique IDs. IDs must start at 1.
+  int32_t id_counter = 1;
 
   base::ThreadChecker thread_checker_;
 };

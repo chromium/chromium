@@ -28,13 +28,14 @@
 
 #include <bitset>
 #include "third_party/blink/public/common/use_counter/use_counter_feature_tracker.h"
+#include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_mode.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
@@ -117,6 +118,9 @@ class CORE_EXPORT UseCounterImpl final {
   void CountPermissionsPolicyUsage(mojom::blink::PermissionsPolicyFeature,
                                    PermissionsPolicyUsageType,
                                    const LocalFrame&);
+  void CountUserAgentOverride(
+      blink::UserAgentOverride::UserAgentOverrideHistogram,
+      const LocalFrame*);
 
   // Return whether the feature has been seen since the last page load
   // (except when muted).  Does include features seen in documents which have

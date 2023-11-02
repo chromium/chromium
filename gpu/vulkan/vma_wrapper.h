@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,6 +24,7 @@ VkResult CreateAllocator(VkPhysicalDevice physical_device,
                          VkDevice device,
                          VkInstance instance,
                          const VkDeviceSize* heap_size_limit,
+                         const bool is_thread_safe,
                          VmaAllocator* allocator);
 
 COMPONENT_EXPORT(VULKAN) void DestroyAllocator(VmaAllocator allocator);

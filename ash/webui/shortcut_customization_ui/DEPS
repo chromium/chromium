@@ -1,6 +1,4 @@
 include_rules = [
-  "+ash/grit/ash_shortcut_customization_app_resources.h",
-  "+ash/grit/ash_shortcut_customization_app_resources_map.h",
   "+ui/resources",
   "+ui/webui",
 ]

@@ -30,7 +30,9 @@
 <translation id="1189258430971676908">პრაქტიკის არე: ჩამოსაშლელი სიები</translation>
 <translation id="1195238899008218998">ბოლოსიტყვაობა</translation>
 <translation id="1197088940767939838">ნარინჯისფერი</translation>
+<translation id="1198865190323699001">შეხების ჟესტები</translation>
 <translation id="1201402288615127009">შემდეგი</translation>
+<translation id="1202112913213080585">გაუქმება</translation>
 <translation id="1206619573307042055">მორბენალი სტრიქონი</translation>
 <translation id="1207086294218137981">შემდეგი მე-4 დონის სათაური არ არის</translation>
 <translation id="1212770441379271564">ქვემოთ მოცემული რამდენიმე მალსახმობი ChromeVox-ის ბრძანებებს არ წარმოადგენს, თუმცა მათი მეშვეობით Chrome-ის მაქსიმალურად გამოყენებას შეძლებთ.
@@ -42,6 +44,7 @@
     Chrome ბრაუზერის მენიუს გასახსნელად დააჭირეთ კლავიშთა შემდეგ კომბინაციას: Alt+F.</translation>
 <translation id="1213216066620407844">ChromeVox - Chrome-თვის ხმის მიცემა</translation>
 <translation id="1225969361094801578">მუქი ასპიდისფერი ნაცრისფერი</translation>
+<translation id="122928249241119550">წინა წინადადებაზე გადასვლა</translation>
 <translation id="1230503547248836149">არჩევანის დასაწყისი</translation>
 <translation id="1236794971743289975">საბოლოო შენიშვნა</translation>
 <translation id="1237797094773582699">ამის მსგავსად, ოთხი თითით მარჯვნიდან მარცხნივ გადაფურცვლით შესაძლებელია წინა სექციაზე გადასვლა. ცადეთ ახლავე!</translation>
@@ -69,6 +72,7 @@
 <translation id="1354356357730355833">კოპირება</translation>
 <translation id="135978014023467274">ახლა თქვენ იყენებთ ChromeVox 63-ს!</translation>
 <translation id="1360699455582016846">დააწკაპუნეთ მარშრუტიზაციის კლავიშ <ph name="ROUTING_KEY_NUMBER" />-ის ქვეშ მოცემულ ერთეულზე</translation>
+<translation id="1376703628032300005">შემდეგ სიმბოლოზე გადასვლა</translation>
 <translation id="1377925789329510816">ეს ბოლო სათაურია. დააჭირეთ კლავიშთა კომბინაციას: Search+H პირველ სათაურზე გადასასვლელად, ან კლავიშთა კომბინაციას: Search+Shift+H ამ გვერდზე მეორე სათაურზე გადასასვლელად.</translation>
 <translation id="138218114945450791">ცისფერი</translation>
 <translation id="1383876407941801731">ძიება</translation>
@@ -134,9 +138,9 @@
 <translation id="1812527064848182527">პეიზაჟი</translation>
 <translation id="1829244130665387512">გვერდზე ძებნა</translation>
 <translation id="1834891354138622109">სვეტი</translation>
-<translation id="1845944666972354496">გასააქტიურებლად შეეხეთ ორმაგად</translation>
 <translation id="1846771122725914429">ბრაილის Bluetooth ეკრანი</translation>
 <translation id="1852018405765032699">ეკრანზე ოთხი თითით შეხება გახსნის და დახურავს ChromeVox მენიუებს. ეს მენიუები შეიცავს სასარგებლო ინფორმაციას ბრძანებებისა და მალსახმობების შესახებ. მენიუების გახსნის შემდეგ ერთეულებში გადასაადგილებლად გადაფურცლეთ ერთი თითით, ხოლო ერთეულების გასააქტიურებლად — შეეხეთ ორმაგად. გასაგრძელებლად შეეხეთ ეკრანს ოთხი თითით.</translation>
+<translation id="1864430479908918647">დააჭირეთ კლავიშთა კომბინაციას Search+შორისი</translation>
 <translation id="1865601187525349519">ტექსტის დასასრული</translation>
 <translation id="1876229593313240038">დოკ</translation>
 <translation id="1902396333223336119">უჯრა</translation>
@@ -211,8 +215,10 @@
 <translation id="2435422727584637732">ღია ფოლადისფერი ლურჯი</translation>
 <translation id="2438712309510062123">შემოთავაზება</translation>
 <translation id="2450814015951372393">მოსანიშნი უჯრა</translation>
+<translation id="2450992626945324272">შემდეგ წინადადებაზე გადასვლა</translation>
 <translation id="2461822463642141190">ამჟამინდელი</translation>
 <translation id="2462626033734746142">რადიო ღილაკის ჯგუფი</translation>
+<translation id="2467741090055146971">არჩევის გაუქმება</translation>
 <translation id="2471138580042810658">სათაური 6</translation>
 <translation id="248982282205370495">{COUNT,plural, =1{ვარსკვლავი}other{# ვარსკვლავი}}</translation>
 <translation id="2490721194269245365">მოვარდისფრო ყავისფერი</translation>
@@ -232,6 +238,7 @@
 <translation id="2619344480613750862">სურვილისამებრ, შეგიძლიათ ეკრანის სექციებს შორის გადაადგილებაც. მაგალითად, შესაძლებელია გამშვებს, თაროსა და თქვენს Chrome ჩანართებს შორის გადაადგილება. შემდეგ სექციაზე გადასასვლელად ოთხი თითით გადაფურცლეთ მარცხნიდან მარჯვნივ. გასაგრძელებლად ცადეთ აღნიშნული კომბინაციის გამოყენება.</translation>
 <translation id="2624431853467395961">სწავლის რეჟიმის გახსნა</translation>
 <translation id="2626530649491650971">დაწკაპუნებადი</translation>
+<translation id="263637551280112393">დააჭირეთ კლავიშთა კომბინაციას Search+Shift+შორისი</translation>
 <translation id="2637227747952042642">მათემატიკა</translation>
 <translation id="2638785836053527382">ჩამოტვირთვა განახლდა <ph name="FILE_NAME" /></translation>
 <translation id="2639750663247012216">ChromeVox-ის მოდიფიკატორი</translation>
@@ -389,6 +396,7 @@
 <translation id="3497063866483065785">{COUNT,plural, =1{ კითხვის ნიშანი}other{# კითხვის ნიშანი}}</translation>
 <translation id="3505359110822747654">ChromeVox მენიუების ჩაკეცვა</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{ ჩასმის სიმბოლო}other{# ჩასმის სიმბოლო}}</translation>
+<translation id="3518600448524470129">{COUNT,plural, =1{თეთრი ბურთულა}other{# თეთრი ბურთულა}}</translation>
 <translation id="352577523970648069">რედაქტირებადი ტექსტური ველი</translation>
 <translation id="3538907380453898475">dscrplst</translation>
 <translation id="3549141990712742152">ამოიჭრას <ph name="TEXT" />.</translation>
@@ -485,6 +493,7 @@
 <translation id="42164919740161077">მონაცრისფრო ლურჯი</translation>
 <translation id="4217571870635786043">კარნახი</translation>
 <translation id="4218529045364428769">{COUNT,plural, =1{ტირე}other{# ტირეები}}</translation>
+<translation id="4220024144662591089">აირჩეს ფრაზიდან „<ph name="START_PHRASE" />“ ფრაზამდე „<ph name="END_PHRASE" />“</translation>
 <translation id="4221012616705981690">წინა სია არ არის</translation>
 <translation id="4225355998815256469">ფორმის მართვის საშუალებები</translation>
 <translation id="4230834257931120629">ღია ასპიდისფერი ნაცრისფერი</translation>
@@ -503,6 +512,7 @@
 <translation id="4300318234632215983">URL-ის განცხადება ბმულის უკან</translation>
 <translation id="4322625298640984693">სიენა</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{წერტილი}=3{სამწერტილი}other{# წერტილები}}</translation>
+<translation id="4352022650330571548">აიკრიფოს <ph name="PHRASE" /></translation>
 <translation id="4372435075475052704">მინ:<ph name="X" /></translation>
 <translation id="4372705107434148843">მეტყველების შეწყვეტა</translation>
 <translation id="4376316291247992553">გრაფიკული ელემენტის ბრაილის შრიფტად გარდაქმნა</translation>
@@ -520,6 +530,7 @@
 <translation id="4479068155583208887">აგურისფერი</translation>
 <translation id="4482330759234983253">წინა ცხრილი</translation>
 <translation id="4491109536499578614">გამოსახულება</translation>
+<translation id="4507332368061453500">ამჟამინდელ ერთეულზე ხანგრძლივად შეხება</translation>
 <translation id="4511186779140817916">გარჩეული ნუშისფერი</translation>
 <translation id="451510441928265982">წინა მე-2 დონის სათაური არ არის</translation>
 <translation id="4515799157838123044">ფონური კონტენტის დაჩრდილვა</translation>
@@ -532,6 +543,7 @@
 <translation id="4601367666219428522">ცხრილი <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">შემდეგ კლავიშზე დაჭერის იგნორირება</translation>
 <translation id="4623097797855662355">კოლოფონი</translation>
+<translation id="4624970070706497034">TalkBack აღარ უზრუნველყოფს მორგებულ ფუნქციებს Chromebook-ისთვის. TalkBack-ის გამოყენება კვლავ შეგიძლიათ, თუმცა კლავიატურის ნაგულისხმევი მალსახმობებით. ხელმისაწვდომი მალსახმობების გასაცნობად დააჭირეთ კლავიშთა კომბინაციას Search+A, შემდეგ კი კლავიშს K. თუ TalkBack-ით სარგებლობის გაგრძელებას გადაწყვეტთ, ხელახლა დააჭირეთ ბრძანებას.</translation>
 <translation id="463135993322337640">სიახლეების გასაცნობად დააჭირეთ კლავიშთა კომბინაციას ChromeVox o, n</translation>
 <translation id="4649220074413114917">ეკრანზე ორი თითით შეხებით შესაძლებელია მეტყველების შეჩერება. ეს გამოგადგებათ, როცა არ გსურთ, რომ ChromeVox რამეს კითხულობდეს. გასაგრძელებლად შეეხეთ ეკრანს ორი თითით.</translation>
 <translation id="4660783501463101648">ChromeVox Classic გაუქმდა. ახლა მასზე კლავიატურის მეშვეობით გადართვა ვეღარ მოხერხდება.</translation>
@@ -566,6 +578,7 @@
 <translation id="4854380505292502090">წინა მედიავიჯეტი არ არის</translation>
 <translation id="4855927945655956315">ძირითადი კლავიშები: Control</translation>
 <translation id="4862744964787595316">არ არის მუქი</translation>
+<translation id="4865995900839719272">წინა ხაზზე გადასვლა</translation>
 <translation id="4866956062845190338">rdmnuitm</translation>
 <translation id="4867316986324544967">TTS აღრიცხვის ჩართვა</translation>
 <translation id="4886524826165775965"><ph name="INDEX" />/<ph name="TOTAL" /></translation>
@@ -586,7 +599,6 @@
 <translation id="4993152509206108683">შეფასება <ph name="PERCENT" /> პროცენტი</translation>
 <translation id="4994420463726586413">ბატარეის ამჟამინდელი სტატუსის გამოცხადება</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, რადიო ღილაკი არჩეულია</translation>
-<translation id="5011664330025416377">გასააქტიურებლად დააჭირეთ კლავიშთა შემდეგ კომბინაციას: Search+შორისი</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, მენიუს ერთეული არჩევანის ღილაკი არჩეული</translation>
 <translation id="5020651427400641814">მეტყველების აღრიცხვის ჩართვა</translation>
 <translation id="5041394372352067729">გადაადგილეთ ბრაილი ეკრანის საწყის გვერდზე</translation>
@@ -613,7 +625,6 @@
 <translation id="5170206230005240598">ბრაილის წარწერები ჩართულია</translation>
 <translation id="5183440668879371625">ბრაილის წინა სტრიქონი</translation>
 <translation id="5189244881767082992">ხაზი</translation>
-<translation id="5234747236692380506">აიკრიფოს <ph name="TEXT" /></translation>
 <translation id="5263034204789987535">ახალი სიმინდისფერი</translation>
 <translation id="5263344797180442561">h2</translation>
 <translation id="528468243742722775">დასასრული</translation>
@@ -624,6 +635,7 @@
 <translation id="5304943142864553931"><ph name="TITLE" />, ჩანართი</translation>
 <translation id="5308380583665731573">დაკავშირება</translation>
 <translation id="5310788376443009632">წაშლილი:</translation>
+<translation id="5316825363044614340">შემდეგ ხაზზე გადასვლა</translation>
 <translation id="5320727453979144100">წებოვანი რეჟიმი ჩართულია</translation>
 <translation id="5321085947096604457">{COUNT,plural, =1{მძიმე}other{# მძიმეები}}</translation>
 <translation id="532485153932049746">ტექსტის ფორმატირება
@@ -639,6 +651,7 @@
 <translation id="5355014376930441909">შემდეგი სექცია არ არის</translation>
 <translation id="5368000168321181111">Earcons გამორთულია</translation>
 <translation id="5368505757342402527">ჩამოტვირთულია <ph name="PROGRESS" />% <ph name="FILE_NAME" />. დარჩენილია დაახლოებით <ph name="TIME" /> <ph name="UNITS" />.</translation>
+<translation id="5381388086899614489">ხანგრძლივი დაწკაპუნება</translation>
 <translation id="5400836586163650660">ნაცრისფერი</translation>
 <translation id="5402367795255837559">ბრაილის შრიფტი</translation>
 <translation id="5402791055281059602">გაფრთხილება მოდალურ ფანჯარაში</translation>
@@ -660,6 +673,7 @@
 <translation id="5522423213731659107">სწრაფი ორიენტაცია დასრულდა!</translation>
 <translation id="5534303576632885660">სათაური</translation>
 <translation id="5539820223028224601">გეინსბორო</translation>
+<translation id="554893713779400387">კარნახის გადართვა</translation>
 <translation id="5549179427201066174">ხმოვანი გამოხმაურების (ხმოვანი ეფექტების) ჩართვა ან გამორთვა</translation>
 <translation id="556042886152191864">ღილაკი</translation>
 <translation id="5561345396546889625">შემდეგი სია</translation>
@@ -670,6 +684,7 @@
 <translation id="5597170376237141345">შემდეგი თოლია</translation>
 <translation id="5598905979683743333"><ph name="NAME" />, მოუნიშნავი რადიო ღილაკი</translation>
 <translation id="5601172225407283979">ნაგულისხმევი მოქმედების შესრულება</translation>
+<translation id="5604302400025591178">{COUNT,plural, =1{ოთხკუთხა ბურთულა}other{# ოთხკუთხა ბურთულა}}</translation>
 <translation id="5608798115546226984">ავტომატური შევსების თანმიმდევრობა</translation>
 <translation id="5616029807486814372">შემდეგი გაკვეთილი</translation>
 <translation id="561939826962581046">დრო</translation>
@@ -677,6 +692,8 @@
 <translation id="5623842676595125836">ჟურნალი</translation>
 <translation id="5628125749885014029">h4</translation>
 <translation id="5632083598315326067">გრაფიკული სიმბოლო</translation>
+<translation id="5648939288050772726">გილოცავთ! თქვენ წარმატებით გაეცანით ChromeVox-თან მუშაობის საფუძვლებს. გახსოვდეთ, რომ ChromeVox-ის ბრძანებათა მენიუს ნებისმიერ დროს გახსნა შეგიძლიათ კლავიშთა შემდეგი კომბინაციით: Search+წერტილი. ChromeVox-ისა და ChromeOS-ის შესახებ დამატებითი ინფორმაციისთვის გაეცანით ქვემოთ მითითებულ სტატიებს.
+    თუ სახელმძღვანელოს გაცნობა დაასრულეთ, ChromeVox-ის მეშვეობით გადადით დახურვის ღილაკზე და დააწკაპუნეთ მასზე.</translation>
 <translation id="5653397561111110475">Chromebook-ის სენსორული ეკრანის მარტივი წვდომის ფუნქციების გამოყენება</translation>
 <translation id="5655682562155942719">გადასვლის ბრძანებები</translation>
 <translation id="56637627897541303">ტექსტის არე</translation>
@@ -747,8 +764,10 @@
 <translation id="6100239002225743044">ერთი ხაზით ზემოთ გადასვლა</translation>
 <translation id="6118126368611144850">Android აპები Chrome-ისთვის. ახლა Android-ის აპები აღჭურვილია ChromeVox-ის ექსპერიმენტული მხარდაჭერით, რაც შეგიძლიათ თავად ცადოთ Play Store-იდან Google Chrome Canary-ს ჩამოტვირთვით.</translation>
 <translation id="611827076493383239">vtd</translation>
+<translation id="6119846243427417423">გააქტიურება</translation>
 <translation id="6122013438240733403">ღილაკი</translation>
 <translation id="6132506484792346370">სიის ველი ან კომბო-ველი</translation>
+<translation id="613344593214611552">წინა წინადადების წაშლა</translation>
 <translation id="6142308968191113180">სათაური 4</translation>
 <translation id="6150023170003443621">მოყვითალო მწვანე</translation>
 <translation id="6158882249329863701">მწკრივი <ph name="TABLECELLROWINDEX" /> სვეტი <ph name="TABLECELLCOLUMNINDEX" /></translation>
@@ -758,9 +777,11 @@
 <translation id="6186305613600865047">გადასვლა გვერდის ბოლოში</translation>
 <translation id="6187190722927752226">ბაცი მოცისფრო-მწვანე</translation>
 <translation id="6197361807490522975">მუქი ლურჯი</translation>
+<translation id="6218813441317556731">ჩანაცვლდეს „<ph name="DELETE_PHRASE" />“ ფრაზით „<ph name="INSERT_PHRASE" />“</translation>
 <translation id="6236061028292614533">მომდევნო სათაური</translation>
 <translation id="6254901459154107917">შემდეგი რედაქტირებადი ტექსტის არე</translation>
 <translation id="6259464875943891919"><ph name="TYPE" /> დაიხურა.</translation>
+<translation id="6280088282605782512">ორმაგი შეხება</translation>
 <translation id="6282062888058716985">ნავ</translation>
 <translation id="6295699829709583154">ძირითადი კლავიშები: Search</translation>
 <translation id="6305702903308659374">ჩვეულებრივ ხმაზე დაკვრა, როცა ChromeVox საუბრობს</translation>
@@ -903,6 +924,7 @@
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7308519659008003150">ფორმის წინა ველი არ არის</translation>
 <translation id="731121099745151312">tritm</translation>
+<translation id="7313717760367325059">დახმარება</translation>
 <translation id="7317017974771324508">ნაწილობრივ არჩეული</translation>
 <translation id="7322442671176251901">შეხებით დათვალიერება</translation>
 <translation id="7344012264516629579">გადასვლის დამატებით ბრძანებებს შორისაა ბმულების, ღილაკების, მოსანიშნი ველებისა და სხვა საშუალებების მეშვეობით გადასვლა. გადასვლის ბრძანებების სრული სია ხელმისაწვდომია ChromeVox-ის მენიუებში, რომელთა გახსნაც შესაძლებელია კლავიშთა კომბინაციით Search + წერტილი.</translation>
@@ -929,6 +951,7 @@
 <translation id="7533226154149229506">ღია ოქროწკეპლისფერი</translation>
 <translation id="7543255924852002459">დახურვის ლეიბლი</translation>
 <translation id="7552432549459840808">Chrome-ის სასარგებლო მალსახმობები</translation>
+<translation id="7553679324939294712">ჩაისვას „<ph name="INSERT_PHRASE" />“ ფრაზამდე „<ph name="BEFORE_PHRASE" />“</translation>
 <translation id="7569983096843329377">შავი</translation>
 <translation id="7579911500627256166">წერტილი <ph name="DOT" /></translation>
 <translation id="7592060599656252486">ზოგიერთი</translation>
@@ -952,16 +975,16 @@
 <translation id="7684431668231950609">ტექსტის რედაქტირება, URL ჩანაწერი</translation>
 <translation id="7685589220304187312">tlbar</translation>
 <translation id="7693840228159394336">წინა არჩევანის ღილაკი</translation>
+<translation id="7696631298608145306">შემდეგ სიტყვაზე გადასვლა</translation>
 <translation id="7701040980221191251">არცერთი</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7713139339518499741">ბუნებრივი ხმა</translation>
 <translation id="7714340021005120797">შემდეგი ველი ჩამონათვლით არ არის</translation>
-<translation id="772146615414628379">გილოცავთ! თქვენ წარმატებით გაეცანით ChromeVox-თან მუშაობის საფუძვლებს. გახსოვდეთ, რომ ChromeVox-ის ბრძანებათა მენიუს ნებისმიერ დროს გახსნა შეგიძლიათ კლავიშთა შემდეგი კომბინაციით: Search+წერტილი. ChromeVox-ისა და Chrome OS-ის შესახებ დამატებითი ინფორმაციისთვის გაეცანით ქვემოთ მითითებულ სტატიებს.
-    თუ სახელმძღვანელოს გაცნობა დაასრულეთ, ChromeVox-ის მეშვეობით გადადით დახურვის ღილაკზე და დააწკაპუნეთ მასზე.</translation>
 <translation id="7724603315864178912">ამოჭრა</translation>
 <translation id="7731785449856576010">შემდეგი მედიავიჯეტი არ არის</translation>
 <translation id="7735498529470878067">შეხებით დათვალიერება დაგეხმარებათ, სწრაფად გაერკვეთ იმაში, თუ რა არის მოცემული ეკრანზე.</translation>
 <translation id="773906353055481349">უჯრედებში ნავიგაციისთვის გამოიყენეთ კლავიშთა შემდეგი კომბინაცია: Search+Ctrl+Alt და ისრებიანი კლავიშები</translation>
+<translation id="7746976083433980639"><ph name="ACTION" />, რომ შესრულდეს <ph name="LABEL" /></translation>
 <translation id="7763537600611320912">ჩამოტვირთვა დაიწყო <ph name="FILE_NAME" /></translation>
 <translation id="7768784765476638775">მონიშვნა წარმოსათქმელად</translation>
 <translation id="7776293189010177726">ChromeVox-ის მენიუების გახსნა</translation>
@@ -1061,6 +1084,7 @@
 <translation id="8455868257606149352">მაქს. <ph name="X" /></translation>
 <translation id="84575901236241018">გააჩნია წვდომის კლავიში, <ph name="KEY" /></translation>
 <translation id="8463645336674919227">გრამატიკული შეცდომა რჩება</translation>
+<translation id="8465573210279050749">წინა სიტყვის წაშლა</translation>
 <translation id="847040613207937740">შემდეგი მოსანიშნი ველი არ არის</translation>
 <translation id="8473540203671727883">მაუსის კურსორის ქვეშ მოქცეული ტექსტის გახმოვანება</translation>
 <translation id="8476408756881832830">დაკვრის დაპაუზება, როცა ChromeVox საუბრობს</translation>
@@ -1091,11 +1115,13 @@
 <translation id="8659501358298941449">ჩამოსაშლელი სიები</translation>
 <translation id="8666733765751421568"><ph name="TYPE" /> დასასრული</translation>
 <translation id="867187640362843212">სათაური 5</translation>
+<translation id="8690400660839620419">{COUNT,plural, =1{}other{ჩადგმული დონე #}}</translation>
 <translation id="8693391540059827073">ჩემი საყვარელი წელიწადის დრო</translation>
 <translation id="8696284982970258155">ცვარტკბილისფერი</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{მილი}other{# ვერტიკალური მილები}}</translation>
 <translation id="8741370088760768424">მინიშნება: მიმდინარე ერთეულის გასააქტიურებლად გამოიყენეთ კლავიშთა კომბინაცია Search + შორისი.</translation>
 <translation id="8743786158317878347">სტრუქტურირებული შიგთავსის შეყვანა, როგორიცაა ცხრილები</translation>
+<translation id="8746846427395705317">წინა სიტყვაზე გადასვლა</translation>
 <translation id="8747966237988593539">შეკვეთილი სია</translation>
 <translation id="8749988712346667988">ვერცხლისფერი</translation>
 <translation id="875769700429317857">ჩამოტვირთვა დასრულდა <ph name="FILE_NAME" /></translation>
@@ -1123,12 +1149,14 @@
 <translation id="8970172509886453271">წინა სექცია არ არის</translation>
 <translation id="89720367119469899">Escape</translation>
 <translation id="8978496506222343566">tltip</translation>
+<translation id="898089897833732740">წაიშალოს „<ph name="PHRASE" />“</translation>
 <translation id="8986362086234534611">დავიწყება</translation>
 <translation id="8989104346085848538">ChromeVox გახმოვანების შესაწყვეტად დააჭირეთ Control კლავიშს.</translation>
 <translation id="8993737615451556423">გთავაზობთ წაკითხვის ხმის აჩქარების, შენელების და დაპაუზების მართვის საშუალებებს</translation>
 <translation id="9014206344398081366">ChromeVox-ის სახელმძღვანელო</translation>
 <translation id="9040132695316389094">სათაური 1</translation>
 <translation id="9061884144798498064">აირჩიეთ 8-წერტილიანი ბრაილის ცხრილი:</translation>
+<translation id="9063946545000394379">წინა სიმბოლოზე გადასვლა</translation>
 <translation id="9065283790526219006">+კონტექტური ფანჯარა</translation>
 <translation id="9065912140022662363">შემდეგი არჩევანის ღილაკი არ არის</translation>
 <translation id="9067522039955793016">გვერდის წყვეტა</translation>
@@ -1157,6 +1185,7 @@
 <translation id="9223032053830369045">მუქი წითელი</translation>
 <translation id="923331726185079994">ChromeVox განახლდა</translation>
 <translation id="93384979447910801">მუქი ზღვისფერი მწვანე</translation>
+<translation id="937605981140327129">TalkBack ამჟამად არ არის დაინსტალირებული. Play Store-იდან დააინსტალირეთ Android AccessibilitySuite და ცადეთ ხელახლა.</translation>
 <translation id="948171205378458592">მეტყველების სიჩქარის შემცირება</translation>
 <translation id="957570623732056069">ამ გაკვეთილში გადაადგილებისთვის გადაფურცლეთ ერთი თითით მარცხნივ ან მარჯვნივ</translation>
 <translation id="958854023026327378">ერთი თითით გადაფურცვლა ქვემოთ</translation>

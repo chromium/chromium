@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/message.h"
 
 namespace mojo {
@@ -33,7 +34,7 @@ class MessageAccumulator : public MessageReceiver {
   bool Accept(Message* message) override;
 
  private:
-  MessageQueue* queue_;
+  raw_ptr<MessageQueue> queue_;
   base::OnceClosure closure_;
 };
 

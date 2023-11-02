@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -52,8 +52,8 @@ class MediaSessionControllersManagerTest
   static const int kIsAudioFocusEnabled = 1;
 
   void SetUp() override {
-    std::vector<base::Feature> enabled_features;
-    std::vector<base::Feature> disabled_features;
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
 
     enabled_features.push_back(media::kGlobalMediaControlsPictureInPicture);
 
@@ -80,7 +80,7 @@ class MediaSessionControllersManagerTest
     RenderViewHostImplTestHarness::SetUp();
 
     GlobalRenderFrameHostId frame_routing_id =
-        contents()->GetMainFrame()->GetGlobalId();
+        contents()->GetPrimaryMainFrame()->GetGlobalId();
     media_player_id_ = MediaPlayerId(frame_routing_id, 1);
     media_player_id2_ = MediaPlayerId(frame_routing_id, 2);
     manager_ = std::make_unique<MediaSessionControllersManager>(contents());
@@ -151,7 +151,7 @@ TEST_P(MediaSessionControllersManagerTest, RenderFrameDeletedRemovesHost) {
   EXPECT_TRUE(manager_->RequestPlay(media_player_id_));
   ASSERT_EQ(media_session()->IsActive(), IsMediaSessionEnabled());
 
-  manager_->RenderFrameDeleted(contents()->GetMainFrame());
+  manager_->RenderFrameDeleted(contents()->GetPrimaryMainFrame());
   EXPECT_FALSE(media_session()->IsActive());
 }
 

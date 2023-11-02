@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<grit-part>
-  <include name="IDR_QUERY_SHOPPING_META_JS"
-           file="commerce/shopping_list/resources/query_shopping_meta.js" type="BINDATA" />
-</grit-part>

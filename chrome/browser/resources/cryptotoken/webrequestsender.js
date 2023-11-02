@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,8 +25,9 @@ var WebRequestSender;
  *     sender is invalid.
  */
 function createSenderFromMessageSender(messageSender) {
-  var origin = getOriginFromUrl(/** @type {string} */ (messageSender.url));
-  if (!origin) {
+  var origin = messageSender.origin;
+  if (!origin ||
+      (!origin.startsWith('http://') && !origin.startsWith('https://'))) {
     return null;
   }
   var sender = {origin: origin};
@@ -54,7 +55,7 @@ function createSenderFromMessageSender(messageSender) {
  */
 function tabMatchesOrigin(tab, origin) {
   // If the tab's origin matches, trust that the request came from this tab.
-  if (getOriginFromUrl(tab.url) == origin) {
+  if (getOriginFromUrl(tab.url) === origin) {
     return Promise.resolve(tab.id);
   }
   return Promise.reject(false);
@@ -94,7 +95,7 @@ function getTabIdWhenPossible(sender) {
                     },
                     function() {
                       // Didn't match? Check if the debugger is open.
-                      if (tab.url.indexOf('devtools://') != 0) {
+                      if (tab.url.indexOf('devtools://') !== 0) {
                         reject(false);
                         return;
                       }

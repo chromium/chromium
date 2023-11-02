@@ -1,0 +1,27 @@
+caption: Allow Developer Mode for Isolated Apps.
+default: true
+default_for_enterprise_users: false
+desc: |-
+  Setting the policy to Enabled lets users access Developer Mode for Isolated Apps.
+        Setting the policy to Disabled means users will not be able to access these capabilities.
+        If this policy is left not set, the default is not allowed for enterprise-managed users on ChromeOS and allowed for all other users and OSes.
+example_value: false
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- chrome_os
+- chrome.*
+- fuchsia
+items:
+- caption: Enable Isolated Apps Developer Mode
+  value: true
+- caption: Disable Isolated Apps Developer Mode
+  value: false
+owners:
+- file://content/browser/direct_sockets/OWNERS
+- greengrape@google.com
+schema:
+  type: boolean
+tags: []
+type: main

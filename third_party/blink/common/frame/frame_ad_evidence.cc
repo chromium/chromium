@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,7 +21,7 @@ FrameAdEvidence::FrameAdEvidence(const FrameAdEvidence&) = default;
 
 FrameAdEvidence::~FrameAdEvidence() = default;
 
-bool FrameAdEvidence::IndicatesAdSubframe() const {
+bool FrameAdEvidence::IndicatesAdFrame() const {
   DCHECK(is_complete_);
 
   // We tag a frame as an ad if its parent is one, it was created by ad script

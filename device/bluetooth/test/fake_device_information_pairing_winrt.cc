@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,8 @@ namespace device {
 
 namespace {
 
+using ABI::Windows::Devices::Enumeration::DevicePairingKinds;
+using ABI::Windows::Devices::Enumeration::DevicePairingKinds_ProvidePin;
 using ABI::Windows::Devices::Enumeration::DevicePairingProtectionLevel;
 using ABI::Windows::Devices::Enumeration::DevicePairingResult;
 using ABI::Windows::Devices::Enumeration::DeviceUnpairingResult;
@@ -30,6 +32,18 @@ FakeDeviceInformationPairingWinrt::FakeDeviceInformationPairingWinrt(
     std::string pin)
     : custom_(Make<FakeDeviceInformationCustomPairingWinrt>(this,
                                                             std::move(pin))) {}
+
+FakeDeviceInformationPairingWinrt::FakeDeviceInformationPairingWinrt(
+    DevicePairingKinds pairing_kind)
+    : custom_(
+          Make<FakeDeviceInformationCustomPairingWinrt>(this, pairing_kind)) {}
+
+FakeDeviceInformationPairingWinrt::FakeDeviceInformationPairingWinrt(
+    DevicePairingKinds pairing_kind,
+    base::StringPiece display_pin)
+    : custom_(Make<FakeDeviceInformationCustomPairingWinrt>(this,
+                                                            pairing_kind,
+                                                            display_pin)) {}
 
 FakeDeviceInformationPairingWinrt::~FakeDeviceInformationPairingWinrt() =
     default;

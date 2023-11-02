@@ -1,13 +1,15 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import {getPropertyDescriptor, PropertyKind} from 'chrome://resources/js/cr.m.js';
-import {ArrayDataModel} from 'chrome://resources/js/cr/ui/array_data_model.m.js';
-import {List} from 'chrome://resources/js/cr/ui/list.m.js';
-import {ListSingleSelectionModel} from 'chrome://resources/js/cr/ui/list_single_selection_model.m.js';
+
+import {ArrayDataModel} from '../../../common/js/array_data_model.js';
 
 import {FileManagerDialogBase} from './file_manager_dialog_base.js';
+import {List} from './list.js';
+import {ListSingleSelectionModel} from './list_single_selection_model.js';
+
 
 
 /**
@@ -88,20 +90,27 @@ export class DefaultTaskDialog extends FileManagerDialogBase {
   renderItem(item) {
     const result = this.document_.createElement('li');
 
-    const div = this.document_.createElement('div');
-    div.textContent = item.label;
+    // Task label.
+    const labelSpan = this.document_.createElement('span');
+    labelSpan.classList.add('label');
+    labelSpan.textContent = item.label;
+
+    // Task file type icon.
+    const iconDiv = this.document_.createElement('div');
+    iconDiv.classList.add('icon');
 
     if (item.iconType) {
-      div.setAttribute('file-type-icon', item.iconType);
+      iconDiv.setAttribute('file-type-icon', item.iconType);
     } else if (item.iconUrl) {
-      div.style.backgroundImage = 'url(' + item.iconUrl + ')';
+      iconDiv.style.backgroundImage = 'url(' + item.iconUrl + ')';
     }
 
     if (item.class) {
-      div.classList.add(item.class);
+      iconDiv.classList.add(item.class);
     }
 
-    result.appendChild(div);
+    result.appendChild(labelSpan);
+    result.appendChild(iconDiv);
     // A11y - make it focusable and readable.
     result.setAttribute('tabindex', '-1');
 
@@ -130,7 +139,7 @@ export class DefaultTaskDialog extends FileManagerDialogBase {
     const show = super.showTitleAndTextDialog(title, message);
 
     if (!show) {
-      console.error('DefaultTaskDialog can\'t be shown.');
+      console.warn('DefaultTaskDialog can\'t be shown.');
       return;
     }
 

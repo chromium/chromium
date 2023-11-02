@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,7 @@
 [
     ActiveScriptWrappable,
     Exposed=(Window,Worker),
-    SecureContext,
-    RuntimeEnabled=WebTransport
+    SecureContext
 ] interface WebTransport {
   [CallWith=ScriptState, RaisesException, MeasureAs=WebTransport] constructor(USVString url, optional WebTransportOptions options = {});
   [CallWith=ScriptState, RaisesException] Promise<WritableStream>

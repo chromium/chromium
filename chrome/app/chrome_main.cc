@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,40 +6,44 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/check.h"
 #include "base/command_line.h"
-#include "base/compiler_specific.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_main_delegate.h"
 #include "chrome/browser/headless/headless_mode_util.h"
 #include "chrome/common/buildflags.h"
+#include "chrome/common/chrome_result_codes.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/profiler/main_thread_stack_sampling_profiler.h"
 #include "content/public/app/content_main.h"
 #include "content/public/common/content_switches.h"
+#include "headless/app/headless_shell_switches.h"
 #include "headless/public/headless_shell.h"
 #include "ui/gfx/switches.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/app/chrome_main_mac.h"
 #include "chrome/app/notification_metrics.h"
+#include <dlfcn.h>
 #endif
 
-#if defined(OS_WIN) || defined(OS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 #include "base/base_switches.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/allocator/buildflags.h"
+#include "base/dcheck_is_on.h"
+#include "base/debug/handle_hooks_win.h"
+#include "base/win/current_module.h"
 #if BUILDFLAG(USE_ALLOCATOR_SHIM)
-#include "base/allocator/allocator_shim.h"
+#include "base/allocator/partition_allocator/shim/allocator_shim.h"
 #endif
 
 #include <timeapi.h>
 
 #include "base/debug/dump_without_crashing.h"
-#include "base/files/file_util.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/win/win_util.h"
 #include "chrome/chrome_elf/chrome_elf_main.h"
 #include "chrome/common/chrome_constants.h"
@@ -52,10 +56,9 @@
 extern "C" {
 DLLEXPORT int __cdecl ChromeMain(HINSTANCE instance,
                                  sandbox::SandboxInterfaceInfo* sandbox_info,
-                                 int64_t exe_entry_point_ticks,
-                                 base::PrefetchResultCode prefetch_result_code);
+                                 int64_t exe_entry_point_ticks);
 }
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 extern "C" {
 // This function must be marked with NO_STACK_PROTECTOR or it may crash on
 // return, see the --change-stack-guard-on-fork command line flag.
@@ -66,36 +69,96 @@ ChromeMain(int argc, const char** argv);
 #error Unknown platform.
 #endif
 
-#if defined(OS_WIN)
-DLLEXPORT int __cdecl ChromeMain(
-    HINSTANCE instance,
-    sandbox::SandboxInterfaceInfo* sandbox_info,
-    int64_t exe_entry_point_ticks,
-    base::PrefetchResultCode prefetch_result_code) {
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+extern "C" void V8SetRecordingOrReplaying(void* handle);
+extern "C" void V8InitializeNotRecordingOrReplaying();
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+#include "./record_replay_main.cc"
+#endif
+
+#if BUILDFLAG(IS_WIN)
+namespace recordreplay { extern void InitBindings(); }
+#endif
+
+#include "base/power_monitor/power_monitor.h"
+#include "base/record_replay.h"
+
+#if BUILDFLAG(IS_WIN)
+DLLEXPORT int __cdecl ChromeMain(HINSTANCE instance,
+                                 sandbox::SandboxInterfaceInfo* sandbox_info,
+                                 int64_t exe_entry_point_ticks) {
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 int ChromeMain(int argc, const char** argv) {
   int64_t exe_entry_point_ticks = 0;
 #else
 #error Unknown platform.
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX)
+  // On linux ChromeMain is the process entry point, and we need to start
+  // recording/replaying.
+  void* handle = RecordReplayAttach(&argc, &argv);
+  if (handle) {
+    V8SetRecordingOrReplaying(handle);
+  } else {
+    V8InitializeNotRecordingOrReplaying();
+  }
+#elif BUILDFLAG(IS_MAC)
+  // On macOS the main function is in a different binary in chrome_exe_main_mac.cc.
+  // When we get to ChromeMain we've already started recording/replaying, but still
+  // need to initialize V8's record/replay bindings.
+  //
+  // Note: On macOS the library handle doesn't need to be specified when using dlsym.
+  void* sym = dlsym(nullptr, "RecordReplayAttach");
+  if (sym) {
+    V8SetRecordingOrReplaying(nullptr);
+  }
+#elif BUILDFLAG(IS_WIN)
+  // On windows the main function is in a different binary in chrome_exe_main_win.cc.
+  // As for macOS we have already started recording/replaying but initialize V8's
+  // record/replay bindings here. Also make sure we update the command line used in
+  // chrome.dll.
+  if (RecordReplayShouldRecord(nullptr, nullptr)) {
+    HMODULE module = GetModuleHandleA("windows-recordreplay.dll");
+    CHECK(module);
+    V8SetRecordingOrReplaying((void*)module);
+    recordreplay::InitBindings();
+  }
+  // Fix warning.
+  (void)RecordReplayAttach;
+#else // !BUILDFLAG(IS_WIN)
+#error Unknown platform
+#endif // !BUILDFLAG(IS_WIN)
+
+  if (recordreplay::IsRecordingOrReplaying("eager-initialization", "ChromeMain")) {
+    // Force initialization that can otherwise happen at non-deterministic points.
+    base::PowerMonitor::GetInstance();
+  }
+
+#if BUILDFLAG(IS_WIN)
 #if BUILDFLAG(USE_ALLOCATOR_SHIM) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   // Call this early on in order to configure heap workarounds. This must be
   // called from chrome.dll. This may be a NOP on some platforms.
-  base::allocator::ConfigurePartitionAlloc();
+  allocator_shim::ConfigurePartitionAlloc();
 #endif
 
-  base::UmaHistogramEnumeration("Windows.ChromeDllPrefetchResult",
-                                prefetch_result_code);
   install_static::InitializeFromPrimaryModule();
-#endif
+#if !defined(COMPONENT_BUILD) && DCHECK_IS_ON()
+  // Patch the main EXE on non-component builds when DCHECKs are enabled.
+  // This allows detection of third party code that might attempt to meddle with
+  // Chrome's handles. This must be done when single-threaded to avoid other
+  // threads attempting to make calls through the hooks while they are being
+  // emplaced.
+  // Note: The EXE is patched separately, in chrome/app/chrome_exe_main_win.cc.
+  base::debug::HandleHooks::AddIATPatch(CURRENT_MODULE());
+#endif  // !defined(COMPONENT_BUILD) && DCHECK_IS_ON()
+#endif  // BUILDFLAG(IS_WIN)
 
   ChromeMainDelegate chrome_main_delegate(
       base::TimeTicks::FromInternalValue(exe_entry_point_ticks));
   content::ContentMainParams params(&chrome_main_delegate);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // The process should crash when going through abnormal termination, but we
   // must be sure to reset this setting when ChromeMain returns normally.
   auto crash_on_detach_resetter = base::ScopedClosureRunner(
@@ -118,12 +181,12 @@ int ChromeMain(int argc, const char** argv) {
   params.argc = argc;
   params.argv = argv;
   base::CommandLine::Init(params.argc, params.argv);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   base::CommandLine::Init(0, nullptr);
-  const base::CommandLine* command_line(base::CommandLine::ForCurrentProcess());
-  ALLOW_UNUSED_LOCAL(command_line);
+  [[maybe_unused]] base::CommandLine* command_line(
+      base::CommandLine::ForCurrentProcess());
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           ::switches::kRaiseTimerFrequency)) {
     // Raise the timer interrupt frequency and leave it raised.
@@ -131,7 +194,7 @@ int ChromeMain(int argc, const char** argv) {
   }
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   SetUpBundleOverrides();
 #endif
 
@@ -145,22 +208,19 @@ int ChromeMain(int argc, const char** argv) {
   if (headless::IsChromeNativeHeadless()) {
     headless::SetUpCommandLine(command_line);
   } else {
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) || \
-    defined(OS_WIN)
-    if (command_line->HasSwitch(switches::kHeadless))
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN)
+    if (command_line->HasSwitch(switches::kHeadless)) {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      command_line->AppendSwitch(::headless::switches::kEnableCrashReporter);
+#endif
       return headless::HeadlessShellMain(std::move(params));
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) ||
-        // defined(OS_WIN)
+    }
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
+        // BUILDFLAG(IS_WIN)
   }
 
-#if defined(OS_LINUX)
-  // TODO(https://crbug.com/1176772): Remove when Chrome Linux is fully migrated
-  // to Crashpad.
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      ::switches::kEnableCrashpad);
-#endif
-
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Gracefully exit if the system tried to launch the macOS notification helper
   // app when a user clicked on a notification.
   if (IsAlertsHelperLaunchedViaNotificationAction()) {
@@ -171,5 +231,7 @@ int ChromeMain(int argc, const char** argv) {
 
   int rv = content::ContentMain(std::move(params));
 
+  if (chrome::IsNormalResultCode(static_cast<chrome::ResultCode>(rv)))
+    return content::RESULT_CODE_NORMAL_EXIT;
   return rv;
 }

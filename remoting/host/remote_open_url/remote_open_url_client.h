@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,14 +8,16 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/command_line.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "mojo/public/cpp/platform/named_platform_channel.h"
-#include "mojo/public/cpp/system/isolated_connection.h"
 #include "remoting/host/mojom/remote_url_opener.mojom.h"
+#include "url/gurl.h"
 
 namespace remoting {
+
+class ChromotingHostServicesProvider;
 
 // A helper to allow the standalone open URL binary to open a URL remotely and
 // handle local fallback.
@@ -26,8 +28,6 @@ class RemoteOpenUrlClient final {
    public:
     Delegate() = default;
     virtual ~Delegate() = default;
-
-    virtual bool IsInRemoteDesktopSession() = 0;
 
     // Opens |url| on the fallback browser. If |url| is empty, simply opens the
     // browser without a URL.
@@ -44,8 +44,9 @@ class RemoteOpenUrlClient final {
   // Simply opens the fallback browser with no arguments.
   void OpenFallbackBrowser();
 
-  // Opens the URL and calls |done| when done.
-  void OpenUrl(const GURL& url, base::OnceClosure done);
+  // Opens |arg| (which can be either a URL or an absolute file path) and calls
+  // |done| when done.
+  void Open(const base::CommandLine::StringType& arg, base::OnceClosure done);
 
   RemoteOpenUrlClient(const RemoteOpenUrlClient&) = delete;
   RemoteOpenUrlClient& operator=(const RemoteOpenUrlClient&) = delete;
@@ -54,20 +55,21 @@ class RemoteOpenUrlClient final {
   friend class RemoteOpenUrlClientTest;
 
   // Ctor for unittests.
-  RemoteOpenUrlClient(std::unique_ptr<Delegate> delegate,
-                      const mojo::NamedPlatformChannel::ServerName& server_name,
-                      base::TimeDelta request_timeout);
+  RemoteOpenUrlClient(
+      std::unique_ptr<Delegate> delegate,
+      std::unique_ptr<ChromotingHostServicesProvider> api_provider,
+      base::TimeDelta request_timeout);
 
   void OnOpenUrlResponse(mojom::OpenUrlResult result);
   void OnRequestTimeout();
+  void OnIpcDisconnected();
 
   std::unique_ptr<Delegate> delegate_;
-  mojo::NamedPlatformChannel::ServerName server_name_;
+  std::unique_ptr<ChromotingHostServicesProvider> api_provider_;
   base::TimeDelta request_timeout_;
   base::OneShotTimer timeout_timer_;
   GURL url_;
   base::OnceClosure done_;
-  mojo::IsolatedConnection connection_;
   mojo::Remote<mojom::RemoteUrlOpener> remote_;
 };
 

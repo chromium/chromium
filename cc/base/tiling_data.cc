@@ -1,4 +1,4 @@
-// Copyright 2010 The Chromium Authors. All rights reserved.
+// Copyright 2010 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,8 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/vector2d.h"
+
+#include "base/record_replay.h"
 
 namespace cc {
 
@@ -43,6 +45,10 @@ TilingData::TilingData(const gfx::Size& max_texture_size,
     : max_texture_size_(max_texture_size),
       tiling_size_(tiling_size),
       border_texels_(has_border_texels ? 1 : 0) {
+  // https://linear.app/replay/issue/RUN-885
+  recordreplay::Assert("TilingData::TilingData #1 %d %d",
+                       tiling_size_.width(), tiling_size_.height());
+
   RecomputeNumTiles();
 }
 
@@ -52,11 +58,20 @@ TilingData::TilingData(const gfx::Size& max_texture_size,
     : max_texture_size_(max_texture_size),
       tiling_size_(tiling_size),
       border_texels_(border_texels) {
+  // https://linear.app/replay/issue/RUN-885
+  recordreplay::Assert("TilingData::TilingData #2 %d %d",
+                       tiling_size_.width(), tiling_size_.height());
+
   RecomputeNumTiles();
 }
 
 void TilingData::SetTilingSize(const gfx::Size& tiling_size) {
   tiling_size_ = tiling_size;
+
+  // https://linear.app/replay/issue/RUN-885
+  recordreplay::Assert("TilingData::SetTilingSize %d %d",
+                       tiling_size_.width(), tiling_size_.height());
+
   RecomputeNumTiles();
 }
 
@@ -250,6 +265,12 @@ gfx::Rect TilingData::TileBounds(int i, int j) const {
 }
 
 gfx::Rect TilingData::TileBoundsWithBorder(int i, int j) const {
+  // https://linear.app/replay/issue/RUN-465
+  recordreplay::Assert("TilingData::TileBoundsWithBorder %d %d %d %d %d %d %d",
+                       i, j,
+                       max_texture_size_.width(), max_texture_size_.height(), border_texels_,
+                       tiling_size_.width(), tiling_size_.height());
+
   AssertTile(i, j);
   int max_texture_size_x = max_texture_size_.width() - 2 * border_texels_;
   int max_texture_size_y = max_texture_size_.height() - 2 * border_texels_;
@@ -334,7 +355,7 @@ int TilingData::TileSizeY(int y_index) const {
 
 gfx::RectF TilingData::TexelExtent(int i, int j) const {
   gfx::RectF result(TileBoundsWithBorder(i, j));
-  result.Inset(0.5f, 0.5f);
+  result.Inset(0.5f);
   return result;
 }
 

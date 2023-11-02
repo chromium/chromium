@@ -1,8 +1,6 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
-import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
 
 /**
  * @fileoverview A helper object used by the "Google Play Store" (ARC) section
@@ -17,7 +15,7 @@ import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
  *   playStoreEnabled: boolean,
  *   settingsAppAvailable: boolean,
  * }}
- * @see chrome/browser/ui/webui/settings/chromeos/android_apps_handler.cc
+ * @see chrome/browser/ui/webui/settings/ash/android_apps_handler.cc
  */
 export let AndroidAppsInfo;
 
@@ -32,10 +30,23 @@ export class AndroidAppsBrowserProxy {
   showAndroidAppsSettings(keyboardAction) {}
 }
 
+/** @type {?AndroidAppsBrowserProxy} */
+let instance = null;
+
 /**
  * @implements {AndroidAppsBrowserProxy}
  */
 export class AndroidAppsBrowserProxyImpl {
+  /** @return {!AndroidAppsBrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new AndroidAppsBrowserProxyImpl());
+  }
+
+  /** @param {!AndroidAppsBrowserProxy} obj */
+  static setInstanceForTesting(obj) {
+    instance = obj;
+  }
+
   /** @override */
   requestAndroidAppsInfo() {
     chrome.send('requestAndroidAppsInfo');
@@ -46,7 +57,3 @@ export class AndroidAppsBrowserProxyImpl {
     chrome.send('showAndroidAppsSettings', [keyboardAction]);
   }
 }
-
-  // The singleton instance_ can be replaced with a test version of this wrapper
-  // during testing.
-addSingletonGetter(AndroidAppsBrowserProxyImpl);

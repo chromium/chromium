@@ -1,11 +1,13 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/loader/long_task_detector.h"
 
+#include "base/time/time.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
 
@@ -49,7 +51,13 @@ void LongTaskDetector::DidProcessTask(base::TimeTicks start_time,
     return;
 
   iterating_ = true;
+  HeapVector<Member<LongTaskObserver>> observers_vector;
   for (auto& observer : observers_) {
+    observers_vector.push_back(observer);
+  }
+  std::sort(observers_vector.begin(), observers_vector.end(),
+            recordreplay::CompareMemberByPointerId<Member<LongTaskObserver>>());
+  for (auto& observer : observers_vector) {
     observer->OnLongTaskDetected(start_time, end_time);
   }
   iterating_ = false;

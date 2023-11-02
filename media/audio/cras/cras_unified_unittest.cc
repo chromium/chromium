@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,14 +7,14 @@
 #include <memory>
 #include <string>
 
-#include "ash/components/audio/cras_audio_handler.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/test_message_loop.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
-#include "chromeos/dbus/audio/cras_audio_client.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
+#include "chromeos/ash/components/dbus/audio/cras_audio_client.h"
 #include "media/audio/audio_device_description.h"
 #include "media/audio/cras/audio_manager_chromeos.h"
 #include "media/audio/fake_audio_log_factory.h"
@@ -64,7 +64,7 @@ class CrasUnifiedStreamTest : public testing::Test {
 
  protected:
   CrasUnifiedStreamTest() {
-    chromeos::CrasAudioClient::InitializeFake();
+    ash::CrasAudioClient::InitializeFake();
     ash::CrasAudioHandler::InitializeForTesting();
     mock_manager_.reset(new StrictMock<MockAudioManagerCras>());
     base::RunLoop().RunUntilIdle();
@@ -73,14 +73,14 @@ class CrasUnifiedStreamTest : public testing::Test {
   ~CrasUnifiedStreamTest() override {
     mock_manager_->Shutdown();
     ash::CrasAudioHandler::Shutdown();
-    chromeos::CrasAudioClient::Shutdown();
+    ash::CrasAudioClient::Shutdown();
   }
 
-  CrasUnifiedStream* CreateStream(ChannelLayout layout) {
+  CrasUnifiedStream* CreateStream(ChannelLayoutConfig layout) {
     return CreateStream(layout, kTestFramesPerPacket);
   }
 
-  CrasUnifiedStream* CreateStream(ChannelLayout layout,
+  CrasUnifiedStream* CreateStream(ChannelLayoutConfig layout,
                                   int32_t samples_per_packet) {
     AudioParameters params(kTestFormat, layout, kTestSampleRate,
                            samples_per_packet);
@@ -101,7 +101,7 @@ class CrasUnifiedStreamTest : public testing::Test {
   std::unique_ptr<StrictMock<MockAudioManagerCras>> mock_manager_;
 };
 
-const ChannelLayout CrasUnifiedStreamTest::kTestChannelLayout =
+constexpr ChannelLayout CrasUnifiedStreamTest::kTestChannelLayout =
     CHANNEL_LAYOUT_STEREO;
 const int CrasUnifiedStreamTest::kTestSampleRate =
     AudioParameters::kAudioCDSampleRate;
@@ -110,23 +110,26 @@ const AudioParameters::Format CrasUnifiedStreamTest::kTestFormat =
 const uint32_t CrasUnifiedStreamTest::kTestFramesPerPacket = 1000;
 
 TEST_F(CrasUnifiedStreamTest, ConstructedState) {
-  CrasUnifiedStream* test_stream = CreateStream(kTestChannelLayout);
+  CrasUnifiedStream* test_stream =
+      CreateStream(ChannelLayoutConfig::FromLayout<kTestChannelLayout>());
   EXPECT_TRUE(test_stream->Open());
   test_stream->Close();
 
   // Should support mono.
-  test_stream = CreateStream(CHANNEL_LAYOUT_MONO);
+  test_stream = CreateStream(ChannelLayoutConfig::Mono());
   EXPECT_TRUE(test_stream->Open());
   test_stream->Close();
 
   // Should support multi-channel.
-  test_stream = CreateStream(CHANNEL_LAYOUT_SURROUND);
+  test_stream =
+      CreateStream(ChannelLayoutConfig::FromLayout<CHANNEL_LAYOUT_SURROUND>());
   EXPECT_TRUE(test_stream->Open());
   test_stream->Close();
 
   // Bad sample rate.
-  AudioParameters bad_rate_params(kTestFormat, kTestChannelLayout, 0,
-                                  kTestFramesPerPacket);
+  AudioParameters bad_rate_params(
+      kTestFormat, ChannelLayoutConfig::FromLayout<kTestChannelLayout>(), 0,
+      kTestFramesPerPacket);
   test_stream = new CrasUnifiedStream(bad_rate_params, mock_manager_.get(),
                                       AudioDeviceDescription::kDefaultDeviceId);
   EXPECT_FALSE(test_stream->Open());
@@ -134,7 +137,7 @@ TEST_F(CrasUnifiedStreamTest, ConstructedState) {
 }
 
 TEST_F(CrasUnifiedStreamTest, RenderFrames) {
-  CrasUnifiedStream* test_stream = CreateStream(CHANNEL_LAYOUT_MONO);
+  CrasUnifiedStream* test_stream = CreateStream(ChannelLayoutConfig::Mono());
   MockAudioSourceCallback mock_callback;
 
   ASSERT_TRUE(test_stream->Open());

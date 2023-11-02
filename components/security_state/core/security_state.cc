@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
-#include "components/security_state/core/features.h"
 #include "net/ssl/ssl_cipher_suite_names.h"
 #include "net/ssl/ssl_connection_status_flags.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
@@ -67,10 +66,6 @@ std::string GetHistogramSuffixForSafetyTipStatus(
 // Sets |level| to the right value if status should be set.
 bool ShouldSetSecurityLevelFromSafetyTip(security_state::SafetyTipStatus status,
                                          SecurityLevel* level) {
-  if (!IsSafetyTipUIFeatureEnabled()) {
-    return false;
-  }
-
   switch (status) {
     case security_state::SafetyTipStatus::kBadReputation:
       *level = security_state::NONE;
@@ -160,7 +155,7 @@ SecurityLevel GetSecurityLevel(
     if (!visible_security_state.is_error_page &&
         !network::IsUrlPotentiallyTrustworthy(url) &&
         (url.IsStandard() || url.SchemeIs(url::kBlobScheme))) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
       // On Desktop, Reader Mode pages have their own visible security state in
       // the omnibox. Display ReaderMode pages as neutral even if the original
       // URL was secure, because Chrome has modified the content so we don't
@@ -172,7 +167,7 @@ SecurityLevel GetSecurityLevel(
       if (visible_security_state.is_reader_mode) {
         return NONE;
       }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
       return WARNING;
     }
     return NONE;
@@ -290,13 +285,6 @@ bool IsSHA1InChain(const VisibleSecurityState& visible_security_state) {
   return visible_security_state.certificate &&
          (visible_security_state.cert_status &
           net::CERT_STATUS_SHA1_SIGNATURE_PRESENT);
-}
-
-bool IsSafetyTipUIFeatureEnabled() {
-  return base::FeatureList::IsEnabled(features::kSafetyTipUI) ||
-         base::FeatureList::IsEnabled(
-             features::kSafetyTipUIForSimplifiedDomainDisplay) ||
-         base::FeatureList::IsEnabled(features::kSafetyTipUIOnDelayedWarning);
 }
 
 }  // namespace security_state

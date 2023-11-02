@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,9 +17,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check.h"
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
-#include "base/no_destructor.h"
 #include "base/strings/string_piece.h"
 #include "chrome/browser/ash/platform_keys/chaps_slot_session.h"
 #include "crypto/chaps_support.h"
@@ -110,8 +108,8 @@ absl::optional<KeyPairHandles> GenerateSoftwareBackedRSAKeyPair(
           chaps_session, "GenerateKeyPair",
           base::BindRepeating(&ChapsSlotSession::GenerateKeyPair,
                               base::Unretained(chaps_session), &mechanism,
-                              pub_attributes, base::size(pub_attributes),
-                              priv_attributes, base::size(priv_attributes),
+                              pub_attributes, std::size(pub_attributes),
+                              priv_attributes, std::size(priv_attributes),
                               &(key_pair.public_key),
                               &(key_pair.private_key)))) {
     return {};
@@ -132,7 +130,7 @@ absl::optional<std::vector<CK_BYTE>> ExtractModulus(
           base::BindRepeating(&ChapsSlotSession::GetAttributeValue,
                               base::Unretained(chaps_session), pub_key_handle,
                               attrs_get_modulus,
-                              base::size(attrs_get_modulus)))) {
+                              std::size(attrs_get_modulus)))) {
     return {};
   }
   return modulus;
@@ -150,7 +148,7 @@ absl::optional<bool> IsKeySoftwareBacked(ChapsSlotSession* chaps_session,
           base::BindRepeating(&ChapsSlotSession::GetAttributeValue,
                               base::Unretained(chaps_session),
                               private_key_handle, attrs_get_key_in_software,
-                              base::size(attrs_get_key_in_software)))) {
+                              std::size(attrs_get_key_in_software)))) {
     return {};
   }
   return key_in_software;
@@ -180,7 +178,7 @@ bool SetCkaId(ChapsSlotSession* chaps_session,
           base::BindRepeating(&ChapsSlotSession::SetAttributeValue,
                               base::Unretained(chaps_session),
                               key_pair.private_key, attrs_set_id,
-                              base::size(attrs_set_id)))) {
+                              std::size(attrs_set_id)))) {
     return false;
   }
   if (!PerformWithRetries(
@@ -188,7 +186,7 @@ bool SetCkaId(ChapsSlotSession* chaps_session,
           base::BindRepeating(&ChapsSlotSession::SetAttributeValue,
                               base::Unretained(chaps_session),
                               key_pair.public_key, attrs_set_id,
-                              base::size(attrs_set_id)))) {
+                              std::size(attrs_set_id)))) {
     return false;
   }
   return true;

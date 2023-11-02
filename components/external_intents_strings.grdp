@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+  <message name="IDS_EXTERNAL_NAVIGATION_CONTINUE_TO_TITLE" desc="Title for the Continue To App Message." formatter_data="android_java">
+    Continue to <ph name="APP_NAME">%1s<ex>Youtube</ex></ph>?
+  </message>
+  <message name="IDS_EXTERNAL_NAVIGATION_CONTINUE_TO_DESCRIPTION" desc="Description for the Continue To App Message." formatter_data="android_java">
+    This site wants to open the <ph name="APP_NAME">%1s<ex>Youtube</ex></ph> app
+  </message>
+  <message name="IDS_EXTERNAL_NAVIGATION_CONTINUE_TO_ACTION" desc="Action for the Continue To App Message." formatter_data="android_java">
+    Continue
+  </message>
+</grit-part>

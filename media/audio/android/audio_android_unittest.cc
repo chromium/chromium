@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -223,7 +224,7 @@ class FileAudioSource : public AudioOutputStream::AudioSourceCallback {
   int file_size() { return file_->data_size(); }
 
  private:
-  base::WaitableEvent* event_;
+  raw_ptr<base::WaitableEvent> event_;
   int pos_;
   scoped_refptr<DecoderBuffer> file_;
 };
@@ -296,10 +297,10 @@ class FileAudioSink : public AudioInputStream::AudioInputCallback {
   void OnError() override {}
 
  private:
-  base::WaitableEvent* event_;
+  raw_ptr<base::WaitableEvent> event_;
   AudioParameters params_;
   std::unique_ptr<media::SeekableBuffer> buffer_;
-  FILE* binary_file_;
+  raw_ptr<FILE> binary_file_;
 };
 
 // Implements AudioInputCallback and AudioSourceCallback to support full
@@ -582,7 +583,7 @@ class AudioAndroidOutputTest : public testing::Test {
   std::unique_ptr<AudioManager> audio_manager_;
   AudioDeviceInfoAccessorForTests audio_manager_device_info_;
   AudioParameters audio_output_parameters_;
-  AudioOutputStream* audio_output_stream_;
+  raw_ptr<AudioOutputStream> audio_output_stream_;
   base::TimeTicks start_time_;
   base::TimeTicks end_time_;
 };
@@ -718,7 +719,7 @@ class AudioAndroidInputTest : public AudioAndroidOutputTest,
     audio_input_stream_ = nullptr;
   }
 
-  AudioInputStream* audio_input_stream_;
+  raw_ptr<AudioInputStream> audio_input_stream_;
   AudioParameters audio_input_parameters_;
 };
 
@@ -821,10 +822,12 @@ TEST_F(AudioAndroidOutputTest, StartOutputStreamCallbacks) {
 // select a 10ms buffer size instead of the default size and to open up the
 // device in mono.
 // TODO(henrika): possibly add support for more variations.
-TEST_F(AudioAndroidOutputTest, StartOutputStreamCallbacksNonDefaultParameters) {
+// TODO(https://crbug.com/1314750): Flaky.
+TEST_F(AudioAndroidOutputTest,
+       DISABLED_StartOutputStreamCallbacksNonDefaultParameters) {
   GetDefaultOutputStreamParametersOnAudioThread();
   AudioParameters params(audio_output_parameters().format(),
-                         CHANNEL_LAYOUT_MONO,
+                         ChannelLayoutConfig::Mono(),
                          audio_output_parameters().sample_rate(),
                          audio_output_parameters().sample_rate() / 100);
   StartOutputStreamCallbacks(params);

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,6 +40,7 @@ class VIZ_SERVICE_EXPORT SoftwareOutputDeviceOzone
   void EndPaint() override;
   void OnSwapBuffers(SwapBuffersCallback swap_ack_callback) override;
   int MaxFramesPending() const override;
+  bool SupportsOverridePlatformSize() const override;
 
  private:
   // This object should outlive |surface_ozone_|. Ending its lifetime may

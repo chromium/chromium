@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,8 @@
 #define UI_OZONE_PLATFORM_FLATLAND_FLATLAND_CONNECTION_H_
 
 #include <fuchsia/ui/composition/cpp/fidl.h>
+
+#include <memory>
 
 #include "base/callback.h"
 #include "base/containers/queue.h"
@@ -16,18 +18,13 @@ namespace ui {
 // Present. By limiting the number of Present calls, FlatlandConnection ensures
 // that the Flatland will not be shut down, thus, users of FlatlandConnection
 // should not call Flatland::Present on their own.
-class FlatlandConnection {
+class FlatlandConnection final {
  public:
-  FlatlandConnection(
-      const std::string& debug_name,
-      fidl::InterfaceHandle<fuchsia::ui::composition::Flatland> flatland);
+  explicit FlatlandConnection(const std::string& debug_name);
   ~FlatlandConnection();
 
   FlatlandConnection(const FlatlandConnection&) = delete;
   FlatlandConnection& operator=(const FlatlandConnection&) = delete;
-
-  static fidl::InterfaceHandle<fuchsia::ui::composition::Flatland>
-  ConnectToFlatland();
 
   fuchsia::ui::composition::Flatland* flatland() { return flatland_.get(); }
 
@@ -56,6 +53,18 @@ class FlatlandConnection {
   uint64_t next_content_id_ = 0;
   uint32_t present_credits_ = 1;
 
+  struct PendingPresent {
+    PendingPresent(fuchsia::ui::composition::PresentArgs present_args,
+                   OnFramePresentedCallback callback);
+    ~PendingPresent();
+
+    PendingPresent(PendingPresent&& other);
+    PendingPresent& operator=(PendingPresent&& other);
+
+    fuchsia::ui::composition::PresentArgs present_args;
+    OnFramePresentedCallback callback;
+  };
+  base::queue<PendingPresent> pending_presents_;
   std::vector<zx::event> previous_present_release_fences_;
   base::queue<OnFramePresentedCallback> presented_callbacks_;
 };

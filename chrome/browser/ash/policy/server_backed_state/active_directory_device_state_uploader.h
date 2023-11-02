@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -59,7 +59,7 @@ class ActiveDirectoryDeviceStateUploader : public CloudPolicyClient::Observer {
   bool HasUploadedEnrollmentId() const;
 
   // Subscribes to state keys update signal to trigger state keys upload
-  // whenever state keys are updated.
+  // whenever state keys are updated. Also, starts a DM Token request.
   void Init();
 
   // Unsubscribes from state keys update signal.

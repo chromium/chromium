@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "base/sequence_checker.h"
 #include "device/fido/cable/v2_handshake.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/websocket.mojom.h"
@@ -61,6 +62,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) WebSocketAdapter
   // defaults to 64KiB. Exceeding that will cause the function to return false.
   bool Write(base::span<const uint8_t> data);
 
+  // Reparent updates the data callback. This is only valid to call after the
+  // tunnel is established.
+  void Reparent(TunnelDataCallback on_tunnel_data);
+
   // WebSocketHandshakeClient:
 
   void OnOpeningHandshakeStarted(
@@ -104,7 +109,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) WebSocketAdapter
   bool pending_message_finished_ = false;
 
   TunnelReadyCallback on_tunnel_ready_;
-  const TunnelDataCallback on_tunnel_data_;
+  TunnelDataCallback on_tunnel_data_;
   mojo::Receiver<network::mojom::WebSocketHandshakeClient> handshake_receiver_{
       this};
   mojo::Receiver<network::mojom::WebSocketClient> client_receiver_{this};

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_list.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_artifact.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/testing/fake_display_item_client.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -72,7 +73,8 @@ class TestPaintArtifact {
       const EffectPaintPropertyNodeOrAlias& effect) {
     return Properties(PropertyTreeStateOrAlias(transform, clip, effect));
   }
-  TestPaintArtifact& Properties(const RefCountedPropertyTreeState& properties) {
+  TestPaintArtifact& Properties(
+      const RefCountedPropertyTreeStateOrAlias& properties) {
     return Properties(properties.GetPropertyTreeState());
   }
 
@@ -85,7 +87,8 @@ class TestPaintArtifact {
   TestPaintArtifact& Chunk(const PropertyTreeStateOrAlias& properties) {
     return Chunk().Properties(properties);
   }
-  TestPaintArtifact& Chunk(const RefCountedPropertyTreeState& properties) {
+  TestPaintArtifact& Chunk(
+      const RefCountedPropertyTreeStateOrAlias& properties) {
     return Chunk().Properties(properties);
   }
 

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -175,7 +175,9 @@ void OverlayPanelLayer::SetProperties(
   bar_background_->SetBounds(background_size);
   bar_background_->SetPosition(
       gfx::PointF(0.f, bar_top_y + rounded_top_height));
-  bar_background_->SetBackgroundColor(bar_background_color);
+  // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
+  bar_background_->SetBackgroundColor(
+      SkColor4f::FromColor(bar_background_color));
 
   // ---------------------------------------------------------------------------
   // Bar Text
@@ -307,7 +309,8 @@ void OverlayPanelLayer::SetProperties(
   content_container_->SetPosition(
       gfx::PointF(0.f, content_offset_y));
   content_container_->SetBounds(gfx::Size(panel_width, panel_height));
-  content_container_->SetBackgroundColor(bar_background_color);
+  content_container_->SetBackgroundColor(
+      SkColor4f::FromColor(bar_background_color));
   if (content_layer) {
     if (content_layer->parent() != content_container_)
       content_container_->AddChild(content_layer);
@@ -349,7 +352,7 @@ void OverlayPanelLayer::SetProperties(
     bar_border_->SetBounds(bar_border_size);
     bar_border_->SetPosition(
         gfx::PointF(0.f, border_y));
-    bar_border_->SetBackgroundColor(separator_line_color);
+    bar_border_->SetBackgroundColor(SkColor4f::FromColor(separator_line_color));
     if (bar_border_->parent() != layer_)
       layer_->AddChild(bar_border_);
   } else if (bar_border_.get() && bar_border_->parent()) {
@@ -358,7 +361,9 @@ void OverlayPanelLayer::SetProperties(
 }
 
 void OverlayPanelLayer::SetProgressBar(int progress_bar_background_resource_id,
+                                       int progress_bar_background_tint,
                                        int progress_bar_resource_id,
+                                       int progress_bar_tint,
                                        bool progress_bar_visible,
                                        float progress_bar_position_y,
                                        float progress_bar_height,
@@ -370,12 +375,13 @@ void OverlayPanelLayer::SetProgressBar(int progress_bar_background_resource_id,
 
   if (should_render_progress_bar) {
     ui::NinePatchResource* progress_bar_background_resource =
-        ui::NinePatchResource::From(resource_manager_->GetResource(
-            ui::ANDROID_RESOURCE_TYPE_STATIC,
-            progress_bar_background_resource_id));
-    ui::NinePatchResource* progress_bar_resource =
-        ui::NinePatchResource::From(resource_manager_->GetResource(
-            ui::ANDROID_RESOURCE_TYPE_STATIC, progress_bar_resource_id));
+        ui::NinePatchResource::From(
+            resource_manager_->GetStaticResourceWithTint(
+                progress_bar_background_resource_id,
+                progress_bar_background_tint));
+    ui::NinePatchResource* progress_bar_resource = ui::NinePatchResource::From(
+        resource_manager_->GetStaticResourceWithTint(progress_bar_resource_id,
+                                                     progress_bar_tint));
 
     DCHECK(progress_bar_background_resource);
     DCHECK(progress_bar_resource);

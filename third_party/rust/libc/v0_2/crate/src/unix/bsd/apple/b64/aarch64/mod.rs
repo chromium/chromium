@@ -6,6 +6,8 @@ s! {
     }
 }
 
+pub const CLOCK_UPTIME_RAW: ::clockid_t = 8;
+
 cfg_if! {
     if #[cfg(libc_align)] {
         mod align;

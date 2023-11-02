@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,7 +45,7 @@ class HttpFirewallRoutine : public NetworkDiagnosticsRoutine {
   ~HttpFirewallRoutine() override;
 
   // NetworkDiagnosticsRoutine:
-  mojom::RoutineType Type() override;
+  chromeos::network_diagnostics::mojom::RoutineType Type() override;
   void Run() override;
   void AnalyzeResultsAndExecuteCallback() override;
 
@@ -82,7 +82,8 @@ class HttpFirewallRoutine : public NetworkDiagnosticsRoutine {
   int tls_probe_failures_ = 0;
   int num_no_dns_failure_tls_probes_attempted_ = 0;
   std::unique_ptr<TlsProber> tls_prober_;
-  std::vector<mojom::HttpFirewallProblem> problems_;
+  std::vector<chromeos::network_diagnostics::mojom::HttpFirewallProblem>
+      problems_;
 
   base::WeakPtrFactory<HttpFirewallRoutine> weak_factory_{this};
 };

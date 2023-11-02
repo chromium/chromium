@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -81,6 +81,11 @@ class COMPONENT_EXPORT(X11) SELinux {
   Connection* connection() const { return connection_; }
 
   struct ListItem {
+    bool operator==(const ListItem& other) const {
+      return name == other.name && object_context == other.object_context &&
+             data_context == other.data_context;
+    }
+
     Atom name{};
     std::string object_context{};
     std::string data_context{};

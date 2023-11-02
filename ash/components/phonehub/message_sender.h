@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 
 #include "ash/components/phonehub/proto/phonehub_api.pb.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 // Provides interface to send messages from the local device (this Chrome OS
@@ -46,6 +46,10 @@ class MessageSender {
   // Requests that the phone should show the notification access set up.
   virtual void SendShowNotificationAccessSetupRequest() = 0;
 
+  // Requests that the phone should show the feature access set up.
+  virtual void SendFeatureSetupRequest(bool camera_roll,
+                                       bool notifications) = 0;
+
   // Requests that the phone enables or disables ringing.
   virtual void SendRingDeviceRequest(bool device_ringing_enabled) = 0;
 
@@ -69,6 +73,6 @@ class MessageSender {
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_PHONEHUB_MESSAGE_SENDER_H_

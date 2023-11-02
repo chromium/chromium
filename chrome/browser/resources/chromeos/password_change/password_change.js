@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,30 +7,59 @@
  * with cryptohome password.
  */
 
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
-import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import 'chrome://password-change/strings.js';
-import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
-import 'chrome://resources/cr_elements/icons.m.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 
-Polymer({
-  is: 'password-change',
-  behaviors: [I18nBehavior],
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-  /**
-   * The UI component that hosts IdP pages.
-   * @type {!cr.samlPasswordChange.Authenticator|undefined}
-   */
-  authenticator_: undefined,
+import {PasswordChangeAuthenticator, PasswordChangeEventData} from '../../gaia_auth_host/password_change_authenticator.js';
+
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const PasswordChangeElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
+
+/** @polymer */
+export class PasswordChangeElement extends PasswordChangeElementBase {
+  static get is() {
+    return 'password-change';
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
+  }
+
+  constructor() {
+    super();
+
+    /**
+     * The UI component that hosts IdP pages.
+     * @type {PasswordChangeAuthenticator|undefined}
+     */
+    this.authenticator_ = undefined;
+  }
 
   /** @override */
   ready() {
+    super.ready();
     const signinFrame = this.getSigninFrame_();
-    this.authenticator_ = new cr.samlPasswordChange.Authenticator(signinFrame);
-    this.authenticator_.addEventListener(
-        'authCompleted', this.onAuthCompleted_);
+    this.authenticator_ = new PasswordChangeAuthenticator(signinFrame);
+    this.authenticator_.addEventListener('authCompleted', (event) => {
+      this.onAuthCompleted_(
+          /**
+           * @type {!CustomEvent<!PasswordChangeEventData>}
+           */
+          (event));
+    });
+
     chrome.send('initialize');
-  },
+  }
 
   /**
    * Loads auth extension.
@@ -38,29 +67,35 @@ Polymer({
    */
   loadAuthExtension(data) {
     this.authenticator_.load(data);
-  },
+  }
 
   /**
-   * @return {!Element}
+   * @return {!WebView|string}
    * @private
    */
   getSigninFrame_() {
     // Note: Can't use |this.$|, since it returns cached references to elements
     // originally present in DOM, while the signin-frame is dynamically
     // recreated (see Authenticator.setWebviewPartition()).
-    const signinFrame = this.shadowRoot.getElementById('signinFrame');
+    const signinFrame =
+        /** @type {!WebView} */ (this.shadowRoot.getElementById('signinFrame'));
     assert(signinFrame);
     return signinFrame;
-  },
+  }
 
-  /** @private */
+  /**
+   * @param {!CustomEvent<!PasswordChangeEventData>} e
+   * @private
+   * */
   onAuthCompleted_(e) {
     chrome.send(
         'changePassword', [e.detail.old_passwords, e.detail.new_passwords]);
-  },
+  }
 
   /** @private */
   onCloseTap_() {
     chrome.send('dialogClose');
-  },
-});
+  }
+}
+
+customElements.define(PasswordChangeElement.is, PasswordChangeElement);

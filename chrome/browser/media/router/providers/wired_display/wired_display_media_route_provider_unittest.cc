@@ -1,10 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/media/router/providers/wired_display/wired_display_media_route_provider.h"
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/media/router/providers/wired_display/wired_display_presentation_receiver.h"
 #include "chrome/browser/media/router/providers/wired_display/wired_display_presentation_receiver_factory.h"
@@ -33,16 +34,18 @@ namespace media_router {
 
 namespace {
 
+static constexpr int kFrameTreeNodeId = 1;
+
 class MockCallback {
  public:
   MOCK_METHOD4(CreateRoute,
                void(const absl::optional<MediaRoute>& route,
                     mojom::RoutePresentationConnectionPtr connection,
                     const absl::optional<std::string>& error,
-                    RouteRequestResult::ResultCode result));
+                    mojom::RouteRequestResultCode result));
   MOCK_METHOD2(TerminateRoute,
                void(const absl::optional<std::string>& error,
-                    RouteRequestResult::ResultCode result));
+                    mojom::RouteRequestResultCode result));
 };
 
 std::string GetSinkId(const Display& display) {
@@ -107,7 +110,7 @@ class MockReceiverCreator {
 
   // Retains a reference to |unique_receiver_| even after |this| loses its
   // ownership.
-  MockPresentationReceiver* const receiver_;
+  const raw_ptr<MockPresentationReceiver> receiver_;
 };
 
 const char kPresentationSource[] = "https://www.example.com/presentation";
@@ -307,20 +310,19 @@ TEST_F(WiredDisplayMediaRouteProviderTest, CreateAndTerminateRoute) {
   MockCallback callback;
 
   provider_->set_all_displays({secondary_display1_, primary_display_});
-  provider_remote_->StartObservingMediaRoutes(kPresentationSource);
+  provider_remote_->StartObservingMediaRoutes();
   base::RunLoop().RunUntilIdle();
 
   // Create a route for |presentation_id|.
   EXPECT_CALL(callback, CreateRoute(_, _, absl::optional<std::string>(),
-                                    RouteRequestResult::OK))
+                                    mojom::RouteRequestResultCode::OK))
       .WillOnce(WithArg<0>(
           Invoke([&presentation_id](const absl::optional<MediaRoute>& route) {
             EXPECT_TRUE(route.has_value());
             EXPECT_EQ(route->media_route_id(), presentation_id);
             EXPECT_EQ(route->description(), "Presenting (www.example.com)");
           })));
-  EXPECT_CALL(router_,
-              OnRoutesUpdated(kProviderId, _, kPresentationSource, IsEmpty()))
+  EXPECT_CALL(router_, OnRoutesUpdated(kProviderId, _))
       .WillOnce(WithArg<1>(
           Invoke([&presentation_id](const std::vector<MediaRoute>& routes) {
             EXPECT_EQ(routes.size(), 1u);
@@ -331,14 +333,14 @@ TEST_F(WiredDisplayMediaRouteProviderTest, CreateAndTerminateRoute) {
               Start(presentation_id, GURL(kPresentationSource)));
   provider_remote_->CreateRoute(
       kPresentationSource, GetSinkId(secondary_display1_), presentation_id,
-      url::Origin::Create(GURL(kPresentationSource)), 0, base::Seconds(100),
-      false,
+      url::Origin::Create(GURL(kPresentationSource)), kFrameTreeNodeId,
+      base::Seconds(100), false,
       base::BindOnce(&MockCallback::CreateRoute, base::Unretained(&callback)));
   base::RunLoop().RunUntilIdle();
 
   // Terminate the route.
   EXPECT_CALL(callback, TerminateRoute(absl::optional<std::string>(),
-                                       RouteRequestResult::OK));
+                                       mojom::RouteRequestResultCode::OK));
   EXPECT_CALL(*receiver_creator_.receiver(), Terminate());
   EXPECT_CALL(router_,
               OnPresentationConnectionStateChanged(
@@ -351,8 +353,7 @@ TEST_F(WiredDisplayMediaRouteProviderTest, CreateAndTerminateRoute) {
 
   // The presentation should not be removed until the receiver's termination
   // callback is called.
-  EXPECT_CALL(router_, OnRoutesUpdated(kProviderId, IsEmpty(),
-                                       kPresentationSource, IsEmpty()));
+  EXPECT_CALL(router_, OnRoutesUpdated(kProviderId, IsEmpty()));
   receiver_creator_.receiver()->RunTerminationCallback();
 }
 
@@ -362,14 +363,14 @@ TEST_F(WiredDisplayMediaRouteProviderTest, SendMediaStatusUpdate) {
   NiceMock<MockCallback> callback;
 
   provider_->set_all_displays({secondary_display1_, primary_display_});
-  provider_remote_->StartObservingMediaRoutes(kPresentationSource);
+  provider_remote_->StartObservingMediaRoutes();
   base::RunLoop().RunUntilIdle();
 
   // Create a route for |presentation_id|.
   provider_remote_->CreateRoute(
       kPresentationSource, GetSinkId(secondary_display1_), presentation_id,
-      url::Origin::Create(GURL(kPresentationSource)), 0, base::Seconds(100),
-      false,
+      url::Origin::Create(GURL(kPresentationSource)), kFrameTreeNodeId,
+      base::Seconds(100), false,
       base::BindOnce(&MockCallback::CreateRoute, base::Unretained(&callback)));
   base::RunLoop().RunUntilIdle();
 
@@ -392,13 +393,13 @@ TEST_F(WiredDisplayMediaRouteProviderTest, SendMediaStatusUpdate) {
 TEST_F(WiredDisplayMediaRouteProviderTest, ExitFullscreenOnDisplayRemoved) {
   NiceMock<MockCallback> callback;
   provider_->set_all_displays({secondary_display1_, primary_display_});
-  provider_remote_->StartObservingMediaRoutes(kPresentationSource);
+  provider_remote_->StartObservingMediaRoutes();
   base::RunLoop().RunUntilIdle();
 
   provider_remote_->CreateRoute(
       kPresentationSource, GetSinkId(secondary_display1_), "presentationId",
-      url::Origin::Create(GURL(kPresentationSource)), 0, base::Seconds(100),
-      false,
+      url::Origin::Create(GURL(kPresentationSource)), kFrameTreeNodeId,
+      base::Seconds(100), false,
       base::BindOnce(&MockCallback::CreateRoute, base::Unretained(&callback)));
   base::RunLoop().RunUntilIdle();
 

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -97,12 +97,7 @@ public class FilterChipsProvider implements OfflineItemFilterObserver {
     public void setFilterSelected(@FilterType int type) {
         for (int i = 0; i < mSortedChips.size(); i++) {
             PropertyModel chip = mSortedChips.get(i).model;
-            boolean willSelect = chip.get(ChipProperties.ID) == type;
-
-            // Early out if we're already selecting the appropriate Chip type.
-            if (chip.get(ChipProperties.SELECTED) && willSelect) return;
-            if (chip.get(ChipProperties.SELECTED) == willSelect) continue;
-            chip.set(ChipProperties.SELECTED, willSelect);
+            chip.set(ChipProperties.SELECTED, chip.get(ChipProperties.ID) == type);
         }
     }
 

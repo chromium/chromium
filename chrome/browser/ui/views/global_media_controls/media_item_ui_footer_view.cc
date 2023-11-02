@@ -1,9 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/global_media_controls/media_item_ui_footer_view.h"
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/global_media_controls/media_notification_device_entry_ui.h"
@@ -42,7 +43,7 @@ class DeviceEntryButton : public views::LabelButton {
 
   SkColor foreground_color_ = gfx::kPlaceholderColor;
 
-  const gfx::VectorIcon* icon_;
+  raw_ptr<const gfx::VectorIcon> icon_;
 };
 
 DeviceEntryButton::DeviceEntryButton(PressedCallback callback,
@@ -98,10 +99,8 @@ MediaItemUIFooterView::MediaItemUIFooterView(
       .SetCollapseMargins(true)
       .SetDefault(
           views::kMarginsKey,
-          gfx::Insets(
-              /*vertical=*/0,
-              /*horizontal=*/ChromeLayoutProvider::Get()->GetDistanceMetric(
-                  views::DISTANCE_RELATED_BUTTON_HORIZONTAL)));
+          gfx::Insets::VH(0, ChromeLayoutProvider::Get()->GetDistanceMetric(
+                                 views::DISTANCE_RELATED_BUTTON_HORIZONTAL)));
 
   if (stop_casting_callback.is_null())
     return;

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,16 @@
 
 #include <string>
 
+#include "build/chromeos_buildflags.h"
 #include "extensions/browser/extension_event_histogram_value.h"
 #include "extensions/browser/extension_prefs_scope.h"
 #include "extensions/common/mojom/api_permission_id.mojom-shared.h"
 #include "extensions/common/permissions/permission_set.h"
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/mojom/prefs.mojom-shared.h"
+#include "chromeos/crosapi/mojom/prefs.mojom.h"
+#endif
 
 class PrefService;
 class Profile;
@@ -22,9 +28,6 @@ class ListValue;
 namespace extensions {
 namespace preference_helpers {
 
-bool StringToScope(const std::string& s,
-                   extensions::ExtensionPrefsScope* scope);
-
 // Returns a string constant (defined in the API) indicating the level of
 // control this extension has over the specified preference.
 const char* GetLevelOfControl(
@@ -32,6 +35,30 @@ const char* GetLevelOfControl(
     const std::string& extension_id,
     const std::string& browser_pref,
     bool incognito);
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// As GetLevelOfControl, but additionally considers the ash state of the pref.
+// This is relevant when the underlying preference lives in ash. Note that when
+// the ash state is kDefaultUnknown this is equivalent to GetLevelOfControl.
+const char* GetLevelOfControlWithAshControlState(
+    crosapi::mojom::PrefControlState control_state,
+    Profile* profile,
+    const std::string& extension_id,
+    const std::string& browser_pref,
+    bool incognito);
+
+// As DispatchEventToExtensions, but additionally considers the ash state of the
+// pref.
+void DispatchEventToExtensionsWithAshControlState(
+    Profile* profile,
+    events::HistogramValue histogram_value,
+    const std::string& event_name,
+    base::ListValue* args,
+    mojom::APIPermissionID permission,
+    bool incognito,
+    const std::string& browser_pref,
+    crosapi::mojom::PrefControlState control_state);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // Dispatches |event_name| to extensions listening to the event and holding
 // |permission|. |args| is passed as arguments to the event listener.  A

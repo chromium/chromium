@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,7 +26,7 @@ class ChromeSendWebUITest : public WebUIBrowserTest {
     ChromeSendWebUIMessageHandler();
     ~ChromeSendWebUIMessageHandler() override;
 
-    MOCK_METHOD1(HandleCheckSend, void(const base::ListValue*));
+    MOCK_METHOD1(HandleCheckSend, void(const base::Value::List&));
 
    private:
     void RegisterMessages() override;

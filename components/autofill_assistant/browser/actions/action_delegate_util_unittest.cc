@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@
 #include "components/autofill_assistant/browser/action_value.pb.h"
 #include "components/autofill_assistant/browser/actions/action_test_utils.h"
 #include "components/autofill_assistant/browser/actions/mock_action_delegate.h"
-#include "components/autofill_assistant/browser/mock_website_login_manager.h"
+#include "components/autofill_assistant/browser/public/password_change/mock_website_login_manager.h"
 #include "components/autofill_assistant/browser/selector.h"
 #include "components/autofill_assistant/browser/user_data.h"
 #include "components/autofill_assistant/browser/user_model.h"
@@ -46,23 +46,25 @@ class ActionDelegateUtilTest : public testing::Test {
 
     ON_CALL(mock_action_delegate_, GetUserData)
         .WillByDefault(Return(&user_data_));
+    ON_CALL(mock_action_delegate_, GetUserModel)
+        .WillByDefault(Return(&user_model_));
     ON_CALL(mock_action_delegate_, GetWebsiteLoginManager)
         .WillByDefault(Return(&mock_website_login_manager_));
   }
 
   MOCK_METHOD2(MockAction,
-               void(const ElementFinder::Result& element,
+               void(const ElementFinderResult& element,
                     base::OnceCallback<void(const ClientStatus&)> done));
 
   MOCK_METHOD3(MockIndexedAction,
                void(int index,
-                    const ElementFinder::Result&,
+                    const ElementFinderResult&,
                     base::OnceCallback<void(const ClientStatus&)> done));
 
   MOCK_METHOD1(MockDone, void(const ClientStatus& status));
 
   MOCK_METHOD2(MockGetAction,
-               void(const ElementFinder::Result& element,
+               void(const ElementFinderResult& element,
                     base::OnceCallback<void(const ClientStatus&,
                                             const std::string&)> done));
 
@@ -71,12 +73,12 @@ class ActionDelegateUtilTest : public testing::Test {
 
   MOCK_METHOD3(MockValueAction,
                void(const std::string& value,
-                    const ElementFinder::Result& element,
+                    const ElementFinderResult& element,
                     base::OnceCallback<void(const ClientStatus&)> done));
 
   MOCK_METHOD3(MockElementAction,
-               void(const ElementFinder::Result& parameter_element,
-                    const ElementFinder::Result& element,
+               void(const ElementFinderResult& parameter_element,
+                    const ElementFinderResult& element,
                     base::OnceCallback<void(const ClientStatus&)> done));
 
  protected:
@@ -144,7 +146,7 @@ TEST_F(ActionDelegateUtilTest, ActionDelegateDeletedDuringExecution) {
       actions.get());
   actions->emplace_back(base::BindOnce(
       [](base::OnceCallback<void()> destroy_delegate,
-         const ElementFinder::Result& element,
+         const ElementFinderResult& element,
          base::OnceCallback<void(const ClientStatus&)> done) {
         std::move(destroy_delegate).Run();
         std::move(done).Run(OkClientStatus());
@@ -164,7 +166,7 @@ TEST_F(ActionDelegateUtilTest, ActionDelegateDeletedDuringExecution) {
 }
 
 TEST_F(ActionDelegateUtilTest, PerformWithStringValue) {
-  auto element = std::make_unique<ElementFinder::Result>();
+  auto element = std::make_unique<ElementFinderResult>();
 
   EXPECT_CALL(*this, MockValueAction("Hello World", _, _))
       .WillOnce(RunOnceCallback<2>(OkClientStatus()));
@@ -182,7 +184,7 @@ TEST_F(ActionDelegateUtilTest, PerformWithStringValue) {
 }
 
 TEST_F(ActionDelegateUtilTest, PerformWithAutofillValue) {
-  auto element = std::make_unique<ElementFinder::Result>();
+  auto element = std::make_unique<ElementFinderResult>();
 
   EXPECT_CALL(*this, MockValueAction("John", _, _))
       .WillOnce(RunOnceCallback<2>(OkClientStatus()));
@@ -213,10 +215,10 @@ TEST_F(ActionDelegateUtilTest, PerformWithAutofillValue) {
 }
 
 TEST_F(ActionDelegateUtilTest, PerformWithPasswordManagerValue) {
-  auto element = std::make_unique<ElementFinder::Result>();
+  auto element = std::make_unique<ElementFinderResult>();
   content::WebContentsTester::For(web_contents_.get())
       ->NavigateAndCommit(GURL("https://www.example.com"));
-  element->container_frame_host = web_contents_->GetMainFrame();
+  element->SetRenderFrameHostForTest(web_contents_->GetPrimaryMainFrame());
 
   user_data_.selected_login_ = absl::make_optional<WebsiteLoginManager::Login>(
       GURL("https://www.example.com"), "username");
@@ -238,9 +240,8 @@ TEST_F(ActionDelegateUtilTest, PerformWithPasswordManagerValue) {
 }
 
 TEST_F(ActionDelegateUtilTest, PerformWithFailingPasswordManagerValue) {
-  auto element = std::make_unique<ElementFinder::Result>();
-
-  element->container_frame_host = web_contents_->GetMainFrame();
+  auto element = std::make_unique<ElementFinderResult>();
+  element->SetRenderFrameHostForTest(web_contents_->GetPrimaryMainFrame());
 
   user_data_.selected_login_ = absl::make_optional<WebsiteLoginManager::Login>(
       GURL("https://www.example.com"), "username");
@@ -265,7 +266,7 @@ TEST_F(ActionDelegateUtilTest, PerformWithFailingPasswordManagerValue) {
 }
 
 TEST_F(ActionDelegateUtilTest, PerformWithClientMemoryKey) {
-  auto element = std::make_unique<ElementFinder::Result>();
+  auto element = std::make_unique<ElementFinderResult>();
 
   ValueProto value_proto;
   value_proto.mutable_strings()->add_values("Hello World");
@@ -287,11 +288,11 @@ TEST_F(ActionDelegateUtilTest, PerformWithClientMemoryKey) {
 }
 
 TEST_F(ActionDelegateUtilTest, PerformWithExistingElementValue) {
-  auto element = std::make_unique<ElementFinder::Result>();
+  auto element = std::make_unique<ElementFinderResult>();
 
-  ElementFinder::Result option;
-  option.dom_object.object_data.object_id = "option";
-  mock_action_delegate_.GetElementStore()->AddElement("o", option.dom_object);
+  ElementFinderResult option;
+  option.SetObjectId("option");
+  mock_action_delegate_.GetElementStore()->AddElement("o", option.dom_object());
 
   EXPECT_CALL(*this, MockElementAction(EqualsElement(option), _, _))
       .WillOnce(RunOnceCallback<2>(OkClientStatus()));
@@ -310,7 +311,7 @@ TEST_F(ActionDelegateUtilTest, PerformWithExistingElementValue) {
 }
 
 TEST_F(ActionDelegateUtilTest, PerformWithMissingElementValue) {
-  auto element = std::make_unique<ElementFinder::Result>();
+  auto element = std::make_unique<ElementFinderResult>();
 
   EXPECT_CALL(*this, MockElementAction(_, _, _)).Times(0);
   EXPECT_CALL(

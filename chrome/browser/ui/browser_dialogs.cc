@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,11 +12,6 @@
 #endif
 
 namespace chrome {
-
-void RecordDialogCreation(DialogIdentifier identifier) {
-  UMA_HISTOGRAM_ENUMERATION("Dialog.Creation", identifier,
-                            DialogIdentifier::MAX_VALUE);
-}
 
 #if !defined(TOOLKIT_VIEWS)
 void ShowWindowNamePrompt(Browser* browser) {

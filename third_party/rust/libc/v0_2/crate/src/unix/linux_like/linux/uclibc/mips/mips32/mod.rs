@@ -12,7 +12,6 @@ pub type blksize_t = i32;
 pub type nlink_t = u32;
 pub type fsblkcnt_t = ::c_ulong;
 pub type fsfilcnt_t = ::c_ulong;
-pub type rlim_t = ::c_ulong;
 pub type __u64 = ::c_ulonglong;
 pub type fsblkcnt64_t = u64;
 pub type fsfilcnt64_t = u64;
@@ -264,8 +263,6 @@ pub const __SIZEOF_PTHREAD_RWLOCK_T: usize = 32;
 pub const __SIZEOF_PTHREAD_RWLOCKATTR_T: usize = 8;
 pub const __SIZEOF_PTHREAD_BARRIER_T: usize = 20;
 pub const __SIZEOF_PTHREAD_BARRIERATTR_T: usize = 4;
-
-pub const RLIM_INFINITY: ::rlim_t = 0x7fffffff;
 
 pub const SYS_syscall: ::c_long = 4000 + 0;
 pub const SYS_exit: ::c_long = 4000 + 1;
@@ -637,7 +634,6 @@ extern "C" {
         newp: *mut ::c_void,
         newlen: ::size_t,
     ) -> ::c_int;
-    pub fn ioctl(fd: ::c_int, request: ::c_ulong, ...) -> ::c_int;
     pub fn glob64(
         pattern: *const ::c_char,
         flags: ::c_int,

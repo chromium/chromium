@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 using BluetoothShellApiTest = extensions::ShellApiTest;
 
 // TODO(crbug.com/1165955): this test flakes on Mac ASAN
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_ApiSanityCheck DISABLED_ApiSanityCheck
 #else
 #define MAYBE_ApiSanityCheck ApiSanityCheck

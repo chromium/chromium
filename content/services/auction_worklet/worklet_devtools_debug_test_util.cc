@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/json/json_reader.h"
+#include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/inspector_protocol/crdtp/cbor.h"
@@ -40,7 +41,7 @@ std::string ToString(crdtp::span<uint8_t> span) {
 }  // namespace
 
 TestDevToolsAgentClient::TestDevToolsAgentClient(
-    mojo::Remote<blink::mojom::DevToolsAgent> agent,
+    mojo::AssociatedRemote<blink::mojom::DevToolsAgent> agent,
     std::string session_id,
     bool use_binary_protocol)
     : session_id_(std::move(session_id)),
@@ -50,7 +51,8 @@ TestDevToolsAgentClient::TestDevToolsAgentClient(
   agent_->AttachDevToolsSession(receiver_.BindNewEndpointAndPassRemote(),
                                 session_.BindNewEndpointAndPassReceiver(),
                                 io_session_.BindNewPipeAndPassReceiver(),
-                                nullptr, use_binary_protocol_, session_id_);
+                                nullptr, use_binary_protocol_,
+                                /*client_is_trusted=*/true, session_id_);
 }
 
 TestDevToolsAgentClient::~TestDevToolsAgentClient() = default;
@@ -88,8 +90,8 @@ TestDevToolsAgentClient::RunCommandAndWaitForResult(Channel channel,
   return WaitForEvent(base::BindRepeating(
       [](int call_id, const Event& event) {
         return event.type == Event::Type::kResponse &&
-               event.call_id == call_id &&
-               event.value.FindIntKey("id").value_or(-call_id) == call_id;
+               event.call_id == call_id && event.value.is_dict() &&
+               event.value.GetDict().FindInt("id") == call_id;
       },
       call_id));
 }
@@ -118,7 +120,7 @@ TestDevToolsAgentClient::WaitForMethodNotification(std::string method) {
           return false;
 
         const std::string* candidate_method =
-            event.value.FindStringKey("method");
+            event.value.GetDict().FindString("method");
         return (candidate_method && *candidate_method == method);
       },
       method));
@@ -165,7 +167,7 @@ void TestDevToolsAgentClient::LogEvent(
   event.value = std::move(val.value());
 
   // Make sure it has proper session ID.
-  const std::string* session = event.value.FindStringPath("sessionId");
+  const std::string* session = event.value.GetDict().FindString("sessionId");
   ASSERT_TRUE(session);
   EXPECT_EQ(session_id_, *session);
 

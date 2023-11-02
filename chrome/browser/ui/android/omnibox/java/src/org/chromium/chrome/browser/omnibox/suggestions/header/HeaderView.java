@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -47,23 +47,16 @@ public class HeaderView extends SimpleHorizontalLayoutView {
         TypedValue themeRes = new TypedValue();
         getContext().getTheme().resolveAttribute(R.attr.selectableItemBackground, themeRes, true);
         setBackgroundResource(themeRes.resourceId);
-        setClickable(true);
         setFocusable(true);
 
         mHeaderText = new TextView(context);
         mHeaderText.setLayoutParams(LayoutParams.forDynamicView());
         mHeaderText.setMaxLines(1);
         mHeaderText.setEllipsize(TruncateAt.END);
-        mHeaderText.setAllCaps(true);
         TextViewCompat.setTextAppearance(
                 mHeaderText, ChromeColors.getTextMediumThickSecondaryStyle(false));
-        mHeaderText.setMinHeight(context.getResources().getDimensionPixelSize(
-                R.dimen.omnibox_suggestion_header_height));
         mHeaderText.setGravity(Gravity.CENTER_VERTICAL);
         mHeaderText.setTextAlignment(TextView.TEXT_ALIGNMENT_VIEW_START);
-        mHeaderText.setPaddingRelative(context.getResources().getDimensionPixelSize(
-                                               R.dimen.omnibox_suggestion_header_margin_start),
-                0, 0, 0);
         addView(mHeaderText);
 
         mHeaderIcon = new AppCompatImageView(context);
@@ -73,30 +66,6 @@ public class HeaderView extends SimpleHorizontalLayoutView {
                 getResources().getDimensionPixelSize(R.dimen.omnibox_suggestion_action_icon_width),
                 LayoutParams.MATCH_PARENT));
         addView(mHeaderIcon);
-
-        ViewCompat.setAccessibilityDelegate(this, new AccessibilityDelegateCompat() {
-            @Override
-            public void onInitializeAccessibilityNodeInfo(
-                    View host, AccessibilityNodeInfoCompat info) {
-                super.onInitializeAccessibilityNodeInfo(host, info);
-                AccessibilityActionCompat action = mIsCollapsed
-                        ? AccessibilityActionCompat.ACTION_EXPAND
-                        : AccessibilityActionCompat.ACTION_COLLAPSE;
-
-                info.addAction(new AccessibilityActionCompat(
-                        AccessibilityEvent.TYPE_VIEW_CLICKED, action.getLabel()));
-                info.addAction(action);
-            }
-
-            @Override
-            public boolean performAccessibilityAction(View host, int action, Bundle arguments) {
-                if (action == AccessibilityNodeInfoCompat.ACTION_EXPAND
-                        || action == AccessibilityNodeInfoCompat.ACTION_COLLAPSE) {
-                    return performClick();
-                }
-                return super.performAccessibilityAction(host, action, arguments);
-            }
-        });
     }
 
     /** Return ImageView used to present group header chevron. */
@@ -131,6 +100,69 @@ public class HeaderView extends SimpleHorizontalLayoutView {
         if (selected && mOnSelectListener != null) {
             mOnSelectListener.run();
         }
+    }
+
+    /**
+     * Specifies whether the chevron on the right side of header should be removed.
+     *
+     * @param shouldRemoveSuggestionHeaderChevron true, if the chevron on the right side of header
+     *         should be removed.
+     */
+    void setShouldRemoveSuggestionHeaderChevron(boolean shouldRemoveSuggestionHeaderChevron) {
+        mHeaderIcon.setVisibility(shouldRemoveSuggestionHeaderChevron ? GONE : VISIBLE);
+        setClickable(!shouldRemoveSuggestionHeaderChevron);
+
+        // Remove extra accessibility announcement for expanded state, and remove click action.
+        if (!shouldRemoveSuggestionHeaderChevron) {
+            ViewCompat.setAccessibilityDelegate(this, new AccessibilityDelegateCompat() {
+                @Override
+                public void onInitializeAccessibilityNodeInfo(
+                        View host, AccessibilityNodeInfoCompat info) {
+                    super.onInitializeAccessibilityNodeInfo(host, info);
+                    AccessibilityActionCompat action = mIsCollapsed
+                            ? AccessibilityActionCompat.ACTION_EXPAND
+                            : AccessibilityActionCompat.ACTION_COLLAPSE;
+
+                    info.addAction(new AccessibilityActionCompat(
+                            AccessibilityEvent.TYPE_VIEW_CLICKED, action.getLabel()));
+                    info.addAction(action);
+                }
+
+                @Override
+                public boolean performAccessibilityAction(View host, int action, Bundle arguments) {
+                    if (action == AccessibilityNodeInfoCompat.ACTION_EXPAND
+                            || action == AccessibilityNodeInfoCompat.ACTION_COLLAPSE) {
+                        return performClick();
+                    }
+                    return super.performAccessibilityAction(host, action, arguments);
+                }
+            });
+        }
+    }
+
+    /**
+     * Specifies whether suggestion header text should be capitalized.
+     *
+     * @param shouldRemoveSuggestionHeaderCapitalization true, if capitalization on the suggestion
+     *         header should be removed.
+     */
+    void setShouldRemoveSuggestionHeaderCapitalization(
+            boolean shouldRemoveSuggestionHeaderCapitalization) {
+        mHeaderText.setAllCaps(!shouldRemoveSuggestionHeaderCapitalization);
+    }
+
+    /**
+     * Specifies the paddings for suggestion header.
+     *
+     * @param minHeight the min height of header view.
+     * @param paddingStart the start padding of header view.
+     * @param paddingTop the top padding of header view.
+     * @param paddingBottom the bottom padding of header view.
+     */
+    void setUpdateHeaderPadding(
+            int minHeight, int paddingStart, int paddingTop, int paddingBottom) {
+        mHeaderText.setMinHeight(minHeight);
+        mHeaderText.setPaddingRelative(paddingStart, paddingTop, 0, paddingBottom);
     }
 
     @Override

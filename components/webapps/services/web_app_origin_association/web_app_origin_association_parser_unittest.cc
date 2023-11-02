@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,7 +39,7 @@ class WebAppOriginAssociationParserTest : public testing::Test {
 
   unsigned int GetErrorCount() const { return errors_.size(); }
 
-  bool failed() { return failed_; }
+  bool failed() const { return failed_; }
 
  private:
   std::vector<std::string> errors_;

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 #define CHROME_SERVICES_SHARING_NEARBY_PLATFORM_LOG_MESSAGE_H_
 
 #include "base/logging.h"
-#include "third_party/nearby/src/cpp/platform/api/log_message.h"
+#include "third_party/nearby/src/internal/platform/implementation/log_message.h"
 
 namespace location {
 namespace nearby {

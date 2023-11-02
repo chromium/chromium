@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,13 +9,13 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/compiler_specific.h"
-#include "base/files/file_util.h"
 #include "base/memory/ref_counted.h"
-#include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
-#include "content/common/content_export.h"
 #include "content/public/browser/download_manager_delegate.h"
+
+namespace base {
+class FilePath;
+}
 
 namespace content {
 
@@ -23,7 +23,7 @@ class DownloadManager;
 
 namespace protocol {
 
-class CONTENT_EXPORT DevToolsDownloadManagerDelegate
+class DevToolsDownloadManagerDelegate
     : public base::SupportsUserData::Data,
       public content::DownloadManagerDelegate {
  public:

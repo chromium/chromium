@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,6 +17,7 @@ class ComputedStyle;
 class DisplayItemClient;
 class LayoutObject;
 class NGInlineCursor;
+class NGInlinePaintContext;
 struct NGTextFragmentPaintInfo;
 struct PaintInfo;
 struct PhysicalOffset;
@@ -33,8 +34,11 @@ class NGTextFragmentPainter {
   explicit NGTextFragmentPainter(const NGInlineCursor& cursor)
       : cursor_(cursor) {}
   NGTextFragmentPainter(const NGInlineCursor& cursor,
-                        const PhysicalOffset& parent_offset)
-      : cursor_(cursor), parent_offset_(parent_offset) {}
+                        const PhysicalOffset& parent_offset,
+                        NGInlinePaintContext* inline_context)
+      : cursor_(cursor),
+        parent_offset_(parent_offset),
+        inline_context_(inline_context) {}
 
   void Paint(const PaintInfo&, const PhysicalOffset& paint_offset);
 
@@ -44,7 +48,7 @@ class NGTextFragmentPainter {
              const DisplayItemClient& display_item_client,
              const ComputedStyle& style,
              PhysicalRect box_rect,
-             const IntRect& visual_rect,
+             const gfx::Rect& visual_rect,
              bool is_ellipsis,
              bool is_symbol_marker,
              const PaintInfo& paint_info,
@@ -59,6 +63,7 @@ class NGTextFragmentPainter {
   const NGInlineCursor& cursor_;
   PhysicalOffset parent_offset_;
   absl::optional<NGInlineCursor> inline_cursor_for_block_flow_;
+  NGInlinePaintContext* inline_context_ = nullptr;
 };
 
 }  // namespace blink

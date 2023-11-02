@@ -1,10 +1,11 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef MEDIA_FILTERS_AUDIO_TIMESTAMP_VALIDATOR_H_
 #define MEDIA_FILTERS_AUDIO_TIMESTAMP_VALIDATOR_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "media/base/audio_buffer.h"
@@ -35,7 +36,7 @@ class MEDIA_EXPORT AudioTimestampValidator {
 
  private:
   bool has_codec_delay_;
-  MediaLog* media_log_;
+  raw_ptr<MediaLog> media_log_;
 
   // Accumulates time from decoded audio frames. We adjust the base timestamp as
   // needed for the first few buffers (stabilization period) of decoded output

@@ -1,0 +1,90 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN
+++++++UNKNOWN hidden
+++++++++STATIC_TEXT hidden label='Link (from aria-labelledby)'
+++++++UNKNOWN hidden
+++++++++STATIC_TEXT hidden label='Circle (from aria-labelledby)'
+++++++UNKNOWN
+++++++++LINK focusable label='Link (from aria-labelledby)' actions='{DEFAULT}' secondary_label='Link (from title)'
+++++++++++UNKNOWN hidden
+++++++++++++STATIC_TEXT hidden label='Link (from title)'
+++++++UNKNOWN
+++++++++LINK focusable label='Link (from aria-label)' actions='{DEFAULT}' secondary_label='Link (from title)'
+++++++++++UNKNOWN hidden
+++++++++++++STATIC_TEXT hidden label='Link (from title)'
+++++++UNKNOWN
+++++++++LINK focusable label='Link (from title)' actions='{DEFAULT}' secondary_label='Link (from xlink:title)'
+++++++++++UNKNOWN hidden
+++++++++++++STATIC_TEXT hidden label='Link (from title)'
+++++++UNKNOWN
+++++++++LINK focusable label='Link (from xlink:title)' actions='{DEFAULT}'
+++++++UNKNOWN
+++++++++UNKNOWN label='Circle (from aria-labelledby)'
+++++++UNKNOWN
+++++++++UNKNOWN label='Circle (from aria-label)'
+++++++UNKNOWN
+++++++++UNKNOWN label='Circle (from title)'
+++++++++++UNKNOWN hidden
+++++++++++++STATIC_TEXT hidden label='Circle (from title)'
+++++++UNKNOWN
+++++++++UNKNOWN label='Circle (From first use element's title)'
+++++++++++UNKNOWN hidden
+++++++++UNKNOWN label='Circle (From second use element's title)'
+++++++++++UNKNOWN hidden
+++++++UNKNOWN
+++++++++UNKNOWN hidden
+++++++++++STATIC_TEXT hidden label='Rectangle Symbol (From symbol's title)'
+++++++++UNKNOWN label='Rectangle Symbol (From symbol's title)'
+++++++++++UNKNOWN hidden
+++++++++++++STATIC_TEXT hidden label='Rectangle Symbol (From symbol's title)'
+++++++++UNKNOWN label='Rectangle Symbol (From symbol's title)'
+++++++++++UNKNOWN hidden
+++++++++++++STATIC_TEXT hidden label='Rectangle Symbol (From symbol's title)'
+++++++UNKNOWN hidden
+++++++++STATIC_TEXT hidden label='Link (from aria-describedby)'
+++++++UNKNOWN
+++++++++LINK focusable label='Link (from title)' actions='{DEFAULT}' secondary_label='Link (from aria-describedby)'
+++++++++++UNKNOWN hidden
+++++++++++++STATIC_TEXT hidden label='Link (from title)'
+++++++++++UNKNOWN hidden
+++++++++++++STATIC_TEXT hidden label='Link (from desc)'
+++++++UNKNOWN
+++++++++LINK focusable label='Link (from title)' actions='{DEFAULT}' secondary_label='Link (from aria-description)'
+++++++++++UNKNOWN hidden
+++++++++++++STATIC_TEXT hidden label='Link (from title)'
+++++++++++UNKNOWN hidden
+++++++++++++STATIC_TEXT hidden label='Link (from desc)'
+++++++UNKNOWN
+++++++++LINK focusable label='Link (from title)' actions='{DEFAULT}' secondary_label='Link (from desc)'
+++++++++++UNKNOWN hidden
+++++++++++++STATIC_TEXT hidden label='Link (from title)'
+++++++++++UNKNOWN hidden
+++++++++++++STATIC_TEXT hidden label='Link (from desc)'
+++++++UNKNOWN
+++++++++LINK focusable label='Link (from aria-label)' actions='{DEFAULT}' secondary_label='Link (from title)'
+++++++++++UNKNOWN hidden
+++++++++++++STATIC_TEXT hidden label='Link (from title)'
+++++++UNKNOWN
+++++++++LINK focusable label='Link (from title)' actions='{DEFAULT}' secondary_label='Link (from xlink:title)'
+++++++++++UNKNOWN hidden
+++++++++++++STATIC_TEXT hidden label='Link (from title)'
+++++++UNKNOWN
+++++++++UNKNOWN secondary_label='Circle (From first use element's desc)'
+++++++++++UNKNOWN hidden
+++++++++UNKNOWN secondary_label='Circle (From second use element's desc)'
+++++++++++UNKNOWN hidden
+++++++UNKNOWN
+++++++++UNKNOWN label='Circle 1' secondary_label='Circle (From first use element's title)'
+++++++++++UNKNOWN hidden
+++++++++UNKNOWN label='Circle 2' secondary_label='Circle (From second use element's title)'
+++++++++++UNKNOWN hidden
+++++++UNKNOWN
+++++++++UNKNOWN hidden
+++++++++++STATIC_TEXT hidden label='Rectangle Symbol (From symbol's desc)'
+++++++++UNKNOWN secondary_label='Rectangle Symbol (From symbol's desc)'
+++++++++++UNKNOWN hidden
+++++++++++++STATIC_TEXT hidden label='Rectangle Symbol (From symbol's desc)'
+++++++++UNKNOWN secondary_label='Rectangle Symbol (From symbol's desc)'
+++++++++++UNKNOWN hidden
+++++++++++++STATIC_TEXT hidden label='Rectangle Symbol (From symbol's desc)'

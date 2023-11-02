@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,10 +25,12 @@ class StaticSizedView : public View {
 
   void set_minimum_size(const gfx::Size& minimum_size) {
     minimum_size_ = minimum_size;
+    InvalidateLayout();
   }
 
   void set_maximum_size(const gfx::Size& maximum_size) {
     maximum_size_ = maximum_size;
+    InvalidateLayout();
   }
 
   // View overrides:

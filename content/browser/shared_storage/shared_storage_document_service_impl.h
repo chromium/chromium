@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,19 +12,34 @@
 #include "third_party/blink/public/mojom/shared_storage/shared_storage.mojom.h"
 #include "url/origin.h"
 
+namespace storage {
+class SharedStorageManager;
+}
+
 namespace content {
 
 class RenderFrameHost;
 class SharedStorageWorkletHost;
 
+extern CONTENT_EXPORT const char kSharedStorageDisabledMessage[];
+
 // Handle renderer-initiated shared storage access and worklet operations. The
-// worklet operations (i.e. addModule and runOperation) will be dispatched to
-// the `SharedStorageWorkletHost` to be handled.
+// worklet operations (i.e. `addModule()`, `selectURL()`, `run()`) will be
+// dispatched to the `SharedStorageWorkletHost` to be handled.
 class CONTENT_EXPORT SharedStorageDocumentServiceImpl final
     : public DocumentUserData<SharedStorageDocumentServiceImpl>,
       public blink::mojom::SharedStorageDocumentService {
  public:
+  // If true, allows operations to bypass the permission check in
+  // `IsSharedStorageAllowed()` for testing, in order to simulate the situation
+  // where permission is allowed at the stage where `run()` is called but
+  // becomes disallowed when subsequent operations are called from inside the
+  // worklet.
+  static bool& GetBypassIsSharedStorageAllowedForTesting();
+
   ~SharedStorageDocumentServiceImpl() final;
+
+  const url::Origin& main_frame_origin() const { return main_frame_origin_; }
 
   void Bind(mojo::PendingAssociatedReceiver<
             blink::mojom::SharedStorageDocumentService> receiver);
@@ -32,19 +47,47 @@ class CONTENT_EXPORT SharedStorageDocumentServiceImpl final
   // blink::mojom::SharedStorageDocumentService.
   void AddModuleOnWorklet(const GURL& script_source_url,
                           AddModuleOnWorkletCallback callback) override;
-  void RunOperationOnWorklet(
+  void RunOperationOnWorklet(const std::string& name,
+                             const std::vector<uint8_t>& serialized_data,
+                             RunOperationOnWorkletCallback callback) override;
+  void RunURLSelectionOperationOnWorklet(
       const std::string& name,
-      const std::vector<uint8_t>& serialized_data) override;
+      std::vector<blink::mojom::SharedStorageUrlWithMetadataPtr>
+          urls_with_metadata,
+      const std::vector<uint8_t>& serialized_data,
+      RunURLSelectionOperationOnWorkletCallback callback) override;
+  void SharedStorageSet(const std::u16string& key,
+                        const std::u16string& value,
+                        bool ignore_if_present,
+                        SharedStorageSetCallback callback) override;
+  void SharedStorageAppend(const std::u16string& key,
+                           const std::u16string& value,
+                           SharedStorageAppendCallback callback) override;
+  void SharedStorageDelete(const std::u16string& key,
+                           SharedStorageDeleteCallback callback) override;
+  void SharedStorageClear(SharedStorageClearCallback callback) override;
+
+  base::WeakPtr<SharedStorageDocumentServiceImpl> GetWeakPtr();
 
  private:
   friend class DocumentUserData;
+
+  static bool& GetBypassIsSharedStorageAllowed();
 
   explicit SharedStorageDocumentServiceImpl(RenderFrameHost*);
 
   SharedStorageWorkletHost* GetSharedStorageWorkletHost();
 
+  storage::SharedStorageManager* GetSharedStorageManager();
+
+  bool IsSharedStorageAllowed();
+
   mojo::AssociatedReceiver<blink::mojom::SharedStorageDocumentService>
       receiver_{this};
+
+  // To avoid race conditions associated with top frame navigations, we need to
+  // save the value of the main frame origin in the constructor.
+  const url::Origin main_frame_origin_;
 
   DOCUMENT_USER_DATA_KEY_DECL();
 

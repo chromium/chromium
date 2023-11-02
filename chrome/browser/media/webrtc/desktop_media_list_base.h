@@ -1,13 +1,17 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_MEDIA_WEBRTC_DESKTOP_MEDIA_LIST_BASE_H_
 #define CHROME_BROWSER_MEDIA_WEBRTC_DESKTOP_MEDIA_LIST_BASE_H_
 
+#include "base/callback.h"
+#include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "chrome/browser/media/webrtc/desktop_media_list_observer.h"
 #include "content/public/browser/desktop_media_id.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace gfx {
 class Image;
@@ -39,6 +43,10 @@ class DesktopMediaListBase : public DesktopMediaList {
   int GetSourceCount() const override;
   const Source& GetSource(int index) const override;
   DesktopMediaList::Type GetMediaListType() const override;
+  bool IsSourceListDelegated() const override;
+  void ClearDelegatedSourceListSelection() override;
+  void FocusList() override;
+  void HideList() override;
 
   static uint32_t GetImageHash(const gfx::Image& image);
 
@@ -54,6 +62,12 @@ class DesktopMediaListBase : public DesktopMediaList {
 
   DesktopMediaListBase(base::TimeDelta update_period,
                        DesktopMediaListObserver* observer);
+
+  // Called to allow a capturer with a delegated source list to be started only
+  // once the list actually starts updating. Otherwise, child classes are
+  // responsible for ensuring their capturer is started at a reasonable time.
+  // Only called if IsSourceListDelegated() returns true.
+  virtual void StartDelegatedCapturer() {}
 
   // Before this method is called, |refresh_callback_| must be non-null, and
   // after it completes (usually asychnonrously), |refresh_callback_| must be
@@ -74,6 +88,9 @@ class DesktopMediaListBase : public DesktopMediaList {
   // Called when a refresh is complete.  Invokes |refresh_callback_| unless it
   // is null.  Postcondition: |refresh_callback_| is null.
   void OnRefreshComplete();
+
+  void OnDelegatedSourceListSelection();
+  void OnDelegatedSourceListDismissed();
 
   bool can_refresh() const { return !refresh_callback_.is_null(); }
 
@@ -102,7 +119,7 @@ class DesktopMediaListBase : public DesktopMediaList {
   std::vector<Source> sources_;
 
   // The observer passed to StartUpdating().
-  DesktopMediaListObserver* observer_ = nullptr;
+  raw_ptr<DesktopMediaListObserver> observer_ = nullptr;
 
   // Called when a refresh operation completes.
   RefreshCallback refresh_callback_;

@@ -1,8 +1,11 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 
+# TODO(1262303): After Telemetry is supported by python3 we can remove
+# object inheritance from this script.
+# pylint: disable=useless-object-inheritance
 class Environment(object):
   """An environment in which tests can be run.
 

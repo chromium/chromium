@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -195,7 +195,7 @@ void U2fSignOperation::OnEnrollmentResponseReceived(
 
 const std::vector<uint8_t>& U2fSignOperation::key_handle() const {
   DCHECK_LT(current_key_handle_index_, request().allow_list.size());
-  return request().allow_list.at(current_key_handle_index_).id();
+  return request().allow_list.at(current_key_handle_index_).id;
 }
 
 }  // namespace device

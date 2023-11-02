@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
@@ -38,6 +38,31 @@ bool CheckCacheIntegrity(const base::FilePath& path,
                          uint32_t mask);
 
 // -----------------------------------------------------------------------
+
+// Like net::TestCompletionCallback, but for BackendResultCallback.
+struct BackendResultIsPendingHelper {
+  bool operator()(const disk_cache::BackendResult& result) const {
+    return result.net_error == net::ERR_IO_PENDING;
+  }
+};
+using TestBackendResultCompletionCallbackBase =
+    net::internal::TestCompletionCallbackTemplate<disk_cache::BackendResult,
+                                                  BackendResultIsPendingHelper>;
+
+class TestBackendResultCompletionCallback
+    : public TestBackendResultCompletionCallbackBase {
+ public:
+  TestBackendResultCompletionCallback();
+
+  TestBackendResultCompletionCallback(
+      const TestBackendResultCompletionCallback&) = delete;
+  TestBackendResultCompletionCallback& operator=(
+      const TestBackendResultCompletionCallback&) = delete;
+
+  ~TestBackendResultCompletionCallback() override;
+
+  disk_cache::BackendResultCallback callback();
+};
 
 // Like net::TestCompletionCallback, but for EntryResultCallback.
 
@@ -129,14 +154,14 @@ class MessageLoopHelper {
   void TimerExpired();
 
   std::unique_ptr<base::RunLoop> run_loop_;
-  int num_callbacks_;
-  int num_iterations_;
-  int last_;
-  bool completed_;
+  int num_callbacks_ = 0;
+  int num_iterations_ = 0;
+  int last_ = 0;
+  bool completed_ = false;
 
   // True if a callback was called/reused more than expected.
-  bool callback_reused_error_;
-  int callbacks_called_;
+  bool callback_reused_error_ = false;
+  int callbacks_called_ = 0;
 };
 
 // -----------------------------------------------------------------------
@@ -165,7 +190,7 @@ class CallbackTest {
   }
 
  private:
-  MessageLoopHelper* helper_;
+  raw_ptr<MessageLoopHelper> helper_;
   int reuse_;
   int last_result_;
   disk_cache::EntryResult last_entry_result_;

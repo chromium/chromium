@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/detachable_base/detachable_base_pairing_status.h"
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/login/login_screen_controller.h"
@@ -22,6 +23,7 @@
 #include "ash/public/cpp/kiosk_app_menu.h"
 #include "ash/public/cpp/login_types.h"
 #include "ash/public/cpp/smartlock_state.h"
+#include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "ash/shelf/login_shelf_view.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_widget.h"
@@ -29,10 +31,10 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/user_manager/known_user.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/ash/ime_keyboard.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -103,6 +105,7 @@ struct UserMetadata {
   AccountId account_id;
   std::string display_name;
   bool enable_pin = false;
+  bool pin_autosubmit = false;
   bool enable_tap_to_unlock = false;
   bool enable_challenge_response = false;  // Smart Card
   bool enable_auth = true;
@@ -141,8 +144,8 @@ LoginUserInfo PopulateUserData(const LoginUserInfo& user,
   result.basic_user_info.display_name =
       is_public_account
           ? kDebugPublicAccountNames[user_index %
-                                     base::size(kDebugPublicAccountNames)]
-          : kDebugUserNames[user_index % base::size(kDebugUserNames)];
+                                     std::size(kDebugPublicAccountNames)]
+          : kDebugUserNames[user_index % std::size(kDebugUserNames)];
   result.basic_user_info.display_email =
       result.basic_user_info.account_id.GetUserEmail();
 
@@ -267,9 +270,33 @@ class LockDebugView::DebugDataDispatcherTransformer
   void TogglePinStateForUserIndex(size_t user_index) {
     DCHECK(user_index >= 0 && user_index < debug_users_.size());
     UserMetadata* debug_user = &debug_users_[user_index];
-    debug_user->enable_pin = !debug_user->enable_pin;
+    if (!debug_user->enable_pin) {
+      debug_user->enable_pin = true;
+      debug_user->pin_autosubmit = false;
+      user_manager::KnownUser(Shell::Get()->local_state())
+          .SetUserPinLength(debug_user->account_id, 0);
+    } else if (!debug_user->pin_autosubmit) {
+      debug_user->pin_autosubmit = true;
+      user_manager::KnownUser(Shell::Get()->local_state())
+          .SetUserPinLength(debug_user->account_id, 6);
+    } else {
+      debug_user->enable_pin = false;
+      debug_user->pin_autosubmit = false;
+      user_manager::KnownUser(Shell::Get()->local_state())
+          .SetUserPinLength(debug_user->account_id, 0);
+    }
     debug_dispatcher_.SetPinEnabledForUser(debug_user->account_id,
                                            debug_user->enable_pin);
+  }
+
+  void ToggleDarkLigntModeForUserIndex(size_t user_index) {
+    UserMetadata* debug_user = &debug_users_[user_index];
+    user_manager::KnownUser(Shell::Get()->local_state())
+        .SetBooleanPref(
+            debug_user->account_id, prefs::kDarkModeEnabled,
+            !ash::DarkLightModeController::Get()->IsDarkModeEnabled());
+    Shell::Get()->login_screen_controller()->data_dispatcher()->NotifyFocusPod(
+        debug_user->account_id);
   }
 
   // Activates or deactivates challenge response for the user at
@@ -538,14 +565,14 @@ class LockDebugView::DebugDataDispatcherTransformer
     menu_item.app_id = kDebugKioskAppId;
     menu_item.name = kDebugKioskAppName;
     kiosk_apps_.push_back(std::move(menu_item));
-    shelf_widget->login_shelf_view()->SetKioskApps(kiosk_apps_, {}, {});
+    shelf_widget->GetLoginShelfView()->SetKioskApps(kiosk_apps_);
   }
 
   void RemoveKioskApp(ShelfWidget* shelf_widget) {
     if (kiosk_apps_.empty())
       return;
     kiosk_apps_.pop_back();
-    shelf_widget->login_shelf_view()->SetKioskApps(kiosk_apps_, {}, {});
+    shelf_widget->GetLoginShelfView()->SetKioskApps(kiosk_apps_);
   }
 
   void AddSystemInfo(const std::string& os_version,
@@ -692,7 +719,7 @@ class LockDebugView::DebugLoginDetachableBaseModel
   // Calculates the debugging detachable base ID that should become the paired
   // base in the model when the button for cycling paired bases is clicked.
   int NextBaseId() const {
-    return (base_id_ + 1) % base::size(kDebugDetachableBases);
+    return (base_id_ + 1) % std::size(kDebugDetachableBases);
   }
 
   // Gets the descripting text for currently paired base, if any.
@@ -711,7 +738,7 @@ class LockDebugView::DebugLoginDetachableBaseModel
     pairing_status_ = pairing_status;
     if (pairing_status == DetachableBasePairingStatus::kAuthenticated) {
       CHECK_GE(base_id, 0);
-      CHECK_LT(base_id, static_cast<int>(base::size(kDebugDetachableBases)));
+      CHECK_LT(base_id, static_cast<int>(std::size(kDebugDetachableBases)));
       base_id_ = base_id;
     } else {
       base_id_ = kNullBaseId;
@@ -1140,6 +1167,13 @@ void LockDebugView::UpdatePerUserActionContainer() {
                   &DebugDataDispatcherTransformer::TogglePinStateForUserIndex,
                   base::Unretained(debug_data_dispatcher_.get()), i),
               row);
+    AddButton(
+        "Toggle Dark/Light mode",
+        base::BindRepeating(
+            &DebugDataDispatcherTransformer::ToggleDarkLigntModeForUserIndex,
+            base::Unretained(debug_data_dispatcher_.get()), i),
+        row);
+
     AddButton(
         "Toggle Smart card",
         base::BindRepeating(&DebugDataDispatcherTransformer::

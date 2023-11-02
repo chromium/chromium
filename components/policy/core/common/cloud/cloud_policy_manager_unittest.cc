@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -54,7 +54,7 @@ class TestHarness : public PolicyProviderTestHarness {
   void InstallStringListPolicy(const std::string& policy_name,
                                const base::ListValue* policy_value) override;
   void InstallDictionaryPolicy(const std::string& policy_name,
-                               const base::Value* policy_value) override;
+                               const base::Value::Dict& policy_value) override;
 
   // Creates harnesses for mandatory and recommended levels, respectively.
   static PolicyProviderTestHarness* CreateMandatory();
@@ -113,10 +113,12 @@ void TestHarness::InstallStringListPolicy(const std::string& policy_name,
                          POLICY_SOURCE_CLOUD, policy_value->Clone(), nullptr);
 }
 
-void TestHarness::InstallDictionaryPolicy(const std::string& policy_name,
-                                          const base::Value* policy_value) {
+void TestHarness::InstallDictionaryPolicy(
+    const std::string& policy_name,
+    const base::Value::Dict& policy_value) {
   store_.policy_map_.Set(policy_name, policy_level(), policy_scope(),
-                         POLICY_SOURCE_CLOUD, policy_value->Clone(), nullptr);
+                         POLICY_SOURCE_CLOUD, base::Value(policy_value.Clone()),
+                         nullptr);
 }
 
 // static

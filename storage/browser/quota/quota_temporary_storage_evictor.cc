@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -196,7 +196,7 @@ void QuotaTemporaryStorageEvictor::OnGotEvictionRoundInfo(
     // TODO(michaeln): if the reason for eviction is low physical disk space,
     // make 'unlimited' storage keys subject to eviction too.
     quota_eviction_handler_->GetEvictionBucket(
-        blink::mojom::StorageType::kTemporary, settings.pool_size,
+        blink::mojom::StorageType::kTemporary,
         base::BindOnce(&QuotaTemporaryStorageEvictor::OnGotEvictionBucket,
                        weak_factory_.GetWeakPtr()));
     return;

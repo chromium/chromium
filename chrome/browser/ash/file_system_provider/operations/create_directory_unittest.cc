@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -59,7 +59,7 @@ TEST_F(FileSystemProviderOperationsCreateDirectoryTest, Execute) {
   util::StatusCallbackLog callback_log;
 
   CreateDirectory create_directory(
-      NULL, file_system_info_, base::FilePath(kDirectoryPath),
+      nullptr, file_system_info_, base::FilePath(kDirectoryPath),
       true /* recursive */,
       base::BindOnce(&util::LogStatusCallback, &callback_log));
   create_directory.SetDispatchEventImplForTesting(
@@ -73,10 +73,10 @@ TEST_F(FileSystemProviderOperationsCreateDirectoryTest, Execute) {
   EXPECT_EQ(extensions::api::file_system_provider::OnCreateDirectoryRequested::
                 kEventName,
             event->event_name);
-  base::ListValue* event_args = event->event_args.get();
-  ASSERT_EQ(1u, event_args->GetList().size());
+  const base::Value::List& event_args = event->event_args;
+  ASSERT_EQ(1u, event_args.size());
 
-  const base::Value* options_as_value = &event_args->GetList()[0];
+  const base::Value* options_as_value = &event_args[0];
   ASSERT_TRUE(options_as_value->is_dict());
 
   CreateDirectoryRequestedOptions options;
@@ -93,7 +93,7 @@ TEST_F(FileSystemProviderOperationsCreateDirectoryTest, Execute_NoListener) {
   util::StatusCallbackLog callback_log;
 
   CreateDirectory create_directory(
-      NULL, file_system_info_, base::FilePath(kDirectoryPath),
+      nullptr, file_system_info_, base::FilePath(kDirectoryPath),
       true /* recursive */,
       base::BindOnce(&util::LogStatusCallback, &callback_log));
   create_directory.SetDispatchEventImplForTesting(
@@ -113,7 +113,7 @@ TEST_F(FileSystemProviderOperationsCreateDirectoryTest, Execute_ReadOnly) {
       true /* watchable */, extensions::SOURCE_FILE, IconSet());
 
   CreateDirectory create_directory(
-      NULL, read_only_file_system_info, base::FilePath(kDirectoryPath),
+      nullptr, read_only_file_system_info, base::FilePath(kDirectoryPath),
       true /* recursive */,
       base::BindOnce(&util::LogStatusCallback, &callback_log));
   create_directory.SetDispatchEventImplForTesting(
@@ -128,7 +128,7 @@ TEST_F(FileSystemProviderOperationsCreateDirectoryTest, OnSuccess) {
   util::StatusCallbackLog callback_log;
 
   CreateDirectory create_directory(
-      NULL, file_system_info_, base::FilePath(kDirectoryPath),
+      nullptr, file_system_info_, base::FilePath(kDirectoryPath),
       true /* recursive */,
       base::BindOnce(&util::LogStatusCallback, &callback_log));
   create_directory.SetDispatchEventImplForTesting(
@@ -148,7 +148,7 @@ TEST_F(FileSystemProviderOperationsCreateDirectoryTest, OnError) {
   util::StatusCallbackLog callback_log;
 
   CreateDirectory create_directory(
-      NULL, file_system_info_, base::FilePath(kDirectoryPath),
+      nullptr, file_system_info_, base::FilePath(kDirectoryPath),
       true /* recursive */,
       base::BindOnce(&util::LogStatusCallback, &callback_log));
   create_directory.SetDispatchEventImplForTesting(

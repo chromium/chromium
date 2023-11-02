@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,7 +41,8 @@ struct PopupBlockerTabHelper::BlockedRequest {
 };
 
 PopupBlockerTabHelper::PopupBlockerTabHelper(content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<PopupBlockerTabHelper>(*web_contents) {
   blocked_content::SafeBrowsingTriggeredPopupBlocker::MaybeCreate(web_contents);
 }
 
@@ -75,7 +76,7 @@ void PopupBlockerTabHelper::DidFinishNavigation(
 
 void PopupBlockerTabHelper::HidePopupNotification() {
   auto* pscs = content_settings::PageSpecificContentSettings::GetForFrame(
-      web_contents()->GetMainFrame());
+      web_contents()->GetPrimaryMainFrame());
   if (pscs)
     pscs->ClearPopupsBlocked();
 }
@@ -95,7 +96,7 @@ void PopupBlockerTabHelper::AddBlockedPopup(
 
   auto* content_settings =
       content_settings::PageSpecificContentSettings::GetForFrame(
-          web_contents()->GetMainFrame());
+          web_contents()->GetPrimaryMainFrame());
   if (content_settings) {
     content_settings->OnContentBlocked(ContentSettingsType::POPUPS);
   }

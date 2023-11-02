@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "ash/public/cpp/ash_public_export.h"
+#include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_progress.h"
 #include "base/callback.h"
@@ -22,6 +23,10 @@
 namespace base {
 class FilePath;
 }  // namespace base
+
+namespace cros_styles {
+enum class ColorName;
+}  // namespace cros_styles
 
 namespace ash {
 
@@ -56,13 +61,15 @@ class ASH_PUBLIC_EXPORT HoldingSpaceModel {
     ScopedItemUpdate& SetBackingFile(const base::FilePath& file_path,
                                      const GURL& file_system_url);
 
+    // Sets the commands for an in-progress item which are shown in the item's
+    // context menu and possibly, in the case of cancel/pause/resume, as
+    // primary/secondary actions on the item view itself.
+    ScopedItemUpdate& SetInProgressCommands(
+        std::vector<HoldingSpaceItem::InProgressCommand> in_progress_commands);
+
     // Sets whether the image for the item should be forcibly invalidated and
     // returns a reference to `this`.
     ScopedItemUpdate& SetInvalidateImage(bool invalidate_image);
-
-    // Sets if progress of the item is `paused` and returns a ref to `this`.
-    // NOTE: Only in-progress holding space items can be paused.
-    ScopedItemUpdate& SetPaused(bool paused);
 
     // Sets the `progress` of the item and returns a reference to `this`.
     // NOTE: Only in-progress holding space items can be progressed.
@@ -72,6 +79,11 @@ class ASH_PUBLIC_EXPORT HoldingSpaceModel {
     // reference to `this`.
     ScopedItemUpdate& SetSecondaryText(
         const absl::optional<std::u16string>& secondary_text);
+
+    // Sets the color for the secondary text that should be shown for the item
+    // and returns a reference to `this`.
+    ScopedItemUpdate& SetSecondaryTextColor(
+        const absl::optional<cros_styles::ColorName>& secondary_text_color);
 
     // Sets the text that should be shown for the item and returns a reference
     // to `this`. If absent, the lossy display name of the backing file will be
@@ -88,9 +100,12 @@ class ASH_PUBLIC_EXPORT HoldingSpaceModel {
     absl::optional<absl::optional<std::u16string>> accessible_name_;
     absl::optional<base::FilePath> file_path_;
     absl::optional<GURL> file_system_url_;
-    absl::optional<bool> paused_;
+    absl::optional<std::vector<HoldingSpaceItem::InProgressCommand>>
+        in_progress_commands_;
     absl::optional<HoldingSpaceProgress> progress_;
     absl::optional<absl::optional<std::u16string>> secondary_text_;
+    absl::optional<absl::optional<cros_styles::ColorName>>
+        secondary_text_color_;
     absl::optional<absl::optional<std::u16string>> text_;
     bool invalidate_image_ = false;
   };

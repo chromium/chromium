@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,13 +23,13 @@ namespace {
 void ExtractLinks(const cc::PaintOpBuffer* buffer, std::vector<GURL>* links) {
   for (cc::PaintOpBuffer::Iterator it(buffer); it; ++it) {
     if (it->GetType() == cc::PaintOpType::Annotate) {
-      auto* annotate_op = static_cast<cc::AnnotateOp*>(*it);
+      const auto& annotate_op = static_cast<const cc::AnnotateOp&>(*it);
       links->push_back(GURL(
-          std::string(reinterpret_cast<const char*>(annotate_op->data->data()),
-                      annotate_op->data->size())));
+          std::string(reinterpret_cast<const char*>(annotate_op.data->data()),
+                      annotate_op.data->size())));
     } else if (it->GetType() == cc::PaintOpType::DrawRecord) {
-      auto* record_op = static_cast<cc::DrawRecordOp*>(*it);
-      ExtractLinks(record_op->record.get(), links);
+      const auto& record_op = static_cast<const cc::DrawRecordOp&>(*it);
+      ExtractLinks(record_op.record.get(), links);
     }
   }
 }
@@ -77,33 +77,19 @@ TEST_P(NGBoxFragmentPainterTest, ScrollHitTestOrder) {
   scroll_hit_test.scroll_translation =
       scroller.FirstFragment().PaintProperties()->ScrollTranslation();
   scroll_hit_test.scroll_hit_test_rect = gfx::Rect(0, 0, 40, 40);
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    EXPECT_THAT(
-        ContentPaintChunks(),
-        ElementsAre(
-            VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
-            IsPaintChunk(1, 1,
-                         PaintChunk::Id(scroller.Layer()->Id(),
-                                        DisplayItem::kLayerChunk),
-                         scroller.FirstFragment().LocalBorderBoxProperties()),
-            IsPaintChunk(
-                1, 1,
-                PaintChunk::Id(root_fragment.Id(), DisplayItem::kScrollHitTest),
-                scroller.FirstFragment().LocalBorderBoxProperties(),
-                &scroll_hit_test, gfx::Rect(0, 0, 40, 40)),
-            IsPaintChunk(1, 2)));
-  } else {
-    EXPECT_THAT(
-        ContentPaintChunks(),
-        ElementsAre(
-            VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
-            IsPaintChunk(
-                1, 1,
-                PaintChunk::Id(root_fragment.Id(), DisplayItem::kScrollHitTest),
-                scroller.FirstFragment().LocalBorderBoxProperties(),
-                &scroll_hit_test, gfx::Rect(0, 0, 40, 40)),
-            IsPaintChunk(1, 2)));
-  }
+  EXPECT_THAT(
+      ContentPaintChunks(),
+      ElementsAre(
+          VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
+          IsPaintChunk(1, 1,
+                       PaintChunk::Id(scroller.Id(), kBackgroundChunkType),
+                       scroller.FirstFragment().LocalBorderBoxProperties()),
+          IsPaintChunk(
+              1, 1,
+              PaintChunk::Id(root_fragment.Id(), DisplayItem::kScrollHitTest),
+              scroller.FirstFragment().LocalBorderBoxProperties(),
+              &scroll_hit_test, gfx::Rect(0, 0, 40, 40)),
+          IsPaintChunk(1, 2)));
 }
 
 TEST_P(NGBoxFragmentPainterTest, AddUrlRects) {
@@ -133,10 +119,9 @@ TEST_P(NGBoxFragmentPainterTest, AddUrlRects) {
   auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
   builder->Context().SetPaintPreviewTracker(&tracker);
 
-  GetDocument().View()->PaintContentsOutsideOfLifecycle(
+  GetDocument().View()->PaintOutsideOfLifecycle(
       builder->Context(),
-      kGlobalPaintNormalPhase | kGlobalPaintAddUrlMetadata |
-          kGlobalPaintFlattenCompositingLayers,
+      PaintFlag::kAddUrlMetadata | PaintFlag::kOmitCompositingInfo,
       CullRect::Infinite());
 
   auto record = builder->EndRecording();
@@ -192,9 +177,9 @@ TEST_P(NGBoxFragmentPainterTest, SelectionTablePainting) {
   GetDocument().GetLayoutView()->CommitPendingSelection();
   UpdateAllLifecyclePhasesForTest();
   auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
-  GetDocument().View()->PaintContentsOutsideOfLifecycle(
+  GetDocument().View()->PaintOutsideOfLifecycle(
       builder->Context(),
-      kGlobalPaintSelectionDragImageOnly | kGlobalPaintFlattenCompositingLayers,
+      PaintFlag::kSelectionDragImageOnly | PaintFlag::kOmitCompositingInfo,
       CullRect::Infinite());
 
   auto record = builder->EndRecording();
@@ -238,8 +223,8 @@ TEST_P(NGBoxFragmentPainterTest, NodeAtPointWithSvgInline) {
 
   auto* root = GetDocument().getElementById("svg")->GetLayoutBox();
   HitTestResult result;
-  root->NodeAtPoint(result, HitTestLocation(FloatPoint(256, 192)),
-                    PhysicalOffset(0, 0), kHitTestForeground);
+  root->NodeAtPoint(result, HitTestLocation(gfx::PointF(256, 192)),
+                    PhysicalOffset(0, 0), HitTestPhase::kForeground);
   EXPECT_EQ(GetDocument().getElementById("pass"), result.InnerElement());
 }
 

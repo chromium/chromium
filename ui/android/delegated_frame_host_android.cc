@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,7 +43,7 @@ class TopControlsSwapPromise : public cc::SwapPromise {
       DidNotSwapReason reason) override {
     return DidNotSwapAction::KEEP_ACTIVE;
   }
-  int64_t TraceId() const override { return 0; }
+  int64_t GetTraceId() const override { return 0; }
 
  private:
   const float height_;
@@ -188,6 +188,19 @@ void DelegatedFrameHostAndroid::EvictDelegatedFrame() {
   client_->WasEvicted();
 }
 
+void DelegatedFrameHostAndroid::ClearFallbackSurfaceForCommitPending() {
+  const absl::optional<viz::SurfaceId> fallback_surface_id =
+      content_layer_->oldest_acceptable_fallback();
+
+  // CommitPending without a target for TakeFallbackContentFrom. Since we cannot
+  // guarantee that Navigation will complete, evict our surfaces which are from
+  // a previous Navigation.
+  if (fallback_surface_id && fallback_surface_id->is_valid()) {
+    EvictDelegatedFrame();
+    content_layer_->SetOldestAcceptableFallback(viz::SurfaceId());
+  }
+}
+
 void DelegatedFrameHostAndroid::ResetFallbackToFirstNavigationSurface() {
   // Don't update the fallback if it's already newer than the first id after
   // navigation.
@@ -204,7 +217,7 @@ void DelegatedFrameHostAndroid::ResetFallbackToFirstNavigationSurface() {
   if (pre_navigation_local_surface_id_.is_valid() &&
       !first_local_surface_id_after_navigation_.is_valid()) {
     EvictDelegatedFrame();
-    content_layer_->SetBackgroundColor(SK_ColorTRANSPARENT);
+    content_layer_->SetBackgroundColor(SkColors::kTransparent);
   }
 
   content_layer_->SetOldestAcceptableFallback(
@@ -309,8 +322,8 @@ void DelegatedFrameHostAndroid::EmbedSurface(
       content_layer_->SetOldestAcceptableFallback(new_primary_surface_id);
 
       // We default to black background for fullscreen case.
-      content_layer_->SetBackgroundColor(is_fullscreen ? SK_ColorBLACK
-                                                       : SK_ColorTRANSPARENT);
+      content_layer_->SetBackgroundColor(
+          is_fullscreen ? SkColors::kBlack : SkColors::kTransparent);
     }
   }
 

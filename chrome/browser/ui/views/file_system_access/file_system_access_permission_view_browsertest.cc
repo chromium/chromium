@@ -1,10 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/file_system_access/file_system_access_permission_view.h"
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
@@ -72,7 +73,7 @@ class FileSystemAccessPermissionViewTest : public DialogBrowserTest {
   const url::Origin kTestOrigin =
       url::Origin::Create(GURL("https://example.com"));
 
-  views::Widget* widget_ = nullptr;
+  raw_ptr<views::Widget> widget_ = nullptr;
 
   bool callback_called_ = false;
   permissions::PermissionAction callback_result_ =

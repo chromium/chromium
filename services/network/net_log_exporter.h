@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/files/file.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/values.h"
 #include "net/log/net_log.h"
@@ -38,11 +38,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetLogExporter
   ~NetLogExporter() override;
 
   void Start(base::File destination,
-             base::Value extra_constants,
+             base::Value::Dict extra_constants,
              net::NetLogCaptureMode capture_mode,
              uint64_t max_file_size,
              StartCallback callback) override;
-  void Stop(base::Value polled_data, StopCallback callback) override;
+  void Stop(base::Value::Dict polled_data, StopCallback callback) override;
 
   // Sets a callback that will be used to create a scratch directory instead
   // of the normal codepath. For test use only.
@@ -59,13 +59,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetLogExporter
 
   static void StartWithScratchDirOrCleanup(
       base::WeakPtr<NetLogExporter> object,
-      base::Value extra_constants,
+      base::Value::Dict extra_constants,
       net::NetLogCaptureMode capture_mode,
       uint64_t max_file_size,
       StartCallback callback,
       const base::FilePath& scratch_dir_path);
 
-  void StartWithScratchDir(base::Value extra_constants,
+  void StartWithScratchDir(base::Value::Dict extra_constants,
                            net::NetLogCaptureMode capture_mode,
                            uint64_t max_file_size,
                            StartCallback callback,
@@ -73,7 +73,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetLogExporter
 
   // NetworkContext owns |this| via UniqueReceiverSet, so this object can't
   // outlive it.
-  NetworkContext* network_context_;
+  raw_ptr<NetworkContext> network_context_;
   enum State { STATE_IDLE, STATE_WAITING_DIR, STATE_RUNNING } state_;
 
   std::unique_ptr<net::FileNetLogObserver> file_net_observer_;

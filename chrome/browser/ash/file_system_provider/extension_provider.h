@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,6 +40,11 @@ class ExtensionProvider : public ProviderInterface,
   ExtensionProvider(Profile* profile,
                     const extensions::ExtensionId& extension_id,
                     const ProvidingExtensionInfo& info);
+  ExtensionProvider(Profile* profile,
+                    ProviderId id,
+                    Capabilities capabilities,
+                    std::string name);
+
   ~ExtensionProvider() override;
 
   // Returns a provider instance for the specified extension. If the extension
@@ -59,6 +64,10 @@ class ExtensionProvider : public ProviderInterface,
   bool RequestMount(Profile* profile) override;
 
  private:
+  // This method is only partially functional since non-app extensions are not
+  // registered with the app service.
+  void ObserveAppServiceForIcons(Profile* profile);
+
   // apps::AppRegistryCache::Observer overrides:
   void OnAppUpdate(const apps::AppUpdate& update) override;
   void OnAppRegistryCacheWillBeDestroyed(

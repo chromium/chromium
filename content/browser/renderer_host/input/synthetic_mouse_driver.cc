@@ -1,9 +1,10 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/browser/renderer_host/input/synthetic_mouse_driver.h"
 
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/input/synthetic_gesture_target.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
@@ -187,8 +188,8 @@ int SyntheticMouseDriver::ComputeClickCount(
     return 1;
 
   ++click_count_;
-#if !defined(OS_MAC) && !defined(OS_WIN)
-  // On Mac and Windows, we keep incresing the click count, but on the other
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
+  // On Mac and Windows, we keep increasing the click count, but on the other
   // platforms, we reset the count to 1 when it is greater than 3.
   if (click_count_ > 3)
     click_count_ = 1;

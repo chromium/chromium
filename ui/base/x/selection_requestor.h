@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/time/time.h"
 #include "ui/gfx/x/connection.h"
@@ -114,7 +115,7 @@ class COMPONENT_EXPORT(UI_BASE_X) SelectionRequestor {
   const x11::Window x_window_;
 
   // Not owned.
-  XClipboardHelper* const helper_;
+  const raw_ptr<XClipboardHelper> helper_;
 
   // The property on |x_window_| set by the selection owner with the value of
   // the selection.

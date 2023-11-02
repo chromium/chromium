@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,7 +40,7 @@ namespace content {
 CONTENT_EXPORT network::mojom::NetworkService* GetNetworkService();
 
 // Only on ChromeOS since it's only used there.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Returns the global NetworkChangeNotifier instance.
 CONTENT_EXPORT net::NetworkChangeNotifier* GetNetworkChangeNotifier();
 #endif
@@ -96,6 +96,13 @@ GetCertVerifierParams(cert_verifier::mojom::CertVerifierCreationParamsPtr
 // CertVerifierServices.
 CONTENT_EXPORT void SetCertVerifierServiceFactoryForTesting(
     cert_verifier::mojom::CertVerifierServiceFactory* service_factory);
+
+// Returns a pointer to the CertVerifierServiceFactory, creating / re-creating
+// it as needed.
+//
+// This method can only be called on the UI thread.
+CONTENT_EXPORT cert_verifier::mojom::CertVerifierServiceFactory*
+GetCertVerifierServiceFactory();
 
 // Convenience function to create a NetworkContext from the given set of
 // |params|. Any creation of network contexts should be done through this

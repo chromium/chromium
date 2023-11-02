@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,6 +20,7 @@
 #include "ash/wm/pip/pip_test_utils.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
+#include "ash/wm/work_area_insets.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "ui/aura/window.h"
@@ -79,8 +80,10 @@ class PipPositionerDisplayTest : public AshTestBase,
 
   void UpdateWorkArea(const std::string& bounds) {
     UpdateDisplay(bounds);
-    for (aura::Window* root : Shell::GetAllRootWindows())
-      Shell::Get()->SetDisplayWorkAreaInsets(root, gfx::Insets());
+    for (aura::Window* root : Shell::GetAllRootWindows()) {
+      WorkAreaInsets::ForWindow(root)->UpdateWorkAreaInsetsForTest(
+          root, gfx::Rect(), gfx::Insets(), gfx::Insets());
+    }
   }
 
  private:

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 namespace content {
 
 void SetBrowserStartupIsCompleteForTesting() {
-  content::BrowserTaskExecutor::EnableAllQueues();
+  content::BrowserTaskExecutor::OnStartupComplete();
   // Forward the message to ContentBrowserClient if one is registered (there are
   // many tests where one isn't but that's fine as that also means they get the
   // default ContentBrowserClient::IsBrowserStartupComplete() which is always

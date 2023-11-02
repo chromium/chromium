@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -190,8 +190,8 @@ void ModuleTreeLinker::FetchRoot(const KURL& original_url,
   if (!url.IsValid()) {
     result_ = nullptr;
     modulator_->TaskRunner()->PostTask(
-        FROM_HERE, WTF::Bind(&ModuleTreeLinker::AdvanceState,
-                             WrapPersistent(this), State::kFinished));
+        FROM_HERE, WTF::BindOnce(&ModuleTreeLinker::AdvanceState,
+                                 WrapPersistent(this), State::kFinished));
     return;
   }
 
@@ -235,7 +235,7 @@ void ModuleTreeLinker::FetchRootInline(
     base::PassKey<ModuleTreeLinkerRegistry>) {
   DCHECK(module_script);
 #if DCHECK_IS_ON()
-  original_url_ = module_script->BaseURL();
+  original_url_ = module_script->BaseUrl();
   url_ = original_url_;
   module_type_ = ModuleType::kJavaScript;
   root_is_inline_ = true;
@@ -263,8 +263,8 @@ void ModuleTreeLinker::FetchRootInline(
   // <spec step="4">Fetch the descendants of and instantiate script, ...</spec>
   modulator_->TaskRunner()->PostTask(
       FROM_HERE,
-      WTF::Bind(&ModuleTreeLinker::FetchDescendants, WrapPersistent(this),
-                WrapPersistent(module_script)));
+      WTF::BindOnce(&ModuleTreeLinker::FetchDescendants, WrapPersistent(this),
+                    WrapPersistent(module_script)));
 }
 
 // Returning from #fetch-a-single-module-script, calling from
@@ -405,7 +405,7 @@ void ModuleTreeLinker::FetchDescendants(const ModuleScript* module_script) {
     }
   }
 
-  if (module_requests.IsEmpty()) {
+  if (module_requests.empty()) {
     // <spec step="3">... if record.[[RequestedModules]] is empty,
     // asynchronously complete this algorithm with module script.</spec>
     //
@@ -424,16 +424,16 @@ void ModuleTreeLinker::FetchDescendants(const ModuleScript* module_script) {
   // are a new script fetch options whose items all have the same values, except
   // for the integrity metadata, which is instead the empty string.</spec>
   //
-  // TODO(domfarolino): It has not yet been decided how a root module script's
-  // "importance" mode should trickle down to imports. There is discussion of
-  // this at https://github.com/whatwg/html/issues/3670, but for now, descendant
-  // scripts get "auto" importance (Also see https://crbug.com/821464).
+  // <spec
+  // href="https://wicg.github.io/priority-hints/#script">
+  // descendant scripts get "auto" fetchpriority (only the main script resource
+  // is affected by Priority Hints).
   ScriptFetchOptions options(module_script->FetchOptions().Nonce(),
                              IntegrityMetadataSet(), String(),
                              module_script->FetchOptions().ParserState(),
                              module_script->FetchOptions().CredentialsMode(),
                              module_script->FetchOptions().GetReferrerPolicy(),
-                             mojom::blink::FetchImportanceMode::kImportanceAuto,
+                             mojom::blink::FetchPriorityHint::kAuto,
                              RenderBlockingBehavior::kNonBlocking);
 
   // <spec step="8">For each moduleRequest in moduleRequests, ...</spec>
@@ -448,7 +448,7 @@ void ModuleTreeLinker::FetchDescendants(const ModuleScript* module_script) {
     // script's base URL. ...</spec>
     ModuleScriptFetchRequest request(
         module_request.url, module_request.module_type, context_type_,
-        destination_, options, module_script->BaseURL().GetString(),
+        destination_, options, module_script->BaseUrl().GetString(),
         module_request.position);
 
     // <spec label="IMSGF" step="1">Assert: visited set contains url.</spec>
@@ -526,7 +526,7 @@ void ModuleTreeLinker::Instantiate() {
 
     ScriptState::Scope scope(script_state);
     ScriptValue instantiation_error =
-        ModuleRecord::Instantiate(script_state, record, result_->SourceURL());
+        ModuleRecord::Instantiate(script_state, record, result_->SourceUrl());
 
     // <spec step="5.2">... If this throws an exception, set result's error to
     // rethrow to that exception.</spec>

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/task/task.h"
 #include "components/prefs/pref_service.h"
@@ -56,11 +57,11 @@ class DownloadArchivesTask : public Task {
       std::unique_ptr<ItemsToDownload> items_to_download);
 
   // Prefetch store to execute against. Not owned.
-  PrefetchStore* prefetch_store_;
+  raw_ptr<PrefetchStore> prefetch_store_;
   // Prefetch downloader to request downloads from. Not owned.
-  PrefetchDownloader* prefetch_downloader_;
+  raw_ptr<PrefetchDownloader> prefetch_downloader_;
 
-  PrefService* prefs_;
+  raw_ptr<PrefService> prefs_;
 
   base::WeakPtrFactory<DownloadArchivesTask> weak_ptr_factory_{this};
 };

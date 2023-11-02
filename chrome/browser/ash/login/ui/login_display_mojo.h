@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/ui/login_display.h"
-#include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
 #include "components/user_manager/user_manager.h"
 
 namespace ash {
@@ -17,7 +16,6 @@ class LoginDisplayHostMojo;
 // screen.
 // TODO(estade): rename to LoginDisplayAsh.
 class LoginDisplayMojo : public LoginDisplay,
-                         public SigninScreenHandlerDelegate,
                          public user_manager::UserManager::Observer {
  public:
   explicit LoginDisplayMojo(LoginDisplayHostMojo* host);
@@ -32,26 +30,9 @@ class LoginDisplayMojo : public LoginDisplay,
   void UpdateChallengeResponseAuthAvailability(const AccountId& account_id);
 
   // LoginDisplay:
-  void ClearAndEnablePassword() override;
   void Init(const user_manager::UserList& filtered_users,
-            bool show_guest,
-            bool show_users,
-            bool show_new_user) override;
-  void OnPreferencesChanged() override;
+            bool show_guest) override;
   void SetUIEnabled(bool is_enabled) override;
-  void ShowAllowlistCheckFailedError() override;
-
-  // SigninScreenHandlerDelegate:
-  void Login(const UserContext& user_context,
-             const SigninSpecifics& specifics) override;
-  bool IsSigninInProgress() const override;
-  void OnSigninScreenReady() override;
-  void ShowEnterpriseEnrollmentScreen() override;
-  void ShowKioskAutolaunchScreen() override;
-  void ShowWrongHWIDScreen() override;
-  void SetWebUIHandler(LoginDisplayWebUIHandler* webui_handler) override;
-  bool AllowNewUserChanged() const override;
-  bool IsUserSigninCompleted() const override;
 
   // user_manager::UserManager::Observer:
   void OnUserImageChanged(const user_manager::User& user) override;
@@ -64,7 +45,6 @@ class LoginDisplayMojo : public LoginDisplay,
   bool initialized_ = false;
 
   LoginDisplayHostMojo* const host_ = nullptr;  // Unowned.
-  LoginDisplayWebUIHandler* webui_handler_ = nullptr;
 
   base::WeakPtrFactory<LoginDisplayMojo> weak_factory_{this};
 };

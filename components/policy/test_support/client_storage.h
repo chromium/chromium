@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -54,12 +54,29 @@ class ClientStorage {
   // no such a client.
   const ClientInfo* GetClientOrNull(const std::string& device_id) const;
 
+  // Returns the client info associated with |state_key| or nullptr if there is
+  // no such a client.
+  const ClientInfo* LookupByStateKey(const std::string& state_key) const;
+
+  // Returns true if deletion of client with token |device_token| succeeded.
+  bool DeleteClient(const std::string& device_token);
+
   // Returns the number of clients registered.
   size_t GetNumberOfRegisteredClients() const;
+
+  // Returns hashes for all state keys registered with the server, which, when
+  // divied by |modulus|, result in the specified |remainder|.
+  std::vector<std::string> GetMatchingStateKeyHashes(uint64_t modulus,
+                                                     uint64_t remainder) const;
+
+  // Returns all the clients in the storage.
+  std::vector<ClientInfo> GetAllClients();
 
  private:
   // Key: device ids.
   std::map<std::string, ClientInfo> clients_;
+  // Maps device tokens to device IDs.
+  std::map<std::string, std::string> registered_tokens_;
 };
 
 }  // namespace policy

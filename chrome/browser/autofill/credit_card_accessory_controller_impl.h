@@ -1,10 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_AUTOFILL_CREDIT_CARD_ACCESSORY_CONTROLLER_IMPL_H_
 #define CHROME_BROWSER_AUTOFILL_CREDIT_CARD_ACCESSORY_CONTROLLER_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/autofill/credit_card_accessory_controller.h"
 
 #include "base/memory/weak_ptr.h"
@@ -14,6 +15,8 @@
 class ManualFillingController;
 
 namespace autofill {
+
+class AutofillManager;
 
 // Use either CreditCardAccessoryController::GetOrCreate or
 // CreditCardAccessoryController::GetIfExisting to obtain instances of this
@@ -26,7 +29,7 @@ class CreditCardAccessoryControllerImpl
 
   // AccessoryController:
   void RegisterFillingSourceObserver(FillingSourceObserver observer) override;
-  absl::optional<autofill::AccessorySheetData> GetSheetData() const override;
+  absl::optional<AccessorySheetData> GetSheetData() const override;
   void OnFillingTriggered(FieldGlobalId focused_field_id,
                           const AccessorySheetField& selection) override;
   void OnOptionSelected(AccessoryAction selected_action) override;
@@ -46,9 +49,9 @@ class CreditCardAccessoryControllerImpl
   static void CreateForWebContentsForTesting(
       content::WebContents* web_contents,
       base::WeakPtr<ManualFillingController> mf_controller,
-      autofill::PersonalDataManager* personal_data_manager,
-      autofill::BrowserAutofillManager* af_manager,
-      autofill::AutofillDriver* af_driver);
+      PersonalDataManager* personal_data_manager,
+      BrowserAutofillManager* af_manager,
+      AutofillDriver* af_driver);
 
  private:
   friend class content::WebContentsUserData<CreditCardAccessoryControllerImpl>;
@@ -64,8 +67,8 @@ class CreditCardAccessoryControllerImpl
       content::WebContents* web_contents,
       base::WeakPtr<ManualFillingController> mf_controller,
       PersonalDataManager* personal_data_manager,
-      autofill::BrowserAutofillManager* af_manager,
-      autofill::AutofillDriver* af_driver);
+      BrowserAutofillManager* af_manager,
+      AutofillDriver* af_driver);
 
   // Queries the `personal_data_manager_` for regular and virtual credit cards.
   // Virtual cards are (re-)created based on the enrollment status of the cards
@@ -83,14 +86,15 @@ class CreditCardAccessoryControllerImpl
   std::vector<const AutofillOfferData*> GetPromoCodeOffers() const;
 
   base::WeakPtr<ManualFillingController> GetManualFillingController();
-  autofill::AutofillDriver* GetDriver();
-  autofill::BrowserAutofillManager* GetManager() const;
+  AutofillDriver* GetDriver();
+  AutofillManager* GetManager() const;
 
-  content::WebContents* web_contents_;
+  content::WebContents& GetWebContents() const;
+
   base::WeakPtr<ManualFillingController> mf_controller_;
-  PersonalDataManager* const personal_data_manager_;
-  autofill::BrowserAutofillManager* af_manager_for_testing_ = nullptr;
-  autofill::AutofillDriver* af_driver_for_testing_ = nullptr;
+  const raw_ptr<PersonalDataManager> personal_data_manager_;
+  raw_ptr<BrowserAutofillManager> af_manager_for_testing_ = nullptr;
+  raw_ptr<AutofillDriver> af_driver_for_testing_ = nullptr;
 
   // The observer to notify if available suggestions change.
   FillingSourceObserver source_observer_;

@@ -1,10 +1,11 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_BREAK_TOKEN_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_BREAK_TOKEN_H_
 
+#include "base/check_op.h"
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_input_node.h"
@@ -47,11 +48,12 @@ class CORE_EXPORT NGBreakToken : public GarbageCollected<NGBreakToken> {
   }
 
 #if DCHECK_IS_ON()
-  virtual String ToString() const;
+  String ToString() const;
   void ShowBreakTokenTree() const;
 #endif
 
-  virtual void Trace(Visitor*) const;
+  void Trace(Visitor*) const;
+  void TraceAfterDispatch(Visitor*) const;
 
  protected:
   NGBreakToken(NGBreakTokenType type,
@@ -59,9 +61,13 @@ class CORE_EXPORT NGBreakToken : public GarbageCollected<NGBreakToken> {
                unsigned flags = 0)
       : box_(node.GetLayoutBox()),
         type_(type),
+#if DCHECK_IS_ON()
+        is_repeated_actual_break_(false),
+#endif
         flags_(flags),
         is_break_before_(false),
         is_forced_break_(false),
+        is_repeated_(false),
         is_caused_by_column_spanner_(false),
         is_at_block_end_(false),
         has_seen_all_children_(false) {
@@ -71,12 +77,19 @@ class CORE_EXPORT NGBreakToken : public GarbageCollected<NGBreakToken> {
  private:
   // Because |NGLayoutInputNode| has a pointer and 1 bit flag, and it's fast to
   // re-construct, keep |LayoutBox| to save the memory consumed by alignment.
-  // TODO(yukiy): Use Member here once NGPhysicalFragment gets converted to GCed
-  WeakMember<LayoutBox> box_;
+  Member<LayoutBox> box_;
 
   unsigned type_ : 1;
 
  protected:
+#if DCHECK_IS_ON()
+  // If true, this is a break token for an actual break in a cloned fragment. In
+  // such cases, only a few of the members here have been set up correctly, and
+  // the rest should therefore not be accessed. Such break tokens are never used
+  // in layout, only by pre-paint / paint.
+  unsigned is_repeated_actual_break_ : 1;
+#endif
+
   // The following bitfields are only to be used by NGInlineBreakToken (it's
   // defined here to save memory, since that class has no bitfields).
 
@@ -88,6 +101,8 @@ class CORE_EXPORT NGBreakToken : public GarbageCollected<NGBreakToken> {
   unsigned is_break_before_ : 1;
 
   unsigned is_forced_break_ : 1;
+
+  unsigned is_repeated_ : 1;
 
   unsigned is_caused_by_column_spanner_ : 1;
 

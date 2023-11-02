@@ -1,10 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_COLUMN_LAYOUT_ALGORITHM_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_COLUMN_LAYOUT_ALGORITHM_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_algorithm.h"
 
@@ -13,6 +14,7 @@ namespace blink {
 enum class NGBreakStatus;
 class NGBlockNode;
 class NGBlockBreakToken;
+class NGColumnSpannerPath;
 class NGConstraintSpace;
 struct LogicalSize;
 struct NGMarginStrut;
@@ -24,7 +26,7 @@ class CORE_EXPORT NGColumnLayoutAlgorithm
  public:
   explicit NGColumnLayoutAlgorithm(const NGLayoutAlgorithmParams& params);
 
-  scoped_refptr<const NGLayoutResult> Layout() override;
+  const NGLayoutResult* Layout() override;
 
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) override;
 
@@ -43,9 +45,8 @@ class CORE_EXPORT NGColumnLayoutAlgorithm
   // column that was laid out. The rows themselves don't create fragments. If
   // we're in a nested fragmentation context and completely out of outer
   // fragmentainer space, nullptr will be returned.
-  scoped_refptr<const NGLayoutResult> LayoutRow(
-      const NGBlockBreakToken* next_column_token,
-      NGMarginStrut*);
+  const NGLayoutResult* LayoutRow(const NGBlockBreakToken* next_column_token,
+                                  NGMarginStrut*);
 
   // Lay out a column spanner. The return value will tell whether to break
   // before the spanner or not. If |NGBreakStatus::kContinue| is returned, and
@@ -73,7 +74,14 @@ class CORE_EXPORT NGColumnLayoutAlgorithm
   void PropagateBaselineFromChild(const NGPhysicalBoxFragment& child,
                                   LayoutUnit block_offset);
 
+  // Calculate the smallest possible block-size for balanced columns. This will
+  // be the initial size we'll try with when actually lay out the columns.
   LayoutUnit CalculateBalancedColumnBlockSize(
+      const LogicalSize& column_size,
+      LayoutUnit row_offset,
+      const NGBlockBreakToken* child_break_token);
+
+  LayoutUnit CalculateBalancedColumnBlockSizeInternal(
       const LogicalSize& column_size,
       LayoutUnit row_offset,
       const NGBlockBreakToken* child_break_token);
@@ -100,6 +108,30 @@ class CORE_EXPORT NGColumnLayoutAlgorithm
       LayoutUnit block_offset) const;
   NGConstraintSpace CreateConstraintSpaceForMinMax() const;
 
+  // If this is a nested multicol container, and there's no room for anything in
+  // the current outer fragmentainer, we're normally allowed to abort (typically
+  // with NGLayoutResult::kOutOfFragmentainerSpace), and retry in the next outer
+  // fragmentainer. This is not the case for out-of-flow positioned multicol
+  // containers, though, as we're not allowed to insert a soft break before an
+  // out-of-flow positioned node. Our implementation requires that an OOF start
+  // in the fragmentainer where it would "naturally" occur. This is also not the
+  // case for floated multicols since float margins are treated as monolithic
+  // [1]. Given this, the margin of the float wouldn't get truncated after a
+  // break, which could lead to an infinite loop.
+  //
+  // [1] https://codereview.chromium.org/2479483002
+  bool MayAbortOnInsufficientSpace() const {
+    DCHECK(is_constrained_by_outer_fragmentation_context_);
+    return !Node().IsFloatingOrOutOfFlowPositioned();
+  }
+
+  // The sum of all the current column children's block-sizes, as if they were
+  // stacked, including any block-size that is added as a result of
+  // ClampedToValidFragmentainerCapacity().
+  LayoutUnit TotalColumnBlockSize() const;
+
+  const NGColumnSpannerPath* spanner_path_ = nullptr;
+
   int used_column_count_;
   LayoutUnit column_inline_size_;
   LayoutUnit column_inline_progression_;
@@ -112,8 +144,6 @@ class CORE_EXPORT NGColumnLayoutAlgorithm
   // the first piece of content of the multicol container. It is used to check
   // if we're at a valid class A  breakpoint (between block-level siblings).
   bool has_processed_first_child_ = false;
-
-  bool has_processed_first_column_ = false;
 };
 
 }  // namespace blink

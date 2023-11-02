@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,17 +6,16 @@
 
 #include "base/bind.h"
 #include "base/task/task_traits.h"
-#include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/web_contents_proxy.h"
-#include "components/permissions/permission_manager.h"
-#include "components/permissions/permission_result.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/permission_controller.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 
 namespace performance_manager {
 namespace mechanism {
@@ -29,20 +28,19 @@ void MaybeFreezePageOnUIThread(const WebContentsProxy& contents_proxy) {
   if (!contents)
     return;
 
-  const GURL last_committed_origin =
-      permissions::PermissionUtil::GetLastCommittedOriginAsURL(contents);
+  content::PermissionController* permission_controller =
+      contents->GetBrowserContext()->GetPermissionController();
 
   // Page with the notification permission shouldn't be frozen as this is a
   // strong signal that the user wants to receive updates from this page while
   // it's in background. This information isn't available in the PM graph, this
   // has to be checked on the UI thread.
-  auto notif_permission =
-      PermissionManagerFactory::GetForProfile(
-          Profile::FromBrowserContext(contents->GetBrowserContext()))
-          ->GetPermissionStatus(ContentSettingsType::NOTIFICATIONS,
-                                last_committed_origin, last_committed_origin);
-  if (notif_permission.content_setting == CONTENT_SETTING_ALLOW)
+  if (permission_controller->GetPermissionStatusForCurrentDocument(
+          blink::PermissionType::NOTIFICATIONS,
+          contents->GetPrimaryMainFrame()) ==
+      blink::mojom::PermissionStatus::GRANTED) {
     return;
+  }
 
   contents->SetPageFrozen(true);
 }

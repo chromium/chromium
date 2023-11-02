@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -67,13 +67,7 @@ bool StructTraits<
   if (!data.ReadStatus(&out->status))
     return false;
 
-  base::Value body;
-  if (!data.ReadBody(&body)) {
-    return false;
-  }
-  out->body = base::Value::ToUniquePtrValue(std::move(body));
-
-  return true;
+  return data.ReadBody(&out->body);
 }
 
 }  // namespace mojo

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,13 +9,15 @@ import android.content.Context;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
-import org.chromium.chrome.browser.contextualsearch.ContextualSearchFieldTrial.ContextualSearchSwitch;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -69,6 +71,8 @@ public class ContextualSearchTabHelper
     /** Whether the current default search engine is Google.  Is {@code null} if not inited. */
     private Boolean mIsDefaultSearchEngineGoogle;
 
+    private Callback<ContextualSearchManager> mManagerCallback;
+
     /**
      * Creates a contextual search tab helper for the given tab.
      * @param tab The tab whose contextual search actions will be handled by this helper.
@@ -92,6 +96,7 @@ public class ContextualSearchTabHelper
         Context context = tab != null ? tab.getContext() : null;
         if (context != null) scaleFactor /= context.getResources().getDisplayMetrics().density;
         mPxToDp = scaleFactor;
+        mManagerCallback = (ContextualSearchManager manager) -> updateHooksForTab(mTab);
     }
 
     // ============================================================================================
@@ -154,6 +159,11 @@ public class ContextualSearchTabHelper
         mContextualSearchManager = null;
         mSelectionClientManager = null;
         mGestureStateListener = null;
+        ObservableSupplier<ContextualSearchManager> supplier =
+                getContextualSearchManagerSupplier(mTab);
+        if (supplier != null) {
+            supplier.removeObserver(mManagerCallback);
+        }
     }
 
     @Override
@@ -197,12 +207,14 @@ public class ContextualSearchTabHelper
         boolean webContentsChanged = currentWebContents != mWebContents;
         if (webContentsChanged || mContextualSearchManager != getContextualSearchManager(tab)) {
             mContextualSearchManager = getContextualSearchManager(tab);
-            if (webContentsChanged && currentWebContents != null) {
+            if (webContentsChanged) {
                 // Ensure the hooks are cleared on the old web contents before proceeding. All of
                 // the objects associated with the web content need to be recreated in order for
                 // selection to continue working. See https://crbug.com/1076326 for more details.
                 removeContextualSearchHooks(mWebContents);
-                mSelectionClientManager = new SelectionClientManager(currentWebContents);
+                mSelectionClientManager = currentWebContents != null
+                        ? new SelectionClientManager(currentWebContents)
+                        : null;
             }
             mWebContents = currentWebContents;
             updateContextualSearchHooks(mWebContents);
@@ -279,6 +291,11 @@ public class ContextualSearchTabHelper
         ContextualSearchManager manager = getContextualSearchManager(mTab);
         if (manager == null) {
             if (isCct) Log.w(TAG, "No manager!");
+            ObservableSupplier<ContextualSearchManager> supplier =
+                    getContextualSearchManagerSupplier(mTab);
+            if (supplier != null) {
+                supplier.addObserver(mManagerCallback);
+            }
             return false;
         }
 
@@ -313,8 +330,8 @@ public class ContextualSearchTabHelper
 
     /** @return Whether the device is online, or we have disabled online-detection. */
     private boolean isDeviceOnline(ContextualSearchManager manager) {
-        return ContextualSearchFieldTrial.getSwitch(
-                       ContextualSearchSwitch.IS_ONLINE_DETECTION_DISABLED)
+        return ChromeFeatureList.isEnabled(
+                       ChromeFeatureList.CONTEXTUAL_SEARCH_DISABLE_ONLINE_DETECTION)
                 ? true
                 : manager.isDeviceOnline();
     }
@@ -325,9 +342,21 @@ public class ContextualSearchTabHelper
      * @return The Contextual Search manager controlling that Tab.
      */
     private ContextualSearchManager getContextualSearchManager(Tab tab) {
+        ObservableSupplier<ContextualSearchManager> supplier =
+                getContextualSearchManagerSupplier(tab);
+        if (supplier == null) return null;
+        return supplier.get();
+    }
+
+    private ObservableSupplier<ContextualSearchManager> getContextualSearchManagerSupplier(
+            Tab tab) {
+        // Window may be null in tests.
+        if (tab.getWindowAndroid() == null) return null;
+        // TODO(crbug.com/1192143): This shouldn't have a reference to ChromeActivity, find a way to
+        // inject the supplier instead.
         Activity activity = tab.getWindowAndroid().getActivity().get();
         if (activity instanceof ChromeActivity) {
-            return ((ChromeActivity) activity).getContextualSearchManager();
+            return ((ChromeActivity) activity).getContextualSearchManagerSupplier();
         }
         return null;
     }
@@ -351,11 +380,10 @@ public class ContextualSearchTabHelper
      * coordinates.
      */
     @CalledByNative
-    void onShowUnhandledTapUIIfNeeded(int x, int y, int fontSizeDips, int textRunLength) {
+    void onShowUnhandledTapUIIfNeeded(int x, int y) {
         // Only notify the manager if we currently have a valid listener.
         if (mGestureStateListener != null && getContextualSearchManager(mTab) != null) {
-            getContextualSearchManager(mTab).onShowUnhandledTapUIIfNeeded(
-                    x, y, fontSizeDips, textRunLength);
+            getContextualSearchManager(mTab).onShowUnhandledTapUIIfNeeded(x, y);
         }
     }
 

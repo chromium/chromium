@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,15 +26,14 @@
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
 
 class CustomElementRegistryTest : public PageTestBase {
  protected:
-  void SetUp() override { PageTestBase::SetUp(IntSize(1, 1)); }
+  void SetUp() override { PageTestBase::SetUp(gfx::Size(1, 1)); }
 
   CustomElementRegistry& Registry() {
     return *GetFrame().DomWindow()->customElements();
@@ -66,7 +65,7 @@ TEST_F(CustomElementRegistryTest,
   HeapVector<Member<Element>> elements;
   CollectCandidates(CustomElementDescriptor("a-a", "a-a"), &elements);
 
-  EXPECT_TRUE(elements.IsEmpty())
+  EXPECT_TRUE(elements.empty())
       << "no candidates should have been found, but we have "
       << elements.size();
   EXPECT_FALSE(elements.Contains(element))
@@ -86,7 +85,7 @@ TEST_F(CustomElementRegistryTest,
   HeapVector<Member<Element>> elements;
   CollectCandidates(CustomElementDescriptor("a-a", "a-a"), &elements);
 
-  EXPECT_TRUE(elements.IsEmpty())
+  EXPECT_TRUE(elements.empty())
       << "no candidates should have been found, but we have "
       << elements.size();
   EXPECT_FALSE(elements.Contains(element))

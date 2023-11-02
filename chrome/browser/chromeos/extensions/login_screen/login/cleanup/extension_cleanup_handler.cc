@@ -1,15 +1,17 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/extension_cleanup_handler.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/pref_names.h"
+#include "components/app_constants/constants.h"
 #include "components/prefs/pref_service.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
@@ -18,8 +20,8 @@
 
 // Extensions that should not be attempted to be uninstalled and reinstalled.
 const char* const kExemptExtensions[] = {
-    extension_misc::kChromeAppId,
-    extension_misc::kLacrosAppId,
+    app_constants::kChromeAppId,
+    app_constants::kLacrosAppId,
 };
 
 namespace chromeos {
@@ -32,14 +34,16 @@ void ExtensionCleanupHandler::Cleanup(CleanupHandlerCallback callback) {
   DCHECK(callback_.is_null());
 
   profile_ = ProfileManager::GetActiveUserProfile();
-  extension_service_ =
-      extensions::ExtensionSystem::Get(profile_)->extension_service();
-
   if (!profile_) {
     std::move(callback).Run("There is no active user");
     return;
   }
+
+  extension_service_ =
+      extensions::ExtensionSystem::Get(profile_)->extension_service();
+
   callback_ = std::move(callback);
+  errors_.clear();
   extensions_to_be_uninstalled_.clear();
 
   // UninstallExtensions() will trigger the cleanup process by uninstalling all
@@ -49,7 +53,7 @@ void ExtensionCleanupHandler::Cleanup(CleanupHandlerCallback callback) {
 }
 
 void ExtensionCleanupHandler::UninstallExtensions() {
-  std::unordered_set<std::string> exempt_extensions =
+  std::unordered_set<std::string> policy_exempt_extensions =
       GetCleanupExemptExtensions();
 
   auto* extension_registry = extensions::ExtensionRegistry::Get(profile_);
@@ -65,31 +69,56 @@ void ExtensionCleanupHandler::UninstallExtensions() {
       continue;
 
     // Skip extensions exempt by policy.
-    if (exempt_extensions.find(extension_id) != exempt_extensions.end())
+    if (base::Contains(policy_exempt_extensions, extension_id))
       continue;
 
     extensions_to_be_uninstalled_.insert(extension_id);
-    wait_for_uninstall_ = true;
+  }
 
+  // Exit cleanup handler in case no extensions need to be uninstalled.
+  if (extensions_to_be_uninstalled_.empty()) {
+    std::move(callback_).Run(absl::nullopt);
+    return;
+  }
+
+  for (auto it = extensions_to_be_uninstalled_.begin();
+       it != extensions_to_be_uninstalled_.end();) {
     std::u16string error;
     extension_service_->UninstallExtension(
-        extension_id, extensions::UninstallReason::UNINSTALL_REASON_REINSTALL,
-        &error,
+        *it, extensions::UninstallReason::UNINSTALL_REASON_REINSTALL, &error,
         base::BindOnce(&ExtensionCleanupHandler::OnUninstallDataDeleterFinished,
-                       base::Unretained(this), extension_id));
-    DCHECK(error.empty());
+                       base::Unretained(this), *it));
+
+    if (!error.empty()) {
+      errors_.push_back(*it + ": " + base::UTF16ToUTF8(error));
+      it = extensions_to_be_uninstalled_.erase(it);
+    } else {
+      ++it;
+    }
   }
-  // Exit cleanup handler in case no extensions were uninstalled.
-  if (!wait_for_uninstall_)
-    std::move(callback_).Run(absl::nullopt);
+
+  // |extensions_to_be_uninstalled_| can be empty if all extensions attempted to
+  // be uninstalled have reported errors. We run the callback here because
+  // |OnUninstallDataDeleterFinished()| will not be called in case of an error.
+  if (extensions_to_be_uninstalled_.empty()) {
+    std::string errors = base::JoinString(errors_, "\n");
+    std::move(callback_).Run(errors);
+  }
 }
 
 void ExtensionCleanupHandler::OnUninstallDataDeleterFinished(
     const std::string& extension_id) {
   extensions_to_be_uninstalled_.erase(extension_id);
-  if (extensions_to_be_uninstalled_.empty()) {
-    ReinstallExtensions();
+  if (!extensions_to_be_uninstalled_.empty())
+    return;
+
+  if (!errors_.empty()) {
+    std::string errors = base::JoinString(errors_, "\n");
+    std::move(callback_).Run(errors);
+    return;
   }
+
+  ReinstallExtensions();
 }
 
 void ExtensionCleanupHandler::ReinstallExtensions() {
@@ -106,10 +135,10 @@ void ExtensionCleanupHandler::ReinstallExtensions() {
 std::unordered_set<std::string>
 ExtensionCleanupHandler::GetCleanupExemptExtensions() {
   std::unordered_set<std::string> exempt_extensions;
-  const base::ListValue* exempt_list = profile_->GetPrefs()->GetList(
+  const base::Value::List& exempt_list = profile_->GetPrefs()->GetList(
       prefs::kRestrictedManagedGuestSessionExtensionCleanupExemptList);
 
-  for (const base::Value& value : exempt_list->GetList()) {
+  for (const base::Value& value : exempt_list) {
     exempt_extensions.insert(value.GetString());
   }
   return exempt_extensions;

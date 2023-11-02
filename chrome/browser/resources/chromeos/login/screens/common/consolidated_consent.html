@@ -1,0 +1,345 @@
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<style include="oobe-dialog-host-styles">
+  #termsDescriptionTitle {
+    color: var(--oobe-header-text-color);
+    font-family: var(--oobe-header-font-family);
+    font-size: 18px;
+    font-weight: var(--oobe-header-font-weight);
+    line-height: 24px;
+    margin-bottom: 4px;
+  }
+
+  #termsDescription,
+  #termsDescriptionArcDisabled {
+    font-size: 13px;
+  }
+
+  .tos-dialog {
+    --oobe-modal-dialog-content-height: 500px;
+  }
+
+  .tos-webview {
+    display: flex;
+    height: 484px;
+  }
+
+  .managed-icon {
+    --iron-icon-fill-color: var(--cros-icon-color-secondary);
+    height: 20px;
+    margin-inline-end: 6px;
+  }
+
+  #usageStats.first-optin-no-tos {
+    border-top: hidden;
+  }
+</style>
+
+<!-- LOADING DIALOG -->
+<oobe-loading-dialog id="progressDialog" for-step="loading"
+    role="dialog" title-key="consolidatedConsentLoading"
+    aria-label$="[[i18nDynamic(locale, 'consolidatedConsentLoading')]]">
+  <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
+</oobe-loading-dialog>
+
+<!-- ERROR DIALOG -->
+<oobe-adaptive-dialog id="errorDialog" for-step="error" role="dialog"
+    aria-label$="[[i18nDynamic(locale, 'consolidatedConsentHeader')]]">
+  <iron-icon slot="icon" icon="oobe-32:warning"></iron-icon>
+  <h1 slot="title">
+    [[i18nDynamic(locale, 'consolidatedConsentErrorTitle')]]
+  </h1>
+  <p slot="subtitle">
+    [[i18nDynamic(locale, 'consolidatedConsentErrorMessage')]]
+  </p>
+  <div slot="content" class="flex layout vertical center center-justified">
+    <img src="images/error.svg" class="oobe-illustration">
+  </div>
+  <div slot="bottom-buttons">
+    <oobe-text-button id="retryButton"
+        class="focus-on-show" inverse on-click="onRetryClick_"
+        text-key="consolidatedConsentRetry"></oobe-text-button>
+  </div>
+</oobe-adaptive-dialog>
+
+<!-- Google EULA Dialog -->
+<oobe-adaptive-dialog id="googleEulaDialog" for-step="google-eula"
+    role="dialog"
+    aria-label$="[[i18nDynamic(locale,
+                  'consolidatedConsentGoogleEulaTitle')]]">
+  <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
+  <h1 slot="title">
+    [[i18nDynamic(locale, 'consolidatedConsentGoogleEulaTitle')]]
+  </h1>
+  <div slot="content" class="flex layout vertical">
+    <webview id="consolidatedConsentGoogleEulaWebview" role="document"
+        class="oobe-tos-webview tos-webview"
+        on-contentload="onGoogleEulaContentLoad_">
+    </webview>
+  </div>
+  <div slot="bottom-buttons">
+    <oobe-text-button id="googleEulaOkButton"
+        class="focus-on-show" inverse on-click="onTermsStepOkClick_"
+        text-key="consolidatedConsentOK"></oobe-text-button>
+  </div>
+</oobe-adaptive-dialog>
+
+<!-- CrOS EULA Dialog -->
+<oobe-adaptive-dialog id="crosEulaDialog" for-step="cros-eula"
+    role="dialog"
+    aria-label$="[[i18nDynamic(locale,
+                  'consolidatedConsentCrosEulaTitle')]]">
+  <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
+  <h1 slot="title">
+    [[i18nDynamic(locale, 'consolidatedConsentCrosEulaTitle')]]
+  </h1>
+  <div slot="content" class="flex layout vertical">
+    <webview id="consolidatedConsentCrosEulaWebview" role="document"
+        class="oobe-tos-webview tos-webview"
+        on-contentload="onCrosEulaContentLoad_">
+    </webview>
+  </div>
+  <div slot="bottom-buttons">
+    <oobe-text-button id="crosEulaOkButton"
+        class="focus-on-show" inverse on-click="onTermsStepOkClick_"
+        text-key="consolidatedConsentOK"></oobe-text-button>
+  </div>
+</oobe-adaptive-dialog>
+
+<!-- ARC Terms Dialog -->
+<oobe-adaptive-dialog id="arcTosDialog" for-step="arc" role="dialog"
+    aria-label$="[[i18nDynamic(locale,
+                  'consolidatedConsentArcTermsTitle')]]">
+  <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
+  <h1 slot="title">
+    [[i18nDynamic(locale, 'consolidatedConsentArcTermsTitle')]]
+  </h1>
+  <div slot="content" class="flex layout vertical">
+    <webview id="consolidatedConsentArcTosWebview" role="document"
+        class="oobe-tos-webview tos-webview"
+        on-contentload="onArcTosContentLoad_">
+    </webview>
+  </div>
+  <div slot="bottom-buttons">
+    <oobe-text-button id="arcTosOkButton"
+        class="focus-on-show" inverse on-click="onTermsStepOkClick_"
+        text-key="consolidatedConsentOK"></oobe-text-button>
+  </div>
+</oobe-adaptive-dialog>
+
+<!-- Privacy Policy Dialog -->
+<oobe-adaptive-dialog id="privacyPolicyDialog" for-step="privacy"
+    role="dialog" aria-label$="[[i18nDynamic(locale,
+                                'consolidatedConsentPrivacyTitle')]]">
+  <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
+  <h1 slot="title">
+    [[i18nDynamic(locale, 'consolidatedConsentPrivacyTitle')]]
+  </h1>
+  <div slot="content" class="flex layout vertical">
+    <webview id="consolidatedConsentPrivacyPolicyWebview" role="document"
+        class="oobe-tos-webview tos-webview"
+        on-contentload="onPrivacyPolicyContentLoad_">
+    </webview>
+  </div>
+  <div slot="bottom-buttons">
+    <oobe-text-button id="privacyOkButton"
+        class="focus-on-show" inverse on-click="onTermsStepOkClick_"
+        text-key="consolidatedConsentOK"></oobe-text-button>
+  </div>
+</oobe-adaptive-dialog>
+
+<!-- LOADED DIALOG -->
+<oobe-adaptive-dialog id="loadedDialog" for-step="loaded" role="dialog"
+    aria-label$="[[i18nDynamic(locale, 'consolidatedConsentHeader')]]"
+    read-more>
+  <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
+  <h1 slot="title">
+    [[getTitle_(locale, isTosHidden_, isChildAccount_)]]
+  </h1>
+  <div id="subtitle" slot="subtitle">
+    <div inner-h-t-m-l="[[getSubtitleArcEnabled_(locale)]]"
+        hidden="[[!shouldShowArcTos_(isTosHidden_, isArcEnabled_)]]">
+    </div>
+    <div hidden="[[shouldShowArcTos_(isTosHidden_, isArcEnabled_)]]">
+      [[i18nDynamic(locale, 'consolidatedConsentSubheaderArcDisabled')]]
+    </div>
+  </div>
+  <div id="loadedContent" slot="content">
+    <div hidden="[[isTosHidden_]]">
+      <div id="termsDescriptionTitle">
+        [[i18nDynamic(locale, 'consolidatedConsentTermsDescriptionTitle')]]
+      </div>
+      <div id="termsDescriptionArcEnabled"
+          inner-h-t-m-l="[[getTermsDescriptionArcEnabled_(locale)]]"
+          hidden="[[!shouldShowArcTos_(isTosHidden_, isArcEnabled_)]]">
+      </div>
+      <div id="termsDescriptionArcDisabled"
+          inner-h-t-m-l="[[getTermsDescriptionArcDisabled_(locale)]]"
+          hidden="[[shouldShowArcTos_(isTosHidden_, isArcEnabled_)]]">
+      </div>
+    </div>
+
+    <!-- Usage stats toggle row -->
+    <div id="usageStats" class="layout horizontal center oobe-optin-row"
+        hidden="[[usageOptinHidden_]]">
+      <div class="oobe-optin-content flex">
+        <span id="usageTitle" class="oobe-optin-title">
+          [[i18nDynamic(locale, 'consolidatedConsentUsageOptInTitle')]]
+        </span>
+        [[i18nDynamic(locale, 'consolidatedConsentUsageOptIn')]]
+        <a id="usageLearnMore" on-click="onUsageLearnMoreClick_"
+            class="oobe-local-link" is="action-link">
+          [[i18nDynamic(locale,
+                        'consolidatedConsentUsageOptInLearnMoreLink')]]
+        </a>
+      </div>
+      <iron-icon class="managed-icon" icon="oobe-32:enterprise"
+          hidden="[[!usageManaged_]]"></iron-icon>
+      <cr-toggle id="usageOptin" checked="{{usageChecked}}"
+          disabled="[[usageManaged_]]" aria-describedby="usageTitle">
+      </cr-toggle>
+    </div>
+
+    <!-- Backup toggle row -->
+    <div id="backup" class="layout horizontal center oobe-optin-row"
+        hidden="[[isArcOptInsHidden_(isArcEnabled_, isDemo_)]]">
+      <div class="oobe-optin-content flex">
+        <span id="backupTitle" class="oobe-optin-title">
+          [[i18nDynamic(locale, 'consolidatedConsentBackupOptInTitle')]]
+        </span>
+        <span hidden="[[isChildAccount_]]">
+          [[i18nDynamic(locale, 'consolidatedConsentBackupOptIn')]]
+        </span>
+        <span hidden="[[!isChildAccount_]]">
+          [[i18nDynamic(locale, 'consolidatedConsentBackupOptInChild')]]
+        </span>
+        <a id="backupLearnMore" on-click="onBackupLearnMoreClick_"
+            class="oobe-local-link" is="action-link">
+          [[i18nDynamic(locale,
+                        'consolidatedConsenttBackupOptInLearnMoreLink')]]
+        </a>
+      </div>
+      <iron-icon class="managed-icon" icon="oobe-32:enterprise"
+          hidden="[[!backupManaged_]]">
+      </iron-icon>
+      <cr-toggle id="backupOptIn" checked="{{backupChecked}}"
+          disabled="[[backupManaged_]]" aria-describedby="backupTitle">
+      </cr-toggle>
+    </div>
+
+    <!-- Recovery toggle row -->
+    <div id="recovery" class="layout horizontal center oobe-optin-row"
+        hidden="[[!recoveryVisible_]]">
+      <div class="oobe-optin-content flex">
+        <span id="recoveryTitle" class="oobe-optin-title">
+          [[i18nDynamic(locale, 'consolidatedConsentRecoveryOptInTitle')]]
+        </span>
+        <span>
+          [[i18nDynamic(locale, 'consolidatedConsentRecoveryOptIn')]]
+        </span>
+      </div>
+      <cr-toggle id="recoveryOptIn" checked="{{recoveryChecked}}"
+          aria-describedby="recoveryTitle">
+      </cr-toggle>
+    </div>
+
+    <!-- Location services toggle row -->
+    <div id="location" class="layout horizontal center oobe-optin-row"
+        hidden="[[isArcOptInsHidden_(isArcEnabled_, isDemo_)]]">
+      <div class="oobe-optin-content flex">
+        <span id="locationTitle" class="oobe-optin-title">
+          [[i18nDynamic(locale, 'consolidatedConsentLocationOptInTitle')]]
+        </span>
+        <span hidden="[[isChildAccount_]]">
+          [[i18nDynamic(locale, 'consolidatedConsentLocationOptIn')]]
+        </span>
+        <span hidden="[[!isChildAccount_]]">
+          [[i18nDynamic(locale, 'consolidatedConsentLocationOptInChild')]]
+        </span>
+        <a id="locationLearnMore" on-click="onLocationLearnMoreClick_"
+            class="oobe-local-link" is="action-link">
+          [[i18nDynamic(locale,
+                        'consolidatedConsenttLocationOptInLearnMoreLink')]]
+        </a>
+      </div>
+      <iron-icon class="managed-icon" icon="oobe-32:enterprise"
+          hidden="[[!locationManaged_]]">
+      </iron-icon>
+      <cr-toggle id="locationOptIn" checked="{{locationChecked}}"
+          disabled="[[locationManaged_]]" aria-describedby="locationTitle">
+      </cr-toggle>
+    </div>
+    <div id="footer" hidden="[[isArcOptInsHidden_(isArcEnabled_, isDemo_)]]"
+        class="oobe-optin-row">
+      <span id="footerText">
+        <span hidden="[[isChildAccount_]]">
+          [[i18nDynamic(locale, 'consolidatedConsentFooter')]]
+        </span>
+        <span hidden="[[!isChildAccount_]]">
+          [[i18nDynamic(locale, 'consolidatedConsentFooterChild')]]
+        </span>
+      </span>
+      <a id="footerLearnMore"
+          on-click="onFooterLearnMoreClick_"
+          class="oobe-local-link" is="action-link"
+          aria-describedby="footerText">
+        [[i18nDynamic(locale, 'consolidatedConsentLearnMore')]]
+      </a>
+    </div>
+  </div>
+  <div slot="back-navigation">
+    <oobe-back-button id="backButton" hidden="[[!isDemo_]]"
+        on-click="onBack_"></oobe-back-button>
+  </div>
+  <div slot="bottom-buttons">
+    <oobe-next-button id="acceptButton" inverse on-click="onAcceptClick_"
+        class="focus-on-show"
+        text-key="consolidatedConsentAcceptAndContinue">
+    </oobe-next-button>
+  </div>
+</oobe-adaptive-dialog>
+
+<oobe-modal-dialog id="arcTosOverlay" class="tos-dialog">
+  <div slot="content" id="arcTosOverlayWebviewContainer">
+    <webview id="arcTosOverlayWebview" class="oobe-tos-webview tos-webview"
+        on-contentload="onArcTosContentLoad_">
+    </webview>
+  </div>
+</oobe-modal-dialog>
+
+<oobe-modal-dialog id="usageLearnMorePopUp">
+  <div slot="content">
+    <span
+        inner-h-t-m-l=
+            "[[getUsageLearnMoreText_(locale, isChildAccount_,
+                                      isArcEnabled_, isDemo_)]]">
+    </span>
+  </div>
+</oobe-modal-dialog>
+
+<oobe-modal-dialog id="backupLearnMorePopUp">
+  <div slot="content">
+    <span inner-h-t-m-l=
+        "[[getBackupLearnMoreText_(locale, isChildAccount_)]]">
+    </span>
+  </div>
+</oobe-modal-dialog>
+
+<oobe-modal-dialog id="locationLearnMorePopUp">
+  <div slot="content">
+    <span
+        inner-h-t-m-l="[[getLocationLearnMoreText_(locale,
+                                                    isChildAccount_)]]">
+    </span>
+  </div>
+</oobe-modal-dialog>
+
+<oobe-modal-dialog id="footerLearnMorePopUp">
+  <div slot="content">
+    [[i18nDynamic(locale, 'consolidatedConsentFooterLearnMore')]]
+  </div>
+</oobe-modal-dialog>

@@ -1,0 +1,32 @@
+Name: APK Analyzer
+Short Name: apkanalyzer
+Version: 30.4.0-alpha09
+License: Apache Version 2.0
+License File: NOT_SHIPPED
+Security Critical: No
+URL: https://developer.android.com/studio/command-line/apkanalyzer
+
+Description:
+Tool for inspecting .apk files.
+
+Local Modifications:
+  * Added "apkanalyzer" script.
+  * Added "overrides.jar", generated using instructions below.
+    * Needed to fix overcounting of shared debug info. See pull request:
+      * https://github.com/JesusFreke/smali/pull/844
+
+Update Instructions:
+  * Find latest available version via:
+    https://ci.chromium.org/p/chromium/builders/ci/3pp-linux-amd64-packager
+  * Update DEPS and the Version in this file to newer version.
+
+Generating overrides.jar:
+
+cd third_party/android_build_tools/apkanalyzer
+git clone https://github.com/zerny/smali.git
+cd smali
+git checkout debuginfo
+mkdir out
+javac -d out -cp ../apkanalyzer.jar src/org/jf/dexlib2/dexbacked/CDexBackedMethodImplementation.java src/org/jf/dexlib2/dexbacked/DexBackedMethodImplementation.java src/org/jf/dexlib2/dexbacked/util/DebugInfo.java
+cd out
+zip -r ../../overrides.jar *

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,6 +20,7 @@ class InstanceRegistry;
 // Created in ash-chrome. Listens to |BrowserAppInstanceRegistry| events and
 // aura::Windows associated with them and updates |InstanceRegistry|.
 class InstanceRegistryUpdater : public BrowserAppInstanceObserver,
+                                public aura::EnvObserver,
                                 public aura::WindowObserver {
  public:
   InstanceRegistryUpdater(
@@ -37,14 +38,18 @@ class InstanceRegistryUpdater : public BrowserAppInstanceObserver,
   void OnBrowserAppUpdated(const BrowserAppInstance& instance) override;
   void OnBrowserAppRemoved(const BrowserAppInstance& instance) override;
 
+  // aura::EnvObserver overrides:
+  void OnWindowInitialized(aura::Window* window) override;
+
   // aura::WindowObserver overrides:
   void OnWindowVisibilityChanged(aura::Window* window, bool visible) override;
+  void OnWindowDestroying(aura::Window* window) override;
 
  private:
   BrowserAppInstanceRegistry& browser_app_instance_registry_;
   InstanceRegistry& instance_registry_;
 
-  void OnInstance(const base::UnguessableToken& id,
+  void OnInstance(const base::UnguessableToken& instance_id,
                   const std::string& app_id,
                   aura::Window* window,
                   InstanceState state);

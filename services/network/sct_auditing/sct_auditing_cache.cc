@@ -1,12 +1,15 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "services/network/sct_auditing/sct_auditing_cache.h"
 
+#include <algorithm>
+
 #include "base/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
+#include "base/time/time.h"
 #include "components/version_info/version_info.h"
 #include "crypto/secure_hash.h"
 #include "crypto/sha2.h"
@@ -58,20 +61,40 @@ void RecordSCTAuditingReportSizeMetrics(size_t report_size) {
 
 }  // namespace
 
+SCTAuditingCache::ReportEntry::ReportEntry() = default;
+SCTAuditingCache::ReportEntry::ReportEntry(ReportEntry&& other) = default;
+SCTAuditingCache::ReportEntry::~ReportEntry() = default;
+
 SCTAuditingCache::SCTAuditingCache(size_t cache_size)
     : dedupe_cache_(cache_size) {}
 
 SCTAuditingCache::~SCTAuditingCache() = default;
 
-void SCTAuditingCache::MaybeEnqueueReport(
-    NetworkContext* context,
+void SCTAuditingCache::Configure(
+    mojom::SCTAuditingConfigurationPtr configuration) {
+  configuration_ = std::move(configuration);
+}
+
+mojom::SCTAuditingConfigurationPtr SCTAuditingCache::GetConfiguration() const {
+  return configuration_.Clone();
+}
+
+absl::optional<SCTAuditingCache::ReportEntry>
+SCTAuditingCache::MaybeGenerateReportEntry(
     const net::HostPortPair& host_port_pair,
     const net::X509Certificate* validated_certificate_chain,
     const net::SignedCertificateTimestampAndStatusList&
         signed_certificate_timestamps) {
-  if (!enabled_)
-    return;
-
+  if (!configuration_) {
+    return absl::nullopt;
+  }
+  if (!histogram_timer_.IsRunning()) {
+    // High-water-mark metrics get logged hourly (rather than once-per-session
+    // at shutdown, as Network Service shutdown is not consistent and
+    // non-browser processes can fail to report metrics during shutdown).
+    histogram_timer_.Start(FROM_HERE, base::Hours(1), this,
+                           &SCTAuditingCache::ReportHWMMetrics);
+  }
   auto report = std::make_unique<sct_auditing::SCTClientReport>();
   auto* tls_report = report->add_certificate_report();
 
@@ -82,12 +105,6 @@ void SCTAuditingCache::MaybeEnqueueReport(
   SHA256_CTX ctx;
   SHA256_Init(&ctx);
   for (const auto& sct : signed_certificate_timestamps) {
-    // Only audit valid SCTs. This ensures that they come from a known log, have
-    // a valid signature, and thus are expected to be public certificates. If
-    // there are no valid SCTs, there's no need to report anything.
-    if (sct.status != net::ct::SCT_STATUS_OK)
-      continue;
-
     auto* sct_source_and_status = tls_report->add_included_sct();
     // TODO(crbug.com/1082860): Update the proto to remove the status entirely
     // since only valid SCTs are reported now.
@@ -103,17 +120,17 @@ void SCTAuditingCache::MaybeEnqueueReport(
   }
   // Don't handle reports if there were no valid SCTs.
   if (tls_report->included_sct().empty())
-    return;
+    return absl::nullopt;
 
-  net::SHA256HashValue cache_key;
-  SHA256_Final(reinterpret_cast<uint8_t*>(&cache_key), &ctx);
+  net::HashValue cache_key(net::HASH_VALUE_SHA256);
+  SHA256_Final(reinterpret_cast<uint8_t*>(cache_key.data()), &ctx);
 
   // Check if the SCTs are already in the cache. This will update the last seen
   // time if they are present in the cache.
   auto it = dedupe_cache_.Get(cache_key);
   if (it != dedupe_cache_.end()) {
     RecordSCTAuditingReportDeduplicatedMetrics(true);
-    return;
+    return absl::nullopt;
   }
   RecordSCTAuditingReportDeduplicatedMetrics(false);
 
@@ -122,9 +139,9 @@ void SCTAuditingCache::MaybeEnqueueReport(
   // Add `cache_key` to the dedupe cache. The cache value is not used.
   dedupe_cache_.Put(cache_key, true);
 
-  if (base::RandDouble() > sampling_rate_) {
+  if (base::RandDouble() > configuration_->sampling_rate) {
     RecordSCTAuditingReportSampledMetrics(false);
-    return;
+    return absl::nullopt;
   }
   RecordSCTAuditingReportSampledMetrics(true);
 
@@ -154,15 +171,17 @@ void SCTAuditingCache::MaybeEnqueueReport(
   if (dedupe_cache_.size() > dedupe_cache_size_hwm_)
     dedupe_cache_size_hwm_ = dedupe_cache_.size();
 
-  // Ensure that the URLLoaderFactory is still bound.
-  if (!url_loader_factory_ || !url_loader_factory_.is_connected()) {
-    // TODO(cthomp): Should this signal to embedder that something has failed?
-    return;
-  }
+  ReportEntry report_entry;
+  report_entry.key = std::move(cache_key);
+  report_entry.report = std::move(report);
+  return report_entry;
+}
 
-  context->sct_auditing_handler()->AddReporter(
-      cache_key, std::move(report), *url_loader_factory_, report_uri_,
-      traffic_annotation_);
+bool SCTAuditingCache::IsPopularSCT(base::span<const uint8_t> sct_leaf_hash) {
+  // Copy into a vector to make comparisons easier.
+  std::vector<uint8_t> leaf_hash(sct_leaf_hash.begin(), sct_leaf_hash.end());
+  return std::binary_search(popular_scts_.begin(), popular_scts_.end(),
+                            leaf_hash);
 }
 
 void SCTAuditingCache::ClearCache() {
@@ -170,28 +189,8 @@ void SCTAuditingCache::ClearCache() {
   dedupe_cache_.Clear();
 }
 
-void SCTAuditingCache::set_enabled(bool enabled) {
-  enabled_ = enabled;
-  SetPeriodicMetricsEnabled(enabled);
-}
-
 void SCTAuditingCache::ReportHWMMetrics() {
-  if (!enabled_)
-    return;
   RecordSCTAuditingCacheHighWaterMarkMetrics(dedupe_cache_size_hwm_);
-}
-
-void SCTAuditingCache::SetPeriodicMetricsEnabled(bool enabled) {
-  // High-water-mark metrics get logged hourly (rather than once-per-session at
-  // shutdown, as Network Service shutdown is not consistent and non-browser
-  // processes can fail to report metrics during shutdown). The timer should
-  // only be running if SCT auditing is enabled.
-  if (enabled) {
-    histogram_timer_.Start(FROM_HERE, base::Hours(1), this,
-                           &SCTAuditingCache::ReportHWMMetrics);
-  } else {
-    histogram_timer_.Stop();
-  }
 }
 
 }  // namespace network

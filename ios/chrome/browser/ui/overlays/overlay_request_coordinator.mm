@@ -1,13 +1,15 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/overlays/overlay_request_coordinator.h"
 #import "ios/chrome/browser/ui/overlays/overlay_request_coordinator+subclassing.h"
 
-#include "base/check.h"
-#include "base/notreached.h"
-#include "ios/chrome/browser/overlays/public/overlay_request_support.h"
+#import <ostream>
+
+#import "base/check.h"
+#import "base/notreached.h"
+#import "ios/chrome/browser/overlays/public/overlay_request_support.h"
 #import "ios/chrome/browser/ui/overlays/overlay_request_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/overlays/overlay_request_mediator.h"
 
@@ -25,7 +27,7 @@
 @implementation OverlayRequestCoordinator
 
 - (void)dealloc {
-  // ChromeCoordinator's |-dealloc| calls |-stop|, which defaults to an animated
+  // ChromeCoordinator's `-dealloc` calls `-stop`, which defaults to an animated
   // dismissal.  OverlayRequestCoordinators should instead stop without
   // animation so that the OverlayRequestCoordinatorDelegate can be notified of
   // the dismissal immediately.

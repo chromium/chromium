@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
   TestRunner.addResult(
       `Tests Overview pane calculation in FlameChart for different width = 2^n with n in range 4 - 0.
       Also tests loading of a legacy nodes format, where nodes were represented as a tree.\n`);
-  await TestRunner.loadModule('profiler'); await TestRunner.loadTestModule('cpu_profiler_test_runner');
+  await TestRunner.loadLegacyModule('profiler'); await TestRunner.loadTestModule('cpu_profiler_test_runner');
 
   var profileAndExpectations = {
     profile: {

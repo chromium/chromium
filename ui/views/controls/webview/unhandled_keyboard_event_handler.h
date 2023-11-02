@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,8 +32,9 @@ class WEBVIEW_EXPORT UnhandledKeyboardEventHandler {
 
  private:
   // Platform specific handling for unhandled keyboard events.
-  static bool HandleNativeKeyboardEvent(gfx::NativeEvent event,
-                                        FocusManager* focus_manager);
+  static bool HandleNativeKeyboardEvent(
+      const content::NativeWebKeyboardEvent& event,
+      FocusManager* focus_manager);
 
   // Whether to ignore the next Char keyboard event.
   // If a RawKeyDown event was handled as a shortcut key, then we're done

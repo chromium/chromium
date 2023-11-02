@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -30,7 +31,7 @@ namespace views {
 namespace examples {
 namespace {
 
-constexpr int kFakeModeless = ui::MODAL_TYPE_SYSTEM + 1;
+constexpr size_t kFakeModeless = ui::MODAL_TYPE_SYSTEM + 1;
 
 }  // namespace
 
@@ -72,7 +73,7 @@ class DialogExample::Delegate : public virtual DialogType {
   bool Accept() override { return parent_->AllowDialogClose(true); }
 
  private:
-  DialogExample* parent_;
+  raw_ptr<DialogExample> parent_;
 };
 
 class DialogExample::Bubble : public Delegate<BubbleDialogDelegateView> {
@@ -143,30 +144,30 @@ void DialogExample::CreateExampleView(View* container) {
         .AddRows(1, TableLayout::kFixedSize);
   }
 
-  StartTextfieldRow(table, &title_,
-                    l10n_util::GetStringUTF16(IDS_DIALOG_TITLE_LABEL),
-                    l10n_util::GetStringUTF16(IDS_DIALOG_TITLE_TEXT));
-  StartTextfieldRow(table, &body_,
-                    l10n_util::GetStringUTF16(IDS_DIALOG_BODY_LABEL),
-                    l10n_util::GetStringUTF16(IDS_DIALOG_BODY_LABEL));
+  StartTextfieldRow(
+      table, &title_, l10n_util::GetStringUTF16(IDS_DIALOG_TITLE_LABEL),
+      l10n_util::GetStringUTF16(IDS_DIALOG_TITLE_TEXT), nullptr, true);
+  StartTextfieldRow(
+      table, &body_, l10n_util::GetStringUTF16(IDS_DIALOG_BODY_LABEL),
+      l10n_util::GetStringUTF16(IDS_DIALOG_BODY_LABEL), nullptr, true);
 
   Label* row_label = nullptr;
   StartTextfieldRow(table, &ok_button_label_,
                     l10n_util::GetStringUTF16(IDS_DIALOG_OK_BUTTON_LABEL),
                     l10n_util::GetStringUTF16(IDS_DIALOG_OK_BUTTON_TEXT),
-                    &row_label);
+                    &row_label, false);
   AddCheckbox(table, &has_ok_button_, row_label);
 
   StartTextfieldRow(table, &cancel_button_label_,
                     l10n_util::GetStringUTF16(IDS_DIALOG_CANCEL_BUTTON_LABEL),
                     l10n_util::GetStringUTF16(IDS_DIALOG_CANCEL_BUTTON_TEXT),
-                    &row_label);
+                    &row_label, false);
   AddCheckbox(table, &has_cancel_button_, row_label);
 
   StartTextfieldRow(table, &extra_button_label_,
                     l10n_util::GetStringUTF16(IDS_DIALOG_EXTRA_BUTTON_LABEL),
                     l10n_util::GetStringUTF16(IDS_DIALOG_EXTRA_BUTTON_TEXT),
-                    &row_label);
+                    &row_label, false);
   AddCheckbox(table, &has_extra_button_, row_label);
 
   std::u16string modal_label =
@@ -192,16 +193,18 @@ void DialogExample::CreateExampleView(View* container) {
       l10n_util::GetStringUTF16(IDS_DIALOG_SHOW_BUTTON_LABEL)));
   show_->SetProperty(kCrossAxisAlignmentKey, LayoutAlignment::kCenter);
   show_->SetProperty(
-      kMarginsKey, gfx::Insets(provider->GetDistanceMetric(
-                                   views::DISTANCE_UNRELATED_CONTROL_VERTICAL),
-                               0, 0, 0));
+      kMarginsKey,
+      gfx::Insets::TLBR(provider->GetDistanceMetric(
+                            views::DISTANCE_UNRELATED_CONTROL_VERTICAL),
+                        0, 0, 0));
 }
 
 void DialogExample::StartTextfieldRow(View* parent,
                                       Textfield** member,
                                       std::u16string label,
                                       std::u16string value,
-                                      Label** created_label) {
+                                      Label** created_label,
+                                      bool pad_last_col) {
   Label* row_label = parent->AddChildView(std::make_unique<Label>(label));
   if (created_label)
     *created_label = row_label;
@@ -210,6 +213,8 @@ void DialogExample::StartTextfieldRow(View* parent,
   textfield->SetText(value);
   textfield->SetAssociatedLabel(row_label);
   *member = parent->AddChildView(std::move(textfield));
+  if (pad_last_col)
+    parent->AddChildView(std::make_unique<View>());
 }
 
 void DialogExample::AddCheckbox(View* parent, Checkbox** member, Label* label) {
@@ -233,7 +238,7 @@ ui::ModalType DialogExample::GetModalType() const {
   if (mode_->GetSelectedIndex() == kFakeModeless)
     return ui::MODAL_TYPE_WINDOW;
 
-  return static_cast<ui::ModalType>(mode_->GetSelectedIndex());
+  return static_cast<ui::ModalType>(mode_->GetSelectedIndex().value());
 }
 
 int DialogExample::GetDialogButtons() const {
@@ -337,7 +342,7 @@ void DialogExample::ContentsChanged(Textfield* sender,
 
 void DialogExample::OnPerformAction() {
   bool enable = bubble_->GetChecked() || GetModalType() != ui::MODAL_TYPE_CHILD;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   enable = enable && GetModalType() != ui::MODAL_TYPE_SYSTEM;
 #endif
   show_->SetEnabled(enable);

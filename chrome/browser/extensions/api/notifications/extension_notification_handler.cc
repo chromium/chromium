@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -130,8 +130,8 @@ void ExtensionNotificationHandler::SendEvent(
   if (!event_router)
     return;
 
-  std::unique_ptr<Event> event(
-      new Event(histogram_value, event_name, std::move(*args).TakeList()));
+  auto event = std::make_unique<Event>(histogram_value, event_name,
+                                       std::move(*args).TakeList());
   event->user_gesture = user_gesture;
   event_router->DispatchEventToExtension(extension_id, std::move(event));
 }

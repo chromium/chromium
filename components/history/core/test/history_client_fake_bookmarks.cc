@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/synchronization/lock.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/history/core/browser/history_backend_client.h"
 #include "url/gurl.h"
@@ -164,5 +165,9 @@ std::unique_ptr<HistoryBackendClient>
 HistoryClientFakeBookmarks::CreateBackendClient() {
   return std::make_unique<HistoryBackendClientFakeBookmarks>(bookmarks_);
 }
+
+void HistoryClientFakeBookmarks::UpdateBookmarkLastUsedTime(
+    int64_t bookmark_node_id,
+    base::Time time) {}
 
 }  // namespace history

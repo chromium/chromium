@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,12 +11,27 @@
 const USER_ACTION_ACCEPT_UPDATE_OVER_CELLUAR = 'update-accept-cellular';
 const USER_ACTION_REJECT_UPDATE_OVER_CELLUAR = 'update-reject-cellular';
 const USER_ACTION_CANCEL_UPDATE_SHORTCUT = 'cancel-update';
+const USER_ACTION_OPT_OUT_INFO_NEXT = 'opt-out-info-next';
 
 const UNREACHABLE_PERCENT = 1000;
 // Thresholds which are used to determine when update status announcement should
 // take place. Last element is not reachable to simplify implementation.
 const PERCENT_THRESHOLDS = [
-  0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 98, 99, 100, UNREACHABLE_PERCENT
+  0,
+  10,
+  20,
+  30,
+  40,
+  50,
+  60,
+  70,
+  80,
+  90,
+  95,
+  98,
+  99,
+  100,
+  UNREACHABLE_PERCENT,
 ];
 
 /**
@@ -31,6 +46,7 @@ const UpdateUIState = {
   RESTART: 'restart',
   REBOOT: 'reboot',
   CELLULAR: 'cellular',
+  OPT_OUT_INFO: 'opt-out-info',
 };
 
 /**
@@ -133,8 +149,20 @@ class Update extends UpdateBase {
       thresholdIndex: {
         type: Number,
         value: 0,
-      }
+      },
+
+      /**
+       * Whether a user can opt out from auto-updates.
+       */
+      isOptOutEnabled: {
+        type: Boolean,
+        value: false,
+      },
     };
+  }
+
+  static get observers() {
+    return ['playAnimation_(uiStep)'];
   }
 
   constructor() {
@@ -166,9 +194,17 @@ class Update extends UpdateBase {
 
   ready() {
     super.ready();
-    this.initializeLoginScreen('UpdateScreen', {
-      resetAllowed: true,
-    });
+    this.initializeLoginScreen('UpdateScreen');
+  }
+
+  /**
+   * Event handler that is invoked just before the screen is shown.
+   * @param {Object} data Screen init payload.
+   */
+  onBeforeShow(data) {
+    if (data && 'is_opt_out_enabled' in data) {
+      this.isOptOutEnabled = data['is_opt_out_enabled'];
+    }
   }
 
   /**
@@ -184,6 +220,10 @@ class Update extends UpdateBase {
 
   onNextClicked_() {
     this.userActed(USER_ACTION_ACCEPT_UPDATE_OVER_CELLUAR);
+  }
+
+  onOptOutInfoNext_() {
+    this.userActed(USER_ACTION_OPT_OUT_INFO_NEXT);
   }
 
   /** @param {boolean} enabled */
@@ -247,6 +287,36 @@ class Update extends UpdateBase {
    */
   getAutoTransition_(step, autoTransition) {
     return step == UpdateUIState.UPDATE && autoTransition;
+  }
+
+  /**
+   * Computes the title of the first slide in carousel during update.
+   * @param {string} locale
+   * @param {boolean} isOptOutEnabled
+   */
+  getUpdateSlideTitle_(locale, isOptOutEnabled) {
+    return this.i18n(
+        isOptOutEnabled ? 'slideUpdateAdditionalSettingsTitle' :
+                          'slideUpdateTitle');
+  }
+
+  /**
+   * Computes the text of the first slide in carousel during update.
+   * @param {string} locale
+   * @param {boolean} isOptOutEnabled
+   */
+  getUpdateSlideText_(locale, isOptOutEnabled) {
+    return this.i18n(
+        isOptOutEnabled ? 'slideUpdateAdditionalSettingsText' :
+                          'slideUpdateText');
+  }
+
+  /**
+   * @private
+   * @param {UpdateUIState} uiStep which UIState is shown now.
+   */
+  playAnimation_(uiStep) {
+    this.$.checkingAnimation.playing = (uiStep === UpdateUIState.CHECKING);
   }
 }
 

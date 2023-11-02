@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -354,7 +354,7 @@ function jsonSerialize(item, seen) {
   // (above) are type 'function', so this check must be performed after.
   if (typeof item === 'function')
     return item;
-  // TODO(rohpavone): Implement WindowProxy serialization.
+  // TODO(crbug.com/1337415): Implement WindowProxy serialization.
   if (typeof item.toJSON === 'function' &&
       (item.hasOwnProperty('toJSON') ||
        Object.getPrototypeOf(item).hasOwnProperty('toJSON')))

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/test_simple_task_runner.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -223,7 +224,7 @@ TEST_F(DeviceEventLogTest, TestTimeFormat) {
   EXPECT_EQ(base::StringPrintf("[%s] event0\n", extected_time_str.c_str()),
             GetLogString(OLDEST_FIRST, "time", kDefaultLevel, 1));
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   char sign = hour_delta > 0 ? '+' : '-';
   std::string expected_time =
       base::StringPrintf("2020-01-01T%02d:34:56.000000%c%02d:00",

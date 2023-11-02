@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,8 +27,10 @@ class PLATFORM_EXPORT ScrollbarThemeSettings {
   friend class ScopedMockOverlayScrollbars;
   friend class ScrollbarsTest;
   friend class ScrollbarTheme;
+  friend class ScrollbarThemeFluentTest;
   friend class ScrollbarThemeMacTest;
   friend class WebRuntimeFeatures;
+  friend class WebThemeEngineDefault;
 
   static void SetMockScrollbarsEnabled(bool);
   static bool MockScrollbarsEnabled();
@@ -40,6 +42,9 @@ class PLATFORM_EXPORT ScrollbarThemeSettings {
   // device emulation on desktop, so code should use Page::GetScrollbarTheme()
   // instead of this function.
   static bool OverlayScrollbarsEnabled();
+
+  static void SetFluentScrollbarsEnabled(bool);
+  static bool FluentScrollbarsEnabled();
 };
 
 }  // namespace blink

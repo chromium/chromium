@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,11 @@
 #define COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_AD_METRICS_ADS_PAGE_LOAD_METRICS_OBSERVER_H_
 
 #include <bitset>
-#include <list>
 #include <map>
 #include <memory>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/scoped_observation.h"
@@ -37,7 +37,7 @@ class HeavyAdService;
 namespace page_load_metrics {
 
 namespace features {
-extern const base::Feature kRestrictedNavigationAdTagging;
+BASE_DECLARE_FEATURE(kRestrictedNavigationAdTagging);
 }
 
 // This observer labels each sub-frame as an ad or not, and keeps track of
@@ -82,9 +82,9 @@ class AdsPageLoadMetricsObserver
       heavy_ad_intervention::HeavyAdService* heavy_ad_service,
       const ApplicationLocaleGetter& application_local_getter);
 
-  // For a given subframe, returns whether or not the subframe's url would be
-  // considering same origin to the main frame's url.
-  static bool IsSubframeSameOriginToMainFrame(
+  // For a given frame, returns whether or not the frame's url would be
+  // considered same origin to the outermost main frame's url.
+  static bool IsFrameSameOriginToOutermostMainFrame(
       content::RenderFrameHost* sub_host);
 
   // |clock| and |blocklist| should be set only by tests. In particular,
@@ -102,11 +102,14 @@ class AdsPageLoadMetricsObserver
   ~AdsPageLoadMetricsObserver() override;
 
   // PageLoadMetricsObserver
+  const char* GetObserverName() const override;
   ObservePolicy OnStart(content::NavigationHandle* navigation_handle,
                         const GURL& currently_committed_url,
                         bool started_in_foreground) override;
-  ObservePolicy OnCommit(content::NavigationHandle* navigation_handle,
-                         ukm::SourceId source_id) override;
+  ObservePolicy OnFencedFramesStart(
+      content::NavigationHandle* navigation_handle,
+      const GURL& currently_committed_url) override;
+  ObservePolicy OnCommit(content::NavigationHandle* navigation_handle) override;
   void OnTimingUpdate(content::RenderFrameHost* subframe_rfh,
                       const mojom::PageLoadTiming& timing) override;
   void OnCpuTimingUpdate(content::RenderFrameHost* subframe_rfh,
@@ -129,18 +132,19 @@ class AdsPageLoadMetricsObserver
   void MediaStartedPlaying(
       const content::WebContentsObserver::MediaPlayerInfo& video_type,
       content::RenderFrameHost* render_frame_host) override;
-  void OnFrameIntersectionUpdate(
+  void OnMainFrameIntersectionRectChanged(
       content::RenderFrameHost* render_frame_host,
-      const mojom::FrameIntersectionUpdate& intersection_update) override;
+      const gfx::Rect& main_frame_intersection_rect) override;
+  void OnMainFrameViewportRectChanged(
+      const gfx::Rect& main_frame_viewport_rect) override;
   void OnSubFrameDeleted(int frame_tree_node_id) override;
+  void OnV8MemoryChanged(
+      const std::vector<MemoryUpdate>& memory_updates) override;
 
   void SetHeavyAdThresholdNoiseProviderForTesting(
       std::unique_ptr<HeavyAdThresholdNoiseProvider> noise_provider) {
     heavy_ad_threshold_noise_provider_ = std::move(noise_provider);
   }
-
-  void OnV8MemoryChanged(
-      const std::vector<MemoryUpdate>& memory_updates) override;
 
   void UpdateAggregateMemoryUsage(int64_t bytes, FrameVisibility visibility);
 
@@ -202,7 +206,7 @@ class AdsPageLoadMetricsObserver
                             const mojom::ResourceDataUpdatePtr& resource) const;
 
   // Updates page level counters for resource loads.
-  void ProcessResourceForPage(int process_id,
+  void ProcessResourceForPage(content::RenderFrameHost* render_frame_host,
                               const mojom::ResourceDataUpdatePtr& resource);
   void ProcessResourceForFrame(content::RenderFrameHost* render_frame_host,
                                const mojom::ResourceDataUpdatePtr& resource);
@@ -285,7 +289,7 @@ class AdsPageLoadMetricsObserver
       subresource_observation_{this};
 
   // The tick clock used to get the current time. Can be replaced by tests.
-  const base::TickClock* clock_;
+  raw_ptr<const base::TickClock> clock_;
 
   // Whether the page load currently being observed is a reload of a previous
   // page.
@@ -303,13 +307,13 @@ class AdsPageLoadMetricsObserver
 
   // Pointer to the HeavyAdService from which the heavy ad blocklist is obtained
   // in production.
-  heavy_ad_intervention::HeavyAdService* heavy_ad_service_;
+  raw_ptr<heavy_ad_intervention::HeavyAdService> heavy_ad_service_;
 
   ApplicationLocaleGetter application_locale_getter_;
 
   // Pointer to the blocklist used to throttle the heavy ad intervention. Can
   // be replaced by tests.
-  heavy_ad_intervention::HeavyAdBlocklist* heavy_ad_blocklist_;
+  raw_ptr<heavy_ad_intervention::HeavyAdBlocklist> heavy_ad_blocklist_;
 
   // Whether the heavy ad privacy mitigations feature is enabled.
   const bool heavy_ad_privacy_mitigations_enabled_;

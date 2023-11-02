@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CSSPAINT_PAINT_WORKLET_PROXY_CLIENT_H_
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/core/css/cssom/paint_worklet_input.h"
 #include "third_party/blink/renderer/core/workers/worker_clients.h"
@@ -50,6 +49,7 @@ class MODULES_EXPORT PaintWorkletProxyClient
   PaintWorkletProxyClient(
       int worklet_id,
       PaintWorklet*,
+      scoped_refptr<base::SingleThreadTaskRunner> main_thread_runner,
       base::WeakPtr<PaintWorkletPaintDispatcher> compositor_paintee,
       scoped_refptr<base::SingleThreadTaskRunner> compositor_host_queue);
 

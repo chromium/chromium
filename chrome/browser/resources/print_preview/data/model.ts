@@ -1,16 +1,20 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
+// <if expr="is_chromeos">
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
+// </if>
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {BackgroundGraphicsModeRestriction, ColorModeRestriction, DuplexModeRestriction, PinModeRestriction, Policies} from '../native_layer.js';
-import {CapabilityWithReset, Cdd, CddCapabilities, ColorOption, DpiOption, DuplexOption, MediaSizeOption, VendorCapability} from './cdd.js';
-import {Destination, DestinationOrigin, DestinationType, GooglePromotedDestinationId, RecentDestination} from './destination.js';
-import {getPrinterTypeForDestination, PrinterType} from './destination_match.js';
+import {BackgroundGraphicsModeRestriction, Policies} from '../native_layer.js';
+// <if expr="is_chromeos">
+import {ColorModeRestriction, DuplexModeRestriction, PinModeRestriction} from '../native_layer.js';
+// </if>
+import {CapabilityWithReset, Cdd, CddCapabilities, ColorOption, DpiOption, DuplexOption, MediaSizeOption} from './cdd.js';
+import {Destination, DestinationOrigin, GooglePromotedDestinationId, PrinterType, RecentDestination} from './destination.js';
 import {DocumentSettings} from './document_info.js';
 import {CustomMarginsOrientation, Margins, MarginsSetting, MarginsType} from './margins.js';
 import {ScalingType} from './scaling.js';
@@ -21,138 +25,151 @@ import {Size} from './size.js';
  * setting, or an empty string if the setting should not be saved in the
  * serialized state.
  */
-export type Setting = {
-  value: any,
-  unavailableValue: any,
-  valid: boolean,
-  available: boolean,
-  setByPolicy: boolean,
-  setFromUi: boolean,
-  key: string,
-  updatesPreview: boolean,
-};
-
-export type Settings = {
-  pages: Setting,
-  copies: Setting,
-  collate: Setting,
-  layout: Setting,
-  color: Setting,
-  customMargins: Setting,
-  mediaSize: Setting,
-  margins: Setting,
-  dpi: Setting,
-  scaling: Setting,
-  scalingType: Setting,
-  scalingTypePdf: Setting,
-  duplex: Setting,
-  duplexShortEdge: Setting,
-  cssBackground: Setting,
-  selectionOnly: Setting,
-  headerFooter: Setting,
-  rasterize: Setting,
-  vendorItems: Setting,
-  otherOptions: Setting,
-  ranges: Setting,
-  pagesPerSheet: Setting,
-  pin?: Setting,
-  pinValue?: Setting,
-};
-
-export type SerializedSettings = {
-  version: number,
-  recentDestinations?: RecentDestination[],
-  dpi?: DpiOption,
-  mediaSize?: MediaSizeOption,
-  marginsType?: MarginsType,
-  customMargins?: MarginsSetting,
-  isColorEnabled?: boolean,
-  isDuplexEnabled?: boolean,
-  isHeaderFooterEnabled?: boolean,
-  isLandscapeEnabled?: boolean,
-  isCollateEnabled?: boolean,
-  isCssBackgroundEnabled?: boolean,
-  scaling?: string,
-  scalingType?: ScalingType,
-  scalingTypePdf?: ScalingType,
-  vendor_options?: object,
-  isPinEnabled?: boolean,
-  pinValue?: string,
-};
-
-export type PolicyEntry = {
-  value: any,
-  managed: boolean,
-  applyOnDestinationUpdate: boolean,
-};
-
-export type PolicySettings = {
-  headerFooter?: PolicyEntry,
-  cssBackground?: PolicyEntry,
-  mediaSize?: PolicyEntry,
-  sheets?: PolicyEntry,
-  color?: PolicyEntry,
-  duplex?: PolicyEntry,
-  pin?: PolicyEntry,
-  printPdfAsImageAvailability?: PolicyEntry,
-  printPdfAsImage?: PolicyEntry,
-};
-
-type CloudJobTicketPrint = {
-  page_orientation?: object,
-  dpi?: object,
-  vendor_ticket_item?: object[],
-  copies?: object,
-  media_size?: object,
-  duplex?: object,
-  color?: {vendor_id?: string, type?: string},
-  collate?: object,
+export interface Setting {
+  value: any;
+  unavailableValue: any;
+  valid: boolean;
+  available: boolean;
+  setByPolicy: boolean;
+  setFromUi: boolean;
+  key: string;
+  updatesPreview: boolean;
 }
 
-type CloudJobTicket = {
-  version: string,
-  print: CloudJobTicketPrint,
-};
+export interface Settings {
+  pages: Setting;
+  copies: Setting;
+  collate: Setting;
+  layout: Setting;
+  color: Setting;
+  customMargins: Setting;
+  mediaSize: Setting;
+  margins: Setting;
+  dpi: Setting;
+  scaling: Setting;
+  scalingType: Setting;
+  scalingTypePdf: Setting;
+  duplex: Setting;
+  duplexShortEdge: Setting;
+  cssBackground: Setting;
+  selectionOnly: Setting;
+  headerFooter: Setting;
+  rasterize: Setting;
+  vendorItems: Setting;
+  otherOptions: Setting;
+  ranges: Setting;
+  pagesPerSheet: Setting;
+  // <if expr="is_chromeos">
+  pin: Setting;
+  pinValue: Setting;
+  // </if>
+}
 
-export type MediaSizeValue = {
-  width_microns: number; height_microns: number;
-};
+export interface SerializedSettings {
+  version: number;
+  recentDestinations?: RecentDestination[];
+  dpi?: DpiOption;
+  mediaSize?: MediaSizeOption;
+  marginsType?: MarginsType;
+  customMargins?: MarginsSetting;
+  isColorEnabled?: boolean;
+  isDuplexEnabled?: boolean;
+  isDuplexShortEdge?: boolean;
+  isHeaderFooterEnabled?: boolean;
+  isLandscapeEnabled?: boolean;
+  isCollateEnabled?: boolean;
+  isCssBackgroundEnabled?: boolean;
+  scaling?: string;
+  scalingType?: ScalingType;
+  scalingTypePdf?: ScalingType;
+  vendorOptions?: object;
+  // <if expr="is_chromeos">
+  isPinEnabled?: boolean;
+  pinValue?: string;
+  // </if>
+}
 
-export type Ticket = {
-  collate: boolean,
-  color: number,
-  copies: number,
-  deviceName: string,
-  dpiHorizontal: number,
-  dpiVertical: number,
-  duplex: DuplexMode,
-  headerFooterEnabled: boolean,
-  landscape: boolean,
-  marginsType: MarginsType,
-  mediaSize: MediaSizeValue,
-  pagesPerSheet: number,
-  previewModifiable: boolean,
-  printerType: PrinterType,
-  rasterizePDF: boolean,
-  scaleFactor: number,
-  scalingType: ScalingType,
-  shouldPrintBackgrounds: boolean,
-  shouldPrintSelectionOnly: boolean,
-  advancedSettings?: object,
-  capabilities?: string,
-  cloudPrintID?: string,
-  marginsCustom?: MarginsSetting,
-  openPDFInPreview?: boolean,
-  pinValue?: string,
-  ticket?: string,
-};
+export interface PolicyEntry {
+  value: any;
+  managed: boolean;
+  applyOnDestinationUpdate: boolean;
+}
 
-type PrintTicket = Ticket&{
+export interface PolicyObjectEntry {
+  defaultMode?: any;
+  allowedMode?: any;
+  value?: number;
+}
+
+export interface PolicySettings {
+  headerFooter?: PolicyEntry;
+  cssBackground?: PolicyEntry;
+  mediaSize?: PolicyEntry;
+  sheets?: PolicyEntry;
+  color?: PolicyEntry;
+  duplex?: PolicyEntry;
+  pin?: PolicyEntry;
+  printPdfAsImageAvailability?: PolicyEntry;
+  printPdfAsImage?: PolicyEntry;
+}
+
+interface CloudJobTicketPrint {
+  page_orientation?: object;
+  dpi?: object;
+  vendor_ticket_item?: object[];
+  copies?: object;
+  media_size?: object;
+  duplex?: object;
+  color?: {vendor_id?: string, type?: string};
+  collate?: object;
+}
+
+interface CloudJobTicket {
+  version: string;
+  print: CloudJobTicketPrint;
+}
+
+export interface MediaSizeValue {
+  width_microns: number;
+  height_microns: number;
+}
+
+export interface Ticket {
+  collate: boolean;
+  color: number;
+  copies: number;
+  deviceName: string;
+  dpiHorizontal: number;
+  dpiVertical: number;
+  duplex: DuplexMode;
+  headerFooterEnabled: boolean;
+  landscape: boolean;
+  marginsType: MarginsType;
+  mediaSize: MediaSizeValue;
+  pagesPerSheet: number;
+  previewModifiable: boolean;
+  printerType: PrinterType;
+  rasterizePDF: boolean;
+  scaleFactor: number;
+  scalingType: ScalingType;
+  shouldPrintBackgrounds: boolean;
+  shouldPrintSelectionOnly: boolean;
+  advancedSettings?: object;
+  capabilities?: string;
+  marginsCustom?: MarginsSetting;
+  openPDFInPreview?: boolean;
+  pinValue?: string;
+  ticket?: string;
+}
+
+export type PrintTicket = Ticket&{
   dpiDefault: boolean,
   pageCount: number,
   pageHeight: number,
   pageWidth: number,
+  // <if expr="is_chromeos">
   printToGoogleDrive: boolean,
+  // </if>
   showSystemDialog: boolean,
 };
 
@@ -180,7 +197,8 @@ let instance: PrintPreviewModelElement|null = null;
 let whenReadyResolver: PromiseResolver<void> = new PromiseResolver();
 
 export function getInstance(): PrintPreviewModelElement {
-  return assert(instance!);
+  assert(instance);
+  return instance;
 }
 
 export function whenReady(): Promise<void> {
@@ -208,7 +226,7 @@ const STICKY_SETTING_NAMES: string[] = [
   'scalingTypePdf',
   'vendorItems',
 ];
-// <if expr="chromeos or lacros">
+// <if expr="is_chromeos">
 STICKY_SETTING_NAMES.push('pin', 'pinValue');
 // </if>
 
@@ -479,7 +497,7 @@ export class PrintPreviewModelElement extends PolymerElement {
               key: 'recentDestinations',
               updatesPreview: false,
             },
-            // <if expr="chromeos or lacros">
+            // <if expr="is_chromeos">
             pin: {
               value: false,
               unavailableValue: false,
@@ -523,7 +541,7 @@ export class PrintPreviewModelElement extends PolymerElement {
         type: Number,
         value: 0,
         notify: true,
-      }
+      },
     };
   }
 
@@ -552,7 +570,7 @@ export class PrintPreviewModelElement extends PolymerElement {
   private policySettings_: PolicySettings|null = null;
   private lastDestinationCapabilities_: Cdd|null = null;
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     assert(!instance);
@@ -560,7 +578,7 @@ export class PrintPreviewModelElement extends PolymerElement {
     whenReadyResolver.resolve();
   }
 
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
 
     instance = null;
@@ -725,7 +743,7 @@ export class PrintPreviewModelElement extends PolymerElement {
     this.setSettingPath_(
         'vendorItems.available', !!caps && !!caps.vendor_capability);
 
-    // <if expr="chromeos or lacros">
+    // <if expr="is_chromeos">
     const pinSupported = !!caps && !!caps.pin && !!caps.pin.supported &&
         loadTimeData.getBoolean('isEnterpriseManaged');
     this.set('settings.pin.available', pinSupported);
@@ -738,8 +756,7 @@ export class PrintPreviewModelElement extends PolymerElement {
   }
 
   private updateSettingsAvailabilityFromDestinationAndDocumentSettings_() {
-    const isSaveAsPDF = getPrinterTypeForDestination(this.destination) ===
-        PrinterType.PDF_PRINTER;
+    const isSaveAsPDF = this.destination.type === PrinterType.PDF_PRINTER;
     const knownSizeToSaveAsPdf = isSaveAsPDF &&
         (!this.documentSettings.isModifiable ||
          this.documentSettings.hasCssMediaStyles);
@@ -940,11 +957,6 @@ export class PrintPreviewModelElement extends PolymerElement {
             true);
       }
     } else if (
-        !this.settings.color.available &&
-        (this.destination.id === GooglePromotedDestinationId.DOCS ||
-         this.destination.type === DestinationType.MOBILE)) {
-      this.setSettingPath_('color.unavailableValue', true);
-    } else if (
         !this.settings.color.available && caps && caps.color &&
         caps.color.option && caps.color.option.length > 0) {
       this.setSettingPath_(
@@ -1048,19 +1060,18 @@ export class PrintPreviewModelElement extends PolymerElement {
       recentDestinations = [recentDestinations];
     }
 
-    // Remove unsupported privet printers from the sticky settings,
+    // Remove unsupported privet and cloud printers from the sticky settings,
     // to free up these spots for supported printers.
+    const unsupportedOrigins: DestinationOrigin[] = [
+      DestinationOrigin.COOKIES,
+      // <if expr="is_chromeos">
+      DestinationOrigin.DEVICE,
+      // </if>
+      DestinationOrigin.PRIVET,
+    ];
     recentDestinations = recentDestinations.filter((d: RecentDestination) => {
-      return d.origin !== DestinationOrigin.PRIVET;
+      return !unsupportedOrigins.includes(d.origin);
     });
-
-    // <if expr="chromeos or lacros">
-    // Remove Cloud Print Drive destination. The Chrome OS version will always
-    // be shown in the dropdown and is still supported.
-    recentDestinations = recentDestinations.filter((d: RecentDestination) => {
-      return d.id !== GooglePromotedDestinationId.DOCS;
-    });
-    // </if>
 
     // Initialize recent destinations early so that the destination store can
     // start trying to fetch them.
@@ -1182,8 +1193,7 @@ export class PrintPreviewModelElement extends PolymerElement {
     if (policies === undefined) {
       return;
     }
-    const policiesObject = policies as
-        {[key: string]: {defaultMode?: any, allowedMode?: any, value?: number}};
+    const policiesObject = policies as {[key: string]: PolicyObjectEntry};
     ['headerFooter', 'cssBackground', 'mediaSize'].forEach(settingName => {
       if (!policiesObject[settingName]) {
         return;
@@ -1192,7 +1202,7 @@ export class PrintPreviewModelElement extends PolymerElement {
       const allowedMode = policiesObject[settingName].allowedMode;
       this.configurePolicySetting_(settingName, allowedMode, defaultMode);
     });
-    // <if expr="chromeos or lacros">
+    // <if expr="is_chromeos">
     if (policiesObject['sheets']) {
       if (!this.policySettings_) {
         this.policySettings_ = {};
@@ -1287,7 +1297,7 @@ export class PrintPreviewModelElement extends PolymerElement {
       for (const [settingName, policy] of Object.entries(
                this.policySettings_)) {
         const policyEntry = policy as PolicyEntry;
-        // <if expr="chromeos or lacros">
+        // <if expr="is_chromeos">
         if (settingName === 'sheets') {
           this.maxSheets = policyEntry.value;
           continue;
@@ -1459,7 +1469,7 @@ export class PrintPreviewModelElement extends PolymerElement {
 
   private updateManaged_() {
     let managedSettings = ['cssBackground', 'headerFooter'];
-    // <if expr="chromeos or lacros">
+    // <if expr="is_chromeos">
     managedSettings =
         managedSettings.concat(['color', 'duplex', 'duplexShortEdge', 'pin']);
     // </if>
@@ -1480,7 +1490,7 @@ export class PrintPreviewModelElement extends PolymerElement {
     STICKY_SETTING_NAMES.forEach(settingName => {
       const setting = this.get(settingName, this.settings);
       if (setting.setFromUi) {
-        serialization[assert(setting.key)] = setting.value;
+        serialization[setting.key] = setting.value;
       }
     });
 
@@ -1535,8 +1545,7 @@ export class PrintPreviewModelElement extends PolymerElement {
       shouldPrintBackgrounds: this.getSettingValue('cssBackground'),
       shouldPrintSelectionOnly: false,  // only used in print preview
       previewModifiable: this.documentSettings.isModifiable,
-      printToGoogleDrive: destination.id === GooglePromotedDestinationId.DOCS,
-      printerType: getPrinterTypeForDestination(destination),
+      printerType: destination.type,
       rasterizePDF: this.getSettingValue('rasterize'),
       scaleFactor:
           this.getSettingValue(scalingSettingKey) === ScalingType.CUSTOM ?
@@ -1551,16 +1560,11 @@ export class PrintPreviewModelElement extends PolymerElement {
       pageWidth: this.pageSize.width,
       pageHeight: this.pageSize.height,
       showSystemDialog: showSystemDialog,
+      // <if expr="is_chromeos">
+      printToGoogleDrive:
+          destination.id === GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS,
+      // </if>
     };
-    // <if expr="chromeos or lacros">
-    ticket['printToGoogleDrive'] = ticket['printToGoogleDrive'] ||
-        destination.id === GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS;
-    // </if>
-
-    // Set 'cloudPrintID' only if the destination is not local.
-    if (!destination.isLocal) {
-      ticket['cloudPrintID'] = destination.id;
-    }
 
     if (openPdfInPreview) {
       ticket['openPDFInPreview'] = openPdfInPreview;
@@ -1577,7 +1581,7 @@ export class PrintPreviewModelElement extends PolymerElement {
       ticket['capabilities'] = JSON.stringify(destination.capabilities);
     }
 
-    // <if expr="chromeos or lacros">
+    // <if expr="is_chromeos">
     if (this.getSettingValue('pin')) {
       ticket['pinValue'] = this.getSettingValue('pinValue');
     }
@@ -1596,7 +1600,7 @@ export class PrintPreviewModelElement extends PolymerElement {
    */
   createCloudJobTicket(destination: Destination): string {
     assert(
-        !destination.isLocal || destination.isExtension,
+        destination.isExtension,
         'Trying to create a Google Cloud Print print ticket for a local ' +
             ' non-extension destination');
     assert(
@@ -1647,7 +1651,7 @@ export class PrintPreviewModelElement extends PolymerElement {
         width_microns: mediaValue.width_microns,
         height_microns: mediaValue.height_microns,
         is_continuous_feed: mediaValue.is_continuous_feed,
-        vendor_id: mediaValue.vendor_id
+        vendor_id: mediaValue.vendor_id,
       };
     }
     if (!this.settings.layout.available) {
@@ -1663,7 +1667,7 @@ export class PrintPreviewModelElement extends PolymerElement {
       }
     } else {
       cjt.print.page_orientation = {
-        type: this.settings.layout.value ? 'LANDSCAPE' : 'PORTRAIT'
+        type: this.settings.layout.value ? 'LANDSCAPE' : 'PORTRAIT',
       };
     }
     if (this.settings.dpi.available) {
@@ -1671,7 +1675,7 @@ export class PrintPreviewModelElement extends PolymerElement {
       cjt.print.dpi = {
         horizontal_dpi: dpiValue.horizontal_dpi,
         vertical_dpi: dpiValue.vertical_dpi,
-        vendor_id: dpiValue.vendor_id
+        vendor_id: dpiValue.vendor_id,
       };
     }
     if (this.settings.vendorItems.available) {

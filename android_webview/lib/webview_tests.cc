@@ -1,9 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
+#include "base/test/allow_check_is_test_to_be_called.h"
 #include "base/test/test_suite.h"
 #include "content/public/common/content_switches.h"
 #include "mojo/core/embedder/embedder.h"
@@ -15,9 +16,10 @@ int main(int argc, char** argv) {
   command_line->AppendSwitch(switches::kSingleProcess);
   command_line->AppendSwitchASCII(switches::kDisableFeatures, ",Vulkan");
   command_line->AppendSwitchASCII(switches::kEnableFeatures,
-                                  ",UseSkiaRenderer");
+                                  ",WebViewNewInvalidateHeuristic");
 
   gl::GLSurfaceTestSupport::InitializeNoExtensionsOneOff();
+  base::test::AllowCheckIsTestToBeCalled();
   base::TestSuite test_suite(argc, argv);
   mojo::core::Init();
   return test_suite.Run();

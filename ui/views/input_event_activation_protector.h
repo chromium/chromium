@@ -1,4 +1,4 @@
-// Copyright (c) 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,6 +36,9 @@ class VIEWS_EXPORT InputEventActivationProtector {
 
   // Resets the state for click tracking.
   void ResetForTesting();
+
+  // Integration tests can disable all input event activation protectors.
+  static void DisableForTesting();
 
  private:
   // Timestamp of when the view being tracked is first shown.

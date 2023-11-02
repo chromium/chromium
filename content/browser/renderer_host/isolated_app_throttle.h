@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,6 +33,9 @@ class CONTENT_EXPORT IsolatedAppThrottle : public NavigationThrottle {
   NavigationThrottle::ThrottleCheckResult DoThrottle(
       bool needs_app_isolation,
       NavigationThrottle::ThrottleAction block_action);
+
+  // Opens a url in the systems' default application for the given url.
+  bool OpenUrlExternal(const GURL& url);
 
   bool embedder_requests_app_isolation();
 

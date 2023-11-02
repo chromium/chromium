@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,11 +12,10 @@
 #include "base/unguessable_token.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
-class UserContext;
-}
-
 namespace ash {
+
+class UserContext;
+
 namespace quick_unlock {
 
 // Security token with an identifyier string and a predetermined life time,
@@ -26,9 +25,9 @@ namespace quick_unlock {
 class AuthToken {
  public:
   // How long the token lives.
-  static const int kTokenExpirationSeconds;
+  static const base::TimeDelta kTokenExpiration;
 
-  explicit AuthToken(const chromeos::UserContext& user_context);
+  explicit AuthToken(const UserContext& user_context);
 
   AuthToken(const AuthToken&) = delete;
   AuthToken& operator=(const AuthToken&) = delete;
@@ -39,13 +38,21 @@ class AuthToken {
   // instance has not changed. Returns nullopt if Reset() was called.
   absl::optional<std::string> Identifier() const;
 
+  // Similar to the above, but returns the strongly typed
+  // `base::UnguessableToken` instead
+  absl::optional<base::UnguessableToken> GetUnguessableToken() const;
+
   // Time since token was created or `absl::nullopt` if Reset() was called.
   absl::optional<base::TimeDelta> GetAge() const;
 
   // The UserContext returned here can be null if Reset() was called.
-  const chromeos::UserContext* user_context() const {
-    return user_context_.get();
-  }
+  const UserContext* user_context() const { return user_context_.get(); }
+  UserContext* user_context() { return user_context_.get(); }
+
+  // Replace the user context that is stored with this token. If Reset() has
+  // been called earlier, the call is ignored, and the user context passed to
+  // this function is destroyed.
+  void ReplaceUserContext(std::unique_ptr<UserContext>);
 
  private:
   friend class QuickUnlockStorageUnitTest;
@@ -56,7 +63,7 @@ class AuthToken {
 
   base::UnguessableToken identifier_;
   base::TimeTicks creation_time_;
-  std::unique_ptr<chromeos::UserContext> user_context_;
+  std::unique_ptr<UserContext> user_context_;
 
   base::WeakPtrFactory<AuthToken> weak_factory_{this};
 };

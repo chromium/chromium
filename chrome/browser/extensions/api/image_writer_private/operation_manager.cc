@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/image_writer_private/destroy_partitions_operation.h"
-#include "chrome/browser/extensions/api/image_writer_private/error_messages.h"
+#include "chrome/browser/extensions/api/image_writer_private/error_constants.h"
 #include "chrome/browser/extensions/api/image_writer_private/operation.h"
 #include "chrome/browser/extensions/api/image_writer_private/write_from_file_operation.h"
 #include "chrome/browser/extensions/api/image_writer_private/write_from_url_operation.h"
@@ -201,7 +201,7 @@ void OperationManager::CancelWrite(const ExtensionId& extension_id,
                                    Operation::CancelWriteCallback callback) {
   Operation* existing_operation = GetOperation(extension_id);
 
-  if (existing_operation == NULL) {
+  if (existing_operation == nullptr) {
     std::move(callback).Run(false, error::kNoOperationInProgress);
   } else {
     existing_operation->PostTask(
@@ -338,7 +338,7 @@ Operation* OperationManager::GetOperation(const ExtensionId& extension_id) {
   auto existing_operation = operations_.find(extension_id);
 
   if (existing_operation == operations_.end())
-    return NULL;
+    return nullptr;
   return existing_operation->second.get();
 }
 

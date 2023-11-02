@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_SMB_CLIENT_SMB_ERRORS_H_
 
 #include "base/files/file.h"
-#include "chromeos/dbus/smbprovider/smb_provider_client.h"
+#include "chromeos/ash/components/dbus/smbprovider/smb_provider_client.h"
 
 namespace ash {
 namespace smb_client {
@@ -14,7 +14,7 @@ namespace smb_client {
 // These values are written to logs. New enum values may be added, but existing
 // enums must never be renumbered or values reused. Must be kept in sync
 // with the SmbMountResult enum in
-// ui/webui/resources/cr_components/chromeos/smb_shares/smb_browser_proxy.js
+// ash/webui/common/resources/smb_shares/smb_browser_proxy.js
 // and the NativeSmbFileShare_MountResult enum in enums.xml.
 enum class SmbMountResult {
   kSuccess = 0,                 // Mount succeeded.

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -55,7 +55,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/security_state/core/security_state.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/sync/driver/test_sync_service.h"
+#include "components/sync/test/test_sync_service.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "components/variations/variations_associated_data.h"
 #include "components/variations/variations_params_manager.h"
@@ -112,7 +112,6 @@ class CreditCardFIDOAuthenticatorTest : public testing::Test {
                                 /*pref_service=*/autofill_client_.GetPrefs(),
                                 /*local_state=*/autofill_client_.GetPrefs(),
                                 /*identity_manager=*/nullptr,
-                                /*client_profile_validator=*/nullptr,
                                 /*history_service=*/nullptr,
                                 /*strike_database=*/nullptr,
                                 /*image_fetcher=*/nullptr,
@@ -274,7 +273,7 @@ TEST_F(CreditCardFIDOAuthenticatorTest, IsUserOptedIn_True) {
   EXPECT_TRUE(fido_authenticator_->IsUserOptedIn());
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(CreditCardFIDOAuthenticatorTest,
        GetUserOptInIntention_IntentToOptIn_Android) {
   scoped_feature_list_.InitAndEnableFeature(
@@ -348,17 +347,17 @@ TEST_F(CreditCardFIDOAuthenticatorTest, ParseRequestOptions) {
   base::Value request_options_json = GetTestRequestOptions(
       kTestChallenge, kTestRelyingPartyId, kTestCredentialId);
 
-  PublicKeyCredentialRequestOptionsPtr request_options_ptr =
+  blink::mojom::PublicKeyCredentialRequestOptionsPtr request_options_ptr =
       fido_authenticator_->ParseRequestOptions(std::move(request_options_json));
   EXPECT_EQ(kTestChallenge, BytesToBase64(request_options_ptr->challenge));
   EXPECT_EQ(kTestRelyingPartyId, request_options_ptr->relying_party_id);
   EXPECT_EQ(kTestCredentialId,
-            BytesToBase64(request_options_ptr->allow_credentials.front().id()));
+            BytesToBase64(request_options_ptr->allow_credentials.front().id));
 }
 
 TEST_F(CreditCardFIDOAuthenticatorTest, ParseAssertionResponse) {
-  GetAssertionAuthenticatorResponsePtr assertion_response_ptr =
-      GetAssertionAuthenticatorResponse::New();
+  blink::mojom::GetAssertionAuthenticatorResponsePtr assertion_response_ptr =
+      blink::mojom::GetAssertionAuthenticatorResponse::New();
   assertion_response_ptr->info = blink::mojom::CommonCredentialInfo::New();
   assertion_response_ptr->info->raw_id = Base64ToBytes(kTestCredentialId);
   assertion_response_ptr->signature = Base64ToBytes(kTestSignature);
@@ -376,24 +375,25 @@ TEST_F(CreditCardFIDOAuthenticatorTest, ParseCreationOptions) {
   base::Value creation_options_json =
       GetTestCreationOptions(kTestChallenge, kTestRelyingPartyId);
 
-  PublicKeyCredentialCreationOptionsPtr creation_options_ptr =
+  blink::mojom::PublicKeyCredentialCreationOptionsPtr creation_options_ptr =
       fido_authenticator_->ParseCreationOptions(
           std::move(creation_options_json));
   EXPECT_EQ(kTestChallenge, BytesToBase64(creation_options_ptr->challenge));
   EXPECT_EQ(kTestRelyingPartyId, creation_options_ptr->relying_party.id);
 
   // Ensure only platform authenticators are allowed.
-  EXPECT_EQ(AuthenticatorAttachment::kPlatform,
+  EXPECT_EQ(
+      device::AuthenticatorAttachment::kPlatform,
+      creation_options_ptr->authenticator_selection->authenticator_attachment);
+  EXPECT_EQ(device::UserVerificationRequirement::kRequired,
             creation_options_ptr->authenticator_selection
-                ->authenticator_attachment());
-  EXPECT_EQ(UserVerificationRequirement::kRequired,
-            creation_options_ptr->authenticator_selection
-                ->user_verification_requirement());
+                ->user_verification_requirement);
 }
 
 TEST_F(CreditCardFIDOAuthenticatorTest, ParseAttestationResponse) {
-  MakeCredentialAuthenticatorResponsePtr attestation_response_ptr =
-      MakeCredentialAuthenticatorResponse::New();
+  blink::mojom::MakeCredentialAuthenticatorResponsePtr
+      attestation_response_ptr =
+          blink::mojom::MakeCredentialAuthenticatorResponse::New();
   attestation_response_ptr->info = blink::mojom::CommonCredentialInfo::New();
   attestation_response_ptr->attestation_object = Base64ToBytes(kTestSignature);
 
@@ -624,7 +624,7 @@ TEST_F(CreditCardFIDOAuthenticatorTest,
       AutofillMetrics::WebauthnOptInParameters::kWithCreationChallenge, 1);
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // This test is not applicable for Android (we won't opt-in with Register).
 TEST_F(CreditCardFIDOAuthenticatorTest,
        Register_OptInAttemptReturnsRequestOptions) {

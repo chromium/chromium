@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -61,7 +61,8 @@ class CC_PAINT_EXPORT PaintImageGenerator : public SkRefCnt {
   // DecodingImageGenerator tracing needs. Remove it.
   virtual bool GetYUVAPlanes(const SkYUVAPixmaps& pixmaps,
                              size_t frame_index,
-                             uint32_t lazy_pixel_ref) = 0;
+                             uint32_t lazy_pixel_ref,
+                             PaintImage::GeneratorClientId client_id) = 0;
 
   // Returns the smallest size that is at least as big as the requested size,
   // such that we can decode to exactly that scale.

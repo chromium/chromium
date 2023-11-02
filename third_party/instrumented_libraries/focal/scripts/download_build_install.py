@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright 2013 The Chromium Authors. All rights reserved.
+# Copyright 2013 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -276,8 +276,10 @@ class DebianBuilder(InstrumentedPackageBuilder):
   TODO(spang): Probably the rest of the packages should also use this method..
   """
 
-  def init_build_env(self):
+  def init_build_env(self, args_env):
     self._build_env = os.environ.copy()
+
+    self._build_env.update(dict(args_env))
 
     self._build_env['CC'] = self._cc
     self._build_env['CXX'] = self._cxx

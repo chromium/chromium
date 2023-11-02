@@ -1,0 +1,5 @@
+# The following OWNERS are only for adding / removing / renaming directories
+# that are conceptually the same as existing ones (which would have already gone
+# through third_party review).
+agrieve@chromium.org
+wnwen@chromium.org

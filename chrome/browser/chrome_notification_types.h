@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,16 +37,6 @@ namespace chrome {
 enum NotificationType {
   NOTIFICATION_CHROME_START = PREVIOUS_END,
 
-  // Application-wide ----------------------------------------------------------
-
-  // This message is sent when the application is terminating (the last
-  // browser window has shutdown as part of an explicit user-initiated exit,
-  // or the user closed the last browser window on Windows/Linux and there are
-  // no BackgroundContents keeping the browser running). No source or details
-  // are passed.
-  // TODO(https://crbug.com/1174781): Remove.
-  NOTIFICATION_APP_TERMINATING = NOTIFICATION_CHROME_START,
-
   // Authentication ----------------------------------------------------------
 
   // This is sent when a login prompt is shown.  The source is the
@@ -54,7 +44,7 @@ enum NotificationType {
   // Details are a LoginNotificationDetails which provide the LoginHandler
   // that should be given authentication.
   // TODO(https://crbug.com/1174785): Remove.
-  NOTIFICATION_AUTH_NEEDED,
+  NOTIFICATION_AUTH_NEEDED = NOTIFICATION_CHROME_START,
 
   // This is sent when authentication credentials have been supplied (either
   // by the user or by an automation service), but before we've actually
@@ -79,17 +69,12 @@ enum NotificationType {
   // Use ProfileManagerObserver::OnProfileAdded instead of this notification.
   // Sent after a Profile has been added to ProfileManager.
   // The details are none and the source is the new profile.
-  // TODO(https://crbug.com/1174720): Remove. See also
-  // https://crbug.com/1038437.
+  // Note: this notification is only sent for profiles owned by the
+  // `ProfileManager`. In particular, off-the-record profiles don't trigger this
+  // notification, but on-the-record System and Guest profiles do.
+  //  TODO(https://crbug.com/1174720): Remove. See also
+  //  https://crbug.com/1038437.
   NOTIFICATION_PROFILE_ADDED,
-
-  // Printing ----------------------------------------------------------------
-
-  // Notification from PrintJob that an event occurred. It can be that a page
-  // finished printing or that the print job failed. Details is
-  // PrintJob::EventDetails. Source is a PrintJob.
-  // TODO(https://crbug.com/796051): Remove.
-  NOTIFICATION_PRINT_JOB_EVENT,
 
   // Misc --------------------------------------------------------------------
   // Note:-

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,11 +31,9 @@ class WebFeedDialogMediator {
         public void onClick(PropertyModel model, int buttonType) {
             switch (buttonType) {
                 case ModalDialogProperties.ButtonType.POSITIVE:
-                    mCallback.onResult(DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
                     dismissDialog(DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
                     break;
                 case ModalDialogProperties.ButtonType.NEGATIVE:
-                    mCallback.onResult(DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
                     dismissDialog(DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
                     break;
                 default:

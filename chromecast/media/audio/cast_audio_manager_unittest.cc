@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chromecast/chromecast_buildflags.h"
 #include "chromecast/common/mojom/constants.mojom.h"
@@ -31,9 +32,9 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "media/audio/android/audio_track_output_stream.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 using testing::_;
 using testing::AnyNumber;
@@ -46,13 +47,13 @@ namespace {
 
 const ::media::AudioParameters kDefaultAudioParams(
     ::media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-    ::media::CHANNEL_LAYOUT_STEREO,
+    ::media::ChannelLayoutConfig::Stereo(),
     ::media::AudioParameters::kAudioCDSampleRate,
     256);
 
 const ::media::AudioParameters kAudioParamsInvalidLayout(
     ::media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-    ::media::CHANNEL_LAYOUT_NONE,
+    ::media::ChannelLayoutConfig::FromLayout<::media::CHANNEL_LAYOUT_NONE>(),
     ::media::AudioParameters::kAudioCDSampleRate,
     256);
 
@@ -202,7 +203,7 @@ TEST_F(CastAudioManagerTest, CanMakeStream) {
   RunThreadsUntilIdle();
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(CastAudioManagerTest, CanMakeAC3Stream) {
   const ::media::AudioParameters kAC3AudioParams(
       ::media::AudioParameters::AUDIO_BITSTREAM_AC3,
@@ -213,7 +214,6 @@ TEST_F(CastAudioManagerTest, CanMakeAC3Stream) {
   EXPECT_TRUE(stream);
   // Only run the rest of the test if the device supports AC3.
   if (stream->Open()) {
-    EXPECT_CALL(*mock_cma_backend_, Start(_)).WillOnce(Return(true));
     EXPECT_CALL(mock_source_callback_, OnMoreData(_, _, _, _))
         .WillRepeatedly(Invoke(OnMoreData));
     EXPECT_CALL(mock_source_callback_, OnError(_)).Times(0);
@@ -225,7 +225,31 @@ TEST_F(CastAudioManagerTest, CanMakeAC3Stream) {
   }
   stream->Close();
 }
-#endif  // defined(OS_ANDROID)
+
+#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+TEST_F(CastAudioManagerTest, CanMakeDTSStream) {
+  const ::media::AudioParameters kDTSAudioParams(
+      ::media::AudioParameters::AUDIO_BITSTREAM_DTS,
+      ::media::CHANNEL_LAYOUT_5_1, ::media::AudioParameters::kAudioCDSampleRate,
+      256);
+  ::media::AudioOutputStream* stream = audio_manager_->MakeAudioOutputStream(
+      kDTSAudioParams, "", ::media::AudioManager::LogCallback());
+  EXPECT_TRUE(stream);
+  // Only run the rest of the test if the device supports DTS.
+  if (stream->Open()) {
+    EXPECT_CALL(mock_source_callback_, OnMoreData(_, _, _, _))
+        .WillRepeatedly(Invoke(OnMoreData));
+    EXPECT_CALL(mock_source_callback_, OnError(_)).Times(0);
+    stream->Start(&mock_source_callback_);
+    RunThreadsUntilIdle();
+
+    stream->Stop();
+    RunThreadsUntilIdle();
+  }
+  stream->Close();
+}
+#endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO))
+#endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_F(CastAudioManagerTest, DISABLED_CanMakeStreamProxy) {
   SetUpBackendAndDecoder();

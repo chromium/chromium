@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define COMPONENTS_FEED_CORE_V2_ENUMS_H_
 
 #include <iosfwd>
+#include "base/strings/string_piece_forward.h"
 
 namespace feed {
 
@@ -23,6 +24,7 @@ enum class NetworkRequestType : int {
   kQueryBackgroundFeed = 9,
   kQueryNextPage = 10,
 };
+std::ostream& operator<<(std::ostream& out, NetworkRequestType value);
 
 // Denotes how the stream content loading is used for.
 enum class LoadType {
@@ -38,6 +40,9 @@ enum class LoadType {
   // The stored stream data and the loaded model will not be affected if the
   // network request fails.
   kManualRefresh = 3,
+  // Same as kBackgroundRefresh but specifically scheduled based on user
+  // interaction with the feed.
+  kFeedCloseBackgroundRefresh = 4,
 };
 
 // This must be kept in sync with FeedLoadStreamStatus in enums.xml.
@@ -81,7 +86,11 @@ enum class LoadStreamStatus {
   kAbortWithPendingClearAll = 24,
   kAlreadyHaveUnreadContent = 25,
   kNotAWebFeedSubscriber = 26,
-  kMaxValue = kNotAWebFeedSubscriber,
+  kAccountTokenFetchFailedWrongAccount = 27,
+  kAccountTokenFetchTimedOut = 28,
+  kNetworkFetchTimedOut = 29,
+  kLoadNotAllowedDisabled = 30,
+  kMaxValue = kLoadNotAllowedDisabled,
 };
 
 // Were we able to load fresh Feed data. This should be 'true' unless some kind
@@ -100,6 +109,7 @@ enum class UploadActionsStatus {
   kUpdatedConsistencyToken = 4,
   kFinishedWithoutUpdatingConsistencyToken = 5,
   kAbortUploadForSignedOutUser = 6,
+  // TODO(b/213622639): This is unused, remove it.
   kAbortUploadBecauseDisabled = 7,
   kAbortUploadForWrongUser = 8,
   kAbortUploadActionsWithPendingClearAll = 9,
@@ -135,21 +145,36 @@ enum class WebFeedRefreshStatus {
 };
 std::ostream& operator<<(std::ostream& out, WebFeedRefreshStatus value);
 
-// Tells how the notice acknowledgement is reached. These values are also used
-// in histograms. Entries should not be renumbered and numeric values should
-// never be reused.
-enum class NoticeAcknowledgementPath {
-  // The acknowledgment is reached after the user views the notice for a
-  // required number of times (currently it is 3).
-  kViaViewing = 0,
-  // The acknowledgment is reached after the user taps the notice to perform
-  // an open action for a required number of times (currently it is 1).
-  kViaOpenAction = 1,
-  // The acknowledgement is reached after the user taps X button to close
-  // the notice.
-  kViaDismissal = 2,
-  kMaxValue = kViaDismissal,
+// This must be kept in sync with FeedUserSettingsOnStart in enums.xml.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// Reports last known state of user settings which affect Feed content.
+// This includes WAA (whether activity is recorded), and DP (whether
+// Discover personalization is enabled).
+enum class UserSettingsOnStart {
+  // The Feed is disabled by enterprise policy.
+  kFeedNotEnabledByPolicy = 0,
+  // The Feed is enabled by enterprise policy, but the user has hidden and
+  // disabled the Feed, so other user settings beyond sign-in status are not
+  // available.
+  kFeedNotVisibleSignedOut = 1,
+  kFeedNotVisibleSignedIn = 2,
+  // The Feed is enabled, the user is not signed in.
+  kSignedOut = 3,
+  // The Feed is enabled, the user is signed in, and setting states are known.
+  kSignedInWaaOnDpOn = 4,
+  kSignedInWaaOnDpOff = 5,
+  kSignedInWaaOffDpOn = 6,
+  kSignedInWaaOffDpOff = 7,
+  // The Feed is enabled, but there is no recent Feed data, so user settings
+  // state is unknown.
+  kSignedInNoRecentData = 8,
+  // The Feed is disabled.
+  kFeedNotEnabled = 9,
+  kMaxValue = kFeedNotEnabled,
 };
+base::StringPiece ToString(UserSettingsOnStart v);
+std::ostream& operator<<(std::ostream& out, UserSettingsOnStart value);
 
 }  // namespace feed
 

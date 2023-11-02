@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -394,7 +394,25 @@ TEST_F(RendererControllerTest, SetClientNullptr) {
   ExpectInLocalRendering();
 }
 
-#if defined(OS_ANDROID)
+TEST_F(RendererControllerTest, OnFrozen) {
+  InitializeControllerAndBecomeDominant(DefaultMetadata(VideoCodec::kVP8),
+                                        GetDefaultSinkMetadata(true));
+  ExpectInDelayedStart();
+  DelayedStartEnds();
+  RunUntilIdle();
+  ExpectInRemoting();
+
+  // Pausing needs to occur before freezing can be enabled.
+  controller_->OnPaused();
+  ExpectInRemoting();
+
+  // Freezing should kick rendering back to local.
+  controller_->OnFrozen();
+  RunUntilIdle();
+  ExpectInLocalRendering();
+}
+
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(RendererControllerTest, RemotePlaybackHlsCompatibility) {
   controller_ = FakeRemoterFactory::CreateController(true);
   controller_->SetClient(this);

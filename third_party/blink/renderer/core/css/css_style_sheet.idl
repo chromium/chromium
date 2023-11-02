@@ -29,7 +29,7 @@
     [RaisesException] unsigned long insertRule(DOMString rule, optional unsigned long index = 0);
     [RaisesException] void deleteRule(unsigned long index);
 
-    [MeasureAs=CSSStyleSheetReplace, CallWith=ScriptState] Promise<CSSStyleSheet> replace(DOMString text);
+    [MeasureAs=CSSStyleSheetReplace, CallWith=ScriptState, RaisesException] Promise<CSSStyleSheet> replace(DOMString text);
     [MeasureAs=CSSStyleSheetReplaceSync, RaisesException] void replaceSync(DOMString text);
 
     // Non-standard APIs

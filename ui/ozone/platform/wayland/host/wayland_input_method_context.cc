@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "base/i18n/char_iterator.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_offset_string_conversions.h"
@@ -18,6 +19,9 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/composition_text.h"
 #include "ui/base/ime/ime_text_span.h"
+#include "ui/base/ime/text_input_client.h"
+#include "ui/base/ime/text_input_flags.h"
+#include "ui/base/ime/text_input_type.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
@@ -25,6 +29,7 @@
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/range/range.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_seat.h"
 #include "ui/ozone/platform/wayland/host/zwp_text_input_wrapper_v1.h"
 #include "ui/ozone/public/ozone_switches.h"
 
@@ -36,7 +41,7 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "base/check.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
+#include "chromeos/startup/browser_params_proxy.h"
 #endif
 
 namespace ui {
@@ -72,15 +77,10 @@ bool IsImeEnabled() {
   // Lacros-chrome side, which helps us on releasing.
   // TODO(crbug.com/1159237): In the future, we may want to unify the behavior
   // of ozone/wayland across platforms.
-  const auto* lacros_service = chromeos::LacrosService::Get();
-
-  // Note: |init_params| may be null, if ash-chrome is too old.
-  // TODO(crbug.com/1156033): Clean up the condition, after ash-chrome in the
-  // world becomes new enough.
-  const crosapi::mojom::BrowserInitParams* init_params =
-      lacros_service ? lacros_service->init_params() : nullptr;
-  if (init_params && init_params->exo_ime_support !=
-                         crosapi::mojom::ExoImeSupport::kUnsupported) {
+  const chromeos::BrowserParamsProxy* init_params =
+      chromeos::BrowserParamsProxy::Get();
+  if (init_params->ExoImeSupport() !=
+      crosapi::mojom::ExoImeSupport::kUnsupported) {
     return true;
   }
 #endif
@@ -124,12 +124,10 @@ ConvertStyle(uint32_t style) {
 WaylandInputMethodContext::WaylandInputMethodContext(
     WaylandConnection* connection,
     WaylandKeyboard::Delegate* key_delegate,
-    LinuxInputMethodContextDelegate* ime_delegate,
-    bool is_simple)
+    LinuxInputMethodContextDelegate* ime_delegate)
     : connection_(connection),
       key_delegate_(key_delegate),
       ime_delegate_(ime_delegate),
-      is_simple_(is_simple),
       text_input_(nullptr) {
   connection_->wayland_window_manager()->AddObserver(this);
   Init();
@@ -137,8 +135,8 @@ WaylandInputMethodContext::WaylandInputMethodContext(
 
 WaylandInputMethodContext::~WaylandInputMethodContext() {
   if (text_input_) {
+    DismissVirtualKeyboard();
     text_input_->Deactivate();
-    text_input_->HideInputPanel();
   }
   connection_->wayland_window_manager()->RemoveObserver(this);
 }
@@ -149,7 +147,7 @@ void WaylandInputMethodContext::Init(bool initialize_for_testing) {
   // If text input instance is not created then all ime context operations
   // are noop. This option is because in some environments someone might not
   // want to enable ime/virtual keyboard even if it's available.
-  if (use_ozone_wayland_vkb && !is_simple_ && !text_input_ &&
+  if (use_ozone_wayland_vkb && !text_input_ &&
       connection_->text_input_manager_v1()) {
     text_input_ = std::make_unique<ZWPTextInputWrapperV1>(
         connection_, this, connection_->text_input_manager_v1(),
@@ -208,14 +206,33 @@ void WaylandInputMethodContext::Reset() {
     text_input_->Reset();
 }
 
-void WaylandInputMethodContext::Focus() {
-  focused_ = true;
-  MaybeUpdateActivated();
+void WaylandInputMethodContext::WillUpdateFocus(TextInputClient* old_client,
+                                                TextInputClient* new_client) {
+  if (old_client)
+    past_clients_.try_emplace(old_client, base::AsWeakPtr(old_client));
 }
 
-void WaylandInputMethodContext::Blur() {
+void WaylandInputMethodContext::UpdateFocus(bool has_client,
+                                            TextInputType old_type,
+                                            TextInputType new_type) {
+  // This prevents unnecessarily hiding/showing the virtual keyboard.
+  bool skip_vk_update =
+      old_type != TEXT_INPUT_TYPE_NONE && new_type != TEXT_INPUT_TYPE_NONE;
+
+  if (old_type != TEXT_INPUT_TYPE_NONE)
+    Blur(skip_vk_update);
+  if (new_type != TEXT_INPUT_TYPE_NONE)
+    Focus(skip_vk_update);
+}
+
+void WaylandInputMethodContext::Focus(bool skip_virtual_keyboard_update) {
+  focused_ = true;
+  MaybeUpdateActivated(skip_virtual_keyboard_update);
+}
+
+void WaylandInputMethodContext::Blur(bool skip_virtual_keyboard_update) {
   focused_ = false;
-  MaybeUpdateActivated();
+  MaybeUpdateActivated(skip_virtual_keyboard_update);
 }
 
 void WaylandInputMethodContext::SetCursorLocation(const gfx::Rect& rect) {
@@ -319,6 +336,66 @@ void WaylandInputMethodContext::SetSurroundingText(
   text_input_->SetSurroundingText(truncated_text, relocated_selection_range);
 }
 
+void WaylandInputMethodContext::SetContentType(TextInputType type,
+                                               TextInputMode mode,
+                                               uint32_t flags,
+                                               bool should_do_learning) {
+  if (!text_input_)
+    return;
+  text_input_->SetContentType(type, mode, flags, should_do_learning);
+}
+
+void WaylandInputMethodContext::SetGrammarFragmentAtCursor(
+    const GrammarFragment& fragment) {
+  if (!text_input_)
+    return;
+  text_input_->SetGrammarFragmentAtCursor(fragment);
+}
+
+void WaylandInputMethodContext::SetAutocorrectInfo(
+    const gfx::Range& autocorrect_range,
+    const gfx::Rect& autocorrect_bounds) {
+  if (!text_input_)
+    return;
+  text_input_->SetAutocorrectInfo(autocorrect_range, autocorrect_bounds);
+}
+
+VirtualKeyboardController*
+WaylandInputMethodContext::GetVirtualKeyboardController() {
+  if (!text_input_)
+    return nullptr;
+  return this;
+}
+
+bool WaylandInputMethodContext::DisplayVirtualKeyboard() {
+  if (!text_input_)
+    return false;
+
+  text_input_->ShowInputPanel();
+  return true;
+}
+
+void WaylandInputMethodContext::DismissVirtualKeyboard() {
+  if (!text_input_)
+    return;
+
+  text_input_->HideInputPanel();
+}
+
+void WaylandInputMethodContext::AddObserver(
+    VirtualKeyboardControllerObserver* observer) {
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+
+void WaylandInputMethodContext::RemoveObserver(
+    VirtualKeyboardControllerObserver* observer) {
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+
+bool WaylandInputMethodContext::IsKeyboardVisible() {
+  return virtual_keyboard_visible_;
+}
+
 void WaylandInputMethodContext::OnPreeditString(
     base::StringPiece text,
     const std::vector<SpanStyle>& spans,
@@ -326,7 +403,6 @@ void WaylandInputMethodContext::OnPreeditString(
   ui::CompositionText composition_text;
   composition_text.text = base::UTF8ToUTF16(text);
   for (const auto& span : spans) {
-    ImeTextSpan text_span;
     auto start_offset = OffsetFromUTF8Offset(text, span.index);
     if (!start_offset)
       continue;
@@ -357,7 +433,37 @@ void WaylandInputMethodContext::OnPreeditString(
 }
 
 void WaylandInputMethodContext::OnCommitString(base::StringPiece text) {
+  if (pending_keep_selection_) {
+    ime_delegate_->OnConfirmCompositionText(true);
+    pending_keep_selection_ = false;
+    return;
+  }
   ime_delegate_->OnCommit(base::UTF8ToUTF16(text));
+}
+
+void WaylandInputMethodContext::OnCursorPosition(int32_t index,
+                                                 int32_t anchor) {
+  if (surrounding_text_.empty()) {
+    LOG(ERROR) << "SetSurroundingText should run before OnCursorPosition.";
+    return;
+  }
+
+  if (index < 0 || static_cast<uint32_t>(index) > surrounding_text_.size()) {
+    LOG(ERROR) << "Invalid index is specified.";
+    return;
+  }
+  if (anchor < 0 || static_cast<uint32_t>(anchor) > surrounding_text_.size()) {
+    LOG(ERROR) << "Invalid anchor is specified.";
+    return;
+  }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (selection_range_utf8_ == gfx::Range(index, anchor)) {
+    pending_keep_selection_ = true;
+  } else {
+    NOTIMPLEMENTED_LOG_ONCE();
+  }
+#endif
 }
 
 void WaylandInputMethodContext::OnDeleteSurroundingText(int32_t index,
@@ -405,26 +511,46 @@ void WaylandInputMethodContext::OnDeleteSurroundingText(int32_t index,
 
 void WaylandInputMethodContext::OnKeysym(uint32_t keysym,
                                          uint32_t state,
-                                         uint32_t modifiers) {
+                                         uint32_t modifiers_bits) {
 #if BUILDFLAG(USE_XKBCOMMON)
   auto* layout_engine = KeyboardLayoutEngineManager::GetKeyboardLayoutEngine();
   if (!layout_engine)
     return;
 
-  // TODO(crbug.com/1079353): Handle modifiers.
+  // TODO(crbug.com/1289236): This is for the backward compatibility with older
+  // ash-chrome (M101 and earlier). In that version of ash-chrome didn't send
+  // CapsLock so that we hit an issue on using it.
+  // Because newer ash-chrome always sends CapsLock modifier map, as short term
+  // workaround, check the condition to identify whether Lacros is running
+  // on top of enough newer ash-chrome.
+  // To avoid accident, we also check text_input_extension, which is available
+  // only on ash-chrome.
+  // We can remove this workaround check in M104 or later.
+  absl::optional<std::vector<base::StringPiece>> modifiers;
+  if (!connection_->text_input_extension_v1() ||
+      base::Contains(modifiers_map_, XKB_MOD_NAME_CAPS)) {
+    std::vector<base::StringPiece> modifier_content;
+    for (size_t i = 0; i < modifiers_map_.size(); ++i) {
+      if (modifiers_bits & (1 << i))
+        modifier_content.emplace_back(modifiers_map_[i]);
+    }
+    modifiers = std::move(modifier_content);
+  }
+
   DomCode dom_code = static_cast<XkbKeyboardLayoutEngine*>(layout_engine)
-                         ->GetDomCodeByKeysym(keysym);
+                         ->GetDomCodeByKeysym(keysym, modifiers);
   if (dom_code == DomCode::NONE)
     return;
 
   // Keyboard might not exist.
-  int device_id =
-      connection_->keyboard() ? connection_->keyboard()->device_id() : 0;
+  int device_id = connection_->seat()->keyboard()
+                      ? connection_->seat()->keyboard()->device_id()
+                      : 0;
 
   EventType type =
       state == WL_KEYBOARD_KEY_STATE_PRESSED ? ET_KEY_PRESSED : ET_KEY_RELEASED;
   key_delegate_->OnKeyboardKeyEvent(type, dom_code, /*repeat=*/false,
-                                    EventTimeForNow(), device_id,
+                                    absl::nullopt, EventTimeForNow(), device_id,
                                     WaylandKeyboard::KeyEventKind::kKey);
 #else
   NOTIMPLEMENTED();
@@ -492,19 +618,71 @@ void WaylandInputMethodContext::OnSetPreeditRegion(
                                     ime_text_spans);
 }
 
-void WaylandInputMethodContext::OnKeyboardFocusedWindowChanged() {
-  MaybeUpdateActivated();
+void WaylandInputMethodContext::OnClearGrammarFragments(
+    const gfx::Range& range) {
+  std::vector<size_t> offsets = {range.start(), range.end()};
+  base::UTF8ToUTF16AndAdjustOffsets(surrounding_text_, &offsets);
+  ime_delegate_->OnClearGrammarFragments(gfx::Range(
+      static_cast<uint32_t>(offsets[0]), static_cast<uint32_t>(offsets[1])));
 }
 
-void WaylandInputMethodContext::MaybeUpdateActivated() {
+void WaylandInputMethodContext::OnAddGrammarFragment(
+    const GrammarFragment& fragment) {
+  std::vector<size_t> offsets = {fragment.range.start(), fragment.range.end()};
+  base::UTF8ToUTF16AndAdjustOffsets(surrounding_text_, &offsets);
+  ime_delegate_->OnAddGrammarFragment(
+      {GrammarFragment(gfx::Range(static_cast<uint32_t>(offsets[0]),
+                                  static_cast<uint32_t>(offsets[1])),
+                       fragment.suggestion)});
+}
+
+void WaylandInputMethodContext::OnSetAutocorrectRange(const gfx::Range& range) {
+  ime_delegate_->OnSetAutocorrectRange(range);
+}
+
+void WaylandInputMethodContext::OnSetVirtualKeyboardOccludedBounds(
+    const gfx::Rect& screen_bounds) {
+  ime_delegate_->OnSetVirtualKeyboardOccludedBounds(screen_bounds);
+
+  for (auto& client : past_clients_) {
+    if (client.second)
+      client.second->EnsureCaretNotInRect(screen_bounds);
+  }
+  if (screen_bounds.IsEmpty())
+    past_clients_.clear();
+}
+
+void WaylandInputMethodContext::OnInputPanelState(uint32_t state) {
+  virtual_keyboard_visible_ = (state & 1) != 0;
+  // Note: Currently there's no support of VirtualKeyboardControllerObserver.
+  // In the future, we may need to support it. Specifically,
+  // RenderWidgetHostViewAura would like to know the VirtualKeyboard's
+  // region somehow.
+}
+
+void WaylandInputMethodContext::OnModifiersMap(
+    std::vector<std::string> modifiers_map) {
+  modifiers_map_ = std::move(modifiers_map);
+}
+
+void WaylandInputMethodContext::OnKeyboardFocusedWindowChanged() {
+  MaybeUpdateActivated(false);
+}
+
+void WaylandInputMethodContext::MaybeUpdateActivated(
+    bool skip_virtual_keyboard_update) {
   if (!text_input_)
     return;
 
   WaylandWindow* window =
       connection_->wayland_window_manager()->GetCurrentKeyboardFocusedWindow();
+  if (!window && !connection_->seat()->keyboard())
+    window = connection_->wayland_window_manager()->GetCurrentActiveWindow();
   // Activate Wayland IME only if 1) InputMethod in Chrome has some
   // TextInputClient connected, and 2) the actual keyboard focus of Wayland
   // is given to Chrome, which is notified via wl_keyboard::enter.
+  // If no keyboard is connected, the current active window is used for 2)
+  // instead (https://crbug.com/1168411).
   bool activated = focused_ && window;
   if (activated_ == activated)
     return;
@@ -512,10 +690,12 @@ void WaylandInputMethodContext::MaybeUpdateActivated() {
   activated_ = activated;
   if (activated) {
     text_input_->Activate(window);
-    text_input_->ShowInputPanel();
+    if (!skip_virtual_keyboard_update)
+      DisplayVirtualKeyboard();
   } else {
+    if (!skip_virtual_keyboard_update)
+      DismissVirtualKeyboard();
     text_input_->Deactivate();
-    text_input_->HideInputPanel();
   }
 }
 

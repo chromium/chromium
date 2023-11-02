@@ -1,4 +1,4 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Chromium presubmit script for prerender in Web Platform Tests.
@@ -38,7 +38,7 @@ def _CheckTimeoutMetaTags(input_api, output_api):
         if not _CheckFileTimeoutMetaTags(f):
             results.append(
                 output_api.PresubmitError(
-                    ('Missing long timeout.'
+                    ('Missing long timeout. '
                      'Add `<meta name="timeout" content="long">` to %s.') %
                     f.LocalPath()))
     return results

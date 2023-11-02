@@ -1,9 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_UPDATER_PREFS_H_
 #define CHROME_UPDATER_PREFS_H_
+
+#include <string>
 
 #include "base/memory/ref_counted.h"
 
@@ -44,9 +46,11 @@ class GlobalPrefs : virtual public UpdaterPrefs {
   GlobalPrefs() = default;
 
   virtual std::string GetActiveVersion() const = 0;
-  virtual void SetActiveVersion(std::string value) = 0;
+  virtual void SetActiveVersion(const std::string& value) = 0;
   virtual bool GetSwapping() const = 0;
   virtual void SetSwapping(bool value) = 0;
+  virtual bool GetMigratedLegacyUpdaters() const = 0;
+  virtual void SetMigratedLegacyUpdaters() = 0;
 
   // The server starts counter is a global pref value that counts the number of
   // active server starts for the updater. If there are no apps registered by

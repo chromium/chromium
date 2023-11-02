@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -133,7 +133,7 @@ mojom::blink::ContactsManager* ContactsManager::GetContactsManager(
 
 const Vector<String>& ContactsManager::GetProperties(
     ScriptState* script_state) {
-  if (properties_.IsEmpty()) {
+  if (properties_.empty()) {
     properties_ = {kEmail, kName, kTel};
 
     if (RuntimeEnabledFeatures::ContactsManagerExtraPropertiesEnabled(
@@ -154,7 +154,7 @@ ScriptPromise ContactsManager::select(
                           ? LocalDOMWindow::From(script_state)->GetFrame()
                           : nullptr;
 
-  if (!frame || !frame->IsMainFrame()) {
+  if (!frame || !frame->IsOutermostMainFrame()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "The contacts API can only be used in the top frame");
@@ -167,7 +167,7 @@ ScriptPromise ContactsManager::select(
     return ScriptPromise();
   }
 
-  if (properties.IsEmpty()) {
+  if (properties.empty()) {
     exception_state.ThrowTypeError("At least one property must be provided");
     return ScriptPromise();
   }
@@ -222,8 +222,8 @@ ScriptPromise ContactsManager::select(
   GetContactsManager(script_state)
       ->Select(options->multiple(), include_names, include_emails, include_tel,
                include_addresses, include_icons,
-               WTF::Bind(&ContactsManager::OnContactsSelected,
-                         WrapPersistent(this), WrapPersistent(resolver)));
+               WTF::BindOnce(&ContactsManager::OnContactsSelected,
+                             WrapPersistent(this), WrapPersistent(resolver)));
 
   return promise;
 }

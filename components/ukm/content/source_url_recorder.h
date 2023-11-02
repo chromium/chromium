@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,13 +14,9 @@ class WebContents;
 namespace ukm {
 
 // Initializes recording of UKM source URLs for the given WebContents.
+// Note: this method is idempotent.
 void InitializeSourceUrlRecorderForWebContents(
     content::WebContents* web_contents);
-
-// Get a UKM SourceId for the currently committed document of web contents.
-// Returns kInvalidSourceId if no commit has been observed.
-SourceId GetSourceIdForWebContentsDocument(
-    const content::WebContents* web_contents);
 
 }  // namespace ukm
 

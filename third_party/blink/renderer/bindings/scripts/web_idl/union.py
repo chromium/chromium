@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -8,8 +8,6 @@ from .composition_parts import WithCodeGeneratorInfo
 from .composition_parts import WithComponent
 from .composition_parts import WithDebugInfo
 from .composition_parts import WithIdentifier
-from .idl_type import IdlType
-from .typedef import Typedef
 
 
 class Union(WithIdentifier, WithCodeGeneratorInfo, WithComponent,
@@ -153,9 +151,6 @@ class Union(WithIdentifier, WithCodeGeneratorInfo, WithComponent,
             sorted(ir.typedefs, key=sort_key_identifier))
 
         ir.public_object = self
-
-        for idl_type in self._idl_types:
-            idl_type.set_union_definition_object(self)
 
     @property
     def idl_types(self):

@@ -1,4 +1,4 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -7,10 +7,16 @@ import("//build/config/chromeos/ui_mode.gni")
 source_set("common") {
   public = [
     "common_signals_decorator.h",
+    "metrics_utils.h",
     "signals_decorator.h",
+    "signals_utils.h",
   ]
 
-  sources = [ "common_signals_decorator.cc" ]
+  sources = [
+    "common_signals_decorator.cc",
+    "metrics_utils.cc",
+    "signals_utils.cc",
+  ]
 
   public_deps = [
     "//base",
@@ -19,6 +25,7 @@ source_set("common") {
 
   deps = [
     "//chrome/browser/enterprise/signals:utils",
+    "//components/device_signals/core/common",
     "//components/policy/core/common",
     "//components/version_info",
     "//third_party/abseil-cpp:absl",
@@ -51,6 +58,7 @@ source_set("unit_tests") {
     "//chrome/browser/enterprise/connectors/device_trust/attestation/common:types",
     "//chrome/common:constants",
     "//components/component_updater",
+    "//components/device_signals/core/common",
     "//components/policy/content",
     "//components/policy/core/browser",
     "//components/prefs:test_support",

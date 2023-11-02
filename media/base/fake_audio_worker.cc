@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -185,8 +185,10 @@ void FakeAudioWorker::Worker::DoRead() {
                                             frames_elapsed_, sample_rate_);
   }
 
-  worker_task_runner_->PostDelayedTask(FROM_HERE, worker_task_cb_.callback(),
-                                       next_read_time - now);
+  worker_task_runner_->PostDelayedTaskAt(base::subtle::PostDelayedTaskPassKey(),
+                                         FROM_HERE, worker_task_cb_.callback(),
+                                         next_read_time,
+                                         base::subtle::DelayPolicy::kPrecise);
 }
 
 }  // namespace media

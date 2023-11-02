@@ -1,0 +1,1 @@
+Tests with WildcardSubdomainsInPermissionsPolicy enabled.

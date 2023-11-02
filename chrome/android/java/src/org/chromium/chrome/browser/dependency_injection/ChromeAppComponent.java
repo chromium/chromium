@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,8 @@ import org.chromium.chrome.browser.AppHooksModule;
 import org.chromium.chrome.browser.browserservices.ClearDataDialogResultRecorder;
 import org.chromium.chrome.browser.browserservices.SessionDataHolder;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClient;
+import org.chromium.chrome.browser.browserservices.permissiondelegation.InstalledWebappPermissionManager;
 import org.chromium.chrome.browser.browserservices.permissiondelegation.PermissionUpdater;
-import org.chromium.chrome.browser.browserservices.permissiondelegation.TrustedWebActivityPermissionManager;
 import org.chromium.chrome.browser.customtabs.CustomTabsClientFileProcessor;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.dependency_injection.BaseCustomTabActivityComponent;
@@ -35,9 +35,9 @@ public interface ChromeAppComponent {
 
     CustomTabsConnection resolveCustomTabsConnection();
     SharedPreferencesManager resolveSharedPreferencesManager();
-    ClearDataDialogResultRecorder resolveTwaClearDataDialogRecorder();
-    TrustedWebActivityPermissionManager resolveTwaPermissionManager();
-    PermissionUpdater resolveTwaPermissionUpdater();
+    ClearDataDialogResultRecorder resolveClearDataDialogResultRecorder();
+    InstalledWebappPermissionManager resolvePermissionManager();
+    PermissionUpdater resolvePermissionUpdater();
     TrustedWebActivityClient resolveTrustedWebActivityClient();
     ExternalAuthUtils resolveExternalAuthUtils();
 

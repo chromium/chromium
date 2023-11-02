@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <string>
 #include <vector>
 
@@ -42,6 +43,14 @@ enum COMPONENT_EXPORT(EVDEV) EventDeviceType {
   DT_MULTITOUCH,
   DT_MULTITOUCH_MOUSE,
   DT_ALL,
+};
+
+// Status of Keyboard Device
+enum COMPONENT_EXPORT(EVDEV) KeyboardType {
+  NOT_KEYBOARD,
+  IN_BLOCKLIST,
+  STYLUS_BUTTON_DEVICE,
+  VALID_KEYBOARD,
 };
 
 // Device information for Linux input devices
@@ -136,6 +145,9 @@ class COMPONENT_EXPORT(EVDEV) EventDeviceInfo {
   // Has stylus EV_KEY events.
   bool HasStylus() const;
 
+  // Determine status of keyboard device (No keyboard, In blocklist, ect.).
+  KeyboardType GetKeyboardType() const;
+
   // Determine whether there's a keyboard on this device.
   bool HasKeyboard() const;
 
@@ -148,6 +160,9 @@ class COMPONENT_EXPORT(EVDEV) EventDeviceInfo {
 
   // Determine whether there's a touchpad on this device.
   bool HasTouchpad() const;
+
+  // Determine whether there's a haptic touchpad on this device.
+  bool HasHapticTouchpad() const;
 
   // Determine whether there's a tablet on this device.
   bool HasTablet() const;
@@ -188,6 +203,10 @@ class COMPONENT_EXPORT(EVDEV) EventDeviceInfo {
   // The device type (internal or external.)
   InputDeviceType device_type() const { return device_type_; }
 
+  std::array<unsigned long, EVDEV_BITS_TO_LONGS(KEY_CNT)> GetKeyBits() const {
+    return key_bits_;
+  }
+
   // Determines InputDeviceType from device identification.
   static InputDeviceType GetInputDeviceTypeFromId(input_id id);
 
@@ -206,17 +225,17 @@ class COMPONENT_EXPORT(EVDEV) EventDeviceInfo {
   // do not tell us what the axes mean.
   LegacyAbsoluteDeviceType ProbeLegacyAbsoluteDevice() const;
 
-  unsigned long ev_bits_[EVDEV_BITS_TO_LONGS(EV_CNT)];
-  unsigned long key_bits_[EVDEV_BITS_TO_LONGS(KEY_CNT)];
-  unsigned long rel_bits_[EVDEV_BITS_TO_LONGS(REL_CNT)];
-  unsigned long abs_bits_[EVDEV_BITS_TO_LONGS(ABS_CNT)];
-  unsigned long msc_bits_[EVDEV_BITS_TO_LONGS(MSC_CNT)];
-  unsigned long sw_bits_[EVDEV_BITS_TO_LONGS(SW_CNT)];
-  unsigned long led_bits_[EVDEV_BITS_TO_LONGS(LED_CNT)];
-  unsigned long prop_bits_[EVDEV_BITS_TO_LONGS(INPUT_PROP_CNT)];
-  unsigned long ff_bits_[EVDEV_BITS_TO_LONGS(FF_CNT)];
+  std::array<unsigned long, EVDEV_BITS_TO_LONGS(EV_CNT)> ev_bits_;
+  std::array<unsigned long, EVDEV_BITS_TO_LONGS(KEY_CNT)> key_bits_;
+  std::array<unsigned long, EVDEV_BITS_TO_LONGS(REL_CNT)> rel_bits_;
+  std::array<unsigned long, EVDEV_BITS_TO_LONGS(ABS_CNT)> abs_bits_;
+  std::array<unsigned long, EVDEV_BITS_TO_LONGS(MSC_CNT)> msc_bits_;
+  std::array<unsigned long, EVDEV_BITS_TO_LONGS(SW_CNT)> sw_bits_;
+  std::array<unsigned long, EVDEV_BITS_TO_LONGS(LED_CNT)> led_bits_;
+  std::array<unsigned long, EVDEV_BITS_TO_LONGS(INPUT_PROP_CNT)> prop_bits_;
+  std::array<unsigned long, EVDEV_BITS_TO_LONGS(FF_CNT)> ff_bits_;
 
-  struct input_absinfo abs_info_[ABS_CNT];
+  std::array<input_absinfo, ABS_CNT> abs_info_;
 
   // Store the values for the multi-touch properties for each slot.
   std::vector<int32_t> slot_values_[EVDEV_ABS_MT_COUNT];
@@ -233,6 +252,6 @@ class COMPONENT_EXPORT(EVDEV) EventDeviceInfo {
   InputDeviceType device_type_ = InputDeviceType::INPUT_DEVICE_UNKNOWN;
 };
 
-}  // namspace ui
+}  // namespace ui
 
 #endif  // UI_EVENTS_OZONE_EVDEV_EVENT_DEVICE_INFO_H_

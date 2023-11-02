@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,10 +20,10 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
-#include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace blink {
 
@@ -31,17 +31,17 @@ namespace {
 
 // Accumulated scroll offset of all frames up to the local root frame.
 int AccumulatedScrollOffset(const HTMLAnchorElement& anchor_element) {
-  IntSize offset;
+  int offset = 0;
   Frame* frame = anchor_element.GetDocument().GetFrame();
   while (frame && frame->View()) {
     auto* local_frame = DynamicTo<LocalFrame>(frame);
     if (!local_frame)
       break;
 
-    offset += local_frame->View()->LayoutViewport()->ScrollOffsetInt();
+    offset += local_frame->View()->LayoutViewport()->ScrollOffsetInt().y();
     frame = frame->Tree().Parent();
   }
-  return offset.height();
+  return offset;
 }
 
 // Whether the element is inside an iframe.
@@ -126,10 +126,10 @@ bool IsUrlIncrementedByOne(const HTMLAnchorElement& anchor_element) {
 
 // Returns the bounding box rect of a layout object, including visual
 // overflows.
-IntRect AbsoluteElementBoundingBoxRect(const LayoutObject& layout_object) {
+gfx::Rect AbsoluteElementBoundingBoxRect(const LayoutObject& layout_object) {
   Vector<PhysicalRect> rects = layout_object.OutlineRects(
-      PhysicalOffset(), NGOutlineType::kIncludeBlockVisualOverflow);
-  return EnclosingIntRect(layout_object.LocalToAbsoluteRect(UnionRect(rects)));
+      nullptr, PhysicalOffset(), NGOutlineType::kIncludeBlockVisualOverflow);
+  return ToEnclosingRect(layout_object.LocalToAbsoluteRect(UnionRect(rects)));
 }
 
 bool IsNonEmptyTextNode(Node* node) {
@@ -187,17 +187,17 @@ mojom::blink::AnchorElementMetricsPtr CreateAnchorElementMetrics(
   if (!local_frame_view || !root_frame_view)
     return metrics;
 
-  IntRect viewport = root_frame_view->LayoutViewport()->VisibleContentRect();
-  if (viewport.size().IsEmpty())
+  gfx::Rect viewport = root_frame_view->LayoutViewport()->VisibleContentRect();
+  if (viewport.IsEmpty())
     return metrics;
-  metrics->viewport_size = ToGfxSize(viewport.size());
+  metrics->viewport_size = viewport.size();
 
   // Use the viewport size to normalize anchor element metrics.
   float base_height = static_cast<float>(viewport.height());
   float base_width = static_cast<float>(viewport.width());
 
   // The anchor element rect in the root frame.
-  IntRect target = local_frame_view->ConvertToRootFrame(
+  gfx::Rect target = local_frame_view->ConvertToRootFrame(
       AbsoluteElementBoundingBoxRect(*layout_object));
 
   // Limit the element size to the viewport size.
@@ -228,16 +228,15 @@ mojom::blink::AnchorElementMetricsPtr CreateAnchorElementMetrics(
                         ->ContentsSize()
                         .height();
 
-  int root_scrolled =
-      root_frame_view->LayoutViewport()->ScrollOffsetInt().height();
+  int root_scrolled = root_frame_view->LayoutViewport()->ScrollOffsetInt().y();
   float ratio_distance_root_bottom =
       (root_height - root_scrolled - target.y() - target.height()) /
       base_height;
   metrics->ratio_distance_root_bottom = ratio_distance_root_bottom;
 
   // Get the anchor element rect that intersects with the viewport.
-  IntRect target_visible(target);
-  target_visible.Intersect(IntRect(gfx::Point(), viewport.size()));
+  gfx::Rect target_visible = target;
+  target_visible.Intersect(gfx::Rect(viewport.size()));
 
   // It guarantees to be less or equal to 1.
   float ratio_visible_area = (target_visible.height() / base_height) *

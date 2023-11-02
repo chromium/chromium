@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -57,7 +57,7 @@ void UrgentPageDiscardingPolicy::OnTakenFromGraph(Graph* graph) {
 void UrgentPageDiscardingPolicy::OnReclaimTarget(
     absl::optional<uint64_t> reclaim_target_kb) {
   PageDiscardingHelper::GetFromGraph(graph_)->UrgentlyDiscardMultiplePages(
-      reclaim_target_kb, features::DiscardStrategy::LRU, true,
+      reclaim_target_kb, true,
       base::BindOnce(
           [](UrgentPageDiscardingPolicy* policy, bool success_unused) {
             DCHECK(policy->handling_memory_pressure_notification_);
@@ -94,7 +94,6 @@ void UrgentPageDiscardingPolicy::OnMemoryPressure(
                      base::Unretained(this)));
 #else
   PageDiscardingHelper::GetFromGraph(graph_)->UrgentlyDiscardAPage(
-      features::UrgentDiscardingParams::GetParams().discard_strategy(),
       base::BindOnce(
           [](UrgentPageDiscardingPolicy* policy, bool success_unused) {
             DCHECK(policy->handling_memory_pressure_notification_);

@@ -1,24 +1,24 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/app/spotlight/topsites_spotlight_manager.h"
 
-#include <memory>
+#import <memory>
 
-#include "base/bind.h"
-#include "base/memory/ref_counted.h"
-#include "base/strings/sys_string_conversions.h"
-#include "components/bookmarks/browser/bookmark_model.h"
-#include "components/history/core/browser/history_types.h"
-#include "components/history/core/browser/top_sites.h"
-#include "components/history/core/browser/top_sites_observer.h"
-#include "components/sync/driver/sync_service.h"
-#include "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
-#include "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
-#include "ios/chrome/browser/history/top_sites_factory.h"
-#include "ios/chrome/browser/sync/sync_observer_bridge.h"
-#include "ios/chrome/browser/sync/sync_service_factory.h"
+#import "base/bind.h"
+#import "base/memory/ref_counted.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/bookmarks/browser/bookmark_model.h"
+#import "components/history/core/browser/history_types.h"
+#import "components/history/core/browser/top_sites.h"
+#import "components/history/core/browser/top_sites_observer.h"
+#import "components/sync/driver/sync_service.h"
+#import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
+#import "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
+#import "ios/chrome/browser/history/top_sites_factory.h"
+#import "ios/chrome/browser/sync/sync_observer_bridge.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

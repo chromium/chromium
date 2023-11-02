@@ -1,11 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/renderer/mhtml_handle_writer.h"
 
 #include "base/metrics/histogram_macros.h"
-#include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
@@ -63,7 +62,15 @@ MHTMLFileHandleWriter::MHTMLFileHandleWriter(
     base::File file)
     : MHTMLHandleWriter(std::move(main_thread_task_runner),
                         std::move(callback)),
-      file_(std::move(file)) {}
+      file_(std::move(file)) {
+#if BUILDFLAG(IS_FUCHSIA)
+  // TODO(crbug.com/1288816): Remove the Seek call.
+  // On fuchsia, fds do not share state. As the fd has been duped and sent from
+  // the browser process, it must be seeked to the end to ensure the data is
+  // appended.
+  file_.Seek(base::File::FROM_END, 0);
+#endif  // BUILDFLAG(IS_FUCHSIA)
+}
 
 MHTMLFileHandleWriter::~MHTMLFileHandleWriter() {}
 

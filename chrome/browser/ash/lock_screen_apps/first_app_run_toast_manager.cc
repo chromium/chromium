@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -78,12 +78,9 @@ void FirstAppRunToastManager::RunForAppWindow(
   DCHECK(app_window->GetNativeWindow());
 
   const extensions::Extension* app = app_window->GetExtension();
-  const base::DictionaryValue* toast_shown =
-      profile_->GetPrefs()->GetDictionary(
-          prefs::kNoteTakingAppsLockScreenToastShown);
-  bool already_shown_for_app = false;
-  if (toast_shown->GetBoolean(app->id(), &already_shown_for_app) &&
-      already_shown_for_app) {
+  const base::Value::Dict& toast_shown =
+      profile_->GetPrefs()->GetDict(prefs::kNoteTakingAppsLockScreenToastShown);
+  if (toast_shown.FindBoolByDottedPath(app->id()).value_or(false)) {
     return;
   }
 
@@ -147,9 +144,9 @@ void FirstAppRunToastManager::CreateAndShowToastDialog() {
 void FirstAppRunToastManager::ToastDialogDismissed() {
   {
     const extensions::Extension* app = app_window_->GetExtension();
-    DictionaryPrefUpdate dict_update(
+    ScopedDictPrefUpdate dict_update(
         profile_->GetPrefs(), prefs::kNoteTakingAppsLockScreenToastShown);
-    dict_update->SetBoolean(app->id(), true);
+    dict_update->Set(app->id(), true);
   }
   Reset();
 }

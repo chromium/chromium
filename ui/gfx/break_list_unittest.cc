@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include "base/cxx17_backports.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/range/range.h"
@@ -27,6 +26,21 @@ TEST_F(BreakListTest, SetValue) {
   EXPECT_TRUE(color_breaks.EqualsValueForTesting(SK_ColorRED));
   color_breaks.SetValue(SK_ColorBLACK);
   EXPECT_TRUE(color_breaks.EqualsValueForTesting(SK_ColorBLACK));
+}
+
+TEST_F(BreakListTest, SetValueChanged) {
+  BreakList<bool> breaks(false);
+  EXPECT_FALSE(breaks.SetValue(false));
+  EXPECT_TRUE(breaks.SetValue(true));
+  EXPECT_FALSE(breaks.SetValue(true));
+  EXPECT_TRUE(breaks.SetValue(false));
+
+  const size_t max = 99;
+  breaks.SetMax(max);
+  breaks.ApplyValue(true, Range(0, 2));
+  breaks.ApplyValue(true, Range(3, 6));
+  EXPECT_TRUE(breaks.SetValue(false));
+  EXPECT_FALSE(breaks.SetValue(false));
 }
 
 TEST_F(BreakListTest, ApplyValue) {
@@ -103,6 +117,27 @@ TEST_F(BreakListTest, ApplyValue) {
   EXPECT_TRUE(breaks.EqualsForTesting(overlap));
 }
 
+TEST_F(BreakListTest, ApplyValueChanged) {
+  BreakList<bool> breaks(false);
+  const size_t max = 99;
+  breaks.SetMax(max);
+
+  // Set two ranges.
+  EXPECT_TRUE(breaks.ApplyValue(true, Range(0, 5)));
+  EXPECT_TRUE(breaks.ApplyValue(true, Range(9, 10)));
+
+  // Setting sub-ranges should be a no-op.
+  EXPECT_FALSE(breaks.ApplyValue(true, Range(0, 2)));
+  EXPECT_FALSE(breaks.ApplyValue(true, Range(1, 3)));
+
+  // Merge the two ranges.
+  EXPECT_TRUE(breaks.ApplyValue(true, Range(2, 10)));
+
+  // Setting sub-ranges should be a no-op.
+  EXPECT_FALSE(breaks.ApplyValue(true, Range(0, 2)));
+  EXPECT_FALSE(breaks.ApplyValue(true, Range(1, 3)));
+}
+
 TEST_F(BreakListTest, SetMax) {
   // Ensure values adjust to accommodate max position changes.
   BreakList<bool> breaks(false);
@@ -145,20 +180,12 @@ TEST_F(BreakListTest, GetBreakAndRange) {
     size_t break_index;
     Range range;
   } cases[] = {
-    { 0, 0, Range(0, 1) },
-    { 1, 1, Range(1, 2) },
-    { 2, 2, Range(2, 4) },
-    { 3, 2, Range(2, 4) },
-    { 4, 3, Range(4, 6) },
-    { 5, 3, Range(4, 6) },
-    { 6, 4, Range(6, 8) },
-    { 7, 4, Range(6, 8) },
-    // Positions at or beyond the max simply return the last break and range.
-    { 8, 4, Range(6, 8) },
-    { 9, 4, Range(6, 8) },
+      {0, 0, Range(0, 1)}, {1, 1, Range(1, 2)}, {2, 2, Range(2, 4)},
+      {3, 2, Range(2, 4)}, {4, 3, Range(4, 6)}, {5, 3, Range(4, 6)},
+      {6, 4, Range(6, 8)}, {7, 4, Range(6, 8)},
   };
 
-  for (size_t i = 0; i < base::size(cases); ++i) {
+  for (size_t i = 0; i < std::size(cases); ++i) {
     BreakList<bool>::const_iterator it = breaks.GetBreak(cases[i].position);
     EXPECT_EQ(breaks.breaks()[cases[i].break_index], *it);
     EXPECT_EQ(breaks.GetRange(it), cases[i].range);

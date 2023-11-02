@@ -4,7 +4,7 @@ browser process.
 
 There are four types of work items executed on the UI and IO threads.
 1) Both the UI and IO threads can have tasks posted to them via the Task
-   Scheduler [e.g. via base::PostTask with a BrowserThread::ID].
+   Scheduler [e.g. via content::Get(UI|IO)ThreadTaskRunner()].
 2) The UI thread processes native events directly from the message loop
    [NSEvents on macOS, MSGs on Windows, InputEvents on Android, XEvents on
    X11, etc.]

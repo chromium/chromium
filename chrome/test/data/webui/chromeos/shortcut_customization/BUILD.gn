@@ -1,108 +1,48 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
 
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  closure_flags = default_closure_args + [
-                    "browser_resolver_prefix_replacements=\"chrome://shortcut-customization/=../../ash/webui/shortcut_customization_ui/resources/\"",
-                    "js_module_root=../../chrome/test/data/webui/",
-                    "js_module_root=./gen/chrome/test/data/webui/",
-                  ]
+ts_library("build_ts") {
+  root_dir = "."
+  out_dir = "$target_gen_dir/tsc"
+  tsconfig_base = "tsconfig_base.json"
+  path_mappings = [
+    "chrome://shortcut-customization/*|" +
+        rebase_path(
+            "$root_gen_dir/ash/webui/shortcut_customization_ui/resources/tsc/*",
+            target_gen_dir),
+    "chrome://webui-test/*|" +
+        rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
+                    target_gen_dir),
+  ]
+  in_files = [
+    "accelerator_edit_dialog_test.ts",
+    "accelerator_edit_view_test.ts",
+    "accelerator_lookup_manager_test.ts",
+    "accelerator_row_test.ts",
+    "accelerator_subsection_test.ts",
+    "accelerator_view_test.ts",
+    "fake_shortcut_provider_test.ts",
+    "input_key_test.ts",
+    "shortcut_customization_test.ts",
+    "shortcut_customization_test_util.ts",
+    "shortcut_utils_test.ts",
+  ]
   deps = [
-    ":accelerator_edit_dialog_test",
-    ":accelerator_edit_view_test",
-    ":accelerator_lookup_manager_test",
-    ":accelerator_row_test",
-    ":accelerator_view_test",
-    ":fake_shortcut_provider_test",
-    ":shortcut_customization_test",
-    ":shortcut_customization_test_util",
-    ":shortcut_customization_unified_test",
+    "../..:build_ts",
+    "//ash/webui/shortcut_customization_ui/resources:build_ts",
   ]
 }
 
-js_library("accelerator_edit_dialog_test") {
-  deps = [
-    ":shortcut_customization_test_util",
-    "../..:chai_assert",
-    "//ash/webui/shortcut_customization_ui/resources:accelerator_edit_dialog",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
+generate_grd("build_grdp") {
+  grd_prefix = "webui_chromeos_shortcut_customization"
+  out_grd = "$target_gen_dir/resources.grdp"
 
-js_library("accelerator_edit_view_test") {
-  deps = [
-    ":shortcut_customization_test_util",
-    "../..:chai_assert",
-    "//ash/webui/shortcut_customization_ui/resources:accelerator_edit_view",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("accelerator_lookup_manager_test") {
-  deps = [
-    "../..:chai_assert",
-    "//ash/webui/shortcut_customization_ui/resources:accelerator_lookup_manager",
-    "//ash/webui/shortcut_customization_ui/resources:fake_data",
-    "//ash/webui/shortcut_customization_ui/resources:fake_shortcut_provider",
-    "//ash/webui/shortcut_customization_ui/resources:shortcut_types",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("accelerator_row_test") {
-  deps = [
-    ":shortcut_customization_test_util",
-    "../..:chai_assert",
-    "//ash/webui/shortcut_customization_ui/resources:accelerator_row",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("accelerator_subsection_test") {
-  deps = [
-    "../..:chai_assert",
-    "//ash/webui/shortcut_customization_ui/resources:accelerator_subsection",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("accelerator_view_test") {
-  deps = [
-    ":shortcut_customization_test_util",
-    "../..:chai_assert",
-    "//ash/webui/shortcut_customization_ui/resources:accelerator_view",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("fake_shortcut_provider_test") {
-  deps = [
-    "../..:chai_assert",
-    "//ash/webui/shortcut_customization_ui/resources:fake_data",
-    "//ash/webui/shortcut_customization_ui/resources:fake_shortcut_provider",
-    "//ash/webui/shortcut_customization_ui/resources:shortcut_types",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("shortcut_customization_test") {
-  deps = [
-    "../..:chai_assert",
-    "//ash/webui/shortcut_customization_ui/resources:accelerator_subsection",
-    "//ash/webui/shortcut_customization_ui/resources:mojo_interface_provider",
-    "//ash/webui/shortcut_customization_ui/resources:shortcut_customization_app",
-    "//ash/webui/shortcut_customization_ui/resources:shortcut_types",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("shortcut_customization_test_util") {
-  deps = []
-}
-
-js_library("shortcut_customization_unified_test") {
+  deps = [ ":build_ts" ]
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+  resource_path_prefix = "chromeos/shortcut_customization"
 }

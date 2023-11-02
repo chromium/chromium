@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@ bool StructTraits<viz::mojom::AggregatedHitTestRegionDataView,
     Read(viz::mojom::AggregatedHitTestRegionDataView data,
          viz::AggregatedHitTestRegion* out) {
   if (!data.ReadFrameSinkId(&out->frame_sink_id) ||
-      !data.ReadRect(&out->rect) || !data.ReadTransform(&out->transform_)) {
+      !data.ReadRect(&out->rect) || !data.ReadTransform(&out->transform)) {
     return false;
   }
   out->flags = data.flags();

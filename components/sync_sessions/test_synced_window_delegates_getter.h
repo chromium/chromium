@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,10 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/sync/protocol/session_specifics.pb.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_sessions/local_session_event_router.h"
 #include "components/sync_sessions/synced_tab_delegate.h"
 #include "components/sync_sessions/synced_window_delegate.h"
@@ -49,8 +51,6 @@ class TestSyncedTabDelegate : public SyncedTabDelegate {
   bool IsInitialBlankNavigation() const override;
   int GetCurrentEntryIndex() const override;
   GURL GetVirtualURLAtIndex(int i) const override;
-  GURL GetFaviconURLAtIndex(int i) const override;
-  ui::PageTransition GetTransitionAtIndex(int i) const override;
   std::string GetPageLanguageAtIndex(int i) const override;
   void GetSerializedNavigationAtIndex(
       int i,
@@ -60,8 +60,8 @@ class TestSyncedTabDelegate : public SyncedTabDelegate {
   SessionID GetSessionId() const override;
   bool IsBeingDestroyed() const override;
   std::string GetExtensionAppId() const override;
-  bool ProfileIsSupervised() const override;
-  void set_is_supervised(bool is_supervised);
+  bool ProfileHasChildAccount() const override;
+  void set_has_child_account(bool has_child_account);
   const std::vector<std::unique_ptr<const sessions::SerializedNavigationEntry>>*
   GetBlockedNavigations() const override;
   bool IsPlaceholderTab() const override;
@@ -76,7 +76,7 @@ class TestSyncedTabDelegate : public SyncedTabDelegate {
   const base::RepeatingCallback<void(SyncedTabDelegate*)> notify_cb_;
 
   int current_entry_index_ = -1;
-  bool is_supervised_ = false;
+  bool has_child_account_ = false;
   std::vector<std::unique_ptr<const sessions::SerializedNavigationEntry>>
       blocked_navigations_;
   std::vector<std::unique_ptr<const sessions::SerializedNavigationEntry>>
@@ -108,13 +108,11 @@ class PlaceholderTabDelegate : public SyncedTabDelegate {
   int GetCurrentEntryIndex() const override;
   int GetEntryCount() const override;
   GURL GetVirtualURLAtIndex(int i) const override;
-  GURL GetFaviconURLAtIndex(int i) const override;
-  ui::PageTransition GetTransitionAtIndex(int i) const override;
   std::string GetPageLanguageAtIndex(int i) const override;
   void GetSerializedNavigationAtIndex(
       int i,
       sessions::SerializedNavigationEntry* serialized_entry) const override;
-  bool ProfileIsSupervised() const override;
+  bool ProfileHasChildAccount() const override;
   const std::vector<std::unique_ptr<const sessions::SerializedNavigationEntry>>*
   GetBlockedNavigations() const override;
   bool ShouldSync(SyncSessionsClient* sessions_client) override;
@@ -129,7 +127,7 @@ class PlaceholderTabDelegate : public SyncedTabDelegate {
 class TestSyncedWindowDelegate : public SyncedWindowDelegate {
  public:
   explicit TestSyncedWindowDelegate(SessionID window_id,
-                                    sync_pb::SessionWindow_BrowserType type);
+                                    sync_pb::SyncEnums_BrowserType type);
 
   TestSyncedWindowDelegate(const TestSyncedWindowDelegate&) = delete;
   TestSyncedWindowDelegate& operator=(const TestSyncedWindowDelegate&) = delete;
@@ -158,7 +156,7 @@ class TestSyncedWindowDelegate : public SyncedWindowDelegate {
 
  private:
   const SessionID window_id_;
-  const sync_pb::SessionWindow_BrowserType window_type_;
+  const sync_pb::SyncEnums_BrowserType window_type_;
 
   std::vector<SyncedTabDelegate*> tab_delegates_;
   bool is_session_restore_in_progress_;
@@ -177,7 +175,7 @@ class TestSyncedWindowDelegatesGetter : public SyncedWindowDelegatesGetter {
 
   void ResetWindows();
   TestSyncedWindowDelegate* AddWindow(
-      sync_pb::SessionWindow_BrowserType type,
+      sync_pb::SyncEnums_BrowserType type,
       SessionID window_id = SessionID::NewUnique());
   // Creates a new tab within the window specified by |window_id|. The newly
   // created tab's ID can be specified optionally. Returns the newly created
@@ -190,7 +188,7 @@ class TestSyncedWindowDelegatesGetter : public SyncedWindowDelegatesGetter {
 
   // SyncedWindowDelegatesGetter overrides.
   SyncedWindowDelegateMap GetSyncedWindowDelegates() override;
-  const SyncedWindowDelegate* FindById(SessionID id) override;
+  const SyncedWindowDelegate* FindById(SessionID session_id) override;
 
  private:
   class DummyRouter : public LocalSessionEventRouter {
@@ -203,7 +201,7 @@ class TestSyncedWindowDelegatesGetter : public SyncedWindowDelegatesGetter {
     void NotifySessionRestoreComplete();
 
    private:
-    LocalSessionEventHandler* handler_ = nullptr;
+    raw_ptr<LocalSessionEventHandler> handler_ = nullptr;
   };
 
   SyncedWindowDelegateMap delegates_;

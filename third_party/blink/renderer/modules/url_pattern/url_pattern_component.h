@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include "base/types/pass_key.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_regexp.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/trace_traits.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
@@ -19,6 +19,7 @@
 namespace blink {
 
 class ExceptionState;
+class URLPatternOptions;
 
 namespace url_pattern {
 
@@ -49,6 +50,7 @@ class Component final : public GarbageCollected<Component> {
   static Component* Compile(StringView pattern,
                             Type type,
                             Component* protocol_component,
+                            const URLPatternOptions& external_options,
                             ExceptionState& exception_state);
 
   // Compare the pattern strings in the two given components.  This provides a

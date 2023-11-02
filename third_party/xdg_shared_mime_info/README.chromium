@@ -1,0 +1,25 @@
+Name: XDG Shared Mime Info
+Short Name: xdg-shared-mime-info
+URL: http://freedesktop.org
+Version: 0
+Date: 2022/08/23
+License: GPL v2
+License File: LICENSE
+Security Critical: no
+
+Description:
+File freedesktop.org.xml.in synced from
+https://github.com/freedesktop/xdg-shared-mime-info
+f4e7cbc86e67e7bc39cf8167823fcf0d8ace9ce1 on 2022/08/23
+
+generate.py will fetch the latest version of the xml file from the freedesktop
+repo and save it to this dir, and generate mime_cache.cc.
+
+This script can be run from time to time as the freedesktop database is updated.
+About once a year or so would be fine since the database does not change often.
+If there are missing or wrong values, we should first try to get changes
+accepted upstream.
+
+Local Modifications:
+No modifications, but after running this script, you may need to run
+`git cl format` and possibly add some `nocheck` comments.

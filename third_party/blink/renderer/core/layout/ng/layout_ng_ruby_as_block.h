@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,7 +24,10 @@ class CORE_EXPORT LayoutNGRubyAsBlock
   explicit LayoutNGRubyAsBlock(Element*);
   ~LayoutNGRubyAsBlock() override;
 
-  const char* GetName() const override { return "LayoutNGRubyAsBlock"; }
+  const char* GetName() const override {
+    NOT_DESTROYED();
+    return "LayoutNGRubyAsBlock";
+  }
   void UpdateBlockLayout(bool relayout_children) override;
 };
 

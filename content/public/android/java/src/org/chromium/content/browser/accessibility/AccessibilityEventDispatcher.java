@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -149,6 +149,16 @@ public class AccessibilityEventDispatcher {
                     (mEventLastFiredTimes.get(uuid) + mEventThrottleDelays.get(eventType)) - now);
             mPendingEvents.put(uuid, myRunnable);
         }
+    }
+
+    /**
+     * Helper method to cancel all posted Runnables if the Client object is being destroyed early.
+     */
+    public void clearQueue() {
+        for (Long uuid : mPendingEvents.keySet()) {
+            mClient.removeRunnable(mPendingEvents.get(uuid));
+        }
+        mPendingEvents.clear();
     }
 
     /**

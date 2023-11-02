@@ -1,10 +1,11 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_POLICY_CLOUD_REMOTE_COMMANDS_INVALIDATOR_H_
 #define CHROME_BROWSER_POLICY_CLOUD_REMOTE_COMMANDS_INVALIDATOR_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "components/invalidation/public/invalidation_handler.h"
 #include "components/invalidation/public/invalidation_util.h"
@@ -83,12 +84,12 @@ class RemoteCommandsInvalidator : public invalidation::InvalidationHandler {
   // subscribes to the given |topic| with the invalidation service.
   void Register(const invalidation::Topic& topic);
 
-  // Unregisters this handler and unsubscribes from the current topic with
+  // Unregisters this handler but keeps the current topic subscribed with
   // the invalidation service.
-  // TODO(crbug.com/1056114): Topic subscription remains active after browser
-  // restart, so explicit unsubscription here causes redundant (un)subscription
-  // traffic (and potentially leaking subscriptions).
   void Unregister();
+
+  // Unsubscribes from the current topics but keeps the registration as is.
+  void UnsubscribeFromTopics();
 
   // Updates invalidations_enabled_.
   void UpdateInvalidationsEnabled();
@@ -105,7 +106,7 @@ class RemoteCommandsInvalidator : public invalidation::InvalidationHandler {
   const std::string owner_name_;
 
   // The invalidation service.
-  invalidation::InvalidationService* invalidation_service_ = nullptr;
+  raw_ptr<invalidation::InvalidationService> invalidation_service_ = nullptr;
 
   // Whether the invalidator currently has the ability to receive invalidations.
   // This is true if the invalidation service is enabled and the invalidator

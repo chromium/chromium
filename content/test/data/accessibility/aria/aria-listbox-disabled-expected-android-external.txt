@@ -1,0 +1,8 @@
+WebView focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++TextView text:"Start of test: striped should have selected state" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="heading", roleDescription="heading 1"]
+++ListView clickable disabled CollectionInfo:[rows=4, cols=1] actions:[CLICK, AX_FOCUS] bundle:[chromeRole="listBox", roleDescription="list box"]
+++++View text:"Orange" disabled focusable CollectionItemInfo:[rowIndex=0, colIndex=0] actions:[FOCUS, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="listBoxOption"]
+++++View text:"Striped" disabled focusable selected CollectionItemInfo:[rowIndex=1, colIndex=0] actions:[FOCUS, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="listBoxOption"]
+++++View text:"Calico" disabled focusable CollectionItemInfo:[rowIndex=2, colIndex=0] actions:[FOCUS, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="listBoxOption"]
+++++View text:"Black" disabled focusable CollectionItemInfo:[rowIndex=3, colIndex=0] actions:[FOCUS, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="listBoxOption"]
+++TextView text:"End of test" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="paragraph"]

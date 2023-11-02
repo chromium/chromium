@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -81,6 +81,10 @@ EGLBoolean eglExportDMABUFImageQueryMESAFn(EGLDisplay dpy,
                                            int* fourcc,
                                            int* num_planes,
                                            EGLuint64KHR* modifiers) override;
+EGLBoolean eglExportVkImageANGLEFn(EGLDisplay dpy,
+                                   EGLImageKHR image,
+                                   void* vk_image,
+                                   void* vk_image_create_info) override;
 EGLBoolean eglGetCompositorTimingANDROIDFn(EGLDisplay dpy,
                                            EGLSurface surface,
                                            EGLint numTimestamps,
@@ -175,6 +179,16 @@ EGLBoolean eglQueryDisplayAttribANGLEFn(EGLDisplay dpy,
 EGLBoolean eglQueryDisplayAttribEXTFn(EGLDisplay dpy,
                                       EGLint attribute,
                                       EGLAttrib* value) override;
+EGLBoolean eglQueryDmaBufFormatsEXTFn(EGLDisplay dpy,
+                                      EGLint max_formats,
+                                      EGLint* formats,
+                                      EGLint* num_formats) override;
+EGLBoolean eglQueryDmaBufModifiersEXTFn(EGLDisplay dpy,
+                                        EGLint format,
+                                        EGLint max_modifiers,
+                                        EGLuint64KHR* modifiers,
+                                        EGLBoolean* external_only,
+                                        EGLint* num_modifiers) override;
 EGLBoolean eglQueryStreamKHRFn(EGLDisplay dpy,
                                EGLStreamKHR stream,
                                EGLenum attribute,

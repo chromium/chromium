@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,13 +6,13 @@
 #include "ash/assistant/ui/assistant_view_ids.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "ash/public/cpp/style/color_provider.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
-#include "chromeos/services/libassistant/public/cpp/assistant_suggestion.h"
+#include "chromeos/ash/services/libassistant/public/cpp/assistant_suggestion.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/views/background.h"
@@ -26,7 +26,7 @@ namespace {
 AssistantOnboardingSuggestionView* CreateSuggestionViewAt(
     int index,
     views::Widget* widget) {
-  chromeos::assistant::AssistantSuggestion assistant_suggestion;
+  assistant::AssistantSuggestion assistant_suggestion;
   return widget->GetContentsView()->AddChildView(
       std::make_unique<AssistantOnboardingSuggestionView>(
           /*delegate=*/nullptr, assistant_suggestion, index));
@@ -42,11 +42,15 @@ views::Label* GetLabel(AssistantOnboardingSuggestionView* suggestion_view) {
 using AssistantOnboardingSuggestionViewTest = AshTestBase;
 
 TEST_F(AssistantOnboardingSuggestionViewTest, DarkAndLightTheme) {
-  base::test::ScopedFeatureList scoped_feature_list(features::kDarkLightMode);
-  AshColorProvider::Get()->OnActiveUserPrefServiceChanged(
+  base::test::ScopedFeatureList scoped_feature_list(
+      chromeos::features::kDarkLightMode);
+  auto* dark_light_mode_controller = DarkLightModeControllerImpl::Get();
+  dark_light_mode_controller->OnActiveUserPrefServiceChanged(
       Shell::Get()->session_controller()->GetActivePrefService());
   ASSERT_TRUE(features::IsDarkLightModeEnabled());
-  ASSERT_FALSE(ColorProvider::Get()->IsDarkModeEnabled());
+  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
+      prefs::kDarkModeEnabled, false);
+  ASSERT_FALSE(dark_light_mode_controller->IsDarkModeEnabled());
 
   std::unique_ptr<views::Widget> widget = CreateTestWidget();
 
@@ -95,7 +99,7 @@ TEST_F(AssistantOnboardingSuggestionViewTest, DarkAndLightTheme) {
 
   Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
       prefs::kDarkModeEnabled, true);
-  ASSERT_TRUE(ColorProvider::Get()->IsDarkModeEnabled());
+  ASSERT_TRUE(DarkLightModeControllerImpl::Get()->IsDarkModeEnabled());
 
   // 0x4c is for 30% alpha. 255*0.3=76.5. 0x4c is 76 in hex.
   EXPECT_EQ(suggestion_view_0->GetBackground()->get_color(),
@@ -129,7 +133,10 @@ TEST_F(AssistantOnboardingSuggestionViewTest, DarkAndLightTheme) {
 }
 
 TEST_F(AssistantOnboardingSuggestionViewTest, DarkAndLightModeFlagOff) {
-  ASSERT_FALSE(features::IsDarkLightModeEnabled());
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{}, /*disabled_features=*/{
+          chromeos::features::kDarkLightMode, features::kNotificationsRefresh});
 
   std::unique_ptr<views::Widget> widget = CreateTestWidget();
 

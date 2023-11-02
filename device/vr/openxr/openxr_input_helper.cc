@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -92,6 +92,11 @@ absl::optional<Gamepad> GetXrStandardGamepad(
       controller.GetButton(OpenXrButtonType::kGrasp);
   if (grasp_button)
     builder.AddOptionalButtonData(grasp_button.value());
+
+  absl::optional<GamepadButton> shoulder_button =
+      controller.GetButton(OpenXrButtonType::kShoulder);
+  if (shoulder_button)
+    builder.AddOptionalButtonData(shoulder_button.value());
 
   return builder.GetGamepad();
 }

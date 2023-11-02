@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -88,11 +88,15 @@ void LoseContextCHROMIUM(GLenum current, GLenum other) {
   }
 }
 
-void BeginRasterCHROMIUMImmediate(GLuint sk_color,
+void BeginRasterCHROMIUMImmediate(GLfloat r,
+                                  GLfloat g,
+                                  GLfloat b,
+                                  GLfloat a,
                                   GLboolean needs_clear,
                                   GLuint msaa_sample_count,
                                   gpu::raster::MsaaMode msaa_mode,
                                   GLboolean can_use_lcd_text,
+                                  GLboolean visible,
                                   const GLbyte* mailbox) {
   const uint32_t size =
       raster::cmds::BeginRasterCHROMIUMImmediate::ComputeSize();
@@ -100,8 +104,8 @@ void BeginRasterCHROMIUMImmediate(GLuint sk_color,
       GetImmediateCmdSpaceTotalSize<raster::cmds::BeginRasterCHROMIUMImmediate>(
           size);
   if (c) {
-    c->Init(sk_color, needs_clear, msaa_sample_count, msaa_mode,
-            can_use_lcd_text, mailbox);
+    c->Init(r, g, b, a, needs_clear, msaa_sample_count, msaa_mode,
+            can_use_lcd_text, visible, mailbox);
   }
 }
 
@@ -157,17 +161,6 @@ void UnlockTransferCacheEntryINTERNAL(GLuint entry_type, GLuint entry_id) {
   }
 }
 
-void DeletePaintCacheTextBlobsINTERNALImmediate(GLsizei n, const GLuint* ids) {
-  const uint32_t size =
-      raster::cmds::DeletePaintCacheTextBlobsINTERNALImmediate::ComputeSize(n);
-  raster::cmds::DeletePaintCacheTextBlobsINTERNALImmediate* c =
-      GetImmediateCmdSpaceTotalSize<
-          raster::cmds::DeletePaintCacheTextBlobsINTERNALImmediate>(size);
-  if (c) {
-    c->Init(n, ids);
-  }
-}
-
 void DeletePaintCachePathsINTERNALImmediate(GLsizei n, const GLuint* ids) {
   const uint32_t size =
       raster::cmds::DeletePaintCachePathsINTERNALImmediate::ComputeSize(n);
@@ -176,6 +169,16 @@ void DeletePaintCachePathsINTERNALImmediate(GLsizei n, const GLuint* ids) {
           raster::cmds::DeletePaintCachePathsINTERNALImmediate>(size);
   if (c) {
     c->Init(n, ids);
+  }
+}
+
+void DeletePaintCachePathsINTERNAL(GLsizei n,
+                                   uint32_t ids_shm_id,
+                                   uint32_t ids_shm_offset) {
+  raster::cmds::DeletePaintCachePathsINTERNAL* c =
+      GetCmdSpace<raster::cmds::DeletePaintCachePathsINTERNAL>();
+  if (c) {
+    c->Init(n, ids_shm_id, ids_shm_offset);
   }
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,8 @@
 
 namespace media_router {
 
-MediaRoutesObserver::MediaRoutesObserver(MediaRouter* router,
-                                         const MediaSource::Id& source_id)
-    : router_(router), source_id_(source_id) {
+MediaRoutesObserver::MediaRoutesObserver(MediaRouter* router)
+    : router_(router) {
   DCHECK(router_);
   router_->RegisterMediaRoutesObserver(this);
 }

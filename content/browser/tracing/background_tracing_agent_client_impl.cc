@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,20 +34,20 @@ void BackgroundTracingAgentClientImpl::Create(
 }
 
 BackgroundTracingAgentClientImpl::~BackgroundTracingAgentClientImpl() {
-  BackgroundTracingManagerImpl::GetInstance()->RemoveAgent(agent_.get());
+  BackgroundTracingManagerImpl::GetInstance().RemoveAgent(agent_.get());
 }
 
 void BackgroundTracingAgentClientImpl::OnInitialized() {
-  BackgroundTracingManagerImpl::GetInstance()->AddAgent(agent_.get());
+  BackgroundTracingManagerImpl::GetInstance().AddAgent(agent_.get());
 }
 
 void BackgroundTracingAgentClientImpl::OnTriggerBackgroundTrace(
     const std::string& name) {
-  BackgroundTracingManagerImpl::GetInstance()->OnHistogramTrigger(name);
+  BackgroundTracingManagerImpl::GetInstance().OnHistogramTrigger(name);
 }
 
 void BackgroundTracingAgentClientImpl::OnAbortBackgroundTrace() {
-  BackgroundTracingManagerImpl::GetInstance()->AbortScenario();
+  BackgroundTracingManagerImpl::GetInstance().AbortScenario();
 }
 
 BackgroundTracingAgentClientImpl::BackgroundTracingAgentClientImpl(

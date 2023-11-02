@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-# Copyright 2017 The Chromium Authors. All rights reserved.
+#!/usr/bin/env python3
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -17,7 +17,7 @@ import traceback
 
 
 def read_file_to_string(path):
-  with open(path, 'r') as f:
+  with open(path, 'rb') as f:
     return f.read()
 
 
@@ -36,7 +36,7 @@ def read_certificates_data_from_server(hostname):
 
   sys.stderr.write("Failed getting certificates for %s:\n%s\n" % (
       hostname, result[1]))
-  return ""
+  return b""
 
 
 def read_sources_from_commandline(sources):
@@ -47,7 +47,7 @@ def read_sources_from_commandline(sources):
   if not sources:
     # If no command-line arguments were given to the program, read input from
     # stdin.
-    sources_bytes.append(sys.stdin.read())
+    sources_bytes.append(sys.stdin.buffer.read())
   else:
     for arg in sources:
       # If the argument identifies a file path, read it
@@ -62,24 +62,30 @@ def read_sources_from_commandline(sources):
 
 def strip_indentation_whitespace(text):
   """Strips leading whitespace from each line."""
-  stripped_lines = [line.lstrip() for line in text.split("\n")]
-  return "\n".join(stripped_lines)
+  stripped_lines = [line.lstrip() for line in text.split(b"\n")]
+  return b"\n".join(stripped_lines)
 
 
 def strip_all_whitespace(text):
-  pattern = re.compile(r'\s+')
-  return re.sub(pattern, '', text)
+  pattern = re.compile(rb'\s+')
+  return re.sub(pattern, b'', text).replace(rb'\n', b'\n')
 
 
 def extract_certificates_from_pem(pem_bytes):
   certificates_der = []
 
   regex = re.compile(
-      r'-----BEGIN (CERTIFICATE|PKCS7)-----(.*?)-----END \1-----', re.DOTALL)
+      rb'-----BEGIN (CERTIFICATE|PKCS7)-----(.*?)(-----END \1-----|$)',
+      re.DOTALL)
 
   for match in regex.finditer(pem_bytes):
+    if not match.group(3):
+      sys.stderr.write(
+          "\nUnterminated %s block, input is corrupt or truncated\n" %
+          match.group(1))
+      continue
     der = base64.b64decode(strip_all_whitespace(match.group(2)))
-    if match.group(1) == 'CERTIFICATE':
+    if match.group(1) == b'CERTIFICATE':
       certificates_der.append(der)
     else:
       certificates_der.extend(extract_certificates_from_der_pkcs7(der))
@@ -266,17 +272,17 @@ def extract_tls_certificate_message(netlog_text):
 
 
 def extract_certificates(source_bytes):
-  if "BEGIN CERTIFICATE" in source_bytes or "BEGIN PKCS7" in source_bytes:
+  if b"BEGIN CERTIFICATE" in source_bytes or b"BEGIN PKCS7" in source_bytes:
     return extract_certificates_from_pem(source_bytes)
 
-  if "SEQUENCE {" in source_bytes:
+  if b"SEQUENCE {" in source_bytes:
     return extract_certificates_from_der_ascii(source_bytes)
 
-  if "SSL_HANDSHAKE_MESSAGE_RECEIVED" in source_bytes:
+  if b"SSL_HANDSHAKE_MESSAGE_RECEIVED" in source_bytes:
     return extract_tls_certificate_message(source_bytes)
 
   # DER encoding of PKCS #7 signedData OID (1.2.840.113549.1.7.2)
-  if "\x06\x09\x2a\x86\x48\x86\xf7\x0d\x01\x07\x02" in source_bytes:
+  if b"\x06\x09\x2a\x86\x48\x86\xf7\x0d\x01\x07\x02" in source_bytes:
     return extract_certificates_from_der_pkcs7(source_bytes)
 
   # Otherwise assume it is the DER for a single certificate
@@ -289,10 +295,10 @@ def process_data_with_command(command, data):
                          stdin=subprocess.PIPE,
                          stdout=subprocess.PIPE,
                          stderr=subprocess.PIPE)
-  except OSError, e:
+  except OSError as e:
     if e.errno == errno.ENOENT:
       sys.stderr.write("Failed to execute %s\n" % command[0])
-      return ""
+      return b""
     raise
 
   result = p.communicate(data)
@@ -302,7 +308,7 @@ def process_data_with_command(command, data):
 
   # Otherwise failed.
   sys.stderr.write("Failed: %s: %s\n" % (" ".join(command), result[1]))
-  return ""
+  return b""
 
 
 def openssl_text_pretty_printer(certificate_der, unused_certificate_number):
@@ -321,9 +327,10 @@ def der2ascii_pretty_printer(certificate_der, unused_certificate_number):
 
 def header_pretty_printer(certificate_der, certificate_number):
   cert_hash = hashlib.sha256(certificate_der).hexdigest()
-  return """===========================================
+  s = """===========================================
 Certificate%d: %s
 ===========================================""" % (certificate_number, cert_hash)
+  return s.encode("ascii")
 
 
 # This is actually just used as a magic value, since pretty_print_certificates
@@ -342,7 +349,7 @@ def pretty_print_certificates(certificates_der, pretty_printers):
                            len(certificates_der) - 1))
     return certificates_der[0]
 
-  result = ""
+  result = b""
   for i in range(len(certificates_der)):
     certificate_der = certificates_der[i]
     pretty = []
@@ -350,7 +357,7 @@ def pretty_print_certificates(certificates_der, pretty_printers):
       pretty_printed = pretty_printer(certificate_der, i)
       if pretty_printed:
         pretty.append(pretty_printed)
-    result += "\n".join(pretty) + "\n"
+    result += b"\n".join(pretty) + b"\n"
   return result
 
 
@@ -367,8 +374,8 @@ def parse_outputs(outputs):
       return []
     pretty_printers.append(output_map[output_name])
   if der_printer in pretty_printers and len(pretty_printers) > 1:
-      sys.stderr.write("Output type der must be used alone.\n")
-      return []
+    sys.stderr.write("Output type der must be used alone.\n")
+    return []
   return pretty_printers
 
 
@@ -412,7 +419,8 @@ from NetLogs).''')
   for source_bytes in sources_bytes:
     certificates_der.extend(extract_certificates(source_bytes))
 
-  sys.stdout.write(pretty_print_certificates(certificates_der, pretty_printers))
+  sys.stdout.buffer.write(
+      pretty_print_certificates(certificates_der, pretty_printers))
 
 
 if __name__ == "__main__":

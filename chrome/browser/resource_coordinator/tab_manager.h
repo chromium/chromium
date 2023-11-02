@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,9 @@
 #include <vector>
 
 #include "base/callback_helpers.h"
-#include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/memory_pressure_listener.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
@@ -99,8 +99,10 @@ class TabManager : public LifecycleUnitObserver,
   // was discarded.
   content::WebContents* DiscardTabByExtension(content::WebContents* contents);
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Discards a tab in response to memory pressure.
   void DiscardTabFromMemoryPressure();
+#endif
 
   // TODO(fdoray): Remove these methods. TabManager shouldn't know about tabs.
   // https://crbug.com/775644
@@ -167,6 +169,7 @@ class TabManager : public LifecycleUnitObserver,
   // can be easily reloaded and hence makes a good choice to discard.
   static bool IsInternalPage(const GURL& url);
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Called by the memory pressure listener when the memory pressure rises.
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
@@ -181,6 +184,7 @@ class TabManager : public LifecycleUnitObserver,
   // Unregister to stop listening to memory pressure. Called on shutdown or
   // beginning of tab discards.
   void UnregisterMemoryPressureListener();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Called by OnTabStripModelChanged()
   void OnActiveTabChanged(content::WebContents* old_contents,
@@ -254,7 +258,7 @@ class TabManager : public LifecycleUnitObserver,
   UsageClock usage_clock_;
 
   // The tab load tracker observed by this instance.
-  TabLoadTracker* const tab_load_tracker_;
+  const raw_ptr<TabLoadTracker> tab_load_tracker_;
 
   // Weak pointer factory used for posting delayed tasks.
   base::WeakPtrFactory<TabManager> weak_ptr_factory_{this};

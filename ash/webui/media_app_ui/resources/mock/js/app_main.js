@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
  * Helper that returns UI that can serve as an effective mock of a fragment of
  * the real app, after loading a provided Blob URL.
  *
- * @typedef{function(string, string): Promise<!HTMLElement>}}
+ * @typedef{function(string, mediaApp.AbstractFile): Promise<!HTMLElement>}}
  */
 let ModuleHandler;
 
@@ -25,33 +25,37 @@ const createVideoChild = async (blobSrc) => {
 };
 
 /** @type {ModuleHandler} */
-const createImgChild = async (blobSrc, fileName) => {
+const createImgChild = async (blobSrc, file) => {
   const img = /** @type {!HTMLImageElement} */ (document.createElement('img'));
   img.src = blobSrc;
-  img.alt = fileName;
+  img.alt = file.name;
   try {
     await img.decode();
   } catch (error) {
     // Mimic what the real app does on decode errors so we can test error
     // handling for file access.
-    return /** @type {!HTMLElement} */ (
-        await createErrorChild(blobSrc, fileName));
+    return /** @type {!HTMLElement} */ (await createErrorChild(blobSrc, file));
   }
   return img;
 };
 
 /** @type {ModuleHandler} */
-const createAudioChild = async (blobSrc, fileName) => {
+const createAudioChild = async (blobSrc, file) => {
   const container =
       /** @type {HTMLDivElement} */ (document.createElement('div'));
 
   const title = /** @type {HTMLDivElement} */
       (container.appendChild(document.createElement('div')));
   title.className = 'title';
-  title.innerText = fileName;
+  title.innerText = file.name;
 
   const audio = /** @type {HTMLAudioElement} */
       (container.appendChild(document.createElement('audio')));
+  if (file.size === 0) {
+    console.warn('Assuming zero-byte test file: not loading audio.');
+    return container;
+  }
+
   audio.src = blobSrc;
   // Audio will autoplay in this manner. Do the same in the mock to test
   // integration points.
@@ -66,8 +70,8 @@ const createAudioChild = async (blobSrc, fileName) => {
 };
 
 /** @type {ModuleHandler} */
-const createErrorChild = async (_, fileName) => {
-  console.warn(`Mock handling of ${fileName} resulted in error.`);
+const createErrorChild = async (_, file) => {
+  console.warn(`Mock handling of ${file.name} resulted in error.`);
   // In the real app, a loaderror element is loaded infront of a placeholder
   // image with some error alt text. For tests, we only mock the placeholder.
   const img = /** @type {!HTMLImageElement} */ (document.createElement('img'));
@@ -164,10 +168,11 @@ class BacklightApp extends HTMLElement {
         factory = createErrorChild;
     }
     // Note the mock app will just leak this Blob URL.
-    const child = await factory(URL.createObjectURL(file.blob), file.name);
+    const child = await factory(URL.createObjectURL(file.blob), file);
 
     this.replaceChild(child, this.currentMedia);
     this.currentMedia = child;
+    this.delegate.notifyCurrentFile(file.name, mimeType);
   }
 
   updateHandler() {
@@ -179,9 +184,10 @@ class BacklightApp extends HTMLElement {
     this.replaceChild(newHandler, this.currentHandler);
     this.currentHandler = newHandler;
 
-    // Toggle 'shownav' indicating the navigation buttons are available.
-    // This emulates `setNavigationPossible()` in the real app.
-    this.currentHandler.toggleAttribute('shownav', this.files.length > 1);
+    // The presence of the 'filetraversalenabled' attribute emulates
+    // `setFileTraversalEnabled()` in the real app.
+    this.currentHandler.toggleAttribute(
+        'filetraversalenabled', this.files.length > 1);
   }
 
   /** @override  */
@@ -224,7 +230,7 @@ class BacklightApp extends HTMLElement {
 window.customElements.define('backlight-app', BacklightApp);
 
 // Element mimicking the image/video handler which is the parent of the
-// `navigation-overlay`.
+// `carousel-overlay`.
 class BacklightMediaHandler extends HTMLElement {}
 window.customElements.define('backlight-media-handler', BacklightMediaHandler);
 
@@ -246,7 +252,7 @@ self.addEventListener('error', (event) => {
     url: window.location.href,
     product: 'ChromeOS_MediaAppMock',
     lineNumber: errorEvent.lineno,
-    columnNumber: errorEvent.colno
+    columnNumber: errorEvent.colno,
   });
 });
 self.addEventListener('unhandledrejection', (event) => {

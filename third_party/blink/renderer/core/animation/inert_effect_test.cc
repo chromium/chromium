@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,8 +24,7 @@ TEST(InertEffectTest, IsCurrent) {
 
     auto* inert_effect = MakeGarbageCollected<InertEffect>(
         opacity_model, timing, /* paused */ false, AnimationTimeDelta(),
-        TimelinePhase::kActive, absl::nullopt,
-        /* playback_rate */ 1.0);
+        /* timeline_duration */ absl::nullopt, /* playback_rate */ 1.0);
     HeapVector<Member<Interpolation>> interpolations;
     // Calling Sample ensures Timing is calculated.
     inert_effect->Sample(interpolations);
@@ -36,12 +35,11 @@ TEST(InertEffectTest, IsCurrent) {
   {
     Timing timing;
     timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(1000);
-    timing.start_delay = ANIMATION_TIME_DELTA_FROM_SECONDS(500);
+    timing.start_delay = Timing::Delay(ANIMATION_TIME_DELTA_FROM_SECONDS(500));
 
     auto* inert_effect = MakeGarbageCollected<InertEffect>(
         opacity_model, timing, /* paused */ false, AnimationTimeDelta(),
-        TimelinePhase::kActive, absl::nullopt,
-        /* playback_rate */ 1.0);
+        /* timeline_duration */ absl::nullopt, /* playback_rate */ 1.0);
     HeapVector<Member<Interpolation>> interpolations;
     // Calling Sample ensures Timing is calculated.
     inert_effect->Sample(interpolations);
@@ -52,12 +50,11 @@ TEST(InertEffectTest, IsCurrent) {
   {
     Timing timing;
     timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(1000);
-    timing.start_delay = ANIMATION_TIME_DELTA_FROM_SECONDS(500);
+    timing.start_delay = Timing::Delay(ANIMATION_TIME_DELTA_FROM_SECONDS(500));
 
     auto* inert_effect = MakeGarbageCollected<InertEffect>(
         opacity_model, timing, /* paused */ false, AnimationTimeDelta(),
-        TimelinePhase::kActive, absl::nullopt,
-        /* playback_rate */ -1.0);
+        /* timeline_duration */ absl::nullopt, /* playback_rate */ -1.0);
     HeapVector<Member<Interpolation>> interpolations;
     // Calling Sample ensures Timing is calculated.
     inert_effect->Sample(interpolations);
@@ -76,13 +73,11 @@ TEST(InertEffectTest, Affects) {
 
   auto* opacity_effect = MakeGarbageCollected<InertEffect>(
       opacity_model, timing, /* paused */ false, AnimationTimeDelta(),
-      TimelinePhase::kActive, absl::nullopt,
-      /* playback_rate */ 1.0);
+      /* timeline_duration */ absl::nullopt, /* playback_rate */ 1.0);
 
   auto* color_effect = MakeGarbageCollected<InertEffect>(
       color_model, timing, /* paused */ false, AnimationTimeDelta(),
-      TimelinePhase::kActive, absl::nullopt,
-      /* playback_rate */ 1.0);
+      /* timeline_duration */ absl::nullopt, /* playback_rate */ 1.0);
 
   EXPECT_TRUE(opacity_effect->Affects(PropertyHandle(GetCSSPropertyOpacity())));
   EXPECT_FALSE(opacity_effect->Affects(PropertyHandle(GetCSSPropertyColor())));

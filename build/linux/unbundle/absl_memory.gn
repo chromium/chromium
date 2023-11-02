@@ -1,0 +1,20 @@
+import("//build/config/linux/pkg_config.gni")
+import("//build/shim_headers.gni")
+
+pkg_config("system_absl_memory") {
+  packages = [ "absl_memory" ]
+}
+
+shim_headers("memory_shim") {
+  root_path = "."
+  prefix = "absl/memory/"
+  headers = [ "memory.h" ]
+}
+
+source_set("memory") {
+  deps = [ ":memory_shim" ]
+  public_configs = [ ":system_absl_memory" ]
+}
+
+source_set("memory_test") {
+}

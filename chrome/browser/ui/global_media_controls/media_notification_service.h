@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,7 @@
 #include "components/global_media_controls/public/media_session_item_producer.h"
 #include "components/global_media_controls/public/media_session_item_producer_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/media_router/browser/presentation/web_contents_presentation_manager.h"
+#include "content/public/browser/presentation_observer.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -65,8 +65,6 @@ class MediaNotificationService
       base::RepeatingCallback<void(bool)> callback) override;
 
   // global_media_controls::MediaSessionItemProducerObserver:
-  void OnMediaSessionItemCreated(const std::string& id) override;
-  void OnMediaSessionItemDestroyed(const std::string& id) override;
   void OnMediaSessionActionButtonPressed(
       const std::string& id,
       media_session::mojom::MediaSessionAction action) override;
@@ -119,35 +117,6 @@ class MediaNotificationService
   FRIEND_TEST_ALL_PREFIXES(MediaNotificationServiceCastTest,
                            ShowSupplementalNotifications);
 
-  class PresentationManagerObservation
-      : public media_router::WebContentsPresentationManager::Observer {
-   public:
-    PresentationManagerObservation(base::RepeatingClosure cast_started_callback,
-                                   content::WebContents* web_contents);
-    PresentationManagerObservation(const PresentationManagerObservation&) =
-        delete;
-    PresentationManagerObservation& operator=(
-        const PresentationManagerObservation&) = delete;
-    ~PresentationManagerObservation() override;
-
-    // media_router::WebContentsPresentationManager::Observer:
-    void OnMediaRoutesChanged(
-        const std::vector<media_router::MediaRoute>& routes) override;
-
-    void SetPresentationManagerForTesting(
-        base::WeakPtr<media_router::WebContentsPresentationManager>
-            presentation_manager);
-
-   private:
-    base::RepeatingClosure cast_started_callback_;
-    base::WeakPtr<media_router::WebContentsPresentationManager>
-        presentation_manager_;
-  };
-
-  // Called by PresentationManagerObservation when casting starts for its
-  // WebContents.
-  void OnCastStarted(content::WebContents* web_contents);
-
   // True if there are cast notifications associated with |web_contents|.
   bool HasCastNotificationsForWebContents(
       content::WebContents* web_contents) const;
@@ -165,11 +134,6 @@ class MediaNotificationService
   std::unique_ptr<CastMediaNotificationProducer> cast_notification_producer_;
   std::unique_ptr<PresentationRequestNotificationProducer>
       presentation_request_notification_producer_;
-
-  // Observes media_router::WebContentsPresentationManagers so we can dismiss
-  // the dialog when casting starts.
-  std::map<std::string, PresentationManagerObservation>
-      presentation_manager_observations_;
 
   // Used to initialize a MediaRouterUI.
   std::unique_ptr<media_router::StartPresentationContext> context_;

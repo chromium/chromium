@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/owned_window_anchor.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/platform_window/platform_window_delegate.h"
@@ -21,7 +22,7 @@ class MockPlatformWindowDelegate : public PlatformWindowDelegate {
   MockPlatformWindowDelegate& operator=(const MockPlatformWindowDelegate&) =
       delete;
 
-  ~MockPlatformWindowDelegate();
+  ~MockPlatformWindowDelegate() override;
 
   MOCK_METHOD1(OnBoundsChanged, void(const BoundsChange& change));
   MOCK_METHOD1(OnDamageRect, void(const gfx::Rect& damaged_region));
@@ -31,6 +32,10 @@ class MockPlatformWindowDelegate : public PlatformWindowDelegate {
   MOCK_METHOD2(OnWindowStateChanged,
                void(PlatformWindowState old_state,
                     PlatformWindowState new_state));
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  MOCK_METHOD1(OnWindowTiledStateChanged,
+               void(WindowTiledEdges new_tiled_edges));
+#endif
   MOCK_METHOD0(OnLostCapture, void());
   MOCK_METHOD1(OnAcceleratedWidgetAvailable,
                void(gfx::AcceleratedWidget widget));
@@ -40,13 +45,13 @@ class MockPlatformWindowDelegate : public PlatformWindowDelegate {
   MOCK_METHOD0(GetMinimumSizeForWindow, absl::optional<gfx::Size>());
   MOCK_METHOD0(GetMaximumSizeForWindow, absl::optional<gfx::Size>());
   MOCK_METHOD0(GetMenuType, absl::optional<MenuType>());
-  MOCK_METHOD0(GetOwnedWindowAnchorAndRectInPx,
+  MOCK_METHOD0(GetOwnedWindowAnchorAndRectInDIP,
                absl::optional<OwnedWindowAnchor>());
   MOCK_METHOD0(OnMouseEnter, void());
 };
 
-bool operator==(const PlatformWindowDelegate::BoundsChange& bounds,
-                const gfx::Rect& rect);
+bool operator==(const PlatformWindowDelegate::BoundsChange& a,
+                const PlatformWindowDelegate::BoundsChange& b);
 
 }  // namespace ui
 

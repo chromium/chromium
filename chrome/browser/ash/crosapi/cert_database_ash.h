@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,13 @@
 #define CHROME_BROWSER_ASH_CROSAPI_CERT_DATABASE_ASH_H_
 
 #include "base/memory/weak_ptr.h"
+#include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
+#include "chromeos/components/certificate_provider/certificate_info.h"
 #include "chromeos/crosapi/mojom/cert_database.mojom.h"
-#include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crosapi {
@@ -40,6 +42,19 @@ class CertDatabaseAsh : public mojom::CertDatabase,
   // subsequent calls during current user session.
   void GetCertDatabaseInfo(GetCertDatabaseInfoCallback callback) override;
 
+  // mojom::CertDatabase
+  void OnCertsChangedInLacros() override;
+  void AddAshCertDatabaseObserver(
+      mojo::PendingRemote<mojom::AshCertDatabaseObserver> observer) override;
+  void SetCertsProvidedByExtension(
+      const std::string& extension_id,
+      const chromeos::certificate_provider::CertificateInfoList&
+          certificate_infos) override;
+
+  // Notifies observers that were added with `AddAshCertDatabaseObserver` about
+  // cert changes in Ash.
+  void NotifyCertsChangedInAsh();
+
  private:
   // chromeos::LoginState::Observer
   void LoggedInStateChanged() override;
@@ -52,6 +67,9 @@ class CertDatabaseAsh : public mojom::CertDatabase,
   absl::optional<bool> is_cert_database_ready_;
   unsigned long private_slot_id_;
   absl::optional<unsigned long> system_slot_id_;
+
+  // The observers that will receive notifications about cert changes in Ash.
+  mojo::RemoteSet<mojom::AshCertDatabaseObserver> observers_;
 
   // This class supports any number of connections. This allows the client to
   // have multiple, potentially thread-affine, remotes.

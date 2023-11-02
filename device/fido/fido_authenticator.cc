@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,6 +23,12 @@ void FidoAuthenticator::ExcludeAppIdCredentialsBeforeMakeCredential(
 
 void FidoAuthenticator::GetNextAssertion(
     FidoAuthenticator::GetAssertionCallback callback) {
+  NOTREACHED();
+}
+
+void FidoAuthenticator::GetCredentialInformationForRequest(
+    const CtapGetAssertionRequest& request,
+    GetCredentialInformationForRequestCallback callback) {
   NOTREACHED();
 }
 
@@ -116,6 +122,10 @@ void FidoAuthenticator::DeleteCredential(
   NOTREACHED();
 }
 
+bool FidoAuthenticator::SupportsUpdateUserInformation() const {
+  return false;
+}
+
 void FidoAuthenticator::UpdateUserInformation(
     const pin::TokenResponse& pin_token,
     const PublicKeyCredentialDescriptor& credential_id,
@@ -162,7 +172,7 @@ void FidoAuthenticator::BioEnrollDelete(const pin::TokenResponse&,
 }
 
 void FidoAuthenticator::WriteLargeBlob(
-    const std::vector<uint8_t>& large_blob,
+    LargeBlob large_blob,
     const LargeBlobKey& large_blob_key,
     const absl::optional<pin::TokenResponse> pin_uv_auth_token,
     base::OnceCallback<void(CtapDeviceResponseCode)> callback) {
@@ -189,6 +199,10 @@ void FidoAuthenticator::Reset(ResetCallback callback) {
                           absl::nullopt);
 }
 
+FidoAuthenticator::Type FidoAuthenticator::GetType() const {
+  return Type::kOther;
+}
+
 std::string FidoAuthenticator::GetDisplayName() const {
   return GetId();
 }
@@ -210,6 +224,10 @@ bool FidoAuthenticator::SupportsEnterpriseAttestation() const {
 }
 
 bool FidoAuthenticator::SupportsCredBlobOfSize(size_t num_bytes) const {
+  return false;
+}
+
+bool FidoAuthenticator::SupportsDevicePublicKey() const {
   return false;
 }
 

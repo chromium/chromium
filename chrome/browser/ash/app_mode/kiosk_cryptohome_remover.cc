@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,12 +9,14 @@
 
 #include "base/barrier_closure.h"
 #include "base/bind.h"
+#include "base/callback.h"
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "chrome/browser/ash/app_mode/pref_names.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
-#include "chromeos/cryptohome/userdataauth_util.h"
-#include "chromeos/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/ash/components/cryptohome/userdataauth_util.h"
+#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -27,15 +29,13 @@ namespace ash {
 
 namespace {
 
-using ::chromeos::UserDataAuthClient;
-
 void ScheduleDelayedCryptohomeRemoval(const AccountId& account_id) {
   PrefService* const local_state = g_browser_process->local_state();
   {
-    DictionaryPrefUpdate dict_update(local_state,
+    ScopedDictPrefUpdate dict_update(local_state,
                                      prefs::kAllKioskUsersToRemove);
-    dict_update->SetKey(cryptohome::Identification(account_id).id(),
-                        base::Value(account_id.GetUserEmail()));
+    dict_update->Set(cryptohome::Identification(account_id).id(),
+                     account_id.GetUserEmail());
   }
   local_state->CommitPendingWrite();
 }
@@ -43,9 +43,9 @@ void ScheduleDelayedCryptohomeRemoval(const AccountId& account_id) {
 void UnscheduleDelayedCryptohomeRemoval(const cryptohome::Identification& id) {
   PrefService* const local_state = g_browser_process->local_state();
   {
-    DictionaryPrefUpdate dict_update(local_state,
+    ScopedDictPrefUpdate dict_update(local_state,
                                      prefs::kAllKioskUsersToRemove);
-    dict_update->RemoveKey(id.id());
+    dict_update->Remove(id.id());
   }
   local_state->CommitPendingWrite();
 }
@@ -70,9 +70,9 @@ void PerformDelayedCryptohomeRemovals(bool service_is_available) {
   }
 
   PrefService* local_state = g_browser_process->local_state();
-  const base::DictionaryValue* const dict =
-      local_state->GetDictionary(prefs::kAllKioskUsersToRemove);
-  for (const auto it : dict->DictItems()) {
+  const base::Value::Dict& dict =
+      local_state->GetDict(prefs::kAllKioskUsersToRemove);
+  for (const auto it : dict) {
     std::string app_id;
     if (it.second.is_string())
       app_id = it.second.GetString();
@@ -104,7 +104,9 @@ void KioskCryptohomeRemover::RemoveObsoleteCryptohomes() {
 }
 
 void KioskCryptohomeRemover::CancelDelayedCryptohomeRemoval(
-    const AccountId& account_id) {}
+    const AccountId& account_id) {
+  UnscheduleDelayedCryptohomeRemoval(cryptohome::Identification(account_id));
+}
 
 void KioskCryptohomeRemover::RemoveCryptohomesAndExitIfNeeded(
     const std::vector<AccountId>& account_ids) {
@@ -114,8 +116,7 @@ void KioskCryptohomeRemover::RemoveCryptohomesAndExitIfNeeded(
   AccountId active_account_id;
   if (active_user)
     active_account_id = active_user->GetAccountId();
-  if (std::find(account_ids.begin(), account_ids.end(), active_account_id) !=
-      account_ids.end()) {
+  if (base::Contains(account_ids, active_account_id)) {
     cryptohomes_barrier_closure = BarrierClosure(
         account_ids.size() - 1, base::BindOnce(&chrome::AttemptUserExit));
   }

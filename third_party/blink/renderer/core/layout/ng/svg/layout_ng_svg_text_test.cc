@@ -1,14 +1,36 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_test.h"
+#include "third_party/blink/renderer/core/loader/empty_clients.h"
 
 namespace blink {
 
+class LayoutCounts : public EmptyLocalFrameClient {
+ public:
+  uint32_t AllCallCount() const { return all_call_count_; }
+
+ private:
+  void DidObserveLayoutNg(uint32_t all_block_count,
+                          uint32_t ng_block_count,
+                          uint32_t all_call_count,
+                          uint32_t ng_call_count) override {
+    all_call_count_ += all_call_count;
+  }
+
+  uint32_t all_call_count_ = 0;
+};
+
 class LayoutNGSVGTextTest : public NGLayoutTest {
  public:
-  LayoutNGSVGTextTest() : svg_text_ng_(true) {}
+  LayoutNGSVGTextTest()
+      : NGLayoutTest(MakeGarbageCollected<LayoutCounts>()),
+        svg_text_ng_(true) {}
+
+  uint32_t AllLayoutCallCount() const {
+    return static_cast<LayoutCounts*>(GetFrame().Client())->AllCallCount();
+  }
 
  private:
   ScopedSVGTextNGForTest svg_text_ng_;
@@ -25,11 +47,11 @@ body { margin:0; padding: 0; }
 </svg>)HTML");
   UpdateAllLifecyclePhasesForTest();
 
-  Vector<FloatQuad> quads;
+  Vector<gfx::QuadF> quads;
   auto* object = GetLayoutObjectByElementId("t");
   object->AbsoluteQuads(quads, 0);
   EXPECT_EQ(1u, quads.size());
-  FloatRect bounding = quads.back().BoundingBox();
+  gfx::RectF bounding = quads.back().BoundingBox();
   EXPECT_EQ(7.0f, bounding.x());
   EXPECT_EQ(307.0f, bounding.right());
 }
@@ -70,6 +92,56 @@ qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq</text>
   EXPECT_FALSE(std::isinf(box.origin().y()));
   EXPECT_FALSE(std::isinf(box.width()));
   EXPECT_FALSE(std::isinf(box.height()));
+}
+
+// crbug.com/1285666
+TEST_F(LayoutNGSVGTextTest, SubtreeLayout) {
+  SetBodyInnerHTML(R"HTML(
+<body>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 360">
+<text x="240" y="25" font-size="16" id="t">foo</text>
+<text x="240" y="50" font-size="16" id="t2">bar</text>
+</svg>
+</body>)HTML");
+  UpdateAllLifecyclePhasesForTest();
+  LocalFrameView* frame_view = GetFrame().View();
+  LayoutView& view = GetLayoutView();
+  ASSERT_FALSE(view.NeedsLayout());
+
+  GetElementById("t")->setAttribute("transform", "scale(0.5)");
+  GetDocument().UpdateStyleAndLayoutTreeForThisDocument();
+  EXPECT_TRUE(frame_view->IsSubtreeLayout());
+
+  uint32_t pre_layout_count = AllLayoutCallCount();
+  UpdateAllLifecyclePhasesForTest();
+  // Only the <text> and its parent <svg> should be laid out again.
+  EXPECT_EQ(2u, AllLayoutCallCount() - pre_layout_count);
+}
+
+// crbug.com/1320615
+TEST_F(LayoutNGSVGTextTest, WillBeRemovedFromTree) {
+  SetHtmlInnerHTML(R"HTML(
+<body>
+<div id="to_be_skipped">
+<div id="d">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 360" id="svg">
+<text id="t">foo</text>
+</svg>
+</div>
+</div>
+</body>)HTML");
+  // The <text> is registered to #d, #to_be_skipped, body, ...
+  UpdateAllLifecyclePhasesForTest();
+
+  // #d's containing block will be the LayoutView.
+  GetElementById("d")->setAttribute("style", "position:absolute;");
+  UpdateAllLifecyclePhasesForTest();
+
+  // The <text> should be unregistered from all of ancestors.
+  GetElementById("svg")->remove();
+  GetElementById("to_be_skipped")
+      ->setAttribute("style", "transform:rotate(20deg)");
+  UpdateAllLifecyclePhasesForTest();
 }
 
 }  // namespace blink

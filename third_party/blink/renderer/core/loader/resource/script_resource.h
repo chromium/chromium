@@ -40,11 +40,11 @@
 
 namespace blink {
 
+class CachedMetadataHandler;
 class FetchParameters;
 class KURL;
 class ResourceFetcher;
 class ScriptCachedMetadataHandler;
-class SingleCachedMetadataHandler;
 
 // ScriptResource is a resource representing a JavaScript, either a classic or
 // module script. Based on discussions (crbug.com/1178198) ScriptResources are
@@ -88,6 +88,19 @@ class CORE_EXPORT ScriptResource final : public TextResource {
       ResponseBodyLoaderDrainableInterface& body_loader,
       scoped_refptr<base::SingleThreadTaskRunner> loader_task_runner) override;
 
+  class ScriptDecodedDataInfo final : public DecodedDataInfo {
+   public:
+    explicit ScriptDecodedDataInfo(
+        std::unique_ptr<ParkableStringImpl::SecureDigest> digest)
+        : digest_(std::move(digest)) {}
+
+    ResourceType GetType() const override { return ResourceType::kScript; }
+
+    std::unique_ptr<ParkableStringImpl::SecureDigest> digest_;
+  };
+  void DidReceiveDecodedData(const String& data,
+                             std::unique_ptr<DecodedDataInfo> info) override;
+
   void Trace(Visitor*) const override;
 
   void OnMemoryDump(WebMemoryDumpLevelOfDetail,
@@ -99,11 +112,15 @@ class CORE_EXPORT ScriptResource final : public TextResource {
 
   const ParkableString& SourceText();
 
+  const ParkableString& RawSourceText();
+
+  bool IsWebSnapshot() const;
+
   // Get the resource's current text. This can return partial data, so should
   // not be used outside of the inspector.
   String TextForInspector() const;
 
-  SingleCachedMetadataHandler* CacheHandler();
+  CachedMetadataHandler* CacheHandler();
 
   mojom::blink::ScriptType GetInitialRequestScriptType() const {
     return initial_request_script_type_;
@@ -111,7 +128,7 @@ class CORE_EXPORT ScriptResource final : public TextResource {
 
   // Gets the script streamer from the ScriptResource, clearing the resource's
   // streamer so that it cannot be used twice.
-  ScriptStreamer* TakeStreamer();
+  ResourceScriptStreamer* TakeStreamer();
 
   ScriptStreamer::NotStreamingReason NoStreamerReason() const {
     return no_streamer_reason_;
@@ -145,6 +162,8 @@ class CORE_EXPORT ScriptResource final : public TextResource {
   //   1. Loading + streaming completes, or
   //   2. Loading completes + streaming is disabled.
   void NotifyFinished() override;
+
+  void SetEncoding(const String& chs) override;
 
  private:
   // Valid state transitions:
@@ -228,9 +247,11 @@ class CORE_EXPORT ScriptResource final : public TextResource {
   void OnDataPipeReadable(MojoResult result,
                           const mojo::HandleSignalsState& state);
 
+  bool DataHasPrefix(const base::span<const char>& prefix) const;
+
   ParkableString source_text_;
 
-  Member<ScriptStreamer> streamer_;
+  Member<ResourceScriptStreamer> streamer_;
   ScriptStreamer::NotStreamingReason no_streamer_reason_ =
       ScriptStreamer::NotStreamingReason::kInvalid;
   StreamingState streaming_state_ = StreamingState::kWaitingForDataPipe;
@@ -238,12 +259,20 @@ class CORE_EXPORT ScriptResource final : public TextResource {
   Member<ScriptCacheConsumer> cache_consumer_;
   ConsumeCacheState consume_cache_state_;
   const mojom::blink::ScriptType initial_request_script_type_;
+  std::unique_ptr<TextResourceDecoder> stream_text_decoder_;
 };
 
 template <>
 struct DowncastTraits<ScriptResource> {
   static bool AllowFrom(const Resource& resource) {
     return resource.GetType() == ResourceType::kScript;
+  }
+};
+
+template <>
+struct DowncastTraits<ScriptResource::ScriptDecodedDataInfo> {
+  static bool AllowFrom(const Resource::DecodedDataInfo& info) {
+    return info.GetType() == ResourceType::kScript;
   }
 };
 

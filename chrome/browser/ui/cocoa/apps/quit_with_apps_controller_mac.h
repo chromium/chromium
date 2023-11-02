@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
 class PrefRegistrySimple;
@@ -47,7 +48,7 @@ class QuitWithAppsController : public message_center::NotificationDelegate {
   // the instance here because when we want to cancel the notification we need
   // to provide the profile which was used to add the notification previously.
   // Not owned by this class.
-  Profile* notification_profile_ = nullptr;
+  raw_ptr<Profile> notification_profile_ = nullptr;
 
   // Whether to suppress showing the notification for the rest of the session.
   bool suppress_for_session_ = false;

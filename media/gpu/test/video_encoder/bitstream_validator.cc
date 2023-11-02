@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/synchronization/waitable_event.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/media_log.h"
@@ -87,7 +88,7 @@ bool BitstreamValidator::Initialize(const VideoDecoderConfig& decoder_config) {
   bool success = false;
   base::WaitableEvent initialized;
   VideoDecoder::InitCB init_done = base::BindOnce(
-      [](bool* result, base::WaitableEvent* initialized, Status status) {
+      [](bool* result, base::WaitableEvent* initialized, DecoderStatus status) {
         *result = true;
         if (!status.is_ok()) {
           LOG(ERROR) << "Failed decoder initialization ("
@@ -159,9 +160,8 @@ void BitstreamValidator::ConstructSpatialIndices(
   CHECK_LE(spatial_layer_resolutions.size(), spatial_layer_resolutions_.size());
 
   original_spatial_indices_.resize(spatial_layer_resolutions.size());
-  auto begin = std::find(spatial_layer_resolutions_.begin(),
-                         spatial_layer_resolutions_.end(),
-                         spatial_layer_resolutions.front());
+  auto begin = base::ranges::find(spatial_layer_resolutions_,
+                                  spatial_layer_resolutions.front());
   CHECK(begin != spatial_layer_resolutions_.end());
   uint8_t sid_offset = begin - spatial_layer_resolutions_.begin();
   for (size_t i = 0; i < spatial_layer_resolutions.size(); ++i) {
@@ -228,6 +228,10 @@ void BitstreamValidator::ProcessBitstreamTask(
     const H264Metadata& metadata = *bitstream->metadata.h264;
     should_decode = metadata.temporal_idx <= *temporal_layer_index_to_decode_;
     should_flush = frame_index == last_frame_index_;
+  } else if (bitstream->metadata.vp8) {
+    const Vp8Metadata& metadata = *bitstream->metadata.vp8;
+    should_decode = metadata.temporal_idx <= *temporal_layer_index_to_decode_;
+    should_flush = frame_index == last_frame_index_;
   }
 
   if (should_flush) {
@@ -264,14 +268,14 @@ void BitstreamValidator::ProcessBitstreamTask(
   }
 }
 
-void BitstreamValidator::DecodeDone(int64_t timestamp, Status status) {
+void BitstreamValidator::DecodeDone(int64_t timestamp, DecoderStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(validator_thread_sequence_checker_);
   if (!status.is_ok()) {
     base::AutoLock lock(validator_lock_);
     if (!decode_error_) {
       decode_error_ = true;
       LOG(ERROR) << "DecodeStatus is not OK, status="
-                 << GetDecodeStatusString(status.code());
+                 << static_cast<int>(status.code());
     }
   }
   if (timestamp == kEOSTimeStamp) {

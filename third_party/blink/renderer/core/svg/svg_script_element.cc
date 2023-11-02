@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_htmlscriptelement_svgscriptelement.h"
 #include "third_party/blink/renderer/core/dom/attribute.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
@@ -80,11 +81,6 @@ void SVGScriptElement::DidNotifySubtreeInsertionsToDocument() {
 void SVGScriptElement::ChildrenChanged(const ChildrenChange& change) {
   SVGElement::ChildrenChanged(change);
   loader_->ChildrenChanged();
-}
-
-void SVGScriptElement::DidMoveToNewDocument(Document& old_document) {
-  ScriptRunner::MovePendingScript(old_document, GetDocument(), loader_.Get());
-  SVGElement::DidMoveToNewDocument(old_document);
 }
 
 bool SVGScriptElement::IsURLAttribute(const Attribute& attribute) const {
@@ -162,12 +158,12 @@ Element& SVGScriptElement::CloneWithoutAttributesAndChildren(
 }
 
 void SVGScriptElement::DispatchLoadEvent() {
-  DispatchEvent(*Event::Create(event_type_names::kLoad));
+  DispatchEvent(*Event::Create(event_type_names::kLoad), "SVGScriptElement::DispatchLoadEvent");
   have_fired_load_ = true;
 }
 
 void SVGScriptElement::DispatchErrorEvent() {
-  DispatchEvent(*Event::Create(event_type_names::kError));
+  DispatchEvent(*Event::Create(event_type_names::kError), "SVGScriptElement::DispatchErrorEvent");
 }
 
 ScriptElementBase::Type SVGScriptElement::GetScriptElementType() {

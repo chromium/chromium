@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include "base/json/json_reader.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
@@ -19,8 +20,9 @@ namespace fido_filter {
 
 namespace {
 
-const base::Feature kFilter{"WebAuthenticationFilter",
-                            base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kFilter,
+             "WebAuthenticationFilter",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<std::string> kFilterJSON{
     &kFilter,
@@ -51,9 +53,8 @@ bool IsListOf(const base::Value* v, bool (*predicate)(const base::Value&)) {
   if (!v->is_list()) {
     return false;
   }
-  auto contents = v->GetList();
-  return !contents.empty() &&
-         std::all_of(contents.begin(), contents.end(), predicate);
+  auto contents = v->GetListDeprecated();
+  return !contents.empty() && base::ranges::all_of(contents, predicate);
 }
 
 std::vector<std::string> GetStringOrListOfStrings(const base::Value* v) {
@@ -62,7 +63,7 @@ std::vector<std::string> GetStringOrListOfStrings(const base::Value* v) {
   }
 
   std::vector<std::string> ret;
-  for (const auto& elem : v->GetList()) {
+  for (const auto& elem : v->GetListDeprecated()) {
     ret.push_back(elem.GetString());
   }
   return ret;
@@ -81,7 +82,7 @@ absl::optional<std::vector<FilterStep>> ParseJSON(base::StringPiece json) {
   }
 
   std::vector<FilterStep> ret;
-  const auto filter_list = filters->GetList();
+  const auto filter_list = filters->GetListDeprecated();
   for (const auto& filter : filter_list) {
     if (!filter.is_dict()) {
       return absl::nullopt;
@@ -277,10 +278,10 @@ Action Evaluate(
     if ((!filter.operation ||
          base::MatchPattern(OperationToString(op), *filter.operation)) &&
         (filter.rp_id.empty() ||
-         std::any_of(filter.rp_id.begin(), filter.rp_id.end(),
-                     [rp_id](const std::string& pattern) -> bool {
-                       return base::MatchPattern(rp_id, pattern);
-                     })) &&
+         base::ranges::any_of(filter.rp_id,
+                              [rp_id](const std::string& pattern) {
+                                return base::MatchPattern(rp_id, pattern);
+                              })) &&
         (!filter.device ||
          base::MatchPattern(device.value_or(""), *filter.device)) &&
         (!filter.id_type || (id && base::MatchPattern(IDTypeToString(id->first),
@@ -290,10 +291,10 @@ Action Evaluate(
         (!filter.id_max_size ||
          (id && *filter.id_max_size >= id->second.size())) &&
         (filter.id.empty() ||
-         (id_hex && std::any_of(filter.id.begin(), filter.id.end(),
-                                [&id_hex](const std::string& pattern) -> bool {
-                                  return base::MatchPattern(*id_hex, pattern);
-                                })))) {
+         (id_hex && base::ranges::any_of(
+                        filter.id, [&id_hex](const std::string& pattern) {
+                          return base::MatchPattern(*id_hex, pattern);
+                        })))) {
       return filter.action;
     }
   }

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/android/vr/gvr_util.h"
 #include "chrome/browser/vr/gesture_detector.h"
@@ -101,7 +102,7 @@ class VrController : public PlatformController {
   // The last controller state (updated once per frame).
   std::unique_ptr<gvr::ControllerState> controller_state_;
 
-  gvr::GvrApi* gvr_api_;
+  raw_ptr<gvr::GvrApi> gvr_api_;
 
   std::unique_ptr<GestureDetector> gesture_detector_;
 

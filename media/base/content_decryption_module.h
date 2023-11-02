@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "media/base/cdm_key_information.h"
 #include "media/base/eme_constants.h"
@@ -56,17 +56,18 @@ enum class CdmMessageType {
   MESSAGE_TYPE_MAX = INDIVIDUALIZATION_REQUEST
 };
 
+// This enum is reported to UKM. Existing values should NEVER be changed.
 enum class HdcpVersion {
-  kHdcpVersionNone,
-  kHdcpVersion1_0,
-  kHdcpVersion1_1,
-  kHdcpVersion1_2,
-  kHdcpVersion1_3,
-  kHdcpVersion1_4,
-  kHdcpVersion2_0,
-  kHdcpVersion2_1,
-  kHdcpVersion2_2,
-  kHdcpVersion2_3,
+  kHdcpVersionNone = 0,
+  kHdcpVersion1_0 = 1,
+  kHdcpVersion1_1 = 2,
+  kHdcpVersion1_2 = 3,
+  kHdcpVersion1_3 = 4,
+  kHdcpVersion1_4 = 5,
+  kHdcpVersion2_0 = 6,
+  kHdcpVersion2_1 = 7,
+  kHdcpVersion2_2 = 8,
+  kHdcpVersion2_3 = 9,
   kMaxValue = kHdcpVersion2_3
 };
 

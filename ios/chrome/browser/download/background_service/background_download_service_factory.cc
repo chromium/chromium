@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/no_destructor.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/default_clock.h"
@@ -22,7 +23,9 @@
 #include "components/download/public/background_service/clients.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/optimization_guide/prediction_model_download_client.h"
 
 // The root directory for background download system, under browser state
 // directory.
@@ -61,8 +64,17 @@ BackgroundDownloadServiceFactory::~BackgroundDownloadServiceFactory() = default;
 std::unique_ptr<KeyedService>
 BackgroundDownloadServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
+  DCHECK(!context->IsOffTheRecord());
   auto clients = std::make_unique<download::DownloadClientMap>();
   // Clients should be registered here.
+  if (optimization_guide::features::IsModelDownloadingEnabled()) {
+    auto prediction_model_download_client =
+        std::make_unique<optimization_guide::PredictionModelDownloadClient>(
+            ChromeBrowserState::FromBrowserState(context));
+    clients->insert(std::make_pair(
+        download::DownloadClient::OPTIMIZATION_GUIDE_PREDICTION_MODELS,
+        std::move(prediction_model_download_client)));
+  }
   return BuildServiceWithClients(context, std::move(clients));
 }
 

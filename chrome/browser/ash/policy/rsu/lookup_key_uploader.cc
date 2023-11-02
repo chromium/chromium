@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,11 @@
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/strings/strcat.h"
-#include "base/task/post_task.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_store_ash.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/dbus/cryptohome/rpc.pb.h"
-#include "chromeos/dbus/userdataauth/cryptohome_misc_client.h"
+#include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
+#include "chromeos/ash/components/dbus/userdataauth/cryptohome_misc_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/prefs/pref_service.h"
 
@@ -27,7 +26,7 @@ LookupKeyUploader::LookupKeyUploader(
     : policy_store_(policy_store),
       prefs_(pref_service),
       certificate_uploader_(certificate_uploader),
-      cryptohome_misc_client_(chromeos::CryptohomeMiscClient::Get()),
+      cryptohome_misc_client_(ash::CryptohomeMiscClient::Get()),
       clock_(base::DefaultClock::GetInstance()) {
   // Can be null in tests.
   if (policy_store_)

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -49,6 +49,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/sequence_checker.h"
 #include "base/threading/platform_thread.h"
@@ -130,11 +131,11 @@ class MEDIA_EXPORT AudioInputDevice : public AudioCapturerSource,
 
   AudioParameters audio_parameters_;
 
-  const base::ThreadPriority thread_priority_;
+  const base::ThreadType thread_type_;
 
   const bool enable_uma_;
 
-  CaptureCallback* callback_;
+  raw_ptr<CaptureCallback> callback_;
 
   // A pointer to the IPC layer that takes care of sending requests over to
   // the stream implementation.  Only valid when state_ != IPC_CLOSED.

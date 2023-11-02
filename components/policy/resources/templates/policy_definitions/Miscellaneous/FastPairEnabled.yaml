@@ -1,0 +1,26 @@
+caption: Enable Fast Pair (fast Bluetooth pairing)
+default: true
+default_for_enterprise_users: false
+desc: |-
+  Setting this policy will force Fast Pair to be enabled or disabled.
+        Fast Pair is a new Bluetooth pairing flow that links paired peripherals with a GAIA account.
+        This allows other ChromeOS (and Android) devices signed in with the same GAIA account to pair automatically.
+        If unset, the default value is disabled for enterprise users and enabled for non
+        managed accounts.
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: true
+items:
+- caption: Force Fast Pair (fast Bluetooth pairing) to be enabled.
+  value: true
+- caption: Force Fast Pair (fast Bluetooth pairing) to be disabled.
+  value: false
+owners:
+- file://ash/quick_pair/OWNERS
+schema:
+  type: boolean
+supported_on:
+- chrome_os:100-
+tags: []
+type: main

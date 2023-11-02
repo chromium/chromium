@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -190,7 +190,7 @@ std::string GcpUsingChromeTest::RunProcessAndExtractOutput(
   std::string output_from_process;
   char buffer[1024];
   for (bool is_done = false; !is_done;) {
-    DWORD length = base::size(buffer) - 1;
+    DWORD length = std::size(buffer) - 1;
 
     DWORD ret = ::WaitForSingleObject(read_handle.Get(), kTimeout);
     if (ret == WAIT_OBJECT_0) {

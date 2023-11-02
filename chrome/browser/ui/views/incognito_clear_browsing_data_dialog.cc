@@ -1,13 +1,13 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/incognito_clear_browsing_data_dialog.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
-#include "chrome/browser/ui/views/chrome_typography.h"
+#include "chrome/browser/ui/views/accessibility/theme_tracking_non_accessible_image_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
@@ -19,54 +19,14 @@
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_provider.h"
-
-namespace {
-IncognitoClearBrowsingDataDialog* g_incognito_cbd_dialog = nullptr;
-}  // namespace
-
-// static
-void IncognitoClearBrowsingDataDialog::Show(views::View* anchor_view,
-                                            Profile* incognito_profile,
-                                            Type type) {
-  g_incognito_cbd_dialog = new IncognitoClearBrowsingDataDialog(
-      anchor_view, incognito_profile, type);
-  views::Widget* const widget =
-      BubbleDialogDelegateView::CreateBubble(g_incognito_cbd_dialog);
-  widget->Show();
-}
-
-// static
-bool IncognitoClearBrowsingDataDialog::IsShowing() {
-  return g_incognito_cbd_dialog != nullptr;
-}
-
-// static
-void IncognitoClearBrowsingDataDialog::CloseDialog() {
-  if (IsShowing())
-    g_incognito_cbd_dialog->GetWidget()->Close();
-}
-
-// static
-IncognitoClearBrowsingDataDialog* IncognitoClearBrowsingDataDialog::
-    GetIncognitoClearBrowsingDataDialogForTesting() {
-  return g_incognito_cbd_dialog;
-}
-
-void IncognitoClearBrowsingDataDialog::SetDestructorCallbackForTesting(
-    base::OnceClosure callback) {
-  destructor_callback_ = std::move(callback);
-}
-
-IncognitoClearBrowsingDataDialog::~IncognitoClearBrowsingDataDialog() {
-  g_incognito_cbd_dialog = nullptr;
-  std::move(destructor_callback_).Run();
-}
+#include "ui/views/style/typography.h"
 
 IncognitoClearBrowsingDataDialog::IncognitoClearBrowsingDataDialog(
     views::View* anchor_view,
     Profile* incognito_profile,
     Type type)
     : BubbleDialogDelegateView(anchor_view, views::BubbleBorder::TOP_RIGHT),
+      dialog_type_(type),
       incognito_profile_(incognito_profile) {
   DCHECK(incognito_profile_);
   DCHECK(incognito_profile_->IsIncognitoProfile());
@@ -79,7 +39,7 @@ IncognitoClearBrowsingDataDialog::IncognitoClearBrowsingDataDialog(
   views::FlexLayout* layout =
       SetLayoutManager(std::make_unique<views::FlexLayout>());
   layout->SetOrientation(views::LayoutOrientation::kVertical);
-  layout->SetDefault(views::kMarginsKey, gfx::Insets(vertical_spacing, 0));
+  layout->SetDefault(views::kMarginsKey, gfx::Insets::VH(vertical_spacing, 0));
   layout->SetCollapseMargins(true);
   layout->SetIgnoreDefaultMainAxisMargins(true);
 
@@ -87,9 +47,13 @@ IncognitoClearBrowsingDataDialog::IncognitoClearBrowsingDataDialog(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
 
   // Header art
-  auto header_view = std::make_unique<NonAccessibleImageView>();
-  header_view_ = header_view.get();
-  AddChildView(std::move(header_view));
+  ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
+  auto image_view = std::make_unique<ThemeTrackingNonAccessibleImageView>(
+      *bundle.GetImageSkiaNamed(IDR_INCOGNITO_DATA_NOT_SAVED_HEADER_LIGHT),
+      *bundle.GetImageSkiaNamed(IDR_INCOGNITO_DATA_NOT_SAVED_HEADER_DARK),
+      base::BindRepeating(&views::BubbleDialogDelegate::GetBackgroundColor,
+                          base::Unretained(this)));
+  AddChildView(std::move(image_view));
 
   // Set bubble regarding to the type.
   if (type == kHistoryDisclaimerBubble)
@@ -100,13 +64,14 @@ IncognitoClearBrowsingDataDialog::IncognitoClearBrowsingDataDialog(
 
 void IncognitoClearBrowsingDataDialog::SetDialogForDefaultBubbleType() {
   // Text
-  AddChildView(views::Builder<views::Label>()
-                   .SetText(l10n_util::GetStringUTF16(
-                       IDS_INCOGNITO_CLEAR_BROWSING_DATA_DIALOG_PRIMARY_TEXT))
-                   .SetFontList(views::style::GetFont(
-                       views::style::CONTEXT_LABEL, STYLE_EMPHASIZED))
-                   .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-                   .Build());
+  AddChildView(
+      views::Builder<views::Label>()
+          .SetText(l10n_util::GetStringUTF16(
+              IDS_INCOGNITO_CLEAR_BROWSING_DATA_DIALOG_PRIMARY_TEXT))
+          .SetFontList(views::style::GetFont(views::style::CONTEXT_LABEL,
+                                             views::style::STYLE_EMPHASIZED))
+          .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+          .Build());
 
   AddChildView(
       views::Builder<views::Label>()
@@ -135,13 +100,14 @@ void IncognitoClearBrowsingDataDialog::SetDialogForDefaultBubbleType() {
 void IncognitoClearBrowsingDataDialog::
     SetDialogForHistoryDisclaimerBubbleType() {
   // Text
-  AddChildView(views::Builder<views::Label>()
-                   .SetText(l10n_util::GetStringUTF16(
-                       IDS_INCOGNITO_HISTORY_BUBBLE_PRIMARY_TEXT))
-                   .SetFontList(views::style::GetFont(
-                       views::style::CONTEXT_LABEL, STYLE_EMPHASIZED))
-                   .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-                   .Build());
+  AddChildView(
+      views::Builder<views::Label>()
+          .SetText(l10n_util::GetStringUTF16(
+              IDS_INCOGNITO_HISTORY_BUBBLE_PRIMARY_TEXT))
+          .SetFontList(views::style::GetFont(views::style::CONTEXT_LABEL,
+                                             views::style::STYLE_EMPHASIZED))
+          .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+          .Build());
 
   views::Label* label = AddChildView(
       views::Builder<views::Label>()
@@ -173,6 +139,12 @@ void IncognitoClearBrowsingDataDialog::
 }
 
 void IncognitoClearBrowsingDataDialog::OnCloseWindowsButtonClicked() {
+  if (dialog_type_ == Type::kDefaultBubble) {
+    base::UmaHistogramEnumeration(
+        "Incognito.ClearBrowsingDataDialog.ActionType",
+        DialogActionType::kCloseIncognito);
+  }
+
   // Skipping before-unload trigger to give incognito mode users a chance to
   // quickly close all incognito windows without needing to confirm closing the
   // open forms.
@@ -182,20 +154,14 @@ void IncognitoClearBrowsingDataDialog::OnCloseWindowsButtonClicked() {
 }
 
 void IncognitoClearBrowsingDataDialog::OnCancelButtonClicked() {
-  CloseDialog();
-}
+  if (dialog_type_ == Type::kDefaultBubble) {
+    base::UmaHistogramEnumeration(
+        "Incognito.ClearBrowsingDataDialog.ActionType",
+        DialogActionType::kCancel);
+  }
 
-void IncognitoClearBrowsingDataDialog::OnThemeChanged() {
-  BubbleDialogDelegateView::OnThemeChanged();
-  header_view_->SetImage(GetHeaderArt());
-}
-
-gfx::ImageSkia* IncognitoClearBrowsingDataDialog::GetHeaderArt() {
-  bool is_dark =
-      color_utils::IsDark(GetBubbleFrameView()->GetBackgroundColor());
-  return ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-      is_dark ? IDR_INCOGNITO_DATA_NOT_SAVED_HEADER_DARK
-              : IDR_INCOGNITO_DATA_NOT_SAVED_HEADER_LIGHT);
+  GetWidget()->CloseWithReason(
+      views::Widget::ClosedReason::kCloseButtonClicked);
 }
 
 BEGIN_METADATA(IncognitoClearBrowsingDataDialog,

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,10 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/mac/scoped_nsobject.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 
+@class NSMutableArray;
 @class NSMenuItem;
 @class TabMenuListener;
 class TabStripModel;
@@ -43,8 +45,8 @@ class TabMenuBridge : public TabStripModelObserver {
  private:
   FRIEND_TEST_ALL_PREFIXES(TabMenuBridgeTest, ClickingMenuActivatesTab);
 
-  // These methods are used to make batch changes to the menu.
-  void RemoveAllDynamicItems();
+  // These methods are used manage the dynamic menu items.
+  NSMutableArray* DynamicMenuItems();
   void AddDynamicItemsFromModel();
 
   // This method exists to be called back into from the Cocoa part of this
@@ -61,7 +63,7 @@ class TabMenuBridge : public TabStripModelObserver {
                     TabChangeType change_type) override;
   void OnTabStripModelDestroyed(TabStripModel* model) override;
 
-  TabStripModel* model_;
+  raw_ptr<TabStripModel> model_;
   NSMenuItem* menu_item_;  // weak
   base::scoped_nsobject<TabMenuListener> menu_listener_;
 

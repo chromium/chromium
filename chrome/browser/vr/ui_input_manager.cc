@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,8 +33,7 @@ bool IsCentroidInViewport(const gfx::Transform& view_proj_matrix,
     return false;
   }
   gfx::Transform m = view_proj_matrix * world_matrix;
-  gfx::Point3F o;
-  m.TransformPoint(&o);
+  gfx::Point3F o = m.MapPoint(gfx::Point3F());
   return o.x() > -1.0f && o.x() < 1.0f && o.y() > -1.0f && o.y() < 1.0f;
 }
 

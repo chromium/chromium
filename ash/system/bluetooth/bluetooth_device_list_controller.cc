@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@ BluetoothDeviceListController::Factory* g_test_factory = nullptr;
 
 std::unique_ptr<BluetoothDeviceListController>
 BluetoothDeviceListController::Factory::Create(
-    tray::BluetoothDetailedView* bluetooth_detailed_view) {
+    BluetoothDetailedView* bluetooth_detailed_view) {
   if (g_test_factory)
     return g_test_factory->CreateForTesting();  // IN-TEST
   return std::make_unique<BluetoothDeviceListControllerImpl>(

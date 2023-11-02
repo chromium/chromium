@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/gcm_driver/fake_gcm_profile_service.h"
-#include "components/sync/driver/sync_driver_switches.h"
+#include "components/sync/base/command_line_switches.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/test/result_catcher.h"
 
@@ -81,7 +81,7 @@ void GcmApiTest::SetUpCommandLine(base::CommandLine* command_line) {
   // SyncServiceFactory that is called when a profile is being
   // initialized. In order to prevent it from being created, we add the switch
   // to disable the sync logic.
-  command_line->AppendSwitch(switches::kDisableSync);
+  command_line->AppendSwitch(syncer::kDisableSync);
 
   ExtensionApiTest::SetUpCommandLine(command_line);
 }

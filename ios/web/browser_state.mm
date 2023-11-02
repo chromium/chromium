@@ -1,35 +1,32 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/web/public/browser_state.h"
+#import "ios/web/public/browser_state.h"
 
-#include <memory>
+#import <memory>
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
-#include "base/guid.h"
-#include "base/location.h"
-#include "base/memory/ref_counted.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/no_destructor.h"
-#include "base/process/process_handle.h"
-#include "base/task/post_task.h"
-#include "base/token.h"
-#include "components/leveldb_proto/public/proto_database_provider.h"
-#include "ios/web/public/browsing_data/cookie_blocking_mode.h"
-#include "ios/web/public/init/network_context_owner.h"
-#include "ios/web/public/security/certificate_policy_cache.h"
-#include "ios/web/public/thread/web_task_traits.h"
-#include "ios/web/public/thread/web_thread.h"
+#import "base/bind.h"
+#import "base/callback_helpers.h"
+#import "base/guid.h"
+#import "base/location.h"
+#import "base/memory/ref_counted.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/process/process_handle.h"
+#import "base/token.h"
+#import "components/leveldb_proto/public/proto_database_provider.h"
+#import "ios/web/public/init/network_context_owner.h"
+#import "ios/web/public/security/certificate_policy_cache.h"
+#import "ios/web/public/thread/web_task_traits.h"
+#import "ios/web/public/thread/web_thread.h"
 #import "ios/web/web_state/ui/wk_content_rule_list_provider.h"
-#include "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
-#include "ios/web/webui/url_data_manager_ios_backend.h"
-#include "mojo/public/cpp/bindings/remote.h"
-#include "net/url_request/url_request_context_getter.h"
-#include "net/url_request/url_request_context_getter_observer.h"
-#include "services/network/network_context.h"
-#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
+#import "ios/web/webui/url_data_manager_ios_backend.h"
+#import "mojo/public/cpp/bindings/remote.h"
+#import "net/url_request/url_request_context_getter.h"
+#import "net/url_request/url_request_context_getter_observer.h"
+#import "services/network/network_context.h"
+#import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -72,9 +69,7 @@ scoped_refptr<CertificatePolicyCache> BrowserState::GetCertificatePolicyCache(
   return handle->policy_cache;
 }
 
-BrowserState::BrowserState()
-    : url_data_manager_ios_backend_(nullptr),
-      cookie_blocking_mode_(CookieBlockingMode::kAllow) {
+BrowserState::BrowserState() : url_data_manager_ios_backend_(nullptr) {
   // (Refcounted)?BrowserStateKeyedServiceFactories needs to be able to convert
   // a base::SupportsUserData to a BrowserState. Moreover, since the factories
   // may be passed a content::BrowserContext instead of a BrowserState, attach
@@ -93,18 +88,18 @@ BrowserState::~BrowserState() {
   shared_url_loader_factory_->Detach();
 
   if (network_context_) {
-    base::DeleteSoon(FROM_HERE, {web::WebThread::IO},
-                     network_context_owner_.release());
+    web::GetIOThreadTaskRunner({})->DeleteSoon(
+        FROM_HERE, network_context_owner_.release());
   }
 
   // Delete the URLDataManagerIOSBackend instance on the IO thread if it has
   // been created. Note that while this check can theoretically race with a
-  // call to |GetURLDataManagerIOSBackendOnIOThread()|, if any clients of this
+  // call to `GetURLDataManagerIOSBackendOnIOThread()`, if any clients of this
   // BrowserState are still accessing it on the IO thread at this point,
   // they're going to have a bad time anyway.
   if (url_data_manager_ios_backend_) {
-    bool posted = base::DeleteSoon(FROM_HERE, {web::WebThread::IO},
-                                   url_data_manager_ios_backend_);
+    bool posted = web::GetIOThreadTaskRunner({})->DeleteSoon(
+        FROM_HERE, url_data_manager_ios_backend_);
     if (!posted)
       delete url_data_manager_ios_backend_;
   }
@@ -117,6 +112,7 @@ network::mojom::URLLoaderFactory* BrowserState::GetURLLoaderFactory() {
         network::mojom::URLLoaderFactoryParams::New();
     url_loader_factory_params->process_id = network::mojom::kBrowserProcessId;
     url_loader_factory_params->is_corb_enabled = false;
+    url_loader_factory_params->is_trusted = true;
     network_context_->CreateURLLoaderFactory(
         url_loader_factory_.BindNewPipeAndPassReceiver(),
         std::move(url_loader_factory_params));
@@ -187,35 +183,6 @@ BrowserState* BrowserState::FromSupportsUserData(
     return nullptr;
   }
   return static_cast<BrowserState*>(supports_user_data);
-}
-
-CookieBlockingMode BrowserState::GetCookieBlockingMode() const {
-  return cookie_blocking_mode_;
-}
-
-void BrowserState::SetCookieBlockingMode(
-    CookieBlockingMode cookie_blocking_mode,
-    base::OnceClosure callback) {
-  if (cookie_blocking_mode == cookie_blocking_mode_) {
-    std::move(callback).Run();
-    return;
-  }
-  cookie_blocking_mode_ = cookie_blocking_mode;
-  WKWebViewConfigurationProvider& config_provider =
-      WKWebViewConfigurationProvider::FromBrowserState(this);
-  // Cookie blocking needs the injected Javascript to be updated because the
-  // source of the injected Javascript depends on the current cookie blocking
-  // mode to set up the blocking correctly.
-  config_provider.UpdateScripts();
-
-  config_provider.GetContentRuleListProvider()->UpdateContentRuleLists(
-      base::BindOnce(
-          [](base::OnceClosure callback, bool success) {
-            base::UmaHistogramBoolean(
-                "IOS.ContentRuleListProviderUpdateSuccess", success);
-            std::move(callback).Run();
-          },
-          std::move(callback)));
 }
 
 }  // namespace web

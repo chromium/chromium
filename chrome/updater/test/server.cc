@@ -1,16 +1,16 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/updater/test/server.h"
 
-#include <algorithm>
 #include <list>
 #include <memory>
 #include <string>
 #include <utility>
 
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "chrome/updater/test/integration_test_commands.h"
 #include "chrome/updater/test/integration_tests_impl.h"
 #include "net/http/http_status_code.h"
@@ -38,8 +38,8 @@ ScopedServer::~ScopedServer() {
     // Forces `request_matcher` to log to help debugging, unless the
     // predicate matches "..." string in the request.
     ADD_FAILURE() << "Unmet expectation: ";
-    std::for_each(request_matcher.begin(), request_matcher.end(),
-                  [](RequestMatcherPredicate pred) { pred.Run("..."); });
+    base::ranges::for_each(
+        request_matcher, [](RequestMatcherPredicate pred) { pred.Run("..."); });
   }
 }
 
@@ -58,11 +58,10 @@ std::unique_ptr<net::test_server::HttpResponse> ScopedServer::HandleRequest(
     response->set_code(net::HTTP_INTERNAL_SERVER_ERROR);
     return response;
   }
-  if (!std::all_of(request_matchers_.front().begin(),
-                   request_matchers_.front().end(),
-                   [&request](RequestMatcherPredicate pred) {
-                     return pred.Run(request.content);
-                   })) {
+  if (!base::ranges::all_of(request_matchers_.front(),
+                            [&request](RequestMatcherPredicate pred) {
+                              return pred.Run(request.content);
+                            })) {
     ADD_FAILURE() << "Request did not match: " << request.content;
     response->set_code(net::HTTP_INTERNAL_SERVER_ERROR);
     return response;

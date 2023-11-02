@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,17 +7,14 @@
  * Settings dialog is used to change a Bluetooth device nickname.
  */
 
-import '../../settings_shared_css.js';
-import '//resources/cr_elements/cr_input/cr_input.m.js';
+import '../../settings_shared.css.js';
+import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from '//resources/js/i18n_behavior.m.js';
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {getDeviceName} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_utils.js';
-import {getBluetoothConfig} from 'chrome://resources/cr_components/chromeos/bluetooth/cros_bluetooth_config.js';
-
-import {loadTimeData} from '../../i18n_setup.js';
-
-const mojom = chromeos.bluetoothConfig.mojom;
+import {getDeviceName} from 'chrome://resources/ash/common/bluetooth/bluetooth_utils.js';
+import {getBluetoothConfig} from 'chrome://resources/ash/common/bluetooth/cros_bluetooth_config.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {PairedBluetoothDeviceProperties} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /** @type {number} */
 const MAX_INPUT_LENGTH = 32;
@@ -44,7 +41,7 @@ class SettingsBluetoothChangeDeviceNameDialogElement extends
   static get properties() {
     return {
       /**
-       * @private {!chromeos.bluetoothConfig.mojom.PairedBluetoothDeviceProperties}
+       * @private {!PairedBluetoothDeviceProperties}
        */
       device: {
         type: Object,
@@ -69,7 +66,7 @@ class SettingsBluetoothChangeDeviceNameDialogElement extends
         type: Boolean,
         value: false,
         reflectToAttribute: true,
-      }
+      },
     };
   }
 

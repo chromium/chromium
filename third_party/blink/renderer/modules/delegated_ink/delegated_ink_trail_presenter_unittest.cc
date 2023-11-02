@@ -1,9 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/delegated_ink/delegated_ink_trail_presenter.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_pointer_event_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ink_trail_style.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -632,6 +633,9 @@ INSTANTIATE_TEST_SUITE_P(,
 // Confirm that presentation area defaults to the size of the viewport.
 // Numbers and color used were chosen arbitrarily.
 TEST_F(DelegatedInkTrailPresenterUnitTest, PresentationAreaNotProvided) {
+  LoadURL("about:blank");
+  Compositor().BeginFrame();
+
   const int kViewportHeight = 555;
   const int kViewportWidth = 333;
   SetWebViewSize(kViewportWidth, kViewportHeight);

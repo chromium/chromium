@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,13 +11,13 @@
 #include "base/feature_list.h"
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
-#include "media/base/status_codes.h"
-#include "media/base/win/hresult_status_helper.h"
 #include "media/base/win/mf_helpers.h"
 #include "media/gpu/windows/av1_guids.h"
 #include "media/gpu/windows/d3d11_copying_texture_wrapper.h"
+#include "media/gpu/windows/d3d11_status.h"
+#include "media/gpu/windows/supported_profile_helpers.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gl/direct_composition_surface_win.h"
+#include "ui/gl/direct_composition_support.h"
 
 namespace media {
 
@@ -41,16 +41,34 @@ std::unique_ptr<D3D11DecoderConfigurator> D3D11DecoderConfigurator::Create(
     const gpu::GpuDriverBugWorkarounds& workarounds,
     const VideoDecoderConfig& config,
     uint8_t bit_depth,
+    VideoChromaSampling chroma_sampling,
     MediaLog* media_log,
     bool use_shared_handle) {
   // Decoder swap chains do not support shared resources. More info in
   // https://crbug.com/911847. To enable Kaby Lake+ systems for using shared
   // handle, we disable decode swap chain support if shared handle is enabled.
   const bool supports_nv12_decode_swap_chain =
-      gl::DirectCompositionSurfaceWin::IsDecodeSwapChainSupported() &&
-      !use_shared_handle;
-  const auto decoder_dxgi_format =
-      bit_depth == 8 ? DXGI_FORMAT_NV12 : DXGI_FORMAT_P010;
+      gl::DirectCompositionDecodeSwapChainSupported() && !use_shared_handle;
+
+  DXGI_FORMAT decoder_dxgi_format = DXGI_FORMAT_UNKNOWN;
+  // Assume YUV420 format.
+  switch (bit_depth) {
+    case 8:
+      decoder_dxgi_format = DXGI_FORMAT_NV12;
+      break;
+    case 10:
+      decoder_dxgi_format = DXGI_FORMAT_P010;
+      break;
+    case 12:
+      decoder_dxgi_format = DXGI_FORMAT_P016;
+      break;
+    default:
+      MEDIA_LOG(WARNING, media_log)
+          << "D3D11VideoDecoder does not support bit depth "
+          << base::strict_cast<int>(bit_depth);
+      return nullptr;
+  }
+
   GUID decoder_guid = {};
   if (config.codec() == VideoCodec::kH264) {
     decoder_guid = D3D11_DECODER_PROFILE_H264_VLD_NOFGT;
@@ -64,7 +82,57 @@ std::unique_ptr<D3D11DecoderConfigurator> D3D11DecoderConfigurator::Create(
     decoder_guid = DXVA_ModeAV1_VLD_Profile1;
   } else if (config.profile() == AV1PROFILE_PROFILE_PRO) {
     decoder_guid = DXVA_ModeAV1_VLD_Profile2;
-  } else {
+  }
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+  else if (config.profile() == HEVCPROFILE_MAIN) {
+    decoder_guid = D3D11_DECODER_PROFILE_HEVC_VLD_MAIN;
+  } else if (config.profile() == HEVCPROFILE_MAIN10) {
+    decoder_guid = D3D11_DECODER_PROFILE_HEVC_VLD_MAIN10;
+  } else if (config.profile() == HEVCPROFILE_REXT) {
+    // TODO(crbug.com/1345568): Enable 8-bit 444 decoding when AYUV
+    // is added into video pixel format histogram enumerations.
+    if (bit_depth == 8) {
+      if (chroma_sampling == VideoChromaSampling::k420) {
+        decoder_guid = DXVA_ModeHEVC_VLD_Main_Intel;
+        decoder_dxgi_format = DXGI_FORMAT_NV12;
+      } else {
+        MEDIA_LOG(INFO, media_log)
+            << "D3D11VideoDecoder does not support HEVC range extension "
+            << config.codec() << " with chroma subsampling format "
+            << VideoChromaSamplingToString(chroma_sampling) << " and bit depth "
+            << base::strict_cast<int>(bit_depth);
+        return nullptr;
+      }
+    } else if (bit_depth == 10) {
+      if (chroma_sampling == VideoChromaSampling::k420) {
+        decoder_guid = DXVA_ModeHEVC_VLD_Main10_Intel;
+        decoder_dxgi_format = DXGI_FORMAT_P010;
+      } else if (chroma_sampling == VideoChromaSampling::k422) {
+        decoder_guid = DXVA_ModeHEVC_VLD_Main422_10_Intel;
+        decoder_dxgi_format = DXGI_FORMAT_Y210;
+      } else if (chroma_sampling == VideoChromaSampling::k444) {
+        decoder_guid = DXVA_ModeHEVC_VLD_Main444_10_Intel;
+        decoder_dxgi_format = DXGI_FORMAT_Y410;
+      }
+    } else if (bit_depth == 12) {
+      // TODO(crbug.com/1345568): Enable 12-bit 422/444 decoding.
+      // 12-bit decoding with 422 & 444 format does not work well
+      // on Intel platforms.
+      if (chroma_sampling == VideoChromaSampling::k420) {
+        decoder_guid = DXVA_ModeHEVC_VLD_Main12_Intel;
+        decoder_dxgi_format = DXGI_FORMAT_P016;
+      } else {
+        MEDIA_LOG(INFO, media_log)
+            << "D3D11VideoDecoder does not support HEVC range extension "
+            << config.codec() << " with chroma subsampling format "
+            << VideoChromaSamplingToString(chroma_sampling) << " and bit depth "
+            << base::strict_cast<int>(bit_depth);
+        return nullptr;
+      }
+    }
+  }
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+  else {
     MEDIA_LOG(INFO, media_log)
         << "D3D11VideoDecoder does not support codec " << config.codec();
     return nullptr;
@@ -72,7 +140,7 @@ std::unique_ptr<D3D11DecoderConfigurator> D3D11DecoderConfigurator::Create(
 
   MEDIA_LOG(INFO, media_log)
       << "D3D11VideoDecoder is using " << GetProfileName(config.profile())
-      << " / " << (decoder_dxgi_format == DXGI_FORMAT_NV12 ? "NV12" : "P010");
+      << " / " << VideoChromaSamplingToString(chroma_sampling);
 
   return std::make_unique<D3D11DecoderConfigurator>(
       decoder_dxgi_format, decoder_guid, config.coded_size(),
@@ -128,15 +196,11 @@ D3D11DecoderConfigurator::CreateOutputTexture(ComD3D11Device device,
   ComD3D11Texture2D texture;
   HRESULT hr =
       device->CreateTexture2D(&output_texture_desc_, nullptr, &texture);
-  if (FAILED(hr)) {
-    return D3D11Status(D3D11Status::Codes::kCreateDecoderOutputTextureFailed)
-        .AddCause(HresultToStatus(hr));
-  }
+  if (FAILED(hr))
+    return {D3D11Status::Codes::kCreateDecoderOutputTextureFailed, hr};
   hr = SetDebugName(texture.Get(), "D3D11Decoder_ConfiguratorOutput");
-  if (FAILED(hr)) {
-    return D3D11Status(D3D11Status::Codes::kCreateDecoderOutputTextureFailed)
-        .AddCause(HresultToStatus(hr));
-  }
+  if (FAILED(hr))
+    return {D3D11Status::Codes::kCreateDecoderOutputTextureFailed, hr};
   return texture;
 }
 

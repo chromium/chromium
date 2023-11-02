@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,10 +20,10 @@ class InstantAppsSettings {
   InstantAppsSettings(const InstantAppsSettings&) = delete;
   InstantAppsSettings& operator=(const InstantAppsSettings&) = delete;
 
-  static void RecordInfoBarShowEvent(content::WebContents* web_contents,
-                                     const std::string& url);
-  static void RecordInfoBarDismissEvent(content::WebContents* web_contents,
-                                        const std::string& url);
+  static void RecordShowEvent(content::WebContents* web_contents,
+                              const std::string& url);
+  static void RecordDismissEvent(content::WebContents* web_contents,
+                                 const std::string& url);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_INSTANTAPPS_INSTANT_APPS_SETTINGS_H_

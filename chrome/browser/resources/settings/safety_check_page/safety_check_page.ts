@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,40 +8,42 @@
  * safety check.
  */
 
-import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
-import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
-import 'chrome://resources/cr_elements/shared_style_css.m.js';
-import 'chrome://resources/cr_elements/shared_vars_css.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/cr_elements/cr_shared_style.css.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import '../settings_shared_css.js';
+import '../settings_shared.css.js';
 import './safety_check_extensions_child.js';
 import './safety_check_passwords_child.js';
 import './safety_check_safe_browsing_child.js';
 import './safety_check_updates_child.js';
-
 // <if expr="_google_chrome and is_win">
 import './safety_check_chrome_cleaner_child.js';
+
 // </if>
 
-import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
-import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
-import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
-import {flush, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {WebUIListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {HatsBrowserProxyImpl, TrustSafetyInteraction} from '../hats_browser_proxy.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl, SafetyCheckInteractions} from '../metrics_browser_proxy.js';
-
 import {routes} from '../route.js';
 import {Router} from '../router.js';
-import {SafetyCheckBrowserProxy, SafetyCheckBrowserProxyImpl, SafetyCheckCallbackConstants, SafetyCheckParentStatus} from './safety_check_browser_proxy.js';
+import {NotificationPermission, SiteSettingsPrefsBrowserProxy, SiteSettingsPrefsBrowserProxyImpl} from '../site_settings/site_settings_prefs_browser_proxy.js';
 
-type ParentChangedEvent = {
-  newState: SafetyCheckParentStatus,
-  displayString: string,
-};
+import {SafetyCheckBrowserProxy, SafetyCheckBrowserProxyImpl, SafetyCheckCallbackConstants, SafetyCheckParentStatus} from './safety_check_browser_proxy.js';
+import {getTemplate} from './safety_check_page.html.js';
+
+interface ParentChangedEvent {
+  newState: SafetyCheckParentStatus;
+  displayString: string;
+}
 
 const SettingsSafetyCheckPageElementBase =
     WebUIListenerMixin(I18nMixin(PolymerElement));
@@ -53,7 +55,7 @@ export class SettingsSafetyCheckPageElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -66,11 +68,37 @@ export class SettingsSafetyCheckPageElement extends
 
       /** UI string to display for the parent status. */
       parentDisplayString_: String,
+
+      /** Boolean to check safety check notification permissions enabled . */
+      safetyCheckNotificationPermissionsEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean(
+              'safetyCheckNotificationPermissionsEnabled');
+        },
+      },
+
+      /** Boolean to show/hide entry point for unused site permissions. */
+      safetyCheckUnusedSitePermissionsEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean(
+              'safetyCheckUnusedSitePermissionsEnabled');
+        },
+      },
+
+      /* List of notification permission sites. */
+      notificationPermissionSites_: Array,
     };
   }
 
   private parentStatus_: SafetyCheckParentStatus;
   private parentDisplayString_: string;
+  private safetyCheckNotificationPermissionsEnabled_: boolean;
+  private safetyCheckUnusedSitePermissionsEnabled_: boolean;
+  private notificationPermissionSites_: NotificationPermission[] = [];
+  private siteSettingsBrowserProxy_: SiteSettingsPrefsBrowserProxy =
+      SiteSettingsPrefsBrowserProxyImpl.getInstance();
   private safetyCheckBrowserProxy_: SafetyCheckBrowserProxy =
       SafetyCheckBrowserProxyImpl.getInstance();
   private metricsBrowserProxy_: MetricsBrowserProxy =
@@ -79,7 +107,7 @@ export class SettingsSafetyCheckPageElement extends
   /** Timer ID for periodic update. */
   private updateTimerId_: number = -1;
 
-  connectedCallback() {
+  override async connectedCallback() {
     super.connectedCallback();
 
     // Register for safety check status updates.
@@ -95,6 +123,15 @@ export class SettingsSafetyCheckPageElement extends
         Router.getInstance().getQueryParameters().has('activateSafetyCheck')) {
       this.runSafetyCheck_();
     }
+
+    // Register for notification permission review list updates.
+    this.addWebUIListener(
+        'notification-permission-review-list-changed',
+        (sites: NotificationPermission[]) =>
+            this.onReviewNotificationPermissionListChanged_(sites));
+
+    this.notificationPermissionSites_ =
+        await this.siteSettingsBrowserProxy_.getNotificationPermissionReview();
   }
 
   /** Triggers the safety check. */
@@ -107,7 +144,7 @@ export class SettingsSafetyCheckPageElement extends
     // Trigger safety check.
     this.safetyCheckBrowserProxy_.runSafetyCheck();
     // Readout new safety check status via accessibility.
-    this.fireIronAnnounce_(this.i18n('safetyCheckAriaLiveRunning'));
+    getAnnouncerInstance().announce(this.i18n('safetyCheckAriaLiveRunning'));
   }
 
   private onSafetyCheckParentChanged_(event: ParentChangedEvent) {
@@ -128,13 +165,8 @@ export class SettingsSafetyCheckPageElement extends
       // Run initial safety check parent ran string update now.
       update();
       // Readout new safety check status via accessibility.
-      this.fireIronAnnounce_(this.i18n('safetyCheckAriaLiveAfter'));
+      getAnnouncerInstance().announce(this.i18n('safetyCheckAriaLiveAfter'));
     }
-  }
-
-  private fireIronAnnounce_(text: string) {
-    this.dispatchEvent(new CustomEvent(
-        'iron-announce', {bubbles: true, composed: true, detail: {text}}));
   }
 
   private shouldShowParentButton_(): boolean {
@@ -158,6 +190,16 @@ export class SettingsSafetyCheckPageElement extends
 
   private shouldShowChildren_(): boolean {
     return this.parentStatus_ !== SafetyCheckParentStatus.BEFORE;
+  }
+
+  private onReviewNotificationPermissionListChanged_(
+      sites: NotificationPermission[]) {
+    this.notificationPermissionSites_ = sites;
+  }
+
+  private shouldShowNotificationPermissions_(): boolean {
+    return this.notificationPermissionSites_.length !== 0 &&
+        this.safetyCheckNotificationPermissionsEnabled_;
   }
 }
 

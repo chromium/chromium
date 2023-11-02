@@ -1,18 +1,20 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import 'chrome://scanning/scanning_app.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {setScanServiceForTesting} from 'chrome://scanning/mojo_interface_provider.js';
 import {MAX_NUM_SAVED_SCANNERS, ScannerArr, ScannerSetting, ScanSettings, StartMultiPageScanResponse} from 'chrome://scanning/scanning_app_types.js';
-import {tokenToString} from 'chrome://scanning/scanning_app_util.js';
+import {getColorModeString, getPageSizeString, tokenToString} from 'chrome://scanning/scanning_app_util.js';
 import {ScanningBrowserProxyImpl} from 'chrome://scanning/scanning_browser_proxy.js';
+import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertArrayEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
-import {flushTasks, isVisible, waitAfterNextRender} from '../../test_util.js';
+import {isVisible} from '../../test_util.js';
 
 import {changeSelect, createScanner, createScannerSource} from './scanning_app_test_utils.js';
 import {TestScanningBrowserProxy} from './test_scanning_browser_proxy.js';
@@ -52,8 +54,16 @@ const SourceType = {
 };
 
 const firstPageSizes = [PageSize.A4, PageSize.Letter, PageSize.Max];
+const firstColorModes = [ColorMode.BLACK_AND_WHITE, ColorMode.COLOR];
+const firstResolutions = [75, 100, 300];
 
 const secondPageSizes = [PageSize.A4, PageSize.Max];
+const secondColorModes = [ColorMode.BLACK_AND_WHITE, ColorMode.GRAYSCALE];
+const secondResolutions = [150, 600];
+
+const thirdPageSizes = [PageSize.Max];
+const thirdColorModes = [ColorMode.BLACK_AND_WHITE];
+const thirdResolutions = [75, 200];
 
 const firstScannerId =
     /** @type {!mojoBase.mojom.UnguessableToken} */ ({high: 0, low: 1});
@@ -65,20 +75,24 @@ const secondScannerName = 'Scanner 2';
 
 const firstCapabilities = {
   sources: [
-    createScannerSource(SourceType.ADF_DUPLEX, ADF_DUPLEX, firstPageSizes),
-    createScannerSource(SourceType.FLATBED, PLATEN, secondPageSizes),
+    createScannerSource(
+        SourceType.ADF_DUPLEX, ADF_DUPLEX, firstPageSizes, firstColorModes,
+        firstResolutions),
+    createScannerSource(
+        SourceType.FLATBED, PLATEN, secondPageSizes, firstColorModes,
+        firstResolutions),
   ],
-  colorModes: [ColorMode.BLACK_AND_WHITE, ColorMode.COLOR],
-  resolutions: [75, 100, 300]
 };
 
 const secondCapabilities = {
   sources: [
-    createScannerSource(SourceType.ADF_DUPLEX, ADF_DUPLEX, secondPageSizes),
-    createScannerSource(SourceType.ADF_SIMPLEX, ADF_SIMPLEX, secondPageSizes),
+    createScannerSource(
+        SourceType.ADF_DUPLEX, ADF_DUPLEX, thirdPageSizes, thirdColorModes,
+        thirdResolutions),
+    createScannerSource(
+        SourceType.ADF_SIMPLEX, ADF_SIMPLEX, secondPageSizes, secondColorModes,
+        secondResolutions),
   ],
-  colorModes: [ColorMode.BLACK_AND_WHITE, ColorMode.GRAYSCALE],
-  resolutions: [150, 600]
 };
 
 /** @implements {ash.scanning.mojom.ScanServiceInterface} */
@@ -126,7 +140,7 @@ class FakeScanService {
    * @private
    */
   getResolver_(methodName) {
-    let method = this.resolverMap_.get(methodName);
+    const method = this.resolverMap_.get(methodName);
     assertTrue(!!method, `Method '${methodName}' not found.`);
     return method;
   }
@@ -279,7 +293,7 @@ class FakeScanService {
       this.scanJobObserverRemote_ = remote;
       this.methodCalled('startMultiPageScan');
       resolve({
-        controller: this.failStartScan_ ? null : this.multiPageScanController_
+        controller: this.failStartScan_ ? null : this.multiPageScanController_,
       });
     });
   }
@@ -321,7 +335,7 @@ class FakeMultiPageScanController {
    * @private
    */
   getResolver_(methodName) {
-    let method = this.resolverMap_.get(methodName);
+    const method = this.resolverMap_.get(methodName);
     assertTrue(!!method, `Method '${methodName}' not found.`);
     return method;
   }
@@ -457,7 +471,7 @@ export function scanningAppTest() {
   /** @type {!ScannerArr} */
   const expectedScanners = [
     createScanner(firstScannerId, firstScannerName),
-    createScanner(secondScannerId, secondScannerName)
+    createScanner(secondScannerId, secondScannerName),
   ];
 
   suiteSetup(() => {
@@ -648,7 +662,7 @@ export function scanningAppTest() {
               firstCapabilities.sources[1].pageSizes[0].toString(),
               scanningApp.selectedPageSize);
           assertEquals(
-              firstCapabilities.resolutions[0].toString(),
+              firstCapabilities.sources[1].resolutions[0].toString(),
               scanningApp.selectedResolution);
 
           // Before the scan button is clicked, the settings and scan button
@@ -838,7 +852,8 @@ export function scanningAppTest() {
 
           // Simulate the ESC key by sending the `cancel` event to the native
           // dialog.
-          scanFailedDialog.$$('dialog').dispatchEvent(new Event('cancel'));
+          scanFailedDialog.shadowRoot.querySelector('#dialog').dispatchEvent(
+              new Event('cancel'));
           assertFalse(scanningApp.$$('#scanFailedDialog').open);
           assertFalse(scanButton.disabled);
           assertTrue(isVisible(/** @type {!CrButtonElement} */ (scanButton)));
@@ -1477,6 +1492,69 @@ export function scanningAppTest() {
               scanningApp.$$('multi-page-scan')
                   .$$('#scanButton')
                   .textContent.trim());
+        });
+  });
+
+  // Verify the page size, color, and resolution dropdowns contain the correct
+  // elements when each source is selected.
+  test('SourceChangeUpdatesDropdowns', () => {
+    return initializeScanningApp(expectedScanners.slice(1), capabilities)
+        .then(() => {
+          sourceSelect = scanningApp.$$('#sourceSelect').$$('select');
+          return getScannerCapabilities();
+        })
+        .then(() => {
+          assertEquals(2, sourceSelect.length);
+          return changeSelect(
+              /** @type {!HTMLSelectElement} */ (sourceSelect),
+              /* value=*/ null, /* selectedIndex=*/ 0);
+        })
+        .then(() => {
+          colorModeSelect = scanningApp.$$('#colorModeSelect').$$('select');
+          pageSizeSelect = scanningApp.$$('#pageSizeSelect').$$('select');
+          resolutionSelect = scanningApp.$$('#resolutionSelect').$$('select');
+
+          assertEquals(2, colorModeSelect.length);
+          assertEquals(
+              getColorModeString(secondColorModes[0]),
+              colorModeSelect.options[0].textContent.trim());
+          assertEquals(
+              getColorModeString(secondColorModes[1]),
+              colorModeSelect.options[1].textContent.trim());
+          assertEquals(2, pageSizeSelect.length);
+          assertEquals(
+              getPageSizeString(secondPageSizes[0]),
+              pageSizeSelect.options[0].textContent.trim());
+          assertEquals(
+              getPageSizeString(secondPageSizes[1]),
+              pageSizeSelect.options[1].textContent.trim());
+          assertEquals(2, resolutionSelect.length);
+          assertEquals(
+              secondResolutions[0].toString() + ' dpi',
+              resolutionSelect.options[0].textContent.trim());
+          assertEquals(
+              secondResolutions[1].toString() + ' dpi',
+              resolutionSelect.options[1].textContent.trim());
+          return changeSelect(
+              /** @type {!HTMLSelectElement} */ (sourceSelect),
+              /* value=*/ null, /* selectedIndex=*/ 1);
+        })
+        .then(() => {
+          assertEquals(1, colorModeSelect.length);
+          assertEquals(
+              getColorModeString(thirdColorModes[0]),
+              colorModeSelect.options[0].textContent.trim());
+          assertEquals(1, pageSizeSelect.length);
+          assertEquals(
+              getPageSizeString(thirdPageSizes[0]),
+              pageSizeSelect.options[0].textContent.trim());
+          assertEquals(2, resolutionSelect.length);
+          assertEquals(
+              thirdResolutions[0].toString() + ' dpi',
+              resolutionSelect.options[0].textContent.trim());
+          assertEquals(
+              thirdResolutions[1].toString() + ' dpi',
+              resolutionSelect.options[1].textContent.trim());
         });
   });
 
@@ -2371,10 +2449,6 @@ export function scanningAppTest() {
   // Verify that the multi-page scanning checkbox is only visible when both
   // Flatbed and PDF scan settings are selected.
   test('showMultiPageCheckbox', () => {
-    if (!loadTimeData.getBoolean('scanAppMultiPageScanEnabled')) {
-      return;
-    }
-
     return initializeScanningApp(expectedScanners, capabilities)
         .then(() => {
           return getScannerCapabilities();

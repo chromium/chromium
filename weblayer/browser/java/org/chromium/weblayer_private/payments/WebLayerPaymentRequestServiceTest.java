@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -64,7 +64,6 @@ public class WebLayerPaymentRequestServiceTest {
     private PaymentRequestClient mClient;
     private PaymentAppFactoryInterface mFactory;
     private PaymentApp mPaymentApp;
-    private boolean mIsUserGesture;
     private boolean mWaitForUpdatedDetails;
 
     @Before
@@ -119,7 +118,7 @@ public class WebLayerPaymentRequestServiceTest {
     }
 
     private void show(PaymentRequest request) {
-        request.show(mIsUserGesture, mWaitForUpdatedDetails);
+        request.show(mWaitForUpdatedDetails);
     }
 
     private void assertNoError() {

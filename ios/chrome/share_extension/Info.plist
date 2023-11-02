@@ -36,7 +36,14 @@
 					SUBQUERY (
 						$extensionItem.attachments,
 						$attachment,
-						ANY $attachment.registeredTypeIdentifiers UTI-CONFORMS-TO "public.url"
+						(
+							ANY $attachment.registeredTypeIdentifiers UTI-CONFORMS-TO "public.url"
+						)
+						AND (
+							NOT (
+								ANY $attachment.registeredTypeIdentifiers UTI-CONFORMS-TO "public.file-url"
+							)
+						)
 					).@count == 1
 				).@count == 1
 			</string>

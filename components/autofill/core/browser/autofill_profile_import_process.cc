@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,13 +29,15 @@ ProfileImportProcess::ProfileImportProcess(
     const std::string& app_locale,
     const GURL& form_source_url,
     const PersonalDataManager* personal_data_manager,
-    bool allow_only_silent_updates)
+    bool allow_only_silent_updates,
+    ProfileImportMetadata import_metadata)
     : import_id_(GetImportId()),
       observed_profile_(observed_profile),
       app_locale_(app_locale),
       form_source_url_(form_source_url),
       personal_data_manager_(personal_data_manager),
-      allow_only_silent_updates_(allow_only_silent_updates) {
+      allow_only_silent_updates_(allow_only_silent_updates),
+      import_metadata_(import_metadata) {
   DetermineProfileImportType();
 }
 
@@ -66,11 +68,10 @@ void ProfileImportProcess::DetermineProfileImportType() {
   AutofillProfileComparator comparator(app_locale_);
   bool is_mergeable_with_existing_profile = false;
 
+  DCHECK(personal_data_manager_);
   new_profiles_suppressed_for_domain_ =
-      personal_data_manager_
-          ? personal_data_manager_->IsNewProfileImportBlockedForDomain(
-                form_source_url_)
-          : false;
+      personal_data_manager_->IsNewProfileImportBlockedForDomain(
+          form_source_url_);
 
   int number_of_unchanged_profiles = 0;
 
@@ -105,7 +106,7 @@ void ProfileImportProcess::DetermineProfileImportType() {
     // merge can  be considered as a silent update that does not need to get
     // user confirmation.
     if (AutofillProfileComparator::ProfilesHaveDifferentSettingsVisibleValues(
-            *existing_profile, merged_profile)) {
+            *existing_profile, merged_profile, app_locale_)) {
       if (allow_only_silent_updates_) {
         ++number_of_unchanged_profiles;
         continue;
@@ -337,27 +338,92 @@ void ProfileImportProcess::set_prompt_was_shown() {
   prompt_shown_ = true;
 }
 
-void ProfileImportProcess::CollectMetrics() const {
+void ProfileImportProcess::CollectMetrics(ukm::UkmRecorder* ukm_recorder,
+                                          ukm::SourceId source_id) const {
   // Metrics should only be recorded after a user decision was supplied.
   DCHECK_NE(user_decision_, UserDecision::kUndefined);
+
+  auto LogUkmMetrics = [&](int num_edited_fields = 0) {
+    AutofillMetrics::LogAddressProfileImportUkm(
+        ukm_recorder, source_id, import_type_, user_decision_, import_metadata_,
+        num_edited_fields);
+  };
 
   if (allow_only_silent_updates_) {
     // Record the import type for the silent updates.
     AutofillMetrics::LogSilentUpdatesProfileImportType(import_type_);
+    if (import_metadata_.phone_import_status == PhoneImportStatus::kInvalid) {
+      AutofillMetrics::LogSilentUpdatesWithRemovedPhoneNumberProfileImportType(
+          import_type_);
+    }
+    if (import_type_ == AutofillProfileImportType::kSilentUpdate ||
+        import_type_ ==
+            AutofillProfileImportType::kSilentUpdateForIncompleteProfile)
+      LogUkmMetrics();
     return;
   }
 
   // For any finished import process record the type of the import.
   AutofillMetrics::LogProfileImportType(import_type_);
 
+  // Tracks number of edited fields by the user in the storage prompt.
+  int num_edited_fields = 0;
+
+  // If the profile was edited by the user, record a histogram of edited types.
+  if (user_decision_ == UserDecision::kEditAccepted) {
+    const std::vector<ProfileValueDifference> edit_difference =
+        AutofillProfileComparator::GetSettingsVisibleProfileDifference(
+            import_candidate_.value(), confirmed_import_candidate_.value(),
+            app_locale_);
+    for (const auto& difference : edit_difference) {
+      if (import_type_ == AutofillProfileImportType::kNewProfile) {
+        AutofillMetrics::LogNewProfileEditedType(difference.type);
+        if (import_metadata_.did_complement_country &&
+            difference.type == ServerFieldType::ADDRESS_HOME_COUNTRY) {
+          AutofillMetrics::LogNewProfileEditedComplementedCountry();
+        }
+      } else {
+        AutofillMetrics::LogProfileUpdateEditedType(difference.type);
+        if (import_metadata_.did_complement_country &&
+            difference.type == ServerFieldType::ADDRESS_HOME_COUNTRY) {
+          AutofillMetrics::LogProfileUpdateEditedComplementedCountry();
+        }
+      }
+    }
+    num_edited_fields = edit_difference.size();
+    if (import_type_ == AutofillProfileImportType::kNewProfile) {
+      AutofillMetrics::LogNewProfileNumberOfEditedFields(num_edited_fields);
+    } else {
+      AutofillMetrics::LogUpdateProfileNumberOfEditedFields(num_edited_fields);
+    }
+  }
+
   // For an import process that involves prompting the user, record the
   // decision.
   if (import_type_ == AutofillProfileImportType::kNewProfile) {
     AutofillMetrics::LogNewProfileImportDecision(user_decision_);
+    if (import_metadata_.did_complement_country) {
+      AutofillMetrics::LogNewProfileWithComplementedCountryImportDecision(
+          user_decision_);
+    }
+    if (import_metadata_.did_ignore_invalid_country) {
+      AutofillMetrics::LogNewProfileWithIgnoredCountryImportDecision(
+          user_decision_);
+    }
+    if (import_metadata_.phone_import_status == PhoneImportStatus::kInvalid) {
+      AutofillMetrics::LogNewProfileWithRemovedPhoneNumberImportDecision(
+          user_decision_);
+    }
+
+    LogUkmMetrics(num_edited_fields);
   } else if (import_type_ == AutofillProfileImportType::kConfirmableMerge ||
              import_type_ ==
                  AutofillProfileImportType::kConfirmableMergeAndSilentUpdate) {
     AutofillMetrics::LogProfileUpdateImportDecision(user_decision_);
+    if (import_metadata_.phone_import_status == PhoneImportStatus::kInvalid) {
+      AutofillMetrics::LogProfileUpdateWithRemovedPhoneNumberImportDecision(
+          user_decision_);
+    }
 
     DCHECK(merge_candidate_.has_value() && import_candidate_.has_value());
 
@@ -369,35 +435,30 @@ void ProfileImportProcess::CollectMetrics() const {
         AutofillProfileComparator::GetSettingsVisibleProfileDifference(
             import_candidate_.value(), merge_candidate_.value(), app_locale_);
 
+    bool difference_in_country = false;
     for (const auto& difference : merge_difference) {
       AutofillMetrics::LogProfileUpdateAffectedType(difference.type,
                                                     user_decision_);
+      difference_in_country |= difference.type == ADDRESS_HOME_COUNTRY;
+    }
+    // If the country was complemented, but already stored, it didn't make a
+    // difference and we should not count it in the metrics.
+    if (import_metadata_.did_complement_country && difference_in_country) {
+      AutofillMetrics::LogProfileUpdateWithComplementedCountryImportDecision(
+          user_decision_);
+    }
+    // Ignoring an invalid country made the update possible, so this should be
+    // logged in any case.
+    if (import_metadata_.did_ignore_invalid_country) {
+      AutofillMetrics::LogProfileUpdateWithIgnoredCountryImportDecision(
+          user_decision_);
     }
 
     AutofillMetrics::LogUpdateProfileNumberOfAffectedFields(
         merge_difference.size(), user_decision_);
-  }
-
-  // If the profile was edited by the user, record a histogram of edited types.
-  if (user_decision_ == UserDecision::kEditAccepted) {
-    const std::vector<ProfileValueDifference> edit_difference =
-        AutofillProfileComparator::GetSettingsVisibleProfileDifference(
-            import_candidate_.value(), confirmed_import_candidate_.value(),
-            app_locale_);
-    for (const auto& difference : edit_difference) {
-      if (import_type_ == AutofillProfileImportType::kNewProfile) {
-        AutofillMetrics::LogNewProfileEditedType(difference.type);
-      } else {
-        AutofillMetrics::LogProfileUpdateEditedType(difference.type);
-      }
-    }
-    if (import_type_ == AutofillProfileImportType::kNewProfile) {
-      AutofillMetrics::LogNewProfileNumberOfEditedFields(
-          edit_difference.size());
-    } else {
-      AutofillMetrics::LogUpdateProfileNumberOfEditedFields(
-          edit_difference.size());
-    }
+    LogUkmMetrics(num_edited_fields);
+  } else if (import_type_ == AutofillProfileImportType::kSilentUpdate) {
+    LogUkmMetrics();
   }
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,6 +19,7 @@
 #include "ui/base/ime/fuchsia/keyboard_client.h"
 #include "ui/events/fuchsia/input_event_dispatcher.h"
 #include "ui/events/fuchsia/input_event_sink.h"
+#include "ui/events/fuchsia/pointer_events_handler.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_f.h"
@@ -53,8 +54,10 @@ class COMPONENT_EXPORT(OZONE) ScenicWindow final : public PlatformWindow,
   fuchsia::ui::views::ViewRef CloneViewRef();
 
   // ui::PlatformWindow implementation.
-  gfx::Rect GetBounds() const override;
-  void SetBounds(const gfx::Rect& bounds) override;
+  gfx::Rect GetBoundsInPixels() const override;
+  void SetBoundsInPixels(const gfx::Rect& bounds) override;
+  gfx::Rect GetBoundsInDIP() const override;
+  void SetBoundsInDIP(const gfx::Rect& bounds) override;
   void SetTitle(const std::u16string& title) override;
   void Show(bool inactive) override;
   void Hide() override;
@@ -76,8 +79,8 @@ class COMPONENT_EXPORT(OZONE) ScenicWindow final : public PlatformWindow,
   void SetCursor(scoped_refptr<PlatformCursor> cursor) override;
   void MoveCursorTo(const gfx::Point& location) override;
   void ConfineCursorToBounds(const gfx::Rect& bounds) override;
-  void SetRestoredBoundsInPixels(const gfx::Rect& bounds) override;
-  gfx::Rect GetRestoredBoundsInPixels() const override;
+  void SetRestoredBoundsInDIP(const gfx::Rect& bounds) override;
+  gfx::Rect GetRestoredBoundsInDIP() const override;
   void SetWindowIcons(const gfx::ImageSkia& window_icon,
                       const gfx::ImageSkia& app_icon) override;
   void SizeConstraintsChanged() override;
@@ -109,6 +112,9 @@ class COMPONENT_EXPORT(OZONE) ScenicWindow final : public PlatformWindow,
   // Called from OnScenicEvents() to handle focus change and input events.
   void OnInputEvent(const fuchsia::ui::input::InputEvent& event);
 
+  // Hanging gets from |view_ref_focused_|.
+  void OnViewRefFocusedWatchResult(fuchsia::ui::views::FocusState focus_state);
+
   // Sizes the Scenic nodes based on the View dimensions, and device pixel
   // ratio, and signals the dimensions change to the window delegate.
   void UpdateSize();
@@ -125,6 +131,8 @@ class COMPONENT_EXPORT(OZONE) ScenicWindow final : public PlatformWindow,
                                  view_properties_->bounding_box.min.y));
   }
 
+  void OnViewControllerDisconnected(zx_status_t status);
+
   ScenicWindowManager* const manager_;
   PlatformWindowDelegate* const delegate_;
   ScenicWindowDelegate* const scenic_window_delegate_;
@@ -135,29 +143,38 @@ class COMPONENT_EXPORT(OZONE) ScenicWindow final : public PlatformWindow,
   // calling CloneViewRef().
   const fuchsia::ui::views::ViewRef view_ref_;
 
+  // Used to coordinate window closure requests with the shell.
+  fuchsia::element::ViewControllerPtr view_controller_;
+
   // Dispatches Scenic input events as Chrome ui::Events.
   InputEventDispatcher event_dispatcher_;
 
   fuchsia::ui::input3::KeyboardPtr keyboard_service_;
   std::unique_ptr<KeyboardClient> keyboard_client_;
 
+  // React to view-focus coming and going.
+  fuchsia::ui::views::ViewRefFocusedPtr view_ref_focused_;
+
+  // Accept touch and mouse events.
+  absl::optional<PointerEventsHandler> pointer_handler_;
+
   // Scenic session used for all drawing operations in this View.
-  scenic::Session scenic_session_;
+  absl::optional<scenic::Session> scenic_session_;
 
   // Used for safely queueing Present() operations on |scenic_session_|.
-  SafePresenter safe_presenter_;
+  absl::optional<SafePresenter> safe_presenter_;
 
   // The view resource in |scenic_session_|.
-  scenic::View view_;
+  absl::optional<scenic::View> view_;
 
   // Entity node for the |view_|.
-  scenic::EntityNode node_;
+  absl::optional<scenic::EntityNode> node_;
 
   // Node in |scenic_session_| for receiving input that hits within our View.
-  scenic::ShapeNode input_node_;
+  absl::optional<scenic::ShapeNode> input_node_;
 
   // Node in |scenic_session_| for rendering (hit testing disabled).
-  scenic::EntityNode render_node_;
+  absl::optional<scenic::EntityNode> render_node_;
 
   // Holds the View into which the GPU processes composites the window's
   // contents.

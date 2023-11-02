@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -127,7 +127,7 @@ class LazyBackgroundTaskQueueTest : public ExtensionsTest {
 
   // The total number of pending tasks that have been executed.
   int task_run_count_;
-  TestProcessManager* process_manager_ = nullptr;
+  raw_ptr<TestProcessManager> process_manager_ = nullptr;
 };
 
 // Tests that only extensions with background pages should have tasks queued.
@@ -196,7 +196,7 @@ TEST_F(LazyBackgroundTaskQueueTest, ProcessPendingTasks) {
 
   // ProcessPendingTasks is a no-op if there are no tasks.
   scoped_refptr<const Extension> extension = CreateSimpleExtension();
-  queue.ProcessPendingTasks(NULL, browser_context(), extension.get());
+  queue.ProcessPendingTasks(nullptr, browser_context(), extension.get());
   EXPECT_EQ(0, task_run_count());
 
   // Schedule a task to run.
@@ -209,13 +209,13 @@ TEST_F(LazyBackgroundTaskQueueTest, ProcessPendingTasks) {
 
   // Trying to run tasks for an unrelated BrowserContext should do nothing.
   content::TestBrowserContext unrelated_context;
-  queue.ProcessPendingTasks(NULL, &unrelated_context, extension.get());
+  queue.ProcessPendingTasks(nullptr, &unrelated_context, extension.get());
   EXPECT_EQ(0, task_run_count());
   EXPECT_EQ(1u, queue.pending_tasks_.size());
 
   // Processing tasks when there is one pending runs the task and removes the
   // extension from the list of extensions with pending tasks.
-  queue.ProcessPendingTasks(NULL, browser_context(), extension.get());
+  queue.ProcessPendingTasks(nullptr, browser_context(), extension.get());
   EXPECT_EQ(1, task_run_count());
   EXPECT_EQ(0u, queue.pending_tasks_.size());
 }

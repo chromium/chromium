@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/strings/stringprintf.h"
 #include "base/syslog_logging.h"
 
 namespace policy {
@@ -15,6 +16,33 @@ namespace {
 
 constexpr base::TimeDelta kDefaultCommandTimeout = base::Minutes(10);
 constexpr base::TimeDelta kDefaultCommandExpirationTime = base::Minutes(10);
+
+std::string ToString(enterprise_management::RemoteCommand::Type type) {
+#define CASE(_name)                                 \
+  case enterprise_management::RemoteCommand::_name: \
+    return #_name;
+
+  switch (type) {
+    CASE(COMMAND_ECHO_TEST);
+    CASE(DEVICE_REBOOT);
+    CASE(DEVICE_SCREENSHOT);
+    CASE(DEVICE_SET_VOLUME);
+    CASE(DEVICE_FETCH_STATUS);
+    CASE(USER_ARC_COMMAND);
+    CASE(DEVICE_WIPE_USERS);
+    CASE(DEVICE_START_CRD_SESSION);
+    CASE(DEVICE_REMOTE_POWERWASH);
+    CASE(DEVICE_REFRESH_ENTERPRISE_MACHINE_CERTIFICATE);
+    CASE(DEVICE_GET_AVAILABLE_DIAGNOSTIC_ROUTINES);
+    CASE(DEVICE_RUN_DIAGNOSTIC_ROUTINE);
+    CASE(DEVICE_GET_DIAGNOSTIC_ROUTINE_UPDATE);
+    CASE(BROWSER_CLEAR_BROWSING_DATA);
+    CASE(DEVICE_RESET_EUICC);
+    CASE(BROWSER_ROTATE_ATTESTATION_CREDENTIAL);
+  }
+  return base::StringPrintf("Unknown type %i", type);
+#undef CASE
+}
 
 }  // namespace
 
@@ -27,7 +55,7 @@ RemoteCommandJob::~RemoteCommandJob() {
 bool RemoteCommandJob::Init(
     base::TimeTicks now,
     const enterprise_management::RemoteCommand& command,
-    const enterprise_management::SignedData* signed_command) {
+    const enterprise_management::SignedData& signed_command) {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK_EQ(NOT_INITIALIZED, status_);
 
@@ -38,8 +66,7 @@ bool RemoteCommandJob::Init(
   DCHECK_EQ(command.type(), GetType());
 
   unique_id_ = command.command_id();
-  if (signed_command)
-    signed_command_ = *signed_command;
+  signed_command_ = signed_command;
 
   if (command.has_age_of_command()) {
     // Use age of command provided by server to estimate the command issued time
@@ -62,8 +89,9 @@ bool RemoteCommandJob::Init(
     return false;
   }
 
-  SYSLOG(INFO) << "Remote command type " << command.type() << " with id "
-               << command.command_id() << " initialized.";
+  SYSLOG(INFO) << "Remote command type " << ToString(command.type()) << " ("
+               << command.type() << ")"
+               << " with id " << command.command_id() << " initialized.";
 
   status_ = NOT_STARTED;
   return true;
@@ -150,8 +178,7 @@ bool RemoteCommandJob::IsExpired(base::TimeTicks now) {
   return now > issued_time() + kDefaultCommandExpirationTime;
 }
 
-void RemoteCommandJob::TerminateImpl() {
-}
+void RemoteCommandJob::TerminateImpl() {}
 
 void RemoteCommandJob::OnCommandExecutionFinishedWithResult(
     bool succeeded,

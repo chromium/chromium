@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "ash/services/ime/public/cpp/rulebased/def/ethi.h"
 #include "ash/services/ime/public/cpp/rulebased/def/fa.h"
 #include "ash/services/ime/public/cpp/rulebased/def/gu_phone.h"
+#include "ash/services/ime/public/cpp/rulebased/def/hi_inscript.h"
 #include "ash/services/ime/public/cpp/rulebased/def/km.h"
 #include "ash/services/ime/public/cpp/rulebased/def/kn_phone.h"
 #include "ash/services/ime/public/cpp/rulebased/def/lo.h"
@@ -39,11 +40,10 @@
 #include "ash/services/ime/public/cpp/rulebased/def/vi_vni.h"
 #include "ash/services/ime/public/mojom/input_method.mojom-shared.h"
 #include "base/containers/contains.h"
-#include "base/cxx17_backports.h"
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/re2/src/re2/re2.h"
 
-namespace chromeos {
+namespace ash {
 namespace ime {
 namespace rulebased {
 
@@ -88,6 +88,8 @@ const std::map<std::string, RawDataEntry>& GetRawData() {
       {gu_phone::kId,
        RawDataEntry(gu_phone::kKeyMap, gu_phone::kIs102, gu_phone::kTransforms,
                     gu_phone::kTransformsLen, gu_phone::kHistoryPrune)},
+      {hi_inscript::kId,
+       RawDataEntry(hi_inscript::kKeyMap, hi_inscript::kIs102)},
       {km::kId, RawDataEntry(km::kKeyMap, km::kIs102)},
       {kn_phone::kId,
        RawDataEntry(us::kKeyMap, us::kIs102, kn_phone::kTransforms,
@@ -203,7 +205,7 @@ constexpr mojom::DomCode k102Keys[] = {
 // Parses the raw key mappings and generate a KeyMap instance.
 KeyMap ParseKeyMap(const char** raw_key_map, bool is_102) {
   const mojom::DomCode* std_keys = is_102 ? k102Keys : k101Keys;
-  size_t nkeys = is_102 ? base::size(k102Keys) : base::size(k101Keys);
+  size_t nkeys = is_102 ? std::size(k102Keys) : std::size(k101Keys);
   KeyMap key_map;
   for (size_t i = 0; i < nkeys; ++i)
     key_map[std_keys[i]] = raw_key_map[i];
@@ -315,7 +317,7 @@ std::unique_ptr<re2::RE2> ParseHistoryPrune(const char* history_prune) {
 // The delimit inserted at the position of "transat".
 // The term "transat" means "was transformed at".
 // Please refer to some details in the |Transform| method.
-static const char* kTransatDelimit = u8"\u001D";
+static const char* kTransatDelimit = "\u001D";
 
 }  // namespace
 
@@ -434,4 +436,4 @@ bool RulesData::PredictTransform(const std::string& str, int transat) const {
 
 }  // namespace rulebased
 }  // namespace ime
-}  // namespace chromeos
+}  // namespace ash

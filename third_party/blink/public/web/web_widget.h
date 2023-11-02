@@ -31,28 +31,12 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_WIDGET_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_WIDGET_H_
 
-#include "base/callback.h"
-#include "build/build_config.h"
-#include "cc/input/browser_controls_state.h"
-#include "cc/metrics/begin_main_frame_metrics.h"
-#include "cc/paint/element_id.h"
-#include "cc/trees/layer_tree_host_client.h"
-#include "third_party/blink/public/common/input/web_menu_source_type.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
-#include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
-#include "third_party/blink/public/mojom/input/pointer_lock_context.mojom-shared.h"
-#include "third_party/blink/public/mojom/input/pointer_lock_result.mojom-shared.h"
-#include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
-#include "third_party/blink/public/platform/cross_variant_mojo_util.h"
-#include "third_party/blink/public/platform/input/input_handler_proxy.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
-#include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_input_event_result.h"
-#include "third_party/blink/public/platform/web_text_input_info.h"
-#include "third_party/blink/public/platform/web_vector.h"
-#include "third_party/blink/public/web/web_hit_test_result.h"
+#include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_lifecycle_update.h"
-#include "third_party/blink/public/web/web_range.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace cc {
 class LayerTreeHost;
@@ -64,18 +48,20 @@ struct ScreenInfo;
 struct ScreenInfos;
 }  // namespace display
 
+namespace gfx {
+class PointF;
+class Rect;
+class Vector2dF;
+}  // namespace gfx
+
 namespace ui {
 class Cursor;
-class LatencyInfo;
 }
 
 namespace blink {
 struct VisualProperties;
 class WebCoalescedInputEvent;
-
-namespace scheduler {
-class WebRenderWidgetSchedulingState;
-}
+class WebHitTestResult;
 
 class WebWidget {
  public:
@@ -142,10 +128,6 @@ class WebWidget {
   // Returns the state of focus for the WebWidget.
   virtual bool HasFocus() { return false; }
 
-  // Accessor to the WebWidget scheduing state.
-  virtual scheduler::WebRenderWidgetSchedulingState*
-  RendererWidgetSchedulingState() = 0;
-
   virtual void SetCursor(const ui::Cursor& cursor) = 0;
 
   // Get the current tooltip text.
@@ -157,17 +139,9 @@ class WebWidget {
   // Set state that the widget is in the process of handling input events.
   virtual void SetHandlingInputEvent(bool handling) = 0;
 
-  using HandledEventCallback = base::OnceCallback<void(
-      mojom::InputEventResultState ack_state,
-      const ui::LatencyInfo& latency_info,
-      std::unique_ptr<InputHandlerProxy::DidOverscrollParams>,
-      absl::optional<cc::TouchAction>)>;
-
-  // Process the input event, invoking the callback when complete. This
-  // method will call the callback synchronously.
+  // Process the input event, blocking until complete.
   virtual void ProcessInputEventSynchronouslyForTesting(
-      const WebCoalescedInputEvent&,
-      HandledEventCallback) = 0;
+      const WebCoalescedInputEvent&) = 0;
 
   virtual void DidOverscrollForTesting(
       const gfx::Vector2dF& overscroll_delta,

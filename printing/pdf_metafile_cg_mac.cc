@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -285,6 +285,11 @@ bool PdfMetafileCg::GetData(void* dst_buffer, uint32_t dst_buffer_size) const {
   CFDataGetBytes(pdf_data_, CFRangeMake(0, dst_buffer_size),
                  static_cast<UInt8*>(dst_buffer));
   return true;
+}
+
+bool PdfMetafileCg::ShouldCopySharedMemoryRegionData() const {
+  // Since `InitFromData()` copies the data, the caller doesn't have to.
+  return false;
 }
 
 mojom::MetafileDataType PdfMetafileCg::GetDataType() const {

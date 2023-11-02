@@ -73,7 +73,7 @@ class PoissonDistributionInterfaceTest : public ::testing::Test {};
 
 using IntTypes = ::testing::Types<int, int8_t, int16_t, int32_t, int64_t,
                                   uint8_t, uint16_t, uint32_t, uint64_t>;
-TYPED_TEST_CASE(PoissonDistributionInterfaceTest, IntTypes);
+TYPED_TEST_SUITE(PoissonDistributionInterfaceTest, IntTypes);
 
 TYPED_TEST(PoissonDistributionInterfaceTest, SerializeTest) {
   using param_type = typename absl::poisson_distribution<TypeParam>::param_type;

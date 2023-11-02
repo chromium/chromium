@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_checker.h"
@@ -44,7 +44,7 @@ class AutoThread : base::PlatformThread::Delegate {
       const char* name,
       scoped_refptr<AutoThreadTaskRunner> joiner);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Create an AutoThread initialized for COM.  |com_init_type| specifies the
   // type of COM apartment to initialize.
   enum ComInitType { COM_INIT_NONE, COM_INIT_STA, COM_INIT_MTA };
@@ -76,7 +76,7 @@ class AutoThread : base::PlatformThread::Delegate {
   // thread will exit when no references to the TaskRunner remain.
   scoped_refptr<AutoThreadTaskRunner> StartWithType(base::MessagePumpType type);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Configures the thread to initialize the specified COM apartment type.
   // SetComInitType() must be called before Start().
   void SetComInitType(ComInitType com_init_type);
@@ -93,9 +93,9 @@ class AutoThread : base::PlatformThread::Delegate {
 
   // Used to pass data to ThreadMain.
   struct StartupData;
-  StartupData* startup_data_;
+  raw_ptr<StartupData> startup_data_;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Specifies which kind of COM apartment to initialize, if any.
   ComInitType com_init_type_;
 #endif

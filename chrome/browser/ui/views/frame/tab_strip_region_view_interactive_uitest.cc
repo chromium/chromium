@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,12 +27,12 @@ class TabStripRegionViewBrowserTest : public InProcessBrowserTest {
   void SetUp() override {
     // Ensure we run our tests with the tab search button placement configured
     // for the tab strip region view.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
     scoped_feature_list_.InitAndDisableFeature(
         features::kChromeOSTabSearchCaptionButton);
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     scoped_feature_list_.InitAndDisableFeature(
         features::kWin10TabSearchCaptionButton);
 #endif

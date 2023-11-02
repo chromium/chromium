@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,17 @@
 
 #include <string>
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
 namespace base {
 class FilePath;
+class TimeDelta;
+class Version;
 }
 
 namespace updater {
+
+enum class UpdaterScope;
 
 enum class InstallErrors {
   // Failed to mount the DMG.
@@ -46,10 +52,15 @@ enum class InstallErrors {
 // Choose which type of archive to install from. Possible types of archives are
 // DMG, Zip and just the App. From there, it calls the archive specific
 // installation method.
-int InstallFromArchive(const base::FilePath& file_path,
-                       const base::FilePath& existence_checker_path,
-                       const std::string& ap,
-                       const std::string& arguments);
+int InstallFromArchive(
+    const base::FilePath& file_path,
+    const base::FilePath& existence_checker_path,
+    const std::string& ap,
+    const UpdaterScope& scope,
+    const base::Version& pv,
+    const std::string& arguments,
+    const absl::optional<base::FilePath>& installer_data_file,
+    const base::TimeDelta& timeout);
 
 }  // namespace updater
 

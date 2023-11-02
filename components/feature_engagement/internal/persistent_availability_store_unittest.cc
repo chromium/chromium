@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/feature_engagement/internal/proto/availability.pb.h"
 #include "components/feature_engagement/public/feature_list.h"
@@ -25,14 +26,18 @@
 namespace feature_engagement {
 
 namespace {
-const base::Feature kPersistentTestFeatureFoo{
-    "test_foo", base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kPersistentTestFeatureBar{
-    "test_bar", base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kPersistentTestFeatureQux{
-    "test_qux", base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kPersistentTestFeatureNop{
-    "test_nop", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kPersistentTestFeatureFoo,
+             "test_foo",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPersistentTestFeatureBar,
+             "test_bar",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPersistentTestFeatureQux,
+             "test_qux",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPersistentTestFeatureNop,
+             "test_nop",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 Availability CreateAvailability(const base::Feature& feature, uint32_t day) {
   Availability availability;
@@ -87,7 +92,7 @@ class PersistentAvailabilityStoreTest : public testing::Test {
   std::map<std::string, Availability> db_availabilities_;
 
   // The database that is in use.
-  leveldb_proto::test::FakeDB<Availability>* db_;
+  raw_ptr<leveldb_proto::test::FakeDB<Availability>> db_;
 
   // Constant test data.
   base::FilePath storage_dir_;

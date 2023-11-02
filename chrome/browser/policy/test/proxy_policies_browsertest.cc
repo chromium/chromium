@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,10 +32,9 @@ void VerifyProxyPrefs(PrefService* prefs,
                       absl::optional<bool> expected_proxy_pac_mandatory,
                       const std::string& expected_proxy_bypass_list,
                       const ProxyPrefs::ProxyMode& expected_proxy_mode) {
-  const base::Value* value = prefs->Get(proxy_config::prefs::kProxy);
-  ASSERT_TRUE(value);
-  ASSERT_TRUE(value->is_dict());
-  ProxyConfigDictionary dict(value->Clone());
+  const base::Value::Dict& pref_dict =
+      prefs->GetDict(proxy_config::prefs::kProxy);
+  ProxyConfigDictionary dict(pref_dict.Clone());
   std::string s;
   bool b;
   if (expected_proxy_server.empty()) {

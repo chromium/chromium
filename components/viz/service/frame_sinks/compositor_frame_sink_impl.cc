@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,9 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/containers/flat_set.h"
+#include "base/threading/platform_thread.h"
+#include "build/build_config.h"
 #include "components/viz/service/frame_sinks/frame_sink_bundle_impl.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "ui/gfx/overlay_transform.h"
@@ -191,6 +194,14 @@ void CompositorFrameSinkImpl::InitializeCompositorFrameSinkType(
     mojom::CompositorFrameSinkType type) {
   support_->InitializeCompositorFrameSinkType(type);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+void CompositorFrameSinkImpl::SetThreadIds(
+    const std::vector<int32_t>& thread_ids) {
+  support_->SetThreadIds(/*from_untrusted_client=*/true,
+                         base::MakeFlatSet<base::PlatformThreadId>(thread_ids));
+}
+#endif
 
 void CompositorFrameSinkImpl::OnClientConnectionLost() {
   // The client that owns this CompositorFrameSink is either shutting down or

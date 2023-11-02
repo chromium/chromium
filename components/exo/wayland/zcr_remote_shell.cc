@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -134,7 +134,6 @@ const WaylandRemoteShellEventMapping wayland_remote_shell_event_mapping_v1 = {
     ZCR_REMOTE_SHELL_V1_DEFAULT_DEVICE_SCALE_FACTOR_SINCE_VERSION,
     ZCR_REMOTE_SURFACE_V1_CHANGE_ZOOM_LEVEL_SINCE_VERSION,
     ZCR_REMOTE_SHELL_V1_WORKSPACE_INFO_SINCE_VERSION,
-    ZCR_REMOTE_SURFACE_V1_BOUNDS_CHANGED_IN_OUTPUT_SINCE_VERSION,
     ZCR_REMOTE_SHELL_V1_SET_USE_DEFAULT_DEVICE_SCALE_CANCELLATION_SINCE_VERSION,
 };
 
@@ -182,6 +181,8 @@ void remote_shell_get_remote_surface(wl_client* client,
 
   if (wl_resource_get_version(remote_surface_resource) < 18)
     shell_surface->set_server_reparent_window(true);
+
+  shell_surface->SetSecurityDelegate(GetSecurityDelegate(client));
 
   shell_surface->set_delegate(
       shell->CreateShellSurfaceDelegate(remote_surface_resource));
@@ -293,8 +294,7 @@ void remote_shell_get_remote_output(wl_client* client,
                          wl_resource_get_version(resource), id);
 
   auto remote_output = std::make_unique<WaylandRemoteOutput>(
-      remote_output_resource, remote_output_event_mapping_v1);
-  display_handler->AddObserver(remote_output.get());
+      remote_output_resource, remote_output_event_mapping_v1, display_handler);
 
   SetImplementation(remote_output_resource, &remote_output_implementation,
                     std::move(remote_output));
@@ -354,7 +354,7 @@ gfx::Insets GetWorkAreaInsetsInPixel(const display::Display& display,
   // way is to use enclosed rect when converting the work area from dp to
   // client pixel, but that led to weird buffer size in overlay detection.
   // (crbug.com/920650). Investigate if we can fix it and use enclosed rect.
-  return gfx::Insets(
+  return gfx::Insets::TLBR(
       base::ClampRound(
           base::ClampCeil(insets_in_pixel.top() / device_scale_factor) *
           device_scale_factor),

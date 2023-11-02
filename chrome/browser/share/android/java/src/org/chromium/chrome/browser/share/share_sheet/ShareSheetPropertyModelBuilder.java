@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -220,7 +220,7 @@ public class ShareSheetPropertyModelBuilder {
                     "Sharing.SharingHubAndroid.ThirdPartyAppUsage", logIndex, MAX_NUM_APPS + 1);
         }
         ShareSheetCoordinator.recordShareMetrics("SharingHubAndroid.ThirdPartyAppSelected",
-                linkGenerationStatusForMetrics, linkToggleMetricsDetails, shareStartTime);
+                linkGenerationStatusForMetrics, linkToggleMetricsDetails, shareStartTime, mProfile);
         ComponentName component = new ComponentName(ai.applicationInfo.packageName, ai.name);
         ShareParams.TargetChosenCallback callback = params.getCallback();
         if (callback != null) {

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/process/kill.h"
 #include "base/process/launch.h"
@@ -43,11 +42,10 @@ class OrphanedTestServerFilter : public base::ProcessFilter {
       return false;
     bool found_path_string = false;
     bool found_port_string = false;
-    for (auto it = entry.cmd_line_args().begin();
-         it != entry.cmd_line_args().end(); ++it) {
-      if (it->find(path_string_) != std::string::npos)
+    for (const auto& cmd_line_arg : entry.cmd_line_args()) {
+      if (cmd_line_arg.find(path_string_) != std::string::npos)
         found_path_string = true;
-      if (it->find(port_string_) != std::string::npos)
+      if (cmd_line_arg.find(port_string_) != std::string::npos)
         found_port_string = true;
     }
     return found_path_string && found_port_string;

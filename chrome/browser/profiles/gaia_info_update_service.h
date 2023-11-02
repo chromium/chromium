@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,8 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_downloader.h"
 #include "chrome/browser/profiles/profile_downloader_delegate.h"
@@ -50,8 +50,8 @@ class GAIAInfoUpdateService : public KeyedService,
       const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
       const GoogleServiceAuthError& error) override;
 
-  signin::IdentityManager* identity_manager_;
-  ProfileAttributesStorage* profile_attributes_storage_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
+  raw_ptr<ProfileAttributesStorage> profile_attributes_storage_;
   const base::FilePath profile_path_;
   // TODO(msalama): remove when |SigninProfileAttributesUpdater| is folded into
   // |GAIAInfoUpdateService|.

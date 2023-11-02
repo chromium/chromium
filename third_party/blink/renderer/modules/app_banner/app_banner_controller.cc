@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,8 @@
 
 #include <memory>
 #include <utility>
+#include "base/feature_list.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -64,18 +66,22 @@ void AppBannerController::BannerPromptRequest(
     const Vector<String>& platforms,
     BannerPromptRequestCallback callback) {
   // TODO(hajimehoshi): Add tests for the case the frame is detached.
+  // TODO(http://crbug/1289079): Test that prompt() behaves correctly when
+  // called in pagehide().
 
-  // With the current implementation, bfcache could cause prompt() event to be
-  // lost if called after being put into the cache, and the banner will not be
-  // hidden properly. We disable bfcache to avoid these issues.
-  GetSupplementable()->GetFrame()->GetFrameScheduler()->RegisterStickyFeature(
-      blink::SchedulingPolicy::Feature::kAppBanner,
-      {blink::SchedulingPolicy::DisableBackForwardCache()});
+  if (!base::FeatureList::IsEnabled(features::kBackForwardCacheAppBanner)) {
+    // With the current implementation, bfcache could cause prompt() event to be
+    // lost if called after being put into the cache, and the banner will not be
+    // hidden properly. We disable bfcache to avoid these issues.
+    GetSupplementable()->GetFrame()->GetFrameScheduler()->RegisterStickyFeature(
+        blink::SchedulingPolicy::Feature::kAppBanner,
+        {blink::SchedulingPolicy::DisableBackForwardCache()});
+  }
 
   mojom::AppBannerPromptReply reply =
       GetSupplementable()->DispatchEvent(*BeforeInstallPromptEvent::Create(
           event_type_names::kBeforeinstallprompt, *GetSupplementable(),
-          std::move(service_remote), std::move(event_receiver), platforms)) ==
+          std::move(service_remote), std::move(event_receiver), platforms), "AppBannerController::BannerPromptRequest") ==
               DispatchEventResult::kNotCanceled
           ? mojom::AppBannerPromptReply::NONE
           : mojom::AppBannerPromptReply::CANCEL;

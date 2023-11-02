@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -119,6 +119,9 @@ interface IWebLayer {
 
   // Creates an instance of PaymentDetailsUpdateService. Added in Version 92.
   IObjectWrapper createPaymentDetailsUpdateService() = 27;
+
+  // Added in Version 101.
+  String getXClientDataHeader() = 28;
 
   // WARNING: when choosing next value make sure you look back for the max, as
   // merges may mean the last function does not have the max value.

@@ -24,25 +24,26 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_FILTERS_POINT_LIGHT_SOURCE_H_
 
 #include "third_party/blink/renderer/platform/graphics/filters/light_source.h"
+#include "ui/gfx/geometry/point3_f.h"
 
 namespace blink {
 
 class PLATFORM_EXPORT PointLightSource final : public LightSource {
  public:
-  static scoped_refptr<PointLightSource> Create(const FloatPoint3D& position) {
+  static scoped_refptr<PointLightSource> Create(const gfx::Point3F& position) {
     return base::AdoptRef(new PointLightSource(position));
   }
 
-  const FloatPoint3D& GetPosition() const { return position_; }
-  bool SetPosition(const FloatPoint3D&) override;
+  const gfx::Point3F& GetPosition() const { return position_; }
+  bool SetPosition(const gfx::Point3F&) override;
 
   WTF::TextStream& ExternalRepresentation(WTF::TextStream&) const override;
 
  private:
-  PointLightSource(const FloatPoint3D& position)
+  explicit PointLightSource(const gfx::Point3F& position)
       : LightSource(kLsPoint), position_(position) {}
 
-  FloatPoint3D position_;
+  gfx::Point3F position_;
 };
 
 }  // namespace blink

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,7 +23,7 @@ DriveUploaderOnWorker::DriveUploaderOnWorker(
     : wrapper_(wrapper),
       ui_task_runner_(ui_task_runner),
       worker_task_runner_(worker_task_runner) {
-  sequece_checker_.DetachFromSequence();
+  DETACH_FROM_SEQUENCE(sequece_checker_);
 }
 
 DriveUploaderOnWorker::~DriveUploaderOnWorker() {}
@@ -41,7 +41,7 @@ google_apis::CancelCallbackOnce DriveUploaderOnWorker::UploadNewFile(
     const drive::UploadNewFileOptions& options,
     drive::UploadCompletionCallback callback,
     google_apis::ProgressCallback progress_callback) {
-  DCHECK(sequece_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequece_checker_);
 
   ui_task_runner_->PostTask(
       FROM_HERE,
@@ -61,7 +61,7 @@ google_apis::CancelCallbackOnce DriveUploaderOnWorker::UploadExistingFile(
     const drive::UploadExistingFileOptions& options,
     drive::UploadCompletionCallback callback,
     google_apis::ProgressCallback progress_callback) {
-  DCHECK(sequece_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequece_checker_);
 
   ui_task_runner_->PostTask(
       FROM_HERE,

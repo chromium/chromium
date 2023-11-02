@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,11 @@
 
 #include <map>
 #include <string>
-#include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/install/crx_install_error.h"
@@ -18,10 +19,11 @@
 #include "extensions/browser/updater/extension_downloader_delegate.h"
 #include "extensions/browser/updater/safe_manifest_parser.h"
 #include "extensions/common/extension_id.h"
+#include "extensions/common/manifest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "components/user_manager/user_manager.h"
+#include "components/user_manager/user_type.h"  // nogncheck
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class Profile;
@@ -471,7 +473,7 @@ class InstallStageTracker : public KeyedService {
                                 FailureReason reason,
                                 const InstallationData& data);
 
-  const content::BrowserContext* browser_context_;
+  raw_ptr<const content::BrowserContext> browser_context_;
 
   std::map<ExtensionId, InstallationData> installation_data_map_;
 

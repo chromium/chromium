@@ -1,10 +1,11 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_VIEWS_WIDGET_ROOT_VIEW_TARGETER_H_
 #define UI_VIEWS_WIDGET_ROOT_VIEW_TARGETER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/views/view_targeter.h"
 #include "ui/views/views_export.h"
 
@@ -40,7 +41,7 @@ class VIEWS_EXPORT RootViewTargeter : public ViewTargeter {
       const ui::GestureEvent& gesture) override;
 
   // A pointer to the RootView on which |this| is installed.
-  internal::RootView* root_view_;
+  raw_ptr<internal::RootView> root_view_;
 };
 
 }  // namespace views

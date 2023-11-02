@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,12 +6,15 @@
 #define CHROME_BROWSER_DEVICE_API_MANAGED_CONFIGURATION_API_H_
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/observer_list_types.h"
+#include "base/observer_list.h"
+#include "base/threading/sequence_bound.h"
 #include "base/values.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 class Profile;
@@ -46,8 +49,7 @@ class ManagedConfigurationAPI : public KeyedService {
   void GetOriginPolicyConfiguration(
       const url::Origin& origin,
       const std::vector<std::string>& keys,
-      base::OnceCallback<void(std::unique_ptr<base::DictionaryValue>)>
-          callback);
+      base::OnceCallback<void(absl::optional<base::Value::Dict>)> callback);
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -81,15 +83,11 @@ class ManagedConfigurationAPI : public KeyedService {
 
   // Sends an operation to set the configured value on FILE thread.
   void PostStoreConfiguration(const url::Origin& origin,
-                              base::DictionaryValue configuration);
+                              base::Value::Dict configuration);
+  void InformObserversIfConfigurationChanged(const url::Origin& origin,
+                                             bool changed);
 
-  std::unique_ptr<base::DictionaryValue> GetConfigurationOnBackend(
-      const url::Origin& origin,
-      const std::vector<std::string>& keys);
-  void StoreConfigurationOnBackend(const url::Origin& origin,
-                                   base::DictionaryValue configuration);
-
-  ManagedConfigurationStore* GetOrLoadStoreForOrigin(const url::Origin& origin);
+  void MaybeCreateStoreForOrigin(const url::Origin& origin);
   base::FilePath GetStoreLocation(const url::Origin& origin);
 
   // Assigns observers from |unmanaged_observers_| to a particular store if
@@ -99,22 +97,21 @@ class ManagedConfigurationAPI : public KeyedService {
   // store object.
   void PromoteObservers();
 
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
 
   const base::FilePath stores_path_;
-  std::map<url::Origin, std::unique_ptr<ManagedConfigurationStore>> store_map_;
+  std::map<url::Origin, base::SequenceBound<ManagedConfigurationStore>>
+      store_map_;
   // Stores current configuration downloading managers.
   std::map<url::Origin, std::unique_ptr<ManagedConfigurationDownloader>>
       downloaders_;
+  std::map<url::Origin, base::ObserverList<Observer>> observers_;
 
   // Stores the list of orrigins which have a managed configuration(may not yet
   // loaded).
   std::set<url::Origin> managed_origins_;
 
   std::set<Observer*> unmanaged_observers_;
-
-  // Blocking task runner for IO related tasks.
-  scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
 
   // Observes changes to WebAppInstallForceList.
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;

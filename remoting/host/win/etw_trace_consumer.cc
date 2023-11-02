@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,12 +10,11 @@
 
 #include "base/logging.h"
 #include "base/logging_win.h"
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "base/win/event_trace_consumer.h"
 #include "base/win/event_trace_controller.h"
 #include "remoting/base/auto_thread_task_runner.h"
-#include "remoting/host/logging.h"
+#include "remoting/base/logging.h"
 #include "remoting/host/win/etw_trace_controller.h"
 #include "remoting/host/win/event_trace_data.h"
 #include "remoting/host/win/host_event_logger.h"

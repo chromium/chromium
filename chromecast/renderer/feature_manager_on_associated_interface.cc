@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,7 @@ namespace chromecast {
 FeatureManagerOnAssociatedInterface::FeatureManagerOnAssociatedInterface(
     content::RenderFrame* render_frame)
     : content::RenderFrameObserver(render_frame), configured_(false) {
-  registry_.AddInterface(base::BindRepeating(
+  registry_.AddInterface<shell::mojom::FeatureManager>(base::BindRepeating(
       &FeatureManagerOnAssociatedInterface::OnFeatureManagerAssociatedRequest,
       base::Unretained(this)));
 }

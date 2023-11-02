@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -130,26 +130,26 @@ TEST_F(ServiceConnectionTest, LoadTextClassifier) {
                           base::BindOnce([](mojom::LoadModelResult result) {}));
 }
 
-// Tests that LoadHandwritingModelWithSpec runs OK (no crash) in a basic Mojo
+// Tests that LoadHandwritingModel runs OK (no crash) in a basic Mojo
 // environment.
-TEST_F(ServiceConnectionTest, LoadHandwritingModelWithSpec) {
+TEST_F(ServiceConnectionTest, LoadHandwritingModel) {
   mojo::Remote<mojom::MachineLearningService> ml_service;
   ServiceConnection::GetInstance()->BindMachineLearningService(
       ml_service.BindNewPipeAndPassReceiver());
 
   mojo::Remote<mojom::HandwritingRecognizer> handwriting_recognizer;
-  ml_service->LoadHandwritingModelWithSpec(
+  ml_service->LoadHandwritingModel(
       mojom::HandwritingRecognizerSpec::New("en"),
       handwriting_recognizer.BindNewPipeAndPassReceiver(),
-      base::BindOnce([](mojom::LoadModelResult result) {}));
+      base::BindOnce([](mojom::LoadHandwritingModelResult result) {}));
 
   handwriting_recognizer.reset();
   ServiceConnection::GetInstance()
       ->GetMachineLearningService()
-      .LoadHandwritingModelWithSpec(
+      .LoadHandwritingModel(
           mojom::HandwritingRecognizerSpec::New("en"),
           handwriting_recognizer.BindNewPipeAndPassReceiver(),
-          base::BindOnce([](mojom::LoadModelResult result) {}));
+          base::BindOnce([](mojom::LoadHandwritingModelResult result) {}));
 }
 
 // Tests that LoadGrammarChecker runs OK (no crash) in a basic Mojo environment.
@@ -278,7 +278,7 @@ TEST_F(ServiceConnectionTest, FakeServiceConnectionForBuiltinModel) {
   mojo::Remote<mojom::GraphExecutor> graph;
   run_loop.reset(new base::RunLoop);
   model->CreateGraphExecutor(
-      graph.BindNewPipeAndPassReceiver(),
+      mojom::GraphExecutorOptions::New(), graph.BindNewPipeAndPassReceiver(),
       base::BindOnce(
           [](bool* callback_done, mojom::CreateGraphExecutorResult result) {
             EXPECT_EQ(result, mojom::CreateGraphExecutorResult::OK);
@@ -348,7 +348,7 @@ TEST_F(ServiceConnectionTest, FakeServiceConnectionForFlatBufferModel) {
   mojo::Remote<mojom::GraphExecutor> graph;
   run_loop.reset(new base::RunLoop);
   model->CreateGraphExecutor(
-      graph.BindNewPipeAndPassReceiver(),
+      mojom::GraphExecutorOptions::New(), graph.BindNewPipeAndPassReceiver(),
       base::BindOnce(
           [](bool* callback_done, mojom::CreateGraphExecutorResult result) {
             EXPECT_EQ(result, mojom::CreateGraphExecutorResult::OK);
@@ -394,8 +394,7 @@ TEST_F(ServiceConnectionTest,
       &fake_service_connection);
   ServiceConnection::GetInstance()->Initialize();
 
-  auto dummy_data = mojom::TextEntityData::New();
-  dummy_data->set_numeric_value(123456789.);
+  auto dummy_data = mojom::TextEntityData::NewNumericValue(123456789.);
   std::vector<mojom::TextEntityPtr> entities;
   entities.emplace_back(
       mojom::TextEntity::New("dummy",                      // Entity name.
@@ -443,56 +442,6 @@ TEST_F(ServiceConnectionTest,
           },
           &infer_callback_done)
           .Then(run_loop->QuitClosure()));
-  run_loop->Run();
-  ASSERT_TRUE(infer_callback_done);
-}
-
-// Tests the fake ML service for text classifier suggest selection.
-TEST_F(ServiceConnectionTest,
-       FakeServiceConnectionForTextClassifierSuggestSelection) {
-  mojo::Remote<mojom::TextClassifier> text_classifier;
-  bool callback_done = false;
-  FakeServiceConnectionImpl fake_service_connection;
-  ServiceConnection::UseFakeServiceConnectionForTesting(
-      &fake_service_connection);
-  ServiceConnection::GetInstance()->Initialize();
-
-  auto span = mojom::CodepointSpan::New();
-  span->start_offset = 1;
-  span->end_offset = 2;
-  fake_service_connection.SetOutputSelection(span);
-
-  std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
-  ServiceConnection::GetInstance()
-      ->GetMachineLearningService()
-      .LoadTextClassifier(
-          text_classifier.BindNewPipeAndPassReceiver(),
-          base::BindOnce(
-              [](bool* callback_done, mojom::LoadModelResult result) {
-                EXPECT_EQ(result, mojom::LoadModelResult::OK);
-                *callback_done = true;
-              },
-              &callback_done)
-              .Then(run_loop->QuitClosure()));
-  run_loop->Run();
-  ASSERT_TRUE(callback_done);
-  ASSERT_TRUE(text_classifier.is_bound());
-
-  auto request = mojom::TextSuggestSelectionRequest::New();
-  request->user_selection = mojom::CodepointSpan::New();
-  bool infer_callback_done = false;
-  run_loop.reset(new base::RunLoop);
-  text_classifier->SuggestSelection(
-      std::move(request), base::BindOnce(
-                              [](bool* infer_callback_done,
-                                 mojom::CodepointSpanPtr suggested_span) {
-                                *infer_callback_done = true;
-                                // Check if the suggestion is correct.
-                                EXPECT_EQ(suggested_span->start_offset, 1u);
-                                EXPECT_EQ(suggested_span->end_offset, 2u);
-                              },
-                              &infer_callback_done)
-                              .Then(run_loop->QuitClosure()));
   run_loop->Run();
   ASSERT_TRUE(infer_callback_done);
 }
@@ -568,65 +517,6 @@ TEST_F(ServiceConnectionTest, FakeHandWritingRecognizer) {
               [](bool* callback_done,
                  mojom::LoadHandwritingModelResult result) {
                 EXPECT_EQ(result, mojom::LoadHandwritingModelResult::OK);
-                *callback_done = true;
-              },
-              &callback_done)
-              .Then(run_loop->QuitClosure()));
-  run_loop->Run();
-  ASSERT_TRUE(callback_done);
-  ASSERT_TRUE(recognizer.is_bound());
-
-  // Construct fake output.
-  mojom::HandwritingRecognizerResultPtr result =
-      mojom::HandwritingRecognizerResult::New();
-  result->status = mojom::HandwritingRecognizerResult::Status::OK;
-  mojom::HandwritingRecognizerCandidatePtr candidate =
-      mojom::HandwritingRecognizerCandidate::New();
-  candidate->text = "cat";
-  candidate->score = 0.5f;
-  result->candidates.emplace_back(std::move(candidate));
-  fake_service_connection.SetOutputHandwritingRecognizerResult(result);
-
-  auto query = mojom::HandwritingRecognitionQuery::New();
-  bool infer_callback_done = false;
-  run_loop.reset(new base::RunLoop);
-  recognizer->Recognize(
-      std::move(query),
-      base::BindOnce(
-          [](bool* infer_callback_done,
-             mojom::HandwritingRecognizerResultPtr result) {
-            *infer_callback_done = true;
-            // Check if the annotation is correct.
-            ASSERT_EQ(result->status,
-                      mojom::HandwritingRecognizerResult::Status::OK);
-            EXPECT_EQ(result->candidates.at(0)->text, "cat");
-            EXPECT_EQ(result->candidates.at(0)->score, 0.5f);
-          },
-          &infer_callback_done)
-          .Then(run_loop->QuitClosure()));
-  run_loop->Run();
-  ASSERT_TRUE(infer_callback_done);
-}
-
-// Tests the deprecated fake ML service for handwriting.
-// Deprecated API.
-TEST_F(ServiceConnectionTest, FakeHandWritingRecognizerWithSpec) {
-  mojo::Remote<mojom::HandwritingRecognizer> recognizer;
-  bool callback_done = false;
-  FakeServiceConnectionImpl fake_service_connection;
-  ServiceConnection::UseFakeServiceConnectionForTesting(
-      &fake_service_connection);
-  ServiceConnection::GetInstance()->Initialize();
-
-  std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
-  ServiceConnection::GetInstance()
-      ->GetMachineLearningService()
-      .LoadHandwritingModelWithSpec(
-          mojom::HandwritingRecognizerSpec::New("en"),
-          recognizer.BindNewPipeAndPassReceiver(),
-          base::BindOnce(
-              [](bool* callback_done, mojom::LoadModelResult result) {
-                EXPECT_EQ(result, mojom::LoadModelResult::OK);
                 *callback_done = true;
               },
               &callback_done)
@@ -822,8 +712,7 @@ TEST_F(ServiceConnectionTest, FakeTextSuggester) {
   multi_word->text = "hello";
   multi_word->normalized_score = 0.5f;
   mojom::TextSuggestionCandidatePtr candidate =
-      mojom::TextSuggestionCandidate::New();
-  candidate->set_multi_word(std::move(multi_word));
+      mojom::TextSuggestionCandidate::NewMultiWord(std::move(multi_word));
 
   result->candidates.emplace_back(std::move(candidate));
   fake_service_connection.SetOutputTextSuggesterResult(result);
@@ -862,10 +751,11 @@ TEST_F(ServiceConnectionTest, FakeDocumentScanner) {
   ServiceConnection::GetInstance()->Initialize();
 
   std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
+  auto config = chromeos::machine_learning::mojom::DocumentScannerConfig::New();
   ServiceConnection::GetInstance()
       ->GetMachineLearningService()
       .LoadDocumentScanner(
-          scanner.BindNewPipeAndPassReceiver(),
+          scanner.BindNewPipeAndPassReceiver(), std::move(config),
           base::BindOnce(
               [](bool* callback_done, mojom::LoadModelResult result) {
                 EXPECT_EQ(result, mojom::LoadModelResult::OK);
@@ -902,6 +792,146 @@ TEST_F(ServiceConnectionTest, FakeDocumentScanner) {
           .Then(run_loop->QuitClosure()));
   run_loop->Run();
   ASSERT_TRUE(infer_callback_done);
+}
+
+// Tests the fake ML service for web platform model loader.
+TEST_F(ServiceConnectionTest,
+       FakeServiceConnectionForLoadingWebPlatformModelLoader) {
+  FakeServiceConnectionImpl fake_service_connection;
+  ServiceConnection::UseFakeServiceConnectionForTesting(
+      &fake_service_connection);
+  ServiceConnection::GetInstance()->Initialize();
+
+  // First, tries to create a model loader;
+  mojo::Remote<ml::model_loader::mojom::ModelLoader> model_loader;
+  fake_service_connection.SetCreateWebPlatformModelLoaderResult(
+      ml::model_loader::mojom::CreateModelLoaderResult::kOk);
+
+  auto create_loader_options =
+      ml::model_loader::mojom::CreateModelLoaderOptions::New();
+  bool create_loader_callback_done = false;
+  std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
+  ServiceConnection::GetInstance()
+      ->GetMachineLearningService()
+      .CreateWebPlatformModelLoader(
+          model_loader.BindNewPipeAndPassReceiver(),
+          std::move(create_loader_options),
+          base::BindOnce(
+              [](bool* callback_done,
+                 ml::model_loader::mojom::CreateModelLoaderResult result) {
+                EXPECT_EQ(
+                    result,
+                    ml::model_loader::mojom::CreateModelLoaderResult::kOk);
+                *callback_done = true;
+              },
+              &create_loader_callback_done)
+              .Then(run_loop->QuitClosure()));
+  run_loop->Run();
+  ASSERT_TRUE(create_loader_callback_done);
+  ASSERT_TRUE(model_loader.is_bound());
+
+  // Second, loads a model from the model loader.
+  mojo::Remote<ml::model_loader::mojom::Model> model;
+  mojo_base::BigBuffer model_content;
+  bool create_model_callback_done = false;
+  run_loop.reset(new base::RunLoop);
+  fake_service_connection.SetLoadWebPlatformModelResult(
+      ml::model_loader::mojom::LoadModelResult::kOk);
+  auto model_info = ml::model_loader::mojom::ModelInfo::New();
+  model_info->input_tensor_info["input1"] =
+      ml::model_loader::mojom::TensorInfo::New(
+          123u, ml::model_loader::mojom::DataType::kInt32,
+          std::vector<unsigned int>({1u, 2u, 3u}));
+  model_info->input_tensor_info["input2"] =
+      ml::model_loader::mojom::TensorInfo::New(
+          456u, ml::model_loader::mojom::DataType::kFloat64,
+          std::vector<unsigned int>({3u}));
+  model_info->output_tensor_info["output1"] =
+      ml::model_loader::mojom::TensorInfo::New(
+          789u, ml::model_loader::mojom::DataType::kUint16,
+          std::vector<unsigned int>({3u, 4u, 5u}));
+  model_info->output_tensor_info["output2"] =
+      ml::model_loader::mojom::TensorInfo::New(
+          654u, ml::model_loader::mojom::DataType::kUint8,
+          std::vector<unsigned int>({7u, 8u}));
+  fake_service_connection.SetWebPlatformModelInfo(std::move(model_info));
+  model_loader->Load(
+      std::move(model_content),
+      base::BindOnce(
+          [](bool* callback_done,
+             mojo::Remote<ml::model_loader::mojom::Model>* model,
+             ml::model_loader::mojom::LoadModelResult result,
+             mojo::PendingRemote<ml::model_loader::mojom::Model> remote,
+             ml::model_loader::mojom::ModelInfoPtr model_info) {
+            *callback_done = true;
+            // Check if the suggestion is correct.
+            ASSERT_EQ(model_info->input_tensor_info.size(), 2u);
+            ASSERT_EQ(model_info->output_tensor_info.size(), 2u);
+            const auto iter1 = model_info->input_tensor_info.find("input1");
+            ASSERT_TRUE(iter1 != model_info->input_tensor_info.end());
+            EXPECT_EQ(iter1->second->byte_size, 123u);
+            EXPECT_EQ(iter1->second->data_type,
+                      ml::model_loader::mojom::DataType::kInt32);
+            EXPECT_EQ(iter1->second->dimensions,
+                      std::vector<unsigned int>({1u, 2u, 3u}));
+            const auto iter2 = model_info->input_tensor_info.find("input2");
+            ASSERT_TRUE(iter2 != model_info->input_tensor_info.end());
+            EXPECT_EQ(iter2->second->byte_size, 456u);
+            EXPECT_EQ(iter2->second->data_type,
+                      ml::model_loader::mojom::DataType::kFloat64);
+            EXPECT_EQ(iter2->second->dimensions,
+                      std::vector<unsigned int>({3u}));
+            const auto iter3 = model_info->output_tensor_info.find("output1");
+            ASSERT_TRUE(iter3 != model_info->output_tensor_info.end());
+            EXPECT_EQ(iter3->second->byte_size, 789u);
+            EXPECT_EQ(iter3->second->data_type,
+                      ml::model_loader::mojom::DataType::kUint16);
+            EXPECT_EQ(iter3->second->dimensions,
+                      std::vector<unsigned int>({3u, 4u, 5u}));
+            const auto iter4 = model_info->output_tensor_info.find("output2");
+            ASSERT_TRUE(iter4 != model_info->output_tensor_info.end());
+            EXPECT_EQ(iter4->second->byte_size, 654u);
+            EXPECT_EQ(iter4->second->data_type,
+                      ml::model_loader::mojom::DataType::kUint8);
+            EXPECT_EQ(iter4->second->dimensions,
+                      std::vector<unsigned int>({7u, 8u}));
+
+            ASSERT_TRUE(remote.is_valid());
+            model->Bind(std::move(remote));
+          },
+          &create_model_callback_done, &model)
+          .Then(run_loop->QuitClosure()));
+  run_loop->Run();
+  ASSERT_TRUE(create_model_callback_done);
+  ASSERT_TRUE(model.is_bound());
+
+  // At last, calls the `Compute` interface of `Model`.
+  base::flat_map<std::string, std::vector<uint8_t>> input_tensors;
+  input_tensors["input1"] = {1, 2, 3};
+  base::flat_map<std::string, std::vector<uint8_t>> output_tensors;
+  output_tensors["output1"] = {10, 20, 30};
+  fake_service_connection.SetOutputWebPlatformModelCompute(
+      std::move(output_tensors));
+  bool compute_callback_done = false;
+  run_loop.reset(new base::RunLoop);
+  model->Compute(
+      std::move(input_tensors),
+      base::BindOnce(
+          [](bool* callback_done, ml::model_loader::mojom::ComputeResult result,
+             const absl::optional<base::flat_map<
+                 std::string, std::vector<uint8_t>>>& output_tensors) {
+            ASSERT_TRUE(output_tensors.has_value());
+            ASSERT_EQ(output_tensors->size(), 1u);
+            const auto iter = output_tensors->find("output1");
+            ASSERT_TRUE(iter != output_tensors->end());
+            EXPECT_EQ(iter->second, std::vector<uint8_t>({10, 20, 30}));
+
+            *callback_done = true;
+          },
+          &compute_callback_done)
+          .Then(run_loop->QuitClosure()));
+  run_loop->Run();
+  ASSERT_TRUE(compute_callback_done);
 }
 
 }  // namespace

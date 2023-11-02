@@ -15,6 +15,7 @@ include_rules = [
     "+net/url_request/redirect_info.h",
     "+services/metrics/public", # for UKM API
     "+services/network/public",  # for Fetch API and CORS
+    "+third_party/blink/renderer/platform/back_forward_cache_buffer_limit_tracker.h",
     "+third_party/blink/renderer/platform/back_forward_cache_utils.h",
     "+third_party/blink/renderer/platform/bindings/dom_wrapper_world.h",
     "+third_party/blink/renderer/platform/bindings/parkable_string.h",
@@ -49,22 +50,6 @@ include_rules = [
 specific_include_rules = {
   "resource_error\.cc": [
     "+net/base/net_errors.h"
-  ],
-  "ftp_directory_listing.cc": [
-    "+base/i18n/encoding_detection.h",
-    "+base/i18n/icu_string_conversions.h",
-    "+base/strings/string_util.h",
-    "+base/strings/sys_string_conversions.h",
-    "+base/strings/utf_string_conversions.h",
-    "+net/base/directory_listing.h",
-    "+net/base/escape.h",
-    "+net/base/net_errors.h",
-    "+net/ftp/ftp_directory_listing_parser.h",
-    "+net/net_buildflags.h",
-  ],
-  "ftp_directory_listing_test.cc": [
-    "+net/net_buildflags.h",
-    "+third_party/icu/source/i18n/unicode/timezone.h"
   ],
   "replaying_web_data_consumer_handle.h": [
       "+third_party/blink/renderer/platform/waitable_event.h",

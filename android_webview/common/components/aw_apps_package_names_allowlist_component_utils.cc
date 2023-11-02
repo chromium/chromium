@@ -1,11 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "android_webview/common/components/aw_apps_package_names_allowlist_component_utils.h"
 
 #include "base/check.h"
-#include "base/cxx17_backports.h"
 
 namespace android_webview {
 
@@ -25,10 +24,9 @@ const uint8_t kWebViewAppsPackageNamesAllowlistPublicKeySHA256[32] = {
 void GetWebViewAppsPackageNamesAllowlistPublicKeyHash(
     std::vector<uint8_t>* hash) {
   DCHECK(hash);
-  hash->assign(
-      kWebViewAppsPackageNamesAllowlistPublicKeySHA256,
-      kWebViewAppsPackageNamesAllowlistPublicKeySHA256 +
-          base::size(kWebViewAppsPackageNamesAllowlistPublicKeySHA256));
+  hash->assign(kWebViewAppsPackageNamesAllowlistPublicKeySHA256,
+               kWebViewAppsPackageNamesAllowlistPublicKeySHA256 +
+                   std::size(kWebViewAppsPackageNamesAllowlistPublicKeySHA256));
 }
 
 }  // namespace android_webview

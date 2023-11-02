@@ -9,7 +9,7 @@
 /* at a redacted point in time
  */
 /* Compiler settings for ../../third_party/iaccessible2/ia2_api_all.idl:
-    Oicf, W1, Zp8, env=Win64 (32b run), target_arch=ARM64 8.01.0622 
+    Oicf, W1, Zp8, env=Win64 (32b run), target_arch=ARM64 8.01.0626 
     protocol : dce , ms_ext, c_ext, robust
     error checks: allocation ref bounds_check enum stub_data 
     VC __declspec() decoration level: 
@@ -95,6 +95,9 @@ MIDL_DEFINE_GUID(IID, IID_IAccessibleText,0x24FD2FFB,0x3AAD,0x4a08,0x83,0x35,0xA
 
 
 MIDL_DEFINE_GUID(IID, IID_IAccessibleText2,0x9690A9CC,0x5C80,0x4DF5,0x85,0x2E,0x2D,0x5A,0xE4,0x18,0x9A,0x54);
+
+
+MIDL_DEFINE_GUID(IID, IID_IAccessibleTextSelectionContainer,0x2118B599,0x733F,0x43D0,0xA5,0x69,0x0B,0x31,0xD1,0x25,0xED,0x9A);
 
 
 MIDL_DEFINE_GUID(IID, IID_IAccessibleEditableText,0xA59AA09A,0x7011,0x4b65,0x93,0x9D,0x32,0xB1,0xFB,0x55,0x47,0xE3);

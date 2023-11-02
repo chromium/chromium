@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -71,16 +71,18 @@ HeaderView::HeaderView(views::Widget* target_widget,
           target_widget_));
   caption_button_container_->UpdateCaptionButtonState(false /*=animate*/);
 
-  aura::Window* window = target_widget->GetNativeWindow();
   frame_header_ = std::make_unique<DefaultFrameHeader>(
       target_widget,
       (frame_view ? static_cast<views::View*>(frame_view) : this),
       caption_button_container_);
+}
 
+void HeaderView::Init() {
   UpdateBackButton();
   UpdateCenterButton();
-
   frame_header_->UpdateFrameColors();
+
+  aura::Window* window = target_widget_->GetNativeWindow();
   window_observation_.Observe(window);
   Shell::Get()->tablet_mode_controller()->AddObserver(this);
 }
@@ -215,6 +217,15 @@ void HeaderView::OnWindowPropertyChanged(aura::Window* window,
   } else if (key == aura::client::kShowStateKey) {
     frame_header_->OnShowStateChanged(
         window->GetProperty(aura::client::kShowStateKey));
+  } else if (key == chromeos::kWindowStateTypeKey) {
+    // Float state is an ash specific state that changes the header UI. It isn't
+    // a show state so we need to watch the window state type key as well.
+    if (window->GetProperty(chromeos::kWindowStateTypeKey) ==
+            chromeos::WindowStateType::kFloated ||
+        static_cast<chromeos::WindowStateType>(old) ==
+            chromeos::WindowStateType::kFloated) {
+      frame_header_->OnFloatStateChanged();
+    }
   }
 }
 

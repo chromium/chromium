@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -778,10 +778,10 @@ TEST_P(BoxUploader_IncompleteItemFromRerouteInfoTest, RetryUpload) {
   ASSERT_TRUE(upload_success_);
 }
 
-INSTANTIATE_TEST_CASE_P(,
-                        BoxUploader_IncompleteItemFromRerouteInfoTest,
-                        testing::Range(State::IN_PROGRESS,
-                                       State::MAX_DOWNLOAD_STATE));
+INSTANTIATE_TEST_SUITE_P(,
+                         BoxUploader_IncompleteItemFromRerouteInfoTest,
+                         testing::Range(State::IN_PROGRESS,
+                                        State::MAX_DOWNLOAD_STATE));
 
 class BoxUploader_CompletedItemFromRerouteInfoTest
     : public BoxUploader_FromRerouteInfoTestBase {};

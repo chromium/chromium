@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,24 +11,26 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
+#include "chrome/browser/password_manager/passwords_navigation_observer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/test_password_store.h"
 #include "components/password_manager/core/common/password_manager_features.h"
-#include "components/sync/driver/test_sync_service.h"
+#include "components/sync/test/test_sync_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_handle.h"
@@ -115,7 +117,7 @@ class CustomManagePasswordsUIController : public ManagePasswordsUIController {
   void QuitRunLoop();
 
   // The loop to be stopped when the target state or fallback is observed.
-  base::RunLoop* run_loop_;
+  raw_ptr<base::RunLoop> run_loop_;
 
   // The state CustomManagePasswordsUIController is currently waiting for.
   absl::optional<password_manager::ui::State> target_state_;
@@ -291,35 +293,6 @@ enum ReturnCodes {  // Possible results of the JavaScript code.
 
 }  // namespace
 
-NavigationObserver::NavigationObserver(content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {}
-NavigationObserver::~NavigationObserver() = default;
-
-void NavigationObserver::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->HasCommitted())
-    return;
-
-  if (quit_on_entry_committed_)
-    run_loop_.Quit();
-}
-
-void NavigationObserver::DidFinishLoad(
-    content::RenderFrameHost* render_frame_host,
-    const GURL& validated_url) {
-  render_frame_host_ = render_frame_host;
-  if (!wait_for_path_.empty()) {
-    if (validated_url.path() == wait_for_path_)
-      run_loop_.Quit();
-  } else if (!render_frame_host->GetParent()) {
-    run_loop_.Quit();
-  }
-}
-
-void NavigationObserver::Wait() {
-  run_loop_.Run();
-}
-
 BubbleObserver::BubbleObserver(content::WebContents* web_contents)
     : passwords_ui_controller_(
           ManagePasswordsUIController::FromWebContents(web_contents)) {}
@@ -423,6 +396,11 @@ void PasswordStoreResultsObserver::OnGetPasswordStoreResults(
   run_loop_.Quit();
 }
 
+base::WeakPtr<password_manager::PasswordStoreConsumer>
+PasswordStoreResultsObserver::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 std::vector<std::unique_ptr<password_manager::PasswordForm>>
 PasswordStoreResultsObserver::WaitForResults() {
   run_loop_.Run();
@@ -500,7 +478,7 @@ void PasswordManagerBrowserTestBase::GetNewTab(
                                                 true);
   if (preexisting_tab) {
     browser->tab_strip_model()->CloseWebContentsAt(0,
-                                                   TabStripModel::CLOSE_NONE);
+                                                   TabCloseTypes::CLOSE_NONE);
   }
   ASSERT_EQ(controller,
             ManagePasswordsUIController::FromWebContents(*web_contents));
@@ -515,7 +493,7 @@ void PasswordManagerBrowserTestBase::WaitForPasswordStore(Browser* browser) {
           browser->profile(), ServiceAccessType::IMPLICIT_ACCESS);
   PasswordStoreResultsObserver profile_syncer;
   profile_password_store->GetAllLoginsWithAffiliationAndBrandingInformation(
-      &profile_syncer);
+      profile_syncer.GetWeakPtr());
   profile_syncer.WaitForResults();
 
   scoped_refptr<password_manager::PasswordStoreInterface>
@@ -524,7 +502,7 @@ void PasswordManagerBrowserTestBase::WaitForPasswordStore(Browser* browser) {
   if (account_password_store) {
     PasswordStoreResultsObserver account_syncer;
     account_password_store->GetAllLoginsWithAffiliationAndBrandingInformation(
-        &account_syncer);
+        account_syncer.GetWeakPtr());
     account_syncer.WaitForResults();
   }
 }
@@ -535,13 +513,13 @@ content::WebContents* PasswordManagerBrowserTestBase::WebContents() const {
 
 content::RenderFrameHost* PasswordManagerBrowserTestBase::RenderFrameHost()
     const {
-  return WebContents()->GetMainFrame();
+  return WebContents()->GetPrimaryMainFrame();
 }
 
 void PasswordManagerBrowserTestBase::NavigateToFile(const std::string& path) {
   ASSERT_EQ(web_contents_,
             browser()->tab_strip_model()->GetActiveWebContents());
-  NavigationObserver observer(WebContents());
+  PasswordsNavigationObserver observer(WebContents());
   GURL url = embedded_test_server()->GetURL(path);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   observer.Wait();

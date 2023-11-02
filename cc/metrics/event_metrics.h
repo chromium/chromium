@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,10 @@
 #define CC_METRICS_EVENT_METRICS_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "cc/cc_export.h"
@@ -16,6 +18,9 @@
 #include "ui/events/types/scroll_input_type.h"
 
 namespace cc {
+class PinchEventMetrics;
+class ScrollEventMetrics;
+class ScrollUpdateEventMetrics;
 
 // Data about an event used by CompositorFrameReporter in generating event
 // latency metrics.
@@ -58,35 +63,10 @@ class CC_EXPORT EventMetrics {
     kMaxValue = kInertialGestureScrollUpdate,
   };
 
-  // Type of scroll events. This list should be in the same order as values of
-  // `EventLatencyScrollInputType` enum from enums.xml file.
-  enum class ScrollType {
-    kAutoscroll,
-    kScrollbar,
-    kTouchscreen,
-    kWheel,
-    kMaxValue = kWheel,
-  };
-
-  // Determines whether a scroll-update event is the first one in a gesture
-  // scroll sequence or not.
-  enum class ScrollUpdateType {
-    kStarted,
-    kContinued,
-    kMaxValue = kContinued,
-  };
-
-  // Type of pinch events. This list should be in the same order as values of
-  // `EventLatencyPinchInputType` enum from enums.xml file.
-  enum class PinchType {
-    kTouchpad,
-    kTouchscreen,
-    kMaxValue = kTouchscreen,
-  };
-
   // Stages of event dispatch in different processes/threads.
   enum class DispatchStage {
     kGenerated,
+    kArrivedInBrowserMain,
     kArrivedInRendererCompositor,
     kRendererCompositorStarted,
     kRendererCompositorFinished,
@@ -95,97 +75,44 @@ class CC_EXPORT EventMetrics {
     kMaxValue = kRendererMainFinished,
   };
 
-  // Parameters to initialize an `EventMetrics` object for a scroll or pinch
-  // gesture event.
-  struct CC_EXPORT GestureParams {
-    // Extra parameters for scroll events.
-    struct CC_EXPORT ScrollParams {
-      // Constructor for all scroll events.
-      explicit ScrollParams(bool is_inertial);
-
-      // Constructor for scroll update events only.
-      ScrollParams(bool is_inertial, ScrollUpdateType update_type);
-
-      ScrollParams(const ScrollParams&);
-      ScrollParams& operator=(const ScrollParams&);
-
-      // Determines whether the scroll event is an inertial phase event (caused
-      // by a fling).
-      bool is_inertial;
-
-      // Determines whether the scroll update event is the first one in a
-      // sequence.
-      absl::optional<ScrollUpdateType> update_type;
-    };
-
-    // Constructor for all gesture (scroll and pinch) events.
-    explicit GestureParams(ui::ScrollInputType input_type);
-
-    // Constructor for scroll events only.
-    GestureParams(ui::ScrollInputType input_type, bool scroll_is_inertial);
-
-    // Constructor for scroll update events only.
-    GestureParams(ui::ScrollInputType input_type,
-                  bool scroll_is_inertial,
-                  ScrollUpdateType scroll_update_type);
-
-    GestureParams(const GestureParams&);
-    GestureParams& operator=(const GestureParams&);
-
-    // Determines the type of input device generating the event.
-    ui::ScrollInputType input_type;
-
-    // Extra parameters for scroll events.
-    absl::optional<ScrollParams> scroll_params;
-  };
-
   // Returns a new instance if the event is of a type we are interested in.
-  // Otherwise, returns nullptr.
-  static std::unique_ptr<EventMetrics> Create(
-      ui::EventType type,
-      absl::optional<GestureParams> gesture_params,
-      base::TimeTicks timestamp);
+  // Otherwise, returns `nullptr`. For scroll and pinch events, use the
+  // appropriate subcalss instead.
+  static std::unique_ptr<EventMetrics> Create(ui::EventType type,
+                                              base::TimeTicks timestamp);
 
   // Similar to `Create()` with an extra `base::TickClock` to use in tests.
   static std::unique_ptr<EventMetrics> CreateForTesting(
       ui::EventType type,
-      absl::optional<GestureParams> gesture_params,
       base::TimeTicks timestamp,
       const base::TickClock* tick_clock);
 
   // Used to create an instance for an event generated based on an existing
   // event. If the new event is of an interesting type, we expect that the
   // existing event is also of an interesting type in which case `existing` is
-  // not nullptr and timestamps (up to and including `last_dispatch_stage`) and
-  // tick clock from `existing` will be used for the new metrics object. If the
-  // new event is not an interesting one, return value would be nullptr.
+  // not `nullptr` and timestamps (up to and including `last_dispatch_stage`)
+  // and tick clock from `existing` will be used for the new metrics object. If
+  // the new event is not an interesting one, return value would be `nullptr`.
+  // For scroll and pinch events, use the appropriate subclass instead.
   static std::unique_ptr<EventMetrics> CreateFromExisting(
       ui::EventType type,
-      absl::optional<GestureParams> gesture_params,
       DispatchStage last_dispatch_stage,
       const EventMetrics* existing);
 
-  EventMetrics(const EventMetrics&) = delete;
-  EventMetrics& operator=(const EventMetrics&) = delete;
+  virtual ~EventMetrics();
 
-  ~EventMetrics();
+  EventMetrics& operator=(const EventMetrics&) = delete;
 
   EventType type() const { return type_; }
 
   // Returns a string representing event type.
   const char* GetTypeName() const;
 
-  const absl::optional<ScrollType>& scroll_type() const { return scroll_type_; }
-
-  // Returns a string representing input type for a scroll event. Should only be
-  // called for scroll events.
-  const char* GetScrollTypeName() const;
-
-  const absl::optional<PinchType>& pinch_type() const { return pinch_type_; }
-
-  // Returns a string representing input type for a pinch event. Should only be
-  // called for pinch events.
-  const char* GetPinchTypeName() const;
+  void SetHighLatencyStage(const std::string& stage);
+  const std::vector<std::string>& GetHighLatencyStages() const {
+    return high_latency_stages_;
+  }
+  void ClearHighLatencyStagesForTesting() { high_latency_stages_.clear(); }
 
   void SetDispatchStageTimestamp(DispatchStage stage);
   base::TimeTicks GetDispatchStageTimestamp(DispatchStage stage) const;
@@ -196,35 +123,66 @@ class CC_EXPORT EventMetrics {
 
   bool HasSmoothInputEvent() const;
 
-  std::unique_ptr<EventMetrics> Clone() const;
+  virtual ScrollEventMetrics* AsScroll();
+  const ScrollEventMetrics* AsScroll() const;
 
-  // Used in tests to check expectations on EventMetrics objects.
-  bool operator==(const EventMetrics& other) const;
+  virtual ScrollUpdateEventMetrics* AsScrollUpdate();
+  const ScrollUpdateEventMetrics* AsScrollUpdate() const;
 
- private:
-  static std::unique_ptr<EventMetrics> CreateInternal(
-      ui::EventType type,
-      const absl::optional<GestureParams>& gesture_params,
-      base::TimeTicks timestamp,
-      const base::TickClock* tick_clock);
+  virtual PinchEventMetrics* AsPinch();
+  const PinchEventMetrics* AsPinch() const;
 
+  virtual std::unique_ptr<EventMetrics> Clone() const;
+
+  bool should_record_tracing() const { return should_record_tracing_; }
+  void tracing_recorded() {
+    DCHECK(should_record_tracing_);
+    should_record_tracing_ = false;
+  }
+
+  bool requires_main_thread_update() const {
+    return requires_main_thread_update_;
+  }
+  void set_requires_main_thread_update() {
+    DCHECK(!requires_main_thread_update_);
+    requires_main_thread_update_ = true;
+  }
+
+ protected:
   EventMetrics(EventType type,
-               absl::optional<ScrollType> scroll_type,
-               absl::optional<PinchType> pinch_type,
                base::TimeTicks timestamp,
                const base::TickClock* tick_clock);
 
+  EventMetrics(EventType type,
+               base::TimeTicks timestamp,
+               base::TimeTicks arrived_in_browser_main_timestamp,
+               const base::TickClock* tick_clock);
+
+  // Creates a clone of `other` that might be used in creating `EventMetrics`
+  // objects for some injected events. Since this object itself does not
+  // directly correspond to an event, it won't be used in recording trace
+  // events.
+  EventMetrics(const EventMetrics& other);
+
+  // Copy timestamps of dispatch stages (up to and including
+  // `last_dispatch_stage`) from `other`.
+  void CopyTimestampsFrom(const EventMetrics& other,
+                          DispatchStage last_dispatch_stage);
+
+ private:
+  friend class ScrollEventMetrics;
+  friend class ScrollUpdateEventMetrics;
+
+  static std::unique_ptr<EventMetrics> CreateInternal(
+      ui::EventType type,
+      base::TimeTicks timestamp,
+      const base::TickClock* tick_clock);
+
   EventType type_;
 
-  // Only available for scroll events and represents the type of input device
-  // for the event.
-  absl::optional<ScrollType> scroll_type_;
+  std::vector<std::string> high_latency_stages_;
 
-  // Only available for pinch events and represents the type of input device for
-  // the event.
-  absl::optional<PinchType> pinch_type_;
-
-  const base::TickClock* const tick_clock_;
+  const raw_ptr<const base::TickClock> tick_clock_;
 
   // Timestamps of different stages of event dispatch. Timestamps are set as the
   // event moves forward in the pipeline. In the end, some stages might not have
@@ -232,6 +190,270 @@ class CC_EXPORT EventMetrics {
   base::TimeTicks
       dispatch_stage_timestamps_[static_cast<int>(DispatchStage::kMaxValue) +
                                  1];
+
+  // Determines whether a tracing event should be recorded for this object or
+  // not. This is `true` by default and set to `false` after a tracing event is
+  // recorded to avoid multiple recordings. Also, it is `false` for cloned
+  // objects as they are not meant to be recorded in tracings.
+  bool should_record_tracing_ = true;
+
+  // This is set on an EventMetrics object that comes from the impl thread, if
+  // the visual update from the event requires the main thread. Currently used
+  // for GestureScrollUpdate with scroll unification, when the scroller isn't
+  // composited or has main-thread scrolling reasons on the ScrollNode.
+  bool requires_main_thread_update_ = false;
+};
+
+class CC_EXPORT ScrollEventMetrics : public EventMetrics {
+ public:
+  // Type of scroll events. This list should be in the same order as values of
+  // `EventLatencyScrollInputType` enum from enums.xml file.
+  enum class ScrollType {
+    kAutoscroll,
+    kScrollbar,
+    kTouchscreen,
+    kWheel,
+    kMaxValue = kWheel,
+  };
+
+  // Returns a new instance if the event is of a type we are interested in.
+  // Otherwise, returns `nullptr`. Should only be used for scroll events other
+  // than scroll-update.
+  //
+  // TODO(b/224960731): Fix tests and stop supporting the case when
+  // `arrived_in_browser_main_timestamp` is null.
+  static std::unique_ptr<ScrollEventMetrics> Create(
+      ui::EventType type,
+      ui::ScrollInputType input_type,
+      bool is_inertial,
+      base::TimeTicks timestamp,
+      base::TimeTicks arrived_in_browser_main_timestamp);
+
+  // Prefer to use `Create()` above. This method is used only by the Browser
+  // process which have own breakdowns.
+  // Similar to `Create()` above but doesn't set kArrivedInBrowserMain.
+  static std::unique_ptr<ScrollEventMetrics> CreateForBrowser(
+      ui::EventType type,
+      ui::ScrollInputType input_type,
+      bool is_inertial,
+      base::TimeTicks timestamp);
+
+  // Similar to `Create()` with an extra `base::TickClock` to use in tests.
+  // Should only be used for scroll events other than scroll-update.
+  static std::unique_ptr<ScrollEventMetrics> CreateForTesting(
+      ui::EventType type,
+      ui::ScrollInputType input_type,
+      bool is_inertial,
+      base::TimeTicks timestamp,
+      base::TimeTicks arrived_in_browser_main_timestamp,
+      const base::TickClock* tick_clock);
+
+  // Used to create an instance for an event generated based on an existing
+  // event. If the new event is of an interesting type, we expect that the
+  // existing event is also of an interesting type in which case `existing` is
+  // not `nullptr` and timestamps (up to and including `last_dispatch_stage`)
+  // and tick clock from `existing` will be used for the new metrics object. If
+  // the new event is not an interesting one, return value would be `nullptr`.
+  // Should only be used for scroll events other than scroll-update.
+  static std::unique_ptr<ScrollEventMetrics> CreateFromExisting(
+      ui::EventType type,
+      ui::ScrollInputType input_type,
+      bool is_inertial,
+      DispatchStage last_dispatch_stage,
+      const EventMetrics* existing);
+
+  ~ScrollEventMetrics() override;
+
+  ScrollType scroll_type() const { return scroll_type_; }
+
+  // Returns a string representing input type for a scroll event.
+  const char* GetScrollTypeName() const;
+
+  ScrollEventMetrics* AsScroll() override;
+
+  std::unique_ptr<EventMetrics> Clone() const override;
+
+ protected:
+  ScrollEventMetrics(EventType type,
+                     ScrollType scroll_type,
+                     base::TimeTicks timestamp,
+                     base::TimeTicks arrived_in_browser_main_timestamp,
+                     const base::TickClock* tick_clock);
+  ScrollEventMetrics(const ScrollEventMetrics&);
+
+ private:
+  static std::unique_ptr<ScrollEventMetrics> CreateInternal(
+      ui::EventType type,
+      ui::ScrollInputType input_type,
+      bool is_inertial,
+      base::TimeTicks timestamp,
+      base::TimeTicks arrived_in_browser_main_timestamp,
+      const base::TickClock* tick_clock);
+
+  // Type of the input device for the event.
+  ScrollType scroll_type_;
+};
+
+class CC_EXPORT ScrollUpdateEventMetrics : public ScrollEventMetrics {
+ public:
+  // Determines whether a scroll-update event is the first one in a gesture
+  // scroll sequence or not.
+  enum class ScrollUpdateType {
+    kStarted,
+    kContinued,
+    kMaxValue = kContinued,
+  };
+
+  // Returns a new instance if the event is of a type we are interested in.
+  // Otherwise, returns `nullptr`. Should only be used for scroll-update events.
+  //
+  // TODO(b/224960731): Fix tests and stop supporting the case when
+  // `arrived_in_browser_main_timestamp` is null.
+  static std::unique_ptr<ScrollUpdateEventMetrics> Create(
+      ui::EventType type,
+      ui::ScrollInputType input_type,
+      bool is_inertial,
+      ScrollUpdateType scroll_update_type,
+      float delta,
+      base::TimeTicks timestamp,
+      base::TimeTicks arrived_in_browser_main_timestamp);
+
+  // Prefer to use `Create()` above. This method is used only by the Browser
+  // process which have own breakdowns.
+  // Similar to `Create()` above but doesn't set kArrivedInBrowserMain.
+  static std::unique_ptr<ScrollUpdateEventMetrics> CreateForBrowser(
+      ui::EventType type,
+      ui::ScrollInputType input_type,
+      bool is_inertial,
+      ScrollUpdateType scroll_update_type,
+      float delta,
+      base::TimeTicks timestamp);
+
+  // Similar to `Create()` with an extra `base::TickClock` to use in tests.
+  // Should only be used for scroll-update events.
+  static std::unique_ptr<ScrollUpdateEventMetrics> CreateForTesting(
+      ui::EventType type,
+      ui::ScrollInputType input_type,
+      bool is_inertial,
+      ScrollUpdateType scroll_update_type,
+      float delta,
+      base::TimeTicks timestamp,
+      base::TimeTicks arrived_in_browser_main_timestamp,
+      const base::TickClock* tick_clock);
+
+  // Used to create an instance for an event generated based on an existing
+  // event. If the new event is of an interesting type, we expect that the
+  // existing event is also of an interesting type in which case `existing` is
+  // not `nullptr` and timestamps (up to and including `last_dispatch_stage`)
+  // and tick clock from `existing` will be used for the new metrics object. If
+  // the new event is not an interesting one, return value would be `nullptr`.
+  // Should only be used for scroll-update events.
+  static std::unique_ptr<ScrollUpdateEventMetrics> CreateFromExisting(
+      ui::EventType type,
+      ui::ScrollInputType input_type,
+      bool is_inertial,
+      ScrollUpdateType scroll_update_type,
+      float delta,
+      DispatchStage last_dispatch_stage,
+      const EventMetrics* existing);
+
+  ~ScrollUpdateEventMetrics() override;
+
+  void CoalesceWith(const ScrollUpdateEventMetrics& newer_scroll_update);
+
+  ScrollUpdateEventMetrics* AsScrollUpdate() override;
+
+  float delta() const { return delta_; }
+
+  float predicted_delta() const { return predicted_delta_; }
+  void set_predicted_delta(float predicted_delta) {
+    predicted_delta_ = predicted_delta;
+  }
+
+  base::TimeTicks last_timestamp() const { return last_timestamp_; }
+
+  std::unique_ptr<EventMetrics> Clone() const override;
+
+ protected:
+  ScrollUpdateEventMetrics(EventType type,
+                           ScrollType scroll_type,
+                           ScrollUpdateType scroll_update_type,
+                           float delta,
+                           base::TimeTicks timestamp,
+                           base::TimeTicks arrived_in_browser_main_timestamp,
+                           const base::TickClock* tick_clock);
+  ScrollUpdateEventMetrics(const ScrollUpdateEventMetrics&);
+
+ private:
+  static std::unique_ptr<ScrollUpdateEventMetrics> CreateInternal(
+      ui::EventType type,
+      ui::ScrollInputType input_type,
+      bool is_inertial,
+      ScrollUpdateType scroll_update_type,
+      float delta,
+      base::TimeTicks timestamp,
+      base::TimeTicks arrived_in_browser_main_timestamp,
+      const base::TickClock* tick_clock);
+
+  float delta_;
+  float predicted_delta_;
+
+  // Timestamp of the last event coalesced into this one.
+  base::TimeTicks last_timestamp_;
+};
+
+class CC_EXPORT PinchEventMetrics : public EventMetrics {
+ public:
+  // Type of pinch events. This list should be in the same order as values of
+  // `EventLatencyPinchInputType` enum from enums.xml file.
+  enum class PinchType {
+    kTouchpad,
+    kTouchscreen,
+    kMaxValue = kTouchscreen,
+  };
+
+  // Returns a new instance if the event is of a type we are interested in.
+  // Otherwise, returns `nullptr`. Should only be used for pinch events.
+  static std::unique_ptr<PinchEventMetrics> Create(
+      ui::EventType type,
+      ui::ScrollInputType input_type,
+      base::TimeTicks timestamp);
+
+  // Similar to `Create()` with an extra `base::TickClock` to use in tests.
+  // Should only be used for pinch events.
+  static std::unique_ptr<PinchEventMetrics> CreateForTesting(
+      ui::EventType type,
+      ui::ScrollInputType input_type,
+      base::TimeTicks timestamp,
+      const base::TickClock* tick_clock);
+
+  ~PinchEventMetrics() override;
+
+  PinchType pinch_type() const { return pinch_type_; }
+
+  // Returns a string representing input type for a pinch event. Should only be
+  // called for pinch events.
+  const char* GetPinchTypeName() const;
+
+  PinchEventMetrics* AsPinch() override;
+
+  std::unique_ptr<EventMetrics> Clone() const override;
+
+ protected:
+  PinchEventMetrics(EventType type,
+                    PinchType pinch_type,
+                    base::TimeTicks timestamp,
+                    const base::TickClock* tick_clock);
+  PinchEventMetrics(const PinchEventMetrics&);
+
+ private:
+  static std::unique_ptr<PinchEventMetrics> CreateInternal(
+      ui::EventType type,
+      ui::ScrollInputType input_type,
+      base::TimeTicks timestamp,
+      const base::TickClock* tick_clock);
+
+  PinchType pinch_type_;
 };
 
 // Struct storing event metrics from both main and impl threads.

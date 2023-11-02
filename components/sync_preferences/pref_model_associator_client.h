@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,7 +34,7 @@ class PrefModelAssociatorClient {
   // strategy to the preference named |pref_name| with local value |local_value|
   // and server-provided value |server_value|. Otherwise, returns |nullptr| and
   // the server's value will be chosen.
-  virtual std::unique_ptr<base::Value> MaybeMergePreferenceValues(
+  virtual base::Value MaybeMergePreferenceValues(
       const std::string& pref_name,
       const base::Value& local_value,
       const base::Value& server_value) const = 0;

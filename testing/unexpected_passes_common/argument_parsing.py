@@ -1,12 +1,16 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Common argument parsing-related code for unexpected pass finders."""
 
+import argparse
 import logging
+import os
+
+from unexpected_passes_common import constants
 
 
-def AddCommonArguments(parser):
+def AddCommonArguments(parser: argparse.ArgumentParser) -> None:
   """Adds arguments that are common to all unexpected pass finders.
 
   Args:
@@ -65,9 +69,45 @@ def AddCommonArguments(parser):
                             'from being removed before a sufficient amount of '
                             'data has been generated with the expectation '
                             'active. Set to a negative value to disable.'))
+  parser.add_argument('--result-output-file',
+                      help=('Output file to store the generated results. If '
+                            'not specified, will use a temporary file.'))
+  parser.add_argument('--bug-output-file',
+                      help=('Output file to store "Bug:"/"Fixed:" text '
+                            'intended for use in CL descriptions. If not '
+                            'specified, will be printed to the terminal '
+                            'instead.'))
+  internal_group = parser.add_mutually_exclusive_group()
+  internal_group.add_argument('--include-internal-builders',
+                              action='store_true',
+                              dest='include_internal_builders',
+                              default=None,
+                              help=('Includes builders that are defined in '
+                                    'src-internal in addition to the public '
+                                    'ones. If left unset, will be '
+                                    'automatically determined by the presence '
+                                    'of src-internal.'))
+  internal_group.add_argument('--no-include-internal-builders',
+                              action='store_false',
+                              dest='include_internal_builders',
+                              default=None,
+                              help=('Does not include builders that are '
+                                    'defined in src-internal. If left unset, '
+                                    'will be automatically determined by the '
+                                    'presence of src-internal.'))
 
 
-def SetLoggingVerbosity(args):
+def PerformCommonPostParseSetup(args: argparse.Namespace) -> None:
+  """Helper function to perform all common post-parse setup.
+
+  Args:
+    args: Parsed arguments from an argparse.ArgumentParser.
+  """
+  SetLoggingVerbosity(args)
+  SetInternalBuilderInclusion(args)
+
+
+def SetLoggingVerbosity(args: argparse.Namespace) -> None:
   """Sets logging verbosity based on parsed arguments.
 
   Args:
@@ -85,3 +125,18 @@ def SetLoggingVerbosity(args):
   else:
     level = logging.DEBUG
   logging.getLogger().setLevel(level)
+
+
+def SetInternalBuilderInclusion(args: argparse.Namespace) -> None:
+  """Sets internal builder inclusion based on parsed arguments.
+
+  Args:
+    args: Parsed arguments from an argparse.ArgumentParser.
+  """
+  if args.include_internal_builders is not None:
+    return
+
+  if os.path.isdir(constants.SRC_INTERNAL_DIR):
+    args.include_internal_builders = True
+  else:
+    args.include_internal_builders = False

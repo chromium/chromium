@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -93,7 +93,6 @@ struct CustomOnTaskRunnerDeleter {
   ~CustomOnTaskRunnerDeleter() = default;
 
   CustomOnTaskRunnerDeleter(CustomOnTaskRunnerDeleter&&) = default;
-  CustomOnTaskRunnerDeleter& operator=(CustomOnTaskRunnerDeleter&&) = default;
 
   // For compatibility with std:: deleters.
   template <typename T>

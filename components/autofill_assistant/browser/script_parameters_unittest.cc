@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -68,10 +68,11 @@ TEST(ScriptParametersTest, TriggerScriptAllowList) {
                                   {"FALLBACK_BUNDLE_ID", "fallback_id"},
                                   {"key_b", "value_b"},
                                   {"FALLBACK_BUNDLE_VERSION", "fallback_ver"},
-                                  {"INTENT", "FAKE_INTENT"}}};
+                                  {"INTENT", "FAKE_INTENT"},
+                                  {"CAPABILITIES_REQUEST_ID", "123456789"}}};
 
   EXPECT_THAT(
-      parameters.ToProto(/* only_trigger_script_allowlisted = */ false),
+      parameters.ToProto(/* only_non_sensitive_allowlisted = */ false),
       UnorderedElementsAreArray(base::flat_map<std::string, std::string>(
           {{"DEBUG_BUNDLE_ID", "12345"},
            {"key_a", "value_a"},
@@ -80,17 +81,19 @@ TEST(ScriptParametersTest, TriggerScriptAllowList) {
            {"FALLBACK_BUNDLE_ID", "fallback_id"},
            {"key_b", "value_b"},
            {"FALLBACK_BUNDLE_VERSION", "fallback_ver"},
-           {"INTENT", "FAKE_INTENT"}})));
+           {"INTENT", "FAKE_INTENT"},
+           {"CAPABILITIES_REQUEST_ID", "123456789"}})));
 
   EXPECT_THAT(
-      parameters.ToProto(/* only_trigger_script_allowlisted = */ true),
+      parameters.ToProto(/* only_non_sensitive_allowlisted = */ true),
       UnorderedElementsAreArray(base::flat_map<std::string, std::string>(
           {{"DEBUG_BUNDLE_ID", "12345"},
            {"DEBUG_BUNDLE_VERSION", "version"},
            {"DEBUG_SOCKET_ID", "678"},
            {"FALLBACK_BUNDLE_ID", "fallback_id"},
            {"FALLBACK_BUNDLE_VERSION", "fallback_ver"},
-           {"INTENT", "FAKE_INTENT"}})));
+           {"INTENT", "FAKE_INTENT"},
+           {"CAPABILITIES_REQUEST_ID", "123456789"}})));
 }
 
 TEST(ScriptParametersTest, SpecialScriptParameters) {
@@ -101,10 +104,17 @@ TEST(ScriptParametersTest, SpecialScriptParameters) {
        {"TRIGGER_SCRIPT_EXPERIMENT", "true"},
        {"START_IMMEDIATELY", "false"},
        {"REQUEST_TRIGGER_SCRIPT", "true"},
-       {"TRIGGER_SCRIPTS_BASE64", "abc123"},
        {"PASSWORD_CHANGE_USERNAME", "fake_username"},
        {"OVERLAY_COLORS", "#123456"},
        {"ENABLE_TTS", "true"},
+       {"CALLER", "3"},
+       {"SOURCE", "4"},
+       {"EXPERIMENT_IDS", "123,456,789"},
+       {"FIELD_TRIAL_1", "1234"},
+       {"FIELD_TRIAL_3", "5555"},
+       {"RUN_HEADLESS", "true"},
+       {"USE_ASSISTANT_UI", "false"},
+       {"DISABLE_RPC_SIGNING", "true"},
        {"DETAILS_SHOW_INITIAL", "true"},
        {"DETAILS_TITLE", "title"},
        {"DETAILS_DESCRIPTION_LINE_1", "line1"},
@@ -122,10 +132,20 @@ TEST(ScriptParametersTest, SpecialScriptParameters) {
   EXPECT_THAT(parameters.GetTriggerScriptExperiment(), Eq(true));
   EXPECT_THAT(parameters.GetStartImmediately(), Eq(false));
   EXPECT_THAT(parameters.GetRequestsTriggerScript(), Eq(true));
-  EXPECT_THAT(parameters.GetBase64TriggerScriptsResponseProto(), Eq("abc123"));
   EXPECT_THAT(parameters.GetPasswordChangeUsername(), Eq("fake_username"));
   EXPECT_THAT(parameters.GetOverlayColors(), Eq("#123456"));
   EXPECT_THAT(parameters.GetEnableTts(), Eq(true));
+  EXPECT_THAT(parameters.GetCaller(), Eq(3));
+  EXPECT_THAT(parameters.GetSource(), Eq(4));
+  EXPECT_THAT(
+      parameters.GetExperiments(),
+      UnorderedElementsAreArray(std::vector<std::string>{"123", "456", "789"}));
+  EXPECT_THAT(parameters.GetFieldTrialGroup(1), Eq("1234"));
+  EXPECT_THAT(parameters.GetFieldTrialGroup(3), Eq("5555"));
+  EXPECT_THAT(parameters.GetFieldTrialGroup(2).has_value(), Eq(false));
+  EXPECT_THAT(parameters.GetRunHeadless(), Eq(true));
+  EXPECT_THAT(parameters.GetUseAssistantUi(), Eq(false));
+  EXPECT_THAT(parameters.GetDisableRpcSigning(), Eq(true));
   EXPECT_THAT(parameters.GetDetailsShowInitial(), Eq(true));
   EXPECT_THAT(parameters.GetDetailsTitle(), Eq("title"));
   EXPECT_THAT(parameters.GetDetailsDescriptionLine1(), Eq("line1"));
@@ -187,11 +207,11 @@ TEST(ScriptParametersTest, ToProtoRemovesEnabled) {
   ScriptParameters parameters = {{{"key_a", "value_a"}, {"ENABLED", "true"}}};
 
   EXPECT_THAT(
-      parameters.ToProto(/* only_trigger_script_allowlisted = */ false),
+      parameters.ToProto(/* only_non_sensitive_allowlisted = */ false),
       UnorderedElementsAreArray(
           base::flat_map<std::string, std::string>({{"key_a", "value_a"}})));
 
-  EXPECT_THAT(parameters.ToProto(/* only_trigger_script_allowlisted = */ true),
+  EXPECT_THAT(parameters.ToProto(/* only_non_sensitive_allowlisted = */ true),
               IsEmpty());
 }
 
@@ -201,7 +221,7 @@ TEST(ScriptParametersTest, ToProtoDoesNotAddDeviceOnlyParameters) {
   parameters.UpdateDeviceOnlyParameters(
       base::flat_map<std::string, std::string>({{"device_only", "secret"}}));
 
-  EXPECT_THAT(parameters.ToProto(/* only_trigger_script_allowlisted = */ false),
+  EXPECT_THAT(parameters.ToProto(/* only_non_sensitive_allowlisted = */ false),
               IsEmpty());
 }
 
@@ -247,6 +267,62 @@ TEST(ScriptParametersTest,
             "b");
   EXPECT_EQ(user_data.GetAdditionalValue("param:key_c")->strings().values(0),
             "c");
+}
+
+TEST(ScriptParametersTest, InvalidFormat) {
+  ScriptParameters parameters = {
+      {{"ENABLED", "not_a_boolean"}, {"CALLER", "not_an_integer"}}};
+
+  EXPECT_THAT(parameters.GetEnabled(), Eq(false));
+  EXPECT_THAT(parameters.GetCaller(), Eq(absl::nullopt));
+}
+
+TEST(ScriptParametersTest, MissingValues) {
+  ScriptParameters parameters;
+
+  // Just one test per data type here for brevity.
+  EXPECT_THAT(parameters.HasStartImmediately(), Eq(false));
+  EXPECT_THAT(parameters.GetEnabled(), Eq(false));
+  EXPECT_THAT(parameters.GetIntent(), Eq(absl::nullopt));
+  EXPECT_THAT(parameters.GetCaller(), Eq(absl::nullopt));
+  EXPECT_THAT(parameters.GetExperiments(), IsEmpty());
+}
+
+TEST(ScriptParametersTest, ExperimentIdParsing) {
+  {
+    ScriptParameters parameters = {{{"EXPERIMENT_IDS", ""}}};
+    EXPECT_THAT(parameters.GetExperiments(), IsEmpty());
+  }
+
+  {
+    ScriptParameters parameters = {{{"EXPERIMENT_IDS", ","}}};
+    EXPECT_THAT(parameters.GetExperiments(), IsEmpty());
+  }
+
+  {
+    ScriptParameters parameters = {{{"EXPERIMENT_IDS", ",123,"}}};
+    EXPECT_THAT(parameters.GetExperiments(),
+                UnorderedElementsAreArray(std::vector<std::string>{"123"}));
+  }
+
+  {
+    ScriptParameters parameters = {{{"EXPERIMENT_IDS", "not_an_integer"}}};
+    EXPECT_THAT(
+        parameters.GetExperiments(),
+        UnorderedElementsAreArray(std::vector<std::string>{"not_an_integer"}));
+  }
+}
+
+TEST(ScriptParametersTest, HasExperimentId) {
+  ScriptParameters parameters = {{{"EXPERIMENT_IDS", "13,123,778"}}};
+  EXPECT_THAT(
+      parameters.GetExperiments(),
+      UnorderedElementsAreArray(std::vector<std::string>{"13", "123", "778"}));
+  EXPECT_TRUE(parameters.HasExperimentId("13"));
+  EXPECT_TRUE(parameters.HasExperimentId("123"));
+  EXPECT_TRUE(parameters.HasExperimentId("778"));
+  EXPECT_FALSE(parameters.HasExperimentId("1"));
+  EXPECT_FALSE(parameters.HasExperimentId("42"));
 }
 
 }  // namespace autofill_assistant

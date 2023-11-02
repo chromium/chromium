@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,7 +19,6 @@
 #include "components/viz/common/quads/debug_border_draw_quad.h"
 #include "components/viz/common/quads/shared_quad_state.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
-#include "components/viz/common/quads/stream_video_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/quads/tile_draw_quad.h"
 #include "components/viz/common/quads/yuv_video_draw_quad.h"
@@ -30,6 +29,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkImageFilter.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/video_types.h"
 
 namespace cc {
 
@@ -40,9 +40,9 @@ viz::ResourceId CreateAndImportResource(
     const gpu::SyncToken& sync_token,
     gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB()) {
   constexpr gfx::Size size(64, 64);
-  auto transfer_resource = viz::TransferableResource::MakeGL(
+  auto transfer_resource = viz::TransferableResource::MakeGpu(
       gpu::Mailbox::Generate(), GL_LINEAR, GL_TEXTURE_2D, sync_token, size,
-      false /* is_overlay_candidate */);
+      viz::RGBA_8888, false /* is_overlay_candidate */);
   transfer_resource.color_space = std::move(color_space);
   return resource_provider->ImportResource(transfer_resource,
                                            base::DoNothing());
@@ -110,7 +110,7 @@ viz::AggregatedRenderPass* AddRenderPassWithDamage(
 
 viz::SolidColorDrawQuad* AddClippedQuad(viz::AggregatedRenderPass* pass,
                                         const gfx::Rect& rect,
-                                        SkColor color) {
+                                        SkColor4f color) {
   viz::SharedQuadState* shared_state = pass->CreateAndAppendSharedQuadState();
   shared_state->SetAll(gfx::Transform(), rect, rect, gfx::MaskFilterInfo(),
                        rect, false, 1, SkBlendMode::kSrcOver, 0);
@@ -121,7 +121,7 @@ viz::SolidColorDrawQuad* AddClippedQuad(viz::AggregatedRenderPass* pass,
 
 viz::SolidColorDrawQuad* AddTransformedQuad(viz::AggregatedRenderPass* pass,
                                             const gfx::Rect& rect,
-                                            SkColor color,
+                                            SkColor4f color,
                                             const gfx::Transform& transform) {
   viz::SharedQuadState* shared_state = pass->CreateAndAppendSharedQuadState();
   shared_state->SetAll(transform, rect, rect, gfx::MaskFilterInfo(),
@@ -223,7 +223,8 @@ std::vector<viz::ResourceId> AddOneOfEveryQuadType(
 
   auto* debug_border_quad =
       to_pass->CreateAndAppendDrawQuad<viz::DebugBorderDrawQuad>();
-  debug_border_quad->SetNew(shared_state, rect, visible_rect, SK_ColorRED, 1);
+  debug_border_quad->SetNew(shared_state, rect, visible_rect, SkColors::kRed,
+                            1);
 
   if (child_pass_id) {
     auto* render_pass_quad =
@@ -236,26 +237,31 @@ std::vector<viz::ResourceId> AddOneOfEveryQuadType(
 
   auto* solid_color_quad =
       to_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
-  solid_color_quad->SetNew(shared_state, rect, visible_rect, SK_ColorRED,
+  solid_color_quad->SetNew(shared_state, rect, visible_rect, SkColors::kRed,
                            false);
 
+  // We add a TextureDrawQuad with is_stream_video set to true to cover related
+  // code paths.
   auto* stream_video_quad =
-      to_pass->CreateAndAppendDrawQuad<viz::StreamVideoDrawQuad>();
+      to_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
   stream_video_quad->SetNew(shared_state, rect, visible_rect, needs_blending,
-                            resource6, gfx::Size(), gfx::PointF(),
-                            gfx::PointF(1.f, 1.f));
+                            resource6, false, gfx::PointF(0.f, 0.f),
+                            gfx::PointF(1.f, 1.f), SkColors::kTransparent,
+                            vertex_opacity, false, false, false,
+                            gfx::ProtectedVideoType::kHardwareProtected);
+  stream_video_quad->is_stream_video = true;
 
   auto* texture_quad = to_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
   texture_quad->SetNew(
       shared_state, rect, visible_rect, needs_blending, resource1, false,
-      gfx::PointF(0.f, 0.f), gfx::PointF(1.f, 1.f), SK_ColorTRANSPARENT,
+      gfx::PointF(0.f, 0.f), gfx::PointF(1.f, 1.f), SkColors::kTransparent,
       vertex_opacity, false, false, false, gfx::ProtectedVideoType::kClear);
 
   auto* external_resource_texture_quad =
       to_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
   external_resource_texture_quad->SetNew(
       shared_state, rect, visible_rect, needs_blending, resource8, false,
-      gfx::PointF(0.f, 0.f), gfx::PointF(1.f, 1.f), SK_ColorTRANSPARENT,
+      gfx::PointF(0.f, 0.f), gfx::PointF(1.f, 1.f), SkColors::kTransparent,
       vertex_opacity, false, false, false, gfx::ProtectedVideoType::kClear);
 
   auto* scaled_tile_quad =
@@ -289,11 +295,11 @@ std::vector<viz::ResourceId> AddOneOfEveryQuadType(
 
   auto* yuv_quad = to_pass->CreateAndAppendDrawQuad<viz::YUVVideoDrawQuad>();
   yuv_quad->SetNew(shared_state2, rect, visible_rect, needs_blending,
-                   gfx::RectF(.0f, .0f, 100.0f, 100.0f),
-                   gfx::RectF(.0f, .0f, 50.0f, 50.0f), gfx::Size(100, 100),
-                   gfx::Size(50, 50), plane_resources[0], plane_resources[1],
+                   gfx::Size(100, 100), gfx::Rect(0, 0, 50, 50),
+                   gfx::Size(2, 2), plane_resources[0], plane_resources[1],
                    plane_resources[2], plane_resources[3],
-                   gfx::ColorSpace::CreateREC601(), 0.0, 1.0, 8);
+                   gfx::ColorSpace::CreateREC601(), 0.0, 1.0, 8,
+                   gfx::ProtectedVideoType::kClear, absl::nullopt);
 
   return {resource1,          resource2,          resource3,
           resource4,          resource5,          resource6,
@@ -400,7 +406,8 @@ void AddOneOfEveryQuadTypeInDisplayResourceProvider(
 
   viz::DebugBorderDrawQuad* debug_border_quad =
       to_pass->CreateAndAppendDrawQuad<viz::DebugBorderDrawQuad>();
-  debug_border_quad->SetNew(shared_state, rect, visible_rect, SK_ColorRED, 1);
+  debug_border_quad->SetNew(shared_state, rect, visible_rect, SkColors::kRed,
+                            1);
   if (child_pass_id) {
     auto* render_pass_quad =
         to_pass->CreateAndAppendDrawQuad<viz::AggregatedRenderPassDrawQuad>();
@@ -412,27 +419,30 @@ void AddOneOfEveryQuadTypeInDisplayResourceProvider(
 
   viz::SolidColorDrawQuad* solid_color_quad =
       to_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
-  solid_color_quad->SetNew(shared_state, rect, visible_rect, SK_ColorRED,
+  solid_color_quad->SetNew(shared_state, rect, visible_rect, SkColors::kRed,
                            false);
 
-  viz::StreamVideoDrawQuad* stream_video_quad =
-      to_pass->CreateAndAppendDrawQuad<viz::StreamVideoDrawQuad>();
+  viz::TextureDrawQuad* stream_video_quad =
+      to_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
   stream_video_quad->SetNew(shared_state, rect, visible_rect, needs_blending,
-                            mapped_resource6, gfx::Size(), gfx::PointF(),
-                            gfx::PointF(1.f, 1.f));
+                            mapped_resource6, false, gfx::PointF(0.f, 0.f),
+                            gfx::PointF(1.f, 1.f), SkColors::kTransparent,
+                            vertex_opacity, false, false, false,
+                            gfx::ProtectedVideoType::kHardwareProtected);
+  stream_video_quad->is_stream_video = true;
 
   viz::TextureDrawQuad* texture_quad =
       to_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
   texture_quad->SetNew(
       shared_state, rect, visible_rect, needs_blending, mapped_resource1, false,
-      gfx::PointF(0.f, 0.f), gfx::PointF(1.f, 1.f), SK_ColorTRANSPARENT,
+      gfx::PointF(0.f, 0.f), gfx::PointF(1.f, 1.f), SkColors::kTransparent,
       vertex_opacity, false, false, false, gfx::ProtectedVideoType::kClear);
 
   viz::TextureDrawQuad* external_resource_texture_quad =
       to_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
   external_resource_texture_quad->SetNew(
       shared_state, rect, visible_rect, needs_blending, mapped_resource8, false,
-      gfx::PointF(0.f, 0.f), gfx::PointF(1.f, 1.f), SK_ColorTRANSPARENT,
+      gfx::PointF(0.f, 0.f), gfx::PointF(1.f, 1.f), SkColors::kTransparent,
       vertex_opacity, false, false, false, gfx::ProtectedVideoType::kClear);
 
   viz::TileDrawQuad* scaled_tile_quad =
@@ -467,12 +477,12 @@ void AddOneOfEveryQuadTypeInDisplayResourceProvider(
 
   viz::YUVVideoDrawQuad* yuv_quad =
       to_pass->CreateAndAppendDrawQuad<viz::YUVVideoDrawQuad>();
-  yuv_quad->SetNew(
-      shared_state2, rect, visible_rect, needs_blending,
-      gfx::RectF(.0f, .0f, 100.0f, 100.0f), gfx::RectF(.0f, .0f, 50.0f, 50.0f),
-      gfx::Size(100, 100), gfx::Size(50, 50), mapped_plane_resources[0],
-      mapped_plane_resources[1], mapped_plane_resources[2],
-      mapped_plane_resources[3], gfx::ColorSpace::CreateREC601(), 0.0, 1.0, 8);
+  yuv_quad->SetNew(shared_state2, rect, visible_rect, needs_blending,
+                   gfx::Size(200, 200), gfx::Rect(0, 0, 100, 100),
+                   gfx::Size(2, 1), mapped_plane_resources[0],
+                   mapped_plane_resources[1], mapped_plane_resources[2],
+                   mapped_plane_resources[3], gfx::ColorSpace::CreateREC601(),
+                   0.0, 1.0, 8, gfx::ProtectedVideoType::kClear, absl::nullopt);
 }
 
 }  // namespace cc

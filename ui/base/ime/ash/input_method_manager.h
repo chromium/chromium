@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,7 @@
 class Profile;
 
 namespace ui {
-class IMEEngineHandlerInterface;
+class TextInputMethod;
 class VirtualKeyboardController;
 }  // namespace ui
 
@@ -64,7 +64,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodManager {
     bool checked;
 
     unsigned int modified;
-    std::vector<MenuItem> children;
   };
 
   enum ImeMenuFeature {
@@ -140,7 +139,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodManager {
     virtual void AddInputMethodExtension(
         const std::string& extension_id,
         const InputMethodDescriptors& descriptors,
-        ui::IMEEngineHandlerInterface* instance) = 0;
+        ui::TextInputMethod* instance) = 0;
 
     // Removes an input method extension.
     virtual void RemoveInputMethodExtension(
@@ -175,7 +174,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodManager {
         const std::vector<std::string>& initial_layouts) = 0;
 
     // Filters current state layouts and leaves only suitable for lock screen.
-    virtual void EnableLockScreenLayouts() = 0;
+    virtual void DisableNonLockScreenLayouts() = 0;
 
     // Returns a list of descriptors for all Input Method Extensions.
     virtual void GetInputMethodExtensions(InputMethodDescriptors* result) = 0;
@@ -205,7 +204,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodManager {
 
     // Returns the input method descriptor from the given input method id
     // string.
-    // If the given input method id is invalid, returns NULL.
+    // If the given input method id is invalid, returns nullptr.
     virtual const InputMethodDescriptor* GetInputMethodFromId(
         const std::string& input_method_id) const = 0;
 
@@ -234,25 +233,29 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodManager {
     // Gets the descriptor of the input method which is currently selected.
     virtual InputMethodDescriptor GetCurrentInputMethod() const = 0;
 
-    // Updates the list of enabled input method IDs, and then starts or stops
-    // the system input method framework as needed.
+    // Updates the list of enabled input method IDs (checking that they are
+    // valid and allowed by policy), and then starts or stops the system input
+    // method framework as needed.
     virtual bool ReplaceEnabledInputMethods(
         const std::vector<std::string>& new_enabled_input_method_ids) = 0;
 
-    // Sets the currently allowed input methods (e.g. due to policy). Invalid
+    // Sets the currently allowed input methods due to policy. Invalid
     // input method ids are ignored. Passing an empty vector means that all
-    // input methods are allowed, which is the default.  When
-    // |enable_allowed_input_menthods| is true, the allowed input methods are
-    // also automatically enabled.
+    // input methods are allowed, which is the default.
+    // Automatically enables allowed methods in Kiosk sessions if the vector is
+    // non-empty.
     virtual bool SetAllowedInputMethods(
-        const std::vector<std::string>& allowed_input_method_ids,
-        bool enable_allowed_input_methods) = 0;
+        const std::vector<std::string>& allowed_input_method_ids) = 0;
 
     // Returns IDs of currently allowed input methods, as set by
-    // SetAllowedInputMethodIds. An empty vector means that all input methods
+    // `SetAllowedInputMethods()`. An empty vector means that all input methods
     // are allowed.
     virtual const std::vector<std::string>& GetAllowedInputMethodIds()
         const = 0;
+
+    // Returns the first hardware input method that is allowed or the first
+    // allowed input method, if no hardware input method is allowed.
+    virtual std::string GetAllowedFallBackKeyboardLayout() const = 0;
 
     // Methods related to custom input view of the input method.
     // Enables custom input view of the current (active) input method.
@@ -277,16 +280,22 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodManager {
 
   // Gets the global instance of InputMethodManager. Initialize() must be called
   // first.
+  // TODO(crbug/1279743): This is a stateful global. Make it into true global
+  // singleton first, then use dependency injection instead in the next step.
   static COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodManager* Get();
 
   // Sets the global instance. |instance| will be owned by the internal pointer
   // and deleted by Shutdown().
   // TODO(nona): Instanciate InputMethodManagerImpl inside of this function once
   //             crbug.com/164375 is fixed.
+  // TODO(crbug/1279743): This is a stateful global. Make it into true global
+  // singleton first, then use dependency injection instead in the next step.
   static COMPONENT_EXPORT(UI_BASE_IME_ASH) void Initialize(
       InputMethodManager* instance);
 
   // Destroy the global instance.
+  // TODO(crbug/1279743): This is a stateful global. Make it into true global
+  // singleton first, then use dependency injection instead in the next step.
   static COMPONENT_EXPORT(UI_BASE_IME_ASH) void Shutdown();
 
   // Adds an observer to receive notifications of input method related
@@ -305,8 +314,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodManager {
 
   // Connects a receiver to the InputEngineManager instance.
   virtual void ConnectInputEngineManager(
-      mojo::PendingReceiver<chromeos::ime::mojom::InputEngineManager>
-          receiver) = 0;
+      mojo::PendingReceiver<ime::mojom::InputEngineManager> receiver) = 0;
 
   virtual bool IsISOLevel5ShiftUsedByCurrentInputMethod() const = 0;
 

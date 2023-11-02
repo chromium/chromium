@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -51,6 +51,10 @@ struct CC_EXPORT TransformNode {
   // transform node. -1 indicates there are no sticky position constraints.
   int sticky_position_constraint_id;
 
+  // This is the data of the scroll container of the anchor node specified by
+  // the `anchor-scroll` property. -1 indicates there is no such node.
+  int anchor_scroll_containers_data_id;
+
   // This id determines which 3d rendering context the node is in. 0 is a
   // special value and indicates that the node is not in any 3d rendering
   // context.
@@ -90,6 +94,8 @@ struct CC_EXPORT TransformNode {
 
   bool scrolls : 1;
 
+  bool should_undo_overscroll : 1;
+
   bool should_be_snapped : 1;
 
   // Used by the compositor to determine which layers need to be repositioned by
@@ -110,13 +116,14 @@ struct CC_EXPORT TransformNode {
   // visibility, not this transform one.
   bool delegates_to_parent_for_backface : 1;
 
-  // Set to true, if the compositing reason is will-change:transform.
+  // Set to true, if the compositing reason is will-change:transform, scale,
+  // rotate, or translate (for the CSS property that created this node).
   bool will_change_transform : 1;
 
   // Set to true, if the node or it's parent |will_change_transform| is true.
   bool node_or_ancestors_will_change_transform : 1;
 
-  gfx::Vector2dF scroll_offset;
+  gfx::PointF scroll_offset;
 
   // This value stores the snapped amount whenever we snap. If the snap is due
   // to a scroll, we need it to calculate fixed-pos elements adjustment, even

@@ -1,10 +1,12 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "content/browser/web_package/web_bundle_browsertest_base.h"
+#include "content/browser/web_package/web_bundle_utils.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
@@ -134,7 +136,8 @@ IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest, SimpleWithScript) {
   const GURL script_url =
       embedded_test_server()->GetURL("/web_bundle/script.js");
 
-  web_package::WebBundleBuilder builder(primary_url.spec(), "");
+  web_package::WebBundleBuilder builder;
+  builder.AddPrimaryURL(primary_url.spec());
   builder.AddExchange(primary_url.spec(),
                       {{":status", "200"}, {"content-type", "text/html"}},
                       "<script src=\"script.js\"></script>");
@@ -229,7 +232,8 @@ IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest,
   const GURL primary_url = embedded_test_server()->GetURL(primary_url_path);
   const GURL inner_url =
       embedded_test_server()->GetURL("/web_bundle/inner.html");
-  web_package::WebBundleBuilder builder(primary_url.spec(), "");
+  web_package::WebBundleBuilder builder;
+  builder.AddPrimaryURL(primary_url.spec());
   builder.AddExchange(inner_url.spec(),
                       {{":status", "200"}, {"content-type", "text/html"}},
                       "<title>Ready</title>");
@@ -247,7 +251,7 @@ IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest, PrimaryURLNotFound) {
   const GURL wbn_url = embedded_test_server()->GetURL(wbn_path);
   const GURL inner_url =
       embedded_test_server()->GetURL("/web_bundle/inner.html");
-  web_package::WebBundleBuilder builder("", "");
+  web_package::WebBundleBuilder builder;
   builder.AddExchange(inner_url.spec(),
                       {{":status", "200"}, {"content-type", "text/html"}},
                       "<title>Ready</title>");
@@ -255,6 +259,46 @@ IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest, PrimaryURLNotFound) {
   SetContents(std::string(bundle.begin(), bundle.end()));
   TestNavigationFailure(
       wbn_url, "Web Bundle is missing the Primary URL to navigate to.");
+}
+
+IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest,
+                       PrimaryURLHasInvalidScheme) {
+  const std::string wbn_path = "/web_bundle/test.wbn";
+  RegisterRequestHandler(wbn_path);
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  const GURL wbn_url = embedded_test_server()->GetURL(wbn_path);
+  web_package::WebBundleBuilder builder;
+  builder.AddPrimaryURL("foo://bar/");
+  builder.AddExchange("foo://bar/",
+                      {{":status", "200"}, {"content-type", "text/html"}},
+                      "<title>Ready</title>");
+  std::vector<uint8_t> bundle = builder.CreateBundle();
+  SetContents(std::string(bundle.begin(), bundle.end()));
+  TestNavigationFailure(wbn_url,
+                        web_bundle_utils::kInvalidPrimaryUrlErrorMessage);
+}
+
+IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest, ExchangeHasInvalidScheme) {
+  const std::string wbn_path = "/web_bundle/test.wbn";
+  const std::string primary_url_path = "/web_bundle/test.html";
+  RegisterRequestHandler(wbn_path);
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  const GURL wbn_url = embedded_test_server()->GetURL(wbn_path);
+  const GURL primary_url = embedded_test_server()->GetURL(primary_url_path);
+  web_package::WebBundleBuilder builder;
+  builder.AddPrimaryURL(primary_url.spec());
+  builder.AddExchange(primary_url.spec(),
+                      {{":status", "200"}, {"content-type", "text/html"}},
+                      "<title>Ready</title>");
+  builder.AddExchange("foo://bar",
+                      {{":status", "200"}, {"content-type", "text/html"}},
+                      "<title>Ready</title>");
+  std::vector<uint8_t> bundle = builder.CreateBundle();
+  SetContents(std::string(bundle.begin(), bundle.end()));
+  TestNavigationFailure(wbn_url,
+                        web_bundle_utils::kInvalidExchangeUrlErrorMessage);
 }
 
 IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest, OriginMismatch) {
@@ -282,7 +326,7 @@ IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest, InvalidFile) {
 
   TestNavigationFailure(embedded_test_server()->GetURL(wbn_path),
                         "Failed to read metadata of Web Bundle file: Wrong "
-                        "CBOR array size of the top-level structure");
+                        "magic bytes.");
 }
 
 IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest, DataDecoderRestart) {
@@ -399,7 +443,7 @@ IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest, SameDocumentNavigation) {
 }
 
 // https://crbug.com/1219373 fails with BFCache field trial testing config.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_IframeNavigation DISABLED_IframeNavigation
 #else
 #define MAYBE_IframeNavigation IframeNavigation
@@ -426,7 +470,7 @@ IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest,
 }
 
 // https://crbug.com/1219373 fails with BFCache field trial testing config.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_IframeSameDocumentNavigation DISABLED_IframeSameDocumentNavigation
 #else
 #define MAYBE_IframeSameDocumentNavigation IframeSameDocumentNavigation
@@ -512,7 +556,7 @@ IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest,
   // back navigation will recreate the page. Disable back/forward cache to
   // ensure that it doesn't get preserved in the cache.
   DisableBackForwardCacheForTesting(shell()->web_contents(),
-                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
   const std::string wbn_path = "/web_bundle/test.wbn";
   const std::string primary_url_path = "/web_bundle/test.html";
   RegisterRequestHandler(wbn_path);
@@ -546,7 +590,7 @@ IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest,
   // back navigation will recreate the page. Disable back/forward cache to
   // ensure that it doesn't get preserved in the cache.
   DisableBackForwardCacheForTesting(shell()->web_contents(),
-                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
   const std::string wbn_path = "/web_bundle/test.wbn";
   const std::string primary_url_path = "/web_bundle/test.html";
   RegisterRequestHandler(wbn_path);
@@ -581,7 +625,7 @@ IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest,
   // back navigation will recreate the page. Disable back/forward cache to
   // ensure that it doesn't get preserved in the cache.
   DisableBackForwardCacheForTesting(shell()->web_contents(),
-                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
   const std::string wbn_path = "/web_bundle/test.wbn";
   const std::string primary_url_path = "/web_bundle/test.html";
   RegisterRequestHandler(wbn_path);
@@ -614,7 +658,7 @@ IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest,
   // The test assumes the previous page gets deleted after navigation. Disable
   // back/forward cache to ensure that it doesn't get preserved in the cache.
   DisableBackForwardCacheForTesting(shell()->web_contents(),
-                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
   const std::string wbn_path = "/web_bundle/test.wbn";
   const std::string primary_url_path = "/web_bundle/test.html";
   RegisterRequestHandler(wbn_path);
@@ -632,8 +676,7 @@ IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest,
 
   SetContents("This is an invalid Web Bundle file.");
   HistoryBackAndWaitUntilConsoleError(
-      "Failed to read metadata of Web Bundle file: Wrong CBOR array size of "
-      "the top-level structure");
+      "Failed to read metadata of Web Bundle file: Wrong magic bytes.");
 }
 
 IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest,
@@ -642,7 +685,7 @@ IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest,
   // back navigation will recreate the page. Disable back/forward cache to
   // ensure that it doesn't get preserved in the cache.
   DisableBackForwardCacheForTesting(shell()->web_contents(),
-                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
   const std::string wbn_path = "/web_bundle/test.wbn";
   const std::string primary_url_path = "/web_bundle/test.html";
   const std::string alt_primary_url_path = "/web_bundle/alt.html";
@@ -714,8 +757,8 @@ IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest, OutScopeSubPage) {
       embedded_test_server(), "");
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL origin = embedded_test_server()->GetURL("/");
-  web_package::WebBundleBuilder builder(origin.Resolve(primary_url_path).spec(),
-                                        "");
+  web_package::WebBundleBuilder builder;
+  builder.AddPrimaryURL(origin.Resolve(primary_url_path).spec());
   web_bundle_browsertest_utils::AddHtmlFile(&builder, origin, primary_url_path,
                                             R"(
     <script>

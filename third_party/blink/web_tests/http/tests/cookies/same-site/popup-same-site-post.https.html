@@ -28,6 +28,7 @@ if (window.location.hostname == "127.0.0.1") {
         f.action = "https://" + ORIGINAL_HOST + ":8443/cookies/resources/post-cookies-to-opener.php";
         f.method = "POST";
         f.target = "_blank";
+        f.rel = "opener";
         window.onload = t.step_func(f.submit.bind(f));
         document.body.appendChild(f);
     }, "'" + ORIGINAL_HOST + "' is same-site with itself, so samesite cookies are sent.");

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -14,7 +14,8 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
 #include "base/process/process_handle.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -27,15 +28,17 @@
 #include "ipc/ipc_channel_proxy.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_message.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel_server_endpoint.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
 #include "mojo/public/cpp/system/invitation.h"
+#include "remoting/host/base/switches.h"
 #include "remoting/host/host_main.h"
 #include "remoting/host/ipc_constants.h"
-#include "remoting/host/switches.h"
+#include "remoting/host/mojom/desktop_session.mojom.h"
 #include "remoting/host/win/launch_process_with_token.h"
 #include "remoting/host/win/security_descriptor.h"
 #include "remoting/host/win/worker_process_launcher.h"
@@ -73,10 +76,10 @@ class WtsSessionProcessDelegate::Core
 
   // Mirrors WorkerProcessLauncher::Delegate.
   void LaunchProcess(WorkerProcessLauncher* event_handler);
-  void Send(IPC::Message* message);
   void GetRemoteAssociatedInterface(
       mojo::GenericPendingAssociatedReceiver receiver);
   void CloseChannel();
+  void CrashProcess(const base::Location& location);
   void KillProcess();
 
  private:
@@ -135,7 +138,7 @@ class WtsSessionProcessDelegate::Core
   // Security descriptor (as SDDL) to be applied to |channel_|.
   const std::string channel_security_;
 
-  WorkerProcessLauncher* event_handler_ = nullptr;
+  raw_ptr<WorkerProcessLauncher> event_handler_ = nullptr;
 
   // The job object used to control the lifetime of child processes.
   base::win::ScopedHandle job_;
@@ -167,6 +170,8 @@ class WtsSessionProcessDelegate::Core
 
   // The pending process connection for the process being launched.
   mojo::OutgoingInvitation mojo_invitation_;
+
+  mojo::AssociatedRemote<mojom::WorkerProcessControl> worker_process_control_;
 };
 
 WtsSessionProcessDelegate::Core::Core(
@@ -244,21 +249,10 @@ void WtsSessionProcessDelegate::Core::LaunchProcess(
   DoLaunchProcess();
 }
 
-void WtsSessionProcessDelegate::Core::Send(IPC::Message* message) {
-  DCHECK(caller_task_runner_->BelongsToCurrentThread());
-
-  if (channel_) {
-    channel_->Send(message);
-  } else {
-    delete message;
-  }
-}
-
 void WtsSessionProcessDelegate::Core::GetRemoteAssociatedInterface(
     mojo::GenericPendingAssociatedReceiver receiver) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
-  // TODO(joedow): Implement this when converting the Daemon->Desktop messages.
-  NOTIMPLEMENTED();
+  channel_->GetRemoteAssociatedInterface(std::move(receiver));
 }
 
 void WtsSessionProcessDelegate::Core::CloseChannel() {
@@ -268,10 +262,20 @@ void WtsSessionProcessDelegate::Core::CloseChannel() {
     return;
   }
 
+  worker_process_control_.reset();
   channel_.reset();
   elevated_server_endpoint_.reset();
   elevated_launcher_pid_ = base::kNullProcessId;
   mojo_invitation_ = {};
+}
+
+void WtsSessionProcessDelegate::Core::CrashProcess(
+    const base::Location& location) {
+  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  if (worker_process_control_) {
+    worker_process_control_->CrashProcess(
+        location.function_name(), location.file_name(), location.line_number());
+  }
 }
 
 void WtsSessionProcessDelegate::Core::KillProcess() {
@@ -358,12 +362,14 @@ void WtsSessionProcessDelegate::Core::OnIOCompleted(
 bool WtsSessionProcessDelegate::Core::OnMessageReceived(
     const IPC::Message& message) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
-
-  return event_handler_->OnMessageReceived(message);
+  NOTREACHED() << "Received unexpected IPC type: " << message.type();
+  return false;
 }
 
 void WtsSessionProcessDelegate::Core::OnChannelConnected(int32_t peer_pid) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
+
+  channel_->GetRemoteAssociatedInterface(&worker_process_control_);
 
   if (event_handler_)
     event_handler_->OnChannelConnected(peer_pid);
@@ -621,10 +627,6 @@ void WtsSessionProcessDelegate::LaunchProcess(
   core_->LaunchProcess(event_handler);
 }
 
-void WtsSessionProcessDelegate::Send(IPC::Message* message) {
-  core_->Send(message);
-}
-
 void WtsSessionProcessDelegate::GetRemoteAssociatedInterface(
     mojo::GenericPendingAssociatedReceiver receiver) {
   core_->GetRemoteAssociatedInterface(std::move(receiver));
@@ -632,6 +634,10 @@ void WtsSessionProcessDelegate::GetRemoteAssociatedInterface(
 
 void WtsSessionProcessDelegate::CloseChannel() {
   core_->CloseChannel();
+}
+
+void WtsSessionProcessDelegate::CrashProcess(const base::Location& location) {
+  core_->CrashProcess(location);
 }
 
 void WtsSessionProcessDelegate::KillProcess() {

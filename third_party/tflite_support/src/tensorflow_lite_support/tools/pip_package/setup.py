@@ -1,4 +1,3 @@
-# lint as: python3
 # Copyright 2015 The TensorFlow Authors. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,12 +16,20 @@
 
 This PyPI package includes the Python bindings for following features:
 
+ - Task Library: a set of powerful and easy-to-use task-specific libraries to
+ integrate TFLite models onto various platforms. See the [Task Library
+ documentation](https://www.tensorflow.org/lite/inference_with_metadata/task_library/overview)
+ for more information.
  - Metadata schemas: wraps TFLite model schema and metadata schema in Python.
- - Metadata populator and displayer: can be used to populate the metadata and
+ - Metadata writer and displayer: can be used to populate the metadata and
  associated files into the model, as well as converting the populated metadata
- into the json format.
+ into the json format. See the [Metadata
+ documentation](https://www.tensorflow.org/lite/convert/metadata) for more
+ information.
  - Android Codegen tool: generates the Java model interface used in Android for
- a particular model.
+ a particular model. See the [Codegen tool
+ documentation](https://www.tensorflow.org/lite/inference_with_metadata/codegen)
+ for more information.
 """
 
 from __future__ import absolute_import
@@ -43,16 +50,21 @@ from setuptools.dist import Distribution
 # This version string is semver compatible, but incompatible with pip.
 # For pip, we will remove all '-' characters from this string, and use the
 # result for pip.
-_VERSION = '0.1.0'
+_VERSION = '0.4.0'
 
 SETUP_PACKAGES = [
-    'pybind11 >= 2.4',
+    'pybind11 >= 2.6.0',
 ]
 
 REQUIRED_PACKAGES = [
     'absl-py >= 0.7.0',
-    'numpy >= 1.16.0',
-    'flatbuffers >= 1.12',
+    'numpy >= 1.20.0',
+    'flatbuffers >= 2.0',
+    # The Protobuf version needs to be newer than the one in WORKSPACE.
+    # Protobuf v4 introduced breaking changes making it incompatible with
+    # pb2 files compiled with earlier versions of protobuf used in this project.
+    'protobuf >= 3.18.0, <4',
+    'sounddevice >= 0.4.4',
 ] + SETUP_PACKAGES
 
 project_name = 'tflite-support'

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@ namespace test {
 class MockNotificationScheduleService : public NotificationScheduleService {
  public:
   MockNotificationScheduleService();
-  ~MockNotificationScheduleService();
+  ~MockNotificationScheduleService() override;
 
   MOCK_METHOD1(Schedule,
                void(std::unique_ptr<NotificationParams> notification_params));

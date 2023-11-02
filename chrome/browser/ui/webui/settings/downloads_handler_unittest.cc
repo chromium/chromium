@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "base/json/json_reader.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_core_service_factory.h"
@@ -89,8 +90,8 @@ void VerifyDownloadsConnectionPolicyChangedCallback(
   size_t account_info_received = 0;
   for (auto& data : web_ui_call_data) {
     EXPECT_EQ("cr.webUIListenerCallback", data->function_name());
-    std::string event;
-    ASSERT_TRUE(data->arg1()->GetAsString(&event));
+    ASSERT_TRUE(data->arg1()->is_string());
+    const std::string& event = data->arg1()->GetString();
     if (event == "downloads-connection-policy-changed") {
       policy_change_received = true;
       ASSERT_TRUE(data->arg2()->is_bool());
@@ -112,9 +113,8 @@ void VerifyDownloadsConnectionPolicyChangedCallback(
 
 void VerifyAutoOpenDownloadsChangedCallback(const WebUIDataReceivedPtr& data) {
   EXPECT_EQ("cr.webUIListenerCallback", data->function_name());
-  std::string event;
-  ASSERT_TRUE(data->arg1()->GetAsString(&event));
-  EXPECT_EQ("auto-open-downloads-changed", event);
+  ASSERT_TRUE(data->arg1()->is_string());
+  EXPECT_EQ("auto-open-downloads-changed", data->arg1()->GetString());
   ASSERT_TRUE(data->arg2()->is_bool());
   EXPECT_FALSE(data->arg2()->GetBool());
 }
@@ -128,7 +128,8 @@ class DownloadsHandlerTest : public testing::TestWithParam<DownloadsSettings> {
   DownloadsHandlerTest()
       : download_manager_(new NiceMock<content::MockDownloadManager>()),
         handler_(&profile_) {
-    profile_.SetDownloadManagerForTesting(base::WrapUnique(download_manager_));
+    profile_.SetDownloadManagerForTesting(
+        base::WrapUnique(download_manager_.get()));
     std::unique_ptr<ChromeDownloadManagerDelegate> delegate =
         std::make_unique<ChromeDownloadManagerDelegate>(&profile_);
     chrome_download_manager_delegate_ = delegate.get();
@@ -166,7 +167,7 @@ class DownloadsHandlerTest : public testing::TestWithParam<DownloadsSettings> {
     expected_init_callback_count += param.connection_init_enabled;
 
     base::ListValue args;
-    handler()->HandleInitialize(&args);
+    handler()->HandleInitialize(args.GetList());
 
     EXPECT_TRUE(handler()->IsJavascriptAllowed());
     ASSERT_EQ(web_ui_call_data().size(), expected_init_callback_count);
@@ -256,9 +257,10 @@ class DownloadsHandlerTest : public testing::TestWithParam<DownloadsSettings> {
   content::TestWebUI test_web_ui_;
   TestingProfile profile_;
 
-  DownloadCoreService* service_;
-  content::MockDownloadManager* download_manager_;  // Owned by |profile_|.
-  ChromeDownloadManagerDelegate* chrome_download_manager_delegate_;
+  raw_ptr<DownloadCoreService> service_;
+  raw_ptr<content::MockDownloadManager>
+      download_manager_;  // Owned by |profile_|.
+  raw_ptr<ChromeDownloadManagerDelegate> chrome_download_manager_delegate_;
 
   bool connection_policy_enabled_;
   std::string account_name_, account_login_, folder_name_, folder_id_;

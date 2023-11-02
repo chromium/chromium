@@ -38,7 +38,7 @@
 #include "third_party/blink/renderer/core/animation/sampled_effect.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/properties/css_bitset.h"
-#include "third_party/blink/renderer/platform/geometry/float_box.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -61,7 +61,7 @@ class CORE_EXPORT EffectStack {
   }
   static bool CompareSampledEffects(const Member<SampledEffect>&,
                                     const Member<SampledEffect>&);
-  bool IsEmpty() const { return sampled_effects_.IsEmpty(); }
+  bool IsEmpty() const { return sampled_effects_.empty(); }
   bool HasActiveAnimationsOnCompositor(const PropertyHandle&) const;
 
   using PropertyHandleFilter = bool (*)(const PropertyHandle&);

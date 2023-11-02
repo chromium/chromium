@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 
 #include "apps/saved_files_service_factory.h"
 #include "base/json/values_util.h"
+#include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/api/file_system/saved_file_entry.h"
@@ -112,31 +113,32 @@ std::vector<SavedFileEntry> GetSavedFileEntries(
     ExtensionPrefs* prefs,
     const std::string& extension_id) {
   std::vector<SavedFileEntry> result;
-  const base::DictionaryValue* file_entries = NULL;
-  if (!prefs->ReadPrefAsDictionary(extension_id, kFileEntries, &file_entries))
-    return result;
 
-  for (base::DictionaryValue::Iterator it(*file_entries); !it.IsAtEnd();
-       it.Advance()) {
-    const base::DictionaryValue* file_entry = NULL;
-    if (!it.value().GetAsDictionary(&file_entry))
+  const auto* dict = prefs->ReadPrefAsDict(extension_id, kFileEntries);
+  if (!dict) {
+    return result;
+  }
+
+  for (const auto item : *dict) {
+    const auto* file_entry = item.second.GetIfDict();
+    if (!file_entry)
       continue;
-    const base::Value* path_value;
-    if (!file_entry->Get(kFileEntryPath, &path_value))
+
+    const base::Value* path_value = file_entry->Find(kFileEntryPath);
+    if (!path_value)
       continue;
     absl::optional<base::FilePath> file_path =
         base::ValueToFilePath(*path_value);
     if (!file_path)
       continue;
-    bool is_directory = false;
-    file_entry->GetBoolean(kFileEntryIsDirectory, &is_directory);
-    int sequence_number = 0;
-    if (!file_entry->GetInteger(kFileEntrySequenceNumber, &sequence_number))
+    bool is_directory =
+        file_entry->FindBool(kFileEntryIsDirectory).value_or(false);
+    const absl::optional<int> sequence_number =
+        file_entry->FindInt(kFileEntrySequenceNumber);
+    if (!sequence_number || sequence_number.value() == 0)
       continue;
-    if (!sequence_number)
-      continue;
-    result.push_back(
-        SavedFileEntry(it.key(), *file_path, is_directory, sequence_number));
+    result.emplace_back(item.first, *file_path, is_directory,
+                        sequence_number.value());
   }
   return result;
 }
@@ -166,7 +168,7 @@ class SavedFilesService::SavedFiles {
 
   void LoadSavedFileEntriesFromPreferences();
 
-  content::BrowserContext* context_;
+  raw_ptr<content::BrowserContext> context_;
   const std::string extension_id_;
 
   // Contains all file entries that have been registered, keyed by ID.

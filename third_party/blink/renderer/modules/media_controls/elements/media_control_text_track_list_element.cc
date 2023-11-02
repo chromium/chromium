@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,7 @@
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_toggle_closed_captions_button_element.h"
 #include "third_party/blink/renderer/modules/media_controls/media_controls_impl.h"
 #include "third_party/blink/renderer/modules/media_controls/media_controls_text_track_manager.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 
 namespace blink {
@@ -123,14 +123,14 @@ Element* MediaControlTextTrackListElement::CreateTextTrackListItem(
   track_item_input->SetIntegralAttribute(TrackIndexAttrName(), track_index);
   if (!MediaElement().TextTracksVisible()) {
     if (!track) {
-      track_item_input->setChecked(true);
+      track_item_input->SetChecked(true);
       track_item->setAttribute(html_names::kAriaCheckedAttr, "true");
     }
   } else {
     // If there are multiple text tracks set to showing, they must all have
     // checkmarks displayed.
-    if (track && track->mode() == TextTrack::ShowingKeyword()) {
-      track_item_input->setChecked(true);
+    if (track && track->mode() == TextTrackMode::kShowing) {
+      track_item_input->SetChecked(true);
       track_item->setAttribute(html_names::kAriaCheckedAttr, "true");
     } else {
       track_item->setAttribute(html_names::kAriaCheckedAttr, "false");
@@ -146,7 +146,7 @@ Element* MediaControlTextTrackListElement::CreateTextTrackListItem(
   String track_label =
       GetMediaControls().GetTextTrackManager().GetTextTrackLabel(track);
   auto* track_label_span = MakeGarbageCollected<HTMLSpanElement>(GetDocument());
-  track_label_span->setInnerText(track_label, ASSERT_NO_EXCEPTION);
+  track_label_span->setInnerText(track_label);
   track_label_span->setAttribute(html_names::kAriaHiddenAttr, "true");
   track_item->setAttribute(html_names::kAriaLabelAttr,
                            WTF::AtomicString(track_label));
@@ -155,13 +155,18 @@ Element* MediaControlTextTrackListElement::CreateTextTrackListItem(
 
   // Add a track kind marker icon if there are multiple tracks with the same
   // label or if the track has no label.
-  if (track && (track->label().IsEmpty() || HasDuplicateLabel(track))) {
+  if (track && (track->label().empty() || HasDuplicateLabel(track))) {
     auto* track_kind_marker =
         MakeGarbageCollected<HTMLSpanElement>(GetDocument());
     if (track->kind() == track->CaptionsKeyword()) {
       track_kind_marker->SetShadowPseudoId(AtomicString(
           "-internal-media-controls-text-track-list-kind-captions"));
+    } else if (track->kind() == track->DescriptionsKeyword()) {
+      track_kind_marker->SetShadowPseudoId(AtomicString(
+          "-internal-media-controls-text-track-list-kind-descriptions"));
     } else {
+      // Aside from Captions and Descriptions, Subtitles is the only other
+      // supported keyword.
       DCHECK_EQ(track->kind(), track->SubtitlesKeyword());
       track_kind_marker->SetShadowPseudoId(AtomicString(
           "-internal-media-controls-text-track-list-kind-subtitles"));

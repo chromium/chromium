@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -69,23 +69,23 @@ GURL CreateRedirectURL(const std::string& scheme,
 PreconnectRequest::PreconnectRequest(
     const url::Origin& origin,
     int num_sockets,
-    const net::NetworkIsolationKey& network_isolation_key)
+    const net::NetworkAnonymizationKey& network_anonymization_key)
     : origin(origin),
       num_sockets(num_sockets),
-      network_isolation_key(network_isolation_key) {
+      network_anonymization_key(network_anonymization_key) {
   DCHECK_GE(num_sockets, 0);
-  DCHECK(!network_isolation_key.IsEmpty());
+  DCHECK(!network_anonymization_key.IsEmpty());
 }
 
 PrefetchRequest::PrefetchRequest(
     const GURL& url,
-    const net::NetworkIsolationKey& network_isolation_key,
+    const net::NetworkAnonymizationKey& network_anonymization_key,
     network::mojom::RequestDestination destination)
     : url(url),
-      network_isolation_key(network_isolation_key),
+      network_anonymization_key(network_anonymization_key),
       destination(destination) {
   DCHECK(base::FeatureList::IsEnabled(features::kLoadingPredictorPrefetch));
-  DCHECK(!network_isolation_key.IsEmpty());
+  DCHECK(!network_anonymization_key.IsEmpty());
 }
 
 PreconnectPrediction::PreconnectPrediction() = default;
@@ -218,11 +218,12 @@ bool ResourcePrefetchPredictor::GetRedirectEndpointsForPreconnect(
     }
 
     // Add the endpoint to which the predictor has seen redirects to.
-    // Set network isolation key same as the origin of the redirect target.
+    // Set network anonymization key same as the origin of the redirect target.
     if (prediction) {
       prediction->requests.emplace_back(
           redirect_origin, 1 /* num_scokets */,
-          net::NetworkIsolationKey(redirect_origin, redirect_origin));
+          net::NetworkAnonymizationKey(net::SchemefulSite(redirect_origin),
+                                       net::SchemefulSite(redirect_origin)));
     }
     at_least_one_redirect_endpoint_added = true;
   }
@@ -346,9 +347,9 @@ bool ResourcePrefetchPredictor::PredictPreconnectOrigins(
     prediction->host = redirect_origin.host();
     prediction->is_redirected = (redirect_origin != url_origin);
   }
-
-  net::NetworkIsolationKey network_isolation_key(redirect_origin,
-                                                 redirect_origin);
+  net::SchemefulSite redirect_site = net::SchemefulSite(redirect_origin);
+  net::NetworkAnonymizationKey network_anonymization_key(redirect_site,
+                                                         redirect_site);
 
   for (const OriginStat& origin : data.origins()) {
     float confidence = static_cast<float>(origin.number_of_hits()) /
@@ -361,11 +362,11 @@ bool ResourcePrefetchPredictor::PredictPreconnectOrigins(
       if (confidence > kMinOriginConfidenceToTriggerPreconnect) {
         prediction->requests.emplace_back(
             url::Origin::Create(GURL(origin.origin())), 1,
-            network_isolation_key);
+            network_anonymization_key);
       } else {
         prediction->requests.emplace_back(
             url::Origin::Create(GURL(origin.origin())), 0,
-            network_isolation_key);
+            network_anonymization_key);
       }
     }
   }

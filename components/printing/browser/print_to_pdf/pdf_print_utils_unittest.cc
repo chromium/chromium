@@ -1,96 +1,62 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/printing/browser/print_to_pdf/pdf_print_utils.h"
+
+#include "components/printing/browser/print_to_pdf/pdf_print_result.h"
+#include "printing/page_number.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace print_to_pdf {
 
 namespace {
 
-std::vector<uint32_t> GetPages(
-    absl::variant<printing::PageRanges, PageRangeError> result) {
-  return printing::PageRange::GetPages(absl::get<printing::PageRanges>(result));
-}
-
-PageRangeError GetError(
-    absl::variant<printing::PageRanges, PageRangeError> result) {
-  return absl::get<PageRangeError>(result);
-}
+using printing::PageRange;
+using printing::PageRanges;
+using testing::ElementsAre;
+using testing::ElementsAreArray;
+using testing::VariantWith;
 
 TEST(PageRangeTextToPagesTest, General) {
-  absl::variant<printing::PageRanges, PageRangeError> result;
-  std::vector<uint32_t> expected_pages;
-
-  // "-" is the full range of pages.
-  result = TextPageRangesToPageRanges("-", false, 10);
-  EXPECT_TRUE(absl::holds_alternative<printing::PageRanges>(result));
-  EXPECT_FALSE(absl::holds_alternative<PageRangeError>(result));
-  expected_pages = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-  EXPECT_EQ(GetPages(result), expected_pages);
+  EXPECT_THAT(
+      TextPageRangesToPageRanges("-"),
+      VariantWith<PageRanges>(ElementsAre(PageRange{0, PageRange::kMaxPage})));
 
   // If no start page is specified, we start at the first page.
-  result = TextPageRangesToPageRanges("-5", false, 10);
-  EXPECT_TRUE(absl::holds_alternative<printing::PageRanges>(result));
-  EXPECT_FALSE(absl::holds_alternative<PageRangeError>(result));
-  expected_pages = {0, 1, 2, 3, 4};
-  EXPECT_EQ(GetPages(result), expected_pages);
+  EXPECT_THAT(TextPageRangesToPageRanges("-5"),
+              VariantWith<PageRanges>(ElementsAre(PageRange{0, 4})));
 
   // If no end page is specified, we end at the last page.
-  result = TextPageRangesToPageRanges("5-", false, 10);
-  EXPECT_TRUE(absl::holds_alternative<printing::PageRanges>(result));
-  EXPECT_FALSE(absl::holds_alternative<PageRangeError>(result));
-  expected_pages = {4, 5, 6, 7, 8, 9};
-  EXPECT_EQ(GetPages(result), expected_pages);
+  EXPECT_THAT(
+      TextPageRangesToPageRanges("5-"),
+      VariantWith<PageRanges>(ElementsAre(PageRange{4, PageRange::kMaxPage})));
 
   // Multiple ranges are separated by commas.
-  result = TextPageRangesToPageRanges("1-3,9-10,4-6", false, 10);
-  EXPECT_TRUE(absl::holds_alternative<printing::PageRanges>(result));
-  EXPECT_FALSE(absl::holds_alternative<PageRangeError>(result));
-  expected_pages = {0, 1, 2, 3, 4, 5, 8, 9};
-  EXPECT_EQ(GetPages(result), expected_pages);
+  EXPECT_THAT(TextPageRangesToPageRanges("1-3,9-10,4-6"),
+              VariantWith<PageRanges>(
+                  ElementsAreArray<PageRange>({{0, 2}, {8, 9}, {3, 5}})));
 
   // White space is ignored.
-  result = TextPageRangesToPageRanges("1- 3, 9-10,4 -6", false, 10);
-  EXPECT_TRUE(absl::holds_alternative<printing::PageRanges>(result));
-  EXPECT_FALSE(absl::holds_alternative<PageRangeError>(result));
-  expected_pages = {0, 1, 2, 3, 4, 5, 8, 9};
-  EXPECT_EQ(GetPages(result), expected_pages);
+  EXPECT_THAT(TextPageRangesToPageRanges("1- 3, 9-10,4 -6"),
+              VariantWith<PageRanges>(
+                  ElementsAreArray<PageRange>({{0, 2}, {8, 9}, {3, 5}})));
 
-  // End page beyond number of pages is supported and capped to number
-  // of pages.
-  result = TextPageRangesToPageRanges("1-10", false, 5);
-  EXPECT_TRUE(absl::holds_alternative<printing::PageRanges>(result));
-  EXPECT_FALSE(absl::holds_alternative<PageRangeError>(result));
-  expected_pages = {0, 1, 2, 3, 4};
-  EXPECT_EQ(GetPages(result), expected_pages);
-
-  // Start page beyond number of pages results in an error.
-  result = TextPageRangesToPageRanges("1-3,9-10,4-6", false, 5);
-  EXPECT_FALSE(absl::holds_alternative<printing::PageRanges>(result));
-  EXPECT_TRUE(absl::holds_alternative<PageRangeError>(result));
-  EXPECT_EQ(GetError(result), PageRangeError::LIMIT_ERROR);
-
-  // Invalid page ranges are ignored if |ignore_invalid_page_ranges| is
-  // in effect.
-  result = TextPageRangesToPageRanges("9-10,4-6,3-1", true, 5);
-  EXPECT_TRUE(absl::holds_alternative<printing::PageRanges>(result));
-  EXPECT_FALSE(absl::holds_alternative<PageRangeError>(result));
-  expected_pages = {3, 4};
-  EXPECT_EQ(GetPages(result), expected_pages);
+  // Range with a start page greater than the end page results in an error.
+  EXPECT_THAT(
+      TextPageRangesToPageRanges("6-4"),
+      VariantWith<PdfPrintResult>(PdfPrintResult::kPageRangeInvalidRange));
 
   // Invalid input results in an error.
-  result = TextPageRangesToPageRanges("abcd", false, 10);
-  EXPECT_FALSE(absl::holds_alternative<printing::PageRanges>(result));
-  EXPECT_TRUE(absl::holds_alternative<PageRangeError>(result));
-  EXPECT_EQ(GetError(result), PageRangeError::SYNTAX_ERROR);
+  EXPECT_THAT(
+      TextPageRangesToPageRanges("abcd"),
+      VariantWith<PdfPrintResult>(PdfPrintResult::kPageRangeSyntaxError));
 
   // Invalid input results in an error.
-  result = TextPageRangesToPageRanges("1-3,9-a10,4-6", false, 10);
-  EXPECT_FALSE(absl::holds_alternative<printing::PageRanges>(result));
-  EXPECT_TRUE(absl::holds_alternative<PageRangeError>(result));
-  EXPECT_EQ(GetError(result), PageRangeError::SYNTAX_ERROR);
+  EXPECT_THAT(
+      TextPageRangesToPageRanges("1-3,9-a10,4-6"),
+      VariantWith<PdfPrintResult>(PdfPrintResult::kPageRangeSyntaxError));
 }
 
 }  // namespace

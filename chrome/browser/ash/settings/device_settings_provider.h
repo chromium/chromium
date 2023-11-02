@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,11 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/settings/cros_settings_provider.h"
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
+#include "chromeos/ash/components/settings/cros_settings_provider.h"
 #include "components/ownership/owner_settings_service.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
@@ -30,9 +30,12 @@ class ChromeDeviceSettingsProto;
 
 namespace ash {
 
+constexpr char kAllowlistCOILFallbackHistogram[] =
+    "Login.AllowlistCOILFallback";
+
 // CrosSettingsProvider implementation that works with device settings.
-// Dependency: chromeos::InstallAttributes must be initialized while this class
-// is in use.
+// Dependency: `InstallAttributes` must be initialized while this class is in
+// use.
 //
 // Note that the write path is in the process of being migrated to
 // OwnerSettingsServiceAsh (crbug.com/230018).

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,13 +26,13 @@
 #include "printing/mojom/print.mojom.h"
 #include "url/gurl.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/feature_list.h"
 #include "printing/backend/cups_connection.h"
 #include "printing/backend/cups_ipp_utils.h"
 #include "printing/backend/print_backend_cups_ipp.h"
 #include "printing/printing_features.h"
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 namespace printing {
 
@@ -61,7 +61,7 @@ PrintBackendCUPS::PrintBackendCUPS(const GURL& print_server_url,
                                    http_encryption_t encryption,
                                    bool blocking,
                                    const std::string& locale)
-    : PrintBackend(locale),
+    : locale_(locale),
       print_server_url_(print_server_url),
       cups_encryption_(encryption),
       blocking_(blocking) {}
@@ -104,7 +104,7 @@ mojom::ResultCode PrintBackendCUPS::PrinterBasicInfoFromCUPS(
         printer.options[opt_index].value;
   }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // On Mac, "printer-info" option specifies the printer name and
   // "printer-make-and-model" specifies the printer description.
   if (info)
@@ -136,9 +136,8 @@ void PrintBackendCUPS::DestinationDeleter::operator()(cups_dest_t* dest) const {
 }
 
 mojom::ResultCode PrintBackendCUPS::EnumeratePrinters(
-    PrinterList* printer_list) {
-  DCHECK(printer_list);
-  printer_list->clear();
+    PrinterList& printer_list) {
+  DCHECK(printer_list.empty());
 
   // If possible prefer to use cupsEnumDests() over GetDests(), because the
   // latter has been found to filter out some destination values if a device
@@ -191,14 +190,14 @@ mojom::ResultCode PrintBackendCUPS::EnumeratePrinters(
     PrinterBasicInfo printer_info;
     if (PrinterBasicInfoFromCUPS(printer, &printer_info) ==
         mojom::ResultCode::kSuccess) {
-      printer_list->push_back(printer_info);
+      printer_list.push_back(printer_info);
     }
   }
 
   cupsFreeDests(dests_data.num_dests, dests_data.dests);
 
   VLOG(1) << "CUPS: Enumerated printers, server: " << print_server_url_
-          << ", # of printers: " << printer_list->size();
+          << ", # of printers: " << printer_list.size();
   return mojom::ResultCode::kSuccess;
 }
 
@@ -248,7 +247,7 @@ mojom::ResultCode PrintBackendCUPS::GetPrinterSemanticCapsAndDefaults(
     return result_code;
 
   ScopedDestination dest = GetNamedDest(printer_name);
-  return ParsePpdCapabilities(dest.get(), locale(), info.printer_capabilities,
+  return ParsePpdCapabilities(dest.get(), locale_, info.printer_capabilities,
                               printer_info)
              ? mojom::ResultCode::kSuccess
              : mojom::ResultCode::kFailed;
@@ -302,34 +301,39 @@ bool PrintBackendCUPS::IsValidPrinter(const std::string& printer_name) {
   return !!GetNamedDest(printer_name);
 }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
 scoped_refptr<PrintBackend> PrintBackend::CreateInstanceImpl(
-    const base::DictionaryValue* print_backend_settings,
-    const std::string& locale,
-    bool for_cloud_print) {
-#if defined(OS_MAC)
-  if (!for_cloud_print &&
-      base::FeatureList::IsEnabled(features::kCupsIppPrintingBackend)) {
+    const base::Value::Dict* print_backend_settings,
+    const std::string& locale) {
+#if BUILDFLAG(IS_MAC)
+  if (base::FeatureList::IsEnabled(features::kCupsIppPrintingBackend)) {
     return base::MakeRefCounted<PrintBackendCupsIpp>(
-        CreateConnection(print_backend_settings), locale);
+        CreateConnection(print_backend_settings));
   }
-#endif  // defined(OS_MAC)
-  std::string print_server_url_str, cups_blocking;
+#endif  // BUILDFLAG(IS_MAC)
+  std::string print_server_url_str;
+  bool cups_blocking = false;
   int encryption = HTTP_ENCRYPT_NEVER;
   if (print_backend_settings) {
-    print_backend_settings->GetString(kCUPSPrintServerURL,
-                                      &print_server_url_str);
+    const std::string* url_from_settings =
+        print_backend_settings->FindString(kCUPSPrintServerURL);
+    if (url_from_settings)
+      print_server_url_str = *url_from_settings;
 
-    print_backend_settings->GetString(kCUPSBlocking, &cups_blocking);
+    const std::string* blocking_from_settings =
+        print_backend_settings->FindString(kCUPSBlocking);
+    if (blocking_from_settings)
+      cups_blocking = *blocking_from_settings == kValueTrue;
 
-    print_backend_settings->GetInteger(kCUPSEncryption, &encryption);
+    encryption = print_backend_settings->FindInt(kCUPSEncryption)
+                     .value_or(HTTP_ENCRYPT_NEVER);
   }
   GURL print_server_url(print_server_url_str);
   return base::MakeRefCounted<PrintBackendCUPS>(
       print_server_url, static_cast<http_encryption_t>(encryption),
-      cups_blocking == kValueTrue, locale);
+      cups_blocking, locale);
 }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 int PrintBackendCUPS::GetDests(cups_dest_t** dests) {
   // Default to the local print server (CUPS scheduler)

@@ -95,6 +95,11 @@ early issues that arise can be addressed before they reach all users. The new
 release generally reaches all users within one to two weeks unless major issues
 arise that cannot be addressed quickly.
 
+To get better statistical data for staged rollouts, each rollout will consist of 
+two separate builds which are identical, except for the build number. There is no 
+harm in being on the lower build number, and all users are expected to be 
+automatically updated to the higher build number as part of the rollout process.
+
 ### Stable Refresh
 
 The stable and extended stable channels are refreshed every two weeks. These

@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,15 +7,17 @@
 #include <limits.h>
 #include <map>
 #include <memory>
+#include <string>
 #include <utility>
 
+#include "base/strings/string_piece.h"
 #include "base/values.h"
 
 PrefValueMap::PrefValueMap() {}
 
 PrefValueMap::~PrefValueMap() {}
 
-bool PrefValueMap::GetValue(const std::string& key,
+bool PrefValueMap::GetValue(base::StringPiece key,
                             const base::Value** value) const {
   auto it = prefs_.find(key);
   if (it == prefs_.end())
@@ -27,7 +29,7 @@ bool PrefValueMap::GetValue(const std::string& key,
   return true;
 }
 
-bool PrefValueMap::GetValue(const std::string& key, base::Value** value) {
+bool PrefValueMap::GetValue(base::StringPiece key, base::Value** value) {
   auto it = prefs_.find(key);
   if (it == prefs_.end())
     return false;
@@ -169,10 +171,10 @@ void PrefValueMap::GetDifferingKeys(
     differing_keys->push_back(other_pref->first);
 }
 
-std::unique_ptr<base::DictionaryValue> PrefValueMap::AsDictionaryValue() const {
-  auto dictionary = std::make_unique<base::DictionaryValue>();
+base::Value::Dict PrefValueMap::AsDict() const {
+  base::Value::Dict dictionary;
   for (const auto& value : prefs_)
-    dictionary->SetPath(value.first, value.second.Clone());
+    dictionary.SetByDottedPath(value.first, value.second.Clone());
 
   return dictionary;
 }

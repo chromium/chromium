@@ -1,0 +1,35 @@
+# Copyright 2020 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
+
+component("security_token_pin") {
+  sources = [
+    "constants.h",
+    "error_generator.cc",
+    "error_generator.h",
+  ]
+
+  defines = [ "IS_SECURITY_TOKEN_PIN_IMPL" ]
+
+  deps = [
+    "//base",
+    "//base:i18n",
+    "//chromeos/strings",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "error_generator_unittest.cc" ]
+
+  deps = [
+    ":security_token_pin",
+    "//base",
+    "//base:i18n",
+    "//testing/gtest",
+    "//ui/base",
+  ]
+}

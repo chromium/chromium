@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@ import java.util.Set;
  * Used to fetch OAuth2 access tokens for the user's current GAIA account.
  * @since 89
  */
-public abstract class GoogleAccountAccessTokenFetcher {
+abstract class GoogleAccountAccessTokenFetcher {
     /**
      * Called when the WebLayer implementation wants to fetch an access token for the embedder's
      * current GAIA account (if any) and the given scopes. The client should invoke

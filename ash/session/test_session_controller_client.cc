@@ -1,10 +1,9 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/session/test_session_controller_client.h"
 
-#include <algorithm>
 #include <string>
 
 #include "ash/login/login_screen_controller.h"
@@ -15,6 +14,7 @@
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -153,13 +153,18 @@ void TestSessionControllerClient::AddUserSession(
     bool provide_pref_service,
     bool is_new_profile,
     const std::string& given_name) {
+  // Set is_ephemeral in user_info to true if the user type is guest or public
+  // account.
+  bool is_ephemeral = user_type == user_manager::USER_TYPE_GUEST ||
+                      user_type == user_manager::USER_TYPE_PUBLIC_ACCOUNT;
+
   UserSession session;
   session.session_id = ++fake_session_id_;
   session.user_info.type = user_type;
   session.user_info.account_id = account_id;
   session.user_info.display_name = "Über tray Über tray Über tray Über tray";
   session.user_info.display_email = display_email;
-  session.user_info.is_ephemeral = false;
+  session.user_info.is_ephemeral = is_ephemeral;
   session.user_info.is_new_profile = is_new_profile;
   session.user_info.given_name = given_name;
   controller_->UpdateUserSession(std::move(session));
@@ -184,7 +189,7 @@ void TestSessionControllerClient::LockScreen() {
 }
 
 void TestSessionControllerClient::UnlockScreen() {
-  SetSessionState(session_manager::SessionState::ACTIVE);
+  RequestHideLockScreen();
 }
 
 void TestSessionControllerClient::FlushForTest() {
@@ -222,9 +227,17 @@ void TestSessionControllerClient::RequestLockScreen() {
                                 session_manager::SessionState::LOCKED));
 }
 
+void TestSessionControllerClient::RequestHideLockScreen() {
+  SetSessionState(session_manager::SessionState::ACTIVE);
+}
+
 void TestSessionControllerClient::RequestSignOut() {
   Reset();
   ++request_sign_out_count_;
+}
+
+void TestSessionControllerClient::RequestRestartForUpdate() {
+  ++request_restart_for_update_count_;
 }
 
 void TestSessionControllerClient::AttemptRestartChrome() {
@@ -267,11 +280,10 @@ void TestSessionControllerClient::CycleActiveUser(
     session_id = 1u;
 
   // Maps session id to AccountId and call SwitchActiveUser.
-  auto it =
-      std::find_if(sessions.begin(), sessions.end(),
-                   [session_id](const std::unique_ptr<UserSession>& session) {
-                     return session && session->session_id == session_id;
-                   });
+  auto it = base::ranges::find_if(
+      sessions, [session_id](const std::unique_ptr<UserSession>& session) {
+        return session && session->session_id == session_id;
+      });
   if (it == sessions.end()) {
     NOTREACHED();
     return;
@@ -302,6 +314,10 @@ PrefService* TestSessionControllerClient::GetSigninScreenPrefService() {
 PrefService* TestSessionControllerClient::GetUserPrefService(
     const AccountId& account_id) {
   return prefs_provider_ ? prefs_provider_->GetUserPrefs(account_id) : nullptr;
+}
+
+bool TestSessionControllerClient::IsEnterpriseManaged() const {
+  return is_enterprise_managed_;
 }
 
 void TestSessionControllerClient::DoSwitchUser(const AccountId& account_id,

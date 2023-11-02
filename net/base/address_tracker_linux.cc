@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,12 +21,11 @@
 #include "net/base/network_interfaces_linux.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #endif
 
-namespace net {
-namespace internal {
+namespace net::internal {
 
 namespace {
 
@@ -74,8 +73,8 @@ bool GetAddress(const struct nlmsghdr* header,
   // getaddrinfo in glibc (check_pf.c). Judging from kernel implementation of
   // NETLINK, IPv4 addresses have only the IFA_ADDRESS attribute, while IPv6
   // have the IFA_LOCAL attribute.
-  uint8_t* address = NULL;
-  uint8_t* local = NULL;
+  uint8_t* address = nullptr;
+  uint8_t* local = nullptr;
   int length = IFA_PAYLOAD(header);
   if (length > header_length) {
     LOG(ERROR) << "ifaddrmsg length exceeds bounds";
@@ -155,11 +154,8 @@ AddressTrackerLinux::AddressTrackerLinux()
       link_callback_(base::DoNothing()),
       tunnel_callback_(base::DoNothing()),
       ignored_interfaces_(),
-      connection_type_initialized_(false),
       connection_type_initialized_cv_(&connection_type_lock_),
-      current_connection_type_(NetworkChangeNotifier::CONNECTION_NONE),
-      tracking_(false),
-      threads_waiting_for_connection_type_initialization_(0) {}
+      tracking_(false) {}
 
 AddressTrackerLinux::AddressTrackerLinux(
     const base::RepeatingClosure& address_callback,
@@ -171,11 +167,8 @@ AddressTrackerLinux::AddressTrackerLinux(
       link_callback_(link_callback),
       tunnel_callback_(tunnel_callback),
       ignored_interfaces_(ignored_interfaces),
-      connection_type_initialized_(false),
       connection_type_initialized_cv_(&connection_type_lock_),
-      current_connection_type_(NetworkChangeNotifier::CONNECTION_NONE),
-      tracking_(true),
-      threads_waiting_for_connection_type_initialization_(0) {
+      tracking_(true) {
   DCHECK(!address_callback.is_null());
   DCHECK(!link_callback.is_null());
 }
@@ -183,7 +176,7 @@ AddressTrackerLinux::AddressTrackerLinux(
 AddressTrackerLinux::~AddressTrackerLinux() = default;
 
 void AddressTrackerLinux::Init() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // RTM_GETLINK stopped working in Android 11 (see
   // https://developer.android.com/preview/privacy/mac-address),
   // so AddressTrackerLinux should not be used in later versions
@@ -402,7 +395,7 @@ void AddressTrackerLinux::HandleMessage(const char* buffer,
           // prefix which can cause the linux kernel to frequently output two
           // back-to-back messages, one without the deprecated flag and one with
           // the deprecated flag but both with preferred lifetimes of 0. Avoid
-          // interpretting this as an actual change by canonicalizing the two
+          // interpreting this as an actual change by canonicalizing the two
           // messages by setting the deprecated flag based on the preferred
           // lifetime also.  http://crbug.com/268042
           if (really_deprecated)
@@ -556,5 +549,4 @@ AddressTrackerLinux::AddressTrackerAutoLock::~AddressTrackerAutoLock() {
   }
 }
 
-}  // namespace internal
-}  // namespace net
+}  // namespace net::internal

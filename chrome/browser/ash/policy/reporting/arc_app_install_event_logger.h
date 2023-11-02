@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_bridge.h"
 #include "chrome/browser/ash/policy/reporting/arc_app_install_event_log_collector.h"
+#include "chrome/browser/ash/policy/reporting/arc_app_install_policy_data_helper.h"
 #include "chrome/browser/ash/policy/reporting/install_event_logger_base.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -49,7 +50,7 @@ class ArcAppInstallEventLogger
           enterprise_management::AppInstallReportLogEvent::EventType,
           std::string>,
       public ArcAppInstallEventLogCollector::Delegate,
-      public policy::PolicyService::Observer,
+      public PolicyService::Observer,
       public arc::ArcPolicyBridge::Observer {
  public:
   // The delegate that events are forwarded to for inclusion in the log.
@@ -93,11 +94,13 @@ class ArcAppInstallEventLogger
            bool gather_disk_space_info,
            std::unique_ptr<enterprise_management::AppInstallReportLogEvent>
                event) override;
+  void UpdatePolicySuccessRate(const std::string& package,
+                               bool success) override;
 
-  // policy::PolicyService::Observer:
-  void OnPolicyUpdated(const policy::PolicyNamespace& ns,
-                       const policy::PolicyMap& previous,
-                       const policy::PolicyMap& current) override;
+  // PolicyService::Observer:
+  void OnPolicyUpdated(const PolicyNamespace& ns,
+                       const PolicyMap& previous,
+                       const PolicyMap& current) override;
 
   // arc::ArcPolicyBridge::Observer:
   void OnPolicySent(const std::string& policy) override;
@@ -123,7 +126,7 @@ class ArcAppInstallEventLogger
   // Extracts the list of app push-install requests from |policy|, logs the
   // cancellation of any pending push-installs that are no longer in |policy|
   // and updates the |log_collector_|.
-  void EvaluatePolicy(const policy::PolicyMap& policy, bool initial);
+  void EvaluatePolicy(const PolicyMap& policy, bool initial);
 
   // Override for InstallEventLoggerBase::AddForSetOfApps.
   void AddForSetOfApps(
@@ -151,6 +154,9 @@ class ArcAppInstallEventLogger
   // push-install process. Non-|nullptr| whenever there are one or more pending
   // app push-install requests.
   std::unique_ptr<ArcAppInstallEventLogCollector> log_collector_;
+
+  // Handles operations for tracking policy metrics.
+  ArcAppInstallPolicyDataHelper policy_data_helper_;
 
   // Weak factory used to reference |this| from background tasks.
   base::WeakPtrFactory<ArcAppInstallEventLogger> weak_factory_{this};

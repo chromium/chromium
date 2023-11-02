@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,11 +33,12 @@ IN_PROC_BROWSER_TEST_F(SessionStateChangedEventDispatcherApitest,
       {session_manager::SessionState::LOGGED_IN_NOT_ACTIVE, "IN_LOGIN_SCREEN"},
       {session_manager::SessionState::ACTIVE, "IN_SESSION"},
       {session_manager::SessionState::LOGIN_SECONDARY, "IN_LOGIN_SCREEN"},
+      {session_manager::SessionState::RMA, "IN_RMA_SCREEN"},
       {session_manager::SessionState::UNKNOWN, "UNKNOWN"},
   };
 
   for (const auto& test : kTestCases) {
-    ExtensionTestMessageListener listener(test.expected, /*will_reply=*/false);
+    ExtensionTestMessageListener listener(test.expected);
     session_manager->SetSessionState(test.session_state);
     ASSERT_TRUE(listener.WaitUntilSatisfied());
   }

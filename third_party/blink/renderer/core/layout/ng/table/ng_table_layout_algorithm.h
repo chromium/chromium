@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_TABLE_NG_TABLE_LAYOUT_ALGORITHM_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_TABLE_NG_TABLE_LAYOUT_ALGORITHM_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_algorithm.h"
 
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment_builder.h"
@@ -23,7 +24,7 @@ class CORE_EXPORT NGTableLayoutAlgorithm
  public:
   explicit NGTableLayoutAlgorithm(const NGLayoutAlgorithmParams& params)
       : NGLayoutAlgorithm(params) {}
-  scoped_refptr<const NGLayoutResult> Layout() override;
+  const NGLayoutResult* Layout() override;
 
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) override;
 
@@ -42,20 +43,29 @@ class CORE_EXPORT NGTableLayoutAlgorithm
   // table-grid, we need to layout all the captions ahead of time. This struct
   // stores the necessary information to add them to the fragment later.
   struct CaptionResult {
+    DISALLOW_NEW();
+
+   public:
+    void Trace(Visitor* visitor) const {
+      visitor->Trace(node);
+      visitor->Trace(layout_result);
+    }
+
     NGBlockNode node;
-    scoped_refptr<const NGLayoutResult> layout_result;
+    Member<const NGLayoutResult> layout_result;
     const NGBoxStrut margins;
   };
 
  private:
+  const NGLayoutResult* RelayoutAsLastTableBox();
+
   void ComputeRows(const LayoutUnit table_grid_inline_size,
                    const NGTableGroupedChildren& grouped_children,
-                   const NGTableTypes::ColumnLocations& column_locations,
+                   const Vector<NGTableColumnLocation>& column_locations,
                    const NGTableBorders& table_borders,
                    const LogicalSize& border_spacing,
                    const NGBoxStrut& table_border_padding,
                    const LayoutUnit captions_block_size,
-                   bool is_fixed_layout,
                    NGTableTypes::Rows* rows,
                    NGTableTypes::CellBlockConstraints* cell_block_constraints,
                    NGTableTypes::Sections* sections,
@@ -63,26 +73,32 @@ class CORE_EXPORT NGTableLayoutAlgorithm
 
   void ComputeTableSpecificFragmentData(
       const NGTableGroupedChildren& grouped_children,
-      const NGTableTypes::ColumnLocations& column_locations,
+      const Vector<NGTableColumnLocation>& column_locations,
       const NGTableTypes::Rows& rows,
       const NGTableBorders& table_borders,
-      const PhysicalRect& table_grid_rect,
-      const LogicalSize& border_spacing,
+      const LogicalRect& table_grid_rect,
       LayoutUnit table_grid_block_size);
 
-  scoped_refptr<const NGLayoutResult> GenerateFragment(
+  const NGLayoutResult* GenerateFragment(
       LayoutUnit table_inline_size,
       LayoutUnit minimal_table_grid_block_size,
       const NGTableGroupedChildren& grouped_children,
-      const NGTableTypes::ColumnLocations& column_locations,
+      const Vector<NGTableColumnLocation>& column_locations,
       const NGTableTypes::Rows& rows,
       const NGTableTypes::CellBlockConstraints& cell_block_constraints,
       const NGTableTypes::Sections& sections,
-      const Vector<CaptionResult>& captions,
+      const HeapVector<CaptionResult>& captions,
       const NGTableBorders& table_borders,
       const LogicalSize& border_spacing);
+
+  // Set to true when we're re-laying out without repeating table headers and
+  // footers.
+  bool is_known_to_be_last_table_box_ = false;
 };
 
 }  // namespace blink
+
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
+    blink::NGTableLayoutAlgorithm::CaptionResult)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_TABLE_NG_TABLE_LAYOUT_ALGORITHM_H_

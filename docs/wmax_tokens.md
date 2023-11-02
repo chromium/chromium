@@ -1,5 +1,16 @@
 # -Wmax-tokens
 
+**Update 2022-08-02** The -Wmax-tokens experiment was [retired](https://chromium-review.googlesource.com/c/chromium/src/+/3804719)
+as the downsides (annoyance to developers) were determined to outweigh the
+benefits (preventing include bloat), especially in the face of
+[libc++ rolls](https://crbug.com/1348349).  We now have better
+[include graph analysis](https://commondatastorage.googleapis.com/chromium-browser-clang/chrome_includes-index.html)
+and [tracking of total build size over time](https://commondatastorage.googleapis.com/chromium-browser-clang/chrome_includes-index.html).
+The goal is to have a [Gerrit warning for flagging include bloat
+growth](https://crbug.com/1229609) in the future.
+
+---
+
 This is an experiment that uses the compiler to limit the size of certain header
 files as a way of tackling #include bloat.
 

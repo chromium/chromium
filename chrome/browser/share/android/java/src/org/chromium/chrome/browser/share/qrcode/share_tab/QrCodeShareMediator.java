@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,13 +17,14 @@ import android.text.TextUtils;
 import android.text.TextUtils.TruncateAt;
 import android.view.View;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.download.FileAccessPermissionHelper;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.share.BitmapDownloadRequest;
 import org.chromium.chrome.browser.share.qrcode.QRCodeGenerationRequest;
-import org.chromium.ui.base.AndroidPermissionDelegate;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
@@ -34,7 +35,7 @@ class QrCodeShareMediator {
 
     private final Context mContext;
     private final PropertyModel mPropertyModel;
-    private AndroidPermissionDelegate mPermissionDelegate;
+    private WindowAndroid mWindowAndroid;
 
     // The number of times the user has attempted to download the QR code in this dialog.
     private int mNumDownloads;
@@ -52,14 +53,14 @@ class QrCodeShareMediator {
      * @param permissionDelegate The delegate to help with downloading QRCode.
      */
     QrCodeShareMediator(Context context, PropertyModel propertyModel, Runnable closeDialog,
-            String url, AndroidPermissionDelegate permissionDelegate) {
+            String url, WindowAndroid windowAndroid) {
         mContext = context;
         mPropertyModel = propertyModel;
         mCloseDialog = closeDialog;
         mUrl = url;
         ChromeBrowserInitializer.getInstance().runNowOrAfterFullBrowserStarted(
                 () -> refreshQrCode(mUrl));
-        mPermissionDelegate = permissionDelegate;
+        mWindowAndroid = windowAndroid;
         updatePermissionSettings();
     }
 
@@ -100,9 +101,9 @@ class QrCodeShareMediator {
     protected void downloadQrCode(View view) {
         logDownload();
         Bitmap qrcodeBitmap = mPropertyModel.get(QrCodeShareViewProperties.QRCODE_BITMAP);
-        if (qrcodeBitmap != null && !mIsDownloadInProgress && mPermissionDelegate != null) {
+        if (qrcodeBitmap != null && !mIsDownloadInProgress && mWindowAndroid != null) {
             FileAccessPermissionHelper.requestFileAccessPermission(
-                    mPermissionDelegate, this::finishDownloadWithPermission);
+                    mWindowAndroid, this::finishDownloadWithPermission);
             return;
         }
     }
@@ -119,8 +120,15 @@ class QrCodeShareMediator {
         }
     }
 
+    /** Returns whether we need to explicitly request a storage permission. */
+    private Boolean requiresAdditionalStoragePermission() {
+        return !BuildInfo.isAtLeastT();
+    }
+
     /** Returns whether the user has granted storage permissions. */
     private Boolean hasStoragePermission() {
+        // Not needed for newer SDKs; treat as granted implicitly.
+        if (!requiresAdditionalStoragePermission()) return true;
         return mContext.checkPermission(
                        permission.WRITE_EXTERNAL_STORAGE, Process.myPid(), Process.myUid())
                 == PackageManager.PERMISSION_GRANTED;
@@ -128,8 +136,9 @@ class QrCodeShareMediator {
 
     /** Returns whether the user can be prompted for storage permissions. */
     private Boolean canPromptForPermission() {
-        if (mPermissionDelegate == null) return false;
-        return mPermissionDelegate.canRequestPermission(permission.WRITE_EXTERNAL_STORAGE);
+        if (!requiresAdditionalStoragePermission()) return false;
+        if (mWindowAndroid == null) return false;
+        return mWindowAndroid.canRequestPermission(permission.WRITE_EXTERNAL_STORAGE);
     }
 
     /** Updates the permission settings with the latest values. */
@@ -140,8 +149,8 @@ class QrCodeShareMediator {
                 QrCodeShareViewProperties.HAS_STORAGE_PERMISSION, hasStoragePermission());
     }
 
-    public void updatePermissions(AndroidPermissionDelegate windowAndroid) {
-        mPermissionDelegate = windowAndroid;
+    public void updatePermissions(WindowAndroid windowAndroid) {
+        mWindowAndroid = windowAndroid;
         updatePermissionSettings();
     }
     /**

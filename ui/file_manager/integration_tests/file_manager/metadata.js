@@ -1,12 +1,12 @@
-// Copyright (c) 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import {MetadataStatsType} from '../metadata_stats_type.js';
-import {addEntries, ENTRIES, EntryType, RootPath, TestEntryInfo} from '../test_util.js';
+import {addEntries, createTestFile, ENTRIES, EntryType, RootPath, TestEntryInfo} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
-import {openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {navigateWithDirectoryTree, openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
 import {BASIC_LOCAL_ENTRY_SET} from './test_data.js';
 
 /**
@@ -32,26 +32,6 @@ function equal1PercentMargin(value, desiredValue) {
 }
 
 /**
- * Creates a test file, which can be inside folders, however parent folders
- * have to be created by the caller using |createTestFolder|.
- * @param {string} path File path to be created,
- * @return {TestEntryInfo}
- */
-function createTestFile(path) {
-  const name = path.split('/').pop();
-  return new TestEntryInfo({
-    targetPath: path,
-    nameText: name,
-    type: EntryType.FILE,
-    lastModifiedTime: 'Sep 4, 1998, 12:34 PM',
-    sizeText: '51 bytes',
-    typeText: 'Plain text',
-    sourceFileName: 'text.txt',
-    mimeType: 'text/plain'
-  });
-}
-
-/**
  * Creates a test file, which can be inside another folder, however parent
  * folders have to be created by the caller.
  * @param {string} path Folder path to be created,
@@ -65,7 +45,7 @@ function createTestFolder(path) {
     type: EntryType.DIRECTORY,
     lastModifiedTime: 'Jan 1, 1980, 11:59 PM',
     sizeText: '--',
-    typeText: 'Folder'
+    typeText: 'Folder',
   });
 }
 
@@ -123,8 +103,7 @@ testcase.metadataDrive = async () => {
 
   // Navigate 2 folders deep, because navigating in directory tree might
   // trigger further metadata fetches.
-  await remoteCall.navigateWithDirectoryTree(
-      appId, '/root/photos1/folder1', 'My Drive', 'drive');
+  await navigateWithDirectoryTree(appId, '/My Drive/photos1/folder1');
 
   // Fetch the metadata stats.
   const metadataStats = /** @type {!MetadataStatsType} */
@@ -162,8 +141,7 @@ testcase.metadataDownloads = async () => {
 
   // Navigate 2 folders deep, because navigating in directory tree might
   // triggers further metadata fetches.
-  await remoteCall.navigateWithDirectoryTree(
-      appId, '/Downloads/photos1/folder1', 'My files');
+  await navigateWithDirectoryTree(appId, '/My files/Downloads/photos1/folder1');
 
   // Fetch the metadata stats.
   const metadataStats =
@@ -222,8 +200,7 @@ testcase.metadataLargeDrive = async () => {
 
   // Navigate only 1 folder deep,which is slightly different from
   // metadatatDrive test.
-  await remoteCall.navigateWithDirectoryTree(
-      appId, '/root/folder1', 'My Drive', 'drive');
+  await navigateWithDirectoryTree(appId, '/My Drive/folder1');
 
   // Wait for the metadata stats to reach the desired count.
   // File list component, doesn't display all files at once for performance
@@ -289,8 +266,7 @@ testcase.metadataTeamDrives = async () => {
       RootPath.DRIVE, downloadsEntries, entries.concat(driveEntries));
 
   // Navigate to Shared drives root.
-  await remoteCall.navigateWithDirectoryTree(
-      appId, '/team_drives', 'Shared drives', 'drive');
+  await navigateWithDirectoryTree(appId, '/Shared drives');
 
   // Expand Shared Drives, because expanding might need metadata.
   const expandIcon = sharedDrivesTreeItem + ' > .tree-row .expand-icon';
@@ -369,10 +345,7 @@ testcase.metadataDocumentsProvider = async () => {
   await remoteCall.waitForFiles(appId, files, {ignoreLastModifiedTime: true});
 
   // Select file hello.txt in the file list.
-  chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil(
-          'selectFile', appId, [ENTRIES.hello.nameText]),
-      'selectFile failed');
+  await remoteCall.waitUntilSelected(appId, ENTRIES.hello.nameText);
 
   // Check that a request for content metadata completes.
   const result = await await remoteCall.callRemoteTestUtil(

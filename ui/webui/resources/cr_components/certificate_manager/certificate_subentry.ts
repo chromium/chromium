@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,20 +7,21 @@
  */
 
 import '../../cr_elements/cr_action_menu/cr_action_menu.js';
-import '../../cr_elements/cr_icon_button/cr_icon_button.m.js';
-import '../../cr_elements/cr_lazy_render/cr_lazy_render.m.js';
-import '../../cr_elements/policy/cr_policy_indicator.m.js';
-import '../../cr_elements/icons.m.js';
-import './certificate_shared_css.js';
+import '../../cr_elements/cr_icon_button/cr_icon_button.js';
+import '../../cr_elements/cr_lazy_render/cr_lazy_render.js';
+import '../../cr_elements/policy/cr_policy_indicator.js';
+import '../../cr_elements/icons.html.js';
+import './certificate_shared.css.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CrActionMenuElement} from '../../cr_elements/cr_action_menu/cr_action_menu.js';
-import {CrLazyRenderElement} from '../../cr_elements/cr_lazy_render/cr_lazy_render.m.js';
-import {CrPolicyIndicatorType} from '../../cr_elements/policy/cr_policy_indicator_behavior.m.js';
-import {I18nMixin} from '../../js/i18n_mixin.js';
+import {CrLazyRenderElement} from '../../cr_elements/cr_lazy_render/cr_lazy_render.js';
+import {CrPolicyIndicatorType} from '../../cr_elements/policy/cr_policy_indicator_mixin.js';
+import {I18nMixin} from '../../cr_elements/i18n_mixin.js';
 
-import {CertificateAction, CertificateActionEvent, CertificateActionEventDetail} from './certificate_manager_types.js';
+import {CertificateAction, CertificateActionEvent} from './certificate_manager_types.js';
+import {getTemplate} from './certificate_subentry.html.js';
 import {CertificatesBrowserProxy, CertificatesBrowserProxyImpl, CertificatesError, CertificateSubnode, CertificateType} from './certificates_browser_proxy.js';
 
 export interface CertificateSubentryElement {
@@ -38,7 +39,7 @@ export class CertificateSubentryElement extends CertificateSubentryElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -76,8 +77,9 @@ export class CertificateSubentryElement extends CertificateSubentryElementBase {
    */
   private onRejected_(error: CertificatesError|null) {
     if (error === null) {
-      // Nothing to do here. Null indicates that the user clicked "cancel" on
-      // the native file chooser dialog.
+      // Nothing to do here. Null indicates that the user clicked "cancel" on a
+      // native file chooser dialog or that the request was ignored by the
+      // handler due to being received while another was still being processed.
       return;
     }
 
@@ -153,6 +155,12 @@ export class CertificateSubentryElement extends CertificateSubentryElementBase {
       CrPolicyIndicatorType {
     return model.policy ? CrPolicyIndicatorType.USER_POLICY :
                           CrPolicyIndicatorType.NONE;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'certificate-subentry': CertificateSubentryElement;
   }
 }
 

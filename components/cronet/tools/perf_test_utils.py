@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Utilities for Cronet performance tests."""
@@ -12,6 +12,8 @@ import tempfile
 from time import sleep
 
 from cronet.tools import android_rndis_forwarder
+
+# pylint: disable=useless-object-inheritance
 
 
 REPOSITORY_ROOT = os.path.abspath(os.path.join(
@@ -62,9 +64,9 @@ DEFAULT_BENCHMARK_CONFIG = {
 # Add benchmark config to global state for easy access.
 globals().update(DEFAULT_BENCHMARK_CONFIG)
 # Pylint doesn't really interpret the file, so it won't find the definitions
-# added from DEFAULT_BENCHMARK_CONFIG, so suppress the undefined variable
-# warning.
-#pylint: disable=undefined-variable
+# added from DEFAULT_BENCHMARK_CONFIG, so suppress the undefined variable and
+# bad string format type warnings.
+#pylint: disable=undefined-variable,bad-string-format-type
 
 class NativeDevice(object):
   def GetExternalStoragePath(self):
@@ -122,7 +124,7 @@ class QuicServer(object):
            '--port=%d' % QUIC_PORT]
     logging.info("Starting Quic Server: %s", cmd)
     self._process = subprocess.Popen(cmd)
-    assert self._process != None
+    assert self._process is not None
     # Wait for quic_server to start serving.
     waited_s = 0
     while subprocess.call(['lsof', '-i', 'udp:%d' % QUIC_PORT, '-p',

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #ifndef CC_TREES_PRESENTATION_TIME_CALLBACK_BUFFER_H_
@@ -9,6 +9,7 @@
 #include "base/callback_forward.h"
 #include "base/containers/circular_deque.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "cc/cc_export.h"
 #include "ui/gfx/presentation_feedback.h"
 

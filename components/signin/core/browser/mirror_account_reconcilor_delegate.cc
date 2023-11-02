@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,7 +40,7 @@ bool MirrorAccountReconcilorDelegate::ShouldAbortReconcileIfPrimaryHasError()
 
 ConsentLevel MirrorAccountReconcilorDelegate::GetConsentLevelForPrimaryAccount()
     const {
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   return ConsentLevel::kSignin;
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   // Whenever Mirror is enabled on a Lacros Profile, the Primary Account may or
@@ -50,18 +50,6 @@ ConsentLevel MirrorAccountReconcilorDelegate::GetConsentLevelForPrimaryAccount()
 #else
   return ConsentLevel::kSync;
 #endif
-}
-
-CoreAccountId MirrorAccountReconcilorDelegate::GetFirstGaiaAccountForReconcile(
-    const std::vector<CoreAccountId>& chrome_accounts,
-    const std::vector<gaia::ListedAccount>& gaia_accounts,
-    const CoreAccountId& primary_account,
-    bool first_execution,
-    bool will_logout) const {
-  // Mirror only uses the primary account, and it is never empty.
-  DCHECK(!primary_account.empty());
-  DCHECK(base::Contains(chrome_accounts, primary_account));
-  return primary_account;
 }
 
 std::vector<CoreAccountId>

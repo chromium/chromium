@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,12 +17,12 @@ namespace blink {
 
 // This class is needed to copy a FetchClientSettingsObjectSnapshot across
 // threads, because it has some members which cannot be transferred across
-// threads (AtomicString for example).
+// threads (SecurityOrigin for example).
 // There are some rules / restrictions:
 //   - This struct cannot contain an object that cannot be transferred across
-//     threads (e.g., AtomicString)
-//   - Non-simple members need explicit copying (e.g., String::IsolatedCopy,
-//     KURL::Copy) rather than the copy constructor or the assignment operator.
+//     threads.
+//   - Non-thread-safe members need explicit copying rather than the copy
+//     constructor or the assignment operator.
 //   - This struct cannot contain any garbage-collected object because this
 //     data can be constructed on a thread which runs without Oilpan.
 struct CrossThreadFetchClientSettingsObjectData {
@@ -37,7 +37,6 @@ struct CrossThreadFetchClientSettingsObjectData {
       String outgoing_referrer,
       HttpsState https_state,
       AllowedByNosniff::MimeTypeCheck mime_type_check_for_classic_worker_script,
-      network::mojom::IPAddressSpace address_space,
       mojom::blink::InsecureRequestPolicy insecure_requests_policy,
       FetchClientSettingsObject::InsecureNavigationsSet
           insecure_navigations_set)
@@ -49,7 +48,6 @@ struct CrossThreadFetchClientSettingsObjectData {
         https_state(https_state),
         mime_type_check_for_classic_worker_script(
             mime_type_check_for_classic_worker_script),
-        address_space(address_space),
         insecure_requests_policy(insecure_requests_policy),
         insecure_navigations_set(std::move(insecure_navigations_set)) {}
   CrossThreadFetchClientSettingsObjectData(
@@ -65,7 +63,6 @@ struct CrossThreadFetchClientSettingsObjectData {
   const HttpsState https_state;
   const AllowedByNosniff::MimeTypeCheck
       mime_type_check_for_classic_worker_script;
-  const network::mojom::IPAddressSpace address_space;
   const mojom::blink::InsecureRequestPolicy insecure_requests_policy;
   const FetchClientSettingsObject::InsecureNavigationsSet
       insecure_navigations_set;
@@ -95,7 +92,6 @@ class PLATFORM_EXPORT FetchClientSettingsObjectSnapshot final
       const String& outgoing_referrer,
       HttpsState https_state,
       AllowedByNosniff::MimeTypeCheck,
-      network::mojom::IPAddressSpace,
       mojom::blink::InsecureRequestPolicy,
       InsecureNavigationsSet);
 
@@ -113,10 +109,6 @@ class PLATFORM_EXPORT FetchClientSettingsObjectSnapshot final
     return outgoing_referrer_;
   }
   HttpsState GetHttpsState() const override { return https_state_; }
-
-  network::mojom::IPAddressSpace GetAddressSpace() const override {
-    return address_space_;
-  }
 
   mojom::blink::InsecureRequestPolicy GetInsecureRequestsPolicy()
       const override {
@@ -136,11 +128,10 @@ class PLATFORM_EXPORT FetchClientSettingsObjectSnapshot final
   // Gets a copy of the data suitable for passing to another thread.
   std::unique_ptr<CrossThreadFetchClientSettingsObjectData> CopyData() const {
     return std::make_unique<CrossThreadFetchClientSettingsObjectData>(
-        global_object_url_.Copy(), base_url_.Copy(),
-        security_origin_->IsolatedCopy(), referrer_policy_,
-        outgoing_referrer_.IsolatedCopy(), https_state_,
-        mime_type_check_for_classic_worker_script_, address_space_,
-        insecure_requests_policy_, insecure_navigations_set_);
+        global_object_url_, base_url_, security_origin_->IsolatedCopy(),
+        referrer_policy_, outgoing_referrer_, https_state_,
+        mime_type_check_for_classic_worker_script_, insecure_requests_policy_,
+        insecure_navigations_set_);
   }
 
  private:
@@ -152,7 +143,6 @@ class PLATFORM_EXPORT FetchClientSettingsObjectSnapshot final
   const HttpsState https_state_;
   const AllowedByNosniff::MimeTypeCheck
       mime_type_check_for_classic_worker_script_;
-  const network::mojom::IPAddressSpace address_space_;
 
   const mojom::blink::InsecureRequestPolicy insecure_requests_policy_;
   const InsecureNavigationsSet insecure_navigations_set_;

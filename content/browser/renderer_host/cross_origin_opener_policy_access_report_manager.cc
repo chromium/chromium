@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,15 +19,16 @@ namespace content {
 
 namespace {
 
-absl::optional<blink::FrameToken> GetFrameToken(FrameTreeNode* frame,
-                                                SiteInstance* site_instance) {
+absl::optional<blink::FrameToken> GetFrameToken(
+    FrameTreeNode* frame,
+    SiteInstanceGroup* site_instance_group) {
   RenderFrameHostImpl* rfh = frame->current_frame_host();
-  if (rfh->GetSiteInstance() == site_instance)
+  if (rfh->GetSiteInstance()->group() == site_instance_group)
     return rfh->GetFrameToken();
 
   RenderFrameProxyHost* proxy =
-      frame->render_manager()->GetRenderFrameProxyHost(
-          static_cast<SiteInstanceImpl*>(site_instance)->group());
+      rfh->browsing_context_state()->GetRenderFrameProxyHost(
+          site_instance_group);
   if (proxy)
     return proxy->GetFrameToken();
 
@@ -76,6 +77,10 @@ void CrossOriginOpenerPolicyAccessReportManager::InstallAccessMonitorsIfNeeded(
   std::vector<FrameTreeNode*> other_main_frames =
       CollectOtherWindowForCoopAccess(frame);
 
+  // Fenced frame roots are in their own browsing instance and shouldn't be
+  // joined with any other main frames.
+  DCHECK(!frame->IsInFencedFrameTree() || other_main_frames.empty());
+
   CrossOriginOpenerPolicyAccessReportManager* access_manager_frame =
       frame->current_frame_host()->coop_access_report_manager();
 
@@ -115,11 +120,11 @@ void CrossOriginOpenerPolicyAccessReportManager::MonitorAccesses(
   // It means all the accessed from the first window are made from documents
   // inside the same SiteInstance. Only one SiteInstance has to be updated.
 
-  SiteInstance* site_instance =
-      accessing_node->current_frame_host()->GetSiteInstance();
+  SiteInstanceGroup* site_instance_group =
+      accessing_node->current_frame_host()->GetSiteInstance()->group();
 
   absl::optional<blink::FrameToken> accessed_window_token =
-      GetFrameToken(accessed_node, site_instance);
+      GetFrameToken(accessed_node, site_instance_group);
   if (!accessed_window_token)
     return;
 

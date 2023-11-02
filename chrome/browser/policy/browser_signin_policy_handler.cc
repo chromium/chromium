@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,7 @@
 #include "components/signin/public/base/signin_pref_names.h"
 
 namespace policy {
+
 BrowserSigninPolicyHandler::BrowserSigninPolicyHandler(Schema chrome_schema)
     : IntRangePolicyHandler(key::kBrowserSignin,
                             prefs::kForceBrowserSignin,
@@ -29,7 +30,7 @@ BrowserSigninPolicyHandler::~BrowserSigninPolicyHandler() {}
 
 void BrowserSigninPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
                                                      PrefValueMap* prefs) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Browser sign in policies shouldn't be enforced on gcpw signin
   // mode as gcpw is invoked in windows login UI screen.
   // Also note that GCPW launches chrome in incognito mode using a
@@ -40,16 +41,17 @@ void BrowserSigninPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
     return;
 #endif
 
-  const base::Value* value = policies.GetValue(policy_name());
+  const base::Value* value =
+      policies.GetValue(policy_name(), base::Value::Type::INTEGER);
   switch (static_cast<BrowserSigninMode>(value->GetInt())) {
     case BrowserSigninMode::kForced:
-#if !defined(OS_LINUX) && !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
       prefs->SetValue(prefs::kForceBrowserSignin, base::Value(true));
 #endif
-      FALLTHROUGH;
+      [[fallthrough]];
     case BrowserSigninMode::kEnabled:
       prefs->SetValue(
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
           // The new kSigninAllowedOnNextStartup pref is only used on Desktop.
           // Keep the old kSigninAllowed pref for Android until the policy is
           // fully deprecated in M71 and can be removed.
@@ -61,7 +63,7 @@ void BrowserSigninPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
       break;
     case BrowserSigninMode::kDisabled:
       prefs->SetValue(
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
           // The new kSigninAllowedOnNextStartup pref is only used on Desktop.
           // Keep the old kSigninAllowed pref for Android until the policy is
           // fully deprecated in M71 and can be removed.

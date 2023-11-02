@@ -1,13 +1,13 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import {fakeInstallationProgress} from 'chrome://accessory-update/fake_data.js';
 import {FakeUpdateController} from 'chrome://accessory-update/fake_update_controller.js';
-import {UpdateProgressObserver} from 'chrome://accessory-update/firmware_update_types.js';
+import {UpdateProgressObserverRemote} from 'chrome://accessory-update/firmware_update_types.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {assertDeepEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks} from '../../test_util.js';
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 
 export function fakeUpdateControllerTest() {
   /** @type {?FakeUpdateController} */
@@ -28,34 +28,33 @@ export function fakeUpdateControllerTest() {
     return controller.completedFirmwareUpdates_;
   }
 
-  test('StartUpdate', () => {
+  test('StartUpdate', async () => {
     const deviceId = '1';
     controller.setUpdateIntervalInMs(0);
+    controller.setDeviceIdForUpdateInProgress(deviceId);
     // Keep track of which observation we should get.
-    let observerCallCount = 0;
-    /** @type {!UpdateProgressObserver} */
-    const updateProgressObserverRemote = {
-      onProgressChanged: (installationProgress) => {
-        // Only expect 3 calls.
-        assertTrue(observerCallCount <= 2);
-        assertDeepEquals(
-            fakeInstallationProgress[observerCallCount++],
-            installationProgress);
-      }
-    };
+    let onStatusChangedCallCount = 0;
 
-    controller.startUpdate(deviceId, updateProgressObserverRemote);
-    return controller
-        .getStartUpdatePromiseForTesting()
-        // Use flushTasks to process the 3 fake installation progress
-        // observations.
-        .then(() => flushTasks())
-        .then(() => flushTasks())
-        .then(() => flushTasks())
-        // Trigger stops when update is completed.
-        .then(() => {
-          assertFalse(controller.isUpdateInProgress());
-          assertTrue(getCompletedFirmwareUpdates().has(deviceId));
+    const updateProgressObserverRemote =
+        /** @type {!UpdateProgressObserverRemote} */ ({
+          onStatusChanged: (update) => {
+            // Only expect 3 calls.
+            assertTrue(onStatusChangedCallCount <= 2);
+            assertEquals(
+                fakeInstallationProgress[onStatusChangedCallCount].percentage,
+                update.percentage);
+            assertEquals(
+                fakeInstallationProgress[onStatusChangedCallCount].state,
+                update.state);
+            onStatusChangedCallCount++;
+          },
         });
+
+    controller.addObserver(updateProgressObserverRemote);
+    controller.beginUpdate(deviceId, /*filepath*/ {path: 'test1.cab'});
+    // Allow firmware update to complete.
+    await controller.getUpdateCompletedPromiseForTesting();
+    assertFalse(controller.isUpdateInProgress());
+    assertTrue(getCompletedFirmwareUpdates().has(deviceId));
   });
 }

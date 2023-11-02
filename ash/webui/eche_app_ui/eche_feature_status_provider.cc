@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,24 +6,23 @@
 
 #include "ash/components/phonehub/feature_status.h"
 #include "ash/components/phonehub/phone_hub_manager.h"
-#include "chromeos/components/multidevice/logging/logging.h"
-#include "chromeos/components/multidevice/remote_device_ref.h"
-#include "chromeos/components/multidevice/software_feature.h"
-#include "chromeos/components/multidevice/software_feature_state.h"
-#include "chromeos/services/device_sync/public/cpp/device_sync_client.h"
+#include "ash/services/device_sync/public/cpp/device_sync_client.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
+#include "chromeos/ash/components/multidevice/remote_device_ref.h"
+#include "chromeos/ash/components/multidevice/software_feature.h"
+#include "chromeos/ash/components/multidevice/software_feature_state.h"
 
 namespace ash {
 namespace eche_app {
 namespace {
 
-using ::chromeos::multidevice::RemoteDeviceRef;
-using ::chromeos::multidevice::RemoteDeviceRefList;
-using ::chromeos::multidevice::SoftwareFeature;
-using ::chromeos::multidevice::SoftwareFeatureState;
-
-using ::chromeos::multidevice_setup::mojom::Feature;
-using ::chromeos::multidevice_setup::mojom::FeatureState;
-using ::chromeos::multidevice_setup::mojom::HostStatus;
+using multidevice::RemoteDeviceRef;
+using multidevice::RemoteDeviceRefList;
+using multidevice::SoftwareFeature;
+using multidevice::SoftwareFeatureState;
+using multidevice_setup::mojom::Feature;
+using multidevice_setup::mojom::FeatureState;
+using multidevice_setup::mojom::HostStatus;
 
 bool IsEnabledHost(const RemoteDeviceRef& device) {
   return device.GetSoftwareFeatureState(SoftwareFeature::kBetterTogetherHost) !=
@@ -33,7 +32,7 @@ bool IsEnabledHost(const RemoteDeviceRef& device) {
 }
 
 bool IsEligibleForFeature(
-    const absl::optional<multidevice::RemoteDeviceRef>& local_device,
+    const absl::optional<RemoteDeviceRef>& local_device,
     multidevice_setup::MultiDeviceSetupClient::HostStatusWithDevice host_status,
     const RemoteDeviceRefList& remote_devices,
     FeatureState feature_state) {
@@ -135,19 +134,19 @@ FeatureStatus EcheFeatureStatusProvider::ComputeStatus() {
   // unavailable.
   switch (current_phone_hub_feature_status_) {
     case phonehub::FeatureStatus::kNotEligibleForFeature:
-      FALLTHROUGH;
+      [[fallthrough]];
     case phonehub::FeatureStatus::kEligiblePhoneButNotSetUp:
-      FALLTHROUGH;
+      [[fallthrough]];
     case phonehub::FeatureStatus::kPhoneSelectedAndPendingSetup:
-      FALLTHROUGH;
+      [[fallthrough]];
     case phonehub::FeatureStatus::kDisabled:
-      FALLTHROUGH;
+      [[fallthrough]];
     case phonehub::FeatureStatus::kUnavailableBluetoothOff:
       return FeatureStatus::kDependentFeature;
     case phonehub::FeatureStatus::kEnabledAndConnecting:
-      FALLTHROUGH;
+      [[fallthrough]];
     case phonehub::FeatureStatus::kEnabledButDisconnected:
-      FALLTHROUGH;
+      [[fallthrough]];
     // The device is in a suspended state.
     case phonehub::FeatureStatus::kLockOrSuspended:
       return FeatureStatus::kDependentFeaturePending;

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,7 +24,6 @@ class WebViewAutofillClientIOS;
 
 namespace ios_web_view {
 class WebViewPasswordManagerClient;
-class WebViewPasswordManagerDriver;
 }  // namespace ios_web_view
 
 namespace password_manager {
@@ -55,9 +54,6 @@ class WebState;
     passwordManagerClient:
         (std::unique_ptr<ios_web_view::WebViewPasswordManagerClient>)
             passwordManagerClient
-    passwordManagerDriver:
-        (std::unique_ptr<ios_web_view::WebViewPasswordManagerDriver>)
-            passwordManagerDriver
        passwordController:(SharedPasswordController*)passwordController
         applicationLocale:(const std::string&)applicationLocale
     NS_DESIGNATED_INITIALIZER;

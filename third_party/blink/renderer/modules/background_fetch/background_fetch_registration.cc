@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,8 @@
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
-#include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_request_usvstring.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_cache_query_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_image_resource.h"
@@ -27,8 +28,8 @@
 #include "third_party/blink/renderer/modules/service_worker/service_worker_registration.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
-#include "third_party/blink/renderer/platform/heap/heap_allocator.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -73,7 +74,7 @@ void BackgroundFetchRegistration::OnProgress(
   result_ = result;
   failure_reason_ = failure_reason;
 
-  DispatchEvent(*Event::Create(event_type_names::kProgress));
+  DispatchEvent(*Event::Create(event_type_names::kProgress), "BackgroundFetchRegistration::OnProgress");
 }
 
 void BackgroundFetchRegistration::OnRecordsUnavailable() {
@@ -134,9 +135,9 @@ ScriptPromise BackgroundFetchRegistration::abort(ScriptState* script_state) {
   DCHECK(registration_);
   DCHECK(registration_service_);
 
-  registration_service_->Abort(WTF::Bind(&BackgroundFetchRegistration::DidAbort,
-                                         WrapPersistent(this),
-                                         WrapPersistent(resolver)));
+  registration_service_->Abort(
+      WTF::BindOnce(&BackgroundFetchRegistration::DidAbort,
+                    WrapPersistent(this), WrapPersistent(resolver)));
 
   return promise;
 }
@@ -217,8 +218,8 @@ ScriptPromise BackgroundFetchRegistration::MatchImpl(
 
   registration_service_->MatchRequests(
       std::move(request_to_match), std::move(cache_query_options), match_all,
-      WTF::Bind(&BackgroundFetchRegistration::DidGetMatchingRequests,
-                WrapPersistent(this), WrapPersistent(resolver), match_all));
+      WTF::BindOnce(&BackgroundFetchRegistration::DidGetMatchingRequests,
+                    WrapPersistent(this), WrapPersistent(resolver), match_all));
 
   return promise;
 }
@@ -252,7 +253,7 @@ void BackgroundFetchRegistration::DidGetMatchingRequests(
   }
 
   if (!return_all) {
-    if (settled_fetches.IsEmpty()) {
+    if (settled_fetches.empty()) {
       // Nothing was matched. Resolve with `undefined`.
       resolver->Resolve();
       return;
@@ -373,7 +374,7 @@ bool BackgroundFetchRegistration::HasPendingActivity() const {
   if (GetExecutionContext()->IsContextDestroyed())
     return false;
 
-  return !observers_.IsEmpty();
+  return !observers_.empty();
 }
 
 void BackgroundFetchRegistration::UpdateUI(

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,15 +19,13 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
+#include "chromeos/ash/components/network/managed_network_configuration_handler.h"
+#include "chromeos/ash/components/network/network_handler_test_helper.h"
+#include "chromeos/ash/components/network/network_state.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/login/login_state/login_state.h"
-#include "chromeos/network/cellular_esim_profile_handler_impl.h"
-#include "chromeos/network/managed_network_configuration_handler.h"
-#include "chromeos/network/network_handler_test_helper.h"
-#include "chromeos/network/network_metadata_store.h"
-#include "chromeos/network/network_state.h"
-#include "chromeos/network/network_state_handler.h"
-#include "chromeos/tpm/stub_install_attributes.h"
 #include "components/onc/onc_constants.h"
 #include "components/onc/onc_pref_names.h"
 #include "components/ownership/mock_owner_key_util.h"
@@ -153,8 +151,7 @@ TestingPrefServiceSimple* RegisterPrefs(TestingPrefServiceSimple* local_state) {
   return local_state;
 }
 
-void PrintErrorAndFail(const std::string& error_name,
-                       std::unique_ptr<base::DictionaryValue>) {
+void PrintErrorAndFail(const std::string& error_name) {
   LOG(ERROR) << error_name;
   FAIL();
 }
@@ -165,21 +162,20 @@ void PrintErrorAndMessageAndFail(const std::string& error_name,
   FAIL();
 }
 
-chromeos::NetworkStateHandler* network_state_handler() {
-  return chromeos::NetworkHandler::Get()->network_state_handler();
+NetworkStateHandler* network_state_handler() {
+  return NetworkHandler::Get()->network_state_handler();
 }
 
-chromeos::ManagedNetworkConfigurationHandler*
+ash::ManagedNetworkConfigurationHandler*
 managed_network_configuration_handler() {
-  return chromeos::NetworkHandler::Get()
-      ->managed_network_configuration_handler();
+  return NetworkHandler::Get()->managed_network_configuration_handler();
 }
 
 ShillServiceClient* shill_service_client() {
   return ShillServiceClient::Get();
 }
 
-const chromeos::NetworkState* GetNetworkState(const std::string& guid) {
+const NetworkState* GetNetworkState(const std::string& guid) {
   return network_state_handler()->GetNetworkStateFromGuid(guid);
 }
 
@@ -188,7 +184,7 @@ std::string GetServicePath(const std::string& guid) {
 }
 
 bool NetworkExists(const std::string& guid) {
-  const chromeos::NetworkState* network_state =
+  const ash::NetworkState* network_state =
       network_state_handler()->GetNetworkStateFromGuid(guid);
   return network_state && network_state->IsInProfile();
 }
@@ -196,7 +192,7 @@ bool NetworkExists(const std::string& guid) {
 void SetUpDeviceWideNetworkConfig(const base::Value& config) {
   base::RunLoop run_loop;
   managed_network_configuration_handler()->CreateConfiguration(
-      kDeviceUserHash, base::Value::AsDictionaryValue(config),
+      kDeviceUserHash, config,
       base::BindLambdaForTesting(
           [&](const std::string& service_path, const std::string& guid) {
             run_loop.Quit();
@@ -209,10 +205,10 @@ void SetPropertiesForExistingNetwork(const std::string& guid,
                                      const base::Value& config) {
   base::RunLoop run_loop;
   ASSERT_TRUE(NetworkExists(guid));
-  const chromeos::NetworkState* network_state =
+  const ash::NetworkState* network_state =
       network_state_handler()->GetNetworkStateFromGuid(guid);
   managed_network_configuration_handler()->SetProperties(
-      network_state->path(), base::Value::AsDictionaryValue(config),
+      network_state->path(), config,
       base::BindLambdaForTesting([&]() { run_loop.Quit(); }),
       base::BindOnce(&PrintErrorAndFail));
   run_loop.Run();
@@ -280,7 +276,7 @@ std::string GetEapPassphrase(const std::string& guid) {
 }
 
 void RemoveNetwork(const std::string& guid) {
-  const chromeos::NetworkState* network_state =
+  const ash::NetworkState* network_state =
       network_state_handler()->GetNetworkStateFromGuid(guid);
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
   base::Value result;
@@ -309,13 +305,10 @@ class RollbackNetworkConfigTest : public testing::Test {
   void RegisterAndSetUpPrefs() {
     PrefProxyConfigTrackerImpl::RegisterProfilePrefs(user_prefs_.registry());
     PrefProxyConfigTrackerImpl::RegisterPrefs(local_state_.registry());
-    ::onc::RegisterProfilePrefs(user_prefs_.registry());
-    ::onc::RegisterPrefs(local_state_.registry());
-    chromeos::NetworkMetadataStore::RegisterPrefs(user_prefs_.registry());
-    chromeos::NetworkMetadataStore::RegisterPrefs(local_state_.registry());
-    chromeos::CellularESimProfileHandlerImpl::RegisterLocalStatePrefs(
-        local_state_.registry());
-    NetworkHandler::Get()->InitializePrefServices(&user_prefs_, &local_state_);
+    network_handler_test_helper_.RegisterPrefs(user_prefs_.registry(),
+                                               local_state_.registry());
+
+    network_handler_test_helper_.InitializePrefs(&user_prefs_, &local_state_);
   }
 
   void SetUp() override { SetEmptyDevicePolicy(); }
@@ -550,6 +543,10 @@ TEST_F(RollbackNetworkConfigTest, PeapWiFiIsPreserved) {
             onc::network_type::kWiFi);
   EXPECT_EQ(OncWiFiGetSecurity(properties), onc::wifi::kWPA_EAP);
   EXPECT_EQ(OncGetEapIdentity(properties), OncGetEapIdentity(network));
+  EXPECT_EQ(OncGetEapInner(properties), OncGetEapInner(network));
+  EXPECT_EQ(OncGetEapOuter(properties), OncGetEapOuter(network));
+  EXPECT_EQ(OncGetEapSaveCredentials(properties),
+            OncGetEapSaveCredentials(network));
   EXPECT_TRUE(OncIsEapWithoutClientCertificate(properties));
 }
 
@@ -574,6 +571,10 @@ TEST_F(RollbackNetworkConfigTest, PolicyPeapWiFiIsPreserved) {
             onc::network_type::kWiFi);
   EXPECT_EQ(OncWiFiGetSecurity(properties), onc::wifi::kWPA_EAP);
   EXPECT_EQ(OncGetEapIdentity(properties), OncGetEapIdentity(network));
+  EXPECT_EQ(OncGetEapInner(properties), OncGetEapInner(network));
+  EXPECT_EQ(OncGetEapOuter(properties), OncGetEapOuter(network));
+  EXPECT_EQ(OncGetEapSaveCredentials(properties),
+            OncGetEapSaveCredentials(network));
   EXPECT_TRUE(OncIsEapWithoutClientCertificate(properties));
   EXPECT_EQ(GetStringValue(properties, onc::network_config::kSource),
             onc::network_config::kSourceDevicePolicy);
@@ -632,6 +633,10 @@ TEST_F(RollbackNetworkConfigTest, PeapEthernetIsPreserved) {
             onc::network_type::kEthernet);
   EXPECT_EQ(OncEthernetGetAuthentication(properties), onc::ethernet::k8021X);
   EXPECT_EQ(OncGetEapIdentity(properties), OncGetEapIdentity(network));
+  EXPECT_EQ(OncGetEapInner(properties), OncGetEapInner(network));
+  EXPECT_EQ(OncGetEapOuter(properties), OncGetEapOuter(network));
+  EXPECT_EQ(OncGetEapSaveCredentials(properties),
+            OncGetEapSaveCredentials(network));
   EXPECT_TRUE(OncIsEapWithoutClientCertificate(properties));
 }
 
@@ -655,6 +660,10 @@ TEST_F(RollbackNetworkConfigTest, PolicyPeapEthernetIsPreserved) {
             onc::network_type::kEthernet);
   EXPECT_EQ(OncEthernetGetAuthentication(properties), onc::ethernet::k8021X);
   EXPECT_EQ(OncGetEapIdentity(properties), OncGetEapIdentity(network));
+  EXPECT_EQ(OncGetEapInner(properties), OncGetEapInner(network));
+  EXPECT_EQ(OncGetEapOuter(properties), OncGetEapOuter(network));
+  EXPECT_EQ(OncGetEapSaveCredentials(properties),
+            OncGetEapSaveCredentials(network));
   EXPECT_TRUE(OncIsEapWithoutClientCertificate(properties));
   EXPECT_EQ(GetStringValue(properties, onc::network_config::kSource),
             onc::network_config::kSourceDevicePolicy);

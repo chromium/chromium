@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "content/browser/service_worker/service_worker_client_utils.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
@@ -13,7 +14,6 @@
 #include "content/browser/service_worker/service_worker_host.h"
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/browser/service_worker/service_worker_type_converters.h"
-#include "content/common/service_worker/service_worker_utils.h"
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 
@@ -80,6 +80,10 @@ void StartWorkerToDispatchExtendableMessageEvent(
     std::move(callback).Run(blink::ServiceWorkerStatusCode::kErrorRedundant);
     return;
   }
+
+  // As we don't track tasks between workers and renderers, we can nullify the
+  // message's parent task ID.
+  message.parent_task_id = absl::nullopt;
 
   worker->RunAfterStartWorker(
       ServiceWorkerMetrics::EventType::MESSAGE,
@@ -194,7 +198,7 @@ void DispatchExtendableMessageEventFromServiceWorker(
 
 ServiceWorkerObjectHost::ServiceWorkerObjectHost(
     base::WeakPtr<ServiceWorkerContextCore> context,
-    ServiceWorkerContainerHost* container_host,
+    base::WeakPtr<ServiceWorkerContainerHost> container_host,
     scoped_refptr<ServiceWorkerVersion> version)
     : context_(context),
       container_host_(container_host),
@@ -279,11 +283,16 @@ void ServiceWorkerObjectHost::TerminateForTesting(
 void ServiceWorkerObjectHost::DispatchExtendableMessageEvent(
     ::blink::TransferableMessage message,
     StatusCallback callback) {
+  DCHECK(container_host_);
   if (!context_) {
     std::move(callback).Run(blink::ServiceWorkerStatusCode::kErrorAbort);
     return;
   }
   DCHECK_EQ(container_origin_, url::Origin::Create(container_host_->url()));
+
+  // As we don't track tasks between workers and renderers, we can nullify the
+  // message's parent task ID.
+  message.parent_task_id = absl::nullopt;
 
   if (container_host_->IsContainerForServiceWorker()) {
     // Clamp timeout to the sending worker's remaining timeout, to prevent
@@ -299,7 +308,7 @@ void ServiceWorkerObjectHost::DispatchExtendableMessageEvent(
                        container_host_->GetWeakPtr()));
   } else if (container_host_->IsContainerForWindowClient()) {
     service_worker_client_utils::GetClient(
-        container_host_,
+        container_host_.get(),
         base::BindOnce(&DispatchExtendableMessageEventFromClient, context_,
                        version_, std::move(message), container_origin_,
                        std::move(callback)));
@@ -316,6 +325,7 @@ void ServiceWorkerObjectHost::OnConnectionError() {
   // If there are still receivers, |this| is still being used.
   if (!receivers_.empty())
     return;
+  DCHECK(container_host_);
   // Will destroy |this|.
   container_host_->RemoveServiceWorkerObjectHost(version_->version_id());
 }

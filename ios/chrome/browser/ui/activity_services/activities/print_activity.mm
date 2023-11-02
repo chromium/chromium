@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,11 @@
 
 #import "ios/chrome/browser/ui/activity_services/data/share_image_data.h"
 #import "ios/chrome/browser/ui/activity_services/data/share_to_data.h"
-#include "ios/chrome/browser/ui/commands/browser_commands.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ui/base/l10n/l10n_util_mac.h"
+#import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/ui/icons/action_icon.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -26,7 +28,7 @@ NSString* const kPrintActivityType = @"com.google.chrome.printActivity";
 // The data object targeted by this activity if it comes from an image.
 @property(nonatomic, strong, readonly) ShareImageData* imageData;
 // The handler to be invoked when the activity is performed.
-@property(nonatomic, weak, readonly) id<BrowserCommands> handler;
+@property(nonatomic, weak, readonly) id<BrowserCoordinatorCommands> handler;
 // The base VC to present print preview.
 @property(nonatomic, weak) UIViewController* baseViewController;
 
@@ -35,7 +37,7 @@ NSString* const kPrintActivityType = @"com.google.chrome.printActivity";
 @implementation PrintActivity
 
 - (instancetype)initWithData:(ShareToData*)webData
-                     handler:(id<BrowserCommands>)handler
+                     handler:(id<BrowserCoordinatorCommands>)handler
           baseViewController:(UIViewController*)baseViewController {
   if (self = [super init]) {
     _webData = webData;
@@ -46,7 +48,7 @@ NSString* const kPrintActivityType = @"com.google.chrome.printActivity";
 }
 
 - (instancetype)initWithImageData:(ShareImageData*)imageData
-                          handler:(id<BrowserCommands>)handler
+                          handler:(id<BrowserCoordinatorCommands>)handler
                baseViewController:(UIViewController*)baseViewController {
   if (self = [super init]) {
     _imageData = imageData;
@@ -67,6 +69,9 @@ NSString* const kPrintActivityType = @"com.google.chrome.printActivity";
 }
 
 - (UIImage*)activityImage {
+  if (UseSymbols()) {
+    return DefaultSymbolWithPointSize(kPrinterSymbol, kSymbolActionPointSize);
+  }
   return [UIImage imageNamed:@"activity_services_print"];
 }
 

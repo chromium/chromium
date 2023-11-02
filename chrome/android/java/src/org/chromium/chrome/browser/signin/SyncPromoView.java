@@ -1,12 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.signin;
 
 import android.content.Context;
-import android.content.Intent;
-import android.provider.Settings;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,7 +13,6 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import org.chromium.base.IntentUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.sync.SyncService;
@@ -95,9 +92,8 @@ public class SyncPromoView extends LinearLayout implements SyncService.SyncState
 
     private void update() {
         ViewState viewState;
-        if (!SyncService.get().isSyncAllowedByPlatform()) {
-            viewState = getStateForEnableAndroidSync();
-        } else if (!SyncService.get().isSyncRequested()) {
+        if (!SyncService.get().isSyncRequested()
+                || SyncService.get().getSelectedTypes().isEmpty()) {
             viewState = getStateForEnableChromeSync();
         } else {
             viewState = getStateForStartUsing();
@@ -157,19 +153,6 @@ public class SyncPromoView extends LinearLayout implements SyncService.SyncState
             button.setText(mTextResource);
             button.setOnClickListener(mOnClickListener);
         }
-    }
-
-    private ViewState getStateForEnableAndroidSync() {
-        assert mAccessPoint == SigninAccessPoint.RECENT_TABS
-                : "Enable Android Sync should not be showing from bookmarks";
-
-        int descId = R.string.recent_tabs_sync_promo_enable_android_sync;
-
-        ButtonState positiveButton = new ButtonPresent(R.string.open_settings_button, view -> {
-            IntentUtils.safeStartActivity(getContext(), new Intent(Settings.ACTION_SYNC_SETTINGS));
-        });
-
-        return new ViewState(descId, positiveButton);
     }
 
     private ViewState getStateForEnableChromeSync() {

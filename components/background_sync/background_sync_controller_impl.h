@@ -1,10 +1,11 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_BACKGROUND_SYNC_BACKGROUND_SYNC_CONTROLLER_IMPL_H_
 #define COMPONENTS_BACKGROUND_SYNC_BACKGROUND_SYNC_CONTROLLER_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/background_sync_controller.h"
 
 #include <stdint.h>
@@ -126,7 +127,7 @@ class BackgroundSyncControllerImpl : public content::BackgroundSyncController,
   // KeyedService implementation.
   void Shutdown() override;
 
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
 
   std::unique_ptr<background_sync::BackgroundSyncDelegate> delegate_;
   std::unique_ptr<BackgroundSyncMetrics> background_sync_metrics_;

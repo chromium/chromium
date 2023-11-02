@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/task/current_thread.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -28,6 +29,7 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/web_contents_tester.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -156,8 +158,8 @@ class TabManagerStatsCollectorTabSwitchTest
   }
 
  private:
-  WebContents* foreground_tab_;
-  WebContents* background_tab_;
+  raw_ptr<WebContents> foreground_tab_;
+  raw_ptr<WebContents> background_tab_;
 };
 
 TEST_F(TabManagerStatsCollectorTabSwitchTest, HistogramsSwitchToTab) {
@@ -266,6 +268,8 @@ TEST_F(TabManagerStatsCollectorPrerenderingTest,
        KeepingWebContentsMapInPrerendering) {
   std::unique_ptr<WebContents> tab1(CreateTestWebContents());
   std::unique_ptr<WebContents> tab2(CreateTestWebContents());
+  content::test::ScopedPrerenderWebContentsDelegate tab1_delegate(*tab1.get());
+  content::test::ScopedPrerenderWebContentsDelegate tab2_delegate(*tab2.get());
 
   GURL init_url("https://example1.test/");
   content::NavigationSimulator::NavigateAndCommitFromBrowser(tab2.get(),

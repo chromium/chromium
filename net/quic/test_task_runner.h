@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -10,18 +10,16 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/test/test_pending_task.h"
-#include "net/third_party/quiche/src/quic/core/quic_time.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_time.h"
 
 namespace quic {
 class MockClock;
 }  // namespace quic
-namespace net {
-
-namespace test {
+namespace net::test {
 
 typedef base::TestPendingTask PostedTask;
 
@@ -67,12 +65,10 @@ class TestTaskRunner : public base::SequencedTaskRunner {
  private:
   std::vector<PostedTask>::iterator FindNextTask();
 
-  quic::MockClock* const clock_;
+  const raw_ptr<quic::MockClock> clock_;
   std::vector<PostedTask> tasks_;
 };
 
-}  // namespace test
-
-}  // namespace net
+}  // namespace net::test
 
 #endif  // NET_QUIC_TEST_TASK_RUNNER_H_

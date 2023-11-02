@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,7 +34,7 @@
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/websockets/websocket_frame.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <Winsock2.h>
 #endif
 
@@ -49,7 +49,7 @@ bool ResolveHost(const std::string& host,
   hints.ai_socktype = SOCK_STREAM;
 
   struct addrinfo* result;
-  if (getaddrinfo(host.c_str(), NULL, &hints, &result))
+  if (getaddrinfo(host.c_str(), nullptr, &hints, &result))
     return false;
 
   auto list = net::AddressList::CreateFromAddrinfo(result);

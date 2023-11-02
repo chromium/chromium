@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 
 #include "base/containers/adapters.h"
 #include "base/containers/circular_deque.h"
+#include "base/ranges/algorithm.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
@@ -62,9 +63,8 @@ void FastInkPoints::MoveForwardToTime(const base::TimeTicks& latest_time) {
   if (!points_.empty() && !life_duration_.is_zero()) {
     // Remove obsolete points.
     const base::TimeTicks expiration = latest_time - life_duration_;
-    auto first_alive_point = std::find_if(
-        points_.begin(), points_.end(),
-        [expiration](const FastInkPoint& p) { return p.time > expiration; });
+    auto first_alive_point = base::ranges::lower_bound(
+        points_, expiration, base::ranges::less_equal(), &FastInkPoint::time);
     points_.erase(points_.begin(), first_alive_point);
   }
 }

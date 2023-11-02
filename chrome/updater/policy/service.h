@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,10 +11,15 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/sequence_checker.h"
+#include "chrome/updater/external_constants.h"
 #include "chrome/updater/policy/manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
+
+class PolicyFetcher;
 
 // This class contains the aggregate status of a policy value. It determines
 // whether a conflict exists when multiple policy providers set the same policy.
@@ -59,14 +64,23 @@ class PolicyStatus {
 
 // The PolicyService returns policies for enterprise managed machines from the
 // source with the highest priority where the policy available.
-class PolicyService : public base::RefCounted<PolicyService> {
+// This class is sequence affine and its instance is bound to the main sequence.
+// TODO(crbug.com/1358718) - modernize the public interface to return by value
+// instead of two out-params.
+class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
  public:
   using PolicyManagerVector =
       std::vector<std::unique_ptr<PolicyManagerInterface>>;
 
   explicit PolicyService(PolicyManagerVector managers);
+  explicit PolicyService(scoped_refptr<ExternalConstants> external_constants);
   PolicyService(const PolicyService&) = delete;
   PolicyService& operator=(const PolicyService&) = delete;
+
+  // Fetches policies from device management and updates the PolicyService
+  // instance. `callback` is passed a result that is `kErrorOk` on success,
+  // `kErrorDMRegistrationFailed` if DM registration fails, or any other error.
+  void FetchPolicies(base::OnceCallback<void(int)> callback);
 
   std::string source() const;
 
@@ -82,7 +96,6 @@ class PolicyService : public base::RefCounted<PolicyService> {
                                       int* cache_size_limit) const;
   bool GetPackageCacheExpirationTimeDays(PolicyStatus<int>* policy_status,
                                          int* cache_life_limit) const;
-
   bool GetEffectivePolicyForAppInstalls(const std::string& app_id,
                                         PolicyStatus<int>* policy_status,
                                         int* install_policy) const;
@@ -104,19 +117,33 @@ class PolicyService : public base::RefCounted<PolicyService> {
                       std::string* proxy_pac_url) const;
   bool GetProxyServer(PolicyStatus<std::string>* policy_status,
                       std::string* proxy_server) const;
-
-  // Creates an instance that takes a snapshot of policies from all providers.
-  static scoped_refptr<PolicyService> Create();
+  bool GetForceInstallApps(
+      PolicyStatus<std::vector<std::string>>* policy_status,
+      std::vector<std::string>* force_install_apps) const;
 
  protected:
   virtual ~PolicyService();
 
  private:
-  friend class base::RefCounted<PolicyService>;
+  friend class base::RefCountedThreadSafe<PolicyService>;
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  // Called when `FetchPolicies` has completed. If `dm_policy_manager` is valid,
+  // the policy managers within the policy service are reloaded/reset with the
+  // provided DM policy manager. The DM policy manager is preloaded separately
+  // in a blocking sequence since it needs to do I/O to load policies.
+  void FetchPoliciesDone(
+      base::OnceCallback<void(int)> callback,
+      int result,
+      std::unique_ptr<PolicyManagerInterface> dm_policy_manager);
 
   // List of policy providers in descending order of priority. All managed
   // providers should be ahead of non-managed providers.
   PolicyManagerVector policy_managers_;
+
+  const scoped_refptr<ExternalConstants> external_constants_;
+  const scoped_refptr<PolicyFetcher> policy_fetcher_;
 
   // Helper function to query the policy from the managed policy providers and
   // determines the policy status.
@@ -137,6 +164,22 @@ class PolicyService : public base::RefCounted<PolicyService> {
       const std::string& app_id,
       PolicyStatus<T>* policy_status,
       T* value) const;
+};
+
+// Decouples the proxy configuration from `PolicyService`.
+struct PolicyServiceProxyConfiguration {
+  PolicyServiceProxyConfiguration();
+  ~PolicyServiceProxyConfiguration();
+  PolicyServiceProxyConfiguration(const PolicyServiceProxyConfiguration&);
+  PolicyServiceProxyConfiguration& operator=(
+      const PolicyServiceProxyConfiguration&);
+
+  static absl::optional<PolicyServiceProxyConfiguration> Get(
+      scoped_refptr<PolicyService> policy_service);
+
+  absl::optional<bool> proxy_auto_detect;
+  absl::optional<std::string> proxy_pac_url;
+  absl::optional<std::string> proxy_url;
 };
 
 }  // namespace updater

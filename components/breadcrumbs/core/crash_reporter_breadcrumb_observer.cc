@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,9 @@
 #include <numeric>
 #include <string>
 
+#include "base/containers/adapters.h"
+#include "base/no_destructor.h"
+#include "components/breadcrumbs/core/breadcrumb_manager.h"
 #include "components/breadcrumbs/core/crash_reporter_breadcrumb_constants.h"
 #include "components/crash/core/common/crash_key.h"
 
@@ -32,42 +35,17 @@ CrashReporterBreadcrumbObserver::GetInstance() {
   return *instance;
 }
 
-void CrashReporterBreadcrumbObserver::ObserveBreadcrumbManager(
-    BreadcrumbManager* breadcrumb_manager) {
-  breadcrumb_manager_observations_.AddObservation(breadcrumb_manager);
-}
-
-void CrashReporterBreadcrumbObserver::StopObservingBreadcrumbManager(
-    BreadcrumbManager* breadcrumb_manager) {
-  breadcrumb_manager_observations_.RemoveObservation(breadcrumb_manager);
-}
-
-void CrashReporterBreadcrumbObserver::ObserveBreadcrumbManagerService(
-    BreadcrumbManagerKeyedService* breadcrumb_manager_service) {
-  breadcrumb_manager_service_observations_.AddObservation(
-      breadcrumb_manager_service);
-}
-
-void CrashReporterBreadcrumbObserver::StopObservingBreadcrumbManagerService(
-    BreadcrumbManagerKeyedService* breadcrumb_manager_service) {
-  // |breadcrumb_manager_service| may not be observed, because the incognito
-  // BrowserState deletes itself before initializing on iOS (see
-  // scene_controller::destroyAndRebuildIncognitoBrowserState).
-  if (breadcrumb_manager_service_observations_.IsObservingSource(
-          breadcrumb_manager_service)) {
-    breadcrumb_manager_service_observations_.RemoveObservation(
-        breadcrumb_manager_service);
-  }
-}
-
 void CrashReporterBreadcrumbObserver::SetPreviousSessionEvents(
     const std::vector<std::string>& events) {
   breadcrumbs_.insert(breadcrumbs_.begin(), events.begin(), events.end());
   UpdateBreadcrumbEventsCrashKey();
 }
 
-void CrashReporterBreadcrumbObserver::EventAdded(BreadcrumbManager* manager,
-                                                 const std::string& event) {
+void CrashReporterBreadcrumbObserver::ResetForTesting() {
+  breadcrumbs_.clear();
+}
+
+void CrashReporterBreadcrumbObserver::EventAdded(const std::string& event) {
   breadcrumbs_.push_back(event);
   UpdateBreadcrumbEventsCrashKey();
 }
@@ -91,9 +69,8 @@ void CrashReporterBreadcrumbObserver::UpdateBreadcrumbEventsCrashKey() {
 
   // Concatenate breadcrumbs backwards, putting new breadcrumbs at the front, so
   // that the most relevant (i.e., newest) breadcrumbs are at the top in Crash.
-  for (auto it = breadcrumbs_.rbegin(), end_it = breadcrumbs_.rend();
-       it != end_it; ++it) {
-    breadcrumbs_string += *it;
+  for (const std::string& breadcrumb : base::Reversed(breadcrumbs_)) {
+    breadcrumbs_string += breadcrumb;
     breadcrumbs_string += kEventSeparator;
   }
   DCHECK(breadcrumbs_string.length() == breadcrumbs_string_length);

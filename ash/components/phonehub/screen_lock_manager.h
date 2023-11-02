@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include "base/observer_list.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 // Tracks the status of whether the user has enabled screen lock on their phone.
@@ -48,8 +48,8 @@ class ScreenLockManager {
   void NotifyScreenLockChanged();
 
  private:
-  friend class ScreenLockManagerImplTest;
   friend class PhoneStatusProcessor;
+  friend class ScreenLockManagerImplTest;
 
   virtual void SetLockStatusInternal(LockStatus lock_status) = 0;
 
@@ -57,6 +57,6 @@ class ScreenLockManager {
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_PHONEHUB_SCREEN_LOCK_MANAGER_H_

@@ -1,13 +1,8 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import os
-import sys
-
-CHROMIUM_SRC_DIR = os.path.realpath(
-    os.path.join(os.path.dirname(__file__), '..', '..', '..', '..'))
-TESTING_DIR = os.path.join(CHROMIUM_SRC_DIR, 'testing')
-
-if TESTING_DIR not in sys.path:
-  sys.path.append(TESTING_DIR)
+# pylint: disable=unused-import
+from gpu_path_util import setup_testing_paths
+from gpu_path_util import setup_tools_perf_paths
+# pylint: enable=unused-import

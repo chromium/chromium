@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/public/cpp/network_config_service.h"
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
@@ -15,7 +16,7 @@
 #include "base/test/task_environment.h"
 #include "base/timer/mock_timer.h"
 #include "chrome/browser/ash/nearby/bluetooth_adapter_manager.h"
-#include "chrome/browser/ash/nearby/nearby_connections_dependencies_provider.h"
+#include "chrome/browser/ash/nearby/nearby_dependencies_provider.h"
 #include "chrome/browser/ash/nearby/nearby_process_manager_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
@@ -23,13 +24,19 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/services/sharing/nearby/test_support/fake_adapter.h"
 #include "chrome/services/sharing/nearby/test_support/mock_webrtc_dependencies.h"
-#include "chromeos/services/nearby/public/cpp/mock_nearby_connections.h"
-#include "chromeos/services/nearby/public/cpp/mock_nearby_sharing_decoder.h"
-#include "chromeos/services/nearby/public/mojom/nearby_connections.mojom.h"
-#include "chromeos/services/nearby/public/mojom/nearby_connections_types.mojom.h"
-#include "chromeos/services/nearby/public/mojom/nearby_decoder.mojom.h"
-#include "chromeos/services/nearby/public/mojom/sharing.mojom.h"
-#include "chromeos/services/nearby/public/mojom/webrtc.mojom.h"
+#include "chromeos/ash/services/nearby/public/cpp/fake_firewall_hole_factory.h"
+#include "chromeos/ash/services/nearby/public/cpp/fake_tcp_socket_factory.h"
+#include "chromeos/ash/services/nearby/public/cpp/mock_nearby_connections.h"
+#include "chromeos/ash/services/nearby/public/cpp/mock_nearby_sharing_decoder.h"
+#include "chromeos/ash/services/nearby/public/mojom/firewall_hole.mojom.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_connections.mojom.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_decoder.mojom.h"
+#include "chromeos/ash/services/nearby/public/mojom/sharing.mojom.h"
+#include "chromeos/ash/services/nearby/public/mojom/tcp_socket_factory.mojom.h"
+#include "chromeos/ash/services/nearby/public/mojom/webrtc.mojom.h"
+#include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
+#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -64,20 +71,17 @@ class FakeSharingMojoService : public sharing::mojom::Sharing {
  private:
   // mojom::Sharing:
   void Connect(
-      location::nearby::connections::mojom::NearbyConnectionsDependenciesPtr
-          deps,
+      sharing::mojom::NearbyDependenciesPtr deps,
       mojo::PendingReceiver<NearbyConnectionsMojom> connections_receiver,
       mojo::PendingReceiver<sharing::mojom::NearbySharingDecoder>
           decoder_receiver) override {
     EXPECT_FALSE(mock_connections_);
     EXPECT_FALSE(mock_decoder_);
 
-    mock_connections_ =
-        std::make_unique<chromeos::nearby::MockNearbyConnections>();
+    mock_connections_ = std::make_unique<MockNearbyConnections>();
     mock_connections_->BindInterface(std::move(connections_receiver));
 
-    mock_decoder_ =
-        std::make_unique<chromeos::nearby::MockNearbySharingDecoder>();
+    mock_decoder_ = std::make_unique<MockNearbySharingDecoder>();
     mock_decoder_->BindInterface(std::move(decoder_receiver));
   }
 
@@ -87,8 +91,8 @@ class FakeSharingMojoService : public sharing::mojom::Sharing {
     std::move(callback).Run();
   }
 
-  std::unique_ptr<chromeos::nearby::MockNearbyConnections> mock_connections_;
-  std::unique_ptr<chromeos::nearby::MockNearbySharingDecoder> mock_decoder_;
+  std::unique_ptr<MockNearbyConnections> mock_connections_;
+  std::unique_ptr<MockNearbySharingDecoder> mock_decoder_;
   mojo::Receiver<sharing::mojom::Sharing> receiver_{this};
 };
 
@@ -96,31 +100,53 @@ class FakeSharingMojoService : public sharing::mojom::Sharing {
 
 class NearbyProcessManagerImplTest : public testing::Test {
  public:
-  class FakeNearbyConnectionsDependenciesProvider
-      : public NearbyConnectionsDependenciesProvider {
+  class FakeNearbyDependenciesProvider : public NearbyDependenciesProvider {
    public:
-    FakeNearbyConnectionsDependenciesProvider() = default;
-    ~FakeNearbyConnectionsDependenciesProvider() override = default;
+    FakeNearbyDependenciesProvider() = default;
+    ~FakeNearbyDependenciesProvider() override = default;
 
-    // NearbyConnectionsDependenciesProvider:
-    location::nearby::connections::mojom::NearbyConnectionsDependenciesPtr
-    GetDependencies() override {
+    // NearbyDependenciesProvider:
+    sharing::mojom::NearbyDependenciesPtr GetDependencies() override {
       fake_adapter_ = std::make_unique<bluetooth::FakeAdapter>();
       webrtc_dependencies_ =
           std::make_unique<sharing::MockWebRtcDependencies>();
 
-      return location::nearby::connections::mojom::
-          NearbyConnectionsDependencies::New(
-              fake_adapter_->adapter_.BindNewPipeAndPassRemote(),
-              location::nearby::connections::mojom::WebRtcDependencies::New(
-                  webrtc_dependencies_->socket_manager_
-                      .BindNewPipeAndPassRemote(),
-                  webrtc_dependencies_->mdns_responder_factory_
-                      .BindNewPipeAndPassRemote(),
-                  webrtc_dependencies_->ice_config_fetcher_
-                      .BindNewPipeAndPassRemote(),
-                  webrtc_dependencies_->messenger_.BindNewPipeAndPassRemote()),
-              location::nearby::api::LogMessage::Severity::kInfo);
+      // Set up CrosNetworkConfig mojo service.
+      mojo::PendingRemote<chromeos::network_config::mojom::CrosNetworkConfig>
+          cros_network_config_remote;
+      ash::GetNetworkConfigService(
+          cros_network_config_remote.InitWithNewPipeAndPassReceiver());
+
+      // Set up firewall hole factory mojo service.
+      mojo::PendingRemote<sharing::mojom::FirewallHoleFactory>
+          firewall_hole_factory_remote;
+      mojo::MakeSelfOwnedReceiver(
+          std::make_unique<ash::nearby::FakeFirewallHoleFactory>(),
+          firewall_hole_factory_remote.InitWithNewPipeAndPassReceiver());
+
+      // Set up TCP socket factory mojo service.
+      mojo::PendingRemote<sharing::mojom::TcpSocketFactory>
+          tcp_socket_factory_remote;
+      mojo::MakeSelfOwnedReceiver(
+          std::make_unique<ash::nearby::FakeTcpSocketFactory>(
+              /*default_local_addr=*/net::IPEndPoint(
+                  net::IPAddress(192, 168, 86, 75), 44444)),
+          tcp_socket_factory_remote.InitWithNewPipeAndPassReceiver());
+
+      return sharing::mojom::NearbyDependencies::New(
+          fake_adapter_->adapter_.BindNewPipeAndPassRemote(),
+          sharing::mojom::WebRtcDependencies::New(
+              webrtc_dependencies_->socket_manager_.BindNewPipeAndPassRemote(),
+              webrtc_dependencies_->mdns_responder_factory_
+                  .BindNewPipeAndPassRemote(),
+              webrtc_dependencies_->ice_config_fetcher_
+                  .BindNewPipeAndPassRemote(),
+              webrtc_dependencies_->messenger_.BindNewPipeAndPassRemote()),
+          sharing::mojom::WifiLanDependencies::New(
+              std::move(cros_network_config_remote),
+              std::move(firewall_hole_factory_remote),
+              std::move(tcp_socket_factory_remote)),
+          location::nearby::api::LogMessage::Severity::kInfo);
     }
 
     void PrepareForShutdown() override { prepare_for_shutdown_count_++; }
@@ -128,6 +154,8 @@ class NearbyProcessManagerImplTest : public testing::Test {
     int prepare_for_shutdown_count() { return prepare_for_shutdown_count_; }
 
    private:
+    chromeos::network_config::CrosNetworkConfigTestHelper
+        cros_network_config_test_helper_;
     std::unique_ptr<bluetooth::FakeAdapter> fake_adapter_;
     std::unique_ptr<sharing::MockWebRtcDependencies> webrtc_dependencies_;
     int prepare_for_shutdown_count_ = 0;
@@ -164,7 +192,7 @@ class NearbyProcessManagerImplTest : public testing::Test {
     return num_process_stopped_calls_;
   }
 
-  FakeNearbyConnectionsDependenciesProvider* fake_deps_provider() {
+  FakeNearbyDependenciesProvider* fake_deps_provider() {
     return &fake_deps_provider_;
   }
 
@@ -199,7 +227,7 @@ class NearbyProcessManagerImplTest : public testing::Test {
   size_t num_process_stopped_calls_ = 0u;
 
   FakeSharingMojoService fake_sharing_mojo_service_;
-  FakeNearbyConnectionsDependenciesProvider fake_deps_provider_;
+  FakeNearbyDependenciesProvider fake_deps_provider_;
 
   std::unique_ptr<NearbyProcessManager> nearby_process_manager_;
 

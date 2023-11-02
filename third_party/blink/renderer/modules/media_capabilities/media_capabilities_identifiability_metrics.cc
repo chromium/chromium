@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_key_system_media_capability.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_configuration.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/modules/encryptedmedia/media_key_system_access.h"
 #include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
 
 namespace blink {
@@ -25,12 +26,12 @@ namespace media_capabilities_identifiability_metrics {
 namespace {
 
 bool IsDecodingInfoTypeAllowed() {
-  return IdentifiabilityStudySettings::Get()->IsTypeAllowed(
+  return IdentifiabilityStudySettings::Get()->ShouldSampleType(
       IdentifiableSurface::Type::kMediaCapabilities_DecodingInfo);
 }
 
 bool ShouldSampleDecodingInfoType() {
-  return IdentifiabilityStudySettings::Get()->ShouldSample(
+  return IdentifiabilityStudySettings::Get()->ShouldSampleType(
       IdentifiableSurface::Type::kMediaCapabilities_DecodingInfo);
 }
 

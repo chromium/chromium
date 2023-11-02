@@ -1,11 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_RENDERER_PEPPER_HOST_GLOBALS_H_
 #define CONTENT_RENDERER_PEPPER_HOST_GLOBALS_H_
 
-#include "base/compiler_specific.h"
 #include "content/renderer/pepper/host_var_tracker.h"
 #include "ppapi/shared_impl/callback_tracker.h"
 #include "ppapi/shared_impl/ppapi_globals.h"

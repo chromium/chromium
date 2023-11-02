@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,7 +21,6 @@ import android.text.TextUtils;
 
 import androidx.browser.customtabs.CustomTabsIntent;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.SysUtils;
@@ -105,7 +104,7 @@ public class MediaViewerUtils {
         } else {
             backgroundRes = R.color.media_viewer_bg;
         }
-        int mediaColor = ApiCompatibilityUtils.getColor(context.getResources(), backgroundRes);
+        int mediaColor = context.getColor(backgroundRes);
 
         // Build up the Intent further.
         Intent intent = builder.build().intent;

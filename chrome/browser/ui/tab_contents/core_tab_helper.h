@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,9 +12,12 @@
 #include "base/time/time.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "components/lens/lens_entrypoints.h"
+#include "components/lens/lens_rendering_environment.h"
 #include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_service.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
@@ -37,32 +40,38 @@ class CoreTabHelper : public content::WebContentsObserver,
   void UpdateContentRestrictions(int content_restrictions);
 
   // Open the Lens standalone experience for the image that triggered the
-  // context menu. If |use_side_panel| is true, the page will be opened in a
-  // side panel rather than a new tab.
-  void SearchWithLensInNewTab(content::RenderFrameHost* render_frame_host,
-                              const GURL& src_url,
-                              lens::EntryPoint entry_point,
-                              bool use_side_panel);
+  // context menu. If |is_side_panel_enabled_for_feature| is true and if the
+  // google lens supports opening requests in side panel, then the request will
+  // open in the side panel instead of new tab.
+  void SearchWithLens(content::RenderFrameHost* render_frame_host,
+                      const GURL& src_url,
+                      lens::EntryPoint entry_point,
+                      bool is_side_panel_enabled_for_feature);
 
   // Open the Lens experience for an image. Used for sending the bitmap selected
   // via Lens Region Search. |image_original_size| is specified in case of
-  // resizing that happens prior to passing the image to CoreTabHelper. If
-  // |use_side_panel| is true, the page will be opened in a side panel rather
-  // than a new tab.
-  void SearchWithLensInNewTab(gfx::Image image,
-                              const gfx::Size& image_original_size,
-                              lens::EntryPoint entry_point,
-                              bool use_side_panel);
+  // resizing that happens prior to passing the image to |CoreTabHelper|. If
+  // |is_side_panel_enabled_for_feature| is true and if the search engine
+  // supports opening requests in side panel, then the request will open in the
+  // side panel instead of a new tab.
+  void SearchWithLens(gfx::Image image,
+                      const gfx::Size& image_original_size,
+                      lens::EntryPoint entry_point,
+                      bool is_region_search_request,
+                      bool is_side_panel_enabled_for_feature);
 
   // Perform an image search for the image that triggered the context menu.  The
   // |src_url| is passed to the search request and is not used directly to fetch
-  // the image resources.
-  void SearchByImageInNewTab(content::RenderFrameHost* render_frame_host,
-                             const GURL& src_url);
+  // the image resources. If the search engine supports opening requests in side
+  // panel, then the request will open in the side panel instead of a new tab.
+  void SearchByImage(content::RenderFrameHost* render_frame_host,
+                     const GURL& src_url);
 
-  // Performs an image search for the provided image.
-  void SearchByImageInNewTab(const gfx::Image& image,
-                             const gfx::Size& image_original_size);
+  // Performs an image search for the provided image. If the search engine
+  // supports opening requests in side panel, then the request will open in side
+  // panel instead of a new tab.
+  void SearchByImage(const gfx::Image& image,
+                     const gfx::Size& image_original_size);
 
   void set_new_tab_start_time(const base::TimeTicks& time) {
     new_tab_start_time_ = time;
@@ -90,7 +99,7 @@ class CoreTabHelper : public content::WebContentsObserver,
   void OnWebContentsFocused(content::RenderWidgetHost*) override;
   void OnWebContentsLostFocus(content::RenderWidgetHost*) override;
 
-  void DoSearchByImageInNewTab(
+  void DoSearchByImage(
       mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame>
           chrome_render_frame,
       const GURL& src_url,
@@ -98,7 +107,23 @@ class CoreTabHelper : public content::WebContentsObserver,
       bool use_side_panel,
       const std::vector<uint8_t>& thumbnail_data,
       const gfx::Size& original_size,
-      const std::string& image_extension);
+      const std::string& image_extension,
+      const std::vector<lens::mojom::LatencyLogPtr> latency_logs);
+
+  // Wrapper method for fetching template URL service.
+  TemplateURLService* GetTemplateURLService();
+
+  // Helper that returns true if the current Browser instance is a Progressive
+  // Web App
+  bool IsInProgressiveWebApp();
+
+  // Helper function to check if side panel is enabled for current browser
+  // context
+  bool IsSidePanelEnabled();
+
+  // Helper function to check if the side panel is enabled for third party
+  // default search engines (3PDSE).
+  bool IsSidePanelEnabledFor3PDse();
 
   // Posts the bytes and content type to the specified URL If |use_side_panel|
   // is true, the content will open in a side panel, otherwise it will open in
@@ -112,17 +137,17 @@ class CoreTabHelper : public content::WebContentsObserver,
   // not used directly to fetch the image resources. The
   // |additional_query_params| are also passed to the search request as part of
   // search args.
-  void SearchByImageInNewTabImpl(content::RenderFrameHost* render_frame_host,
-                                 const GURL& src_url,
-                                 int thumbnail_min_size,
-                                 int thumbnail_max_width,
-                                 int thumbnail_max_height,
-                                 const std::string& additional_query_params,
-                                 bool use_side_panel);
-  void SearchByImageInNewTabImpl(const gfx::Image& image,
-                                 const gfx::Size& image_original_size,
-                                 const std::string& additional_query_params,
-                                 bool use_side_panel);
+  void SearchByImageImpl(content::RenderFrameHost* render_frame_host,
+                         const GURL& src_url,
+                         int thumbnail_min_size,
+                         int thumbnail_max_width,
+                         int thumbnail_max_height,
+                         const std::string& additional_query_params,
+                         bool use_side_panel);
+  void SearchByImageImpl(const gfx::Image& image,
+                         const gfx::Size& image_original_size,
+                         const std::string& additional_query_params,
+                         bool use_side_panel);
 
   // The time when we started to create the new tab page.  This time is from
   // before we created this WebContents.
@@ -130,7 +155,7 @@ class CoreTabHelper : public content::WebContentsObserver,
 
   // Content restrictions, used to disable print/copy etc based on content's
   // (full-page plugins for now only) permissions.
-  int content_restrictions_;
+  int content_restrictions_ = 0;
 
   base::WeakPtrFactory<CoreTabHelper> weak_factory_{this};
 

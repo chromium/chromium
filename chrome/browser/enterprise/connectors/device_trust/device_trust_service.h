@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,17 +9,19 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
-#include "chrome/browser/enterprise/connectors/device_trust/attestation/common/signals_type.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/prefs/pref_change_registrar.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
 
-class PrefService;
+class GURL;
 
 namespace enterprise_connectors {
 
+struct AttestationResponse;
 class AttestationService;
+class DeviceTrustConnectorService;
+struct DeviceTrustResponse;
 class SignalsService;
 
 // Main service used to drive device trust connector scenarios. It is currently
@@ -27,19 +29,16 @@ class SignalsService;
 // Access during an attestation flow.
 class DeviceTrustService : public KeyedService {
  public:
-  using AttestationCallback = base::OnceCallback<void(const std::string&)>;
+  using DeviceTrustCallback =
+      base::OnceCallback<void(const DeviceTrustResponse&)>;
 
-  using TrustedUrlPatternsChangedCallbackList =
-      base::RepeatingCallbackList<void(const base::ListValue&)>;
-  using TrustedUrlPatternsChangedCallback =
-      TrustedUrlPatternsChangedCallbackList::CallbackType;
+  // Callback used by the data_decoder to get the parsed json result.
+  using ParseJsonChallengeCallback =
+      base::OnceCallback<void(const std::string&)>;
 
-  // Check if DeviceTrustService is enabled via prefs with non-empty allowlist.
-  static bool IsEnabled(PrefService* prefs);
-
-  DeviceTrustService(PrefService* profile_prefs,
-                     std::unique_ptr<AttestationService> attestation_service,
-                     std::unique_ptr<SignalsService> signals_service);
+  DeviceTrustService(std::unique_ptr<AttestationService> attestation_service,
+                     std::unique_ptr<SignalsService> signals_service,
+                     DeviceTrustConnectorService* connector);
 
   DeviceTrustService(const DeviceTrustService&) = delete;
   DeviceTrustService& operator=(const DeviceTrustService&) = delete;
@@ -50,41 +49,42 @@ class DeviceTrustService : public KeyedService {
   // any task sequence.
   virtual bool IsEnabled() const;
 
-  // Starts flow that actually builds a response.
-  virtual void BuildChallengeResponse(const std::string& challenge,
-                                      AttestationCallback callback);
+  // Uses the challenge stored in `serialized_challenge` to generate a
+  // challenge-response containing device signals and a device identity
+  // signature to be used in an attestation flow. Returns the challenge response
+  // asynchronously via `callback`.
+  virtual void BuildChallengeResponse(const std::string& serialized_challenge,
+                                      DeviceTrustCallback callback);
+
+  // Returns whether the Device Trust connector watches navigations to the given
+  // `url` or not.
+  virtual bool Watches(const GURL& url) const;
 
   // Collects device trust signals and returns them via `callback`.
-  void GetSignals(
-      base::OnceCallback<void(std::unique_ptr<SignalsType>)> callback);
+  void GetSignals(base::OnceCallback<void(base::Value::Dict)> callback);
 
-  // Register a `callback` that listens for changes in the trust URL patterns.
-  // The callback may be run synchronously for initialization purposes.
-  virtual base::CallbackListSubscription
-  RegisterTrustedUrlPatternsChangedCallback(
-      TrustedUrlPatternsChangedCallback callback);
-
-  // KeyedService:
-  void Shutdown() override;
+  // Parses the `serialized_challenge` and returns its value via `callback`.
+  void ParseJsonChallenge(const std::string& serialized_challenge,
+                          ParseJsonChallengeCallback callback);
 
  protected:
   // Default constructor that can be used by mocks to bypass initialization.
-  explicit DeviceTrustService(PrefService* profile_prefs);
+  DeviceTrustService();
 
  private:
-  void OnPolicyUpdated();
-
+  void OnChallengeParsed(DeviceTrustCallback callback,
+                         const std::string& challenge);
   void OnSignalsCollected(const std::string& challenge,
-                          AttestationCallback callback,
-                          std::unique_ptr<SignalsType> signals);
+                          DeviceTrustCallback callback,
+                          base::Value::Dict signals);
+  void OnAttestationResponseReceived(
+      DeviceTrustCallback callback,
+      const AttestationResponse& attestation_response);
 
-  PrefChangeRegistrar pref_observer_;
-
-  PrefService* const profile_prefs_;
   std::unique_ptr<AttestationService> attestation_service_;
   std::unique_ptr<SignalsService> signals_service_;
-  TrustedUrlPatternsChangedCallbackList callbacks_;
-
+  const raw_ptr<DeviceTrustConnectorService> connector_{nullptr};
+  data_decoder::DataDecoder data_decoder_;
   base::WeakPtrFactory<DeviceTrustService> weak_factory_{this};
 };
 

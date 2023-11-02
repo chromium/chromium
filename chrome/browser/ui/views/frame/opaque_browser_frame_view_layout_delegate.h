@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,12 @@
 
 #include <string>
 
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "ui/base/ui_base_types.h"
+#endif
 
 namespace gfx {
 class Size;
@@ -47,6 +53,9 @@ class OpaqueBrowserFrameViewLayoutDelegate {
   virtual bool IsRegularOrGuestSession() const = 0;
 
   // Controls window state.
+  virtual bool CanMaximize() const = 0;
+  virtual bool CanMinimize() const = 0;
+
   virtual bool IsMaximized() const = 0;
   virtual bool IsMinimized() const = 0;
   virtual bool IsFullscreen() const = 0;
@@ -86,6 +95,12 @@ class OpaqueBrowserFrameViewLayoutDelegate {
 
   // Returns true if a client-side shadow should be drawn for restored windows.
   virtual bool ShouldDrawRestoredFrameShadow() const = 0;
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Returns which edges of the window are snapped to the edges of the desktop
+  // (or "tiled").
+  virtual ui::WindowTiledEdges GetTiledEdges() const = 0;
+#endif
 
  protected:
   virtual ~OpaqueBrowserFrameViewLayoutDelegate() = default;

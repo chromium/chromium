@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -56,7 +56,7 @@ TEST_F(VariationsCrashKeysTest, BasicFunctionality) {
       SyntheticTrialsActiveGroupIdProvider::GetInstance());
 
   // Start with 2 trials, one active and one not
-  base::FieldTrialList::CreateFieldTrial("Trial1", "Group1")->group();
+  base::FieldTrialList::CreateFieldTrial("Trial1", "Group1")->Activate();
   base::FieldTrialList::CreateFieldTrial("Trial2", "Group2");
 
   InitCrashKeys();
@@ -79,7 +79,8 @@ TEST_F(VariationsCrashKeysTest, BasicFunctionality) {
   EXPECT_EQ("8e7abfb0-c16397b7,277f2a3d-d77354d0,", info.experiment_list);
 
   // Add two synthetic trials and confirm that they show up in the list.
-  SyntheticTrialGroup synth_trial(HashName("Trial3"), HashName("Group3"));
+  SyntheticTrialGroup synth_trial(
+      "Trial3", "Group3", variations::SyntheticTrialAnnotationMode::kNextLog);
   registry.RegisterSyntheticFieldTrial(synth_trial);
 
   EXPECT_EQ("3", GetNumExperimentsCrashKey());
@@ -91,7 +92,7 @@ TEST_F(VariationsCrashKeysTest, BasicFunctionality) {
             info.experiment_list);
 
   // Add another regular trial.
-  base::FieldTrialList::CreateFieldTrial("Trial4", "Group4")->group();
+  base::FieldTrialList::CreateFieldTrial("Trial4", "Group4")->Activate();
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ("4", GetNumExperimentsCrashKey());
   EXPECT_EQ(
@@ -106,9 +107,11 @@ TEST_F(VariationsCrashKeysTest, BasicFunctionality) {
       info.experiment_list);
 
   // Replace synthetic trial group and add one more.
-  SyntheticTrialGroup synth_trial2(HashName("Trial3"), HashName("Group3_A"));
+  SyntheticTrialGroup synth_trial2(
+      "Trial3", "Group3_A", variations::SyntheticTrialAnnotationMode::kNextLog);
   registry.RegisterSyntheticFieldTrial(synth_trial2);
-  SyntheticTrialGroup synth_trial3(HashName("Trial4"), HashName("Group4"));
+  SyntheticTrialGroup synth_trial3(
+      "Trial4", "Group4", variations::SyntheticTrialAnnotationMode::kNextLog);
   registry.RegisterSyntheticFieldTrial(synth_trial3);
 
   EXPECT_EQ("5", GetNumExperimentsCrashKey());

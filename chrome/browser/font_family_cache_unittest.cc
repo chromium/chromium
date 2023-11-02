@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,7 +41,7 @@ TEST(FontFamilyCacheTest, Caching) {
 
   std::string font1("font 1");
   std::string font2("font 2");
-  std::string map_name("webkit.webprefs.fonts.pictograph");
+  std::string map_name("webkit.webprefs.fonts.sansserif");
   std::string script("Zzyxca");
   std::string pref_name(map_name + '.' + script);
   std::string pref_name2(map_name + '.' + "adsf");

@@ -18,6 +18,18 @@
       #usageHeader {
         padding: 0 var(--cr-section-padding);
       }
+
+      #usageDetails {
+        align-items: center;
+        display: flex;
+        flex: 1;
+        flex-direction: row;
+      }
+
+      #fpsPolicyContainer {
+        display: flex;
+        padding: 8px;
+      }
     </style>
     <!-- Confirm reset settings dialog. -->
     <cr-dialog id="confirmResetSettings" close-text="$i18n{close}"
@@ -46,11 +58,13 @@
         [[i18n('siteSettingsSiteClearStorageConfirmationNew', pageTitle)]]
         <div class="detail-list">
           <div class="detail">
-            <iron-icon icon="all-sites:logout"></iron-icon>
+            <iron-icon icon="all-sites:logout" aria-hidden="true"
+              role="presentation"></iron-icon>
             $i18n{siteSettingsSiteClearStorageSignOut}
           </div>
           <div class="detail">
-            <iron-icon icon="all-sites:offline"></iron-icon>
+            <iron-icon icon="all-sites:offline" aria-hidden="true"
+              role="presentation"></iron-icon>
             $i18n{siteSettingsSiteClearStorageOfflineData}
           </div>
         </div>
@@ -76,12 +90,34 @@
         </div>
         <div class="list-item" id="storage"
             hidden$="[[!hasUsage_(storedData_, numCookies_)]]">
-          <div class="start" id="storageText">
-            <div hidden$="[[!storedData_]]">[[storedData_]]</div>
-            <div hidden$="[[!hasDataAndCookies_(storedData_, numCookies_)]]">
-              &nbsp;&middot;&nbsp;
+          <div id="usageDetails">
+            <div>
+              <div id="storageText">
+                <div id="storedData" hidden$="[[!storedData_]]">
+                  [[storedData_]]
+                </div>
+                <div hidden$="[[!hasDataAndCookies_(
+                    storedData_,numCookies_)]]">
+                  &nbsp;&middot;&nbsp;
+                </div>
+                <div id="numCookies" hidden$="[[!numCookies_]]">
+                  [[numCookies_]]
+                </div>
+              </div>
+              <div id="fpsMembership" class="secondary"
+                  hidden$="[[!fpsMembership_]]">
+                [[fpsMembership_]]
+              </div>
             </div>
-            <div hidden$="[[!numCookies_]]">[[numCookies_]]</div>
+            <template is="dom-if" if="[[fpsEnterprisePref_]]">
+              <div id="fpsPolicyContainer">
+                <cr-policy-pref-indicator
+                  id="fpsPolicy" pref="[[fpsEnterprisePref_]]"
+                  icon-aria-label="[[label]]" focus-row-control
+                  focus-type="policy">
+                </cr-policy-pref-indicator>
+              </div>
+            </template>
           </div>
           <cr-button id="clearStorage" role="button" aria-disabled="false"
               on-click="onConfirmClearStorage_"
@@ -165,7 +201,7 @@
       <site-details-permission category="[[contentSettingsTypesEnum_.HID_DEVICES]]"
           icon="settings:hid-device" label="$i18n{siteSettingsHidDevices}">
       </site-details-permission>
-<if expr="chromeos or is_win">
+<if expr="is_chromeos or is_win">
       <site-details-permission
           category="[[contentSettingsTypesEnum_.PROTECTED_CONTENT]]"
           icon="settings:protected-content"
@@ -192,6 +228,11 @@
           icon="settings:insecure-content"
           label="$i18n{siteSettingsInsecureContent}">
       </site-details-permission>
+      <site-details-permission
+          category="[[contentSettingsTypesEnum_.FEDERATED_IDENTITY_API]]"
+          icon="settings:federated-identity-api"
+          label="$i18n{siteSettingsFederatedIdentityApi}">
+      </site-details-permission>
       <site-details-permission category="[[contentSettingsTypesEnum_.AR]]"
           icon="settings:vr-headset" label="$i18n{siteSettingsAr}">
       </site-details-permission>
@@ -204,17 +245,12 @@
           label="$i18n{siteSettingsIdleDetection}">
       </site-details-permission>
       <site-details-permission
-          category="[[contentSettingsTypesEnum_.WINDOW_PLACEMENT]]"
-          icon="settings:window-placement"
-          label="$i18n{siteSettingsWindowPlacement}">
+          category="[[contentSettingsTypesEnum_.WINDOW_MANAGEMENT]]"
+          icon="settings:window-management"
+          label="$i18n{siteSettingsWindowManagement}">
       </site-details-permission>
       <site-details-permission
-          category="[[contentSettingsTypesEnum_.FONT_ACCESS]]"
-          icon="settings:font-access" label="$i18n{fonts}">
-      </site-details-permission>
-      <site-details-permission
-          category="[[contentSettingsTypesEnum_.FILE_HANDLING]]"
-          icon="settings:file-handling"
-          label="$i18n{siteSettingsFileHandling}">
+          category="[[contentSettingsTypesEnum_.LOCAL_FONTS]]"
+          icon="settings:local-fonts" label="$i18n{fonts}">
       </site-details-permission>
     </div>

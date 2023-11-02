@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/base_export.h"
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 
 namespace base {
@@ -36,6 +35,8 @@ enum SdkVersion {
   SDK_VERSION_Q = 29,
   SDK_VERSION_R = 30,
   SDK_VERSION_S = 31,
+  SDK_VERSION_Sv2 = 32,
+  SDK_VERSION_T = 33,
 };
 
 // BuildInfo is a singleton class that stores android build and device
@@ -139,6 +140,12 @@ class BASE_EXPORT BuildInfo {
 
   const char* version_incremental() const { return version_incremental_; }
 
+  const char* hardware() const { return hardware_; }
+
+  bool is_at_least_t() const { return is_at_least_t_; }
+
+  bool is_automotive() const { return is_automotive_; }
+
  private:
   friend struct BuildInfoSingletonTraits;
 
@@ -174,6 +181,9 @@ class BASE_EXPORT BuildInfo {
   const bool is_debug_android_;
   const bool is_tv_;
   const char* const version_incremental_;
+  const char* const hardware_;
+  const bool is_at_least_t_;
+  const bool is_automotive_;
 };
 
 }  // namespace android

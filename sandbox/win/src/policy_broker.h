@@ -1,4 +1,4 @@
-// Copyright (c) 2006-2010 The Chromium Authors. All rights reserved.
+// Copyright 2006-2010 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,6 @@
 namespace sandbox {
 
 class TargetProcess;
-
-// Initializes global imported symbols from ntdll.
-bool InitGlobalNt();
 
 // Sets up interceptions not controlled by explicit policies.
 bool SetupBasicInterceptions(InterceptionManager* manager,

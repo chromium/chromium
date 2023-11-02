@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -19,8 +19,10 @@ component("public") {
     "auto_resumption_handler.cc",
     "auto_resumption_handler.h",
     "base_file.h",
+    "download_content.cc",
     "download_content.h",
     "download_create_info.h",
+    "download_danger_type.cc",
     "download_danger_type.h",
     "download_destination_observer.cc",
     "download_destination_observer.h",
@@ -45,8 +47,6 @@ component("public") {
     "download_response_handler.h",
     "download_save_info.cc",
     "download_save_info.h",
-    "download_schedule.cc",
-    "download_schedule.h",
     "download_source.h",
     "download_start_observer.h",
     "download_stats.h",
@@ -64,8 +64,6 @@ component("public") {
     "resume_mode.h",
     "simple_download_manager.h",
     "simple_download_manager_coordinator.h",
-    "storage_partition_config.cc",
-    "storage_partition_config.h",
     "stream_handle_input_stream.h",
     "url_download_handler_factory.h",
     "url_download_request_handle.h",
@@ -106,6 +104,14 @@ component("public") {
   if (is_win && is_component_build) {
     ldflags = [ "/IGNORE:4217" ]
   }
+
+  if (is_chromeos) {
+    sources += [
+      "download_item_utils.cc",
+      "download_item_utils.h",
+    ]
+    deps += [ "//chromeos/crosapi/mojom" ]
+  }
 }
 
 if (is_android) {
@@ -113,7 +119,6 @@ if (is_android) {
     srcjar_deps = [ ":jni_enums" ]
 
     deps = [
-      "//base:base_java",
       "//components/download/internal/common:internal_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
     ]
@@ -169,11 +174,7 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [
-    "auto_resumption_handler_unittest.cc",
-    "download_schedule_unittest.cc",
-    "storage_partition_config_unittest.cc",
-  ]
+  sources = [ "auto_resumption_handler_unittest.cc" ]
 
   deps = [
     ":public",

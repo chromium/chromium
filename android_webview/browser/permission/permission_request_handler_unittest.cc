@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "android_webview/browser/permission/permission_request_handler_client.h"
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace android_webview {
@@ -93,7 +94,7 @@ class TestPermissionRequestHandlerClient
 
  private:
   base::android::ScopedJavaLocalRef<jobject> java_request_;
-  AwPermissionRequest* request_;
+  raw_ptr<AwPermissionRequest> request_;
   Permission requested_permission_;
   Permission canceled_permission_;
 };

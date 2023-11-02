@@ -1,13 +1,14 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/crash_report/breadcrumbs/application_breadcrumbs_logger.h"
+#import "ios/chrome/browser/crash_report/breadcrumbs/application_breadcrumbs_logger.h"
 
-#include <string>
+#import <string>
 
-#include "components/breadcrumbs/core/breadcrumb_manager.h"
+#import "components/breadcrumbs/core/breadcrumb_manager.h"
 #import "ios/chrome/browser/crash_report/crash_report_helper.h"
+#import "ios/chrome/browser/metrics/ios_chrome_metrics_service_accessor.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -16,8 +17,11 @@
 const char kBreadcrumbOrientation[] = "Orientation";
 
 ApplicationBreadcrumbsLogger::ApplicationBreadcrumbsLogger(
-    breadcrumbs::BreadcrumbManager* breadcrumb_manager)
-    : breadcrumbs::ApplicationBreadcrumbsLogger(breadcrumb_manager) {
+    const base::FilePath& storage_dir)
+    : breadcrumbs::ApplicationBreadcrumbsLogger(
+          storage_dir,
+          base::BindRepeating(&IOSChromeMetricsServiceAccessor::
+                                  IsMetricsAndCrashReportingEnabled)) {
   orientation_observer_ = [NSNotificationCenter.defaultCenter
       addObserverForName:UIDeviceOrientationDidChangeNotification
                   object:nil
@@ -51,7 +55,7 @@ ApplicationBreadcrumbsLogger::ApplicationBreadcrumbsLogger(
                     event += " #face-down";
                     break;
                 }
-                AddEvent(event);
+                breadcrumbs::BreadcrumbManager::GetInstance().AddEvent(event);
               }];
 }
 

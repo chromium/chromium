@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/android/jni_android.h"
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread.h"
@@ -74,6 +73,7 @@ class VolumeControlAndroid : SystemVolumeTableAccessApi {
                                           AudioContentType to_type,
                                           float level);
 
+  const bool is_single_volume_;
   base::android::ScopedJavaGlobalRef<jobject> j_volume_control_;
 
   std::map<AudioContentType, std::unique_ptr<VolumeCache>> volume_cache_;

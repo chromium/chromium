@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,6 +27,7 @@
 #include "base/command_line.h"
 #include "base/containers/circular_deque.h"
 #include "base/files/file_descriptor_watcher_posix.h"
+#include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
@@ -35,6 +36,7 @@
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_tick_clock.h"
+#include "base/time/time.h"
 #include "media/cast/test/utility/udp_proxy.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
@@ -51,7 +53,7 @@ class SendToFDPipe : public PacketPipe {
   explicit SendToFDPipe(int fd) : fd_(fd) {
   }
   void Send(std::unique_ptr<Packet> packet) final {
-    while (1) {
+    while (true) {
       int written = write(
           fd_,
           reinterpret_cast<char*>(&packet->front()),
@@ -176,7 +178,7 @@ class ByteCounterPipe : public media::cast::test::PacketPipe {
     pipe_->Send(std::move(packet));
   }
  private:
-  ByteCounter* counter_;
+  raw_ptr<ByteCounter> counter_;
 };
 
 void SetupByteCounters(std::unique_ptr<media::cast::test::PacketPipe>* pipe,

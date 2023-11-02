@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -50,8 +50,9 @@ bool SendResponseHelper::GetResponse() {
 }
 
 void SendResponseHelper::OnResponse(ExtensionFunction::ResponseType response,
-                                    base::Value results,
-                                    const std::string& error) {
+                                    base::Value::List results,
+                                    const std::string& error,
+                                    mojom::ExtraResponseDataPtr) {
   ASSERT_NE(ExtensionFunction::BAD_MESSAGE, response);
   response_ = std::make_unique<bool>(response == ExtensionFunction::SUCCEEDED);
   run_loop_.Quit();
@@ -66,26 +67,51 @@ std::unique_ptr<base::DictionaryValue> ParseDictionary(
   return base::DictionaryValue::From(ParseJSON(data));
 }
 
-bool GetBoolean(const base::DictionaryValue* val, const std::string& key) {
-  absl::optional<bool> result = val->FindBoolKey(key);
-  if (!result)
+bool GetBoolean(const base::Value::Dict& dict, const std::string& key) {
+  absl::optional<bool> value = dict.FindBool(key);
+  if (!value.has_value()) {
     ADD_FAILURE() << key << " does not exist or is not a boolean.";
-  return result.value_or(false);
+    return false;
+  }
+  return *value;
 }
 
-int GetInteger(const base::DictionaryValue* val, const std::string& key) {
-  absl::optional<int> result = val->FindIntKey(key);
-  if (!result)
+int GetInteger(const base::Value::Dict& dict, const std::string& key) {
+  absl::optional<int> value = dict.FindInt(key);
+  if (!value.has_value()) {
     ADD_FAILURE() << key << " does not exist or is not an integer.";
-  return result.value_or(0);
+    return 0;
+  }
+  return *value;
 }
 
-std::string GetString(const base::DictionaryValue* val,
-                      const std::string& key) {
-  std::string result;
-  if (!val->GetString(key, &result))
+std::string GetString(const base::Value::Dict& dict, const std::string& key) {
+  const std::string* value = dict.FindString(key);
+  if (!value) {
     ADD_FAILURE() << key << " does not exist or is not a string.";
-  return result;
+    return "";
+  }
+  return *value;
+}
+
+base::Value::List GetList(const base::Value::Dict& dict,
+                          const std::string& key) {
+  const base::Value::List* value = dict.FindList(key);
+  if (!value) {
+    ADD_FAILURE() << key << " does not exist or is not a list.";
+    return base::Value::List();
+  }
+  return value->Clone();
+}
+
+base::Value::Dict GetDict(const base::Value::Dict& dict,
+                          const std::string& key) {
+  const base::Value::Dict* value = dict.FindDict(key);
+  if (!value) {
+    ADD_FAILURE() << key << " does not exist or is not a dict.";
+    return base::Value::Dict();
+  }
+  return value->Clone();
 }
 
 std::unique_ptr<base::Value> RunFunctionWithDelegateAndReturnSingleResult(
@@ -109,12 +135,11 @@ std::unique_ptr<base::Value> RunFunctionWithDelegateAndReturnSingleResult(
   RunFunction(function.get(), std::move(args), std::move(dispatcher), flags);
   EXPECT_TRUE(function->GetError().empty()) << "Unexpected error: "
                                             << function->GetError();
-  const base::Value* single_result = NULL;
-  if (function->GetResultList() != NULL &&
-      function->GetResultList()->Get(0, &single_result)) {
-    return single_result->CreateDeepCopy();
+  if (function->GetResultList() && !function->GetResultList()->empty()) {
+    const base::Value& single_result = (*function->GetResultList())[0];
+    return std::make_unique<base::Value>(single_result.Clone());
   }
-  return NULL;
+  return nullptr;
 }
 
 std::unique_ptr<base::Value> RunFunctionAndReturnSingleResult(
@@ -153,9 +178,9 @@ std::string RunFunctionAndReturnError(ExtensionFunction* function,
   RunFunction(function, args, std::move(dispatcher), flags);
   // When sending a response, the function will set an empty list value if there
   // is no specified result.
-  const base::ListValue* results = function->GetResultList();
+  const base::Value::List* results = function->GetResultList();
   CHECK(results);
-  EXPECT_TRUE(results->GetList().empty()) << "Did not expect a result";
+  EXPECT_TRUE(results->empty()) << "Did not expect a result";
   CHECK(function->response_type());
   EXPECT_EQ(ExtensionFunction::FAILED, *function->response_type());
   return function->GetError();

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -95,7 +95,7 @@ public final class RemoteObjectHostImplTest {
      *
      * This verifies that it is working correctly.
      */
-    private static class HasMethodCapture implements RemoteObject.HasMethodResponse {
+    private static class HasMethodCapture implements RemoteObject.HasMethod_Response {
         public Boolean methodExists;
 
         @Override

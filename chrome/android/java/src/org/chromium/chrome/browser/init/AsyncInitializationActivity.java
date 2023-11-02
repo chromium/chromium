@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,22 +12,18 @@ import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Process;
 import android.os.SystemClock;
 import android.provider.Settings;
 import android.provider.Settings.SettingNotFoundException;
 import android.view.Display;
 import android.view.Menu;
 import android.view.View;
-import android.view.ViewTreeObserver;
-import android.view.ViewTreeObserver.OnPreDrawListener;
 import android.view.WindowManager;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.SysUtils;
 import org.chromium.base.TraceEvent;
@@ -46,6 +42,7 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcherImp
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
+import org.chromium.components.browser_ui.util.FirstDrawDetector;
 import org.chromium.ui.base.ActivityIntentRequestTrackerDelegate;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -168,8 +165,7 @@ public abstract class AsyncInitializationActivity
 
     @Override
     public final void setContentViewAndLoadLibrary(Runnable onInflationCompleteCallback) {
-        boolean enableInstantStart =
-                TabUiFeatureUtilities.supportInstantStart(isTablet(), this) && !mHadWarmStart;
+        boolean enableInstantStart = isInstantStartEnabled() && !mHadWarmStart;
         mOnInflationCompleteCallback = onInflationCompleteCallback;
         if (enableInstantStart) {
             triggerLayoutInflation();
@@ -190,7 +186,6 @@ public abstract class AsyncInitializationActivity
         if (!enableInstantStart) {
             triggerLayoutInflation();
         }
-        if (mLaunchBehindWorkaround != null) mLaunchBehindWorkaround.onSetContentView();
     }
 
     /** Controls the parameter of {@link NativeInitializationController#startBackgroundTasks}.*/
@@ -229,7 +224,7 @@ public abstract class AsyncInitializationActivity
             mFirstDrawComplete = true;
             StartSurfaceConfiguration.recordHistogram(FIRST_DRAW_COMPLETED_TIME_MS_UMA,
                     SystemClock.elapsedRealtime() - getOnCreateTimestampMs(),
-                    TabUiFeatureUtilities.supportInstantStart(isTablet(), this));
+                    isInstantStartEnabled());
             if (!mStartupDelayed) {
                 onFirstDrawComplete();
             }
@@ -397,19 +392,7 @@ public abstract class AsyncInitializationActivity
             return;
         } else {
             assert dispatchAction == LaunchIntentDispatcher.Action.FINISH_ACTIVITY_REMOVE_TASK;
-            ApiCompatibilityUtils.finishAndRemoveTask(this);
-
-            if (Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP
-                    || Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP_MR1) {
-                // On L ApiCompatibilityUtils.finishAndRemoveTask() sometimes fails, which causes
-                // NPE in onStart() later, see crbug.com/781396. We can't let this activity to
-                // start, and we don't want to crash either. So try finishing one more time and
-                // suicide if that fails.
-                if (!isFinishing()) {
-                    finish();
-                    if (!isFinishing()) Process.killProcess(Process.myPid());
-                }
-            }
+            finishAndRemoveTask();
         }
         overridePendingTransition(0, R.anim.no_anim);
     }
@@ -527,7 +510,6 @@ public abstract class AsyncInitializationActivity
         mFirstResumePending = false;
 
         mNativeInitializationController.onResume();
-        if (mLaunchBehindWorkaround != null) mLaunchBehindWorkaround.onResume();
     }
 
     @CallSuper
@@ -535,7 +517,6 @@ public abstract class AsyncInitializationActivity
     public void onPause() {
         mNativeInitializationController.onPause();
         super.onPause();
-        if (mLaunchBehindWorkaround != null) mLaunchBehindWorkaround.onPause();
     }
 
     @CallSuper
@@ -725,6 +706,13 @@ public abstract class AsyncInitializationActivity
     }
 
     /**
+     * Returns whether the instant start is enabled.
+     */
+    protected boolean isInstantStartEnabled() {
+        return TabUiFeatureUtilities.supportInstantStart(isTablet(), this);
+    }
+
+    /**
      * Get current smallest screen width in dp. This method uses {@link WindowManager} on
      * Android R and above; otherwise, {@link DisplayUtil#getSmallestWidth(DisplayAndroid)}.
      *
@@ -866,65 +854,6 @@ public abstract class AsyncInitializationActivity
      */
     public MultiWindowModeStateDispatcher getMultiWindowModeStateDispatcher() {
         return mMultiWindowModeStateDispatcher;
-    }
-
-    /**
-     * Lollipop (pre-MR1) makeTaskLaunchBehind() workaround.
-     *
-     * Our activity's surface is destroyed at the end of the new activity animation
-     * when ActivityOptions.makeTaskLaunchBehind() is used, which causes a crash.
-     * Making everything invisible when paused prevents the crash, since view changes
-     * will not trigger draws to the missing surface. However, we need to wait until
-     * after the first draw to make everything invisible, as the activity launch
-     * animation needs a full frame (or it will delay the animation excessively).
-     */
-    private final LaunchBehindWorkaround mLaunchBehindWorkaround =
-            (Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP)
-                    ? new LaunchBehindWorkaround()
-                    : null;
-
-    private class LaunchBehindWorkaround {
-        private boolean mPaused;
-
-        private View getDecorView() {
-            return getWindow().getDecorView();
-        }
-
-        private ViewTreeObserver getViewTreeObserver() {
-            return getDecorView().getViewTreeObserver();
-        }
-
-        private void onPause() {
-            mPaused = true;
-        }
-
-        public void onResume() {
-            mPaused = false;
-            getDecorView().setVisibility(View.VISIBLE);
-        }
-
-        public void onSetContentView() {
-            getViewTreeObserver().addOnPreDrawListener(mPreDrawListener);
-        }
-
-        // Note, we probably want onDrawListener here, but it isn't being called
-        // when I add this to the decorView. However, it should be the same for
-        // this purpose as long as no other pre-draw listener returns false.
-        private final OnPreDrawListener mPreDrawListener = new OnPreDrawListener() {
-            @Override
-            public boolean onPreDraw() {
-                mHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (mPaused) {
-                            getDecorView().setVisibility(View.GONE);
-                        }
-                        getViewTreeObserver().removeOnPreDrawListener(mPreDrawListener);
-                    }
-                });
-                return true;
-            }
-        };
     }
 
     @Override

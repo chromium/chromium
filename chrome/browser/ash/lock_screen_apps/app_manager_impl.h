@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,23 +7,30 @@
 
 #include <string>
 
-#include "base/callback.h"
+#include "base/callback_forward.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "base/time/time.h"
 #include "chrome/browser/ash/lock_screen_apps/app_manager.h"
 #include "chrome/browser/ash/note_taking_helper.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/browser/uninstall_reason.h"
+#include "extensions/browser/unloaded_extension_reason.h"
 
 class Profile;
 
 namespace base {
 class TickClock;
+class TimeTicks;
+}  // namespace base
+
+namespace content {
+class BrowserContext;
 }
 
 namespace extensions {
 class Extension;
-class ExtensionRegistry;
 }  // namespace extensions
 
 namespace lock_screen_apps {

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,9 @@
 #include <utility>
 
 #include "base/timer/timer.h"
+#include "chrome/browser/apps/app_service/metrics/app_platform_input_metrics.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
+#include "chrome/browser/apps/app_service/metrics/website_metrics.h"
 #include "chrome/browser/profiles/profile.h"
 
 class PrefRegistrySimple;
@@ -43,12 +45,22 @@ class AppPlatformMetricsService {
     return app_platform_app_metrics_.get();
   }
 
+  void SetWebsiteMetricsForTesting(
+      std::unique_ptr<apps::WebsiteMetrics> website_metrics);
+
  private:
+  friend class AppPlatformInputMetricsTest;
+  friend class WebsiteMetricsBrowserTest;
+
   // Helper function to check if a new day has arrived.
   void CheckForNewDay();
 
   // Helper function to check if 5 mintues have arrived.
   void CheckForFiveMinutes();
+
+  // Helper function to check if the reporting interval for noisy AppKMs has
+  // arrived to report noisy AppKMs events.
+  void CheckForNoisyAppKMReportingInterval();
 
   Profile* const profile_;
 
@@ -60,7 +72,13 @@ class AppPlatformMetricsService {
   // A periodic timer that checks if five minutes have arrived.
   base::RepeatingTimer five_minutes_timer_;
 
+  // A periodic timer that checks if the reporting interval for noisy AppKMs has
+  // arrived to report noisy AppKM events.
+  base::RepeatingTimer noisy_appkm_reporting_interval_timer_;
+
   std::unique_ptr<apps::AppPlatformMetrics> app_platform_app_metrics_;
+  std::unique_ptr<apps::AppPlatformInputMetrics> app_platform_input_metrics_;
+  std::unique_ptr<apps::WebsiteMetrics> website_metrics_;
 };
 
 }  // namespace apps

@@ -1,14 +1,14 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Copyright 2014 Blake Embrey (hello@blakeembrey.com)
 // Use of this source code is governed by an MIT-style license that can be
 // found in the LICENSE file or at https://opensource.org/licenses/MIT.
 
 #include "third_party/liburlpattern/tokenize.h"
 
-#include "base/compiler_specific.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "third_party/icu/source/common/unicode/uchar.h"
 #include "third_party/icu/source/common/unicode/utf8.h"
+#include "third_party/liburlpattern/utils.h"
 
 // The following code is a translation from the path-to-regexp typescript at:
 //
@@ -22,24 +22,6 @@ bool IsASCII(UChar32 c) {
   // Characters should be valid ASCII code points:
   // https://infra.spec.whatwg.org/#ascii-code-point
   return c >= 0x00 && c <= 0x7f;
-}
-
-bool IsNameCodepoint(UChar32 c, bool first_codepoint) {
-  // Require group names to follow the same character restrictions as
-  // javascript identifiers.  This code originates from v8 at:
-  //
-  // https://source.chromium.org/chromium/chromium/src/+/master:v8/src/strings/char-predicates.cc;l=17-34;drc=be014256adea1552d4a044ef80616cdab6a7d549
-  //
-  // We deviate from js identifiers, however, in not support the backslash
-  // character.  This is mainly used in js identifiers to allow escaped
-  // unicode sequences to be written in ascii.  The js engine, however,
-  // should take care of this long before we reach this level of code.  So
-  // we don't need to handle it here.
-  if (first_codepoint) {
-    return u_hasBinaryProperty(c, UCHAR_ID_START) || c == '$' || c == '_';
-  }
-  return u_hasBinaryProperty(c, UCHAR_ID_CONTINUE) || c == '$' || c == '_' ||
-         c == 0x200c || c == 0x200d;
 }
 
 class Tokenizer {
@@ -259,7 +241,7 @@ class Tokenizer {
   // `codepoint_`.  In addition, `next_index_` is updated to the codepoint to be
   // read next.  Returns true iff the codepoint was read successfully. On
   // success, `codepoint_` is non-negative.
-  bool Next() WARN_UNUSED_RESULT {
+  [[nodiscard]] bool Next() {
     U8_NEXT(pattern_.data(), next_index_, pattern_.size(), codepoint_);
     return codepoint_ >= 0;
   }
@@ -268,7 +250,7 @@ class Tokenizer {
   // `codepoint_`.  In addition, `next_index_` is updated to the codepoint to be
   // read next.  Returns true iff the codepoint was read successfully. On
   // success, `codepoint_` is non-negative.
-  bool NextAt(size_t index) WARN_UNUSED_RESULT {
+  [[nodiscard]] bool NextAt(size_t index) {
     next_index_ = index;
     return Next();
   }

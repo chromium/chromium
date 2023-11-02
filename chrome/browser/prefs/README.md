@@ -53,16 +53,11 @@ Visually such settings are typically grayed out to prevent confusing the user
 but nothing prevents C++ from setting a user pref that doesn't take effect.
 
 ## Deleting an old pref
-Deleted prefs should be left in a delete-self state for 1 year in an attempt to
+_Most_ deleted prefs should be left in a delete-self state for 1 year to help
 avoid leaving unused text in JSON files storing User Prefs. To avoid leaving a
 bunch of TODOs and pinging owners to cleanup, you will be asked to follow-up
 your CL with another CL that removes 1+ year old deletions; someone else will
-cleanup after you in 1 year.
-
-0. If the pref is also a policy, you will need to mark it deprecated as
-   described in
-   [add_new_policy.md](https://chromium.googlesource.com/chromium/src/+/main/docs/enterprise/add_new_policy.md#deprecating-a-policy).
-   Deleting the pref logic (steps below) will need to wait a few milestones.
+clean up after you in 1 year.
 
 1. Move the pref name declaration to the anonymous namespace of
    [chrome/browser/prefs/browser_prefs.cc](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/prefs/browser_prefs.cc)
@@ -77,6 +72,16 @@ cleanup after you in 1 year.
 1. In a follow-up CL, delete any 1+ year old `ClearPref()` calls in
    browser_prefs.cc; someone else will clean up after you in 1 year.
 
+### Deleting an old pref exposed by a policy
+If the pref is exposed via policy, you will need to mark the policy as
+deprecated by following the steps in [add_new_policy.md](https://chromium.googlesource.com/chromium/src/+/main/docs/enterprise/add_new_policy.md#deprecating-a-policy).
+Deleting the pref logic (steps above) will then need to wait a few milestones.
+
+Note: If the pref was _only_ exposed as a policy in the Managed Prefs (with no
+UI to allow an end-user to adjust the pref) then there is no need to set the
+pref to a delete-self state using the steps above, because the pref will
+never have been written to User Prefs JSON.
+
 ## Migrating a pref
 Instead of merely deleting a pref you might want to run migration code from an
 old to a new pref. This uses the same hooks as deletion and will be left in
@@ -86,6 +91,13 @@ invoked as part of initializing each `Profile`. In both cases this is before
 each `PrefService` is query-able by the rest of //chrome, your code can
 therefore assume the migration has taken place if it's accessing the
 `PrefService` via an initialized `BrowserProcess` or `Profile`.
+
+Note that this code in browser_prefs.cc does *not* run on iOS, so if you're
+migrating a pref that also is used on iOS, then the pref may also need to be
+migrated or cleared specifically for iOS as well. This could be by doing the
+migration in feature code that's called by all platforms instead of here, or by
+calling migration code in the appropriate place for iOS specifically, e.g.
+[ios/chrome/browser/prefs/browser_prefs.mm](https://source.chromium.org/chromium/chromium/src/+/main:ios/chrome/browser/prefs/browser_prefs.mm).
 
 As per [deleting an old pref](#deleting-an-old-pref), if the old pref is also a
 policy, you will need to mark it deprecated for a few milestones first as

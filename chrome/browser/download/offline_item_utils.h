@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,6 +26,9 @@ class OfflineItemUtils {
       const std::string& name_space,
       download::DownloadItem* item);
 
+  static offline_items_collection::ContentId GetContentIdForDownload(
+      download::DownloadItem* download);
+
   static std::string GetDownloadNamespacePrefix(bool is_off_the_record);
 
   static bool IsDownload(const offline_items_collection::ContentId& id);
@@ -48,16 +51,6 @@ class OfflineItemUtils {
   // offline_items_collection::RenameResult.
   static RenameResult ConvertDownloadRenameResultToRenameResult(
       DownloadRenameResult download_rename_result);
-
-  // Converts OfflineItemSchedule to DownloadSchedule.
-  static absl::optional<download::DownloadSchedule> ToDownloadSchedule(
-      absl::optional<offline_items_collection::OfflineItemSchedule>
-          offline_item_schedule);
-
-  // Converts DownloadSchedule to OfflineItemSchedule.
-  static absl::optional<offline_items_collection::OfflineItemSchedule>
-  ToOfflineItemSchedule(
-      absl::optional<download::DownloadSchedule> download_schedule);
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_OFFLINE_ITEM_UTILS_H_

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,9 @@
 #include "base/test/task_environment.h"
 #include "chrome/browser/upgrade_detector/build_state.h"
 #include "chrome/browser/upgrade_detector/mock_build_state_observer.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/update_engine/fake_update_engine_client.h"
-#include "chromeos/dbus/update_engine/update_engine.pb.h"
+#include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
+#include "chromeos/ash/components/dbus/update_engine/update_engine.pb.h"
+#include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -25,14 +25,8 @@ using ::testing::Property;
 class InstalledVersionUpdaterTest : public ::testing::Test {
  protected:
   InstalledVersionUpdaterTest() {
-    // Create the fake update engine client, hold a pointer to it, and hand
-    // ownership of it off to the DBus thread manager.
-    auto fake_update_engine_client =
-        std::make_unique<chromeos::FakeUpdateEngineClient>();
-    fake_update_engine_client_ = fake_update_engine_client.get();
-    chromeos::DBusThreadManager::Initialize();
-    chromeos::DBusThreadManager::GetSetterForTesting()->SetUpdateEngineClient(
-        std::move(fake_update_engine_client));
+    fake_update_engine_client_ =
+        ash::UpdateEngineClient::InitializeFakeForTest();
 
     build_state_.AddObserver(&mock_observer_);
   }
@@ -41,7 +35,7 @@ class InstalledVersionUpdaterTest : public ::testing::Test {
     build_state_.RemoveObserver(&mock_observer_);
 
     // Be kind; rewind.
-    chromeos::DBusThreadManager::Shutdown();
+    ash::UpdateEngineClient::Shutdown();
   }
 
   void NotifyStatusChanged(update_engine::StatusResult status) {
@@ -53,7 +47,7 @@ class InstalledVersionUpdaterTest : public ::testing::Test {
   BuildState build_state_;
 
  private:
-  chromeos::FakeUpdateEngineClient* fake_update_engine_client_;  // Not owned.
+  ash::FakeUpdateEngineClient* fake_update_engine_client_;  // Not owned.
 };
 
 // Tests that an unrelated status change notification does not push data to the

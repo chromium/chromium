@@ -1,4 +1,4 @@
-// Copyright 2015 The Crashpad Authors. All rights reserved.
+// Copyright 2015 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,6 +14,8 @@
 
 #include <intrin.h>
 #include <windows.h>
+
+#include <ostream>
 
 #include "base/check_op.h"
 #include "client/crashpad_client.h"

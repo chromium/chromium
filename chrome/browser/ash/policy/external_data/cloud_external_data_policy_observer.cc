@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,23 +9,25 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/settings/cros_settings_names.h"
-#include "ash/components/settings/cros_settings_provider.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
-#include "base/logging.h"
 #include "base/values.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
+#include "chrome/browser/ash/policy/handlers/configuration_policy_handler_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/ash/components/settings/cros_settings_provider.h"
+#include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/core/common/external_data_fetcher.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/user_manager/user.h"
+
 namespace policy {
 
 // Helper class that observes a policy for a logged-in user, notifying the
@@ -60,7 +62,7 @@ CloudExternalDataPolicyObserver::PolicyServiceObserver::PolicyServiceObserver(
     : parent_(parent), user_id_(user_id), policy_service_(policy_service) {
   policy_service_->AddObserver(POLICY_DOMAIN_CHROME, this);
 
-  if (!IsDeviceLocalAccountUser(user_id, NULL)) {
+  if (!IsDeviceLocalAccountUser(user_id, nullptr)) {
     // Notify |parent_| if the external data reference for |user_id_| is set
     // during login. This is omitted for device-local accounts because their
     // policy is available before login and the external data reference will
@@ -151,9 +153,9 @@ void CloudExternalDataPolicyObserver::Init() {
 void CloudExternalDataPolicyObserver::OnUserProfileLoaded(
     const AccountId& account_id) {
   Profile* profile =
-      chromeos::ProfileHelper::Get()->GetProfileByAccountId(account_id);
+      ash::ProfileHelper::Get()->GetProfileByAccountId(account_id);
   const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+      ash::ProfileHelper::Get()->GetUserByProfile(profile);
   if (!user) {
     NOTREACHED();
     return;
@@ -203,7 +205,7 @@ void CloudExternalDataPolicyObserver::OnPolicyUpdated(
         device_local_account_entries_.find(user_id);
     if (it != device_local_account_entries_.end()) {
       device_local_account_entries_.erase(it);
-      HandleExternalDataPolicyUpdate(user_id, NULL);
+      HandleExternalDataPolicyUpdate(user_id, nullptr);
     }
     return;
   }
@@ -231,7 +233,7 @@ void CloudExternalDataPolicyObserver::RetrieveDeviceLocalAccounts() {
   }
 
   std::vector<DeviceLocalAccount> device_local_account_list =
-      policy::GetDeviceLocalAccounts(cros_settings_);
+      GetDeviceLocalAccounts(cros_settings_);
   std::set<std::string> device_local_accounts;
   for (std::vector<DeviceLocalAccount>::const_iterator it =
            device_local_account_list.begin();
@@ -248,7 +250,7 @@ void CloudExternalDataPolicyObserver::RetrieveDeviceLocalAccounts() {
       // When a device-local account whose external data reference was set is
       // removed, emit a notification that the external data reference has been
       // cleared.
-      HandleExternalDataPolicyUpdate(user_id, NULL);
+      HandleExternalDataPolicyUpdate(user_id, nullptr);
     } else {
       ++it;
     }
@@ -263,7 +265,9 @@ void CloudExternalDataPolicyObserver::RetrieveDeviceLocalAccounts() {
 void CloudExternalDataPolicyObserver::HandleExternalDataPolicyUpdate(
     const std::string& user_id,
     const PolicyMap::Entry* entry) {
-  if (!entry) {
+  PolicyErrorMap error_map;
+  if (!entry || !ExternalDataPolicyHandler::CheckPolicySettings(
+                    policy_.c_str(), entry, &error_map)) {
     delegate_->OnExternalDataCleared(policy_, user_id);
     fetch_weak_ptrs_.erase(user_id);
     return;

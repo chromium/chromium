@@ -92,7 +92,7 @@ ConversionResult ConvertLatin1ToUTF8(const LChar** source_start,
       case 2:
         *--target = (char)((ch | kByteMark) & kByteMask);
         ch >>= 6;
-        FALLTHROUGH;
+        [[fallthrough]];
       case 1:
         *--target = (char)(ch | kFirstByteMark[bytes_to_write]);
     }
@@ -171,15 +171,15 @@ ConversionResult ConvertUTF16ToUTF8(const UChar** source_start,
       case 4:
         *--target = (char)((ch | kByteMark) & kByteMask);
         ch >>= 6;
-        FALLTHROUGH;
+        [[fallthrough]];
       case 3:
         *--target = (char)((ch | kByteMark) & kByteMask);
         ch >>= 6;
-        FALLTHROUGH;
+        [[fallthrough]];
       case 2:
         *--target = (char)((ch | kByteMark) & kByteMask);
         ch >>= 6;
-        FALLTHROUGH;
+        [[fallthrough]];
       case 1:
         *--target = (char)(ch | kFirstByteMark[bytes_to_write]);
     }
@@ -202,11 +202,11 @@ static bool IsLegalUTF8(const unsigned char* source, int length) {
     case 4:
       if ((a = (*--srcptr)) < 0x80 || a > 0xBF)
         return false;
-      FALLTHROUGH;
+      [[fallthrough]];
     case 3:
       if ((a = (*--srcptr)) < 0x80 || a > 0xBF)
         return false;
-      FALLTHROUGH;
+      [[fallthrough]];
     case 2:
       if ((a = (*--srcptr)) > 0xBF)
         return false;
@@ -233,7 +233,7 @@ static bool IsLegalUTF8(const unsigned char* source, int length) {
           if (a < 0x80)
             return false;
       }
-      FALLTHROUGH;
+      [[fallthrough]];
 
     case 1:
       if (*source >= 0x80 && *source < 0xC2)
@@ -261,23 +261,23 @@ static inline UChar32 ReadUTF8Sequence(const char*& sequence, unsigned length) {
     case 6:
       character += static_cast<unsigned char>(*sequence++);
       character <<= 6;
-      FALLTHROUGH;
+      [[fallthrough]];
     case 5:
       character += static_cast<unsigned char>(*sequence++);
       character <<= 6;
-      FALLTHROUGH;
+      [[fallthrough]];
     case 4:
       character += static_cast<unsigned char>(*sequence++);
       character <<= 6;
-      FALLTHROUGH;
+      [[fallthrough]];
     case 3:
       character += static_cast<unsigned char>(*sequence++);
       character <<= 6;
-      FALLTHROUGH;
+      [[fallthrough]];
     case 2:
       character += static_cast<unsigned char>(*sequence++);
       character <<= 6;
-      FALLTHROUGH;
+      [[fallthrough]];
     case 1:
       character += static_cast<unsigned char>(*sequence++);
   }
@@ -436,7 +436,7 @@ ALWAYS_INLINE bool EqualWithUTF8Internal(const CharType* a,
 
     if (!IsLegalUTF8(reinterpret_cast<const unsigned char*>(b),
                      utf8_sequence_length))
-      return 0;
+      return false;
 
     UChar32 character = ReadUTF8Sequence(b, utf8_sequence_length);
     DCHECK(!IsASCII(character));

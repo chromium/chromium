@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,8 +39,8 @@ class SearchHostToURLsMap {
   // Removes the TemplateURL from the lookup.
   void Remove(const TemplateURL* template_url);
 
-  // Returns the first TemplateURL found with a URL using the specified |host|,
-  // or NULL if there are no such TemplateURLs
+  // Returns the best TemplateURL found with a URL using the specified |host|,
+  // or nullptr if there are no such TemplateURLs
   TemplateURL* GetTemplateURLForHost(base::StringPiece host);
 
   // Return the TemplateURLSet for the given the |host| or NULL if there are

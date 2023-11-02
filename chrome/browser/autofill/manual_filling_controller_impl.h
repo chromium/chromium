@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -58,8 +58,7 @@ class ManualFillingControllerImpl
                        bool enabled) const override;
   void RequestAccessorySheet(
       autofill::AccessoryTabType tab_type,
-      base::OnceCallback<void(const autofill::AccessorySheetData&)> callback)
-      override;
+      base::OnceCallback<void(autofill::AccessorySheetData)> callback) override;
 
   gfx::NativeView container_view() const override;
 
@@ -138,9 +137,6 @@ class ManualFillingControllerImpl
   AccessoryController* GetControllerForAction(
       autofill::AccessoryAction action) const;
 
-  // The tab for which this class is scoped.
-  content::WebContents* web_contents_ = nullptr;
-
   // This set contains sources to be shown to the user.
   base::flat_set<FillingSource> available_sources_;
 
@@ -164,7 +160,7 @@ class ManualFillingControllerImpl
   // member so the view can be created in the constructor with a fully set up
   // controller instance.
   std::unique_ptr<ManualFillingViewInterface> view_ =
-      ManualFillingViewInterface::Create(this, web_contents_);
+      ManualFillingViewInterface::Create(this, &GetWebContents());
 
   base::WeakPtrFactory<ManualFillingControllerImpl> weak_factory_{this};
 

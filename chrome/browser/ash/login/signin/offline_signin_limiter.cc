@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,8 +22,9 @@
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/reauth_stats.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/components/proximity_auth/screenlock_bridge.h"
+#include "chromeos/ash/components/proximity_auth/screenlock_bridge.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
@@ -367,9 +368,9 @@ void OfflineSigninLimiter::ForceOnlineLogin() {
   user_manager::UserManager::Get()->SaveForceOnlineSignin(user->GetAccountId(),
                                                           true);
   if (user->using_saml())
-    RecordReauthReason(user->GetAccountId(), ReauthReason::SAML_REAUTH_POLICY);
+    RecordReauthReason(user->GetAccountId(), ReauthReason::kSamlReauthPolicy);
   else
-    RecordReauthReason(user->GetAccountId(), ReauthReason::GAIA_REAUTH_POLICY);
+    RecordReauthReason(user->GetAccountId(), ReauthReason::kGaiaReauthPolicy);
   offline_signin_limit_timer_->Stop();
 }
 
@@ -392,10 +393,10 @@ void OfflineSigninLimiter::ForceOnlineLockScreenReauth() {
 
   if (user->using_saml()) {
     RecordReauthReason(user->GetAccountId(),
-                       ReauthReason::SAML_LOCK_SCREEN_REAUTH_POLICY);
+                       ReauthReason::kSamlLockScreenReauthPolicy);
   } else {
     RecordReauthReason(user->GetAccountId(),
-                       ReauthReason::GAIA_LOCK_SCREEN_REAUTH_POLICY);
+                       ReauthReason::kGaiaLockScreenReauthPolicy);
   }
   offline_lock_screen_signin_limit_timer_->Stop();
 }
@@ -410,8 +411,9 @@ void OfflineSigninLimiter::UpdateOnlineSigninData(
     return;
   }
 
-  user_manager::known_user::SetLastOnlineSignin(user->GetAccountId(), time);
-  user_manager::known_user::SetOfflineSigninLimit(user->GetAccountId(), limit);
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  known_user.SetLastOnlineSignin(user->GetAccountId(), time);
+  known_user.SetOfflineSigninLimit(user->GetAccountId(), limit);
 }
 
 }  // namespace ash

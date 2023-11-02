@@ -1,10 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.components.paintpreview.player.frame;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Rect;
@@ -37,6 +38,7 @@ public class PlayerFrameView extends FrameLayout {
     private List<View> mSubFrameViews;
     private List<Rect> mSubFrameRects;
     private Matrix mScaleMatrix;
+    private Matrix mOffset = new Matrix();
     protected WebContentsAccessibility mWebContentsAccessibility;
 
     /**
@@ -103,12 +105,16 @@ public class PlayerFrameView extends FrameLayout {
         mSubFrameRects = subFrameRects;
     }
 
+    void updateOffset(int left, int top) {
+        mOffset.setTranslate(left, top);
+    }
+
     void updateViewPort(int left, int top, int right, int bottom) {
         mBitmapPainter.updateViewPort(left, top, right, bottom);
         layoutSubFrames();
     }
 
-    void updateBitmapMatrix(CompressibleBitmap[][] bitmapMatrix) {
+    void updateBitmapMatrix(Bitmap[][] bitmapMatrix) {
         mBitmapPainter.updateBitmapMatrix(bitmapMatrix);
     }
 
@@ -127,6 +133,7 @@ public class PlayerFrameView extends FrameLayout {
     @Override
     protected void onDraw(Canvas canvas) {
         canvas.save();
+        canvas.concat(mOffset);
         canvas.concat(mScaleMatrix);
         mBitmapPainter.onDraw(canvas);
         canvas.restore();

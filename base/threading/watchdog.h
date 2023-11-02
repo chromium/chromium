@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,7 @@
 
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/platform_thread.h"
@@ -75,7 +75,7 @@ class BASE_EXPORT Watchdog {
    private:
     void SetThreadName() const;
 
-    Watchdog* watchdog_;
+    raw_ptr<Watchdog> watchdog_;
   };
 
   enum State { ARMED, DISARMED, SHUTDOWN, JOINABLE };

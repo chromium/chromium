@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,14 +18,15 @@
  * @typedef {{
  *   title:  HTMLAnchorElement,
  *   chromeVoxHint:  OobeModalDialogElement,
- *   welcomeAnimation:  CrLottieElement,
+ *   welcomeAnimation:  OobeCrLottie,
  * }}
  */
 OobeWelcomeDialogBase.$;
 
 /* #export */ class OobeWelcomeDialog extends OobeWelcomeDialogBase {
-
-  static get is() { return 'oobe-welcome-dialog'; }
+  static get is() {
+    return 'oobe-welcome-dialog';
+  }
 
   /* #html_template_placeholder */
 
@@ -63,6 +64,8 @@ OobeWelcomeDialogBase.$;
         },
         readOnly: true,
       },
+
+      isQuickStartEnabled: Boolean,
     };
   }
 
@@ -81,10 +84,11 @@ OobeWelcomeDialogBase.$;
      * to this dialog from Language / Timezone Selection dialogs.
      */
     this.focusedElement_ = null;
+
+    this.isQuickStartEnabled = false;
   }
 
   onBeforeShow() {
-    document.documentElement.setAttribute('new-layout', '');
     this.setVideoPlay_(true);
   }
 
@@ -105,11 +109,19 @@ OobeWelcomeDialogBase.$;
 
   onNextClicked_() {
     this.focusedElement_ = 'getStarted';
-    this.dispatchEvent(new CustomEvent('next-button-clicked', { bubbles: true, composed: true }));
+    this.dispatchEvent(new CustomEvent(
+        'next-button-clicked', {bubbles: true, composed: true}));
+  }
+
+  onQuickStartClicked_() {
+    assert(this.isQuickStartEnabled);
+    this.dispatchEvent(new CustomEvent(
+        'quick-start-clicked', {bubbles: true, composed: true}));
   }
 
   onDebuggingLinkClicked_() {
-    this.dispatchEvent(new CustomEvent('enable-debugging-clicked', { bubbles: true, composed: true }));
+    this.dispatchEvent(new CustomEvent(
+        'enable-debugging-clicked', {bubbles: true, composed: true}));
   }
 
   /*
@@ -118,7 +130,8 @@ OobeWelcomeDialogBase.$;
     * @private
     */
   onTitleLongTouch_() {
-    this.dispatchEvent(new CustomEvent('launch-advanced-options', { bubbles: true, composed: true }));
+    this.dispatchEvent(new CustomEvent(
+        'launch-advanced-options', {bubbles: true, composed: true}));
   }
 
   attached() {
@@ -141,9 +154,10 @@ OobeWelcomeDialogBase.$;
     if (!this.focusedElement_) {
       this.focusedElement_ = 'getStarted';
     }
-    let focusedElement = this.$[this.focusedElement_];
-    if (focusedElement)
+    const focusedElement = this.$[this.focusedElement_];
+    if (focusedElement) {
       focusedElement.focus();
+    }
   }
 
   /*
@@ -151,7 +165,7 @@ OobeWelcomeDialogBase.$;
     * This replaces the show() function, in this class.
     */
   updateHidden_(newValue, oldValue) {
-    let visible = !newValue;
+    const visible = !newValue;
     if (visible) {
       this.focus();
     }
@@ -166,9 +180,10 @@ OobeWelcomeDialogBase.$;
    * @suppress {missingProperties}
    */
   setVideoPlay_(play) {
-    if (this.isMeet_)
+    if (this.isMeet_) {
       return;
-    this.$.welcomeAnimation.setPlay(play);
+    }
+    this.$.welcomeAnimation.playing = play;
   }
 
   /**

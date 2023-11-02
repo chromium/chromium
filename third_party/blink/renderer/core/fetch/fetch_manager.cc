@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,13 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/header_util.h"
 #include "services/network/public/cpp/request_mode.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "services/network/public/mojom/trust_tokens.mojom-blink.h"
@@ -42,7 +44,6 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
-#include "third_party/blink/renderer/core/inspector/thread_debugger.h"
 #include "third_party/blink/renderer/core/loader/subresource_integrity_helper.h"
 #include "third_party/blink/renderer/core/loader/threadable_loader.h"
 #include "third_party/blink/renderer/core/loader/threadable_loader_client.h"
@@ -53,8 +54,9 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/bindings/thread_debugger.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/cors/cors.h"
@@ -79,10 +81,9 @@
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
-#include "v8.h"
+#include "v8/include/v8.h"
 
 using network::mojom::CredentialsMode;
 using network::mojom::FetchResponseType;
@@ -97,7 +98,7 @@ bool HasNonEmptyLocationHeader(const FetchHeaderList* headers) {
   String value;
   if (!headers->Get(http_names::kLocation, value))
     return false;
-  return !value.IsEmpty();
+  return !value.empty();
 }
 
 const char* SerializeTrustTokenOperationType(
@@ -192,7 +193,7 @@ class FetchManager::Loader final
         size_t available;
         result = body_->BeginRead(&buffer, &available);
         if (result == Result::kOk) {
-          buffer_.Append(buffer, SafeCast<wtf_size_t>(available));
+          buffer_.Append(buffer, base::checked_cast<wtf_size_t>(available));
           result = body_->EndRead(available);
         }
         if (result == Result::kShouldWait)
@@ -450,13 +451,15 @@ void FetchManager::Loader::DidReceiveResponse(
       NOTREACHED();
       break;
   }
+  // TODO(crbug.com/1288221): Remove this once the investigation is done.
+  CHECK(tainted_response);
 
   response_has_no_store_header_ = response.CacheControlContainsNoStore();
 
   Response* r =
       Response::Create(resolver_->GetExecutionContext(), tainted_response);
   r->headers()->SetGuard(Headers::kImmutableGuard);
-  if (fetch_request_data_->Integrity().IsEmpty()) {
+  if (fetch_request_data_->Integrity().empty()) {
     resolver_->Resolve(r);
     resolver_.Clear();
   } else {
@@ -479,7 +482,7 @@ void FetchManager::Loader::DidReceiveCachedMetadata(mojo_base::BigBuffer data) {
 }
 
 void FetchManager::Loader::DidStartLoadingResponseBody(BytesConsumer& body) {
-  if (fetch_request_data_->Integrity().IsEmpty() &&
+  if (fetch_request_data_->Integrity().empty() &&
       !response_has_no_store_header_) {
     // BufferingBytesConsumer reads chunks from |bytes_consumer| as soon as
     // they get available to relieve backpressure.  Buffering starts after
@@ -505,7 +508,7 @@ void FetchManager::Loader::DidFinishLoading(uint64_t) {
 
   auto* window = DynamicTo<LocalDOMWindow>(execution_context_.Get());
   if (window && window->GetFrame() &&
-      cors::IsOkStatus(response_http_status_code_)) {
+      network::IsSuccessfulStatus(response_http_status_code_)) {
     window->GetFrame()->GetPage()->GetChromeClient().AjaxSucceeded(
         window->GetFrame());
   }
@@ -644,9 +647,7 @@ void FetchManager::Loader::Dispose() {
   // Prevent notification
   fetch_manager_ = nullptr;
   if (threadable_loader_) {
-    if (fetch_request_data_->Keepalive() &&
-        !base::FeatureList::IsEnabled(
-            network::features::kDisableKeepaliveFetch)) {
+    if (fetch_request_data_->Keepalive()) {
       threadable_loader_->Detach();
     } else {
       threadable_loader_->Cancel();
@@ -765,6 +766,7 @@ void FetchManager::Loader::PerformHTTPFetch() {
   request.SetFetchWindowId(fetch_request_data_->WindowId());
   request.SetTrustTokenParams(fetch_request_data_->TrustTokenParams());
   request.SetMode(fetch_request_data_->Mode());
+  request.SetTargetAddressSpace(fetch_request_data_->TargetAddressSpace());
 
   request.SetCredentialsMode(fetch_request_data_->Credentials());
   for (const auto& header : fetch_request_data_->HeaderList()->List()) {
@@ -788,20 +790,17 @@ void FetchManager::Loader::PerformHTTPFetch() {
             pending_remote;
         fetch_request_data_->Buffer()->DrainAsChunkedDataPipeGetter(
             resolver_->GetScriptState(),
-            pending_remote.InitWithNewPipeAndPassReceiver());
+            pending_remote.InitWithNewPipeAndPassReceiver(),
+            /*client=*/nullptr);
         request.MutableBody().SetStreamBody(std::move(pending_remote));
-        request.SetAllowHTTP1ForStreamingUpload(
-            fetch_request_data_->AllowHTTP1ForStreamingUpload());
       }
     }
   }
   request.SetCacheMode(fetch_request_data_->CacheMode());
   request.SetRedirectMode(fetch_request_data_->Redirect());
-  request.SetFetchImportanceMode(fetch_request_data_->Importance());
+  request.SetFetchPriorityHint(fetch_request_data_->FetchPriorityHint());
   request.SetPriority(fetch_request_data_->Priority());
   request.SetUseStreamOnResponse(true);
-  request.SetExternalRequestStateFromRequestorAddressSpace(
-      execution_context_->AddressSpace());
   request.SetReferrerString(fetch_request_data_->ReferrerString());
   request.SetReferrerPolicy(fetch_request_data_->GetReferrerPolicy());
 
@@ -862,7 +861,7 @@ void FetchManager::Loader::PerformDataFetch() {
   request.SetHttpMethod(fetch_request_data_->Method());
   request.SetCredentialsMode(network::mojom::CredentialsMode::kOmit);
   request.SetRedirectMode(RedirectMode::kError);
-  request.SetFetchImportanceMode(fetch_request_data_->Importance());
+  request.SetFetchPriorityHint(fetch_request_data_->FetchPriorityHint());
   request.SetPriority(fetch_request_data_->Priority());
   // We intentionally skip 'setExternalRequestStateFromRequestorAddressSpace',
   // as 'data:' can never be external.
@@ -888,7 +887,7 @@ void FetchManager::Loader::Failed(
   bool issue_only =
       base::FeatureList::IsEnabled(blink::features::kCORSErrorsIssueOnly) &&
       issue_id;
-  if (!message.IsEmpty() && !issue_only) {
+  if (!message.empty() && !issue_only) {
     // CORS issues are reported via network service instrumentation, with the
     // exception of early errors reported in FileIssueAndPerformNetworkError.
     auto* console_message = MakeGarbageCollected<ConsoleMessage>(
@@ -907,21 +906,19 @@ void FetchManager::Loader::Failed(
     } else {
       v8::Local<v8::Value> value = exception_.Get(state->GetIsolate());
       exception_.Reset();
-      if (RuntimeEnabledFeatures::ExceptionMetaDataForDevToolsEnabled()) {
-        ThreadDebugger* debugger = ThreadDebugger::From(state->GetIsolate());
-        if (devtools_request_id) {
-          debugger->GetV8Inspector()->associateExceptionData(
-              state->GetContext(), value,
-              V8AtomicString(state->GetIsolate(), "requestId"),
-              V8String(state->GetIsolate(), *devtools_request_id));
-        }
-        if (issue_id) {
-          debugger->GetV8Inspector()->associateExceptionData(
-              state->GetContext(), value,
-              V8AtomicString(state->GetIsolate(), "issueId"),
-              V8String(state->GetIsolate(),
-                       IdentifiersFactory::IdFromToken(*issue_id)));
-        }
+      ThreadDebugger* debugger = ThreadDebugger::From(state->GetIsolate());
+      if (devtools_request_id) {
+        debugger->GetV8Inspector()->associateExceptionData(
+            state->GetContext(), value,
+            V8AtomicString(state->GetIsolate(), "requestId"),
+            V8String(state->GetIsolate(), *devtools_request_id));
+      }
+      if (issue_id) {
+        debugger->GetV8Inspector()->associateExceptionData(
+            state->GetContext(), value,
+            V8AtomicString(state->GetIsolate(), "issueId"),
+            V8String(state->GetIsolate(),
+                     IdentifiersFactory::IdFromToken(*issue_id)));
       }
       resolver_->Reject(value);
     }
@@ -957,7 +954,8 @@ ScriptPromise FetchManager::Fetch(ScriptState* script_state,
       MakeGarbageCollected<Loader>(GetExecutionContext(), this, resolver,
                                    request, &script_state->World(), signal);
   loaders_.insert(loader);
-  signal->AddAlgorithm(WTF::Bind(&Loader::Abort, WrapWeakPersistent(loader)));
+  signal->AddAlgorithm(
+      WTF::BindOnce(&Loader::Abort, WrapWeakPersistent(loader)));
   // TODO(ricea): Reject the Response body with AbortError, not TypeError.
   loader->Start();
   return promise;

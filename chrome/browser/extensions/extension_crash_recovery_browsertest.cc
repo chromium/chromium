@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/navigation_controller.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -99,8 +98,9 @@ class ExtensionCrashRecoveryTest : public extensions::ExtensionBrowserTest {
     ASSERT_TRUE(extension_host);
     extensions::ProcessManager::FrameSet frames =
         GetProcessManager()->GetAllFrames();
-    ASSERT_NE(frames.end(),
-              frames.find(extension_host->host_contents()->GetMainFrame()));
+    ASSERT_NE(
+        frames.end(),
+        frames.find(extension_host->host_contents()->GetPrimaryMainFrame()));
     ASSERT_FALSE(GetProcessManager()->GetAllFrames().empty());
     ASSERT_TRUE(extension_host->IsRendererLive());
     extensions::ProcessMap* process_map =
@@ -473,12 +473,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrashRecoveryTest,
 
   extensions::TestExtensionRegistryObserver observer(GetExtensionRegistry());
   {
-    content::WindowedNotificationObserver notification_observer(
-        content::NOTIFICATION_LOAD_STOP,
-        content::Source<NavigationController>(&browser()
-                                                   ->tab_strip_model()
-                                                   ->GetActiveWebContents()
-                                                   ->GetController()));
+    content::LoadStopObserver notification_observer(
+        browser()->tab_strip_model()->GetActiveWebContents());
     chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
     notification_observer.Wait();
   }

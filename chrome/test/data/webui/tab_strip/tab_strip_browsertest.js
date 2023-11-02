@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,10 +19,6 @@ var TabStripTabListTest = class extends TabStripBrowserTest {
     return 'chrome://tab-strip.top-chrome/test_loader.html?module=tab_strip/tab_list_test.js';
   }
 };
-
-TEST_F('TabStripTabListTest', 'All', function() {
-  mocha.run();
-});
 
 var TabStripTabTest = class extends TabStripBrowserTest {
   get browsePreload() {

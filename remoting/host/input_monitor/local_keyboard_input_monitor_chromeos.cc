@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "remoting/host/chromeos/point_transformer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
@@ -22,6 +21,10 @@
 namespace remoting {
 
 namespace {
+
+bool IsInjectedByCrd(const ui::PlatformEvent& event) {
+  return event->source_device_id() == ui::ED_REMOTE_INPUT_DEVICE;
+}
 
 class LocalKeyboardInputMonitorChromeos : public LocalKeyboardInputMonitor {
  public:
@@ -106,6 +109,11 @@ void LocalKeyboardInputMonitorChromeos::Core::WillProcessEvent(
 
 void LocalKeyboardInputMonitorChromeos::Core::DidProcessEvent(
     const ui::PlatformEvent& event) {
+  // Do not pass on events remotely injected by CRD, as we're supposed to
+  // monitor for local input only.
+  if (IsInjectedByCrd(event))
+    return;
+
   ui::EventType type = ui::EventTypeFromNative(event);
   if (type == ui::ET_KEY_PRESSED) {
     ui::DomCode dom_code = ui::CodeFromNative(event);

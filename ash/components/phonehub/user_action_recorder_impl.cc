@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include "ash/components/phonehub/feature_status_provider.h"
 #include "base/metrics/histogram_functions.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 UserActionRecorderImpl::UserActionRecorderImpl(
@@ -18,10 +18,7 @@ UserActionRecorderImpl::UserActionRecorderImpl(
 UserActionRecorderImpl::~UserActionRecorderImpl() = default;
 
 void UserActionRecorderImpl::RecordUiOpened() {
-  if (feature_status_provider_->GetStatus() ==
-      FeatureStatus::kEnabledAndConnected) {
-    HandleUserAction(UserAction::kUiOpened);
-  }
+  HandleUserAction(UserAction::kUiOpened);
 }
 
 void UserActionRecorderImpl::RecordTetherConnectionAttempt() {
@@ -57,4 +54,4 @@ void UserActionRecorderImpl::HandleUserAction(UserAction action) {
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "components/omnibox/browser/location_bar_model.h"
 
 namespace gfx {
@@ -31,7 +32,8 @@ class TestLocationBarModel : public LocationBarModel {
   security_state::SecurityLevel GetSecurityLevel() const override;
   net::CertStatus GetCertStatus() const override;
   metrics::OmniboxEventProto::PageClassification GetPageClassification(
-      OmniboxFocusSource focus_source) override;
+      OmniboxFocusSource focus_source,
+      bool is_prefetch = false) override;
   const gfx::VectorIcon& GetVectorIcon() const override;
   std::u16string GetSecureDisplayText() const override;
   std::u16string GetSecureAccessibilityText() const override;
@@ -74,7 +76,7 @@ class TestLocationBarModel : public LocationBarModel {
   GURL url_;
   security_state::SecurityLevel security_level_ = security_state::NONE;
   net::CertStatus cert_status_ = 0;
-  const gfx::VectorIcon* icon_ = nullptr;
+  raw_ptr<const gfx::VectorIcon> icon_ = nullptr;
   bool should_display_url_ = false;
   bool offline_page_ = false;
   std::u16string secure_display_text_ = std::u16string();

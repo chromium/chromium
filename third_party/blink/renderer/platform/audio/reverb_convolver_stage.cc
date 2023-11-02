@@ -94,8 +94,9 @@ ReverbConvolverStage::ReverbConvolverStage(
   size_t half_size = fft_size / 2;
   if (!direct_mode_) {
     DCHECK_GE(total_delay, half_size);
-    if (total_delay >= half_size)
+    if (total_delay >= half_size) {
       total_delay -= half_size;
+    }
   }
 
   // We divide up the total delay, into pre and post delay sections so that we
@@ -104,8 +105,9 @@ ReverbConvolverStage::ReverbConvolverStage(
   // same time...
   size_t max_pre_delay_length = std::min(half_size, total_delay);
   pre_delay_length_ = total_delay > 0 ? render_phase % max_pre_delay_length : 0;
-  if (pre_delay_length_ > total_delay)
+  if (pre_delay_length_ > total_delay) {
     pre_delay_length_ = 0;
+  }
 
   post_delay_length_ = total_delay - pre_delay_length_;
   pre_read_write_index_ = 0;
@@ -129,8 +131,9 @@ void ReverbConvolverStage::ProcessInBackground(ReverbConvolver* convolver,
 void ReverbConvolverStage::Process(const float* source,
                                    uint32_t frames_to_process) {
   DCHECK(source);
-  if (!source)
+  if (!source) {
     return;
+  }
 
   // Deal with pre-delay stream : note special handling of zero delay.
 
@@ -144,8 +147,9 @@ void ReverbConvolverStage::Process(const float* source,
     bool is_pre_delay_safe =
         pre_read_write_index_ + frames_to_process <= pre_delay_buffer_.size();
     DCHECK(is_pre_delay_safe);
-    if (!is_pre_delay_safe)
+    if (!is_pre_delay_safe) {
       return;
+    }
 
     is_temporary_buffer_safe = frames_to_process <= temporary_buffer_.size();
 
@@ -162,8 +166,9 @@ void ReverbConvolverStage::Process(const float* source,
   }
 
   DCHECK(is_temporary_buffer_safe);
-  if (!is_temporary_buffer_safe)
+  if (!is_temporary_buffer_safe) {
     return;
+  }
 
   if (frames_processed_ < pre_delay_length_) {
     // For the first m_preDelayLength frames don't process the convolver,
@@ -175,12 +180,13 @@ void ReverbConvolverStage::Process(const float* source,
     // Now, run the convolution (into the delay buffer).
     // An expensive FFT will happen every fftSize / 2 frames.
     // We process in-place here...
-    if (!direct_mode_)
+    if (!direct_mode_) {
       fft_convolver_->Process(fft_kernel_.get(), pre_delayed_source,
                               temporary_buffer, frames_to_process);
-    else
+    } else {
       direct_convolver_->Process(pre_delayed_source, temporary_buffer,
                                  frames_to_process);
+    }
 
     // Now accumulate into reverb's accumulation buffer.
     accumulation_buffer_->Accumulate(temporary_buffer, frames_to_process,
@@ -194,18 +200,20 @@ void ReverbConvolverStage::Process(const float* source,
     pre_read_write_index_ += frames_to_process;
 
     DCHECK_LE(pre_read_write_index_, pre_delay_length_);
-    if (pre_read_write_index_ >= pre_delay_length_)
+    if (pre_read_write_index_ >= pre_delay_length_) {
       pre_read_write_index_ = 0;
+    }
   }
 
   frames_processed_ += frames_to_process;
 }
 
 void ReverbConvolverStage::Reset() {
-  if (!direct_mode_)
+  if (!direct_mode_) {
     fft_convolver_->Reset();
-  else
+  } else {
     direct_convolver_->Reset();
+  }
   pre_delay_buffer_.Zero();
   accumulation_read_index_ = 0;
   input_read_index_ = 0;

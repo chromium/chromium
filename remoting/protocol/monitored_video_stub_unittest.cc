@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,8 +24,7 @@ using ::testing::AnyNumber;
 using ::testing::AtMost;
 using ::testing::InvokeWithoutArgs;
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 static const int64_t kTestOverrideDelayMilliseconds = 1;
 
@@ -97,5 +96,4 @@ TEST_F(MonitoredVideoStubTest, OnChannelStayDisconnected) {
   base::RunLoop().Run();
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

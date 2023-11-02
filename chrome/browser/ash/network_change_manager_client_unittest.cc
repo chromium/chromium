@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,10 @@
 
 #include <string>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/string_split.h"
+#include "chromeos/ash/components/network/network_handler_test_helper.h"
+#include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/dbus/power/power_manager_client.h"
-#include "chromeos/network/network_handler_test_helper.h"
-#include "chromeos/network/network_state.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/network_change_notifier_posix.h"
@@ -93,10 +92,12 @@ TEST(NetworkChangeManagerClientTest, ConnectionTypeFromShill) {
        NetworkChangeNotifier::CONNECTION_4G},
       {shill::kTypeCellular, shill::kNetworkTechnologyLteAdvanced,
        NetworkChangeNotifier::CONNECTION_4G},
+      {shill::kTypeCellular, shill::kNetworkTechnology5gNr,
+       NetworkChangeNotifier::CONNECTION_5G},
       {shill::kTypeCellular, "unknown technology",
        NetworkChangeNotifier::CONNECTION_2G}};
 
-  for (size_t i = 0; i < base::size(type_mappings); ++i) {
+  for (size_t i = 0; i < std::size(type_mappings); ++i) {
     NetworkChangeNotifier::ConnectionType type =
         NetworkChangeManagerClient::ConnectionTypeFromShill(
             type_mappings[i].shill_type, type_mappings[i].technology);
@@ -118,7 +119,7 @@ TEST(NetworkChangeManagerClientTest,
 
   // Initialize DBus clients and clear services so NetworkHandler thinks we're
   // offline.
-  PowerManagerClient::InitializeFake();
+  chromeos::PowerManagerClient::InitializeFake();
   NetworkHandlerTestHelper network_handler_test_helper;
   network_handler_test_helper.service_test()->ClearServices();
 
@@ -133,7 +134,7 @@ TEST(NetworkChangeManagerClientTest,
             net::NetworkChangeNotifier::GetConnectionType());
 
   client.reset();
-  PowerManagerClient::Shutdown();
+  chromeos::PowerManagerClient::Shutdown();
 }
 
 class NetworkChangeManagerClientUpdateTest : public testing::Test {
@@ -149,7 +150,7 @@ class NetworkChangeManagerClientUpdateTest : public testing::Test {
 
   void SetUp() override {
     network_change_notifier_ = net::NetworkChangeNotifier::CreateIfNeeded();
-    PowerManagerClient::InitializeFake();
+    chromeos::PowerManagerClient::InitializeFake();
     proxy_ = std::make_unique<NetworkChangeManagerClient>(
         static_cast<net::NetworkChangeNotifierPosix*>(
             network_change_notifier_.get()));
@@ -157,7 +158,7 @@ class NetworkChangeManagerClientUpdateTest : public testing::Test {
 
   void TearDown() override {
     proxy_.reset();
-    PowerManagerClient::Shutdown();
+    chromeos::PowerManagerClient::Shutdown();
     network_change_notifier_.reset();
   }
 
@@ -393,7 +394,7 @@ NotifierUpdateTestCase test_cases[] = {
      false}};
 
 TEST_F(NetworkChangeManagerClientUpdateTest, UpdateDefaultNetwork) {
-  for (size_t i = 0; i < base::size(test_cases); ++i) {
+  for (size_t i = 0; i < std::size(test_cases); ++i) {
     SCOPED_TRACE(test_cases[i].test_description);
     SetNotifierState(test_cases[i].initial_state);
     SetDefaultNetworkState(test_cases[i].default_network_state);

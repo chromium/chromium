@@ -1,4 +1,4 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 #
@@ -13,31 +13,31 @@
 {
   "desktop_grds": {
     "languages": [
-      "af", "am", "ar", "as", "az", "be", "bg", "bn", "bs", "ca", "cs", "da",
-      "de", "el", "en-GB", "es", "es-419", "et", "eu", "fa", "fi", "fil", "fr",
-      "fr-CA", "gl", "gu", "hi", "hr", "hu", "hy", "id", "is", "it", "iw", "ja",
-      "ka", "kk", "km", "kn", "ko", "ky", "lo", "lt", "lv", "mk", "ml", "mn",
-      "mr", "ms", "my", "ne", "nl", "no", "or", "pa", "pl", "pt-BR", "pt-PT",
-      "ro", "ru", "si", "sk", "sl", "sq", "sr", "sr-Latn", "sv", "sw", "ta",
-      "te", "th", "tr", "uk", "ur", "uz", "vi", "zh-CN", "zh-HK", "zh-TW", "zu",
+      "af", "am", "ar", "as", "az", "be", "bg", "bn", "bs", "ca", "cs", "cy",
+      "da", "de", "el", "en-GB", "es", "es-419", "et", "eu", "fa", "fi", "fil",
+      "fr", "fr-CA", "gl", "gu", "hi", "hr", "hu", "hy", "id", "is", "it", "iw",
+      "ja", "ka", "kk", "km", "kn", "ko", "ky", "lo", "lt", "lv", "mk", "ml",
+      "mn", "mr", "ms", "my", "ne", "nl", "no", "or", "pa", "pl", "pt-BR",
+      "pt-PT", "ro", "ru", "si", "sk", "sl", "sq", "sr", "sr-Latn", "sv", "sw",
+      "ta", "te", "th", "tr", "uk", "ur", "uz", "vi", "zh-CN", "zh-HK", "zh-TW",
+      "zu",
     ],
     "files": [
       "android_webview/java/strings/android_webview_strings.grd",
-      "android_webview/ui/aw_strings.grd",
       "ash/ash_strings.grd",
       "ash/shortcut_viewer/shortcut_viewer_strings.grd",
       "ash/webui/camera_app_ui/resources/strings/camera_strings.grd",
       "chrome/android/features/vr/java/strings/android_chrome_vr_strings.grd",
       "chrome/android/features/keyboard_accessory/internal/java/strings/android_keyboard_accessory_strings.grd",
-      "chrome/android/features/start_surface/internal/java/strings/android_chrome_start_surface_strings.grd",
       "chrome/android/features/tab_ui/java/strings/android_chrome_tab_ui_strings.grd",
       "chrome/android/webapk/strings/android_webapk_strings.grd",
       "chrome/app/chromium_strings.grd",
       "chrome/app/generated_resources.grd",
       "chrome/app/google_chrome_strings.grd",
+      "chrome/browser/password_check/android/internal/java/strings/android_password_check_strings.grd",
       "chrome/browser/resources/chromeos/accessibility/strings/accessibility_strings.grd",
       "chrome/browser/touch_to_fill/android/internal/java/strings/android_touch_to_fill_strings.grd",
-      "chrome/browser/password_check/android/internal/java/strings/android_password_check_strings.grd",
+      "chrome/browser/ui/android/fast_checkout/internal/java/strings/android_fast_checkout_strings.grd",
       "chrome/browser/ui/android/strings/android_chrome_strings.grd",
       "chrome/credential_provider/gaiacp/gaia_resources.grd",
       "chromeos/chromeos_strings.grd",
@@ -70,10 +70,12 @@
       "remoting/resources/remoting_strings.grd",
       "services/services_strings.grd",
       "third_party/libaddressinput/chromium/address_input_strings.grd",
+      "third_party/blink/public/strings/blink_accessibility_strings.grd",
       "third_party/blink/public/strings/blink_strings.grd",
       "ui/accessibility/extensions/strings/accessibility_extensions_strings.grd",
       "ui/android/java/strings/android_ui_strings.grd",
       "ui/chromeos/ui_chromeos_strings.grd",
+      "ui/strings/ax_strings.grd",
       "ui/strings/ui_strings.grd",
       "weblayer/browser/java/weblayer_strings.grd",
     ],
@@ -118,9 +120,7 @@
     "chrome/app/resources/locale_settings_win.grd": "Not UI strings; localized separately",
     "chrome/test/data/chrome_test_resources.grd": "Test data",
     "chromecast/app/resources/chromecast_settings.grd": "Not UI strings; localized separately",
-    "cloud_print/virtual_driver/win/install/virtual_driver_setup_resources.grd": "Separate release process",
     "components/components_locale_settings.grd": "Not UI strings; localized separately",
-    "components/omnibox/resources/omnibox_resources.grd": "Not UI strings; localized separately",
     "tools/grit/grit/testdata/allowlist_resources.grd": "Test data",
     "tools/grit/grit/testdata/allowlist_strings.grd": "Test data",
     "tools/grit/grit/testdata/buildinfo.grd": "Test data",
@@ -134,6 +134,7 @@
     "ui/base/test/ui_base_test_resources.grd": "Test data",
     "ui/strings/app_locale_settings.grd": "Not UI strings; localized separately",
     "ui/views/examples/views_examples_resources.grd": "Test data",
+    "ui/webui/examples/resources/webui_examples_resources.grd": "Test data",
   },
   # Internal grds that contain parts not available publicly and thus should
   # not be checked by translation script.

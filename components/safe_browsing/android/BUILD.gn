@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -8,6 +8,8 @@ import("//build/config/android/rules.gni")
 android_library("safe_browsing_java") {
   deps = [
     "//base:base_java",
+    "//base:jni_java",
+    "//build/android:build_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
@@ -66,25 +68,19 @@ static_library("safe_browsing_api_handler_util") {
 
 source_set("safe_browsing_api_handler") {
   sources = [
-    "safe_browsing_api_handler.cc",
-    "safe_browsing_api_handler.h",
+    "safe_browsing_api_handler_bridge.cc",
+    "safe_browsing_api_handler_bridge.h",
   ]
   deps = [
+    ":jni_headers",
     ":safe_browsing_api_handler_util",
     "//base",
+    "//components/safe_browsing:buildflags",
     "//components/safe_browsing/core/browser/db:util",
     "//components/safe_browsing/core/common",
     "//content/public/browser:browser",
     "//url",
   ]
-
-  if (is_android) {
-    deps += [ ":jni_headers" ]
-    sources += [
-      "safe_browsing_api_handler_bridge.cc",
-      "safe_browsing_api_handler_bridge.h",
-    ]
-  }
 }
 
 source_set("unit_tests_mobile") {

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -138,7 +138,7 @@ absl::optional<ParsedIndexValues> UnnestPpdMetadata(const base::Value& value) {
     return absl::nullopt;
   }
   const base::Value* const ppd_metadata_list = value.FindListKey("ppdMetadata");
-  if (!ppd_metadata_list || ppd_metadata_list->GetList().size() == 0) {
+  if (!ppd_metadata_list || ppd_metadata_list->GetList().empty()) {
     return absl::nullopt;
   }
 

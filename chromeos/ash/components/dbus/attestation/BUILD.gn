@@ -1,0 +1,37 @@
+# Copyright 2020 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //chromeos/ash")
+
+component("attestation") {
+  output_name = "ash_dbus_attestation"
+  defines = [ "IS_ASH_DBUS_ATTESTATION_IMPL" ]
+
+  deps = [
+    ":attestation_proto",
+    "//base",
+    "//chromeos/dbus/constants:constants",
+    "//dbus",
+  ]
+
+  sources = [
+    "attestation_client.cc",
+    "attestation_client.h",
+    "fake_attestation_client.cc",
+    "fake_attestation_client.h",
+  ]
+}
+
+proto_library("attestation_proto") {
+  sources = [
+    "//third_party/cros_system_api/dbus/attestation/attestation_ca.proto",
+    "//third_party/cros_system_api/dbus/attestation/interface.proto",
+    "//third_party/cros_system_api/dbus/attestation/keystore.proto",
+  ]
+
+  proto_out_dir = "chromeos/ash/components/dbus/attestation"
+}

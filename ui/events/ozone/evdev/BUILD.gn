@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -65,20 +65,23 @@ component("evdev") {
     "input_device_factory_evdev.h",
     "input_device_factory_evdev_proxy.cc",
     "input_device_factory_evdev_proxy.h",
+    "input_device_opener.h",
+    "input_device_opener_evdev.cc",
+    "input_device_opener_evdev.h",
     "input_device_settings_evdev.cc",
     "input_device_settings_evdev.h",
     "input_injector_evdev.cc",
     "input_injector_evdev.h",
     "keyboard_evdev.cc",
     "keyboard_evdev.h",
+    "keyboard_imposter_checker_evdev.cc",
+    "keyboard_imposter_checker_evdev.h",
     "microphone_mute_switch_event_converter_evdev.cc",
     "microphone_mute_switch_event_converter_evdev.h",
     "mouse_button_map_evdev.cc",
     "mouse_button_map_evdev.h",
     "stylus_button_event_converter_evdev.cc",
     "stylus_button_event_converter_evdev.h",
-    "switches.cc",
-    "switches.h",
     "tablet_event_converter_evdev.cc",
     "tablet_event_converter_evdev.h",
     "touch_evdev_debug_buffer.cc",
@@ -109,6 +112,8 @@ component("evdev") {
     "touch_filter/palm_detection_filter_factory.h",
     "touch_filter/palm_model/onedevice_train_palm_detection_filter_inference.cc",
     "touch_filter/palm_model/onedevice_train_palm_detection_filter_inference.h",
+    "touch_filter/palm_model/onedevice_train_palm_detection_filter_inference_beta.cc",
+    "touch_filter/palm_model/onedevice_train_palm_detection_filter_inference_beta.h",
     "touch_filter/palm_model/onedevice_train_palm_detection_filter_model.cc",
     "touch_filter/palm_model/onedevice_train_palm_detection_filter_model.h",
     "touch_filter/shared_palm_detection_filter_state.h",
@@ -135,10 +140,12 @@ component("evdev") {
 
   if (is_chromeos_ash) {
     sources += [
+      "fake_keyboard_heuristic_metrics.cc",
+      "fake_keyboard_heuristic_metrics.h",
       "numberpad_metrics.cc",
       "numberpad_metrics.h",
     ]
-    deps += [ "//chromeos/components/feature_usage" ]
+    deps += [ "//chromeos/ash/components/feature_usage" ]
   }
 
   public_configs = [ ":evdev_config" ]
@@ -159,6 +166,8 @@ component("evdev") {
       "libgestures_glue/gesture_property_provider.h",
       "libgestures_glue/gesture_timer_provider.cc",
       "libgestures_glue/gesture_timer_provider.h",
+      "libgestures_glue/haptic_touchpad_handler.cc",
+      "libgestures_glue/haptic_touchpad_handler.h",
     ]
 
     deps += [ "//ui/ozone/public/mojom:gesture_properties_service" ]
@@ -182,14 +191,17 @@ component("evdev") {
   }
 
   visibility += [
+    "//ash/webui/diagnostics_ui/*",
     "//ui/chromeos/*",
     "//ui/ozone/*",
   ]
 }
 
 source_set("event_device_info") {
-  public = [ "event_device_info.h" ]
-  sources = [ "event_device_info.cc" ]
+  sources = [
+    "event_device_info.cc",
+    "event_device_info.h",
+  ]
 
   deps = [
     "//base",
@@ -199,7 +211,7 @@ source_set("event_device_info") {
 
   visibility += [
     "//ash/webui/diagnostics_ui/backend:*",
-    "//chromeos/services/cros_healthd/*",
+    "//chromeos/ash/services/cros_healthd/*",
     "//ui/chromeos/*",
   ]
 }
@@ -232,7 +244,11 @@ source_set("unittests") {
     "event_factory_evdev_unittest.cc",
     "gamepad_event_converter_evdev_unittest.cc",
     "input_controller_evdev_unittest.cc",
+    "input_device_factory_evdev_unittest.cc",
     "input_injector_evdev_unittest.cc",
+    "libgestures_glue/haptic_touchpad_handler.cc",
+    "libgestures_glue/haptic_touchpad_handler.h",
+    "libgestures_glue/haptic_touchpad_handler_unittest.cc",
     "microphone_mute_switch_event_converter_evdev_unittest.cc",
     "stylus_button_event_converter_evdev_unittest.cc",
     "tablet_event_converter_evdev_unittest.cc",
@@ -266,7 +282,7 @@ source_set("unittests") {
 
   if (is_chromeos_ash) {
     sources += [ "numberpad_metrics_unittest.cc" ]
-    deps += [ "//chromeos/components/feature_usage" ]
+    deps += [ "//chromeos/ash/components/feature_usage" ]
   }
 
   visibility += [ "//ui/events/ozone:unittests" ]

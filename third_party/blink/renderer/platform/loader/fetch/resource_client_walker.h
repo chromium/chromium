@@ -25,7 +25,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_RESOURCE_CLIENT_WALKER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_RESOURCE_CLIENT_WALKER_H_
 
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_counted_set.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_client.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -40,7 +42,9 @@ class ResourceClientWalker {
 
  public:
   explicit ResourceClientWalker(
-      const HeapHashCountedSet<WeakMember<ResourceClient>>& set)
+      const HeapHashCountedSet<WeakMember<ResourceClient>,
+                               WTF::MemberHashRecordReplayId<ResourceClient>>&
+          set)
       : client_set_(set) {
     CopyToVector(client_set_, client_vector_);
   }
@@ -58,7 +62,9 @@ class ResourceClientWalker {
   }
 
  private:
-  const HeapHashCountedSet<WeakMember<ResourceClient>>& client_set_;
+  const HeapHashCountedSet<WeakMember<ResourceClient>,
+                           WTF::MemberHashRecordReplayId<ResourceClient>>&
+      client_set_;
   HeapVector<Member<ResourceClient>> client_vector_;
   wtf_size_t index_ = 0;
 };

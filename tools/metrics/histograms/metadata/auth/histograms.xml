@@ -1,12 +1,12 @@
 <!--
-Copyright 2020 The Chromium Authors. All rights reserved.
+Copyright 2020 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
 <!--
-This file is used to generate a comprehensive list of Auth histograms
-along with a detailed description for each histogram.
+This file is used to generate a comprehensive list of Auth histograms along
+with a detailed description for each histogram.
 
 For best practices on writing histogram descriptions, see
 https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
@@ -23,34 +23,34 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="AuthPolicy.ErrorTypeOfAuthenticateUser"
-    enum="AuthPolicyErrorType" expires_after="M104">
+    enum="AuthPolicyErrorType" expires_after="M111">
   <owner>fsandrade@chromium.org</owner>
-  <owner>tomdobro@chromium.org</owner>
+  <owner>src/chrome/browser/ash/authpolicy/OWNERS</owner>
   <summary>
     Result from an attempt to authenticate a user to an Active Directory domain.
   </summary>
 </histogram>
 
 <histogram name="AuthPolicy.ErrorTypeOfAutoMachinePasswordChange"
-    enum="AuthPolicyErrorType" expires_after="M104">
+    enum="AuthPolicyErrorType" expires_after="M111">
   <owner>fsandrade@chromium.org</owner>
-  <owner>tomdobro@chromium.org</owner>
+  <owner>src/chrome/browser/ash/authpolicy/OWNERS</owner>
   <summary>Result from automatic background machine password renewal.</summary>
 </histogram>
 
 <histogram name="AuthPolicy.ErrorTypeOfAutoTgtRenewal"
-    enum="AuthPolicyErrorType" expires_after="M104">
+    enum="AuthPolicyErrorType" expires_after="M111">
   <owner>fsandrade@chromium.org</owner>
-  <owner>tomdobro@chromium.org</owner>
+  <owner>src/chrome/browser/ash/authpolicy/OWNERS</owner>
   <summary>
     Result from automatic background ticket-granting-ticket renewal.
   </summary>
 </histogram>
 
 <histogram name="AuthPolicy.ErrorTypeOfGetUserKerberosFiles"
-    enum="AuthPolicyErrorType" expires_after="M104">
+    enum="AuthPolicyErrorType" expires_after="M111">
   <owner>fsandrade@chromium.org</owner>
-  <owner>tomdobro@chromium.org</owner>
+  <owner>src/chrome/browser/ash/authpolicy/OWNERS</owner>
   <summary>
     Result of an attempt to get an Active Directory user's Kerberos
     ticket-granting-ticket and configuration data.
@@ -58,9 +58,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AuthPolicy.ErrorTypeOfGetUserStatus"
-    enum="AuthPolicyErrorType" expires_after="M104">
+    enum="AuthPolicyErrorType" expires_after="M111">
   <owner>fsandrade@chromium.org</owner>
-  <owner>tomdobro@chromium.org</owner>
+  <owner>src/chrome/browser/ash/authpolicy/OWNERS</owner>
   <summary>
     Result of an attempt to get the status of an Active Directory user's
     Kerberos ticket, password and account.
@@ -68,18 +68,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AuthPolicy.ErrorTypeOfJoinADDomain" enum="AuthPolicyErrorType"
-    expires_after="M104">
+    expires_after="M111">
   <owner>fsandrade@chromium.org</owner>
-  <owner>tomdobro@chromium.org</owner>
+  <owner>src/chrome/browser/ash/authpolicy/OWNERS</owner>
   <summary>
     Result from an attempt to join a machine to an Active Directory domain.
   </summary>
 </histogram>
 
 <histogram name="AuthPolicy.ErrorTypeOfRefreshDevicePolicy"
-    enum="AuthPolicyErrorType" expires_after="M104">
+    enum="AuthPolicyErrorType" expires_after="M111">
   <owner>fsandrade@chromium.org</owner>
-  <owner>tomdobro@chromium.org</owner>
+  <owner>src/chrome/browser/ash/authpolicy/OWNERS</owner>
   <summary>
     Result from an attempt to fetch device policy from an Active Directory
     domain and store it on disk.
@@ -87,9 +87,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AuthPolicy.ErrorTypeOfRefreshUserPolicy"
-    enum="AuthPolicyErrorType" expires_after="M104">
+    enum="AuthPolicyErrorType" expires_after="M111">
   <owner>fsandrade@chromium.org</owner>
-  <owner>tomdobro@chromium.org</owner>
+  <owner>src/chrome/browser/ash/authpolicy/OWNERS</owner>
   <summary>
     Result from an attempt to fetch user policy from an Active Directory domain
     and store it on disk.
@@ -97,9 +97,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AuthPolicy.FailedTriesOfKinit" units="units"
-    expires_after="M104">
+    expires_after="M111">
   <owner>fsandrade@chromium.org</owner>
-  <owner>tomdobro@chromium.org</owner>
+  <owner>src/chrome/browser/ash/authpolicy/OWNERS</owner>
   <summary>
     Number of times 'kinit' failed until the next try succeeded or the method
     gave up because a maximum number of tries was exceeded. 'kinit' is run for
@@ -109,9 +109,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AuthPolicy.FailedTriesOfSmbClient" units="units"
-    expires_after="M104">
+    expires_after="M111">
   <owner>fsandrade@chromium.org</owner>
-  <owner>tomdobro@chromium.org</owner>
+  <owner>src/chrome/browser/ash/authpolicy/OWNERS</owner>
   <summary>
     Number of times 'smbclient' failed until it the next try succeeded or the
     method gave up because a maximum number of tries was exceeded. 'smbclient'
@@ -120,9 +120,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AuthPolicy.KerberosEncryptionTypes.AuthenticateUser"
-    enum="KerberosEncryptionTypes" expires_after="M104">
+    enum="KerberosEncryptionTypes" expires_after="M111">
   <owner>fsandrade@chromium.org</owner>
-  <owner>tomdobro@chromium.org</owner>
+  <owner>src/chrome/browser/ash/authpolicy/OWNERS</owner>
   <summary>
     The Kerberos encryption types used while succesfully authenticating an user.
     This value comes from the DeviceKerberosEncryptionTypes policy.
@@ -130,9 +130,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AuthPolicy.KerberosEncryptionTypes.JoinADDomain"
-    enum="KerberosEncryptionTypes" expires_after="M104">
+    enum="KerberosEncryptionTypes" expires_after="M111">
   <owner>fsandrade@chromium.org</owner>
-  <owner>tomdobro@chromium.org</owner>
+  <owner>src/chrome/browser/ash/authpolicy/OWNERS</owner>
   <summary>
     The Kerberos encryption types used while succesfully joining an Active
     Directory domain. This value comes from the advanced settings of the
@@ -141,9 +141,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AuthPolicy.NumGposToDownload" units="units"
-    expires_after="M104">
+    expires_after="M111">
   <owner>fsandrade@chromium.org</owner>
-  <owner>tomdobro@chromium.org</owner>
+  <owner>src/chrome/browser/ash/authpolicy/OWNERS</owner>
   <summary>
     Number of group policy objects attached to a specific user or machine on an
     Active Directory domain. This value is recorded when user or device policy
@@ -152,9 +152,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AuthPolicy.TimeToAuthenticateUser" units="ms"
-    expires_after="M104">
+    expires_after="M111">
   <owner>fsandrade@chromium.org</owner>
-  <owner>tomdobro@chromium.org</owner>
+  <owner>src/chrome/browser/ash/authpolicy/OWNERS</owner>
   <summary>
     Time in milliseconds to authenticate a user to an Active Directory domain.
     The value is recorded no matter if the operation was successful or not.
@@ -162,9 +162,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AuthPolicy.TimeToGetUserKerberosFiles" units="ms"
-    expires_after="M104">
+    expires_after="M111">
   <owner>fsandrade@chromium.org</owner>
-  <owner>tomdobro@chromium.org</owner>
+  <owner>src/chrome/browser/ash/authpolicy/OWNERS</owner>
   <summary>
     Time in milliseconds to get the Kerberos ticket-granting-ticket and
     configuration data of an Active Directory user. The value is recorded no
@@ -173,18 +173,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AuthPolicy.TimeToGetUserStatus" units="ms"
-    expires_after="M104">
+    expires_after="M111">
   <owner>fsandrade@chromium.org</owner>
-  <owner>tomdobro@chromium.org</owner>
+  <owner>src/chrome/browser/ash/authpolicy/OWNERS</owner>
   <summary>
     Time in milliseconds to get status information of an Active Directory user.
     The value is recorded no matter if the operation was successful or not.
   </summary>
 </histogram>
 
-<histogram name="AuthPolicy.TimeToJoinADDomain" units="ms" expires_after="M104">
+<histogram name="AuthPolicy.TimeToJoinADDomain" units="ms" expires_after="M111">
   <owner>fsandrade@chromium.org</owner>
-  <owner>tomdobro@chromium.org</owner>
+  <owner>src/chrome/browser/ash/authpolicy/OWNERS</owner>
   <summary>
     Time in milliseconds to join a machine to an Active Directory domain. Domain
     join is part of the Active Directory enrollment process. The value is
@@ -193,9 +193,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AuthPolicy.TimeToRefreshDevicePolicy" units="ms"
-    expires_after="M104">
+    expires_after="M111">
   <owner>fsandrade@chromium.org</owner>
-  <owner>tomdobro@chromium.org</owner>
+  <owner>src/chrome/browser/ash/authpolicy/OWNERS</owner>
   <summary>
     Time in milliseconds to fetch device policy from an Active Directory domain
     and store it on disk. The value is recorded no matter if the operation was
@@ -204,9 +204,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AuthPolicy.TimeToRefreshUserPolicy" units="ms"
-    expires_after="M104">
+    expires_after="M111">
   <owner>fsandrade@chromium.org</owner>
-  <owner>tomdobro@chromium.org</owner>
+  <owner>src/chrome/browser/ash/authpolicy/OWNERS</owner>
   <summary>
     Time in milliseconds to fetch user policy from an Active Directory domain
     and store it on disk. The value is recorded no matter if the operation was
@@ -214,9 +214,9 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="AuthPolicy.TimeToRunKinit" units="ms" expires_after="M104">
+<histogram name="AuthPolicy.TimeToRunKinit" units="ms" expires_after="M111">
   <owner>fsandrade@chromium.org</owner>
-  <owner>tomdobro@chromium.org</owner>
+  <owner>src/chrome/browser/ash/authpolicy/OWNERS</owner>
   <summary>
     Time in milliseconds to call 'kinit' (request Kerberos ticket-granting-
     ticket). TGTs are requested regularly for accessing services on Active
@@ -225,9 +225,9 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="AuthPolicy.TimeToRunKlist" units="ms" expires_after="M104">
+<histogram name="AuthPolicy.TimeToRunKlist" units="ms" expires_after="M111">
   <owner>fsandrade@chromium.org</owner>
-  <owner>tomdobro@chromium.org</owner>
+  <owner>src/chrome/browser/ash/authpolicy/OWNERS</owner>
   <summary>
     Time in milliseconds to call 'klist' (print Kerberos ticket-granting-ticket
     information). The command reveals a TGT's lifetime, which is used to
@@ -236,9 +236,9 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="AuthPolicy.TimeToRunKpasswd" units="ms" expires_after="M104">
+<histogram name="AuthPolicy.TimeToRunKpasswd" units="ms" expires_after="M111">
   <owner>fsandrade@chromium.org</owner>
-  <owner>tomdobro@chromium.org</owner>
+  <owner>src/chrome/browser/ash/authpolicy/OWNERS</owner>
   <summary>
     Time in milliseconds to call 'kpasswd' (change Active Directory password).
     The command is used to change the machine account password. By default, it
@@ -247,9 +247,9 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="AuthPolicy.TimeToRunNetAdsGpo" units="ms" expires_after="M104">
+<histogram name="AuthPolicy.TimeToRunNetAdsGpo" units="ms" expires_after="M111">
   <owner>fsandrade@chromium.org</owner>
-  <owner>tomdobro@chromium.org</owner>
+  <owner>src/chrome/browser/ash/authpolicy/OWNERS</owner>
   <summary>
     Time in milliseconds to call 'net ads gpo list' (list Active Directory group
     policy objects). The value is recorded no matter if the operation was
@@ -258,9 +258,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AuthPolicy.TimeToRunNetAdsInfo" units="ms"
-    expires_after="M104">
+    expires_after="M111">
   <owner>fsandrade@chromium.org</owner>
-  <owner>tomdobro@chromium.org</owner>
+  <owner>src/chrome/browser/ash/authpolicy/OWNERS</owner>
   <summary>
     Time in milliseconds to call 'net ads info' (query Active Directory
     information). The value is recorded no matter if the operation was
@@ -269,9 +269,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AuthPolicy.TimeToRunNetAdsJoin" units="ms"
-    expires_after="M104">
+    expires_after="M111">
   <owner>fsandrade@chromium.org</owner>
-  <owner>tomdobro@chromium.org</owner>
+  <owner>src/chrome/browser/ash/authpolicy/OWNERS</owner>
   <summary>
     Time in milliseconds to call 'net ads join' (join machine to an Active
     Directory domain). The value is recorded no matter if the operation was
@@ -280,9 +280,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AuthPolicy.TimeToRunNetAdsSearch" units="ms"
-    expires_after="M104">
+    expires_after="M111">
   <owner>fsandrade@chromium.org</owner>
-  <owner>tomdobro@chromium.org</owner>
+  <owner>src/chrome/browser/ash/authpolicy/OWNERS</owner>
   <summary>
     Time in milliseconds to call 'net ads search' (query information about an
     Active Directory account). The value is recorded no matter if the operation
@@ -291,9 +291,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AuthPolicy.TimeToRunNetAdsWorkgroup" units="ms"
-    expires_after="M104">
+    expires_after="M111">
   <owner>fsandrade@chromium.org</owner>
-  <owner>tomdobro@chromium.org</owner>
+  <owner>src/chrome/browser/ash/authpolicy/OWNERS</owner>
   <summary>
     Time in milliseconds to call 'net ads workgroup' (query Active Directory
     workgroup). The value is recorded no matter if the operation was successful
@@ -301,9 +301,9 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="AuthPolicy.TimeToRunSmbclient" units="ms" expires_after="M104">
+<histogram name="AuthPolicy.TimeToRunSmbclient" units="ms" expires_after="M111">
   <owner>fsandrade@chromium.org</owner>
-  <owner>tomdobro@chromium.org</owner>
+  <owner>src/chrome/browser/ash/authpolicy/OWNERS</owner>
   <summary>
     Time in milliseconds to call 'smbclient' (download policy from an Active
     Directory domain). The value is recorded no matter if the operation was

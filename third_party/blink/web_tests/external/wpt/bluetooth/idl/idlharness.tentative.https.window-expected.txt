@@ -1,9 +1,10 @@
 This is a testharness.js-based test.
-Found 205 tests; 154 PASS, 51 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 209 tests; 158 PASS, 51 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Navigator: original interface defined
 PASS Partial interface Navigator: member names are unique
+PASS Partial interface Navigator[2]: member names are unique
 PASS Partial interface mixin NavigatorID: member names are unique
 PASS Bluetooth includes BluetoothDeviceEventHandlers: member names are unique
 PASS Bluetooth includes CharacteristicEventHandlers: member names are unique
@@ -75,6 +76,7 @@ PASS BluetoothDevice interface: existence and properties of interface prototype 
 PASS BluetoothDevice interface: attribute id
 PASS BluetoothDevice interface: attribute name
 PASS BluetoothDevice interface: attribute gatt
+PASS BluetoothDevice interface: operation forget()
 PASS BluetoothDevice interface: operation watchAdvertisements(optional WatchAdvertisementsOptions)
 PASS BluetoothDevice interface: attribute watchingAdvertisements
 PASS BluetoothDevice interface: attribute onadvertisementreceived
@@ -89,12 +91,14 @@ PASS BluetoothManufacturerDataMap interface object name
 PASS BluetoothManufacturerDataMap interface: existence and properties of interface prototype object
 PASS BluetoothManufacturerDataMap interface: existence and properties of interface prototype object's "constructor" property
 PASS BluetoothManufacturerDataMap interface: existence and properties of interface prototype object's @@unscopables property
+PASS BluetoothManufacturerDataMap interface: maplike<unsigned short, DataView>
 PASS BluetoothServiceDataMap interface: existence and properties of interface object
 PASS BluetoothServiceDataMap interface object length
 PASS BluetoothServiceDataMap interface object name
 PASS BluetoothServiceDataMap interface: existence and properties of interface prototype object
 PASS BluetoothServiceDataMap interface: existence and properties of interface prototype object's "constructor" property
 PASS BluetoothServiceDataMap interface: existence and properties of interface prototype object's @@unscopables property
+PASS BluetoothServiceDataMap interface: maplike<UUID, DataView>
 PASS BluetoothAdvertisingEvent interface: existence and properties of interface object
 FAIL BluetoothAdvertisingEvent interface object length assert_equals: wrong value for BluetoothAdvertisingEvent.length expected 2 but got 0
 PASS BluetoothAdvertisingEvent interface object name

@@ -1,10 +1,9 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 
-#include "base/cxx17_backports.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -206,7 +205,7 @@ void PolicyBuilder::SetSigningKey(const crypto::RSAPrivateKey& key) {
 }
 
 void PolicyBuilder::SetDefaultSigningKey() {
-  raw_signing_key_.assign(kSigningKey, kSigningKey + base::size(kSigningKey));
+  raw_signing_key_.assign(kSigningKey, kSigningKey + std::size(kSigningKey));
 }
 
 void PolicyBuilder::UnsetSigningKey() {
@@ -221,7 +220,7 @@ std::unique_ptr<crypto::RSAPrivateKey> PolicyBuilder::GetNewSigningKey() const {
 
 void PolicyBuilder::SetDefaultNewSigningKey() {
   raw_new_signing_key_.assign(kNewSigningKey,
-                              kNewSigningKey + base::size(kNewSigningKey));
+                              kNewSigningKey + std::size(kNewSigningKey));
   raw_new_signing_key_signature_ = GetTestOtherSigningKeySignature();
 }
 
@@ -232,7 +231,7 @@ void PolicyBuilder::UnsetNewSigningKey() {
 
 void PolicyBuilder::SetDefaultInitialSigningKey() {
   raw_new_signing_key_.assign(kSigningKey,
-                              kSigningKey + base::size(kSigningKey));
+                              kSigningKey + std::size(kSigningKey));
   raw_new_signing_key_signature_ = GetTestSigningKeySignature();
   UnsetSigningKey();
 }
@@ -293,7 +292,7 @@ std::unique_ptr<em::PolicyFetchResponse> PolicyBuilder::GetCopy() const {
 // static
 std::unique_ptr<crypto::RSAPrivateKey> PolicyBuilder::CreateTestSigningKey() {
   std::vector<uint8_t> raw_signing_key(kSigningKey,
-                                       kSigningKey + base::size(kSigningKey));
+                                       kSigningKey + std::size(kSigningKey));
   return crypto::RSAPrivateKey::CreateFromPrivateKeyInfo(raw_signing_key);
 }
 
@@ -301,7 +300,7 @@ std::unique_ptr<crypto::RSAPrivateKey> PolicyBuilder::CreateTestSigningKey() {
 std::unique_ptr<crypto::RSAPrivateKey>
 PolicyBuilder::CreateTestOtherSigningKey() {
   std::vector<uint8_t> raw_new_signing_key(
-      kNewSigningKey, kNewSigningKey + base::size(kNewSigningKey));
+      kNewSigningKey, kNewSigningKey + std::size(kNewSigningKey));
   return crypto::RSAPrivateKey::CreateFromPrivateKeyInfo(raw_new_signing_key);
 }
 
@@ -378,7 +377,7 @@ TypedPolicyBuilder<em::CloudPolicySettings>::TypedPolicyBuilder()
 // Have the instantiation compiled into the module.
 template class TypedPolicyBuilder<em::CloudPolicySettings>;
 
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 template <>
 TypedPolicyBuilder<em::ExternalPolicyData>::TypedPolicyBuilder() {
   CreatePayload();

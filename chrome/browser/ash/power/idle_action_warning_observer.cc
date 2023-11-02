@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/power/idle_action_warning_dialog_view.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
 #include "components/prefs/pref_service.h"
 
@@ -29,24 +29,24 @@ void ReportMetricsForDemoMode(IdleLogoutWarningEvent event) {
     UMA_HISTOGRAM_ENUMERATION("DemoMode.IdleLogoutWarningEvent", event);
 }
 
-PowerPolicyController::Action GetIdleAction(bool on_battery_power) {
+chromeos::PowerPolicyController::Action GetIdleAction(bool on_battery_power) {
   PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
   int action;
   if (on_battery_power)
     action = prefs->GetInteger(ash::prefs::kPowerBatteryIdleAction);
   else
     action = prefs->GetInteger(ash::prefs::kPowerAcIdleAction);
-  return static_cast<PowerPolicyController::Action>(action);
+  return static_cast<chromeos::PowerPolicyController::Action>(action);
 }
 
 }  // namespace
 
 IdleActionWarningObserver::IdleActionWarningObserver() {
-  PowerManagerClient::Get()->AddObserver(this);
+  chromeos::PowerManagerClient::Get()->AddObserver(this);
 }
 
 IdleActionWarningObserver::~IdleActionWarningObserver() {
-  PowerManagerClient::Get()->RemoveObserver(this);
+  chromeos::PowerManagerClient::Get()->RemoveObserver(this);
   if (warning_dialog_) {
     warning_dialog_->GetWidget()->RemoveObserver(this);
     warning_dialog_->CloseDialog();
@@ -57,9 +57,10 @@ IdleActionWarningObserver::~IdleActionWarningObserver() {
 void IdleActionWarningObserver::IdleActionImminent(
     base::TimeDelta time_until_idle_action) {
   // Only display warning if idle action is to shut down or logout.
-  PowerPolicyController::Action idle_action = GetIdleAction(on_battery_power_);
-  if (idle_action != PowerPolicyController::ACTION_STOP_SESSION &&
-      idle_action != PowerPolicyController::ACTION_SHUT_DOWN) {
+  chromeos::PowerPolicyController::Action idle_action =
+      GetIdleAction(on_battery_power_);
+  if (idle_action != chromeos::PowerPolicyController::ACTION_STOP_SESSION &&
+      idle_action != chromeos::PowerPolicyController::ACTION_SHUT_DOWN) {
     HideDialogIfPresent();
     return;
   }
@@ -86,7 +87,7 @@ void IdleActionWarningObserver::PowerChanged(
       power_manager::PowerSupplyProperties_BatteryState_DISCHARGING;
 }
 
-void IdleActionWarningObserver::OnWidgetClosing(views::Widget* widget) {
+void IdleActionWarningObserver::OnWidgetDestroying(views::Widget* widget) {
   DCHECK(warning_dialog_);
   DCHECK_EQ(widget, warning_dialog_->GetWidget());
   warning_dialog_->GetWidget()->RemoveObserver(this);

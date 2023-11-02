@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <stddef.h>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/compiler_specific.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
 #include "ui/android/view_android.h"
 
@@ -19,7 +19,8 @@ class AutofillPopupController;
 
 class AutofillPopupViewAndroid : public AutofillPopupView {
  public:
-  explicit AutofillPopupViewAndroid(AutofillPopupController* controller);
+  explicit AutofillPopupViewAndroid(
+      base::WeakPtr<AutofillPopupController> controller);
 
   AutofillPopupViewAndroid(const AutofillPopupViewAndroid&) = delete;
   AutofillPopupViewAndroid& operator=(const AutofillPopupViewAndroid&) = delete;
@@ -61,7 +62,7 @@ class AutofillPopupViewAndroid : public AutofillPopupView {
   // screen space available).
   bool WasSuppressed();
 
-  AutofillPopupController* controller_;  // weak.
+  base::WeakPtr<AutofillPopupController> controller_;  // weak.
 
   // The index of the last item the user long-pressed (they will be shown a
   // confirmation dialog).

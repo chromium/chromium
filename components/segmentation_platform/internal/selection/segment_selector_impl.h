@@ -1,15 +1,22 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SELECTION_SEGMENT_SELECTOR_IMPL_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SELECTION_SEGMENT_SELECTOR_IMPL_H_
 
-#include "components/segmentation_platform/internal/selection/segment_selector.h"
-
+#include <utility>
 #include "base/callback_helpers.h"
+#include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
+#include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/platform_options.h"
+#include "components/segmentation_platform/internal/selection/segment_result_provider.h"
+#include "components/segmentation_platform/internal/selection/segment_selector.h"
+#include "components/segmentation_platform/public/input_context.h"
 #include "components/segmentation_platform/public/segment_selection_result.h"
+
+class PrefService;
 
 namespace base {
 class Clock;
@@ -18,76 +25,116 @@ class Clock;
 namespace segmentation_platform {
 
 struct Config;
-class ModelExecutionScheduler;
+class DefaultModelManager;
+class ExecutionService;
+class ExperimentalGroupRecorder;
+class FieldTrialRegister;
 class SegmentationResultPrefs;
-class SegmentInfoDatabase;
 class SignalStorageConfig;
-
-namespace proto {
-class SegmentInfo;
-}  // namespace proto
 
 class SegmentSelectorImpl : public SegmentSelector {
  public:
   SegmentSelectorImpl(SegmentInfoDatabase* segment_database,
                       SignalStorageConfig* signal_storage_config,
-                      SegmentationResultPrefs* result_prefs,
+                      PrefService* pref_service,
                       const Config* config,
+                      FieldTrialRegister* field_trial_register,
                       base::Clock* clock,
-                      const PlatformOptions& platform_options);
+                      const PlatformOptions& platform_options,
+                      DefaultModelManager* default_model_manager);
+
+  SegmentSelectorImpl(SegmentInfoDatabase* segment_database,
+                      SignalStorageConfig* signal_storage_config,
+                      std::unique_ptr<SegmentationResultPrefs> prefs,
+                      const Config* config,
+                      FieldTrialRegister* field_trial_register,
+                      base::Clock* clock,
+                      const PlatformOptions& platform_options,
+                      DefaultModelManager* default_model_manager);
 
   ~SegmentSelectorImpl() override;
 
   // SegmentSelector overrides.
+  void OnPlatformInitialized(ExecutionService* execution_service) override;
   void GetSelectedSegment(SegmentSelectionCallback callback) override;
+  SegmentSelectionResult GetCachedSegmentResult() override;
+  void GetSelectedSegmentOnDemand(scoped_refptr<InputContext> input_context,
+                                  SegmentSelectionCallback callback) override;
 
-  // ModelExecutionScheduler::Observer overrides.
+  // Helper function to update the selected segment in the prefs. Auto-extends
+  // the selection if the new result is unknown.
+  virtual void UpdateSelectedSegment(SegmentId new_selection, float rank);
 
   // Called whenever a model eval completes. Runs segment selection to find the
   // best segment, and writes it to the pref.
-  void OnModelExecutionCompleted(OptimizationTarget segment_id) override;
+  void OnModelExecutionCompleted(SegmentId segment_id) override;
+
+  void set_segment_result_provider_for_testing(
+      std::unique_ptr<SegmentResultProvider> result_provider) {
+    segment_result_provider_ = std::move(result_provider);
+  }
 
  private:
   // For testing.
   friend class SegmentSelectorTest;
 
-  // Helper method to run segment selection if possible.
-  void RunSegmentSelection(
-      std::vector<std::pair<OptimizationTarget, proto::SegmentInfo>>
-          all_segments);
+  using SegmentRanks = base::flat_map<SegmentId, float>;
 
-  // Determines whether segment selection can be run based on whether all
-  // segments have met signal collection requirement, have valid results, and
-  // segment selection TTL has expired.
-  bool CanComputeSegmentSelection(
-      const std::vector<std::pair<OptimizationTarget, proto::SegmentInfo>>&
-          all_segments);
+  // Determines whether segment selection can be run based on whether the
+  // segment selection TTL has expired, or selection is unavailable.
+  bool IsPreviousSelectionInvalid();
+
+  // Gets scores for all segments and recomputes selection and stores the result
+  // to prefs.
+  void SelectSegmentAndStoreToPrefs();
+
+  // Gets ranks for each segment from SegmentResultProvider, and then computes
+  // segment selection.
+  void GetRankForNextSegment(std::unique_ptr<SegmentRanks> ranks,
+                             scoped_refptr<InputContext> input_context,
+                             SegmentSelectionCallback callback);
+
+  // Callback used to get result from SegmentResultProvider for each segment.
+  void OnGetResultForSegmentSelection(
+      std::unique_ptr<SegmentRanks> ranks,
+      scoped_refptr<InputContext> input_context,
+      SegmentSelectionCallback callback,
+      SegmentId current_segment_id,
+      std::unique_ptr<SegmentResultProvider::SegmentResult> result);
 
   // Loops through all segments, performs discrete mapping, honors finch
-  // supplied tie-breakers, TTL, inertia etc, and finds the highest score.
+  // supplied tie-breakers, TTL, inertia etc, and finds the highest rank.
   // Ignores the segments that have no results.
-  OptimizationTarget FindBestSegment(
-      const std::vector<std::pair<OptimizationTarget, proto::SegmentInfo>>&
-          all_segments);
+  std::pair<SegmentId, float> FindBestSegment(
+      const SegmentRanks& segment_scores);
 
-  // Helper function to update the selected segment in the prefs. Auto-extends
-  // the selection if the new result is unknown.
-  void UpdateSelectedSegment(OptimizationTarget new_selection);
-
-  // The database storing metadata and results.
-  SegmentInfoDatabase* segment_database_;
-
-  // The database to determine whether the signal storage requirements are met.
-  SignalStorageConfig* signal_storage_config_;
+  std::unique_ptr<SegmentResultProvider> segment_result_provider_;
 
   // Helper class to read/write results to the prefs.
-  SegmentationResultPrefs* result_prefs_;
+  std::unique_ptr<SegmentationResultPrefs> result_prefs_;
+
+  // The database storing metadata and results.
+  const raw_ptr<SegmentInfoDatabase> segment_database_;
+
+  // The database to determine whether the signal storage requirements are met.
+  const raw_ptr<SignalStorageConfig> signal_storage_config_;
+
+  // The default model manager is used for the default model fallbacks.
+  const raw_ptr<DefaultModelManager> default_model_manager_;
 
   // The config for providing configuration params.
-  const Config* config_;
+  const raw_ptr<const Config> config_;
+
+  // Delegate that records selected segments to metrics.
+  const raw_ptr<FieldTrialRegister> field_trial_register_;
+
+  // Helper that records segmentation subgroups to `field_trial_register_`. Once
+  // for each segment in the `config_`.
+  std::vector<std::unique_ptr<ExperimentalGroupRecorder>>
+      experimental_group_recorder_;
 
   // The time provider.
-  base::Clock* clock_;
+  const raw_ptr<base::Clock> clock_;
 
   const PlatformOptions platform_options_;
 

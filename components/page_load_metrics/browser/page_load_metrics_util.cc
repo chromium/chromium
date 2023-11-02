@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/metrics/histogram_functions.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
 #include "components/page_load_metrics/common/page_visit_final_status.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -104,6 +105,16 @@ bool QueryContainsComponentHelper(const base::StringPiece query,
 
 }  // namespace
 
+void UmaMaxCumulativeShiftScoreHistogram10000x(
+    const std::string& name,
+    const page_load_metrics::NormalizedCLSData& normalized_cls_data) {
+  base::UmaHistogramCustomCounts(
+      name,
+      page_load_metrics::LayoutShiftUmaValue10000(
+          normalized_cls_data.session_windows_gap1000ms_max5000ms_max_cls),
+      1, 24000, 50);
+}
+
 bool WasStartedInForegroundOptionalEventInForeground(
     const absl::optional<base::TimeDelta>& event,
     const PageLoadMetricsObserverDelegate& delegate) {
@@ -145,6 +156,76 @@ bool WasStartedInBackgroundOptionalEventInForeground(
 
 bool WasInForeground(const PageLoadMetricsObserverDelegate& delegate) {
   return delegate.StartedInForeground() || delegate.GetTimeToFirstForeground();
+}
+
+absl::optional<base::TimeDelta> GetNonPrerenderingBackgroundStartTiming(
+    const PageLoadMetricsObserverDelegate& delegate) {
+  switch (delegate.GetPrerenderingState()) {
+    case PrerenderingState::kNoPrerendering:
+      if (delegate.StartedInForeground()) {
+        return delegate.GetTimeToFirstBackground();
+      } else {
+        return base::Seconds(0);
+      }
+    case PrerenderingState::kInPrerendering:
+    case PrerenderingState::kActivatedNoActivationStart:
+      return absl::nullopt;
+    case PrerenderingState::kActivated:
+      if (delegate.GetVisibilityAtActivation() == PageVisibility::kForeground) {
+        return delegate.GetTimeToFirstBackground();
+      } else {
+        return delegate.GetActivationStart();
+      }
+  }
+}
+
+bool EventOccurredBeforeNonPrerenderingBackgroundStart(
+    const PageLoadMetricsObserverDelegate& delegate,
+    const base::TimeDelta& event) {
+  // If background start is nullopt, it'll must be greater than already
+  // occurred event.
+  const base::TimeDelta bg_start =
+      GetNonPrerenderingBackgroundStartTiming(delegate).value_or(
+          base::TimeDelta::Max());
+  return event < bg_start;
+}
+
+// Currently, multiple implementations of PageLoadMetricsObserver is ongoing.
+// We'll left the old version for a while.
+// TODO(https://crbug.com/1317494): Use the above version and delete this.
+bool EventOccurredBeforeNonPrerenderingBackgroundStart(
+    const PageLoadMetricsObserverDelegate& delegate,
+    const page_load_metrics::mojom::PageLoadTiming& timing,
+    const base::TimeDelta& event) {
+  return EventOccurredBeforeNonPrerenderingBackgroundStart(delegate, event);
+}
+
+base::TimeDelta CorrectEventAsNavigationOrActivationOrigined(
+    const PageLoadMetricsObserverDelegate& delegate,
+    const base::TimeDelta& event) {
+  base::TimeDelta zero = base::Seconds(0);
+
+  switch (delegate.GetPrerenderingState()) {
+    case PrerenderingState::kNoPrerendering:
+      return event;
+    case PrerenderingState::kInPrerendering:
+    case PrerenderingState::kActivatedNoActivationStart:
+      return zero;
+    case PrerenderingState::kActivated: {
+      base::TimeDelta corrected = event - delegate.GetActivationStart().value();
+      return std::max(zero, corrected);
+    }
+  }
+}
+
+// Currently, multiple implementations of PageLoadMetricsObserver is ongoing.
+// We'll left the old version for a while.
+// TODO(https://crbug.com/1317494): Use the above version and delete this.
+base::TimeDelta CorrectEventAsNavigationOrActivationOrigined(
+    const PageLoadMetricsObserverDelegate& delegate,
+    const page_load_metrics::mojom::PageLoadTiming& timing,
+    const base::TimeDelta& event) {
+  return CorrectEventAsNavigationOrActivationOrigined(delegate, event);
 }
 
 PageAbortInfo GetPageAbortInfo(

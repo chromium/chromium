@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@ namespace ui {
 
 WaylandBufferBackingSolidColor::WaylandBufferBackingSolidColor(
     const WaylandConnection* connection,
-    SkColor color,
+    SkColor4f color,
     const gfx::Size& size,
     uint32_t buffer_id)
     : WaylandBufferBacking(connection, buffer_id, size), color_(color) {}
@@ -22,7 +22,13 @@ void WaylandBufferBackingSolidColor::RequestBufferHandle(
     base::OnceCallback<void(wl::Object<wl_buffer>)> callback) {
   DCHECK(!callback.is_null());
   std::move(callback).Run(
-      connection_->surface_augmenter()->CreateSolidColorBuffer(color_, size()));
+      connection()->surface_augmenter()->CreateSolidColorBuffer(color_,
+                                                                size()));
+}
+
+WaylandBufferBacking::BufferBackingType
+WaylandBufferBackingSolidColor::GetBackingType() const {
+  return WaylandBufferBacking::BufferBackingType::kSolidColor;
 }
 
 }  // namespace ui

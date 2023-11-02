@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,20 +8,46 @@
 #import <Foundation/Foundation.h>
 
 #import "base/ios/block_types.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
+
+namespace consent_auditor {
+class ConsentAuditor;
+}
+
+namespace signin {
+class IdentityManager;
+}
+
+namespace unified_consent {
+class UnifiedConsentService;
+}
+
+namespace syncer {
+class SyncService;
+}
 
 @class AuthenticationFlow;
 class AuthenticationService;
 class ChromeAccountManagerService;
 @class ChromeIdentity;
 @protocol SigninSyncConsumer;
+@protocol SigninSyncMediatorDelegate;
+class SyncSetupService;
 
 @interface SigninSyncMediator : NSObject
 
 // The designated initializer.
-- (instancetype)initWithAccountManagerService:
-                    (ChromeAccountManagerService*)accountManagerService
-                        authenticationService:
-                            (AuthenticationService*)authenticationService
+- (instancetype)
+    initWithAuthenticationService:(AuthenticationService*)authenticationService
+                  identityManager:(signin::IdentityManager*)identityManager
+            accountManagerService:
+                (ChromeAccountManagerService*)accountManagerService
+                   consentAuditor:
+                       (consent_auditor::ConsentAuditor*)consentAuditor
+                 syncSetupService:(SyncSetupService*)syncSetupService
+            unifiedConsentService:
+                (unified_consent::UnifiedConsentService*)unifiedConsentService
+                      syncService:(syncer::SyncService*)syncService
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
@@ -35,13 +61,32 @@ class ChromeAccountManagerService;
 // Whether an account has been added. Must be set externally.
 @property(nonatomic, assign) BOOL addedAccount;
 
+// Delegate.
+@property(nonatomic, weak) id<SigninSyncMediatorDelegate> delegate;
+
 // Disconnect the mediator.
 - (void)disconnect;
 
-// Sign in the selected account.
-- (void)startSignInWithAuthenticationFlow:
-            (AuthenticationFlow*)authenticationFlow
-                               completion:(ProceduralBlock)completion;
+// Reverts the sign-in and sync operation if needed.
+// @param signinStateOnStart: Browser sign-in state when the coordinator starts.
+// @param signinIdentityOnStart: Sign-in identity when the coordinator starts.
+- (void)cancelSyncAndRestoreSigninState:(IdentitySigninState)signinStateOnStart
+                  signinIdentityOnStart:(ChromeIdentity*)signinIdentityOnStart;
+
+// Starts the sync engine.
+// @param confirmationID: The confirmation string ID of sync.
+// @param consentIDs: The consent string IDs of sync screen.
+// @param authenticationFlow: the object used to manage the authentication flow.
+// @param advancedSyncSettingsLinkWasTapped: YES if the link to show the
+//   advance settings was used to start the sync.
+- (void)startSyncWithConfirmationID:(const int)confirmationID
+                         consentIDs:(NSArray<NSNumber*>*)consentIDs
+                 authenticationFlow:(AuthenticationFlow*)authenticationFlow;
+
+// Prepare for advanced settings before showing them.
+// @param authenticationFlow: the object used to manage the authentication flow.
+- (void)prepareAdvancedSettingsWithAuthenticationFlow:
+    (AuthenticationFlow*)authenticationFlow;
 
 @end
 

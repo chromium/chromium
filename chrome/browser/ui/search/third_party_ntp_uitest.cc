@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -77,7 +77,7 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyNTPUiTest, Reloads) {
     ASSERT_TRUE(content::ExecJs(tab1, "window.location.reload()"));
     nav_observer.WaitForNavigationFinished();
     ASSERT_TRUE(nav_observer.last_navigation_succeeded());
-    EXPECT_EQ(ntp_url, tab1->GetMainFrame()->GetLastCommittedURL());
+    EXPECT_EQ(ntp_url, tab1->GetPrimaryMainFrame()->GetLastCommittedURL());
     EXPECT_EQ(1, content::EvalJs(tab1, "history.length"));
   }
   // Verify that the omnibox retained its focus.

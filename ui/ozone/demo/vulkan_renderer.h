@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/gfx/buffer_types.h"
@@ -81,7 +82,7 @@ class VulkanRenderer : public RendererBase {
 
   std::vector<std::unique_ptr<Framebuffer>> framebuffers_;
 
-  gpu::VulkanImplementation* const vulkan_implementation_;
+  const raw_ptr<gpu::VulkanImplementation> vulkan_implementation_;
   std::unique_ptr<gpu::VulkanDeviceQueue> device_queue_;
   std::unique_ptr<gpu::VulkanCommandPool> command_pool_;
   std::unique_ptr<gpu::VulkanSurface> vulkan_surface_;

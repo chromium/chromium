@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -93,7 +93,7 @@ export class TtsManager {
         /** @type {!chrome.tts.TtsOptions} */ (Object.assign({}, ttsOptions));
     // Saves a copy of the ttsOptions for resume.
     Object.assign(this.clientTtsOptions_, ttsOptions);
-    modifiedOptions.onEvent = (event) => {
+    modifiedOptions.onEvent = event => {
       switch (event.type) {
         case chrome.tts.EventType.ERROR:
           if (this.isNetworkVoice_) {
@@ -123,7 +123,7 @@ export class TtsManager {
           }
           TtsManager.sendEventToOptions(ttsOptions, {
             type: chrome.tts.EventType.START,
-            charIndex: this.currentCharIndex_
+            charIndex: this.currentCharIndex_,
           });
           break;
         case chrome.tts.EventType.END:
@@ -131,7 +131,7 @@ export class TtsManager {
           this.currentCharIndex_ = text.length + offset;
           TtsManager.sendEventToOptions(ttsOptions, {
             type: chrome.tts.EventType.END,
-            charIndex: this.currentCharIndex_
+            charIndex: this.currentCharIndex_,
           });
           break;
         case chrome.tts.EventType.WORD:
@@ -140,7 +140,7 @@ export class TtsManager {
           TtsManager.sendEventToOptions(ttsOptions, {
             type: chrome.tts.EventType.WORD,
             charIndex: this.currentCharIndex_,
-            length: event.length
+            length: event.length,
           });
           break;
         case chrome.tts.EventType.INTERRUPTED:
@@ -151,7 +151,7 @@ export class TtsManager {
           if (this.pauseCompleteCallback_) {
             TtsManager.sendEventToOptions(ttsOptions, {
               type: chrome.tts.EventType.PAUSE,
-              charIndex: this.currentCharIndex_
+              charIndex: this.currentCharIndex_,
             });
             this.pauseCompleteCallback_();
             break;
@@ -178,7 +178,7 @@ export class TtsManager {
    * @return {!Promise}
    */
   pause() {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       this.pauseCompleteCallback_ = () => {
         this.pauseCompleteCallback_ = null;
         resolve();
@@ -203,7 +203,7 @@ export class TtsManager {
     if (this.text_.slice(this.currentCharIndex_).trim().length === 0) {
       TtsManager.sendEventToOptions(ttsOptions, {
         type: chrome.tts.EventType.ERROR,
-        errorMessage: TtsManager.ErrorMessage.RESUME_WITH_EMPTY_CONTENT
+        errorMessage: TtsManager.ErrorMessage.RESUME_WITH_EMPTY_CONTENT,
       });
       return;
     }

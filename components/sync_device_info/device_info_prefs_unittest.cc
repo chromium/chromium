@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -56,20 +56,19 @@ TEST_F(DeviceInfoPrefsTest, ShouldCleanUpCorruptEntriesUponGarbageCollection) {
 
   // Manipulate the preference directly to add a corrupt entry to the list,
   // which is a string instead of a dictionary.
-  ListPrefUpdate cache_guids_update(&pref_service_,
-                                    kDeviceInfoRecentGUIDsWithTimestamps);
-  cache_guids_update->Insert(cache_guids_update->GetList().begin(),
-                             base::Value("corrupt_string_entry"));
+  ScopedListPrefUpdate cache_guids_update(&pref_service_,
+                                          kDeviceInfoRecentGUIDsWithTimestamps);
+  base::Value::List& update_list = cache_guids_update.Get();
+  update_list.Insert(update_list.begin(), base::Value("corrupt_string_entry"));
 
   // Add another corrupt entry: in this case the entry is a dictionary, but it
   // contains no timestamp.
-  cache_guids_update->Insert(cache_guids_update->GetList().begin(),
-                             base::Value(base::Value::Type::DICTIONARY));
+  update_list.Insert(update_list.begin(),
+                     base::Value(base::Value::Type::DICTIONARY));
 
   // The end result is the list contains three entries among which one is valid.
-  ASSERT_EQ(3u, pref_service_.GetList(kDeviceInfoRecentGUIDsWithTimestamps)
-                    ->GetList()
-                    .size());
+  ASSERT_EQ(3u,
+            pref_service_.GetList(kDeviceInfoRecentGUIDsWithTimestamps).size());
   ASSERT_TRUE(device_info_prefs_.IsRecentLocalCacheGuid("guid1"));
 
   // Garbage collection should clean up the corrupt entries.
@@ -77,9 +76,8 @@ TEST_F(DeviceInfoPrefsTest, ShouldCleanUpCorruptEntriesUponGarbageCollection) {
   ASSERT_TRUE(device_info_prefs_.IsRecentLocalCacheGuid("guid1"));
 
   // |guid1| should be the only entry in the list.
-  EXPECT_EQ(1u, pref_service_.GetList(kDeviceInfoRecentGUIDsWithTimestamps)
-                    ->GetList()
-                    .size());
+  EXPECT_EQ(1u,
+            pref_service_.GetList(kDeviceInfoRecentGUIDsWithTimestamps).size());
 }
 
 TEST_F(DeviceInfoPrefsTest, ShouldTruncateAfterMaximumNumberOfGuids) {

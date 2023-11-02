@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,8 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -97,7 +99,7 @@ class VIEWS_EXPORT TooltipIcon : public ImageView,
   bool mouse_inside_;
 
   // A bubble shown on hover. Weak; owns itself. NULL while hiding.
-  InfoBubble* bubble_;
+  raw_ptr<InfoBubble> bubble_;
 
   // The width the tooltip prefers to be. Default is 0 (no preference).
   int preferred_width_;

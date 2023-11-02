@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,10 +27,10 @@
 #include "media/capture/capture_export.h"
 #include "media/capture/video/chromeos/mojom/cros_camera_service.mojom.h"
 #include "media/capture/video/chromeos/token_manager.h"
-#include "media/capture/video/chromeos/video_capture_device_factory_chromeos.h"
 #include "media/capture/video/video_capture_device_factory.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/platform/platform_channel_server_endpoint.h"
@@ -46,6 +46,8 @@ namespace media {
 
 using MojoJpegEncodeAcceleratorFactoryCB = base::RepeatingCallback<void(
     mojo::PendingReceiver<chromeos_camera::mojom::JpegEncodeAccelerator>)>;
+using MojoMjpegDecodeAcceleratorFactoryCB = base::RepeatingCallback<void(
+    mojo::PendingReceiver<chromeos_camera::mojom::MjpegDecodeAccelerator>)>;
 
 class CAPTURE_EXPORT CameraClientObserver {
  public:
@@ -95,6 +97,9 @@ class FailedCameraHalServerCallbacks final
                                   bool opened,
                                   cros::mojom::CameraClientType type) override;
   void CameraPrivacySwitchStateChange(
+      cros::mojom::CameraPrivacySwitchState state,
+      int32_t camera_id) override;
+  void CameraSWPrivacySwitchStateChange(
       cros::mojom::CameraPrivacySwitchState state) override;
 
   mojo::Receiver<cros::mojom::CameraHalServerCallbacks> callbacks_;
@@ -103,11 +108,15 @@ class FailedCameraHalServerCallbacks final
 class CAPTURE_EXPORT CameraPrivacySwitchObserver
     : public base::CheckedObserver {
  public:
-  virtual void OnCameraPrivacySwitchStatusChanged(
-      cros::mojom::CameraPrivacySwitchState state) = 0;
-
- protected:
   ~CameraPrivacySwitchObserver() override = default;
+
+  // If |camera_id| is unknown, |camera_id| will be set -1.
+  virtual void OnCameraHWPrivacySwitchStatusChanged(
+      int32_t camera_id,
+      cros::mojom::CameraPrivacySwitchState state) {}
+
+  virtual void OnCameraSWPrivacySwitchStatusChanged(
+      cros::mojom::CameraPrivacySwitchState state) {}
 };
 
 // The CameraHalDispatcherImpl hosts and waits on the unix domain socket
@@ -118,8 +127,13 @@ class CAPTURE_EXPORT CameraPrivacySwitchObserver
 // establish direct Mojo connections between the CameraHalServer and the
 // CameraHalClients.
 //
-// For general documentation about the CameraHalDispater Mojo interface see the
-// comments in mojo/cros_camera_service.mojom.
+// CameraHalDispatcherImpl owns two threads. blocking_io_thread_ is for
+// communicating with a socket file to listen for Mojo connection buildup
+// request. proxy_thread_ is the thread where the Mojo channel is bound and all
+// communication through Mojo will happen.
+//
+// For general documentation about the CameraHalDispatcher Mojo interface see
+// the comments in mojo/cros_camera_service.mojom.
 //
 // On ChromeOS the video capture service must run in the browser process,
 // because parts of the code depend on global objects that are only available in
@@ -128,8 +142,7 @@ class CAPTURE_EXPORT CameraPrivacySwitchObserver
 // See https://crbug.com/891961.
 class CAPTURE_EXPORT CameraHalDispatcherImpl final
     : public cros::mojom::CameraHalDispatcher,
-      public cros::mojom::CameraHalServerCallbacks,
-      public base::trace_event::TraceLog::EnabledStateObserver {
+      public cros::mojom::CameraHalServerCallbacks {
  public:
   static CameraHalDispatcherImpl* GetInstance();
 
@@ -139,7 +152,7 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
   bool Start(MojoMjpegDecodeAcceleratorFactoryCB jda_factory,
              MojoJpegEncodeAcceleratorFactoryCB jea_factory);
 
-  void AddClientObserver(std::unique_ptr<CameraClientObserver> observer,
+  void AddClientObserver(CameraClientObserver* observer,
                          base::OnceCallback<void(int32_t)> result_callback);
 
   bool IsStarted();
@@ -152,10 +165,15 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
   // being destroyed.
   void RemoveActiveClientObserver(CameraActiveClientObserver* observer);
 
+  // Removes the observers after a call by the subject and returns after
+  // the observers are removed.
+  void RemoveClientObservers(
+      std::vector<CameraClientObserver*> client_observers);
+
   // Adds an observer to get notified when the camera privacy switch status
   // changed. Please note that for some devices, the signal will only be
   // detectable when the camera is currently on due to hardware limitations.
-  // Returns the current state of the camera privacy switch.
+  // Returns the current state of the camera HW privacy switch.
   cros::mojom::CameraPrivacySwitchState AddCameraPrivacySwitchObserver(
       CameraPrivacySwitchObserver* observer);
 
@@ -163,9 +181,22 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
   // being destroyed.
   void RemoveCameraPrivacySwitchObserver(CameraPrivacySwitchObserver* observer);
 
-  // Called by vm_permission_service to register the token used for pluginvm.
+  // Gets the current camera software privacy switch state.
+  void GetCameraSWPrivacySwitchState(
+      cros::mojom::CameraHalServer::GetCameraSWPrivacySwitchStateCallback
+          callback);
+
+  // Sets the camera software privacy switch state.
+  void SetCameraSWPrivacySwitchState(
+      cros::mojom::CameraPrivacySwitchState state);
+
+  // Called by vm_permission_service to register the token used for
+  // pluginvm.
   void RegisterPluginVmToken(const base::UnguessableToken& token);
   void UnregisterPluginVmToken(const base::UnguessableToken& token);
+
+  // Used when running capture unittests to avoid running sensor related path.
+  void DisableSensorForTesting();
 
   // CameraHalDispatcher implementations.
   void RegisterServer(
@@ -197,14 +228,17 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
                                   bool opened,
                                   cros::mojom::CameraClientType type) final;
   void CameraPrivacySwitchStateChange(
+      cros::mojom::CameraPrivacySwitchState state,
+      int32_t camera_id) final;
+  void CameraSWPrivacySwitchStateChange(
       cros::mojom::CameraPrivacySwitchState state) final;
 
   base::UnguessableToken GetTokenForTrustedClient(
       cros::mojom::CameraClientType type);
 
-  // base::trace_event::TraceLog::EnabledStateObserver implementation.
-  void OnTraceLogEnabled() final;
-  void OnTraceLogDisabled() final;
+  void SetAutoFramingState(cros::mojom::CameraAutoFramingState state);
+  void GetAutoFramingSupported(
+      cros::mojom::CameraHalServer::GetAutoFramingSupportedCallback callback);
 
  private:
   friend struct base::DefaultSingletonTraits<CameraHalDispatcherImpl>;
@@ -224,6 +258,13 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
   // Runs on |blocking_io_thread_|.
   void StartServiceLoop(base::ScopedFD socket_fd, base::WaitableEvent* started);
 
+  void GetCameraSWPrivacySwitchStateOnProxyThread(
+      cros::mojom::CameraHalServer::GetCameraSWPrivacySwitchStateCallback
+          callback);
+
+  void SetCameraSWPrivacySwitchStateOnProxyThread(
+      cros::mojom::CameraPrivacySwitchState state);
+
   void RegisterClientWithTokenOnProxyThread(
       mojo::PendingRemote<cros::mojom::CameraHalClient> client,
       cros::mojom::CameraClientType type,
@@ -231,8 +272,9 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
       RegisterClientWithTokenCallback callback);
 
   void AddClientObserverOnProxyThread(
-      std::unique_ptr<CameraClientObserver> observer,
-      base::OnceCallback<void(int32_t)> result_callback);
+      CameraClientObserver* observer,
+      base::OnceCallback<void(int32_t)> result_callback,
+      base::WaitableEvent* added);
 
   void EstablishMojoChannel(CameraClientObserver* client_observer);
 
@@ -243,15 +285,23 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
   void OnCameraHalServerConnectionError();
   void OnCameraHalClientConnectionError(CameraClientObserver* client);
 
+  // Cleans up everything about the observer
+  void CleanupClientOnProxyThread(CameraClientObserver* client_observer);
+  void RemoveClientObserversOnProxyThread(
+      std::vector<CameraClientObserver*> client_observers,
+      base::WaitableEvent* removed);
+
   void RegisterSensorClientWithTokenOnUIThread(
       mojo::PendingRemote<chromeos::sensors::mojom::SensorHalClient> client,
       const base::UnguessableToken& auth_token,
       RegisterSensorClientWithTokenCallback callback);
 
-  void StopOnProxyThread();
+  void SetAutoFramingStateOnProxyThread(
+      cros::mojom::CameraAutoFramingState state);
+  void GetAutoFramingSupportedOnProxyThread(
+      cros::mojom::CameraHalServer::GetAutoFramingSupportedCallback callback);
 
-  void OnTraceLogEnabledOnProxyThread();
-  void OnTraceLogDisabledOnProxyThread();
+  void StopOnProxyThread();
 
   TokenManager* GetTokenManagerForTesting();
 
@@ -272,8 +322,7 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
       camera_hal_server_callbacks_;
   FailedCameraHalServerCallbacks failed_camera_hal_server_callbacks_;
 
-  std::set<std::unique_ptr<CameraClientObserver>, base::UniquePtrComparator>
-      client_observers_;
+  std::set<CameraClientObserver*> client_observers_;
 
   MojoMjpegDecodeAcceleratorFactoryCB jda_factory_;
 
@@ -288,12 +337,25 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
   scoped_refptr<base::ObserverListThreadSafe<CameraActiveClientObserver>>
       active_client_observers_;
 
-  base::Lock privacy_switch_state_lock_;
-  cros::mojom::CameraPrivacySwitchState current_privacy_switch_state_
-      GUARDED_BY(privacy_switch_state_lock_);
+  // |current_hw_privacy_switch_state_| can be accessed from the UI thread
+  // besides |proxy_thread_|.
+  base::Lock hw_privacy_switch_lock_;
+  cros::mojom::CameraPrivacySwitchState current_hw_privacy_switch_state_
+      GUARDED_BY(hw_privacy_switch_lock_) =
+          cros::mojom::CameraPrivacySwitchState::UNKNOWN;
+
+  cros::mojom::CameraAutoFramingState current_auto_framing_state_ =
+      cros::mojom::CameraAutoFramingState::OFF;
+
+  cros::mojom::CameraHalServer::GetAutoFramingSupportedCallback
+      auto_framing_supported_callback_;
 
   scoped_refptr<base::ObserverListThreadSafe<CameraPrivacySwitchObserver>>
       privacy_switch_observers_;
+
+  bool sensor_enabled_ = true;
+  std::map<CameraClientObserver*, std::unique_ptr<CameraClientObserver>>
+      mojo_client_observers_;
 
   base::WeakPtrFactory<CameraHalDispatcherImpl> weak_factory_{this};
 };

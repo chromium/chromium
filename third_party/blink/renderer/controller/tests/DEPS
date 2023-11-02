@@ -4,7 +4,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-    'run_all_tests\.cc': [
+    'blink_test_suite\.h': [
         "+content/public/test/blink_test_environment.h",
     ],
 }

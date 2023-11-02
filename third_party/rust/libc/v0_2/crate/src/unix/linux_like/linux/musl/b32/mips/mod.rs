@@ -172,18 +172,6 @@ pub const O_NOFOLLOW: ::c_int = 0o400000;
 pub const O_ASYNC: ::c_int = 0o10000;
 pub const O_LARGEFILE: ::c_int = 0x2000;
 
-pub const FIOCLEX: ::c_int = 0x6601;
-pub const FIONCLEX: ::c_int = 0x6602;
-pub const FIONBIO: ::c_int = 0x667E;
-
-pub const RLIMIT_RSS: ::c_int = 7;
-pub const RLIMIT_NOFILE: ::c_int = 5;
-pub const RLIMIT_AS: ::c_int = 6;
-pub const RLIMIT_NPROC: ::c_int = 8;
-pub const RLIMIT_MEMLOCK: ::c_int = 9;
-pub const RLIMIT_NLIMITS: ::c_int = 15;
-pub const RLIM_NLIMITS: ::c_int = RLIMIT_NLIMITS;
-
 pub const MCL_CURRENT: ::c_int = 0x0001;
 pub const MCL_FUTURE: ::c_int = 0x0002;
 pub const CBAUD: ::tcflag_t = 0o0010017;
@@ -413,54 +401,8 @@ pub const IEXTEN: ::tcflag_t = 0o000400;
 pub const TOSTOP: ::tcflag_t = 0o100000;
 pub const FLUSHO: ::tcflag_t = 0o020000;
 
-pub const TCGETS: ::c_int = 0x540D;
-pub const TCSETS: ::c_int = 0x540E;
-pub const TCSETSW: ::c_int = 0x540F;
-pub const TCSETSF: ::c_int = 0x5410;
-pub const TCGETA: ::c_int = 0x5401;
-pub const TCSETA: ::c_int = 0x5402;
-pub const TCSETAW: ::c_int = 0x5403;
-pub const TCSETAF: ::c_int = 0x5404;
-pub const TCSBRK: ::c_int = 0x5405;
-pub const TCXONC: ::c_int = 0x5406;
-pub const TCFLSH: ::c_int = 0x5407;
-pub const TIOCGSOFTCAR: ::c_int = 0x5481;
-pub const TIOCSSOFTCAR: ::c_int = 0x5482;
-pub const TIOCLINUX: ::c_int = 0x5483;
-pub const TIOCGSERIAL: ::c_int = 0x5484;
-pub const TIOCEXCL: ::c_int = 0x740D;
-pub const TIOCNXCL: ::c_int = 0x740E;
-pub const TIOCSCTTY: ::c_int = 0x5480;
-pub const TIOCGPGRP: ::c_int = 0x40047477;
-pub const TIOCSPGRP: ::c_int = 0x80047476;
-pub const TIOCOUTQ: ::c_int = 0x7472;
-pub const TIOCSTI: ::c_int = 0x5472;
-pub const TIOCGWINSZ: ::c_int = 0x40087468;
-pub const TIOCSWINSZ: ::c_int = 0x80087467;
-pub const TIOCMGET: ::c_int = 0x741D;
-pub const TIOCMBIS: ::c_int = 0x741B;
-pub const TIOCMBIC: ::c_int = 0x741C;
-pub const TIOCMSET: ::c_int = 0x741A;
-pub const FIONREAD: ::c_int = 0x467F;
-pub const TIOCCONS: ::c_int = 0x80047478;
-
-pub const TIOCGRS485: ::c_int = 0x4020542E;
-pub const TIOCSRS485: ::c_int = 0xC020542F;
-
 pub const POLLWRNORM: ::c_short = 0x4;
 pub const POLLWRBAND: ::c_short = 0x100;
-
-pub const TIOCM_LE: ::c_int = 0x001;
-pub const TIOCM_DTR: ::c_int = 0x002;
-pub const TIOCM_RTS: ::c_int = 0x004;
-pub const TIOCM_ST: ::c_int = 0x010;
-pub const TIOCM_SR: ::c_int = 0x020;
-pub const TIOCM_CTS: ::c_int = 0x040;
-pub const TIOCM_CAR: ::c_int = 0x100;
-pub const TIOCM_CD: ::c_int = TIOCM_CAR;
-pub const TIOCM_RNG: ::c_int = 0x200;
-pub const TIOCM_RI: ::c_int = TIOCM_RNG;
-pub const TIOCM_DSR: ::c_int = 0x400;
 
 pub const SYS_syscall: ::c_long = 4000 + 0;
 pub const SYS_exit: ::c_long = 4000 + 1;

@@ -50,7 +50,7 @@
     [Replaceable, MeasureAs=BarPropToolbar] readonly attribute BarProp toolbar;
     attribute DOMString status;
     [CrossOrigin, CallWith=Isolate] void close();
-    [HighEntropy=Direct, MeasureAs=WindowClosed, CrossOrigin] readonly attribute boolean closed;
+    [MeasureAs=WindowClosed, CrossOrigin] readonly attribute boolean closed;
     void stop();
     [CrossOrigin, CallWith=Isolate] void focus();
     [CrossOrigin] void blur();
@@ -60,7 +60,7 @@
     [Replaceable, CrossOrigin] readonly attribute unsigned long length;
     [LegacyUnforgeable, CrossOrigin] readonly attribute Window? top;
     // FIXME: opener should be of type any.
-    [CrossOrigin, Custom=Setter] attribute Window opener;
+    [CrossOrigin, Custom=Setter, ImplementedAs=OpenerWithMetrics] attribute Window opener;
     [Replaceable, CrossOrigin] readonly attribute Window? parent;
     [CheckSecurity=ReturnValue, Custom=Getter] readonly attribute Element? frameElement;
 
@@ -94,7 +94,6 @@
     // https://wicg.github.io/origin-policy/#monkeypatch-html-windoworworkerglobalscope
     [Replaceable] readonly attribute DOMString origin;
     void queueMicrotask(VoidFunction callback);
-    [RuntimeEnabled=OriginPolicy, SameObject, SaveSameObject] readonly attribute FrozenArray<DOMString> originPolicyIds;
 
     // AnimationFrameProvider mixin
     // https://html.spec.whatwg.org/C/#animation-frames
@@ -192,8 +191,8 @@
     [MeasureAs=WindowOffscreenBuffering, Replaceable, NotEnumerable] readonly attribute boolean offscreenBuffering;
     [HighEntropy=Direct, MeasureAs=WindowScreenLeft, Replaceable] readonly attribute long screenLeft;
     [HighEntropy=Direct, MeasureAs=WindowScreenTop, Replaceable] readonly attribute long screenTop;
-    [MeasureAs=WindowDefaultStatus] attribute DOMString defaultStatus;
-    [MeasureAs=WindowDefaultstatus, ImplementedAs=defaultStatus] attribute DOMString defaultstatus;
+    [RuntimeEnabled=WindowDefaultStatus,MeasureAs=WindowDefaultStatus] attribute DOMString defaultStatus;
+    [RuntimeEnabled=WindowDefaultStatus,MeasureAs=WindowDefaultstatus, ImplementedAs=defaultStatus] attribute DOMString defaultstatus;
     [MeasureAs=StyleMedia] readonly attribute StyleMedia styleMedia;
     [DeprecateAs=PrefixedRequestAnimationFrame] long webkitRequestAnimationFrame(FrameRequestCallback callback);
     [DeprecateAs=PrefixedCancelAnimationFrame, ImplementedAs=cancelAnimationFrame] void webkitCancelAnimationFrame(long id);
@@ -205,7 +204,15 @@
     readonly attribute boolean isSecureContext;
 
     // TrustedTypes API: http://github.com/wicg/trusted-types
-    [RuntimeEnabled=TrustedDOMTypes, CallWith=ScriptState] readonly attribute TrustedTypePolicyFactory trustedTypes;
+    [CallWith=ScriptState] readonly attribute TrustedTypePolicyFactory trustedTypes;
+
+    // Anonymous iframe:
+    // https://wicg.github.io/anonymous-iframe/#spec-window-attribute
+    [RuntimeEnabled=AnonymousIframe] readonly attribute boolean anonymouslyFramed;
+
+    // Collection of fenced frame APIs
+    // https://github.com/shivanigithub/fenced-frame/issues/14
+    [RuntimeEnabled=FencedFrames] readonly attribute Fence? fence;
 };
 
 Window includes GlobalEventHandlers;

@@ -1,4 +1,4 @@
-/* Copyright 2014 The Chromium Authors. All rights reserved.
+/* Copyright 2014 The Chromium Authors
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file.
  *
@@ -43,12 +43,11 @@ a:hover {
   font-weight: 500;
   margin-top: 1.98em;
   padding: 10.5px 12px;
-  text-decoration: none;
 }
 
 @media (prefers-color-scheme: dark) {
   :-webkit-any(a, .learn-more-button) {
-    color: rgb(138, 180, 248);  /* --google-blue-refresh-300 */
+    color: rgb(138, 180, 248);  /* --google-blue-300 */
   }
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -82,8 +82,10 @@ const oneGoogleBarApi = (() => {
      * @param {boolean} enabled
      */
     setForegroundLight: enabled => {
-      foregroundLight = enabled;
-      api.bar.setForegroundStyle(foregroundLight ? 1 : 0);
+      if (foregroundLight !== enabled) {
+        foregroundLight = enabled;
+        api.bar.setForegroundStyle(foregroundLight ? 1 : 0);
+      }
     },
 
     /**
@@ -264,8 +266,10 @@ const overlayUpdater = (() => {
 })();
 
 window.addEventListener('message', ({data}) => {
-  if (data.type === 'enableDarkTheme') {
-    oneGoogleBarApi.setForegroundLight(data.enabled);
+  if (data.type === 'updateAppearance') {
+    oneGoogleBarApi.setForegroundLight(data.applyLightTheme);
+    document.body.toggleAttribute(
+        'apply-background-protection_', data.applyBackgroundProtection);
   }
 });
 

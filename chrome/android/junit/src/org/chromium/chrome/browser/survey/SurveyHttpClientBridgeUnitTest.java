@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,6 +33,7 @@ import java.util.Map;
 
 /** Unit test for {@link SurveyHttpClientBridge}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // Mocks GURL
 public class SurveyHttpClientBridgeUnitTest {
     private static final long FAKE_NATIVE_POINTER = 123456789L;
 

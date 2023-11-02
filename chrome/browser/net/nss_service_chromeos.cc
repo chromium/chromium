@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "ash/components/settings/cros_settings_names.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
@@ -17,12 +16,17 @@
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/ash/crosapi/cert_database_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/userdataauth/cryptohome_pkcs11_client.h"
-#include "chromeos/tpm/tpm_token_info_getter.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/dbus/userdataauth/cryptohome_pkcs11_client.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/ash/components/tpm/tpm_token_info_getter.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_context.h"
@@ -66,14 +70,14 @@ namespace {
 //                   v---------------------------------------/
 //     GetTPMInfoForUserOnUIThread
 //                   |
-// chromeos::TPMTokenInfoGetter::Start
+//   ash::TPMTokenInfoGetter::Start
 //                   |
 //     DidGetTPMInfoForUserOnUIThread
 //                   \---------------------------------------v
 //                                          crypto::InitializeTPMForChromeOSUser
 
 void DidGetTPMInfoForUserOnUIThread(
-    std::unique_ptr<chromeos::TPMTokenInfoGetter> getter,
+    std::unique_ptr<ash::TPMTokenInfoGetter> getter,
     const std::string& username_hash,
     absl::optional<user_data_auth::TpmTokenInfo> token_info) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -93,12 +97,11 @@ void GetTPMInfoForUserOnUIThread(const AccountId& account_id,
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DVLOG(1) << "Getting TPM info from cryptohome for "
            << " " << account_id.Serialize() << " " << username_hash;
-  std::unique_ptr<chromeos::TPMTokenInfoGetter> scoped_token_info_getter =
-      chromeos::TPMTokenInfoGetter::CreateForUserToken(
-          account_id, chromeos::CryptohomePkcs11Client::Get(),
+  std::unique_ptr<ash::TPMTokenInfoGetter> scoped_token_info_getter =
+      ash::TPMTokenInfoGetter::CreateForUserToken(
+          account_id, ash::CryptohomePkcs11Client::Get(),
           base::ThreadTaskRunnerHandle::Get());
-  chromeos::TPMTokenInfoGetter* token_info_getter =
-      scoped_token_info_getter.get();
+  ash::TPMTokenInfoGetter* token_info_getter = scoped_token_info_getter.get();
 
   // Bind |token_info_getter| to the callback to ensure it does not go away
   // before TPM token info is fetched.
@@ -143,11 +146,20 @@ void StartNSSInitOnIOThread(const AccountId& account_id,
       &StartTPMSlotInitializationOnIOThread, account_id, username_hash));
 }
 
+void NotifyCertsChangedInAshOnUIThread() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  crosapi::CrosapiManager::Get()
+      ->crosapi_ash()
+      ->cert_database_ash()
+      ->NotifyCertsChangedInAsh();
+}
+
 }  // namespace
 
 // Creates and manages a NSSCertDatabaseChromeOS. Created on the UI thread, but
 // all other calls are made on the IO thread.
-class NssService::NSSCertDatabaseChromeOSManager {
+class NssService::NSSCertDatabaseChromeOSManager
+    : public net::NSSCertDatabase::Observer {
  public:
   using GetNSSCertDatabaseCallback =
       base::OnceCallback<void(net::NSSCertDatabase*)>;
@@ -164,7 +176,12 @@ class NssService::NSSCertDatabaseChromeOSManager {
   NSSCertDatabaseChromeOSManager& operator=(
       const NSSCertDatabaseChromeOSManager&) = delete;
 
-  ~NSSCertDatabaseChromeOSManager() { DCHECK_CURRENTLY_ON(BrowserThread::IO); }
+  ~NSSCertDatabaseChromeOSManager() override {
+    DCHECK_CURRENTLY_ON(BrowserThread::IO);
+    if (nss_cert_database_) {
+      nss_cert_database_->RemoveObserver(this);
+    }
+  }
 
   net::NSSCertDatabase* GetNSSCertDatabase(
       GetNSSCertDatabaseCallback callback) {
@@ -185,6 +202,12 @@ class NssService::NSSCertDatabaseChromeOSManager {
     }
 
     return nullptr;
+  }
+
+  // net::NSSCertDatabase::Observer
+  void OnCertDBChanged() override {
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&NotifyCertsChangedInAshOnUIThread));
   }
 
  private:
@@ -217,12 +240,22 @@ class NssService::NSSCertDatabaseChromeOSManager {
                       crypto::ScopedPK11Slot system_slot) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
+    auto public_slot = crypto::GetPublicSlotForChromeOSUser(username_hash_);
+
+    // TODO(crbug.com/1163303): Remove when the bug is fixed.
+    if (!public_slot) {
+      Profile* profile = ProfileManager::GetActiveUserProfile();
+      CHECK(profile);
+      crypto::DiagnosePublicSlotAndCrash(
+          crypto::GetSoftwareNSSDBPath(profile->GetPath()));
+    }
+
     nss_cert_database_ = std::make_unique<net::NSSCertDatabaseChromeOS>(
-        crypto::GetPublicSlotForChromeOSUser(username_hash_),
-        std::move(private_slot));
+        std::move(public_slot), std::move(private_slot));
 
     if (system_slot)
       nss_cert_database_->SetSystemSlot(std::move(system_slot));
+    nss_cert_database_->AddObserver(this);
 
     ready_callback_list_.Notify(nss_cert_database_.get());
   }
@@ -244,7 +277,7 @@ NssService::NssService(content::BrowserContext* context) {
 
   Profile* profile = Profile::FromBrowserContext(context);
   const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+      ash::ProfileHelper::Get()->GetUserByProfile(profile);
   // No need to initialize NSS for users with empty username hash:
   // Getters for a user's NSS slots always return a null slot if the user's
   // username hash is empty, even when the NSS is not initialized for the

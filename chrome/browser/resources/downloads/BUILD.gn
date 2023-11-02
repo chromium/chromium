@@ -1,61 +1,28 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chrome/common/features.gni")
-import("//tools/grit/grit_rule.gni")
-import("//tools/grit/preprocess_if_expr.gni")
-import("//tools/polymer/html_to_js.gni")
-import("//tools/typescript/ts_library.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
-import("../tools/optimize_webui.gni")
+import("//chrome/browser/resources/tools/build_webui.gni")
 
-preprocess_folder = "preprocessed"
+assert(!is_android)
 
-if (optimize_webui) {
-  build_manifest = "build_manifest.json"
+build_webui("build") {
+  grd_prefix = "downloads"
 
-  optimize_webui("build") {
-    host = "downloads"
-    input = rebase_path("$target_gen_dir/tsc", root_build_dir)
-    js_out_files = [ "downloads.rollup.js" ]
-    js_module_in_files = [ "downloads.js" ]
-    out_manifest = "$target_gen_dir/$build_manifest"
-    excludes = [
-      "chrome://resources/js/cr.m.js",
-      "chrome://resources/mojo/mojo/public/js/bindings.js",
-    ]
-
-    deps = [
-      ":build_ts",
-      "../../../../ui/webui/resources:preprocess",
-    ]
-  }
-}
-
-generate_grd("build_grd") {
-  input_files = [
+  static_files = [
     "downloads.html",
     "images/incognito_marker.svg",
     "images/no_downloads.svg",
   ]
-  input_files_base_dir = rebase_path(".", "//")
-  if (optimize_webui) {
-    deps = [ ":build" ]
-    manifest_files = [ "$target_gen_dir/$build_manifest" ]
-    resource_path_rewrites = [ "downloads.rollup.js|downloads.js" ]
-  } else {
-    deps = [ ":build_ts" ]
-    manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
-  }
-  grd_prefix = "downloads"
-  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
-}
 
-preprocess_if_expr("preprocess") {
-  in_folder = "./"
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = [
+  # Files holding a Polymer element definition and have an equivalent .html file.
+  web_component_files = [
+    "item.ts",
+    "manager.ts",
+    "toolbar.ts",
+  ]
+
+  non_web_component_files = [
     "browser_proxy.ts",
     "constants.ts",
     "data.ts",
@@ -63,78 +30,31 @@ preprocess_if_expr("preprocess") {
     "icon_loader.ts",
     "search_service.ts",
   ]
-}
 
-preprocess_if_expr("preprocess_web_components") {
-  deps = [ ":web_components" ]
-  in_folder = target_gen_dir
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = [
-    "icons.ts",
-    "item.ts",
-    "manager.ts",
-    "toolbar.ts",
-  ]
-}
+  icons_html_files = [ "icons.html" ]
 
-copy("copy_mojo") {
-  deps = [ "//chrome/browser/ui/webui/downloads:mojo_bindings_webui_js" ]
-  sources = [ "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/downloads/downloads.mojom-webui.js" ]
-  outputs = [ "$target_gen_dir/$preprocess_folder/{{source_file_part}}" ]
-}
+  mojo_files_deps =
+      [ "//chrome/browser/ui/webui/downloads:mojo_bindings_webui_js" ]
+  mojo_files = [ "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/downloads/downloads.mojom-webui.js" ]
 
-grit("resources") {
-  defines = chrome_grit_defines
-
-  # These arguments are needed since the grd is generated at build time.
-  enable_input_discovery_for_gn_analyze = false
-  source = "$target_gen_dir/downloads_resources.grd"
-  deps = [ ":build_grd" ]
-
-  outputs = [
-    "grit/downloads_resources.h",
-    "grit/downloads_resources_map.cc",
-    "grit/downloads_resources_map.h",
-    "downloads_resources.pak",
-  ]
-  output_dir = "$root_gen_dir/chrome"
-}
-
-html_to_js("web_components") {
-  js_files = [
-    "icons.ts",
-    "item.ts",
-    "manager.ts",
-    "toolbar.ts",
-  ]
-}
-
-ts_library("build_ts") {
-  root_dir = "$target_gen_dir/$preprocess_folder"
-  out_dir = "$target_gen_dir/tsc"
-  composite = true
-  tsconfig_base = "tsconfig_base.json"
-  in_files = [
-    "browser_proxy.ts",
-    "constants.ts",
-    "data.ts",
-    "downloads.mojom-webui.js",
-    "downloads.ts",
-    "icon_loader.ts",
-    "icons.ts",
-    "item.ts",
-    "manager.ts",
-    "search_service.ts",
-    "toolbar.ts",
-  ]
-  deps = [
+  ts_composite = true
+  ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
+  ts_deps = [
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources:library",
+    "//ui/webui/resources/mojo:library",
   ]
-  definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
-  extra_deps = [
-    ":copy_mojo",
-    ":preprocess",
-    ":preprocess_web_components",
-  ]
+
+  optimize = optimize_webui
+  if (optimize) {
+    optimize_webui_host = "downloads"
+    optimize_webui_out_files = [ "downloads.rollup.js" ]
+    optimize_webui_in_files = [ "downloads.js" ]
+    optimize_webui_excludes = [
+      "chrome://resources/js/cr.m.js",
+      "chrome://resources/mojo/mojo/public/js/bindings.js",
+    ]
+    optimize_webui_resource_paths_rewrites =
+        [ "downloads.rollup.js|downloads.js" ]
+  }
 }

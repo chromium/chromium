@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "components/media_router/common/media_sink.h"
 #include "components/media_router/common/media_source.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -67,7 +68,7 @@ class MediaSinksObserver {
  private:
   const absl::optional<const MediaSource> source_;
   const url::Origin origin_;
-  MediaRouter* const router_;
+  const raw_ptr<MediaRouter> router_;
   bool initialized_;
 
 #if DCHECK_IS_ON()

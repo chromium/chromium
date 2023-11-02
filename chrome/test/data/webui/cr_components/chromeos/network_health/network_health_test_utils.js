@@ -1,9 +1,8 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-import 'chrome://resources/mojo/ash/services/network_health/public/mojom/network_diagnostics.mojom-lite.js';
+import {RoutineResult, RoutineVerdict} from 'chrome://resources/mojo/chromeos/services/network_health/public/mojom/network_diagnostics.mojom-webui.js';
 
 /**
  * Removes any prefixed URL from a icon image path
@@ -17,8 +16,8 @@ export function getIconFromSrc(src) {
 
 /**
  * Creates and returns a basic RoutineResult structure
- * @param {!ash.networkDiagnostics.mojom.RoutineVerdict} verdict
- * @return {!ash.networkDiagnostics.mojom.RoutineResult}
+ * @param {!RoutineVerdict} verdict
+ * @return {!RoutineResult}
  */
 export function createResult(verdict) {
   return {

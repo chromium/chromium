@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -115,7 +115,10 @@ FrameTextDumpResult FrameTextDumpResult::CompleteWithContents(
   DCHECK(!IsCompleted());
 
   FrameTextDumpResult copy = *this;
+  // Always trim whitespace from |contents| because it can non-deterministically
+  // have trailing whitespace which makes testing and parsing harder.
   copy.contents_ = contents;
+  base::TrimWhitespace(contents, base::TRIM_ALL, &(copy.contents_.value()));
   return copy;
 }
 

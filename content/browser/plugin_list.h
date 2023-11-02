@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,11 +10,8 @@
 #include <utility>
 #include <vector>
 
-#include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/lazy_instance.h"
-#include "base/synchronization/lock.h"
-#include "base/thread_annotations.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "content/public/common/webplugininfo.h"
@@ -28,14 +25,8 @@ class GURL;
 
 namespace content {
 
-// The PluginList is responsible for loading our NPAPI based plugins. It does
-// so in whatever manner is appropriate for the platform. On Windows, it loads
-// plugins from a known directory by looking for DLLs which start with "NP",
-// and checking to see if they are valid NPAPI libraries. On the Mac, it walks
-// the machine-wide and user plugin directories and loads anything that has
-// the correct types. On Linux, it walks the plugin directories as well
-// (e.g. /usr/lib/browser-plugins/).
-// This object is thread safe.
+// Manages the list of plugins. At this point, there are no external plugins.
+// This object lives on the UI thread.
 class CONTENT_EXPORT PluginList {
  public:
   // Gets the one instance of the PluginList.
@@ -86,8 +77,6 @@ class CONTENT_EXPORT PluginList {
                           std::vector<WebPluginInfo>* info,
                           std::vector<std::string>* actual_mime_types);
 
-  void set_will_load_plugins_callback(const base::RepeatingClosure& callback);
-
  private:
   enum LoadingState {
     LOADING_STATE_NEEDS_REFRESH,
@@ -120,10 +109,8 @@ class CONTENT_EXPORT PluginList {
   // Load all plugins from the default plugins directory.
   void LoadPlugins();
 
-  // Removes |plugin_path| from the list of extra plugin paths. Should only be
-  // called while holding |lock_|.
-  void RemoveExtraPluginPathLocked(const base::FilePath& plugin_path)
-      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  // Removes |plugin_path| from the list of extra plugin paths.
+  void RemoveExtraPluginPath(const base::FilePath& plugin_path);
 
   // Creates a WebPluginInfo structure given a plugin's path.  On success
   // returns true, with the information being put into "info".
@@ -143,23 +130,16 @@ class CONTENT_EXPORT PluginList {
   // States whether we will load the plugin list the next time we try to access
   // it, whether we are currently in the process of loading it, or whether we
   // consider it up to date.
-  LoadingState loading_state_ GUARDED_BY(lock_);
+  LoadingState loading_state_ = LOADING_STATE_NEEDS_REFRESH;
 
   // Extra plugin paths that we want to search when loading.
-  std::vector<base::FilePath> extra_plugin_paths_ GUARDED_BY(lock_);
+  std::vector<base::FilePath> extra_plugin_paths_;
 
   // Holds information about internal plugins.
-  std::vector<WebPluginInfo> internal_plugins_ GUARDED_BY(lock_);
+  std::vector<WebPluginInfo> internal_plugins_;
 
   // A list holding all plugins.
-  std::vector<WebPluginInfo> plugins_list_ GUARDED_BY(lock_);
-
-  // Callback that is invoked whenever the PluginList will reload the plugins.
-  base::RepeatingClosure will_load_plugins_callback_ GUARDED_BY(lock_);
-
-  // Need synchronization for the above members since this object can be
-  // accessed on multiple threads.
-  base::Lock lock_;
+  std::vector<WebPluginInfo> plugins_list_;
 };
 
 }  // namespace content

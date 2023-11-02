@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 
 #include "ash/public/cpp/session/session_controller_client.h"
 #include "base/callback_forward.h"
+#include "base/callback_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/crosapi/browser_manager_observer.h"
@@ -19,8 +20,6 @@
 #include "chromeos/login/login_state/login_state.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/user_manager/user_manager.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 
 class Profile;
 class PrefChangeRegistrar;
@@ -42,7 +41,6 @@ class SessionControllerClientImpl
       public user_manager::UserManager::Observer,
       public session_manager::SessionManagerObserver,
       public SupervisedUserServiceObserver,
-      public content::NotificationObserver,
       public policy::off_hours::DeviceOffHoursController::Observer,
       public crosapi::BrowserManagerObserver {
  public:
@@ -73,7 +71,8 @@ class SessionControllerClientImpl
 
   // Calls ash SessionController to run unlock animation.
   // |animation_finished_callback| will be invoked when the animation finishes.
-  void RunUnlockAnimation(base::OnceClosure animation_finished_callback);
+  void RunUnlockAnimation(ash::SessionController::RunUnlockAnimationCallback
+                              animation_finished_callback);
 
   // Asks the session controller to show the window teleportation dialog.
   void ShowTeleportWarningDialog(
@@ -81,7 +80,9 @@ class SessionControllerClientImpl
 
   // ash::SessionControllerClient:
   void RequestLockScreen() override;
+  void RequestHideLockScreen() override;
   void RequestSignOut() override;
+  void RequestRestartForUpdate() override;
   void AttemptRestartChrome() override;
   void SwitchActiveUser(const AccountId& account_id) override;
   void CycleActiveUser(ash::CycleUserDirection direction) override;
@@ -89,6 +90,7 @@ class SessionControllerClientImpl
   void EmitAshInitialized() override;
   PrefService* GetSigninScreenPrefService() override;
   PrefService* GetUserPrefService(const AccountId& account_id) override;
+  bool IsEnterpriseManaged() const override;
 
   // Returns true if a multi-profile user can be added to the session or if
   // multiple users are already signed in.
@@ -108,11 +110,6 @@ class SessionControllerClientImpl
 
   // SupervisedUserServiceObserver:
   void OnCustodianInfoChanged() override;
-
-  // content::NotificationObserver:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
 
   // DeviceOffHoursController::Observer:
   void OnOffHoursEndTimeChanged() override;
@@ -156,6 +153,9 @@ class SessionControllerClientImpl
   // policy.
   void SendSessionLengthLimit();
 
+  // Called when application is terminating
+  void OnAppTerminating();
+
   // crosapi::BrowserManagerObserver:
   void OnStateChanged() override;
 
@@ -169,7 +169,7 @@ class SessionControllerClientImpl
   // Chrome OS only supports a single supervised user in a session.
   Profile* supervised_user_profile_ = nullptr;
 
-  content::NotificationRegistrar registrar_;
+  base::CallbackListSubscription subscription_;
 
   // Pref change observers to update session info when a relevant user pref
   // changes. There is one observer per user and they have no particular order,

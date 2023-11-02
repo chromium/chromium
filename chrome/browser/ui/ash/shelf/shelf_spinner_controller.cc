@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -127,11 +127,13 @@ class SpinningEffectSource : public gfx::CanvasImageSource {
                          0, 0);
 
     const int gap = kSpinningGapPercent * inactive_image_.width() / 100;
+    constexpr SkColor kThrobberColor = SK_ColorWHITE;
     gfx::PaintThrobberSpinning(
         canvas,
         gfx::Rect(gap, gap, inactive_image_.width() - 2 * gap,
                   inactive_image_.height() - 2 * gap),
-        SkColorSetA(SK_ColorWHITE, 0xFF * (1.0 - std::abs(animation_lirp))),
+        SkColorSetA(kThrobberColor, SkColorGetA(kThrobberColor) *
+                                        (1.0 - std::abs(animation_lirp))),
         now - data_.creation_time());
   }
 
@@ -144,9 +146,9 @@ class SpinningEffectSource : public gfx::CanvasImageSource {
     if (data_.IsFadingIn()) {
       return 1.0 -
              TimeProportionSince(data_.creation_time(), now, kFadeInDuration);
-    } else {
-      return TimeProportionSince(data_.removal_time(), now, kFadeOutDuration);
     }
+
+    return TimeProportionSince(data_.removal_time(), now, kFadeOutDuration);
   }
 
   ShelfSpinnerController::ShelfSpinnerData data_;
@@ -234,8 +236,7 @@ bool ShelfSpinnerController::RemoveSpinnerFromControllerMap(
 void ShelfSpinnerController::CloseCrostiniSpinners() {
   std::vector<std::string> app_ids_to_close;
   const Profile* profile =
-      chromeos::ProfileHelper::Get()->GetProfileByAccountId(
-          current_account_id_);
+      ash::ProfileHelper::Get()->GetProfileByAccountId(current_account_id_);
   for (const auto& app_id_controller_pair : app_controller_map_) {
     if (crostini::IsCrostiniShelfAppId(profile, app_id_controller_pair.first))
       app_ids_to_close.push_back(app_id_controller_pair.first);

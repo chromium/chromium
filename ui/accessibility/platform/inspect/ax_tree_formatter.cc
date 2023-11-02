@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -51,12 +51,12 @@ bool AXTreeFormatter::MatchesPropertyFilters(
 // static
 bool AXTreeFormatter::MatchesNodeFilters(
     const std::vector<AXNodeFilter>& node_filters,
-    const base::Value& dict) {
+    const base::Value::Dict& dict) {
   for (const auto& filter : node_filters) {
     if (filter.property == "*") {
       return true;
     }
-    const std::string* value = dict.FindStringKey(filter.property);
+    const std::string* value = dict.FindString(filter.property);
     if (value && base::MatchPattern(*value, filter.pattern)) {
       return true;
     }

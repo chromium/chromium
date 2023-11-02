@@ -1,8 +1,7 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import argparse
 import collections
 import contextlib
 import itertools
@@ -238,7 +237,7 @@ def IterResourceFilesInDirectories(directories,
         yield path, archive_path
 
 
-class ResourceInfoFile(object):
+class ResourceInfoFile:
   """Helper for building up .res.info files."""
 
   def __init__(self):
@@ -346,6 +345,39 @@ def _FixPackageIds(resource_value):
   # either, a single value '0x12345678', or an array of values like '{
   # 0xfedcba98, 0x01234567, 0x56789abc }'
   return resource_value.replace('0x00', '0x7f')
+
+
+def ResolveStyleableReferences(r_txt_path):
+  # Convert lines like:
+  # int[] styleable ViewBack { 0x010100d4, com.android.webview.R.attr.backTint }
+  # to:
+  # int[] styleable ViewBack { 0x010100d4, 0xREALVALUE }
+  entries = _ParseTextSymbolsFile(r_txt_path)
+  lookup_table = {(e.resource_type, e.name): e.value for e in entries}
+
+  sb = []
+  with open(r_txt_path, encoding='utf8') as f:
+    for l in f:
+      if l.startswith('int[] styleable'):
+        brace_start = l.index('{') + 2
+        brace_end = l.index('}') - 1
+        values = [x for x in l[brace_start:brace_end].split(', ') if x]
+        new_values = []
+        for v in values:
+          try:
+            if not v.startswith('0x'):
+              resource_type, name = v.split('.')[-2:]
+              new_values.append(lookup_table[(resource_type, name)])
+            else:
+              new_values.append(v)
+          except:
+            logging.warning('Failed line: %r %r', l, v)
+            raise
+        l = l[:brace_start] + ', '.join(new_values) + l[brace_end:]
+      sb.append(l)
+
+  with open(r_txt_path, 'w', encoding='utf8') as f:
+    f.writelines(sb)
 
 
 def _GetRTxtResourceNames(r_txt_path):
@@ -486,15 +518,14 @@ class RJavaBuildOptions:
     if entry.resource_type == 'styleable' and entry.java_type != 'int[]':
       # A styleable constant may be exported as non-final after all.
       return not self.export_const_styleable
-    elif not self.has_constant_ids:
+    if not self.has_constant_ids:
       # Every resource is non-final
       return False
-    elif not self.resources_allowlist:
+    if not self.resources_allowlist:
       # No allowlist means all IDs are non-final.
       return True
-    else:
-      # Otherwise, only those in the
-      return entry.name not in self.resources_allowlist
+    # Otherwise, only those in the
+    return entry.name not in self.resources_allowlist
 
 
 def CreateRJavaFiles(srcjar_dir,
@@ -583,8 +614,8 @@ def CreateRJavaFiles(srcjar_dir,
   with open(root_r_java_path, 'w') as f:
     f.write(root_java_file_contents)
 
-  for package in packages:
-    _CreateRJavaSourceFile(srcjar_dir, package, root_r_java_package,
+  for p in packages:
+    _CreateRJavaSourceFile(srcjar_dir, p, root_r_java_package,
                            rjava_build_options)
 
 
@@ -672,6 +703,10 @@ def _RenderRootRJavaSource(package, all_resources_by_type, rjava_build_options,
     extends_string = 'extends {{ parent_path }}.R.{{ resource_type }} '
     dep_path = GetCustomPackagePath(grandparent_custom_package_name)
 
+  # Don't actually mark fields as "final" or else R8 complain when aapt2 uses
+  # --proguard-conditional-keep-rules. E.g.:
+  # Rule precondition matches static final fields javac has inlined.
+  # Such rules are unsound as the shrinker cannot infer the inlining precisely.
   template = Template("""/* AUTO-GENERATED FILE.  DO NOT MODIFY. */
 
 package {{ package }};
@@ -680,7 +715,7 @@ public final class R {
     {% for resource_type in resource_types %}
     public static class {{ resource_type }} """ + extends_string + """ {
         {% for e in final_resources[resource_type] %}
-        public static final {{ e.java_type }} {{ e.name }} = {{ e.value }};
+        public static {{ e.java_type }} {{ e.name }} = {{ e.value }};
         {% endfor %}
         {% for e in non_final_resources[resource_type] %}
             {% if e.value != '0' %}
@@ -857,7 +892,7 @@ def ExtractDeps(dep_zips, deps_dir):
   return dep_subdirs
 
 
-class _ResourceBuildContext(object):
+class _ResourceBuildContext:
   """A temporary directory for packaging and compiling Android resources.
 
   Args:
@@ -915,60 +950,6 @@ def BuildContext(temp_dir=None, keep_files=False):
       context.Close()
 
 
-def ResourceArgsParser():
-  """Create an argparse.ArgumentParser instance with common argument groups.
-
-  Returns:
-    A tuple of (parser, in_group, out_group) corresponding to the parser
-    instance, and the input and output argument groups for it, respectively.
-  """
-  parser = argparse.ArgumentParser(description=__doc__)
-
-  input_opts = parser.add_argument_group('Input options')
-  output_opts = parser.add_argument_group('Output options')
-
-  build_utils.AddDepfileOption(output_opts)
-
-  input_opts.add_argument('--include-resources', required=True, action="append",
-                        help='Paths to arsc resource files used to link '
-                             'against. Can be specified multiple times.')
-
-  input_opts.add_argument('--dependencies-res-zips', required=True,
-                    help='Resources zip archives from dependents. Required to '
-                         'resolve @type/foo references into dependent '
-                         'libraries.')
-
-  input_opts.add_argument(
-      '--extra-res-packages',
-      help='Additional package names to generate R.java files for.')
-
-  return (parser, input_opts, output_opts)
-
-
-def HandleCommonOptions(options):
-  """Handle common command-line options after parsing.
-
-  Args:
-    options: the result of parse_args() on the parser returned by
-        ResourceArgsParser(). This function updates a few common fields.
-  """
-  options.include_resources = [build_utils.ParseGnList(r) for r in
-                               options.include_resources]
-  # Flatten list of include resources list to make it easier to use.
-  options.include_resources = [r for resources in options.include_resources
-                               for r in resources]
-
-  options.dependencies_res_zips = (
-      build_utils.ParseGnList(options.dependencies_res_zips))
-
-  # Don't use [] as default value since some script explicitly pass "".
-  if options.extra_res_packages:
-    options.extra_res_packages = (
-        build_utils.ParseGnList(options.extra_res_packages))
-  else:
-    options.extra_res_packages = []
-
-
 def ParseAndroidResourceStringsFromXml(xml_data):
   """Parse and Android xml resource file and extract strings from it.
 
@@ -1017,7 +998,7 @@ def ParseAndroidResourceStringsFromXml(xml_data):
       raise Exception('Expected closing string tag: ' + input_data)
     text = input_data[:m2.start()]
     input_data = input_data[m2.end():]
-    if len(text) and text[0] == '"' and text[-1] == '"':
+    if len(text) != 0 and text[0] == '"' and text[-1] == '"':
       text = text[1:-1]
     result[name] = text
 

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@ MultiWorldsV8Reference::MultiWorldsV8Reference(v8::Isolate* isolate,
     : value_(isolate, value) {
   if (value->IsObject()) {
     script_state_ =
-        ScriptState::From(value.As<v8::Object>()->CreationContext());
+        ScriptState::From(value.As<v8::Object>()->GetCreationContextChecked());
   } else {
     script_state_ = nullptr;
   }

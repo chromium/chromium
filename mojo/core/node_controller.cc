@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,34 +12,37 @@
 #include "base/containers/queue.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/process/process_handle.h"
 #include "base/rand_util.h"
 #include "base/strings/string_piece.h"
 #include "base/task/current_thread.h"
+#include "build/build_config.h"
 #include "mojo/core/broker.h"
 #include "mojo/core/broker_host.h"
 #include "mojo/core/configuration.h"
 #include "mojo/core/ports/name.h"
+#include "mojo/core/ports/port_locker.h"
 #include "mojo/core/request_context.h"
 #include "mojo/core/user_message_impl.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
 #include "crypto/random.h"
 #endif
+
+#include "base/record_replay.h"
 
 namespace mojo {
 namespace core {
 
 namespace {
 
-#if defined(OS_NACL)
+#if BUILDFLAG(IS_NACL)
 template <typename T>
 void GenerateRandomName(T* out) {
   base::RandBytes(out, sizeof(T));
@@ -58,6 +61,11 @@ ports::NodeName GetRandomNodeName() {
 }
 
 Channel::MessagePtr SerializeEventMessage(ports::ScopedEvent event) {
+  // https://linear.app/replay/issue/RUN-1243
+  recordreplay::Assert(
+      "[RUN-1243] NodeController::SerializeEventMessage eventType=%d",
+      event->type());
+
   if (event->type() == ports::Event::Type::kUserMessage) {
     // User message events must already be partially serialized.
     return UserMessageImpl::FinalizeEventMessage(
@@ -68,6 +76,7 @@ Channel::MessagePtr SerializeEventMessage(ports::ScopedEvent event) {
   size_t size = event->GetSerializedSize();
   auto message = NodeChannel::CreateEventMessage(size, size, &data, 0);
   event->Serialize(data);
+
   return message;
 }
 
@@ -145,12 +154,62 @@ class ThreadDestructionObserver
   base::OnceClosure callback_;
 };
 
+#if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_FUCHSIA)
+ConnectionParams CreateSyncNodeConnectionParams(
+    const base::Process& target_process,
+    ConnectionParams connection_params,
+    const ProcessErrorCallback& process_error_callback,
+    Channel::HandlePolicy& handle_policy) {
+  ConnectionParams node_connection_params;
+  const bool is_untrusted_process = connection_params.is_untrusted_process();
+
+  // BrokerHost owns itself.
+  BrokerHost* broker_host = new BrokerHost(
+      target_process.IsValid() ? target_process.Duplicate() : base::Process(),
+      std::move(connection_params), process_error_callback);
+
+#if BUILDFLAG(IS_WIN)
+  // On Windows, if target_process is invalid it means it's elevated or running
+  // in another session so a named pipe should be used instead.
+  if (!target_process.IsValid()) {
+    handle_policy = Channel::HandlePolicy::kRejectHandles;
+    NamedPlatformChannel::Options options;
+    NamedPlatformChannel named_channel(options);
+    node_connection_params =
+        ConnectionParams(named_channel.TakeServerEndpoint());
+    node_connection_params.set_is_untrusted_process(is_untrusted_process);
+    broker_host->SendNamedChannel(named_channel.GetServerName());
+    return node_connection_params;
+  }
+#endif
+
+  // Sync connections usurp the passed endpoint and use it for the sync broker
+  // channel. A new channel is created here for the NodeChannel and sent over
+  // a sync broker message to the client.
+  PlatformChannel node_channel;
+  node_connection_params = ConnectionParams(node_channel.TakeLocalEndpoint());
+  node_connection_params.set_is_untrusted_process(is_untrusted_process);
+  bool channel_ok = broker_host->SendChannel(
+      node_channel.TakeRemoteEndpoint().TakePlatformHandle());
+  DCHECK(channel_ok);
+
+  return node_connection_params;
+}
+#endif  // !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_FUCHSIA)
+
 }  // namespace
 
 NodeController::~NodeController() = default;
 
 NodeController::NodeController()
-    : name_(GetRandomNodeName()), node_(new ports::Node(name_, this)) {
+    : name_(GetRandomNodeName()),
+      node_(new ports::Node(name_, this)),
+      peers_lock_("NodeController.peers_lock_"),
+      reserved_ports_lock_("NodeController.reserved_ports_lock_"),
+      pending_port_merges_lock_("NodeController.pending_port_merges_lock_"),
+      inviter_lock_("NodeController.inviter_lock_"),
+      broker_lock_("NodeController.broker_lock_"),
+      shutdown_lock_("NodeController.shutdown_lock_") {
   DVLOG(1) << "Initializing node " << name_;
 }
 
@@ -193,7 +252,7 @@ void NodeController::AcceptBrokerClientInvitation(
     ConnectionParams connection_params) {
   absl::optional<PlatformHandle> broker_host_handle;
   DCHECK(!GetConfiguration().is_broker_process);
-#if !defined(OS_APPLE) && !defined(OS_NACL_SFI) && !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_FUCHSIA)
   if (!connection_params.is_async()) {
     // Use the bootstrap channel for the broker and receive the node's channel
     // synchronously as the first message from the broker.
@@ -291,6 +350,8 @@ void NodeController::MergePortIntoInviter(const std::string& name,
     return;
   }
 
+  RecordPendingPortMerge(port);
+
   inviter->RequestPortMerge(port.name(), name);
 }
 
@@ -301,7 +362,7 @@ int NodeController::MergeLocalPorts(const ports::PortRef& port0,
 
 base::WritableSharedMemoryRegion NodeController::CreateSharedBuffer(
     size_t num_bytes) {
-#if !defined(OS_APPLE) && !defined(OS_NACL_SFI) && !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_FUCHSIA)
   // Shared buffer creation failure is fatal, so always use the broker when we
   // have one; unless of course the embedder forces us not to.
   if (!GetConfiguration().force_direct_shared_memory_allocation && broker_)
@@ -342,6 +403,13 @@ void NodeController::ForceDisconnectProcessForTesting(
           base::Unretained(this), process_id));
 }
 
+void NodeController::RecordPendingPortMerge(const ports::PortRef& port_ref) {
+  // TODO(sroettger): this should also keep track of the node that is allowed
+  //                  to trigger the merge.
+  ports::SinglePortLocker locker(&port_ref);
+  locker.port()->pending_merge_peer = true;
+}
+
 // static
 void NodeController::DeserializeRawBytesAsEventForFuzzer(
     base::span<const unsigned char> data) {
@@ -365,51 +433,29 @@ void NodeController::SendBrokerClientInvitationOnIOThread(
     const ProcessErrorCallback& process_error_callback) {
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
 
-#if !defined(OS_APPLE) && !defined(OS_NACL) && !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_FUCHSIA)
+  Channel::HandlePolicy handle_policy = Channel::HandlePolicy::kAcceptHandles;
   ConnectionParams node_connection_params;
-  if (!connection_params.is_async()) {
-    // Sync connections usurp the passed endpoint and use it for the sync broker
-    // channel. A new channel is created here for the NodeChannel and sent over
-    // a sync broker message to the client.
-    PlatformChannel node_channel;
-    node_connection_params = ConnectionParams(node_channel.TakeLocalEndpoint());
-    // BrokerHost owns itself.
-    BrokerHost* broker_host =
-        new BrokerHost(target_process.Duplicate(), std::move(connection_params),
-                       process_error_callback);
-    bool channel_ok = broker_host->SendChannel(
-        node_channel.TakeRemoteEndpoint().TakePlatformHandle());
 
-#if defined(OS_WIN)
-    if (!channel_ok) {
-      // On Windows the above operation may fail if the channel is crossing a
-      // session boundary. In that case we fall back to a named pipe.
-      NamedPlatformChannel::Options options;
-      NamedPlatformChannel named_channel(options);
-      node_connection_params =
-          ConnectionParams(named_channel.TakeServerEndpoint());
-      broker_host->SendNamedChannel(named_channel.GetServerName());
-    }
-#else
-    CHECK(channel_ok);
-#endif  // defined(OS_WIN)
-  } else {
+  if (connection_params.is_async()) {
     // For async connections, the passed endpoint really is the NodeChannel
     // endpoint. The broker channel will be established asynchronously by a
     // |BIND_SYNC_BROKER| message from the invited client.
     node_connection_params = std::move(connection_params);
+  } else {
+    node_connection_params = CreateSyncNodeConnectionParams(
+        target_process, std::move(connection_params), process_error_callback,
+        handle_policy);
   }
 
-  scoped_refptr<NodeChannel> channel =
-      NodeChannel::Create(this, std::move(node_connection_params),
-                          Channel::HandlePolicy::kAcceptHandles,
-                          io_task_runner_, process_error_callback);
-
-#else   // !defined(OS_APPLE) && !defined(OS_NACL) && !defined(OS_FUCHSIA)
+  scoped_refptr<NodeChannel> channel = NodeChannel::Create(
+      this, std::move(node_connection_params), handle_policy, io_task_runner_,
+      process_error_callback);
+#else   // !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_FUCHSIA)
   scoped_refptr<NodeChannel> channel = NodeChannel::Create(
       this, std::move(connection_params), Channel::HandlePolicy::kAcceptHandles,
       io_task_runner_, process_error_callback);
-#endif  // !defined(OS_APPLE) && !defined(OS_NACL) && !defined(OS_FUCHSIA)
+#endif  // !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_FUCHSIA)
 
   // We set up the invitee channel with a temporary name so it can be identified
   // as a pending invitee if it writes any messages to the channel. We may start
@@ -510,6 +556,8 @@ void NodeController::ConnectIsolatedOnIOThread(
   channel->SetRemoteNodeName(token);
   channel->Start();
 
+  RecordPendingPortMerge(port);
+
   channel->AcceptPeer(name_, token, port.name());
 }
 
@@ -545,7 +593,8 @@ scoped_refptr<NodeChannel> NodeController::GetBrokerChannel() {
 
 void NodeController::AddPeer(const ports::NodeName& name,
                              scoped_refptr<NodeChannel> channel,
-                             bool start_channel) {
+                             bool start_channel,
+                             bool allow_name_reuse) {
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
 
   DCHECK(name != ports::kInvalidNodeName);
@@ -561,6 +610,11 @@ void NodeController::AddPeer(const ports::NodeName& name,
       // other. The losing pipe will be silently closed and introduction should
       // not be affected.
       DVLOG(1) << "Ignoring duplicate peer name " << name;
+      return;
+    }
+
+    if (dropped_peers_.Contains(name) && !allow_name_reuse) {
+      DVLOG(1) << "Trying to re-add dropped peer " << name;
       return;
     }
 
@@ -602,8 +656,20 @@ void NodeController::DropPeer(const ports::NodeName& node_name,
     auto it = peers_.find(name);
 
     if (it != peers_.end()) {
+      auto channel_has_one_ref = it->second.get()->HasOneRef();
+
+      // Since some amount of work happens after this point, there's no
+      // guarantee that this assert will fire even if there is a thread
+      // interleaving issue present.
+      //
+      // https://linear.app/replay/issue/RUN-1050
+      recordreplay::Assert(
+          "[RUN-1050] NodeController::DropPeer #1 has_one_ref=%d",
+          channel_has_one_ref);
+
       ports::NodeName peer = it->first;
       peers_.erase(it);
+      dropped_peers_.Insert(peer);
       DVLOG(1) << "Dropped peer " << peer;
     }
 
@@ -617,11 +683,17 @@ void NodeController::DropPeer(const ports::NodeName& node_name,
     base::AutoLock lock(reserved_ports_lock_);
     auto it = reserved_ports_.find(name);
     if (it != reserved_ports_.end()) {
+      // https://linear.app/replay/issue/RUN-1050
+      recordreplay::Assert("[RUN-1050] NodeController::DropPeer #2");
+
       for (auto& entry : it->second)
         ports_to_close.emplace_back(entry.second);
       reserved_ports_.erase(it);
     }
   }
+
+  // https://linear.app/replay/issue/RUN-1050
+  recordreplay::Assert("[RUN-1050] NodeController::DropPeer #3");
 
   bool is_inviter;
   {
@@ -655,10 +727,12 @@ void NodeController::DropPeer(const ports::NodeName& node_name,
 void NodeController::SendPeerEvent(const ports::NodeName& name,
                                    ports::ScopedEvent event) {
   Channel::MessagePtr event_message = SerializeEventMessage(std::move(event));
+  recordreplay::Assert("[RUN-1307-1773] NodeController::SendPeerEvent A %d",
+                       !!event_message);
   if (!event_message)
     return;
   scoped_refptr<NodeChannel> peer = GetPeerChannel(name);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (event_message->has_handles()) {
     // If we're sending a message with handles we aren't the destination
     // node's inviter or broker (i.e. we don't know its process handle), ask
@@ -674,8 +748,10 @@ void NodeController::SendPeerEvent(const ports::NodeName& name,
       return;
     }
   }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
+  recordreplay::Assert("[RUN-1307-1773] NodeController::SendPeerEvent B %d",
+                       !!peer);
   if (peer) {
     peer->SendChannelMessage(std::move(event_message));
     return;
@@ -685,6 +761,8 @@ void NodeController::SendPeerEvent(const ports::NodeName& name,
   // the peer is invalid, i.e., it's either a junk name or has already been
   // disconnected.
   scoped_refptr<NodeChannel> broker = GetBrokerChannel();
+  recordreplay::Assert("[RUN-1307-1773] NodeController::SendPeerEvent C %d",
+                       !!broker);
   if (!broker) {
     DVLOG(1) << "Dropping message for unknown peer: " << name;
     return;
@@ -706,10 +784,13 @@ void NodeController::SendPeerEvent(const ports::NodeName& name,
       peer = it->second;
     }
   }
+  recordreplay::Assert("[RUN-1307-1773] NodeController::SendPeerEvent D %d %d",
+                       !!needs_introduction, !!peer);
   if (needs_introduction)
     broker->RequestIntroduction(name);
   else if (peer)
     peer->SendChannelMessage(std::move(event_message));
+  recordreplay::Assert("[RUN-1307-1773] NodeController::SendPeerEvent E");
 }
 
 void NodeController::DropAllPeers() {
@@ -752,10 +833,15 @@ void NodeController::DropAllPeers() {
 void NodeController::ForwardEvent(const ports::NodeName& node,
                                   ports::ScopedEvent event) {
   DCHECK(event);
+
+  recordreplay::Assert("[RUN-1307-1773] NodeController::ForwardEvent A %d",
+                       node == name_);
   if (node == name_)
-    node_->AcceptEvent(std::move(event));
+    node_->AcceptEvent(name_, std::move(event));
   else
     SendPeerEvent(node, std::move(event));
+
+  recordreplay::Assert("[RUN-1307-1773] NodeController::ForwardEvent B");
 
   AttemptShutdownIfRequested();
 }
@@ -765,10 +851,14 @@ void NodeController::BroadcastEvent(ports::ScopedEvent event) {
   DCHECK(channel_message && !channel_message->has_handles());
 
   scoped_refptr<NodeChannel> broker = GetBrokerChannel();
-  if (broker)
+  if (broker) {
     broker->Broadcast(std::move(channel_message));
-  else
+  } else if (broker_name_ == ports::kInvalidNodeName) {
+    // Do an additional check if broker_name_ is not set. It's possible that we
+    // don't have a broker channel even though we're not the broker ourselves,
+    // e.g. if this code path is called from the channel error path..
     OnBroadcast(name_, std::move(channel_message));
+  }
 }
 
 void NodeController::PortStatusChanged(const ports::PortRef& port) {
@@ -891,8 +981,13 @@ void NodeController::OnAddBrokerClient(const ports::NodeName& from_node,
     return;
   }
 
+  if (!GetConfiguration().is_broker_process) {
+    DLOG(ERROR) << "Ignoring AddBrokerClient on non-broker node.";
+    return;
+  }
+
   if (GetPeerChannel(client_name)) {
-    DLOG(ERROR) << "Ignoring AddBrokerClient for known client.";
+    LOG(ERROR) << "Ignoring AddBrokerClient for known client.";
     DropPeer(from_node, nullptr);
     return;
   }
@@ -903,7 +998,7 @@ void NodeController::OnAddBrokerClient(const ports::NodeName& from_node,
       this, std::move(connection_params), Channel::HandlePolicy::kAcceptHandles,
       io_task_runner_, ProcessErrorCallback());
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // The broker must have a working handle to the client process in order to
   // properly copy other handles to and from the client.
   if (!scoped_process_handle.IsValid()) {
@@ -1002,10 +1097,16 @@ void NodeController::OnAcceptBrokerClient(const ports::NodeName& from_node,
 
   {
     // Complete any port merge requests we have waiting for the inviter.
-    base::AutoLock lock(pending_port_merges_lock_);
-    for (const auto& request : pending_port_merges_)
+    std::vector<std::pair<std::string, ports::PortRef>> pending_port_merges;
+    {
+      base::AutoLock lock(pending_port_merges_lock_);
+      std::swap(pending_port_merges_, pending_port_merges);
+    }
+    std::vector<ports::PortName> pending_port_names;
+    for (auto& request : pending_port_merges) {
+      RecordPendingPortMerge(request.second);
       inviter->RequestPortMerge(request.second.name(), request.first);
-    pending_port_merges_.clear();
+    }
   }
 
   // Feed the broker any pending invitees of our own.
@@ -1019,7 +1120,7 @@ void NodeController::OnAcceptBrokerClient(const ports::NodeName& from_node,
     pending_broker_clients.pop();
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Have the broker relay any messages we have waiting.
   for (auto& entry : pending_relay_messages) {
     const ports::NodeName& destination = entry.first;
@@ -1050,7 +1151,11 @@ void NodeController::OnEventMessage(const ports::NodeName& from_node,
     return;
   }
 
-  node_->AcceptEvent(std::move(event));
+  // https://linear.app/replay/issue/RUN-1243
+  recordreplay::Assert("[RUN-1243] NodeController::OnEventMessage eventType=%d",
+                       (int)event->type());
+
+  node_->AcceptEvent(from_node, std::move(event));
 
   AttemptShutdownIfRequested();
 }
@@ -1101,6 +1206,12 @@ void NodeController::OnRequestIntroduction(const ports::NodeName& from_node,
                                            const ports::NodeName& name) {
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
 
+  if (broker_name_ != ports::kInvalidNodeName) {
+    DLOG(ERROR) << "Ignoring OnRequestIntroduction on non-broker node.";
+    DropPeer(from_node, nullptr);
+    return;
+  }
+
   scoped_refptr<NodeChannel> requestor = GetPeerChannel(from_node);
   if (from_node == name || name == ports::kInvalidNodeName || !requestor) {
     DLOG(ERROR) << "Rejecting invalid OnRequestIntroduction message from "
@@ -1145,7 +1256,7 @@ void NodeController::OnIntroduce(const ports::NodeName& from_node,
     return;
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Introduced peers are never our broker nor our inviter, so we never accept
   // handles from them directly.
   constexpr auto kPeerHandlePolicy = Channel::HandlePolicy::kRejectHandles;
@@ -1173,6 +1284,12 @@ void NodeController::OnBroadcast(const ports::NodeName& from_node,
                                  Channel::MessagePtr message) {
   DCHECK(!message->has_handles());
 
+  if (broker_name_ != ports::kInvalidNodeName) {
+    DLOG(ERROR) << "Ignoring OnBroadcast on non-broker node.";
+    DropPeer(from_node, nullptr);
+    return;
+  }
+
   auto event = DeserializeEventMessage(from_node, std::move(message));
   if (!event) {
     // We silently ignore unparseable events, as they may come from a process
@@ -1186,7 +1303,7 @@ void NodeController::OnBroadcast(const ports::NodeName& from_node,
   for (auto& iter : peers_) {
     // Clone and send the event to each known peer. Events which cannot be
     // cloned cannot be broadcast.
-    ports::ScopedEvent clone = event->Clone();
+    ports::ScopedEvent clone = event->CloneForBroadcast();
     if (!clone) {
       DVLOG(1) << "Ignoring request to broadcast invalid event from "
                << from_node << " [type=" << static_cast<uint32_t>(event->type())
@@ -1198,7 +1315,7 @@ void NodeController::OnBroadcast(const ports::NodeName& from_node,
   }
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void NodeController::OnRelayEventMessage(const ports::NodeName& from_node,
                                          base::ProcessHandle from_process,
                                          const ports::NodeName& destination,
@@ -1267,7 +1384,8 @@ void NodeController::OnAcceptPeer(const ports::NodeName& from_node,
     // Note that we explicitly drop any prior connection to the same peer so
     // that new isolated connections can replace old ones.
     DropPeer(peer_name, nullptr);
-    AddPeer(peer_name, channel, false /* start_channel */);
+    AddPeer(peer_name, channel, false /* start_channel */,
+            true /* allow_name_reuse */);
     DVLOG(1) << "Node " << name_ << " accepted peer " << peer_name;
   }
 
@@ -1336,7 +1454,7 @@ void NodeController::AttemptShutdownIfRequested() {
 
 void NodeController::ForceDisconnectProcessForTestingOnIOThread(
     base::ProcessId process_id) {
-#if defined(OS_NACL) || defined(OS_IOS)
+#if BUILDFLAG(IS_NACL) || BUILDFLAG(IS_IOS)
   NOTREACHED();
 #else
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
@@ -1382,6 +1500,25 @@ NodeController::IsolatedConnection::operator=(const IsolatedConnection& other) =
 NodeController::IsolatedConnection&
 NodeController::IsolatedConnection::operator=(IsolatedConnection&& other) =
     default;
+
+BoundedPeerSet::BoundedPeerSet() = default;
+BoundedPeerSet::~BoundedPeerSet() = default;
+
+void BoundedPeerSet::Insert(const ports::NodeName& name) {
+  if (new_set_.size() == kHalfSize) {
+    old_set_.clear();
+    std::swap(old_set_, new_set_);
+  }
+  new_set_.insert(name);
+}
+
+bool BoundedPeerSet::Contains(const ports::NodeName& name) {
+  if (old_set_.find(name) != old_set_.end())
+    return true;
+  if (new_set_.find(name) != new_set_.end())
+    return true;
+  return false;
+}
 
 }  // namespace core
 }  // namespace mojo

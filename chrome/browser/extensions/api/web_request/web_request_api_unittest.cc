@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,7 +21,6 @@
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -58,11 +57,6 @@
 #include "testing/gtest/include/gtest/gtest-message.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom-forward.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/login/login_state/scoped_test_public_session_login_state.h"
-#include "components/crx_file/id_util.h"
-#endif
 
 namespace helpers = extension_web_request_api_helpers;
 namespace keys = extension_web_request_api_constants;
@@ -146,49 +140,130 @@ bool GenerateInfoSpec(content::BrowserContext* browser_context,
 
 }  // namespace
 
-// Tests that |render_process_id| is not relevant for adding and removing
-// listeners with |web_view_instance_id| = 0.
+// Tests adding and removing listeners from the event router.
 TEST_F(ExtensionWebRequestTest, AddAndRemoveListeners) {
   std::string ext_id("abcdefghijklmnopabcdefghijklmnop");
-  ExtensionWebRequestEventRouter::RequestFilter filter;
   const std::string kEventName(web_request::OnBeforeRequest::kEventName);
-  const std::string kSubEventName = kEventName + "/1";
+  const std::string kSubEventName1 = kEventName + "/1";
+  const std::string kSubEventName2 = kEventName + "/2";
   EXPECT_EQ(
       0u,
       ExtensionWebRequestEventRouter::GetInstance()->GetListenerCountForTesting(
           &profile_, kEventName));
 
-  // Add two non-webview listeners.
+  // Add two listeners.
   ExtensionWebRequestEventRouter::GetInstance()->AddEventListener(
-      &profile_, ext_id, ext_id, events::FOR_TEST, kEventName, kSubEventName,
-      filter, 0, 1 /* render_process_id */, 0, extensions::kMainThreadId,
+      &profile_, ext_id, ext_id, events::FOR_TEST, kEventName, kSubEventName1,
+      ExtensionWebRequestEventRouter::RequestFilter(), 0,
+      1 /* render_process_id */, 0, extensions::kMainThreadId,
       blink::mojom::kInvalidServiceWorkerVersionId);
   ExtensionWebRequestEventRouter::GetInstance()->AddEventListener(
-      &profile_, ext_id, ext_id, events::FOR_TEST, kEventName, kSubEventName,
-      filter, 0, 2 /* render_process_id */, 0, extensions::kMainThreadId,
+      &profile_, ext_id, ext_id, events::FOR_TEST, kEventName, kSubEventName2,
+      ExtensionWebRequestEventRouter::RequestFilter(), 0,
+      1 /* render_process_id */, 0, extensions::kMainThreadId,
       blink::mojom::kInvalidServiceWorkerVersionId);
   EXPECT_EQ(
       2u,
       ExtensionWebRequestEventRouter::GetInstance()->GetListenerCountForTesting(
           &profile_, kEventName));
 
-  // Now remove the events without passing an explicit process ID.
-  ExtensionWebRequestEventRouter::EventListener::ID id1(
-      &profile_, ext_id, kSubEventName, 0, 0, extensions::kMainThreadId,
+  // Now remove the listeners one at a time, verifying the counts after each
+  // removal.
+  ExtensionWebRequestEventRouter::GetInstance()->UpdateActiveListener(
+      ExtensionWebRequestEventRouter::ListenerUpdateType::kRemove, &profile_,
+      ext_id, kSubEventName1, extensions::kMainThreadId,
       blink::mojom::kInvalidServiceWorkerVersionId);
-  ExtensionWebRequestEventRouter::GetInstance()->RemoveEventListener(id1,
-                                                                     false);
   EXPECT_EQ(
       1u,
       ExtensionWebRequestEventRouter::GetInstance()->GetListenerCountForTesting(
           &profile_, kEventName));
 
-  ExtensionWebRequestEventRouter::GetInstance()->RemoveEventListener(id1,
-                                                                     false);
+  ExtensionWebRequestEventRouter::GetInstance()->UpdateActiveListener(
+      ExtensionWebRequestEventRouter::ListenerUpdateType::kRemove, &profile_,
+      ext_id, kSubEventName2, extensions::kMainThreadId,
+      blink::mojom::kInvalidServiceWorkerVersionId);
   EXPECT_EQ(
       0u,
       ExtensionWebRequestEventRouter::GetInstance()->GetListenerCountForTesting(
           &profile_, kEventName));
+}
+
+// Tests that when a browser_context shuts down, all data keyed to that
+// context is removed.
+TEST_F(ExtensionWebRequestTest, BrowserContextShutdown) {
+  ExtensionWebRequestEventRouter* const event_router =
+      ExtensionWebRequestEventRouter::GetInstance();
+  ASSERT_TRUE(event_router);
+
+  std::string ext_id("abcdefghijklmnopabcdefghijklmnop");
+  const std::string kEventName(web_request::OnBeforeRequest::kEventName);
+  const std::string kSubEventName = kEventName + "/1";
+  EXPECT_EQ(0u,
+            event_router->GetListenerCountForTesting(&profile_, kEventName));
+  EXPECT_FALSE(event_router->HasAnyExtraHeadersListenerImpl(&profile_));
+
+  // Add two listeners for the main profile.
+  event_router->AddEventListener(
+      &profile_, ext_id, ext_id, events::FOR_TEST, kEventName, kSubEventName,
+      ExtensionWebRequestEventRouter::RequestFilter(), 0,
+      1 /* render_process_id */, 0, extensions::kMainThreadId,
+      blink::mojom::kInvalidServiceWorkerVersionId);
+  event_router->AddEventListener(
+      &profile_, ext_id, ext_id, events::FOR_TEST, kEventName, kSubEventName,
+      ExtensionWebRequestEventRouter::RequestFilter(), 0,
+      2 /* render_process_id */, 0, extensions::kMainThreadId,
+      blink::mojom::kInvalidServiceWorkerVersionId);
+  event_router->IncrementExtraHeadersListenerCount(&profile_);
+  EXPECT_EQ(2u,
+            event_router->GetListenerCountForTesting(&profile_, kEventName));
+  EXPECT_TRUE(event_router->HasAnyExtraHeadersListenerImpl(&profile_));
+
+  // Create an off-the-record profile.
+  auto otr_profile_id = Profile::OTRProfileID::CreateUniqueForTesting();
+  Profile* const otr_profile =
+      profile_.GetOffTheRecordProfile(otr_profile_id,
+                                      /*create_if_needed=*/true);
+  ASSERT_TRUE(otr_profile);
+
+  // Because the ExtensionWebRequestEventRouter is a singleton, there are hooks
+  // in the off-the-record profile for notifying it when an OTR profile is
+  // created and destroyed. Unfortunately, that doesn't work with test profiles,
+  // so the test needs to simulate those calls
+  event_router->OnOTRBrowserContextCreated(&profile_, otr_profile);
+  EXPECT_EQ(0u,
+            event_router->GetListenerCountForTesting(otr_profile, kEventName));
+  EXPECT_FALSE(event_router->HasAnyExtraHeadersListenerImpl(otr_profile));
+
+  // Add two listeners for the otr profile.
+  event_router->AddEventListener(
+      otr_profile, ext_id, ext_id, events::FOR_TEST, kEventName, kSubEventName,
+      ExtensionWebRequestEventRouter::RequestFilter(), 0,
+      1 /* render_process_id */, 0, extensions::kMainThreadId,
+      blink::mojom::kInvalidServiceWorkerVersionId);
+  event_router->AddEventListener(
+      otr_profile, ext_id, ext_id, events::FOR_TEST, kEventName, kSubEventName,
+      ExtensionWebRequestEventRouter::RequestFilter(), 0,
+      2 /* render_process_id */, 0, extensions::kMainThreadId,
+      blink::mojom::kInvalidServiceWorkerVersionId);
+  event_router->IncrementExtraHeadersListenerCount(otr_profile);
+  EXPECT_EQ(2u,
+            event_router->GetListenerCountForTesting(otr_profile, kEventName));
+  EXPECT_TRUE(event_router->HasAnyExtraHeadersListenerImpl(otr_profile));
+
+  // Simulate the OTR being destroyed.
+  event_router->OnOTRBrowserContextDestroyed(&profile_, otr_profile);
+  EXPECT_EQ(0u,
+            event_router->GetListenerCountForTesting(otr_profile, kEventName));
+  EXPECT_FALSE(event_router->HasAnyExtraHeadersListenerImpl(otr_profile));
+
+  // We can't just delete the profile, because the call comes through the
+  // WebRequestAPI instance for that profile, and creating that requires
+  // more infrastucture than it's worth. Instead, simulate it with a call
+  // into the event router directly.
+  event_router->OnBrowserContextShutdown(&profile_);
+  EXPECT_EQ(0u,
+            event_router->GetListenerCountForTesting(&profile_, kEventName));
+  EXPECT_FALSE(event_router->HasAnyExtraHeadersListenerImpl(&profile_));
 }
 
 namespace {
@@ -255,7 +330,7 @@ TEST(ExtensionWebRequestHelpersTest, TestStringToCharList) {
   std::string string_value(reinterpret_cast<char *>(char_value), 5);
 
   base::Value converted_list(StringToCharList(string_value));
-  EXPECT_TRUE(list_value.Equals(&converted_list));
+  EXPECT_EQ(list_value, converted_list);
 
   std::string converted_string;
   EXPECT_TRUE(CharListToString(list_value.GetList(), &converted_string));
@@ -1107,25 +1182,7 @@ TEST(ExtensionWebRequestHelpersTest,
 namespace {
 
 std::string GetCookieExpirationDate(int delta_secs) {
-  const char* const kWeekDays[] = {
-    "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"
-  };
-  const char* const kMonthNames[] = {
-    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-  };
-
-  Time::Exploded exploded_time;
-  (Time::Now() + base::Seconds(delta_secs)).UTCExplode(&exploded_time);
-
-  return base::StringPrintf("%s, %d %s %d %.2d:%.2d:%.2d GMT",
-                            kWeekDays[exploded_time.day_of_week],
-                            exploded_time.day_of_month,
-                            kMonthNames[exploded_time.month - 1],
-                            exploded_time.year,
-                            exploded_time.hour,
-                            exploded_time.minute,
-                            exploded_time.second);
+  return base::TimeFormatHTTP(Time::Now() + base::Seconds(delta_secs));
 }
 
 }  // namespace

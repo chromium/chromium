@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,12 +13,16 @@ MockIMECandidateWindowHandler::MockIMECandidateWindowHandler()
 
 MockIMECandidateWindowHandler::~MockIMECandidateWindowHandler() = default;
 
+void MockIMECandidateWindowHandler::HideLookupTable() {
+  ++update_lookup_table_call_count_;
+  last_update_lookup_table_arg_.is_visible = false;
+}
+
 void MockIMECandidateWindowHandler::UpdateLookupTable(
-    const ui::CandidateWindow& table,
-    bool visible) {
+    const ui::CandidateWindow& table) {
   ++update_lookup_table_call_count_;
   last_update_lookup_table_arg_.lookup_table.CopyFrom(table);
-  last_update_lookup_table_arg_.is_visible = visible;
+  last_update_lookup_table_arg_.is_visible = true;
 }
 
 void MockIMECandidateWindowHandler::UpdatePreeditText(

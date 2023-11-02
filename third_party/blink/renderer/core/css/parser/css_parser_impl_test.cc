@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,13 +6,17 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
+#include "third_party/blink/renderer/core/css/css_font_family_value.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
+#include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_observer.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
+#include "third_party/blink/renderer/core/css/style_rule_font_palette_values.h"
 #include "third_party/blink/renderer/core/css/style_rule_import.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
@@ -91,23 +95,6 @@ TEST(CSSParserImplTest, AtSupportsOffsets) {
   EXPECT_EQ(test_css_parser_observer.rule_body_end_, 27u);
 }
 
-TEST(CSSParserImplTest, AtViewportOffsets) {
-  String sheet_text = "@viewport { }";
-  auto* context = MakeGarbageCollected<CSSParserContext>(
-      kUASheetMode, SecureContextMode::kInsecureContext);
-  auto* style_sheet = MakeGarbageCollected<StyleSheetContents>(context);
-  TestCSSParserObserver test_css_parser_observer;
-  CSSParserImpl::ParseStyleSheetForInspector(sheet_text, context, style_sheet,
-                                             test_css_parser_observer);
-  EXPECT_EQ(style_sheet->ChildRules().size(), 1u);
-  EXPECT_EQ(test_css_parser_observer.rule_type_,
-            StyleRule::RuleType::kViewport);
-  EXPECT_EQ(test_css_parser_observer.rule_header_start_, 10u);
-  EXPECT_EQ(test_css_parser_observer.rule_header_end_, 10u);
-  EXPECT_EQ(test_css_parser_observer.rule_body_start_, 10u);
-  EXPECT_EQ(test_css_parser_observer.rule_body_end_, 10u);
-}
-
 TEST(CSSParserImplTest, AtFontFaceOffsets) {
   String sheet_text = "@font-face { }";
   auto* context = MakeGarbageCollected<CSSParserContext>(
@@ -173,25 +160,6 @@ TEST(CSSParserImplTest, AtPropertyOffsets) {
   EXPECT_EQ(test_css_parser_observer.rule_header_end_, 17u);
   EXPECT_EQ(test_css_parser_observer.rule_body_start_, 18u);
   EXPECT_EQ(test_css_parser_observer.rule_body_end_, 19u);
-}
-
-TEST(CSSParserImplTest, AtScrollTimelineOffsets) {
-  ScopedCSSScrollTimelineForTest scoped_feature(true);
-
-  String sheet_text = "@scroll-timeline test { }";
-  auto* context = MakeGarbageCollected<CSSParserContext>(
-      kHTMLStandardMode, SecureContextMode::kInsecureContext);
-  auto* style_sheet = MakeGarbageCollected<StyleSheetContents>(context);
-  TestCSSParserObserver test_css_parser_observer;
-  CSSParserImpl::ParseStyleSheetForInspector(sheet_text, context, style_sheet,
-                                             test_css_parser_observer);
-  EXPECT_EQ(style_sheet->ChildRules().size(), 1u);
-  EXPECT_EQ(test_css_parser_observer.rule_type_,
-            StyleRule::RuleType::kScrollTimeline);
-  EXPECT_EQ(test_css_parser_observer.rule_header_start_, 17u);
-  EXPECT_EQ(test_css_parser_observer.rule_header_end_, 22u);
-  EXPECT_EQ(test_css_parser_observer.rule_body_start_, 23u);
-  EXPECT_EQ(test_css_parser_observer.rule_body_end_, 24u);
 }
 
 TEST(CSSParserImplTest, AtCounterStyleOffsets) {
@@ -277,23 +245,7 @@ TEST(CSSParserImplTest, RemoveImportantAnnotationIfPresent) {
   }
 }
 
-TEST(CSSParserImplTest, LayerRuleDisabled) {
-  ScopedCSSCascadeLayersForTest disabled_scope(false);
-
-  // @layer rules should be ignored when the feature is disabled.
-
-  using css_test_helpers::ParseRule;
-  Document* document = Document::CreateForTest();
-  EXPECT_FALSE(ParseRule(*document, "@layer foo;"));
-  EXPECT_FALSE(ParseRule(*document, "@layer foo, bar;"));
-  EXPECT_FALSE(ParseRule(*document, "@layer foo { }"));
-  EXPECT_FALSE(ParseRule(*document, "@layer foo.bar { }"));
-  EXPECT_FALSE(ParseRule(*document, "@layer { }"));
-}
-
 TEST(CSSParserImplTest, InvalidLayerRules) {
-  ScopedCSSCascadeLayersForTest enabled_scope(true);
-
   using css_test_helpers::ParseRule;
   Document* document = Document::CreateForTest();
 
@@ -318,8 +270,6 @@ TEST(CSSParserImplTest, InvalidLayerRules) {
 }
 
 TEST(CSSParserImplTest, ValidLayerBlockRule) {
-  ScopedCSSCascadeLayersForTest enabled_scope(true);
-
   using css_test_helpers::ParseRule;
   Document* document = Document::CreateForTest();
 
@@ -353,8 +303,6 @@ TEST(CSSParserImplTest, ValidLayerBlockRule) {
 }
 
 TEST(CSSParserImplTest, ValidLayerStatementRule) {
-  ScopedCSSCascadeLayersForTest enabled_scope(true);
-
   using css_test_helpers::ParseRule;
   Document* document = Document::CreateForTest();
 
@@ -395,8 +343,6 @@ TEST(CSSParserImplTest, ValidLayerStatementRule) {
 }
 
 TEST(CSSParserImplTest, NestedLayerRules) {
-  ScopedCSSCascadeLayersForTest enabled_scope(true);
-
   using css_test_helpers::ParseRule;
   Document* document = Document::CreateForTest();
 
@@ -457,44 +403,7 @@ TEST(CSSParserImplTest, NestedLayerRules) {
   }
 }
 
-TEST(CSSParserImplTest, LayeredImportDisabled) {
-  ScopedCSSCascadeLayersForTest disabled_scope(false);
-
-  using css_test_helpers::ParseRule;
-  Document* document = Document::CreateForTest();
-
-  // When the feature is disabled, layered @import rules should still parse and
-  // the layer keyword/function should be parsed as a <general-enclosed>, and
-  // hence has no effect.
-
-  {
-    String rule = "@import url(foo.css) layer;";
-    auto* parsed = DynamicTo<StyleRuleImport>(ParseRule(*document, rule));
-    ASSERT_TRUE(parsed);
-    EXPECT_FALSE(parsed->IsLayered());
-    EXPECT_EQ("layer", parsed->MediaQueries()->MediaText());
-  }
-
-  {
-    String rule = "@import url(foo.css) layer(bar);";
-    auto* parsed = DynamicTo<StyleRuleImport>(ParseRule(*document, rule));
-    ASSERT_TRUE(parsed);
-    EXPECT_FALSE(parsed->IsLayered());
-    EXPECT_EQ("not all", parsed->MediaQueries()->MediaText());
-  }
-
-  {
-    String rule = "@import url(foo.css) layer(bar.baz);";
-    auto* parsed = DynamicTo<StyleRuleImport>(ParseRule(*document, rule));
-    ASSERT_TRUE(parsed);
-    EXPECT_FALSE(parsed->IsLayered());
-    EXPECT_EQ("not all", parsed->MediaQueries()->MediaText());
-  }
-}
-
 TEST(CSSParserImplTest, LayeredImportRules) {
-  ScopedCSSCascadeLayersForTest enabled_scope(true);
-
   using css_test_helpers::ParseRule;
   Document* document = Document::CreateForTest();
 
@@ -528,8 +437,6 @@ TEST(CSSParserImplTest, LayeredImportRules) {
 }
 
 TEST(CSSParserImplTest, LayeredImportRulesInvalid) {
-  ScopedCSSCascadeLayersForTest enabled_scope(true);
-
   using css_test_helpers::ParseRule;
   Document* document = Document::CreateForTest();
 
@@ -541,7 +448,7 @@ TEST(CSSParserImplTest, LayeredImportRulesInvalid) {
     auto* parsed = DynamicTo<StyleRuleImport>(ParseRule(*document, rule));
     ASSERT_TRUE(parsed);
     EXPECT_FALSE(parsed->IsLayered());
-    EXPECT_EQ("not all", parsed->MediaQueries()->MediaText());
+    EXPECT_TRUE(parsed->MediaQueries()->HasUnknown());
   }
 
   {
@@ -549,7 +456,7 @@ TEST(CSSParserImplTest, LayeredImportRulesInvalid) {
     auto* parsed = DynamicTo<StyleRuleImport>(ParseRule(*document, rule));
     ASSERT_TRUE(parsed);
     EXPECT_FALSE(parsed->IsLayered());
-    EXPECT_EQ("not all", parsed->MediaQueries()->MediaText());
+    EXPECT_TRUE(parsed->MediaQueries()->HasUnknown());
   }
 
   {
@@ -557,13 +464,11 @@ TEST(CSSParserImplTest, LayeredImportRulesInvalid) {
     auto* parsed = DynamicTo<StyleRuleImport>(ParseRule(*document, rule));
     ASSERT_TRUE(parsed);
     EXPECT_FALSE(parsed->IsLayered());
-    EXPECT_EQ("not all", parsed->MediaQueries()->MediaText());
+    EXPECT_TRUE(parsed->MediaQueries()->HasUnknown());
   }
 }
 
 TEST(CSSParserImplTest, LayeredImportRulesMultipleLayers) {
-  ScopedCSSCascadeLayersForTest enabled_scope(true);
-
   using css_test_helpers::ParseRule;
   Document* document = Document::CreateForTest();
 
@@ -578,7 +483,7 @@ TEST(CSSParserImplTest, LayeredImportRulesMultipleLayers) {
     ASSERT_TRUE(parsed->IsLayered());
     ASSERT_EQ(1u, parsed->GetLayerName().size());
     EXPECT_EQ(g_empty_atom, parsed->GetLayerName()[0]);
-    EXPECT_EQ("layer", parsed->MediaQueries()->MediaText());
+    EXPECT_EQ("not all", parsed->MediaQueries()->MediaText());
   }
 
   {
@@ -588,7 +493,7 @@ TEST(CSSParserImplTest, LayeredImportRulesMultipleLayers) {
     ASSERT_TRUE(parsed->IsLayered());
     ASSERT_EQ(1u, parsed->GetLayerName().size());
     EXPECT_EQ(g_empty_atom, parsed->GetLayerName()[0]);
-    EXPECT_EQ("not all", parsed->MediaQueries()->MediaText());
+    EXPECT_TRUE(parsed->MediaQueries()->HasUnknown());
   }
 
   {
@@ -598,13 +503,11 @@ TEST(CSSParserImplTest, LayeredImportRulesMultipleLayers) {
     ASSERT_TRUE(parsed->IsLayered());
     ASSERT_EQ(1u, parsed->GetLayerName().size());
     EXPECT_EQ("bar", parsed->GetLayerName()[0]);
-    EXPECT_EQ("layer", parsed->MediaQueries()->MediaText());
+    EXPECT_EQ("not all", parsed->MediaQueries()->MediaText());
   }
 }
 
 TEST(CSSParserImplTest, CorrectAtRuleOrderingWithLayers) {
-  ScopedCSSCascadeLayersForTest enabled_scope(true);
-
   String sheet_text = R"CSS(
     @layer foo;
     @import url(bar.css) layer(bar);
@@ -625,8 +528,6 @@ TEST(CSSParserImplTest, CorrectAtRuleOrderingWithLayers) {
 }
 
 TEST(CSSParserImplTest, EmptyLayerStatementsAtWrongPositions) {
-  ScopedCSSCascadeLayersForTest enabled_scope(true);
-
   {
     // @layer interleaving with @import rules
     String sheet_text = R"CSS(
@@ -672,8 +573,6 @@ TEST(CSSParserImplTest, EmptyLayerStatementsAtWrongPositions) {
 }
 
 TEST(CSSParserImplTest, EmptyLayerStatementAfterRegularRule) {
-  ScopedCSSCascadeLayersForTest enabled_scope(true);
-
   // Empty @layer statements after regular rules are parsed as regular rules.
 
   String sheet_text = R"CSS(
@@ -689,6 +588,40 @@ TEST(CSSParserImplTest, EmptyLayerStatementAfterRegularRule) {
   EXPECT_EQ(2u, sheet->ChildRules().size());
   EXPECT_TRUE(sheet->ChildRules()[0]->IsStyleRule());
   EXPECT_TRUE(sheet->ChildRules()[1]->IsLayerStatementRule());
+}
+
+TEST(CSSParserImplTest, FontPaletteValuesDisabled) {
+  ScopedFontPaletteForTest disabled_scope(false);
+
+  // @font-palette-values rules should be ignored when the feature is disabled.
+
+  using css_test_helpers::ParseRule;
+  Document* document = Document::CreateForTest();
+  EXPECT_FALSE(ParseRule(*document, "@font-palette-values foo;"));
+  EXPECT_FALSE(ParseRule(*document, "@font-palette-values foo { }"));
+  EXPECT_FALSE(ParseRule(*document, "@font-palette-values foo.bar { }"));
+  EXPECT_FALSE(ParseRule(*document, "@font-palette-values { }"));
+}
+
+TEST(CSSParserImplTest, FontPaletteValuesBasicRuleParsing) {
+  ScopedFontPaletteForTest enabled_scope(true);
+  using css_test_helpers::ParseRule;
+  Document* document = Document::CreateForTest();
+  String rule = R"CSS(@font-palette-values --myTestPalette {
+    font-family: testFamily;
+    base-palette: 0;
+    override-colors: 0 red, 1 blue;
+  })CSS";
+  auto* parsed =
+      DynamicTo<StyleRuleFontPaletteValues>(ParseRule(*document, rule));
+  ASSERT_TRUE(parsed);
+  ASSERT_EQ("--myTestPalette", parsed->GetName());
+  ASSERT_EQ("testFamily",
+            DynamicTo<CSSFontFamilyValue>(parsed->GetFontFamily())->Value());
+  ASSERT_EQ(
+      0, DynamicTo<CSSPrimitiveValue>(parsed->GetBasePalette())->GetIntValue());
+  ASSERT_TRUE(parsed->GetOverrideColors()->IsValueList());
+  ASSERT_EQ(2u, DynamicTo<CSSValueList>(parsed->GetOverrideColors())->length());
 }
 
 }  // namespace blink

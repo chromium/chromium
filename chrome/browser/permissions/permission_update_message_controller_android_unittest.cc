@@ -1,9 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/permissions/permission_update_message_controller_android.h"
 
+#include "base/android/jni_android.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/grit/chromium_strings.h"
@@ -22,12 +24,26 @@ class PermissionUpdateMessageControllerAndroidTest
 
   PermissionUpdateMessageController* GetController() { return controller_; }
 
-  void Show(base::OnceCallback<void(bool)> callback) {
+  void ShowLocation(base::OnceCallback<void(bool)> callback) {
     EXPECT_CALL(message_dispatcher_bridge_, EnqueueMessage);
     GetController()->ShowMessageInternal(
         {}, {}, {}, IDR_ANDROID_INFOBAR_GEOLOCATION,
         IDS_MESSAGE_MISSING_LOCATION_PERMISSION_TITLE,
         IDS_MESSAGE_MISSING_LOCATION_PERMISSION_TEXT, std::move(callback));
+  }
+
+  void ShowMedia(base::OnceCallback<void(bool)> callback) {
+    ShowMedia(std::move(callback), true);
+  }
+
+  void ShowMedia(base::OnceCallback<void(bool)> callback, bool expect_qneueue) {
+    if (expect_qneueue)
+      EXPECT_CALL(message_dispatcher_bridge_, EnqueueMessage);
+    GetController()->ShowMessageInternal(
+        {}, {}, {}, IDR_ANDROID_INFOBAR_GEOLOCATION,
+        IDS_MESSAGE_MISSING_MICROPHONE_CAMERA_PERMISSION_TITLE,
+        IDS_MESSAGE_MISSING_MICROPHONE_CAMERA_PERMISSIONS_TEXT,
+        std::move(callback));
   }
 
   size_t GetMessageDelegatesSize() {
@@ -63,7 +79,7 @@ class PermissionUpdateMessageControllerAndroidTest
   }
 
  private:
-  PermissionUpdateMessageController* controller_;
+  raw_ptr<PermissionUpdateMessageController> controller_;
   messages::MockMessageDispatcherBridge message_dispatcher_bridge_;
 };
 
@@ -85,9 +101,9 @@ TEST_F(PermissionUpdateMessageControllerAndroidTest,
        OnMessageDismissedByPrimaryAction) {
   base::MockOnceCallback<void(bool)> mock_permission_update_callback1;
   base::MockOnceCallback<void(bool)> mock_permission_update_callback2;
-  Show(mock_permission_update_callback1.Get());
+  ShowLocation(mock_permission_update_callback1.Get());
   EXPECT_EQ(1u, GetMessageDelegatesSize());
-  Show(mock_permission_update_callback2.Get());
+  ShowMedia(mock_permission_update_callback2.Get());
   EXPECT_EQ(2u, GetMessageDelegatesSize());
   EXPECT_CALL(mock_permission_update_callback1, Run(false));
 
@@ -110,7 +126,7 @@ TEST_F(PermissionUpdateMessageControllerAndroidTest, OnPermissionResult) {
   // In this case, dismiss callback is invoked when the controller is trying
   // to delete the message delegate. The dismiss reason should be UNKNOWN.
   base::MockOnceCallback<void(bool)> mock_permission_update_callback1;
-  Show(mock_permission_update_callback1.Get());
+  ShowLocation(mock_permission_update_callback1.Get());
   EXPECT_EQ(1u, GetMessageDelegatesSize());
   SetPermissionResultTriggeredSynchronously();
   EXPECT_CALL(mock_permission_update_callback1, Run(true));
@@ -119,11 +135,31 @@ TEST_F(PermissionUpdateMessageControllerAndroidTest, OnPermissionResult) {
   EXPECT_EQ(0u, GetMessageDelegatesSize());
 
   base::MockOnceCallback<void(bool)> mock_permission_update_callback2;
-  Show(mock_permission_update_callback2.Get());
+  ShowMedia(mock_permission_update_callback2.Get());
   EXPECT_EQ(1u, GetMessageDelegatesSize());
   SetPermissionResultTriggeredSynchronously();
   EXPECT_CALL(mock_permission_update_callback2, Run(false));
   ExpectDismiss(messages::DismissReason::UNKNOWN);
+  OnPermissionGranted(false);
+  EXPECT_EQ(0u, GetMessageDelegatesSize());
+}
+
+TEST_F(PermissionUpdateMessageControllerAndroidTest,
+       OnEnqueuingDuplciatedMessage) {
+  base::MockOnceCallback<void(bool)> mock_permission_update_callback1;
+  base::MockOnceCallback<void(bool)> mock_permission_update_callback2;
+  ShowMedia(mock_permission_update_callback1.Get());
+  EXPECT_EQ(1u, GetMessageDelegatesSize());
+  ShowMedia(mock_permission_update_callback2.Get(), false);
+  EXPECT_EQ(1u, GetMessageDelegatesSize());
+  EXPECT_CALL(mock_permission_update_callback1, Run(false));
+  EXPECT_CALL(mock_permission_update_callback2, Run(false));
+
+  // Message is dismissed first by primary action, and then permission update
+  // callback is invoked. In this case, the dismiss reason should be
+  // PRIMARY_ACTION.
+  ExpectDismiss(messages::DismissReason::PRIMARY_ACTION);
+  DismissedByPrimaryAction();
   OnPermissionGranted(false);
   EXPECT_EQ(0u, GetMessageDelegatesSize());
 }

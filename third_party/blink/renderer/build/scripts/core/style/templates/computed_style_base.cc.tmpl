@@ -75,8 +75,18 @@ bool ComputedStyleBase::{{name}}(const ComputedStyle& a, const ComputedStyle& b)
 
 #if DCHECK_IS_ON()
 
-Vector<String> ComputedStyleBase::DebugDiffFields(const ComputedStyleBase& o) const {
-  Vector<String> diff;
+String ComputedStyleBase::DebugFieldToString(DebugField field) {
+  switch (field) {
+  {% for field in computed_style.all_fields|sort(attribute='name') %}
+   case DebugField::{{field.name}}:
+     return "{{field.name}}";
+  {% endfor %}
+  }
+}
+
+Vector<ComputedStyleBase::DebugField>
+ComputedStyleBase::DebugDiffFields(const ComputedStyleBase& o) const {
+  Vector<DebugField> diff;
   {{fieldwise_debug_diff(computed_style, computed_style.all_fields)|indent(2)}}
   return diff;
 }

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -52,7 +52,7 @@ public interface Toolbar {
     /**
      * @return Whether a dirty check for invalidation makes sense at this time.
      */
-    boolean isReadyForTextureCapture();
+    CaptureReadinessResult isReadyForTextureCapture();
 
     /**
      * Sets whether or not the toolbar should force itself to draw for a texture capture regardless

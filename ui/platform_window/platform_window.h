@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -52,9 +52,18 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindow
   virtual void PrepareForShutdown() = 0;
 
   // Sets and gets the bounds of the platform-window. Note that the bounds is in
-  // physical pixel coordinates.
-  virtual void SetBounds(const gfx::Rect& bounds) = 0;
-  virtual gfx::Rect GetBounds() const = 0;
+  // physical pixel coordinates. The implementation should use
+  // `PlatformWindowDelegate::ConvertRectToPixels|DIP` if conversion is
+  // necessary.
+  virtual void SetBoundsInPixels(const gfx::Rect& bounds) = 0;
+  virtual gfx::Rect GetBoundsInPixels() const = 0;
+
+  // Sets and gets the bounds of the platform-window. Note that the bounds is in
+  // device-independent-pixel (dip) coordinates. The implementation should use
+  // `PlatformWindowDelegate::ConvertRectToPixels|DIP` if conversion is
+  // necessary.
+  virtual void SetBoundsInDIP(const gfx::Rect& bounds) = 0;
+  virtual gfx::Rect GetBoundsInDIP() const = 0;
 
   virtual void SetTitle(const std::u16string& title) = 0;
 
@@ -93,8 +102,8 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindow
   virtual void ConfineCursorToBounds(const gfx::Rect& bounds) = 0;
 
   // Sets and gets the restored bounds of the platform-window.
-  virtual void SetRestoredBoundsInPixels(const gfx::Rect& bounds) = 0;
-  virtual gfx::Rect GetRestoredBoundsInPixels() const = 0;
+  virtual void SetRestoredBoundsInDIP(const gfx::Rect& bounds) = 0;
+  virtual gfx::Rect GetRestoredBoundsInDIP() const = 0;
 
   // Sets the Window icons. |window_icon| is a 16x16 icon suitable for use in
   // a title bar. |app_icon| is a larger size for use in the host environment
@@ -181,6 +190,15 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindow
   // to a more reasonable (10px) area.  If |region_px| is nullptr, then any
   // existing region will be reset.
   virtual void SetInputRegion(const gfx::Rect* region_px);
+
+  // Whether the platform supports client-controlled window movement. Under
+  // Wayland, for example, this returns false, unless the required protocol
+  // extension is supported by the compositor.
+  virtual bool IsClientControlledWindowMovementSupported() const;
+
+  // Notifies the DE that the app is done loading, so that it can dismiss any
+  // loading animations.
+  virtual void NotifyStartupComplete(const std::string& startup_id);
 };
 
 }  // namespace ui

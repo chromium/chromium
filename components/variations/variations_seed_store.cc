@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,10 +24,14 @@
 #include "third_party/protobuf/src/google/protobuf/io/coded_stream.h"
 #include "third_party/zlib/google/compression_utils.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/variations/android/variations_seed_bridge.h"
 #include "components/variations/metrics.h"
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_IOS)
+#include "components/variations/metrics.h"
+#endif  // BUILDFLAG(IS_IOS)
 
 namespace variations {
 namespace {
@@ -135,10 +139,10 @@ VariationsSeedStore::VariationsSeedStore(
     : local_state_(local_state),
       signature_verification_enabled_(signature_verification_enabled),
       use_first_run_prefs_(use_first_run_prefs) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   if (initial_seed)
     ImportInitialSeed(std::move(initial_seed));
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
 
 VariationsSeedStore::~VariationsSeedStore() = default;
@@ -156,14 +160,14 @@ bool VariationsSeedStore::LoadSeed(VariationsSeed* seed,
   return true;
 }
 
-bool VariationsSeedStore::StoreSeedData(
-    const std::string& data,
-    const std::string& base64_seed_signature,
-    const std::string& country_code,
-    const base::Time& date_fetched,
+void VariationsSeedStore::StoreSeedData(
+    std::string data,
+    std::string base64_seed_signature,
+    std::string country_code,
+    base::Time date_fetched,
     bool is_delta_compressed,
     bool is_gzip_compressed,
-    VariationsSeed* parsed_seed) {
+    base::OnceCallback<void(bool, VariationsSeed)> done_callback) {
   UMA_HISTOGRAM_COUNTS_1000("Variations.StoreSeed.DataSize",
                             data.length() / 1024);
   InstanceManipulations im = {
@@ -176,8 +180,9 @@ bool VariationsSeedStore::StoreSeedData(
       ResolveInstanceManipulations(data, im, &seed_bytes);
   if (im_result != StoreSeedResult::kSuccess) {
     RecordStoreSeedResult(im_result);
-    return false;
-  };
+    std::move(done_callback).Run(false, VariationsSeed());
+    return;
+  }
 
   ValidatedSeed validated;
   StoreSeedResult validate_result = ValidateSeedBytes(
@@ -186,7 +191,8 @@ bool VariationsSeedStore::StoreSeedData(
     RecordStoreSeedResult(validate_result);
     if (im.delta_compressed)
       RecordStoreSeedResult(StoreSeedResult::kFailedDeltaStore);
-    return false;
+    std::move(done_callback).Run(false, VariationsSeed());
+    return;
   }
 
   StoreSeedResult result =
@@ -195,23 +201,21 @@ bool VariationsSeedStore::StoreSeedData(
   if (result != StoreSeedResult::kSuccess) {
     if (im.delta_compressed)
       RecordStoreSeedResult(StoreSeedResult::kFailedDeltaStore);
-    return false;
+    std::move(done_callback).Run(false, VariationsSeed());
+    return;
   }
-  if (parsed_seed)
-    parsed_seed->Swap(&validated.parsed);
-  return true;
+  std::move(done_callback).Run(true, std::move(validated.parsed));
 }
 
-LoadSeedResult VariationsSeedStore::LoadSafeSeed(
-    VariationsSeed* seed,
-    ClientFilterableState* client_state) {
+bool VariationsSeedStore::LoadSafeSeed(VariationsSeed* seed,
+                                       ClientFilterableState* client_state) {
   std::string unused_seed_data;
   std::string unused_base64_seed_signature;
   LoadSeedResult result = LoadSeedImpl(SeedType::SAFE, seed, &unused_seed_data,
                                        &unused_base64_seed_signature);
   RecordLoadSafeSeedResult(result);
   if (result != LoadSeedResult::kSuccess)
-    return result;
+    return false;
 
   // TODO(crbug/1261685): While it's not immediately obvious, |client_state| is
   // not used for successfully loaded safe seeds that are rejected after
@@ -224,7 +228,7 @@ LoadSeedResult VariationsSeedStore::LoadSafeSeed(
       prefs::kVariationsSafeSeedPermanentConsistencyCountry);
   client_state->session_consistency_country = local_state_->GetString(
       prefs::kVariationsSafeSeedSessionConsistencyCountry);
-  return result;
+  return true;
 }
 
 bool VariationsSeedStore::StoreSafeSeed(
@@ -366,7 +370,7 @@ void VariationsSeedStore::ClearPrefs(SeedType seed_type) {
   local_state_->ClearPref(prefs::kVariationsSafeSeedSignature);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 void VariationsSeedStore::ImportInitialSeed(
     std::unique_ptr<SeedResponse> initial_seed) {
   if (initial_seed->data.empty()) {
@@ -374,15 +378,6 @@ void VariationsSeedStore::ImportInitialSeed(
     RecordFirstRunSeedImportResult(
         FirstRunSeedImportResult::FAIL_NO_FIRST_RUN_SEED);
     return;
-  }
-
-  // Clear the Java-side seed prefs. At this point, the seed has
-  // already been fetched from the Java side, so it's no longer
-  // needed there. This is done regardless if we fail or succeed
-  // below - since if we succeed, we're good to go and if we fail,
-  // we probably don't want to keep around the bad content anyway.
-  if (use_first_run_prefs_) {
-    android::ClearJavaFirstRunPrefs();
   }
 
   if (initial_seed->date == 0) {
@@ -393,16 +388,23 @@ void VariationsSeedStore::ImportInitialSeed(
   }
   base::Time date = base::Time::FromJavaTime(initial_seed->date);
 
-  if (!StoreSeedData(initial_seed->data, initial_seed->signature,
-                     initial_seed->country, date, false,
-                     initial_seed->is_gzip_compressed, nullptr)) {
-    RecordFirstRunSeedImportResult(FirstRunSeedImportResult::FAIL_STORE_FAILED);
-    LOG(WARNING) << "First run variations seed is invalid.";
-    return;
-  }
-  RecordFirstRunSeedImportResult(FirstRunSeedImportResult::SUCCESS);
+  auto done_callback =
+      base::BindOnce([](bool store_success, VariationsSeed seed) {
+        if (store_success) {
+          RecordFirstRunSeedImportResult(FirstRunSeedImportResult::SUCCESS);
+        } else {
+          RecordFirstRunSeedImportResult(
+              FirstRunSeedImportResult::FAIL_STORE_FAILED);
+          LOG(WARNING) << "First run variations seed is invalid.";
+        }
+      });
+  StoreSeedData(std::move(initial_seed->data),
+                std::move(initial_seed->signature),
+                std::move(initial_seed->country), date,
+                /*is_delta_compressed=*/false, initial_seed->is_gzip_compressed,
+                std::move(done_callback));
 }
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 LoadSeedResult VariationsSeedStore::LoadSeedImpl(
     SeedType seed_type,
@@ -567,7 +569,7 @@ StoreSeedResult VariationsSeedStore::StoreValidatedSeed(
   StoreSeedResult result = CompressSeedBytes(seed, &base64_seed_data);
   if (result != StoreSeedResult::kSuccess)
     return result;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // If currently we do not have any stored pref then we mark seed storing as
   // successful on the Java side to avoid repeated seed fetches.
   if (local_state_->GetString(prefs::kVariationsCompressedSeed).empty() &&

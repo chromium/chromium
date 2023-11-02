@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,8 @@ class PictureBufferManagerImplTest : public testing::Test {
     // TODO(sandersd): Use a separate thread for the GPU task runner.
     cbh_ = base::MakeRefCounted<FakeCommandBufferHelper>(
         environment_.GetMainThreadTaskRunner());
-    pbm_ = PictureBufferManager::Create(reuse_cb_.Get());
+    pbm_ = PictureBufferManager::Create(/*allocate_gpu_memory_buffers=*/false,
+                                        reuse_cb_.Get());
   }
 
   PictureBufferManagerImplTest(const PictureBufferManagerImplTest&) = delete;
@@ -47,8 +48,15 @@ class PictureBufferManagerImplTest : public testing::Test {
       uint32_t count,
       VideoDecodeAccelerator::TextureAllocationMode mode =
           VideoDecodeAccelerator::TextureAllocationMode::kAllocateGLTextures) {
-    return pbm_->CreatePictureBuffers(count, PIXEL_FORMAT_ARGB, 1,
-                                      gfx::Size(320, 240), GL_TEXTURE_2D, mode);
+    std::vector<std::pair<PictureBuffer, gfx::GpuMemoryBufferHandle>>
+        picture_buffers_and_gmbs = pbm_->CreatePictureBuffers(
+            count, PIXEL_FORMAT_ARGB, 1, gfx::Size(320, 240), GL_TEXTURE_2D,
+            mode);
+    std::vector<PictureBuffer> picture_buffers;
+    for (const auto& picture_buffer_and_gmb : picture_buffers_and_gmbs) {
+      picture_buffers.push_back(picture_buffer_and_gmb.first);
+    }
+    return picture_buffers;
   }
 
   PictureBuffer CreateARGBPictureBuffer(

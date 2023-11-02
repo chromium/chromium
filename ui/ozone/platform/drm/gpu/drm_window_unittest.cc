@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,6 +33,7 @@
 #include "ui/ozone/platform/drm/gpu/drm_framebuffer.h"
 #include "ui/ozone/platform/drm/gpu/hardware_display_controller.h"
 #include "ui/ozone/platform/drm/gpu/mock_drm_device.h"
+#include "ui/ozone/platform/drm/gpu/page_flip_watchdog.h"
 #include "ui/ozone/platform/drm/gpu/screen_manager.h"
 #include "ui/ozone/public/surface_ozone_canvas.h"
 
@@ -136,7 +137,8 @@ void DrmWindowTest::SetUp() {
   controllers_to_enable.emplace_back(
       1 /*display_id*/, drm_, kDefaultCrtc, kDefaultConnector, gfx::Point(),
       std::make_unique<drmModeModeInfo>(kDefaultMode));
-  screen_manager_->ConfigureDisplayControllers(controllers_to_enable);
+  screen_manager_->ConfigureDisplayControllers(
+      controllers_to_enable, display::kTestModeset | display::kCommitModeset);
 
   drm_device_manager_ = std::make_unique<ui::DrmDeviceManager>(nullptr);
 
@@ -296,7 +298,8 @@ TEST_F(DrmWindowTest, CheckCursorSurfaceAfterChangingDevice) {
       2 /*display_id*/, drm, kDefaultCrtc, kDefaultConnector,
       gfx::Point(0, kDefaultMode.vdisplay),
       std::make_unique<drmModeModeInfo>(kDefaultMode));
-  screen_manager_->ConfigureDisplayControllers(controllers_to_enable);
+  screen_manager_->ConfigureDisplayControllers(
+      controllers_to_enable, display::kTestModeset | display::kCommitModeset);
 
   // Move window to the display on the new device.
   screen_manager_->GetWindow(kDefaultWidgetHandle)
@@ -374,7 +377,7 @@ TEST_F(DrmWindowTest, CheckPageflipFailureOnFailedSwap) {
   const std::string gpu_crash_log =
       "Failed to modeset within " +
       base::NumberToString(ui::kWaitForModesetTimeout.InSeconds()) +
-      " s of the first page flip failure. Crashing GPU process. Goodbye.";
+      " s of the first page flip failure. Crashing GPU process.";
   EXPECT_DEATH_IF_SUPPORTED(
       task_environment_.FastForwardBy(ui::kWaitForModesetTimeout),
       gpu_crash_log);

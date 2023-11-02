@@ -14,6 +14,12 @@
       "exists": "forbidden",
       "wow_key": "KEY_WOW64_32KEY"
     },
+    "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\Windows Error Reporting\\RuntimeExceptionHelperModules": {
+      "exists": "optional",
+      "values": {
+        "$LOCAL_APPDATA\\$CHROME_DIR_SXS\\Application\\$MINI_INSTALLER_FILE_VERSION\\chrome_wer.dll": {}
+      }
+    },
     "HKEY_CURRENT_USER\\Software\\Classes\\$CHROME_HTML_PROG_ID_SXS$USER_SPECIFIC_REGISTRY_SUFFIX": {
       "exists": "forbidden"
     },

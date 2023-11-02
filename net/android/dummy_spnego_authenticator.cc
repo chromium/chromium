@@ -1,11 +1,10 @@
-// Copyright (c) 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #include "net/android/dummy_spnego_authenticator.h"
 
 #include "base/android/jni_string.h"
 #include "base/base64.h"
-#include "base/cxx17_backports.h"
 #include "net/net_test_jni_headers/DummySpnegoAuthenticator_jni.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -17,7 +16,7 @@ namespace net {
 // From RFC 4178, which uses SNEGO not SPNEGO.
 static const unsigned char kSpnegoOid[] = {0x2b, 0x06, 0x01, 0x05, 0x05, 0x02};
 gss_OID_desc CHROME_GSS_SPNEGO_MECH_OID_DESC_VAL = {
-    base::size(kSpnegoOid), const_cast<unsigned char*>(kSpnegoOid)};
+    std::size(kSpnegoOid), const_cast<unsigned char*>(kSpnegoOid)};
 
 gss_OID CHROME_GSS_SPNEGO_MECH_OID_DESC = &CHROME_GSS_SPNEGO_MECH_OID_DESC_VAL;
 
@@ -134,8 +133,8 @@ DummySpnegoAuthenticator::SecurityContextQuery::SecurityContextQuery()
 DummySpnegoAuthenticator::SecurityContextQuery::SecurityContextQuery(
     const SecurityContextQuery& other) = default;
 
-DummySpnegoAuthenticator::SecurityContextQuery::~SecurityContextQuery() {
-}
+DummySpnegoAuthenticator::SecurityContextQuery::~SecurityContextQuery() =
+    default;
 
 base::android::ScopedJavaLocalRef<jstring>
 DummySpnegoAuthenticator::SecurityContextQuery::GetTokenToReturn(
@@ -159,11 +158,9 @@ void DummySpnegoAuthenticator::SecurityContextQuery::CheckGetTokenArguments(
 }
 
 // Needed to satisfy "complex class" clang requirements.
-DummySpnegoAuthenticator::DummySpnegoAuthenticator() {
-}
+DummySpnegoAuthenticator::DummySpnegoAuthenticator() = default;
 
-DummySpnegoAuthenticator::~DummySpnegoAuthenticator() {
-}
+DummySpnegoAuthenticator::~DummySpnegoAuthenticator() = default;
 
 void DummySpnegoAuthenticator::EnsureTestAccountExists() {
   Java_DummySpnegoAuthenticator_ensureTestAccountExists(

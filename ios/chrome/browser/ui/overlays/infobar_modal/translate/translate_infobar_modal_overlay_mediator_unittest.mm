@@ -1,26 +1,26 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/overlays/infobar_modal/translate/translate_infobar_modal_overlay_mediator.h"
 
-#include "base/ios/ios_util.h"
-#include "base/strings/sys_string_conversions.h"
-#include "components/translate/core/browser/translate_step.h"
-#include "ios/chrome/browser/infobars/infobar_ios.h"
+#import "base/ios/ios_util.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/translate/core/browser/translate_step.h"
+#import "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/overlays/public/infobar_modal/infobar_modal_overlay_responses.h"
 #import "ios/chrome/browser/overlays/public/infobar_modal/translate_infobar_modal_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_modal/translate_infobar_modal_overlay_responses.h"
-#include "ios/chrome/browser/overlays/public/overlay_callback_manager.h"
-#include "ios/chrome/browser/overlays/public/overlay_request.h"
-#include "ios/chrome/browser/overlays/public/overlay_response.h"
-#include "ios/chrome/browser/overlays/test/fake_overlay_request_callback_installer.h"
+#import "ios/chrome/browser/overlays/public/overlay_callback_manager.h"
+#import "ios/chrome/browser/overlays/public/overlay_request.h"
+#import "ios/chrome/browser/overlays/public/overlay_response.h"
+#import "ios/chrome/browser/overlays/test/fake_overlay_request_callback_installer.h"
 #import "ios/chrome/browser/translate/fake_translate_infobar_delegate.h"
 #import "ios/chrome/browser/ui/infobars/coordinators/infobar_translate_modal_consumer.h"
 #import "ios/chrome/browser/ui/infobars/modals/test/fake_infobar_translate_modal_consumer.h"
-#include "testing/gmock/include/gmock/gmock.h"
-#include "testing/gtest_mac.h"
-#include "testing/platform_test.h"
+#import "testing/gmock/include/gmock/gmock.h"
+#import "testing/gtest_mac.h"
+#import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
@@ -43,7 +43,7 @@ class TranslateInfobarModalOverlayMediatorTest : public PlatformTest {
  public:
   TranslateInfobarModalOverlayMediatorTest(
       translate::TranslateStep step,
-      translate::TranslateErrors::Type error_type)
+      translate::TranslateErrors error_type)
       : infobar_(
             InfobarType::kInfobarTypeTranslate,
             delegate_factory_.CreateFakeTranslateInfoBarDelegate("fr",
@@ -72,7 +72,7 @@ class TranslateInfobarModalOverlayMediatorTest : public PlatformTest {
   TranslateInfobarModalOverlayMediatorTest()
       : TranslateInfobarModalOverlayMediatorTest(
             translate::TranslateStep::TRANSLATE_STEP_BEFORE_TRANSLATE,
-            translate::TranslateErrors::Type::NONE) {}
+            translate::TranslateErrors::NONE) {}
 
   ~TranslateInfobarModalOverlayMediatorTest() override {
     EXPECT_CALL(callback_receiver_, CompletionCallback(request_.get()));
@@ -205,7 +205,7 @@ class TranslateInfobarModalOverlayMediatorAfterTranslateTest
   TranslateInfobarModalOverlayMediatorAfterTranslateTest()
       : TranslateInfobarModalOverlayMediatorTest(
             translate::TranslateStep::TRANSLATE_STEP_AFTER_TRANSLATE,
-            translate::TranslateErrors::Type::NONE) {}
+            translate::TranslateErrors::NONE) {}
 };
 
 // Tests that a TranslateInfobarModalOverlayMediator correctly sets up its
@@ -237,7 +237,7 @@ class TranslateInfobarModalOverlayMediatorTranslateErrorTest
   TranslateInfobarModalOverlayMediatorTranslateErrorTest()
       : TranslateInfobarModalOverlayMediatorTest(
             translate::TranslateStep::TRANSLATE_STEP_TRANSLATE_ERROR,
-            translate::TranslateErrors::Type::TRANSLATION_ERROR) {}
+            translate::TranslateErrors::TRANSLATION_ERROR) {}
 };
 
 // Tests that a TranslateInfobarModalOverlayMediator correctly sets up its

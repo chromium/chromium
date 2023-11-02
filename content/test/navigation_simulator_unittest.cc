@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
@@ -50,7 +51,7 @@ class CancellingNavigationSimulatorTest
 
   void SetUp() override {
     RenderViewHostImplTestHarness::SetUp();
-    contents()->GetMainFrame()->InitializeRenderFrameIfNeeded();
+    contents()->GetPrimaryMainFrame()->InitializeRenderFrameIfNeeded();
     Observe(RenderViewHostImplTestHarness::web_contents());
     std::tie(cancel_time_, sync_) = GetParam();
     simulator_ = NavigationSimulator::CreateRendererInitiated(
@@ -106,7 +107,7 @@ class MethodCheckingNavigationSimulatorTest : public NavigationSimulatorTest,
 
   void SetUp() override {
     RenderViewHostImplTestHarness::SetUp();
-    contents()->GetMainFrame()->InitializeRenderFrameIfNeeded();
+    contents()->GetPrimaryMainFrame()->InitializeRenderFrameIfNeeded();
     Observe(RenderViewHostImplTestHarness::web_contents());
   }
 
@@ -135,7 +136,7 @@ class ResponseHeadersCheckingNavigationSimulatorTest
 
   void SetUp() override {
     RenderViewHostImplTestHarness::SetUp();
-    contents()->GetMainFrame()->InitializeRenderFrameIfNeeded();
+    contents()->GetPrimaryMainFrame()->InitializeRenderFrameIfNeeded();
     Observe(RenderViewHostImplTestHarness::web_contents());
   }
 
@@ -145,7 +146,7 @@ class ResponseHeadersCheckingNavigationSimulatorTest
     }
   }
 
-  const net::HttpResponseHeaders* response_headers_;
+  raw_ptr<const net::HttpResponseHeaders> response_headers_;
 };
 
 TEST_F(NavigationSimulatorTest, AutoAdvanceOff) {

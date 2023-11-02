@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,9 @@ package org.chromium.chrome.browser.feed.webfeed;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 
@@ -15,20 +17,23 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLog;
 import org.robolectric.shadows.ShadowLooper;
 
@@ -36,16 +41,20 @@ import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.browser.feed.R;
+import org.chromium.chrome.browser.feed.test.R;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController.FeedLauncher;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.share.crow.CrowButtonDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.embedder_support.util.ShadowUrlUtilities;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.url_formatter.UrlFormatterJni;
+import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.widget.ChipView;
 import org.chromium.ui.widget.LoadingView;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -57,6 +66,8 @@ import java.util.ArrayList;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = {ShadowUrlUtilities.class})
+@LooperMode(LooperMode.Mode.LEGACY)
+@Features.EnableFeatures({ChromeFeatureList.CORMORANT})
 @SmallTest
 public final class WebFeedMainMenuItemTest {
     private static final GURL TEST_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
@@ -64,6 +75,11 @@ public final class WebFeedMainMenuItemTest {
 
     @Rule
     public JniMocker mJniMocker = new JniMocker();
+    @Rule
+    public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
+            new ActivityScenarioRule<>(TestActivity.class);
+    @Rule
+    public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
     private Activity mActivity;
     @Mock
@@ -81,6 +97,9 @@ public final class WebFeedMainMenuItemTest {
     @Mock
     public UrlFormatter.Natives mUrlFormatterJniMock;
     private TestWebFeedFaviconFetcher mFaviconFetcher = new TestWebFeedFaviconFetcher();
+    @Mock
+    private CrowButtonDelegate mCrowButtonDelegate;
+    private Class<?> mCreatorActivityClass;
 
     private WebFeedMainMenuItem mWebFeedMainMenuItem;
     private ArrayList<Callback<WebFeedBridge.WebFeedMetadata>> mWaitingMetadataCallbacks =
@@ -101,18 +120,21 @@ public final class WebFeedMainMenuItemTest {
         doReturn(GURL.emptyGURL()).when(mTab).getOriginalUrl();
         doReturn(false).when(mTab).isShowingErrorPage();
 
-        mActivity = Robolectric.setupActivity(Activity.class);
         // Required for resolving an attribute used in AppMenuItemText.
-        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
 
         // Add requests for web feed information to mWaitingMetadataCallbacks.
         doAnswer(invocation -> {
+            assertEquals("Incorrect WebFeedPageInformationRequestReason was used.",
+                    WebFeedPageInformationRequestReason.MENU_ITEM_PRESENTATION,
+                    invocation.<Integer>getArgument(1).intValue());
             mWaitingMetadataCallbacks.add(
-                    invocation.<Callback<WebFeedBridge.WebFeedMetadata>>getArgument(1));
+                    invocation.<Callback<WebFeedBridge.WebFeedMetadata>>getArgument(2));
             return null;
         })
                 .when(mWebFeedBridgeJniMock)
-                .findWebFeedInfoForPage(any(), any(Callback.class));
+                .findWebFeedInfoForPage(any(WebFeedBridge.WebFeedPageInformation.class), anyInt(),
+                        any(Callback.class));
 
         mWebFeedMainMenuItem = (WebFeedMainMenuItem) (LayoutInflater.from(mActivity).inflate(
                 R.layout.web_feed_main_menu_item, null));
@@ -143,7 +165,7 @@ public final class WebFeedMainMenuItemTest {
     public void initialize_emptyUrl_removesIcon() {
         doReturn(GURL.emptyGURL()).when(mTab).getOriginalUrl();
         mWebFeedMainMenuItem.initialize(mTab, mAppMenuHandler, mFaviconFetcher, mFeedLauncher,
-                mDialogManager, mSnackBarManager);
+                mDialogManager, mSnackBarManager, mCrowButtonDelegate, mCreatorActivityClass);
         respondWithFeedMetadata(null);
         mFaviconFetcher.answerWithNull();
 
@@ -161,6 +183,18 @@ public final class WebFeedMainMenuItemTest {
         assertEquals("Title should be shortened URL.",
                 UrlFormatter.formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(TEST_URL),
                 textView.getText());
+    }
+
+    @Test
+    @UiThreadTest
+    public void initialize_launchCreatorActivity() {
+        initializeWebFeedMainMenuItem();
+        respondWithFeedMetadata(null);
+
+        assertFalse(mWebFeedMainMenuItem.isCreatorActivityInitiated());
+        TextView textView = mWebFeedMainMenuItem.findViewById(R.id.menu_item_text);
+        textView.performClick();
+        assertTrue(mWebFeedMainMenuItem.isCreatorActivityInitiated());
     }
 
     @Test
@@ -224,6 +258,48 @@ public final class WebFeedMainMenuItemTest {
         assertEquals("invisible", getChipState());
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         assertEquals("disabled following", getChipState());
+    }
+
+    @Test
+    @UiThreadTest
+    public void initialize_notFollowed_displaysFollowChip_crowPresent_displaysChipsOnSingleRow() {
+        initializeWebFeedMainMenuItem();
+        respondWithFeedMetadata(
+                createWebFeedMetadata(WebFeedSubscriptionStatus.NOT_SUBSCRIBED, GURL.emptyGURL()));
+
+        // Chip group with Follow chip should have same parent as the icon view.
+        doAnswer(invocation -> {
+            Callback callback = invocation.getArgument(1);
+            callback.onResult(true);
+            return null;
+        })
+                .when(mCrowButtonDelegate)
+                .isEnabledForSite(any(GURL.class), any(Callback.class));
+
+        ViewGroup chipsGroup = mWebFeedMainMenuItem.findViewById(R.id.chip_container);
+        View iconView = mWebFeedMainMenuItem.findViewById(R.id.icon);
+        assertEquals(iconView.getParent(), chipsGroup.getParent());
+    }
+
+    @Test
+    @UiThreadTest
+    public void initialize_notFollowed_displaysFollowChip_crowPresent_displaysChipsOnSecondRow() {
+        doAnswer(invocation -> {
+            Callback callback = invocation.getArgument(1);
+            callback.onResult(true);
+            return null;
+        })
+                .when(mCrowButtonDelegate)
+                .isEnabledForSite(any(GURL.class), any(Callback.class));
+
+        initializeWebFeedMainMenuItem();
+        respondWithFeedMetadata(
+                createWebFeedMetadata(WebFeedSubscriptionStatus.NOT_SUBSCRIBED, GURL.emptyGURL()));
+
+        // Chip group with Follow and Crow chips should be moved to a second row.
+        ViewGroup chipsGroup = mWebFeedMainMenuItem.findViewById(R.id.chip_container);
+        ViewGroup secondRowGroup = mWebFeedMainMenuItem.findViewById(R.id.footer_second_chip_row);
+        assertEquals(secondRowGroup, chipsGroup.getParent());
     }
 
     @Test
@@ -324,7 +400,7 @@ public final class WebFeedMainMenuItemTest {
     private void initializeWebFeedMainMenuItem() {
         doReturn(TEST_URL).when(mTab).getOriginalUrl();
         mWebFeedMainMenuItem.initialize(mTab, mAppMenuHandler, mFaviconFetcher, mFeedLauncher,
-                mDialogManager, mSnackBarManager);
+                mDialogManager, mSnackBarManager, mCrowButtonDelegate, mCreatorActivityClass);
     }
 
     /**

@@ -1,8 +1,11 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
+
+assert(is_chromeos_ash)
 
 mojom("mojom") {
   sources = [ "shimless_rma.mojom" ]
@@ -30,8 +33,16 @@ mojom("mojom") {
           cpp = "::rmad::ComponentsRepairState_ComponentRepairStatus"
         },
         {
+          mojom = "ash.shimless_rma.mojom.WriteProtectDisableCompleteAction"
+          cpp = "::rmad::WriteProtectDisableCompleteState_Action"
+        },
+        {
           mojom = "ash.shimless_rma.mojom.ProvisioningStatus"
           cpp = "::rmad::ProvisionStatus_Status"
+        },
+        {
+          mojom = "ash.shimless_rma.mojom.ProvisioningError"
+          cpp = "::rmad::ProvisionStatus_Error"
         },
         {
           mojom = "ash.shimless_rma.mojom.RmadErrorCode"
@@ -58,6 +69,14 @@ mojom("mojom") {
           cpp = "::rmad::FinalizeStatus_Status"
         },
         {
+          mojom = "ash.shimless_rma.mojom.FinalizationError"
+          cpp = "::rmad::FinalizeStatus_Error"
+        },
+        {
+          mojom = "ash.shimless_rma.mojom.UpdateRoFirmwareStatus"
+          cpp = "::rmad::UpdateRoFirmwareStatus"
+        },
+        {
           mojom = "media.mojom.CdmKeyInformation"
           cpp = "::std::unique_ptr<::media::CdmKeyInformation>"
           move_only = true
@@ -66,16 +85,27 @@ mojom("mojom") {
           mojom = "media.mojom.CdmKeyStatus"
           cpp = "::media::CdmKeyInformation::KeyStatus"
         },
+        {
+          mojom = "ash.shimless_rma.mojom.UpdateErrorCode"
+          cpp = "::update_engine::ErrorCode"
+        },
+        {
+          mojom = "ash.shimless_rma.mojom.ShutdownMethod"
+          cpp = "::rmad::RepairCompleteState_ShutdownMethod"
+        },
       ]
       traits_headers = [
         "shimless_rma_mojom_traits.h",
-        "//chromeos/dbus/rmad/rmad.pb.h",
-        "//chromeos/dbus/update_engine/update_engine.pb.h",
+        "//chromeos/ash/components/dbus/rmad/rmad.pb.h",
+        "//chromeos/ash/components/dbus/update_engine/update_engine.pb.h",
+        "//chromeos/ash/components/dbus/update_engine/update_engine_client.h",
       ]
       traits_sources = [ "shimless_rma_mojom_traits.cc" ]
       traits_public_deps = [
-        "//chromeos/dbus/rmad:rmad_proto",
-        "//chromeos/dbus/update_engine:proto",
+        "//chromeos/ash/components/dbus/rmad:rmad_proto",
+        "//chromeos/ash/components/dbus/update_engine:proto",
+        "//chromeos/ash/components/dbus/update_engine:update_engine",
+        "//dbus",
       ]
     },
   ]
@@ -90,9 +120,9 @@ source_set("unit_tests") {
     ":mojom",
     "//base",
     "//base/test:test_support",
-    "//chromeos/dbus/rmad",
-    "//chromeos/dbus/rmad:rmad_proto",
-    "//chromeos/dbus/update_engine",
+    "//chromeos/ash/components/dbus/rmad",
+    "//chromeos/ash/components/dbus/rmad:rmad_proto",
+    "//chromeos/ash/components/dbus/update_engine",
     "//content/test:test_support",
     "//services/data_decoder/public/cpp:test_support",
     "//services/device/public/cpp:test_support",

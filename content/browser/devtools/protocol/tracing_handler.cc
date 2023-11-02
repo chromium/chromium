@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,7 @@
 #include "base/format_macros.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
@@ -52,7 +53,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/inspector_protocol/crdtp/json.h"
 
-#ifdef OS_ANDROID
+#if BUILDFLAG(IS_ANDROID)
 #include "content/browser/renderer_host/compositor_impl_android.h"
 #endif
 
@@ -64,6 +65,7 @@ namespace {
 const double kMinimumReportingInterval = 250.0;
 
 const char kRecordModeParam[] = "record_mode";
+const char kTraceBufferSizeInKb[] = "trace_buffer_size_in_kb";
 
 // Frames need to be at least 1x1, otherwise nothing would be captured.
 constexpr gfx::Size kMinFrameSize = gfx::Size(1, 1);
@@ -86,29 +88,24 @@ std::string ConvertFromCamelCase(const std::string& in_str, char separator) {
   return out_str;
 }
 
-std::unique_ptr<base::Value> ConvertDictKeyStyle(const base::Value& value) {
-  const base::DictionaryValue* dict = nullptr;
-  if (value.GetAsDictionary(&dict)) {
-    std::unique_ptr<base::DictionaryValue> out_dict(
-        new base::DictionaryValue());
-    for (base::DictionaryValue::Iterator it(*dict); !it.IsAtEnd();
-         it.Advance()) {
-      out_dict->SetKey(
-          ConvertFromCamelCase(it.key(), '_'),
-          base::Value::FromUniquePtrValue(ConvertDictKeyStyle(it.value())));
+base::Value ConvertDictKeyStyle(const base::Value& value) {
+  if (value.is_dict()) {
+    base::Value out(base::Value::Type::DICTIONARY);
+    for (auto kv : value.DictItems()) {
+      out.SetKey(ConvertFromCamelCase(kv.first, '_'),
+                 ConvertDictKeyStyle(kv.second));
     }
-    return std::move(out_dict);
+    return out;
   }
 
-  const base::ListValue* list = nullptr;
-  if (value.GetAsList(&list)) {
-    std::unique_ptr<base::ListValue> out_list(new base::ListValue());
-    for (const auto& key : list->GetList())
-      out_list->Append(ConvertDictKeyStyle(key));
-    return std::move(out_list);
+  if (value.is_list()) {
+    base::Value out(base::Value::Type::LIST);
+    for (const auto& v : value.GetList())
+      out.Append(ConvertDictKeyStyle(v));
+    return out;
   }
 
-  return base::Value::ToUniquePtrValue(value.Clone());
+  return value.Clone();
 }
 
 class DevToolsTraceEndpointProxy : public TracingController::TraceDataEndpoint {
@@ -188,7 +185,7 @@ void FillFrameData(base::trace_event::TracedValue* data,
                    FrameTreeNode* node,
                    RenderFrameHostImpl* frame_host,
                    const GURL& url) {
-  url::Replacements<char> strip_fragment;
+  GURL::Replacements strip_fragment;
   strip_fragment.ClearRef();
   data->SetString("frame", node->devtools_frame_token().ToString());
   data->SetString("url", url.ReplaceComponents(strip_fragment).spec());
@@ -239,6 +236,11 @@ void AddPidsToProcessFilter(
   }
 }
 
+bool IsChromeDataSource(const std::string& data_source_name) {
+  return base::StartsWith(data_source_name, "org.chromium.") ||
+         data_source_name == "track_event";
+}
+
 absl::optional<perfetto::BackendType> GetBackendTypeFromParameters(
     const std::string& tracing_backend,
     perfetto::TraceConfig& perfetto_config) {
@@ -251,12 +253,40 @@ absl::optional<perfetto::BackendType> GetBackendTypeFromParameters(
     // sources specified in the config.
     for (auto& data_source : *(perfetto_config.mutable_data_sources())) {
       auto* source_config = data_source.mutable_config();
-      if (!base::StartsWith(source_config->name(), "org.chromium."))
+      if (!IsChromeDataSource(source_config->name()))
         return perfetto::BackendType::kSystemBackend;
     }
     return perfetto::BackendType::kCustomBackend;
   }
   return absl::nullopt;
+}
+
+// Perfetto SDK build expects track_event data source to be configured via
+// track_event_config. But some devtools users (e.g. Perfetto UI) send
+// a chrome_config instead. We build a track_event_config based on the
+// chrome_config if no other track_event data sources have been configured.
+void ConvertToTrackEventConfigIfNeeded(perfetto::TraceConfig& trace_config) {
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  for (const auto& data_source : trace_config.data_sources()) {
+    if (!data_source.config().track_event_config_raw().empty()) {
+      return;
+    }
+  }
+  for (auto& data_source : *trace_config.mutable_data_sources()) {
+    if (data_source.config().name() ==
+            tracing::mojom::kTraceEventDataSourceName &&
+        data_source.config().has_chrome_config()) {
+      data_source.mutable_config()->set_name("track_event");
+      base::trace_event::TraceConfig base_config(
+          data_source.config().chrome_config().trace_config());
+      bool privacy_filtering_enabled =
+          data_source.config().chrome_config().privacy_filtering_enabled();
+      data_source.mutable_config()->set_track_event_config_raw(
+          base_config.ToPerfettoTrackEventConfigRaw(privacy_filtering_enabled));
+      return;
+    }
+  }
+#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 }
 
 // We currently don't support concurrent tracing sessions, but are planning to.
@@ -273,12 +303,15 @@ class TracingHandler::PerfettoTracingSession {
   PerfettoTracingSession(bool use_proto, perfetto::BackendType backend_type)
       : use_proto_format_(use_proto), backend_type_(backend_type) {}
 
+  ~PerfettoTracingSession() { g_any_agent_tracing = false; }
+
   void EnableTracing(const perfetto::TraceConfig& perfetto_config,
                      base::OnceCallback<void(const std::string& /*error_msg*/)>
                          start_callback) {
     DCHECK(!tracing_session_);
     DCHECK(!tracing_active_);
 
+    g_any_agent_tracing = true;
     tracing_active_ = true;
     start_callback_ = std::move(start_callback);
 
@@ -516,17 +549,8 @@ TracingHandler::TracingHandler(DevToolsIOContext* io_context)
       return_as_stream_(false),
       gzip_compression_(false),
       buffer_usage_reporting_interval_(0) {
-  bool use_video_capture_api = true;
-#ifdef OS_ANDROID
-  // Video capture API cannot be used on Android WebView.
-  if (!CompositorImpl::IsInitialized())
-    use_video_capture_api = false;
-#endif
-  if (use_video_capture_api) {
-    video_consumer_ =
-        std::make_unique<DevToolsVideoConsumer>(base::BindRepeating(
-            &TracingHandler::OnFrameFromVideoConsumer, base::Unretained(this)));
-  }
+  video_consumer_ = std::make_unique<DevToolsVideoConsumer>(base::BindRepeating(
+      &TracingHandler::OnFrameFromVideoConsumer, base::Unretained(this)));
 }
 
 TracingHandler::~TracingHandler() = default;
@@ -540,7 +564,7 @@ std::vector<TracingHandler*> TracingHandler::ForAgentHost(
 void TracingHandler::SetRenderer(int process_host_id,
                                  RenderFrameHostImpl* frame_host) {
   frame_host_ = frame_host;
-  if (!video_consumer_ || !frame_host)
+  if (!frame_host)
     return;
   video_consumer_->SetFrameSinkId(
       frame_host->GetRenderWidgetHost()->GetFrameSinkId());
@@ -723,19 +747,16 @@ void TracingHandler::Start(Maybe<std::string> categories,
         break;
       }
     }
+
+    ConvertToTrackEventConfigIfNeeded(trace_config);
   } else {
     base::trace_event::TraceConfig browser_config =
         base::trace_event::TraceConfig();
     if (config.isJust()) {
-      std::unique_ptr<base::Value> value = protocol::toBaseValue(
-          protocol::ValueTypeConverter<Tracing::TraceConfig>::ToValue(
-              *config.fromJust())
-              .get(),
-          1000);
-      if (value && value->is_dict()) {
-        browser_config = GetTraceConfigFromDevToolsConfig(
-            *static_cast<base::DictionaryValue*>(value.get()));
-      }
+      base::Value::Dict dict;
+      CHECK(crdtp::ConvertProtocolValue(*config.fromJust(), &dict));
+      browser_config =
+          GetTraceConfigFromDevToolsConfig(base::Value(std::move(dict)));
     } else if (categories.isJust() || options.isJust()) {
       browser_config = base::trace_event::TraceConfig(categories.fromMaybe(""),
                                                       options.fromMaybe(""));
@@ -792,6 +813,7 @@ void TracingHandler::Start(Maybe<std::string> categories,
       buffer_usage_reporting_interval.fromMaybe(0);
   did_initiate_recording_ = true;
   trace_config_ = std::move(trace_config);
+  pids_being_traced_.clear();
 
   GpuProcessHost* gpu_process_host =
       GpuProcessHost::Get(GPU_PROCESS_KIND_SANDBOXED,
@@ -805,7 +827,6 @@ void TracingHandler::Start(Maybe<std::string> categories,
       trace_config_,
       base::BindOnce(&TracingHandler::OnRecordingEnabled,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
-  g_any_agent_tracing = true;
 }
 
 perfetto::TraceConfig TracingHandler::CreatePerfettoConfiguration(
@@ -830,21 +851,21 @@ void TracingHandler::SetupProcessFilter(
     return;
 
   base::ProcessId browser_pid = base::Process::Current().Pid();
-  std::unordered_set<base::ProcessId> included_process_ids({browser_pid});
+  pids_being_traced_.insert(browser_pid);
 
   if (gpu_pid != base::kNullProcessId)
-    included_process_ids.insert(gpu_pid);
+    pids_being_traced_.insert(gpu_pid);
 
   if (new_render_frame_host)
-    AppendProcessId(new_render_frame_host, &included_process_ids);
+    AppendProcessId(new_render_frame_host, &pids_being_traced_);
 
   DCHECK(!frame_host_->GetParent());
   for (FrameTreeNode* node : frame_host_->frame_tree()->Nodes()) {
     if (RenderFrameHost* frame_host = node->current_frame_host())
-      AppendProcessId(frame_host, &included_process_ids);
+      AppendProcessId(frame_host, &pids_being_traced_);
   }
 
-  AddPidsToProcessFilter(included_process_ids, trace_config_);
+  AddPidsToProcessFilter(pids_being_traced_, trace_config_);
 }
 
 void TracingHandler::AppendProcessId(
@@ -861,13 +882,17 @@ void TracingHandler::AppendProcessId(
 }
 
 void TracingHandler::OnProcessReady(RenderProcessHost* process_host) {
+  AddProcess(process_host->GetProcess().Pid());
+}
+
+void TracingHandler::AddProcess(base::ProcessId pid) {
   if (!did_initiate_recording_)
     return;
-  std::unordered_set<base::ProcessId> included_process_ids(
-      {process_host->GetProcess().Pid()});
-
-  AddPidsToProcessFilter(included_process_ids, trace_config_);
-  session_->ChangeTraceConfig(trace_config_);
+  if (!pids_being_traced_.insert(pid).second)
+    return;
+  AddPidsToProcessFilter({pid}, trace_config_);
+  if (session_)
+    session_->ChangeTraceConfig(trace_config_);
 }
 
 void TracingHandler::AttemptAdoptStartupSession(
@@ -895,7 +920,6 @@ void TracingHandler::AttemptAdoptStartupSession(
   session_ =
       std::make_unique<PerfettoTracingSession>(proto_format_, tracing_backend);
   session_->AdoptStartupTracingSession(perfetto_config);
-  g_any_agent_tracing = true;
 }
 
 Response TracingHandler::End() {
@@ -957,7 +981,7 @@ void TracingHandler::OnRecordingEnabled(std::unique_ptr<StartCallback> callback,
   bool screenshot_enabled;
   TRACE_EVENT_CATEGORY_GROUP_ENABLED(
       TRACE_DISABLED_BY_DEFAULT("devtools.screenshot"), &screenshot_enabled);
-  if (video_consumer_ && screenshot_enabled) {
+  if (screenshot_enabled) {
     // Reset number of screenshots received, each time tracing begins.
     number_of_screenshots_from_video_consumer_ = 0;
     video_consumer_->SetMinAndMaxFrameSize(kMinFrameSize, kMaxFrameSize);
@@ -1084,9 +1108,7 @@ void TracingHandler::StopTracing(
     session_.reset();
   }
   did_initiate_recording_ = false;
-  g_any_agent_tracing = false;
-  if (video_consumer_)
-    video_consumer_->StopCapture();
+  video_consumer_->StopCapture();
 }
 
 bool TracingHandler::IsTracing() const {
@@ -1150,17 +1172,16 @@ bool TracingHandler::IsStartupTracingActive() {
 
 // static
 base::trace_event::TraceConfig TracingHandler::GetTraceConfigFromDevToolsConfig(
-    const base::DictionaryValue& devtools_config) {
-  std::unique_ptr<base::Value> value = ConvertDictKeyStyle(devtools_config);
-  DCHECK(value && value->is_dict());
-  std::unique_ptr<base::DictionaryValue> tracing_dict(
-      static_cast<base::DictionaryValue*>(value.release()));
-
-  std::string mode;
-  if (tracing_dict->GetString(kRecordModeParam, &mode))
-    tracing_dict->SetString(kRecordModeParam, ConvertFromCamelCase(mode, '-'));
-
-  return base::trace_event::TraceConfig(*tracing_dict);
+    const base::Value& devtools_config) {
+  base::Value config = ConvertDictKeyStyle(devtools_config);
+  if (std::string* mode = config.FindStringPath(kRecordModeParam))
+    config.SetStringPath(kRecordModeParam, ConvertFromCamelCase(*mode, '-'));
+  if (absl::optional<double> buffer_size =
+          config.FindDoublePath(kTraceBufferSizeInKb)) {
+    config.SetIntKey(kTraceBufferSizeInKb,
+                     base::saturated_cast<size_t>(buffer_size.value()));
+  }
+  return base::trace_event::TraceConfig(config);
 }
 
 }  // namespace protocol

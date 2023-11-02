@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -101,7 +101,6 @@ class COMPONENT_EXPORT(X11) ScreenSaver {
   struct NotifyEvent {
     static constexpr int type_id = 13;
     static constexpr uint8_t opcode = 0;
-    bool send_event{};
     State state{};
     uint16_t sequence{};
     Time time{};

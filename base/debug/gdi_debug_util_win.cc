@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #include "base/debug/gdi_debug_util_win.h"
@@ -378,20 +378,20 @@ void CollectChildGDIUsageAndDie(DWORD parent_pid) {
 
   int total_process_count = 0;
   base::debug::Alias(&total_process_count);
-  int total_peak_gdi_count = 0;
+  DWORD total_peak_gdi_count = 0;
   base::debug::Alias(&total_peak_gdi_count);
-  int total_gdi_count = 0;
+  DWORD total_gdi_count = 0;
   base::debug::Alias(&total_gdi_count);
-  int total_user_count = 0;
+  DWORD total_user_count = 0;
   base::debug::Alias(&total_user_count);
 
   int child_count = 0;
   base::debug::Alias(&child_count);
-  int peak_gdi_count = 0;
+  DWORD peak_gdi_count = 0;
   base::debug::Alias(&peak_gdi_count);
-  int sum_gdi_count = 0;
+  DWORD sum_gdi_count = 0;
   base::debug::Alias(&sum_gdi_count);
-  int sum_user_count = 0;
+  DWORD sum_user_count = 0;
   base::debug::Alias(&sum_user_count);
 
   PROCESSENTRY32 proc_entry = {};
@@ -402,11 +402,11 @@ void CollectChildGDIUsageAndDie(DWORD parent_pid) {
         OpenProcess(PROCESS_QUERY_INFORMATION,
                     FALSE,
                     proc_entry.th32ProcessID));
-    if (!process.IsValid())
+    if (!process.is_valid())
       continue;
 
-    int num_gdi_handles = GetGuiResources(process.Get(), GR_GDIOBJECTS);
-    int num_user_handles = GetGuiResources(process.Get(), GR_USEROBJECTS);
+    DWORD num_gdi_handles = GetGuiResources(process.get(), GR_GDIOBJECTS);
+    DWORD num_user_handles = GetGuiResources(process.get(), GR_USEROBJECTS);
 
     // Compute sum and peak counts for all processes.
     ++total_process_count;

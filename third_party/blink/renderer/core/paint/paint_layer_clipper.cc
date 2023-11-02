@@ -125,82 +125,35 @@ PaintLayerClipper::PaintLayerClipper(const PaintLayer* layer,
                                      bool usegeometry_mapper)
     : layer_(layer), use_geometry_mapper_(usegeometry_mapper) {}
 
-PhysicalRect PaintLayerClipper::LocalClipRect(
-    const PaintLayer& clipping_root_layer) const {
-  DCHECK(use_geometry_mapper_);
-  ClipRectsContext context(
-      &clipping_root_layer,
-      &clipping_root_layer.GetLayoutObject().FirstFragment());
-
-  ClipRect clip_rect;
-  CalculateBackgroundClipRectWithGeometryMapper(
-      context, layer_->GetLayoutObject().FirstFragment(), kRespectOverflowClip,
-      clip_rect);
-
-  if (clip_rect.IsInfinite())
-    return clip_rect.Rect();
-
-  PhysicalRect premapped_rect = clip_rect.Rect();
-  // The rect now needs to be transformed to the local space of this
-  // PaintLayer.
-  // TODO(chrishtr): not correct for fragmentation.
-  premapped_rect.Move(context.root_fragment->PaintOffset());
-
-  const auto& clip_root_layer_transform =
-      context.root_fragment->LocalBorderBoxProperties().Transform();
-  const auto& layer_transform = layer_->GetLayoutObject()
-                                    .FirstFragment()
-                                    .LocalBorderBoxProperties()
-                                    .Transform();
-  FloatRect clipped_rect_in_local_space(premapped_rect);
-  GeometryMapper::SourceToDestinationRect(
-      clip_root_layer_transform, layer_transform, clipped_rect_in_local_space);
-  // TODO(chrishtr): not correct for fragmentation.
-  clipped_rect_in_local_space.MoveBy(
-      -FloatPoint(layer_->GetLayoutObject().FirstFragment().PaintOffset()));
-
-  return PhysicalRect::FastAndLossyFromFloatRect(clipped_rect_in_local_space);
-}
-
 void PaintLayerClipper::CalculateRectsWithGeometryMapper(
     const ClipRectsContext& context,
     const FragmentData& fragment_data,
-    const CullRect* cull_rect,
-    PhysicalRect& layer_bounds,
+    PhysicalOffset& layer_offset,
     ClipRect& background_rect,
-    ClipRect& foreground_rect,
-    const PhysicalOffset* offset_from_root) const {
-  layer_bounds.size = PhysicalSize(layer_->PixelSnappedSize());
-  if (offset_from_root) {
-    layer_bounds.offset = *offset_from_root;
+    ClipRect& foreground_rect) const {
+  layer_offset = context.sub_pixel_accumulation;
+  if (layer_ == context.root_layer) {
+    DCHECK_EQ(&fragment_data, context.root_fragment);
   } else {
-    layer_bounds.offset = context.sub_pixel_accumulation;
-    if (layer_ == context.root_layer) {
-      DCHECK_EQ(&fragment_data, context.root_fragment);
-    } else {
-      layer_bounds.Move(fragment_data.PaintOffset());
-      FloatRect float_bounds(layer_bounds);
-      GeometryMapper::SourceToDestinationRect(
-          fragment_data.PreTransform(),
-          context.root_fragment->LocalBorderBoxProperties().Transform(),
-          float_bounds);
-      layer_bounds = PhysicalRect::FastAndLossyFromFloatRect(float_bounds);
-      layer_bounds.offset -= context.root_fragment->PaintOffset();
-    }
+    layer_offset += fragment_data.PaintOffset();
+    auto projection = GeometryMapper::SourceToDestinationProjection(
+        fragment_data.PreTransform(),
+        context.root_fragment->LocalBorderBoxProperties().Transform());
+    layer_offset = PhysicalOffset::FromPointFRound(
+        projection.MapPoint(gfx::PointF(layer_offset)));
+    layer_offset -= context.root_fragment->PaintOffset();
   }
 
   CalculateBackgroundClipRectWithGeometryMapper(
       context, fragment_data, kRespectOverflowClip, background_rect);
 
   foreground_rect.Reset();
-  if (cull_rect)
-    background_rect.Intersect(PhysicalRect(cull_rect->Rect()));
 
   if (ShouldClipOverflowAlongEitherAxis(context)) {
     LayoutBoxModelObject& layout_object = layer_->GetLayoutObject();
     foreground_rect =
         To<LayoutBox>(layout_object)
-            .OverflowClipRect(layer_bounds.offset,
+            .OverflowClipRect(layer_offset,
                               context.overlay_scrollbar_clip_behavior);
     if (layout_object.StyleRef().HasBorderRadius())
       foreground_rect.SetHasRadius(true);
@@ -210,23 +163,19 @@ void PaintLayerClipper::CalculateRectsWithGeometryMapper(
   }
 }
 
-void PaintLayerClipper::CalculateRects(
-    const ClipRectsContext& context,
-    const FragmentData* fragment_data,
-    const CullRect* cull_rect,
-    PhysicalRect& layer_bounds,
-    ClipRect& background_rect,
-    ClipRect& foreground_rect,
-    const PhysicalOffset* offset_from_root) const {
+void PaintLayerClipper::CalculateRects(const ClipRectsContext& context,
+                                       const FragmentData* fragment_data,
+                                       PhysicalOffset& layer_offset,
+                                       ClipRect& background_rect,
+                                       ClipRect& foreground_rect) const {
   if (use_geometry_mapper_) {
     DCHECK(fragment_data);
     DCHECK(fragment_data->HasLocalBorderBoxProperties());
     // TODO(chrishtr): find the root cause of not having a fragment and fix it.
     if (!fragment_data->HasLocalBorderBoxProperties())
       return;
-    CalculateRectsWithGeometryMapper(context, *fragment_data, cull_rect,
-                                     layer_bounds, background_rect,
-                                     foreground_rect, offset_from_root);
+    CalculateRectsWithGeometryMapper(context, *fragment_data, layer_offset,
+                                     background_rect, foreground_rect);
     return;
   }
   DCHECK(!fragment_data);
@@ -238,23 +187,18 @@ void PaintLayerClipper::CalculateRects(
     CalculateBackgroundClipRect(context, background_rect);
     background_rect.Move(context.sub_pixel_accumulation);
   }
-  if (cull_rect)
-    background_rect.Intersect(PhysicalRect(cull_rect->Rect()));
 
   foreground_rect = background_rect;
 
-  PhysicalOffset offset(context.sub_pixel_accumulation);
-  if (offset_from_root)
-    offset = *offset_from_root;
-  else
-    layer_->ConvertToLayerCoords(context.root_layer, offset);
-  layer_bounds = PhysicalRect(offset, PhysicalSize(layer_->PixelSnappedSize()));
+  layer_offset = context.sub_pixel_accumulation;
+  layer_->ConvertToLayerCoords(context.root_layer, layer_offset);
 
   // Update the clip rects that will be passed to child layers.
   if (ShouldClipOverflowAlongEitherAxis(context)) {
     PhysicalRect overflow_and_clip_rect =
         To<LayoutBox>(layout_object)
-            .OverflowClipRect(offset, context.overlay_scrollbar_clip_behavior);
+            .OverflowClipRect(layer_offset,
+                              context.overlay_scrollbar_clip_behavior);
     foreground_rect.Intersect(overflow_and_clip_rect);
     if (layout_object.StyleRef().HasBorderRadius())
       foreground_rect.SetHasRadius(true);
@@ -263,7 +207,7 @@ void PaintLayerClipper::CalculateRects(
     // factor in the individual column boxes as overflow.
 
     PhysicalRect layer_bounds_with_visual_overflow = LocalVisualRect(context);
-    layer_bounds_with_visual_overflow.Move(offset);
+    layer_bounds_with_visual_overflow.Move(layer_offset);
     background_rect.Intersect(layer_bounds_with_visual_overflow);
   }
 
@@ -271,7 +215,8 @@ void PaintLayerClipper::CalculateRects(
   // even if it falls outside of the border box.
   if (layout_object.HasClip()) {
     // Clip applies to *us* as well, so go ahead and update the damageRect.
-    PhysicalRect new_pos_clip = To<LayoutBox>(layout_object).ClipRect(offset);
+    PhysicalRect new_pos_clip =
+        To<LayoutBox>(layout_object).ClipRect(layer_offset);
     background_rect.Intersect(new_pos_clip);
     foreground_rect.Intersect(new_pos_clip);
   }
@@ -346,9 +291,11 @@ void PaintLayerClipper::CalculateBackgroundClipRectWithGeometryMapper(
       context.root_fragment->LocalBorderBoxProperties();
   if (context.ShouldRespectRootLayerClip()) {
     destination_property_tree_state.SetClip(context.root_fragment->PreClip());
+    destination_property_tree_state.SetEffect(
+        context.root_fragment->PreEffect());
   } else {
     destination_property_tree_state.SetClip(
-        context.root_fragment->PostOverflowClip());
+        context.root_fragment->ContentsClip());
   }
 
   // The background rect applies all clips *above* m_layer, but not the overflow
@@ -374,7 +321,7 @@ void PaintLayerClipper::CalculateBackgroundClipRectWithGeometryMapper(
     if (is_clipping_root)
       clip_behavior = kIgnoreOverlayScrollbarSize;
 
-    FloatClipRect clip_rect(ToGfxRectF(FloatRect(LocalVisualRect(context))));
+    FloatClipRect clip_rect(gfx::RectF(LocalVisualRect(context)));
     clip_rect.Move(gfx::Vector2dF(fragment_data.PaintOffset()));
 
     GeometryMapper::LocalToAncestorVisualRect(source_property_tree_state,
@@ -411,9 +358,8 @@ PhysicalRect PaintLayerClipper::LocalVisualRect(
   // overflow induced by paint, prior to applying filters. This function is
   // expected the return the final visual rect after filtering.
   if (layer_->PaintsWithFilters() &&
-      // If we use GeometryMapper to map to an ancestor layer, GeometryMapper
-      // will handle filter effects.
-      (!use_geometry_mapper_ || context.root_layer == layer_)) {
+      // GeometryMapper will handle filter effects.
+      !use_geometry_mapper_) {
     layer_bounds_with_visual_overflow =
         layer_->MapRectForFilter(layer_bounds_with_visual_overflow);
   }

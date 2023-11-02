@@ -1,10 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef DEVICE_BLUETOOTH_BLUETOOTH_REMOTE_GATT_DESCRIPTOR_MAC_H_
 #define DEVICE_BLUETOOTH_BLUETOOTH_REMOTE_GATT_DESCRIPTOR_MAC_H_
 
+#include "base/memory/raw_ptr.h"
 #include "device/bluetooth/bluetooth_remote_gatt_descriptor.h"
 
 #include <vector>
@@ -63,7 +64,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattDescriptorMac
   // Returns CoreBluetooth descriptor.
   CBDescriptor* GetCBDescriptor() const;
   // gatt_characteristic_ owns instances of this class.
-  BluetoothRemoteGattCharacteristicMac* gatt_characteristic_;
+  raw_ptr<BluetoothRemoteGattCharacteristicMac> gatt_characteristic_;
   // Descriptor from CoreBluetooth.
   base::scoped_nsobject<CBDescriptor> cb_descriptor_;
   // Descriptor identifier.

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
-#include "base/task/post_task.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "chrome/browser/download/background_download_service_factory.h"
 #include "chrome/browser/metrics/ukm_background_recorder_service.h"
@@ -100,7 +100,7 @@ void BackgroundFetchDelegateImpl::UpdateUI(
   bool should_update_visuals = ui_state.update_delta.has_value()
                                    ? ui_state.update_delta->visuals_changed
                                    : false;
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   should_update_visuals = false;
 #endif
 
@@ -116,7 +116,11 @@ void BackgroundFetchDelegateImpl::UpdateUI(
 void BackgroundFetchDelegateImpl::OpenItem(
     const offline_items_collection::OpenParams& open_params,
     const offline_items_collection::ContentId& id) {
-  OnUiFinished(id.id, /*activated=*/true);
+  OnUiActivated(id.id);
+
+  auto* job_details = GetJobDetails(id.id, /*allow_null=*/true);
+  if (job_details && job_details->IsComplete())
+    OnUiFinished(id.id);
 }
 
 void BackgroundFetchDelegateImpl::RemoveItem(
@@ -208,12 +212,6 @@ void BackgroundFetchDelegateImpl::RenameItem(
   NOTIMPLEMENTED();
 }
 
-void BackgroundFetchDelegateImpl::ChangeSchedule(
-    const offline_items_collection::ContentId& id,
-    absl::optional<offline_items_collection::OfflineItemSchedule> schedule) {
-  NOTIMPLEMENTED();
-}
-
 download::BackgroundDownloadService*
 BackgroundFetchDelegateImpl::GetDownloadService() {
   return BackgroundDownloadServiceFactory::GetInstance()->GetForKey(
@@ -227,7 +225,7 @@ void BackgroundFetchDelegateImpl::OnJobDetailsCreated(
   offline_items_collection::OfflineItem offline_item(
       offline_items_collection::ContentId(provider_namespace_, job_id));
   offline_item.is_off_the_record = profile_->IsOffTheRecord();
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (profile_->IsOffTheRecord())
     offline_item.otr_profile_id = profile_->GetOTRProfileID().Serialize();
 #endif

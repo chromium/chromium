@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,14 @@
 
 namespace content {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class EmbeddedWorkerStatus {
-  STOPPED,
-  STARTING,
-  RUNNING,
-  STOPPING,
+  STOPPED = 0,
+  STARTING = 1,
+  RUNNING = 2,
+  STOPPING = 3,
+  kMaxValue = STOPPING,
 };
 
 }  // namespace content

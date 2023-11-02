@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,8 +32,8 @@ bool CastDownloadManagerDelegate::DetermineDownloadTarget(
   std::move(*callback).Run(
       empty, download::DownloadItem::TARGET_DISPOSITION_OVERWRITE,
       download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT,
-      download::DownloadItem::MixedContentStatus::UNKNOWN, empty,
-      absl::nullopt /*download_schedule*/,
+      download::DownloadItem::MixedContentStatus::UNKNOWN, empty, empty,
+      std::string() /*mime_type*/,
       download::DOWNLOAD_INTERRUPT_REASON_USER_CANCELED);
   return true;
 }

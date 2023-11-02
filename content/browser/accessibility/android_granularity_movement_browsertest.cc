@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,12 +43,13 @@ class AndroidGranularityMovementBrowserTest : public ContentBrowserTest {
                                            ui::kAXModeComplete,
                                            ax::mojom::Event::kLoadComplete);
     EXPECT_TRUE(NavigateToURL(shell(), url));
-    waiter.WaitForNotification();
+    EXPECT_TRUE(waiter.WaitForNotification());
 
     // Get the BrowserAccessibilityManager.
     WebContentsImpl* web_contents =
         static_cast<WebContentsImpl*>(shell()->web_contents());
-    return web_contents->GetRootBrowserAccessibilityManager()->GetRoot();
+    return web_contents->GetRootBrowserAccessibilityManager()
+        ->GetBrowserAccessibilityRoot();
   }
 
   // First, set accessibility focus to a node and wait for the update that
@@ -72,7 +73,7 @@ class AndroidGranularityMovementBrowserTest : public ContentBrowserTest {
                                            ui::kAXModeComplete,
                                            ax::mojom::Event::kTreeChanged);
     node->manager()->LoadInlineTextBoxes(*node);
-    waiter.WaitForNotification();
+    EXPECT_TRUE(waiter.WaitForNotification());
 
     int start_index = -1;
     int end_index = -1;
@@ -80,7 +81,7 @@ class AndroidGranularityMovementBrowserTest : public ContentBrowserTest {
         static_cast<BrowserAccessibilityAndroid*>(node);
     BrowserAccessibilityManagerAndroid* manager =
         static_cast<BrowserAccessibilityManagerAndroid*>(node->manager());
-    std::u16string text = android_node->GetInnerText();
+    std::u16string text = android_node->GetTextContentUTF16();
     std::u16string concatenated;
     int previous_end_index = -1;
     while (manager->NextAtGranularity(granularity, end_index, android_node,

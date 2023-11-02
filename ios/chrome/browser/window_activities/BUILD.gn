@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -14,7 +14,7 @@ source_set("window_activities") {
   deps = [
     ":ios_move_tab_activity_type_buildflags",
     "//base",
-    "//ios/chrome/browser:chrome_url_constants",
+    "//ios/chrome/browser/url:constants",
     "//ios/chrome/browser/url_loading:url_loading_params_header",
     "//ios/web/public/navigation",
     "//net",

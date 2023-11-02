@@ -1,5 +1,5 @@
 AXGroup AXDescription='PDF document containing 1 page'
-++AXGroup AXDescription='Page 1'
+++AXGroup AXSubrole=AXLandmarkRegion AXDescription='Page 1'
 ++++AXGroup
 ++++++AXStaticText AXValue='Hello,<newline> world!<newline><newline>Goodbye,<newline> world!<newline>'
 ++++AXGroup

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -251,7 +251,8 @@ bool Process::WaitForExitWithTimeout(TimeDelta timeout, int* exit_code) const {
   zx_status_t status =
       process_.wait_one(ZX_TASK_TERMINATED, deadline, &signals_observed);
   if (status != ZX_OK) {
-    ZX_DLOG(ERROR, status) << "zx_object_wait_one";
+    ZX_DLOG_IF(ERROR, status != ZX_ERR_TIMED_OUT, status)
+        << "zx_object_wait_one";
     return false;
   }
 
@@ -266,7 +267,7 @@ bool Process::WaitForExitWithTimeout(TimeDelta timeout, int* exit_code) const {
   }
 
   if (exit_code)
-    *exit_code = proc_info.return_code;
+    *exit_code = static_cast<int>(proc_info.return_code);
 
   return true;
 }

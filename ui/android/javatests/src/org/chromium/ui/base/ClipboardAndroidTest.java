@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,16 +27,20 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
 import java.util.concurrent.TimeoutException;
 
 /**
  * Clipboard tests for Android platform that depend on access to the ClipboardManager.
+ *
+ * This test suite can fail on Android 10+ if the activity does not maintain focus during testing.
+ * For more information see: https://crbug.com/1297678 and
+ * https://developer.android.com/about/versions/10/privacy/changes#clipboard-data
  */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
-public class ClipboardAndroidTest extends DummyUiActivityTestCase {
+public class ClipboardAndroidTest extends BlankUiTestActivityTestCase {
     private static final String TEXT_URL = "http://www.foo.com/";
     private static final String MIX_TEXT_URL = "test http://www.foo.com http://www.bar.com";
     private static final String MIX_TEXT_URL_NO_PROTOCOL = "test www.foo.com www.bar.com";
@@ -49,7 +53,15 @@ public class ClipboardAndroidTest extends DummyUiActivityTestCase {
 
     @Override
     public void tearDownTest() throws Exception {
-        ClipboardAndroidTestSupport.cleanup();
+        Clipboard.cleanupNativeForTesting();
+
+        // Clear the clipboard to avoid leaving any state.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ClipboardManager clipboardManager =
+                    (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipData clipData = ClipData.newPlainText("", "");
+            clipboardManager.setPrimaryClip(clipData);
+        });
         super.tearDownTest();
     }
 
@@ -90,7 +102,7 @@ public class ClipboardAndroidTest extends DummyUiActivityTestCase {
             clipboardManager.setPrimaryClip(ClipData.newPlainText(null, invalidatingText));
         });
 
-        helper.waitForFirst("ClipboardManager did not notify of PrimaryClip change.");
+        helper.waitForCallback("ClipboardManager did not notify of PrimaryClip change.", 0);
 
         // Assert that the overwrite from another application is registered by the native clipboard.
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -120,7 +132,7 @@ public class ClipboardAndroidTest extends DummyUiActivityTestCase {
         ClipData clipData =
                 ClipData.newPlainText("text", spanString.subSequence(0, spanString.length() - 1));
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Clipboard.getInstance().setPrimaryClipNoException(clipData);
+            ((ClipboardImpl) Clipboard.getInstance()).setPrimaryClipNoException(clipData);
             Assert.assertTrue(Clipboard.getInstance().hasHTMLOrStyledText());
         });
     }

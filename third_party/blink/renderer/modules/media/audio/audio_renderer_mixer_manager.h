@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,8 @@
 #include <memory>
 #include <string>
 
+#include "base/check_op.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "base/unguessable_token.h"
 #include "media/audio/audio_device_description.h"
@@ -43,16 +43,19 @@ namespace blink {
 class BLINK_MODULES_EXPORT AudioRendererMixerManager final
     : public media::AudioRendererMixerPool {
  public:
+  // Callback which will be used to create sinks. See AudioDeviceFactory for
+  // more details on the parameters.
+  using CreateSinkCB =
+      base::RepeatingCallback<scoped_refptr<media::AudioRendererSink>(
+          const blink::LocalFrameToken& source_frame_token,
+          const media::AudioSinkParameters& params)>;
+
+  explicit AudioRendererMixerManager(CreateSinkCB create_sink_cb);
+  ~AudioRendererMixerManager() final;
+
   AudioRendererMixerManager(const AudioRendererMixerManager&) = delete;
   AudioRendererMixerManager& operator=(const AudioRendererMixerManager&) =
       delete;
-
-  ~AudioRendererMixerManager() final;
-
-  // AudioRendererMixerManager instance which manages renderer side mixer
-  // instances shared based on configured audio parameters. Lazily created on
-  // first call.
-  static AudioRendererMixerManager& GetInstance();
 
   // Creates an AudioRendererMixerInput with the proper callbacks necessary to
   // retrieve an AudioRendererMixer instance from AudioRendererMixerManager.
@@ -83,16 +86,6 @@ class BLINK_MODULES_EXPORT AudioRendererMixerManager final
   scoped_refptr<media::AudioRendererSink> GetSink(
       const blink::LocalFrameToken& source_frame_token,
       const std::string& device_id);
-
- protected:
-  // Callback which will be used to create sinks. See AudioDeviceFactory for
-  // more details on the parameters.
-  using CreateSinkCB =
-      base::RepeatingCallback<scoped_refptr<media::AudioRendererSink>(
-          const blink::LocalFrameToken& source_frame_token,
-          const media::AudioSinkParameters& params)>;
-
-  explicit AudioRendererMixerManager(CreateSinkCB create_sink_cb);
 
  private:
   friend class AudioRendererMixerManagerTest;

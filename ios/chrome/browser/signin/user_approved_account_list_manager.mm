@@ -1,11 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/signin/user_approved_account_list_manager.h"
 
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/pref_names.h"
+#import "ios/chrome/browser/prefs/pref_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -22,10 +22,10 @@ UserApprovedAccountListManager::~UserApprovedAccountListManager() {}
 std::vector<CoreAccountId>
 UserApprovedAccountListManager::GetApprovedAccountIDList() const {
   DCHECK(pref_service_);
-  const base::Value* accounts_pref =
+  const base::Value::List& accounts_pref =
       pref_service_->GetList(prefs::kSigninLastAccounts);
   std::vector<CoreAccountId> accounts;
-  for (const auto& value : accounts_pref->GetList()) {
+  for (const auto& value : accounts_pref) {
     DCHECK(value.is_string());
     DCHECK(!value.GetString().empty());
     accounts.push_back(CoreAccountId::FromString(value.GetString()));
@@ -37,11 +37,11 @@ void UserApprovedAccountListManager::SetApprovedAccountList(
     const std::vector<CoreAccountInfo>& account_list) {
   DCHECK(pref_service_);
   DCHECK(!account_list.empty());
-  std::vector<base::Value> accounts_pref_value;
+  base::Value::List accounts_pref_value;
   for (const CoreAccountInfo& account_info : account_list)
-    accounts_pref_value.emplace_back(account_info.account_id.ToString());
-  pref_service_->Set(prefs::kSigninLastAccounts,
-                     base::Value(std::move(accounts_pref_value)));
+    accounts_pref_value.Append(account_info.account_id.ToString());
+  pref_service_->SetList(prefs::kSigninLastAccounts,
+                         std::move(accounts_pref_value));
 }
 
 void UserApprovedAccountListManager::ClearApprovedAccountList() {

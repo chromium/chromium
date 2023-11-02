@@ -1,4 +1,4 @@
-// Copyright (c) 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define GPU_IPC_SERVICE_GLES2_COMMAND_BUFFER_STUB_H_
 
 #include "base/containers/circular_deque.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "gpu/ipc/service/command_buffer_stub.h"
@@ -46,16 +47,13 @@ class GPU_IPC_SERVICE_EXPORT GLES2CommandBufferStub
   void OnGpuSwitched(gl::GpuPreference active_gpu_heuristic) override;
 
 // ImageTransportSurfaceDelegate implementation:
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void DidCreateAcceleratedSurfaceChildWindow(
       SurfaceHandle parent_window,
       SurfaceHandle child_window) override;
 #endif
-  void DidSwapBuffersComplete(SwapBuffersCompleteParams params,
-                              gfx::GpuFenceHandle release_fence) override;
   const gles2::FeatureInfo* GetFeatureInfo() const override;
   const GpuPreferences& GetGpuPreferences() const override;
-  void BufferPresented(const gfx::PresentationFeedback& feedback) override;
   viz::GpuVSyncCallback GetGpuVSyncCallback() override;
   base::TimeDelta GetGpuBlockedTimeSinceLastSwap() override;
 
@@ -67,8 +65,6 @@ class GPU_IPC_SERVICE_EXPORT GLES2CommandBufferStub
                                 gfx::GpuFenceHandle handle) override;
   void GetGpuFenceHandle(uint32_t gpu_fence_id,
                          GetGpuFenceHandleCallback callback) override;
-  void CreateImage(mojom::CreateImageParamsPtr params) override;
-  void DestroyImage(int32_t id) override;
 
   void OnSwapBuffers(uint64_t swap_id, uint32_t flags) override;
 
@@ -77,16 +73,7 @@ class GPU_IPC_SERVICE_EXPORT GLES2CommandBufferStub
 
   // Keep a more specifically typed reference to the decoder to avoid
   // unnecessary casts. Owned by parent class.
-  gles2::GLES2Decoder* gles2_decoder_;
-
-  // Params pushed each time we call OnSwapBuffers, and popped when a buffer
-  // is presented or a swap completed.
-  struct SwapBufferParams {
-    uint64_t swap_id;
-    uint32_t flags;
-  };
-  base::circular_deque<SwapBufferParams> pending_presented_params_;
-  base::circular_deque<SwapBufferParams> pending_swap_completed_params_;
+  raw_ptr<gles2::GLES2Decoder> gles2_decoder_;
 
   base::WeakPtrFactory<GLES2CommandBufferStub> weak_ptr_factory_{this};
 };

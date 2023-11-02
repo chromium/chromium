@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,17 +8,16 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bits.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "net/http/http_byte_range.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/cors/cors.h"
-#include "third_party/blink/public/common/loader/previews_state.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
 #include "third_party/blink/public/platform/media/resource_fetch_context.h"
 #include "third_party/blink/public/platform/media/url_index.h"
@@ -87,18 +86,6 @@ void ResourceMultiBufferDataProvider::Start() {
       WebString::FromUTF8(net::HttpRequestHeaders::kRange),
       WebString::FromUTF8(
           net::HttpByteRange::RightUnbounded(byte_pos()).GetHeaderValue()));
-
-  if (url_data_->length() == kPositionNotSpecified &&
-      url_data_->CachedSize() == 0 && url_data_->BytesReadFromCache() == 0 &&
-      WebNetworkStateNotifier::SaveDataEnabled() &&
-      (url_data_->url().SchemeIs(url::kHttpScheme) ||
-       url_data_->url().SchemeIs(url::kHttpsScheme))) {
-    // This lets the data reduction proxy know that we don't have any previously
-    // cached data for this resource. We can only send it if this is the first
-    // request for this resource.
-    request.SetPreviewsState(request.GetPreviewsState() |
-                             PreviewsTypes::kSrcVideoRedirectOn);
-  }
 
   // We would like to send an if-match header with the request to
   // tell the remote server that we really can't handle files other
@@ -327,7 +314,12 @@ void ResourceMultiBufferDataProvider::DidReceiveResponse(
       // probably accurate enough for metrics.
       destination_url_data->set_has_access_control();
     }
+
+    destination_url_data->set_mime_type(response.MimeType().Utf8());
   }
+
+  destination_url_data->set_passed_timing_allow_origin_check(
+      response.TimingAllowPassed());
 
   if (destination_url_data != url_data_) {
     // At this point, we've encountered a redirect, or found a better url data
@@ -400,15 +392,17 @@ void ResourceMultiBufferDataProvider::DidReceiveData(const char* data,
 
   while (data_length) {
     if (fifo_.empty() || fifo_.back()->data_size() == block_size()) {
-      fifo_.push_back(new media::DataBuffer(block_size()));
+      fifo_.push_back(new media::DataBuffer(static_cast<int>(block_size())));
       fifo_.back()->set_data_size(0);
     }
     int last_block_size = fifo_.back()->data_size();
-    int to_append = std::min<int>(data_length, block_size() - last_block_size);
+    auto to_append =
+        std::min<int64_t>(data_length, block_size() - last_block_size);
     DCHECK_GT(to_append, 0);
-    memcpy(fifo_.back()->writable_data() + last_block_size, data, to_append);
+    memcpy(fifo_.back()->writable_data() + last_block_size, data,
+           static_cast<size_t>(to_append));
     data += to_append;
-    fifo_.back()->set_data_size(last_block_size + to_append);
+    fifo_.back()->set_data_size(static_cast<int>(last_block_size + to_append));
     data_length -= to_append;
   }
 

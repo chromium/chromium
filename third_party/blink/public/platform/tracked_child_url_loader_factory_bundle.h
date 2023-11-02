@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,8 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/platform/child_url_loader_factory_bundle.h"
 #include "third_party/blink/public/platform/web_common.h"
+
+#include "base/deterministic_containers.h"
 
 namespace blink {
 
@@ -124,8 +126,8 @@ class BLINK_PLATFORM_EXPORT HostChildURLLoaderFactoryBundle
       std::pair<base::WeakPtr<TrackedChildURLLoaderFactoryBundle>,
                 scoped_refptr<base::SequencedTaskRunner>>;
   using ObserverList =
-      std::unordered_map<TrackedChildURLLoaderFactoryBundle*,
-                         std::unique_ptr<ObserverPtrAndTaskRunner>>;
+      base::deterministic_unordered_map<TrackedChildURLLoaderFactoryBundle*,
+                                        std::unique_ptr<ObserverPtrAndTaskRunner>>;
 
   explicit HostChildURLLoaderFactoryBundle(
       scoped_refptr<base::SequencedTaskRunner> task_runner);

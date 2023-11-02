@@ -1,8 +1,5 @@
-include_rules = [
-  "+chromeos/login",
-  "+chromeos/network",
-  "+chromeos/services/bluetooth_config",
-  "+components/country_codes",
-  "+components/user_manager",
-  "+third_party/cros_system_api",
-]
+specific_include_rules = {
+  "system_proxy_manager_unittest\.cc": [
+    "+services/network/network_context.h"
+  ]
+}

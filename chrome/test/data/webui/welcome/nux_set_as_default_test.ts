@@ -1,10 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import 'chrome://welcome/set_as_default/nux_set_as_default.js';
 
-import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 import {NuxSetAsDefaultElement} from 'chrome://welcome/set_as_default/nux_set_as_default.js';
@@ -21,7 +21,8 @@ suite('SetAsDefaultTest', function() {
     testSetAsDefaultProxy = new TestNuxSetAsDefaultProxy();
     NuxSetAsDefaultProxyImpl.setInstance(testSetAsDefaultProxy);
 
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     testElement = document.createElement('nux-set-as-default');
     document.body.appendChild(testElement);
     navigatedPromise = new Promise(resolve => {
@@ -59,7 +60,7 @@ suite('SetAsDefaultTest', function() {
         return Promise.all([
           notifyPromise,
           testSetAsDefaultProxy.whenCalled('recordSuccessfullySetDefault'),
-          navigatedPromise
+          navigatedPromise,
         ]);
       });
 

@@ -1,0 +1,23 @@
+caption: Enable two-factor authentication for remote access hosts
+deprecated: true
+desc: |-
+  Enables two-factor authentication for remote access hosts instead of a user-specified PIN.
+
+            If this setting is enabled, then users must provide a valid two-factor code when accessing a host.
+
+            If this setting is disabled or not set, then two-factor will not be enabled and the default behavior of having a user-defined PIN will be used.
+example_value: false
+features:
+  dynamic_refresh: true
+  per_profile: false
+  platform_only: true
+owners:
+- file://remoting/OWNERS
+- jamiewalch@chromium.org
+- lambroslambrou@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome.*:22-22
+tags: []
+type: main

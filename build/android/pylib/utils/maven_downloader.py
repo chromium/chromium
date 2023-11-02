@@ -1,5 +1,5 @@
 #!/usr/bin/env vpython3
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -23,7 +23,7 @@ def _MakeDirsIfAbsent(path):
       raise
 
 
-class MavenDownloader(object):
+class MavenDownloader:
   '''
   Downloads and installs the requested artifacts from the Google Maven repo.
   The artifacts are expected to be specified in the format
@@ -71,7 +71,7 @@ class MavenDownloader(object):
     return self._debug
 
 
-class _SingleArtifactDownloader(object):
+class _SingleArtifactDownloader:
   '''Handles downloading and installing a single Maven artifact.'''
 
   _POM_FILE_TYPE = 'pom'
@@ -121,8 +121,8 @@ class _SingleArtifactDownloader(object):
       if ret_code != 0:
         raise Exception('Command "{}" failed'.format(' '.join(cmd)))
     except OSError as e:
-      if e.errno == os.errno.ENOENT:
-        raise Exception('mvn command not found. Please install Maven.')
+      if e.errno == errno.ENOENT:
+        raise Exception('mvn command not found. Please install Maven.') from e
       raise
 
     return os.path.join(os.path.join(*group_id.split('.')),

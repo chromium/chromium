@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,25 +27,6 @@ bool ServerCountMatchStatusChecker::IsExitConditionSatisfied(std::ostream* os) {
   size_t actual_count = fake_server()->GetSyncEntitiesByModelType(type_).size();
   *os << "Waiting for fake server entity count " << actual_count
       << " to match expected count " << count_ << " for type "
-      << ModelTypeToString(type_);
+      << ModelTypeToDebugString(type_);
   return count_ == actual_count;
-}
-
-PassphraseRequiredChecker::PassphraseRequiredChecker(
-    syncer::SyncServiceImpl* service)
-    : SingleClientStatusChangeChecker(service) {}
-
-bool PassphraseRequiredChecker::IsExitConditionSatisfied(std::ostream* os) {
-  *os << "Passhrase Required";
-  return service()->GetUserSettings()->IsPassphraseRequired();
-}
-
-PassphraseAcceptedChecker::PassphraseAcceptedChecker(
-    syncer::SyncServiceImpl* service)
-    : SingleClientStatusChangeChecker(service) {}
-
-bool PassphraseAcceptedChecker::IsExitConditionSatisfied(std::ostream* os) {
-  *os << "Passhrase Accepted";
-  return !service()->GetUserSettings()->IsPassphraseRequired() &&
-         service()->GetUserSettings()->IsUsingExplicitPassphrase();
 }

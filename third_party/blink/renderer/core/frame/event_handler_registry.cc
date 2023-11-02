@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/scrolling/scrolling_coordinator.h"
 #include "third_party/blink/renderer/platform/heap/thread_state_scopes.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 
 namespace blink {
 
@@ -112,13 +113,25 @@ void EventHandlerRegistry::UpdateEventHandlerTargets(
   switch (op) {
     case kAdd:
       targets->insert(target);
+      if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers",
+                                               "EventHandlerRegistry")) {
+        replay_strong_targets_.insert(target);
+      }
       return;
     case kRemove:
       DCHECK(targets->Contains(target));
       targets->erase(target);
+      if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers",
+                                               "EventHandlerRegistry")) {
+        replay_strong_targets_.erase(target);
+      }
       return;
     case kRemoveAll:
       targets->RemoveAll(target);
+      if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers",
+                                               "EventHandlerRegistry")) {
+        replay_strong_targets_.RemoveAll(target);
+      }
       return;
   }
   NOTREACHED();
@@ -133,6 +146,10 @@ bool EventHandlerRegistry::UpdateEventHandlerInternal(
   unsigned new_num_handlers = targets_[handler_class].size();
 
   bool handlers_changed = old_num_handlers != new_num_handlers;
+
+  recordreplay::AssertMaybeEventsDisallowed(
+        "[RUN-2300] EventHandlerRegistry::UpdateEventHandlerInternal %d %d %d",
+        target->RecordReplayId(), (int)op, handlers_changed);
   if (op != kRemoveAll && handlers_changed)
     NotifyHandlersChanged(target, handler_class, new_num_handlers > 0);
 
@@ -229,6 +246,14 @@ void EventHandlerRegistry::NotifyHandlersChanged(
   if (!GetPage())
     return;
 
+  // Avoid updating state in other components at non-deterministic points.
+  if (recordreplay::AreEventsDisallowed("EventHandlerRegistry::NotifyHandlersChanged"))
+    return;
+
+  recordreplay::Assert(
+      "[RUN-2300] EventHandlerRegistry::UpdateEventHandlerInternal %d",
+      target->RecordReplayId(), (int)handler_class);
+
   switch (handler_class) {
     case kScrollEvent:
       GetPage()->GetChromeClient().SetHasScrollEventHandlers(
@@ -244,7 +269,7 @@ void EventHandlerRegistry::NotifyHandlersChanged(
     case kTouchStartOrMoveEventBlockingLowLatency:
       GetPage()->GetChromeClient().SetNeedsLowLatencyInput(frame,
                                                            has_active_handlers);
-      FALLTHROUGH;
+      [[fallthrough]];
     case kTouchAction:
     case kTouchStartOrMoveEventBlocking:
     case kTouchStartOrMoveEventPassive:
@@ -323,6 +348,7 @@ void EventHandlerRegistry::Trace(Visitor* visitor) const {
   visitor->Trace(frame_);
   visitor->template RegisterWeakCallbackMethod<
       EventHandlerRegistry, &EventHandlerRegistry::ProcessCustomWeakness>(this);
+  visitor->Trace(replay_strong_targets_);
 }
 
 void EventHandlerRegistry::ProcessCustomWeakness(const LivenessBroker& info) {

@@ -1,10 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef REMOTING_HOST_DESKTOP_AND_CURSOR_COMPOSER_NOTIFIER_H_
 #define REMOTING_HOST_DESKTOP_AND_CURSOR_COMPOSER_NOTIFIER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "remoting/protocol/input_filter.h"
 
 namespace remoting {
@@ -38,7 +39,7 @@ class DesktopAndCursorComposerNotifier : public protocol::InputFilter {
  private:
   void NotifyEventHandler(bool enabled);
 
-  EventHandler* event_handler_;
+  raw_ptr<EventHandler> event_handler_;
   bool has_triggered_ = false;
   bool is_enabled_ = false;
 };

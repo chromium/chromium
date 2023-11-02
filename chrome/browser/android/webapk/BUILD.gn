@@ -1,0 +1,14 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/android/webapk/shell_apk/request_update_for_version.gni")
+
+source_set("webapk_features") {
+  sources = [
+    "webapk_features.cc",
+    "webapk_features.h",
+  ]
+  deps = [ "//base" ]
+  defines = [ "REQUEST_UPDATE_FOR_SHELL_APK_VERSION_VALUE=$request_update_for_shell_apk_version" ]
+}

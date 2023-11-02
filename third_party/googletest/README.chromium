@@ -150,5 +150,5 @@ git push pwnall master
 ### Other Resources
 
 * [AutoRoller](https://autoroll.skia.org/r/googletest-chromium-autoroll) and
-  accompanying [configuration file](https://skia.googlesource.com/buildbot/+/master/autoroll/config/googletest-chromium.cfg)
+  accompanying [configuration file](https://skia.googlesource.com/skia-autoroll-internal-config.git/+/main/skia-public/googletest-chromium.cfg)
 * [Bug tracking substantial roll](https://crbug.com/1163396)

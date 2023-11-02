@@ -56,7 +56,10 @@ class MockUser(object):
 
     def confirm(self, message=None, default='y'):
         _log.info(message)
-        return default == 'y'
+        response = default
+        if self._canned_responses:
+            response = self._canned_responses.pop(0)
+        return response == 'y'
 
     def can_open_url(self):
         return True

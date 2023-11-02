@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,24 +7,20 @@
  * Access.
  */
 
-import '//resources/cr_elements/cr_button/cr_button.m.js';
-import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
-import '//resources/cr_elements/shared_style_css.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import '../../controls/settings_slider.js';
-import '../os_icons.m.js';
+import '../os_icons.js';
 
-import {SliderTick} from '//resources/cr_elements/cr_slider/cr_slider.js';
-import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
-import {loadTimeData} from '//resources/js/load_time_data.m.js';
-import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
-import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Route, Router} from '../../router.js';
-import {routes} from '../os_route.m.js';
-import {PrefsBehavior} from '../prefs_behavior.js';
-import {RouteObserverBehavior} from '../route_observer_behavior.js';
+import {Router} from '../../router.js';
+import {routes} from '../os_route.js';
+import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
 
-import {actionToPref, AssignmentContext, AUTO_SCAN_SPEED_RANGE_MS, SwitchAccessCommand, SwitchAccessDeviceType} from './switch_access_constants.js';
+import {actionToPref, AssignmentContext, AUTO_SCAN_ENABLED_PREF, AUTO_SCAN_KEYBOARD_SPEED_PREF, AUTO_SCAN_SPEED_PREF, AUTO_SCAN_SPEED_RANGE_MS, DEFAULT_AUTO_SCAN_SPEED_MS, SwitchAccessCommand} from './switch_access_constants.js';
 import {SwitchAccessSubpageBrowserProxy, SwitchAccessSubpageBrowserProxyImpl} from './switch_access_subpage_browser_proxy.js';
 
 /**
@@ -35,7 +31,6 @@ import {SwitchAccessSubpageBrowserProxy, SwitchAccessSubpageBrowserProxyImpl} fr
 const SASetupElement = {
   BLUETOOTH_BUTTON: 'bluetooth',
   DONE_BUTTON: 'done',
-  EXIT_BUTTON: 'exit',
   NEXT_BUTTON: 'next',
   PREVIOUS_BUTTON: 'previous',
   START_OVER_BUTTON: 'start-over',
@@ -79,172 +74,203 @@ const SASetupPageList = {};
 SASetupPageList[SASetupPageId.INTRO] = {
   titleId: 'switchAccessSetupIntroTitle',
   visibleElements: [
-    SASetupElement.BLUETOOTH_BUTTON, SASetupElement.EXIT_BUTTON,
-    SASetupElement.NEXT_BUTTON, SASetupElement.INTRO_CONTENT
-  ]
+    SASetupElement.BLUETOOTH_BUTTON,
+    SASetupElement.NEXT_BUTTON,
+    SASetupElement.INTRO_CONTENT,
+  ],
 };
 
 SASetupPageList[SASetupPageId.ASSIGN_SELECT] = {
   titleId: 'switchAccessSetupAssignSelectTitle',
-  visibleElements:
-      [SASetupElement.EXIT_BUTTON, SASetupElement.ASSIGN_SWITCH_CONTENT]
+  visibleElements: [SASetupElement.ASSIGN_SWITCH_CONTENT],
 };
 
 SASetupPageList[SASetupPageId.AUTO_SCAN_ENABLED] = {
   titleId: 'switchAccessSetupAutoScanEnabledTitle',
   visibleElements: [
-    SASetupElement.NEXT_BUTTON, SASetupElement.PREVIOUS_BUTTON,
-    SASetupElement.AUTO_SCAN_ENABLED_CONTENT
-  ]
+    SASetupElement.NEXT_BUTTON,
+    SASetupElement.PREVIOUS_BUTTON,
+    SASetupElement.AUTO_SCAN_ENABLED_CONTENT,
+  ],
 };
 
 SASetupPageList[SASetupPageId.CHOOSE_SWITCH_COUNT] = {
   titleId: 'switchAccessSetupChooseSwitchCountTitle',
   visibleElements: [
-    SASetupElement.NEXT_BUTTON, SASetupElement.PREVIOUS_BUTTON,
-    SASetupElement.CHOOSE_SWITCH_COUNT_CONTENT
-  ]
+    SASetupElement.NEXT_BUTTON,
+    SASetupElement.PREVIOUS_BUTTON,
+    SASetupElement.CHOOSE_SWITCH_COUNT_CONTENT,
+  ],
 };
 
 SASetupPageList[SASetupPageId.AUTO_SCAN_SPEED] = {
   titleId: 'switchAccessSetupAutoScanSpeedTitle',
   visibleElements: [
-    SASetupElement.NEXT_BUTTON, SASetupElement.PREVIOUS_BUTTON,
-    SASetupElement.AUTO_SCAN_SPEED_CONTENT
-  ]
+    SASetupElement.NEXT_BUTTON,
+    SASetupElement.PREVIOUS_BUTTON,
+    SASetupElement.AUTO_SCAN_SPEED_CONTENT,
+  ],
 };
 
 SASetupPageList[SASetupPageId.ASSIGN_NEXT] = {
   titleId: 'switchAccessSetupAssignNextTitle',
   visibleElements:
-      [SASetupElement.PREVIOUS_BUTTON, SASetupElement.ASSIGN_SWITCH_CONTENT]
+      [SASetupElement.PREVIOUS_BUTTON, SASetupElement.ASSIGN_SWITCH_CONTENT],
 };
 
 SASetupPageList[SASetupPageId.ASSIGN_PREVIOUS] = {
   titleId: 'switchAccessSetupAssignPreviousTitle',
   visibleElements:
-      [SASetupElement.PREVIOUS_BUTTON, SASetupElement.ASSIGN_SWITCH_CONTENT]
+      [SASetupElement.PREVIOUS_BUTTON, SASetupElement.ASSIGN_SWITCH_CONTENT],
 };
 
 SASetupPageList[SASetupPageId.CLOSING] = {
   titleId: 'switchAccessSetupClosingTitle',
   visibleElements: [
-    SASetupElement.DONE_BUTTON, SASetupElement.START_OVER_BUTTON,
-    SASetupElement.CLOSING_CONTENT
-  ]
+    SASetupElement.DONE_BUTTON,
+    SASetupElement.START_OVER_BUTTON,
+    SASetupElement.CLOSING_CONTENT,
+  ],
 };
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'settings-switch-access-setup-guide-dialog',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ * @implements {PrefsBehaviorInterface}
+ */
+const SettingsSwitchAccessSetupGuideDialogElementBase = mixinBehaviors(
+    [
+      I18nBehavior,
+      PrefsBehavior,
+    ],
+    PolymerElement);
 
-  behaviors: [
-    I18nBehavior,
-    PrefsBehavior,
-  ],
+/** @polymer */
+class SettingsSwitchAccessSetupGuideDialogElement extends
+    SettingsSwitchAccessSetupGuideDialogElementBase {
+  static get is() {
+    return 'settings-switch-access-setup-guide-dialog';
+  }
 
-  properties: {
-    prefs: {
-      type: Object,
-      notify: true,
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /** @private */
-    autoScanPreviouslyEnabled_: {type: Boolean, value: false},
-
-    /** @private {!Array<!SliderTick>} */
-    autoScanSpeedRangeMs_: {
-      type: Array,
-      value: [],
-    },
-
-    /** @private */
-    currentPageId_: {
-      type: Number,
-      value: SASetupPageId.INTRO,
-    },
-
-    /**
-     * A number formatter, to display values with exactly 1 digit after the
-     * decimal (that has been internationalized properly).
-     * @private {Object}
-     */
-    formatter_: {
-      type: Object,
-      value() {
-        // navigator.language actually returns a locale, not just a language.
-        const locale = window.navigator.language;
-        const options = {minimumFractionDigits: 1, maximumFractionDigits: 1};
-        return new Intl.NumberFormat(locale, options);
+  static get properties() {
+    return {
+      prefs: {
+        type: Object,
+        notify: true,
       },
-    },
 
-    /** @private */
-    maxScanSpeedMs_: {
-      readOnly: true,
-      type: Number,
-      value: AUTO_SCAN_SPEED_RANGE_MS[AUTO_SCAN_SPEED_RANGE_MS.length - 1]
-    },
-
-    /** @private */
-    maxScanSpeedLabelSec_: {
-      readOnly: true,
-      type: String,
-      value() {
-        return this.scanSpeedStringInSec_(this.maxScanSpeedMs_);
+      /** @private {!Array<!SliderTick>} */
+      autoScanSpeedRangeMs_: {
+        type: Array,
+        value: [],
       },
-    },
 
-    /** @private */
-    minScanSpeedMs_:
-        {readOnly: true, type: Number, value: AUTO_SCAN_SPEED_RANGE_MS[0]},
-
-    /** @private */
-    minScanSpeedLabelSec_: {
-      readOnly: true,
-      type: String,
-      value() {
-        return this.scanSpeedStringInSec_(this.minScanSpeedMs_);
+      /** @private */
+      currentPageId_: {
+        type: Number,
+        value: SASetupPageId.INTRO,
       },
-    },
 
-    /** @private */
-    switchCount_: {
-      type: Number,
-      value: 1,
-    },
-  },
+      /**
+       * A number formatter, to display values with exactly 1 digit after the
+       * decimal (that has been internationalized properly).
+       * @private {Object}
+       */
+      formatter_: {
+        type: Object,
+        value() {
+          // navigator.language actually returns a locale, not just a language.
+          const locale = window.navigator.language;
+          const options = {minimumFractionDigits: 1, maximumFractionDigits: 1};
+          return new Intl.NumberFormat(locale, options);
+        },
+      },
 
-  listeners: {
-    'exit-pane': 'onSwitchAssignmentMaybeChanged_',
-  },
+      /** @private */
+      maxScanSpeedMs_: {
+        readOnly: true,
+        type: Number,
+        value: AUTO_SCAN_SPEED_RANGE_MS[AUTO_SCAN_SPEED_RANGE_MS.length - 1],
+      },
 
-  observers: [
-    `onSwitchAssignmentMaybeChanged_(
-        prefs.settings.a11y.switch_access.next.*,
-        prefs.settings.a11y.switch_access.previous.*,
-        prefs.settings.a11y.switch_access.select.*)`,
-  ],
+      /** @private */
+      maxScanSpeedLabelSec_: {
+        readOnly: true,
+        type: String,
+        value() {
+          return this.scanSpeedStringInSec_(this.maxScanSpeedMs_);
+        },
+      },
+
+      /** @private */
+      minScanSpeedMs_:
+          {readOnly: true, type: Number, value: AUTO_SCAN_SPEED_RANGE_MS[0]},
+
+      /** @private */
+      minScanSpeedLabelSec_: {
+        readOnly: true,
+        type: String,
+        value() {
+          return this.scanSpeedStringInSec_(this.minScanSpeedMs_);
+        },
+      },
+
+      /** @private */
+      switchCount_: {
+        type: Number,
+        value: 1,
+      },
+    };
+  }
+
+  static get observers() {
+    return [
+      `onSwitchAssignmentMaybeChanged_(
+          prefs.settings.a11y.switch_access.next.*,
+          prefs.settings.a11y.switch_access.previous.*,
+          prefs.settings.a11y.switch_access.select.*)`,
+    ];
+  }
 
   /** @override */
-  created() {
+  constructor() {
+    super();
+
     this.autoScanSpeedRangeMs_ =
         this.ticksWithLabelsInSec_(AUTO_SCAN_SPEED_RANGE_MS);
-  },
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     SwitchAccessSubpageBrowserProxyImpl.getInstance()
         .notifySwitchAccessSetupGuideAttached();
-  },
+  }
 
   /** @override */
   ready() {
+    super.ready();
+
+    this.addEventListener('exit-pane', this.onSwitchAssignmentMaybeChanged_);
+
     // Reset all switch assignments.
     for (const pref of Object.values(actionToPref)) {
       chrome.settingsPrivate.setPref(pref, {});
     }
-  },
+
+    // Reset auto-scan.
+    chrome.settingsPrivate.setPref(
+        AUTO_SCAN_SPEED_PREF, DEFAULT_AUTO_SCAN_SPEED_MS);
+    chrome.settingsPrivate.setPref(
+        AUTO_SCAN_KEYBOARD_SPEED_PREF, DEFAULT_AUTO_SCAN_SPEED_MS);
+    chrome.settingsPrivate.setPref(AUTO_SCAN_ENABLED_PREF, false);
+  }
 
   /**
    * @param {SASetupPageId} id
@@ -254,14 +280,14 @@ Polymer({
     this.addOrRemoveAssignmentPane_(id);
 
     const newPage = SASetupPageList[id];
-    this.$.title.textContent = this.i18n(newPage.titleId);
+    this.$.titleText.textContent = this.i18n(newPage.titleId);
 
     for (const element of Object.values(SASetupElement)) {
-      this['$'][element]['hidden'] = !newPage.visibleElements.includes(element);
+      this.$[element]['hidden'] = !newPage.visibleElements.includes(element);
     }
 
     this.currentPageId_ = id;
-  },
+  }
 
   /**
    * The assignment pane prevents Switch Access from receiving key events when
@@ -289,7 +315,7 @@ Polymer({
     } else {
       this.removeAssignmentPaneIfPresent_();
     }
-  },
+  }
 
   /**
    * @param {SwitchAccessCommand} action
@@ -305,7 +331,7 @@ Polymer({
     assignmentPane.action = action;
     assignmentPane.context = AssignmentContext.SETUP_GUIDE;
     this.assignmentContentsElement.appendChild(assignmentPane);
-  },
+  }
 
   /** @private */
   removeAssignmentPaneIfPresent_() {
@@ -314,7 +340,7 @@ Polymer({
           this.assignmentContentsElement.firstChild);
     }
     this.assignmentIllustrationElement.classList = 'illustration';
-  },
+  }
 
   /**
    * Determines what page is shown next, from the current page ID and other
@@ -347,7 +373,7 @@ Polymer({
       default:
         return SASetupPageId.CLOSING;
     }
-  },
+  }
 
   /**
    * Returns what page was shown previously from the current page ID.
@@ -377,17 +403,17 @@ Polymer({
       default:
         return SASetupPageId.INTRO;
     }
-  },
+  }
 
   /** @private */
   onExitClick_() {
     this.$.switchAccessSetupGuideDialog.close();
-  },
+  }
 
   /** @private */
   onStartOverClick_() {
     this.loadPage_(SASetupPageId.INTRO);
-  },
+  }
 
   /** @private */
   onNextClick_() {
@@ -395,87 +421,88 @@ Polymer({
 
     // Enable auto-scan when we reach that page of the setup guide.
     if (this.currentPageId_ === SASetupPageId.AUTO_SCAN_ENABLED) {
-      this.autoScanPreviouslyEnabled_ = /** @type {boolean} */ (
-          this.getPref('settings.a11y.switch_access.auto_scan.enabled').value);
-      chrome.settingsPrivate.setPref(
-          'settings.a11y.switch_access.auto_scan.enabled', true);
+      chrome.settingsPrivate.setPref(AUTO_SCAN_ENABLED_PREF, true);
     }
 
+    // Disable auto-scan once the user has selected two or more switches.
     if (this.currentPageId_ === SASetupPageId.ASSIGN_NEXT) {
-      chrome.settingsPrivate.setPref(
-          'settings.a11y.switch_access.auto_scan.enabled', false);
+      chrome.settingsPrivate.setPref(AUTO_SCAN_ENABLED_PREF, false);
     }
 
     if (this.currentPageId_ === SASetupPageId.CLOSING) {
       if (this.switchCount_ >= 2) {
-        this['$']['closing-instructions'].textContent =
+        this.$['closing-instructions'].textContent =
             this.i18n('switchAccessSetupClosingManualScanInstructions');
       }
     }
-  },
+  }
 
   /** @private */
   onPreviousClick_() {
-    // Disable auto-scan, if we enabled it as part of the setup guide.
-    if (this.currentPageId_ === SASetupPageId.AUTO_SCAN_ENABLED &&
-        !this.autoScanPreviouslyEnabled_) {
-      chrome.settingsPrivate.setPref(
-          'settings.a11y.switch_access.auto_scan.enabled', false);
+    // Disable auto-scan when the user reverses to before it was enabled.
+    if (this.currentPageId_ === SASetupPageId.AUTO_SCAN_ENABLED) {
+      chrome.settingsPrivate.setPref(AUTO_SCAN_ENABLED_PREF, false);
     }
 
     this.loadPage_(this.getPreviousPageId_());
-  },
+  }
 
   /** @private */
   onBluetoothClick_() {
     Router.getInstance().navigateTo(routes.BLUETOOTH_DEVICES);
-  },
+  }
 
   /** @private */
   onAutoScanSpeedFaster_() {
-    const currentValue = /** @type {number} */ (
-        this.getPref('settings.a11y.switch_access.auto_scan.speed_ms').value);
+    const currentValue =
+        /** @type {number} */ (this.getPref(AUTO_SCAN_SPEED_PREF).value);
+    // Find the first element in the array that is equal to, or smaller than,
+    // the current value. Since AUTO_SCAN_SPEED_RANGE_MS is sorted largest to
+    // smallest, this gives us a guarantee that we are within one step (100ms)
+    // of the value at the provided index.
     const index =
         AUTO_SCAN_SPEED_RANGE_MS.findIndex(elem => elem <= currentValue);
     if (index === -1 || index === AUTO_SCAN_SPEED_RANGE_MS.length - 1) {
       return;
     }
     chrome.settingsPrivate.setPref(
-        'settings.a11y.switch_access.auto_scan.speed_ms',
-        AUTO_SCAN_SPEED_RANGE_MS[index + 1]);
-  },
+        AUTO_SCAN_SPEED_PREF, AUTO_SCAN_SPEED_RANGE_MS[index + 1]);
+  }
 
   /** @private */
   onAutoScanSpeedSlower_() {
-    const currentValue = /** @type {number} */ (
-        this.getPref('settings.a11y.switch_access.auto_scan.speed_ms').value);
+    const currentValue =
+        /** @type {number} */ (this.getPref(AUTO_SCAN_SPEED_PREF).value);
+    // Find the first element in the array that is equal to, or smaller than,
+    // the current value. Since AUTO_SCAN_SPEED_RANGE_MS is sorted largest to
+    // smallest, this gives us a guarantee that we are within one step (100ms)
+    // of the value at the provided index.
     const index =
         AUTO_SCAN_SPEED_RANGE_MS.findIndex(elem => elem <= currentValue);
     if (index <= 0) {
       return;
     }
     chrome.settingsPrivate.setPref(
-        'settings.a11y.switch_access.auto_scan.speed_ms',
-        AUTO_SCAN_SPEED_RANGE_MS[index - 1]);
-  },
+        AUTO_SCAN_SPEED_PREF, AUTO_SCAN_SPEED_RANGE_MS[index - 1]);
+  }
 
   /** @private */
   onSwitchCountChanged_() {
-    const selected = this['$']['switch-count-group'].selected;
+    const selected = this.$['switch-count-group'].selected;
     if (selected === 'one-switch') {
       this.switchCount_ = 1;
-      this['$']['choose-switch-count-illustration'].className =
+      this.$['choose-switch-count-illustration'].className =
           'illustration one-switch';
     } else if (selected === 'two-switches') {
       this.switchCount_ = 2;
-      this['$']['choose-switch-count-illustration'].className =
+      this.$['choose-switch-count-illustration'].className =
           'illustration two-switches';
     } else if (selected === 'three-switches') {
       this.switchCount_ = 3;
-      this['$']['choose-switch-count-illustration'].className =
+      this.$['choose-switch-count-illustration'].className =
           'illustration three-switches';
     }
-  },
+  }
 
   /** @private */
   onSwitchAssignmentMaybeChanged_() {
@@ -494,7 +521,7 @@ Polymer({
     } else {
       this.initializeAssignmentPane_(currentAction);
     }
-  },
+  }
 
   /**
    * @param {number} scanSpeedValueMs
@@ -505,7 +532,7 @@ Polymer({
     const scanSpeedValueSec = scanSpeedValueMs / 1000;
     return this.i18n(
         'durationInSeconds', this.formatter_.format(scanSpeedValueSec));
-  },
+  }
 
   /**
    * @param {!Array<number>} ticksInMs
@@ -516,17 +543,21 @@ Polymer({
     // Dividing by 1000 to convert milliseconds to seconds for the label.
     return ticksInMs.map(
         x => ({label: `${this.scanSpeedStringInSec_(x)}`, value: x}));
-  },
+  }
 
   /** @private */
   get assignmentContentsElement() {
-    return this['$'][SASetupElement.ASSIGN_SWITCH_CONTENT].querySelector(
+    return this.$[SASetupElement.ASSIGN_SWITCH_CONTENT].querySelector(
         '.sa-setup-contents');
-  },
+  }
 
   /** @private */
   get assignmentIllustrationElement() {
-    return this['$'][SASetupElement.ASSIGN_SWITCH_CONTENT].querySelector(
+    return this.$[SASetupElement.ASSIGN_SWITCH_CONTENT].querySelector(
         '.illustration');
-  },
-});
+  }
+}
+
+customElements.define(
+    SettingsSwitchAccessSetupGuideDialogElement.is,
+    SettingsSwitchAccessSetupGuideDialogElement);

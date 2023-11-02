@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,7 +23,7 @@
 // -[TableViewIdentityCell initWithStyle:reuseIdentifier:] should be used.
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
 
-// Configures the cell with the title, subtitle and image. If |checked| is YES,
+// Configures the cell with the title, subtitle and image. If `checked` is YES,
 // the cell displays a checkmark.
 - (void)configureCellWithTitle:(NSString*)title
                       subtitle:(NSString*)subtitle

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/notreached.h"
@@ -23,6 +22,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/multiprocess_test.h"
+#include "base/time/time.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/wrapped_window_proc.h"
 #include "chrome/browser/win/chrome_process_finder.h"
@@ -207,7 +207,7 @@ class ProcessSingletonTest : public base::MultiProcessTest {
     // The wait should always return because either |ready_event| is signaled or
     // |browser_victim_| died unexpectedly or exited on error.
     DWORD result =
-        ::WaitForMultipleObjects(base::size(handles), handles, FALSE, INFINITE);
+        ::WaitForMultipleObjects(std::size(handles), handles, FALSE, INFINITE);
     ASSERT_EQ(WAIT_OBJECT_0, result);
   }
 

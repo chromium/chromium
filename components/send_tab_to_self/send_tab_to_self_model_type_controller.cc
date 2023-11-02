@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,9 +19,7 @@ SendTabToSelfModelTypeController::SendTabToSelfModelTypeController(
     : ModelTypeController(syncer::SEND_TAB_TO_SELF,
                           std::move(delegate_for_full_sync_mode),
                           std::move(delegate_for_transport_mode)) {
-  DCHECK_EQ(base::FeatureList::IsEnabled(
-                send_tab_to_self::kSendTabToSelfWhenSignedIn),
-            ShouldRunInTransportOnlyMode());
+  DCHECK(ShouldRunInTransportOnlyMode());
 }
 
 SendTabToSelfModelTypeController::~SendTabToSelfModelTypeController() = default;

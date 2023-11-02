@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,7 +26,7 @@ Quaternion::Quaternion(const Vector3dF& axis, double theta) {
     return;
 
   Vector3dF normalized = axis;
-  normalized.Scale(1.0 / length);
+  normalized.InvScale(length);
 
   theta *= 0.5;
   double s = sin(theta);

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,12 @@
 
 #include "base/containers/span.h"
 #include "base/values.h"
+#include "media/base/decoder_status.h"
+#include "media/base/encoder_status.h"
 #include "media/base/ipc/media_param_traits.h"
 #include "media/base/status.h"
 #include "media/mojo/mojom/media_types.mojom.h"
+#include "mojo/public/cpp/bindings/optional_as_pointer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
@@ -26,21 +29,27 @@ struct StructTraits<media::mojom::StatusDataDataView,
     return input.group;
   }
 
-  static std::string message(const media::internal::StatusData& input) {
+  static const std::string& message(const media::internal::StatusData& input) {
     return input.message;
   }
 
-  static base::span<base::Value> frames(media::internal::StatusData& input) {
+  static base::span<const base::Value> frames(
+      const media::internal::StatusData& input) {
     return input.frames;
   }
 
-  static base::span<media::internal::StatusData> causes(
-      media::internal::StatusData& input) {
-    return input.causes;
+  static mojo::OptionalAsPointer<const media::internal::StatusData> cause(
+      const media::internal::StatusData& input) {
+    return mojo::MakeOptionalAsPointer(input.cause.get());
   }
 
-  static base::Value data(const media::internal::StatusData& input) {
-    return input.data.Clone();
+  static const base::Value& data(const media::internal::StatusData& input) {
+    return input.data;
+  }
+
+  static media::UKMPackedType packed_root_cause(
+      const media::internal::StatusData& input) {
+    return input.packed_root_cause;
   }
 
   static bool Read(media::mojom::StatusDataDataView data,
@@ -49,11 +58,9 @@ struct StructTraits<media::mojom::StatusDataDataView,
 
 template <typename StatusEnum, typename DataView>
 struct StructTraits<DataView, media::TypedStatus<StatusEnum>> {
-  static absl::optional<media::internal::StatusData> internal(
+  static mojo::OptionalAsPointer<const media::internal::StatusData> internal(
       const media::TypedStatus<StatusEnum>& input) {
-    if (input.data_)
-      return *input.data_;
-    return absl::nullopt;
+    return mojo::MakeOptionalAsPointer(input.data_.get());
   }
 
   static bool Read(DataView data, media::TypedStatus<StatusEnum>* output) {

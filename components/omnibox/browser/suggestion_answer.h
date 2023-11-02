@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,23 +11,22 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/ptr_util.h"
+#include "base/values.h"
+#include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
-#ifdef OS_ANDROID
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
 #endif
-
-namespace base {
-class Value;
-}
 
 // Structured representation of the JSON payload of a suggestion with an answer.
 // An answer has exactly two image lines, so called because they are a
 // combination of text and an optional image URL.  Each image line has 1 or more
 // text fields, each of which is required to contain a string and an integer
-// type.  The text fields are contained in a non-empty vector and two optional
-// named properties, referred to as "additional text" and "status text".
+// type.  The text fields are contained in a non-empty vector and three optional
+// named properties, referred to as `additional text`, `status text`, and
+// `accessibility label`.
 //
 // When represented in the UI, these elements should be styled and laid out
 // according to the specification at https://goto.google.com/ais_api.
@@ -132,7 +131,7 @@ class SuggestionAnswer {
     // Parses |field_json| dictionary and populates |text_field| with the
     // contents.  If any of the required elements is missing, returns false and
     // leaves text_field in a partially populated state.
-    static bool ParseTextField(const base::Value& field_json,
+    static bool ParseTextField(const base::Value::Dict& field_json,
                                TextField* text_field);
 
     const std::u16string& text() const { return text_; }
@@ -173,7 +172,7 @@ class SuggestionAnswer {
     // Parses dictionary |line_json| and populates |image_line| with the
     // contents.  If any of the required elements is missing, returns false and
     // leaves text_field in a partially populated state.
-    static bool ParseImageLine(const base::Value& line_json,
+    static bool ParseImageLine(const base::Value::Dict& line_json,
                                ImageLine* image_line);
 
     const TextFields& text_fields() const { return text_fields_; }
@@ -187,6 +186,12 @@ class SuggestionAnswer {
     const TextField* status_text() const {
       if (status_text_)
         return &status_text_.value();
+      else
+        return nullptr;
+    }
+    const std::u16string* accessibility_label() const {
+      if (accessibility_label_)
+        return &accessibility_label_.value();
       else
         return nullptr;
     }
@@ -211,6 +216,7 @@ class SuggestionAnswer {
     int num_text_lines_;
     absl::optional<TextField> additional_text_;
     absl::optional<TextField> status_text_;
+    absl::optional<std::u16string> accessibility_label_;
     GURL image_url_;
 
     FRIEND_TEST_ALL_PREFIXES(SuggestionAnswerTest, DifferentValuesAreUnequal);
@@ -226,7 +232,7 @@ class SuggestionAnswer {
   // Parses dictionary |answer_json| and fills a SuggestionAnswer containing the
   // contents. Returns true on success. If the supplied data is not well formed
   // or is missing required elements, returns false instead.
-  static bool ParseAnswer(const base::Value& answer_json,
+  static bool ParseAnswer(const base::Value::Dict& answer_json,
                           const std::u16string& answer_type_str,
                           SuggestionAnswer* answer);
 
@@ -259,7 +265,7 @@ class SuggestionAnswer {
   // omnibox to go somewhere.
   static void LogAnswerUsed(const absl::optional<SuggestionAnswer>& answer);
 
-#ifdef OS_ANDROID
+#if BUILDFLAG(IS_ANDROID)
   base::android::ScopedJavaLocalRef<jobject> CreateJavaObject() const;
 #endif
 

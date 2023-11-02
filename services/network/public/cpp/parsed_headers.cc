@@ -1,23 +1,27 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "services/network/public/cpp/parsed_headers.h"
 
+#include "base/containers/contains.h"
 #include "build/build_config.h"
 #include "net/base/features.h"
 #include "net/http/http_response_headers.h"
 #include "net/reporting/reporting_header_parser.h"
-#include "services/network/public/cpp/bfcache_opt_in_parser.h"
 #include "services/network/public/cpp/client_hints.h"
+#include "services/network/public/cpp/content_language_parser.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy_parser.h"
 #include "services/network/public/cpp/cross_origin_opener_policy_parser.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/link_header_parser.h"
 #include "services/network/public/cpp/origin_agent_cluster_parser.h"
+#include "services/network/public/cpp/supports_loading_mode/supports_loading_mode_parser.h"
 #include "services/network/public/cpp/timing_allow_origin_parser.h"
+#include "services/network/public/cpp/variants_header_parser.h"
 #include "services/network/public/cpp/x_frame_options_parser.h"
+#include "services/network/public/mojom/supports_loading_mode.mojom.h"
 
 namespace network {
 
@@ -47,12 +51,6 @@ mojom::ParsedHeadersPtr PopulateParsedHeaders(
   if (headers->GetNormalizedHeader("Accept-CH", &accept_ch))
     parsed_headers->accept_ch = ParseClientHintsHeader(accept_ch);
 
-  std::string accept_ch_lifetime;
-  if (headers->GetNormalizedHeader("Accept-CH-Lifetime", &accept_ch_lifetime)) {
-    parsed_headers->accept_ch_lifetime =
-        ParseAcceptCHLifetime(accept_ch_lifetime);
-  }
-
   std::string critical_ch;
   if (headers->GetNormalizedHeader("Critical-CH", &critical_ch))
     parsed_headers->critical_ch = ParseClientHintsHeader(critical_ch);
@@ -68,10 +66,13 @@ mojom::ParsedHeadersPtr PopulateParsedHeaders(
         ParseTimingAllowOrigin(timing_allow_origin_value);
   }
 
-  std::string bfcache_opt_in;
-  if (headers->GetNormalizedHeader("BFCache-Opt-In", &bfcache_opt_in)) {
-    parsed_headers->bfcache_opt_in_unload =
-        ParseBFCacheOptInUnload(bfcache_opt_in);
+  network::mojom::SupportsLoadingModePtr result =
+      network::ParseSupportsLoadingMode(*headers);
+  if (!result.is_null() &&
+      base::Contains(result->supported_modes,
+                     network::mojom::LoadingMode::kCredentialedPrerender)) {
+    parsed_headers->supports_loading_mode.push_back(
+        network::mojom::LoadingMode::kCredentialedPrerender);
   }
 
 #if BUILDFLAG(ENABLE_REPORTING)
@@ -85,6 +86,17 @@ mojom::ParsedHeadersPtr PopulateParsedHeaders(
   }
 #endif
 
+  if (base::FeatureList::IsEnabled(network::features::kReduceAcceptLanguage)) {
+    std::string variants;
+    if (headers->GetNormalizedHeader("Variants", &variants)) {
+      parsed_headers->variants_headers = ParseVariantsHeaders(variants);
+    }
+    std::string content_language;
+    if (headers->GetNormalizedHeader("Content-Language", &content_language)) {
+      parsed_headers->content_language =
+          ParseContentLanguages(content_language);
+    }
+  }
   return parsed_headers;
 }
 

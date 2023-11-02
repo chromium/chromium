@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -59,7 +59,7 @@ DocumentMarker::MarkerType SuggestionMarkerListImpl::MarkerType() const {
 }
 
 bool SuggestionMarkerListImpl::IsEmpty() const {
-  return markers_.IsEmpty();
+  return markers_.empty();
 }
 
 void SuggestionMarkerListImpl::Add(DocumentMarker* marker) {

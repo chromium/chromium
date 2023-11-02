@@ -27,11 +27,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_CONSTRUCTION_SITE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_CONSTRUCTION_SITE_H_
 
+#include "base/check_op.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/parser_content_policy.h"
 #include "third_party/blink/renderer/core/html/parser/html_element_stack.h"
 #include "third_party/blink/renderer/core/html/parser/html_formatting_element_list.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -87,14 +88,6 @@ enum WhitespaceMode {
   kAllWhitespace,
 };
 
-enum FlushMode {
-  // Flush pending text. Flush queued tasks.
-  kFlushAlways,
-
-  // Flush pending text if node has length limit. Flush queued tasks.
-  kFlushIfAtTextLimit,
-};
-
 class AtomicHTMLToken;
 class CustomElementDefinition;
 class Document;
@@ -125,20 +118,20 @@ class HTMLConstructionSite final {
 
   // flushPendingText turns pending text into queued Text insertions, but does
   // not execute them.
-  void FlushPendingText(FlushMode);
+  void FlushPendingText();
 
   // Called before every token in HTMLTreeBuilder::processToken, thus inlined:
-  void Flush(FlushMode mode) {
+  void Flush() {
     if (!HasPendingTasks())
       return;
-    FlushPendingText(mode);
+    FlushPendingText();
     // NOTE: Possible reentrancy via JavaScript execution.
     ExecuteQueuedTasks();
-    DCHECK(mode == kFlushIfAtTextLimit || !HasPendingTasks());
+    DCHECK(!HasPendingTasks());
   }
 
   bool HasPendingTasks() {
-    return !pending_text_.IsEmpty() || !task_queue_.IsEmpty();
+    return !pending_text_.IsEmpty() || !task_queue_.empty();
   }
 
   void SetDefaultCompatibilityMode();
@@ -188,7 +181,7 @@ class HTMLConstructionSite final {
   void ReconstructTheActiveFormattingElements();
 
   void GenerateImpliedEndTags();
-  void GenerateImpliedEndTagsWithExclusion(const AtomicString& tag_name);
+  void GenerateImpliedEndTagsWithExclusion(const HTMLTokenName& name);
 
   bool InQuirksMode();
 
@@ -250,7 +243,7 @@ class HTMLConstructionSite final {
   typedef HeapVector<HTMLConstructionSiteTask, 1> TaskQueue;
 
   void SetCompatibilityMode(Document::CompatibilityMode);
-  void SetCompatibilityModeFromDoctype(const String& name,
+  void SetCompatibilityModeFromDoctype(const html_names::HTMLTag tag,
                                        const String& public_id,
                                        const String& system_id);
 
@@ -272,6 +265,8 @@ class HTMLConstructionSite final {
       Document&,
       const QualifiedName&,
       const AtomicString& is);
+
+  void SetAttributes(Element* element, AtomicHTMLToken* token);
 
   Member<HTMLParserReentryPermit> reentry_permit_;
   Member<Document> document_;
@@ -316,6 +311,9 @@ class HTMLConstructionSite final {
     }
 
     void Discard() {
+      if (IsEmpty())
+        return;
+
       PendingText discarded_text;
       Swap(discarded_text);
     }
@@ -323,11 +321,11 @@ class HTMLConstructionSite final {
     bool IsEmpty() {
       // When the stringbuilder is empty, the parent and whitespace should also
       // be "empty".
-      DCHECK_EQ(string_builder.IsEmpty(), !parent);
-      DCHECK(!string_builder.IsEmpty() || !next_child);
-      DCHECK(!string_builder.IsEmpty() ||
+      DCHECK_EQ(string_builder.empty(), !parent);
+      DCHECK(!string_builder.empty() || !next_child);
+      DCHECK(!string_builder.empty() ||
              (whitespace_mode == kWhitespaceUnknown));
-      return string_builder.IsEmpty();
+      return string_builder.empty();
     }
 
     void Trace(Visitor*) const;
@@ -340,7 +338,8 @@ class HTMLConstructionSite final {
 
   PendingText pending_text_;
 
-  ParserContentPolicy parser_content_policy_;
+  const ParserContentPolicy parser_content_policy_;
+  const bool is_scripting_content_allowed_;
   bool is_parsing_fragment_;
 
   // http://www.whatwg.org/specs/web-apps/current-work/multipage/tokenization.html#parsing-main-intable
@@ -350,6 +349,9 @@ class HTMLConstructionSite final {
   bool redirect_attach_to_foster_parent_;
 
   bool in_quirks_mode_;
+
+  // Whether duplicate attribute was reported.
+  bool reported_duplicate_attribute_ = false;
 };
 
 }  // namespace blink

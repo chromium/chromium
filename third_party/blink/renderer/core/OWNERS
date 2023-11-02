@@ -15,14 +15,15 @@ bokan@chromium.org
 cbiesinger@chromium.org
 chrishtr@chromium.org
 clamy@chromium.org
+dbaron@chromium.org
 dcheng@chromium.org
 dgozman@chromium.org
 dlibby@microsoft.com
+dom@chromium.org
 # drott reviews font specific changes.
 drott@chromium.org
 # dtapuska reviews input-related changes
 dtapuska@chromium.org
-enne@chromium.org
 # flackr reviews animation, input-related and scrolling-related changes.
 flackr@chromium.org
 fmalita@chromium.org
@@ -40,7 +41,6 @@ japhet@chromium.org
 jarhar@chromium.org
 jbroman@chromium.org
 jfernandez@igalia.com
-jochen@chromium.org
 junov@chromium.org
 kbr@chromium.org
 keishi@chromium.org
@@ -54,7 +54,6 @@ nhiroki@chromium.org
 obrufau@igalia.com
 # pdr reviews many svg and text autosizing patches.
 pdr@chromium.org
-pfeldman@chromium.org
 pkasting@chromium.org
 rego@igalia.com
 rbuis@igalia.com
@@ -68,6 +67,5 @@ tkent@chromium.org
 vmpstr@chromium.org
 vollick@chromium.org
 wangxianzhu@chromium.org
-yhirano@chromium.org
+xiaochengh@chromium.org
 yoavweiss@chromium.org
-yutak@chromium.org

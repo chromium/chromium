@@ -1,9 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/browser/file_system_access/file_system_access_access_handle_host_impl.h"
 
+#include "base/callback_helpers.h"
 #include "content/browser/file_system_access/file_system_access_capacity_allocation_host_impl.h"
 #include "content/browser/file_system_access/file_system_access_file_delegate_host_impl.h"
 #include "storage/browser/file_system/file_system_context.h"
@@ -21,11 +22,13 @@ FileSystemAccessAccessHandleHostImpl::FileSystemAccessAccessHandleHostImpl(
         file_delegate_receiver,
     mojo::PendingReceiver<blink::mojom::FileSystemAccessCapacityAllocationHost>
         capacity_allocation_host_receiver,
-    int64_t file_size)
+    int64_t file_size,
+    base::ScopedClosureRunner on_close_callback)
     : manager_(manager),
       lock_(std::move(lock)),
       receiver_(this, std::move(receiver)),
-      url_(url) {
+      url_(url),
+      on_close_callback_(std::move(on_close_callback)) {
   DCHECK(manager_);
   DCHECK_EQ(lock_->type(),
             FileSystemAccessWriteLockManager::WriteLockType::kExclusive);
@@ -61,10 +64,14 @@ FileSystemAccessAccessHandleHostImpl::~FileSystemAccessAccessHandleHostImpl() =
 
 void FileSystemAccessAccessHandleHostImpl::Close(CloseCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!close_callback_);
 
-  // `receiver_` is not reset, since `callback` is yet to be called.
+  // Run `callback` when this instance is destroyed, after capacity allocation
+  // has been released.
+  close_callback_ = base::ScopedClosureRunner(std::move(callback));
+
   // Removes `this`.
-  manager_->RemoveAccessHandleHost(this, std::move(callback));
+  manager_->RemoveAccessHandleHost(this);
 }
 
 void FileSystemAccessAccessHandleHostImpl::OnDisconnect() {
@@ -72,7 +79,7 @@ void FileSystemAccessAccessHandleHostImpl::OnDisconnect() {
 
   // No need to reset `receiver_` after it disconnected.
   // Removes `this`.
-  manager_->RemoveAccessHandleHost(this, base::DoNothing());
+  manager_->RemoveAccessHandleHost(this);
 }
 
 }  // namespace content

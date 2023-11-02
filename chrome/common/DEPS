@@ -3,19 +3,19 @@ include_rules = [
   "+chrome/grit",
   "+chrome/install_static",
   "+chrome/services/file_util/public",
-  "+chromeos/components/chromebox_for_meetings/buildflags",
   "+chromeos/crosapi",
+  "+chromeos/lacros/lacros_paths.h",
   "+components/autofill/content/common",
   "+components/autofill/core/common",
   "+components/bookmarks/common",
-  "+components/cast_certificate",
   "+components/cdm/common",
   "+components/cloud_devices/common",
   "+components/content_settings/core/common",
   "+components/crash/core/app",
+  "+components/history_clusters",
+  "+components/optimization_guide/optimization_guide_internals/webui",
   "+components/crash/core/common",
   "+components/crx_file",
-  "+components/data_reduction_proxy/core/common",
   "+components/dom_distiller/core",
   "+components/embedder_support/android/common",
   "+components/embedder_support/origin_trials",
@@ -73,7 +73,10 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "logging_chrome.cc": [
+  "logging_chrome\.cc": [
     "+ash/constants/ash_switches.h",
-  ]
+  ],
+  "pdf_util_unittest\.cc": [
+    "+pdf/content_restriction.h",
+  ],
 }

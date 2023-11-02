@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -99,7 +99,7 @@ class MyInstance : public pp::Instance {
     font.Describe(&desc, &metrics);
 
     char buf[256];
-    sprintf(buf, "%s = %s %dpt",
+    snprintf(buf, sizeof(buf), "%s = %s %dpt",
             title, desc.face().AsString().c_str(), desc.size());
     return std::string(buf);
   }

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,7 @@
 #include "base/scoped_multi_source_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "components/app_constants/constants.h"
 #include "extensions/common/constants.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/window_types.h"
@@ -48,18 +49,17 @@ constexpr int kMaxPeriodsWithoutActivity = base::Seconds(15) / kSamplePeriod;
 DemoModeApp GetAppFromAppId(const std::string& app_id) {
   // Each version of the Highlights app is bucketed into the same value.
   if (app_id == extension_misc::kHighlightsAppId ||
-      app_id == extension_misc::kHighlightsAtlasAppId) {
+      app_id == extension_misc::kNewHighlightsAppId) {
     return DemoModeApp::kHighlights;
   }
 
   // Each version of the Screensaver app is bucketed into the same value.
   if (app_id == extension_misc::kScreensaverAppId ||
-      app_id == extension_misc::kScreensaverAtlasAppId ||
-      app_id == extension_misc::kScreensaverKraneZdksAppId) {
+      app_id == extension_misc::kNewAttractLoopAppId) {
     return DemoModeApp::kScreensaver;
   }
 
-  if (app_id == extension_misc::kChromeAppId)
+  if (app_id == app_constants::kChromeAppId)
     return DemoModeApp::kBrowser;
   if (app_id == extension_misc::kFilesManagerAppId)
     return DemoModeApp::kFiles;
@@ -99,6 +99,10 @@ DemoModeApp GetAppFromAppId(const std::string& app_id) {
     return DemoModeApp::kGeForceNow;
   if (app_id == extension_misc::kZoomAppId)
     return DemoModeApp::kZoom;
+  if (app_id == extension_misc::kSumoAppId)
+    return DemoModeApp::kSumo;
+  if (app_id == extension_misc::kAdobeSparkAppId)
+    return DemoModeApp::kAdobeSpark;
 
   return DemoModeApp::kOtherChromeApp;
 }
@@ -187,7 +191,7 @@ DemoModeApp GetAppFromWindow(const aura::Window* window) {
   std::string app_id = GetShelfID(window).app_id;
 
   // The Chrome "app" in the shelf is just the browser.
-  if (app_id == extension_misc::kChromeAppId)
+  if (app_id == app_constants::kChromeAppId)
     return DemoModeApp::kBrowser;
 
   // If the window is the "browser" type, having an app ID other than the
@@ -348,6 +352,8 @@ DemoSessionMetricsRecorder::~DemoSessionMetricsRecorder() {
 
   ReportDwellTime();
 
+  ReportUserClickesAndPresses();
+
   // Unsubscribe from window activation events.
   activation_client_->RemoveObserver(this);
 
@@ -441,6 +447,20 @@ void DemoSessionMetricsRecorder::OnUserActivity(const ui::Event* event) {
   periods_since_activity_ = 0;
 }
 
+void DemoSessionMetricsRecorder::OnMouseEvent(ui::MouseEvent* event) {
+  // If event type is mouse/trackpad clicking, increase the metric by one.
+  if (event->type() == ui::ET_MOUSE_PRESSED) {
+    user_clicks_and_presses_++;
+  }
+}
+
+void DemoSessionMetricsRecorder::OnTouchEvent(ui::TouchEvent* event) {
+  // If event type is screen pressing, increase the metric by one.
+  if (event->type() == ui::ET_TOUCH_PRESSED) {
+    user_clicks_and_presses_++;
+  }
+}
+
 void DemoSessionMetricsRecorder::StartRecording() {
   unique_apps_launched_recording_enabled_ = true;
   timer_->Start(FROM_HERE, kSamplePeriod, this,
@@ -500,6 +520,12 @@ void DemoSessionMetricsRecorder::ReportDwellTime() {
   }
   first_user_activity_ = base::TimeTicks();
   last_user_activity_ = base::TimeTicks();
+}
+
+void DemoSessionMetricsRecorder::ReportUserClickesAndPresses() {
+  UMA_HISTOGRAM_COUNTS_1000(
+      DemoSessionMetricsRecorder::kUserClicksAndPressesMetric,
+      user_clicks_and_presses_);
 }
 
 }  // namespace ash

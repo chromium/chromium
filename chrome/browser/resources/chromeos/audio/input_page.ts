@@ -1,4 +1,8 @@
-import {$} from 'chrome://resources/js/util.m.js';
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {$} from 'chrome://resources/js/util.js';
 
 import {AudioBroker} from './audio_broker.js';
 import {Page, PageNavigator} from './page.js';
@@ -11,9 +15,7 @@ export class InputPage extends Page {
   private animationRequestId?: number;
   private recordClicked: boolean;
   private audioContext: AudioContext|null;
-  // Type is set to any because TypeScript compiler
-  // does not recognize the MediaRecorder object.
-  private mediaRecorder: any;
+  private mediaRecorder: MediaRecorder|null;
   private intervalId: number|null;
 
   constructor() {
@@ -27,7 +29,7 @@ export class InputPage extends Page {
     this.setUpButtons();
   }
 
-  showPage() {
+  override showPage() {
     super.showPage();
     if (this.audioContext) {
       this.audioContext.resume();
@@ -36,7 +38,7 @@ export class InputPage extends Page {
     }
   }
 
-  hidePage() {
+  override hidePage() {
     super.hidePage();
     if (this.audioContext) {
       this.audioContext.suspend();
@@ -54,16 +56,26 @@ export class InputPage extends Page {
   }
 
   visualize() {
-    const pairs = [
-      {'canvas': $('channel-l'), 'analyser': this.analyserLeft},
-      {'canvas': $('channel-r'), 'analyser': this.analyserRight},
-    ];
+    const pairs: Array<{
+      canvas: HTMLCanvasElement,
+      analyser: AnalyserNode | undefined,
+    }> =
+        [
+          {
+            canvas: $('channel-l') as HTMLCanvasElement,
+            analyser: this.analyserLeft,
+          },
+          {
+            canvas: $('channel-r') as HTMLCanvasElement,
+            analyser: this.analyserRight,
+          },
+        ];
     const draw = () => {
       this.animationRequestId = requestAnimationFrame(draw);
       for (const channel of pairs) {
-        let canvas = <HTMLCanvasElement>channel['canvas'];
-        let canvasContext = canvas.getContext('2d');
-        let analyser = channel['analyser'];
+        const canvas = channel['canvas'];
+        const canvasContext = canvas.getContext('2d');
+        const analyser = channel['analyser'];
 
         if (canvasContext && analyser) {
           analyser.fftSize = 2048;
@@ -107,8 +119,9 @@ export class InputPage extends Page {
         }
       }
     };
-    if (this.animationRequestId)
+    if (this.animationRequestId) {
       window.cancelAnimationFrame(this.animationRequestId);
+    }
     draw();
   }
 
@@ -123,12 +136,12 @@ export class InputPage extends Page {
     }
   }
 
-  initAudio(audio_constraint: boolean|Object) {
+  initAudio(audioConstraint: boolean|Object) {
     this.audioContext = new window.AudioContext();
-    navigator.mediaDevices.getUserMedia({'audio': audio_constraint})
-        .then((stream_got) => {
+    navigator.mediaDevices.getUserMedia({'audio': audioConstraint})
+        .then((streamGot) => {
           if (this.audioContext) {
-            const stream = stream_got;
+            const stream = streamGot;
             const source = this.audioContext.createMediaStreamSource(stream);
             this.record(stream);
             this.buildAudioGraph(source);
@@ -138,7 +151,7 @@ export class InputPage extends Page {
   }
 
   record(source: MediaStream) {
-    let chunks = new Array<Blob>();
+    let chunks: Blob[] = [];
     const recordButton = $('record-btn');
     const clipSection = $('audio-file');
     this.mediaRecorder = new MediaRecorder(source);
@@ -161,13 +174,13 @@ export class InputPage extends Page {
 
         audio.controls = true;
         const blob = new Blob(chunks, {'type': 'audio/ogg; codecs=opus'});
-        chunks = new Array<Blob>();
+        chunks = [];
         const audioURL = window.URL.createObjectURL(blob);
         audio.src = audioURL;
         this.testInputFeedback.set('audioUrl', audioURL);
       };
 
-      this.mediaRecorder.ondataavailable = (event: dataavailable) => {
+      this.mediaRecorder.ondataavailable = (event: BlobEvent) => {
         chunks.push(event.data);
       };
     }
@@ -237,5 +250,3 @@ export class InputPage extends Page {
 }
 
 let instance: InputPage|null = null;
-declare let MediaRecorder: any;
-type dataavailable = any;

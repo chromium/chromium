@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -121,37 +121,6 @@ absl::optional<int64_t> GetCpuTimeJiffies(const base::FilePath& stat_file) {
     }
   }
   return absl::nullopt;
-}
-
-absl::optional<int64_t> GetUsedMemTotalKB(const base::FilePath& meminfo_file) {
-  int64_t mem_total = 0;
-  int64_t mem_free = 0;
-  std::string meminfo_contents;
-  if (!base::ReadFileToString(meminfo_file, &meminfo_contents))
-    return absl::nullopt;
-
-  std::vector<base::StringPiece> meminfo_lines = base::SplitStringPiece(
-      meminfo_contents, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  for (auto& line : meminfo_lines) {
-    if (base::StartsWith(line, "MemTotal:", base::CompareCase::SENSITIVE)) {
-      std::vector<base::StringPiece> line_items = base::SplitStringPiece(
-          line, " \t", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-      if (line_items.size() != 3)
-        return absl::nullopt;
-      if (!base::StringToInt64(line_items.at(1), &mem_total))
-        return absl::nullopt;
-    }
-    if (base::StartsWith(line, "MemFree:", base::CompareCase::SENSITIVE)) {
-      std::vector<base::StringPiece> line_items = base::SplitStringPiece(
-          line, " \t", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-      if (line_items.size() != 3)
-        return absl::nullopt;
-      if (!base::StringToInt64(line_items.at(1), &mem_free))
-        return absl::nullopt;
-      break;
-    }
-  }
-  return mem_total - mem_free;
 }
 
 }  // namespace system

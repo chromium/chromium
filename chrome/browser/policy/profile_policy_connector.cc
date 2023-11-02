@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,7 +24,6 @@
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #include "components/policy/core/common/configuration_policy_provider.h"
-#include "components/policy/core/common/legacy_chrome_policy_migrator.h"
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_namespace.h"
@@ -32,6 +31,10 @@
 #include "components/policy/core/common/proxy_policy_provider.h"
 #include "components/policy/core/common/schema_registry_tracking_policy_provider.h"
 #include "components/policy/policy_constants.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/policy/restricted_mgs_policy_provider.h"
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/policy/active_directory/active_directory_policy_manager.h"
@@ -41,7 +44,6 @@
 #include "chrome/browser/ash/policy/core/device_local_account_policy_provider.h"
 #include "chrome/browser/ash/policy/login/login_profile_policy_provider.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "components/policy/core/common/proxy_policy_provider.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #endif
@@ -194,8 +196,15 @@ void ProfilePolicyConnector::Init(
     policy_providers_.push_back(connector->command_line_policy_provider());
 #endif
 
-  if (configuration_policy_provider)
+  if (configuration_policy_provider) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    AppendPolicyProviderWithSchemaTracking(configuration_policy_provider,
+                                           schema_registry);
+    configuration_policy_provider_ = wrapped_policy_providers_.back().get();
+#else
     policy_providers_.push_back(configuration_policy_provider);
+#endif
+  }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!user) {
@@ -222,21 +231,23 @@ void ProfilePolicyConnector::Init(
   }
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+  // `RestrictedMGSPolicyProvider::Create()` returns a nullptr when we are not
+  // in a Managed Guest Session.
+  restricted_mgs_policy_provider = RestrictedMGSPolicyProvider::Create();
+  if (restricted_mgs_policy_provider) {
+    restricted_mgs_policy_provider->Init(schema_registry);
+    policy_providers_.push_back(restricted_mgs_policy_provider.get());
+  }
+#endif
+
   std::vector<std::unique_ptr<PolicyMigrator>> migrators;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   migrators.push_back(
       std::make_unique<browser_switcher::BrowserSwitcherPolicyMigrator>());
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  migrators.push_back(std::make_unique<LegacyChromePolicyMigrator>(
-      policy::key::kDeviceNativePrinters, policy::key::kDevicePrinters));
-  migrators.push_back(std::make_unique<LegacyChromePolicyMigrator>(
-      policy::key::kDeviceUserWhitelist, policy::key::kDeviceUserAllowlist));
-  migrators.push_back(std::make_unique<LegacyChromePolicyMigrator>(
-      policy::key::kNativePrintersBulkConfiguration,
-      policy::key::kPrintersBulkConfiguration));
-
   ConfigurationPolicyProvider* user_policy_delegate_candidate =
       configuration_policy_provider ? configuration_policy_provider
                                     : special_user_policy_provider_.get();
@@ -289,6 +300,11 @@ void ProfilePolicyConnector::Shutdown() {
     special_user_policy_provider_->Shutdown();
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+  if (restricted_mgs_policy_provider)
+    restricted_mgs_policy_provider->Shutdown();
+#endif
+
   for (auto& wrapped_policy_provider : wrapped_policy_providers_) {
     wrapped_policy_provider->Shutdown();
   }
@@ -324,8 +340,7 @@ bool ProfilePolicyConnector::IsMainProfile() const {
     return true;
 
   auto profiles = profile_manager->GetLoadedProfiles();
-  const auto main_it = base::ranges::find_if(
-      profiles, [](Profile* profile) { return profile->IsMainProfile(); });
+  const auto main_it = base::ranges::find_if(profiles, &Profile::IsMainProfile);
   if (main_it == profiles.end())
     return false;
   return (*main_it)->GetProfilePolicyConnector() == this;

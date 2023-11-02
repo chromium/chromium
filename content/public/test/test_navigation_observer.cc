@@ -1,14 +1,16 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/public/test/test_navigation_observer.h"
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_url_handler.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/test/browser_test_utils.h"
 
 namespace content {
 
@@ -54,7 +56,7 @@ class TestNavigationObserver::TestWebContentsObserver
     parent_->OnDidFinishNavigation(navigation_handle);
   }
 
-  TestNavigationObserver* parent_;
+  raw_ptr<TestNavigationObserver> parent_;
 };
 
 TestNavigationObserver::WebContentsState::WebContentsState() = default;
@@ -109,9 +111,7 @@ TestNavigationObserver::TestNavigationObserver(
                              quit_mode,
                              ignore_uncommitted_navigations) {}
 
-TestNavigationObserver::~TestNavigationObserver() {
-  StopWatchingNewWebContents();
-}
+TestNavigationObserver::~TestNavigationObserver() = default;
 
 void TestNavigationObserver::Wait() {
   was_event_consumed_ = false;
@@ -136,13 +136,13 @@ void TestNavigationObserver::WaitForNavigationFinished() {
 }
 
 void TestNavigationObserver::StartWatchingNewWebContents() {
-  WebContentsImpl::FriendWrapper::AddCreatedCallbackForTesting(
-      web_contents_created_callback_);
+  creation_subscription_ = RegisterWebContentsCreationCallback(
+      base::BindRepeating(&TestNavigationObserver::OnWebContentsCreated,
+                          base::Unretained(this)));
 }
 
 void TestNavigationObserver::StopWatchingNewWebContents() {
-  WebContentsImpl::FriendWrapper::RemoveCreatedCallbackForTesting(
-      web_contents_created_callback_);
+  creation_subscription_ = base::CallbackListSubscription();
 }
 
 void TestNavigationObserver::WatchExistingWebContents() {
@@ -172,10 +172,7 @@ TestNavigationObserver::TestNavigationObserver(
       last_navigation_succeeded_(false),
       last_net_error_code_(net::OK),
       last_navigation_type_(NAVIGATION_TYPE_UNKNOWN),
-      message_loop_runner_(new MessageLoopRunner(quit_mode)),
-      web_contents_created_callback_(
-          base::BindRepeating(&TestNavigationObserver::OnWebContentsCreated,
-                              base::Unretained(this))) {
+      message_loop_runner_(new MessageLoopRunner(quit_mode)) {
   if (web_contents)
     RegisterAsObserver(web_contents);
 }
@@ -284,6 +281,7 @@ void TestNavigationObserver::OnDidFinishNavigation(
                               : NAVIGATION_TYPE_UNKNOWN;
   last_nav_entry_id_ =
       NavigationRequest::From(navigation_handle)->nav_entry_id();
+  last_source_site_instance_ = navigation_handle->GetSourceSiteInstance();
 
   // Allow extending classes to fetch data available via navigation_handle.
   NavigationOfInterestDidFinish(navigation_handle);
@@ -319,7 +317,7 @@ bool TestNavigationObserver::DoesNavigationMatchExpectedInitialUrl(
 
   // Find the real URL being navigated to (e.g. stripping the "view-source:"
   // prefix if necessary).
-  GURL expected_url = navigation_request->GetOriginalRequestURL();
+  GURL expected_url = *expected_initial_url_;
   BrowserContext* browser_context = navigation_request->frame_tree_node()
                                         ->navigator()
                                         .controller()

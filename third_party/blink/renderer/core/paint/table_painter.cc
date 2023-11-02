@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -63,9 +63,8 @@ void TablePainter::PaintBoxDecorationBackground(
       layout_table_.StyleRef().Visibility() == EVisibility::kVisible) {
     BoxPainter(layout_table_)
         .PaintBoxDecorationBackgroundWithRect(
-            paint_info,
-            IntRect(BoxPainter(layout_table_).VisualRect(paint_offset)), rect,
-            layout_table_);
+            paint_info, BoxPainter(layout_table_).VisualRect(paint_offset),
+            rect, layout_table_);
   }
 
   BoxPainter(layout_table_).RecordHitTestData(paint_info, rect, layout_table_);

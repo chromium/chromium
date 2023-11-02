@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,14 +10,13 @@
 
 #include "base/callback.h"
 #include "base/containers/queue.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "remoting/protocol/message_pipe.h"
 #include "third_party/webrtc/api/peer_connection_interface.h"
 #include "third_party/webrtc/rtc_base/ref_count.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 // WebrtcDataStreamAdapter implements MessagePipe for WebRTC data channels.
 class WebrtcDataStreamAdapter : public MessagePipe,
@@ -70,7 +69,7 @@ class WebrtcDataStreamAdapter : public MessagePipe,
 
   rtc::scoped_refptr<webrtc::DataChannelInterface> channel_;
 
-  EventHandler* event_handler_ = nullptr;
+  raw_ptr<EventHandler> event_handler_ = nullptr;
 
   State state_ = State::CONNECTING;
 
@@ -80,7 +79,6 @@ class WebrtcDataStreamAdapter : public MessagePipe,
   base::WeakPtrFactory<WebrtcDataStreamAdapter> weak_ptr_factory_{this};
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_WEBRTC_DATA_STREAM_ADAPTER_H_

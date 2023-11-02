@@ -1,0 +1,50 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("lib") {
+  sources = [
+    "csv_password_parser_impl.cc",
+    "csv_password_parser_impl.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/password_manager/core/browser/import:csv",
+    "//mojo/public/cpp/bindings",
+  ]
+
+  public_deps =
+      [ "//components/password_manager/services/csv_password/public/mojom" ]
+}
+
+if (!is_ios) {
+  source_set("service") {
+    sources = [
+      "csv_password_parser_service.cc",
+      "csv_password_parser_service.h",
+    ]
+
+    deps = [
+      "//components/strings",
+      "//content/public/browser",
+    ]
+
+    public_deps = [
+      "//components/password_manager/services/csv_password/public/mojom",
+      "//mojo/public/cpp/bindings",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "csv_password_parser_impl_unittest.cc" ]
+
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//components/password_manager/services/csv_password:lib",
+    "//testing/gtest",
+  ]
+}

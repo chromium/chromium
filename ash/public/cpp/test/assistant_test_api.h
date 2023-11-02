@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <string>
 
 #include "ash/ash_export.h"
-#include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_prefs.h"
 
 namespace aura {
 class Window;
@@ -47,6 +47,11 @@ class ASH_EXPORT AssistantTestApi {
   // queries, i.e. the input text field must be visible and focussed.
   virtual void SendTextQuery(const std::string& query) = 0;
 
+  // Simulates the production state of assistant enabled. Equivalent to
+  // SetAssistantEnabled(true) followed by notifications for feature allowed and
+  // feature ready, then a wait for assistant actions to settle.
+  virtual void EnableAssistantAndWait() = 0;
+
   // Enables/Disables Assistant in settings.
   // This will ensure the new value is propagated to the |AssistantState|.
   virtual void SetAssistantEnabled(bool enabled) = 0;
@@ -58,7 +63,7 @@ class ASH_EXPORT AssistantTestApi {
   virtual void SetTabletMode(bool enable) = 0;
 
   // Changes the user preference controlling the status of user consent.
-  virtual void SetConsentStatus(chromeos::assistant::prefs::ConsentStatus) = 0;
+  virtual void SetConsentStatus(assistant::prefs::ConsentStatus) = 0;
 
   // Sets the number of user sessions where Assistant onboarding was shown.
   virtual void SetNumberOfSessionsWhereOnboardingShown(
@@ -66,7 +71,7 @@ class ASH_EXPORT AssistantTestApi {
 
   // Changes the user preference controlling the mode of the onboarding UX.
   virtual void SetOnboardingMode(
-      chromeos::assistant::prefs::AssistantOnboardingMode onboarding_mode) = 0;
+      assistant::prefs::AssistantOnboardingMode onboarding_mode) = 0;
 
   // Changes the user setting controlling whether the user prefers voice or
   // keyboard (internally called |kAssistantLaunchWithMicOpen|).

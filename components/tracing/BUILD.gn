@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -34,6 +34,42 @@ component("startup_tracing") {
   deps = [ "//base" ]
 }
 
+component("background_tracing_metrics_provider") {
+  sources = [
+    "common/background_tracing_metrics_provider.cc",
+    "common/background_tracing_metrics_provider.h",
+    "tracing_export.h",
+  ]
+
+  defines = [ "TRACING_IMPLEMENTATION" ]
+
+  deps = [
+    "//base",
+    "//components/metrics:content",
+    "//content/public/browser",
+  ]
+}
+
+component("background_tracing_utils") {
+  sources = [
+    "common/background_tracing_state_manager.cc",
+    "common/background_tracing_state_manager.h",
+    "common/background_tracing_utils.cc",
+    "common/background_tracing_utils.h",
+    "common/pref_names.cc",
+    "common/pref_names.h",
+  ]
+
+  defines = [ "IS_BACKGROUND_TRACING_UTILS_IMPL" ]
+
+  deps = [
+    ":startup_tracing",
+    "//base",
+    "//components/prefs",
+    "//content/public/browser",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
 
@@ -52,6 +88,19 @@ source_set("unit_tests") {
     sources = [ "common/trace_startup_config_unittest.cc" ]
     deps += [ ":startup_tracing" ]
   }
+
+  sources += [
+    "common/background_tracing_state_manager_unittest.cc",
+    "common/background_tracing_utils_unittest.cc",
+  ]
+  deps += [
+    ":background_tracing_utils",
+    ":startup_tracing",
+    "//components/metrics:metrics",
+    "//components/prefs:test_support",
+    "//content/public/browser",
+    "//content/test:test_support",
+  ]
 }
 
 test("tracing_perftests") {

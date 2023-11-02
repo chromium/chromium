@@ -1,4 +1,4 @@
-[document web]
+[document web] name='done'
 ++[section]
 ++++[push button] name='Text in iframe'
 ++++++[document web] name='Text in iframe'

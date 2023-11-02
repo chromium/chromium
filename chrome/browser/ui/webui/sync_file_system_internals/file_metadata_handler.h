@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/sync_file_system/remote_file_sync_service.h"
 #include "chrome/browser/sync_file_system/sync_status_code.h"
@@ -34,14 +34,14 @@ class FileMetadataHandler : public content::WebUIMessageHandler {
   void RegisterMessages() override;
 
  private:
-  void HandleGetExtensions(const base::ListValue* args);
-  void DidGetExtensions(std::string callback_id, const base::ListValue& list);
+  void HandleGetExtensions(const base::Value::List& args);
+  void DidGetExtensions(std::string callback_id, base::Value::List list);
 
-  void HandleGetFileMetadata(const base::ListValue* args);
+  void HandleGetFileMetadata(const base::Value::List& args);
   void DidGetFileMetadata(std::string callback_id,
                           const base::ListValue& files);
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   base::WeakPtrFactory<FileMetadataHandler> weak_factory_{this};
 };
 }  // namespace syncfs_internals

@@ -1,13 +1,14 @@
-// Copyright (c) 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/run_loop.h"
+#include "build/build_config.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/device_service_test_base.h"
 #include "services/device/public/mojom/vibration_manager.mojom.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
 #include "services/device/vibration/android/vibration_jni_headers/VibrationManagerImpl_jni.h"
 #else
@@ -48,7 +49,7 @@ class VibrationManagerImplTest : public DeviceServiceTestBase {
   }
 
   int64_t GetVibrationMilliSeconds() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     return Java_VibrationManagerImpl_getVibrateMilliSecondsForTesting(
         base::android::AttachCurrentThread());
 #else
@@ -57,7 +58,7 @@ class VibrationManagerImplTest : public DeviceServiceTestBase {
   }
 
   bool GetVibrationCancelled() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     return Java_VibrationManagerImpl_getVibrateCancelledForTesting(
         base::android::AttachCurrentThread());
 #else

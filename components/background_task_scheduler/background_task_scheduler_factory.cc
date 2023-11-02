@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include "components/background_task_scheduler/background_task_scheduler.h"
 #include "components/keyed_service/core/simple_dependency_manager.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/background_task_scheduler/internal/android/native_task_scheduler.h"
 #endif
 
@@ -38,7 +38,7 @@ BackgroundTaskSchedulerFactory::~BackgroundTaskSchedulerFactory() = default;
 std::unique_ptr<KeyedService>
 BackgroundTaskSchedulerFactory::BuildServiceInstanceFor(
     SimpleFactoryKey* key) const {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return std::make_unique<NativeTaskScheduler>();
 #else
   return nullptr;

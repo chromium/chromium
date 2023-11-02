@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -71,8 +71,6 @@ TEST_F(LayoutViewTest, DisplayNoneFrame) {
 }
 
 TEST_F(LayoutViewTest, NamedPages) {
-  ScopedNamedPagesForTest named_pages_enabler(true);
-
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <style>
@@ -106,21 +104,27 @@ TEST_F(LayoutViewTest, NamedPages) {
 
   ScopedPrintContext print_context(&GetDocument().View()->GetFrame());
   print_context->BeginPrintMode(500, 500);
-  const NamedPagesMapper* mapper = view->GetNamedPagesMapper();
-  ASSERT_TRUE(mapper);
 
-  EXPECT_EQ(mapper->NamedPageAtIndex(0), AtomicString());
-  EXPECT_EQ(mapper->NamedPageAtIndex(1), AtomicString());
-  EXPECT_EQ(mapper->NamedPageAtIndex(2), "yksi");
-  EXPECT_EQ(mapper->NamedPageAtIndex(3), "yksi");
-  EXPECT_EQ(mapper->NamedPageAtIndex(4), "yksi");
-  EXPECT_EQ(mapper->NamedPageAtIndex(5), "kaksi");
-  EXPECT_EQ(mapper->NamedPageAtIndex(6), "maksitaksi");
-  EXPECT_EQ(mapper->NamedPageAtIndex(7), AtomicString());
-  EXPECT_EQ(mapper->NamedPageAtIndex(8), "yksi");
-  EXPECT_EQ(mapper->NamedPageAtIndex(9), "yksi");
-  EXPECT_EQ(mapper->NamedPageAtIndex(100), "yksi");
-  EXPECT_EQ(mapper->LastPageName(), "yksi");
+  EXPECT_EQ(view->NamedPageAtIndex(0), AtomicString());
+  EXPECT_EQ(view->NamedPageAtIndex(1), AtomicString());
+  EXPECT_EQ(view->NamedPageAtIndex(2), "yksi");
+  EXPECT_EQ(view->NamedPageAtIndex(3), "yksi");
+  EXPECT_EQ(view->NamedPageAtIndex(4), "yksi");
+  EXPECT_EQ(view->NamedPageAtIndex(5), "kaksi");
+  EXPECT_EQ(view->NamedPageAtIndex(6), "maksitaksi");
+  EXPECT_EQ(view->NamedPageAtIndex(7), AtomicString());
+  EXPECT_EQ(view->NamedPageAtIndex(8), "yksi");
+
+  if (RuntimeEnabledFeatures::LayoutNGPrintingEnabled()) {
+    // LayoutNGPrinting doesn't provide a name for pages that don't exist.
+    EXPECT_EQ(view->NamedPageAtIndex(9), AtomicString());
+    EXPECT_EQ(view->NamedPageAtIndex(100), AtomicString());
+  } else {
+    // The legacy API, on the other hand, has no clue about how many pages we
+    // have, so it will just return the last page name, for good measure.
+    EXPECT_EQ(view->NamedPageAtIndex(9), "yksi");
+    EXPECT_EQ(view->NamedPageAtIndex(100), "yksi");
+  }
 }
 
 struct HitTestConfig {
@@ -177,6 +181,53 @@ INSTANTIATE_TEST_SUITE_P(
         HitTestConfig{true, mojom::EditingBehavior::kEditingUnixBehavior},
         HitTestConfig{true, mojom::EditingBehavior::kEditingAndroidBehavior},
         HitTestConfig{true, mojom::EditingBehavior::kEditingChromeOSBehavior}));
+
+// See editing/selection/click-after-nested-block.html
+TEST_P(LayoutViewHitTestTest, BlockInInlineBelowBottom) {
+  LoadAhem();
+  InsertStyleElement("body { margin: 0px; font: 10px/15px Ahem; }");
+  SetBodyInnerHTML(
+      "<div id=target>"
+      "<div id=line1>ab</div>"
+      "<div><span><div id=line2>cd</div></span></div>"
+      "</div>");
+  const auto& line2 = *GetElementById("line2");
+  const auto& cd = *To<Text>(line2.firstChild());
+  const auto& cd_0 = PositionWithAffinity(Position(cd, 0));
+  const auto& cd_1 = PositionWithAffinity(
+      Position(cd, 1),
+      LayoutNG() ? TextAffinity::kDownstream : TextAffinity::kUpstream);
+  const auto& cd_2 =
+      PositionWithAffinity(Position(cd, 2), TextAffinity::kUpstream);
+  const auto& kEndOfLine = PositionWithAffinity(
+      LayoutNG() ? Position::AfterNode(line2) : Position(cd, 2));
+
+  // hit test on line 2
+  EXPECT_EQ(cd_0, HitTest(0, 20));
+  EXPECT_EQ(cd_0, HitTest(5, 20));
+  EXPECT_EQ(cd_1, HitTest(10, 20));
+  EXPECT_EQ(cd_1, HitTest(15, 20));
+  EXPECT_EQ(cd_2, HitTest(20, 20));
+  EXPECT_EQ(cd_2, HitTest(25, 20));
+
+  // hit test below line 2
+  if (IsAndroidOrWindowsEditingBehavior()) {
+    EXPECT_EQ(cd_0, HitTest(0, 50));
+    EXPECT_EQ(cd_0, HitTest(5, 50));
+    EXPECT_EQ(cd_1, HitTest(10, 50));
+    EXPECT_EQ(cd_1, HitTest(15, 50));
+    EXPECT_EQ(cd_2, HitTest(20, 50));
+    EXPECT_EQ(cd_2, HitTest(25, 50));
+  } else {
+    // ShouldMoveCaretToHorizontalBoundaryWhenPastTopOrBottom behavior is
+    // in effect.
+    EXPECT_EQ(kEndOfLine, HitTest(0, 50));
+    EXPECT_EQ(kEndOfLine, HitTest(5, 50));
+    EXPECT_EQ(kEndOfLine, HitTest(10, 50));
+    EXPECT_EQ(kEndOfLine, HitTest(15, 50));
+    EXPECT_EQ(kEndOfLine, HitTest(25, 50));
+  }
+}
 
 // See editing/pasteboard/drag-drop-list.html
 TEST_P(LayoutViewHitTestTest, BlockInInlineWithListItem) {
@@ -1135,6 +1186,230 @@ TEST_P(LayoutViewHitTestTest, PseudoElementAfterBlockWithMargin) {
   EXPECT_EQ(expected, HitTest(55, 5)) << "after XY";
 }
 
+// http://crbug.com/1268782
+TEST_P(LayoutViewHitTestTest, ScrolledBlockChildren) {
+  LoadAhem();
+  InsertStyleElement(R"CSS(
+    body {
+      margin: 0px;
+      font: 10px/15px Ahem;
+    }
+    #sample { height: 60px; overflow: scroll; }
+  )CSS");
+  SetBodyInnerHTML(
+      "<div id=sample>"
+      "0<br>1<br>2<br><b id=four>4</b><br><b id=five>5</b><br>"
+      "<div id=x>X</div>"
+      "<b id=six>6</b><br>7<br>8<br>9<br>"
+      "</div>");
+
+  Element& sample = *GetElementById("sample");
+  sample.scrollTo(0, 45);
+
+  const auto& text_4 = *To<Text>(GetElementById("four")->firstChild());
+  const auto& text_5 = *To<Text>(GetElementById("five")->firstChild());
+  const auto& text_6 = *To<Text>(GetElementById("six")->firstChild());
+  const auto& text_x = *To<Text>(GetElementById("x")->firstChild());
+
+  EXPECT_EQ(PositionWithAffinity(Position(text_4, 1), TextAffinity::kUpstream),
+            HitTest(15, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(text_5, 1), TextAffinity::kUpstream),
+            HitTest(15, 15));
+  EXPECT_EQ(PositionWithAffinity(Position(text_5, 1), TextAffinity::kUpstream),
+            HitTest(15, 25));
+  EXPECT_EQ(PositionWithAffinity(Position(text_x, 1), TextAffinity::kUpstream),
+            HitTest(15, 35));
+  if (LayoutNG()) {
+    EXPECT_EQ(
+        PositionWithAffinity(Position(text_6, 1), TextAffinity::kUpstream),
+        HitTest(15, 45));
+  } else if (IsAndroidOrWindowsEditingBehavior()) {
+    EXPECT_EQ(
+        PositionWithAffinity(Position(text_6, 1), TextAffinity::kUpstream),
+        HitTest(15, 45));
+  } else {
+    EXPECT_EQ(
+        PositionWithAffinity(Position(text_6, 0), TextAffinity::kDownstream),
+        HitTest(15, 45));
+  }
+  EXPECT_EQ(PositionWithAffinity(Position(text_6, 1), TextAffinity::kUpstream),
+            HitTest(15, 55));
+}
+
+// See also "editing/selection/click-in-padding-with-multiple-line-boxes.html"
+TEST_P(LayoutViewHitTestTest, ScrolledInlineChildren) {
+  LoadAhem();
+  InsertStyleElement(R"CSS(
+    body {
+      margin: 0px;
+      font: 10px/15px Ahem;
+    }
+    #sample {
+      overflow: scroll;
+      padding-bottom: 10px;
+      padding-top: 10px;
+      white-space: nowrap;
+      width: 60px;
+    }
+  )CSS");
+  SetBodyInnerHTML("<div id=sample>012345678</div>");
+
+  Element& sample = *GetElementById("sample");
+  sample.scrollTo(20, 0);
+
+  const auto& text = *To<Text>(sample.firstChild());
+
+  if (LayoutNG()) {
+    if (IsAndroidOrWindowsEditingBehavior()) {
+      EXPECT_EQ(PositionWithAffinity(Position(text, 2)), HitTest(5, 5));
+      EXPECT_EQ(PositionWithAffinity(Position(text, 2)), HitTest(5, 15));
+      EXPECT_EQ(PositionWithAffinity(Position(text, 2)), HitTest(5, 25));
+
+      EXPECT_EQ(PositionWithAffinity(Position(text, 3)), HitTest(15, 5));
+      EXPECT_EQ(PositionWithAffinity(Position(text, 3)), HitTest(15, 15));
+      EXPECT_EQ(PositionWithAffinity(Position(text, 3)), HitTest(15, 25));
+
+      EXPECT_EQ(PositionWithAffinity(Position(text, 4)), HitTest(25, 5));
+      EXPECT_EQ(PositionWithAffinity(Position(text, 4)), HitTest(25, 15));
+      EXPECT_EQ(PositionWithAffinity(Position(text, 4)), HitTest(25, 25));
+
+      EXPECT_EQ(PositionWithAffinity(Position(text, 5)), HitTest(35, 5));
+      EXPECT_EQ(PositionWithAffinity(Position(text, 5)), HitTest(35, 15));
+      EXPECT_EQ(PositionWithAffinity(Position(text, 5)), HitTest(35, 25));
+
+      EXPECT_EQ(PositionWithAffinity(Position(text, 6)), HitTest(45, 5));
+      EXPECT_EQ(PositionWithAffinity(Position(text, 6)), HitTest(45, 15));
+      EXPECT_EQ(PositionWithAffinity(Position(text, 6)), HitTest(45, 25));
+
+      EXPECT_EQ(PositionWithAffinity(Position(text, 7)), HitTest(55, 5));
+      EXPECT_EQ(PositionWithAffinity(Position(text, 7)), HitTest(55, 15));
+      EXPECT_EQ(PositionWithAffinity(Position(text, 7)), HitTest(55, 25));
+    } else {
+      EXPECT_EQ(PositionWithAffinity(Position(text, 0)), HitTest(5, 5));
+      EXPECT_EQ(PositionWithAffinity(Position(text, 2)), HitTest(5, 15));
+      EXPECT_EQ(PositionWithAffinity(Position(text, 9)), HitTest(5, 25));
+
+      EXPECT_EQ(PositionWithAffinity(Position(text, 0)), HitTest(15, 5));
+      EXPECT_EQ(PositionWithAffinity(Position(text, 3)), HitTest(15, 15));
+      EXPECT_EQ(PositionWithAffinity(Position(text, 9)), HitTest(15, 25));
+
+      EXPECT_EQ(PositionWithAffinity(Position(text, 0)), HitTest(25, 5));
+      EXPECT_EQ(PositionWithAffinity(Position(text, 4)), HitTest(25, 15));
+      EXPECT_EQ(PositionWithAffinity(Position(text, 9)), HitTest(25, 25));
+
+      EXPECT_EQ(PositionWithAffinity(Position(text, 0)), HitTest(35, 5));
+      EXPECT_EQ(PositionWithAffinity(Position(text, 5)), HitTest(35, 15));
+      EXPECT_EQ(PositionWithAffinity(Position(text, 9)), HitTest(35, 25));
+
+      EXPECT_EQ(PositionWithAffinity(Position(text, 0)), HitTest(45, 5));
+      EXPECT_EQ(PositionWithAffinity(Position(text, 6)), HitTest(45, 15));
+      EXPECT_EQ(PositionWithAffinity(Position(text, 9)), HitTest(45, 25));
+
+      EXPECT_EQ(PositionWithAffinity(Position(text, 0)), HitTest(55, 5));
+      EXPECT_EQ(PositionWithAffinity(Position(text, 7)), HitTest(55, 15));
+      EXPECT_EQ(PositionWithAffinity(Position(text, 9)), HitTest(55, 25));
+    }
+  } else {
+    if (IsAndroidOrWindowsEditingBehavior()) {
+      EXPECT_EQ(
+          PositionWithAffinity(Position(text, 2), TextAffinity::kUpstream),
+          HitTest(5, 5));
+      EXPECT_EQ(
+          PositionWithAffinity(Position(text, 2), TextAffinity::kUpstream),
+          HitTest(5, 15));
+      EXPECT_EQ(
+          PositionWithAffinity(Position(text, 2), TextAffinity::kUpstream),
+          HitTest(5, 25));
+
+      EXPECT_EQ(
+          PositionWithAffinity(Position(text, 3), TextAffinity::kUpstream),
+          HitTest(15, 5));
+      EXPECT_EQ(
+          PositionWithAffinity(Position(text, 3), TextAffinity::kUpstream),
+          HitTest(15, 15));
+      EXPECT_EQ(
+          PositionWithAffinity(Position(text, 3), TextAffinity::kUpstream),
+          HitTest(15, 25));
+
+      EXPECT_EQ(
+          PositionWithAffinity(Position(text, 4), TextAffinity::kUpstream),
+          HitTest(25, 5));
+      EXPECT_EQ(
+          PositionWithAffinity(Position(text, 4), TextAffinity::kUpstream),
+          HitTest(25, 15));
+      EXPECT_EQ(
+          PositionWithAffinity(Position(text, 4), TextAffinity::kUpstream),
+          HitTest(25, 25));
+
+      EXPECT_EQ(
+          PositionWithAffinity(Position(text, 5), TextAffinity::kUpstream),
+          HitTest(35, 5));
+      EXPECT_EQ(
+          PositionWithAffinity(Position(text, 5), TextAffinity::kUpstream),
+          HitTest(35, 15));
+      EXPECT_EQ(
+          PositionWithAffinity(Position(text, 5), TextAffinity::kUpstream),
+          HitTest(35, 25));
+
+      EXPECT_EQ(
+          PositionWithAffinity(Position(text, 6), TextAffinity::kUpstream),
+          HitTest(45, 5));
+      EXPECT_EQ(
+          PositionWithAffinity(Position(text, 6), TextAffinity::kUpstream),
+          HitTest(45, 15));
+      EXPECT_EQ(
+          PositionWithAffinity(Position(text, 6), TextAffinity::kUpstream),
+          HitTest(45, 25));
+
+      EXPECT_EQ(
+          PositionWithAffinity(Position(text, 7), TextAffinity::kUpstream),
+          HitTest(55, 5));
+      EXPECT_EQ(
+          PositionWithAffinity(Position(text, 7), TextAffinity::kUpstream),
+          HitTest(55, 15));
+      EXPECT_EQ(
+          PositionWithAffinity(Position(text, 7), TextAffinity::kUpstream),
+          HitTest(55, 25));
+    } else {
+      EXPECT_EQ(PositionWithAffinity(Position(text, 0)), HitTest(5, 5));
+      EXPECT_EQ(
+          PositionWithAffinity(Position(text, 2), TextAffinity::kUpstream),
+          HitTest(5, 15));
+      EXPECT_EQ(PositionWithAffinity(Position(text, 9)), HitTest(5, 25));
+
+      EXPECT_EQ(PositionWithAffinity(Position(text, 0)), HitTest(15, 5));
+      EXPECT_EQ(
+          PositionWithAffinity(Position(text, 3), TextAffinity::kUpstream),
+          HitTest(15, 15));
+      EXPECT_EQ(PositionWithAffinity(Position(text, 9)), HitTest(15, 25));
+
+      EXPECT_EQ(PositionWithAffinity(Position(text, 0)), HitTest(25, 5));
+      EXPECT_EQ(
+          PositionWithAffinity(Position(text, 4), TextAffinity::kUpstream),
+          HitTest(25, 15));
+      EXPECT_EQ(PositionWithAffinity(Position(text, 9)), HitTest(25, 25));
+
+      EXPECT_EQ(PositionWithAffinity(Position(text, 0)), HitTest(35, 5));
+      EXPECT_EQ(
+          PositionWithAffinity(Position(text, 5), TextAffinity::kUpstream),
+          HitTest(35, 15));
+      EXPECT_EQ(PositionWithAffinity(Position(text, 9)), HitTest(35, 25));
+
+      EXPECT_EQ(PositionWithAffinity(Position(text, 0)), HitTest(45, 5));
+      EXPECT_EQ(
+          PositionWithAffinity(Position(text, 6), TextAffinity::kUpstream),
+          HitTest(45, 15));
+      EXPECT_EQ(PositionWithAffinity(Position(text, 9)), HitTest(45, 25));
+
+      EXPECT_EQ(PositionWithAffinity(Position(text, 0)), HitTest(55, 5));
+      EXPECT_EQ(
+          PositionWithAffinity(Position(text, 7), TextAffinity::kUpstream),
+          HitTest(55, 15));
+      EXPECT_EQ(PositionWithAffinity(Position(text, 9)), HitTest(55, 25));
+    }
+  }
+}
+
 TEST_P(LayoutViewHitTestTest, TextAndInputsWithRtlDirection) {
   LoadAhem();
   InsertStyleElement(R"CSS(
@@ -1231,7 +1506,7 @@ TEST_P(LayoutViewHitTestTest, TextAndInputsWithRtlDirection) {
 }
 
 TEST_P(LayoutViewHitTestTest, TextCombineOneTextNode) {
-  ScopedLayoutNGTextCombineForTest enable_layout_ng_text_combine(true);
+  ScopedLayoutNGForTest enable_layout_ng(true);
   LoadAhem();
   InsertStyleElement(
       "body { margin: 0px; font: 100px/110px Ahem; }"
@@ -1306,7 +1581,7 @@ TEST_P(LayoutViewHitTestTest, TextCombineOneTextNode) {
 }
 
 TEST_P(LayoutViewHitTestTest, TextCombineTwoTextNodes) {
-  ScopedLayoutNGTextCombineForTest enable_layout_ng_text_combine(true);
+  ScopedLayoutNGForTest enable_layout_ng(true);
   LoadAhem();
   InsertStyleElement(
       "body { margin: 0px; font: 100px/110px Ahem; }"

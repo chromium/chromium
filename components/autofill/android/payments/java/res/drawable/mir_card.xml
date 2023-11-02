@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2019 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="32dp" android:height="20dp" android:viewportWidth="32" android:viewportHeight="20">
+    <path android:pathData="M5.328 6.5l0.138 0.007c0.502 0.049 0.935 0.362 1.122 0.81l0.045 0.126 0.952 3.187c0.021 0.071 0.112 0.083 0.157 0.035l0.02-0.035 0.952-3.187C8.868 6.928 9.334 6.56 9.88 6.507L10.019 6.5h2.328v7H10.02V9.405c0-0.086-0.109-0.115-0.16-0.06L9.84 9.379 8.48 13.5H6.868l-1.36-4.121C5.48 9.296 5.368 9.3 5.336 9.367L5.328 9.405V13.5H3v-7h2.328zm10.357 0v4.025c0 0.079 0.094 0.112 0.149 0.07l0.027-0.033 1.6-3.315c0.199-0.414 0.61-0.693 1.076-0.74L18.678 6.5h1.97v7H18.32V9.254c0-0.082-0.1-0.114-0.154-0.067l-0.022 0.031-1.622 3.535c-0.19 0.412-0.594 0.692-1.055 0.74l-0.14 0.007h-1.97v-7h2.328zm13.103 3.226c-0.355 0.899-1.262 1.538-2.325 1.538h-2.477V13.5h-2.328V9.726z" android:strokeWidth="1" android:fillColor="#3BA536" android:fillType="evenOdd"/>
+    <path android:pathData="M26.463 6.5h-5.108c0.18 1.62 1.61 2.882 3.347 2.882h4.192c0.036-0.161 0.055-0.328 0.055-0.5 0-1.316-1.113-2.382-2.486-2.382" android:strokeWidth="1" android:fillColor="#0093D3" android:fillType="evenOdd"/>
+    <path android:pathData="M3 1h26a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2z" android:strokeWidth="1" android:fillColor="#FFFFFF" android:fillType="evenOdd"/>
+    <path android:pathData="M5.328 6.5l0.138 0.007c0.502 0.049 0.935 0.362 1.122 0.81l0.045 0.126 0.952 3.187c0.021 0.071 0.112 0.083 0.157 0.035l0.02-0.035 0.952-3.187C8.868 6.928 9.334 6.56 9.88 6.507L10.019 6.5h2.328v7H10.02V9.405c0-0.086-0.109-0.115-0.16-0.06L9.84 9.379 8.48 13.5H6.868l-1.36-4.121C5.48 9.296 5.368 9.3 5.336 9.367L5.328 9.405V13.5H3v-7h2.328zm10.357 0v4.025c0 0.079 0.094 0.112 0.149 0.07l0.027-0.033 1.6-3.315c0.199-0.414 0.61-0.693 1.076-0.74L18.678 6.5h1.97v7H18.32V9.254c0-0.082-0.1-0.114-0.154-0.067l-0.022 0.031-1.622 3.535c-0.19 0.412-0.594 0.692-1.055 0.74l-0.14 0.007h-1.97v-7h2.328zm13.103 3.226c-0.355 0.899-1.262 1.538-2.325 1.538h-2.477V13.5h-2.328V9.726z" android:strokeWidth="1" android:fillColor="#3BA536" android:fillType="evenOdd"/>
+    <path android:pathData="M26.463 6.5h-5.108c0.18 1.62 1.61 2.882 3.347 2.882h4.192c0.036-0.161 0.055-0.328 0.055-0.5 0-1.316-1.113-2.382-2.486-2.382" android:strokeWidth="1" android:fillColor="#0093D3" android:fillType="evenOdd"/>
+</vector>

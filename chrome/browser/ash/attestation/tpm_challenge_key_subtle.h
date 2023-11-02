@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,11 +13,11 @@
 #include "base/sequence_checker.h"
 #include "chrome/browser/ash/attestation/tpm_challenge_key_result.h"
 #include "chrome/browser/platform_keys/platform_keys.h"
-#include "chromeos/attestation/attestation_flow.h"
-#include "chromeos/dbus/attestation/attestation_ca.pb.h"
-#include "chromeos/dbus/attestation/attestation_client.h"
-#include "chromeos/dbus/attestation/interface.pb.h"
-#include "chromeos/dbus/constants/attestation_constants.h"
+#include "chromeos/ash/components/attestation/attestation_flow.h"
+#include "chromeos/ash/components/dbus/attestation/attestation_ca.pb.h"
+#include "chromeos/ash/components/dbus/attestation/attestation_client.h"
+#include "chromeos/ash/components/dbus/attestation/interface.pb.h"
+#include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"
@@ -95,7 +95,7 @@ class TpmChallengeKeySubtle {
       const std::string& key_name,
       Profile* profile,
       TpmChallengeKeyCallback callback,
-      const absl::optional<::attestation::DeviceTrustSignals>& signals) = 0;
+      const absl::optional<std::string>& signals) = 0;
 
   // Generates a VA challenge response using the key pair prepared by
   // |PrepareKey| method. Returns VA challenge response via |callback|. In case
@@ -141,14 +141,12 @@ class TpmChallengeKeySubtleImpl final : public TpmChallengeKeySubtle {
   ~TpmChallengeKeySubtleImpl() override;
 
   // TpmChallengeKeySubtle
-  void StartPrepareKeyStep(
-      AttestationKeyType key_type,
-      bool will_register_key,
-      const std::string& key_name,
-      Profile* profile,
-      TpmChallengeKeyCallback callback,
-      const absl::optional<::attestation::DeviceTrustSignals>& signals)
-      override;
+  void StartPrepareKeyStep(AttestationKeyType key_type,
+                           bool will_register_key,
+                           const std::string& key_name,
+                           Profile* profile,
+                           TpmChallengeKeyCallback callback,
+                           const absl::optional<std::string>& signals) override;
   void StartSignChallengeStep(const std::string& challenge,
                               TpmChallengeKeyCallback callback) override;
   void StartRegisterKeyStep(TpmChallengeKeyCallback callback) override;
@@ -243,7 +241,7 @@ class TpmChallengeKeySubtleImpl final : public TpmChallengeKeySubtle {
   // as corporate.
   std::string public_key_;
   // Signals from Context Aware Access.
-  absl::optional<::attestation::DeviceTrustSignals> signals_;
+  absl::optional<std::string> signals_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

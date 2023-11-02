@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,25 +7,6 @@
 #include "base/metrics/histogram_functions.h"
 
 namespace payments {
-
-void RecordEnrollDialogShown(SecurePaymentConfirmationEnrollDialogShown shown) {
-  // The histogram name must be kept in sync with
-  // tools/metrics/histograms/metadata/payment/histograms.xml
-  base::UmaHistogramEnumeration(
-      "PaymentRequest.SecurePaymentConfirmation.Funnel."
-      "EnrollDialogShown",
-      shown);
-}
-
-void RecordEnrollDialogResult(
-    SecurePaymentConfirmationEnrollDialogResult result) {
-  // The histogram name must be kept in sync with
-  // tools/metrics/histograms/metadata/payment/histograms.xml
-  base::UmaHistogramEnumeration(
-      "PaymentRequest.SecurePaymentConfirmation.Funnel."
-      "EnrollDialogResult",
-      result);
-}
 
 void RecordEnrollSystemPromptResult(
     SecurePaymentConfirmationEnrollSystemPromptResult result) {

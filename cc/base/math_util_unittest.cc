@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,7 +26,7 @@ TEST(MathUtilTest, ProjectionOfPerpendicularPlane) {
 
   gfx::Transform transform;
   transform.MakeIdentity();
-  transform.matrix().set(2, 2, 0);
+  transform.set_rc(2, 2, 0);
 
   gfx::RectF rect = gfx::RectF(0, 0, 1, 1);
   gfx::RectF projected_rect = MathUtil::ProjectClippedRect(transform, rect);
@@ -47,12 +47,11 @@ TEST(MathUtilTest, ProjectionOfAlmostPerpendicularPlane) {
   //   +16331238407143424.0000 +0.0000 -0.0000 +51346917453137000267776.0000
   //   +0.0000 +0.0000 +0.0000 +1.0000 ]
   transform.MakeIdentity();
-  transform.matrix().set(0, 2, static_cast<SkScalar>(-1));
-  transform.matrix().set(0, 3, static_cast<SkScalar>(3144132.0));
-  transform.matrix().set(2, 0, static_cast<SkScalar>(16331238407143424.0));
-  transform.matrix().set(2, 2, static_cast<SkScalar>(-1e-33));
-  transform.matrix().set(2, 3,
-                         static_cast<SkScalar>(51346917453137000267776.0));
+  transform.set_rc(0, 2, static_cast<SkScalar>(-1));
+  transform.set_rc(0, 3, static_cast<SkScalar>(3144132.0));
+  transform.set_rc(2, 0, static_cast<SkScalar>(16331238407143424.0));
+  transform.set_rc(2, 2, static_cast<SkScalar>(-1e-33));
+  transform.set_rc(2, 3, static_cast<SkScalar>(51346917453137000267776.0));
 
   gfx::RectF rect = gfx::RectF(0, 0, 1, 1);
   gfx::RectF projected_rect = MathUtil::ProjectClippedRect(transform, rect);
@@ -345,33 +344,33 @@ TEST(MathUtilTest, MapEnclosingRectWithLargeTransforms) {
   gfx::Transform rotation;
   rotation.RotateAboutYAxis(170.0);
 
-  int max_int = std::numeric_limits<int>::max();
-
+  // The following code should not crash due to NaNs. The result rects are
+  // empty because either the geometry was saturated or NaNs were set to 0.
   output = MathUtil::MapEnclosingClippedRect(large_x_scale, input);
-  EXPECT_EQ(gfx::Rect(max_int, 2, 0, 200), output);
+  EXPECT_TRUE(output.IsEmpty());
 
   output = MathUtil::MapEnclosingClippedRect(large_x_scale * rotation, input);
-  EXPECT_EQ(gfx::Rect(), output);
+  EXPECT_TRUE(output.IsEmpty());
 
   output = MathUtil::MapEnclosingClippedRect(infinite_x_scale, input);
-  EXPECT_EQ(gfx::Rect(max_int, 2, 0, 200), output);
+  EXPECT_TRUE(output.IsEmpty());
 
   output =
       MathUtil::MapEnclosingClippedRect(infinite_x_scale * rotation, input);
-  EXPECT_EQ(gfx::Rect(), output);
+  EXPECT_TRUE(output.IsEmpty());
 
   output = MathUtil::MapEnclosingClippedRect(large_y_scale, input);
-  EXPECT_EQ(gfx::Rect(1, max_int, 100, 0), output);
+  EXPECT_TRUE(output.IsEmpty());
 
   output = MathUtil::MapEnclosingClippedRect(large_y_scale * rotation, input);
-  EXPECT_EQ(gfx::Rect(-100, max_int, 100, 0), output);
+  EXPECT_TRUE(output.IsEmpty());
 
   output = MathUtil::MapEnclosingClippedRect(infinite_y_scale, input);
-  EXPECT_EQ(gfx::Rect(1, max_int, 100, 0), output);
+  EXPECT_TRUE(output.IsEmpty());
 
   output =
       MathUtil::MapEnclosingClippedRect(infinite_y_scale * rotation, input);
-  EXPECT_EQ(gfx::Rect(), output);
+  EXPECT_TRUE(output.IsEmpty());
 }
 
 TEST(MathUtilTest, MapEnclosingRectIgnoringError) {
@@ -413,35 +412,35 @@ TEST(MathUtilTest, ProjectEnclosingRectWithLargeTransforms) {
   gfx::Transform rotation;
   rotation.RotateAboutYAxis(170.0);
 
-  int max_int = std::numeric_limits<int>::max();
-
+  // The following code should not crash due to NaNs. The result rects are
+  // empty because either the geometry was saturated or NaNs were set to 0.
   output = MathUtil::ProjectEnclosingClippedRect(large_x_scale, input);
-  EXPECT_EQ(gfx::Rect(max_int, 2, 0, 200), output);
+  EXPECT_TRUE(output.IsEmpty());
 
   output =
       MathUtil::ProjectEnclosingClippedRect(large_x_scale * rotation, input);
-  EXPECT_EQ(gfx::Rect(), output);
+  EXPECT_TRUE(output.IsEmpty());
 
   output = MathUtil::ProjectEnclosingClippedRect(infinite_x_scale, input);
-  EXPECT_EQ(gfx::Rect(max_int, 2, 0, 200), output);
+  EXPECT_TRUE(output.IsEmpty());
 
   output =
       MathUtil::ProjectEnclosingClippedRect(infinite_x_scale * rotation, input);
-  EXPECT_EQ(gfx::Rect(), output);
+  EXPECT_TRUE(output.IsEmpty());
 
   output = MathUtil::ProjectEnclosingClippedRect(large_y_scale, input);
-  EXPECT_EQ(gfx::Rect(1, max_int, 100, 0), output);
+  EXPECT_TRUE(output.IsEmpty());
 
   output =
       MathUtil::ProjectEnclosingClippedRect(large_y_scale * rotation, input);
-  EXPECT_EQ(gfx::Rect(-103, max_int, 102, 0), output);
+  EXPECT_TRUE(output.IsEmpty());
 
   output = MathUtil::ProjectEnclosingClippedRect(infinite_y_scale, input);
-  EXPECT_EQ(gfx::Rect(1, max_int, 100, 0), output);
+  EXPECT_TRUE(output.IsEmpty());
 
   output =
       MathUtil::ProjectEnclosingClippedRect(infinite_y_scale * rotation, input);
-  EXPECT_EQ(gfx::Rect(), output);
+  EXPECT_TRUE(output.IsEmpty());
 }
 
 TEST(MathUtilTest, RoundUp) {
@@ -985,7 +984,7 @@ TEST(MathUtilTest, MapClippedQuadClampWholePlaneBelow) {
 
 TEST(MathUtilTest, MapClippedQuadInfiniteMatrix) {
   // clang-format off
-  gfx::Transform transform(
+  auto transform = gfx::Transform::RowMajor(
       1.0f, 0.0f, 0.0f, 0.0f,
       0.0f, -100.0f, 0.0f, std::numeric_limits<float>::infinity(),
       0.0f, 0.0f, 1.0f, 0.0f,

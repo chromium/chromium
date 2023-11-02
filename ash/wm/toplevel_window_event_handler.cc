@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include "ash/constants/app_types.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
+#include "ash/wm/multitask_menu_nudge_controller.h"
 #include "ash/wm/resize_shadow.h"
 #include "ash/wm/resize_shadow_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -456,7 +457,7 @@ void ToplevelWindowEventHandler::OnGestureEvent(ui::GestureEvent* event) {
       event->StopPropagation();
       return;
     case ui::ET_SCROLL_FLING_START:
-      FALLTHROUGH;
+      [[fallthrough]];
     case ui::ET_GESTURE_SWIPE:
       HandleFlingOrSwipe(event);
       return;
@@ -606,8 +607,9 @@ aura::Window* ToplevelWindowEventHandler::GetTargetForClientAreaGesture(
     return nullptr;
   }
 
-  if (toplevel->GetProperty(aura::client::kAppType) ==
-      static_cast<int>(AppType::BROWSER)) {
+  auto app_type = toplevel->GetProperty(aura::client::kAppType);
+  if (app_type == static_cast<int>(AppType::BROWSER) ||
+      app_type == static_cast<int>(AppType::LACROS)) {
     return nullptr;
   }
 
@@ -643,7 +645,9 @@ bool ToplevelWindowEventHandler::PrepareForDrag(
     int window_component,
     ::wm::WindowMoveSource source,
     bool grab_capture) {
-  if (window_resizer_)
+  // Do not allow resizing if there is already one in progress or if the
+  // window's state is not managed by the window manager.
+  if (window_resizer_ || !WindowState::Get(window))
     return false;
 
   std::unique_ptr<WindowResizer> resizer(
@@ -731,10 +735,16 @@ void ToplevelWindowEventHandler::HandleDrag(aura::Window* target,
   if (!window_resizer_)
     return;
   gfx::PointF location_in_parent = event->location_f();
-  aura::Window::ConvertPointToTarget(target, target->parent(),
-                                     &location_in_parent);
+  aura::Window::ConvertPointToTarget(
+      target, window_resizer_->resizer()->GetTarget()->parent(),
+      &location_in_parent);
   window_resizer_->resizer()->Drag(location_in_parent, event->flags());
   event->StopPropagation();
+
+  // Dragging may change the window that has capture, invalidating
+  // `window_resizer_`.
+  if (window_resizer_ && window_resizer_->IsResize())
+    Shell::Get()->multitask_menu_nudge_controller()->MaybeShowNudge(target);
 }
 
 void ToplevelWindowEventHandler::HandleMouseMoved(aura::Window* target,

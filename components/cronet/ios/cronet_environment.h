@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread.h"
+#include "base/values.h"
 #include "components/cronet/url_request_context_config.h"
 #include "components/cronet/version.h"
 #include "net/cert/cert_verifier.h"
@@ -189,7 +190,7 @@ class CronetEnvironment {
   std::string accept_language_;
   std::string experimental_options_;
   // Effective experimental options. Kept for NetLog.
-  std::unique_ptr<base::DictionaryValue> effective_experimental_options_;
+  base::Value::Dict effective_experimental_options_;
   std::string ssl_key_log_file_name_;
   URLRequestContextConfig::HttpCacheType http_cache_;
   PkpVector pkp_list_;

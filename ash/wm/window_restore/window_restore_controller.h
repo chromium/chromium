@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "components/account_id/account_id.h"
-#include "components/app_restore/full_restore_info.h"
+#include "components/app_restore/app_restore_info.h"
 #include "components/app_restore/window_info.h"
 #include "ui/aura/window_observer.h"
 
@@ -32,7 +32,7 @@ class WindowState;
 
 class ASH_EXPORT WindowRestoreController
     : public TabletModeObserver,
-      public full_restore::FullRestoreInfo::Observer,
+      public app_restore::AppRestoreInfo::Observer,
       public aura::WindowObserver {
  public:
   using SaveWindowCallback =
@@ -47,10 +47,10 @@ class ASH_EXPORT WindowRestoreController
   // Shell.
   static WindowRestoreController* Get();
 
-  // Returns whether a Full Restore'd window can be activated. Only ghost
-  // windows, windows without the `app_restore::kLaunchedFromFullRestoreKey`,
-  // and topmost Full Restore'd windows return true.
-  static bool CanActivateFullRestoredWindow(const aura::Window* window);
+  // Returns whether a app restored window can be activated. Only ghost
+  // windows, windows without the `app_restore::kLaunchedFromAppRestoreKey`,
+  // and topmost app restored windows return true.
+  static bool CanActivateRestoredWindow(const aura::Window* window);
 
   // When windows are restored, they're restored inactive so during tablet mode
   // a window may be restored above the app list while the app list is still
@@ -85,17 +85,21 @@ class ASH_EXPORT WindowRestoreController
   // Stacks the window according to its activation index.
   void StackWindow(aura::Window* window);
 
+  // Returns true if `window` is currently in the process of being restored by
+  // `this`.
+  bool IsRestoringWindow(aura::Window* window) const;
+
   // TabletModeObserver:
   void OnTabletModeStarted() override;
   void OnTabletModeEnded() override;
   void OnTabletControllerDestroyed() override;
 
-  // full_restore::FullRestoreInfo::Observer:
+  // app_restore::AppRestoreInfo::Observer:
   void OnRestorePrefChanged(const AccountId& account_id,
                             bool could_restore) override;
   void OnAppLaunched(aura::Window* window) override;
   void OnWidgetInitialized(views::Widget* widget) override;
-  void OnARCTaskReadyForUnparentedWindow(aura::Window* window) override;
+  void OnParentWindowToValidContainer(aura::Window* window) override;
 
   // aura::WindowObserver:
   void OnWindowPropertyChanged(aura::Window* window,
@@ -104,7 +108,9 @@ class ASH_EXPORT WindowRestoreController
   void OnWindowVisibilityChanged(aura::Window* window, bool visible) override;
   void OnWindowDestroying(aura::Window* window) override;
 
-  bool is_restoring_snap_state() const { return is_restoring_snap_state_; }
+  const aura::Window* to_be_snapped_window() const {
+    return to_be_snapped_window_;
+  }
 
  private:
   friend class WindowRestoreControllerTest;
@@ -125,15 +131,15 @@ class ASH_EXPORT WindowRestoreController
 
   // Retrieves the saved `WindowInfo` of `window` and restores its
   // `WindowStateType`. Also creates a post task to clear `window`s
-  // `app_restore::kLaunchedFromFullRestoreKey`.
+  // `app_restore::kLaunchedFromAppRestoreKey`.
   void RestoreStateTypeAndClearLaunchedKey(aura::Window* window);
 
   // Calls `CancelAndRemoveRestorePropertyClearCallback()`. Also sets the
-  // `window`'s `app_restore::kLaunchedFromFullRestoreKey` to false if the
+  // `window`'s `app_restore::kLaunchedFromAppRestoreKey` to false if the
   // window is not destroying.
   void ClearLaunchedKey(aura::Window* window);
 
-  // Cancels and removes the Full Restore property clear callback for `window`
+  // Cancels and removes the App Restore property clear callback for `window`
   // from `restore_property_clear_callbacks_`.
   void CancelAndRemoveRestorePropertyClearCallback(aura::Window* window);
 
@@ -143,14 +149,16 @@ class ASH_EXPORT WindowRestoreController
   void SetSaveWindowCallbackForTesting(SaveWindowCallback callback);
 
   // True whenever we are attempting to restore snap state.
-  bool is_restoring_snap_state_ = false;
+  // The window that is about to be snapped by window restore. Reset to nullptr
+  // if we aren't directly working with the window anymore.
+  aura::Window* to_be_snapped_window_ = nullptr;
 
   // The set of windows that have had their widgets initialized and will be
   // shown later.
   base::flat_set<aura::Window*> to_be_shown_windows_;
 
   // When a window is restored, we post a task to clear its
-  // `app_restore::kLaunchedFromFullRestoreKey` property. However, a window can
+  // `app_restore::kLaunchedFromAppRestoreKey` property. However, a window can
   // be closed before this task occurs, deleting the window. This map keeps
   // track of these posted tasks so we can cancel them upon window deletion.
   std::map<aura::Window*, base::CancelableOnceClosure>
@@ -159,9 +167,9 @@ class ASH_EXPORT WindowRestoreController
   base::ScopedObservation<TabletModeController, TabletModeObserver>
       tablet_mode_observation_{this};
 
-  base::ScopedObservation<full_restore::FullRestoreInfo,
-                          full_restore::FullRestoreInfo::Observer>
-      full_restore_info_observation_{this};
+  base::ScopedObservation<app_restore::AppRestoreInfo,
+                          app_restore::AppRestoreInfo::Observer>
+      app_restore_info_observation_{this};
 
   // Observes windows launched by window restore.
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>

@@ -30,6 +30,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/graphics/decoding_image_generator.h"
 #include "third_party/blink/renderer/platform/graphics/image_decoding_store.h"
@@ -39,6 +40,7 @@
 #include "third_party/blink/renderer/platform/image-decoders/segment_reader.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImage.h"
 
 namespace blink {
@@ -74,47 +76,6 @@ void ReportIncrementalDecodeNeeded(bool all_data_received,
   }
 }
 
-void RecordByteSizeAndWhetherIncrementalDecode(const String& image_type,
-                                               bool incrementally_decoded,
-                                               size_t bytes) {
-  DCHECK(IsMainThread());
-  // A base::HistogramBase::Sample may not fit the number of bytes of the image.
-  base::HistogramBase::Sample sample_bytes =
-      base::saturated_cast<base::HistogramBase::Sample>(bytes);
-  if (image_type == "jpg") {
-    if (incrementally_decoded) {
-      DEFINE_STATIC_LOCAL(
-          CustomCountHistogram, jpeg_byte_size_incrementally_decoded_histogram,
-          ("Blink.ImageDecoders.IncrementallyDecodedByteSize.Jpeg",
-           125 /* min */, 15000000 /* 15 MB */, 100 /* bucket count */));
-      jpeg_byte_size_incrementally_decoded_histogram.Count(sample_bytes);
-    } else {
-      DEFINE_STATIC_LOCAL(
-          CustomCountHistogram,
-          jpeg_byte_size_initially_fully_decoded_histogram,
-          ("Blink.ImageDecoders.InitiallyFullyDecodedByteSize.Jpeg",
-           125 /* min */, 15000000 /* 15 MB */, 100 /* bucket count */));
-      jpeg_byte_size_initially_fully_decoded_histogram.Count(sample_bytes);
-    }
-  } else {
-    DCHECK_EQ(image_type, "webp");
-    if (incrementally_decoded) {
-      DEFINE_STATIC_LOCAL(
-          CustomCountHistogram, webp_byte_size_incrementally_decoded_histogram,
-          ("Blink.ImageDecoders.IncrementallyDecodedByteSize.WebP",
-           125 /* min */, 15000000 /* 15 MB */, 100 /* bucket count */));
-      webp_byte_size_incrementally_decoded_histogram.Count(sample_bytes);
-    } else {
-      DEFINE_STATIC_LOCAL(
-          CustomCountHistogram,
-          webp_byte_size_initially_fully_decoded_histogram,
-          ("Blink.ImageDecoders.InitiallyFullyDecodedByteSize.WebP",
-           125 /* min */, 15000000 /* 15 MB */, 100 /* bucket count */));
-      webp_byte_size_initially_fully_decoded_histogram.Count(sample_bytes);
-    }
-  }
-}
-
 }  // namespace
 
 struct DeferredFrameData {
@@ -127,7 +88,7 @@ struct DeferredFrameData {
   DeferredFrameData& operator=(const DeferredFrameData&) = delete;
 
   ImageOrientation orientation_;
-  IntSize density_corrected_size_;
+  gfx::Size density_corrected_size_;
   base::TimeDelta duration_;
   bool is_received_;
 };
@@ -180,19 +141,34 @@ String DeferredImageDecoder::FilenameExtension() const {
 }
 
 sk_sp<PaintImageGenerator> DeferredImageDecoder::CreateGenerator() {
+  recordreplay::Assert(
+      "[RUN-1975-2036] DeferredImageDecoder::CreateGenerator A %d %s",
+      complete_frame_content_id_, FilenameExtension().Utf8().c_str());
   if (frame_generator_ && frame_generator_->DecodeFailed())
     return nullptr;
 
-  if (invalid_image_ || frame_data_.IsEmpty())
+  recordreplay::Assert(
+      "[RUN-1975-2036] DeferredImageDecoder::CreateGenerator B %d",
+      invalid_image_);
+
+  if (invalid_image_ || frame_data_.empty())
     return nullptr;
 
   DCHECK(frame_generator_);
   const SkISize& decoded_size = frame_generator_->GetFullSize();
+
+  recordreplay::Assert(
+      "[RUN-1975-2036] DeferredImageDecoder::CreateGenerator C %d %d",
+      decoded_size.width(), decoded_size.height());
+
   DCHECK_GT(decoded_size.width(), 0);
   DCHECK_GT(decoded_size.height(), 0);
 
   scoped_refptr<SegmentReader> segment_reader =
       parkable_image_->MakeROSnapshot();
+
+  recordreplay::Assert(
+      "[RUN-1975-2036] DeferredImageDecoder::CreateGenerator D");
 
   SkImageInfo info =
       SkImageInfo::MakeN32(decoded_size.width(), decoded_size.height(),
@@ -205,6 +181,9 @@ sk_sp<PaintImageGenerator> DeferredImageDecoder::CreateGenerator() {
     frames[i].complete = frame_data_[i].is_received_;
     frames[i].duration = FrameDurationAtIndex(i);
   }
+
+  recordreplay::Assert(
+      "[RUN-1975-2036] DeferredImageDecoder::CreateGenerator E");
 
   // Report UMA about whether incremental decoding is done for JPEG/WebP images.
   const String image_type = FilenameExtension();
@@ -231,19 +210,17 @@ sk_sp<PaintImageGenerator> DeferredImageDecoder::CreateGenerator() {
   image_metadata_->all_data_received_prior_to_decode =
       !incremental_decode_needed_.value();
 
+  recordreplay::Assert(
+      "[RUN-1975-2036] DeferredImageDecoder::CreateGenerator F");
+
   auto generator = DecodingImageGenerator::Create(
       frame_generator_, info, std::move(segment_reader), std::move(frames),
       complete_frame_content_id_, all_data_received_, can_yuv_decode_,
       *image_metadata_);
   first_decoding_generator_created_ = true;
 
-  size_t image_byte_size = ByteSize();
-  if (all_data_received_ && (image_type == "jpg" || image_type == "webp")) {
-    DCHECK(incremental_decode_needed_.has_value());
-    DCHECK(image_byte_size);
-    RecordByteSizeAndWhetherIncrementalDecode(
-        image_type, incremental_decode_needed_.value(), image_byte_size);
-  }
+  recordreplay::Assert(
+      "[RUN-1975-2036] DeferredImageDecoder::CreateGenerator G");
 
   return generator;
 }
@@ -300,11 +277,11 @@ bool DeferredImageDecoder::HasEmbeddedColorProfile() const {
                            : has_embedded_color_profile_;
 }
 
-IntSize DeferredImageDecoder::Size() const {
+gfx::Size DeferredImageDecoder::Size() const {
   return metadata_decoder_ ? metadata_decoder_->Size() : size_;
 }
 
-IntSize DeferredImageDecoder::FrameSizeAtIndex(wtf_size_t index) const {
+gfx::Size DeferredImageDecoder::FrameSizeAtIndex(wtf_size_t index) const {
   // FIXME: LocalFrame size is assumed to be uniform. This might not be true for
   // future supported codecs.
   return metadata_decoder_ ? metadata_decoder_->FrameSizeAtIndex(index) : size_;
@@ -369,7 +346,7 @@ ImageOrientation DeferredImageDecoder::OrientationAtIndex(
   return ImageOrientationEnum::kDefault;
 }
 
-IntSize DeferredImageDecoder::DensityCorrectedSizeAtIndex(
+gfx::Size DeferredImageDecoder::DensityCorrectedSizeAtIndex(
     wtf_size_t index) const {
   if (metadata_decoder_)
     return metadata_decoder_->DensityCorrectedSize();

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.components.payments.PaymentManifestVerifier.ManifestVerifyCallback;
 import org.chromium.components.payments.intent.WebPaymentIntentHelper;
 import org.chromium.payments.mojom.PaymentDetailsModifier;
@@ -391,6 +392,14 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
                 }
                 urlMethodToSupportedOriginsMapping.get(supportedUrlMethod).add(appOrigin);
             }
+
+            // Record the total number of payment methods that this activity `ResolveInfo app`
+            // declares to support in its metadata.
+            if (!TextUtils.isEmpty(defaultMethod)) supportedMethods.add(defaultMethod);
+            RecordHistogram.recordCustomCountHistogram(
+                    /*name=*/"PaymentRequest.NumberOfSupportedMethods.AndroidApp",
+                    /*sample=*/supportedMethods.size(),
+                    /*min=*/1, /*max=*/10, /*numBuckets=*/10);
         }
 
         List<PaymentManifestVerifier> manifestVerifiers = new ArrayList<>();
@@ -406,7 +415,8 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
             // Initialize the native side of the downloader, once we know that a manifest file needs
             // to be downloaded.
             if (!mDownloader.isInitialized()) {
-                mDownloader.initialize(mFactoryDelegate.getParams().getWebContents());
+                mDownloader.initialize(mFactoryDelegate.getParams().getWebContents(),
+                        mFactoryDelegate.getCSPChecker());
             }
 
             manifestVerifiers.add(new PaymentManifestVerifier(

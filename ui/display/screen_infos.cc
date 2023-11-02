@@ -1,8 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/display/screen_infos.h"
+
+#include "base/ranges/algorithm.h"
 
 namespace display {
 
@@ -14,7 +16,8 @@ ScreenInfos::~ScreenInfos() = default;
 ScreenInfos& ScreenInfos::operator=(const ScreenInfos& other) = default;
 bool ScreenInfos::operator==(const ScreenInfos& other) const {
   return screen_infos == other.screen_infos &&
-         current_display_id == other.current_display_id;
+         current_display_id == other.current_display_id &&
+         system_cursor_size == other.system_cursor_size;
 }
 
 bool ScreenInfos::operator!=(const ScreenInfos& other) const {

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/location.h"
+#include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -40,6 +41,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_rep.h"
 
 using extensions::Extension;
 using extensions::Manifest;
@@ -481,14 +483,15 @@ scoped_refptr<Extension>
     std::string* error) {
   std::unique_ptr<base::DictionaryValue> localized_manifest;
   if (!localized_name.empty() || !localized_description.empty()) {
-    localized_manifest.reset(manifest->DeepCopy());
+    localized_manifest = base::DictionaryValue::From(
+        base::Value::ToUniquePtrValue(manifest->Clone()));
     if (!localized_name.empty()) {
-      localized_manifest->SetString(extensions::manifest_keys::kName,
-                                    localized_name);
+      localized_manifest->SetStringKey(extensions::manifest_keys::kName,
+                                       localized_name);
     }
     if (!localized_description.empty()) {
-      localized_manifest->SetString(extensions::manifest_keys::kDescription,
-                                    localized_description);
+      localized_manifest->SetStringKey(extensions::manifest_keys::kDescription,
+                                       localized_description);
     }
   }
 

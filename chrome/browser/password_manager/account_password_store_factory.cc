@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -31,12 +32,11 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "base/task/task_traits.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/ui/browser.h"
@@ -45,19 +45,25 @@
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/browser/browser_task_traits.h"
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 using password_manager::PasswordStore;
 using password_manager::PasswordStoreInterface;
-
-#if !defined(OS_ANDROID)
+using password_manager::UnsyncedCredentialsDeletionNotifier;
 
 namespace {
 
-void UpdateAllFormManagersAndPasswordReuseManager(Profile* profile) {
+void SyncEnabledOrDisabled(Profile* profile) {
+#if BUILDFLAG(IS_ANDROID)
+  NOTREACHED();
+#else
+  // Update all form managers. Incognito tabs originated from this profile
+  // can also fill passwords, so they should be included.
   for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->profile() != profile)
+    if (browser->profile()->GetOriginalProfile() !=
+        profile->GetOriginalProfile()) {
       continue;
+    }
     TabStripModel* tabs = browser->tab_strip_model();
     for (int index = 0; index < tabs->count(); index++) {
       content::WebContents* web_contents = tabs->GetWebContentsAt(index);
@@ -69,10 +75,12 @@ void UpdateAllFormManagersAndPasswordReuseManager(Profile* profile) {
       PasswordReuseManagerFactory::GetForProfile(profile);
   if (reuse_manager)
     reuse_manager->AccountStoreStateChanged();
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 class UnsyncedCredentialsDeletionNotifierImpl
-    : public PasswordStore::UnsyncedCredentialsDeletionNotifier {
+    : public UnsyncedCredentialsDeletionNotifier {
  public:
   explicit UnsyncedCredentialsDeletionNotifierImpl(Profile* profile);
   ~UnsyncedCredentialsDeletionNotifierImpl() override = default;
@@ -82,7 +90,7 @@ class UnsyncedCredentialsDeletionNotifierImpl
   base::WeakPtr<UnsyncedCredentialsDeletionNotifier> GetWeakPtr() override;
 
  private:
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
   base::WeakPtrFactory<UnsyncedCredentialsDeletionNotifier> weak_ptr_factory_{
       this};
 };
@@ -107,24 +115,14 @@ void UnsyncedCredentialsDeletionNotifierImpl::Notify(
   ui_controller->NotifyUnsyncedCredentialsWillBeDeleted(std::move(credentials));
 }
 
-base::WeakPtr<PasswordStore::UnsyncedCredentialsDeletionNotifier>
+base::WeakPtr<UnsyncedCredentialsDeletionNotifier>
 UnsyncedCredentialsDeletionNotifierImpl::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
-#endif  // !defined(OS_ANDROID)
-
-void SyncEnabledOrDisabled(Profile* profile) {
-#if defined(OS_ANDROID)
-  NOTREACHED();
-#else
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&UpdateAllFormManagersAndPasswordReuseManager, profile));
-#endif  // defined(OS_ANDROID)
-}
 // static
 scoped_refptr<PasswordStoreInterface>
 AccountPasswordStoreFactory::GetForProfile(Profile* profile,
@@ -172,7 +170,7 @@ AccountPasswordStoreFactory::BuildServiceInstanceFor(
           profile->GetPath()));
 
   scoped_refptr<password_manager::PasswordStore> ps =
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       new password_manager::PasswordStore(
           std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
               std::move(login_db)));

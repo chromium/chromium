@@ -2,6 +2,7 @@
   "WebRTC Chromium FYI Android Builder": {
     "gn_args": {
       "dcheck_always_on": false,
+      "debuggable_apks": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
@@ -14,6 +15,7 @@
   },
   "WebRTC Chromium FYI Android Builder (dbg)": {
     "gn_args": {
+      "debuggable_apks": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": true,
@@ -25,6 +27,7 @@
   },
   "WebRTC Chromium FYI Android Builder ARM64 (dbg)": {
     "gn_args": {
+      "debuggable_apks": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": true,
@@ -93,6 +96,34 @@
       "proprietary_codecs": true,
       "symbol_level": 1,
       "target_cpu": "x86",
+      "use_goma": true
+    }
+  },
+  "WebRTC Chromium FYI ios-device": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "ios_code_signing_identity_description": "Apple Development",
+      "ios_enable_code_signing": false,
+      "ios_set_attributes_for_xcode_project_generation": false,
+      "is_component_build": false,
+      "is_debug": false,
+      "symbol_level": 0,
+      "target_cpu": "arm64",
+      "target_environment": "device",
+      "target_os": "ios",
+      "use_goma": true
+    }
+  },
+  "WebRTC Chromium FYI ios-simulator": {
+    "gn_args": {
+      "enable_run_ios_unittests_with_xctest": true,
+      "ios_set_attributes_for_xcode_project_generation": false,
+      "is_component_build": false,
+      "is_debug": true,
+      "symbol_level": 1,
+      "target_cpu": "x64",
+      "target_environment": "simulator",
+      "target_os": "ios",
       "use_goma": true
     }
   }

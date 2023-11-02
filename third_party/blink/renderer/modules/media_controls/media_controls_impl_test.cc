@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -49,8 +49,8 @@
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_timeline_element.h"
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_volume_slider_element.h"
 #include "third_party/blink/renderer/modules/remoteplayback/remote_playback.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/testing/empty_web_media_player.h"
 #include "third_party/blink/renderer/platform/testing/histogram_tester.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
@@ -89,9 +89,6 @@ class MockWebMediaPlayerForImpl : public EmptyWebMediaPlayer {
   WebTimeRanges Seekable() const override { return seekable_; }
   bool HasVideo() const override { return true; }
   bool HasAudio() const override { return has_audio_; }
-  SurfaceLayerMode GetVideoSurfaceLayerMode() const override {
-    return SurfaceLayerMode::kAlways;
-  }
 
   bool has_audio_ = false;
   WebTimeRanges seekable_;
@@ -310,7 +307,7 @@ class MediaControlsImplTest : public PageTestBase,
   void GestureDoubleTapAt(gfx::PointF pos);
 
   bool HasAvailabilityCallbacks(RemotePlayback& remote_playback) {
-    return !remote_playback.availability_callbacks_.IsEmpty();
+    return !remote_playback.availability_callbacks_.empty();
   }
 
   const String GetDisplayedTime(MediaControlTimeDisplayElement* display) {

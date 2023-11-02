@@ -1,4 +1,4 @@
-// Copyright 2018 the Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,7 +25,10 @@ namespace blink {
 namespace {
 
 class PaintWorkletStylePropertyMapIterationSource final
-    : public PairIterable<String, CSSStyleValueVector>::IterationSource {
+    : public PairIterable<String,
+                          IDLString,
+                          CSSStyleValueVector,
+                          IDLSequence<CSSStyleValue>>::IterationSource {
  public:
   explicit PaintWorkletStylePropertyMapIterationSource(
       HeapVector<PaintWorkletStylePropertyMap::StylePropertyMapEntry> values)
@@ -47,7 +50,8 @@ class PaintWorkletStylePropertyMapIterationSource final
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(values_);
-    PairIterable<String, CSSStyleValueVector>::IterationSource::Trace(visitor);
+    PairIterable<String, IDLString, CSSStyleValueVector,
+                 IDLSequence<CSSStyleValue>>::IterationSource::Trace(visitor);
   }
 
  private:
@@ -72,10 +76,8 @@ bool BuildNativeValues(const ComputedStyle& style,
                 /* allow_visited_style */ false);
     if (value->GetType() == CrossThreadStyleValue::StyleValueType::kUnknownType)
       return false;
-    String key = CSSProperty::Get(property_id).GetPropertyNameString();
-    if (!key.IsSafeToSendToAnotherThread())
-      key = key.IsolatedCopy();
-    data.Set(key, std::move(value));
+    data.Set(CSSProperty::Get(property_id).GetPropertyNameString(),
+             std::move(value));
   }
   return true;
 }
@@ -108,11 +110,7 @@ bool BuildCustomValues(
               ref.GetProperty().PropertyID()));
       input_property_keys.emplace_back(property_name.Utf8(), element_id);
     }
-    // Ensure that the String can be safely passed cross threads.
-    String key = property_name.GetString();
-    if (!key.IsSafeToSendToAnotherThread())
-      key = key.IsolatedCopy();
-    data.Set(key, std::move(value));
+    data.Set(property_name.GetString(), std::move(value));
   }
   return true;
 }
@@ -146,7 +144,7 @@ PaintWorkletStylePropertyMap::CopyCrossThreadData(const CrossThreadData& data) {
   PaintWorkletStylePropertyMap::CrossThreadData copied_data;
   copied_data.ReserveCapacityForSize(data.size());
   for (auto& pair : data)
-    copied_data.Set(pair.key.IsolatedCopy(), pair.value->IsolatedCopy());
+    copied_data.Set(pair.key, pair.value->IsolatedCopy());
   return copied_data;
 }
 
@@ -164,7 +162,7 @@ CSSStyleValue* PaintWorkletStylePropertyMap::get(
     ExceptionState& exception_state) const {
   CSSStyleValueVector all_values =
       getAll(execution_context, property_name, exception_state);
-  return all_values.IsEmpty() ? nullptr : all_values[0];
+  return all_values.empty() ? nullptr : all_values[0];
 }
 
 CSSStyleValueVector PaintWorkletStylePropertyMap::getAll(
@@ -191,7 +189,7 @@ bool PaintWorkletStylePropertyMap::has(
     const ExecutionContext* execution_context,
     const String& property_name,
     ExceptionState& exception_state) const {
-  return !getAll(execution_context, property_name, exception_state).IsEmpty();
+  return !getAll(execution_context, property_name, exception_state).empty();
 }
 
 unsigned PaintWorkletStylePropertyMap::size() const {

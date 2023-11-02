@@ -1,12 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/nearby/bluetooth_adapter_manager.h"
 
-#include "chromeos/services/nearby/public/cpp/nearby_client_uuids.h"
+#include "chromeos/ash/services/nearby/public/cpp/nearby_client_uuids.h"
 #include "device/bluetooth/adapter.h"
-#include "device/bluetooth/bluez/bluetooth_adapter_bluez.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace ash {
@@ -49,13 +48,10 @@ void BluetoothAdapterManager::Shutdown() {
   // actual high-visibility state, because Nearby is the only consumer of APIs
   // which change the device name and discoverable status.  However, if other
   // features use this in the future, this approach may need to be reconsidered.
-  bluez::BluetoothAdapterBlueZ* adapter =
-      static_cast<bluez::BluetoothAdapterBlueZ*>(device_bluetooth_adapter_);
-  if (adapter) {
-    adapter->SetDiscoverable(false, /*callback=*/base::DoNothing(),
-                             /*error_callback=*/base::DoNothing());
-    adapter->SetStandardChromeOSAdapterName();
-  }
+  device_bluetooth_adapter_->SetDiscoverable(
+      false, /*callback=*/base::DoNothing(),
+      /*error_callback=*/base::DoNothing());
+  device_bluetooth_adapter_->SetStandardChromeOSAdapterName();
   device_bluetooth_adapter_ = nullptr;
   bluetooth_adapter_.reset();
 }

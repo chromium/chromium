@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "base/cancelable_callback.h"
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -134,7 +135,7 @@ class SessionRestorePolicy {
                                            size_t score);
 
  protected:
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   friend class TabDataAccess;
 #endif
 
@@ -231,7 +232,7 @@ class SessionRestorePolicy {
 
   // Delegate for interface with the system. This allows easy testing of only
   // the logic in this class.
-  const Delegate* const delegate_;
+  const raw_ptr<const Delegate> delegate_;
 
   // The minimum number of tabs to ever load simultaneously. This can be
   // exceeded by user actions or load timeouts. See TabLoader for details.

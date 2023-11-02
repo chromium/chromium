@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,8 @@
 #include "base/component_export.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/platform/platform_event_source.h"
@@ -23,6 +25,27 @@ namespace x11 {
 class Event;
 class KeyboardState;
 class WriteBuffer;
+
+// On the wire, sequence IDs are 16 bits.  In xcb, they're usually extended to
+// 32 and sometimes 64 bits.  In Xlib, they're extended to unsigned long, which
+// may be 32 or 64 bits depending on the platform.  This function is intended to
+// prevent bugs caused by comparing two differently sized sequences.  Also
+// handles rollover.  To use, compare the result of this function with 0.  For
+// example, to compare seq1 <= seq2, use CompareSequenceIds(seq1, seq2) <= 0.
+template <typename T, typename U>
+auto CompareSequenceIds(T t, U u) {
+  static_assert(std::is_unsigned<T>::value, "");
+  static_assert(std::is_unsigned<U>::value, "");
+  // Cast to the smaller of the two types so that comparisons will always work.
+  // If we casted to the larger type, then the smaller type will be zero-padded
+  // and may incorrectly compare less than the other value.
+  using SmallerType =
+      typename std::conditional<sizeof(T) <= sizeof(U), T, U>::type;
+  SmallerType t0 = static_cast<SmallerType>(t);
+  SmallerType u0 = static_cast<SmallerType>(u);
+  using SignedType = typename std::make_signed<SmallerType>::type;
+  return static_cast<SignedType>(t0 - u0);
+}
 
 // This interface is used by classes wanting to receive
 // Events directly.  For input events (mouse, keyboard, touch), a
@@ -204,6 +227,7 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
   std::unique_ptr<ui::PlatformEventSource> platform_event_source;
 
  private:
+  friend class FutureBase;
   template <typename Reply>
   friend class Future;
 
@@ -215,6 +239,10 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
                const char* request_name_for_tracing);
 
     void Wait();
+
+    void DispatchNow();
+
+    bool AfterEvent(const Event& event) const;
 
     void Sync(RawReply* raw_reply, std::unique_ptr<Error>* error);
 
@@ -234,7 +262,7 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
     // The response must already have been obtained using WaitForResponse().
     void TakeResponse(RawReply* reply, std::unique_ptr<Error>* error);
 
-    Connection* connection = nullptr;
+    raw_ptr<Connection, DanglingUntriaged> connection = nullptr;
     SequenceType sequence = 0;
     bool generates_reply = false;
     const char* request_name_for_tracing = nullptr;
@@ -298,7 +326,10 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
 
   uint32_t GenerateIdImpl();
 
-  xcb_connection_t* connection_ = nullptr;
+  std::string display_string_;
+  int default_screen_id_ = 0;
+  std::unique_ptr<xcb_connection_t, void (*)(xcb_connection_t*)> connection_ = {
+      nullptr, nullptr};
   std::unique_ptr<XlibDisplay> xlib_display_;
 
   bool synchronous_ = false;
@@ -306,12 +337,10 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
 
   uint32_t extended_max_request_length_ = 0;
 
-  std::string display_string_;
-  int default_screen_id_ = 0;
   Setup setup_;
-  Screen* default_screen_ = nullptr;
-  Depth* default_root_depth_ = nullptr;
-  VisualType* default_root_visual_ = nullptr;
+  raw_ptr<Screen> default_screen_ = nullptr;
+  raw_ptr<Depth> default_root_depth_ = nullptr;
+  raw_ptr<VisualType> default_root_visual_ = nullptr;
 
   base::flat_map<VisualId, VisualInfo> default_screen_visuals_;
 
@@ -322,7 +351,7 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
   base::ObserverList<EventObserver>::Unchecked event_observers_;
 
   // The Event currently being dispatched, or nullptr if there is none.
-  const Event* dispatching_event_ = nullptr;
+  raw_ptr<const Event> dispatching_event_ = nullptr;
 
   base::circular_deque<Request> requests_;
   // The sequence ID of requests_.front(), or if |requests_| is empty, then the

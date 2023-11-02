@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,8 +41,8 @@ class CastDialogMetricsTest : public ChromeViewsTestBase {
  protected:
   TestingProfile profile_;
   base::HistogramTester tester_;
-  CastDialogMetrics metrics_{init_time, MediaRouterDialogOpenOrigin::TOOLBAR,
-                             &profile_};
+  CastDialogMetrics metrics_{
+      init_time, MediaRouterDialogActivationLocation::TOOLBAR, &profile_};
 };
 
 TEST_F(CastDialogMetricsTest, OnSinksLoaded) {
@@ -116,20 +116,10 @@ TEST_F(CastDialogMetricsTest, RecordIconState) {
 
   profile_.GetPrefs()->SetBoolean(::prefs::kShowCastIconInToolbar, true);
   CastDialogMetrics metrics_with_pinned_icon{
-      init_time, MediaRouterDialogOpenOrigin::PAGE, &profile_};
+      init_time, MediaRouterDialogActivationLocation::PAGE, &profile_};
   tester_.ExpectBucketCount(
       MediaRouterMetrics::kHistogramUiDialogIconStateAtOpen,
       /* is_pinned */ true, 1);
-}
-
-TEST_F(CastDialogMetricsTest, RecordCloudPref) {
-  // When a dialog is opened after enabling the cloud services, that should be
-  // recorded.
-  profile_.GetPrefs()->SetBoolean(prefs::kMediaRouterEnableCloudServices, true);
-  CastDialogMetrics metrics_with_cloud_pref_enabled{
-      init_time, MediaRouterDialogOpenOrigin::PAGE, &profile_};
-  tester_.ExpectBucketCount(MediaRouterMetrics::kHistogramCloudPrefAtDialogOpen,
-                            /* enabled */ true, 1);
 }
 
 TEST_F(CastDialogMetricsTest, RecordDialogActivationLocationAndCastMode) {
@@ -142,7 +132,7 @@ TEST_F(CastDialogMetricsTest, RecordDialogActivationLocationAndCastMode) {
       DialogActivationLocationAndCastMode::kEphemeralIconAndTabMirror, 1);
 
   CastDialogMetrics metrics_opened_from_page{
-      init_time, MediaRouterDialogOpenOrigin::PAGE, &profile_};
+      init_time, MediaRouterDialogActivationLocation::PAGE, &profile_};
   metrics_opened_from_page.OnSinksLoaded(sink_load_time);
   metrics_opened_from_page.OnStartCasting(start_casting_time, kSinkIndex,
                                           PRESENTATION, SinkIconType::GENERIC,
@@ -153,7 +143,7 @@ TEST_F(CastDialogMetricsTest, RecordDialogActivationLocationAndCastMode) {
 
   profile_.GetPrefs()->SetBoolean(::prefs::kShowCastIconInToolbar, true);
   CastDialogMetrics metrics_with_pinned_icon{
-      init_time, MediaRouterDialogOpenOrigin::TOOLBAR, &profile_};
+      init_time, MediaRouterDialogActivationLocation::TOOLBAR, &profile_};
   metrics_with_pinned_icon.OnSinksLoaded(sink_load_time);
   metrics_with_pinned_icon.OnStartCasting(start_casting_time, kSinkIndex,
                                           DESKTOP_MIRROR, SinkIconType::CAST,

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,8 @@
 #include <string>
 #include <vector>
 
+#include "base/auto_reset.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -19,6 +21,7 @@
 #include "cc/layers/content_layer_client.h"
 #include "cc/layers/surface_layer.h"
 #include "cc/layers/texture_layer_client.h"
+#include "cc/paint/filter_operation.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -39,6 +42,7 @@ class TextureLayer;
 namespace gfx {
 class RoundedCornersF;
 class Transform;
+class LinearGradient;
 }  // namespace gfx
 
 namespace viz {
@@ -120,6 +124,11 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   void SetCompositor(Compositor* compositor,
                      scoped_refptr<cc::Layer> root_layer);
   void ResetCompositor();
+
+  // These should be private, but they're used by HideHelper, which needs to
+  // do part but not all of what SetCompositor/ResetCompositor do.
+  void SetCompositorForAnimatorsInTree(Compositor* compositor);
+  void ResetCompositorForAnimatorsInTree(Compositor* compositor);
 
   LayerDelegate* delegate() { return delegate_; }
   void set_delegate(LayerDelegate* delegate) { delegate_ = delegate; }
@@ -243,14 +252,14 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   void SetLayerBlur(float blur_sigma);
 
   // Saturate all pixels of this layer by this amount.
-  // This effect will get "combined" with the inverted,
-  // brightness and grayscale setting.
+  // The effect of invert, brightness, greyscale, saturate, sepia, and
+  // custom color matrix settings are combined.
   float layer_saturation() const { return layer_saturation_; }
   void SetLayerSaturation(float saturation);
 
   // Change the brightness of all pixels from this layer by this amount.
-  // This effect will get "combined" with the inverted, saturate
-  // and grayscale setting.
+  // The effect of invert, brightness, greyscale, saturate, sepia, and
+  // custom color matrix settings are combined.
   float layer_brightness() const { return layer_brightness_; }
   void SetLayerBrightness(float brightness);
 
@@ -259,14 +268,38 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   float GetTargetBrightness() const;
 
   // Change the grayscale of all pixels from this layer by this amount.
-  // This effect will get "combined" with the inverted, saturate
-  // and brightness setting.
+  // The effect of invert, brightness, greyscale, saturate, sepia, and
+  // custom color matrix settings are combined.
   float layer_grayscale() const { return layer_grayscale_; }
   void SetLayerGrayscale(float grayscale);
 
   // Return the target grayscale if animator is running, or the current
   // grayscale otherwise.
   float GetTargetGrayscale() const;
+
+  // Applies a sepia filter to all pixels from this layer by this amount.
+  // Amounts may be between 0 (no change) and 1 (completely sepia).
+  // The effect of invert, brightness, greyscale, saturate, sepia, and
+  // custom color matrix settings are combined.
+  void SetLayerSepia(float amount);
+  float layer_sepia() const { return layer_sepia_; }
+
+  // Applies a hue rotation by this amount.
+  // Amounts may be between 0 (no change) and 359 (completely rotated).
+  // Amounts over 359 will wrap back to 0.
+  // The effect of invert, brightness, greyscale, saturate, sepia, and
+  // custom color matrix settings are combined.
+  void SetLayerHueRotation(float amount);
+  float layer_hue_rotation() const { return layer_hue_rotation_; }
+
+  // Applies a custom color filter to all pixels from this layer with the given
+  // matrix. This effect will get "combined" with the invert, saturate and
+  // brightness setting.
+  void SetLayerCustomColorMatrix(const cc::FilterOperation::Matrix& matrix);
+  const cc::FilterOperation::Matrix* GetLayerCustomColorMatrix() const;
+  bool LayerHasCustomColorMatrix() const;
+  // If a custom layer color matrix was set, this clears it.
+  void ClearLayerCustomColorMatrix();
 
   // Zoom the background by a factor of |zoom|. The effect is blended along the
   // edge across |inset| pixels.
@@ -317,6 +350,12 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   void SetRoundedCornerRadius(const gfx::RoundedCornersF& corner_radii);
   const gfx::RoundedCornersF& rounded_corner_radii() const {
     return cc_layer_->corner_radii();
+  }
+
+  // Gets/sets a gradient mask that is applied to the clip bounds on the layer
+  void SetGradientMask(const gfx::LinearGradient& linear_gradient);
+  const gfx::LinearGradient& gradient_mask() const {
+    return cc_layer_->gradient_mask();
   }
 
   // If set to true, this layer would not trigger a render surface (if possible)
@@ -446,7 +485,7 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   // Invoked when scrolling performed by the cc::InputHandler is committed. This
   // will only occur if the Layer has set scroll container bounds.
   void SetDidScrollCallback(
-      base::RepeatingCallback<void(const gfx::Vector2dF&, const cc::ElementId&)>
+      base::RepeatingCallback<void(const gfx::PointF&, const cc::ElementId&)>
           callback);
 
   cc::ElementId element_id() const { return cc_layer_->element_id(); }
@@ -457,8 +496,8 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   void SetScrollable(const gfx::Size& container_bounds);
 
   // Gets and sets the current scroll offset of the layer.
-  gfx::Vector2dF CurrentScrollOffset() const;
-  void SetScrollOffset(const gfx::Vector2dF& offset);
+  gfx::PointF CurrentScrollOffset() const;
+  void SetScrollOffset(const gfx::PointF& offset);
 
   // ContentLayerClient implementation.
   gfx::Rect PaintableRegion() const override;
@@ -534,11 +573,13 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   }
 
  private:
+  // TODO(https://crbug.com/1242749): temporary while tracking down crash.
+  friend class Compositor;
   friend class LayerOwner;
   class LayerMirror;
   class SubpixelPositionOffsetCache;
 
-  void CollectAnimators(std::vector<scoped_refptr<LayerAnimator> >* animators);
+  void CollectAnimators(std::vector<scoped_refptr<LayerAnimator>>* animators);
 
   // Stacks |child| above or below |other|.  Helper method for StackAbove() and
   // StackBelow().
@@ -576,6 +617,8 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   void SetRoundedCornersFromAnimation(
       const gfx::RoundedCornersF& rounded_corners,
       PropertyChangeReason reason) override;
+  void SetGradientMaskFromAnimation(const gfx::LinearGradient& gradient_mask,
+                                    PropertyChangeReason reason) override;
   void ScheduleDrawForAnimation() override;
   const gfx::Rect& GetBoundsForAnimation() const override;
   gfx::Transform GetTransformForAnimation() const override;
@@ -586,6 +629,7 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   SkColor GetColorForAnimation() const override;
   gfx::Rect GetClipRectForAnimation() const override;
   gfx::RoundedCornersF GetRoundedCornersForAnimation() const override;
+  const gfx::LinearGradient& GetGradientMaskForAnimation() const override;
   float GetDeviceScaleFactor() const override;
   Layer* GetLayer() override;
   cc::Layer* GetCcLayer() const override;
@@ -611,10 +655,7 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   // animations handled by old cc layer before the switch, |this| could be
   // released by an animation observer. Returns false when it happens and
   // callers should take cautions as well. Otherwise returns true.
-  bool SwitchToLayer(scoped_refptr<cc::Layer> new_layer) WARN_UNUSED_RESULT;
-
-  void SetCompositorForAnimatorsInTree(Compositor* compositor);
-  void ResetCompositorForAnimatorsInTree(Compositor* compositor);
+  [[nodiscard]] bool SwitchToLayer(scoped_refptr<cc::Layer> new_layer);
 
   void OnMirrorDestroyed(LayerMirror* mirror);
 
@@ -648,9 +689,9 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
 
   const LayerType type_;
 
-  Compositor* compositor_;
+  raw_ptr<Compositor> compositor_;
 
-  Layer* parent_;
+  raw_ptr<Layer> parent_;
 
   // This layer's children, in bottom-to-top stacking order.
   std::vector<Layer*> children_;
@@ -658,7 +699,7 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   std::vector<std::unique_ptr<LayerMirror>> mirrors_;
 
   // The layer being reflected with its subtree by this one, if any.
-  Layer* subtree_reflected_layer_ = nullptr;
+  raw_ptr<Layer> subtree_reflected_layer_ = nullptr;
 
   // List of layers reflecting this layer and its subtree, if any.
   base::flat_set<Layer*> subtree_reflecting_layers_;
@@ -705,13 +746,16 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   float layer_grayscale_;
   bool layer_inverted_;
   float layer_blur_sigma_;
+  float layer_sepia_;
+  float layer_hue_rotation_;
+  std::unique_ptr<cc::FilterOperation::Matrix> layer_custom_color_matrix_;
 
   // The associated mask layer with this layer.
-  Layer* layer_mask_;
+  raw_ptr<Layer> layer_mask_;
   // The back link from the mask layer to it's associated masked layer.
   // We keep this reference for the case that if the mask layer gets deleted
   // while attached to the main layer before the main layer is deleted.
-  Layer* layer_mask_back_link_;
+  raw_ptr<Layer> layer_mask_back_link_;
 
   // The zoom factor to scale the layer by.  Zooming is disabled when this is
   // set to 1.
@@ -725,11 +769,11 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
 
   std::string name_;
 
-  LayerDelegate* delegate_;
+  raw_ptr<LayerDelegate> delegate_;
 
   base::ObserverList<LayerObserver>::Unchecked observer_list_;
 
-  LayerOwner* owner_;
+  raw_ptr<LayerOwner> owner_;
 
   scoped_refptr<LayerAnimator> animator_;
 
@@ -741,7 +785,7 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   scoped_refptr<cc::TextureLayer> texture_layer_;
   scoped_refptr<cc::SolidColorLayer> solid_color_layer_;
   scoped_refptr<cc::SurfaceLayer> surface_layer_;
-  cc::Layer* cc_layer_;
+  raw_ptr<cc::Layer> cc_layer_;
 
   // A cached copy of |Compositor::device_scale_factor()|.
   float device_scale_factor_;
@@ -780,10 +824,9 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   // layer.
   unsigned trilinear_filtering_request_;
 
-  // TODO(crbug.com/1172694): Remove once the root cause is identified.
-#if defined(ADDRESS_SANITIZER)
-  bool destroyed_ = false;
-#endif
+  // TODO(https://crbug.com/1242749): temporary while tracking down crash.
+  bool in_send_damaged_rects_ = false;
+  bool sending_damaged_rects_for_descendants_ = false;
 
   base::WeakPtrFactory<Layer> weak_ptr_factory_{this};
 };

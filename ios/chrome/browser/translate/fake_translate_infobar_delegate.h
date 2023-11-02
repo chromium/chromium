@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,11 +29,10 @@ class FakeTranslateInfoBarDelegate
  public:
   FakeTranslateInfoBarDelegate(
       const base::WeakPtr<translate::TranslateManager>& translate_manager,
-      bool is_off_the_record,
       translate::TranslateStep step,
       const std::string& source_language,
       const std::string& target_language,
-      translate::TranslateErrors::Type error_type,
+      translate::TranslateErrors error_type,
       bool triggered_from_menu);
   ~FakeTranslateInfoBarDelegate() override;
 
@@ -41,10 +40,9 @@ class FakeTranslateInfoBarDelegate
   void RemoveObserver(Observer* observer) override;
 
   // Call the OnTranslateStepChanged() observer method on all
-  // |OnTranslateStepChanged|.
-  void TriggerOnTranslateStepChanged(
-      translate::TranslateStep step,
-      translate::TranslateErrors::Type error_type);
+  // `OnTranslateStepChanged`.
+  void TriggerOnTranslateStepChanged(translate::TranslateStep step,
+                                     translate::TranslateErrors error_type);
 
   std::u16string source_language_name() const override;
 
@@ -63,15 +61,14 @@ class FakeTranslateInfoBarDelegateFactory {
   ~FakeTranslateInfoBarDelegateFactory();
 
   // Create a FakeTranslateInfoBarDelegate unique_ptr with
-  // |source_language|, |target_language|, |translate_step| and |error_type|.
+  // `source_language`, `target_language`, `translate_step` and `error_type`.
   std::unique_ptr<FakeTranslateInfoBarDelegate>
   CreateFakeTranslateInfoBarDelegate(
       const std::string& source_language,
       const std::string& target_language,
       translate::TranslateStep translate_step =
           translate::TranslateStep::TRANSLATE_STEP_BEFORE_TRANSLATE,
-      translate::TranslateErrors::Type error_type =
-          translate::TranslateErrors::Type::NONE);
+      translate::TranslateErrors error_type = translate::TranslateErrors::NONE);
 
  private:
   translate::testing::MockTranslateDriver driver_;

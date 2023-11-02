@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,11 @@
 
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string_encoding.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
+#include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
 namespace WTF {
@@ -23,12 +25,10 @@ class WTF_EXPORT AtomicStringTable final {
   AtomicStringTable();
   AtomicStringTable(const AtomicStringTable&) = delete;
   AtomicStringTable& operator=(const AtomicStringTable&) = delete;
-  ~AtomicStringTable();
+  ~AtomicStringTable() = delete;
 
-  // Gets the shared table for the current thread.
-  static AtomicStringTable& Instance() {
-    return WtfThreading().GetAtomicStringTable();
-  }
+  // Gets the shared table.
+  static AtomicStringTable& Instance();
 
   // Used by system initialization to preallocate enough storage for all of
   // the static strings.
@@ -37,9 +37,12 @@ class WTF_EXPORT AtomicStringTable final {
   // Inserting strings into the table. Note that the return value from adding
   // a UChar string may be an LChar string as the table will attempt to
   // convert the string to save memory if possible.
-  StringImpl* Add(StringImpl*);
+  scoped_refptr<StringImpl> Add(StringImpl*);
+  scoped_refptr<StringImpl> Add(scoped_refptr<StringImpl>&&);
   scoped_refptr<StringImpl> Add(const LChar* chars, unsigned length);
-  scoped_refptr<StringImpl> Add(const UChar* chars, unsigned length);
+  scoped_refptr<StringImpl> Add(const UChar* chars,
+                                unsigned length,
+                                AtomicStringUCharEncoding encoding);
 
   // Adding UTF8.
   // Returns null if the characters contain invalid utf8 sequences.
@@ -47,8 +50,8 @@ class WTF_EXPORT AtomicStringTable final {
   scoped_refptr<StringImpl> AddUTF8(const char* characters_start,
                                     const char* characters_end);
 
-  // Returned as part of the WeakFind() APIs below. Represents the result of
-  // the non-creating lookup within the AtomicStringTable. See the WeakFind()
+  // Returned as part of the WeakFind*() APIs below. Represents the result of
+  // the non-creating lookup within the AtomicStringTable. See the WeakFind*()
   // documentation for a description of how it can be used.
   class WeakResult {
    public:
@@ -57,6 +60,9 @@ class WTF_EXPORT AtomicStringTable final {
         : ptr_value_(reinterpret_cast<uintptr_t>(str)) {
       CHECK(!str || str->IsAtomic() || str == StringImpl::empty_);
     }
+
+    explicit WeakResult(const AtomicString& str)
+        : ptr_value_((reinterpret_cast<uintptr_t>(str.Impl()))) {}
 
     bool IsNull() const { return ptr_value_ == 0; }
 
@@ -73,25 +79,15 @@ class WTF_EXPORT AtomicStringTable final {
   // unnecessarily creating an AtomicString. Useful to optimize fast-path
   // non-existence checks inside collections of AtomicStrings.
   //
-  // Specifically, if WeakFind() returns an IsNull() WeakResult, then a
+  // Specifically, if WeakFind*() returns an IsNull() WeakResult, then a
   // collection search can be skipped because the AtomicString cannot exist
-  // in the collection. If WeakFind() returns a non-null WeakResult, then
+  // in the collection. If WeakFind*() returns a non-null WeakResult, then
   // assuming the target collection has no concurrent access, this lookup
   // can be reused to check for existence in the collection without
   // requiring either an AtomicString collection or another lookup within
   // the AtomicStringTable.
-  WeakResult WeakFind(StringImpl* string) {
-    // Mirror the empty logic in Add().
-    if (UNLIKELY(!string->length()))
-      return WeakResult(StringImpl::empty_);
 
-    if (LIKELY(string->IsAtomic()))
-      return WeakResult(string);
-
-    return WeakFindSlow(string);
-  }
-
-  WeakResult WeakFind(const StringView& string) {
+  WeakResult WeakFindForTesting(const StringView& string) {
     // Mirror the empty logic in Add().
     if (UNLIKELY(!string.length()))
       return WeakResult(StringImpl::empty_);
@@ -99,36 +95,26 @@ class WTF_EXPORT AtomicStringTable final {
     if (LIKELY(string.IsAtomic()))
       return WeakResult(string.SharedImpl());
 
-    return WeakFindSlow(string);
+    return WeakFindSlowForTesting(string);
   }
 
-  WeakResult WeakFind(const LChar* chars, unsigned length);
-  WeakResult WeakFind(const UChar* chars, unsigned length);
-
-  WeakResult WeakFindLowercased(const StringView& string) {
-    // Mirror the empty logic in Add().
-    if (UNLIKELY(!string.length()))
-      return WeakResult(StringImpl::empty_);
-
-    if (LIKELY(string.IsAtomic() && string.IsLowerASCII()))
-      return WeakResult(string.SharedImpl());
-
-    return WeakFindLowercasedSlow(string);
-  }
-
+  WeakResult WeakFindLowercase(const AtomicString& string);
   // This is for ~StringImpl to unregister a string before destruction since
   // the table is holding weak pointers. It should not be used directly.
-  void Remove(StringImpl*);
+  bool ReleaseAndRemoveIfNeeded(StringImpl*);
 
  private:
   template <typename T, typename HashTranslator>
   inline scoped_refptr<StringImpl> AddToStringTable(const T& value);
 
-  WeakResult WeakFindSlow(StringImpl*);
-  WeakResult WeakFindSlow(const StringView&);
-  WeakResult WeakFindLowercasedSlow(const StringView& string);
+  // AddNoLock does not take the lock itself but expects every caller to
+  // do it before calling it.
+  StringImpl* AddNoLock(StringImpl*) EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
-  HashSet<StringImpl*> table_;
+  WeakResult WeakFindSlowForTesting(const StringView&);
+
+  base::Lock lock_;
+  HashSet<StringImpl*> table_ GUARDED_BY(lock_);
 };
 
 inline bool operator==(const AtomicStringTable::WeakResult& lhs,

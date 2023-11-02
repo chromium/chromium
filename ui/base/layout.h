@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/gfx/native_widget_types.h"
@@ -55,7 +56,7 @@ class COMPONENT_EXPORT(UI_BASE) ScopedSetSupportedResourceScaleFactors {
   ~ScopedSetSupportedResourceScaleFactors();
 
  private:
-  std::vector<ResourceScaleFactor>* original_scale_factors_;
+  raw_ptr<std::vector<ResourceScaleFactor>> original_scale_factors_;
 };
 
 }  // namespace test

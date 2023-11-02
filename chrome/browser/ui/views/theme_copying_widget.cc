@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,7 @@ const ui::ThemeProvider* ThemeCopyingWidget::GetThemeProvider() const {
                                         : Widget::GetThemeProvider();
 }
 
-ui::ColorProviderManager::InitializerSupplier*
+ui::ColorProviderManager::ThemeInitializerSupplier*
 ThemeCopyingWidget::GetCustomTheme() const {
   return observed_widget_.IsObserving() ? role_model_->GetCustomTheme()
                                         : Widget::GetCustomTheme();

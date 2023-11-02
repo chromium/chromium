@@ -1,10 +1,11 @@
-// Copyright (c) 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_VIEWS_TEST_WIDGET_ANIMATION_WAITER_H_
 #define UI_VIEWS_TEST_WIDGET_ANIMATION_WAITER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "ui/compositor/layer_animation_observer.h"
 
@@ -37,7 +38,7 @@ class WidgetAnimationWaiter : ui::LayerAnimationObserver {
   gfx::Rect target_bounds_;
 
   // Unowned
-  Widget* const widget_;
+  const raw_ptr<Widget> widget_;
 
   base::RunLoop run_loop_;
   bool is_valid_animation_ = false;

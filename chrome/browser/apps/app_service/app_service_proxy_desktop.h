@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,9 +37,17 @@ class AppServiceProxy : public AppServiceProxyBase {
 
   // apps::AppServiceProxyBase overrides:
   void Uninstall(const std::string& app_id,
+                 UninstallSource uninstall_source,
+                 gfx::NativeWindow parent_window) override;
+  void Uninstall(const std::string& app_id,
                  apps::mojom::UninstallSource uninstall_source,
                  gfx::NativeWindow parent_window) override;
-  void FlushMojoCallsForTesting() override;
+
+  // Used for setting Run on OS Login modes.
+  void SetRunOnOsLoginMode(const std::string& app_id,
+                           apps::mojom::RunOnOsLoginMode run_on_os_login_mode);
+
+  base::WeakPtr<AppServiceProxy> GetWeakPtr();
 
  private:
   // For access to Initialize.

@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,6 +19,7 @@
 #include "base/task/task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_usage_estimator.h"
+#include "build/build_config.h"
 #include "net/base/net_errors.h"
 #include "net/disk_cache/backend_cleanup_tracker.h"
 #include "net/disk_cache/simple/simple_entry_format.h"
@@ -28,7 +29,7 @@
 #include "net/disk_cache/simple/simple_synchronous_entry.h"
 #include "net/disk_cache/simple/simple_util.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include <sys/stat.h>
 #include <sys/time.h>
 #endif
@@ -192,17 +193,15 @@ SimpleIndex::~SimpleIndex() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Fail all callbacks waiting for the index to come up.
-  for (auto it = to_run_when_initialized_.begin(),
-            end = to_run_when_initialized_.end();
-       it != end; ++it) {
-    std::move(*it).Run(net::ERR_ABORTED);
+  for (auto& callback : to_run_when_initialized_) {
+    std::move(callback).Run(net::ERR_ABORTED);
   }
 }
 
 void SimpleIndex::Initialize(base::Time cache_mtime) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (app_status_listener_) {
     app_status_listener_->SetCallback(base::BindRepeating(
         &SimpleIndex::OnApplicationStateChange, AsWeakPtr()));
@@ -214,12 +213,13 @@ void SimpleIndex::Initialize(base::Time cache_mtime) {
   }
 #endif
 
-  SimpleIndexLoadResult* load_result = new SimpleIndexLoadResult();
-  std::unique_ptr<SimpleIndexLoadResult> load_result_scoped(load_result);
-  base::OnceClosure reply =
+  auto load_result = std::make_unique<SimpleIndexLoadResult>();
+  auto* load_result_ptr = load_result.get();
+  index_file_->LoadIndexEntries(
+      cache_mtime,
       base::BindOnce(&SimpleIndex::MergeInitializingSet, AsWeakPtr(),
-                     std::move(load_result_scoped));
-  index_file_->LoadIndexEntries(cache_mtime, std::move(reply), load_result);
+                     std::move(load_result)),
+      load_result_ptr);
 }
 
 void SimpleIndex::SetMaxSize(uint64_t max_bytes) {
@@ -257,7 +257,7 @@ std::unique_ptr<SimpleIndex::HashList> SimpleIndex::GetEntriesBetween(
     end_time += EntryMetadata::GetUpperEpsilonForTimeComparisons();
   DCHECK(end_time >= initial_time);
 
-  std::unique_ptr<HashList> ret_hashes(new HashList());
+  auto ret_hashes = std::make_unique<HashList>();
   for (const auto& entry : entries_set_) {
     const EntryMetadata& metadata = entry.second;
     base::Time entry_time = metadata.GetLastUsedTime();
@@ -545,25 +545,23 @@ void SimpleIndex::MergeInitializingSet(
 
   EntrySet* index_file_entries = &load_result->entries;
 
-  for (auto it = removed_entries_.begin(); it != removed_entries_.end(); ++it) {
-    index_file_entries->erase(*it);
+  for (uint64_t removed_entry : removed_entries_) {
+    index_file_entries->erase(removed_entry);
   }
   removed_entries_.clear();
 
-  for (EntrySet::const_iterator it = entries_set_.begin();
-       it != entries_set_.end(); ++it) {
-    const uint64_t entry_hash = it->first;
+  for (const auto& it : entries_set_) {
+    const uint64_t entry_hash = it.first;
     std::pair<EntrySet::iterator, bool> insert_result =
         index_file_entries->insert(EntrySet::value_type(entry_hash,
                                                         EntryMetadata()));
     EntrySet::iterator& possibly_inserted_entry = insert_result.first;
-    possibly_inserted_entry->second = it->second;
+    possibly_inserted_entry->second = it.second;
   }
 
   uint64_t merged_cache_size = 0;
-  for (auto it = index_file_entries->begin(); it != index_file_entries->end();
-       ++it) {
-    merged_cache_size += it->second.GetEntrySize();
+  for (const auto& index_file_entry : *index_file_entries) {
+    merged_cache_size += index_file_entry.second.GetEntrySize();
   }
 
   entries_set_.swap(*index_file_entries);
@@ -586,15 +584,14 @@ void SimpleIndex::MergeInitializingSet(
       static_cast<base::HistogramBase::Sample>(max_size_ / kBytesInKb));
 
   // Run all callbacks waiting for the index to come up.
-  for (auto it = to_run_when_initialized_.begin(),
-            end = to_run_when_initialized_.end();
-       it != end; ++it) {
-    task_runner_->PostTask(FROM_HERE, base::BindOnce(std::move(*it), net::OK));
+  for (auto& callback : to_run_when_initialized_) {
+    task_runner_->PostTask(FROM_HERE,
+                           base::BindOnce(std::move(callback), net::OK));
   }
   to_run_when_initialized_.clear();
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void SimpleIndex::OnApplicationStateChange(
     base::android::ApplicationState state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

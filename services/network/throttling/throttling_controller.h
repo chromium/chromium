@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/threading/thread_checker.h"
 #include "base/unguessable_token.h"
@@ -53,11 +52,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ThrottlingController {
 
   // Unregister the NetLog source. This is called from ScopedThrottlingToken.
   static void UnregisterNetLogSource(uint32_t net_log_source_id);
-
-  // Returns whether there is an interceptor for the profile ID. This is called
-  // from ScopedThrottlingToken.
-  static bool HasInterceptor(
-      const base::UnguessableToken& throttling_profile_id);
 
   void Register(uint32_t net_log_source_id,
                 const base::UnguessableToken& throttling_profile_id);

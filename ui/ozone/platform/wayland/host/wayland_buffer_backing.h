@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,8 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
+#include "drm_fourcc.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
@@ -25,29 +27,48 @@ class WaylandConnection;
 // Has one-to-many relationship with WaylandBufferHandle.
 class WaylandBufferBacking {
  public:
+  enum class BufferBackingType {
+    kShm = 0,
+    kDmabuf = 1,
+    kSolidColor = 2,
+  };
+
   WaylandBufferBacking() = delete;
   WaylandBufferBacking(const WaylandBufferBacking&) = delete;
   WaylandBufferBacking& operator=(const WaylandBufferBacking&) = delete;
   WaylandBufferBacking(const WaylandConnection* connection,
                        uint32_t buffer_id,
-                       const gfx::Size& size);
+                       const gfx::Size& size,
+                       uint32_t format = DRM_FORMAT_INVALID);
   virtual ~WaylandBufferBacking();
 
+  const WaylandConnection* connection() const { return connection_; }
+  uint32_t format() const { return format_; }
   uint32_t id() const { return buffer_id_; }
   gfx::Size size() const { return size_; }
 
-  // Returns true if a wl_buffer can be attached to the |requestor|. Requests a
-  // new wl_buffer if such a wl_buffer does not exist.
-  bool EnsureBufferHandle(WaylandSurface* requestor = nullptr);
+  // Whether linux_explicit_synchronization extension is enabled. It is an
+  // extension that completely replaces base protocol's wl_buffer.release
+  // events.
+  bool UseExplicitSyncRelease() const;
 
   // Returns a wl_buffer wrapper that can be attached to the |requestor|.
+  // Requests a new wl_buffer if such a wl_buffer does not exist.
+  WaylandBufferHandle* EnsureBufferHandle(WaylandSurface* requestor = nullptr);
+
+  // Same as above but does not do the requesting.
   WaylandBufferHandle* GetBufferHandle(WaylandSurface* requestor);
 
- protected:
-  // Non-owned pointer to the main connection.
-  const WaylandConnection* connection_;
+  // Returns type of the backing. See BufferBackingType.
+  virtual BufferBackingType GetBackingType() const = 0;
 
  private:
+  // Non-owned pointer to the main connection.
+  raw_ptr<const WaylandConnection> connection_;
+
+  // DRM buffer format if specified, otherwise DRM_FORMAT_INVALID (0)
+  const uint32_t format_;
+
   // Requests a new wl_buffer. |callback| will be run with the created wl_buffer
   // object when creation is complete.
   virtual void RequestBufferHandle(

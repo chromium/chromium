@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,17 +19,25 @@ TEST_F(ExtensionManifestChromeOSSystemExtensionTest,
 }
 
 TEST_F(ExtensionManifestChromeOSSystemExtensionTest,
-       ValidChromeOSSystemExtension_Allowlisted_1) {
+       ValidChromeOSSystemExtension_Allowlisted_Google) {
   scoped_refptr<extensions::Extension> extension(
-      LoadAndExpectSuccess("chromeos_system_extension.json"));
+      LoadAndExpectSuccess("chromeos_system_extension_google.json"));
   EXPECT_TRUE(extension->is_chromeos_system_extension());
   EXPECT_TRUE(extension->install_warnings().empty());
 }
 
 TEST_F(ExtensionManifestChromeOSSystemExtensionTest,
-       ValidChromeOSSystemExtension_Allowlisted_2) {
+       ValidChromeOSSystemExtension_Allowlisted_HP) {
   scoped_refptr<extensions::Extension> extension(
-      LoadAndExpectSuccess("chromeos_system_extension_2.json"));
+      LoadAndExpectSuccess("chromeos_system_extension_hp.json"));
+  EXPECT_TRUE(extension->is_chromeos_system_extension());
+  EXPECT_TRUE(extension->install_warnings().empty());
+}
+
+TEST_F(ExtensionManifestChromeOSSystemExtensionTest,
+       ValidChromeOSSystemExtension_Allowlisted_ASUS) {
+  scoped_refptr<extensions::Extension> extension(
+      LoadAndExpectSuccess("chromeos_system_extension_asus.json"));
   EXPECT_TRUE(extension->is_chromeos_system_extension());
   EXPECT_TRUE(extension->install_warnings().empty());
 }

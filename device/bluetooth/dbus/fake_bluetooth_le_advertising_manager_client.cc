@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "dbus/bus.h"
@@ -85,8 +86,7 @@ void FakeBluetoothLEAdvertisingManagerClient::UnregisterAdvertisement(
 
   auto service_iter = service_provider_map_.find(advertisement_object_path);
   auto reg_iter =
-      std::find(currently_registered_.begin(), currently_registered_.end(),
-                advertisement_object_path);
+      base::ranges::find(currently_registered_, advertisement_object_path);
 
   if (service_iter == service_provider_map_.end()) {
     std::move(error_callback)

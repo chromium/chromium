@@ -1,21 +1,32 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Use the <code>chrome.os.diagnostics</code> API to get telemetry data.
+// Use the <code>chrome.os.diagnostics</code> API to run diagnostic routines.
 //
 // Many types defined here map with Mojo structs defined in
-// chromeos/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.
+// chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.
 [implemented_in = "chrome/browser/chromeos/extensions/telemetry/api/diagnostics_api.h"]
 namespace os.diagnostics {
   enum RoutineType {
+    ac_power,
     battery_capacity,
     battery_charge,
     battery_discharge,
     battery_health,
     cpu_cache,
+    cpu_floating_point_accuracy,
+    cpu_prime_search,
     cpu_stress,
-    memory
+    disk_read,
+    dns_resolution,
+    memory,
+    nvme_wear_level,
+    smartctl_check,
+    lan_connectivity,
+    signal_strength,
+    dns_resolver_present,
+    gateway_can_be_pinged
   };
 
   enum RoutineStatus {
@@ -47,6 +58,16 @@ namespace os.diagnostics {
     plug_in_ac_power
   };
 
+  enum DiskReadRoutineType {
+    linear,
+    random
+  };
+
+  enum AcPowerStatus {
+    connected,
+    disconnected
+  };
+
   dictionary GetAvailableRoutinesResponse {
     RoutineType[] routines;
   };
@@ -65,6 +86,13 @@ namespace os.diagnostics {
     UserMessageType? user_message;
   };
 
+  dictionary RunAcPowerRoutineRequest {
+    AcPowerStatus expected_status;
+    // If specified, this must match the type of power
+    // supply for the routine to succeed.
+    DOMString? expected_power_type;
+  };
+
   dictionary RunBatteryChargeRoutineRequest {
     long length_seconds;
 
@@ -81,6 +109,16 @@ namespace os.diagnostics {
     long length_seconds;
   };
 
+  dictionary RunDiskReadRequest {
+    DiskReadRoutineType type;
+    long length_seconds;
+    long file_size_mb;
+  };
+
+  dictionary RunNvmeWearLevelRequest {
+    long wear_level_threshold;
+  };
+
   dictionary RunRoutineResponse {
     long id;
 
@@ -94,36 +132,54 @@ namespace os.diagnostics {
   callback RunRoutineCallback = void (RunRoutineResponse response);
 
   interface Functions {
-    // Starts battery capacity routine.
     [supportsPromises] static void getAvailableRoutines(GetAvailableRoutinesCallback callback);
 
-    // Get routine update
     [supportsPromises] static void getRoutineUpdate(GetRoutineUpdateRequest request,
                                                     GetRoutineUpdateCallback callback);
 
-    // Starts battery capacity routine.
+    [supportsPromises] static void runAcPowerRoutine(RunAcPowerRoutineRequest request,
+                                                     RunRoutineCallback callback);
+
     [supportsPromises] static void runBatteryCapacityRoutine(RunRoutineCallback callback);
 
-    // Starts battery charge routine.
     [supportsPromises] static void runBatteryChargeRoutine(RunBatteryChargeRoutineRequest request,
                                                            RunRoutineCallback callback);
 
-    // Starts battery discharge routine.
     [supportsPromises] static void runBatteryDischargeRoutine(RunBatteryDischargeRoutineRequest request,
                                                               RunRoutineCallback callback);
 
-    // Starts battery health routine.
     [supportsPromises] static void runBatteryHealthRoutine(RunRoutineCallback callback);
 
-    // Starts CPU cache routine.
     [supportsPromises] static void runCpuCacheRoutine(RunCpuRoutineRequest request,
                                                       RunRoutineCallback callback);
 
-    // Starts CPU stress routine.
+    [supportsPromises] static void runCpuFloatingPointAccuracyRoutine(RunCpuRoutineRequest request,
+                                                                      RunRoutineCallback callback);
+
+    [supportsPromises] static void runCpuPrimeSearchRoutine(RunCpuRoutineRequest request,
+                                                            RunRoutineCallback callback);
+
     [supportsPromises] static void runCpuStressRoutine(RunCpuRoutineRequest request,
                                                        RunRoutineCallback callback);
 
-    // Starts memory routine.
+    [supportsPromises] static void runDiskReadRoutine(RunDiskReadRequest request,
+                                                      RunRoutineCallback callback);
+
+    [supportsPromises] static void runDnsResolutionRoutine(RunRoutineCallback callback);
+
+    [supportsPromises] static void runDnsResolverPresentRoutine(RunRoutineCallback callback);
+
+    [supportsPromises] static void runGatewayCanBePingedRoutine(RunRoutineCallback callback);
+
+    [supportsPromises] static void runLanConnectivityRoutine(RunRoutineCallback callback);
+
     [supportsPromises] static void runMemoryRoutine(RunRoutineCallback callback);
+
+    [supportsPromises] static void runNvmeWearLevelRoutine(RunNvmeWearLevelRequest request,
+                                                           RunRoutineCallback callback);
+
+    [supportsPromises] static void runSignalStrengthRoutine(RunRoutineCallback callback);
+
+    [supportsPromises] static void runSmartctlCheckRoutine(RunRoutineCallback callback);
   };
 };

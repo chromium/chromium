@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -130,7 +130,7 @@ void ThirdPartyMetricsRecorder::AddUnsignedModuleToCrashkeys(
       {"unsigned-modules-5", UnsignedModulesKey::Tag::kArray},
   };
 
-  if (current_key_index_ >= base::size(unsigned_modules_keys))
+  if (current_key_index_ >= std::size(unsigned_modules_keys))
     return;
 
   std::string module = base::WideToUTF8(module_basename);
@@ -147,7 +147,7 @@ void ThirdPartyMetricsRecorder::AddUnsignedModuleToCrashkeys(
   if (module_length > length_remaining) {
     current_value_.clear();
 
-    if (++current_key_index_ >= base::size(unsigned_modules_keys))
+    if (++current_key_index_ >= std::size(unsigned_modules_keys))
       return;
   }
 

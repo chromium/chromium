@@ -1,15 +1,13 @@
-#!/usr/bin/env python
-# Copyright 2021 The Chromium Authors. All rights reserved.
+#!/usr/bin/env python3
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
-from __future__ import print_function
 
 import argparse
 import datetime
 import json
 import os
-import urllib
+import urllib.request
 
 _COMMITS_URL = 'https://api.github.com/repos/google/turbine/commits?per_page=1&until={}'
 _ARCHIVE_URL = 'https://github.com/google/turbine/archive/{}.tar.gz'
@@ -25,7 +23,7 @@ def get_last_commit_of_the_week():
     end_of_last_week = today-datetime.timedelta(days=days_since_week_start)
     url = _COMMITS_URL.format(end_of_last_week.isoformat())
     # Search for the last commit until the start of this week.
-    return json.loads(urllib.urlopen(url).read().strip())[0]
+    return json.load(urllib.request.urlopen(url))[0]
 
 
 def do_latest():

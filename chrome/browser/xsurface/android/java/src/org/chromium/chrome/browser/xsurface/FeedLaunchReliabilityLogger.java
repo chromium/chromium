@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,13 +24,14 @@ public interface FeedLaunchReliabilityLogger {
         int START_SURFACE = 2;
     }
 
-    /** Type of stream being launched (the "For you" or "Following" feed). */
-    @IntDef({StreamType.UNSPECIFIED, StreamType.FOR_YOU, StreamType.WEB_FEED})
+    /** Type of stream being launched (the "For you","Following", or "Channel" feed). */
+    @IntDef({StreamType.UNSPECIFIED, StreamType.FOR_YOU, StreamType.WEB_FEED, StreamType.CHANNEL})
     @Retention(RetentionPolicy.SOURCE)
     @interface StreamType {
         int UNSPECIFIED = 0;
         int FOR_YOU = 1;
         int WEB_FEED = 2;
+        int CHANNEL = 3;
     }
 
     /**
@@ -83,6 +84,13 @@ public interface FeedLaunchReliabilityLogger {
     default void logFeedLaunchOtherStart(long timestamp) {}
 
     /**
+     * Log when the user switches to another feed tab.
+     * @param toStreamType New feed type.
+     * @param timestamp Event time.
+     */
+    default void logSwitchedFeeds(@StreamType int toStreamType, long timestamp) {}
+
+    /**
      * Log when cached feed content is about to be read.
      * @param timestamp Event time.
      */
@@ -125,7 +133,9 @@ public interface FeedLaunchReliabilityLogger {
     }
 
     /**
-     * Log to mark the end of the feed launch.
+     * Log to mark the end of the feed launch. Logs a "launched finished" event with the timestamp
+     * and result (or instead with the pending "launch finished" timestamp and result if there was a
+     * call to pendingFinished()).
      * @param timestamp Event time, possibly the same as one of the other events.
      * @param result DiscoverLaunchResult.
      */
@@ -139,4 +149,21 @@ public interface FeedLaunchReliabilityLogger {
      *         feed launch in progress.
      */
     default void logLaunchFinished(long timestamp, int result, boolean onlyIfLaunchInProgress) {}
+
+    /**
+     * Keep a tentative timestamp and status for "launch finished" if the user left the feed but
+     * might return before it finishes loading.
+     * If the next call is to logLaunchFinished(), logLaunchFinished() will log the pending
+     * "launch finished" timestamp and status and clear them. If the next call is to
+     * cancelPendingFinished(), the pending "launch finished" is cleared. If there is already a
+     * pending "launch finished", calling pendingFinished() again has no effect.
+     * @param timestamp Event time in nanoseconds.
+     * @param result DiscoverLaunchResult.
+     */
+    default void pendingFinished(long timestamp, int result) {}
+
+    /**
+     * If a timestamp and status code were recorded with pendingFinished(), drop them.
+     */
+    default void cancelPendingFinished() {}
 }

@@ -55,7 +55,7 @@
   TestRunner.completeTest();
 
   function pressKey(key) {
-    var element = document.deepActiveElement();
+    var element = Platform.DOMUtilities.deepActiveElement(document);
     if (!element)
       return;
     element.dispatchEvent(TestRunner.createKeyEvent(key));
@@ -72,7 +72,7 @@
     }
     var selection = '';
     var subMenu = menu;
-    var activeElement = document.deepActiveElement();
+    var activeElement = Platform.DOMUtilities.deepActiveElement(document);
     do {
       if (selection)
         selection += ' -> ';

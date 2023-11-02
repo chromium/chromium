@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,11 +13,11 @@
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/cxx20_is_constant_evaluated.h"
 #include "base/functional/identity.h"
 #include "base/functional/invoke.h"
 #include "base/ranges/functional.h"
 #include "base/ranges/ranges.h"
-#include "base/template_util.h"
 
 namespace base {
 
@@ -63,9 +63,9 @@ class BinaryPredicateProjector {
 
  private:
   template <typename ProjT, typename ProjU, typename T, typename U>
-  using InvokeResult = invoke_result_t<Pred&,
-                                       invoke_result_t<ProjT&, T&&>,
-                                       invoke_result_t<ProjU&, U&&>>;
+  using InvokeResult = std::invoke_result_t<Pred&,
+                                            std::invoke_result_t<ProjT&, T&&>,
+                                            std::invoke_result_t<ProjU&, U&&>>;
 
   template <typename T, typename U, typename = InvokeResult<Proj1, Proj2, T, U>>
   constexpr std::pair<Proj1&, Proj2&> GetProjs(priority_tag<3>) const {

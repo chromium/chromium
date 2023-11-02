@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -122,9 +122,9 @@ TaskHandle PostCancellableTask(base::SequencedTaskRunner& task_runner,
   DCHECK(task_runner.RunsTasksInCurrentSequence());
   scoped_refptr<TaskHandle::Runner> runner =
       base::AdoptRef(new TaskHandle::Runner(std::move(task)));
-  task_runner.PostTask(location,
-                       WTF::Bind(&TaskHandle::Runner::Run, runner->AsWeakPtr(),
-                                 TaskHandle(runner)));
+  task_runner.PostTask(
+      location, WTF::BindOnce(&TaskHandle::Runner::Run, runner->AsWeakPtr(),
+                              TaskHandle(runner)));
   return TaskHandle(runner);
 }
 
@@ -137,8 +137,8 @@ TaskHandle PostDelayedCancellableTask(base::SequencedTaskRunner& task_runner,
       base::AdoptRef(new TaskHandle::Runner(std::move(task)));
   task_runner.PostDelayedTask(
       location,
-      WTF::Bind(&TaskHandle::Runner::Run, runner->AsWeakPtr(),
-                TaskHandle(runner)),
+      WTF::BindOnce(&TaskHandle::Runner::Run, runner->AsWeakPtr(),
+                    TaskHandle(runner)),
       delay);
   return TaskHandle(runner);
 }
@@ -151,8 +151,8 @@ TaskHandle PostNonNestableCancellableTask(
   scoped_refptr<TaskHandle::Runner> runner =
       base::AdoptRef(new TaskHandle::Runner(std::move(task)));
   task_runner.PostNonNestableTask(
-      location, WTF::Bind(&TaskHandle::Runner::Run, runner->AsWeakPtr(),
-                          TaskHandle(runner)));
+      location, WTF::BindOnce(&TaskHandle::Runner::Run, runner->AsWeakPtr(),
+                              TaskHandle(runner)));
   return TaskHandle(runner);
 }
 
@@ -166,8 +166,8 @@ TaskHandle PostNonNestableDelayedCancellableTask(
       base::AdoptRef(new TaskHandle::Runner(std::move(task)));
   task_runner.PostNonNestableDelayedTask(
       location,
-      WTF::Bind(&TaskHandle::Runner::Run, runner->AsWeakPtr(),
-                TaskHandle(runner)),
+      WTF::BindOnce(&TaskHandle::Runner::Run, runner->AsWeakPtr(),
+                    TaskHandle(runner)),
       delay);
   return TaskHandle(runner);
 }

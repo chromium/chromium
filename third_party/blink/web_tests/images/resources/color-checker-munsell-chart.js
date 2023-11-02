@@ -19,7 +19,7 @@ function drawImageToCanvas() {
   canvas.width = image.width;
   canvas.height = image.height;
 
-  var context2D = canvas.getContext('2d');
+  var context2D = canvas.getContext("2d", {willReadFrequently: true});
   if (context2D) {
     context2D.drawImage(image, 0, 0, canvas.width, canvas.height);
     chartColorTransform(canvas);
@@ -32,7 +32,7 @@ function drawImageToCanvas() {
 }
 
 function getCanvasPixelDataAtPoint(canvas, x, y) {
-  var context2D = canvas.getContext('2d');
+  var context2D = canvas.getContext("2d", {willReadFrequently: true});
   if (context2D)
     return context2D.getImageData(x, y, 1, 1).data;
 

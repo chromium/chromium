@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,11 +32,11 @@ class PasswordProtectionJavaScriptFeature : public web::JavaScriptFeature {
                              const web::ScriptMessage& message) override;
 
   // Adds observer for key presses and paste actions, only for the WebState
-  // specified in |observer|. It is an error to add more than one observer per
+  // specified in `observer`. It is an error to add more than one observer per
   // WebState, or more than one WebState per observer.
   void AddObserver(InputEventObserver* observer);
 
-  // Removes the observer. It is an error to call this method if |observer| is
+  // Removes the observer. It is an error to call this method if `observer` is
   // not already added.
   void RemoveObserver(InputEventObserver* observer);
 

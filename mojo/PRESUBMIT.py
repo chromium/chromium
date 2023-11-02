@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -11,9 +11,9 @@ for more details about the presubmit API built into depot_tools.
 import os.path
 
 USE_PYTHON3 = True
+PRESUBMIT_VERSION = '2.0.0'
 
-
-def CheckChangeOnUpload(input_api, output_api):
+def CheckChange(input_api, output_api):
   # Additional python module paths (we're in src/mojo/); not everyone needs
   # them, but it's easiest to add them to everyone's path.
   # For ply and jinja2:
@@ -30,6 +30,7 @@ def CheckChangeOnUpload(input_api, output_api):
   files_to_skip = input_api.DEFAULT_FILES_TO_SKIP + \
       (r".*\bpublic[\\\/]tools[\\\/]bindings[\\\/]pylib[\\\/]mojom[\\\/]"
            r"generate[\\\/].+\.py$",
+       r".*\bpublic[\\\/]tools[\\\/]bindings[\\\/]checks[\\\/].+\.py$",
        r".*\bpublic[\\\/]tools[\\\/]bindings[\\\/]generators[\\\/].+\.py$",
        r".*\bspy[\\\/]ui[\\\/].+\.py$",
        r".*\btools[\\\/]pylib[\\\/]transitive_hash\.py$",

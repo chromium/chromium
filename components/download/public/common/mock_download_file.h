@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -69,7 +69,7 @@ class MockDownloadFile : public DownloadFile {
   MOCK_CONST_METHOD0(DebugString, std::string());
   MOCK_METHOD0(Pause, void());
   MOCK_METHOD0(Resume, void());
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   MOCK_METHOD6(RenameToIntermediateUri,
                void(const GURL& original_url,
                     const GURL& referrer_url,
@@ -79,7 +79,7 @@ class MockDownloadFile : public DownloadFile {
                     RenameCompletionCallback callback));
   MOCK_METHOD1(PublishDownload, void(RenameCompletionCallback callback));
   MOCK_METHOD0(GetDisplayName, base::FilePath());
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 };
 
 }  // namespace download

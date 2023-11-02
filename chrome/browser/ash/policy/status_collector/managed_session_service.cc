@@ -1,11 +1,13 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/policy/status_collector/managed_session_service.h"
 
 #include "base/logging.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
+#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "components/user_manager/user_manager.h"
 
@@ -15,10 +17,18 @@ namespace {
 
 constexpr base::TimeDelta kMinimumSuspendDuration = base::Minutes(1);
 
+ash::KioskLaunchController* GetKioskLaunchController() {
+  auto* host = ash::LoginDisplayHost::default_host();
+  return host ? host->GetKioskLaunchController() : nullptr;
+}
+
 }  // namespace
 
 ManagedSessionService::ManagedSessionService(base::Clock* clock)
     : clock_(clock), session_manager_(session_manager::SessionManager::Get()) {
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+
+  SetLoginStatus();
   if (session_manager_) {
     // To alleviate tight coupling in unit tests to DeviceStatusCollector.
     session_manager_observation_.Observe(session_manager_);
@@ -37,14 +47,23 @@ ManagedSessionService::~ManagedSessionService() {
         ->RemoveLoginStatusConsumer(this);
   }
 
-  if (chromeos::SessionTerminationManager::Get()) {
-    chromeos::SessionTerminationManager::Get()->RemoveObserver(this);
+  if (GetKioskLaunchController()) {
+    GetKioskLaunchController()->RemoveKioskProfileLoadFailedObserver(this);
+  }
+
+  if (ash::SessionTerminationManager::Get()) {
+    ash::SessionTerminationManager::Get()->RemoveObserver(this);
   }
 }
 
 void ManagedSessionService::AddObserver(
     ManagedSessionService::Observer* observer) {
   observers_.AddObserver(observer);
+  if (is_logged_in_observed_) {
+    auto* const profile = ash::ProfileHelper::Get()->GetProfileByUser(
+        user_manager::UserManager::Get()->GetPrimaryUser());
+    observer->OnLogin(profile);
+  }
 }
 
 void ManagedSessionService::RemoveObserver(
@@ -72,14 +91,25 @@ void ManagedSessionService::OnSessionStateChanged() {
 
 void ManagedSessionService::OnUserProfileLoaded(const AccountId& account_id) {
   Profile* profile =
-      chromeos::ProfileHelper::Get()->GetProfileByAccountId(account_id);
-  profile_observations_.AddObservation(profile);
-  if (chromeos::SessionTerminationManager::Get() &&
-      chromeos::ProfileHelper::Get()->IsPrimaryProfile(profile)) {
-    chromeos::SessionTerminationManager::Get()->AddObserver(this);
+      ash::ProfileHelper::Get()->GetProfileByAccountId(account_id);
+  bool is_primary_profile =
+      ash::ProfileHelper::Get()->IsPrimaryProfile(profile);
+  if (is_logged_in_observed_ && is_primary_profile) {
+    return;
+  } else if (!is_primary_profile) {
+    profile_observations_.AddObservation(profile);
   }
+  SetLoginStatus();
   for (auto& observer : observers_) {
     observer.OnLogin(profile);
+  }
+}
+
+void ManagedSessionService::OnUnlockScreenAttempt(
+    const bool success,
+    const session_manager::UnlockType unlock_type) {
+  for (auto& observer : observers_) {
+    observer.OnUnlockAttempt(success, unlock_type);
   }
 }
 
@@ -101,7 +131,7 @@ void ManagedSessionService::OnSessionWillBeTerminated() {
     observer.OnSessionTerminationStarted(
         user_manager::UserManager::Get()->GetPrimaryUser());
   }
-  chromeos::SessionTerminationManager::Get()->RemoveObserver(this);
+  ash::SessionTerminationManager::Get()->RemoveObserver(this);
 }
 
 void ManagedSessionService::OnUserToBeRemoved(const AccountId& account_id) {
@@ -134,12 +164,51 @@ void ManagedSessionService::OnAuthAttemptStarted() {
     ash::ExistingUserController::current_controller()->AddLoginStatusConsumer(
         this);
   }
+
+  if (GetKioskLaunchController()) {
+    // Remove observer first in case the auth attempt is because of a retry, and
+    // the observation was added, if it was not added removing the observer will
+    // be a no-op.
+    GetKioskLaunchController()->RemoveKioskProfileLoadFailedObserver(this);
+    GetKioskLaunchController()->AddKioskProfileLoadFailedObserver(this);
+  }
 }
 
-void ManagedSessionService::OnAuthFailure(const chromeos::AuthFailure& error) {
+void ManagedSessionService::OnAuthFailure(const ash::AuthFailure& error) {
   for (auto& observer : observers_) {
     observer.OnLoginFailure(error);
   }
 }
 
+void ManagedSessionService::OnKioskProfileLoadFailed() {
+  for (auto& observer : observers_) {
+    observer.OnKioskLoginFailure();
+  }
+}
+
+void ManagedSessionService::SetLoginStatus() {
+  if (is_logged_in_observed_ || !user_manager::UserManager::Get() ||
+      !user_manager::UserManager::Get()->IsUserLoggedIn()) {
+    return;
+  }
+
+  auto* const primary_user = user_manager::UserManager::Get()->GetPrimaryUser();
+  if (!primary_user || !primary_user->is_profile_created()) {
+    return;
+  }
+
+  auto* const profile =
+      ash::ProfileHelper::Get()->GetProfileByUser(primary_user);
+  if (!profile) {
+    // Profile is not fully initialized yet.
+    return;
+  }
+
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  is_logged_in_observed_ = true;
+  profile_observations_.AddObservation(profile);
+  if (ash::SessionTerminationManager::Get()) {
+    ash::SessionTerminationManager::Get()->AddObserver(this);
+  }
+}
 }  // namespace policy

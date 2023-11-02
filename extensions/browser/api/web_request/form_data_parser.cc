@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,13 +9,13 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/cxx17_backports.h"
 #include "base/lazy_instance.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
-#include "net/base/escape.h"
 #include "net/http/http_request_headers.h"
 #include "third_party/re2/src/re2/re2.h"
 
@@ -29,7 +29,7 @@ namespace extensions {
 namespace {
 
 const char kContentDisposition[] = "content-disposition:";
-const size_t kContentDispositionLength = base::size(kContentDisposition) - 1;
+const size_t kContentDispositionLength = std::size(kContentDisposition) - 1;
 // kCharacterPattern is an allowed character in a URL encoding. Definition is
 // from RFC 1738, end of section 2.2.
 const char kCharacterPattern[] =
@@ -119,7 +119,7 @@ class FormDataParserUrlEncoded : public FormDataParser {
   const RE2::Arg* args_[args_size_];
 
   // Caching the pointer to g_patterns.Get().
-  const Patterns* patterns_;
+  raw_ptr<const Patterns> patterns_;
 };
 
 // The following class, FormDataParserMultipart, parses forms encoded as
@@ -300,7 +300,7 @@ class FormDataParserMultipart : public FormDataParser {
   re2::StringPiece source_;
 
   // Caching the pointer to g_patterns.Get().
-  const Patterns* patterns_;
+  raw_ptr<const Patterns> patterns_;
 };
 
 FormDataParser::Result::Result() {}
@@ -323,7 +323,7 @@ std::unique_ptr<FormDataParser> FormDataParser::Create(
   std::string value;
   const bool found =
       request_headers.GetHeader(net::HttpRequestHeaders::kContentType, &value);
-  return CreateFromContentTypeHeader(found ? &value : NULL);
+  return CreateFromContentTypeHeader(found ? &value : nullptr);
 }
 
 // static
@@ -333,7 +333,7 @@ std::unique_ptr<FormDataParser> FormDataParser::CreateFromContentTypeHeader(
   ParserChoice choice = ERROR_CHOICE;
   std::string boundary;
 
-  if (content_type_header == NULL) {
+  if (content_type_header == nullptr) {
     choice = URL_ENCODED;
   } else {
     const std::string content_type(
@@ -375,7 +375,7 @@ std::unique_ptr<FormDataParser> FormDataParser::CreateFromContentTypeHeader(
 FormDataParser::FormDataParser() {}
 
 FormDataParserUrlEncoded::FormDataParserUrlEncoded()
-    : source_(NULL),
+    : source_(nullptr),
       source_set_(false),
       source_malformed_(false),
       arg_name_(&name_),
@@ -398,14 +398,14 @@ bool FormDataParserUrlEncoded::GetNextNameValue(Result* result) {
 
   bool success = RE2::ConsumeN(&source_, pattern(), args_, args_size_);
   if (success) {
-    const net::UnescapeRule::Type kUnescapeRules =
-        net::UnescapeRule::REPLACE_PLUS_WITH_SPACE;
+    const base::UnescapeRule::Type kUnescapeRules =
+        base::UnescapeRule::REPLACE_PLUS_WITH_SPACE;
 
     std::string unescaped_name =
-        net::UnescapeBinaryURLComponent(name_, kUnescapeRules);
+        base::UnescapeBinaryURLComponent(name_, kUnescapeRules);
     result->set_name(unescaped_name);
     std::string unescaped_value =
-        net::UnescapeBinaryURLComponent(value_, kUnescapeRules);
+        base::UnescapeBinaryURLComponent(value_, kUnescapeRules);
     const base::StringPiece unescaped_data(unescaped_value.data(),
                                            unescaped_value.length());
     if (base::IsStringUTF8(unescaped_data)) {
@@ -466,7 +466,7 @@ std::string FormDataParserMultipart::CreateBoundaryPatternFromLiteral(
 // static
 bool FormDataParserMultipart::StartsWithPattern(const re2::StringPiece& input,
                                                 const RE2& pattern) {
-  return pattern.Match(input, 0, input.size(), RE2::ANCHOR_START, NULL, 0);
+  return pattern.Match(input, 0, input.size(), RE2::ANCHOR_START, nullptr, 0);
 }
 
 FormDataParserMultipart::FormDataParserMultipart(
@@ -491,7 +491,7 @@ bool FormDataParserMultipart::FinishReadingPart(base::StringPiece* data) {
       return false;
     }
   }
-  if (data != NULL) {
+  if (data != nullptr) {
     if (source_.data() == data_start) {
       // No data in this body part.
       state_ = STATE_ERROR;
@@ -554,7 +554,7 @@ bool FormDataParserMultipart::GetNextNameValue(Result* result) {
     return_value = FinishReadingPart(value_assigned ? nullptr : &value);
   }
 
-  result->set_name(net::UnescapeBinaryURLComponent(name));
+  result->set_name(base::UnescapeBinaryURLComponent(name));
   if (value_assigned) {
     // Hold filename as value.
     result->SetStringValue(std::string(value));
@@ -568,7 +568,7 @@ bool FormDataParserMultipart::GetNextNameValue(Result* result) {
 }
 
 bool FormDataParserMultipart::SetSource(base::StringPiece source) {
-  if (source.data() == NULL || !source_.empty())
+  if (source.data() == nullptr || !source_.empty())
     return false;
   source_.set(source.data(), source.size());
 

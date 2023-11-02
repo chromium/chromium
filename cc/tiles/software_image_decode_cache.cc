@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,15 +13,21 @@
 #include "base/bind.h"
 #include "base/debug/stack_trace.h"
 #include "base/format_macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/ostream_operators.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "cc/base/devtools_instrumentation.h"
+#include "cc/base/features.h"
 #include "cc/base/histograms.h"
 #include "cc/raster/tile_task.h"
 #include "cc/tiles/mipmap_util.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+
+#include "base/record_replay.h"
 
 using base::trace_event::MemoryAllocatorDump;
 using base::trace_event::MemoryDumpLevelOfDetail;
@@ -47,9 +53,10 @@ class AutoRemoveKeyFromTaskMap {
   ~AutoRemoveKeyFromTaskMap() { task_map_->erase(key_); }
 
  private:
-  std::unordered_map<SoftwareImageDecodeCache::CacheKey,
-                     scoped_refptr<TileTask>,
-                     SoftwareImageDecodeCache::CacheKeyHash>* task_map_;
+  raw_ptr<std::unordered_map<SoftwareImageDecodeCache::CacheKey,
+                             scoped_refptr<TileTask>,
+                             SoftwareImageDecodeCache::CacheKeyHash>>
+      task_map_;
   const SoftwareImageDecodeCache::CacheKey& key_;
 };
 
@@ -62,7 +69,10 @@ class SoftwareImageDecodeTaskImpl : public TileTask {
       SoftwareImageDecodeCache::DecodeTaskType task_type,
       const ImageDecodeCache::TracingInfo& tracing_info)
       : TileTask(TileTask::SupportsConcurrentExecution::kYes,
-                 TileTask::SupportsBackgroundThreadPriority::kYes),
+                 (base::FeatureList::IsEnabled(
+                      features::kNormalPriorityImageDecoding)
+                      ? TileTask::SupportsBackgroundThreadPriority::kNo
+                      : TileTask::SupportsBackgroundThreadPriority::kYes)),
         cache_(cache),
         image_key_(image_key),
         paint_image_(paint_image),
@@ -87,6 +97,7 @@ class SoftwareImageDecodeTaskImpl : public TileTask {
         devtools_instrumentation::ScopedImageDecodeTask::kSoftware,
         ImageDecodeCache::ToScopedTaskType(tracing_info_.task_type),
         ImageDecodeCache::ToScopedImageType(image_type));
+    recordreplay::Assert("[RUN-593-1824] RunOnWorkerThread %s", image_key_.ToString().c_str());
     SoftwareImageDecodeCache::TaskProcessingResult result =
         cache_->DecodeImageInTask(image_key_, paint_image_, task_type_);
 
@@ -100,11 +111,18 @@ class SoftwareImageDecodeTaskImpl : public TileTask {
     cache_->OnImageDecodeTaskCompleted(image_key_, task_type_);
   }
 
+  // Overridden from TileTask:
+  bool TaskContainsLCPCandidateImages() const override {
+    if (!HasCompleted() && paint_image_.may_be_lcp_candidate())
+      return true;
+    return TileTask::TaskContainsLCPCandidateImages();
+  }
+
  protected:
   ~SoftwareImageDecodeTaskImpl() override = default;
 
  private:
-  SoftwareImageDecodeCache* cache_;
+  raw_ptr<SoftwareImageDecodeCache> cache_;
   SoftwareImageDecodeCache::CacheKey image_key_;
   PaintImage paint_image_;
   SoftwareImageDecodeCache::DecodeTaskType task_type_;
@@ -139,13 +157,14 @@ PaintFlags::FilterQuality GetDecodedFilterQuality(
 
 SoftwareImageDecodeCache::SoftwareImageDecodeCache(
     SkColorType color_type,
-    size_t locked_memory_limit_bytes,
-    PaintImage::GeneratorClientId generator_client_id)
-    : decoded_images_(ImageLRUCache::NO_AUTO_EVICT),
+    size_t locked_memory_limit_bytes)
+    : lock_("SoftwareImageDecodeCache.lock_"),
+      decoded_images_(ImageLRUCache::NO_AUTO_EVICT),
       locked_images_budget_(locked_memory_limit_bytes),
       color_type_(color_type),
-      generator_client_id_(generator_client_id),
+      generator_client_id_(PaintImage::GetNextGeneratorClientId()),
       max_items_in_cache_(kNormalMaxItemsInCacheForSoftware) {
+  DCHECK_NE(generator_client_id_, PaintImage::kDefaultGeneratorClientId);
   // In certain cases, ThreadTaskRunnerHandle isn't set (Android Webview).
   // Don't register a dump provider in these cases.
   if (base::ThreadTaskRunnerHandle::IsSet()) {
@@ -183,7 +202,7 @@ SoftwareImageDecodeCache::GetTaskForImageAndRefInternal(
     const TracingInfo& tracing_info,
     DecodeTaskType task_type) {
   CacheKey key = CacheKey::FromDrawImage(
-      image, GetColorTypeForPaintImage(image.target_color_space(),
+      image, GetColorTypeForPaintImage(image.target_color_params(),
                                        image.paint_image()));
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                "SoftwareImageDecodeCache::GetTaskForImageAndRefInternal", "key",
@@ -191,13 +210,15 @@ SoftwareImageDecodeCache::GetTaskForImageAndRefInternal(
 
   // If the target size is empty, we can skip this image during draw (and thus
   // we don't need to decode it or ref it).
-  if (key.target_size().IsEmpty())
+  if (key.target_size().IsEmpty()) {
     return TaskResult(/*need_unref=*/false, /*is_at_raster_decode=*/false,
                       /*can_do_hardware_accelerated_decode=*/false);
+  }
 
-  if (!UseCacheForDrawImage(image))
+  if (!UseCacheForDrawImage(image)) {
     return TaskResult(/*need_unref=*/false, /*is_at_raster_decode=*/false,
                       /*can_do_hardware_accelerated_decode=*/false);
+  }
 
   base::AutoLock lock(lock_);
 
@@ -237,9 +258,10 @@ SoftwareImageDecodeCache::GetTaskForImageAndRefInternal(
 
   // If we already have a locked entry, then we can just use that. Otherwise
   // we'll have to create a task.
-  if (cache_entry->is_locked)
+  if (cache_entry->is_locked) {
     return TaskResult(/*need_unref=*/true, /*is_at_raster_decode=*/false,
                       /*can_do_hardware_accelerated_decode=*/false);
+  }
 
   scoped_refptr<TileTask>& task =
       task_type == DecodeTaskType::USE_IN_RASTER_TASKS
@@ -251,6 +273,7 @@ SoftwareImageDecodeCache::GetTaskForImageAndRefInternal(
     task = base::MakeRefCounted<SoftwareImageDecodeTaskImpl>(
         this, key, image.paint_image(), task_type, tracing_info);
   }
+
   return TaskResult(task, /*can_do_hardware_accelerated_decode=*/false);
 }
 
@@ -279,7 +302,7 @@ void SoftwareImageDecodeCache::RemoveBudgetForImage(const CacheKey& key,
 
 void SoftwareImageDecodeCache::UnrefImage(const DrawImage& image) {
   const CacheKey& key = CacheKey::FromDrawImage(
-      image, GetColorTypeForPaintImage(image.target_color_space(),
+      image, GetColorTypeForPaintImage(image.target_color_params(),
                                        image.paint_image()));
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                "SoftwareImageDecodeCache::UnrefImage", "key", key.ToString());
@@ -336,6 +359,10 @@ SoftwareImageDecodeCache::DecodeImageIfNecessary(const CacheKey& key,
   if (key.target_size().IsEmpty())
     entry->decode_failed = true;
 
+  recordreplay::Assert(
+      "[RUN-593-1824] SoftwareImageDecodeCache::DecodeImageIfNecessary A %d %d %d",
+      entry->decode_failed, !!entry->memory, !!entry->is_locked);
+
   if (entry->decode_failed)
     return TaskProcessingResult::kCancelled;
 
@@ -348,13 +375,17 @@ SoftwareImageDecodeCache::DecodeImageIfNecessary(const CacheKey& key,
       return TaskProcessingResult::kLockOnly;
   }
 
+  recordreplay::Assert(
+      "[RUN-593-1824] SoftwareImageDecodeCache::DecodeImageIfNecessary B %d",
+      (int)key.type());
+
   std::unique_ptr<CacheEntry> local_cache_entry;
   // If we can use the original decode, we'll definitely need a decode.
   if (key.type() == CacheKey::kOriginal) {
     base::AutoUnlock release(lock_);
     local_cache_entry = Utils::DoDecodeImage(
         key, paint_image,
-        GetColorTypeForPaintImage(key.target_color_space(), paint_image),
+        GetColorTypeForPaintImage(key.target_color_params(), paint_image),
         generator_client_id_,
         base::BindOnce(&SoftwareImageDecodeCache::ClearCache,
                        base::Unretained(this)));
@@ -386,7 +417,7 @@ SoftwareImageDecodeCache::DecodeImageIfNecessary(const CacheKey& key,
       base::AutoUnlock release(lock_);
       local_cache_entry = Utils::DoDecodeImage(
           key, paint_image,
-          GetColorTypeForPaintImage(key.target_color_space(), paint_image),
+          GetColorTypeForPaintImage(key.target_color_params(), paint_image),
           generator_client_id_,
           base::BindOnce(&SoftwareImageDecodeCache::ClearCache,
                          base::Unretained(this)));
@@ -416,16 +447,25 @@ SoftwareImageDecodeCache::DecodeImageIfNecessary(const CacheKey& key,
               : gfx::RectToSkIRect(key.src_rect());
       DrawImage candidate_draw_image(
           paint_image, false, src_rect, PaintFlags::FilterQuality::kNone,
-          SkM44(), key.frame_key().frame_index(), key.target_color_space());
+          SkM44(), key.frame_key().frame_index(), key.target_color_params());
       candidate_key.emplace(CacheKey::FromDrawImage(
           candidate_draw_image,
-          GetColorTypeForPaintImage(key.target_color_space(), paint_image)));
+          GetColorTypeForPaintImage(key.target_color_params(), paint_image)));
     }
+
+    recordreplay::Assert(
+        "[RUN-593-1824] SoftwareImageDecodeCache::DecodeImageIfNecessary C %d %s",
+        !!candidate_key, candidate_key ? candidate_key->ToString().c_str() : "");
 
     if (candidate_key) {
       CHECK(*candidate_key != key) << key.ToString();
       auto decoded_draw_image =
           GetDecodedImageForDrawInternal(*candidate_key, paint_image);
+
+      recordreplay::Assert(
+          "[RUN-593-1824] SoftwareImageDecodeCache::DecodeImageIfNecessary D %d %d",
+          !!decoded_draw_image.image(), (int)key.type());
+
       if (!decoded_draw_image.image()) {
         local_cache_entry = nullptr;
       } else {
@@ -437,7 +477,7 @@ SoftwareImageDecodeCache::DecodeImageIfNecessary(const CacheKey& key,
         local_cache_entry = Utils::GenerateCacheEntryFromCandidate(
             key, decoded_draw_image,
             candidate_key->type() == CacheKey::kOriginal,
-            GetColorTypeForPaintImage(key.target_color_space(), paint_image));
+            GetColorTypeForPaintImage(key.target_color_params(), paint_image));
       }
 
       // Unref to balance the GetDecodedImageForDrawInternal() call.
@@ -536,9 +576,9 @@ DecodedDrawImage SoftwareImageDecodeCache::GetDecodedImageForDraw(
 
   base::AutoLock hold(lock_);
   return GetDecodedImageForDrawInternal(
-      CacheKey::FromDrawImage(
-          draw_image, GetColorTypeForPaintImage(draw_image.target_color_space(),
-                                                draw_image.paint_image())),
+      CacheKey::FromDrawImage(draw_image, GetColorTypeForPaintImage(
+                                              draw_image.target_color_params(),
+                                              draw_image.paint_image())),
       draw_image.paint_image());
 }
 
@@ -579,7 +619,7 @@ void SoftwareImageDecodeCache::DrawWithImageFinished(
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                "SoftwareImageDecodeCache::DrawWithImageFinished", "key",
                CacheKey::FromDrawImage(
-                   image, GetColorTypeForPaintImage(image.target_color_space(),
+                   image, GetColorTypeForPaintImage(image.target_color_params(),
                                                     image.paint_image()))
                    .ToString());
   UnrefImage(image);
@@ -597,8 +637,7 @@ void SoftwareImageDecodeCache::ReduceCacheUsageUntilWithinLimit(size_t limit) {
 
     const CacheKey& key = it->first;
     auto vector_it = frame_key_to_image_keys_.find(key.frame_key());
-    auto item_it =
-        std::find(vector_it->second.begin(), vector_it->second.end(), key);
+    auto item_it = base::ranges::find(vector_it->second, key);
     DCHECK(item_it != vector_it->second.end());
     vector_it->second.erase(item_it);
     if (vector_it->second.empty())
@@ -630,6 +669,8 @@ void SoftwareImageDecodeCache::OnImageDecodeTaskCompleted(
   auto image_it = decoded_images_.Peek(key);
   DCHECK(image_it != decoded_images_.end());
   CacheEntry* cache_entry = image_it->second.get();
+  UMA_HISTOGRAM_BOOLEAN("Compositing.DecodeLCPCandidateImage.Software",
+                        key.may_be_lcp_candidate());
   auto& task = task_type == DecodeTaskType::USE_IN_RASTER_TASKS
                    ? cache_entry->in_raster_task
                    : cache_entry->out_of_raster_task;
@@ -695,8 +736,9 @@ size_t SoftwareImageDecodeCache::GetNumCacheEntriesForTesting() {
 }
 
 SkColorType SoftwareImageDecodeCache::GetColorTypeForPaintImage(
-    const gfx::ColorSpace& target_color_space,
+    const TargetColorParams& target_color_params,
     const PaintImage& paint_image) {
+  const gfx::ColorSpace& target_color_space = target_color_params.color_space;
   // Decode HDR images to half float when targeting HDR.
   //
   // TODO(crbug.com/1076568): Once we have access to the display's buffer format

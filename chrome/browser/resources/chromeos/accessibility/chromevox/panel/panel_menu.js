@@ -1,23 +1,18 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 /**
  * @fileoverview A drop-down menu in the ChromeVox panel.
  */
+import {BackgroundBridge} from '../common/background_bridge.js';
+import {BridgeCallbackManager} from '../common/bridge_callback_manager.js';
+import {Msgs} from '../common/msgs.js';
+import {PanelNodeMenuItemData} from '../common/panel_menu_data.js';
 
-goog.provide('PanelMenu');
-goog.provide('PanelNodeMenu');
-goog.provide('PanelSearchMenu');
+import {PanelMenuItem} from './panel_menu_item.js';
 
-goog.require('AutomationTreeWalker');
-goog.require('Msgs');
-goog.require('Output');
-goog.require('PanelMenuItem');
-goog.require('constants');
-goog.require('cursors.Range');
-
-PanelMenu = class {
+export class PanelMenu {
   /**
    * @param {string} menuMsg The msg id of the menu.
    */
@@ -53,7 +48,7 @@ PanelMenu = class {
     this.items_ = [];
 
     /**
-     * The return value from window.setTimeout for a function to update the
+     * The return value from setTimeout for a function to update the
      * scroll bars after an item has been added to a menu. Used so that we
      * don't re-layout too many times.
      * @type {?number}
@@ -80,7 +75,8 @@ PanelMenu = class {
    * @param {string} menuItemShortcut The keystrokes to select this item.
    * @param {string} menuItemBraille
    * @param {string} gesture
-   * @param {Function} callback The function to call if this item is selected.
+   * @param {function() : !Promise} callback The function to call if this item
+   *     is selected.
    * @param {string=} opt_id An optional id for the menu item element.
    * @return {!PanelMenuItem} The menu item just created.
    */
@@ -104,7 +100,7 @@ PanelMenu = class {
     // to avoid excessive layout, schedule this once per batch of adding
     // menu items rather than after each add.
     if (!this.updateScrollbarsTimeout_) {
-      this.updateScrollbarsTimeout_ = window.setTimeout(
+      this.updateScrollbarsTimeout_ = setTimeout(
           (function() {
             const menuBounds = this.menuElement.getBoundingClientRect();
             const maxHeight = window.innerHeight - menuBounds.top;
@@ -177,7 +173,7 @@ PanelMenu = class {
     this.menuBarItemElement.classList.remove('active');
     this.activeIndex_ = -1;
 
-    window.setTimeout(
+    setTimeout(
         (function() {
           this.menuContainerElement.style.visibility = 'hidden';
         }).bind(this),
@@ -244,7 +240,7 @@ PanelMenu = class {
 
   /**
    * Get the callback for the active menu item.
-   * @return {Function} The callback.
+   * @return {?function() : !Promise} The callback.
    */
   getCallbackForCurrentItem() {
     if (this.activeIndex_ >= 0 && this.activeIndex_ < this.items_.length) {
@@ -256,7 +252,7 @@ PanelMenu = class {
   /**
    * Get the callback for a menu item given its DOM element.
    * @param {Element} element The DOM element.
-   * @return {Function} The callback.
+   * @return {?function() : !Promise} The callback.
    */
   getCallbackForElement(element) {
     for (let i = 0; i < this.items_.length; i++) {
@@ -316,33 +312,10 @@ PanelMenu = class {
     }
     return -1;
   }
-};
+}
 
 
-PanelNodeMenu = class extends PanelMenu {
-  /**
-   * @param {string} menuMsg The msg id of the menu.
-   * @param {chrome.automation.AutomationNode} node ChromeVox's current
-   *     position.
-   * @param {AutomationPredicate.Unary} pred Filter to use on the document.
-   * @param {boolean} async If true, populates the menu asynchronously by
-   *     posting a task after searching each chunk of nodes.
-   */
-  constructor(menuMsg, node, pred, async) {
-    super(menuMsg);
-    /** @private {AutomationNode} */
-    this.node_ = node;
-    /** @private {AutomationPredicate.Unary} */
-    this.pred_ = pred;
-    /** @private {boolean} */
-    this.async_ = async;
-    /** @private {AutomationTreeWalker|undefined} */
-    this.walker_;
-    /** @private {number} */
-    this.nodeCount_ = 0;
-    this.populate_();
-  }
-
+export class PanelNodeMenu extends PanelMenu {
   /** @override */
   activate(activateFirstItem) {
     super.activate(false);
@@ -354,103 +327,24 @@ PanelNodeMenu = class extends PanelMenu {
     }
   }
 
-  /**
-   * Create the AutomationTreeWalker and kick off the search to find
-   * nodes that match the predicate for this menu.
-   * @private
-   */
-  populate_() {
-    if (!this.node_) {
-      this.finish_();
-      return;
-    }
-
-    const root = AutomationUtil.getTopLevelRoot(this.node_);
-    if (!root) {
-      this.finish_();
-      return;
-    }
-
-    this.walker_ = new AutomationTreeWalker(root, constants.Dir.FORWARD, {
-      visit(node) {
-        return !AutomationPredicate.shouldIgnoreNode(node);
+  /** @param {!PanelNodeMenuItemData} data */
+  addItemFromData(data) {
+    this.addMenuItem(data.title, '', '', '', async () => {
+      if (data.callbackId) {
+        BridgeCallbackManager.performCallback(data.callbackId);
       }
     });
-    this.nodeCount_ = 0;
-    this.findMoreNodes_();
-  }
-
-  /**
-   * Iterate over nodes from the tree walker. If a node matches the
-   * predicate, add an item to the menu.
-   *
-   * If |this.async_| is true, then after MAX_NODES_BEFORE_ASYNC nodes
-   * have been scanned, call setTimeout to defer searching. This frees
-   * up the main event loop to keep the panel menu responsive, otherwise
-   * it basically freezes up until all of the nodes have been found.
-   * @private
-   */
-  findMoreNodes_() {
-    while (this.walker_.next().node) {
-      const node = this.walker_.node;
-      if (this.pred_(node)) {
-        const output = new Output();
-        const range = cursors.Range.fromNode(node);
-        output.withoutHints();
-        output.withSpeech(range, range, OutputEventType.NAVIGATE);
-        const label = output.toString();
-        this.addMenuItem(label, '', '', '', (function() {
-                           const savedNode = node;
-                           return function() {
-                             chrome.extension.getBackgroundPage()
-                                 .ChromeVoxState.instance['navigateToRange'](
-                                     cursors.Range.fromNode(savedNode));
-                           };
-                         }()));
-
-        if (node === this.node_ && !this.async_) {
-          this.activeIndex_ = this.items_.length - 1;
-        }
-      }
-
-      if (this.async_) {
-        this.nodeCount_++;
-        if (this.nodeCount_ >= PanelNodeMenu.MAX_NODES_BEFORE_ASYNC) {
-          this.nodeCount_ = 0;
-          window.setTimeout(this.findMoreNodes_.bind(this), 0);
-          return;
-        }
-      }
-    }
-    this.finish_();
-  }
-
-  /**
-   * Called when we've finished searching for nodes. If no matches were
-   * found, adds an item to the menu indicating none were found.
-   * @private
-   */
-  finish_() {
-    if (!this.items_.length) {
-      this.addMenuItem(
-          Msgs.getMsg('panel_menu_item_none'), '', '', '', function() {});
+    if (data.isActive) {
+      this.activeIndex_ = this.items_.length - 1;
     }
   }
-};
-
-/**
- * The number of nodes to search before posting a task to finish
- * searching.
- * @const {number}
- */
-PanelNodeMenu.MAX_NODES_BEFORE_ASYNC = 100;
-
+}
 
 /**
  * Implements a menu that allows users to dynamically search the contents of the
  * ChromeVox menus.
  */
-PanelSearchMenu = class extends PanelMenu {
+export class PanelSearchMenu extends PanelMenu {
   /**
    * @param {!string} menuMsg The msg id of the menu.
    */
@@ -539,7 +433,7 @@ PanelSearchMenu = class extends PanelMenu {
         this, menuItemTitle, menuItemShortcut, menuItemBraille, gesture,
         callback, 'result-number-' + this.searchResultCounter_.toString());
     // Ensure that item styling is updated on mouse hovers.
-    item.element.addEventListener('mouseover', (event) => {
+    item.element.addEventListener('mouseover', event => {
       this.resetItemAtActiveIndex();
     }, true);
     return item;
@@ -600,4 +494,4 @@ PanelSearchMenu = class extends PanelMenu {
   scrollToBottom() {
     this.activateItem(this.items_.length - 1);
   }
-};
+}

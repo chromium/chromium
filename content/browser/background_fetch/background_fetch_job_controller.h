@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/background_fetch/background_fetch_delegate_proxy.h"
@@ -161,11 +162,11 @@ class CONTENT_EXPORT BackgroundFetchJobController
 
   // Manager for interacting with the DB. It is owned by the
   // BackgroundFetchContext.
-  BackgroundFetchDataManager* data_manager_;
+  raw_ptr<BackgroundFetchDataManager> data_manager_;
 
   // Proxy for interacting with the BackgroundFetchDelegate across thread
   // boundaries. It is owned by the BackgroundFetchContext.
-  BackgroundFetchDelegateProxy* delegate_proxy_;
+  raw_ptr<BackgroundFetchDelegateProxy> delegate_proxy_;
 
   // A map from the download GUID to the active request.
   std::map<std::string, scoped_refptr<BackgroundFetchRequestInfo>>

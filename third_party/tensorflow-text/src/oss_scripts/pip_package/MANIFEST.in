@@ -1,1 +1,1 @@
-recursive-include tensorflow_text *.so
+recursive-include tensorflow_text *.dylib *.pyd *.so *.so

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -55,7 +55,9 @@ public class TabSuggestionMessageCardViewModel {
                         dismissButtonContextDescription)
                 .with(MessageCardViewProperties.IS_ICON_VISIBLE, true)
                 .with(MessageCardViewProperties.IS_INCOGNITO, false)
-                .with(MessageCardViewProperties.SHOULD_SHOW_IN_INCOGNITO, false)
+                .with(MessageCardViewProperties
+                                .MESSAGE_CARD_VISIBILITY_CONTROL_IN_REGULAR_AND_INCOGNITO_MODE,
+                        MessageCardViewProperties.MessageCardScope.REGULAR)
                 .with(CARD_TYPE, MESSAGE)
                 .with(CARD_ALPHA, 1f)
                 .build();

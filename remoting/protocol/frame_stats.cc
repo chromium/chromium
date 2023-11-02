@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,7 @@
 #include "remoting/proto/video.pb.h"
 #include "remoting/proto/video_stats.pb.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 ClientFrameStats::ClientFrameStats() = default;
 ClientFrameStats::ClientFrameStats(const ClientFrameStats&) = default;
@@ -96,6 +95,9 @@ HostFrameStats HostFrameStats::FromFrameStatsMessage(
   if (message.has_frame_quality()) {
     result.frame_quality = message.frame_quality();
   }
+  if (message.has_screen_id()) {
+    result.screen_id = message.screen_id();
+  }
 
   return result;
 }
@@ -140,11 +142,13 @@ void HostFrameStats::ToFrameStatsMessage(FrameStatsMessage* message_out) const {
   if (frame_quality != -1) {
     message_out->set_frame_quality(frame_quality);
   }
+  if (screen_id != webrtc::kInvalidScreenId) {
+    message_out->set_screen_id(screen_id);
+  }
 }
 
 FrameStats::FrameStats() = default;
 FrameStats::FrameStats(const FrameStats&) = default;
 FrameStats::~FrameStats() = default;
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

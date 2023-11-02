@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,9 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
@@ -26,7 +26,7 @@
 #include "ui/base/models/dialog_model.h"
 #include "url/gurl.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/installer/util/google_update_util.h"
 #endif
 
@@ -84,7 +84,7 @@ void OnDialogAccepted(content::PageNavigator* navigator,
         GURL(update_browser_redirect_url), content::Referrer(),
         WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
         false));
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   } else {
     DCHECK(UpgradeDetector::GetInstance()->is_outdated_install_no_au());
     UMA_HISTOGRAM_CUSTOM_COUNTS("OutdatedUpgradeBubble.NumLaterPerEnableAU",
@@ -104,7 +104,7 @@ void OnDialogAccepted(content::PageNavigator* navigator,
         {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
          base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
         base::BindOnce(&google_update::ElevateIfNeededToReenableUpdates));
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   }
 }
 
@@ -125,7 +125,7 @@ void ShowOutdatedUpgradeBubble(Browser* browser, bool auto_update_enabled) {
               l10n_util::GetStringUTF16(auto_update_enabled
                                             ? IDS_REINSTALL_APP
                                             : IDS_REENABLE_UPDATES))
-          .AddBodyText(
+          .AddParagraph(
               ui::DialogModelLabel(IDS_UPGRADE_BUBBLE_TEXT).set_is_secondary())
           .SetDialogDestroyingCallback(base::BindOnce(&OnWindowClosing))
           .SetCloseActionCallback(base::BindOnce(
@@ -134,8 +134,6 @@ void ShowOutdatedUpgradeBubble(Browser* browser, bool auto_update_enabled) {
           .Build();
 
   chrome::ShowBubble(browser, kAppMenuButtonElementId, std::move(dialog_model));
-
-  chrome::RecordDialogCreation(chrome::DialogIdentifier::OUTDATED_UPGRADE);
 
   base::RecordAction(
       auto_update_enabled

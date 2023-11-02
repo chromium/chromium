@@ -37,12 +37,12 @@ class JSONChecker(object):
     def check(self, lines):
         try:
             json.loads('\n'.join(lines) + '\n')
+        except json.JSONDecodeError as error:
+            self._handle_style_error(error.lineno, 'json/syntax', 5, error.msg)
         except ValueError as error:
             self._handle_style_error(
                 self.line_number_from_json_exception(error), 'json/syntax', 5,
                 str(error))
-        except json.JSONDecodeError as error:
-            self._handle_style_error(error.lineno, 'json/syntax', 5, error.msg)
 
     @staticmethod
     def line_number_from_json_exception(error):

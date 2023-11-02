@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -8,21 +8,18 @@ _inspector_protocol = "//third_party/inspector_protocol"
 import("$_inspector_protocol/inspector_protocol.gni")
 
 _protocol_generated = [
-  "base_string_adapter.cc",
-  "base_string_adapter.h",
-  "CSS.cpp",
-  "CSS.h",
-  "DOM.cpp",
-  "DOM.h",
-  "Forward.h",
-  "Overlay.cpp",
-  "Overlay.h",
-  "Page.cpp",
-  "Page.h",
-  "Protocol.cpp",
-  "Protocol.h",
-  "Tracing.h",
-  "Tracing.cpp",
+  "css.cc",
+  "css.h",
+  "dom.cc",
+  "dom.h",
+  "forward.h",
+  "overlay.cc",
+  "overlay.h",
+  "page.cc",
+  "page.h",
+  "protocol.h",
+  "tracing.h",
+  "tracing.cc",
 ]
 
 action("protocol_compatibility") {
@@ -52,6 +49,7 @@ inspector_protocol_generate("protocol_generated_sources") {
     "protocol.json",
     "inspector_protocol_config.json",
   ]
+  use_embedder_types = true
 
   outputs = _protocol_generated
 }
@@ -90,6 +88,7 @@ component("ui_devtools") {
   defines = [ "UI_DEVTOOLS_IMPLEMENTATION" ]
 
   deps = [
+    ":features",
     ":protocol_generated_sources",
     "//base",
     "//mojo/public/cpp/bindings",
@@ -107,6 +106,19 @@ component("ui_devtools") {
     "//services/tracing/public/cpp",
     "//services/tracing/public/mojom",
   ]
+}
+
+component("features") {
+  output_name = "ui_devtools_features"
+
+  defines = [ "IS_UI_DEVTOOLS_FEATURES_IMPL" ]
+
+  sources = [
+    "ui_devtools_features.cc",
+    "ui_devtools_features.h",
+  ]
+
+  deps = [ "//base" ]
 }
 
 static_library("test_support") {

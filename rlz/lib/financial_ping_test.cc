@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -18,7 +18,6 @@
 
 #include <stdint.h>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -33,7 +32,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "rlz/win/lib/machine_deal.h"
 #else
 #include "base/time/time.h"
@@ -82,7 +81,7 @@ TEST_F(FinancialPingTest, FormRequest) {
   std::string brand_string = rlz_lib::SupplementaryBranding::GetBrand();
   const char* brand = brand_string.empty() ? "GGLA" : brand_string.c_str();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EXPECT_TRUE(rlz_lib::MachineDealCode::Set("dcc_value"));
 #define DCC_PARAM "&dcc=dcc_value"
 #else
@@ -176,7 +175,7 @@ TEST_F(FinancialPingTest, FormRequest) {
        ap < rlz_lib::LAST_ACCESS_POINT; ap++) {
     rlz[0] = 0;
     rlz_lib::AccessPoint point = static_cast<rlz_lib::AccessPoint>(ap);
-    if (rlz_lib::GetAccessPointRlz(point, rlz, base::size(rlz)) && rlz[0]) {
+    if (rlz_lib::GetAccessPointRlz(point, rlz, std::size(rlz)) && rlz[0]) {
       rlz_lib::SetAccessPointRlz(point, "");
     }
   }
@@ -193,7 +192,7 @@ TEST_F(FinancialPingTest, FormRequest) {
       "Q1:QsbRlzValue" DCC_PARAM, brand);
   EXPECT_STREQ(expected_response.c_str(), request.c_str());
 
-  if (!GetAccessPointRlz(rlz_lib::IE_HOME_PAGE, rlz, base::size(rlz))) {
+  if (!GetAccessPointRlz(rlz_lib::IE_HOME_PAGE, rlz, std::size(rlz))) {
     points[2] = rlz_lib::IE_HOME_PAGE;
     EXPECT_TRUE(rlz_lib::FinancialPing::FormRequest(rlz_lib::TOOLBAR_NOTIFIER,
         points, "swg", brand, "MyId", "en-US", true, &request));

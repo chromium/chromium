@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -17,7 +18,6 @@
 #include "chrome/browser/media/router/discovery/mdns/cast_media_sink_service_impl.h"
 #include "chrome/browser/media/router/discovery/mdns/dns_sd_delegate.h"
 #include "chrome/browser/media/router/discovery/mdns/dns_sd_registry.h"
-#include "components/media_router/browser/logger_impl.h"
 #include "components/media_router/common/discovery/media_sink_internal.h"
 #include "components/media_router/common/discovery/media_sink_service_util.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -25,7 +25,7 @@
 namespace media_router {
 
 // A service which can be used to start background discovery and resolution of
-// Cast devices.
+// Cast devices. It is owned by a singleton that is never freed.
 // This class is not thread safe. All methods must be invoked on the UI thread.
 // TODO(imcheng): Consider removing this class and moving the logic into a part
 // of CastMediaSinkServiceImpl that runs on the UI thread, and renaming
@@ -75,10 +75,6 @@ class CastMediaSinkService : public DnsSdRegistry::DnsSdObserver {
 
   void SetDnsSdRegistryForTest(DnsSdRegistry* registry);
 
-  // Binds |pending_remote| to the Mojo Remote owned by |impl_|.
-  // Marked virtual for tests.
-  virtual void BindLogger(LoggerImpl* logger_impl);
-
  private:
   friend class CastMediaSinkServiceTest;
 
@@ -100,7 +96,7 @@ class CastMediaSinkService : public DnsSdRegistry::DnsSdObserver {
 
   // Raw pointer to DnsSdRegistry instance, which is a global leaky singleton
   // and lives as long as the browser process.
-  DnsSdRegistry* dns_sd_registry_ = nullptr;
+  raw_ptr<DnsSdRegistry> dns_sd_registry_ = nullptr;
 
   // Created on the UI thread, used and destroyed on its SequencedTaskRunner.
   std::unique_ptr<CastMediaSinkServiceImpl, base::OnTaskRunnerDeleter> impl_;
@@ -110,10 +106,6 @@ class CastMediaSinkService : public DnsSdRegistry::DnsSdObserver {
 
   // List of cast sinks found in current round of mDNS discovery.
   std::vector<MediaSinkInternal> cast_sinks_;
-
-  // Pointer to the LoggerImpl object owned by MediaRouterDesktop. It should
-  // only be used after BindLogger() is called.
-  LoggerImpl* logger_impl_ = nullptr;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<CastMediaSinkService> weak_ptr_factory_{this};

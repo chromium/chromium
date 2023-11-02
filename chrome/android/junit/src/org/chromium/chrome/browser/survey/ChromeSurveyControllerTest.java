@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,7 +26,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -44,7 +44,7 @@ import org.chromium.content_public.browser.WebContents;
  * Unit tests for ChromeSurveyController.java.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = ShadowRecordHistogram.class)
+@Config(manifest = Config.NONE)
 public class ChromeSurveyControllerTest {
     private static final String TEST_SURVEY_TRIGGER_ID = "foobar";
 
@@ -72,6 +72,7 @@ public class ChromeSurveyControllerTest {
 
     @Before
     public void before() {
+        ChromeSurveyController.forceIsUMAEnabledForTesting(true);
         mTestController = new TestChromeSurveyController(TEST_SURVEY_TRIGGER_ID,
                 mActivityLifecycleDispatcher, mActivity, mMessageDispatcher);
         mTestController.setTabModelSelector(mSelector);
@@ -81,6 +82,7 @@ public class ChromeSurveyControllerTest {
 
     @After
     public void after() {
+        ChromeSurveyController.forceIsUMAEnabledForTesting(false);
         FirstRunStatus.setFirstRunTriggered(false);
     }
 
@@ -180,6 +182,17 @@ public class ChromeSurveyControllerTest {
     }
 
     @Test
+    public void testShowInfoBarUmaUploadNotEnabled() {
+        doReturn(true).when(mTab).isUserInteractable();
+        doReturn(true).when(mTab).isLoading();
+        ChromeSurveyController.forceIsUMAEnabledForTesting(false);
+
+        mTestController.showInfoBarIfApplicable(mTab, null, null);
+        Assert.assertNull("Tab should be null", mTestController.getLastTabInfobarShown());
+        verify(mTab, atLeastOnce()).isUserInteractable();
+    }
+
+    @Test
     @Features.DisableFeatures({ChromeFeatureList.MESSAGES_FOR_ANDROID_CHROME_SURVEY})
     public void testSurveyAvailableWebContentsLoaded() {
         doReturn(mTab).when(mSelector).getCurrentTab();
@@ -204,6 +217,14 @@ public class ChromeSurveyControllerTest {
         mTestController.onSurveyAvailable(null);
         Assert.assertNull("Tab should be null", mTestController.getLastTabInfobarShown());
         verify(mSelector).addObserver(any());
+    }
+
+    @Test
+    public void testSurveyAvailableUmaDisabled() {
+        ChromeSurveyController.forceIsUMAEnabledForTesting(false);
+        mTestController.onSurveyAvailable(null);
+        Assert.assertNull("Tab should be null", mTestController.getLastTabInfobarShown());
+        verify(mSelector, never()).addObserver(any());
     }
 
     @Test
@@ -269,7 +290,7 @@ public class ChromeSurveyControllerTest {
     }
 
     private void verifyFilteringResultRecorded(@FilteringResult int reason, int expectedCount) {
-        int count = ShadowRecordHistogram.getHistogramValueCountForTesting(
+        int count = RecordHistogram.getHistogramValueCountForTesting(
                 "Android.Survey.SurveyFilteringResults", reason);
         Assert.assertEquals(String.format("FilteringResult for type <%s> does not match.", reason),
                 expectedCount, count);

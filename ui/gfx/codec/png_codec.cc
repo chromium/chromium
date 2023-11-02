@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "third_party/libpng/png.h"
@@ -63,7 +64,7 @@ class PngDecoderState {
   int output_channels;
 
   // An incoming SkBitmap to write to. If NULL, we write to output instead.
-  SkBitmap* bitmap;
+  raw_ptr<SkBitmap> bitmap;
 
   // Used during the reading of an SkBitmap. Defaults to true until we see a
   // pixel with anything other than an alpha of 255.
@@ -71,7 +72,7 @@ class PngDecoderState {
 
   // The other way to decode output, where we write into an intermediary buffer
   // instead of directly to an SkBitmap.
-  std::vector<unsigned char>* output;
+  raw_ptr<std::vector<unsigned char>> output;
 
   // Size of the image, set in the info callback.
   int width;
@@ -218,7 +219,11 @@ void DecodeInfoCallback(png_struct* png_ptr, png_info* info_ptr) {
   png_read_update_info(png_ptr, info_ptr);
 
   if (state->bitmap) {
-    state->bitmap->allocN32Pixels(state->width, state->height);
+    if (!state->bitmap->tryAllocN32Pixels(state->width, state->height)) {
+      png_error(png_ptr, "Could not allocate bitmap.");
+      NOTREACHED() << "png_error should not return.";
+      return;
+    }
   } else if (state->output) {
     state->output->resize(
         state->width * state->output_channels * state->height);

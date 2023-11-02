@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,12 +39,10 @@ const base::Value* GetPrefsEntry(const std::string& public_key_spki_der_b64,
   if (!profile_prefs)
     return nullptr;
 
-  const base::DictionaryValue* platform_keys =
-      profile_prefs->GetDictionary(prefs::kPlatformKeys);
-  if (!platform_keys)
-    return nullptr;
+  const base::Value::Dict& platform_keys =
+      profile_prefs->GetDict(prefs::kPlatformKeys);
 
-  return platform_keys->FindKey(public_key_spki_der_b64);
+  return platform_keys.Find(public_key_spki_der_b64);
 }
 
 }  // namespace
@@ -70,13 +68,12 @@ void MarkUserKeyCorporateInPref(const std::string& public_key_spki_der,
   std::string public_key_spki_der_b64;
   base::Base64Encode(public_key_spki_der, &public_key_spki_der_b64);
 
-  DictionaryPrefUpdate update(profile_prefs, prefs::kPlatformKeys);
+  ScopedDictPrefUpdate update(profile_prefs, prefs::kPlatformKeys);
 
-  auto new_pref_entry = std::make_unique<base::DictionaryValue>();
-  new_pref_entry->SetKey(kPrefKeyUsage, base::Value(kPrefKeyUsageCorporate));
+  base::Value::Dict new_pref_entry;
+  new_pref_entry.Set(kPrefKeyUsage, kPrefKeyUsageCorporate);
 
-  update->SetKey(public_key_spki_der_b64,
-                 base::Value::FromUniquePtrValue(std::move(new_pref_entry)));
+  update->Set(public_key_spki_der_b64, std::move(new_pref_entry));
 }
 
 }  // namespace internal

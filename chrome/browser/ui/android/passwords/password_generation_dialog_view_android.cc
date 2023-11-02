@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,6 +19,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/android/window_android.h"
@@ -59,7 +60,9 @@ void PasswordGenerationDialogViewAndroid::Show(
   std::u16string explanation_text;
   if (account_info.has_value()) {
     explanation_text = l10n_util::GetStringFUTF16(
-        IDS_PASSWORD_GENERATION_DIALOG_DESCRIPTION,
+        password_manager::features::UsesUnifiedPasswordManagerBranding()
+            ? IDS_PASSWORD_GENERATION_DIALOG_DESCRIPTION_UPM_BRANDED
+            : IDS_PASSWORD_GENERATION_DIALOG_DESCRIPTION,
         base::UTF8ToUTF16(account_info.value().email));
   } else {
     explanation_text =

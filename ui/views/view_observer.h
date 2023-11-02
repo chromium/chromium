@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,6 +42,9 @@ class VIEWS_EXPORT ViewObserver {
   // Do not use for new call sites, we should instead figure out how to
   // migrate this method (and possibly others) into callbacks.
   virtual void OnViewLayerTransformed(View* observed_view) {}
+
+  // Called when `observed_view`'s layer clip rect changes.
+  virtual void OnViewLayerClipRectChanged(View* observed_view) {}
 
   // Called when View::ViewHierarchyChanged() is called.
   virtual void OnViewHierarchyChanged(

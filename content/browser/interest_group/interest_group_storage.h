@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,14 +7,18 @@
 
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "content/browser/interest_group/interest_group_update.h"
 #include "content/browser/interest_group/storage_interest_group.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
+#include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-forward.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "url/gurl.h"
@@ -58,40 +62,39 @@ class CONTENT_EXPORT InterestGroupStorage {
   void JoinInterestGroup(const blink::InterestGroup& group,
                          const GURL& main_frame_joining_url);
   // Remove the interest group if it exists.
-  void LeaveInterestGroup(const url::Origin& owner, const std::string& name);
-  // Updates the interest group of the same name based on the information in
-  // the provided group. This does not update the interest group expiration
-  // time or user bidding signals. Silently fails if the interest group does
-  // not exist.
-  void UpdateInterestGroup(blink::InterestGroup group);
+  void LeaveInterestGroup(const blink::InterestGroupKey& group_key,
+                          const url::Origin& main_frame);
+  // Updates the interest group `name` of `owner` with the populated fields of
+  // `update`.
+  //
+  // If it fails for any reason (e.g., the interest group does not exist, or the
+  // data in `update` is not valid), returns false.
+  bool UpdateInterestGroup(const blink::InterestGroupKey& group_key,
+                           InterestGroupUpdate update);
   // Report that updating of the interest group with owner `owner` and name
-  // `name` failed. The rate limit duration for failed updates is shorter than
-  // for those that succeed -- for successes, UpdateInterestGroup()
-  // automatically updates the rate limit duration. If `net_disconnected` is
-  // true, the rate limit duration is set to 0, since updates can retry
-  // immediately if the network is disconnected.
-  void ReportUpdateFetchFailed(const url::Origin& owner,
-                               const std::string& name,
-                               bool net_disconnected);
-  // Adds an entry to the bidding history for this interest group.
-  void RecordInterestGroupBid(const url::Origin& owner,
-                              const std::string& name);
+  // `name` failed. With the exception of parse failures, the rate limit
+  // duration for failed updates is shorter than for those that succeed -- for
+  // successes, UpdateInterestGroup() automatically updates the rate limit
+  // duration.
+  void ReportUpdateFailed(const blink::InterestGroupKey& group_key,
+                          bool parse_failure);
+  // Adds an entry to the bidding history for these interest groups.
+  void RecordInterestGroupBids(const blink::InterestGroupSet& group);
   // Adds an entry to the win history for this interest group. `ad_json` is a
   // piece of opaque data to identify the winning ad.
-  void RecordInterestGroupWin(const url::Origin& owner,
-                              const std::string& name,
+  void RecordInterestGroupWin(const blink::InterestGroupKey& group_key,
                               const std::string& ad_json);
-  // Records the K-anonymity data for an interest group owner/name combination.
-  void UpdateInterestGroupNameKAnonymity(
-      const StorageInterestGroup::KAnonymityData& data,
-      const absl::optional<base::Time>& update_sent_time);
-  // Records the K-anonymity data for an interest group update URL.
-  void UpdateInterestGroupUpdateURLKAnonymity(
-      const StorageInterestGroup::KAnonymityData& data,
-      const absl::optional<base::Time>& update_sent_time);
-  // Records the K-anonymity data for an ad.
-  void UpdateAdKAnonymity(const StorageInterestGroup::KAnonymityData& data,
-                          const absl::optional<base::Time>& update_sent_time);
+  // Records K-anonymity.
+  void UpdateKAnonymity(const StorageInterestGroup::KAnonymityData& data);
+
+  // Gets the last time that the key was reported to the k-anonymity server.
+  absl::optional<base::Time> GetLastKAnonymityReported(const std::string& key);
+  // Updates the last time that the key was reported to the k-anonymity server.
+  void UpdateLastKAnonymityReported(const std::string& key);
+
+  // Gets a single interest group.
+  absl::optional<StorageInterestGroup> GetInterestGroup(
+      const blink::InterestGroupKey& group_key);
   // Gets a list of all interest group owners. Each owner will only appear
   // once.
   std::vector<url::Origin> GetAllInterestGroupOwners();
@@ -102,15 +105,37 @@ class CONTENT_EXPORT InterestGroupStorage {
   // Like GetInterestGroupsForOwner(), but doesn't return any interest groups
   // that are currently rate-limited for updates. Additionally, this will update
   // the `next_update_after` field such that a subsequent
-  // ClaimInterestGroupsForUpdate() call with the same `owner` won't return
+  // GetInterestGroupsForUpdate() call with the same `owner` won't return
   // anything until after the success rate limit period passes.
-  std::vector<StorageInterestGroup> ClaimInterestGroupsForUpdate(
-      const url::Origin& owner);
+  //
+  // `groups_limit` sets a limit on the maximum number of interest groups that
+  // may be returned.
+  std::vector<StorageInterestGroup> GetInterestGroupsForUpdate(
+      const url::Origin& owner,
+      size_t groups_limit);
+  // Gets a list of all interest group joining origins. Each joining origin
+  // will only appear once.
+  std::vector<url::Origin> GetAllInterestGroupJoiningOrigins();
 
-  // Clear out storage for the matching owning origin. If the callback is empty
-  // then apply to all origins.
+  // Clear out storage for the matching owning storage key.
   void DeleteInterestGroupData(
-      const base::RepeatingCallback<bool(const url::Origin&)>& origin_matcher);
+      StoragePartition::StorageKeyMatcherFunction storage_key_matcher);
+  // Clear out all interest group storage including k-anonymity store.
+  void DeleteAllInterestGroupData();
+  // Update the interest group priority.
+  void SetInterestGroupPriority(const blink::InterestGroupKey& group_key,
+                                double priority);
+
+  // Merges `update_priority_signals_overrides` with the currently stored
+  // priority signals of `group`. Doesn't take the cached overrides from the
+  // caller, which may already have them, in favor of reading them from the
+  // database, as the values may have been updated on disk since they were read
+  // by the caller.
+  void UpdateInterestGroupPriorityOverrides(
+      const blink::InterestGroupKey& group_key,
+      base::flat_map<std::string,
+                     auction_worklet::mojom::PrioritySignalsDoublePtr>
+          update_priority_signals_overrides);
 
   std::vector<StorageInterestGroup> GetAllInterestGroupsUnfilteredForTesting();
 

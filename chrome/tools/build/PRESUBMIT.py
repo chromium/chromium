@@ -1,4 +1,4 @@
-# Copyright (c) 2011 The Chromium Authors. All rights reserved.
+# Copyright 2011 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -9,7 +9,7 @@ for more details about the presubmit API built into depot_tools.
 """
 
 USE_PYTHON3 = True
-_PLATFORMS = ['android', 'chromeos', 'linux', 'mac', 'win']
+_PLATFORMS = ['chromeos', 'win']
 
 def _CheckChange(input_api, output_api):
   results = []
@@ -20,12 +20,13 @@ def _CheckChange(input_api, output_api):
     for filepath in affected_files:
       if filepath.endswith(files_config_path):
         output, error = input_api.subprocess.Popen(
-            ['python', files_config_path],
+            ['python3', files_config_path],
             stdout=input_api.subprocess.PIPE,
             stderr=input_api.subprocess.PIPE).communicate()
         if output or error:
           results.append(output_api.PresubmitError(
-              files_config_path + " syntax error: \n" + output + error))
+              files_config_path + " syntax error: \n" + bytes.decode(output) +
+              bytes.decode(error)))
   return results
 
 def CheckChangeOnUpload(input_api, output_api):

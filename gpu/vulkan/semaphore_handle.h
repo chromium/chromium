@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,18 +9,18 @@
 #include <utility>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "build/build_config.h"
+#include "ui/gfx/gpu_fence_handle.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include "base/files/scoped_file.h"
 #endif
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 #include <lib/zx/event.h>
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_handle.h"
 #endif
 
@@ -32,17 +32,18 @@ namespace gpu {
 // used other handles types.
 class COMPONENT_EXPORT(VULKAN) SemaphoreHandle {
  public:
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   using PlatformHandle = base::ScopedFD;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   using PlatformHandle = base::win::ScopedHandle;
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
   using PlatformHandle = zx::event;
 #endif
 
   SemaphoreHandle();
   SemaphoreHandle(VkExternalSemaphoreHandleTypeFlagBits type,
                   PlatformHandle handle);
+  explicit SemaphoreHandle(gfx::GpuFenceHandle fence);
   SemaphoreHandle(SemaphoreHandle&&);
 
   SemaphoreHandle(const SemaphoreHandle&) = delete;
@@ -55,7 +56,7 @@ class COMPONENT_EXPORT(VULKAN) SemaphoreHandle {
   VkExternalSemaphoreHandleTypeFlagBits vk_handle_type() { return type_; }
 
   bool is_valid() const {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     return handle_.IsValid();
 #else
     return handle_.is_valid();
@@ -66,9 +67,14 @@ class COMPONENT_EXPORT(VULKAN) SemaphoreHandle {
   // becomes false after this function returns.
   PlatformHandle TakeHandle() { return std::move(handle_); }
 
+  // Moves platform specific instances to gfx::GpuFenceHandle.
+  gfx::GpuFenceHandle ToGpuFenceHandle() &&;
+
   SemaphoreHandle Duplicate() const;
 
  private:
+  void Init(VkExternalSemaphoreHandleTypeFlagBits type, PlatformHandle handle);
+
   VkExternalSemaphoreHandleTypeFlagBits type_;
   PlatformHandle handle_;
 };

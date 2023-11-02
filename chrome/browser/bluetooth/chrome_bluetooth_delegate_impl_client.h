@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,10 +41,13 @@ class ChromeBluetoothDelegateImplClient
       content::RenderFrameHost* frame,
       const content::BluetoothScanningPrompt::EventHandler& event_handler)
       override;
-  void ShowBluetoothDeviceCredentialsDialog(
+
+  void ShowBluetoothDevicePairDialog(
       content::RenderFrameHost* frame,
       const std::u16string& device_identifier,
-      content::BluetoothDelegate::CredentialsCallback callback) override;
+      content::BluetoothDelegate::PairPromptCallback callback,
+      content::BluetoothDelegate::PairingKind pairing_kind,
+      const absl::optional<std::u16string>& pin) override;
 };
 
 #endif  // CHROME_BROWSER_BLUETOOTH_CHROME_BLUETOOTH_DELEGATE_IMPL_CLIENT_H_

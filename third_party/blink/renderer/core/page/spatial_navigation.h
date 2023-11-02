@@ -67,7 +67,7 @@ CORE_EXPORT bool HasRemoteFrame(const Node*);
 CORE_EXPORT int LineBoxes(const LayoutObject& layout_object);
 CORE_EXPORT
 bool IsFragmentedInline(const LayoutObject& layout_object);
-CORE_EXPORT FloatRect RectInViewport(const Node&);
+CORE_EXPORT gfx::RectF RectInViewport(const Node&);
 CORE_EXPORT bool IsOffscreen(const Node*);
 CORE_EXPORT bool IsUnobscured(const FocusCandidate&);
 bool ScrollInDirection(Node* container, SpatialNavigationDirection);

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -116,7 +116,8 @@ void FileSystemAccessCapacityAllocationHostImpl::DidGetUsageAndQuota(
   quota_manager_proxy()->NotifyStorageModified(
       storage::QuotaClientType::kFileSystem, url_.storage_key(),
       storage::FileSystemTypeToQuotaStorageType(url_.type()), capacity_delta,
-      base::Time::Now());
+      base::Time::Now(), base::SequencedTaskRunnerHandle::Get(),
+      base::DoNothing());
   std::move(callback).Run(capacity_delta);
 }
 

@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -54,6 +54,12 @@ source_set("platform") {
     "system_clock.cc",
     "webrtc.cc",
     "webrtc.h",
+    "wifi_lan_medium.cc",
+    "wifi_lan_medium.h",
+    "wifi_lan_server_socket.cc",
+    "wifi_lan_server_socket.h",
+    "wifi_lan_socket.cc",
+    "wifi_lan_socket.h",
   ]
 
   public_deps = [
@@ -65,9 +71,15 @@ source_set("platform") {
     "//ash/constants",
     "//base",
     "//chrome/services/sharing/webrtc",
-    "//chromeos/services/nearby/public/mojom",
+    "//chromeos/ash/services/nearby/public/cpp:tcp_server_socket_port",
+    "//chromeos/ash/services/nearby/public/mojom",
+    "//chromeos/services/network_config/public/mojom",
+    "//components/webrtc:thread_wrapper",
     "//crypto",
-    "//jingle:webrtc_glue",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/system",
+    "//net",
+    "//services/network/public/mojom",
     "//third_party/abseil-cpp:absl",
   ]
 }
@@ -96,14 +108,26 @@ source_set("unit_tests") {
     "scheduled_executor_unittest.cc",
     "single_thread_executor_unittest.cc",
     "webrtc_test.cc",
+    "wifi_lan_medium_unittest.cc",
+    "wifi_lan_server_socket_unittest.cc",
+    "wifi_lan_socket_unittest.cc",
   ]
 
   deps = [
     ":platform",
     "//base/test:test_support",
     "//chrome/services/sharing/nearby/test_support",
-    "//chromeos/services/nearby/public/mojom",
+    "//chromeos/ash/services/nearby/public/cpp:tcp_server_socket_port",
+    "//chromeos/ash/services/nearby/public/cpp:test_support",
+    "//chromeos/ash/services/nearby/public/mojom",
+    "//chromeos/login/login_state",
+    "//chromeos/services/network_config:in_process_instance",
+    "//chromeos/services/network_config/public/cpp:test_support",
+    "//components/onc",
+    "//components/prefs:test_support",
+    "//components/sync_preferences:test_support",
     "//mojo/public/cpp/bindings",
+    "//services/network/public/mojom",
     "//testing/gtest",
   ]
 }

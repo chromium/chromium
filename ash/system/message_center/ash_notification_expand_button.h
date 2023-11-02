@@ -1,10 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef ASH_SYSTEM_MESSAGE_CENTER_ASH_NOTIFICATION_EXPAND_BUTTON_H_
 #define ASH_SYSTEM_MESSAGE_CENTER_ASH_NOTIFICATION_EXPAND_BUTTON_H_
 
+#include "base/memory/weak_ptr.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/metadata/view_factory.h"
 
@@ -41,13 +42,32 @@ class AshNotificationExpandButton : public views::Button {
   // Generate the icons used for chevron in the expanded and collapsed state.
   void UpdateIcons();
 
+  // Perform expand/collapse and converting from single to group notification
+  // animation. Both of these include bounds change and fade in/out `label_`.
+  void AnimateExpandCollapse();
+  void AnimateSingleToGroupNotification();
+
   // views::Button:
-  gfx::Size CalculatePreferredSize() const override;
   void OnThemeChanged() override;
+  gfx::Size CalculatePreferredSize() const override;
+
+  void set_label_fading_out(bool label_fading_out) {
+    label_fading_out_ = label_fading_out;
+  }
+
+  void set_previous_bounds(gfx::Rect previous_bounds) {
+    previous_bounds_ = previous_bounds;
+  }
 
   views::Label* label_for_test() { return label_; }
 
  private:
+  // Bounds change animation happens during expand/collapse and converting from
+  // single to group animation.
+  void AnimateBoundsChange(int duration_in_ms,
+                           gfx::Tween::Type tween_type,
+                           const std::string& animation_histogram_name);
+
   // Owned by views hierarchy.
   views::Label* label_;
   views::ImageView* image_;
@@ -56,11 +76,19 @@ class AshNotificationExpandButton : public views::Button {
   gfx::ImageSkia expanded_image_;
   gfx::ImageSkia collapsed_image_;
 
+  // Used in layer bounds animation.
+  gfx::Rect previous_bounds_;
+
   // Total number of grouped child notifications in this button's parent view.
   int total_grouped_notifications_ = 0;
 
   // The expand state of the button.
   bool expanded_ = false;
+
+  // True if `label_` is in its fade out animation.
+  bool label_fading_out_ = false;
+
+  base::WeakPtrFactory<AshNotificationExpandButton> weak_factory_{this};
 };
 BEGIN_VIEW_BUILDER(/*no export*/, AshNotificationExpandButton, views::Button)
 END_VIEW_BUILDER

@@ -1,5 +1,5 @@
-# Copyright 2021 The Chromium Authors.All rights reserved.
-# Use of this source code is governed by a BSD - style license that can be
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 assert(is_fuchsia)
@@ -36,6 +36,8 @@ source_set("flatland") {
     "flatland_window.h",
     "flatland_window_manager.cc",
     "flatland_window_manager.h",
+    "overlay_manager_flatland.cc",
+    "overlay_manager_flatland.h",
     "ozone_platform_flatland.cc",
     "ozone_platform_flatland.h",
     "vulkan_implementation_flatland.cc",
@@ -59,20 +61,21 @@ source_set("flatland") {
     "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
     "//ui/base",
     "//ui/base/cursor",
-    "//ui/base/cursor:cursor_base",
     "//ui/base/ime/fuchsia",
     "//ui/display/fake",
     "//ui/events:dom_keycode_converter",
     "//ui/events/ozone/layout",
     "//ui/ozone:ozone_base",
     "//ui/ozone/common",
-    "//ui/ozone/public/mojom",
+    "//ui/ozone/platform/scenic/mojom",
   ]
 
   public_deps = [
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.composition",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.gfx",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.input",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.input3",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.pointer",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.views",
     "//ui/gfx/geometry",
     "//ui/platform_window",
   ]
@@ -86,16 +89,21 @@ source_set("flatland") {
 source_set("flatland_unittests") {
   testonly = true
   sources = [
+    "flatland_connection_unittest.cc",
+    "flatland_surface_unittest.cc",
+    "flatland_window_unittest.cc",
     "tests/fake_flatland.cc",
     "tests/fake_flatland.h",
-    "tests/flatland_connection_unittest.cc",
+    "tests/fake_view_ref_focused.cc",
+    "tests/fake_view_ref_focused.h",
   ]
   deps = [
     ":flatland",
     "//base",
     "//base/test:test_support",
     "//testing/gtest",
-    "//third_party/fuchsia-sdk/sdk/pkg/async-testing",
+    "//ui/events:test_support",
     "//ui/ozone:platform",
+    "//ui/ozone:test_support",
   ]
 }

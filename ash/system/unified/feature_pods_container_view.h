@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -56,6 +56,9 @@ class ASH_EXPORT FeaturePodsContainerView : public views::View,
 
   // Make sure button is visible by switching page if needed.
   void EnsurePageWithButton(views::View* button);
+
+  // PaginationModelObserver
+  void SelectedPageChanged(int old_selected, int new_selected) override;
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;

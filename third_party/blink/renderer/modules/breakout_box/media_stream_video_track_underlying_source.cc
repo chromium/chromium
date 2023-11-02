@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,8 +30,9 @@ bool IsScreenOrWindowCapture(const std::string& device_id) {
 }
 }  // namespace
 
-const base::Feature kBreakoutBoxFrameLimiter{"BreakoutBoxFrameLimiter",
-                                             base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kBreakoutBoxFrameLimiter,
+             "BreakoutBoxFrameLimiter",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const int MediaStreamVideoTrackUnderlyingSource::kMaxMonitoredFrameCount = 20;
 const int MediaStreamVideoTrackUnderlyingSource::kMinMonitoredFrameCount = 2;
@@ -66,6 +67,9 @@ MediaStreamVideoTrackUnderlyingSource::GetStreamTransferOptimizer() {
       this, GetRealmRunner(), MaxQueueSize(),
       CrossThreadBindOnce(
           &MediaStreamVideoTrackUnderlyingSource::OnSourceTransferStarted,
+          WrapCrossThreadWeakPersistent(this)),
+      CrossThreadBindOnce(
+          &MediaStreamVideoTrackUnderlyingSource::ClearTransferredSource,
           WrapCrossThreadWeakPersistent(this)));
 }
 
@@ -76,9 +80,9 @@ MediaStreamVideoTrackUnderlyingSource::GetIOTaskRunner() {
 
 void MediaStreamVideoTrackUnderlyingSource::OnSourceTransferStarted(
     scoped_refptr<base::SequencedTaskRunner> transferred_runner,
-    TransferredVideoFrameQueueUnderlyingSource* source) {
+    CrossThreadPersistent<TransferredVideoFrameQueueUnderlyingSource> source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  TransferSource(source);
+  TransferSource(std::move(source));
   RecordBreakoutBoxUsage(BreakoutBoxUsage::kReadableVideoWorker);
 }
 
@@ -127,7 +131,7 @@ std::string MediaStreamVideoTrackUnderlyingSource::GetDeviceIdForMonitoring(
     case mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE:
       if (IsScreenOrWindowCapture(device.id))
         return device.id;
-      FALLTHROUGH;
+      [[fallthrough]];
     default:
       return std::string();
   }
@@ -153,7 +157,7 @@ wtf_size_t MediaStreamVideoTrackUnderlyingSource::GetFramePoolSize(
                 MediaStreamVideoTrackUnderlyingSource::kMinMonitoredFrameCount,
                 media::kVideoCaptureDefaultMaxBufferPoolSize / 2)));
       }
-      FALLTHROUGH;
+      [[fallthrough]];
     default:
       // There will be no monitoring and no frame pool size. Return 0 to signal
       // that the returned value will not be used.

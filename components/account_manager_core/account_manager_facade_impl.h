@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "base/callback_helpers.h"
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
@@ -62,12 +63,14 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacadeImpl
       base::OnceCallback<void(const account_manager::AccountAdditionResult&
                                   result)> callback) override;
   void ShowReauthAccountDialog(AccountAdditionSource source,
-                               const std::string& email) override;
+                               const std::string& email,
+                               base::OnceClosure callback) override;
   void ShowManageAccountsSettings() override;
   std::unique_ptr<OAuth2AccessTokenFetcher> CreateAccessTokenFetcher(
       const AccountKey& account,
-      const std::string& oauth_consumer_name,
       OAuth2AccessTokenConsumer* consumer) override;
+  void ReportAuthError(const account_manager::AccountKey& account,
+                       const GoogleServiceAuthError& error) override;
   void UpsertAccountForTesting(const Account& account,
                                const std::string& token_value) override;
   void RemoveAccountForTesting(const AccountKey& account) override;
@@ -75,14 +78,29 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacadeImpl
   // crosapi::mojom::AccountManagerObserver overrides:
   void OnTokenUpserted(crosapi::mojom::AccountPtr account) override;
   void OnAccountRemoved(crosapi::mojom::AccountPtr account) override;
+  void OnAuthErrorChanged(
+      crosapi::mojom::AccountKeyPtr account,
+      crosapi::mojom::GoogleServiceAuthErrorPtr error) override;
+  void OnSigninDialogClosed() override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(AccountManagerFacadeImplTest,
                            ShowAddAccountDialogCallsMojo);
   FRIEND_TEST_ALL_PREFIXES(AccountManagerFacadeImplTest,
+                           GetAccountsHangsWhenRemoteIsNull);
+  FRIEND_TEST_ALL_PREFIXES(AccountManagerFacadeImplTest,
                            ShowAddAccountDialogUMA);
   FRIEND_TEST_ALL_PREFIXES(AccountManagerFacadeImplTest,
                            ShowReauthAccountDialogCallsMojo);
+  FRIEND_TEST_ALL_PREFIXES(
+      AccountManagerFacadeImplTest,
+      ShowAddAccountDialogSetsCorrectOptionsForAdditionFromAsh);
+  FRIEND_TEST_ALL_PREFIXES(
+      AccountManagerFacadeImplTest,
+      ShowAddAccountDialogSetsCorrectOptionsForAdditionFromLacros);
+  FRIEND_TEST_ALL_PREFIXES(
+      AccountManagerFacadeImplTest,
+      ShowAddAccountDialogSetsCorrectOptionsForAdditionFromArc);
   FRIEND_TEST_ALL_PREFIXES(AccountManagerFacadeImplTest,
                            ShowReauthAccountDialogUMA);
   FRIEND_TEST_ALL_PREFIXES(AccountManagerFacadeImplTest,
@@ -92,7 +110,31 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacadeImpl
   FRIEND_TEST_ALL_PREFIXES(
       AccountManagerFacadeImplTest,
       AccessTokenFetcherCanBeCreatedBeforeAccountManagerFacadeInitialization);
+  FRIEND_TEST_ALL_PREFIXES(AccountManagerFacadeImplTest,
+                           HistogramsForZeroAccountManagerRemoteDisconnections);
+  FRIEND_TEST_ALL_PREFIXES(AccountManagerFacadeImplTest,
+                           HistogramsForAccountManagerRemoteDisconnection);
+  FRIEND_TEST_ALL_PREFIXES(
+      AccountManagerFacadeImplTest,
+      HistogramsForZeroAccountManagerObserverReceiverDisconnections);
+  FRIEND_TEST_ALL_PREFIXES(
+      AccountManagerFacadeImplTest,
+      HistogramsForAccountManagerObserverReceiverDisconnections);
+
+  // Status of the mojo connection.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class FacadeMojoStatus {
+    kOk = 0,
+    kUninitialized = 1,
+    kNoRemote = 2,
+    kVersionMismatch = 3,
+
+    kMaxValue = kVersionMismatch
+  };
+
   static std::string GetAccountAdditionResultStatusHistogramNameForTesting();
+  static std::string GetAccountsMojoStatusHistogramNameForTesting();
 
   // A utility class to fetch access tokens over Mojo.
   class AccessTokenFetcher;
@@ -140,9 +182,13 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacadeImpl
   void RunAfterInitializationSequence(base::OnceClosure closure);
 
   // Runs `closure` if/when `account_manager_remote_` gets disconnected.
-  void RunOnMojoDisconnection(base::OnceClosure closure);
-  // Mojo disconnect handler.
-  void OnMojoError();
+  void RunOnAccountManagerRemoteDisconnection(base::OnceClosure closure);
+
+  // Mojo disconnect handler for `account_manager_remote_`.
+  void OnAccountManagerRemoteDisconnected();
+
+  // Mojo disconnect handler for `receiver_`.
+  void OnAccountManagerObserverReceiverDisconnected();
 
   bool IsInitialized();
 
@@ -151,9 +197,15 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacadeImpl
   // Mojo API version on the remote (Ash) side.
   const uint32_t remote_version_;
 
+  // Number of Mojo pipe disconnections seen by `account_manager_remote_`.
+  int num_remote_disconnections_ = 0;
+
+  // Number of Mojo pipe disconnections seen by `receiver_`.
+  int num_receiver_disconnections_ = 0;
+
   bool is_initialized_ = false;
   std::vector<base::OnceClosure> initialization_callbacks_;
-  std::vector<base::OnceClosure> mojo_disconnection_handlers_;
+  std::vector<base::OnceClosure> account_manager_remote_disconnection_handlers_;
 
   mojo::Remote<crosapi::mojom::AccountManager> account_manager_remote_;
   std::unique_ptr<mojo::Receiver<crosapi::mojom::AccountManagerObserver>>
@@ -161,7 +213,7 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacadeImpl
 
   base::ObserverList<Observer> observer_list_;
 
-  AccountManager* account_manager_for_tests_ = nullptr;
+  raw_ptr<AccountManager> account_manager_for_tests_ = nullptr;
 
   base::WeakPtrFactory<AccountManagerFacadeImpl> weak_factory_{this};
 };

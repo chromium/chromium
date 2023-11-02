@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "ipc/ipc_sender.h"
@@ -73,7 +73,7 @@ class COMPONENT_EXPORT(IPC) SyncMessageFilter : public MessageFilter,
   void SignalAllEvents();
 
   // The channel to which this filter was added.
-  Channel* channel_;
+  raw_ptr<Channel> channel_;
 
   // The process's main thread.
   scoped_refptr<base::SingleThreadTaskRunner> listener_task_runner_;
@@ -90,7 +90,7 @@ class COMPONENT_EXPORT(IPC) SyncMessageFilter : public MessageFilter,
   // Locks data members above.
   base::Lock lock_;
 
-  base::WaitableEvent* const shutdown_event_;
+  const raw_ptr<base::WaitableEvent> shutdown_event_;
 };
 
 }  // namespace IPC

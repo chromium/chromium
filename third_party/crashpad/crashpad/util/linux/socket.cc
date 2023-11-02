@@ -1,4 +1,4 @@
-// Copyright 2019 The Crashpad Authors. All rights reserved.
+// Copyright 2019 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -46,8 +46,8 @@ bool UnixCredentialSocket::CreateCredentialSocketpair(ScopedFileHandle* sock1,
     return false;
   }
 
-  sock1->swap(local_sock1);
-  sock2->swap(local_sock2);
+  *sock1 = std::move(local_sock1);
+  *sock2 = std::move(local_sock2);
   return true;
 }
 

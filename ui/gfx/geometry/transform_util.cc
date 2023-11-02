@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <ostream>
 #include <string>
 
 #include "base/check.h"
@@ -56,53 +57,52 @@ SkScalar Round(SkScalar n) {
 }
 
 // Returns false if the matrix cannot be normalized.
-bool Normalize(skia::Matrix44& m) {
-  if (m.get(3, 3) == 0.0)
+bool Normalize(Transform& m) {
+  if (m.rc(3, 3) == 0.0)
     // Cannot normalize.
     return false;
 
-  SkScalar scale = SK_Scalar1 / m.get(3, 3);
+  SkScalar scale = SK_Scalar1 / m.rc(3, 3);
   for (int i = 0; i < 4; i++)
     for (int j = 0; j < 4; j++)
-      m.set(i, j, m.get(i, j) * scale);
+      m.set_rc(i, j, m.rc(i, j) * scale);
 
   return true;
 }
 
-skia::Matrix44 BuildPerspectiveMatrix(const DecomposedTransform& decomp) {
-  skia::Matrix44 matrix(skia::Matrix44::kIdentity_Constructor);
+Transform BuildPerspectiveMatrix(const DecomposedTransform& decomp) {
+  Transform matrix;
 
   for (int i = 0; i < 4; i++)
-    matrix.setDouble(3, i, decomp.perspective[i]);
+    matrix.set_rc(3, i, decomp.perspective[i]);
   return matrix;
 }
 
-skia::Matrix44 BuildTranslationMatrix(const DecomposedTransform& decomp) {
-  skia::Matrix44 matrix(skia::Matrix44::kUninitialized_Constructor);
-  // Implicitly calls matrix.setIdentity()
-  matrix.setTranslate(SkDoubleToScalar(decomp.translate[0]),
-                      SkDoubleToScalar(decomp.translate[1]),
-                      SkDoubleToScalar(decomp.translate[2]));
+Transform BuildTranslationMatrix(const DecomposedTransform& decomp) {
+  Transform matrix;
+  matrix.Translate3d(SkDoubleToScalar(decomp.translate[0]),
+                     SkDoubleToScalar(decomp.translate[1]),
+                     SkDoubleToScalar(decomp.translate[2]));
   return matrix;
 }
 
-skia::Matrix44 BuildSnappedTranslationMatrix(DecomposedTransform decomp) {
+Transform BuildSnappedTranslationMatrix(DecomposedTransform decomp) {
   decomp.translate[0] = Round(decomp.translate[0]);
   decomp.translate[1] = Round(decomp.translate[1]);
   decomp.translate[2] = Round(decomp.translate[2]);
   return BuildTranslationMatrix(decomp);
 }
 
-skia::Matrix44 BuildRotationMatrix(const DecomposedTransform& decomp) {
-  return Transform(decomp.quaternion).matrix();
+Transform BuildRotationMatrix(const DecomposedTransform& decomp) {
+  return Transform(decomp.quaternion);
 }
 
-skia::Matrix44 BuildSnappedRotationMatrix(const DecomposedTransform& decomp) {
+Transform BuildSnappedRotationMatrix(const DecomposedTransform& decomp) {
   // Create snapped rotation.
-  skia::Matrix44 rotation_matrix = BuildRotationMatrix(decomp);
+  Transform rotation_matrix = BuildRotationMatrix(decomp);
   for (int i = 0; i < 3; ++i) {
     for (int j = 0; j < 3; ++j) {
-      SkScalar value = rotation_matrix.get(i, j);
+      SkScalar value = rotation_matrix.rc(i, j);
       // Snap values to -1, 0 or 1.
       if (value < -0.5f) {
         value = -1.0f;
@@ -111,77 +111,74 @@ skia::Matrix44 BuildSnappedRotationMatrix(const DecomposedTransform& decomp) {
       } else {
         value = 0.0f;
       }
-      rotation_matrix.set(i, j, value);
+      rotation_matrix.set_rc(i, j, value);
     }
   }
   return rotation_matrix;
 }
 
-skia::Matrix44 BuildSkewMatrix(const DecomposedTransform& decomp) {
-  skia::Matrix44 matrix(skia::Matrix44::kIdentity_Constructor);
+Transform BuildSkewMatrix(const DecomposedTransform& decomp) {
+  Transform matrix;
 
-  skia::Matrix44 temp(skia::Matrix44::kIdentity_Constructor);
+  Transform temp;
   if (decomp.skew[2]) {
-    temp.setDouble(1, 2, decomp.skew[2]);
-    matrix.preConcat(temp);
+    temp.set_rc(1, 2, decomp.skew[2]);
+    matrix.PreConcat(temp);
   }
 
   if (decomp.skew[1]) {
-    temp.setDouble(1, 2, 0);
-    temp.setDouble(0, 2, decomp.skew[1]);
-    matrix.preConcat(temp);
+    temp.set_rc(1, 2, 0);
+    temp.set_rc(0, 2, decomp.skew[1]);
+    matrix.PreConcat(temp);
   }
 
   if (decomp.skew[0]) {
-    temp.setDouble(0, 2, 0);
-    temp.setDouble(0, 1, decomp.skew[0]);
-    matrix.preConcat(temp);
+    temp.set_rc(0, 2, 0);
+    temp.set_rc(0, 1, decomp.skew[0]);
+    matrix.PreConcat(temp);
   }
   return matrix;
 }
 
-skia::Matrix44 BuildScaleMatrix(const DecomposedTransform& decomp) {
-  skia::Matrix44 matrix(skia::Matrix44::kUninitialized_Constructor);
-  matrix.setScale(SkDoubleToScalar(decomp.scale[0]),
-                  SkDoubleToScalar(decomp.scale[1]),
-                  SkDoubleToScalar(decomp.scale[2]));
+Transform BuildScaleMatrix(const DecomposedTransform& decomp) {
+  Transform matrix;
+  matrix.Scale3d(SkDoubleToScalar(decomp.scale[0]),
+                 SkDoubleToScalar(decomp.scale[1]),
+                 SkDoubleToScalar(decomp.scale[2]));
   return matrix;
 }
 
-skia::Matrix44 BuildSnappedScaleMatrix(DecomposedTransform decomp) {
+Transform BuildSnappedScaleMatrix(DecomposedTransform decomp) {
   decomp.scale[0] = Round(decomp.scale[0]);
   decomp.scale[1] = Round(decomp.scale[1]);
   decomp.scale[2] = Round(decomp.scale[2]);
   return BuildScaleMatrix(decomp);
 }
 
-Transform ComposeTransform(const skia::Matrix44& perspective,
-                           const skia::Matrix44& translation,
-                           const skia::Matrix44& rotation,
-                           const skia::Matrix44& skew,
-                           const skia::Matrix44& scale) {
-  skia::Matrix44 matrix(skia::Matrix44::kIdentity_Constructor);
+Transform ComposeTransform(const Transform& perspective,
+                           const Transform& translation,
+                           const Transform& rotation,
+                           const Transform& skew,
+                           const Transform& scale) {
+  Transform matrix;
 
-  matrix.preConcat(perspective);
-  matrix.preConcat(translation);
-  matrix.preConcat(rotation);
-  matrix.preConcat(skew);
-  matrix.preConcat(scale);
+  matrix.PreConcat(perspective);
+  matrix.PreConcat(translation);
+  matrix.PreConcat(rotation);
+  matrix.PreConcat(skew);
+  matrix.PreConcat(scale);
 
-  Transform to_return;
-  to_return.matrix() = matrix;
-  return to_return;
+  return matrix;
 }
 
 bool CheckViewportPointMapsWithinOnePixel(const Point& point,
                                           const Transform& transform) {
   auto point_original = Point3F(PointF(point));
-  auto point_transformed = Point3F(PointF(point));
 
   // Can't use TransformRect here since it would give us the axis-aligned
   // bounding rect of the 4 points in the initial rectable which is not what we
   // want.
-  transform.TransformPoint(&point_transformed);
+  auto point_transformed = transform.MapPoint(point_original);
 
   if ((point_transformed - point_original).Length() > 1.f) {
     // The changed distance should not be more than 1 pixel.
@@ -209,14 +206,7 @@ bool CheckTransformsMapsIntViewportWithinOnePixel(const Rect& viewport,
 }
 
 bool Is2dTransform(const Transform& transform) {
-  const skia::Matrix44 matrix = transform.matrix();
-  if (matrix.hasPerspective())
-    return false;
-
-  return matrix.get(2, 0) == 0 && matrix.get(2, 1) == 0 &&
-         matrix.get(0, 2) == 0 && matrix.get(1, 2) == 0 &&
-         matrix.get(2, 2) == 1 && matrix.get(3, 2) == 0 &&
-         matrix.get(2, 3) == 0;
+  return !transform.HasPerspective() && transform.IsFlat();
 }
 
 bool Decompose2DTransform(DecomposedTransform* decomp,
@@ -225,11 +215,10 @@ bool Decompose2DTransform(DecomposedTransform* decomp,
     return false;
   }
 
-  const skia::Matrix44 matrix = transform.matrix();
-  double m11 = matrix.getDouble(0, 0);
-  double m21 = matrix.getDouble(0, 1);
-  double m12 = matrix.getDouble(1, 0);
-  double m22 = matrix.getDouble(1, 1);
+  double m11 = transform.rc(0, 0);
+  double m21 = transform.rc(0, 1);
+  double m12 = transform.rc(1, 0);
+  double m22 = transform.rc(1, 1);
 
   double determinant = m11 * m22 - m12 * m21;
   // Test for matrix being singular.
@@ -242,8 +231,8 @@ bool Decompose2DTransform(DecomposedTransform* decomp,
   // [m12 m22 0 m42]  = [0 1 0 Ty] [m12 m22 0 0]
   // [ 0   0  1  0 ]    [0 0 1 0 ] [ 0   0  1 0]
   // [ 0   0  0  1 ]    [0 0 0 1 ] [ 0   0  0 1]
-  decomp->translate[0] = matrix.get(0, 3);
-  decomp->translate[1] = matrix.get(1, 3);
+  decomp->translate[0] = transform.rc(0, 3);
+  decomp->translate[1] = transform.rc(1, 3);
 
   // For the remainder of the decomposition process, we can focus on the upper
   // 2x2 submatrix
@@ -360,43 +349,41 @@ bool DecomposeTransform(DecomposedTransform* decomp,
   if (Decompose2DTransform(decomp, transform))
     return true;
 
-  // We'll operate on a copy of the matrix.
-  skia::Matrix44 matrix = transform.matrix();
+  // We'll operate on a copy of the transform.
+  Transform matrix = transform;
 
   // If we cannot normalize the matrix, then bail early as we cannot decompose.
   if (!Normalize(matrix))
     return false;
 
-  skia::Matrix44 perspectiveMatrix = matrix;
+  Transform perspective_matrix = matrix;
 
   for (int i = 0; i < 3; ++i)
-    perspectiveMatrix.set(3, i, 0.0);
+    perspective_matrix.set_rc(3, i, 0.0);
 
-  perspectiveMatrix.set(3, 3, 1.0);
+  perspective_matrix.set_rc(3, 3, 1.0);
 
   // If the perspective matrix is not invertible, we are also unable to
-  // decompose, so we'll bail early. Constant taken from skia::Matrix44::invert.
-  if (std::abs(perspectiveMatrix.determinant()) < 1e-8)
+  // decompose, so we'll bail early.
+  if (!perspective_matrix.IsInvertible())
     return false;
 
-  if (matrix.get(3, 0) != 0.0 || matrix.get(3, 1) != 0.0 ||
-      matrix.get(3, 2) != 0.0) {
+  if (matrix.HasPerspective()) {
     // rhs is the right hand side of the equation.
-    SkScalar rhs[4] = {matrix.get(3, 0), matrix.get(3, 1), matrix.get(3, 2),
-                       matrix.get(3, 3)};
+    SkScalar rhs[4] = {matrix.rc(3, 0), matrix.rc(3, 1), matrix.rc(3, 2),
+                       matrix.rc(3, 3)};
 
     // Solve the equation by inverting perspectiveMatrix and multiplying
     // rhs by the inverse.
-    skia::Matrix44 inversePerspectiveMatrix(
-        skia::Matrix44::kUninitialized_Constructor);
-    if (!perspectiveMatrix.invert(&inversePerspectiveMatrix))
+    Transform inverse_perspective_matrix(Transform::kSkipInitialization);
+    if (!perspective_matrix.GetInverse(&inverse_perspective_matrix))
       return false;
 
-    skia::Matrix44 transposedInversePerspectiveMatrix =
-        inversePerspectiveMatrix;
+    Transform transposed_inverse_perspective_matrix =
+        inverse_perspective_matrix;
 
-    transposedInversePerspectiveMatrix.transpose();
-    transposedInversePerspectiveMatrix.mapScalars(rhs);
+    transposed_inverse_perspective_matrix.Transpose();
+    transposed_inverse_perspective_matrix.TransformVector4(rhs);
 
     for (int i = 0; i < 4; ++i)
       decomp->perspective[i] = rhs[i];
@@ -409,14 +396,14 @@ bool DecomposeTransform(DecomposedTransform* decomp,
   }
 
   for (int i = 0; i < 3; i++)
-    decomp->translate[i] = matrix.get(i, 3);
+    decomp->translate[i] = matrix.rc(i, 3);
 
   // Copy of matrix is stored in column major order to facilitate column-level
   // operations.
   SkScalar column[3][3];
   for (int i = 0; i < 3; i++)
     for (int j = 0; j < 3; ++j)
-      column[i][j] = matrix.get(j, i);
+      column[i][j] = matrix.rc(j, i);
 
   // Compute X scale factor and normalize first column.
   decomp->scale[0] = Length3(column[0]);
@@ -531,11 +518,11 @@ bool DecomposeTransform(DecomposedTransform* decomp,
 
 // Taken from http://www.w3.org/TR/css3-transforms/.
 Transform ComposeTransform(const DecomposedTransform& decomp) {
-  skia::Matrix44 perspective = BuildPerspectiveMatrix(decomp);
-  skia::Matrix44 translation = BuildTranslationMatrix(decomp);
-  skia::Matrix44 rotation = BuildRotationMatrix(decomp);
-  skia::Matrix44 skew = BuildSkewMatrix(decomp);
-  skia::Matrix44 scale = BuildScaleMatrix(decomp);
+  Transform perspective = BuildPerspectiveMatrix(decomp);
+  Transform translation = BuildTranslationMatrix(decomp);
+  Transform rotation = BuildRotationMatrix(decomp);
+  Transform skew = BuildSkewMatrix(decomp);
+  Transform scale = BuildScaleMatrix(decomp);
 
   return ComposeTransform(perspective, translation, rotation, skew, scale);
 }
@@ -546,15 +533,15 @@ bool SnapTransform(Transform* out,
   DecomposedTransform decomp;
   DecomposeTransform(&decomp, transform);
 
-  skia::Matrix44 rotation_matrix = BuildSnappedRotationMatrix(decomp);
-  skia::Matrix44 translation = BuildSnappedTranslationMatrix(decomp);
-  skia::Matrix44 scale = BuildSnappedScaleMatrix(decomp);
+  Transform rotation_matrix = BuildSnappedRotationMatrix(decomp);
+  Transform translation = BuildSnappedTranslationMatrix(decomp);
+  Transform scale = BuildSnappedScaleMatrix(decomp);
 
   // Rebuild matrices for other unchanged components.
-  skia::Matrix44 perspective = BuildPerspectiveMatrix(decomp);
+  Transform perspective = BuildPerspectiveMatrix(decomp);
 
   // Completely ignore the skew.
-  skia::Matrix44 skew(skia::Matrix44::kIdentity_Constructor);
+  Transform skew;
 
   // Get full transform.
   Transform snapped =
@@ -569,10 +556,10 @@ bool SnapTransform(Transform* out,
   return snappable;
 }
 
-Transform TransformAboutPivot(const Point& pivot, const Transform& transform) {
+Transform TransformAboutPivot(const PointF& pivot, const Transform& transform) {
   Transform result;
   result.Translate(pivot.x(), pivot.y());
-  result.PreconcatTransform(transform);
+  result.PreConcat(transform);
   result.Translate(-pivot.x(), -pivot.y());
   return result;
 }
@@ -598,41 +585,27 @@ std::string DecomposedTransform::ToString() const {
       quaternion.w());
 }
 
-Transform OrthoProjectionMatrix(float left,
-                                float right,
-                                float bottom,
-                                float top) {
-  // Use the standard formula to map the clipping frustum to the cube from
-  // [-1, -1, -1] to [1, 1, 1].
+AxisTransform2d OrthoProjectionTransform(float left,
+                                         float right,
+                                         float bottom,
+                                         float top) {
+  // Use the standard formula to map the clipping frustum to the square from
+  // [-1, -1] to [1, 1].
   float delta_x = right - left;
   float delta_y = top - bottom;
-  Transform proj;
   if (!delta_x || !delta_y)
-    return proj;
-  proj.matrix().set(0, 0, 2.0f / delta_x);
-  proj.matrix().set(0, 3, -(right + left) / delta_x);
-  proj.matrix().set(1, 1, 2.0f / delta_y);
-  proj.matrix().set(1, 3, -(top + bottom) / delta_y);
+    return AxisTransform2d();
 
-  // Z component of vertices is always set to zero as we don't use the depth
-  // buffer while drawing.
-  proj.matrix().set(2, 2, 0);
-
-  return proj;
+  return AxisTransform2d::FromScaleAndTranslation(
+      Vector2dF(2.0f / delta_x, 2.0f / delta_y),
+      Vector2dF(-(right + left) / delta_x, -(top + bottom) / delta_y));
 }
 
-Transform WindowMatrix(int x, int y, int width, int height) {
-  Transform canvas;
-
-  // Map to window position and scale up to pixel coordinates.
-  canvas.Translate3d(x, y, 0);
-  canvas.Scale3d(width, height, 0);
-
-  // Map from ([-1, -1] to [1, 1]) -> ([0, 0] to [1, 1])
-  canvas.Translate3d(0.5, 0.5, 0.5);
-  canvas.Scale3d(0.5, 0.5, 0.5);
-
-  return canvas;
+AxisTransform2d WindowTransform(int x, int y, int width, int height) {
+  // Map from ([-1, -1] to [1, 1]) -> ([x, y] to [x + width, y + height]).
+  return AxisTransform2d::FromScaleAndTranslation(
+      Vector2dF(width * 0.5f, height * 0.5f),
+      Vector2dF(x + width * 0.5f, y + height * 0.5f));
 }
 
 static inline bool NearlyZero(double value) {
@@ -653,12 +626,11 @@ static inline float ScaleOnAxis(double a, double b, double c) {
 
 absl::optional<Vector2dF> TryComputeTransform2dScaleComponents(
     const Transform& transform) {
-  const auto& matrix = transform.matrix();
-  if (matrix.get(3, 0) != 0.0f || matrix.get(3, 1) != 0.0f) {
+  if (transform.rc(3, 0) != 0.0f || transform.rc(3, 1) != 0.0f) {
     return absl::nullopt;
   }
 
-  float w = matrix.getFloat(3, 3);
+  float w = transform.rc(3, 3);
   if (!std::isnormal(w)) {
     return absl::nullopt;
   }
@@ -675,10 +647,10 @@ absl::optional<Vector2dF> TryComputeTransform2dScaleComponents(
   // during animation.  Currently some such code only considers the
   // endpoints, which would become problematic for cases like animation
   // from rotateY(-60deg) to rotateY(60deg).
-  float x_scale = ScaleOnAxis(matrix.getDouble(0, 0), matrix.getDouble(1, 0),
-                              matrix.getDouble(2, 0));
-  float y_scale = ScaleOnAxis(matrix.getDouble(0, 1), matrix.getDouble(1, 1),
-                              matrix.getDouble(2, 1));
+  float x_scale =
+      ScaleOnAxis(transform.rc(0, 0), transform.rc(1, 0), transform.rc(2, 0));
+  float y_scale =
+      ScaleOnAxis(transform.rc(0, 1), transform.rc(1, 1), transform.rc(2, 1));
   return Vector2dF(x_scale * w_scale, y_scale * w_scale);
 }
 
@@ -693,8 +665,7 @@ Vector2dF ComputeTransform2dScaleComponents(const Transform& transform,
 }
 
 float ComputeApproximateMaxScale(const Transform& transform) {
-  RectF unit(0.f, 0.f, 1.f, 1.f);
-  transform.TransformRect(&unit);
+  gfx::RectF unit = transform.MapRect(RectF(0.f, 0.f, 1.f, 1.f));
   return std::max(unit.width(), unit.height());
 }
 

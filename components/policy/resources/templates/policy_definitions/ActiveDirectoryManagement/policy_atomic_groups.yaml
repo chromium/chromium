@@ -1,0 +1,9 @@
+ActiveDirectoryManagement:
+  caption: <ph name="MS_AD_NAME">Microsoft® Active Directory®</ph> management settings
+  policies:
+  - DeviceMachinePasswordChangeRate
+  - DeviceUserPolicyLoopbackProcessingMode
+  - DeviceKerberosEncryptionTypes
+  - DeviceGpoCacheLifetime
+  - DeviceAuthDataCacheLifetime
+  - ChromadToCloudMigrationEnabled

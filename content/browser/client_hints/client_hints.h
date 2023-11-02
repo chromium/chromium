@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,12 @@
 #include <memory>
 #include <string>
 
+#include "content/common/content_export.h"
 #include "content/public/browser/client_hints_controller_delegate.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/mojom/parsed_headers.mojom-forward.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
+#include "url/gurl.h"
 
 namespace net {
 class HttpResponseHeaders;
@@ -24,10 +26,27 @@ class FrameTreeNode;
 
 // Returns whether client hints can be added for the given URL and frame. This
 // is true only if the URL is eligible and JavaScript is enabled.
+//
+// |origin| is the origin to be used for client hints storage.
+// |maybe_request_url| is the url of the request. It is used as an origin for
+// the origin trial client hints.
+//
+// Where possible, |origin| should be the origin of the document the navigation
+// is creating. NavigationRequest::GetOriginToCommit() is used, and takes
+// sandbox into account, which means that |origin| can be opaque. When called at
+// request time, NavigationRequest::GetTentativeOriginAtRequestTime() should be
+// used, because it is not possible to determine the origin before receiving the
+// final navigation response and the CSP:sandbox response header. It takes into
+// account the sandbox flags set by the embedder only.
+//
+// If |request_url| is not provided, |origin| must not be opaque. This is the
+// case for Critical-CH processing and ACCEPT_CH frame processing, where the
+// document is not taken into account.
 CONTENT_EXPORT bool ShouldAddClientHints(
-    const GURL& url,
+    const url::Origin& origin,
     FrameTreeNode* frame_tree_node,
-    ClientHintsControllerDelegate* delegate);
+    ClientHintsControllerDelegate* delegate,
+    const absl::optional<GURL> maybe_request_url = absl::nullopt);
 
 // Returns |rtt| after adding host-specific random noise, and rounding it as
 // per the NetInfo spec to improve privacy.
@@ -47,34 +66,38 @@ CONTENT_EXPORT double RoundKbpsToMbpsForTesting(
 // or Feature/Permission Policy) but is not currently in the client hint
 // storage.
 CONTENT_EXPORT bool AreCriticalHintsMissing(
-    const GURL& url,
+    const url::Origin& origin,
     FrameTreeNode* frame_tree_node,
     ClientHintsControllerDelegate* delegate,
     const std::vector<network::mojom::WebClientHintsType>& critical_hints);
 
 // Updates the user agent client hint headers. This is called if the value of
 // |override_ua| changes after the NavigationRequest was created.
+//
+// See |ShouldAddClientHints| for |origin| vs |request_url|
 CONTENT_EXPORT void UpdateNavigationRequestClientUaHeaders(
-    const GURL& url,
+    const url::Origin& origin,
     ClientHintsControllerDelegate* delegate,
     bool override_ua,
     FrameTreeNode* frame_tree_node,
-    net::HttpRequestHeaders* headers);
+    net::HttpRequestHeaders* headers,
+    const absl::optional<GURL>& request_url = absl::nullopt);
 
 CONTENT_EXPORT void AddNavigationRequestClientHintsHeaders(
-    const GURL& url,
+    const url::Origin& origin,
     net::HttpRequestHeaders* headers,
     BrowserContext* context,
     ClientHintsControllerDelegate* delegate,
     bool is_ua_override_on,
     FrameTreeNode*,
-    const blink::ParsedPermissionsPolicy&);
+    const blink::ParsedPermissionsPolicy&,
+    const absl::optional<GURL>& request_url = absl::nullopt);
 
 // Adds client hints headers for a prefetch navigation that is not associated
 // with a frame. It must be a main frame navigation. |is_javascript_enabled| is
 // whether JavaScript is enabled in blink or not.
 CONTENT_EXPORT void AddPrefetchNavigationRequestClientHintsHeaders(
-    const GURL& url,
+    const url::Origin& origin,
     net::HttpRequestHeaders* headers,
     BrowserContext* context,
     ClientHintsControllerDelegate* delegate,
@@ -83,9 +106,7 @@ CONTENT_EXPORT void AddPrefetchNavigationRequestClientHintsHeaders(
 
 // Parses incoming client hints and persists them as appropriate. Returns
 // hints that were accepted as enabled even if they are not going to be
-// persisted. The distinction is relevant in legacy case where permissions
-// policy is off and there is no valid Accept-CH-Lifetime, where the header
-// still applies locally within frame.
+// persisted.
 //
 // The ParsedHeaders are used to retrieve the already parsed Accept-CH header
 // values. The HttpResponseHeaders are not meant to be used by non-sandboxed
@@ -94,38 +115,34 @@ CONTENT_EXPORT void AddPrefetchNavigationRequestClientHintsHeaders(
 // TrialTokenValidator from the browser process, see crrev.com/c/2142580.
 CONTENT_EXPORT absl::optional<std::vector<network::mojom::WebClientHintsType>>
 ParseAndPersistAcceptCHForNavigation(
-    const GURL& url,
+    const url::Origin& origin,
     const network::mojom::ParsedHeadersPtr& parsed_headers,
     const net::HttpResponseHeaders* response_headers,
     BrowserContext* context,
     ClientHintsControllerDelegate* delegate,
     FrameTreeNode*);
 
-// Persists the `hints` in the Accept-CH storage for the Origin of `url`.  If
-// `persist_duration` is not null, it's used to store an expiration time for the
-// hint.
-//
+// Persists the `hints` in the Accept-CH storage for the Origin of `url`.
 // `delegate` cannot be nullptr.
-// `persist_duration` can be nullptr, in which case, a long-enough expiration
-// time is chosen such that the hints won't expire.
-//
-// TODO(crbug.com/1243060): Remove `persist_duration` as an argument when
-// FeaturePolicyForClientHints is removed.
 CONTENT_EXPORT void PersistAcceptCH(
-    const GURL& url,
+    const url::Origin& origin,
+    FrameTreeNode& frame_tree_node,
     ClientHintsControllerDelegate* delegate,
-    const std::vector<network::mojom::WebClientHintsType>& hints,
-    base::TimeDelta* persist_duration);
+    const std::vector<network::mojom::WebClientHintsType>& hints);
 
 // Looks up which client hints the renderer should be told to enable
 // (after subjecting them to permissions policy).
 //
 // Note that this is based on the top-level frame, and not necessarily the
 // frame being committed.
+//
+// See |ShouldAddClientHints| for |origin| vs |request_url|
 CONTENT_EXPORT std::vector<::network::mojom::WebClientHintsType>
-LookupAcceptCHForCommit(const GURL& url,
-                        ClientHintsControllerDelegate* delegate,
-                        FrameTreeNode* frame_tree_node);
+LookupAcceptCHForCommit(
+    const url::Origin& origin,
+    ClientHintsControllerDelegate* delegate,
+    FrameTreeNode* frame_tree_node,
+    const absl::optional<GURL>& request_url = absl::nullopt);
 
 }  // namespace content
 

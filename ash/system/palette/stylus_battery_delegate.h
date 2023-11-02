@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,12 @@
 #include "base/callback_forward.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/image/image_skia.h"
+
+namespace ui {
+class ColorProvider;
+}  // namespace ui
 
 namespace ash {
 
@@ -25,7 +30,7 @@ class ASH_EXPORT StylusBatteryDelegate
   ~StylusBatteryDelegate() override;
 
   SkColor GetColorForBatteryLevel() const;
-  gfx::ImageSkia GetBatteryImage() const;
+  gfx::ImageSkia GetBatteryImage(ui::ColorProvider* color_provider) const;
   gfx::ImageSkia GetBatteryStatusUnknownImage() const;
   void SetBatteryUpdateCallback(Callback battery_update_callback);
   bool IsBatteryCharging() const;

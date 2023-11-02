@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,12 +39,6 @@ class PhoneNumber : public FormGroup {
       const std::u16string& value,
       structured_address::VerificationStatus status) override;
 
-  // Size and offset of the prefix and suffix portions of phone numbers.
-  static const size_t kPrefixOffset = 0;
-  static const size_t kPrefixLength = 3;
-  static const size_t kSuffixOffset = 3;
-  static const size_t kSuffixLength = 4;
-
   // The class used to combine home phone parts into a whole number.
   class PhoneCombineHelper {
    public:
@@ -61,7 +55,7 @@ class PhoneNumber : public FormGroup {
     // true if parsing was successful, false otherwise.
     bool ParseNumber(const AutofillProfile& profile,
                      const std::string& app_locale,
-                     std::u16string* value);
+                     std::u16string* value) const;
 
     // Returns true if both |phone_| and |whole_number_| are empty.
     bool IsEmpty() const;

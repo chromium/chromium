@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,14 +8,31 @@
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/system_tray_test_api.h"
 #include "ash/shell.h"
 #include "base/bind.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
+#include "base/memory/weak_ptr.h"
+#include "base/metrics/metrics_hashes.h"
+#include "base/metrics/statistics_recorder.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/timer/timer.h"
+#include "build/build_config.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
+#include "chrome/browser/ash/accessibility/dictation_bubble_test_helper.h"
+#include "chrome/browser/ash/accessibility/speech_monitor.h"
+#include "chrome/browser/ash/base/locale_util.h"
 #include "chrome/browser/ash/input_method/textinput_test_helper.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/speech/speech_recognition_constants.h"
 #include "chrome/browser/speech/speech_recognition_test_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -23,15 +40,20 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/prefs/pref_service.h"
 #include "components/soda/soda_installer.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
+#include "content/public/test/accessibility_notification_waiter.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/fake_speech_recognition_manager.h"
+#include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/extension_host_test_helper.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/accessibility_features.h"
-#include "ui/accessibility/accessibility_switches.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
@@ -39,20 +61,40 @@
 #include "ui/base/clipboard/clipboard_observer.h"
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/ime/ash/mock_ime_input_context_handler.h"
-#include "ui/base/ime/dummy_text_input_client.h"
+#include "ui/base/ime/fake_text_input_client.h"
 #include "ui/base/ime/input_method_base.h"
 #include "ui/events/test/event_generator.h"
 
 namespace ash {
 namespace {
 
-const char kFirstSpeechResult[] = "help";
-const char16_t kFirstSpeechResult16[] = u"help";
-const char kSecondSpeechResult[] = "help oh";
-const char16_t kSecondSpeechResult16[] = u"help oh";
-const char kFinalSpeechResult[] = "hello world";
-const char16_t kFinalSpeechResult16[] = u"hello world";
-const int kNoSpeechTimeoutInSeconds = 10;
+constexpr int kPrintErrorMessageDelayMs = 3500;
+
+const char kFirstSpeechResult[] = "Help";
+const char16_t kFirstSpeechResult16[] = u"Help";
+const char kFinalSpeechResult[] = "Hello world";
+const char16_t kFinalSpeechResult16[] = u"Hello world";
+const char16_t kTrySaying[] = u"Try saying:";
+const char16_t kType[] = u"\"Type [word / phrase]\"";
+const char16_t kHelp[] = u"\"Help\"";
+const char16_t kUndo[] = u"\"Undo\"";
+const char16_t kDelete[] = u"\"Delete\"";
+const char16_t kSelectAll[] = u"\"Select all\"";
+const char16_t kUnselect[] = u"\"Unselect\"";
+const char16_t kCopy[] = u"\"Copy\"";
+const char* kOnDeviceListeningDurationMetric =
+    "Accessibility.CrosDictation.ListeningDuration.OnDeviceRecognition";
+const char* kNetworkListeningDurationMetric =
+    "Accessibility.CrosDictation.ListeningDuration.NetworkRecognition";
+const char* kLocaleMetric = "Accessibility.CrosDictation.Language";
+const char* kOnDeviceSpeechMetric =
+    "Accessibility.CrosDictation.UsedOnDeviceSpeech";
+const char* kMacroRecognizedMetric =
+    "Accessibility.CrosDictation.MacroRecognized";
+const char* kMacroSucceededMetric =
+    "Accessibility.CrosDictation.MacroSucceeded";
+const char* kMacroFailedMetric = "Accessibility.CrosDictation.MacroFailed";
+const int kInputTextViewMetricValue = 1;
 
 static const char* kEnglishDictationCommands[] = {
     "delete",
@@ -68,38 +110,189 @@ static const char* kEnglishDictationCommands[] = {
     "select all",
     "unselect",
     "help",
-    "new line"};
+    "new line",
+    "cancel",
+    "delete the previous word",
+    "delete the previous sentence",
+    "move to the next word",
+    "move to the previous word",
+    "delete phrase",
+    "replace phrase with another phrase",
+    "insert phrase before another phrase",
+    "select from phrase to another phrase",
+    "move to the next sentence",
+    "move to the previous sentence"};
 
 PrefService* GetActiveUserPrefs() {
   return ProfileManager::GetActiveUserProfile()->GetPrefs();
 }
 
+AccessibilityManager* GetManager() {
+  return AccessibilityManager::Get();
+}
+
+void EnableChromeVox() {
+  GetManager()->EnableSpokenFeedback(true);
+}
+
+std::string ToString(DictationBubbleIconType icon) {
+  switch (icon) {
+    case DictationBubbleIconType::kHidden:
+      return "hidden";
+    case DictationBubbleIconType::kStandby:
+      return "standby";
+    case DictationBubbleIconType::kMacroSuccess:
+      return "macro success";
+    case DictationBubbleIconType::kMacroFail:
+      return "macro fail";
+  }
+}
+
+// Listens for changes to the histogram provided at construction. This class
+// only allows `Wait()` to be called once. If you need to call `Wait()` multiple
+// times, create multiple instances of this class.
+class HistogramWaiter {
+ public:
+  explicit HistogramWaiter(const char* metric_name) {
+    histogram_observer_ = std::make_unique<
+        base::StatisticsRecorder::ScopedHistogramSampleObserver>(
+        metric_name, base::BindRepeating(&HistogramWaiter::OnHistogramCallback,
+                                         base::Unretained(this)));
+  }
+  ~HistogramWaiter() { histogram_observer_.reset(); }
+
+  HistogramWaiter(const HistogramWaiter&) = delete;
+  HistogramWaiter& operator=(const HistogramWaiter&) = delete;
+
+  // Waits for the next update to the observed histogram.
+  void Wait() { run_loop_.Run(); }
+
+  void OnHistogramCallback(const char* metric_name,
+                           uint64_t name_hash,
+                           base::HistogramBase::Sample sample) {
+    run_loop_.Quit();
+    histogram_observer_.reset();
+  }
+
+ private:
+  std::unique_ptr<base::StatisticsRecorder::ScopedHistogramSampleObserver>
+      histogram_observer_;
+  base::RunLoop run_loop_;
+};
+
+// A class that repeatedly runs a function, which is supplied at construction,
+// until it evaluates to true.
+class SuccessWaiter {
+ public:
+  SuccessWaiter(const base::RepeatingCallback<bool()>& is_success,
+                const std::string& error_message)
+      : is_success_(is_success), error_message_(error_message) {}
+  ~SuccessWaiter() = default;
+  SuccessWaiter(const SuccessWaiter&) = delete;
+  SuccessWaiter& operator=(const SuccessWaiter&) = delete;
+
+  void Wait() {
+    timer_.Start(FROM_HERE, base::Milliseconds(200), this,
+                 &SuccessWaiter::OnTimer);
+    content::GetUIThreadTaskRunner({})->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&SuccessWaiter::MaybePrintErrorMessage,
+                       weak_factory_.GetWeakPtr()),
+        base::Milliseconds(kPrintErrorMessageDelayMs));
+    run_loop_.Run();
+    ASSERT_TRUE(is_success_.Run());
+  }
+
+  void OnTimer() {
+    if (is_success_.Run()) {
+      timer_.Stop();
+      run_loop_.Quit();
+    }
+  }
+
+  void MaybePrintErrorMessage() {
+    if (!timer_.IsRunning() || run_loop_.AnyQuitCalled() || is_success_.Run())
+      return;
+
+    LOG(ERROR) << "Still waiting for SuccessWaiter\n"
+               << "SuccessWaiter error message: " << error_message_ << "\n";
+  }
+
+ private:
+  base::RepeatingCallback<bool()> is_success_;
+  std::string error_message_;
+  base::RepeatingTimer timer_;
+  base::RunLoop run_loop_;
+  base::WeakPtrFactory<SuccessWaiter> weak_factory_{this};
+};
+
+class CaretBoundsChangedWaiter : public ui::InputMethodObserver {
+ public:
+  explicit CaretBoundsChangedWaiter(ui::InputMethod* input_method)
+      : input_method_(input_method) {
+    input_method_->AddObserver(this);
+  }
+  CaretBoundsChangedWaiter(const CaretBoundsChangedWaiter&) = delete;
+  CaretBoundsChangedWaiter& operator=(const CaretBoundsChangedWaiter&) = delete;
+  ~CaretBoundsChangedWaiter() override { input_method_->RemoveObserver(this); }
+
+  void Wait() { run_loop_.Run(); }
+
+ private:
+  // ui::InputMethodObserver:
+  void OnFocus() override {}
+  void OnBlur() override {}
+  void OnTextInputStateChanged(const ui::TextInputClient* client) override {}
+  void OnInputMethodDestroyed(const ui::InputMethod* input_method) override {}
+  void OnCaretBoundsChanged(const ui::TextInputClient* client) override {
+    run_loop_.Quit();
+  }
+
+  ui::InputMethod* input_method_;
+  base::RunLoop run_loop_;
+};
+
+// Listens for changes to the clipboard. This class only allows `Wait()` to be
+// called once. If you need to call `Wait()` multiple times, create multiple
+// instances of this class.
+class ClipboardChangedWaiter : public ui::ClipboardObserver {
+ public:
+  ClipboardChangedWaiter() {
+    ui::ClipboardMonitor::GetInstance()->AddObserver(this);
+  }
+  ClipboardChangedWaiter(const ClipboardChangedWaiter&) = delete;
+  ClipboardChangedWaiter& operator=(const ClipboardChangedWaiter&) = delete;
+  ~ClipboardChangedWaiter() override {
+    ui::ClipboardMonitor::GetInstance()->RemoveObserver(this);
+  }
+
+  void Wait() { run_loop_.Run(); }
+
+ private:
+  // ui::ClipboardObserver:
+  void OnClipboardDataChanged() override { run_loop_.Quit(); }
+
+  base::RunLoop run_loop_;
+};
+
 }  // namespace
 
-// This class performs common setup and teardown operations for Dictation tests,
-// such as managing the speech recognition service.
-class DictationBaseTest
+class DictationTestBase
     : public InProcessBrowserTest,
-      public ::testing::WithParamInterface<SpeechRecognitionType> {
- protected:
-  DictationBaseTest() : test_helper_(GetParam()) {}
-  ~DictationBaseTest() override = default;
-  DictationBaseTest(const DictationBaseTest&) = delete;
-  DictationBaseTest& operator=(const DictationBaseTest&) = delete;
+      public ::testing::WithParamInterface<speech::SpeechRecognitionType> {
+ public:
+  DictationTestBase() : test_helper_(GetParam()) {}
+  ~DictationTestBase() override = default;
+  DictationTestBase(const DictationTestBase&) = delete;
+  DictationTestBase& operator=(const DictationTestBase&) = delete;
 
+ protected:
   // InProcessBrowserTest:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    std::vector<base::Feature> enabled_features =
+    std::vector<base::test::FeatureRef> enabled_features =
         test_helper_.GetEnabledFeatures();
-    std::vector<base::Feature> disabled_features =
+    std::vector<base::test::FeatureRef> disabled_features =
         test_helper_.GetDisabledFeatures();
-    if (GetParam() == SpeechRecognitionType::kOnDevice) {
-      enabled_features.push_back(
-          ::features::kExperimentalAccessibilityDictationOffline);
-    } else {
-      disabled_features.push_back(
-          ::features::kExperimentalAccessibilityDictationOffline);
-    }
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 
     InProcessBrowserTest::SetUpCommandLine(command_line);
@@ -108,330 +301,226 @@ class DictationBaseTest
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     test_helper_.SetUp(browser()->profile());
-    // Ensure that the Dictation locale preference is set.
-    GetActiveUserPrefs()->SetString(prefs::kAccessibilityDictationLocale,
-                                    "en-US");
+
+    ASSERT_FALSE(AccessibilityManager::Get()->IsDictationEnabled());
+    console_observer_ = std::make_unique<ExtensionConsoleErrorObserver>(
+        browser()->profile(), extension_misc::kAccessibilityCommonExtensionId);
+    browser()->profile()->GetPrefs()->SetBoolean(
+        ash::prefs::kDictationAcceleratorDialogHasBeenAccepted, true);
+
+    extensions::ExtensionHostTestHelper host_helper(
+        browser()->profile(), extension_misc::kAccessibilityCommonExtensionId);
+    AccessibilityManager::Get()->SetDictationEnabled(true);
+    host_helper.WaitForHostCompletedFirstLoad();
+
+    aura::Window* root_window = Shell::Get()->GetPrimaryRootWindow();
+    generator_ = std::make_unique<ui::test::EventGenerator>(root_window);
+
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(),
+        GURL(
+            "data:text/html;charset=utf-8,<textarea id=textarea></textarea>")));
+    // Put focus in the text box.
+    ASSERT_NO_FATAL_FAILURE(ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
+        nullptr, ui::KeyboardCode::VKEY_TAB, false, false, false, false)));
+
+    // Increase Dictation's NO_FOCUSED_IME timeout to reduce flakiness on slower
+    // builds.
+    std::string script = R"(
+      accessibilityCommon.dictation_.increaseNoFocusedImeTimeoutForTesting_();
+      window.domAutomationController.send("done");
+    )";
+    ExecuteAccessibilityCommonScript(script);
   }
 
   void TearDownOnMainThread() override {
-    if (GetParam() == SpeechRecognitionType::kNetwork)
+    if (GetParam() == speech::SpeechRecognitionType::kNetwork)
       content::SpeechRecognitionManager::SetManagerForTesting(nullptr);
 
     InProcessBrowserTest::TearDownOnMainThread();
   }
 
   // Routers to SpeechRecognitionTestHelper methods.
-  void WaitForRecognitionStarted() { test_helper_.WaitForRecognitionStarted(); }
+  void WaitForRecognitionStarted() {
+    test_helper_.WaitForRecognitionStarted();
+    // Dictation initializes FocusHandler when speech recognition starts.
+    // Several tests require FocusHandler logic, so wait for it to initialize
+    // before proceeding.
+    WaitForFocusHandler();
+  }
 
   void WaitForRecognitionStopped() { test_helper_.WaitForRecognitionStopped(); }
 
-  void SendFakeSpeechResultAndWait(const std::string& transcript,
-                                   bool is_final) {
-    test_helper_.SendFakeSpeechResultAndWait(transcript, is_final);
+  void SendInterimResultAndWait(const std::string& transcript) {
+    test_helper_.SendInterimResultAndWait(transcript);
   }
 
-  void SendFinalFakeSpeechResultAndWait(const std::string& transcript) {
-    test_helper_.SendFinalFakeSpeechResultAndWait(transcript);
+  void SendFinalResultAndWait(const std::string& transcript) {
+    test_helper_.SendFinalResultAndWait(transcript);
   }
 
-  void SendFakeSpeechRecognitionErrorAndWait() {
-    test_helper_.SendFakeSpeechRecognitionErrorAndWait();
+  void SendErrorAndWait() { test_helper_.SendErrorAndWait(); }
+
+  void SendFinalResultAndWaitForTextAreaValue(const std::string& result,
+                                              const std::string& value) {
+    // Ensure that the accessibility tree and the text area value are updated.
+    content::AccessibilityNotificationWaiter waiter(
+        browser()->tab_strip_model()->GetActiveWebContents(),
+        ui::kAXModeComplete, ax::mojom::Event::kValueChanged);
+    SendFinalResultAndWait(result);
+    // TODO(https://crbug.com/1333354): Investigate why this does not always
+    // return true.
+    ASSERT_TRUE(waiter.WaitForNotification());
+    WaitForTextAreaValue(value);
+  }
+
+  void SendFinalResultAndWaitForSelectionChanged(const std::string& result) {
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    content::AccessibilityNotificationWaiter selection_waiter(
+        browser()->tab_strip_model()->GetActiveWebContents(),
+        ui::kAXModeComplete,
+        ui::AXEventGenerator::Event::TEXT_SELECTION_CHANGED);
+    content::BoundingBoxUpdateWaiter bounding_box_waiter(web_contents);
+    SendFinalResultAndWait(result);
+    bounding_box_waiter.Wait();
+    // TODO(https://crbug.com/1333354): Investigate why this does not always
+    // return true.
+    ASSERT_TRUE(selection_waiter.WaitForNotification());
+  }
+
+  void SendFinalResultAndWaitForCaretBoundsChanged(const std::string& result) {
+    content::AccessibilityNotificationWaiter selection_waiter(
+        browser()->tab_strip_model()->GetActiveWebContents(),
+        ui::kAXModeComplete,
+        ui::AXEventGenerator::Event::TEXT_SELECTION_CHANGED);
+    CaretBoundsChangedWaiter caret_waiter(
+        browser()->window()->GetNativeWindow()->GetHost()->GetInputMethod());
+    SendFinalResultAndWait(result);
+    caret_waiter.Wait();
+    // TODO(https://crbug.com/1333354): Investigate why this does not always
+    // return true.
+    ASSERT_TRUE(selection_waiter.WaitForNotification());
+  }
+
+  void SendFinalResultAndWaitForClipboardChanged(const std::string& result) {
+    ClipboardChangedWaiter waiter;
+    SendFinalResultAndWait(result);
+    waiter.Wait();
+  }
+
+  std::string GetTextAreaValue() {
+    std::string output;
+    std::string script =
+        "window.domAutomationController.send("
+        "document.getElementById('textarea').value)";
+    CHECK(ExecuteScriptAndExtractString(
+        browser()->tab_strip_model()->GetWebContentsAt(0), script, &output));
+    return output;
+  }
+
+  void WaitForTextAreaValue(const std::string& value) {
+    std::string error_message = "Still waiting for text area value: " + value;
+    SuccessWaiter(base::BindLambdaForTesting(
+                      [&]() { return value == GetTextAreaValue(); }),
+                  error_message)
+        .Wait();
+  }
+
+  void WaitForFocusHandler() {
+    std::string error_message = "Still waiting for FocusHandler";
+    std::string script = R"(
+      if (accessibilityCommon.dictation_.focusHandler_.isReadyForTesting()) {
+        window.domAutomationController.send("ready");
+      } else {
+        window.domAutomationController.send("not ready");
+      }
+    )";
+    SuccessWaiter(
+        base::BindLambdaForTesting([&]() {
+          std::string result =
+              extensions::browsertest_util::ExecuteScriptInBackgroundPage(
+                  /*context=*/browser()->profile(),
+                  /*extension_id=*/
+                  extension_misc::kAccessibilityCommonExtensionId,
+                  /*script=*/script);
+          return result == "ready";
+        }),
+        error_message)
+        .Wait();
+  }
+
+  void ToggleDictationWithKeystroke() {
+    ASSERT_NO_FATAL_FAILURE(ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
+        nullptr, ui::KeyboardCode::VKEY_D, false, false, false, true)));
+  }
+
+  void InstallMockInputContextHandler() {
+    input_context_handler_ = std::make_unique<ui::MockIMEInputContextHandler>();
+    ui::IMEBridge::Get()->SetInputContextHandler(input_context_handler_.get());
+  }
+
+  // Retrieves the number of times commit text is updated.
+  int GetCommitTextCallCount() {
+    EXPECT_TRUE(input_context_handler_);
+    return input_context_handler_->commit_text_call_count();
+  }
+
+  void WaitForCommitText(const std::u16string& value) {
+    std::string error_message =
+        base::UTF16ToUTF8(u"Still waiting for commit text: " + value);
+    EXPECT_TRUE(input_context_handler_);
+    SuccessWaiter(base::BindLambdaForTesting([&]() {
+                    return value == input_context_handler_->last_commit_text();
+                  }),
+                  error_message)
+        .Wait();
+  }
+
+  const base::flat_map<std::string, Dictation::LocaleData>
+  GetAllSupportedLocales() {
+    return Dictation::GetAllSupportedLocales();
+  }
+
+  void ExecuteAccessibilityCommonScript(const std::string& script) {
+    extensions::browsertest_util::ExecuteScriptInBackgroundPage(
+        /*context=*/browser()->profile(),
+        /*extension_id=*/extension_misc::kAccessibilityCommonExtensionId,
+        /*script=*/script);
   }
 
  private:
   SpeechRecognitionTestHelper test_helper_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<ui::MockIMEInputContextHandler> input_context_handler_;
+  std::unique_ptr<ui::test::EventGenerator> generator_;
+  std::unique_ptr<ExtensionConsoleErrorObserver> console_observer_;
 };
 
-class DictationTest : public DictationBaseTest {
- protected:
-  DictationTest() {
-    input_context_handler_ = std::make_unique<ui::MockIMEInputContextHandler>();
-    empty_composition_text_ =
-        ui::MockIMEInputContextHandler::UpdateCompositionTextArg()
-            .composition_text;
-  }
+class DictationTest : public DictationTestBase {
+ public:
+  DictationTest() = default;
   ~DictationTest() override = default;
   DictationTest(const DictationTest&) = delete;
   DictationTest& operator=(const DictationTest&) = delete;
 
+ protected:
   void SetUpOnMainThread() override {
-    DictationBaseTest::SetUpOnMainThread();
-
-    ui::IMEBridge::Get()->SetInputContextHandler(input_context_handler_.get());
-    generator_ = std::make_unique<ui::test::EventGenerator>(
-        ash::Shell::Get()->GetPrimaryRootWindow());
-    GetActiveUserPrefs()->SetBoolean(
-        prefs::kDictationAcceleratorDialogHasBeenAccepted, true);
-    ash::Shell::Get()->accessibility_controller()->dictation().SetEnabled(true);
+    GetActiveUserPrefs()->SetString(prefs::kAccessibilityDictationLocale,
+                                    "en-US");
+    DictationTestBase::SetUpOnMainThread();
   }
-
-  AccessibilityManager* GetManager() { return AccessibilityManager::Get(); }
-
-  void EnableChromeVox() { GetManager()->EnableSpokenFeedback(true); }
-
-  void SendSpeechResult(const std::string& result, bool is_final) {
-    if (GetParam() == SpeechRecognitionType::kNetwork && !is_final) {
-      // FakeSpeechRecognitionManager can only send final results,
-      // so if this isn't final just send to Dictation directly.
-      GetManager()->dictation_->OnSpeechResult(base::ASCIIToUTF16(result),
-                                               is_final, absl::nullopt);
-      return;
-    }
-
-    SendFakeSpeechResultAndWait(result, is_final);
-  }
-
-  void NotifyTextInputStateChanged(ui::TextInputClient* client) {
-    GetManager()->dictation_->OnTextInputStateChanged(client);
-  }
-
-  bool IsDictationOff() {
-    return !GetManager()->dictation_ ||
-           GetManager()->dictation_->current_state_ == SPEECH_RECOGNIZER_OFF;
-  }
-
-  base::OneShotTimer* GetTimer() {
-    if (!GetManager()->dictation_)
-      return nullptr;
-    return &(GetManager()->dictation_->speech_timeout_);
-  }
-
-  void ToggleDictation() {
-    // We are trying to toggle on if Dictation is currently off.
-    bool will_toggle_on = IsDictationOff();
-    generator_->PressAndReleaseKey(ui::VKEY_D, ui::EF_COMMAND_DOWN);
-    if (will_toggle_on) {
-      // SpeechRecognition may be turned on asynchronously. Wait for it to
-      // complete before moving on to ensures that we are ready to receive
-      // speech. In Dictation, a tone is played when recognition starts,
-      // indicating to the user that they can begin speaking.
-      WaitForRecognitionStarted();
-    }
-    // Now wait for the callbacks to propagate on the UI thread.
-    base::RunLoop().RunUntilIdle();
-  }
-
-  ui::CompositionText GetLastCompositionText() {
-    return input_context_handler_->last_update_composition_arg()
-        .composition_text;
-  }
-
-  const base::flat_map<std::string, Dictation::LocaleData>
-  GetAllSupportedLocales() {
-    return GetManager()->dictation_->GetAllSupportedLocales();
-  }
-
-  std::unique_ptr<ui::MockIMEInputContextHandler> input_context_handler_;
-  std::unique_ptr<ui::test::EventGenerator> generator_;
-  ui::CompositionText empty_composition_text_;
 };
 
-INSTANTIATE_TEST_SUITE_P(Network,
-                         DictationTest,
-                         ::testing::Values(SpeechRecognitionType::kNetwork));
+INSTANTIATE_TEST_SUITE_P(
+    Network,
+    DictationTest,
+    ::testing::Values(speech::SpeechRecognitionType::kNetwork));
 
-INSTANTIATE_TEST_SUITE_P(OnDevice,
-                         DictationTest,
-                         ::testing::Values(SpeechRecognitionType::kOnDevice));
-
-IN_PROC_BROWSER_TEST_P(DictationTest, RecognitionEnds) {
-  ToggleDictation();
-  EXPECT_EQ(GetLastCompositionText().text, empty_composition_text_.text);
-
-  SendSpeechResult(kFirstSpeechResult, false /* is_final */);
-  EXPECT_EQ(kFirstSpeechResult16, GetLastCompositionText().text);
-
-  SendSpeechResult(kSecondSpeechResult, false /* is_final */);
-  EXPECT_EQ(kSecondSpeechResult16, GetLastCompositionText().text);
-
-  SendSpeechResult(kFinalSpeechResult, true /* is_final */);
-  // Wait for interim results to be finalized.
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(1, input_context_handler_->commit_text_call_count());
-  EXPECT_EQ(kFinalSpeechResult16, input_context_handler_->last_commit_text());
-
-  EXPECT_FALSE(IsDictationOff());
-  base::OneShotTimer* timer = GetTimer();
-  ASSERT_TRUE(timer);
-  EXPECT_EQ(timer->GetCurrentDelay(), base::Seconds(kNoSpeechTimeoutInSeconds));
-}
-
-IN_PROC_BROWSER_TEST_P(DictationTest, RecognitionEndsWithChromeVoxEnabled) {
-  AccessibilityManager* manager = GetManager();
-  EnableChromeVox();
-  EXPECT_TRUE(manager->IsSpokenFeedbackEnabled());
-
-  // Toggle Dictation on directly.
-  GetManager()->ToggleDictation();
-  WaitForRecognitionStarted();
-  // Now wait for the callbacks to propagate on the UI thread.
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_EQ(GetLastCompositionText().text, empty_composition_text_.text);
-
-  SendSpeechResult(kFirstSpeechResult, false /* is_final */);
-  EXPECT_EQ(GetLastCompositionText().text, empty_composition_text_.text);
-
-  SendSpeechResult(kSecondSpeechResult, false /* is_final */);
-  EXPECT_EQ(GetLastCompositionText().text, empty_composition_text_.text);
-
-  SendSpeechResult(kFinalSpeechResult, true /* is_final */);
-  // Wait for interim results to be finalized.
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(1, input_context_handler_->commit_text_call_count());
-  EXPECT_EQ(kFinalSpeechResult16, input_context_handler_->last_commit_text());
-
-  EXPECT_FALSE(IsDictationOff());
-  base::OneShotTimer* timer = GetTimer();
-  ASSERT_TRUE(timer);
-  EXPECT_EQ(timer->GetCurrentDelay(), base::Seconds(kNoSpeechTimeoutInSeconds));
-}
-
-IN_PROC_BROWSER_TEST_P(DictationTest, RecognitionEndsWithNoSpeech) {
-  ToggleDictation();
-  EXPECT_FALSE(IsDictationOff());
-  base::OneShotTimer* timer = GetTimer();
-  ASSERT_TRUE(timer);
-  EXPECT_EQ(timer->GetCurrentDelay(), base::Seconds(kNoSpeechTimeoutInSeconds));
-  // Firing the timer, which simluates waiting for some time with no events,
-  // should end dictation.
-  timer->FireNow();
-  EXPECT_TRUE(IsDictationOff());
-}
-
-IN_PROC_BROWSER_TEST_P(DictationTest, RecognitionEndsWithoutFinalizedSpeech) {
-  ToggleDictation();
-  EXPECT_FALSE(IsDictationOff());
-  SendSpeechResult(kFirstSpeechResult, false /* is_final */);
-  base::OneShotTimer* timer = GetTimer();
-  ASSERT_TRUE(timer);
-  EXPECT_EQ(timer->GetCurrentDelay(), base::Seconds(kNoSpeechTimeoutInSeconds));
-  // Firing the timer, which simluates waiting for some time without new speech,
-  // should end dictation.
-  timer->FireNow();
-  // Wait for interim results to be finalized.
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(IsDictationOff());
-  EXPECT_EQ(1, input_context_handler_->commit_text_call_count());
-  EXPECT_EQ(kFirstSpeechResult16, input_context_handler_->last_commit_text());
-}
-
-IN_PROC_BROWSER_TEST_P(DictationTest, UserEndsDictationBeforeSpeech) {
-  ToggleDictation();
-  ToggleDictation();
-  EXPECT_EQ(GetLastCompositionText().text, empty_composition_text_.text);
-  EXPECT_EQ(0, input_context_handler_->commit_text_call_count());
-}
-
-IN_PROC_BROWSER_TEST_P(DictationTest, UserEndsDictation) {
-  ToggleDictation();
-  EXPECT_EQ(GetLastCompositionText().text, empty_composition_text_.text);
-
-  SendSpeechResult(kFinalSpeechResult, false /* is_final */);
-  EXPECT_EQ(kFinalSpeechResult16, GetLastCompositionText().text);
-
-  ToggleDictation();
-  EXPECT_EQ(1, input_context_handler_->commit_text_call_count());
-  EXPECT_EQ(kFinalSpeechResult16, input_context_handler_->last_commit_text());
-}
-
-IN_PROC_BROWSER_TEST_P(DictationTest, UserEndsDictationWhenChromeVoxEnabled) {
-  AccessibilityManager* manager = GetManager();
-
-  EnableChromeVox();
-  EXPECT_TRUE(manager->IsSpokenFeedbackEnabled());
-
-  // Toggle Dictation on directly.
-  GetManager()->ToggleDictation();
-  WaitForRecognitionStarted();
-  // Now wait for the callbacks to propagate on the UI thread.
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_EQ(GetLastCompositionText().text, empty_composition_text_.text);
-
-  SendSpeechResult(kFinalSpeechResult, false /* is_final */);
-  EXPECT_EQ(GetLastCompositionText().text, empty_composition_text_.text);
-
-  // Toggle Dictation off.
-  GetManager()->ToggleDictation();
-  base::RunLoop().RunUntilIdle();
-
-  // Wait for interim results to be finalized.
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(1, input_context_handler_->commit_text_call_count());
-  EXPECT_EQ(kFinalSpeechResult16, input_context_handler_->last_commit_text());
-}
-
-IN_PROC_BROWSER_TEST_P(DictationTest, SwitchInputContext) {
-  // Turn on dictation and say something.
-  ToggleDictation();
-  SendSpeechResult(kFirstSpeechResult, true /* is final */);
-  // Wait for interim results to be finalized.
-  base::RunLoop().RunUntilIdle();
-
-  // Speech goes to the default IMEInputContextHandler.
-  EXPECT_EQ(kFirstSpeechResult16, input_context_handler_->last_commit_text());
-
-  // Simulate a remote app instantiating a new IMEInputContextHandler, like
-  // the keyboard shortcut viewer app creating a second `InputMethodAsh`.
-  ui::MockIMEInputContextHandler input_context_handler2;
-  ui::IMEBridge::Get()->SetInputContextHandler(&input_context_handler2);
-
-  SendSpeechResult(kSecondSpeechResult, true /* is final*/);
-  // Wait for interim results to be finalized.
-  base::RunLoop().RunUntilIdle();
-
-  std::u16string expected = u" ";
-  expected += kSecondSpeechResult16;
-
-  // Speech goes to the new IMEInputContextHandler.
-  EXPECT_EQ(expected, input_context_handler2.last_commit_text());
-
-  ui::IMEBridge::Get()->SetInputContextHandler(nullptr);
-}
-
-IN_PROC_BROWSER_TEST_P(DictationTest, ChangeInputField) {
-  // Turn on dictation and start speaking.
-  ToggleDictation();
-  SendSpeechResult(kFinalSpeechResult, false /* is_final */);
-
-  // Change the input state to a new client.
-  std::unique_ptr<ui::TextInputClient> new_client =
-      std::make_unique<ui::DummyTextInputClient>();
-  NotifyTextInputStateChanged(new_client.get());
-  // Wait for interim results to be finalized.
-  base::RunLoop().RunUntilIdle();
-
-  // Check that dictation has turned off.
-  EXPECT_EQ(1, input_context_handler_->commit_text_call_count());
-  EXPECT_EQ(kFinalSpeechResult16, input_context_handler_->last_commit_text());
-}
-
-IN_PROC_BROWSER_TEST_P(DictationTest, ListensForMultipleResults) {
-  // Turn on dictation and send a final result.
-  ToggleDictation();
-  SendSpeechResult("Purple", true /* is final */);
-  // Wait for interim results to be finalized.
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_EQ(u"Purple", input_context_handler_->last_commit_text());
-  EXPECT_FALSE(IsDictationOff());
-
-  SendSpeechResult("pink", true /* is final */);
-  EXPECT_EQ(2, input_context_handler_->commit_text_call_count());
-  // Space in front of the result.
-  EXPECT_EQ(u" pink", input_context_handler_->last_commit_text());
-
-  SendSpeechResult(" blue", true /* is final */);
-  EXPECT_EQ(3, input_context_handler_->commit_text_call_count());
-  // Only one space in front of the result.
-  EXPECT_EQ(u" blue", input_context_handler_->last_commit_text());
-
-  ToggleDictation();
-  // No change expected after toggle.
-  EXPECT_EQ(3, input_context_handler_->commit_text_call_count());
-}
+INSTANTIATE_TEST_SUITE_P(
+    OnDevice,
+    DictationTest,
+    ::testing::Values(speech::SpeechRecognitionType::kOnDevice));
 
 // Tests the behavior of the GetAllSupportedLocales method, specifically how
 // it sets locale data.
@@ -441,7 +530,7 @@ IN_PROC_BROWSER_TEST_P(DictationTest, GetAllSupportedLocales) {
     const std::string locale = it.first;
     bool works_offline = it.second.works_offline;
     bool installed = it.second.installed;
-    if (GetParam() == SpeechRecognitionType::kOnDevice &&
+    if (GetParam() == speech::SpeechRecognitionType::kOnDevice &&
         locale == speech::kUsEnglishLocale) {
       // Currently, the only locale supported by SODA is en-US. It should work
       // offline and be installed.
@@ -453,7 +542,7 @@ IN_PROC_BROWSER_TEST_P(DictationTest, GetAllSupportedLocales) {
     }
   }
 
-  if (GetParam() == SpeechRecognitionType::kOnDevice) {
+  if (GetParam() == speech::SpeechRecognitionType::kOnDevice) {
     // Uninstall SODA and all language packs.
     speech::SodaInstaller::GetInstance()->UninstallSodaForTesting();
   } else {
@@ -477,238 +566,396 @@ IN_PROC_BROWSER_TEST_P(DictationTest, GetAllSupportedLocales) {
   }
 }
 
-class TextMatchesWaiter {
- public:
-  TextMatchesWaiter(const std::string& expected,
-                    base::RepeatingCallback<std::string()> checker)
-      : expected_(expected), checker_(std::move(checker)) {}
-  ~TextMatchesWaiter() = default;
-  TextMatchesWaiter(const TextMatchesWaiter&) = delete;
-  TextMatchesWaiter& operator=(const TextMatchesWaiter&) = delete;
-
-  void Wait() {
-    base::RepeatingTimer check_timer;
-    check_timer.Start(FROM_HERE, base::Milliseconds(10), this,
-                      &TextMatchesWaiter::OnTimer);
-    run_loop_.Run();
-  }
-
- private:
-  void OnTimer() {
-    if (checker_.Run() == expected_)
-      run_loop_.Quit();
-  }
-
-  std::string expected_;
-  base::RepeatingCallback<std::string()> checker_;
-  base::RunLoop run_loop_;
-};
-
-// TODO(crbug.com/1216111): Use a MockIMEInputContextHandler to check
-// composition after supporting interim results.
-class DictationExtensionTest : public DictationBaseTest {
- protected:
-  DictationExtensionTest() {}
-  ~DictationExtensionTest() override = default;
-  DictationExtensionTest(const DictationExtensionTest&) = delete;
-  DictationExtensionTest& operator=(const DictationExtensionTest&) = delete;
-
-  void SetUpOnMainThread() override {
-    DictationBaseTest::SetUpOnMainThread();
-
-    ASSERT_FALSE(AccessibilityManager::Get()->IsDictationEnabled());
-    console_observer_ = std::make_unique<ExtensionConsoleErrorObserver>(
-        browser()->profile(), extension_misc::kAccessibilityCommonExtensionId);
-    browser()->profile()->GetPrefs()->SetBoolean(
-        ash::prefs::kDictationAcceleratorDialogHasBeenAccepted, true);
-
-    extensions::ExtensionHostTestHelper host_helper(
-        browser()->profile(), extension_misc::kAccessibilityCommonExtensionId);
-    AccessibilityManager::Get()->SetDictationEnabled(true);
-    host_helper.WaitForHostCompletedFirstLoad();
-
-    aura::Window* root_window = Shell::Get()->GetPrimaryRootWindow();
-    generator_ = std::make_unique<ui::test::EventGenerator>(root_window);
-
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(),
-        GURL(
-            "data:text/html;charset=utf-8,<textarea id=textarea></textarea>")));
-    // Put focus in the text box.
-    ASSERT_NO_FATAL_FAILURE(ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
-        nullptr, ui::KeyboardCode::VKEY_TAB, false, false, false, false)));
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(
-        ::switches::kEnableExperimentalAccessibilityDictationExtension);
-    DictationBaseTest::SetUpCommandLine(command_line);
-  }
-
-  void SendFinalSpeechResultAndWaitForTextAreaValue(const std::string& result,
-                                                    const std::string& value) {
-    SendFinalFakeSpeechResultAndWait(result);
-    WaitForTextAreaValue(value);
-  }
-
-  std::string GetTextareaValue() {
-    std::string output;
-    std::string script =
-        "window.domAutomationController.send("
-        "document.getElementById('textarea').value)";
-    CHECK(ExecuteScriptAndExtractString(
-        browser()->tab_strip_model()->GetWebContentsAt(0), script, &output));
-    return output;
-  }
-
-  void WaitForTextAreaValue(const std::string& value) {
-    TextMatchesWaiter waiter(
-        value, base::BindRepeating(&DictationExtensionTest::GetTextareaValue,
-                                   base::Unretained(this)));
-    waiter.Wait();
-    base::RunLoop().RunUntilIdle();
-  }
-
-  void ToggleDictationWithKeystroke() {
-    ASSERT_NO_FATAL_FAILURE(ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
-        nullptr, ui::KeyboardCode::VKEY_D, false, false, false, true)));
-  }
-
- private:
-  std::unique_ptr<ui::test::EventGenerator> generator_;
-  std::unique_ptr<ExtensionConsoleErrorObserver> console_observer_;
-};
-
-INSTANTIATE_TEST_SUITE_P(Network,
-                         DictationExtensionTest,
-                         ::testing::Values(SpeechRecognitionType::kNetwork));
-
-INSTANTIATE_TEST_SUITE_P(OnDevice,
-                         DictationExtensionTest,
-                         ::testing::Values(SpeechRecognitionType::kOnDevice));
-
-IN_PROC_BROWSER_TEST_P(DictationExtensionTest, StartsAndStopsRecognition) {
+IN_PROC_BROWSER_TEST_P(DictationTest, StartsAndStopsRecognition) {
   ToggleDictationWithKeystroke();
   WaitForRecognitionStarted();
   ToggleDictationWithKeystroke();
   WaitForRecognitionStopped();
 }
 
-IN_PROC_BROWSER_TEST_P(DictationExtensionTest, EntersFinalizedSpeech) {
+IN_PROC_BROWSER_TEST_P(DictationTest, EntersFinalizedSpeech) {
   ToggleDictationWithKeystroke();
   WaitForRecognitionStarted();
-  SendFinalSpeechResultAndWaitForTextAreaValue(kFinalSpeechResult,
-                                               kFinalSpeechResult);
+  SendFinalResultAndWaitForTextAreaValue(kFinalSpeechResult,
+                                         kFinalSpeechResult);
   ToggleDictationWithKeystroke();
   WaitForRecognitionStopped();
 }
 
-IN_PROC_BROWSER_TEST_P(DictationExtensionTest, EntersMultipleFinalizedStrings) {
+// Tests that multiple finalized strings can be committed to the text area.
+// Also ensures that spaces are added between finalized utterances.
+IN_PROC_BROWSER_TEST_P(DictationTest, EntersMultipleFinalizedStrings) {
   ToggleDictationWithKeystroke();
   WaitForRecognitionStarted();
-  SendFinalSpeechResultAndWaitForTextAreaValue("The rain in Spain",
-                                               "The rain in Spain");
-  SendFinalSpeechResultAndWaitForTextAreaValue(
+  SendFinalResultAndWaitForTextAreaValue("The rain in Spain",
+                                         "The rain in Spain");
+  SendFinalResultAndWaitForTextAreaValue(
+      "falls mainly on the plain.",
+      "The rain in Spain falls mainly on the plain.");
+  SendFinalResultAndWaitForTextAreaValue(
+      "Vega is a star.",
+      "The rain in Spain falls mainly on the plain. Vega is a star.");
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStopped();
+}
+
+IN_PROC_BROWSER_TEST_P(DictationTest, OnlyAddSpaceWhenNecessary) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+  SendFinalResultAndWaitForTextAreaValue("The rain in Spain",
+                                         "The rain in Spain");
+  // Artificially add a space to this utterance. Verify that only one space is
+  // added.
+  SendFinalResultAndWaitForTextAreaValue(
       " falls mainly on the plain.",
       "The rain in Spain falls mainly on the plain.");
+  // Artificially add a space to this utterance. Verify that only one space is
+  // added.
+  SendFinalResultAndWaitForTextAreaValue(
+      " Vega is a star.",
+      "The rain in Spain falls mainly on the plain. Vega is a star.");
   ToggleDictationWithKeystroke();
   WaitForRecognitionStopped();
 }
 
-IN_PROC_BROWSER_TEST_P(DictationExtensionTest,
-                       RecognitionEndsWhenInputFieldLosesFocus) {
+IN_PROC_BROWSER_TEST_P(DictationTest, RecognitionEndsWhenInputFieldLosesFocus) {
   ToggleDictationWithKeystroke();
   WaitForRecognitionStarted();
-  SendFinalSpeechResultAndWaitForTextAreaValue("Vega is a star",
-                                               "Vega is a star");
+  SendFinalResultAndWaitForTextAreaValue("Vega is a star", "Vega is a star");
   ASSERT_NO_FATAL_FAILURE(ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
       nullptr, ui::KeyboardCode::VKEY_TAB, false, false, false, false)));
   WaitForRecognitionStopped();
-  EXPECT_EQ("Vega is a star", GetTextareaValue());
+  EXPECT_EQ("Vega is a star", GetTextAreaValue());
 }
 
-// Without the feature flag kExperimentalAccessibilityDictationCommands,
-// commands should be treated like any other text.
-IN_PROC_BROWSER_TEST_P(DictationExtensionTest, IgnoresCommands) {
+// TODO(crbug.com/1352312): Flaky.
+IN_PROC_BROWSER_TEST_P(DictationTest,
+                       DISABLED_UserEndsDictationWhenChromeVoxEnabled) {
+  EnableChromeVox();
+  EXPECT_TRUE(GetManager()->IsSpokenFeedbackEnabled());
+  InstallMockInputContextHandler();
+
+  GetManager()->ToggleDictation();
+  WaitForRecognitionStarted();
+  SendInterimResultAndWait(kFinalSpeechResult);
+  GetManager()->ToggleDictation();
+  WaitForRecognitionStopped();
+
+  WaitForCommitText(kFinalSpeechResult16);
+}
+
+IN_PROC_BROWSER_TEST_P(DictationTest, ChromeVoxSilencedWhenToggledOn) {
+  // Set up ChromeVox.
+  test::SpeechMonitor sm;
+  EXPECT_FALSE(GetManager()->IsSpokenFeedbackEnabled());
+  extensions::ExtensionHostTestHelper host_helper(
+      browser()->profile(), extension_misc::kChromeVoxExtensionId);
+  EnableChromeVox();
+  host_helper.WaitForHostCompletedFirstLoad();
+  EXPECT_TRUE(GetManager()->IsSpokenFeedbackEnabled());
+
+  // Not yet forced to stop.
+  EXPECT_EQ(0, sm.stop_count());
+
   ToggleDictationWithKeystroke();
   WaitForRecognitionStarted();
-  std::string expected_text = "";
-  for (const char* command : kEnglishDictationCommands) {
-    expected_text += command;
-    SendFinalSpeechResultAndWaitForTextAreaValue(command, expected_text);
+
+  // Assert ChromeVox was asked to stop speaking at the toggle.
+  EXPECT_EQ(1, sm.stop_count());
+}
+
+IN_PROC_BROWSER_TEST_P(DictationTest, EntersInterimSpeechWhenToggledOff) {
+  InstallMockInputContextHandler();
+
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+  SendInterimResultAndWait(kFirstSpeechResult);
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStopped();
+  WaitForCommitText(kFirstSpeechResult16);
+}
+
+// Tests that commit text is not updated if the user toggles dictation and no
+// speech results are processed.
+IN_PROC_BROWSER_TEST_P(DictationTest, UserEndsDictationBeforeSpeech) {
+  InstallMockInputContextHandler();
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStopped();
+  EXPECT_EQ(0, GetCommitTextCallCount());
+}
+
+// Ensures that the correct metrics are recorded when Dictation is toggled.
+IN_PROC_BROWSER_TEST_P(DictationTest, Metrics) {
+  base::HistogramTester histogram_tester_;
+  bool on_device = GetParam() == speech::SpeechRecognitionType::kOnDevice;
+  const char* metric_name = on_device ? kOnDeviceListeningDurationMetric
+                                      : kNetworkListeningDurationMetric;
+  HistogramWaiter waiter(metric_name);
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStopped();
+  waiter.Wait();
+  content::FetchHistogramsFromChildProcesses();
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+
+  // Ensure that we recorded the correct locale.
+  histogram_tester_.ExpectUniqueSample(/*name=*/kLocaleMetric,
+                                       /*sample=*/base::HashMetricName("en-US"),
+                                       /*expected_bucket_count=*/1);
+  // Ensure that we recorded the type of speech recognition and listening
+  // duration.
+  if (on_device) {
+    histogram_tester_.ExpectUniqueSample(/*name=*/kOnDeviceSpeechMetric,
+                                         /*sample=*/true,
+                                         /*expected_bucket_count=*/1);
+    ASSERT_EQ(1u,
+              histogram_tester_.GetAllSamples(kOnDeviceListeningDurationMetric)
+                  .size());
+    // Ensure there are no metrics for the other type of speech recognition.
+    ASSERT_EQ(0u,
+              histogram_tester_.GetAllSamples(kNetworkListeningDurationMetric)
+                  .size());
+  } else {
+    histogram_tester_.ExpectUniqueSample(/*name=*/kOnDeviceSpeechMetric,
+                                         /*sample=*/false,
+                                         /*expected_bucket_count=*/1);
+    ASSERT_EQ(1u,
+              histogram_tester_.GetAllSamples(kNetworkListeningDurationMetric)
+                  .size());
+    // Ensure there are no metrics for the other type of speech recognition.
+    ASSERT_EQ(0u,
+              histogram_tester_.GetAllSamples(kOnDeviceListeningDurationMetric)
+                  .size());
   }
+}
+
+IN_PROC_BROWSER_TEST_P(DictationTest,
+                       DictationStopsWhenSystemTrayBecomesVisible) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+  SystemTrayTestApi::Create()->ShowBubble();
+  WaitForRecognitionStopped();
+}
+
+IN_PROC_BROWSER_TEST_P(DictationTest, NoExtraSpaceForPunctuation) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+  SendFinalResultAndWaitForTextAreaValue("Hello world", "Hello world");
+  SendFinalResultAndWaitForTextAreaValue(".", "Hello world.");
+  SendFinalResultAndWaitForTextAreaValue("Goodnight", "Hello world. Goodnight");
+  SendFinalResultAndWaitForTextAreaValue("!", "Hello world. Goodnight!");
   ToggleDictationWithKeystroke();
   WaitForRecognitionStopped();
 }
 
-class CaretBoundsChangedWaiter : public ui::InputMethodObserver {
+IN_PROC_BROWSER_TEST_P(DictationTest, StopListening) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+  SendFinalResultAndWait("cancel");
+  WaitForRecognitionStopped();
+}
+
+IN_PROC_BROWSER_TEST_P(DictationTest, SmartCapitalization) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+  SendFinalResultAndWaitForTextAreaValue("This", "This");
+  SendFinalResultAndWaitForTextAreaValue("Is", "This is");
+  SendFinalResultAndWaitForTextAreaValue("a test.", "This is a test.");
+  SendFinalResultAndWaitForTextAreaValue("you passed!",
+                                         "This is a test. You passed!");
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStopped();
+}
+
+IN_PROC_BROWSER_TEST_P(DictationTest, SmartCapitalizationWithComma) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+  SendFinalResultAndWaitForTextAreaValue("Hello,", "Hello,");
+  SendFinalResultAndWaitForTextAreaValue("world", "Hello, world");
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStopped();
+}
+
+class DictationWithAutoclickTest : public DictationTestBase {
  public:
-  explicit CaretBoundsChangedWaiter(ui::InputMethod* input_method)
-      : input_method_(input_method) {
-    input_method_->AddObserver(this);
-  }
-  CaretBoundsChangedWaiter(const CaretBoundsChangedWaiter&) = delete;
-  CaretBoundsChangedWaiter& operator=(const CaretBoundsChangedWaiter&) = delete;
-  ~CaretBoundsChangedWaiter() override { input_method_->RemoveObserver(this); }
-
-  void Wait() { run_loop_.Run(); }
-
- private:
-  // ui::InputMethodObserver:
-  void OnFocus() override {}
-  void OnBlur() override {}
-  void OnTextInputStateChanged(const ui::TextInputClient* client) override {}
-  void OnShowVirtualKeyboardIfEnabled() override {}
-  void OnInputMethodDestroyed(const ui::InputMethod* input_method) override {}
-  void OnCaretBoundsChanged(const ui::TextInputClient* client) override {
-    run_loop_.Quit();
-  }
-
-  ui::InputMethod* input_method_;
-  base::RunLoop run_loop_;
-};
-
-// Listens for changes to the clipboard. This class only allows `Wait()` to be
-// called once. If you need to call `Wait()` multiple times, create multiple
-// instances of this class.
-class ClipboardChangedWaiterOneShot : public ui::ClipboardObserver {
- public:
-  ClipboardChangedWaiterOneShot() {
-    ui::ClipboardMonitor::GetInstance()->AddObserver(this);
-  }
-  ClipboardChangedWaiterOneShot(const ClipboardChangedWaiterOneShot&) = delete;
-  ClipboardChangedWaiterOneShot& operator=(
-      const ClipboardChangedWaiterOneShot&) = delete;
-  ~ClipboardChangedWaiterOneShot() override {
-    ui::ClipboardMonitor::GetInstance()->RemoveObserver(this);
-  }
-
-  void Wait() { run_loop_.Run(); }
-
- private:
-  // ui::ClipboardObserver:
-  void OnClipboardDataChanged() override { run_loop_.Quit(); }
-
-  base::RunLoop run_loop_;
-};
-
-class DictationCommandsExtensionTest : public DictationExtensionTest {
- protected:
-  DictationCommandsExtensionTest() {}
-  ~DictationCommandsExtensionTest() override = default;
-  DictationCommandsExtensionTest(const DictationCommandsExtensionTest&) =
+  DictationWithAutoclickTest() = default;
+  ~DictationWithAutoclickTest() override = default;
+  DictationWithAutoclickTest(const DictationWithAutoclickTest&) = delete;
+  DictationWithAutoclickTest& operator=(const DictationWithAutoclickTest&) =
       delete;
-  DictationCommandsExtensionTest& operator=(
-      const DictationCommandsExtensionTest&) = delete;
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    DictationExtensionTest::SetUpCommandLine(command_line);
-    scoped_feature_list_.InitAndEnableFeature(
-        ::features::kExperimentalAccessibilityDictationCommands);
+ protected:
+  void SetUpOnMainThread() override {
+    // Setup Autoclick first, then setup Dictation. This is to ensure that
+    // Autoclick doesn't steal focus away from the textarea (either by clicking
+    // or via the presence of the Autoclick UI, which steals focus when
+    // initially shown).
+    GetActiveUserPrefs()->SetInteger(prefs::kAccessibilityAutoclickDelayMs,
+                                     90 * 1000);
+    GetActiveUserPrefs()->CommitPendingWrite();
+    GetManager()->EnableAutoclick(true);
+    EXPECT_TRUE(GetManager()->IsAutoclickEnabled());
+
+    DictationTestBase::SetUpOnMainThread();
   }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    Network,
+    DictationWithAutoclickTest,
+    ::testing::Values(speech::SpeechRecognitionType::kNetwork));
+
+INSTANTIATE_TEST_SUITE_P(
+    OnDevice,
+    DictationWithAutoclickTest,
+    ::testing::Values(speech::SpeechRecognitionType::kOnDevice));
+
+IN_PROC_BROWSER_TEST_P(DictationWithAutoclickTest, CanDictate) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+  SendFinalResultAndWaitForTextAreaValue("Hello world", "Hello world");
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStopped();
+}
+
+// Tests the behavior of Dictation in Japanese.
+class DictationJaTest : public DictationTestBase {
+ public:
+  DictationJaTest() = default;
+  ~DictationJaTest() override = default;
+  DictationJaTest(const DictationJaTest&) = delete;
+  DictationJaTest& operator=(const DictationJaTest&) = delete;
+
+ protected:
+  void SetUpOnMainThread() override {
+    locale_util::SwitchLanguage("ja", /*enable_locale_keyboard_layouts=*/true,
+                                /*login_layouts_only*/ false, base::DoNothing(),
+                                browser()->profile());
+    g_browser_process->SetApplicationLocale("ja");
+    GetActiveUserPrefs()->SetString(prefs::kAccessibilityDictationLocale, "ja");
+
+    DictationTestBase::SetUpOnMainThread();
+  }
+};
+
+// On-device speech recognition is currently limited to en-US, so
+// DictationJaTest should use network speech recognition only.
+INSTANTIATE_TEST_SUITE_P(
+    Network,
+    DictationJaTest,
+    ::testing::Values(speech::SpeechRecognitionType::kNetwork));
+
+IN_PROC_BROWSER_TEST_P(DictationJaTest, NoSmartSpacingOrCapitalization) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+  SendFinalResultAndWaitForTextAreaValue("this", "this");
+  SendFinalResultAndWaitForTextAreaValue(" Is", "this Is");
+  SendFinalResultAndWaitForTextAreaValue("a test.", "this Isa test.");
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStopped();
+}
+
+IN_PROC_BROWSER_TEST_P(DictationJaTest, CanDictate) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+  SendFinalResultAndWaitForTextAreaValue("テニス", "テニス");
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStopped();
+}
+
+IN_PROC_BROWSER_TEST_P(DictationJaTest, DeleteCharacter) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+  // Dictate "tennis".
+  SendFinalResultAndWaitForTextAreaValue("テニス", "テニス");
+  // Perform the 'delete' command.
+  SendFinalResultAndWaitForTextAreaValue("削除", "テニ");
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStopped();
+}
+
+IN_PROC_BROWSER_TEST_P(DictationJaTest, SmartDeletePhrase) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+  // Dictate "I like basketball".
+  SendFinalResultAndWaitForTextAreaValue("私はバスケットボールが好きです。",
+                                         "私はバスケットボールが好きです。");
+  // Delete "I" e.g. the first two characters in the sentence.
+  SendFinalResultAndWaitForTextAreaValue("私はを削除",
+                                         "バスケットボールが好きです。");
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStopped();
+}
+
+IN_PROC_BROWSER_TEST_P(DictationJaTest, SmartReplacePhrase) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+  // Dictate "I like basketball".
+  SendFinalResultAndWaitForTextAreaValue("私はバスケットボールが好きです。",
+                                         "私はバスケットボールが好きです。");
+  // Replace "basketball" with "tennis".
+  SendFinalResultAndWaitForTextAreaValue("バスケットボールをテニスに置き換え",
+                                         "私はテニスが好きです。");
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStopped();
+}
+
+IN_PROC_BROWSER_TEST_P(DictationJaTest, SmartInsertBefore) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+  // Dictate "I like tennis".
+  SendFinalResultAndWaitForTextAreaValue("私はテニスが好きです。",
+                                         "私はテニスが好きです。");
+  // Insert "basketball and" before "tennis".
+  // Final text area value should be "I like basketball and tennis".
+  SendFinalResultAndWaitForTextAreaValue(
+      "バスケットボールとをテニスの前に挿入",
+      "私はバスケットボールとテニスが好きです。");
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStopped();
+}
+
+IN_PROC_BROWSER_TEST_P(DictationJaTest, SmartSelectBetweenAndDictate) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+  // Dictate "I like tennis".
+  SendFinalResultAndWaitForTextAreaValue("私はテニスが好きです。",
+                                         "私はテニスが好きです。");
+  // Select the entire text using the SMART_SELECT_BETWEEN command.
+  SendFinalResultAndWaitForSelectionChanged("私はから好きですまで選択");
+  // Dictate "congratulations", which should replace the selected text.
+  SendFinalResultAndWaitForTextAreaValue("おめでとう", "おめでとう。");
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStopped();
+}
+
+IN_PROC_BROWSER_TEST_P(DictationJaTest, SmartSelectBetweenAndDelete) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+  // Dictate "I like tennis".
+  SendFinalResultAndWaitForTextAreaValue("私はテニスが好きです。",
+                                         "私はテニスが好きです。");
+  // Select between "I" and "tennis" using the SMART_SELECT_BETWEEN command
+  // (roughly the first half of the text).
+  SendFinalResultAndWaitForSelectionChanged("私はからテニスまで選択");
+  // Perform the delete command.
+  SendFinalResultAndWaitForTextAreaValue("削除", "が好きです。");
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStopped();
+}
+
+class DictationCommandsTest : public DictationTest {
+ protected:
+  DictationCommandsTest() {}
+  ~DictationCommandsTest() override = default;
+  DictationCommandsTest(const DictationCommandsTest&) = delete;
+  DictationCommandsTest& operator=(const DictationCommandsTest&) = delete;
 
   void SetUpOnMainThread() override {
-    DictationExtensionTest::SetUpOnMainThread();
+    DictationTest::SetUpOnMainThread();
     ToggleDictationWithKeystroke();
     WaitForRecognitionStarted();
   }
@@ -716,13 +963,7 @@ class DictationCommandsExtensionTest : public DictationExtensionTest {
   void TearDownOnMainThread() override {
     ToggleDictationWithKeystroke();
     WaitForRecognitionStopped();
-    DictationExtensionTest::TearDownOnMainThread();
-  }
-
-  void WaitForCaretBoundsChanged() {
-    CaretBoundsChangedWaiter waiter(
-        browser()->window()->GetNativeWindow()->GetHost()->GetInputMethod());
-    waiter.Wait();
+    DictationTest::TearDownOnMainThread();
   }
 
   std::string GetClipboardText() {
@@ -731,148 +972,734 @@ class DictationCommandsExtensionTest : public DictationExtensionTest {
         ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr, &text);
     return base::UTF16ToUTF8(text);
   }
-
-  void SendFinalFakeSpeechResultAndWaitForSelectionChange(
-      const std::string& result,
-      content::WebContents* web_contents) {
-    content::BoundingBoxUpdateWaiter waiter(web_contents);
-    SendFinalFakeSpeechResultAndWait(result);
-    waiter.Wait();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(Network,
-                         DictationCommandsExtensionTest,
-                         ::testing::Values(SpeechRecognitionType::kNetwork));
+INSTANTIATE_TEST_SUITE_P(
+    Network,
+    DictationCommandsTest,
+    ::testing::Values(speech::SpeechRecognitionType::kNetwork));
 
-INSTANTIATE_TEST_SUITE_P(OnDevice,
-                         DictationCommandsExtensionTest,
-                         ::testing::Values(SpeechRecognitionType::kOnDevice));
+INSTANTIATE_TEST_SUITE_P(
+    OnDevice,
+    DictationCommandsTest,
+    ::testing::Values(speech::SpeechRecognitionType::kOnDevice));
 
-IN_PROC_BROWSER_TEST_P(DictationCommandsExtensionTest, TypesCommands) {
+IN_PROC_BROWSER_TEST_P(DictationCommandsTest, TypesCommands) {
   std::string expected_text = "";
+  int i = 0;
   for (const char* command : kEnglishDictationCommands) {
     std::string type_command = "type ";
-    expected_text += command;
-    SendFinalSpeechResultAndWaitForTextAreaValue(type_command + command,
-                                                 expected_text);
+    if (i == 0) {
+      expected_text += command;
+      expected_text[0] = base::ToUpperASCII(expected_text[0]);
+    } else {
+      expected_text += " ";
+      expected_text += command;
+    }
+    SendFinalResultAndWaitForTextAreaValue(type_command + command,
+                                           expected_text);
+    ++i;
   }
 }
 
-IN_PROC_BROWSER_TEST_P(DictationCommandsExtensionTest, DeleteCharacter) {
-  SendFinalSpeechResultAndWaitForTextAreaValue("Vega", "Vega");
+IN_PROC_BROWSER_TEST_P(DictationCommandsTest, TypesNonCommands) {
+  // The phrase should be entered without the word "type".
+  SendFinalResultAndWaitForTextAreaValue("Type this is a test",
+                                         "This is a test");
+}
 
+IN_PROC_BROWSER_TEST_P(DictationCommandsTest, DeleteCharacter) {
+  SendFinalResultAndWaitForTextAreaValue("Vega", "Vega");
   // Capitalization and whitespace shouldn't matter.
-  SendFinalSpeechResultAndWaitForTextAreaValue(" Delete", "Veg");
-  SendFinalSpeechResultAndWaitForTextAreaValue("delete ", "Ve");
-  SendFinalSpeechResultAndWaitForTextAreaValue("  delete ", "V");
-  SendFinalSpeechResultAndWaitForTextAreaValue("DELETE", "");
+  SendFinalResultAndWaitForTextAreaValue(" Delete", "Veg");
+  SendFinalResultAndWaitForTextAreaValue("delete", "Ve");
+  SendFinalResultAndWaitForTextAreaValue("  delete ", "V");
+  SendFinalResultAndWaitForTextAreaValue("DELETE", "");
 }
 
-IN_PROC_BROWSER_TEST_P(DictationCommandsExtensionTest, MoveByCharacter) {
-  SendFinalSpeechResultAndWaitForTextAreaValue("Lyra", "Lyra");
-
-  SendFinalFakeSpeechResultAndWait("Move to the Previous character");
-  WaitForCaretBoundsChanged();
-  SendFinalSpeechResultAndWaitForTextAreaValue(" inserted ", "Lyr inserted a");
-  SendFinalFakeSpeechResultAndWait("move TO the next character ");
-  WaitForCaretBoundsChanged();
-  SendFinalSpeechResultAndWaitForTextAreaValue(
-      " is a constellation", "Lyr inserted a is a constellation");
+IN_PROC_BROWSER_TEST_P(DictationCommandsTest, MoveByCharacter) {
+  SendFinalResultAndWaitForTextAreaValue("Lyra", "Lyra");
+  SendFinalResultAndWaitForCaretBoundsChanged("Move to the Previous character");
+  // White space is added to the text on the left of the text caret, but not
+  // to the right of the text caret.
+  SendFinalResultAndWaitForTextAreaValue("inserted", "Lyr inserted a");
+  SendFinalResultAndWaitForCaretBoundsChanged("move TO the next character ");
+  SendFinalResultAndWaitForTextAreaValue("is a constellation",
+                                         "Lyr inserted a is a constellation");
 }
 
-IN_PROC_BROWSER_TEST_P(DictationCommandsExtensionTest, NewLineAndMoveByLine) {
-  SendFinalSpeechResultAndWaitForTextAreaValue("Line 1", "Line 1");
-
-  SendFinalSpeechResultAndWaitForTextAreaValue("new line", "Line 1\n");
-
-  SendFinalSpeechResultAndWaitForTextAreaValue("Line 2", "Line 1\nLine 2");
-
-  SendFinalFakeSpeechResultAndWait("Move to the previous line ");
-  WaitForCaretBoundsChanged();
-  SendFinalSpeechResultAndWaitForTextAreaValue("up", "Line 1up\nLine 2");
-
-  SendFinalFakeSpeechResultAndWait("Move to the next line");
-  WaitForCaretBoundsChanged();
-  SendFinalSpeechResultAndWaitForTextAreaValue("down", "Line 1up\nLine 2down");
+IN_PROC_BROWSER_TEST_P(DictationCommandsTest, NewLineAndMoveByLine) {
+  SendFinalResultAndWaitForTextAreaValue("Line 1", "Line 1");
+  SendFinalResultAndWaitForTextAreaValue("new line", "Line 1\n");
+  SendFinalResultAndWaitForTextAreaValue("line 2", "Line 1\nline 2");
+  SendFinalResultAndWaitForCaretBoundsChanged("Move to the previous line ");
+  SendFinalResultAndWaitForTextAreaValue("up", "Line 1 up\nline 2");
+  SendFinalResultAndWaitForCaretBoundsChanged("Move to the next line");
+  SendFinalResultAndWaitForTextAreaValue("down", "Line 1 up\nline 2 down");
 }
 
-IN_PROC_BROWSER_TEST_P(DictationCommandsExtensionTest, UndoAndRedo) {
-  SendFinalSpeechResultAndWaitForTextAreaValue("The constellation",
-                                               "The constellation");
-  SendFinalSpeechResultAndWaitForTextAreaValue(" Myra",
-                                               "The constellation Myra");
-  SendFinalSpeechResultAndWaitForTextAreaValue("undo", "The constellation");
-  SendFinalSpeechResultAndWaitForTextAreaValue(" Lyra",
-                                               "The constellation Lyra");
-  SendFinalSpeechResultAndWaitForTextAreaValue("undo", "The constellation");
-  SendFinalSpeechResultAndWaitForTextAreaValue("redo",
-                                               "The constellation Lyra");
+IN_PROC_BROWSER_TEST_P(DictationCommandsTest, UndoAndRedo) {
+  SendFinalResultAndWaitForTextAreaValue("The constellation",
+                                         "The constellation");
+  SendFinalResultAndWaitForTextAreaValue(" Myra", "The constellation Myra");
+  SendFinalResultAndWaitForTextAreaValue("undo", "The constellation");
+  SendFinalResultAndWaitForTextAreaValue(" Lyra", "The constellation Lyra");
+  SendFinalResultAndWaitForTextAreaValue("undo", "The constellation");
+  SendFinalResultAndWaitForTextAreaValue("redo", "The constellation Lyra");
 }
 
-IN_PROC_BROWSER_TEST_P(DictationCommandsExtensionTest, SelectAllAndUnselect) {
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  SendFinalSpeechResultAndWaitForTextAreaValue(
-      "Vega is the brightest star in Lyra",
-      "Vega is the brightest star in Lyra");
-  SendFinalFakeSpeechResultAndWaitForSelectionChange("Select all",
-                                                     web_contents);
-  SendFinalSpeechResultAndWaitForTextAreaValue("delete", "");
-
-  SendFinalSpeechResultAndWaitForTextAreaValue(
+IN_PROC_BROWSER_TEST_P(DictationCommandsTest, SelectAllAndUnselect) {
+  SendFinalResultAndWaitForTextAreaValue("Vega is the brightest star in Lyra",
+                                         "Vega is the brightest star in Lyra");
+  SendFinalResultAndWaitForSelectionChanged("Select all");
+  SendFinalResultAndWaitForTextAreaValue("delete", "");
+  SendFinalResultAndWaitForTextAreaValue(
       "Vega is the fifth brightest star in the sky",
       "Vega is the fifth brightest star in the sky");
-  SendFinalFakeSpeechResultAndWaitForSelectionChange("Select all",
-                                                     web_contents);
-  SendFinalFakeSpeechResultAndWaitForSelectionChange("Unselect", web_contents);
-  SendFinalSpeechResultAndWaitForTextAreaValue(
+  SendFinalResultAndWaitForSelectionChanged("Select all");
+  SendFinalResultAndWaitForSelectionChanged("Unselect");
+  SendFinalResultAndWaitForTextAreaValue(
       "!", "Vega is the fifth brightest star in the sky!");
 }
 
-IN_PROC_BROWSER_TEST_P(DictationCommandsExtensionTest, CutCopyPaste) {
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  SendFinalSpeechResultAndWaitForTextAreaValue("Star", "Star");
-  SendFinalFakeSpeechResultAndWaitForSelectionChange("Select all",
-                                                     web_contents);
-  ClipboardChangedWaiterOneShot copy_waiter;
-  SendFinalFakeSpeechResultAndWait("Copy");
-  copy_waiter.Wait();
+IN_PROC_BROWSER_TEST_P(DictationCommandsTest, CutCopyPaste) {
+  SendFinalResultAndWaitForTextAreaValue("Star", "Star");
+  SendFinalResultAndWaitForSelectionChanged("Select all");
+  SendFinalResultAndWaitForClipboardChanged("Copy");
   EXPECT_EQ("Star", GetClipboardText());
-  SendFinalFakeSpeechResultAndWaitForSelectionChange("unselect", web_contents);
-
-  SendFinalSpeechResultAndWaitForTextAreaValue("paste", "StarStar");
-
-  SendFinalFakeSpeechResultAndWaitForSelectionChange("select ALL ",
-                                                     web_contents);
-  ClipboardChangedWaiterOneShot cut_waiter;
-  SendFinalFakeSpeechResultAndWait("cut");
-  cut_waiter.Wait();
+  SendFinalResultAndWaitForSelectionChanged("unselect");
+  SendFinalResultAndWaitForTextAreaValue("paste", "StarStar");
+  SendFinalResultAndWaitForSelectionChanged("select ALL ");
+  SendFinalResultAndWaitForClipboardChanged("cut");
   EXPECT_EQ("StarStar", GetClipboardText());
   WaitForTextAreaValue("");
-
-  SendFinalSpeechResultAndWaitForTextAreaValue("  PaStE ", "StarStar");
+  SendFinalResultAndWaitForTextAreaValue("  PaStE ", "StarStar");
 }
 
-// TODO(1266696): DictationCommandsExtensionTest.Help is failing on
-// linux-chromeos-debug.
-#if defined(OS_CHROMEOS)
+// Ensures that a metric is recorded when a macro succeeds.
+// TODO(crbug.com/1288964): Add a test to ensure that a metric is recorded when
+// a macro fails.
+IN_PROC_BROWSER_TEST_P(DictationCommandsTest, MacroSucceededMetric) {
+  base::HistogramTester histogram_tester_;
+  SendFinalResultAndWaitForTextAreaValue("Vega is the brightest star in Lyra",
+                                         "Vega is the brightest star in Lyra");
+  histogram_tester_.ExpectUniqueSample(/*name=*/kMacroSucceededMetric,
+                                       /*sample=*/kInputTextViewMetricValue,
+                                       /*expected_bucket_count=*/1);
+  histogram_tester_.ExpectUniqueSample(/*name=*/kMacroFailedMetric,
+                                       /*sample=*/kInputTextViewMetricValue,
+                                       /*expected_bucket_count=*/0);
+  histogram_tester_.ExpectUniqueSample(/*name=*/kMacroRecognizedMetric,
+                                       /*sample=*/kInputTextViewMetricValue,
+                                       /*expected_bucket_count=*/1);
+}
+
+// Flaky on Linux (crbug.com/1348608).
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_Help DISABLED_Help
 #else
 #define MAYBE_Help Help
 #endif
-IN_PROC_BROWSER_TEST_P(DictationCommandsExtensionTest, MAYBE_Help) {
-  SendFinalFakeSpeechResultAndWait("HELP");
+IN_PROC_BROWSER_TEST_P(DictationCommandsTest, MAYBE_Help) {
+  SendFinalResultAndWait("help");
+
+  // Wait for the help URL to load.
+  SuccessWaiter(
+      base::BindLambdaForTesting([&]() {
+        content::WebContents* web_contents =
+            browser()->tab_strip_model()->GetActiveWebContents();
+        return web_contents->GetVisibleURL() ==
+               "https://support.google.com/chromebook?p=text_dictation_m100";
+      }),
+      "Still waiting for help URL to load")
+      .Wait();
+
   // Opening a new tab with the help center article toggles Dictation off.
   WaitForRecognitionStopped();
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_TRUE(web_contents->GetVisibleURL().spec().rfind(
-                  "https://support.google.com/chromebook", /*pos=*/0) != 0);
 }
+
+IN_PROC_BROWSER_TEST_P(DictationCommandsTest, DeletePrevWordSimple) {
+  SendFinalResultAndWaitForTextAreaValue("This is a test", "This is a test");
+  SendFinalResultAndWaitForTextAreaValue("delete the previous word",
+                                         "This is a ");
+}
+
+IN_PROC_BROWSER_TEST_P(DictationCommandsTest, DeletePrevWordExtraSpace) {
+  SendFinalResultAndWaitForTextAreaValue("This is a test ", "This is a test ");
+  SendFinalResultAndWaitForTextAreaValue("delete the previous word",
+                                         "This is a ");
+}
+
+IN_PROC_BROWSER_TEST_P(DictationCommandsTest, DeletePrevWordNewLine) {
+  SendFinalResultAndWaitForTextAreaValue("This is a test\n\n",
+                                         "This is a test\n\n");
+  SendFinalResultAndWaitForTextAreaValue("delete the previous word",
+                                         "This is a test\n");
+}
+
+IN_PROC_BROWSER_TEST_P(DictationCommandsTest, DeletePrevWordPunctuation) {
+  SendFinalResultAndWaitForTextAreaValue("This.is.a.test. ",
+                                         "This.is.a.test. ");
+  SendFinalResultAndWaitForTextAreaValue("delete the previous word",
+                                         "This.is.a.test");
+}
+
+IN_PROC_BROWSER_TEST_P(DictationCommandsTest, DeletePrevWordMiddleOfWord) {
+  SendFinalResultAndWaitForTextAreaValue("This is a test.", "This is a test.");
+  // Move the text caret into the middle of the word "test".
+  SendFinalResultAndWaitForCaretBoundsChanged("Move to the Previous character");
+  SendFinalResultAndWaitForCaretBoundsChanged("Move to the Previous character");
+  SendFinalResultAndWaitForTextAreaValue("delete the previous word",
+                                         "This is a t.");
+}
+
+IN_PROC_BROWSER_TEST_P(DictationCommandsTest, DeletePrevSentSimple) {
+  SendFinalResultAndWaitForTextAreaValue("Hello, world.", "Hello, world.");
+  SendFinalResultAndWaitForTextAreaValue("delete the previous sentence", "");
+}
+
+IN_PROC_BROWSER_TEST_P(DictationCommandsTest, DeletePrevSentWhiteSpace) {
+  SendFinalResultAndWaitForTextAreaValue("  \nHello, world.\n  ",
+                                         "  \nHello, world.\n  ");
+  SendFinalResultAndWaitForTextAreaValue("delete the previous sentence", "");
+}
+
+IN_PROC_BROWSER_TEST_P(DictationCommandsTest, DeletePrevSentPunctuation) {
+  SendFinalResultAndWaitForTextAreaValue(
+      "Hello, world! Good afternoon; good evening? Goodnight, world.",
+      "Hello, world! Good afternoon; good evening? Goodnight, world.");
+  SendFinalResultAndWaitForTextAreaValue(
+      "delete the previous sentence",
+      "Hello, world! Good afternoon; good evening?");
+  SendFinalResultAndWaitForTextAreaValue("delete the previous sentence",
+                                         "Hello, world! Good afternoon;");
+  SendFinalResultAndWaitForTextAreaValue("delete the previous sentence",
+                                         "Hello, world!");
+}
+
+IN_PROC_BROWSER_TEST_P(DictationCommandsTest, DeletePrevSentTwoSentences) {
+  SendFinalResultAndWaitForTextAreaValue("Hello, world. Goodnight, world.",
+                                         "Hello, world. Goodnight, world.");
+  SendFinalResultAndWaitForTextAreaValue("delete the previous sentence",
+                                         "Hello, world.");
+}
+
+IN_PROC_BROWSER_TEST_P(DictationCommandsTest, DeletePrevSentMiddleOfSentence) {
+  SendFinalResultAndWaitForTextAreaValue("Hello, world. Goodnight, world.",
+                                         "Hello, world. Goodnight, world.");
+  // Move the text caret into the middle of the second sentence.
+  SendFinalResultAndWaitForCaretBoundsChanged("Move to the Previous character");
+  SendFinalResultAndWaitForCaretBoundsChanged("Move to the Previous character");
+  SendFinalResultAndWaitForTextAreaValue("delete the previous sentence",
+                                         "Hello, world.d.");
+}
+
+IN_PROC_BROWSER_TEST_P(DictationCommandsTest, MoveByWord) {
+  SendFinalResultAndWaitForTextAreaValue("This is a quiz", "This is a quiz");
+  SendFinalResultAndWaitForCaretBoundsChanged("move to the previous word");
+  SendFinalResultAndWaitForTextAreaValue("pop ", "This is a pop quiz");
+  SendFinalResultAndWaitForCaretBoundsChanged("move to the next word");
+  SendFinalResultAndWaitForTextAreaValue("folks!", "This is a pop quiz folks!");
+}
+
+IN_PROC_BROWSER_TEST_P(DictationCommandsTest, SmartDeletePhraseSimple) {
+  SendFinalResultAndWaitForTextAreaValue("This is a difficult test",
+                                         "This is a difficult test");
+  SendFinalResultAndWaitForTextAreaValue("delete difficult", "This is a test");
+}
+
+IN_PROC_BROWSER_TEST_P(DictationCommandsTest,
+                       SmartDeletePhraseCaseInsensitive) {
+  SendFinalResultAndWaitForTextAreaValue("This is a DIFFICULT test",
+                                         "This is a DIFFICULT test");
+  SendFinalResultAndWaitForTextAreaValue("delete difficult", "This is a test");
+}
+
+IN_PROC_BROWSER_TEST_P(DictationCommandsTest,
+                       SmartDeletePhraseDuplicateMatches) {
+  SendFinalResultAndWaitForTextAreaValue("The cow jumped over the moon.",
+                                         "The cow jumped over the moon.");
+  // Deletes the right-most occurrence of "the".
+  SendFinalResultAndWaitForTextAreaValue("delete the",
+                                         "The cow jumped over moon.");
+}
+
+IN_PROC_BROWSER_TEST_P(DictationCommandsTest,
+                       SmartDeletePhraseDeletesLeftOfCaret) {
+  SendFinalResultAndWaitForTextAreaValue("The cow jumped over the moon.",
+                                         "The cow jumped over the moon.");
+  SendFinalResultAndWaitForCaretBoundsChanged("move to the previous word");
+  SendFinalResultAndWaitForCaretBoundsChanged("move to the previous word");
+  SendFinalResultAndWaitForCaretBoundsChanged("move to the previous word");
+  SendFinalResultAndWaitForTextAreaValue("delete the",
+                                         "cow jumped over the moon.");
+}
+
+IN_PROC_BROWSER_TEST_P(DictationCommandsTest,
+                       SmartDeletePhraseDeletesAtWordBoundaries) {
+  SendFinalResultAndWaitForTextAreaValue("A square is also a rectangle.",
+                                         "A square is also a rectangle.");
+  // Deletes the first word "a", not the first character "a".
+  SendFinalResultAndWaitForTextAreaValue("delete a",
+                                         "A square is also rectangle.");
+}
+
+IN_PROC_BROWSER_TEST_P(DictationCommandsTest, SmartReplacePhrase) {
+  SendFinalResultAndWaitForTextAreaValue("This is a difficult test.",
+                                         "This is a difficult test.");
+  SendFinalResultAndWaitForTextAreaValue("replace difficult with simple",
+                                         "This is a simple test.");
+  SendFinalResultAndWaitForTextAreaValue("replace is with isn't",
+                                         "This isn't a simple test.");
+}
+
+IN_PROC_BROWSER_TEST_P(DictationCommandsTest, SmartInsertBefore) {
+  SendFinalResultAndWaitForTextAreaValue("This is a test.", "This is a test.");
+  SendFinalResultAndWaitForTextAreaValue("insert simple before test",
+                                         "This is a simple test.");
+}
+
+IN_PROC_BROWSER_TEST_P(DictationCommandsTest, SmartSelectBetween) {
+  SendFinalResultAndWaitForTextAreaValue("This is a test.", "This is a test.");
+  SendFinalResultAndWaitForSelectionChanged("select from this to test");
+  SendFinalResultAndWaitForTextAreaValue("Hello world", "Hello world.");
+}
+
+IN_PROC_BROWSER_TEST_P(DictationCommandsTest, MoveBySentence) {
+  SendFinalResultAndWaitForTextAreaValue("Hello world! Goodnight world?",
+                                         "Hello world! Goodnight world?");
+  SendFinalResultAndWaitForCaretBoundsChanged("move to the previous sentence");
+  SendFinalResultAndWaitForTextAreaValue(
+      "Good evening.", "Hello world! Good evening. Goodnight world?");
+  SendFinalResultAndWaitForCaretBoundsChanged("move to the next sentence");
+  SendFinalResultAndWaitForTextAreaValue(
+      "Time for a midnight snack",
+      "Hello world! Good evening. Goodnight world? Time for a midnight snack");
+}
+
+// CursorPosition... tests verify the new cursor position after a command is
+// performed. The new cursor position is verified by inserting text after the
+// command under test is performed.
+
+IN_PROC_BROWSER_TEST_P(DictationCommandsTest, CursorPositionDeleteSentence) {
+  SendFinalResultAndWaitForTextAreaValue("First. Second.", "First. Second.");
+  SendFinalResultAndWaitForTextAreaValue("delete the previous sentence",
+                                         "First.");
+  SendFinalResultAndWaitForTextAreaValue("Third.", "First. Third.");
+}
+
+IN_PROC_BROWSER_TEST_P(DictationCommandsTest, CursorPositionSmartDeletePhrase) {
+  SendFinalResultAndWaitForTextAreaValue("This is a difficult test",
+                                         "This is a difficult test");
+  SendFinalResultAndWaitForCaretBoundsChanged("delete difficult");
+  SendFinalResultAndWaitForTextAreaValue("simple", "This is a simple test");
+}
+
+IN_PROC_BROWSER_TEST_P(DictationCommandsTest,
+                       CursorPositionSmartReplacePhrase) {
+  SendFinalResultAndWaitForTextAreaValue("This is a difficult test",
+                                         "This is a difficult test");
+  SendFinalResultAndWaitForCaretBoundsChanged("replace difficult with simple");
+  SendFinalResultAndWaitForTextAreaValue("biology",
+                                         "This is a simple biology test");
+  SendFinalResultAndWaitForTextAreaValue(
+      "and chemistry", "This is a simple biology and chemistry test");
+}
+
+IN_PROC_BROWSER_TEST_P(DictationCommandsTest, CursorPositionSmartInsertBefore) {
+  SendFinalResultAndWaitForTextAreaValue("This is a test", "This is a test");
+  SendFinalResultAndWaitForCaretBoundsChanged("insert simple before test");
+  SendFinalResultAndWaitForTextAreaValue("biology",
+                                         "This is a simple biology test");
+}
+
+// Tests the behavior of the Dictation bubble UI.
+class DictationUITest : public DictationTest {
+ protected:
+  DictationUITest() = default;
+  ~DictationUITest() override = default;
+  DictationUITest(const DictationUITest&) = delete;
+  DictationUITest& operator=(const DictationUITest&) = delete;
+
+  void SetUpOnMainThread() override {
+    DictationTest::SetUpOnMainThread();
+    dictation_bubble_test_helper_ =
+        std::make_unique<DictationBubbleTestHelper>();
+  }
+
+  void WaitForProperties(
+      bool visible,
+      DictationBubbleIconType icon,
+      const absl::optional<std::u16string>& text,
+      const absl::optional<std::vector<std::u16string>>& hints) {
+    WaitForVisibility(visible);
+    WaitForVisibleIcon(icon);
+    if (text.has_value())
+      WaitForVisibleText(text.value());
+    if (hints.has_value())
+      WaitForVisibleHints(hints.value());
+  }
+
+ private:
+  void WaitForVisibility(bool visible) {
+    std::string error_message = "Still waiting for UI visibility: ";
+    error_message += visible ? "true" : "false";
+    SuccessWaiter(base::BindLambdaForTesting([&]() {
+                    return dictation_bubble_test_helper_->IsVisible() ==
+                           visible;
+                  }),
+                  error_message)
+        .Wait();
+  }
+
+  void WaitForVisibleIcon(DictationBubbleIconType icon) {
+    std::string error_message = "Still waiting for UI icon: " + ToString(icon);
+    SuccessWaiter(base::BindLambdaForTesting([&]() {
+                    return dictation_bubble_test_helper_->GetVisibleIcon() ==
+                           icon;
+                  }),
+                  error_message)
+        .Wait();
+  }
+
+  void WaitForVisibleText(const std::u16string& text) {
+    std::string error_message =
+        "Still waiting for UI text: " + base::UTF16ToUTF8(text);
+    SuccessWaiter(base::BindLambdaForTesting([&]() {
+                    return dictation_bubble_test_helper_->GetText() == text;
+                  }),
+                  error_message)
+        .Wait();
+  }
+
+  void WaitForVisibleHints(const std::vector<std::u16string>& hints) {
+    std::string error_message = base::UTF16ToUTF8(
+        u"Still waiting for UI hints: " + base::JoinString(hints, u","));
+    SuccessWaiter(
+        base::BindLambdaForTesting([&]() {
+          return dictation_bubble_test_helper_->HasVisibleHints(hints);
+        }),
+        error_message)
+        .Wait();
+  }
+
+  std::unique_ptr<DictationBubbleTestHelper> dictation_bubble_test_helper_;
+};
+
+// Consistently failing on Linux ChromiumOS MSan (https://crbug.com/1302688).
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_ShownWhenSpeechRecognitionStarts \
+  DISABLED_ShownWhenSpeechRecognitionStarts
+#define MAYBE_DisplaysInterimSpeechResults DISABLED_DisplaysInterimSpeechResults
+#define MAYBE_DisplaysMacroSuccess DISABLED_DisplaysMacroSuccess
+#define MAYBE_ResetsToStandbyModeAfterFinalSpeechResult \
+  DISABLED_ResetsToStandbyModeAfterFinalSpeechResult
+#define MAYBE_DisplaysMacroSuccess DISABLED_DisplaysMacroSuccess
+#define MAYBE_HiddenWhenDictationDeactivates \
+  DISABLED_HiddenWhenDictationDeactivates
+#define MAYBE_StandbyHints DISABLED_StandbyHints
+#define MAYBE_HintsShownWhenTextCommitted DISABLED_HintsShownWhenTextCommitted
+#define MAYBE_HintsShownAfterTextSelected DISABLED_HintsShownAfterTextSelected
+#define MAYBE_HintsShownAfterCommandExecuted \
+  DISABLED_HintsShownAfterCommandExecuted
+#else
+#define MAYBE_ShownWhenSpeechRecognitionStarts ShownWhenSpeechRecognitionStarts
+#define MAYBE_DisplaysInterimSpeechResults DisplaysInterimSpeechResults
+#define MAYBE_DisplaysMacroSuccess DisplaysMacroSuccess
+#define MAYBE_ResetsToStandbyModeAfterFinalSpeechResult \
+  ResetsToStandbyModeAfterFinalSpeechResult
+#define MAYBE_DisplaysMacroSuccess DisplaysMacroSuccess
+#define MAYBE_HiddenWhenDictationDeactivates HiddenWhenDictationDeactivates
+#define MAYBE_StandbyHints StandbyHints
+#define MAYBE_HintsShownWhenTextCommitted HintsShownWhenTextCommitted
+#define MAYBE_HintsShownAfterTextSelected HintsShownAfterTextSelected
+#define MAYBE_HintsShownAfterCommandExecuted HintsShownAfterCommandExecuted
+#endif
+
+INSTANTIATE_TEST_SUITE_P(
+    Network,
+    DictationUITest,
+    ::testing::Values(speech::SpeechRecognitionType::kNetwork));
+
+INSTANTIATE_TEST_SUITE_P(
+    OnDevice,
+    DictationUITest,
+    ::testing::Values(speech::SpeechRecognitionType::kOnDevice));
+
+IN_PROC_BROWSER_TEST_P(DictationUITest,
+                       MAYBE_ShownWhenSpeechRecognitionStarts) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+  WaitForProperties(/*visible=*/true,
+                    /*icon=*/DictationBubbleIconType::kStandby,
+                    /*text=*/absl::optional<std::u16string>(),
+                    /*hints=*/absl::optional<std::vector<std::u16string>>());
+}
+
+IN_PROC_BROWSER_TEST_P(DictationUITest, MAYBE_DisplaysInterimSpeechResults) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+  // Send an interim speech result.
+  SendInterimResultAndWait("Testing");
+  WaitForProperties(/*visible=*/true,
+                    /*icon=*/DictationBubbleIconType::kHidden,
+                    /*text=*/u"Testing",
+                    /*hints=*/absl::optional<std::vector<std::u16string>>());
+}
+
+IN_PROC_BROWSER_TEST_P(DictationUITest, MAYBE_DisplaysMacroSuccess) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+  // Perform a command.
+  SendFinalResultAndWait("Select all");
+  WaitForProperties(/*visible=*/true,
+                    /*icon=*/DictationBubbleIconType::kMacroSuccess,
+                    /*text=*/u"Select all",
+                    /*hints=*/absl::optional<std::vector<std::u16string>>());
+  // UI should return to standby mode after a timeout.
+  WaitForProperties(/*visible=*/true,
+                    /*icon=*/DictationBubbleIconType::kStandby,
+                    /*text=*/std::u16string(),
+                    /*hints=*/absl::optional<std::vector<std::u16string>>());
+}
+
+IN_PROC_BROWSER_TEST_P(DictationUITest,
+                       MAYBE_ResetsToStandbyModeAfterFinalSpeechResult) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+  WaitForProperties(/*visible=*/true,
+                    /*icon=*/DictationBubbleIconType::kStandby,
+                    /*text=*/absl::optional<std::u16string>(),
+                    /*hints=*/absl::optional<std::vector<std::u16string>>());
+  // Send an interim speech result.
+  SendInterimResultAndWait("Testing");
+  WaitForProperties(/*visible=*/true,
+                    /*icon=*/DictationBubbleIconType::kHidden,
+                    /*text=*/u"Testing",
+                    /*hints=*/absl::optional<std::vector<std::u16string>>());
+  // Send a final speech result. UI should return to standby mode.
+  SendFinalResultAndWait("Testing 123");
+  WaitForProperties(/*visible=*/true,
+                    /*icon=*/DictationBubbleIconType::kStandby,
+                    /*text=*/std::u16string(),
+                    /*hints=*/absl::optional<std::vector<std::u16string>>());
+}
+
+IN_PROC_BROWSER_TEST_P(DictationUITest, MAYBE_HiddenWhenDictationDeactivates) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+  WaitForProperties(/*visible=*/true,
+                    /*icon=*/DictationBubbleIconType::kStandby,
+                    /*text=*/absl::optional<std::u16string>(),
+                    /*hints=*/absl::optional<std::vector<std::u16string>>());
+  // The UI should be hidden when Dictation deactivates.
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStopped();
+  WaitForProperties(/*visible=*/false,
+                    /*icon=*/DictationBubbleIconType::kHidden,
+                    /*text=*/std::u16string(),
+                    /*hints=*/absl::optional<std::vector<std::u16string>>());
+}
+
+IN_PROC_BROWSER_TEST_P(DictationUITest, MAYBE_StandbyHints) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+  WaitForProperties(/*visible=*/true,
+                    /*icon=*/DictationBubbleIconType::kStandby,
+                    /*text=*/absl::optional<std::u16string>(),
+                    /*hints=*/absl::optional<std::vector<std::u16string>>());
+  // Hints should show up after a few seconds without speech.
+  WaitForProperties(
+      /*visible=*/true,
+      /*icon=*/DictationBubbleIconType::kStandby,
+      /*text=*/absl::optional<std::u16string>(),
+      /*hints=*/std::vector<std::u16string>{kTrySaying, kType, kHelp});
+}
+
+// Ensures that Search + D can be used to toggle Dictation when ChromeVox is
+// active. Also verifies that ChromeVox announces hints when they are shown in
+// the Dictation UI.
+IN_PROC_BROWSER_TEST_P(DictationUITest, ChromeVoxAnnouncesHints) {
+  // Setup ChromeVox first.
+  test::SpeechMonitor sm;
+  EXPECT_FALSE(GetManager()->IsSpokenFeedbackEnabled());
+  extensions::ExtensionHostTestHelper host_helper(
+      browser()->profile(), extension_misc::kChromeVoxExtensionId);
+  EnableChromeVox();
+  host_helper.WaitForHostCompletedFirstLoad();
+  EXPECT_TRUE(GetManager()->IsSpokenFeedbackEnabled());
+
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+
+  // Hints should show up after a few seconds without speech.
+  WaitForProperties(
+      /*visible=*/true,
+      /*icon=*/DictationBubbleIconType::kStandby,
+      /*text=*/absl::optional<std::u16string>(),
+      /*hints=*/std::vector<std::u16string>{kTrySaying, kType, kHelp});
+
+  // Assert speech from ChromeVox.
+  sm.ExpectSpeechPattern("Try saying*Type*Help*");
+  sm.Replay();
+}
+
+IN_PROC_BROWSER_TEST_P(DictationUITest, MAYBE_HintsShownWhenTextCommitted) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+
+  WaitForProperties(/*visible=*/true,
+                    /*icon=*/DictationBubbleIconType::kStandby,
+                    /*text=*/absl::optional<std::u16string>(),
+                    /*hints=*/absl::optional<std::vector<std::u16string>>());
+
+  // Send a final speech result. UI should return to standby mode.
+  SendFinalResultAndWait("Testing");
+  WaitForProperties(/*visible=*/true,
+                    /*icon=*/DictationBubbleIconType::kStandby,
+                    /*text=*/std::u16string(),
+                    /*hints=*/absl::optional<std::vector<std::u16string>>());
+
+  // Hints should show up after a few seconds without speech.
+  WaitForProperties(
+      /*visible=*/true,
+      /*icon=*/DictationBubbleIconType::kStandby,
+      /*text=*/absl::optional<std::u16string>(),
+      /*hints=*/
+      std::vector<std::u16string>{kTrySaying, kUndo, kDelete, kSelectAll,
+                                  kHelp});
+}
+
+IN_PROC_BROWSER_TEST_P(DictationUITest, MAYBE_HintsShownAfterTextSelected) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+
+  // Perform a select all command.
+  SendFinalResultAndWaitForTextAreaValue("Vega is the brightest star in Lyra",
+                                         "Vega is the brightest star in Lyra");
+  SendFinalResultAndWaitForSelectionChanged("Select all");
+  WaitForProperties(/*visible=*/true,
+                    /*icon=*/DictationBubbleIconType::kMacroSuccess,
+                    /*text=*/u"Select all",
+                    /*hints=*/absl::optional<std::vector<std::u16string>>());
+
+  // UI should return to standby mode with hints after a few seconds without
+  // speech.
+  WaitForProperties(
+      /*visible=*/true,
+      /*icon=*/DictationBubbleIconType::kStandby,
+      /*text=*/absl::optional<std::u16string>(),
+      /*hints=*/
+      std::vector<std::u16string>{kTrySaying, kUnselect, kCopy, kDelete,
+                                  kHelp});
+}
+
+IN_PROC_BROWSER_TEST_P(DictationUITest, MAYBE_HintsShownAfterCommandExecuted) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+
+  // Perform a command.
+  SendFinalResultAndWait("Move to the previous character");
+  WaitForProperties(/*visible=*/true,
+                    /*icon=*/DictationBubbleIconType::kMacroSuccess,
+                    /*text=*/u"Move to the previous character",
+                    /*hints=*/absl::optional<std::vector<std::u16string>>());
+
+  // UI should return to standby mode with hints after a few seconds without
+  // speech.
+  WaitForProperties(
+      /*visible=*/true,
+      /*icon=*/DictationBubbleIconType::kStandby,
+      /*text=*/absl::optional<std::u16string>(),
+      /*hints=*/std::vector<std::u16string>{kTrySaying, kUndo, kHelp});
+}
+
+// Tests behavior of Dictation and installation of Pumpkin.
+class DictationPumpkinInstallTest : public DictationTest {
+ protected:
+  DictationPumpkinInstallTest() = default;
+  ~DictationPumpkinInstallTest() = default;
+  DictationPumpkinInstallTest(const DictationPumpkinInstallTest&) = delete;
+  DictationPumpkinInstallTest& operator=(const DictationPumpkinInstallTest&) =
+      delete;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    DictationTest::SetUpCommandLine(command_line);
+    scoped_feature_list_.InitAndEnableFeature(
+        ::features::kExperimentalAccessibilityDictationWithPumpkin);
+  }
+
+  void SetUpOnMainThread() override {
+    // Initialize Pumpkin DLC directory.
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_TRUE(pumpkin_root_dir_.CreateUniqueTempDir());
+    // Create subdirectories for each locale supported by Pumpkin.
+    std::vector<std::string> locales{"en_us", "fr_fr", "it_it", "de_de",
+                                     "es_es"};
+    for (size_t i = 0; i < locales.size(); ++i) {
+      sub_dirs_.push_back(std::make_unique<base::ScopedTempDir>());
+      ASSERT_TRUE(
+          sub_dirs_[i]->Set(pumpkin_root_dir_.GetPath().Append(locales[i])));
+    }
+
+    // Create fake DLC files.
+    AccessibilityManager::Get()->SetDlcPathForTest(pumpkin_root_dir_.GetPath());
+    std::string content = "Fake DLC file content";
+    std::vector<base::FilePath> files{
+        pumpkin_root_dir_.GetPath().Append("js_pumpkin_tagger_bin.js"),
+        pumpkin_root_dir_.GetPath().Append("tagger_wasm_main.js"),
+        pumpkin_root_dir_.GetPath().Append("tagger_wasm_main.wasm"),
+    };
+    for (const auto& sub_dir : sub_dirs_) {
+      files.push_back(sub_dir->GetPath().Append("action_config.binarypb"));
+      files.push_back(sub_dir->GetPath().Append("pumpkin_config.binarypb"));
+    }
+    for (const auto& file : files) {
+      ASSERT_TRUE(base::WriteFile(file, content));
+    }
+
+    DictationTest::SetUpOnMainThread();
+  }
+
+  void WaitForInstallToSucceed() {
+    std::string error_message = "Waiting for Pumpkin installation to succeed";
+    SuccessWaiter(base::BindLambdaForTesting([&]() {
+                    return AccessibilityManager::Get()
+                        ->is_pumpkin_installed_for_testing();
+                  }),
+                  error_message)
+        .Wait();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  base::ScopedTempDir pumpkin_root_dir_;
+  std::vector<std::unique_ptr<base::ScopedTempDir>> sub_dirs_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    Network,
+    DictationPumpkinInstallTest,
+    ::testing::Values(speech::SpeechRecognitionType::kNetwork));
+
+INSTANTIATE_TEST_SUITE_P(
+    OnDevice,
+    DictationPumpkinInstallTest,
+    ::testing::Values(speech::SpeechRecognitionType::kOnDevice));
+
+// TODO(crbug.com/1368843): Test is flaky on MSAN builds.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_WaitForInstall DISABLED_WaitForInstall
+#else
+#define MAYBE_WaitForInstall WaitForInstall
+#endif
+IN_PROC_BROWSER_TEST_P(DictationPumpkinInstallTest, MAYBE_WaitForInstall) {
+  // Dictation will request a Pumpkin install when it starts up. Wait for
+  // the install to succeed.
+  WaitForInstallToSucceed();
+}
+
+// TODO(crbug.com/1264544): Test looking at gn args has pumpkin and does
+// repeats.
 
 }  // namespace ash

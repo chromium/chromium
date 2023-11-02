@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/gtest_prod_util.h"
+#include "base/time/time.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/expiring_cache.h"
 #include "net/base/net_export.h"
@@ -66,7 +67,7 @@ class NET_EXPORT CachingCertVerifier : public CertVerifier,
     CachedResult();
     ~CachedResult();
 
-    int error;                // The return value of CertVerifier::Verify.
+    int error = ERR_FAILED;   // The return value of CertVerifier::Verify.
     CertVerifyResult result;  // The output of CertVerifier::Verify.
   };
 
@@ -128,11 +129,11 @@ class NET_EXPORT CachingCertVerifier : public CertVerifier,
 
   std::unique_ptr<CertVerifier> verifier_;
 
-  uint32_t config_id_;
+  uint32_t config_id_ = 0u;
   CertVerificationCache cache_;
 
-  uint64_t requests_;
-  uint64_t cache_hits_;
+  uint64_t requests_ = 0u;
+  uint64_t cache_hits_ = 0u;
 };
 
 }  // namespace net

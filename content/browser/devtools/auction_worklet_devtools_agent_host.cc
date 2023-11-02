@@ -1,12 +1,12 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/browser/devtools/auction_worklet_devtools_agent_host.h"
 
 #include "base/bind.h"
-#include "base/guid.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -71,17 +71,25 @@ BrowserContext* AuctionWorkletDevToolsAgentHost::GetBrowserContext() {
 
 bool AuctionWorkletDevToolsAgentHost::AttachSession(DevToolsSession* session,
                                                     bool acquire_wake_lock) {
+  // We use `force_using_io_session` as AuctionV8DevToolsSession can't handle
+  // commands on main session when blocked on a breakpoint, only on IO session.
+  session->AttachToAgent(associated_agent_remote_.get(),
+                         /*force_using_io_session=*/true);
   return true;
 }
 
 AuctionWorkletDevToolsAgentHost::AuctionWorkletDevToolsAgentHost(
     DebuggableAuctionWorklet* worklet)
-    : DevToolsAgentHostImpl(base::GenerateGUID()), worklet_(worklet) {
-  mojo::PendingRemote<blink::mojom::DevToolsAgent> agent;
-  worklet->ConnectDevToolsAgent(agent.InitWithNewPipeAndPassReceiver());
+    : DevToolsAgentHostImpl(worklet->UniqueId()), worklet_(worklet) {
+  mojo::PendingAssociatedRemote<blink::mojom::DevToolsAgent> agent;
+  worklet->ConnectDevToolsAgent(agent.InitWithNewEndpointAndPassReceiver());
   NotifyCreated();
-  GetRendererChannel()->SetRenderer(std::move(agent), mojo::NullReceiver(),
-                                    ChildProcessHost::kInvalidUniqueID);
+
+  associated_agent_remote_.Bind(std::move(agent));
+
+  // Since we were just created, we don't have any sessions yet, so nothing to
+  // attach here.
+  DCHECK(sessions().empty());
 }
 
 AuctionWorkletDevToolsAgentHost::~AuctionWorkletDevToolsAgentHost() = default;
@@ -89,8 +97,7 @@ AuctionWorkletDevToolsAgentHost::~AuctionWorkletDevToolsAgentHost() = default;
 void AuctionWorkletDevToolsAgentHost::WorkletDestroyed() {
   worklet_ = nullptr;
   ForceDetachAllSessions();
-  GetRendererChannel()->SetRenderer(mojo::NullRemote(), mojo::NullReceiver(),
-                                    ChildProcessHost::kInvalidUniqueID);
+  associated_agent_remote_.reset();
 }
 
 AuctionWorkletDevToolsAgentHostManager&

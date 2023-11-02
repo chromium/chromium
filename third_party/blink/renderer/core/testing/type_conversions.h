@@ -27,7 +27,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_TYPE_CONVERSIONS_H_
 
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -36,15 +35,7 @@ class TypeConversions final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  TypeConversions()
-      : long_(0),
-        unsigned_long_(0),
-        long_long_(0),
-        unsigned_long_long_(0),
-        byte_(0),
-        octet_(0),
-        short_(0),
-        unsigned_short_(0) {}
+  TypeConversions() = default;
 
   int32_t testLong() { return long_; }
   void setTestLong(int32_t value) { long_ = value; }
@@ -78,14 +69,14 @@ class TypeConversions final : public ScriptWrappable {
   }
 
  private:
-  int32_t long_;
-  uint32_t unsigned_long_;
-  int64_t long_long_;
-  uint64_t unsigned_long_long_;
-  int8_t byte_;
-  uint8_t octet_;
-  int16_t short_;
-  uint16_t unsigned_short_;
+  int32_t long_ = 0;
+  uint32_t unsigned_long_ = 0;
+  int64_t long_long_ = 0;
+  uint64_t unsigned_long_long_ = 0;
+  int8_t byte_ = 0;
+  uint8_t octet_ = 0;
+  int16_t short_ = 0;
+  uint16_t unsigned_short_ = 0;
   String byte_string_;
   String usv_string_;
   String usv_string_or_null_;

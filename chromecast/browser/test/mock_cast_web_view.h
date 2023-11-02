@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #ifndef CHROMECAST_BROWSER_TEST_MOCK_CAST_WEB_VIEW_H_
@@ -6,6 +6,7 @@
 
 #include "chromecast/browser/cast_web_contents.h"
 #include "chromecast/browser/cast_web_view.h"
+#include "components/url_rewrite/mojom/url_request_rewrite.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -15,13 +16,17 @@ namespace chromecast {
 class MockCastWebContents : public CastWebContents {
  public:
   MockCastWebContents();
-  ~MockCastWebContents();
+  ~MockCastWebContents() override;
 
   // CastWebContents implementation
   MOCK_METHOD(int, tab_id, (), (const, override));
   MOCK_METHOD(int, id, (), (const, override));
   MOCK_METHOD(content::WebContents*, web_contents, (), (const, override));
   MOCK_METHOD(PageState, page_state, (), (const, override));
+  MOCK_METHOD(url_rewrite::UrlRequestRewriteRulesManager*,
+              url_rewrite_rules_manager,
+              (),
+              (override));
   MOCK_METHOD(void, AddRendererFeatures, (base::Value), (override));
   MOCK_METHOD(void,
               SetInterfacesForRenderer,
@@ -38,6 +43,10 @@ class MockCastWebContents : public CastWebContents {
                const std::vector<std::string>&),
               (override));
   MOCK_METHOD(void, SetGroupInfo, (const std::string&, bool), (override));
+  MOCK_METHOD(void,
+              SetUrlRewriteRules,
+              (url_rewrite::mojom::UrlRequestRewriteRulesPtr),
+              (override));
   MOCK_METHOD(void, LoadUrl, (const GURL&), (override));
   MOCK_METHOD(void, ClosePage, (), (override));
   MOCK_METHOD(void, Stop, (int), (override));

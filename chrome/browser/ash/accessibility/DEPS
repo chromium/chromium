@@ -6,4 +6,7 @@ specific_include_rules = {
   "speech_monitor\.(cc|h)": [
     "+content/public/browser/tts_controller.h",
   ],
+  "accessibility_manager.cc": [
+    "+services/accessibility/buildflags.h",
+  ],
 }

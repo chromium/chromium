@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include "base/bind.h"
 #include "base/environment.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -155,7 +156,7 @@ class WriteToFileAudioSink : public AudioInputStream::AudioInputCallback {
 
  private:
   media::SeekableBuffer buffer_;
-  FILE* binary_file_;
+  raw_ptr<FILE> binary_file_;
   size_t bytes_to_write_;
 };
 
@@ -225,7 +226,7 @@ class AudioInputStreamWrapper {
     return ais;
   }
 
-  AudioManager* audio_man_;
+  raw_ptr<AudioManager> audio_man_;
   AudioParameters default_params_;
   std::string device_id_ = AudioDeviceDescription::kDefaultDeviceId;
   int frames_per_buffer_;
@@ -267,7 +268,7 @@ class ScopedAudioInputStream {
   }
 
  private:
-  AudioInputStream* stream_;
+  raw_ptr<AudioInputStream> stream_;
 };
 
 class WinAudioInputTest : public ::testing::Test,
@@ -414,7 +415,8 @@ TEST_F(WinAudioInputTest, WASAPIAudioInputStreamHistograms) {
   sink.WaitForData();
   ais->Stop();
   ais.Close();
-  histogram_tester.ExpectTotalCount("Media.Audio.Capture.Win.Glitches", 1);
+  histogram_tester.ExpectTotalCount("Media.Audio.Capture.EarlyGlitchDetected",
+                                    1);
 }
 
 // Test some additional calling sequences.
@@ -613,12 +615,12 @@ TEST_F(WinAudioInputTest, DISABLED_WASAPIAudioInputStreamResampleToFile) {
   struct TestData {
     const int rate;
     const int frames;
-    ChannelLayout layout;
+    ChannelLayoutConfig layout;
   } tests[] = {
-      {8000, 80, CHANNEL_LAYOUT_MONO},
-      {8000, 80, CHANNEL_LAYOUT_STEREO},
-      {44100, 441, CHANNEL_LAYOUT_MONO},
-      {44100, 1024, CHANNEL_LAYOUT_STEREO},
+      {8000, 80, media::ChannelLayoutConfig::Mono()},
+      {8000, 80, media::ChannelLayoutConfig::Stereo()},
+      {44100, 441, media::ChannelLayoutConfig::Mono()},
+      {44100, 1024, media::ChannelLayoutConfig::Stereo()},
   };
 
   for (const auto& test : tests) {

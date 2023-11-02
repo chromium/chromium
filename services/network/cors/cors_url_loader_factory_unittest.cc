@@ -1,10 +1,9 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/test_support/fake_message_dispatch_context.h"
@@ -16,6 +15,7 @@
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "services/network/cors/cors_url_loader_factory.h"
+#include "services/network/is_browser_initiated.h"
 #include "services/network/network_context.h"
 #include "services/network/network_service.h"
 #include "services/network/public/cpp/features.h"
@@ -29,14 +29,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-namespace network {
-namespace cors {
+namespace network::cors {
 
 namespace {
 
 constexpr int kProcessId = 123;
 constexpr int kRequestId = 456;
-constexpr int kRouteId = 789;
+constexpr ResourceScheduler::ClientId kResourceSchedulerClientId(99);
 
 }  // namespace
 
@@ -81,7 +80,8 @@ class CorsURLLoaderFactoryTest : public testing::Test {
         url::Origin::Create(test_server_.base_url());
     auto resource_scheduler_client =
         base::MakeRefCounted<ResourceSchedulerClient>(
-            kProcessId, kRouteId, &resource_scheduler_,
+            kResourceSchedulerClientId, IsBrowserInitiated(false),
+            &resource_scheduler_,
             url_request_context_->network_quality_estimator());
     cors_url_loader_factory_ = std::make_unique<CorsURLLoaderFactory>(
         network_context_.get(), std::move(factory_params),
@@ -91,7 +91,7 @@ class CorsURLLoaderFactoryTest : public testing::Test {
   }
 
   void CreateLoaderAndStart(const ResourceRequest& request) {
-    url_loaders_.emplace_back(mojo::Remote<mojom::URLLoader>());
+    url_loaders_.emplace_back();
     test_cors_loader_clients_.emplace_back(
         std::make_unique<TestURLLoaderClient>());
     cors_url_loader_factory_->CreateLoaderAndStart(
@@ -146,10 +146,10 @@ TEST_F(CorsURLLoaderFactoryTest, DestructionOrder) {
   request.url = url;
   request.request_initiator = url::Origin::Create(url);
 
-  // As of r609458 setting |keepalive| to true was triggerring a dereference of
-  // |factory_params_| in the destructor of network::URLLoader.  This
+  // As of r609458 setting `keepalive` to true was triggerring a dereference of
+  // `factory_params_` in the destructor of network::URLLoader.  This
   // dereference assumes that the network::URLLoaderFactory (which keeps
-  // |factory_params_| alive) lives longer than the network::URLLoaders created
+  // `factory_params_` alive) lives longer than the network::URLLoaders created
   // via the factory (which necessitates being careful with the destruction
   // order of fields of network::cors::CorsURLLoaderFactory which owns both
   // network::URLLoaderFactory and the network::URLLoaders it creates).
@@ -176,7 +176,7 @@ TEST_F(CorsURLLoaderFactoryTest, CleanupWithSharedCacheObjectInUse) {
   test_cors_loader_clients().back()->RunUntilResponseReceived();
 
   // Read only requests will fail synchonously on destruction of the request
-  // they're waiting on if they're in the |done_headers_queue| when the other
+  // they're waiting on if they're in the `done_headers_queue` when the other
   // request fails. Make a large number of such requests, spin the message loop
   // so they end up blocked on the hung request, and then destroy all loads. A
   // large number of loaders is needed because they're stored in a set, indexed
@@ -306,5 +306,4 @@ TEST_F(CorsURLLoaderFactoryTest,
       bad_message_observer.WaitForBadMessage());
 }
 
-}  // namespace cors
-}  // namespace network
+}  // namespace network::cors

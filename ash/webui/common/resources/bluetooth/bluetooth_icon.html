@@ -1,0 +1,14 @@
+<style include="cr-shared-style">
+  #image {
+    height: 24px;
+    width: 24px;
+  }
+</style>
+
+<template is="dom-if" if="[[!hasDefaultImage_(device.*)]]">
+  <iron-icon id="deviceTypeIcon" icon="bluetooth:[[getIcon_(device.*)]]">
+  </iron-icon>
+</template>
+<template is="dom-if" if="[[hasDefaultImage_(device.*)]]">
+  <img id="image" src="[[getDefaultImageSrc_(device.*)]]" alt="Default device image">
+</template>

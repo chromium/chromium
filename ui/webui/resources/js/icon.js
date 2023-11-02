@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -107,7 +107,7 @@ export function getImage(path) {
 function getBaseFaviconUrl() {
   const faviconUrl = new URL('chrome://favicon2/');
   faviconUrl.searchParams.set('size', '16');
-  faviconUrl.searchParams.set('scale_factor', 'SCALEFACTORx');
+  faviconUrl.searchParams.set('scaleFactor', 'SCALEFACTORx');
   return faviconUrl;
 }
 
@@ -119,7 +119,7 @@ function getBaseFaviconUrl() {
  */
 export function getFavicon(url) {
   const faviconUrl = getBaseFaviconUrl();
-  faviconUrl.searchParams.set('icon_url', url);
+  faviconUrl.searchParams.set('iconUrl', url);
   return getImageSet(faviconUrl.toString());
 }
 
@@ -130,25 +130,31 @@ export function getFavicon(url) {
  * @param {boolean} isSyncedUrlForHistoryUi Should be set to true only if the
  *     caller is an UI aimed at displaying user history, and the requested url
  *     is known to be present in Chrome sync data.
- * @param {string} remoteIconUrlForUma In case the entry is contained in sync
+ * @param {string=} remoteIconUrlForUma In case the entry is contained in sync
  *     data, we can pass the associated icon url.
- * @param {number} size The favicon size.
+ * @param {number=} size The favicon size.
+ * @param {boolean=} forceLightMode Flag to force the service to show the light
+ *     mode version of the default favicon.
  *
  * @return {string} -webkit-image-set for the favicon.
  */
 export function getFaviconForPageURL(
-    url, isSyncedUrlForHistoryUi, remoteIconUrlForUma = '', size = 16) {
+    url, isSyncedUrlForHistoryUi, remoteIconUrlForUma = '', size = 16,
+    forceLightMode = false) {
   // Note: URL param keys used below must match those in the description of
   // chrome://favicon2 format in components/favicon_base/favicon_url_parser.h.
   const faviconUrl = getBaseFaviconUrl();
   faviconUrl.searchParams.set('size', size);
-  faviconUrl.searchParams.set('page_url', url);
-  // TODO(dbeam): use the presence of 'allow_google_server_fallback' to
+  faviconUrl.searchParams.set('pageUrl', url);
+  // TODO(dbeam): use the presence of 'allowGoogleServerFallback' to
   // indicate true, otherwise false.
   const fallback = isSyncedUrlForHistoryUi ? '1' : '0';
-  faviconUrl.searchParams.set('allow_google_server_fallback', fallback);
+  faviconUrl.searchParams.set('allowGoogleServerFallback', fallback);
   if (isSyncedUrlForHistoryUi) {
-    faviconUrl.searchParams.set('icon_url', remoteIconUrlForUma);
+    faviconUrl.searchParams.set('iconUrl', remoteIconUrlForUma);
+  }
+  if (forceLightMode) {
+    faviconUrl.searchParams.set('forceLightMode', true);
   }
 
   return getImageSet(faviconUrl.toString());

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,14 +7,17 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/post_task.h"
+#include "base/task/task_runner_util.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/ash/login/test/dialog_window_waiter.h"
 #include "chrome/browser/ash/login/test/fake_eula_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
@@ -30,6 +33,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/chromeos/login/eula_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/network_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/installer/util/google_update_settings.h"
@@ -56,12 +60,17 @@ const test::UIPath kUsageStats = {"oobe-eula-md", "usageStats"};
 const test::UIPath kAdditionalTermsLink = {"oobe-eula-md", "additionalTerms"};
 const test::UIPath kAdditionalTermsDialog = {"oobe-eula-md", "additionalToS"};
 const test::UIPath kLearnMoreLink = {"oobe-eula-md", "learnMore"};
+const test::UIPath kBackButton = {"oobe-eula-md", "backButton"};
 
 const char kRemoraRequisition[] = "remora";
 
 class EulaTest : public OobeBaseTest {
  public:
-  EulaTest() = default;
+  EulaTest() {
+    // EULA screen is not shown when OobeConsolidatedConsent is enabled, and
+    // its content is moved to the consolidated consent screen.
+    feature_list_.InitAndDisableFeature(features::kOobeConsolidatedConsent);
+  }
 
   EulaTest(const EulaTest&) = delete;
   EulaTest& operator=(const EulaTest&) = delete;
@@ -123,6 +132,7 @@ class EulaTest : public OobeBaseTest {
     return consented;
   }
 
+  base::test::ScopedFeatureList feature_list_;
   FakeEulaMixin fake_eula_{&mixin_host_, embedded_test_server()};
 };
 
@@ -273,7 +283,7 @@ IN_PROC_BROWSER_TEST_F(EulaTest, LearnMore) {
           1)));
 }
 
-#if defined(OS_CHROMEOS) && defined(NDEBUG)
+#if defined(NDEBUG)
 #define MAYBE_AdditionalToS DISABLED_AdditionalToS
 #else
 #define MAYBE_AdditionalToS AdditionalToS
@@ -333,6 +343,12 @@ IN_PROC_BROWSER_TEST_F(EulaTest, SkippedEula) {
   EXPECT_FALSE(g_browser_process->local_state()->GetBoolean(
       metrics::prefs::kMetricsReportingEnabled));
   EXPECT_FALSE(GetGoogleCollectStatsConsent());
+}
+
+IN_PROC_BROWSER_TEST_F(EulaTest, ClickBack) {
+  ShowEulaScreen();
+  test::OobeJS().ClickOnPath(kBackButton);
+  OobeScreenWaiter(NetworkScreenView::kScreenId).Wait();
 }
 
 }  // namespace

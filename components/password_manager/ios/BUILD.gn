@@ -1,8 +1,8 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//ios/web/js_compile.gni")
+import("//ios/web/public/js_messaging/optimize_js.gni")
 
 component("ios") {
   configs += [ "//build/config/compiler:enable_arc" ]
@@ -22,14 +22,22 @@ component("ios") {
     "//components/password_manager/core/common",
     "//components/security_state/ios",
     "//components/strings:components_strings_grit",
+    "//components/ukm/ios:ukm_url_recorder",
     "//ios/web/common",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
+    "//services/metrics/public/cpp:ukm_builders",
     "//ui/base",
     "//url",
   ]
 
   sources = [
+    "ios_password_manager_driver.h",
+    "ios_password_manager_driver.mm",
+    "ios_password_manager_driver_factory.h",
+    "ios_password_manager_driver_factory.mm",
+    "password_controller_driver_helper.h",
+    "password_controller_driver_helper.mm",
     "password_form_helper.h",
     "password_form_helper.mm",
     "password_generation_provider.h",
@@ -77,8 +85,8 @@ source_set("account_select_fill_data") {
   ]
 }
 
-js_compile_bundle("password_controller_js") {
-  closure_entry_point = "__crWeb.passwords"
+optimize_js("password_controller_js") {
+  primary_script = "resources/password_controller.js"
   sources = [ "resources/password_controller.js" ]
 }
 
@@ -103,6 +111,9 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "account_select_fill_data_unittest.cc",
+    "ios_password_manager_driver_factory_unittest.mm",
+    "ios_password_manager_driver_unittest.mm",
+    "password_controller_driver_helper_unittest.mm",
     "password_form_helper_unittest.mm",
     "shared_password_controller_unittest.mm",
   ]
@@ -119,10 +130,15 @@ source_set("unit_tests") {
     "//components/autofill/ios/form_util:test_support",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser:test_support",
+    "//components/password_manager/core/common:features",
     "//components/password_manager/ios:password_manager_feature",
+    "//components/ukm:test_support",
+    "//components/ukm/ios:ukm_url_recorder",
     "//ios/web/public/js_messaging",
     "//ios/web/public/test",
+    "//ios/web/public/test:test_fixture",
     "//ios/web/public/test/fakes",
+    "//services/metrics/public/cpp:ukm_builders",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/ocmock",

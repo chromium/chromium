@@ -25,7 +25,7 @@
     [CEReactions, Reflect] attribute DOMString name;
     [CEReactions, Reflect=http_equiv] attribute DOMString httpEquiv;
     [CEReactions, Reflect] attribute DOMString content;
-    [CEReactions, Reflect, MeasureAs=MediaMetaThemeColor, RuntimeEnabled=MediaMetaThemeColor] attribute DOMString media;
+    [CEReactions, Reflect, MeasureAs=MediaMetaThemeColor] attribute DOMString media;
 
     // obsolete members
     // https://html.spec.whatwg.org/C/#HTMLMetaElement-partial

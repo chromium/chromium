@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 #include "base/callback.h"
 #include "base/environment.h"
 #include "remoting/base/logging.h"
-#include "remoting/host/username.h"
+#include "remoting/host/base/username.h"
 #include "remoting/protocol/channel_authenticator.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 
@@ -72,7 +72,7 @@ bool PamAuthorizer::started() const {
 protocol::Authenticator::RejectionReason
 PamAuthorizer::rejection_reason() const {
   if (local_login_status_ == DISALLOWED) {
-    return INVALID_CREDENTIALS;
+    return RejectionReason::INVALID_CREDENTIALS;
   } else {
     return underlying_->rejection_reason();
   }

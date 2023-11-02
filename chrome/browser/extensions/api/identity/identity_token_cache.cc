@@ -1,14 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/api/identity/identity_token_cache.h"
 
-#include <algorithm>
-
 #include "base/containers/cxx20_erase.h"
 #include "base/ranges/algorithm.h"
-#include "base/stl_util.h"
 #include "chrome/browser/extensions/api/identity/identity_constants.h"
 
 namespace extensions {
@@ -169,10 +166,9 @@ void IdentityTokenCache::SetToken(const ExtensionTokenKey& key,
     intermediate_value_cache_.erase(key);
 
     AccessTokensKey access_tokens_key(key);
-    auto emplace_result =
-        base::TryEmplace(access_tokens_cache_, access_tokens_key);
+    auto [it, inserted] = access_tokens_cache_.try_emplace(access_tokens_key);
 
-    AccessTokensValue& cached_tokens = emplace_result.first->second;
+    AccessTokensValue& cached_tokens = it->second;
     // If a cached tokens set already exists, remove any existing token with the
     // same set of scopes.
     cached_tokens.erase(token_data);
@@ -226,9 +222,8 @@ const IdentityTokenCacheValue& IdentityTokenCache::GetToken(
   auto find_tokens_it = access_tokens_cache_.find(access_tokens_key);
   if (find_tokens_it != access_tokens_cache_.end()) {
     const AccessTokensValue& cached_tokens = find_tokens_it->second;
-    auto matched_token_it = std::find_if(
-        cached_tokens.begin(), cached_tokens.end(),
-        [&key](const auto& cached_token) {
+    auto matched_token_it =
+        base::ranges::find_if(cached_tokens, [&key](const auto& cached_token) {
           return key.scopes.size() <= cached_token.granted_scopes().size() &&
                  base::ranges::includes(cached_token.granted_scopes(),
                                         key.scopes);

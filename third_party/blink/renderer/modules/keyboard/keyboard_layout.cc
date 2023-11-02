@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,12 +12,13 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
@@ -81,7 +82,7 @@ ScriptPromise KeyboardLayout::GetKeyboardLayoutMap(
   }
 
   if (!EnsureServiceConnected()) {
-    if (IdentifiabilityStudySettings::Get()->ShouldSample(
+    if (IdentifiabilityStudySettings::Get()->ShouldSampleSurface(
             kGetKeyboardLayoutMapSurface)) {
       RecordGetLayoutMapResult(ExecutionContext::From(script_state),
                                IdentifiableToken());
@@ -95,8 +96,8 @@ ScriptPromise KeyboardLayout::GetKeyboardLayoutMap(
   script_promise_resolver_ =
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   service_->GetKeyboardLayoutMap(
-      WTF::Bind(&KeyboardLayout::GotKeyboardLayoutMap, WrapPersistent(this),
-                WrapPersistent(script_promise_resolver_.Get())));
+      script_promise_resolver_->WrapCallbackInScriptScope(WTF::BindOnce(
+          &KeyboardLayout::GotKeyboardLayoutMap, WrapPersistent(this))));
   return script_promise_resolver_->Promise();
 }
 
@@ -121,8 +122,9 @@ void KeyboardLayout::GotKeyboardLayoutMap(
     mojom::blink::GetKeyboardLayoutMapResultPtr result) {
   DCHECK(script_promise_resolver_);
 
-  bool instrumentation_on = IdentifiabilityStudySettings::Get()->ShouldSample(
-      kGetKeyboardLayoutMapSurface);
+  bool instrumentation_on =
+      IdentifiabilityStudySettings::Get()->ShouldSampleSurface(
+          kGetKeyboardLayoutMapSurface);
 
   switch (result->status) {
     case mojom::blink::GetKeyboardLayoutMapStatus::kSuccess:
@@ -130,19 +132,21 @@ void KeyboardLayout::GotKeyboardLayoutMap(
         RecordGetLayoutMapResult(GetExecutionContext(),
                                  ComputeLayoutValue(result->layout_map));
       }
-      script_promise_resolver_->Resolve(
+      resolver->Resolve(
           MakeGarbageCollected<KeyboardLayoutMap>(result->layout_map));
       break;
     case mojom::blink::GetKeyboardLayoutMapStatus::kFail:
       if (instrumentation_on)
         RecordGetLayoutMapResult(GetExecutionContext(), IdentifiableToken());
 
-      script_promise_resolver_->Reject(MakeGarbageCollected<DOMException>(
+      resolver->Reject(V8ThrowDOMException::CreateOrDie(
+          resolver->GetScriptState()->GetIsolate(),
           DOMExceptionCode::kInvalidStateError,
           kKeyboardMapRequestFailedErrorMsg));
       break;
     case mojom::blink::GetKeyboardLayoutMapStatus::kDenied:
-      script_promise_resolver_->Reject(MakeGarbageCollected<DOMException>(
+      resolver->Reject(V8ThrowDOMException::CreateOrDie(
+          resolver->GetScriptState()->GetIsolate(),
           DOMExceptionCode::kSecurityError, kFeaturePolicyBlocked));
       break;
   }

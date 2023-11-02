@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -17,7 +17,6 @@ static_library("browser") {
   deps = [
     "//base",
     "//content/public/browser",
-    "//pdf:features",
     "//ui/base",
     "//ui/touch_selection",
   ]
@@ -51,7 +50,6 @@ static_library("interceptors") {
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
     "//net",
-    "//pdf:features",
     "//services/network/public/cpp:cpp_base",
     "//services/network/public/mojom",
     "//skia",
@@ -82,7 +80,6 @@ source_set("unit_tests") {
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
     "//net",
-    "//pdf:features",
     "//services/network/public/cpp:cpp_base",
     "//services/network/public/mojom",
     "//testing/gmock",

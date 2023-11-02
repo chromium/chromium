@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -35,12 +35,19 @@ component("views_examples_lib") {
     "combobox_example.h",
     "create_examples.cc",
     "create_examples.h",
+    "designer_example.cc",
+    "designer_example.h",
     "dialog_example.cc",
     "dialog_example.h",
     "example_base.cc",
     "example_base.h",
     "example_combobox_model.cc",
     "example_combobox_model.h",
+    "examples_color_id.h",
+    "examples_color_mixer.cc",
+    "examples_color_mixer.h",
+    "examples_themed_label.cc",
+    "examples_themed_label.h",
     "examples_window.cc",
     "examples_window.h",
     "fade_animation.cc",
@@ -98,6 +105,13 @@ component("views_examples_lib") {
     "widget_example.h",
   ]
 
+  if (is_linux || is_chromeos || is_fuchsia) {
+    sources += [
+      "color_chooser_example.cc",
+      "color_chooser_example.h",
+    ]
+  }
+
   defines = [
     "GFX_VECTOR_ICONS_UNSAFE",
     "VIEWS_EXAMPLES_IMPLEMENTATION",
@@ -153,6 +167,7 @@ source_set("views_examples_proc") {
     "//mojo/core/embedder",
     "//skia",
     "//ui/base",
+    "//ui/color:mixers",
     "//ui/compositor",
     "//ui/compositor:test_support",
     "//ui/gfx",
@@ -160,7 +175,7 @@ source_set("views_examples_proc") {
     "//ui/views:test_support",
   ]
 
-  if (is_win || is_mac || (is_linux || is_chromeos_lacros)) {
+  if (is_win || is_mac || is_linux || is_chromeos_lacros) {
     sources += [
       "examples_skia_gold_pixel_diff.cc",
       "examples_skia_gold_pixel_diff.h",
@@ -201,6 +216,7 @@ executable("views_examples") {
     "//base",
     "//base/test:test_support",
     "//build/win:default_exe_manifest",
+    "//ui/color:mixers",
     "//ui/resources:ui_test_pak",
   ]
 }
@@ -246,6 +262,7 @@ executable("views_examples_with_content") {
     "//content",
     "//content:sandbox_helper_win",
     "//sandbox",
+    "//ui/color:mixers",
     "//ui/views_content_client",
   ]
 
@@ -318,12 +335,15 @@ test("views_examples_unittests") {
   }
 
   if (is_fuchsia) {
-    additional_manifest_fragments =
-        [ "//build/config/fuchsia/test/vulkan_capabilities.test-cmx" ]
+    additional_manifest_fragments = [
+      "//build/config/fuchsia/test/fonts.shard.test-cml",
+      "//third_party/fuchsia-sdk/sdk/pkg/vulkan/client.shard.cml",
+    ]
   }
 
   data_deps = [
     ":views_examples_resources_pak",
+    "//testing/buildbot/filters:views_examples_unittests_filters",
     "//ui/resources:ui_test_pak_data",
   ]
 

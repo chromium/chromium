@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2021 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -53,7 +55,7 @@
             android:layout_below="@id/no_header_space"
             android:layout_toStartOf="@id/edit_button"
             android:text="@string/autofill_update_address_prompt_new_values_section_label"
-            android:textAppearance="@style/TextAppearance.TextMedium.Blue" />
+            android:textAppearance="@style/TextAppearance.TextMedium.Accent1" />
 
         <org.chromium.ui.widget.TextViewWithLeading
             android:id="@+id/details_new"

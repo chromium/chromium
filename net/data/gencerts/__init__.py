@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright (c) 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -17,7 +17,7 @@ import shutil
 import subprocess
 import sys
 
-import openssl_conf
+from . import openssl_conf
 
 # Enum for the "type" of certificate that is to be created. This is used to
 # select sane defaults for the .cnf file and command line flags, but they can
@@ -64,8 +64,9 @@ g_tmp_dir = None
 g_invoking_script_path = None
 
 # The default validity range of generated certificates. Can be modified with
-# set_default_validity_range(). Chosen to end on a Wednesday, since these
-# will have to be manually re-generated.
+# set_default_validity_range(). This range is intentionally already expired to
+# avoid tests being added which depend on the certs being valid at the current
+# time rather than specifying the time as an input of the test.
 g_default_start_date = OCTOBER_5_2021_UTC
 g_default_end_date = OCTOBER_5_2022_UTC
 
@@ -318,20 +319,20 @@ class Certificate(object):
     # "verify_certificate_chain_unittest/my_test/generate_chains.py"
     script_path = os.path.realpath(g_invoking_script_path)
     script_path = "/".join(script_path.split(os.sep)[-3:])
-    m.update(script_path)
+    m.update(script_path.encode('utf-8'))
 
     # Mix in the path_id, which corresponds to a unique path for the
     # certificate under out/ (and accounts for non-unique certificate names).
-    m.update(self.path_id)
+    m.update(self.path_id.encode('utf-8'))
 
-    serial_bytes = m.digest()
+    serial_bytes = bytearray(m.digest())
 
     # SHA1 digest is 20 bytes long, which is appropriate for a serial number.
     # However, need to also make sure the most significant bit is 0 so it is
     # not a "negative" number.
-    serial_bytes = chr(ord(serial_bytes[0]) & 0x7F) + serial_bytes[1:]
+    serial_bytes[0] = serial_bytes[0] & 0x7F
 
-    return serial_bytes.encode("hex")
+    return serial_bytes.hex()
 
 
   def get_csr_path(self):
@@ -499,8 +500,10 @@ class Certificate(object):
 
 
 def text_data_to_pem(block_header, text_data):
-  return '%s\n-----BEGIN %s-----\n%s\n-----END %s-----\n' % (text_data,
-          block_header, base64.b64encode(text_data), block_header)
+  # b64encode takes in bytes and returns bytes.
+  pem_data = base64.b64encode(text_data.encode('utf8')).decode('utf8')
+  return '%s\n-----BEGIN %s-----\n%s\n-----END %s-----\n' % (
+      text_data, block_header, pem_data, block_header)
 
 
 def write_chain(description, chain, out_pem):

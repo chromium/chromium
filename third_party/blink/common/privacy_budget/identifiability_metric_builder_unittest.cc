@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,7 @@
 #include "third_party/blink/common/privacy_budget/test_ukm_recorder.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 #include "third_party/blink/public/common/privacy_budget/scoped_identifiability_test_sample_collector.h"
-#include "third_party/blink/public/mojom/web_feature/web_feature.mojom.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 
 namespace blink {
 
@@ -104,8 +104,8 @@ TEST(IdentifiabilityMetricBuilderTest, SetWebfeature) {
 namespace {
 
 // clang flags this function as unused although it's used in the MATCHER_P()
-// definition below. Hence the ALLOW_UNUSED_TYPE.
-ALLOW_UNUSED_TYPE bool HasSingleEntryWithValue(
+// definition below. Hence the [[maybe_unused]].
+[[maybe_unused]] bool HasSingleEntryWithValue(
     const test::ScopedIdentifiabilityTestSampleCollector& collector,
     int64_t value) {
   if (collector.entries().size() != 1u) {

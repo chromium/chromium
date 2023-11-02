@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,7 @@
 // an empty FileTypePolicies to platforms without Safe Browsing to remove the
 // BUILDFLAGs and nogncheck here.
 #if (BUILDFLAG(FULL_SAFE_BROWSING) || BUILDFLAG(SAFE_BROWSING_DB_REMOTE)) && \
-    !defined(OS_FUCHSIA)
+    !BUILDFLAG(IS_FUCHSIA)
 #include "components/safe_browsing/content/common/file_type_policies.h"  // nogncheck
 #endif
 
@@ -115,6 +115,9 @@ std::string CreateHistogramNameWithSuffix(const std::string& name,
       break;
     case DownloadSource::RETRY:
       suffix = "Retry";
+      break;
+    case DownloadSource::RETRY_FROM_BUBBLE:
+      suffix = "RetryFromBubble";
       break;
   }
 
@@ -237,6 +240,13 @@ void RecordDownloadResumption(DownloadInterruptReason reason,
   base::UmaHistogramBoolean("Download.Resume.UserResume", user_resume);
 }
 
+void RecordDownloadRetry(DownloadInterruptReason reason) {
+  std::vector<base::HistogramBase::Sample> samples =
+      base::CustomHistogram::ArrayToCustomEnumRanges(kAllInterruptReasonCodes);
+  UMA_HISTOGRAM_CUSTOM_ENUMERATION("Download.Retry.InterruptReason", reason,
+                                   samples);
+}
+
 void RecordAutoResumeCountLimitReached(DownloadInterruptReason reason) {
   base::UmaHistogramBoolean("Download.Resume.AutoResumeLimitReached", true);
 
@@ -251,7 +261,7 @@ void RecordDangerousDownloadAccept(DownloadDangerType danger_type,
   UMA_HISTOGRAM_ENUMERATION("Download.UserValidatedDangerousDownload",
                             danger_type, DOWNLOAD_DANGER_TYPE_MAX);
 #if (BUILDFLAG(FULL_SAFE_BROWSING) || BUILDFLAG(SAFE_BROWSING_DB_REMOTE)) && \
-    !defined(OS_FUCHSIA)
+    !BUILDFLAG(IS_FUCHSIA)
   // This can only be recorded for certain platforms, since the enum used for
   // file types is provided by safe_browsing::FileTypePolicies.
   if (danger_type == DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE) {
@@ -684,17 +694,17 @@ void RecordDownloadLaterEvent(DownloadLaterEvent event) {
   base::UmaHistogramEnumeration("Download.Later.Events", event);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void RecordBackgroundTargetDeterminationResult(
     BackgroudTargetDeterminationResultTypes type) {
   base::UmaHistogramEnumeration(
       "MobileDownload.Background.TargetDeterminationResult", type);
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void RecordWinFileMoveError(int os_error) {
   base::UmaHistogramSparse("Download.WinFileMoveError", os_error);
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 }  // namespace download

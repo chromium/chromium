@@ -1,10 +1,9 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.compositor;
 
-import android.content.res.Resources;
 import android.graphics.Rect;
 import android.view.SurfaceView;
 import android.view.View;
@@ -61,14 +60,6 @@ public class CompositorVisibilityTest {
 
         @Override
         public void pushDebugRect(Rect rect, int color) {}
-
-        @Override
-        public void loadPersitentTextureDataIfNeeded() {}
-
-        @Override
-        public int getBrowserControlsBackgroundColor(Resources res) {
-            return 0;
-        }
 
         @Override
         public ResourceManager getResourceManager() {

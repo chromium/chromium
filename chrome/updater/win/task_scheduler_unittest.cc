@@ -1,9 +1,12 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/updater/win/task_scheduler.h"
 
+#include <lmsname.h>
+#include <mstask.h>
+#include <security.h>
 #include <shlobj.h>
 #include <taskschd.h>
 
@@ -11,24 +14,33 @@
 #include <string>
 #include <vector>
 
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/logging.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_variant.h"
 #include "base/win/windows_version.h"
+#include "chrome/updater/constants.h"
+#include "chrome/updater/test/integration_tests_impl.h"
 #include "chrome/updater/test_scope.h"
+#include "chrome/updater/unittest_util.h"
 #include "chrome/updater/updater_branding.h"
+#include "chrome/updater/util.h"
 #include "chrome/updater/win/test/test_executables.h"
 #include "chrome/updater/win/test/test_strings.h"
 #include "chrome/updater/win/win_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 namespace {
@@ -37,6 +49,9 @@ namespace {
 // safely delete them if they get stuck for whatever reason.
 const wchar_t kTaskName1[] = L"Chrome Updater Test task 1 (delete me)";
 const wchar_t kTaskName2[] = L"Chrome Updater Test task 2 (delete me)";
+
+const wchar_t kPrefixTaskName1[] = L"Chrome Updater Test task 1";
+const wchar_t kPrefixTaskName2[] = L"Chrome Updater Test task 2";
 
 // Optional descriptions for the tasks above.
 const wchar_t kTaskDescription1[] =
@@ -50,10 +65,13 @@ const char kUnitTestSwitch[] = "a_switch";
 class TaskSchedulerTests : public ::testing::Test {
  public:
   void SetUp() override {
+    DeleteLogFile();
+
     task_scheduler_ = TaskScheduler::CreateInstance();
     EXPECT_TRUE(task_scheduler_->DeleteTask(kTaskName1));
     EXPECT_TRUE(task_scheduler_->DeleteTask(kTaskName2));
-    ASSERT_FALSE(IsProcessRunning(kTestProcessExecutableName));
+    ASSERT_FALSE(test::IsProcessRunning(kTestProcessExecutableName));
+    EXPECT_TRUE(IsServiceRunning(SERVICE_SCHEDULE));
   }
 
   void TearDown() override {
@@ -61,7 +79,11 @@ class TaskSchedulerTests : public ::testing::Test {
     EXPECT_TRUE(task_scheduler_->DeleteTask(kTaskName2));
 
     // Make sure every processes launched with scheduled task are completed.
-    ASSERT_TRUE(WaitForProcessesStopped(kTestProcessExecutableName));
+    test::WaitForProcessesToExit(kTestProcessExecutableName,
+                                 TestTimeouts::action_max_timeout());
+    EXPECT_FALSE(test::IsProcessRunning(kTestProcessExecutableName));
+
+    DeleteLogFile();
   }
 
   // Converts a base::Time that is in UTC and returns the corresponding local
@@ -84,6 +106,16 @@ class TaskSchedulerTests : public ::testing::Test {
     return base::Time::FromFileTime(file_time_local);
   }
 
+  void DeleteLogFile() {
+    const absl::optional<base::FilePath> log_dir =
+        GetBaseDataDirectory(GetTestScope());
+    if (log_dir) {
+      base::DeleteFile(log_dir->Append(FILE_PATH_LITERAL("updater.log")));
+    }
+  }
+
+  static void SetUpTestCase() { InitLogging(GetTestScope()); }
+
  protected:
   std::unique_ptr<TaskScheduler> task_scheduler_;
 };
@@ -94,10 +126,7 @@ TEST_F(TaskSchedulerTests, DeleteAndIsRegistered) {
   EXPECT_FALSE(task_scheduler_->IsTaskRegistered(kTaskName1));
 
   // Construct the full-path of the test executable.
-  base::FilePath executable_path;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &executable_path));
-  base::CommandLine command_line(
-      executable_path.Append(kTestProcessExecutableName));
+  base::CommandLine command_line = GetTestProcessCommandLine(GetTestScope());
 
   // Validate that the task is properly seen as registered when it is.
   EXPECT_TRUE(task_scheduler_->RegisterTask(
@@ -116,19 +145,18 @@ TEST_F(TaskSchedulerTests, DeleteAndIsRegistered) {
   EXPECT_FALSE(task_scheduler_->IsTaskRegistered(kTaskName2));
 }
 
-TEST_F(TaskSchedulerTests, RunAProgramNow) {
-  base::FilePath executable_path;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &executable_path));
-  base::CommandLine command_line(
-      executable_path.Append(kTestProcessExecutableName));
+// TODO(crbug.com/1295399) : this test fails on Builder
+// win10-updater-tester-dbg-uac, and we do not know why.
+TEST_F(TaskSchedulerTests, DISABLED_RunAProgramNow) {
+  base::CommandLine command_line = GetTestProcessCommandLine(GetTestScope());
 
   // Create a unique name for a shared event to be waited for in this process
   // and signaled in the test process to confirm it was scheduled and ran.
   const std::wstring event_name =
       base::StrCat({kTestProcessExecutableName, L"-",
                     base::NumberToWString(::GetCurrentProcessId())});
-  NamedObjectAttributes attr;
-  GetNamedObjectAttributes(event_name.c_str(), GetTestScope(), &attr);
+  NamedObjectAttributes attr =
+      GetNamedObjectAttributes(event_name.c_str(), GetTestScope());
 
   base::WaitableEvent event(base::win::ScopedHandle(
       ::CreateEvent(&attr.sa, FALSE, FALSE, attr.name.c_str())));
@@ -137,18 +165,23 @@ TEST_F(TaskSchedulerTests, RunAProgramNow) {
   command_line.AppendSwitchNative(kTestEventToSignal, attr.name);
   EXPECT_TRUE(task_scheduler_->RegisterTask(
       GetTestScope(), kTaskName1, kTaskDescription1, command_line,
-      TaskScheduler::TRIGGER_TYPE_NOW, false));
+      TaskScheduler::TRIGGER_TYPE_HOURLY, false));
+  EXPECT_TRUE(task_scheduler_->StartTask(kTaskName1));
+
+  VLOG(0) << [this]() {
+    TaskScheduler::TaskInfo info;
+    EXPECT_TRUE(task_scheduler_->GetTaskInfo(kTaskName1, &info));
+    return info;
+  }();
+
   EXPECT_TRUE(event.TimedWait(TestTimeouts::action_max_timeout()));
-  base::Time next_run_time;
-  EXPECT_FALSE(task_scheduler_->GetNextTaskRunTime(kTaskName1, &next_run_time));
   EXPECT_TRUE(task_scheduler_->DeleteTask(kTaskName1));
+
+  test::PrintLog(GetTestScope());
 }
 
 TEST_F(TaskSchedulerTests, Hourly) {
-  base::FilePath executable_path;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &executable_path));
-  base::CommandLine command_line(
-      executable_path.Append(kTestProcessExecutableName));
+  base::CommandLine command_line = GetTestProcessCommandLine(GetTestScope());
 
   base::Time now(base::Time::NowFromSystemTime());
   EXPECT_TRUE(task_scheduler_->RegisterTask(
@@ -170,10 +203,7 @@ TEST_F(TaskSchedulerTests, Hourly) {
 }
 
 TEST_F(TaskSchedulerTests, EveryFiveHours) {
-  base::FilePath executable_path;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &executable_path));
-  base::CommandLine command_line(
-      executable_path.Append(kTestProcessExecutableName));
+  base::CommandLine command_line = GetTestProcessCommandLine(GetTestScope());
 
   base::Time now(base::Time::NowFromSystemTime());
   EXPECT_TRUE(task_scheduler_->RegisterTask(
@@ -195,10 +225,7 @@ TEST_F(TaskSchedulerTests, EveryFiveHours) {
 }
 
 TEST_F(TaskSchedulerTests, SetTaskEnabled) {
-  base::FilePath executable_path;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &executable_path));
-  base::CommandLine command_line(
-      executable_path.Append(kTestProcessExecutableName));
+  base::CommandLine command_line = GetTestProcessCommandLine(GetTestScope());
 
   EXPECT_TRUE(task_scheduler_->RegisterTask(
       GetTestScope(), kTaskName1, kTaskDescription1, command_line,
@@ -217,10 +244,7 @@ TEST_F(TaskSchedulerTests, SetTaskEnabled) {
 }
 
 TEST_F(TaskSchedulerTests, GetTaskNameList) {
-  base::FilePath executable_path;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &executable_path));
-  base::CommandLine command_line(
-      executable_path.Append(kTestProcessExecutableName));
+  base::CommandLine command_line = GetTestProcessCommandLine(GetTestScope());
 
   EXPECT_TRUE(task_scheduler_->RegisterTask(
       GetTestScope(), kTaskName1, kTaskDescription1, command_line,
@@ -240,11 +264,29 @@ TEST_F(TaskSchedulerTests, GetTaskNameList) {
   EXPECT_TRUE(task_scheduler_->DeleteTask(kTaskName2));
 }
 
+TEST_F(TaskSchedulerTests, FindFirstTaskName) {
+  base::CommandLine command_line = GetTestProcessCommandLine(GetTestScope());
+
+  EXPECT_TRUE(task_scheduler_->RegisterTask(
+      GetTestScope(), kTaskName1, kTaskDescription1, command_line,
+      TaskScheduler::TRIGGER_TYPE_HOURLY, false));
+  EXPECT_TRUE(task_scheduler_->IsTaskRegistered(kTaskName1));
+  EXPECT_TRUE(task_scheduler_->RegisterTask(
+      GetTestScope(), kTaskName2, kTaskDescription2, command_line,
+      TaskScheduler::TRIGGER_TYPE_HOURLY, false));
+  EXPECT_TRUE(task_scheduler_->IsTaskRegistered(kTaskName2));
+
+  EXPECT_STREQ(kTaskName1,
+               task_scheduler_->FindFirstTaskName(kPrefixTaskName1).c_str());
+  EXPECT_STREQ(kTaskName2,
+               task_scheduler_->FindFirstTaskName(kPrefixTaskName2).c_str());
+
+  EXPECT_TRUE(task_scheduler_->DeleteTask(kTaskName1));
+  EXPECT_TRUE(task_scheduler_->DeleteTask(kTaskName2));
+}
+
 TEST_F(TaskSchedulerTests, GetTasksIncludesHidden) {
-  base::FilePath executable_path;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &executable_path));
-  base::CommandLine command_line(
-      executable_path.Append(kTestProcessExecutableName));
+  base::CommandLine command_line = GetTestProcessCommandLine(GetTestScope());
 
   EXPECT_TRUE(task_scheduler_->RegisterTask(
       GetTestScope(), kTaskName1, kTaskDescription1, command_line,
@@ -260,10 +302,7 @@ TEST_F(TaskSchedulerTests, GetTasksIncludesHidden) {
 }
 
 TEST_F(TaskSchedulerTests, GetTaskInfoExecActions) {
-  base::FilePath executable_path;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &executable_path));
-  base::CommandLine command_line1(
-      executable_path.Append(kTestProcessExecutableName));
+  base::CommandLine command_line1 = GetTestProcessCommandLine(GetTestScope());
 
   EXPECT_TRUE(task_scheduler_->RegisterTask(
       GetTestScope(), kTaskName1, kTaskDescription1, command_line1,
@@ -278,8 +317,7 @@ TEST_F(TaskSchedulerTests, GetTaskInfoExecActions) {
   EXPECT_EQ(command_line1.GetProgram(), info.exec_actions[0].application_path);
   EXPECT_EQ(command_line1.GetArgumentsString(), info.exec_actions[0].arguments);
 
-  base::CommandLine command_line2(
-      executable_path.Append(kTestProcessExecutableName));
+  base::CommandLine command_line2 = GetTestProcessCommandLine(GetTestScope());
   command_line2.AppendSwitch(kUnitTestSwitch);
   EXPECT_TRUE(task_scheduler_->RegisterTask(
       GetTestScope(), kTaskName2, kTaskDescription2, command_line2,
@@ -298,10 +336,7 @@ TEST_F(TaskSchedulerTests, GetTaskInfoExecActions) {
 }
 
 TEST_F(TaskSchedulerTests, GetTaskInfoNameAndDescription) {
-  base::FilePath executable_path;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &executable_path));
-  base::CommandLine command_line1(
-      executable_path.Append(kTestProcessExecutableName));
+  base::CommandLine command_line1 = GetTestProcessCommandLine(GetTestScope());
 
   EXPECT_TRUE(task_scheduler_->RegisterTask(
       GetTestScope(), kTaskName1, kTaskDescription1, command_line1,
@@ -317,8 +352,13 @@ TEST_F(TaskSchedulerTests, GetTaskInfoNameAndDescription) {
   EXPECT_EQ(kTaskDescription1, info.description);
   EXPECT_EQ(kTaskName1, info.name);
 
-  EXPECT_TRUE(task_scheduler_->HasTaskFolder(
-      L"\\" COMPANY_SHORTNAME_STRING L"\\" PRODUCT_FULLNAME_STRING));
+  const std::wstring expected_task_folder = base::StrCat(
+      {L"\\" COMPANY_SHORTNAME_STRING,
+       GetTestScope() == UpdaterScope::kSystem ? L"System " : L"User ",
+       L"\\" PRODUCT_FULLNAME_STRING});
+  EXPECT_EQ(task_scheduler_->GetTaskSubfolderName(GetTestScope()),
+            expected_task_folder);
+  EXPECT_TRUE(task_scheduler_->HasTaskFolder(expected_task_folder.c_str()));
 
   EXPECT_TRUE(task_scheduler_->DeleteTask(kTaskName1));
 }
@@ -326,10 +366,7 @@ TEST_F(TaskSchedulerTests, GetTaskInfoNameAndDescription) {
 TEST_F(TaskSchedulerTests, GetTaskInfoLogonType) {
   const bool is_system = GetTestScope() == UpdaterScope::kSystem;
 
-  base::FilePath executable_path;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &executable_path));
-  base::CommandLine command_line1(
-      executable_path.Append(kTestProcessExecutableName));
+  base::CommandLine command_line1 = GetTestProcessCommandLine(GetTestScope());
 
   EXPECT_TRUE(task_scheduler_->RegisterTask(
       GetTestScope(), kTaskName1, kTaskDescription1, command_line1,
@@ -343,6 +380,43 @@ TEST_F(TaskSchedulerTests, GetTaskInfoLogonType) {
   EXPECT_EQ(!is_system, !!(info.logon_type & TaskScheduler::LOGON_INTERACTIVE));
   EXPECT_EQ(is_system, !!(info.logon_type & TaskScheduler::LOGON_SERVICE));
   EXPECT_FALSE(info.logon_type & TaskScheduler::LOGON_S4U);
+
+  EXPECT_TRUE(task_scheduler_->DeleteTask(kTaskName1));
+}
+
+TEST_F(TaskSchedulerTests, GetTaskInfoUserId) {
+  const bool is_system = GetTestScope() == UpdaterScope::kSystem;
+
+  base::CommandLine command_line1 = GetTestProcessCommandLine(GetTestScope());
+
+  EXPECT_TRUE(task_scheduler_->RegisterTask(
+      GetTestScope(), kTaskName1, kTaskDescription1, command_line1,
+      TaskScheduler::TRIGGER_TYPE_HOURLY, false));
+  EXPECT_TRUE(task_scheduler_->IsTaskRegistered(kTaskName1));
+
+  TaskScheduler::TaskInfo info;
+  EXPECT_FALSE(task_scheduler_->GetTaskInfo(kTaskName2, &info));
+  EXPECT_STREQ(L"", info.user_id.c_str());
+
+  EXPECT_TRUE(task_scheduler_->GetTaskInfo(kTaskName1, &info));
+
+  const std::wstring expected_user_id = [&is_system]() -> std::wstring {
+    if (is_system)
+      return L"SYSTEM";
+
+    base::win::ScopedBstr user_name_bstr;
+    ULONG user_name_size = 256;
+    EXPECT_TRUE(::GetUserNameExW(
+        NameSamCompatible,
+        user_name_bstr.AllocateBytes(user_name_size * sizeof(OLECHAR)),
+        &user_name_size));
+    return user_name_bstr.Get();
+  }();
+
+  EXPECT_TRUE(base::EndsWith(info.user_id, expected_user_id,
+                             base::CompareCase::INSENSITIVE_ASCII) ||
+              base::EndsWith(expected_user_id, info.user_id,
+                             base::CompareCase::INSENSITIVE_ASCII));
 
   EXPECT_TRUE(task_scheduler_->DeleteTask(kTaskName1));
 }

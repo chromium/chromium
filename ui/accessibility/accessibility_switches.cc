@@ -1,4 +1,4 @@
-// Copyright (c) 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,11 +12,6 @@ namespace switches {
 // Shows additional automatic click features that haven't launched yet.
 const char kEnableExperimentalAccessibilityAutoclick[] =
     "enable-experimental-accessibility-autoclick";
-
-// Enables the experimental dictation extension on Chrome OS that hasn't
-// launched yet.
-const char kEnableExperimentalAccessibilityDictationExtension[] =
-    "enable-experimental-accessibility-dictation-extension";
 
 // Enables support for visually debugging the accessibility labels
 // feature, which provides images descriptions for screen reader users.
@@ -41,16 +36,6 @@ const char kEnableExperimentalAccessibilitySwitchAccessText[] =
 // zooming in.
 const char kEnableMagnifierDebugDrawRect[] = "enable-magnifier-debug-draw-rect";
 
-// Enables multistep automation for Switch Access, which is a 2021 accessibility
-// sprint project and hasn't launched yet.
-const char kEnableExperimentalAccessibilitySwitchAccessMultistepAutomation[] =
-    "enable-experimental-accessibility-switch-access-multistep-automation";
-
-bool IsExperimentalAccessibilityDictationExtensionEnabled() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      ::switches::kEnableExperimentalAccessibilityDictationExtension);
-}
-
 bool IsExperimentalAccessibilityLanguageDetectionEnabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       ::switches::kEnableExperimentalAccessibilityLanguageDetection);
@@ -71,20 +56,14 @@ bool IsMagnifierDebugDrawRectEnabled() {
       ::switches::kEnableMagnifierDebugDrawRect);
 }
 
-bool IsSwitchAccessMultistepAutomationEnabled() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      ::switches::
-          kEnableExperimentalAccessibilitySwitchAccessMultistepAutomation);
-}
-
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Enables UI Automation platform API in addition to the IAccessible API.
 const char kEnableExperimentalUIAutomation[] =
     "enable-experimental-ui-automation";
 #endif
 
 bool IsExperimentalAccessibilityPlatformUIAEnabled() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       ::switches::kEnableExperimentalUIAutomation);
 #else
@@ -95,5 +74,8 @@ bool IsExperimentalAccessibilityPlatformUIAEnabled() {
 // Optionally disable AXMenuList, which makes the internal pop-up menu
 // UI for a select element directly accessible.
 const char kDisableAXMenuList[] = "disable-ax-menu-list";
+
+const char kGenerateAccessibilityTestExpectations[] =
+    "generate-accessibility-test-expectations";
 
 }  // namespace switches

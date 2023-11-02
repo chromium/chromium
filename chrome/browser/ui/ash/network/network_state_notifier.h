@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,21 +10,19 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chromeos/network/network_connection_observer.h"
-#include "chromeos/network/network_state_handler_observer.h"
+#include "chromeos/ash/components/network/network_connection_observer.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
-class SystemTrayClient;
-}  // namespace ash
-
-namespace chromeos {
 
 class NetworkState;
+class SystemTrayClient;
 
 // This class provides user notifications in the following cases:
 // 1. ShowNetworkConnectError() gets called after any user initiated connect
@@ -55,7 +53,7 @@ class NetworkStateNotifier : public NetworkConnectionObserver,
   // Show a mobile activation error notification.
   void ShowMobileActivationErrorForGuid(const std::string& guid);
 
-  void set_system_tray_client(ash::SystemTrayClient* system_tray_client) {
+  void set_system_tray_client(SystemTrayClient* system_tray_client) {
     system_tray_client_ = system_tray_client;
   }
 
@@ -84,12 +82,12 @@ class NetworkStateNotifier : public NetworkConnectionObserver,
   void ActiveNetworksChanged(
       const std::vector<const NetworkState*>& active_networks) override;
   void NetworkPropertiesUpdated(const NetworkState* network) override;
-  void NetworkConnectionStateChanged(
-      const chromeos::NetworkState* network) override;
+  void NetworkConnectionStateChanged(const NetworkState* network) override;
   void NetworkIdentifierTransitioned(const std::string& old_service_path,
                                      const std::string& new_service_path,
                                      const std::string& old_guid,
                                      const std::string& new_guid) override;
+  void OnShuttingDown() override;
 
   void OnConnectErrorGetProperties(
       const std::string& error_name,
@@ -121,7 +119,7 @@ class NetworkStateNotifier : public NetworkConnectionObserver,
   // Shows the carrier account detail page for |network_id|.
   void ShowCarrierAccountDetail(const std::string& network_id);
 
-  ash::SystemTrayClient* system_tray_client_ = nullptr;
+  SystemTrayClient* system_tray_client_ = nullptr;
 
   // The details of the connected VPN network if any, otherwise null.
   // Used for displaying the VPN disconnected notification.
@@ -140,9 +138,12 @@ class NetworkStateNotifier : public NetworkConnectionObserver,
   // Tracks GUIDs of activating cellular networks for activation notification.
   std::set<std::string> cellular_activating_guids_;
 
+  base::ScopedObservation<NetworkStateHandler, NetworkStateHandlerObserver>
+      network_state_handler_observer_{this};
+
   base::WeakPtrFactory<NetworkStateNotifier> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_ASH_NETWORK_NETWORK_STATE_NOTIFIER_H_

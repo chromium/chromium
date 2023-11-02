@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/scoped_observation.h"
 #include "extensions/browser/api/test/test_api_observer.h"
@@ -27,7 +27,7 @@ class TestSendMessageFunction;
 // This class helps us wait for incoming messages sent from javascript via
 // chrome.test.sendMessage(). A sample usage would be:
 //
-//   ExtensionTestMessageListener listener("foo", false);  // won't reply
+//   ExtensionTestMessageListener listener("foo");
 //   ... do some work
 //   ASSERT_TRUE(listener.WaitUntilSatisfied());
 //
@@ -35,8 +35,8 @@ class TestSendMessageFunction;
 // useful for coordinating multiple pages/processes and having them wait on
 // each other. Example:
 //
-//   ExtensionTestMessageListener listener1("foo1", true);  // will reply
-//   ExtensionTestMessageListener listener2("foo2", true);  // will reply
+//   ExtensionTestMessageListener listener1("foo1", ReplyBehavior::kWillReply);
+//   ExtensionTestMessageListener listener2("foo2", ReplyBehavior::kWillReply);
 //   ASSERT_TRUE(listener1.WaitUntilSatisfied());
 //   ASSERT_TRUE(listener2.WaitUntilSatisfied());
 //   ... do some work
@@ -78,7 +78,7 @@ class TestSendMessageFunction;
 // A callback can be set to react to a message from an extension, instead of
 // manually waiting.
 //
-//   ExtensionTestMessageListener listener("do_something", false);
+//   ExtensionTestMessageListener listener("do_something");
 //   listener.SetOnSatisfied(base::BindOnce(&DoSomething));
 //   ... run test
 //   // SetOnRepeatedlySatisfied could be used if the message is expected
@@ -86,7 +86,7 @@ class TestSendMessageFunction;
 //
 // Finally, you can reset the listener to reuse it.
 //
-//   ExtensionTestMessageListener listener(true);  // will reply
+//   ExtensionTestMessageListener listener(ReplyBehavior::kWillReply);
 //   ASSERT_TRUE(listener.WaitUntilSatisfied());
 //   while (listener.message() != "end") {
 //     Handle(listener.message());
@@ -100,13 +100,31 @@ class TestSendMessageFunction;
 // either make it a local variable inside your test body, or if it's a member
 // variable of a ExtensionBrowserTest subclass, override the
 // BrowserTestBase::TearDownOnMainThread() method and clean it up there.
+
+// The behavior specifying whether the listener will reply to the
+// incoming message. This is defined outside the class simply to save authors
+// from typing out ReplyBehavior::kWillReply.
+enum class ReplyBehavior {
+  // The listener will reply. The extension API callback will not be
+  // triggered until `ExtensionTestMessageListener::Reply()` is called.
+  kWillReply,
+  // The listener won't reply with a custom message. The extension API
+  // callback is triggered automatically.
+  kWontReply,
+};
+
 class ExtensionTestMessageListener : public extensions::TestApiObserver {
  public:
-  // We immediately start listening for |expected_message|.
-  ExtensionTestMessageListener(const std::string& expected_message,
-                               bool will_reply);
-  // Construct a message listener which will listen for any message.
-  explicit ExtensionTestMessageListener(bool will_reply);
+  // Listen for the `expected_message` with the specified `reply_behavior`.
+  // TODO(devlin): Possibly update this to just take a StringPiece, once the
+  // enum conversions highlighted below are done?
+  explicit ExtensionTestMessageListener(
+      const std::string& expected_message,
+      ReplyBehavior reply_behavior = ReplyBehavior::kWontReply);
+  // Construct a message listener which will listen for any message with
+  // the specified `reply_behavior`.
+  explicit ExtensionTestMessageListener(
+      ReplyBehavior reply_behavior = ReplyBehavior::kWontReply);
 
   ~ExtensionTestMessageListener() override;
 
@@ -115,7 +133,7 @@ class ExtensionTestMessageListener : public extensions::TestApiObserver {
   // extension_id_for_message() accessors can be used.
   // Returns false if the wait is interrupted and we still haven't gotten the
   // message, or if the message was equal to |failure_message_|.
-  bool WaitUntilSatisfied() WARN_UNUSED_RESULT;
+  [[nodiscard]] bool WaitUntilSatisfied();
 
   // Send the given message as a reply. It is only valid to call this after
   // WaitUntilSatisfied has returned true, and if will_reply is true.
@@ -185,15 +203,14 @@ class ExtensionTestMessageListener : public extensions::TestApiObserver {
   base::OnceCallback<OnSatisfiedSignature> on_satisfied_;
   base::RepeatingCallback<OnSatisfiedSignature> on_repeatedly_satisfied_;
 
-  // If true, we expect the calling code to manually send a reply. Otherwise,
-  // we send an automatic empty reply to the extension.
-  const bool will_reply_;
+  // Whether the listener will send an explicit reply via `Reply()`.
+  const ReplyBehavior reply_behavior_;
 
   // The extension id that we listen for, or empty.
   std::string extension_id_;
 
   // If non-null, we listen to messages only from this BrowserContext.
-  const content::BrowserContext* browser_context_ = nullptr;
+  raw_ptr<const content::BrowserContext> browser_context_ = nullptr;
 
   // The message that signals failure.
   absl::optional<std::string> failure_message_;

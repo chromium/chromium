@@ -1,5 +1,7 @@
 monorail {
   component: "Blink>Vibration"
 }
-team_email: "platform-capabilities@chromium.org"
-
+team_email: "device-dev@chromium.org"
+wpt {
+  notify: YES
+}

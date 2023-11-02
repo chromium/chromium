@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -69,7 +70,7 @@ class OnStartupHandlerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
   std::unique_ptr<TestOnStartupHandler> handler_;
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
 #endif
@@ -79,7 +80,7 @@ class OnStartupHandlerTest : public testing::Test {
 TEST_F(OnStartupHandlerTest, HandleGetNtpExtension) {
   base::Value list_args(base::Value::Type::LIST);
   list_args.Append(kCallbackId);
-  handler()->HandleGetNtpExtension(&base::Value::AsListValue(list_args));
+  handler()->HandleGetNtpExtension(list_args.GetList());
 
   EXPECT_EQ(1U, web_ui()->call_data().size());
 
@@ -97,7 +98,7 @@ TEST_F(OnStartupHandlerTest, HandleValidateStartupPage_Valid) {
   base::Value list_args(base::Value::Type::LIST);
   list_args.Append(kCallbackId);
   list_args.Append("http://example.com");
-  handler()->HandleValidateStartupPage(&base::Value::AsListValue(list_args));
+  handler()->HandleValidateStartupPage(list_args.GetList());
 
   EXPECT_EQ(1U, web_ui()->call_data().size());
 
@@ -118,7 +119,7 @@ TEST_F(OnStartupHandlerTest, HandleValidateStartupPage_Invalid) {
   base::Value list_args(base::Value::Type::LIST);
   list_args.Append(kCallbackId);
   list_args.Append("@");
-  handler()->HandleValidateStartupPage(&base::Value::AsListValue(list_args));
+  handler()->HandleValidateStartupPage(list_args.GetList());
 
   EXPECT_EQ(1U, web_ui()->call_data().size());
 

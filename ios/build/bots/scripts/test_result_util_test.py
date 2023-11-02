@@ -1,5 +1,5 @@
-#!/usr/bin/env vpython
-# Copyright 2021 The Chromium Authors. All rights reserved.
+#!/usr/bin/env vpython3
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Unittests for test_result_util.py."""
@@ -13,9 +13,10 @@ import test_result_util
 from test_result_util import TestResult, TestStatus, ResultCollection
 import test_runner_test
 
-PASSED_RESULT = TestResult('passed/test', TestStatus.PASS, test_log='Logs')
+PASSED_RESULT = TestResult(
+    'passed/test', TestStatus.PASS, duration=1233, test_log='Logs')
 FAILED_RESULT = TestResult(
-    'failed/test', TestStatus.FAIL, test_log='line1\nline2')
+    'failed/test', TestStatus.FAIL, duration=1233, test_log='line1\nline2')
 FAILED_RESULT_DUPLICATE = TestResult(
     'failed/test', TestStatus.FAIL, test_log='line3\nline4')
 DISABLED_RESULT = TestResult(
@@ -39,13 +40,11 @@ class UtilTest(test_runner_test.TestCase):
     """Tests _validate_kwargs."""
     with self.assertRaises(AssertionError) as context:
       TestResult('name', TestStatus.PASS, unknown='foo')
-    expected_message = (
-        'Invalid keyword argument(s) in set([\'unknown\']) passed in!')
+    expected_message = ("Invalid keyword argument(s) in")
     self.assertTrue(expected_message in str(context.exception))
     with self.assertRaises(AssertionError) as context:
       ResultCollection(test_log='foo')
-    expected_message = (
-        'Invalid keyword argument(s) in set([\'test_log\']) passed in!')
+    expected_message = ("Invalid keyword argument(s) in")
     self.assertTrue(expected_message in str(context.exception))
 
   def test_validate_test_status(self):
@@ -103,6 +102,7 @@ class TestResultTest(test_runner_test.TestCase):
         'disabled/test',
         'SKIP',
         True,
+        duration=None,
         test_log='',
         tags=[('test_name', 'disabled/test'), ('disabled_test', 'true')],
         file_artifacts={'name': '/path/to/name'})
@@ -111,6 +111,18 @@ class TestResultTest(test_runner_test.TestCase):
     self.assertEqual(client.post.call_count, 1)
     disabled_test_result.report_to_result_sink(client)
     self.assertEqual(client.post.call_count, 1)
+
+    faileded_result = FAILED_RESULT
+    client = mock.MagicMock()
+    faileded_result.report_to_result_sink(client)
+    client.post.assert_called_with(
+        'failed/test',
+        'FAIL',
+        False,
+        duration=1233,
+        file_artifacts={},
+        tags=[('test_name', 'failed/test')],
+        test_log='line1\nline2')
 
 
 class ResultCollectionTest(test_runner_test.TestCase):
@@ -285,22 +297,13 @@ class ResultCollectionTest(test_runner_test.TestCase):
     self.assertEqual(collection.pure_expected_tests(),
                      set(['passed/test', 'disabled/test']))
 
-  @mock.patch('test_result_util.TestResult.report_to_result_sink')
-  @mock.patch('result_sink_util.ResultSinkClient.close')
-  @mock.patch('result_sink_util.ResultSinkClient.__init__', return_value=None)
-  def test_add_and_report_crash(self, mock_sink_init, mock_sink_close,
-                                mock_report):
+  def test_add_and_report_crash(self):
     """Tests add_and_report_crash."""
     collection = copy.copy(self.full_collection)
-    self.assertFalse('BUILD_INTERRUPTED' in collection.crashed_tests())
 
-    collection.add_and_report_crash('Prefix Line')
+    collection.set_crashed_with_prefix('Prefix Line')
     self.assertEqual(collection.crash_message, 'Prefix Line\n')
-    self.assertTrue('BUILD_INTERRUPTED' in collection.crashed_tests())
-
-    mock_sink_init.assert_called_once()
-    mock_report.assert_called_once()
-    mock_sink_close.assert_called_once()
+    self.assertTrue(collection.crashed)
 
   @mock.patch('test_result_util.TestResult.report_to_result_sink')
   @mock.patch('result_sink_util.ResultSinkClient.close')

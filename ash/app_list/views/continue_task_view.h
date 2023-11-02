@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,6 +28,8 @@ enum ContinueTaskCommandId {
   kOpenResult = 0,
   // Context Menu option to prevent the suggestion from showing.
   kRemoveResult = 1,
+  // Context Menu option to hide the continue section.
+  kHideContinueSection = 2,
 };
 
 // A view with a suggested task for the "Continue" section.
@@ -36,6 +38,15 @@ class ASH_EXPORT ContinueTaskView : public views::Button,
                                     public ui::SimpleMenuModel::Delegate,
                                     public SearchResultObserver {
  public:
+  // The type of result for the task.
+  // These values are used for metrics and should not be changed.
+  enum class TaskResultType {
+    kLocalFile = 0,
+    kDriveFile = 1,
+    kUnknown = 2,
+    kMaxValue = kUnknown,
+  };
+
   METADATA_HEADER(ContinueTaskView);
 
   ContinueTaskView(AppListViewDelegate* view_delegate, bool tablet_mode);
@@ -44,6 +55,9 @@ class ASH_EXPORT ContinueTaskView : public views::Button,
   ~ContinueTaskView() override;
 
   // views::View:
+  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size GetMinimumSize() const override;
+  gfx::Size GetMaximumSize() const override;
   void OnThemeChanged() override;
 
   // SearchResultObserver:
@@ -61,9 +75,13 @@ class ASH_EXPORT ContinueTaskView : public views::Button,
 
   // SimpleMenuModel::Delegate:
   void ExecuteCommand(int command_id, int event_flags) override;
+  void MenuClosed(ui::SimpleMenuModel* source) override;
+
+  // Returns the type of result for the task. Used for metrics.
+  TaskResultType GetTaskResultType();
 
  private:
-  void SetIcon(const gfx::ImageSkia& icon);
+  void UpdateIcon();
   gfx::Size GetIconSize() const;
   void UpdateResult();
 
@@ -77,11 +95,21 @@ class ASH_EXPORT ContinueTaskView : public views::Button,
   // Opens the search result related to the view.
   void OpenResult(int event_flags);
 
+  // Removes the search result related to the view.
+  void RemoveResult();
+
   // Builds and returns a raw pointer to `context_menu_model_`.
   ui::SimpleMenuModel* BuildMenuModel();
 
   // Closes the context menu for this view if it is running.
   void CloseContextMenu();
+
+  // Updates the background and the border if the ContinueTaskView is in tablet
+  // mode.
+  void UpdateStyleForTabletMode();
+
+  // Record metrics at the moment when the ContinueTaskView result is removed.
+  void LogMetricsOnResultRemoved();
 
   // The index of this view within a |SearchResultContainerView| that holds it.
   absl::optional<int> index_in_container_;
@@ -91,6 +119,8 @@ class ASH_EXPORT ContinueTaskView : public views::Button,
   views::Label* subtitle_ = nullptr;
   views::ImageView* icon_ = nullptr;
   SearchResult* result_ = nullptr;  // Owned by SearchModel::SearchResults.
+
+  const bool is_tablet_mode_;
 
   std::unique_ptr<ui::SimpleMenuModel> context_menu_model_;
   std::unique_ptr<views::MenuRunner> context_menu_runner_;

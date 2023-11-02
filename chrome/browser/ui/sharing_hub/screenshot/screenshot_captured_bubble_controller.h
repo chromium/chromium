@@ -1,9 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_SHARING_HUB_SCREENSHOT_SCREENSHOT_CAPTURED_BUBBLE_CONTROLLER_H_
 #define CHROME_BROWSER_UI_SHARING_HUB_SCREENSHOT_SCREENSHOT_CAPTURED_BUBBLE_CONTROLLER_H_
+
+#include <vector>
 
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -47,14 +49,13 @@ class ScreenshotCapturedBubbleController
       content::WebContents* web_contents);
 
  private:
-  ScreenshotCapturedBubbleController();
-
   friend class content::WebContentsUserData<ScreenshotCapturedBubbleController>;
 
-  // The web_contents associated with this controller.
-  content::WebContents* web_contents_;
-
+  // Screenshot capture utility class.
   std::unique_ptr<image_editor::ScreenshotFlow> screenshot_flow_;
+
+  // Result of successful image capture as PNG bytes, or empty.
+  std::vector<unsigned char> captured_image_bytes_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

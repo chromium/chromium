@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,7 +27,7 @@ class CastDialogMetrics {
   // this value as the baseline for how long the dialog took to paint, load
   // sinks, etc.
   CastDialogMetrics(const base::Time& initialization_time,
-                    MediaRouterDialogOpenOrigin activation_location,
+                    MediaRouterDialogActivationLocation activation_location,
                     Profile* profile);
 
   CastDialogMetrics(const CastDialogMetrics&) = delete;
@@ -79,7 +79,7 @@ class CastDialogMetrics {
   // The time when a non-empty list of sinks was loaded.
   base::Time sinks_load_time_;
 
-  MediaRouterDialogOpenOrigin const activation_location_;
+  MediaRouterDialogActivationLocation const activation_location_;
 
   bool const is_icon_pinned_;
 

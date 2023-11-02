@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -148,8 +148,6 @@ TestScheduler::TestScheduler(
                 layer_tree_host_id,
                 task_runner,
                 std::move(compositor_timing_history),
-                nullptr,
-                nullptr,
                 compositor_frame_reporting_controller,
                 power_mode_arbiter),
       now_src_(now_src) {}

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,14 +14,14 @@
 #include "ui/base/ime/ash/mock_input_method_manager.h"
 #include "ui/base/ime/dummy_text_input_client.h"
 #include "ui/base/ime/mock_input_method.h"
-#include "ui/events/keycodes/dom/dom_codes.h"
+#include "ui/events/keycodes/dom/dom_code.h"
 
 namespace arc {
 
 namespace {
 
 class DummyInputMethodEngineObserver
-    : public ash::input_method::InputMethodEngineBase::Observer {
+    : public ash::input_method::InputMethodEngineObserver {
  public:
   DummyInputMethodEngineObserver() = default;
 
@@ -33,29 +33,29 @@ class DummyInputMethodEngineObserver
   ~DummyInputMethodEngineObserver() override = default;
 
   void OnActivate(const std::string& engine_id) override {}
-  void OnFocus(
-      const std::string& engine_id,
-      int context_id,
-      const ui::IMEEngineHandlerInterface::InputContext& context) override {}
+  void OnFocus(const std::string& engine_id,
+               int context_id,
+               const ui::TextInputMethod::InputContext& context) override {}
+  void OnTouch(ui::EventPointerType pointerType) override {}
   void OnBlur(const std::string& engine_id, int context_id) override {}
-  void OnKeyEvent(
-      const std::string& engine_id,
-      const ui::KeyEvent& event,
-      ui::IMEEngineHandlerInterface::KeyEventDoneCallback key_data) override {}
+  void OnKeyEvent(const std::string& engine_id,
+                  const ui::KeyEvent& event,
+                  ui::TextInputMethod::KeyEventDoneCallback key_data) override {
+  }
   void OnReset(const std::string& engine_id) override {}
   void OnDeactivated(const std::string& engine_id) override {}
   void OnCompositionBoundsChanged(
       const std::vector<gfx::Rect>& bounds) override {}
+  void OnCaretBoundsChanged(const gfx::Rect& caret_bounds) override {}
   void OnSurroundingTextChanged(const std::string& engine_id,
                                 const std::u16string& text,
                                 int cursor_pos,
                                 int anchor_pos,
                                 int offset_pos) override {}
-  void OnCandidateClicked(
-      const std::string& component_id,
-      int candidate_id,
-      ash::input_method::InputMethodEngineBase::MouseButtonEvent button)
-      override {}
+  void OnCandidateClicked(const std::string& component_id,
+                          int candidate_id,
+                          ash::input_method::MouseButtonEvent button) override {
+  }
   void OnMenuItemActivated(const std::string& component_id,
                            const std::string& menu_id) override {}
   void OnScreenProjectionChanged(bool is_projected) override {}
@@ -185,17 +185,13 @@ class InputConnectionImplTest : public testing::Test {
 
   MockTextInputClient* client() { return &text_input_client_; }
 
-  ui::IMEEngineHandlerInterface::InputContext context() {
-    return ui::IMEEngineHandlerInterface::InputContext{
-        ui::TEXT_INPUT_TYPE_TEXT,
-        ui::TEXT_INPUT_MODE_DEFAULT,
-        0 /* flags */,
-        ui::TextInputClient::FOCUS_REASON_MOUSE,
-        true /* should_do_learning */};
+  ui::TextInputMethod::InputContext context() {
+    return ui::TextInputMethod::InputContext{
+        ui::TEXT_INPUT_TYPE_TEXT, ui::TEXT_INPUT_MODE_DEFAULT, 0 /* flags */,
+        ui::TextInputClient::FOCUS_REASON_MOUSE, true /* should_do_learning */};
   }
 
   void SetUp() override {
-    ui::IMEBridge::Initialize();
     ash::input_method::InputMethodManager::Initialize(
         new TestInputMethodManager);
     bridge_ = std::make_unique<TestInputMethodManagerBridge>();
@@ -217,7 +213,6 @@ class InputConnectionImplTest : public testing::Test {
     engine_.reset();
     bridge_.reset();
     ash::input_method::InputMethodManager::Shutdown();
-    ui::IMEBridge::Shutdown();
   }
 
  private:

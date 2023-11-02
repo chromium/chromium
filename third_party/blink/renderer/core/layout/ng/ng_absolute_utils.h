@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,10 +22,41 @@ class NGLayoutResult;
 struct NGLogicalStaticPosition;
 
 struct CORE_EXPORT NGLogicalOutOfFlowDimensions {
+  LayoutUnit MarginBoxInlineStart() const {
+    return inset.inline_start - margins.inline_start;
+  }
+  LayoutUnit MarginBoxBlockStart() const {
+    return inset.block_start - margins.block_start;
+  }
+  LayoutUnit MarginBoxInlineEnd() const {
+    return inset.inline_start + size.inline_size + margins.inline_end;
+  }
+  LayoutUnit MarginBoxBlockEnd() const {
+    return inset.block_start + size.block_size + margins.block_end;
+  }
+
   NGBoxStrut inset;
   LogicalSize size = {kIndefiniteSize, kIndefiniteSize};
   NGBoxStrut margins;
 };
+
+struct CORE_EXPORT NGLogicalOutOfFlowInsets {
+  absl::optional<LayoutUnit> inline_start;
+  absl::optional<LayoutUnit> inline_end;
+  absl::optional<LayoutUnit> block_start;
+  absl::optional<LayoutUnit> block_end;
+};
+
+CORE_EXPORT NGLogicalOutOfFlowInsets
+ComputeOutOfFlowInsets(const ComputedStyle& style,
+                       const LogicalSize& available_size,
+                       NGAnchorEvaluatorImpl* anchor_evaluator);
+
+CORE_EXPORT LogicalSize
+ComputeOutOfFlowAvailableSize(const NGBlockNode&,
+                              const NGConstraintSpace&,
+                              const NGLogicalOutOfFlowInsets&,
+                              const NGLogicalStaticPosition&);
 
 // The following routines implement the absolute size resolution algorithm.
 // https://www.w3.org/TR/css-position-3/#abs-non-replaced-width
@@ -43,22 +74,30 @@ struct CORE_EXPORT NGLogicalOutOfFlowDimensions {
 // Will return true if |NGBlockNode::ComputeMinMaxSizes| was called.
 CORE_EXPORT bool ComputeOutOfFlowInlineDimensions(
     const NGBlockNode&,
+    const ComputedStyle& style,
     const NGConstraintSpace&,
+    const NGLogicalOutOfFlowInsets&,
     const NGBoxStrut& border_padding,
     const NGLogicalStaticPosition&,
+    const LogicalSize computed_available_size,
     const absl::optional<LogicalSize>& replaced_size,
     const WritingDirectionMode container_writing_direction,
+    const Length::AnchorEvaluator* anchor_evaluator,
     NGLogicalOutOfFlowDimensions* dimensions);
 
 // If layout was performed to determine the position, this will be returned
 // otherwise it will return nullptr.
-CORE_EXPORT scoped_refptr<const NGLayoutResult> ComputeOutOfFlowBlockDimensions(
+CORE_EXPORT const NGLayoutResult* ComputeOutOfFlowBlockDimensions(
     const NGBlockNode&,
+    const ComputedStyle& style,
     const NGConstraintSpace&,
+    const NGLogicalOutOfFlowInsets&,
     const NGBoxStrut& border_padding,
     const NGLogicalStaticPosition&,
+    const LogicalSize computed_available_size,
     const absl::optional<LogicalSize>& replaced_size,
     const WritingDirectionMode container_writing_direction,
+    const Length::AnchorEvaluator* anchor_evaluator,
     NGLogicalOutOfFlowDimensions* dimensions);
 
 CORE_EXPORT void AdjustOffsetForSplitInline(

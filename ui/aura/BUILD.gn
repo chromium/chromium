@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -13,6 +13,7 @@ component("aura") {
     "client/capture_delegate.h",
     "client/cursor_client.h",
     "client/cursor_client_observer.h",
+    "client/cursor_shape_client.h",
     "client/default_capture_client.h",
     "client/drag_drop_client.h",
     "client/drag_drop_client_observer.h",
@@ -31,6 +32,7 @@ component("aura") {
     "env_input_state_controller.h",
     "env_observer.h",
     "event_injector.h",
+    "host_frame_rate_throttler.h",
     "input_state_lookup.h",
     "layout_manager.h",
     "null_window_targeter.h",
@@ -59,6 +61,7 @@ component("aura") {
     "client/capture_client.cc",
     "client/cursor_client.cc",
     "client/cursor_client_observer.cc",
+    "client/cursor_shape_client.cc",
     "client/default_capture_client.cc",
     "client/drag_drop_client.cc",
     "client/drag_drop_delegate.cc",
@@ -73,6 +76,7 @@ component("aura") {
     "env.cc",
     "env_input_state_controller.cc",
     "event_injector.cc",
+    "host_frame_rate_throttler.cc",
     "input_state_lookup.cc",
     "layout_manager.cc",
     "native_window_occlusion_tracker.cc",
@@ -134,7 +138,7 @@ component("aura") {
   ]
 
   public_deps = [
-    "//ui/base/cursor:cursor_base",
+    "//ui/base/cursor",
     "//ui/base/dragdrop:types",
     "//ui/base/dragdrop/mojom:mojom_headers",
     "//ui/base/ime",
@@ -156,7 +160,6 @@ component("aura") {
 
     deps += [
       "//ipc",
-      "//ui/base/cursor",
       "//ui/platform_window/win",
     ]
   }
@@ -173,8 +176,6 @@ component("aura") {
     public += [ "screen_ozone.h" ]
     sources += [ "screen_ozone.cc" ]
   }
-
-  configs += [ "//build/config/compiler:noshadowing" ]
 }
 
 static_library("test_support") {
@@ -229,7 +230,7 @@ static_library("test_support") {
     "//skia",
     "//testing/gtest",
     "//ui/base:test_support",
-    "//ui/base/cursor:cursor_base",
+    "//ui/base/cursor",
     "//ui/base/cursor/mojom:cursor_type",
     "//ui/base/ime/init",
     "//ui/compositor:test_support",
@@ -345,8 +346,10 @@ test("aura_unittests") {
   }
 
   if (is_fuchsia) {
-    additional_manifest_fragments =
-        [ "//build/config/fuchsia/test/present_view_capabilities.test-cmx" ]
+    additional_manifest_fragments = [
+      "//build/config/fuchsia/test/present_view.shard.test-cml",
+      "//third_party/fuchsia-sdk/sdk/pkg/vulkan/client.shard.cml",
+    ]
   }
 
   data_deps = [ "//third_party/mesa_headers" ]

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -52,6 +52,7 @@ enable_remoting = true
 enable_webview_bundles = true
 ffmpeg_branding = "Chrome"
 proprietary_codecs = true
+force_enable_raw_ptr_exclusion = true
 EOF
         ;;
 
@@ -67,6 +68,48 @@ is_official_build = true
 symbol_level = 1
 use_goma = false
 chrome_pgo_phase = 0
+force_enable_raw_ptr_exclusion = true
+EOF
+        ;;
+
+    linux)
+        cat <<EOF
+target_os = "linux"
+dcheck_always_on = true
+is_chrome_branded = true
+is_debug = false
+is_official_build = true
+use_goma = false
+chrome_pgo_phase = 0
+force_enable_raw_ptr_exclusion = true
+EOF
+        ;;
+
+    cros)
+        cat <<EOF
+target_os = "chromeos"
+chromeos_is_browser_only = true
+dcheck_always_on = true
+is_chrome_branded = true
+is_debug = false
+is_official_build = true
+use_goma = false
+chrome_pgo_phase = 0
+force_enable_raw_ptr_exclusion = true
+EOF
+        ;;
+
+    mac)
+        cat <<EOF
+target_os = "mac"
+dcheck_always_on = true
+is_chrome_branded = true
+is_debug = false
+is_official_build = true
+use_goma = false
+chrome_pgo_phase = 0
+symbol_level = 1
+force_enable_raw_ptr_exclusion = true
 EOF
         ;;
 
@@ -87,8 +130,10 @@ pre_process() {
     # Build generated files that a successful compilation depends on.
     echo "*** Preparing targets for $PLATFORM ***"
     gn gen $OUT_DIR
-    GEN_H_TARGETS=`ninja -C $OUT_DIR -t targets all | grep '^gen/.*\(\.h\|inc\|css_tokenizer_codepoints.cc\)' | cut -d : -f 1`
-    time ninja -C $OUT_DIR $GEN_H_TARGETS
+    time ninja -C $OUT_DIR -t targets all \
+        | grep '^gen/.*\(\.h\|inc\|css_tokenizer_codepoints.cc\)' \
+        | cut -d : -f 1 \
+        | xargs -s $(expr $(getconf ARG_MAX) - 256) ninja -C $OUT_DIR
 
     TARGET_OS_OPTION=""
     if [ $PLATFORM = "win" ]; then

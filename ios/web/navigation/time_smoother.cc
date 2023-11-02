@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@ namespace web {
 
 // Duplicated from content/browser/web_contents/navigation_controller_impl.cc.
 base::Time TimeSmoother::GetSmoothedTime(base::Time t) {
-  // If |t| is between the water marks, we're in a run of duplicates
+  // If `t` is between the water marks, we're in a run of duplicates
   // or just getting out of it, so increase the high-water mark to get
   // a time that probably hasn't been used before and return it.
   if (low_water_mark_ <= t && t <= high_water_mark_) {

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,12 +27,12 @@
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
+#include "ui/views/examples/examples_color_id.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/view.h"
 
-namespace views {
-namespace examples {
+namespace views::examples {
 
 namespace {
 
@@ -56,10 +56,12 @@ class AnimationGallery : public BoxLayoutView, public TextfieldController {
             Builder<View>()
                 .CopyAddressTo(&image_view_container)
                 .SetUseDefaultFillLayout(true)
-                .AddChild(Builder<AnimatedImageView>()
-                              .CopyAddressTo(&animated_image_view_)
-                              .SetBorder(CreateSolidSidedBorder(
-                                  1, 1, 1, 1, SK_ColorBLACK))),
+                .AddChild(
+                    Builder<AnimatedImageView>()
+                        .CopyAddressTo(&animated_image_view_)
+                        .SetBorder(CreateThemedSolidBorder(
+                            1, ExamplesColorIds::
+                                   kColorAnimatedImageViewExampleBorder))),
             Builder<BoxLayoutView>()
                 .CopyAddressTo(&file_container)
                 .SetInsideBorderInsets(gfx::Insets(10))
@@ -98,11 +100,11 @@ class AnimationGallery : public BoxLayoutView, public TextfieldController {
   void ButtonPressed(const ui::Event& event) {
     std::string json;
     base::ScopedAllowBlockingForTesting allow_blocking;
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
     base::FilePath path(base::UTF16ToUTF8(file_chooser_->GetText()));
 #else
     base::FilePath path(base::UTF16ToWide(file_chooser_->GetText()));
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
     if (base::ReadFileToString(path, &json)) {
       auto skottie = cc::SkottieWrapper::CreateSerializable(
           std::vector<uint8_t>(json.begin(), json.end()));
@@ -141,5 +143,4 @@ void AnimatedImageViewExample::CreateExampleView(View* container) {
   container->AddChildView(std::make_unique<AnimationGallery>());
 }
 
-}  // namespace examples
-}  // namespace views
+}  // namespace views::examples

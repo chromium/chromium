@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 #include <ostream>
 
+#include "ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
@@ -17,8 +18,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/secure_channel/nearby_connection_broker.h"
 #include "chrome/browser/ash/secure_channel/util/histogram_util.h"
-#include "chromeos/services/nearby/public/mojom/nearby_connections.mojom.h"
-#include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_connections.mojom.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 
 namespace ash {
@@ -47,14 +47,11 @@ class NearbyConnectionBrokerImpl
         const std::vector<uint8_t>& bluetooth_public_address,
         const std::vector<uint8_t>& eid,
         NearbyEndpointFinder* endpoint_finder,
-        mojo::PendingReceiver<
-            chromeos::secure_channel::mojom::NearbyMessageSender>
+        mojo::PendingReceiver<mojom::NearbyMessageSender>
             message_sender_receiver,
-        mojo::PendingReceiver<
-            chromeos::secure_channel::mojom::NearbyFilePayloadHandler>
+        mojo::PendingReceiver<mojom::NearbyFilePayloadHandler>
             file_payload_handler_receiver,
-        mojo::PendingRemote<
-            chromeos::secure_channel::mojom::NearbyMessageReceiver>
+        mojo::PendingRemote<mojom::NearbyMessageReceiver>
             message_receiver_remote,
         const mojo::SharedRemote<
             location::nearby::connections::mojom::NearbyConnections>&
@@ -71,14 +68,11 @@ class NearbyConnectionBrokerImpl
     virtual std::unique_ptr<NearbyConnectionBroker> CreateInstance(
         const std::vector<uint8_t>& bluetooth_public_address,
         NearbyEndpointFinder* endpoint_finder,
-        mojo::PendingReceiver<
-            chromeos::secure_channel::mojom::NearbyMessageSender>
+        mojo::PendingReceiver<mojom::NearbyMessageSender>
             message_sender_receiver,
-        mojo::PendingReceiver<
-            chromeos::secure_channel::mojom::NearbyFilePayloadHandler>
+        mojo::PendingReceiver<mojom::NearbyFilePayloadHandler>
             file_payload_handler_receiver,
-        mojo::PendingRemote<
-            chromeos::secure_channel::mojom::NearbyMessageReceiver>
+        mojo::PendingRemote<mojom::NearbyMessageReceiver>
             message_receiver_remote,
         const mojo::SharedRemote<
             location::nearby::connections::mojom::NearbyConnections>&
@@ -109,15 +103,10 @@ class NearbyConnectionBrokerImpl
       const std::vector<uint8_t>& bluetooth_public_address,
       const std::vector<uint8_t>& eid,
       NearbyEndpointFinder* endpoint_finder,
-      mojo::PendingReceiver<
-          chromeos::secure_channel::mojom::NearbyMessageSender>
-          message_sender_receiver,
-      mojo::PendingReceiver<
-          chromeos::secure_channel::mojom::NearbyFilePayloadHandler>
+      mojo::PendingReceiver<mojom::NearbyMessageSender> message_sender_receiver,
+      mojo::PendingReceiver<mojom::NearbyFilePayloadHandler>
           file_payload_handler_receiver,
-      mojo::PendingRemote<
-          chromeos::secure_channel::mojom::NearbyMessageReceiver>
-          message_receiver_remote,
+      mojo::PendingRemote<mojom::NearbyMessageReceiver> message_receiver_remote,
       const mojo::SharedRemote<
           location::nearby::connections::mojom::NearbyConnections>&
           nearby_connections,
@@ -146,8 +135,7 @@ class NearbyConnectionBrokerImpl
 
   void OnPayloadFileRegistered(
       int64_t payload_id,
-      mojo::PendingRemote<chromeos::secure_channel::mojom::FilePayloadListener>
-          listener,
+      mojo::PendingRemote<mojom::FilePayloadListener> listener,
       RegisterPayloadFileCallback callback,
       location::nearby::connections::mojom::Status status);
   void OnFilePayloadListenerDisconnect(int64_t payload_id);
@@ -163,9 +151,8 @@ class NearbyConnectionBrokerImpl
   // mojom::NearbyFilePayloadHandler:
   void RegisterPayloadFile(
       int64_t payload_id,
-      chromeos::secure_channel::mojom::PayloadFilesPtr payload_files,
-      mojo::PendingRemote<chromeos::secure_channel::mojom::FilePayloadListener>
-          listener,
+      mojom::PayloadFilesPtr payload_files,
+      mojo::PendingRemote<mojom::FilePayloadListener> listener,
       RegisterPayloadFileCallback callback) override;
 
   // location::nearby::connections::mojom::ConnectionLifecycleListener:
@@ -225,9 +212,7 @@ class NearbyConnectionBrokerImpl
 
   // Listeners for file payloads registered via RegisterPayloadFile(), keyed by
   // payload ID.
-  base::flat_map<
-      int64_t,
-      mojo::Remote<chromeos::secure_channel::mojom::FilePayloadListener>>
+  base::flat_map<int64_t, mojo::Remote<mojom::FilePayloadListener>>
       file_payload_listeners_;
   // TaskRunner to close received payload files.
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;

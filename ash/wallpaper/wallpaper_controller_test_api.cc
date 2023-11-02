@@ -1,9 +1,14 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/wallpaper/wallpaper_controller_test_api.h"
+
+#include <memory>
+
 #include "ash/wallpaper/wallpaper_controller_impl.h"
+#include "ash/wallpaper/wallpaper_utils/wallpaper_calculated_colors.h"
+#include "ash/wallpaper/wallpaper_utils/wallpaper_color_calculator.h"
 #include "base/bind.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
@@ -32,15 +37,6 @@ WallpaperControllerTestApi::WallpaperControllerTestApi(
 
 WallpaperControllerTestApi::~WallpaperControllerTestApi() = default;
 
-SkColor WallpaperControllerTestApi::ApplyColorProducingWallpaper() {
-  // TODO(manucornet): Figure out where all those "magic numbers" come from
-  // and document/compute them instead of just hard-coding them.
-  controller_->ShowWallpaperImage(
-      CreateImageWithColor(SkColorSetRGB(60, 40, 40)), kTestWallpaperInfo,
-      /*preview_mode=*/false, /*always_on_top=*/false);
-  return SkColorSetRGB(40, 35, 37);
-}
-
 void WallpaperControllerTestApi::StartWallpaperPreview() {
   // Preview mode is considered active when the two callbacks have non-empty
   // values. Their specific values don't matter for testing purpose.
@@ -64,6 +60,15 @@ void WallpaperControllerTestApi::EndWallpaperPreview(
     controller_->ConfirmPreviewWallpaper();
   else
     controller_->CancelPreviewWallpaper();
+}
+
+void WallpaperControllerTestApi::SetCalculatedColors(
+    const WallpaperCalculatedColors& calculated_colors) {
+  if (controller_->color_calculator_) {
+    controller_->color_calculator_->RemoveObserver(controller_);
+    controller_->color_calculator_.reset();
+  }
+  controller_->SetCalculatedColors(calculated_colors);
 }
 
 }  // namespace ash

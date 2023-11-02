@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,16 +16,12 @@
 #include "extensions/browser/api/clipboard/clipboard_api.h"
 #include "extensions/browser/api/declarative_content/content_rules_registry.h"
 #include "extensions/browser/api/storage/settings_namespace.h"
+#include "extensions/browser/api/storage/settings_observer.h"
 #include "extensions/common/api/clipboard.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
 
 class GURL;
-
-namespace base {
-template <class T>
-class ObserverListThreadSafe;
-}
 
 namespace content {
 class BrowserContext;
@@ -59,7 +55,6 @@ class MimeHandlerViewGuest;
 class MimeHandlerViewGuestDelegate;
 class NonNativeFileSystemDelegate;
 class RulesCacheDelegate;
-class SettingsObserver;
 class SupervisedUserExtensionsDelegate;
 class ValueStoreCache;
 class VirtualKeyboardDelegate;
@@ -68,6 +63,10 @@ class WebViewGuest;
 class WebViewGuestDelegate;
 class WebViewPermissionHelper;
 class WebViewPermissionHelperDelegate;
+
+#if BUILDFLAG(IS_CHROMEOS)
+class ConsentProvider;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Allows the embedder of the extensions module to customize its support for
 // API features. The embedder must create a single instance in the browser
@@ -90,8 +89,7 @@ class ExtensionsAPIClient {
   virtual void AddAdditionalValueStoreCaches(
       content::BrowserContext* context,
       const scoped_refptr<value_store::ValueStoreFactory>& factory,
-      const scoped_refptr<base::ObserverListThreadSafe<SettingsObserver>>&
-          observers,
+      SettingsChangedCallback observer,
       std::map<settings_namespace::Namespace, ValueStoreCache*>* caches);
 
   // Attaches any extra web contents helpers (like ExtensionWebContentsObserver)
@@ -155,6 +153,13 @@ class ExtensionsAPIClient {
   CreateWebViewPermissionHelperDelegate(
       WebViewPermissionHelper* web_view_permission_helper) const;
 
+#if BUILDFLAG(IS_CHROMEOS)
+  // Returns an interface for requesting consent for file system API. The caller
+  // owns the returned ConsentProvider.
+  virtual std::unique_ptr<ConsentProvider> CreateConsentProvider(
+      content::BrowserContext* browser_context) const;
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   // TODO(wjmaclean): Remove this when (if) ContentRulesRegistry code moves
   // to extensions/browser/api.
   virtual scoped_refptr<ContentRulesRegistry> CreateContentRulesRegistry(
@@ -165,10 +170,10 @@ class ExtensionsAPIClient {
   virtual std::unique_ptr<DevicePermissionsPrompt>
   CreateDevicePermissionsPrompt(content::WebContents* web_contents) const;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   // Returns true if device policy allows detaching a given USB device.
   virtual bool ShouldAllowDetachingUsb(int vid, int pid) const;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Returns a delegate for some of VirtualKeyboardAPI's behavior.
   virtual std::unique_ptr<VirtualKeyboardDelegate>
@@ -210,7 +215,7 @@ class ExtensionsAPIClient {
   virtual MediaPerceptionAPIDelegate* GetMediaPerceptionAPIDelegate();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   // Saves image data on clipboard.
   virtual void SaveImageDataToClipboard(
       std::vector<uint8_t> image_data,
@@ -218,7 +223,7 @@ class ExtensionsAPIClient {
       AdditionalDataItemList additional_items,
       base::OnceClosure success_callback,
       base::OnceCallback<void(const std::string&)> error_callback);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   virtual AutomationInternalApiDelegate* GetAutomationInternalApiDelegate();
 

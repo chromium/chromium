@@ -98,7 +98,7 @@ static void SetUpAxisNamesMap(AxisNamesMap& axis_names) {
 static bool IsAxisName(const String& name, Step::Axis& type) {
   DEFINE_STATIC_LOCAL(AxisNamesMap, axis_names, ());
 
-  if (axis_names.IsEmpty())
+  if (axis_names.empty())
     SetUpAxisNamesMap(axis_names);
 
   AxisNamesMap::iterator it = axis_names.find(name);

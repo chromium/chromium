@@ -1,15 +1,26 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://drafts.csswg.org/web-animations/#the-effecttiming-dictionaries
+// https://w3.org/TR/web-animations-1/#the-effecttiming-dictionaries
 
 enum FillMode { "none", "forwards", "backwards", "both", "auto" };
 enum PlaybackDirection { "normal", "reverse", "alternate", "alternate-reverse" };
 
+// TODO(https://github.com/w3c/csswg-drafts/issues/7701): Update enum name
+// once resolved.
+enum TimelineOffsetPhase { "cover", "contain", "enter", "exit" };
+
+dictionary TimelineOffset {
+    // TODO(https://github.com/w3c/csswg-drafts/issues/7701): Update dictionary
+    // names once resolved.
+    TimelineOffsetPhase phase;
+    CSSNumericValue percent;
+};
+
 dictionary EffectTiming {
-    double                                                delay = 0;
-    double                                                endDelay = 0;
+    (double or TimelineOffset)                            delay = 0;
+    (double or TimelineOffset)                            endDelay = 0;
     FillMode                                              fill = "auto";
     double                                                iterationStart = 0.0;
     unrestricted double                                   iterations = 1.0;

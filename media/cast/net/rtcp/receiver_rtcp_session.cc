@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,7 +43,7 @@ bool ReceiverRtcpSession::IncomingRtcpPacket(const uint8_t* data,
   }
 
   // Parse this packet.
-  base::BigEndianReader reader(reinterpret_cast<const char*>(data), length);
+  base::BigEndianReader reader(data, length);
   if (parser_.Parse(&reader)) {
     if (parser_.has_sender_report()) {
       OnReceivedNtp(parser_.sender_report().ntp_seconds,
@@ -63,11 +63,6 @@ void ReceiverRtcpSession::OnReceivedNtp(uint32_t ntp_seconds,
   const base::TimeTicks now = clock_->NowTicks();
   time_last_report_received_ = now;
 
-  // TODO(miu): This clock offset calculation does not account for packet
-  // transit time over the network.  End2EndTest.EvilNetwork confirms that this
-  // contributes a very significant source of error here.  Determine whether
-  // RTT should be factored-in, and how that changes the rest of the
-  // calculation.
   const base::TimeDelta measured_offset =
       now - ConvertNtpToTimeTicks(ntp_seconds, ntp_fraction);
   local_clock_ahead_by_.Update(now, measured_offset);

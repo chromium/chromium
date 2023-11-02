@@ -1,11 +1,10 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import itertools
 
 from .attribute import Attribute
-from .code_generator_info import CodeGeneratorInfo
 from .composition_parts import Identifier
 from .composition_parts import WithCodeGeneratorInfo
 from .composition_parts import WithComponent
@@ -17,7 +16,6 @@ from .composition_parts import WithOwner
 from .constant import Constant
 from .constructor import Constructor
 from .constructor import ConstructorGroup
-from .exposure import Exposure
 from .idl_type import IdlType
 from .ir_map import IRMap
 from .make_copy import make_copy
@@ -203,12 +201,13 @@ class Interface(UserDefinedType, WithExtendedAttributes, WithCodeGeneratorInfo,
             for operation_ir in ir.operations
         ])
         self._operation_groups = tuple([
-            OperationGroup(
-                group_ir,
-                list(
-                    filter(lambda x: x.identifier == group_ir.identifier,
-                           self._operations)),
-                owner=self) for group_ir in ir.operation_groups
+            OperationGroup(group_ir,
+                           list(
+                               filter(
+                                   lambda x: x.is_static == group_ir.is_static
+                                   and x.identifier == group_ir.identifier,
+                                   self._operations)),
+                           owner=self) for group_ir in ir.operation_groups
         ])
         self._exposed_constructs = tuple(ir.exposed_constructs)
         self._legacy_window_aliases = tuple(ir.legacy_window_aliases)

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/global_media_controls/presentation_request_notification_item.h"
 #include "components/global_media_controls/public/media_item_manager_observer.h"
@@ -15,6 +16,7 @@
 #include "components/global_media_controls/public/media_item_ui_observer.h"
 #include "components/global_media_controls/public/media_item_ui_observer_set.h"
 #include "components/media_router/browser/presentation/web_contents_presentation_manager.h"
+#include "content/public/browser/presentation_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace global_media_controls {
@@ -48,7 +50,7 @@ class MediaNotificationService;
 // managing the notification for an active session.
 class PresentationRequestNotificationProducer final
     : public global_media_controls::MediaItemProducer,
-      public media_router::WebContentsPresentationManager::Observer,
+      public content::PresentationObserver,
       public global_media_controls::MediaItemManagerObserver,
       public global_media_controls::MediaItemUIObserver {
  public:
@@ -64,7 +66,7 @@ class PresentationRequestNotificationProducer final
   base::WeakPtr<media_message_center::MediaNotificationItem> GetMediaItem(
       const std::string& id) override;
   // Returns the supplemental notification's id if it should be shown.
-  std::set<std::string> GetActiveControllableItemIds() override;
+  std::set<std::string> GetActiveControllableItemIds() const override;
   bool HasFrozenItems() override;
   void OnItemShown(const std::string& id,
                    global_media_controls::MediaItemUI* item_ui) override;
@@ -103,9 +105,8 @@ class PresentationRequestNotificationProducer final
           presentation_manager);
   void AfterMediaDialogClosed();
 
-  // WebContentsPresentationManager::Observer:
-  void OnMediaRoutesChanged(
-      const std::vector<media_router::MediaRoute>& routes) override;
+  // content::PresentationObserver:
+  void OnPresentationsChanged(bool has_presentation) override;
   void OnDefaultPresentationChanged(
       const content::PresentationRequest* presentation_request) final;
 
@@ -125,9 +126,9 @@ class PresentationRequestNotificationProducer final
   // Show or hide |item_| if the visibility changed.
   void ShowOrHideItem();
 
-  MediaNotificationService* const notification_service_;
+  const raw_ptr<MediaNotificationService> notification_service_;
 
-  global_media_controls::MediaItemManager* const item_manager_;
+  const raw_ptr<global_media_controls::MediaItemManager> item_manager_;
 
   // A copy of the WebContentsPresentationManager associated with the web
   // page where the media dialog is opened. The value is nullptr if the media

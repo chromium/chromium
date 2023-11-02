@@ -26,6 +26,7 @@
 
 #include "third_party/blink/renderer/modules/media_controls/media_controls_impl.h"
 
+#include "base/auto_reset.h"
 #include "media/base/media_switches.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -585,13 +586,10 @@ void MediaControlsImpl::InitializeControls() {
   toggle_closed_captions_button_ =
       MakeGarbageCollected<MediaControlToggleClosedCaptionsButtonElement>(
           *this);
-
-  if (base::FeatureList::IsEnabled(media::kPlaybackSpeedButton)) {
-    playback_speed_button_ =
-        MakeGarbageCollected<MediaControlPlaybackSpeedButtonElement>(*this);
-    playback_speed_button_->SetIsWanted(
-        ShouldShowPlaybackSpeedButton(MediaElement()));
-  }
+  playback_speed_button_ =
+      MakeGarbageCollected<MediaControlPlaybackSpeedButtonElement>(*this);
+  playback_speed_button_->SetIsWanted(
+      ShouldShowPlaybackSpeedButton(MediaElement()));
   overflow_menu_ =
       MakeGarbageCollected<MediaControlOverflowMenuButtonElement>(*this);
 
@@ -630,12 +628,9 @@ void MediaControlsImpl::InitializeControls() {
       toggle_closed_captions_button_->CreateOverflowElement(
           MakeGarbageCollected<MediaControlToggleClosedCaptionsButtonElement>(
               *this)));
-  if (playback_speed_button_) {
-    overflow_list_->ParserAppendChild(
-        playback_speed_button_->CreateOverflowElement(
-            MakeGarbageCollected<MediaControlPlaybackSpeedButtonElement>(
-                *this)));
-  }
+  overflow_list_->ParserAppendChild(
+      playback_speed_button_->CreateOverflowElement(
+          MakeGarbageCollected<MediaControlPlaybackSpeedButtonElement>(*this)));
   if (picture_in_picture_button_) {
     overflow_list_->ParserAppendChild(
         picture_in_picture_button_->CreateOverflowElement(
@@ -952,10 +947,8 @@ void MediaControlsImpl::OnControlsListUpdated() {
   download_button_->SetIsWanted(
       download_button_->ShouldDisplayDownloadButton());
 
-  if (playback_speed_button_) {
-    playback_speed_button_->SetIsWanted(
-        ShouldShowPlaybackSpeedButton(MediaElement()));
-  }
+  playback_speed_button_->SetIsWanted(
+      ShouldShowPlaybackSpeedButton(MediaElement()));
 }
 
 LayoutObject* MediaControlsImpl::PanelLayoutObject() {
@@ -1155,7 +1148,7 @@ void MediaControlsImpl::BeginScrubbing(bool is_touch_event) {
   if (scrubbing_message_ && is_touch_event) {
     scrubbing_message_->SetIsWanted(true);
     if (scrubbing_message_->DoesFit())
-      panel_->setAttribute("class", kScrubbingMessageCSSClass);
+      panel_->setAttribute("class", AtomicString(kScrubbingMessageCSSClass));
   }
 
   is_scrubbing_ = true;
@@ -1298,7 +1291,7 @@ void MediaControlsImpl::UpdateOverflowMenuWanted() const {
   };
 
   // Current size of the media controls.
-  gfx::Size controls_size = ToGfxSize(size_);
+  gfx::Size controls_size = size_;
 
   // The video controls are more than one row so we need to allocate vertical
   // room and hide the overlay play button if there is not enough room.
@@ -1969,7 +1962,7 @@ void MediaControlsImpl::NotifyElementSizeChanged(DOMRectReadOnly* new_size) {
   // this, but it would be even greater to move this code entirely to
   // JS and fix it there.
 
-  IntSize old_size = size_;
+  gfx::Size old_size = size_;
   size_.set_width(new_size->width());
   size_.set_height(new_size->height());
 

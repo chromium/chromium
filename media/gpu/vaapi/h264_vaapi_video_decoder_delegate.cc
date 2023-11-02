@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <va/va.h>
 
-#include "base/cxx17_backports.h"
 #include "base/memory/aligned_memory.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/cdm_context.h"
@@ -97,6 +96,18 @@ static void InitVAPicture(VAPictureH264* va_pic) {
   va_pic->flags = VA_PICTURE_H264_INVALID;
 }
 
+void H264VaapiVideoDecoderDelegate::ProcessSPS(
+    const H264SPS* sps,
+    base::span<const uint8_t> sps_nalu_data) {
+  last_sps_nalu_data_.assign(sps_nalu_data.begin(), sps_nalu_data.end());
+}
+
+void H264VaapiVideoDecoderDelegate::ProcessPPS(
+    const H264PPS* pps,
+    base::span<const uint8_t> pps_nalu_data) {
+  last_pps_nalu_data_.assign(pps_nalu_data.begin(), pps_nalu_data.end());
+}
+
 DecodeStatus H264VaapiVideoDecoderDelegate::SubmitFrameMetadata(
     const H264SPS* sps,
     const H264PPS* pps,
@@ -177,7 +188,7 @@ DecodeStatus H264VaapiVideoDecoderDelegate::SubmitFrameMetadata(
 
   // And fill it with picture info from DPB.
   FillVARefFramesFromDPB(dpb, pic_param.ReferenceFrames,
-                         base::size(pic_param.ReferenceFrames));
+                         std::size(pic_param.ReferenceFrames));
 
   pic_param.num_ref_frames = sps->max_num_ref_frames;
 
@@ -219,8 +230,6 @@ DecodeStatus H264VaapiVideoDecoderDelegate::SubmitFrameMetadata(
 DecodeStatus H264VaapiVideoDecoderDelegate::ParseEncryptedSliceHeader(
     const std::vector<base::span<const uint8_t>>& data,
     const std::vector<SubsampleEntry>& subsamples,
-    const std::vector<uint8_t>& sps_nalu_data,
-    const std::vector<uint8_t>& pps_nalu_data,
     H264SliceHeader* slice_header_out) {
   DCHECK(slice_header_out);
   DCHECK(!subsamples.empty());
@@ -228,21 +237,17 @@ DecodeStatus H264VaapiVideoDecoderDelegate::ParseEncryptedSliceHeader(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   auto slice_param_buf = std::make_unique<VACencSliceParameterBufferH264>();
-  // For AMD, we get the slice parameters as structures in the first encrypted
+  // For AMD, we get the slice parameters as structures in the last encrypted
   // range.
   if (IsTranscrypted()) {
-    if (data.size() != 1) {
-      DLOG(ERROR) << "Incorrect number of spans for AMD encrypted slice header";
-      return DecodeStatus::kFail;
-    }
-    if (subsamples[0].cypher_bytes < kAmdEncryptedSliceHeaderSize) {
+    if (subsamples.back().cypher_bytes < kAmdEncryptedSliceHeaderSize) {
       DLOG(ERROR) << "AMD CENCv1 data is wrong size: "
-                  << subsamples[0].cypher_bytes;
+                  << subsamples.back().cypher_bytes;
       return DecodeStatus::kFail;
     }
     const AMD_SLICE_PARAMS* amd_slice_params =
-        reinterpret_cast<const AMD_SLICE_PARAMS*>(data[0].data() +
-                                                  subsamples[0].clear_bytes);
+        reinterpret_cast<const AMD_SLICE_PARAMS*>(
+            data.back().data() + subsamples.back().clear_bytes);
     // Fill in the AMD specific params.
     slice_header_out->bottom_field_flag =
         amd_slice_params->va_param.bottom_field_flag;
@@ -283,8 +288,8 @@ DecodeStatus H264VaapiVideoDecoderDelegate::ParseEncryptedSliceHeader(
 
     // Adjust the first segment length and init length to compensate for
     // inserting the SPS, PPS and 3 start codes.
-    size_t size_adjustment =
-        sps_nalu_data.size() + pps_nalu_data.size() + kExtraDataBytes;
+    size_t size_adjustment = last_sps_nalu_data_.size() +
+                             last_pps_nalu_data_.size() + kExtraDataBytes;
     size_t total_size = 0;
     size_t offset_adjustment = 0;
     for (auto& segment : segment_info) {
@@ -338,11 +343,11 @@ DecodeStatus H264VaapiVideoDecoderDelegate::ParseEncryptedSliceHeader(
     const std::vector<uint8_t> start_code = {0u, 0u, 1u};
     full_data.reserve(total_size);
     full_data.insert(full_data.end(), start_code.begin(), start_code.end());
-    full_data.insert(full_data.end(), sps_nalu_data.begin(),
-                     sps_nalu_data.end());
+    full_data.insert(full_data.end(), last_sps_nalu_data_.begin(),
+                     last_sps_nalu_data_.end());
     full_data.insert(full_data.end(), start_code.begin(), start_code.end());
-    full_data.insert(full_data.end(), pps_nalu_data.begin(),
-                     pps_nalu_data.end());
+    full_data.insert(full_data.end(), last_pps_nalu_data_.begin(),
+                     last_pps_nalu_data_.end());
     for (auto& nalu : data) {
       full_data.insert(full_data.end(), start_code.begin(), start_code.end());
       full_data.insert(full_data.end(), nalu.begin(), nalu.end());
@@ -520,23 +525,23 @@ DecodeStatus H264VaapiVideoDecoderDelegate::SubmitSlice(
     }
   }
 
-  static_assert(base::size(slice_param.RefPicList0) ==
-                    base::size(slice_param.RefPicList1),
-                "Invalid RefPicList sizes");
+  static_assert(
+      std::size(slice_param.RefPicList0) == std::size(slice_param.RefPicList1),
+      "Invalid RefPicList sizes");
 
-  for (size_t i = 0; i < base::size(slice_param.RefPicList0); ++i) {
+  for (size_t i = 0; i < std::size(slice_param.RefPicList0); ++i) {
     InitVAPicture(&slice_param.RefPicList0[i]);
     InitVAPicture(&slice_param.RefPicList1[i]);
   }
 
   for (size_t i = 0;
-       i < ref_pic_list0.size() && i < base::size(slice_param.RefPicList0);
+       i < ref_pic_list0.size() && i < std::size(slice_param.RefPicList0);
        ++i) {
     if (ref_pic_list0[i])
       FillVAPicture(&slice_param.RefPicList0[i], ref_pic_list0[i]);
   }
   for (size_t i = 0;
-       i < ref_pic_list1.size() && i < base::size(slice_param.RefPicList1);
+       i < ref_pic_list1.size() && i < std::size(slice_param.RefPicList1);
        ++i) {
     if (ref_pic_list1[i])
       FillVAPicture(&slice_param.RefPicList1[i], ref_pic_list1[i]);

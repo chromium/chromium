@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,9 +13,9 @@
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "crypto/sha2.h"
 #include "device/fido/cable/cable_discovery_data.h"
+#include "device/fido/device_public_key_extension.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/large_blob.h"
 #include "device/fido/pin.h"
@@ -123,7 +123,7 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CtapGetAssertionRequest {
   absl::optional<HMACSecret> hmac_secret;
   bool large_blob_key = false;
   bool large_blob_read = false;
-  absl::optional<std::vector<uint8_t>> large_blob_write;
+  absl::optional<LargeBlob> large_blob_write;
   bool get_cred_blob = false;
 
   // Instructs the request handler only to dispatch this request via U2F.
@@ -132,6 +132,10 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CtapGetAssertionRequest {
   // Indicates whether the request was created in an off-the-record
   // BrowserContext (e.g. Incognito or Guest mode in Chrome).
   bool is_off_the_record_context = false;
+
+  // device_public_key contains parameters for the devicePubKey extension
+  // https://github.com/w3c/webauthn/pull/1663
+  absl::optional<DevicePublicKeyRequest> device_public_key;
 };
 
 struct CtapGetNextAssertionRequest {};

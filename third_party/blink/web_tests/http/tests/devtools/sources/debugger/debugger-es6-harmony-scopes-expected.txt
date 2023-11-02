@@ -7,7 +7,7 @@ Scope variables sidebar pane:
 Block
     block2: "catch(e) {...}"
     const2: 2
-Catch
+Catch block
     e: Error: An exception
     at innerFunction (...)
     at testFunction (...)

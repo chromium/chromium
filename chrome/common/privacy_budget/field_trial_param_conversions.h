@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,10 +35,12 @@ bool DecodeIdentifiabilityType(const base::StringPiece,
 bool DecodeIdentifiabilityType(const base::StringPiece,
                                blink::IdentifiableSurface::Type*);
 bool DecodeIdentifiabilityType(const base::StringPiece, int*);
+bool DecodeIdentifiabilityType(const base::StringPiece, uint64_t*);
 bool DecodeIdentifiabilityType(const base::StringPiece, unsigned int*);
 bool DecodeIdentifiabilityType(const base::StringPiece, double*);
 bool DecodeIdentifiabilityType(const base::StringPiece,
                                std::vector<blink::IdentifiableSurface>*);
+bool DecodeIdentifiabilityType(const base::StringPiece, std::string*);
 
 // V is a std::pair<P,R> where P and R are types known to
 // DecodeIdentifiabilityType().
@@ -65,6 +67,8 @@ std::string EncodeIdentifiabilityType(const blink::IdentifiableSurface&);
 std::string EncodeIdentifiabilityType(const blink::IdentifiableSurface::Type&);
 std::string EncodeIdentifiabilityType(const unsigned int&);
 std::string EncodeIdentifiabilityType(const double&);
+std::string EncodeIdentifiabilityType(const uint64_t&);
+std::string EncodeIdentifiabilityType(const int&);
 template <typename T, typename U>
 std::string EncodeIdentifiabilityType(const std::pair<T, U>& v) {
   return base::StrCat({EncodeIdentifiabilityType(v.first), ";",
@@ -72,6 +76,7 @@ std::string EncodeIdentifiabilityType(const std::pair<T, U>& v) {
 }
 std::string EncodeIdentifiabilityType(
     const std::vector<blink::IdentifiableSurface>& value);
+std::string EncodeIdentifiabilityType(const std::string& value);
 
 template <typename T>
 struct NoOpFilter {
@@ -110,6 +115,8 @@ T DecodeIdentifiabilityFieldTrialParam(base::StringPiece encoded_value) {
   }
   return result;
 }
+
+std::string EncodeIdentifiabilityFieldTrialParam(bool source);
 
 // Encodes a field trial parameter that will contain a list of values taken from
 // a container. The container must satisfy the named requirement Container. Its

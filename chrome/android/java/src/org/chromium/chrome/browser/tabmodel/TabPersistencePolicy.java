@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -122,4 +122,12 @@ public interface TabPersistencePolicy {
      * @param taskRunner The same SequencedTaskRunner as {@link TabPersistentStore} is using.
      */
     default void setTaskRunner(SequencedTaskRunner taskRunner) {}
+
+    /**
+     * @return Whether allows to skip loading the first active Tab during Startup when an overview
+     *         page is showing.
+     */
+    default boolean allowSkipLoadingTab() {
+        return false;
+    }
 }

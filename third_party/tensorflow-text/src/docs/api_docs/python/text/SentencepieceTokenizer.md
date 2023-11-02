@@ -28,17 +28,29 @@ source</a>
 Tokenizes a tensor of UTF-8 strings.
 
 Inherits From: [`TokenizerWithOffsets`](../text/TokenizerWithOffsets.md),
-[`Tokenizer`](../text/Tokenizer.md), [`Splitter`](../text/Splitter.md),
-[`Detokenizer`](../text/Detokenizer.md)
+[`Tokenizer`](../text/Tokenizer.md),
+[`SplitterWithOffsets`](../text/SplitterWithOffsets.md),
+[`Splitter`](../text/Splitter.md), [`Detokenizer`](../text/Detokenizer.md)
 
 <pre class="devsite-click-to-copy prettyprint lang-py tfo-signature-link">
 <code>text.SentencepieceTokenizer(
     model=None, out_type=dtypes.int32, nbest_size=0, alpha=1.0, reverse=False,
-    add_bos=False, add_eos=False, name=None
+    add_bos=False, add_eos=False, return_nbest=False, name=None
 )
 </code></pre>
 
 <!-- Placeholder for "Used in" -->
+
+SentencePiece is an unsupervised text tokenizer and detokenizer. It is used
+mainly for Neural Network-based text generation systems where the vocabulary
+size is predetermined prior to the neural model training. SentencePiece
+implements subword units with the extension of direct training from raw
+sentences.
+
+Before using the tokenizer, you will need to train a vocabulary and build a
+model configuration for it. Please visit the
+[Sentencepiece repository](https://github.com/google/sentencepiece#train-sentencepiece-model)
+for the most up-to-date instructions on this process.
 
 <!-- Tabular view -->
  <table class="responsive fixed orange">
@@ -66,11 +78,11 @@ tf.int32 directly encodes the string into an id sequence.
 </td>
 <td>
 A scalar for sampling.
-nbest_size = {0,1}: No sampling is performed. (default)
-nbest_size > 1: samples from the nbest_size results.
-nbest_size < 0: assuming that nbest_size is infinite and samples
-from the all hypothesis (lattice) using
-forward-filtering-and-backward-sampling algorithm.
+* `nbest_size = {0,1}`: No sampling is performed. (default)
+* `nbest_size > 1`: samples from the nbest_size results.
+* `nbest_size < 0`: assuming that nbest_size is infinite and samples
+    from the all hypothesis (lattice) using
+    forward-filtering-and-backward-sampling algorithm.
 </td>
 </tr><tr>
 <td>
@@ -99,8 +111,19 @@ Add beginning of sentence token to the result (Default = false)
 `add_eos`
 </td>
 <td>
-Add end of sentence token to the result (Default = false).
-When reverse=True beginning/end of sentence tokens are added after reversing.
+Add end of sentence token to the result (Default = false). When
+`reverse=True` beginning/end of sentence tokens are added after
+reversing.
+</td>
+</tr><tr>
+<td>
+`return_nbest`
+</td>
+<td>
+If True requires that `nbest_size` is a scalar and `> 1`.
+Returns the `nbest_size` best tokenizations for each sentence instead
+of a single one. The returned tensor has shape
+`[batch * nbest, (tokens)]`.
 </td>
 </tr><tr>
 <td>
@@ -126,6 +149,8 @@ source</a>
 </code></pre>
 
 Detokenizes tokens into preprocessed text.
+
+This function accepts tokenized text, and reforms it back into sentences.
 
 <!-- Tabular view -->
  <table class="responsive fixed orange">
@@ -220,37 +245,8 @@ source</a>
 )
 </code></pre>
 
-Splits the strings from the input tensor.
-
-<!-- Tabular view -->
- <table class="responsive fixed orange">
-<colgroup><col width="214px"><col></colgroup>
-<tr><th colspan="2">Args</th></tr>
-
-<tr>
-<td>
-`input`
-</td>
-<td>
-An N-dimensional UTF-8 string (or optionally integer) `Tensor` or
-`RaggedTensor`.
-</td>
-</tr>
-</table>
-
-<!-- Tabular view -->
- <table class="responsive fixed orange">
-<colgroup><col width="214px"><col></colgroup>
-<tr><th colspan="2">Returns</th></tr>
-<tr class="alt">
-<td colspan="2">
-An N+1-dimensional UTF-8 string or integer `Tensor` or `RaggedTensor`.
-For each string from the input tensor, the final, extra dimension contains
-the pieces that string was split into.
-</td>
-</tr>
-
-</table>
+Alias for
+<a href="../text/Tokenizer.md#tokenize"><code>Tokenizer.tokenize</code></a>.
 
 <h3 id="split_with_offsets"><code>split_with_offsets</code></h3>
 
@@ -263,42 +259,8 @@ source</a>
 )
 </code></pre>
 
-Splits the input tensor, returns the resulting pieces with offsets.
-
-<!-- Tabular view -->
- <table class="responsive fixed orange">
-<colgroup><col width="214px"><col></colgroup>
-<tr><th colspan="2">Args</th></tr>
-
-<tr>
-<td>
-`input`
-</td>
-<td>
-An N-dimensional UTF-8 string (or optionally integer) `Tensor` or
-`RaggedTensor`.
-</td>
-</tr>
-</table>
-
-<!-- Tabular view -->
- <table class="responsive fixed orange">
-<colgroup><col width="214px"><col></colgroup>
-<tr><th colspan="2">Returns</th></tr>
-<tr class="alt">
-<td colspan="2">
-A tuple `(pieces, start_offsets, end_offsets)` where:
-
-*   `pieces` is an N+1-dimensional UTF-8 string or integer `Tensor` or
-    `RaggedTensor`.
-*   `start_offsets` is an N+1-dimensional integer `Tensor` or `RaggedTensor`
-    containing the starting indices of each piece (byte indices for input
-    strings).
-*   `end_offsets` is an N+1-dimensional integer `Tensor` or `RaggedTensor`
-    containing the exclusive ending indices of each piece (byte indices for
-    input strings). </td> </tr>
-
-</table>
+Alias for
+<a href="../text/TokenizerWithOffsets.md#tokenize_with_offsets"><code>TokenizerWithOffsets.tokenize_with_offsets</code></a>.
 
 <h3 id="string_to_id"><code>string_to_id</code></h3>
 
@@ -312,6 +274,9 @@ source</a>
 </code></pre>
 
 Converts token into a vocabulary id.
+
+This function is particularly helpful for determining the IDs for any special
+tokens whose ID could not be determined through normal tokenization.
 
 <!-- Tabular view -->
  <table class="responsive fixed orange">
@@ -408,6 +373,9 @@ source</a>
 
 Tokenizes a tensor of UTF-8 strings.
 
+This function returns a tuple containing the tokens along with start and end
+byte offsets that mark where in the original string each token was located.
+
 <!-- Tabular view -->
  <table class="responsive fixed orange">
 <colgroup><col width="214px"><col></colgroup>
@@ -437,16 +405,35 @@ The name argument that is passed to the op function.
 <tr class="alt">
 <td colspan="2">
 A tuple `(tokens, start_offsets, end_offsets)` where:
-
-*   `tokens` is an N+1-dimensional UTF-8 string or integer `Tensor` or
-    `RaggedTensor`.
-*   `start_offsets` is an N+1-dimensional integer `Tensor` or `RaggedTensor`
-    containing the starting indices of each token (byte indices for input
-    strings).
-*   `end_offsets` is an N+1-dimensional integer `Tensor` or `RaggedTensor`
-    containing the exclusive ending indices of each token (byte indices for
-    input strings). </td> </tr>
-
+</td>
+</tr>
+<tr>
+<td>
+`tokens`
+</td>
+<td>
+is an N+1-dimensional UTF-8 string or integer `Tensor` or
+`RaggedTensor`.
+</td>
+</tr><tr>
+<td>
+`start_offsets`
+</td>
+<td>
+is an N+1-dimensional integer `Tensor` or
+`RaggedTensor` containing the starting indices of each token (byte
+indices for input strings).
+</td>
+</tr><tr>
+<td>
+`end_offsets`
+</td>
+<td>
+is an N+1-dimensional integer `Tensor` or
+`RaggedTensor` containing the exclusive ending indices of each token
+(byte indices for input strings).
+</td>
+</tr>
 </table>
 
 <h3 id="vocab_size"><code>vocab_size</code></h3>
@@ -461,6 +448,9 @@ source</a>
 </code></pre>
 
 Returns the vocabulary size.
+
+The number of tokens from within the Sentencepiece vocabulary provided at the
+time of initialization.
 
 <!-- Tabular view -->
  <table class="responsive fixed orange">

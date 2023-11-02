@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,6 @@
 #define EXTENSIONS_BROWSER_GUEST_VIEW_MIME_HANDLER_VIEW_MIME_HANDLER_VIEW_GUEST_DELEGATE_H_
 
 #include <string>
-
-#include "base/macros.h"
 
 namespace content {
 class RenderFrameHost;
@@ -35,7 +33,7 @@ class MimeHandlerViewGuestDelegate {
   virtual bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                                  const content::ContextMenuParams& params);
   // Called when MimeHandlerViewGuest has an associated embedder frame.
-  virtual void RecordLoadMetric(bool in_main_frame,
+  virtual void RecordLoadMetric(bool is_full_page,
                                 const std::string& mime_type);
 };
 

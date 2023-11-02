@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,8 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/services/device_sync/proto/cryptauth_better_together_feature_metadata.pb.h"
+#include "ash/services/device_sync/public/cpp/gcm_constants.h"
 #include "base/callback.h"
 #include "base/feature_list.h"
 #include "base/linux_util.h"
@@ -21,11 +23,9 @@
 #include "chrome/browser/ash/cryptauth/cryptauth_device_id_provider_impl.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/components/multidevice/logging/logging.h"
-#include "chromeos/network/network_state_handler.h"
-#include "chromeos/network/network_type_pattern.h"
-#include "chromeos/services/device_sync/proto/cryptauth_better_together_feature_metadata.pb.h"
-#include "chromeos/services/device_sync/public/cpp/gcm_constants.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/ash/components/network/network_type_pattern.h"
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
 #include "components/gcm_driver/instance_id/instance_id_profile_service.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -46,17 +46,21 @@ const cryptauthv2::FeatureMetadata& GenerateFeatureMetadata() {
       feature_metadata([] {
         cryptauthv2::BetterTogetherFeatureMetadata inner_metadata;
 
-        // Smart Lock, MultiDevice Setup and Messages are supported on all
-        // Chromebooks.
+        // Smart Lock and MultiDevice Setup are supported on all Chromebooks.
         inner_metadata.add_supported_features(
             cryptauthv2::
                 BetterTogetherFeatureMetadata_FeatureName_EASY_UNLOCK_CLIENT);
         inner_metadata.add_supported_features(
             cryptauthv2::
                 BetterTogetherFeatureMetadata_FeatureName_BETTER_TOGETHER_CLIENT);
-        inner_metadata.add_supported_features(
-            cryptauthv2::
-                BetterTogetherFeatureMetadata_FeatureName_SMS_CONNECT_CLIENT);
+
+        // Disable Messages integration when pre-installing app on all devices.
+        if (!base::FeatureList::IsEnabled(
+                features::kDisableMessagesCrossDeviceIntegration)) {
+          inner_metadata.add_supported_features(
+              cryptauthv2::
+                  BetterTogetherFeatureMetadata_FeatureName_SMS_CONNECT_CLIENT);
+        }
 
         // Instant Tethering is only supported if the associated flag enabled.
         if (base::FeatureList::IsEnabled(features::kInstantTethering)) {

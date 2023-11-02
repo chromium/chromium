@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/paint/compositing/composited_layer_mapping.h"
-#include "third_party/blink/renderer/core/paint/compositing/paint_layer_compositor.h"
+#include "third_party/blink/renderer/core/paint/paint_flags.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/cull_rect.h"
@@ -26,11 +25,8 @@ SimCompositor::SimCompositor() {
 
 SimCompositor::~SimCompositor() = default;
 
-void SimCompositor::SetWebView(
-    WebViewImpl& web_view,
-    frame_test_helpers::TestWebViewClient& view_client) {
+void SimCompositor::SetWebView(WebViewImpl& web_view) {
   web_view_ = &web_view;
-  test_web_view_client_ = &view_client;
 }
 
 SimCanvas::Commands SimCompositor::BeginFrame(double time_delta_in_seconds,
@@ -61,8 +57,8 @@ SimCanvas::Commands SimCompositor::PaintFrame() {
 
   auto* frame = web_view_->MainFrameImpl()->GetFrame();
   auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
-  frame->View()->PaintOutsideOfLifecycle(builder->Context(),
-                                         kGlobalPaintFlattenCompositingLayers);
+  frame->View()->PaintOutsideOfLifecycleWithThrottlingAllowed(
+      builder->Context(), PaintFlag::kOmitCompositingInfo);
 
   auto infinite_rect = LayoutRect::InfiniteIntRect();
   SimCanvas canvas(infinite_rect.width(), infinite_rect.height());

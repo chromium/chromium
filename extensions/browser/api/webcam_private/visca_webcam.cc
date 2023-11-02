@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 
 using content::BrowserThread;
 
@@ -113,7 +112,7 @@ const uint8_t kPTStopCommand[] = {0x81, 0x01, 0x06, 0x01, 0x03,
 
 #define CHAR_VECTOR_FROM_ARRAY(array)                     \
   std::vector<char>(reinterpret_cast<const char*>(array), \
-                    reinterpret_cast<const char*>(array + base::size(array)))
+                    reinterpret_cast<const char*>(array + std::size(array)))
 
 int ShiftResponseLowerBits(char c, size_t shift) {
   return static_cast<int>(c & 0x0F) << shift;
@@ -166,13 +165,13 @@ void ViscaWebcam::Open(const std::string& extension_id,
   api::serial::ConnectionOptions options;
 
   // Set the receive buffer size to receive the response data 1 by 1.
-  options.buffer_size = std::make_unique<int>(1);
-  options.persistent = std::make_unique<bool>(false);
-  options.bitrate = std::make_unique<int>(9600);
-  options.cts_flow_control = std::make_unique<bool>(false);
+  options.buffer_size = 1;
+  options.persistent = false;
+  options.bitrate = 9600;
+  options.cts_flow_control = false;
   // Enable send and receive timeout error.
-  options.receive_timeout = std::make_unique<int>(3000);
-  options.send_timeout = std::make_unique<int>(3000);
+  options.receive_timeout = 3000;
+  options.send_timeout = 3000;
   options.data_bits = api::serial::DATA_BITS_EIGHT;
   options.parity_bit = api::serial::PARITY_BIT_NO;
   options.stop_bits = api::serial::STOP_BITS_ONE;

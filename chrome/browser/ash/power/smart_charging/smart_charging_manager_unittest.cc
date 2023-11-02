@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,15 +9,21 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/clock.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ash/power/smart_charging/user_charging_event.pb.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
+#include "chromeos/dbus/power_manager/user_charging_event.pb.h"
 #include "components/session_manager/core/session_manager.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 
 namespace ash {
 namespace power {
 namespace {
+
+using PastEvent = power_manager::PastChargingEvents::Event;
+using EventReason = power_manager::UserChargingEvent::Event::Reason;
+using UserChargingEvent = power_manager::UserChargingEvent;
+using ChargeHistoryState = power_manager::ChargeHistoryState;
+
 PastEvent CreateEvent(int time,
                       int battery_percent,
                       int timezone,
@@ -45,7 +51,7 @@ class SmartChargingManagerTest : public ChromeRenderViewHostTestHarness {
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-    PowerManagerClient::InitializeFake();
+    chromeos::PowerManagerClient::InitializeFake();
 
     mojo::PendingRemote<viz::mojom::VideoDetectorObserver> observer;
     auto periodic_timer = std::make_unique<base::RepeatingTimer>();
@@ -58,7 +64,7 @@ class SmartChargingManagerTest : public ChromeRenderViewHostTestHarness {
 
   void TearDown() override {
     smart_charging_manager_.reset();
-    PowerManagerClient::Shutdown();
+    chromeos::PowerManagerClient::Shutdown();
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
@@ -69,6 +75,12 @@ class SmartChargingManagerTest : public ChromeRenderViewHostTestHarness {
   absl::optional<power_manager::PowerSupplyProperties::ExternalPower>
   GetExternalPower() {
     return smart_charging_manager_->external_power_;
+  }
+
+  void UpdateChargeHistory() { smart_charging_manager_->UpdateChargeHistory(); }
+
+  ChargeHistoryState GetChargeHistory() {
+    return smart_charging_manager_->charge_history_;
   }
 
  protected:
@@ -82,7 +94,7 @@ class SmartChargingManagerTest : public ChromeRenderViewHostTestHarness {
     power_manager::PowerSupplyProperties proto;
     proto.set_external_power(power);
     proto.set_battery_percent(battery_percent);
-    FakePowerManagerClient::Get()->UpdatePowerProperties(proto);
+    chromeos::FakePowerManagerClient::Get()->UpdatePowerProperties(proto);
   }
 
   void ReportBrightnessChangeEvent(const double level) {
@@ -101,14 +113,15 @@ class SmartChargingManagerTest : public ChromeRenderViewHostTestHarness {
         power_manager::SuspendImminent::LID_CLOSED);
   }
 
-  void ReportLidEvent(const PowerManagerClient::LidState state) {
-    FakePowerManagerClient::Get()->SetLidState(state,
-                                               base::TimeTicks::UnixEpoch());
+  void ReportLidEvent(const chromeos::PowerManagerClient::LidState state) {
+    chromeos::FakePowerManagerClient::Get()->SetLidState(
+        state, base::TimeTicks::UnixEpoch());
   }
 
-  void ReportTabletModeEvent(const PowerManagerClient::TabletMode mode) {
-    FakePowerManagerClient::Get()->SetTabletMode(mode,
-                                                 base::TimeTicks::UnixEpoch());
+  void ReportTabletModeEvent(
+      const chromeos::PowerManagerClient::TabletMode mode) {
+    chromeos::FakePowerManagerClient::Get()->SetTabletMode(
+        mode, base::TimeTicks::UnixEpoch());
   }
 
   void ReportVideoStart() { smart_charging_manager_->OnVideoActivityStarted(); }
@@ -325,8 +338,8 @@ TEST_F(SmartChargingManagerTest, VideoDuration) {
 }
 
 TEST_F(SmartChargingManagerTest, DeviceMode) {
-  ReportLidEvent(PowerManagerClient::LidState::OPEN);
-  ReportTabletModeEvent(PowerManagerClient::TabletMode::UNSUPPORTED);
+  ReportLidEvent(chromeos::PowerManagerClient::LidState::OPEN);
+  ReportTabletModeEvent(chromeos::PowerManagerClient::TabletMode::UNSUPPORTED);
 
   ReportPowerChangeEvent(power_manager::PowerSupplyProperties::AC, 15.0f);
   EXPECT_EQ(GetUserChargingEvent().features().device_mode(),
@@ -342,9 +355,7 @@ TEST_F(SmartChargingManagerTest, GetLastChargeEventsNoLastCharges) {
   AddEvent(CreateEvent(5, 50, 11, UserChargingEvent::Event::SHUTDOWN));
   AddEvent(CreateEvent(6, 60, 11, UserChargingEvent::Event::PERIODIC_LOG));
 
-  PastEvent plugged_in;
-  PastEvent unplugged;
-  std::tie(plugged_in, unplugged) = GetLastChargeEvents();
+  auto [plugged_in, unplugged] = GetLastChargeEvents();
   EXPECT_FALSE(plugged_in.has_time());
   EXPECT_FALSE(unplugged.has_time());
 }
@@ -379,9 +390,7 @@ TEST_F(SmartChargingManagerTest, GetLastChargeEventsComplex) {
   AddEvent(
       CreateEvent(22, 40, 1, UserChargingEvent::Event::CHARGER_PLUGGED_IN));
 
-  PastEvent plugged_in;
-  PastEvent unplugged;
-  std::tie(plugged_in, unplugged) = GetLastChargeEvents();
+  auto [plugged_in, unplugged] = GetLastChargeEvents();
   EXPECT_TRUE(plugged_in.has_time());
   EXPECT_TRUE(unplugged.has_time());
   EXPECT_EQ(plugged_in.time(), 15);
@@ -509,10 +518,39 @@ TEST_F(SmartChargingManagerTest, LastChargeRelatedFeatures) {
   const auto features = GetUserChargingEvent().features();
 
   EXPECT_TRUE(features.halt_from_last_charge());
-  EXPECT_EQ(features.time_since_last_charge(), 38);
-  EXPECT_EQ(features.duration_of_last_charge(), 58);
+  EXPECT_EQ(features.time_since_last_charge_minutes(), 38);
+  EXPECT_EQ(features.duration_of_last_charge_minutes(), 58);
   EXPECT_EQ(features.battery_percentage_before_last_charge(), 23);
   EXPECT_EQ(features.battery_percentage_of_last_charge(), 80);
 }
+
+TEST_F(SmartChargingManagerTest, GetCorrectChargeHistory) {
+  ChargeHistoryState charge_history;
+  ChargeHistoryState::ChargeEvent charge_event;
+  ChargeHistoryState::DailyHistory daily_history;
+
+  charge_event.set_start_time(1234);
+  daily_history.set_utc_midnight(3456);
+
+  for (size_t i = 0; i < 50; ++i)
+    *charge_history.add_charge_event() = charge_event;
+  for (size_t i = 0; i < 30; ++i)
+    *charge_history.add_daily_history() = daily_history;
+
+  chromeos::FakePowerManagerClient::Get()->SetChargeHistoryForAdaptiveCharging(
+      charge_history);
+
+  UpdateChargeHistory();
+  Wait();
+
+  ChargeHistoryState charge_history_obtained = GetChargeHistory();
+  EXPECT_EQ(charge_history_obtained.charge_event_size(), 50);
+  EXPECT_TRUE(charge_history_obtained.charge_event(10).has_start_time());
+  EXPECT_EQ(charge_history_obtained.charge_event(10).start_time(), 1234);
+  EXPECT_EQ(charge_history_obtained.daily_history_size(), 30);
+  EXPECT_TRUE(charge_history_obtained.daily_history(10).has_utc_midnight());
+  EXPECT_EQ(charge_history_obtained.daily_history(10).utc_midnight(), 3456);
+}
+
 }  // namespace power
 }  // namespace ash

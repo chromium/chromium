@@ -35,13 +35,13 @@
 
 namespace gfx {
 class Point;
-}
+class Rect;
+}  // namespace gfx
 
 namespace blink {
 
 class LayoutObject;
 class Node;
-class IntRect;
 class LocalFrame;
 
 // |WordSide| is used as a parameter of |StartOfWordPosition()| and
@@ -53,10 +53,16 @@ enum WordSide {
 };
 
 enum class PlatformWordBehavior { kWordSkipSpaces, kWordDontSkipSpaces };
+enum class SentenceTrailingSpaceBehavior { kIncludeSpace, kOmitSpace };
 
 // offset functions on Node
 CORE_EXPORT int CaretMinOffset(const Node*);
 CORE_EXPORT int CaretMaxOffset(const Node*);
+
+enum class SnapToClient {
+  kOthers,
+  kLocalCaretRect,
+};
 
 // Position
 // mostForward/BackwardCaretPosition are used for moving back and forth between
@@ -76,16 +82,20 @@ CORE_EXPORT int CaretMaxOffset(const Node*);
 // endsOfNodeAreVisuallyDistinctPositions(boundary).
 CORE_EXPORT Position MostBackwardCaretPosition(
     const Position&,
-    EditingBoundaryCrossingRule = kCannotCrossEditingBoundary);
+    EditingBoundaryCrossingRule = kCannotCrossEditingBoundary,
+    SnapToClient client = SnapToClient::kOthers);
 CORE_EXPORT PositionInFlatTree MostBackwardCaretPosition(
     const PositionInFlatTree&,
-    EditingBoundaryCrossingRule = kCannotCrossEditingBoundary);
+    EditingBoundaryCrossingRule = kCannotCrossEditingBoundary,
+    SnapToClient client = SnapToClient::kOthers);
 CORE_EXPORT Position MostForwardCaretPosition(
     const Position&,
-    EditingBoundaryCrossingRule = kCannotCrossEditingBoundary);
+    EditingBoundaryCrossingRule = kCannotCrossEditingBoundary,
+    SnapToClient client = SnapToClient::kOthers);
 CORE_EXPORT PositionInFlatTree MostForwardCaretPosition(
     const PositionInFlatTree&,
-    EditingBoundaryCrossingRule = kCannotCrossEditingBoundary);
+    EditingBoundaryCrossingRule = kCannotCrossEditingBoundary,
+    SnapToClient client = SnapToClient::kOthers);
 
 CORE_EXPORT bool IsVisuallyEquivalentCandidate(const Position&);
 CORE_EXPORT bool IsVisuallyEquivalentCandidate(const PositionInFlatTree&);
@@ -144,12 +154,22 @@ bool IsWordBreak(UChar);
 CORE_EXPORT Position StartOfSentencePosition(const Position&);
 CORE_EXPORT PositionInFlatTree
 StartOfSentencePosition(const PositionInFlatTree&);
-CORE_EXPORT PositionWithAffinity EndOfSentence(const Position&);
+CORE_EXPORT PositionWithAffinity
+EndOfSentence(const Position&,
+              SentenceTrailingSpaceBehavior =
+                  SentenceTrailingSpaceBehavior::kIncludeSpace);
 CORE_EXPORT PositionInFlatTreeWithAffinity
-EndOfSentence(const PositionInFlatTree&);
-CORE_EXPORT VisiblePosition EndOfSentence(const VisiblePosition&);
+EndOfSentence(const PositionInFlatTree&,
+              SentenceTrailingSpaceBehavior =
+                  SentenceTrailingSpaceBehavior::kIncludeSpace);
+CORE_EXPORT VisiblePosition
+EndOfSentence(const VisiblePosition&,
+              SentenceTrailingSpaceBehavior =
+                  SentenceTrailingSpaceBehavior::kIncludeSpace);
 CORE_EXPORT VisiblePositionInFlatTree
-EndOfSentence(const VisiblePositionInFlatTree&);
+EndOfSentence(const VisiblePositionInFlatTree&,
+              SentenceTrailingSpaceBehavior =
+                  SentenceTrailingSpaceBehavior::kIncludeSpace);
 PositionInFlatTree PreviousSentencePosition(const PositionInFlatTree&);
 PositionInFlatTree NextSentencePosition(const PositionInFlatTree&);
 EphemeralRange ExpandEndToSentenceBoundary(const EphemeralRange&);
@@ -253,12 +273,12 @@ CORE_EXPORT bool RendersInDifferentPosition(const Position&, const Position&);
 CORE_EXPORT Position SkipWhitespace(const Position&);
 CORE_EXPORT PositionInFlatTree SkipWhitespace(const PositionInFlatTree&);
 
-CORE_EXPORT IntRect ComputeTextRect(const EphemeralRange&);
-IntRect ComputeTextRect(const EphemeralRangeInFlatTree&);
-FloatRect ComputeTextFloatRect(const EphemeralRange&);
+CORE_EXPORT gfx::Rect ComputeTextRect(const EphemeralRange&);
+gfx::Rect ComputeTextRect(const EphemeralRangeInFlatTree&);
+gfx::RectF ComputeTextRectF(const EphemeralRange&);
 
 // |FirstRectForRange| requires up-to-date layout.
-IntRect FirstRectForRange(const EphemeralRange&);
+gfx::Rect FirstRectForRange(const EphemeralRange&);
 
 CORE_EXPORT PositionWithAffinity
 AdjustForwardPositionToAvoidCrossingEditingBoundaries(

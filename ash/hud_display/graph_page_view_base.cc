@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "ash/hud_display/solid_source_background.h"
 #include "base/bind.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/border.h"
@@ -35,7 +36,7 @@ class MinMaxButton : public views::ImageButton {
 
   explicit MinMaxButton(views::Button::PressedCallback callback)
       : views::ImageButton(callback) {
-    SetBorder(views::CreateEmptyBorder(gfx::Insets(kMinMaxButtonBorder)));
+    SetBorder(views::CreateEmptyBorder(kMinMaxButtonBorder));
     SetBackground(std::make_unique<SolidSourceBackground>(kHUDLegendBackground,
                                                           /*radius=*/0));
     SetProperty(kHUDClickHandler, HTCLIENT);
@@ -71,17 +72,17 @@ BEGIN_METADATA(MinMaxButton, views::ImageButton)
 END_METADATA
 
 void SetMinimizeIconToButton(views::ImageButton* button) {
-  button->SetImage(
+  button->SetImageModel(
       views::Button::ButtonState::STATE_NORMAL,
-      gfx::CreateVectorIcon(views::kWindowControlMinimizeIcon,
-                            kMinMaxButtonIconSize, kHUDDefaultColor));
+      ui::ImageModel::FromVectorIcon(views::kWindowControlMinimizeIcon,
+                                     kHUDDefaultColor, kMinMaxButtonIconSize));
 }
 
 void SetRestoreIconToButton(views::ImageButton* button) {
-  button->SetImage(
+  button->SetImageModel(
       views::Button::ButtonState::STATE_NORMAL,
-      gfx::CreateVectorIcon(views::kWindowControlRestoreIcon,
-                            kMinMaxButtonIconSize, kHUDDefaultColor));
+      ui::ImageModel::FromVectorIcon(views::kWindowControlRestoreIcon,
+                                     kHUDDefaultColor, kMinMaxButtonIconSize));
 }
 
 }  // namespace
@@ -110,8 +111,7 @@ GraphPageViewBase::GraphPageViewBase() {
       ->SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kVertical))
       ->set_cross_axis_alignment(views::BoxLayout::CrossAxisAlignment::kStart);
-  legend_container_->SetBorder(
-      views::CreateEmptyBorder(gfx::Insets(kLegendPositionOffset)));
+  legend_container_->SetBorder(views::CreateEmptyBorder(kLegendPositionOffset));
   legend_container_->SetVisible(false);
 
   legend_min_max_button_ = legend_container_->AddChildView(

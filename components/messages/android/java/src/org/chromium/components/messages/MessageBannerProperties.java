@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,12 @@ import android.view.View.OnClickListener;
 import androidx.annotation.ColorInt;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.BooleanSupplier;
+import org.chromium.base.supplier.Supplier;
+import org.chromium.components.browser_ui.widget.listmenu.ListMenuButtonDelegate;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableFloatPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableLongPropertyKey;
@@ -31,15 +35,41 @@ public class MessageBannerProperties {
      * MessageIdentifier enum.
      */
     public static final ReadableIntPropertyKey MESSAGE_IDENTIFIER = new ReadableIntPropertyKey();
+    /**
+     * Controls the appearance of the primary widget, according to which value of the
+     * PrimaryWidgetAppearance enum that this is set to. See the documentation of
+     * PrimaryWidgetAppearance in components/messages/android/message_enums.h for details about each
+     * possible value.
+     */
+    public static final WritableIntPropertyKey PRIMARY_WIDGET_APPEARANCE =
+            new WritableIntPropertyKey();
     public static final WritableObjectPropertyKey<String> PRIMARY_BUTTON_TEXT =
             new WritableObjectPropertyKey<>();
-    public static final WritableObjectPropertyKey<Runnable> ON_PRIMARY_ACTION =
-            new WritableObjectPropertyKey<>();
+    /**
+     * See the documentation of PrimaryActionClickBehavior in
+     * components/messages/android/message_enums.h for more information about the return value of
+     * the primary action callback.
+     */
+    public static final WritableObjectPropertyKey<Supplier</*@PrimaryActionClickBehavior*/ Integer>>
+            ON_PRIMARY_ACTION = new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<Runnable> ON_SECONDARY_ACTION =
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<String> TITLE_CONTENT_DESCRIPTION =
+            new WritableObjectPropertyKey<>();
+
     public static final WritableObjectPropertyKey<CharSequence> DESCRIPTION =
             new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<Drawable> DESCRIPTION_ICON =
+            new WritableObjectPropertyKey<>();
+    /**
+     * RESIZE_DESCRIPTION_ICON allows resizing the width of the drawable represented by
+     * DESCRIPTION_ICON. This is useful when the icon width and height are unequal. If
+     * RESIZE_DESCRIPTION_ICON is not specified, the DESCRIPTION_ICON will have a size of 18dp.
+     */
+    public static final WritableBooleanPropertyKey RESIZE_DESCRIPTION_ICON =
+            new WritableBooleanPropertyKey();
+
     /**
      * DESCRIPTION_MAX_LINES allows limiting description view to the specified number of lines. The
      * description will be ellipsized with TruncateAt.END option.
@@ -49,6 +79,11 @@ public class MessageBannerProperties {
     public static final WritableObjectPropertyKey<Drawable> ICON =
             new WritableObjectPropertyKey<>();
     public static final WritableIntPropertyKey ICON_RESOURCE_ID = new WritableIntPropertyKey();
+    // Large: 36 x 36dp; Default: 24dp (height) x wrap_content
+    public static final WritableBooleanPropertyKey LARGE_ICON = new WritableBooleanPropertyKey();
+    // Default: 0dp
+    public static final WritableIntPropertyKey ICON_ROUNDED_CORNER_RADIUS_PX =
+            new WritableIntPropertyKey();
 
     /**
      * If left unspecified, this will be default_icon_color_accent1. {@link #TINT_NONE} can be used
@@ -64,6 +99,10 @@ public class MessageBannerProperties {
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<String> SECONDARY_ICON_CONTENT_DESCRIPTION =
             new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<ListMenuButtonDelegate>
+            SECONDARY_MENU_BUTTON_DELEGATE = new WritableObjectPropertyKey<>();
+    public static final WritableIntPropertyKey SECONDARY_MENU_MAX_SIZE =
+            new WritableIntPropertyKey();
     // Unit: milliseconds.
     public static final WritableLongPropertyKey DISMISSAL_DURATION = new WritableLongPropertyKey();
     /**
@@ -72,13 +111,18 @@ public class MessageBannerProperties {
      */
     public static final WritableObjectPropertyKey<Callback<Integer>> ON_DISMISSED =
             new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<BooleanSupplier> ON_STARTED_SHOWING =
+            new WritableObjectPropertyKey<>();
 
     // Following properties should only be accessed by the message banner component.
     static final WritableFloatPropertyKey TRANSLATION_X = new WritableFloatPropertyKey();
     static final WritableFloatPropertyKey TRANSLATION_Y = new WritableFloatPropertyKey();
+
+    static final WritableIntPropertyKey MARGIN_TOP = new WritableIntPropertyKey();
     static final WritableFloatPropertyKey ALPHA = new WritableFloatPropertyKey();
     static final WritableObjectPropertyKey<Runnable> ON_TOUCH_RUNNABLE =
             new WritableObjectPropertyKey<>();
+    static final WritableFloatPropertyKey ELEVATION = new WritableFloatPropertyKey();
     // PRIMARY_BUTTON_CLICK_LISTENER is SingleActionMessage's handler attached to primary button
     // view. SingleActionMessage calls ON_PRIMARY_ACTION from the handler.
     static final WritableObjectPropertyKey<OnClickListener> PRIMARY_BUTTON_CLICK_LISTENER =
@@ -88,9 +132,12 @@ public class MessageBannerProperties {
             new WritableObjectPropertyKey<>();
 
     public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {MESSAGE_IDENTIFIER,
-            PRIMARY_BUTTON_TEXT, PRIMARY_BUTTON_CLICK_LISTENER, TITLE, DESCRIPTION,
-            DESCRIPTION_MAX_LINES, ICON, ICON_RESOURCE_ID, ICON_TINT_COLOR, SECONDARY_ICON,
-            SECONDARY_ICON_RESOURCE_ID, SECONDARY_BUTTON_MENU_TEXT, ON_SECONDARY_BUTTON_CLICK,
-            SECONDARY_ICON_CONTENT_DESCRIPTION, DISMISSAL_DURATION, TRANSLATION_X, TRANSLATION_Y,
-            ALPHA, ON_TOUCH_RUNNABLE, ON_PRIMARY_ACTION, ON_SECONDARY_ACTION, ON_DISMISSED};
+            PRIMARY_BUTTON_TEXT, PRIMARY_BUTTON_CLICK_LISTENER, TITLE, TITLE_CONTENT_DESCRIPTION,
+            DESCRIPTION, DESCRIPTION_ICON, RESIZE_DESCRIPTION_ICON, DESCRIPTION_MAX_LINES, ICON,
+            ICON_RESOURCE_ID, ICON_TINT_COLOR, LARGE_ICON, ICON_ROUNDED_CORNER_RADIUS_PX,
+            SECONDARY_ICON, SECONDARY_ICON_RESOURCE_ID, SECONDARY_BUTTON_MENU_TEXT,
+            ON_SECONDARY_BUTTON_CLICK, SECONDARY_ICON_CONTENT_DESCRIPTION, DISMISSAL_DURATION,
+            TRANSLATION_X, TRANSLATION_Y, ALPHA, ON_TOUCH_RUNNABLE, ON_PRIMARY_ACTION,
+            ON_SECONDARY_ACTION, ON_DISMISSED, ON_STARTED_SHOWING, SECONDARY_MENU_BUTTON_DELEGATE,
+            SECONDARY_MENU_MAX_SIZE, PRIMARY_WIDGET_APPEARANCE, ELEVATION, MARGIN_TOP};
 }

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,9 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "net/http/http_util.h"
+#include "services/network/public/mojom/timing_allow_origin.mojom-forward.h"
 
 namespace network {
 
@@ -31,6 +33,14 @@ mojom::TimingAllowOriginPtr ParseTimingAllowOrigin(const std::string& value) {
     values.push_back(v.value());
   }
   return mojom::TimingAllowOrigin::NewSerializedOrigins(std::move(values));
+}
+
+// https://fetch.spec.whatwg.org/#concept-tao-check
+bool TimingAllowOriginCheck(const mojom::TimingAllowOriginPtr& tao,
+                            const url::Origin& origin) {
+  return tao &&
+         (tao->which() == mojom::TimingAllowOrigin::Tag::kAll ||
+          ::base::Contains(tao->get_serialized_origins(), origin.Serialize()));
 }
 
 }  // namespace network

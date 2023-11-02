@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,13 +8,14 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 
 import java.util.Arrays;
 import java.util.List;
@@ -22,12 +23,18 @@ import java.util.List;
 /**
  * Tests for the AppLocalUtils class.
  */
-@RunWith(ChromeJUnit4ClassRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class AppLocaleUtilsTest {
+    @Before
+    public void setUp() {
+        LanguageTestUtils.initializeResourceBundleForTesting();
+    }
+
     // Reset the application override language after each test.
     @After
     public void tearDown() {
+        LanguageTestUtils.clearResourceBundleForTesting();
         SharedPreferencesManager.getInstance().writeString(
                 ChromePreferenceKeys.APPLICATION_OVERRIDE_LANGUAGE, null);
     }
@@ -117,23 +124,6 @@ public class AppLocaleUtilsTest {
             Assert.assertTrue(String.format("Language %s", language),
                     AppLocaleUtils.isAvailableExactUiLanguage(language));
         }
-    }
-
-    @Test
-    @SmallTest
-    public void testHasMultipleUiLanguageVariants() {
-        Assert.assertTrue(AppLocaleUtils.hasMultipleUiLanguageVariants("en-US"));
-        Assert.assertTrue(AppLocaleUtils.hasMultipleUiLanguageVariants("en-AU"));
-        Assert.assertTrue(AppLocaleUtils.hasMultipleUiLanguageVariants("pt-BR"));
-        Assert.assertTrue(AppLocaleUtils.hasMultipleUiLanguageVariants("es"));
-
-        Assert.assertFalse(AppLocaleUtils.hasMultipleUiLanguageVariants("af"));
-        Assert.assertFalse(AppLocaleUtils.hasMultipleUiLanguageVariants("af-ZA"));
-        Assert.assertFalse(AppLocaleUtils.hasMultipleUiLanguageVariants("fil"));
-        Assert.assertFalse(AppLocaleUtils.hasMultipleUiLanguageVariants("zu"));
-
-        // Non existent UI language is false.
-        Assert.assertFalse(AppLocaleUtils.hasMultipleUiLanguageVariants("dne"));
     }
 
     // Helper function to manually get and check AppLanguagePref.

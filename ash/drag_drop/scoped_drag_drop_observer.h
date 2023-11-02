@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,7 +34,8 @@ class ASH_EXPORT ScopedDragDropObserver
  private:
   // aura::client::DragDropClientObserver:
   void OnDragUpdated(const ui::DropTargetEvent& event) override;
-  void OnDragEnded() override;
+  void OnDragCompleted(const ui::DropTargetEvent& event) override;
+  void OnDragCancelled() override;
 
   // ShellObserver:
   void OnShellDestroying() override;

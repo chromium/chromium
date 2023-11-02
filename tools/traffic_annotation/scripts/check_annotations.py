@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-# Copyright 2017 The Chromium Authors. All rights reserved.
+#!/usr/bin/env vpython3
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -31,7 +31,7 @@ CHANGELIST_SIZE_TO_TRIGGER_FULL_TEST = 100
 
 class NetworkTrafficAnnotationChecker():
   EXTENSIONS = ['.cc', '.mm', '.java']
-  ANNOTATIONS_FILE = 'annotations.xml'
+  IMPORTANT_FILES = {'annotations.xml', 'grouping.xml', 'safe_list.txt'}
 
   def __init__(self, build_path=None):
     """Initializes a NetworkTrafficAnnotationChecker object.
@@ -43,9 +43,12 @@ class NetworkTrafficAnnotationChecker():
     """
     self.tools = NetworkTrafficAnnotationTools(build_path)
 
-  def IsAnnotationsFile(self, file_path):
-    """Returns true if the given file is the annotations file."""
-    return os.path.basename(file_path) == self.ANNOTATIONS_FILE
+  def IsImportantFile(self, file_path):
+    """Returns true if the given file is an important file.
+
+    Importrant files trigger a run on the full Chromium codebase, instead of
+    only analyzing modified source files."""
+    return os.path.basename(file_path) in self.IMPORTANT_FILES
 
   def ShouldCheckFile(self, file_path):
     """Returns true if the input file has an extension relevant to network
@@ -60,14 +63,14 @@ class NetworkTrafficAnnotationChecker():
     # run in error resilient mode.
     file_paths = self.tools.GetModifiedFiles() or []
 
-    annotations_file_changed = any(
-        self.IsAnnotationsFile(file_path) for file_path in file_paths)
+    important_file_changed = any(
+        self.IsImportantFile(file_path) for file_path in file_paths)
 
     # If the annotations file has changed, trigger a full test to avoid
     # missing a case where the annotations file has changed, but not the
     # corresponding file, causing a mismatch that is not detected by just
     # checking the changed .cc and .mm files.
-    if annotations_file_changed:
+    if important_file_changed:
       return []
 
     file_paths = [
@@ -84,16 +87,17 @@ class NetworkTrafficAnnotationChecker():
 
     return file_paths
 
-  def CheckFiles(self, complete_run, limit, use_python_auditor):
+  def CheckFiles(self, complete_run, limit, errors_file, use_python_auditor):
     """Passes all given files to traffic_annotation_auditor to be checked for
     possible violations of network traffic annotation rules.
 
     Args:
       complete_run: bool Flag requesting to run test on all relevant files.
-      use_python_auditor: bool If True, test auditor.py instead of
-        t_a_auditor.exe.
       limit: int The upper threshold for number of errors and warnings. Use 0
           for unlimited.
+      errors_file: str Path to a file to write errors to.
+      use_python_auditor: bool If True, test auditor.py instead of
+        t_a_auditor.exe.
 
     Returns:
       int Exit code of the network traffic annotation auditor.
@@ -108,8 +112,10 @@ class NetworkTrafficAnnotationChecker():
     if file_paths is None:
       return 0
 
-    args = ["--test-only", "--limit=%i" % limit, "--error-resilient"] + \
-           file_paths
+    args = ["--test-only", "--limit=%i" % limit, "--error-resilient"]
+    if errors_file:
+      args += ["--errors-file", errors_file]
+    args += file_paths
 
     stdout_text, stderr_text, return_code = self.tools.RunAuditor(
         args, use_python_auditor)
@@ -118,14 +124,6 @@ class NetworkTrafficAnnotationChecker():
       print(stdout_text)
     if stderr_text:
       print("\n[Runtime Messages]:\n%s" % stderr_text)
-
-    if self.tools.GetCurrentPlatform() == "android":
-      # For now, always mark the android bot as green. This acts as a sort of
-      # "FYI" mode.
-      #
-      # TODO(crbug.com/1254719): Once the Android presubmit bot is stable, turn
-      # this into a CQ-blocking failure.
-      return 0
 
     return return_code
 
@@ -142,18 +140,24 @@ def main():
            'specified, the script tries to guess it. Will not proceed if not '
            'found.')
   parser.add_argument(
-      '--limit', default=5,
+      '--limit',
+      default=5,
+      type=int,
       help='Limit for the maximum number of returned errors and warnings. '
-           'Default value is 5, use 0 for unlimited.')
+      'Default value is 5, use 0 for unlimited.')
   parser.add_argument(
       '--complete', action='store_true',
       help='Run the test on the complete repository. Otherwise only the '
            'modified files are tested.')
+  parser.add_argument('--errors-file',
+                      type=str,
+                      help='Optional path to a JSON output file with errors.')
 
   args = parser.parse_args()
   checker = NetworkTrafficAnnotationChecker(args.build_path)
   exit_code = checker.CheckFiles(args.complete,
                                  args.limit,
+                                 args.errors_file,
                                  use_python_auditor=USE_PYTHON_AUDITOR)
 
   return exit_code

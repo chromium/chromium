@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,12 +15,12 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/guid.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
@@ -29,6 +29,7 @@
 #include "chrome/browser/safe_browsing/chrome_cleaner/srt_field_trial_win.h"
 #include "chrome/install_static/install_details.h"
 #include "chrome/install_static/install_modes.h"
+#include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_request_headers.h"
@@ -107,7 +108,8 @@ net::NetworkTrafficAnnotationTag kChromeCleanerTrafficAnnotation =
 class ChromeCleanerFetcher {
  public:
   ChromeCleanerFetcher(ChromeCleanerFetchedCallback fetched_callback,
-                       network::mojom::URLLoaderFactory* url_loader_factory);
+                       network::mojom::URLLoaderFactory* url_loader_factory,
+                       PrefService* prefs);
 
   ChromeCleanerFetcher(const ChromeCleanerFetcher&) = delete;
   ChromeCleanerFetcher& operator=(const ChromeCleanerFetcher&) = delete;
@@ -128,7 +130,8 @@ class ChromeCleanerFetcher {
   ChromeCleanerFetchedCallback fetched_callback_;
 
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
-  network::mojom::URLLoaderFactory* url_loader_factory_;
+  raw_ptr<network::mojom::URLLoaderFactory> url_loader_factory_;
+  GURL download_url_;
 
   // Used for file operations such as creating a new temporary directory.
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
@@ -142,9 +145,11 @@ class ChromeCleanerFetcher {
 
 ChromeCleanerFetcher::ChromeCleanerFetcher(
     ChromeCleanerFetchedCallback fetched_callback,
-    network::mojom::URLLoaderFactory* url_loader_factory)
+    network::mojom::URLLoaderFactory* url_loader_factory,
+    PrefService* prefs)
     : fetched_callback_(std::move(fetched_callback)),
       url_loader_factory_(url_loader_factory),
+      download_url_(GetSRTDownloadURL(prefs)),
       blocking_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})),
@@ -179,7 +184,7 @@ void ChromeCleanerFetcher::OnTemporaryDirectoryCreated(bool success) {
       base::ASCIIToWide(base::GenerateGUID()) + L".tmp");
 
   auto request = std::make_unique<network::ResourceRequest>();
-  request->url = GetSRTDownloadURL();
+  request->url = download_url_;
   request->load_flags = net::LOAD_DISABLE_CACHE;
   request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 
@@ -278,8 +283,10 @@ void ChromeCleanerFetcher::RecordTimeToCompleteDownload(
 }  // namespace
 
 void FetchChromeCleaner(ChromeCleanerFetchedCallback fetched_callback,
-                        network::mojom::URLLoaderFactory* url_loader_factory) {
-  new ChromeCleanerFetcher(std::move(fetched_callback), url_loader_factory);
+                        network::mojom::URLLoaderFactory* url_loader_factory,
+                        PrefService* prefs) {
+  new ChromeCleanerFetcher(std::move(fetched_callback), url_loader_factory,
+                           prefs);
 }
 
 }  // namespace safe_browsing

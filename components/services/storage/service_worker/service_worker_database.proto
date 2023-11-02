@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,6 +22,7 @@ message ServiceWorkerNavigationPreloadState {
   optional string header = 2;
 }
 
+// NEXT ID TO USE: 24
 message ServiceWorkerRegistrationData {
   enum ServiceWorkerScriptType {
     CLASSIC = 0;
@@ -37,6 +38,41 @@ message ServiceWorkerRegistrationData {
     REQUIRE_CORP = 1;
     CREDENTIALLESS = 2;
   }
+  enum AncestorFrameType {
+    NORMAL_FRAME = 0;
+    FENCED_FRAME = 1;
+  }
+  enum FetchHandlerSkippableType {
+    reserved 0;  // Deprecated UNKNOWN_FETCH_HANDLER.
+    NOT_SKIPPABLE = 1;
+    SKIPPABLE_EMPTY_FETCH_HANDLER = 2;
+  }
+  enum ReferrerPolicyValue {
+    ALWAYS = 0;
+    DEFAULT = 1;
+    NO_REFERRER_WHEN_DOWNGRADE = 2;
+    NEVER = 3;
+    ORIGIN = 4;
+    ORIGIN_WHEN_CROSS_ORIGIN = 5;
+    STRICT_ORIGIN_WHEN_CROSS_ORIGIN = 6;
+    SAME_ORIGIN = 7;
+    STRICT_ORIGIN = 8;
+  }
+
+  // https://wicg.github.io/private-network-access/#framework
+  enum IPAddressSpace {
+    UNKNOWN = 0;
+    LOCAL = 1;
+    PRIVATE = 2;
+    PUBLIC = 3;
+  }
+
+  message PolicyContainerPolicies {
+    optional ReferrerPolicyValue referrer_policy = 1 [default = DEFAULT];
+    optional int32 sandbox_flags = 2 [default = 0];
+    optional IPAddressSpace ip_address_space = 3 [default = UNKNOWN];
+    // TODO(https://crbug.com/1177199): add content security policies
+  }
 
   required int64 registration_id = 1;
   required string scope_url = 2;
@@ -49,6 +85,7 @@ message ServiceWorkerRegistrationData {
 
   required bool is_active = 5;
   required bool has_fetch_handler = 6;
+  optional FetchHandlerSkippableType fetch_handler_skippable_type = 22;
 
   // Serialized by Time::FromDeltaSinceWindowsEpoch().
   required int64 last_update_check_time = 7;
@@ -86,6 +123,9 @@ message ServiceWorkerRegistrationData {
       [default = NONE_OR_NOT_EXIST];
   optional string cross_origin_embedder_policy_report_only_reporting_endpoint =
       20;
+  optional AncestorFrameType ancestor_frame_type = 21 [default = NORMAL_FRAME];
+
+  optional PolicyContainerPolicies policy_container_policies = 23;
 }
 
 message ServiceWorkerResourceRecord {

@@ -1,0 +1,10 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chromeos/dbus/config/use_real_dbus_clients.gni")
+
+declare_args() {
+  # TODO(crbug/1321052): Replace use_real_dbus_clients with this.
+  use_real_chromeos_services = use_real_dbus_clients
+}

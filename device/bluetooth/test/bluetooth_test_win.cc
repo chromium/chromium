@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,7 @@
 #include "base/callback_helpers.h"
 #include "base/containers/circular_deque.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -88,6 +89,7 @@ using ABI::Windows::Devices::Bluetooth::Advertisement::
     IBluetoothLEAdvertisementWatcher;
 using ABI::Windows::Devices::Bluetooth::Advertisement::
     IBluetoothLEManufacturerDataFactory;
+using ABI::Windows::Devices::Enumeration::DevicePairingKinds;
 using ABI::Windows::Devices::Enumeration::IDeviceInformation;
 using ABI::Windows::Devices::Enumeration::IDeviceInformationStatics;
 using ABI::Windows::Devices::Radios::IRadioStatics;
@@ -151,7 +153,7 @@ class TestBluetoothDeviceWinrt : public BluetoothDeviceWinrt {
   }
 
  private:
-  BluetoothTestWinrt* bluetooth_test_winrt_ = nullptr;
+  raw_ptr<BluetoothTestWinrt> bluetooth_test_winrt_ = nullptr;
 };
 
 class TestBluetoothAdapterWinrt : public BluetoothAdapterWinrt {
@@ -215,7 +217,7 @@ class TestBluetoothAdapterWinrt : public BluetoothAdapterWinrt {
   ComPtr<IBluetoothAdapter> adapter_;
   ComPtr<IDeviceInformation> device_information_;
   ComPtr<FakeBluetoothLEAdvertisementWatcherWinrt> watcher_;
-  BluetoothTestWinrt* bluetooth_test_winrt_ = nullptr;
+  raw_ptr<BluetoothTestWinrt> bluetooth_test_winrt_ = nullptr;
 };
 
 BLUETOOTH_ADDRESS
@@ -501,7 +503,7 @@ void BluetoothTestWin::SimulateGattCharacteristicReadError(
       GetSimulatedCharacteristic(characteristic);
   CHECK(target_characteristic);
   HRESULT hr = HRESULT_FROM_WIN32(ERROR_SEM_TIMEOUT);
-  if (error_code == BluetoothGattService::GATT_ERROR_INVALID_LENGTH)
+  if (error_code == BluetoothGattService::GattErrorCode::kInvalidLength)
     hr = E_BLUETOOTH_ATT_INVALID_ATTRIBUTE_VALUE_LENGTH;
   fake_bt_le_wrapper_->SimulateGattCharacteristicReadError(
       target_characteristic, hr);
@@ -521,7 +523,7 @@ void BluetoothTestWin::SimulateGattCharacteristicWriteError(
       GetSimulatedCharacteristic(characteristic);
   CHECK(target_characteristic);
   HRESULT hr = HRESULT_FROM_WIN32(ERROR_SEM_TIMEOUT);
-  if (error_code == BluetoothGattService::GATT_ERROR_INVALID_LENGTH)
+  if (error_code == BluetoothGattService::GattErrorCode::kInvalidLength)
     hr = E_BLUETOOTH_ATT_INVALID_ATTRIBUTE_VALUE_LENGTH;
   fake_bt_le_wrapper_->SimulateGattCharacteristicWriteError(
       target_characteristic, hr);
@@ -563,7 +565,7 @@ void BluetoothTestWin::SimulateGattNotifySessionStartError(
   win::GattCharacteristic* simulated_characteristic =
       GetSimulatedCharacteristic(characteristic);
   DCHECK(simulated_characteristic);
-  DCHECK(error_code == BluetoothGattService::GATT_ERROR_UNKNOWN);
+  DCHECK(error_code == BluetoothGattService::GattErrorCode::kUnknown);
   fake_bt_le_wrapper_->SimulateGattCharacteristicSetNotifyError(
       simulated_characteristic, E_BLUETOOTH_ATT_UNKNOWN_ERROR);
 }
@@ -687,8 +689,8 @@ void BluetoothTestWin::FinishPendingTasks() {
 }
 
 BluetoothTestWinrt::BluetoothTestWinrt() {
-  std::vector<base::Feature> enabled;
-  std::vector<base::Feature> disabled;
+  std::vector<base::test::FeatureRef> enabled;
+  std::vector<base::test::FeatureRef> disabled;
   if (GetParam().new_ble_implementation_enabled) {
     enabled.push_back(kNewBLEWinImplementation);
     if (base::win::GetVersion() >= base::win::Version::WIN10) {
@@ -702,6 +704,9 @@ BluetoothTestWinrt::BluetoothTestWinrt() {
   } else {
     disabled.push_back(kNewBLEGattSessionHandling);
   }
+  // TODO(crbug.com/1335586): Remove once `kWebBluetoothConfirmPairingSupport`
+  // is enabled by default.
+  enabled.push_back(features::kWebBluetoothConfirmPairingSupport);
   scoped_feature_list_.InitWithFeatures(enabled, disabled);
 }
 
@@ -878,6 +883,21 @@ void BluetoothTestWinrt::SimulatePairingPinCode(BluetoothDevice* device,
       static_cast<TestBluetoothDeviceWinrt*>(device)->ble_device();
   DCHECK(ble_device);
   ble_device->SimulatePairingPinCode(std::move(pin_code));
+}
+
+void BluetoothTestWinrt::SimulateConfirmOnly(BluetoothDevice* device) {
+  auto* const ble_device =
+      static_cast<TestBluetoothDeviceWinrt*>(device)->ble_device();
+  DCHECK(ble_device);
+  ble_device->SimulateConfirmOnly();
+}
+
+void BluetoothTestWinrt::SimulateDisplayPin(BluetoothDevice* device,
+                                            base::StringPiece display_pin) {
+  auto* const ble_device =
+      static_cast<TestBluetoothDeviceWinrt*>(device)->ble_device();
+  DCHECK(ble_device);
+  ble_device->SimulateDisplayPin(display_pin);
 }
 
 void BluetoothTestWinrt::SimulateAdvertisementStarted(

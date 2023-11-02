@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -90,7 +90,8 @@ interface FontService {
       string postscript_name_or_full_font_name) =>
     (FontIdentity? identity);
 
-  // PPAPI Specific font call to match a font family and charset.
+  // PDF-specific font call to match a font family and charset.
+  [EnableIf=enable_pdf]
   MatchFontWithFallback(string family, bool is_bold, bool is_italic,
       uint32 charset, uint32 fallback_family_type) =>
       (mojo_base.mojom.ReadOnlyFile? font_file_handle);

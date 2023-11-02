@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -86,6 +86,7 @@ class ASH_EXPORT MessageCenterUiController
       message_center::NotificationBlocker* blocker) override;
   void OnNotificationPopupShown(const std::string& notification_id,
                                 bool mark_notification_as_read) override;
+  void OnMessageViewHovered(const std::string& notification_id) override;
 
   // SessionObserver:
   void OnFirstSessionStarted() override;

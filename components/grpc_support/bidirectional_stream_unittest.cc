@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/synchronization/waitable_event.h"
 #include "build/build_config.h"
@@ -104,7 +105,7 @@ class TestBidirectionalStreamCallback {
     ~WriteData();
   };
 
-  bidirectional_stream* stream;
+  raw_ptr<bidirectional_stream> stream;
   base::WaitableEvent stream_done_event;
 
   // Test parameters.
@@ -116,7 +117,7 @@ class TestBidirectionalStreamCallback {
 
   // Test results.
   ResponseStep response_step;
-  char* read_buffer;
+  raw_ptr<char> read_buffer;
   std::map<std::string, std::string> response_headers;
   std::map<std::string, std::string> response_trailers;
   std::vector<std::string> read_data;
@@ -641,8 +642,8 @@ TEST_P(MAYBE_BidirectionalStreamTest, ReadFailsBeforeRequestStarted) {
   bidirectional_stream_destroy(test.stream);
 }
 
-// TODO(https://crbug.com/880474): This test is flaky on fuchsia_x64 builder.
-#if defined(OS_FUCHSIA)
+// TODO(https://crbug.com/880474): This test is flaky on fuchsia-x64 builder.
+#if BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_StreamFailBeforeReadIsExecutedOnNetworkThread \
   DISABLED_StreamFailBeforeReadIsExecutedOnNetworkThread
 #else
@@ -724,7 +725,7 @@ TEST_P(MAYBE_BidirectionalStreamTest, StreamFailAfterStreamReadyCallback) {
 }
 
 // TODO(crbug.com/1246489): Flaky on Win64.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_StreamFailBeforeWriteIsExecutedOnNetworkThread \
   DISABLED_StreamFailBeforeWriteIsExecutedOnNetworkThread
 #else

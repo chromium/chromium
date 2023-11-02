@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
@@ -117,7 +118,7 @@ class RulesetManagerObserver : public RulesetManager::TestObserver {
   void OnEvaluateRequest(const WebRequestInfo& request,
                          bool is_incognito_context) override;
 
-  RulesetManager* const manager_;
+  const raw_ptr<RulesetManager> manager_;
   size_t current_count_ = 0;
   absl::optional<size_t> expected_count_;
   std::unique_ptr<base::RunLoop> run_loop_;

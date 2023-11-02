@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -116,14 +116,14 @@ void FakeBluetoothGattDescriptorServiceProvider::GetValue(
           characteristic->service_path())) {
     DVLOG(1) << "GATT descriptor not registered.";
     std::move(callback).Run(
-        device::BluetoothGattService::GattErrorCode::GATT_ERROR_FAILED,
+        device::BluetoothGattService::GattErrorCode::kFailed,
         /*value=*/std::vector<uint8_t>());
     return;
   }
 
   if (!CanRead(flags_)) {
     std::move(callback).Run(
-        device::BluetoothGattService::GattErrorCode::GATT_ERROR_FAILED,
+        device::BluetoothGattService::GattErrorCode::kFailed,
         /*value=*/std::vector<uint8_t>());
     return;
   }

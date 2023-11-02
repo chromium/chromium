@@ -1,4 +1,4 @@
-// Copyright (c) 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,6 +22,7 @@
 #include "ui/events/devices/x11/device_list_cache_x11.h"
 #include "ui/events/devices/x11/touch_factory_x11.h"
 #include "ui/events/devices/x11/xinput_util.h"
+#include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_code_conversion_x.h"
 #include "ui/events/pointer_details.h"
 #include "ui/gfx/geometry/point.h"
@@ -184,8 +185,8 @@ int GetEventFlagsFromXKeyEvent(const x11::Event& xev) {
       fabricated_by_xim ? ui::EF_IME_FABRICATED_KEY : 0;
 #endif
 
-  return GetEventFlagsFromXState(state) | (key->send_event ? ui::EF_FINAL : 0) |
-         ime_fabricated_flag;
+  return GetEventFlagsFromXState(state) |
+         (xev.send_event() ? ui::EF_FINAL : 0) | ime_fabricated_flag;
 }
 
 int GetEventFlagsFromXGenericEvent(const x11::Event& x11_event) {
@@ -194,7 +195,7 @@ int GetEventFlagsFromXGenericEvent(const x11::Event& x11_event) {
   DCHECK(xievent->opcode == x11::Input::DeviceEvent::KeyPress ||
          xievent->opcode == x11::Input::DeviceEvent::KeyRelease);
   return GetEventFlagsFromXState(xievent->mods.effective) |
-         (xievent->send_event ? ui::EF_FINAL : 0);
+         (x11_event.send_event() ? ui::EF_FINAL : 0);
 }
 
 // Get the event flag for the button in XButtonEvent. During a ButtonPress
@@ -743,10 +744,17 @@ float GetTouchForceFromXEvent(const x11::Event& x11_event) {
 }
 
 PointerDetails GetTouchPointerDetailsFromXEvent(const x11::Event& xev) {
+  auto* event = xev.As<x11::Input::DeviceEvent>();
+
+  // Use touch as the default pointer type if `event` is null.
+  EventPointerType pointer_type =
+      event ? ui::TouchFactory::GetInstance()->GetTouchDevicePointerType(
+                  event->sourceid)
+            : EventPointerType::kTouch;
   return PointerDetails(
-      EventPointerType::kTouch, GetTouchIdFromXEvent(xev),
-      GetTouchRadiusXFromXEvent(xev), GetTouchRadiusYFromXEvent(xev),
-      GetTouchForceFromXEvent(xev), GetTouchAngleFromXEvent(xev));
+      pointer_type, GetTouchIdFromXEvent(xev), GetTouchRadiusXFromXEvent(xev),
+      GetTouchRadiusYFromXEvent(xev), GetTouchForceFromXEvent(xev),
+      GetTouchAngleFromXEvent(xev));
 }
 
 bool GetScrollOffsetsFromXEvent(const x11::Event& xev,

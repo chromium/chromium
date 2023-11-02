@@ -1,9 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/optimization_guide/chrome_hints_manager.h"
 
+#include "base/command_line.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -11,10 +12,10 @@
 #include "chrome/browser/optimization_guide/optimization_guide_tab_url_provider.h"
 #include "chrome/browser/optimization_guide/optimization_guide_web_contents_observer.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/data_reduction_proxy/core/common/data_reduction_proxy_pref_names.h"
 #include "components/optimization_guide/content/browser/optimization_guide_decider.h"
 #include "components/optimization_guide/core/hints_fetcher.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_store.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
@@ -25,10 +26,8 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/test_web_contents_factory.h"
-#include "services/network/public/cpp/network_connection_tracker.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
-#include "services/network/test/test_network_connection_tracker.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -90,8 +89,6 @@ class ChromeHintsManagerFetchingTest
     pref_service_ =
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
     optimization_guide::prefs::RegisterProfilePrefs(pref_service_->registry());
-    pref_service_->registry()->RegisterBooleanPref(
-        data_reduction_proxy::prefs::kDataSaverEnabled, false);
     unified_consent::UnifiedConsentService::RegisterPrefs(
         pref_service_->registry());
 
@@ -101,17 +98,17 @@ class ChromeHintsManagerFetchingTest
 
     hint_store_ = std::make_unique<optimization_guide::OptimizationGuideStore>(
         db_provider_.get(), temp_dir(),
-        task_environment_.GetMainThreadTaskRunner());
+        task_environment_.GetMainThreadTaskRunner(), /*pref_service=*/nullptr);
 
     tab_url_provider_ = std::make_unique<FakeTabUrlProvider>();
 
     hints_manager_ = std::make_unique<ChromeHintsManager>(
-        &testing_profile_, pref_service(), hint_store_.get(),
+        &testing_profile_, pref_service(), hint_store_->AsWeakPtr(),
         /*top_host_provider=*/nullptr, tab_url_provider_.get(),
         url_loader_factory_,
-        network::TestNetworkConnectionTracker::GetInstance(),
         OptimizationGuideKeyedService::MaybeCreatePushNotificationManager(
-            &testing_profile_));
+            &testing_profile_),
+        &optimization_guide_logger_);
     hints_manager_->SetClockForTesting(task_environment_.GetMockClock());
 
     // Run until hint cache is initialized and the ChromeHintsManager is ready
@@ -141,11 +138,6 @@ class ChromeHintsManagerFetchingTest
             web_contents);
     navigation_handle->set_url(url);
     return navigation_handle;
-  }
-
-  void SetConnectionOnline() {
-    network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
-        network::mojom::ConnectionType::CONNECTION_4G);
   }
 
   content::WebContents* Navigate(GURL url) {
@@ -188,6 +180,7 @@ class ChromeHintsManagerFetchingTest
   std::unique_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   network::TestURLLoaderFactory test_url_loader_factory_;
+  OptimizationGuideLogger optimization_guide_logger_;
 };
 
 TEST_F(ChromeHintsManagerFetchingTest, HintsFetched_AtSRP_DuplicatesRemoved) {
@@ -195,9 +188,6 @@ TEST_F(ChromeHintsManagerFetchingTest, HintsFetched_AtSRP_DuplicatesRemoved) {
       optimization_guide::switches::kDisableCheckingUserPermissionsForTesting);
   hints_manager()->RegisterOptimizationTypes(
       {optimization_guide::proto::DEFER_ALL_SCRIPT});
-
-  // Set to online so fetch is activated.
-  SetConnectionOnline();
 
   std::vector<GURL> sorted_predicted_urls;
   sorted_predicted_urls.emplace_back("https://foo.com/page1.html");
@@ -247,8 +237,6 @@ TEST_F(ChromeHintsManagerFetchingTest,
   hints_manager()->RegisterOptimizationTypes(
       {optimization_guide::proto::DEFER_ALL_SCRIPT});
 
-  // Set to online so fetch is activated.
-  SetConnectionOnline();
   base::HistogramTester histogram_tester;
   std::vector<GURL> sorted_predicted_urls;
   sorted_predicted_urls.emplace_back("https://foo.com/page1.html");
@@ -280,9 +268,6 @@ TEST_F(ChromeHintsManagerFetchingTest, HintsFetched_AtSRP) {
   hints_manager()->RegisterOptimizationTypes(
       {optimization_guide::proto::DEFER_ALL_SCRIPT});
 
-  // Set to online so fetch is activated.
-  SetConnectionOnline();
-
   base::HistogramTester histogram_tester;
   std::vector<GURL> sorted_predicted_urls;
   sorted_predicted_urls.emplace_back("https://foo.com/");
@@ -307,9 +292,6 @@ TEST_F(ChromeHintsManagerFetchingTest, HintsFetched_AtSRP_GoogleLinksIgnored) {
       optimization_guide::switches::kDisableCheckingUserPermissionsForTesting);
   hints_manager()->RegisterOptimizationTypes(
       {optimization_guide::proto::DEFER_ALL_SCRIPT});
-
-  // Set to online so fetch is activated.
-  SetConnectionOnline();
 
   base::HistogramTester histogram_tester;
   std::vector<GURL> sorted_predicted_urls;
@@ -337,8 +319,6 @@ TEST_F(ChromeHintsManagerFetchingTest, HintsFetched_AtNonSRP) {
   hints_manager()->RegisterOptimizationTypes(
       {optimization_guide::proto::DEFER_ALL_SCRIPT});
 
-  // Set to online so fetch is activated.
-  SetConnectionOnline();
   base::HistogramTester histogram_tester;
   std::vector<GURL> sorted_predicted_urls;
   sorted_predicted_urls.emplace_back("https://foo.com/");
@@ -370,12 +350,8 @@ class ChromeHintsManagerPushEnabledTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(ChromeHintsManagerPushEnabledTest, PushManagerSetOnAndroid) {
-#if defined(OS_ANDROID)
+TEST_F(ChromeHintsManagerPushEnabledTest, PushManagerSet) {
   EXPECT_TRUE(hints_manager()->push_notification_manager());
-#else
-  EXPECT_FALSE(hints_manager()->push_notification_manager());
-#endif
 }
 
 class ChromeHintsManagerPushDisabledTest
@@ -390,7 +366,7 @@ class ChromeHintsManagerPushDisabledTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(ChromeHintsManagerPushDisabledTest, PushManagerSetOnAndroid) {
+TEST_F(ChromeHintsManagerPushDisabledTest, PushManagerSet) {
   EXPECT_FALSE(hints_manager()->push_notification_manager());
 }
 

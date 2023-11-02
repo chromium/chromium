@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,24 +14,53 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "net/cert/mock_cert_verifier.h"
+#include "net/cert/pem.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/log/test_net_log.h"
 #include "net/quic/crypto/proof_source_chromium.h"
 #include "net/quic/quic_context.h"
 #include "net/test/test_data_directory.h"
-#include "net/third_party/quiche/src/quic/test_tools/crypto_test_utils.h"
-#include "net/third_party/quiche/src/quic/test_tools/quic_test_backend.h"
+#include "net/third_party/quiche/src/quiche/quic/core/crypto/proof_source_x509.h"
+#include "net/third_party/quiche/src/quiche/quic/test_tools/crypto_test_utils.h"
+#include "net/third_party/quiche/src/quiche/quic/test_tools/quic_test_backend.h"
 #include "net/tools/quic/quic_simple_server.h"
-#include "net/tools/quic/quic_transport_simple_server.h"
 #include "net/url_request/url_request_context.h"
 #include "services/network/network_context.h"
 #include "services/network/network_service.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/test/fake_test_cert_verifier_params_factory.h"
+#include "services/network/url_request_context_builder_mojo.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace network {
 namespace {
+
+class HostResolverFactory final : public net::HostResolver::Factory {
+ public:
+  explicit HostResolverFactory(std::unique_ptr<net::HostResolver> resolver)
+      : resolver_(std::move(resolver)) {}
+
+  std::unique_ptr<net::HostResolver> CreateResolver(
+      net::HostResolverManager* manager,
+      base::StringPiece host_mapping_rules,
+      bool enable_caching) override {
+    DCHECK(resolver_);
+    return std::move(resolver_);
+  }
+
+  // See HostResolver::CreateStandaloneResolver.
+  std::unique_ptr<net::HostResolver> CreateStandaloneResolver(
+      net::NetLog* net_log,
+      const net::HostResolver::ManagerOptions& options,
+      base::StringPiece host_mapping_rules,
+      bool enable_caching) override {
+    NOTREACHED();
+    return nullptr;
+  }
+
+ private:
+  std::unique_ptr<net::HostResolver> resolver_;
+};
 
 // A clock that only mocks out WallNow(), but uses real Now() and
 // ApproximateNow().  Useful for certificate verification.
@@ -57,7 +86,7 @@ class TestConnectionHelper : public quic::QuicConnectionHelperInterface {
   quic::QuicRandom* GetRandomGenerator() override {
     return quic::QuicRandom::GetInstance();
   }
-  quic::QuicBufferAllocator* GetStreamSendBufferAllocator() override {
+  quiche::QuicheBufferAllocator* GetStreamSendBufferAllocator() override {
     return &allocator_;
   }
 
@@ -65,7 +94,7 @@ class TestConnectionHelper : public quic::QuicConnectionHelperInterface {
 
  private:
   TestWallClock clock_;
-  quic::SimpleBufferAllocator allocator_;
+  quiche::SimpleBufferAllocator allocator_;
 };
 
 mojom::NetworkContextParamsPtr CreateNetworkContextParams() {
@@ -179,8 +208,7 @@ class TestClient final : public mojom::WebTransportClient {
 
   // mojom::WebTransportClient implementation.
   void OnDatagramReceived(base::span<const uint8_t> data) override {
-    received_datagrams_.push_back(
-        std::vector<uint8_t>(data.begin(), data.end()));
+    received_datagrams_.emplace_back(data.begin(), data.end());
   }
   void OnIncomingStreamClosed(uint32_t stream_id, bool fin_received) override {
     closed_incoming_streams_.insert(std::make_pair(stream_id, fin_received));
@@ -263,7 +291,7 @@ class TestClient final : public mojom::WebTransportClient {
 };
 
 quic::ParsedQuicVersion GetTestVersion() {
-  quic::ParsedQuicVersion version = quic::DefaultVersionForQuicTransport();
+  quic::ParsedQuicVersion version = quic::ParsedQuicVersion::RFCv1();
   quic::QuicEnableVersion(version);
   return version;
 }
@@ -278,26 +306,30 @@ class WebTransportTest : public testing::TestWithParam<base::StringPiece> {
         origin_(url::Origin::Create(GURL("https://example.org/"))),
         task_environment_(base::test::TaskEnvironment::MainThreadType::IO),
         network_service_(NetworkService::CreateForTesting()),
-        network_context_remote_(mojo::NullRemote()),
-        network_context_(network_service_.get(),
-                         network_context_remote_.BindNewPipeAndPassReceiver(),
-                         CreateNetworkContextParams()) {
-      backend_.set_enable_webtransport(true);
-      http_server_ = std::make_unique<net::QuicSimpleServer>(
-          std::move(proof_source), quic::QuicConfig(),
-          quic::QuicCryptoServerConfig::ConfigOptions(),
-          quic::AllSupportedVersions(), &backend_);
-      EXPECT_TRUE(http_server_->CreateUDPSocketAndListen(
-          quic::QuicSocketAddress(quic::QuicSocketAddress(
-              quic::QuicIpAddress::Any6(), /*port=*/0))));
+        network_context_remote_(mojo::NullRemote()) {
+    auto host_resolver = std::make_unique<net::MockHostResolver>();
+    host_resolver->rules()->AddRule("test.example.com", "127.0.0.1");
+    network_service_->set_host_resolver_factory_for_testing(
+        std::make_unique<HostResolverFactory>(std::move(host_resolver)));
+    network_context_ = NetworkContext::CreateForTesting(
+        network_service_.get(),
+        network_context_remote_.BindNewPipeAndPassReceiver(),
+        CreateNetworkContextParams(),
+        base::BindOnce([](net::URLRequestContextBuilder* builder) {
+          auto cert_verifier = std::make_unique<net::MockCertVerifier>();
+          cert_verifier->set_default_result(net::OK);
+          builder->SetCertVerifier(std::move(cert_verifier));
+        }));
+    backend_.set_enable_webtransport(true);
+    http_server_ = std::make_unique<net::QuicSimpleServer>(
+        std::move(proof_source), quic::QuicConfig(),
+        quic::QuicCryptoServerConfig::ConfigOptions(),
+        quic::AllSupportedVersions(), &backend_);
+    EXPECT_TRUE(http_server_->CreateUDPSocketAndListen(quic::QuicSocketAddress(
+        quic::QuicSocketAddress(quic::QuicIpAddress::Any6(), /*port=*/0))));
 
-    cert_verifier_.set_default_result(net::OK);
-    host_resolver_.rules()->AddRule("test.example.com", "127.0.0.1");
-
-    network_context_.url_request_context()->set_cert_verifier(&cert_verifier_);
-    network_context_.url_request_context()->set_host_resolver(&host_resolver_);
-    network_context_.url_request_context()->set_net_log(net::NetLog::Get());
-    auto* quic_context = network_context_.url_request_context()->quic_context();
+    auto* quic_context =
+        network_context_->url_request_context()->quic_context();
     quic_context->params()->supported_versions.push_back(version_);
     quic_context->params()->origins_to_force_quic_on.insert(
         net::HostPortPair("test.example.com", 0));
@@ -307,11 +339,11 @@ class WebTransportTest : public testing::TestWithParam<base::StringPiece> {
   void CreateWebTransport(
       const GURL& url,
       const url::Origin& origin,
-      const net::NetworkIsolationKey& key,
+      const net::NetworkAnonymizationKey& key,
       std::vector<mojom::WebTransportCertificateFingerprintPtr> fingerprints,
       mojo::PendingRemote<mojom::WebTransportHandshakeClient>
           handshake_client) {
-    network_context_.CreateWebTransport(
+    network_context_->CreateWebTransport(
         url, origin, key, std::move(fingerprints), std::move(handshake_client));
   }
   void CreateWebTransport(
@@ -319,7 +351,7 @@ class WebTransportTest : public testing::TestWithParam<base::StringPiece> {
       const url::Origin& origin,
       mojo::PendingRemote<mojom::WebTransportHandshakeClient>
           handshake_client) {
-    CreateWebTransport(url, origin, net::NetworkIsolationKey(), {},
+    CreateWebTransport(url, origin, net::NetworkAnonymizationKey(), {},
                        std::move(handshake_client));
   }
 
@@ -329,7 +361,7 @@ class WebTransportTest : public testing::TestWithParam<base::StringPiece> {
       std::vector<mojom::WebTransportCertificateFingerprintPtr> fingerprints,
       mojo::PendingRemote<mojom::WebTransportHandshakeClient>
           handshake_client) {
-    CreateWebTransport(url, origin, net::NetworkIsolationKey(),
+    CreateWebTransport(url, origin, net::NetworkAnonymizationKey(),
                        std::move(fingerprints), std::move(handshake_client));
   }
 
@@ -340,8 +372,8 @@ class WebTransportTest : public testing::TestWithParam<base::StringPiece> {
   }
 
   const url::Origin& origin() const { return origin_; }
-  const NetworkContext& network_context() const { return network_context_; }
-  NetworkContext& mutable_network_context() { return network_context_; }
+  const NetworkContext& network_context() const { return *network_context_; }
+  NetworkContext& mutable_network_context() { return *network_context_; }
   net::RecordingNetLogObserver& net_log_observer() { return net_log_observer_; }
 
   void RunPendingTasks() {
@@ -352,18 +384,16 @@ class WebTransportTest : public testing::TestWithParam<base::StringPiece> {
   }
 
  private:
-  QuicFlagSaver flags_;  // Save/restore all QUIC flag values.
+  quic::test::QuicFlagSaver flags_;  // Save/restore all QUIC flag values.
   quic::ParsedQuicVersion version_;
   const url::Origin origin_;
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<NetworkService> network_service_;
   mojo::Remote<mojom::NetworkContext> network_context_remote_;
 
-  net::MockCertVerifier cert_verifier_;
-  net::MockHostResolver host_resolver_;
   net::RecordingNetLogObserver net_log_observer_;
 
-  NetworkContext network_context_;
+  std::unique_ptr<NetworkContext> network_context_;
 
   std::unique_ptr<net::QuicSimpleServer> http_server_;
   quic::test::QuicTestBackend backend_;
@@ -661,11 +691,36 @@ class WebTransportWithCustomCertificateTest : public WebTransportTest {
   static std::unique_ptr<quic::ProofSource> CreateProofSource() {
     auto proof_source = std::make_unique<net::ProofSourceChromium>();
     base::FilePath certs_dir = net::GetTestCertsDirectory();
-    EXPECT_TRUE(proof_source->Initialize(
-        certs_dir.AppendASCII("quic-short-lived.pem"),
-        certs_dir.AppendASCII("quic-leaf-cert.key"),
-        certs_dir.AppendASCII("quic-leaf-cert.key.sct")));
-    return proof_source;
+    base::FilePath cert_path = certs_dir.AppendASCII("quic-short-lived.pem");
+    base::FilePath key_path = certs_dir.AppendASCII("quic-ecdsa-leaf.key");
+
+    std::string cert_pem, key_raw;
+    if (!base::ReadFileToString(cert_path, &cert_pem)) {
+      ADD_FAILURE() << "Failed to load the certificate from " << cert_path;
+      return nullptr;
+    }
+    if (!base::ReadFileToString(key_path, &key_raw)) {
+      ADD_FAILURE() << "Failed to load the private key from " << key_path;
+      return nullptr;
+    }
+
+    net::PEMTokenizer pem_tokenizer(cert_pem, {"CERTIFICATE"});
+    if (!pem_tokenizer.GetNext()) {
+      ADD_FAILURE() << "No certificates found in " << cert_path;
+      return nullptr;
+    }
+    auto chain =
+        quiche::QuicheReferenceCountedPointer<quic::ProofSource::Chain>(
+            new quic::ProofSource::Chain(
+                std::vector<std::string>{pem_tokenizer.data()}));
+    std::unique_ptr<quic::CertificatePrivateKey> key =
+        quic::CertificatePrivateKey::LoadFromDer(key_raw);
+    if (!key) {
+      ADD_FAILURE() << "Failed to parse the key file " << key_path;
+      return nullptr;
+    }
+
+    return quic::ProofSourceX509::Create(std::move(chain), std::move(*key));
   }
 };
 
@@ -678,8 +733,8 @@ TEST_F(WebTransportWithCustomCertificateTest, WithValidFingerprint) {
 
   auto fingerprint = mojom::WebTransportCertificateFingerprint::New(
       "sha-256",
-      "ED:3D:D7:C3:67:10:94:68:D1:DC:D1:26:5C:B2:74:D7:1C:"
-      "A2:63:3E:94:94:C0:84:39:D6:64:FA:08:B9:77:37");
+      "6E:8E:7B:43:2A:30:B2:A8:5F:59:56:85:64:C2:48:E9:35:"
+      "CB:63:B0:7A:E9:F5:CA:3C:35:6F:CB:CC:E8:8D:1B");
   std::vector<mojom::WebTransportCertificateFingerprintPtr> fingerprints;
   fingerprints.push_back(std::move(fingerprint));
 

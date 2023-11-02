@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "components/web_package/web_bundle_builder.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"
+#include "mojo/public/cpp/system/functions.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
@@ -30,6 +31,7 @@ const char kBundleRequestId[] = "bundle-devtools-request-id";
 const char kResourceUrl[] = "https://example.com/";
 const char kResourceUrl2[] = "https://example.com/another";
 const char kResourceUrl3[] = "https://example.com/yetanother";
+const char kInvalidResourceUrl[] = "ftp://foo";
 const char kResourceRequestId[] = "resource-1-devtools-request-id";
 const char kResourceRequestId2[] = "resource-2-devtools-request-id";
 const char kResourceRequestId3[] = "resource-3-devtools-request-id";
@@ -45,7 +47,7 @@ using ::testing::Optional;
 using ::testing::Pointee;
 
 std::vector<uint8_t> CreateSmallBundle() {
-  web_package::WebBundleBuilder builder(kResourceUrl, "" /* manifest_url */);
+  web_package::WebBundleBuilder builder;
   builder.AddExchange(kResourceUrl,
                       {{":status", "200"}, {"content-type", "text/plain"}},
                       "body");
@@ -53,7 +55,7 @@ std::vector<uint8_t> CreateSmallBundle() {
 }
 
 std::vector<uint8_t> CreateLargeBundle() {
-  web_package::WebBundleBuilder builder(kResourceUrl, "" /* manifest_url */);
+  web_package::WebBundleBuilder builder;
   builder.AddExchange(kResourceUrl,
                       {{":status", "200"}, {"content-type", "text/plain"}},
                       "body");
@@ -67,8 +69,7 @@ std::vector<uint8_t> CreateLargeBundle() {
 }
 
 std::vector<uint8_t> CreateCrossOriginBundle() {
-  web_package::WebBundleBuilder builder(kCrossOriginJsonUrl,
-                                        "" /* manifest_url */);
+  web_package::WebBundleBuilder builder;
   builder.AddExchange(
       kCrossOriginJsonUrl,
       {{":status", "200"}, {"content-type", "application/json"}},
@@ -207,11 +208,11 @@ class WebBundleURLLoaderFactoryTest : public ::testing::Test {
   StartRequestResult StartRequest(const ResourceRequest& request) {
     StartRequestResult result;
     result.client = std::make_unique<network::TestURLLoaderClient>();
-    factory_->StartSubresourceRequest(
+    factory_->StartLoader(WebBundleURLLoaderFactory::CreateURLLoader(
         result.loader.BindNewPipeAndPassReceiver(), request,
         result.client->CreateRemote(),
         mojo::Remote<mojom::TrustedHeaderClient>(), base::Time::Now(),
-        base::TimeTicks::Now());
+        base::TimeTicks::Now(), base::DoNothing()));
     return result;
   }
 
@@ -263,6 +264,8 @@ TEST_F(WebBundleURLLoaderFactoryTest, Basic) {
   histogram_tester.ExpectUniqueSample(
       "SubresourceWebBundles.LoadResult",
       WebBundleURLLoaderFactory::SubresourceWebBundleLoadResult::kSuccess, 1);
+  histogram_tester.ExpectUniqueSample("SubresourceWebBundles.ResourceCount", 1,
+                                      1);
 }
 
 TEST_F(WebBundleURLLoaderFactoryTest, MetadataParseError) {
@@ -301,8 +304,46 @@ TEST_F(WebBundleURLLoaderFactoryTest, MetadataParseError) {
       1);
 }
 
+TEST_F(WebBundleURLLoaderFactoryTest, MetadataWithInvalidExchangeUrl) {
+  base::HistogramTester histogram_tester;
+  auto request = StartRequest(GURL(kInvalidResourceUrl), kResourceRequestId);
+
+  web_package::WebBundleBuilder builder;
+  builder.AddExchange(kInvalidResourceUrl,
+                      {{":status", "200"}, {"content-type", "text/plain"}},
+                      "body");
+  WriteBundle(builder.CreateBundle());
+  FinishWritingBundle();
+
+  EXPECT_CALL(*devtools_observer_,
+              OnSubresourceWebBundleMetadataError(
+                  kBundleRequestId, Eq("Exchange URL is not valid.")));
+  EXPECT_CALL(*devtools_observer_, OnSubresourceWebBundleInnerResponse(_, _, _))
+      .Times(0);
+  request.client->RunUntilComplete();
+  RunUntilBundleError();
+
+  EXPECT_EQ(net::ERR_INVALID_WEB_BUNDLE,
+            request.client->completion_status().error_code);
+  EXPECT_EQ(last_bundle_error()->first,
+            mojom::WebBundleErrorType::kMetadataParseError);
+  EXPECT_EQ(last_bundle_error()->second, "Exchange URL is not valid.");
+
+  // Requests made after metadata parse error should also fail.
+  auto request2 = StartRequest(GURL(kInvalidResourceUrl), kResourceRequestId);
+  request2.client->RunUntilComplete();
+
+  EXPECT_EQ(net::ERR_INVALID_WEB_BUNDLE,
+            request2.client->completion_status().error_code);
+  histogram_tester.ExpectUniqueSample(
+      "SubresourceWebBundles.LoadResult",
+      WebBundleURLLoaderFactory::SubresourceWebBundleLoadResult::
+          kMetadataParseError,
+      1);
+}
+
 TEST_F(WebBundleURLLoaderFactoryTest, ResponseParseError) {
-  web_package::WebBundleBuilder builder(kResourceUrl, "" /* manifest_url */);
+  web_package::WebBundleBuilder builder;
   // An invalid response.
   builder.AddExchange(kResourceUrl, {{":status", "0"}}, "body");
   WriteBundle(builder.CreateBundle());
@@ -354,7 +395,7 @@ TEST_F(WebBundleURLLoaderFactoryTest, ResourceNotFoundInBundle) {
 }
 
 TEST_F(WebBundleURLLoaderFactoryTest, RedirectResponseIsNotAllowed) {
-  web_package::WebBundleBuilder builder(kResourceUrl, "" /* manifest_url */);
+  web_package::WebBundleBuilder builder;
   builder.AddExchange(kResourceUrl,
                       {{":status", "301"}, {"location", kResourceUrl2}}, "");
   builder.AddExchange(kResourceUrl2,
@@ -394,6 +435,7 @@ TEST_F(WebBundleURLLoaderFactoryTest, StartRequestBeforeReadingBundle) {
 }
 
 TEST_F(WebBundleURLLoaderFactoryTest, MultipleRequests) {
+  base::HistogramTester histogram_tester;
   auto request1 = StartRequest(GURL(kResourceUrl), kResourceRequestId);
   auto request2 = StartRequest(GURL(kResourceUrl2), kResourceRequestId2);
 
@@ -413,6 +455,8 @@ TEST_F(WebBundleURLLoaderFactoryTest, MultipleRequests) {
   request2.client->RunUntilComplete();
 
   EXPECT_EQ(net::OK, request2.client->completion_status().error_code);
+  histogram_tester.ExpectUniqueSample("SubresourceWebBundles.ResourceCount", 3,
+                                      1);
 }
 
 TEST_F(WebBundleURLLoaderFactoryTest, CancelRequest) {
@@ -484,7 +528,7 @@ TEST_F(WebBundleURLLoaderFactoryTest, TruncatedBundle) {
   EXPECT_EQ(last_bundle_error()->second, "Error reading response header.");
 }
 
-TEST_F(WebBundleURLLoaderFactoryTest, CrossOiginJson) {
+TEST_F(WebBundleURLLoaderFactoryTest, CrossOriginJson) {
   WriteBundle(CreateCrossOriginBundle());
   FinishWritingBundle();
 

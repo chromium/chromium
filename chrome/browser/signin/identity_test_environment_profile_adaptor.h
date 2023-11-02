@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,7 +44,9 @@ class IdentityTestEnvironmentProfileAdaptor {
   // requires explicitly on a Profile that is passed to it.
   // See the above variant for comments on common parameters.
   static void SetIdentityTestEnvironmentFactoriesOnBrowserContext(
-      content::BrowserContext* browser_context);
+      content::BrowserContext* browser_context,
+      signin::AccountConsistencyMethod account_consistency =
+          signin::AccountConsistencyMethod::kDisabled);
 
   // Appends the set of testing factories that signin::IdentityTestEnvironment
   // requires to |factories_to_append_to|, which should be the set of testing

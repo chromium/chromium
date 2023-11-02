@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 
 #include "base/callback.h"
 #include "base/files/file.h"
-#include "base/task/post_task.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_checker.h"
@@ -129,7 +129,7 @@ class PnaclHost {
     PendingTranslation(const PendingTranslation& other);
     ~PendingTranslation();
     base::ProcessHandle process_handle;
-    base::File* nexe_fd;
+    raw_ptr<base::File> nexe_fd;
     bool got_nexe_fd;
     bool got_cache_reply;
     bool got_cache_hit;

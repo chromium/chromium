@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,12 @@
 
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "remoting/protocol/connection_to_host.h"
 #include "remoting/protocol/protocol_mock_objects.h"
 
-namespace remoting {
-namespace test {
+namespace remoting::test {
 
 class FakeConnectionToHost : public protocol::ConnectionToHost {
  public:
@@ -54,7 +53,7 @@ class FakeConnectionToHost : public protocol::ConnectionToHost {
 
   State state_ = INITIALIZING;
 
-  HostEventCallback* event_callback_;
+  raw_ptr<HostEventCallback> event_callback_;
 
   testing::NiceMock<protocol::MockClipboardStub> mock_clipboard_stub_;
   testing::NiceMock<protocol::MockHostStub> mock_host_stub_;
@@ -62,7 +61,6 @@ class FakeConnectionToHost : public protocol::ConnectionToHost {
   std::unique_ptr<protocol::SessionConfig> session_config_;
 };
 
-}  // namespace test
-}  // namespace remoting
+}  // namespace remoting::test
 
 #endif  // REMOTING_PROTOCOL_FAKE_CONNECTION_TO_HOST_H_

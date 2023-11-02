@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -59,52 +59,53 @@ TEST(JSONWriterTest, NestedTypes) {
 
   // Writer unittests like empty list/dict nesting,
   // list list nesting, etc.
-  Value root_dict(Value::Type::DICTIONARY);
-  Value::ListStorage list_storage;
-  Value inner_dict(Value::Type::DICTIONARY);
-  inner_dict.SetIntKey("inner int", 10);
-  list_storage.push_back(std::move(inner_dict));
-  list_storage.push_back(Value(Value::Type::LIST));
-  list_storage.push_back(Value(true));
-  root_dict.SetKey("list", Value(std::move(list_storage)));
-
-  // Test the pretty-printer.
-  EXPECT_TRUE(JSONWriter::Write(root_dict, &output_js));
-  EXPECT_EQ("{\"list\":[{\"inner int\":10},[],true]}", output_js);
-  EXPECT_TRUE(JSONWriter::WriteWithOptions(
-      root_dict, JSONWriter::OPTIONS_PRETTY_PRINT, &output_js));
+  Value::Dict root_dict;
+  Value::List list;
+  Value::Dict inner_dict;
+  inner_dict.Set("inner int", 10);
+  list.Append(std::move(inner_dict));
+  Value::Dict empty_dict;
+  list.Append(std::move(empty_dict));
+  list.Append(Value::List());
+  list.Append(true);
+  root_dict.Set("list", Value(std::move(list)));
 
   // The pretty-printer uses a different newline style on Windows than on
   // other platforms.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define JSON_NEWLINE "\r\n"
 #else
 #define JSON_NEWLINE "\n"
 #endif
-  EXPECT_EQ("{" JSON_NEWLINE
-            "   \"list\": [ {" JSON_NEWLINE
-            "      \"inner int\": 10" JSON_NEWLINE
-            "   }, [  ], true ]" JSON_NEWLINE
-            "}" JSON_NEWLINE,
+
+  // Test the pretty-printer.
+  EXPECT_TRUE(JSONWriter::Write(root_dict, &output_js));
+  EXPECT_EQ("{\"list\":[{\"inner int\":10},{},[],true]}", output_js);
+  EXPECT_TRUE(JSONWriter::WriteWithOptions(
+      root_dict, JSONWriter::OPTIONS_PRETTY_PRINT, &output_js));
+  EXPECT_EQ("{" JSON_NEWLINE "   \"list\": [ {" JSON_NEWLINE
+            "      \"inner int\": 10" JSON_NEWLINE "   }, {" JSON_NEWLINE
+            "   }, [  ], true ]" JSON_NEWLINE "}" JSON_NEWLINE,
             output_js);
+
 #undef JSON_NEWLINE
 }
 
 TEST(JSONWriterTest, KeysWithPeriods) {
   std::string output_js;
 
-  Value period_dict(Value::Type::DICTIONARY);
-  period_dict.SetIntKey("a.b", 3);
-  period_dict.SetIntKey("c", 2);
-  Value period_dict2(Value::Type::DICTIONARY);
-  period_dict2.SetIntKey("g.h.i.j", 1);
-  period_dict.SetKey("d.e.f", std::move(period_dict2));
+  Value::Dict period_dict;
+  period_dict.Set("a.b", 3);
+  period_dict.Set("c", 2);
+  Value::Dict period_dict2;
+  period_dict2.Set("g.h.i.j", 1);
+  period_dict.Set("d.e.f", std::move(period_dict2));
   EXPECT_TRUE(JSONWriter::Write(period_dict, &output_js));
   EXPECT_EQ("{\"a.b\":3,\"c\":2,\"d.e.f\":{\"g.h.i.j\":1}}", output_js);
 
-  Value period_dict3(Value::Type::DICTIONARY);
-  period_dict3.SetIntPath("a.b", 2);
-  period_dict3.SetIntKey("a.b", 1);
+  Value::Dict period_dict3;
+  period_dict3.SetByDottedPath("a.b", 2);
+  period_dict3.Set("a.b", 1);
   EXPECT_TRUE(JSONWriter::Write(period_dict3, &output_js));
   EXPECT_EQ("{\"a\":{\"b\":2},\"a.b\":1}", output_js);
 }
@@ -122,24 +123,23 @@ TEST(JSONWriterTest, BinaryValues) {
       root, JSONWriter::OPTIONS_OMIT_BINARY_VALUES, &output_js));
   EXPECT_TRUE(output_js.empty());
 
-  Value::ListStorage binary_list_storage;
-  binary_list_storage.push_back(Value(kBufferSpan));
-  binary_list_storage.push_back(Value(5));
-  binary_list_storage.push_back(Value(kBufferSpan));
-  binary_list_storage.push_back(Value(2));
-  binary_list_storage.push_back(Value(kBufferSpan));
-  Value binary_list(std::move(binary_list_storage));
+  Value::List binary_list;
+  binary_list.Append(Value(kBufferSpan));
+  binary_list.Append(5);
+  binary_list.Append(Value(kBufferSpan));
+  binary_list.Append(2);
+  binary_list.Append(Value(kBufferSpan));
   EXPECT_FALSE(JSONWriter::Write(binary_list, &output_js));
   EXPECT_TRUE(JSONWriter::WriteWithOptions(
       binary_list, JSONWriter::OPTIONS_OMIT_BINARY_VALUES, &output_js));
   EXPECT_EQ("[5,2]", output_js);
 
-  Value binary_dict(Value::Type::DICTIONARY);
-  binary_dict.SetKey("a", Value(kBufferSpan));
-  binary_dict.SetIntKey("b", 5);
-  binary_dict.SetKey("c", Value(kBufferSpan));
-  binary_dict.SetIntKey("d", 2);
-  binary_dict.SetKey("e", Value(kBufferSpan));
+  Value::Dict binary_dict;
+  binary_dict.Set("a", Value(kBufferSpan));
+  binary_dict.Set("b", 5);
+  binary_dict.Set("c", Value(kBufferSpan));
+  binary_dict.Set("d", 2);
+  binary_dict.Set("e", Value(kBufferSpan));
   EXPECT_FALSE(JSONWriter::Write(binary_dict, &output_js));
   EXPECT_TRUE(JSONWriter::WriteWithOptions(
       binary_dict, JSONWriter::OPTIONS_OMIT_BINARY_VALUES, &output_js));
@@ -160,28 +160,28 @@ TEST(JSONWriterTest, DoublesAsInts) {
 TEST(JSONWriterTest, StackOverflow) {
   std::string output_js;
 
-  Value::ListStorage deep_list_storage;
+  Value::List deep_list;
   const size_t max_depth = 100000;
 
   for (size_t i = 0; i < max_depth; ++i) {
-    Value::ListStorage inner_list_storage;
-    std::swap(inner_list_storage, deep_list_storage);
-    deep_list_storage.push_back(Value(std::move(inner_list_storage)));
+    Value::List new_top_list;
+    new_top_list.Append(std::move(deep_list));
+    deep_list = std::move(new_top_list);
   }
 
-  Value deep_list(std::move(deep_list_storage));
-  EXPECT_FALSE(JSONWriter::Write(deep_list, &output_js));
+  Value deep_list_value(std::move(deep_list));
+  EXPECT_FALSE(JSONWriter::Write(deep_list_value, &output_js));
   EXPECT_FALSE(JSONWriter::WriteWithOptions(
-      deep_list, JSONWriter::OPTIONS_PRETTY_PRINT, &output_js));
+      deep_list_value, JSONWriter::OPTIONS_PRETTY_PRINT, &output_js));
 
   // We cannot just let deep_list tear down since it
   // would cause a stack overflow. Therefore, we tear
   // down the deep list manually.
-  deep_list_storage = std::move(deep_list).TakeList();
-  while (!deep_list_storage.empty()) {
-    DCHECK_EQ(deep_list_storage.size(), 1u);
-    Value inner_list = std::move(deep_list_storage[0]);
-    deep_list_storage = std::move(inner_list).TakeList();
+  deep_list = std::move(deep_list_value).TakeList();
+  while (!deep_list.empty()) {
+    DCHECK_EQ(deep_list.size(), 1u);
+    Value::List inner_list = std::move(deep_list[0]).TakeList();
+    deep_list = std::move(inner_list);
   }
 }
 
@@ -199,10 +199,10 @@ TEST(JSONWriterTest, TestMaxDepthWithValidNodes) {
   }
 
   // Ensure we can read and write the JSON
-  JSONReader::ValueWithError json_val = JSONReader::ReadAndReturnValueWithError(
+  auto json_val = JSONReader::ReadAndReturnValueWithError(
       nested_json, JSON_ALLOW_TRAILING_COMMAS);
-  EXPECT_TRUE(json_val.value);
-  const Value& value = json_val.value.value();
+  EXPECT_TRUE(json_val.has_value());
+  const Value& value = *json_val;
   std::string serialized;
   EXPECT_TRUE(JSONWriter::Write(value, &serialized));
 }

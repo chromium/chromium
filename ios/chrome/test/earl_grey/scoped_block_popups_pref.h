@@ -1,11 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef IOS_CHROME_TEST_EARL_GREY_SCOPED_BLOCK_POPUPS_PREF_H_
 #define IOS_CHROME_TEST_EARL_GREY_SCOPED_BLOCK_POPUPS_PREF_H_
 
-#include "base/macros.h"
 #include "components/content_settings/core/common/content_settings.h"
 
 // ScopedBlockPopupsPref modifies the block popups preference for the original

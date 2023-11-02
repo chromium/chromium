@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
  * loading and rendering of elements that are accessed imperatively. A URL is
  * given that holds the elements to be loaded lazily.
  */
-import {assert} from '//resources/js/assert.m.js';
+import {assert} from '//resources/js/assert_ts.js';
 import {html, PolymerElement, TemplateInstanceBase, templatize} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ensureLazyLoaded} from '../ensure_lazy_loaded.js';
@@ -35,7 +35,7 @@ export class SettingsIdleLoadElement extends PolymerElement {
   private idleCallback_: number = 0;
   private loading_: Promise<Element>|null = null;
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.idleCallback_ = window.requestIdleCallback(() => {
@@ -43,7 +43,7 @@ export class SettingsIdleLoadElement extends PolymerElement {
     });
   }
 
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
 
     // No-op if callback already fired.
@@ -85,7 +85,7 @@ export class SettingsIdleLoadElement extends PolymerElement {
   /**
    * @return Child element which has been stamped into the DOM tree.
    */
-  get(): Promise<Element> {
+  override get(): Promise<Element> {
     if (this.loading_) {
       return this.loading_;
     }
@@ -94,6 +94,7 @@ export class SettingsIdleLoadElement extends PolymerElement {
     return this.loading_;
   }
 
+  /* eslint-disable-next-line @typescript-eslint/naming-convention */
   private _forwardHostPropV2(prop: string, value: any) {
     if (this.instance_) {
       this.instance_.forwardHostProp(prop, value);

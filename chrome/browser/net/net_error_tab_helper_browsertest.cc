@@ -1,8 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/net/net_error_diagnostics_dialog.h"
 #include "chrome/browser/net/net_error_tab_helper.h"
 #include "chrome/browser/ui/browser.h"
@@ -73,7 +75,7 @@ class NetErrorTabHelperTest : public InProcessBrowserTest {
   }
 
  private:
-  chrome_browser_net::NetErrorTabHelper* tab_helper_ = nullptr;
+  raw_ptr<chrome_browser_net::NetErrorTabHelper> tab_helper_ = nullptr;
 };
 
 class NetErrorTabHelperWithPrerenderingTest : public NetErrorTabHelperTest {
@@ -128,7 +130,7 @@ class NetErrorTabHelperWithPrerenderingTest : public NetErrorTabHelperTest {
 };
 
 // TODO(crbug.com/1241506): Enable this test on macOS after the issue is fixed.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_ErrorPagesDoNotPrerenderOrTriggerDnsProbeStatuses \
   DISABLED_ErrorPagesDoNotPrerenderOrTriggerDnsProbeStatuses
 #else
@@ -172,7 +174,7 @@ IN_PROC_BROWSER_TEST_F(NetErrorTabHelperWithPrerenderingTest,
 
   // Overrides the last committed origin to treat the network error as the same
   // url with the non-opaque origins.
-  content::OverrideLastCommittedOrigin(GetWebContents()->GetMainFrame(),
+  content::OverrideLastCommittedOrigin(GetWebContents()->GetPrimaryMainFrame(),
                                        url::Origin::Create(initial_url));
 
   GURL prerender_url =
@@ -207,7 +209,7 @@ class NetErrorTabHelperWithFencedFrameTest : public NetErrorTabHelperTest {
       const NetErrorTabHelperWithFencedFrameTest&) = delete;
 
   RenderFrameHost* primary_main_frame_host() {
-    return GetWebContents()->GetMainFrame();
+    return GetWebContents()->GetPrimaryMainFrame();
   }
 
   test::FencedFrameTestHelper& fenced_frame_test_helper() {
@@ -232,25 +234,22 @@ IN_PROC_BROWSER_TEST_F(NetErrorTabHelperWithFencedFrameTest,
   GURL initial_url =
       net::URLRequestFailedJob::GetMockHttpUrl(net::ERR_NAME_NOT_RESOLVED);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
-  EvalJsResult result =
-      EvalJs(GetWebContents()->GetMainFrame(), kSearchingForDiagnosisScript);
+  EvalJsResult result = EvalJs(GetWebContents()->GetPrimaryMainFrame(),
+                               kSearchingForDiagnosisScript);
   ASSERT_TRUE(result.error.empty());
-  EXPECT_EQ(WebContentsCanShowDiagnosticsTool(GetWebContents()->GetMainFrame()),
+  EXPECT_EQ(WebContentsCanShowDiagnosticsTool(
+                GetWebContents()->GetPrimaryMainFrame()),
             result.ExtractString());
 }
 
 IN_PROC_BROWSER_TEST_F(NetErrorTabHelperWithFencedFrameTest,
                        CanRunDiagnosticsDialogOnFencedFrame) {
-  GURL initial_url =
+  GURL fenced_frame_url =
       net::URLRequestFailedJob::GetMockHttpUrl(net::ERR_NAME_NOT_RESOLVED);
   RenderFrameHost* inner_fenced_frame_rfh =
       fenced_frame_test_helper().CreateFencedFrame(
-          GetWebContents()->GetMainFrame(), initial_url);
-  const GURL fenced_frame_url =
-      net::URLRequestFailedJob::GetMockHttpUrl(net::ERR_NAME_NOT_RESOLVED);
-  inner_fenced_frame_rfh =
-      fenced_frame_test_helper().NavigateFrameInFencedFrameTree(
-          inner_fenced_frame_rfh, fenced_frame_url);
+          GetWebContents()->GetPrimaryMainFrame(), fenced_frame_url,
+          net::ERR_NAME_NOT_RESOLVED);
   EvalJsResult result =
       EvalJs(inner_fenced_frame_rfh, kSearchingForDiagnosisScript);
   ASSERT_TRUE(result.error.empty());

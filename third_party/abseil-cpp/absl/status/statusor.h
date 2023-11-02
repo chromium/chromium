@@ -106,7 +106,13 @@ class BadStatusOrAccess : public std::exception {
 
 // Returned StatusOr objects may not be ignored.
 template <typename T>
+#if ABSL_HAVE_CPP_ATTRIBUTE(nodiscard)
+// TODO(b/176172494): ABSL_MUST_USE_RESULT should expand to the more strict
+// [[nodiscard]]. For now, just use [[nodiscard]] directly when it is available.
+class [[nodiscard]] StatusOr;
+#else
 class ABSL_MUST_USE_RESULT StatusOr;
+#endif  // ABSL_HAVE_CPP_ATTRIBUTE(nodiscard)
 
 // absl::StatusOr<T>
 //
@@ -156,8 +162,8 @@ class ABSL_MUST_USE_RESULT StatusOr;
 // A `absl::StatusOr<T*>` can be constructed from a null pointer like any other
 // pointer value, and the result will be that `ok()` returns `true` and
 // `value()` returns `nullptr`. Checking the value of pointer in an
-// `absl::StatusOr<T>` generally requires a bit more care, to ensure both that a
-// value is present and that value is not null:
+// `absl::StatusOr<T*>` generally requires a bit more care, to ensure both that
+// a value is present and that value is not null:
 //
 //  StatusOr<std::unique_ptr<Foo>> result = FooFactory::MakeNewFoo(arg);
 //  if (!result.ok()) {
@@ -471,7 +477,7 @@ class StatusOr : private internal_statusor::StatusOrData<T>,
   // StatusOr<T>::ok()
   //
   // Returns whether or not this `absl::StatusOr<T>` holds a `T` value. This
-  // member function is analagous to `absl::Status::ok()` and should be used
+  // member function is analogous to `absl::Status::ok()` and should be used
   // similarly to check the status of return values.
   //
   // Example:

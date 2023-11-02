@@ -1,23 +1,23 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/media_router/common/providers/cast/cast_media_source.h"
 
-#include <algorithm>
 #include <utility>
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
+#include "base/ranges/algorithm.h"
+#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/cast_channel/cast_message_util.h"
-#include "components/cast_channel/enum_table.h"
 #include "components/media_router/common/media_source.h"
-#include "net/base/escape.h"
+#include "components/media_router/common/providers/cast/channel/cast_message_util.h"
+#include "components/media_router/common/providers/cast/channel/enum_table.h"
 #include "net/base/url_util.h"
 #include "third_party/openscreen/src/cast/common/public/cast_streaming_app_ids.h"
 #include "url/gurl.h"
@@ -152,15 +152,13 @@ base::flat_map<std::string, std::string> MakeQueryMap(const GURL& url) {
   base::flat_map<std::string, std::string> result;
   for (net::QueryIterator query_it(url); !query_it.IsAtEnd();
        query_it.Advance()) {
-    result[query_it.GetKey()] = query_it.GetUnescapedValue();
+    result[std::string(query_it.GetKey())] = query_it.GetUnescapedValue();
   }
   return result;
 }
 
-// TODO(jrw): Move to common utils?
-//
-// TODO(jrw): Should this use net::UnescapeURLComponent instead of
-// url::DecodeURLEscapeSequences?
+// TODO(crbug.com/1291718): Move to common utils?  Should this use
+// base::UnescapeURLComponent instead of url::DecodeURLEscapeSequences?
 std::string DecodeURLComponent(const std::string& encoded) {
   url::RawCanonOutputT<char16_t> unescaped;
   std::string output;
@@ -225,6 +223,11 @@ std::unique_ptr<CastMediaSource> CastMediaSourceForDesktopMirroring(
   }
   return std::make_unique<CastMediaSource>(source.id(),
                                            std::vector<CastAppInfo>({info}));
+}
+
+std::unique_ptr<CastMediaSource> CastMediaSourceForRemotePlayback(
+    const MediaSource& source) {
+  return CastMediaSourceForTabMirroring(source.id());
 }
 
 // The logic shared by ParseCastUrl() and ParseLegacyCastUrl().
@@ -317,11 +320,11 @@ std::unique_ptr<CastMediaSource> ParseLegacyCastUrl(
   base::StringPairs params;
   base::SplitStringIntoKeyValuePairs(url.ref(), '=', '/', &params);
   for (auto& pair : params) {
-    pair.second = net::UnescapeURLComponent(
+    pair.second = base::UnescapeURLComponent(
         pair.second,
-        net::UnescapeRule::SPACES | net::UnescapeRule::PATH_SEPARATORS |
-            net::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS |
-            net::UnescapeRule::REPLACE_PLUS_WITH_SPACE);
+        base::UnescapeRule::SPACES | base::UnescapeRule::PATH_SEPARATORS |
+            base::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS |
+            base::UnescapeRule::REPLACE_PLUS_WITH_SPACE);
   }
 
   // Legacy URLs can specify multiple apps.
@@ -425,11 +428,14 @@ CastAppInfo CastAppInfo::ForCastStreamingAudio() {
 // static
 std::unique_ptr<CastMediaSource> CastMediaSource::FromMediaSource(
     const MediaSource& source) {
-  if (source.IsTabMirroringSource() || source.IsLocalFileSource())
+  if (source.IsTabMirroringSource())
     return CastMediaSourceForTabMirroring(source.id());
 
   if (source.IsDesktopMirroringSource())
     return CastMediaSourceForDesktopMirroring(source);
+
+  if (source.IsRemotePlaybackSource())
+    return CastMediaSourceForRemotePlayback(source);
 
   const GURL& url = source.url();
 
@@ -486,9 +492,9 @@ bool CastMediaSource::ContainsApp(const std::string& app_id) const {
 
 bool CastMediaSource::ContainsAnyAppFrom(
     const std::vector<std::string>& app_ids) const {
-  return std::any_of(
-      app_ids.begin(), app_ids.end(),
-      [this](const std::string& app_id) { return ContainsApp(app_id); });
+  return base::ranges::any_of(app_ids, [this](const std::string& app_id) {
+    return ContainsApp(app_id);
+  });
 }
 
 bool CastMediaSource::ContainsStreamingApp() const {

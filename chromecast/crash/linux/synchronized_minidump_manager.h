@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,9 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "chromecast/crash/linux/dump_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromecast {
 
@@ -134,7 +134,8 @@ class SynchronizedMinidumpManager {
 
   // Write deserialized |dumps| to |lockfile_path_| and the deserialized
   // |metadata| to |metadata_path_|.
-  bool WriteFiles(const base::ListValue* dumps, const base::Value* metadata);
+  bool WriteFiles(const base::Value::List& dumps,
+                  const base::Value::Dict& metadata);
 
   // Creates an empty lock file and an initialized metadata file.
   bool InitializeFiles();
@@ -145,8 +146,8 @@ class SynchronizedMinidumpManager {
   const base::FilePath lockfile_path_;
   const base::FilePath metadata_path_;
   int lockfile_fd_;
-  std::unique_ptr<base::Value> metadata_;
-  std::unique_ptr<base::ListValue> dumps_;
+  absl::optional<base::Value::Dict> metadata_;
+  absl::optional<base::Value::List> dumps_;
 };
 
 }  // namespace chromecast

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,8 +28,10 @@
 #include "chrome/browser/ui/tabs/tab_menu_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/unload_controller.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/reading_list/core/reading_list_model.h"
+#include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/sessions/content/content_live_tab.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sessions/core/tab_restore_service.h"
@@ -81,7 +83,7 @@ Browser* BrowserTabStripModelDelegate::CreateNewStripWithContents(
     // Enforce that there is an active tab in the strip at all times by forcing
     // the first web contents to be marked as active.
     if (i == 0)
-      item.add_types |= TabStripModel::ADD_ACTIVE;
+      item.add_types |= AddTabTypes::ADD_ACTIVE;
 
     content::WebContents* raw_web_contents = item.web_contents.get();
     new_model->InsertWebContentsAt(
@@ -149,10 +151,11 @@ void BrowserTabStripModelDelegate::MoveTabsToNewWindow(
 
 void BrowserTabStripModelDelegate::MoveGroupToNewWindow(
     const tab_groups::TabGroupId& group) {
-  gfx::Range range = browser_->tab_strip_model()
-                         ->group_model()
-                         ->GetTabGroup(group)
-                         ->ListTabs();
+  TabGroupModel* group_model = browser_->tab_strip_model()->group_model();
+  if (!group_model)
+    return;
+
+  gfx::Range range = group_model->GetTabGroup(group)->ListTabs();
 
   std::vector<int> indices;
   indices.reserve(range.length());
@@ -215,6 +218,14 @@ bool BrowserTabStripModelDelegate::ShouldRunUnloadListenerBeforeClosing(
 
 bool BrowserTabStripModelDelegate::ShouldDisplayFavicon(
     content::WebContents* contents) const {
+  // Don't show favicon when on an interstitial.
+  security_interstitials::SecurityInterstitialTabHelper*
+      security_interstitial_tab_helper = security_interstitials::
+          SecurityInterstitialTabHelper::FromWebContents(contents);
+  if (security_interstitial_tab_helper &&
+      security_interstitial_tab_helper->IsDisplayingInterstitial())
+    return false;
+
   return browser_->ShouldDisplayFavicon(contents);
 }
 
@@ -230,6 +241,10 @@ void BrowserTabStripModelDelegate::AddToReadLater(
     return;
 
   chrome::MoveTabToReadLater(browser_, web_contents);
+}
+
+bool BrowserTabStripModelDelegate::SupportsReadLater() {
+  return !browser_->profile()->IsGuestSession() && !IsForWebApp();
 }
 
 void BrowserTabStripModelDelegate::CacheWebContents(
@@ -259,6 +274,24 @@ void BrowserTabStripModelDelegate::CacheWebContents(
   dwc->remove_reason = TabStripModelChange::RemoveReason::kCached;
   auto cached = std::make_pair(dwc->id, std::move(wc));
   cache.CacheWebContents(std::move(cached));
+}
+
+void BrowserTabStripModelDelegate::FollowSite(
+    content::WebContents* web_contents) {
+  chrome::FollowSite(web_contents);
+}
+
+void BrowserTabStripModelDelegate::UnfollowSite(
+    content::WebContents* web_contents) {
+  chrome::UnfollowSite(web_contents);
+}
+
+bool BrowserTabStripModelDelegate::IsForWebApp() {
+  return web_app::AppBrowserController::IsWebApp(browser_);
+}
+
+void BrowserTabStripModelDelegate::CopyURL(content::WebContents* web_contents) {
+  chrome::CopyURL(web_contents);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

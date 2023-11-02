@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,10 +10,7 @@
 
 namespace safe_browsing {
 
-TestBinaryUploadService::TestBinaryUploadService()
-    : BinaryUploadService(/*url_loader_factory=*/nullptr,
-                          /*profile=*/nullptr,
-                          /*binary_fcm_service=*/nullptr) {}
+TestBinaryUploadService::TestBinaryUploadService() = default;
 
 void TestBinaryUploadService::MaybeUploadForDeepScanning(
     std::unique_ptr<Request> request) {

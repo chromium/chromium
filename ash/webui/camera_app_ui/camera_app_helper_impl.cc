@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,12 +6,13 @@
 
 #include <utility>
 
+#include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/callback_helpers.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/trace_event/trace_event.h"
+#include "base/trace_event/typed_macros.h"
 #include "chromeos/utils/pdf_conversion.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/url_util.h"
@@ -21,6 +22,7 @@ namespace ash {
 namespace {
 
 using camera_app::mojom::DocumentOutputFormat;
+using chromeos::machine_learning::mojom::Rotation;
 
 camera_app::mojom::ScreenState ToMojoScreenState(ScreenBacklightState s) {
   switch (s) {
@@ -141,11 +143,13 @@ void CameraAppHelperImpl::IsTabletMode(IsTabletModeCallback callback) {
 }
 
 void CameraAppHelperImpl::StartPerfEventTrace(const std::string& event) {
-  TRACE_EVENT_BEGIN0("camera", event.c_str());
+  TRACE_EVENT_BEGIN("camera", nullptr, [&](perfetto::EventContext ctx) {
+    ctx.event()->set_name(event);
+  });
 }
 
 void CameraAppHelperImpl::StopPerfEventTrace(const std::string& event) {
-  TRACE_EVENT_END0("camera", event.c_str());
+  TRACE_EVENT_END("camera");
 }
 
 void CameraAppHelperImpl::SetTabletMonitor(
@@ -216,7 +220,7 @@ void CameraAppHelperImpl::OnConvertedToDocument(
       return;
     case DocumentOutputFormat::PDF: {
       std::vector<uint8_t> pdf_data;
-      if (!chromeos::ConvertJpgImageToPdf(processed_jpeg_image, &pdf_data)) {
+      if (!chromeos::ConvertJpgImagesToPdf({processed_jpeg_image}, &pdf_data)) {
         LOG(ERROR) << "Failed to convert jpeg image to PDF format";
         std::move(callback).Run({});
         return;
@@ -235,6 +239,12 @@ void CameraAppHelperImpl::OpenFileInGallery(const std::string& name) {
 
 void CameraAppHelperImpl::OpenFeedbackDialog(const std::string& placeholder) {
   camera_app_ui_->delegate()->OpenFeedbackDialog(placeholder);
+}
+
+void CameraAppHelperImpl::OpenUrlInBrowser(const GURL& url) {
+  NewWindowDelegate::GetPrimary()->OpenUrl(
+      url, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      NewWindowDelegate::Disposition::kNewForegroundTab);
 }
 
 void CameraAppHelperImpl::SetCameraUsageMonitor(
@@ -281,10 +291,29 @@ void CameraAppHelperImpl::MonitorFileDeletion(
                 std::move(callback)));
 }
 
-void CameraAppHelperImpl::IsDocumentModeSupported(
-    IsDocumentModeSupportedCallback callback) {
-  bool supported = document_scanner_service_ != nullptr;
-  std::move(callback).Run(supported);
+void CameraAppHelperImpl::GetDocumentScannerReadyState(
+    GetDocumentScannerReadyStateCallback callback) {
+  if (document_scanner_service_ == nullptr) {
+    std::move(callback).Run(
+        camera_app::mojom::DocumentScannerReadyState::NOT_SUPPORTED);
+    return;
+  }
+  if (document_scanner_service_->IsLoaded()) {
+    std::move(callback).Run(
+        camera_app::mojom::DocumentScannerReadyState::SUPPORTED_AND_READY);
+    return;
+  }
+  std::move(callback).Run(
+      camera_app::mojom::DocumentScannerReadyState::SUPPORTED_BUT_NOT_READY);
+}
+
+void CameraAppHelperImpl::CheckDocumentModeReadiness(
+    CheckDocumentModeReadinessCallback callback) {
+  if (document_scanner_service_ == nullptr) {
+    std::move(callback).Run(false);
+    return;
+  }
+  document_scanner_service_->CheckDocumentModeReadiness(std::move(callback));
 }
 
 void CameraAppHelperImpl::ScanDocumentCorners(
@@ -312,6 +341,7 @@ void CameraAppHelperImpl::ScanDocumentCorners(
 void CameraAppHelperImpl::ConvertToDocument(
     const std::vector<uint8_t>& jpeg_data,
     const std::vector<gfx::PointF>& corners,
+    Rotation rotation,
     DocumentOutputFormat output_format,
     ConvertToDocumentCallback callback) {
   DCHECK(document_scanner_service_);
@@ -334,21 +364,26 @@ void CameraAppHelperImpl::ConvertToDocument(
   // posted to other sequence with weak pointer of |document_scanner_service|.
   // Therefore, it is safe to use |base::Unretained(this)| here.
   document_scanner_service_->DoPostProcessing(
-      std::move(memory.region), corners,
+      std::move(memory.region), corners, rotation,
       base::BindOnce(&CameraAppHelperImpl::OnConvertedToDocument,
                      base::Unretained(this), output_format,
                      std::move(callback)));
 }
 
-void CameraAppHelperImpl::ConvertToPdf(const std::vector<uint8_t>& jpeg_data,
-                                       ConvertToPdfCallback callback) {
+void CameraAppHelperImpl::ConvertToPdf(
+    const std::vector<std::vector<uint8_t>>& jpegs_data,
+    ConvertToPdfCallback callback) {
   std::vector<uint8_t> pdf_data;
-  if (!chromeos::ConvertJpgImageToPdf(jpeg_data, &pdf_data)) {
+  if (!chromeos::ConvertJpgImagesToPdf(jpegs_data, &pdf_data)) {
     LOG(ERROR) << "Failed to convert jpeg image to PDF format";
     std::move(callback).Run({});
     return;
   }
   std::move(callback).Run(std::move(pdf_data));
+}
+
+void CameraAppHelperImpl::MaybeTriggerSurvey() {
+  camera_app_ui_->delegate()->MaybeTriggerSurvey();
 }
 
 void CameraAppHelperImpl::OnTabletModeStarted() {

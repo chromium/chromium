@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,9 +16,6 @@
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "components/metrics/call_stack_profile_params.h"
-#include "components/metrics/public/mojom/call_stack_profile_collector.mojom.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
-#include "third_party/metrics_proto/sampled_profile.pb.h"
 
 // PeriodicSamplingScheduler repeatedly schedules periodic sampling of the
 // thread through calls to GetTimeToNextCollection(). This class is exposed
@@ -92,23 +89,15 @@ class ThreadProfiler {
   static void StartOnChildThread(
       metrics::CallStackProfileParams::Thread thread);
 
-  // Sets the callback to use for reporting browser process profiles. This
-  // indirection is required to avoid a dependency on unnecessary metrics code
-  // in child processes.
-  static void SetBrowserProcessReceiverCallback(
-      const base::RepeatingCallback<void(base::TimeTicks,
-                                         metrics::SampledProfile)>& callback);
-
-  // This function must be called within child processes to supply the Service
-  // Manager's connector, to bind the interface through which a profile is sent
+  // Returns true if called within a child process that will collect profiles
+  // through a CallStackProfileCollector. If so,
+  // metrics::CallStackProfileBuilder::SetParentProfileCollectorForChildProcess
+  // must be called to to bind the interface through which a profile is sent
   // back to the browser process.
   //
   // Note that the metrics::CallStackProfileCollector interface also must be
-  // exposed to the child process, and metrics::mojom::CallStackProfileCollector
-  // declared in chrome_content_browser_manifest_overlay.json, for the binding
-  // to succeed.
-  static void SetCollectorForChildProcess(
-      mojo::PendingRemote<metrics::mojom::CallStackProfileCollector> collector);
+  // exposed to the child process.
+  static bool ShouldCollectProfilesForChildProcess();
 
  private:
   class WorkIdRecorder;

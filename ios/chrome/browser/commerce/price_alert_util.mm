@@ -1,12 +1,15 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/commerce/price_alert_util.h"
 
-#include "components/prefs/pref_service.h"
-#include "components/unified_consent/pref_names.h"
+#import "base/metrics/field_trial_params.h"
+#import "components/commerce/core/commerce_feature_list.h"
+#import "components/prefs/pref_service.h"
+#import "components/unified_consent/url_keyed_data_collection_consent_helper.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
@@ -16,32 +19,40 @@
 #endif
 
 namespace {
-const char kPriceTrackingWithOptimizationGuideParam[] =
-    "price_tracking_with_optimization_guide";
+const char kPriceTrackingNotifications[] = "enable_price_notification";
 }  // namespace
 
 bool IsPriceAlertsEligible(web::BrowserState* browser_state) {
   if (browser_state->IsOffTheRecord()) {
     return false;
   }
+  // Price drop annotations are only enabled for en_US.
+  NSLocale* current_locale = [NSLocale currentLocale];
+  if (![@"en_US" isEqualToString:current_locale.localeIdentifier]) {
+    return false;
+  }
   ChromeBrowserState* chrome_browser_state =
       ChromeBrowserState::FromBrowserState(browser_state);
   AuthenticationService* authentication_service =
       AuthenticationServiceFactory::GetForBrowserState(chrome_browser_state);
-  if (!authentication_service || !authentication_service->HasPrimaryIdentity(
-                                     signin::ConsentLevel::kSignin)) {
+  DCHECK(authentication_service);
+  if (!authentication_service->HasPrimaryIdentity(
+          signin::ConsentLevel::kSignin)) {
     return false;
   }
-  const PrefService& prefs = *chrome_browser_state->GetPrefs();
-  if (!prefs.GetBoolean(
-          unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled)) {
+  PrefService* pref_service = chrome_browser_state->GetPrefs();
+  if (!unified_consent::UrlKeyedDataCollectionConsentHelper::
+           NewAnonymizedDataCollectionConsentHelper(pref_service)
+               ->IsEnabled() ||
+      !pref_service->GetBoolean(prefs::kTrackPricesOnTabsEnabled)) {
     return false;
   }
   return true;
 }
 
-bool IsPriceAlertsEnabled() {
+// Determine if price drop notifications are enabled.
+bool IsPriceNotificationsEnabled() {
   return base::GetFieldTrialParamByFeatureAsBool(
-      kCommercePriceTracking, kPriceTrackingWithOptimizationGuideParam,
+      commerce::kCommercePriceTracking, kPriceTrackingNotifications,
       /** default_value */ false);
 }

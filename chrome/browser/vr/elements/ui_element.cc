@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,10 @@
 #include <limits>
 
 #include "base/check_op.h"
+#include "base/containers/adapters.h"
 #include "base/cxx17_backports.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -460,7 +462,7 @@ gfx::TransformOperations UiElement::GetTargetTransform() const {
 gfx::Transform UiElement::ComputeTargetWorldSpaceTransform() const {
   gfx::Transform m;
   for (const UiElement* current = this; current; current = current->parent()) {
-    m.ConcatTransform(current->GetTargetLocalTransform());
+    m.PostConcat(current->GetTargetLocalTransform());
   }
   return m;
 }
@@ -685,10 +687,8 @@ std::unique_ptr<UiElement> UiElement::ReplaceChild(
   to_remove->parent_ = nullptr;
   size_t old_size = children_.size();
 
-  auto it = std::find_if(std::begin(children_), std::end(children_),
-                         [to_remove](const std::unique_ptr<UiElement>& child) {
-                           return child.get() == to_remove;
-                         });
+  auto it = base::ranges::find(children_, to_remove,
+                               &std::unique_ptr<UiElement>::get);
   DCHECK(it != std::end(children_));
 
   std::unique_ptr<UiElement> removed(it->release());
@@ -724,19 +724,16 @@ void UiElement::UpdateBindings() {
 }
 
 gfx::Point3F UiElement::GetCenter() const {
-  gfx::Point3F center;
-  world_space_transform_.TransformPoint(&center);
-  return center;
+  return world_space_transform_.MapPoint(gfx::Point3F());
 }
 
 gfx::PointF UiElement::GetUnitRectangleCoordinates(
     const gfx::Point3F& world_point) const {
-  gfx::Point3F origin;
-  gfx::Vector3dF x_axis(1, 0, 0);
-  gfx::Vector3dF y_axis(0, 1, 0);
-  world_space_transform_.TransformPoint(&origin);
-  world_space_transform_.TransformVector(&x_axis);
-  world_space_transform_.TransformVector(&y_axis);
+  gfx::Vector3dF x_axis =
+      world_space_transform_.MapVector(gfx::Vector3dF(1, 0, 0));
+  gfx::Vector3dF y_axis =
+      world_space_transform_.MapVector(gfx::Vector3dF(0, 1, 0));
+  gfx::Point3F origin = world_space_transform_.MapPoint(gfx::Point3F());
   gfx::Vector3dF origin_to_world = world_point - origin;
   float x = gfx::DotProduct(origin_to_world, x_axis) /
             gfx::DotProduct(x_axis, x_axis);
@@ -746,10 +743,10 @@ gfx::PointF UiElement::GetUnitRectangleCoordinates(
 }
 
 gfx::Vector3dF UiElement::GetNormal() const {
-  gfx::Vector3dF x_axis(1, 0, 0);
-  gfx::Vector3dF y_axis(0, 1, 0);
-  world_space_transform_.TransformVector(&x_axis);
-  world_space_transform_.TransformVector(&y_axis);
+  gfx::Vector3dF x_axis =
+      world_space_transform_.MapVector(gfx::Vector3dF(1, 0, 0));
+  gfx::Vector3dF y_axis =
+      world_space_transform_.MapVector(gfx::Vector3dF(0, 1, 0));
   gfx::Vector3dF normal = CrossProduct(x_axis, y_axis);
   normal.GetNormalized(&normal);
   return normal;
@@ -872,8 +869,11 @@ gfx::RectF UiElement::ComputeContributingChildrenBounds() {
     gfx::RectF outer_bounds(child->size());
     gfx::RectF inner_bounds(child->size());
     if (!child->bounds_contain_padding_) {
-      inner_bounds.Inset(child->left_padding_, child->bottom_padding_,
-                         child->right_padding_, child->top_padding_);
+      // TODO(crbug.com/1312352): The order of bottom_padding_ and top_padding_
+      // seems incorrect.
+      inner_bounds.Inset(
+          gfx::InsetsF::TLBR(child->bottom_padding_, child->left_padding_,
+                             child->top_padding_, child->right_padding_));
     }
     gfx::SizeF size = inner_bounds.size();
     if (size.IsEmpty())
@@ -887,8 +887,8 @@ gfx::RectF UiElement::ComputeContributingChildrenBounds() {
     gfx::Point3F child_upper_left = child_center + corner_offset;
     gfx::Point3F child_lower_right = child_center - corner_offset;
 
-    child->LocalTransform().TransformPoint(&child_upper_left);
-    child->LocalTransform().TransformPoint(&child_lower_right);
+    child_upper_left = child->LocalTransform().MapPoint(child_upper_left);
+    child_lower_right = child->LocalTransform().MapPoint(child_lower_right);
     gfx::RectF local_rect =
         gfx::RectF(child_upper_left.x(), child_upper_left.y(),
                    child_lower_right.x() - child_upper_left.x(),
@@ -896,8 +896,10 @@ gfx::RectF UiElement::ComputeContributingChildrenBounds() {
     bounds.Union(local_rect);
   }
 
-  bounds.Inset(-left_padding_, -bottom_padding_, -right_padding_,
-               -top_padding_);
+  // TODO(crbug.com/1312352): The order of bottom_padding_ and top_padding_
+  // seems incorrect.
+  bounds.Inset(gfx::InsetsF::TLBR(-bottom_padding_, -left_padding_,
+                                  -top_padding_, -right_padding_));
   bounds.set_origin(bounds.CenterPoint());
   if (local_origin_ != bounds.origin()) {
     world_space_transform_dirty_ = true;
@@ -965,16 +967,17 @@ void UiElement::ClipChildren(const gfx::RectF& abs_clip) {
       continue;
 
     DCHECK(child->LocalTransform().IsScaleOrTranslation());
-    auto child_abs_clip = abs_clip;
-    child->LocalTransform().TransformRectReverse(&child_abs_clip);
+    absl::optional<gfx::RectF> child_abs_clip =
+        child->LocalTransform().InverseMapRect(abs_clip);
+    DCHECK(child_abs_clip);
     if (!child->size().IsEmpty()) {
-      child->clip_rect_ = child_abs_clip;
+      child->clip_rect_ = *child_abs_clip;
       child->clip_rect_.Scale(1.0f / child->size().width(),
                               1.0f / child->size().height());
     } else {
       child->clip_rect_ = kRelativeFullRectClip;
     }
-    child->ClipChildren(child_abs_clip);
+    child->ClipChildren(*child_abs_clip);
   }
 }
 
@@ -996,16 +999,13 @@ void UiElement::SetClipRect(const gfx::RectF& rect) {
 }
 
 UiElement* UiElement::FirstLaidOutChild() const {
-  auto i = std::find_if(
-      children_.begin(), children_.end(),
-      [](const std::unique_ptr<UiElement>& e) { return e->requires_layout(); });
+  auto i = base::ranges::find_if(children_, &UiElement::requires_layout);
   return i == children_.end() ? nullptr : i->get();
 }
 
 UiElement* UiElement::LastLaidOutChild() const {
-  auto i = std::find_if(
-      children_.rbegin(), children_.rend(),
-      [](const std::unique_ptr<UiElement>& e) { return e->requires_layout(); });
+  auto i = base::ranges::find_if(base::Reversed(children_),
+                                 &UiElement::requires_layout);
   return i == children_.rend() ? nullptr : i->get();
 }
 
@@ -1038,10 +1038,10 @@ bool UiElement::UpdateWorldSpaceTransform(bool parent_changed) {
     gfx::Transform inheritable = LocalTransform();
 
     if (parent_) {
-      inheritable.ConcatTransform(parent_->inheritable_transform());
+      inheritable.PostConcat(parent_->inheritable_transform());
     }
 
-    transform.ConcatTransform(inheritable);
+    transform.PostConcat(inheritable);
     changed = !transform.ApproximatelyEqual(world_space_transform_) ||
               !inheritable.ApproximatelyEqual(inheritable_transform_);
     set_world_space_transform(transform);

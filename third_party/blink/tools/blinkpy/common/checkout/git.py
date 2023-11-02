@@ -29,6 +29,7 @@
 
 import logging
 import re
+from typing import List
 
 from blinkpy.common.memoized import memoized
 from blinkpy.common.system.executive import Executive, ScriptError
@@ -87,7 +88,7 @@ class Git(object):
         if not platform or not platform.is_win():
             return 'git'
         try:
-            executive.run_command(['git', 'help'])
+            executive.run_command(['git', 'help'], debug_logging=False)
             return 'git'
         except OSError:
             _log.debug('Using "git.bat" as git executable.')
@@ -106,7 +107,8 @@ class Git(object):
                                            cwd=cwd,
                                            input=stdin,
                                            return_exit_code=return_exit_code,
-                                           decode_output=decode_output)
+                                           decode_output=decode_output,
+                                           debug_logging=False)
 
     def absolute_path(self, repository_relative_path):
         """Converts repository-relative paths to absolute paths."""
@@ -117,7 +119,8 @@ class Git(object):
         return self._executive.run_command(
             [self._executable_name, 'rev-parse', '--is-inside-work-tree'],
             cwd=path,
-            error_handler=Executive.ignore_error).rstrip() == 'true'
+            error_handler=Executive.ignore_error,
+            debug_logging=False).rstrip() == 'true'
 
     def find_checkout_root(self, path):
         """Returns the absolute path to the root of the repository."""
@@ -143,6 +146,10 @@ class Git(object):
             command.extend(['--', pathspec])
         return self.run(command) != ''
 
+    def uncommitted_changes(self):
+        """List files with uncommitted changes, including untracked files."""
+        return [path for _, _, path in self._working_changes()]
+
     def unstaged_changes(self):
         """Lists files with unstaged changes, including untracked files.
 
@@ -150,26 +157,62 @@ class Git(object):
         to one-character codes identifying the change, e.g. 'M' for modified,
         'D' for deleted, '?' for untracked.
         """
+        return {
+            path: unstaged_status
+            for _, unstaged_status, path in self._working_changes()
+            if unstaged_status
+        }
+
+    def _working_changes(self):
         # `git status -z` is a version of `git status -s`, that's recommended
         # for machine parsing. Lines are terminated with NUL rather than LF.
-        change_lines = self.run(['status', '-z',
-                                 '--untracked-files=all']).rstrip('\x00')
+        change_lines = self.run(
+            ['status', '-z', '--no-renames',
+             '--untracked-files=all']).rstrip('\x00')
         if not change_lines:
-            return {}  # No changes.
-        unstaged_changes = {}
+            return
         for line in change_lines.split('\x00'):
             assert len(line) >= 4, 'Unexpected change line format %s' % line
-            if line[1] == ' ':
-                continue  # Already staged for commit.
             path = line[3:]
-            unstaged_changes[path] = line[1]
-        return unstaged_changes
+            yield line[0].strip(), line[1].strip(), path
 
-    def add_list(self, paths, return_exit_code=False):
-        return self.run(['add'] + paths, return_exit_code=return_exit_code)
+    def add_list(self, paths: List[str], return_exit_code: bool = False):
+        return self._run_chunked(['add'],
+                                 paths,
+                                 return_exit_code=return_exit_code)
 
-    def delete_list(self, paths):
-        return self.run(['rm', '-f'] + paths)
+    def delete_list(self, paths: List[str], ignore_unmatch: bool = False):
+        command = ['rm', '-f']
+        if ignore_unmatch:
+            command.append('--ignore-unmatch')
+        return self._run_chunked(command, paths)
+
+    def _run_chunked(self,
+                     command: List[str],
+                     paths: List[str],
+                     chunk_size: int = 128,
+                     **run_kwargs):
+        """Safely run `git` operations on an arbitrary number of paths.
+
+        This helper transparently avoids command line length limitations on
+        Windows by splitting paths across multiple `git` invocations. This only
+        works for commands that can operate on a variable number of paths.
+
+        Arguments:
+            command: The non-path arguments after `git` but before the paths.
+            paths: The paths to operate on.
+            chunk_size: The maximum number of paths to operate on at a time. The
+                default was picked heuristically.
+
+        Returns:
+            The first truthy value returned by a `run` command. This is usually
+            stdout or a nonzero exit code.
+        """
+        rv = 0
+        for chunk_start in range(0, len(paths), chunk_size):
+            chunk = paths[chunk_start:chunk_start + chunk_size]
+            rv = rv or self.run(command + chunk, **run_kwargs)
+        return rv
 
     def move(self, origin, destination):
         return self.run(['mv', '-f', origin, destination])
@@ -190,6 +233,10 @@ class Git(object):
             # HEAD is detached; return an empty string.
             return ''
         return self._branch_from_ref(ref)
+
+    def current_revision(self):
+        """Return the commit hash of HEAD."""
+        return self.run(['rev-parse', 'HEAD']).strip()
 
     def _upstream_branch(self):
         current_branch = self.current_branch()

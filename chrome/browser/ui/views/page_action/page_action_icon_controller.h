@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,16 @@
 #define CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PAGE_ACTION_ICON_CONTROLLER_H_
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
+#include "chrome/browser/ui/views/page_action/page_action_icon_view_observer.h"
 #include "components/zoom/zoom_event_manager.h"
 #include "components/zoom/zoom_event_manager_observer.h"
+#include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/page.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/views/view.h"
@@ -19,7 +24,9 @@ class PageActionIconContainer;
 struct PageActionIconParams;
 class ZoomView;
 
-class PageActionIconController : public zoom::ZoomEventManagerObserver {
+class PageActionIconController : public PageActionIconViewObserver,
+                                 public zoom::ZoomEventManagerObserver,
+                                 public content::WebContentsObserver {
  public:
   PageActionIconController();
   PageActionIconController(const PageActionIconController&) = delete;
@@ -30,6 +37,7 @@ class PageActionIconController : public zoom::ZoomEventManagerObserver {
             PageActionIconContainer* icon_container);
 
   PageActionIconView* GetIconView(PageActionIconType type);
+  PageActionIconType GetIconType(PageActionIconView* view);
 
   // Updates the visual state of all enabled page action icons.
   void UpdateAll();
@@ -49,17 +57,47 @@ class PageActionIconController : public zoom::ZoomEventManagerObserver {
   // See comment in browser_window.h for more info.
   void ZoomChangedForActiveTab(bool can_show_bubble);
 
+  // Observe the new web contents.
+  void UpdateWebContents(content::WebContents* contents);
+
+  // WebContentsObserver
+  void ReadyToCommitNavigation(
+      content::NavigationHandle* navigation_handle) override;
+  void PrimaryPageChanged(content::Page& page) override;
+
   std::vector<const PageActionIconView*> GetPageActionIconViewsForTesting()
       const;
 
  private:
+  // PageActionIconViewObserver:
+  void OnPageActionIconViewShown(PageActionIconView* view) override;
+  void OnPageActionIconViewClicked(PageActionIconView* view) override;
+
   // ZoomEventManagerObserver:
   // Updates the view for the zoom icon when default zoom levels change.
   void OnDefaultZoomLevelChanged() override;
 
-  PageActionIconContainer* icon_container_ = nullptr;
+  // Returns the number of page actions which are currently visible. Does not
+  // include permanent page actions, such as the bookmarks star and sharing
+  // hub.
+  int VisibleEphemeralActionCount() const;
 
-  ZoomView* zoom_icon_ = nullptr;
+  // Logs UMA data about the set of currently visible page actions overall, eg.
+  // the total number of page actions shown.
+  void RecordOverallMetrics();
+
+  // Logs UMA data about an individual visible page action, eg. the type of
+  // action shown.
+  void RecordIndividualMetrics(PageActionIconType type,
+                               PageActionIconView* view) const;
+
+  // Logs UMA data when an individual visible page action is clicked.
+  void RecordClickMetrics(PageActionIconType type,
+                          PageActionIconView* view) const;
+
+  raw_ptr<PageActionIconContainer> icon_container_ = nullptr;
+
+  raw_ptr<ZoomView> zoom_icon_ = nullptr;
 
   base::flat_map<PageActionIconType, PageActionIconView*>
       page_action_icon_views_;
@@ -67,6 +105,11 @@ class PageActionIconController : public zoom::ZoomEventManagerObserver {
   base::ScopedObservation<zoom::ZoomEventManager,
                           zoom::ZoomEventManagerObserver>
       zoom_observation_{this};
+
+  // Max number of actions shown concurrently after the latest page change, as
+  // tracked in metrics logging. Used to ensure we don't double-count certain
+  // metrics.
+  int max_actions_recorded_on_current_page_ = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PAGE_ACTION_ICON_CONTROLLER_H_

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -201,6 +201,7 @@ TEST_F(AdapterTest, TestConnectToServiceInsecurely_DisallowedUuid) {
   base::RunLoop run_loop;
   adapter_->ConnectToServiceInsecurely(
       kKnownDeviceAddress, device::BluetoothUUID(kServiceId),
+      /*should_unbond_on_error=*/false,
       base::BindLambdaForTesting(
           [&](mojom::ConnectToServiceResultPtr connect_to_service_result) {
             EXPECT_FALSE(connect_to_service_result);
@@ -220,6 +221,7 @@ TEST_F(AdapterTest, TestConnectToServiceInsecurely_KnownDevice_Success) {
   base::RunLoop run_loop;
   adapter_->ConnectToServiceInsecurely(
       kKnownDeviceAddress, device::BluetoothUUID(kServiceId),
+      /*should_unbond_on_error=*/false,
       base::BindLambdaForTesting(
           [&](mojom::ConnectToServiceResultPtr connect_to_service_result) {
             EXPECT_TRUE(connect_to_service_result);
@@ -239,6 +241,7 @@ TEST_F(AdapterTest, TestConnectToServiceInsecurely_KnownDevice_Error) {
   base::RunLoop run_loop;
   adapter_->ConnectToServiceInsecurely(
       kKnownDeviceAddress, device::BluetoothUUID(kServiceId),
+      /*should_unbond_on_error=*/false,
       base::BindLambdaForTesting(
           [&](mojom::ConnectToServiceResultPtr connect_to_service_result) {
             EXPECT_FALSE(connect_to_service_result);
@@ -247,7 +250,7 @@ TEST_F(AdapterTest, TestConnectToServiceInsecurely_KnownDevice_Error) {
   run_loop.Run();
 }
 
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 TEST_F(
     AdapterTest,
     TestConnectToServiceInsecurely_UnknownDevice_Success_ServicesAlreadyResolved) {
@@ -267,6 +270,7 @@ TEST_F(
   base::RunLoop run_loop;
   adapter_->ConnectToServiceInsecurely(
       kUnknownDeviceAddress, device::BluetoothUUID(kServiceId),
+      /*should_unbond_on_error=*/false,
       base::BindLambdaForTesting(
           [&](mojom::ConnectToServiceResultPtr connect_to_service_result) {
             EXPECT_TRUE(connect_to_service_result);
@@ -307,6 +311,7 @@ TEST_F(
   base::RunLoop run_loop;
   adapter_->ConnectToServiceInsecurely(
       kUnknownDeviceAddress, device::BluetoothUUID(kServiceId),
+      /*should_unbond_on_error=*/false,
       base::BindLambdaForTesting(
           [&](mojom::ConnectToServiceResultPtr connect_to_service_result) {
             EXPECT_TRUE(connect_to_service_result);
@@ -332,6 +337,7 @@ TEST_F(
   base::RunLoop run_loop;
   adapter_->ConnectToServiceInsecurely(
       kUnknownDeviceAddress, device::BluetoothUUID(kServiceId),
+      /*should_unbond_on_error=*/false,
       base::BindLambdaForTesting(
           [&](mojom::ConnectToServiceResultPtr connect_to_service_result) {
             EXPECT_FALSE(connect_to_service_result);
@@ -361,6 +367,7 @@ TEST_F(
   base::RunLoop run_loop;
   adapter_->ConnectToServiceInsecurely(
       kUnknownDeviceAddress, device::BluetoothUUID(kServiceId),
+      /*should_unbond_on_error=*/false,
       base::BindLambdaForTesting(
           [&](mojom::ConnectToServiceResultPtr connect_to_service_result) {
             EXPECT_FALSE(connect_to_service_result);
@@ -379,13 +386,14 @@ TEST_F(
 TEST_F(AdapterTest, TestConnectToServiceInsecurely_UnknownDevice_Error) {
   EXPECT_CALL(*mock_bluetooth_adapter_,
               ConnectDevice(kUnknownDeviceAddress, _, _, _))
-      .WillOnce(RunOnceCallback<3>());
+      .WillOnce(RunOnceCallback<3>(""));
 
   adapter_->AllowConnectionsForUuid(device::BluetoothUUID(kServiceId));
 
   base::RunLoop run_loop;
   adapter_->ConnectToServiceInsecurely(
       kUnknownDeviceAddress, device::BluetoothUUID(kServiceId),
+      /*should_unbond_on_error=*/false,
       base::BindLambdaForTesting(
           [&](mojom::ConnectToServiceResultPtr connect_to_service_result) {
             EXPECT_FALSE(connect_to_service_result);
@@ -400,12 +408,33 @@ TEST_F(AdapterTest, TestConnectToServiceInsecurely_UnknownDevice) {
   base::RunLoop run_loop;
   adapter_->ConnectToServiceInsecurely(
       kUnknownDeviceAddress, device::BluetoothUUID(kServiceId),
+      /*should_unbond_on_error=*/false,
       base::BindLambdaForTesting(
           [&](mojom::ConnectToServiceResultPtr connect_to_service_result) {
             EXPECT_FALSE(connect_to_service_result);
             run_loop.Quit();
           }));
   run_loop.Run();
+}
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_F(AdapterTest, TestConnectToServiceInsecurely_HalfPaired) {
+  EXPECT_CALL(*mock_known_bluetooth_device_, IsBonded).WillOnce(Return(true));
+
+  EXPECT_CALL(*mock_known_bluetooth_device_,
+              ConnectToServiceInsecurely(_, _, _))
+      .WillOnce(RunOnceCallback<2>("br-connection-canceled"));
+
+  EXPECT_CALL(*mock_known_bluetooth_device_, Forget).Times(1);
+
+  adapter_->AllowConnectionsForUuid(device::BluetoothUUID(kServiceId));
+
+  adapter_->ConnectToServiceInsecurely(
+      kKnownDeviceAddress, device::BluetoothUUID(kServiceId),
+      /*should_unbond_on_error=*/true,
+      base::BindLambdaForTesting(
+          [&](mojom::ConnectToServiceResultPtr connect_to_service_result) {}));
 }
 #endif
 
@@ -459,7 +488,7 @@ TEST_F(AdapterTest, TestCreateRfcommServiceInsecurely_Success) {
   run_loop.Run();
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(AdapterTest, TestMetricsOnShutdown_NoPendingConnects) {
   base::HistogramTester histogram_tester;
   adapter_.reset();
@@ -486,9 +515,9 @@ TEST_F(AdapterTest, TestMetricsOnShutdown_PendingConnects) {
       .WillRepeatedly(Return(false));
 
   adapter_->AllowConnectionsForUuid(device::BluetoothUUID(kServiceId));
-  adapter_->ConnectToServiceInsecurely(kUnknownDeviceAddress,
-                                       device::BluetoothUUID(kServiceId),
-                                       base::DoNothing());
+  adapter_->ConnectToServiceInsecurely(
+      kUnknownDeviceAddress, device::BluetoothUUID(kServiceId),
+      /*should_unbond_on_error=*/false, base::DoNothing());
   base::RunLoop().RunUntilIdle();
 
   adapter_.reset();

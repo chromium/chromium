@@ -1,22 +1,25 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import 'chrome://diagnostics/routine_section.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
-import {RoutineType, StandardRoutineResult} from 'chrome://diagnostics/diagnostics_types.js';
 import {createRoutine} from 'chrome://diagnostics/diagnostics_utils.js';
-import {fakePowerRoutineResults, fakeRoutineResults} from 'chrome://diagnostics/fake_data.js';
 import {FakeSystemRoutineController} from 'chrome://diagnostics/fake_system_routine_controller.js';
 import {setSystemRoutineControllerForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
 import {RoutineGroup} from 'chrome://diagnostics/routine_group.js';
 import {ExecutionProgress, TestSuiteStatus} from 'chrome://diagnostics/routine_list_executor.js';
-import {getRoutineType} from 'chrome://diagnostics/routine_result_entry.js';
-import {BadgeType} from 'chrome://diagnostics/text_badge.js';
+import {getRoutineType, RoutineResultEntryElement} from 'chrome://diagnostics/routine_result_entry.js';
+import {RoutineResultListElement} from 'chrome://diagnostics/routine_result_list.js';
+import {RoutineSectionElement} from 'chrome://diagnostics/routine_section.js';
+import {RoutineType, StandardRoutineResult} from 'chrome://diagnostics/system_routine_controller.mojom-webui.js';
+import {BadgeType, TextBadgeElement} from 'chrome://diagnostics/text_badge.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks, isVisible} from '../../test_util.js';
+import {isVisible} from '../../test_util.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';
 
@@ -40,7 +43,7 @@ export function routineSectionTestSuite() {
 
     // Enable all routines by default.
     routineController.setFakeSupportedRoutines(
-        [...fakeRoutineResults.keys(), ...fakePowerRoutineResults.keys()]);
+        routineController.getAllRoutines());
 
     setSystemRoutineControllerForTesting(routineController);
   });
@@ -68,11 +71,12 @@ export function routineSectionTestSuite() {
 
     // Assign the routines to the property.
     routineSectionElement.routines = routines;
-    routineSectionElement.testSuiteStatus = TestSuiteStatus.kNotRunning;
+    routineSectionElement.testSuiteStatus = TestSuiteStatus.NOT_RUNNING;
     routineSectionElement.routineRuntime = runtime;
 
     if (!(routines[0] instanceof RoutineGroup) && routines.length === 1 && [
-          RoutineType.kBatteryDischarge, RoutineType.kBatteryCharge
+          RoutineType.kBatteryDischarge,
+          RoutineType.kBatteryCharge,
         ].includes(routines[0])) {
       routineSectionElement.isPowerRoutine = true;
     }
@@ -128,7 +132,7 @@ export function routineSectionTestSuite() {
    */
   function getStatusBadge() {
     return /** @type {!TextBadgeElement} */ (
-        routineSectionElement.$$('#testStatusBadge'));
+        routineSectionElement.shadowRoot.querySelector('#testStatusBadge'));
   }
 
   /**
@@ -138,7 +142,7 @@ export function routineSectionTestSuite() {
   function getStatusTextElement() {
     const statusText =
         /** @type {!HTMLElement} */ (
-            routineSectionElement.$$('#testStatusText'));
+            routineSectionElement.shadowRoot.querySelector('#testStatusText'));
     assertTrue(!!statusText);
     return statusText;
   }
@@ -248,15 +252,6 @@ export function routineSectionTestSuite() {
   }
 
   /**
-   * @param {boolean} runTestsAutomatically
-   * @return {!Promise}
-   */
-  function setRunTestsAutomatically(runTestsAutomatically) {
-    routineSectionElement.runTestsAutomatically = runTestsAutomatically;
-    return flushTasks();
-  }
-
-  /**
    * @param {!Array<!RoutineType>} routines
    * @return {!Promise}
    */
@@ -281,7 +276,7 @@ export function routineSectionTestSuite() {
   function getLearnMoreButton() {
     const learnMoreButton =
         /** @type {!CrButtonElement} */ (
-            routineSectionElement.$$('#learnMoreButton'));
+            routineSectionElement.shadowRoot.querySelector('#learnMoreButton'));
     assertTrue(!!learnMoreButton);
     return learnMoreButton;
   }
@@ -289,7 +284,8 @@ export function routineSectionTestSuite() {
   test('ElementRenders', () => {
     return initializeRoutineSection([]).then(() => {
       // Verify the element rendered.
-      assertTrue(!!routineSectionElement.$$('#routineSection'));
+      assertTrue(
+          !!routineSectionElement.shadowRoot.querySelector('#routineSection'));
     });
   });
 
@@ -298,13 +294,15 @@ export function routineSectionTestSuite() {
         .then(() => {
           // Verify the element is hidden.
           assertFalse(isVisible(/** @type {!HTMLElement} */ (
-              routineSectionElement.$$('#routineSection'))));
+              routineSectionElement.shadowRoot.querySelector(
+                  '#routineSection'))));
         })
         .then(() => setRoutines([RoutineType.kLanConnectivity]))
         .then(() => {
           // Verify the element is not hidden.
           assertTrue(isVisible(/** @type {!HTMLElement} */ (
-              routineSectionElement.$$('#routineSection'))));
+              routineSectionElement.shadowRoot.querySelector(
+                  '#routineSection'))));
         });
   });
 
@@ -319,7 +317,7 @@ export function routineSectionTestSuite() {
         .then(() => {
           assertFalse(isRunTestsButtonDisabled());
           assertEquals(
-              TestSuiteStatus.kNotRunning,
+              TestSuiteStatus.NOT_RUNNING,
               routineSectionElement.testSuiteStatus);
           return clickRunTestsButton();
         })
@@ -327,7 +325,7 @@ export function routineSectionTestSuite() {
           assertFalse(isVisible(getRunTestsButton()));
           assertTrue(isVisible(getStopTestsButton()));
           assertEquals(
-              TestSuiteStatus.kRunning, routineSectionElement.testSuiteStatus);
+              TestSuiteStatus.RUNNING, routineSectionElement.testSuiteStatus);
           dx_utils.assertElementContainsText(
               getStopTestsButton(),
               loadTimeData.getString('stopTestButtonText'));
@@ -400,11 +398,11 @@ export function routineSectionTestSuite() {
 
           // First routine should be running.
           assertEquals(routines[0], entries[0].item.routine);
-          assertEquals(ExecutionProgress.kRunning, entries[0].item.progress);
+          assertEquals(ExecutionProgress.RUNNING, entries[0].item.progress);
 
           // Second routine is not started.
           assertEquals(routines[1], entries[1].item.routine);
-          assertEquals(ExecutionProgress.kNotStarted, entries[1].item.progress);
+          assertEquals(ExecutionProgress.NOT_STARTED, entries[1].item.progress);
 
           // Resolve the running test.
           return routineController.resolveRoutineForTesting();
@@ -418,11 +416,11 @@ export function routineSectionTestSuite() {
 
           // First routine should be completed.
           assertEquals(routines[0], entries[0].item.routine);
-          assertEquals(ExecutionProgress.kCompleted, entries[0].item.progress);
+          assertEquals(ExecutionProgress.COMPLETED, entries[0].item.progress);
 
           // Second routine should be running.
           assertEquals(routines[1], entries[1].item.routine);
-          assertEquals(ExecutionProgress.kRunning, entries[1].item.progress);
+          assertEquals(ExecutionProgress.RUNNING, entries[1].item.progress);
 
           // Resolve the running test.
           return routineController.resolveRoutineForTesting();
@@ -436,11 +434,11 @@ export function routineSectionTestSuite() {
 
           // First routine should be completed.
           assertEquals(routines[0], entries[0].item.routine);
-          assertEquals(ExecutionProgress.kCompleted, entries[0].item.progress);
+          assertEquals(ExecutionProgress.COMPLETED, entries[0].item.progress);
 
           // Second routine should be completed.
           assertEquals(routines[1], entries[1].item.routine);
-          assertEquals(ExecutionProgress.kCompleted, entries[1].item.progress);
+          assertEquals(ExecutionProgress.COMPLETED, entries[1].item.progress);
         });
   });
 
@@ -624,11 +622,11 @@ export function routineSectionTestSuite() {
 
           // First routine should be running.
           assertEquals(routines[0], entries[0].item.routine);
-          assertEquals(ExecutionProgress.kRunning, entries[0].item.progress);
+          assertEquals(ExecutionProgress.RUNNING, entries[0].item.progress);
 
           // Second routine is not started.
           assertEquals(routines[1], entries[1].item.routine);
-          assertEquals(ExecutionProgress.kNotStarted, entries[1].item.progress);
+          assertEquals(ExecutionProgress.NOT_STARTED, entries[1].item.progress);
           // // Resolve the running test.
           return routineController.resolveRoutineForTesting();
         })
@@ -636,18 +634,18 @@ export function routineSectionTestSuite() {
         .then(() => {
           const entries = getEntries();
           // First routine should be completed.
-          assertEquals(ExecutionProgress.kCompleted, entries[0].item.progress);
+          assertEquals(ExecutionProgress.COMPLETED, entries[0].item.progress);
 
           // Second routine should be running.
-          assertEquals(ExecutionProgress.kRunning, entries[1].item.progress);
+          assertEquals(ExecutionProgress.RUNNING, entries[1].item.progress);
         })
         .then(() => clickStopTestsButton())
         .then(() => {
           const entries = getEntries();
           // First routine should still be completed.
-          assertEquals(ExecutionProgress.kCompleted, entries[0].item.progress);
+          assertEquals(ExecutionProgress.COMPLETED, entries[0].item.progress);
           // Second routine should be cancelled.
-          assertEquals(ExecutionProgress.kCancelled, entries[1].item.progress);
+          assertEquals(ExecutionProgress.CANCELLED, entries[1].item.progress);
 
           // Badge and status are visible.
           assertTrue(isVisible(getStatusBadge()));
@@ -689,11 +687,11 @@ export function routineSectionTestSuite() {
           const entries = getEntries();
           // First routine should be running.
           assertEquals(routines[0], entries[0].item.routine);
-          assertEquals(ExecutionProgress.kRunning, entries[0].item.progress);
+          assertEquals(ExecutionProgress.RUNNING, entries[0].item.progress);
 
           // Second routine is not started.
           assertEquals(routines[1], entries[1].item.routine);
-          assertEquals(ExecutionProgress.kNotStarted, entries[1].item.progress);
+          assertEquals(ExecutionProgress.NOT_STARTED, entries[1].item.progress);
         })
         // Stop running test.
         .then(() => clickStopTestsButton())
@@ -704,9 +702,9 @@ export function routineSectionTestSuite() {
 
           const entries = getEntries();
           // First routine should be cancelled.
-          assertEquals(ExecutionProgress.kCancelled, entries[0].item.progress);
+          assertEquals(ExecutionProgress.CANCELLED, entries[0].item.progress);
           // Second routine should be cancelled.
-          assertEquals(ExecutionProgress.kCancelled, entries[1].item.progress);
+          assertEquals(ExecutionProgress.CANCELLED, entries[1].item.progress);
 
           // Status text shows test that was cancelled.
           dx_utils.assertElementContainsText(
@@ -739,9 +737,9 @@ export function routineSectionTestSuite() {
 
           const entries = getEntries();
           // First routine should be cancelled.
-          assertEquals(ExecutionProgress.kCancelled, entries[0].item.progress);
+          assertEquals(ExecutionProgress.CANCELLED, entries[0].item.progress);
           // Second routine should be cancelled.
-          assertEquals(ExecutionProgress.kCancelled, entries[1].item.progress);
+          assertEquals(ExecutionProgress.CANCELLED, entries[1].item.progress);
 
           // Status text shows test that was cancelled.
           dx_utils.assertElementContainsText(
@@ -776,7 +774,7 @@ export function routineSectionTestSuite() {
           const entries = getEntries();
           // First routine should be completed.
           assertEquals(routines[0], entries[0].item.routine);
-          assertEquals(ExecutionProgress.kCompleted, entries[0].item.progress);
+          assertEquals(ExecutionProgress.COMPLETED, entries[0].item.progress);
 
           // Status text shows that a routine succeeded.
           dx_utils.assertElementContainsText(
@@ -795,7 +793,7 @@ export function routineSectionTestSuite() {
 
           const entries = getEntries();
           // First routine should be running.
-          assertEquals(ExecutionProgress.kRunning, entries[0].item.progress);
+          assertEquals(ExecutionProgress.RUNNING, entries[0].item.progress);
 
           // Button text should be "Stop test"
           dx_utils.assertElementContainsText(
@@ -965,7 +963,7 @@ export function routineSectionTestSuite() {
           assertFalse(isVisible(getResultList()));
           // Memory routine should be cancelled.
           assertEquals(
-              ExecutionProgress.kCancelled, getEntries()[0].item.progress);
+              ExecutionProgress.CANCELLED, getEntries()[0].item.progress);
         });
   });
 
@@ -975,25 +973,27 @@ export function routineSectionTestSuite() {
         .then(() => {
           assertFalse(isVisible(getLearnMoreButton()));
           assertFalse(isVisible(/** @type {!HTMLElement} */ (
-              routineSectionElement.$$('.routine-status-container'))));
+              routineSectionElement.shadowRoot.querySelector(
+                  '.routine-status-container'))));
           assertFalse(isVisible(/** @type {!HTMLElement} */ (
-              routineSectionElement.$$('.button-container'))));
+              routineSectionElement.shadowRoot.querySelector(
+                  '.button-container'))));
         });
   });
 
 
   test('StopAfterFirstBlockingFailureInRoutineGroup', () => {
-    let localNetworkGroup = new RoutineGroup(
+    const localNetworkGroup = new RoutineGroup(
         [
           createRoutine(RoutineType.kGatewayCanBePinged, true),
-          createRoutine(RoutineType.kLanConnectivity, true)
+          createRoutine(RoutineType.kLanConnectivity, true),
         ],
         'localNetworkGroupLabel');
 
-    let nameResolutionGroup = new RoutineGroup(
+    const nameResolutionGroup = new RoutineGroup(
         [createRoutine(RoutineType.kDnsResolverPresent, true)],
         'nameResolutionGroupLabel');
-    let groups = [localNetworkGroup, nameResolutionGroup];
+    const groups = [localNetworkGroup, nameResolutionGroup];
     routineController.setFakeStandardRoutineResult(
         RoutineType.kGatewayCanBePinged, StandardRoutineResult.kTestPassed);
     routineController.setFakeStandardRoutineResult(
@@ -1009,7 +1009,7 @@ export function routineSectionTestSuite() {
           // First routine should be running.
           assertEquals(
               RoutineType.kGatewayCanBePinged, entries[0].item.routines[0]);
-          assertEquals(ExecutionProgress.kRunning, entries[0].item.progress);
+          assertEquals(ExecutionProgress.RUNNING, entries[0].item.progress);
 
           // Resolve the running test.
           return routineController.resolveRoutineForTesting();
@@ -1021,7 +1021,7 @@ export function routineSectionTestSuite() {
           // Second routine in the first group should be running.
           assertEquals(
               RoutineType.kLanConnectivity, entries[0].item.routines[1]);
-          assertEquals(ExecutionProgress.kRunning, entries[0].item.progress);
+          assertEquals(ExecutionProgress.RUNNING, entries[0].item.progress);
 
           // Resolve the running test.
           return routineController.resolveRoutineForTesting();
@@ -1037,19 +1037,19 @@ export function routineSectionTestSuite() {
 
           assertEquals(
               RoutineType.kLanConnectivity, entries[0].item.routines[1]);
-          assertEquals(ExecutionProgress.kCompleted, entries[0].item.progress);
+          assertEquals(ExecutionProgress.COMPLETED, entries[0].item.progress);
 
           // Text badge should display 'FAILED' for the first group.
           const textBadge = entries[0].shadowRoot.querySelector('#status');
           dx_utils.assertElementContainsText(
-              textBadge.$$('#textBadge'), 'FAILED');
+              textBadge.shadowRoot.querySelector('#textBadge'), 'FAILED');
 
           // Remaining routine groups should display the skipped state.
-          assertEquals(ExecutionProgress.kSkipped, entries[1].item.progress);
+          assertEquals(ExecutionProgress.SKIPPED, entries[1].item.progress);
 
           // Remaining routine should still be running in the background.
           assertEquals(
-              routineSectionElement.testSuiteStatus, TestSuiteStatus.kRunning);
+              routineSectionElement.testSuiteStatus, TestSuiteStatus.RUNNING);
 
           // Resolve the running test.
           return routineController.resolveRoutineForTesting();
@@ -1059,24 +1059,23 @@ export function routineSectionTestSuite() {
           // All tests are completed and the ignore updates flag should be off
           // again.
           assertEquals(
-              routineSectionElement.testSuiteStatus,
-              TestSuiteStatus.kCompleted);
+              routineSectionElement.testSuiteStatus, TestSuiteStatus.COMPLETED);
           assertFalse(getResultList().ignoreRoutineStatusUpdates);
         });
   });
 
   test('NonBlockingRoutineFailureHandledCorrectly', () => {
-    let localNetworkGroup = new RoutineGroup(
+    const localNetworkGroup = new RoutineGroup(
         [
           createRoutine(RoutineType.kSignalStrength, false),
           createRoutine(RoutineType.kCaptivePortal, false),
         ],
         'wifiGroupLabel');
 
-    let nameResolutionGroup = new RoutineGroup(
+    const nameResolutionGroup = new RoutineGroup(
         [createRoutine(RoutineType.kDnsResolverPresent, true)],
         'nameResolutionGroupLabel');
-    let groups = [localNetworkGroup, nameResolutionGroup];
+    const groups = [localNetworkGroup, nameResolutionGroup];
     routineController.setFakeStandardRoutineResult(
         RoutineType.kSignalStrength, StandardRoutineResult.kTestFailed);
     routineController.setFakeStandardRoutineResult(
@@ -1092,7 +1091,7 @@ export function routineSectionTestSuite() {
           // First routine should be running.
           assertEquals(
               RoutineType.kSignalStrength, entries[0].item.routines[0]);
-          assertEquals(ExecutionProgress.kRunning, entries[0].item.progress);
+          assertEquals(ExecutionProgress.RUNNING, entries[0].item.progress);
 
           // Resolve the running test.
           return routineController.resolveRoutineForTesting();
@@ -1112,7 +1111,7 @@ export function routineSectionTestSuite() {
           // Text badge should display 'WARNING' for the first group.
           const textBadge = entries[0].shadowRoot.querySelector('#status');
           dx_utils.assertElementContainsText(
-              textBadge.$$('#textBadge'), 'WARNING');
+              textBadge.shadowRoot.querySelector('#textBadge'), 'WARNING');
 
           // Resolve the running test.
           return routineController.resolveRoutineForTesting();
@@ -1124,12 +1123,12 @@ export function routineSectionTestSuite() {
           // Text badge should still display 'WARNING' for the first group.
           const textBadge = entries[0].shadowRoot.querySelector('#status');
           dx_utils.assertElementContainsText(
-              textBadge.$$('#textBadge'), 'WARNING');
+              textBadge.shadowRoot.querySelector('#textBadge'), 'WARNING');
 
           // First routine in the second group should be running.
           assertEquals(
               RoutineType.kDnsResolverPresent, entries[1].item.routines[0]);
-          assertEquals(ExecutionProgress.kRunning, entries[1].item.progress);
+          assertEquals(ExecutionProgress.RUNNING, entries[1].item.progress);
 
 
           // Resolve the running test.
@@ -1142,16 +1141,15 @@ export function routineSectionTestSuite() {
           // Text badge should display 'PASSED' for the second group.
           const textBadge = entries[1].shadowRoot.querySelector('#status');
           dx_utils.assertElementContainsText(
-              textBadge.$$('#textBadge'), 'PASSED');
-          assertEquals(ExecutionProgress.kCompleted, entries[1].item.progress);
+              textBadge.shadowRoot.querySelector('#textBadge'), 'PASSED');
+          assertEquals(ExecutionProgress.COMPLETED, entries[1].item.progress);
           assertEquals(
-              routineSectionElement.testSuiteStatus,
-              TestSuiteStatus.kCompleted);
+              routineSectionElement.testSuiteStatus, TestSuiteStatus.COMPLETED);
         });
   });
 
   test('MultipleNonBlockingTestsFail', () => {
-    let groups = [new RoutineGroup(
+    const groups = [new RoutineGroup(
         [
           createRoutine(RoutineType.kSignalStrength, false),
           createRoutine(RoutineType.kCaptivePortal, false),
@@ -1169,7 +1167,7 @@ export function routineSectionTestSuite() {
           // First routine should be running.
           assertEquals(
               RoutineType.kSignalStrength, entries[0].item.routines[0]);
-          assertEquals(ExecutionProgress.kRunning, entries[0].item.progress);
+          assertEquals(ExecutionProgress.RUNNING, entries[0].item.progress);
           // Resolve the running test.
           return routineController.resolveRoutineForTesting();
         })
@@ -1186,7 +1184,7 @@ export function routineSectionTestSuite() {
           // Text badge should display 'WARNING' for the first group.
           const textBadge = entries[0].shadowRoot.querySelector('#status');
           dx_utils.assertElementContainsText(
-              textBadge.$$('#textBadge'), 'WARNING');
+              textBadge.shadowRoot.querySelector('#textBadge'), 'WARNING');
           // Failed test text should be set properly.
           assertEquals(entries[0].item.failedTest, RoutineType.kSignalStrength);
           // Resolve the running test.
@@ -1198,14 +1196,14 @@ export function routineSectionTestSuite() {
           // Text badge should still display 'WARNING' for the first group.
           const textBadge = entries[0].shadowRoot.querySelector('#status');
           dx_utils.assertElementContainsText(
-              textBadge.$$('#textBadge'), 'WARNING');
+              textBadge.shadowRoot.querySelector('#textBadge'), 'WARNING');
           // Failed test does not get overwritten.
           assertEquals(entries[0].item.failedTest, RoutineType.kSignalStrength);
         });
   });
 
   test('LastNonBlockingRoutineInGroupFails', () => {
-    let groups = [new RoutineGroup(
+    const groups = [new RoutineGroup(
         [
           createRoutine(RoutineType.kSignalStrength, false),
           createRoutine(RoutineType.kCaptivePortal, false),
@@ -1223,7 +1221,7 @@ export function routineSectionTestSuite() {
           // First routine should be running.
           assertEquals(
               RoutineType.kSignalStrength, entries[0].item.routines[0]);
-          assertEquals(ExecutionProgress.kRunning, entries[0].item.progress);
+          assertEquals(ExecutionProgress.RUNNING, entries[0].item.progress);
           // Resolve the running test.
           return routineController.resolveRoutineForTesting();
         })
@@ -1239,7 +1237,7 @@ export function routineSectionTestSuite() {
           // routines in this group.
           const textBadge = entries[0].shadowRoot.querySelector('#status');
           dx_utils.assertElementContainsText(
-              textBadge.$$('#textBadge'), 'RUNNING');
+              textBadge.shadowRoot.querySelector('#textBadge'), 'RUNNING');
           // Failed test text should be unset.
           assertFalse(!!entries[0].item.failedTest);
           // Resolve the running test.
@@ -1252,15 +1250,15 @@ export function routineSectionTestSuite() {
           // state.
           const textBadge = entries[0].shadowRoot.querySelector('#status');
           dx_utils.assertElementContainsText(
-              textBadge.$$('#textBadge'), 'WARNING');
-          assertEquals(entries[0].item.progress, ExecutionProgress.kCompleted);
+              textBadge.shadowRoot.querySelector('#textBadge'), 'WARNING');
+          assertEquals(entries[0].item.progress, ExecutionProgress.COMPLETED);
           // Failed test text should be set properly.
           assertEquals(entries[0].item.failedTest, RoutineType.kCaptivePortal);
         });
   });
 
   test('AnnounceOnAllTestPassed', () => {
-    let groups = [new RoutineGroup(
+    const groups = [new RoutineGroup(
         [
           createRoutine(RoutineType.kSignalStrength, /* blocking */ false),
         ],
@@ -1278,8 +1276,7 @@ export function routineSectionTestSuite() {
         .then(() => flushTasks())
         .then(() => {
           assertEquals(
-              routineSectionElement.testSuiteStatus,
-              TestSuiteStatus.kCompleted);
+              routineSectionElement.testSuiteStatus, TestSuiteStatus.COMPLETED);
           assertEquals('Diagnostics completed', getAnnouncedText());
         });
   });
@@ -1295,7 +1292,7 @@ export function routineSectionTestSuite() {
           [
             createRoutine(RoutineType.kDnsResolverPresent, true),
           ],
-          'wifiGroupLabel')
+          'wifiGroupLabel'),
     ];
     routineController.setFakeStandardRoutineResult(
         RoutineType.kCaptivePortal, StandardRoutineResult.kTestFailed);
@@ -1318,14 +1315,13 @@ export function routineSectionTestSuite() {
         .then(() => flushTasks())
         .then(() => {
           assertEquals(
-              routineSectionElement.testSuiteStatus,
-              TestSuiteStatus.kCompleted);
+              routineSectionElement.testSuiteStatus, TestSuiteStatus.COMPLETED);
           assertEquals('Diagnostics completed', getAnnouncedText());
         });
   });
 
   test('AnnounceOnBlockingTestFailed', () => {
-    let groups = [new RoutineGroup(
+    const groups = [new RoutineGroup(
         [
           createRoutine(RoutineType.kSignalStrength, /* blocking */ true),
         ],
@@ -1343,14 +1339,13 @@ export function routineSectionTestSuite() {
         .then(() => flushTasks())
         .then(() => {
           assertEquals(
-              routineSectionElement.testSuiteStatus,
-              TestSuiteStatus.kCompleted);
+              routineSectionElement.testSuiteStatus, TestSuiteStatus.COMPLETED);
           assertEquals('Diagnostics completed', getAnnouncedText());
         });
   });
 
   test('NoAnnounceOnBlockingTestCancelled', () => {
-    let groups = [new RoutineGroup(
+    const groups = [new RoutineGroup(
         [
           createRoutine(RoutineType.kSignalStrength, /* blocking */ true),
         ],
@@ -1368,7 +1363,7 @@ export function routineSectionTestSuite() {
         .then(() => {
           assertEquals(
               routineSectionElement.testSuiteStatus,
-              TestSuiteStatus.kNotRunning);
+              TestSuiteStatus.NOT_RUNNING);
           assertEquals('', getAnnouncedText());
         });
   });

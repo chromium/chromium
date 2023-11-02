@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_controller.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "v8/include/v8.h"
 
@@ -82,6 +83,9 @@ class ReadableStreamDefaultController : public ReadableStreamController {
 
   // https://streams.spec.whatwg.org/#rs-default-controller-private-pull
   StreamPromiseResolver* PullSteps(ScriptState*) override;
+
+  // https://streams.spec.whatwg.org/#abstract-opdef-readablestreamdefaultcontroller-releasesteps
+  void ReleaseSteps() override;
 
  private:
   friend class ReadableStream;

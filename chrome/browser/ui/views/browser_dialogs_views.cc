@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/extensions/api/chrome_device_permissions_prompt.h"
-#include "chrome/browser/extensions/chrome_extension_chooser_dialog.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/login/login_handler.h"
@@ -37,9 +36,11 @@ std::unique_ptr<LoginHandler> LoginHandler::Create(
 void BookmarkEditor::Show(gfx::NativeWindow parent_window,
                           Profile* profile,
                           const EditDetails& details,
-                          Configuration configuration) {
+                          Configuration configuration,
+                          OnSaveCallback on_save_callback) {
   auto editor = std::make_unique<BookmarkEditorView>(
-      profile, details.parent_node, details, configuration);
+      profile, details.parent_node, details, configuration,
+      std::move(on_save_callback));
   editor->Show(parent_window);
   editor.release();  // BookmarkEditorView is self-deleting
 }
@@ -48,14 +49,9 @@ void ChromeDevicePermissionsPrompt::ShowDialog() {
   ShowDialogViews();
 }
 
-void ChromeExtensionChooserDialog::ShowDialog(
-    std::unique_ptr<permissions::ChooserController> chooser_controller) const {
-  ShowDialogImpl(std::move(chooser_controller));
-}
-
 namespace chrome {
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 task_manager::TaskManagerTableModel* ShowTaskManager(Browser* browser) {
   return task_manager::TaskManagerView::Show(browser);
 }

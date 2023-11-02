@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/test/base/android/android_browser_test.h"
 #else
 #include "chrome/test/base/in_process_browser_test.h"
@@ -48,7 +48,8 @@ constexpr char kValueExpectationSwitch[] = "value-expectation";
 class DISABLED_CanvasInputKeyBrowserTest : public PlatformBrowserTest {
  public:
   DISABLED_CanvasInputKeyBrowserTest() {
-    privacy_budget_config_.Apply(test::ScopedPrivacyBudgetConfig::Parameters());
+    privacy_budget_config_.Apply(test::ScopedPrivacyBudgetConfig::Parameters(
+        test::ScopedPrivacyBudgetConfig::Presets::kEnableRandomSampling));
   }
 
   content::WebContents* web_contents() {
@@ -113,7 +114,7 @@ absl::optional<MetricKeyValue> ExtractKeyOfType(IdentifiableSurface::Type type,
 IN_PROC_BROWSER_TEST_F(DISABLED_CanvasInputKeyBrowserTest,
                        TestCanvasFingerprint) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  content::DOMMessageQueue messages;
+  content::DOMMessageQueue messages(web_contents());
   base::RunLoop run_loop;
 
   recorder().SetOnAddEntryCallback(ukm::builders::Identifiability::kEntryName,

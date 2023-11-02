@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/metrics/histogram.h"
+#include "build/build_config.h"
 
 namespace nacl {
 
@@ -68,11 +69,11 @@ void HistogramEnumerateOsArch(const std::string& sandbox_isa) {
   };
 
   NaClOSArch os_arch = kNaClOSArchMax;
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   os_arch = kNaClLinux32;
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   os_arch = kNaClMac32;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   os_arch = kNaClWin32;
 #endif
 

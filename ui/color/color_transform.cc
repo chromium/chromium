@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,7 +29,6 @@ ColorTransform::ColorTransform(SkColor color) {
 }
 
 ColorTransform::ColorTransform(ColorId id) {
-  DCHECK_COLOR_ID_VALID(id);
   const auto generator = [](ColorId id, SkColor input_color,
                             const ColorMixer& mixer) {
     SkColor result_color = mixer.GetResultColor(id);
@@ -182,21 +181,6 @@ ColorTransform DeriveDefaultIconColor(ColorTransform transform) {
   return base::BindRepeating(generator, std::move(transform));
 }
 
-ColorTransform FromOriginalColorFromSet(ColorId id, ColorSetId set_id) {
-  DCHECK_COLOR_ID_VALID(id);
-  DCHECK_COLOR_SET_ID_VALID(set_id);
-  const auto generator = [](ColorId id, ColorSetId set_id, SkColor input_color,
-                            const ColorMixer& mixer) {
-    SkColor result_color = mixer.GetOriginalColorFromSet(id, set_id);
-    DVLOG(2) << "ColorTransform FromOriginalColorFromSet:"
-             << " Color Id: " << ColorIdName(id)
-             << " ColorSet Id: " << ColorSetIdName(set_id)
-             << " Result Color: " << SkColorName(result_color);
-    return result_color;
-  };
-  return base::BindRepeating(generator, id, set_id);
-}
-
 ColorTransform FromTransformInput() {
   const auto generator = [](SkColor input_color, const ColorMixer& mixer) {
     DVLOG(2) << "ColorTransform FromTransformInput: "
@@ -213,6 +197,21 @@ ColorTransform GetColorWithMaxContrast(ColorTransform transform) {
     const SkColor result_color =
         color_utils::GetColorWithMaxContrast(transform_color);
     DVLOG(2) << "ColorTransform GetColorWithMaxContrast:"
+             << " Input Color: " << SkColorName(input_color)
+             << " Transform Color: " << SkColorName(transform_color)
+             << " Result Color: " << SkColorName(result_color);
+    return result_color;
+  };
+  return base::BindRepeating(generator, std::move(transform));
+}
+
+ColorTransform GetEndpointColorWithMinContrast(ColorTransform transform) {
+  const auto generator = [](ColorTransform transform, SkColor input_color,
+                            const ColorMixer& mixer) {
+    const SkColor transform_color = transform.Run(input_color, mixer);
+    const SkColor result_color =
+        color_utils::GetEndpointColorWithMinContrast(transform_color);
+    DVLOG(2) << "ColorTransform GetEndPointColorWithMinContrast:"
              << " Input Color: " << SkColorName(input_color)
              << " Transform Color: " << SkColorName(transform_color)
              << " Result Color: " << SkColorName(result_color);
@@ -304,6 +303,23 @@ ColorTransform PickGoogleColor(ColorTransform color,
       };
   return base::BindRepeating(generator, std::move(color),
                              std::move(background_color), min_contrast);
+}
+
+ColorTransform HSLShift(ColorTransform color, color_utils::HSL hsl) {
+  const auto generator = [](ColorTransform transform, color_utils::HSL hsl,
+                            SkColor input_color, const ColorMixer& mixer) {
+    const SkColor transform_color = transform.Run(input_color, mixer);
+    const SkColor result_color = color_utils::HSLShift(transform_color, hsl);
+    DVLOG(2) << "ColorTransform HSLShift:"
+             << " Input Color: " << SkColorName(input_color)
+             << " Transform Color: " << SkColorName(transform_color)
+             << " HSL: {" << base::NumberToString(hsl.h) << ", "
+             << base::NumberToString(hsl.s) << ", "
+             << base::NumberToString(hsl.l) << "}"
+             << " Result Color: " << SkColorName(result_color);
+    return result_color;
+  };
+  return base::BindRepeating(generator, std::move(color), hsl);
 }
 
 }  // namespace ui

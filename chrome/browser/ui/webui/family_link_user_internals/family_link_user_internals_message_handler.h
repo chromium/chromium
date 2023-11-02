@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,10 +13,6 @@
 #include "chrome/browser/supervised_user/supervised_user_service_observer.h"
 #include "chrome/browser/supervised_user/supervised_user_url_filter.h"
 #include "content/public/browser/web_ui_message_handler.h"
-
-namespace base {
-class ListValue;
-}  // namespace base
 
 // The implementation for the chrome://family-link-user-internals page.
 class FamilyLinkUserInternalsMessageHandler
@@ -43,9 +39,9 @@ class FamilyLinkUserInternalsMessageHandler
 
   SupervisedUserService* GetSupervisedUserService();
 
-  void HandleRegisterForEvents(const base::ListValue* args);
-  void HandleGetBasicInfo(const base::ListValue* args);
-  void HandleTryURL(const base::ListValue* args);
+  void HandleRegisterForEvents(const base::Value::List& args);
+  void HandleGetBasicInfo(const base::Value::List& args);
+  void HandleTryURL(const base::Value::List& args);
 
   void SendBasicInfo();
   void SendFamilyLinkUserSettings(const base::DictionaryValue* settings);

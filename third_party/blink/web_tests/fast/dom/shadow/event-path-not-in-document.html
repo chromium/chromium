@@ -10,7 +10,7 @@
 var elementNotInDocument = document.createElement('div');
 elementNotInDocument.id = "element-not-in-document";
 elementNotInDocument.addEventListener('click', function(event) {
-    debug(dumpNodeList(event.path));
+    debug(dumpNodeList(event.composedPath()));
 });
 var clickEvent = document.createEvent("MouseEvents");
 clickEvent.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);

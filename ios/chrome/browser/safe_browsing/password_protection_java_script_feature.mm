@@ -1,14 +1,14 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/safe_browsing/password_protection_java_script_feature.h"
 
-#include "base/check.h"
+#import "base/check.h"
 #import "base/ios/ios_util.h"
-#include "base/no_destructor.h"
+#import "base/no_destructor.h"
 #import "base/strings/sys_string_conversions.h"
-#include "ios/chrome/browser/safe_browsing/input_event_observer.h"
+#import "ios/chrome/browser/safe_browsing/input_event_observer.h"
 #import "ios/web/public/js_messaging/script_message.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -16,7 +16,7 @@
 #endif
 
 namespace {
-const char kScriptFilename[] = "password_protection_js";
+const char kScriptFilename[] = "password_protection";
 
 const char kTextEnteredHandlerName[] = "PasswordProtectionTextEntered";
 

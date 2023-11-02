@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,13 +12,14 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "net/base/sockaddr_storage.h"
+#include "net/base/sockaddr_util_posix.h"
 #include "net/base/test_completion_callback.h"
 #include "net/socket/socket_posix.h"
 #include "net/socket/unix_domain_client_socket_posix.h"
@@ -242,8 +243,7 @@ TEST_F(SecurityKeyAuthHandlerPosixTest, HandleSingleRequestWithEof) {
 
   net::SocketPosix raw_socket;
   net::SockaddrStorage address;
-  ASSERT_TRUE(net::UnixDomainClientSocket::FillAddress(socket_path_.value(),
-                                                       false, &address));
+  ASSERT_TRUE(net::FillUnixAddress(socket_path_.value(), false, &address));
   raw_socket.AdoptConnectedSocket(client_socket.ReleaseConnectedSocket(),
                                   address);
 

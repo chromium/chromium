@@ -1,4 +1,4 @@
-// Copyright 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,7 +40,7 @@ TextureLayerImpl::~TextureLayerImpl() {
 }
 
 std::unique_ptr<LayerImpl> TextureLayerImpl::CreateLayerImpl(
-    LayerTreeImpl* tree_impl) {
+    LayerTreeImpl* tree_impl) const {
   return TextureLayerImpl::Create(tree_impl, id());
 }
 
@@ -59,6 +59,7 @@ void TextureLayerImpl::PushPropertiesTo(LayerImpl* layer) {
   texture_layer->SetBlendBackgroundColor(blend_background_color_);
   texture_layer->SetForceTextureToOpaque(force_texture_to_opaque_);
   texture_layer->SetNearestNeighbor(nearest_neighbor_);
+  texture_layer->SetHDRMetadata(hdr_metadata_);
   if (own_resource_) {
     texture_layer->SetTransferableResource(transferable_resource_,
                                            std::move(release_callback_));
@@ -122,15 +123,14 @@ void TextureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
       std::make_move_iterator(to_register_bitmaps_.end()));
   to_register_bitmaps_.clear();
 
-  SkColor bg_color =
-      blend_background_color_ ? background_color() : SK_ColorTRANSPARENT;
+  SkColor4f bg_color =
+      blend_background_color_ ? background_color() : SkColors::kTransparent;
 
   if (force_texture_to_opaque_) {
-    bg_color = SK_ColorBLACK;
+    bg_color = SkColors::kBlack;
   }
 
-  bool are_contents_opaque =
-      contents_opaque() || (SkColorGetA(bg_color) == 0xFF);
+  bool are_contents_opaque = contents_opaque() || bg_color.isOpaque();
 
   viz::SharedQuadState* shared_quad_state =
       render_pass->CreateAndAppendSharedQuadState();
@@ -152,9 +152,10 @@ void TextureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
   quad->SetNew(shared_quad_state, quad_rect, visible_quad_rect, needs_blending,
                resource_id_, premultiplied_alpha_, uv_top_left_,
                uv_bottom_right_, bg_color, vertex_opacity, flipped_,
-               nearest_neighbor_, /*secure_output_only=*/false,
+               nearest_neighbor_, /*secure_output=*/false,
                gfx::ProtectedVideoType::kClear);
   quad->set_resource_size_in_pixels(transferable_resource_.size);
+  quad->hdr_metadata = hdr_metadata_;
   ValidateQuadResources(quad);
 }
 
@@ -165,7 +166,7 @@ SimpleEnclosedRegion TextureLayerImpl::VisibleOpaqueRegion() const {
   if (force_texture_to_opaque_)
     return SimpleEnclosedRegion(visible_layer_rect());
 
-  if (blend_background_color_ && (SkColorGetA(background_color()) == 0xFF))
+  if (blend_background_color_ && background_color().isOpaque())
     return SimpleEnclosedRegion(visible_layer_rect());
 
   return SimpleEnclosedRegion();
@@ -228,6 +229,11 @@ void TextureLayerImpl::SetUVTopLeft(const gfx::PointF& top_left) {
 
 void TextureLayerImpl::SetUVBottomRight(const gfx::PointF& bottom_right) {
   uv_bottom_right_ = bottom_right;
+}
+
+void TextureLayerImpl::SetHDRMetadata(
+    absl::optional<gfx::HDRMetadata> hdr_metadata) {
+  hdr_metadata_ = hdr_metadata;
 }
 
 void TextureLayerImpl::SetTransferableResource(

@@ -1,8 +1,0 @@
-Name: strsim
-URL: https://crates.io/crates/strsim
-Description: Implementations of string similarity metrics.
-Includes Hamming, Levenshtein, OSA, Damerau-Levenshtein, Jaro, and Jaro-Winkler.
-
-Version: 0.8.0
-Security Critical: no
-License: MIT

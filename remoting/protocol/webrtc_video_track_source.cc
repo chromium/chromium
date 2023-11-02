@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,7 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "remoting/protocol/webrtc_video_frame_adapter.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 WebrtcVideoTrackSource::WebrtcVideoTrackSource(
     AddSinkCallback add_sink_callback)
@@ -98,5 +97,4 @@ void WebrtcVideoTrackSource::SendCapturedFrame(
   sink_->OnFrame(video_frame);
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

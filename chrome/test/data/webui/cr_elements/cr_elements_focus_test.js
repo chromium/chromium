@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,8 @@
 // Polymer BrowserTest fixture.
 GEN_INCLUDE(['//chrome/test/data/webui/polymer_interactive_ui_test.js']);
 
+GEN('#include "build/build_config.h"');
 GEN('#include "content/public/test/browser_test.h"');
-
-/* eslint-disable no-var */
 
 var CrElementsFocusTest = class extends PolymerInteractiveUITest {
   /** @override */
@@ -26,7 +25,7 @@ var CrElementsFocusTest = class extends PolymerInteractiveUITest {
 var CrElementsActionMenuTest = class extends CrElementsFocusTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=cr_elements/cr_action_menu_test.js';
+    return 'chrome://webui-test/test_loader.html?module=cr_elements/cr_action_menu_test.js';
   }
 };
 
@@ -37,7 +36,7 @@ TEST_F('CrElementsActionMenuTest', 'All', function() {
 var CrElementsCheckboxTest = class extends CrElementsFocusTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=cr_elements/cr_checkbox_test.js';
+    return 'chrome://webui-test/test_loader.html?module=cr_elements/cr_checkbox_test.js';
   }
 };
 
@@ -48,12 +47,12 @@ TEST_F('CrElementsCheckboxTest', 'All', function() {
 var CrElementsInputTest = class extends CrElementsFocusTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=cr_elements/cr_input_test.js';
+    return 'chrome://webui-test/test_loader.html?module=cr_elements/cr_input_test.js';
   }
 };
 
 // https://crbug.com/997943: Flaky on Mac
-GEN('#if defined(OS_MAC)');
+GEN('#if BUILDFLAG(IS_MAC)');
 GEN('#define MAYBE_All DISABLED_All');
 GEN('#else');
 GEN('#define MAYBE_All All');
@@ -65,7 +64,7 @@ TEST_F('CrElementsInputTest', 'MAYBE_All', function() {
 var CrElementsProfileAvatarSelectorTest = class extends CrElementsFocusTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=cr_elements/cr_profile_avatar_selector_tests.js';
+    return 'chrome://webui-test/test_loader.html?module=cr_elements/cr_profile_avatar_selector_tests.js';
   }
 };
 
@@ -76,7 +75,7 @@ TEST_F('CrElementsProfileAvatarSelectorTest', 'All', function() {
 var CrElementsTabsTest = class extends CrElementsFocusTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=cr_elements/cr_tabs_test.js';
+    return 'chrome://webui-test/test_loader.html?module=cr_elements/cr_tabs_test.js';
   }
 };
 
@@ -87,7 +86,7 @@ TEST_F('CrElementsTabsTest', 'All', function() {
 var CrElementsToggleTest = class extends CrElementsFocusTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=cr_elements/cr_toggle_test.js';
+    return 'chrome://webui-test/test_loader.html?module=cr_elements/cr_toggle_test.js';
   }
 };
 
@@ -98,7 +97,7 @@ TEST_F('CrElementsToggleTest', 'All', function() {
 var CrElementsToolbarSearchFieldTest = class extends CrElementsFocusTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=cr_elements/cr_toolbar_search_field_tests.js';
+    return 'chrome://webui-test/test_loader.html?module=cr_elements/cr_toolbar_search_field_tests.js';
   }
 };
 
@@ -110,7 +109,7 @@ TEST_F('CrElementsToolbarSearchFieldTest', 'All', function() {
 var IronListFocusTest = class extends CrElementsFocusTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=cr_elements/iron_list_focus_test.js';
+    return 'chrome://webui-test/test_loader.html?module=cr_elements/iron_list_focus_test.js';
   }
 };
 
@@ -122,7 +121,7 @@ TEST_F('IronListFocusTest', 'All', function() {
 var CrElementsGridFocusTest = class extends CrElementsFocusTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=cr_elements/cr_grid_focus_test.js';
+    return 'chrome://webui-test/test_loader.html?module=cr_elements/cr_grid_focus_test.js';
   }
 };
 
@@ -134,7 +133,7 @@ TEST_F('CrElementsGridFocusTest', 'All', function() {
 var CrElementsMenuSelectorFocusTest = class extends CrElementsFocusTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=cr_elements/cr_menu_selector_focus_test.js';
+    return 'chrome://webui-test/test_loader.html?module=cr_elements/cr_menu_selector_focus_test.js';
   }
 };
 
@@ -146,7 +145,7 @@ TEST_F('CrElementsMenuSelectorFocusTest', 'All', function() {
 var CrElementsToolbarFocusTest = class extends CrElementsFocusTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=cr_elements/cr_toolbar_focus_tests.js';
+    return 'chrome://webui-test/test_loader.html?module=cr_elements/cr_toolbar_focus_tests.js';
   }
 };
 

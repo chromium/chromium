@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/task_runner_util.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/power/auto_screen_brightness/brightness_monitor.h"
 #include "chromeos/dbus/power/power_manager_client.h"
@@ -23,7 +23,7 @@ namespace auto_screen_brightness {
 // Real implementation of BrightnessMonitor.
 // It monitors user brightness changes and records the stabilized brightness.
 class BrightnessMonitorImpl : public BrightnessMonitor,
-                              public PowerManagerClient::Observer {
+                              public chromeos::PowerManagerClient::Observer {
  public:
   // Once a user brightness adjustment is received, we wait for
   // |brightness_sample_delay_| to record the final brightness. It can be

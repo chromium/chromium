@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -163,12 +163,6 @@ bool LayoutNGTableCell::BackgroundIsKnownToBeOpaqueInRect(
     return false;
   return LayoutNGBlockFlowMixin<
       LayoutBlockFlow>::BackgroundIsKnownToBeOpaqueInRect(local_rect);
-}
-
-Length LayoutNGTableCell::StyleOrColLogicalWidth() const {
-  NOT_DESTROYED();
-  // TODO(atotic) TablesNG cannot easily get col width before layout.
-  return StyleRef().LogicalWidth();
 }
 
 // TODO(crbug.com/1079133): Used by AXLayoutObject::RowIndex,

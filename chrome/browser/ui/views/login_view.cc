@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,7 +24,8 @@
 LoginView::LoginView(const std::u16string& authority,
                      const std::u16string& explanation,
                      LoginHandler::LoginModelData* login_model_data)
-    : http_auth_manager_(login_model_data ? login_model_data->model : nullptr) {
+    : http_auth_manager_(login_model_data ? login_model_data->model.get()
+                                          : nullptr) {
   ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
@@ -60,7 +61,7 @@ LoginView::LoginView(const std::u16string& authority,
                   views::TableLayout::kFixedSize,
                   views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
       .AddPaddingColumn(
-          views::GridLayout::kFixedSize,
+          views::TableLayout::kFixedSize,
           provider->GetDistanceMetric(views::DISTANCE_RELATED_LABEL_HORIZONTAL))
       .AddColumn(views::LayoutAlignment::kStretch,
                  views::LayoutAlignment::kStretch, 1.0,
@@ -69,7 +70,7 @@ LoginView::LoginView(const std::u16string& authority,
       .AddPaddingRow(views::TableLayout::kFixedSize,
                      ChromeLayoutProvider::Get()->GetDistanceMetric(
                          DISTANCE_CONTROL_LIST_VERTICAL))
-      .AddRows(1, views::GridLayout::kFixedSize);
+      .AddRows(1, views::TableLayout::kFixedSize);
   auto* username_label =
       fields_container->AddChildView(std::make_unique<views::Label>(
           l10n_util::GetStringUTF16(IDS_LOGIN_DIALOG_USERNAME_FIELD),

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@ import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 import android.view.View;
 
+import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -24,7 +25,6 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.download.DownloadTestRule;
@@ -84,17 +84,14 @@ public class ToastHWATest implements CustomMainActivityStart {
     @Test
     @SmallTest
     @CommandLineFlags.Add(BaseSwitches.ENABLE_LOW_END_DEVICE_MODE)
-    @FlakyTest(message = "crbug.com/668217")
+    @DisabledTest(message = "crbug.com/668217")
     public void testNoRenderThread() {
         Utils.assertNoRenderThread();
     }
 
-    /*
-     * @MediumTest
-     * @CommandLineFlags.Add(BaseSwitches.ENABLE_LOW_END_DEVICE_MODE)
-     * BUG=crbug.com/668217
-    */
     @Test
+    @MediumTest
+    @CommandLineFlags.Add(BaseSwitches.ENABLE_LOW_END_DEVICE_MODE)
     @DisabledTest(message = "crbug.com/668217")
     public void testDownloadingToast() throws Exception {
         mDownloadTestRule.loadUrl(mTestServer.getURL(URL_PATH));
@@ -119,7 +116,7 @@ public class ToastHWATest implements CustomMainActivityStart {
     @Test
     @SmallTest
     @CommandLineFlags.Add(BaseSwitches.ENABLE_LOW_END_DEVICE_MODE)
-    @FlakyTest(message = "crbug.com/668217")
+    @DisabledTest(message = "crbug.com/668217")
     public void testOpenedInBackgroundToast() throws Exception {
         mDownloadTestRule.loadUrl(mTestServer.getURL(URL_PATH));
         mDownloadTestRule.assertWaitForPageScaleFactorMatch(0.5f);
@@ -138,7 +135,7 @@ public class ToastHWATest implements CustomMainActivityStart {
     @Test
     @SmallTest
     @CommandLineFlags.Add(BaseSwitches.ENABLE_LOW_END_DEVICE_MODE)
-    @FlakyTest(message = "crbug.com/668217")
+    @DisabledTest(message = "crbug.com/668217")
     public void testToastNoAcceleration() throws Exception {
         // Toasts created on low-end devices shouldn't be HW accelerated.
         Assert.assertFalse(isToastAcceleratedWithContext(mDownloadTestRule.getActivity()));

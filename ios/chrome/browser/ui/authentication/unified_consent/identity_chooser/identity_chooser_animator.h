@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,10 +11,10 @@
 @interface IdentityChooserAnimator
     : NSObject<UIViewControllerAnimatedTransitioning>
 
-// Whether the IdentityChooser is |appearing|.
+// Whether the IdentityChooser is `appearing`.
 @property(nonatomic, assign) BOOL appearing;
 
-// Origin of the animation, in window coordinates. Only user if |appearing| is
+// Origin of the animation, in window coordinates. Only user if `appearing` is
 // true. Not user if equals to CGPointZero.
 @property(nonatomic, assign) CGPoint origin;
 

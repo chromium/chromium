@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
@@ -37,6 +38,7 @@ class DesktopMediaListController : public DesktopMediaListObserver,
     virtual void OnSourceNameChanged(size_t index) = 0;
     virtual void OnSourceThumbnailChanged(size_t index) = 0;
     virtual void OnSourcePreviewChanged(size_t index) = 0;
+    virtual void OnDelegatedSourceListSelection() = 0;
   };
 
   // The abstract interface implemented by any view controlled by this
@@ -52,6 +54,8 @@ class DesktopMediaListController : public DesktopMediaListObserver,
     // Returns the SourceListListener to use to notify this ListView of changes
     // to the backing DesktopMediaList.
     virtual SourceListListener* GetSourceListListener() = 0;
+
+    virtual void ClearSelection() = 0;
 
    protected:
     ListView() = default;
@@ -80,9 +84,23 @@ class DesktopMediaListController : public DesktopMediaListObserver,
   // Focuses this controller's view.
   void FocusView();
 
+  void HideView();
+
+  // Used to indicate if the underlying DesktopMediaList supports the notion of
+  // Reselecting a source.
+  bool SupportsReselectButton() const;
+
+  void OnReselectRequested();
+
+  // Returns whether or not the reselect button (if supported), should be
+  // enabled.
+  bool can_reselect() const { return can_reselect_; }
+
   // Returns the DesktopMediaID corresponding to the current selection in this
   // controller's view, if there is one.
   absl::optional<content::DesktopMediaID> GetSelection() const;
+
+  void ClearSelection();
 
   // These three methods are called by the view to inform the controller of
   // events. The first two indicate changes in the visual state of the view; the
@@ -99,6 +117,10 @@ class DesktopMediaListController : public DesktopMediaListObserver,
   void SetThumbnailSize(const gfx::Size& size);
   void SetPreviewedSource(const absl::optional<content::DesktopMediaID>& id);
 
+  // Returns a WeakPtr to the current DesktopMediaListController. Note that the
+  // weak pointer must only be used on the UI thread.
+  base::WeakPtr<DesktopMediaListController> GetWeakPtr();
+
  private:
   friend class DesktopMediaPickerViewsTestApi;
 
@@ -112,6 +134,10 @@ class DesktopMediaListController : public DesktopMediaListObserver,
   // Used in tests.
   void Reject();
 
+  void StartUpdatingInternal();
+
+  void SetCanReselect(bool can_reselect);
+
   // DesktopMediaListObserver:
   void OnSourceAdded(int index) override;
   void OnSourceRemoved(int index) override;
@@ -119,6 +145,8 @@ class DesktopMediaListController : public DesktopMediaListObserver,
   void OnSourceNameChanged(int index) override;
   void OnSourceThumbnailChanged(int index) override;
   void OnSourcePreviewChanged(size_t index) override;
+  void OnDelegatedSourceListSelection() override;
+  void OnDelegatedSourceListDismissed() override;
 
   // ViewObserver:
   void OnViewIsDeleting(views::View* view) override;
@@ -126,11 +154,16 @@ class DesktopMediaListController : public DesktopMediaListObserver,
   bool ShouldAutoAccept(const DesktopMediaList::Source& source) const;
   bool ShouldAutoReject(const DesktopMediaList::Source& source) const;
 
-  DesktopMediaPickerDialogView* dialog_;
+  raw_ptr<DesktopMediaPickerDialogView> dialog_;
   std::unique_ptr<DesktopMediaList> media_list_;
-  ListView* view_ = nullptr;
+  raw_ptr<ListView> view_ = nullptr;
   base::ScopedMultiSourceObservation<views::View, views::ViewObserver>
       view_observations_{this};
+  bool is_updating_ = false;
+  content::DesktopMediaID dialog_window_id_;
+
+  // Whether or not the reselect button (if supported), should be enabled.
+  bool can_reselect_ = false;
 
   // Auto-selection. Used only in tests.
   const std::string auto_select_tab_;        // Only tabs, by title.

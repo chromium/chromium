@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -18,6 +18,10 @@ mojom("mojo_types") {
   cpp_typemaps = [
     {
       types = [
+        {
+          mojom = "autofill.mojom.Section"
+          cpp = "::autofill::Section"
+        },
         {
           mojom = "autofill.mojom.FormData"
           cpp = "::autofill::FormData"
@@ -71,6 +75,11 @@ mojom("mojo_types") {
         {
           mojom = "autofill.mojom.PasswordGenerationUIData"
           cpp = "::autofill::password_generation::PasswordGenerationUIData"
+        },
+        {
+          mojom = "autofill.mojom.FormElementWasClicked"
+          cpp = "::autofill::FormElementWasClicked"
+          copyable_pass_by_value = true
         },
       ]
       traits_headers = [ "autofill_types_mojom_traits.h" ]

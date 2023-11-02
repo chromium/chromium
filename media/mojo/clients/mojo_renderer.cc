@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -248,23 +248,13 @@ void MojoRenderer::OnEnded() {
   client_->OnEnded();
 }
 
-void MojoRenderer::OnError(const Status& status) {
+void MojoRenderer::OnError(const PipelineStatus& status) {
   DVLOG(1) << __func__;
   DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK(!init_cb_);
 
   encountered_error_ = true;
-  absl::optional<PipelineStatus> pipeline_status =
-      StatusCodeToPipelineStatus(status.code());
-
-  // If an unexpected status code is encountered default
-  // back to a decode error.
-  if (!pipeline_status) {
-    // TODO(crbug.com/1153465): Log status code that failed to convert.
-    pipeline_status = PipelineStatus::PIPELINE_ERROR_DECODE;
-  }
-
-  client_->OnError(*pipeline_status);
+  client_->OnError(status);
 }
 
 void MojoRenderer::OnVideoNaturalSizeChange(const gfx::Size& size) {
@@ -320,7 +310,7 @@ void MojoRenderer::OnConnectionError() {
   CancelPendingCallbacks();
 
   if (client_)
-    client_->OnError(PIPELINE_ERROR_DECODE);
+    client_->OnError(PIPELINE_ERROR_DISCONNECTED);
 }
 
 void MojoRenderer::OnDemuxerStreamConnectionError(

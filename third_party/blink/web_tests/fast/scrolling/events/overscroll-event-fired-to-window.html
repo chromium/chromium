@@ -25,7 +25,7 @@
 
 <script>
 if (window.internals)
-  internals.runtimeFlags.overscrollCustomizationEnabled = true;
+  internals.runtimeFlags.scrollEndEventsEnabled = true;
 
 var target_div = document.getElementById('targetDiv');
 var rect = target_div.getBoundingClientRect();
@@ -44,6 +44,7 @@ const pixelsToScroll = 600;
 const { y: pixelsToScrollY } = calculatePixelsToScroll(
   target_div, pixelsToScroll, pixelsToScroll
 );
+const scroll_speed_factor_y = pixelsToScrollY / pixelsToScroll;
 
 var window_received_overscroll = false;
 
@@ -62,7 +63,7 @@ async function test_overscroll_event_fire(source_device,
 
   // Scroll up on target div and wait for the window to get overscroll event.
   await smoothScroll(
-    pixelsToScrollY, x, y, source_device, "up", pixelsPerSec,
+    pixelsToScrollY, x, y, source_device, "up", pixelsPerSec * scroll_speed_factor_y,
     precise_scrolling_delta
   );
   await waitFor(() => { return window_received_overscroll; },

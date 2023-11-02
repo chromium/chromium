@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/observer_list.h"
 #include "components/browsing_data/content/local_shared_objects_container.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/browser/ui/cookie_controls_view.h"
@@ -73,7 +74,8 @@ CookieControlsController::GetStatus(content::WebContents* web_contents) {
 
   SettingSource source;
   bool is_allowed = cookie_settings_->IsThirdPartyAccessAllowed(
-      web_contents->GetLastCommittedURL(), &source);
+      web_contents->GetLastCommittedURL(), &source,
+      CookieSettings::QueryReason::kCookies);
 
   CookieControlsStatus status = is_allowed
                                     ? CookieControlsStatus::kDisabledForSite
@@ -84,7 +86,8 @@ CookieControlsController::GetStatus(content::WebContents* web_contents) {
   } else if (is_allowed && original_cookie_settings_ &&
              original_cookie_settings_->ShouldBlockThirdPartyCookies() &&
              original_cookie_settings_->IsThirdPartyAccessAllowed(
-                 web_contents->GetLastCommittedURL(), nullptr /* source */)) {
+                 web_contents->GetLastCommittedURL(), nullptr /* source */,
+                 CookieSettings::QueryReason::kCookies)) {
     // TODO(crbug.com/1015767): Rules from regular mode can't be temporarily
     // overridden in incognito.
     enforcement = CookieControlsEnforcement::kEnforcedByCookieSetting;
@@ -113,13 +116,13 @@ void CookieControlsController::OnCookieBlockingEnabledForSite(
 bool CookieControlsController::FirstPartyCookiesBlocked() {
   const GURL& url = GetWebContents()->GetLastCommittedURL();
   return !cookie_settings_->IsFullCookieAccessAllowed(
-      url, net::SiteForCookies::FromUrl(url), url::Origin::Create(url));
+      url, net::SiteForCookies::FromUrl(url), url::Origin::Create(url),
+      CookieSettings::QueryReason::kCookies);
 }
 
 int CookieControlsController::GetAllowedCookieCount() {
-  auto* pscs =
-      content_settings::PageSpecificContentSettings::GetForCurrentDocument(
-          tab_observer_->web_contents()->GetMainFrame());
+  auto* pscs = content_settings::PageSpecificContentSettings::GetForPage(
+      tab_observer_->web_contents()->GetPrimaryPage());
   if (pscs) {
     return pscs->allowed_local_shared_objects().GetObjectCount();
   } else {
@@ -127,9 +130,8 @@ int CookieControlsController::GetAllowedCookieCount() {
   }
 }
 int CookieControlsController::GetBlockedCookieCount() {
-  auto* pscs =
-      content_settings::PageSpecificContentSettings::GetForCurrentDocument(
-          tab_observer_->web_contents()->GetMainFrame());
+  auto* pscs = content_settings::PageSpecificContentSettings::GetForPage(
+      tab_observer_->web_contents()->GetPrimaryPage());
   if (pscs) {
     return pscs->blocked_local_shared_objects().GetObjectCount();
   } else {

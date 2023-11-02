@@ -1,19 +1,23 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import 'chrome://diagnostics/connectivity_card.js';
 
-import {Network, RoutineType, StandardRoutineResult} from 'chrome://diagnostics/diagnostics_types.js';
-import {fakeCellularNetwork, fakeEthernetNetwork, fakeNetworkGuidInfoList, fakePowerRoutineResults, fakeRoutineResults, fakeWifiNetwork} from 'chrome://diagnostics/fake_data.js';
+import {ConnectivityCardElement} from 'chrome://diagnostics/connectivity_card.js';
+import {fakeCellularNetwork, fakeEthernetNetwork, fakeNetworkGuidInfoList, fakeWifiNetwork} from 'chrome://diagnostics/fake_data.js';
 import {FakeNetworkHealthProvider} from 'chrome://diagnostics/fake_network_health_provider.js';
 import {FakeSystemRoutineController} from 'chrome://diagnostics/fake_system_routine_controller.js';
+import {IpConfigInfoDrawerElement} from 'chrome://diagnostics/ip_config_info_drawer.js';
 import {setNetworkHealthProviderForTesting, setSystemRoutineControllerForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
+import {Network} from 'chrome://diagnostics/network_health_provider.mojom-webui.js';
 import {RoutineGroup} from 'chrome://diagnostics/routine_group.js';
 import {TestSuiteStatus} from 'chrome://diagnostics/routine_list_executor.js';
+import {RoutineType, StandardRoutineResult} from 'chrome://diagnostics/system_routine_controller.mojom-webui.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks, isVisible} from '../../test_util.js';
+import {isVisible} from '../../test_util.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';
 
@@ -43,8 +47,7 @@ export function connectivityCardTestSuite() {
     routineController.setDelayTimeInMillisecondsForTesting(-1);
 
     /** @type {!Array<!RoutineType>} */
-    const supportedRoutines =
-        [...fakeRoutineResults.keys(), ...fakePowerRoutineResults.keys()];
+    const supportedRoutines = routineController.getAllRoutines();
     // Enable all routines by default.
     routineController.setFakeSupportedRoutines(supportedRoutines);
     // Configure default routine results. Results can also be set in individual
@@ -87,7 +90,7 @@ export function connectivityCardTestSuite() {
   function getRoutines() {
     assertTrue(!!connectivityCardElement);
     let routines = [];
-    for (let routineGroup of connectivityCardElement.routineGroups_) {
+    for (const routineGroup of connectivityCardElement.routineGroups_) {
       routines = [...routines, ...routineGroup.routines];
     }
 
@@ -145,14 +148,15 @@ export function connectivityCardTestSuite() {
   test('CardTitleEthernetOnlineInitializedCorrectly', () => {
     return initializeConnectivityCard('ethernetGuid').then(() => {
       dx_utils.assertElementContainsText(
-          connectivityCardElement.$$('#cardTitle'), 'Ethernet');
+          connectivityCardElement.shadowRoot.querySelector('#cardTitle'),
+          'Ethernet');
     });
   });
 
   test('CardMacAddressChipInitializedCorrectly', () => {
     return initializeConnectivityCard('ethernetGuid').then(() => {
       dx_utils.assertElementContainsText(
-          connectivityCardElement.$$('#macAddressChip'),
+          connectivityCardElement.shadowRoot.querySelector('#macAddressChip'),
           'MAC: 81:C5:A6:30:3F:31');
     });
   });
@@ -160,7 +164,8 @@ export function connectivityCardTestSuite() {
   test('CardNetworkIconEthernetOnlineInitializedCorrectly', () => {
     return initializeConnectivityCard('ethernetGuid').then(() => {
       assertTrue(isVisible(
-          /** @type {!Element} */ (connectivityCardElement.$$('#icon'))));
+          /** @type {!Element} */ (
+              connectivityCardElement.shadowRoot.querySelector('#icon'))));
     });
   });
 
@@ -168,7 +173,7 @@ export function connectivityCardTestSuite() {
     return initializeConnectivityCard('ethernetGuid', true)
         .then(
             () => assertEquals(
-                TestSuiteStatus.kRunning,
+                TestSuiteStatus.RUNNING,
                 connectivityCardElement.testSuiteStatus));
   });
 
@@ -176,8 +181,9 @@ export function connectivityCardTestSuite() {
       'CardIpConfigurationDrawerInitializedCorrectly', () => {
         return initializeConnectivityCard('ethernetGuid').then(() => {
           const ipConfigInfoDrawerElement =
-              /** @type IpConfigInfoDrawerElement */ (
-                  connectivityCardElement.$$('#ipConfigInfoDrawer'));
+              /** @type {IpConfigInfoDrawerElement} */ (
+                  connectivityCardElement.shadowRoot.querySelector(
+                      '#ipConfigInfoDrawer'));
           assertTrue(isVisible(
               /** @type {!HTMLElement} */ (ipConfigInfoDrawerElement)));
           assertDeepEquals(
@@ -206,17 +212,17 @@ export function connectivityCardTestSuite() {
     return initializeConnectivityCard('ethernetGuid', true)
         .then(
             () => assertEquals(
-                TestSuiteStatus.kRunning,
+                TestSuiteStatus.RUNNING,
                 connectivityCardElement.testSuiteStatus))
         .then(() => stopTests())
         .then(
             () => assertEquals(
-                TestSuiteStatus.kNotRunning,
+                TestSuiteStatus.NOT_RUNNING,
                 connectivityCardElement.testSuiteStatus))
         .then(() => changeActiveGuid('wifiGuid'))
         .then(
             () => assertEquals(
-                TestSuiteStatus.kRunning,
+                TestSuiteStatus.RUNNING,
                 connectivityCardElement.testSuiteStatus));
   });
 }

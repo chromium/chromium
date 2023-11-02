@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,10 +10,13 @@
 
 namespace ui {
 
+class ScenicOverlayView;
+
 class SysmemNativePixmap : public gfx::NativePixmap {
  public:
   SysmemNativePixmap(scoped_refptr<SysmemBufferCollection> collection,
-                     gfx::NativePixmapHandle handle);
+                     gfx::NativePixmapHandle handle,
+                     gfx::Size size);
 
   SysmemNativePixmap(const SysmemNativePixmap&) = delete;
   SysmemNativePixmap& operator=(const SysmemNativePixmap&) = delete;
@@ -25,6 +28,7 @@ class SysmemNativePixmap : public gfx::NativePixmap {
   size_t GetDmaBufOffset(size_t plane) const override;
   size_t GetDmaBufPlaneSize(size_t plane) const override;
   size_t GetNumberOfPlanes() const override;
+  bool SupportsZeroCopyWebGPUImport() const override;
   uint64_t GetBufferFormatModifier() const override;
   gfx::BufferFormat GetBufferFormat() const override;
   gfx::Size GetBufferSize() const override;
@@ -39,7 +43,10 @@ class SysmemNativePixmap : public gfx::NativePixmap {
 
   // Returns true if overlay planes are supported and ScheduleOverlayPlane() can
   // be called.
-  bool SupportsOverlayPlane(gfx::AcceleratedWidget widget) const;
+  bool SupportsOverlayPlane() const;
+
+  // Returns true ScenicOverlayView for the pixmap if any.
+  ScenicOverlayView* GetScenicOverlayView();
 
  private:
   ~SysmemNativePixmap() override;
@@ -47,6 +54,11 @@ class SysmemNativePixmap : public gfx::NativePixmap {
   // Keep reference to the collection to make sure it outlives the pixmap.
   scoped_refptr<SysmemBufferCollection> collection_;
   gfx::NativePixmapHandle handle_;
+  gfx::Size size_;
+
+  // ID of the image registered with the `ImagePipe` owned by the
+  // `ScenicOverlayView` that corresponds to the `collection_`.
+  uint32_t overlay_image_id_ = 0;
 };
 
 }  // namespace ui

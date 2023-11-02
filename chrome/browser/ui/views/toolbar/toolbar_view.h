@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/command_observer.h"
@@ -21,7 +22,7 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_bubble_view_model.h"
-#include "chrome/browser/ui/views/toolbar/read_later_toolbar_button.h"
+#include "chrome/browser/ui/views/toolbar/side_panel_toolbar_button.h"
 #include "chrome/browser/upgrade_detector/upgrade_observer.h"
 #include "components/prefs/pref_member.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -35,18 +36,21 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/components/arc/mojom/intent_helper.mojom-forward.h"  // nogncheck https://crbug.com/784179
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
-#include "components/arc/mojom/intent_helper.mojom-forward.h"  // nogncheck https://crbug.com/784179
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class AppMenuButton;
 class AvatarToolbarButton;
+class BatterySaverButton;
 class BrowserAppMenuButton;
 class Browser;
+class DownloadToolbarButtonView;
 class ExtensionsToolbarButton;
 class ExtensionsToolbarContainer;
 class ChromeLabsButton;
 class HomeButton;
+class IntentChipButton;
 class MediaToolbarButtonView;
 class ReloadButton;
 class ToolbarButton;
@@ -128,7 +132,7 @@ class ToolbarView : public views::AccessiblePaneView,
       std::vector<IntentPickerBubbleView::AppInfo> app_info,
       bool show_stay_in_chrome,
       bool show_remember_selection,
-      PageActionIconType icon_type,
+      IntentPickerBubbleView::BubbleType bubble_type,
       const absl::optional<url::Origin>& initiating_origin,
       IntentPickerResponse callback);
 
@@ -143,6 +147,9 @@ class ToolbarView : public views::AccessiblePaneView,
   ChromeLabsBubbleViewModel* chrome_labs_model() const {
     return chrome_labs_model_.get();
   }
+  DownloadToolbarButtonView* download_button() const {
+    return download_button_;
+  }
   ExtensionsToolbarContainer* extensions_container() const {
     return extensions_container_;
   }
@@ -151,9 +158,12 @@ class ToolbarView : public views::AccessiblePaneView,
   ToolbarButton* left_side_panel_button() { return left_side_panel_button_; }
   LocationBarView* location_bar() const { return location_bar_; }
   CustomTabBarView* custom_tab_bar() { return custom_tab_bar_; }
+  BatterySaverButton* battery_saver_button() const {
+    return battery_saver_button_;
+  }
   media_router::CastToolbarButton* cast_button() const { return cast_; }
-  ReadLaterToolbarButton* read_later_button() const {
-    return read_later_button_;
+  SidePanelToolbarButton* side_panel_button() const {
+    return side_panel_button_;
   }
   MediaToolbarButtonView* media_button() const { return media_button_; }
   send_tab_to_self::SendTabToSelfToolbarIconView* send_tab_to_self_button()
@@ -236,14 +246,18 @@ class ToolbarView : public views::AccessiblePaneView,
   views::AccessiblePaneView* GetAsAccessiblePaneView() override;
   views::View* GetAnchorView(PageActionIconType type) override;
   void ZoomChangedForActiveTab(bool can_show_bubble) override;
-  ReadLaterToolbarButton* GetSidePanelButton() override;
+  SidePanelToolbarButton* GetSidePanelButton() override;
   AvatarToolbarButton* GetAvatarToolbarButton() override;
   ToolbarButton* GetBackButton() override;
   ReloadButton* GetReloadButton() override;
+  IntentChipButton* GetIntentChipButton() override;
+  DownloadToolbarButtonView* GetDownloadButton() override;
 
   // BrowserRootView::DropTarget
   BrowserRootView::DropIndex GetDropIndex(
       const ui::DropTargetEvent& event) override;
+  BrowserRootView::DropTarget* GetDropTarget(
+      gfx::Point loc_in_local_coords) override;
   views::View* GetViewForDrop() override;
 
   // Changes the visibility of the Chrome Labs entry point based on prefs.
@@ -268,28 +282,31 @@ class ToolbarView : public views::AccessiblePaneView,
   // Controls. Most of these can be null, e.g. in popup windows. Only
   // |location_bar_| is guaranteed to exist. These pointers are owned by the
   // view hierarchy.
-  ToolbarButton* left_side_panel_button_ = nullptr;
-  ToolbarButton* back_ = nullptr;
-  ToolbarButton* forward_ = nullptr;
-  ReloadButton* reload_ = nullptr;
-  HomeButton* home_ = nullptr;
-  CustomTabBarView* custom_tab_bar_ = nullptr;
-  LocationBarView* location_bar_ = nullptr;
-  ExtensionsToolbarContainer* extensions_container_ = nullptr;
-  ChromeLabsButton* chrome_labs_button_ = nullptr;
-  media_router::CastToolbarButton* cast_ = nullptr;
-  ReadLaterToolbarButton* read_later_button_ = nullptr;
-  ToolbarAccountIconContainerView* toolbar_account_icon_container_ = nullptr;
-  AvatarToolbarButton* avatar_ = nullptr;
-  MediaToolbarButtonView* media_button_ = nullptr;
-  send_tab_to_self::SendTabToSelfToolbarIconView* send_tab_to_self_button_ =
+  raw_ptr<ToolbarButton> left_side_panel_button_ = nullptr;
+  raw_ptr<ToolbarButton> back_ = nullptr;
+  raw_ptr<ToolbarButton> forward_ = nullptr;
+  raw_ptr<ReloadButton> reload_ = nullptr;
+  raw_ptr<HomeButton> home_ = nullptr;
+  raw_ptr<CustomTabBarView> custom_tab_bar_ = nullptr;
+  raw_ptr<LocationBarView> location_bar_ = nullptr;
+  raw_ptr<ExtensionsToolbarContainer> extensions_container_ = nullptr;
+  raw_ptr<ChromeLabsButton> chrome_labs_button_ = nullptr;
+  raw_ptr<BatterySaverButton> battery_saver_button_ = nullptr;
+  raw_ptr<media_router::CastToolbarButton> cast_ = nullptr;
+  raw_ptr<SidePanelToolbarButton> side_panel_button_ = nullptr;
+  raw_ptr<ToolbarAccountIconContainerView> toolbar_account_icon_container_ =
       nullptr;
-  BrowserAppMenuButton* app_menu_button_ = nullptr;
+  raw_ptr<AvatarToolbarButton> avatar_ = nullptr;
+  raw_ptr<MediaToolbarButtonView> media_button_ = nullptr;
+  raw_ptr<send_tab_to_self::SendTabToSelfToolbarIconView>
+      send_tab_to_self_button_ = nullptr;
+  raw_ptr<BrowserAppMenuButton> app_menu_button_ = nullptr;
+  raw_ptr<DownloadToolbarButtonView> download_button_ = nullptr;
 
-  Browser* const browser_;
-  BrowserView* const browser_view_;
+  const raw_ptr<Browser> browser_;
+  const raw_ptr<BrowserView> browser_view_;
 
-  views::FlexLayout* layout_manager_ = nullptr;
+  raw_ptr<views::FlexLayout> layout_manager_ = nullptr;
 
   AppMenuIconController app_menu_icon_controller_;
 

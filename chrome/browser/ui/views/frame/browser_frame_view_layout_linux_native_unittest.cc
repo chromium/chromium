@@ -1,17 +1,22 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/frame/browser_frame_view_layout_linux_native.h"
+#include "base/memory/raw_ptr.h"
 
 #include <memory>
 
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "ui/base/models/image_model.h"
+#include "ui/linux/nav_button_provider.h"
+#include "ui/linux/window_frame_provider.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/image_button.h"
-#include "ui/views/linux_ui/nav_button_provider.h"
-#include "ui/views/linux_ui/window_frame_provider.h"
+#include "ui/views/test/views_test_utils.h"
 
 namespace {
 
@@ -21,11 +26,11 @@ constexpr gfx::Size kCloseButtonSize = gfx::Size(2, 3);
 constexpr gfx::Size kMaximizeButtonSize = gfx::Size(5, 7);
 constexpr gfx::Size kMinimizeButtonSize = gfx::Size(11, 13);
 
-constexpr gfx::Insets kCloseButtonMargin = gfx::Insets(17, 19, 23, 29);
-constexpr gfx::Insets kMaximizeButtonMargin = gfx::Insets(31, 37, 41, 43);
-constexpr gfx::Insets kMinimizeButtonMargin = gfx::Insets(47, 53, 59, 61);
+constexpr gfx::Insets kCloseButtonMargin = gfx::Insets::TLBR(17, 19, 23, 29);
+constexpr gfx::Insets kMaximizeButtonMargin = gfx::Insets::TLBR(31, 37, 41, 43);
+constexpr gfx::Insets kMinimizeButtonMargin = gfx::Insets::TLBR(47, 53, 59, 61);
 
-constexpr gfx::Insets kTopAreaSpacing = gfx::Insets(67, 71, 73, 79);
+constexpr gfx::Insets kTopAreaSpacing = gfx::Insets::TLBR(67, 71, 73, 79);
 
 constexpr int kInterNavButtonSpacing = 83;
 
@@ -54,6 +59,8 @@ class TestLayoutDelegate : public OpaqueBrowserFrameViewLayoutDelegate {
   }
   bool ShouldShowCaptionButtons() const override { return true; }
   bool IsRegularOrGuestSession() const override { return true; }
+  bool CanMaximize() const override { return true; }
+  bool CanMinimize() const override { return true; }
   bool IsMaximized() const override { return false; }
   bool IsMinimized() const override { return false; }
   bool IsFullscreen() const override { return false; }
@@ -73,9 +80,12 @@ class TestLayoutDelegate : public OpaqueBrowserFrameViewLayoutDelegate {
       const gfx::Rect& bounding_rect) const override {}
   bool IsTranslucentWindowOpacitySupported() const override { return true; }
   bool ShouldDrawRestoredFrameShadow() const override { return true; }
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  ui::WindowTiledEdges GetTiledEdges() const override { return {}; }
+#endif
 };
 
-class TestNavButtonProvider : public views::NavButtonProvider {
+class TestNavButtonProvider : public ui::NavButtonProvider {
  public:
   TestNavButtonProvider() = default;
 
@@ -85,14 +95,15 @@ class TestNavButtonProvider : public views::NavButtonProvider {
     ASSERT_EQ(false, maximized);  // This only tests the restored state.
   }
 
-  gfx::ImageSkia GetImage(views::NavButtonProvider::FrameButtonDisplayType type,
-                          views::Button::ButtonState state) const override {
+  gfx::ImageSkia GetImage(
+      ui::NavButtonProvider::FrameButtonDisplayType type,
+      ui::NavButtonProvider::ButtonState state) const override {
     switch (type) {
-      case views::NavButtonProvider::FrameButtonDisplayType::kClose:
+      case ui::NavButtonProvider::FrameButtonDisplayType::kClose:
         return GetTestImageForSize(kCloseButtonSize);
-      case views::NavButtonProvider::FrameButtonDisplayType::kMaximize:
+      case ui::NavButtonProvider::FrameButtonDisplayType::kMaximize:
         return GetTestImageForSize(kMaximizeButtonSize);
-      case views::NavButtonProvider::FrameButtonDisplayType::kMinimize:
+      case ui::NavButtonProvider::FrameButtonDisplayType::kMinimize:
         return GetTestImageForSize(kMinimizeButtonSize);
       default:
         NOTREACHED();
@@ -101,13 +112,13 @@ class TestNavButtonProvider : public views::NavButtonProvider {
   }
 
   gfx::Insets GetNavButtonMargin(
-      views::NavButtonProvider::FrameButtonDisplayType type) const override {
+      ui::NavButtonProvider::FrameButtonDisplayType type) const override {
     switch (type) {
-      case views::NavButtonProvider::FrameButtonDisplayType::kClose:
+      case ui::NavButtonProvider::FrameButtonDisplayType::kClose:
         return kCloseButtonMargin;
-      case views::NavButtonProvider::FrameButtonDisplayType::kMaximize:
+      case ui::NavButtonProvider::FrameButtonDisplayType::kMaximize:
         return kMaximizeButtonMargin;
-      case views::NavButtonProvider::FrameButtonDisplayType::kMinimize:
+      case ui::NavButtonProvider::FrameButtonDisplayType::kMinimize:
         return kMinimizeButtonMargin;
       default:
         NOTREACHED();
@@ -122,13 +133,13 @@ class TestNavButtonProvider : public views::NavButtonProvider {
   }
 };
 
-class TestFrameProvider : public views::WindowFrameProvider {
+class TestFrameProvider : public ui::WindowFrameProvider {
  public:
   TestFrameProvider() = default;
 
   ~TestFrameProvider() override = default;
 
-  // views::WindowFrameProvider:
+  // ui::WindowFrameProvider:
   int GetTopCornerRadiusDip() override { return 0; }
   gfx::Insets GetFrameThicknessDip() override { return {}; }
   void PaintWindowFrame(gfx::Canvas* canvas,
@@ -185,18 +196,34 @@ class BrowserFrameViewLayoutLinuxNativeTest : public ChromeViewsTestBase {
   }
 
   void ResetNativeNavButtonImagesFromButtonProvider() {
-    std::vector<views::ImageButton*> buttons{close_button_, maximize_button_,
-                                             minimize_button_};
-    std::vector<views::NavButtonProvider::FrameButtonDisplayType> button_types{
-        views::NavButtonProvider::FrameButtonDisplayType::kClose,
-        views::NavButtonProvider::FrameButtonDisplayType::kMaximize,
-        views::NavButtonProvider::FrameButtonDisplayType::kMinimize};
-    for (size_t i = 0; i < buttons.size(); i++) {
-      for (views::Button::ButtonState state :
-           {views::Button::STATE_NORMAL, views ::Button::STATE_HOVERED,
-            views::Button::STATE_PRESSED}) {
-        buttons[i]->SetImage(
-            state, nav_button_provider_->GetImage(button_types[i], state));
+    struct {
+      views::ImageButton* button;
+      ui::NavButtonProvider::FrameButtonDisplayType type;
+    } const kButtons[] = {
+        {minimize_button_,
+         ui::NavButtonProvider::FrameButtonDisplayType::kMinimize},
+        {maximize_button_,
+         ui::NavButtonProvider::FrameButtonDisplayType::kMaximize},
+        {close_button_, ui::NavButtonProvider::FrameButtonDisplayType::kClose},
+    };
+    struct {
+      views::Button::ButtonState button_state;
+      ui::NavButtonProvider::ButtonState nav_button_provider_state;
+    } const kStates[] = {
+        {views::Button::STATE_NORMAL,
+         ui::NavButtonProvider::ButtonState::kNormal},
+        {views::Button::STATE_HOVERED,
+         ui::NavButtonProvider::ButtonState::kHovered},
+        {views::Button::STATE_PRESSED,
+         ui::NavButtonProvider::ButtonState::kPressed},
+    };
+
+    for (const auto& button : kButtons) {
+      for (const auto& state : kStates) {
+        button.button->SetImageModel(
+            state.button_state,
+            ui::ImageModel::FromImageSkia(nav_button_provider_->GetImage(
+                button.type, state.nav_button_provider_state)));
       }
     }
   }
@@ -207,17 +234,17 @@ class BrowserFrameViewLayoutLinuxNativeTest : public ChromeViewsTestBase {
   }
 
   std::unique_ptr<views::Widget> widget_;
-  views::View* root_view_ = nullptr;
-  BrowserFrameViewLayoutLinuxNative* layout_manager_ = nullptr;
+  raw_ptr<views::View> root_view_ = nullptr;
+  raw_ptr<BrowserFrameViewLayoutLinuxNative> layout_manager_ = nullptr;
   std::unique_ptr<TestLayoutDelegate> delegate_;
-  std::unique_ptr<views::NavButtonProvider> nav_button_provider_;
-  std::unique_ptr<views::WindowFrameProvider> frame_provider_;
+  std::unique_ptr<ui::NavButtonProvider> nav_button_provider_;
+  std::unique_ptr<ui::WindowFrameProvider> frame_provider_;
 
   // Widgets:
-  views::ImageButton* minimize_button_ = nullptr;
-  views::ImageButton* maximize_button_ = nullptr;
-  views::ImageButton* restore_button_ = nullptr;
-  views::ImageButton* close_button_ = nullptr;
+  raw_ptr<views::ImageButton> minimize_button_ = nullptr;
+  raw_ptr<views::ImageButton> maximize_button_ = nullptr;
+  raw_ptr<views::ImageButton> restore_button_ = nullptr;
+  raw_ptr<views::ImageButton> close_button_ = nullptr;
 };
 
 // Tests layout of native navigation buttons.
@@ -230,7 +257,7 @@ TEST_F(BrowserFrameViewLayoutLinuxNativeTest, NativeNavButtons) {
   layout_manager_->SetButtonOrdering(leading_buttons, trailing_buttons);
   ResetNativeNavButtonImagesFromButtonProvider();
 
-  root_view_->Layout();
+  views::test::RunScheduledLayout(root_view_);
 
   const int frame_top_thickness = FrameInsets().top();
 

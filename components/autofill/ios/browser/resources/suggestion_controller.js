@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,6 @@
  * TODO(crbug.com/647084): Enable checkTypes error for this file.
  * @suppress {checkTypes}
  */
-goog.provide('__crWeb.suggestion');
-
-/* Beginning of anonymous object. */
-(function() {
 
 /**
  * Namespace for this file. It depends on |__gCrWeb| having already been
@@ -199,6 +195,31 @@ __gCrWeb.suggestion.getFormElementAfter = function(
 };
 
 /**
+ * Tests an element's visibility. This test is expensive so should be used
+ * sparingly.
+ *
+ * @param {Element} element A DOM element.
+ * @return {boolean} true if the |element| is currently part of the visible
+ * DOM.
+ */
+const isElementVisible = function(element) {
+  /** @type {Node} */
+  let node = element;
+  while (node && node !== document) {
+    if (node.nodeType === Node.ELEMENT_NODE) {
+      const style = window.getComputedStyle(/** @type {Element} */ (node));
+      if (style.display === 'none' || style.visibility === 'hidden') {
+        return false;
+      }
+    }
+    // Move up the tree and test again.
+    node = node.parentNode;
+  }
+  // Test reached the top of the DOM without finding a concealed ancestor.
+  return true;
+};
+
+/**
  * Returns if an element is reachable in sequential navigation.
  *
  * @param {Element} element The element that is to be examined.
@@ -249,7 +270,7 @@ __gCrWeb.suggestion.isSequentiallyReachable = function(element) {
   }
 
   // Expensive, final check that the element is not concealed.
-  return __gCrWeb['common'].isElementVisible(element);
+  return isElementVisible(element);
 };
 
 /**
@@ -357,7 +378,7 @@ __gCrWeb.suggestion['hasPreviousElement'] = function(formName, fieldName) {
 __gCrWeb.suggestion['hasPreviousNextElements'] = function(formName, fieldName) {
   return [
     __gCrWeb.suggestion.hasPreviousElement(formName, fieldName),
-    __gCrWeb.suggestion.hasNextElement(formName, fieldName)
+    __gCrWeb.suggestion.hasNextElement(formName, fieldName),
   ].toString();
 };
 
@@ -367,5 +388,3 @@ __gCrWeb.suggestion['hasPreviousNextElements'] = function(formName, fieldName) {
 __gCrWeb.suggestion['blurActiveElement'] = function() {
   document.activeElement.blur();
 };
-
-}());  // End of anonymous object

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,11 @@
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/ranges/algorithm.h"
 #include "components/ntp_tiles/constants.h"
+#include "components/ntp_tiles/deleted_tile_type.h"
+#include "components/ntp_tiles/metrics.h"
+#include "components/ntp_tiles/most_visited_sites.h"
 #include "components/ntp_tiles/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -25,8 +29,10 @@ CustomLinksManagerImpl::CustomLinksManagerImpl(
   DCHECK(prefs);
   if (history_service)
     history_service_observation_.Observe(history_service);
-  if (IsInitialized())
+  if (IsInitialized()) {
     current_links_ = store_.RetrieveLinks();
+    RemoveCustomLinksForPreinstalledApps();
+  }
 
   base::RepeatingClosure callback =
       base::BindRepeating(&CustomLinksManagerImpl::OnPreferenceChanged,
@@ -186,10 +192,26 @@ void CustomLinksManagerImpl::StoreLinks() {
   store_.StoreLinks(current_links_);
 }
 
+void CustomLinksManagerImpl::RemoveCustomLinksForPreinstalledApps() {
+  if (!prefs_->GetBoolean(prefs::kCustomLinksForPreinstalledAppsRemoved)) {
+    bool default_app_links_deleted = false;
+    for (const Link& link : current_links_) {
+      if (MostVisitedSites::IsNtpTileFromPreinstalledApp(link.url) &&
+          MostVisitedSites::WasNtpAppMigratedToWebApp(prefs_, link.url)) {
+        DeleteLink(link.url);
+        default_app_links_deleted = true;
+      }
+    }
+    if (default_app_links_deleted) {
+      metrics::RecordsMigratedDefaultAppDeleted(DeletedTileType::kCustomLink);
+      prefs_->SetBoolean(prefs::kCustomLinksForPreinstalledAppsRemoved, true);
+    }
+  }
+}
+
 std::vector<CustomLinksManager::Link>::iterator
 CustomLinksManagerImpl::FindLinkWithUrl(const GURL& url) {
-  return std::find_if(current_links_.begin(), current_links_.end(),
-                      [&url](const Link& link) { return link.url == url; });
+  return base::ranges::find(current_links_, url, &Link::url);
 }
 
 base::CallbackListSubscription
@@ -249,6 +271,8 @@ void CustomLinksManagerImpl::RegisterProfilePrefs(
   user_prefs->RegisterBooleanPref(
       prefs::kCustomLinksInitialized, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  user_prefs->RegisterBooleanPref(prefs::kCustomLinksForPreinstalledAppsRemoved,
+                                  false);
   CustomLinksStore::RegisterProfilePrefs(user_prefs);
 }
 

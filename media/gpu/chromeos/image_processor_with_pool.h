@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/containers/queue.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
@@ -48,7 +49,16 @@ class ImageProcessorWithPool {
   // returned by |ready_cb|.
   void Reset();
 
+  // Returns true if the image processor supports buffers allocated
+  // incoherently. The MTK MDP3 image processor has coherency issues, but the
+  // Libyuv image processor benefits greatly from incoherent allocations.
+  bool SupportsIncoherentBufs() const {
+    return image_processor_ && image_processor_->SupportsIncoherentBufs();
+  }
+
  private:
+  friend class VideoDecoderPipelineTest;
+
   ImageProcessorWithPool(
       std::unique_ptr<ImageProcessor> image_processor,
       DmabufVideoFramePool* const frame_pool,
@@ -65,7 +75,7 @@ class ImageProcessorWithPool {
   // The frame pool to allocate output frames of the image processor.
   // The caller should guarantee the pool alive during the lifetime of this
   // ImageProcessorWithPool instance.
-  DmabufVideoFramePool* const frame_pool_;
+  const raw_ptr<DmabufVideoFramePool> frame_pool_;
 
   // The pending input frames that wait for passing to |image_processor_|.
   base::queue<std::pair<scoped_refptr<VideoFrame>, FrameReadyCB>>

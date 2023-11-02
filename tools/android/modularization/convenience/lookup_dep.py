@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 r'''Finds which build target(s) contain a particular Java class.
@@ -165,7 +165,7 @@ class ClassLookupIndex:
     """Create the class to target index."""
     logging.debug('Running list_java_targets.py...')
     list_java_targets_command = [
-        'build/android/list_java_targets.py', '--gn-labels',
+        sys.executable, 'build/android/list_java_targets.py', '--gn-labels',
         '--print-build-config-paths',
         f'--output-directory={self._abs_build_output_dir}'
     ]
@@ -296,10 +296,16 @@ class ClassLookupIndex:
     # Caching namelist speeds up lookup_dep.py runtime by 1.5s.
     cache_path = abs_jar_path.with_suffix(abs_jar_path.suffix +
                                           '.namelist_cache')
-    if (not ClassLookupIndex._is_path_relative_to(abs_jar_path,
-                                                  abs_build_output_dir)):
+    if ClassLookupIndex._is_path_relative_to(cache_path, abs_build_output_dir):
+      # already in the outdir, no need to adjust cache path
+      pass
+    elif ClassLookupIndex._is_path_relative_to(abs_jar_path, _SRC_DIR):
       cache_path = (abs_build_output_dir / 'gen' /
                     cache_path.relative_to(_SRC_DIR))
+    else:
+      cache_path = (abs_build_output_dir / 'gen' / 'abs' /
+                    cache_path.relative_to(cache_path.anchor))
+
     if (cache_path.exists()
         and os.path.getmtime(cache_path) > os.path.getmtime(abs_jar_path)):
       with open(cache_path) as f:
@@ -317,9 +323,11 @@ class ClassLookupIndex:
   @staticmethod
   def _is_path_relative_to(path: pathlib.Path, other: pathlib.Path) -> bool:
     # PurePath.is_relative_to() was introduced in Python 3.9
-    resolved_path = path.resolve()
-    resolved_other = other.resolve()
-    return str(resolved_path).startswith(str(resolved_other))
+    try:
+      path.relative_to(other)
+      return True
+    except ValueError:
+      return False
 
   @staticmethod
   def _parse_full_java_class(source_path: pathlib.Path) -> str:

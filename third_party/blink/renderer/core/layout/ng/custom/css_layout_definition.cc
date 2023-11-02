@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_intrinsic_sizes_result_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_layout_callback.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_no_argument_constructor.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
 #include "third_party/blink/renderer/core/css/cssom/prepopulated_computed_style_property_map.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -27,11 +28,10 @@
 #include "third_party/blink/renderer/core/layout/ng/custom/custom_layout_scope.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_input_node.h"
-#include "third_party/blink/renderer/platform/bindings/microtask.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding_macros.h"
 #include "third_party/blink/renderer/platform/bindings/v8_object_constructor.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -148,7 +148,7 @@ bool CSSLayoutDefinition::Instance::Layout(
 
   // Run the work queue until exhaustion.
   auto& queue = *custom_layout_scope->Queue();
-  while (!queue.IsEmpty()) {
+  while (!queue.empty()) {
     {
       v8::MicrotasksScope microtasks_scope(
           isolate, microtask_queue, v8::MicrotasksScope::kDoNotRunMicrotasks);
@@ -285,7 +285,7 @@ bool CSSLayoutDefinition::Instance::IntrinsicSizes(
 
   // Run the work queue until exhaustion.
   auto& queue = *custom_layout_scope->Queue();
-  while (!queue.IsEmpty()) {
+  while (!queue.empty()) {
     {
       v8::MicrotasksScope microtasks_scope(
           isolate, microtask_queue, v8::MicrotasksScope::kDoNotRunMicrotasks);

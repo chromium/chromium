@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,10 @@
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
+
+namespace mojo_base {
+class BigBuffer;
+}
 
 namespace blink {
 
@@ -28,7 +32,7 @@ class CachedMetadataSender;
 // the handler is rejected if e.g. the disk cache entry has been updated and the
 // handler refers to an older response.
 class PLATFORM_EXPORT ScriptCachedMetadataHandler
-    : public SingleCachedMetadataHandler {
+    : public CachedMetadataHandler {
  public:
   ScriptCachedMetadataHandler(const WTF::TextEncoding&,
                               std::unique_ptr<CachedMetadataSender>);
@@ -112,12 +116,8 @@ class PLATFORM_EXPORT ScriptCachedMetadataHandlerWithHashing final
     kUninitialized,  // hash_ has not been written.
     kDeserialized,   // hash_ contains data from the code cache that has not yet
                      // been checked for matching the script text.
-
-    // Terminal states: once hash_state_ reaches one of the following, neither
-    // hash_state_ nor hash_ will ever change again.
-
-    kChecked,        // hash_ contains the hash of the script text.
-    kFailedToCheck,  // hash_ contains garbage. Computing the hash failed.
+    kChecked,        // hash_ contains the hash of the script text. Neither
+                     // hash_state_ nor hash_ will ever change again.
   };
   HashState hash_state_ = kUninitialized;
 };

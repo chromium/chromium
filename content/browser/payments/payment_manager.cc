@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -75,7 +75,7 @@ void PaymentManager::Init(const GURL& context_url, const std::string& scope) {
         "Scope URL is not from the same origin of the context URL.");
     return;
   }
-  if (!origin_.IsSameOriginWith(url::Origin::Create(context_url))) {
+  if (!origin_.IsSameOriginWith(context_url)) {
     receiver_.ResetWithReason(
         static_cast<uint32_t>(ReasonCode::kCrossOriginDataAccess),
         "Cross origin data access.");

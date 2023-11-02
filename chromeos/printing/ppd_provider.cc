@@ -1,10 +1,9 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chromeos/printing/ppd_provider.h"
 
-#include <algorithm>
 #include <string>
 #include <utility>
 #include <vector>
@@ -14,8 +13,8 @@
 #include "base/files/file_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
-#include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -64,9 +63,8 @@ bool PpdReferenceIsWellFormed(const Printer::PpdReference& reference) {
   // All effective-make-and-model strings should be lowercased, since v2.
   // Since make-and-model strings could include non-Latin chars, only checking
   // that it excludes all upper-case chars A-Z.
-  if (!std::all_of(reference.effective_make_and_model.begin(),
-                   reference.effective_make_and_model.end(),
-                   [](char c) -> bool { return !base::IsAsciiUpper(c); })) {
+  if (!base::ranges::all_of(reference.effective_make_and_model,
+                            [](char c) { return !base::IsAsciiUpper(c); })) {
     return false;
   }
   // Should have exactly one non-empty field.

@@ -1,0 +1,152 @@
+<style include="oobe-common-styles action-link">
+  .scrollable {
+    overflow: auto;
+  }
+
+  #offline-network-control {
+    margin-bottom: 20px;
+    min-height: 200px;
+  }
+
+  @keyframes connecting-indicator-ellipsis {
+    0% {
+      opacity: 0;
+    }
+    10% {
+      opacity: 1;
+    }
+    50% {
+      opacity: .8;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+
+  #connecting-indicator-ellipsis-1 {
+    animation: connecting-indicator-ellipsis 3s 0s infinite;
+  }
+
+  #connecting-indicator-ellipsis-2 {
+    animation: connecting-indicator-ellipsis 3s 500ms infinite;
+  }
+
+  #connecting-indicator-ellipsis-3 {
+    animation: connecting-indicator-ellipsis 3s 1s infinite;
+  }
+</style>
+<oobe-adaptive-dialog role="dialog" id="dialog">
+  <iron-icon slot="icon" icon="oobe-32:wifi">
+  </iron-icon>
+  <h1 slot="title" aria-live="assertive">
+    [[getDialogTitle_(locale, errorState_, uiState_)]]
+  </h1>
+  <div slot="subtitle">
+    <div hidden="[[!isOneOf_(errorState_, 'kiosk-online')]]">
+      [[i18nDynamic(locale, 'kioskOnlineMessageBody')]]
+    </div>
+    <div id="offlineMessageBody" hidden="[[!isOneOf_(errorState_,
+        'offline', 'auth-ext-timeout')]]">
+      <span hidden="[[!isOneOf_(uiState_, 'ui-state-update')]]">
+        [[i18nDynamic(locale, 'updateOfflineMessageBody')]]
+      </span>
+      <span hidden="[[!isOneOf_(uiState_, 'ui-state-signin')]]">
+        [[i18nDynamic(locale, 'signinOfflineMessageBody')]]
+      </span>
+      <span hidden="[[!isOneOf_(uiState_, 'ui-state-kiosk-mode')]]">
+        [[i18nDynamic(locale, 'kioskOfflineMessageBody')]]
+      </span>
+    </div>
+    <div hidden="[[!isOneOf_(errorState_, 'portal')]]">
+      <span id="captive-portal-message-text"
+          hidden="[[!isOneOf_(uiState_,
+              'ui-state-update',
+              'ui-state-signin',
+              'ui-state-kiosk-mode')]]">
+      </span>
+    </div>
+    <div hidden="[[!isOneOf_(errorState_,
+        'portal',
+        'auth-ext-timeout')]]">
+      <span id="captive-portal-proxy-message-text"
+          hidden="[[!isOneOf_(uiState_,
+              'ui-state-update',
+              'ui-state-signin',
+              'ui-state-kiosk-mode')]]">
+      </span>
+    </div>
+    <div hidden="[[!isOneOf_(errorState_, 'proxy')]]">
+      <span id="update-proxy-message-text"
+          hidden="[[!isOneOf_(uiState_,
+              'ui-state-update')]]">
+      </span>
+      <span id="signin-proxy-message-text"
+          hidden="[[!isOneOf_(uiState_,
+              'ui-state-signin',
+              'ui-state-kiosk-mode')]]">
+      </span>
+    </div>
+    <span hidden="[[!isOneOf_(uiState_,'ui-state-auto-enrollment-error')]]">
+      [[i18nDynamic(locale, 'autoEnrollmentOfflineMessageBody')]]
+    </span>
+    <div id="guestSessionText" hidden="[[!isOneOf_(uiState_,
+        'ui-state-update',
+        'ui-state-signin',
+        'ui-state-kiosk-mode')]]">
+      <span id="error-guest-signin" hidden="[[!guestSessionAllowed_]]">
+      </span>
+    </div>
+    <div hidden="[[!isOneOf_(uiState_, 'ui-state-auto-enrollment-error')]]">
+      <span id="error-guest-signin-fix-network"
+          hidden="[[!guestSessionAllowed_]]">
+      </span>
+    </div>
+    <div id="error-offline-login" hidden="[[!offlineLoginAllowed_]]">
+    </div>
+    <div hidden="[[!connectingIndicatorShown_]]">
+      [[i18nDynamic(locale, 'connectingIndicatorText')]]
+      <span id="connecting-indicator-ellipsis-1">.</span>
+      <span id="connecting-indicator-ellipsis-2">.</span>
+      <span id="connecting-indicator-ellipsis-3">.</span>
+    </div>
+  </div>
+  <div slot="content" class="flex layout vertical">
+    <div class="error-body" aria-live="assertive">
+      <div hidden="[[!isOneOf_(uiState_,
+          'ui-state-update',
+          'ui-state-signin',
+          'ui-state-kiosk-mode',
+          'ui-state-auto-enrollment-error')]]" class="scrollable">
+        <network-select-login id="offline-network-control"
+            class="layout vertical flex" configure-connected
+            enable-wifi-scans="[[enableWifiScans_]]"
+            on-selected-network-connected="onNetworkConnected_">
+        </network-select-login>
+      </div>
+    </div>
+  </div>
+  <div slot="back-navigation">
+    <oobe-back-button id="backButton" on-click="cancel">
+    </oobe-back-button>
+  </div>
+  <div slot="bottom-buttons">
+    <oobe-text-button on-click="rebootButtonClicked"
+        text-key="rebootButton"
+        hidden="[[!isOneOf_(uiState_, 'ui-state-kiosk-mode')]]">
+    </oobe-text-button>
+    <oobe-text-button on-click="diagnoseButtonClicked"
+        text-key="diagnoseButton"
+        hidden="[[!isOneOf_(uiState_, 'ui-state-kiosk-mode')]]">
+    </oobe-text-button>
+    <oobe-text-button id="configureCertsButton"
+        on-click="configureCertsButtonClicked"
+        text-key="configureCertsButton"
+        hidden="[[!isOneOf_(uiState_, 'ui-state-kiosk-mode')]]">
+    </oobe-text-button>
+    <oobe-text-button id="continueButton"
+        on-click="continueButtonClicked"
+        text-key="continueButton"
+        hidden="[[!isOneOf_(errorState_, 'kiosk-online')]]">
+    </oobe-text-button>
+  </div>
+</oobe-adaptive-dialog>

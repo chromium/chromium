@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -56,7 +56,10 @@ static_library("core") {
       "android/offline_item_visuals_bridge.h",
     ]
 
-    deps += [ ":jni_headers" ]
+    deps += [
+      ":jni_headers",
+      "//url:gurl_android",
+    ]
   }
 }
 
@@ -66,7 +69,6 @@ source_set("unit_tests") {
   sources = [
     "filtered_offline_item_observer_unittest.cc",
     "offline_content_aggregator_unittest.cc",
-    "offline_item_unittest.cc",
     "throttled_offline_content_provider_unittest.cc",
   ]
 
@@ -94,7 +96,6 @@ if (is_android) {
       "android/java/src/org/chromium/components/offline_items_collection/OfflineContentAggregatorBridge.java",
       "android/java/src/org/chromium/components/offline_items_collection/OfflineContentProvider.java",
       "android/java/src/org/chromium/components/offline_items_collection/OfflineItem.java",
-      "android/java/src/org/chromium/components/offline_items_collection/OfflineItemSchedule.java",
       "android/java/src/org/chromium/components/offline_items_collection/OfflineItemShareInfo.java",
       "android/java/src/org/chromium/components/offline_items_collection/OfflineItemVisuals.java",
       "android/java/src/org/chromium/components/offline_items_collection/OpenParams.java",
@@ -111,7 +112,10 @@ if (is_android) {
 
     deps = [
       "//base:base_java",
+      "//base:jni_java",
+      "//build/android:build_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
+      "//url:gurl_java",
     ]
   }
 
@@ -144,7 +148,7 @@ if (is_android) {
     testonly = true
     deps = [
       ":core_java",
-      "//base:base_java",
+      "//base:jni_java",
       "//third_party/junit",
     ]
 

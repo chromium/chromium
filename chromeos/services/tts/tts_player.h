@@ -1,12 +1,15 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROMEOS_SERVICES_TTS_TTS_PLAYER_H_
 #define CHROMEOS_SERVICES_TTS_TTS_PLAYER_H_
 
+#include <queue>
+
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
+#include "base/time/time.h"
 #include "chromeos/services/tts/public/mojom/tts_service.mojom.h"
 #include "media/base/audio_renderer_sink.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

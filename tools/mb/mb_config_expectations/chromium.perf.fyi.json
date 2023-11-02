@@ -2,6 +2,7 @@
   "android-cfi-builder-perf-fyi": {
     "gn_args": {
       "clang_use_default_sample_profile": false,
+      "debuggable_apks": false,
       "ffmpeg_branding": "Chrome",
       "is_chrome_branded": true,
       "is_official_build": true,
@@ -16,6 +17,7 @@
   "android_arm64-cfi-builder-perf-fyi": {
     "gn_args": {
       "clang_use_default_sample_profile": false,
+      "debuggable_apks": false,
       "ffmpeg_branding": "Chrome",
       "is_chrome_branded": true,
       "is_official_build": true,
@@ -40,11 +42,12 @@
       "use_goma": true
     }
   },
-  "fuchsia-builder-perf-fyi": {
+  "fuchsia-builder-perf-arm64": {
     "gn_args": {
       "ffmpeg_branding": "Chrome",
       "fuchsia_additional_boot_images": [
-        "//third_party/fuchsia-sdk/images-internal/astro-release/"
+        "//third_party/fuchsia-sdk/images-internal/astro-release/",
+        "//third_party/fuchsia-sdk/images-internal/sherlock-release/"
       ],
       "is_chrome_branded": true,
       "is_official_build": true,
@@ -53,6 +56,42 @@
       "target_cpu": "arm64",
       "target_os": "fuchsia",
       "test_isolate_uses_emulator": false,
+      "use_cfv2_script": true,
+      "use_goma": true
+    }
+  },
+  "fuchsia-builder-perf-fyi": {
+    "gn_args": {
+      "ffmpeg_branding": "Chrome",
+      "fuchsia_additional_boot_images": [
+        "//third_party/fuchsia-sdk/images-internal/astro-release/",
+        "//third_party/fuchsia-sdk/images-internal/sherlock-release/"
+      ],
+      "is_chrome_branded": true,
+      "is_official_build": true,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "target_cpu": "arm64",
+      "target_os": "fuchsia",
+      "test_isolate_uses_emulator": false,
+      "use_cfv2_script": true,
+      "use_goma": true
+    }
+  },
+  "fuchsia-builder-perf-x64": {
+    "gn_args": {
+      "ffmpeg_branding": "Chrome",
+      "fuchsia_additional_boot_images": [
+        "//third_party/fuchsia-sdk/images/chromebook-x64-release/"
+      ],
+      "is_chrome_branded": true,
+      "is_official_build": true,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "target_cpu": "x64",
+      "target_os": "fuchsia",
+      "test_isolate_uses_emulator": false,
+      "use_cfv2_script": true,
       "use_goma": true
     }
   }

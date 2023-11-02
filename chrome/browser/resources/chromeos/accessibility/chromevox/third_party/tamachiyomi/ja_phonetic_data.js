@@ -317,7 +317,7 @@ JaPhoneticData = class {
           case JaPhoneticData.CharacterSet.FULL_WIDTH_CYRILLIC_OR_GREEK_UPPER:
             return {
               delimiter: true,
-              prefix: JaPhoneticData.getDefaultPrefix(currentCharacterSet)
+              prefix: JaPhoneticData.getDefaultPrefix(currentCharacterSet),
             };
         }
         return {delimiter: true, prefix: null};
@@ -327,7 +327,7 @@ JaPhoneticData = class {
     // Returns the default prefix.
     return {
       delimiter: true,
-      prefix: JaPhoneticData.getDefaultPrefix(currentCharacterSet)
+      prefix: JaPhoneticData.getDefaultPrefix(currentCharacterSet),
     };
   }
 
@@ -367,7 +367,7 @@ JaPhoneticData.CharacterSet = {
   FULL_WIDTH_SYMBOL: 14,                   // '＠'
   FULL_WIDTH_CYRILLIC_OR_GREEK_UPPER: 15,  // 'Α'
   FULL_WIDTH_CYRILLIC_OR_GREEK_LOWER: 16,  // 'α'
-  OTHER: 17                                // Kanji and unsupported symbols
+  OTHER: 17,                               // Kanji and unsupported symbols
 };
 
 /**
@@ -388,7 +388,7 @@ JaPhoneticData.DEFAULT_PREFIX = new Map([
   // 'ｧ'
   [
     JaPhoneticData.CharacterSet.HALF_WIDTH_KATAKANA_SMALL_LETTER,
-    'ハンカク チイサイ'
+    'ハンカク チイサイ',
   ],
   // 'A'
   [JaPhoneticData.CharacterSet.HALF_WIDTH_ALPHABET_UPPER, 'オオモジ'],

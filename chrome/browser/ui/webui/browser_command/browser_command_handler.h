@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,16 +7,22 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/command_updater_delegate.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/webui/resources/js/browser_command/browser_command.mojom.h"
 #include "url/gurl.h"
 
 class CommandUpdater;
 class Profile;
+
+namespace user_education {
+class TutorialService;
+}
 
 // Struct containing the information needed to customize/configure the feedback
 // form. Used to populate arguments passed to chrome::ShowFeedbackPage().
@@ -65,13 +71,20 @@ class BrowserCommandHandler : public CommandUpdaterDelegate,
 
   virtual CommandUpdater* GetCommandUpdater();
 
+  virtual bool BrowserSupportsTabGroups();
+
+  virtual bool BrowserHasTabGroups();
+
  private:
   virtual void NavigateToURL(const GURL& url,
                              WindowOpenDisposition disposition);
   virtual void OpenFeedbackForm();
+  virtual user_education::TutorialService* GetTutorialService();
+  virtual ui::ElementContext GetUiElementContext();
+  void StartTabGroupTutorial();
 
   FeedbackCommandSettings feedback_settings_;
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   std::vector<browser_command::mojom::Command> supported_commands_;
   std::unique_ptr<CommandUpdater> command_updater_;
   mojo::Receiver<browser_command::mojom::CommandHandler> page_handler_;

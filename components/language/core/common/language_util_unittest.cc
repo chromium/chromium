@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,14 @@ TEST_F(LanguageUtilTest, ToTranslateLanguageSynonym) {
   language = std::string("nb");
   language::ToTranslateLanguageSynonym(&language);
   EXPECT_EQ("no", language);
+
+  language = std::string("in");
+  language::ToTranslateLanguageSynonym(&language);
+  EXPECT_EQ("id", language);
+
+  language = std::string("fil");
+  language::ToTranslateLanguageSynonym(&language);
+  EXPECT_EQ("tl", language);
 
   // Test all known Chinese cases.
   language = std::string("zh-HK");
@@ -57,9 +65,15 @@ TEST_F(LanguageUtilTest, ToChromeLanguageSynonym) {
   language = std::string("no");
   language::ToChromeLanguageSynonym(&language);
   EXPECT_EQ("no", language);
+
   language = std::string("nb");
   language::ToChromeLanguageSynonym(&language);
   EXPECT_EQ("nb", language);
+
+  // Convert to Chrome synonym
+  language = std::string("tl");
+  language::ToChromeLanguageSynonym(&language);
+  EXPECT_EQ("fil", language);
 
   // Preserve a sub code
   language = std::string("iw-IL");

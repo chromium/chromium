@@ -1,32 +1,36 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/upgrade/upgrade_center.h"
 
-#include <memory>
-#include <set>
-#include <utility>
+#import <memory>
+#import <set>
+#import <utility>
 
-#include "base/mac/bundle_locations.h"
-#include "base/scoped_observation.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/version.h"
-#include "components/infobars/core/confirm_infobar_delegate.h"
-#include "components/infobars/core/infobar.h"
-#include "components/infobars/core/infobar_manager.h"
-#include "components/version_info/version_info.h"
-#include "ios/chrome/browser/infobars/infobar_utils.h"
+#import "base/mac/bundle_locations.h"
+#import "base/mac/foundation_util.h"
+#import "base/scoped_observation.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/time/time.h"
+#import "base/version.h"
+#import "components/infobars/core/confirm_infobar_delegate.h"
+#import "components/infobars/core/infobar.h"
+#import "components/infobars/core/infobar_manager.h"
+#import "components/version_info/version_info.h"
+#import "ios/chrome/browser/infobars/infobar_utils.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
+#import "ios/chrome/browser/ui/icons/infobar_icon.h"
 #import "ios/chrome/browser/upgrade/upgrade_constants.h"
-#include "ios/chrome/grit/ios_chromium_strings.h"
-#include "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/common/url_scheme_util.h"
 #import "net/base/mac/url_conversions.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "ui/gfx/image/image.h"
-#include "url/gurl.h"
+#import "ui/base/l10n/l10n_util.h"
+#import "ui/gfx/image/image.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -55,6 +59,9 @@
 @end
 
 namespace {
+
+// The amount of time that must elapse before showing the infobar again.
+constexpr base::TimeDelta kInfobarDisplayInterval = base::Days(1);
 
 // The class controlling the look of the infobar displayed when an upgrade is
 // available.
@@ -85,11 +92,14 @@ class UpgradeInfoBarDelegate : public ConfirmInfoBarDelegate {
     return false;
   }
 
-  gfx::Image GetIcon() const override {
+  ui::ImageModel GetIcon() const override {
     if (icon_.IsEmpty()) {
-      icon_ = gfx::Image([UIImage imageNamed:@"infobar_update"]);
+      icon_ = gfx::Image(UseSymbols()
+                             ? DefaultSymbolWithPointSize(kInfoCircleSymbol,
+                                                          kSymbolImagePointSize)
+                             : [UIImage imageNamed:@"infobar_update"]);
     }
-    return icon_;
+    return ui::ImageModel::FromImage(icon_);
   }
 
   std::u16string GetMessageText() const override {
@@ -260,14 +270,17 @@ class UpgradeInfoBarDismissObserver
 
 - (BOOL)infoBarShownRecently {
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-  NSDate* lastDisplay = [defaults objectForKey:kLastInfobarDisplayTimeKey];
+  NSDate* lastDisplayDate = base::mac::ObjCCast<NSDate>(
+      [defaults objectForKey:kLastInfobarDisplayTimeKey]);
+  if (!lastDisplayDate) {
+    return NO;
+  }
+
   // Absolute value is to ensure the infobar won't be suppressed forever if the
   // clock temporarily jumps to the distant future.
-  if (lastDisplay && fabs([lastDisplay timeIntervalSinceNow]) <
-                         kInfobarDisplayIntervalInSeconds) {
-    return YES;
-  }
-  return NO;
+  const base::Time lastDisplayTime = base::Time::FromNSDate(lastDisplayDate);
+  return (base::Time::Now() - lastDisplayTime).magnitude() <
+         kInfobarDisplayInterval;
 }
 
 - (void)applicationWillEnterForeground:(NSNotification*)note {
@@ -449,9 +462,10 @@ class UpgradeInfoBarDismissObserver
 }
 
 - (void)setLastDisplayToPast {
-  NSDate* pastDate = [NSDate
-      dateWithTimeIntervalSinceNow:-(kInfobarDisplayIntervalInSeconds + 1)];
-  [[NSUserDefaults standardUserDefaults] setObject:pastDate
+  const base::Time pastDate =
+      base::Time::Now() - kInfobarDisplayInterval - base::Seconds(1);
+
+  [[NSUserDefaults standardUserDefaults] setObject:pastDate.ToNSDate()
                                             forKey:kLastInfobarDisplayTimeKey];
 }
 

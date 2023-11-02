@@ -1,9 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/feed/core/v2/protocol_translator.h"
 
+#include <initializer_list>
 #include <sstream>
 #include <string>
 #include <utility>
@@ -26,6 +27,12 @@ namespace {
 
 const char kResponsePbPath[] = "components/test/data/feed/response.binarypb";
 const base::Time kCurrentTime = base::Time::UnixEpoch() + base::Days(123);
+AccountInfo TestAccountInfo() {
+  AccountInfo account_info;
+  account_info.gaia = "gaia";
+  account_info.email = "user@foo.com";
+  return account_info;
+}
 
 feedwire::Response TestWireResponse() {
   // Read and parse response.binarypb.
@@ -85,14 +92,14 @@ feedwire::DataOperation MakeDataOperationWithRenderData(
 
 // Helpers to add some common params.
 RefreshResponseData TranslateWireResponse(feedwire::Response response,
-                                          bool was_signed_in_request) {
+                                          const AccountInfo& account_info) {
   return TranslateWireResponse(response,
                                StreamModelUpdateRequest::Source::kNetworkUpdate,
-                               was_signed_in_request, kCurrentTime);
+                               account_info, kCurrentTime);
 }
 
 RefreshResponseData TranslateWireResponse(feedwire::Response response) {
-  return TranslateWireResponse(response, true);
+  return TranslateWireResponse(response, TestAccountInfo());
 }
 absl::optional<feedstore::DataOperation> TranslateDataOperation(
     feedwire::DataOperation operation) {
@@ -123,14 +130,36 @@ TEST(ProtocolTranslatorTest, EmptyResponse) {
   EXPECT_TRUE(TranslateWireResponse(response).model_update_request);
 }
 
+TEST(ProtocolTranslatorTest, RootEventIdPresent) {
+  feedwire::Response response = EmptyWireResponse();
+  response.mutable_feed_response()
+      ->mutable_feed_response_metadata()
+      ->mutable_event_id()
+      ->set_time_usec(123);
+  EXPECT_EQ(TranslateWireResponse(response)
+                .model_update_request->stream_data.root_event_id(),
+            response.mutable_feed_response()
+                ->mutable_feed_response_metadata()
+                ->event_id()
+                .SerializeAsString());
+}
+
+TEST(ProtocolTranslatorTest, RootEventIdNotPresent) {
+  feedwire::Response response = EmptyWireResponse();
+  EXPECT_EQ(TranslateWireResponse(response)
+                .model_update_request->stream_data.root_event_id(),
+            "");
+}
+
 TEST(ProtocolTranslatorTest, WasSignedInRequest) {
   feedwire::Response response = EmptyWireResponse();
-  for (bool was_signed_in_request_state : {true, false}) {
-    RefreshResponseData refresh =
-        TranslateWireResponse(response, was_signed_in_request_state);
+
+  for (AccountInfo account_info :
+       std::initializer_list<AccountInfo>{{"gaia", "user@foo.com"}, {}}) {
+    RefreshResponseData refresh = TranslateWireResponse(response, account_info);
     ASSERT_TRUE(refresh.model_update_request);
     EXPECT_EQ(refresh.model_update_request->stream_data.signed_in(),
-              was_signed_in_request_state);
+              !account_info.IsEmpty());
   }
 }
 
@@ -324,20 +353,23 @@ TEST(ProtocolTranslatorTest, TranslateRealResponse) {
 
   const std::string want = R"(source: 0
 stream_data: {
+  root_event_id: )"
+                           "\"\\b\xEF\xBF\xBD\xEF\xBF\xBD\\u0007\""
+                           R"(
   last_added_time_millis: 10627200000
   shared_state_ids {
     content_domain: "render_data"
   }
-  content_ids: 3328940074512586021
-  content_ids: 8191455549164721606
-  content_ids: -8109602013173974591
-  content_ids: -8979410608587540000
-  content_ids: -8421826555441408245
-  content_ids: -3490122365494686813
-  content_ids: 2741853109953412745
-  content_ids: 586433679892097787
-  content_ids: 790985792726953756
-  content_ids: 7324025093440047528
+  content_hashes: 934967784
+  content_hashes: 1272916258
+  content_hashes: 3242987079
+  content_hashes: 1955343871
+  content_hashes: 3258315382
+  content_hashes: 3546053313
+  content_hashes: 1640265464
+  content_hashes: 2920920940
+  content_hashes: 3805198647
+  content_hashes: 3846950793
 }
 content: {
   content_id {

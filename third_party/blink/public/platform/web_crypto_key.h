@@ -87,7 +87,7 @@ class WebCryptoKeyHandle;
 //
 // If WebCryptoKey "IsNull()" then it is invalid to call any of the other
 // methods on it (other than destruction, assignment, or IsNull()).
-class WebCryptoKey {
+class BLINK_PLATFORM_EXPORT WebCryptoKey {
  public:
   // Constructs a "null" key (One for which isNull() returns true).
   WebCryptoKey() = default;
@@ -103,32 +103,31 @@ class WebCryptoKey {
   // https://dvcs.w3.org/hg/webcrypto-api/raw-file/tip/spec/Overview.html#key-interface-members
   //
   // Note that the caller is passing ownership of the WebCryptoKeyHandle*.
-  BLINK_PLATFORM_EXPORT static WebCryptoKey Create(WebCryptoKeyHandle*,
-                                                   WebCryptoKeyType,
-                                                   bool extractable,
-                                                   const WebCryptoKeyAlgorithm&,
-                                                   WebCryptoKeyUsageMask);
+  static WebCryptoKey Create(WebCryptoKeyHandle*,
+                             WebCryptoKeyType,
+                             bool extractable,
+                             const WebCryptoKeyAlgorithm&,
+                             WebCryptoKeyUsageMask);
 
-  BLINK_PLATFORM_EXPORT static WebCryptoKey CreateNull();
+  static WebCryptoKey CreateNull();
 
   // Returns the opaque key handle that was set by the embedder.
   //   * Safe to downcast to known type (since embedder creates all the keys)
   //   * Returned pointer's lifetime is bound to |this|
-  BLINK_PLATFORM_EXPORT WebCryptoKeyHandle* Handle() const;
+  WebCryptoKeyHandle* Handle() const;
 
-  BLINK_PLATFORM_EXPORT WebCryptoKeyType GetType() const;
-  BLINK_PLATFORM_EXPORT bool Extractable() const;
-  BLINK_PLATFORM_EXPORT const WebCryptoKeyAlgorithm& Algorithm() const;
-  BLINK_PLATFORM_EXPORT WebCryptoKeyUsageMask Usages() const;
+  WebCryptoKeyType GetType() const;
+  bool Extractable() const;
+  const WebCryptoKeyAlgorithm& Algorithm() const;
+  WebCryptoKeyUsageMask Usages() const;
 
-  BLINK_PLATFORM_EXPORT bool IsNull() const;
+  bool IsNull() const;
 
-  BLINK_PLATFORM_EXPORT bool KeyUsageAllows(
-      const blink::WebCryptoKeyUsage) const;
+  bool KeyUsageAllows(const blink::WebCryptoKeyUsage) const;
 
  private:
-  BLINK_PLATFORM_EXPORT void Assign(const WebCryptoKey& other);
-  BLINK_PLATFORM_EXPORT void Reset();
+  void Assign(const WebCryptoKey& other);
+  void Reset();
 
   WebPrivatePtr<WebCryptoKeyPrivate> private_;
 };

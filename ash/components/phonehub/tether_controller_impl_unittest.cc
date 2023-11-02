@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,26 +10,26 @@
 #include "ash/components/phonehub/mutable_phone_model.h"
 #include "ash/components/phonehub/phone_model_test_util.h"
 #include "ash/components/phonehub/phone_status_model.h"
+#include "ash/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
-#include "chromeos/network/network_state_handler.h"
-#include "chromeos/network/network_state_test_helper.h"
-#include "chromeos/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "chromeos/services/network_config/in_process_instance.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 namespace {
 
+using ::chromeos::network_config::mojom::ConnectionStateType;
+using ::chromeos::network_config::mojom::NetworkStatePropertiesPtr;
+using ::chromeos::network_config::mojom::StartConnectResult;
 using multidevice_setup::mojom::Feature;
 using multidevice_setup::mojom::FeatureState;
-using network_config::mojom::ConnectionStateType;
-using network_config::mojom::NetworkStatePropertiesPtr;
-using network_config::mojom::StartConnectResult;
 
 constexpr char kWifiGuid[] = "WifiGuid";
 constexpr char kTetherGuid[] = "TetherGuid";
@@ -101,8 +101,9 @@ class TetherControllerImplTest : public testing::Test {
       start_disconnect_callback_ = std::move(callback);
     }
 
-    void GetNetworkStateList(network_config::mojom::NetworkFilterPtr filter,
-                             GetNetworkStateListCallback callback) override {
+    void GetNetworkStateList(
+        chromeos::network_config::mojom::NetworkFilterPtr filter,
+        GetNetworkStateListCallback callback) override {
       cros_network_config_->GetNetworkStateList(
           std::move(filter),
           base::BindOnce(
@@ -116,8 +117,7 @@ class TetherControllerImplTest : public testing::Test {
 
     void OnVisibleTetherNetworkFetched(
         GetNetworkStateListCallback callback,
-        std::vector<network_config::mojom::NetworkStatePropertiesPtr>
-            networks) {
+        std::vector<NetworkStatePropertiesPtr> networks) {
       if (connection_state_.has_value() && networks.size() == 1) {
         networks[0]->connection_state = *connection_state_;
         connection_state_ = absl::nullopt;
@@ -135,8 +135,7 @@ class TetherControllerImplTest : public testing::Test {
     }
 
     void InvokeStartConnectCallbackWithFakeResult(
-        network_config::mojom::StartConnectResult result =
-            StartConnectResult::kSuccess,
+        StartConnectResult result = StartConnectResult::kSuccess,
         const std::string& message = "") {
       std::move(start_connect_callback_).Run(result, message);
     }
@@ -151,7 +150,8 @@ class TetherControllerImplTest : public testing::Test {
     }
 
    private:
-    mojo::Remote<network_config::mojom::CrosNetworkConfig> cros_network_config_;
+    mojo::Remote<chromeos::network_config::mojom::CrosNetworkConfig>
+        cros_network_config_;
     absl::optional<ConnectionStateType> connection_state_;
     StartConnectCallback start_connect_callback_;
     StartDisconnectCallback start_disconnect_callback_;
@@ -183,7 +183,7 @@ class TetherControllerImplTest : public testing::Test {
 
   void TearDown() override {
     controller_->RemoveObserver(&fake_observer_);
-    chromeos::NetworkHandler::Shutdown();
+    NetworkHandler::Shutdown();
     testing::Test::TearDown();
   }
 
@@ -319,7 +319,7 @@ TEST_F(TetherControllerImplTest,
   // ConnectionStateType::kConnecting tether network instead of a
   // ConnectionStateType::kDisconnected network.
   fake_tether_network_connector()->SetNextConnectionStateType(
-      network_config::mojom::ConnectionStateType::kConnecting);
+      ConnectionStateType::kConnecting);
   SetTetherNetworkStateDisconnected();
   EXPECT_EQ(GetStatus(), TetherController::Status::kConnecting);
 
@@ -578,4 +578,4 @@ TEST_F(TetherControllerImplTest, AttemptConnectFeatureOffNoNetwork) {
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,11 @@
 #include "components/reporting/metrics/reporting_settings.h"
 
 namespace reporting {
+
+// static
+BASE_FEATURE(kEnableTelemetryTestingRates,
+             "EnableTelemetryTestingRates",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 MetricRateController::MetricRateController(
     base::RepeatingClosure task,
@@ -33,7 +38,10 @@ void MetricRateController::Start() {
       rate_ = base::Milliseconds(current_rate * rate_unit_to_ms_);
     }
   }
-  if (rate_ < base::Milliseconds(1)) {
+  // Use default rate if setting rate is too high or if testing flag is enabled
+  // to have a higher collection and reporting rate set using the default rate.
+  if (rate_ < base::Milliseconds(1) ||
+      base::FeatureList::IsEnabled(kEnableTelemetryTestingRates)) {
     if (default_rate_ < base::Milliseconds(1)) {
       return;
     }

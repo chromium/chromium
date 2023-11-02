@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,7 +21,7 @@ namespace power {
 namespace auto_screen_brightness {
 
 // MetricsReport logs daily user screen brightness adjustments to UMA.
-class MetricsReporter : public PowerManagerClient::Observer {
+class MetricsReporter : public chromeos::PowerManagerClient::Observer {
  public:
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -64,7 +64,7 @@ class MetricsReporter : public PowerManagerClient::Observer {
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
   // RegisterLocalStatePrefs() must be called before instantiating this class.
-  MetricsReporter(PowerManagerClient* power_manager_client,
+  MetricsReporter(chromeos::PowerManagerClient* power_manager_client,
                   PrefService* local_state_pref_service);
 
   MetricsReporter(const MetricsReporter&) = delete;
@@ -97,7 +97,8 @@ class MetricsReporter : public PowerManagerClient::Observer {
   // Set once and then never changed during the Chrome session.
   absl::optional<DeviceClass> device_class_;
 
-  base::ScopedObservation<PowerManagerClient, PowerManagerClient::Observer>
+  base::ScopedObservation<chromeos::PowerManagerClient,
+                          chromeos::PowerManagerClient::Observer>
       power_manager_client_observation_{this};
 
   PrefService* pref_service_;  // Not owned.

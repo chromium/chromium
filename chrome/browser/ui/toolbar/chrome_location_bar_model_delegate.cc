@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,9 +37,9 @@
 #include "content/public/common/url_constants.h"
 #include "extensions/common/constants.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "components/omnibox/browser/vector_icons.h"  // nogncheck
-#endif                                                // !defined(OS_ANDROID)
+#endif
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
 #include "chrome/browser/offline_pages/offline_page_utils.h"
@@ -74,7 +74,7 @@ ChromeLocationBarModelDelegate::FormattedStringWithEquivalentMeaning(
 bool ChromeLocationBarModelDelegate::GetURL(GURL* url) const {
   DCHECK(url);
   content::NavigationEntry* entry = GetNavigationEntry();
-  if (!entry)
+  if (!entry || entry->IsInitialEntry())
     return false;
 
   *url = entry->GetVirtualURL();
@@ -98,7 +98,7 @@ bool ChromeLocationBarModelDelegate::ShouldDisplayURL() const {
   //   of view-source:chrome://newtab, which should display its URL despite what
   //   chrome://newtab says.
   content::NavigationEntry* entry = GetNavigationEntry();
-  if (!entry)
+  if (!entry || entry->IsInitialEntry())
     return true;
 
   security_interstitials::SecurityInterstitialTabHelper*
@@ -132,13 +132,6 @@ bool ChromeLocationBarModelDelegate::ShouldDisplayURL() const {
 
 bool ChromeLocationBarModelDelegate::
     ShouldUseUpdatedConnectionSecurityIndicators() const {
-  Profile* profile = GetProfile();
-  if (!profile) {
-    return false;
-  }
-  if (profile->GetPrefs()->GetBoolean(omnibox::kLockIconInAddressBarEnabled)) {
-    return false;
-  }
   return base::FeatureList::IsEnabled(
       omnibox::kUpdatedConnectionSecurityIndicators);
 }
@@ -181,14 +174,14 @@ ChromeLocationBarModelDelegate::GetVisibleSecurityState() const {
 scoped_refptr<net::X509Certificate>
 ChromeLocationBarModelDelegate::GetCertificate() const {
   content::NavigationEntry* entry = GetNavigationEntry();
-  if (!entry)
+  if (!entry || entry->IsInitialEntry())
     return scoped_refptr<net::X509Certificate>();
   return entry->GetSSL().certificate;
 }
 
 const gfx::VectorIcon* ChromeLocationBarModelDelegate::GetVectorIconOverride()
     const {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   GURL url;
   GetURL(&url);
 
@@ -215,7 +208,7 @@ bool ChromeLocationBarModelDelegate::IsOfflinePage() const {
 
 bool ChromeLocationBarModelDelegate::IsNewTabPage() const {
   content::NavigationEntry* const entry = GetNavigationEntry();
-  if (!entry)
+  if (!entry || entry->IsInitialEntry())
     return false;
 
   Profile* const profile = GetProfile();
@@ -243,7 +236,7 @@ bool ChromeLocationBarModelDelegate::IsHomePage(const GURL& url) const {
 }
 
 bool ChromeLocationBarModelDelegate::IsShowingAccuracyTip() const {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   Profile* const profile = GetProfile();
   if (!profile) {
     return false;
@@ -313,5 +306,4 @@ TemplateURLService* ChromeLocationBarModelDelegate::GetTemplateURLService() {
 void ChromeLocationBarModelDelegate::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(omnibox::kPreventUrlElisionsInOmnibox, false);
-  registry->RegisterBooleanPref(omnibox::kLockIconInAddressBarEnabled, false);
 }

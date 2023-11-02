@@ -1,11 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef EXTENSIONS_TEST_LOGGING_TIMER_H_
 #define EXTENSIONS_TEST_LOGGING_TIMER_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 

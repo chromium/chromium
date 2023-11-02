@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -90,7 +90,6 @@ class TextInputTestHelper : public ui::InputMethodObserver {
   void OnBlur() override;
   void OnCaretBoundsChanged(const ui::TextInputClient* client) override;
   void OnTextInputStateChanged(const ui::TextInputClient* client) override;
-  void OnShowVirtualKeyboardIfEnabled() override;
   void OnInputMethodDestroyed(const ui::InputMethod* input_method) override;
 
   // Represents waiting type of text input event.

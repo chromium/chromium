@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,7 +28,7 @@
 namespace {
 
 // Creates a new instance of BrowsingDataCounter that is counting the data
-// for |browser_state| related to a given deletion preference |pref_name|.
+// for `browser_state` related to a given deletion preference `pref_name`.
 std::unique_ptr<browsing_data::BrowsingDataCounter>
 CreateCounterForBrowserStateAndPref(ChromeBrowserState* browser_state,
                                     base::StringPiece pref_name) {

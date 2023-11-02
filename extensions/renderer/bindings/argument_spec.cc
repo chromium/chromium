@@ -1,8 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "extensions/renderer/bindings/argument_spec.h"
+
+#include <cmath>
 
 #include "base/check.h"
 #include "base/strings/string_piece.h"
@@ -153,9 +155,8 @@ void ArgumentSpec::InitializeType(const base::DictionaryValue* dict) {
   if (type_ == ArgumentType::OBJECT) {
     const base::DictionaryValue* properties_value = nullptr;
     if (dict->GetDictionary("properties", &properties_value)) {
-      for (base::DictionaryValue::Iterator iter(*properties_value);
-           !iter.IsAtEnd(); iter.Advance()) {
-        properties_[iter.key()] = std::make_unique<ArgumentSpec>(iter.value());
+      for (const auto item : properties_value->GetDict()) {
+        properties_[item.first] = std::make_unique<ArgumentSpec>(item.second);
       }
     }
     const base::DictionaryValue* additional_properties_value = nullptr;
@@ -176,20 +177,17 @@ void ArgumentSpec::InitializeType(const base::DictionaryValue* dict) {
     // always update this if need be.
     const base::ListValue* enums = nullptr;
     if (dict->GetList("enum", &enums)) {
-      size_t size = enums->GetList().size();
-      CHECK_GT(size, 0u);
-      for (size_t i = 0; i < size; ++i) {
-        std::string enum_value;
+      CHECK(!enums->GetList().empty());
+      for (const base::Value& value : enums->GetList()) {
+        const std::string* enum_str = value.GetIfString();
         // Enum entries come in two versions: a list of possible strings, and
         // a dictionary with a field 'name'.
-        if (!enums->GetString(i, &enum_value)) {
-          const base::Value& value = enums->GetList()[i];
+        if (!enum_str) {
           CHECK(value.is_dict());
-          const base::DictionaryValue* enum_value_dictionary =
-              static_cast<const base::DictionaryValue*>(&value);
-          CHECK(enum_value_dictionary->GetString("name", &enum_value));
+          enum_str = value.FindStringKey("name");
+          CHECK(enum_str);
         }
-        enum_values_.insert(std::move(enum_value));
+        enum_values_.insert(*enum_str);
       }
     }
   } else if (type_ == ArgumentType::FUNCTION) {
@@ -410,6 +408,10 @@ bool ArgumentSpec::ParseArgumentToFundamental(
     case ArgumentType::DOUBLE: {
       DCHECK(value->IsNumber());
       double double_val = value.As<v8::Number>()->Value();
+      if (std::isnan(double_val) || std::isinf(double_val)) {
+        *error = api_errors::NumberIsNaNOrInfinity();
+        return false;
+      }
       if (!CheckFundamentalBounds(double_val, minimum_, maximum_, error))
         return false;
       if (out_value)
@@ -700,7 +702,7 @@ bool ArgumentSpec::ParseArgumentToArray(v8::Local<v8::Context> context,
       return false;
     }
     if (out_value)
-      result->Append(std::move(item));
+      result->Append(base::Value::FromUniquePtrValue(std::move(item)));
     if (v8_out_value) {
       // This should never fail, since it's a newly-created array with
       // CreateDataProperty().

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Chromium Authors. All rights reserved.
+ * Copyright 2020 The Chromium Authors
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file.
  */
@@ -133,21 +133,23 @@ function createPaymentRequest(
     credentialId, totalAmount, withModifier, modifierAmount) {
   const challenge = new TextEncoder().encode('hello world');
   return new PaymentRequest(
-    [{supportedMethods: kPaymentMethodIdentifier,
-      data: {
-       action: 'authenticate',
-       credentialIds: [Uint8Array.from(atob(credentialId),
-                                       (b) => b.charCodeAt(0))],
-       timeout: 6000,
-       payeeOrigin: 'https://example-payee-origin.test',
-       challenge,
-       instrument: {
-        icon: window.location.origin + '/icon.png',
-        displayName: 'My card',
-       },
-     },
-    }],
-    createDetails(totalAmount, withModifier, modifierAmount));
+      [{
+        supportedMethods: kPaymentMethodIdentifier,
+        data: {
+          action: 'authenticate',
+          credentialIds:
+              [Uint8Array.from(atob(credentialId), (b) => b.charCodeAt(0))],
+          timeout: 6000,
+          payeeOrigin: 'https://example-payee-origin.test',
+          challenge,
+          instrument: {
+            icon: window.location.origin + '/icon.png',
+            displayName: 'My card',
+          },
+          rpId: 'a.com',
+        },
+      }],
+      createDetails(totalAmount, withModifier, modifierAmount));
 }
 
 /**

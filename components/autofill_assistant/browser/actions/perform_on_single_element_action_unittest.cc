@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include "components/autofill_assistant/browser/actions/mock_action_delegate.h"
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/dom_action.pb.h"
-#include "components/autofill_assistant/browser/web/element_finder.h"
+#include "components/autofill_assistant/browser/web/element_finder_result.h"
 #include "components/autofill_assistant/browser/web/element_store.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -94,10 +94,10 @@ TEST_F(PerformOnSingleElementActionTest, FailsIfElementDoesNotExist) {
 }
 
 TEST_F(PerformOnSingleElementActionTest, PerformsAndEnds) {
-  ElementFinder::Result element;
-  element.dom_object.object_data.object_id = "id";
+  ElementFinderResult element;
+  element.SetObjectId("id");
   mock_action_delegate_.GetElementStore()->AddElement(kClientId,
-                                                      element.dom_object);
+                                                      element.dom_object());
 
   EXPECT_CALL(
       callback_,
@@ -111,10 +111,10 @@ TEST_F(PerformOnSingleElementActionTest, PerformsAndEnds) {
 }
 
 TEST_F(PerformOnSingleElementActionTest, PerformsTimedAndEnds) {
-  ElementFinder::Result element;
-  element.dom_object.object_data.object_id = "id";
+  ElementFinderResult element;
+  element.SetObjectId("id");
   mock_action_delegate_.GetElementStore()->AddElement(kClientId,
-                                                      element.dom_object);
+                                                      element.dom_object());
 
   ProcessedActionProto capture;
   EXPECT_CALL(callback_, Run).WillOnce(testing::SaveArgPointee<0>(&capture));

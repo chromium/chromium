@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -73,10 +73,11 @@
    * @return {Array<string>}
    */
   listSteps() {
-    if (Array.isArray(this.UI_STEPS))
+    if (Array.isArray(this.UI_STEPS)) {
       return this.UI_STEPS.slice();
-    let result = [];
-    for (let [key, value] of Object.entries(this.UI_STEPS)) {
+    }
+    const result = [];
+    for (const [key, value] of Object.entries(this.UI_STEPS)) {
       result.push(value);
     }
     return result;
@@ -87,7 +88,7 @@
    * @return {string}
    */
   defaultUIStep() {
-    throw 'Element should define default UI state';
+    throw new Error('Element should define default UI state');
   },
 
   ready() {
@@ -107,8 +108,9 @@
   },
 
   onBeforeHide() {
-    if (this.uiStep)
+    if (this.uiStep) {
       this.hideUIStep_(this.uiStep);
+    }
     this.shown_ = false;
   },
 
@@ -125,15 +127,16 @@
    * current step).
    */
   applyToStepElements(func, step = this.uiStep) {
-    for (let element of this.stepElements_[step] || []) {
+    for (const element of this.stepElements_[step] || []) {
       func(element);
     }
   },
 
   setUIStep(step) {
     if (this.uiStep) {
-      if (this.uiStep == step)
+      if (this.uiStep == step) {
         return;
+      }
       this.hideUIStep_(this.uiStep);
     }
     this.uiStep = step;
@@ -145,7 +148,7 @@
       // Will execute from onBeforeShow.
       return;
     }
-    for (let element of this.stepElements_[step] || []) {
+    for (const element of this.stepElements_[step] || []) {
       cr.ui.login.invokePolymerMethod(element, 'onBeforeShow');
       element.hidden = false;
       // Trigger show() if element is an oobe-dialog
@@ -156,7 +159,7 @@
   },
 
   hideUIStep_(step) {
-    for (let element of this.stepElements_[step] || []) {
+    for (const element of this.stepElements_[step] || []) {
       cr.ui.login.invokePolymerMethod(element, 'onBeforeHide');
       element.hidden = true;
     }
@@ -170,11 +173,11 @@
   refreshStepBindings_() {
     this.stepElements_ = {};
     var matches = Polymer.dom(this.root).querySelectorAll('[for-step]');
-    for (let child of matches) {
-      let stepsList = child.getAttribute('for-step');
-      for (let stepChunk of stepsList.split(',')) {
-        let step = stepChunk.trim();
-        let list = this.stepElements_[step] || [];
+    for (const child of matches) {
+      const stepsList = child.getAttribute('for-step');
+      for (const stepChunk of stepsList.split(',')) {
+        const step = stepChunk.trim();
+        const list = this.stepElements_[step] || [];
         list.push(child);
         this.stepElements_[step] = list;
       }

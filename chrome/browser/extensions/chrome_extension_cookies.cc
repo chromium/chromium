@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,13 +9,18 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/extensions/chrome_extension_cookies_factory.h"
 #include "chrome/browser/net/profile_network_context_service.h"
+#include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_constants.h"
 #include "components/cookie_config/cookie_store_util.h"
+#include "components/prefs/pref_service.h"
+#include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/cookie_store_factory.h"
 #include "extensions/common/constants.h"
+#include "net/cookies/cookie_partition_key_collection.h"
+#include "net/first_party_sets/first_party_set_metadata.h"
 #include "services/network/cookie_manager.h"
 #include "services/network/restricted_cookie_manager.h"
 
@@ -69,9 +74,11 @@ void ChromeExtensionCookies::CreateRestrictedCookieManager(
 
   // Safe since |io_data_| is non-null so no IOData deletion is queued.
   content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&IOData::CreateRestrictedCookieManager,
-                                base::Unretained(io_data_.get()), origin,
-                                isolation_info, std::move(receiver)));
+      FROM_HERE,
+      base::BindOnce(
+          &IOData::ComputeFirstPartySetMetadataAndCreateRestrictedCookieManager,
+          base::Unretained(io_data_.get()), origin, isolation_info,
+          std::move(receiver)));
 }
 
 void ChromeExtensionCookies::ClearCookies(const GURL& origin,
@@ -115,10 +122,24 @@ ChromeExtensionCookies::IOData::~IOData() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 }
 
+void ChromeExtensionCookies::IOData::
+    ComputeFirstPartySetMetadataAndCreateRestrictedCookieManager(
+        const url::Origin& origin,
+        const net::IsolationInfo& isolation_info,
+        mojo::PendingReceiver<network::mojom::RestrictedCookieManager>
+            receiver) {
+  network::RestrictedCookieManager::ComputeFirstPartySetMetadata(
+      origin, GetOrCreateCookieStore(), isolation_info,
+      base::BindOnce(&IOData::CreateRestrictedCookieManager,
+                     weak_factory_.GetWeakPtr(), origin, isolation_info,
+                     std::move(receiver)));
+}
+
 void ChromeExtensionCookies::IOData::CreateRestrictedCookieManager(
     const url::Origin& origin,
     const net::IsolationInfo& isolation_info,
-    mojo::PendingReceiver<network::mojom::RestrictedCookieManager> receiver) {
+    mojo::PendingReceiver<network::mojom::RestrictedCookieManager> receiver,
+    net::FirstPartySetMetadata first_party_set_metadata) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
   restricted_cookie_managers_.Add(
@@ -127,7 +148,7 @@ void ChromeExtensionCookies::IOData::CreateRestrictedCookieManager(
           GetOrCreateCookieStore(), network_cookie_settings_, origin,
           isolation_info,
           /* null cookies_observer disables logging */
-          mojo::NullRemote()),
+          mojo::NullRemote(), std::move(first_party_set_metadata)),
       std::move(receiver));
 }
 

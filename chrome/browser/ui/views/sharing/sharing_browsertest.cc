@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -92,7 +92,7 @@ void SharingBrowserTest::Init(
       sharing_service_->GetMessageSenderForTesting()->GetFCMSenderForTesting();
   fake_web_push_sender_ = new FakeWebPushSender();
   sharing_fcm_sender->SetWebPushSenderForTesting(
-      base::WrapUnique(fake_web_push_sender_));
+      base::WrapUnique(fake_web_push_sender_.get()));
   sharing_fcm_sender->SetSharingMessageBridgeForTesting(
       &fake_sharing_message_bridge_);
 
@@ -152,7 +152,8 @@ void SharingBrowserTest::AddDeviceInfo(
           base::StrCat(
               {"testing_device_", base::NumberToString(fake_device_id)}),
           original_device.chrome_version(), original_device.sync_user_agent(),
-          original_device.device_type(),
+          original_device.device_type(), original_device.os_type(),
+          original_device.form_factor(),
           original_device.signin_scoped_device_id(), "Google",
           base::StrCat({"model", base::NumberToString(fake_device_id)}),
           original_device.full_hardware_class(),
@@ -179,13 +180,13 @@ std::unique_ptr<TestRenderViewContextMenu> SharingBrowserTest::InitContextMenu(
   params.link_text = base::ASCIIToUTF16(link_text);
   params.page_url = web_contents_->GetVisibleURL();
   params.source_type = ui::MenuSourceType::MENU_SOURCE_MOUSE;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   params.writing_direction_default = 0;
   params.writing_direction_left_to_right = 0;
   params.writing_direction_right_to_left = 0;
 #endif
   auto menu = std::make_unique<TestRenderViewContextMenu>(
-      *web_contents_->GetMainFrame(), params);
+      *web_contents_->GetPrimaryMainFrame(), params);
   menu->Init();
   return menu;
 }

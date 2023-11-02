@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "base/android/memory_pressure_listener_android.h"
 #include "base/android/unguessable_token_android.h"
 #include "base/check.h"
+#include "base/command_line.h"
 #include "base/lazy_instance.h"
 #include "base/unguessable_token.h"
 #include "content/child/child_thread_impl.h"

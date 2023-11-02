@@ -33,7 +33,7 @@ class LineLayoutBlockFlow;
 
 struct BidiStatus;
 
-enum ForceEllipsisOnLine { DoNotForceEllipsis, ForceEllipsis };
+enum ForceEllipsisOnLine { kDoNotForceEllipsis, kForceEllipsis };
 
 class RootInlineBox : public InlineFlowBox {
  public:
@@ -116,7 +116,7 @@ class RootInlineBox : public InlineFlowBox {
                            LayoutUnit ellipsis_width,
                            LayoutUnit logical_left_offset,
                            InlineBox** found_box,
-                           ForceEllipsisOnLine = DoNotForceEllipsis);
+                           ForceEllipsisOnLine = kDoNotForceEllipsis);
   // Return the position of the EllipsisBox or -1.
   LayoutUnit PlaceEllipsisBox(bool ltr,
                               LayoutUnit block_left_edge,
@@ -222,14 +222,14 @@ class RootInlineBox : public InlineFlowBox {
   // Where this line ended. The exact object and the position within that
   // object are stored so that we can create an InlineIterator beginning just
   // after the end of this line.
-  // RootInlineBox cannot have LineLayoutBox itself bacuse it consists of
+  // RootInlineBox cannot have LineLayoutBox itself because it consists of
   // WeakPersistent. Use LineBreakObj() to create LineLayoutBox.
   Member<LayoutObject> line_break_obj_;
-  scoped_refptr<BidiContext> line_break_context_;
-
   // Floats hanging off the line are pushed into this vector during layout. It
   // is only good for as long as the line has not been marked dirty.
   Member<HeapVector<Member<LayoutBox>>> floats_;
+
+  scoped_refptr<BidiContext> line_break_context_;
 
   LayoutUnit line_top_;
   LayoutUnit line_bottom_;

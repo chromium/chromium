@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <string>
 
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/common/signatures.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -38,16 +39,19 @@ MATCHER_P(SignatureIs,
   return false;
 }
 
+// The matcher argument is a FormStructure.
 MATCHER_P(SubmissionEventIsSameAs,
           expected_submission_event,
           std::string(negation ? "submission event isn't "
                                : "submission event is ") +
               std::to_string(static_cast<int>(expected_submission_event))) {
-  if (expected_submission_event == arg.get_submission_event_for_testing())
+  autofill::FormStructureTestApi test_api(
+      const_cast<autofill::FormStructure*>(&arg));
+  if (expected_submission_event == test_api.get_submission_event())
     return true;
 
-  *result_listener << "submission event is "
-                   << arg.get_submission_event_for_testing() << " instead";
+  *result_listener << "submission event is " << test_api.get_submission_event()
+                   << " instead";
   return false;
 }
 

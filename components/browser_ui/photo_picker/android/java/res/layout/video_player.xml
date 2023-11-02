@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2020 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
@@ -66,7 +68,7 @@
                     android:layout_height="24dp"
                     android:layout_marginEnd="8dp"
                     android:contentDescription="@string/accessibility_pause_video"
-                    app:srcCompat="@drawable/ic_fast_rewind_white_36dp" />
+                    app:srcCompat="@drawable/ic_fast_rewind_white_24dp" />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -78,7 +80,7 @@
                     android:layout_height="24dp"
                     android:layout_marginStart="8dp"
                     android:contentDescription="@string/accessibility_pause_video"
-                    app:srcCompat="@drawable/ic_fast_forward_white_36dp" />
+                    app:srcCompat="@drawable/ic_fast_forward_white_24dp" />
             </LinearLayout>
 
             <ImageView

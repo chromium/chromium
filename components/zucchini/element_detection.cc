@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include "components/zucchini/buildflags.h"
 #include "components/zucchini/disassembler.h"
 #include "components/zucchini/disassembler_no_op.h"
-#include "components/zucchini/patch_utils.h"
+#include "components/zucchini/version_info.h"
 
 #if BUILDFLAG(ENABLE_DEX)
 #include "components/zucchini/disassembler_dex.h"

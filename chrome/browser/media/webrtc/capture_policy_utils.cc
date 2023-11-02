@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,15 +6,21 @@
 
 #include "base/containers/cxx20_erase_vector.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/content_settings/browser/page_specific_content_settings.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/tab_modal_confirm_dialog.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog_delegate.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -33,14 +39,11 @@ struct RestrictedCapturePolicy {
 }  // namespace
 
 bool IsOriginInList(const GURL& request_origin,
-                    const base::Value* allowed_origins) {
-  if (!allowed_origins || !allowed_origins->is_list())
-    return false;
-
+                    const base::Value::List& allowed_origins) {
   // Though we are not technically a Content Setting, ContentSettingsPattern
   // aligns better than URLMatcher with the rules from:
   // https://chromeenterprise.google/policies/url-patterns/.
-  for (const auto& value : allowed_origins->GetList()) {
+  for (const auto& value : allowed_origins) {
     if (!value.is_string())
       continue;
     ContentSettingsPattern pattern =
@@ -101,6 +104,30 @@ AllowedScreenCaptureLevel GetAllowedCaptureLevel(const GURL& request_origin,
   return AllowedScreenCaptureLevel::kDisallowed;
 }
 
+bool IsGetDisplayMediaSetSelectAllScreensAllowed(
+    content::BrowserContext* context,
+    const GURL& url) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_CHROMEOS_ASH)
+  Profile* profile = Profile::FromBrowserContext(context);
+  if (!profile)
+    return false;
+  HostContentSettingsMap* host_content_settings_map =
+      HostContentSettingsMapFactory::GetForProfile(profile);
+  if (!host_content_settings_map)
+    return false;
+  const base::Value auto_accept_enabled =
+      host_content_settings_map->GetWebsiteSetting(
+          url, url,
+          ContentSettingsType::GET_DISPLAY_MEDIA_SET_SELECT_ALL_SCREENS,
+          /*info=*/nullptr);
+  return auto_accept_enabled.is_int() &&
+         auto_accept_enabled.GetInt() == ContentSetting::CONTENT_SETTING_ALLOW;
+#else
+  // This API is currently only available on ChromeOS.
+  return false;
+#endif
+}
+
 DesktopMediaList::WebContentsFilter GetIncludableWebContentsFilter(
     const GURL& request_origin,
     AllowedScreenCaptureLevel capture_level) {
@@ -144,7 +171,7 @@ void FilterMediaList(std::vector<DesktopMediaList::Type>& media_types,
       });
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 class CaptureTerminatedDialogDelegate : public TabModalConfirmDialogDelegate {
  public:
   explicit CaptureTerminatedDialogDelegate(content::WebContents* web_contents)
@@ -164,7 +191,7 @@ class CaptureTerminatedDialogDelegate : public TabModalConfirmDialogDelegate {
 #endif
 
 void ShowCaptureTerminatedDialog(content::WebContents* contents) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   TabModalConfirmDialog::Create(
       std::make_unique<CaptureTerminatedDialogDelegate>(contents), contents);
 #endif

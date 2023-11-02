@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,11 +12,13 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/default_clock.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/engagement/history_aware_site_engagement_service.h"
@@ -85,7 +87,7 @@ class SiteEngagementChangeWaiter : public content_settings::Observer {
  private:
   void Proceed() { run_loop_.Quit(); }
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   base::RunLoop run_loop_;
 };
 
@@ -158,7 +160,7 @@ class ObserverTester : public SiteEngagementObserver {
   }
 
  private:
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
   GURL url_;
   double score_;
   EngagementType type_;
@@ -192,6 +194,12 @@ class SiteEngagementServiceTest : public ChromeRenderViewHostTestHarness {
   void TearDown() override {
     service_->Shutdown();
     ChromeRenderViewHostTestHarness::TearDown();
+  }
+
+  bool IsEngagementAtLeast(const GURL& url,
+                           blink::mojom::EngagementLevel level) {
+    double score = service_->GetScore(url);
+    return SiteEngagementService::IsEngagementAtLeast(score, level);
   }
 
   void NavigateWithTransitionAndExpectHigherScore(
@@ -272,7 +280,7 @@ class SiteEngagementServiceTest : public ChromeRenderViewHostTestHarness {
   }
 
   base::ScopedTempDir temp_dir_;
-  SiteEngagementService* service_;
+  raw_ptr<SiteEngagementService> service_;
   base::SimpleTestClock clock_;
 };
 
@@ -530,7 +538,7 @@ TEST_F(SiteEngagementServiceTest, LastShortcutLaunch) {
 }
 
 // Disabled due to flakiness on Builder Linux Tests. crbug.com/1137759
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_CheckHistograms DISABLED_CheckHistograms
 #else
 #define MAYBE_CheckHistograms CheckHistograms
@@ -555,8 +563,6 @@ TEST_F(SiteEngagementServiceTest, MAYBE_CheckHistograms) {
                               0);
   histograms.ExpectTotalCount(
       SiteEngagementMetrics::kOriginsWithMaxEngagementHistogram, 0);
-  histograms.ExpectTotalCount(
-      SiteEngagementMetrics::kOriginsWithMaxDailyEngagementHistogram, 0);
   histograms.ExpectTotalCount(SiteEngagementMetrics::kEngagementTypeHistogram,
                               0);
 
@@ -617,8 +623,6 @@ TEST_F(SiteEngagementServiceTest, MAYBE_CheckHistograms) {
                               1);
   histograms.ExpectUniqueSample(
       SiteEngagementMetrics::kOriginsWithMaxEngagementHistogram, 0, 2);
-  histograms.ExpectUniqueSample(
-      SiteEngagementMetrics::kOriginsWithMaxDailyEngagementHistogram, 0, 2);
   histograms.ExpectTotalCount(SiteEngagementMetrics::kEngagementTypeHistogram,
                               6);
   histograms.ExpectBucketCount(SiteEngagementMetrics::kEngagementTypeHistogram,
@@ -681,8 +685,6 @@ TEST_F(SiteEngagementServiceTest, MAYBE_CheckHistograms) {
                               4);
   histograms.ExpectUniqueSample(
       SiteEngagementMetrics::kOriginsWithMaxEngagementHistogram, 0, 3);
-  histograms.ExpectUniqueSample(
-      SiteEngagementMetrics::kOriginsWithMaxDailyEngagementHistogram, 0, 3);
   histograms.ExpectTotalCount(SiteEngagementMetrics::kEngagementTypeHistogram,
                               12);
   histograms.ExpectBucketCount(SiteEngagementMetrics::kEngagementTypeHistogram,
@@ -753,10 +755,6 @@ TEST_F(SiteEngagementServiceTest, MAYBE_CheckHistograms) {
                               7);
   histograms.ExpectUniqueSample(
       SiteEngagementMetrics::kOriginsWithMaxEngagementHistogram, 0, 4);
-  histograms.ExpectBucketCount(
-      SiteEngagementMetrics::kOriginsWithMaxDailyEngagementHistogram, 0, 3);
-  histograms.ExpectBucketCount(
-      SiteEngagementMetrics::kOriginsWithMaxDailyEngagementHistogram, 1, 1);
   histograms.ExpectTotalCount(SiteEngagementMetrics::kEngagementTypeHistogram,
                               24);
   histograms.ExpectBucketCount(SiteEngagementMetrics::kEngagementTypeHistogram,
@@ -1217,18 +1215,14 @@ TEST_F(SiteEngagementServiceTest, EngagementLevel) {
             service_->GetEngagementLevel(url1));
   EXPECT_EQ(blink::mojom::EngagementLevel::NONE,
             service_->GetEngagementLevel(url2));
-  EXPECT_TRUE(
-      service_->IsEngagementAtLeast(url1, blink::mojom::EngagementLevel::NONE));
-  EXPECT_FALSE(service_->IsEngagementAtLeast(
-      url1, blink::mojom::EngagementLevel::MINIMAL));
+  EXPECT_TRUE(IsEngagementAtLeast(url1, blink::mojom::EngagementLevel::NONE));
   EXPECT_FALSE(
-      service_->IsEngagementAtLeast(url1, blink::mojom::EngagementLevel::LOW));
-  EXPECT_FALSE(service_->IsEngagementAtLeast(
-      url1, blink::mojom::EngagementLevel::MEDIUM));
+      IsEngagementAtLeast(url1, blink::mojom::EngagementLevel::MINIMAL));
+  EXPECT_FALSE(IsEngagementAtLeast(url1, blink::mojom::EngagementLevel::LOW));
   EXPECT_FALSE(
-      service_->IsEngagementAtLeast(url1, blink::mojom::EngagementLevel::HIGH));
-  EXPECT_FALSE(
-      service_->IsEngagementAtLeast(url1, blink::mojom::EngagementLevel::MAX));
+      IsEngagementAtLeast(url1, blink::mojom::EngagementLevel::MEDIUM));
+  EXPECT_FALSE(IsEngagementAtLeast(url1, blink::mojom::EngagementLevel::HIGH));
+  EXPECT_FALSE(IsEngagementAtLeast(url1, blink::mojom::EngagementLevel::MAX));
 
   // Bring url2 to MINIMAL engagement.
   service_->AddPointsForTesting(url2, 0.5);
@@ -1236,18 +1230,14 @@ TEST_F(SiteEngagementServiceTest, EngagementLevel) {
             service_->GetEngagementLevel(url1));
   EXPECT_EQ(blink::mojom::EngagementLevel::MINIMAL,
             service_->GetEngagementLevel(url2));
+  EXPECT_TRUE(IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::NONE));
   EXPECT_TRUE(
-      service_->IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::NONE));
-  EXPECT_TRUE(service_->IsEngagementAtLeast(
-      url2, blink::mojom::EngagementLevel::MINIMAL));
+      IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::MINIMAL));
+  EXPECT_FALSE(IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::LOW));
   EXPECT_FALSE(
-      service_->IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::LOW));
-  EXPECT_FALSE(service_->IsEngagementAtLeast(
-      url2, blink::mojom::EngagementLevel::MEDIUM));
-  EXPECT_FALSE(
-      service_->IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::HIGH));
-  EXPECT_FALSE(
-      service_->IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::MAX));
+      IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::MEDIUM));
+  EXPECT_FALSE(IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::HIGH));
+  EXPECT_FALSE(IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::MAX));
 
   // Bring url1 to LOW engagement.
   service_->AddPointsForTesting(url1, 1.0);
@@ -1255,18 +1245,14 @@ TEST_F(SiteEngagementServiceTest, EngagementLevel) {
             service_->GetEngagementLevel(url1));
   EXPECT_EQ(blink::mojom::EngagementLevel::MINIMAL,
             service_->GetEngagementLevel(url2));
+  EXPECT_TRUE(IsEngagementAtLeast(url1, blink::mojom::EngagementLevel::NONE));
   EXPECT_TRUE(
-      service_->IsEngagementAtLeast(url1, blink::mojom::EngagementLevel::NONE));
-  EXPECT_TRUE(service_->IsEngagementAtLeast(
-      url1, blink::mojom::EngagementLevel::MINIMAL));
-  EXPECT_TRUE(
-      service_->IsEngagementAtLeast(url1, blink::mojom::EngagementLevel::LOW));
-  EXPECT_FALSE(service_->IsEngagementAtLeast(
-      url1, blink::mojom::EngagementLevel::MEDIUM));
+      IsEngagementAtLeast(url1, blink::mojom::EngagementLevel::MINIMAL));
+  EXPECT_TRUE(IsEngagementAtLeast(url1, blink::mojom::EngagementLevel::LOW));
   EXPECT_FALSE(
-      service_->IsEngagementAtLeast(url1, blink::mojom::EngagementLevel::HIGH));
-  EXPECT_FALSE(
-      service_->IsEngagementAtLeast(url1, blink::mojom::EngagementLevel::MAX));
+      IsEngagementAtLeast(url1, blink::mojom::EngagementLevel::MEDIUM));
+  EXPECT_FALSE(IsEngagementAtLeast(url1, blink::mojom::EngagementLevel::HIGH));
+  EXPECT_FALSE(IsEngagementAtLeast(url1, blink::mojom::EngagementLevel::MAX));
 
   // Bring url2 to MEDIUM engagement.
   service_->AddPointsForTesting(url2, 4.5);
@@ -1274,18 +1260,13 @@ TEST_F(SiteEngagementServiceTest, EngagementLevel) {
             service_->GetEngagementLevel(url1));
   EXPECT_EQ(blink::mojom::EngagementLevel::MEDIUM,
             service_->GetEngagementLevel(url2));
+  EXPECT_TRUE(IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::NONE));
   EXPECT_TRUE(
-      service_->IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::NONE));
-  EXPECT_TRUE(service_->IsEngagementAtLeast(
-      url2, blink::mojom::EngagementLevel::MINIMAL));
-  EXPECT_TRUE(
-      service_->IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::LOW));
-  EXPECT_TRUE(service_->IsEngagementAtLeast(
-      url2, blink::mojom::EngagementLevel::MEDIUM));
-  EXPECT_FALSE(
-      service_->IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::HIGH));
-  EXPECT_FALSE(
-      service_->IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::MAX));
+      IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::MINIMAL));
+  EXPECT_TRUE(IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::LOW));
+  EXPECT_TRUE(IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::MEDIUM));
+  EXPECT_FALSE(IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::HIGH));
+  EXPECT_FALSE(IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::MAX));
 
   // Bring url2 to HIGH engagement.
   for (int i = 0; i < 9; ++i) {
@@ -1296,18 +1277,13 @@ TEST_F(SiteEngagementServiceTest, EngagementLevel) {
   EXPECT_EQ(blink::mojom::EngagementLevel::HIGH,
             service_->GetEngagementLevel(url2));
 
+  EXPECT_TRUE(IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::NONE));
   EXPECT_TRUE(
-      service_->IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::NONE));
-  EXPECT_TRUE(service_->IsEngagementAtLeast(
-      url2, blink::mojom::EngagementLevel::MINIMAL));
-  EXPECT_TRUE(
-      service_->IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::LOW));
-  EXPECT_TRUE(service_->IsEngagementAtLeast(
-      url2, blink::mojom::EngagementLevel::MEDIUM));
-  EXPECT_TRUE(
-      service_->IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::HIGH));
-  EXPECT_FALSE(
-      service_->IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::MAX));
+      IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::MINIMAL));
+  EXPECT_TRUE(IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::LOW));
+  EXPECT_TRUE(IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::MEDIUM));
+  EXPECT_TRUE(IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::HIGH));
+  EXPECT_FALSE(IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::MAX));
 
   // Bring url2 to MAX engagement.
   for (int i = 0; i < 10; ++i) {
@@ -1317,18 +1293,13 @@ TEST_F(SiteEngagementServiceTest, EngagementLevel) {
   }
   EXPECT_EQ(blink::mojom::EngagementLevel::MAX,
             service_->GetEngagementLevel(url2));
+  EXPECT_TRUE(IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::NONE));
   EXPECT_TRUE(
-      service_->IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::NONE));
-  EXPECT_TRUE(service_->IsEngagementAtLeast(
-      url2, blink::mojom::EngagementLevel::MINIMAL));
-  EXPECT_TRUE(
-      service_->IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::LOW));
-  EXPECT_TRUE(service_->IsEngagementAtLeast(
-      url2, blink::mojom::EngagementLevel::MEDIUM));
-  EXPECT_TRUE(
-      service_->IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::HIGH));
-  EXPECT_TRUE(
-      service_->IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::MAX));
+      IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::MINIMAL));
+  EXPECT_TRUE(IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::LOW));
+  EXPECT_TRUE(IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::MEDIUM));
+  EXPECT_TRUE(IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::HIGH));
+  EXPECT_TRUE(IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::MAX));
 }
 
 TEST_F(SiteEngagementServiceTest, Observers) {

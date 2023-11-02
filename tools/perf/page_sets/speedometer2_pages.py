@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -34,11 +34,11 @@ class Speedometer2Story(press_story.PressStory):
   NAME = 'Speedometer2'
 
   def __init__(self,
-               ps,
+               page_set,
                should_filter_suites,
                filtered_suite_names=None,
                iterations=None):
-    super(Speedometer2Story, self).__init__(ps)
+    super(Speedometer2Story, self).__init__(page_set)
     self._should_filter_suites = should_filter_suites
     self._filtered_suite_names = filtered_suite_names
     self._iterations = iterations
@@ -68,11 +68,13 @@ class Speedometer2Story(press_story.PressStory):
       iterationCount = self._iterations
 
     if self._should_filter_suites:
-      action_runner.ExecuteJavaScript("""
+      action_runner.ExecuteJavaScript(
+          """
         Suites.forEach(function(suite) {
-          suite.disabled = {{ filtered_suites }}.indexOf(suite.name) < 0;
+          suite.disabled = {{ filtered_suites }}.indexOf(suite.name) == -1;
         });
-      """, filtered_suites=self._filtered_suite_names)
+      """,
+          filtered_suites=self._filtered_suite_names)
 
     self._enabled_suites = action_runner.EvaluateJavaScript("""
       (function() {

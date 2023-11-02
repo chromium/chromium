@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,9 +31,9 @@ TEST(ProcessMitigationsWin32kTest, CheckWin8LockDownFailure) {
   test_policy_command += std::to_wstring(TESTPOLICY_WIN32K);
 
   TestRunner runner;
-  sandbox::TargetPolicy* policy = runner.GetPolicy();
+  sandbox::TargetConfig* config = runner.GetPolicy()->GetConfig();
 
-  EXPECT_EQ(policy->SetProcessMitigations(MITIGATION_WIN32K_DISABLE),
+  EXPECT_EQ(config->SetProcessMitigations(MITIGATION_WIN32K_DISABLE),
             SBOX_ALL_OK);
   EXPECT_NE(SBOX_TEST_SUCCEEDED, runner.RunTest(test_policy_command.c_str()));
 }
@@ -51,11 +51,11 @@ TEST(ProcessMitigationsWin32kTest, CheckWin8LockDownSuccess) {
   test_policy_command += std::to_wstring(TESTPOLICY_WIN32K);
 
   TestRunner runner;
-  sandbox::TargetPolicy* policy = runner.GetPolicy();
-  EXPECT_EQ(policy->SetProcessMitigations(MITIGATION_WIN32K_DISABLE),
+  sandbox::TargetConfig* config = runner.GetPolicy()->GetConfig();
+  EXPECT_EQ(config->SetProcessMitigations(MITIGATION_WIN32K_DISABLE),
             SBOX_ALL_OK);
-  EXPECT_EQ(policy->AddRule(sandbox::TargetPolicy::SUBSYS_WIN32K_LOCKDOWN,
-                            sandbox::TargetPolicy::FAKE_USER_GDI_INIT, nullptr),
+  EXPECT_EQ(config->AddRule(sandbox::SubSystem::kWin32kLockdown,
+                            sandbox::Semantics::kFakeGdiInit, nullptr),
             sandbox::SBOX_ALL_OK);
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(test_policy_command.c_str()));
 }

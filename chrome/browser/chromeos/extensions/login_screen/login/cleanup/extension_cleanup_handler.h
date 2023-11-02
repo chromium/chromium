@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_LOGIN_SCREEN_LOGIN_CLEANUP_EXTENSION_CLEANUP_HANDLER_H_
 
 #include "base/callback.h"
-#include "base/no_destructor.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/cleanup_handler.h"
 #include "chrome/browser/extensions/extension_service.h"
 
@@ -41,11 +41,11 @@ class ExtensionCleanupHandler : public CleanupHandler {
 
   std::unordered_set<std::string> GetCleanupExemptExtensions();
 
-  Profile* profile_;
-  extensions::ExtensionService* extension_service_;
+  raw_ptr<Profile> profile_ = nullptr;
+  std::vector<std::string> errors_;
+  raw_ptr<extensions::ExtensionService> extension_service_ = nullptr;
   CleanupHandlerCallback callback_;
   std::unordered_set<std::string> extensions_to_be_uninstalled_;
-  bool wait_for_uninstall_ = false;
 };
 
 }  // namespace chromeos

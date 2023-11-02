@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -58,12 +58,19 @@ class Operation : public RequestManager::HandlerInterface {
   bool SendEvent(int request_id,
                  extensions::events::HistogramValue histogram_value,
                  const std::string& event_name,
-                 std::vector<base::Value> event_args);
+                 base::Value::List event_args);
 
   ProvidedFileSystemInfo file_system_info_;
 
  private:
-  DispatchEventImplCallback dispatch_event_impl_;
+  using DispatchEventInternalCallback =
+      base::RepeatingCallback<bool(ProviderId provider_id,
+                                   const std::string& file_system_id,
+                                   int request_id,
+                                   extensions::events::HistogramValue,
+                                   const std::string&,
+                                   base::Value::List)>;
+  DispatchEventInternalCallback dispatch_event_impl_;
 };
 
 }  // namespace operations

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,7 @@
 #include "chrome/browser/local_discovery/service_discovery_device_lister.h"
 #include "chrome/browser/local_discovery/service_discovery_shared_client.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/device_event_log/device_event_log.h"
 
 namespace ash {
 
@@ -139,17 +140,28 @@ std::string ZeroconfPrinterId(const ServiceDescription& service,
 // Attempt to fill |detected_printer| using the information in
 // |service_description| and |metadata|.  Return true on success, false on
 // failure.
-bool ConvertToPrinter(
-    const std::string& service_type,
-    const ServiceDescription& service_description,
-    const ParsedMetadata& metadata,
-    chromeos::PrinterDetector::DetectedPrinter* detected_printer) {
+bool ConvertToPrinter(const std::string& service_type,
+                      const ServiceDescription& service_description,
+                      const ParsedMetadata& metadata,
+                      PrinterDetector::DetectedPrinter* detected_printer) {
   // If we don't have the minimum information needed to attempt a setup, fail.
   // Also fail on a port of 0, as this is used to indicate that the service
   // doesn't *actually* exist, the device just wants to guard the name.
-  if (service_description.service_name.empty() ||
-      service_description.ip_address.empty() ||
-      (service_description.address.port() == 0)) {
+  if (service_description.service_name.empty()) {
+    PRINTER_LOG(ERROR) << "Found zeroconf " << service_type
+                       << " printer with missing service name.";
+    return false;
+  }
+  if (service_description.ip_address.empty()) {
+    PRINTER_LOG(ERROR) << "Found zeroconf " << service_type
+                       << " printer named '" << service_description.service_name
+                       << "' with missing IP address.";
+    return false;
+  }
+  if (service_description.address.port() == 0) {
+    PRINTER_LOG(ERROR) << "Found zeroconf " << service_type
+                       << " printer named '" << service_description.service_name
+                       << "' with invalid port.";
     return false;
   }
 
@@ -177,15 +189,19 @@ bool ConvertToPrinter(
   } else {
     // Since we only register for these services, we should never get back
     // a service other than the ones above.
-    NOTREACHED() << "Zeroconf printer with unknown service type"
+    NOTREACHED() << "Zeroconf printer with unknown service type "
                  << service_description.service_type();
     return false;
   }
 
   if (!uri.SetHostEncoded(service_description.address.HostForURL()) ||
       !uri.SetPort(service_description.address.port()) ||
-      !uri.SetPathEncoded("/" + rp) || !printer.SetUri(uri))
+      !uri.SetPathEncoded("/" + rp) || !printer.SetUri(uri)) {
+    PRINTER_LOG(ERROR) << "Zeroconf printer type " << service_type << " named '"
+                       << service_description.instance_name()
+                       << "' has invalid uri: " << uri.GetNormalized();
     return false;
+  }
 
   // Per the IPP Everywhere Standard 5100.14-2013, section 4.2.1, IPP
   // everywhere-capable printers advertise services prefixed with "_print"
@@ -225,6 +241,10 @@ bool ConvertToPrinter(
           [](base::StringPiece s) { return base::ToLowerASCII(s); });
     }
   }
+
+  PRINTER_LOG(EVENT) << "Found zeroconf " << service_type << " printer named '"
+                     << service_description.instance_name() << "' at "
+                     << uri.GetNormalized();
   return true;
 }
 
@@ -294,6 +314,8 @@ class ZeroconfPrinterDetectorImpl : public ZeroconfPrinterDetector {
     auto& service_type_map = printers_[service_type];
     auto it = service_type_map.find(service_description.instance_name());
     if (it != service_type_map.end()) {
+      PRINTER_LOG(EVENT) << "Removed zeroconf printer type " << service_type
+                         << " named " << service_name;
       service_type_map.erase(it);
       if (on_printers_found_callback_) {
         on_printers_found_callback_.Run(GetPrintersLocked());

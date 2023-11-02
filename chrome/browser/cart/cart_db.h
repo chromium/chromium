@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 
 namespace content {
@@ -19,7 +20,7 @@ class ChromeCartContentProto;
 }  // namespace cart_db
 
 template <typename T>
-class ProfileProtoDB;
+class SessionProtoDB;
 
 class CartDB {
  public:
@@ -62,7 +63,7 @@ class CartDB {
                              OperationCallback callback);
 
  private:
-  ProfileProtoDB<cart_db::ChromeCartContentProto>* proto_db_;
+  raw_ptr<SessionProtoDB<cart_db::ChromeCartContentProto>> proto_db_;
   base::WeakPtrFactory<CartDB> weak_ptr_factory_{this};
 };
 

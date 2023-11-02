@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,17 +38,6 @@ ProjectorController* ProjectorController::Get() {
 bool ProjectorController::AreExtendedProjectorFeaturesDisabled() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   return command_line->HasSwitch(kExtendedProjectorFeaturesDisabled);
-}
-
-ProjectorController::ScopedInstanceResetterForTest::
-    ScopedInstanceResetterForTest()
-    : controller_(g_instance) {
-  g_instance = nullptr;
-}
-
-ProjectorController::ScopedInstanceResetterForTest::
-    ~ScopedInstanceResetterForTest() {
-  g_instance = controller_;
 }
 
 }  // namespace ash

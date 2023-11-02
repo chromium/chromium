@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,7 +42,7 @@ ScopedTestMountPoint::~ScopedTestMountPoint() {
     if (file_manager::VolumeManager::Get(profile_)) {
       file_manager::VolumeManager::Get(profile_)
           ->RemoveVolumeForTesting(  // IN-TEST
-              temp_dir_.GetPath(), volume_type_, chromeos::DEVICE_TYPE_UNKNOWN,
+              temp_dir_.GetPath(), volume_type_, DeviceType::kUnknown,
               /*read_only=*/false);
     }
   }
@@ -62,7 +62,7 @@ void ScopedTestMountPoint::Mount(Profile* profile) {
                                 base::FilePath(name_));
   if (file_manager::VolumeManager::Get(profile_)) {
     file_manager::VolumeManager::Get(profile_)->AddVolumeForTesting(  // IN-TEST
-        temp_dir_.GetPath(), volume_type_, chromeos::DEVICE_TYPE_UNKNOWN,
+        temp_dir_.GetPath(), volume_type_, DeviceType::kUnknown,
         /*read_only=*/false);
   }
 }

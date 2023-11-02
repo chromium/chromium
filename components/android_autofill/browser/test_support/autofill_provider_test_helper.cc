@@ -1,9 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/ranges/algorithm.h"
 #include "components/android_autofill/browser/test_support/jni_headers/AutofillProviderTestHelper_jni.h"
 
+#include <iterator>
 #include <string>
 
 #include "base/android/jni_array.h"
@@ -39,7 +41,7 @@ AutofillManager* ToMainFrameAutofillManager(
       content::WebContents::FromJavaWebContents(jweb_contents);
   CHECK(web_contents);
   AutofillManager* autofill_manager =
-      GetAutofillManager(web_contents, web_contents->GetMainFrame());
+      GetAutofillManager(web_contents, web_contents->GetPrimaryMainFrame());
   CHECK(autofill_manager);
   return autofill_manager;
 }
@@ -80,7 +82,7 @@ JNI_AutofillProviderTestHelper_SimulateMainFrameAutofillServerResponseForTesting
     for (size_t i = 0; i < field_ids.size(); ++i) {
       for (auto form_field_data : formData.fields) {
         if (form_field_data.id_attribute == field_ids[i]) {
-          autofill::test::AddFieldSuggestionToForm(
+          autofill::test::AddFieldPredictionToForm(
               form_field_data,
               static_cast<autofill::ServerFieldType>(field_types[i]),
               form_suggestion);
@@ -135,8 +137,15 @@ JNI_AutofillProviderTestHelper_SimulateMainFramePredictionsAutofillServerRespons
     for (size_t i = 0; i < field_ids.size(); ++i) {
       for (auto form_field_data : formData.fields) {
         if (form_field_data.id_attribute == field_ids[i]) {
+          std::vector<ServerFieldType> server_field_types(
+              field_types[i].size());
+          base::ranges::transform(field_types[i],
+                                  std::back_inserter(server_field_types),
+                                  [](int type) -> ServerFieldType {
+                                    return ServerFieldType(type);
+                                  });
           autofill::test::AddFieldPredictionsToForm(
-              form_field_data, field_types[i], form_suggestion);
+              form_field_data, server_field_types, form_suggestion);
           found_fields_count++;
           break;
         }

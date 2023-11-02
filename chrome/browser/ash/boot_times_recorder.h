@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include "base/atomic_sequence_num.h"
 #include "base/callback_forward.h"
-#include "base/compiler_specific.h"
 #include "base/scoped_multi_source_observation.h"
 #include "chromeos/metrics/login_event_recorder.h"
 #include "content/public/browser/notification_observer.h"

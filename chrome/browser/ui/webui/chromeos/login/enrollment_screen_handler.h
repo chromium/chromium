@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,8 @@
 #include <string>
 #include <vector>
 
+#include "base/scoped_observation.h"
+#include "base/values.h"
 #include "chrome/browser/ash/login/enrollment/enrollment_screen_view.h"
 #include "chrome/browser/ash/login/enrollment/enterprise_enrollment_helper.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
@@ -19,14 +21,13 @@
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/network_state_informer.h"
-#include "net/base/net_errors.h"
 #include "net/cookies/canonical_cookie.h"
 
 namespace chromeos {
 class CookieWaiter;
 
 // Possible error states of the Active Directory screen. Must be in the same
-// order as ACTIVE_DIRECTORY_ERROR_STATE enum values.
+// order as ActiveDirectoryErrorState ( in enterprise_enrollment.js ) values.
 enum class ActiveDirectoryErrorState {
   NONE = 0,
   MACHINE_NAME_INVALID = 1,
@@ -59,7 +60,6 @@ class EnrollmentScreenHandler
   using TView = EnrollmentScreenView;
 
   EnrollmentScreenHandler(
-      JSCallsContainer* js_calls_container,
       const scoped_refptr<NetworkStateInformer>& network_state_informer,
       ErrorScreen* error_screen);
 
@@ -78,14 +78,16 @@ class EnrollmentScreenHandler
   void SetEnterpriseDomainInfo(const std::string& manager,
                                const std::u16string& device_type) override;
   void SetFlowType(FlowType flow_type) override;
+  void SetGaiaButtonsType(GaiaButtonsType buttons_type) override;
   void Show() override;
   void Hide() override;
   void Bind(ash::EnrollmentScreen* screen) override;
   void Unbind() override;
   void ShowSigninScreen() override;
+  void ShowSkipConfirmationDialog() override;
   void ShowUserError(UserErrorType error_type,
                      const std::string& email) override;
-  void ShowEnrollmentCloudReadyNotAllowedError() override;
+  void ShowEnrollmentDuringTrialNotAllowedError() override;
   void ShowActiveDirectoryScreen(const std::string& domain_join_config,
                                  const std::string& machine_name,
                                  const std::string& username,
@@ -100,27 +102,28 @@ class EnrollmentScreenHandler
   void ShowOtherError(
       EnterpriseEnrollmentHelper::OtherError error_code) override;
   void Shutdown() override;
-  void SetIsBrandedBuild(bool is_branded) override;
 
   // Implements BaseScreenHandler:
-  void Initialize() override;
+  void InitializeDeprecated() override;
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void GetAdditionalParameters(base::DictionaryValue* parameters) override;
+  void GetAdditionalParameters(base::Value::Dict* parameters) override;
 
   // Implements NetworkStateInformer::NetworkStateInformerObserver
   void UpdateState(NetworkError::ErrorReason reason) override;
 
-  void ContinueAuthenticationWhenCookiesAvailable(const std::string& user);
+  void ContinueAuthenticationWhenCookiesAvailable(const std::string& user,
+                                                  int license_type);
   void OnCookieWaitTimeout();
 
  private:
   // Handlers for WebUI messages.
   void HandleToggleFakeEnrollment();
   void HandleClose(const std::string& reason);
-  void HandleCompleteLogin(const std::string& user);
+  void HandleCompleteLogin(const std::string& user, int license_type);
   void OnGetCookiesForCompleteLogin(
       const std::string& user,
+      int license_type,
       const net::CookieAccessResultList& cookies,
       const net::CookieAccessResultList& excluded_cookies);
   void HandleAdCompleteLogin(const std::string& machine_name,
@@ -157,11 +160,23 @@ class EnrollmentScreenHandler
   // Display the given i18n string as a progress message.
   void ShowWorking(int message_id);
 
-  // Shows the screen.
+  // Shows the screen. Asynchronous for oauth-based enrollment.
   void DoShow();
 
-  // Shows the screen.
+  // Shows oauth-based enrollment screen using the given sign-in partition name.
   void DoShowWithPartition(const std::string& partition_name);
+
+  // Shows the screen with the given data dictionary.
+  void DoShowWithData(base::Value::Dict screen_data);
+
+  // Screen data to be passed to web ui for attestation enrollment.
+  base::Value::Dict ScreenDataForAttestationEnrollment();
+
+  // Screen data to be passed to web ui for gaia oauth-based enrollment.
+  base::Value::Dict ScreenDataForOAuthEnrollment();
+
+  // Screen data to be passed to web ui for all enrollment modes.
+  base::Value::Dict ScreenDataCommon();
 
   // Returns true if current visible screen is the enrollment sign-in page.
   bool IsOnEnrollmentScreen();
@@ -184,6 +199,8 @@ class EnrollmentScreenHandler
   // GAIA flow type parameter that is set to authenticator.
   FlowType flow_type_;
 
+  GaiaButtonsType gaia_buttons_type_;
+
   // Active Directory configuration in the form of encrypted binary data.
   std::string active_directory_domain_join_config_;
 
@@ -193,16 +210,17 @@ class EnrollmentScreenHandler
   // True if screen was not shown yet.
   bool first_show_ = true;
 
-  // Whether we should handle network errors on enrollment screen.
-  // True when signin screen step is shown.
-  bool observe_network_failure_ = false;
-
   // Set true when chrome is being restarted to pick up enrollment changes. The
   // renderer processes will be destroyed and can no longer be talked to.
   bool shutdown_ = false;
 
   // Network state informer used to keep signin screen up.
   scoped_refptr<NetworkStateInformer> network_state_informer_;
+
+  // Used to control observation of network errors on enrollment screen
+  // depending on whenever signin screen is shown.
+  base::ScopedObservation<NetworkStateInformer, NetworkStateInformerObserver>
+      scoped_network_observation_{this};
 
   ErrorScreen* error_screen_ = nullptr;
   ash::EnrollmentScreen* screen_ = nullptr;

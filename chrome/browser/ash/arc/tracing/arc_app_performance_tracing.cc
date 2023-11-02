@@ -1,14 +1,21 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing.h"
 
+#include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
+#include "ash/components/arc/arc_features.h"
+#include "ash/components/arc/arc_util.h"
+#include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/components/arc/session/arc_service_manager.h"
+#include "ash/constants/ash_features.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/ash/app_restore/arc_ghost_window_shell_surface.h"
 #include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing_custom_session.h"
 #include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing_session.h"
 #include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing_uma_session.h"
@@ -18,20 +25,19 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs_factory.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/app_list/arc/arc_package_syncable_service.h"
-#include "components/arc/arc_browser_context_keyed_service_factory_base.h"
-#include "components/arc/arc_features.h"
-#include "components/arc/arc_util.h"
-#include "components/arc/session/arc_bridge_service.h"
-#include "components/arc/session/arc_service_manager.h"
+#include "components/app_restore/window_properties.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
 #include "components/exo/wm_helper.h"
 #include "components/sync/base/passphrase_enums.h"
-#include "components/sync/base/sync_prefs.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
 #include "ui/aura/window.h"
+
+// Enable VLOG level 1.
+#undef ENABLED_VLOG_LEVEL
+#define ENABLED_VLOG_LEVEL 1
 
 namespace arc {
 
@@ -60,6 +66,7 @@ class ArcAppPerformanceTracingFactory
   friend base::DefaultSingletonTraits<ArcAppPerformanceTracingFactory>;
   ArcAppPerformanceTracingFactory() {
     DependsOn(ArcAppListPrefsFactory::GetInstance());
+    // TODO(crbug.com/1330894): This should probably depend on SyncService.
   }
   ~ArcAppPerformanceTracingFactory() override = default;
 };
@@ -206,6 +213,10 @@ void ArcAppPerformanceTracing::OnWindowActivated(ActivationReason reason,
   if (arc::GetWindowTaskId(gained_active) <= 0)
     return;
 
+  // Ghost window is not an actual app window.
+  if (gained_active->GetProperty(ash::full_restore::kArcGhostSurface))
+    return;
+
   // Observe active ARC++ window.
   AttachActiveWindow(gained_active);
 
@@ -268,8 +279,10 @@ void ArcAppPerformanceTracing::OnCommit(exo::Surface* surface) {
 }
 
 void ArcAppPerformanceTracing::OnSurfaceDestroying(exo::Surface* surface) {
-  if (surface)
-    surface->RemoveSurfaceObserver(this);
+  // |scoped_surface_| might be already reset in case window is destroyed
+  // first.
+  DCHECK(!scoped_surface_ || (scoped_surface_->get() == surface));
+  scoped_surface_.reset();
 }
 
 void ArcAppPerformanceTracing::CancelJankinessTracing() {
@@ -408,15 +421,27 @@ void ArcAppPerformanceTracing::MaybeStartTracing() {
   Profile* const profile = Profile::FromBrowserContext(context_);
   DCHECK(profile);
 
-  const syncer::SyncPrefs prefs(profile->GetPrefs());
-
-  if (!prefs.GetSelectedTypes().Has(syncer::UserSelectableType::kApps)) {
-    VLOG(1) << "Cannot trace: App Sync is not enabled.";
+  const syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfile(profile);
+  if (!sync_service) {
+    // Possible if sync is disabled by command line flag.
+    // TODO(crbug.com/1330894): This should probably handled by
+    // ArcAppPerformanceTracingFactory.
+    VLOG(1) << "Cannot trace: Sync service not available";
     return;
   }
 
   const syncer::SyncUserSettings* sync_user_settings =
-      SyncServiceFactory::GetForProfile(profile)->GetUserSettings();
+      sync_service->GetUserSettings();
+
+  const bool apps_sync_enabled = sync_service->CanSyncFeatureStart() &&
+                                 sync_user_settings->GetSelectedOsTypes().Has(
+                                     syncer::UserSelectableOsType::kOsApps);
+
+  if (!apps_sync_enabled) {
+    VLOG(1) << "Cannot trace: App Sync is not enabled.";
+    return;
+  }
 
   if (sync_user_settings->IsUsingExplicitPassphrase()) {
     VLOG(1) << "Cannot trace: User has a sync passphrase.";
@@ -442,18 +467,18 @@ void ArcAppPerformanceTracing::AttachActiveWindow(aura::Window* window) {
 
   exo::Surface* const surface = exo::GetShellRootSurface(window);
   DCHECK(surface);
-  surface->AddSurfaceObserver(this);
+  // Use scoped surface observer to be safe on the surface
+  // destruction. |exo::GetShellRootSurface| would fail in case
+  // the surface gets destroyed before widget.
+  scoped_surface_ =
+      std::make_unique<exo::ScopedSurface>(surface, this /* observer */);
 }
 
 void ArcAppPerformanceTracing::DetachActiveWindow() {
   if (!arc_active_window_)
     return;
 
-  exo::Surface* const surface = exo::GetShellRootSurface(arc_active_window_);
-  // Surface might be destroyed.
-  if (surface)
-    surface->RemoveSurfaceObserver(this);
-
+  scoped_surface_.reset();
   arc_active_window_->RemoveObserver(this);
   arc_active_window_ = nullptr;
 }

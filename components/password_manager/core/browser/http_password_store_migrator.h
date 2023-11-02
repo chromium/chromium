@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,8 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/password_manager/core/browser/hsts_query.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
@@ -77,8 +79,8 @@ class HttpPasswordStoreMigrator : public PasswordStoreConsumer {
  private:
   void ProcessPasswordStoreResults();
 
-  PasswordStoreInterface* const store_;
-  Consumer* consumer_;
+  const raw_ptr<PasswordStoreInterface> store_;
+  raw_ptr<Consumer> consumer_;
 
   // |ProcessPasswordStoreResults| requires that both |OnHSTSQueryResult| and
   // |OnGetPasswordStoreResults| have returned. Since this can happen in an
@@ -90,6 +92,7 @@ class HttpPasswordStoreMigrator : public PasswordStoreConsumer {
   std::vector<std::unique_ptr<PasswordForm>> results_;
   url::Origin http_origin_domain_;
   SEQUENCE_CHECKER(sequence_checker_);
+  base::WeakPtrFactory<HttpPasswordStoreMigrator> weak_ptr_factory_{this};
 };
 
 }  // namespace password_manager

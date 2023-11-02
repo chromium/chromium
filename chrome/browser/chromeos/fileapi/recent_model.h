@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -60,6 +60,7 @@ class RecentModel : public KeyedService {
   void GetRecentFiles(storage::FileSystemContext* file_system_context,
                       const GURL& origin,
                       FileType file_type,
+                      bool invalidate_cache,
                       GetRecentFilesCallback callback);
 
   // KeyedService overrides:
@@ -68,7 +69,10 @@ class RecentModel : public KeyedService {
  private:
   friend class RecentModelFactory;
   friend class RecentModelTest;
+  friend class RecentModelCacheTest;
   FRIEND_TEST_ALL_PREFIXES(RecentModelTest, GetRecentFiles_UmaStats);
+  FRIEND_TEST_ALL_PREFIXES(RecentModelCacheTest,
+                           GetRecentFiles_InvalidateCache);
 
   static const char kLoadHistogramName[];
 

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,11 +34,13 @@ bool StructTraits<network::mojom::URLLoaderCompletionStatusDataView,
   out->error_code = data.error_code();
   out->extended_error_code = data.extended_error_code();
   out->exists_in_cache = data.exists_in_cache();
+  out->exists_in_memory_cache = data.exists_in_memory_cache();
   out->encoded_data_length = data.encoded_data_length();
   out->encoded_body_length = data.encoded_body_length();
   out->decoded_body_length = data.decoded_body_length();
   out->should_report_corb_blocking = data.should_report_corb_blocking();
   out->should_collapse_initiator = data.should_collapse_initiator();
+  out->pervasive_payload_requested = data.pervasive_payload_requested();
   return true;
 }
 

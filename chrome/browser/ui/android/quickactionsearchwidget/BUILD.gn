@@ -1,4 +1,4 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -21,8 +21,6 @@ android_library("java") {
 }
 
 android_library("javatests") {
-  # Skip platform checks since Robolectric depends on requires_android targets.
-  bypass_platform_checks = true
   testonly = true
   sources = [
     "java/src/org/chromium/chrome/browser/ui/quickactionsearchwidget/QuickActionSearchWidgetProviderDelegateTest.java",
@@ -40,10 +38,11 @@ android_library("javatests") {
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",
     "//chrome/browser/ui/android/searchactivityutils:java",
-    "//chrome/test/android:chrome_java_test_support",
+    "//chrome/test/android:chrome_java_integration_test_support",
     "//components/embedder_support/android:util_java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_support_test_runner:runner_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit:junit",
     "//third_party/mockito:mockito_java",
@@ -54,7 +53,6 @@ android_library("javatests") {
 android_resources("java_resources") {
   sources = [
     "java/res/drawable-nodpi/quick_action_search_widget_dino_preview.png",
-    "java/res/drawable-nodpi/quick_action_search_widget_medium_preview.png",
     "java/res/drawable-nodpi/quick_action_search_widget_small_preview.png",
     "java/res/drawable/ic_dino.xml",
     "java/res/drawable/quick_action_search_widget_background.xml",
@@ -64,13 +62,16 @@ android_resources("java_resources") {
     "java/res/drawable/quick_action_search_widget_medium_search_bar_background.xml",
     "java/res/drawable/quick_action_search_widget_small_button_background.xml",
     "java/res/drawable/quick_action_search_widget_small_search_bar_background.xml",
+    "java/res/drawable/quick_action_search_widget_xsmall_background.xml",
+    "java/res/drawable/quick_action_search_widget_xsmall_button_background.xml",
+    "java/res/drawable/quick_action_search_widget_xsmall_search_bar_background.xml",
     "java/res/layout/quick_action_search_widget_dino_layout.xml",
     "java/res/layout/quick_action_search_widget_medium_layout.xml",
     "java/res/layout/quick_action_search_widget_small_layout.xml",
+    "java/res/layout/quick_action_search_widget_xsmall_layout.xml",
     "java/res/values/dimens.xml",
     "java/res/values/styles.xml",
     "java/res/xml/quick_action_search_widget_dino_info.xml",
-    "java/res/xml/quick_action_search_widget_medium_info.xml",
     "java/res/xml/quick_action_search_widget_small_info.xml",
   ]
 }

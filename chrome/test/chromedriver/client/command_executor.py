@@ -1,12 +1,12 @@
-# Copyright 2013 The Chromium Authors. All rights reserved.
+# Copyright 2013 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import httplib
+import http.client
 import json
 import os
 import sys
-from urlparse import urlparse
+from urllib.parse import urlparse
 
 _THIS_DIR = os.path.abspath(os.path.dirname(__file__))
 _PARENT_DIR = os.path.join(_THIS_DIR, os.pardir)
@@ -215,6 +215,9 @@ class Command(object):
       '/session/:sessionId/secure-payment-confirmation/set-mode')
   SET_PERMISSION = (
       _Method.POST, '/session/:sessionId/permissions')
+  GET_CAST_SINKS = (
+      _Method.GET,
+      '/session/:sessionId/:vendorId/cast/get_sinks')
 
   # Custom Chrome commands.
   IS_LOADING = (_Method.GET, '/session/:sessionId/is_loading')
@@ -227,7 +230,7 @@ class CommandExecutor(object):
     # see https://crbug.com/1045241: short timeout seems to introduce flakiness
     if util.IsMac() or util.IsWindows():
       timeout = 30
-    self._http_client = httplib.HTTPConnection(
+    self._http_client = http.client.HTTPConnection(
       parsed_url.hostname, parsed_url.port, timeout=timeout)
 
   @staticmethod

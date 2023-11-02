@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,7 +26,7 @@ static const int kSampleRate = 48000;
 static const int kBufferSize = 8192;
 static const base::UnguessableToken kFrameToken =
     base::UnguessableToken::Create();
-static const ChannelLayout kChannelLayout = CHANNEL_LAYOUT_STEREO;
+static constexpr ChannelLayout kChannelLayout = CHANNEL_LAYOUT_STEREO;
 static const char kDefaultDeviceId[] = "default";
 static const char kAnotherDeviceId[] = "another";
 static const char kUnauthorizedDeviceId[] = "unauthorized";
@@ -37,7 +37,8 @@ class AudioRendererMixerInputTest : public testing::Test,
  public:
   AudioRendererMixerInputTest() {
     audio_parameters_ =
-        AudioParameters(AudioParameters::AUDIO_PCM_LINEAR, kChannelLayout,
+        AudioParameters(AudioParameters::AUDIO_PCM_LINEAR,
+                        ChannelLayoutConfig::FromLayout<kChannelLayout>(),
                         kSampleRate, kBufferSize);
 
     CreateMixerInput(kDefaultDeviceId);

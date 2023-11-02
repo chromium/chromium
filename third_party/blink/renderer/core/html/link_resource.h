@@ -32,7 +32,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_LINK_RESOURCE_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/core/loader/link_load_parameters.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 
 namespace blink {
@@ -55,7 +57,7 @@ class CORE_EXPORT LinkResource : public GarbageCollected<LinkResource> {
   LocalFrame* LoadingFrame() const;
 
   virtual LinkResourceType GetType() const = 0;
-  virtual void Process() = 0;
+  virtual void Process(LinkLoadParameters::Reason reason) {}
   virtual void OwnerRemoved() {}
   virtual void OwnerInserted() {}
   virtual bool HasLoaded() const = 0;
@@ -70,7 +72,7 @@ class CORE_EXPORT LinkResource : public GarbageCollected<LinkResource> {
   WTF::TextEncoding GetCharset() const;
   ExecutionContext* GetExecutionContext();
 
-  Member<HTMLLinkElement> owner_;
+  const Member<HTMLLinkElement> owner_;
 };
 
 }  // namespace blink

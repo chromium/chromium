@@ -31,10 +31,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SHAPES_RASTER_SHAPE_H_
 
 #include <memory>
+
+#include "base/check_op.h"
 #include "third_party/blink/renderer/core/layout/shapes/shape.h"
 #include "third_party/blink/renderer/core/layout/shapes/shape_interval.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 
@@ -47,7 +49,7 @@ class RasterShapeIntervals {
   }
 
   void InitializeBounds();
-  const IntRect& Bounds() const { return bounds_; }
+  const gfx::Rect& Bounds() const { return bounds_; }
   bool IsEmpty() const { return bounds_.IsEmpty(); }
 
   IntShapeInterval& IntervalAt(int y) {
@@ -73,7 +75,7 @@ class RasterShapeIntervals {
   int MinY() const { return -offset_; }
   int MaxY() const { return -offset_ + intervals_.size(); }
 
-  IntRect bounds_;
+  gfx::Rect bounds_;
   Vector<IntShapeInterval> intervals_;
   int offset_;
 };
@@ -81,7 +83,7 @@ class RasterShapeIntervals {
 class RasterShape final : public Shape {
  public:
   RasterShape(std::unique_ptr<RasterShapeIntervals> intervals,
-              const IntSize& margin_rect_size)
+              const gfx::Size& margin_rect_size)
       : intervals_(std::move(intervals)), margin_rect_size_(margin_rect_size) {
     intervals_->InitializeBounds();
   }
@@ -105,7 +107,7 @@ class RasterShape final : public Shape {
 
   std::unique_ptr<RasterShapeIntervals> intervals_;
   mutable std::unique_ptr<RasterShapeIntervals> margin_intervals_;
-  IntSize margin_rect_size_;
+  gfx::Size margin_rect_size_;
 };
 
 }  // namespace blink

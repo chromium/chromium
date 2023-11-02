@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,13 @@
 #define ASH_APP_LIST_VIEWS_PRODUCTIVITY_LAUNCHER_SEARCH_VIEW_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/views/search_result_container_view.h"
 #include "ash/ash_export.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
@@ -20,6 +22,7 @@ namespace ash {
 class AppListViewDelegate;
 class ResultSelectionController;
 class SearchBoxView;
+class SearchResultPageDialogController;
 
 // The search results view for productivity launcher. Contains a scrolling list
 // of search results. Does not include the search box, which is owned by a
@@ -31,8 +34,10 @@ class ASH_EXPORT ProductivityLauncherSearchView
  public:
   METADATA_HEADER(ProductivityLauncherSearchView);
 
-  ProductivityLauncherSearchView(AppListViewDelegate* view_delegate,
-                                 SearchBoxView* search_box_view);
+  ProductivityLauncherSearchView(
+      AppListViewDelegate* view_delegate,
+      SearchResultPageDialogController* dialog_controller,
+      SearchBoxView* search_box_view);
   ProductivityLauncherSearchView(const ProductivityLauncherSearchView&) =
       delete;
   ProductivityLauncherSearchView& operator=(
@@ -50,11 +55,28 @@ class ASH_EXPORT ProductivityLauncherSearchView
   void OnActiveAppListModelsChanged(AppListModel* model,
                                     SearchModel* search_model) override;
 
+  // Called when the app list search query changes and new search is about to
+  // start or cleared.
+  // `search_active` - whether search update will result in a new search. This
+  // will be false when the search is about to be cleared using an empty query.
+  void UpdateForNewSearch(bool search_active);
+
   // Returns true if there are search results that can be keyboard selected.
   bool CanSelectSearchResults();
 
+  // Sums the heights of all search_result_list_views_ owned by this view.
+  int TabletModePreferredHeight();
+
+  // Returns a layer that can be used for launcher page animations. Which layer
+  // is an implementation detail.
+  ui::Layer* GetPageAnimationLayer() const;
+
   std::vector<SearchResultContainerView*> result_container_views_for_test() {
     return result_container_views_;
+  }
+
+  ResultSelectionController* result_selection_controller_for_test() {
+    return result_selection_controller_.get();
   }
 
  private:
@@ -90,6 +112,8 @@ class ASH_EXPORT ProductivityLauncherSearchView
   // result view unless overridden by |ignore_result_changes_for_a11y_|.
   void MaybeNotifySelectedResultChanged();
 
+  SearchResultPageDialogController* const dialog_controller_;
+
   SearchBoxView* const search_box_view_;
 
   // The scroll view that contains all the result_container_views_.
@@ -99,16 +123,22 @@ class ASH_EXPORT ProductivityLauncherSearchView
   // accessibility framework.
   bool ignore_result_changes_for_a11y_ = false;
 
-  // Containers for search result views. Has a single element, but is a vector
-  // for compatibility with SearchBoxView. The contained view is owned by the
-  // views hierarchy.
+  // Containers for search result views. The contained views are owned by the
+  // views hierarchy. Used by result_selection_controller_.
   std::vector<SearchResultContainerView*> result_container_views_;
+
+  // Cache of the last shown search results' animation metadata.
+  std::vector<SearchResultContainerView::SearchResultAimationMetadata>
+      last_result_metadata_;
 
   // Handles search result selection.
   std::unique_ptr<ResultSelectionController> result_selection_controller_;
 
   // Timer used to delay calls to NotifyA11yResultsChanged().
   base::OneShotTimer notify_a11y_results_changed_timer_;
+
+  // Stores the last time fast search result update animations were used.
+  absl::optional<base::TimeTicks> search_result_fast_update_time_;
 
   // The last reported number of search results shown by all containers.
   int last_search_result_count_ = 0;

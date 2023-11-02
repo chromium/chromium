@@ -1,7 +1,9 @@
 include_rules = [
   "-components",
+  "+components/cast_streaming",
   "+components/mirroring/mojom",
   "+components/mirroring/service",
+  "+components/openscreen_platform",
   "+components/version_info",
   "+crypto",
   "+gpu/config",
@@ -14,5 +16,9 @@ include_rules = [
   "+services/viz/public",
   "+third_party/libaom",
   "+third_party/openscreen/src/cast/streaming",
+  "+third_party/openscreen/src/cast/common/public",
+  "+third_party/openscreen/src/platform/api",
+  "+third_party/openscreen/src/platform/base",
   "+ui/base",
+  "+ui/gfx/geometry",
 ]

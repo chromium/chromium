@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,10 +22,10 @@ PrefServiceFlagsStorage::PrefServiceFlagsStorage(PrefService* prefs)
 PrefServiceFlagsStorage::~PrefServiceFlagsStorage() {}
 
 std::set<std::string> PrefServiceFlagsStorage::GetFlags() const {
-  const base::Value* enabled_experiments =
+  const base::Value::List& enabled_experiments =
       prefs_->GetList(prefs::kAboutFlagsEntries);
   std::set<std::string> flags;
-  for (const auto& entry : enabled_experiments->GetList()) {
+  for (const auto& entry : enabled_experiments) {
     if (!entry.is_string()) {
       LOG(WARNING) << "Invalid entry in " << prefs::kAboutFlagsEntries;
       continue;
@@ -36,24 +36,19 @@ std::set<std::string> PrefServiceFlagsStorage::GetFlags() const {
 }
 
 bool PrefServiceFlagsStorage::SetFlags(const std::set<std::string>& flags) {
-  ListPrefUpdate update(prefs_, prefs::kAboutFlagsEntries);
-  base::Value* experiments_list = update.Get();
-  DCHECK(experiments_list->is_list());
-
-  experiments_list->ClearList();
+  base::Value::List experiments_list;
   for (const auto& flag : flags)
-    experiments_list->Append(flag);
+    experiments_list.Append(flag);
+  prefs_->SetList(prefs::kAboutFlagsEntries, std::move(experiments_list));
 
   return true;
 }
 
 std::string PrefServiceFlagsStorage::GetOriginListFlag(
     const std::string& internal_entry_name) const {
-  const base::Value* origin_lists =
-      prefs_->GetDictionary(prefs::kAboutFlagsOriginLists);
-  if (!origin_lists)
-    return std::string();
-  if (const std::string* s = origin_lists->FindStringKey(internal_entry_name))
+  const base::Value::Dict& origin_lists =
+      prefs_->GetDict(prefs::kAboutFlagsOriginLists);
+  if (const std::string* s = origin_lists.FindString(internal_entry_name))
     return *s;
   return std::string();
 }
@@ -61,8 +56,8 @@ std::string PrefServiceFlagsStorage::GetOriginListFlag(
 void PrefServiceFlagsStorage::SetOriginListFlag(
     const std::string& internal_entry_name,
     const std::string& origin_list_value) {
-  DictionaryPrefUpdate update(prefs_, prefs::kAboutFlagsOriginLists);
-  update->SetString(internal_entry_name, origin_list_value);
+  ScopedDictPrefUpdate update(prefs_, prefs::kAboutFlagsOriginLists);
+  update->SetByDottedPath(internal_entry_name, origin_list_value);
 }
 
 void PrefServiceFlagsStorage::CommitPendingWrites() {

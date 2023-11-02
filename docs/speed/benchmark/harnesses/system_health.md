@@ -161,68 +161,7 @@ out why the story fails, fix it and re-land the patch.
 Add new SystemHealthStory subclass(es) to either one of the existing files or a
 new file in [tools/perf/page_sets/system_health/](../../../../tools/perf/page_sets/system_health).
 The new class(es) will automatically be picked up and added to the story set.
-To run the story through the memory benchmark against live sites, use the
-following commands:
 
-```
-$ tools/perf/run_benchmark system_health.memory_desktop \
-      --browser=reference --device=desktop \
-      --story-filter=<NAME-OF-YOUR-STORY> \
-      --use-live-sites
-$ tools/perf/run_benchmark system_health.memory_mobile \
-      --browser=reference --device=android \
-      --story-filter=<NAME-OF-YOUR-STORY> \
-      --also-run-disabled-tests --use-live-sites
-```
-
-Once you’re happy with the stories, record them:
-
-```
-$ tools/perf/record_wpr --story desktop_system_health_story_set \
-      --browser=reference --device=desktop \
-      --story-filter=<NAME-OF-YOUR-STORY>
-$ tools/perf/record_wpr --story mobile_system_health_story_set \
-      --browser=reference --device=android \
-      --story-filter=<NAME-OF-YOUR-STORY>
-```
-
-You can now replay the stories from the recording by omitting the
-`--use-live-sites` flag:
-
-```
-$ tools/perf/run_benchmark system_health.memory_desktop \
-      --browser=reference --device=desktop \
-      --story-filter=<NAME-OF-YOUR-STORY> \
-      --also-run-disabled-tests
-$ tools/perf/run_benchmark system_health.memory_mobile \
-      --browser=reference --device=android \
-      --story-filter=<NAME-OF-YOUR-STORY> \
-      --also-run-disabled-tests
-```
-
-The recordings are stored in `system_health_desktop_MMM.wprgo` and
-`system_health_mobile_NNN.wprgo` files in the
-[tools/perf/page_sets/data](../../../../tools/perf/page_sets/data) directory.
-You can find the MMM and NNN values by inspecting the changes to
-`system_health_desktop.json` and `system_health_mobile.json`:
-
-```
-$ git diff tools/perf/page_sets/data/system_health_desktop.json
-$ git diff tools/perf/page_sets/data/system_health_mobile.json
-```
-
-Once you verified that the replay works as you expect, you can upload the .wprgo
-files to the cloud and include the .wprgo.sha1 files in your patch:
-
-```
-$ upload_to_google_storage.py --bucket chrome-partner-telemetry \
-      system_health_desktop_MMM.wprgo
-$ upload_to_google_storage.py --bucket chrome-partner-telemetry \
-      system_health_mobile_NNN.wprgo
-$ git add tools/perf/page_sets/data/system_health_desktop_MMM.wprgo.sha1
-$ git add tools/perf/page_sets/data/system_health_mobile_NNN.wprgo.sha1
-```
-
-If the stories work as they should (certain website features don’t work well
-under WPR and need to be worked around), send them out for review in the patch
-that is adding the new story.
+Next you will need to record the story, validate it works, upload the new recording, and submit the
+test case. To do so, follow
+[these instructions](https://source.chromium.org/chromium/chromium/src/+/main:tools/perf/recording_benchmarks.md).

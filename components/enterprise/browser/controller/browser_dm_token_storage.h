@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -51,10 +51,13 @@ class BrowserDMTokenStorage {
     // Gets the boolean value that determines if error message will be
     // displayed when enrollment fails.
     virtual bool InitEnrollmentErrorOption() = 0;
-    // Function called by |SaveDMToken| that returns if the operation was a
+    // Function called by `SaveDMToken()` that returns if the operation was a
     // success.
     virtual StoreTask SaveDMTokenTask(const std::string& token,
                                       const std::string& client_id) = 0;
+    // Function called by `DeleteDMToken()` that returns if the operation was a
+    // success.
+    virtual StoreTask DeleteDMTokenTask(const std::string& client_id) = 0;
     // Gets the specific task runner that should be used by |SaveDMToken|.
     virtual scoped_refptr<base::TaskRunner> SaveDMTokenTaskRunner() = 0;
   };
@@ -122,6 +125,8 @@ class BrowserDMTokenStorage {
 
   // Saves the DM token.
   void SaveDMToken(const std::string& token);
+  // Deletes the DM token.
+  void DeleteDMToken();
 
   // Will be called after the DM token is stored.
   StoreCallback store_callback_;

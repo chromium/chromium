@@ -1,4 +1,4 @@
-// Copyright (c) 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "gpu/command_buffer/client/interface_base.h"
 #include "gpu/command_buffer/common/webgpu_cmd_enums.h"
 #include "gpu/command_buffer/common/webgpu_cmd_ids.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace gpu {
 namespace webgpu {
@@ -31,6 +32,8 @@ class APIChannel : public base::RefCounted<APIChannel> {
   // As long as a reference to this APIChannel alive, it is valid to
   // call these procs.
   virtual const DawnProcTable& GetProcs() const = 0;
+  // Get the WGPUInstance.
+  virtual WGPUInstance GetWGPUInstance() const = 0;
 
   // Disconnect. All commands using the WebGPU API should become a
   // no-op and server-side resources can be freed.
@@ -54,7 +57,7 @@ class WebGPUInterface : public InterfaceBase {
   // if a flush has already been indicated, or a flush is not needed (there may
   // be no commands to flush). Returns true if the caller should schedule a
   // flush.
-  virtual void EnsureAwaitingFlush(bool* needs_flush) = 0;
+  virtual bool EnsureAwaitingFlush() = 0;
 
   // If the awaiting flush flag is set, flushes commands. Otherwise, does
   // nothing.
@@ -63,18 +66,9 @@ class WebGPUInterface : public InterfaceBase {
   // Get a strong reference to the APIChannel backing the implementation.
   virtual scoped_refptr<APIChannel> GetAPIChannel() const = 0;
 
-  virtual ReservedTexture ReserveTexture(WGPUDevice device) = 0;
-  virtual void RequestAdapterAsync(
-      PowerPreference power_preference,
-      base::OnceCallback<void(int32_t,
-                              const WGPUDeviceProperties&,
-                              const char*)> request_adapter_callback) = 0;
-  virtual void RequestDeviceAsync(
-      uint32_t adapter_service_id,
-      const WGPUDeviceProperties& requested_device_properties,
-      base::OnceCallback<void(WGPUDevice,
-                              const WGPUSupportedLimits*,
-                              const char*)> request_device_callback) = 0;
+  virtual ReservedTexture ReserveTexture(
+      WGPUDevice device,
+      const WGPUTextureDescriptor* optionalDesc = nullptr) = 0;
 
   // Gets or creates a usable WGPUDevice synchronously. It really should not
   // be used, and the async request adapter and request device APIs should be
@@ -94,6 +88,15 @@ class WebGPUInterface : public InterfaceBase {
                         const GLbyte* mailbox) {
     AssociateMailbox(device_id, device_generation, id, generation, usage,
                      WEBGPU_MAILBOX_NONE, mailbox);
+  }
+
+  void SetWebGPUExecutionContextToken(
+      const blink::WebGPUExecutionContextToken& token) {
+    uint64_t high = token.value().GetHighForSerialization();
+    uint64_t low = token.value().GetLowForSerialization();
+    SetWebGPUExecutionContextToken(token.variant_index(), high >> 32,
+                                   high & 0xFFFFFFFF, low >> 32,
+                                   low & 0xFFFFFFFF);
   }
 };
 

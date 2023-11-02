@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -25,7 +25,7 @@ source_set("main") {
     "//components/discardable_memory/public/mojom",
     "//components/ui_devtools",
     "//components/viz/service",
-    "//gpu/ipc:gl_in_process_context",
+    "//gpu/command_buffer/service:gles2",
     "//gpu/ipc/common",
     "//gpu/ipc/service",
     "//ipc",
@@ -33,7 +33,6 @@ source_set("main") {
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/mojom",
     "//services/service_manager/public/cpp",
-    "//services/tracing/public/cpp",
     "//services/viz/privileged/mojom",
     "//ui/gfx:memory_buffer",
     "//ui/gl/init",
@@ -47,9 +46,5 @@ source_set("main") {
 
   if (is_chromeos_ash) {
     deps += [ "//media/gpu" ]
-  }
-
-  if (is_chromecast) {
-    deps += [ "//chromecast/media/service/mojom" ]
   }
 }

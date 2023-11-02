@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -175,8 +175,7 @@ ExtensionFunction::ResponseValue
 DashboardPrivateShowPermissionPromptForDelegatedInstallFunction::BuildResponse(
     api::dashboard_private::Result result, const std::string& error) {
   // The web store expects an empty string on success.
-  std::vector<base::Value> args =
-      ShowPermissionPromptForDelegatedInstall::Results::Create(result);
+  auto args = ShowPermissionPromptForDelegatedInstall::Results::Create(result);
   if (result == api::dashboard_private::RESULT_EMPTY_STRING)
     return ArgumentList(std::move(args));
   return ErrorWithArguments(std::move(args), error);

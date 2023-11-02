@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,10 @@ namespace bookmarks {
 class BookmarkBubbleObserver;
 }
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 namespace views {
 class BubbleDialogDelegate;
 class Button;
@@ -30,6 +34,7 @@ class BookmarkBubbleView {
   BookmarkBubbleView& operator=(const BookmarkBubbleView&) = delete;
 
   static void ShowBubble(views::View* anchor_view,
+                         content::WebContents* web_contents,
                          views::Button* highlighted_button,
                          bookmarks::BookmarkBubbleObserver* observer,
                          std::unique_ptr<BubbleSyncPromoDelegate> delegate,

@@ -17,7 +17,7 @@ package org.tensorflow.lite.support.tensorbuffer;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tensorflow.lite.DataType;
-import org.tensorflow.lite.support.common.SupportPreconditions;
+import org.tensorflow.lite.support.common.internal.SupportPreconditions;
 
 /** Represents data buffer with 8-bit unsigned integer values. */
 public final class TensorBufferUint8 extends TensorBuffer {
@@ -90,6 +90,7 @@ public final class TensorBufferUint8 extends TensorBuffer {
         SupportPreconditions.checkNotNull(src, "The array to be loaded cannot be null.");
         SupportPreconditions.checkArgument(src.length == computeFlatSize(shape),
                 "The size of the array to be loaded does not match the specified shape.");
+        copyByteBufferIfReadOnly();
         resize(shape);
         buffer.rewind();
 
@@ -106,6 +107,7 @@ public final class TensorBufferUint8 extends TensorBuffer {
         SupportPreconditions.checkNotNull(src, "The array to be loaded cannot be null.");
         SupportPreconditions.checkArgument(src.length == computeFlatSize(shape),
                 "The size of the array to be loaded does not match the specified shape.");
+        copyByteBufferIfReadOnly();
         resize(shape);
         buffer.rewind();
 

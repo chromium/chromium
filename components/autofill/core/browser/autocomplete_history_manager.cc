@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,24 +11,27 @@
 
 #include "base/bind.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
-#include "components/autofill/core/browser/autofill_regexes.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/suggestions_context.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/validation.h"
 #include "components/autofill/core/browser/webdata/autofill_entry.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
+#include "components/autofill/core/common/autofill_regexes.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
 
-using NotificationType = autofill::AutofillObserver::NotificationType;
-
 namespace autofill {
+
+using NotificationType = AutofillObserver::NotificationType;
+
 namespace {
 
 // Limit on the number of suggestions to appear in the pop-up menu under an
@@ -49,8 +52,9 @@ bool IsTextField(const FormFieldData& field) {
 // that a different website or different form uses the same field name for a
 // totally different purpose.
 bool IsMeaningfulFieldName(const std::u16string& name) {
-  return !MatchesPattern(
-      name, u"^(((field|input)(_|-)?\\d+)|tan|otp|title|captcha)$");
+  static constexpr char16_t kRegex[] =
+      u"^(((field|input)(_|-)?\\d+)|title|otp|tan)$|(cvc|cvn|cvv|captcha)";
+  return !MatchesRegex<kRegex>(name);
 }
 
 }  // namespace
@@ -75,56 +79,62 @@ AutocompleteHistoryManager::~AutocompleteHistoryManager() {
   CancelAllPendingQueries();
 }
 
-void AutocompleteHistoryManager::OnGetSingleFieldSuggestions(
+bool AutocompleteHistoryManager::OnGetSingleFieldSuggestions(
     int query_id,
     bool is_autocomplete_enabled,
     bool autoselect_first_suggestion,
-    const std::u16string& name,
-    const std::u16string& prefix,
-    const std::string& form_control_type,
-    base::WeakPtr<SuggestionsHandler> handler) {
+    const FormFieldData& field,
+    base::WeakPtr<SuggestionsHandler> handler,
+    const SuggestionsContext& context) {
+  if (!field.should_autocomplete)
+    return false;
+
   CancelPendingQueries(handler.get());
 
-  if (!IsMeaningfulFieldName(name) || !is_autocomplete_enabled ||
-      form_control_type == "textarea" ||
+  if (!IsMeaningfulFieldName(field.name) || !is_autocomplete_enabled ||
+      field.form_control_type == "textarea" ||
       IsInAutofillSuggestionsDisabledExperiment()) {
     SendSuggestions({}, QueryHandler(query_id, autoselect_first_suggestion,
-                                     prefix, handler));
-    uma_recorder_.OnGetAutocompleteSuggestions(name,
+                                     field.value, handler));
+    uma_recorder_.OnGetAutocompleteSuggestions(field.global_id(),
                                                0 /* pending_query_handle */);
-    return;
+    return true;
   }
 
   if (profile_database_) {
     auto query_handle = profile_database_->GetFormValuesForElementName(
-        name, prefix, kMaxAutocompleteMenuItems, this);
-    uma_recorder_.OnGetAutocompleteSuggestions(name, query_handle);
+        field.name, field.value, kMaxAutocompleteMenuItems, this);
+    uma_recorder_.OnGetAutocompleteSuggestions(field.global_id(), query_handle);
 
     // We can simply insert, since |query_handle| is always unique.
     pending_queries_.insert(
-        {query_handle,
-         QueryHandler(query_id, autoselect_first_suggestion, prefix, handler)});
+        {query_handle, QueryHandler(query_id, autoselect_first_suggestion,
+                                    field.value, handler)});
+    return true;
   }
+
+  // TODO(crbug.com/1190334): Remove this after ensuring that in practice
+  // |profile_database_| is never null.
+  base::debug::DumpWithoutCrashing();
+  return false;
 }
 
-void AutocompleteHistoryManager::OnWillSubmitForm(
-    const FormData& form,
+void AutocompleteHistoryManager::OnWillSubmitFormWithFields(
+    const std::vector<FormFieldData>& fields,
     bool is_autocomplete_enabled) {
   if (!is_autocomplete_enabled || is_off_the_record_) {
     Notify(NotificationType::AutocompleteFormSkipped);
     return;
   }
-
-  std::vector<FormFieldData> values;
-  for (const FormFieldData& field : form.fields) {
+  std::vector<FormFieldData> autocomplete_saveable_fields;
+  autocomplete_saveable_fields.reserve(fields.size());
+  for (const FormFieldData& field : fields) {
     if (IsFieldValueSaveable(field)) {
-      values.push_back(field);
+      autocomplete_saveable_fields.push_back(field);
     }
   }
-
-  if (!values.empty() && profile_database_.get()) {
-    profile_database_->AddFormFields(values);
-
+  if (!autocomplete_saveable_fields.empty() && profile_database_.get()) {
+    profile_database_->AddFormFields(autocomplete_saveable_fields);
     Notify(NotificationType::AutocompleteFormSubmitted);
   }
 }
@@ -132,11 +142,9 @@ void AutocompleteHistoryManager::OnWillSubmitForm(
 void AutocompleteHistoryManager::CancelPendingQueries(
     const SuggestionsHandler* handler) {
   if (handler && profile_database_) {
-    for (auto iter : pending_queries_) {
-      const QueryHandler& query_handler = iter.second;
-
+    for (const auto& [handle, query_handler] : pending_queries_) {
       if (query_handler.handler_ && query_handler.handler_.get() == handler) {
-        profile_database_->CancelRequest(iter.first);
+        profile_database_->CancelRequest(handle);
       }
     }
   }
@@ -148,13 +156,15 @@ void AutocompleteHistoryManager::CancelPendingQueries(
 
 void AutocompleteHistoryManager::OnRemoveCurrentSingleFieldSuggestion(
     const std::u16string& field_name,
-    const std::u16string& value) {
+    const std::u16string& value,
+    int frontend_id) {
   if (profile_database_)
     profile_database_->RemoveFormValueForElementName(field_name, value);
 }
 
 void AutocompleteHistoryManager::OnSingleFieldSuggestionSelected(
-    const std::u16string& value) {
+    const std::u16string& value,
+    int frontend_id) {
   // Try to find the AutofillEntry associated with the given suggestion.
   auto last_entries_iter = last_entries_.find(value);
   if (last_entries_iter == last_entries_.end()) {
@@ -226,21 +236,21 @@ void AutocompleteHistoryManager::OnWebDataServiceRequestDone(
 }
 
 void AutocompleteHistoryManager::UMARecorder::OnGetAutocompleteSuggestions(
-    const std::u16string& name,
+    const FieldGlobalId& field_global_id,
     WebDataServiceBase::Handle pending_query_handle) {
-  // log only if the current field is different than the latest one that has
-  // been logged. we assume that user works at the same field if
-  // measuring_name_ is same as the name of current field.
-  bool should_log_query = measuring_name_ != name;
+  // Log only if the current field is different than the latest one that has
+  // been logged. We determine this by comparing the global ID of the current
+  // field against `measuring_field_global_id_`.
+  bool should_log_query = measuring_field_global_id_ != field_global_id;
 
   if (should_log_query) {
     AutofillMetrics::LogAutocompleteQuery(pending_query_handle /* created */);
-    measuring_name_ = name;
+    measuring_field_global_id_ = field_global_id;
   }
   // We should track the query and log the suggestions, only if
-  // - query has been logged.
-  // - or, the query we previously tracked has been cancelled
-  // The previous query must be cancelled if measuring_query_handle_ isn't
+  // - query has been logged, or
+  // - the query we previously tracked has been cancelled
+  // The previous query must be cancelled if `measuring_query_handle_` isn't
   // reset.
   if (should_log_query || measuring_query_handle_)
     measuring_query_handle_ = pending_query_handle;
@@ -257,21 +267,6 @@ void AutocompleteHistoryManager::UMARecorder::OnWebDataServiceRequestDone(
     return;
   AutofillMetrics::LogAutocompleteSuggestions(has_suggestion);
 }
-
-AutocompleteHistoryManager::QueryHandler::QueryHandler(
-    int client_query_id,
-    bool autoselect_first_suggestion,
-    std::u16string prefix,
-    base::WeakPtr<SuggestionsHandler> handler)
-    : client_query_id_(client_query_id),
-      autoselect_first_suggestion_(autoselect_first_suggestion),
-      prefix_(prefix),
-      handler_(std::move(handler)) {}
-
-AutocompleteHistoryManager::QueryHandler::QueryHandler(
-    const QueryHandler& original) = default;
-
-AutocompleteHistoryManager::QueryHandler::~QueryHandler() = default;
 
 void AutocompleteHistoryManager::SendSuggestions(
     const std::vector<AutofillEntry>& entries,
@@ -303,8 +298,8 @@ void AutocompleteHistoryManager::SendSuggestions(
 
 void AutocompleteHistoryManager::CancelAllPendingQueries() {
   if (profile_database_) {
-    for (const auto& pending_query : pending_queries_) {
-      profile_database_->CancelRequest(pending_query.first);
+    for (const auto& [handle, query_handler] : pending_queries_) {
+      profile_database_->CancelRequest(handle);
     }
   }
 

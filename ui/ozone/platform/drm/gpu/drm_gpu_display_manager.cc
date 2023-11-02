@@ -1,24 +1,29 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/ozone/platform/drm/gpu/drm_gpu_display_manager.h"
 
 #include <stddef.h>
+#include <cstring>
+
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/ranges/algorithm.h"
+#include "base/strings/string_number_conversions.h"
 #include "ui/display/types/display_mode.h"
 #include "ui/display/types/display_snapshot.h"
 #include "ui/display/types/gamma_ramp_rgb_entry.h"
 #include "ui/gfx/linux/drm_util_linux.h"
-#include "ui/ozone/platform/drm/common/drm_util.h"
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
 #include "ui/ozone/platform/drm/gpu/drm_device_manager.h"
 #include "ui/ozone/platform/drm/gpu/drm_display.h"
+#include "ui/ozone/platform/drm/gpu/drm_gpu_util.h"
 #include "ui/ozone/platform/drm/gpu/screen_manager.h"
 
 namespace ui {
@@ -28,6 +33,10 @@ constexpr char kMultipleDisplayIdsCollisionDetected[] =
     "Display.MultipleDisplays.GenerateId.CollisionDetection";
 using MapDisplayIdToIndexAndSnapshotPair =
     base::flat_map<int64_t, display::DisplaySnapshot*>;
+
+// A list of property names that are blocked from issuing a full display
+// configuration (modeset) via a udev display CHANGE event.
+const char* kBlockedEventsByTriggerProperty[] = {"Content Protection"};
 
 class DisplayComparator {
  public:
@@ -98,6 +107,15 @@ bool FindModeForDisplay(
   return mode_found;
 }
 
+std::string GetEventPropertyByKey(const std::string& key,
+                                  const EventPropertyMap event_props) {
+  const auto it = event_props.find(key);
+  if (it == event_props.end())
+    return std::string();
+
+  return std::string(it->second);
+}
+
 }  // namespace
 
 DrmGpuDisplayManager::DrmGpuDisplayManager(ScreenManager* screen_manager,
@@ -107,9 +125,9 @@ DrmGpuDisplayManager::DrmGpuDisplayManager(ScreenManager* screen_manager,
 
 DrmGpuDisplayManager::~DrmGpuDisplayManager() = default;
 
-void DrmGpuDisplayManager::SetClearOverlayCacheCallback(
+void DrmGpuDisplayManager::SetDisplaysConfiguredCallback(
     base::RepeatingClosure callback) {
-  clear_overlay_cache_callback_ = std::move(callback);
+  displays_configured_callback_ = std::move(callback);
 }
 
 MovableDisplaySnapshots DrmGpuDisplayManager::GetDisplays() {
@@ -132,10 +150,10 @@ MovableDisplaySnapshots DrmGpuDisplayManager::GetDisplays() {
     // Receiving a signal that DRM state was updated. Need to reset the plane
     // manager's resource cache since IDs may have changed.
     drm->plane_manager()->ResetConnectorsCache(drm->GetResources());
-    auto display_infos = GetAvailableDisplayControllerInfos(drm->get_fd());
+    auto display_infos = GetDisplayInfosAndUpdateCrtcs(drm->get_fd());
     for (const auto& display_info : display_infos) {
-      auto it = std::find_if(
-          old_displays.begin(), old_displays.end(),
+      auto it = base::ranges::find_if(
+          old_displays,
           DisplayComparator(drm, display_info->crtc()->crtc_id,
                             display_info->connector()->connector_id));
       if (it != old_displays.end()) {
@@ -200,15 +218,65 @@ void DrmGpuDisplayManager::RelinquishDisplayControl() {
     drm->DropMaster();
 }
 
-bool DrmGpuDisplayManager::ConfigureDisplays(
-    const std::vector<display::DisplayConfigurationParams>& config_requests) {
-  ScreenManager::ControllerConfigsList controllers_to_configure;
+bool DrmGpuDisplayManager::ShouldDisplayEventTriggerConfiguration(
+    const EventPropertyMap& event_props) {
+  DCHECK(!event_props.empty());
 
+  const std::string event_seq_num =
+      GetEventPropertyByKey("SEQNUM", event_props);
+  std::string log_prefix =
+      "Display event CHANGE" +
+      (event_seq_num.empty() ? "" : "(SEQNUM:" + event_seq_num + ") ");
+  std::string trigger_prop_log;
+
+  const std::string event_dev_path =
+      GetEventPropertyByKey("DEVPATH", event_props);
+  const DrmDeviceVector& devices = drm_device_manager_->GetDrmDevices();
+  for (const auto& drm : devices) {
+    if (drm->device_path().value().find(event_dev_path) == std::string::npos)
+      continue;
+
+    // Get the trigger property's ID and convert to an int.
+    const std::string trigger_prop_id_str =
+        GetEventPropertyByKey("PROPERTY", event_props);
+    if (trigger_prop_id_str.empty())
+      break;
+
+    uint32_t trigger_prop_id;
+    const bool conversion_success =
+        base::StringToUint(trigger_prop_id_str, &trigger_prop_id);
+    DCHECK(conversion_success);
+
+    // Fetch the name of the property from the device.
+    ScopedDrmPropertyPtr drm_property(drm->GetProperty(trigger_prop_id));
+    DCHECK(drm_property);
+    trigger_prop_log =
+        "[trigger property: " + std::string(drm_property->name) + "] ";
+    for (const char* blocked_prop : kBlockedEventsByTriggerProperty) {
+      if (strcmp(drm_property->name, blocked_prop) == 0) {
+        VLOG(1) << log_prefix << trigger_prop_log
+                << "resolution: blocked; display configuration task "
+                   "rejected.";
+        return false;
+      }
+    }
+  }
+
+  VLOG(1) << log_prefix << trigger_prop_log
+          << "resolution: allowed; display configuration task triggered.";
+  return true;
+}
+
+bool DrmGpuDisplayManager::ConfigureDisplays(
+    const std::vector<display::DisplayConfigurationParams>& config_requests,
+    uint32_t modeset_flag) {
+  ScreenManager::ControllerConfigsList controllers_to_configure;
   for (const auto& config : config_requests) {
     int64_t display_id = config.id;
     DrmDisplay* display = FindDisplay(display_id);
     if (!display) {
-      LOG(ERROR) << "There is no display with ID " << display_id;
+      LOG(WARNING) << __func__ << ": there is no display with ID "
+                   << display_id;
       return false;
     }
 
@@ -222,41 +290,22 @@ bool DrmGpuDisplayManager::ConfigureDisplays(
     }
 
     scoped_refptr<DrmDevice> drm = display->drm();
-
-    VLOG(1) << "DRM configuring: device=" << drm->device_path().value()
-            << " crtc=" << display->crtc()
-            << " connector=" << display->connector()
-            << " origin=" << config.origin.ToString() << " size="
-            << (mode_ptr ? ModeSize(*(mode_ptr.get())).ToString() : "0x0")
-            << " refresh_rate=" << (mode_ptr ? mode_ptr->vrefresh : 0) << "Hz";
-
     ScreenManager::ControllerConfigParams params(
         display->display_id(), drm, display->crtc(), display->connector(),
-        config.origin, std::move(mode_ptr));
+        config.origin, std::move(mode_ptr), display->base_connector_id());
     controllers_to_configure.push_back(std::move(params));
   }
 
-  if (clear_overlay_cache_callback_)
-    clear_overlay_cache_callback_.Run();
+  bool config_success = screen_manager_->ConfigureDisplayControllers(
+      controllers_to_configure, modeset_flag);
 
-  bool config_success =
-      screen_manager_->ConfigureDisplayControllers(controllers_to_configure);
+  if (displays_configured_callback_)
+    displays_configured_callback_.Run();
 
-  for (const auto& controller : controllers_to_configure) {
-    if (config_success) {
+  const bool test_only = modeset_flag == display::kTestModeset;
+  if (!test_only && config_success) {
+    for (const auto& controller : controllers_to_configure)
       FindDisplay(controller.display_id)->SetOrigin(controller.origin);
-    } else {
-      if (controller.mode) {
-        VLOG(1) << "Failed to enable device="
-                << controller.drm->device_path().value()
-                << " crtc=" << controller.crtc
-                << " connector=" << controller.connector;
-      } else {
-        VLOG(1) << "Failed to disable device="
-                << controller.drm->device_path().value()
-                << " crtc=" << controller.crtc;
-      }
-    }
   }
 
   return config_success;
@@ -268,7 +317,7 @@ bool DrmGpuDisplayManager::GetHDCPState(
     display::ContentProtectionMethod* protection_method) {
   DrmDisplay* display = FindDisplay(display_id);
   if (!display) {
-    LOG(ERROR) << "There is no display with ID " << display_id;
+    LOG(WARNING) << __func__ << ": there is no display with ID " << display_id;
     return false;
   }
 
@@ -281,7 +330,7 @@ bool DrmGpuDisplayManager::SetHDCPState(
     display::ContentProtectionMethod protection_method) {
   DrmDisplay* display = FindDisplay(display_id);
   if (!display) {
-    LOG(ERROR) << "There is no display with ID " << display_id;
+    LOG(WARNING) << __func__ << ": there is no display with ID " << display_id;
     return false;
   }
 
@@ -293,7 +342,7 @@ void DrmGpuDisplayManager::SetColorMatrix(
     const std::vector<float>& color_matrix) {
   DrmDisplay* display = FindDisplay(display_id);
   if (!display) {
-    LOG(ERROR) << "There is no display with ID " << display_id;
+    LOG(WARNING) << __func__ << ": there is no display with ID " << display_id;
     return;
   }
 
@@ -304,7 +353,7 @@ void DrmGpuDisplayManager::SetBackgroundColor(int64_t display_id,
                                               const uint64_t background_color) {
   DrmDisplay* display = FindDisplay(display_id);
   if (!display) {
-    LOG(ERROR) << "There is no display with ID" << display_id;
+    LOG(WARNING) << __func__ << ": there is no display with ID" << display_id;
     return;
   }
 
@@ -317,20 +366,20 @@ void DrmGpuDisplayManager::SetGammaCorrection(
     const std::vector<display::GammaRampRGBEntry>& gamma_lut) {
   DrmDisplay* display = FindDisplay(display_id);
   if (!display) {
-    LOG(ERROR) << "There is no display with ID " << display_id;
+    LOG(WARNING) << __func__ << ": there is no display with ID " << display_id;
     return;
   }
   display->SetGammaCorrection(degamma_lut, gamma_lut);
 }
 
-void DrmGpuDisplayManager::SetPrivacyScreen(int64_t display_id, bool enabled) {
+bool DrmGpuDisplayManager::SetPrivacyScreen(int64_t display_id, bool enabled) {
   DrmDisplay* display = FindDisplay(display_id);
   if (!display) {
-    LOG(ERROR) << "There is no display with ID " << display_id;
-    return;
+    LOG(WARNING) << __func__ << ": there is no display with ID " << display_id;
+    return false;
   }
 
-  display->SetPrivacyScreen(enabled);
+  return display->SetPrivacyScreen(enabled);
 }
 
 void DrmGpuDisplayManager::SetColorSpace(int64_t crtc_id,
@@ -341,7 +390,7 @@ void DrmGpuDisplayManager::SetColorSpace(int64_t crtc_id,
       return;
     }
   }
-  LOG(ERROR) << __func__ << " there is no display with CRTC ID " << crtc_id;
+  LOG(WARNING) << __func__ << ": there is no display with CRTC ID " << crtc_id;
 }
 
 DrmDisplay* DrmGpuDisplayManager::FindDisplay(int64_t display_id) {
@@ -358,10 +407,8 @@ void DrmGpuDisplayManager::NotifyScreenManager(
     const std::vector<std::unique_ptr<DrmDisplay>>& old_displays) const {
   ScreenManager::CrtcsWithDrmList controllers_to_remove;
   for (const auto& old_display : old_displays) {
-    auto it = std::find_if(new_displays.begin(), new_displays.end(),
-                           DisplayComparator(old_display.get()));
-
-    if (it == new_displays.end()) {
+    if (base::ranges::none_of(new_displays,
+                              DisplayComparator(old_display.get()))) {
       controllers_to_remove.emplace_back(old_display->crtc(),
                                          old_display->drm());
     }
@@ -370,10 +417,8 @@ void DrmGpuDisplayManager::NotifyScreenManager(
     screen_manager_->RemoveDisplayControllers(controllers_to_remove);
 
   for (const auto& new_display : new_displays) {
-    auto it = std::find_if(old_displays.begin(), old_displays.end(),
-                           DisplayComparator(new_display.get()));
-
-    if (it == old_displays.end()) {
+    if (base::ranges::none_of(old_displays,
+                              DisplayComparator(new_display.get()))) {
       screen_manager_->AddDisplayController(
           new_display->drm(), new_display->crtc(), new_display->connector());
     }

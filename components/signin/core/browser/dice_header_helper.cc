@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -204,7 +204,7 @@ bool DiceHeaderHelper::IsUrlEligibleForRequestHeader(const GURL& url) {
   if (account_consistency_ != AccountConsistencyMethod::kDice)
     return false;
 
-  return gaia::IsGaiaSignonRealm(url.DeprecatedGetOriginAsURL());
+  return gaia::HasGaiaSchemeHostPort(url);
 }
 
 std::string DiceHeaderHelper::BuildRequestHeader(

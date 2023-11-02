@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "net/base/ip_endpoint.h"
@@ -185,9 +185,7 @@ class NET_EXPORT ClientSocketHandle {
     return ssl_cert_request_info_;
   }
 
-  // If the connection failed, returns the connection attempts made. (If it
-  // succeeded, they will be returned through the socket instead; see
-  // |StreamSocket::GetConnectionAttempts|.)
+  // If the connection failed, returns the connection attempts made.
   const ConnectionAttempts& connection_attempts() {
     return connection_attempts_;
   }
@@ -230,18 +228,18 @@ class NET_EXPORT ClientSocketHandle {
   // Resets the supplemental error state.
   void ResetErrorState();
 
-  bool is_initialized_;
-  ClientSocketPool* pool_;
-  HigherLayeredPool* higher_pool_;
+  bool is_initialized_ = false;
+  raw_ptr<ClientSocketPool> pool_ = nullptr;
+  raw_ptr<HigherLayeredPool> higher_pool_ = nullptr;
   std::unique_ptr<StreamSocket> socket_;
   ClientSocketPool::GroupId group_id_;
-  SocketReuseType reuse_type_;
+  SocketReuseType reuse_type_ = ClientSocketHandle::UNUSED;
   CompletionOnceCallback callback_;
   base::TimeDelta idle_time_;
   // See ClientSocketPool::ReleaseSocket() for an explanation.
-  int64_t group_generation_;
+  int64_t group_generation_ = -1;
   ResolveErrorInfo resolve_error_info_;
-  bool is_ssl_error_;
+  bool is_ssl_error_ = false;
   scoped_refptr<SSLCertRequestInfo> ssl_cert_request_info_;
   std::vector<ConnectionAttempt> connection_attempts_;
 

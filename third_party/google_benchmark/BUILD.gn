@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -7,6 +7,12 @@ import("buildconfig.gni")
 if (enable_google_benchmarks) {
   config("benchmark_config") {
     include_dirs = [ "src/include" ]
+  }
+
+  # TODO(crbug.com/1344570): Remove once third_party/google_benchmark no longer
+  # uses std::wstring_convert.
+  config("benchmark_suppress_warnings") {
+    cflags = ["-Wno-deprecated-declarations"]
   }
 
   source_set("google_benchmark") {
@@ -60,7 +66,10 @@ if (enable_google_benchmarks) {
     all_dependent_configs = [ ":benchmark_config" ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [ "//build/config/compiler:no_chromium_code" ]
+    configs += [
+      "//build/config/compiler:no_chromium_code",
+      ":benchmark_suppress_warnings",
+    ]
 
     defines = [
       # Tell gtest to always use standard regular expressions.

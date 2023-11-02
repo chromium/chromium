@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,9 @@ import java.util.List;
 
 /**
  * An interface to be notified about changes to a TabModel.
+ *
+ * NOTE: Any changes to this interface including the addition of new methods should be applied to
+ *       {@link TabModelFilter} and {@link TabModelObserverJniBridge}.
  */
 public interface TabModelObserver {
     /**
@@ -27,29 +30,29 @@ public interface TabModelObserver {
 
     /**
      * Called when a tab starts closing.
-     *
      * @param tab The tab to close.
      * @param animate Whether or not to animate the closing.
+     * @param didCloseAlone indicates whether tab will close by itself VS as part of multiple/all
+     *                      tab closures.
      */
-    default void willCloseTab(Tab tab, boolean animate) {}
+    default void willCloseTab(Tab tab, boolean animate, boolean didCloseAlone) {}
 
     /**
-     * Called right after {@code tab} has been destroyed.
+     * Called right before {@code tab} will be destroyed. Called for each tab.
      *
-     * @param tabId The ID of the tab that was destroyed.
-     * @param incognito True if the closed tab was incognito.
-     *
-     * @deprecated Use {@link #didCloseTab(Tab)} instead
+     * @param tab The {@link Tab} that was closed.
      */
-    @Deprecated
-    default void didCloseTab(int tabId, boolean incognito) {}
+    default void onFinishingTabClosure(Tab tab) {}
 
     /**
-     * Called right after {@code tab} has been destroyed.
+     * Called right before each of {@code tabs} will be destroyed. Called as each closure event is
+     * committed. Will be called per closure event i.e. {@link TabModel#closeTab()},
+     * {@link TabModel#closeAllTabs()}, and {@link TabModel#closeMultipleTabs()} will all trigger
+     * one event when the tabs associated with a particular closure commit to closing.
      *
-     * @param tab The tab that was closed.
+     * @param tabs The list of {@link Tab} that were closed.
      */
-    default void didCloseTab(Tab tab) {}
+    default void onFinishingMultipleTabClosure(List<Tab> tabs) {}
 
     /**
      * Called before a tab will be added to the {@link TabModel}.
@@ -83,22 +86,9 @@ public interface TabModelObserver {
      * via {@link TabModel#getComprehensiveModel()}.
      *
      * @param tab The tab that is pending closure.
+     * @param pendingToken The token that can be used to commit or undo the tab closure.
      */
     default void tabPendingClosure(Tab tab) {}
-
-    /**
-     * Called when a tab closure is undone.
-     *
-     * @param tab The tab that has been reopened.
-     */
-    default void tabClosureUndone(Tab tab) {}
-
-    /**
-     * Called when a tab closure is committed and can't be undone anymore.
-     *
-     * @param tab The tab that has been closed.
-     */
-    default void tabClosureCommitted(Tab tab) {}
 
     /**
      * Called when multiple tabs are pending closure.
@@ -109,14 +99,44 @@ public interface TabModelObserver {
     default void multipleTabsPendingClosure(List<Tab> tabs, boolean isAllTabs) {}
 
     /**
+     * Called when a tab closure is undone.
+     *
+     * @param tab The tab that has been reopened.
+     */
+    default void tabClosureUndone(Tab tab) {}
+
+    /**
+     * Called after all tabs closed from a close all tabs action have been successfully restored by
+     * an undo action.
+     */
+    default void allTabsClosureUndone() {}
+
+    /**
+     * Called when a tab closure is committed and can't be undone anymore.
+     *
+     * @param tab The tab that has been closed.
+     */
+    default void tabClosureCommitted(Tab tab) {}
+
+    /**
      * Called when an "all tabs" closure will happen.
+     * If multiple tabs are closed, @{@link TabModelObserver#willCloseMultipleTabs(boolean, List)}
+     * is invoked
      */
     default void willCloseAllTabs(boolean incognito) {}
 
     /**
+     * Called when multiple tabs closure will happen. If "all tabs" are closed at once, @{@link
+     * TabModelObserver#willCloseAllTabs(boolean)} is invoked.
+     * @param allowUndo If undo is allowed on the tab closure.
+     * @param tabs being closed.
+     */
+    default void willCloseMultipleTabs(boolean allowUndo, List<Tab> tabs){};
+
+    /**
      * Called when an "all tabs" closure has been committed and can't be undone anymore.
      */
-    default void allTabsClosureCommitted() {}
+    default void allTabsClosureCommitted(boolean isIncognito) {}
 
     /**
      * Called after a tab has been removed. At this point, the tab is no longer in the tab model.

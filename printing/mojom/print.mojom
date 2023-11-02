@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -146,14 +146,14 @@ enum ResultCode {
 };
 
 // Matches print_preview.PrinterType in
-// chrome/browser/resources/print_preview/data/destination_match.js
+// chrome/browser/resources/print_preview/data/destination_match.ts
 [Stable, Extensible]
 enum PrinterType {
-  kPrivet,
+  kPrivetDeprecated,
   kExtension,
   kPdf,
   kLocal,
-  kCloud
+  kCloudDeprecated
 };
 
 [EnableIf=is_win]
@@ -163,4 +163,10 @@ enum PrinterLanguageType {
   kXps,
   kPostscriptLevel2,
   kPostscriptLevel3,
+};
+
+// Corresponds to `printing::PageRange` in printing/page_range.h.
+struct PageRange {
+  uint32 from;
+  uint32 to;
 };

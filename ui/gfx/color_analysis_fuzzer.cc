@@ -1,21 +1,14 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <fuzzer/FuzzedDataProvider.h>
+#include <algorithm>
 #include <vector>
 
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/color_analysis.h"
 #include "ui/gfx/color_utils.h"
-
-double ConsumeDouble(FuzzedDataProvider* provider) {
-  std::vector<uint8_t> v = provider->ConsumeBytes<uint8_t>(sizeof(double));
-  if (v.size() == sizeof(double))
-    return reinterpret_cast<double*>(v.data())[0];
-
-  return 0;
-}
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   FuzzedDataProvider provider(data, size);
@@ -26,12 +19,17 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   SkImageInfo info = SkImageInfo::MakeN32Premul(width, height);
   size_t expected_size = info.computeMinByteSize();
 
-  color_utils::HSL upper_bound = {ConsumeDouble(&provider),
-                                  ConsumeDouble(&provider),
-                                  ConsumeDouble(&provider)};
-  color_utils::HSL lower_bound = {ConsumeDouble(&provider),
-                                  ConsumeDouble(&provider),
-                                  ConsumeDouble(&provider)};
+  const double lower_bound_hue = provider.ConsumeFloatingPointInRange(0.0, 1.0);
+  const double upper_bound_hue = provider.ConsumeFloatingPointInRange(
+      lower_bound_hue, lower_bound_hue + 1);
+  const double s1 = provider.ConsumeFloatingPointInRange(0.0, 1.0);
+  const double s2 = provider.ConsumeFloatingPointInRange(0.0, 1.0);
+  const double l1 = provider.ConsumeFloatingPointInRange(0.0, 1.0);
+  const double l2 = provider.ConsumeFloatingPointInRange(0.0, 1.0);
+  color_utils::HSL upper_bound = {upper_bound_hue, std::max(s1, s2),
+                                  std::max(l1, l2)};
+  color_utils::HSL lower_bound = {lower_bound_hue, std::min(s1, s2),
+                                  std::min(l1, l2)};
 
   bool find_closest = provider.ConsumeBool();
 

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,14 +42,14 @@ class TextControlElementTest : public testing::Test {
 
 void TextControlElementTest::SetUp() {
   dummy_page_holder_ =
-      std::make_unique<DummyPageHolder>(IntSize(800, 600), nullptr);
+      std::make_unique<DummyPageHolder>(gfx::Size(800, 600), nullptr);
 
   document_ = &dummy_page_holder_->GetDocument();
   document_->documentElement()->setInnerHTML(
       "<body><textarea id=textarea></textarea><input id=input /></body>");
   UpdateAllLifecyclePhases();
   text_control_ = ToTextControl(document_->getElementById("textarea"));
-  text_control_->focus();
+  text_control_->Focus();
   input_ = To<HTMLInputElement>(document_->getElementById("input"));
 }
 
@@ -67,8 +67,8 @@ TEST_F(TextControlElementTest, SetSelectionRange) {
 }
 
 TEST_F(TextControlElementTest, SetSelectionRangeDoesNotCauseLayout) {
-  Input().focus();
-  Input().setValue("Hello, input form.");
+  Input().Focus();
+  Input().SetValue("Hello, input form.");
   Input().SetSelectionRange(1, 1);
 
   // Force layout if document().updateStyleAndLayoutIgnorePendingStylesheets()
@@ -81,7 +81,7 @@ TEST_F(TextControlElementTest, SetSelectionRangeDoesNotCauseLayout) {
 }
 
 TEST_F(TextControlElementTest, IndexForPosition) {
-  Input().setValue("Hello");
+  Input().SetValue("Hello");
   HTMLElement* inner_editor = Input().InnerEditorElement();
   EXPECT_EQ(5u, TextControlElement::IndexForPosition(
                     inner_editor,
@@ -93,12 +93,12 @@ TEST_F(TextControlElementTest, ReadOnlyAttributeChangeEditability) {
   Input().setAttribute(html_names::kReadonlyAttr, "");
   UpdateAllLifecyclePhases();
   EXPECT_EQ(EUserModify::kReadOnly,
-            Input().InnerEditorElement()->GetComputedStyle()->UserModify());
+            Input().InnerEditorElement()->GetComputedStyle()->UsedUserModify());
 
   Input().removeAttribute(html_names::kReadonlyAttr);
   UpdateAllLifecyclePhases();
   EXPECT_EQ(EUserModify::kReadWritePlaintextOnly,
-            Input().InnerEditorElement()->GetComputedStyle()->UserModify());
+            Input().InnerEditorElement()->GetComputedStyle()->UsedUserModify());
 }
 
 TEST_F(TextControlElementTest, DisabledAttributeChangeEditability) {
@@ -106,12 +106,12 @@ TEST_F(TextControlElementTest, DisabledAttributeChangeEditability) {
   Input().setAttribute(html_names::kDisabledAttr, "");
   UpdateAllLifecyclePhases();
   EXPECT_EQ(EUserModify::kReadOnly,
-            Input().InnerEditorElement()->GetComputedStyle()->UserModify());
+            Input().InnerEditorElement()->GetComputedStyle()->UsedUserModify());
 
   Input().removeAttribute(html_names::kDisabledAttr);
   UpdateAllLifecyclePhases();
   EXPECT_EQ(EUserModify::kReadWritePlaintextOnly,
-            Input().InnerEditorElement()->GetComputedStyle()->UserModify());
+            Input().InnerEditorElement()->GetComputedStyle()->UsedUserModify());
 }
 
 }  // namespace blink

@@ -1,0 +1,20 @@
+import("//build/config/linux/pkg_config.gni")
+import("//build/shim_headers.gni")
+
+pkg_config("system_absl_type_traits") {
+  packages = [ "absl_type_traits" ]
+}
+
+shim_headers("type_traits_shim") {
+  root_path = "."
+  prefix = "absl/meta/"
+  headers = [ "type_traits.h" ]
+}
+
+source_set("type_traits") {
+  deps = [ ":type_traits_shim" ]
+  public_configs = [ ":system_absl_type_traits" ]
+}
+
+source_set("type_traits_test") {
+}

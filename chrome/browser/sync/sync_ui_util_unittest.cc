@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,8 +13,8 @@
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "components/sync/driver/test_sync_service.h"
 #include "components/sync/engine/sync_engine.h"
+#include "components/sync/test/test_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -369,9 +369,6 @@ TEST(SyncUIUtilTest, ShouldShowSyncPassphraseError) {
 TEST(SyncUIUtilTest, ShouldShowSyncPassphraseError_SyncDisabled) {
   syncer::TestSyncService service;
   service.SetFirstSetupComplete(false);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  service.GetUserSettings()->SetOsSyncFeatureEnabled(false);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   service.SetPassphraseRequiredForPreferredDataTypes(true);
   EXPECT_FALSE(ShouldShowSyncPassphraseError(&service));
 }
@@ -382,21 +379,5 @@ TEST(SyncUIUtilTest, ShouldShowSyncPassphraseError_NotUsingPassphrase) {
   service.SetPassphraseRequiredForPreferredDataTypes(false);
   EXPECT_FALSE(ShouldShowSyncPassphraseError(&service));
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-TEST(SyncUIUtilTest, ShouldShowSyncPassphraseError_OsSyncEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  // SyncConsentOptional requires SyncSettingsCategorization.
-  feature_list.InitWithFeatures(
-      {chromeos::features::kSyncSettingsCategorization,
-       chromeos::features::kSyncConsentOptional},
-      {});
-  syncer::TestSyncService service;
-  service.SetPassphraseRequiredForPreferredDataTypes(true);
-  service.SetFirstSetupComplete(false);
-  service.GetUserSettings()->SetOsSyncFeatureEnabled(true);
-  EXPECT_TRUE(ShouldShowSyncPassphraseError(&service));
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace

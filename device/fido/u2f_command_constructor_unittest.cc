@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,7 +26,6 @@ CtapMakeCredentialRequest ConstructMakeCredentialRequest() {
       fido_parsing_utils::Materialize(test_data::kUserId));
   user.name = "johnpsmith@example.com";
   user.display_name = "John P. Smith";
-  user.icon_url = GURL("https://pics.acme.com/00/p/aBjjjpqPb.png");
 
   return CtapMakeCredentialRequest(
       test_data::kClientDataJson, std::move(rp), std::move(user),
@@ -79,7 +78,6 @@ TEST(U2fCommandConstructorTest, TestU2fRegisterCredentialAlgorithmRequirement) {
       fido_parsing_utils::Materialize(test_data::kUserId));
   user.name = "johnpsmith@example.com";
   user.display_name = "John P. Smith";
-  user.icon_url = GURL("https://pics.acme.com/00/p/aBjjjpqPb.png");
 
   CtapMakeCredentialRequest make_credential_param(
       test_data::kClientDataJson, std::move(rp), std::move(user),

@@ -1,0 +1,25 @@
+This is a testharness.js-based test.
+PASS Check after-1kb.html
+PASS Check after-bogus-after-1kb.html
+PASS Check after-bogus.html
+FAIL Check after-head-after-1kb-crlf.html assert_equals: Check characterSet expected "UTF-8" but got "windows-1251"
+PASS Check after-head-after-1kb.html
+PASS Check after-head-in-1kb-crlf.html
+PASS Check after-head-in-1kb.html
+PASS Check baseline.html
+PASS Check document-write.html
+PASS Check in-comment.html
+PASS Check in-noscript-after-template-after-1kb.html
+PASS Check in-object.html
+PASS Check in-script.html
+PASS Check in-style.html
+PASS Check in-svg.html
+PASS Check in-svg-in-cdata.html
+PASS Check in-template-after-1kb.html
+PASS Check in-template.html
+PASS Check in-title.html
+PASS Check ncr.html
+PASS Check non-ascii-in-comment-before.html
+PASS Check non-ascii-in-title-before.html
+Harness: the test ran to completion.
+

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -277,13 +277,11 @@ void ProtoConversions::RequestParamsToProto(const RequestParams& request_params,
   proto->set_credentials_mode(
       static_cast<int32_t>(request_params.credentials_mode));
 
-  int i = 0;
   net::HttpRequestHeaders::Iterator iter(request_params.request_headers);
   while (iter.GetNext()) {
     protodb::RequestHeader* header = proto->add_headers();
     header->set_key(iter.name());
     header->set_value(iter.value());
-    i++;
   }
 }
 
@@ -319,6 +317,10 @@ Entry ProtoConversions::EntryFromProto(const protodb::Entry& proto) {
   entry.did_received_response = proto.did_received_response();
   entry.require_response_headers = proto.require_response_headers();
 
+  for (const auto& kv : proto.custom_data()) {
+    entry.custom_data[kv.key()] = kv.value();
+  }
+
   return entry;
 }
 
@@ -347,6 +349,11 @@ protodb::Entry ProtoConversions::EntryToProto(const Entry& entry) {
     proto.set_response_headers(entry.response_headers->raw_headers());
   proto.set_did_received_response(entry.did_received_response);
   proto.set_require_response_headers(entry.require_response_headers);
+  for (const auto& kv : entry.custom_data) {
+    auto* custom_data_proto = proto.add_custom_data();
+    custom_data_proto->set_key(kv.first);
+    custom_data_proto->set_value(kv.second);
+  }
 
   return proto;
 }

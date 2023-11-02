@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "chrome/updater/constants.h"
 
@@ -50,7 +51,7 @@ class PolicyManagerInterface {
   // its policies are operational. For instance, the Device Management Policy
   // Manager will return |true| for this method if the machine is joined to
   // a DM server.
-  virtual bool IsManaged() const = 0;
+  virtual bool HasActiveDevicePolicies() const = 0;
 
   // Returns the policy for how often the Updater should check for updates.
   // Returns the time interval between update checks in minutes.
@@ -109,9 +110,14 @@ class PolicyManagerInterface {
   // Returns a channel, for example {stable|beta|dev}.
   virtual bool GetTargetChannel(const std::string& app_id,
                                 std::string* channel) const = 0;
+
+  // Returns a list of apps that need to be downloaded and installed by the
+  // updater.
+  virtual bool GetForceInstallApps(
+      std::vector<std::string>* force_install_apps) const = 0;
 };
 
-std::unique_ptr<PolicyManagerInterface> GetPolicyManager();
+std::unique_ptr<PolicyManagerInterface> GetDefaultValuesPolicyManager();
 
 }  // namespace updater
 

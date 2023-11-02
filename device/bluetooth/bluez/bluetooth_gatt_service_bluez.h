@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "dbus/object_path.h"
 #include "device/bluetooth/bluetooth_gatt_service.h"
 
@@ -47,7 +47,7 @@ class BluetoothGattServiceBlueZ : public virtual device::BluetoothGattService {
 
   // The adapter associated with this service. It's ok to store a raw pointer
   // here since |adapter_| indirectly owns this instance.
-  BluetoothAdapterBlueZ* adapter_;
+  raw_ptr<BluetoothAdapterBlueZ> adapter_;
 
   // Object path of the GATT service.
   dbus::ObjectPath object_path_;

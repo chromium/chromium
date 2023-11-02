@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,13 @@
 #include "components/sync/protocol/app_list_specifics.pb.h"
 #include "components/sync/protocol/app_specifics.pb.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
+#include "components/sync/protocol/contact_info_specifics.pb.h"
 #include "components/sync/protocol/gaia_password_reuse.pb.h"
 #include "components/sync/protocol/get_updates_caller_info.pb.h"
 #include "components/sync/protocol/nigori_specifics.pb.h"
 #include "components/sync/protocol/reading_list_specifics.pb.h"
+#include "components/sync/protocol/saved_tab_group_specifics.pb.h"
+#include "components/sync/protocol/segmentation_specifics.pb.h"
 #include "components/sync/protocol/session_specifics.pb.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
@@ -45,6 +48,9 @@ const char* ProtoEnumToString(
     sync_pb::CommitResponse::ResponseType response_type);
 
 const char* ProtoEnumToString(
+    sync_pb::ContactInfoSpecifics::VerificationStatus verification_status);
+
+const char* ProtoEnumToString(
     sync_pb::GetUpdatesCallerInfo::GetUpdatesSource updates_source);
 
 const char* ProtoEnumToString(sync_pb::NigoriSpecifics::PassphraseType type);
@@ -52,12 +58,14 @@ const char* ProtoEnumToString(sync_pb::NigoriSpecifics::PassphraseType type);
 const char* ProtoEnumToString(
     sync_pb::ReadingListSpecifics::ReadingListEntryStatus status);
 
+const char* ProtoEnumToString(sync_pb::SavedTabGroup::SavedTabGroupColor color);
+
 const char* ProtoEnumToString(
     sync_pb::SearchEngineSpecifics::ActiveStatus is_active);
 
 const char* ProtoEnumToString(sync_pb::SessionTab::FaviconType favicon_type);
 
-const char* ProtoEnumToString(sync_pb::SessionWindow::BrowserType browser_type);
+const char* ProtoEnumToString(sync_pb::SyncEnums::BrowserType browser_type);
 
 const char* ProtoEnumToString(sync_pb::SyncEnums::Action action);
 
@@ -77,7 +85,7 @@ const char* ProtoEnumToString(sync_pb::SyncEnums::SingletonDebugEventType type);
 
 const char* ProtoEnumToString(sync_pb::TabNavigation::BlockedState state);
 
-const char* ProtoEnumToString(sync_pb::TabNavigation::PasswordState state);
+const char* ProtoEnumToString(sync_pb::SyncEnums::PasswordState state);
 
 const char* ProtoEnumToString(sync_pb::UserConsentTypes::ConsentStatus status);
 
@@ -101,6 +109,9 @@ const char* ProtoEnumToString(
     sync_pb::GaiaPasswordReuse::PasswordCaptured::EventTrigger trigger);
 
 const char* ProtoEnumToString(
+    sync_pb::SegmentationSpecifics::DeviceMetadata::PlatformType platform_type);
+
+const char* ProtoEnumToString(
     sync_pb::UserEventSpecifics::GaiaPasswordCaptured::EventTrigger trigger);
 
 const char* ProtoEnumToString(
@@ -109,6 +120,10 @@ const char* ProtoEnumToString(
 const char* ProtoEnumToString(
     sync_pb::WalletMaskedCreditCard::VirtualCardEnrollmentState
         virtual_card_enrollment_state);
+
+const char* ProtoEnumToString(
+    sync_pb::WalletMaskedCreditCard::VirtualCardEnrollmentType
+        virtual_card_enrollment_type);
 
 const char* ProtoEnumToString(
     sync_pb::WalletMaskedCreditCard::WalletCardStatus wallet_card_status);
@@ -150,8 +165,20 @@ const char* ProtoEnumToString(
     sync_pb::WorkspaceDeskSpecifics::WindowState window_state);
 
 const char* ProtoEnumToString(
+    sync_pb::WorkspaceDeskSpecifics::LaunchContainer container);
+
+const char* ProtoEnumToString(
+    sync_pb::WorkspaceDeskSpecifics::WindowOpenDisposition disposition);
+
+const char* ProtoEnumToString(
     sync_pb::UserConsentTypes::AssistantActivityControlConsent::SettingType
         setting_type);
+
+const char* ProtoEnumToString(sync_pb::WorkspaceDeskSpecifics::DeskType type);
+
+const char* ProtoEnumToString(
+    sync_pb::WorkspaceDeskSpecifics::TabGroupColor color);
+
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_PROTOCOL_PROTO_ENUM_CONVERSIONS_H_

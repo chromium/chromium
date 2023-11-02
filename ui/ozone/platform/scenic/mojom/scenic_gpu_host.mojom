@@ -1,0 +1,12 @@
+// Copyright 2018 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ui.mojom;
+
+// Browser process interface that enables the GPU process to present to Scenic.
+interface ScenicGpuHost {
+  // Attaches the surface View identified by |view_holder_token| to the scene
+  // graph for |window_id|.
+  AttachSurfaceToWindow(int32 window_id, handle<platform> view_holder_token);
+};

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,9 +44,6 @@ LacrosAppWindow::LacrosAppWindow(const ash::ShelfID& shelf_id,
       gfx::Size(kWindowIconSizeDips, kWindowIconSizeDips));
   views::NativeWidgetAura::AssignIconToAuraWindow(GetNativeWindow(),
                                                   window_icon, app_icon);
-  auto* win = widget->GetNativeWindow();
-  if (win)
-    win->SetProperty(aura::client::kUseWindowBoundsForShadow, false);
 }
 
 LacrosAppWindow::~LacrosAppWindow() = default;

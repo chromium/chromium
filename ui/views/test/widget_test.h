@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,21 +9,26 @@
 #include <string>
 #include <utility>
 
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
+#include "build/chromecast_buildflags.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/widget/widget_observer.h"
 
+#if (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS)) || \
+    BUILDFLAG(IS_CHROMEOS_LACROS)
+
+#include "ui/display/screen.h"
+#endif
+
 namespace ui {
-namespace internal {
-class InputMethodDelegate;
-}
 class EventSink;
+class ImeKeyEventDispatcher;
 }  // namespace ui
 
 namespace views {
@@ -109,8 +114,8 @@ class WidgetTest : public ViewsTestBase {
   // sink.
   static ui::EventSink* GetEventSink(Widget* widget);
 
-  // Get the InputMethodDelegate, for setting on a Mock InputMethod in tests.
-  static ui::internal::InputMethodDelegate* GetInputMethodDelegateForWidget(
+  // Get the ImeKeyEventDispatcher, for setting on a Mock InputMethod in tests.
+  static ui::ImeKeyEventDispatcher* GetImeKeyEventDispatcherForWidget(
       Widget* widget);
 
   // Return true if |window| is transparent according to the native platform.
@@ -156,6 +161,12 @@ class DesktopWidgetTestInteractive : public DesktopWidgetTest {
 
   // DesktopWidgetTest
   void SetUp() override;
+
+#if (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS)) || \
+    BUILDFLAG(IS_CHROMEOS_LACROS)
+  void TearDown() override;
+  std::unique_ptr<display::Screen> screen_;
+#endif
 };
 
 // A helper WidgetDelegate for tests that require hooks into WidgetDelegate
@@ -201,8 +212,8 @@ class TestDesktopWidgetDelegate : public WidgetDelegate {
   bool OnCloseRequested(Widget::ClosedReason close_reason) override;
 
  private:
-  Widget* widget_;
-  View* contents_view_ = nullptr;
+  raw_ptr<Widget> widget_;
+  raw_ptr<View> contents_view_ = nullptr;
   int window_closing_count_ = 0;
   gfx::Rect initial_bounds_ = gfx::Rect(100, 100, 200, 200);
   bool can_close_ = true;
@@ -228,7 +239,7 @@ class TestInitialFocusWidgetDelegate : public TestDesktopWidgetDelegate {
   View* GetInitiallyFocusedView() override;
 
  private:
-  View* view_;
+  raw_ptr<View> view_;
 };
 
 // Use in tests to wait until a Widget's activation change to a particular
@@ -251,9 +262,11 @@ class WidgetActivationWaiter : public WidgetObserver {
   // views::WidgetObserver override:
   void OnWidgetActivationChanged(Widget* widget, bool active) override;
 
-  base::RunLoop run_loop_;
   bool observed_;
   bool active_;
+
+  base::RunLoop run_loop_;
+  base::ScopedObservation<Widget, WidgetObserver> widget_observation_{this};
 };
 
 // Use in tests to wait for a widget to be destroyed.
@@ -274,8 +287,8 @@ class WidgetDestroyedWaiter : public WidgetObserver {
   // views::WidgetObserver
   void OnWidgetDestroyed(Widget* widget) override;
 
-  Widget* widget_;
   base::RunLoop run_loop_;
+  base::ScopedObservation<Widget, WidgetObserver> widget_observation_{this};
 };
 
 // Helper class to wait for a Widget to become visible. This will add a failure
@@ -296,7 +309,7 @@ class WidgetVisibleWaiter : public WidgetObserver {
   void OnWidgetVisibilityChanged(Widget* widget, bool visible) override;
   void OnWidgetDestroying(Widget* widget) override;
 
-  Widget* const widget_;
+  const raw_ptr<Widget> widget_;
   base::RunLoop run_loop_;
   base::ScopedObservation<Widget, WidgetObserver> widget_observation_{this};
 };

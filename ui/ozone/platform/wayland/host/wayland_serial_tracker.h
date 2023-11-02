@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,10 @@ namespace wl {
 // meta-data, received through Wayland protocol events. Each serial value is
 // associated with an event type, which is represented by a SerialType enum
 // entry.
+//
+// Note: SerialTracker must not be used to track related input object states,
+// e.g: whether a pointer button is pressed, or whether there are active touch
+// points. Instead, other specific APIs should be added/used for that.
 
 enum class SerialType {
   kMouseEnter,

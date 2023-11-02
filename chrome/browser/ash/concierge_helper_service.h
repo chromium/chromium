@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_CONCIERGE_HELPER_SERVICE_H_
 
 #include "base/no_destructor.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace ash {
@@ -31,7 +31,7 @@ class ConciergeHelperService : public KeyedService {
   void SetPluginVmCpuRestriction(bool do_restrict);
 };
 
-class ConciergeHelperServiceFactory : public BrowserContextKeyedServiceFactory {
+class ConciergeHelperServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static ConciergeHelperServiceFactory* GetInstance();
   static ConciergeHelperService* GetForBrowserContext(

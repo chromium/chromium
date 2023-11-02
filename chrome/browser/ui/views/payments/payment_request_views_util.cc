@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
 #include "chrome/browser/ui/views/payments/payment_request_sheet_controller.h"
@@ -53,6 +54,7 @@
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/painter.h"
+#include "ui/views/style/typography.h"
 #include "ui/views/view.h"
 
 namespace payments {
@@ -108,6 +110,29 @@ class ChromeLogoImageView : public views::ImageView {
 BEGIN_METADATA(ChromeLogoImageView, views::ImageView)
 END_METADATA
 
+class PaymentRequestBackArrowButton : public views::ImageButton {
+ public:
+  explicit PaymentRequestBackArrowButton(
+      views::Button::PressedCallback back_arrow_callback)
+      : views::ImageButton(back_arrow_callback) {
+    ConfigureVectorImageButton(this);
+    constexpr int kBackArrowSize = 16;
+    SetSize(gfx::Size(kBackArrowSize, kBackArrowSize));
+    SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+    SetID(static_cast<int>(DialogViewID::BACK_BUTTON));
+    SetAccessibleName(l10n_util::GetStringUTF16(IDS_PAYMENTS_BACK));
+  }
+
+  void OnThemeChanged() override {
+    views::View::OnThemeChanged();
+    const auto* const cp = GetColorProvider();
+    views::SetImageFromVectorIconWithColor(
+        this, vector_icons::kBackArrowIcon,
+        cp->GetColor(kColorPaymentsRequestBackArrowButtonIcon),
+        cp->GetColor(kColorPaymentsRequestBackArrowButtonIconDisabled));
+  }
+};
+
 // |s1|, |s2|, and |s3| are lines identifying the profile. |s1| is the
 // "headline" which may be emphasized depending on |type|. If |enabled| is
 // false, the labels will look disabled.
@@ -127,9 +152,10 @@ std::unique_ptr<views::View> GetBaseProfileLabel(
   container->SetLayoutManager(std::move(layout));
 
   if (!s1.empty()) {
-    const int text_style = type == AddressStyleType::DETAILED
-                               ? static_cast<int>(STYLE_EMPHASIZED)
-                               : static_cast<int>(views::style::STYLE_PRIMARY);
+    const int text_style =
+        type == AddressStyleType::DETAILED
+            ? static_cast<int>(views::style::STYLE_EMPHASIZED)
+            : static_cast<int>(views::style::STYLE_PRIMARY);
     auto label = std::make_unique<ThemeTrackingLabel>(s1);
     label->SetTextContext(views::style::CONTEXT_LABEL);
     label->SetTextStyle(text_style);
@@ -233,7 +259,6 @@ void PopulateSheetHeaderView(bool show_back_arrow,
                              views::Button::PressedCallback back_arrow_callback,
                              views::View* container,
                              std::unique_ptr<views::Background> background) {
-  SkColor background_color = background->get_color();
   container->SetBackground(std::move(background));
   views::BoxLayout* layout =
       container->SetLayoutManager(std::make_unique<views::BoxLayout>());
@@ -245,23 +270,13 @@ void PopulateSheetHeaderView(bool show_back_arrow,
 
   constexpr int kVerticalInset = 14;
   constexpr int kHeaderHorizontalInset = 16;
-  container->SetBorder(
-      views::CreateEmptyBorder(kVerticalInset, kHeaderHorizontalInset,
-                               kVerticalInset, kHeaderHorizontalInset));
+  container->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(kVerticalInset, kHeaderHorizontalInset, kVerticalInset,
+                        kHeaderHorizontalInset)));
 
-  if (show_back_arrow) {
-    auto back_arrow =
-        views::CreateVectorImageButton(std::move(back_arrow_callback));
-    views::SetImageFromVectorIcon(
-        back_arrow.get(), vector_icons::kBackArrowIcon,
-        color_utils::GetColorWithMaxContrast(background_color));
-    constexpr int kBackArrowSize = 16;
-    back_arrow->SetSize(gfx::Size(kBackArrowSize, kBackArrowSize));
-    back_arrow->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
-    back_arrow->SetID(static_cast<int>(DialogViewID::BACK_BUTTON));
-    back_arrow->SetAccessibleName(l10n_util::GetStringUTF16(IDS_PAYMENTS_BACK));
-    container->AddChildView(std::move(back_arrow));
-  }
+  if (show_back_arrow)
+    container->AddChildView(
+        std::make_unique<PaymentRequestBackArrowButton>(back_arrow_callback));
 
   layout->SetFlexForView(
       container->AddChildView(std::move(header_content_view)), 1);
@@ -386,7 +401,7 @@ std::unique_ptr<views::Border> CreatePaymentRequestRowBorder(
 
 std::unique_ptr<views::Label> CreateBoldLabel(const std::u16string& text) {
   return std::make_unique<views::Label>(text, views::style::CONTEXT_LABEL,
-                                        STYLE_EMPHASIZED);
+                                        views::style::STYLE_EMPHASIZED);
 }
 
 std::unique_ptr<views::Label> CreateMediumLabel(const std::u16string& text) {
@@ -460,7 +475,7 @@ std::unique_ptr<views::View> CreateWarningView(const std::u16string& message,
   constexpr int kRowHorizontalSpacing = 8;
   auto layout = std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,
-      gfx::Insets(0, kPaymentRequestRowHorizontalInsets),
+      gfx::Insets::VH(0, kPaymentRequestRowHorizontalInsets),
       kRowHorizontalSpacing);
   layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kStart);
   layout->set_cross_axis_alignment(

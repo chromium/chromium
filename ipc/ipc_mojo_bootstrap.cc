@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,8 +18,8 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
@@ -48,6 +48,8 @@
 #include "mojo/public/cpp/bindings/pipe_control_message_proxy.h"
 #include "mojo/public/cpp/bindings/sequence_local_sync_event_watcher.h"
 #include "mojo/public/cpp/bindings/tracing_helpers.h"
+
+#include "base/record_replay.h"
 
 namespace IPC {
 
@@ -146,7 +148,8 @@ class ChannelAssociatedGroupController
         dispatcher_(this),
         control_message_handler_(this),
         control_message_proxy_thunk_(this),
-        control_message_proxy_(&control_message_proxy_thunk_) {
+        control_message_proxy_(&control_message_proxy_thunk_),
+        lock_("ChannelAssociatedGroupController.lock_") {
     thread_checker_.DetachFromThread();
     control_message_handler_.SetDescription(
         "IPC::mojom::Bootstrap [primary] PipeControlMessageHandler");
@@ -469,7 +472,7 @@ class ChannelAssociatedGroupController
     mojo::Message& value() { return value_; }
 
    private:
-    ChannelAssociatedGroupController* controller_ = nullptr;
+    raw_ptr<ChannelAssociatedGroupController> controller_ = nullptr;
     mojo::Message value_;
   };
 
@@ -631,7 +634,7 @@ class ChannelAssociatedGroupController
 
       scoped_refptr<Endpoint> keepalive(this);
       scoped_refptr<AssociatedGroupController> controller_keepalive(
-          controller_);
+          controller_.get());
       base::AutoLock locker(controller_->lock_);
       bool more_to_process = false;
       if (!sync_messages_.empty()) {
@@ -685,7 +688,7 @@ class ChannelAssociatedGroupController
       return id;
     }
 
-    ChannelAssociatedGroupController* const controller_;
+    const raw_ptr<ChannelAssociatedGroupController> controller_;
     const mojo::InterfaceId id_;
 
     bool closed_ = false;
@@ -693,7 +696,7 @@ class ChannelAssociatedGroupController
     bool handle_created_ = false;
     bool was_bound_off_sequence_ = false;
     absl::optional<mojo::DisconnectReason> disconnect_reason_;
-    mojo::InterfaceEndpointClient* client_ = nullptr;
+    raw_ptr<mojo::InterfaceEndpointClient> client_ = nullptr;
     scoped_refptr<base::SequencedTaskRunner> task_runner_;
     std::unique_ptr<mojo::SequenceLocalSyncEventWatcher> sync_watcher_;
     base::queue<std::pair<uint32_t, MessageWrapper>> sync_messages_;
@@ -716,7 +719,7 @@ class ChannelAssociatedGroupController
       return controller_->SendMessage(message);
     }
 
-    ChannelAssociatedGroupController* controller_;
+    raw_ptr<ChannelAssociatedGroupController> controller_;
   };
 
   ~ChannelAssociatedGroupController() override {
@@ -817,10 +820,10 @@ class ChannelAssociatedGroupController
       client->NotifyError(reason);
     } else {
       endpoint->task_runner()->PostTask(
-          FROM_HERE,
-          base::BindOnce(&ChannelAssociatedGroupController::
-                             NotifyEndpointOfErrorOnEndpointThread,
-                         this, endpoint->id(), base::Unretained(endpoint)));
+          FROM_HERE, base::BindOnce(&ChannelAssociatedGroupController::
+                                        NotifyEndpointOfErrorOnEndpointThread,
+                                    this, endpoint->id(),
+                                    base::UnsafeDanglingUntriaged(endpoint)));
     }
   }
 
@@ -973,15 +976,24 @@ class ChannelAssociatedGroupController
 
     base::AutoLock locker(lock_);
     Endpoint* endpoint = FindEndpoint(id);
-    if (!endpoint)
+    if (!endpoint) {
       return;
+    }
 
     mojo::InterfaceEndpointClient* client = endpoint->client();
-    if (!client)
+    if (!client) {
       return;
+    }
 
+    if (!endpoint->task_runner()->RunsTasksInCurrentSequence() &&
+        !proxy_task_runner_->RunsTasksInCurrentSequence()) {
+      return;
+    }
+
+    // TODO(altimin): This event is temporarily kept as a debug fallback. Remove
+    // it once the new implementation proves to be stable.
     TRACE_EVENT(
-        TRACE_CATEGORY_OR_DISABLED_BY_DEFAULT_MOJOM("mojom"),
+        TRACE_DISABLED_BY_DEFAULT("mojom"),
         // Using client->interface_name() is safe here because this is a static
         // string defined for each mojo interface.
         perfetto::StaticString(client->interface_name()),
@@ -993,8 +1005,6 @@ class ChannelAssociatedGroupController
 
           perfetto::Flow::Global(message.GetTraceId())(ctx);
         });
-    DCHECK(endpoint->task_runner()->RunsTasksInCurrentSequence() ||
-           proxy_task_runner_->RunsTasksInCurrentSequence());
 
     // Sync messages should never make their way to this method.
     DCHECK(!message.has_flag(mojo::Message::kFlagIsSync));
@@ -1024,11 +1034,14 @@ class ChannelAssociatedGroupController
     if (!client)
       return;
 
+    if (!endpoint->task_runner()->RunsTasksInCurrentSequence() &&
+        !proxy_task_runner_->RunsTasksInCurrentSequence()) {
+      return;
+    }
+
     // Using client->interface_name() is safe here because this is a static
     // string defined for each mojo interface.
     TRACE_EVENT0("mojom", client->interface_name());
-    DCHECK(endpoint->task_runner()->RunsTasksInCurrentSequence() ||
-           proxy_task_runner_->RunsTasksInCurrentSequence());
     MessageWrapper message_wrapper = endpoint->PopSyncMessage(message_id);
 
     // The message must have already been dequeued by the endpoint waking up

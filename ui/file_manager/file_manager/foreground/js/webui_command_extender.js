@@ -1,9 +1,9 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import {dispatchPropertyChange} from 'chrome://resources/js/cr.m.js';
-import {Command} from 'chrome://resources/js/cr/ui/command.m.js';
+import {Command} from './ui/command.js';
 
 /**
  * Sets 'hidden' property of a Command instance and dispatches

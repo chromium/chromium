@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/thread_annotations.h"
 #include "base/threading/thread_checker.h"
+#include "base/time/time.h"
 #include "base/token.h"
 #include "media/base/video_frame.h"
 #include "media/capture/mojom/video_capture.mojom-blink.h"
@@ -41,7 +42,7 @@ namespace blink {
 
 class BrowserInterfaceBrokerProxy;
 
-extern const PLATFORM_EXPORT base::Feature kTimeoutHangingVideoCaptureStarts;
+PLATFORM_EXPORT BASE_DECLARE_FEATURE(kTimeoutHangingVideoCaptureStarts);
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -70,22 +71,19 @@ class PLATFORM_EXPORT VideoCaptureImpl
   // Stop/resume delivering video frames to clients, based on flag |suspend|.
   void SuspendCapture(bool suspend);
 
-  // Start/stop cropping a video track.
-  // Non-empty |crop_id| sets (or changes) the crop-target.
-  // Empty |crop_id| reverts the capture to its original, uncropped state.
-  // The callback reports success/failure.
-  void Crop(const base::Token& crop_id,
-            base::OnceCallback<void(media::mojom::CropRequestResult)> callback);
-
   // Start capturing using the provided parameters.
   // |client_id| must be unique to this object in the render process. It is
   // used later to stop receiving video frames.
   // |state_update_cb| will be called when state changes.
   // |deliver_frame_cb| will be called when a frame is ready.
+  // |crop_version_cb| will be called when it is guaranteed that all
+  // subsequent frames |deliver_frame_cb| is called for, have a crop version
+  // that is equal-to-or-greater-than the given crop version.
   void StartCapture(int client_id,
                     const media::VideoCaptureParams& params,
                     const VideoCaptureStateUpdateCB& state_update_cb,
-                    const VideoCaptureDeliverFrameCB& deliver_frame_cb);
+                    const VideoCaptureDeliverFrameCB& deliver_frame_cb,
+                    const VideoCaptureCropVersionCB& crop_version_cb);
 
   // Stop capturing. |client_id| is the identifier used to call StartCapture.
   void StopCapture(int client_id);
@@ -118,7 +116,8 @@ class PLATFORM_EXPORT VideoCaptureImpl
       std::unique_ptr<gpu::GpuMemoryBufferSupport> gpu_memory_buffer_support);
 
   // media::mojom::VideoCaptureObserver implementation.
-  void OnStateChanged(media::mojom::VideoCaptureState state) override;
+  void OnStateChanged(
+      media::mojom::blink::VideoCaptureResultPtr result) override;
   void OnNewBuffer(
       int32_t buffer_id,
       media::mojom::blink::VideoBufferHandlePtr buffer_handle) override;
@@ -126,6 +125,7 @@ class PLATFORM_EXPORT VideoCaptureImpl
       media::mojom::blink::ReadyBufferPtr buffer,
       Vector<media::mojom::blink::ReadyBufferPtr> scaled_buffers) override;
   void OnBufferDestroyed(int32_t buffer_id) override;
+  void OnNewCropVersion(uint32_t crop_version) override;
 
   void ProcessFeedback(const media::VideoCaptureFeedback& feedback);
 
@@ -217,10 +217,6 @@ class PLATFORM_EXPORT VideoCaptureImpl
       VideoCaptureDeviceFormatsCallback callback,
       const Vector<media::VideoCaptureFormat>& formats_in_use);
 
-  void OnCropResult(
-      base::OnceCallback<void(media::mojom::CropRequestResult)> callback,
-      media::mojom::CropRequestResult result);
-
   // Tries to remove |client_id| from |clients|, returning false if not found.
   bool RemoveClient(int client_id, ClientInfoMap* clients);
 
@@ -245,6 +241,13 @@ class PLATFORM_EXPORT VideoCaptureImpl
 
   void SetGpuFactoriesHandleOnIOTaskRunner(
       media::GpuVideoAcceleratorFactories* gpu_factories);
+
+  // Sets fallback mode which will make it always request
+  // premapped frames from the capturer.
+  void RequirePremappedFrames();
+
+  // Generates feedback accounding for premapped frames requirement.
+  media::VideoCaptureFeedback DefaultFeedback();
 
   // |device_id_| and |session_id_| are different concepts, but we reuse the
   // same numerical value, passed on construction.
@@ -293,6 +296,8 @@ class PLATFORM_EXPORT VideoCaptureImpl
   // Stores feedback from the clients, received in |ProcessFeedback()|.
   // Only accessed on the IO thread.
   media::VideoCaptureFeedback feedback_;
+
+  bool require_premapped_frames_ = false;
 
   THREAD_CHECKER(io_thread_checker_);
 

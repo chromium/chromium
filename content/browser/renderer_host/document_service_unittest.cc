@@ -1,10 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/public/browser/document_service.h"
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "content/browser/renderer_host/document_service_echo_impl.h"
 #include "content/public/browser/back_forward_cache.h"
@@ -56,12 +57,12 @@ class DocumentServiceTest : public RenderViewHostTestHarness {
   }
 
   void Initialize() {
-    RenderFrameHost* main_rfh = web_contents()->GetMainFrame();
+    RenderFrameHost* main_rfh = web_contents()->GetPrimaryMainFrame();
     RenderFrameHostTester::For(main_rfh)->InitializeRenderFrameIfNeeded();
     main_rfh_ = SimulateNavigation(main_rfh, GURL(kFooOrigin));
   }
 
-  void CreateEchoImpl(RenderFrameHost* rfh) {
+  void CreateEchoImpl(RenderFrameHost& rfh) {
     DCHECK(!is_echo_impl_alive_);
     new DocumentServiceEchoImpl(
         rfh, echo_remote_.BindNewPipeAndPassReceiver(),
@@ -80,13 +81,13 @@ class DocumentServiceTest : public RenderViewHostTestHarness {
     base::RunLoop().RunUntilIdle();
   }
 
-  RenderFrameHost* main_rfh_ = nullptr;
+  raw_ptr<RenderFrameHost> main_rfh_ = nullptr;
   mojo::Remote<mojom::Echo> echo_remote_;
   bool is_echo_impl_alive_ = false;
 };
 
 TEST_F(DocumentServiceTest, ConnectionError) {
-  CreateEchoImpl(main_rfh_);
+  CreateEchoImpl(*main_rfh_);
   ResetConnection();
   EXPECT_FALSE(is_echo_impl_alive_);
 }
@@ -95,7 +96,7 @@ TEST_F(DocumentServiceTest, RenderFrameDeleted) {
   // Needs to create a child frame so we can delete it using DetachFrame()
   // because it is not allowed to detach the main frame.
   RenderFrameHost* child_rfh = AddChildFrame(main_rfh_, GURL(kBarOrigin));
-  CreateEchoImpl(child_rfh);
+  CreateEchoImpl(*child_rfh);
   DetachFrame(child_rfh);
   EXPECT_FALSE(is_echo_impl_alive_);
 }
@@ -104,14 +105,14 @@ TEST_F(DocumentServiceTest, DidFinishNavigation) {
   // When a page enters the BackForwardCache, the RenderFrameHost is not
   // deleted.
   web_contents()->GetController().GetBackForwardCache().DisableForTesting(
-      BackForwardCache::TEST_ASSUMES_NO_CACHING);
-  CreateEchoImpl(main_rfh_);
+      BackForwardCache::TEST_REQUIRES_NO_CACHING);
+  CreateEchoImpl(*main_rfh_);
   SimulateNavigation(main_rfh_, GURL(kBarOrigin));
   EXPECT_FALSE(is_echo_impl_alive_);
 }
 
 TEST_F(DocumentServiceTest, SameDocumentNavigation) {
-  CreateEchoImpl(main_rfh_);
+  CreateEchoImpl(*main_rfh_);
 
   // Must use the same origin to simulate same document navigation.
   auto navigation_simulator =
@@ -123,7 +124,7 @@ TEST_F(DocumentServiceTest, SameDocumentNavigation) {
 }
 
 TEST_F(DocumentServiceTest, FailedNavigation) {
-  CreateEchoImpl(main_rfh_);
+  CreateEchoImpl(*main_rfh_);
 
   auto navigation_simulator =
       NavigationSimulator::CreateRendererInitiated(GURL(kFooOrigin), main_rfh_);
@@ -134,7 +135,7 @@ TEST_F(DocumentServiceTest, FailedNavigation) {
 }
 
 TEST_F(DocumentServiceTest, DeleteContents) {
-  CreateEchoImpl(main_rfh_);
+  CreateEchoImpl(*main_rfh_);
   DeleteContents();
   EXPECT_FALSE(is_echo_impl_alive_);
 }

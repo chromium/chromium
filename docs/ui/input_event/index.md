@@ -423,7 +423,7 @@ keyboard focus.
 
 Chrome on Linux observes the platform native focus change events FocusIn and
 FocusOut
-[[ref](https://source.chromium.org/chromium/chromium/src/+/main:ui/base/x/x11_window.cc?q=x11::Input::CrossingEvent::FocusIn)]
+[[ref](https://source.chromium.org/chromium/chromium/src/+/main:ui/ozone/platform/x11/x11_window.cc?q=x11::Input::CrossingEvent::FocusIn)]
 to respond to focus change events. Nevertheless, eventually just like on
 Windows, the events will be interpreted as active window change.
 

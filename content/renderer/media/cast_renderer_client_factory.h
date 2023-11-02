@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
-#include "content/common/content_export.h"
 #include "media/base/renderer.h"
 #include "media/base/renderer_factory.h"
 #include "ui/gfx/color_space.h"
@@ -24,7 +23,7 @@ namespace content {
 // Creates a renderer for chromecast.
 // This class creates a cast specific MojoRenderer from a MojoRendererFactory,
 // and wraps it within a DecryptingRenderer.
-class CONTENT_EXPORT CastRendererClientFactory : public media::RendererFactory {
+class CastRendererClientFactory : public media::RendererFactory {
  public:
   CastRendererClientFactory(
       media::MediaLog* media_log,

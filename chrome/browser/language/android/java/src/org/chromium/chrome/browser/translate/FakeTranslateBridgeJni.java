@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,6 +30,7 @@ public class FakeTranslateBridgeJni implements TranslateBridge.Natives {
     private HashSet<String> mNeverLanguages;
     private HashSet<String> mAlwaysLanguages;
     private TreeMap<String, LanguageItem> mChromeLanguages;
+    private boolean mAppLanguagePromptShown;
 
     public FakeTranslateBridgeJni(Collection<LanguageItem> chromeLanguages,
             Collection<String> userAcceptLanguages, Collection<String> neverLanguages,
@@ -45,14 +46,26 @@ public class FakeTranslateBridgeJni implements TranslateBridge.Natives {
         mTargetLanguage = targetLanguage;
     }
 
+    /**
+     * Create a basic fake translate bridge with English as the default language.
+     */
+    public FakeTranslateBridgeJni() {
+        mChromeLanguages = new TreeMap<String, LanguageItem>();
+        mUserAcceptLanguages = new ArrayList(Arrays.asList("en"));
+        mDefaultUserAcceptLanguages = new LinkedHashSet(Arrays.asList("en"));
+        mNeverLanguages = new HashSet(Arrays.asList("en"));
+        mAlwaysLanguages = new HashSet();
+        mTargetLanguage = "en";
+    }
+
     @Override
     public void getChromeAcceptLanguages(List<LanguageItem> list) {
         list.addAll(mChromeLanguages.values());
     }
 
     @Override
-    public void getUserAcceptLanguages(List<String> list) {
-        list.addAll(mUserAcceptLanguages);
+    public String[] getUserAcceptLanguages() {
+        return mUserAcceptLanguages.toArray(new String[mUserAcceptLanguages.size()]);
     }
 
     /**
@@ -95,8 +108,8 @@ public class FakeTranslateBridgeJni implements TranslateBridge.Natives {
     }
 
     @Override
-    public void getAlwaysTranslateLanguages(List<String> list) {
-        list.addAll(mAlwaysLanguages);
+    public String[] getAlwaysTranslateLanguages() {
+        return mAlwaysLanguages.toArray(new String[mAlwaysLanguages.size()]);
     }
 
     @Override
@@ -109,8 +122,8 @@ public class FakeTranslateBridgeJni implements TranslateBridge.Natives {
     }
 
     @Override
-    public void getNeverTranslateLanguages(List<String> list) {
-        list.addAll(mNeverLanguages);
+    public String[] getNeverTranslateLanguages() {
+        return mNeverLanguages.toArray(new String[mNeverLanguages.size()]);
     }
 
     @Override
@@ -125,6 +138,24 @@ public class FakeTranslateBridgeJni implements TranslateBridge.Natives {
     @Override
     public boolean isBlockedLanguage(String language) {
         return mNeverLanguages.contains(language);
+    }
+
+    @Override
+    public boolean getAppLanguagePromptShown() {
+        return mAppLanguagePromptShown;
+    }
+
+    @Override
+    public void setAppLanguagePromptShown() {
+        mAppLanguagePromptShown = true;
+    }
+
+    /**
+     * Allow the App Language Prompt shown status to be set for testing.
+     * @param shown Boolean value to set App Language Prompt shown status to.
+     */
+    public void setAppLanguagePromptShown(boolean shown) {
+        mAppLanguagePromptShown = shown;
     }
 
     /**
@@ -167,11 +198,6 @@ public class FakeTranslateBridgeJni implements TranslateBridge.Natives {
     }
 
     @Override
-    public void getModelLanguages(LinkedHashSet<String> set) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public void moveAcceptLanguage(String language, int offset) {
         throw new UnsupportedOperationException();
     }
@@ -183,16 +209,6 @@ public class FakeTranslateBridgeJni implements TranslateBridge.Natives {
 
     @Override
     public void setExplicitLanguageAskPromptShown(boolean shown) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean getAppLanguagePromptShown() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void setAppLanguagePromptShown() {
         throw new UnsupportedOperationException();
     }
 

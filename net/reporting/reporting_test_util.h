@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,11 +10,11 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/unguessable_token.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/rand_callback.h"
 #include "net/reporting/reporting_cache.h"
 #include "net/reporting/reporting_context.h"
@@ -66,7 +66,7 @@ class TestReportingUploader : public ReportingUploader {
     virtual const url::Origin& report_origin() const = 0;
     virtual const GURL& url() const = 0;
     virtual const std::string& json() const = 0;
-    virtual std::unique_ptr<base::Value> GetValue() const = 0;
+    virtual absl::optional<base::Value> GetValue() const = 0;
 
     virtual void Complete(Outcome outcome) = 0;
 
@@ -179,8 +179,8 @@ class TestReportingContext : public ReportingContext {
   // Owned by the DeliveryAgent and GarbageCollector, respectively, but
   // referenced here to preserve type:
 
-  base::MockOneShotTimer* delivery_timer_;
-  base::MockOneShotTimer* garbage_collection_timer_;
+  raw_ptr<base::MockOneShotTimer> delivery_timer_;
+  raw_ptr<base::MockOneShotTimer> garbage_collection_timer_;
 };
 
 // A unit test base class that provides a TestReportingContext and shorthand
@@ -290,7 +290,7 @@ class ReportingTestBase : public TestWithTaskEnvironment {
   base::SimpleTestClock clock_;
   base::SimpleTestTickClock tick_clock_;
   std::unique_ptr<TestReportingContext> context_;
-  ReportingCache::PersistentReportingStore* store_;
+  raw_ptr<ReportingCache::PersistentReportingStore> store_ = nullptr;
 };
 
 class TestReportingService : public ReportingService {
@@ -303,7 +303,7 @@ class TestReportingService : public ReportingService {
     Report(Report&& other);
 
     Report(const GURL& url,
-           const NetworkIsolationKey& network_isolation_key,
+           const NetworkAnonymizationKey& network_anonymization_key,
            const std::string& user_agent,
            const std::string& group,
            const std::string& type,
@@ -313,7 +313,7 @@ class TestReportingService : public ReportingService {
     ~Report();
 
     GURL url;
-    NetworkIsolationKey network_isolation_key;
+    NetworkAnonymizationKey network_anonymization_key;
     std::string user_agent;
     std::string group;
     std::string type;
@@ -344,20 +344,22 @@ class TestReportingService : public ReportingService {
   void QueueReport(
       const GURL& url,
       const absl::optional<base::UnguessableToken>& reporting_source,
-      const NetworkIsolationKey& network_isolation_key,
+      const NetworkAnonymizationKey& network_anonymization_key,
       const std::string& user_agent,
       const std::string& group,
       const std::string& type,
-      std::unique_ptr<const base::Value> body,
+      base::Value::Dict body,
       int depth) override;
 
-  void ProcessReportToHeader(const url::Origin& url,
-                             const NetworkIsolationKey& network_isolation_key,
-                             const std::string& header_value) override;
+  void ProcessReportToHeader(
+      const url::Origin& url,
+      const NetworkAnonymizationKey& network_anonymization_key,
+      const std::string& header_value) override;
 
   void RemoveBrowsingData(
       uint64_t data_type_mask,
-      const base::RepeatingCallback<bool(const GURL&)>& origin_filter) override;
+      const base::RepeatingCallback<bool(const url::Origin&)>& origin_filter)
+      override;
 
   void RemoveAllBrowsingData(uint64_t data_type_mask) override;
 
@@ -368,6 +370,8 @@ class TestReportingService : public ReportingService {
   ReportingContext* GetContextForTesting() const override;
 
   std::vector<const ReportingReport*> GetReports() const override;
+  base::flat_map<url::Origin, std::vector<ReportingEndpoint>>
+  GetV1ReportingEndpointsByOrigin() const override;
   void AddReportingCacheObserver(ReportingCacheObserver* observer) override;
   void RemoveReportingCacheObserver(ReportingCacheObserver* observer) override;
 

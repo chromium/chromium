@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,12 @@
 
 #include <set>
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/net_export.h"
 #include "net/http/http_request_info.h"
 #include "net/spdy/spdy_session_key.h"
-#include "net/third_party/quiche/src/spdy/core/spdy_protocol.h"
+#include "net/third_party/quiche/src/quiche/spdy/core/spdy_protocol.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -41,12 +40,12 @@ class NET_EXPORT Http2PushPromiseIndex {
   // claimed, and generating SpdySession weak pointer.
   class NET_EXPORT Delegate {
    public:
-    Delegate() {}
+    Delegate() = default;
 
     Delegate(const Delegate&) = delete;
     Delegate& operator=(const Delegate&) = delete;
 
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
 
     // Return true if a pushed stream with |url| can be used for a request with
     // |key|.
@@ -72,16 +71,17 @@ class NET_EXPORT Http2PushPromiseIndex {
   // same entry before |delegate| is destroyed.
   // Returns true if there is no unclaimed pushed stream with the same URL for
   // the same Delegate, in which case the stream is registered.
-  bool RegisterUnclaimedPushedStream(const GURL& url,
-                                     spdy::SpdyStreamId stream_id,
-                                     Delegate* delegate) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool RegisterUnclaimedPushedStream(const GURL& url,
+                                                   spdy::SpdyStreamId stream_id,
+                                                   Delegate* delegate);
 
   // Tries to unregister a Delegate with an unclaimed pushed stream for |url|
   // with given |stream_id|.
   // Returns true if this exact entry is found, in which case it is removed.
-  bool UnregisterUnclaimedPushedStream(const GURL& url,
-                                       spdy::SpdyStreamId stream_id,
-                                       Delegate* delegate) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool UnregisterUnclaimedPushedStream(
+      const GURL& url,
+      spdy::SpdyStreamId stream_id,
+      Delegate* delegate);
 
   // Returns the number of pushed streams registered for |delegate|.
   size_t CountStreamsForSession(const Delegate* delegate) const;
@@ -109,7 +109,7 @@ class NET_EXPORT Http2PushPromiseIndex {
   // An unclaimed pushed stream entry.
   struct NET_EXPORT UnclaimedPushedStream {
     GURL url;
-    Delegate* delegate;
+    raw_ptr<Delegate> delegate;
     spdy::SpdyStreamId stream_id;
   };
 

@@ -1,4 +1,4 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -22,4 +22,9 @@ blink_core_sources_typed_arrays = [
   "flexible_array_buffer_view.h",
   "nadc_typed_array_view.h",
   "typed_flexible_array_buffer_view.h",
+]
+
+blink_core_tests_typed_arrays = [
+  "array_buffer/array_buffer_contents_test.cc",
+  "dom_array_buffer_test.cc",
 ]

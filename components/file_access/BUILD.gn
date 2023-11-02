@@ -1,0 +1,37 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+component("file_access") {
+  output_name = "file_access_lib"
+
+  sources = [
+    "file_access_copy_or_move_delegate_factory.cc",
+    "file_access_copy_or_move_delegate_factory.h",
+    "scoped_file_access.cc",
+    "scoped_file_access.h",
+    "scoped_file_access_delegate.cc",
+    "scoped_file_access_delegate.h",
+  ]
+
+  defines = [ "IS_FILE_ACCESS_IMPL" ]
+
+  deps = [
+    "//base",
+    "//url:url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "file_access_copy_or_move_delegate_factory_unittest.cc",
+    "scoped_file_access_delegate_unittest.cc",
+  ]
+
+  deps = [
+    ":file_access",
+    "//base",
+    "//testing/gtest",
+  ]
+}

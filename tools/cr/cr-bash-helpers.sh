@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright 2013 The Chromium Authors. All rights reserved.
+# Copyright 2013 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -26,7 +26,7 @@ else
 fi
 
 cr_main="${cr_base_dir}/main.py"
-cr_exec=("PYTHONDONTWRITEBYTECODE=1" "python" "${cr_main}")
+cr_exec=("PYTHONDONTWRITEBYTECODE=1" "python3" "${cr_main}")
 
 # The main entry point to the cr tool.
 # Invokes the python script with pyc files turned off.

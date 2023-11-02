@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabViewManager;
 import org.chromium.chrome.browser.tab.TabViewProvider;
+import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -118,10 +119,12 @@ public final class PageViewObserverTest {
         mDestroyedUserDataHost = new UserDataHost();
         mDestroyedUserDataHost.destroy();
 
+        Activity activity = Robolectric.buildActivity(TestActivity.class).get();
+
         doReturn(false).when(mTab).isIncognito();
         doReturn(null).when(mTab).getUrl();
-        doReturn(Robolectric.buildActivity(Activity.class).get()).when(mTab).getContext();
-        doReturn(Robolectric.buildActivity(Activity.class).get()).when(mTab2).getContext();
+        doReturn(activity).when(mTab).getContext();
+        doReturn(activity).when(mTab2).getContext();
         doReturn(new MockTabViewManager()).when(mTab).getTabViewManager();
         doReturn(new MockTabViewManager()).when(mTab2).getTabViewManager();
         doReturn(true).when(mTab).isInitialized();

@@ -44,10 +44,9 @@ class Local;
 namespace blink {
 
 class SerializedScriptValue;
-class WebString;
 
 // FIXME: Should this class be in platform?
-class WebSerializedScriptValue {
+class BLINK_EXPORT WebSerializedScriptValue {
  public:
   ~WebSerializedScriptValue() { Reset(); }
 
@@ -58,31 +57,23 @@ class WebSerializedScriptValue {
     return *this;
   }
 
-  // Creates a serialized script value from its wire format data.
-  BLINK_EXPORT static WebSerializedScriptValue FromString(const WebString&);
-
-  BLINK_EXPORT static WebSerializedScriptValue Serialize(v8::Isolate*,
-                                                         v8::Local<v8::Value>);
+  static WebSerializedScriptValue Serialize(v8::Isolate*, v8::Local<v8::Value>);
 
   // Create a WebSerializedScriptValue that represents a serialization error.
-  BLINK_EXPORT static WebSerializedScriptValue CreateInvalid();
+  static WebSerializedScriptValue CreateInvalid();
 
-  BLINK_EXPORT void Reset();
-  BLINK_EXPORT void Assign(const WebSerializedScriptValue&);
+  void Reset();
+  void Assign(const WebSerializedScriptValue&);
 
   bool IsNull() const { return private_.IsNull(); }
 
-  // Returns a string representation of the WebSerializedScriptValue.
-  BLINK_EXPORT WebString ToString() const;
-
   // Convert the serialized value to a parsed v8 value.
-  BLINK_EXPORT v8::Local<v8::Value> Deserialize(v8::Isolate*);
+  v8::Local<v8::Value> Deserialize(v8::Isolate*);
 
 #if INSIDE_BLINK
-  BLINK_EXPORT WebSerializedScriptValue(scoped_refptr<SerializedScriptValue>);
-  BLINK_EXPORT WebSerializedScriptValue& operator=(
-      scoped_refptr<SerializedScriptValue>);
-  BLINK_EXPORT operator scoped_refptr<SerializedScriptValue>() const;
+  WebSerializedScriptValue(scoped_refptr<SerializedScriptValue>);
+  WebSerializedScriptValue& operator=(scoped_refptr<SerializedScriptValue>);
+  operator scoped_refptr<SerializedScriptValue>() const;
 #endif
 
  private:

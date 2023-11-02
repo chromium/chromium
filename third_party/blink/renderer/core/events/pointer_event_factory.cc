@@ -1,9 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/events/pointer_event_factory.h"
 
+#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_pointer_event_init.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -11,8 +12,8 @@
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/pointer_type_names.h"
-#include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "ui/display/screen_info.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
 
@@ -70,7 +71,7 @@ float GetPointerEventPressure(float force, uint16_t buttons) {
 }
 
 void UpdateCommonPointerEventInit(const WebPointerEvent& web_pointer_event,
-                                  const FloatPoint& last_global_position,
+                                  const gfx::PointF& last_global_position,
                                   LocalDOMWindow* dom_window,
                                   PointerEventInit* pointer_event_init) {
   // This function should not update attributes like pointerId, isPrimary,
@@ -86,19 +87,7 @@ void UpdateCommonPointerEventInit(const WebPointerEvent& web_pointer_event,
       !web_pointer_event.is_raw_movement_event &&
       (web_pointer_event.GetType() == WebInputEvent::Type::kPointerMove ||
        web_pointer_event.GetType() == WebInputEvent::Type::kPointerRawUpdate)) {
-    // TODO(crbug.com/907309): Current movementX/Y is in physical pixel when
-    // zoom-for-dsf is enabled. Here we apply the device-scale-factor to align
-    // with the current behavior. We need to figure out what is the best
-    // behavior here.
     float device_scale_factor = 1;
-    if (dom_window && dom_window->GetFrame()) {
-      LocalFrame* frame = dom_window->GetFrame();
-      if (frame->GetPage()->DeviceScaleFactorDeprecated() == 1) {
-        ChromeClient& chrome_client = frame->GetPage()->GetChromeClient();
-        device_scale_factor =
-            chrome_client.GetScreenInfo(*frame).device_scale_factor;
-      }
-    }
 
     // movementX/Y is type int for pointerevent, so we still need to truncated
     // the coordinates before calculate movement.
@@ -116,15 +105,20 @@ void UpdateCommonPointerEventInit(const WebPointerEvent& web_pointer_event,
 
   // If width/height is unknown we let PointerEventInit set it to 1.
   // See https://w3c.github.io/pointerevents/#dom-pointerevent-width
+  //
+  // For pointerup, even known width/height is ignored in favor of the default
+  // value of 1.  See https://github.com/w3c/pointerevents/issues/225.
   if (web_pointer_event_in_root_frame.HasWidth() &&
-      web_pointer_event_in_root_frame.HasHeight()) {
+      web_pointer_event_in_root_frame.HasHeight() &&
+      web_pointer_event.GetType() != WebInputEvent::Type::kPointerUp) {
     float scale_factor = 1.0f;
     if (dom_window && dom_window->GetFrame())
       scale_factor = 1.0f / dom_window->GetFrame()->PageZoomFactor();
 
-    FloatSize point_shape = FloatSize(web_pointer_event_in_root_frame.width,
-                                      web_pointer_event_in_root_frame.height)
-                                .ScaledBy(scale_factor);
+    gfx::SizeF point_shape =
+        gfx::ScaleSize(gfx::SizeF(web_pointer_event_in_root_frame.width,
+                                  web_pointer_event_in_root_frame.height),
+                       scale_factor);
     pointer_event_init->setWidth(point_shape.width());
     pointer_event_init->setHeight(point_shape.height());
   }
@@ -167,10 +161,10 @@ HeapVector<Member<PointerEvent>> PointerEventFactory::CreateEventSequence(
   AtomicString type = PointerEventNameForEventType(web_pointer_event.GetType());
   HeapVector<Member<PointerEvent>> result;
 
-  if (!event_list.IsEmpty()) {
+  if (!event_list.empty()) {
     // Make a copy of LastPointerPosition so we can modify it after creating
     // each coalesced event.
-    FloatPoint last_global_position =
+    gfx::PointF last_global_position =
         GetLastPointerPosition(pointer_event_init->pointerId(),
                                event_list.front(), web_pointer_event.GetType());
 
@@ -201,7 +195,7 @@ HeapVector<Member<PointerEvent>> PointerEventFactory::CreateEventSequence(
           new_event_init,
           static_cast<WebInputEvent::Modifiers>(event.GetModifiers()));
 
-      last_global_position = FloatPoint(event.PositionInScreen());
+      last_global_position = event.PositionInScreen();
 
       PointerEvent* pointer_event =
           PointerEvent::Create(type, new_event_init, event.TimeStamp());
@@ -357,13 +351,13 @@ PointerEvent* PointerEventFactory::Create(
   pointer_event_init->setPredictedEvents(predicted_pointer_events);
 
   SetLastPosition(pointer_event_init->pointerId(),
-                  FloatPoint(web_pointer_event.PositionInScreen()), event_type);
+                  web_pointer_event.PositionInScreen(), event_type);
   return PointerEvent::Create(type, pointer_event_init,
                               web_pointer_event.TimeStamp());
 }
 
 void PointerEventFactory::SetLastPosition(int pointer_id,
-                                          const FloatPoint& position_in_screen,
+                                          const gfx::PointF& position_in_screen,
                                           WebInputEvent::Type event_type) {
   if (event_type == WebInputEvent::Type::kPointerRawUpdate)
     pointerrawupdate_last_position_mapping_.Set(pointer_id, position_in_screen);
@@ -376,7 +370,7 @@ void PointerEventFactory::RemoveLastPosition(const int pointer_id) {
   pointerrawupdate_last_position_mapping_.erase(pointer_id);
 }
 
-FloatPoint PointerEventFactory::GetLastPointerPosition(
+gfx::PointF PointerEventFactory::GetLastPointerPosition(
     int pointer_id,
     const WebPointerProperties& event,
     WebInputEvent::Type event_type) const {
@@ -389,7 +383,7 @@ FloatPoint PointerEventFactory::GetLastPointerPosition(
   }
   // If pointer_id is not in the map, returns the current position so the
   // movement will be zero.
-  return FloatPoint(event.PositionInScreen());
+  return event.PositionInScreen();
 }
 
 PointerEvent* PointerEventFactory::CreatePointerCancelEvent(

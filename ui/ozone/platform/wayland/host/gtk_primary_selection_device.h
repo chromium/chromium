@@ -1,11 +1,12 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_GTK_PRIMARY_SELECTION_DEVICE_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_GTK_PRIMARY_SELECTION_DEVICE_H_
 
-#include "base/callback.h"
+#include <cstdint>
+
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_device_base.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_source.h"
@@ -32,7 +33,7 @@ class GtkPrimarySelectionDevice : public WaylandDataDeviceBase {
     return data_device_.get();
   }
 
-  void SetSelectionSource(GtkPrimarySelectionSource* source);
+  void SetSelectionSource(GtkPrimarySelectionSource* source, uint32_t serial);
 
  private:
   // gtk_primary_selection_device_listener callbacks

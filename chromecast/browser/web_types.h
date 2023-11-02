@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,6 @@
 #define CHROMECAST_BROWSER_WEB_TYPES_H_
 
 #include <ostream>
-
-#include "chromecast/browser/webview/proto/webview.pb.h"
 
 namespace chromecast {
 
@@ -18,8 +16,7 @@ enum class BackgroundColor {
   TRANSPARENT,
 };
 
-// Page state for the main frame. These values *must* be kept in sync with
-// AsyncPageEvent::State in chromecast/browser/webview/proto/webview.proto.
+// Page state for the main frame.
 enum class PageState {
   IDLE = 0,       // Main frame has not started yet.
   LOADING = 1,    // Main frame is loading resources.
@@ -30,8 +27,6 @@ enum class PageState {
 };
 
 std::ostream& operator<<(std::ostream& os, PageState state);
-
-webview::AsyncPageEvent_State ToGrpcPageState(PageState state);
 
 }  // namespace chromecast
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -45,7 +46,7 @@ class ChromeContentRulesRegistry::EvaluationScope {
   ~EvaluationScope();
 
  private:
-  ChromeContentRulesRegistry* const registry_;
+  const raw_ptr<ChromeContentRulesRegistry> registry_;
   const EvaluationDisposition previous_disposition_;
 };
 
@@ -165,17 +166,17 @@ ChromeContentRulesRegistry::CreateRule(
     const api::events::Rule& api_rule,
     std::string* error) {
   std::vector<std::unique_ptr<const ContentCondition>> conditions;
-  for (const std::unique_ptr<base::Value>& value : api_rule.conditions) {
+  for (const base::Value& value : api_rule.conditions) {
     conditions.push_back(
-        CreateContentCondition(extension, predicate_factories, *value, error));
+        CreateContentCondition(extension, predicate_factories, value, error));
     if (!error->empty())
       return nullptr;
   }
 
   std::vector<std::unique_ptr<const ContentAction>> actions;
-  for (const std::unique_ptr<base::Value>& value : api_rule.actions) {
-    actions.push_back(ContentAction::Create(browser_context(), extension,
-                                            *value, error));
+  for (const base::Value& value : api_rule.actions) {
+    actions.push_back(
+        ContentAction::Create(browser_context(), extension, value, error));
     if (!error->empty())
       return nullptr;
   }

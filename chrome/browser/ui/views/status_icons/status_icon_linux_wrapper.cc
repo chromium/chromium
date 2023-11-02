@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/status_icons/status_icon_button_linux.h"
+#include "ui/gfx/image/image_skia_rep.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 
 #if defined(USE_DBUS)
@@ -35,11 +36,10 @@ gfx::ImageSkia GetBestImageRep(const gfx::ImageSkia& image) {
 
 }  // namespace
 
-StatusIconLinuxWrapper::StatusIconLinuxWrapper(
-    views::StatusIconLinux* status_icon,
-    StatusIconType status_icon_type,
-    const gfx::ImageSkia& image,
-    const std::u16string& tool_tip)
+StatusIconLinuxWrapper::StatusIconLinuxWrapper(ui::StatusIconLinux* status_icon,
+                                               StatusIconType status_icon_type,
+                                               const gfx::ImageSkia& image,
+                                               const std::u16string& tool_tip)
     : status_icon_(status_icon),
       status_icon_type_(status_icon_type),
       image_(GetBestImageRep(image)),
@@ -59,7 +59,7 @@ StatusIconLinuxWrapper::StatusIconLinuxWrapper(
 #endif
 
 StatusIconLinuxWrapper::StatusIconLinuxWrapper(
-    std::unique_ptr<views::StatusIconLinux> status_icon,
+    std::unique_ptr<ui::StatusIconLinux> status_icon,
     StatusIconType status_icon_type,
     const gfx::ImageSkia& image,
     const std::u16string& tool_tip)
@@ -92,7 +92,8 @@ void StatusIconLinuxWrapper::DisplayBalloon(
     const std::u16string& title,
     const std::u16string& contents,
     const message_center::NotifierId& notifier_id) {
-  notification_.DisplayBalloon(icon, title, contents, notifier_id);
+  notification_.DisplayBalloon(ui::ImageModel::FromImageSkia(icon), title,
+                               contents, notifier_id);
 }
 
 void StatusIconLinuxWrapper::OnClick() {

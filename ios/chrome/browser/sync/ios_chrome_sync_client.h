@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/browser_sync/browser_sync_client.h"
@@ -24,7 +23,7 @@ class PasswordStoreInterface;
 }
 
 namespace browser_sync {
-class ProfileSyncComponentsFactoryImpl;
+class SyncApiComponentFactoryImpl;
 }
 
 class IOSChromeSyncClient : public browser_sync::BrowserSyncClient {
@@ -44,7 +43,6 @@ class IOSChromeSyncClient : public browser_sync::BrowserSyncClient {
   syncer::DeviceInfoSyncService* GetDeviceInfoSyncService() override;
   send_tab_to_self::SendTabToSelfSyncService* GetSendTabToSelfSyncService()
       override;
-  bookmarks::BookmarkModel* GetBookmarkModel() override;
   favicon::FaviconService* GetFaviconService() override;
   history::HistoryService* GetHistoryService() override;
   sync_preferences::PrefServiceSyncable* GetPrefServiceSyncable() override;
@@ -54,7 +52,6 @@ class IOSChromeSyncClient : public browser_sync::BrowserSyncClient {
   invalidation::InvalidationService* GetInvalidationService() override;
   syncer::SyncInvalidationsService* GetSyncInvalidationsService() override;
   syncer::TrustedVaultClient* GetTrustedVaultClient() override;
-  BookmarkUndoService* GetBookmarkUndoService() override;
   scoped_refptr<syncer::ExtensionsActivity> GetExtensionsActivity() override;
   base::WeakPtr<syncer::ModelTypeControllerDelegate>
   GetControllerDelegateForModelType(syncer::ModelType type) override;
@@ -66,8 +63,7 @@ class IOSChromeSyncClient : public browser_sync::BrowserSyncClient {
   ChromeBrowserState* const browser_state_;
 
   // The sync api component factory in use by this client.
-  std::unique_ptr<browser_sync::ProfileSyncComponentsFactoryImpl>
-      component_factory_;
+  std::unique_ptr<browser_sync::SyncApiComponentFactoryImpl> component_factory_;
 
   std::unique_ptr<syncer::TrustedVaultClient> trusted_vault_client_;
 
@@ -77,7 +73,7 @@ class IOSChromeSyncClient : public browser_sync::BrowserSyncClient {
   scoped_refptr<autofill::AutofillWebDataService> account_web_data_service_;
   scoped_refptr<password_manager::PasswordStoreInterface> password_store_;
 
-  // The task runner for the |web_data_service_|, if any.
+  // The task runner for the `web_data_service_`, if any.
   scoped_refptr<base::SingleThreadTaskRunner> db_thread_;
 };
 

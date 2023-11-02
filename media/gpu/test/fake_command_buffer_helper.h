@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,7 +43,7 @@ class FakeCommandBufferHelper : public CommandBufferHelper {
   // CommandBufferHelper implementation.
   gl::GLContext* GetGLContext() override;
   gpu::SharedImageStub* GetSharedImageStub() override;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   gpu::DXGISharedHandleManager* GetDXGISharedHandleManager() override;
 #endif
   bool HasStub() override;
@@ -63,7 +63,6 @@ class FakeCommandBufferHelper : public CommandBufferHelper {
                  gl::GLImage* image,
                  bool client_managed) override;
   gpu::Mailbox CreateMailbox(GLuint service_id) override;
-  void ProduceTexture(const gpu::Mailbox& mailbox, GLuint service_id) override;
   void WaitForSyncToken(gpu::SyncToken sync_token,
                         base::OnceClosure done_cb) override;
   void SetWillDestroyStubCB(WillDestroyStubCB will_destroy_stub_cb) override;

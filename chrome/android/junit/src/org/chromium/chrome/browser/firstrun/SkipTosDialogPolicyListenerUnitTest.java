@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
-import org.mockito.internal.util.reflection.FieldSetter;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
@@ -29,7 +28,7 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
@@ -45,9 +44,8 @@ import org.chromium.components.policy.PolicyService;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE,
-        shadows = {SkipTosDialogPolicyListenerUnitTest.ShadowFirstRunUtils.class,
-                ShadowRecordHistogram.class})
-//TODO(crbug.com/1210371): Rewrite using paused loop. See crbug for details.
+        shadows = {SkipTosDialogPolicyListenerUnitTest.ShadowFirstRunUtils.class})
+// TODO(crbug.com/1210371): Rewrite using paused loop. See crbug for details.
 @LooperMode(LooperMode.Mode.LEGACY)
 public class SkipTosDialogPolicyListenerUnitTest {
     private static final String HIST_IS_DEVICE_OWNED_DETECTED =
@@ -103,7 +101,7 @@ public class SkipTosDialogPolicyListenerUnitTest {
 
     @Before
     public void setUp() {
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
         Mockito.doAnswer(invocation -> {
                    mEnterpriseInfoCallback = invocation.getArgument(0);
                    return null;
@@ -130,7 +128,7 @@ public class SkipTosDialogPolicyListenerUnitTest {
 
     @After
     public void tearDown() {
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
     }
 
     @Test
@@ -364,7 +362,8 @@ public class SkipTosDialogPolicyListenerUnitTest {
     }
 
     @Test
-    public void testCreateAndOwnPolicyLoadListener() throws NoSuchFieldException {
+    public void testCreateAndOwnPolicyLoadListener()
+            throws NoSuchFieldException, IllegalAccessException {
         FirstRunAppRestrictionInfo mockAppRestrictionInfo =
                 Mockito.mock(FirstRunAppRestrictionInfo.class);
         OneshotSupplier<PolicyService> mockSupplier =
@@ -379,9 +378,10 @@ public class SkipTosDialogPolicyListenerUnitTest {
 
         PolicyLoadListener spyListener =
                 Mockito.spy(targetListener.getPolicyLoadListenerForTesting());
-        FieldSetter.setField(targetListener,
-                SkipTosDialogPolicyListener.class.getDeclaredField("mPolicyLoadListener"),
-                spyListener);
+
+        var field = SkipTosDialogPolicyListener.class.getDeclaredField("mPolicyLoadListener");
+        field.setAccessible(true);
+        field.set(targetListener, spyListener);
 
         targetListener.destroy();
         Mockito.verify(spyListener).destroy();

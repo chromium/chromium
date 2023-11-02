@@ -1,30 +1,31 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 'use strict';
 
+// eslint-disable-next-line no-var
 var dialogSettings = {};
 
 function mountFileSystem(onSuccess, onError) {
   chrome.fileSystemProvider.getAll(function(mounted) {
-    var index = mounted.length + 1;
+    const index = mounted.length + 1;
     chrome.fileSystemProvider.mount({
       fileSystemId: 'test-fs-' + index,
-      displayName: 'Test (' + index + ')'
+      displayName: 'Test (' + index + ')',
     });
   });
 }
 
-chrome.fileSystemProvider.onGetMetadataRequested.addListener(
-    function(options, onSuccess, onError) {
-      onSuccess({
-        isDirectory: true,
-        name: '',
-        size: 0,
-        modificationTime: new Date()
-      });
-    });
+chrome.fileSystemProvider.onGetMetadataRequested.addListener(function(
+    options, onSuccess, onError) {
+  onSuccess({
+    isDirectory: true,
+    name: '',
+    size: 0,
+    modificationTime: new Date(),
+  });
+});
 
 chrome.fileSystemProvider.onReadDirectoryRequested.addListener(function(
     options, onSuccess, onError) {
@@ -64,7 +65,7 @@ chrome.fileSystemProvider.onGetActionsRequested.addListener(
 
 // If the manifest for device or file source is used, then mount a fake file
 // system on install.
-if (chrome.runtime.getManifest().description === "Testing Provider device" ||
-    chrome.runtime.getManifest().description === "Testing Provider file") {
+if (chrome.runtime.getManifest().description === 'Testing Provider device' ||
+    chrome.runtime.getManifest().description === 'Testing Provider file') {
   chrome.runtime.onInstalled.addListener(mountFileSystem);
 }

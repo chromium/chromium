@@ -1,13 +1,13 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/controls/contextual_tooltip.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/session/session_controller_impl.h"
-#include "ash/shelf/contextual_tooltip.h"
 #include "ash/shelf/drag_handle.h"
 #include "ash/shelf/drag_window_from_shelf_controller.h"
 #include "ash/shelf/drag_window_from_shelf_controller_test_api.h"
@@ -119,10 +119,6 @@ TEST_F(DragHandleContextualNudgeTest, HideDragHandleNudgeHiddenOnMinimize) {
   EXPECT_FALSE(GetShelfWidget()->GetDragHandle()->GetVisible());
   EXPECT_FALSE(
       GetShelfWidget()->GetDragHandle()->gesture_nudge_target_visibility());
-
-  histogram_tester.ExpectBucketCount(
-      "Ash.ContextualNudgeDismissContext.InAppToHome",
-      contextual_tooltip::DismissNudgeReason::kExitToHomeScreen, 1);
 }
 
 // Tests that the drag handle nudge nudge is hidden when closing the widget and
@@ -260,10 +256,6 @@ TEST_F(DragHandleContextualNudgeTest, DragHandleNudgeShownInAppShelf) {
   EXPECT_FALSE(GetShelfWidget()->GetDragHandle()->GetVisible());
   EXPECT_FALSE(
       GetShelfWidget()->GetDragHandle()->gesture_nudge_target_visibility());
-
-  histogram_tester.ExpectBucketCount(
-      "Ash.ContextualNudgeDismissContext.InAppToHome",
-      contextual_tooltip::DismissNudgeReason::kSwitchToClamshell, 1);
 
   // Reentering tablet mode should show the drag handle but the nudge should
   // not. No timer should be set to show the nudge.
@@ -681,12 +673,6 @@ TEST_F(DragHandleContextualNudgeTest, GestureSwipeHidesDragHandleNudge) {
   // The nudge should be hidden when the gesture completes.
   EXPECT_FALSE(drag_handle->gesture_nudge_target_visibility());
   GetAppListTestHelper()->CheckVisibility(true);
-
-  histogram_tester.ExpectBucketCount(
-      "Ash.ContextualNudgeDismissContext.InAppToHome",
-      contextual_tooltip::DismissNudgeReason::kPerformedGesture, 1);
-  histogram_tester.ExpectTimeBucketCount(
-      "Ash.ContextualNudgeDismissTime.InAppToHome", base::Seconds(0), 1);
 }
 
 // Tests that drag handle nudge gets hidden when the user performs window drag
@@ -841,7 +827,8 @@ TEST_F(DragHandleContextualNudgeTest,
   EnterOverview();
   SplitViewController* split_view_controller =
       SplitViewController::Get(shelf_widget->GetNativeWindow());
-  split_view_controller->SnapWindow(window.get(), SplitViewController::LEFT);
+  split_view_controller->SnapWindow(
+      window.get(), SplitViewController::SnapPosition::kPrimary);
   EXPECT_TRUE(split_view_controller->InSplitViewMode());
 
   // Tapping the drag handle will not show the drag handle.
@@ -871,7 +858,8 @@ TEST_F(DragHandleContextualNudgeTest, DragHandleNudgeHiddenOnSplitScreen) {
   EnterOverview();
   SplitViewController* split_view_controller =
       SplitViewController::Get(shelf_widget->GetNativeWindow());
-  split_view_controller->SnapWindow(window.get(), SplitViewController::LEFT);
+  split_view_controller->SnapWindow(
+      window.get(), SplitViewController::SnapPosition::kPrimary);
   EXPECT_TRUE(split_view_controller->InSplitViewMode());
 
   // The drag handle nudge should no longer be visible.

@@ -1,14 +1,14 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/signin/chrome_signin_client.h"
+
 #include <memory>
 #include <utility>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
-#include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
@@ -21,7 +21,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -38,7 +37,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/test/base/browser_with_test_window_test.h"
 #endif
 
@@ -103,7 +102,7 @@ class ChromeSigninClientTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<Profile> profile_;
-  SigninClient* signin_client_;
+  raw_ptr<SigninClient> signin_client_;
 };
 
 TEST_F(ChromeSigninClientTest, DelayNetworkCallRunsImmediatelyWithNetwork) {
@@ -142,7 +141,7 @@ TEST_F(ChromeSigninClientTest, DelayNetworkCallRunsAfterNetworkChange) {
   ASSERT_TRUE(tester.WasCalledExactlyOnce());
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 
 class MockChromeSigninClient : public ChromeSigninClient {
  public:
@@ -261,9 +260,13 @@ bool IsSignoutDisallowedByPolicy(
     case signin_metrics::ProfileSignout::
         AUTHENTICATION_FAILED_WITH_FORCE_SIGNIN:
     case signin_metrics::ProfileSignout::SIGNIN_NOT_ALLOWED_ON_PROFILE_INIT:
-    case signin_metrics::ProfileSignout::USER_TUNED_OFF_SYNC_FROM_DICE_UI:
+    case signin_metrics::ProfileSignout::SIGNIN_RETRIGGERD_FROM_WEB_SIGNIN:
+    case signin_metrics::ProfileSignout::
+        USER_CLICKED_SIGNOUT_FROM_CLEAR_BROWSING_DATA_PAGE:
       return true;
     case signin_metrics::ProfileSignout::ACCOUNT_REMOVED_FROM_DEVICE:
+    case signin_metrics::ProfileSignout::
+        IOS_ACCOUNT_REMOVED_FROM_DEVICE_AFTER_RESTORE:
       // TODO(msarda): Add more of the above cases to this "false" branch.
       // For now only ACCOUNT_REMOVED_FROM_DEVICE is here to preserve the status
       // quo. Additional internal sources of sign-out will be moved here in a
@@ -284,6 +287,16 @@ bool IsSignoutDisallowedByPolicy(
       // happen when there's no sync account and policies aren't enforced.
       // PrimaryAccountManager won't actually invoke PreSignOut in this case,
       // thus it is fine for ChromeSigninClient to not have any special-casing.
+      return true;
+    case signin_metrics::ProfileSignout::
+        USER_CLICKED_REVOKE_SYNC_CONSENT_SETTINGS:
+      return false;
+    case signin_metrics::ProfileSignout::USER_CLICKED_SIGNOUT_PROFILE_MENU:
+      return false;
+    case signin_metrics::ProfileSignout::
+        USER_CLICKED_SIGNOUT_FROM_USER_POLICY_NOTIFICATION_DIALOG:
+      return false;
+    case signin_metrics::ProfileSignout::ACCOUNT_EMAIL_UPDATED:
       return true;
     case signin_metrics::ProfileSignout::NUM_PROFILE_SIGNOUT_METRICS:
       NOTREACHED();
@@ -313,8 +326,8 @@ TEST_P(ChromeSigninClientSignoutSourceTest, UserSignoutAllowed) {
   PreSignOut(signout_source, delete_metric);
 }
 
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
-    defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_MAC)
 TEST_P(ChromeSigninClientSignoutSourceTest, UserSignoutDisallowed) {
   signin_metrics::ProfileSignout signout_source = GetParam();
 
@@ -375,7 +388,6 @@ TEST_P(ChromeSigninClientSignoutSourceTest, UserSignoutDisallowedWithSync) {
 
 TEST_P(ChromeSigninClientSignoutSourceTest,
        UserSignoutDisallowedAccountManagementAccepted) {
-  base::test::ScopedFeatureList features(kAccountPoliciesLoadedWithoutSync);
   signin_metrics::ProfileSignout signout_source = GetParam();
 
   TestingProfile::Builder builder;
@@ -413,21 +425,34 @@ const signin_metrics::ProfileSignout kSignoutSources[] = {
     signin_metrics::ProfileSignout::SERVER_FORCED_DISABLE,
     signin_metrics::ProfileSignout::TRANSFER_CREDENTIALS,
     signin_metrics::ProfileSignout::AUTHENTICATION_FAILED_WITH_FORCE_SIGNIN,
-    signin_metrics::ProfileSignout::USER_TUNED_OFF_SYNC_FROM_DICE_UI,
     signin_metrics::ProfileSignout::ACCOUNT_REMOVED_FROM_DEVICE,
     signin_metrics::ProfileSignout::SIGNIN_NOT_ALLOWED_ON_PROFILE_INIT,
     signin_metrics::ProfileSignout::FORCE_SIGNOUT_ALWAYS_ALLOWED_FOR_TEST,
     signin_metrics::ProfileSignout::USER_DELETED_ACCOUNT_COOKIES,
     signin_metrics::ProfileSignout::MOBILE_IDENTITY_CONSISTENCY_ROLLBACK,
     signin_metrics::ProfileSignout::ACCOUNT_ID_MIGRATION,
+    signin_metrics::ProfileSignout::
+        IOS_ACCOUNT_REMOVED_FROM_DEVICE_AFTER_RESTORE,
+    signin_metrics::ProfileSignout::USER_CLICKED_REVOKE_SYNC_CONSENT_SETTINGS,
+    signin_metrics::ProfileSignout::USER_CLICKED_SIGNOUT_PROFILE_MENU,
+    signin_metrics::ProfileSignout::SIGNIN_RETRIGGERD_FROM_WEB_SIGNIN,
+    signin_metrics::ProfileSignout::
+        USER_CLICKED_SIGNOUT_FROM_USER_POLICY_NOTIFICATION_DIALOG,
+    signin_metrics::ProfileSignout::ACCOUNT_EMAIL_UPDATED,
+    signin_metrics::ProfileSignout::
+        USER_CLICKED_SIGNOUT_FROM_CLEAR_BROWSING_DATA_PAGE,
 };
-static_assert(base::size(kSignoutSources) ==
+// kNumberOfObsoleteSignoutSources should be updated when a ProfileSignout
+// value is deprecated.
+const int kNumberOfObsoleteSignoutSources = 1;
+static_assert(std::size(kSignoutSources) + kNumberOfObsoleteSignoutSources ==
                   signin_metrics::ProfileSignout::NUM_PROFILE_SIGNOUT_METRICS,
-              "kSignoutSources should enumerate all ProfileSignout values");
+              "kSignoutSources should enumerate all ProfileSignout values that "
+              "are not obsolete");
 
 INSTANTIATE_TEST_SUITE_P(AllSignoutSources,
                          ChromeSigninClientSignoutSourceTest,
                          testing::ValuesIn(kSignoutSources));
 
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)

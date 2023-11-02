@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@ package org.chromium.ui.modaldialog;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.IntDef;
 
 import org.chromium.ui.modelutil.PropertyKey;
@@ -15,6 +16,7 @@ import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 import java.lang.annotation.Retention;
@@ -82,21 +84,40 @@ public class ModalDialogProperties {
     /** The title of the dialog. */
     public static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();
 
+    /** The maximum number of lines that the title can take. */
+    public static final WritableIntPropertyKey TITLE_MAX_LINES = new WritableIntPropertyKey();
+
     /** The title icon of the dialog. */
     public static final WritableObjectPropertyKey<Drawable> TITLE_ICON =
             new WritableObjectPropertyKey<>();
 
-    /** The message of the dialog. */
-    public static final WritableObjectPropertyKey<CharSequence> MESSAGE =
+    /** The message paragraph 1 of the dialog. */
+    public static final WritableObjectPropertyKey<CharSequence> MESSAGE_PARAGRAPH_1 =
+            new WritableObjectPropertyKey<>();
+
+    /** The message paragraph 2 of the dialog. Shown below the paragraph 1 when both are set. */
+    public static final WritableObjectPropertyKey<CharSequence> MESSAGE_PARAGRAPH_2 =
             new WritableObjectPropertyKey<>();
 
     /** The customized content view of the dialog. */
     public static final WritableObjectPropertyKey<View> CUSTOM_VIEW =
             new WritableObjectPropertyKey<>();
 
+    /** The customized view replacing the button bar of the dialog. */
+    public static final WritableObjectPropertyKey<View> CUSTOM_BUTTON_BAR_VIEW =
+            new WritableObjectPropertyKey<>();
+
     /** The text on the positive button. */
     public static final WritableObjectPropertyKey<String> POSITIVE_BUTTON_TEXT =
             new WritableObjectPropertyKey<>();
+
+    /**
+     * The icon on the positive button.
+     * Note: Not intended for general usage; please seek Chrome UX approval for
+     * an exception.
+     */
+    public static final WritableObjectPropertyKey<Drawable> POSITIVE_BUTTON_ICON =
+            new WritableObjectPropertyKey();
 
     /** Content description for the positive button. */
     public static final WritableObjectPropertyKey<String> POSITIVE_BUTTON_CONTENT_DESCRIPTION =
@@ -117,6 +138,10 @@ public class ModalDialogProperties {
     /** The enabled state on the negative button. */
     public static final WritableBooleanPropertyKey NEGATIVE_BUTTON_DISABLED =
             new WritableBooleanPropertyKey();
+
+    /** The message on the dialog footer. */
+    public static final WritableObjectPropertyKey<CharSequence> FOOTER_MESSAGE =
+            new WritableObjectPropertyKey<>();
 
     /** Whether the dialog should be dismissed on user tapping the scrim. */
     public static final WritableBooleanPropertyKey CANCEL_ON_TOUCH_OUTSIDE =
@@ -144,15 +169,39 @@ public class ModalDialogProperties {
     public static final ReadableIntPropertyKey BUTTON_STYLES = new ReadableIntPropertyKey();
 
     /**
-     * Whether the dialog is of fullscreen style.
+     * Whether the dialog is of fullscreen style. Both {@code FULLSCREEN_DIALOG} and
+     * {@code DIALOG_WHEN_LARGE} cannot be set to true.
      */
     public static final ReadableBooleanPropertyKey FULLSCREEN_DIALOG =
             new ReadableBooleanPropertyKey();
 
+    /**
+     * Whether the dialog is of DialogWhenLarge style i.e. fullscreen on phone, and dialog on large
+     * screen. Both {@code FULLSCREEN_DIALOG} and {@code DIALOG_WHEN_LARGE} cannot be set to true.
+     */
+    public static final ReadableBooleanPropertyKey DIALOG_WHEN_LARGE =
+            new ReadableBooleanPropertyKey();
+
+    /** Whether the dialog should be focused for accessibility. */
+    public static final WritableBooleanPropertyKey FOCUS_DIALOG = new WritableBooleanPropertyKey();
+
+    /** Whether the dialog contents can be larger than the specs prefer (e.g. in fullscreen). */
+    public static final WritableBooleanPropertyKey EXCEED_MAX_HEIGHT =
+            new WritableBooleanPropertyKey();
+
+    /**
+     * The handler for back presses done on a {@ModalDialogType.APP}. By default, a back press
+     * dismisses the dialog.
+     */
+    public static final WritableObjectPropertyKey<OnBackPressedCallback>
+            APP_MODAL_DIALOG_BACK_PRESS_HANDLER = new WritableObjectPropertyKey();
+
     public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {CONTROLLER, CONTENT_DESCRIPTION,
-            TITLE, TITLE_ICON, MESSAGE, CUSTOM_VIEW, POSITIVE_BUTTON_TEXT,
+            TITLE, TITLE_MAX_LINES, TITLE_ICON, MESSAGE_PARAGRAPH_1, MESSAGE_PARAGRAPH_2,
+            CUSTOM_VIEW, CUSTOM_BUTTON_BAR_VIEW, POSITIVE_BUTTON_TEXT, POSITIVE_BUTTON_ICON,
             POSITIVE_BUTTON_CONTENT_DESCRIPTION, POSITIVE_BUTTON_DISABLED, NEGATIVE_BUTTON_TEXT,
-            NEGATIVE_BUTTON_CONTENT_DESCRIPTION, NEGATIVE_BUTTON_DISABLED, CANCEL_ON_TOUCH_OUTSIDE,
-            FILTER_TOUCH_FOR_SECURITY, TOUCH_FILTERED_CALLBACK, TITLE_SCROLLABLE, BUTTON_STYLES,
-            FULLSCREEN_DIALOG};
+            NEGATIVE_BUTTON_CONTENT_DESCRIPTION, NEGATIVE_BUTTON_DISABLED, FOOTER_MESSAGE,
+            CANCEL_ON_TOUCH_OUTSIDE, FILTER_TOUCH_FOR_SECURITY, TOUCH_FILTERED_CALLBACK,
+            TITLE_SCROLLABLE, BUTTON_STYLES, FULLSCREEN_DIALOG, DIALOG_WHEN_LARGE, FOCUS_DIALOG,
+            EXCEED_MAX_HEIGHT, APP_MODAL_DIALOG_BACK_PRESS_HANDLER};
 }

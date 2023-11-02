@@ -30,7 +30,9 @@
 <translation id="1189258430971676908">练习区：下拉列表</translation>
 <translation id="1195238899008218998">后记</translation>
 <translation id="1197088940767939838">橙色</translation>
+<translation id="1198865190323699001">触摸手势</translation>
 <translation id="1201402288615127009">下一步</translation>
+<translation id="1202112913213080585">取消</translation>
 <translation id="1206619573307042055">marquee</translation>
 <translation id="1207086294218137981">没有下一个 4 级标题</translation>
 <translation id="1212770441379271564">以下这些实用的快捷键并不是 ChromeVox 命令，但能够帮助您充分利用 Chrome。
@@ -42,6 +44,7 @@
     要打开 Chrome 浏览器菜单，请按 Alt+F。</translation>
 <translation id="1213216066620407844">ChromeVox - 为Chrome提供语音功能</translation>
 <translation id="1225969361094801578">暗岩灰色</translation>
+<translation id="122928249241119550">移到上一句</translation>
 <translation id="1230503547248836149">文本选择区域的开头</translation>
 <translation id="1236794971743289975">尾注</translation>
 <translation id="1237797094773582699">同样，用 4 根手指从右向左滑动屏幕即可移至上一部分。现在就试试吧！</translation>
@@ -51,7 +54,7 @@
 <translation id="1251750620252348585">下一个 6 级标题</translation>
 <translation id="1268366246392928616">没有上一个数学表达式</translation>
 <translation id="1273314450961659276">文字转语音设置</translation>
-<translation id="1275718070701477396">已选中</translation>
+<translation id="1275718070701477396">已选择</translation>
 <translation id="1284576163386164372">您可随时查看各个教程，只需用 4 根手指点按打开相关菜单，然后在“ChromeVox”部分中激活相应教程。</translation>
 <translation id="1291286136605998134">切换按钮</translation>
 <translation id="1299774449519412690">浅天蓝色</translation>
@@ -135,9 +138,9 @@
 <translation id="1812527064848182527">横向</translation>
 <translation id="1829244130665387512">在网页中查找</translation>
 <translation id="1834891354138622109">列</translation>
-<translation id="1845944666972354496">连续点按两次即可激活</translation>
 <translation id="1846771122725914429">蓝牙盲文显示屏</translation>
 <translation id="1852018405765032699">用 4 根手指点按屏幕可打开/关闭 ChromeVox 菜单。此类菜单包含与命令和快捷键有关的实用信息。打开此类菜单后，您只需用 1 根手指滑动屏幕即可浏览各个项，在屏幕上点按两次则可激活所需项。若要继续，请用 4 根手指点按屏幕。</translation>
+<translation id="1864430479908918647">按搜索键+空格键</translation>
 <translation id="1865601187525349519">文本末尾</translation>
 <translation id="1876229593313240038">文档</translation>
 <translation id="1902396333223336119">单元格</translation>
@@ -212,6 +215,7 @@
 <translation id="2435422727584637732">道奇蓝色</translation>
 <translation id="2438712309510062123">建议</translation>
 <translation id="2450814015951372393">复选框</translation>
+<translation id="2450992626945324272">移到下一句</translation>
 <translation id="2461822463642141190">电流</translation>
 <translation id="2462626033734746142">单选按钮组</translation>
 <translation id="2467741090055146971">取消选择</translation>
@@ -234,6 +238,7 @@
 <translation id="2619344480613750862">您还可在屏幕上的各部分之间移动。例如，您可在启动器、任务栏和 Chrome 标签页之间移动。若要移至下一部分，请用 4 根手指从左向右滑动屏幕。请立即尝试此手势以继续。</translation>
 <translation id="2624431853467395961">打开学习模式</translation>
 <translation id="2626530649491650971">可点击</translation>
+<translation id="263637551280112393">按搜索键+Shift+空格键</translation>
 <translation id="2637227747952042642">数学对象</translation>
 <translation id="2638785836053527382">“<ph name="FILE_NAME" />”已恢复下载</translation>
 <translation id="2639750663247012216">ChromeVox辅助键</translation>
@@ -389,7 +394,9 @@
 <translation id="3492609944033322585">{COUNT,plural, =1{1个右方括号}other{#个右方括号}}</translation>
 <translation id="3494946239022273294">mnuitm</translation>
 <translation id="3497063866483065785">{COUNT,plural, =1{1个问号}other{#个问号}}</translation>
+<translation id="3505359110822747654">收起 ChromeVox 菜单</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{1个插入符号}other{#个插入符号}}</translation>
+<translation id="3518600448524470129">{COUNT,plural, =1{白色项目符号}other{# 个白色项目符号}}</translation>
 <translation id="352577523970648069">可编辑的文本字段</translation>
 <translation id="3538907380453898475">说明表</translation>
 <translation id="3549141990712742152">剪切<ph name="TEXT" />。</translation>
@@ -486,6 +493,7 @@
 <translation id="42164919740161077">军服蓝</translation>
 <translation id="4217571870635786043">语音输入</translation>
 <translation id="4218529045364428769">{COUNT,plural, =1{1个破折号}other{#个破折号}}</translation>
+<translation id="4220024144662591089">选择从“<ph name="START_PHRASE" />”到“<ph name="END_PHRASE" />”之间的内容</translation>
 <translation id="4221012616705981690">没有上一个列表</translation>
 <translation id="4225355998815256469">表单控件</translation>
 <translation id="4230834257931120629">亮岩灰色</translation>
@@ -504,6 +512,7 @@
 <translation id="4300318234632215983">读出链接网址</translation>
 <translation id="4322625298640984693">赭色</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{1个点}=3{3个点}other{#个点}}</translation>
+<translation id="4352022650330571548">输入“<ph name="PHRASE" />”</translation>
 <translation id="4372435075475052704">最小值为<ph name="X" /></translation>
 <translation id="4372705107434148843">关闭语音</translation>
 <translation id="4376316291247992553">以盲文的形式查看图形</translation>
@@ -521,6 +530,7 @@
 <translation id="4479068155583208887">耐火砖红色</translation>
 <translation id="4482330759234983253">上一个表格</translation>
 <translation id="4491109536499578614">图片</translation>
+<translation id="4507332368061453500">长按当前内容</translation>
 <translation id="4511186779140817916">杏仁白</translation>
 <translation id="451510441928265982">没有上一个 2 级标题</translation>
 <translation id="4515799157838123044">暗化背景内容</translation>
@@ -533,6 +543,7 @@
 <translation id="4601367666219428522">表格“<ph name="TABLENAME" />”<ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">将忽略下一次按键</translation>
 <translation id="4623097797855662355">版权页</translation>
+<translation id="4624970070706497034">我们不再支持在 Chromebook 上自定义 TalkBack 功能。您仍能使用此功能，但应改用 TalkBack 默认键盘快捷键。先按搜索键+A，然后按 K 键，即可查看可用的键盘快捷键。如果您仍想使用 TalkBack，请再次按相应命令。</translation>
 <translation id="463135993322337640">按 ChromeVox 的 O 键、N 键，即可了解最新功能</translation>
 <translation id="4649220074413114917">用 2 根手指点按屏幕可停止任何当前语音。如果您不想让 ChromeVox 读出某些内容，此手势很有用。若要继续，请用 2 根手指点按屏幕。</translation>
 <translation id="4660783501463101648">移除了 Classic。现已无法再通过键盘切换回 ChromeVox Classic。</translation>
@@ -588,7 +599,6 @@
 <translation id="4993152509206108683">语速为<ph name="PERCENT" />%</translation>
 <translation id="4994420463726586413">播报当前电池状态</translation>
 <translation id="4997282455736854877"><ph name="NAME" />，已选中的单选按钮</translation>
-<translation id="5011664330025416377">按搜索键+空格键即可激活</translation>
 <translation id="5012724933919010465"><ph name="NAME" />，已选中的菜单项单选按钮</translation>
 <translation id="5020651427400641814">启用语音登录功能</translation>
 <translation id="5041394372352067729">将盲文显示移动到页首</translation>
@@ -615,7 +625,6 @@
 <translation id="5170206230005240598">已启用盲文字幕</translation>
 <translation id="5183440668879371625">上一行盲文</translation>
 <translation id="5189244881767082992">行</translation>
-<translation id="5234747236692380506">输入“<ph name="TEXT" />”</translation>
 <translation id="5263034204789987535">玉米丝色</translation>
 <translation id="5263344797180442561">2级标题标记</translation>
 <translation id="528468243742722775">结束</translation>
@@ -642,6 +651,7 @@
 <translation id="5355014376930441909">没有下一个章节</translation>
 <translation id="5368000168321181111">已关闭耳标</translation>
 <translation id="5368505757342402527">“<ph name="FILE_NAME" />”已下载 <ph name="PROGRESS" />%。大约还需 <ph name="TIME" /> <ph name="UNITS" />即可下载完毕。</translation>
+<translation id="5381388086899614489">长按</translation>
 <translation id="5400836586163650660">灰色</translation>
 <translation id="5402367795255837559">盲文</translation>
 <translation id="5402791055281059602">模态提醒</translation>
@@ -663,6 +673,7 @@
 <translation id="5522423213731659107">已完成快速入门教程！</translation>
 <translation id="5534303576632885660">标头标记</translation>
 <translation id="5539820223028224601">庚斯博罗灰色</translation>
+<translation id="554893713779400387">开启/关闭语音输入</translation>
 <translation id="5549179427201066174">开启或关闭声音反馈（耳标）</translation>
 <translation id="556042886152191864">按钮</translation>
 <translation id="5561345396546889625">下一个列表</translation>
@@ -673,6 +684,7 @@
 <translation id="5597170376237141345">下一个复选框</translation>
 <translation id="5598905979683743333"><ph name="NAME" />，未选中的单选按钮</translation>
 <translation id="5601172225407283979">执行默认操作</translation>
+<translation id="5604302400025591178">{COUNT,plural, =1{方形项目符号}other{# 个方形项目符号}}</translation>
 <translation id="5608798115546226984">自动填充内嵌</translation>
 <translation id="5616029807486814372">下一课</translation>
 <translation id="561939826962581046">time</translation>
@@ -680,6 +692,8 @@
 <translation id="5623842676595125836">日志</translation>
 <translation id="5628125749885014029">4级标题标记</translation>
 <translation id="5632083598315326067">图形符号</translation>
+<translation id="5648939288050772726">恭喜！您已成功完成对 ChromeVox 基本使用方法的学习。提示：您可以随时通过按下“搜索键+句点键”打开 ChromeVox 命令菜单。如需详细了解 ChromeVox 和 Chrome 操作系统，请阅读以下文章。
+    若要退出此教程，请使用 ChromeVox 找到“关闭”按钮，然后点击该按钮。</translation>
 <translation id="5653397561111110475">使用 Chromebook 触摸屏无障碍功能</translation>
 <translation id="5655682562155942719">跳转命令</translation>
 <translation id="56637627897541303">文本区域</translation>
@@ -750,8 +764,10 @@
 <translation id="6100239002225743044">上移 1 行</translation>
 <translation id="6118126368611144850">适合在 Chrome 中使用的 Android 应用。如果您的设备上安装了 Play 商店，则可以通过 Android 应用抢先体验 ChromeVox。只需从 Play 商店下载 Google Chrome Canary，即可体验实验功能。</translation>
 <translation id="611827076493383239">vtd</translation>
+<translation id="6119846243427417423">激活</translation>
 <translation id="6122013438240733403">按钮</translation>
 <translation id="6132506484792346370">列表框或组合框</translation>
+<translation id="613344593214611552">删除上一句</translation>
 <translation id="6142308968191113180">4 级标题标记</translation>
 <translation id="6150023170003443621">黄绿色</translation>
 <translation id="6158882249329863701">第 <ph name="TABLECELLROWINDEX" /> 行，第 <ph name="TABLECELLCOLUMNINDEX" /> 列</translation>
@@ -761,9 +777,11 @@
 <translation id="6186305613600865047">跳至页尾</translation>
 <translation id="6187190722927752226">海蓝色</translation>
 <translation id="6197361807490522975">深蓝色</translation>
+<translation id="6218813441317556731">将“<ph name="DELETE_PHRASE" />”替换为“<ph name="INSERT_PHRASE" />”</translation>
 <translation id="6236061028292614533">下一个标题</translation>
 <translation id="6254901459154107917">下一个可编辑的文本区域</translation>
 <translation id="6259464875943891919">已退出“<ph name="TYPE" />”。</translation>
+<translation id="6280088282605782512">点按两次</translation>
 <translation id="6282062888058716985">导航</translation>
 <translation id="6295699829709583154">基础键：搜索键</translation>
 <translation id="6305702903308659374">即使在 ChromeVox 朗读时也以正常音量播放音频</translation>
@@ -934,6 +952,7 @@
 <translation id="7533226154149229506">亮金黄色</translation>
 <translation id="7543255924852002459">舍弃标签</translation>
 <translation id="7552432549459840808">实用的 Chrome 快捷键</translation>
+<translation id="7553679324939294712">在“<ph name="BEFORE_PHRASE" />”前面插入“<ph name="INSERT_PHRASE" />”</translation>
 <translation id="7569983096843329377">黑色</translation>
 <translation id="7579911500627256166">点 <ph name="DOT" /></translation>
 <translation id="7592060599656252486">部分</translation>
@@ -957,16 +976,16 @@
 <translation id="7684431668231950609">编辑文本，网址条目</translation>
 <translation id="7685589220304187312">tlbar</translation>
 <translation id="7693840228159394336">上一个单选按钮</translation>
+<translation id="7696631298608145306">移到下一个字词</translation>
 <translation id="7701040980221191251">无</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7713139339518499741">自然语音</translation>
 <translation id="7714340021005120797">没有下一个组合框</translation>
-<translation id="772146615414628379">恭喜！您已完成对 ChromeVox 基本使用方法的学习。提示：您可以随时通过按下“搜索键+句点键”打开 ChromeVox 命令菜单。如需详细了解 ChromeVox 和 Chrome 操作系统，请阅读以下文章。
-    若要退出此教程，请使用 ChromeVox 找到“关闭”按钮，然后点击该按钮。</translation>
 <translation id="7724603315864178912">剪切</translation>
 <translation id="7731785449856576010">没有下一个媒体微件</translation>
 <translation id="7735498529470878067">“触摸浏览”功能可帮助您快速了解屏幕上的内容。</translation>
 <translation id="773906353055481349">同时按搜索键+Ctrl+Alt+箭头键，即可按单元格浏览</translation>
+<translation id="7746976083433980639"><ph name="ACTION" />即可<ph name="LABEL" /></translation>
 <translation id="7763537600611320912">“<ph name="FILE_NAME" />”已开始下载</translation>
 <translation id="7768784765476638775">随选朗读</translation>
 <translation id="7776293189010177726">打开 ChromeVox 菜单</translation>
@@ -1066,6 +1085,7 @@
 <translation id="8455868257606149352">最大值为<ph name="X" /></translation>
 <translation id="84575901236241018">有快捷键，<ph name="KEY" /></translation>
 <translation id="8463645336674919227">退出的区域含有语法错误</translation>
+<translation id="8465573210279050749">删除上一个字词</translation>
 <translation id="847040613207937740">没有下一个复选框</translation>
 <translation id="8473540203671727883">说出鼠标指针下的文字</translation>
 <translation id="8476408756881832830">在 ChromeVox 朗读时暂停播放音频</translation>
@@ -1096,11 +1116,13 @@
 <translation id="8659501358298941449">下拉列表</translation>
 <translation id="8666733765751421568">已到<ph name="TYPE" />末尾</translation>
 <translation id="867187640362843212">5 级标题标记</translation>
+<translation id="8690400660839620419">{COUNT,plural, =1{}other{嵌套的级别 #}}</translation>
 <translation id="8693391540059827073">我最喜爱的季节</translation>
 <translation id="8696284982970258155">蜜瓜绿色</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{1个竖线符号}other{#个竖线符号}}</translation>
 <translation id="8741370088760768424">提示：按搜索键 + 空格键可启用当前项。</translation>
 <translation id="8743786158317878347">进入结构化内容，如表格</translation>
+<translation id="8746846427395705317">移到上一个字词</translation>
 <translation id="8747966237988593539">经过排序的列表</translation>
 <translation id="8749988712346667988">银色</translation>
 <translation id="875769700429317857">“<ph name="FILE_NAME" />”已下载完毕</translation>
@@ -1128,6 +1150,7 @@
 <translation id="8970172509886453271">没有上一个章节</translation>
 <translation id="89720367119469899">转义</translation>
 <translation id="8978496506222343566">tltip</translation>
+<translation id="898089897833732740">删除“<ph name="PHRASE" />”</translation>
 <translation id="8986362086234534611">不保存</translation>
 <translation id="8989104346085848538">若要停止任何当前 ChromeVox 语音，请按 Ctrl 键。</translation>
 <translation id="8993737615451556423">提供用于加快语速、减慢语速和暂停朗读的控件</translation>
@@ -1163,6 +1186,7 @@
 <translation id="9223032053830369045">深红色</translation>
 <translation id="923331726185079994">ChromeVox 已更新</translation>
 <translation id="93384979447910801">暗海绿色</translation>
+<translation id="937605981140327129">目前未安装 TalkBack。请通过 Play 商店安装 Android AccessibilitySuite，然后重试。</translation>
 <translation id="948171205378458592">减慢语速</translation>
 <translation id="957570623732056069">用 1 根手指向左或向右滑动屏幕即可浏览此课程</translation>
 <translation id="958854023026327378">向下滑动一根手指</translation>

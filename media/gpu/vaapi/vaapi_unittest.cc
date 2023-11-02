@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@
 #include <va/va.h>
 #include <va/va_drmcommon.h>
 #include <va/va_str.h>
+#include <xf86drm.h>
 
 #include "base/bits.h"
 #include "base/callback_helpers.h"
@@ -36,8 +37,15 @@
 #include "media/base/media_switches.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
 #include "media/media_buildflags.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/linux/gbm_defines.h"
+
+#if defined(USE_OZONE) && BUILDFLAG(IS_LINUX)
+// GN doesn't understand conditional includes, so we need nogncheck here.
+// See crbug.com/1125897.
+#include "ui/ozone/public/ozone_platform.h"  // nogncheck
+#endif
 
 namespace media {
 namespace {
@@ -53,10 +61,11 @@ absl::optional<VAProfile> ConvertToVAProfile(VideoCodecProfile profile) {
     {VP9PROFILE_PROFILE0, VAProfileVP9Profile0},
     {VP9PROFILE_PROFILE2, VAProfileVP9Profile2},
     {AV1PROFILE_PROFILE_MAIN, VAProfileAV1Profile0},
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
     {HEVCPROFILE_MAIN, VAProfileHEVCMain},
+    {HEVCPROFILE_MAIN_STILL_PICTURE, VAProfileHEVCMain},
     {HEVCPROFILE_MAIN10, VAProfileHEVCMain10},
-#endif
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
   };
   auto it = kProfileMap.find(profile);
   return it != kProfileMap.end() ? absl::make_optional<VAProfile>(it->second)
@@ -78,10 +87,10 @@ absl::optional<VAProfile> StringToVAProfile(const std::string& va_profile) {
     {"VAProfileVP9Profile0", VAProfileVP9Profile0},
     {"VAProfileVP9Profile2", VAProfileVP9Profile2},
     {"VAProfileAV1Profile0", VAProfileAV1Profile0},
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
     {"VAProfileHEVCMain", VAProfileHEVCMain},
     {"VAProfileHEVCMain10", VAProfileHEVCMain10},
-#endif
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 #if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
     {"VAProfileProtected", VAProfileProtected},
 #endif  // BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
@@ -262,7 +271,7 @@ std::map<VAProfile, std::vector<VAEntrypoint>> ParseVainfo(
   return info;
 }
 
-std::map<VAProfile, std::vector<VAEntrypoint>> RetrieveVAInfoOutput() {
+std::string GetVaInfo(std::vector<std::string> argv) {
   int fds[2];
   PCHECK(pipe(fds) == 0);
   base::File read_pipe(fds[0]);
@@ -270,16 +279,21 @@ std::map<VAProfile, std::vector<VAEntrypoint>> RetrieveVAInfoOutput() {
 
   base::LaunchOptions options;
   options.fds_to_remap.emplace_back(write_pipe_fd.get(), STDOUT_FILENO);
-  std::vector<std::string> argv = {"vainfo"};
   EXPECT_TRUE(LaunchProcess(argv, options).IsValid());
   write_pipe_fd.reset();
 
-  char buf[4096] = {};
+  char buf[262144] = {};
   int n = read_pipe.ReadAtCurrentPos(buf, sizeof(buf));
   PCHECK(n >= 0);
-  EXPECT_LT(n, 4096);
+  EXPECT_LT(n, 262144);
   std::string output(buf, n);
   DVLOG(4) << output;
+  return output;
+}
+
+std::map<VAProfile, std::vector<VAEntrypoint>> RetrieveVAInfoOutput() {
+  std::vector<std::string> argv = {"vainfo"};
+  std::string output = GetVaInfo(argv);
   return ParseVainfo(output);
 }
 
@@ -333,15 +347,73 @@ TEST_F(VaapiTest, GetSupportedEncodeProfiles) {
   }
 }
 
+// Verifies that the resolutions of profiles for VBR and CBR are the same.
+TEST_F(VaapiTest, VbrAndCbrResolutionsMatch) {
+  struct ResolutionInfo {
+    VaapiWrapper::CodecMode mode;
+    gfx::Size min;
+    gfx::Size max;
+  };
+  std::map<VAProfile, std::vector<ResolutionInfo>> supported_resolutions;
+  for (const VaapiWrapper::CodecMode codec_mode :
+       {VaapiWrapper::kEncodeConstantBitrate,
+        VaapiWrapper::kEncodeConstantQuantizationParameter,
+        VaapiWrapper::kEncodeVariableBitrate}) {
+    const std::map<VAProfile, std::vector<VAEntrypoint>> configurations =
+        VaapiWrapper::GetSupportedConfigurationsForCodecModeForTesting(
+            codec_mode);
+    for (const auto& configuration : configurations) {
+      const VAProfile va_profile = configuration.first;
+      ResolutionInfo res_info{.mode = codec_mode};
+      ASSERT_TRUE(VaapiWrapper::GetSupportedResolutions(
+          va_profile, codec_mode, res_info.min, res_info.max))
+          << " Failed get resolutions: "
+          << "profile=" << va_profile << ", mode=" << codec_mode;
+
+      supported_resolutions[va_profile].push_back(res_info);
+    }
+  }
+
+  for (const auto& r : supported_resolutions) {
+    const VAProfile va_profile = r.first;
+    const auto& resolution_info = r.second;
+
+    for (size_t i = 0; i < resolution_info.size(); ++i) {
+      for (size_t j = i + 1; j < resolution_info.size(); ++j) {
+        EXPECT_EQ(resolution_info[i].min, resolution_info[j].min)
+            << " Minimum supported resolution mismatch for profile="
+            << VAProfileToString(va_profile) << ": " << resolution_info[i].mode
+            << " (" << resolution_info[i].min.ToString() << ") and "
+            << resolution_info[j].mode << " ("
+            << resolution_info[j].min.ToString() << ")";
+        EXPECT_EQ(resolution_info[i].max, resolution_info[j].max)
+            << " Maximum supported resolution mismatch for profile="
+            << VAProfileToString(va_profile) << ": " << resolution_info[i].mode
+            << " (" << resolution_info[i].max.ToString() << ") and "
+            << resolution_info[j].mode << " ("
+            << resolution_info[j].max.ToString() << ")";
+      }
+    }
+  }
+}
+
 #if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
 // Verifies that VAProfileProtected is indeed supported by the command line
 // vainfo utility.
 TEST_F(VaapiTest, VaapiProfileProtected) {
-  const auto va_info = RetrieveVAInfoOutput();
+  VAImplementation impl = VaapiWrapper::GetImplementationType();
+  // VAProfileProtected is only used in the Intel iHD implementation. AMD does
+  // not need to support that profile (but should be the only other protected
+  // content VAAPI implementation).
+  if (impl == VAImplementation::kIntelIHD) {
+    const auto va_info = RetrieveVAInfoOutput();
 
-  EXPECT_TRUE(base::Contains(va_info.at(VAProfileProtected),
-                             VAEntrypointProtectedContent))
-      << ", va profile: " << vaProfileStr(VAProfileProtected);
+    EXPECT_TRUE(base::Contains(va_info.at(VAProfileProtected),
+                               VAEntrypointProtectedContent))
+        << ", va profile: " << vaProfileStr(VAProfileProtected);
+  } else {
+    EXPECT_EQ(impl, VAImplementation::kMesaGallium);
+  }
 }
 #endif  // BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
 
@@ -418,7 +490,7 @@ TEST_F(VaapiTest, LowQualityEncodingSetting) {
       VAConfigAttrib attrib{};
       attrib.type = VAConfigAttribEncQualityRange;
       {
-        base::AutoLock auto_lock(*wrapper->va_lock_);
+        base::AutoLockMaybe auto_lock(wrapper->va_lock_.get());
         VAStatus va_res = vaGetConfigAttributes(
             wrapper->va_display_, va_profile, entrypoint, &attrib, 1);
         ASSERT_EQ(va_res, VA_STATUS_SUCCESS);
@@ -438,7 +510,7 @@ TEST_F(VaapiTest, LowQualityEncodingSetting) {
       ASSERT_TRUE(wrapper->CreateContext(gfx::Size(640, 368)));
       ASSERT_EQ(wrapper->pending_va_buffers_.size(), 1u);
       {
-        base::AutoLock auto_lock(*wrapper->va_lock_);
+        base::AutoLockMaybe auto_lock(wrapper->va_lock_.get());
         ScopedVABufferMapping mapping(wrapper->va_lock_, wrapper->va_display_,
                                       wrapper->pending_va_buffers_.front());
         ASSERT_TRUE(mapping.IsValid());
@@ -459,7 +531,7 @@ TEST_F(VaapiTest, LowQualityEncodingSetting) {
 
 // This test checks the supported SVC scalability mode.
 TEST_F(VaapiTest, CheckSupportedSVCScalabilityModes) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   const std::vector<SVCScalabilityMode> kSupportedTemporalSVC = {
       SVCScalabilityMode::kL1T2, SVCScalabilityMode::kL1T3};
   const std::vector<SVCScalabilityMode> kSupportedTemporalAndKeySVC = {
@@ -471,7 +543,7 @@ TEST_F(VaapiTest, CheckSupportedSVCScalabilityModes) {
   const auto scalability_modes_vp9_profile0 =
       VaapiWrapper::GetSupportedScalabilityModes(VP9PROFILE_PROFILE0,
                                                  VAProfileVP9Profile0);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (base::FeatureList::IsEnabled(kVaapiVp9kSVCHWEncoding) &&
       VaapiWrapper::GetDefaultVaEntryPoint(
           VaapiWrapper::kEncodeConstantQuantizationParameter,
@@ -489,16 +561,23 @@ TEST_F(VaapiTest, CheckSupportedSVCScalabilityModes) {
                                                  VAProfileVP9Profile2);
   EXPECT_TRUE(scalability_modes_vp9_profile2.empty());
 
+  const auto scalability_modes_vp8 = VaapiWrapper::GetSupportedScalabilityModes(
+      VP8PROFILE_ANY, VAProfileVP8Version0_3);
+#if BUILDFLAG(IS_CHROMEOS)
+  if (base::FeatureList::IsEnabled(kVaapiVp8TemporalLayerHWEncoding)) {
+    EXPECT_EQ(scalability_modes_vp8, kSupportedTemporalSVC);
+  } else {
+    EXPECT_TRUE(scalability_modes_vp8.empty());
+  }
+#else
+  EXPECT_TRUE(scalability_modes_vp8.empty());
+#endif
+
   const auto scalability_modes_h264_baseline =
       VaapiWrapper::GetSupportedScalabilityModes(
           H264PROFILE_BASELINE, VAProfileH264ConstrainedBaseline);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // TODO(b/199487660): Enable H.264 temporal layer encoding on AMD once their
-  // drivers support them.
-  const auto implementation = VaapiWrapper::GetImplementationType();
-  if (base::FeatureList::IsEnabled(kVaapiH264TemporalLayerHWEncoding) &&
-      (implementation == VAImplementation::kIntelI965 ||
-       implementation == VAImplementation::kIntelIHD)) {
+#if BUILDFLAG(IS_CHROMEOS)
+  if (base::FeatureList::IsEnabled(kVaapiH264TemporalLayerHWEncoding)) {
     EXPECT_EQ(scalability_modes_h264_baseline, kSupportedTemporalSVC);
   } else {
     EXPECT_TRUE(scalability_modes_h264_baseline.empty());
@@ -631,8 +710,11 @@ TEST_P(VaapiMinigbmTest, AllocateAndCompareWithMinigbm) {
   const gfx::Size resolution = std::get<2>(GetParam());
 
   // TODO(b/187852384): enable the other backends.
-  if (VaapiWrapper::GetImplementationType() != VAImplementation::kIntelIHD)
+  const auto backend = VaapiWrapper::GetImplementationType();
+  if (!(backend == VAImplementation::kIntelIHD ||
+        backend == VAImplementation::kMesaGallium)) {
     GTEST_SKIP() << "backend not supported";
+  }
 
   ASSERT_NE(va_rt_format, kInvalidVaRtFormat);
   if (!VaapiWrapper::IsDecodeSupported(va_profile))
@@ -642,14 +724,17 @@ TEST_P(VaapiMinigbmTest, AllocateAndCompareWithMinigbm) {
                                                           va_rt_format)) {
     GTEST_SKIP() << VARTFormatToString(va_rt_format) << " not supported.";
   }
+  // TODO(b/200817282): Fix high-bit depth formats on AMD Gallium impl.
+  if (backend == VAImplementation::kMesaGallium &&
+      va_rt_format == VA_RT_FORMAT_YUV420_10) {
+    GTEST_SKIP() << vaProfileStr(va_profile) << " fails on AMD, skipping.";
+  }
 
   gfx::Size minimum_supported_size;
-  ASSERT_TRUE(VaapiWrapper::GetDecodeMinResolution(va_profile,
-                                                   &minimum_supported_size));
   gfx::Size maximum_supported_size;
-  ASSERT_TRUE(VaapiWrapper::GetDecodeMaxResolution(va_profile,
-                                                   &maximum_supported_size));
-
+  ASSERT_TRUE(VaapiWrapper::GetSupportedResolutions(
+      va_profile, VaapiWrapper::CodecMode::kDecode, minimum_supported_size,
+      maximum_supported_size));
   if (resolution.width() < minimum_supported_size.width() ||
       resolution.height() < minimum_supported_size.height() ||
       resolution.width() > maximum_supported_size.width() ||
@@ -679,7 +764,7 @@ TEST_P(VaapiMinigbmTest, AllocateAndCompareWithMinigbm) {
   // Request the underlying DRM metadata for |scoped_va_surface|.
   VADRMPRIMESurfaceDescriptor va_descriptor{};
   {
-    base::AutoLock auto_lock(*wrapper->va_lock_);
+    base::AutoLockMaybe auto_lock(wrapper->va_lock_.get());
     VAStatus va_res =
         vaSyncSurface(wrapper->va_display_, scoped_va_surface->id());
     ASSERT_EQ(va_res, VA_STATUS_SUCCESS);
@@ -691,8 +776,8 @@ TEST_P(VaapiMinigbmTest, AllocateAndCompareWithMinigbm) {
     ASSERT_EQ(va_res, VA_STATUS_SUCCESS);
   }
 
-  // Verify some expected properties of the allocated VASurface. We expect a
-  // single |object|, with a number of |layers| of the same |pitch|.
+  // Verify some expected properties of the allocated VASurface. We expect one
+  // or two |object|s, with a number of |layers| of the same |pitch|.
   EXPECT_EQ(scoped_va_surface->size(),
             gfx::Size(base::checked_cast<int>(va_descriptor.width),
                       base::checked_cast<int>(va_descriptor.height)));
@@ -702,18 +787,39 @@ TEST_P(VaapiMinigbmTest, AllocateAndCompareWithMinigbm) {
   EXPECT_EQ(va_descriptor.fourcc, va_fourcc)
       << FourccToString(va_descriptor.fourcc)
       << " != " << FourccToString(va_fourcc);
-  EXPECT_EQ(va_descriptor.num_objects, 1u);
+  EXPECT_THAT(va_descriptor.num_objects, ::testing::AnyOf(1, 2));
   // TODO(mcasas): consider comparing |size| with a better estimate of the
   // |scoped_va_surface| memory footprint (e.g. including planes and format).
   EXPECT_GE(va_descriptor.objects[0].size,
             base::checked_cast<uint32_t>(scoped_va_surface->size().GetArea()));
+  if (va_descriptor.num_objects == 2) {
+    const int uv_width = (scoped_va_surface->size().width() + 1) / 2;
+    const int uv_height = (scoped_va_surface->size().height() + 1) / 2;
+    EXPECT_GE(va_descriptor.objects[1].size,
+              base::checked_cast<uint32_t>(2 * uv_width * uv_height));
+  }
+
+  base::AutoLockMaybe auto_lock(wrapper->va_lock_.get());
+  const std::string va_vendor_string
+         = vaQueryVendorString(wrapper->va_display_);
+  uint64_t expected_drm_modifier = DRM_FORMAT_MOD_LINEAR;
+
+  if (backend == VAImplementation::kIntelIHD) {
+    expected_drm_modifier = I915_FORMAT_MOD_Y_TILED;
+  } else if (backend == VAImplementation::kMesaGallium) {
+    if (va_vendor_string.find("STONEY") != std::string::npos) {
+      expected_drm_modifier = DRM_FORMAT_MOD_INVALID;
+    }
+  }
   EXPECT_EQ(va_descriptor.objects[0].drm_format_modifier,
-            I915_FORMAT_MOD_Y_TILED);
+            expected_drm_modifier);
   // TODO(mcasas): |num_layers| actually depends on |va_descriptor.va_fourcc|.
   EXPECT_EQ(va_descriptor.num_layers, 2u);
   for (uint32_t i = 0; i < va_descriptor.num_layers; ++i) {
     EXPECT_EQ(va_descriptor.layers[i].num_planes, 1u);
-    EXPECT_EQ(va_descriptor.layers[i].object_index[0], 0u);
+    const uint32_t expected_object_index =
+        (va_descriptor.num_objects == 1) ? 0 : i;
+    EXPECT_EQ(va_descriptor.layers[i].object_index[0], expected_object_index);
 
     DVLOG(2) << "plane " << i
              << ", pitch: " << va_descriptor.layers[i].pitch[0];
@@ -733,12 +839,33 @@ TEST_P(VaapiMinigbmTest, AllocateAndCompareWithMinigbm) {
 
   // Now open minigbm pointing to the DRM primary node, allocate a gbm_bo, and
   // compare its width/height/stride/etc with the |va_descriptor|s.
-  base::File drm_fd(
-      base::FilePath("/dev/dri/card0"),
-      base::File::FLAG_OPEN | base::File::FLAG_READ | base::File::FLAG_WRITE);
+  constexpr char kPrimaryNodeFilePattern[] = "/dev/dri/card%d";
+  struct gbm_device* gbm = nullptr;
+  base::File drm_fd;
+  // This loop ends on either the first card that does not exist or the first
+  // primary node that is not vgem.
+  for (int i = 0;; i++) {
+    base::FilePath dev_path(FILE_PATH_LITERAL(
+        base::StringPrintf(kPrimaryNodeFilePattern, i).c_str()));
+    drm_fd =
+        base::File(dev_path, base::File::FLAG_OPEN | base::File::FLAG_READ |
+                                 base::File::FLAG_WRITE);
+    ASSERT_TRUE(drm_fd.IsValid());
+    // Skip the virtual graphics memory manager device.
+    drmVersionPtr version = drmGetVersion(drm_fd.GetPlatformFile());
+    if (!version)
+      continue;
+    std::string version_name(
+        version->name,
+        base::checked_cast<std::string::size_type>(version->name_len));
+    drmFreeVersion(version);
+    if (base::EqualsCaseInsensitiveASCII(version_name, "vgem"))
+      continue;
 
-  ASSERT_TRUE(drm_fd.IsValid());
-  struct gbm_device* gbm = gbm_create_device(drm_fd.GetPlatformFile());
+    gbm = gbm_create_device(drm_fd.GetPlatformFile());
+    break;
+  }
+
   ASSERT_TRUE(gbm);
 
   const auto gbm_format = ToGBMFormat(va_rt_format);
@@ -810,6 +937,18 @@ int main(int argc, char** argv) {
     // creates a ScopedFeatureList and multiple concurrent ScopedFeatureLists
     // are not allowed.
     auto scoped_feature_list = media::CreateScopedFeatureList();
+
+#if defined(USE_OZONE) && BUILDFLAG(IS_LINUX)
+    // Initialize Ozone so that the VADisplayState can decide if we're running
+    // on top of a platform that can deal with VA-API buffers.
+    // TODO(b/230370976): we may no longer need to initialize Ozone since we
+    // don't use it for buffer allocation.
+    ui::OzonePlatform::InitParams params;
+    params.single_process = true;
+    ui::OzonePlatform::InitializeForUI(params);
+    ui::OzonePlatform::InitializeForGPU(params);
+#endif
+
     // PreSandboxInitialization() loads and opens the driver, queries its
     // capabilities and fills in the VASupportedProfiles.
     media::VaapiWrapper::PreSandboxInitialization();

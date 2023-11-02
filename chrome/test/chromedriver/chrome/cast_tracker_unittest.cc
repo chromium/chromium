@@ -1,4 +1,4 @@
-// Copyright (c) 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,7 +27,7 @@ class MockDevToolsClient : public StubDevToolsClient {
  public:
   MOCK_METHOD2(SendCommand,
                Status(const std::string& method,
-                      const base::DictionaryValue& params));
+                      const base::Value::Dict& params));
   MOCK_METHOD1(AddListener, void(DevToolsEventListener* listener));
 };
 
@@ -49,14 +49,14 @@ class CastTrackerTest : public testing::Test {
 };
 
 TEST_F(CastTrackerTest, OnSinksUpdated) {
-  const base::Value empty_sinks = base::Value(std::vector<base::Value>());
+  const base::Value empty_sinks = base::Value(base::Value::List());
   base::DictionaryValue params;
   EXPECT_EQ(0u, cast_tracker_->sinks().GetList().size());
 
-  base::Value sinks(base::Value::Type::LIST);
+  base::Value::List sinks;
   sinks.Append(CreateSink("sink1", "1"));
   sinks.Append(CreateSink("sink2", "2"));
-  params.SetKey("sinks", std::move(sinks));
+  params.SetKey("sinks", base::Value(std::move(sinks)));
   cast_tracker_->OnEvent(&devtools_client_, "Cast.sinksUpdated", params);
   EXPECT_EQ(2u, cast_tracker_->sinks().GetList().size());
 

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,9 +18,9 @@
   TestRunner.assertEquals(
       cssResource.resourceType(), Common.resourceTypes.Stylesheet, 'Resource type should be Stylesheet.');
   TestRunner.assertTrue(!cssResource.failed, 'Resource loading failed.');
-  await cssResource.requestContent();
+  const {isEncoded} = await cssResource.requestContent();
 
-  var content = (await cssResource.contentEncoded()) ? window.atob(cssResource.content) : cssResource.content;
+  var content = isEncoded ? window.atob(cssResource.content) : cssResource.content;
   TestRunner.addResult('Resource.content: ' + content);
   TestRunner.completeTest();
 })();

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include "build/build_config.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/mojom/printing_context.mojom-shared.h"
-#include "printing/page_range.h"
 #include "printing/page_setup.h"
 #include "printing/print_settings.h"
 #include "ui/gfx/geometry/size.h"
@@ -62,15 +61,6 @@ struct StructTraits<printing::mojom::PageSetupDataView, printing::PageSetup> {
 
   static bool Read(printing::mojom::PageSetupDataView data,
                    printing::PageSetup* out);
-};
-
-template <>
-struct StructTraits<printing::mojom::PageRangeDataView, printing::PageRange> {
-  static uint32_t from(const printing::PageRange& r) { return r.from; }
-  static uint32_t to(const printing::PageRange& r) { return r.to; }
-
-  static bool Read(printing::mojom::PageRangeDataView data,
-                   printing::PageRange* out);
 };
 
 template <>
@@ -150,15 +140,12 @@ struct StructTraits<printing::mojom::PrintSettingsDataView,
     return s.supports_alpha_blend();
   }
 
-#if defined(OS_WIN)
-  static bool print_text_with_gdi(const printing::PrintSettings& s) {
-    return s.print_text_with_gdi();
-  }
+#if BUILDFLAG(IS_WIN)
   static printing::mojom::PrinterLanguageType printer_language_type(
       const printing::PrintSettings& s) {
     return s.printer_language_type();
   }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   static bool is_modifiable(const printing::PrintSettings& s) {
     return s.is_modifiable();
@@ -171,14 +158,14 @@ struct StructTraits<printing::mojom::PrintSettingsDataView,
     return s.pages_per_sheet();
   }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   static const printing::PrintSettings::AdvancedSettings& advanced_settings(
       const printing::PrintSettings& s) {
     return s.advanced_settings();
   }
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   static bool send_user_info(const printing::PrintSettings& s) {
     return s.send_user_info();
   }
@@ -188,7 +175,7 @@ struct StructTraits<printing::mojom::PrintSettingsDataView,
   static const std::string& pin_value(const printing::PrintSettings& s) {
     return s.pin_value();
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   static bool Read(printing::mojom::PrintSettingsDataView data,
                    printing::PrintSettings* out);

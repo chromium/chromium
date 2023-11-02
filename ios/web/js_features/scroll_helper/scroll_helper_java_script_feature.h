@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,8 +23,8 @@ class ScrollHelperJavaScriptFeature : public JavaScriptFeature {
   ScrollHelperJavaScriptFeature& operator=(
       const ScrollHelperJavaScriptFeature&) = delete;
 
-  // Sets the scroll dragging state of the page to |dragging|. window.scrollTo
-  // is overridden to be suppressed as long as the |dragging| is true.
+  // Sets the scroll dragging state of the page to `dragging`. window.scrollTo
+  // is overridden to be suppressed as long as the `dragging` is true.
   void SetWebViewScrollViewIsDragging(WebState* web_state, bool dragging);
 };
 

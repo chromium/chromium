@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@ import org.chromium.base.UnownedUserData;
 import org.chromium.base.UnownedUserDataKey;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.security_state.SecurityStateModel;
 import org.chromium.content_public.browser.WebContents;
@@ -21,7 +22,8 @@ import org.chromium.ui.base.WindowAndroid;
  * Provides a trusted CDN publisher URL for the current web contents in a Tab.
  */
 public class TrustedCdn extends TabWebContentsUserData {
-    private static final Class<TrustedCdn> USER_DATA_KEY = TrustedCdn.class;
+    @VisibleForTesting
+    public static final Class<TrustedCdn> USER_DATA_KEY = TrustedCdn.class;
 
     private final Tab mTab;
     private final long mNativeTrustedCdn;
@@ -84,6 +86,22 @@ public class TrustedCdn extends TabWebContentsUserData {
         return cdn != null ? cdn.getPublisherUrl() : null;
     }
 
+    /**
+     * @param tab Tab object currently being shown.
+     * @return The name of the publisher of the content if it can be reliably extracted, or null
+     *         otherwise.
+     */
+    public static String getContentPublisher(Tab tab) {
+        if (tab == null) return null;
+
+        String publisherUrl = TrustedCdn.getPublisherUrl(tab);
+        if (publisherUrl != null) {
+            return UrlUtilities.extractPublisherFromPublisherUrl(publisherUrl);
+        }
+
+        return null;
+    }
+
     static TrustedCdn from(@NonNull Tab tab) {
         TrustedCdn trustedCdn = get(tab);
         if (trustedCdn == null) {
@@ -124,7 +142,8 @@ public class TrustedCdn extends TabWebContentsUserData {
     }
 
     @Nullable
-    private String getPublisherUrl() {
+    @VisibleForTesting
+    public String getPublisherUrl() {
         WebContents webContents = mTab.getWebContents();
         if (webContents == null) return null;
 

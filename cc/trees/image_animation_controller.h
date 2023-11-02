@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "base/cancelable_callback.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "cc/cc_export.h"
@@ -20,6 +21,10 @@
 #include "cc/paint/paint_image_generator.h"
 #include "cc/tiles/tile_priority.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
+
+namespace base {
+class SingleThreadTaskRunner;
+}
 
 namespace cc {
 class PaintImage;
@@ -115,6 +120,7 @@ class CC_EXPORT ImageAnimationController {
   // Notifies the beginning of an impl frame with the given |args|.
   void WillBeginImplFrame(const viz::BeginFrameArgs& args);
 
+  bool did_navigate() const { return did_navigate_; }
   void set_did_navigate() { did_navigate_ = true; }
 
   const base::flat_set<AnimationDriver*>& GetDriversForTesting(
@@ -278,8 +284,8 @@ class CC_EXPORT ImageAnimationController {
     void RequestBeginFrame();
     void RequestInvalidation();
 
-    base::SingleThreadTaskRunner* task_runner_;
-    Client* const client_;
+    raw_ptr<base::SingleThreadTaskRunner> task_runner_;
+    const raw_ptr<Client> client_;
     NowCallback now_callback_for_testing_;
 
     InvalidationState state_ = InvalidationState::kIdle;

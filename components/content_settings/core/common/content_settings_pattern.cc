@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,13 +11,13 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "components/content_settings/core/common/content_settings_pattern_parser.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -38,7 +38,7 @@ const char* const kSchemeNames[] = {"wildcard",         "other",
                                     "chrome-search",    "chrome",
                                     "chrome-untrusted", "devtools"};
 
-static_assert(base::size(kSchemeNames) == ContentSettingsPattern::SCHEME_MAX,
+static_assert(std::size(kSchemeNames) == ContentSettingsPattern::SCHEME_MAX,
               "kSchemeNames should have SCHEME_MAX elements");
 
 // Note: it is safe to return a base::StringPiece here as long as they are
@@ -367,8 +367,6 @@ operator=(PatternParts&& other) = default;
 //   - a.b.c.d (matches an exact IPv4 ip)
 //   - [a:b:c:d:e:f:g:h] (matches an exact IPv6 ip)
 //   - file:///tmp/test.html (a complete URL without a host)
-// Version 2 adds a resource identifier for plugins.
-// TODO(jochen): update once this feature is no longer behind a flag.
 const int ContentSettingsPattern::kContentSettingsPatternVersion = 1;
 
 // static
@@ -481,6 +479,43 @@ bool ContentSettingsPattern::IsNonWildcardDomainNonPortScheme(
   return false;
 }
 
+// static
+ContentSettingsPattern ContentSettingsPattern::ToDomainWildcardPattern(
+    const ContentSettingsPattern& pattern) {
+  DCHECK(pattern.IsValid());
+  std::string registrable_domain =
+      net::registry_controlled_domains::GetDomainAndRegistry(
+          pattern.GetHost(),
+          net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+
+  if (registrable_domain.empty()) {
+    return CreateBuilder()->Invalid()->Build();
+  }
+
+  return CreateBuilder()
+      ->WithHost(registrable_domain)
+      ->WithDomainWildcard()
+      ->WithSchemeWildcard()
+      ->WithPortWildcard()
+      ->WithPathWildcard()
+      ->Build();
+}
+
+// static
+ContentSettingsPattern ContentSettingsPattern::ToHostOnlyPattern(
+    const ContentSettingsPattern& pattern) {
+  DCHECK(pattern.IsValid());
+  auto builder = CreateBuilder();
+  builder->WithHost(pattern.GetHost());
+  builder->WithSchemeWildcard();
+  builder->WithPortWildcard();
+  builder->WithPathWildcard();
+  if (pattern.HasDomainWildcard()) {
+    builder->WithDomainWildcard();
+  }
+  return builder->Build();
+}
+
 ContentSettingsPattern::ContentSettingsPattern()
   : is_valid_(false) {
 }
@@ -547,6 +582,15 @@ bool ContentSettingsPattern::MatchesAllHosts() const {
   return parts_.has_domain_wildcard && parts_.host.empty();
 }
 
+bool ContentSettingsPattern::MatchesSingleOrigin() const {
+  return !parts_.is_scheme_wildcard && !parts_.has_domain_wildcard &&
+         !parts_.is_port_wildcard && !parts_.is_path_wildcard;
+}
+
+bool ContentSettingsPattern::HasDomainWildcard() const {
+  return parts_.has_domain_wildcard && !parts_.host.empty();
+}
+
 std::string ContentSettingsPattern::ToString() const {
   if (IsValid())
     return content_settings::PatternParser::ToString(parts_);
@@ -557,7 +601,7 @@ ContentSettingsPattern::SchemeType ContentSettingsPattern::GetScheme() const {
   if (parts_.is_scheme_wildcard)
     return SCHEME_WILDCARD;
 
-  for (size_t i = 2; i < base::size(kSchemeNames); ++i) {
+  for (size_t i = 2; i < std::size(kSchemeNames); ++i) {
     if (parts_.scheme == kSchemeNames[i])
       return static_cast<SchemeType>(i);
   }

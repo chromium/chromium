@@ -1,9 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/policy/cbcm_invalidations_initializer.h"
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
@@ -70,7 +71,12 @@ class CBCMInvalidationsInitializer::MachineLevelDeviceAccountInitializerHelper
     std::move(callback_).Run(true);
   }
 
-  void OnDeviceAccountTokenError(EnrollmentStatus status) override {
+  void OnDeviceAccountTokenFetchError(
+      absl::optional<DeviceManagementStatus> /*dm_status*/) override {
+    std::move(callback_).Run(false);
+  }
+
+  void OnDeviceAccountTokenStoreError() override {
     std::move(callback_).Run(false);
   }
 
@@ -96,7 +102,7 @@ class CBCMInvalidationsInitializer::MachineLevelDeviceAccountInitializerHelper
   }
 
   std::string service_account_email_;
-  policy::CloudPolicyClient* policy_client_;
+  raw_ptr<policy::CloudPolicyClient> policy_client_;
   std::unique_ptr<DeviceAccountInitializer> device_account_initializer_;
   Callback callback_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
@@ -120,7 +126,7 @@ void CBCMInvalidationsInitializer::OnServiceAccountSet(
   // the service account has to be initialized to the one in the policy.
   if (!DeviceOAuth2TokenServiceFactory::Get()->RefreshTokenIsAvailable() ||
       DeviceOAuth2TokenServiceFactory::Get()->GetRobotAccountId() !=
-          CoreAccountId::FromEmail(account_email)) {
+          CoreAccountId::FromRobotEmail(account_email)) {
     // Initialize the device service account and fetch auth codes to exchange
     // for a refresh token. Creating this object starts that process and the
     // callback will be called from it whether it succeeds or not.

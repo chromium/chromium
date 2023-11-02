@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,7 +45,7 @@ class BaseReportingBrowserTest : public CertVerifierBrowserTest,
  public:
   BaseReportingBrowserTest()
       : https_server_(net::test_server::EmbeddedTestServer::TYPE_HTTPS) {
-    std::vector<base::Feature> required_features = {
+    std::vector<base::test::FeatureRef> required_features = {
         network::features::kReporting, network::features::kNetworkErrorLogging,
         features::kCrashReporting};
     if (UseDocumentReporting()) {
@@ -110,7 +110,13 @@ class BaseReportingBrowserTest : public CertVerifierBrowserTest,
   }
 
  protected:
-  bool UseDocumentReporting() const { return GetParam(); }
+  bool UseDocumentReporting() const {
+#if BUILDFLAG(ENABLE_REPORTING)
+    return GetParam();
+#else
+    return false;
+#endif
+  }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -185,9 +191,9 @@ class NonIsolatedReportingBrowserTest : public BaseReportingBrowserTest {
 };
 
 std::unique_ptr<base::Value> ParseReportUpload(const std::string& payload) {
-  auto parsed_payload = base::test::ParseJsonDeprecated(payload);
+  base::Value parsed_payload = base::test::ParseJson(payload);
   // Clear out any non-reproducible fields.
-  for (auto& report : parsed_payload->GetList()) {
+  for (auto& report : parsed_payload.GetListDeprecated()) {
     report.RemoveKey("age");
     report.RemovePath("body.elapsed_time");
     auto* user_agent =
@@ -195,7 +201,7 @@ std::unique_ptr<base::Value> ParseReportUpload(const std::string& payload) {
     if (user_agent)
       *user_agent = base::Value("Mozilla/1.0");
   }
-  return parsed_payload;
+  return base::Value::ToUniquePtrValue(std::move(parsed_payload));
 }
 
 }  // namespace
@@ -375,7 +381,7 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTest,
   original_response()->Done();
 
   // Open a cross-origin kReportingHost iframe that fails to load. No report
-  // should be uploaded, since the NetworkIsolationKey does not match.
+  // should be uploaded, since the NetworkAnonymizationKey does not match.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), server()->GetURL("/iframe_blank.html")));
   content::NavigateIframeToURL(
@@ -383,8 +389,8 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTest,
       server()->GetURL(kReportingHost, "/close-socket?should-not-be-reported"));
 
   // Navigate the main frame to a kReportingHost URL that fails to load. A
-  // report should be uploaded, since the NetworkIsolationKey matches that of
-  // the original request where reporting information was learned.
+  // report should be uploaded, since the NetworkAnonymizationKey matches that
+  // of the original request where reporting information was learned.
   GURL expect_reported_url =
       server()->GetURL(kReportingHost, "/close-socket?should-be-reported");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), expect_reported_url));
@@ -394,9 +400,8 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTest,
 
   // Verify the contents of the received report.
   ASSERT_TRUE(actual);
-  std::unique_ptr<base::Value> expected =
-      base::test::ParseJsonDeprecated(base::StringPrintf(
-          R"json(
+  const base::Value expected = base::test::ParseJson(base::StringPrintf(
+      R"json(
         [
           {
             "body": {
@@ -415,8 +420,8 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTest,
           },
         ]
       )json",
-          expect_reported_url.spec().c_str()));
-  EXPECT_EQ(*expected, *actual);
+      expect_reported_url.spec().c_str()));
+  EXPECT_EQ(expected, *actual);
 }
 
 // These tests intentionally crash a render process, and so fail ASan tests.
@@ -427,7 +432,7 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTest,
 #define MAYBE_CrashReport CrashReport
 
 // Flaky on Mac (multiple versions), see https://crbug.com/1261749
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_CrashReportUnresponsive DISABLED_CrashReportUnresponsive
 #else
 #define MAYBE_CrashReportUnresponsive CrashReportUnresponsive
@@ -465,7 +470,7 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTest, MAYBE_CrashReport) {
 
   // Verify the contents of the report that we received.
   EXPECT_TRUE(response != nullptr);
-  auto report = response->GetList().begin();
+  auto report = response->GetListDeprecated().begin();
   auto* type = report->FindKeyOfType("type", base::Value::Type::STRING);
   auto* url = report->FindKeyOfType("url", base::Value::Type::STRING);
 
@@ -492,7 +497,8 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTest, MAYBE_CrashReportUnresponsive) {
 
   // Simulate the page being killed due to being unresponsive.
   content::ScopedAllowRendererCrashes allow_renderer_crashes(contents);
-  contents->GetMainFrame()->GetProcess()->Shutdown(content::RESULT_CODE_HUNG);
+  contents->GetPrimaryMainFrame()->GetProcess()->Shutdown(
+      content::RESULT_CODE_HUNG);
 
   upload_response()->WaitForRequest();
   auto response = ParseReportUpload(upload_response()->http_request()->content);
@@ -502,7 +508,7 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTest, MAYBE_CrashReportUnresponsive) {
 
   // Verify the contents of the report that we received.
   EXPECT_TRUE(response != nullptr);
-  auto report = response->GetList().begin();
+  auto report = response->GetListDeprecated().begin();
   auto* type = report->FindKeyOfType("type", base::Value::Type::STRING);
   auto* url = report->FindKeyOfType("url", base::Value::Type::STRING);
   auto* body = report->FindKeyOfType("body", base::Value::Type::DICTIONARY);

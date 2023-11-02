@@ -28,9 +28,9 @@
 #include "third_party/blink/renderer/core/svg/svg_parsing_error.h"
 #include "third_party/blink/renderer/core/svg/svg_preserve_aspect_ratio.h"
 #include "third_party/blink/renderer/core/svg/svg_rect.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 
@@ -48,7 +48,6 @@ SVGParsingError SVGAnimatedViewBoxRect::AttributeChanged(const String& value) {
   if (parse_status == SVGParseStatus::kNoError &&
       (BaseValue()->Width() < 0 || BaseValue()->Height() < 0)) {
     parse_status = SVGParseStatus::kNegativeValue;
-    BaseValue()->SetInvalid();
   }
   return parse_status;
 }
@@ -81,6 +80,11 @@ AffineTransform SVGFitToViewBox::ViewBoxToViewTransform(
 bool SVGFitToViewBox::IsKnownAttribute(const QualifiedName& attr_name) {
   return attr_name == svg_names::kViewBoxAttr ||
          attr_name == svg_names::kPreserveAspectRatioAttr;
+}
+
+bool SVGFitToViewBox::HasValidViewBox() const {
+  const SVGRect* value = view_box_->CurrentValue();
+  return value->IsValid() && value->Width() >= 0 && value->Height() >= 0;
 }
 
 }  // namespace blink

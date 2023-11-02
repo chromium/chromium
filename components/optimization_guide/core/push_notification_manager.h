@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
+#include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/push_notification.pb.h"
@@ -30,10 +31,6 @@ class PushNotificationManager {
         base::OnceClosure on_success,
         proto::KeyRepresentation key_representation,
         const base::flat_set<std::string>& hint_keys) = 0;
-
-    // If a cache of notifications overflowed and the set of hints to invalidate
-    // were lost, this asks the delegate to purge the whole database.
-    virtual void PurgeFetchedEntries(base::OnceClosure on_success) = 0;
   };
 
   // Observer interface to process HintNotificationPayload.payload. Subclasses
@@ -48,26 +45,35 @@ class PushNotificationManager {
 
   PushNotificationManager(const PushNotificationManager&) = delete;
   PushNotificationManager& operator=(const PushNotificationManager&) = delete;
-  virtual ~PushNotificationManager() = default;
+  PushNotificationManager();
+  virtual ~PushNotificationManager();
 
   // Sets |this|'s delegate.
-  virtual void SetDelegate(Delegate* delegate) = 0;
+  void SetDelegate(Delegate* delegate);
 
   // Informs |this| that the delegate is ready to process pushed hints.
-  virtual void OnDelegateReady() = 0;
+  virtual void OnDelegateReady();
 
   // Called when a new push notification arrives.
   virtual void OnNewPushNotification(
-      const proto::HintNotificationPayload& notification) = 0;
+      const proto::HintNotificationPayload& notification);
 
   // Adds an observer to handle payload in HintNotificationPayload.payload.
-  virtual void AddObserver(Observer* observer) = 0;
+  virtual void AddObserver(Observer* observer);
 
   // Removes an observer that handles HintNotificationPayload.payload.
-  virtual void RemoveObserver(Observer* observer) = 0;
+  virtual void RemoveObserver(Observer* observer);
 
  protected:
-  PushNotificationManager() = default;
+  // Owns |this|
+  raw_ptr<PushNotificationManager::Delegate> delegate_ = nullptr;
+
+ private:
+  friend class PushNotificationManagerUnitTest;
+  void DispatchPayload(const proto::HintNotificationPayload& notification);
+
+  // Observers to handle the custom payload.
+  base::ObserverList<PushNotificationManager::Observer> observers_;
 };
 
 }  // namespace optimization_guide

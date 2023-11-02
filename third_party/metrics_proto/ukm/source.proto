@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,6 +21,8 @@ enum SourceType {
   DESKTOP_WEB_APP_ID = 6;
   WORKER_ID = 7;
   NO_URL_ID = 8;
+  REDIRECT_ID = 9;
+  WEB_IDENTITY_ID = 10;
 }
 
 // Android Activity Type defined by
@@ -140,10 +142,6 @@ message Source {
   // The URL of the source, as recorded in history. If this URL has not been
   // discovered by Google's crawler, it should not be recorded.
   optional string url = 2;
-
-  // The origin of the URL (ex. "http://docs.google.com" if the URL is something
-  // like "http://docs.google.com/some_doc_hash"). This field is populated
-  // server-side and should never be filled in by clients.
   reserved 5;
   reserved "url_origin";
   reserved 9;
@@ -155,15 +153,12 @@ message Source {
   optional string initial_url = 6;
 
   // Flag indicating if the metric was collected while inside a "custom tab".
-  // TODO(b/191457204): to be replaced by |android_activity_type| below.
-  optional bool is_custom_tab = 7;
+  // Replaced by |android_activity_type| below.
+  optional bool deprecated_is_custom_tab = 7 [deprecated = true];
 
   // For Android only. Denotes the Chrome activity type when the source was
   // created. See
   // https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/flags/android/chrome_session_state.h;l=20;drc=c14f6f4b9c44fe479a8d004576b42723b2a5feb6
-  // This field should eventually replace the |is_custom_tab| above because it
-  // additionally distinguishes between Trusted Web Activities, WebAPKs, and
-  // WebApps.
   optional AndroidActivityType android_activity_type = 18;
 
   // Relative time of navigation for this Source, as seen by the client, and is
@@ -177,8 +172,4 @@ message Source {
   // Unique identifier (for a given client_id/session_id) for the tab this
   // source is associated with. Should only be set for navigation sources.
   optional int64 tab_id = 10;
-
-  // Time between navigation and the first contentful paint, in milliseconds.
-  // Deprecated. Use ukm::Entry instead.
-  optional int64 first_contentful_paint_msec = 4 [deprecated = true];
 }

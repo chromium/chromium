@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -19,12 +19,21 @@ component("mirroring_service") {
     "mirroring_features.h",
     "mirroring_service.cc",
     "mirroring_service.h",
+    "openscreen_message_port.cc",
+    "openscreen_message_port.h",
+    "openscreen_rpc_dispatcher.cc",
+    "openscreen_rpc_dispatcher.h",
+    "openscreen_session_host.cc",
+    "openscreen_session_host.h",
     "receiver_response.cc",
     "receiver_response.h",
     "receiver_setup_querier.cc",
     "receiver_setup_querier.h",
     "remoting_sender.cc",
     "remoting_sender.h",
+    "rpc_dispatcher.h",
+    "rpc_dispatcher_impl.cc",
+    "rpc_dispatcher_impl.h",
     "rtp_stream.cc",
     "rtp_stream.h",
     "session.cc",
@@ -41,9 +50,9 @@ component("mirroring_service") {
 
   deps = [
     "//build:chromeos_buildflags",
+    "//components/cast_streaming/public:config_conversions",
     "//components/mirroring/mojom:service",
     "//components/openscreen_platform",
-    "//components/openscreen_platform:openscreen_platform_network_service",
     "//components/version_info",
     "//crypto",
     "//gpu/config",
@@ -51,6 +60,7 @@ component("mirroring_service") {
     "//media/capture:capture_base",
     "//media/capture/mojom:video_capture",
     "//media/cast:common",
+    "//media/cast:encoding",
     "//media/cast:net",
     "//media/cast:sender",
     "//media/gpu",
@@ -58,6 +68,7 @@ component("mirroring_service") {
     "//media/mojo/common:common",
     "//media/mojo/mojom",
     "//media/mojo/mojom:remoting",
+    "//media/remoting:remoting_device_capability",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
     "//net",
@@ -67,6 +78,7 @@ component("mirroring_service") {
     "//third_party/jsoncpp",  # Required by Open Screen API.
     "//third_party/libaom:libaom_buildflags",
     "//third_party/openscreen/src/cast/streaming:common",
+    "//third_party/openscreen/src/cast/streaming:sender",
     "//ui/base",
     "//ui/gfx",
   ]
@@ -85,6 +97,9 @@ source_set("unittests") {
     "fake_video_capture_host.h",
     "media_remoter_unittest.cc",
     "message_dispatcher_unittest.cc",
+    "openscreen_message_port_unittest.cc",
+    "openscreen_rpc_dispatcher_unittest.cc",
+    "openscreen_session_host_unittest.cc",
     "receiver_response_unittest.cc",
     "receiver_setup_querier_unittest.cc",
     "remoting_sender_unittest.cc",
@@ -100,7 +115,6 @@ source_set("unittests") {
     "//base/test:test_support",
     "//components/mirroring/mojom:service",
     "//components/openscreen_platform",
-    "//components/openscreen_platform:openscreen_platform_network_service",
     "//media",
     "//media/capture/mojom:video_capture",
     "//media/cast:common",
@@ -117,6 +131,7 @@ source_set("unittests") {
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/openscreen/src/cast/streaming:common",
+    "//third_party/openscreen/src/cast/streaming:sender",
   ]
 
   include_dirs = [ "//third_party/openscreen/src" ]

@@ -1,9 +1,10 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/apple/compile_entitlements.gni")
 import("//build/apple/tweak_info_plist.gni")
+import("//build/buildflag_header.gni")
 import("//build/config/ios/ios_sdk.gni")
 import("//build/config/ios/rules.gni")
 import("//build/ios/extension_bundle_data.gni")
@@ -11,6 +12,29 @@ import("//ios/build/chrome_build.gni")
 import("//ios/build/config.gni")
 import("//ios/chrome/features.gni")
 import("//ios/public/provider/chrome/browser/build_config.gni")
+
+declare_args() {
+  # Controls whether fast_app_terminate_buildflags is enabled
+  # (see crbug.com/1328891 for details).
+  fast_app_terminate_enabled = -1
+}
+
+# If fast_app_terminate_enabled is not enabled, default to true,
+# except in debug mode (as this makes it difficult to debug the
+# app termination crashes).
+if (fast_app_terminate_enabled == -1) {
+  fast_app_terminate_enabled = !is_debug
+}
+
+buildflag_header("background_mode_buildflags") {
+  header = "background_mode_buildflags.h"
+  flags = [ "IOS_BACKGROUND_MODE_ENABLED=$ios_enable_background_mode" ]
+}
+
+buildflag_header("fast_app_terminate_buildflags") {
+  header = "fast_app_terminate_buildflags.h"
+  flags = [ "FAST_APP_TERMINATE_ENABLED=$fast_app_terminate_enabled" ]
+}
 
 source_set("app") {
   configs += [ "//build/config/compiler:enable_arc" ]
@@ -24,6 +48,8 @@ source_set("app") {
   deps = [
     "//base",
     "//ios/chrome/browser",
+    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/url:constants",
     "//net",
     "//url",
   ]
@@ -38,6 +64,7 @@ source_set("unit_tests") {
     "app_metrics_app_state_agent_unittest.mm",
     "deferred_initialization_runner_unittest.mm",
     "main_application_delegate_unittest.mm",
+    "post_restore_app_agent_unittest.mm",
     "safe_mode_app_state_agent_unittest.mm",
     "tab_opener_unittest.mm",
   ]
@@ -45,11 +72,13 @@ source_set("unit_tests") {
     ":app",
     ":app_internal",
     ":app_metrics_app_state_agent",
+    ":post_restore_app_agent",
     ":safe_mode_app_state_agent",
     "//base",
     "//base/test:test_support",
     "//components/metrics",
     "//components/prefs",
+    "//components/prefs:test_support",
     "//components/sync_preferences:sync_preferences",
     "//components/sync_preferences:test_support",
     "//ios/chrome/app:enterprise_app_agent",
@@ -62,9 +91,17 @@ source_set("unit_tests") {
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/metrics:metrics",
     "//ios/chrome/browser/prefs:browser_prefs",
+    "//ios/chrome/browser/promos_manager:constants",
+    "//ios/chrome/browser/promos_manager:promos_manager",
+    "//ios/chrome/browser/promos_manager:test_support",
+    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/signin:signin_util",
+    "//ios/chrome/browser/signin:test_support",
     "//ios/chrome/browser/tabs",
     "//ios/chrome/browser/ui/main:scene",
+    "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/browser/ui/main/test",
+    "//ios/chrome/browser/ui/post_restore_signin:features",
     "//ios/chrome/browser/ui/safe_mode",
     "//ios/chrome/common/app_group",
     "//ios/chrome/test:test_support",
@@ -74,6 +111,7 @@ source_set("unit_tests") {
     "//ios/testing:block_swizzler",
     "//ios/third_party/material_components_ios",
     "//ios/web/public/test:test",
+    "//testing/gmock",
     "//testing/gtest",
     "//third_party/ocmock",
     "//url",
@@ -99,6 +137,9 @@ if (!is_fat_secondary_toolchain) {
       "resources/Info.plist",
       "resources/ChromeAddition+Info.plist",
     ]
+    if (ios_enable_background_mode) {
+      info_plists += [ "resources/Background+Info.plist" ]
+    }
     if (target_environment == "catalyst") {
       info_plists += [ "resources/Environment+Catalyst.plist" ]
     } else {
@@ -137,21 +178,6 @@ if (!is_fat_secondary_toolchain) {
   }
 }
 
-source_set("content_suggestions_scheduler_app_state_agent") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "content_suggestions_scheduler_app_state_agent.h",
-    "content_suggestions_scheduler_app_state_agent.mm",
-  ]
-  deps = [
-    "//components/ntp_snippets",
-    "//components/previous_session_info",
-    "//ios/chrome/app/application_delegate:observing_app_state_agent",
-    "//ios/chrome/browser/metrics",
-    "//ios/chrome/browser/ntp_snippets",
-  ]
-}
-
 if (ios_enable_credential_provider_extension) {
   source_set("credential_provider_migrator_app_agent") {
     configs += [ "//build/config/compiler:enable_arc" ]
@@ -184,7 +210,7 @@ source_set("app_metrics_app_state_agent") {
     "//ios/chrome/app/application_delegate:application_delegate_internal",
     "//ios/chrome/app/application_delegate:observing_app_state_agent",
     "//ios/chrome/browser/metrics",
-    "//ios/chrome/browser/ui/main:scene",
+    "//ios/chrome/browser/ui/main:scene_state_header",
   ]
 }
 
@@ -202,6 +228,19 @@ source_set("safe_mode_app_state_agent") {
   ]
 }
 
+source_set("variations_app_state_agent") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "variations_app_state_agent.h",
+    "variations_app_state_agent.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/app/application_delegate:observing_app_state_agent",
+  ]
+}
+
 source_set("enterprise_app_agent") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
@@ -212,7 +251,13 @@ source_set("enterprise_app_agent") {
   deps = [
     ":enterprise_app_agent_ui",
     "//base",
+    "//components/policy/core/common",
+    "//ios/chrome/app:tests_hook",
     "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/app/application_delegate:application_delegate_internal",
+    "//ios/chrome/browser",
+    "//ios/chrome/browser/policy",
+    "//ios/chrome/browser/ui/first_run:utils",
     "//ios/chrome/browser/ui/main:scene_state_header",
   ]
 }
@@ -225,7 +270,8 @@ source_set("enterprise_app_agent_ui") {
   ]
   deps = [
     "//base",
-    "//ios/chrome/app/strings:ios_chromium_strings_grit",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ui/first_run:constants",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
     "//ios/chrome/common/ui/util:dynamic_type_util",
@@ -253,12 +299,54 @@ source_set("first_run_app_state_agent") {
     "//ios/chrome/browser/ui/commands:commands",
     "//ios/chrome/browser/ui/first_run",
     "//ios/chrome/browser/ui/first_run:field_trial",
+    "//ios/chrome/browser/ui/first_run:field_trial_constants",
     "//ios/chrome/browser/ui/first_run:first_run_provider",
     "//ios/chrome/browser/ui/first_run:utils",
     "//ios/chrome/browser/ui/main:browser_interface_provider",
     "//ios/chrome/browser/ui/main:observing_scene_agent",
-    "//ios/chrome/browser/ui/main:scene",
+    "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/browser/ui/screen:screen_provider",
+  ]
+}
+
+source_set("post_restore_app_agent") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "post_restore_app_agent.h",
+    "post_restore_app_agent.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/app/application_delegate:application_delegate_internal",
+    "//ios/chrome/browser/application_context:application_context",
+    "//ios/chrome/browser/promos_manager:constants",
+    "//ios/chrome/browser/promos_manager:promos_manager",
+    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/signin:signin_util",
+    "//ios/chrome/browser/ui/post_restore_signin:features",
+  ]
+}
+
+source_set("feed_app_agent") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "feed_app_agent.h",
+    "feed_app_agent.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/app/application_delegate:observing_app_state_agent",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/discover_feed:discover_feed",
+    "//ios/chrome/browser/discover_feed:discover_feed_factory",
+    "//ios/chrome/browser/ntp:features",
+    "//ios/chrome/browser/signin",
+  ]
+  frameworks = [
+    "BackgroundTasks.framework",
+    "UserNotifications.framework",
   ]
 }
 
@@ -283,12 +371,15 @@ source_set("app_internal") {
     ":app",
     ":app_metrics_app_state_agent",
     ":blocking_scene_commands",
-    ":content_suggestions_scheduler_app_state_agent",
     ":enterprise_app_agent",
+    ":fast_app_terminate_buildflags",
+    ":feed_app_agent",
     ":first_run_app_state_agent",
     ":mode",
+    ":post_restore_app_agent",
     ":safe_mode_app_state_agent",
     ":tests_hook",
+    ":variations_app_state_agent",
     "//base",
     "//build:branding_buildflags",
     "//components/bookmarks/browser",
@@ -300,6 +391,7 @@ source_set("app_internal") {
     "//components/component_updater:crl_set_remover",
     "//components/component_updater/installer_policies",
     "//components/crash/core/common",
+    "//components/download/public/background_service:public",
     "//components/favicon/core",
     "//components/favicon_base",
     "//components/feature_engagement",
@@ -330,26 +422,30 @@ source_set("app_internal") {
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/browser_state:browser_state_impl",
     "//ios/chrome/browser/browsing_data",
+    "//ios/chrome/browser/commerce",
     "//ios/chrome/browser/crash_report",
     "//ios/chrome/browser/crash_report:crash_report_internal",
     "//ios/chrome/browser/crash_report/breadcrumbs",
     "//ios/chrome/browser/credential_provider:buildflags",
-    "//ios/chrome/browser/credential_provider:feature_flags",
     "//ios/chrome/browser/download",
+    "//ios/chrome/browser/download/background_service:background_service",
     "//ios/chrome/browser/external_files",
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/feature_engagement",
     "//ios/chrome/browser/first_run",
+    "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/geolocation",
     "//ios/chrome/browser/history",
+    "//ios/chrome/browser/mailto_handler",
+    "//ios/chrome/browser/mailto_handler:mailto_handler_factory",
     "//ios/chrome/browser/main",
     "//ios/chrome/browser/memory",
     "//ios/chrome/browser/metrics",
     "//ios/chrome/browser/metrics:metrics_internal",
-    "//ios/chrome/browser/net",
     "//ios/chrome/browser/ntp:features",
     "//ios/chrome/browser/omaha",
     "//ios/chrome/browser/passwords",
+    "//ios/chrome/browser/push_notification:push_notification_service",
     "//ios/chrome/browser/reading_list",
     "//ios/chrome/browser/screenshot",
     "//ios/chrome/browser/search_engines",
@@ -366,8 +462,10 @@ source_set("app_internal") {
     "//ios/chrome/browser/ui/download",
     "//ios/chrome/browser/ui/first_run",
     "//ios/chrome/browser/ui/first_run:utils",
+    "//ios/chrome/browser/ui/keyboard:features",
     "//ios/chrome/browser/ui/main",
     "//ios/chrome/browser/ui/main:scene",
+    "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_ui",
     "//ios/chrome/browser/ui/table_view",
@@ -381,20 +479,19 @@ source_set("app_internal") {
     "//ios/chrome/browser/variations:ios_chrome_ui_string_overrider_factory",
     "//ios/chrome/browser/voice",
     "//ios/chrome/browser/web",
-    "//ios/chrome/browser/web:tab_id_tab_helper",
     "//ios/chrome/browser/web:web_internal",
     "//ios/chrome/browser/web/session_state",
     "//ios/chrome/browser/web_state_list",
     "//ios/chrome/common/app_group",
     "//ios/chrome/common/app_group:main_app",
     "//ios/chrome/common/intents",
+    "//ios/components/cookie_util",
     "//ios/net",
-    "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser/app_distribution:app_distribution_api",
-    "//ios/public/provider/chrome/browser/mailto",
     "//ios/public/provider/chrome/browser/overrides:overrides_api",
-    "//ios/public/provider/chrome/browser/signin",
-    "//ios/public/provider/chrome/browser/user_feedback",
+    "//ios/public/provider/chrome/browser/ui_utils:ui_utils_api",
+    "//ios/public/provider/chrome/browser/user_feedback:user_feedback_api",
+    "//ios/third_party/material_components_ios",
     "//ios/web/common:features",
     "//ios/web/common:uikit",
     "//ios/web/public/webui",
@@ -450,6 +547,7 @@ source_set("main") {
     "//ios/chrome/app/startup:startup_basic",
     "//ios/chrome/browser/crash_report",
     "//ios/chrome/common",
+    "//ios/public/provider/chrome/browser/primes:primes_api",
   ]
   if (ios_enable_sandbox_dump) {
     deps += [ "//ios/chrome/app/startup:sandbox_dump" ]

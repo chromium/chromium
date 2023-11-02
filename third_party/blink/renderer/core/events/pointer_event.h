@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EVENTS_POINTER_EVENT_H_
 
 #include "third_party/blink/public/common/input/pointer_id.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
@@ -56,32 +57,32 @@ class CORE_EXPORT PointerEvent : public MouseEvent {
   double screenX() const override {
     if (ShouldHaveIntegerCoordinates())
       return MouseEvent::screenX();
-    return screen_location_.X();
+    return screen_x_;
   }
   double screenY() const override {
     if (ShouldHaveIntegerCoordinates())
       return MouseEvent::screenY();
-    return screen_location_.Y();
+    return screen_y_;
   }
   double clientX() const override {
     if (ShouldHaveIntegerCoordinates())
       return MouseEvent::clientX();
-    return client_location_.X();
+    return client_x_;
   }
   double clientY() const override {
     if (ShouldHaveIntegerCoordinates())
       return MouseEvent::clientY();
-    return client_location_.Y();
+    return client_y_;
   }
   double pageX() const override {
     if (ShouldHaveIntegerCoordinates())
       return MouseEvent::pageX();
-    return page_location_.X();
+    return page_x_;
   }
   double pageY() const override {
     if (ShouldHaveIntegerCoordinates())
       return MouseEvent::pageY();
-    return page_location_.Y();
+    return page_y_;
   }
 
   double offsetX() const override;

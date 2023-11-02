@@ -1,17 +1,19 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
 
+#include <tuple>
+
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/permissions/permission_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
@@ -20,6 +22,7 @@
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/select_file_dialog_factory.h"
 #include "ui/shell_dialogs/select_file_policy.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -40,7 +43,8 @@ class FakeSelectFileDialog : public ui::SelectFileDialog {
                       int file_type_index,
                       const base::FilePath::StringType& default_extension,
                       gfx::NativeWindow owning_window,
-                      void* params) override {
+                      void* params,
+                      const GURL* caller) override {
     if (result_.size() == 1)
       listener_->FileSelected(result_[0], 0, params);
     else
@@ -194,7 +198,7 @@ IN_PROC_BROWSER_TEST_F(
   // In order to get the file handle without the file picker dialog in the
   // prerendered page, BroadcastChannel gets the file handle from the current
   // active page.
-  ignore_result(
+  std::ignore =
       content::ExecJs(prerendered_frame_host, R"(
             var createWritableAndClose = (async () => {
               let b = new BroadcastChannel('channel');
@@ -208,17 +212,17 @@ IN_PROC_BROWSER_TEST_F(
               await w.close();
               return "";})();
             )",
-                      content::EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE));
+                      content::EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE);
 
   // The active page picks files and sends it to the prerendered page to test
   // 'close()' in prerendering.
-  ignore_result(content::ExecJs(
+  std::ignore = content::ExecJs(
       GetWebContents(),
       "(async () => {"
       "  let [e] = await self.showOpenFilePicker();"
       "  self.entry = e;"
       "  new BroadcastChannel('channel').postMessage({entry: e});"
-      "  return e.name; })()"));
+      "  return e.name; })()");
 
   // PerformAfterWriteChecks() is not called in prerendering.
   EXPECT_FALSE(permission_context.performed_after_write_checks());
@@ -226,7 +230,7 @@ IN_PROC_BROWSER_TEST_F(
   // Activate the prerendered page.
   prerender_helper().NavigatePrimaryPage(prerender_url);
   content::UpdateUserActivationStateInterceptor user_activation_interceptor(
-      GetWebContents()->GetMainFrame());
+      GetWebContents()->GetPrimaryMainFrame());
   user_activation_interceptor.UpdateUserActivationState(
       blink::mojom::UserActivationUpdateType::kNotifyActivation,
       blink::mojom::UserActivationNotificationType::kTest);

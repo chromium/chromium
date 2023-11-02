@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,7 +26,7 @@ export const FilesTooltip = Polymer({
     showTimeout: {
       type: Number,
       value: 500,  // ms
-      readOnly: true
+      readOnly: true,
     },
 
     /**
@@ -34,9 +34,9 @@ export const FilesTooltip = Polymer({
      */
     hideTimeout: {
       type: Number,
-      value: 250,  // ms
-      readOnly: true
-    }
+      value: 500,  // ms
+      readOnly: true,
+    },
   },
 
   /**
@@ -75,9 +75,13 @@ export const FilesTooltip = Polymer({
   attached: function() {
     const closeTooltipHandler = this.onDocumentMouseDown_.bind(this);
     const cleanupTooltipHandler = this.onTransitionEnd_.bind(this);
+    const mouseoverHandler = this.onMouseOver_.bind(this, null);
+    const mouseoutHandler = this.onMouseOut_.bind(this, null);
     document.body.addEventListener('mousedown', closeTooltipHandler);
     this.addEventListener('transitionend', cleanupTooltipHandler);
     window.addEventListener('resize', closeTooltipHandler);
+    this.addEventListener('mouseover', mouseoverHandler);
+    this.addEventListener('mouseout', mouseoutHandler);
   },
 
   /**
@@ -92,7 +96,7 @@ export const FilesTooltip = Polymer({
 
   /**
    * Adds a target to tooltip.
-   * @param {!EventTarget} target
+   * @param {!HTMLElement} target
    */
   addTarget: function(target) {
     target.addEventListener('mouseover', this.onMouseOver_.bind(this, target));
@@ -115,6 +119,15 @@ export const FilesTooltip = Polymer({
   },
 
   /**
+   * Update the tooltip text with the passed-in target.
+   *
+   * @param {!HTMLElement} target
+   */
+  updateTooltipText: function(target) {
+    this.initShowingTooltip_(target);
+  },
+
+  /**
    * @param {!HTMLElement} target
    * @private
    */
@@ -127,7 +140,12 @@ export const FilesTooltip = Polymer({
       }
     }
 
-    if (this.visibleTooltipTarget_ === target) {
+    // Even the current target is the visible tooltip target, we still need to
+    // check if the label is different from the existing tooltip text, because
+    // if label text changes, we need to show the tooltip.
+    if (this.visibleTooltipTarget_ === target &&
+        target.hasAttribute('aria-label') &&
+        this.$.label.textContent === target.getAttribute('aria-label')) {
       return;
     }
 
@@ -174,6 +192,9 @@ export const FilesTooltip = Polymer({
     this.visibleTooltipTarget_ = target;
 
     const useCardTooltip = target.hasAttribute('show-card-tooltip');
+    const useLinkTooltip = target.dataset['tooltipLinkHref'] &&
+        target.dataset['tooltipLinkAriaLabel'] &&
+        target.dataset['tooltipLinkText'];
 
     const windowEdgePadding = 6;
 
@@ -183,6 +204,18 @@ export const FilesTooltip = Polymer({
     }
 
     this.$.label.textContent = label;
+    if (useLinkTooltip) {
+      this.classList.add('link-tooltip');
+      this.$.link.setAttribute('href', target.dataset['tooltipLinkHref']);
+      this.$.link.setAttribute(
+          'aria-label', target.dataset['tooltipLinkAriaLabel']);
+      this.$.link.textContent = target.dataset['tooltipLinkText'];
+      this.$.link.setAttribute('aria-hidden', 'false');
+      this.$.link.classList.add('link-label');
+    } else {
+      this.cleanupLinkTooltip_();
+    }
+
     const invert = 'invert-tooltip';
     this.$.label.toggleAttribute('invert', target.hasAttribute(invert));
 
@@ -202,8 +235,8 @@ export const FilesTooltip = Polymer({
     let left;
 
     if (useCardTooltip) {
-      this.className = 'card-tooltip';
-      this.$.label.className = 'card-label';
+      this.classList.add('card-tooltip');
+      this.$.label.classList.add('card-label');
 
       // Push left to the body's left when tooltip is longer than viewport.
       if (this.offsetWidth > document.body.offsetWidth) {
@@ -261,19 +294,27 @@ export const FilesTooltip = Polymer({
   },
 
   /**
-   * @param {Event} event
+   * @param {?HTMLElement} target Element with 'has-tooltip' attribute or null.
+   * @param {Event} event The event that triggered this handler.
    * @private
    */
   onMouseOver_: function(target, event) {
-    this.initShowingTooltip_(target);
+    const actualTarget = target || this.visibleTooltipTarget_;
+    if (actualTarget) {
+      this.initShowingTooltip_(actualTarget);
+    }
   },
 
   /**
-   * @param {Event} event
+   * @param {?HTMLElement} target Element with 'has-tooltip' attribute or null.
+   * @param {Event} event The event that triggered this handler.
    * @private
    */
   onMouseOut_: function(target, event) {
-    this.initHidingTooltip_(target);
+    const actualTarget = target || this.visibleTooltipTarget_;
+    if (actualTarget) {
+      this.initHidingTooltip_(actualTarget);
+    }
   },
 
   /**
@@ -311,8 +352,9 @@ export const FilesTooltip = Polymer({
    * @private
    */
   onTransitionEnd_: function(event) {
-    // Clear card tooltip.
+    // Clear card and link tooltip.
     if (!this.hasAttribute('visible')) {
+      this.cleanupLinkTooltip_();
       this.cleanupCardTooltip_();
     }
   },
@@ -322,9 +364,22 @@ export const FilesTooltip = Polymer({
    * @private
    */
   cleanupCardTooltip_: function() {
-    this.className = '';
+    this.classList.remove('card-tooltip');
     this.$.label.className = '';
-  }
+  },
+
+  /**
+   * Clear link tooltip styles to prevent overwriting normal tooltip rules.
+   * @private
+   */
+  cleanupLinkTooltip_: function() {
+    this.$.link.setAttribute('href', '#');
+    this.$.link.removeAttribute('aria-label');
+    this.$.link.setAttribute('aria-hidden', 'true');
+    this.$.link.textContent = '';
+    this.$.link.classList.remove('link-label');
+    this.classList.remove('link-tooltip');
+  },
 });
 
 //# sourceURL=//ui/file_manager/file_manager/foreground/elements/files_tooltip.js

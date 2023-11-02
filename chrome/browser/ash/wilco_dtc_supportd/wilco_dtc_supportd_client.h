@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,13 @@
 
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
-#include "chromeos/dbus/dbus_client.h"
-#include "chromeos/dbus/dbus_method_call_status.h"
+#include "chromeos/dbus/common/dbus_client.h"
+#include "chromeos/dbus/common/dbus_method_call_status.h"
 #include "dbus/object_proxy.h"
 
 namespace ash {
 
-class WilcoDtcSupportdClient : public DBusClient {
+class WilcoDtcSupportdClient : public chromeos::DBusClient {
  public:
   // Creates and initializes the global instance. |bus| must not be null.
   static void Initialize(dbus::Bus* bus);
@@ -32,12 +32,13 @@ class WilcoDtcSupportdClient : public DBusClient {
   // Registers |callback| to run when the wilco_dtc_supportd service becomes
   // available.
   virtual void WaitForServiceToBeAvailable(
-      WaitForServiceToBeAvailableCallback callback) = 0;
+      chromeos::WaitForServiceToBeAvailableCallback callback) = 0;
 
   // Bootstrap the Mojo connection between Chrome and the wilco_dtc_supportd
   // daemon. |fd| is the file descriptor with the child end of the Mojo pipe.
-  virtual void BootstrapMojoConnection(base::ScopedFD fd,
-                                       VoidDBusMethodCallback callback) = 0;
+  virtual void BootstrapMojoConnection(
+      base::ScopedFD fd,
+      chromeos::VoidDBusMethodCallback callback) = 0;
 
  protected:
   // Create() should be used instead.

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,11 +21,11 @@ namespace extensions {
 ShellFeedbackPrivateDelegate::ShellFeedbackPrivateDelegate() = default;
 ShellFeedbackPrivateDelegate::~ShellFeedbackPrivateDelegate() = default;
 
-std::unique_ptr<base::DictionaryValue> ShellFeedbackPrivateDelegate::GetStrings(
+base::Value::Dict ShellFeedbackPrivateDelegate::GetStrings(
     content::BrowserContext* browser_context,
     bool from_crash) const {
   NOTIMPLEMENTED();
-  return nullptr;
+  return {};
 }
 
 void ShellFeedbackPrivateDelegate::FetchSystemInformation(
@@ -49,11 +49,6 @@ void ShellFeedbackPrivateDelegate::FetchExtraLogs(
     FetchExtraLogsCallback callback) const {
   NOTIMPLEMENTED();
   std::move(callback).Run(feedback_data);
-}
-
-void ShellFeedbackPrivateDelegate::UnloadFeedbackExtension(
-    content::BrowserContext* context) const {
-  NOTIMPLEMENTED();
 }
 
 api::feedback_private::LandingPageType

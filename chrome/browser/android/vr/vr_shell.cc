@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -585,12 +585,11 @@ void VrShell::CancelToast(JNIEnv* env,
 }
 
 void VrShell::ConnectPresentingService(
-    device::mojom::VRDisplayInfoPtr display_info,
     device::mojom::XRRuntimeSessionOptionsPtr options) {
-  PostToGlThread(FROM_HERE,
-                 base::BindOnce(&BrowserRenderer::ConnectPresentingService,
-                                gl_thread_->GetBrowserRenderer(),
-                                std::move(display_info), std::move(options)));
+  PostToGlThread(
+      FROM_HERE,
+      base::BindOnce(&BrowserRenderer::ConnectPresentingService,
+                     gl_thread_->GetBrowserRenderer(), std::move(options)));
 }
 
 void VrShell::SetHistoryButtonsEnabled(JNIEnv* env,
@@ -713,7 +712,7 @@ void VrShell::UpdateWebInputIndices(
 }
 
 content::WebContents* VrShell::GetNonNativePageWebContents() const {
-  return !web_contents_is_native_page_ ? web_contents_ : nullptr;
+  return !web_contents_is_native_page_ ? web_contents_.get() : nullptr;
 }
 
 void VrShell::OnUnsupportedMode(UiUnsupportedMode mode) {
@@ -975,7 +974,7 @@ content::WebContents* VrShell::GetActiveWebContents() const {
 
 bool VrShell::ShouldDisplayURL() const {
   content::NavigationEntry* entry = GetNavigationEntry();
-  if (!entry) {
+  if (!entry || entry->IsInitialEntry()) {
     return ChromeLocationBarModelDelegate::ShouldDisplayURL();
   }
   GURL url = entry->GetVirtualURL();

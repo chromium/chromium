@@ -30,9 +30,11 @@
 
 #include "base/debug/stack_trace.h"
 #include "base/memory/ptr_util.h"
+#include "cc/animation/animation_id_provider.h"
+#include "cc/animation/keyframe_model.h"
 #include "cc/layers/picture_layer.h"
 #include "cc/paint/display_item_list.h"
-#include "skia/ext/skia_matrix_44.h"
+#include "cc/trees/target_property.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
@@ -47,15 +49,11 @@
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_item.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
-#include "third_party/blink/renderer/core/paint/compositing/composited_layer_mapping.h"
+#include "third_party/blink/renderer/core/paint/fragment_data_iterator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
-#include "third_party/blink/renderer/platform/animation/compositor_animation_curve.h"
-#include "third_party/blink/renderer/platform/animation/compositor_float_animation_curve.h"
-#include "third_party/blink/renderer/platform/animation/compositor_keyframe_model.h"
-#include "third_party/blink/renderer/platform/animation/compositor_target_property.h"
 #include "third_party/blink/renderer/platform/animation/timing_function.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
+#include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
 #include "third_party/blink/renderer/platform/graphics/paint/foreign_layer_display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_recorder.h"
@@ -63,6 +61,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "ui/gfx/animation/keyframe/keyframed_animation_curve.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_f.h"
@@ -73,6 +72,10 @@ static constexpr float kStartOpacity = 1;
 
 namespace {
 
+float GetTargetOpacity() {
+  return WebTestSupport::IsRunningWebTest() ? kStartOpacity : 0;
+}
+
 EffectPaintPropertyNode::State LinkHighlightEffectNodeState(
     float opacity,
     CompositorElementId element_id) {
@@ -80,11 +83,10 @@ EffectPaintPropertyNode::State LinkHighlightEffectNodeState(
   state.opacity = opacity;
   state.local_transform_space = &TransformPaintPropertyNode::Root();
   state.compositor_element_id = element_id;
-  state.direct_compositing_reasons = CompositingReason::kActiveOpacityAnimation;
   // EffectPaintPropertyNode::Update does not pay attention to changes in
-  // has_active_opacity_animation so we assume that the effect node is
-  // always animating.
-  state.has_active_opacity_animation = true;
+  // direct_compositing_reasons so we assume that the effect node is always
+  // animating.
+  state.direct_compositing_reasons = CompositingReason::kActiveOpacityAnimation;
   return state;
 }
 
@@ -97,7 +99,6 @@ static CompositorElementId NewElementId() {
 
 LinkHighlightImpl::LinkHighlightImpl(Node* node)
     : node_(node),
-      is_animating_(false),
       start_time_(base::TimeTicks::Now()),
       element_id_(NewElementId()) {
   DCHECK(node_);
@@ -122,15 +123,17 @@ LinkHighlightImpl::LinkHighlightImpl(Node* node)
 }
 
 LinkHighlightImpl::~LinkHighlightImpl() {
+  ReleaseResources();
+
   if (compositor_animation_->IsElementAttached())
     compositor_animation_->DetachElement();
   compositor_animation_->SetAnimationDelegate(nullptr);
   compositor_animation_.reset();
-
-  ReleaseResources();
 }
 
 void LinkHighlightImpl::ReleaseResources() {
+  StopCompositorAnimation();
+
   if (!node_)
     return;
 
@@ -140,6 +143,50 @@ void LinkHighlightImpl::ReleaseResources() {
   SetNeedsRepaintAndCompositingUpdate();
 
   node_.Clear();
+}
+
+void LinkHighlightImpl::StartCompositorAnimation() {
+  is_animating_on_compositor_ = true;
+  // FIXME: Should duration be configurable?
+  constexpr auto kFadeDuration = base::Milliseconds(100);
+  constexpr auto kMinPreFadeDuration = base::Milliseconds(100);
+
+  auto curve = gfx::KeyframedFloatAnimationCurve::Create();
+
+  const auto& timing_function = *CubicBezierTimingFunction::Preset(
+      CubicBezierTimingFunction::EaseType::EASE);
+
+  curve->AddKeyframe(gfx::FloatKeyframe::Create(base::Seconds(0), kStartOpacity,
+                                                timing_function.CloneToCC()));
+  // Make sure we have displayed for at least minPreFadeDuration before starting
+  // to fade out.
+  base::TimeDelta extra_duration_required =
+      std::max(base::TimeDelta(),
+               kMinPreFadeDuration - (base::TimeTicks::Now() - start_time_));
+  if (!extra_duration_required.is_zero()) {
+    curve->AddKeyframe(gfx::FloatKeyframe::Create(
+        extra_duration_required, kStartOpacity, timing_function.CloneToCC()));
+  }
+  curve->AddKeyframe(gfx::FloatKeyframe::Create(
+      kFadeDuration + extra_duration_required, GetTargetOpacity(),
+      timing_function.CloneToCC()));
+
+  auto keyframe_model = cc::KeyframeModel::Create(
+      std::move(curve), cc::AnimationIdProvider::NextKeyframeModelId(),
+      cc::AnimationIdProvider::NextGroupId(),
+      cc::KeyframeModel::TargetPropertyId(cc::TargetProperty::OPACITY));
+
+  compositor_keyframe_model_id_ = keyframe_model->id();
+  compositor_animation_->AddKeyframeModel(std::move(keyframe_model));
+}
+
+void LinkHighlightImpl::StopCompositorAnimation() {
+  if (!is_animating_on_compositor_)
+    return;
+
+  is_animating_on_compositor_ = false;
+  compositor_animation_->RemoveKeyframeModel(compositor_keyframe_model_id_);
+  compositor_keyframe_model_id_ = 0;
 }
 
 LinkHighlightImpl::LinkHighlightFragment::LinkHighlightFragment() {
@@ -165,8 +212,8 @@ LinkHighlightImpl::LinkHighlightFragment::PaintContentsToDisplayList() {
   cc::PaintCanvas* canvas =
       recorder.beginRecording(record_bounds.width(), record_bounds.height());
 
-  PaintFlags flags;
-  flags.setStyle(PaintFlags::kFill_Style);
+  cc::PaintFlags flags;
+  flags.setStyle(cc::PaintFlags::kFill_Style);
   flags.setAntiAlias(true);
   flags.setColor(color_.Rgb());
   canvas->drawPath(path_.GetSkPath(), flags);
@@ -179,49 +226,24 @@ LinkHighlightImpl::LinkHighlightFragment::PaintContentsToDisplayList() {
   return display_list;
 }
 
-void LinkHighlightImpl::StartHighlightAnimationIfNeeded() {
-  if (is_animating_)
+void LinkHighlightImpl::UpdateOpacityAndRequestAnimation() {
+  if (!node_ || is_animating_on_compositor_ || start_compositor_animation_)
     return;
-
-  is_animating_ = true;
-  // FIXME: Should duration be configurable?
-  constexpr auto kFadeDuration = base::Milliseconds(100);
-  constexpr auto kMinPreFadeDuration = base::Milliseconds(100);
-
-  auto curve = std::make_unique<CompositorFloatAnimationCurve>();
-
-  const auto& timing_function = *CubicBezierTimingFunction::Preset(
-      CubicBezierTimingFunction::EaseType::EASE);
-
-  float target_opacity = WebTestSupport::IsRunningWebTest() ? kStartOpacity : 0;
 
   // Since the notification about the animation finishing may not arrive in
   // time to remove the link highlight before it's drawn without an animation
   // we set the opacity to the final target opacity to avoid a flash of the
-  // initial opacity. https://crbug.com/974160
-  UpdateOpacity(target_opacity);
+  // initial opacity. https://crbug.com/974160.
+  // Note it's also possible we may skip the animation if the property node
+  // has not been composited in which case we immediately use the target
+  // opacity.
+  UpdateOpacity(GetTargetOpacity());
 
-  curve->AddKeyframe(
-      CompositorFloatKeyframe(0, kStartOpacity, timing_function));
-  // Make sure we have displayed for at least minPreFadeDuration before starting
-  // to fade out.
-  base::TimeDelta extra_duration_required =
-      std::max(base::TimeDelta(),
-               kMinPreFadeDuration - (base::TimeTicks::Now() - start_time_));
-  if (!extra_duration_required.is_zero()) {
-    curve->AddKeyframe(CompositorFloatKeyframe(
-        extra_duration_required.InSecondsF(), kStartOpacity, timing_function));
-  }
-  curve->AddKeyframe(CompositorFloatKeyframe(
-      (kFadeDuration + extra_duration_required).InSecondsF(), target_opacity,
-      timing_function));
-
-  auto keyframe_model = std::make_unique<CompositorKeyframeModel>(
-      *curve, 0, 0,
-      CompositorKeyframeModel::TargetPropertyId(
-          compositor_target_property::OPACITY));
-
-  compositor_animation_->AddKeyframeModel(std::move(keyframe_model));
+  // We request a compositing update after which UpdateAfterPaint will start
+  // the composited animation at the same time as PendingAnimations::Update
+  // starts composited web animations.
+  SetNeedsRepaintAndCompositingUpdate();
+  start_compositor_animation_ = true;
 }
 
 void LinkHighlightImpl::NotifyAnimationFinished(base::TimeDelta, int) {
@@ -282,11 +304,11 @@ void LinkHighlightImpl::Paint(GraphicsContext& context) {
                            !object->FirstFragment().NextFragment();
 
   wtf_size_t index = 0;
-  for (const auto* fragment = &object->FirstFragment(); fragment;
-       fragment = fragment->NextFragment(), ++index) {
-    ScopedDisplayItemFragment scoped_fragment(context, index);
-    auto rects = object->OutlineRects(
-        fragment->PaintOffset(), NGOutlineType::kIncludeBlockVisualOverflow);
+  for (FragmentDataIterator iterator(*object); !iterator.IsDone(); index++) {
+    const auto* fragment = iterator.GetFragmentData();
+    ScopedDisplayItemFragment scoped_fragment(context, fragment->FragmentID());
+    Vector<PhysicalRect> rects = object->CollectOutlineRectsAndAdvance(
+        NGOutlineType::kIncludeBlockVisualOverflow, iterator);
     if (rects.size() > 1)
       use_rounded_rects = false;
 
@@ -306,7 +328,7 @@ void LinkHighlightImpl::Paint(GraphicsContext& context) {
 
     Path new_path;
     for (auto& rect : rects) {
-      FloatRect snapped_rect(PixelSnappedIntRect(rect));
+      gfx::RectF snapped_rect(ToPixelSnappedRect(rect));
       if (use_rounded_rects) {
         constexpr float kRadius = 3;
         new_path.AddRoundedRect(FloatRoundedRect(snapped_rect, kRadius));
@@ -344,11 +366,35 @@ void LinkHighlightImpl::Paint(GraphicsContext& context) {
   DCHECK_EQ(index, fragments_.size());
 }
 
+void LinkHighlightImpl::UpdateAfterPaint(
+    const PaintArtifactCompositor* paint_artifact_compositor) {
+  bool should_start_animation =
+      !is_animating_on_compositor_ && start_compositor_animation_;
+  start_compositor_animation_ = false;
+  if (!is_animating_on_compositor_ && !should_start_animation)
+    return;
+
+  bool is_composited = paint_artifact_compositor->HasComposited(element_id_);
+  // If the animating node has not been composited, remove the highlight
+  // animation.
+  if (is_animating_on_compositor_ && !is_composited)
+    StopCompositorAnimation();
+
+  // Skip starting the link highlight animation if the target effect node has
+  // not been composited.
+  if (!should_start_animation || !is_composited)
+    return;
+
+  StartCompositorAnimation();
+}
+
 void LinkHighlightImpl::SetNeedsRepaintAndCompositingUpdate() {
   DCHECK(node_);
   if (auto* frame_view = node_->GetDocument().View()) {
     frame_view->SetVisualViewportOrOverlayNeedsRepaint();
-    frame_view->SetPaintArtifactCompositorNeedsUpdate();
+    frame_view->SetPaintArtifactCompositorNeedsUpdate(
+        PaintArtifactCompositorUpdateReason::
+            kLinkHighlightImplNeedsCompositingUpdate);
   }
 }
 

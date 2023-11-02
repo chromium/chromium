@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -11,6 +11,9 @@ component("webrtc") {
   sources = [
     "audio_delay_stats_reporter.cc",
     "audio_delay_stats_reporter.h",
+    "audio_processor.cc",
+    "audio_processor.h",
+    "constants.h",
     "helpers.cc",
     "helpers.h",
     "webrtc_features.cc",
@@ -22,6 +25,7 @@ component("webrtc") {
   deps = [
     "//base",
     "//build:chromecast_buildflags",
+    "//build:chromeos_buildflags",
     "//media",
     "//media:shared_memory_support",
     "//third_party/webrtc_overrides:webrtc_component",
@@ -40,5 +44,8 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/webrtc_overrides:webrtc_component",
   ]
-  sources = [ "helpers_unittests.cc" ]
+  sources = [
+    "audio_processor_test.cc",
+    "helpers_unittests.cc",
+  ]
 }

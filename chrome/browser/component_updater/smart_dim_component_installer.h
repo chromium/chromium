@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,6 +33,8 @@ class SmartDimComponentInstallerPolicy : public ComponentInstallerPolicy {
       const SmartDimComponentInstallerPolicy&) = delete;
 
   ~SmartDimComponentInstallerPolicy() override;
+
+  static const std::string GetExtensionId();
 
  private:
   // ComponentInstallerPolicy overrides:

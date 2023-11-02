@@ -1,13 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 /**
  * @fileoverview Add functionality related to getting image data.
  */
-goog.provide('__crWeb.imageFetch');
 
-(function() {
 /**
  * Namespace for this file. It depends on |__gCrWeb| having already been
  * injected.
@@ -126,5 +124,3 @@ function getImageDataByXMLHttpRequest(url, timeout, onData, onError) {
 
   xhr.send();
 };
-
-}());  // End of anonymous object

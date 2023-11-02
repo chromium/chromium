@@ -1,0 +1,6 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN
+++++++UNKNOWN hidden
+++++++++CHECK_BOX focusable label='Checkbox Title' actions='{DEFAULT}' checked_state='UNCHECKED'
+++++++++STATIC_TEXT hidden label=' Checkbox Title'

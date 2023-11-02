@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,15 +13,17 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "chrome/browser/lookalikes/lookalike_url_blocking_page.h"
 #include "chrome/browser/lookalikes/lookalike_url_controller_client.h"
 #include "chrome/browser/lookalikes/lookalike_url_service.h"
 #include "chrome/browser/lookalikes/lookalike_url_tab_storage.h"
-#include "chrome/browser/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
+#include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/reputation/reputation_service.h"
 #include "components/lookalikes/core/features.h"
@@ -31,7 +33,6 @@
 #include "components/reputation/core/safety_tips_config.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/site_engagement/content/site_engagement_service.h"
-#include "components/ukm/content/source_url_recorder.h"
 #include "components/url_formatter/spoof_checks/top_domains/top500_domains.h"
 #include "components/url_formatter/spoof_checks/top_domains/top_domain_util.h"
 #include "content/public/browser/navigation_handle.h"
@@ -49,9 +50,31 @@ bool IsInterstitialReload(const GURL& current_url,
          stored_redirect_chain[stored_redirect_chain.size() - 1] == current_url;
 }
 
-const base::Feature kOptimizeLookalikeUrlNavigationThrottle{
-    "OptimizeLookalikeUrlNavigationThrottle",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kOptimizeLookalikeUrlNavigationThrottle,
+             "OptimizeLookalikeUrlNavigationThrottle",
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
+
+// Records latency histograms for an invocation of PerformChecks() just before
+// it will return a value of PROCEED.
+void RecordPerformCheckLatenciesForAllowedNavigation(
+    base::TimeTicks check_start_time,
+    base::TimeDelta is_lookalike_url_duration,
+    base::TimeDelta get_domain_info_duration) {
+  UMA_HISTOGRAM_TIMES(
+      "NavigationSuggestion.PerformChecksDelayBeforeAllowingNavigation",
+      base::TimeTicks::Now() - check_start_time);
+  UMA_HISTOGRAM_TIMES(
+      "NavigationSuggestion.IsLookalikeUrlDelayBeforeAllowingNavigation",
+      is_lookalike_url_duration);
+  UMA_HISTOGRAM_TIMES(
+      "NavigationSuggestion.GetDomainInfoDelayBeforeAllowingNavigation",
+      get_domain_info_duration);
+}
 
 }  // namespace
 
@@ -91,9 +114,8 @@ ThrottleCheckResult LookalikeUrlNavigationThrottle::WillProcessResponse() {
 
   content::NavigationHandle* handle = navigation_handle();
 
-  // Ignore errors, subframe and same document navigations.
-  if (handle->GetNetErrorCode() != net::OK || !handle->IsInMainFrame() ||
-      handle->IsSameDocument()) {
+  // Ignore errors and same document navigations.
+  if (handle->GetNetErrorCode() != net::OK || handle->IsSameDocument()) {
     return content::NavigationThrottle::PROCEED;
   }
 
@@ -192,21 +214,33 @@ LookalikeUrlNavigationThrottle::MaybeCreateNavigationThrottle(
   // metrics.
   content::WebContents* web_contents = navigation_handle->GetWebContents();
   if (prerender::ChromeNoStatePrefetchContentsDelegate::FromWebContents(
-          web_contents)) {
+          web_contents))
     return nullptr;
-  }
+
+  // Don't handle navigations in subframe or fenced frame which shouldn't
+  // show an interstitial and record metrics.
+  // TODO(crbug.com/1199724): For portals, the throttle probably should be run
+  // as they may eventually become the primary main frame. Revisit here once
+  // portals are migrated to MPArch.
+  if (!navigation_handle->IsInPrimaryMainFrame() &&
+      !navigation_handle->IsInPrerenderedMainFrame())
+    return nullptr;
 
   // Otherwise, always insert the throttle for metrics recording.
   return std::make_unique<LookalikeUrlNavigationThrottle>(navigation_handle);
 }
 
 ThrottleCheckResult
-LookalikeUrlNavigationThrottle::CheckManifestsAndMaybeShowInterstitial(
+LookalikeUrlNavigationThrottle::CheckAndMaybeShowInterstitial(
     const GURL& safe_domain,
     const GURL& lookalike_domain,
     ukm::SourceId source_id,
     LookalikeUrlMatchType match_type,
     bool triggered_by_initial_url) {
+  // Cancel the prerender to show an interstitial after activation.
+  if (navigation_handle()->IsInPrerenderedMainFrame())
+    return content::NavigationThrottle::CANCEL;
+
   RecordUMAFromMatchType(match_type);
 
   // Punycode interstitial doesn't have a target site, so safe_domain isn't
@@ -282,6 +316,8 @@ void LookalikeUrlNavigationThrottle::PerformChecksDeferred(
 
 ThrottleCheckResult LookalikeUrlNavigationThrottle::PerformChecks(
     const std::vector<DomainInfo>& engaged_sites) {
+  base::TimeTicks perform_checks_start = base::TimeTicks::Now();
+
   // The last URL in the redirect chain must be the same as the commit URL,
   // or the navigation is a loadData navigation (where the base URL is saved in
   // the redirect chain, instead of the commit URL).
@@ -296,19 +332,30 @@ ThrottleCheckResult LookalikeUrlNavigationThrottle::PerformChecks(
   const GURL& first_url = navigation_handle()->GetRedirectChain()[0];
   const GURL& last_url = navigation_handle()->GetURL();
 
+  base::TimeTicks is_lookalike_url_start = base::TimeTicks::Now();
+
   // If first_url and last_url share a hostname, then only check last_url.
   // This saves time, and avoids clouding metrics.
   LookalikeUrlMatchType first_match_type;
   GURL first_suggested_url;
+  base::TimeDelta first_url_get_domain_info_duration;
   bool first_is_lookalike =
       first_url.host() != last_url.host() &&
       IsLookalikeUrl(first_url, engaged_sites, &first_match_type,
-                     &first_suggested_url);
+                     &first_suggested_url, &first_url_get_domain_info_duration);
 
   LookalikeUrlMatchType last_match_type;
   GURL last_suggested_url;
-  bool last_is_lookalike = IsLookalikeUrl(
-      last_url, engaged_sites, &last_match_type, &last_suggested_url);
+  base::TimeDelta last_url_get_domain_info_duration;
+  bool last_is_lookalike =
+      IsLookalikeUrl(last_url, engaged_sites, &last_match_type,
+                     &last_suggested_url, &last_url_get_domain_info_duration);
+
+  base::TimeDelta is_lookalike_url_duration =
+      base::TimeTicks::Now() - is_lookalike_url_start;
+  base::TimeDelta total_get_domain_info_duration =
+      first_url_get_domain_info_duration;
+  total_get_domain_info_duration += last_url_get_domain_info_duration;
 
   // If the first URL is a lookalike, but we ended up on the suggested site
   // anyway, don't warn.
@@ -340,6 +387,9 @@ ThrottleCheckResult LookalikeUrlNavigationThrottle::PerformChecks(
   }
 
   if (!first_is_lookalike && !last_is_lookalike) {
+    RecordPerformCheckLatenciesForAllowedNavigation(
+        perform_checks_start, is_lookalike_url_duration,
+        total_get_domain_info_duration);
     return NavigationThrottle::PROCEED;
   }
   // IMPORTANT: Do not modify first_is_lookalike or last_is_lookalike beyond
@@ -352,32 +402,25 @@ ThrottleCheckResult LookalikeUrlNavigationThrottle::PerformChecks(
 
   if (first_is_lookalike &&
       ShouldBlockLookalikeUrlNavigation(first_match_type)) {
-    return CheckManifestsAndMaybeShowInterstitial(
-        first_suggested_url, first_url, source_id, first_match_type,
-        first_is_lookalike);
+    return CheckAndMaybeShowInterstitial(first_suggested_url, first_url,
+                                         source_id, first_match_type,
+                                         first_is_lookalike);
   }
 
   if (last_is_lookalike && ShouldBlockLookalikeUrlNavigation(last_match_type)) {
-    return CheckManifestsAndMaybeShowInterstitial(last_suggested_url, last_url,
-                                                  source_id, last_match_type,
-                                                  first_is_lookalike);
+    return CheckAndMaybeShowInterstitial(last_suggested_url, last_url,
+                                         source_id, last_match_type,
+                                         first_is_lookalike);
   }
 
   LookalikeUrlMatchType match_type =
       first_is_lookalike ? first_match_type : last_match_type;
-  if (match_type == LookalikeUrlMatchType::kCharacterSwapSiteEngagement ||
-      match_type == LookalikeUrlMatchType::kCharacterSwapTop500) {
-    GURL lookalike_url = first_is_lookalike ? first_url : last_url;
 
-    navigation_handle()->GetWebContents()->GetMainFrame()->AddMessageToConsole(
-        blink::mojom::ConsoleMessageLevel::kWarning,
-        base::StringPrintf(
-            "Chrome has determined that %s could be fake or fraudulent.\n\n"
-            "Future Chrome versions will show a warning on this domain name. "
-            "If you believe this is shown in error please visit "
-            "https://g.co/chrome/lookalike-warnings",
-            lookalike_url.host().c_str()));
-  }
+  // IMPORTANT: Every time that a new lookalike heuristic is added, before
+  // adding a warning UI, a console message should be printed here. To do that,
+  // `lookalikes::GetConsoleMessage(lookalike_url, is_new_heuristic)` should be
+  // called with `is_new_heuristic=true`. The `lookalike_url` could be first_url
+  // or last_url depending on the value of `first_is_lookalike`.
 
   RecordUMAFromMatchType(match_type);
   // Interstitial normally records UKM, but still record when it's not shown.
@@ -385,6 +428,9 @@ ThrottleCheckResult LookalikeUrlNavigationThrottle::PerformChecks(
       source_id, match_type,
       LookalikeUrlBlockingPageUserAction::kInterstitialNotShown,
       first_is_lookalike);
+  RecordPerformCheckLatenciesForAllowedNavigation(
+      perform_checks_start, is_lookalike_url_duration,
+      total_get_domain_info_duration);
   return NavigationThrottle::PROCEED;
 }
 
@@ -392,7 +438,10 @@ bool LookalikeUrlNavigationThrottle::IsLookalikeUrl(
     const GURL& url,
     const std::vector<DomainInfo>& engaged_sites,
     LookalikeUrlMatchType* match_type,
-    GURL* suggested_url) {
+    GURL* suggested_url,
+    base::TimeDelta* get_domain_info_duration) {
+  DCHECK(get_domain_info_duration->is_zero());
+
   if (!url.SchemeIsHTTPOrHTTPS()) {
     return false;
   }
@@ -422,14 +471,11 @@ bool LookalikeUrlNavigationThrottle::IsLookalikeUrl(
     return false;
   }
 
-  // If the URL is in the component allowlist, don't show any warning.
-  if (reputation::IsUrlAllowlistedBySafetyTipsComponent(
-          proto, url.GetWithEmptyPath())) {
-    return false;
-  }
-
   // GetDomainInfo() is expensive, so do possible early-abort checks first.
+  base::TimeTicks get_domain_info_start = base::TimeTicks::Now();
   const DomainInfo navigated_domain = GetDomainInfo(url);
+  *get_domain_info_duration = base::TimeTicks::Now() - get_domain_info_start;
+
   if (IsTopDomain(navigated_domain)) {
     return false;
   }
@@ -440,13 +486,8 @@ bool LookalikeUrlNavigationThrottle::IsLookalikeUrl(
   // ignores the scheme which is okay since it's more conservative: If the user
   // is engaged with http://domain.test, not showing the warning on
   // https://domain.test is acceptable.
-  const auto already_engaged =
-      std::find_if(engaged_sites.begin(), engaged_sites.end(),
-                   [navigated_domain](const DomainInfo& engaged_domain) {
-                     return (navigated_domain.domain_and_registry ==
-                             engaged_domain.domain_and_registry);
-                   });
-  if (already_engaged != engaged_sites.end()) {
+  if (base::Contains(engaged_sites, navigated_domain.domain_and_registry,
+                     &DomainInfo::domain_and_registry)) {
     return false;
   }
 
@@ -481,13 +522,24 @@ bool LookalikeUrlNavigationThrottle::IsLookalikeUrl(
     GURL::Replacements replace_host;
     replace_host.SetHostStr(suggested_domain);
     *suggested_url = url.ReplaceComponents(replace_host).GetWithEmptyPath();
-    return true;
+
+    // Only flag the URL if its not allowed to spoof the suggested URL.
+    if (!reputation::IsUrlAllowlistedBySafetyTipsComponent(
+            proto, url.GetWithEmptyPath(), *suggested_url)) {
+      return true;
+    }
   }
 
   if (ShouldBlockBySpoofCheckResult(navigated_domain)) {
     *match_type = LookalikeUrlMatchType::kFailedSpoofChecks;
     *suggested_url = GURL();
-    return true;
+
+    // Only flag the URL if its not allowed to spoof itself (which is how we
+    // indicate spoof-check-specific allowlisting).
+    if (!reputation::IsUrlAllowlistedBySafetyTipsComponent(
+            proto, url.GetWithEmptyPath(), url.GetWithEmptyPath())) {
+      return true;
+    }
   }
 
   return false;

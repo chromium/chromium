@@ -1,14 +1,16 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/web_applications/web_app_metrics.h"
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/time/time.h"
+#include "chrome/browser/after_startup_task_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -20,6 +22,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
+#include "chrome/common/chrome_features.h"
 #include "components/site_engagement/content/engagement_type.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
@@ -27,12 +30,13 @@
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 
 using DisplayMode = blink::mojom::DisplayMode;
-using absl::optional;
 using content::WebContents;
 
 namespace web_app {
 
 namespace {
+
+bool g_disable_automatic_icon_health_checks_for_testing = false;
 
 // Max amount of time to record as a session. If a session exceeds this length,
 // treat it as invalid (0 time).
@@ -68,14 +72,28 @@ WebAppMetrics* WebAppMetrics::Get(Profile* profile) {
   return WebAppMetricsFactory::GetForProfile(profile);
 }
 
+// static
+void WebAppMetrics::DisableAutomaticIconHealthChecksForTesting() {
+  g_disable_automatic_icon_health_checks_for_testing = true;
+}
+
 WebAppMetrics::WebAppMetrics(Profile* profile)
     : SiteEngagementObserver(
           site_engagement::SiteEngagementService::Get(profile)),
       profile_(profile),
+      icon_health_checks_(profile),
       browser_tab_strip_tracker_(this, nullptr) {
   browser_tab_strip_tracker_.Init();
   base::PowerMonitor::AddPowerSuspendObserver(this);
   BrowserList::AddObserver(this);
+
+  if (base::FeatureList::IsEnabled(features::kDesktopPWAsIconHealthChecks) &&
+      !g_disable_automatic_icon_health_checks_for_testing) {
+    AfterStartupTaskUtils::PostTask(
+        FROM_HERE, base::ThreadTaskRunnerHandle::Get(),
+        base::BindOnce(&WebAppIconHealthChecks::Start,
+                       icon_health_checks_.GetWeakPtr(), base::DoNothing()));
+  }
 
   WebAppProvider* provider = WebAppProvider::GetForLocalAppsUnchecked(profile_);
   DCHECK(provider);
@@ -120,18 +138,15 @@ void WebAppMetrics::OnEngagementEvent(
 
   // A presence of WebAppTabHelper with valid app_id indicates an installed
   // web app.
-  WebAppTabHelper* tab_helper = WebAppTabHelper::FromWebContents(web_contents);
-  if (!tab_helper)
-    return;
-  AppId app_id = tab_helper->GetAppId();
-  if (app_id.empty())
+  const AppId* app_id = WebAppTabHelper::GetAppId(web_contents);
+  if (!app_id)
     return;
 
   // No HostedAppBrowserController if app is running as a tab in common browser.
   const bool in_window = !!browser->app_controller();
   const bool user_installed = WebAppProvider::GetForLocalAppsUnchecked(profile_)
                                   ->registrar()
-                                  .WasInstalledByUser(app_id);
+                                  .WasInstalledByUser(*app_id);
 
   // Record all web apps:
   RecordTabOrWindowHistogram("WebApp.Engagement", in_window, engagement_type);
@@ -174,7 +189,18 @@ void WebAppMetrics::OnTabStripModelChanged(
     const TabStripSelectionChange& selection) {
   // Process deselection, removal, then selection in-order so we have a
   // consistent view of selected and last-interacted tabs.
-  UpdateUkmData(selection.old_contents, TabSwitching::kFrom);
+  TabSwitching initial_mode = TabSwitching::kFrom;
+  // Foreground usage duration should be counted when the web app is being
+  // closed, despite IsInAppWindow returning false at this point.
+  if (change.type() == TabStripModelChange::kRemoved &&
+      tab_strip_model->empty()) {
+    auto iter = base::ranges::find(*BrowserList::GetInstance(), tab_strip_model,
+                                   &Browser::tab_strip_model);
+    if (iter != BrowserList::GetInstance()->end() &&
+        (*iter)->type() == Browser::TYPE_APP)
+      initial_mode = TabSwitching::kForegroundClosing;
+  }
+  UpdateUkmData(selection.old_contents, initial_mode);
 
   foreground_web_contents_ = selection.new_contents;
   // Newly-selected foreground contents should not be going away.
@@ -196,9 +222,9 @@ void WebAppMetrics::OnTabStripModelChanged(
          change.GetRemove()->contents) {
       if (contents.remove_reason ==
           TabStripModelChange::RemoveReason::kDeleted) {
-        auto* tab_helper = WebAppTabHelper::FromWebContents(contents.contents);
-        if (tab_helper && !tab_helper->GetAppId().empty())
-          app_last_interacted_time_.erase(tab_helper->GetAppId());
+        const AppId* app_id = WebAppTabHelper::GetAppId(contents.contents);
+        if (app_id)
+          app_last_interacted_time_.erase(*app_id);
         // Newly-selected foreground contents should not be going away.
         if (contents.contents == foreground_web_contents_) {
           base::debug::DumpWithoutCrashing();
@@ -214,12 +240,10 @@ void WebAppMetrics::OnTabStripModelChanged(
 void WebAppMetrics::OnSuspend() {
   // Update current tab as foreground time.
   if (foreground_web_contents_) {
-    auto* tab_helper =
-        WebAppTabHelper::FromWebContents(foreground_web_contents_);
-    if (tab_helper && !tab_helper->GetAppId().empty() &&
-        app_last_interacted_time_.contains(tab_helper->GetAppId())) {
+    const AppId* app_id = WebAppTabHelper::GetAppId(foreground_web_contents_);
+    if (app_id && app_last_interacted_time_.contains(*app_id)) {
       UpdateUkmData(foreground_web_contents_, TabSwitching::kFrom);
-      app_last_interacted_time_.erase(tab_helper->GetAppId());
+      app_last_interacted_time_.erase(*app_id);
     }
   }
   // Update all other tabs as background time.
@@ -229,9 +253,8 @@ void WebAppMetrics::OnSuspend() {
     for (int i = 0; i < tab_count; i++) {
       WebContents* contents = browser->tab_strip_model()->GetWebContentsAt(i);
       DCHECK(contents);
-      auto* tab_helper = WebAppTabHelper::FromWebContents(contents);
-      if (tab_helper && !tab_helper->GetAppId().empty() &&
-          app_last_interacted_time_.contains(tab_helper->GetAppId())) {
+      const AppId* app_id = WebAppTabHelper::GetAppId(contents);
+      if (app_id && app_last_interacted_time_.contains(*app_id)) {
         UpdateUkmData(contents, TabSwitching::kBackgroundClosing);
       }
     }
@@ -239,13 +262,15 @@ void WebAppMetrics::OnSuspend() {
   app_last_interacted_time_.clear();
 }
 
-void WebAppMetrics::NotifyOnAssociatedAppChanged(WebContents* web_contents,
-                                                 const AppId& previous_app_id,
-                                                 const AppId& new_app_id) {
+void WebAppMetrics::NotifyOnAssociatedAppChanged(
+    content::WebContents* web_contents,
+    const absl::optional<AppId>& previous_app_id,
+    const absl::optional<AppId>& new_app_id) {
   // Ensure we aren't counting closed app as still open.
   // TODO (crbug.com/1081187): If there were multiple app instances open, this
   // will prevent background time being counted until the app is next active.
-  app_last_interacted_time_.erase(previous_app_id);
+  if (previous_app_id.has_value())
+    app_last_interacted_time_.erase(previous_app_id.value());
   // Don't record any UKM data here. It will be recorded in
   // |NotifyInstallableWebAppStatusUpdated| once fully fetched.
 }
@@ -314,17 +339,17 @@ void WebAppMetrics::UpdateUkmData(WebContents* web_contents,
     return;
   DailyInteraction features;
 
-  auto* tab_helper = WebAppTabHelper::FromWebContents(web_contents);
-  if (tab_helper &&
-      provider->registrar().IsLocallyInstalled(tab_helper->GetAppId())) {
+  const AppId* app_id = WebAppTabHelper::GetAppId(web_contents);
+  if (app_id && provider->registrar().IsLocallyInstalled(*app_id)) {
     // App is installed
-    const AppId& app_id = tab_helper->GetAppId();
-    features.start_url = provider->registrar().GetAppStartUrl(app_id);
+    features.start_url = provider->registrar().GetAppStartUrl(*app_id);
     features.installed = true;
-    features.install_source =
-        GetWebAppInstallSource(profile_->GetPrefs(), app_id);
+    auto install_source =
+        provider->registrar().GetAppInstallSourceForMetrics(*app_id);
+    if (install_source)
+      features.install_source = static_cast<int>(*install_source);
     DisplayMode display_mode =
-        provider->registrar().GetAppEffectiveDisplayMode(app_id);
+        provider->registrar().GetAppEffectiveDisplayMode(*app_id);
     features.effective_display_mode = static_cast<int>(display_mode);
     // AppBannerManager treats already-installed web-apps as non-promotable, so
     // include already-installed findings as promotable.
@@ -332,13 +357,15 @@ void WebAppMetrics::UpdateUkmData(WebContents* web_contents,
         /*ignore_existing_installations=*/true);
     // Record usage duration and session counts only for installed web apps that
     // are currently open in a window.
-    if (provider->ui_manager().IsInAppWindow(web_contents)) {
+    if (provider->ui_manager().IsInAppWindow(web_contents) ||
+        mode == TabSwitching::kForegroundClosing) {
       base::Time now = base::Time::Now();
-      if (app_last_interacted_time_.contains(app_id)) {
-        base::TimeDelta delta = now - app_last_interacted_time_[app_id];
+      if (app_last_interacted_time_.contains(*app_id)) {
+        base::TimeDelta delta = now - app_last_interacted_time_[*app_id];
         if (delta < max_valid_session_delta_) {
           switch (mode) {
             case TabSwitching::kFrom:
+            case TabSwitching::kForegroundClosing:
               features.foreground_duration = delta;
               break;
             case TabSwitching::kTo:
@@ -348,7 +375,7 @@ void WebAppMetrics::UpdateUkmData(WebContents* web_contents,
           }
         }
       }
-      app_last_interacted_time_[app_id] = now;
+      app_last_interacted_time_[*app_id] = now;
 
       // Note: real web app launch counts 2 sessions immediately, as app window
       // is actually activated twice in the launch process.

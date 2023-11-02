@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/cpu_time_budget_pool.h"
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/task_queue_throttler.h"
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/wake_up_budget_pool.h"
+#include "third_party/blink/renderer/platform/scheduler/public/scheduling_policy.h"
 #include "third_party/blink/renderer/platform/scheduler/worker/non_main_thread_web_scheduling_task_queue_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/worker/worker_scheduler_proxy.h"
 #include "third_party/blink/renderer/platform/scheduler/worker/worker_thread_scheduler.h"
@@ -36,13 +37,13 @@ WorkerSchedulerImpl::PauseHandleImpl::~PauseHandleImpl() {
 WorkerSchedulerImpl::WorkerSchedulerImpl(
     WorkerThreadScheduler* worker_thread_scheduler,
     WorkerSchedulerProxy* proxy)
-    : throttleable_task_queue_(
-          worker_thread_scheduler->CreateTaskQueue("worker_throttleable_tq",
-                                                   true)),
-      pausable_task_queue_(
-          worker_thread_scheduler->CreateTaskQueue("worker_pausable_tq")),
-      unpausable_task_queue_(
-          worker_thread_scheduler->CreateTaskQueue("worker_unpausable_tq")),
+    : throttleable_task_queue_(worker_thread_scheduler->CreateTaskQueue(
+          base::sequence_manager::QueueName::WORKER_THROTTLEABLE_TQ,
+          true)),
+      pausable_task_queue_(worker_thread_scheduler->CreateTaskQueue(
+          base::sequence_manager::QueueName::WORKER_PAUSABLE_TQ)),
+      unpausable_task_queue_(worker_thread_scheduler->CreateTaskQueue(
+          base::sequence_manager::QueueName::WORKER_UNPAUSABLE_TQ)),
       thread_scheduler_(worker_thread_scheduler),
       back_forward_cache_disabling_feature_tracker_(&tracing_controller_,
                                                     thread_scheduler_) {
@@ -75,14 +76,14 @@ WorkerThreadScheduler* WorkerSchedulerImpl::GetWorkerThreadScheduler() const {
 }
 
 std::unique_ptr<WorkerSchedulerImpl::PauseHandle> WorkerSchedulerImpl::Pause() {
-  thread_scheduler_->helper()->CheckOnValidThread();
+  thread_scheduler_->GetHelper().CheckOnValidThread();
   if (is_disposed_)
     return nullptr;
   return std::make_unique<PauseHandleImpl>(GetWeakPtr());
 }
 
 void WorkerSchedulerImpl::PauseImpl() {
-  thread_scheduler_->helper()->CheckOnValidThread();
+  thread_scheduler_->GetHelper().CheckOnValidThread();
   paused_count_++;
   if (paused_count_ == 1) {
     for (const auto& pair : task_runners_) {
@@ -94,7 +95,7 @@ void WorkerSchedulerImpl::PauseImpl() {
 }
 
 void WorkerSchedulerImpl::ResumeImpl() {
-  thread_scheduler_->helper()->CheckOnValidThread();
+  thread_scheduler_->GetHelper().CheckOnValidThread();
   paused_count_--;
   if (paused_count_ == 0 && !is_disposed_) {
     for (const auto& pair : task_runners_) {
@@ -154,8 +155,8 @@ scoped_refptr<base::SingleThreadTaskRunner> WorkerSchedulerImpl::GetTaskRunner(
     case TaskType::kDOMManipulation:
     case TaskType::kUserInteraction:
     case TaskType::kNetworking:
-    case TaskType::kNetworkingWithURLLoaderAnnotation:
     case TaskType::kNetworkingControl:
+    case TaskType::kLowPriorityScriptExecution:
     case TaskType::kHistoryTraversal:
     case TaskType::kEmbed:
     case TaskType::kMediaElementEvent:
@@ -185,6 +186,7 @@ scoped_refptr<base::SingleThreadTaskRunner> WorkerSchedulerImpl::GetTaskRunner(
     case TaskType::kInternalUserInteraction:
     case TaskType::kInternalIntersectionObserver:
     case TaskType::kInternalNavigationAssociated:
+    case TaskType::kInternalNavigationCancellation:
     case TaskType::kInternalContinueScriptLoading:
     case TaskType::kWakeLock:
       // UnthrottledTaskRunner is generally discouraged in future.
@@ -278,6 +280,9 @@ WorkerSchedulerImpl::ThrottleableTaskQueue() {
 void WorkerSchedulerImpl::OnStartedUsingFeature(
     SchedulingPolicy::Feature feature,
     const SchedulingPolicy& policy) {
+  if (policy.disable_align_wake_ups)
+    scheduler::DisableAlignWakeUpsForProcess();
+
   if (!policy.disable_back_forward_cache) {
     return;
   }
@@ -304,10 +309,16 @@ std::unique_ptr<WebSchedulingTaskQueue>
 WorkerSchedulerImpl::CreateWebSchedulingTaskQueue(
     WebSchedulingPriority priority) {
   scoped_refptr<NonMainThreadTaskQueue> task_queue =
-      thread_scheduler_->CreateTaskQueue("worker_web_scheduling_tq");
+      thread_scheduler_->CreateTaskQueue(
+          base::sequence_manager::QueueName::WORKER_WEB_SCHEDULING_TQ);
   task_queue->SetWebSchedulingPriority(priority);
   return std::make_unique<NonMainThreadWebSchedulingTaskQueueImpl>(
       std::move(task_queue));
+}
+
+scoped_refptr<base::SingleThreadTaskRunner>
+WorkerSchedulerImpl::CompositorTaskRunner() {
+  return thread_scheduler_->CompositorTaskRunner();
 }
 
 }  // namespace scheduler

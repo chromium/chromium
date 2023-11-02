@@ -1,4 +1,4 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -8,8 +8,11 @@ source_set("core") {
     "application_breadcrumbs_logger.h",
     "breadcrumb_manager.cc",
     "breadcrumb_manager.h",
+    "breadcrumb_manager_browser_agent.cc",
+    "breadcrumb_manager_browser_agent.h",
     "breadcrumb_manager_keyed_service.cc",
     "breadcrumb_manager_keyed_service.h",
+    "breadcrumb_manager_observer.cc",
     "breadcrumb_manager_observer.h",
     "breadcrumb_manager_tab_helper.cc",
     "breadcrumb_manager_tab_helper.h",
@@ -17,14 +20,15 @@ source_set("core") {
     "breadcrumb_persistent_storage_manager.h",
     "breadcrumb_persistent_storage_util.cc",
     "breadcrumb_persistent_storage_util.h",
-    "breadcrumb_util.cc",
-    "breadcrumb_util.h",
+    "breadcrumbs_status.cc",
+    "breadcrumbs_status.h",
     "crash_reporter_breadcrumb_constants.h",
     "crash_reporter_breadcrumb_observer.cc",
     "crash_reporter_breadcrumb_observer.h",
   ]
 
   deps = [
+    ":feature_flags",
     ":generate_not_user_triggered_actions",
     "//base",
     "//components/crash/core/common:crash_key",
@@ -58,6 +62,7 @@ source_set("unit_tests") {
     "breadcrumb_manager_keyed_service_unittest.cc",
     "breadcrumb_manager_observer_unittest.cc",
     "breadcrumb_manager_unittest.cc",
+    "breadcrumb_persistent_storage_manager_unittest.cc",
     "breadcrumb_persistent_storage_util_unittest.cc",
   ]
 }

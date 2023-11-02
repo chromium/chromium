@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,8 +27,8 @@ class TestVersionUpdater : public VersionUpdater {
   void SetReturnedStatus(Status status) { status_ = status; }
 
 // VersionUpdater implementation:
-#if defined(OS_MAC)
-  void PromoteUpdater() const override {}
+#if BUILDFLAG(IS_MAC)
+  void PromoteUpdater() override {}
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void SetChannel(const std::string& channel,
@@ -36,9 +36,14 @@ class TestVersionUpdater : public VersionUpdater {
   void GetChannel(bool get_current_channel, ChannelCallback callback) override {
   }
   void GetEolInfo(EolInfoCallback callback) override {}
+  void ToggleFeature(const std::string& feature, bool enable) override {}
+  void IsFeatureEnabled(const std::string& feature,
+                        IsFeatureEnabledCallback callback) override {}
+  bool IsManagedAutoUpdateEnabled() override;
   void SetUpdateOverCellularOneTimePermission(StatusCallback callback,
                                               const std::string& update_version,
                                               int64_t update_size) override {}
+  void ApplyDeferredUpdate() override {}
 #endif
 
  private:

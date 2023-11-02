@@ -1,13 +1,8 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "device/gamepad/xbox_data_fetcher_mac.h"
-
-#include <algorithm>
-#include <cmath>
-#include <limits>
-#include <string>
 
 #include <CoreFoundation/CoreFoundation.h>
 #include <IOKit/IOCFPlugIn.h>
@@ -15,7 +10,12 @@
 #include <IOKit/usb/IOUSBLib.h>
 #include <IOKit/usb/USB.h>
 
-#include "base/cxx17_backports.h"
+#include <algorithm>
+#include <cmath>
+#include <limits>
+#include <string>
+
+#include "base/containers/fixed_flat_set.h"
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -26,17 +26,19 @@ namespace device {
 namespace {
 
 // XboxDataFetcher recognizes the following devices connected over USB.
-constexpr GamepadId kSupportedDeviceIds[]{
-    GamepadId::kAmazonProduct041a,     // Amazon Luna Controller
-    GamepadId::kMicrosoftProduct028e,  // Xbox 360
-    GamepadId::kMicrosoftProduct02d1,  // Xbox One
-    GamepadId::kMicrosoftProduct02dd,  // Xbox One, 2015 firmware
-    GamepadId::kMicrosoftProduct02e3,  // Xbox Elite
-    GamepadId::kMicrosoftProduct02ea,  // Xbox One S
-    GamepadId::kMicrosoftProduct0b00,  // Xbox Elite 2
-    GamepadId::kMicrosoftProduct0b0a,  // Xbox Adaptive
-    GamepadId::kMicrosoftProduct0b12,  // Xbox Series X
-};
+constexpr auto kSupportedDeviceIds = base::MakeFixedFlatSet<GamepadId>({
+    GamepadId::kAmazonProduct041a,       // Amazon Luna Controller
+    GamepadId::kMicrosoftProduct028e,    // Xbox 360
+    GamepadId::kMicrosoftProduct02d1,    // Xbox One
+    GamepadId::kMicrosoftProduct02dd,    // Xbox One, 2015 firmware
+    GamepadId::kMicrosoftProduct02e3,    // Xbox Elite
+    GamepadId::kMicrosoftProduct02ea,    // Xbox One S
+    GamepadId::kMicrosoftProduct0b00,    // Xbox Elite 2
+    GamepadId::kMicrosoftProduct0b0a,    // Xbox Adaptive
+    GamepadId::kMicrosoftProduct0b12,    // Xbox Series X
+    GamepadId::kSteelSeriesProduct1430,  // Stratus Duo receiver
+    GamepadId::kSteelSeriesProduct1431,  // Stratus Duo
+});
 
 }  // namespace
 
@@ -366,7 +368,7 @@ void XboxDataFetcher::XboxControllerGotData(
     pad.buttons[17].value = data.buttons[14] ? 1.0f : 0.0f;
     pad.buttons_length = 18;
   }
-  for (size_t i = 0; i < base::size(data.axes); i++) {
+  for (size_t i = 0; i < std::size(data.axes); i++) {
     pad.axes[i] = data.axes[i];
   }
 

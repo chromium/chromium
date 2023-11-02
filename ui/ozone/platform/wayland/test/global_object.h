@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,8 @@
 #define UI_OZONE_PLATFORM_WAYLAND_TEST_GLOBAL_OBJECT_H_
 
 #include <memory>
+
+#include "base/memory/raw_ptr.h"
 
 struct wl_client;
 struct wl_display;
@@ -56,10 +58,10 @@ class GlobalObject {
 
   std::unique_ptr<wl_global, Deleter> global_;
 
-  const wl_interface* interface_;
-  const void* implementation_;
+  raw_ptr<const wl_interface> interface_;
+  raw_ptr<const void> implementation_;
   const uint32_t version_;
-  wl_resource* resource_ = nullptr;
+  raw_ptr<wl_resource> resource_ = nullptr;
 };
 
 }  // namespace wl

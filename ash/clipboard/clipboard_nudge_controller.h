@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/system/tray/system_nudge_controller.h"
 #include "base/time/clock.h"
+#include "base/time/time.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "ui/base/clipboard/clipboard_observer.h"
 
@@ -83,19 +84,11 @@ class ASH_EXPORT ClipboardNudgeController
   // Resets nudge state and show nudge timer.
   void HandleNudgeShown();
 
-  // Checks whether we should show the context menu 'new' badge.
-  bool ShouldShowNewFeatureBadge();
-
-  // Increment the 'new' feature badge shown count.
-  void MarkNewFeatureBadgeShown();
-
   // Increment the screenshot notification shown count.
   void MarkScreenshotNotificationShown();
 
   // ClipboardHistoryControllerImpl:
-  void OnClipboardHistoryMenuShown(
-      crosapi::mojom::ClipboardHistoryControllerShowSource show_source)
-      override;
+  void OnClipboardHistoryMenuShown() override;
   void OnClipboardHistoryPasted() override;
 
   // Shows the nudge widget.
@@ -106,7 +99,6 @@ class ASH_EXPORT ClipboardNudgeController
   void ClearClockOverrideForTesting();
 
   const ClipboardState& GetClipboardStateForTesting();
-  SystemNudge* GetClipboardNudgeForTesting() { return nudge_.get(); }
 
  protected:
   // SystemNudgeController:
@@ -117,8 +109,6 @@ class ASH_EXPORT ClipboardNudgeController
   int GetShownCount(PrefService* prefs);
   // Gets the last time the nudge was shown.
   base::Time GetLastShownTime(PrefService* prefs);
-  // Gets the number of times the context menu 'new' badge has been shown.
-  int GetNewFeatureBadgeShownCount(PrefService* prefs);
   // Checks whether another nudge can be shown.
   bool ShouldShowNudge(PrefService* prefs);
   // Gets the current time. Can be overridden for testing.
@@ -130,9 +120,6 @@ class ASH_EXPORT ClipboardNudgeController
   // Time the zero state nudge was last shown.
   TimeMetricHelper zero_state_last_shown_time_;
 
-  // Time the new feature badge was last shown.
-  TimeMetricHelper new_feature_last_shown_time_;
-
   // Time the screenshot notification nudge was last shown.
   TimeMetricHelper screenshot_notification_last_shown_time_;
 
@@ -140,7 +127,7 @@ class ASH_EXPORT ClipboardNudgeController
   const ClipboardHistory* clipboard_history_;
 
   // Owned by ash/Shell.
-  const ClipboardHistoryControllerImpl* const clipboard_history_controller_;
+  ClipboardHistoryControllerImpl* const clipboard_history_controller_;
 
   // Current clipboard state.
   ClipboardState clipboard_state_ = ClipboardState::kInit;

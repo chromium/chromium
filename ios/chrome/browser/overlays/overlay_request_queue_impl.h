@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,7 +29,7 @@ class OverlayRequestQueueImpl : public OverlayRequestQueue {
   class Container : public web::WebStateUserData<Container> {
    public:
     ~Container() override;
-    // Returns the request queue for |modality|.
+    // Returns the request queue for `modality`.
     OverlayRequestQueueImpl* QueueForModality(OverlayModality modality);
 
    private:
@@ -44,7 +44,7 @@ class OverlayRequestQueueImpl : public OverlayRequestQueue {
   // Delegate class for the queue.
   class Delegate {
    public:
-    // Called when |request| is removed from |queue|.  |cancelled| is true if
+    // Called when `request` is removed from `queue`.  `cancelled` is true if
     // the request is removed by its cancel handler or by a call to
     // CancelAllRequests().
     virtual void OverlayRequestRemoved(OverlayRequestQueueImpl* queue,
@@ -58,16 +58,16 @@ class OverlayRequestQueueImpl : public OverlayRequestQueue {
   // Observer class for the queue.
   class Observer : public base::CheckedObserver {
    public:
-    // Called after |request| has been added to |queue|.
+    // Called after `request` has been added to `queue`.
     virtual void RequestAddedToQueue(OverlayRequestQueueImpl* queue,
                                      OverlayRequest* request,
                                      size_t index) {}
 
-    // Called when |queue| is about to be destroyed.
+    // Called when `queue` is about to be destroyed.
     virtual void OverlayRequestQueueDestroyed(OverlayRequestQueueImpl* queue) {}
   };
 
-  // Returns the request queue implementation for |web_state| at |modality|.
+  // Returns the request queue implementation for `web_state` at `modality`.
   static OverlayRequestQueueImpl* FromWebState(web::WebState* web_state,
                                                OverlayModality modality);
 
@@ -116,8 +116,8 @@ class OverlayRequestQueueImpl : public OverlayRequestQueue {
   // Private constructor called by container.
   explicit OverlayRequestQueueImpl(web::WebState* web_state);
 
-  // Removes the request at |index|, passing ownership of the removed request to
-  // the delegate.  |cancelled| is true if the request is removed by its cancel
+  // Removes the request at `index`, passing ownership of the removed request to
+  // the delegate.  `cancelled` is true if the request is removed by its cancel
   // handler or by a call to CancelAllRequests().
   void RemoveRequest(size_t index, bool cancelled);
 

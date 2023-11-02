@@ -1,17 +1,17 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {isRTL} from 'chrome://resources/js/util.m.js';
+import {isRTL} from 'chrome://resources/js/util.js';
 import {IronIconsetSvgElement} from 'chrome://resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 
 import {inDarkMode} from './dark_mode_mixin.js';
 import {LocalizedString} from './data/cdd.js';
 
-export type Range = {
-  to: number,
-  from: number,
-};
+export interface Range {
+  to: number;
+  from: number;
+}
 
 /**
  * Returns true if the contents of the two page ranges are equal.
@@ -79,7 +79,7 @@ export function getSelectDropdownBackground(
   const iconElement = iconset.createIcon(iconName, isRTL()) as HTMLElement;
   const dark = inDarkMode();
   const fillColor = getComputedStyle(el).getPropertyValue(
-      dark ? '--google-grey-refresh-500' : '--google-grey-600');
+      dark ? '--google-grey-500' : '--google-grey-600');
   iconElement.style.fill = fillColor;
   const serializedIcon = serializer.serializeToString(iconElement);
   const uri = encodeURIComponent(serializedIcon);

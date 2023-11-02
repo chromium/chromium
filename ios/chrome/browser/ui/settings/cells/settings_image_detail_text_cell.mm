@@ -1,13 +1,13 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_cell.h"
 
-#include "base/check.h"
-#include "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
+#import "base/check.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -18,10 +18,10 @@
 // Image view for the cell.
 @property(nonatomic, strong) UIImageView* imageView;
 
-// Constraint used for leading text constraint without |imageView|.
+// Constraint used for leading text constraint without `imageView`.
 @property(nonatomic, strong) NSLayoutConstraint* textNoImageConstraint;
 
-// Constraint used for leading text constraint with |imageView| showing.
+// Constraint used for leading text constraint with `imageView` showing.
 @property(nonatomic, strong) NSLayoutConstraint* textWithImageConstraint;
 
 // Constraint used for aligning the image with the content view centerYAnchor.
@@ -129,7 +129,7 @@
                                     constant:
                                         kTableViewTwoLabelsCellVerticalSpacing],
 
-    // Leading constraint for |customSepartor|.
+    // Leading constraint for `customSepartor`.
     [self.customSeparator.leadingAnchor
         constraintEqualToAnchor:self.textLabel.leadingAnchor],
   ]];
@@ -139,7 +139,7 @@
   BOOL hidden = !image;
   self.imageView.image = image;
   self.imageView.hidden = hidden;
-  // Update the leading text constraint based on |image| being provided.
+  // Update the leading text constraint based on `image` being provided.
   if (hidden) {
     self.textWithImageConstraint.active = NO;
     self.textNoImageConstraint.active = YES;
@@ -174,10 +174,15 @@
 #pragma mark - UIAccessibility
 
 - (NSString*)accessibilityLabel {
+  if (!self.textLabel.text) {
+    return self.detailTextLabel.text;
+  }
+
   if (self.detailTextLabel.text) {
     return [NSString stringWithFormat:@"%@, %@", self.textLabel.text,
                                       self.detailTextLabel.text];
   }
+
   return self.textLabel.text;
 }
 

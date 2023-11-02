@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,8 @@ namespace media {
 class CAPTURE_EXPORT VideoCaptureBufferTrackerFactoryWin
     : public VideoCaptureBufferTrackerFactory {
  public:
-  VideoCaptureBufferTrackerFactoryWin();
+  explicit VideoCaptureBufferTrackerFactoryWin(
+      scoped_refptr<DXGIDeviceManager> dxgi_device_manager);
   ~VideoCaptureBufferTrackerFactoryWin() override;
   std::unique_ptr<VideoCaptureBufferTracker> CreateTracker(
       VideoCaptureBufferType buffer_type) override;

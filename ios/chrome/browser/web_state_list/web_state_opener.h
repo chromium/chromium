@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,16 +15,16 @@ struct WebStateOpener {
   // the WebState has no opener.
   web::WebState* opener;
 
-  // Recorded value of the |opener| last committed navigation index when the
-  // WebState was open. Value is undefined if |opener| is null.
+  // Recorded value of the `opener` last committed navigation index when the
+  // WebState was open. Value is undefined if `opener` is null.
   int navigation_index;
 
-  // Creates WebStateOpener with a null |opener|.
+  // Creates WebStateOpener with a null `opener`.
   WebStateOpener();
 
-  // Creates WebStateOpener initialising the members from |opener| (the
-  // |navigation_index| will be initialised from |opener|'s navigation
-  // manager if |opener| is not null).
+  // Creates WebStateOpener initialising the members from `opener` (the
+  // `navigation_index` will be initialised from `opener`'s navigation
+  // manager if `opener` is not null).
   explicit WebStateOpener(web::WebState* opener);
 
   // Creates WebStateOpener initialising the members from the parameters.

@@ -1,15 +1,17 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/media/router/discovery/dial/dial_app_discovery_service.h"
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/media/router/discovery/dial/dial_url_fetcher.h"
 #include "chrome/browser/media/router/discovery/dial/parsed_dial_device_description.h"
 #include "chrome/browser/media/router/discovery/dial/safe_dial_app_info_parser.h"
 #include "chrome/browser/media/router/test/provider_test_helpers.h"
+#include "content/public/test/browser_task_environment.h"
 #include "net/http/http_status_code.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -110,8 +112,12 @@ class DialAppDiscoveryServiceTest : public ::testing::Test {
   }
 
  protected:
-  TestSafeDialAppInfoParser* test_parser_;
+  raw_ptr<TestSafeDialAppInfoParser> test_parser_;
   DialAppDiscoveryService dial_app_discovery_service_;
+
+  // Must be on Chrome_UIThread, as `OnDialAppInfoFetchComplete` uses a
+  // LoggerList instance which requires UI thread.
+  content::BrowserTaskEnvironment task_environment_;
 };
 
 TEST_F(DialAppDiscoveryServiceTest, TestFetchDialAppInfoFetchURL) {

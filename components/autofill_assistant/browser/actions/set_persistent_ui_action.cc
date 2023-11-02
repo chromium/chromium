@@ -1,8 +1,9 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/autofill_assistant/browser/actions/set_persistent_ui_action.h"
+#include "base/logging.h"
 #include "components/autofill_assistant/browser/actions/action_delegate.h"
 #include "components/autofill_assistant/browser/client_status.h"
 
@@ -11,6 +12,8 @@ namespace {
 bool IsCallbackAllowed(const CallbackProto::KindCase kind) {
   switch (kind) {
     case CallbackProto::kEndAction:
+    case CallbackProto::kRequestBackendData:
+    case CallbackProto::kShowAccountScreen:
     case CallbackProto::kToggleUserAction:
     case CallbackProto::kSetUserActions:
     case CallbackProto::KIND_NOT_SET:

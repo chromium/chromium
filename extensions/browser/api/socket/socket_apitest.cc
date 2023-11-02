@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,9 +25,8 @@ IN_PROC_BROWSER_TEST_F(SocketApiTest, SocketUDPCreateGood) {
 
   std::unique_ptr<base::Value> result(RunFunctionAndReturnSingleResult(
       socket_create_function.get(), "[\"udp\"]", browser_context()));
-  base::DictionaryValue* value = NULL;
-  ASSERT_TRUE(result->GetAsDictionary(&value));
-  absl::optional<int> socket_id = value->FindIntKey("socketId");
+  const base::Value::Dict& value = result->GetDict();
+  absl::optional<int> socket_id = value.FindInt("socketId");
   ASSERT_TRUE(socket_id);
   EXPECT_GT(*socket_id, 0);
 }
@@ -43,9 +42,8 @@ IN_PROC_BROWSER_TEST_F(SocketApiTest, SocketTCPCreateGood) {
 
   std::unique_ptr<base::Value> result(RunFunctionAndReturnSingleResult(
       socket_create_function.get(), "[\"tcp\"]", browser_context()));
-  base::DictionaryValue* value = NULL;
-  ASSERT_TRUE(result->GetAsDictionary(&value));
-  absl::optional<int> socket_id = value->FindIntKey("socketId");
+  const base::Value::Dict& value = result->GetDict();
+  absl::optional<int> socket_id = value.FindInt("socketId");
   ASSERT_TRUE(socket_id);
   ASSERT_GT(*socket_id, 0);
 }
@@ -64,9 +62,8 @@ IN_PROC_BROWSER_TEST_F(SocketApiTest, GetNetworkList) {
 
   // If we're invoking socket tests, all we can confirm is that we have at
   // least one address, but not what it is.
-  base::ListValue* value = NULL;
-  ASSERT_TRUE(result->GetAsList(&value));
-  ASSERT_GT(value->GetList().size(), 0U);
+  ASSERT_TRUE(result->is_list());
+  ASSERT_FALSE(result->GetList().empty());
 }
 
 }  //  namespace extensions

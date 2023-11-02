@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,6 +24,7 @@ class ScriptParameters {
   ~ScriptParameters();
   ScriptParameters(const ScriptParameters&) = delete;
   ScriptParameters& operator=(const ScriptParameters&) = delete;
+  ScriptParameters& operator=(ScriptParameters&&);
 
   // Merges |another| into this. Does not overwrite existing values.
   void MergeWith(const ScriptParameters& another);
@@ -32,10 +33,11 @@ class ScriptParameters {
   bool Matches(const ScriptParameterMatchProto& proto) const;
 
   // Returns a proto representation of this class. If
-  // |only_trigger_script_allowlisted| is set to true, this will only return the
-  // list of trigger-script-approved script parameters.
+  // |only_non_sensitive_allowlisted| is set to true, this will only return the
+  // list of non sensitive script parameters that client requests are allowed
+  // to send to the backend.
   google::protobuf::RepeatedPtrField<ScriptParameterProto> ToProto(
-      bool only_trigger_script_allowlisted = false) const;
+      bool only_non_sensitive_allowlisted = false) const;
 
   // Update the device only parameters. New parameters always take precedence.
   void UpdateDeviceOnlyParameters(
@@ -45,21 +47,38 @@ class ScriptParameters {
   // to the additional values with a "param:" prefix.
   void WriteToUserData(UserData* user_data) const;
 
+  // Returns whether |experiment_id| is contained in the experiments parameter.
+  bool HasExperimentId(const std::string& experiment_id) const;
+
   // Getters for specific parameters.
   absl::optional<std::string> GetOverlayColors() const;
   absl::optional<std::string> GetPasswordChangeUsername() const;
-  absl::optional<std::string> GetBase64TriggerScriptsResponseProto() const;
-  absl::optional<bool> GetRequestsTriggerScript() const;
-  absl::optional<bool> GetStartImmediately() const;
-  absl::optional<bool> GetEnabled() const;
+  bool GetRequestsTriggerScript() const;
+  // Returns true if the parameter is set and valid (either "true" or "false").
+  bool HasStartImmediately() const;
+  bool GetStartImmediately() const;
+  bool GetEnabled() const;
   absl::optional<std::string> GetOriginalDeeplink() const;
-  absl::optional<bool> GetTriggerScriptExperiment() const;
+  bool GetTriggerScriptExperiment() const;
   absl::optional<std::string> GetIntent() const;
   absl::optional<std::string> GetCallerEmail() const;
-  absl::optional<bool> GetEnableTts() const;
+  bool GetEnableTts() const;
+  bool GetEnableObserverWaitForDom() const;
+  absl::optional<int> GetCaller() const;
+  absl::optional<int> GetSource() const;
+  std::vector<std::string> GetExperiments() const;
+  bool GetDisableRpcSigning() const;
+  bool GetSendAnnotateDomModelVersion() const;
+  bool GetRunHeadless() const;
+  bool GetUseAssistantUi() const;
+  absl::optional<std::string> GetFieldTrialGroup(
+      const int field_trial_slot) const;
+  absl::optional<bool> GetIsNoRoundtrip() const;
 
   // Details parameters.
-  absl::optional<bool> GetDetailsShowInitial() const;
+  bool GetDetailsShowInitial() const;
+  // Returns true if the parameter is set and valid (either "true" or "false").
+  bool HasDetailsShowInitial() const;
   absl::optional<std::string> GetDetailsTitle() const;
   absl::optional<std::string> GetDetailsDescriptionLine1() const;
   absl::optional<std::string> GetDetailsDescriptionLine2() const;

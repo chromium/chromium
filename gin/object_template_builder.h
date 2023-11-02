@@ -1,16 +1,16 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef GIN_OBJECT_TEMPLATE_BUILDER_H_
 #define GIN_OBJECT_TEMPLATE_BUILDER_H_
 
-#include <tuple>
 #include <type_traits>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "gin/converter.h"
 #include "gin/function_template.h"
@@ -104,9 +104,7 @@ class GIN_EXPORT ObjectTemplateBuilder {
       options.holder_is_first_argument = true;
       options.holder_type = type_name_;
     }
-    v8::AccessorNameGetterCallback callback;
-    v8::Local<v8::Value> data;
-    std::tie(callback, data) = CreateDataPropertyCallback(
+    auto [callback, data] = CreateDataPropertyCallback(
         isolate_, base::BindRepeating(getter), std::move(options));
     return SetLazyDataPropertyImpl(name, callback, data);
   }
@@ -129,7 +127,7 @@ class GIN_EXPORT ObjectTemplateBuilder {
       v8::AccessorNameGetterCallback callback,
       v8::Local<v8::Value> data);
 
-  v8::Isolate* isolate_;
+  raw_ptr<v8::Isolate> isolate_;
 
   // If provided, |type_name_| will be used to give a user-friendly error
   // message if a member function is invoked on the wrong type of object.

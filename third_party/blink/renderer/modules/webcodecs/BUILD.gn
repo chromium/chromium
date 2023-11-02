@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -15,15 +15,25 @@ blink_modules_sources("webcodecs") {
     "audio_data.h",
     "audio_data_attachment.cc",
     "audio_data_attachment.h",
+    "audio_data_transfer_list.cc",
+    "audio_data_transfer_list.h",
     "audio_decoder.cc",
     "audio_decoder.h",
     "audio_decoder_broker.cc",
     "audio_decoder_broker.h",
     "audio_encoder.cc",
     "audio_encoder.h",
+    "background_readback.cc",
+    "background_readback.h",
     "codec_config_eval.h",
     "codec_logger.cc",
     "codec_logger.h",
+    "codec_pressure_gauge.cc",
+    "codec_pressure_gauge.h",
+    "codec_pressure_manager.cc",
+    "codec_pressure_manager.h",
+    "codec_pressure_manager_provider.cc",
+    "codec_pressure_manager_provider.h",
     "codec_state_helper.cc",
     "codec_state_helper.h",
     "codec_trace_names.h",
@@ -51,8 +61,6 @@ blink_modules_sources("webcodecs") {
     "image_track.h",
     "image_track_list.cc",
     "image_track_list.h",
-    "parsed_copy_to_options.cc",
-    "parsed_copy_to_options.h",
     "reclaimable_codec.cc",
     "reclaimable_codec.h",
     "video_color_space.cc",
@@ -61,6 +69,8 @@ blink_modules_sources("webcodecs") {
     "video_decoder.h",
     "video_decoder_broker.cc",
     "video_decoder_broker.h",
+    "video_decoder_helper.cc",
+    "video_decoder_helper.h",
     "video_encoder.cc",
     "video_encoder.h",
     "video_frame.cc",
@@ -71,6 +81,8 @@ blink_modules_sources("webcodecs") {
     "video_frame_handle.h",
     "video_frame_init_util.cc",
     "video_frame_init_util.h",
+    "video_frame_layout.cc",
+    "video_frame_layout.h",
     "video_frame_monitor.cc",
     "video_frame_monitor.h",
     "video_frame_rect_util.cc",
@@ -81,7 +93,7 @@ blink_modules_sources("webcodecs") {
     "webcodecs_logger.h",
   ]
   deps = [
-    "//build:os_buildflags",
+    "//build:chromeos_buildflags",
     "//media",
     "//media/mojo:buildflags",
     "//media/mojo/clients",
@@ -99,6 +111,9 @@ blink_modules_sources("webcodecs") {
   if (media_use_openh264) {
     deps += [ "//third_party/openh264:encoder" ]
   }
+  if (is_fuchsia) {
+    deps += [ "//media/fuchsia/video" ]
+  }
   public_deps = [ "//third_party/blink/renderer/modules/webaudio:webaudio" ]
 }
 
@@ -107,13 +122,16 @@ source_set("unit_tests") {
   sources = [
     "audio_data_test.cc",
     "audio_decoder_broker_test.cc",
-    "audio_encoder_test.cc",
+    "codec_pressure_gauge_test.cc",
+    "codec_pressure_manager_test.cc",
     "decoder_selector_test.cc",
     "decoder_template_test.cc",
     "encoded_video_chunk_test.cc",
+    "image_decoder_core_test.cc",
     "image_decoder_external_test.cc",
     "reclaimable_codec_test.cc",
     "video_decoder_broker_test.cc",
+    "video_decoder_test.cc",
     "video_encoder_test.cc",
     "video_frame_monitor_test.cc",
     "video_frame_test.cc",

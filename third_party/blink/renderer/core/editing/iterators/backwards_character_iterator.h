@@ -26,9 +26,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_ITERATORS_BACKWARDS_CHARACTER_ITERATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_ITERATORS_BACKWARDS_CHARACTER_ITERATOR_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/core/editing/iterators/simplified_backwards_text_iterator.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -44,6 +45,11 @@ class BackwardsCharacterIteratorAlgorithm {
   void Advance(int);
 
   bool AtEnd() const { return text_iterator_.AtEnd(); }
+
+  int length() const { return text_iterator_.length() - run_offset_; }
+  UChar CharacterAt(unsigned index) const {
+    return text_iterator_.CharacterAt(run_offset_ + index);
+  }
 
   PositionTemplate<Strategy> EndPosition() const;
 
@@ -62,6 +68,9 @@ extern template class CORE_EXTERN_TEMPLATE_EXPORT
 
 using BackwardsCharacterIterator =
     BackwardsCharacterIteratorAlgorithm<EditingStrategy>;
+
+using BackwardsCharacterIteratorInFlatTree =
+    BackwardsCharacterIteratorAlgorithm<EditingInFlatTreeStrategy>;
 
 }  // namespace blink
 

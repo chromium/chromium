@@ -1,17 +1,28 @@
 <!DOCTYPE html>
 <style>
-  p { width: 1px; height: 1px; color: red; }
-  @media (prefers-color-scheme: no-preference) { p { width: 2px; } }
-  @media (prefers-color-scheme: light) { p { width: 3px; } }
-  @media (prefers-color-scheme: dark) { p { width: 4px; } }
-  @media (prefers-reduced-motion: no-preference) { p { height: 2px; } }
-  @media (prefers-reduced-motion: reduce) { p { height: 3px; } }
-  @media (prefers-contrast: no-preference) { p { color: blue; } }
-  @media (prefers-contrast: more) { p { color: green; } }
-  @media (prefers-contrast: less) { p { color: yellow; } }
-  @media (prefers-contrast: custom) { p { color: orange; } }
-  @media (prefers-color-scheme: dark) and (prefers-reduced-motion: reduce) { p { width: 999px; height: 999px; } }
-  @media (color-gamut: p3) { p { width: 6px; height: 6px; } }
-  @media (color-gamut: rec2020) { p { width: 7px; height: 7px; } }
+  p {
+    --prefers-color-scheme:invalid;
+    --prefers-reduced-motion:invalid;
+    --prefers-reduced-data:invalid;
+    --prefers-contrast:invalid;
+    --color-gamut:invalid;
+    --forced-colors:invalid;
+  }
+  @media (prefers-color-scheme: no-preference) { p { --prefers-color-scheme:no-preference; } }
+  @media (prefers-color-scheme: light) { p { --prefers-color-scheme:light; } }
+  @media (prefers-color-scheme: dark) { p { --prefers-color-scheme:dark; } }
+  @media (prefers-reduced-motion: no-preference) { p { --prefers-reduced-motion:no-preference; } }
+  @media (prefers-reduced-motion: reduce) { p { --prefers-reduced-motion:reduce; } }
+  @media (prefers-reduced-data: no-preference) { p { --prefers-reduced-data:no-preference; } }
+  @media (prefers-reduced-data: reduce) { p { --prefers-reduced-data:reduce; } }
+  @media (prefers-contrast: no-preference) { p { --prefers-contrast:no-preference; } }
+  @media (prefers-contrast: more) { p { --prefers-contrast:more; } }
+  @media (prefers-contrast: less) { p { --prefers-contrast:less; } }
+  @media (prefers-contrast: custom) { p { --prefers-contrast:custom; } }
+  @media (prefers-color-scheme: dark) and (prefers-reduced-motion: reduce) { p { --prefers-color-scheme:dark2; --prefers-reduced-motion:reduce2; } }
+  @media (color-gamut: p3) { p { --color-gamut:p3; } }
+  @media (color-gamut: rec2020) { p { --color-gamut:rec2020; } }
+  @media (forced-colors: active) { p { --forced-colors:active; } }
+  @media (forced-colors: none) { p { --forced-colors:none; } }
 </style>
 <p id="p">

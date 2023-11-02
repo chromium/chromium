@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,24 +20,26 @@
 #include "third_party/blink/renderer/modules/webcodecs/encoded_video_chunk.h"
 #include "third_party/blink/renderer/modules/webcodecs/fuzzer_inputs.pb.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
-#include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 #include <string>
+
+namespace base {
+class ScopedClosureRunner;
+}
 
 namespace blink {
 
 class DOMRectInit;
 class PlaneLayout;
 
-class FakeFunction : public ScriptFunction {
+base::ScopedClosureRunner MakeScopedGarbageCollectionRequest();
+
+class FakeFunction : public ScriptFunction::Callable {
  public:
-  static FakeFunction* Create(ScriptState* script_state, std::string name);
+  explicit FakeFunction(std::string name);
 
-  explicit FakeFunction(ScriptState* script_state, std::string name);
-
-  v8::Local<v8::Function> Bind();
-  ScriptValue Call(ScriptValue) override;
+  ScriptValue Call(ScriptState*, ScriptValue) override;
 
  private:
   const std::string name_;
@@ -75,8 +77,10 @@ VideoFrame* MakeVideoFrame(
 VideoFrame* MakeVideoFrame(ScriptState* script_state,
                            const wc_fuzzer::VideoFrameBitmapInit& proto);
 
-AudioData* MakeAudioData(ScriptState* script_state,
-                         const wc_fuzzer::AudioDataInit& proto);
+AudioData* MakeAudioData(const wc_fuzzer::AudioDataInit& proto);
+
+AudioDataCopyToOptions* MakeAudioDataCopyToOptions(
+    const wc_fuzzer::AudioDataCopyToOptions& proto);
 
 VideoEncoderEncodeOptions* MakeEncodeOptions(
     const wc_fuzzer::EncodeVideo_EncodeOptions& proto);

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/views/extensions/extension_context_menu_controller.h"
@@ -27,14 +28,12 @@ class ExtensionsMenuButton : public HoverButton,
  public:
   METADATA_HEADER(ExtensionsMenuButton);
   ExtensionsMenuButton(Browser* browser,
-                       ToolbarActionViewController* controller,
-                       bool allow_pinning);
+                       ToolbarActionViewController* controller);
   ExtensionsMenuButton(const ExtensionsMenuButton&) = delete;
   ExtensionsMenuButton& operator=(const ExtensionsMenuButton&) = delete;
   ~ExtensionsMenuButton() override;
 
   // HoverButton:
-  bool CanShowIconInToolbar() const override;
   void AddedToWidget() override;
   void OnThemeChanged() override;
 
@@ -53,12 +52,15 @@ class ExtensionsMenuButton : public HoverButton,
 
   void ButtonPressed();
 
-  Browser* const browser_;
+  const raw_ptr<Browser> browser_;
 
   // Responsible for executing the extension's actions.
-  ToolbarActionViewController* const controller_;
-
-  bool allow_pinning_;
+  const raw_ptr<ToolbarActionViewController> controller_;
 };
+
+BEGIN_VIEW_BUILDER(/* no export */, ExtensionsMenuButton, HoverButton)
+END_VIEW_BUILDER
+
+DEFINE_VIEW_BUILDER(/* no export */, ExtensionsMenuButton)
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_BUTTON_H_

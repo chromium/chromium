@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,20 +15,20 @@ class OverlayPresentationContextObserver : public base::CheckedObserver {
  public:
   OverlayPresentationContextObserver() = default;
 
-  // Called before |presentation_context|'s activation state changes to
-  // |activating|.
+  // Called before `presentation_context`'s activation state changes to
+  // `activating`.
   virtual void OverlayPresentationContextWillChangePresentationCapabilities(
       OverlayPresentationContext* presentation_context,
       OverlayPresentationContext::UIPresentationCapabilities capabilities) {}
 
-  // Called after |presentation_context|'s activation state changes.
+  // Called after `presentation_context`'s activation state changes.
   virtual void OverlayPresentationContextDidChangePresentationCapabilities(
       OverlayPresentationContext* presentation_context) {}
 
   virtual void OverlayPresentationContextDidEnableUI(
       OverlayPresentationContext* presentation_context) {}
 
-  // Called when |presentation_context| moves to |window|.
+  // Called when `presentation_context` moves to `window`.
   virtual void OverlayPresentationContextDidMoveToWindow(
       OverlayPresentationContext* presentation_context,
       UIWindow* window) {}

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
 #include "base/observer_list.h"
+#include "base/time/time.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_item.h"
@@ -62,8 +63,6 @@ class FakeDownloadItem : public download::DownloadItem {
   bool IsTransient() const override;
   bool IsParallelDownload() const override;
   DownloadCreationType GetDownloadCreationType() const override;
-  const absl::optional<download::DownloadSchedule>& GetDownloadSchedule()
-      const override;
   ::network::mojom::CredentialsMode GetCredentialsMode() const override;
   const absl::optional<net::IsolationInfo>& GetIsolationInfo() const override;
   bool IsDone() const override;
@@ -72,11 +71,13 @@ class FakeDownloadItem : public download::DownloadItem {
   bool IsPaused() const override;
   bool AllowMetered() const override;
   bool IsTemporary() const override;
+  bool RequireSafetyChecks() const override;
   bool CanResume() const override;
   int64_t GetBytesWasted() const override;
   int32_t GetAutoResumeCount() const override;
+  bool IsOffTheRecord() const override;
   const GURL& GetReferrerUrl() const override;
-  const GURL& GetSiteUrl() const override;
+  const std::string& GetSerializedEmbedderDownloadData() const override;
   const GURL& GetTabUrl() const override;
   const GURL& GetTabReferrerUrl() const override;
   const absl::optional<url::Origin>& GetRequestInitiator() const override;
@@ -100,7 +101,6 @@ class FakeDownloadItem : public download::DownloadItem {
   const download::DownloadItemRerouteInfo& GetRerouteInfo() const override;
   bool IsDangerous() const override;
   bool IsMixedContent() const override;
-  bool ShouldShowIncognitoWarning() const override;
   download::DownloadDangerType GetDangerType() const override;
   download::DownloadItem::MixedContentStatus GetMixedContentStatus()
       const override;
@@ -129,15 +129,12 @@ class FakeDownloadItem : public download::DownloadItem {
       download::DownloadInterruptReason reason) override;
   void ValidateDangerousDownload() override;
   void ValidateMixedContentDownload() override;
-  void AcceptIncognitoWarning() override;
   void StealDangerousDownload(bool delete_file_afterward,
                               AcquireFileCallback callback) override;
   void Rename(const base::FilePath& name,
               RenameDownloadCallback callback) override;
   void OnAsyncScanningCompleted(
       download::DownloadDangerType danger_type) override;
-  void OnDownloadScheduleChanged(
-      absl::optional<download::DownloadSchedule> schedule) override;
 
   bool removed() const { return removed_; }
 
@@ -172,6 +169,9 @@ class FakeDownloadItem : public download::DownloadItem {
   void SetDummyFilePath(const base::FilePath& dummy_file_path);
   void SetIsDangerous(bool is_dangerous);
   void SetIsMixedContent(bool is_mixed_content);
+  void SetDangerType(download::DownloadDangerType danger_type);
+  void SetMixedContentStatus(
+      download::DownloadItem::MixedContentStatus mixed_content_status);
 
  private:
   base::ObserverList<Observer>::Unchecked observers_;
@@ -202,16 +202,20 @@ class FakeDownloadItem : public download::DownloadItem {
   std::string etag_;
   std::string last_modified_time_;
   std::string hash_;
-  absl::optional<download::DownloadSchedule> download_schedule_;
   int percent_complete_ = 0;
   download::DownloadItemRerouteInfo reroute_info_;
   bool open_when_complete_ = false;
   bool is_dangerous_ = false;
   bool is_mixed_content_ = false;
   absl::optional<net::IsolationInfo> isolation_info_;
+  download::DownloadDangerType danger_type_ =
+      download::DownloadDangerType::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS;
+  download::DownloadItem::MixedContentStatus mixed_content_status_ =
+      download::DownloadItem::MixedContentStatus::UNKNOWN;
 
   // The members below are to be returned by methods, which return by reference.
   GURL dummy_url;
+  std::string serialized_embedder_download_data;
   absl::optional<url::Origin> dummy_origin;
   base::FilePath dummy_file_path;
 };

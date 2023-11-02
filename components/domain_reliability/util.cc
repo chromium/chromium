@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <stddef.h>
 
 #include "base/callback.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/time/default_tick_clock.h"
@@ -92,7 +91,7 @@ bool GetDomainReliabilityBeaconStatus(
   }
 
   // TODO(juliatuttle): Consider sorting and using binary search?
-  for (size_t i = 0; i < base::size(net_error_map); i++) {
+  for (size_t i = 0; i < std::size(net_error_map); i++) {
     if (net_error_map[i].net_error == net_error) {
       *beacon_status_out = net_error_map[i].beacon_status;
       return true;
@@ -101,7 +100,7 @@ bool GetDomainReliabilityBeaconStatus(
   return false;
 }
 
-// TODO(juliatuttle): Consider using NPN/ALPN instead, if there's a good way to
+// TODO(juliatuttle): Consider using ALPN instead, if there's a good way to
 //                    differentiate HTTP and HTTPS.
 std::string GetDomainReliabilityProtocol(
     net::HttpResponseInfo::ConnectionInfo connection_info,

@@ -14,6 +14,7 @@
 
 set noparent
 # NOTE: keep this in sync with lsc-owners-override@chromium.org owners
+# by emailing lsc-policy@chromium.org when this list changes.
 alexmos@chromium.org
 altimin@chromium.org
 arthursonzogni@chromium.org
@@ -22,17 +23,22 @@ clamy@chromium.org
 creis@chromium.org
 dgozman@chromium.org
 jam@chromium.org
-jochen@chromium.org
 kinuko@chromium.org
 nasko@chromium.org
-pfeldman@chromium.org
 # NOTE: keep this in sync with lsc-owners-override@chromium.org owners
+# by emailing lsc-policy@chromium.org when this list changes.
 
 # per-file rules:
+
+# For threading and startup/shutdown sequences
+# gab@chromium.org (see per-file rules in subdirectories)
 
 # This is for the common case of adding or renaming files. If you're doing
 # structural changes, please get a review from a reviewer in this file.
 per-file BUILD.gn=*
+
+per-file content_resources.grd=file://ui/webui/PLATFORM_OWNERS
+per-file dev_ui_content_resources.grd=file://ui/webui/PLATFORM_OWNERS
 
 # The remaining rules are for platform-specific implementation changes.
 # Do NOT add other per-file changes as they would also apply to public/.

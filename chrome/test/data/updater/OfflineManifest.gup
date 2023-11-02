@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<response protocol="3.0">
+  <app appid="{CDABE316-39CD-43BA-8440-6D1E0547AEE6}" status="ok">
+    <updatecheck status="ok">
+      <urls>
+        <url codebase="http://dl.google.com/foo/install/1.2.3.4/"/>
+      </urls>
+      <manifest version="1.2.3.4">
+        <packages>
+          <package hash="abcdef" hash_sha256="sha256hash_foobar" name="my_installer.exe" required="true" size="12345678"/>
+        </packages>
+        <actions>
+          <action event="install" needsadmin="false" run="my_installer.exe" arguments="-baz"/>
+          <action event="postinstall" onsuccess="exitsilentlyonlaunchcmd"/>
+        </actions>
+      </manifest>
+    </updatecheck>
+    <!-- "system_level" is not included in any of the definitions. needsadmin
+          controls this. -->
+    <data index="verboselogging" name="install" status="ok">
+      {
+        "distribution": {
+          "verbose_logging": true
+        }
+      }
+    </data>
+    <data index="test_data_index" name="install" status="ok">
+      {
+        "distribution": {
+          "skip_first_run_ui": true,
+          "show_welcome_page": true,
+          "import_search_engine": true,
+          "import_history": false,
+          "create_all_shortcuts": true,
+          "do_not_launch_foo": true,
+          "make_foo_default": false,
+          "verbose_logging": false
+        }
+      }
+    </data>
+  </app>
+</response>

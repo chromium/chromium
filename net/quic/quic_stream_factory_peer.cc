@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,13 +16,12 @@
 #include "net/quic/quic_stream_factory.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
-#include "net/third_party/quiche/src/quic/core/crypto/quic_crypto_client_config.h"
+#include "net/third_party/quiche/src/quiche/quic/core/crypto/quic_crypto_client_config.h"
 #include "url/scheme_host_port.h"
 
 using std::string;
 
-namespace net {
-namespace test {
+namespace net::test {
 
 const quic::QuicConfig* QuicStreamFactoryPeer::GetConfig(
     QuicStreamFactory* factory) {
@@ -32,22 +31,26 @@ const quic::QuicConfig* QuicStreamFactoryPeer::GetConfig(
 std::unique_ptr<QuicCryptoClientConfigHandle>
 QuicStreamFactoryPeer::GetCryptoConfig(
     QuicStreamFactory* factory,
-    const NetworkIsolationKey& network_isolation_key) {
-  return factory->GetCryptoConfigForTesting(network_isolation_key);
+    const NetworkAnonymizationKey& network_anonymization_key) {
+  return factory->GetCryptoConfigForTesting(network_anonymization_key);
 }
 
 bool QuicStreamFactoryPeer::HasActiveSession(
     QuicStreamFactory* factory,
     const quic::QuicServerId& server_id,
-    const NetworkIsolationKey& network_isolation_key) {
-  return factory->HasActiveSession(QuicSessionKey(
-      server_id, SocketTag(), network_isolation_key, SecureDnsPolicy::kAllow));
+    const NetworkAnonymizationKey& network_anonymization_key) {
+  return factory->HasActiveSession(
+      QuicSessionKey(server_id, SocketTag(), network_anonymization_key,
+                     SecureDnsPolicy::kAllow,
+                     /*require_dns_https_alpn=*/false));
 }
 
 bool QuicStreamFactoryPeer::HasActiveJob(QuicStreamFactory* factory,
                                          const quic::QuicServerId& server_id) {
-  return factory->HasActiveJob(QuicSessionKey(
-      server_id, SocketTag(), NetworkIsolationKey(), SecureDnsPolicy::kAllow));
+  return factory->HasActiveJob(
+      QuicSessionKey(server_id, SocketTag(), NetworkAnonymizationKey(),
+                     SecureDnsPolicy::kAllow,
+                     /*require_dns_https_alpn=*/false));
 }
 
 // static
@@ -55,8 +58,9 @@ QuicChromiumClientSession* QuicStreamFactoryPeer::GetPendingSession(
     QuicStreamFactory* factory,
     const quic::QuicServerId& server_id,
     url::SchemeHostPort destination) {
-  QuicSessionKey session_key(server_id, SocketTag(), NetworkIsolationKey(),
-                             SecureDnsPolicy::kAllow);
+  QuicSessionKey session_key(server_id, SocketTag(), NetworkAnonymizationKey(),
+                             SecureDnsPolicy::kAllow,
+                             /*require_dns_https_alpn=*/false);
   QuicStreamFactory::QuicSessionAliasKey key(std::move(destination),
                                              session_key);
   DCHECK(factory->HasActiveJob(session_key));
@@ -68,9 +72,10 @@ QuicChromiumClientSession* QuicStreamFactoryPeer::GetPendingSession(
 QuicChromiumClientSession* QuicStreamFactoryPeer::GetActiveSession(
     QuicStreamFactory* factory,
     const quic::QuicServerId& server_id,
-    const NetworkIsolationKey& network_isolation_key) {
-  QuicSessionKey session_key(server_id, SocketTag(), network_isolation_key,
-                             SecureDnsPolicy::kAllow);
+    const NetworkAnonymizationKey& network_anonymization_key) {
+  QuicSessionKey session_key(server_id, SocketTag(), network_anonymization_key,
+                             SecureDnsPolicy::kAllow,
+                             /*require_dns_https_alpn=*/false);
   DCHECK(factory->HasActiveSession(session_key));
   return factory->active_sessions_[session_key];
 }
@@ -79,13 +84,13 @@ bool QuicStreamFactoryPeer::HasLiveSession(
     QuicStreamFactory* factory,
     url::SchemeHostPort destination,
     const quic::QuicServerId& server_id) {
-  QuicSessionKey session_key = QuicSessionKey(
-      server_id, SocketTag(), NetworkIsolationKey(), SecureDnsPolicy::kAllow);
+  QuicSessionKey session_key =
+      QuicSessionKey(server_id, SocketTag(), NetworkAnonymizationKey(),
+                     SecureDnsPolicy::kAllow, /*require_dns_https_alpn=*/false);
   QuicStreamFactory::QuicSessionAliasKey alias_key(std::move(destination),
                                                    session_key);
-  for (auto it = factory->all_sessions_.begin();
-       it != factory->all_sessions_.end(); ++it) {
-    if (it->second == alias_key)
+  for (const auto& it : factory->all_sessions_) {
+    if (it.second == alias_key)
       return true;
   }
   return false;
@@ -93,9 +98,8 @@ bool QuicStreamFactoryPeer::HasLiveSession(
 
 bool QuicStreamFactoryPeer::IsLiveSession(QuicStreamFactory* factory,
                                           QuicChromiumClientSession* session) {
-  for (auto it = factory->all_sessions_.begin();
-       it != factory->all_sessions_.end(); ++it) {
-    if (it->first == session)
+  for (const auto& it : factory->all_sessions_) {
+    if (it.first == session)
       return true;
   }
   return false;
@@ -131,15 +135,15 @@ void QuicStreamFactoryPeer::SetYieldAfterDuration(
 bool QuicStreamFactoryPeer::CryptoConfigCacheIsEmpty(
     QuicStreamFactory* factory,
     const quic::QuicServerId& quic_server_id,
-    const NetworkIsolationKey& network_isolation_key) {
+    const NetworkAnonymizationKey& network_anonymization_key) {
   return factory->CryptoConfigCacheIsEmptyForTesting(quic_server_id,
-                                                     network_isolation_key);
+                                                     network_anonymization_key);
 }
 
 void QuicStreamFactoryPeer::CacheDummyServerConfig(
     QuicStreamFactory* factory,
     const quic::QuicServerId& quic_server_id,
-    const NetworkIsolationKey& network_isolation_key) {
+    const NetworkAnonymizationKey& network_anonymization_key) {
   // Minimum SCFG that passes config validation checks.
   const char scfg[] = {// SCFG
                        0x53, 0x43, 0x46, 0x47,
@@ -166,7 +170,7 @@ void QuicStreamFactoryPeer::CacheDummyServerConfig(
   certs.emplace_back(x509_util::CryptoBufferAsStringPiece(cert->cert_buffer()));
 
   std::unique_ptr<QuicCryptoClientConfigHandle> crypto_config_handle =
-      GetCryptoConfig(factory, network_isolation_key);
+      GetCryptoConfig(factory, network_anonymization_key);
   quic::QuicCryptoClientConfig::CachedState* cached =
       crypto_config_handle->GetConfig()->LookupOrCreate(quic_server_id);
   quic::QuicChromiumClock clock;
@@ -191,5 +195,4 @@ void QuicStreamFactoryPeer::SetAlarmFactory(
   factory->alarm_factory_ = std::move(alarm_factory);
 }
 
-}  // namespace test
-}  // namespace net
+}  // namespace net::test

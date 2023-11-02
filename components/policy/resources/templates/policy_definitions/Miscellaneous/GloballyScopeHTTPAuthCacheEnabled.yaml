@@ -1,0 +1,32 @@
+caption: Enable globally scoped HTTP auth cache
+desc: |-
+  This policy configures a single global per profile cache with HTTP server authentication credentials.
+
+        If this policy is unset or disabled, the browser will use the default behavior of cross-site auth, which as of version 80, will be to scope HTTP server authentication credentials by top-level site, so if two sites use resources from the same authenticating domain, credentials will need to be provided independently in the context of both sites. Cached proxy credentials will be reused across sites.
+
+        If the policy is enabled, HTTP auth credentials entered in the context of one site will automatically be used in the context of another.
+
+        Enabling this policy leaves sites open to some types of cross-site attacks, and allows users to be tracked across sites even without cookies by adding entries to the HTTP auth cache using credentials embedded in URLs.
+
+        This policy is intended to give enterprises depending on the legacy behavior a chance to update their login procedures, and will be removed in the future.
+example_value: false
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- fuchsia
+items:
+- caption: Enable globally scoped HTTP authentication cache
+  value: true
+- caption: Disable globally scoped HTTP authentication cache
+  value: false
+owners:
+- file://net/OWNERS
+- mmenke@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome.*:80-
+- chrome_os:80-
+tags: []
+type: main

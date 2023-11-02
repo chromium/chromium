@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/chooser_controller/title_util.h"
@@ -32,13 +33,11 @@ SerialChooserController::SerialChooserController(
           IDS_SERIAL_PORT_CHOOSER_PROMPT_EXTENSION_NAME)),
       filters_(std::move(filters)),
       callback_(std::move(callback)),
-      frame_tree_node_id_(render_frame_host->GetFrameTreeNodeId()) {
-  auto* web_contents =
-      content::WebContents::FromRenderFrameHost(render_frame_host);
-  origin_ = web_contents->GetMainFrame()->GetLastCommittedOrigin();
+      initiator_document_(render_frame_host->GetWeakDocumentPtr()) {
+  origin_ = render_frame_host->GetMainFrame()->GetLastCommittedOrigin();
 
   auto* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+      Profile::FromBrowserContext(render_frame_host->GetBrowserContext());
   chooser_context_ =
       SerialChooserContextFactory::GetForProfile(profile)->AsWeakPtr();
   DCHECK(chooser_context_);
@@ -123,8 +122,13 @@ void SerialChooserController::Cancel() {}
 void SerialChooserController::Close() {}
 
 void SerialChooserController::OpenHelpCenterUrl() const {
-  auto* web_contents =
-      content::WebContents::FromFrameTreeNodeId(frame_tree_node_id_);
+  auto* rfh = initiator_document_.AsRenderFrameHostIfValid();
+  auto* web_contents = rfh && rfh->IsActive()
+                           ? content::WebContents::FromRenderFrameHost(rfh)
+                           : nullptr;
+  if (!web_contents)
+    return;
+
   web_contents->OpenURL(content::OpenURLParams(
       GURL(chrome::kChooserSerialOverviewUrl), content::Referrer(),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
@@ -143,9 +147,8 @@ void SerialChooserController::OnPortAdded(
 
 void SerialChooserController::OnPortRemoved(
     const device::mojom::SerialPortInfo& port) {
-  const auto it = std::find_if(
-      ports_.begin(), ports_.end(),
-      [&port](const auto& ptr) { return ptr->token == port.token; });
+  const auto it = base::ranges::find(ports_, port.token,
+                                     &device::mojom::SerialPortInfo::token);
   if (it != ports_.end()) {
     const size_t index = it - ports_.begin();
     ports_.erase(it);
@@ -177,8 +180,19 @@ void SerialChooserController::OnGetDevices(
 
 bool SerialChooserController::DisplayDevice(
     const device::mojom::SerialPortInfo& port) const {
-  if (SerialBlocklist::Get().IsExcluded(port))
+  if (SerialBlocklist::Get().IsExcluded(port)) {
+    DCHECK(port.has_vendor_id && port.has_product_id);
+    AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kInfo,
+        base::StringPrintf(
+            "Chooser dialog is not displaying a port blocked by "
+            "the Serial blocklist: vendorId=%d, "
+            "productId=%d, name='%s', serial='%s'",
+            port.vendor_id, port.product_id,
+            port.display_name ? port.display_name.value().c_str() : "",
+            port.serial_number ? port.serial_number.value().c_str() : ""));
     return false;
+  }
 
   if (filters_.empty())
     return true;
@@ -196,6 +210,15 @@ bool SerialChooserController::DisplayDevice(
   }
 
   return false;
+}
+
+void SerialChooserController::AddMessageToConsole(
+    blink::mojom::ConsoleMessageLevel level,
+    const std::string& message) const {
+  if (content::RenderFrameHost* rfh =
+          initiator_document_.AsRenderFrameHostIfValid()) {
+    rfh->AddMessageToConsole(level, message);
+  }
 }
 
 void SerialChooserController::RunCallback(

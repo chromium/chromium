@@ -1,10 +1,9 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 
-#include "build/chromeos_buildflags.h"
 #include "chrome/grit/theme_resources.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -34,69 +33,21 @@ void VerifyScaling(gfx::Image& image, gfx::Size& size) {
 }
 
 TEST(ProfileInfoUtilTest, SizedMenuIcon) {
-  // Test that an avatar icon isn't changed.
-  const gfx::Image& profile_image(
-      ui::ResourceBundle::GetSharedInstance().GetImageNamed(
-          IDR_PROFILE_AVATAR_0));
-  gfx::Image result =
-      profiles::GetSizedAvatarIcon(profile_image, false, 50, 50);
-
-  EXPECT_FALSE(gfx::test::IsEmpty(result));
-  EXPECT_TRUE(gfx::test::AreImagesEqual(profile_image, result));
-
-  // Test that a rectangular picture (e.g., GAIA image) is changed.
   gfx::Image rect_picture(gfx::test::CreateImage());
 
   gfx::Size size(30, 20);
-  gfx::Image result2 = profiles::GetSizedAvatarIcon(
-      rect_picture, true, size.width(), size.height());
+  gfx::Image result =
+      profiles::GetSizedAvatarIcon(rect_picture, size.width(), size.height());
 
-  VerifyScaling(result2, size);
+  VerifyScaling(result, size);
 }
-
-// On CrOS, the rectangular avatar icons needed for this test are not available.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-TEST(ProfileInfoUtilTest, SizedAvatarIconWithPaintOptions) {
-  // Test that a modern rectangular avatar icon isn't changed.
-  const gfx::Image& profile_image(
-      ui::ResourceBundle::GetSharedInstance().GetImageNamed(
-          IDR_PROFILE_AVATAR_27));
-  gfx::Image opaque = profiles::GetSizedAvatarIcon(
-      profile_image, /*is_rectangle=*/true, 96, 96, profiles::SHAPE_SQUARE,
-      profiles::AvatarPaintOptions{/*background_color=*/SK_ColorGREEN,
-                                   /*avatar_alpha=*/255u});
-
-  EXPECT_FALSE(gfx::test::IsEmpty(opaque));
-  EXPECT_TRUE(gfx::test::AreImagesEqual(profile_image, opaque));
-
-  gfx::Image transparent = profiles::GetSizedAvatarIcon(
-      profile_image, /*is_rectangle=*/true, 96, 96, profiles::SHAPE_SQUARE,
-      profiles::AvatarPaintOptions{/*background_color=*/SK_ColorGREEN,
-                                   /*avatar_alpha=*/0u});
-  transparent.AsImageSkia().EnsureRepsForSupportedScales();
-  std::vector<gfx::ImageSkiaRep> reps = transparent.AsImageSkia().image_reps();
-
-  // CreateBitmap creates a solid bitmap with SK_ColorGREEN.
-  SkBitmap green_bitmap(gfx::test::CreateBitmap(96, 96));
-  EXPECT_TRUE(gfx::test::AreBitmapsEqual(green_bitmap, reps[0].GetBitmap()));
-}
-#endif
 
 TEST(ProfileInfoUtilTest, WebUIIcon) {
-  // Test that an avatar icon isn't changed.
-  const gfx::Image& profile_image(
-      ui::ResourceBundle::GetSharedInstance().GetImageNamed(
-          IDR_PROFILE_AVATAR_0));
-  gfx::Image result = profiles::GetAvatarIconForWebUI(profile_image, false);
-  EXPECT_FALSE(gfx::test::IsEmpty(result));
-  EXPECT_TRUE(gfx::test::AreImagesEqual(profile_image, result));
-
-  // Test that a rectangular picture is changed.
   gfx::Image rect_picture(gfx::test::CreateImage());
   gfx::Size size(profiles::kAvatarIconSize, profiles::kAvatarIconSize);
-  gfx::Image result2 = profiles::GetAvatarIconForWebUI(rect_picture, true);
+  gfx::Image result = profiles::GetAvatarIconForWebUI(rect_picture);
 
-  VerifyScaling(result2, size);
+  VerifyScaling(result, size);
 }
 
 TEST(ProfileInfoUtilTest, TitleBarIcon) {
@@ -107,19 +58,10 @@ TEST(ProfileInfoUtilTest, TitleBarIcon) {
   const gfx::Image& profile_image(
       ui::ResourceBundle::GetSharedInstance().GetImageNamed(
           IDR_PROFILE_AVATAR_0));
-  gfx::Image result = profiles::GetAvatarIconForTitleBar(
-      profile_image, false, width, height);
+  gfx::Image result =
+      profiles::GetAvatarIconForTitleBar(profile_image, width, height);
   EXPECT_FALSE(gfx::test::IsEmpty(result));
   EXPECT_TRUE(gfx::test::AreImagesEqual(profile_image, result));
-
-  // Test that a rectangular picture is changed.
-  gfx::Image rect_picture(gfx::test::CreateImage());
-
-  gfx::Size size(width, height);
-  gfx::Image result2 = profiles::GetAvatarIconForTitleBar(
-      rect_picture, true, width, height);
-
-  VerifyScaling(result2, size);
 }
 
 }  // namespace

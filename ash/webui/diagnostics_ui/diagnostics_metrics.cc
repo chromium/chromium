@@ -1,11 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/webui/diagnostics_ui/diagnostics_metrics.h"
 
 #include "ash/constants/ash_features.h"
-#include "chromeos/components/feature_usage/feature_usage_metrics.h"
+#include "chromeos/ash/components/feature_usage/feature_usage_metrics.h"
 
 namespace ash {
 namespace diagnostics {
@@ -19,11 +19,11 @@ DiagnosticsMetrics::DiagnosticsMetrics()
       successful_usage_started_(false) {}
 
 bool DiagnosticsMetrics::IsEligible() const {
-  return features::IsDiagnosticsAppEnabled();
+  return true;
 }
 
 bool DiagnosticsMetrics::IsEnabled() const {
-  return features::IsDiagnosticsAppEnabled();
+  return true;
 }
 
 // Helper function for feature_usage::FeatureUsageMetrics RecordUsage.

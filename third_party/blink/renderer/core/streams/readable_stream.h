@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,12 +10,13 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_byob_reader.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_reader.h"
 #include "third_party/blink/renderer/core/streams/transferable_streams.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "v8/include/v8.h"
 
@@ -37,6 +38,7 @@ class StreamAlgorithm;
 class StreamPipeOptions;
 class StreamPromiseResolver;
 class StreamStartAlgorithm;
+class UnderlyingByteSourceBase;
 class UnderlyingSourceBase;
 class WritableStream;
 
@@ -111,6 +113,25 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
                                 StrategySizeAlgorithm* size_algorithm,
                                 ExceptionState&);
 
+  // Entry point to create a ReadableByteStream from other C++ APIs.
+  // CreateReadableByteStream():
+  // https://streams.spec.whatwg.org/#abstract-opdef-createreadablebytestream
+  static ReadableStream* CreateByteStream(
+      ScriptState*,
+      UnderlyingByteSourceBase* underlying_byte_source);
+
+  static void InitByteStream(ScriptState*,
+                             ReadableStream*,
+                             UnderlyingByteSourceBase* underlying_byte_source,
+                             ExceptionState&);
+  static void InitByteStream(ScriptState*,
+                             ReadableStream*,
+                             ReadableByteStreamController*,
+                             StreamStartAlgorithm* start_algorithm,
+                             StreamAlgorithm* pull_algorithm,
+                             StreamAlgorithm* cancel_algorithm,
+                             ExceptionState&);
+
   ReadableStream();
 
   ~ReadableStream() override;
@@ -144,6 +165,9 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
 
   ReadableStreamDefaultReader* GetDefaultReaderForTesting(ScriptState*,
                                                           ExceptionState&);
+
+  ReadableStreamBYOBReader* GetBYOBReaderForTesting(ScriptState*,
+                                                    ExceptionState&);
 
   ReadableStream* pipeThrough(ScriptState*,
                               ReadableWritablePair* transform,
@@ -185,6 +209,9 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
   bool IsErrored() const { return IsErrored(this); }
 
   void LockAndDisturb(ScriptState*);
+
+  // https://streams.spec.whatwg.org/#readablestream-close
+  void CloseStream(ScriptState*, ExceptionState&);
 
   void Serialize(ScriptState*, MessagePort* port, ExceptionState&);
 
@@ -268,6 +295,8 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
   friend class ReadableStreamDefaultReader;
   friend class ReadableStreamGenericReader;
 
+  class PullAlgorithm;
+  class CancelAlgorithm;
   class PipeToEngine;
   class ReadHandleImpl;
   class TeeEngine;

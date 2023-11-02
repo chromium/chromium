@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,17 +12,33 @@
 #include <string>
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "build/build_config.h"
 
-namespace blink {
-namespace scheduler {
-class UkmTaskSampler;
-class MainThreadMetricsHelper;
-}
-}  // namespace blink
+#if !BUILDFLAG(IS_NACL)
+#include "third_party/boringssl/src/include/openssl/rand.h"
+#endif
 
 namespace base {
+
+namespace internal {
+
+#if BUILDFLAG(IS_ANDROID)
+// Sets the implementation of RandBytes according to the corresponding
+// base::Feature. Thread safe: allows to switch while RandBytes() is in use.
+void ConfigureRandBytesFieldTrial();
+#endif
+
+#if !BUILDFLAG(IS_NACL)
+void ConfigureBoringSSLBackedRandBytesFieldTrial();
+#endif
+
+// Returns a random double in range [0, 1). For use in allocator shim to avoid
+// infinite recursion. Thread-safe.
+BASE_EXPORT double RandDoubleAvoidAllocation();
+
+}  // namespace internal
 
 // Returns a random number in range [0, UINT64_MAX]. Thread-safe.
 BASE_EXPORT uint64_t RandUint64();
@@ -36,9 +52,16 @@ BASE_EXPORT uint64_t RandGenerator(uint64_t range);
 // Returns a random double in range [0, 1). Thread-safe.
 BASE_EXPORT double RandDouble();
 
+// Returns a random float in range [0, 1). Thread-safe.
+BASE_EXPORT float RandFloat();
+
 // Given input |bits|, convert with maximum precision to a double in
 // the range [0, 1). Thread-safe.
 BASE_EXPORT double BitsToOpenEndedUnitInterval(uint64_t bits);
+
+// Given input `bits`, convert with maximum precision to a float in the range
+// [0, 1). Thread-safe.
+BASE_EXPORT float BitsToOpenEndedUnitIntervalF(uint64_t bits);
 
 // Fills |output_length| bytes of |output| with random data. Thread-safe.
 //
@@ -59,7 +82,6 @@ BASE_EXPORT void RandBytes(void* output, size_t output_length);
 BASE_EXPORT std::string RandBytesAsString(size_t length);
 
 // An STL UniformRandomBitGenerator backed by RandUint64.
-// TODO(tzik): Consider replacing this with a faster implementation.
 class RandomBitGenerator {
  public:
   using result_type = uint64_t;
@@ -71,25 +93,35 @@ class RandomBitGenerator {
   ~RandomBitGenerator() = default;
 };
 
+#if !BUILDFLAG(IS_NACL)
+class NonAllocatingRandomBitGenerator {
+ public:
+  using result_type = uint64_t;
+  static constexpr result_type min() { return 0; }
+  static constexpr result_type max() { return UINT64_MAX; }
+  result_type operator()() const {
+    uint64_t result;
+    RAND_get_system_entropy_for_custom_prng(reinterpret_cast<uint8_t*>(&result),
+                                            sizeof(result));
+    return result;
+  }
+
+  NonAllocatingRandomBitGenerator() = default;
+  ~NonAllocatingRandomBitGenerator() = default;
+};
+#endif
+
 // Shuffles [first, last) randomly. Thread-safe.
 template <typename Itr>
 void RandomShuffle(Itr first, Itr last) {
   std::shuffle(first, last, RandomBitGenerator());
 }
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 BASE_EXPORT int GetUrandomFD();
 #endif
 
-namespace partition_alloc {
-class RandomGenerator;
-}
-
-namespace sequence_manager {
-namespace internal {
-class SequenceManagerImpl;
-}
-}  // namespace sequence_manager
+class MetricsSubSampler;
 
 // Fast, insecure pseudo-random number generator.
 //
@@ -135,26 +167,24 @@ class BASE_EXPORT InsecureRandomGenerator {
   // Before adding a new friend class, make sure that the overhead of
   // base::Rand*() is too high, using something more representative than a
   // microbenchmark.
-  //
-  // PartitionAlloc allocations should not take more than 40-50ns per
-  // malloc()/free() pair, otherwise high-level benchmarks regress, and does not
-  // need a secure PRNG, as it's used for ASLR and zeroing some allocations at
-  // free() time.
-  friend class partition_alloc::RandomGenerator;
 
-  // Friend classes below are using the generator to sub-sample metrics after
-  // task execution. Task execution overhead is ~1us on a Linux desktop, and yet
-  // accounts for multiple percentage points of total CPU usage. Keeping it low
-  // is thus important.
-  friend class sequence_manager::internal::SequenceManagerImpl;
-  friend class blink::scheduler::UkmTaskSampler;
-  friend class blink::scheduler::MainThreadMetricsHelper;
+  // Uses the generator to sub-sample metrics.
+  friend class MetricsSubSampler;
 
   FRIEND_TEST_ALL_PREFIXES(RandUtilTest,
                            InsecureRandomGeneratorProducesBothValuesOfAllBits);
   FRIEND_TEST_ALL_PREFIXES(RandUtilTest, InsecureRandomGeneratorChiSquared);
   FRIEND_TEST_ALL_PREFIXES(RandUtilTest, InsecureRandomGeneratorRandDouble);
   FRIEND_TEST_ALL_PREFIXES(RandUtilPerfTest, InsecureRandomRandUint64);
+};
+
+class BASE_EXPORT MetricsSubSampler {
+ public:
+  MetricsSubSampler();
+  bool ShouldSample(double probability);
+
+ private:
+  InsecureRandomGenerator generator_;
 };
 
 }  // namespace base

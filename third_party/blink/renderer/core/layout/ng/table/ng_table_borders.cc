@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -114,14 +114,13 @@ class ColgroupBordersMarker {
 scoped_refptr<NGTableBorders> NGTableBorders::ComputeTableBorders(
     const NGBlockNode& table) {
   const ComputedStyle& table_style = table.Style();
-  NGBoxStrut intrinsic_borders(LayoutUnit(table_style.BorderStartWidth()),
-                               LayoutUnit(table_style.BorderEndWidth()),
-                               LayoutUnit(table_style.BorderBeforeWidth()),
-                               LayoutUnit(table_style.BorderAfterWidth()));
+  const bool is_collapsed =
+      table_style.BorderCollapse() == EBorderCollapse::kCollapse;
   scoped_refptr<NGTableBorders> table_borders =
-      base::MakeRefCounted<NGTableBorders>(table_style, intrinsic_borders);
+      base::MakeRefCounted<NGTableBorders>(
+          ComputeNonCollapsedTableBorders(table_style), is_collapsed);
 
-  if (table_style.BorderCollapse() != EBorderCollapse::kCollapse)
+  if (!is_collapsed)
     return table_borders;
 
   NGTableGroupedChildren grouped_children(table);
@@ -233,13 +232,13 @@ scoped_refptr<NGTableBorders> NGTableBorders::ComputeTableBorders(
                                       table_writing_direction,
                                       *table_borders.get());
   VisitLayoutNGTableColumn(
-      const_cast<Vector<NGBlockNode>&>(grouped_children.columns),
+      const_cast<HeapVector<NGBlockNode>&>(grouped_children.columns),
       table_column_count, &col_borders_marker);
   ColgroupBordersMarker colgroup_borders_marker(table_row_count, ++box_order,
                                                 table_writing_direction,
                                                 *table_borders.get());
   VisitLayoutNGTableColumn(
-      const_cast<Vector<NGBlockNode>&>(grouped_children.columns),
+      const_cast<HeapVector<NGBlockNode>&>(grouped_children.columns),
       table_column_count, &colgroup_borders_marker);
 
   // Mark table borders.
@@ -247,29 +246,14 @@ scoped_refptr<NGTableBorders> NGTableBorders::ComputeTableBorders(
                               table_style, NGTableBorders::EdgeSource::kTable,
                               ++box_order, table_writing_direction);
 
-  table_borders->ComputeCollapsedTableBorderPadding(table_row_count,
-                                                    table_column_count);
-
-  // https://github.com/w3c/csswg-drafts/issues/6230
-  if (table_borders->collapsed_visual_inline_start_ !=
-          table_borders->cached_table_border_->inline_start ||
-      table_borders->collapsed_visual_inline_end_ !=
-          table_borders->cached_table_border_->inline_end) {
-    UseCounter::Count(table.GetDocument(),
-                      WebFeature::kTableCollapsedBorderDifferentToVisual);
-  }
+  table_borders->UpdateTableBorder(table_row_count, table_column_count);
 
   return table_borders;
 }
 
-NGTableBorders::NGTableBorders(const ComputedStyle& table_style,
-                               const NGBoxStrut& table_border)
-    : is_collapsed_(table_style.BorderCollapse() ==
-                    EBorderCollapse::kCollapse) {
-  if (!is_collapsed_) {
-    cached_table_border_ = table_border;
-  }
-}
+NGTableBorders::NGTableBorders(const NGBoxStrut& table_border,
+                               const bool is_collapsed)
+    : table_border_(table_border), is_collapsed_(is_collapsed) {}
 
 #if DCHECK_IS_ON()
 String NGTableBorders::DumpEdges() {
@@ -329,10 +313,7 @@ bool NGTableBorders::operator==(const NGTableBorders& other) const {
   }
   return sections_ == other.sections_ &&
          edges_per_row_ == other.edges_per_row_ &&
-         cached_table_border_ == other.cached_table_border_ &&
-         collapsed_visual_inline_start_ ==
-             other.collapsed_visual_inline_start_ &&
-         collapsed_visual_inline_end_ == other.collapsed_visual_inline_end_ &&
+         table_border_ == other.table_border_ &&
          last_column_index_ == other.last_column_index_ &&
          is_collapsed_ == other.is_collapsed_;
 }
@@ -393,45 +374,15 @@ NGBoxStrut NGTableBorders::GetCellBorders(wtf_size_t row,
   return border_strut;
 }
 
-void NGTableBorders::ComputeCollapsedTableBorderPadding(
-    wtf_size_t table_row_count,
-    wtf_size_t table_column_count) {
+void NGTableBorders::UpdateTableBorder(wtf_size_t table_row_count,
+                                       wtf_size_t table_column_count) {
   DCHECK(is_collapsed_);
-  // https://www.w3.org/TR/CSS2/tables.html#collapsing-borders
-  // block[start|end] borders are computed by traversing all the edges.
-  // inline[start|end] borders are computed by looking at first/last edge.
   if (edges_per_row_ == 0) {
-    cached_table_border_ = NGBoxStrut();
+    table_border_ = NGBoxStrut();
     return;
   }
   DCHECK_GE((table_column_count + 1) * 2, edges_per_row_);
-  // We still need visual border rect.
-  NGBoxStrut borders =
-      GetCellBorders(0, 0, table_row_count, table_column_count);
-  collapsed_visual_inline_start_ = borders.inline_start;
-  collapsed_visual_inline_end_ = borders.inline_end;
-  wtf_size_t inline_start_edge = 0;
-  wtf_size_t inline_end_edge = 2 * table_column_count;
-  borders.inline_start = CanPaint(inline_start_edge)
-                             ? BorderWidth(inline_start_edge) / 2
-                             : LayoutUnit();
-  borders.inline_end = CanPaint(inline_end_edge)
-                           ? BorderWidth(inline_end_edge) / 2
-                           : LayoutUnit();
-  cached_table_border_ = borders;
-}
-
-NGBoxStrut NGTableBorders::GetCollapsedBorderVisualSizeDiff() const {
-  if (!is_collapsed_)
-    return NGBoxStrut();
-  // Inline sizes expand by difference between visual and
-  // layout border width.
-  NGBoxStrut visual_diff;
-  visual_diff.inline_start =
-      collapsed_visual_inline_start_ - cached_table_border_->inline_start;
-  visual_diff.inline_end =
-      collapsed_visual_inline_end_ - cached_table_border_->inline_end;
-  return visual_diff;
+  table_border_ = GetCellBorders(0, 0, table_row_count, table_column_count);
 }
 
 NGBoxStrut NGTableBorders::CellBorder(

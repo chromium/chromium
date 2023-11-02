@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,6 +30,8 @@ void WeakWrapperSharedURLLoaderFactory::CreateLoaderAndStart(
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
   if (!factory())
     return;
+
+  mojo::internal::AutoRecordReplayAssertBufferAllocations assertsEnabled("RUN-1725-1732");
   factory()->CreateLoaderAndStart(std::move(loader), request_id, options,
                                   request, std::move(client),
                                   traffic_annotation);

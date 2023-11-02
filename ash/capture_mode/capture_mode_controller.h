@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,15 +14,17 @@
 #include "ash/capture_mode/video_recording_watcher.h"
 #include "ash/public/cpp/capture_mode/capture_mode_delegate.h"
 #include "ash/public/cpp/session/session_observer.h"
-#include "ash/services/recording/public/mojom/recording_service.mojom.h"
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chromeos/ash/services/recording/public/mojom/recording_service.mojom.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_video_capture.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -39,6 +41,7 @@ class SequencedTaskRunner;
 
 namespace ash {
 
+class CaptureModeCameraController;
 class CaptureModeSession;
 
 // Defines a callback type that will be invoked when an attempt to delete the
@@ -47,9 +50,16 @@ using OnFileDeletedCallback =
     base::OnceCallback<void(const base::FilePath& path,
                             bool delete_successful)>;
 
-// Controls starting and ending a Capture Mode session and its behavior.
+// Controls starting and ending a Capture Mode session and its behavior. There
+// are various checks that are run when a capture session start is attempted,
+// and when a capture operation is performed, to make sure they're allowed. For
+// example, checking that policy allows screen capture, and there are no content
+// on the screen restricted by DLP (Data Leak Prevention). In the case of video
+// recording, HDCP is also checked to ensure no protected content is being
+// recorded.
 class ASH_EXPORT CaptureModeController
     : public recording::mojom::RecordingServiceClient,
+      public recording::mojom::DriveFsQuotaDelegate,
       public SessionObserver,
       public chromeos::PowerManagerClient::Observer {
  public:
@@ -74,22 +84,33 @@ class ASH_EXPORT CaptureModeController
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
+  CaptureModeCameraController* camera_controller() {
+    return camera_controller_.get();
+  }
   CaptureModeType type() const { return type_; }
   CaptureModeSource source() const { return source_; }
   CaptureModeSession* capture_mode_session() const {
     return capture_mode_session_.get();
   }
   gfx::Rect user_capture_region() const { return user_capture_region_; }
-  bool enable_audio_recording() const { return enable_audio_recording_; }
   bool is_recording_in_progress() const {
-    return video_recording_watcher_ &&
-           !video_recording_watcher_->is_shutting_down();
+    return is_initializing_recording_ ||
+           (video_recording_watcher_ &&
+            !video_recording_watcher_->is_shutting_down());
   }
 
   // Returns true if a capture mode session is currently active. If you only
   // need to call this method, but don't need the rest of the controller, use
   // capture_mode_util::IsCaptureModeActive().
   bool IsActive() const;
+
+  // Returns true if audio recording is enabled. This takes into account the
+  // `AudioCaptureAllowed` policy.
+  bool GetAudioRecordingEnabled() const;
+
+  // Returns true if audio recording is forced disabled by the
+  // `AudioCaptureAllowed` policy.
+  bool IsAudioCaptureDisabledByPolicy() const;
 
   // Sets the capture source/type, which will be applied to an ongoing capture
   // session (if any), or to a future capture session when Start() is called.
@@ -98,7 +119,8 @@ class ASH_EXPORT CaptureModeController
 
   // Sets the audio recording flag, which will be applied to any future
   // recordings (cannot be set mid recording), or to a future capture mode
-  // session when Start() is called.
+  // session when Start() is called. The effective enabled state takes into
+  // account the `AudioCaptureAllowed` policy.
   void EnableAudioRecording(bool enable_audio_recording);
 
   // Starts a new capture session with the most-recently used |type_| and
@@ -113,13 +135,13 @@ class ASH_EXPORT CaptureModeController
   void SetUserCaptureRegion(const gfx::Rect& region, bool by_user);
 
   // Returns true if we can show a user nudge animation and a toast message to
-  // alert the user about the new settings to customize the save folder path.
-  bool CanShowFolderSelectionNudge() const;
+  // alert users any available new features.
+  bool CanShowUserNudge() const;
 
-  // Disables showing the folder selection nudge from now on. Calling the above
-  // CanShowFolderSelectionNudge() will return false for the current active user
-  // going forward.
-  void DisableFolderSelectionNudgeForever();
+  // Disables showing the user nudge from now on. Calling the above
+  // CanShowUserNudge() will return false for the current active user going
+  // forward.
+  void DisableUserNudgeForever();
 
   // Sets whether the currently logged in user selected to use the default
   // "Downloads" folder as the current save location, even while they already
@@ -188,9 +210,36 @@ class ASH_EXPORT CaptureModeController
   // content view of the recording overlay widget.
   std::unique_ptr<RecordingOverlayView> CreateRecordingOverlayView();
 
+  // Returns true if the given `path` is the root folder of DriveFS, false
+  // otherwise.
+  bool IsRootDriveFsPath(const base::FilePath& path) const;
+
+  // Returns true if the given `path` is the same as the Android Play files
+  // path, false otherwise.
+  bool IsAndroidFilesPath(const base::FilePath& path) const;
+
+  // Returns true if the given `path` is the same as the Linux Files path, false
+  // otherwise.
+  bool IsLinuxFilesPath(const base::FilePath& path) const;
+
+  // Returns the current parent window for the on-capture-surface widgets such
+  // as `CaptureModeCameraController::camera_preview_widget_` and
+  // `CaptureModeDemoToolsController::demo_tools_widget_`.
+  aura::Window* GetOnCaptureSurfaceWidgetParentWindow() const;
+
+  // Returns the bounds, within which the on-capture-surface widgets (such as
+  // the camera preview and the demo tools widget) will be confined. The bounds
+  // is in screen coordinate when capture source is `kFullscreen` or 'kRegion',
+  // but in window's coordinate when it is 'kWindow' type.
+  gfx::Rect GetCaptureSurfaceConfineBounds() const;
+
   // recording::mojom::RecordingServiceClient:
   void OnRecordingEnded(recording::mojom::RecordingStatus status,
                         const gfx::ImageSkia& thumbnail) override;
+
+  // recording::mojom::DriveFsQuotaDelegate:
+  void GetDriveFsFreeSpaceBytes(
+      GetDriveFsFreeSpaceBytesCallback callback) override;
 
   // SessionObserver:
   void OnActiveUserSessionChanged(const AccountId& account_id) override;
@@ -270,12 +319,6 @@ class ASH_EXPORT CaptureModeController
 
   // Called back when the mojo pipe to the recording service gets disconnected.
   void OnRecordingServiceDisconnected();
-
-  // Returns whether doing a screen capture is currently allowed by enterprise
-  // policies and a reason otherwise.
-  // ShouldBlockRecordingForContentProtection() should be used for HDCP checks.
-  CaptureAllowance IsCaptureAllowedByEnterprisePolicies(
-      const CaptureParams& capture_params) const;
 
   // Terminates the recording service process, closes any recording-related UI
   // elements (only if |success| is false as this indicates that recording was
@@ -387,6 +430,24 @@ class ASH_EXPORT CaptureModeController
   // allowed to be captured.
   void InterruptVideoRecording();
 
+  // Called by the DLP manager when it's checked for any on-screen content
+  // restriction at the time when the capture operation is attempted. `proceed`
+  // will be set to true if the capture operation should continue, false if it
+  // should be aborted.
+  void OnDlpRestrictionCheckedAtPerformingCapture(bool proceed);
+
+  // Called by the DLP manager when it's checked again for any on-screen content
+  // restriction at the time when the video capture 3-second countdown ends.
+  // `proceed` will be set to true if video recording should begin, or false if
+  // it should be aborted.
+  void OnDlpRestrictionCheckedAtCountDownFinished(bool proceed);
+
+  // Bound to a callback that will be called by the DLP manager to let us know
+  // whether a pending session initialization should `proceed` or abort due to
+  // some restricted contents on the screen.
+  void OnDlpRestrictionCheckedAtSessionInit(CaptureModeEntryType entry_type,
+                                            bool proceed);
+
   // At the end of a video recording, the DLP manager is checked to see if there
   // were any restricted content of a warning level type during the recording
   // (warning-level restrictions do not result in interrupting the video
@@ -399,10 +460,18 @@ class ASH_EXPORT CaptureModeController
                                          bool in_projector_mode,
                                          bool proceed);
 
+  // Bound to a callback that will be called by DLP manager to let the user know
+  // whether full screen capture on all displays should `proceed` or abort due
+  // to some restricted contents on the screen.
+  void OnDlpRestrictionCheckedAtCaptureScreenshotsOfAllDisplays(bool proceed);
+
   // Gets the corresponding `SaveLocation` enum value on the given `path`.
   CaptureModeSaveToLocation GetSaveToOption(const base::FilePath& path);
 
   std::unique_ptr<CaptureModeDelegate> delegate_;
+
+  // Controls the selfie camera feature of capture mode.
+  std::unique_ptr<CaptureModeCameraController> camera_controller_;
 
   CaptureModeType type_ = CaptureModeType::kImage;
   CaptureModeSource source_ = CaptureModeSource::kRegion;
@@ -412,7 +481,9 @@ class ASH_EXPORT CaptureModeController
 
   mojo::Remote<recording::mojom::RecordingService> recording_service_remote_;
   mojo::Receiver<recording::mojom::RecordingServiceClient>
-      recording_service_client_receiver_;
+      recording_service_client_receiver_{this};
+  mojo::Receiver<recording::mojom::DriveFsQuotaDelegate>
+      drive_fs_quota_delegate_receiver_{this};
 
   // This is the file path of the video file currently being recorded. It is
   // empty when no video recording is in progress or when no video is being
@@ -428,7 +499,9 @@ class ASH_EXPORT CaptureModeController
 
   // Remember the user selected audio preference of whether to record audio or
   // not for a video, between sessions. Initially, this value is set to false,
-  // ensuring that this is an opt-in feature.
+  // ensuring that this is an opt-in feature. Note that this value will always
+  // be overwritten by the `AudioCaptureAllowed` policy, when
+  // `GetAudioRecordingEnabled()` is called.
   bool enable_audio_recording_ = false;
 
   // If true, the 3-second countdown UI will be skipped, and video recording
@@ -440,6 +513,11 @@ class ASH_EXPORT CaptureModeController
   // determine the message shown to the user in the video preview notification
   // to explain why the recording was ended, and is then reset back to false.
   bool low_disk_space_threshold_reached_ = false;
+
+  // Set to true when we're waiting for a callback from the DLP manager to check
+  // content restrictions that may block capture mode at any of its stages
+  // (initialization or performing the capture).
+  bool pending_dlp_check_ = false;
 
   // Watches events that lead to ending video recording.
   std::unique_ptr<VideoRecordingWatcher> video_recording_watcher_;
@@ -456,6 +534,8 @@ class ASH_EXPORT CaptureModeController
       on_file_saved_callback_for_test_;
 
   OnFileDeletedCallback on_file_deleted_callback_for_test_;
+
+  base::OnceClosure on_countdown_finished_callback_for_test_;
 
   // Timers used to schedule recording of the number of screenshots taken.
   base::RepeatingTimer num_screenshots_taken_in_last_day_scheduler_;
@@ -481,6 +561,9 @@ class ASH_EXPORT CaptureModeController
   // has passed since the last time the user changes the capture region when the
   // new capture session starts .
   base::TimeTicks last_capture_region_update_time_;
+
+  // True in the scope of BeginVideoRecording().
+  bool is_initializing_recording_ = false;
 
   base::WeakPtrFactory<CaptureModeController> weak_ptr_factory_{this};
 };

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/renderer/platform/graphics/color_behavior.h"
 #include "third_party/blink/renderer/platform/image-encoders/image_encoder.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace blink {
@@ -40,23 +41,28 @@ void MockClipboardHost::GetSequenceNumber(
   std::move(callback).Run(sequence_number_);
 }
 
-void MockClipboardHost::ReadAvailableTypes(
-    mojom::ClipboardBuffer clipboard_buffer,
-    ReadAvailableTypesCallback callback) {
+Vector<String> MockClipboardHost::ReadStandardFormatNames() {
   Vector<String> types;
-  if (!plain_text_.IsEmpty())
+  if (!plain_text_.empty())
     types.push_back("text/plain");
-  if (!html_text_.IsEmpty())
+  if (!html_text_.empty())
     types.push_back("text/html");
-  if (!svg_text_.IsEmpty())
+  if (!svg_text_.empty())
     types.push_back("image/svg+xml");
-  if (!png_.IsEmpty())
+  if (!png_.empty())
     types.push_back("image/png");
   for (auto& it : custom_data_) {
     CHECK(!base::Contains(types, it.key));
     types.push_back(it.key);
   }
-  std::move(callback).Run(types);
+  return types;
+}
+
+void MockClipboardHost::ReadAvailableTypes(
+    mojom::ClipboardBuffer clipboard_buffer,
+    ReadAvailableTypesCallback callback) {
+  Vector<String> types = ReadStandardFormatNames();
+  std::move(callback).Run(std::move(types));
 }
 
 void MockClipboardHost::IsFormatAvailable(
@@ -66,10 +72,10 @@ void MockClipboardHost::IsFormatAvailable(
   bool result = false;
   switch (format) {
     case mojom::ClipboardFormat::kPlaintext:
-      result = !plain_text_.IsEmpty();
+      result = !plain_text_.empty();
       break;
     case mojom::ClipboardFormat::kHtml:
-      result = !html_text_.IsEmpty();
+      result = !html_text_.empty();
       break;
     case mojom::ClipboardFormat::kSmartPaste:
       result = write_smart_paste_;
@@ -173,10 +179,10 @@ void MockClipboardHost::CommitWrite() {
 
 void MockClipboardHost::ReadAvailableCustomAndStandardFormats(
     ReadAvailableCustomAndStandardFormatsCallback callback) {
-  Vector<String> format_names;
+  Vector<String> format_names = ReadStandardFormatNames();
   for (const auto& item : unsanitized_custom_data_map_)
     format_names.emplace_back(item.key);
-  std::move(callback).Run(format_names);
+  std::move(callback).Run(std::move(format_names));
 }
 
 void MockClipboardHost::ReadUnsanitizedCustomFormat(
@@ -199,10 +205,12 @@ void MockClipboardHost::WriteUnsanitizedCustomFormat(
   // Simulate the underlying platform copying this data.
   Vector<uint8_t> data_copy(base::saturated_cast<wtf_size_t>(data.size()),
                             *data.data());
-  unsanitized_custom_data_map_.Set(format, data_copy);
+  // Append the "web " prefix since it is removed by the clipboard writer during
+  // write.
+  unsanitized_custom_data_map_.Set("web " + format, std::move(data_copy));
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 void MockClipboardHost::WriteStringToFindPboard(const String& text) {}
 #endif
 

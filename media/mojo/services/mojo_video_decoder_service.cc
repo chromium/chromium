@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,9 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/types/optional_util.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/simple_sync_token_client.h"
 #include "media/base/video_decoder.h"
@@ -79,16 +79,30 @@ class VideoFrameHandleReleaserImpl final
   }
 
   // mojom::MojoVideoFrameHandleReleaser implementation
-  void ReleaseVideoFrame(const base::UnguessableToken& release_token,
-                         const gpu::SyncToken& release_sync_token) final {
+  void ReleaseVideoFrame(
+      const base::UnguessableToken& release_token,
+      const absl::optional<gpu::SyncToken>& release_sync_token) final {
     DVLOG(3) << __func__ << "(" << release_token.ToString() << ")";
     auto it = video_frames_.find(release_token);
     if (it == video_frames_.end()) {
       mojo::ReportBadMessage("Unknown |release_token|.");
       return;
     }
-    SimpleSyncTokenClient client(release_sync_token);
-    it->second->UpdateReleaseSyncToken(&client);
+    if (it->second->HasReleaseMailboxCB()) {
+      if (!release_sync_token) {
+        mojo::ReportBadMessage(
+            "A SyncToken is required to release frames that have a callback "
+            "for releasing mailboxes.");
+        return;
+      }
+      // An empty *|release_sync_token| can be taken as a signal that the
+      // about-to-be-released VideoFrame was never used by the client.
+      // Therefore, we should let that frame retain whatever SyncToken it has.
+      if (release_sync_token->HasData()) {
+        SimpleSyncTokenClient client(*release_sync_token);
+        it->second->UpdateReleaseSyncToken(&client);
+      }
+    }
     video_frames_.erase(it);
   }
 
@@ -99,9 +113,13 @@ class VideoFrameHandleReleaserImpl final
 
 MojoVideoDecoderService::MojoVideoDecoderService(
     MojoMediaClient* mojo_media_client,
-    MojoCdmServiceContext* mojo_cdm_service_context)
+    MojoCdmServiceContext* mojo_cdm_service_context,
+    mojo::PendingRemote<stable::mojom::StableVideoDecoder>
+        oop_video_decoder_pending_remote)
     : mojo_media_client_(mojo_media_client),
-      mojo_cdm_service_context_(mojo_cdm_service_context) {
+      mojo_cdm_service_context_(mojo_cdm_service_context),
+      oop_video_decoder_pending_remote_(
+          std::move(oop_video_decoder_pending_remote)) {
   DVLOG(1) << __func__;
   DCHECK(mojo_media_client_);
   DCHECK(mojo_cdm_service_context_);
@@ -112,9 +130,7 @@ MojoVideoDecoderService::~MojoVideoDecoderService() {
   DVLOG(1) << __func__;
 
   if (init_cb_) {
-    OnDecoderInitialized(
-        Status(StatusCode::kMojoDecoderDeletedWithoutInitialization)
-            .WithData("decoder", "MojoVideoDecoder"));
+    OnDecoderInitialized(DecoderStatus::Codes::kInterrupted);
   }
 
   if (reset_cb_)
@@ -153,7 +169,7 @@ void MojoVideoDecoderService::Construct(
   DVLOG(1) << __func__;
   TRACE_EVENT0("media", "MojoVideoDecoderService::Construct");
 
-  if (decoder_) {
+  if (media_log_) {
     mojo::ReportBadMessage("Construct() already called");
     return;
   }
@@ -177,7 +193,7 @@ void MojoVideoDecoderService::Construct(
       task_runner, media_log_.get(), std::move(command_buffer_id),
       base::BindRepeating(
           &MojoVideoDecoderService::OnDecoderRequestedOverlayInfo, weak_this_),
-      target_color_space);
+      target_color_space, std::move(oop_video_decoder_pending_remote_));
 }
 
 void MojoVideoDecoderService::Initialize(
@@ -187,19 +203,28 @@ void MojoVideoDecoderService::Initialize(
     InitializeCallback callback) {
   DVLOG(1) << __func__ << " config = " << config.AsHumanReadableString()
            << ", cdm_id = "
-           << CdmContext::CdmIdToString(base::OptionalOrNullptr(cdm_id));
+           << CdmContext::CdmIdToString(base::OptionalToPtr(cdm_id));
   DCHECK(!init_cb_);
   DCHECK(callback);
 
   TRACE_EVENT_ASYNC_BEGIN2(
       "media", kInitializeTraceName, this, "config",
       config.AsHumanReadableString(), "cdm_id",
-      CdmContext::CdmIdToString(base::OptionalOrNullptr(cdm_id)));
+      CdmContext::CdmIdToString(base::OptionalToPtr(cdm_id)));
 
   init_cb_ = std::move(callback);
 
+  // Prevent creation of too many hardware decoding instances since it may lead
+  // to system instability. Note: This will break decoding entirely for codecs
+  // which don't have software fallback, so we use a conservative limit. Most
+  // platforms will self-limit and never reach this limit.
+  if (!config.is_encrypted() && g_num_active_mvd_instances >= 128) {
+    OnDecoderInitialized(DecoderStatus::Codes::kTooManyDecoders);
+    return;
+  }
+
   if (!decoder_) {
-    OnDecoderInitialized(StatusCode::kMojoDecoderNoWrappedDecoder);
+    OnDecoderInitialized(DecoderStatus::Codes::kFailedToCreateDecoder);
     return;
   }
 
@@ -215,7 +240,7 @@ void MojoVideoDecoderService::Initialize(
     } else if (cdm_id != cdm_id_) {
       // TODO(xhwang): Replace with mojo::ReportBadMessage().
       NOTREACHED() << "The caller should not switch CDM";
-      OnDecoderInitialized(StatusCode::kDecoderMissingCdmForEncryptedContent);
+      OnDecoderInitialized(DecoderStatus::Codes::kUnsupportedEncryptionMode);
       return;
     }
   }
@@ -226,9 +251,9 @@ void MojoVideoDecoderService::Initialize(
 
   if (config.is_encrypted() && !cdm_context) {
     DVLOG(1) << "CdmContext for "
-             << CdmContext::CdmIdToString(base::OptionalOrNullptr(cdm_id))
+             << CdmContext::CdmIdToString(base::OptionalToPtr(cdm_id))
              << " not found for encrypted video";
-    OnDecoderInitialized(StatusCode::kDecoderMissingCdmForEncryptedContent);
+    OnDecoderInitialized(DecoderStatus::Codes::kUnsupportedEncryptionMode);
     return;
   }
 
@@ -267,7 +292,7 @@ void MojoVideoDecoderService::Decode(mojom::DecoderBufferPtr buffer,
 
   if (!decoder_) {
     OnDecoderDecoded(std::move(callback), std::move(trace_event),
-                     DecodeStatus::DECODE_ERROR);
+                     DecoderStatus::Codes::kNotInitialized);
     return;
   }
 
@@ -310,7 +335,7 @@ void MojoVideoDecoderService::Reset(ResetCallback callback) {
       base::BindOnce(&MojoVideoDecoderService::OnReaderFlushed, weak_this_));
 }
 
-void MojoVideoDecoderService::OnDecoderInitialized(Status status) {
+void MojoVideoDecoderService::OnDecoderInitialized(DecoderStatus status) {
   DVLOG(1) << __func__;
   DCHECK(!status.is_ok() || decoder_);
   DCHECK(init_cb_);
@@ -341,7 +366,7 @@ void MojoVideoDecoderService::OnReaderRead(
 
   if (!buffer) {
     OnDecoderDecoded(std::move(callback), std::move(trace_event),
-                     DecodeStatus::DECODE_ERROR);
+                     DecoderStatus::Codes::kFailedToGetDecoderBuffer);
     return;
   }
 
@@ -359,7 +384,7 @@ void MojoVideoDecoderService::OnReaderFlushed() {
 void MojoVideoDecoderService::OnDecoderDecoded(
     DecodeCallback callback,
     std::unique_ptr<ScopedDecodeTrace> trace_event,
-    media::Status status) {
+    media::DecoderStatus status) {
   DVLOG(3) << __func__;
   if (trace_event) {
     TRACE_EVENT_ASYNC_STEP_PAST0("media", kDecodeTraceName, trace_event.get(),
@@ -390,7 +415,9 @@ void MojoVideoDecoderService::OnDecoderOutput(scoped_refptr<VideoFrame> frame) {
   DCHECK(frame->metadata().power_efficient);
 
   absl::optional<base::UnguessableToken> release_token;
-  if (frame->HasReleaseMailboxCB() && video_frame_handle_releaser_) {
+  if ((decoder_->FramesHoldExternalResources() ||
+       frame->HasReleaseMailboxCB()) &&
+      video_frame_handle_releaser_) {
     // |video_frame_handle_releaser_| is explicitly constructed with a
     // VideoFrameHandleReleaserImpl in Construct().
     VideoFrameHandleReleaserImpl* releaser =

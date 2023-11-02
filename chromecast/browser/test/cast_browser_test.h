@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chromecast/browser/cast_web_view.h"
 #include "content/public/test/browser_test_base.h"
@@ -19,7 +18,6 @@ class WebContents;
 namespace chromecast {
 
 class CastWebService;
-class CastWebViewFactory;
 
 namespace shell {
 
@@ -49,7 +47,6 @@ class CastBrowserTest : public content::BrowserTestBase {
   content::WebContents* NavigateToURL(const GURL& url);
 
  private:
-  std::unique_ptr<CastWebViewFactory> web_view_factory_;
   std::unique_ptr<CastWebService> web_service_;
   CastWebView::Scoped cast_web_view_;
 

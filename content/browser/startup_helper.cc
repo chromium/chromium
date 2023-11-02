@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,7 +25,7 @@ namespace content {
 std::unique_ptr<base::FieldTrialList> SetUpFieldTrialsAndFeatureList() {
   std::unique_ptr<base::FieldTrialList> field_trial_list;
   if (!base::FieldTrialList::GetInstance())
-    field_trial_list = std::make_unique<base::FieldTrialList>(nullptr);
+    field_trial_list = std::make_unique<base::FieldTrialList>();
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();
 
@@ -47,22 +47,23 @@ std::unique_ptr<base::FieldTrialList> SetUpFieldTrialsAndFeatureList() {
 }
 
 namespace {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Mobile config, for iOS see ios/web/app/web_main_loop.cc.
-constexpr int kThreadPoolDefaultMin = 6;
-constexpr int kThreadPoolMax = 8;
+constexpr size_t kThreadPoolDefaultMin = 6;
+constexpr size_t kThreadPoolMax = 8;
 constexpr double kThreadPoolCoresMultiplier = 0.6;
-constexpr int kThreadPoolOffset = 0;
+constexpr size_t kThreadPoolOffset = 0;
 #else
 // Desktop config.
-constexpr int kThreadPoolDefaultMin = 16;
-constexpr int kThreadPoolMax = 32;
+constexpr size_t kThreadPoolDefaultMin = 16;
+constexpr size_t kThreadPoolMax = 32;
 constexpr double kThreadPoolCoresMultiplier = 0.6;
-constexpr int kThreadPoolOffset = 0;
+constexpr size_t kThreadPoolOffset = 0;
 #endif
 
-const base::Feature kBrowserThreadPoolAdjustment{
-    "BrowserThreadPoolAdjustment", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kBrowserThreadPoolAdjustment,
+             "BrowserThreadPoolAdjustment",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kBrowserThreadPoolMin{
     &kBrowserThreadPoolAdjustment, "min", kThreadPoolDefaultMin};
@@ -73,12 +74,12 @@ const base::FeatureParam<int> kBrowserThreadPoolMin{
 void StartBrowserThreadPool() {
   // Ensure we always support at least one thread regardless of the field trial
   // param setting.
-  int min = std::max(kBrowserThreadPoolMin.Get(), 1);
+  auto min = static_cast<size_t>(std::max(kBrowserThreadPoolMin.Get(), 1));
   base::ThreadPoolInstance::InitParams thread_pool_init_params = {
       base::RecommendedMaxNumberOfThreadsInThreadGroup(
           min, kThreadPoolMax, kThreadPoolCoresMultiplier, kThreadPoolOffset)};
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   thread_pool_init_params.common_thread_pool_environment = base::
       ThreadPoolInstance::InitParams::CommonThreadPoolEnvironment::COM_MTA;
 #endif

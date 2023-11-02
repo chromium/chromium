@@ -1,23 +1,26 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webui/chromeos/user_image_source.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "chrome/browser/ash/login/users/default_user_image/default_user_images.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/common/url_constants.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
-#include "net/base/escape.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/resources/grit/ui_chromeos_resources.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/codec/png_codec.h"
+#include "ui/gfx/image/image_skia_rep.h"
 #include "url/third_party/mozilla/url_parse.h"
 
 namespace chromeos {
@@ -31,10 +34,10 @@ const char kFrameIndex[] = "frame";
 // to user email and frame.
 void ParseRequest(const GURL& url, std::string* email, int* frame) {
   DCHECK(url.is_valid());
-  const std::string serialized_account_id = net::UnescapeURLComponent(
+  const std::string serialized_account_id = base::UnescapeURLComponent(
       url.path().substr(1),
-      net::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS |
-          net::UnescapeRule::PATH_SEPARATORS | net::UnescapeRule::SPACES);
+      base::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS |
+          base::UnescapeRule::PATH_SEPARATORS | base::UnescapeRule::SPACES);
   AccountId account_id(EmptyAccountId());
   const bool status =
       AccountId::Deserialize(serialized_account_id, &account_id);
@@ -42,7 +45,8 @@ void ParseRequest(const GURL& url, std::string* email, int* frame) {
   // migrated.
   if (!status) {
     LOG(WARNING) << "Failed to deserialize account_id.";
-    account_id = user_manager::known_user::GetAccountId(
+    user_manager::KnownUser known_user(g_browser_process->local_state());
+    account_id = known_user.GetAccountId(
         serialized_account_id, std::string() /* id */, AccountType::UNKNOWN);
   }
   *email = account_id.GetUserEmail();
@@ -130,6 +134,11 @@ scoped_refptr<base::RefCountedMemory> GetUserImageInternal(
   }
 
   if (user) {
+    // After the default avatar images are moved to cloud, the user
+    // should have image bytes when using default images.
+    CHECK(!ash::features::IsAvatarsCloudMigrationEnabled() ||
+          !user->HasDefaultImage() || user->has_image_bytes());
+
     if (user->has_image_bytes()) {
       if (user->image_format() == user_manager::UserImage::FORMAT_PNG) {
         return GetUserImageFrame(user->image_bytes(), user->image_format(),
@@ -146,6 +155,7 @@ scoped_refptr<base::RefCountedMemory> GetUserImageInternal(
       return LoadUserImageFrameForScaleFactor(IDR_LOGIN_DEFAULT_USER, frame,
                                               scale_factor);
     }
+    // After the avatar cloud migration, remove this if case.
     if (user->HasDefaultImage()) {
       return LoadUserImageFrameForScaleFactor(
           default_user_image::GetDefaultImageResourceId(user->image_index()),
@@ -189,7 +199,7 @@ void UserImageSource::StartDataRequest(
   std::move(callback).Run(GetUserImageInternal(account_id, frame));
 }
 
-std::string UserImageSource::GetMimeType(const std::string& path) {
+std::string UserImageSource::GetMimeType(const GURL& url) {
   // We need to explicitly return a mime type, otherwise if the user tries to
   // drag the image they get no extension.
   return "image/png";

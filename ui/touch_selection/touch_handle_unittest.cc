@@ -1,9 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/touch_selection/touch_handle.h"
 
+#include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/test/motion_event_test_utils.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -60,7 +61,7 @@ class MockTouchHandleDrawable : public TouchHandleDrawable {
   gfx::RectF GetVisibleBounds() const override { return data_->rect; }
 
  private:
-  MockDrawableData* data_;
+  raw_ptr<MockDrawableData> data_;
 };
 
 }  // namespace

@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef WEBLAYER_BROWSER_INSECURE_FORM_CONTROLLER_CLIENT_H_
 #define WEBLAYER_BROWSER_INSECURE_FORM_CONTROLLER_CLIENT_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/security_interstitials/content/security_interstitial_controller_client.h"
 #include "components/security_interstitials/core/metrics_helper.h"
 
@@ -37,7 +38,7 @@ class InsecureFormControllerClient
   void Proceed() override;
 
  private:
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 };
 
 }  // namespace weblayer

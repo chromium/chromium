@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #include <memory>
@@ -82,19 +82,18 @@ class ClearBrowsingDataHandlerBrowserTest
 IN_PROC_BROWSER_TEST_F(ClearBrowsingDataHandlerBrowserTest, GetInstalledApps) {
   GURL url(https_server()->GetURL("/title1.html"));
   InstallAndLaunchApp(url);
-  base::Value args(base::Value::Type::LIST);
+  base::Value::List args;
   args.Append(kWebUiFunctionName);
   args.Append(1);
 
-  web_ui()->HandleReceivedMessage(kGetInstalledApps,
-                                  &base::Value::AsListValue(args));
+  web_ui()->HandleReceivedMessage(kGetInstalledApps, args);
   const content::TestWebUI::CallData& call_data = *web_ui()->call_data().back();
   EXPECT_EQ("cr.webUIResponse", call_data.function_name());
   EXPECT_EQ(kWebUiFunctionName, call_data.arg1()->GetString());
   ASSERT_TRUE(call_data.arg2()->GetBool());
 
   // Get results from JS callback.
-  const base::span<const base::Value> result = call_data.arg3()->GetList();
+  const base::Value::List& result = call_data.arg3()->GetList();
   ASSERT_EQ(1U, result.size());
   auto& installed_app = result.back();
   ASSERT_EQ(url.host(), *(installed_app.FindStringKey("registerableDomain")));

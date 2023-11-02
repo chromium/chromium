@@ -1,8 +1,11 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/events/gesture_event_details.h"
+
+#include <ostream>
+
 #include "base/check_op.h"
 #include "base/notreached.h"
 
@@ -82,7 +85,7 @@ GestureEventDetails::GestureEventDetails(ui::EventType type,
       // allowed as an exception.
       if (other.type() == ui::ET_GESTURE_PINCH_BEGIN)
         break;
-      FALLTHROUGH;
+      [[fallthrough]];
     case ui::ET_GESTURE_SCROLL_UPDATE:
     case ui::ET_SCROLL_FLING_START:
     case ui::ET_GESTURE_SWIPE:

@@ -29,17 +29,15 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "third_party/blink/renderer/platform/fonts/font_cache.h"
-
-#include <ft2build.h>
 #include <freetype/freetype.h>
+#include <ft2build.h>
 #include <unicode/uscript.h>
+#include <windows.h>  // For GetACP()
 
 #include <memory>
 #include <string>
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/debug/alias.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
@@ -48,6 +46,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_font_prewarmer.h"
 #include "third_party/blink/renderer/platform/fonts/bitmap_glyphs_block_list.h"
+#include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_face_creation_params.h"
 #include "third_party/blink/renderer/platform/fonts/font_platform_data.h"
@@ -59,9 +58,6 @@
 #include "third_party/skia/include/core/SkFontMgr.h"
 #include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/include/ports/SkTypeface_win.h"
-
-// For GetACP()
-#include <windows.h>
 
 namespace blink {
 
@@ -79,36 +75,6 @@ AtomicString* FontCache::status_font_family_name_ = nullptr;
 int32_t FontCache::status_font_height_ = 0;
 
 namespace {
-
-enum FallbackAgreementError {
-  kNoneFound,
-  kLegacyNoneFound,
-  kWinAPINoneFound,
-  kLegacyWinAPIDisagree
-};
-
-void LogUmaHistogramFallbackAgreemenError(
-    FallbackAgreementError agreement_error,
-    UBlockCode block_code) {
-  switch (agreement_error) {
-    case kLegacyNoneFound:
-      base::UmaHistogramSparse("Blink.Fonts.WinFallback.LegacyNoneFound",
-                               block_code);
-      break;
-    case kWinAPINoneFound:
-      base::UmaHistogramSparse("Blink.Fonts.WinFallback.WinAPINoneFound",
-                               block_code);
-      break;
-    case kLegacyWinAPIDisagree:
-      base::UmaHistogramSparse("Blink.Fonts.WinFallback.LegacyWinAPIDisagree",
-                               block_code);
-      break;
-    case kNoneFound:
-      base::UmaHistogramSparse("Blink.Fonts.WinFallback.NoFallbackFound",
-                               block_code);
-      break;
-  }
-}
 
 int32_t EnsureMinimumFontHeightIfNeeded(int32_t font_height) {
   // Adjustment for codepage 936 to make the fonts more legible in Simplified
@@ -197,20 +163,6 @@ void FontCache::PrewarmFamily(const AtomicString& family_name) {
 
   if (!prewarmer_)
     return;
-
-  // Platform is initialized before |FeatureList| that we may have a prewarmer
-  // even when the feature is not enabled.
-  // TODO(crbug.com/1256946): Review if there is a better timing to set the
-  // prewarmer.
-  static bool is_initialized = false;
-  if (!is_initialized) {
-    is_initialized = true;
-    if (!base::FeatureList::IsEnabled(kAsyncFontAccess)) {
-      prewarmer_ = nullptr;
-      return;
-    }
-  }
-  DCHECK(base::FeatureList::IsEnabled(kAsyncFontAccess));
 
   static HashSet<AtomicString> prewarmed_families;
   const auto result = prewarmed_families.insert(family_name);
@@ -325,10 +277,10 @@ FontCache::GetFallbackFamilyNameFromHardcodedChoices(
   int num_fonts = 0;
   if (script == USCRIPT_HAN) {
     pan_uni_fonts = kCjkFonts;
-    num_fonts = base::size(kCjkFonts);
+    num_fonts = std::size(kCjkFonts);
   } else {
     pan_uni_fonts = kCommonFonts;
-    num_fonts = base::size(kCommonFonts);
+    num_fonts = std::size(kCommonFonts);
   }
   // Font returned from getFallbackFamily may not cover |character|
   // because it's based on script to font mapping. This problem is
@@ -393,7 +345,7 @@ scoped_refptr<SimpleFontData> FontCache::GetDWriteFallbackFamily(
               service_, &fallback_family, &fallback_style))
         return nullptr;
 
-      if (fallback_family.IsEmpty())
+      if (fallback_family.empty())
         return nullptr;
     }
 
@@ -466,33 +418,8 @@ scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
   // where API fallback was previously available.
   if (RuntimeEnabledFeatures::LegacyWindowsDWriteFontFallbackEnabled() ||
       (!hardcoded_list_fallback_font && use_skia_font_fallback_)) {
-    scoped_refptr<SimpleFontData> dwrite_fallback_font =
-        GetDWriteFallbackFamily(font_description, character, fallback_priority);
-    if (dwrite_fallback_font) {
-      String dwrite_name =
-          dwrite_fallback_font->PlatformData().FontFamilyName();
-    }
-
-    UBlockCode block_code = ublock_getCode(character);
-    if (!hardcoded_list_fallback_font) {
-      LogUmaHistogramFallbackAgreemenError(kLegacyNoneFound, block_code);
-    }
-    if (!dwrite_fallback_font) {
-      LogUmaHistogramFallbackAgreemenError(kWinAPINoneFound, block_code);
-    }
-    if (hardcoded_list_fallback_font && dwrite_fallback_font) {
-      String hardcoded_family_name =
-          hardcoded_list_fallback_font->PlatformData().FontFamilyName();
-      String dwrite_family_name =
-          dwrite_fallback_font->PlatformData().FontFamilyName();
-      if (hardcoded_family_name != dwrite_family_name) {
-        LogUmaHistogramFallbackAgreemenError(kLegacyWinAPIDisagree, block_code);
-      }
-    }
-    if (!hardcoded_list_fallback_font && !dwrite_fallback_font) {
-      LogUmaHistogramFallbackAgreemenError(kNoneFound, block_code);
-    }
-    return dwrite_fallback_font;
+    return GetDWriteFallbackFamily(font_description, character,
+                                   fallback_priority);
   }
 
   return hardcoded_list_fallback_font;
@@ -556,7 +483,7 @@ static bool TypefacesHasWeightSuffix(const AtomicString& family,
       {u" ultrabold", 10, FontSelectionValue(800)},
       {u" black", 6, FontSelectionValue(900)},
       {u" heavy", 6, FontSelectionValue(900)}};
-  size_t num_variants = base::size(kVariantForSuffix);
+  size_t num_variants = std::size(kVariantForSuffix);
   for (size_t i = 0; i < num_variants; i++) {
     const FamilyWeightSuffix& entry = kVariantForSuffix[i];
     if (family.EndsWith(entry.suffix, kTextCaseUnicodeInsensitive)) {
@@ -593,7 +520,7 @@ static bool TypefacesHasStretchSuffix(const AtomicString& family,
       {u" expanded", 9, ExpandedWidthValue()},
       {u" extraexpanded", 14, ExtraExpandedWidthValue()},
       {u" ultraexpanded", 14, UltraExpandedWidthValue()}};
-  size_t num_variants = base::size(kVariantForSuffix);
+  size_t num_variants = std::size(kVariantForSuffix);
   for (size_t i = 0; i < num_variants; i++) {
     const FamilyStretchSuffix& entry = kVariantForSuffix[i];
     if (family.EndsWith(entry.suffix, kTextCaseUnicodeInsensitive)) {
@@ -705,7 +632,7 @@ std::unique_ptr<FontPlatformData> FontCache::CreateFontPlatformData(
       typeface, name.data(), font_size,
       synthetic_bold_requested && font_description.SyntheticBoldAllowed(),
       synthetic_italic_requested && font_description.SyntheticItalicAllowed(),
-      font_description.Orientation());
+      font_description.TextRendering(), font_description.Orientation());
 
   result->SetAvoidEmbeddedBitmaps(
       BitmapGlyphsBlockList::ShouldAvoidEmbeddedBitmapsForTypeface(*typeface));

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -56,7 +56,7 @@ TEST_F(TtsManifestTest, TtsEngine) {
       Testcase("tts_engine_invalid_buffer_size_4.json",
                errors::kInvalidTtsRequiresSampleRateAndBufferSize),
   };
-  RunTestcases(testcases, base::size(testcases), EXPECT_TYPE_ERROR);
+  RunTestcases(testcases, std::size(testcases), EXPECT_TYPE_ERROR);
 
   LoadAndExpectSuccess("tts_engine_valid_voices.json");
   LoadAndExpectSuccess("tts_engine_valid_sample_rate_buffer_size.json");

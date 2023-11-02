@@ -1,14 +1,14 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <memory>
 #include <string>
 
-#include "ash/components/settings/cros_settings_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
@@ -31,11 +31,11 @@
 #include "chrome/browser/ui/webui/chromeos/login/network_state_informer.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
-#include "chromeos/dbus/shill/fake_shill_manager_client.h"
-#include "chromeos/dbus/shill/shill_manager_client.h"
-#include "chromeos/dbus/shill/shill_service_client.h"
+#include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ash/components/dbus/shill/fake_shill_manager_client.h"
+#include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
+#include "chromeos/ash/components/dbus/shill/shill_service_client.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -123,8 +123,7 @@ void DeviceDisablingTest::SetUpOnMainThread() {
   OobeBaseTest::SetUpOnMainThread();
 
   // Set up fake networks.
-  DBusThreadManager::Get()->GetShillManagerClient()->GetTestInterface()->
-      SetupDefaultEnvironment();
+  ShillManagerClient::Get()->GetTestInterface()->SetupDefaultEnvironment();
 }
 
 void DeviceDisablingTest::UpdateState(NetworkError::ErrorReason reason) {
@@ -135,8 +134,6 @@ IN_PROC_BROWSER_TEST_F(DeviceDisablingTest, DisableDuringNormalOperation) {
   MarkDisabledAndWaitForPolicyFetch();
   // Check for WizardController state.
   OobeScreenWaiter(DeviceDisabledScreenView::kScreenId).Wait();
-  // Check for WebUI
-  test::CreateOobeScreenWaiter("device-disabled")->Wait();
 
   EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
 }
@@ -151,9 +148,9 @@ IN_PROC_BROWSER_TEST_F(DeviceDisablingTest, DisableWithEphemeralUsers) {
   // Connect to the fake Ethernet network. This ensures that Chrome OS will not
   // try to show the offline error screen.
   base::RunLoop connect_run_loop;
-  DBusThreadManager::Get()->GetShillServiceClient()->Connect(
-      dbus::ObjectPath("/service/eth1"), connect_run_loop.QuitClosure(),
-      base::BindOnce(&ErrorCallbackFunction));
+  ShillServiceClient::Get()->Connect(dbus::ObjectPath("/service/eth1"),
+                                     connect_run_loop.QuitClosure(),
+                                     base::BindOnce(&ErrorCallbackFunction));
   connect_run_loop.Run();
 
   // Skip to the login screen.
@@ -162,31 +159,11 @@ IN_PROC_BROWSER_TEST_F(DeviceDisablingTest, DisableWithEphemeralUsers) {
   // Mark the device as disabled and wait until cros settings update.
   MarkDisabledAndWaitForPolicyFetch();
 
-  // When the ephemeral users policy is enabled, Chrome OS removes any non-owner
-  // cryptohomes on startup. At the end of that process, JavaScript attempts to
-  // show the login screen. Simulate this.
-  const LoginDisplayHost* host = LoginDisplayHost::default_host();
-  ASSERT_TRUE(host);
-  content::WebContents* web_contents = host->GetOobeWebContents();
-  ASSERT_TRUE(web_contents);
-  ASSERT_TRUE(content::ExecuteScript(web_contents,
-                                     "Oobe.showAddUserForTesting();"));
-
-  // The login profile is scrubbed before attempting to show the login screen.
-  // Wait for the scrubbing to finish.
-  base::RunLoop run_loop;
-  ProfileHelper::Get()->ClearSigninProfile(run_loop.QuitClosure());
-  run_loop.Run();
-
-  // Verify that the login screen was not shown and the device disabled screen
-  // is still being shown instead.
-
   // Check for WizardController state.
   OobeScreenWaiter(DeviceDisabledScreenView::kScreenId).Wait();
-  // Check for WebUI
-  test::CreateOobeScreenWaiter("device-disabled")->Wait();
 
   // Disconnect from the fake Ethernet network.
+  const LoginDisplayHost* host = LoginDisplayHost::default_host();
   OobeUI* const oobe_ui = host->GetOobeUI();
   ASSERT_TRUE(oobe_ui);
   const scoped_refptr<NetworkStateInformer> network_state_informer =
@@ -207,8 +184,6 @@ IN_PROC_BROWSER_TEST_F(DeviceDisablingTest, DisableWithEphemeralUsers) {
   // screen is still being shown instead.
   // Check for WizardController state.
   OobeScreenWaiter(DeviceDisabledScreenView::kScreenId).Wait();
-  // Check for WebUI
-  test::CreateOobeScreenWaiter("device-disabled")->Wait();
 }
 
 class DeviceDisablingWithUsersTest : public DeviceDisablingTest {
@@ -275,7 +250,7 @@ class DeviceDisablingBeforeLoginHostCreated
       return false;
     // Postpone login host creation.
     base::CommandLine::ForCurrentProcess()->RemoveSwitch(
-        chromeos::switches::kForceLoginManagerInTests);
+        switches::kForceLoginManagerInTests);
     return true;
   }
 
@@ -294,11 +269,9 @@ IN_PROC_BROWSER_TEST_F(DeviceDisablingBeforeLoginHostCreated,
   EXPECT_EQ(nullptr, LoginDisplayHost::default_host());
   EXPECT_NE(nullptr,
             g_browser_process->platform_part()->device_disabling_manager());
-  ShowLoginWizard(OobeScreen::SCREEN_UNKNOWN);
+  ShowLoginWizard(ash::OOBE_SCREEN_UNKNOWN);
   // Check for WizardController state.
   OobeScreenWaiter(DeviceDisabledScreenView::kScreenId).Wait();
-  // Check for WebUI
-  test::CreateOobeScreenWaiter("device-disabled")->Wait();
 
   EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
 }

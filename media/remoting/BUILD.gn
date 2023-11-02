@@ -1,36 +1,10 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//media/media_options.gni")
 import("//testing/test.gni")
 import("//third_party/protobuf/proto_library.gni")
-
-# This target is separate from "remoting" because this code is shared by the
-# receiver implementation (currently outside of the Chromium project).
-source_set("rpc") {
-  sources = [
-    "proto_enum_utils.cc",
-    "proto_enum_utils.h",
-    "proto_utils.cc",
-    "proto_utils.h",
-  ]
-
-  public_configs =
-      [ "//third_party/openscreen/src/build:openscreen_include_dirs" ]
-
-  deps = [
-    "//base",
-    "//components/openscreen_platform:openscreen_platform",
-    "//components/openscreen_platform:openscreen_platform_network_service",
-    "//media",
-  ]
-
-  public_deps = [
-    "//third_party/openscreen/src/cast/streaming:common",
-    "//third_party/openscreen/src/cast/streaming:remoting_proto",
-  ]
-}
 
 source_set("remoting_sender") {
   sources = [
@@ -65,12 +39,24 @@ source_set("remoting_sender") {
 
     # Consumers of the CourierRenderer implicitly take a dependency on the
     # generated remoting.pb.h file.
-    public_deps += [ ":rpc" ]
+    public_deps += [ "//components/cast_streaming/public:remoting_utils" ]
   }
 }
 
 source_set("remoting_constants") {
   sources = [ "remoting_constants.h" ]
+}
+
+source_set("remoting_device_capability") {
+  sources = [
+    "device_capability_checker.cc",
+    "device_capability_checker.h",
+  ]
+
+  deps = [
+    "//base",
+    "//media",
+  ]
 }
 
 source_set("remoting_renderer") {
@@ -87,19 +73,19 @@ source_set("remoting_renderer") {
 
   deps = [
     ":remoting_constants",
-    ":rpc",
     "//media/mojo/common:common",
     "//media/mojo/mojom:remoting",
   ]
 
   # Consumers of the ReceiverController implicitly take a dependency on the
   # generated remoting.pb.h file.
-  public_deps = [ ":rpc" ]
+  public_deps = [ "//components/cast_streaming/public:remoting_utils" ]
 }
 
 source_set("media_remoting_tests") {
   testonly = true
   sources = [
+    "device_capability_checker_unittest.cc",
     "fake_remoter.cc",
     "fake_remoter.h",
     "mock_receiver_controller.cc",
@@ -112,11 +98,12 @@ source_set("media_remoting_tests") {
   ]
 
   deps = [
+    ":remoting_device_capability",
     ":remoting_renderer",
     ":remoting_sender",
-    ":rpc",
     "//base",
     "//base/test:test_support",
+    "//components/cast_streaming/public:remoting_utils",
     "//media:test_support",
     "//media/mojo/common",
     "//media/mojo/mojom:remoting",
@@ -135,11 +122,9 @@ source_set("media_remoting_tests") {
       "fake_media_resource.h",
       "integration_test.cc",
       "metrics_unittest.cc",
-      "proto_utils_unittest.cc",
     ]
 
     deps += [
-      ":rpc",
       "//media/test:pipeline_integration_test_base",
       "//services/service_manager/public/cpp:cpp",
       "//ui/gfx:test_support",

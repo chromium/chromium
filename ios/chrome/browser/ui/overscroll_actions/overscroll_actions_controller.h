@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,6 +40,8 @@ extern NSString* const kOverscrollActionsDidEnd;
 // Called when an action has been triggered.
 // The action index holds the current triggered action which are numbered left
 // to right.
+// TODO(crbug.com/1272486) : Separate action handling for overscroll from UI
+// management.
 - (void)overscrollActionsController:(OverscrollActionsController*)controller
                    didTriggerAction:(OverscrollAction)action;
 // Should return true when the delegate wants to enable the overscroll actions.
@@ -58,6 +60,10 @@ extern NSString* const kOverscrollActionsDidEnd;
     (OverscrollActionsController*)controller;
 // Called to retrieve the current height of the header.
 - (CGFloat)headerHeightForOverscrollActionsController:
+    (OverscrollActionsController*)controller;
+// Called to retrieve the initial content offset for the scrollview because
+// some scrollviews don't start at offset 0.
+- (CGFloat)initialContentOffsetForOverscrollActionsController:
     (OverscrollActionsController*)controller;
 // The fullscreen controller, if any, the delegate makes available for
 // overscroll. The deleagate may return nullptr if fullscreen isn't supported.
@@ -115,9 +121,9 @@ extern NSString* const kOverscrollActionsDidEnd;
 // notifications. After this call the controller ceases to function and will
 // clear its delegate.
 - (void)invalidate;
-// Schedules call to |invalidate| at the end of the current action. This lets
+// Schedules call to `invalidate` at the end of the current action. This lets
 // the animation finish before invalidating the controller.
-// If no action is running, calls |invalidate| immediately.
+// If no action is running, calls `invalidate` immediately.
 - (void)scheduleInvalidate;
 // Force the controller to switch to NO_PULL_STARTED state.
 - (void)clear;

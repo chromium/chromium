@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,11 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "components/query_tiles/internal/tile_config.h"
 #include "components/query_tiles/internal/tile_store.h"
 #include "components/query_tiles/switches.h"
@@ -185,7 +187,7 @@ class TileManagerTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TileManager> manager_;
-  MockTileStore* tile_store_;
+  raw_ptr<MockTileStore> tile_store_;
   base::Time current_time_;
 };
 
@@ -452,7 +454,6 @@ TEST_F(TileManagerTest, TrendingTopTilesRemovedAfterShown) {
 
   // Click the 2nd tile.
   OnTileClicked("trending_2");
-  GetTiles(expected);
 
   // Both the first and the second tile will be removed.
   expected.erase(expected.begin(), expected.begin() + 2);
@@ -462,7 +463,6 @@ TEST_F(TileManagerTest, TrendingTopTilesRemovedAfterShown) {
                           MockTileStore::UpdateCallback callback) {
         std::move(callback).Run(true);
       }));
-  GetTiles(expected);
   GetTiles(expected);
 
   // The 3rd tile will be removed due to max impression threshold.
@@ -545,10 +545,6 @@ TEST_F(TileManagerTest, GetSingleTileAfterOnTileClicked) {
   OnTileClicked("parent");
   GetSingleTile("parent", get_single_tile_expected);
 
-  // Click the parent tile to show the subtiles.
-  OnTileClicked("parent");
-  GetSingleTile("parent", get_single_tile_expected);
-
   // Click a trending tile will not reset its impression.
   OnTileClicked("trending_1");
 
@@ -565,9 +561,6 @@ TEST_F(TileManagerTest, GetSingleTileAfterOnTileClicked) {
   get_single_tile_expected->sub_tiles.clear();
   get_single_tile_expected->sub_tiles.emplace_back(
       std::make_unique<Tile>(std::move(trending_3)));
-  OnTileClicked("parent");
-  GetSingleTile("parent", get_single_tile_expected);
-
   OnTileClicked("parent");
   GetSingleTile("parent", get_single_tile_expected);
 

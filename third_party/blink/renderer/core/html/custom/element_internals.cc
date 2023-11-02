@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -116,9 +116,8 @@ void ElementInternals::setValidity(ValidityStateFlags* flags,
   }
   // Custom element authors should provide a message. They can omit the message
   // argument only if nothing if | flags| is true.
-  if (!IsValidityStateFlagsValid(flags) && message.IsEmpty()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kTypeMismatchError,
+  if (!IsValidityStateFlagsValid(flags) && message.empty()) {
+    exception_state.ThrowTypeError(
         "The second argument should not be empty if one or more flags in the "
         "first argument are true.");
     return;
@@ -385,7 +384,7 @@ void ElementInternals::AppendToFormData(FormData& form_data) {
     return;
 
   const AtomicString& name = Target().FastGetAttribute(html_names::kNameAttr);
-  if (!value_->IsFormData() && name.IsEmpty())
+  if (!value_->IsFormData() && name.empty())
     return;
 
   switch (value_->GetContentType()) {

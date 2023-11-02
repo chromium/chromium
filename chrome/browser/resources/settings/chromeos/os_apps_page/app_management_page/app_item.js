@@ -1,36 +1,50 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 import './shared_style.js';
 import './shared_vars.js';
-import '//resources/cr_elements/cr_icons_css.m.js';
+import 'chrome://resources/cr_elements/cr_icons.css.js';
 
-import {assert, assertNotReached} from '//resources/js/assert.m.js';
-import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {AppManagementEntryPoint, AppManagementEntryPointsHistogramName, AppType} from 'chrome://resources/cr_components/app_management/constants.js';
+import {getAppIcon} from 'chrome://resources/cr_components/app_management/util.js';
+import {assertNotReached} from 'chrome://resources/js/assert.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {updateSelectedAppId} from './actions.js';
-import {AppManagementEntryPoint, AppManagementEntryPointsHistogramName, AppType} from './constants.js';
-import {AppManagementStoreClient} from './store_client.js';
-import {getAppIcon, openAppDetailPage} from './util.js';
+import {AppManagementStoreClient, AppManagementStoreClientInterface} from './store_client.js';
+import {openAppDetailPage} from './util.js';
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'app-management-app-item',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {AppManagementStoreClientInterface}
+ */
+const AppManagementAppItemElementBase =
+    mixinBehaviors([AppManagementStoreClient], PolymerElement);
 
-  behaviors: [
-    AppManagementStoreClient,
-  ],
+/** @polymer */
+class AppManagementAppItemElement extends AppManagementAppItemElementBase {
+  static get is() {
+    return 'app-management-app-item';
+  }
 
-  properties: {
-    /** @type {App} */
-    app: {
-      type: Object,
-    },
-  },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  listeners: {
-    'click': 'onClick_',
-  },
+  static get properties() {
+    return {
+      /** @type {App} */
+      app: {
+        type: Object,
+      },
+    };
+  }
+
+  ready() {
+    super.ready();
+
+    this.addEventListener('click', this.onClick_);
+  }
 
   /**
    * @private
@@ -41,7 +55,7 @@ Polymer({
         AppManagementEntryPointsHistogramName,
         this.getAppManagementEntryPoint_(this.app.type),
         Object.keys(AppManagementEntryPoint).length);
-  },
+  }
 
   /**
    * @param {App} app
@@ -50,30 +64,33 @@ Polymer({
    */
   iconUrlFromId_(app) {
     return getAppIcon(app);
-  },
+  }
 
   /**
-   * @param {AppType} appType
-   * @return {AppManagementEntryPoint}
+   * @param {appManagement.mojom.AppType} appType
+   * @return {AppManagementEntryPointType}
    */
   getAppManagementEntryPoint_(appType) {
     switch (appType) {
       case AppType.kArc:
-        return AppManagementEntryPoint.MainViewArc;
-      case AppType.kExtension:
+        return AppManagementEntryPoint.MAIN_VIEW_ARC;
+      case AppType.kChromeApp:
       case AppType.kStandaloneBrowser:
-      case AppType.kStandaloneBrowserExtension:
+      case AppType.kStandaloneBrowserChromeApp:
         // TODO(https://crbug.com/1225848): Figure out appropriate behavior for
         // Lacros-hosted chrome-apps.
-        return AppManagementEntryPoint.MainViewChromeApp;
+        return AppManagementEntryPoint.MAIN_VIEW_CHROME_APP;
       case AppType.kWeb:
-        return AppManagementEntryPoint.MainViewWebApp;
+        return AppManagementEntryPoint.MAIN_VIEW_WEB_APP;
       case AppType.kPluginVm:
-        return AppManagementEntryPoint.MainViewPluginVm;
+        return AppManagementEntryPoint.MAIN_VIEW_PLUGIN_VM;
       case AppType.kBorealis:
-        return AppManagementEntryPoint.MainViewBorealis;
+        return AppManagementEntryPoint.MAIN_VIEW_BOREALIS;
       default:
         assertNotReached();
     }
-  },
-});
+  }
+}
+
+customElements.define(
+    AppManagementAppItemElement.is, AppManagementAppItemElement);

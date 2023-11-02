@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -65,19 +65,19 @@ struct DISPLAY_EXPORT ScreenInfo {
   // TODO(crbug.com/840189): we should use an enum rather than a number here.
   uint16_t orientation_angle = 0;
 
-  // Proposed: https://github.com/webscreens/window-placement
   // Whether this Screen is part of a multi-screen extended visual workspace.
   bool is_extended = false;
 
-  // Proposed: https://github.com/webscreens/window-placement
   // Whether this screen is designated as the 'primary' screen by the OS
   // (otherwise it is a 'secondary' screen).
   bool is_primary = false;
 
-  // Proposed: https://github.com/webscreens/window-placement
   // Whether this screen is an 'internal' panel built into the device, like a
   // laptop display (otherwise it is 'external', like a wired monitor).
   bool is_internal = false;
+
+  // A user-friendly label for the screen, determined by the platform.
+  std::string label;
 
   // Not web-exposed; the display::Display::id(), for internal tracking only.
   int64_t display_id = kDefaultDisplayId;

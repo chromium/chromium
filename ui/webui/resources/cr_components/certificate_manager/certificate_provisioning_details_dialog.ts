@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,20 +6,22 @@
  * @fileoverview 'certificate-provisioning-details-dialog' allows the user to
  * view the details of an in-progress certiifcate provisioning process.
  */
-import '../../cr_elements/cr_expand_button/cr_expand_button.m.js';
-import '../../cr_elements/cr_dialog/cr_dialog.m.js';
+import '../../cr_elements/cr_expand_button/cr_expand_button.js';
+import '../../cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {CrDialogElement} from '../../cr_elements/cr_dialog/cr_dialog.m.js';
-import {I18nMixin} from '../../js/i18n_mixin.js';
+import {CrDialogElement} from '../../cr_elements/cr_dialog/cr_dialog.js';
+import {I18nMixin} from '../../cr_elements/i18n_mixin.js';
 
 import {CertificateProvisioningBrowserProxyImpl, CertificateProvisioningProcess} from './certificate_provisioning_browser_proxy.js';
+import {getTemplate} from './certificate_provisioning_details_dialog.html.js';
 
 export interface CertificateProvisioningDetailsDialogElement {
   $: {
     dialog: CrDialogElement,
+    refresh: HTMLElement,
   };
 }
 
@@ -33,7 +35,7 @@ export class CertificateProvisioningDetailsDialogElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -52,8 +54,11 @@ export class CertificateProvisioningDetailsDialogElement extends
 
   private onRefresh_() {
     CertificateProvisioningBrowserProxyImpl.getInstance()
-        .triggerCertificateProvisioningProcessUpdate(
-            this.model.certProfileId, this.model.isDeviceWide);
+        .triggerCertificateProvisioningProcessUpdate(this.model.certProfileId);
+  }
+
+  private shouldHideLastFailedStatus_(): boolean {
+    return this.model.lastUnsuccessfulMessage.length === 0;
   }
 
   private arrowState_(opened: boolean): string {

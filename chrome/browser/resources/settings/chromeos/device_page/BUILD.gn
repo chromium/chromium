@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -11,7 +11,8 @@ js_type_check("closure_compile_module") {
   closure_flags = os_settings_closure_flags
   is_polymer3 = true
   deps = [
-    ":device_page",
+    ":audio",
+    ":cros_audio_config",
     ":device_page_browser_proxy",
     ":display",
     ":display_layout",
@@ -19,23 +20,29 @@ js_type_check("closure_compile_module") {
     ":drag_behavior",
     ":keyboard",
     ":layout_behavior",
-    ":pointers",
     ":power",
     ":storage",
     ":storage_external",
     ":storage_external_entry",
-    ":stylus",
   ]
 }
 
-js_library("device_page") {
+js_library("audio") {
   deps = [
-    ":device_page_browser_proxy",
-    "..:os_route.m",
+    ":cros_audio_config",
+    "..:os_route",
     "..:route_observer_behavior",
     "../..:router",
-    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ash/webui/common/resources:i18n_behavior",
+    "//chromeos/ash/components/audio/public/mojom:mojom_webui_js",
   ]
+
+  externs_list =
+      [ "//ui/webui/resources/cr_elements/cr_slider/cr_slider_externs.js" ]
+}
+
+js_library("cros_audio_config") {
+  deps = [ "//chromeos/ash/components/audio/public/mojom:mojom_webui_js" ]
 }
 
 js_library("device_page_browser_proxy") {
@@ -48,19 +55,19 @@ js_library("device_page_browser_proxy") {
 
 js_library("display") {
   deps = [
-    "..:os_route.m",
+    "..:os_route",
     "..:route_observer_behavior",
     "../..:router",
-    "../settings_scheduler_slider:settings_scheduler_slider",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_slider:cr_slider",
     "//ui/webui/resources/js:cr.m",
   ]
-  externs_list = chrome_extension_public_externs + [
-                   "$externs_path/settings_private.js",
-                   "$externs_path/system_display.js",
-                   "../settings_controls_types.js",
-                 ]
+  externs_list =
+      chrome_extension_public_externs + [
+        "$externs_path/settings_private.js",
+        "$externs_path/system_display.js",
+        "//ui/webui/resources/cr_elements/cr_slider/cr_slider_externs.js",
+        "../settings_controls_types.js",
+      ]
 }
 
 js_library("display_layout") {
@@ -79,7 +86,7 @@ js_library("display_overscan_dialog") {
 
 js_library("drag_behavior") {
   deps = [
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:cr.m",
   ]
 }
@@ -87,20 +94,19 @@ js_library("drag_behavior") {
 js_library("keyboard") {
   deps = [
     ":device_page_browser_proxy",
-    "..:deep_linking_behavior.m",
-    "..:os_route.m",
+    "..:deep_linking_behavior",
+    "..:os_route",
     "..:route_observer_behavior",
-    "../..:i18n_setup",
     "../..:router",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js/cr/ui:focus_without_ink.m",
+    "//ash/webui/common/resources:focus_without_ink_js",
+    "//ui/webui/resources/js:assert",
   ]
   externs_list = [ "../settings_controls_types.js" ]
 }
 
 js_library("layout_behavior") {
   deps = [
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:cr.m",
   ]
   externs_list = [
@@ -109,87 +115,58 @@ js_library("layout_behavior") {
   ]
 }
 
-js_library("pointers") {
-  deps = [
-    ":device_page_browser_proxy",
-    "..:deep_linking_behavior.m",
-    "..:os_route.m",
-    "..:route_observer_behavior",
-    "../..:router",
-    "//ui/webui/resources/cr_components/chromeos/localized_link:localized_link",
-  ]
-}
-
 js_library("power") {
   deps = [
     ":device_page_browser_proxy",
-    "..:deep_linking_behavior.m",
-    "..:metrics_recorder.m",
-    "..:os_route.m",
+    "..:deep_linking_behavior",
+    "..:metrics_recorder",
+    "..:os_route",
     "..:route_observer_behavior",
     "../..:router",
-    "//ui/webui/resources/js:i18n_behavior.m",
-    "//ui/webui/resources/js:web_ui_listener_behavior.m",
+    "//ash/webui/common/resources:i18n_behavior",
+    "//ash/webui/common/resources:web_ui_listener_behavior",
   ]
 }
 
 js_library("storage") {
   deps = [
     ":device_page_browser_proxy",
-    "..:os_route.m",
+    "..:os_route",
     "..:route_observer_behavior",
-    "..:route_origin_behavior.m",
+    "..:route_origin_behavior",
     "../..:router",
-    "//ui/webui/resources/cr_components/chromeos/localized_link:localized_link",
-    "//ui/webui/resources/js:assert.m",
+    "//ash/webui/common/resources:focus_without_ink_js",
+    "//ash/webui/common/resources:web_ui_listener_behavior",
+    "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:web_ui_listener_behavior.m",
-    "//ui/webui/resources/js/cr/ui:focus_without_ink.m",
   ]
 }
 
 js_library("storage_external") {
   deps = [
     ":device_page_browser_proxy",
-    "//ui/webui/resources/js:i18n_behavior.m",
-    "//ui/webui/resources/js:web_ui_listener_behavior.m",
+    "//ash/webui/common/resources:i18n_behavior",
+    "//ash/webui/common/resources:web_ui_listener_behavior",
   ]
 }
 
 js_library("storage_external_entry") {
   deps = [
     "..:prefs_behavior",
-    "//ui/webui/resources/js:web_ui_listener_behavior.m",
-  ]
-}
-
-js_library("stylus") {
-  deps = [
-    ":device_page_browser_proxy",
-    "..:deep_linking_behavior.m",
-    "..:metrics_recorder.m",
-    "..:os_route.m",
-    "..:route_observer_behavior",
-    "../..:router",
-    "//ui/webui/resources/cr_elements/policy:cr_policy_indicator.m",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:load_time_data.m",
+    "//ash/webui/common/resources:web_ui_listener_behavior",
   ]
 }
 
 html_to_js("web_components") {
   js_files = [
-    "device_page.js",
+    "audio.js",
     "display_layout.js",
     "display.js",
     "display_overscan_dialog.js",
     "keyboard.js",
-    "pointers.js",
     "power.js",
     "storage_external_entry.js",
     "storage_external.js",
     "storage.js",
-    "stylus.js",
   ]
 }

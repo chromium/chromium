@@ -1,4 +1,4 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -9,7 +9,6 @@ android_library("reporter_java") {
   chromium_code = true
 
   deps = [
-    "//base:base_java",
     "//build/android/gtest_apk:native_test_instrumentation_test_runner_java",
     "//third_party/android_sdk:android_test_base_java",
   ]

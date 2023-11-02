@@ -1,11 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_ASH_LOGIN_USERS_AVATAR_USER_IMAGE_MANAGER_TEST_UTIL_H_
 #define CHROME_BROWSER_ASH_LOGIN_USERS_AVATAR_USER_IMAGE_MANAGER_TEST_UTIL_H_
 
-#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
 #include "chrome/browser/image_decoder/image_decoder.h"

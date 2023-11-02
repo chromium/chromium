@@ -1,9 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/system/message_center/ash_message_popup_collection.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/focus_cycler.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_types.h"
@@ -48,11 +49,16 @@ const char AshMessagePopupCollection::kMessagePopupWidgetName[] =
 
 AshMessagePopupCollection::AshMessagePopupCollection(Shelf* shelf)
     : screen_(nullptr), shelf_(shelf), tray_bubble_height_(0) {
-  set_inverse();
+  // The order for notifications will be reversed when
+  // IsNotificationsRefreshEnabled.
+  if (!features::IsNotificationsRefreshEnabled())
+    set_inverse();
   shelf_->AddObserver(this);
+  Shell::Get()->tablet_mode_controller()->AddObserver(this);
 }
 
 AshMessagePopupCollection::~AshMessagePopupCollection() {
+  Shell::Get()->tablet_mode_controller()->RemoveObserver(this);
   shelf_->RemoveObserver(this);
   for (views::Widget* widget : tracked_widgets_)
     widget->RemoveObserver(this);
@@ -174,6 +180,7 @@ void AshMessagePopupCollection::NotifyPopupAdded(
 
 void AshMessagePopupCollection::NotifyPopupClosed(
     message_center::MessagePopupView* popup) {
+  metrics_utils::LogPopupClosed(popup);
   MessagePopupCollection::NotifyPopupClosed(popup);
   popup->message_view()->RemoveObserver(this);
   if (last_pop_up_added_ == popup)
@@ -211,6 +218,16 @@ message_center::MessagePopupView* AshMessagePopupCollection::CreatePopup(
       MessageViewFactory::Create(notification, /*shown_in_popup=*/true)
           .release(),
       this, a11_feedback_on_init);
+}
+
+void AshMessagePopupCollection::OnTabletModeStarted() {
+  // Reset bounds so pop-up baseline is updated.
+  ResetBounds();
+}
+
+void AshMessagePopupCollection::OnTabletModeEnded() {
+  // Reset bounds so pop-up baseline is updated.
+  ResetBounds();
 }
 
 void AshMessagePopupCollection::OnSlideOut(const std::string& notification_id) {

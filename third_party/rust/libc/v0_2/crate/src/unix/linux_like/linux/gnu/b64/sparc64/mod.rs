@@ -10,6 +10,7 @@ pub type nlink_t = u32;
 pub type blksize_t = i64;
 pub type suseconds_t = i32;
 pub type __u64 = ::c_ulonglong;
+pub type __s64 = ::c_longlong;
 
 s! {
     pub struct sigaction {
@@ -193,17 +194,6 @@ s! {
         __reserved1: ::c_ulong,
         __reserved2: ::c_ulong
     }
-
-    pub struct termios2 {
-        pub c_iflag: ::tcflag_t,
-        pub c_oflag: ::tcflag_t,
-        pub c_cflag: ::tcflag_t,
-        pub c_lflag: ::tcflag_t,
-        pub c_line: ::cc_t,
-        pub c_cc: [::cc_t; 19],
-        pub c_ispeed: ::speed_t,
-        pub c_ospeed: ::speed_t,
-    }
 }
 
 pub const POSIX_FADV_DONTNEED: ::c_int = 4;
@@ -214,15 +204,6 @@ pub const RTLD_DEEPBIND: ::c_int = 0x8;
 pub const RTLD_GLOBAL: ::c_int = 0x100;
 pub const RTLD_NOLOAD: ::c_int = 0x4;
 pub const __SIZEOF_PTHREAD_RWLOCK_T: usize = 56;
-
-pub const TIOCGSOFTCAR: ::c_ulong = 0x40047464;
-pub const TIOCSSOFTCAR: ::c_ulong = 0x80047465;
-
-pub const RLIMIT_RSS: ::__rlimit_resource_t = 5;
-pub const RLIMIT_AS: ::__rlimit_resource_t = 9;
-pub const RLIMIT_MEMLOCK: ::__rlimit_resource_t = 8;
-pub const RLIMIT_NOFILE: ::__rlimit_resource_t = 6;
-pub const RLIMIT_NPROC: ::__rlimit_resource_t = 7;
 
 pub const O_APPEND: ::c_int = 0x8;
 pub const O_CREAT: ::c_int = 0x200;
@@ -364,7 +345,7 @@ pub const POLLWRBAND: ::c_short = 0x100;
 pub const O_ASYNC: ::c_int = 0x40;
 pub const O_NDELAY: ::c_int = 0x4004;
 
-pub const PTRACE_DETACH: ::c_uint = 11;
+pub const PTRACE_DETACH: ::c_uint = 17;
 
 pub const EFD_NONBLOCK: ::c_int = 0x4000;
 
@@ -386,27 +367,6 @@ pub const SFD_NONBLOCK: ::c_int = 0x4000;
 pub const TCSANOW: ::c_int = 0;
 pub const TCSADRAIN: ::c_int = 1;
 pub const TCSAFLUSH: ::c_int = 2;
-
-pub const TIOCLINUX: ::c_ulong = 0x541C;
-pub const TIOCGSERIAL: ::c_ulong = 0x541E;
-pub const TIOCEXCL: ::c_ulong = 0x2000740d;
-pub const TIOCNXCL: ::c_ulong = 0x2000740e;
-pub const TIOCCONS: ::c_ulong = 0x20007424;
-pub const TIOCMGET: ::c_ulong = 0x4004746a;
-pub const TIOCMBIC: ::c_ulong = 0x8004746b;
-pub const TIOCMBIS: ::c_ulong = 0x8004746c;
-pub const TIOCMSET: ::c_ulong = 0x8004746d;
-pub const TIOCSTI: ::c_ulong = 0x80017472;
-pub const TIOCCBRK: ::c_ulong = 0x2000747a;
-pub const TIOCSBRK: ::c_ulong = 0x2000747b;
-pub const TIOCSCTTY: ::c_ulong = 0x20007484;
-
-pub const TIOCM_ST: ::c_int = 0x008;
-pub const TIOCM_SR: ::c_int = 0x010;
-pub const TIOCM_CTS: ::c_int = 0x020;
-pub const TIOCM_CAR: ::c_int = 0x040;
-pub const TIOCM_RNG: ::c_int = 0x080;
-pub const TIOCM_DSR: ::c_int = 0x100;
 
 pub const SFD_CLOEXEC: ::c_int = 0x400000;
 
@@ -479,10 +439,6 @@ pub const ENOTNAM: ::c_int = 118;
 pub const ENAVAIL: ::c_int = 119;
 pub const EISNAM: ::c_int = 120;
 pub const EREMOTEIO: ::c_int = 121;
-
-pub const FIOCLEX: ::c_ulong = 0x20006601;
-pub const FIONCLEX: ::c_ulong = 0x20006602;
-pub const FIONBIO: ::c_ulong = 0x8004667e;
 
 pub const MCL_CURRENT: ::c_int = 0x2000;
 pub const MCL_FUTURE: ::c_int = 0x4000;
@@ -559,7 +515,6 @@ pub const B19200: ::speed_t = 0o000016;
 pub const B38400: ::speed_t = 0o000017;
 pub const EXTA: ::speed_t = B19200;
 pub const EXTB: ::speed_t = B38400;
-pub const BOTHER: ::speed_t = 0x1000;
 pub const B57600: ::speed_t = 0x1001;
 pub const B115200: ::speed_t = 0x1002;
 pub const B230400: ::speed_t = 0x1003;
@@ -583,24 +538,6 @@ pub const IEXTEN: ::tcflag_t = 0x8000;
 pub const TOSTOP: ::tcflag_t = 0x100;
 pub const FLUSHO: ::tcflag_t = 0x1000;
 pub const EXTPROC: ::tcflag_t = 0x10000;
-pub const TCGETS: ::c_ulong = 0x40245408;
-pub const TCSETS: ::c_ulong = 0x80245409;
-pub const TCSETSW: ::c_ulong = 0x8024540a;
-pub const TCSETSF: ::c_ulong = 0x8024540b;
-pub const TCGETA: ::c_ulong = 0x40125401;
-pub const TCSETA: ::c_ulong = 0x80125402;
-pub const TCSETAW: ::c_ulong = 0x80125403;
-pub const TCSETAF: ::c_ulong = 0x80125404;
-pub const TCSBRK: ::c_ulong = 0x20005405;
-pub const TCXONC: ::c_ulong = 0x20005406;
-pub const TCFLSH: ::c_ulong = 0x20005407;
-pub const TIOCINQ: ::c_ulong = 0x4004667f;
-pub const TIOCGPGRP: ::c_ulong = 0x40047483;
-pub const TIOCSPGRP: ::c_ulong = 0x80047482;
-pub const TIOCOUTQ: ::c_ulong = 0x40047473;
-pub const TIOCGWINSZ: ::c_ulong = 0x40087468;
-pub const TIOCSWINSZ: ::c_ulong = 0x80087467;
-pub const FIONREAD: ::c_ulong = 0x4004667f;
 
 pub const SYS_restart_syscall: ::c_long = 0;
 pub const SYS_exit: ::c_long = 1;
@@ -942,6 +879,7 @@ pub const SYS_copy_file_range: ::c_long = 357;
 pub const SYS_preadv2: ::c_long = 358;
 pub const SYS_pwritev2: ::c_long = 359;
 pub const SYS_statx: ::c_long = 360;
+pub const SYS_rseq: ::c_long = 365;
 pub const SYS_pidfd_send_signal: ::c_long = 424;
 pub const SYS_io_uring_setup: ::c_long = 425;
 pub const SYS_io_uring_enter: ::c_long = 426;

@@ -4,6 +4,16 @@
 
   await session.navigate('../resources/css-media-features.html');
 
+  // For each emulated media feature, produce a list of corresponding
+  // custom properties to inspect.
+  async function formatComputedValues(features) {
+    let props = features.map(f => `--${f}`);
+    let values = [];
+    for (let prop of props)
+      values.push(await session.evaluate(`getComputedStyle(p).getPropertyValue('${prop}')`));
+    return values.join('; ');
+  }
+
   async function setEmulatedMediaFeature(feature, value) {
     await dp.Emulation.setEmulatedMedia({
       features: [
@@ -17,10 +27,8 @@
     const code = `matchMedia(${JSON.stringify(mediaQuery)}).matches`;
     const result = await session.evaluate(code);
     testRunner.log(`${code}: ${result}`);
-    const width = await session.evaluate('getComputedStyle(p).width');
-    const height = await session.evaluate('getComputedStyle(p).height');
-    const color = await session.evaluate('getComputedStyle(p).color');
-    testRunner.log(`${code} applied: ${width} x ${height}, ${color}`);
+    const applied = await formatComputedValues([feature]);
+    testRunner.log(`${code} applied: ${applied}`);
   }
 
   async function setEmulatedMediaFeatures({ features, mediaQuery }) {
@@ -30,10 +38,8 @@
     const code = `matchMedia(${JSON.stringify(mediaQuery)}).matches`;
     const result = await session.evaluate(code);
     testRunner.log(`${code}: ${result}`);
-    const width = await session.evaluate('getComputedStyle(p).width');
-    const height = await session.evaluate('getComputedStyle(p).height');
-    const color = await session.evaluate('getComputedStyle(p).color');
-    testRunner.log(`${code} applied: ${width} x ${height}, ${color}`);
+    const applied = await formatComputedValues(features.map(f => f.name));
+    testRunner.log(`${code} applied: ${applied}`);
   }
 
   // Test `prefers-color-scheme`.
@@ -50,6 +56,13 @@
   await setEmulatedMediaFeature('prefers-reduced-motion', 'no-preference');
   await setEmulatedMediaFeature('prefers-reduced-motion', 'reduce');
   await setEmulatedMediaFeature('prefers-reduced-motion', '__invalid__');
+
+  // Test `prefers-reduced-data`.
+  // https://drafts.csswg.org/mediaqueries-5/#prefers-reduced-data
+  await setEmulatedMediaFeature('prefers-reduced-data', '__invalid__');
+  await setEmulatedMediaFeature('prefers-reduced-data', 'no-preference');
+  await setEmulatedMediaFeature('prefers-reduced-data', 'reduce');
+  await setEmulatedMediaFeature('prefers-reduced-data', '__invalid__');
 
   // Test `prefers-contrast`.
   // https://drafts.csswg.org/mediaqueries-5/#prefers-contrast

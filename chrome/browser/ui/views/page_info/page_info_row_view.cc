@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,7 +34,7 @@ PageInfoRowView::PageInfoRowView() {
   // and label in the first row.
   const int label_height = title_->GetPreferredSize().height();
   const int margin = (label_height - icon_size) / 2;
-  layout_manager_->SetDefault(views::kMarginsKey, gfx::Insets(margin, 0));
+  layout_manager_->SetDefault(views::kMarginsKey, gfx::Insets::VH(margin, 0));
 }
 
 void PageInfoRowView::SetIcon(const ui::ImageModel image) {

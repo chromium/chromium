@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -39,7 +40,6 @@ AudioOutputDevice::AudioOutputDevice(
       state_(IDLE),
       session_id_(sink_params.session_id),
       device_id_(sink_params.device_id),
-      processing_id_(sink_params.processing_id),
       stopping_hack_(false),
       did_receive_auth_(base::WaitableEvent::ResetPolicy::MANUAL,
                         base::WaitableEvent::InitialState::NOT_SIGNALED),
@@ -228,7 +228,7 @@ void AudioOutputDevice::CreateStreamOnIOThread() {
   if (state_ == IDLE && !(did_receive_auth_.IsSignaled() && device_id_.empty()))
     RequestDeviceAuthorizationOnIOThread();
 
-  ipc_->CreateStream(this, audio_parameters_, processing_id_);
+  ipc_->CreateStream(this, audio_parameters_);
   // By default, start playing right away.
   ipc_->PlayStream();
   state_ = STREAM_CREATION_REQUESTED;
@@ -383,7 +383,7 @@ void AudioOutputDevice::OnStreamCreated(
 
   DCHECK(io_task_runner_->BelongsToCurrentThread());
   DCHECK(shared_memory_region.IsValid());
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   DCHECK(socket_handle.IsValid());
 #else
   DCHECK(socket_handle.is_valid());
@@ -419,7 +419,7 @@ void AudioOutputDevice::OnStreamCreated(
       audio_callback_->InitializePlayStartTime();
     audio_thread_ = std::make_unique<AudioDeviceThread>(
         audio_callback_.get(), std::move(socket_handle), "AudioOutputDevice",
-        base::ThreadPriority::REALTIME_AUDIO);
+        base::ThreadType::kRealtimeAudio);
   }
 }
 

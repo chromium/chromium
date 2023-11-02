@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,8 @@
 #include "services/shape_detection/public/mojom/facedetection_provider.mojom-blink.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_detected_face.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_face_detector_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_landmark.h"
@@ -19,7 +21,7 @@
 #include "third_party/blink/renderer/core/html/canvas/canvas_image_source.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
 #include "third_party/blink/renderer/modules/shapedetection/shape_detection_type_converter.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -47,24 +49,25 @@ FaceDetector::FaceDetector(ExecutionContext* context,
       face_service_.BindNewPipeAndPassReceiver(task_runner),
       std::move(face_detector_options));
 
-  face_service_.set_disconnect_handler(WTF::Bind(
+  face_service_.set_disconnect_handler(WTF::BindOnce(
       &FaceDetector::OnFaceServiceConnectionError, WrapWeakPersistent(this)));
 }
 
-ScriptPromise FaceDetector::DoDetect(ScriptPromiseResolver* resolver,
-                                     SkBitmap bitmap) {
-  ScriptPromise promise = resolver->Promise();
+ScriptPromise FaceDetector::DoDetect(ScriptState* script_state,
+                                     SkBitmap bitmap,
+                                     ExceptionState& exception_state) {
   if (!face_service_.is_bound()) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kNotSupportedError,
-        "Face detection service unavailable."));
-    return promise;
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                      "Face detection service unavailable.");
+    return ScriptPromise();
   }
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto promise = resolver->Promise();
   face_service_requests_.insert(resolver);
   face_service_->Detect(
       std::move(bitmap),
-      WTF::Bind(&FaceDetector::OnDetectFaces, WrapPersistent(this),
-                WrapPersistent(resolver)));
+      WTF::BindOnce(&FaceDetector::OnDetectFaces, WrapPersistent(this),
+                    WrapPersistent(resolver)));
   return promise;
 }
 
@@ -106,9 +109,18 @@ void FaceDetector::OnDetectFaces(
 
 void FaceDetector::OnFaceServiceConnectionError() {
   for (const auto& request : face_service_requests_) {
-    request->Reject(
-        MakeGarbageCollected<DOMException>(DOMExceptionCode::kNotSupportedError,
-                                           "Face Detection not implemented."));
+    // Check if callback's resolver is still valid.
+    if (!IsInParallelAlgorithmRunnable(request->GetExecutionContext(),
+                                       request->GetScriptState())) {
+      continue;
+    }
+    // Enter into resolver's context to support creating DOMException.
+    ScriptState::Scope script_state_scope(request->GetScriptState());
+
+    request->Reject(V8ThrowDOMException::CreateOrDie(
+        request->GetScriptState()->GetIsolate(),
+        DOMExceptionCode::kNotSupportedError,
+        "Face Detection not implemented."));
   }
   face_service_requests_.clear();
   face_service_.reset();

@@ -1,7 +1,8 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <map>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -9,6 +10,7 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/ranges/algorithm.h"
 #include "components/browser_sync/active_devices_provider_impl.h"
 #include "components/browser_sync/browser_sync_switches.h"
 #include "components/sync/base/model_type.h"
@@ -35,25 +37,41 @@ ActiveDevicesProviderImpl::CalculateInvalidationInfo(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const std::vector<std::unique_ptr<syncer::DeviceInfo>> active_devices =
-      GetActiveDevices();
+      GetActiveDevicesSortedByUpdateTime();
   if (active_devices.empty()) {
-    // This may happen if the engine is not initialized yet.
+    // This may happen if the engine is not initialized yet. In other cases,
+    // |active_devices| must contain at least the local device.
     return syncer::ActiveDevicesInvalidationInfo::CreateUninitialized();
   }
 
-  std::vector<std::string> fcm_registration_tokens;
-  syncer::ModelTypeSet interested_data_types;
+  std::vector<std::string> all_fcm_registration_tokens;
+
+  // List of interested data types for all other clients.
+  syncer::ModelTypeSet all_interested_data_types;
+
+  // FCM registration tokens with corresponding interested data types for all
+  // the clients with enabled sync standalone invalidations.
+  std::map<std::string, syncer::ModelTypeSet>
+      fcm_token_and_interested_data_types;
 
   for (const std::unique_ptr<syncer::DeviceInfo>& device : active_devices) {
     if (!local_cache_guid.empty() && device->guid() == local_cache_guid) {
       continue;
     }
 
-    interested_data_types.PutAll(device->interested_data_types());
-    if (!device->fcm_registration_token().empty() &&
-        base::FeatureList::IsEnabled(
-            switches::kSyncUseFCMRegistrationTokensList)) {
-      fcm_registration_tokens.push_back(device->fcm_registration_token());
+    all_interested_data_types.PutAll(device->interested_data_types());
+
+    if (!device->fcm_registration_token().empty()) {
+      // If there is a duplicate FCM registration token, use the latest one. To
+      // achieve this, rely on sorted |active_devices| by update time. Two
+      // DeviceInfo entities can have the same FCM registration token if the
+      // sync engine was reset without signout.
+      fcm_token_and_interested_data_types[device->fcm_registration_token()] =
+          device->interested_data_types();
+      if (base::FeatureList::IsEnabled(
+              switches::kSyncUseFCMRegistrationTokensList)) {
+        all_fcm_registration_tokens.push_back(device->fcm_registration_token());
+      }
     }
   }
 
@@ -61,14 +79,15 @@ ActiveDevicesProviderImpl::CalculateInvalidationInfo(
   // to the case when the client doesn't know about other devices, so return an
   // empty list. Otherwise the client would return only a part of all active
   // clients and other clients might miss an invalidation.
-  if (fcm_registration_tokens.size() >
+  if (all_fcm_registration_tokens.size() >
       static_cast<size_t>(
           switches::kSyncFCMRegistrationTokensListMaxSize.Get())) {
-    fcm_registration_tokens.clear();
+    all_fcm_registration_tokens.clear();
   }
 
   return syncer::ActiveDevicesInvalidationInfo::Create(
-      std::move(fcm_registration_tokens), interested_data_types);
+      std::move(all_fcm_registration_tokens), all_interested_data_types,
+      std::move(fcm_token_and_interested_data_types));
 }
 
 void ActiveDevicesProviderImpl::SetActiveDevicesChangedCallback(
@@ -88,9 +107,15 @@ void ActiveDevicesProviderImpl::OnDeviceInfoChange() {
 }
 
 std::vector<std::unique_ptr<syncer::DeviceInfo>>
-ActiveDevicesProviderImpl::GetActiveDevices() const {
+ActiveDevicesProviderImpl::GetActiveDevicesSortedByUpdateTime() const {
   std::vector<std::unique_ptr<syncer::DeviceInfo>> all_devices =
       device_info_tracker_->GetAllDeviceInfo();
+  base::ranges::sort(
+      all_devices, [](const std::unique_ptr<syncer::DeviceInfo>& left_device,
+                      const std::unique_ptr<syncer::DeviceInfo>& right_device) {
+        return left_device->last_updated_timestamp() <
+               right_device->last_updated_timestamp();
+      });
   if (!base::FeatureList::IsEnabled(
           switches::kSyncFilterOutInactiveDevicesForSingleClient)) {
     return all_devices;

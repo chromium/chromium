@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -37,6 +37,7 @@ static_library("browser") {
   deps = [
     "//base",
     "//base:i18n",
+    "//components/autofill_assistant/core/public:public",
     "//components/os_crypt",
     "//components/prefs",
     "//components/profile_metrics",
@@ -80,9 +81,14 @@ source_set("test_support") {
     "content_autofill_router_test_api.h",
     "form_forest_test_api.cc",
     "form_forest_test_api.h",
+    "test_autofill_manager_injector.h",
   ]
 
-  public_deps = [ ":browser" ]
+  public_deps = [
+    ":browser",
+    "//content/public/browser",
+    "//content/test:test_support",
+  ]
 
   deps = [ "//base" ]
 }

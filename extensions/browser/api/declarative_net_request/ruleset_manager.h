@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "extensions/browser/api/declarative_net_request/utils.h"
@@ -166,14 +166,14 @@ class RulesetManager {
   base::flat_set<ExtensionRulesetData> rulesets_;
 
   // Non-owning pointer to BrowserContext.
-  content::BrowserContext* const browser_context_;
+  const raw_ptr<content::BrowserContext> browser_context_;
 
   // Guaranteed to be valid through-out the lifetime of this instance.
-  ExtensionPrefs* const prefs_;
-  PermissionHelper* const permission_helper_;
+  const raw_ptr<ExtensionPrefs> prefs_;
+  const raw_ptr<PermissionHelper> permission_helper_;
 
   // Non-owning pointer to TestObserver.
-  TestObserver* test_observer_ = nullptr;
+  raw_ptr<TestObserver> test_observer_ = nullptr;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

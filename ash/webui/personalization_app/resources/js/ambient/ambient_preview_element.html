@@ -1,0 +1,238 @@
+<style include="common cros-button-style">
+  :host([main-page]) #container {
+    border: 1px solid var(--cros-separator-color);
+    border-radius: 16px;
+    display: grid;
+    grid-template-areas:
+      '. slot           slot    slot    .'
+      '. image          image   image   .'
+      '. .              .       .       .'
+      '. message        message message .'
+      '. mainpage-desc  .       collage .'
+      '. .              .       .       .';
+    grid-template-columns: 20px minmax(0,1fr) 16px 106px 20px;
+    grid-template-rows: auto minmax(158px, 220px) 20px 106px auto 24px;
+    height: 100%;
+  }
+
+  :host([main-page]) #container.zero-state-disabled {
+    grid-template-rows: auto minmax(158px, 220px) 20px auto 106px 24px;
+  }
+
+  #messageContainer {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    grid-area: message;
+    justify-content: space-between;
+  }
+
+  #messageContainer .text {
+    color: var(--cros-text-color-secondary);
+    font: var(--cros-body-1-font);
+    line-height: 1.5;
+    margin-top: 12px;
+    text-align: center;
+  }
+
+  #messageContainer cr-button {
+    margin-top: 20px;
+  }
+
+  :host(:not([main-page])) #container {
+    border: none;
+    display: grid;
+    grid-template-areas:
+      '.              . .'
+      'image          . subpage-desc'
+      '.              . .';
+    grid-template-columns: 224px 32px minmax(0,1fr);
+    grid-template-rows: 20px 152px 20px;
+  }
+
+  :host([main-page]) .currently-set-text {
+    display: none;
+  }
+
+  :host(:not([main-page])) .currently-set-text {
+    display: block;
+  }
+
+  :host([main-page]) #imageContainer,
+  :host([main-page]) #imagePlaceholder {
+    display: flex;
+    height: 100%;
+    justify-self: center;
+    max-width: 360px;
+    min-width: 252px;
+    width: 100%;
+  }
+
+  ::slotted(div[id='ambientLabel']) {
+    align-items: center;
+    background: none;
+    border: none;
+    display: flex;
+    flex-flow: row nowrap;
+    grid-area: slot;
+    justify-content: space-between;
+    margin-top: 12px;
+  }
+
+  .album-info-mainpage,
+  .album-info-subpage {
+    display: none;
+  }
+
+  :host([main-page]) .album-info-mainpage {
+    display: flex;
+    grid-area: mainpage-desc;
+    justify-content: center;
+  }
+
+  :host(:not([main-page])) .album-info-subpage {
+    display: flex;
+    grid-area: subpage-desc;
+    justify-content: center;
+  }
+
+  #imageContainer,
+  #imagePlaceholder {
+    grid-area: image;
+  }
+
+  #imageContainer img.disabled {
+    /**
+     * Use 50% for image instead of default cros-disabled-opacity.
+     * TODO(b/236415314) get this into design system as a semantic value.
+     */
+    opacity: 50%;
+  }
+
+  :host(:not([main-page])) #collageContainer,
+  :host(:not([main-page])) #collagePlaceholder {
+    display: none;
+  }
+
+  :host([main-page]) #albumTitle {
+    color: var(--cros-text-color-primary);
+    font: var(--cros-display-7-font);
+  }
+
+  :host([main-page]) #albumDescription {
+    color: var(--cros-text-color-secondary);
+    font: var(--cros-body-2-font);
+  }
+
+  :host([main-page]) #collageContainer,
+  :host([main-page]) #collagePlaceholder {
+    border-radius: 12px;
+    display: grid;
+    gap: 2px;
+    grid-area: collage;
+    overflow: hidden;
+  }
+
+  :host([main-page]) #collageContainer {
+    border: 1px solid rgba(0, 0, 0, 0.08);
+  }
+
+  #collageContainer {
+    grid-template-columns: repeat(2, minmax(0,1fr));
+    grid-template-rows: repeat(2, minmax(0,1fr));
+  }
+
+  #collageContainer.collage-1 .collage-item:first-child {
+    grid-row: 1 / 3;
+  }
+
+  #collageContainer.collage-1 .collage-item:first-child,
+  #collageContainer.collage-2 .collage-item:first-child,
+  #collageContainer.collage-2 .collage-item:nth-child(2),
+  #collageContainer.collage-3 .collage-item:nth-child(3) {
+    grid-column: 1 / 3;
+  }
+
+  .collage-item {
+    height: 100%;
+    object-fit: cover;
+    width: 100%;
+  }
+</style>
+<div class$="[[getPreviewContainerClass_(ambientModeEnabled_, loading_)]]" id="container">
+  <slot></slot>
+  <template is="dom-if" if="[[loading_]]">
+    <div id="imagePlaceholder" class="placeholder"></div>
+    <div id="textPlaceholder" class="preview-text-placeholder album-info-mainpage album-info-subpage">
+      <div class="placeholder currently-set-text"></div>
+      <div class="placeholder"></div>
+      <div class="placeholder"></div>
+    </div>
+    <div id="collagePlaceholder" class="placeholder"></div>
+  </template>
+  <template is="dom-if" if="[[!loading_]]">
+    <template is="dom-if" if="[[!ambientModeEnabled_]]">
+      <div id="imageContainer" class="preview-image-container" aria-hidden="true">
+        <div class="preview-image-border"></div>
+        <img class="preview-image disabled" src="//personalization/images/slideshow.png">
+      </div>
+      <div id="messageContainer">
+        <span class="text" id="turnOnDescription">
+          $i18n{ambientModeMainPageZeroStateMessage}
+        </span>
+        <cr-button class="primary" on-click="onClickAmbientModeButton_"
+            aria-describedby="turnOnDescription">
+          <div>$i18n{ambientModeTurnOnLabel}</div>
+        </cr-button>
+      </div>
+    </template>
+    <template is="dom-if" if="[[ambientModeEnabled_]]">
+      <!-- TODO(b/226235802) - Add failed/error state when no previewAlbums available.
+           Currently, we show blank containers -->
+      <template is="dom-if" if="[[previewAlbums_]]">
+        <div id="imageContainer" class="preview-image-container">
+          <div class="preview-image-border"></div>
+          <template is="dom-if" if="[[clickable]]">
+            <img class="preview-image clickable" is="cr-auto-img"
+                on-click="onClickPreviewImage_"
+                on-keypress="onClickPreviewImage_"
+                auto-src="[[getPreviewImage_(firstPreviewAlbum_)]]"
+                alt$="[[getAlbumTitle_(firstPreviewAlbum_)]]"
+                is-google-photos>
+          </template>
+          <template is="dom-if" if="[[!clickable]]">
+            <img class="preview-image" is="cr-auto-img"
+                auto-src="[[getPreviewImage_(firstPreviewAlbum_)]]"
+                alt$="[[getAlbumTitle_(firstPreviewAlbum_)]]"
+                is-google-photos>
+          </template>
+        </div>
+        <h3 id="textContainer" class="preview-text-container album-info-mainpage album-info-subpage"
+            aria-label$="[[getPreviewTextAriaLabel_(firstPreviewAlbum_, topicSource_, previewAlbums_)]]">
+          <span id="currentlySet" class="currently-set-text" aria-hidden="true">
+            $i18n{currentlySet}
+          </span>
+          <span id="albumTitle" aria-hidden="true">
+            [[getAlbumTitle_(firstPreviewAlbum_)]]
+          </span>
+          <paper-tooltip id="albumTitleTooltip" for="albumTitle" aria-hidden="true">
+            <span>[[getAlbumTitle_(firstPreviewAlbum_)]]</span>
+          </paper-tooltip>
+          <span id="albumDescription" aria-hidden="true">
+            [[getAlbumDescription_(topicSource_, previewAlbums_)]]
+          </span>
+        </h3>
+        <div aria-hidden="true"
+            class$="[[getCollageContainerClass_(collageImages_)]]"
+            on-click="onClickPhotoCollage_"
+            on-keypress="onClickPhotoCollage_"
+            id="collageContainer">
+          <template is="dom-repeat" items="[[collageImages_]]">
+            <img class="collage-item" is="cr-auto-img"
+                auto-src="[[item.url]]" is-google-photos>
+          </template>
+        </div>
+      </template>
+    </template>
+  </template>
+</div>

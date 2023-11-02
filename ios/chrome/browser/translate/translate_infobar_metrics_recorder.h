@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -56,20 +56,15 @@ enum class MobileMessagesTranslateModalPresent {
 // This class records metrics for Translate-specific Messages events.
 @interface TranslateInfobarMetricsRecorder : NSObject
 
-// Records a histogram for |bannerEvent|.
+// Records a histogram for `bannerEvent`.
 + (void)recordBannerEvent:(MobileMessagesTranslateBannerEvent)bannerEvent;
-// Records a histogram for |event|.
+// Records a histogram for `event`.
 + (void)recordModalEvent:(MobileMessagesTranslateModalEvent)event;
-// Records a histogram for |presentEvent|.
+// Records a histogram for `presentEvent`.
 + (void)recordModalPresent:(MobileMessagesTranslateModalPresent)presentEvent;
-// Records a histogram for the time an unused legacy infobar persists on screen.
-+ (void)recordUnusedLegacyInfobarScreenDuration:(NSTimeInterval)duration;
 // Records a histogram for an infobar (both legacy and Messages) that the user
 // did not interact with throughout its lifetime.
 + (void)recordUnusedInfobar;
-// Records a histogram for the time between tapping the target and source
-// language in a legacy infobar.
-+ (void)recordLegacyInfobarToggleDelay:(NSTimeInterval)delay;
 @end
 
 #endif  // IOS_CHROME_BROWSER_TRANSLATE_TRANSLATE_INFOBAR_METRICS_RECORDER_H_

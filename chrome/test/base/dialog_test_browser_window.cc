@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,7 @@ using web_modal::WebContentsModalDialogHost;
 using web_modal::ModalDialogHostObserver;
 
 DialogTestBrowserWindow::DialogTestBrowserWindow() {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Create a dummy Widget on Mac for parenting dialogs. On Aura, just parent
   // using the WebContents since creating a Widget here requires an Aura
   // RootWindow for context and it's tricky to get one here.
@@ -54,7 +54,7 @@ gfx::Point DialogTestBrowserWindow::GetDialogPosition(const gfx::Size& size) {
 }
 
 gfx::Size DialogTestBrowserWindow::GetMaximumDialogSize() {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Zero-size windows aren't allowed on Mac.
   return gfx::Size(1, 1);
 #else

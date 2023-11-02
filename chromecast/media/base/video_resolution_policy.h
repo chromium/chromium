@@ -1,11 +1,9 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROMECAST_MEDIA_BASE_VIDEO_RESOLUTION_POLICY_H_
 #define CHROMECAST_MEDIA_BASE_VIDEO_RESOLUTION_POLICY_H_
-
-#include "base/macros.h"
 
 namespace gfx {
 class Size;

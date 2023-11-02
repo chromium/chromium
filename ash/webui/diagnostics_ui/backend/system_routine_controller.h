@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,8 @@
 #include "ash/webui/diagnostics_ui/mojom/system_routine_controller.mojom.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
-#include "chromeos/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom-forward.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -24,15 +24,14 @@ namespace base {
 class OneShotTimer;
 }  // namespace base
 
-namespace ash {
-namespace diagnostics {
+namespace ash::diagnostics {
+
+using RunRoutineCallback =
+    base::OnceCallback<void(cros_healthd::mojom::RunRoutineResponsePtr)>;
 
 class RoutineLog;
 
 constexpr int32_t kInvalidRoutineId = 0;
-
-using RunRoutineCallback = base::OnceCallback<void(
-    chromeos::cros_healthd::mojom::RunRoutineResponsePtr)>;
 
 class SystemRoutineController : public mojom::SystemRoutineController {
  public:
@@ -52,7 +51,7 @@ class SystemRoutineController : public mojom::SystemRoutineController {
       mojo::PendingReceiver<mojom::SystemRoutineController> pending_receiver);
   // Handler for when remote attached to |receiver_| disconnects.
   void OnBoundInterfaceDisconnect();
-  bool ReceiverIsBound();
+  bool IsReceiverBoundForTesting();
 
   void SetWakeLockProviderForTesting(
       mojo::Remote<device::mojom::WakeLockProvider> provider) {
@@ -60,36 +59,37 @@ class SystemRoutineController : public mojom::SystemRoutineController {
   }
 
  private:
+  friend class SystemRoutineControllerTest;
+
   void OnAvailableRoutinesFetched(
       GetSupportedRoutinesCallback callback,
-      const std::vector<chromeos::cros_healthd::mojom::DiagnosticRoutineEnum>&
+      const std::vector<cros_healthd::mojom::DiagnosticRoutineEnum>&
           supported_routines);
 
   void ExecuteRoutine(mojom::RoutineType routine_type);
 
   void OnRoutineStarted(
       mojom::RoutineType routine_type,
-      chromeos::cros_healthd::mojom::RunRoutineResponsePtr response_ptr);
+      cros_healthd::mojom::RunRoutineResponsePtr response_ptr);
 
   void OnPowerRoutineStarted(
       mojom::RoutineType routine_type,
-      chromeos::cros_healthd::mojom::RunRoutineResponsePtr response_ptr);
+      cros_healthd::mojom::RunRoutineResponsePtr response_ptr);
 
   void ContinuePowerRoutine(mojom::RoutineType routine_type);
 
   void OnPowerRoutineContinued(
       mojom::RoutineType routine_type,
-      chromeos::cros_healthd::mojom::RoutineUpdatePtr update_ptr);
+      cros_healthd::mojom::RoutineUpdatePtr update_ptr);
 
   void CheckRoutineStatus(mojom::RoutineType routine_type);
 
-  void OnRoutineStatusUpdated(
-      mojom::RoutineType routine_type,
-      chromeos::cros_healthd::mojom::RoutineUpdatePtr update_ptr);
+  void OnRoutineStatusUpdated(mojom::RoutineType routine_type,
+                              cros_healthd::mojom::RoutineUpdatePtr update_ptr);
 
   void HandlePowerRoutineStatusUpdate(
       mojom ::RoutineType routine_type,
-      chromeos::cros_healthd::mojom::RoutineUpdatePtr update_ptr);
+      cros_healthd::mojom::RoutineUpdatePtr update_ptr);
 
   bool IsRoutineRunning() const;
 
@@ -123,7 +123,7 @@ class SystemRoutineController : public mojom::SystemRoutineController {
   void OnInflightRoutineRunnerDisconnected();
 
   void OnRoutineCancelAttempted(
-      chromeos::cros_healthd::mojom::RoutineUpdatePtr update_ptr);
+      cros_healthd::mojom::RoutineUpdatePtr update_ptr);
 
   bool IsLoggingEnabled() const;
 
@@ -152,7 +152,7 @@ class SystemRoutineController : public mojom::SystemRoutineController {
   mojo::Remote<mojom::RoutineRunner> inflight_routine_runner_;
   std::unique_ptr<base::OneShotTimer> inflight_routine_timer_;
 
-  mojo::Remote<chromeos::cros_healthd::mojom::CrosHealthdDiagnosticsService>
+  mojo::Remote<cros_healthd::mojom::CrosHealthdDiagnosticsService>
       diagnostics_service_;
 
   mojo::Receiver<mojom::SystemRoutineController> receiver_{this};
@@ -170,7 +170,6 @@ class SystemRoutineController : public mojom::SystemRoutineController {
   base::WeakPtrFactory<SystemRoutineController> weak_factory_{this};
 };
 
-}  // namespace diagnostics
-}  // namespace ash
+}  // namespace ash::diagnostics
 
 #endif  // ASH_WEBUI_DIAGNOSTICS_UI_BACKEND_SYSTEM_ROUTINE_CONTROLLER_H_

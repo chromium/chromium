@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -102,21 +102,20 @@ bool IsStudyExpired(const Study& study, const base::Time& date_time);
 // Returns whether |study| should be disabled according to the restriction
 // parameters in the |config|.
 COMPONENT_EXPORT(VARIATIONS)
-bool ShouldAddStudy(const Study& study,
+bool ShouldAddStudy(const ProcessedStudy& processed_study,
                     const ClientFilterableState& client_state,
                     const VariationsLayers& layers);
 
 }  // namespace internal
 
-// Filters the list of studies in |seed| according ot the |client_state|, and
-// validates and pre-processes them, adding any kept studies to the
-// |filtered_studies| list. Ensures that the resulting list will not have more
-// than one study with the same name.
+// Validates and preprocesses studies in |seed|, filters them according to
+// the |client_state| and |layers|, and ensures the result has at most one
+// study with the same name.
 COMPONENT_EXPORT(VARIATIONS)
-void FilterAndValidateStudies(const VariationsSeed& seed,
-                              const ClientFilterableState& client_state,
-                              const VariationsLayers& layers,
-                              std::vector<ProcessedStudy>* filtered_studies);
+std::vector<ProcessedStudy> FilterAndValidateStudies(
+    const VariationsSeed& seed,
+    const ClientFilterableState& client_state,
+    const VariationsLayers& layers);
 
 }  // namespace variations
 

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@ using ::testing::ReturnRef;
 MockScriptExecutorDelegate::MockScriptExecutorDelegate() {
   ON_CALL(*this, GetSettings).WillByDefault(ReturnRef(client_settings_));
   ON_CALL(*this, GetLogInfo).WillByDefault(ReturnRef(log_info_));
+  ON_CALL(*this, GetCurrentURL).WillByDefault(ReturnRef(default_url_));
 }
 
 MockScriptExecutorDelegate::~MockScriptExecutorDelegate() = default;

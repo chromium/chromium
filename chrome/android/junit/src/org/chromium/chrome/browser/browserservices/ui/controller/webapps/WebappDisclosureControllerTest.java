@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -175,7 +175,7 @@ public class WebappDisclosureControllerTest {
     }
 
     private void setVerificationStatus(@VerificationStatus int status) {
-        VerificationState state = new VerificationState(SCOPE, status);
+        VerificationState state = new VerificationState(SCOPE, SCOPE, status);
         doReturn(state).when(mCurrentPageVerifier).getState();
 
         for (Runnable observer : mVerificationObserverCaptor.getAllValues()) {

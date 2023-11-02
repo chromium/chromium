@@ -1,38 +1,34 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
-import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
-import 'chrome://resources/cr_elements/hidden_style_css.m.js';
-import 'chrome://resources/cr_elements/shared_vars_css.m.js';
-import 'chrome://resources/js/action_link.js';
-import 'chrome://resources/cr_elements/action_link_css.m.js';
-import 'chrome://resources/cr_elements/md_select_css.m.js';
-import 'chrome://resources/cr_elements/icons.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../print_preview_utils.js';
-import './destination_dialog_css.js';
+import './destination_dialog_style.css.js';
 import './destination_list.js';
 import './print_preview_search_box.js';
-import './print_preview_shared_css.js';
-import './print_preview_vars_css.js';
+import './print_preview_shared.css.js';
+import './print_preview_vars.css.js';
 import '../strings.m.js';
-import './throbber_css.js';
+import './throbber.css.js';
 import './destination_list_item.js';
 
-import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
-import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
-import {ListPropertyUpdateMixin} from 'chrome://resources/js/list_property_update_mixin.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {beforeNextRender, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
+import {EventTracker} from 'chrome://resources/js/event_tracker.js';
+import {ListPropertyUpdateMixin} from 'chrome://resources/cr_elements/list_property_update_mixin.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Destination} from '../data/destination.js';
 import {DestinationStore, DestinationStoreEventType} from '../data/destination_store.js';
-import {DestinationSearchBucket, MetricsContext} from '../metrics.js';
 import {NativeLayerImpl} from '../native_layer.js';
 
+import {getTemplate} from './destination_dialog.html.js';
 import {PrintPreviewDestinationListItemElement} from './destination_list_item.js';
 import {PrintPreviewSearchBoxElement} from './print_preview_search_box.js';
 
@@ -53,7 +49,7 @@ export class PrintPreviewDestinationDialogElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -62,15 +58,6 @@ export class PrintPreviewDestinationDialogElement extends
         type: Object,
         observer: 'onDestinationStoreSet_',
       },
-
-      activeUser: {
-        type: String,
-        observer: 'onActiveUserChange_',
-      },
-
-      currentDestinationAccount: String,
-
-      users: Array,
 
       destinations_: {
         type: Array,
@@ -82,8 +69,6 @@ export class PrintPreviewDestinationDialogElement extends
         value: false,
       },
 
-      metrics_: Object,
-
       searchQuery_: {
         type: Object,
         value: null,
@@ -92,31 +77,22 @@ export class PrintPreviewDestinationDialogElement extends
   }
 
   destinationStore: DestinationStore;
-  activeUser: string;
-  currentDestinationAccount: string;
-  users: string[];
   private destinations_: Destination[];
   private loadingDestinations_: boolean;
-  private metrics_: MetricsContext;
   private searchQuery_: RegExp|null;
 
   private tracker_: EventTracker = new EventTracker();
   private initialized_: boolean = false;
 
-  ready() {
+  override ready() {
     super.ready();
     this.addEventListener('keydown', (e: KeyboardEvent) => this.onKeydown_(e));
   }
 
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
 
     this.tracker_.removeAll();
-  }
-
-  private fireAccountChange_(account: string) {
-    this.dispatchEvent(new CustomEvent(
-        'account-change', {bubbles: true, composed: true, detail: account}));
   }
 
   private onKeydown_(e: KeyboardEvent) {
@@ -131,22 +107,14 @@ export class PrintPreviewDestinationDialogElement extends
 
   private onDestinationStoreSet_() {
     assert(this.destinations_.length === 0);
-    const destinationStore = assert(this.destinationStore);
     this.tracker_.add(
-        destinationStore, DestinationStoreEventType.DESTINATIONS_INSERTED,
+        this.destinationStore, DestinationStoreEventType.DESTINATIONS_INSERTED,
         this.updateDestinations_.bind(this));
     this.tracker_.add(
-        destinationStore, DestinationStoreEventType.DESTINATION_SEARCH_DONE,
+        this.destinationStore,
+        DestinationStoreEventType.DESTINATION_SEARCH_DONE,
         this.updateDestinations_.bind(this));
     this.initialized_ = true;
-  }
-
-  private onActiveUserChange_() {
-    if (this.activeUser) {
-      this.shadowRoot!.querySelector('select')!.value = this.activeUser;
-    }
-
-    this.updateDestinations_();
   }
 
   private updateDestinations_() {
@@ -163,7 +131,7 @@ export class PrintPreviewDestinationDialogElement extends
   }
 
   private getDestinationList_(): Destination[] {
-    const destinations = this.destinationStore.destinations(this.activeUser);
+    const destinations = this.destinationStore.destinations();
 
     return destinations;
   }
@@ -171,14 +139,6 @@ export class PrintPreviewDestinationDialogElement extends
   private onCloseOrCancel_() {
     if (this.searchQuery_) {
       this.$.searchBox.setValue('');
-    }
-    const cancelled = this.$.dialog.getNative().returnValue !== 'success';
-    this.metrics_.record(
-        cancelled ? DestinationSearchBucket.DESTINATION_CLOSED_UNCHANGED :
-                    DestinationSearchBucket.DESTINATION_CLOSED_CHANGED);
-    if (this.currentDestinationAccount &&
-        this.currentDestinationAccount !== this.activeUser) {
-      this.fireAccountChange_(this.currentDestinationAccount);
     }
   }
 
@@ -193,10 +153,6 @@ export class PrintPreviewDestinationDialogElement extends
       e: CustomEvent<PrintPreviewDestinationListItemElement>) {
     const listItem = e.detail;
     const destination = listItem.destination;
-
-    // No provisional or local CrOS destinations on desktop, so all destinations
-    // should be ready for selection.
-    assert(destination.readyForSelection);
     this.selectDestination_(destination);
   }
 
@@ -206,18 +162,14 @@ export class PrintPreviewDestinationDialogElement extends
   }
 
   show() {
-    if (!this.metrics_) {
-      this.metrics_ = MetricsContext.destinationSearch();
-    }
     this.$.dialog.showModal();
-    this.loadingDestinations_ = this.destinationStore === undefined ||
+    const loading = this.destinationStore === undefined ||
         this.destinationStore.isPrintDestinationSearchInProgress;
-    this.metrics_.record(DestinationSearchBucket.DESTINATION_SHOWN);
-    if (this.activeUser) {
-      beforeNextRender(assert(this.shadowRoot!.querySelector('select')), () => {
-        this.shadowRoot!.querySelector('select')!.value = this.activeUser;
-      });
+    if (!loading) {
+      // All destinations have already loaded.
+      this.updateDestinations_();
     }
+    this.loadingDestinations_ = loading;
   }
 
   /** @return Whether the dialog is open. */
@@ -225,23 +177,14 @@ export class PrintPreviewDestinationDialogElement extends
     return this.$.dialog.hasAttribute('open');
   }
 
-  private onUserChange_() {
-    const select = this.shadowRoot!.querySelector('select')!;
-    const account = select.value;
-    if (account) {
-      this.loadingDestinations_ = true;
-      this.fireAccountChange_(account);
-      this.metrics_.record(DestinationSearchBucket.ACCOUNT_CHANGED);
-    } else {
-      select.value = this.activeUser;
-      NativeLayerImpl.getInstance().signIn();
-      this.metrics_.record(DestinationSearchBucket.ADD_ACCOUNT_SELECTED);
-    }
-  }
-
   private onManageButtonClick_() {
-    this.metrics_.record(DestinationSearchBucket.MANAGE_BUTTON_CLICKED);
     NativeLayerImpl.getInstance().managePrinters();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'print-preview-destination-dialog': PrintPreviewDestinationDialogElement;
   }
 }
 

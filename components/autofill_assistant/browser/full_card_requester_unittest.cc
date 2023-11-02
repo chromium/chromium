@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/payments/card_unmask_delegate.h"
 #include "components/autofill/core/browser/payments/test_payments_client.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
+#include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/mock_personal_data_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
@@ -49,8 +50,9 @@ class FullCardRequesterTest : public testing::Test {
         &browser_context_, nullptr);
     autofill_client_.SetPrefs(autofill::test::PrefServiceForTesting());
     autofill::ContentAutofillDriverFactory::CreateForWebContentsAndDelegate(
-        web_contents_.get(), &autofill_client_, "en-US",
-        autofill::AutofillManager::DISABLE_AUTOFILL_DOWNLOAD_MANAGER);
+        web_contents_.get(), &autofill_client_,
+        base::BindRepeating(&autofill::BrowserDriverInitHook, &autofill_client_,
+                            "en-US"));
     autofill_client_.set_test_payments_client(
         std::make_unique<autofill::payments::TestPaymentsClient>(
             test_url_loader_factory_.GetSafeWeakWrapper(),
@@ -65,9 +67,9 @@ class FullCardRequesterTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   content::RenderViewHostTestEnabler rvh_test_enabler_;
   content::TestBrowserContext browser_context_;
+  MockAutofillClient autofill_client_;  // Needs to outlive the web_contents_.
   std::unique_ptr<content::WebContents> web_contents_;
   ::network::TestURLLoaderFactory test_url_loader_factory_;
-  MockAutofillClient autofill_client_;
   scoped_refptr<autofill::AutofillWebDataService> database_;
   MockPersonalDataManager personal_data_manager_;
   FullCardRequester full_card_requester_;

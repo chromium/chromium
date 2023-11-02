@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,8 +25,8 @@ class MockBookmarkModelObserver : public BookmarkModelObserver {
                     const BookmarkNode*,
                     size_t));
 
-  MOCK_METHOD3(BookmarkNodeAdded,
-               void(BookmarkModel*, const BookmarkNode*, size_t));
+  MOCK_METHOD4(BookmarkNodeAdded,
+               void(BookmarkModel*, const BookmarkNode*, size_t, bool));
 
   MOCK_METHOD5(BookmarkNodeRemoved,
                void(BookmarkModel*,

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
@@ -30,6 +30,7 @@
 #include "net/log/test_net_log_util.h"
 #include "net/socket/client_socket_factory.h"
 #include "net/socket/connect_job_test_util.h"
+#include "net/socket/next_proto.h"
 #include "net/socket/socket_tag.h"
 #include "net/socket/socket_test_util.h"
 #include "net/socket/socks_connect_job.h"
@@ -46,11 +47,12 @@
 #include "net/test/gtest_util.h"
 #include "net/test/test_data_directory.h"
 #include "net/test/test_with_task_environment.h"
-#include "net/third_party/quiche/src/spdy/core/spdy_protocol.h"
+#include "net/third_party/quiche/src/quiche/spdy/core/spdy_protocol.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
+#include "url/gurl.h"
 #include "url/scheme_host_port.h"
 
 using net::test::IsError;
@@ -90,7 +92,6 @@ static const char kRedirectUrl[] = "https://example.com/";
 base::WeakPtr<SpdySession> CreateSpdyProxySession(
     const url::SchemeHostPort& destination,
     HttpNetworkSession* http_session,
-    SpdySessionDependencies* session_deps,
     const SpdySessionKey& key,
     const CommonConnectJobParams* common_connect_job_params) {
   EXPECT_FALSE(http_session->spdy_session_pool()->FindAvailableSession(
@@ -98,14 +99,15 @@ base::WeakPtr<SpdySession> CreateSpdyProxySession(
       NetLogWithSource()));
 
   auto transport_params = base::MakeRefCounted<TransportSocketParams>(
-      destination, NetworkIsolationKey(), SecureDnsPolicy::kAllow,
-      OnHostResolutionCallback());
+      destination, NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+      OnHostResolutionCallback(),
+      /*supported_alpns=*/base::flat_set<std::string>{"h2", "http/1.1"});
 
   SSLConfig ssl_config;
   auto ssl_params = base::MakeRefCounted<SSLSocketParams>(
       transport_params, nullptr, nullptr,
       HostPortPair::FromSchemeHostPort(destination), ssl_config,
-      key.privacy_mode(), key.network_isolation_key());
+      key.privacy_mode(), key.network_anonymization_key());
   TestConnectJobDelegate connect_job_delegate;
   SSLConnectJob connect_job(MEDIUM, SocketTag(), common_connect_job_params,
                             ssl_params, &connect_job_delegate,
@@ -152,14 +154,16 @@ class SpdyProxyClientSocketTest : public PlatformTest,
   spdy::SpdySerializedFrame ConstructConnectAuthReplyFrame();
   spdy::SpdySerializedFrame ConstructConnectRedirectReplyFrame();
   spdy::SpdySerializedFrame ConstructConnectErrorReplyFrame();
-  spdy::SpdySerializedFrame ConstructBodyFrame(const char* data, int length);
+  spdy::SpdySerializedFrame ConstructBodyFrame(const char* data,
+                                               int length,
+                                               bool fin = false);
   scoped_refptr<IOBufferWithSize> CreateBuffer(const char* data, int size);
   void AssertConnectSucceeds();
   void AssertConnectFails(int result);
   void AssertConnectionEstablished();
   void AssertSyncReadEquals(const char* data, int len);
   void AssertSyncReadEOF();
-  void AssertAsyncReadEquals(const char* data, int len);
+  void AssertAsyncReadEquals(const char* data, int len, bool fin = false);
   void AssertReadStarts(const char* data, int len);
   void AssertReadReturns(const char* data, int len);
   void AssertAsyncWriteSucceeds(const char* data, int len);
@@ -170,8 +174,8 @@ class SpdyProxyClientSocketTest : public PlatformTest,
     const std::u16string kFoo(u"foo");
     const std::u16string kBar(u"bar");
     session_->http_auth_cache()->Add(
-        GURL(kProxyUrl), HttpAuth::AUTH_PROXY, "MyRealm1",
-        HttpAuth::AUTH_SCHEME_BASIC, NetworkIsolationKey(),
+        url::SchemeHostPort{GURL(kProxyUrl)}, HttpAuth::AUTH_PROXY, "MyRealm1",
+        HttpAuth::AUTH_SCHEME_BASIC, NetworkAnonymizationKey(),
         "Basic realm=MyRealm1", AuthCredentials(kFoo, kBar), "/");
   }
 
@@ -215,8 +219,7 @@ class SpdyProxyClientSocketTest : public PlatformTest,
 };
 
 SpdyProxyClientSocketTest::SpdyProxyClientSocketTest()
-    : read_buf_(nullptr),
-      connect_data_(SYNCHRONOUS, OK),
+    : connect_data_(SYNCHRONOUS, OK),
       user_agent_(kUserAgent),
       url_(kRequestUrl),
       proxy_host_port_(kProxyHost, kProxyPort),
@@ -227,7 +230,7 @@ SpdyProxyClientSocketTest::SpdyProxyClientSocketTest()
                                  PRIVACY_MODE_DISABLED,
                                  SpdySessionKey::IsProxySession::kFalse,
                                  SocketTag(),
-                                 NetworkIsolationKey(),
+                                 NetworkAnonymizationKey(),
                                  SecureDnsPolicy::kAllow),
       ssl_(SYNCHRONOUS, OK) {
   session_deps_.net_log = NetLog::Get();
@@ -258,6 +261,7 @@ void SpdyProxyClientSocketTest::Initialize(base::span<const MockRead> reads,
   ssl_.ssl_info.cert =
       ImportCertFromFile(GetTestCertsDirectory(), "spdy_pooling.pem");
   ASSERT_TRUE(ssl_.ssl_info.cert);
+  ssl_.next_proto = NextProto::kProtoHTTP2;
   session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_);
 
   session_ = SpdySessionDependencies::SpdyCreateSession(&session_deps_);
@@ -266,8 +270,8 @@ void SpdyProxyClientSocketTest::Initialize(base::span<const MockRead> reads,
 
   // Creates the SPDY session and stream.
   spdy_session_ = CreateSpdyProxySession(
-      url::SchemeHostPort(url_), session_.get(), &session_deps_,
-      endpoint_spdy_session_key_, common_connect_job_params_.get());
+      url::SchemeHostPort(url_), session_.get(), endpoint_spdy_session_key_,
+      common_connect_job_params_.get());
 
   base::WeakPtr<SpdyStream> spdy_stream(
       CreateStreamSynchronously(SPDY_BIDIRECTIONAL_STREAM, spdy_session_, url_,
@@ -278,9 +282,9 @@ void SpdyProxyClientSocketTest::Initialize(base::span<const MockRead> reads,
   sock_ = std::make_unique<SpdyProxyClientSocket>(
       spdy_stream, ProxyServer(ProxyServer::SCHEME_HTTPS, proxy_host_port_),
       user_agent_, endpoint_host_port_pair_, net_log_with_source_,
-      new HttpAuthController(
+      base::MakeRefCounted<HttpAuthController>(
           HttpAuth::AUTH_PROXY, GURL("https://" + proxy_host_port_.ToString()),
-          NetworkIsolationKey(), session_->http_auth_cache(),
+          NetworkAnonymizationKey(), session_->http_auth_cache(),
           session_->http_auth_handler_factory(), session_->host_resolver()),
       // Testing with the proxy delegate is in HttpProxyConnectJobTest.
       nullptr);
@@ -310,6 +314,13 @@ void SpdyProxyClientSocketTest::AssertConnectionEstablished() {
   const HttpResponseInfo* response = sock_->GetConnectResponseInfo();
   ASSERT_TRUE(response != nullptr);
   ASSERT_EQ(200, response->headers->response_code());
+  // Although the underlying HTTP/2 connection uses TLS and negotiates ALPN, the
+  // tunnel itself is a TCP connection to the origin and should not report these
+  // values.
+  net::SSLInfo ssl_info;
+  EXPECT_FALSE(sock_->GetSSLInfo(&ssl_info));
+  EXPECT_FALSE(sock_->WasAlpnNegotiated());
+  EXPECT_EQ(sock_->GetNegotiatedProtocol(), NextProto::kProtoUnknown);
 }
 
 void SpdyProxyClientSocketTest::AssertSyncReadEquals(const char* data,
@@ -334,7 +345,8 @@ void SpdyProxyClientSocketTest::AssertSyncReadEOF() {
 }
 
 void SpdyProxyClientSocketTest::AssertAsyncReadEquals(const char* data,
-                                                      int len) {
+                                                      int len,
+                                                      bool fin) {
   // Issue the read, which will be completed asynchronously
   scoped_refptr<IOBuffer> buf = base::MakeRefCounted<IOBuffer>(len);
   if (use_read_if_ready()) {
@@ -355,7 +367,13 @@ void SpdyProxyClientSocketTest::AssertAsyncReadEquals(const char* data,
   } else {
     EXPECT_EQ(len, read_callback_.WaitForResult());
   }
-  EXPECT_TRUE(sock_->IsConnected());
+
+  if (fin) {
+    EXPECT_FALSE(sock_->IsConnected());
+  } else {
+    EXPECT_TRUE(sock_->IsConnected());
+  }
+
   ASSERT_EQ(std::string(data, len), std::string(buf->data(), len));
 }
 
@@ -476,9 +494,10 @@ SpdyProxyClientSocketTest::ConstructConnectErrorReplyFrame() {
 
 spdy::SpdySerializedFrame SpdyProxyClientSocketTest::ConstructBodyFrame(
     const char* data,
-    int length) {
+    int length,
+    bool fin) {
   return spdy_util_.ConstructSpdyDataFrame(
-      kStreamId, base::StringPiece(data, length), false /* fin */);
+      kStreamId, base::StringPiece(data, length), fin);
 }
 
 // ----------- Connect
@@ -1486,7 +1505,7 @@ class DeleteSockCallback : public TestCompletionCallbackBase {
     SetResult(result);
   }
 
-  std::unique_ptr<SpdyProxyClientSocket>* sock_;
+  raw_ptr<std::unique_ptr<SpdyProxyClientSocket>> sock_;
 };
 
 // If the socket is Reset when both a read and write are pending, and the
@@ -1565,6 +1584,94 @@ TEST_P(SpdyProxyClientSocketTest, CancelReadIfReady) {
 
   // Canceling ReadIfReady() when none is in progress is an no-op.
   EXPECT_EQ(OK, sock_->CancelReadIfReady());
+}
+
+// ----------- Handling END_STREAM from the peer
+
+TEST_P(SpdyProxyClientSocketTest, HandleEndStreamAsEOF) {
+  spdy::SpdySerializedFrame conn(ConstructConnectRequestFrame());
+  spdy::SpdySerializedFrame end_stream(
+      ConstructBodyFrame(/*data=*/nullptr, /*length=*/0, /*fin=*/true));
+  MockWrite writes[] = {
+      CreateMockWrite(conn, 0, SYNCHRONOUS),
+      CreateMockWrite(end_stream, 7, SYNCHRONOUS),
+  };
+
+  spdy::SpdySerializedFrame resp(ConstructConnectReplyFrame());
+  spdy::SpdySerializedFrame msg1(ConstructBodyFrame(kMsg1, kLen1));
+  spdy::SpdySerializedFrame msg2(
+      ConstructBodyFrame(kMsg2, kLen2, /*fin=*/true));
+  MockRead reads[] = {
+      CreateMockRead(resp, 1, ASYNC), MockRead(ASYNC, ERR_IO_PENDING, 2),
+      CreateMockRead(msg1, 3, ASYNC), MockRead(ASYNC, ERR_IO_PENDING, 4),
+      CreateMockRead(msg2, 5, ASYNC), MockRead(SYNCHRONOUS, ERR_IO_PENDING, 6),
+  };
+
+  Initialize(reads, writes);
+
+  AssertConnectSucceeds();
+
+  AssertAsyncReadEquals(kMsg1, kLen1);
+  AssertAsyncReadEquals(kMsg2, kLen2, /*fin=*/true);
+}
+
+TEST_P(SpdyProxyClientSocketTest, SendEndStreamAfterWrite) {
+  spdy::SpdySerializedFrame conn(ConstructConnectRequestFrame());
+  spdy::SpdySerializedFrame write_msg(ConstructBodyFrame(kMsg1, kLen1));
+  spdy::SpdySerializedFrame end_stream(
+      ConstructBodyFrame(/*data=*/nullptr, /*length=*/0, /*fin=*/true));
+  MockWrite writes[] = {
+      CreateMockWrite(conn, 0, SYNCHRONOUS),
+      CreateMockWrite(write_msg, 4, ASYNC),
+      CreateMockWrite(end_stream, 6, ASYNC),
+  };
+
+  spdy::SpdySerializedFrame resp(ConstructConnectReplyFrame());
+  spdy::SpdySerializedFrame read_msg(
+      ConstructBodyFrame(kMsg2, kLen2, /*fin=*/true));
+  MockRead reads[] = {
+      CreateMockRead(resp, 1, ASYNC),     MockRead(ASYNC, ERR_IO_PENDING, 2),
+      CreateMockRead(read_msg, 3, ASYNC), MockRead(ASYNC, ERR_IO_PENDING, 5),
+      MockRead(SYNCHRONOUS, 0, 7),
+  };
+
+  Initialize(reads, writes);
+
+  AssertConnectSucceeds();
+
+  AssertWriteReturns(kMsg1, kLen1, ERR_IO_PENDING);
+  AssertAsyncReadEquals(kMsg2, kLen2, /*fin=*/false);
+  ResumeAndRun();
+  AssertWriteLength(kLen1);
+  AssertSyncReadEOF();
+}
+
+// Regression test for https://crbug.com/1320256
+TEST_P(SpdyProxyClientSocketTest, WriteAfterStreamEndSent) {
+  spdy::SpdySerializedFrame conn(ConstructConnectRequestFrame());
+  MockWrite writes[] = {
+      CreateMockWrite(conn, 0, SYNCHRONOUS),
+      // The following mock write blocks SpdyStream::SendData() in
+      // SpdyProxyClientSocket::MaybeSendEndStream().
+      MockWrite(SYNCHRONOUS, ERR_IO_PENDING, 5),
+  };
+
+  spdy::SpdySerializedFrame resp(ConstructConnectReplyFrame());
+  spdy::SpdySerializedFrame read_msg(
+      ConstructBodyFrame(kMsg1, kLen1, /*fin=*/true));
+  MockRead reads[] = {
+      CreateMockRead(resp, 1, ASYNC),
+      MockRead(ASYNC, ERR_IO_PENDING, 2),
+      CreateMockRead(read_msg, 3, ASYNC),
+      MockRead(SYNCHRONOUS, ERR_IO_PENDING, 4),
+  };
+
+  Initialize(reads, writes);
+
+  AssertConnectSucceeds();
+
+  AssertAsyncReadEquals(kMsg1, kLen1);
+  AssertWriteReturns(kMsg2, kLen2, ERR_CONNECTION_CLOSED);
 }
 
 }  // namespace net

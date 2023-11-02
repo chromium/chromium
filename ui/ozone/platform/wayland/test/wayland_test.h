@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -17,8 +18,8 @@
 #include "ui/ozone/platform/wayland/gpu/wayland_surface_factory.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
+#include "ui/ozone/platform/wayland/test/mock_wayland_platform_window_delegate.h"
 #include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"
-#include "ui/ozone/test/mock_platform_window_delegate.h"
 
 #if BUILDFLAG(USE_XKBCOMMON)
 #include "ui/events/ozone/layout/xkb/xkb_evdev_codes.h"
@@ -51,10 +52,12 @@ class WaylandTest : public ::testing::TestWithParam<wl::ServerConfig> {
   void Sync();
 
  protected:
+  void SetPointerFocusedWindow(WaylandWindow* window);
+  void SetKeyboardFocusedWindow(WaylandWindow* window);
+
   // Sends configure event for the |xdg_surface|.
   void SendConfigureEvent(wl::MockXdgSurface* xdg_surface,
-                          int width,
-                          int height,
+                          const gfx::Size& size,
                           uint32_t serial,
                           struct wl_array* states);
 
@@ -63,12 +66,15 @@ class WaylandTest : public ::testing::TestWithParam<wl::ServerConfig> {
   // height of the surface.
   void ActivateSurface(wl::MockXdgSurface* xdg_surface);
 
+  // Initializes SurfaceAugmenter in |server_|.
+  void InitializeSurfaceAugmenter();
+
   base::test::TaskEnvironment task_environment_;
 
   wl::TestWaylandServerThread server_;
-  wl::MockSurface* surface_;
+  raw_ptr<wl::MockSurface> surface_;
 
-  MockPlatformWindowDelegate delegate_;
+  MockWaylandPlatformWindowDelegate delegate_;
   std::unique_ptr<ScopedKeyboardLayoutEngine> scoped_keyboard_layout_engine_;
   std::unique_ptr<WaylandSurfaceFactory> surface_factory_;
   std::unique_ptr<WaylandBufferManagerGpu> buffer_manager_gpu_;
@@ -76,8 +82,9 @@ class WaylandTest : public ::testing::TestWithParam<wl::ServerConfig> {
   std::unique_ptr<WaylandScreen> screen_;
   std::unique_ptr<WaylandWindow> window_;
   gfx::AcceleratedWidget widget_ = gfx::kNullAcceleratedWidget;
-  std::vector<base::Feature> enabled_features_{ui::kWaylandOverlayDelegation};
-  std::vector<base::Feature> disabled_features_;
+  std::vector<base::test::FeatureRef> enabled_features_{
+      ui::kWaylandOverlayDelegation};
+  std::vector<base::test::FeatureRef> disabled_features_;
 
  private:
   bool initialized_ = false;

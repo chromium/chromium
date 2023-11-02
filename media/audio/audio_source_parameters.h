@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,15 +23,7 @@ struct MEDIA_EXPORT AudioSourceParameters final {
   ~AudioSourceParameters();
 
   base::UnguessableToken session_id;
-
-  struct MEDIA_EXPORT ProcessingConfig {
-    ProcessingConfig(base::UnguessableToken id,
-                     AudioProcessingSettings settings);
-    base::UnguessableToken id;
-    AudioProcessingSettings settings;
-  };
-
-  absl::optional<ProcessingConfig> processing;
+  absl::optional<AudioProcessingSettings> processing;
 };
 
 }  // namespace media

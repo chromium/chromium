@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/ui/omnibox/popup/autocomplete_suggestion.h"
 
 struct AutocompleteMatch;
+@class OmniboxPedalData;
 
 @interface AutocompleteMatchFormatter : NSObject <AutocompleteSuggestion>
 
@@ -19,12 +20,18 @@ struct AutocompleteMatch;
 // some cases
 @property(nonatomic, assign) BOOL defaultSearchEngineIsGoogle;
 
+// The pedal data for the underlying match.
+@property(nonatomic, strong) OmniboxPedalData* pedalData;
+
 - (instancetype)initWithMatch:(const AutocompleteMatch&)match
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 // Convenience constuctor.
 + (instancetype)formatterWithMatch:(const AutocompleteMatch&)match;
+
+// Underlying match.
+- (const AutocompleteMatch&)autocompleteMatch;
 
 @end
 

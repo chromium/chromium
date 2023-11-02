@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,12 +14,31 @@ namespace quick_pair {
 class FakeBluetoothAdapter
     : public testing::NiceMock<device::MockBluetoothAdapter> {
  public:
-  void NotifyPoweredChanged(bool powered) {
-    device::BluetoothAdapter::NotifyAdapterPoweredChanged(powered);
-  }
+  void NotifyPoweredChanged(bool powered);
+
+  bool IsPowered() const override;
+
+  bool IsPresent() const override;
+
+  void SetBluetoothIsPowered(bool powered);
+
+  void SetBluetoothIsPresent(bool present);
+
+  device::BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus
+  GetLowEnergyScanSessionHardwareOffloadingStatus() override;
+
+  void SetHardwareOffloadingStatus(
+      device::BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus
+          hardware_offloading_status);
 
  private:
   ~FakeBluetoothAdapter() = default;
+
+  bool is_bluetooth_powered_ = false;
+  bool is_bluetooth_present_ = true;
+  device::BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus
+      hardware_offloading_status_ = device::BluetoothAdapter::
+          LowEnergyScanSessionHardwareOffloadingStatus::kSupported;
 };
 
 }  // namespace quick_pair

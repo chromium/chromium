@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <map>
 #include <vector>
 
-#include "base/cxx17_backports.h"
+#include "ash/components/arc/arc_prefs.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_string_value_serializer.h"
@@ -25,7 +25,6 @@
 #include "chrome/browser/profiles/reporting_util.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/system/fake_statistics_provider.h"
-#include "components/arc/arc_prefs.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
@@ -97,17 +96,16 @@ bool ContainsSameEvents(const Events& expected,
   return true;
 }
 
-base::Value ConvertEventsToValue(const Events& events, Profile* profile) {
-  base::Value context = reporting::GetContext(profile);
-  base::Value event_list(base::Value::Type::LIST);
+base::Value::List ConvertEventsToValue(const Events& events, Profile* profile) {
+  base::Value::Dict context = reporting::GetContext(profile);
+  base::Value::List event_list;
 
   for (auto it = events.begin(); it != events.end(); ++it) {
     const std::string& package = (*it).first;
     for (const em::AppInstallReportLogEvent& app_install_report_log_event :
          (*it).second) {
-      base::Value wrapper;
-      wrapper = ConvertArcAppEventToValue(package, app_install_report_log_event,
-                                          context);
+      base::Value::Dict wrapper = ConvertArcAppEventToValue(
+          package, app_install_report_log_event, context);
       event_list.Append(std::move(wrapper));
     }
   }
@@ -167,7 +165,6 @@ class ArcAppInstallEventLogManagerTest : public testing::Test {
         log_task_runner_(log_task_runner_wrapper_.test_task_runner()),
         log_file_path_(profile_.GetPath().Append(kLogFileName)),
         packages_{std::begin(kPackageNames), std::end(kPackageNames)},
-        events_value_(base::Value::Type::DICTIONARY),
         scoped_fake_statistics_provider_(
             std::make_unique<
                 chromeos::system::ScopedFakeStatisticsProvider>()) {}
@@ -204,7 +201,7 @@ class ArcAppInstallEventLogManagerTest : public testing::Test {
 
   void AddLogEntry(int app_index) {
     ASSERT_GE(app_index, 0);
-    ASSERT_LT(app_index, static_cast<int>(base::size(kPackageNames)));
+    ASSERT_LT(app_index, static_cast<int>(std::size(kPackageNames)));
     const std::string package_name = kPackageNames[app_index];
     events_[package_name].push_back(event_);
     manager_->Add({kPackageNames[app_index]}, event_);
@@ -223,17 +220,10 @@ class ArcAppInstallEventLogManagerTest : public testing::Test {
 
   void AddLogEntryForAllApps() { AddLogEntryForsetOfApps(packages_); }
 
-  void ClearEventsDict() {
-    base::DictionaryValue* mutable_dict;
-    if (events_value_.GetAsDictionary(&mutable_dict))
-      mutable_dict->Clear();
-    else
-      NOTREACHED();
-  }
-
   void BuildReport() {
-    base::Value event_list = ConvertEventsToValue(events_, /*profile=*/nullptr);
-    base::Value context = reporting::GetContext(/*profile=*/nullptr);
+    base::Value::List event_list =
+        ConvertEventsToValue(events_, /*profile=*/nullptr);
+    base::Value::Dict context = reporting::GetContext(/*profile=*/nullptr);
 
     events_value_ = RealtimeReportingJobConfiguration::BuildReport(
         std::move(event_list), std::move(context));
@@ -241,7 +231,7 @@ class ArcAppInstallEventLogManagerTest : public testing::Test {
 
   void ExpectUploadAndCaptureCallback(
       CloudPolicyClient::StatusCallback* callback) {
-    ClearEventsDict();
+    events_value_.clear();
     BuildReport();
 
     EXPECT_CALL(cloud_policy_client_,
@@ -255,15 +245,15 @@ class ArcAppInstallEventLogManagerTest : public testing::Test {
   }
 
   void ExpectAndCompleteUpload() {
-    ClearEventsDict();
+    events_value_.clear();
     BuildReport();
 
     EXPECT_CALL(cloud_policy_client_,
                 UploadAppInstallReport_(MatchEvents(&events_value_), _))
-        .WillOnce(Invoke(
-            [](base::Value&, CloudPolicyClient::StatusCallback& callback) {
-              std::move(callback).Run(true /* success */);
-            }));
+        .WillOnce(Invoke([](base::Value::Dict&,
+                            CloudPolicyClient::StatusCallback& callback) {
+          std::move(callback).Run(true /* success */);
+        }));
   }
 
   void FlushNonDelayedTasks() {
@@ -316,7 +306,7 @@ class ArcAppInstallEventLogManagerTest : public testing::Test {
 
   const base::FilePath log_file_path_;
   const std::set<std::string> packages_;
-  base::Value events_value_;
+  base::Value::Dict events_value_;
   std::unique_ptr<chromeos::system::ScopedFakeStatisticsProvider>
       scoped_fake_statistics_provider_;
 
@@ -521,7 +511,7 @@ TEST_F(ArcAppInstallEventLogManagerTest, AddToTriggerTotalSizeExpedited) {
   FastForwardTo(offset);
   int i = 0;
   while (i <= kTotalSizeExpeditedUploadThreshold) {
-    for (int j = 0; j < static_cast<int>(base::size(kPackageNames)); ++i, ++j) {
+    for (int j = 0; j < static_cast<int>(std::size(kPackageNames)); ++i, ++j) {
       AddLogEntry(j /* app_index */);
     }
   }
@@ -557,7 +547,7 @@ TEST_F(ArcAppInstallEventLogManagerTest,
   const base::TimeDelta offset = base::Minutes(20);
   FastForwardTo(offset);
   for (int i = 0; i <= kTotalSizeExpeditedUploadThreshold;
-       i += base::size(kPackageNames)) {
+       i += std::size(kPackageNames)) {
     AddLogEntryForAllApps();
   }
 

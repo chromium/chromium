@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include "base/callback_forward.h"
 #include "base/sequence_checker.h"
-#include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -24,7 +23,7 @@ class BlobDataHandle;
 namespace content {
 
 // Helper class to read a data url from a BlobDataHandle.
-class CONTENT_EXPORT DataURLBlobReader : public mojo::DataPipeDrainer::Client {
+class DataURLBlobReader : public mojo::DataPipeDrainer::Client {
  public:
   using ReadCompletionCallback = base::OnceCallback<void(GURL)>;
 

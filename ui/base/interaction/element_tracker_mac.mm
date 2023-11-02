@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,12 @@
 #include <memory>
 
 #include "base/logging.h"
+#include "base/no_destructor.h"
+#include "ui/base/interaction/element_identifier.h"
 
 namespace ui {
 
-DEFINE_ELEMENT_TRACKER_METADATA(TrackedElementMac)
+DEFINE_FRAMEWORK_SPECIFIC_METADATA(TrackedElementMac)
 
 TrackedElementMac::TrackedElementMac(ElementIdentifier identifier,
                                      ElementContext context,
@@ -110,6 +112,14 @@ void ElementTrackerMac::NotifyMenuItemHidden(NSMenu* menu,
   const ElementContext context = GetContextForMenu(menu);
   if (context)
     context_to_data_[context]->HideElement(identifier);
+}
+
+NSMenu* ElementTrackerMac::GetRootMenuForContext(ElementContext context) {
+  for (auto [menu, menu_context] : root_menu_to_context_) {
+    if (menu_context == context)
+      return menu;
+  }
+  return nullptr;
 }
 
 ElementTrackerMac::ElementTrackerMac() = default;

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,7 @@
 
 #include <stddef.h>
 
-namespace base {
-class ListValue;
-}
+#include "base/values.h"
 
 class UploadList;
 
@@ -38,7 +36,7 @@ extern const char kCrashesUIUpdateCrashList[];
 extern const char kCrashesUIRequestSingleCrashUpload[];
 
 // Converts and appends the most recent uploads to |out_value|.
-void UploadListToValue(UploadList* upload_list, base::ListValue* out_value);
+void UploadListToValue(UploadList* upload_list, base::Value::List* out_value);
 
 }  // namespace crash_reporter
 

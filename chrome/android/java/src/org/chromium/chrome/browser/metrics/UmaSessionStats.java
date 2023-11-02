@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@ import android.Manifest;
 import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.res.Configuration;
+
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
@@ -24,9 +25,10 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.variations.SyntheticTrialAnnotationMode;
 import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.ui.base.AndroidPermissionDelegate;
+import org.chromium.ui.permissions.AndroidPermissionDelegate;
 import org.chromium.url.GURL;
 
 /**
@@ -246,9 +248,22 @@ public class UmaSessionStats {
     }
 
     public static void registerSyntheticFieldTrial(String trialName, String groupName) {
-        Log.d(TAG, "registerSyntheticFieldTrial(%s, %s)", trialName, groupName);
+        registerSyntheticFieldTrial(trialName, groupName, SyntheticTrialAnnotationMode.NEXT_LOG);
+    }
+
+    /**
+     * Registers a synthetic field trial with the given trial name, group name, and annotation mode.
+     * If {@code annotationMode} is set to {@link SyntheticTrialAnnotationMode#CURRENT_LOG}, the
+     * metrics logs that are open at the time this method is called (if any) will be annotated with
+     * the synthetic trial. Otherwise, only logs that opened after the registration of the synthetic
+     * trial will be annotated. See C++ SyntheticTrialRegistry::RegisterSyntheticFieldTrial() for
+     * more details.
+     */
+    public static void registerSyntheticFieldTrial(
+            String trialName, String groupName, @SyntheticTrialAnnotationMode int annotationMode) {
+        Log.d(TAG, "registerSyntheticFieldTrial(%s, %s, %d)", trialName, groupName, annotationMode);
         assert isMetricsServiceAvailable();
-        UmaSessionStatsJni.get().registerSyntheticFieldTrial(trialName, groupName);
+        UmaSessionStatsJni.get().registerSyntheticFieldTrial(trialName, groupName, annotationMode);
     }
 
     /**
@@ -280,7 +295,8 @@ public class UmaSessionStats {
         void umaEndSession(long nativeUmaSessionStats, UmaSessionStats caller);
         void registerExternalExperiment(
                 String studyName, int[] experimentIds, boolean overrideExistingIds);
-        void registerSyntheticFieldTrial(String trialName, String groupName);
+        void registerSyntheticFieldTrial(String trialName, String groupName,
+                @SyntheticTrialAnnotationMode int annotationMode);
         void recordTabCountPerLoad(int numTabsOpen);
         void recordPageLoaded(boolean isDesktopUserAgent);
         void recordPageLoadedWithKeyboard();

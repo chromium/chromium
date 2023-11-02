@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define COMPONENTS_BROWSING_DATA_CORE_COUNTERS_SYNC_TRACKER_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "components/sync/driver/sync_service_observer.h"
 
 namespace browsing_data {
@@ -31,8 +32,8 @@ class SyncTracker : public syncer::SyncServiceObserver {
   void OnStateChanged(syncer::SyncService* sync) override;
   void OnSyncShutdown(syncer::SyncService* sync) override;
 
-  BrowsingDataCounter* counter_;
-  syncer::SyncService* sync_service_;
+  raw_ptr<BrowsingDataCounter> counter_;
+  raw_ptr<syncer::SyncService> sync_service_;
   SyncPredicate predicate_;
   bool sync_enabled_;
 };

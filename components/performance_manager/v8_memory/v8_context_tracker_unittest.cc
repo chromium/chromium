@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,9 @@
 #include <string>
 #include <utility>
 
-#include "base/stl_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/gtest_util.h"
+#include "base/types/optional_util.h"
 #include "components/performance_manager/execution_context/execution_context_registry_impl.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
@@ -67,7 +68,7 @@ class V8ContextTrackerTest : public GraphTestHarness {
         std::make_unique<MockSinglePageWithMultipleProcessesGraph>(graph());
   }
 
-  execution_context::ExecutionContextRegistry* registry_ = nullptr;
+  raw_ptr<execution_context::ExecutionContextRegistry> registry_ = nullptr;
   V8ContextTracker* tracker_ = nullptr;
   std::unique_ptr<MockSinglePageWithMultipleProcessesGraph> mock_graph_;
 };

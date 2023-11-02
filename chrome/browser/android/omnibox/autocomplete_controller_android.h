@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,9 @@
 #include <memory>
 
 #include "base/android/jni_android.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_input.h"
@@ -46,9 +47,10 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
              bool prevent_inline_autocomplete,
              bool prefer_keyword,
              bool allow_exact_keyword_match,
-             bool want_asynchronous_matches,
-             const base::android::JavaRef<jstring>& j_query_tile_id,
-             bool is_query_started_from_tiles);
+             bool want_asynchronous_matches);
+  void StartPrefetch(JNIEnv* env,
+                     const base::android::JavaRef<jstring>& j_current_url,
+                     jint j_page_classification);
   base::android::ScopedJavaLocalRef<jobject> Classify(
       JNIEnv* env,
       const base::android::JavaParamRef<jstring>& j_text,
@@ -64,24 +66,25 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
 
   void OnSuggestionSelected(
       JNIEnv* env,
-      jint selected_index,
+      jint match_index,
       const jint j_window_open_disposition,
       const base::android::JavaParamRef<jstring>& j_current_url,
       jint j_page_classification,
       jlong elapsed_time_since_first_modified,
       jint completed_length,
       const base::android::JavaParamRef<jobject>& j_web_contents);
-  void DeleteSuggestion(JNIEnv* env, jint selected_index);
+  void DeleteMatch(JNIEnv* env, jint match_index);
+  void DeleteMatchElement(JNIEnv* env, jint match_index, jint element_index);
   base::android::ScopedJavaLocalRef<jobject>
   UpdateMatchDestinationURLWithAdditionalAssistedQueryStats(
       JNIEnv* env,
-      jint selected_index,
+      jint match_index,
       jlong elapsed_time_since_input_change,
       const base::android::JavaParamRef<jstring>& jnew_query_text,
       const base::android::JavaParamRef<jobjectArray>& jnew_query_params);
   base::android::ScopedJavaLocalRef<jobject> GetMatchingTabForSuggestion(
       JNIEnv* env,
-      jint index);
+      jint match_index);
 
   // KeyedService:
   void Shutdown() override;
@@ -94,14 +97,10 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject() const;
 
-  class Factory : public BrowserContextKeyedServiceFactory {
+  class Factory : public ProfileKeyedServiceFactory {
    public:
     static AutocompleteControllerAndroid* GetForProfile(Profile* profile);
     static Factory* GetInstance();
-
-   protected:
-    content::BrowserContext* GetBrowserContextToUse(
-        content::BrowserContext* context) const override;
 
    private:
     friend struct base::DefaultSingletonTraits<Factory>;
@@ -138,15 +137,11 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
   // from Classify().
   bool inside_synchronous_start_{false};
 
-  // Whether the omnibox input is a query that starts building
-  // by clicking on an image tile.
-  bool is_query_started_from_tiles_{false};
-
   // The Profile associated with this instance of AutocompleteControllerAndroid.
   // There should be only one instance of AutocompleteControllerAndroid per
   // Profile. This is orchestrated by AutocompleteControllerFactory java class.
   // Guaranteed to be non-null.
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
 
   // Direct reference to AutocompleteController java class. Kept for as long as
   // this instance of AutocompleteControllerAndroid lives: until corresponding
@@ -158,7 +153,7 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
 
   // Associated AutocompleteProviderClient.
   // Guaranteed to be non-null.
-  ChromeAutocompleteProviderClient* const provider_client_;
+  const raw_ptr<ChromeAutocompleteProviderClient> provider_client_;
 
   // AutocompleteController associated with this client. As this is directly
   // associated with the |provider_client_| and indirectly with |profile_|

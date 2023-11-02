@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,7 +29,7 @@ ScriptPromise InternalsDeleteAllCookies::deleteAllCookies(
   // Get the interface so `cookie_manager` can be moved below.
   test::mojom::blink::CookieManagerAutomation* raw_cookie_manager =
       cookie_manager.get();
-  raw_cookie_manager->DeleteAllCookies(WTF::Bind(
+  raw_cookie_manager->DeleteAllCookies(WTF::BindOnce(
       [](ScriptPromiseResolver* resolver,
          mojo::Remote<test::mojom::blink::CookieManagerAutomation>) {
         resolver->Resolve();

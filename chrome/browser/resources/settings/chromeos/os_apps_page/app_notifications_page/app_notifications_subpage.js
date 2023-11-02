@@ -1,24 +1,27 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import './app_notification_row.js';
 import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+import 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-lite.js';
 import 'chrome://resources/mojo/skia/public/mojom/image_info.mojom-lite.js';
 import 'chrome://resources/mojo/skia/public/mojom/bitmap.mojom-lite.js';
 import 'chrome://resources/mojo/url/mojom/url.mojom-lite.js';
 import '/app-management/file_path.mojom-lite.js';
 import '/app-management/image.mojom-lite.js';
+import '/app-management/safe_base_name.mojom-lite.js';
 import '/app-management/types.mojom-lite.js';
 import '/os_apps_page/app_notification_handler.mojom-lite.js';
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {Setting} from '../../../mojom-webui/setting.mojom-webui.js';
 import {Route, Router} from '../../../router.js';
-import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../../deep_linking_behavior.m.js';
-import {recordSettingChange} from '../../metrics_recorder.m.js';
-import {routes} from '../../os_route.m.js';
+import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../../deep_linking_behavior.js';
+import {recordSettingChange} from '../../metrics_recorder.js';
+import {routes} from '../../os_route.js';
 import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../../route_observer_behavior.js';
 import {isAppInstalled} from '../os_apps_page.js';
 
@@ -74,12 +77,12 @@ export class AppNotificationsSubpage extends AppNotificationsSubpageBase {
 
       /**
        * Used by DeepLinkingBehavior to focus this page's deep links.
-       * @type {!Set<!chromeos.settings.mojom.Setting>}
+       * @type {!Set<!Setting>}
        */
       supportedSettingIds: {
         type: Object,
         value: () => new Set([
-          chromeos.settings.mojom.Setting.kDoNotDisturbOnOff,
+          Setting.kDoNotDisturbOnOff,
         ]),
       },
     };
@@ -94,7 +97,7 @@ export class AppNotificationsSubpage extends AppNotificationsSubpageBase {
     /**
      * Receiver responsible for observing app notification events.
      * @private {
-     *    ?chromeos.settings.appNotification.mojom.
+     *    ?ash.settings.appNotification.mojom.
      *    AppNotificationsObserverReceiver
      * }
      */
@@ -105,7 +108,9 @@ export class AppNotificationsSubpage extends AppNotificationsSubpageBase {
   connectedCallback() {
     super.connectedCallback();
     this.startObservingAppNotifications_();
-    this.mojoInterfaceProvider_.notifyPageReady();
+    this.mojoInterfaceProvider_.getQuietMode().then((result) => {
+      this.isDndEnabled_ = result.enabled;
+    });
     this.mojoInterfaceProvider_.getApps().then((result) => {
       this.appList_ = result.apps;
     });
@@ -132,23 +137,22 @@ export class AppNotificationsSubpage extends AppNotificationsSubpageBase {
   /** @private */
   startObservingAppNotifications_() {
     this.appNotificationsObserverReceiver_ =
-        new chromeos.settings.appNotification.mojom
-            .AppNotificationsObserverReceiver(
-                /**
-                 * @type {!chromeos.settings.appNotification.mojom.
-                 * AppNotificationsObserverInterface}
-                 */
-                (this));
+        new ash.settings.appNotification.mojom.AppNotificationsObserverReceiver(
+            /**
+             * @type {!ash.settings.appNotification.mojom.
+             * AppNotificationsObserverInterface}
+             */
+            (this));
     this.mojoInterfaceProvider_.addObserver(
         this.appNotificationsObserverReceiver_.$.bindNewPipeAndPassRemote());
   }
 
-  /** Override chromeos.settings.appNotification.onQuietModeChanged */
+  /** Override ash.settings.appNotification.onQuietModeChanged */
   onQuietModeChanged(enabled) {
     this.isDndEnabled_ = enabled;
   }
 
-  /** Override chromeos.settings.appNotification.onNotificationAppChanged */
+  /** Override ash.settings.appNotification.onNotificationAppChanged */
   onNotificationAppChanged(updatedApp) {
     // Using Polymer mutation methods do not properly handle splice updates with
     // object that have deep properties. Create and assign a copy list instead.
@@ -178,8 +182,7 @@ export class AppNotificationsSubpage extends AppNotificationsSubpageBase {
     this.isDndEnabled_ = !this.isDndEnabled_;
     this.mojoInterfaceProvider_.setQuietMode(this.isDndEnabled_);
     recordSettingChange(
-        chromeos.settings.mojom.Setting.kDoNotDisturbOnOff,
-        {boolValue: this.isDndEnabled_});
+        Setting.kDoNotDisturbOnOff, {boolValue: this.isDndEnabled_});
   }
 
   /**

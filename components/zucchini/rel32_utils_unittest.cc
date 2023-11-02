@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,6 +42,11 @@ void CheckReader(const std::vector<Reference>& expected_refs,
   }
   EXPECT_EQ(absl::nullopt, reader->GetNext());  // Nothing should be left.
 }
+
+using ArmCopyDispFun = bool (*)(ConstBufferView src_view,
+                                offset_t src_idx,
+                                MutableBufferView dst_view,
+                                offset_t dst_idx);
 
 // Copies displacements from |bytes1| to |bytes2| and checks results against
 // |bytes_exp_1_to_2|. Then repeats for |*bytes2| , |*byte1|, and

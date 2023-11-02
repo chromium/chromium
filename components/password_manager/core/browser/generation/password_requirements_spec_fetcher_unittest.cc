@@ -1,9 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/password_manager/core/browser/generation/password_requirements_spec_fetcher_impl.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -70,7 +71,7 @@ TEST(PasswordRequirementsSpecFetcherTest, FetchData) {
     net::HttpStatusCode response_status = net::HTTP_OK;
 
     // Expected spec.
-    PasswordRequirementsSpec* expected_spec;
+    raw_ptr<PasswordRequirementsSpec> expected_spec;
     ResultCode expected_result;
   } tests[] = {
       {

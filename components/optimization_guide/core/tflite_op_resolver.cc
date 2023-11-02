@@ -1,11 +1,17 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #include "components/optimization_guide/core/tflite_op_resolver.h"
 
+#include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "third_party/tflite/src/tensorflow/lite/c/common.h"
 #include "third_party/tflite/src/tensorflow/lite/kernels/builtin_op_kernels.h"
 #include "third_party/tflite/src/tensorflow/lite/schema/schema_generated.h"
+
+#if BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
+#include "third_party/tflite/src/tensorflow/lite/tflite_with_xnnpack_optional.h"
+#endif
 
 namespace optimization_guide {
 
@@ -371,6 +377,18 @@ TFLiteOpResolver::TFLiteOpResolver() {
              tflite::ops::builtin::Register_BATCH_MATMUL(),
              /* min_version = */ 1,
              /* max_version = */ 4);
+  AddBuiltin(tflite::BuiltinOperator_GELU,
+             tflite::ops::builtin::Register_GELU(),
+             /* min_version = */ 1,
+             /* max_version = */ 2);
+
+#if BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
+  if (features::TFLiteXNNPACKDelegateEnabled()) {
+    delegate_creators_.push_back([](int num_threads) {
+      return tflite::MaybeCreateXNNPACKDelegate(num_threads);
+    });
+  }
+#endif
 }
 
 }  // namespace optimization_guide

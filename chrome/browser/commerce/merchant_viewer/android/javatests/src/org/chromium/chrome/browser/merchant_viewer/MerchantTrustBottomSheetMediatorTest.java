@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -66,6 +66,7 @@ import org.chromium.url.GURL;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@SuppressWarnings("DoNotMock") // Mocking GURL
 public class MerchantTrustBottomSheetMediatorTest {
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
@@ -258,7 +259,8 @@ public class MerchantTrustBottomSheetMediatorTest {
 
         assertNull(mToolbarModel.get(BottomSheetToolbarProperties.FAVICON_ICON_DRAWABLE));
 
-        mWebContentsObserverCaptor.getValue().didStartNavigation(mMockNavigationHandle);
+        mWebContentsObserverCaptor.getValue().didStartNavigationInPrimaryMainFrame(
+                mMockNavigationHandle);
         verify(mMockMetrics, times(1)).recordNavigateLinkOnBottomSheet();
         verify(mMockFaviconHelper, times(1))
                 .getLocalFaviconImageForURL(any(Profile.class), any(GURL.class), anyInt(),
@@ -285,24 +287,14 @@ public class MerchantTrustBottomSheetMediatorTest {
 
     @Test
     public void testWebContentsObserverDidFinishNavigation() {
-        doReturn(false).when(mMockNavigationHandle).isInPrimaryMainFrame();
         doReturn(false).when(mMockNavigationHandle).hasCommitted();
-        mWebContentsObserverCaptor.getValue().didFinishNavigation(mMockNavigationHandle);
+        mWebContentsObserverCaptor.getValue().didFinishNavigationInPrimaryMainFrame(
+                mMockNavigationHandle);
         assertEquals(null, mToolbarModel.get(BottomSheetToolbarProperties.URL));
 
-        doReturn(true).when(mMockNavigationHandle).isInPrimaryMainFrame();
-        doReturn(false).when(mMockNavigationHandle).hasCommitted();
-        mWebContentsObserverCaptor.getValue().didFinishNavigation(mMockNavigationHandle);
-        assertEquals(null, mToolbarModel.get(BottomSheetToolbarProperties.URL));
-
-        doReturn(false).when(mMockNavigationHandle).isInPrimaryMainFrame();
         doReturn(true).when(mMockNavigationHandle).hasCommitted();
-        mWebContentsObserverCaptor.getValue().didFinishNavigation(mMockNavigationHandle);
-        assertEquals(null, mToolbarModel.get(BottomSheetToolbarProperties.URL));
-
-        doReturn(true).when(mMockNavigationHandle).isInPrimaryMainFrame();
-        doReturn(true).when(mMockNavigationHandle).hasCommitted();
-        mWebContentsObserverCaptor.getValue().didFinishNavigation(mMockNavigationHandle);
+        mWebContentsObserverCaptor.getValue().didFinishNavigationInPrimaryMainFrame(
+                mMockNavigationHandle);
         assertEquals(mMockDestinationGurl, mToolbarModel.get(BottomSheetToolbarProperties.URL));
     }
 }

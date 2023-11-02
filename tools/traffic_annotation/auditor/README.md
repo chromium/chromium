@@ -1,7 +1,7 @@
 # Network Traffic Annotation Auditor
 
 THIS CODEBASE IS DEPRECATED. It will be removed soon(ish). The new
-implementation can be found at `tools/traffic_annotation/auditor/auditor.py`. It
+implementation can be found at `tools/traffic_annotation/scripts/auditor/auditor.py`. It
 is a drop-in replacement for traffic_annotation_auditor, so you can run it with
 the same command-line arguments, etc.
 

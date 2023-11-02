@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
@@ -27,10 +27,10 @@ namespace protocol {
 class AudioStub;
 class AudioSource;
 
-// AudioPump is responsible for fetching audio data from the AudioCapturer
-// and encoding it before passing it to the AudioStub for delivery to the
-// client. Audio data will be downmixed to stereo if needed. Audio is captured
-// and encoded on the audio thread and then passed to AudioStub on the network
+// AudioPump is responsible for fetching audio data from the AudioCapturer and
+// encoding it before passing it to the AudioStub for delivery to the client.
+// Audio data will be downmixed to stereo if needed. Audio is captured and
+// encoded on the audio thread and then passed to AudioStub on the network
 // thread.
 class AudioPump : public AudioStream {
  public:
@@ -58,12 +58,12 @@ class AudioPump : public AudioStream {
   // Callback for BufferedSocketWriter.
   void OnPacketSent(int size);
 
-  base::ThreadChecker thread_checker_;
-
   scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner_;
-  AudioStub* audio_stub_;
+  raw_ptr<AudioStub> audio_stub_;
 
   std::unique_ptr<Core> core_;
+
+  THREAD_CHECKER(thread_checker_);
 
   base::WeakPtrFactory<AudioPump> weak_factory_{this};
 };

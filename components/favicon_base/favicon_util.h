@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,6 +45,6 @@ favicon_base::FaviconRawBitmapResult ResizeFaviconBitmapResult(
         favicon_bitmap_results,
     int desired_size_in_pixel);
 
-}  // namspace favicon_base
+}  // namespace favicon_base
 
 #endif  // COMPONENTS_FAVICON_BASE_FAVICON_UTIL_H_

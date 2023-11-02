@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -124,18 +124,10 @@ class ArcAppInstallEventLogUploaderTest : public testing::Test {
         .WillOnce(MoveArg<0>(callback));
   }
 
-  void ClearReportDict() {
-    base::DictionaryValue* mutable_dict;
-    if (value_report_.GetAsDictionary(&mutable_dict))
-      mutable_dict->Clear();
-    else
-      NOTREACHED();
-  }
-
   void CompleteUpload(bool success) {
-    ClearReportDict();
-    base::Value context = reporting::GetContext(/*profile=*/nullptr);
-    base::Value events = ConvertArcAppProtoToValue(&log_, context);
+    value_report_.clear();
+    base::Value::Dict context = reporting::GetContext(/*profile=*/nullptr);
+    base::Value::List events = ConvertArcAppProtoToValue(&log_, context);
     value_report_ = RealtimeReportingJobConfiguration::BuildReport(
         std::move(events), std::move(context));
 
@@ -147,9 +139,9 @@ class ArcAppInstallEventLogUploaderTest : public testing::Test {
   }
 
   void CaptureUpload(CloudPolicyClient::StatusCallback* callback) {
-    ClearReportDict();
-    base::Value context = reporting::GetContext(/*profile=*/nullptr);
-    base::Value events = ConvertArcAppProtoToValue(&log_, context);
+    value_report_.clear();
+    base::Value::Dict context = reporting::GetContext(/*profile=*/nullptr);
+    base::Value::List events = ConvertArcAppProtoToValue(&log_, context);
     value_report_ = RealtimeReportingJobConfiguration::BuildReport(
         std::move(events), std::move(context));
 
@@ -172,7 +164,7 @@ class ArcAppInstallEventLogUploaderTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   em::AppInstallReportRequest log_;
-  base::Value value_report_{base::Value::Type::DICTIONARY};
+  base::Value::Dict value_report_;
 
   MockCloudPolicyClient client_;
   MockArcAppInstallEventLogUploaderDelegate delegate_;
@@ -498,11 +490,9 @@ TEST_F(ArcAppInstallEventLogUploaderTest, DuplicateEvents) {
   EXPECT_CALL(delegate_, OnUploadSuccess());
   uploader_->RequestUpload();
 
-  EXPECT_EQ(2u,
-            value_report_
-                .FindListKey(RealtimeReportingJobConfiguration::kEventListKey)
-                ->GetList()
-                .size());
+  EXPECT_EQ(2u, value_report_
+                    .FindList(RealtimeReportingJobConfiguration::kEventListKey)
+                    ->size());
 }
 
 }  // namespace policy

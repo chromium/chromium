@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,6 +17,7 @@
 #include "base/mac/mach_logging.h"
 #include "base/mac/scoped_mach_msg_destroy.h"
 #include "base/notreached.h"
+#include "base/record_replay.h"
 #include "base/strings/stringprintf.h"
 
 namespace base {
@@ -111,9 +112,9 @@ void MachPortRendezvousServer::RegisterPortsForPid(
   DCHECK_LT(ports.size(), kMaximumRendezvousPorts);
   DCHECK(!ports.empty());
 
-  ScopedDispatchObject<dispatch_source_t> exit_watcher(
-      dispatch_source_create(DISPATCH_SOURCE_TYPE_PROC, pid, DISPATCH_PROC_EXIT,
-                             dispatch_source_->queue()));
+  ScopedDispatchObject<dispatch_source_t> exit_watcher(dispatch_source_create(
+      DISPATCH_SOURCE_TYPE_PROC, static_cast<uintptr_t>(pid),
+      DISPATCH_PROC_EXIT, dispatch_source_->queue()));
   dispatch_source_set_event_handler(exit_watcher, ^{
     OnClientExited(pid);
   });
@@ -226,10 +227,11 @@ std::unique_ptr<uint8_t[]> MachPortRendezvousServer::CreateReplyMessage(
   message->header.msgh_bits =
       MACH_MSGH_BITS_REMOTE(MACH_MSG_TYPE_MOVE_SEND_ONCE) |
       MACH_MSGH_BITS_COMPLEX;
-  message->header.msgh_size = buffer_size;
+  message->header.msgh_size = checked_cast<mach_msg_size_t>(buffer_size);
   message->header.msgh_remote_port = reply_port;
   message->header.msgh_id = kMachRendezvousMsgIdResponse;
-  message->body.msgh_descriptor_count = port_count;
+  message->body.msgh_descriptor_count =
+      checked_cast<mach_msg_size_t>(port_count);
 
   auto descriptors =
       iterator.MutableSpan<mach_msg_port_descriptor_t>(port_count);
@@ -298,6 +300,12 @@ std::string MachPortRendezvousClient::GetBootstrapName() {
   return StringPrintf(kBootstrapNameFormat, mac::BaseBundleID(), getppid());
 }
 
+static __attribute__((noinline)) void BusyWait() {
+  fprintf(stderr, "Busy-waiting ... (pid %d)\n", getpid());
+  volatile int x = 1;
+  while (x) {}
+}
+
 bool MachPortRendezvousClient::AcquirePorts() {
   AutoLock lock(lock_);
 
@@ -309,6 +317,13 @@ bool MachPortRendezvousClient::AcquirePorts() {
   if (kr != KERN_SUCCESS) {
     BOOTSTRAP_LOG(ERROR, kr) << "bootstrap_look_up " << bootstrap_name;
     return false;
+  }
+
+  // If we wait for a debugger to attach at process startup, the rendezvous
+  // above will fail. This environment variable can be used to attach and watch
+  // for crashes later in the process.
+  if (recordreplay::IsRecordingOrReplaying() && getenv("CHROMIUM_WAIT_AT_START")) {
+    BusyWait();
   }
 
   return SendRequest(std::move(server_port));
@@ -333,10 +348,10 @@ bool MachPortRendezvousClient::SendRequest(
   message->header.msgh_local_port = mig_get_reply_port();
   message->header.msgh_id = kMachRendezvousMsgIdRequest;
 
-  kern_return_t mr = mach_msg(&message->header, MACH_SEND_MSG | MACH_RCV_MSG,
-                              message->header.msgh_size, buffer_size,
-                              message->header.msgh_local_port,
-                              MACH_MSG_TIMEOUT_NONE, MACH_PORT_NULL);
+  kern_return_t mr = mach_msg(
+      &message->header, MACH_SEND_MSG | MACH_RCV_MSG, message->header.msgh_size,
+      checked_cast<mach_msg_size_t>(buffer_size),
+      message->header.msgh_local_port, MACH_MSG_TIMEOUT_NONE, MACH_PORT_NULL);
   if (mr != KERN_SUCCESS) {
     MACH_LOG(ERROR, mr) << "mach_msg";
     return false;

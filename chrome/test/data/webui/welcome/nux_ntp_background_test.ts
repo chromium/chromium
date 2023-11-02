@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@ import {TestMetricsProxy} from './test_metrics_proxy.js';
 import {TestNtpBackgroundProxy} from './test_ntp_background_proxy.js';
 
 suite('NuxNtpBackgroundTest', function() {
-  const backgrounds: Array<NtpBackgroundData> = [
+  const backgrounds: NtpBackgroundData[] = [
     {
       id: 0,
       title: 'Art',
@@ -46,7 +46,8 @@ suite('NuxNtpBackgroundTest', function() {
     NtpBackgroundProxyImpl.setInstance(testNtpBackgroundProxy);
     testNtpBackgroundProxy.setBackgroundsList(backgrounds);
 
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     testElement = document.createElement('nux-ntp-background');
     document.body.appendChild(testElement);
 

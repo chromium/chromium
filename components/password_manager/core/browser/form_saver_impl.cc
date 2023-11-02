@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,6 @@
 #include "base/time/time.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
-#include "google_apis/gaia/gaia_auth_util.h"
-#include "google_apis/gaia/gaia_urls.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -94,7 +92,7 @@ PasswordForm FormSaverImpl::Blocklist(PasswordFormDigest digest) {
 }
 
 void FormSaverImpl::Unblocklist(const PasswordFormDigest& digest) {
-  store_->Unblocklist(digest, /*completion=*/base::DoNothing());
+  store_->Unblocklist(digest);
 }
 
 void FormSaverImpl::Save(PasswordForm pending,

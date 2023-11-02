@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -132,9 +132,11 @@ TEST_F(ExtensionRequestObserverFactoryTest,
   EXPECT_FALSE(factory_.GetObserverByProfileForTesting(guest_profile));
   EXPECT_EQ(0, factory_.GetNumberOfObserversForTesting());
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   TestingProfile* system_profile = profile_manager()->CreateSystemProfile();
   EXPECT_FALSE(factory_.GetObserverByProfileForTesting(system_profile));
   EXPECT_EQ(0, factory_.GetNumberOfObserversForTesting());
+#endif
 }
 
 TEST_F(ExtensionRequestObserverFactoryTest, ReportEnabledAndDisabled) {

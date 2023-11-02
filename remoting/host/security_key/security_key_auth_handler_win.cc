@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_checker.h"
@@ -22,9 +23,7 @@
 #include "ipc/ipc_channel.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_message.h"
-#include "ipc/ipc_message_macros.h"
 #include "remoting/base/logging.h"
-#include "remoting/host/chromoting_messages.h"
 #include "remoting/host/client_session_details.h"
 #include "remoting/host/security_key/security_key_ipc_constants.h"
 #include "remoting/host/security_key/security_key_ipc_server.h"
@@ -62,7 +61,7 @@ class SecurityKeyAuthHandlerWin : public SecurityKeyAuthHandler {
   ~SecurityKeyAuthHandlerWin() override;
 
  private:
-  typedef std::map<int, std::unique_ptr<SecurityKeyIpcServer>> ActiveChannels;
+  using ActiveChannels = std::map<int, std::unique_ptr<SecurityKeyIpcServer>>;
 
   // SecurityKeyAuthHandler interface.
   void CreateSecurityKeyConnection() override;
@@ -94,7 +93,7 @@ class SecurityKeyAuthHandlerWin : public SecurityKeyAuthHandler {
   SendMessageCallback send_message_callback_;
 
   // Interface which provides details about the client session.
-  ClientSessionDetails* client_session_details_ = nullptr;
+  raw_ptr<ClientSessionDetails> client_session_details_ = nullptr;
 
   // Tracks the IPC channel created for each security key forwarding session.
   ActiveChannels active_channels_;

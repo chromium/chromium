@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,23 +10,25 @@
 #include "base/bind.h"
 #include "base/i18n/message_formatter.h"
 #include "base/i18n/number_formatting.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
-#include "chrome/browser/ui/views/chrome_view_class_properties.h"
 #include "chrome/browser/ui/views/flying_indicator.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
-#include "chrome/browser/ui/views/user_education/feature_promo_colors.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/user_education/common/user_education_class_properties.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -227,15 +229,15 @@ class TabCounterAnimator : public gfx::AnimationDelegate {
   TabCounterAnimationType current_animation_ = TabCounterAnimationType::kNone;
 
   // The label that will be animated into view, showing the new value.
-  views::Label* const appearing_label_;
+  const raw_ptr<views::Label> appearing_label_;
   // The label that will be animated out of view, showing the old value.
-  views::Label* const disappearing_label_;
+  const raw_ptr<views::Label> disappearing_label_;
   gfx::MultiAnimation label_animation_;
 
-  views::View* const border_view_;
+  const raw_ptr<views::View> border_view_;
   gfx::MultiAnimation border_animation_;
 
-  views::Throbber* const throbber_;
+  const raw_ptr<views::Throbber> throbber_;
   base::OneShotTimer throbber_timer_;
 
   std::unique_ptr<FlyingIndicator> flying_link_;
@@ -290,7 +292,7 @@ void TabCounterAnimator::MaybeStartPendingAnimation() {
     // of the throbber is just to indicate to the user that some activity has
     // happened in the background, which may not otherwise have been obvious
     // because the tab strip is hidden in this mode.
-    throbber_timer_.Start(FROM_HERE, base::Milliseconds(1000), throbber_,
+    throbber_timer_.Start(FROM_HERE, base::Milliseconds(1000), throbber_.get(),
                           &views::Throbber::Stop);
 
     pending_throbber_ = false;
@@ -475,19 +477,19 @@ class WebUITabCounterButton : public views::Button,
 
   void MaybeStartFlyingLink(WindowOpenDisposition disposition);
 
-  views::InkDropContainerView* ink_drop_container_;
-  views::Label* appearing_label_;
-  views::Label* disappearing_label_;
-  views::View* border_view_;
+  raw_ptr<views::InkDropContainerView> ink_drop_container_;
+  raw_ptr<views::Label> appearing_label_;
+  raw_ptr<views::Label> disappearing_label_;
+  raw_ptr<views::View> border_view_;
   std::unique_ptr<TabCounterAnimator> animator_;
-  views::Throbber* throbber_;
+  raw_ptr<views::Throbber> throbber_;
 
   std::unique_ptr<ui::SimpleMenuModel> menu_model_;
   std::unique_ptr<views::MenuRunner> menu_runner_;
   std::unique_ptr<InteractionTracker> interaction_tracker_;
 
-  TabStripModel* const tab_strip_model_;
-  BrowserView* const browser_view_;
+  const raw_ptr<TabStripModel> tab_strip_model_;
+  const raw_ptr<BrowserView> browser_view_;
   base::CallbackListSubscription link_opened_from_gesture_subscription_;
 };
 
@@ -516,20 +518,16 @@ void WebUITabCounterButton::UpdateTooltip(int num_tabs) {
 }
 
 void WebUITabCounterButton::UpdateColors() {
-  const ui::ThemeProvider* theme_provider = GetThemeProvider();
-  const SkColor toolbar_color =
-      theme_provider ? theme_provider->GetColor(ThemeProperties::COLOR_TOOLBAR)
-                     : gfx::kPlaceholderColor;
+  const auto* const color_provider = GetColorProvider();
+  const SkColor toolbar_color = color_provider->GetColor(kColorToolbar);
   appearing_label_->SetBackgroundColor(toolbar_color);
   disappearing_label_->SetBackgroundColor(toolbar_color);
 
   const SkColor normal_text_color =
-      theme_provider
-          ? theme_provider->GetColor(ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON)
-          : gfx::kPlaceholderColor;
+      color_provider->GetColor(kColorToolbarButtonIcon);
   const SkColor current_text_color =
-      GetProperty(kHasInProductHelpPromoKey)
-          ? GetFeaturePromoHighlightColorForToolbar(theme_provider)
+      GetProperty(user_education::kHasInProductHelpPromoKey)
+          ? color_provider->GetColor(kColorToolbarFeaturePromoHighlight)
           : normal_text_color;
 
   appearing_label_->SetEnabledColor(current_text_color);
@@ -574,14 +572,14 @@ void WebUITabCounterButton::Init() {
       WEBUI_TAB_COUNTER_CXMENU_CLOSE_TAB,
       l10n_util::GetStringUTF16(
           IDS_WEBUI_TAB_STRIP_TAB_COUNTER_CXMENU_CLOSE_TAB),
-      ui::ImageModel::FromImageSkia(gfx::CreateVectorIcon(
-          vector_icons::kCloseIcon, gfx::kFaviconSize, SK_ColorGRAY)));
+      ui::ImageModel::FromVectorIcon(vector_icons::kCloseIcon,
+                                     ui::kColorMenuIcon, gfx::kFaviconSize));
   menu_model_->AddSeparator(ui::MenuSeparatorType::NORMAL_SEPARATOR);
   menu_model_->AddItemWithIcon(
       WEBUI_TAB_COUNTER_CXMENU_NEW_TAB,
       l10n_util::GetStringUTF16(IDS_WEBUI_TAB_STRIP_TAB_COUNTER_CXMENU_NEW_TAB),
-      ui::ImageModel::FromImageSkia(
-          gfx::CreateVectorIcon(kAddIcon, gfx::kFaviconSize, SK_ColorGRAY)));
+      ui::ImageModel::FromVectorIcon(kAddIcon, ui::kColorMenuIcon,
+                                     gfx::kFaviconSize));
   menu_runner_ = std::make_unique<views::MenuRunner>(
       menu_model_.get(), views::MenuRunner::HAS_MNEMONICS |
                              views::MenuRunner::CONTEXT_MENU |
@@ -604,7 +602,7 @@ void WebUITabCounterButton::AddedToWidget() {
 void WebUITabCounterButton::AfterPropertyChange(const void* key,
                                                 int64_t old_value) {
   View::AfterPropertyChange(key, old_value);
-  if (key != kHasInProductHelpPromoKey)
+  if (key != user_education::kHasInProductHelpPromoKey)
     return;
   UpdateColors();
 }
@@ -683,8 +681,8 @@ void WebUITabCounterButton::ExecuteCommand(int command_id, int event_flags) {
     case WEBUI_TAB_COUNTER_CXMENU_CLOSE_TAB: {
       tab_strip_model_->CloseWebContentsAt(
           tab_strip_model_->active_index(),
-          TabStripModel::CLOSE_USER_GESTURE |
-              TabStripModel::CLOSE_CREATE_HISTORICAL_TAB);
+          TabCloseTypes::CLOSE_USER_GESTURE |
+              TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
       break;
     }
     case WEBUI_TAB_COUNTER_CXMENU_NEW_TAB:

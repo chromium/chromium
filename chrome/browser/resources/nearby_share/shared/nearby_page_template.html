@@ -1,144 +1,136 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
+<style include="cr-icons cr-shared-style"></style>
+<style>
+  :host {
+    --nearby-page-linear-gradient-color-start: var(--google-blue-50);
+    --nearby-page-space-block: 24px;
+    --nearby-page-space-inline: 24px;
+  }
 
-<dom-module id="nearby-page-template">
-  <template>
-    <style include="cr-icons cr-shared-style"></style>
-    <style>
-      :host {
-        --nearby-page-linear-gradient-color-start: var(--google-blue-50);
-        --nearby-page-space-block: 24px;
-        --nearby-page-space-inline: 24px;
-      }
+  @media (prefers-color-scheme: dark) {
+    :host {
+      --nearby-page-linear-gradient-color-start:
+          rgba(var(--google-blue-300-rgb), 0.2);
+    }
+  }
 
-      @media (prefers-color-scheme: dark) {
-        :host {
-          --nearby-page-linear-gradient-color-start:
-              rgba(var(--google-blue-300-rgb), 0.2);
-        }
-      }
+  #pageContainer {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
 
-      #pageContainer {
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-      }
+  /* pageContainer has tabindex="-1" but is focused with JS for ChromeVox
+  accessibility */
+  #pageContainer:focus {
+    outline: none;
+  }
 
-      /* pageContainer has tabindex="-1" but is focused with JS for ChromeVox
-      accessibility */
-      #pageContainer:focus {
-        outline: none;
-      }
+  #header {
+    margin-inline-end:  var(--nearby-page-space-inline);
+    margin-inline-start: var(--nearby-page-space-inline);
+    padding-block-end: 16px;
+    padding-block-start: var(--nearby-page-space-block);
+    position: relative;
+  }
 
-      #header {
-        margin-inline-end:  var(--nearby-page-space-inline);
-        margin-inline-start: var(--nearby-page-space-inline);
-        padding-block-end: 16px;
-        padding-block-start: var(--nearby-page-space-block);
-        position: relative;
-      }
+  #contentContainer {
+    box-sizing: border-box;
+    display: flex;
+    flex-grow: 1;
+    justify-content: center;
+    overflow: hidden;
+  }
 
-      #contentContainer {
-        box-sizing: border-box;
-        display: flex;
-        flex-grow: 1;
-        justify-content: center;
-        overflow: hidden;
-      }
+  #pageTitle {
+    color: var(--cros-text-color-primary);
+    font-family: 'Google Sans';
+    font-size: 16px;
+    font-weight: normal;
+    line-height: 24px;
+    margin: 0;
+  }
 
-      #pageTitle {
-        color: var(--cros-text-color-primary);
-        font-family: 'Google Sans';
-        font-size: 16px;
-        font-weight: normal;
-        line-height: 24px;
-        margin: 0;
-      }
+  #pageSubTitle {
+    color: var(--cros-text-color-secondary);
+    font-size: 14px;
+    font-weight: inherit;
+    line-height: 20px;
+    margin: 0;
+  }
 
-      #pageSubTitle {
-        color: var(--cros-text-color-secondary);
-        font-size: 14px;
-        font-weight: inherit;
-        line-height: 20px;
-        margin: 0;
-      }
+  #a11yAnnouncedPageSubTitle {
+    bottom: 16px;
+    clip: rect(0,0,0,0); /* Make invisible. Read on screen readers only. */
+    font-size: 14px;
+    position: absolute; /* Position directly over subtitle it replaces. */
+  }
 
-      #a11yAnnouncedPageSubTitle {
-        bottom: 16px;
-        clip: rect(0,0,0,0); /* Make invisible. Read on screen readers only. */
-        font-size: 14px;
-        position: absolute; /* Position directly over subtitle it replaces. */
-      }
+  #actions {
+    display: flex;
+    justify-content: flex-end;
+    padding-block-end: var(--nearby-page-space-block);
+    padding-block-start: var(--nearby-page-space-block);
+    padding-inline-end:  var(--nearby-page-space-inline);
+    padding-inline-start: var(--nearby-page-space-inline);
+  }
 
-      #actions {
-        display: flex;
-        justify-content: flex-end;
-        padding-block-end: var(--nearby-page-space-block);
-        padding-block-start: var(--nearby-page-space-block);
-        padding-inline-end:  var(--nearby-page-space-inline);
-        padding-inline-start: var(--nearby-page-space-inline);
-      }
-
-      #utilityButton {
-        margin-inline-end: auto;
-      }
-      #utilityButton iron-icon {
-        --iron-icon-fill-color: var(--text-color);
-        margin-inline-end: 8px;
-      }
-    </style>
-    <div id="pageContainer" role="dialog" aria-modal="true"
-        aria-labelledby$="[[getDialogAriaLabelledBy_(a11yAnnouncedSubTitle)]]"
-        tabindex="-1">
-      <div id="header">
-        <h1 id="pageTitle">[[title]]</h1>
-        <h2 id="pageSubTitle"
-            aria-hidden$="[[getSubTitleAriaHidden_(a11yAnnouncedSubTitle)]]">
-          [[subTitle]]
-        </h2>
-        <div id="a11yAnnouncedPageSubTitle" aria-live="polite">
-          [[a11yAnnouncedSubTitle]]
-        </div>
-      </div>
-
-      <div id="contentContainer">
-        <slot name="content"></slot>
-      </div>
-
-      <div id="actions">
-        <template is="dom-if" if="[[!closeOnly]]">
-          <template is="dom-if" if="[[utilityButtonLabel]]">
-            <cr-button id="utilityButton" class="cancel-button"
-                on-click="onUtilityClick_" aria-label="[[utilityButtonLabel]]">
-              <template is="dom-if" if="[[utilityButtonOpenInNew]]">
-                <iron-icon id="openInNewIcon" icon="cr:open-in-new"></iron-icon>
-              </template>
-              <span>[[utilityButtonLabel]]</span>
-            </cr-button>
-          </template>
-          <template is="dom-if" if="[[cancelButtonLabel]]">
-            <cr-button id="cancelButton" class="cancel-button"
-                on-click="onCancelClick_" aria-label="[[cancelButtonLabel]]">
-              [[cancelButtonLabel]]
-            </cr-button>
-          </template>
-          <template is="dom-if" if="[[actionButtonLabel]]">
-            <cr-button id="actionButton" class="action-button"
-                on-click="onActionClick_" disabled="[[actionDisabled]]"
-                aria-label="[[actionButtonLabel]]">
-              [[actionButtonLabel]]
-            </cr-button>
-          </template>
-        </template>
-        <template is="dom-if" if="[[closeOnly]]">
-          <cr-button id="closeButton" class="action-button"
-              on-click="onCloseClick_"
-              aria-label="$i18n{nearbyShareActionsClose}">
-            $i18n{nearbyShareActionsClose}
-          </cr-button>
-        </template>
-      </div>
+  #utilityButton {
+    margin-inline-end: auto;
+  }
+  #utilityButton iron-icon {
+    --iron-icon-fill-color: var(--text-color);
+    margin-inline-end: 8px;
+  }
+</style>
+<div id="pageContainer" role="dialog" aria-modal="true"
+    aria-labelledby$="[[getDialogAriaLabelledBy_(a11yAnnouncedSubTitle)]]"
+    tabindex="-1">
+  <div id="header">
+    <h1 id="pageTitle">[[title]]</h1>
+    <h2 id="pageSubTitle"
+        aria-hidden$="[[getSubTitleAriaHidden_(a11yAnnouncedSubTitle)]]">
+      [[subTitle]]
+    </h2>
+    <div id="a11yAnnouncedPageSubTitle" aria-live="polite">
+      [[a11yAnnouncedSubTitle]]
     </div>
-  </template>
-  <script src="nearby_page_template.js"></script>
-</dom-module>
+  </div>
+
+  <div id="contentContainer">
+    <slot name="content"></slot>
+  </div>
+
+  <div id="actions">
+    <template is="dom-if" if="[[!closeOnly]]">
+      <template is="dom-if" if="[[utilityButtonLabel]]">
+        <cr-button id="utilityButton" class="cancel-button"
+            on-click="onUtilityClick_" aria-label="[[utilityButtonLabel]]">
+          <template is="dom-if" if="[[utilityButtonOpenInNew]]">
+            <iron-icon id="openInNewIcon" icon="cr:open-in-new"></iron-icon>
+          </template>
+          <span>[[utilityButtonLabel]]</span>
+        </cr-button>
+      </template>
+      <template is="dom-if" if="[[cancelButtonLabel]]">
+        <cr-button id="cancelButton" class="cancel-button"
+            on-click="onCancelClick_" aria-label="[[cancelButtonLabel]]">
+          [[cancelButtonLabel]]
+        </cr-button>
+      </template>
+      <template is="dom-if" if="[[actionButtonLabel]]">
+        <cr-button id="actionButton" class="action-button"
+            on-click="onActionClick_" disabled="[[actionDisabled]]"
+            aria-label="[[actionButtonLabel]]">
+          [[actionButtonLabel]]
+        </cr-button>
+      </template>
+    </template>
+    <template is="dom-if" if="[[closeOnly]]">
+      <cr-button id="closeButton" class="action-button"
+          on-click="onCloseClick_"
+          aria-label="$i18n{nearbyShareActionsClose}">
+        $i18n{nearbyShareActionsClose}
+      </cr-button>
+    </template>
+  </div>
+</div>

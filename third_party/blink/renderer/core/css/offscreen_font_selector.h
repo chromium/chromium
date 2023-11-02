@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,10 +10,8 @@
 #include "third_party/blink/renderer/core/css/font_face_cache.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/platform/fonts/generic_font_family_settings.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
-#include "third_party/blink/renderer/platform/wtf/hash_map.h"
-#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
 namespace blink {
 
@@ -27,42 +25,6 @@ class CORE_EXPORT OffscreenFontSelector : public CSSFontSelectorBase {
   ~OffscreenFontSelector() override;
 
   unsigned Version() const override { return 1; }
-
-  void ReportSuccessfulFontFamilyMatch(
-      const AtomicString& font_family_name) override;
-
-  void ReportFailedFontFamilyMatch(
-      const AtomicString& font_family_name) override;
-
-  void ReportSuccessfulLocalFontMatch(const AtomicString& font_name) override;
-
-  void ReportFailedLocalFontMatch(const AtomicString& font_name) override;
-
-  void ReportFontLookupByUniqueOrFamilyName(
-      const AtomicString& name,
-      const FontDescription& font_description,
-      SimpleFontData* resulting_font_data) override;
-
-  void ReportFontLookupByUniqueNameOnly(
-      const AtomicString& name,
-      const FontDescription& font_description,
-      SimpleFontData* resulting_font_data,
-      bool is_loading_fallback = false) override;
-
-  void ReportFontLookupByFallbackCharacter(
-      UChar32 fallback_character,
-      FontFallbackPriority fallback_priority,
-      const FontDescription& font_description,
-      SimpleFontData* resulting_font_data) override;
-
-  void ReportLastResortFallbackFontLookup(
-      const FontDescription& font_description,
-      SimpleFontData* resulting_font_data) override;
-
-  void ReportNotDefGlyph() const override;
-
-  void ReportEmojiSegmentGlyphCoverage(unsigned num_clusters,
-                                       unsigned num_broken_clusters) override;
 
   scoped_refptr<FontData> GetFontData(const FontDescription&,
                                       const FontFamily&) override;
@@ -88,8 +50,11 @@ class CORE_EXPORT OffscreenFontSelector : public CSSFontSelectorBase {
   void Trace(Visitor*) const override;
 
  protected:
-  UseCounter* GetUseCounter() override;
   void DispatchInvalidationCallbacks();
+
+  // `CSSFontSelectorBase` overrides
+  FontMatchingMetrics* GetFontMatchingMetrics() const override;
+  UseCounter* GetUseCounter() const override;
 
  private:
   Member<WorkerGlobalScope> worker_;

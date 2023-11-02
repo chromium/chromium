@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2020 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 
 <org.chromium.components.messages.MessageBannerView
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -25,10 +27,9 @@
     <ImageView
         android:id="@+id/message_icon"
         app:tint="@macro/default_icon_color_accent1"
-        android:paddingStart="@dimen/message_icon_padding"
-        android:paddingEnd="@dimen/message_icon_padding"
+        android:layout_marginHorizontal="@dimen/message_icon_margin"
         android:layout_width="wrap_content"
-        android:layout_height="24dp"
+        android:layout_height="@dimen/message_icon_size"
         android:importantForAccessibility="no" />
 
     <LinearLayout
@@ -47,20 +48,23 @@
             android:textDirection="locale"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
-        <TextView
+        <org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables
             android:id="@+id/message_description"
             style="@style/TextAppearance.TextSmall.Secondary"
             android:visibility="gone"
             android:breakStrategy="simple"
             android:textDirection="locale"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:drawablePadding="@dimen/message_description_icon_padding"
+            app:drawableWidth="@dimen/message_description_icon_size"
+            app:drawableHeight="@dimen/message_description_icon_size"/>
     </LinearLayout>
 
     <!--  Content description is set programmatically according to secondary button icon. -->
     <org.chromium.components.browser_ui.widget.listmenu.ListMenuButton
         android:id="@+id/message_secondary_button"
-        app:tint="@color/default_icon_color_secondary"
+        app:tint="@macro/default_icon_color_secondary"
         app:menuVerticalOverlapAnchor="false"
         android:visibility="gone"
         android:contentDescription="@null"
@@ -72,7 +76,7 @@
         android:id="@+id/message_divider"
         android:layout_marginTop="@dimen/message_divider_margin"
         android:layout_marginBottom="@dimen/message_divider_margin"
-        android:background="@color/divider_line_bg_color"
+        android:background="@macro/divider_line_bg_color"
         android:visibility="gone"
         android:importantForAccessibility="no"
         android:layout_width="1dp"
@@ -89,7 +93,18 @@
         android:maxWidth="@dimen/message_primary_button_max_width"
         android:minWidth="@dimen/button_min_width"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:visibility="gone" />
+
+    <ProgressBar
+        style="@style/ProgressBarStyle"
+        android:id="@+id/message_primary_progress_spinner"
+        android:indeterminate="true"
+        android:maxWidth="@dimen/message_primary_button_max_width"
+        android:minWidth="@dimen/button_min_width"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/message_progress_spinner_height"
         android:layout_gravity="center_vertical"
         android:visibility="gone" />
 </org.chromium.components.messages.MessageBannerView>

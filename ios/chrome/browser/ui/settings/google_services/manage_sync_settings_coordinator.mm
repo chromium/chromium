@@ -1,26 +1,25 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_coordinator.h"
 
-#include "base/check_op.h"
-#include "base/metrics/user_metrics.h"
-#include "base/metrics/user_metrics_action.h"
-#include "components/google/core/common/google_util.h"
-#include "components/sync/driver/sync_service.h"
-#include "components/sync/driver/sync_service_utils.h"
-#include "components/sync/driver/sync_user_settings.h"
-#include "ios/chrome/browser/application_context.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/chrome_url_constants.h"
+#import "base/check_op.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
+#import "components/google/core/common/google_util.h"
+#import "components/sync/driver/sync_service.h"
+#import "components/sync/driver/sync_service_utils.h"
+#import "components/sync/driver/sync_user_settings.h"
+#import "ios/chrome/browser/application_context/application_context.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
-#include "ios/chrome/browser/sync/sync_observer_bridge.h"
-#include "ios/chrome/browser/sync/sync_service_factory.h"
-#include "ios/chrome/browser/sync/sync_setup_service.h"
-#include "ios/chrome/browser/sync/sync_setup_service_factory.h"
+#import "ios/chrome/browser/sync/sync_observer_bridge.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
+#import "ios/chrome/browser/sync/sync_setup_service.h"
+#import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/ui/authentication/signout_action_sheet_coordinator.h"
@@ -36,8 +35,9 @@
 #import "ios/chrome/browser/ui/settings/sync/sync_encryption_passphrase_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/sync/sync_encryption_table_view_controller.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
-#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#include "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
+#import "ios/chrome/browser/url/chrome_url_constants.h"
+#import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
+#import "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
 #import "net/base/mac/url_conversions.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -49,8 +49,9 @@ using signin_metrics::PromoAction;
 
 @interface ManageSyncSettingsCoordinator () <
     ManageSyncSettingsCommandHandler,
-    SyncErrorSettingsCommandHandler,
     ManageSyncSettingsTableViewControllerPresentationDelegate,
+    SignoutActionSheetCoordinatorDelegate,
+    SyncErrorSettingsCommandHandler,
     SyncObserverModelBridge> {
   // Sync observer.
   std::unique_ptr<SyncObserverBridge> _syncObserver;
@@ -69,7 +70,9 @@ using signin_metrics::PromoAction;
 @property(nonatomic, copy) ios::DismissASMViewControllerBlock
     dismissWebAndAppSettingDetailsControllerBlock;
 // Displays the sign-out options for a syncing user.
-@property(nonatomic, strong) SignoutActionSheetCoordinator* signOutCoordinator;
+@property(nonatomic, strong)
+    SignoutActionSheetCoordinator* signoutActionSheetCoordinator;
+@property(nonatomic, assign) BOOL signOutFlowInProgress;
 
 @end
 
@@ -124,6 +127,7 @@ using signin_metrics::PromoAction;
             self.browser->GetBrowserState());
     syncSetupService->CommitSyncChanges();
   }
+  _syncObserver.reset();
 }
 
 #pragma mark - Properties
@@ -192,18 +196,34 @@ using signin_metrics::PromoAction;
 }
 
 - (void)showTurnOffSyncOptionsFromTargetRect:(CGRect)targetRect {
-  self.signOutCoordinator = [[SignoutActionSheetCoordinator alloc]
+  self.signoutActionSheetCoordinator = [[SignoutActionSheetCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser
                             rect:targetRect
-                            view:self.viewController.view];
+                            view:self.viewController.view
+                      withSource:signin_metrics::USER_CLICKED_SIGNOUT_SETTINGS];
+  self.signoutActionSheetCoordinator.delegate = self;
   __weak ManageSyncSettingsCoordinator* weakSelf = self;
-  self.signOutCoordinator.completion = ^(BOOL success) {
+  self.signoutActionSheetCoordinator.completion = ^(BOOL success) {
     if (success) {
       [weakSelf closeManageSyncSettings];
     }
   };
-  [self.signOutCoordinator start];
+  [self.signoutActionSheetCoordinator start];
+}
+
+#pragma mark - SignoutActionSheetCoordinatorDelegate
+
+- (void)signoutActionSheetCoordinatorPreventUserInteraction:
+    (SignoutActionSheetCoordinator*)coordinator {
+  self.signOutFlowInProgress = YES;
+  [self.viewController preventUserInteraction];
+}
+
+- (void)signoutActionSheetCoordinatorAllowUserInteraction:
+    (SignoutActionSheetCoordinator*)coordinator {
+  [self.viewController allowUserInteraction];
+  self.signOutFlowInProgress = NO;
 }
 
 #pragma mark - SyncErrorSettingsCommandHandler
@@ -254,10 +274,11 @@ using signin_metrics::PromoAction;
 }
 
 - (void)openReauthDialogAsSyncIsInAuthError {
-  ChromeIdentity* identity =
-      self.authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
-  if (self.authService->HasCachedMDMErrorForIdentity(identity)) {
-    self.authService->ShowMDMErrorDialogForIdentity(identity);
+  AuthenticationService* authService = self.authService;
+  id<SystemIdentity> identity =
+      authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  if (authService->HasCachedMDMErrorForIdentity(identity)) {
+    authService->ShowMDMErrorDialogForIdentity(identity);
     return;
   }
   // Sync enters in a permanent auth error state when fetching an access token
@@ -273,6 +294,9 @@ using signin_metrics::PromoAction;
 #pragma mark - SyncObserverModelBridge
 
 - (void)onSyncStateChanged {
+  if (self.signOutFlowInProgress) {
+    return;
+  }
   syncer::SyncService::DisableReasonSet disableReasons =
       self.syncService->GetDisableReasons();
   syncer::SyncService::DisableReasonSet userChoiceDisableReason =

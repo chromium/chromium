@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #endif
 
@@ -52,9 +52,6 @@ TEST(SupportedTypesTest, IsSupportedVideoTypeBasics) {
   EXPECT_FALSE(
       IsSupportedVideoType({VideoCodec::kMPEG2, VIDEO_CODEC_PROFILE_UNKNOWN,
                             kUnspecifiedLevel, kColorSpace}));
-  EXPECT_FALSE(
-      IsSupportedVideoType({VideoCodec::kHEVC, VIDEO_CODEC_PROFILE_UNKNOWN,
-                            kUnspecifiedLevel, kColorSpace}));
 
   // Expect conditional support for the following.
   EXPECT_EQ(kPropCodecsEnabled,
@@ -64,6 +61,16 @@ TEST(SupportedTypesTest, IsSupportedVideoTypeBasics) {
       kMpeg4Supported,
       IsSupportedVideoType({VideoCodec::kMPEG4, VIDEO_CODEC_PROFILE_UNKNOWN,
                             kUnspecifiedLevel, kColorSpace}));
+
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC) && BUILDFLAG(IS_ANDROID)
+  EXPECT_TRUE(
+      IsSupportedVideoType({VideoCodec::kHEVC, VIDEO_CODEC_PROFILE_UNKNOWN,
+                            kUnspecifiedLevel, kColorSpace}));
+#else
+  EXPECT_FALSE(
+      IsSupportedVideoType({VideoCodec::kHEVC, VIDEO_CODEC_PROFILE_UNKNOWN,
+                            kUnspecifiedLevel, kColorSpace}));
+#endif
 }
 
 TEST(SupportedTypesTest, IsSupportedVideoType_VP9TransferFunctions) {
@@ -181,7 +188,7 @@ TEST(SupportedTypesTest, IsSupportedVideoType_VP9Profiles) {
 // See third_party/libvpx/BUILD.gn.
 #if defined(ARCH_CPU_X86_FAMILY) ||                                 \
     (defined(ARCH_CPU_ARM_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)) || \
-    (defined(ARCH_CPU_ARM64) && (defined(OS_MAC) || defined(OS_WIN)))
+    (defined(ARCH_CPU_ARM64) && (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)))
   EXPECT_TRUE(IsSupportedVideoType(
       {VideoCodec::kVP9, VP9PROFILE_PROFILE2, kUnspecifiedLevel, kColorSpace}));
 #endif
@@ -236,26 +243,33 @@ TEST(SupportedTypesTest, IsSupportedAudioTypeWithSpatialRenderingBasics) {
   EXPECT_FALSE(IsSupportedAudioType({AudioCodec::kMpegHAudio,
                                      AudioCodecProfile::kUnknown,
                                      is_spatial_rendering}));
+#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+  EXPECT_FALSE(IsSupportedAudioType(
+      {AudioCodec::kDTS, AudioCodecProfile::kUnknown, is_spatial_rendering}));
+  EXPECT_FALSE(
+      IsSupportedAudioType({AudioCodec::kDTSXP2, AudioCodecProfile::kUnknown,
+                            is_spatial_rendering}));
+#endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
   EXPECT_FALSE(
       IsSupportedAudioType({AudioCodec::kUnknown, AudioCodecProfile::kUnknown,
                             is_spatial_rendering}));
 }
 
-TEST(SupportedTypesTest, XHE_AACSupportedOnAndroidOnly) {
-  // TODO(dalecurtis): Update this test if we ever have support elsewhere.
-#if defined(OS_ANDROID)
-  const bool is_supported =
-      kPropCodecsEnabled &&
-      base::android::BuildInfo::GetInstance()->sdk_int() >=
-          base::android::SDK_VERSION_P;
+TEST(SupportedTypesTest, XHE_AACSupported) {
+  bool is_supported = false;
+
+#if BUILDFLAG(IS_ANDROID)
+  is_supported = kPropCodecsEnabled &&
+                 base::android::BuildInfo::GetInstance()->sdk_int() >=
+                     base::android::SDK_VERSION_P;
+#elif BUILDFLAG(IS_MAC) && BUILDFLAG(USE_PROPRIETARY_CODECS)
+  if (__builtin_available(macOS 10.15, *))
+    is_supported = true;
+#endif
 
   EXPECT_EQ(is_supported,
             IsSupportedAudioType(
                 {AudioCodec::kAAC, AudioCodecProfile::kXHE_AAC, false}));
-#else
-  EXPECT_FALSE(IsSupportedAudioType(
-      {AudioCodec::kAAC, AudioCodecProfile::kXHE_AAC, false}));
-#endif
 }
 
 TEST(SupportedTypesTest, IsSupportedVideoTypeWithHdrMetadataBasics) {
@@ -308,5 +322,45 @@ TEST(SupportedTypesTest, IsSupportedVideoTypeWithHdrMetadataBasics) {
   EXPECT_FALSE(IsSupportedVideoType({VideoCodec::kVP8, VP8PROFILE_ANY,
                                      kUnspecifiedLevel, color_space,
                                      gfx::HdrMetadataType::kSmpteSt2094_40}));
+}
+
+TEST(SupportedTypesTest, IsBuiltInVideoCodec) {
+#if BUILDFLAG(USE_PROPRIETARY_CODECS) && BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
+  EXPECT_TRUE(IsBuiltInVideoCodec(VideoCodec::kH264));
+#else
+  EXPECT_FALSE(IsBuiltInVideoCodec(VideoCodec::kH264));
+#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS) &&
+        // BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
+
+#if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
+  EXPECT_TRUE(IsBuiltInVideoCodec(VideoCodec::kTheora));
+#else
+  EXPECT_FALSE(IsBuiltInVideoCodec(VideoCodec::kTheora));
+#endif  // BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
+
+#if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS) || BUILDFLAG(ENABLE_LIBVPX)
+  EXPECT_TRUE(IsBuiltInVideoCodec(VideoCodec::kVP8));
+#else
+  EXPECT_FALSE(IsBuiltInVideoCodec(VideoCodec::kVP8));
+#endif  // BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS) || BUILDFLAG(ENABLE_LIBVPX)
+
+#if BUILDFLAG(ENABLE_LIBVPX)
+  EXPECT_TRUE(IsBuiltInVideoCodec(VideoCodec::kVP9));
+#else
+  EXPECT_FALSE(IsBuiltInVideoCodec(VideoCodec::kVP9));
+#endif  // BUILDFLAG(ENABLE_LIBVPX)
+
+#if BUILDFLAG(ENABLE_AV1_DECODER)
+  EXPECT_TRUE(IsBuiltInVideoCodec(VideoCodec::kAV1));
+#else
+  EXPECT_FALSE(IsBuiltInVideoCodec(VideoCodec::kAV1));
+#endif  // BUILDFLAG(ENABLE_AV1_DECODER)
+
+  EXPECT_FALSE(IsBuiltInVideoCodec(VideoCodec::kUnknown));
+  EXPECT_FALSE(IsBuiltInVideoCodec(VideoCodec::kMPEG4));
+  EXPECT_FALSE(IsBuiltInVideoCodec(VideoCodec::kVC1));
+  EXPECT_FALSE(IsBuiltInVideoCodec(VideoCodec::kMPEG2));
+  EXPECT_FALSE(IsBuiltInVideoCodec(VideoCodec::kHEVC));
+  EXPECT_FALSE(IsBuiltInVideoCodec(VideoCodec::kDolbyVision));
 }
 }  // namespace media

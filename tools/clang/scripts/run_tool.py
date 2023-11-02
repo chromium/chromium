@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright (c) 2013 The Chromium Authors. All rights reserved.
+# Copyright 2013 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Wrapper script to help run clang tools across Chromium code.
@@ -91,7 +91,7 @@ def _PruneGitFiles(git_files, paths):
     least = git_index
     most = len(git_files) - 1
     while least <= most:
-      middle = (least + most ) / 2
+      middle = int((least + most) / 2)
       if git_files[middle] == path:
         least = middle
         break
@@ -132,6 +132,7 @@ def _GetFilesFromGit(paths=None):
     args.append('ls-files')
     command = subprocess.Popen(args, stdout=subprocess.PIPE)
     output, _ = command.communicate()
+    output = output.decode('utf-8')
     git_files = [os.path.realpath(p) for p in output.splitlines()]
     if partial_paths:
       git_files = _PruneGitFiles(git_files, partial_paths)
@@ -149,10 +150,10 @@ def _GetEntriesFromCompileDB(build_directory, source_filenames):
   """
 
   filenames_set = None if source_filenames is None else set(source_filenames)
+  entries = compile_db.Read(build_directory)
   return [
       CompDBEntry(entry['directory'], entry['file'], entry['command'])
-      for entry in compile_db.Read(build_directory)
-      if filenames_set is None or os.path.realpath(
+      for entry in entries if filenames_set is None or os.path.realpath(
           os.path.join(entry['directory'], entry['file'])) in filenames_set
   ]
 
@@ -234,13 +235,15 @@ def _ExecuteTool(toolname, tool_args, build_directory, compdb_entry):
       del args[i:i+2]
       break
 
-  # shlex.split escapes double qoutes in non-Posix mode, so we need to strip
+  # shlex.split escapes double quotes in non-Posix mode, so we need to strip
   # them back.
   if sys.platform == 'win32':
     args = [a.replace('\\"', '"') for a in args]
   command = subprocess.Popen(
       args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=build_directory)
   stdout_text, stderr_text = command.communicate()
+  stdout_text = stdout_text.decode('utf-8')
+  stderr_text = stderr_text.decode('utf-8')
   stderr_text = re.sub(
       r"^warning: .*'linker' input unused \[-Wunused-command-line-argument\]\n",
       "", stderr_text, flags=re.MULTILINE)
@@ -376,9 +379,9 @@ def main():
     git_filenames = set(_GetFilesFromGit(args.path_filter))
     # Filter out files that aren't C/C++/Obj-C/Obj-C++.
     extensions = frozenset(('.c', '.cc', '.cpp', '.m', '.mm'))
-    source_filenames = [f
-                        for f in git_filenames
-                        if os.path.splitext(f)[1] in extensions]
+    source_filenames = [
+        f for f in git_filenames if os.path.splitext(f)[1] in extensions
+    ]
 
   if args.generate_compdb:
     compile_commands = compile_db.GenerateWithNinja(args.p)

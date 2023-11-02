@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -489,8 +489,7 @@ static LayoutInline* CreateLayoutInline(
       document->GetStyleResolver().CreateComputedStyle());
   initialize_style(style.get());
   LayoutInline* const node = LayoutInline::CreateAnonymous(document);
-  node->SetModifiedStyleOutsideStyleRecalc(
-      std::move(style), LayoutObject::ApplyStyleChanges::kNo);
+  node->SetStyle(std::move(style), LayoutObject::ApplyStyleChanges::kNo);
   node->SetIsInLayoutNGInlineFormattingContext(true);
   return node;
 }

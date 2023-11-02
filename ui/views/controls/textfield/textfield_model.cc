@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #include "base/check_op.h"
 #include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
@@ -364,8 +365,8 @@ void SelectRangeInCompositionText(gfx::RenderText* render_text,
                                   const gfx::Range& range) {
   DCHECK(render_text);
   DCHECK(range.IsValid());
-  uint32_t start = range.GetMin();
-  uint32_t end = range.GetMax();
+  size_t start = range.GetMin();
+  size_t end = range.GetMax();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Swap |start| and |end| so that GetCaretBounds() can always return the same
   // value during conversion.
@@ -691,9 +692,8 @@ bool TextfieldModel::Yank() {
 bool TextfieldModel::HasSelection(bool primary_only) const {
   if (primary_only)
     return !render_text_->selection().is_empty();
-  auto selections = render_text_->GetAllSelections();
-  return std::any_of(
-      selections.begin(), selections.end(),
+  return base::ranges::any_of(
+      render_text_->GetAllSelections(),
       [](const auto& selection) { return !selection.is_empty(); });
 }
 
@@ -762,14 +762,18 @@ void TextfieldModel::SetCompositionText(
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 bool TextfieldModel::SetAutocorrectRange(const gfx::Range& range) {
-  // TODO(crbug.com/1108170): Add an underline to |range|.
   if (range.GetMax() > render_text()->text().length()) {
     return false;
   }
   autocorrect_range_ = range;
-  return true;
+
+  // TODO(b/161490813): Update |autocorrect_range_| and show underline.
+  //  Autocorrect range needs to be updated based on user text inputs and an
+  //  underline should be shown for the range.
+  NOTIMPLEMENTED_LOG_ONCE();
+  return false;
 }
 #endif
 
@@ -783,11 +787,11 @@ void TextfieldModel::SetCompositionFromExistingText(const gfx::Range& range) {
   render_text_->SetCompositionRange(range);
 }
 
-uint32_t TextfieldModel::ConfirmCompositionText() {
+size_t TextfieldModel::ConfirmCompositionText() {
   DCHECK(HasCompositionText());
   std::u16string composition =
       text().substr(composition_range_.start(), composition_range_.length());
-  uint32_t composition_length = composition_range_.length();
+  size_t composition_length = composition_range_.length();
   // TODO(oshima): current behavior on ChromeOS is a bit weird and not
   // sure exactly how this should work. Find out and fix if necessary.
   AddOrMergeEditHistory(std::make_unique<internal::InsertEdit>(

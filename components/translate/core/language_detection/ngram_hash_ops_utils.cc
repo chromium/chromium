@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,6 +33,11 @@ TokenizedOutput Tokenize(const char* input_str,
   token_start += strlen(kPrefix);
   Rune token;
   for (size_t i = 0; i < len && output.tokens.size() + 1 < max_tokens;) {
+    if (input_str == nullptr)
+      break;
+    if (strlen(input_str) == 0)
+      break;
+
     // Use the standard UTF-8 library to find the next token.
     size_t bytes_read = charntorune(&token, input_str + i, len - i);
     // Stop processing, if we can't read any more tokens, or we have reached

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/containers/lru_cache.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/clock.h"
@@ -35,8 +36,9 @@ class HintCache {
   // Construct the HintCache with an optional backing store and max host-keyed
   // cache size. If a backing store is not provided, all hints will only be
   // stored in-memory.
-  explicit HintCache(OptimizationGuideStore* optimization_guide_store,
-                     int max_host_keyed_memory_cache_size);
+  explicit HintCache(
+      base::WeakPtr<OptimizationGuideStore> optimization_guide_store,
+      int max_host_keyed_memory_cache_size);
 
   HintCache(const HintCache&) = delete;
   HintCache& operator=(const HintCache&) = delete;
@@ -151,7 +153,7 @@ class HintCache {
   bool IsHintStoreAvailable() const;
 
   // Returns the persistent store for |this|.
-  optimization_guide::OptimizationGuideStore* hint_store() {
+  base::WeakPtr<optimization_guide::OptimizationGuideStore> hint_store() {
     return optimization_guide_store_;
   }
 
@@ -183,8 +185,8 @@ class HintCache {
       std::unique_ptr<MemoryHint> hint);
 
   // The backing store used with this hint cache. Set during construction. Not
-  // owned. Guaranteed to outlive |this|.
-  OptimizationGuideStore* optimization_guide_store_;
+  // owned.
+  base::WeakPtr<OptimizationGuideStore> optimization_guide_store_;
 
   // The cache of host-keyed hints loaded from the store. Maps store
   // EntryKey to Hint proto. This serves two purposes:
@@ -200,7 +202,7 @@ class HintCache {
   URLKeyedHintCache url_keyed_hint_cache_;
 
   // The clock used to determine if hints have expired.
-  const base::Clock* clock_;
+  raw_ptr<const base::Clock> clock_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

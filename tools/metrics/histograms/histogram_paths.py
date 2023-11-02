@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Paths to description XML files in this directory."""
@@ -61,6 +61,11 @@ ALL_TEST_XMLS_RELATIVE = [
 ALL_TEST_XMLS = [path_util.GetInputFile(f) for f in ALL_TEST_XMLS_RELATIVE]
 (TEST_ENUMS_XML, TEST_HISTOGRAMS_XML, TEST_SUFFIXES_XML,
  TEST_UKM_XML) = ALL_TEST_XMLS
+
+TEST_XML_WITH_COMPONENTS_RELATIVE = (
+    'tools/metrics/histograms/test_data/components/histograms.xml')
+TEST_XML_WITH_COMPONENTS = path_util.GetInputFile(
+    TEST_XML_WITH_COMPONENTS_RELATIVE)
 
 # The path to the `histogram_index` file.
 HISTOGRAMS_INDEX = path_util.GetInputFile(

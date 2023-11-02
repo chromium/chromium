@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -198,8 +198,6 @@ bool StructTraits<
       data.update_first_party_url_on_redirect();
   out->load_flags = data.load_flags();
   out->resource_type = data.resource_type();
-  out->should_reset_appcache = data.should_reset_appcache();
-  out->is_external_request = data.is_external_request();
   out->originated_from_service_worker = data.originated_from_service_worker();
   out->skip_service_worker = data.skip_service_worker();
   out->corb_detachable = data.corb_detachable();
@@ -209,16 +207,13 @@ bool StructTraits<
   out->enable_load_timing = data.enable_load_timing();
   out->enable_upload_progress = data.enable_upload_progress();
   out->do_not_prompt_for_login = data.do_not_prompt_for_login();
-  out->is_main_frame = data.is_main_frame();
+  out->is_outermost_main_frame = data.is_outermost_main_frame();
   out->transition_type = data.transition_type();
   out->previews_state = data.previews_state();
   out->upgrade_if_insecure = data.upgrade_if_insecure();
   out->is_revalidating = data.is_revalidating();
-  out->is_signed_exchange_prefetch_cache_enabled =
-      data.is_signed_exchange_prefetch_cache_enabled();
   out->is_fetch_like_api = data.is_fetch_like_api();
   out->is_favicon = data.is_favicon();
-  out->obey_origin_policy = data.obey_origin_policy();
   out->original_destination = data.original_destination();
   out->target_ip_address_space = data.target_ip_address_space();
   return true;

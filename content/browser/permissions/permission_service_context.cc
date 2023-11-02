@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/permissions/permission_service_impl.h"
 #include "content/browser/permissions/permission_util.h"
@@ -16,6 +17,8 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -72,7 +75,7 @@ class PermissionServiceContext::PermissionSubscription {
   void set_id(PermissionController::SubscriptionId id) { id_ = id; }
 
  private:
-  PermissionServiceContext* const context_;
+  const raw_ptr<PermissionServiceContext> context_;
   mojo::Remote<blink::mojom::PermissionObserver> observer_;
   PermissionController::SubscriptionId id_;
 };
@@ -103,9 +106,11 @@ PermissionServiceContext::~PermissionServiceContext() {
 void PermissionServiceContext::CreateService(
     mojo::PendingReceiver<blink::mojom::PermissionService> receiver) {
   DCHECK(render_frame_host_);
-  services_.Add(std::make_unique<PermissionServiceImpl>(
-                    this, render_frame_host_->GetLastCommittedOrigin()),
-                std::move(receiver));
+  services_.Add(
+      std::make_unique<PermissionServiceImpl>(
+          this, url::Origin::Create(PermissionUtil::GetLastCommittedOriginAsURL(
+                    render_frame_host_))),
+      std::move(receiver));
 }
 
 void PermissionServiceContext::CreateServiceForWorker(
@@ -116,7 +121,7 @@ void PermissionServiceContext::CreateServiceForWorker(
 }
 
 void PermissionServiceContext::CreateSubscription(
-    PermissionType permission_type,
+    blink::PermissionType permission_type,
     const url::Origin& origin,
     blink::mojom::PermissionStatus current_status,
     blink::mojom::PermissionStatus last_known_status,
@@ -137,7 +142,8 @@ void PermissionServiceContext::CreateSubscription(
   auto subscription_id =
       PermissionControllerImpl::FromBrowserContext(browser_context)
           ->SubscribePermissionStatusChange(
-              permission_type, render_frame_host_, requesting_origin,
+              permission_type, render_process_host_, render_frame_host_,
+              requesting_origin,
               base::BindRepeating(
                   &PermissionSubscription::OnPermissionStatusChanged,
                   base::Unretained(subscription.get())));
@@ -162,13 +168,9 @@ BrowserContext* PermissionServiceContext::GetBrowserContext() const {
 }
 
 GURL PermissionServiceContext::GetEmbeddingOrigin() const {
-  // TODO(https://crbug.com/1199710): This will return the wrong origin for a
-  // non primary FrameTree.
-  WebContents* web_contents =
-      WebContents::FromRenderFrameHost(render_frame_host_);
-  return web_contents
-             ? PermissionUtil::GetLastCommittedOriginAsURL(web_contents)
-             : GURL();
+  return render_frame_host_ ? PermissionUtil::GetLastCommittedOriginAsURL(
+                                  render_frame_host_->GetMainFrame())
+                            : GURL();
 }
 
 void PermissionServiceContext::RenderProcessHostDestroyed(

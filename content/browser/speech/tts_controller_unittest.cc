@@ -1,4 +1,4 @@
-// Copyright (c) 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include "content/browser/speech/tts_controller_impl.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -71,11 +72,11 @@ class MockTtsPlatformImpl : public TtsPlatform {
   std::string GetError() override { return error_; }
   void ClearError() override { error_.clear(); }
   void Shutdown() override {}
-  bool PreferEngineDelegateVoices() override { return false; }
-  void GetVoicesForBrowserContext(
-      content::BrowserContext* browser_context,
-      const GURL& source_url,
-      std::vector<content::VoiceData>* out_voices) override {}
+  void FinalizeVoiceOrdering(std::vector<VoiceData>& voices) override {}
+  void RefreshVoices() override {}
+  content::ExternalPlatformDelegate* GetExternalPlatformDelegate() override {
+    return nullptr;
+  }
 
   void SetPlatformImplSupported(bool state) { platform_supported_ = state; }
   void SetPlatformImplInitialized(bool state) { platform_initialized_ = state; }
@@ -103,7 +104,7 @@ class MockTtsPlatformImpl : public TtsPlatform {
   }
 
  private:
-  TtsController* const controller_;
+  const raw_ptr<TtsController> controller_;
   bool platform_supported_ = true;
   bool platform_initialized_ = true;
   std::vector<VoiceData> voices_;
@@ -232,11 +233,11 @@ class TtsControllerTest : public testing::Test {
     platform_impl_ = std::make_unique<MockTtsPlatformImpl>(controller_.get());
     browser_context_ = std::make_unique<TestBrowserContext>();
     controller()->SetTtsPlatform(platform_impl_.get());
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     // TtsEngineDelegate isn't set for Android in ChromeContentBrowserClient
     // since it has no extensions.
     controller()->SetTtsEngineDelegate(&engine_delegate_);
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     controller()->SetTtsControllerDelegateForTesting(&delegate_);
 #endif
@@ -295,22 +296,6 @@ class TtsControllerTest : public testing::Test {
 #endif
   MockVoicesChangedDelegate voices_changed_;
 };
-
-TEST_F(TtsControllerTest, TestTtsControllerShutdown) {
-  std::unique_ptr<TtsUtterance> utterance1 = TtsUtterance::Create();
-  utterance1->SetShouldClearQueue(false);
-  utterance1->SetSrcId(1);
-  controller()->SpeakOrEnqueue(std::move(utterance1));
-
-  std::unique_ptr<TtsUtterance> utterance2 = TtsUtterance::Create();
-  utterance2->SetShouldClearQueue(false);
-  utterance2->SetSrcId(2);
-  controller()->SpeakOrEnqueue(std::move(utterance2));
-
-  // Make sure that deleting the controller when there are pending
-  // utterances doesn't cause a crash.
-  ReleaseTtsController();
-}
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(TtsControllerTest, TestBrowserContextRemoved) {
@@ -591,6 +576,28 @@ TEST_F(TtsControllerTest, TestGetMatchingVoice) {
   }
 }
 
+// Note: The following tests are disabled since they do not apply for Lacros
+// build. TtsPlatformImpl is not supported for Lacros when lacros tts support
+// feature is disabled.
+// TODO(crbug.com/1227543): Add new tests for lacros with tts support feature
+// being enabled.
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+TEST_F(TtsControllerTest, TestTtsControllerShutdown) {
+  std::unique_ptr<TtsUtterance> utterance1 = TtsUtterance::Create();
+  utterance1->SetShouldClearQueue(false);
+  utterance1->SetSrcId(1);
+  controller()->SpeakOrEnqueue(std::move(utterance1));
+
+  std::unique_ptr<TtsUtterance> utterance2 = TtsUtterance::Create();
+  utterance2->SetShouldClearQueue(false);
+  utterance2->SetSrcId(2);
+  controller()->SpeakOrEnqueue(std::move(utterance2));
+
+  // Make sure that deleting the controller when there are pending
+  // utterances doesn't cause a crash.
+  ReleaseTtsController();
+}
+
 TEST_F(TtsControllerTest, StopsWhenWebContentsDestroyed) {
   std::unique_ptr<WebContents> web_contents = CreateWebContents();
   std::unique_ptr<TtsUtteranceImpl> utterance =
@@ -713,14 +720,6 @@ TEST_F(TtsControllerTest, SkipsQueuedUtteranceFromHiddenWebContents) {
   controller()->OnTtsEvent(utterance1_id, TTS_EVENT_END, 0, 0, {});
   EXPECT_EQ(nullptr, TtsControllerCurrentUtterance());
   EXPECT_TRUE(IsUtteranceListEmpty());
-}
-
-TEST_F(TtsControllerTest, PauseResumeNoUtterance) {
-  // Pause should not call the platform API when there is no utterance.
-  controller()->Pause();
-  controller()->Resume();
-  EXPECT_EQ(0, platform_impl()->pause_called());
-  EXPECT_EQ(0, platform_impl()->resume_called());
 }
 
 TEST_F(TtsControllerTest, SpeakPauseResume) {
@@ -986,6 +985,15 @@ TEST_F(TtsControllerTest, EngineIdSetNoDelegateSpeakPauseResumeStop) {
   EXPECT_FALSE(TtsControllerCurrentUtterance());
   EXPECT_FALSE(controller()->IsSpeaking());
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
+
+TEST_F(TtsControllerTest, PauseResumeNoUtterance) {
+  // Pause should not call the platform API when there is no utterance.
+  controller()->Pause();
+  controller()->Resume();
+  EXPECT_EQ(0, platform_impl()->pause_called());
+  EXPECT_EQ(0, platform_impl()->resume_called());
+}
 
 TEST_F(TtsControllerTest, PlatformNotSupported) {
   std::unique_ptr<WebContents> web_contents = CreateWebContents();
@@ -1064,7 +1072,7 @@ TEST_F(TtsControllerTest, GetVoicesOnlineOffline) {
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(TtsControllerTest, SpeakWhenLoadingBuiltInEngine) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   platform_impl()->SetPlatformImplSupported(false);
@@ -1109,6 +1117,6 @@ TEST_F(TtsControllerTest, SpeakWhenLoadingBuiltInEngine) {
   EXPECT_FALSE(TtsControllerCurrentUtterance());
   EXPECT_FALSE(controller()->IsSpeaking());
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace content

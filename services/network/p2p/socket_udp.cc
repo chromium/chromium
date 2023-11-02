@@ -1,12 +1,13 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "services/network/p2p/socket_udp.h"
 
+#include <tuple>
+
 #include "base/bind.h"
 #include "base/containers/contains.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
@@ -72,7 +73,7 @@ std::unique_ptr<net::DatagramServerSocket> DefaultSocketFactory(
     net::NetLog* net_log) {
   net::UDPServerSocket* socket =
       new net::UDPServerSocket(net_log, net::NetLogSource());
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   socket->UseNonBlockingIO();
 #endif
 
@@ -127,16 +128,17 @@ P2PSocketUdp::P2PSocketUdp(Delegate* Delegate,
 
 P2PSocketUdp::~P2PSocketUdp() = default;
 
-void P2PSocketUdp::Init(const net::IPEndPoint& local_address,
-                        uint16_t min_port,
-                        uint16_t max_port,
-                        const P2PHostAndIPEndPoint& remote_address,
-                        const net::NetworkIsolationKey& network_isolation_key) {
+void P2PSocketUdp::Init(
+    const net::IPEndPoint& local_address,
+    uint16_t min_port,
+    uint16_t max_port,
+    const P2PHostAndIPEndPoint& remote_address,
+    const net::NetworkAnonymizationKey& network_anonymization_key) {
   DCHECK(!socket_);
   DCHECK((min_port == 0 && max_port == 0) || min_port > 0);
   DCHECK_LE(min_port, max_port);
 
-  socket_ = socket_factory_.Run(net_log_);
+  socket_ = socket_factory_.Run(net_log_.get());
 
   int result = -1;
   if (min_port == 0) {
@@ -145,7 +147,7 @@ void P2PSocketUdp::Init(const net::IPEndPoint& local_address,
     for (unsigned port = min_port; port <= max_port && result < 0; ++port) {
       result = socket_->Listen(net::IPEndPoint(local_address.address(), port));
       if (result < 0 && port != max_port)
-        socket_ = socket_factory_.Run(net_log_);
+        socket_ = socket_factory_.Run(net_log_.get());
     }
   } else if (local_address.port() >= min_port &&
              local_address.port() <= max_port) {
@@ -410,7 +412,7 @@ void P2PSocketUdp::Send(
                          net::NetworkTrafficAnnotationTag(traffic_annotation));
 
     // We are not going to use |this| again, so it's safe to ignore the result.
-    ignore_result(DoSend(packet));
+    std::ignore = DoSend(packet);
   }
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -58,7 +58,7 @@ class ExtensionDialogBoundsTest
   void ShowOpenFileDialog() { browser()->OpenFile(); }
 
   void ShowBigExtensionDialog() {
-    ExtensionTestMessageListener init_listener("ready", false /* will_reply */);
+    ExtensionTestMessageListener init_listener("ready");
 
     scoped_refptr<const extensions::Extension> extension =
         LoadExtension(test_data_dir_.AppendASCII("uitest/tab_traversal"));

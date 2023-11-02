@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,7 +43,10 @@ class MockAffiliationService : public AffiliationService {
               CancelPrefetch,
               (const FacetURI&, const base::Time&),
               (override));
+  MOCK_METHOD(void, KeepPrefetchForFacets, (std::vector<FacetURI>), (override));
   MOCK_METHOD(void, TrimCacheForFacetURI, (const FacetURI&), (override));
+  MOCK_METHOD(void, TrimUnusedCache, (std::vector<FacetURI>), (override));
+  MOCK_METHOD(void, GetAllGroups, (GroupsCallback), (override, const));
 
   void ExpectCallToInjectAffiliationAndBrandingInformation(
       const std::vector<AffiliationAndBrandingInformation>& results_to_inject);
@@ -51,7 +54,7 @@ class MockAffiliationService : public AffiliationService {
   void InjectAffiliationAndBrandingInformation(
       std::vector<std::unique_ptr<PasswordForm>> forms,
       AffiliationService::StrategyOnCacheMiss strategy_on_cache_miss,
-      PasswordFormsCallback result_callback) override;
+      PasswordFormsOrErrorCallback result_callback) override;
 
  private:
   MOCK_METHOD(std::vector<AffiliationAndBrandingInformation>,

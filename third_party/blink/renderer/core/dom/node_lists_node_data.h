@@ -22,13 +22,14 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_NODE_LISTS_NODE_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_NODE_LISTS_NODE_DATA_H_
 
+#include "base/check_op.h"
 #include "third_party/blink/renderer/core/dom/child_node_list.h"
 #include "third_party/blink/renderer/core/dom/empty_node_list.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "third_party/blink/renderer/core/dom/tag_collection.h"
 #include "third_party/blink/renderer/core/html/collection_type.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 
@@ -44,6 +45,14 @@ class NodeListsNodeData final : public GarbageCollected<NodeListsNodeData> {
   ChildNodeList* EnsureChildNodeList(ContainerNode& node) {
     if (child_node_list_)
       return To<ChildNodeList>(child_node_list_.Get());
+
+    if (recordreplay::IsInReplayCode() &&
+        !recordreplay::HasDivergedFromRecording()) {
+      // [RUN-1764] Do not try to create blink API objects in our Replay-only
+      // scripts, unless explicitly diverged.
+      return nullptr;
+    }
+
     auto* list = MakeGarbageCollected<ChildNodeList>(node);
     child_node_list_ = list;
     return list;
@@ -52,6 +61,14 @@ class NodeListsNodeData final : public GarbageCollected<NodeListsNodeData> {
   EmptyNodeList* EnsureEmptyChildNodeList(Node& node) {
     if (child_node_list_)
       return To<EmptyNodeList>(child_node_list_.Get());
+
+    if (recordreplay::IsInReplayCode() &&
+        !recordreplay::HasDivergedFromRecording()) {
+      // [RUN-1764] Do not try to create blink API objects in our Replay-only
+      // scripts, unless explicitly diverged.
+      return nullptr;
+    }
+
     auto* list = MakeGarbageCollected<EmptyNodeList>(node);
     child_node_list_ = list;
     return list;
@@ -140,8 +157,8 @@ class NodeListsNodeData final : public GarbageCollected<NodeListsNodeData> {
   void InvalidateCaches(const QualifiedName* attr_name = nullptr);
 
   bool IsEmpty() const {
-    return !child_node_list_ && atomic_name_caches_.IsEmpty() &&
-           tag_collection_ns_caches_.IsEmpty();
+    return !child_node_list_ && atomic_name_caches_.empty() &&
+           tag_collection_ns_caches_.empty();
   }
 
   void AdoptTreeScope() { InvalidateCaches(); }

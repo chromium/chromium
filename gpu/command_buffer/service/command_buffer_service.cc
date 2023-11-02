@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,13 +11,167 @@
 #include <memory>
 
 #include "base/logging.h"
+#include "base/memory/page_size.h"
 #include "base/strings/string_piece.h"
+#include "base/threading/thread_task_runner_handle.h"
+#include "base/trace_event/memory_dump_manager.h"
+#include "base/trace_event/memory_dump_provider.h"
+#include "base/trace_event/memory_dump_request_args.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
 #include "gpu/command_buffer/common/cmd_buffer_common.h"
 #include "gpu/command_buffer/common/command_buffer_shared.h"
 #include "gpu/command_buffer/service/transfer_buffer_manager.h"
+#include "gpu/config/gpu_finch_features.h"
+
+#if BUILDFLAG(IS_MAC)
+#include <mach/mach_vm.h>
+#include <mach/vm_statistics.h>
+
+#include "base/no_destructor.h"
+#include "base/process/process_metrics.h"
+#include "base/trace_event/process_memory_dump.h"
+#endif
 
 namespace gpu {
+
+#if BUILDFLAG(IS_MAC)
+namespace {
+class AppleGpuMemoryDumpProvider
+    : public base::trace_event::MemoryDumpProvider {
+ public:
+  AppleGpuMemoryDumpProvider();
+  bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
+                    base::trace_event::ProcessMemoryDump* pmd) override;
+
+ private:
+  // NoDestructor only.
+  ~AppleGpuMemoryDumpProvider() override = default;
+};
+
+AppleGpuMemoryDumpProvider::AppleGpuMemoryDumpProvider() {
+  base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
+      this, "CommandBuffer", nullptr);
+}
+
+bool AppleGpuMemoryDumpProvider::OnMemoryDump(
+    const base::trace_event::MemoryDumpArgs& args,
+    base::trace_event::ProcessMemoryDump* pmd) {
+  // Collect IOSurface total memory usage.
+  size_t surface_virtual_size = 0;
+  size_t surface_resident_size = 0;
+  size_t surface_swapped_out_size = 0;
+  size_t surface_dirty_size = 0;
+
+  // And IOAccelerator. Per vm_statistics.h in XNU, this is used to
+  // "differentiate memory needed by GPU drivers and frameworks from generic
+  // IOKit allocations". See xnu-1456.1.26/osfmk/mach/vm_statistics.h.
+  size_t accelerator_virtual_size = 0;
+  size_t accelerator_resident_size = 0;
+  size_t accelerator_swapped_out_size = 0;
+  size_t accelerator_dirty_size = 0;
+
+  task_t task = mach_task_self();
+  mach_vm_address_t address = 0;
+  mach_vm_size_t size = 0;
+
+  while (true) {
+    address += size;
+
+    // GetBasicInfo is faster than querying the extended attributes. Query this
+    // first to filter out regions that cannot correspond to IOSurfaces.
+    vm_region_basic_info_64 basic_info;
+    base::MachVMRegionResult result =
+        base::GetBasicInfo(task, &size, &address, &basic_info);
+    if (result == base::MachVMRegionResult::Finished) {
+      break;
+    } else if (result == base::MachVMRegionResult::Error) {
+      return false;
+    }
+
+    // All IOSurfaces and IOAccelerator allocations seen locally (M1 laptop)
+    // have rw-/rw- permissions. More distinctive characteristics require the
+    // extended info, which are more expensive to query.
+    const vm_prot_t rw = VM_PROT_READ | VM_PROT_WRITE;
+    if (basic_info.protection != rw || basic_info.max_protection != rw)
+      continue;
+
+    // Candidate, need the extended info to get the user tag, but also the page
+    // status breakdown.
+    vm_region_extended_info_data_t info;
+    mach_port_t object_name;
+    mach_msg_type_number_t count;
+
+    count = VM_REGION_EXTENDED_INFO_COUNT;
+    kern_return_t ret = mach_vm_region(
+        task, &address, &size, VM_REGION_EXTENDED_INFO,
+        reinterpret_cast<vm_region_info_t>(&info), &count, &object_name);
+    // No regions above the requested address.
+    if (ret == KERN_INVALID_ADDRESS)
+      break;
+
+    if (ret != KERN_SUCCESS)
+      return false;
+
+    switch (info.user_tag) {
+      case VM_MEMORY_IOSURFACE:
+        surface_virtual_size += size;
+        surface_resident_size += info.pages_resident * base::GetPageSize();
+        surface_swapped_out_size +=
+            info.pages_swapped_out * base::GetPageSize();
+        surface_dirty_size += info.pages_dirtied * base::GetPageSize();
+        break;
+      case VM_MEMORY_IOACCELERATOR:
+        accelerator_virtual_size += size;
+        accelerator_resident_size += info.pages_resident * base::GetPageSize();
+        accelerator_swapped_out_size +=
+            info.pages_swapped_out * base::GetPageSize();
+        accelerator_dirty_size += info.pages_dirtied * base::GetPageSize();
+        break;
+    }
+  }
+
+  auto* dump = pmd->CreateAllocatorDump("iosurface");
+  dump->AddScalar("virtual_size", "bytes", surface_virtual_size);
+  dump->AddScalar("resident_size", "bytes", surface_resident_size);
+  dump->AddScalar("swapped_out_size", "bytes", surface_swapped_out_size);
+  dump->AddScalar("dirty_size", "bytes", surface_dirty_size);
+  dump->AddScalar("size", "bytes", surface_virtual_size);
+  // Some IOSurfaces have a non-trivial difference between their mapped size
+  // and their "dirty" size, possibly because some of it has been marked
+  // purgeable, and has been purged (rather than swapped out). Report resident
+  // + swapped, as it is the fraction of memory which is: (a) using actual
+  // memory, and (b) counted in private memory footprint.
+  //
+  // Note: not using "dirty_size", as it doesn't contain the swapped out part.
+  dump->AddScalar("resident_swapped", "bytes",
+                  surface_resident_size + surface_swapped_out_size);
+
+  // Ditto for IOAccelerator.
+  dump = pmd->CreateAllocatorDump("ioaccelerator");
+  dump->AddScalar("virtual_size", "bytes", accelerator_virtual_size);
+  dump->AddScalar("resident_size", "bytes", accelerator_resident_size);
+  dump->AddScalar("swapped_out_size", "bytes", accelerator_swapped_out_size);
+  dump->AddScalar("dirty_size", "bytes", accelerator_dirty_size);
+  dump->AddScalar("size", "bytes", accelerator_virtual_size);
+  dump->AddScalar("resident_swapped", "bytes",
+                  accelerator_resident_size + accelerator_swapped_out_size);
+
+  return true;
+}
+}  // namespace
+#endif
+
+// Context switching leads to a render pass break in ANGLE/Vulkan. The command
+// buffer has a 20-command limit before it forces a context switch. This
+// experiment tests a 100-command limit.
+int GetCommandBufferSliceSize() {
+  static int slice_size =
+      (base::FeatureList::IsEnabled(features::kIncreasedCmdBufferParseSlice)
+           ? CommandBufferService::kParseCommandsSliceLarge
+           : CommandBufferService::kParseCommandsSliceSmall);
+  return slice_size;
+}
 
 CommandBufferService::CommandBufferService(CommandBufferServiceClient* client,
                                            MemoryTracker* memory_tracker)
@@ -26,6 +180,9 @@ CommandBufferService::CommandBufferService(CommandBufferServiceClient* client,
           std::make_unique<TransferBufferManager>(memory_tracker)) {
   DCHECK(client_);
   state_.token = 0;
+#if BUILDFLAG(IS_MAC)
+  static base::NoDestructor<AppleGpuMemoryDumpProvider> dump_provider;
+#endif
 }
 
 CommandBufferService::~CommandBufferService() = default;
@@ -66,9 +223,9 @@ void CommandBufferService::Flush(int32_t put_offset,
   while (put_offset_ != state_.get_offset) {
     int num_entries = end - state_.get_offset;
     int entries_processed = 0;
-    error::Error error =
-        handler->DoCommands(kParseCommandsSlice, buffer_ + state_.get_offset,
-                            num_entries, &entries_processed);
+    error::Error error = handler->DoCommands(GetCommandBufferSliceSize(),
+                                             buffer_ + state_.get_offset,
+                                             num_entries, &entries_processed);
 
     state_.get_offset += entries_processed;
     DCHECK_LE(state_.get_offset, num_entries_);

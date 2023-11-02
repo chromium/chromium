@@ -1,4 +1,4 @@
-// Copyright 2021 The Crashpad Authors. All rights reserved.
+// Copyright 2021 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -51,7 +51,9 @@ class ReadToString : public crashpad::MemorySnapshot::Delegate {
 
 class ProcessSnapshotIOSIntermediateDumpTest : public testing::Test {
  protected:
-  // testing::Test:
+  ProcessSnapshotIOSIntermediateDumpTest()
+      : long_annotation_name_(Annotation::kNameMaxLength, 'a'),
+        long_annotation_value_(Annotation::kValueMaxSize, 'b') {}
 
   void SetUp() override {
     path_ = temp_dir_.path().Append("dump_file");
@@ -61,6 +63,7 @@ class ProcessSnapshotIOSIntermediateDumpTest : public testing::Test {
   }
 
   void TearDown() override {
+    CloseWriter();
     writer_.reset();
     EXPECT_FALSE(IsRegularFile(path_));
   }
@@ -158,9 +161,16 @@ class ProcessSnapshotIOSIntermediateDumpTest : public testing::Test {
     }
   }
 
-  void WriteAnnotations(IOSIntermediateDumpWriter* writer) {
-    constexpr char annotation_name[] = "annotation_name";
-    constexpr char annotation_value[] = "annotation_value";
+  void WriteAnnotations(IOSIntermediateDumpWriter* writer,
+                        bool use_long_annotations) {
+    constexpr char short_annotation_name[] = "annotation_name";
+    constexpr char short_annotation_value[] = "annotation_value";
+    const char* const annotation_name = use_long_annotations
+                                            ? long_annotation_name_.c_str()
+                                            : short_annotation_name;
+    const char* const annotation_value = use_long_annotations
+                                             ? long_annotation_value_.c_str()
+                                             : short_annotation_value;
     {
       IOSIntermediateDumpWriter::ScopedArray annotationObjectArray(
           writer, Key::kAnnotationObjects);
@@ -198,14 +208,18 @@ class ProcessSnapshotIOSIntermediateDumpTest : public testing::Test {
     }
   }
 
-  void WriteModules(IOSIntermediateDumpWriter* writer) {
+  void WriteModules(IOSIntermediateDumpWriter* writer,
+                    bool has_module_path,
+                    bool use_long_annotations) {
     IOSIntermediateDumpWriter::ScopedArray moduleArray(writer, Key::kModules);
     for (uint32_t image_index = 0; image_index < 2; ++image_index) {
       IOSIntermediateDumpWriter::ScopedArrayMap modules(writer);
 
-      constexpr char image_file[] = "/path/to/module";
-      EXPECT_TRUE(
-          writer->AddProperty(Key::kName, image_file, strlen(image_file)));
+      if (has_module_path) {
+        constexpr char image_file[] = "/path/to/module";
+        EXPECT_TRUE(
+            writer->AddProperty(Key::kName, image_file, strlen(image_file)));
+      }
 
       uint64_t address = 0;
       uint64_t vmsize = 1;
@@ -237,43 +251,66 @@ class ProcessSnapshotIOSIntermediateDumpTest : public testing::Test {
       EXPECT_TRUE(writer->AddProperty(Key::kSourceVersion, &source_version));
       EXPECT_TRUE(writer->AddProperty(Key::kUUID, &uuid));
       EXPECT_TRUE(writer->AddProperty(Key::kFileType, &filetype));
-      WriteAnnotations(writer);
+      WriteAnnotations(writer, use_long_annotations);
     }
   }
 
-  void ExpectModules(const std::vector<const ModuleSnapshot*>& modules) {
+  void ExpectModules(const std::vector<const ModuleSnapshot*>& modules,
+                     bool expect_module_path,
+                     bool expect_long_annotations) {
     for (auto module : modules) {
       EXPECT_EQ(module->GetModuleType(),
                 ModuleSnapshot::kModuleTypeSharedLibrary);
-      EXPECT_STREQ(module->Name().c_str(), "/path/to/module");
-      EXPECT_STREQ(module->DebugFileName().c_str(), "module");
+
+      if (expect_module_path) {
+        EXPECT_STREQ(module->Name().c_str(), "/path/to/module");
+        EXPECT_STREQ(module->DebugFileName().c_str(), "module");
+      }
       UUID uuid;
       uint32_t age;
       module->UUIDAndAge(&uuid, &age);
       EXPECT_EQ(uuid.ToString(), "00010203-0405-0607-0809-0a0b0c0d0e0f");
 
       for (auto annotation : module->AnnotationsVector()) {
-        EXPECT_STREQ(annotation.c_str(), "annotation_value");
+        if (expect_long_annotations) {
+          EXPECT_EQ(annotation, long_annotation_value_);
+        } else {
+          EXPECT_STREQ(annotation.c_str(), "annotation_value");
+        }
       }
 
       for (const auto& it : module->AnnotationsSimpleMap()) {
-        EXPECT_STREQ(it.first.c_str(), "annotation_name");
-        EXPECT_STREQ(it.second.c_str(), "annotation_value");
+        if (expect_long_annotations) {
+          EXPECT_EQ(it.first, long_annotation_name_);
+          EXPECT_EQ(it.second, long_annotation_value_);
+        } else {
+          EXPECT_STREQ(it.first.c_str(), "annotation_name");
+          EXPECT_STREQ(it.second.c_str(), "annotation_value");
+        }
       }
 
       for (auto annotation_object : module->AnnotationObjects()) {
-        EXPECT_STREQ(annotation_object.name.c_str(), "annotation_name");
         EXPECT_EQ(annotation_object.type, (short)Annotation::Type::kString);
-        EXPECT_STREQ(std::string(reinterpret_cast<const char*>(
-                                     annotation_object.value.data()),
-                                 annotation_object.value.size())
-                         .c_str(),
-                     "annotation_value");
+        if (expect_long_annotations) {
+          EXPECT_EQ(annotation_object.name, long_annotation_name_);
+          EXPECT_EQ(std::string(reinterpret_cast<const char*>(
+                                    annotation_object.value.data()),
+                                annotation_object.value.size()),
+                    long_annotation_value_);
+        } else {
+          EXPECT_STREQ(annotation_object.name.c_str(), "annotation_name");
+          EXPECT_STREQ(std::string(reinterpret_cast<const char*>(
+                                       annotation_object.value.data()),
+                                   annotation_object.value.size())
+                           .c_str(),
+                       "annotation_value");
+        }
       }
     }
   }
 
-  void WriteMachException(IOSIntermediateDumpWriter* writer) {
+  void WriteMachException(IOSIntermediateDumpWriter* writer,
+                          bool short_context = false) {
     IOSIntermediateDumpWriter::ScopedMap machExceptionMap(writer,
                                                           Key::kMachException);
     exception_type_t exception = 5;
@@ -298,6 +335,10 @@ class ProcessSnapshotIOSIntermediateDumpTest : public testing::Test {
     EXPECT_TRUE(writer->AddProperty(Key::kException, &exception));
     EXPECT_TRUE(writer->AddProperty(Key::kCodes, code, code_count));
     EXPECT_TRUE(writer->AddProperty(Key::kFlavor, &flavor));
+
+    if (short_context) {
+      state_length -= 10;
+    }
     EXPECT_TRUE(writer->AddPropertyBytes(
         Key::kState, reinterpret_cast<const void*>(&state), state_length));
     uint64_t thread_id = 1;
@@ -351,6 +392,7 @@ class ProcessSnapshotIOSIntermediateDumpTest : public testing::Test {
               Key::kThreadContextMemoryRegionData, "string", 6));
         }
       }
+      EXPECT_TRUE(writer->AddPropertyBytes(Key::kThreadName, "ariadne", 7));
     }
   }
 
@@ -370,6 +412,7 @@ class ProcessSnapshotIOSIntermediateDumpTest : public testing::Test {
     uint64_t thread_id = 1;
     for (auto thread : threads) {
       EXPECT_EQ(thread->ThreadID(), thread_id);
+      EXPECT_EQ(thread->ThreadName(), "ariadne");
       EXPECT_EQ(thread->SuspendCount(), 666);
       EXPECT_EQ(thread->Priority(), 5);
       EXPECT_EQ(thread->ThreadSpecificDataAddress(), thread_id++);
@@ -419,7 +462,9 @@ class ProcessSnapshotIOSIntermediateDumpTest : public testing::Test {
     EXPECT_STREQ(daylight_name.c_str(), "Daylight");
   }
 
-  void ExpectSnapshot(const ProcessSnapshot& snapshot) {
+  void ExpectSnapshot(const ProcessSnapshot& snapshot,
+                      bool expect_module_path,
+                      bool expect_long_annotations) {
     EXPECT_EQ(snapshot.ProcessID(), 2);
     EXPECT_EQ(snapshot.ParentProcessID(), 1);
 
@@ -442,28 +487,33 @@ class ProcessSnapshotIOSIntermediateDumpTest : public testing::Test {
 
     ExpectSystem(*snapshot.System());
     ExpectThreads(snapshot.Threads());
-    ExpectModules(snapshot.Modules());
+    ExpectModules(
+        snapshot.Modules(), expect_module_path, expect_long_annotations);
     ExpectMachException(*snapshot.Exception());
   }
+
+  void CloseWriter() { EXPECT_TRUE(writer_->Close()); }
 
  private:
   std::unique_ptr<internal::IOSIntermediateDumpWriter> writer_;
   ScopedTempDir temp_dir_;
   base::FilePath path_;
   std::map<std::string, std::string> annotations_;
+  const std::string long_annotation_name_;
+  const std::string long_annotation_value_;
 };
 
 TEST_F(ProcessSnapshotIOSIntermediateDumpTest, InitializeNoFile) {
   const base::FilePath file;
   ProcessSnapshotIOSIntermediateDump process_snapshot;
-  EXPECT_FALSE(process_snapshot.Initialize(file, annotations()));
+  EXPECT_FALSE(process_snapshot.InitializeWithFilePath(file, annotations()));
   EXPECT_TRUE(LoggingRemoveFile(path()));
   EXPECT_FALSE(IsRegularFile(path()));
 }
 
 TEST_F(ProcessSnapshotIOSIntermediateDumpTest, InitializeEmpty) {
   ProcessSnapshotIOSIntermediateDump process_snapshot;
-  EXPECT_FALSE(process_snapshot.Initialize(path(), annotations()));
+  EXPECT_FALSE(process_snapshot.InitializeWithFilePath(path(), annotations()));
   EXPECT_FALSE(IsRegularFile(path()));
 }
 
@@ -475,8 +525,9 @@ TEST_F(ProcessSnapshotIOSIntermediateDumpTest, InitializeMinimumDump) {
     { IOSIntermediateDumpWriter::ScopedMap map(writer(), Key::kSystemInfo); }
     { IOSIntermediateDumpWriter::ScopedMap map(writer(), Key::kProcessInfo); }
   }
+  CloseWriter();
   ProcessSnapshotIOSIntermediateDump process_snapshot;
-  ASSERT_TRUE(process_snapshot.Initialize(path(), annotations()));
+  ASSERT_TRUE(process_snapshot.InitializeWithFilePath(path(), annotations()));
   EXPECT_FALSE(IsRegularFile(path()));
   EXPECT_TRUE(DumpSnapshot(process_snapshot));
 }
@@ -488,8 +539,9 @@ TEST_F(ProcessSnapshotIOSIntermediateDumpTest, MissingSystemDump) {
     EXPECT_TRUE(writer()->AddProperty(Key::kVersion, &version));
     { IOSIntermediateDumpWriter::ScopedMap map(writer(), Key::kProcessInfo); }
   }
+  CloseWriter();
   ProcessSnapshotIOSIntermediateDump process_snapshot;
-  ASSERT_FALSE(process_snapshot.Initialize(path(), annotations()));
+  ASSERT_FALSE(process_snapshot.InitializeWithFilePath(path(), annotations()));
   EXPECT_FALSE(IsRegularFile(path()));
 }
 
@@ -500,8 +552,9 @@ TEST_F(ProcessSnapshotIOSIntermediateDumpTest, MissingProcessDump) {
     EXPECT_TRUE(writer()->AddProperty(Key::kVersion, &version));
     { IOSIntermediateDumpWriter::ScopedMap map(writer(), Key::kSystemInfo); }
   }
+  CloseWriter();
   ProcessSnapshotIOSIntermediateDump process_snapshot;
-  ASSERT_FALSE(process_snapshot.Initialize(path(), annotations()));
+  ASSERT_FALSE(process_snapshot.InitializeWithFilePath(path(), annotations()));
   EXPECT_FALSE(IsRegularFile(path()));
 }
 
@@ -525,8 +578,9 @@ TEST_F(ProcessSnapshotIOSIntermediateDumpTest, EmptySignalDump) {
       writer()->AddProperty(Key::kThreadID, &thread_id);
     }
   }
+  CloseWriter();
   ProcessSnapshotIOSIntermediateDump process_snapshot;
-  ASSERT_TRUE(process_snapshot.Initialize(path(), annotations()));
+  ASSERT_TRUE(process_snapshot.InitializeWithFilePath(path(), annotations()));
   EXPECT_FALSE(IsRegularFile(path()));
   EXPECT_TRUE(DumpSnapshot(process_snapshot));
 }
@@ -551,8 +605,9 @@ TEST_F(ProcessSnapshotIOSIntermediateDumpTest, EmptyMachDump) {
       writer()->AddProperty(Key::kThreadID, &thread_id);
     }
   }
+  CloseWriter();
   ProcessSnapshotIOSIntermediateDump process_snapshot;
-  ASSERT_TRUE(process_snapshot.Initialize(path(), annotations()));
+  ASSERT_TRUE(process_snapshot.InitializeWithFilePath(path(), annotations()));
   EXPECT_FALSE(IsRegularFile(path()));
   EXPECT_TRUE(DumpSnapshot(process_snapshot));
 }
@@ -577,8 +632,9 @@ TEST_F(ProcessSnapshotIOSIntermediateDumpTest, EmptyExceptionDump) {
       writer()->AddProperty(Key::kThreadID, &thread_id);
     }
   }
+  CloseWriter();
   ProcessSnapshotIOSIntermediateDump process_snapshot;
-  ASSERT_TRUE(process_snapshot.Initialize(path(), annotations()));
+  ASSERT_TRUE(process_snapshot.InitializeWithFilePath(path(), annotations()));
   EXPECT_FALSE(IsRegularFile(path()));
   EXPECT_TRUE(DumpSnapshot(process_snapshot));
 }
@@ -607,10 +663,56 @@ TEST_F(ProcessSnapshotIOSIntermediateDumpTest, EmptyUncaughtNSExceptionDump) {
           Key::kThreadUncaughtNSExceptionFrames, frames, num_frames);
     }
   }
+  CloseWriter();
   ProcessSnapshotIOSIntermediateDump process_snapshot;
-  ASSERT_TRUE(process_snapshot.Initialize(path(), annotations()));
+  ASSERT_TRUE(process_snapshot.InitializeWithFilePath(path(), annotations()));
   EXPECT_FALSE(IsRegularFile(path()));
   EXPECT_TRUE(DumpSnapshot(process_snapshot));
+}
+
+TEST_F(ProcessSnapshotIOSIntermediateDumpTest, ShortContext) {
+  {
+    IOSIntermediateDumpWriter::ScopedRootMap rootMap(writer());
+    uint8_t version = 1;
+    EXPECT_TRUE(writer()->AddProperty(Key::kVersion, &version));
+    WriteSystemInfo(writer());
+    WriteProcessInfo(writer());
+    WriteThreads(writer());
+    WriteModules(
+        writer(), /*has_module_path=*/false, /*use_long_annotations=*/false);
+    WriteMachException(writer(), true /* short_context=true*/);
+  }
+  CloseWriter();
+
+  ProcessSnapshotIOSIntermediateDump process_snapshot;
+  ASSERT_TRUE(process_snapshot.InitializeWithFilePath(path(), annotations()));
+  EXPECT_FALSE(IsRegularFile(path()));
+  EXPECT_TRUE(DumpSnapshot(process_snapshot));
+  ExpectSnapshot(process_snapshot,
+                 /*expect_module_path=*/false,
+                 /*expect_long_annotations=*/false);
+}
+
+TEST_F(ProcessSnapshotIOSIntermediateDumpTest, LongAnnotations) {
+  {
+    IOSIntermediateDumpWriter::ScopedRootMap rootMap(writer());
+    uint8_t version = 1;
+    EXPECT_TRUE(writer()->AddProperty(Key::kVersion, &version));
+    WriteSystemInfo(writer());
+    WriteProcessInfo(writer());
+    WriteThreads(writer());
+    WriteModules(
+        writer(), /*has_module_path=*/false, /*use_long_annotations=*/true);
+    WriteMachException(writer());
+  }
+  CloseWriter();
+  ProcessSnapshotIOSIntermediateDump process_snapshot;
+  ASSERT_TRUE(process_snapshot.InitializeWithFilePath(path(), annotations()));
+  EXPECT_FALSE(IsRegularFile(path()));
+  EXPECT_TRUE(DumpSnapshot(process_snapshot));
+  ExpectSnapshot(process_snapshot,
+                 /*expect_module_path=*/false,
+                 /*expect_long_annotations=*/true);
 }
 
 TEST_F(ProcessSnapshotIOSIntermediateDumpTest, FullReport) {
@@ -621,23 +723,43 @@ TEST_F(ProcessSnapshotIOSIntermediateDumpTest, FullReport) {
     WriteSystemInfo(writer());
     WriteProcessInfo(writer());
     WriteThreads(writer());
-    WriteModules(writer());
+    WriteModules(
+        writer(), /*has_module_path=*/true, /*use_long_annotations=*/false);
     WriteMachException(writer());
   }
+  CloseWriter();
   ProcessSnapshotIOSIntermediateDump process_snapshot;
-  ASSERT_TRUE(process_snapshot.Initialize(path(), annotations()));
+  ASSERT_TRUE(process_snapshot.InitializeWithFilePath(path(), annotations()));
   EXPECT_FALSE(IsRegularFile(path()));
   EXPECT_TRUE(DumpSnapshot(process_snapshot));
-  ExpectSnapshot(process_snapshot);
+  ExpectSnapshot(process_snapshot,
+                 /*expect_module_path=*/true,
+                 /*expect_long_annotations=*/false);
 }
 
 TEST_F(ProcessSnapshotIOSIntermediateDumpTest, FuzzTestCases) {
   base::FilePath fuzz_path = TestPaths::TestDataRoot().Append(FILE_PATH_LITERAL(
       "snapshot/ios/testdata/crash-1fa088dda0adb41459d063078a0f384a0bb8eefa"));
-
   crashpad::internal::ProcessSnapshotIOSIntermediateDump process_snapshot;
-  EXPECT_TRUE(process_snapshot.Initialize(fuzz_path, {}));
+  EXPECT_TRUE(process_snapshot.InitializeWithFilePath(fuzz_path, {}));
   EXPECT_TRUE(LoggingRemoveFile(path()));
+
+  auto map = process_snapshot.AnnotationsSimpleMap();
+  ASSERT_TRUE(map.find("crashpad_intermediate_dump_incomplete") != map.end());
+  EXPECT_EQ(map["crashpad_intermediate_dump_incomplete"], "yes");
+
+  fuzz_path = TestPaths::TestDataRoot().Append(
+      FILE_PATH_LITERAL("snapshot/ios/testdata/crash-5726011582644224"));
+  crashpad::internal::ProcessSnapshotIOSIntermediateDump process_snapshot2;
+  EXPECT_TRUE(process_snapshot2.InitializeWithFilePath(fuzz_path, {}));
+  map = process_snapshot2.AnnotationsSimpleMap();
+  ASSERT_TRUE(map.find("crashpad_intermediate_dump_incomplete") != map.end());
+  EXPECT_EQ(map["crashpad_intermediate_dump_incomplete"], "yes");
+
+  fuzz_path = TestPaths::TestDataRoot().Append(
+      FILE_PATH_LITERAL("snapshot/ios/testdata/crash-6605504629637120"));
+  crashpad::internal::ProcessSnapshotIOSIntermediateDump process_snapshot3;
+  EXPECT_FALSE(process_snapshot3.InitializeWithFilePath(fuzz_path, {}));
 }
 
 }  // namespace

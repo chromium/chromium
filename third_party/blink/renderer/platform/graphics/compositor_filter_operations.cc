@@ -1,10 +1,9 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/graphics/compositor_filter_operations.h"
 
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -72,8 +71,9 @@ void CompositorFilterOperations::AppendDropShadowFilter(gfx::Point offset,
                                                         float std_deviation,
                                                         const Color& color) {
   gfx::Point gfx_offset(offset.x(), offset.y());
+  // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
   filter_operations_.Append(cc::FilterOperation::CreateDropShadowFilter(
-      gfx_offset, std_deviation, color.Rgb()));
+      gfx_offset, std_deviation, SkColor4f::FromColor(color.Rgb())));
 }
 
 void CompositorFilterOperations::AppendColorMatrixFilter(
@@ -128,8 +128,8 @@ bool CompositorFilterOperations::operator==(
 }
 
 String CompositorFilterOperations::ToString() const {
-  return String(filter_operations_.ToString().c_str()) + " at " +
-         reference_box_.ToString();
+  return String(filter_operations_.ToString()) + " at " +
+         String(reference_box_.ToString());
 }
 
 }  // namespace blink

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "net/base/address_list.h"
+#include "net/dns/public/host_resolver_results.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -28,6 +29,8 @@ struct DnsLookupResult {
   int32_t error;
   net::ResolveErrorInfo resolve_error_info;
   absl::optional<net::AddressList> resolved_addresses;
+  absl::optional<net::HostResolverEndpointResults>
+      endpoint_results_with_metadata;
 };
 
 // Test utility function to perform the indicated DNS resolution, and block
@@ -36,7 +39,7 @@ DnsLookupResult BlockingDnsLookup(
     mojom::NetworkContext* network_context,
     const net::HostPortPair& host_port_pair,
     network::mojom::ResolveHostParametersPtr params,
-    const net::NetworkIsolationKey& network_isolation_key);
+    const net::NetworkAnonymizationKey& network_anonymization_key);
 
 }  // namespace network
 

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,19 +13,18 @@
 #include "ash/login/ui/non_accessible_view.h"
 #include "ash/login/ui/views_utils.h"
 #include "ash/shell.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/style/default_color_constants.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "base/bind.h"
+#include "base/callback.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_shader.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_analysis.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/insets.h"
-#include "ui/views/border.h"
 #include "ui/views/layout/box_layout.h"
 
 namespace ash {
@@ -51,7 +50,7 @@ constexpr int kExtraSmallVerticalDistanceBetweenUsersDp = 32;
 constexpr int kExtraSmallGradientHeightDp = 112;
 
 // Inset the scroll bar from the edges of the screen.
-constexpr gfx::Insets kVerticalScrollInsets(2, 0, 2, 8);
+constexpr auto kVerticalScrollInsets = gfx::Insets::TLBR(2, 0, 2, 8);
 
 constexpr char kScrollableUsersListContentViewName[] =
     "ScrollableUsersListContent";
@@ -99,18 +98,20 @@ LayoutParams BuildLayoutForStyle(LoginDisplayStyle style) {
       params.insets_landscape =
           gfx::Insets(kExtraSmallPaddingAroundUserListLandscapeDp);
       params.insets_portrait =
-          gfx::Insets(kExtraSmallPaddingTopBottomOfUserListPortraitDp,
-                      kExtraSmallPaddingLeftOfUserListPortraitDp,
-                      kExtraSmallPaddingTopBottomOfUserListPortraitDp,
-                      kExtraSmallPaddingRightOfUserListPortraitDp);
+          gfx::Insets::TLBR(kExtraSmallPaddingTopBottomOfUserListPortraitDp,
+                            kExtraSmallPaddingLeftOfUserListPortraitDp,
+                            kExtraSmallPaddingTopBottomOfUserListPortraitDp,
+                            kExtraSmallPaddingRightOfUserListPortraitDp);
       return params;
     }
     case LoginDisplayStyle::kSmall: {
       LayoutParams params;
-      params.insets_landscape = gfx::Insets(kSmallPaddingTopBottomOfUserListDp,
-                                            kSmallPaddingLeftRightOfUserListDp);
-      params.insets_portrait = gfx::Insets(kSmallPaddingTopBottomOfUserListDp,
-                                           kSmallPaddingLeftRightOfUserListDp);
+      params.insets_landscape =
+          gfx::Insets::VH(kSmallPaddingTopBottomOfUserListDp,
+                          kSmallPaddingLeftRightOfUserListDp);
+      params.insets_portrait =
+          gfx::Insets::VH(kSmallPaddingTopBottomOfUserListDp,
+                          kSmallPaddingLeftRightOfUserListDp);
       params.between_child_spacing = kSmallVerticalDistanceBetweenUsersDp;
       return params;
     }
@@ -125,8 +126,8 @@ LayoutParams BuildLayoutForStyle(LoginDisplayStyle style) {
 
 // static
 ScrollableUsersListView::GradientParams
-ScrollableUsersListView::GradientParams::BuildForStyle(
-    LoginDisplayStyle style) {
+ScrollableUsersListView::GradientParams::BuildForStyle(LoginDisplayStyle style,
+                                                       views::View* view) {
   switch (style) {
     case LoginDisplayStyle::kExtraSmall: {
       SkColor dark_muted_color =
@@ -134,8 +135,7 @@ ScrollableUsersListView::GradientParams::BuildForStyle(
               color_utils::ColorProfile(color_utils::LumaRange::DARK,
                                         color_utils::SaturationRange::MUTED));
       SkColor tint_color = color_utils::GetResultingPaintColor(
-          AshColorProvider::Get()->GetShieldLayerColor(
-              AshColorProvider::ShieldLayerType::kShield80),
+          view->GetColorProvider()->GetColor(kColorAshShieldAndBase80),
           SkColorSetA(dark_muted_color, SK_AlphaOPAQUE));
 
       GradientParams params;
@@ -172,7 +172,6 @@ ScrollableUsersListView::ScrollableUsersListView(
     LoginDisplayStyle display_style)
     : display_style_(display_style) {
   auto layout_params = BuildLayoutForStyle(display_style);
-  gradient_params_ = GradientParams::BuildForStyle(display_style);
 
   user_view_host_ = new NonAccessibleView();
   user_view_host_layout_ =
@@ -294,9 +293,10 @@ void ScrollableUsersListView::OnPaintBackground(gfx::Canvas* canvas) {
       SkScalar bottom_gradient_start = 1.f - top_gradient_end;
       SkScalar color_positions[4] = {0.f, top_gradient_end,
                                      bottom_gradient_start, 1.f};
-      SkColor colors[4] = {gradient_params_.color_from,
-                           gradient_params_.color_to, gradient_params_.color_to,
-                           gradient_params_.color_from};
+      SkColor4f colors[4] = {SkColor4f::FromColor(gradient_params_.color_from),
+                             SkColor4f::FromColor(gradient_params_.color_to),
+                             SkColor4f::FromColor(gradient_params_.color_to),
+                             SkColor4f::FromColor(gradient_params_.color_from)};
 
       flags.setShader(cc::PaintShader::MakeLinearGradient(
           in_view_coordinates, colors, color_positions, 4, SkTileMode::kClamp));
@@ -310,8 +310,7 @@ void ScrollableUsersListView::OnPaintBackground(gfx::Canvas* canvas) {
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
     flags.setStyle(cc::PaintFlags::kFill_Style);
-    flags.setColor(AshColorProvider::Get()->GetShieldLayerColor(
-        AshColorProvider::ShieldLayerType::kShield80));
+    flags.setColor(GetColorProvider()->GetColor(kColorAshShieldAndBase80));
     canvas->DrawRoundRect(render_bounds,
                           login::kNonBlurredWallpaperBackgroundRadiusDp, flags);
   }
@@ -319,18 +318,18 @@ void ScrollableUsersListView::OnPaintBackground(gfx::Canvas* canvas) {
 
 void ScrollableUsersListView::OnThemeChanged() {
   views::ScrollView::OnThemeChanged();
-  gradient_params_ = GradientParams::BuildForStyle(display_style_);
+  gradient_params_ = GradientParams::BuildForStyle(display_style_, this);
 }
 
 // When the active user is updated, the wallpaper changes. The gradient color
 // should be updated in response to the new primary wallpaper color.
 void ScrollableUsersListView::OnWallpaperColorsChanged() {
-  gradient_params_ = GradientParams::BuildForStyle(display_style_);
+  gradient_params_ = GradientParams::BuildForStyle(display_style_, this);
   SchedulePaint();
 }
 
 void ScrollableUsersListView::OnWallpaperBlurChanged() {
-  gradient_params_ = GradientParams::BuildForStyle(display_style_);
+  gradient_params_ = GradientParams::BuildForStyle(display_style_, this);
   SchedulePaint();
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,9 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/path_service.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -39,18 +39,18 @@
 #include "extensions/buildflags/buildflags.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/registry.h"
 #include "components/policy/core/common/policy_loader_win.h"
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 #include <CoreFoundation/CoreFoundation.h>
 #include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/policy/core/common/policy_loader_mac.h"
 #include "components/policy/core/common/preferences_mac.h"
-#elif defined(OS_POSIX) && !defined(OS_ANDROID)
+#elif BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
 #include "components/policy/core/common/config_dir_policy_loader.h"
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
 #include "components/policy/core/common/android/android_combined_policy_provider.h"
 #endif
 
@@ -60,18 +60,20 @@
 #include "components/policy/core/common/proxy_policy_provider.h"
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/policy/chrome_browser_cloud_management_controller_android.h"
 #elif !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/policy/chrome_browser_cloud_management_controller_desktop.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/browser/browser_switcher/browser_switcher_policy_migrator.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/lacros/device_settings_lacros.h"
+#include "chromeos/crosapi/mojom/crosapi.mojom.h"
+#include "chromeos/startup/browser_params_proxy.h"
 #include "components/policy/core/common/policy_loader_lacros.h"
 #endif
 
@@ -84,7 +86,7 @@ ChromeBrowserPolicyConnector::ChromeBrowserPolicyConnector()
     : BrowserPolicyConnector(base::BindRepeating(&BuildHandlerList)) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<ChromeBrowserCloudManagementController::Delegate> delegate =
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       std::make_unique<ChromeBrowserCloudManagementControllerAndroid>();
 #else
       std::make_unique<ChromeBrowserCloudManagementControllerDesktop>();
@@ -114,7 +116,7 @@ void ChromeBrowserPolicyConnector::Init(
   device_management_service->ScheduleInitialization(
       kServiceInitializationStartupDelay);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   policy_cache_updater_ = std::make_unique<android::PolicyCacheUpdater>(
       GetPolicyService(), GetHandlerList());
 #endif
@@ -134,8 +136,12 @@ ChromeBrowserPolicyConnector::GetDeviceSettings() const {
 #endif
 
 bool ChromeBrowserPolicyConnector::IsDeviceEnterpriseManaged() const {
-  NOTREACHED() << "This method is only defined for Chrome OS";
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  return chromeos::BrowserParamsProxy::Get()->IsDeviceEnterprisedManaged();
+#else
+  NOTREACHED() << "This method is only defined for ChromeOS";
   return false;
+#endif
 }
 
 bool ChromeBrowserPolicyConnector::HasMachineLevelPolicies() {
@@ -164,9 +170,12 @@ void ChromeBrowserPolicyConnector::Shutdown() {
 
 ConfigurationPolicyProvider*
 ChromeBrowserPolicyConnector::GetPlatformProvider() {
-  ConfigurationPolicyProvider* provider =
-      BrowserPolicyConnectorBase::GetPolicyProviderForTesting();
-  return provider ? provider : platform_provider_;
+  if (ConfigurationPolicyProvider* provider =
+          BrowserPolicyConnectorBase::GetPolicyProviderForTesting()) {
+    CHECK_IS_TEST();
+    return provider;
+  }
+  return platform_provider_.get();
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -249,14 +258,14 @@ ChromeBrowserPolicyConnector::CreatePolicyProviders() {
 
 std::unique_ptr<ConfigurationPolicyProvider>
 ChromeBrowserPolicyConnector::CreatePlatformProvider() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   std::unique_ptr<AsyncPolicyLoader> loader(PolicyLoaderWin::Create(
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT}),
       ManagementServiceFactory::GetForPlatform(), kRegistryChromePolicyKey));
   return std::make_unique<AsyncPolicyProvider>(GetSchemaRegistry(),
                                                std::move(loader));
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Explicitly watch the "com.google.Chrome" bundle ID, no matter what this
   // app's bundle ID actually is. All channels of Chrome should obey the same
@@ -278,9 +287,10 @@ ChromeBrowserPolicyConnector::CreatePlatformProvider() {
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT}),
       PolicyPerProfileFilter::kFalse);
+  device_account_policy_loader_ = loader.get();
   return std::make_unique<AsyncPolicyProvider>(GetSchemaRegistry(),
                                                std::move(loader));
-#elif defined(OS_POSIX) && !defined(OS_ANDROID)
+#elif BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
   base::FilePath config_dir_path;
   if (base::PathService::Get(chrome::DIR_POLICY_FILES, &config_dir_path)) {
     std::unique_ptr<AsyncPolicyLoader> loader(new ConfigDirPolicyLoader(
@@ -292,7 +302,7 @@ ChromeBrowserPolicyConnector::CreatePlatformProvider() {
   } else {
     return nullptr;
   }
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   return std::make_unique<policy::android::AndroidCombinedPolicyProvider>(
       GetSchemaRegistry());
 #else

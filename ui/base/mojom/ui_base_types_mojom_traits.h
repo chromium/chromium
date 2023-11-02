@@ -1,10 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_BASE_MOJOM_UI_BASE_TYPES_MOJOM_TRAITS_H_
 #define UI_BASE_MOJOM_UI_BASE_TYPES_MOJOM_TRAITS_H_
 
+#include "base/notreached.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "ui/base/mojom/ui_base_types.mojom.h"

@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/modules/accessibility/ax_menu_list.h"
 
+#include "base/auto_reset.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_menu_list_popup.h"
@@ -39,7 +40,7 @@ AXMenuList::AXMenuList(LayoutObject* layout_object,
 }
 
 ax::mojom::blink::Role AXMenuList::NativeRoleIgnoringAria() const {
-  return ax::mojom::blink::Role::kPopUpButton;
+  return ax::mojom::blink::Role::kComboBoxSelect;
 }
 
 bool AXMenuList::OnNativeClickAction() {
@@ -81,8 +82,20 @@ void AXMenuList::Detach() {
   }
 }
 
+void AXMenuList::SetNeedsToUpdateChildren() const {
+  if (!children_.empty()) {
+    if (AXObject* child_popup = children_[0]) {
+      // If we have a child popup, update its children at the same time.
+      DCHECK(IsA<AXMenuListPopup>(child_popup));
+      child_popup->SetNeedsToUpdateChildren();
+    }
+  }
+
+  AXObject::SetNeedsToUpdateChildren();
+}
+
 void AXMenuList::ClearChildren() const {
-  if (children_.IsEmpty())
+  if (children_.empty())
     return;
 
   // Unless the menu list is detached, there's no reason to clear our
@@ -124,7 +137,7 @@ AXObject* AXMenuList::GetOrCreateMockPopupChild() {
     return nullptr;
 
   // Ensure mock AXMenuListPopup exists as first and only child.
-  if (children_.IsEmpty()) {
+  if (children_.empty()) {
     AXObjectCacheImpl& cache = AXObjectCache();
     AXObject* popup =
         cache.CreateAndInit(ax::mojom::blink::Role::kMenuListPopup, this);
@@ -164,7 +177,7 @@ void AXMenuList::DidUpdateActiveOption() {
   // time by AXObjectCacheImpl(). Look into calling with clean layout.
   if (!NeedsToUpdateChildren()) {
     const auto& child_objects = ChildrenIncludingIgnored();
-    if (!child_objects.IsEmpty()) {
+    if (!child_objects.empty()) {
       DCHECK_EQ(child_objects.size(), 1ul);
       DCHECK(IsA<AXMenuListPopup>(child_objects[0].Get()));
       HTMLSelectElement* select = To<HTMLSelectElement>(GetNode());

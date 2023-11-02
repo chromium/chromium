@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,6 +36,20 @@ bool HasSourceMatchInList(
   return false;
 }
 
+bool IsScriptDirective(CSPDirectiveName directive_type) {
+  return (directive_type == CSPDirectiveName::ScriptSrc ||
+          directive_type == CSPDirectiveName::ScriptSrcAttr ||
+          directive_type == CSPDirectiveName::ScriptSrcElem ||
+          directive_type == CSPDirectiveName::DefaultSrc);
+}
+
+bool IsStyleDirective(CSPDirectiveName directive_type) {
+  return (directive_type == CSPDirectiveName::StyleSrc ||
+          directive_type == CSPDirectiveName::StyleSrcAttr ||
+          directive_type == CSPDirectiveName::StyleSrcElem ||
+          directive_type == CSPDirectiveName::DefaultSrc);
+}
+
 }  // namespace
 
 bool CSPSourceListAllows(
@@ -51,7 +65,7 @@ bool CSPSourceListAllows(
   if (source_list.allow_star) {
     if (url.ProtocolIsInHTTPFamily() || url.ProtocolIs("ftp") ||
         url.ProtocolIs("ws") || url.ProtocolIs("wss") ||
-        (!url.Protocol().IsEmpty() &&
+        (!url.Protocol().empty() &&
          EqualIgnoringASCIICase(url.Protocol(), self_source.scheme)))
       return true;
 
@@ -107,7 +121,7 @@ bool CSPSourceListIsSelf(
 
 bool CSPSourceListIsHashOrNoncePresent(
     const network::mojom::blink::CSPSourceList& source_list) {
-  return !source_list.nonces.IsEmpty() || !source_list.hashes.IsEmpty();
+  return !source_list.nonces.empty() || !source_list.hashes.empty();
 }
 
 bool CSPSourceListAllowsURLBasedMatching(
@@ -120,15 +134,14 @@ bool CSPSourceListAllowsURLBasedMatching(
 bool CSPSourceListAllowAllInline(
     CSPDirectiveName directive_type,
     const network::mojom::blink::CSPSourceList& source_list) {
-  if (directive_type != CSPDirectiveName::DefaultSrc &&
-      !ContentSecurityPolicy::IsScriptDirective(directive_type) &&
-      !ContentSecurityPolicy::IsStyleDirective(directive_type)) {
+  if (!IsScriptDirective(directive_type) &&
+      !IsStyleDirective(directive_type)) {
     return false;
   }
 
   return source_list.allow_inline &&
          !CSPSourceListIsHashOrNoncePresent(source_list) &&
-         (!ContentSecurityPolicy::IsScriptDirective(directive_type) ||
+         (!IsScriptDirective(directive_type) ||
           !source_list.allow_dynamic);
 }
 

@@ -1,5 +1,3 @@
-# tags: [ Android Fuchsia Linux Mac Mac10.12 Mac10.13 Win Win7 Win10 ]
-# tags: [ Release Debug ]
 # results: [ Timeout Crash Pass Failure Slow Skip ]
 
 # Flaky tests.
@@ -10,7 +8,7 @@ crbug.com/1229002 fast/canvas/canvas-composite-video-shadow.html [ Failure Pass 
 crbug.com/1002522 fast/canvas/canvas-toDataURL-webp.html [ Skip ]
 
 # Flaky on Linux.
-crbug.com/1150545 virtual/android/fullscreen/video-scrolled-iframe.html [ Failure Pass Skip Timeout ]
+crbug.com/1150545 virtual/android/fullscreen/video-scrolled-iframe.html [ Failure Pass Timeout ]
 
 # These tests have large image differences, need investigation.
 crbug.com/993384 css3/filters/effect-reference-colorspace.html [ Failure Pass ]
@@ -51,6 +49,8 @@ crbug.com/1266821 fast/canvas/pixelated.html [ Failure ]
 crbug.com/1266821 images/color-profile-image-filter-all.html [ Failure ]
 crbug.com/1266821 images/color-profile-mask-image-svg.html [ Failure ]
 crbug.com/1266821 images/color-profile-svg-fill-text.html [ Failure ]
+crbug.com/1266821 images/color-profile-background-image-cover.html [ Failure ]
+crbug.com/1266821 images/color-profile-image-canvas.html [ Failure ]
 crbug.com/1266821 images/imagemap-focus-ring-zoom.html [ Failure ]
 crbug.com/1266821 images/yuv-decode-eligible/color-profile-filter.html [ Failure ]
 crbug.com/1266821 images/yuv-decode-eligible/color-profile-layer-filter.html [ Failure ]
@@ -66,3 +66,4 @@ crbug.com/1266821 transforms/svg-vs-css.xhtml [ Failure ]
 crbug.com/1266821 transforms/transformed-caret.html [ Failure ]
 crbug.com/1266821 transforms/transformed-document-element.html [ Failure ]
 crbug.com/1266821 virtual/android/fullscreen/video-controls-timeline.html [ Failure ]
+crbug.com/1268259 images/color-profile-image-canvas-pattern.html [ Failure ]

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,9 @@
 #include <unordered_map>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "content/public/browser/document_service.h"
 #include "content/public/browser/visibility.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -33,19 +35,18 @@ class RenderFrameHost;
 class NavigationPredictor
     : public content::DocumentService<blink::mojom::AnchorElementMetricsHost> {
  public:
-  NavigationPredictor(content::RenderFrameHost* render_frame_host,
-                      mojo::PendingReceiver<AnchorElementMetricsHost> receiver);
-
   NavigationPredictor(const NavigationPredictor&) = delete;
   NavigationPredictor& operator=(const NavigationPredictor&) = delete;
-
-  ~NavigationPredictor() override;
 
   // Create and bind NavigationPredictor.
   static void Create(content::RenderFrameHost* render_frame_host,
                      mojo::PendingReceiver<AnchorElementMetricsHost> receiver);
 
  private:
+  NavigationPredictor(content::RenderFrameHost& render_frame_host,
+                      mojo::PendingReceiver<AnchorElementMetricsHost> receiver);
+  ~NavigationPredictor() override;
+
   // blink::mojom::AnchorElementMetricsHost:
   void ReportAnchorElementClick(
       blink::mojom::AnchorElementClickPtr click) override;
@@ -94,7 +95,7 @@ class NavigationPredictor
   ukm::SourceId ukm_source_id_;
 
   // UKM recorder
-  ukm::UkmRecorder* ukm_recorder_ = nullptr;
+  raw_ptr<ukm::UkmRecorder> ukm_recorder_ = nullptr;
 
   // The time at which the navigation started.
   base::TimeTicks navigation_start_;

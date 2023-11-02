@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,9 +29,8 @@ TEST(TransformUtilTest, GetScaleTransform) {
   const int kOffset = 10;
   for (int sign_x = -1; sign_x <= 1; ++sign_x) {
     for (int sign_y = -1; sign_y <= 1; ++sign_y) {
-      Point test(kAnchor.x() + sign_x * kOffset,
-                 kAnchor.y() + sign_y * kOffset);
-      scale.TransformPoint(&test);
+      Point test = scale.MapPoint(Point(kAnchor.x() + sign_x * kOffset,
+                                        kAnchor.y() + sign_y * kOffset));
 
       EXPECT_EQ(Point(kAnchor.x() + sign_x * kOffset * kScale,
                       kAnchor.y() + sign_y * kOffset * kScale),
@@ -145,22 +144,16 @@ TEST(TransformUtilTest, SnapCompositeTransform) {
   bool snapped = SnapTransform(&result, transform, viewport);
   ASSERT_TRUE(snapped) << "Viewport should snap all components.";
 
-  Point3F point;
-
-  point = Point3F(PointF(viewport.origin()));
-  result.TransformPoint(&point);
+  Point3F point = result.MapPoint(Point3F(PointF(viewport.origin())));
   EXPECT_EQ(Point3F(31.f, 20.f, 10.f), point) << "Transformed origin";
 
-  point = Point3F(PointF(viewport.top_right()));
-  result.TransformPoint(&point);
+  point = result.MapPoint(Point3F(PointF(viewport.top_right())));
   EXPECT_EQ(Point3F(31.f, 1940.f, 10.f), point) << "Transformed top-right";
 
-  point = Point3F(PointF(viewport.bottom_left()));
-  result.TransformPoint(&point);
+  point = result.MapPoint(Point3F(PointF(viewport.bottom_left())));
   EXPECT_EQ(Point3F(-3569.f, 20.f, 10.f), point) << "Transformed bottom-left";
 
-  point = Point3F(PointF(viewport.bottom_right()));
-  result.TransformPoint(&point);
+  point = result.MapPoint(Point3F(PointF(viewport.bottom_right())));
   EXPECT_EQ(Point3F(-3569.f, 1940.f, 10.f), point)
       << "Transformed bottom-right";
 }
@@ -183,16 +176,12 @@ TEST(TransformUtilTest, NoSnapSkewedCompositeTransform) {
 TEST(TransformUtilTest, TransformAboutPivot) {
   Transform transform;
   transform.Scale(3, 4);
-  transform = TransformAboutPivot(Point(7, 8), transform);
+  transform = TransformAboutPivot(PointF(7, 8), transform);
 
-  Point point;
-
-  point = Point(0, 0);
-  transform.TransformPoint(&point);
+  Point point = transform.MapPoint(Point(0, 0));
   EXPECT_EQ(Point(-14, -24).ToString(), point.ToString());
 
-  point = Point(1, 1);
-  transform.TransformPoint(&point);
+  point = transform.MapPoint(Point(1, 1));
   EXPECT_EQ(Point(-11, -20).ToString(), point.ToString());
 }
 
@@ -221,8 +210,8 @@ double ComputeDecompRecompError(const Transform& transform) {
 
   float expected[16];
   float actual[16];
-  transform.matrix().asRowMajorf(expected);
-  composed.matrix().asRowMajorf(actual);
+  transform.GetColMajorF(expected);
+  composed.GetColMajorF(actual);
   double sse = 0;
   for (int i = 0; i < 16; i++) {
     double diff = expected[i] - actual[i];
@@ -233,30 +222,31 @@ double ComputeDecompRecompError(const Transform& transform) {
 
 TEST(TransformUtilTest, RoundTripTest) {
   // rotateZ(90deg)
-  EXPECT_APPROX_EQ(0, ComputeDecompRecompError(Transform(0, 1, -1, 0, 0, 0)));
+  EXPECT_APPROX_EQ(0, ComputeDecompRecompError(Transform::Make90degRotation()));
 
   // rotateZ(180deg)
   // Edge case where w = 0.
-  EXPECT_APPROX_EQ(0, ComputeDecompRecompError(Transform(-1, 0, 0, -1, 0, 0)));
+  EXPECT_APPROX_EQ(0,
+                   ComputeDecompRecompError(Transform::Make180degRotation()));
 
   // rotateX(90deg) rotateY(90deg) rotateZ(90deg)
   // [1  0   0][ 0 0 1][0 -1 0]   [0 0 1][0 -1 0]   [0  0 1]
   // [0  0  -1][ 0 1 0][1  0 0] = [1 0 0][1  0 0] = [0 -1 0]
   // [0  1   0][-1 0 0][0  0 1]   [0 1 0][0  0 1]   [1  0 0]
   // This test case leads to Gimbal lock when using Euler angles.
-  EXPECT_APPROX_EQ(0, ComputeDecompRecompError(Transform(
+  EXPECT_APPROX_EQ(0, ComputeDecompRecompError(Transform::RowMajor(
                           0, 0, 1, 0, 0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1)));
 
   // Quaternion matrices with 0 off-diagonal elements, and negative trace.
   // Stress tests handling of degenerate cases in computing quaternions.
   // Validates fix for https://crbug.com/647554.
-  EXPECT_APPROX_EQ(0, ComputeDecompRecompError(Transform(1, 1, 1, 0, 0, 0)));
-  EXPECT_APPROX_EQ(0, ComputeDecompRecompError(Transform(
-                          -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)));
-  EXPECT_APPROX_EQ(0, ComputeDecompRecompError(Transform(
-                          1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)));
-  EXPECT_APPROX_EQ(0, ComputeDecompRecompError(Transform(
-                          1, 0, 0, 0, 0, 1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1)));
+  EXPECT_APPROX_EQ(0, ComputeDecompRecompError(Transform::RowMajor(
+                          1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)));
+  EXPECT_APPROX_EQ(0, ComputeDecompRecompError(Transform::MakeScale(-1, 1)));
+  EXPECT_APPROX_EQ(0, ComputeDecompRecompError(Transform::MakeScale(1, -1)));
+  Transform flip_z;
+  flip_z.Scale3d(1, 1, -1);
+  EXPECT_APPROX_EQ(0, ComputeDecompRecompError(flip_z));
 }
 
 TEST(TransformUtilTest, Transform2D) {
@@ -268,57 +258,61 @@ TEST(TransformUtilTest, Transform2D) {
   // to needlessly shrink and grow as they transform through scale = 0 along
   // multiple axes.  2D transformation matrices should follow the 2D spec
   // regarding matrix decomposition.
-  DecomposedTransform decompFlipX;
-  DecomposeTransform(&decompFlipX, Transform(-1, 0, 0, 1, 0, 0));
-  EXPECT_APPROX_EQ(-1, decompFlipX.scale[0]);
-  EXPECT_APPROX_EQ(1, decompFlipX.scale[1]);
-  EXPECT_APPROX_EQ(1, decompFlipX.scale[2]);
-  EXPECT_APPROX_EQ(0, decompFlipX.quaternion.z());
-  EXPECT_APPROX_EQ(1, decompFlipX.quaternion.w());
+  DecomposedTransform decomp_flip_x;
+  DecomposeTransform(&decomp_flip_x, Transform::MakeScale(-1, 1));
+  EXPECT_APPROX_EQ(-1, decomp_flip_x.scale[0]);
+  EXPECT_APPROX_EQ(1, decomp_flip_x.scale[1]);
+  EXPECT_APPROX_EQ(1, decomp_flip_x.scale[2]);
+  EXPECT_APPROX_EQ(0, decomp_flip_x.quaternion.z());
+  EXPECT_APPROX_EQ(1, decomp_flip_x.quaternion.w());
 
-  DecomposedTransform decompFlipY;
-  DecomposeTransform(&decompFlipY, Transform(1, 0, 0, -1, 0, 0));
-  EXPECT_APPROX_EQ(1, decompFlipY.scale[0]);
-  EXPECT_APPROX_EQ(-1, decompFlipY.scale[1]);
-  EXPECT_APPROX_EQ(1, decompFlipY.scale[2]);
-  EXPECT_APPROX_EQ(0, decompFlipY.quaternion.z());
-  EXPECT_APPROX_EQ(1, decompFlipY.quaternion.w());
+  DecomposedTransform decomp_flip_y;
+  DecomposeTransform(&decomp_flip_y, Transform::MakeScale(1, -1));
+  EXPECT_APPROX_EQ(1, decomp_flip_y.scale[0]);
+  EXPECT_APPROX_EQ(-1, decomp_flip_y.scale[1]);
+  EXPECT_APPROX_EQ(1, decomp_flip_y.scale[2]);
+  EXPECT_APPROX_EQ(0, decomp_flip_y.quaternion.z());
+  EXPECT_APPROX_EQ(1, decomp_flip_y.quaternion.w());
 
-  DecomposedTransform decompR180;
-  DecomposeTransform(&decompR180, Transform(-1, 0, 0, -1, 0, 0));
-  EXPECT_APPROX_EQ(1, decompR180.scale[0]);
-  EXPECT_APPROX_EQ(1, decompR180.scale[1]);
-  EXPECT_APPROX_EQ(1, decompR180.scale[2]);
-  EXPECT_APPROX_EQ(1, decompR180.quaternion.z());
-  EXPECT_APPROX_EQ(0, decompR180.quaternion.w());
+  DecomposedTransform decomp_rotate_180;
+  DecomposeTransform(&decomp_rotate_180, Transform::Make180degRotation());
+  EXPECT_APPROX_EQ(1, decomp_rotate_180.scale[0]);
+  EXPECT_APPROX_EQ(1, decomp_rotate_180.scale[1]);
+  EXPECT_APPROX_EQ(1, decomp_rotate_180.scale[2]);
+  EXPECT_APPROX_EQ(1, decomp_rotate_180.quaternion.z());
+  EXPECT_APPROX_EQ(0, decomp_rotate_180.quaternion.w());
 
-  DecomposedTransform decompR90;
-  DecomposeTransform(&decompR180, Transform(0, -1, 1, 0, 0, 0));
-  EXPECT_APPROX_EQ(1, decompR180.scale[0]);
-  EXPECT_APPROX_EQ(1, decompR180.scale[1]);
-  EXPECT_APPROX_EQ(1, decompR180.scale[2]);
-  EXPECT_APPROX_EQ(1 / sqrt(2), decompR180.quaternion.z());
-  EXPECT_APPROX_EQ(1 / sqrt(2), decompR180.quaternion.w());
+  DecomposedTransform decomp_rotate_90;
+  DecomposeTransform(&decomp_rotate_90, Transform::Make90degRotation());
+  EXPECT_APPROX_EQ(1, decomp_rotate_90.scale[0]);
+  EXPECT_APPROX_EQ(1, decomp_rotate_90.scale[1]);
+  EXPECT_APPROX_EQ(1, decomp_rotate_90.scale[2]);
+  EXPECT_APPROX_EQ(1 / sqrt(2), decomp_rotate_90.quaternion.z());
+  EXPECT_APPROX_EQ(1 / sqrt(2), decomp_rotate_90.quaternion.w());
 
-  DecomposedTransform decompR90Translate;
-  DecomposeTransform(&decompR90Translate, Transform(0, -1, 1, 0, -1, 1));
-  EXPECT_APPROX_EQ(1, decompR90Translate.scale[0]);
-  EXPECT_APPROX_EQ(1, decompR90Translate.scale[1]);
-  EXPECT_APPROX_EQ(1, decompR90Translate.scale[2]);
-  EXPECT_APPROX_EQ(-1, decompR90Translate.translate[0]);
-  EXPECT_APPROX_EQ(1, decompR90Translate.translate[1]);
-  EXPECT_APPROX_EQ(0, decompR90Translate.translate[2]);
-  EXPECT_APPROX_EQ(1 / sqrt(2), decompR90Translate.quaternion.z());
-  EXPECT_APPROX_EQ(1 / sqrt(2), decompR90Translate.quaternion.w());
+  DecomposedTransform decomp_translate_rotate_90;
+  DecomposeTransform(
+      &decomp_translate_rotate_90,
+      Transform::MakeTranslation(-1, 1) * Transform::Make90degRotation());
+  EXPECT_APPROX_EQ(1, decomp_translate_rotate_90.scale[0]);
+  EXPECT_APPROX_EQ(1, decomp_translate_rotate_90.scale[1]);
+  EXPECT_APPROX_EQ(1, decomp_translate_rotate_90.scale[2]);
+  EXPECT_APPROX_EQ(-1, decomp_translate_rotate_90.translate[0]);
+  EXPECT_APPROX_EQ(1, decomp_translate_rotate_90.translate[1]);
+  EXPECT_APPROX_EQ(0, decomp_translate_rotate_90.translate[2]);
+  EXPECT_APPROX_EQ(1 / sqrt(2), decomp_translate_rotate_90.quaternion.z());
+  EXPECT_APPROX_EQ(1 / sqrt(2), decomp_translate_rotate_90.quaternion.w());
 
-  DecomposedTransform decompSkewRotate;
-  DecomposeTransform(&decompR90Translate, Transform(1, 1, 1, 0, 0, 0));
-  EXPECT_APPROX_EQ(sqrt(2), decompR90Translate.scale[0]);
-  EXPECT_APPROX_EQ(-1 / sqrt(2), decompR90Translate.scale[1]);
-  EXPECT_APPROX_EQ(1, decompR90Translate.scale[2]);
-  EXPECT_APPROX_EQ(-1, decompR90Translate.skew[0]);
-  EXPECT_APPROX_EQ(sin(base::kPiDouble / 8), decompR90Translate.quaternion.z());
-  EXPECT_APPROX_EQ(cos(base::kPiDouble / 8), decompR90Translate.quaternion.w());
+  DecomposedTransform decomp_skew_rotate;
+  DecomposeTransform(
+      &decomp_skew_rotate,
+      Transform::RowMajor(1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1));
+  EXPECT_APPROX_EQ(sqrt(2), decomp_skew_rotate.scale[0]);
+  EXPECT_APPROX_EQ(-1 / sqrt(2), decomp_skew_rotate.scale[1]);
+  EXPECT_APPROX_EQ(1, decomp_skew_rotate.scale[2]);
+  EXPECT_APPROX_EQ(-1, decomp_skew_rotate.skew[0]);
+  EXPECT_APPROX_EQ(sin(base::kPiDouble / 8), decomp_skew_rotate.quaternion.z());
+  EXPECT_APPROX_EQ(cos(base::kPiDouble / 8), decomp_skew_rotate.quaternion.w());
 }
 
 TEST(TransformUtilTest, TransformBetweenRects) {
@@ -327,16 +321,14 @@ TEST(TransformUtilTest, TransformBetweenRects) {
 
     // Applies |transform| to calculate the target rectangle from |src_rect|.
     // Notes that |transform| is in |src_rect|'s local coordinates.
-    RectF dst_in_src_coordinates = RectF(src_rect.size());
-    transform.TransformRect(&dst_in_src_coordinates);
-    RectF dst_in_parent_coordinates = dst_in_src_coordinates;
+    RectF dst_in_parent_coordinates = transform.MapRect(RectF(src_rect.size()));
     dst_in_parent_coordinates.Offset(src_rect.OffsetFromOrigin());
 
     // Verifies that the target rectangle is expected.
     EXPECT_EQ(dst_rect, dst_in_parent_coordinates);
   };
 
-  std::vector<const std::pair<const RectF, const RectF>> test_cases{
+  std::vector<std::pair<const RectF, const RectF>> test_cases{
       {RectF(0.f, 0.f, 2.f, 3.f), RectF(3.f, 5.f, 4.f, 9.f)},
       {RectF(10.f, 7.f, 2.f, 6.f), RectF(4.f, 2.f, 1.f, 12.f)},
       {RectF(0.f, 0.f, 3.f, 5.f), RectF(0.f, 0.f, 6.f, 2.5f)}};
@@ -348,6 +340,39 @@ TEST(TransformUtilTest, TransformBetweenRects) {
 
   // Tests the case where the destination is an empty rectangle.
   verify(RectF(0.f, 0.f, 3.f, 5.f), RectF());
+}
+
+TEST(TransformUtilTest, OrthoProjectionTransform) {
+  auto verify = [](float left, float right, float bottom, float top) {
+    AxisTransform2d t = OrthoProjectionTransform(left, right, bottom, top);
+    if (right == left || top == bottom) {
+      EXPECT_EQ(AxisTransform2d(), t);
+    } else {
+      EXPECT_EQ(PointF(-1, -1), t.MapPoint(PointF(left, bottom)));
+      EXPECT_EQ(PointF(1, 1), t.MapPoint(PointF(right, top)));
+    }
+  };
+
+  verify(0, 0, 0, 0);
+  verify(10, 20, 10, 30);
+  verify(10, 30, 20, 30);
+  verify(0, 0, 10, 20);
+  verify(-100, 400, 200, -200);
+  verify(-1.5, 4.25, 2.75, -3.75);
+}
+
+TEST(TransformUtilTest, WindowTransform) {
+  auto verify = [](int x, int y, int width, int height) {
+    AxisTransform2d t = WindowTransform(x, y, width, height);
+    EXPECT_EQ(PointF(x, y), t.MapPoint(PointF(-1, -1)));
+    EXPECT_EQ(PointF(x + width, y + height), t.MapPoint(PointF(1, 1)));
+  };
+
+  verify(0, 0, 0, 0);
+  verify(10, 20, 0, 30);
+  verify(10, 30, 20, 0);
+  verify(0, 0, 10, 20);
+  verify(-100, -400, 200, 300);
 }
 
 TEST(TransformUtilTest, Transform2dScaleComponents) {
@@ -371,80 +396,80 @@ TEST(TransformUtilTest, Transform2dScaleComponents) {
   } tests[] = {
       // clang-format off
       // A matrix with only scale and translation.
-      {Transform(3, 0, 0, -23,
-                 0, 7, 0, 31,
-                 0, 0, 11, 47,
-                 0, 0, 0, 1),
+      {Transform::RowMajor(3, 0, 0, -23,
+                           0, 7, 0, 31,
+                           0, 0, 11, 47,
+                           0, 0, 0, 1),
        Vector2dF(3, 7)},
       // Matrices like the first, but also with various
       // perspective-altering components.
-      {Transform(3, 0, 0, -23,
-                 0, 7, 0, 31,
-                 0, 0, 11, 47,
-                 0, 0, -0.5, 1),
+      {Transform::RowMajor(3, 0, 0, -23,
+                           0, 7, 0, 31,
+                           0, 0, 11, 47,
+                           0, 0, -0.5, 1),
        Vector2dF(3, 7)},
-      {Transform(3, 0, 0, -23,
-                 0, 7, 0, 31,
-                 0, 0, 11, 47,
-                 0.2f, 0, -0.5f, 1),
+      {Transform::RowMajor(3, 0, 0, -23,
+                           0, 7, 0, 31,
+                           0, 0, 11, 47,
+                           0.2f, 0, -0.5f, 1),
        absl::nullopt},
-      {Transform(3, 0, 0, -23,
-                 0, 7, 0, 31,
-                 0, 0, 11, 47,
-                 0.2f, -0.2f, -0.5f, 1),
+      {Transform::RowMajor(3, 0, 0, -23,
+                           0, 7, 0, 31,
+                           0, 0, 11, 47,
+                           0.2f, -0.2f, -0.5f, 1),
        absl::nullopt},
-      {Transform(3, 0, 0, -23,
-                 0, 7, 0, 31,
-                 0, 0, 11, 47,
-                 0.2f, -0.2f, -0.5f, 1),
+      {Transform::RowMajor(3, 0, 0, -23,
+                           0, 7, 0, 31,
+                           0, 0, 11, 47,
+                           0.2f, -0.2f, -0.5f, 1),
        absl::nullopt},
-      {Transform(3, 0, 0, -23,
-                 0, 7, 0, 31,
-                 0, 0, 11, 47,
-                 0, -0.2f, -0.5f, 1),
+      {Transform::RowMajor(3, 0, 0, -23,
+                           0, 7, 0, 31,
+                           0, 0, 11, 47,
+                           0, -0.2f, -0.5f, 1),
        absl::nullopt},
-      {Transform(3, 0, 0, -23,
-                 0, 7, 0, 31,
-                 0, 0, 11, 47,
-                 0, 0, -0.5f, 0.25f),
+      {Transform::RowMajor(3, 0, 0, -23,
+                           0, 7, 0, 31,
+                           0, 0, 11, 47,
+                           0, 0, -0.5f, 0.25f),
        Vector2dF(12, 28)},
       // Matrices like the first, but with some types of rotation.
-      {Transform(0, 3, 0, -23,
-                 7, 0, 0, 31,
-                 0, 0, 11, 47,
-                 0, 0, 0, 1),
+      {Transform::RowMajor(0, 3, 0, -23,
+                           7, 0, 0, 31,
+                           0, 0, 11, 47,
+                           0, 0, 0, 1),
        Vector2dF(7, 3)},
-      {Transform(3, 8, 0, -23,
-                 4, 6, 0, 31,
-                 0, 0, 11, 47,
-                 0, 0, 0, 1),
+      {Transform::RowMajor(3, 8, 0, -23,
+                           4, 6, 0, 31,
+                           0, 0, 11, 47,
+                           0, 0, 0, 1),
        Vector2dF(5, 10)},
       // Combination of rotation and perspective
-      {Transform(3, 8, 0, -23,
-                 4, 6, 0, 31,
-                 0, 0, 11, 47,
-                 0, 0, 0, 0.25f),
+      {Transform::RowMajor(3, 8, 0, -23,
+                           4, 6, 0, 31,
+                           0, 0, 11, 47,
+                           0, 0, 0, 0.25f),
        Vector2dF(20, 40)},
       // Error handling cases for final perspective component.
-      {Transform(3, 0, 0, -23,
-                 0, 7, 0, 31,
-                 0, 0, 11, 47,
-                 0, 0, 0, 0),
+      {Transform::RowMajor(3, 0, 0, -23,
+                           0, 7, 0, 31,
+                           0, 0, 11, 47,
+                           0, 0, 0, 0),
        absl::nullopt},
-      {Transform(3, 0, 0, -23,
-                 0, 7, 0, 31,
-                 0, 0, 11, 47,
-                 0, 0, 0, quiet_NaN_or_zero),
+      {Transform::RowMajor(3, 0, 0, -23,
+                           0, 7, 0, 31,
+                           0, 0, 11, 47,
+                           0, 0, 0, quiet_NaN_or_zero),
        absl::nullopt},
-      {Transform(3, 0, 0, -23,
-                 0, 7, 0, 31,
-                 0, 0, 11, 47,
-                 0, 0, 0, infinity_or_zero),
+      {Transform::RowMajor(3, 0, 0, -23,
+                           0, 7, 0, 31,
+                           0, 0, 11, 47,
+                           0, 0, 0, infinity_or_zero),
        absl::nullopt},
-      {Transform(3, 0, 0, -23,
-                 0, 7, 0, 31,
-                 0, 0, 11, 47,
-                 0, 0, 0, denorm_min_or_zero),
+      {Transform::RowMajor(3, 0, 0, -23,
+                           0, 7, 0, 31,
+                           0, 0, 11, 47,
+                           0, 0, 0, denorm_min_or_zero),
        absl::nullopt},
       // clang-format on
   };

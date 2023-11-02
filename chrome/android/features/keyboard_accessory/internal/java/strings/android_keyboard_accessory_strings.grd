@@ -83,6 +83,9 @@
     <output filename="values-zh-rHK/android_keyboard_accessory_strings.xml" lang="zh-HK" type="android" />
     <output filename="values-zh-rTW/android_keyboard_accessory_strings.xml" lang="zh-TW" type="android" />
     <output filename="values-zu/android_keyboard_accessory_strings.xml" lang="zu" type="android" />
+    <!-- Pseudolocales -->
+    <output filename="values-ar-rXB/android_keyboard_accessory_strings.xml" lang="ar-XB" type="android" />
+    <output filename="values-en-rXA/android_keyboard_accessory_strings.xml" lang="en-XA" type="android" />
   </outputs>
   <translations>
     <file path="translations/android_keyboard_accessory_strings_af.xtb" lang="af" />
@@ -96,6 +99,7 @@
     <file path="translations/android_keyboard_accessory_strings_bs.xtb" lang="bs" />
     <file path="translations/android_keyboard_accessory_strings_ca.xtb" lang="ca" />
     <file path="translations/android_keyboard_accessory_strings_cs.xtb" lang="cs" />
+    <file path="translations/android_keyboard_accessory_strings_cy.xtb" lang="cy" />
     <file path="translations/android_keyboard_accessory_strings_da.xtb" lang="da" />
     <file path="translations/android_keyboard_accessory_strings_de.xtb" lang="de" />
     <file path="translations/android_keyboard_accessory_strings_el.xtb" lang="el" />
@@ -183,6 +187,9 @@
       <message name="IDS_ALL_PASSWORDS_BOTTOM_SHEET_TITLE" desc="The title string for the all passwords bottom sheet showing a list of the user's credentials.">
         Passwords
       </message>
+      <message name="IDS_ALL_PASSWORDS_BOTTOM_SHEET_TITLE_GPM" desc="The title string for the all passwords bottom sheet showing a list of the user's credentials when the `Select password` button is clicked.">
+        Select password
+      </message>
       <message name="IDS_ALL_PASSWORDS_BOTTOM_SHEET_SEARCH_HINT" desc="The label for a search button appears in all passwords bottom sheet.">
         Search
       </message>
@@ -194,6 +201,9 @@
       </message>
       <message name="IDS_ALL_PASSWORDS_BOTTOM_SHEET_WARNING_DIALOG_MESSAGE_SECOND" desc="The second paragraph in the warning message showing when the `User other password` button is clicked.">
         Try to use a unique password for every site.
+      </message>
+      <message name="IDS_ALL_PASSWORDS_BOTTOM_SHEET_SUBTITLE" desc="The subtitle string for the all passwords bottom sheet showing when the `Select password` button is clicked.">
+        If you trust <ph name="ORIGIN">%s<ex>example.com</ex></ph>, you can use a saved password to sign in
       </message>
       <message name="IDS_AUTOFILL_KEYBOARD_ACCESSORY_CONTENT_DESCRIPTION" desc="The text announced by the screen reader when the password suggestions are shown.">
         Passwords available
@@ -239,6 +249,9 @@
       </message>
       <message name="IDS_IPH_KEYBOARD_ACCESSORY_PAYMENT_VIRTUAL_CARDS" desc="Text used for the In-Product-Help bubble suggesting that the current credit card suggestion is a virtual card.">
         Use your virtual card for added security
+      </message>
+      <message name="IDS_IPH_KEYBOARD_ACCESSORY_PAYMENT_OFFER" desc="Text used for the In-Product-Help bubble suggesting that the current credit card suggestion has a card linked offer attached.">
+        Cashback linked
       </message>
     </messages>
   </release>

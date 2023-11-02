@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,23 +15,26 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/task/post_task.h"
 #include "base/time/time.h"
+#include "content/browser/bad_message.h"
+#include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/permission_type.h"
+#include "content/public/browser/permission_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/child_process_host.h"
 #include "content/public/common/content_switches.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging.mojom.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging_status.mojom.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -129,7 +132,7 @@ struct PushMessagingManager::RegisterData {
   RegisterData();
   RegisterData(RegisterData&& other) = default;
 
-  GURL requesting_origin;
+  url::Origin requesting_origin;
   int64_t service_worker_registration_id;
   absl::optional<std::string> existing_subscription_id;
   blink::mojom::PushSubscriptionOptionsPtr options;
@@ -172,7 +175,6 @@ void PushMessagingManager::Subscribe(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(options);
 
-  // TODO(mvanouwerkerk): Validate arguments?
   RegisterData data;
 
   data.service_worker_registration_id = service_worker_registration_id;
@@ -190,8 +192,27 @@ void PushMessagingManager::Subscribe(
         blink::mojom::PushRegistrationStatus::NO_SERVICE_WORKER);
     return;
   }
-  data.requesting_origin =
-      service_worker_registration->scope().DeprecatedGetOriginAsURL();
+
+  // The renderer should have checked and disallowed the request for fenced
+  // frames and thrown an exception in blink::PushManager. Report a bad message
+  // if the renderer if the renderer side check didn't happen for some reason.
+  if (service_worker_registration->ancestor_frame_type() ==
+      blink::mojom::AncestorFrameType::kFencedFrame) {
+    bad_message::ReceivedBadMessage(render_process_host_.GetID(),
+                                    bad_message::PMM_SUBSCRIBE_IN_FENCED_FRAME);
+    return;
+  }
+
+  const url::Origin& origin = service_worker_registration->key().origin();
+
+  if (!ChildProcessSecurityPolicyImpl::GetInstance()->CanAccessDataForOrigin(
+          render_process_host_.GetID(), origin)) {
+    bad_message::ReceivedBadMessage(&render_process_host_,
+                                    bad_message::PMM_SUBSCRIBE_INVALID_ORIGIN);
+    return;
+  }
+
+  data.requesting_origin = origin;
 
   DCHECK(!(data.options->application_server_key.empty() &&
            IsRequestFromDocument(render_frame_id_)));
@@ -313,18 +334,20 @@ void PushMessagingManager::Register(PushMessagingManager::RegisterData data) {
               blink::mojom::ConsoleMessageLevel::kError,
               kIncognitoPushUnsupportedMessage);
 
-          BrowserContext* browser_context =
-              render_frame_host->GetBrowserContext();
-
           // Request notifications permission (which will fail, since
           // notifications aren't supported in incognito), so the website can't
           // detect whether incognito is active.
-          GURL requesting_origin = data.requesting_origin;
+          url::Origin requesting_origin = data.requesting_origin;
           bool user_gesture = data.user_gesture;
-          PermissionControllerImpl::FromBrowserContext(browser_context)
-              ->RequestPermission(
-                  PermissionType::NOTIFICATIONS, render_frame_host,
-                  requesting_origin, user_gesture,
+
+          DCHECK_EQ(data.requesting_origin,
+                    render_frame_host->GetLastCommittedOrigin());
+
+          render_frame_host->GetBrowserContext()
+              ->GetPermissionController()
+              ->RequestPermissionFromCurrentDocument(
+                  blink::PermissionType::NOTIFICATIONS, render_frame_host,
+                  user_gesture,
                   base::BindOnce(
                       &PushMessagingManager::DidRequestPermissionInIncognito,
                       AsWeakPtr(), std::move(data)));
@@ -335,19 +358,21 @@ void PushMessagingManager::Register(PushMessagingManager::RegisterData data) {
   }
 
   int64_t registration_id = data.service_worker_registration_id;
-  GURL requesting_origin = data.requesting_origin;
+  url::Origin requesting_origin = data.requesting_origin;
   bool user_gesture = data.user_gesture;
 
   auto options = data.options->Clone();
   if (IsRequestFromDocument(render_frame_id_)) {
     push_service->SubscribeFromDocument(
-        requesting_origin, registration_id, render_process_host_.GetID(),
-        render_frame_id_, std::move(options), user_gesture,
+        requesting_origin.GetURL(), registration_id,
+        render_process_host_.GetID(), render_frame_id_, std::move(options),
+        user_gesture,
         base::BindOnce(&PushMessagingManager::DidRegister, AsWeakPtr(),
                        std::move(data)));
   } else {
     push_service->SubscribeFromWorker(
-        requesting_origin, registration_id, std::move(options),
+        requesting_origin.GetURL(), registration_id,
+        render_process_host_.GetID(), std::move(options),
         base::BindOnce(&PushMessagingManager::DidRegister, AsWeakPtr(),
                        std::move(data)));
   }
@@ -409,14 +434,14 @@ void PushMessagingManager::PersistRegistration(
     const std::vector<uint8_t>& auth,
     blink::mojom::PushRegistrationStatus status) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  url::Origin requesting_origin = url::Origin::Create(data.requesting_origin);
+  blink::StorageKey storage_key = blink::StorageKey(data.requesting_origin);
   int64_t registration_id = data.service_worker_registration_id;
   std::string application_server_key(
       std::string(data.options->application_server_key.begin(),
                   data.options->application_server_key.end()));
 
   service_worker_context_->StoreRegistrationUserData(
-      registration_id, blink::StorageKey(requesting_origin),
+      registration_id, std::move(storage_key),
       {{kPushRegistrationIdServiceWorkerKey, push_subscription_id},
        {kPushSenderIdServiceWorkerKey, application_server_key}},
       base::BindOnce(&PushMessagingManager::DidPersistRegistration,
@@ -492,19 +517,26 @@ void PushMessagingManager::Unsubscribe(int64_t service_worker_registration_id,
     return;
   }
 
+  const url::Origin& origin = service_worker_registration->key().origin();
+
+  if (!ChildProcessSecurityPolicyImpl::GetInstance()->CanAccessDataForOrigin(
+          render_process_host_.GetID(), origin)) {
+    bad_message::ReceivedBadMessage(
+        &render_process_host_, bad_message::PMM_UNSUBSCRIBE_INVALID_ORIGIN);
+    return;
+  }
+
   service_worker_context_->GetRegistrationUserData(
       service_worker_registration_id, {kPushSenderIdServiceWorkerKey},
-      base::BindOnce(
-          &PushMessagingManager::UnsubscribeHavingGottenSenderId,
-          weak_factory_.GetWeakPtr(), std::move(callback),
-          service_worker_registration_id,
-          service_worker_registration->scope().DeprecatedGetOriginAsURL()));
+      base::BindOnce(&PushMessagingManager::UnsubscribeHavingGottenSenderId,
+                     weak_factory_.GetWeakPtr(), std::move(callback),
+                     service_worker_registration_id, origin));
 }
 
 void PushMessagingManager::UnsubscribeHavingGottenSenderId(
     UnsubscribeCallback callback,
     int64_t service_worker_registration_id,
-    const GURL& requesting_origin,
+    const url::Origin& requesting_origin,
     const std::vector<std::string>& sender_ids,
     blink::ServiceWorkerStatusCode service_worker_status) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -527,8 +559,8 @@ void PushMessagingManager::UnsubscribeHavingGottenSenderId(
   }
 
   push_service->Unsubscribe(
-      blink::mojom::PushUnregistrationReason::JAVASCRIPT_API, requesting_origin,
-      service_worker_registration_id, sender_id,
+      blink::mojom::PushUnregistrationReason::JAVASCRIPT_API,
+      requesting_origin.GetURL(), service_worker_registration_id, sender_id,
       base::BindOnce(&PushMessagingManager::DidUnregister, AsWeakPtr(),
                      std::move(callback)));
 }
@@ -572,7 +604,20 @@ void PushMessagingManager::GetSubscription(
     int64_t service_worker_registration_id,
     GetSubscriptionCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  // TODO(johnme): Validate arguments?
+
+  scoped_refptr<ServiceWorkerRegistration> registration =
+      service_worker_context_->GetLiveRegistration(
+          service_worker_registration_id);
+  if (registration) {
+    if (!ChildProcessSecurityPolicyImpl::GetInstance()->CanAccessDataForOrigin(
+            render_process_host_.GetID(), registration->key().origin())) {
+      bad_message::ReceivedBadMessage(
+          &render_process_host_,
+          bad_message::PMM_GET_SUBSCRIPTION_INVALID_ORIGIN);
+      return;
+    }
+  }
+
   service_worker_context_->GetRegistrationUserData(
       service_worker_registration_id,
       {kPushRegistrationIdServiceWorkerKey, kPushSenderIdServiceWorkerKey},
@@ -616,7 +661,7 @@ void PushMessagingManager::DidGetSubscription(
         break;
       }
 
-      const GURL origin = registration->scope().DeprecatedGetOriginAsURL();
+      const url::Origin& origin = registration->key().origin();
 
       GetSubscriptionInfo(
           origin, service_worker_registration_id, application_server_key,
@@ -668,7 +713,7 @@ void PushMessagingManager::DidGetSubscription(
 
 void PushMessagingManager::GetSubscriptionDidGetInfo(
     GetSubscriptionCallback callback,
-    const GURL& origin,
+    const url::Origin& origin,
     int64_t service_worker_registration_id,
     const std::string& application_server_key,
     bool is_valid,
@@ -718,7 +763,7 @@ void PushMessagingManager::GetSubscriptionDidGetInfo(
     push_service->Unsubscribe(
         blink::mojom::PushUnregistrationReason::
             GET_SUBSCRIPTION_STORAGE_CORRUPT,
-        origin, service_worker_registration_id, application_server_key,
+        origin.GetURL(), service_worker_registration_id, application_server_key,
         base::BindOnce(&PushMessagingManager::GetSubscriptionDidUnsubscribe,
                        AsWeakPtr(), std::move(callback), status));
 
@@ -735,7 +780,7 @@ void PushMessagingManager::GetSubscriptionDidUnsubscribe(
 }
 
 void PushMessagingManager::GetSubscriptionInfo(
-    const GURL& origin,
+    const url::Origin& origin,
     int64_t service_worker_registration_id,
     const std::string& sender_id,
     const std::string& push_subscription_id,
@@ -750,9 +795,9 @@ void PushMessagingManager::GetSubscriptionInfo(
     return;
   }
 
-  push_service->GetSubscriptionInfo(origin, service_worker_registration_id,
-                                    sender_id, push_subscription_id,
-                                    std::move(callback));
+  push_service->GetSubscriptionInfo(origin.GetURL(),
+                                    service_worker_registration_id, sender_id,
+                                    push_subscription_id, std::move(callback));
 }
 
 PushMessagingService* PushMessagingManager::GetService() {

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,10 +20,11 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
+#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/posix/eintr_wrapper.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -33,7 +34,6 @@
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/media_switches.h"
 #include "media/base/scopedfd_helper.h"
-#include "media/base/unaligned_shared_memory.h"
 #include "media/base/video_types.h"
 #include "media/base/video_util.h"
 #include "media/gpu/chromeos/fourcc.h"
@@ -47,11 +47,14 @@
 #include "media/gpu/v4l2/v4l2_video_decoder_delegate_h264_legacy.h"
 #include "media/gpu/v4l2/v4l2_video_decoder_delegate_vp8.h"
 #include "media/gpu/v4l2/v4l2_video_decoder_delegate_vp8_legacy.h"
-#include "media/gpu/v4l2/v4l2_video_decoder_delegate_vp9_chromium.h"
+#include "media/gpu/v4l2/v4l2_video_decoder_delegate_vp9.h"
 #include "media/gpu/v4l2/v4l2_video_decoder_delegate_vp9_legacy.h"
 #include "ui/gfx/native_pixmap_handle.h"
+#include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
+#include "ui/gl/gl_display.h"
 #include "ui/gl/gl_image.h"
+#include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/scoped_binders.h"
 
 #define NOTIFY_ERROR(x)                       \
@@ -245,7 +248,8 @@ bool V4L2SliceVideoDecodeAccelerator::Initialize(const Config& config,
       return false;
     }
 
-    if (!gl::g_driver_egl.ext.b_EGL_KHR_fence_sync) {
+    gl::GLDisplayEGL* display = gl::GLDisplayEGL::GetDisplayForCurrentContext();
+    if (!display || !display->ext->b_EGL_KHR_fence_sync) {
       VLOGF(1) << "context does not have EGL_KHR_fence_sync";
       return false;
     }
@@ -272,6 +276,8 @@ bool V4L2SliceVideoDecodeAccelerator::Initialize(const Config& config,
   reqbufs.memory = V4L2_MEMORY_MMAP;
   IOCTL_OR_ERROR_RETURN_FALSE(VIDIOC_REQBUFS, &reqbufs);
   if (reqbufs.capabilities & V4L2_BUF_CAP_SUPPORTS_REQUESTS) {
+    // Implicitly this is a way to differentiate between old kernels (pre 5.x)
+    // where the request API was not present.
     supports_requests_ = true;
     VLOGF(1) << "Using request API";
   } else {
@@ -288,35 +294,60 @@ bool V4L2SliceVideoDecodeAccelerator::Initialize(const Config& config,
     if (supports_requests_) {
       decoder_ = std::make_unique<H264Decoder>(
           std::make_unique<V4L2VideoDecoderDelegateH264>(this, device_.get()),
-          video_profile_);
+          video_profile_, config.container_color_space);
     } else {
+#if BUILDFLAG(IS_CHROMEOS)
       decoder_ = std::make_unique<H264Decoder>(
           std::make_unique<V4L2VideoDecoderDelegateH264Legacy>(this,
                                                                device_.get()),
-          video_profile_);
+          video_profile_, config.container_color_space);
+#else
+      NOTREACHED() << "Unsupported profile " << GetProfileName(video_profile_);
+      return false;
+#endif
     }
   } else if (video_profile_ >= VP8PROFILE_MIN &&
              video_profile_ <= VP8PROFILE_MAX) {
     if (supports_requests_) {
       decoder_ = std::make_unique<VP8Decoder>(
-          std::make_unique<V4L2VideoDecoderDelegateVP8>(this, device_.get()));
+          std::make_unique<V4L2VideoDecoderDelegateVP8>(this, device_.get()),
+          config.container_color_space);
     } else {
+#if BUILDFLAG(IS_CHROMEOS)
       decoder_ = std::make_unique<VP8Decoder>(
           std::make_unique<V4L2VideoDecoderDelegateVP8Legacy>(this,
-                                                              device_.get()));
+                                                              device_.get()),
+          config.container_color_space);
+#else
+      NOTREACHED() << "Unsupported profile " << GetProfileName(video_profile_);
+      return false;
+#endif
     }
   } else if (video_profile_ >= VP9PROFILE_MIN &&
              video_profile_ <= VP9PROFILE_MAX) {
     if (supports_requests_) {
+      // TODO(mcasas): Remove this ifndef when V4L2_CID_STATELESS_VP9_FRAME is
+      // known in all kernels.
+#ifndef V4L2_CID_STATELESS_VP9_FRAME
+#define V4L2_CID_STATELESS_VP9_FRAME (0x00a40900 + 300)
+#endif
+      const bool supports_stable_api =
+          device_->IsCtrlExposed(V4L2_CID_STATELESS_VP9_FRAME);
+      CHECK(supports_stable_api);
       decoder_ = std::make_unique<VP9Decoder>(
-          std::make_unique<V4L2VideoDecoderDelegateVP9Chromium>(this,
-                                                                device_.get()),
-          video_profile_);
+          std::make_unique<V4L2VideoDecoderDelegateVP9>(this, device_.get()),
+          video_profile_, config.container_color_space);
+
     } else {
+#if BUILDFLAG(IS_CHROMEOS)
       decoder_ = std::make_unique<VP9Decoder>(
           std::make_unique<V4L2VideoDecoderDelegateVP9Legacy>(this,
                                                               device_.get()),
-          video_profile_);
+          video_profile_, config.container_color_space);
+#else
+      NOTREACHED() << "Unsupported profile " << GetProfileName(video_profile_);
+      return false;
+#endif
     }
   } else {
     NOTREACHED() << "Unsupported profile " << GetProfileName(video_profile_);
@@ -601,7 +632,7 @@ bool V4L2SliceVideoDecodeAccelerator::CreateImageProcessor() {
 
   image_processor_ = v4l2_vda_helpers::CreateImageProcessor(
       *output_format_fourcc_, *gl_image_format_fourcc_, coded_size_,
-      gl_image_size_, GetRectSizeFromOrigin(decoder_->GetVisibleRect()),
+      coded_size_, decoder_->GetVisibleRect(),
       VideoFrame::StorageType::STORAGE_DMABUFS, output_buffer_map_.size(),
       image_processor_device_, image_processor_output_mode,
       // Unretained(this) is safe for ErrorCB because |decoder_thread_| is owned
@@ -626,8 +657,8 @@ bool V4L2SliceVideoDecodeAccelerator::CreateInputBuffers() {
   DCHECK(decoder_thread_task_runner_->BelongsToCurrentThread());
   DCHECK(!input_queue_->IsStreaming());
 
-  if (input_queue_->AllocateBuffers(kNumInputBuffers, V4L2_MEMORY_MMAP) <
-      kNumInputBuffers) {
+  if (input_queue_->AllocateBuffers(kNumInputBuffers, V4L2_MEMORY_MMAP,
+                                    /*incoherent=*/false) < kNumInputBuffers) {
     LOG(ERROR) << "Failed AllocateBuffers";
     NOTIFY_ERROR(PLATFORM_FAILURE);
     return false;
@@ -696,18 +727,21 @@ bool V4L2SliceVideoDecodeAccelerator::CreateOutputBuffers() {
 
   // Now that we know the desired buffers resolution, ask the image processor
   // what it supports so we can request the correct picture buffers.
+  gl_image_size_ = coded_size_;
   if (image_processor_device_) {
-    // Try to get an image size as close as possible to the final one (i.e.
-    // coded_size_ may include padding required by the decoder).
-    gl_image_size_ = GetRectSizeFromOrigin(decoder_->GetVisibleRect());
     size_t planes_count;
+    auto output_size = coded_size_;
     if (!V4L2ImageProcessorBackend::TryOutputFormat(
             output_format_fourcc_->ToV4L2PixFmt(),
-            gl_image_format_fourcc_->ToV4L2PixFmt(), coded_size_,
-            &gl_image_size_, &planes_count)) {
+            gl_image_format_fourcc_->ToV4L2PixFmt(), coded_size_, &output_size,
+            &planes_count)) {
       VLOGF(1) << "Failed to get output size and plane count of IP";
       return false;
     }
+    // This is very restrictive because it assumes the IP has the same alignment
+    // criteria as the video decoder that will produce the input video frames.
+    // In practice, this applies to all Image Processors, i.e. Mediatek devices.
+    DCHECK_EQ(coded_size_, output_size);
     if (gl_image_planes_count_ != planes_count) {
       VLOGF(1) << "IP buffers planes count returned by V4L2 (" << planes_count
                << ") doesn't match the computed number ("
@@ -715,7 +749,6 @@ bool V4L2SliceVideoDecodeAccelerator::CreateOutputBuffers() {
       return false;
     }
   } else {
-    gl_image_size_ = coded_size_;
   }
 
   if (!gfx::Rect(coded_size_).Contains(gfx::Rect(pic_size))) {
@@ -757,7 +790,8 @@ void V4L2SliceVideoDecodeAccelerator::DestroyInputBuffers() {
 
   DCHECK(!input_queue_->IsStreaming());
 
-  input_queue_->DeallocateBuffers();
+  if (!input_queue_->DeallocateBuffers())
+    VLOGF(1) << "Failed to deallocate V4L2 input buffers";
 }
 
 void V4L2SliceVideoDecodeAccelerator::DismissPictures(
@@ -1207,8 +1241,9 @@ bool V4L2SliceVideoDecodeAccelerator::DestroyOutputs(bool dismiss) {
   if (output_buffer_map_.empty())
     return true;
 
-  for (auto& output_record : output_buffer_map_) {
-    picture_buffers_to_dismiss.push_back(output_record.picture_id);
+  for (const auto& [output_frame, picture_id, client_texture_id, texture_id,
+                    cleared, num_times_sent_to_client] : output_buffer_map_) {
+    picture_buffers_to_dismiss.push_back(picture_id);
   }
 
   if (dismiss) {
@@ -1255,7 +1290,8 @@ bool V4L2SliceVideoDecodeAccelerator::DestroyOutputBuffers() {
 
   output_buffer_map_.clear();
 
-  output_queue_->DeallocateBuffers();
+  if (!output_queue_->DeallocateBuffers())
+    VLOGF(1) << "Failed to deallocate V4L2 output buffers";
 
   return true;
 }
@@ -1355,8 +1391,8 @@ void V4L2SliceVideoDecodeAccelerator::AssignPictureBuffersTask(
       (image_processor_device_ || output_mode_ == Config::OutputMode::ALLOCATE
            ? V4L2_MEMORY_MMAP
            : V4L2_MEMORY_DMABUF);
-  if (output_queue_->AllocateBuffers(buffers.size(), memory) !=
-      buffers.size()) {
+  if (output_queue_->AllocateBuffers(buffers.size(), memory,
+                                     /*incoherent=*/false) != buffers.size()) {
     LOG(ERROR) << "Could not allocate enough output buffers";
     NOTIFY_ERROR(PLATFORM_FAILURE);
     return;
@@ -1539,11 +1575,8 @@ void V4L2SliceVideoDecodeAccelerator::ImportBufferForPictureTask(
   if (surface_set_change_pending_)
     return;
 
-  const auto iter =
-      std::find_if(output_buffer_map_.begin(), output_buffer_map_.end(),
-                   [picture_buffer_id](const OutputRecord& output_record) {
-                     return output_record.picture_id == picture_buffer_id;
-                   });
+  const auto iter = base::ranges::find(output_buffer_map_, picture_buffer_id,
+                                       &OutputRecord::picture_id);
   if (iter == output_buffer_map_.end()) {
     // It's possible that we've already posted a DismissPictureBuffer for this
     // picture, but it has not yet executed when this ImportBufferForPicture was
@@ -1979,11 +2012,12 @@ void V4L2SliceVideoDecodeAccelerator::SurfaceReady(
     scoped_refptr<V4L2DecodeSurface> dec_surface,
     int32_t bitstream_id,
     const gfx::Rect& visible_rect,
-    const VideoColorSpace& /* color_space */) {
+    const VideoColorSpace& color_space) {
   DVLOGF(4);
   DCHECK(decoder_thread_task_runner_->BelongsToCurrentThread());
 
   dec_surface->SetVisibleRect(visible_rect);
+  dec_surface->SetColorSpace(color_space);
   decoder_display_queue_.push(std::make_pair(bitstream_id, dec_surface));
   TryOutputSurfaces();
 }
@@ -2030,10 +2064,9 @@ void V4L2SliceVideoDecodeAccelerator::OutputSurface(
   DCHECK_NE(output_record.picture_id, -1);
   ++output_record.num_times_sent_to_client;
 
-  // TODO(hubbe): Insert correct color space. http://crbug.com/647725
-  Picture picture(output_record.picture_id, bitstream_id,
-                  dec_surface->visible_rect(), gfx::ColorSpace(),
-                  true /* allow_overlay */);
+  Picture picture(
+      output_record.picture_id, bitstream_id, dec_surface->visible_rect(),
+      dec_surface->color_space().ToGfxColorSpace(), true /* allow_overlay */);
   DVLOGF(4) << dec_surface->ToString()
             << ", bitstream_id: " << picture.bitstream_buffer_id()
             << ", picture_id: " << picture.picture_buffer_id()
@@ -2118,9 +2151,15 @@ V4L2SliceVideoDecodeAccelerator::CreateSurface() {
         std::move(*input_buffer), std::move(*output_buffer),
         output_record.output_frame, std::move(*request_ref));
   } else {
+// ConfigStore is ChromeOS-specific legacy stuff
+#if BUILDFLAG(IS_CHROMEOS)
     dec_surface = new V4L2ConfigStoreDecodeSurface(std::move(*input_buffer),
                                                    std::move(*output_buffer),
                                                    output_record.output_frame);
+#else
+    NOTREACHED() << "ConfigStore not supported.";
+    return nullptr;
+#endif
   }
 
   DVLOGF(4) << "Created surface " << input << " -> " << output;
@@ -2199,8 +2238,8 @@ V4L2SliceVideoDecodeAccelerator::GetSupportedProfiles() {
   if (!device)
     return SupportedProfiles();
 
-  return device->GetSupportedDecodeProfiles(
-      base::size(supported_input_fourccs_), supported_input_fourccs_);
+  return device->GetSupportedDecodeProfiles(std::size(supported_input_fourccs_),
+                                            supported_input_fourccs_);
 }
 
 bool V4L2SliceVideoDecodeAccelerator::IsSupportedProfile(
@@ -2211,8 +2250,7 @@ bool V4L2SliceVideoDecodeAccelerator::IsSupportedProfile(
     for (const SupportedProfile& entry : profiles)
       supported_profiles_.push_back(entry.profile);
   }
-  return std::find(supported_profiles_.begin(), supported_profiles_.end(),
-                   profile) != supported_profiles_.end();
+  return base::Contains(supported_profiles_, profile);
 }
 
 size_t V4L2SliceVideoDecodeAccelerator::GetNumOfOutputRecordsAtDevice() const {
@@ -2410,10 +2448,10 @@ bool V4L2SliceVideoDecodeAccelerator::OnMemoryDump(
       memset(&v4l2_buffer, 0, sizeof(v4l2_buffer));
       struct v4l2_plane v4l2_planes[VIDEO_MAX_PLANES];
       memset(v4l2_planes, 0, sizeof(v4l2_planes));
-      DCHECK_LT(output_planes_count_, base::size(v4l2_planes));
+      DCHECK_LT(output_planes_count_, std::size(v4l2_planes));
       v4l2_buffer.m.planes = v4l2_planes;
       v4l2_buffer.length =
-          std::min(output_planes_count_, base::size(v4l2_planes));
+          std::min(output_planes_count_, std::size(v4l2_planes));
       v4l2_buffer.index = index;
       v4l2_buffer.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
       v4l2_buffer.memory = V4L2_MEMORY_MMAP;

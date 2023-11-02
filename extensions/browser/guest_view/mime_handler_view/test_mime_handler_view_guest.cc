@@ -1,11 +1,13 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "extensions/browser/guest_view/mime_handler_view/test_mime_handler_view_guest.h"
 
 #include "base/bind.h"
+#include "base/test/test_timeouts.h"
 #include "base/time/time.h"
+#include "components/guest_view/browser/test_guest_view_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/test_utils.h"
@@ -18,12 +20,21 @@ TestMimeHandlerViewGuest::TestMimeHandlerViewGuest(
     content::WebContents* owner_web_contents)
     : MimeHandlerViewGuest(owner_web_contents) {}
 
-TestMimeHandlerViewGuest::~TestMimeHandlerViewGuest() {}
+TestMimeHandlerViewGuest::~TestMimeHandlerViewGuest() = default;
 
 // static
-GuestViewBase* TestMimeHandlerViewGuest::Create(
+void TestMimeHandlerViewGuest::RegisterTestGuestViewType(
+    guest_view::TestGuestViewManager* manager) {
+  manager->RegisterGuestViewType(
+      TestMimeHandlerViewGuest::Type,
+      base::BindRepeating(&TestMimeHandlerViewGuest::Create),
+      base::NullCallback());
+}
+
+// static
+std::unique_ptr<GuestViewBase> TestMimeHandlerViewGuest::Create(
     content::WebContents* owner_web_contents) {
-  return new TestMimeHandlerViewGuest(owner_web_contents);
+  return base::WrapUnique(new TestMimeHandlerViewGuest(owner_web_contents));
 }
 
 // static
@@ -39,7 +50,8 @@ void TestMimeHandlerViewGuest::WaitForGuestAttached() {
 }
 
 void TestMimeHandlerViewGuest::CreateWebContents(
-    const base::DictionaryValue& create_params,
+    std::unique_ptr<GuestViewBase> owned_this,
+    const base::Value::Dict& create_params,
     WebContentsCreatedCallback callback) {
   // Delay the creation of the guest's WebContents if |delay_| is set.
   if (delay_) {
@@ -47,8 +59,8 @@ void TestMimeHandlerViewGuest::CreateWebContents(
     content::GetUIThreadTaskRunner({})->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&TestMimeHandlerViewGuest::CallBaseCreateWebContents,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       create_params.CreateDeepCopy(), std::move(callback)),
+                       weak_ptr_factory_.GetWeakPtr(), std::move(owned_this),
+                       create_params.Clone(), std::move(callback)),
         delta);
 
     // Reset the delay for the next creation.
@@ -56,7 +68,8 @@ void TestMimeHandlerViewGuest::CreateWebContents(
     return;
   }
 
-  MimeHandlerViewGuest::CreateWebContents(create_params, std::move(callback));
+  MimeHandlerViewGuest::CreateWebContents(std::move(owned_this), create_params,
+                                          std::move(callback));
 }
 
 void TestMimeHandlerViewGuest::DidAttachToEmbedder() {
@@ -65,11 +78,28 @@ void TestMimeHandlerViewGuest::DidAttachToEmbedder() {
     created_message_loop_runner_->Quit();
 }
 
+void TestMimeHandlerViewGuest::WaitForGuestLoadStartThenStop(
+    GuestViewBase* guest_view) {
+  auto* guest_contents = guest_view->web_contents();
+
+  while (!guest_contents->IsLoading() &&
+         !guest_view->GetController().GetLastCommittedEntry()) {
+    base::RunLoop run_loop;
+    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
+    run_loop.Run();
+  }
+
+  ASSERT_TRUE(content::WaitForLoadStop(guest_contents));
+}
+
 void TestMimeHandlerViewGuest::CallBaseCreateWebContents(
-    std::unique_ptr<base::DictionaryValue> create_params,
+    std::unique_ptr<GuestViewBase> owned_this,
+    base::Value::Dict create_params,
     WebContentsCreatedCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  MimeHandlerViewGuest::CreateWebContents(*create_params, std::move(callback));
+  MimeHandlerViewGuest::CreateWebContents(std::move(owned_this), create_params,
+                                          std::move(callback));
 }
 
 // static

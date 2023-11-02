@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,8 @@
 #include "base/memory/weak_ptr.h"
 #include "build/buildflag.h"
 #include "media/base/decoder_factory.h"
+#include "media/base/decoder_status.h"
 #include "media/base/media_util.h"
-#include "media/base/status_codes.h"
 #include "media/base/video_decoder_config.h"
 #include "media/mojo/buildflags.h"
 #include "media/mojo/clients/mojo_decoder_factory.h"
@@ -31,9 +31,15 @@
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/worker_pool.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_mojo.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "ui/gfx/color_space.h"
+
+#if BUILDFLAG(IS_FUCHSIA)
+#include "media/fuchsia/video/fuchsia_decoder_factory.h"
+#endif
 
 using DecoderDetails = blink::VideoDecoderBroker::DecoderDetails;
 
@@ -46,8 +52,8 @@ struct CrossThreadCopier<media::VideoDecoderConfig>
 };
 
 template <>
-struct CrossThreadCopier<media::Status>
-    : public CrossThreadCopierPassThrough<media::Status> {
+struct CrossThreadCopier<media::DecoderStatus>
+    : public CrossThreadCopierPassThrough<media::DecoderStatus> {
   STATIC_ONLY(CrossThreadCopier);
 };
 
@@ -68,10 +74,10 @@ namespace blink {
 class MediaVideoTaskWrapper {
  public:
   using CrossThreadOnceInitCB =
-      WTF::CrossThreadOnceFunction<void(media::Status status,
+      WTF::CrossThreadOnceFunction<void(media::DecoderStatus status,
                                         absl::optional<DecoderDetails>)>;
   using CrossThreadOnceDecodeCB =
-      WTF::CrossThreadOnceFunction<void(const media::Status&)>;
+      WTF::CrossThreadOnceFunction<void(const media::DecoderStatus&)>;
   using CrossThreadOnceResetCB = WTF::CrossThreadOnceClosure;
 
   MediaVideoTaskWrapper(
@@ -104,6 +110,11 @@ class MediaVideoTaskWrapper {
         WTF::CrossThreadBindOnce(&MediaVideoTaskWrapper::BindOnTaskRunner,
                                  WTF::CrossThreadUnretained(this),
                                  std::move(media_interface_factory)));
+
+#if BUILDFLAG(IS_FUCHSIA)
+    execution_context.GetBrowserInterfaceBroker().GetInterface(
+        fuchsia_media_resource_provider_.InitWithNewPipeAndPassReceiver());
+#endif
 
     // TODO(sandersd): Target color space is used by DXVA VDA to pick an
     // efficient conversion for FP16 HDR content, and for no other purpose.
@@ -139,8 +150,8 @@ class MediaVideoTaskWrapper {
 
     selector_->SelectDecoder(
         config, low_delay,
-        WTF::Bind(&MediaVideoTaskWrapper::OnDecoderSelected,
-                  weak_factory_.GetWeakPtr()));
+        WTF::BindOnce(&MediaVideoTaskWrapper::OnDecoderSelected,
+                      weak_factory_.GetWeakPtr()));
   }
 
   void Decode(scoped_refptr<media::DecoderBuffer> buffer, int cb_id) {
@@ -148,13 +159,13 @@ class MediaVideoTaskWrapper {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     if (!decoder_) {
-      OnDecodeDone(cb_id, media::DecodeStatus::DECODE_ERROR);
+      OnDecodeDone(cb_id, media::DecoderStatus::Codes::kNotInitialized);
       return;
     }
 
     decoder_->Decode(std::move(buffer),
-                     WTF::Bind(&MediaVideoTaskWrapper::OnDecodeDone,
-                               weak_factory_.GetWeakPtr(), cb_id));
+                     WTF::BindOnce(&MediaVideoTaskWrapper::OnDecodeDone,
+                                   weak_factory_.GetWeakPtr(), cb_id));
   }
 
   void Reset(int cb_id) {
@@ -166,8 +177,8 @@ class MediaVideoTaskWrapper {
       return;
     }
 
-    decoder_->Reset(WTF::Bind(&MediaVideoTaskWrapper::OnReset,
-                              weak_factory_.GetWeakPtr(), cb_id));
+    decoder_->Reset(WTF::BindOnce(&MediaVideoTaskWrapper::OnReset,
+                                  weak_factory_.GetWeakPtr(), cb_id));
   }
 
   void UpdateHardwarePreference(HardwarePreference preference) {
@@ -196,12 +207,17 @@ class MediaVideoTaskWrapper {
     // Bind the |interface_factory_| above before passing to
     // |external_decoder_factory|.
     std::unique_ptr<media::DecoderFactory> external_decoder_factory;
-#if BUILDFLAG(ENABLE_MOJO_VIDEO_DECODER)
     if (hardware_preference_ != HardwarePreference::kPreferSoftware) {
+#if BUILDFLAG(ENABLE_MOJO_VIDEO_DECODER)
       external_decoder_factory = std::make_unique<media::MojoDecoderFactory>(
           media_interface_factory_.get());
-    }
+#elif BUILDFLAG(IS_FUCHSIA)
+      DCHECK(fuchsia_media_resource_provider_);
+      external_decoder_factory = std::make_unique<media::FuchsiaDecoderFactory>(
+          std::move(fuchsia_media_resource_provider_),
+          /*allow_overlays=*/false);
 #endif
+    }
 
     if (hardware_preference_ == HardwarePreference::kPreferHardware) {
       decoder_factory_ = std::move(external_decoder_factory);
@@ -254,14 +270,16 @@ class MediaVideoTaskWrapper {
 
     decoder_ = std::move(decoder);
 
-    media::Status status(media::StatusCode::kDecoderUnsupportedConfig);
-    absl::optional<DecoderDetails> decoder_details;
+    media::DecoderStatus status = media::DecoderStatus::Codes::kOk;
+    absl::optional<DecoderDetails> decoder_details = absl::nullopt;
+
     if (decoder_) {
-      status = media::OkStatus();
       decoder_details = DecoderDetails({decoder_->GetDecoderType(),
                                         decoder_->IsPlatformDecoder(),
                                         decoder_->NeedsBitstreamConversion(),
                                         decoder_->GetMaxDecodeRequests()});
+    } else {
+      status = media::DecoderStatus::Codes::kUnsupportedConfig;
     }
 
     // Fire |init_cb|.
@@ -282,7 +300,7 @@ class MediaVideoTaskWrapper {
                                  decoder_->CanReadWithoutStalling()));
   }
 
-  void OnDecodeDone(int cb_id, media::Status status) {
+  void OnDecodeDone(int cb_id, media::DecoderStatus status) {
     DVLOG(2) << __func__;
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -312,6 +330,11 @@ class MediaVideoTaskWrapper {
   gfx::ColorSpace target_color_space_;
   HardwarePreference hardware_preference_ = HardwarePreference::kNoPreference;
   bool decoder_factory_needs_update_ = true;
+
+#if BUILDFLAG(IS_FUCHSIA)
+  mojo::PendingRemote<media::mojom::FuchsiaMediaResourceProvider>
+      fuchsia_media_resource_provider_;
+#endif
 
   std::unique_ptr<media::MediaLog> media_log_;
 
@@ -407,7 +430,7 @@ int VideoDecoderBroker::CreateCallbackId() {
   return last_callback_id_;
 }
 
-void VideoDecoderBroker::OnInitialize(media::Status status,
+void VideoDecoderBroker::OnInitialize(media::DecoderStatus status,
                                       absl::optional<DecoderDetails> details) {
   DVLOG(2) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -431,7 +454,7 @@ void VideoDecoderBroker::Decode(scoped_refptr<media::DecoderBuffer> buffer,
                                buffer, callback_id));
 }
 
-void VideoDecoderBroker::OnDecodeDone(int cb_id, media::Status status) {
+void VideoDecoderBroker::OnDecodeDone(int cb_id, media::DecoderStatus status) {
   DVLOG(2) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(pending_decode_cb_map_.Contains(cb_id));

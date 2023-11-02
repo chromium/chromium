@@ -48,7 +48,7 @@ binding provided by Selenium.
 ```python
 $ cd ~/chromium/src/chrome/test/chromedriver
 $ export PYTHONPATH=$PWD:$PWD/server:$PWD/client
-$ python
+$ python3
 >>> import server
 >>> import chromedriver
 >>> cd_server = server.Server('../../../out/Default/chromedriver')

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,10 +10,12 @@ let urlParams = window.location.hash ?
     new URLSearchParams(window.location.hash.substring(1)) :
     new URLSearchParams(window.location.search.substring(1));
 urlParams = urlParams.toString();
-document.getElementsByTagName('iframe')[0].src = mainUrl;
+
+let iframeUrl = mainUrl;
 if (urlParams) {
-    document.getElementsByTagName('iframe')[0].src = mainUrl + '?' + urlParams;
+  iframeUrl = mainUrl + '?' + urlParams;
 }
+document.getElementsByTagName('iframe')[0].src = iframeUrl;
 
 // Returns a remote for SignalingMessageExchanger interface which sends messages
 // to the browser.
@@ -43,6 +45,14 @@ systemInfo.setSystemInfoObserver(
 const notificationGenerator =
     ash.echeApp.mojom.NotificationGenerator.getRemote();
 
+const displayStreamHandler = ash.echeApp.mojom.DisplayStreamHandler.getRemote();
+
+const streamActionObserverRouter =
+    new ash.echeApp.mojom.StreamActionObserverCallbackRouter();
+// Set up a message pipe to the browser process to monitor stream action.
+displayStreamHandler.setStreamActionObserver(
+    streamActionObserverRouter.$.bindNewPipeAndPassRemote());
+
 /**
  * A pipe through which we can send messages to the guest frame.
  * Use an undefined `target` to find the <iframe> automatically.
@@ -57,88 +67,144 @@ const notificationGenerator =
                  /*rethrow_errors=*/ false);
 
 // Register bi-directional SEND_SIGNAL pipes.
-guestMessagePipe.registerHandler(Message.SEND_SIGNAL, async (signal) => {
-signalMessageExchanger.sendSignalingMessage(signal);
-});
-
-signalingMessageObserverRouter.onReceivedSignalingMessage.addListener(
- (signal) => {
-   guestMessagePipe.sendMessage(
-       Message.SEND_SIGNAL, {/** @type {Uint8Array} */signal});
+ guestMessagePipe.registerHandler(Message.SEND_SIGNAL, async (signal) => {
+   console.log('echeapi browser_proxy.js sendSignalingMessage');
+   signalMessageExchanger.sendSignalingMessage(signal);
  });
 
-// Register TEAR_DOWN_SIGNAL pipes.
-guestMessagePipe.registerHandler(Message.TEAR_DOWN_SIGNAL, async () => {
-    signalMessageExchanger.tearDownSignaling();
-});
+ signalingMessageObserverRouter.onReceivedSignalingMessage.addListener(
+     (signal) => {
+       console.log('echeapi browser_proxy.js onReceivedSignalingMessage');
+       guestMessagePipe.sendMessage(
+           Message.SEND_SIGNAL, {/** @type {Uint8Array} */ signal});
+     });
 
-// window.close() doesn't work from the iframe.
-guestMessagePipe.registerHandler(Message.CLOSE_WINDOW, async () => {
-    window.close();
-});
+ // Register TEAR_DOWN_SIGNAL pipes.
+ guestMessagePipe.registerHandler(Message.TEAR_DOWN_SIGNAL, async () => {
+   console.log('echeapi browser_proxy.js tearDownSignaling');
+   signalMessageExchanger.tearDownSignaling();
+ });
 
-// Register GET_SYSTEM_INFO pipes for wrapping getSystemInfo async api call.
-guestMessagePipe.registerHandler(Message.GET_SYSTEM_INFO, async () => {
-    return /** @type {!SystemInfo} */ (await systemInfo.getSystemInfo());
-});
+ // window.close() doesn't work from the iframe.
+ guestMessagePipe.registerHandler(Message.CLOSE_WINDOW, async () => {
+   const info = /** @type {!SystemInfo} */ (await systemInfo.getSystemInfo());
+   const systemInfoJson = JSON.parse(JSON.stringify(info));
+   console.log('echeapi browser_proxy.js window.close');
+   displayStreamHandler.onStreamStatusChanged(
+       ash.echeApp.mojom.StreamStatus.kStreamStatusStopped);
+ });
 
-// Register GET_UID pipes for wrapping getUid async api call.
-guestMessagePipe.registerHandler(Message.GET_UID, async () => {
-    return /** @type {!UidInfo} */ (await uidGenerator.getUid());
-});
+ // Register GET_SYSTEM_INFO pipes for wrapping getSystemInfo async api call.
+ guestMessagePipe.registerHandler(Message.GET_SYSTEM_INFO, async () => {
+   console.log('echeapi browser_proxy.js getSystemInfo');
+   return /** @type {!SystemInfo} */ (await systemInfo.getSystemInfo());
+ });
 
-// Add Screen Backlight state listener and send state via pipes.
-systemInfoObserverRouter.onScreenBacklightStateChanged.addListener(
-    (state) => {
-      guestMessagePipe.sendMessage(
-          Message.SCREEN_BACKLIGHT_STATE, {/** @type {number} */state});
-});
+ // Register GET_UID pipes for wrapping getUid async api call.
+ guestMessagePipe.registerHandler(Message.GET_UID, async () => {
+   console.log('echeapi browser_proxy.js getUid');
+   return /** @type {!UidInfo} */ (await uidGenerator.getUid());
+ });
 
-// Add tablet mode listener and send result via pipes.
-systemInfoObserverRouter.onReceivedTabletModeChanged.addListener(
-    (isTabletMode) => {
-      guestMessagePipe.sendMessage(
-          Message.TABLET_MODE, {/** @type {boolean} */isTabletMode});
-});
+ // Add Screen Backlight state listener and send state via pipes.
+ systemInfoObserverRouter.onScreenBacklightStateChanged.addListener((state) => {
+   console.log('echeapi browser_proxy.js onScreenBacklightStateChanged');
+   guestMessagePipe.sendMessage(
+       Message.SCREEN_BACKLIGHT_STATE, {/** @type {number} */ state});
+ });
 
-guestMessagePipe.registerHandler(Message.SHOW_NOTIFICATION, async (message) => {
-  // The C++ layer uses std::u16string, which use 16 bit characters. JS
-  // strings support either 8 or 16 bit characters, and must be converted
-  // to an array of 16 bit character codes that match std::u16string.
-  const titleArray = {data: Array.from(message.title, c => c.charCodeAt())};
-  const messageArray = {data: Array.from(message.message, c => c.charCodeAt())};
-  notificationGenerator.showNotification(
-      titleArray, messageArray, message.notificationType);
-});
+ // Add tablet mode listener and send result via pipes.
+ systemInfoObserverRouter.onReceivedTabletModeChanged.addListener(
+     (isTabletMode) => {
+       console.log('echeapi browser_proxy.js onReceivedTabletModeChanged');
+       guestMessagePipe.sendMessage(
+           Message.TABLET_MODE, {/** @type {boolean} */ isTabletMode});
+     });
 
-guestMessagePipe.registerHandler(
-    Message.TIME_HISTOGRAM_MESSAGE, async (message) => {
-      const histogramData = /** @type {TimeHistogram} */ (message);
-      chrome.metricsPrivate.recordTime(
-          histogramData.histogram, histogramData.value);
-    });
+ // Add stream action listener and send result via pipes.
+ streamActionObserverRouter.onStreamAction.addListener((action) => {
+   console.log(`echeapi browser_proxy.js OnStreamAction ${action}`);
+   guestMessagePipe.sendMessage(
+       Message.STREAM_ACTION, {/** @type {number} */ action});
+ });
 
-guestMessagePipe.registerHandler(
-    Message.ENUM_HISTOGRAM_MESSAGE, async (message) => {
-      const histogramData = /** @type {EnumHistogram} */ (message);
-      chrome.metricsPrivate.recordEnumerationValue(
-          histogramData.histogram, histogramData.value, histogramData.maxValue);
-    });
+ guestMessagePipe.registerHandler(
+     Message.SHOW_NOTIFICATION, async (message) => {
+       // The C++ layer uses std::u16string, which use 16 bit characters. JS
+       // strings support either 8 or 16 bit characters, and must be converted
+       // to an array of 16 bit character codes that match std::u16string.
+       const titleArray = {
+         data: Array.from(message.title, c => c.charCodeAt()),
+       };
+       const messageArray = {
+         data: Array.from(message.message, c => c.charCodeAt()),
+       };
+       console.log('echeapi browser_proxy.js showNotification');
+       notificationGenerator.showNotification(
+           titleArray, messageArray, message.notificationType);
+     });
 
-// We can't access hash change event inside iframe so parse the notification
-// info from the anchor part of the url when hash is changed and send them to
-// untrusted section via message pipes.
-function locationHashChanged() {
-    const urlParams = window.location.hash ?
-    new URLSearchParams(window.location.hash.substring(1)) :
-    new URLSearchParams(window.location.search.substring(1));
-    const notificationId = urlParams.get('notification_id');
-    const packageName = urlParams.get('package_name');
-    const timestamp = urlParams.get('timestamp');
-    const userId = urlParams.get('user_id');
-    const notificationInfo = /** @type {!NotificationInfo} */(
-        {notificationId, packageName, timestamp, userId});
-    guestMessagePipe.sendMessage(Message.NOTIFICATION_INFO, notificationInfo);
-}
+ guestMessagePipe.registerHandler(Message.SHOW_TOAST, async (message) => {
+   // The C++ layer uses std::u16string, which use 16 bit characters. JS
+   // strings support either 8 or 16 bit characters, and must be converted
+   // to an array of 16 bit character codes that match std::u16string.
+   const textArray = {data: Array.from(message.text, c => c.charCodeAt())};
+   console.log('echeapi browser_proxy.js showToast');
+   notificationGenerator.showToast(textArray);
+ });
+
+ guestMessagePipe.registerHandler(
+     Message.TIME_HISTOGRAM_MESSAGE, async (message) => {
+       console.log('echeapi browser_proxy.js recordTime');
+       const histogramData = /** @type {TimeHistogram} */ (message);
+       chrome.metricsPrivate.recordTime(
+           histogramData.histogram, histogramData.value);
+     });
+
+ guestMessagePipe.registerHandler(
+     Message.ENUM_HISTOGRAM_MESSAGE, async (message) => {
+       console.log('echeapi browser_proxy.js recordEnumerationValue');
+       const histogramData = /** @type {EnumHistogram} */ (message);
+       chrome.metricsPrivate.recordEnumerationValue(
+           histogramData.histogram, histogramData.value,
+           histogramData.maxValue);
+     });
+
+ // Register START_STREAMING pipes.
+ guestMessagePipe.registerHandler(Message.START_STREAMING, async () => {
+   console.log('echeapi browser_proxy.js startStreaming');
+   displayStreamHandler.onStreamStatusChanged(
+       ash.echeApp.mojom.StreamStatus.kStreamStatusStarted);
+ });
+
+ // We can't access hash change event inside iframe so parse the notification
+ // info from the anchor part of the url when hash is changed and send them to
+ // untrusted section via message pipes.
+ function locationHashChanged() {
+   const urlParams = window.location.hash ?
+       new URLSearchParams(window.location.hash.substring(1)) :
+       new URLSearchParams(window.location.search.substring(1));
+   const notificationId = urlParams.get('notification_id');
+   const packageName = urlParams.get('package_name');
+   const timestamp = urlParams.get('timestamp');
+   const userId = urlParams.get('user_id');
+   const notificationInfo = /** @type {!NotificationInfo} */ (
+       {notificationId, packageName, timestamp, userId});
+   guestMessagePipe.sendMessage(Message.NOTIFICATION_INFO, notificationInfo);
+ }
 
 window.onhashchange = locationHashChanged;
+
+if ('virtualKeyboard' in navigator) {
+  navigator['virtualKeyboard'].overlaysContent = true;
+  navigator['virtualKeyboard'].addEventListener('geometrychange', (event) => {
+    const {x, y, width, height} = event.target['boundingRect'];
+    console.log('Virtual keyboard geometry:', x, y, width, height);
+    const isVirtualKeyboardEnabled = width > 0 && height > 0;
+    guestMessagePipe.sendMessage(
+        Message.IS_VIRTUAL_KEYBOARD_ENABLED,
+        {/** @type {boolean} */ isVirtualKeyboardEnabled});
+  });
+} else {
+  console.log('virtual keyboard is not supported!');
+}

@@ -3,6 +3,11 @@ Cors issue: {
     code : CorsIssue
     details : {
         corsIssueDetails : {
+            clientSecurityState : {
+                initiatorIPAddressSpace : Local
+                initiatorIsSecureContext : true
+                privateNetworkRequestPolicy : PreflightBlock
+            }
             corsErrorStatus : {
                 corsError : AllowOriginMismatch
                 failedParameter : http://127.0.0.1
@@ -22,6 +27,11 @@ Cors issue: {
     code : CorsIssue
     details : {
         corsIssueDetails : {
+            clientSecurityState : {
+                initiatorIPAddressSpace : Local
+                initiatorIsSecureContext : true
+                privateNetworkRequestPolicy : PreflightBlock
+            }
             corsErrorStatus : {
                 corsError : AllowOriginMismatch
                 failedParameter : http://127.0.0.1
@@ -41,6 +51,11 @@ Cors issue: {
     code : CorsIssue
     details : {
         corsIssueDetails : {
+            clientSecurityState : {
+                initiatorIPAddressSpace : Local
+                initiatorIsSecureContext : true
+                privateNetworkRequestPolicy : PreflightBlock
+            }
             corsErrorStatus : {
                 corsError : MissingAllowOriginHeader
                 failedParameter : 
@@ -60,6 +75,11 @@ Cors issue: {
     code : CorsIssue
     details : {
         corsIssueDetails : {
+            clientSecurityState : {
+                initiatorIPAddressSpace : Local
+                initiatorIsSecureContext : true
+                privateNetworkRequestPolicy : PreflightBlock
+            }
             corsErrorStatus : {
                 corsError : PreflightInvalidAllowOriginValue
                 failedParameter : 1

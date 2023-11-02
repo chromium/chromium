@@ -10,5 +10,5 @@ console-message-format.js:17 Floating as integers: 42 42
 console-message-format.js:18 Floating as is: 42.5
 console-message-format.js:19 Non-numbers as numbers: NaN NaN NaN
 console-message-format.js:20 String as is: string
-console-message-format.js:21 Object as string: #document
+console-message-format.js:21 Object as string: [object HTMLDocument]
 

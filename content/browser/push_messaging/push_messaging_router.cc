@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -103,8 +103,9 @@ void StartServiceWorkerForDispatch(ServiceWorkerMetrics::EventType event_type,
           partition->GetServiceWorkerContext());
   auto devtools_context =
       base::WrapRefCounted<DevToolsBackgroundServicesContextImpl>(
-          service_worker_context->storage_partition()
-              ->GetDevToolsBackgroundServicesContext());
+          static_cast<DevToolsBackgroundServicesContextImpl*>(
+              service_worker_context->storage_partition()
+                  ->GetDevToolsBackgroundServicesContext()));
 
   FindServiceWorkerRegistration(
       event_type, std::move(service_worker_context),

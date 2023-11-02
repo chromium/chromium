@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 
 #import "ios/chrome/browser/download/ar_quick_look_tab_helper_delegate.h"
 
-// ARQuickLookTabHelperDelegate which collects all file URLs into |fileURLs|.
+// ARQuickLookTabHelperDelegate which collects all file URLs into `fileURLs`.
 @interface FakeARQuickLookTabHelperDelegate
     : NSObject <ARQuickLookTabHelperDelegate>
 
@@ -17,7 +17,11 @@
 // cannot be nil.
 @property(nonatomic, readonly) NSArray* fileURLs;
 
-// The value of |allowsContentScaling| for the most recent file URL downloaded
+// The value of `canonicalWebPageURL` for the most recent file URL downloaded
+// by ARQuickLookTabHelper.
+@property(nonatomic, readonly) NSURL* canonicalWebPageURL;
+
+// The value of `allowsContentScaling` for the most recent file URL downloaded
 // by ARQuickLookTabHelper.
 @property(nonatomic, readonly) BOOL allowsContentScaling;
 

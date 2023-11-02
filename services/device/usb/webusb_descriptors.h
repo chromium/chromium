@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,8 @@
 
 #include <stdint.h>
 
-#include <vector>
-
 #include "base/callback_forward.h"
+#include "base/containers/span.h"
 #include "base/memory/ref_counted.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -23,14 +22,14 @@ struct WebUsbPlatformCapabilityDescriptor {
   WebUsbPlatformCapabilityDescriptor();
   ~WebUsbPlatformCapabilityDescriptor();
 
-  bool ParseFromBosDescriptor(const std::vector<uint8_t>& bytes);
+  bool ParseFromBosDescriptor(base::span<const uint8_t> bytes);
 
   uint16_t version;
   uint8_t vendor_code;
   uint8_t landing_page_id;
 };
 
-bool ParseWebUsbUrlDescriptor(const std::vector<uint8_t>& bytes, GURL* output);
+bool ParseWebUsbUrlDescriptor(base::span<const uint8_t> bytes, GURL* output);
 
 void ReadWebUsbLandingPage(
     uint8_t vendor_code,

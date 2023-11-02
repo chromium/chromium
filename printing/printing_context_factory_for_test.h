@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,8 @@ namespace printing {
 class PrintingContextFactoryForTest {
  public:
   virtual std::unique_ptr<PrintingContext> CreatePrintingContext(
-      PrintingContext::Delegate* delegate) = 0;
+      PrintingContext::Delegate* delegate,
+      bool skip_system_calls) = 0;
 };
 
 }  // namespace printing

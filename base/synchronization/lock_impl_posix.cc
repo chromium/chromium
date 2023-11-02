@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,13 +6,14 @@
 
 #include <string>
 
-#include "base/base_export.h"
 #include "base/check_op.h"
 #include "base/debug/activity_tracker.h"
 #include "base/posix/safe_strerror.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/synchronization_buildflags.h"
 #include "build/build_config.h"
+
+#include <dlfcn.h>
 
 namespace base {
 namespace internal {
@@ -30,9 +31,7 @@ const char* AdditionalHintForSystemErrorCode(int error_code) {
 }
 #endif  // DCHECK_IS_ON()
 
-}  // namespace
-
-BASE_EXPORT std::string SystemErrorCodeToString(int error_code) {
+std::string SystemErrorCodeToString(int error_code) {
 #if DCHECK_IS_ON()
   return base::safe_strerror(error_code) + ". " +
          AdditionalHintForSystemErrorCode(error_code);
@@ -41,6 +40,20 @@ BASE_EXPORT std::string SystemErrorCodeToString(int error_code) {
 #endif  // DCHECK_IS_ON()
 }
 
+}  // namespace
+
+#if DCHECK_IS_ON()
+// These are out-of-line so that the .h file doesn't have to include ostream.
+void dcheck_trylock_result(int rv) {
+  DCHECK(rv == 0 || rv == EBUSY)
+      << ". " << base::internal::SystemErrorCodeToString(rv);
+}
+
+void dcheck_unlock_result(int rv) {
+  DCHECK_EQ(rv, 0) << ". " << strerror(rv);
+}
+#endif
+
 // Determines which platforms can consider using priority inheritance locks. Use
 // this define for platform code that may not compile if priority inheritance
 // locks aren't available. For this platform code,
@@ -48,13 +61,28 @@ BASE_EXPORT std::string SystemErrorCodeToString(int error_code) {
 // Lock::PriorityInheritanceAvailable still must be checked as the code may
 // compile but the underlying platform still may not correctly support priority
 // inheritance locks.
-#if defined(OS_NACL) || defined(OS_ANDROID) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_NACL) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
 #define PRIORITY_INHERITANCE_LOCKS_POSSIBLE() 0
 #else
 #define PRIORITY_INHERITANCE_LOCKS_POSSIBLE() 1
 #endif
 
-LockImpl::LockImpl() {
+static void (*gAddOrderedPthreadMutexFn)(const char*, pthread_mutex_t*);
+
+static void RecordReplayAddOrderedPthreadMutex(const char* name,
+                                               pthread_mutex_t* mutex) {
+  if (!gAddOrderedPthreadMutexFn) {
+    void* fnptr = dlsym(RTLD_DEFAULT, "RecordReplayAddOrderedPthreadMutex");
+    if (!fnptr) {
+      return;
+    }
+    gAddOrderedPthreadMutexFn = reinterpret_cast<void(*)(const char*, pthread_mutex_t*)>(fnptr);
+  }
+
+  gAddOrderedPthreadMutexFn(name, mutex);
+}
+
+LockImpl::LockImpl(const char* ordered_name) {
   pthread_mutexattr_t mta;
   int rv = pthread_mutexattr_init(&mta);
   DCHECK_EQ(rv, 0) << ". " << SystemErrorCodeToString(rv);
@@ -73,6 +101,10 @@ LockImpl::LockImpl() {
   DCHECK_EQ(rv, 0) << ". " << SystemErrorCodeToString(rv);
   rv = pthread_mutexattr_destroy(&mta);
   DCHECK_EQ(rv, 0) << ". " << SystemErrorCodeToString(rv);
+
+  if (ordered_name) {
+    RecordReplayAddOrderedPthreadMutex(ordered_name, &native_handle_);
+  }
 }
 
 LockImpl::~LockImpl() {
@@ -90,7 +122,7 @@ void LockImpl::LockInternalWithTracking() {
 bool LockImpl::PriorityInheritanceAvailable() {
 #if BUILDFLAG(ENABLE_MUTEX_PRIORITY_INHERITANCE)
   return true;
-#elif PRIORITY_INHERITANCE_LOCKS_POSSIBLE() && defined(OS_APPLE)
+#elif PRIORITY_INHERITANCE_LOCKS_POSSIBLE() && BUILDFLAG(IS_APPLE)
   return true;
 #else
   // Security concerns prevent the use of priority inheritance mutexes on Linux.

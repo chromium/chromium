@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/containers/contains.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -64,7 +63,6 @@ class MockQuotaEvictionHandler : public QuotaEvictionHandler {
   }
 
   void GetEvictionBucket(StorageType type,
-                         int64_t global_quota,
                          GetBucketCallback callback) override {
     if (bucket_order_.empty()) {
       std::move(callback).Run(absl::nullopt);

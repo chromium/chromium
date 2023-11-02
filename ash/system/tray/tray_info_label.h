@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,6 +29,8 @@ class ASH_EXPORT TrayInfoLabel : public views::View {
 
   // views::View:
   const char* GetClassName() const override;
+
+  const views::Label* label() { return label_; }
 
  private:
   views::Label* const label_;

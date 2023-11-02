@@ -33,8 +33,8 @@
 #include "third_party/blink/public/mojom/dom_storage/storage_area.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/heap/heap_allocator.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
 #include "third_party/blink/renderer/platform/storage/blink_storage_key.h"
@@ -72,15 +72,15 @@ class MODULES_EXPORT StorageNamespace final
   // Creates a namespace for LocalStorage.
   StorageNamespace(StorageController*);
   // Creates a namespace for SessionStorage.
-  StorageNamespace(StorageController*, const String& namespace_id);
+  StorageNamespace(Page& page, StorageController*, const String& namespace_id);
 
   // |storage_area| is ignored here if a cached namespace already exists.
   scoped_refptr<CachedStorageArea> GetCachedArea(
-      const LocalDOMWindow* local_dom_window,
+      LocalDOMWindow* local_dom_window,
       mojo::PendingRemote<mojom::blink::StorageArea> storage_area = {});
 
   scoped_refptr<CachedStorageArea> CreateCachedAreaForPrerender(
-      const LocalDOMWindow* local_dom_window,
+      LocalDOMWindow* local_dom_window,
       mojo::PendingRemote<mojom::blink::StorageArea> storage_area = {});
 
   void EvictSessionStorageCachedData();
@@ -94,7 +94,7 @@ class MODULES_EXPORT StorageNamespace final
   // Removes any CachedStorageAreas that aren't referenced by any source.
   void CleanUpUnusedAreas();
 
-  bool IsSessionStorage() const { return !namespace_id_.IsEmpty(); }
+  bool IsSessionStorage() const { return !namespace_id_.empty(); }
 
   void AddInspectorStorageAgent(InspectorDOMStorageAgent* agent);
   void RemoveInspectorStorageAgent(InspectorDOMStorageAgent* agent);
@@ -127,6 +127,7 @@ class MODULES_EXPORT StorageNamespace final
   // Lives globally.
   StorageController* controller_;
   String namespace_id_;
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   // `StorageNamespace` is a per-Page object and doesn't have any
   // `ExecutionContext`.
   HeapMojoRemote<mojom::blink::SessionStorageNamespace> namespace_{nullptr};

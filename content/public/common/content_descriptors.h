@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define CONTENT_PUBLIC_COMMON_CONTENT_DESCRIPTORS_H_
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 // This is a list of global descriptor keys to be used with the
 // base::GlobalDescriptors object (see base/posix/global_descriptors.h)
@@ -15,10 +16,13 @@ enum {
   kMojoIPCChannel,
   kFieldTrialDescriptor,
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   kAndroidPropertyDescriptor,
   kAndroidICUDataDescriptor,
-  kAndroidICUExtraDataDescriptor,
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  kCrosStartupDataDescriptor,
 #endif
 
   // Reserves 100 to 199 for dynamically generated IDs.

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,8 @@
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/notreached.h"
+#include "base/observer_list.h"
 #include "build/build_config.h"
 #include "components/autofill/core/common/save_password_progress_logger.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
@@ -20,6 +22,7 @@
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
+#include "components/password_manager/core/browser/password_store_util.h"
 #include "components/password_manager/core/browser/psl_matching_helper.h"
 #include "components/password_manager/core/browser/smart_bubble_stats_store.h"
 #include "components/password_manager/core/browser/statistics_table.h"
@@ -58,7 +61,7 @@ std::vector<std::unique_ptr<PasswordForm>> MakeCopies(
 }  // namespace
 
 FormFetcherImpl::FormFetcherImpl(PasswordFormDigest form_digest,
-                                 const PasswordManagerClient* client,
+                                 PasswordManagerClient* client,
                                  bool should_migrate_http_passwords)
     : form_digest_(std::move(form_digest)),
       client_(client),
@@ -119,20 +122,22 @@ void FormFetcherImpl::Fetch() {
     wait_counter_++;
 
   state_ = State::WAITING;
-  profile_password_store->GetLogins(form_digest_, this);
+  profile_password_store->GetLogins(form_digest_,
+                                    weak_ptr_factory_.GetWeakPtr());
   if (account_password_store)
-    account_password_store->GetLogins(form_digest_, this);
+    account_password_store->GetLogins(form_digest_,
+                                      weak_ptr_factory_.GetWeakPtr());
 
 // The statistics isn't needed on mobile, only on desktop. Let's save some
 // processor cycles.
-#if !defined(OS_IOS) && !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   // The statistics is needed for the "Save password?" bubble.
   password_manager::SmartBubbleStatsStore* stats_store =
       profile_password_store->GetSmartBubbleStatsStore();
   // `stats_store` can be null in tests.
   if (stats_store)
     stats_store->GetSiteStats(form_digest_.url.DeprecatedGetOriginAsURL(),
-                              this);
+                              weak_ptr_factory_.GetWeakPtr());
 #endif
 }
 
@@ -145,9 +150,9 @@ const std::vector<InteractionsStats>& FormFetcherImpl::GetInteractionsStats()
   return interactions_stats_;
 }
 
-base::span<const InsecureCredential> FormFetcherImpl::GetInsecureCredentials()
+std::vector<const PasswordForm*> FormFetcherImpl::GetInsecureCredentials()
     const {
-  return insecure_credentials_;
+  return MakeWeakCopies(insecure_credentials_);
 }
 
 std::vector<const PasswordForm*> FormFetcherImpl::GetNonFederatedMatches()
@@ -227,32 +232,29 @@ std::unique_ptr<FormFetcher> FormFetcherImpl::Clone() {
       &result->preferred_match_);
 
   result->interactions_stats_ = interactions_stats_;
-  result->insecure_credentials_ = insecure_credentials_;
+  result->insecure_credentials_ = MakeCopies(insecure_credentials_);
   result->state_ = state_;
   result->need_to_refetch_ = need_to_refetch_;
+  result->profile_store_backend_error_ = profile_store_backend_error_;
 
   return result;
+}
+
+absl::optional<PasswordStoreBackendError>
+FormFetcherImpl::GetProfileStoreBackendError() const {
+  return profile_store_backend_error_;
 }
 
 void FormFetcherImpl::FindMatchesAndNotifyConsumers(
     std::vector<std::unique_ptr<PasswordForm>> results) {
   DCHECK_EQ(State::WAITING, state_);
-  insecure_credentials_.clear();
-  for (const auto& form : results) {
-    for (const auto& issue : form->password_issues) {
-      insecure_credentials_.emplace_back(
-          form->signon_realm, form->username_value, issue.second.create_time,
-          issue.first, issue.second.is_muted);
-      insecure_credentials_.back().in_store = form->in_store;
-    }
-  }
-  state_ = State::NOT_WAITING;
   SplitResults(std::move(results));
 
   password_manager_util::FindBestMatches(
       MakeWeakCopies(non_federated_), form_digest_.scheme,
       &non_federated_same_scheme_, &best_matches_, &preferred_match_);
 
+  state_ = State::NOT_WAITING;
   for (auto& consumer : consumers_)
     consumer.OnFetchCompleted();
 }
@@ -263,6 +265,7 @@ void FormFetcherImpl::SplitResults(
   is_blocklisted_in_account_store_ = false;
   non_federated_.clear();
   federated_.clear();
+  insecure_credentials_.clear();
   for (auto& form : forms) {
     if (form->blocked_by_user) {
       // Ignore non-exact matches for blocklisted entries.
@@ -274,10 +277,14 @@ void FormFetcherImpl::SplitResults(
         else
           is_blocklisted_in_profile_store_ = true;
       }
-    } else if (form->IsFederatedCredential()) {
-      federated_.push_back(std::move(form));
     } else {
-      non_federated_.push_back(std::move(form));
+      if (!form->password_issues.empty())
+        insecure_credentials_.push_back(std::make_unique<PasswordForm>(*form));
+      if (form->IsFederatedCredential()) {
+        federated_.push_back(std::move(form));
+      } else {
+        non_federated_.push_back(std::move(form));
+      }
     }
   }
 }
@@ -293,6 +300,25 @@ void FormFetcherImpl::OnGetPasswordStoreResults(
 void FormFetcherImpl::OnGetPasswordStoreResultsFrom(
     PasswordStoreInterface* store,
     std::vector<std::unique_ptr<PasswordForm>> results) {
+  NOTIMPLEMENTED();
+}
+
+void FormFetcherImpl::OnGetPasswordStoreResultsOrErrorFrom(
+    PasswordStoreInterface* store,
+    FormFetcherImpl::FormsOrError results_or_error) {
+  // TODO(https://crbug.com/1365324): Handle errors coming from the account
+  // store.
+  if (store == client_->GetProfilePasswordStore()) {
+    profile_store_backend_error_.reset();
+    if (absl::holds_alternative<PasswordStoreBackendError>(results_or_error)) {
+      profile_store_backend_error_ =
+          absl::get<PasswordStoreBackendError>(results_or_error);
+    }
+  }
+
+  std::vector<std::unique_ptr<PasswordForm>> results =
+      GetLoginsOrEmptyListOnFailure(std::move(results_or_error));
+
   DCHECK_EQ(State::WAITING, state_);
   DCHECK_GT(wait_counter_, 0);
 

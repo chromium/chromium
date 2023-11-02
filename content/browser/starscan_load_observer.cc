@@ -1,4 +1,4 @@
-// Copyright (c) 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,10 @@
 
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
 #include "base/logging.h"
+#include "content/browser/renderer_host/frame_tree.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/navigation_handle.h"
 
 namespace content {
 
@@ -26,6 +29,14 @@ StarScanLoadObserver::~StarScanLoadObserver() {
 void StarScanLoadObserver::ReadyToCommitNavigation(
     NavigationHandle* navigation_handle) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  // We don't disable PCScan for a prerendering page's navigation since
+  // it doesn't invoke DidStopLoading.
+  RenderFrameHostImpl* rfh = static_cast<RenderFrameHostImpl*>(
+      navigation_handle->GetRenderFrameHost());
+  if (rfh->frame_tree()->type() == FrameTree::Type::kPrerender)
+    return;
+
   // Protect against ReadyToCommitNavigation() being called twice in a row.
   if (is_loading_)
     return;
@@ -33,7 +44,7 @@ void StarScanLoadObserver::ReadyToCommitNavigation(
 
   if (!g_loading_webcontents_) {
     VLOG(3) << "Disabling *Scan due to loading";
-    base::internal::PCScan::Disable();
+    partition_alloc::internal::PCScan::Disable();
   }
   ++g_loading_webcontents_;
 
@@ -56,7 +67,7 @@ void StarScanLoadObserver::DecrementCounterAndReenableStarScanIfNeeded() {
   --g_loading_webcontents_;
   if (!g_loading_webcontents_) {
     VLOG(3) << "Reenabling *Scan after finishing loading";
-    base::internal::PCScan::Reenable();
+    partition_alloc::internal::PCScan::Reenable();
   }
 }
 

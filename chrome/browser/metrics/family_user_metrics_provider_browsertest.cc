@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,11 +12,14 @@
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/ash/login/test/scoped_policy_update.h"
 #include "chrome/browser/ash/login/test/user_policy_mixin.h"
+#include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
+#include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/account_id/account_id.h"
 #include "components/metrics/metrics_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -110,10 +113,10 @@ class FamilyUserMetricsProviderTest
       /*should_launch_browser=*/true,
       GetPrimaryAccountId(GetFamilyUserLogSegment()),
       /*include_initial_user=*/true,
-      // Don't use LocalPolicyTestServer because it does not support customizing
-      // PolicyData.
-      // TODO(crbug/1112885): Use LocalPolicyTestServer when this is fixed.
-      /*use_local_policy_server=*/false};
+      // Don't use EmbeddedPolicyTestServer because it does not support
+      // customizing PolicyData.
+      // TODO(crbug/1112885): Use EmbeddedPolicyTestServer when this is fixed.
+      /*use_embedded_policy_server=*/false};
 };
 
 IN_PROC_BROWSER_TEST_P(FamilyUserMetricsProviderTest, UserCategory) {
@@ -215,6 +218,9 @@ class FamilyUserMetricsProviderEphemeralUserTest
         ->set_ephemeral_users_enabled(true);
 
     device_policy_update.reset();
+
+    scoped_testing_cros_settings_.device_settings()->SetBoolean(
+        ash::kReportDeviceLoginLogout, false);
   }
 
   // MixinBasedInProcessBrowserTest:
@@ -232,6 +238,8 @@ class FamilyUserMetricsProviderEphemeralUserTest
   ash::LoggedInUserMixin logged_in_user_mixin_{
       &mixin_host_, ash::LoggedInUserMixin::LogInType::kRegular,
       embedded_test_server(), this};
+
+  ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
 };
 
 // Tests that regular ephemeral users report 0 for number of secondary accounts.

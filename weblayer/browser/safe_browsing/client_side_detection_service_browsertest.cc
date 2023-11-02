@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -70,7 +70,7 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionServiceBrowserTest,
 
   base::RunLoop run_loop;
 
-  content::RenderFrameHost* rfh = GetWebContents()->GetMainFrame();
+  content::RenderFrameHost* rfh = GetWebContents()->GetPrimaryMainFrame();
   mojo::Remote<safe_browsing::mojom::PhishingDetector> phishing_detector;
   rfh->GetRemoteInterfaces()->GetInterface(
       phishing_detector.BindNewPipeAndPassReceiver());

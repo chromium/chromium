@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -175,13 +175,14 @@ void GvrSchedulerDelegate::SetShowingVrDialog(bool showing) {
 }
 
 void GvrSchedulerDelegate::ConnectPresentingService(
-    device::mojom::VRDisplayInfoPtr display_info,
     device::mojom::XRRuntimeSessionOptionsPtr options) {
   ClosePresentationBindings();
 
+  std::vector<device::mojom::XRViewPtr> views =
+      device::gvr_utils::CreateViews(gvr_api_, nullptr /*pose*/);
   int width = 0;
   int height = 0;
-  for (const auto& view : display_info->views) {
+  for (const auto& view : views) {
     width += view->viewport.width();
     height = std::max(height, view->viewport.height());
   }
@@ -215,7 +216,6 @@ void GvrSchedulerDelegate::ConnectPresentingService(
   auto session = device::mojom::XRSession::New();
   session->data_provider = frame_data_receiver_.BindNewPipeAndPassRemote();
   session->submit_frame_sink = std::move(submit_frame_sink);
-  session->display_info = std::move(display_info);
 
   // Currently, the initial filtering of supported devices happens on the
   // browser side (BrowserXRRuntimeImpl::SupportsFeature()), so if we have
@@ -239,6 +239,7 @@ void GvrSchedulerDelegate::ConnectPresentingService(
   session->device_config = device::mojom::XRSessionDeviceConfig::New();
   auto* config = session->device_config.get();
 
+  config->views = std::move(views);
   config->supports_viewport_scaling = true;
   session->enviroment_blend_mode =
       device::mojom::XREnvironmentBlendMode::kOpaque;
@@ -1057,7 +1058,7 @@ void GvrSchedulerDelegate::WebXrCreateOrResizeSharedBufferImage(
       gpu::GpuMemoryBufferImpl::DestructionCallback());
 
   uint32_t shared_image_usage = gpu::SHARED_IMAGE_USAGE_SCANOUT |
-                                gpu::SHARED_IMAGE_USAGE_DISPLAY |
+                                gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                                 gpu::SHARED_IMAGE_USAGE_GLES2;
   buffer->mailbox_holder = mailbox_bridge_->CreateSharedImage(
       buffer->gmb.get(), gfx::ColorSpace(), shared_image_usage);
@@ -1171,12 +1172,6 @@ void GvrSchedulerDelegate::SubmitFrame(int16_t frame_index,
   webxr_.ProcessOrDefer(
       base::BindOnce(&GvrSchedulerDelegate::ProcessWebVrFrameFromMailbox,
                      weak_ptr_factory_.GetWeakPtr(), frame_index, mailbox));
-}
-
-void GvrSchedulerDelegate::SubmitFrameWithTextureHandle(
-    int16_t frame_index,
-    mojo::PlatformHandle texture_handle) {
-  NOTREACHED();
 }
 
 void GvrSchedulerDelegate::SubmitFrameDrawnIntoTexture(

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,10 +31,6 @@ namespace {
 
 constexpr base::TimeDelta kCountdownUpdateInterval = base::Milliseconds(1000);
 constexpr base::TimeDelta kLastUpdateTime = base::Milliseconds(1000);
-
-gfx::ImageSkia GetImage() {
-  return gfx::CreateVectorIcon(chromeos::kEnterpriseIcon, 20, SK_ColorDKGRAY);
-}
 
 std::u16string GetTitle(
     ash::login::SecurityTokenSessionController::Behavior behavior) {
@@ -114,7 +110,9 @@ SecurityTokenSessionRestrictionView::SecurityTokenSessionRestrictionView(
     base::OnceClosure accept_callback,
     ash::login::SecurityTokenSessionController::Behavior behavior,
     const std::string& domain)
-    : AppDialogView(GetImage()),
+    : AppDialogView(ui::ImageModel::FromVectorIcon(chromeos::kEnterpriseIcon,
+                                                   ui::kColorIcon,
+                                                   20)),
       behavior_(behavior),
       clock_(base::DefaultTickClock::GetInstance()),
       domain_(domain),

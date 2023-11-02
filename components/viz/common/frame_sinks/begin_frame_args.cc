@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -85,11 +85,41 @@ std::string BeginFrameId::ToString() const {
   return value.ToJSON();
 }
 
+PossibleDeadline::PossibleDeadline(int64_t vsync_id,
+                                   base::TimeDelta latch_delta,
+                                   base::TimeDelta present_delta)
+    : vsync_id(vsync_id),
+      latch_delta(latch_delta),
+      present_delta(present_delta) {}
+PossibleDeadline::PossibleDeadline(const PossibleDeadline& other) = default;
+PossibleDeadline::PossibleDeadline(PossibleDeadline&& other) = default;
+PossibleDeadline::~PossibleDeadline() = default;
+PossibleDeadline& PossibleDeadline::operator=(const PossibleDeadline& other) =
+    default;
+PossibleDeadline& PossibleDeadline::operator=(PossibleDeadline&& other) =
+    default;
+
+PossibleDeadlines::PossibleDeadlines(size_t preferred_index)
+    : preferred_index(preferred_index) {}
+PossibleDeadlines::PossibleDeadlines(const PossibleDeadlines& other) = default;
+PossibleDeadlines::PossibleDeadlines(PossibleDeadlines&& other) = default;
+PossibleDeadlines::~PossibleDeadlines() = default;
+PossibleDeadlines& PossibleDeadlines::operator=(
+    const PossibleDeadlines& other) = default;
+PossibleDeadlines& PossibleDeadlines::operator=(PossibleDeadlines&& other) =
+    default;
+
+const PossibleDeadline& PossibleDeadlines::GetPreferredDeadline() const {
+  return deadlines[preferred_index];
+}
+
 BeginFrameArgs::BeginFrameArgs()
     : frame_time(base::TimeTicks::Min()),
       deadline(base::TimeTicks::Min()),
       interval(base::Microseconds(-1)),
       frame_id(BeginFrameId(0, kInvalidFrameNumber)) {}
+
+BeginFrameArgs::~BeginFrameArgs() = default;
 
 BeginFrameArgs::BeginFrameArgs(uint64_t source_id,
                                uint64_t sequence_number,
@@ -150,6 +180,7 @@ void BeginFrameArgs::AsValueInto(base::trace_event::TracedValue* state) const {
 #endif
   state->SetBoolean("on_critical_path", on_critical_path);
   state->SetBoolean("animate_only", animate_only);
+  state->SetBoolean("has_possible_deadlines", !!possible_deadlines);
 }
 
 void BeginFrameArgs::AsProtozeroInto(
@@ -167,8 +198,8 @@ void BeginFrameArgs::AsProtozeroInto(
   state->set_on_critical_path(on_critical_path);
   state->set_animate_only(animate_only);
 #ifndef NDEBUG
-  state->set_source_location_iid(base::trace_event::InternedSourceLocation::Get(
-      &ctx, base::trace_event::TraceSourceLocation(created_from)));
+  state->set_source_location_iid(
+      base::trace_event::InternedSourceLocation::Get(&ctx, created_from));
 #endif
 }
 

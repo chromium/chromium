@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -783,7 +783,7 @@ std::string ChineseScriptClassifier::Classify(const std::string& input) const {
   base::TruncateUTF8ToByteSize(input, 500, &input_subset);
 
   // Remove whitespace since transliterators may not preserve it.
-  base::EraseIf(input_subset, base::IsUnicodeWhitespace);
+  base::EraseIf(input_subset, base::IsAsciiWhitespace<char>);
 
   // Convert the input to icu::UnicodeString so we can iterate over codepoints.
   icu::UnicodeString input_codepoints =

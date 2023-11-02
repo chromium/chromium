@@ -1,0 +1,53 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+
+package commerce_subscription_db;
+
+// Used for storing commerce subscriptions.
+message CommerceSubscriptionContentProto {
+  // The type of subscriptions.
+  enum SubscriptionType {
+    TYPE_UNSPECIFIED = 0;
+    PRICE_TRACK = 1;
+  }
+
+  // The type of tracking IDs.
+  enum TrackingIdType {
+    IDENTIFIER_TYPE_UNSPECIFIED = 0;
+    OFFER_ID = 1;
+    PRODUCT_CLUSTER_ID = 2;
+  }
+
+  // The type of subscription management.
+  enum SubscriptionManagementType {
+    // MANAGE_TYPE_UNSPECIFIED corresponds to
+    // CommerceSubscription.SubscriptionManagementType.TYPE_UNSPECIFIED.
+    MANAGE_TYPE_UNSPECIFIED = 0;
+    CHROME_MANAGED = 1;
+    USER_MANAGED = 2;
+  }
+
+  // Original key for data. It is in the form of
+  // "SubscriptionType_IdType_IdValue".
+  string key = 1;
+
+  // The type of subscription.
+  SubscriptionType subscription_type = 2;
+
+  // The identifier for the subscription (e.g. offer id, product id, etc).
+  string tracking_id = 3;
+
+  // The type of tracking ID.
+  TrackingIdType tracking_id_type = 4;
+
+  // Creation timestamp (milliseconds of UTC time since Unix epoch).
+  int64 timestamp = 5;
+
+  // The type of subscription management.
+  SubscriptionManagementType management_type = 6;
+}

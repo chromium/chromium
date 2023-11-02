@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -86,21 +86,21 @@ class MockWorkItemList : public WorkItemList {
                          MoveTreeOption));
   // Workaround for gmock problems with disambiguating between string pointers
   // and DWORD.
-  virtual WorkItem* AddSetRegValueWorkItem(HKEY a1,
-                                           const std::wstring& a2,
-                                           REGSAM a3,
-                                           const std::wstring& a4,
-                                           const std::wstring& a5,
-                                           bool a6) {
+  WorkItem* AddSetRegValueWorkItem(HKEY a1,
+                                   const std::wstring& a2,
+                                   REGSAM a3,
+                                   const std::wstring& a4,
+                                   const std::wstring& a5,
+                                   bool a6) override {
     return AddSetRegStringValueWorkItem(a1, a2, a3, a4, a5, a6);
   }
 
-  virtual WorkItem* AddSetRegValueWorkItem(HKEY a1,
-                                           const std::wstring& a2,
-                                           REGSAM a3,
-                                           const std::wstring& a4,
-                                           DWORD a5,
-                                           bool a6) {
+  WorkItem* AddSetRegValueWorkItem(HKEY a1,
+                                   const std::wstring& a2,
+                                   REGSAM a3,
+                                   const std::wstring& a4,
+                                   DWORD a5,
+                                   bool a6) override {
     return AddSetRegDwordValueWorkItem(a1, a2, a3, a4, a5, a6);
   }
 

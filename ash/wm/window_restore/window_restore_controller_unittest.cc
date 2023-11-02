@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,10 +25,8 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/scoped_observation.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/account_id/account_id.h"
-#include "components/app_restore/features.h"
-#include "components/app_restore/full_restore_info.h"
+#include "components/app_restore/app_restore_info.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
@@ -121,7 +119,7 @@ class WindowRestoreControllerTest : public AshTestBase,
   }
 
   // Mocks creating a widget that is launched from window restore service.
-  views::Widget* CreateTestFullRestoredWidget(
+  views::Widget* CreateTestWindowRestoredWidget(
       int32_t activation_index,
       const gfx::Rect& bounds = gfx::Rect(200, 200),
       aura::Window* root_window = Shell::GetPrimaryRootWindow()) {
@@ -134,7 +132,7 @@ class WindowRestoreControllerTest : public AshTestBase,
                        chromeos::WindowStateType::kNormal, activation_index,
                        WindowTreeHostManager::GetPrimaryDisplayId(),
                        /*desk_id=*/1);
-    return CreateTestFullRestoredWidgetFromRestoreId(
+    return CreateTestWindowRestoredWidgetFromRestoreId(
         restore_window_id, AppType::BROWSER,
         /*is_taskless_arc_app=*/false);
   }
@@ -142,7 +140,7 @@ class WindowRestoreControllerTest : public AshTestBase,
   // Mocks creating a widget based on the window info in
   // `fake_window_restore_file_`. Returns nullptr if there is not an entry that
   // matches `restore_window_id`.
-  views::Widget* CreateTestFullRestoredWidgetFromRestoreId(
+  views::Widget* CreateTestWindowRestoredWidgetFromRestoreId(
       int32_t restore_window_id,
       AppType app_type,
       bool is_taskless_arc_app) {
@@ -177,7 +175,7 @@ class WindowRestoreControllerTest : public AshTestBase,
         .SetWindowProperty(app_restore::kWindowInfoKey, info_clone)
         .SetWindowProperty(app_restore::kActivationIndexKey,
                            new int32_t(*info->activation_index))
-        .SetWindowProperty(app_restore::kLaunchedFromFullRestoreKey, true)
+        .SetWindowProperty(app_restore::kLaunchedFromAppRestoreKey, true)
         .SetWindowProperty(app_restore::kRestoreWindowIdKey, restore_window_id)
         .SetWindowProperty(aura::client::kAppType, static_cast<int>(app_type))
         .SetWindowProperty(app_restore::kParentToHiddenContainerKey,
@@ -192,9 +190,9 @@ class WindowRestoreControllerTest : public AshTestBase,
     return widget;
   }
 
-  views::Widget* CreateTestFullRestoredWidgetFromRestoreId(
+  views::Widget* CreateTestWindowRestoredWidgetFromRestoreId(
       int32_t restore_window_id) {
-    return CreateTestFullRestoredWidgetFromRestoreId(
+    return CreateTestWindowRestoredWidgetFromRestoreId(
         restore_window_id, AppType::BROWSER,
         /*is_taskless_arc_app=*/false);
   }
@@ -209,7 +207,7 @@ class WindowRestoreControllerTest : public AshTestBase,
   }
 
   // Adds an entry to the fake window restore file. If
-  // `CreateTestFullRestoreWidget` is called with a matching
+  // `CreateTestWindowRestoredWidget` is called with a matching
   // `restore_window_id`, it will read and set the values set here.
   void AddEntryToFakeFile(int restore_window_id,
                           const gfx::Rect& bounds,
@@ -255,9 +253,6 @@ class WindowRestoreControllerTest : public AshTestBase,
 
   // AshTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        full_restore::features::kFullRestore);
-
     AshTestBase::SetUp();
 
     WindowRestoreController::Get()->SetSaveWindowCallbackForTesting(
@@ -267,7 +262,7 @@ class WindowRestoreControllerTest : public AshTestBase,
 
     // Turn on the user preference by default, so do not need to set
     // for all test cases all the time.
-    full_restore::FullRestoreInfo::GetInstance()->SetRestorePref(
+    app_restore::AppRestoreInfo::GetInstance()->SetRestorePref(
         Shell::Get()->session_controller()->GetActiveAccountId(), true);
   }
 
@@ -294,12 +289,6 @@ class WindowRestoreControllerTest : public AshTestBase,
         ++restore_window_id;
       window->SetProperty(app_restore::kRestoreWindowIdKey, restore_window_id);
     }
-
-    // WindowRestoreController relies on getting OnWindowInitialized events from
-    // aura::Env via full_restore::FullRestoreInfo. That object does not exist
-    // for ash unit tests, so we will observe aura::Env ourselves and forward
-    // the event to WindowRestoreController.
-    WindowRestoreController::Get()->OnWindowInitialized(window);
   }
 
  private:
@@ -322,24 +311,7 @@ class WindowRestoreControllerTest : public AshTestBase,
                    fake_window_restore_file_[restore_window_id].info.get());
   }
 
-  // Callback function that is run when WindowRestoreController tries to read
-  // window data from the file. Immediately reads from our fake file
-  // `fake_window_restore_file_`.
-  std::unique_ptr<app_restore::WindowInfo> OnGetWindowInfo(
-      aura::Window* window) {
-    DCHECK(window);
-    const int32_t restore_window_id =
-        window->GetProperty(app_restore::kRestoreWindowIdKey);
-    if (!fake_window_restore_file_.contains(restore_window_id))
-      return nullptr;
-
-    auto window_info = std::make_unique<app_restore::WindowInfo>();
-    CopyWindowInfo(*fake_window_restore_file_[restore_window_id].info,
-                   window_info.get());
-    return window_info;
-  }
-
-  // Copies the info from `src` to `out_dst` since `fullrestore::WindowInfo`
+  // Copies the info from `src` to `out_dst` since `app_restore::WindowInfo`
   // copy constructor is deleted.
   void CopyWindowInfo(const app_restore::WindowInfo& src,
                       app_restore::WindowInfo* out_dst) {
@@ -349,14 +321,13 @@ class WindowRestoreControllerTest : public AshTestBase,
     out_dst->current_bounds = src.current_bounds;
     out_dst->window_state_type = src.window_state_type;
     out_dst->display_id = src.display_id;
+    out_dst->arc_extra_info = src.arc_extra_info;
   }
 
   // A map which is a fake representation of the window restore file.
   base::flat_map<int32_t, WindowInfo> fake_window_restore_file_;
 
   base::ScopedObservation<aura::Env, aura::EnvObserver> env_observation_{this};
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests window save with setting on or off.
@@ -367,8 +338,7 @@ TEST_F(WindowRestoreControllerTest, WindowSaveDisabled) {
   ResetSaveWindowsCount();
 
   // Disable window restore.
-  full_restore::FullRestoreInfo::GetInstance()->SetRestorePref(account_id,
-                                                               false);
+  app_restore::AppRestoreInfo::GetInstance()->SetRestorePref(account_id, false);
 
   auto* window1_state = WindowState::Get(window1.get());
   auto* window2_state = WindowState::Get(window2.get());
@@ -381,8 +351,7 @@ TEST_F(WindowRestoreControllerTest, WindowSaveDisabled) {
   EXPECT_EQ(0, GetSaveWindowsCount(window2.get()));
 
   // Enable window restore.
-  full_restore::FullRestoreInfo::GetInstance()->SetRestorePref(account_id,
-                                                               true);
+  app_restore::AppRestoreInfo::GetInstance()->SetRestorePref(account_id, true);
 
   // Setting the user preference to true should trigger window save
   // immediately.
@@ -568,9 +537,9 @@ TEST_F(WindowRestoreControllerTest, Activation) {
 
 // Tests that the mock widget created from window restore we will use in other
 // tests works as expected.
-TEST_F(WindowRestoreControllerTest, TestFullRestoredWidget) {
+TEST_F(WindowRestoreControllerTest, TestWindowRestoredWidget) {
   const int32_t kActivationIndex = 2;
-  views::Widget* widget = CreateTestFullRestoredWidget(kActivationIndex);
+  views::Widget* widget = CreateTestWindowRestoredWidget(kActivationIndex);
   int32_t* activation_index =
       widget->GetNativeWindow()->GetProperty(app_restore::kActivationIndexKey);
   ASSERT_TRUE(activation_index);
@@ -598,26 +567,26 @@ TEST_F(WindowRestoreControllerTest, Stacking) {
   // Simulate restoring windows out-of-order, starting with `window_4`. Restored
   // windows should be placed below non-restored windows so `window_4` should be
   // placed at the bottom.
-  auto* window_4 = CreateTestFullRestoredWidget(4)->GetNativeWindow();
+  auto* window_4 = CreateTestWindowRestoredWidget(4)->GetNativeWindow();
   VerifyStackingOrder(desk_container, {window_4, non_restored_sibling.get()});
 
   // Restore `window_2` now. It should be stacked above `window_4`.
-  auto* window_2 = CreateTestFullRestoredWidget(2)->GetNativeWindow();
+  auto* window_2 = CreateTestWindowRestoredWidget(2)->GetNativeWindow();
   VerifyStackingOrder(desk_container,
                       {window_4, window_2, non_restored_sibling.get()});
 
   // Restore `window_3` now. It should be stacked above `window_4`.
-  auto* window_3 = CreateTestFullRestoredWidget(3)->GetNativeWindow();
+  auto* window_3 = CreateTestWindowRestoredWidget(3)->GetNativeWindow();
   VerifyStackingOrder(desk_container, {window_4, window_3, window_2,
                                        non_restored_sibling.get()});
 
   // Restore `window_1` now. It should be stacked above `window_2`.
-  auto* window_1 = CreateTestFullRestoredWidget(1)->GetNativeWindow();
+  auto* window_1 = CreateTestWindowRestoredWidget(1)->GetNativeWindow();
   VerifyStackingOrder(desk_container, {window_4, window_3, window_2, window_1,
                                        non_restored_sibling.get()});
 
   // Restore `window_5` now.
-  auto* window_5 = CreateTestFullRestoredWidget(5)->GetNativeWindow();
+  auto* window_5 = CreateTestWindowRestoredWidget(5)->GetNativeWindow();
   VerifyStackingOrder(desk_container, {window_5, window_4, window_3, window_2,
                                        window_1, non_restored_sibling.get()});
 }
@@ -646,43 +615,43 @@ TEST_F(WindowRestoreControllerTest, StackingMultiDisplay) {
   // Start simulating restoring windows out-of-order with the following naming
   // convention `window_<display>_<relative_stacking_order>`. Restore
   // `window_3_3` first.
-  auto* window_3_3 = CreateTestFullRestoredWidget(8, display_3_bounds, root_3)
+  auto* window_3_3 = CreateTestWindowRestoredWidget(8, display_3_bounds, root_3)
                          ->GetNativeWindow();
   VerifyStackingOrder(desk_container_display_3, {window_3_3});
 
   // Restore `window_2_1`.
-  auto* window_2_1 = CreateTestFullRestoredWidget(2, display_2_bounds, root_2)
+  auto* window_2_1 = CreateTestWindowRestoredWidget(2, display_2_bounds, root_2)
                          ->GetNativeWindow();
   VerifyStackingOrder(desk_container_display_2, {window_2_1});
 
   // Restore `window_1_2`.
-  auto* window_1_2 = CreateTestFullRestoredWidget(4, display_1_bounds, root_1)
+  auto* window_1_2 = CreateTestWindowRestoredWidget(4, display_1_bounds, root_1)
                          ->GetNativeWindow();
   VerifyStackingOrder(desk_container_display_1, {window_1_2});
 
   // Restore `window_3_2`.
-  auto* window_3_2 = CreateTestFullRestoredWidget(6, display_3_bounds, root_3)
+  auto* window_3_2 = CreateTestWindowRestoredWidget(6, display_3_bounds, root_3)
                          ->GetNativeWindow();
   VerifyStackingOrder(desk_container_display_3, {window_3_3, window_3_2});
 
   // Restore `window_1_3`.
-  auto* window_1_3 = CreateTestFullRestoredWidget(7, display_1_bounds, root_1)
+  auto* window_1_3 = CreateTestWindowRestoredWidget(7, display_1_bounds, root_1)
                          ->GetNativeWindow();
   VerifyStackingOrder(desk_container_display_1, {window_1_3, window_1_2});
 
   // Restore `window_2_2`.
-  auto* window_2_2 = CreateTestFullRestoredWidget(5, display_2_bounds, root_2)
+  auto* window_2_2 = CreateTestWindowRestoredWidget(5, display_2_bounds, root_2)
                          ->GetNativeWindow();
   VerifyStackingOrder(desk_container_display_2, {window_2_2, window_2_1});
 
   // Restore `window_1_1`.
-  auto* window_1_1 = CreateTestFullRestoredWidget(1, display_1_bounds, root_1)
+  auto* window_1_1 = CreateTestWindowRestoredWidget(1, display_1_bounds, root_1)
                          ->GetNativeWindow();
   VerifyStackingOrder(desk_container_display_1,
                       {window_1_3, window_1_2, window_1_1});
 
   // Restore `window_3_1`.
-  auto* window_3_1 = CreateTestFullRestoredWidget(3, display_3_bounds, root_3)
+  auto* window_3_1 = CreateTestWindowRestoredWidget(3, display_3_bounds, root_3)
                          ->GetNativeWindow();
   VerifyStackingOrder(desk_container_display_3,
                       {window_3_3, window_3_2, window_3_1});
@@ -704,10 +673,10 @@ TEST_F(WindowRestoreControllerTest, ClamshellSnapWindow) {
   // Create two window restore windows with the same restore window ids as the
   // entries we added. Test they are snapped and have snapped bounds.
   aura::Window* left_window =
-      CreateTestFullRestoredWidgetFromRestoreId(/*restore_window_id=*/2)
+      CreateTestWindowRestoredWidgetFromRestoreId(/*restore_window_id=*/2)
           ->GetNativeWindow();
   aura::Window* right_window =
-      CreateTestFullRestoredWidgetFromRestoreId(/*restore_window_id=*/3)
+      CreateTestWindowRestoredWidgetFromRestoreId(/*restore_window_id=*/3)
           ->GetNativeWindow();
   auto* left_window_state = WindowState::Get(left_window);
   auto* right_window_state = WindowState::Get(right_window);
@@ -716,10 +685,10 @@ TEST_F(WindowRestoreControllerTest, ClamshellSnapWindow) {
   auto* split_view_controller =
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
   EXPECT_EQ(split_view_controller->GetSnappedWindowBoundsInScreen(
-                SplitViewController::LEFT, nullptr),
+                SplitViewController::SnapPosition::kPrimary, nullptr),
             left_window->GetBoundsInScreen());
   EXPECT_EQ(split_view_controller->GetSnappedWindowBoundsInScreen(
-                SplitViewController::RIGHT, nullptr),
+                SplitViewController::SnapPosition::kSecondary, nullptr),
             right_window->GetBoundsInScreen());
 
   // Test that after restoring the snapped windows, they have the bounds we
@@ -764,38 +733,38 @@ TEST_F(WindowRestoreControllerTest, DisconnectedDisplay) {
   // Simulate restoring windows out-of-order, starting with `window_3`.
   ASSERT_EQ(0u, desk_container->children().size());
   auto* window_3 =
-      CreateTestFullRestoredWidgetFromRestoreId(/*restore_window_id=*/3)
+      CreateTestWindowRestoredWidgetFromRestoreId(/*restore_window_id=*/3)
           ->GetNativeWindow();
   VerifyStackingOrder(desk_container, {window_3});
 
   // Restore `window_4`.
   auto* window_4 =
-      CreateTestFullRestoredWidgetFromRestoreId(/*restore_window_id=*/4)
+      CreateTestWindowRestoredWidgetFromRestoreId(/*restore_window_id=*/4)
           ->GetNativeWindow();
   VerifyStackingOrder(desk_container, {window_4, window_3});
 
   // Restore `window_2`.
   auto* window_2 =
-      CreateTestFullRestoredWidgetFromRestoreId(/*restore_window_id=*/2)
+      CreateTestWindowRestoredWidgetFromRestoreId(/*restore_window_id=*/2)
           ->GetNativeWindow();
   VerifyStackingOrder(desk_container, {window_4, window_3, window_2});
 
   // Restore `window_1`.
   auto* window_1 =
-      CreateTestFullRestoredWidgetFromRestoreId(/*restore_window_id=*/1)
+      CreateTestWindowRestoredWidgetFromRestoreId(/*restore_window_id=*/1)
           ->GetNativeWindow();
   VerifyStackingOrder(desk_container, {window_4, window_3, window_2, window_1});
 
   // Restore `window_6`.
   auto* window_6 =
-      CreateTestFullRestoredWidgetFromRestoreId(/*restore_window_id=*/6)
+      CreateTestWindowRestoredWidgetFromRestoreId(/*restore_window_id=*/6)
           ->GetNativeWindow();
   VerifyStackingOrder(desk_container,
                       {window_6, window_4, window_3, window_2, window_1});
 
   // Restore `window_5`.
   auto* window_5 =
-      CreateTestFullRestoredWidgetFromRestoreId(/*restore_window_id=*/5)
+      CreateTestWindowRestoredWidgetFromRestoreId(/*restore_window_id=*/5)
           ->GetNativeWindow();
   VerifyStackingOrder(desk_container, {window_6, window_5, window_4, window_3,
                                        window_2, window_1});
@@ -811,8 +780,10 @@ TEST_F(WindowRestoreControllerTest, TabletSplitviewWindow) {
 
   auto* split_view_controller =
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
-  split_view_controller->SnapWindow(window1.get(), SplitViewController::LEFT);
-  split_view_controller->SnapWindow(window2.get(), SplitViewController::RIGHT);
+  split_view_controller->SnapWindow(
+      window1.get(), SplitViewController::SnapPosition::kPrimary);
+  split_view_controller->SnapWindow(
+      window2.get(), SplitViewController::SnapPosition::kSecondary);
 
   app_restore::WindowInfo* window1_info = GetWindowInfo(window1.get());
   app_restore::WindowInfo* window2_info = GetWindowInfo(window2.get());
@@ -845,10 +816,10 @@ TEST_F(WindowRestoreControllerTest, TabletSnapWindow) {
   // Create two window restore windows with the same restore window ids as the
   // entries we added. Test they are snapped and have snapped bounds.
   aura::Window* left_window =
-      CreateTestFullRestoredWidgetFromRestoreId(/*restore_window_id=*/2)
+      CreateTestWindowRestoredWidgetFromRestoreId(/*restore_window_id=*/2)
           ->GetNativeWindow();
   aura::Window* right_window =
-      CreateTestFullRestoredWidgetFromRestoreId(/*restore_window_id=*/3)
+      CreateTestWindowRestoredWidgetFromRestoreId(/*restore_window_id=*/3)
           ->GetNativeWindow();
   auto* left_window_state = WindowState::Get(left_window);
   auto* right_window_state = WindowState::Get(right_window);
@@ -857,13 +828,13 @@ TEST_F(WindowRestoreControllerTest, TabletSnapWindow) {
   auto* split_view_controller =
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
   EXPECT_EQ(split_view_controller->GetSnappedWindowBoundsInScreen(
-                SplitViewController::LEFT, nullptr),
+                SplitViewController::SnapPosition::kPrimary, nullptr),
             left_window->GetBoundsInScreen());
   EXPECT_EQ(split_view_controller->GetSnappedWindowBoundsInScreen(
-                SplitViewController::RIGHT, nullptr),
+                SplitViewController::SnapPosition::kSecondary, nullptr),
             right_window->GetBoundsInScreen());
-  EXPECT_EQ(left_window, split_view_controller->left_window());
-  EXPECT_EQ(right_window, split_view_controller->right_window());
+  EXPECT_EQ(left_window, split_view_controller->primary_window());
+  EXPECT_EQ(right_window, split_view_controller->secondary_window());
 
   TabletModeControllerTestApi().LeaveTabletMode();
 
@@ -889,7 +860,8 @@ TEST_F(WindowRestoreControllerTest, DisplaySizeChange) {
   // Restore the window. Its bounds should be within the current display and its
   // window state should be unaffected.
   auto* restored_window =
-      CreateTestFullRestoredWidgetFromRestoreId(kRestoreId)->GetNativeWindow();
+      CreateTestWindowRestoredWidgetFromRestoreId(kRestoreId)
+          ->GetNativeWindow();
   auto restored_bounds = restored_window->GetBoundsInScreen();
   EXPECT_LE(restored_bounds.width(), 500);
   EXPECT_LE(restored_bounds.height(), 400);
@@ -910,7 +882,8 @@ TEST_F(WindowRestoreControllerTest, ClamshellToTablet) {
   // Restore the window after entering tablet mode, it should be maximized.
   TabletModeControllerTestApi().EnterTabletMode();
   auto* restored_window =
-      CreateTestFullRestoredWidgetFromRestoreId(kRestoreId)->GetNativeWindow();
+      CreateTestWindowRestoredWidgetFromRestoreId(kRestoreId)
+          ->GetNativeWindow();
   EXPECT_TRUE(WindowState::Get(restored_window)->IsMaximized());
   EXPECT_EQ(screen_util::GetMaximizedWindowBoundsInParent(restored_window),
             restored_window->GetBoundsInScreen());
@@ -964,7 +937,8 @@ TEST_F(WindowRestoreControllerTest, TabletToClamshell) {
   // file. Test that the state and bounds are as expected in clamshell mode.
   TabletModeControllerTestApi().LeaveTabletMode();
   auto* restored_window =
-      CreateTestFullRestoredWidgetFromRestoreId(restore_id)->GetNativeWindow();
+      CreateTestWindowRestoredWidgetFromRestoreId(restore_id)
+          ->GetNativeWindow();
   EXPECT_TRUE(WindowState::Get(restored_window)->IsNormalStateType());
   EXPECT_EQ(expected_bounds, window->GetBoundsInScreen());
 }
@@ -990,9 +964,9 @@ TEST_F(WindowRestoreControllerTest, HotseatIsHiddenOnRestoration) {
                      chromeos::WindowStateType::kNormal,
                      /*activation_index=*/2, /*display_id=*/primary_id);
   views::Widget* restored_widget_1 =
-      CreateTestFullRestoredWidgetFromRestoreId(/*restore_window_id=*/1);
+      CreateTestWindowRestoredWidgetFromRestoreId(/*restore_window_id=*/1);
   views::Widget* restored_widget_2 =
-      CreateTestFullRestoredWidgetFromRestoreId(/*restore_window_id=*/2);
+      CreateTestWindowRestoredWidgetFromRestoreId(/*restore_window_id=*/2);
 
   EXPECT_FALSE(restored_widget_1->IsVisible());
   EXPECT_FALSE(restored_widget_1->IsActive());
@@ -1024,9 +998,9 @@ TEST_F(WindowRestoreControllerTest,
                      chromeos::WindowStateType::kMinimized,
                      /*activation_index=*/2, /*display_id=*/primary_id);
   views::Widget* restored_widget_1 =
-      CreateTestFullRestoredWidgetFromRestoreId(/*restore_window_id=*/1);
+      CreateTestWindowRestoredWidgetFromRestoreId(/*restore_window_id=*/1);
   views::Widget* restored_widget_2 =
-      CreateTestFullRestoredWidgetFromRestoreId(/*restore_window_id=*/2);
+      CreateTestWindowRestoredWidgetFromRestoreId(/*restore_window_id=*/2);
   EXPECT_FALSE(restored_widget_1->IsVisible());
   EXPECT_FALSE(restored_widget_2->IsVisible());
   EXPECT_FALSE(restored_widget_1->IsActive());
@@ -1035,16 +1009,16 @@ TEST_F(WindowRestoreControllerTest,
 }
 
 // Tests that the posted task for clearing a window's
-// `app_restore::kLaunchedFromFullRestoreKey` is cancelled when that window is
+// `app_restore::kLaunchedFromAppRestoreKey` is cancelled when that window is
 // destroyed.
 TEST_F(WindowRestoreControllerTest, RestorePropertyClearCallback) {
   // Restore a window.
   AddEntryToFakeFile(/*restore_window_id=*/1, gfx::Rect(200, 200),
                      chromeos::WindowStateType::kNormal);
   views::Widget* restored_widget =
-      CreateTestFullRestoredWidgetFromRestoreId(/*restore_window_id=*/1);
+      CreateTestWindowRestoredWidgetFromRestoreId(/*restore_window_id=*/1);
   ASSERT_TRUE(restored_widget->GetNativeWindow()->GetProperty(
-      app_restore::kLaunchedFromFullRestoreKey));
+      app_restore::kLaunchedFromAppRestoreKey));
 
   // Destroy the window immediately. There should be no restore property clear
   // callbacks left.
@@ -1072,8 +1046,8 @@ TEST_F(WindowRestoreControllerTest, ArcAppWindowCreatedWithoutTask) {
   // Restore the window, it should go to the invisible unparented container for
   // now.
   auto* restored_window =
-      CreateTestFullRestoredWidgetFromRestoreId(kRestoreId, AppType::ARC_APP,
-                                                /*is_taskless_arc_app=*/true)
+      CreateTestWindowRestoredWidgetFromRestoreId(kRestoreId, AppType::ARC_APP,
+                                                  /*is_taskless_arc_app=*/true)
           ->GetNativeWindow();
   EXPECT_EQ(
       Shell::GetContainer(root_window, kShellWindowId_UnparentedContainer),
@@ -1081,7 +1055,7 @@ TEST_F(WindowRestoreControllerTest, ArcAppWindowCreatedWithoutTask) {
 
   // Simulate having the task ready. Our `restored_window` should now be
   // parented to the desk associated with desk 3, which is desk D.
-  WindowRestoreController::Get()->OnARCTaskReadyForUnparentedWindow(
+  WindowRestoreController::Get()->OnParentWindowToValidContainer(
       restored_window);
   EXPECT_EQ(Shell::GetContainer(root_window, kShellWindowId_DeskContainerD),
             restored_window->parent());
@@ -1120,13 +1094,13 @@ TEST_F(WindowRestoreControllerTest,
   // Restore the first window, it should go to the invisible unparented
   // container for the secondary display until the ARC task is ready.
   auto* restored_window1 =
-      CreateTestFullRestoredWidgetFromRestoreId(kRestoreId1, AppType::ARC_APP,
-                                                /*is_taskless_arc_app=*/true)
+      CreateTestWindowRestoredWidgetFromRestoreId(kRestoreId1, AppType::ARC_APP,
+                                                  /*is_taskless_arc_app=*/true)
           ->GetNativeWindow();
   EXPECT_EQ(Shell::GetContainer(secondary_root_window,
                                 kShellWindowId_UnparentedContainer),
             restored_window1->parent());
-  WindowRestoreController::Get()->OnARCTaskReadyForUnparentedWindow(
+  WindowRestoreController::Get()->OnParentWindowToValidContainer(
       restored_window1);
   EXPECT_EQ(
       Shell::GetContainer(secondary_root_window, kShellWindowId_DeskContainerD),
@@ -1135,8 +1109,8 @@ TEST_F(WindowRestoreControllerTest,
   // Restore the second window, it should also go to the invisible unparented
   // container for the secondary display.
   auto* restored_window2 =
-      CreateTestFullRestoredWidgetFromRestoreId(kRestoreId2, AppType::ARC_APP,
-                                                /*is_taskless_arc_app=*/true)
+      CreateTestWindowRestoredWidgetFromRestoreId(kRestoreId2, AppType::ARC_APP,
+                                                  /*is_taskless_arc_app=*/true)
           ->GetNativeWindow();
   EXPECT_EQ(Shell::GetContainer(secondary_root_window,
                                 kShellWindowId_UnparentedContainer),
@@ -1148,7 +1122,7 @@ TEST_F(WindowRestoreControllerTest,
   display_info_list.push_back(primary_info);
   display_manager()->OnNativeDisplaysChanged(display_info_list);
 
-  WindowRestoreController::Get()->OnARCTaskReadyForUnparentedWindow(
+  WindowRestoreController::Get()->OnParentWindowToValidContainer(
       restored_window2);
   EXPECT_EQ(
       Shell::GetContainer(primary_root_window, kShellWindowId_DeskContainerD),
@@ -1178,7 +1152,7 @@ TEST_F(WindowRestoreControllerTest, OutOfBoundsWindows) {
 
   // Restore the first window. The window should have the exact same bounds.
   const gfx::Rect& window_bounds_1 =
-      CreateTestFullRestoredWidgetFromRestoreId(/*restore_id=*/1)
+      CreateTestWindowRestoredWidgetFromRestoreId(/*restore_id=*/1)
           ->GetNativeWindow()
           ->GetBoundsInScreen();
   EXPECT_EQ(kPartialBounds, window_bounds_1);
@@ -1186,7 +1160,7 @@ TEST_F(WindowRestoreControllerTest, OutOfBoundsWindows) {
   // Restore the second window. The window should be moved such that part of it
   // is within the display.
   gfx::Rect window_bounds_2(
-      CreateTestFullRestoredWidgetFromRestoreId(/*restore_id=*/2)
+      CreateTestWindowRestoredWidgetFromRestoreId(/*restore_id=*/2)
           ->GetNativeWindow()
           ->GetBoundsInScreen());
   EXPECT_TRUE(window_bounds_2.Intersects(kScreenBounds));
@@ -1196,14 +1170,14 @@ TEST_F(WindowRestoreControllerTest, OutOfBoundsWindows) {
   // that part of it is within the display.
   const gfx::Rect& window_bounds_3 =
       WindowState::Get(
-          CreateTestFullRestoredWidgetFromRestoreId(/*restore_id=*/3)
+          CreateTestWindowRestoredWidgetFromRestoreId(/*restore_id=*/3)
               ->GetNativeWindow())
           ->GetRestoreBoundsInScreen();
   EXPECT_TRUE(window_bounds_3.Intersects(kScreenBounds));
   EXPECT_LT(0, IntersectRects(kScreenBounds, window_bounds_3).size().GetArea());
 }
 
-// Tests that when the topmost window is a Full Restore'd window, it is
+// Tests that when the topmost window is a Window Restore'd window, it is
 // activatable. See crbug.com/1229928.
 TEST_F(WindowRestoreControllerTest, TopmostWindowIsActivatable) {
   // Create a window that is not restored and activate it.
@@ -1213,27 +1187,27 @@ TEST_F(WindowRestoreControllerTest, TopmostWindowIsActivatable) {
   wm::ActivateWindow(window.get());
   ASSERT_TRUE(wm::IsActiveWindow(window.get()));
 
-  // Create a Full Restore'd Chrome app.
+  // Create a Window Restore'd Chrome app.
   AddEntryToFakeFile(
       /*restore_id=*/2, gfx::Rect(200, 200), chromeos::WindowStateType::kNormal,
       /*activation_index=*/1, WindowTreeHostManager::GetPrimaryDisplayId());
-  auto* restored_window1 = CreateTestFullRestoredWidgetFromRestoreId(
+  auto* restored_window1 = CreateTestWindowRestoredWidgetFromRestoreId(
                                /*restore_id=*/2, AppType::CHROME_APP,
                                /*is_taskless_arc_app=*/false)
                                ->GetNativeWindow();
   VerifyStackingOrder(desk_container, {restored_window1, window.get()});
 
-  // Create a Full Restore'd window.
-  auto* window_4 = CreateTestFullRestoredWidget(4)->GetNativeWindow();
+  // Create a Window Restore'd window.
+  auto* window_4 = CreateTestWindowRestoredWidget(4)->GetNativeWindow();
   VerifyStackingOrder(desk_container,
                       {window_4, restored_window1, window.get()});
 
-  // Check the Full Restore'd windows' properties.
+  // Check the Window Restore'd windows' properties.
   EXPECT_TRUE(
-      restored_window1->GetProperty(app_restore::kLaunchedFromFullRestoreKey));
-  EXPECT_TRUE(window_4->GetProperty(app_restore::kLaunchedFromFullRestoreKey));
+      restored_window1->GetProperty(app_restore::kLaunchedFromAppRestoreKey));
+  EXPECT_TRUE(window_4->GetProperty(app_restore::kLaunchedFromAppRestoreKey));
 
-  // Both the Full Restore'd windows shouldn't be activatable.
+  // Both the Window Restore'd windows shouldn't be activatable.
   EXPECT_FALSE(wm::CanActivateWindow(restored_window1));
   EXPECT_FALSE(wm::CanActivateWindow(window_4));
 
@@ -1242,7 +1216,7 @@ TEST_F(WindowRestoreControllerTest, TopmostWindowIsActivatable) {
   window.reset();
   VerifyStackingOrder(desk_container, {window_4, restored_window1});
   EXPECT_TRUE(
-      restored_window1->GetProperty(app_restore::kLaunchedFromFullRestoreKey));
+      restored_window1->GetProperty(app_restore::kLaunchedFromAppRestoreKey));
   EXPECT_TRUE(wm::CanActivateWindow(restored_window1));
   EXPECT_FALSE(wm::CanActivateWindow(window_4));
 }
@@ -1253,26 +1227,26 @@ TEST_F(WindowRestoreControllerTest, NextTopmostWindowIsActivatable) {
   auto* desk_container = desks_util::GetActiveDeskContainerForRoot(
       Shell::Get()->GetPrimaryRootWindow());
 
-  // Create a minimized Full Restore'd browser. It should not be activatable.
+  // Create a minimized Window Restore'd browser. It should not be activatable.
   AddEntryToFakeFile(
       /*restore_id=*/2, gfx::Rect(200, 200),
       chromeos::WindowStateType::kMinimized,
       /*activation_index=*/2, WindowTreeHostManager::GetPrimaryDisplayId());
-  auto* restored_window2 = CreateTestFullRestoredWidgetFromRestoreId(
+  auto* restored_window2 = CreateTestWindowRestoredWidgetFromRestoreId(
                                /*restore_id=*/2, AppType::BROWSER,
                                /*is_taskless_arc_app=*/false)
                                ->GetNativeWindow();
   VerifyStackingOrder(desk_container, {restored_window2});
   EXPECT_FALSE(wm::CanActivateWindow(restored_window2));
 
-  // Create another minimized Full Restore'd browser which is below
+  // Create another minimized Window Restore'd browser which is below
   // `restored_window2` in the stacking order. Both restored windows should not
   // be activatable because they're minimized.
   AddEntryToFakeFile(
       /*restore_id=*/3, gfx::Rect(200, 200),
       chromeos::WindowStateType::kMinimized,
       /*activation_index=*/3, WindowTreeHostManager::GetPrimaryDisplayId());
-  auto* restored_window3 = CreateTestFullRestoredWidgetFromRestoreId(
+  auto* restored_window3 = CreateTestWindowRestoredWidgetFromRestoreId(
                                /*restore_id=*/3, AppType::BROWSER,
                                /*is_taskless_arc_app=*/false)
                                ->GetNativeWindow();
@@ -1280,14 +1254,14 @@ TEST_F(WindowRestoreControllerTest, NextTopmostWindowIsActivatable) {
   EXPECT_FALSE(wm::CanActivateWindow(restored_window3));
   EXPECT_FALSE(wm::CanActivateWindow(restored_window2));
 
-  // Create Full Restore'd browser which is below `restored_window3` in the
+  // Create Window Restore'd browser which is below `restored_window3` in the
   // stacking order. Since it's the topmost unminimized window, it should be
   // activatable and will be activated so it will be added to the top of the
   // stacking order.
   AddEntryToFakeFile(
       /*restore_id=*/4, gfx::Rect(200, 200), chromeos::WindowStateType::kNormal,
       /*activation_index=*/4, WindowTreeHostManager::GetPrimaryDisplayId());
-  auto* restored_window4 = CreateTestFullRestoredWidgetFromRestoreId(
+  auto* restored_window4 = CreateTestWindowRestoredWidgetFromRestoreId(
                                /*restore_id=*/4, AppType::BROWSER,
                                /*is_taskless_arc_app=*/false)
                                ->GetNativeWindow();
@@ -1312,14 +1286,14 @@ TEST_F(WindowRestoreControllerTest, WindowsOnInactiveDeskAreNotActivatable) {
                                  DesksSwitchSource::kUserSwitch);
   ASSERT_EQ(3u, desks.size());
 
-  // Create a Full Restore'd browser in the third desk. It should not be
+  // Create a Window Restore'd browser in the third desk. It should not be
   // activatable.
   AddEntryToFakeFile(
       /*restore_id=*/2, gfx::Rect(200, 200),
       chromeos::WindowStateType::kMinimized,
       /*activation_index=*/2, WindowTreeHostManager::GetPrimaryDisplayId(),
       /*desk_id=*/2);
-  auto* restored_window2 = CreateTestFullRestoredWidgetFromRestoreId(
+  auto* restored_window2 = CreateTestWindowRestoredWidgetFromRestoreId(
                                /*restore_id=*/2, AppType::BROWSER,
                                /*is_taskless_arc_app=*/false)
                                ->GetNativeWindow();
@@ -1330,14 +1304,21 @@ TEST_F(WindowRestoreControllerTest, WindowsOnInactiveDeskAreNotActivatable) {
 // used. See https://crbug.com/1265750.
 TEST_F(WindowRestoreControllerTest, WindowsSavedInOverview) {
   const gfx::Rect window_bounds(300, 200);
-  auto window = CreateAppWindow(window_bounds, AppType::BROWSER);
+  auto browser_window = CreateAppWindow(window_bounds, AppType::BROWSER);
+  auto arc_window = CreateAppWindow(window_bounds, AppType::ARC_APP);
 
   ToggleOverview();
-  EXPECT_NE(window_bounds, window->GetBoundsInScreen());
+  EXPECT_NE(window_bounds, browser_window->GetBoundsInScreen());
+  EXPECT_NE(window_bounds, arc_window->GetBoundsInRootWindow());
 
-  app_restore::WindowInfo* window_info = GetWindowInfo(window.get());
-  ASSERT_TRUE(window_info);
-  EXPECT_EQ(window_bounds, window_info->current_bounds);
+  app_restore::WindowInfo* browser_window_info =
+      GetWindowInfo(browser_window.get());
+  ASSERT_TRUE(browser_window_info);
+  EXPECT_EQ(window_bounds, browser_window_info->current_bounds);
+
+  app_restore::WindowInfo* arc_window_info = GetWindowInfo(arc_window.get());
+  ASSERT_TRUE(arc_window_info);
+  EXPECT_EQ(window_bounds, arc_window_info->arc_extra_info->bounds_in_root);
 }
 
 }  // namespace ash

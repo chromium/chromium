@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/callback.h"
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
@@ -27,6 +26,7 @@
 #include "components/autofill/core/browser/ui/accessory_sheet_data.h"
 #include "components/autofill/core/browser/ui/accessory_sheet_enums.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/password_manager/core/browser/credential_cache.h"
@@ -125,6 +125,7 @@ void ManualFillingControllerImpl::OnAutomaticGenerationStatusChanged(
 
 void ManualFillingControllerImpl::RefreshSuggestions(
     const AccessorySheetData& accessory_sheet_data) {
+  TRACE_EVENT0("passwords", "ManualFillingControllerImpl::RefreshSuggestions");
   view_->OnItemsAvailable(accessory_sheet_data);
   available_sheets_.insert_or_assign(GetSourceForTabType(accessory_sheet_data),
                                      accessory_sheet_data);
@@ -140,7 +141,7 @@ void ManualFillingControllerImpl::NotifyFocusedInputChanged(
   TRACE_EVENT0("passwords",
                "ManualFillingControllerImpl::NotifyFocusedInputChanged");
   autofill::LocalFrameToken frame_token;
-  if (content::RenderFrameHost* rfh = web_contents_->GetFocusedFrame()) {
+  if (content::RenderFrameHost* rfh = GetWebContents().GetFocusedFrame()) {
     frame_token = autofill::LocalFrameToken(rfh->GetFrameToken().value());
   }
   last_focused_field_id_ = {frame_token, focused_field_id};
@@ -230,7 +231,7 @@ void ManualFillingControllerImpl::OnToggleChanged(
 
 void ManualFillingControllerImpl::RequestAccessorySheet(
     autofill::AccessoryTabType tab_type,
-    base::OnceCallback<void(const autofill::AccessorySheetData&)> callback) {
+    base::OnceCallback<void(autofill::AccessorySheetData)> callback) {
   // TODO(crbug.com/1169167): Consider to execute this async to reduce jank.
   absl::optional<AccessorySheetData> sheet =
       GetControllerForTabType(tab_type)->GetSheetData();
@@ -247,7 +248,10 @@ void ManualFillingControllerImpl::RequestAccessorySheet(
 }
 
 gfx::NativeView ManualFillingControllerImpl::container_view() const {
-  return web_contents_->GetNativeView();
+  // While a const_cast is not ideal. The Autofill API uses const in various
+  // spots and the content public API doesn't have const accessors. So the const
+  // cast is the lesser of two evils.
+  return const_cast<content::WebContents&>(GetWebContents()).GetNativeView();
 }
 
 // Returns a weak pointer for this object.
@@ -257,7 +261,7 @@ ManualFillingControllerImpl::AsWeakPtr() {
 }
 
 void ManualFillingControllerImpl::Initialize() {
-  DCHECK(FromWebContents(web_contents_)) << "Don't call from constructor!";
+  DCHECK(FromWebContents(&GetWebContents())) << "Don't call from constructor!";
   RegisterObserverForAllowedSources();
   if (address_controller_)
     address_controller_->RefreshSuggestions();
@@ -265,12 +269,11 @@ void ManualFillingControllerImpl::Initialize() {
 
 ManualFillingControllerImpl::ManualFillingControllerImpl(
     content::WebContents* web_contents)
-    : web_contents_(web_contents) {
-  if (PasswordAccessoryController::AllowedForWebContents(web_contents_)) {
-    pwd_controller_ =
-        ChromePasswordManagerClient::FromWebContents(web_contents_)
-            ->GetOrCreatePasswordAccessory()
-            ->AsWeakPtr();
+    : content::WebContentsUserData<ManualFillingControllerImpl>(*web_contents) {
+  if (PasswordAccessoryController::AllowedForWebContents(web_contents)) {
+    pwd_controller_ = ChromePasswordManagerClient::FromWebContents(web_contents)
+                          ->GetOrCreatePasswordAccessory()
+                          ->AsWeakPtr();
     DCHECK(pwd_controller_);
   }
   if (AddressAccessoryController::AllowedForWebContents(web_contents)) {
@@ -294,7 +297,7 @@ ManualFillingControllerImpl::ManualFillingControllerImpl(
     base::WeakPtr<AddressAccessoryController> address_controller,
     base::WeakPtr<CreditCardAccessoryController> cc_controller,
     std::unique_ptr<ManualFillingViewInterface> view)
-    : web_contents_(web_contents),
+    : content::WebContentsUserData<ManualFillingControllerImpl>(*web_contents),
       pwd_controller_(std::move(pwd_controller)),
       address_controller_(std::move(address_controller)),
       cc_controller_(std::move(cc_controller)),
@@ -321,21 +324,19 @@ bool ManualFillingControllerImpl::ShouldShowAccessory() const {
   if (!base::FeatureList::IsEnabled(
           autofill::features::kAutofillKeyboardAccessory) &&
       !base::FeatureList::IsEnabled(
-          autofill::features::kAutofillManualFallbackAndroid)) {
+          autofill::features::kAutofillManualFallbackAndroid) &&
+      !base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableManualFallbackForVirtualCards)) {
     return last_focused_field_type_ ==
                FocusedFieldType::kFillablePasswordField ||
            last_focused_field_type_ == FocusedFieldType::kFillableUsernameField;
   }
   switch (last_focused_field_type_) {
-    // Always show on password fields to provide management and generation.
-    case FocusedFieldType::kFillablePasswordField:
-      return true;
-
     // If there are suggestions, show on usual form fields.
+    case FocusedFieldType::kFillablePasswordField:
     case FocusedFieldType::kFillableUsernameField:
     case FocusedFieldType::kFillableNonSearchField:
-      // TODO(crbug/1242839): Hide the accessory if no fallback is available.
-      return true;
+      return !available_sources_.empty();
 
     // Fallbacks aren't really useful on search fields but autocomplete entries
     // justify showing the accessory.
@@ -396,6 +397,8 @@ void ManualFillingControllerImpl::OnSourceAvailabilityChanged(
     FillingSource source,
     AccessoryController* source_controller,
     AccessoryController::IsFillingSourceAvailable is_source_available) {
+  TRACE_EVENT0("passwords",
+               "ManualFillingControllerImpl::OnSourceAvailabilityChanged");
   absl::optional<AccessorySheetData> sheet = source_controller->GetSheetData();
   bool show_filling_source = sheet.has_value() && is_source_available;
   // TODO(crbug.com/1169167): Remove once all sheets pull this information

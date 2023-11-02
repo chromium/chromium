@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -211,7 +211,9 @@ void PageFreezingPolicy::OnFreezingVoteChanged(
   }
 }
 
-void PageFreezingPolicy::OnLoadingStateChanged(const PageNode* page_node) {
+void PageFreezingPolicy::OnLoadingStateChanged(
+    const PageNode* page_node,
+    PageNode::LoadingState previous_state) {
   if (page_node->GetLoadingState() != PageNode::LoadingState::kLoadedIdle)
     return;
   auto freezing_vote = page_node->GetFreezingVote();

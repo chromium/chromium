@@ -1,17 +1,19 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
-#include "content/browser/bluetooth/web_bluetooth_pairing_manager.h"
 
 #include <string>
 #include <utility>
 #include <vector>
 
+#include "base/notreached.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
+#include "content/browser/bluetooth/web_bluetooth_pairing_manager.h"
 #include "content/browser/bluetooth/web_bluetooth_pairing_manager_delegate.h"
 #include "content/browser/bluetooth/web_bluetooth_pairing_manager_impl.h"
+#include "content/public/browser/bluetooth_delegate.h"
 #include "device/bluetooth/test/mock_bluetooth_device.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -21,6 +23,7 @@ namespace content {
 namespace {
 
 using ::base::test::SingleThreadTaskEnvironment;
+using ::base::test::TestFuture;
 using ::blink::WebBluetoothDeviceId;
 using ::blink::mojom::WebBluetoothResult;
 using ::blink::mojom::WebBluetoothService;
@@ -28,6 +31,7 @@ using ::blink::mojom::WebBluetoothWriteType;
 using ::device::BluetoothDevice;
 using ::device::MockBluetoothDevice;
 using ::testing::Return;
+using PairPromptResult = BluetoothDelegate::PairPromptResult;
 
 /**
  * A collection of related Bluetooth test data.
@@ -170,6 +174,12 @@ class BluetoothPairingManagerTest : public testing::Test,
     std::move(pair_callback_).Run(/*error_code=*/absl::nullopt);
   }
 
+  void PairConfirmed(const blink::WebBluetoothDeviceId& device_id) override {
+    ASSERT_TRUE(device_id.IsValid());
+    EXPECT_EQ(device_id, kValidTestData.device_id);
+    std::move(pair_callback_).Run(/*error_code=*/absl::nullopt);
+  }
+
   void ResumeSuspendedPairingWithSuccess() {
     device_paired_ = true;
     EXPECT_FALSE(pair_callback_.is_null());
@@ -271,17 +281,12 @@ class BluetoothPairingManagerTest : public testing::Test,
     std::move(callback).Run(WebBluetoothResult::CONNECT_AUTH_REJECTED);
   }
 
-  void PromptForBluetoothCredentials(
+  void PromptForBluetoothPairing(
       const std::u16string& device_identifier,
-      BluetoothCredentialsCallback callback) override {
-    switch (prompt_result_) {
-      case CredentialPromptResult::kSuccess:
-        std::move(callback).Run(prompt_result_, kValidTestData.pincode);
-        break;
-      case CredentialPromptResult::kCancelled:
-        std::move(callback).Run(prompt_result_, "");
-        break;
-    }
+      BluetoothDelegate::PairPromptCallback callback,
+      BluetoothDelegate::PairingKind pairing_kind,
+      const absl::optional<std::u16string>& pin) override {
+    std::move(callback).Run(prompt_result_);
   }
 
   void SetAuthBehavior(AuthBehavior auth_behavior) {
@@ -290,7 +295,7 @@ class BluetoothPairingManagerTest : public testing::Test,
 
   int num_pair_attempts() const { return num_pair_attempts_; }
 
-  void SetCredentialPromptResult(CredentialPromptResult result) {
+  void SetPromptResult(PairPromptResult result) {
     prompt_result_ = result;
   }
 
@@ -317,7 +322,7 @@ class BluetoothPairingManagerTest : public testing::Test,
   int num_pair_attempts_ = 0;
   bool device_paired_ = false;
   AuthBehavior auth_behavior_ = AuthBehavior::kUnspecified;
-  CredentialPromptResult prompt_result_ = CredentialPromptResult::kSuccess;
+  PairPromptResult prompt_result_;
   std::unique_ptr<WebBluetoothPairingManagerImpl> pairing_manager_;
   SingleThreadTaskEnvironment single_threaded_task_environment_;
 };
@@ -870,7 +875,10 @@ TEST_F(BluetoothPairingManagerTest, WriteDescriptorDoublePair) {
 }
 
 TEST_F(BluetoothPairingManagerTest, CredentialPromptPINSuccess) {
-  SetCredentialPromptResult(CredentialPromptResult::kSuccess);
+  BluetoothDelegate::PairPromptResult result;
+  result.result_code = BluetoothDelegate::PairPromptStatus::kSuccess;
+  result.pin = kValidTestData.pincode;
+  SetPromptResult(result);
 
   MockBluetoothDevice device(/*adapter=*/nullptr,
                              /*bluetooth_class=*/0,
@@ -894,7 +902,9 @@ TEST_F(BluetoothPairingManagerTest, CredentialPromptPINSuccess) {
 }
 
 TEST_F(BluetoothPairingManagerTest, CredentialPromptPINCancelled) {
-  SetCredentialPromptResult(CredentialPromptResult::kCancelled);
+  PairPromptResult result;
+  result.result_code = BluetoothDelegate::PairPromptStatus::kCancelled;
+  SetPromptResult(result);
 
   MockBluetoothDevice device(/*adapter=*/nullptr,
                              /*bluetooth_class=*/0,
@@ -929,6 +939,90 @@ TEST_F(BluetoothPairingManagerTest, CredentialPromptPasskeyCancelled) {
 
   // Passkey not supported. Verify pairing cancelled.
   pairing_manager()->RequestPasskey(&device);
+}
+
+TEST_F(BluetoothPairingManagerTest, PairConfirmPromptSuccess) {
+  PairPromptResult result;
+  result.result_code = BluetoothDelegate::PairPromptStatus::kSuccess;
+  SetPromptResult(result);
+
+  MockBluetoothDevice device(/*adapter=*/nullptr,
+                             /*bluetooth_class=*/0,
+                             kValidTestData.device_name.c_str(),
+                             kValidTestData.device_address,
+                             /*initially_paired=*/false,
+                             /*connected=*/true);
+
+  EXPECT_CALL(device, GetAddress());
+  EXPECT_CALL(device, GetNameForDisplay());
+
+  TestFuture<absl::optional<BluetoothDevice::ConnectErrorCode>> future;
+  pair_callback_ = future.GetCallback();
+  pairing_manager()->AuthorizePairing(&device);
+  EXPECT_FALSE(future.Get());
+}
+
+TEST_F(BluetoothPairingManagerTest, PairConfirmPromptCancelled) {
+  PairPromptResult result;
+  result.result_code = BluetoothDelegate::PairPromptStatus::kCancelled;
+  SetPromptResult(result);
+
+  MockBluetoothDevice device(/*adapter=*/nullptr,
+                             /*bluetooth_class=*/0,
+                             kValidTestData.device_name.c_str(),
+                             kValidTestData.device_address,
+                             /*initially_paired=*/false,
+                             /*connected=*/true);
+
+  EXPECT_CALL(device, GetAddress());
+  EXPECT_CALL(device, GetNameForDisplay());
+
+  TestFuture<absl::optional<BluetoothDevice::ConnectErrorCode>> future;
+  pair_callback_ = future.GetCallback();
+  pairing_manager()->AuthorizePairing(&device);
+  EXPECT_EQ(BluetoothDevice::ERROR_AUTH_CANCELED, future.Get());
+}
+
+TEST_F(BluetoothPairingManagerTest, PairConfirmPinPromptSuccess) {
+  PairPromptResult result;
+  result.result_code = BluetoothDelegate::PairPromptStatus::kSuccess;
+  SetPromptResult(result);
+
+  MockBluetoothDevice device(/*adapter=*/nullptr,
+                             /*bluetooth_class=*/0,
+                             kValidTestData.device_name.c_str(),
+                             kValidTestData.device_address,
+                             /*initially_paired=*/false,
+                             /*connected=*/true);
+
+  EXPECT_CALL(device, GetAddress());
+  EXPECT_CALL(device, GetNameForDisplay());
+
+  TestFuture<absl::optional<BluetoothDevice::ConnectErrorCode>> future;
+  pair_callback_ = future.GetCallback();
+  pairing_manager()->ConfirmPasskey(&device, 123456);
+  EXPECT_FALSE(future.Get());
+}
+
+TEST_F(BluetoothPairingManagerTest, PairConfirmPinPromptCancelled) {
+  PairPromptResult result;
+  result.result_code = BluetoothDelegate::PairPromptStatus::kCancelled;
+  SetPromptResult(result);
+
+  MockBluetoothDevice device(/*adapter=*/nullptr,
+                             /*bluetooth_class=*/0,
+                             kValidTestData.device_name.c_str(),
+                             kValidTestData.device_address,
+                             /*initially_paired=*/false,
+                             /*connected=*/true);
+
+  EXPECT_CALL(device, GetAddress());
+  EXPECT_CALL(device, GetNameForDisplay());
+
+  TestFuture<absl::optional<BluetoothDevice::ConnectErrorCode>> future;
+  pair_callback_ = future.GetCallback();
+  pairing_manager()->ConfirmPasskey(&device, 123456);
+  EXPECT_EQ(BluetoothDevice::ERROR_AUTH_CANCELED, future.Get());
 }
 
 TEST_F(BluetoothPairingManagerTest, StartNotificationsAllAuthsSuccess) {

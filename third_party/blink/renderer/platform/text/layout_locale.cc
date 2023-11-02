@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,6 +17,7 @@
 
 #include <hb.h>
 #include <unicode/locid.h>
+#include <unicode/ulocdata.h>
 
 namespace blink {
 
@@ -35,6 +36,45 @@ struct PerThreadData {
 PerThreadData& GetPerThreadData() {
   DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<PerThreadData>, data, ());
   return *data;
+}
+
+struct DelimiterConfig {
+  ULocaleDataDelimiterType type;
+  UChar* result;
+};
+// Use  ICU ulocdata to find quote delimiters for an ICU locale
+// https://unicode-org.github.io/icu-docs/apidoc/dev/icu4c/ulocdata_8h.html#a0bf1fdd1a86918871ae2c84b5ce8421f
+scoped_refptr<QuotesData> GetQuotesDataForLanguage(const char* locale) {
+  UErrorCode status = U_ZERO_ERROR;
+  // Expect returned buffer size is 1 to match QuotesData type
+  constexpr int ucharDelimMaxLength = 1;
+
+  ULocaleData* uld = ulocdata_open(locale, &status);
+  if (U_FAILURE(status)) {
+    ulocdata_close(uld);
+    return nullptr;
+  }
+  UChar open1[ucharDelimMaxLength], close1[ucharDelimMaxLength],
+      open2[ucharDelimMaxLength], close2[ucharDelimMaxLength];
+
+  int32_t delimResultLength;
+  struct DelimiterConfig delimiters[] = {
+      {ULOCDATA_QUOTATION_START, open1},
+      {ULOCDATA_QUOTATION_END, close1},
+      {ULOCDATA_ALT_QUOTATION_START, open2},
+      {ULOCDATA_ALT_QUOTATION_END, close2},
+  };
+  for (DelimiterConfig delim : delimiters) {
+    delimResultLength = ulocdata_getDelimiter(uld, delim.type, delim.result,
+                                              ucharDelimMaxLength, &status);
+    if (U_FAILURE(status) || delimResultLength != 1) {
+      ulocdata_close(uld);
+      return nullptr;
+    }
+  }
+  ulocdata_close(uld);
+
+  return QuotesData::Create(open1[0], close1[0], open2[0], close2[0]);
 }
 
 }  // namespace
@@ -163,6 +203,7 @@ LayoutLocale::LayoutLocale(const AtomicString& locale)
       script_for_han_(USCRIPT_COMMON),
       has_script_for_han_(false),
       hyphenation_computed_(false),
+      quotes_data_computed_(false),
       case_map_computed_(false) {}
 
 // static
@@ -182,7 +223,7 @@ const LayoutLocale& LayoutLocale::GetDefault() {
   if (UNLIKELY(!data.default_locale)) {
     AtomicString language = DefaultLanguage();
     data.default_locale =
-        LayoutLocale::Get(!language.IsEmpty() ? language : "en");
+        LayoutLocale::Get(!language.empty() ? language : "en");
   }
   return *data.default_locale;
 }
@@ -222,9 +263,68 @@ void LayoutLocale::SetHyphenationForTesting(
   locale.hyphenation_ = std::move(hyphenation);
 }
 
+scoped_refptr<QuotesData> LayoutLocale::GetQuotesData() const {
+  if (quotes_data_computed_)
+    return quotes_data_;
+  quotes_data_computed_ = true;
+
+  // BCP 47 uses '-' as the delimiter but ICU uses '_'.
+  // https://tools.ietf.org/html/bcp47
+  String normalized_lang = LocaleString();
+  normalized_lang.Replace('-', '_');
+
+  UErrorCode status = U_ZERO_ERROR;
+  // Use uloc_openAvailableByType() to find all CLDR recognized locales
+  // https://unicode-org.github.io/icu-docs/apidoc/dev/icu4c/uloc_8h.html#aa0332857185774f3e0520a0823c14d16
+  UEnumeration* ulocales =
+      uloc_openAvailableByType(ULOC_AVAILABLE_DEFAULT, &status);
+  if (U_FAILURE(status)) {
+    uenum_close(ulocales);
+    return nullptr;
+  }
+
+  // Try to find exact match
+  while (const char* loc = uenum_next(ulocales, nullptr, &status)) {
+    if (U_FAILURE(status)) {
+      uenum_close(ulocales);
+      return nullptr;
+    }
+    if (EqualIgnoringASCIICase(loc, normalized_lang)) {
+      quotes_data_ = GetQuotesDataForLanguage(loc);
+      uenum_close(ulocales);
+      return quotes_data_;
+    }
+  }
+  uenum_close(ulocales);
+
+  // No exact match, try to find without subtags.
+  wtf_size_t hyphen_offset = normalized_lang.ReverseFind('_');
+  if (hyphen_offset == kNotFound)
+    return nullptr;
+  normalized_lang = normalized_lang.Substring(0, hyphen_offset);
+  ulocales = uloc_openAvailableByType(ULOC_AVAILABLE_DEFAULT, &status);
+  if (U_FAILURE(status)) {
+    uenum_close(ulocales);
+    return nullptr;
+  }
+  while (const char* loc = uenum_next(ulocales, nullptr, &status)) {
+    if (U_FAILURE(status)) {
+      uenum_close(ulocales);
+      return nullptr;
+    }
+    if (EqualIgnoringASCIICase(loc, normalized_lang)) {
+      quotes_data_ = GetQuotesDataForLanguage(loc);
+      uenum_close(ulocales);
+      return quotes_data_;
+    }
+  }
+  uenum_close(ulocales);
+  return nullptr;
+}
+
 AtomicString LayoutLocale::LocaleWithBreakKeyword(
     LineBreakIteratorMode mode) const {
-  if (string_.IsEmpty())
+  if (string_.empty())
     return string_;
 
   // uloc_setKeywordValue_58 has a problem to handle "@" in the original
@@ -240,7 +340,7 @@ AtomicString LayoutLocale::LocaleWithBreakKeyword(
   switch (mode) {
     default:
       NOTREACHED();
-      FALLTHROUGH;
+      [[fallthrough]];
     case LineBreakIteratorMode::kDefault:
       // nullptr will cause any existing values to be removed.
       break;

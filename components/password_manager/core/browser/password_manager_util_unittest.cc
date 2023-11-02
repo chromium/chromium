@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,20 +10,36 @@
 #include <vector>
 
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "base/values.h"
+#include "build/branding_buildflags.h"
+#include "build/build_config.h"
+#include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/payments/local_card_migration_manager.h"
+#include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/autofill/core/common/password_generation_util.h"
+#include "components/device_reauth/mock_biometric_authenticator.h"
 #include "components/password_manager/core/browser/mock_password_feature_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/test_password_store.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/sync/base/user_selectable_type.h"
+#include "components/sync/test/test_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using autofill::password_generation::PasswordGenerationType;
+using device_reauth::MockBiometricAuthenticator;
 using password_manager::PasswordForm;
 
 namespace password_manager_util {
@@ -51,6 +67,239 @@ class MockPasswordManagerClient
                    password_manager::PasswordManagerClient::ReauthSucceeded)>),
               (override));
   MOCK_METHOD(void, GeneratePassword, (PasswordGenerationType), (override));
+  MOCK_METHOD(PrefService*, GetPrefs, (), (const, override));
+  MOCK_METHOD(PrefService*, GetLocalStatePrefs, (), (const, override));
+  MOCK_METHOD(scoped_refptr<device_reauth::BiometricAuthenticator>,
+              GetBiometricAuthenticator,
+              (),
+              (override));
+};
+
+class MockAutofillClient : public autofill::AutofillClient {
+ public:
+  MockAutofillClient() = default;
+  MockAutofillClient(const MockAutofillClient&) = delete;
+  MockAutofillClient& operator=(const MockAutofillClient&) = delete;
+  ~MockAutofillClient() override = default;
+
+  MOCK_METHOD(version_info::Channel, GetChannel, (), (const, override));
+  MOCK_METHOD(autofill::PersonalDataManager*,
+              GetPersonalDataManager,
+              (),
+              (override));
+  MOCK_METHOD(autofill::AutocompleteHistoryManager*,
+              GetAutocompleteHistoryManager,
+              (),
+              (override));
+  MOCK_METHOD(PrefService*, GetPrefs, (), (override));
+  MOCK_METHOD(const PrefService*, GetPrefs, (), (const, override));
+  MOCK_METHOD(syncer::SyncService*, GetSyncService, (), (override));
+  MOCK_METHOD(signin::IdentityManager*, GetIdentityManager, (), (override));
+  MOCK_METHOD(autofill::FormDataImporter*, GetFormDataImporter, (), (override));
+  MOCK_METHOD(autofill::payments::PaymentsClient*,
+              GetPaymentsClient,
+              (),
+              (override));
+  MOCK_METHOD(autofill::StrikeDatabase*, GetStrikeDatabase, (), (override));
+  MOCK_METHOD(ukm::UkmRecorder*, GetUkmRecorder, (), (override));
+  MOCK_METHOD(ukm::SourceId, GetUkmSourceId, (), (override));
+  MOCK_METHOD(autofill::AddressNormalizer*,
+              GetAddressNormalizer,
+              (),
+              (override));
+  MOCK_METHOD(const GURL&,
+              GetLastCommittedPrimaryMainFrameURL,
+              (),
+              (const, override));
+  MOCK_METHOD(url::Origin,
+              GetLastCommittedPrimaryMainFrameOrigin,
+              (),
+              (const, override));
+  MOCK_METHOD(security_state::SecurityLevel,
+              GetSecurityLevelForUmaHistograms,
+              (),
+              (override));
+  MOCK_METHOD(const translate::LanguageState*,
+              GetLanguageState,
+              (),
+              (override));
+  MOCK_METHOD(translate::TranslateDriver*, GetTranslateDriver, (), (override));
+  MOCK_METHOD(void, ShowAutofillSettings, (bool), (override));
+  MOCK_METHOD(void,
+              ShowUnmaskPrompt,
+              (const autofill::CreditCard&,
+               UnmaskCardReason,
+               base::WeakPtr<autofill::CardUnmaskDelegate>),
+              (override));
+  MOCK_METHOD(void,
+              OnUnmaskVerificationResult,
+              (PaymentsRpcResult),
+              (override));
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  MOCK_METHOD(std::vector<std::string>,
+              GetAllowedMerchantsForVirtualCards,
+              (),
+              (override));
+  MOCK_METHOD(std::vector<std::string>,
+              GetAllowedBinRangesForVirtualCards,
+              (),
+              (override));
+  MOCK_METHOD(void,
+              ShowLocalCardMigrationDialog,
+              (base::OnceClosure),
+              (override));
+  MOCK_METHOD(void,
+              ConfirmMigrateLocalCardToCloud,
+              (const autofill::LegalMessageLines&,
+               const std::string&,
+               const std::vector<autofill::MigratableCreditCard>&,
+               LocalCardMigrationCallback),
+              (override));
+  MOCK_METHOD(void,
+              ShowLocalCardMigrationResults,
+              (const bool,
+               const std::u16string&,
+               const std::vector<autofill::MigratableCreditCard>&,
+               MigrationDeleteCardCallback),
+              (override));
+  MOCK_METHOD(void,
+              ShowWebauthnOfferDialog,
+              (WebauthnDialogCallback),
+              (override));
+  MOCK_METHOD(void,
+              ShowWebauthnVerifyPendingDialog,
+              (WebauthnDialogCallback),
+              (override));
+  MOCK_METHOD(void, UpdateWebauthnOfferDialogWithError, (), (override));
+  MOCK_METHOD(bool, CloseWebauthnDialog, (), (override));
+  MOCK_METHOD(void,
+              ConfirmSaveUpiIdLocally,
+              (const std::string&,
+               base::OnceCallback<void(bool user_decision)>),
+              (override));
+  MOCK_METHOD(void,
+              OfferVirtualCardOptions,
+              (const std::vector<autofill::CreditCard*>&,
+               base::OnceCallback<void(const std::string&)>),
+              (override));
+#else  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  MOCK_METHOD(void,
+              ConfirmAccountNameFixFlow,
+              (base::OnceCallback<void(const std::u16string&)>),
+              (override));
+  MOCK_METHOD(
+      void,
+      ConfirmExpirationDateFixFlow,
+      (const autofill::CreditCard&,
+       base::OnceCallback<void(const std::u16string&, const std::u16string&)>),
+      (override));
+#endif
+  MOCK_METHOD(void,
+              ConfirmSaveCreditCardLocally,
+              (const autofill::CreditCard&,
+               autofill::AutofillClient::SaveCreditCardOptions,
+               LocalSaveCardPromptCallback),
+              (override));
+  MOCK_METHOD(void,
+              ConfirmSaveCreditCardToCloud,
+              (const autofill::CreditCard&,
+               const autofill::LegalMessageLines&,
+               SaveCreditCardOptions,
+               UploadSaveCardPromptCallback),
+              (override));
+  MOCK_METHOD(void, CreditCardUploadCompleted, (bool), (override));
+  MOCK_METHOD(void,
+              ConfirmCreditCardFillAssist,
+              (const autofill::CreditCard&, base::OnceClosure),
+              (override));
+  MOCK_METHOD(void,
+              ConfirmSaveAddressProfile,
+              (const autofill::AutofillProfile&,
+               const autofill::AutofillProfile*,
+               SaveAddressProfilePromptOptions,
+               AddressProfileSavePromptCallback),
+              (override));
+  MOCK_METHOD(bool, HasCreditCardScanFeature, (), (override));
+  MOCK_METHOD(void, ScanCreditCard, (CreditCardScanCallback), (override));
+  MOCK_METHOD(bool, IsFastCheckoutSupported, (), (override));
+  MOCK_METHOD(bool,
+              IsFastCheckoutTriggerForm,
+              (const autofill::FormData&, const autofill::FormFieldData&),
+              (override));
+  MOCK_METHOD(bool,
+              FastCheckoutScriptSupportsConsentlessExecution,
+              (const url::Origin& origin),
+              (override));
+  MOCK_METHOD(bool,
+              FastCheckoutClientSupportsConsentlessExecution,
+              (),
+              (override));
+  MOCK_METHOD(bool,
+              ShowFastCheckout,
+              (base::WeakPtr<autofill::FastCheckoutDelegate>),
+              (override));
+  MOCK_METHOD(void, HideFastCheckout, (), (override));
+  MOCK_METHOD(bool, IsTouchToFillCreditCardSupported, (), (override));
+  MOCK_METHOD(bool,
+              ShowTouchToFillCreditCard,
+              (base::WeakPtr<autofill::TouchToFillDelegate>),
+              (override));
+  MOCK_METHOD(void, HideTouchToFillCreditCard, (), (override));
+  MOCK_METHOD(void,
+              ShowAutofillPopup,
+              (const PopupOpenArgs&,
+               base::WeakPtr<autofill::AutofillPopupDelegate>),
+              (override));
+  MOCK_METHOD(void,
+              UpdateAutofillPopupDataListValues,
+              (const std::vector<std::u16string>&,
+               const std::vector<std::u16string>&),
+              (override));
+  MOCK_METHOD(void, PinPopupView, (), (override));
+  MOCK_METHOD(PopupOpenArgs, GetReopenPopupArgs, (), (const, override));
+  MOCK_METHOD(base::span<const autofill::Suggestion>,
+              GetPopupSuggestions,
+              (),
+              (const, override));
+  MOCK_METHOD(void,
+              UpdatePopup,
+              (const std::vector<autofill::Suggestion>&, autofill::PopupType),
+              (override));
+  MOCK_METHOD(void,
+              HideAutofillPopup,
+              (autofill::PopupHidingReason),
+              (override));
+  MOCK_METHOD(bool, IsAutocompleteEnabled, (), (override));
+  MOCK_METHOD(bool, IsPasswordManagerEnabled, (), (override));
+  MOCK_METHOD(void,
+              PropagateAutofillPredictions,
+              (autofill::AutofillDriver*,
+               const std::vector<autofill::FormStructure*>&),
+              (override));
+  MOCK_METHOD(void,
+              DidFillOrPreviewField,
+              (const std::u16string&, const std::u16string&),
+              (override));
+  MOCK_METHOD(bool, IsContextSecure, (), (const, override));
+  MOCK_METHOD(bool, ShouldShowSigninPromo, (), (override));
+  MOCK_METHOD(bool, AreServerCardsSupported, (), (const, override));
+  MOCK_METHOD(void, ExecuteCommand, (int), (override));
+  MOCK_METHOD(autofill::LogManager*, GetLogManager, (), (const, override));
+  MOCK_METHOD(const autofill::AutofillAblationStudy&,
+              GetAblationStudy,
+              (),
+              (const, override));
+#if BUILDFLAG(IS_IOS)
+  MOCK_METHOD(bool, IsQueryIDRelevant, (int), (override));
+#endif
+  MOCK_METHOD(void,
+              LoadRiskData,
+              (base::OnceCallback<void(const std::string&)>),
+              (override));
+  MOCK_METHOD(void,
+              OpenPromoCodeOfferDetailsURL,
+              (const GURL& url),
+              (override));
 };
 
 PasswordForm GetTestAndroidCredential() {
@@ -89,6 +338,52 @@ using password_manager::UnorderedPasswordFormElementsAre;
 using testing::_;
 using testing::DoAll;
 using testing::Return;
+
+class PasswordManagerUtilTest : public testing::Test {
+ public:
+  PasswordManagerUtilTest() {
+    authenticator_ =
+        base::MakeRefCounted<device_reauth::MockBiometricAuthenticator>();
+    pref_service_.registry()->RegisterBooleanPref(
+        password_manager::prefs::kCredentialsEnableService, true);
+    pref_service_.registry()->RegisterBooleanPref(
+        password_manager::prefs::kCredentialsEnableAutosignin, true);
+#if BUILDFLAG(IS_ANDROID)
+    pref_service_.registry()->RegisterBooleanPref(
+        password_manager::prefs::kOfferToSavePasswordsEnabledGMS, true);
+    pref_service_.registry()->RegisterBooleanPref(
+        password_manager::prefs::kSavePasswordsSuspendedByError, false);
+    pref_service_.registry()->RegisterBooleanPref(
+        password_manager::prefs::kAutoSignInEnabledGMS, true);
+#endif
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+    pref_service_.registry()->RegisterBooleanPref(
+        password_manager::prefs::kBiometricAuthenticationBeforeFilling, false);
+    pref_service_.registry()->RegisterBooleanPref(
+        password_manager::prefs::kHadBiometricsAvailable, false);
+    ON_CALL(mock_client_, GetLocalStatePrefs())
+        .WillByDefault(Return(&pref_service_));
+    ON_CALL(mock_client_, GetPrefs()).WillByDefault(Return(&pref_service_));
+    ON_CALL(mock_client_, GetBiometricAuthenticator())
+        .WillByDefault(Return(authenticator_));
+    ON_CALL(*authenticator_, CanAuthenticate).WillByDefault(Return(true));
+#endif
+  }
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  void SetBiometricAuthenticationBeforeFilling(bool available) {
+    pref_service_.SetBoolean(
+        password_manager::prefs::kBiometricAuthenticationBeforeFilling,
+        available);
+  }
+#endif
+
+ protected:
+  MockPasswordManagerClient mock_client_;
+  scoped_refptr<device_reauth::MockBiometricAuthenticator> authenticator_;
+  TestingPrefServiceSimple pref_service_;
+  syncer::TestSyncService sync_service_;
+};
 
 TEST(PasswordManagerUtil, TrimUsernameOnlyCredentials) {
   std::vector<std::unique_ptr<PasswordForm>> forms;
@@ -265,8 +560,8 @@ TEST(PasswordManagerUtil, FindBestMatches) {
                   test_case.expected_best_matches_indices.find(username));
         size_t expected_index =
             test_case.expected_best_matches_indices.at(username);
-        size_t actual_index = std::distance(
-            matches.begin(), std::find(matches.begin(), matches.end(), match));
+        size_t actual_index =
+            std::distance(matches.begin(), base::ranges::find(matches, match));
         EXPECT_EQ(expected_index, actual_index);
       }
     }
@@ -316,14 +611,10 @@ TEST(PasswordManagerUtil, FindBestMatchesInProfileAndAccountStores) {
                   &best_matches, &preferred_match);
   // |profile_form1| is filtered out because it's the same as |account_form1|.
   EXPECT_EQ(best_matches.size(), 3U);
-  EXPECT_NE(std::find(best_matches.begin(), best_matches.end(), &account_form1),
-            best_matches.end());
-  EXPECT_NE(std::find(best_matches.begin(), best_matches.end(), &account_form2),
-            best_matches.end());
-  EXPECT_EQ(std::find(best_matches.begin(), best_matches.end(), &profile_form1),
-            best_matches.end());
-  EXPECT_NE(std::find(best_matches.begin(), best_matches.end(), &profile_form2),
-            best_matches.end());
+  EXPECT_TRUE(base::Contains(best_matches, &account_form1));
+  EXPECT_TRUE(base::Contains(best_matches, &account_form2));
+  EXPECT_FALSE(base::Contains(best_matches, &profile_form1));
+  EXPECT_TRUE(base::Contains(best_matches, &profile_form2));
 }
 
 TEST(PasswordManagerUtil, GetMatchForUpdating_MatchUsername) {
@@ -437,6 +728,20 @@ TEST(PasswordManagerUtil, GetMatchForUpdating_EmptyUsernamePickFirst) {
             GetMatchForUpdating(parsed, {&stored3, &stored2, &stored1}));
 }
 
+TEST(PasswordManagerUtil,
+     GetMatchForUpdating_EmptyUsernameManualInputNewPassword) {
+  PasswordForm stored = GetTestCredential();
+  stored.username_value = u"Adam";
+  stored.password_value = u"Adam_password";
+
+  PasswordForm parsed = GetTestCredential();
+  parsed.username_value.clear();
+
+  EXPECT_EQ(nullptr,
+            GetMatchForUpdating(parsed, {&stored},
+                                /* username_updated_in_bubble */ true));
+}
+
 TEST(PasswordManagerUtil, MakeNormalizedBlocklistedForm_Android) {
   PasswordForm blocklisted_credential = MakeNormalizedBlocklistedForm(
       password_manager::PasswordFormDigest(GetTestAndroidCredential()));
@@ -475,7 +780,7 @@ TEST(PasswordManagerUtil, ManualGenerationShouldNotReauthIfNotNeeded) {
   EXPECT_CALL(mock_client, TriggerReauthForPrimaryAccount).Times(0);
   EXPECT_CALL(mock_client, GeneratePassword(PasswordGenerationType::kManual));
 
-  UserTriggeredManualGenerationFromContextMenu(&mock_client);
+  UserTriggeredManualGenerationFromContextMenu(&mock_client, nullptr);
 }
 
 TEST(PasswordManagerUtil,
@@ -499,7 +804,7 @@ TEST(PasswordManagerUtil,
           });
   EXPECT_CALL(mock_client, GeneratePassword(PasswordGenerationType::kManual));
 
-  UserTriggeredManualGenerationFromContextMenu(&mock_client);
+  UserTriggeredManualGenerationFromContextMenu(&mock_client, nullptr);
 }
 
 TEST(PasswordManagerUtil,
@@ -524,7 +829,19 @@ TEST(PasswordManagerUtil,
           });
   EXPECT_CALL(mock_client, GeneratePassword).Times(0);
 
-  UserTriggeredManualGenerationFromContextMenu(&mock_client);
+  UserTriggeredManualGenerationFromContextMenu(&mock_client, nullptr);
+}
+
+TEST(PasswordManagerUtil, AvoidOverlappingAutofillMenuAndManualGeneration) {
+  password_manager::StubPasswordManagerClient stub_password_client;
+  MockAutofillClient mock_autofill_client;
+
+  EXPECT_CALL(mock_autofill_client,
+              HideAutofillPopup(autofill::PopupHidingReason::
+                                    kOverlappingWithPasswordGenerationPopup));
+
+  UserTriggeredManualGenerationFromContextMenu(&stub_password_client,
+                                               &mock_autofill_client);
 }
 
 TEST(PasswordManagerUtil, StripAuthAndParams) {
@@ -566,5 +883,80 @@ TEST(PasswordManagerUtil, GetSignonRealm) {
     EXPECT_EQ(test_case.second, GetSignonRealm(test_case.first));
   }
 }
+
+TEST(PasswordManagerUtil, CheckGpmBrandedNamingSyncing) {
+  EXPECT_TRUE(UsesPasswordManagerGoogleBranding(true));
+}
+
+TEST(PasswordManagerUtil, CheckGpmBrandedNamingNotSyncing) {
+  bool use_branding = UsesPasswordManagerGoogleBranding(false);
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  EXPECT_TRUE(use_branding);
+#else
+  EXPECT_FALSE(use_branding);
+#endif
+}
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+TEST_F(PasswordManagerUtilTest, CanUseBiometricAuth) {
+  EXPECT_CALL(*(mock_client_.GetPasswordFeatureManager()),
+              IsBiometricAuthenticationBeforeFillingEnabled)
+      .WillOnce(Return(false));
+  EXPECT_FALSE(CanUseBiometricAuth(
+      authenticator_.get(),
+      device_reauth::BiometricAuthRequester::kAutofillSuggestion,
+      &mock_client_));
+
+  EXPECT_CALL(*(mock_client_.GetPasswordFeatureManager()),
+              IsBiometricAuthenticationBeforeFillingEnabled)
+      .WillOnce(Return(true));
+  EXPECT_TRUE(CanUseBiometricAuth(
+      authenticator_.get(),
+      device_reauth::BiometricAuthRequester::kAutofillSuggestion,
+      &mock_client_));
+}
+
+TEST_F(PasswordManagerUtilTest, BiometricsUnavailable) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      password_manager::features::kBiometricAuthenticationForFilling);
+
+  SetBiometricAuthenticationBeforeFilling(/*available=*/false);
+  EXPECT_CALL(*authenticator_.get(), CanAuthenticate).WillOnce(Return(false));
+  EXPECT_FALSE(
+      ShouldShowBiometricAuthenticationBeforeFillingPromo(&mock_client_));
+}
+
+TEST_F(PasswordManagerUtilTest, BiometricForFillingFlagDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      password_manager::features::kBiometricAuthenticationForFilling);
+  SetBiometricAuthenticationBeforeFilling(/*available=*/false);
+  EXPECT_CALL(*authenticator_.get(), CanAuthenticate).WillOnce(Return(true));
+  EXPECT_FALSE(
+      ShouldShowBiometricAuthenticationBeforeFillingPromo(&mock_client_));
+}
+
+TEST_F(PasswordManagerUtilTest, BiometricForFillingEnabed) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      password_manager::features::kBiometricAuthenticationForFilling);
+  SetBiometricAuthenticationBeforeFilling(/*available=*/true);
+  EXPECT_CALL(*authenticator_.get(), CanAuthenticate).WillOnce(Return(true));
+  EXPECT_FALSE(
+      ShouldShowBiometricAuthenticationBeforeFillingPromo(&mock_client_));
+}
+
+TEST_F(PasswordManagerUtilTest, ShouldShowBiometricAuthPromo) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      password_manager::features::kBiometricAuthenticationForFilling);
+  SetBiometricAuthenticationBeforeFilling(/*available=*/false);
+  EXPECT_CALL(*authenticator_.get(), CanAuthenticate).WillOnce(Return(true));
+  EXPECT_TRUE(
+      ShouldShowBiometricAuthenticationBeforeFillingPromo(&mock_client_));
+}
+
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 }  // namespace password_manager_util

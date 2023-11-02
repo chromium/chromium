@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -140,6 +140,7 @@ ui::ImageModel CardUnmaskAuthenticationSelectionDialogControllerImpl::
   switch (challenge_option.type) {
     case CardUnmaskChallengeOptionType::kSmsOtp:
       return ui::ImageModel::FromVectorIcon(vector_icons::kSmsIcon);
+    case CardUnmaskChallengeOptionType::kCvc:
     case CardUnmaskChallengeOptionType::kUnknownType:
       NOTREACHED();
       return ui::ImageModel();
@@ -153,6 +154,7 @@ std::u16string CardUnmaskAuthenticationSelectionDialogControllerImpl::
     case CardUnmaskChallengeOptionType::kSmsOtp:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_AUTHENTICATION_MODE_TEXT_MESSAGE_LABEL);
+    case CardUnmaskChallengeOptionType::kCvc:
     case CardUnmaskChallengeOptionType::kUnknownType:
       NOTREACHED();
       return std::u16string();

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -71,23 +71,6 @@ public class BasicCardUtils {
             networksByString.put(entry.getValue(), entry.getKey());
         }
         return networksByString;
-    }
-
-    /** @return True if the merchant methodDataMap supports basic card payment method. */
-    public static boolean merchantSupportsBasicCard(Map<String, PaymentMethodData> methodDataMap) {
-        if (!PaymentFeatureList.isEnabled(PaymentFeatureList.PAYMENT_REQUEST_BASIC_CARD)) {
-            return false;
-        }
-        assert methodDataMap != null;
-        PaymentMethodData basicCardData = methodDataMap.get(MethodStrings.BASIC_CARD);
-        if (basicCardData != null) {
-            Set<String> basicCardNetworks = convertBasicCardToNetworks(basicCardData);
-            if (basicCardNetworks != null && !basicCardNetworks.isEmpty()) return true;
-        }
-
-        // Card issuer networks as payment method names was removed in Chrome 77.
-        // https://www.chromestatus.com/feature/5725727580225536
-        return false;
     }
 
     private BasicCardUtils() {}

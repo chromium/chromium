@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,7 +28,8 @@ IntentPickerView::IntentPickerView(
     : PageActionIconView(nullptr,
                          0,
                          icon_label_bubble_delegate,
-                         page_action_icon_delegate),
+                         page_action_icon_delegate,
+                         "IntentPicker"),
       browser_(browser) {}
 
 IntentPickerView::~IntentPickerView() = default;
@@ -47,7 +48,7 @@ void IntentPickerView::OnExecuting(
   DCHECK(GetShowIcon());
   content::WebContents* web_contents = GetWebContents();
   const GURL& url = chrome::GetURLToBookmark(web_contents);
-  apps::ShowIntentPickerBubble(web_contents, url);
+  apps::ShowIntentPickerOrLaunchApp(web_contents, url);
 }
 
 views::BubbleDialogDelegate* IntentPickerView::GetBubble() const {

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,10 @@ namespace crosapi {
 COMPONENT_EXPORT(CROSAPI) extern const char kLacrosAppIdPrefix[];
 
 COMPONENT_EXPORT(CROSAPI) extern const char kLacrosUserDataPath[];
+
+COMPONENT_EXPORT(CROSAPI) extern const char kSharedResourcesPackName[];
+COMPONENT_EXPORT(CROSAPI) extern const char kSharedChrome100PercentPackName[];
+COMPONENT_EXPORT(CROSAPI) extern const char kSharedChrome200PercentPackName[];
 
 COMPONENT_EXPORT(CROSAPI) extern const char kChromeOSReleaseTrack[];
 

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -86,7 +86,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) TCPServerSocket
   // Process the next Accept() from |pending_accepts_queue_|.
   void ProcessNextAccept();
 
-  Delegate* const delegate_;
+  const raw_ptr<Delegate> delegate_;
   std::unique_ptr<net::ServerSocket> socket_;
   int backlog_;
   std::vector<std::unique_ptr<PendingAccept>> pending_accepts_queue_;

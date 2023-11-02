@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -69,6 +69,12 @@ INSTANTIATE_TEST_SUITE_P(
                             /*exclude_alphanonspace=*/true,
                             /*expected_output_str=*/"^ありがと$"})));
 
+TEST(TokenizeTest, NullInputTest) {
+  const TokenizedOutput output = Tokenize(nullptr, 10, 10, true);
+
+  // Tokenize should early return and contain only the prefix and suffix tokens.
+  EXPECT_EQ(output.str, "^$");
+}
 TEST(LowercaseUnicodeTest, TestLowercaseUnicode) {
   {
     // Check that the method is a no-op when the string is lowercase.

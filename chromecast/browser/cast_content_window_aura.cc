@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include "base/memory/ptr_util.h"
 #include "chromecast/chromecast_buildflags.h"
 #include "chromecast/graphics/cast_window_manager.h"
-#include "chromecast/ui/media_control_ui.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/aura/window.h"
 #include "ui/display/display.h"
@@ -125,7 +124,6 @@ void CastContentWindowAura::CreateWindow(
 
   touch_blocker_ =
       std::make_unique<TouchBlocker>(window_, !params_->enable_touch_input);
-  media_controls_ = std::make_unique<MediaControlUi>(window_manager_);
 
   if (has_screen_access_) {
     window_->Show();
@@ -159,25 +157,12 @@ void CastContentWindowAura::EnableTouchInput(bool enabled) {
   }
 }
 
-mojom::MediaControlUi* CastContentWindowAura::media_controls() {
-  return media_controls_.get();
-}
-
 void CastContentWindowAura::RequestVisibility(
     VisibilityPriority visibility_priority) {}
 
 void CastContentWindowAura::SetActivityContext(base::Value activity_context) {}
 
 void CastContentWindowAura::SetHostContext(base::Value host_context) {}
-
-void CastContentWindowAura::NotifyVisibilityChange(
-    VisibilityType visibility_type) {
-  for (auto& observer : observers_) {
-    observer->OnVisibilityChange(visibility_type);
-  }
-}
-
-void CastContentWindowAura::RequestMoveOut() {}
 
 void CastContentWindowAura::OnWindowVisibilityChanged(aura::Window* window,
                                                       bool visible) {
@@ -200,14 +185,6 @@ void CastContentWindowAura::DidStartNavigation(
   }
   resize_window_when_navigation_starts_ = false;
   SetFullWindowBounds();
-}
-
-void CastContentWindowAura::PrimaryMainFrameWasResized(bool width_changed) {
-  if (!web_contents())
-    return;
-  if (media_controls_) {
-    media_controls_->SetBounds(web_contents()->GetContainerBounds());
-  }
 }
 
 void CastContentWindowAura::SetFullWindowBounds() {

@@ -1,14 +1,10 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
+#import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 
-#include <cstddef>
-
-#include "base/check.h"
-#include "components/metrics/metrics_provider.h"
-#import "ios/public/provider/chrome/browser/mailto/mailto_handler_provider.h"
+#import "base/check.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -36,8 +32,7 @@ ChromeBrowserProvider& GetChromeBrowserProvider() {
 
 // A dummy implementation of ChromeBrowserProvider.
 
-ChromeBrowserProvider::ChromeBrowserProvider()
-    : mailto_handler_provider_(std::make_unique<MailtoHandlerProvider>()) {}
+ChromeBrowserProvider::ChromeBrowserProvider() {}
 
 ChromeBrowserProvider::~ChromeBrowserProvider() {
   chrome_identity_service_.reset();
@@ -45,14 +40,15 @@ ChromeBrowserProvider::~ChromeBrowserProvider() {
     observer.OnChromeBrowserProviderWillBeDestroyed();
 }
 
-void ChromeBrowserProvider::AppendSwitchesFromExperimentalSettings(
-    NSUserDefaults* experimental_settings,
-    base::CommandLine* command_line) const {}
-
-void ChromeBrowserProvider::Initialize() const {}
-
 void ChromeBrowserProvider::SetChromeIdentityServiceForTesting(
     std::unique_ptr<ChromeIdentityService> service) {
+  if (service && chrome_identity_service_replaced_for_testing_) {
+    // If the service for testing has already been set, there is no need to
+    // replace it again.
+    // TODO(crbug.com/1201182): cleanup.
+    return;
+  }
+  chrome_identity_service_replaced_for_testing_ = service.get() != nullptr;
   chrome_identity_service_ = std::move(service);
   FireChromeIdentityServiceDidChange(chrome_identity_service_.get());
 }
@@ -63,39 +59,6 @@ ChromeIdentityService* ChromeBrowserProvider::GetChromeIdentityService() {
   }
   return chrome_identity_service_.get();
 }
-
-ChromeTrustedVaultService*
-ChromeBrowserProvider::GetChromeTrustedVaultService() {
-  return nullptr;
-}
-
-UITextField* ChromeBrowserProvider::CreateStyledTextField() const {
-  return nil;
-}
-
-void ChromeBrowserProvider::AttachBrowserAgents(Browser* browser) const {}
-
-id<LogoVendor> ChromeBrowserProvider::CreateLogoVendor(
-    Browser* browser,
-    web::WebState* web_state) const {
-  return nil;
-}
-
-UserFeedbackProvider* ChromeBrowserProvider::GetUserFeedbackProvider() const {
-  return nullptr;
-}
-
-DiscoverFeedProvider* ChromeBrowserProvider::GetDiscoverFeedProvider() const {
-  return nullptr;
-}
-
-MailtoHandlerProvider* ChromeBrowserProvider::GetMailtoHandlerProvider() const {
-  return mailto_handler_provider_.get();
-}
-
-void ChromeBrowserProvider::HideModalViewStack() const {}
-
-void ChromeBrowserProvider::LogIfModalViewsArePresented() const {}
 
 void ChromeBrowserProvider::AddObserver(Observer* observer) {
   observer_list_.AddObserver(observer);

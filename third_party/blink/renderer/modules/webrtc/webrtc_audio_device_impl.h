@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,9 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/threading/thread_checker.h"
+#include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webrtc/webrtc_audio_device_not_impl.h"
@@ -126,7 +126,6 @@ class MODULES_EXPORT WebRtcAudioDeviceImpl
   void RemoveAudioRenderer(blink::WebRtcAudioRenderer* renderer) override;
   void AudioRendererThreadStopped() override;
   void SetOutputDeviceForAec(const String& output_device_id) override;
-  base::UnguessableToken GetAudioProcessingId() const override;
 
   // blink::WebRtcPlayoutDataSource implementation.
   void AddPlayoutSink(blink::WebRtcPlayoutDataSource::Sink* sink) override;
@@ -144,8 +143,6 @@ class MODULES_EXPORT WebRtcAudioDeviceImpl
   THREAD_CHECKER(signaling_thread_checker_);
   THREAD_CHECKER(worker_thread_checker_);
   THREAD_CHECKER(audio_renderer_thread_checker_);
-
-  const base::UnguessableToken audio_processing_id_;
 
   // List of captures which provides access to the native audio input layer
   // in the browser process.  The last capturer in this list is considered the

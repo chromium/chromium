@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,11 +22,10 @@
 #include "net/base/network_change_notifier.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
-#include "net/cert/x509_cert_types.h"
 #include "net/cert/x509_certificate.h"
 #include "url/gurl.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 #endif
@@ -231,11 +230,6 @@ ClockState GetClockState(
   } else if (now_system > build_time + base::Days(365)) {
     build_time_state = CLOCK_STATE_FUTURE;
   }
-
-  UMA_HISTOGRAM_ENUMERATION("interstitial.ssl.clockstate.network3",
-                            network_state, NETWORK_CLOCK_STATE_MAX);
-  UMA_HISTOGRAM_ENUMERATION("interstitial.ssl.clockstate.build_time",
-                            build_time_state, CLOCK_STATE_MAX);
 
   switch (network_state) {
     case NETWORK_CLOCK_STATE_UNKNOWN_SYNC_LOST:

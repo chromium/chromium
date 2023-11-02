@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,8 @@ namespace device {
 
 class GameControllerDataFetcherMac : public GamepadDataFetcher {
  public:
-  typedef GamepadDataFetcherFactoryImpl<GameControllerDataFetcherMac,
-                                        GAMEPAD_SOURCE_MAC_GC>
-      Factory;
+  using Factory = GamepadDataFetcherFactoryImpl<GameControllerDataFetcherMac,
+                                                GamepadSource::kMacGc>;
 
   GameControllerDataFetcherMac();
   GameControllerDataFetcherMac(const GameControllerDataFetcherMac&) = delete;

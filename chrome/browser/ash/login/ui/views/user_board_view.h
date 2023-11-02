@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@
 #include "chrome/browser/ash/login/oobe_screen.h"
 // TODO(https://crbug.com/1164001): move to forward declaration
 #include "chrome/browser/ash/login/screens/user_selection_screen.h"
-#include "chromeos/components/proximity_auth/screenlock_bridge.h"
+#include "chromeos/ash/components/proximity_auth/screenlock_bridge.h"
 
 class AccountId;
 
@@ -38,7 +38,7 @@ class UserBoardView {
   virtual void SetPublicSessionDisplayName(const AccountId& account_id,
                                            const std::string& display_name) = 0;
   virtual void SetPublicSessionLocales(const AccountId& account_id,
-                                       std::unique_ptr<base::ListValue> locales,
+                                       base::Value::List locales,
                                        const std::string& default_locale,
                                        bool multiple_recommended_locales) = 0;
   virtual void SetPublicSessionShowFullManagementDisclosure(

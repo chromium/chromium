@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,16 +8,15 @@ import android.text.TextUtils;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.IntentUtils;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.attribution_reporting.AttributionIntentHandler;
-import org.chromium.chrome.browser.attribution_reporting.AttributionParameters;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabNavigationEventObserver;
 import org.chromium.chrome.browser.customtabs.CustomTabObserver;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
+import org.chromium.chrome.browser.password_manager.PasswordChangeSuccessTrackerBridge;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.embedder_support.util.UrlUtilities;
-import org.chromium.content_public.browser.AttributionReporter;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.url.GURL;
 
@@ -35,32 +34,39 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
     private final CustomTabActivityNavigationController mNavigationController;
     private final CustomTabNavigationEventObserver mNavigationEventObserver;
     private final Lazy<CustomTabObserver> mCustomTabObserver;
-    private final AttributionReporter mAttributionReporter;
-    private final AttributionIntentHandler mAttributionIntentHandler;
 
     @Inject
     public DefaultCustomTabIntentHandlingStrategy(CustomTabActivityTabProvider tabProvider,
             CustomTabActivityNavigationController navigationController,
             CustomTabNavigationEventObserver navigationEventObserver,
-            Lazy<CustomTabObserver> customTabObserver, AttributionReporter attributionReporter,
-            AttributionIntentHandler attributionIntentHandler) {
+            Lazy<CustomTabObserver> customTabObserver) {
         mTabProvider = tabProvider;
         mNavigationController = navigationController;
         mNavigationEventObserver = navigationEventObserver;
         mCustomTabObserver = customTabObserver;
-        mAttributionReporter = attributionReporter;
-        mAttributionIntentHandler = attributionIntentHandler;
     }
 
     @Override
     public void handleInitialIntent(BrowserServicesIntentDataProvider intentDataProvider) {
         @TabCreationMode
         int initialTabCreationMode = mTabProvider.getInitialTabCreationMode();
-        if (initialTabCreationMode == TabCreationMode.HIDDEN
-                || initialTabCreationMode == TabCreationMode.FROM_STARTUP_TAB_PRELOADER) {
-            handleInitialLoadForHiddedTab(initialTabCreationMode, intentDataProvider);
+        if (initialTabCreationMode == TabCreationMode.HIDDEN) {
+            handleInitialLoadForHiddenTab(initialTabCreationMode, intentDataProvider);
         } else {
             LoadUrlParams params = new LoadUrlParams(intentDataProvider.getUrlToLoad());
+
+            // If this is the start of a password change flow, notify the password change success
+            // tracker.
+            String passwordChangeUsername =
+                    IntentUtils.safeGetStringExtra(intentDataProvider.getIntent(),
+                            PasswordChangeSuccessTrackerBridge.EXTRA_MANUAL_CHANGE_USERNAME_KEY);
+            if (passwordChangeUsername != null) {
+                IntentUtils.safeRemoveExtra(intentDataProvider.getIntent(),
+                        PasswordChangeSuccessTrackerBridge.EXTRA_MANUAL_CHANGE_USERNAME_KEY);
+                PasswordChangeSuccessTrackerBridge.onManualPasswordChangeStarted(
+                        getGurlForUrl(params.getUrl()), passwordChangeUsername);
+            }
+
             mNavigationController.navigate(params, getTimestamp(intentDataProvider));
         }
     }
@@ -70,12 +76,11 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
     // https://crbug.com/783819
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public GURL getGurlForUrl(String url) {
-        // TODO(mthiesse): As this is user-provided it should be going through UrlFormatter.fixupUrl
         return new GURL(url);
     }
 
     // The hidden tab case needs a bit of special treatment.
-    private void handleInitialLoadForHiddedTab(@TabCreationMode int initialTabCreationMode,
+    private void handleInitialLoadForHiddenTab(@TabCreationMode int initialTabCreationMode,
             BrowserServicesIntentDataProvider intentDataProvider) {
         Tab tab = mTabProvider.getTab();
         if (tab == null) {
@@ -94,33 +99,15 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
 
         // No actual load to do if the hidden tab already has the exact correct url.
         String speculatedUrl = mTabProvider.getSpeculatedUrl();
-        if (TextUtils.equals(speculatedUrl, url)
-                || initialTabCreationMode == TabCreationMode.FROM_STARTUP_TAB_PRELOADER) {
-            // In the TabCreationMode.FROM_STARTUP_TAB_PRELOADER case:
-            // - CustomActivityTabProvider#getSpeculatedUrl() is not set.
-            // - The tab creation mode is only set in CustomTabActivityTabController if the URL
-            // being loaded is the one we want.
-
+        if (TextUtils.equals(speculatedUrl, url)) {
             if (tab.isLoading()) {
                 // CustomTabObserver and CustomTabActivityNavigationObserver are attached
                 // as observers in CustomTabActivityTabController, not when the navigation is
-                // initiated in HiddenTabHolder or StartupTabPreloader.
+                // initiated in HiddenTabHolder.
                 mCustomTabObserver.get().onPageLoadStarted(tab, gurl);
                 mNavigationEventObserver.onPageLoadStarted(tab, gurl);
             }
 
-            if (initialTabCreationMode == TabCreationMode.HIDDEN) {
-                AttributionParameters attributionParams =
-                        mAttributionIntentHandler.getAndClearPendingAttributionParameters(
-                                intentDataProvider.getIntent());
-                if (attributionParams != null) {
-                    mAttributionReporter.reportAttributionForCurrentNavigation(tab.getWebContents(),
-                            attributionParams.getSourcePackageName(),
-                            attributionParams.getSourceEventId(),
-                            attributionParams.getDestination(), attributionParams.getReportTo(),
-                            attributionParams.getExpiry());
-                }
-            }
             return;
         }
 
@@ -132,8 +119,6 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
                 && UrlUtilities.urlsFragmentsDiffer(speculatedUrl, url)) {
             params.setShouldReplaceCurrentEntry(true);
         }
-
-        IntentHandler.setAttributionParamsFromIntent(params, intentDataProvider.getIntent());
 
         mNavigationController.navigate(params, getTimestamp(intentDataProvider));
     }

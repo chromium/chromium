@@ -1,9 +1,12 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service_factory.h"
 
+#include "ash/constants/ash_features.h"
+#include "ash/services/multidevice_setup/public/cpp/prefs.h"
+#include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "base/command_line.h"
 #include "base/memory/singleton.h"
 #include "build/build_config.h"
@@ -18,8 +21,6 @@
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_switches.h"
-#include "chromeos/services/multidevice_setup/public/cpp/prefs.h"
-#include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "extensions/browser/extension_system.h"
@@ -31,7 +32,7 @@ namespace {
 
 bool IsFeatureAllowed(content::BrowserContext* context) {
   return multidevice_setup::IsFeatureAllowed(
-      chromeos::multidevice_setup::mojom::Feature::kSmartLock,
+      multidevice_setup::mojom::Feature::kSmartLock,
       Profile::FromBrowserContext(context)->GetPrefs());
 }
 
@@ -73,27 +74,45 @@ KeyedService* EasyUnlockServiceFactory::BuildServiceInstanceFor(
   if (!IsFeatureAllowed(context))
     return nullptr;
 
-  if (ProfileHelper::IsSigninProfile(Profile::FromBrowserContext(context))) {
+  Profile* profile = Profile::FromBrowserContext(context);
+
+  // TODO(b/227674947): When Sign in with Smart Lock is deprecated, remove the
+  // check for ProfileHelper::IsSigninProfile() and do not instantiate
+  // EasyUnlockServiceSignin here.
+  // The SigninProfile is a special Profile used at the login screen.
+  if (ProfileHelper::IsSigninProfile(profile)) {
+    if (base::FeatureList::IsEnabled(ash::features::kSmartLockSignInRemoved))
+      return nullptr;
+
     if (!context->IsOffTheRecord())
       return nullptr;
 
+    // There is only one "on the record" SigninProfile instantiated during the
+    // login screen's lifetime, regardless of how many users have previously
+    // signed into this device. This means only one EasyUnlockServiceSignin is
+    // instantiated. This single EasyUnlockServiceSignin instance manages the
+    // Smart Lock user flow for all user pods on the login screen.
     service = new EasyUnlockServiceSignin(
-        Profile::FromBrowserContext(context),
+        profile,
         secure_channel::SecureChannelClientProvider::GetInstance()
             ->GetClient());
-  } else if (!ProfileHelper::IsRegularProfile(
-                 Profile::FromBrowserContext(context))) {
+  } else if (!ProfileHelper::IsRegularProfile(profile) ||
+             !ProfileHelper::IsPrimaryProfile(profile)) {
     return nullptr;
   }
 
   if (!service) {
+    // This is otherwise a "regular" Profile, i.e., a signed-in user (and
+    // therefore this service will be serving the lock screen, not the login
+    // screen). In contrast to EasyUnlockServiceSignin, an
+    // EasyUnlockServiceRegular instance manages the Smart Lock user flow for
+    // only one user.
     service = new EasyUnlockServiceRegular(
         Profile::FromBrowserContext(context),
         secure_channel::SecureChannelClientProvider::GetInstance()->GetClient(),
-        device_sync::DeviceSyncClientFactory::GetForProfile(
-            Profile::FromBrowserContext(context)),
+        device_sync::DeviceSyncClientFactory::GetForProfile(profile),
         multidevice_setup::MultiDeviceSetupClientFactory::GetForProfile(
-            Profile::FromBrowserContext(context)));
+            profile));
   }
 
   service->Initialize();

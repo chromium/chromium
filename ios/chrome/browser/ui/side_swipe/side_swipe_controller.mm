@@ -1,17 +1,17 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/side_swipe/side_swipe_controller.h"
 
-#include <memory>
+#import <memory>
 
-#include "base/feature_list.h"
+#import "base/feature_list.h"
 #import "base/ios/block_types.h"
-#include "base/scoped_observation.h"
+#import "base/scoped_observation.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/main/browser.h"
-#include "ios/chrome/browser/main/browser_observer.h"
+#import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/main/browser_observer.h"
 #import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
 #import "ios/chrome/browser/snapshots/snapshot_cache.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
@@ -23,17 +23,15 @@
 #import "ios/chrome/browser/ui/side_swipe/side_swipe_navigation_view.h"
 #import "ios/chrome/browser/ui/side_swipe/side_swipe_util.h"
 #import "ios/chrome/browser/ui/tabs/requirements/tab_strip_highlighting.h"
-#include "ios/chrome/browser/ui/toolbar/public/side_swipe_toolbar_interacting.h"
 #import "ios/chrome/browser/ui/toolbar/public/side_swipe_toolbar_interacting.h"
 #import "ios/chrome/browser/web/page_placeholder_tab_helper.h"
-#import "ios/chrome/browser/web/tab_id_tab_helper.h"
 #import "ios/chrome/browser/web/web_navigation_util.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/public/web_state_observer_bridge.h"
-#include "ui/base/device_form_factor.h"
+#import "ui/base/device_form_factor.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -65,7 +63,7 @@ const NSUInteger kIpadGreySwipeTabCount = 8;
                                    WebStateListObserving> {
  @private
 
-  // Zeroes out |_browser| when it is destroyed.
+  // Zeroes out `_browser` when it is destroyed.
   std::unique_ptr<SideSwipeControllerBrowserRemover> _browserRemover;
 
   // Side swipe view for tab navigation.
@@ -123,8 +121,8 @@ const NSUInteger kIpadGreySwipeTabCount = 8;
 // The webStateList owned by the current browser.
 @property(nonatomic, readonly) WebStateList* webStateList;
 
-// Load grey snapshots for the next |kIpadGreySwipeTabCount| tabs in
-// |direction|.
+// Load grey snapshots for the next `kIpadGreySwipeTabCount` tabs in
+// `direction`.
 - (void)createGreyCache:(UISwipeGestureRecognizerDirection)direction;
 // Tell snapshot cache to clear grey cache.
 - (void)deleteGreyCache;
@@ -133,15 +131,15 @@ const NSUInteger kIpadGreySwipeTabCount = 8;
 // Handle tab side swipe for iPhone. Introduces a CardSideSwipeView to convey
 // the tab change.
 - (void)handleiPhoneTabSwipe:(SideSwipeGestureRecognizer*)gesture;
-// Overlays |curtain_| as a white view to hide the web view while it updates.
-// Calls |completionHandler| when the curtain is removed.
+// Overlays `curtain_` as a white view to hide the web view while it updates.
+// Calls `completionHandler` when the curtain is removed.
 - (void)addCurtainWithCompletionHandler:(ProceduralBlock)completionHandler;
-// Removes the |curtain_| and calls |completionHandler| when the curtain is
+// Removes the `curtain_` and calls `completionHandler` when the curtain is
 // removed.
 - (void)dismissCurtainWithCompletionHandler:(ProceduralBlock)completionHandler;
 
-// Removes the |curtain_| if there was an active swipe, and resets
-// |inSwipe_| value.
+// Removes the `curtain_` if there was an active swipe, and resets
+// `inSwipe_` value.
 - (void)dismissCurtain;
 // Cleans up Browser, WebStateList, and WebState references in the instance of a
 // BrowserDestroyed BrowserObserver call.
@@ -294,7 +292,7 @@ class SideSwipeControllerBrowserRemover : public BrowserObserver {
   return NO;
 }
 
-// Gestures should only be recognized within |contentArea_| or the toolbar.
+// Gestures should only be recognized within `contentArea_` or the toolbar.
 - (BOOL)gestureRecognizerShouldBegin:(SideSwipeGestureRecognizer*)gesture {
   if (_inSwipe) {
     return NO;
@@ -316,7 +314,7 @@ class SideSwipeControllerBrowserRemover : public BrowserObserver {
     return [_swipeDelegate canBeginToolbarSwipe];
   }
 
-  // Otherwise, only allow contentView touches with |swipeGestureRecognizer_|.
+  // Otherwise, only allow contentView touches with `swipeGestureRecognizer_`.
   // The content view frame is inset by -1 because CGRectContainsPoint does
   // include points on the max X and Y edges, which will happen frequently with
   // edge swipes from the right side.
@@ -361,7 +359,7 @@ class SideSwipeControllerBrowserRemover : public BrowserObserver {
     web::WebState* webState = self.webStateList->GetWebStateAt(index);
     if (webState && PagePlaceholderTabHelper::FromWebState(webState)
                         ->will_add_placeholder_for_next_navigation()) {
-      [sessionIDs addObject:TabIdTabHelper::FromWebState(webState)->tab_id()];
+      [sessionIDs addObject:webState->GetStableIdentifier()];
     }
     index = index + dx;
   }
@@ -375,6 +373,9 @@ class SideSwipeControllerBrowserRemover : public BrowserObserver {
 }
 
 - (void)handlePan:(SideSwipeGestureRecognizer*)gesture {
+  // Do not trigger a CheckForOverRealization here, as it's expected
+  // that many WebStates may realize from multiple swipes.
+  web::IgnoreOverRealizationCheck();
   if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
     return [self handleiPhoneTabSwipe:gesture];
   } else {
@@ -418,7 +419,7 @@ class SideSwipeControllerBrowserRemover : public BrowserObserver {
   } else if (gesture.state == UIGestureRecognizerStateChanged) {
     // Side swipe for iPad involves changing the selected tab as the swipe moves
     // across the width of the view.  The screen is broken up into
-    // |kIpadTabSwipeDistance| / |width| segments, with the current tab in the
+    // `kIpadTabSwipeDistance` / `width` segments, with the current tab in the
     // first section.  The swipe does not wrap edges.
     CGFloat distance = [gesture locationInView:gesture.view].x;
     if (gesture.direction == UISwipeGestureRecognizerDirectionLeft) {

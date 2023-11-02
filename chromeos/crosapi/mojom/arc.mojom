@@ -1,0 +1,224 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+import "ui/gfx/image/mojom/image.mojom";
+
+// These interfaces let Lacros-chrome handle ARC's right click and smart
+// selection.
+// TODO(crbug.com/1268687): It should be migrated to AppService in the future.
+
+// The status in ash-chrome side. Return with the result.
+[Stable, Extensible]
+enum RequestActivityIconsStatus {
+  // Connection established successfully in ash-chrome.
+  kSuccess,
+
+  // Ended with error to connect to ARC in ash-chrome.
+  [Default] kArcNotAvailable,
+};
+
+[Stable, Extensible]
+enum RequestTextSelectionActionsStatus {
+  // Connection established successfully in ash-chrome.
+  kSuccess,
+
+  // Ended with error to connect to ARC in ash-chrome.
+  [Default] kArcNotAvailable,
+};
+
+[Stable, Extensible]
+enum RequestUrlHandlerListStatus {
+  // Connection established successfully in ash-chrome.
+  kSuccess,
+
+  // Ended with error to connect to ARC in ash-chrome.
+  [Default]kArcNotAvailable,
+};
+
+[Stable, Extensible]
+enum IsInstallableResult {
+  // The app is available for installation in ARC.
+  kInstallable,
+
+  // The app is not available for installation in ARC or is already installed.
+  kNotInstallable,
+
+  // ARC is not running (e.g. disabled).
+  kArcIsNotRunning,
+
+  // ARC mojo API version is too low.
+  kArcIsTooOld,
+};
+
+// This struct reflects components/arc/mojom/intent_common.mojom.
+// Describes an activity.
+[Stable]
+struct ActivityName {
+  string package_name@0;
+
+  // may be null to indicate any activity within package
+  string? activity_name@1;
+};
+
+// This struct reflects components/arc/mojom/app.mojom
+// Describes the raw icon png data published by an Android application.
+[Stable]
+struct RawIconPngData {
+  // True if the icon is an adaptive icon, or false otherwise.
+  bool is_adaptive_icon@0;
+  // The raw icon for the non-adaptive icon, or the generated standard icon done
+  // by the ARC side for the adaptive icon.
+  array<uint8>? icon_png_data@1;
+  // The foreground image for the adaptive icon.
+  array<uint8>? foreground_icon_png_data@2;
+  // The background image for the adaptive icon.
+  array<uint8>? background_icon_png_data@3;
+};
+
+// This struct reflects components/arc/mojom/scale_factor.mojom.
+// Duplicates ui::ResourceScaleFactor enum in order to be accessible on
+// Lacros side.
+[Stable, Extensible]
+enum ScaleFactor {
+  // Some numbers are missing because we removed deprecated values.
+  SCALE_FACTOR_NONE = 0,
+  SCALE_FACTOR_100P = 1,
+  SCALE_FACTOR_200P = 7,
+  SCALE_FACTOR_300P = 9,
+};
+
+// This struct reflects components/arc/mojom/intent_helper.mojom
+// Describes an icon for the activity.
+[Stable]
+struct ActivityIcon {
+  ActivityName activity@0;
+  uint32 width@1;  // in px
+  uint32 height@2;  // in px
+  array<uint8> icon@3;  // in BGRA8888 format
+  RawIconPngData? icon_png_data@4;
+};
+
+// Describes a package that can handle an intent.
+// Removed unnecessary perameters for Lacros from IntentHandlerInfo declared in
+// components/arc/mojom/intent_helper.mojom.
+// Next version: 2
+[Stable]
+struct IntentHandlerInfo {
+  string name@0;
+  string package_name@1;
+  string activity_name@2;  // A hint for retrieving the package's icon.
+  [MinVersion=1] bool is_preferred@3;
+  [MinVersion=1] string? fallback_url@4;
+};
+
+// Describes an action that can handle an intent.
+// Removed unnecessary parameters: |clip_data_uri| and |uri_components| for
+// Lacros from IntentInfo declared in components/arc/mojom/intent_helper.mojom.
+[Stable]
+struct IntentInfo {
+  string action@0;
+  array<string>? categories@1;
+  string? data@2;  // URI
+  string? type@3;  // explicit MIME type for data
+  bool ui_bypassed@4; // Whether or not the user saw the UI.
+
+  // Optional string extras. These are the key-value pairs stored in android
+  // intents to carry additional data. See:
+  // https://developer.android.com/reference/android/content/Intent#putExtra(java.lang.String,%20java.lang.String)
+  map<string, string>? extras@5;
+};
+
+// Describe an action given by the android text selection delegate (e.g. open
+// maps).
+[Stable]
+struct TextSelectionAction {
+  // App ID of the package.
+  // This parameter is not set in arc::mojom::TextSelectionAction, but required
+  // in Lacros since Lacros cannot get app id from ActivityName.
+  string app_id@0;
+
+  // Icon of the package.
+  // This parameter is different from arc::mojom::TextSelectionAction.icon.
+  // Generate ImageSkia icon from RawIconPngData in ash-chrome, and send it to
+  // lacros-chrome as a ImageSkia.
+  gfx.mojom.ImageSkia icon@1;
+
+  // The activity and package name of the component that handle the intent.
+  ActivityName activity@2;
+
+  // The title of the action that will be shown in the UI, e.g. "Map", "Call",
+  // "Open".
+  string title@3;
+
+  // The intent to launch when the action is clicked.
+  IntentInfo action_intent@4;
+};
+
+// Observe ARC.
+// Next version: 1
+// Next method id: 1
+[Stable, Uuid="e0993657-e667-408c-9950-e08480fd8013"]
+interface ArcObserver {
+  // Notified when ARC does so via arc::mojom::IntentHelperHost.
+  OnIconInvalidated@0(string package_name);
+};
+
+// Interacts with ARC.
+// Next version: 5
+// Next method id: 8
+[Stable, Uuid="a39a22dd-2f5c-4c99-b0ea-d83d5b1c987f"]
+interface Arc {
+  // Registers ArcObserver in Lacros-chrome to Ash-chrome
+  AddObserver@0(pending_remote<ArcObserver> observer);
+
+  // Requests 48dp * 48dp icons for the |activities| suitable for the
+  // |scale_factor| from Lacros-chrome to Ash-chrome. Ash-chrome will request
+  // icons to ARC and send back the result attained from ARC.
+  // An array of icon data and ARC connection status will be returned.
+  // If ash-chrome succeeded to access to ARC, return icon array with kSuccess.
+  // If not, return empty array with other status.
+  RequestActivityIcons@1(array<ActivityName> activities,
+                         ScaleFactor scale_factor)
+      => (array<ActivityIcon> icons,
+          [MinVersion=2] RequestActivityIconsStatus status);
+
+  // Requests a list of packages that can handle the URL from Lacros-chrome to
+  // Ash-chrome. Ash-chrome will request a handler list to ARC and send back
+  // the result attained from ARC.
+  // An array of IntentHandlerInfo will be returned.
+  // If ash-chrome succeeded to access to ARC, return handler list with
+  // kSuccess. If not, return empty list with other status.
+  RequestUrlHandlerList@2(string url)
+      => (array<IntentHandlerInfo> handlers,
+          [MinVersion=2] RequestUrlHandlerListStatus status);
+
+  // Request generated actions that can handle |text| from Lacros-chrome to
+  // Ash-chrome. Ash-chrome will request acions to ARC and send back the result
+  // attained from ARC with generating Skia icons.
+  // An arrya of TextSelectionAction will be returned.
+  [MinVersion=2] RequestTextSelectionActions@4(string text,
+                                               ScaleFactor scale_factor)
+      => (RequestTextSelectionActionsStatus status,
+          array<TextSelectionAction> actionos);
+
+  // Handles the URL by sending an ACTION_VIEW intent to the package. The
+  // most suitable activity for the URL within the package will be started.
+  [MinVersion=1] HandleUrl@3(string url, string package_name);
+
+  // Passes an intent to an activity and launch app.
+  [MinVersion=3] HandleIntent@5(IntentInfo intent, ActivityName activity);
+
+  // Sets the given package as a preferred package. The next time an ACTION_VIEW
+  // intent is sent with a URL that requires disambiguation, instead of opening
+  // the ResolverActivity, this package will be picked if it is on the list.
+  // When multiple packages are set as preferred, the most recent setting wins.
+  [MinVersion=3] AddPreferredPackage@6(string package_name);
+
+  // Checks if the |package_name| is available for installation.
+  // See |arc.mojom.AppInstance.IsInstallable|.
+  [MinVersion=4] IsInstallable@7(string package_name) =>
+      (IsInstallableResult result);
+};

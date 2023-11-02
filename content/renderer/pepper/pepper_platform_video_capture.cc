@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -53,7 +53,8 @@ void PepperPlatformVideoCapture::StartCapture(
                                 weak_factory_.GetWeakPtr())),
                             media::BindToCurrentLoop(base::BindRepeating(
                                 &PepperPlatformVideoCapture::OnFrameReady,
-                                weak_factory_.GetWeakPtr())));
+                                weak_factory_.GetWeakPtr())),
+                            /*crop_version_cb=*/base::DoNothing());
 }
 
 void PepperPlatformVideoCapture::StopCapture() {

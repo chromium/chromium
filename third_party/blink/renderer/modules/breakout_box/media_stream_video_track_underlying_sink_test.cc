@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
@@ -18,6 +19,7 @@
 #include "third_party/blink/renderer/modules/breakout_box/pushable_media_stream_video_source.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_sink.h"
+#include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
@@ -29,13 +31,13 @@ namespace blink {
 class MediaStreamVideoTrackUnderlyingSinkTest : public testing::Test {
  public:
   MediaStreamVideoTrackUnderlyingSinkTest() {
-    pushable_video_source_ = new PushableMediaStreamVideoSource(
-        scheduler::GetSingleThreadTaskRunnerForTesting());
+    auto pushable_video_source =
+        std::make_unique<PushableMediaStreamVideoSource>(
+            scheduler::GetSingleThreadTaskRunnerForTesting());
+    pushable_video_source_ = pushable_video_source.get();
     media_stream_source_ = MakeGarbageCollected<MediaStreamSource>(
         "dummy_source_id", MediaStreamSource::kTypeVideo, "dummy_source_name",
-        /*remote=*/false);
-    media_stream_source_->SetPlatformSource(
-        base::WrapUnique(pushable_video_source_));
+        /*remote=*/false, std::move(pushable_video_source));
   }
 
   ~MediaStreamVideoTrackUnderlyingSinkTest() override {
@@ -65,8 +67,8 @@ class MediaStreamVideoTrackUnderlyingSinkTest : public testing::Test {
     if (video_frame_out)
       *video_frame_out = video_frame;
     return ScriptValue(script_state->GetIsolate(),
-                       ToV8(video_frame, script_state->GetContext()->Global(),
-                            script_state->GetIsolate()));
+                       ToV8Traits<VideoFrame>::ToV8(script_state, video_frame)
+                           .ToLocalChecked());
   }
 
  protected:

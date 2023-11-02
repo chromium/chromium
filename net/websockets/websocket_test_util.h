@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,12 +12,11 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "net/http/http_basic_state.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_stream_parser.h"
 #include "net/socket/client_socket_handle.h"
-#include "net/third_party/quiche/src/spdy/core/spdy_header_block.h"
+#include "net/third_party/quiche/src/quiche/spdy/core/http2_header_block.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request_test_util.h"
 #include "net/websockets/websocket_handshake_stream_create_helper.h"
@@ -34,7 +33,6 @@ using WebSocketExtraHeaders = std::vector<std::pair<std::string, std::string>>;
 
 class MockClientSocketFactory;
 class WebSocketBasicHandshakeStream;
-class ProxyResolutionService;
 class SequencedSocketData;
 class IPEndPoint;
 struct SSLSocketDataProvider;
@@ -56,25 +54,24 @@ HttpRequestHeaders WebSocketExtraHeadersToHttpRequestHeaders(
     const WebSocketExtraHeaders& headers);
 
 // Generates a standard WebSocket handshake request. The challenge key used is
-// "dGhlIHNhbXBsZSBub25jZQ==". Each header in |extra_headers| must be terminated
-// with "\r\n".
+// "dGhlIHNhbXBsZSBub25jZQ==".
 std::string WebSocketStandardRequest(
     const std::string& path,
     const std::string& host,
     const url::Origin& origin,
-    const std::string& send_additional_request_headers,
-    const std::string& extra_headers);
+    const WebSocketExtraHeaders& send_additional_request_headers,
+    const WebSocketExtraHeaders& extra_headers);
 
 // Generates a standard WebSocket handshake request. The challenge key used is
 // "dGhlIHNhbXBsZSBub25jZQ==". |cookies| must be empty or terminated with
-// "\r\n". Each header in |extra_headers| must be terminated with "\r\n".
+// "\r\n".
 std::string WebSocketStandardRequestWithCookies(
     const std::string& path,
     const std::string& host,
     const url::Origin& origin,
-    const std::string& cookies,
-    const std::string& send_additional_request_headers,
-    const std::string& extra_headers);
+    const WebSocketExtraHeaders& cookies,
+    const WebSocketExtraHeaders& send_additional_request_headers,
+    const WebSocketExtraHeaders& extra_headers);
 
 // A response with the appropriate accept header to match the above
 // challenge key. Each header in |extra_headers| must be terminated with
@@ -141,7 +138,7 @@ class WebSocketMockClientSocketFactoryMaker {
 };
 
 // This class encapsulates the details of creating a
-// TestURLRequestContext that returns mock ClientSocketHandles that do what is
+// URLRequestContext that returns mock ClientSocketHandles that do what is
 // required by the tests.
 struct WebSocketTestURLRequestContextHost {
  public:
@@ -173,18 +170,20 @@ struct WebSocketTestURLRequestContextHost {
 
   // Call after calling one of SetExpections() or AddRawExpectations(). The
   // returned pointer remains owned by this object.
-  TestURLRequestContext* GetURLRequestContext();
+  URLRequestContext* GetURLRequestContext();
 
   const TestNetworkDelegate& network_delegate() const {
-    return network_delegate_;
+    // This is safe because we set a TestNetworkDelegate on
+    // `url_request_context_` creation.
+    return *static_cast<TestNetworkDelegate*>(
+        url_request_context_->network_delegate());
   }
 
  private:
   WebSocketMockClientSocketFactoryMaker maker_;
-  TestURLRequestContext url_request_context_;
+  std::unique_ptr<URLRequestContextBuilder> url_request_context_builder_;
+  std::unique_ptr<URLRequestContext> url_request_context_;
   TestNetworkDelegate network_delegate_;
-  std::unique_ptr<ProxyResolutionService> proxy_resolution_service_;
-  bool url_request_context_initialized_;
 };
 
 // WebSocketStream::ConnectDelegate implementation that does nothing.

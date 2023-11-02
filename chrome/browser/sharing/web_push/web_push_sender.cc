@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,14 +8,13 @@
 
 #include "base/base64url.h"
 #include "base/bind.h"
-#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/sharing/web_push/json_web_token_util.h"
 #include "components/gcm_driver/crypto/p256_key_util.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
-#include "services/network/public/cpp/cors/cors.h"
+#include "services/network/public/cpp/header_util.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -222,7 +221,7 @@ void WebPushSender::OnMessageSent(
     return;
   }
 
-  if (!network::cors::IsOkStatus(response_code)) {
+  if (!network::IsSuccessfulStatus(response_code)) {
     DLOG(ERROR) << "HTTP Error: " << response_code;
     InvokeWebPushCallback(std::move(callback),
                           SendWebPushMessageResult::kServerError);

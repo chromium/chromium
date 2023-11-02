@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,6 +21,10 @@
 + (void)mockReauthenticationModuleExpectedResult:
     (ReauthenticationResult)expectedResult;
 + (void)mockReauthenticationModuleCanAttempt:(BOOL)canAttempt;
+
+// Similar to the methods above, but with a companion to remove the override.
++ (void)setUpMockReauthenticationModuleForExportFromSettings;
++ (void)removeMockReauthenticationModuleForExportFromSettings;
 
 // Dismisses snack bar.  Used before next test.
 + (void)dismissSnackBar;
@@ -53,7 +57,7 @@
 // Gets number of password form stored.
 + (NSInteger)passwordStoreResultsCount;
 
-// Returns YES is crdential service is enabled.
+// Returns YES if credential service is enabled.
 + (BOOL)isCredentialsServiceEnabled;
 
 @end

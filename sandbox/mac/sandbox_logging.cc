@@ -1,11 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "sandbox/mac/sandbox_logging.h"
 
-#include <asl.h>
 #include <errno.h>
+#include <os/log.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
@@ -36,73 +36,40 @@ extern "C" {
 void abort_report_np(const char*, ...);
 }
 
-namespace sandbox {
-
-namespace logging {
+namespace sandbox::logging {
 
 namespace {
 
 enum class Level { FATAL, ERR, WARN, INFO };
 
-void SendAslLog(Level level, const char* message) {
-  class ASLClient {
+void SendOsLog(Level level, const char* message) {
+  const class OSLog {
    public:
-    explicit ASLClient()
-        : client_(asl_open(nullptr,
-                           "com.apple.console",
-                           ASL_OPT_STDERR | ASL_OPT_NO_DELAY)) {}
-    ~ASLClient() { asl_close(client_); }
-
-    aslclient get() const { return client_; }
-
-    ASLClient(const ASLClient&) = delete;
-    ASLClient& operator=(const ASLClient&) = delete;
+    explicit OSLog()
+        : os_log_(os_log_create("org.chromium.sandbox", "chromium_logging")) {}
+    OSLog(const OSLog&) = delete;
+    OSLog& operator=(const OSLog&) = delete;
+    ~OSLog() { os_release(os_log_); }
+    os_log_t get() const { return os_log_; }
 
    private:
-    aslclient client_;
-  } asl_client;
+    os_log_t os_log_;
+  } log;
 
-  class ASLMessage {
-   public:
-    ASLMessage() : message_(asl_new(ASL_TYPE_MSG)) {}
-    ~ASLMessage() { asl_free(message_); }
+  const os_log_type_t os_log_type = [](Level level) {
+    switch (level) {
+      case Level::FATAL:
+        return OS_LOG_TYPE_FAULT;
+      case Level::ERR:
+        return OS_LOG_TYPE_ERROR;
+      case Level::WARN:
+        return OS_LOG_TYPE_DEFAULT;
+      case Level::INFO:
+        return OS_LOG_TYPE_INFO;
+    }
+  }(level);
 
-    aslmsg get() const { return message_; }
-
-    ASLMessage(const ASLMessage&) = delete;
-    ASLMessage& operator=(const ASLMessage&) = delete;
-
-   private:
-    aslmsg message_;
-  } asl_message;
-
-  // By default, messages are only readable by the admin group. Explicitly
-  // make them readable by the user generating the messages.
-  char euid_string[12];
-  snprintf(euid_string, sizeof(euid_string) / sizeof(euid_string[0]), "%d",
-           geteuid());
-  asl_set(asl_message.get(), ASL_KEY_READ_UID, euid_string);
-
-  std::string asl_level_string;
-  switch (level) {
-    case Level::FATAL:
-      asl_level_string = ASL_STRING_CRIT;
-      break;
-    case Level::ERR:
-      asl_level_string = ASL_STRING_ERR;
-      break;
-    case Level::WARN:
-      asl_level_string = ASL_STRING_WARNING;
-      break;
-    case Level::INFO:
-    default:
-      asl_level_string = ASL_STRING_INFO;
-      break;
-  }
-
-  asl_set(asl_message.get(), ASL_KEY_LEVEL, asl_level_string.c_str());
-  asl_set(asl_message.get(), ASL_KEY_MSG, message);
-  asl_send(asl_client.get(), asl_message.get());
+  os_log_with_type(log.get(), os_log_type, "%{public}s", message);
 
   if (level == Level::FATAL) {
     abort_report_np(message);
@@ -119,7 +86,7 @@ void DoLogging(Level level,
   int ret = vsnprintf(message, sizeof(message), fmt, args);
 
   if (ret < 0) {
-    SendAslLog(level, "warning: log message could not be formatted");
+    SendOsLog(level, "warning: log message could not be formatted");
     return;
   }
 
@@ -130,10 +97,11 @@ void DoLogging(Level level,
   if (error)
     final_message += ": " + *error;
 
-  SendAslLog(level, final_message.c_str());
+  SendOsLog(level, final_message.c_str());
 
-  if (truncated)
-    SendAslLog(level, "warning: previous log message truncated");
+  if (truncated) {
+    SendOsLog(level, "warning: previous log message truncated");
+  }
 }
 
 }  // namespace
@@ -186,6 +154,4 @@ void PFatal(const char* fmt, ...) {
   ABORT();
 }
 
-}  // namespace logging
-
-}  // namespace sandbox
+}  // namespace sandbox::logging

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -83,7 +83,7 @@ class ResultLayer : public ui::Layer, public ui::LayerDelegate {
 ResultLayer::ResultLayer(const gfx::Rect& box) {
   SetName("HighlighterResultView:ResultLayer");
   gfx::Rect bounds = box;
-  bounds.Inset(-kResultLayerMargin, -kResultLayerMargin);
+  bounds.Inset(-kResultLayerMargin);
   SetBounds(bounds);
   SetFillsBoundsOpaquely(false);
   SetMasksToBounds(false);

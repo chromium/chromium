@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -64,10 +64,10 @@ TestElfImageBuilder& TestElfImageBuilder::AddNoteSegment(
     StringPiece name,
     span<const uint8_t> desc) {
   const size_t name_with_null_size = name.size() + 1;
-  std::vector<uint8_t> buffer(sizeof(Nhdr) +
-                                  bits::AlignUp(name_with_null_size, 4) +
-                                  bits::AlignUp(desc.size(), 4),
-                              '\0');
+  std::vector<uint8_t> buffer(
+      sizeof(Nhdr) + bits::AlignUp(name_with_null_size, size_t{4}) +
+          bits::AlignUp(desc.size(), size_t{4}),
+      '\0');
   uint8_t* loc = &buffer.front();
   Nhdr* nhdr = reinterpret_cast<Nhdr*>(loc);
   nhdr->n_namesz = name_with_null_size;
@@ -77,10 +77,10 @@ TestElfImageBuilder& TestElfImageBuilder::AddNoteSegment(
 
   memcpy(loc, name.data(), name.size());
   *(loc + name.size()) = '\0';
-  loc += bits::AlignUp(name_with_null_size, 4);
+  loc += bits::AlignUp(name_with_null_size, size_t{4});
 
   memcpy(loc, &desc.front(), desc.size());
-  loc += bits::AlignUp(desc.size(), 4);
+  loc += bits::AlignUp(desc.size(), size_t{4});
 
   DCHECK_EQ(&buffer.front() + buffer.size(), loc);
 
@@ -256,7 +256,7 @@ TestElfImage TestElfImageBuilder::Build() {
 
   Dyn* strtab_dyn = reinterpret_cast<Dyn*>(loc);
   strtab_dyn->d_tag = DT_STRTAB;
-#if defined(OS_FUCHSIA) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_ANDROID)
   // Fuchsia and Android do not alter the symtab pointer on ELF load -- it's
   // expected to remain a 'virutal address'.
   strtab_dyn->d_un.d_ptr =

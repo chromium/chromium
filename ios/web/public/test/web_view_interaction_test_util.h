@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,15 +27,15 @@ std::unique_ptr<base::Value> ExecuteJavaScript(web::WebState* web_state,
                                                const std::string& script);
 
 // Synchronously returns the result of the executed JavaScript function by
-// calling |function| with |parameters| in web_state's main frame.
+// calling `function` with `parameters` in web_state's main frame.
 std::unique_ptr<base::Value> CallJavaScriptFunction(
     web::WebState* web_state,
     const std::string& function,
     const std::vector<base::Value>& parameters);
 
 // Synchronously returns the result of the executed JavaScript function by
-// calling |function| with |parameters| in web_state's main frame in the
-// content world associated with |feature|. If |feature| is null, the function
+// calling `function` with `parameters` in web_state's main frame in the
+// content world associated with `feature`. If `feature` is null, the function
 // will be executed in the page content world.
 std::unique_ptr<base::Value> CallJavaScriptFunctionForFeature(
     web::WebState* web_state,
@@ -44,41 +44,41 @@ std::unique_ptr<base::Value> CallJavaScriptFunctionForFeature(
     JavaScriptFeature* feature);
 
 // Returns the CGRect, in the coordinate system of web_state's view, that
-// encloses the element returned by |selector| in |web_state|'s webview.
+// encloses the element returned by `selector` in `web_state`'s webview.
 // There is no guarantee that the CGRect returned is inside the current window;
 // callers should check and act accordingly (scrolling the webview, perhaps).
 // Returns CGRectNull if no element could be found.
 CGRect GetBoundingRectOfElement(web::WebState* web_state,
                                 ElementSelector* selector);
 
-// Returns whether the element with |element_id| in the passed |web_state| has
+// Returns whether the element with `element_id` in the passed `web_state` has
 // been tapped using a JavaScript click() event.
 bool TapWebViewElementWithId(web::WebState* web_state,
                              const std::string& element_id);
 
-// Returns whether the element with |element_id| in the passed |web_state| has
-// been tapped using a JavaScript click() event. |error| can be nil.
+// Returns whether the element with `element_id` in the passed `web_state` has
+// been tapped using a JavaScript click() event. `error` can be nil.
 bool TapWebViewElementWithId(web::WebState* web_state,
                              const std::string& element_id,
                              NSError* __autoreleasing* error);
 
-// Looks for an element with |element_id| within window.frames[0] in the passed
-// |web_state|. Returns whether this element has been tapped using a JavaScript
+// Looks for an element with `element_id` within window.frames[0] in the passed
+// `web_state`. Returns whether this element has been tapped using a JavaScript
 // click() event. This only works on same-origin iframes.
 bool TapWebViewElementWithIdInIframe(web::WebState* web_state,
                                      const std::string& element_id);
 
-// Returns whether the element with |element_id| in the passed |web_state| has
+// Returns whether the element with `element_id` in the passed `web_state` has
 // been focused using a JavaScript focus() event.
 bool FocusWebViewElementWithId(web::WebState* web_state,
                                const std::string& element_id);
 
-// Returns whether the form with |form_id| in the passed |web_state| has been
+// Returns whether the form with `form_id` in the passed `web_state` has been
 // submitted using a JavaScript submit() event.
 bool SubmitWebViewFormWithId(web::WebState* web_state,
                              const std::string& form_id);
 
-// Returns whether the <option id="|element_id|"> in the passed |web_state| has
+// Returns whether the <option id="`element_id`"> in the passed `web_state` has
 // been selected using a JavaScript "selected=true" operation.
 bool SelectWebViewElementWithId(web::WebState* web_state,
                                 const std::string& element_id);

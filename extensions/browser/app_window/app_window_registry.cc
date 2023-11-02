@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,8 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/observer_list.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
@@ -78,7 +80,7 @@ void AppWindowRegistry::AppWindowShown(AppWindow* app_window, bool was_hidden) {
 
 void AppWindowRegistry::RemoveAppWindow(AppWindow* app_window) {
   const AppWindowList::iterator it =
-      std::find(app_windows_.begin(), app_windows_.end(), app_window);
+      base::ranges::find(app_windows_, app_window);
   if (it != app_windows_.end())
     app_windows_.erase(it);
   for (auto& observer : observers_)
@@ -123,12 +125,12 @@ AppWindow* AppWindowRegistry::GetAppWindowForNativeWindow(
       return *i;
   }
 
-  return NULL;
+  return nullptr;
 }
 
 AppWindow* AppWindowRegistry::GetCurrentAppWindowForApp(
     const std::string& app_id) const {
-  AppWindow* result = NULL;
+  AppWindow* result = nullptr;
   for (auto i = app_windows_.cbegin(); i != app_windows_.cend(); ++i) {
     if ((*i)->extension_id() == app_id) {
       result = *i;
@@ -143,7 +145,7 @@ AppWindow* AppWindowRegistry::GetCurrentAppWindowForApp(
 AppWindow* AppWindowRegistry::GetAppWindowForAppAndKey(
     const std::string& app_id,
     const std::string& window_key) const {
-  AppWindow* result = NULL;
+  AppWindow* result = nullptr;
   for (auto i = app_windows_.cbegin(); i != app_windows_.cend(); ++i) {
     if ((*i)->extension_id() == app_id && (*i)->window_key() == window_key) {
       result = *i;
@@ -182,7 +184,7 @@ void AppWindowRegistry::AddAppWindowToList(AppWindow* app_window) {
 
 void AppWindowRegistry::BringToFront(AppWindow* app_window) {
   const AppWindowList::iterator it =
-      std::find(app_windows_.begin(), app_windows_.end(), app_window);
+      base::ranges::find(app_windows_, app_window);
   if (it != app_windows_.end())
     app_windows_.erase(it);
   app_windows_.push_front(app_window);
@@ -242,7 +244,8 @@ bool AppWindowRegistry::Factory::ServiceIsCreatedWithBrowserContext() const {
 
 content::BrowserContext* AppWindowRegistry::Factory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
-  return ExtensionsBrowserClient::Get()->GetOriginalContext(context);
+  return ExtensionsBrowserClient::Get()->GetRedirectedContextInIncognito(
+      context, /*force_guest_profile=*/true, /*force_system_profile=*/false);
 }
 
 }  // namespace extensions

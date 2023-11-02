@@ -1,4 +1,4 @@
-// Copyright 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <limits>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "cc/base/math_util.h"
 #include "cc/layers/layer_impl.h"
 #include "cc/paint/filter_operation.h"
@@ -72,10 +73,14 @@ void ClearDamageForAllSurfaces(LayerImpl* root) {
 }
 
 void SetCopyRequest(LayerImpl* root) {
-  auto* root_node = root->layer_tree_impl()->property_trees()->effect_tree.Node(
-      root->effect_tree_index());
+  auto* root_node =
+      root->layer_tree_impl()->property_trees()->effect_tree_mutable().Node(
+          root->effect_tree_index());
   root_node->has_copy_request = true;
-  root->layer_tree_impl()->property_trees()->effect_tree.set_needs_update(true);
+  root->layer_tree_impl()
+      ->property_trees()
+      ->effect_tree_mutable()
+      .set_needs_update(true);
 }
 
 class DamageTrackerTest : public LayerTreeImplTestBase, public testing::Test {
@@ -249,7 +254,8 @@ class DamageTrackerTest : public LayerTreeImplTestBase, public testing::Test {
     // consideration.
     root->layer_tree_impl()
         ->property_trees()
-        ->effect_tree.Node(child1_->effect_tree_index())
+        ->effect_tree_mutable()
+        .Node(child1_->effect_tree_index())
         ->backdrop_filters.Append(
             FilterOperation::CreateZoomFilter(2.f /* zoom */, 0 /* inset */));
 
@@ -300,12 +306,12 @@ class DamageTrackerTest : public LayerTreeImplTestBase, public testing::Test {
   std::vector<TestLayerImpl*> child_layers_;
 
   // Store result of CreateTestTreeWithTwoSurfaces().
-  TestLayerImpl* child1_ = nullptr;
-  TestLayerImpl* child2_ = nullptr;
-  TestLayerImpl* grand_child1_ = nullptr;
-  TestLayerImpl* grand_child2_ = nullptr;
-  TestLayerImpl* grand_child3_ = nullptr;
-  TestLayerImpl* grand_child4_ = nullptr;
+  raw_ptr<TestLayerImpl> child1_ = nullptr;
+  raw_ptr<TestLayerImpl> child2_ = nullptr;
+  raw_ptr<TestLayerImpl> grand_child1_ = nullptr;
+  raw_ptr<TestLayerImpl> grand_child2_ = nullptr;
+  raw_ptr<TestLayerImpl> grand_child3_ = nullptr;
+  raw_ptr<TestLayerImpl> grand_child4_ = nullptr;
 };
 
 TEST_F(DamageTrackerTest, SanityCheckTestTreeWithOneSurface) {
@@ -1073,7 +1079,7 @@ TEST_F(DamageTrackerTest, VerifyDamageForHighDPIImageFilter) {
   // Blur outset is 9px for a 3px blur, scaled up by DSF.
   int blur_outset = 9 * device_scale_factor;
   gfx::Rect expected_child_damage_rect(60, 60);
-  expected_child_damage_rect.Inset(-blur_outset, -blur_outset);
+  expected_child_damage_rect.Inset(-blur_outset);
   gfx::Rect expected_root_damage_rect(child_damage_rect);
   expected_root_damage_rect.Offset(200, 200);
   EXPECT_EQ(expected_root_damage_rect, root_damage_rect);
@@ -1333,7 +1339,7 @@ TEST_F(DamageTrackerTest, VerifyDamageForSurfaceChangeFromDescendantSurface) {
   gfx::Rect root_damage_rect;
 
   ClearDamageForAllSurfaces(root);
-  SetPostTranslation(child1_, gfx::Vector2dF(105.f, 107.f));
+  SetPostTranslation(child1_.get(), gfx::Vector2dF(105.f, 107.f));
   child1_->NoteLayerPropertyChanged();
   EmulateDrawingOneFrame(root);
   EXPECT_TRUE(GetRenderSurface(child1_)->damage_tracker()->GetDamageRectIfValid(
@@ -1412,7 +1418,7 @@ TEST_F(DamageTrackerTest, VerifyDamageForAddingAndRemovingRenderSurfaces) {
   // CASE 1: If a descendant surface disappears, its entire old area becomes
   //         exposed.
   ClearDamageForAllSurfaces(root);
-  SetRenderSurfaceReason(child1_, RenderSurfaceReason::kNone);
+  SetRenderSurfaceReason(child1_.get(), RenderSurfaceReason::kNone);
   EmulateDrawingOneFrame(root);
 
   // Sanity check that there is only one surface now.
@@ -1441,7 +1447,7 @@ TEST_F(DamageTrackerTest, VerifyDamageForAddingAndRemovingRenderSurfaces) {
 
   // Then change the tree so that the render surface is added back.
   ClearDamageForAllSurfaces(root);
-  SetRenderSurfaceReason(child1_, RenderSurfaceReason::kTest);
+  SetRenderSurfaceReason(child1_.get(), RenderSurfaceReason::kTest);
 
   EmulateDrawingOneFrame(root);
 
@@ -1955,7 +1961,7 @@ TEST_F(DamageTrackerTest, DamageRectTooBigInRenderSurfaceWithFilter) {
   FilterOperations filters;
   filters.Append(FilterOperation::CreateBlurFilter(5.f));
   child1_->SetDrawsContent(true);
-  SetBackdropFilter(child1_, filters);
+  SetBackdropFilter(child1_.get(), filters);
 
   // Really far left.
   grand_child1_->SetOffsetToTransformParent(gfx::Vector2dF(
@@ -2050,7 +2056,7 @@ TEST_F(DamageTrackerTest, CanUseCachedBackdropFilterResultTest) {
   // Add a backdrop blur filter onto child1_
   FilterOperations filters;
   filters.Append(FilterOperation::CreateBlurFilter(2.f));
-  SetBackdropFilter(child1_, filters);
+  SetBackdropFilter(child1_.get(), filters);
   child1_->NoteLayerPropertyChanged();
   // intersects_damage_under_ is false by default.
   EXPECT_TRUE(GetRenderSurface(child1_)->intersects_damage_under());
@@ -2090,10 +2096,10 @@ TEST_F(DamageTrackerTest, CanUseCachedBackdropFilterResultTest) {
   // backdrop-filtered result of the corresponding render surfaces.
   ClearDamageForAllSurfaces(root);
   // Remove the backdrop filter on child1_
-  SetBackdropFilter(child1_, FilterOperations());
+  SetBackdropFilter(child1_.get(), FilterOperations());
   grand_child1_->NoteLayerPropertyChanged();
   // Add a backdrop blur filtre to grand_child4_
-  SetBackdropFilter(grand_child4_, filters);
+  SetBackdropFilter(grand_child4_.get(), filters);
   grand_child4_->NoteLayerPropertyChanged();
   EmulateDrawingOneFrame(root);
   EXPECT_TRUE(GetRenderSurface(grand_child4_)->intersects_damage_under());
@@ -2200,7 +2206,7 @@ TEST_F(DamageTrackerTest, CanUseCachedBackdropFilterResultTest) {
   // surface with the backdrop filter invalidate cached backdrop-filtered
   // result.
   ClearDamageForAllSurfaces(root);
-  SetRenderSurfaceReason(grand_child3_, RenderSurfaceReason::kNone);
+  SetRenderSurfaceReason(grand_child3_.get(), RenderSurfaceReason::kNone);
   grand_child3_->SetDrawsContent(false);
   EmulateDrawingOneFrame(root);
   EXPECT_TRUE(GetRenderSurface(grand_child4_)->intersects_damage_under());
@@ -2336,7 +2342,7 @@ TEST_F(DamageTrackerTest, VerifyDamageExpansionWithBackdropBlurFilters) {
 
   // Setting the filter will damage the whole surface.
   ClearDamageForAllSurfaces(root);
-  SetBackdropFilter(child1_, filters);
+  SetBackdropFilter(child1_.get(), filters);
   child1_->NoteLayerPropertyChanged();
   EmulateDrawingOneFrame(root);
 

@@ -30,7 +30,6 @@
 
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/public/web/web_ax_enums.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -73,7 +72,7 @@ const char* g_aria_widgets[] = {
 
 static ARIAWidgetSet* CreateARIARoleWidgetSet() {
   ARIAWidgetSet* widget_set = new HashSet<String, CaseFoldingHash>();
-  for (size_t i = 0; i < base::size(g_aria_widgets); ++i)
+  for (size_t i = 0; i < std::size(g_aria_widgets); ++i)
     widget_set->insert(String(g_aria_widgets[i]));
   return widget_set;
 }
@@ -107,8 +106,7 @@ const char* g_aria_interactive_widget_attributes[] = {
 };
 
 bool HasInteractiveARIAAttribute(const Element& element) {
-  for (size_t i = 0; i < base::size(g_aria_interactive_widget_attributes);
-       ++i) {
+  for (size_t i = 0; i < std::size(g_aria_interactive_widget_attributes); ++i) {
     const char* attribute = g_aria_interactive_widget_attributes[i];
     if (element.hasAttribute(attribute)) {
       return true;
@@ -126,7 +124,7 @@ bool AXObjectCache::IsInsideFocusableElementOrARIAWidget(const Node& node) {
       if (element->IsFocusable())
         return true;
       String role = element->getAttribute("role");
-      if (!role.IsEmpty() && IncludesARIAWidgetRole(role))
+      if (!role.empty() && IncludesARIAWidgetRole(role))
         return true;
       if (HasInteractiveARIAAttribute(*element))
         return true;

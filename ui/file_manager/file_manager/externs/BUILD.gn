@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -17,8 +17,11 @@ js_library("file_manager_private") {
   ]
 }
 
-js_library("background_window") {
-  deps = [ "//ui/file_manager/file_manager/externs/background:background_base" ]
+js_library("foreground_window") {
+  deps = [
+    "//ui/file_manager/file_manager/externs/background:crostini",
+    "//ui/file_manager/file_manager/externs/background:file_manager_base",
+  ]
 }
 
 js_library("banner") {

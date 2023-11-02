@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,8 +29,7 @@ bool IsValuePatternSupported(AXPlatformNodeDelegate* delegate) {
   // https://www.w3.org/TR/html-aam-1.0/
   // The HTML AAM maps "href [a; area]" to UIA Value.Value
   return delegate->GetData().IsRangeValueSupported() ||
-         IsReadOnlySupported(delegate->GetRole()) ||
-         IsLink(delegate->GetRole()) ||
+         delegate->IsReadOnlySupported() || IsLink(delegate->GetRole()) ||
          delegate->GetRole() == ax::mojom::Role::kColorWell ||
          delegate->IsCellOrHeaderOfAriaGrid() ||
          (delegate->GetRole() == ax::mojom::Role::kButton &&

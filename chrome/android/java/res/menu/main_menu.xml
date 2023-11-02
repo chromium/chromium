@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2015 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2015 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 
 <!-- TODO(crbug.com/1119550): explore replacing with a programmatically created
      menu.  -->
@@ -31,7 +33,7 @@
                 android:icon="@drawable/btn_info" />
               <item android:id="@+id/reload_menu_id"
                 android:title="@string/accessibility_btn_refresh"
-                android:titleCondensed="@string/menu_refresh"
+                android:titleCondensed="@string/refresh"
                 android:icon="@drawable/btn_reload_stop"/>
             </menu>
         </item>
@@ -91,6 +93,12 @@
         <item android:id="@+id/delete_from_reading_list_menu_id"
             android:title="@string/menu_delete_from_reading_list"
             android:icon="@drawable/ic_reading_list_folder_24dp" />
+        <item android:id="@+id/enable_price_tracking_menu_id"
+            android:title="@string/enable_price_tracking_menu_item"
+            android:icon="@drawable/price_tracking_disabled" />
+        <item android:id="@+id/disable_price_tracking_menu_id"
+            android:title="@string/disable_price_tracking_menu_item"
+            android:icon="@drawable/price_tracking_enabled_filled" />
         <item android:id="@+id/find_in_page_id"
             android:title="@string/menu_find_in_page"
             android:icon="@drawable/ic_find_in_page" />
@@ -125,6 +133,9 @@
                 android:checkable="true" />
           </menu>
         </item>
+        <item android:id="@+id/page_zoom_id"
+            android:title="@string/page_zoom_title"
+            android:icon="@drawable/ic_zoom" />
         <item android:id="@+id/paint_preview_show_id"
             android:title="@string/menu_paint_preview_show"
             android:icon="@drawable/ic_photo_camera" />
@@ -145,8 +156,11 @@
         <item android:id="@+id/enter_vr_id"
             android:title="@string/enter_vr"
             android:icon="@drawable/gm_filled_cardboard_24" />
+        <item android:id="@+id/managed_by_divider_line_id"
+            android:title="@null" />
         <item android:id="@+id/managed_by_menu_id"
-            android:title="@string/managed" />
+            android:title="@string/managed_browser"
+            android:icon="@drawable/ic_business" />
     </group>
 
     <!-- Items shown only in the tab switcher -->
@@ -167,6 +181,9 @@
         <item android:id="@+id/menu_group_tabs"
             android:title="@string/menu_group_tabs"
             android:icon="@drawable/ic_widgets" />
+        <item android:id="@+id/menu_select_tabs"
+            android:title="@string/menu_select_tabs"
+            android:icon="@drawable/ic_select_tabs" />
         <item android:id="@+id/track_prices_row_menu_id"
             android:title="@string/menu_track_prices"
             android:icon="@drawable/ic_trending_down_black" />

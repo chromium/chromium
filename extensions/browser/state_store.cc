@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/location.h"
+#include "base/observer_list.h"
 #include "components/value_store/value_store_factory.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -76,17 +77,20 @@ StateStore::StateStore(
     case BackendType::RULES:
       store_ = std::make_unique<value_store::ValueStoreFrontend>(
           store_factory, base::FilePath(kRulesStoreName),
-          kRulesDatabaseUMAClientName, GetExtensionFileTaskRunner());
+          kRulesDatabaseUMAClientName, content::GetUIThreadTaskRunner({}),
+          GetExtensionFileTaskRunner());
       break;
     case BackendType::STATE:
       store_ = std::make_unique<value_store::ValueStoreFrontend>(
           store_factory, base::FilePath(kStateStoreName),
-          kStateDatabaseUMAClientName, GetExtensionFileTaskRunner());
+          kStateDatabaseUMAClientName, content::GetUIThreadTaskRunner({}),
+          GetExtensionFileTaskRunner());
       break;
     case BackendType::SCRIPTS:
       store_ = std::make_unique<value_store::ValueStoreFrontend>(
           store_factory, base::FilePath(kScriptsStoreName),
-          kScriptsDatabaseUMAClientName, GetExtensionFileTaskRunner());
+          kScriptsDatabaseUMAClientName, content::GetUIThreadTaskRunner({}),
+          GetExtensionFileTaskRunner());
       break;
   }
 
@@ -118,7 +122,7 @@ void StateStore::GetExtensionValue(const std::string& extension_id,
 
 void StateStore::SetExtensionValue(const std::string& extension_id,
                                    const std::string& key,
-                                   std::unique_ptr<base::Value> value) {
+                                   base::Value value) {
   for (TestObserver& observer : observers_)
     observer.WillSetExtensionValue(extension_id, key);
 
@@ -148,7 +152,7 @@ void StateStore::FlushForTesting(base::OnceClosure flushed_callback) {
   GetExtensionValue("fake_id", "fake_key",
                     base::BindOnce(
                         [](base::OnceClosure flushed_callback,
-                           std::unique_ptr<base::Value> ignored) {
+                           absl::optional<base::Value> ignored) {
                           std::move(flushed_callback).Run();
                         },
                         std::move(flushed_callback)));

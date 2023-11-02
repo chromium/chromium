@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,7 @@
 #include "base/callback.h"
 #include "remoting/protocol/audio_source.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class FakeAudioSource : public AudioSource {
  public:
@@ -29,7 +28,6 @@ class FakeAudioSource : public AudioSource {
   PacketCapturedCallback callback_;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_FAKE_AUDIO_SOURCE_H_

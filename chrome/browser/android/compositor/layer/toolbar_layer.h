@@ -1,10 +1,11 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_ANDROID_COMPOSITOR_LAYER_TOOLBAR_LAYER_H_
 #define CHROME_BROWSER_ANDROID_COMPOSITOR_LAYER_TOOLBAR_LAYER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "cc/layers/nine_patch_layer.h"
 #include "chrome/browser/android/compositor/layer/layer.h"
@@ -59,7 +60,7 @@ class ToolbarLayer : public Layer {
  private:
   int GetIndexOfLayer(scoped_refptr<cc::Layer> layer);
 
-  ui::ResourceManager* resource_manager_;
+  raw_ptr<ui::ResourceManager> resource_manager_;
 
   scoped_refptr<cc::Layer> layer_;
   scoped_refptr<cc::SolidColorLayer> toolbar_background_layer_;

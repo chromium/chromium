@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,10 @@
 #define CHROME_BROWSER_ASH_APP_RESTORE_APP_LAUNCH_HANDLER_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "components/app_restore/restore_data.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 
 namespace apps {
 class AppUpdate;
@@ -37,7 +38,7 @@ class AppLaunchHandler : public apps::AppRegistryCache::Observer {
 
   // apps::AppRegistryCache::Observer:
   void OnAppUpdate(const apps::AppUpdate& update) override;
-  void OnAppTypeInitialized(apps::mojom::AppType app_type) override;
+  void OnAppTypeInitialized(apps::AppType app_type) override;
   void OnAppRegistryCacheWillBeDestroyed(
       apps::AppRegistryCache* cache) override;
 
@@ -61,7 +62,7 @@ class AppLaunchHandler : public apps::AppRegistryCache::Observer {
 
   // Called before an extension type app is launched. Allows subclasses to
   // perform some setup prior to launching an extension type app.
-  virtual void OnExtensionLaunching(const std::string& app_id) = 0;
+  virtual void OnExtensionLaunching(const std::string& app_id) {}
 
   virtual base::WeakPtr<AppLaunchHandler> GetWeakPtrAppLaunchHandler() = 0;
 
@@ -71,10 +72,10 @@ class AppLaunchHandler : public apps::AppRegistryCache::Observer {
   }
 
  private:
-  void LaunchApp(apps::mojom::AppType app_type, const std::string& app_id);
+  void LaunchApp(apps::AppType app_type, const std::string& app_id);
 
   virtual void LaunchSystemWebAppOrChromeApp(
-      apps::mojom::AppType app_type,
+      apps::AppType app_type,
       const std::string& app_id,
       const ::app_restore::RestoreData::LaunchList& launch_list);
 

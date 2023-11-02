@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -133,7 +133,7 @@ public class AppLanguagePreferenceDelegate {
         Snackbar snackbar =
                 Snackbar.make(resources.getString(R.string.languages_infobar_ready, displayName),
                                 mStackbarController, Snackbar.TYPE_PERSISTENT,
-                                Snackbar.UMA_TAB_CLOSE_UNDO)
+                                Snackbar.UMA_LANGUAGE_SPLIT_RESTART)
                         .setAction(resources.getString(R.string.languages_infobar_restart), null);
         snackbar.setSingleLine(false);
         if (mSnackbarManager.canShowSnackbar()) {

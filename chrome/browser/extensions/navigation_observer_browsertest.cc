@@ -1,10 +1,11 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
@@ -21,18 +22,8 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/extension_features.h"
 
 namespace extensions {
-
-namespace {
-
-bool IsStrictExtensionIsolationEnabled() {
-  return base::FeatureList::IsEnabled(
-      extensions_features::kStrictExtensionIsolation);
-}
-
-}  // namespace
 
 // A class for testing various scenarios of disabled extensions.
 class DisableExtensionBrowserTest : public ExtensionBrowserTest {
@@ -66,8 +57,8 @@ class DisableExtensionBrowserTest : public ExtensionBrowserTest {
   scoped_refptr<const Extension> extension_;
   std::string extension_id_;
   GURL extension_resource_url_;
-  ExtensionRegistry* registry_;
-  ExtensionPrefs* prefs_;
+  raw_ptr<ExtensionRegistry> registry_;
+  raw_ptr<ExtensionPrefs> prefs_;
 };
 
 // Test that visiting an url associated with a disabled extension offers to
@@ -181,12 +172,13 @@ IN_PROC_BROWSER_TEST_F(DisableExtensionBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_EQ(web_contents->GetMainFrame()->GetLastCommittedURL(), main_url);
+  EXPECT_EQ(web_contents->GetPrimaryMainFrame()->GetLastCommittedURL(),
+            main_url);
 
   // Emulate a user gesture so that the current entry won't be skipped due to
   // the history manipulation intervention when we try to navigate back to it.
-  web_contents->GetMainFrame()->ExecuteJavaScriptWithUserGestureForTests(
-      std::u16string());
+  web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptWithUserGestureForTests(
+      std::u16string(), base::NullCallback());
 
   // Navigate subframe to an enabled extension URL.
   scoped_refptr<const Extension> extension =
@@ -197,17 +189,14 @@ IN_PROC_BROWSER_TEST_F(DisableExtensionBrowserTest,
   EXPECT_TRUE(NavigateIframeToURL(web_contents, "test", extension_url));
 
   content::RenderFrameHost* subframe =
-      ChildFrameAt(web_contents->GetMainFrame(), 0);
+      ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
   EXPECT_EQ(subframe->GetLastCommittedURL(), extension_url);
   EXPECT_EQ(web_contents->GetController().GetEntryCount(), 3);
   scoped_refptr<content::SiteInstance> extension_site_instance =
       subframe->GetSiteInstance();
 
-  // The extension process should only be locked if strict extension isolation
-  // is enabled, since multiple extensions are normally allowed to reuse the
-  // same extension process.
-  EXPECT_EQ(IsStrictExtensionIsolationEnabled(),
-            subframe->GetProcess()->IsProcessLockedToSiteForTesting());
+  // The extension process should be locked.
+  EXPECT_TRUE(subframe->GetProcess()->IsProcessLockedToSiteForTesting());
 
   // Disable the extension.
   extension_service()->DisableExtension(extension->id(),
@@ -230,7 +219,7 @@ IN_PROC_BROWSER_TEST_F(DisableExtensionBrowserTest,
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
   EXPECT_EQ(web_contents->GetController().GetLastCommittedEntryIndex(), 2);
 
-  subframe = ChildFrameAt(web_contents->GetMainFrame(), 0);
+  subframe = ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
   EXPECT_EQ(subframe->GetLastCommittedURL(), extension_url);
 
   // The SiteInstance of the disabled extension frame should be different from
@@ -248,10 +237,8 @@ IN_PROC_BROWSER_TEST_F(DisableExtensionBrowserTest,
     } else {
       EXPECT_EQ(subframe->GetSiteInstance()->GetSiteURL(),
                 GURL(chrome::kExtensionInvalidRequestURL));
-      // The disabled extension process should only be locked if strict
-      // extension isolation is enabled.
-      EXPECT_EQ(IsStrictExtensionIsolationEnabled(),
-                subframe->GetProcess()->IsProcessLockedToSiteForTesting());
+      // The disabled extension process should be locked.
+      EXPECT_TRUE(subframe->GetProcess()->IsProcessLockedToSiteForTesting());
     }
   }
 
@@ -263,11 +250,10 @@ IN_PROC_BROWSER_TEST_F(DisableExtensionBrowserTest,
   // terminate the renderer and should go back to the original extension
   // SiteInstance.
   EXPECT_TRUE(NavigateIframeToURL(web_contents, "test", extension_url));
-  subframe = ChildFrameAt(web_contents->GetMainFrame(), 0);
+  subframe = ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
   EXPECT_TRUE(subframe->IsRenderFrameLive());
   EXPECT_EQ(subframe->GetSiteInstance(), extension_site_instance);
-  EXPECT_EQ(IsStrictExtensionIsolationEnabled(),
-            subframe->GetProcess()->IsProcessLockedToSiteForTesting());
+  EXPECT_TRUE(subframe->GetProcess()->IsProcessLockedToSiteForTesting());
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, NoExtensionsInRefererHeader) {

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -121,7 +121,7 @@ void Stars::Renderer::Draw(float t, const gfx::Transform& view_proj_matrix) {
   glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer_);
 
-  glDrawElements(GL_TRIANGLES, base::size(g_indices), GL_UNSIGNED_SHORT, 0);
+  glDrawElements(GL_TRIANGLES, std::size(g_indices), GL_UNSIGNED_SHORT, 0);
 
   glDisableVertexAttribArray(position_handle_);
   glDisableVertexAttribArray(opacity_handle_);
@@ -170,7 +170,7 @@ void Stars::Renderer::CreateBuffers() {
     }
     for (size_t j = 0; j < kVerticesPerStar; j++, cur_vertex++) {
       gfx::Point3F p = local_star_geometry[j];
-      local.TransformPoint(&p);
+      p = local.MapPoint(p);
       g_vertices[cur_vertex * kFloatsPerStarVertex] = p.x();
       g_vertices[cur_vertex * kFloatsPerStarVertex + 1] = p.y();
       g_vertices[cur_vertex * kFloatsPerStarVertex + 2] = p.z();
@@ -185,13 +185,12 @@ void Stars::Renderer::CreateBuffers() {
   index_buffer_ = buffers[1];
 
   glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_);
-  glBufferData(GL_ARRAY_BUFFER, base::size(g_vertices) * sizeof(float),
+  glBufferData(GL_ARRAY_BUFFER, std::size(g_vertices) * sizeof(float),
                g_vertices, GL_STATIC_DRAW);
 
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer_);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-               base::size(g_indices) * sizeof(GLushort), g_indices,
-               GL_STATIC_DRAW);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, std::size(g_indices) * sizeof(GLushort),
+               g_indices, GL_STATIC_DRAW);
 }
 
 }  // namespace vr

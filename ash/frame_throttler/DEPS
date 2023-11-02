@@ -1,0 +1,6 @@
+specific_include_rules = {
+  ".*test.cc": [
+    "+components/viz/test",
+    "+services/viz/privileged/mojom/compositing",
+  ],
+}

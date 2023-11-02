@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,16 @@ GEN_INCLUDE(['../testing/chromevox_next_e2e_test_base.js']);
 /**
  * Test fixture for Color.
  */
-ChromeVoxColorTest = class extends ChromeVoxNextE2ETest {};
+ChromeVoxColorTest = class extends ChromeVoxNextE2ETest {
+  /** @override */
+  async setUpDeferred() {
+    await super.setUpDeferred();
+    await importModule('Color', '/chromevox/background/color.js');
+  }
+};
 
 
-SYNC_TEST_F('ChromeVoxColorTest', 'FindDistanceTest', function() {
+AX_TEST_F('ChromeVoxColorTest', 'FindDistanceTest', function() {
   // Hexadecimal representations of colors.
   const red = 0xff0000;
   const lime = 0x00ff00;
@@ -26,7 +32,7 @@ SYNC_TEST_F('ChromeVoxColorTest', 'FindDistanceTest', function() {
       Color.findDistance(opaqueRed, transparentLime));
 });
 
-SYNC_TEST_F('ChromeVoxColorTest', 'FindClosestMatchingColorTest', function() {
+AX_TEST_F('ChromeVoxColorTest', 'FindClosestMatchingColorTest', function() {
   const white = 0xffffff;
   const red = 0xff0000;
   const lime = 0x00ff00;
@@ -57,7 +63,7 @@ SYNC_TEST_F('ChromeVoxColorTest', 'FindClosestMatchingColorTest', function() {
   assertEquals('', Color.findClosestMatchingColor(unknownColor));
 });
 
-SYNC_TEST_F('ChromeVoxColorTest', 'GetOpacityPercentageTest', function() {
+AX_TEST_F('ChromeVoxColorTest', 'GetOpacityPercentageTest', function() {
   const opaqueRed = 0xffff0000;
   const transparentLime = 0x0000ff00;
   const translucentBlue = 0x800000ff;

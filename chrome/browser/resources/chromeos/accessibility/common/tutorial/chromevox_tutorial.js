@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,9 @@
  */
 
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {EarconDescription} from '../../../chromevox/common/abstract_earcons.js';
+import {QueueMode} from '../../../chromevox/common/tts_interface.js';
 
 import {Curriculum, InteractionMedium, LessonData, MainMenuButtonData, Screen} from './constants.js';
 import {LessonContainer} from './lesson_container.js';
@@ -30,7 +33,7 @@ import {TutorialLesson} from './tutorial_lesson.js';
  */
 const NudgeType = {
   GENERAL: 'general',
-  PRACTICE_AREA: 'practice_area'
+  PRACTICE_AREA: 'practice_area',
 };
 
 Polymer({
@@ -97,8 +100,8 @@ Polymer({
           title: 'tutorial_touch_orientation_title',
           curriculum: Curriculum.TOUCH_ORIENTATION,
           medium: InteractionMedium.TOUCH,
-        }
-      ]
+        },
+      ],
     },
 
     /** @type {Array<!LessonData>} */
@@ -111,7 +114,7 @@ Polymer({
           medium: InteractionMedium.KEYBOARD,
           curriculums: [Curriculum.QUICK_ORIENTATION],
           actions: [
-            {type: 'key_sequence', value: {keys: {keyCode: [32 /* Space */]}}}
+            {type: 'key_sequence', value: {keys: {keyCode: [32 /* Space */]}}},
           ],
           autoInteractive: true,
         },
@@ -124,7 +127,7 @@ Polymer({
           actions: [{
             type: 'key_sequence',
             value: {keys: {keyCode: [17 /* Ctrl */]}},
-            shouldPropagate: false
+            shouldPropagate: false,
           }],
           autoInteractive: true,
         },
@@ -135,7 +138,7 @@ Polymer({
           medium: InteractionMedium.KEYBOARD,
           curriculums: [Curriculum.QUICK_ORIENTATION],
           actions: [
-            {type: 'key_sequence', value: {keys: {keyCode: [16 /* Shift */]}}}
+            {type: 'key_sequence', value: {keys: {keyCode: [16 /* Shift */]}}},
           ],
           autoInteractive: true,
         },
@@ -156,7 +159,7 @@ Polymer({
           title: 'tutorial_quick_orientation_basic_navigation_title',
           content: [
             'tutorial_quick_orientation_basic_navigation_move_text',
-            'tutorial_quick_orientation_basic_navigation_click_text'
+            'tutorial_quick_orientation_basic_navigation_click_text',
           ],
           medium: InteractionMedium.KEYBOARD,
           curriculums: [Curriculum.QUICK_ORIENTATION],
@@ -168,7 +171,7 @@ Polymer({
             {
               type: 'key_sequence',
               value: {cvoxModifier: true, keys: {keyCode: [32]}},
-            }
+            },
           ],
           autoInteractive: true,
         },
@@ -203,7 +206,7 @@ Polymer({
           medium: InteractionMedium.KEYBOARD,
           curriculums: [Curriculum.QUICK_ORIENTATION],
           actions: [
-            {type: 'key_sequence', value: {keys: {keyCode: [13 /* Enter */]}}}
+            {type: 'key_sequence', value: {keys: {keyCode: [13 /* Enter */]}}},
           ],
           autoInteractive: true,
         },
@@ -212,7 +215,7 @@ Polymer({
           title: 'tutorial_quick_orientation_lists_title',
           content: [
             'tutorial_quick_orientation_lists_text',
-            'tutorial_quick_orientation_lists_continue_text'
+            'tutorial_quick_orientation_lists_continue_text',
           ],
           medium: InteractionMedium.KEYBOARD,
           curriculums: [Curriculum.QUICK_ORIENTATION],
@@ -222,14 +225,14 @@ Polymer({
           practiceFile: 'selects',
           practiceState: {},
           events: [],
-          hints: []
+          hints: [],
         },
 
         {
           title: 'tutorial_quick_orientation_complete_title',
           content: [
             'tutorial_quick_orientation_complete_text',
-            'tutorial_quick_orientation_complete_additional_text'
+            'tutorial_quick_orientation_complete_additional_text',
           ],
           medium: InteractionMedium.KEYBOARD,
           curriculums: [Curriculum.QUICK_ORIENTATION],
@@ -270,7 +273,7 @@ Polymer({
           practiceFile: 'jump_commands',
           practiceState: {},
           events: [],
-          hints: []
+          hints: [],
         },
 
         {
@@ -279,7 +282,7 @@ Polymer({
             'tutorial_menus',
           ],
           medium: InteractionMedium.KEYBOARD,
-          curriculums: [Curriculum.COMMAND_REFERENCES]
+          curriculums: [Curriculum.COMMAND_REFERENCES],
         },
 
         {
@@ -289,14 +292,14 @@ Polymer({
             'tutorial_chromebook_ctrl_forward',
           ],
           medium: InteractionMedium.KEYBOARD,
-          curriculums: [Curriculum.COMMAND_REFERENCES]
+          curriculums: [Curriculum.COMMAND_REFERENCES],
         },
 
         {
           title: 'tutorial_earcon_page_title',
           content: ['tutorial_earcon_page_body'],
           medium: InteractionMedium.KEYBOARD,
-          curriculums: [Curriculum.SOUNDS_AND_SETTINGS]
+          curriculums: [Curriculum.SOUNDS_AND_SETTINGS],
         },
 
         {
@@ -329,10 +332,10 @@ Polymer({
           content: [
             'tutorial_touch_orientation_next_item_text',
             'tutorial_touch_orientation_previous_item_text',
-            'tutorial_touch_orientation_next_previous_continue_text'
+            'tutorial_touch_orientation_next_previous_continue_text',
           ],
           medium: InteractionMedium.TOUCH,
-          curriculums: [Curriculum.TOUCH_ORIENTATION]
+          curriculums: [Curriculum.TOUCH_ORIENTATION],
         },
 
         {
@@ -344,7 +347,7 @@ Polymer({
             'tutorial_touch_orientation_touch_explore_continue_text',
           ],
           medium: InteractionMedium.TOUCH,
-          curriculums: [Curriculum.TOUCH_ORIENTATION]
+          curriculums: [Curriculum.TOUCH_ORIENTATION],
         },
 
         {
@@ -380,9 +383,9 @@ Polymer({
               type: 'gesture',
               value: 'swipeRight4',
               shouldPropagate: false,
-              afterActionCmd: 'nextObject'
+              afterActionCmd: 'nextObject',
             },
-            {type: 'gesture', value: 'swipeLeft4', shouldPropagate: false}
+            {type: 'gesture', value: 'swipeLeft4', shouldPropagate: false},
           ],
           autoInteractive: true,
         },
@@ -392,13 +395,13 @@ Polymer({
           content: [
             'tutorial_touch_orientation_complete_text',
             'tutorial_touch_orientation_complete_help_center_text',
-            'tutorial_touch_orientation_complete_more_tutorials_text'
+            'tutorial_touch_orientation_complete_more_tutorials_text',
           ],
           medium: InteractionMedium.TOUCH,
-          curriculums: [Curriculum.TOUCH_ORIENTATION]
+          curriculums: [Curriculum.TOUCH_ORIENTATION],
         },
-      ]
-    }
+      ],
+    },
   },
 
   /** @override */
@@ -407,11 +410,11 @@ Polymer({
     // finished loading.
     this.hideAllScreens();
     document.addEventListener('keydown', this.onKeyDown.bind(this));
-    this.addEventListener('startpractice', (evt) => {
+    this.addEventListener('startpractice', evt => {
       this.isPracticeAreaActive = true;
       this.startNudges(NudgeType.PRACTICE_AREA);
     });
-    this.addEventListener('endpractice', (evt) => {
+    this.addEventListener('endpractice', evt => {
       this.isPracticeAreaActive = false;
       this.startNudges(NudgeType.GENERAL);
     });
@@ -536,7 +539,7 @@ Polymer({
    * which is defined on the Panel window.
    */
   initializeNudges(type) {
-    const maybeGiveNudge = (msg) => {
+    const maybeGiveNudge = msg => {
       if (this.interactiveMode_) {
         // Do not announce message since ChromeVox blocks actions in interactive
         // mode.
@@ -558,12 +561,14 @@ Polymer({
     } else if (type === NudgeType.GENERAL) {
       const messages = this.medium === InteractionMedium.KEYBOARD ?
           [
-            'tutorial_hint_navigate', 'tutorial_hint_click',
-            'tutorial_hint_exit'
+            'tutorial_hint_navigate',
+            'tutorial_hint_click',
+            'tutorial_hint_exit',
           ] :
           [
-            'tutorial_touch_hint_navigate', 'tutorial_touch_hint_click',
-            'tutorial_touch_hint_exit'
+            'tutorial_touch_hint_navigate',
+            'tutorial_touch_hint_click',
+            'tutorial_touch_hint_exit',
           ];
       this.nudgeArray_ = [
         this.requestFullyDescribe.bind(this),
@@ -572,7 +577,7 @@ Polymer({
         maybeGiveNudge.bind(this, this.getMsg(messages[0])),
         maybeGiveNudge.bind(this, this.getMsg(messages[1])),
         this.requestSpeech.bind(
-            this, this.getMsg(messages[2]), QueueMode.INTERJECT)
+            this, this.getMsg(messages[2]), QueueMode.INTERJECT),
       ];
     } else {
       throw new Error('Invalid NudgeType: ' + type);
@@ -664,7 +669,7 @@ Polymer({
     for (const earconId in EarconDescription) {
       const msgid = EarconDescription[earconId];
       const earconElement = document.createElement('p');
-      earconElement.innerText = this.getMsg(msgid);
+      earconElement.ariaLabel = this.getMsg(msgid);
       earconElement.setAttribute('tabindex', -1);
       earconElement.addEventListener(
           'focus', this.requestEarcon.bind(this, earconId));
@@ -705,22 +710,22 @@ Polymer({
       {
         msgId: 'next_command_reference',
         link:
-            'https://support.google.com/chromebook/answer/7031755#zippy=%2Cmove-through-a-page-with-keyboard-shortcuts'
+            'https://support.google.com/chromebook/answer/7031755#zippy=%2Cmove-through-a-page-with-keyboard-shortcuts',
       },
       {
         msgId: 'chrome_keyboard_shortcuts',
-        link: 'https://support.google.com/chromebook/answer/183101?hl=en'
+        link: 'https://support.google.com/chromebook/answer/183101?hl=en',
       },
       {
         msgId: 'touchscreen_accessibility',
-        link: 'https://support.google.com/chromebook/answer/6103702?hl=en'
+        link: 'https://support.google.com/chromebook/answer/6103702?hl=en',
       },
     ];
     for (const resource of resources) {
       const link = document.createElement('a');
       link.innerText = this.getMsg(resource.msgId);
       link.href = resource.link;
-      link.addEventListener('click', (evt) => {
+      link.addEventListener('click', evt => {
         this.stopNudges();
         this.dispatchEvent(new CustomEvent(
             'openUrl', {composed: true, detail: {url: link.href}}));
@@ -759,5 +764,5 @@ Polymer({
     // Automatically return the description for touch, since the only supported
     // interaction mediums are touch and keyboard.
     return 'tutorial_touch_lesson_menu_header_description';
-  }
+  },
 });

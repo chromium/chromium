@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,7 +19,7 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
@@ -51,13 +51,11 @@ class HistogramBase;
 
 namespace gfx {
 struct GpuFenceHandle;
-struct PresentationFeedback;
 }
 
 namespace gpu {
 struct ContextCreationAttribs;
 struct Mailbox;
-struct SwapBuffersCompleteParams;
 struct SyncToken;
 }
 
@@ -84,7 +82,8 @@ class GPU_EXPORT CommandBufferProxyImpl : public gpu::CommandBuffer,
       scoped_refptr<GpuChannelHost> channel,
       GpuMemoryBufferManager* gpu_memory_buffer_manager,
       int32_t stream_id,
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      base::SharedMemoryMapper* transfer_buffer_mapper = nullptr);
 
   CommandBufferProxyImpl(const CommandBufferProxyImpl&) = delete;
   CommandBufferProxyImpl& operator=(const CommandBufferProxyImpl&) = delete;
@@ -120,20 +119,16 @@ class GPU_EXPORT CommandBufferProxyImpl : public gpu::CommandBuffer,
       TransferBufferAllocationOption option =
           TransferBufferAllocationOption::kLoseContextOnOOM) override;
   void DestroyTransferBuffer(int32_t id) override;
+  void ForceLostContext(error::ContextLostReason reason) override;
 
   // gpu::GpuControl implementation:
   void SetGpuControlClient(GpuControlClient* client) override;
   const gpu::Capabilities& GetCapabilities() const override;
-  int32_t CreateImage(ClientBuffer buffer,
-                      size_t width,
-                      size_t height) override;
-  void DestroyImage(int32_t id) override;
   void SignalQuery(uint32_t query, base::OnceClosure callback) override;
   void CreateGpuFence(uint32_t gpu_fence_id, ClientGpuFence source) override;
   void GetGpuFence(uint32_t gpu_fence_id,
                    base::OnceCallback<void(std::unique_ptr<gfx::GpuFence>)>
                        callback) override;
-  void SetDisplayTransform(gfx::OverlayTransform transform) override;
 
   void SetLock(base::Lock* lock) override;
   void EnsureWorkVisible() override;
@@ -155,12 +150,6 @@ class GPU_EXPORT CommandBufferProxyImpl : public gpu::CommandBuffer,
   void RemoveDeletionObserver(DeletionObserver* observer);
 
   bool EnsureBackbuffer();
-
-  using UpdateVSyncParametersCallback =
-      base::RepeatingCallback<void(base::TimeTicks timebase,
-                                   base::TimeDelta interval)>;
-  void SetUpdateVSyncParametersCallback(
-      const UpdateVSyncParametersCallback& callback);
 
   int32_t route_id() const { return route_id_; }
 
@@ -189,16 +178,14 @@ class GPU_EXPORT CommandBufferProxyImpl : public gpu::CommandBuffer,
   void OrderingBarrierHelper(int32_t put_offset);
 
   std::pair<base::UnsafeSharedMemoryRegion, base::WritableSharedMemoryMapping>
-  AllocateAndMapSharedMemory(size_t size);
+  AllocateAndMapSharedMemory(size_t size,
+                             base::SharedMemoryMapper* mapper = nullptr);
 
   // mojom::CommandBufferClient:
   void OnConsoleMessage(const std::string& message) override;
   void OnGpuSwitched(gl::GpuPreference active_gpu_heuristic) override;
   void OnDestroyed(gpu::error::ContextLostReason reason,
                    gpu::error::Error error) override;
-  void OnSwapBuffersCompleted(const SwapBuffersCompleteParams& params) override;
-  void OnBufferPresented(uint64_t swap_id,
-                         const gfx::PresentationFeedback& feedback) override;
   void OnReturnData(const std::vector<uint8_t>& data) override;
   void OnSignalAck(uint32_t id, const CommandBuffer::State& state) override;
 
@@ -263,17 +250,17 @@ class GPU_EXPORT CommandBufferProxyImpl : public gpu::CommandBuffer,
   // There should be a lock_ if this is going to be used across multiple
   // threads, or we guarantee it is used by a single thread by using a thread
   // checker if no lock_ is set.
-  base::Lock* lock_ = nullptr;
+  raw_ptr<base::Lock> lock_ = nullptr;
   base::ThreadChecker lockless_thread_checker_;
 
   // Client that wants to listen for important events on the GpuControl.
-  gpu::GpuControlClient* gpu_control_client_ = nullptr;
+  raw_ptr<gpu::GpuControlClient> gpu_control_client_ = nullptr;
 
   // Unowned list of DeletionObservers.
   base::ObserverList<DeletionObserver>::Unchecked deletion_observers_;
 
   scoped_refptr<GpuChannelHost> channel_;
-  GpuMemoryBufferManager* gpu_memory_buffer_manager_;
+  raw_ptr<GpuMemoryBufferManager> gpu_memory_buffer_manager_;
   bool disconnected_ = false;
   const int channel_id_;
   const int32_t route_id_;
@@ -298,12 +285,18 @@ class GPU_EXPORT CommandBufferProxyImpl : public gpu::CommandBuffer,
 
   gpu::Capabilities capabilities_;
 
-  UpdateVSyncParametersCallback update_vsync_parameters_completion_callback_;
-
   // Cache pointer to EnsureWorkVisibleDuration custom UMA histogram.
-  base::HistogramBase* uma_histogram_ensure_work_visible_duration_ = nullptr;
+  raw_ptr<base::HistogramBase> uma_histogram_ensure_work_visible_duration_ =
+      nullptr;
 
   scoped_refptr<base::SingleThreadTaskRunner> callback_thread_;
+
+  // Optional shared memory mapper to use when creating transfer buffers.
+  // TODO(1321521) remove this member and instead let callers of
+  // CreateTransferBuffer specify the mapper to use so that only the buffers
+  // used for WebGPU ArrayBuffers use a non-default mapper.
+  raw_ptr<base::SharedMemoryMapper> transfer_buffer_mapper_;
+
   base::WeakPtrFactory<CommandBufferProxyImpl> weak_ptr_factory_{this};
 };
 

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -177,6 +177,10 @@ void MediaControlsRotateToFullscreenDelegate::OnScreenOrientationChange() {
   current_screen_orientation_ = ComputeScreenOrientation();
   DVLOG(3) << __func__ << " " << static_cast<int>(previous_screen_orientation)
            << " -> " << static_cast<int>(current_screen_orientation_);
+
+  // Do not enable if video is in Picture-in-Picture.
+  if (video_element_->GetDisplayType() == DisplayType::kPictureInPicture)
+    return;
 
   // Only enable if native media controls are used.
   if (!video_element_->ShouldShowControls())

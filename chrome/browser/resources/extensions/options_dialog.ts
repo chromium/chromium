@@ -1,14 +1,15 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 
-import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
-import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
-import {Debouncer, html, PolymerElement, timeOut} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {EventTracker} from 'chrome://resources/js/event_tracker.js';
+import {Debouncer, PolymerElement, timeOut} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {navigation, Page} from './navigation_helper.js';
+import {getTemplate} from './options_dialog.html.js';
 
 /**
  * @return A signal that the document is ready. Need to wait for this, otherwise
@@ -35,20 +36,20 @@ export const OptionsDialogMinWidth = 400;
 // The maximum height in pixels for the options dialog.
 export const OptionsDialogMaxHeight = 640;
 
-interface ExtensionsOptionsDialogElement {
+export interface ExtensionsOptionsDialogElement {
   $: {
     body: HTMLElement,
     dialog: CrDialogElement,
   };
 }
 
-class ExtensionsOptionsDialogElement extends PolymerElement {
+export class ExtensionsOptionsDialogElement extends PolymerElement {
   static get is() {
     return 'extensions-options-dialog';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -73,7 +74,10 @@ class ExtensionsOptionsDialogElement extends PolymerElement {
    * into account the window width/height.
    */
   private updateDialogSize_() {
-    const headerHeight = this.$.body.offsetTop;
+    let headerHeight = this.$.body.offsetTop;
+    if (this.$.body.assignedSlot && this.$.body.assignedSlot.parentElement) {
+      headerHeight = this.$.body.assignedSlot.parentElement.offsetTop;
+    }
     const maxHeight =
         Math.min(0.9 * window.innerHeight, OptionsDialogMaxHeight);
     const effectiveHeight =

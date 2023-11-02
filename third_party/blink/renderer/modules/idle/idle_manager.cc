@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -74,8 +74,8 @@ ScriptPromise IdleManager::RequestPermission(ScriptState* script_state,
   permission_service_->RequestPermission(
       CreatePermissionDescriptor(mojom::blink::PermissionName::IDLE_DETECTION),
       LocalFrame::HasTransientUserActivation(window->GetFrame()),
-      WTF::Bind(&IdleManager::OnPermissionRequestComplete, WrapPersistent(this),
-                WrapPersistent(resolver)));
+      WTF::BindOnce(&IdleManager::OnPermissionRequestComplete,
+                    WrapPersistent(this), WrapPersistent(resolver)));
   return promise;
 }
 

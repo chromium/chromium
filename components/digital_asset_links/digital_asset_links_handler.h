@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -71,7 +71,7 @@ class DigitalAssetLinksHandler {
   bool CheckDigitalAssetLinkRelationshipForAndroidApp(
       const std::string& web_domain,
       const std::string& relationship,
-      const std::string& fingerprint,
+      std::vector<std::string> fingerprints,
       const std::string& package,
       RelationshipCheckResultCallback callback);
 
@@ -94,7 +94,7 @@ class DigitalAssetLinksHandler {
   bool CheckDigitalAssetLinkRelationship(
       const std::string& web_domain,
       const std::string& relationship,
-      const absl::optional<std::string>& fingerprint,
+      absl::optional<std::vector<std::string>> fingerprints,
       const std::map<std::string, std::set<std::string>>& target_values,
       RelationshipCheckResultCallback callback);
 
@@ -106,14 +106,14 @@ class DigitalAssetLinksHandler {
  private:
   void OnURLLoadComplete(
       std::string relationship,
-      absl::optional<std::string> fingerprint,
+      absl::optional<std::vector<std::string>> fingerprints,
       std::map<std::string, std::set<std::string>> target_values,
       std::unique_ptr<std::string> response_body);
 
   // Callback for the DataDecoder.
   void OnJSONParseResult(
       std::string relationship,
-      absl::optional<std::string> fingerprint,
+      absl::optional<std::vector<std::string>> fingerprints,
       std::map<std::string, std::set<std::string>> target_values,
       data_decoder::DataDecoder::ValueOrError result);
 

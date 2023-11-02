@@ -1,4 +1,4 @@
-// Copyright 2021 The Crashpad Authors. All rights reserved.
+// Copyright 2021 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,6 +14,8 @@
 
 #ifndef CRASHPAD_UTIL_IOS_IOS_INTERMEDIATE_DUMP_WRITER_H_
 #define CRASHPAD_UTIL_IOS_IOS_INTERMEDIATE_DUMP_WRITER_H_
+
+#include <sys/types.h>
 
 #include "base/files/file_path.h"
 #include "util/ios/ios_intermediate_dump_format.h"
@@ -39,11 +41,13 @@ namespace internal {
 //! Note: All methods are `RUNS-DURING-CRASH`.
 class IOSIntermediateDumpWriter final {
  public:
-  IOSIntermediateDumpWriter() = default;
+  IOSIntermediateDumpWriter() : buffer_occupied_(0), fd_(-1) {}
 
   IOSIntermediateDumpWriter(const IOSIntermediateDumpWriter&) = delete;
   IOSIntermediateDumpWriter& operator=(const IOSIntermediateDumpWriter&) =
       delete;
+
+  ~IOSIntermediateDumpWriter();
 
   //! \brief Command instructions for the intermediate dump reader.
   enum class CommandType : uint8_t {
@@ -72,6 +76,8 @@ class IOSIntermediateDumpWriter final {
 
   //! \brief Open and lock an intermediate dump file. This is the only method
   //!     in the writer class that is generally run outside of a crash.
+  //!
+  //! The client must invoke `Close()` before this object is destroyed.
   //!
   //! \param[in] path The path to the intermediate dump.
   //!
@@ -171,35 +177,74 @@ class IOSIntermediateDumpWriter final {
         key, reinterpret_cast<const char*>(value), value_length);
   }
 
+  //! \return `true` if able to vm_read a string of \a value  and write a
+  //!     kProperty command with the \a key \a value up to a NUL byte.
+  //!     The string cannot be longer than \a max_length with a maximum string
+  //!     length of 1024.
+  bool AddPropertyCString(IntermediateDumpKey key,
+                          size_t max_length,
+                          const char* value);
+
  private:
-  //! \return Returns `true` if able to write a kProperty command  with the
-  //!     \a key \a value \a count tuple.
+  //! \return `true` if able to vm_read_overwrite \a value into
+  //!     \a buffer while only reading one page at a time up to a NUL byte.
+  //!     Sets the final length of \a buffer to \a string_length.
+  //!     Returns `false` if unable to vm_read \a value or when no NUL byte can
+  //!     be found within /a max_length (unterminated).
+  bool ReadCStringInternal(const char* value,
+                           char* buffer,
+                           size_t max_length,
+                           size_t* string_length);
+
+  //! \return `true` if able to vm_read \a value \a count and write a
+  //!     kProperty command  with the \a key \a value \a count tuple.
   bool AddPropertyInternal(IntermediateDumpKey key,
                            const char* value,
                            size_t value_length);
 
-  //! \return Returns `true` if able to write a kArrayStart command  with the
-  //!     \a key.
+  //! \return `true` if able to write a kArrayStart command  with the \a key.
   bool ArrayStart(IntermediateDumpKey key);
 
-  //! \return Returns `true` if able to write a kMapStart command with the
-  //!     \a key.
+  //! \return `true` if able to write a kMapStart command with the \a key.
   bool MapStart(IntermediateDumpKey key);
 
-  //! \return Returns `true` if able to write a kMapStart command.
+  //! \return `true` if able to write a kMapStart command.
   bool ArrayMapStart();
 
-  //! \return Returns `true` if able to write a kArrayEnd command.
+  //! \return `true` if able to write a kArrayEnd command.
   bool ArrayEnd();
 
-  //! \return Returns `true` if able to write a kMapEnd command.
+  //! \return `true` if able to write a kMapEnd command.
   bool MapEnd();
 
-  //! \return Returns `true` if able to write a kRootMapStart command.
+  //! \return `true` if able to write a kRootMapStart command.
   bool RootMapStart();
 
-  //! \return Returns `true` if able to write a kRootMapEnd command.
+  //! \return `true` if able to write a kRootMapEnd command.
   bool RootMapEnd();
+
+  //! \return `true` if able to write a kProperty command with the \a key
+  //!     \a value \a value_length tuple.
+  bool Property(IntermediateDumpKey key,
+                const void* value,
+                size_t value_length);
+
+  //! \return `true` if able to write \a data up to \a size. The \a data might
+  //!     not be written to fd_  until `buffer_` is full or the writer is
+  //!     closed. All writes will be 4096 bytes (the size of your kBufferSize)
+  //!     except for the final flush, which might be partial.
+  bool BufferedWrite(const void* data, size_t size);
+
+  //! \return `true` if able to write `buffer_` up to `buffer_occupied_`.
+  bool FlushWriteBuffer();
+
+  //! \brief The maximum size of the write buffer.
+  static constexpr size_t kBufferSize = 4096;
+
+  //! \brief The write data buffer and amount of that buffer occupied with data
+  //!   to be written.
+  char buffer_[kBufferSize];
+  size_t buffer_occupied_;
 
   int fd_;
 };

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,7 +42,7 @@ class BlobBytesConsumerTestClient final
 
 class BlobBytesConsumerTest : public PageTestBase {
  public:
-  void SetUp() override { PageTestBase::SetUp(IntSize(1, 1)); }
+  void SetUp() override { PageTestBase::SetUp(gfx::Size(1, 1)); }
   scoped_refptr<BlobDataHandle> CreateBlob(const String& body) {
     mojo::PendingRemote<mojom::blink::Blob> mojo_blob;
     mojo::MakeSelfOwnedReceiver(

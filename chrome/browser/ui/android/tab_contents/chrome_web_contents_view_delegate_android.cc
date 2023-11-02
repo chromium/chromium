@@ -1,8 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/android/tab_contents/chrome_web_contents_view_delegate_android.h"
+
+#include <memory>
 
 #include "base/notreached.h"
 #include "chrome/browser/ui/android/context_menu_helper.h"
@@ -37,7 +39,15 @@ void ChromeWebContentsViewDelegateAndroid::ShowContextMenu(
     helper->ShowContextMenu(render_frame_host, params);
 }
 
-content::WebContentsViewDelegate* CreateWebContentsViewDelegate(
+void ChromeWebContentsViewDelegateAndroid::DismissContextMenu() {
+  // ContextMenuHelper is a WebContentsUserData, so it will be the same obj used
+  // in #ShowContextMenu().
+  ContextMenuHelper* helper = ContextMenuHelper::FromWebContents(web_contents_);
+  if (helper)
+    helper->DismissContextMenu();
+}
+
+std::unique_ptr<content::WebContentsViewDelegate> CreateWebContentsViewDelegate(
     content::WebContents* web_contents) {
-  return new ChromeWebContentsViewDelegateAndroid(web_contents);
+  return std::make_unique<ChromeWebContentsViewDelegateAndroid>(web_contents);
 }

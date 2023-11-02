@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,15 +8,11 @@
 #include <cstdint>
 
 #include "base/check_op.h"
-#include "base/no_destructor.h"
 
 namespace reporting {
 
-// TODO(b/159361496): Set total memory allowance based on the platform
-// (or policy?).
-MemoryResourceImpl::MemoryResourceImpl()
-    : total_(16u * 1024LLu * 1024LLu),  // 16 MiB
-      used_(0) {}
+MemoryResourceImpl::MemoryResourceImpl(uint64_t total_size)
+    : total_(total_size) {}
 
 MemoryResourceImpl::~MemoryResourceImpl() = default;
 
@@ -34,21 +30,16 @@ void MemoryResourceImpl::Discard(uint64_t size) {
   used_.fetch_sub(size);
 }
 
-uint64_t MemoryResourceImpl::GetTotal() {
+uint64_t MemoryResourceImpl::GetTotal() const {
   return total_;
 }
 
-uint64_t MemoryResourceImpl::GetUsed() {
+uint64_t MemoryResourceImpl::GetUsed() const {
   return used_.load();
 }
 
 void MemoryResourceImpl::Test_SetTotal(uint64_t test_total) {
   total_ = test_total;
-}
-
-ResourceInterface* GetMemoryResource() {
-  static base::NoDestructor<MemoryResourceImpl> memory;
-  return memory.get();
 }
 
 }  // namespace reporting

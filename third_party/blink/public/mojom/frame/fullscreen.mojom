@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,10 @@ struct FullscreenOptions {
   // Prefer that the bottom navigation bar be shown when in fullscreen
   // mode on devices with overlay navigation bars.
   bool prefers_navigation_bar = false;
+
+  // Prefer that the status bar be shown when in fullscreen mode on devices with
+  // overlay navigation bars.
+  bool prefers_status_bar = false;
 
   // If the Window Placement experiment is enabled, fullscreen may be requested
   // on a particular display. In that case, this is the requested display's id.

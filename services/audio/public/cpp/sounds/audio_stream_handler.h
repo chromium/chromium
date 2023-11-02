@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/component_export.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
@@ -23,7 +23,7 @@
 namespace audio {
 
 // This class sends a sound to the audio output device.
-class AudioStreamHandler {
+class COMPONENT_EXPORT(AUDIO_PUBLIC_CPP) AudioStreamHandler {
  public:
   class TestObserver {
    public:

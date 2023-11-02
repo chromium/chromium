@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -67,9 +67,8 @@ class FakeFidoRequestHandlerBase : public FidoRequestHandlerBase {
  public:
   FakeFidoRequestHandlerBase(MockObserver* observer,
                              FidoDiscoveryFactory* fido_discovery_factory)
-      : FidoRequestHandlerBase(
-            fido_discovery_factory,
-            {FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy}) {
+      : FidoRequestHandlerBase(fido_discovery_factory,
+                               {FidoTransportProtocol::kHybrid}) {
     set_observer(observer);
     Start();
   }
@@ -142,6 +141,7 @@ class FidoBleAdapterManagerTest : public ::testing::Test {
   std::unique_ptr<FakeFidoRequestHandlerBase> fake_request_handler_;
   std::unique_ptr<BluetoothAdapterFactory::GlobalValuesForTesting>
       bluetooth_config_;
+  FidoRequestHandlerBase::ScopedAlwaysAllowBLECalls always_allow_ble_calls_;
 };
 
 TEST_F(FidoBleAdapterManagerTest, AdapterNotPresent) {

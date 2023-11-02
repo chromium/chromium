@@ -1,6 +1,6 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -66,10 +66,10 @@ import tempfile
 #    e. Complete the review as usual
 
 PATCHES = [
-    'chromium-issue-599427.patch',
     'chromium-issue-628581.patch',
     'libxml2-2.9.4-security-xpath-nodetab-uaf.patch',
     'chromium-issue-708434.patch',
+    'undo-sax-deprecation.patch',
 ]
 
 
@@ -90,6 +90,7 @@ SHARED_XML_CONFIGURE_OPTIONS = [
     ('--with-python', 'python=yes'),
     ('--with-reader', 'reader=yes'),
     ('--with-sax1', 'sax1=yes'),
+    ('--with-threads', 'threads=yes'),
     ('--with-tree', 'tree=yes'),
     ('--with-writer', 'writer=yes'),
     ('--with-xpath', 'xpath=yes'),
@@ -97,7 +98,6 @@ SHARED_XML_CONFIGURE_OPTIONS = [
     ('--without-c14n', 'c14n=no'),
     ('--without-catalog', 'catalog=no'),
     ('--without-debug', 'xml_debug=no'),
-    ('--without-docbook', 'docb=no'),
     ('--without-ftp', 'ftp=no'),
     ('--without-http', 'http=no'),
     ('--without-iconv', 'iconv=no'),
@@ -111,10 +111,10 @@ SHARED_XML_CONFIGURE_OPTIONS = [
     ('--without-run-debug', 'run_debug=no'),
     ('--without-schemas', 'schemas=no'),
     ('--without-schematron', 'schematron=no'),
-    ('--without-threads', 'threads=no'),
     ('--without-valid', 'valid=no'),
     ('--without-xinclude', 'xinclude=no'),
     ('--without-xptr', 'xptr=no'),
+    ('--without-xptr-locs', 'xptr_locs=no'),
     ('--without-zlib', 'zlib=no'),
 ]
 
@@ -320,7 +320,8 @@ def prepare_libxml_distribution(src_path, libxml2_repo_path, temp_dir):
 
     with WorkingDir(libxml2_repo_path):
         commit = subprocess.check_output(
-            ['git', 'log', '-n', '1', '--pretty=format:%H', 'HEAD'])
+            ['git', 'log', '-n', '1', '--pretty=format:%H',
+             'HEAD']).decode('ascii')
         subprocess.check_call(
             'git archive HEAD | tar -x -C "%s"' % temp_src_path,
             shell=True)
@@ -341,8 +342,8 @@ def prepare_libxml_distribution(src_path, libxml2_repo_path, temp_dir):
         # Work out what it is called
         tar_file = subprocess.check_output(
             '''awk '/PACKAGE =/ {p=$3} /VERSION =/ {v=$3} '''
-            '''END {printf("%s-%s.tar.gz", p, v)}' Makefile''',
-            shell=True)
+            '''END {printf("%s-%s.tar.xz", p, v)}' Makefile''',
+            shell=True).decode('ascii')
         return commit, os.path.abspath(tar_file)
 
 
@@ -363,7 +364,7 @@ def roll_libxml_linux(src_path, libxml2_repo_path):
             # Update the libxml repo and export it to the Chromium tree
             with WorkingDir(THIRD_PARTY_LIBXML_SRC):
                 subprocess.check_call(
-                    'tar xzf %s --strip-components=1' % tar_file,
+                    'tar xJf %s --strip-components=1' % tar_file,
                     shell=True)
         finally:
             shutil.rmtree(temp_dir)
@@ -422,8 +423,9 @@ def roll_libxml_mac(src_path, icu4c_path):
         sed_in_place('config.h', 's/#define HAVE_RAND_R 1//')
 
     with WorkingDir(full_path_to_third_party_libxml):
-        commit = subprocess.check_output(['awk', '/Version:/ {print $2}',
-                                          'README.chromium'])
+        commit = subprocess.check_output(
+            ['awk', '/Version:/ {print $2}',
+             'README.chromium']).decode('ascii')
         remove_tracked_files(FILES_TO_REMOVE)
         commit_message = 'Roll libxml to %s' % commit
         git('commit', '-am', commit_message)
@@ -432,7 +434,8 @@ def roll_libxml_mac(src_path, icu4c_path):
 
 def check_clean(path):
     with WorkingDir(path):
-        status = subprocess.check_output(['git', 'status', '-s'])
+        status = subprocess.check_output(['git', 'status',
+                                          '-s']).decode('ascii')
         if len(status) > 0:
             raise Exception('repository at %s is not clean' % path)
 

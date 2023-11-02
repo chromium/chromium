@@ -32,6 +32,8 @@ namespace blink {
 IdTargetObserver::IdTargetObserver(IdTargetObserverRegistry& observer_registry,
                                    const AtomicString& id)
     : registry_(&observer_registry), id_(id) {
+  INIT_RECORD_REPLAY_ID(IdTargetObserver);
+
   Registry().AddObserver(id_, this);
 }
 

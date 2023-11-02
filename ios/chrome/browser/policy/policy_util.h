@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,5 +37,9 @@ bool IsIncognitoModeDisabled(PrefService* pref_service);
 
 // Returns true if incognito mode is forced by enterprise policy.
 bool IsIncognitoModeForced(PrefService* pref_service);
+
+// Returns whether the browser is managed based on the presence of policy data
+// in the App Configuration from the platform.
+bool IsApplicationManagedByPlatform();
 
 #endif  // IOS_CHROME_BROWSER_POLICY_POLICY_UTIL_H_

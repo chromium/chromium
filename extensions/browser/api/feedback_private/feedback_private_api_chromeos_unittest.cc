@@ -1,12 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "extensions/browser/api/feedback_private/feedback_private_api.h"
 
-#include "base/containers/contains.h"
 #include "base/json/json_writer.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/values_test_util.h"
@@ -36,7 +34,7 @@ using testing::SaveArg;
 template <typename T>
 std::string ParamsToJSON(const T& params) {
   base::ListValue params_value;
-  params_value.Append(params.ToValue());
+  params_value.Append(base::Value(params.ToValue()));
   std::string params_json_string;
   EXPECT_TRUE(base::JSONWriter::Write(params_value, &params_json_string));
 
@@ -184,7 +182,7 @@ TEST_F(FeedbackPrivateApiUnittest, ReadLogSourceInvalidId) {
   ReadLogSourceParams params;
   params.source = api::feedback_private::LOG_SOURCE_MESSAGES;
   params.incremental = true;
-  params.reader_id = std::make_unique<int>(9999);
+  params.reader_id = 9999;
 
   EXPECT_NE("", RunReadLogSourceFunctionWithError(params));
 }
@@ -234,7 +232,7 @@ TEST_F(FeedbackPrivateApiUnittest, ReadLogSourceIncremental) {
       RunReadLogSourceFunction(params, &result_reader_id, &result_string));
   EXPECT_GT(result_reader_id, 0);
   EXPECT_EQ("a", result_string);
-  params.reader_id = std::make_unique<int>(result_reader_id);
+  params.reader_id = result_reader_id;
 
   EXPECT_TRUE(
       RunReadLogSourceFunction(params, &result_reader_id, &result_string));
@@ -274,7 +272,7 @@ TEST_F(FeedbackPrivateApiUnittest, Redact) {
     EXPECT_TRUE(
         RunReadLogSourceFunction(params, &result_reader_id, &result_string));
     EXPECT_GT(result_reader_id, 0);
-    params.reader_id = std::make_unique<int>(result_reader_id);
+    params.reader_id = result_reader_id;
   }
 
   EXPECT_TRUE(
@@ -298,7 +296,7 @@ TEST_F(FeedbackPrivateApiUnittest, ReadLogSourceMultipleSources) {
                                        &result_string));
   EXPECT_GT(result_reader_id, 0);
   // Store the reader ID back into the params to set up for the next call.
-  params_1st_read.reader_id = std::make_unique<int>(result_reader_id);
+  params_1st_read.reader_id = result_reader_id;
 
   // Create a second reader from the same log source.
   ReadLogSourceParams params_1st_read_repeated;
@@ -317,7 +315,7 @@ TEST_F(FeedbackPrivateApiUnittest, ReadLogSourceMultipleSources) {
   EXPECT_GT(result_reader_id, 0);
   EXPECT_NE(*params_1st_read.reader_id, result_reader_id);
   // Store the reader ID back into the params to set up for the next call.
-  params_2nd_read.reader_id = std::make_unique<int>(result_reader_id);
+  params_2nd_read.reader_id = result_reader_id;
 
   // Create a second reader from the same log source.
   ReadLogSourceParams params_2nd_read_repeated;
@@ -375,7 +373,7 @@ TEST_F(FeedbackPrivateApiUnittest, ReadLogSourceWithAccessTimeouts) {
   EXPECT_TRUE(
       RunReadLogSourceFunction(params, &result_reader_id, &result_string));
   EXPECT_EQ(1, result_reader_id);
-  params.reader_id = std::make_unique<int>(result_reader_id);
+  params.reader_id = result_reader_id;
 
   // Immediately perform another read. This is not allowed. (empty result)
   EXPECT_FALSE(

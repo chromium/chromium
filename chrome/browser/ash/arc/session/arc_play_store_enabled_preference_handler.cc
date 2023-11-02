@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,8 @@
 
 #include <string>
 
+#include "ash/components/arc/arc_prefs.h"
+#include "ash/components/arc/arc_util.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/logging.h"
@@ -19,13 +21,15 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/arc/arc_prefs.h"
-#include "components/arc/arc_util.h"
 #include "components/consent_auditor/consent_auditor.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "content/public/browser/browser_thread.h"
+
+// Enable VLOG level 1.
+#undef ENABLED_VLOG_LEVEL
+#define ENABLED_VLOG_LEVEL 1
 
 using sync_pb::UserConsentTypes;
 
@@ -168,10 +172,21 @@ void ArcPlayStoreEnabledPreferenceHandler::UpdateArcSessionManager() {
         IsArcPlayStoreEnabledPreferenceManagedForProfile(profile_));
   }
 
-  if (ShouldArcAlwaysStart() || IsArcPlayStoreEnabledForProfile(profile_))
+  if (ShouldArcAlwaysStart()) {
+    arc_session_manager_->AllowActivation();
     arc_session_manager_->RequestEnable();
-  else
+  } else if (IsArcPlayStoreEnabledForProfile(profile_)) {
+    if (!ShouldArcStartManually()) {
+      // TODO(b/246282398): Stop calling AllowActivation() on a regular boot
+      // once go/arc-on-demand-v1 is properly implemented.
+      arc_session_manager_->AllowActivation();
+      arc_session_manager_->RequestEnable();
+    } else {
+      VLOG(1) << "ARC is not started automatically";
+    }
+  } else {
     arc_session_manager_->RequestDisableWithArcDataRemoval();
+  }
 }
 
 }  // namespace arc

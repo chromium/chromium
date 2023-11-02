@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,10 @@
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
-#include "components/optimization_guide/proto/performance_hints_metadata.pb.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 
 namespace content {
 class WebContents;
@@ -28,6 +28,8 @@ class ContextMenuHelper
   void ShowContextMenu(content::RenderFrameHost& render_frame_host,
                        const content::ContextMenuParams& params);
 
+  void DismissContextMenu();
+
   void OnContextMenuClosed(JNIEnv* env,
                            const base::android::JavaParamRef<jobject>& obj);
 
@@ -42,7 +44,6 @@ class ContextMenuHelper
   GetChromeRenderFrame() const;
 
   base::android::ScopedJavaGlobalRef<jobject> java_obj_;
-  content::WebContents* web_contents_;
 
   content::ContextMenuParams context_menu_params_;
 

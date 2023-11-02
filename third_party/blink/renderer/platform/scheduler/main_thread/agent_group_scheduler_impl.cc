@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,8 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/public/dummy_schedulers.h"
+
+#include "base/record_replay.h"
 
 namespace blink {
 namespace scheduler {
@@ -49,9 +51,16 @@ AgentGroupSchedulerImpl::AgentGroupSchedulerImpl(
       main_thread_scheduler_(main_thread_scheduler) {
   DCHECK(!default_task_queue_->GetFrameScheduler());
   DCHECK_EQ(default_task_queue_->GetAgentGroupScheduler(), this);
+  agents_ = MakeGarbageCollected<HeapHashSet<WeakMember<Agent>, WTF::MemberHashRecordReplayId<Agent>>>();
+  replay_agents_strong_ = MakeGarbageCollected<HeapHashSet<Member<Agent>>>();
+  record_replay_id_ = recordreplay::NewIdAnyThread("AgentGroupSchedulerImpl");
 }
 
 AgentGroupSchedulerImpl::~AgentGroupSchedulerImpl() {
+  for (Agent* agent : *agents_) {
+    agent->SchedulerDestroyed();
+  }
+
   default_task_queue_->DetachFromMainThreadScheduler();
   compositor_task_queue_->DetachFromMainThreadScheduler();
   main_thread_scheduler_.RemoveAgentGroupScheduler(this);
@@ -103,6 +112,40 @@ BrowserInterfaceBrokerProxy&
 AgentGroupSchedulerImpl::GetBrowserInterfaceBroker() {
   DCHECK(broker_.is_bound());
   return broker_;
+}
+
+v8::Isolate* AgentGroupSchedulerImpl::Isolate() {
+  // TODO(dtapuska): crbug.com/1051790 implement an Isolate per scheduler.
+  v8::Isolate* isolate = main_thread_scheduler_.isolate();
+  DCHECK(isolate);
+  return isolate;
+}
+
+void AgentGroupSchedulerImpl::AddAgent(Agent* agent) {
+  DCHECK(agents_->find(agent) == agents_->end());
+  agents_->insert(agent);
+  
+  if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers", "AgentGroupSchedulerImpl"))
+    replay_agents_strong_->insert(agent);
+}
+
+void AgentGroupSchedulerImpl::RemoveAgent(Agent* agent) {
+  DCHECK(agents_->find(agent) != agents_->end());
+  agents_->erase(agent);
+  if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers", "AgentGroupSchedulerImpl"))
+    replay_agents_strong_->erase(agent);
+}
+
+void AgentGroupSchedulerImpl::PerformMicrotaskCheckpoint() {
+  for (Agent* agent : *agents_) {
+    recordreplay::Assert(
+        "[RUN-2056-2365] AgentGroupSchedulerImpl::PerformMicrotaskCheckpoint "
+        "%d %d %d",
+        RecordReplayId(), (int)agents_->size(), agent->RecordReplayId());
+    agent->PerformMicrotaskCheckpoint();
+  }
+
+  recordreplay::Assert("[RUN-2056-2211] AgentGroupSchedulerImpl::PerformMicrotaskCheckpoint Done");
 }
 
 }  // namespace scheduler

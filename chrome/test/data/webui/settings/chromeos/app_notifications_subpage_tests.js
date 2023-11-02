@@ -1,12 +1,12 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import {createBoolPermission, getBoolPermissionValue, isBoolValue, setAppNotificationProviderForTesting} from 'chrome://os-settings/chromeos/os_settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {flushTasks} from 'chrome://test/test_util.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 
@@ -17,7 +17,7 @@ class FakeAppNotificationHandler {
 
     /**
      * @private
-     *     {?chromeos.settings.appNotification.mojom.
+     *     {?ash.settings.appNotification.mojom.
      *      AppNotificationObserverRemote}
      */
     this.appNotificationObserverRemote_;
@@ -29,7 +29,7 @@ class FakeAppNotificationHandler {
     this.lastUpdatedAppPermission_ = {};
 
     /**
-     * @private {!Array<!chromeos.settings.appNotification.mojom.App>}
+     * @private {!Array<!ash.settings.appNotification.mojom.App>}
      */
     this.apps_ = [];
 
@@ -47,9 +47,9 @@ class FakeAppNotificationHandler {
     this.lastUpdatedAppPermission_ = {};
 
     this.resolverMap_.set('addObserver', new PromiseResolver());
+    this.resolverMap_.set('getQuietMode', new PromiseResolver());
     this.resolverMap_.set('setQuietMode', new PromiseResolver());
     this.resolverMap_.set('setNotificationPermission', new PromiseResolver());
-    this.resolverMap_.set('notifyPageReady', new PromiseResolver());
     this.resolverMap_.set('getApps', new PromiseResolver());
   }
 
@@ -85,7 +85,7 @@ class FakeAppNotificationHandler {
 
   /**
    * @return
-   *      {chromeos.settings.appNotification.mojom.
+   *      {ash.settings.appNotification.mojom.
    *        AppNotificationObserverRemote}
    */
   getObserverRemote() {
@@ -107,7 +107,7 @@ class FakeAppNotificationHandler {
   }
 
   /**
-   * @return {!apps.mojom.Permission}
+   * @return {!appManagement.mojom.Permission}
    */
   getLastUpdatedPermission() {
     return this.lastUpdatedAppPermission_;
@@ -116,7 +116,7 @@ class FakeAppNotificationHandler {
   // appNotificationHandler methods
 
   /**
-   * @param {!chromeos.settings.appNotification.mojom.
+   * @param {!ash.settings.appNotification.mojom.
    *        AppNotificationObserverRemote}
    *      remote
    * @return {!Promise}
@@ -126,6 +126,14 @@ class FakeAppNotificationHandler {
       this.appNotificationObserverRemote_ = remote;
       this.methodCalled('addObserver');
       resolve();
+    });
+  }
+
+  /** @return {!Promise<{success: boolean}>} */
+  getQuietMode() {
+    return new Promise(resolve => {
+      this.methodCalled('getQuietMode');
+      resolve({success: this.isQuietModeEnabled_});
     });
   }
 
@@ -140,7 +148,7 @@ class FakeAppNotificationHandler {
 
   /**
    * @param {string} id
-   * @param {!apps.mojom.Permission} permission
+   * @param {!appManagement.mojom.Permission} permission
    */
   setNotificationPermission(id, permission) {
     return new Promise(resolve => {
@@ -151,16 +159,8 @@ class FakeAppNotificationHandler {
     });
   }
 
-  /** @return {!Promise} */
-  notifyPageReady() {
-    return new Promise(resolve => {
-      this.methodCalled('notifyPageReady');
-      resolve();
-    });
-  }
-
   /**
-   * @return {!Promise<!Array<!chromeos.settings.appNotification.mojom.App>>}
+   * @return {!Promise<!Array<!ash.settings.appNotification.mojom.App>>}
    */
   getApps() {
     return new Promise(resolve => {
@@ -177,7 +177,7 @@ suite('AppNotificationsSubpageTests', function() {
 
   /**
    * @type {
-   *    ?chromeos.settings.appNotification.mojom.AppNotificationHandlerRemote
+   *    ?ash.settings.appNotification.mojom.AppNotificationHandlerRemote
    *  }
    */
   let mojoApi_;
@@ -215,7 +215,7 @@ suite('AppNotificationsSubpageTests', function() {
     mojoApi_.getObserverRemote().onQuietModeChanged(enable);
   }
 
-  /** @param {!chromeos.settings.appNotification.mojom.App} */
+  /** @param {!ash.settings.appNotification.mojom.App} */
   function simulateNotificationAppChanged(app) {
     mojoApi_.getObserverRemote().onNotificationAppChanged(app);
   }
@@ -223,17 +223,18 @@ suite('AppNotificationsSubpageTests', function() {
   /**
    * @param {string} id
    * @param {string} title
-   * @param {!apps.mojom.Permission} permission
-   * @param {?apps.mojom.Readiness} readiness
-   * @return {!chromeos.settings.appNotification.mojom.App}
+   * @param {!appManagement.mojom.Permission} permission
+   * @param {?ash.settings.appNotification.mojom.Readiness} readiness
+   * @return {!ash.settings.appNotification.mojom.App}
    */
   function createApp(
-      id, title, permission, readiness = apps.mojom.Readiness.kReady) {
+      id, title, permission,
+      readiness = ash.settings.appNotification.mojom.Readiness.kReady) {
     return {
       id: id,
       title: title,
       notificationPermission: permission,
-      readiness: readiness
+      readiness: readiness,
     };
   }
 
@@ -302,7 +303,8 @@ suite('AppNotificationsSubpageTests', function() {
     assertEquals(2, appRowList.length);
 
     const app3 = createApp(
-        '1', 'App1', permission1, apps.mojom.Readiness.kUninstalledByUser);
+        '1', 'App1', permission1,
+        ash.settings.appNotification.mojom.Readiness.kUninstalledByUser);
     simulateNotificationAppChanged(app3);
 
     await flushTasks();

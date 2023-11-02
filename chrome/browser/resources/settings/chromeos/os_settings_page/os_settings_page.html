@@ -49,7 +49,7 @@
   }
 
   :host-context(.focus-outline-visible) #advancedToggle:focus {
-    font-weight: 600;
+    outline: 2px solid var(--cros-focus-ring-color);
   }
 
   #openInNewBrowserSettingsIcon {
@@ -127,14 +127,8 @@
     </settings-section>
     <settings-section page-title="$i18n{bluetoothPageTitle}"
         section="bluetooth">
-      <template is="dom-if" if="[[!isBluetoothRevampEnabled_]]" restamp>
-        <settings-bluetooth-page prefs="{{prefs}}">
-        </settings-bluetooth-page>
-      </template>
-      <template is="dom-if" if="[[isBluetoothRevampEnabled_]]" restamp>
-        <os-settings-bluetooth-page prefs="{{prefs}}">
-        </os-settings-bluetooth-page>
-      </template>
+      <os-settings-bluetooth-page prefs="{{prefs}}">
+      </os-settings-bluetooth-page>
     </settings-section>
     <template is="dom-if" if="[[!isGuestMode_]]" restamp>
       <settings-section page-title="$i18n{multidevicePageTitle}"
@@ -186,10 +180,18 @@
           android-apps-info="[[androidAppsInfo]]"
           have-play-store-app="[[havePlayStoreApp]]"
           show-android-apps="[[showAndroidApps]]"
+          show-arcvm-manage-usb="[[showArcvmManageUsb]]"
           show-plugin-vm="[[showPluginVm]]"
           show-startup="[[showStartup]]">
       </os-settings-apps-page>
     </settings-section>
+    <template is="dom-if" if="[[isAccessibilityOSSettingsVisibilityEnabled_]]">
+      <settings-section page-title="$i18n{a11yPageTitle}"
+          section="osAccessibility">
+        <os-settings-a11y-page prefs="{{prefs}}">
+        </os-settings-a11y-page>
+      </settings-section>
+    </template>
   </div>
 </template>
 
@@ -233,19 +235,20 @@
         <os-settings-printing-page prefs="{{prefs}}">
         </os-settings-printing-page>
       </settings-section>
-      <template is="dom-if" if="[[showCrostini]]" restamp>
-        <settings-section page-title="$i18n{crostiniPageTitle}"
-            section="crostini">
-          <settings-crostini-page prefs="{{prefs}}"
-              allow-crostini="[[allowCrostini_]]">
-          </settings-crostini-page>
+      <settings-section page-title="$i18n{crostiniPageTitle}"
+          section="crostini">
+        <settings-crostini-page prefs="{{prefs}}"
+            allow-crostini="[[allowCrostini_]]"
+            show-crostini="[[showCrostini]]">
+        </settings-crostini-page>
+      </settings-section>
+      <template is="dom-if" if="[[!isAccessibilityOSSettingsVisibilityEnabled_]]">
+        <settings-section page-title="$i18n{a11yPageTitle}"
+            section="osAccessibility">
+          <os-settings-a11y-page prefs="{{prefs}}">
+          </os-settings-a11y-page>
         </settings-section>
       </template>
-      <settings-section page-title="$i18n{a11yPageTitle}"
-          section="osAccessibility">
-        <os-settings-a11y-page prefs="{{prefs}}">
-        </os-settings-a11y-page>
-      </settings-section>
       <template is="dom-if" if="[[showReset]]">
         <settings-section page-title="$i18n{resetPageTitle}"
             section="osReset">

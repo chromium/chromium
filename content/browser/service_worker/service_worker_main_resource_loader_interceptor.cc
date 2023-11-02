@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,8 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/stl_util.h"
+#include "base/memory/ptr_util.h"
+#include "base/types/optional_util.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request_info.h"
@@ -17,6 +18,10 @@
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_main_resource_handle.h"
 #include "content/browser/service_worker/service_worker_object_host.h"
+#include "content/browser/worker_host/dedicated_worker_host.h"
+#include "content/browser/worker_host/dedicated_worker_service_impl.h"
+#include "content/browser/worker_host/shared_worker_host.h"
+#include "content/browser/worker_host/shared_worker_service_impl.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/origin_util.h"
 #include "content/public/common/url_constants.h"
@@ -27,7 +32,9 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/loader/resource_type_util.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/storage_key/ancestor_chain_bit.mojom.h"
 #include "url/origin.h"
+#include "url/url_constants.h"
 
 namespace content {
 
@@ -198,42 +205,42 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
     }
   }
 
-  // Update `isolation_info_` in case a redirect has occurred.
+  // Update `isolation_info_`  to equal the net::IsolationInfo needed for any
+  // service worker intercepting this request. Here, `isolation_info_` directly
+  // corresponds to the StorageKey used to look up the service worker's
+  // registration. That StorageKey will then be used later to recreate this
+  // net::IsolationInfo for use by the ServiceWorker itself.
   url::Origin new_origin = url::Origin::Create(tentative_resource_request.url);
-  switch (isolation_info_.request_type()) {
-    case net::IsolationInfo::RequestType::kMainFrame:
-    case net::IsolationInfo::RequestType::kSubFrame:
-      isolation_info_ = isolation_info_.CreateForRedirect(new_origin);
-      break;
-    case net::IsolationInfo::RequestType::kOther:
-      net::SiteForCookies new_site_for_cookies =
-          isolation_info_.site_for_cookies();
-      new_site_for_cookies.CompareWithFrameTreeOriginAndRevise(new_origin);
-      // This is a request for a worker. Loading cross-origin workers is not
-      // allowed, so it does not really matter what we put here (if this is
-      // cross-origin redirect, it will be blocked later on), but we need to
-      // update the storage key anyway so that following DCHECKs pass.
-      //
-      // TODO(https://crbug/1147281): If we will have a custom
-      // `net::IsolationInfo::RequestType` for workers, it might become possible
-      // to simplify this and move the logic into
-      // `net::IsolationInfo::CreateForRedirect`.
-      isolation_info_ =
-          net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
-                                     isolation_info_.top_frame_origin().value(),
-                                     new_origin, new_site_for_cookies);
-      break;
+  net::SiteForCookies new_site_for_cookies = isolation_info_.site_for_cookies();
+  new_site_for_cookies.CompareWithFrameTreeOriginAndRevise(new_origin);
+  isolation_info_ = net::IsolationInfo::Create(
+      isolation_info_.request_type(),
+      isolation_info_.top_frame_origin().value(), new_origin,
+      new_site_for_cookies, absl::nullopt,
+      isolation_info_.nonce().has_value() ? &(isolation_info_.nonce().value())
+                                          : nullptr);
+
+  // Attempt to get the storage key from |RenderFrameHostImpl|. This correctly
+  // accounts for extension URLs. The absence of this logic was a potential
+  // cause for https://crbug.com/1346450.
+  absl::optional<blink::StorageKey> storage_key =
+      GetStorageKeyFromRenderFrameHost(
+          new_origin, base::OptionalToPtr(isolation_info_.nonce()));
+  if (!storage_key.has_value()) {
+    storage_key = GetStorageKeyFromWorkerHost(new_origin);
+  }
+  if (!storage_key.has_value()) {
+    storage_key = blink::StorageKey::CreateFromOriginAndIsolationInfo(
+        new_origin, isolation_info_);
   }
 
   // If we know there's no service worker for the storage key, let's skip asking
   // the storage to check the existence.
-  blink::StorageKey storage_key =
-      blink::StorageKey::FromNetIsolationInfo(isolation_info_);
-
   bool skip_service_worker =
       skip_service_worker_ ||
+      !OriginCanAccessServiceWorkers(tentative_resource_request.url) ||
       !handle_->context_wrapper()->MaybeHasRegistrationForStorageKey(
-          storage_key);
+          *storage_key);
 
   // Create and start the handler for this request. It will invoke the loader
   // callback or fallback callback.
@@ -243,7 +250,7 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
       handle_->service_worker_accessed_callback());
 
   request_handler_->MaybeCreateLoader(
-      tentative_resource_request, storage_key, browser_context,
+      tentative_resource_request, *storage_key, browser_context,
       std::move(loader_callback), std::move(fallback_callback));
 }
 
@@ -267,6 +274,10 @@ ServiceWorkerMainResourceLoaderInterceptor::
   SubresourceLoaderParams params;
   auto controller_info = blink::mojom::ControllerServiceWorkerInfo::New();
   controller_info->mode = container_host->GetControllerMode();
+  controller_info->fetch_handler_type =
+      container_host->controller()->fetch_handler_type();
+  controller_info->effective_fetch_handler_type =
+      container_host->controller()->EffectiveFetchHandlerType();
   // Note that |controller_info->remote_controller| is null if the controller
   // has no fetch event handler. In that case the renderer frame won't get the
   // controller pointer upon the navigation commit, and subresource loading will
@@ -335,6 +346,53 @@ bool ServiceWorkerMainResourceLoaderInterceptor::ShouldCreateForNavigation(
   // case of redirect to HTTPS.
   return url.SchemeIsHTTPOrHTTPS() || OriginCanAccessServiceWorkers(url) ||
          SchemeMaySupportRedirectingToHTTPS(browser_context, url);
+}
+
+absl::optional<blink::StorageKey>
+ServiceWorkerMainResourceLoaderInterceptor::GetStorageKeyFromRenderFrameHost(
+    const url::Origin& origin,
+    const base::UnguessableToken* nonce) {
+  // In this case |frame_tree_node_id_| is invalid.
+  if (!blink::IsRequestDestinationFrame(request_destination_))
+    return absl::nullopt;
+  FrameTreeNode* frame_tree_node =
+      FrameTreeNode::GloballyFindByID(frame_tree_node_id_);
+  if (!frame_tree_node)
+    return absl::nullopt;
+  RenderFrameHostImpl* frame_host = frame_tree_node->current_frame_host();
+  if (!frame_host)
+    return absl::nullopt;
+  return frame_host->CalculateStorageKey(origin, nonce);
+}
+
+absl::optional<blink::StorageKey>
+ServiceWorkerMainResourceLoaderInterceptor::GetStorageKeyFromWorkerHost(
+    const url::Origin& origin) {
+  if (!worker_token_.has_value())
+    return absl::nullopt;
+  auto* process = RenderProcessHost::FromID(process_id_);
+  if (!process)
+    return absl::nullopt;
+  auto* storage_partition = process->GetStoragePartition();
+
+  if (worker_token_->Is<blink::DedicatedWorkerToken>()) {
+    auto* worker_service = static_cast<DedicatedWorkerServiceImpl*>(
+        storage_partition->GetDedicatedWorkerService());
+    auto* worker_host = worker_service->GetDedicatedWorkerHostFromToken(
+        worker_token_->GetAs<blink::DedicatedWorkerToken>());
+    if (worker_host)
+      return worker_host->GetStorageKey().WithOrigin(origin);
+  } else if (worker_token_->Is<blink::SharedWorkerToken>()) {
+    auto* worker_service = static_cast<SharedWorkerServiceImpl*>(
+        storage_partition->GetSharedWorkerService());
+    auto* worker_host = worker_service->GetSharedWorkerHostFromToken(
+        worker_token_->GetAs<blink::SharedWorkerToken>());
+    if (worker_host)
+      return worker_host->GetStorageKey().WithOrigin(origin);
+  } else {
+    NOTREACHED();
+  }
+  return absl::nullopt;
 }
 
 }  // namespace content

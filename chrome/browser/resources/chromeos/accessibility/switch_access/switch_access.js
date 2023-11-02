@@ -1,6 +1,8 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+import {EventHandler} from '../common/event_handler.js';
 
 import {Commands} from './commands.js';
 import {Navigator} from './navigator.js';
@@ -19,7 +21,7 @@ export class SwitchAccess {
   static initialize() {
     SwitchAccess.instance = new SwitchAccess();
 
-    chrome.automation.getDesktop((desktop) => {
+    chrome.automation.getDesktop(desktop => {
       chrome.automation.getFocus(focus => {
         // Focus is available. Finish init without waiting for further events.
         // Disallow web view nodes, which indicate a root web area is still
@@ -41,14 +43,14 @@ export class SwitchAccess {
 
           desktop.removeEventListener(
               chrome.automation.EventType.FOCUS, listener, false);
-          window.clearTimeout(callbackId);
+          clearTimeout(callbackId);
 
           SwitchAccess.finishInit_(desktop);
         };
 
         desktop.addEventListener(
             chrome.automation.EventType.FOCUS, listener, false);
-        callbackId = window.setTimeout(listener, 5000);
+        callbackId = setTimeout(listener, 5000);
       });
     });
   }
@@ -61,18 +63,9 @@ export class SwitchAccess {
      */
     this.enableImprovedTextInput_ = false;
 
-    /** @private {boolean} */
-    this.enableMultistepAutomationFeatures_ = false;
-
     chrome.commandLinePrivate.hasSwitch(
-        'enable-experimental-accessibility-switch-access-text', (result) => {
+        'enable-experimental-accessibility-switch-access-text', result => {
           this.enableImprovedTextInput_ = result;
-        });
-
-    chrome.commandLinePrivate.hasSwitch(
-        'enable-experimental-accessibility-switch-access-multistep-automation',
-        (enabled) => {
-          this.enableMultistepAutomationFeatures_ = enabled;
         });
 
     /* @private {!SAConstants.Mode} */
@@ -86,11 +79,6 @@ export class SwitchAccess {
    */
   improvedTextInputEnabled() {
     return this.enableImprovedTextInput_;
-  }
-
-  /** @return {boolean} */
-  multistepAutomationFeaturesEnabled() {
-    return this.enableMultistepAutomationFeatures_;
   }
 
   /** @return {!SAConstants.Mode} */
@@ -124,7 +112,7 @@ export class SwitchAccess {
         desktop, chrome.automation.EventType.CHILDREN_CHANGED,
         null /** callback */);
 
-    const onEvent = (event) => {
+    const onEvent = event => {
       if (event.target.matches(findParams)) {
         // If the event target is the node we're looking for, we've found it.
         eventHandler.stop();

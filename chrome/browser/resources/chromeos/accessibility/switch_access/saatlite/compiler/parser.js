@@ -1,5 +1,4 @@
-
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -618,7 +617,7 @@ var parser = (function() {
     options: {
       type: 'lalr',
       hasPartialLrUpgradeOnConflict: true,
-      errorRecoveryTokenDiscardCount: 3
+      errorRecoveryTokenDiscardCount: 3,
     },
     symbols_: {
       '$accept': 0,
@@ -650,7 +649,7 @@ var parser = (function() {
       'statement': 22,
       'statements': 21,
       'string_literal': 28,
-      'test': 19
+      'test': 19,
     },
     terminals_: {
       1: 'EOF',
@@ -670,7 +669,7 @@ var parser = (function() {
       15: 'FOCUS',
       16: 'ON',
       17: 'ROLE',
-      18: 'STRING_LITERAL'
+      18: 'STRING_LITERAL',
     },
     TERROR: 2,
     EOF: 1,
@@ -792,13 +791,29 @@ var parser = (function() {
     },
     productions_: bp({
       pop: u([
-        19, 19, 20, 20, s, [21, 4], s, [22, 4], 23, 23, 24, 24, 25, 25, 26, s,
-        [27, 4], 28
+        19,
+        19,
+        20,
+        20,
+        s,
+        [21, 4],
+        s,
+        [22, 4],
+        23,
+        23,
+        24,
+        24,
+        25,
+        25,
+        26,
+        s,
+        [27, 4],
+        28,
       ]),
       rule: u([
-        3, 2, 2, 3, s, [3, 4, -1], 1, 1, 2, 2, c, [4, 3], 1, 5, 0, c, [18, 3],
-        s, [1, 3]
-      ])
+        3, 2,      2, 3, s, [3, 4, -1], 1,       1, 2,      2,
+        c, [4, 3], 1, 5, 0, c,          [18, 3], s, [1, 3],
+      ]),
     }),
     performAction: function parser__PerformAction(
         yystate /* action[1] */, yysp, yyvstack) {
@@ -1022,7 +1037,7 @@ var parser = (function() {
     table: bt({
       len: u([
         11, 1,      8, 2, 5, s, [0, 3], 4, 2, 2, 0, 7, 0, 4, 7,
-        s,  [0, 3], 1, 0, 1, s, [0, 4], 1, 4, 1, 0, 4, 3, c, [12, 5]
+        s,  [0, 3], 1, 0, 1, s, [0, 4], 1, 4, 1, 0, 4, 3, c, [12, 5],
       ]),
       symbol: u([
         1,  s,      [3, 6, 1], s,  [19, 4, 1], 1,  1,  c,  [11, 5],
@@ -1030,29 +1045,30 @@ var parser = (function() {
         4,  11,     25,        15, 26,         1,  4,  c,  [23, 6],
         22, c,      [19, 6],   c,  [11, 4],    10, 12, 16, 13,
         17, 18,     27,        28, 12,         1,  4,  18, 28,
-        1,  4,      17,        14
+        1,  4,      17,        14,
       ]),
       type: u([
         s,       [2, 7], s,       [0, 4], 1,       c, [11, 8], c,
         [7, 10], 0,      2,       c,      [13, 6], c, [11, 5], c,
-        [26, 8], c,      [51, 9], c,      [23, 7], 2, 2
+        [26, 8], c,      [51, 9], c,      [23, 7], 2, 2,
       ]),
       state: u([1, 2, 3, 5, 10, 5, 13, 15, 18, 20, 23, 24, 15, 29, 31, 34]),
       mode: u([
         2, 1,       2, s,       [1, 4], 2,      c, [6, 5],   s, [1, 5],
-        c, [11, 6], c, [17, 8], s,      [2, 6], c, [27, 10], c, [12, 4]
+        c, [11, 6], c, [17, 8], s,      [2, 6], c, [27, 10], c, [12, 4],
       ]),
       goto: u([
         8,      4,  8,       s,  [6, 4, 1], 8,  c,       [6, 5], 11,         12,
         14,     16, 17,      18, 18,        19, 21,      22,     12,         s,
         [6, 3], c,  [17, 3], 16, 17,        s,  [13, 6], s,      [25, 4, 1], 30,
-        32,     33, 22,      22, 32,        23, 23,      35,     36
-      ])
+        32,     33, 22,      22, 32,        23, 23,      35,     36,
+      ]),
     }),
     defaultActions: bda({
       idx: u(
           [5, 6, 7, 11, 13, 16, 17, 18, 20, s, [22, 4, 1], 29, 32, 34, 35, 36]),
-      goto: u([7, 9, 10, 2, 3, 14, 16, 11, 12, 1, 5, 4, 15, 19, 24, 20, 21, 17])
+      goto:
+          u([7, 9, 10, 2, 3, 14, 16, 11, 12, 1, 5, 4, 15, 19, 24, 20, 21, 17]),
     }),
     parseError: function parseError(str, hash, ExceptionClass) {
       if (hash.recoverable) {
@@ -1093,7 +1109,7 @@ var parser = (function() {
       var ERROR_RECOVERY_TOKEN_DISCARD_COUNT =
           (this.options.errorRecoveryTokenDiscardCount | 0) || 3;
       var NO_ACTION = [
-        0, 37 /* === table.length :: ensures that anyone using this new state
+        0, 37, /* === table.length :: ensures that anyone using this new state
                  will fail dramatically! */
       ];
 
@@ -1112,9 +1128,9 @@ var parser = (function() {
         pre_parse: undefined,
         post_parse: undefined,
         pre_lex: undefined,
-        post_lex:
-            undefined  // WARNING: must be written this way for the code
-                       // expanders to work correctly in both ES5 and ES6 modes!
+        post_lex: undefined,  // WARNING: must be written this way for the code
+                              // expanders to work correctly in both ES5 and ES6
+                              // modes!
       };
 
       var ASSERT;
@@ -1311,14 +1327,14 @@ var parser = (function() {
             // info.value = null;
             // info.value_stack = null;
             // ...
-            var rec = !!this.recoverable;
+            var rec = Boolean(this.recoverable);
             for (var key in this) {
               if (this.hasOwnProperty(key) && typeof key === 'object') {
                 this[key] = undefined;
               }
             }
             this.recoverable = rec;
-          }
+          },
         };
         // track this instance so we can `destroy()` it once we deem it
         // superfluous and ready for garbage collection!
@@ -1609,7 +1625,7 @@ var parser = (function() {
       }  // /finally
 
       return retval;
-    }
+    },
   };
   parser.originalParseError = parser.parseError;
   parser.originalQuoteName = parser.quoteName;
@@ -2043,7 +2059,7 @@ var parser = (function() {
         /** @constructor */
         var pei = {
           errStr: msg,
-          recoverable: !!recoverable,
+          recoverable: Boolean(recoverable),
           text: this.match,  // This one MAY be empty; userland code should use
                              // the `upcomingInput` API to obtain more text
                              // which follows the 'lexer cursor position'...
@@ -2070,7 +2086,7 @@ var parser = (function() {
             // info.yy = null;
             // info.lexer = null;
             // ...
-            var rec = !!this.recoverable;
+            var rec = Boolean(this.recoverable);
 
             for (var key in this) {
               if (this.hasOwnProperty(key) && typeof key === 'object') {
@@ -2079,7 +2095,7 @@ var parser = (function() {
             }
 
             this.recoverable = rec;
-          }
+          },
         };
 
         // track this instance so we can `destroy()` it once we deem it
@@ -2201,7 +2217,7 @@ var parser = (function() {
           first_column: col,
           last_line: this.yylineno + 1,
           last_column: col,
-          range: [this.offset, this.offset]
+          range: [this.offset, this.offset],
         };
       },
 
@@ -2273,7 +2289,7 @@ var parser = (function() {
           first_column: 0,
           last_line: 1,
           last_column: 0,
-          range: [0, 0]
+          range: [0, 0],
         };
 
         this.offset = 0;
@@ -2656,7 +2672,7 @@ var parser = (function() {
           first_column: 0,
           last_line: 1,
           last_column: 0,
-          range: [0, 0]
+          range: [0, 0],
         };
 
         if (actual) {
@@ -2951,7 +2967,7 @@ var parser = (function() {
               last_line: this.yylloc.last_line,
               first_column: this.yylloc.first_column,
               last_column: this.yylloc.last_column,
-              range: this.yylloc.range.slice(0)
+              range: this.yylloc.range.slice(0),
             },
 
             yytext: this.yytext,
@@ -2967,7 +2983,7 @@ var parser = (function() {
             yy: this.yy,
 
             conditionStack: this.conditionStack.slice(0),
-            done: this.done
+            done: this.done,
           };
         }
 
@@ -3009,8 +3025,11 @@ var parser = (function() {
         //
         //   function lexer__performAction(yy, yyrulenumber, YY_START) {...}
         token = this.performAction.call(
-            this, this.yy, indexed_rule,
-            this.conditionStack[this.conditionStack.length - 1] /* = YY_START */
+            this,
+            this.yy,
+            indexed_rule,
+            this.conditionStack[this.conditionStack.length - 1], /* = YY_START
+                                                                  */
         );
 
         // otherwise, when the action codes are all simple return token
@@ -3278,7 +3297,7 @@ var parser = (function() {
                      this.yy && typeof this.yy.post_lex === 'function' ||
                      typeof this.options.post_lex === 'function' ||
                      typeof this.post_lex === 'function') &&
-              typeof this.fastLex === 'function'
+              typeof this.fastLex === 'function',
         };
 
         return rv;
@@ -3472,7 +3491,7 @@ var parser = (function() {
 
         /*! Conditions:: INITIAL */
         /*! Rule::       $ */
-        20: 1
+        20: 1,
       },
 
       rules: [
@@ -3497,33 +3516,35 @@ var parser = (function() {
         /* 18: */ /^(?:textField)/i,
         /* 19: */ /^(?:textFieldWithComboBox)/i,
         /* 20: */ /^(?:$)/i,
-        /* 21: */ /^(?:\s)/i
+        /* 21: */ /^(?:\s)/i,
       ],
 
       conditions: {
         'INITIAL': {
           rules: [
             0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10,
-            11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21
+            11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
           ],
 
-          inclusive: true
-        }
-      }
+          inclusive: true,
+        },
+      },
     };
 
     return lexer;
   }();
   parser.lexer = lexer;
 
-  let page, point, objectToMatch;
+  let page;
+  let point;
+  let objectToMatch;
 
   let indent = '';
   const increaseIndent = () => indent = indent + '  ';
   const decreaseIndent = () => indent = indent.substring(2);
 
   let buffer = '';
-  const addToBuffer = (text) => buffer += indent + text + '\n';
+  const addToBuffer = text => buffer += indent + text + '\n';
   const flushBuffer = () => {
     const result = buffer;
     buffer = '';
@@ -3549,7 +3570,7 @@ var parser = (function() {
     return flushBuffer();
   };
 
-  const finishTest = (opt_url) => {
+  const finishTest = opt_url => {
     decreaseIndent();
     if (opt_url) {
       addToBuffer(`}, {url: ${opt_url.output}});`);

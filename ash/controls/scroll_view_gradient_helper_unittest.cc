@@ -1,16 +1,17 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <memory>
 
+#include "ash/controls/gradient_layer_delegate.h"
 #include "ash/controls/scroll_view_gradient_helper.h"
-#include "ash/shelf/gradient_layer_delegate.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_type.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/test/views_test_base.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_utils.h"
@@ -20,6 +21,7 @@ namespace {
 
 constexpr int kWidgetHeight = 100;
 constexpr int kWidgetWidth = 100;
+constexpr int kGradientSize = 16;
 
 // Uses ViewsTestBase because we may want to move this helper into //ui/views
 // in the future.
@@ -46,7 +48,8 @@ class ScrollViewGradientHelperTest : public views::ViewsTestBase {
         contents->AddChildView(std::make_unique<views::ScrollView>());
     scroll_view_->SetBounds(0, 0, kWidgetWidth, kWidgetHeight);
     scroll_view_->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
-    gradient_helper_ = std::make_unique<ScrollViewGradientHelper>(scroll_view_);
+    gradient_helper_ =
+        std::make_unique<ScrollViewGradientHelper>(scroll_view_, kGradientSize);
   }
 
   void TearDown() override {
@@ -59,17 +62,25 @@ class ScrollViewGradientHelperTest : public views::ViewsTestBase {
     auto contents = std::make_unique<views::View>();
     contents->SetSize({kWidgetWidth, height});
     scroll_view_->SetContents(std::move(contents));
-    scroll_view_->Layout();
+    views::test::RunScheduledLayout(scroll_view_);
   }
 
   bool HasGradientAtTop() {
-    auto* gradient_layer = gradient_helper_->gradient_layer_for_test();
-    return !gradient_layer->start_fade_zone_bounds().IsEmpty();
+    const auto& gradient_mask = gradient_helper_->gradient_mask_for_test();
+    EXPECT_FALSE(gradient_mask.IsEmpty());
+    return cc::MathUtil::IsWithinEpsilon(gradient_mask.steps()[0].fraction,
+                                         0.f);
   }
 
   bool HasGradientAtBottom() {
-    auto* gradient_layer = gradient_helper_->gradient_layer_for_test();
-    return !gradient_layer->end_fade_zone_bounds().IsEmpty();
+    const auto& gradient_mask = gradient_helper_->gradient_mask_for_test();
+    EXPECT_FALSE(gradient_mask.IsEmpty());
+    return cc::MathUtil::IsWithinEpsilon(
+        gradient_mask.steps()[gradient_mask.step_count() - 1].fraction, 1.f);
+  }
+
+  bool HasGradientMask(const ui::Layer* layer) {
+    return !layer->gradient_mask().IsEmpty();
   }
 
   views::UniqueWidgetPtr widget_;
@@ -80,36 +91,36 @@ class ScrollViewGradientHelperTest : public views::ViewsTestBase {
 TEST_F(ScrollViewGradientHelperTest, NoGradientForViewThatDoesNotScroll) {
   // Create a short contents view, so the scroll view won't scroll.
   AddScrollViewContentsWithHeight(10);
-  gradient_helper_->UpdateGradientZone();
+  gradient_helper_->UpdateGradientMask();
 
-  EXPECT_FALSE(scroll_view_->layer()->layer_mask_layer());
-  EXPECT_FALSE(gradient_helper_->gradient_layer_for_test());
+  EXPECT_FALSE(HasGradientMask(scroll_view_->layer()));
+  EXPECT_TRUE(gradient_helper_->gradient_mask_for_test().IsEmpty());
 }
 
 TEST_F(ScrollViewGradientHelperTest, HasGradientForViewThatScrolls) {
   // Create a tall contents view.
   AddScrollViewContentsWithHeight(500);
-  gradient_helper_->UpdateGradientZone();
+  gradient_helper_->UpdateGradientMask();
 
   // Gradient is shown.
-  EXPECT_TRUE(scroll_view_->layer()->layer_mask_layer());
-  EXPECT_TRUE(gradient_helper_->gradient_layer_for_test());
+  EXPECT_TRUE(HasGradientMask(scroll_view_->layer()));
+  EXPECT_FALSE(gradient_helper_->gradient_mask_for_test().IsEmpty());
 
   // Shrink the contents view.
   scroll_view_->contents()->SetSize({kWidgetWidth, 10});
-  scroll_view_->Layout();
-  gradient_helper_->UpdateGradientZone();
+  views::test::RunScheduledLayout(scroll_view_);
+  gradient_helper_->UpdateGradientMask();
 
   // Gradient is removed.
-  EXPECT_FALSE(scroll_view_->layer()->layer_mask_layer());
-  EXPECT_FALSE(gradient_helper_->gradient_layer_for_test());
+  EXPECT_FALSE(HasGradientMask(scroll_view_->layer()));
+  EXPECT_TRUE(gradient_helper_->gradient_mask_for_test().IsEmpty());
 }
 
 TEST_F(ScrollViewGradientHelperTest, ShowsGradientsBasedOnScrollPosition) {
   // Create a tall contents view.
   AddScrollViewContentsWithHeight(500);
   ASSERT_TRUE(scroll_view_->vertical_scroll_bar());
-  gradient_helper_->UpdateGradientZone();
+  gradient_helper_->UpdateGradientMask();
 
   // Because the scroll position is at the top, only the bottom gradient shows.
   EXPECT_FALSE(HasGradientAtTop());
@@ -131,14 +142,13 @@ TEST_F(ScrollViewGradientHelperTest, ShowsGradientsBasedOnScrollPosition) {
 TEST_F(ScrollViewGradientHelperTest, DeletingHelperRemovesMaskLayer) {
   // Create a tall contents view.
   AddScrollViewContentsWithHeight(500);
-  gradient_helper_->UpdateGradientZone();
+  gradient_helper_->UpdateGradientMask();
 
-  // Precondition: Mask layer exists.
-  ASSERT_TRUE(scroll_view_->layer()->layer_mask_layer());
+  // Precondition: Mask exists.
+  ASSERT_TRUE(HasGradientMask(scroll_view_->layer()));
 
-  // Deleting the helper removes the mask layer.
   gradient_helper_.reset();
-  EXPECT_FALSE(scroll_view_->layer()->layer_mask_layer());
+  ASSERT_FALSE(HasGradientMask(scroll_view_->layer()));
 }
 
 }  // namespace

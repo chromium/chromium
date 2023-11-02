@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
@@ -34,8 +35,6 @@ namespace {
 
 using sync_pb::SessionSpecifics;
 using syncer::MetadataChangeList;
-using syncer::ModelTypeStore;
-using syncer::ModelTypeSyncBridge;
 
 // Default time without activity after which a session is considered stale and
 // becomes a candidate for garbage collection.
@@ -91,7 +90,7 @@ class LocalSessionWriteBatch : public LocalSessionEventHandlerImpl::WriteBatch {
  private:
   const SessionStore::SessionInfo session_info_;
   std::unique_ptr<SessionStore::WriteBatch> batch_;
-  syncer::ModelTypeChangeProcessor* const processor_;
+  const raw_ptr<syncer::ModelTypeChangeProcessor> processor_;
 };
 
 }  // namespace
@@ -439,10 +438,9 @@ void SessionSyncBridge::ResubmitLocalSession() {
       CreateSessionStoreWriteBatch();
   std::unique_ptr<syncer::DataBatch> read_batch = store_->GetAllSessionData();
   while (read_batch->HasNext()) {
-    syncer::KeyAndData key_and_data = read_batch->Next();
-    if (store_->StorageKeyMatchesLocalSession(key_and_data.first)) {
-      change_processor()->Put(key_and_data.first,
-                              std::move(key_and_data.second),
+    auto [key, data] = read_batch->Next();
+    if (store_->StorageKeyMatchesLocalSession(key)) {
+      change_processor()->Put(key, std::move(data),
                               write_batch->GetMetadataChangeList());
     }
   }

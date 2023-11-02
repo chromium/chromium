@@ -1,11 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/credential_provider_extension/ui/new_password_view_controller.h"
 
-#include "base/notreached.h"
-#include "ios/chrome/common/app_group/app_group_metrics.h"
+#import "base/notreached.h"
+#import "ios/chrome/common/app_group/app_group_metrics.h"
 #import "ios/chrome/common/credential_provider/archivable_credential.h"
 #import "ios/chrome/common/credential_provider/constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -166,7 +166,7 @@ const CGFloat kTableViewTopSpace = 14;
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
   // There is no need to check which cell has been selected because all the
-  // other cells are unselectable from |-tableView:willSelectRowAtIndexPath:|.
+  // other cells are unselectable from `-tableView:willSelectRowAtIndexPath:`.
   [self.credentialHandler userDidRequestGeneratedPassword];
   self.passwordCreationType = CPEPasswordCreated::kPasswordSuggested;
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
@@ -262,7 +262,7 @@ const CGFloat kTableViewTopSpace = 14;
   return passwordCell.textField.text;
 }
 
-// Saves the current data as a credential. If |shouldReplace| is YES, then the
+// Saves the current data as a credential. If `shouldReplace` is YES, then the
 // user has already said they are aware that they are replacing a previous
 // credential.
 - (void)saveCredential:(BOOL)shouldReplace {

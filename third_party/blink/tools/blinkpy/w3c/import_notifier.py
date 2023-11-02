@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Sends notifications after automatic imports from web-platform-tests (WPT).
@@ -19,8 +19,7 @@ from blinkpy.w3c.common import WPT_GH_URL
 from blinkpy.w3c.directory_owners_extractor import DirectoryOwnersExtractor
 from blinkpy.w3c.monorail import MonorailAPI, MonorailIssue
 from blinkpy.w3c.wpt_expectations_updater import WPTExpectationsUpdater
-from blinkpy.web_tests.port.android import (
-    PRODUCTS, ANDROID_WEBLAYER)
+from blinkpy.web_tests.port.android import ANDROID_WEBLAYER
 
 _log = logging.getLogger(__name__)
 

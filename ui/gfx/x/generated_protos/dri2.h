@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -106,6 +106,11 @@ class COMPONENT_EXPORT(X11) Dri2 {
   };
 
   struct DRI2Buffer {
+    bool operator==(const DRI2Buffer& other) const {
+      return attachment == other.attachment && name == other.name &&
+             pitch == other.pitch && cpp == other.cpp && flags == other.flags;
+    }
+
     Attachment attachment{};
     uint32_t name{};
     uint32_t pitch{};
@@ -114,6 +119,10 @@ class COMPONENT_EXPORT(X11) Dri2 {
   };
 
   struct AttachFormat {
+    bool operator==(const AttachFormat& other) const {
+      return attachment == other.attachment && format == other.format;
+    }
+
     Attachment attachment{};
     uint32_t format{};
   };
@@ -121,7 +130,6 @@ class COMPONENT_EXPORT(X11) Dri2 {
   struct BufferSwapCompleteEvent {
     static constexpr int type_id = 2;
     static constexpr uint8_t opcode = 0;
-    bool send_event{};
     uint16_t sequence{};
     EventType event_type{};
     Drawable drawable{};
@@ -139,7 +147,6 @@ class COMPONENT_EXPORT(X11) Dri2 {
   struct InvalidateBuffersEvent {
     static constexpr int type_id = 3;
     static constexpr uint8_t opcode = 1;
-    bool send_event{};
     uint16_t sequence{};
     Drawable drawable{};
 

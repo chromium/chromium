@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -112,6 +112,18 @@ void TestSendMessageFunction::ReplyWithError(const std::string& error) {
     Respond(std::move(response_));
 }
 
+TestSendScriptResultFunction::TestSendScriptResultFunction() = default;
+TestSendScriptResultFunction::~TestSendScriptResultFunction() = default;
+
+ExtensionFunction::ResponseAction TestSendScriptResultFunction::Run() {
+  std::unique_ptr<api::test::SendScriptResult::Params> params(
+      api::test::SendScriptResult::Params::Create(args()));
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  TestApiObserverRegistry::GetInstance()->NotifyScriptResult(params->result);
+  return RespondNow(NoArguments());
+}
+
 // static
 void TestGetConfigFunction::set_test_config_state(
     base::DictionaryValue* value) {
@@ -135,7 +147,8 @@ ExtensionFunction::ResponseAction TestGetConfigFunction::Run() {
   if (!test_config_state->config_state())
     return RespondNow(Error(kNoTestConfigDataError));
   return RespondNow(OneArgument(base::Value::FromUniquePtrValue(
-      test_config_state->config_state()->CreateDeepCopy())));
+      base::DictionaryValue::From(base::Value::ToUniquePtrValue(
+          test_config_state->config_state()->Clone())))));
 }
 
 TestWaitForRoundTripFunction::~TestWaitForRoundTripFunction() {}

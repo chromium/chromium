@@ -1,9 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/blocked_content/android/popup_blocked_message_delegate.h"
 
+#include "base/android/jni_android.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/blocked_content/popup_blocker_tab_helper.h"
@@ -51,12 +53,12 @@ class PopupBlockedMessageDelegateTest
   }
 
  private:
-  PopupBlockerTabHelper* helper_ = nullptr;
+  raw_ptr<PopupBlockerTabHelper> helper_ = nullptr;
   base::test::ScopedFeatureList feature_list_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   scoped_refptr<HostContentSettingsMap> settings_map_;
   messages::MockMessageDispatcherBridge message_dispatcher_bridge_;
-  PopupBlockedMessageDelegate* popup_blocked_message_delegate_;
+  raw_ptr<PopupBlockedMessageDelegate> popup_blocked_message_delegate_;
 };
 
 PopupBlockedMessageDelegateTest::~PopupBlockedMessageDelegateTest() {
@@ -86,6 +88,7 @@ void PopupBlockedMessageDelegateTest::SetUp() {
   popup_blocked_message_delegate_ =
       PopupBlockedMessageDelegate::FromWebContents(web_contents());
   NavigateAndCommit(GURL(kPageUrl));
+  message_dispatcher_bridge_.SetMessagesEnabledForEmbedder(true);
   messages::MessageDispatcherBridge::SetInstanceForTesting(
       &message_dispatcher_bridge_);
 }

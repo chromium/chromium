@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "extensions/browser/api/idle/idle_api_constants.h"
 #include "extensions/browser/api/idle/idle_manager.h"
@@ -47,7 +48,7 @@ class ScopedListen {
   ~ScopedListen();
 
  private:
-  IdleManager* idle_manager_;
+  raw_ptr<IdleManager> idle_manager_;
   const std::string extension_id_;
 };
 
@@ -55,13 +56,13 @@ ScopedListen::ScopedListen(IdleManager* idle_manager,
                            const std::string& extension_id)
     : idle_manager_(idle_manager), extension_id_(extension_id) {
   const EventListenerInfo details(idle::OnStateChanged::kEventName,
-                                  extension_id_, GURL(), NULL);
+                                  extension_id_, GURL(), nullptr);
   idle_manager_->OnListenerAdded(details);
 }
 
 ScopedListen::~ScopedListen() {
   const EventListenerInfo details(idle::OnStateChanged::kEventName,
-                                  extension_id_, GURL(), NULL);
+                                  extension_id_, GURL(), nullptr);
   idle_manager_->OnListenerRemoved(details);
 }
 
@@ -77,9 +78,9 @@ class IdleTest : public ApiUnitTest {
   void SetUp() override;
 
  protected:
-  IdleManager* idle_manager_;
-  TestIdleProvider* idle_provider_;
-  testing::StrictMock<MockEventDelegate>* event_delegate_;
+  raw_ptr<IdleManager> idle_manager_;
+  raw_ptr<TestIdleProvider> idle_provider_;
+  raw_ptr<testing::StrictMock<MockEventDelegate>> event_delegate_;
 };
 
 void IdleTest::SetUp() {

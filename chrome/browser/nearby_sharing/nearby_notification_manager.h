@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,14 +38,16 @@ class NearbyNotificationManager : public TransferUpdateCallback,
     kCopyImage,
     kOpenDownloads,
     kOpenUrl,
+    kOpenWifiNetworksList,
   };
 
   // Type of content we received that determines the actions we provide.
   enum class ReceivedContentType {
-    kFiles,        // One or more generic files
-    kSingleImage,  // One image that will be shown as a preview
-    kSingleUrl,    // One URL that will be opened on click.
-    kText,         // Arbitrary text content
+    kFiles,            // One or more generic files
+    kSingleImage,      // One image that will be shown as a preview
+    kSingleUrl,        // One URL that will be opened on click.
+    kText,             // Arbitrary text content
+    kWifiCredentials,  // Wi-Fi credentials for a network configuration
   };
 
   class SettingsOpener {
@@ -112,6 +114,9 @@ class NearbyNotificationManager : public TransferUpdateCallback,
   // Shows a notification for send or receive cancellation.
   void ShowCancelled(const ShareTarget& share_target);
 
+  // Shows a notification to remind users of their current visibility selection.
+  void ShowVisibilityReminder();
+
   // Closes any currently shown transfer notification (e.g. progress or
   // connection).
   void CloseTransfer();
@@ -121,11 +126,17 @@ class NearbyNotificationManager : public TransferUpdateCallback,
   // visibility mode UI.
   void CloseNearbyDeviceTryingToShare();
 
+  // Closes any currently shown nearby visibility reminder notification.
+  void CloseVisibilityReminder();
+
   // Gets the currently registered delegate for |notification_id|.
   NearbyNotificationDelegate* GetNotificationDelegate(
       const std::string& notification_id);
 
   void OpenURL(GURL url);
+
+  // Opens Wi-Fi Networks subpage in Settings.
+  void OpenWifiNetworksList();
 
   // Cancels the currently in progress transfer.
   void CancelTransfer();
@@ -141,9 +152,15 @@ class NearbyNotificationManager : public TransferUpdateCallback,
 
   // Called when the nearby device is trying notification got dismissed. We
   // won't show another one for a certain time period after this.
-  void OnNearbyDeviceTryingToShareDismissed();
+  void OnNearbyDeviceTryingToShareDismissed(bool did_click_dismiss);
 
-  void CloseSuccessNotification();
+  void CloseSuccessNotification(const std::string& notification_id);
+
+  // Called when the nearby visibility reminder notification got clicked.
+  void OnNearbyVisibilityReminderClicked();
+
+  // Called when the nearby visibility reminder notification got dismissed.
+  void OnNearbyVisibilityReminderDismissed();
 
   void SetOnSuccessClickedForTesting(
       base::OnceCallback<void(SuccessNotificationAction)> callback);
@@ -171,6 +188,10 @@ class NearbyNotificationManager : public TransferUpdateCallback,
   // Last transfer status reported to OnTransferUpdate(). Null when no transfer
   // is in progress.
   absl::optional<TransferMetadata::Status> last_transfer_status_;
+
+  // The last time that 'Nearby device is trying to share' notification was
+  // shown.
+  base::TimeTicks last_device_nearby_sharing_notification_shown_timestamp_;
 
   base::OnceCallback<void(SuccessNotificationAction)>
       success_action_test_callback_;

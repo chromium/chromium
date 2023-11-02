@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -62,7 +62,7 @@ class DownloadDangerPrompt {
   static void SendSafeBrowsingDownloadReport(
       safe_browsing::ClientSafeBrowsingReportRequest::ReportType report_type,
       bool did_proceed,
-      const download::DownloadItem& download);
+      download::DownloadItem* download);
 
  protected:
   // Records UMA stats for a download danger prompt event.

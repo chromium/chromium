@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,12 +10,12 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
+#include "base/values.h"
 #include "components/update_client/component_patcher.h"
 #include "components/update_client/component_unpacker.h"
 
-namespace base {
-class DictionaryValue;
-}  // namespace base
+// TODO(crbug.com/1349158): Remove this file once Puffin patches are fully
+// implemented.
 
 namespace update_client {
 
@@ -38,7 +38,7 @@ class DeltaUpdateOp : public base::RefCountedThreadSafe<DeltaUpdateOp> {
 
   // Parses, runs, and verifies the operation. Calls |callback| with the
   // result of the operation. The callback is called using |task_runner|.
-  void Run(const base::DictionaryValue* command_args,
+  void Run(const base::Value::Dict& command_args,
            const base::FilePath& input_dir,
            const base::FilePath& unpack_dir,
            scoped_refptr<CrxInstaller> installer,
@@ -59,7 +59,7 @@ class DeltaUpdateOp : public base::RefCountedThreadSafe<DeltaUpdateOp> {
   // arguments. DoParseArguments returns DELTA_OK on success; any other code
   // represents failure.
   virtual UnpackerError DoParseArguments(
-      const base::DictionaryValue* command_args,
+      const base::Value::Dict& command_args,
       const base::FilePath& input_dir,
       scoped_refptr<CrxInstaller> installer) = 0;
 
@@ -91,7 +91,7 @@ class DeltaUpdateOpCopy : public DeltaUpdateOp {
 
   // Overrides of DeltaUpdateOp.
   UnpackerError DoParseArguments(
-      const base::DictionaryValue* command_args,
+      const base::Value::Dict& command_args,
       const base::FilePath& input_dir,
       scoped_refptr<CrxInstaller> installer) override;
 
@@ -116,7 +116,7 @@ class DeltaUpdateOpCreate : public DeltaUpdateOp {
 
   // Overrides of DeltaUpdateOp.
   UnpackerError DoParseArguments(
-      const base::DictionaryValue* command_args,
+      const base::Value::Dict& command_args,
       const base::FilePath& input_dir,
       scoped_refptr<CrxInstaller> installer) override;
 
@@ -142,7 +142,7 @@ class DeltaUpdateOpPatch : public DeltaUpdateOp {
 
   // Overrides of DeltaUpdateOp.
   UnpackerError DoParseArguments(
-      const base::DictionaryValue* command_args,
+      const base::Value::Dict& command_args,
       const base::FilePath& input_dir,
       scoped_refptr<CrxInstaller> installer) override;
 

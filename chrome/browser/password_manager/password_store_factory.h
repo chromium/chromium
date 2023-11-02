@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include "base/memory/singleton.h"
 #include "build/build_config.h"
-#include "components/keyed_service/content/refcounted_browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/refcounted_profile_keyed_service_factory.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
 
@@ -15,8 +15,7 @@ class Profile;
 
 // Singleton that owns all PasswordStores and associates them with
 // Profiles.
-class PasswordStoreFactory
-    : public RefcountedBrowserContextKeyedServiceFactory {
+class PasswordStoreFactory : public RefcountedProfileKeyedServiceFactory {
  public:
   static scoped_refptr<password_manager::PasswordStoreInterface> GetForProfile(
       Profile* profile,
@@ -35,8 +34,6 @@ class PasswordStoreFactory
 
   // RefcountedBrowserContextKeyedServiceFactory:
   scoped_refptr<RefcountedKeyedService> BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
   bool ServiceIsNULLWhileTesting() const override;
 };

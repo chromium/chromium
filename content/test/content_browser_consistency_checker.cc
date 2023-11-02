@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/test/web_contents_observer_consistency_checker.h"
 
 namespace content {
@@ -20,15 +21,13 @@ ContentBrowserConsistencyChecker::ContentBrowserConsistencyChecker() {
       << "been enabled.";
   g_consistency_checks_already_enabled = true;
 
-  creation_hook_ = base::BindRepeating(
-      &ContentBrowserConsistencyChecker::OnWebContentsCreated,
-      base::Unretained(this));
-  WebContentsImpl::FriendWrapper::AddCreatedCallbackForTesting(creation_hook_);
+  creation_subscription_ =
+      RegisterWebContentsCreationCallback(base::BindRepeating(
+          &ContentBrowserConsistencyChecker::OnWebContentsCreated,
+          base::Unretained(this)));
 }
 
 ContentBrowserConsistencyChecker::~ContentBrowserConsistencyChecker() {
-  WebContentsImpl::FriendWrapper::RemoveCreatedCallbackForTesting(
-      creation_hook_);
   g_consistency_checks_already_enabled = false;
 }
 

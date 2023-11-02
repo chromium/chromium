@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,10 @@ import android.content.Context;
 import org.chromium.base.lifetime.DestroyChecker;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
-import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkModelObserver;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel.BookmarkDeleteObserver;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import java.util.Locale;
@@ -87,9 +86,9 @@ public class BookmarkUndoController extends BookmarkModelObserver implements
     public void destroy() {
         mDestroyChecker.checkNotDestroyed();
 
+        mDestroyChecker.destroy();
         mBookmarkModel.removeDeleteObserver(this);
         mSnackbarManager.dismissSnackbars(this);
-        mDestroyChecker.destroy();
     }
 
     @Override
@@ -105,7 +104,7 @@ public class BookmarkUndoController extends BookmarkModelObserver implements
     public void onDismissNoAction(Object actionData) {
         mDestroyChecker.checkNotDestroyed();
 
-        if (mDestroyAfterFirstAction) destroy();
+        if (mDestroyAfterFirstAction) destroyIfNecessary();
     }
 
     // Overriding BookmarkModelObserver

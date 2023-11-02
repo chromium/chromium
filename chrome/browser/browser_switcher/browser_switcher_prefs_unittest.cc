@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,12 +41,11 @@ class TestBrowserSwitcherPrefs : public BrowserSwitcherPrefs {
       : BrowserSwitcherPrefs(prefs, policy_service) {}
 };
 
-std::unique_ptr<base::Value> StringArrayToValue(
-    const std::vector<const char*>& strings) {
-  std::vector<base::Value> values(strings.size());
-  std::transform(strings.begin(), strings.end(), values.begin(),
-                 [](const char* s) { return base::Value(s); });
-  return std::make_unique<base::Value>(values);
+base::Value StringArrayToValue(const std::vector<const char*>& strings) {
+  base::Value::List list;
+  for (const auto* string : strings)
+    list.Append(string);
+  return base::Value(std::move(list));
 }
 
 }  // namespace
@@ -88,15 +87,13 @@ class BrowserSwitcherPrefsTest : public testing::Test {
 };
 
 TEST_F(BrowserSwitcherPrefsTest, ListensForPrefChanges) {
-  prefs_backend()->SetManagedPref(prefs::kEnabled,
-                                  std::make_unique<base::Value>(true));
+  prefs_backend()->SetManagedPref(prefs::kEnabled, base::Value(true));
   prefs_backend()->SetManagedPref(prefs::kAlternativeBrowserPath,
-                                  std::make_unique<base::Value>("notepad.exe"));
+                                  base::Value("notepad.exe"));
   prefs_backend()->SetManagedPref(prefs::kAlternativeBrowserParameters,
                                   StringArrayToValue({"a", "b", "c"}));
-#if defined(OS_WIN)
-  prefs_backend()->SetManagedPref(prefs::kChromePath,
-                                  std::make_unique<base::Value>("cmd.exe"));
+#if BUILDFLAG(IS_WIN)
+  prefs_backend()->SetManagedPref(prefs::kChromePath, base::Value("cmd.exe"));
   prefs_backend()->SetManagedPref(prefs::kChromeParameters,
                                   StringArrayToValue({"d", "e", "f"}));
 #endif
@@ -114,7 +111,7 @@ TEST_F(BrowserSwitcherPrefsTest, ListensForPrefChanges) {
   EXPECT_EQ("b", prefs()->GetAlternativeBrowserParameters()[1]);
   EXPECT_EQ("c", prefs()->GetAlternativeBrowserParameters()[2]);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EXPECT_EQ("cmd.exe", prefs()->GetChromePath().MaybeAsASCII());
 
   EXPECT_EQ(3u, prefs()->GetChromeParameters().size());
@@ -151,7 +148,7 @@ TEST_F(BrowserSwitcherPrefsTest, TriggersObserversOnPolicyChange) {
       run_loop.QuitClosure()));
 
   prefs_backend()->SetManagedPref(prefs::kAlternativeBrowserPath,
-                                  std::make_unique<base::Value>("notepad.exe"));
+                                  base::Value("notepad.exe"));
   policy_provider()->UpdateChromePolicy(policy_map);
 
   run_loop.Run();

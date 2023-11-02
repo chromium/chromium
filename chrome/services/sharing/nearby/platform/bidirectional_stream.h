@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,10 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
-#include "chromeos/services/nearby/public/mojom/nearby_connections_types.mojom.h"
+#include "base/synchronization/waitable_event.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 #include "mojo/public/cpp/system/data_pipe.h"
-#include "third_party/nearby/src/cpp/platform/base/exception.h"
+#include "third_party/nearby/src/internal/platform/exception.h"
 
 namespace base {
 class SequencedTaskRunner;

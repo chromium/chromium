@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,6 +23,7 @@ class ChromeTypographyProvider : public views::TypographyProvider {
                    int context,
                    int style) const override;
   int GetLineHeight(int context, int style) const override;
+  bool StyleAllowedForContext(int context, int style) const override;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_CHROME_TYPOGRAPHY_PROVIDER_H_

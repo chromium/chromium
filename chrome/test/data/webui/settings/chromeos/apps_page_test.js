@@ -1,18 +1,17 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/os_settings.js';
+import 'chrome://os-settings/chromeos/os_settings.js';
 
-// #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-// #import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
-// #import {AndroidAppsBrowserProxyImpl, Router, routes, setAppNotificationProviderForTesting, createBoolPermission} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {TestAndroidAppsBrowserProxy} from './test_android_apps_browser_proxy.m.js';
-// #import {flush} from'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {waitAfterNextRender, flushTasks} from 'chrome://test/test_util.js';
-// #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
-// clang-format on
+import {AndroidAppsBrowserProxyImpl, createBoolPermission, Router, routes, routesMojomWebui, setAppNotificationProviderForTesting} from 'chrome://os-settings/chromeos/os_settings.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+
+import {TestAndroidAppsBrowserProxy} from './test_android_apps_browser_proxy.js';
 
 /** @type {?OsSettingsAppsPageElement} */
 let appsPage = null;
@@ -27,15 +26,15 @@ function getFakePrefs() {
         key: 'arc.enabledd',
         type: chrome.settingsPrivate.PrefType.BOOLEAN,
         value: false,
-      }
+      },
     },
     settings: {
       restore_apps_and_pages: {
         key: 'settings.restore_apps_and_pages',
         type: chrome.settingsPrivate.PrefType.NUMBER,
         value: 2,
-      }
-    }
+      },
+    },
   };
 }
 
@@ -46,15 +45,15 @@ function setPrefs(restoreOption) {
         key: 'arc.enabledd',
         type: chrome.settingsPrivate.PrefType.BOOLEAN,
         value: false,
-      }
+      },
     },
     settings: {
       restore_apps_and_pages: {
         key: 'settings.restore_apps_and_pages',
         type: chrome.settingsPrivate.PrefType.NUMBER,
         value: restoreOption,
-      }
-    }
+      },
+    },
   };
 }
 
@@ -65,15 +64,18 @@ class FakeAppNotificationHandler {
 
     /**
      * @private
-     *     {?chromeos.settings.appNotification.mojom.
+     *     {?ash.settings.appNotification.mojom.
      *      AppNotificationObserverRemote}
      */
     this.appNotificationObserverRemote_;
 
     /**
-     * @private {!Array<!chromeos.settings.appNotification.mojom.App>}
+     * @private {!Array<!ash.settings.appNotification.mojom.App>}
      */
     this.apps_ = [];
+
+    /** @private {boolean} */
+    this.isDndEnabled_ = false;
 
     this.resetForTest();
   }
@@ -84,9 +86,9 @@ class FakeAppNotificationHandler {
     }
 
     this.resolverMap_.set('addObserver', new PromiseResolver());
+    this.resolverMap_.set('getQuietMode', new PromiseResolver());
     this.resolverMap_.set('setQuietMode', new PromiseResolver());
     this.resolverMap_.set('setNotificationPermission', new PromiseResolver());
-    this.resolverMap_.set('notifyPageReady', new PromiseResolver());
     this.resolverMap_.set('getApps', new PromiseResolver());
   }
 
@@ -122,7 +124,7 @@ class FakeAppNotificationHandler {
 
   /**
    * @return
-   *      {chromeos.settings.appNotification.mojom.
+   *      {ash.settings.appNotification.mojom.
    *        AppNotificationObserverRemote}
    */
   getObserverRemote() {
@@ -132,7 +134,7 @@ class FakeAppNotificationHandler {
   // appNotificationHandler methods
 
   /**
-   * @param {!chromeos.settings.appNotification.mojom.
+   * @param {!ash.settings.appNotification.mojom.
    *        AppNotificationObserverRemote}
    *      remote
    * @return {!Promise}
@@ -153,9 +155,17 @@ class FakeAppNotificationHandler {
     });
   }
 
+  /** @return {!Promise<{success: boolean}>} */
+  getQuietMode() {
+    return new Promise(resolve => {
+      this.methodCalled('getQuietMode');
+      resolve({success: this.isDndEnabled_});
+    });
+  }
+
   /**
    * @param {string} id
-   * @param {!apps.mojom.Permission} permission
+   * @param {!appManagement.mojom.Permission} permission
    */
   setNotificationPermission(id, permission) {
     return new Promise(resolve => {
@@ -164,16 +174,8 @@ class FakeAppNotificationHandler {
     });
   }
 
-  /** @return {!Promise} */
-  notifyPageReady() {
-    return new Promise(resolve => {
-      this.methodCalled('notifyPageReady');
-      resolve();
-    });
-  }
-
   /**
-   * @return {!Promise<!Array<!chromeos.settings.appNotification.mojom.App>>}
+   * @return {!Promise<!Array<!ash.settings.appNotification.mojom.App>>}
    */
   getApps() {
     return new Promise(resolve => {
@@ -186,7 +188,7 @@ class FakeAppNotificationHandler {
 suite('AppsPageTests', function() {
   /**
    * @type {
-   *    ?chromeos.settings.appNotification.mojom.AppNotificationHandlerRemote
+   *    ?ash.settings.appNotification.mojom.AppNotificationHandlerRemote
    *  }
    */
   let mojoApi_;
@@ -194,17 +196,18 @@ suite('AppsPageTests', function() {
   /**
    * @param {string} id
    * @param {string} title
-   * @param {!apps.mojom.Permission} permission
-   * @param {?apps.mojom.Readiness} readiness
-   * @return {!chromeos.settings.appNotification.mojom.App}
+   * @param {!appManagement.mojom.Permission} permission
+   * @param {?ash.settings.appNotification.mojom.Readiness} readiness
+   * @return {!ash.settings.appNotification.mojom.App}
    */
   function createApp(
-      id, title, permission, readiness = apps.mojom.Readiness.kReady) {
+      id, title, permission,
+      readiness = ash.settings.appNotification.mojom.Readiness.kReady) {
     return {
       id: id,
       title: title,
       notificationPermission: permission,
-      readiness: readiness
+      readiness: readiness,
     };
   }
 
@@ -215,7 +218,7 @@ suite('AppsPageTests', function() {
     return mojoApi_.whenCalled('addObserver');
   }
 
-  /** @param {!Array<!chromeos.settings.appNotification.mojom.App>} */
+  /** @param {!Array<!ash.settings.appNotification.mojom.App>} */
   function simulateNotificationAppChanged(app) {
     mojoApi_.getObserverRemote().onNotificationAppChanged(app);
   }
@@ -223,7 +226,7 @@ suite('AppsPageTests', function() {
   setup(async () => {
     loadTimeData.overrideValues({showOsSettingsAppNotificationsRow: true});
     androidAppsBrowserProxy = new TestAndroidAppsBrowserProxy();
-    settings.AndroidAppsBrowserProxyImpl.instance_ = androidAppsBrowserProxy;
+    AndroidAppsBrowserProxyImpl.setInstanceForTesting(androidAppsBrowserProxy);
     PolymerTest.clearBody();
     mojoApi_ = new FakeAppNotificationHandler();
     setAppNotificationProviderForTesting(mojoApi_);
@@ -237,7 +240,7 @@ suite('AppsPageTests', function() {
     mojoApi_.resetForTest();
     appsPage.remove();
     appsPage = null;
-    settings.Router.getInstance().resetRouteForTesting();
+    Router.getInstance().resetRouteForTesting();
   });
 
   suite('Page Combinations', function() {
@@ -246,14 +249,17 @@ suite('AppsPageTests', function() {
       appsPage.prefs = getFakePrefs();
     });
 
-    const AndroidAppsShown = () => !!appsPage.$$('#android-apps');
-    const AppManagementShown = () => !!appsPage.$$('#appManagement');
-    const RestoreAppsOnStartupShown = () => !!appsPage.$$('#onStartupDropdown');
+    const AndroidAppsShown = () =>
+        !!appsPage.shadowRoot.querySelector('#android-apps');
+    const AppManagementShown = () =>
+        !!appsPage.shadowRoot.querySelector('#appManagement');
+    const RestoreAppsOnStartupShown = () =>
+        !!appsPage.shadowRoot.querySelector('#onStartupDropdown');
 
     test('Only App Management Shown', function() {
       appsPage.showAndroidApps = false;
       appsPage.showStartup = false;
-      Polymer.dom.flush();
+      flush();
 
       assertTrue(AppManagementShown());
       assertFalse(AndroidAppsShown());
@@ -263,7 +269,7 @@ suite('AppsPageTests', function() {
     test('Android Apps and App Management Shown', function() {
       appsPage.showAndroidApps = true;
       appsPage.showStartup = false;
-      Polymer.dom.flush();
+      flush();
 
       assertTrue(AppManagementShown());
       assertTrue(AndroidAppsShown());
@@ -273,20 +279,20 @@ suite('AppsPageTests', function() {
     test('Android Apps, On Startup and App Management Shown', function() {
       appsPage.showAndroidApps = true;
       appsPage.showStartup = true;
-      Polymer.dom.flush();
+      flush();
 
       assertTrue(AppManagementShown());
       assertTrue(AndroidAppsShown());
       assertTrue(RestoreAppsOnStartupShown());
-      expectEquals(3, appsPage.onStartupOptions_.length);
+      assertEquals(3, appsPage.onStartupOptions_.length);
     });
 
     test('App notification row', async () => {
       appsPage.showAndroidApps = true;
       appsPage.showStartup = true;
-      Polymer.dom.flush();
+      flush();
 
-      const rowLink = appsPage.$$('#appNotifications');
+      const rowLink = appsPage.shadowRoot.querySelector('#appNotifications');
       assertTrue(!!rowLink);
       // Test default is to have 0 apps.
       assertEquals('0 apps', rowLink.subLabel);
@@ -308,7 +314,8 @@ suite('AppsPageTests', function() {
 
       // Simulate an uninstalled app.
       const app3 = createApp(
-          '2', 'App2', permission2, apps.mojom.Readiness.kUninstalledByUser);
+          '2', 'App2', permission2,
+          ash.settings.appNotification.mojom.Readiness.kUninstalledByUser);
       simulateNotificationAppChanged(app3);
       await flushTasks();
       assertEquals('1 apps', rowLink.subLabel);
@@ -325,50 +332,57 @@ suite('AppsPageTests', function() {
         playStoreEnabled: false,
         settingsAppAvailable: false,
       };
-      Polymer.dom.flush();
+      flush();
     });
 
     test('Clicking enable button enables ARC', function() {
-      const button = appsPage.$$('#enable');
+      const button = appsPage.shadowRoot.querySelector('#enable');
       assertTrue(!!button);
-      assertFalse(!!appsPage.$$('.subpage-arrow'));
+      assertFalse(!!appsPage.shadowRoot.querySelector('.subpage-arrow'));
 
       button.click();
-      Polymer.dom.flush();
+      flush();
       assertTrue(appsPage.prefs.arc.enabled.value);
 
       appsPage.androidAppsInfo = {
         playStoreEnabled: true,
         settingsAppAvailable: false,
       };
-      Polymer.dom.flush();
-      assertTrue(!!appsPage.$$('.subpage-arrow'));
+      flush();
+      assertTrue(!!appsPage.shadowRoot.querySelector('.subpage-arrow'));
     });
 
     test('On startup dropdown menu', async () => {
       appsPage.prefs = setPrefs(1);
-      Polymer.dom.flush();
-      assertEquals(1, appsPage.$$('#onStartupDropdown').pref.value);
+      flush();
+      assertEquals(
+          1,
+          appsPage.shadowRoot.querySelector('#onStartupDropdown').pref.value);
 
       appsPage.prefs = setPrefs(2);
-      Polymer.dom.flush();
-      assertEquals(2, appsPage.$$('#onStartupDropdown').pref.value);
+      flush();
+      assertEquals(
+          2,
+          appsPage.shadowRoot.querySelector('#onStartupDropdown').pref.value);
 
       appsPage.prefs = setPrefs(3);
-      Polymer.dom.flush();
-      assertEquals(3, appsPage.$$('#onStartupDropdown').pref.value);
+      flush();
+      assertEquals(
+          3,
+          appsPage.shadowRoot.querySelector('#onStartupDropdown').pref.value);
     });
 
     test('Deep link to On startup dropdown menu', async () => {
-      Polymer.dom.flush();
+      flush();
 
-      const params = new URLSearchParams;
+      const params = new URLSearchParams();
       params.append('settingId', '703');
-      settings.Router.getInstance().navigateTo(settings.routes.APPS, params);
+      Router.getInstance().navigateTo(routes.APPS, params);
 
-      const deepLinkElement = appsPage.$$('#onStartupDropdown')
-                                  .shadowRoot.querySelector('#dropdownMenu');
-      await test_util.waitAfterNextRender(deepLinkElement);
+      const deepLinkElement =
+          appsPage.shadowRoot.querySelector('#onStartupDropdown')
+              .shadowRoot.querySelector('#dropdownMenu');
+      await waitAfterNextRender(deepLinkElement);
       assertEquals(
           deepLinkElement, getDeepActiveElement(),
           'On startup dropdown menu should be focused for settingId=703.');
@@ -376,27 +390,27 @@ suite('AppsPageTests', function() {
 
     test('Deep link to manage android prefs', async () => {
       appsPage.havePlayStoreApp = false;
-      Polymer.dom.flush();
+      flush();
 
-      const params = new URLSearchParams;
+      const params = new URLSearchParams();
       params.append('settingId', '700');
-      settings.Router.getInstance().navigateTo(settings.routes.APPS, params);
+      Router.getInstance().navigateTo(routes.APPS, params);
 
-      const deepLinkElement =
-          appsPage.$$('#manageApps').shadowRoot.querySelector('cr-icon-button');
-      await test_util.waitAfterNextRender(deepLinkElement);
+      const deepLinkElement = appsPage.shadowRoot.querySelector('#manageApps')
+                                  .shadowRoot.querySelector('cr-icon-button');
+      await waitAfterNextRender(deepLinkElement);
       assertEquals(
           deepLinkElement, getDeepActiveElement(),
           'Manage android prefs button should be focused for settingId=700.');
     });
 
     test('Deep link to turn on Play Store', async () => {
-      const params = new URLSearchParams;
+      const params = new URLSearchParams();
       params.append('settingId', '702');
-      settings.Router.getInstance().navigateTo(settings.routes.APPS, params);
+      Router.getInstance().navigateTo(routes.APPS, params);
 
-      const deepLinkElement = appsPage.$$('#enable');
-      await test_util.waitAfterNextRender(deepLinkElement);
+      const deepLinkElement = appsPage.shadowRoot.querySelector('#enable');
+      await waitAfterNextRender(deepLinkElement);
       assertEquals(
           deepLinkElement, getDeepActiveElement(),
           'Turn on play store button should be focused for settingId=702.');
@@ -411,7 +425,8 @@ suite('AppsPageTests', function() {
 
     setup(function() {
       androidAppsBrowserProxy = new TestAndroidAppsBrowserProxy();
-      settings.AndroidAppsBrowserProxyImpl.instance_ = androidAppsBrowserProxy;
+      AndroidAppsBrowserProxyImpl.setInstanceForTesting(
+          androidAppsBrowserProxy);
       PolymerTest.clearBody();
       subpage = document.createElement('settings-android-apps-subpage');
       document.body.appendChild(subpage);
@@ -419,9 +434,9 @@ suite('AppsPageTests', function() {
 
       // Because we can't simulate the loadTimeData value androidAppsVisible,
       // this route doesn't exist for tests. Add it in for testing.
-      if (!settings.routes.ANDROID_APPS_DETAILS) {
-        settings.routes.ANDROID_APPS_DETAILS = settings.routes.APPS.createChild(
-            '/' + chromeos.settings.mojom.GOOGLE_PLAY_STORE_SUBPAGE_PATH);
+      if (!routes.ANDROID_APPS_DETAILS) {
+        routes.ANDROID_APPS_DETAILS = routes.APPS.createChild(
+            '/' + routesMojomWebui.GOOGLE_PLAY_STORE_SUBPAGE_PATH);
       }
 
       subpage.prefs = {arc: {enabled: {value: true}}};
@@ -429,7 +444,7 @@ suite('AppsPageTests', function() {
         playStoreEnabled: true,
         settingsAppAvailable: false,
       };
-      Polymer.dom.flush();
+      flush();
     });
 
     teardown(function() {
@@ -438,25 +453,25 @@ suite('AppsPageTests', function() {
     });
 
     test('Sanity', function() {
-      assertTrue(!!subpage.$$('#remove'));
-      assertTrue(!subpage.$$('#manageApps'));
+      assertTrue(!!subpage.shadowRoot.querySelector('#remove'));
+      assertTrue(!subpage.shadowRoot.querySelector('#manageApps'));
     });
 
     test('ManageAppsUpdate', function() {
-      assertTrue(!subpage.$$('#manageApps'));
+      assertTrue(!subpage.shadowRoot.querySelector('#manageApps'));
       subpage.androidAppsInfo = {
         playStoreEnabled: true,
         settingsAppAvailable: true,
       };
-      Polymer.dom.flush();
-      assertTrue(!!subpage.$$('#manageApps'));
+      flush();
+      assertTrue(!!subpage.shadowRoot.querySelector('#manageApps'));
 
       subpage.androidAppsInfo = {
         playStoreEnabled: true,
         settingsAppAvailable: false,
       };
-      Polymer.dom.flush();
-      assertTrue(!subpage.$$('#manageApps'));
+      flush();
+      assertTrue(!subpage.shadowRoot.querySelector('#manageApps'));
     });
 
     test('ManageAppsOpenRequest', function() {
@@ -464,26 +479,26 @@ suite('AppsPageTests', function() {
         playStoreEnabled: true,
         settingsAppAvailable: true,
       };
-      Polymer.dom.flush();
-      const button = subpage.$$('#manageApps');
+      flush();
+      const button = subpage.shadowRoot.querySelector('#manageApps');
       assertTrue(!!button);
       const promise =
           androidAppsBrowserProxy.whenCalled('showAndroidAppsSettings');
       button.click();
-      Polymer.dom.flush();
+      flush();
       return promise;
     });
 
     test('Disable', function() {
-      const dialog = subpage.$$('#confirmDisableDialog');
+      const dialog = subpage.shadowRoot.querySelector('#confirmDisableDialog');
       assertTrue(!!dialog);
       assertFalse(dialog.open);
 
-      const remove = subpage.$$('#remove');
+      const remove = subpage.shadowRoot.querySelector('#remove');
       assertTrue(!!remove);
 
       subpage.onRemoveTap_();
-      Polymer.dom.flush();
+      flush();
       assertTrue(dialog.open);
       dialog.close();
     });
@@ -493,18 +508,18 @@ suite('AppsPageTests', function() {
         arc: {
           enabled: {
             value: true,
-            enforcement: chrome.settingsPrivate.Enforcement.ENFORCED
-          }
-        }
+            enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+          },
+        },
       };
       subpage.androidAppsInfo = {
         playStoreEnabled: true,
         settingsAppAvailable: true,
       };
-      Polymer.dom.flush();
+      flush();
 
-      assertFalse(!!subpage.$$('#remove'));
-      assertTrue(!!subpage.$$('#manageApps'));
+      assertFalse(!!subpage.shadowRoot.querySelector('#remove'));
+      assertTrue(!!subpage.shadowRoot.querySelector('#manageApps'));
     });
 
     test('Can open app settings without Play Store', function() {
@@ -513,14 +528,14 @@ suite('AppsPageTests', function() {
         playStoreEnabled: false,
         settingsAppAvailable: true,
       };
-      Polymer.dom.flush();
+      flush();
 
-      const button = subpage.$$('#manageApps');
+      const button = subpage.shadowRoot.querySelector('#manageApps');
       assertTrue(!!button);
       const promise =
           androidAppsBrowserProxy.whenCalled('showAndroidAppsSettings');
       button.click();
-      Polymer.dom.flush();
+      flush();
       return promise;
     });
 
@@ -529,32 +544,45 @@ suite('AppsPageTests', function() {
         playStoreEnabled: false,
         settingsAppAvailable: true,
       };
-      Polymer.dom.flush();
+      flush();
 
-      const params = new URLSearchParams;
+      const params = new URLSearchParams();
       params.append('settingId', '700');
-      settings.Router.getInstance().navigateTo(
-          settings.routes.ANDROID_APPS_DETAILS, params);
+      Router.getInstance().navigateTo(routes.ANDROID_APPS_DETAILS, params);
 
-      const deepLinkElement =
-          subpage.$$('#manageApps').shadowRoot.querySelector('cr-icon-button');
-      await test_util.waitAfterNextRender(deepLinkElement);
+      const deepLinkElement = subpage.shadowRoot.querySelector('#manageApps')
+                                  .shadowRoot.querySelector('cr-icon-button');
+      await waitAfterNextRender(deepLinkElement);
       assertEquals(
           deepLinkElement, getDeepActiveElement(),
           'Manage android prefs button should be focused for settingId=700.');
     });
 
     test('Deep link to remove play store', async () => {
-      const params = new URLSearchParams;
+      const params = new URLSearchParams();
       params.append('settingId', '701');
-      settings.Router.getInstance().navigateTo(
-          settings.routes.ANDROID_APPS_DETAILS, params);
+      Router.getInstance().navigateTo(routes.ANDROID_APPS_DETAILS, params);
 
-      const deepLinkElement = subpage.$$('#remove cr-button');
-      await test_util.waitAfterNextRender(deepLinkElement);
+      const deepLinkElement =
+          subpage.shadowRoot.querySelector('#remove cr-button');
+      await waitAfterNextRender(deepLinkElement);
       assertEquals(
           deepLinkElement, getDeepActiveElement(),
           'Remove play store button should be focused for settingId=701.');
+    });
+
+    test('ManageUsbDevice', function() {
+      // ARCVM is not enabled
+      subpage.showArcvmManageUsb = false;
+      flush();
+      assertFalse(
+          !!subpage.shadowRoot.querySelector('#manageArcvmShareUsbDevices'));
+
+      // ARCMV is enabled
+      subpage.showArcvmManageUsb = true;
+      flush();
+      assertTrue(
+          !!subpage.shadowRoot.querySelector('#manageArcvmShareUsbDevices'));
     });
   });
 });

@@ -1,14 +1,14 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
-import {Command} from 'chrome://resources/js/cr/ui/command.m.js';
-import {$} from 'chrome://resources/js/util.m.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import {Command} from './ui/command.js';
+import {$} from 'chrome://resources/js/util.js';
 
 import {DialogType} from '../../common/js/dialog_type.js';
 import {metrics} from '../../common/js/metrics.js';
-import {str, util} from '../../common/js/util.js';
+import {str, UserCanceledError, util} from '../../common/js/util.js';
 import {AllowedPaths, VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 
@@ -107,7 +107,7 @@ export class DialogActionController {
   /**
    * @private
    */
-  processOKActionForSaveDialog_() {
+  async processOKActionForSaveDialog_() {
     const selection = this.fileSelectionHandler_.selection;
 
     // If OK action is clicked when a directory is selected, open the directory.
@@ -125,21 +125,20 @@ export class DialogActionController {
       throw new Error('Missing filename!');
     }
 
-    this.namingController_.validateFileNameForSaving(filename)
-        .then(url => {
-          // TODO(mtomasz): Clean this up by avoiding constructing a URL
-          //                via string concatenation.
-          this.selectFilesAndClose_({
-            urls: [url],
-            multiple: false,
-            filterIndex: this.dialogFooter_.selectedFilterIndex
-          });
-        })
-        .catch(error => {
-          if (error instanceof Error) {
-            console.error(error.stack && error);
-          }
-        });
+    try {
+      const url =
+          await this.namingController_.validateFileNameForSaving(filename);
+
+      this.selectFilesAndClose_({
+        urls: [url],
+        multiple: false,
+        filterIndex: this.dialogFooter_.selectedFilterIndex,
+      });
+    } catch (error) {
+      if (!(error instanceof UserCanceledError)) {
+        console.warn(error);
+      }
+    }
   }
 
   /**
@@ -169,7 +168,7 @@ export class DialogActionController {
       const singleSelection = {
         urls: [url],
         multiple: false,
-        filterIndex: this.dialogFooter_.selectedFilterIndex
+        filterIndex: this.dialogFooter_.selectedFilterIndex,
       };
       this.selectFilesAndClose_(singleSelection);
       return;
@@ -186,7 +185,7 @@ export class DialogActionController {
     for (let i = 0; i < selectedIndexes.length; i++) {
       const entry = dm.item(selectedIndexes[i]);
       if (!entry) {
-        console.error('Error locating selected file at index: ' + i);
+        console.warn('Error locating selected file at index: ' + i);
         continue;
       }
 
@@ -223,7 +222,7 @@ export class DialogActionController {
     const singleSelection = {
       urls: [files[0]],
       multiple: false,
-      filterIndex: this.dialogFooter_.selectedFilterIndex
+      filterIndex: this.dialogFooter_.selectedFilterIndex,
     };
     this.selectFilesAndClose_(singleSelection);
   }

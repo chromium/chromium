@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2021 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file.
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
 -->
 
 <LinearLayout
@@ -24,6 +25,7 @@
           android:id="@+id/action_bar"
           android:layout_width="match_parent"
           android:layout_height="?attr/actionBarSize"
+          style="@style/ManagementActivityNoActionBar"
           app:title="@string/follow_manage_following" />
   </com.google.android.material.appbar.AppBarLayout>
 
@@ -32,9 +34,5 @@
       android:id="@+id/follow_management_list"
       android:layout_width="match_parent"
       android:layout_height="match_parent" />
-
-  <!-- TODO(petewil) - After UXR, show all button -->
-
-  <!-- TODO(petewil) - After UXR, "Updates Unavailable" section. -->
 
 </LinearLayout>

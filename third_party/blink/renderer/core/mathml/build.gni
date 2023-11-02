@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -19,6 +19,8 @@ blink_core_sources_mathml = [
   "mathml_scripts_element.h",
   "mathml_space_element.cc",
   "mathml_space_element.h",
+  "mathml_token_element.cc",
+  "mathml_token_element.h",
   "mathml_under_over_element.cc",
   "mathml_under_over_element.h",
 ]

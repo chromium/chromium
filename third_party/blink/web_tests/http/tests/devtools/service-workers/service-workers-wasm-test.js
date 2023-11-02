@@ -1,10 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 (async function() {
   TestRunner.addResult(`Tests V8 code cache for WebAssembly resources using Service Workers.\n`);
-  await TestRunner.loadModule('timeline');
+  await TestRunner.loadLegacyModule('timeline');
   await TestRunner.loadTestModule('performance_test_runner');
   await TestRunner.loadLegacyModule('console');
   await TestRunner.loadTestModule('application_test_runner');

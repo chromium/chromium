@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -82,8 +82,8 @@ int Animation::CurrentValueBetween(int start, int target) const {
 
 gfx::Rect Animation::CurrentValueBetween(const gfx::Rect& start_bounds,
                                          const gfx::Rect& target_bounds) const {
-  return Tween::RectValueBetween(
-      GetCurrentValue(), start_bounds, target_bounds);
+  return Tween::RectValueBetween(GetCurrentValue(), start_bounds,
+                                 target_bounds);
 }
 
 void Animation::SetContainer(AnimationContainer* container) {
@@ -112,8 +112,8 @@ bool Animation::ShouldRenderRichAnimation() {
          RichAnimationRenderMode::FORCE_ENABLED;
 }
 
-#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_IOS) || \
-    defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_IOS) || \
+    BUILDFLAG(IS_FUCHSIA)
 // static
 bool Animation::ShouldRenderRichAnimationImpl() {
   return true;
@@ -126,7 +126,7 @@ bool Animation::ScrollAnimationsEnabledBySystem() {
   // Defined in platform specific files for Windows and OSX and Linux.
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // static
 void Animation::UpdatePrefersReducedMotion() {
   // prefers_reduced_motion_ should only be modified on the UI thread.
@@ -136,9 +136,9 @@ void Animation::UpdatePrefersReducedMotion() {
   // experience for users on systems that don't have APIs for reduced motion.
   prefers_reduced_motion_ = false;
 }
-#endif  // !defined(OS_ANDROID)
-#endif  // defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_IOS)
-        // || defined(OS_FUCHSIA)
+#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) ||
+        // BUILDFLAG(IS_IOS) || BUILDFLAG(IS_FUCHSIA)
 
 // static
 bool Animation::PrefersReducedMotion() {

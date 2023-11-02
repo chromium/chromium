@@ -36,7 +36,7 @@ using cssvalue::CSSConicGradientValue;
 using cssvalue::CSSLinearGradientValue;
 using cssvalue::CSSRadialGradientValue;
 
-Image* GeneratedImageCache::GetImage(const FloatSize& size) const {
+Image* GeneratedImageCache::GetImage(const gfx::SizeF& size) const {
   if (size.IsEmpty())
     return nullptr;
 
@@ -47,18 +47,18 @@ Image* GeneratedImageCache::GetImage(const FloatSize& size) const {
   return image_iter->value.get();
 }
 
-void GeneratedImageCache::PutImage(const FloatSize& size,
+void GeneratedImageCache::PutImage(const gfx::SizeF& size,
                                    scoped_refptr<Image> image) {
   DCHECK(!size.IsEmpty());
   images_.insert(size, std::move(image));
 }
 
-void GeneratedImageCache::AddSize(const FloatSize& size) {
+void GeneratedImageCache::AddSize(const gfx::SizeF& size) {
   DCHECK(!size.IsEmpty());
   sizes_.insert(size);
 }
 
-void GeneratedImageCache::RemoveSize(const FloatSize& size) {
+void GeneratedImageCache::RemoveSize(const gfx::SizeF& size) {
   DCHECK(!size.IsEmpty());
   SECURITY_DCHECK(sizes_.find(size) != sizes_.end());
   bool fully_erased = sizes_.erase(size);
@@ -75,7 +75,7 @@ CSSImageGeneratorValue::~CSSImageGeneratorValue() = default;
 
 void CSSImageGeneratorValue::AddClient(const ImageResourceObserver* client) {
   DCHECK(client);
-  if (clients_.IsEmpty()) {
+  if (clients_.empty()) {
     DCHECK(!keep_alive_);
     keep_alive_ = this;
   }
@@ -93,13 +93,13 @@ void CSSImageGeneratorValue::RemoveClient(const ImageResourceObserver* client) {
   SizeAndCount& size_count = it->value;
   if (!size_count.size.IsEmpty()) {
     cached_images_.RemoveSize(size_count.size);
-    size_count.size = FloatSize();
+    size_count.size = gfx::SizeF();
   }
 
   if (!--size_count.count)
     clients_.erase(client);
 
-  if (clients_.IsEmpty()) {
+  if (clients_.empty()) {
     DCHECK(keep_alive_);
     keep_alive_.Clear();
   }
@@ -111,7 +111,7 @@ void CSSImageGeneratorValue::TraceAfterDispatch(blink::Visitor* visitor) const {
 }
 
 Image* CSSImageGeneratorValue::GetImage(const ImageResourceObserver* client,
-                                        const FloatSize& size) const {
+                                        const gfx::SizeF& size) const {
   ClientSizeCountMap::iterator it = clients_.find(client);
   if (it != clients_.end()) {
     DCHECK(keep_alive_);
@@ -119,7 +119,7 @@ Image* CSSImageGeneratorValue::GetImage(const ImageResourceObserver* client,
     if (size_count.size != size) {
       if (!size_count.size.IsEmpty()) {
         cached_images_.RemoveSize(size_count.size);
-        size_count.size = FloatSize();
+        size_count.size = gfx::SizeF();
       }
 
       if (!size.IsEmpty()) {
@@ -131,7 +131,7 @@ Image* CSSImageGeneratorValue::GetImage(const ImageResourceObserver* client,
   return cached_images_.GetImage(size);
 }
 
-void CSSImageGeneratorValue::PutImage(const FloatSize& size,
+void CSSImageGeneratorValue::PutImage(const gfx::SizeF& size,
                                       scoped_refptr<Image> image) const {
   cached_images_.PutImage(size, std::move(image));
 }
@@ -140,20 +140,21 @@ scoped_refptr<Image> CSSImageGeneratorValue::GetImage(
     const ImageResourceObserver& client,
     const Document& document,
     const ComputedStyle& style,
-    const FloatSize& target_size) {
+    const ContainerSizes& container_sizes,
+    const gfx::SizeF& target_size) {
   switch (GetClassType()) {
     case kLinearGradientClass:
-      return To<CSSLinearGradientValue>(this)->GetImage(client, document, style,
-                                                        target_size);
+      return To<CSSLinearGradientValue>(this)->GetImage(
+          client, document, style, container_sizes, target_size);
     case kPaintClass:
       return To<CSSPaintValue>(this)->GetImage(client, document, style,
                                                target_size);
     case kRadialGradientClass:
-      return To<CSSRadialGradientValue>(this)->GetImage(client, document, style,
-                                                        target_size);
+      return To<CSSRadialGradientValue>(this)->GetImage(
+          client, document, style, container_sizes, target_size);
     case kConicGradientClass:
-      return To<CSSConicGradientValue>(this)->GetImage(client, document, style,
-                                                       target_size);
+      return To<CSSConicGradientValue>(this)->GetImage(
+          client, document, style, container_sizes, target_size);
     default:
       NOTREACHED();
   }
@@ -168,6 +169,32 @@ bool CSSImageGeneratorValue::IsUsingCustomProperty(
                                                           document);
   }
   return false;
+}
+
+bool CSSImageGeneratorValue::IsUsingCurrentColor() const {
+  switch (GetClassType()) {
+    case kLinearGradientClass:
+      return To<CSSLinearGradientValue>(this)->IsUsingCurrentColor();
+    case kRadialGradientClass:
+      return To<CSSRadialGradientValue>(this)->IsUsingCurrentColor();
+    case kConicGradientClass:
+      return To<CSSConicGradientValue>(this)->IsUsingCurrentColor();
+    default:
+      return false;
+  }
+}
+
+bool CSSImageGeneratorValue::IsUsingContainerRelativeUnits() const {
+  switch (GetClassType()) {
+    case kLinearGradientClass:
+      return To<CSSLinearGradientValue>(this)->IsUsingContainerRelativeUnits();
+    case kRadialGradientClass:
+      return To<CSSRadialGradientValue>(this)->IsUsingContainerRelativeUnits();
+    case kConicGradientClass:
+      return To<CSSConicGradientValue>(this)->IsUsingContainerRelativeUnits();
+    default:
+      return false;
+  }
 }
 
 bool CSSImageGeneratorValue::KnownToBeOpaque(const Document& document,

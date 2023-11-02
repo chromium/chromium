@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_family.h"
 #include "third_party/blink/renderer/platform/fonts/font_optical_sizing.h"
 #include "third_party/blink/renderer/platform/fonts/font_orientation.h"
+#include "third_party/blink/renderer/platform/fonts/font_palette.h"
 #include "third_party/blink/renderer/platform/fonts/font_selection_types.h"
 #include "third_party/blink/renderer/platform/fonts/font_smoothing_mode.h"
 #include "third_party/blink/renderer/platform/fonts/font_variant_east_asian.h"
@@ -44,6 +45,7 @@
 #include "third_party/blink/renderer/platform/fonts/typesetting_features.h"
 #include "third_party/blink/renderer/platform/text/layout_locale.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/skia/include/core/SkFontStyle.h"
 
@@ -62,9 +64,10 @@ class PLATFORM_EXPORT FontDescription {
     kHashRegularValue
   };
 
-  enum GenericFamilyType {
+  enum GenericFamilyType : uint8_t {
     kNoFamily,
     kStandardFamily,
+    kWebkitBodyFamily,
     kSerifFamily,
     kSansSerifFamily,
     kMonospaceFamily,
@@ -183,6 +186,11 @@ class PLATFORM_EXPORT FontDescription {
     return Size(KeywordSize(), SpecifiedSize(), IsAbsoluteSize());
   }
   float SpecifiedSize() const { return specified_size_; }
+  // Returns the result of applying font-size-adjust to the specified size. This
+  // is useful as an input to optical sizing and takes zooming out of the
+  // equation for determining the font size to be used for font-optical-sizing:
+  // auto;.
+  float AdjustedSpecifiedSize() const;
   float ComputedSize() const { return computed_size_; }
 
   // TODO(xiaochengh): The functions and members for size-adjust descriptor and
@@ -252,6 +260,7 @@ class PLATFORM_EXPORT FontDescription {
   OpticalSizing FontOpticalSizing() const {
     return static_cast<OpticalSizing>(fields_.font_optical_sizing_);
   }
+  FontPalette* GetFontPalette() const { return font_palette_.get(); }
   TextRenderingMode TextRendering() const {
     return static_cast<TextRenderingMode>(fields_.text_rendering_);
   }
@@ -345,6 +354,9 @@ class PLATFORM_EXPORT FontDescription {
   }
   void SetFontOpticalSizing(OpticalSizing font_optical_sizing) {
     fields_.font_optical_sizing_ = font_optical_sizing;
+  }
+  void SetFontPalette(scoped_refptr<FontPalette> palette) {
+    font_palette_ = std::move(palette);
   }
   void SetTextRendering(TextRenderingMode rendering) {
     fields_.text_rendering_ = rendering;
@@ -446,6 +458,7 @@ class PLATFORM_EXPORT FontDescription {
   scoped_refptr<FontFeatureSettings> feature_settings_;
   scoped_refptr<FontVariationSettings> variation_settings_;
   scoped_refptr<const LayoutLocale> locale_;
+  scoped_refptr<FontPalette> font_palette_;
 
   void UpdateTypesettingFeatures();
 
@@ -567,6 +580,12 @@ struct HashTraits<blink::FontDescription>
   static blink::FontDescription EmptyValue() {
     return blink::FontDescription::CreateHashTableEmptyValue();
   }
+};
+
+template <>
+struct CrossThreadCopier<blink::FontDescription>
+    : public CrossThreadCopierPassThrough<blink::FontDescription> {
+  STATIC_ONLY(CrossThreadCopier);
 };
 
 }  // namespace WTF

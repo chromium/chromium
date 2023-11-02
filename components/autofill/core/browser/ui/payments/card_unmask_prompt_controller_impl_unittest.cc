@@ -1,4 +1,4 @@
-// Copyright (c) 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -71,7 +72,7 @@ class TestCardUnmaskPromptView : public CardUnmaskPromptView {
                              bool allow_retry) override {}
 
  private:
-  CardUnmaskPromptController* controller_;
+  raw_ptr<CardUnmaskPromptController> controller_;
 };
 
 class TestCardUnmaskPromptController : public CardUnmaskPromptControllerImpl {
@@ -85,7 +86,7 @@ class TestCardUnmaskPromptController : public CardUnmaskPromptControllerImpl {
   TestCardUnmaskPromptController& operator=(
       const TestCardUnmaskPromptController&) = delete;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   bool ShouldOfferWebauthn() const override { return should_offer_webauthn_; }
 #endif
   void set_should_offer_webauthn(bool should) {
@@ -176,14 +177,14 @@ class CardUnmaskPromptControllerImplTest
     CardUnmaskPromptControllerImplGenericTest::SetUp();
     pref_service_->registry()->RegisterBooleanPref(
         prefs::kAutofillWalletImportStorageCheckboxState, false);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     pref_service_->registry()->RegisterBooleanPref(
         prefs::kAutofillCreditCardFidoAuthOfferCheckboxState, true);
 #endif
   }
 };
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(CardUnmaskPromptControllerImplTest,
        FidoAuthOfferCheckboxStatePersistent) {
   scoped_feature_list_.InitAndEnableFeature(
@@ -277,56 +278,14 @@ TEST_F(CardUnmaskPromptControllerImplTest,
 // iOS and in the title on other platforms.
 TEST_F(CardUnmaskPromptControllerImplTest, DisplayCardInformation) {
   ShowPrompt();
-#if defined(OS_IOS)
-  EXPECT_TRUE(base::UTF16ToUTF8(controller_->GetInstructionsMessage())
-                  .find("Mastercard  " + test::ObfuscatedCardDigitsAsUTF8(
-                                             "2109")) != std::string::npos);
-#else
-  EXPECT_TRUE(base::UTF16ToUTF8(controller_->GetWindowTitle())
-                  .find("Mastercard  " + test::ObfuscatedCardDigitsAsUTF8(
-                                             "2109")) != std::string::npos);
-#endif
-}
-
-// Ensures to fallback to network name in the instruction message on iOS and in
-// the title on other platforms when the nickname is invalid.
-TEST_F(CardUnmaskPromptControllerImplTest, Nickname_NicknameInvalid) {
-  SetCreditCardForTesting(test::GetMaskedServerCardWithInvalidNickname());
-  ShowPrompt();
-#if defined(OS_IOS)
-  EXPECT_TRUE(
-      base::UTF16ToUTF8(controller_->GetInstructionsMessage()).find("Visa") !=
-      std::string::npos);
-  EXPECT_FALSE(base::UTF16ToUTF8(controller_->GetInstructionsMessage())
-                   .find("Invalid nickname which is too long") !=
-               std::string::npos);
-#else
-  EXPECT_TRUE(base::UTF16ToUTF8(controller_->GetWindowTitle()).find("Visa") !=
+#if BUILDFLAG(IS_IOS)
+  EXPECT_TRUE(controller_->GetInstructionsMessage().find(
+                  card_.CardIdentifierStringForAutofillDisplay()) !=
               std::string::npos);
-  EXPECT_FALSE(base::UTF16ToUTF8(controller_->GetWindowTitle())
-                   .find("Invalid nickname which is too long") !=
-               std::string::npos);
-#endif
-}
-
-// Ensures the nickname is displayed (instead of network) in the instruction
-// message on iOS and in the title on other platforms when the nickname is
-// valid.
-TEST_F(CardUnmaskPromptControllerImplTest, Nickname_NicknameValid) {
-  SetCreditCardForTesting(test::GetMaskedServerCardWithNickname());
-  ShowPrompt();
-#if defined(OS_IOS)
-  EXPECT_FALSE(
-      base::UTF16ToUTF8(controller_->GetInstructionsMessage()).find("Visa") !=
-      std::string::npos);
-  EXPECT_TRUE(base::UTF16ToUTF8(controller_->GetInstructionsMessage())
-                  .find("Test nickname") != std::string::npos);
 #else
-  EXPECT_FALSE(base::UTF16ToUTF8(controller_->GetWindowTitle()).find("Visa") !=
-               std::string::npos);
-  EXPECT_TRUE(
-      base::UTF16ToUTF8(controller_->GetWindowTitle()).find("Test nickname") !=
-      std::string::npos);
+  EXPECT_TRUE(controller_->GetWindowTitle().find(
+                  card_.CardIdentifierStringForAutofillDisplay()) !=
+              std::string::npos);
 #endif
 }
 
@@ -347,7 +306,7 @@ class LoggingValidationTestForNickname
     CardUnmaskPromptControllerImplGenericTest::SetUp();
     pref_service_->registry()->RegisterBooleanPref(
         prefs::kAutofillWalletImportStorageCheckboxState, false);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     pref_service_->registry()->RegisterBooleanPref(
         prefs::kAutofillCreditCardFidoAuthOfferCheckboxState, true);
 #endif
@@ -679,7 +638,7 @@ class CvcInputValidationTest : public CardUnmaskPromptControllerImplGenericTest,
     CardUnmaskPromptControllerImplGenericTest::SetUp();
     pref_service_->registry()->RegisterBooleanPref(
         prefs::kAutofillWalletImportStorageCheckboxState, false);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     pref_service_->registry()->RegisterBooleanPref(
         prefs::kAutofillCreditCardFidoAuthOfferCheckboxState, true);
 #endif
@@ -724,7 +683,7 @@ class CvcInputAmexValidationTest
     CardUnmaskPromptControllerImplGenericTest::SetUp();
     pref_service_->registry()->RegisterBooleanPref(
         prefs::kAutofillWalletImportStorageCheckboxState, false);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     pref_service_->registry()->RegisterBooleanPref(
         prefs::kAutofillCreditCardFidoAuthOfferCheckboxState, true);
 #endif
@@ -778,7 +737,7 @@ class ExpirationDateValidationTest
     CardUnmaskPromptControllerImplGenericTest::SetUp();
     pref_service_->registry()->RegisterBooleanPref(
         prefs::kAutofillWalletImportStorageCheckboxState, false);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     pref_service_->registry()->RegisterBooleanPref(
         prefs::kAutofillCreditCardFidoAuthOfferCheckboxState, true);
 #endif
@@ -811,14 +770,14 @@ class VirtualCardErrorTest
     CardUnmaskPromptControllerImplGenericTest::SetUp();
     pref_service_->registry()->RegisterBooleanPref(
         prefs::kAutofillWalletImportStorageCheckboxState, false);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     pref_service_->registry()->RegisterBooleanPref(
         prefs::kAutofillCreditCardFidoAuthOfferCheckboxState, true);
 #endif
   }
 };
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_P(VirtualCardErrorTest, VirtualCardFailureDismissesUnmaskPrompt) {
   ShowPromptAndSimulateResponse(/*enable_fido_auth=*/false,
                                 /*should_unmask_virtual_card=*/true);
@@ -846,6 +805,6 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(
         AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure,
         AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure));
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace autofill

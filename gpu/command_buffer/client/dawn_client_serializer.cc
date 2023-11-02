@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -88,24 +88,23 @@ void DawnClientSerializer::Commit() {
 
     TRACE_EVENT_WITH_FLOW0(
         TRACE_DISABLED_BY_DEFAULT("gpu.dawn"), "DawnCommands",
-        TRACE_EVENT_FLAG_FLOW_OUT,
-        (static_cast<uint64_t>(buffer_.shm_id()) << 32) + buffer_.offset());
+        (static_cast<uint64_t>(buffer_.shm_id()) << 32) + buffer_.offset(),
+        TRACE_EVENT_FLAG_FLOW_OUT);
 
     buffer_.Shrink(put_offset_);
     helper_->DawnCommands(buffer_.shm_id(), buffer_.offset(), put_offset_);
     put_offset_ = 0;
     buffer_.Release();
-    awaiting_flush_ = false;
 
     memory_transfer_service_->FreeHandles(helper_);
   }
 }
 
 void DawnClientSerializer::SetAwaitingFlush(bool awaiting_flush) {
-  // If awaiting_flush is true, but the buffer_ is invalid (empty), that
-  // means the last command right before this caused a flush. Another flush is
-  // not needed.
-  awaiting_flush_ = awaiting_flush && buffer_.valid();
+  // Set awaiting_flush_. Even if there are no commands in buffer_, this may be
+  // necessary since the buffer_ commands could have been committed and reset,
+  // but not yet flushed.
+  awaiting_flush_ = awaiting_flush;
 }
 
 void DawnClientSerializer::Disconnect() {

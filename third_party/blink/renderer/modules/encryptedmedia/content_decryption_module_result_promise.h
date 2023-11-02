@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -75,6 +75,9 @@ class ContentDecryptionModuleResultPromise
 
   // Determine if it's OK to resolve/reject this promise.
   bool IsValidToFulfillPromise();
+
+  // Returns |config_|.
+  MediaKeysConfig GetMediaKeysConfig();
 
  private:
   Member<ScriptPromiseResolver> resolver_;

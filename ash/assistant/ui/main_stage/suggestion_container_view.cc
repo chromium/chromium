@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -46,11 +46,7 @@ constexpr base::TimeDelta kChipFadeOutDuration = base::Milliseconds(200);
 constexpr char kAssistantSuggestionChipHistogram[] =
     "Ash.Assistant.AnimationSmoothness.SuggestionChip";
 
-// Returns the preferred height in DIPs. Not named GetPreferredHeight() so it
-// looks less like a views::View method.
-int GetPreferredHeightDip() {
-  return features::IsProductivityLauncherEnabled() ? 64 : 48;
-}
+constexpr int kPreferredHeightDip = 64;
 
 }  // namespace
 
@@ -128,7 +124,7 @@ gfx::Size SuggestionContainerView::CalculatePreferredSize() const {
 }
 
 int SuggestionContainerView::GetHeightForWidth(int width) const {
-  return GetPreferredHeightDip();
+  return kPreferredHeightDip;
 }
 
 void SuggestionContainerView::OnContentsPreferredSizeChanged(
@@ -137,7 +133,7 @@ void SuggestionContainerView::OnContentsPreferredSizeChanged(
   // showing conversation starters we will be center aligned.
   const int width =
       std::max(content_view->GetPreferredSize().width(), this->width());
-  content_view->SetSize(gfx::Size(width, GetPreferredHeightDip()));
+  content_view->SetSize(gfx::Size(width, kPreferredHeightDip));
 }
 
 void SuggestionContainerView::OnAssistantControllerDestroying() {
@@ -160,7 +156,7 @@ void SuggestionContainerView::InitLayout() {
   layout_manager_ =
       content_view()->SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal,
-          gfx::Insets(0, assistant::ui::GetHorizontalPadding()),
+          gfx::Insets::VH(0, assistant::ui::GetHorizontalPadding()),
           /*between_child_spacing=*/kSpacingDip));
 
   layout_manager_->set_cross_axis_alignment(
@@ -247,6 +243,12 @@ void SuggestionContainerView::OnUiVisibilityChanged(
   // we need to center align our content.
   layout_manager_->set_main_axis_alignment(
       views::BoxLayout::MainAxisAlignment::kCenter);
+}
+
+void SuggestionContainerView::InitializeUIForBubbleView() {
+  OnConversationStartersChanged(AssistantSuggestionsController::Get()
+                                    ->GetModel()
+                                    ->GetConversationStarters());
 }
 
 void SuggestionContainerView::OnButtonPressed(SuggestionChipView* chip_view) {

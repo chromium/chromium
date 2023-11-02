@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,7 @@
 #include "net/der/parse_values.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace net {
-namespace der {
-namespace test {
+namespace net::der::test {
 
 namespace {
 
@@ -47,13 +45,9 @@ TEST(EncodeValuesTest, EncodeTimeAsGeneralizedTime) {
 // on platforms where it returns true. As of this writing, it will return false
 // on Windows.
 TEST(EncodeValuesTest, EncodeTimeFromBeforeWindowsEpoch) {
-  constexpr int kYearsBeforeWindowsEpoch = 1601 - 1570;
-  constexpr int kDaysPerYear = 365;
-  constexpr int kExtraLeapDaysOverThoseYears = 8;
+  // Thu, 01 Jan 1570 00:00:00 GMT
   constexpr base::Time kStartOfYear1570 =
-      base::Time() - base::Days(kYearsBeforeWindowsEpoch * kDaysPerYear +
-                                kExtraLeapDaysOverThoseYears);
-
+      base::Time::UnixEpoch() - base::Seconds(12622780800);
   GeneralizedTime generalized_time;
   if (!EncodeTimeAsGeneralizedTime(kStartOfYear1570, &generalized_time))
     return;
@@ -277,8 +271,4 @@ TEST(EncodeValuesTest, EncodeUTCTime) {
   EXPECT_FALSE(EncodeUTCTime(time, out));
 }
 
-}  // namespace test
-
-}  // namespace der
-
-}  // namespace net
+}  // namespace net::der::test

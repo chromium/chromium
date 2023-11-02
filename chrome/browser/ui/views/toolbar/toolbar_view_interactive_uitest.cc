@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -69,7 +69,7 @@ void ToolbarViewTest::RunToolbarCycleFocusTest(Browser* browser) {
   bool found_reload = false;
   bool found_location_bar = false;
   bool found_app_menu = false;
-  const views::View* view = NULL;
+  const views::View* view = nullptr;
   while (view != first_view) {
     focus_manager->AdvanceFocus(false);
     view = focus_manager->GetFocusedView();
@@ -91,7 +91,7 @@ void ToolbarViewTest::RunToolbarCycleFocusTest(Browser* browser) {
 
   // Now press Shift-Tab to cycle backwards.
   std::vector<int> reverse_ids;
-  view = NULL;
+  view = nullptr;
   while (view != first_view) {
     focus_manager->AdvanceFocus(true);
     view = focus_manager->GetFocusedView();
@@ -169,7 +169,7 @@ IN_PROC_BROWSER_TEST_F(ToolbarViewTest,
 IN_PROC_BROWSER_TEST_F(ToolbarViewTest,
                        MAYBE_ExtensionsToolbarContainerForGuest) {
   // Verify guest browser does not have an extensions toolbar container.
-  profiles::SwitchToGuestProfile(ProfileManager::CreateCallback());
+  profiles::SwitchToGuestProfile();
   ui_test_utils::WaitForBrowserToOpen();
   Profile* guest = g_browser_process->profile_manager()->GetProfileByPath(
       ProfileManager::GetGuestProfilePath());

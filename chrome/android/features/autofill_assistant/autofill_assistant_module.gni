@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -13,7 +13,7 @@ declare_args() {
 
 autofill_assistant_module_desc = {
   name = "autofill_assistant"
-  java_deps = [ "//chrome/android/features/autofill_assistant:java" ]
+  java_deps = [ "//components/autofill_assistant/android:java" ]
   android_manifest =
       "//chrome/android/features/autofill_assistant/java/AndroidManifest.xml"
   uses_split = "chrome"
@@ -23,7 +23,7 @@ autofill_assistant_module_desc = {
 # different manifests.
 autofill_assistant_module_trichrome_desc = {
   name = "autofill_assistant"
-  java_deps = [ "//chrome/android/features/autofill_assistant:java" ]
+  java_deps = [ "//components/autofill_assistant/android:java" ]
   android_manifest = "//chrome/android/features/autofill_assistant/java/AndroidManifestTrichrome.xml"
   uses_split = "chrome"
 }

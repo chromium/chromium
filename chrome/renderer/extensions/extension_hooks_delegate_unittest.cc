@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -183,11 +183,11 @@ TEST_F(ExtensionHooksDelegateTest, SendRequestChannelLeftOpenToReplyAsync) {
 
   ExtensionMsg_TabConnectionInfo tab_connection_info;
   tab_connection_info.frame_id = 0;
-  const int tab_id = 10;
   GURL source_url("http://example.com");
-  tab_connection_info.tab.Swap(
-      DictionaryBuilder().Set("tabId", tab_id).Build().get());
   ExtensionMsg_ExternalConnectionInfo external_connection_info;
+  // We'd normally also have a tab here (stored in `tab_connection_info.tab`),
+  // but then we need a very large JSON object for it to comply with our
+  // schema. Just pretend it's not there.
   external_connection_info.target_id = extension()->id();
   external_connection_info.source_endpoint =
       MessagingEndpoint::ForExtension(extension()->id());
@@ -273,9 +273,7 @@ class ExtensionHooksDelegateMV3Test : public ExtensionHooksDelegateTest {
   ~ExtensionHooksDelegateMV3Test() override = default;
 
   scoped_refptr<const Extension> BuildExtension() override {
-    return ExtensionBuilder("foo")
-        .SetManifestKey("manifest_version", 3)
-        .Build();
+    return ExtensionBuilder("foo").SetManifestVersion(3).Build();
   }
 };
 

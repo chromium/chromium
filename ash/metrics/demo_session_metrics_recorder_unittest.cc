@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,12 +9,18 @@
 #include <utility>
 
 #include "ash/constants/app_types.h"
+#include "ash/metrics/user_metrics_recorder.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/shelf/home_button.h"
+#include "ash/shelf/shelf.h"
+#include "ash/shelf/shelf_navigation_widget.h"
+#include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/window_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/timer/mock_timer.h"
+#include "components/app_constants/constants.h"
 #include "extensions/common/constants.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/window_types.h"
@@ -147,6 +153,26 @@ class DemoSessionMetricsRecorderTest : public AshTestBase {
             aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(),
             aura::client::WINDOW_TYPE_POPUP, 0, gfx::Rect(0, 0, 10, 10)));
     return window;
+  }
+
+  // Simulates user clicking on home button.
+  void ClickOnHomeButtion() {
+    AshTestBase::LeftClickOn(
+        AshTestBase::GetPrimaryShelf()->navigation_widget()->GetHomeButton());
+  }
+
+  // Simulates user clicking on the test window.
+  void ClickMouseOnTestWindow() {
+    ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow(),
+                                       CreateBrowserWindow().get());
+    generator.ClickLeftButton();
+  }
+
+  // Simulates user pressing the screen on the test window.
+  void GesturePressWindow() {
+    ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow(),
+                                       CreateBrowserWindow().get());
+    generator.GestureTapAt(gfx::Point(0, 0));
   }
 
  protected:
@@ -517,7 +543,7 @@ TEST_F(DemoSessionMetricsRecorderTest, UniqueAppsLaunchedOnDeletion) {
   wm::ActivateWindow(chrome_app_window.get());
 
   std::unique_ptr<aura::Window> chrome_browser_window =
-      CreateChromeAppWindow(extension_misc::kChromeAppId);
+      CreateChromeAppWindow(app_constants::kChromeAppId);
   wm::ActivateWindow(chrome_browser_window.get());
   wm::DeactivateWindow(chrome_browser_window.get());
   wm::ActivateWindow(chrome_browser_window.get());
@@ -601,7 +627,7 @@ TEST_F(DemoSessionMetricsRecorderTest, AppLaunched) {
 
   // Chrome browser window
   std::unique_ptr<aura::Window> chrome_browser_window =
-      CreateChromeAppWindow(extension_misc::kChromeAppId);
+      CreateChromeAppWindow(app_constants::kChromeAppId);
   wm::ActivateWindow(chrome_browser_window.get());
   wm::DeactivateWindow(chrome_browser_window.get());
   wm::ActivateWindow(chrome_browser_window.get());
@@ -691,6 +717,59 @@ TEST_F(DemoSessionMetricsRecorderTest, DwellTime) {
 
   // The recorded dwell time should be 10 seconds.
   histogram_tester_->ExpectUniqueSample("DemoMode.DwellTime", 10, 1);
+}
+
+// Within the demo session, test user clicks the home button on shelf, clicks on
+// the test window twice and presses the screen, then the UserClickesAndPresses
+// should be 4.
+TEST_F(DemoSessionMetricsRecorderTest,
+       UserClicksAndPressesEqualsThreeInDemoSession) {
+  TestSessionControllerClient* session =
+      AshTestBase::GetSessionControllerClient();
+  session->SetIsDemoSession();
+
+  ClickMouseOnTestWindow();
+  ClickMouseOnTestWindow();
+  ClickOnHomeButtion();
+  GesturePressWindow();
+
+  ash::Shell::Get()->metrics()->OnShellShuttingDown();
+
+  // The recorded count UserInteracted should be 4, with one sample recorded.
+  histogram_tester_->ExpectUniqueSample(
+      DemoSessionMetricsRecorder::kUserClicksAndPressesMetric, 4, 1);
+}
+
+// Within the demo session, test user does not do any clicks/presses, then the
+// UserClickesAndPresses should be 0.
+TEST_F(DemoSessionMetricsRecorderTest,
+       UserClicksAndPressesEqualsZeroInDemoSession) {
+  TestSessionControllerClient* session =
+      AshTestBase::GetSessionControllerClient();
+  session->SetIsDemoSession();
+
+  ash::Shell::Get()->metrics()->OnShellShuttingDown();
+
+  // The recorded count UserInteracted should be 0, with one sample recorded.
+  histogram_tester_->ExpectUniqueSample(
+      DemoSessionMetricsRecorder::kUserClicksAndPressesMetric, 0, 1);
+}
+
+// Out of demo session, test user clicks the home button on shelf, clicks on the
+// test window twice and presses the screen, then the UserClickesAndPresses
+// should be 0.
+TEST_F(DemoSessionMetricsRecorderTest,
+       UserClicksAndPressesEqualsZeroOutOfDemoSession) {
+  ClickMouseOnTestWindow();
+  ClickOnHomeButtion();
+  GesturePressWindow();
+
+  ash::Shell::Get()->metrics()->OnShellShuttingDown();
+
+  // The recorded count UserInteracted should be 0, and metric should contain 0
+  // sample.
+  histogram_tester_->ExpectUniqueSample(
+      DemoSessionMetricsRecorder::kUserClicksAndPressesMetric, 0, 0);
 }
 
 }  // namespace

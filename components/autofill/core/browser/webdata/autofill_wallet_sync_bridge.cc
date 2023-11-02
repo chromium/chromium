@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,14 +6,10 @@
 
 #include <utility>
 
-#include "base/base64.h"
+#include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/feature_list.h"
 #include "base/logging.h"
-#include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/browser/autofill_profile_sync_util.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "base/ranges/algorithm.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -22,14 +18,11 @@
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
-#include "components/autofill/core/common/autofill_util.h"
-#include "components/sync/base/data_type_histogram.h"
 #include "components/sync/base/hash_util.h"
-#include "components/sync/driver/sync_driver_switches.h"
-#include "components/sync/engine/entity_data.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/model/sync_metadata_store_change_list.h"
+#include "components/sync/protocol/entity_data.h"
 
 using sync_pb::AutofillWalletSpecifics;
 using syncer::EntityData;
@@ -178,7 +171,9 @@ std::unique_ptr<syncer::MetadataChangeList>
 AutofillWalletSyncBridge::CreateMetadataChangeList() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return std::make_unique<syncer::SyncMetadataStoreChangeList>(
-      GetAutofillTable(), syncer::AUTOFILL_WALLET_DATA);
+      GetAutofillTable(), syncer::AUTOFILL_WALLET_DATA,
+      base::BindRepeating(&syncer::ModelTypeChangeProcessor::ReportError,
+                          change_processor()->GetWeakPtr()));
 }
 
 absl::optional<syncer::ModelError> AutofillWalletSyncBridge::MergeSyncData(
@@ -357,9 +352,9 @@ bool AutofillWalletSyncBridge::SetWalletCards(
       ComputeAutofillWalletDiff(existing_cards, wallet_cards);
 
   if (!diff.IsEmpty()) {
-    // Check if there is any update on cards' virtual card metadata. If so, make
-    // changes to the credit card art image table and log it.
-    ProcessVirtualCardMetadataChanges(existing_cards, wallet_cards);
+    // Check if there is any update on cards' virtual card metadata. If so log
+    // it.
+    LogVirtualCardMetadataChanges(existing_cards, wallet_cards);
 
     table->SetServerCardsData(wallet_cards);
 
@@ -542,27 +537,16 @@ void AutofillWalletSyncBridge::LoadMetadata() {
   change_processor()->ModelReadyToSync(std::move(batch));
 }
 
-void AutofillWalletSyncBridge::ProcessVirtualCardMetadataChanges(
+void AutofillWalletSyncBridge::LogVirtualCardMetadataChanges(
     const std::vector<std::unique_ptr<CreditCard>>& old_data,
     const std::vector<CreditCard>& new_data) {
-  std::vector<std::string> updated_server_ids;
   for (const CreditCard& new_card : new_data) {
-    // If this new card is not enrolled for virtual cards, continue.
-    if (new_card.virtual_card_enrollment_state() !=
-        CreditCard::VirtualCardEnrollmentState::ENROLLED) {
-      continue;
-    }
-
-    // Otherwise try to find the old card with same server id.
-    auto old_data_iterator =
-        std::find_if(old_data.begin(), old_data.end(),
-                     [&new_card](const std::unique_ptr<CreditCard>& old_card) {
-                       return new_card.server_id() == old_card->server_id();
-                     });
+    // Try to find the old card with same server id.
+    auto old_data_iterator = base::ranges::find(old_data, new_card.server_id(),
+                                                &CreditCard::server_id);
 
     // No existing card with the same ID found.
     if (old_data_iterator == old_data.end()) {
-      updated_server_ids.push_back(new_card.server_id());
       // log the newly-synced card.
       AutofillMetrics::LogVirtualCardMetadataSynced(/*existing_card=*/false);
       continue;
@@ -573,15 +557,9 @@ void AutofillWalletSyncBridge::ProcessVirtualCardMetadataChanges(
     if ((*old_data_iterator)->virtual_card_enrollment_state() !=
             new_card.virtual_card_enrollment_state() ||
         (*old_data_iterator)->card_art_url() != new_card.card_art_url()) {
-      updated_server_ids.push_back(new_card.server_id());
       AutofillMetrics::LogVirtualCardMetadataSynced(/*existing_card=*/true);
     }
   }
-
-  // After traversing all the new cards, notify the observer the ids of card
-  // whose image should be updated.
-  if (!updated_server_ids.empty() && web_data_backend_)
-    web_data_backend_->NotifyOfCreditCardArtImagesChanged(updated_server_ids);
 }
 
 }  // namespace autofill

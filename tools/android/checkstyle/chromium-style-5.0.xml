@@ -173,5 +173,12 @@
       <property name="ignoreComments" value="true"/>
       <property name="message" value="If possible, please use #setTextAppearance to set one of the pre-defined text appearance styles in src/ui/android/java/res/values-v17/styles.xml, instead of using #setTextColor or #setTextSize. This will ensure that your programmatically set text styles stay in-sync with text styles used in the rest of Chrome. (crbug.com/775198)"/>
     </module>
+    <module name="RegexpSinglelineJava">
+      <property name="id" value="ActivityScenarioLaunch"/>
+      <property name="severity" value="warning"/>
+      <property name="format" value="ActivityScenario\.launch"/>
+      <property name="ignoreComments" value="true"/>
+      <property name="message" value="Launching an ActivityScenario manually is error prone for any test run in a batch. Failing to #close will cause the Activity to leak into the next test. Consider replacing with ActivityScenarioRule. (https://crbug.com/1338271)"/>
+    </module>
   </module>
 </module>

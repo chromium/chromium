@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -52,7 +52,7 @@ class POLICY_EXPORT PolicyLoaderMac : public AsyncPolicyLoader {
   std::unique_ptr<PolicyBundle> Load() override;
   base::Time LastModificationTime() override;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Gets the path to the preferences (.plist) file associated with the given
   // |bundle_id|.  The file at the returned path might not exist (yet).
   // Returns an empty path upon failure.

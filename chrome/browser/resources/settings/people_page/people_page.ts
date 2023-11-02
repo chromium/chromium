@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,49 +6,49 @@
  * @fileoverview
  * 'settings-people-page' is the settings page containing sign-in settings.
  */
-import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
-import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
-import 'chrome://resources/cr_elements/icons.m.js';
-import 'chrome://resources/cr_elements/policy/cr_policy_indicator.m.js';
-import 'chrome://resources/cr_elements/shared_style_css.m.js';
-import 'chrome://resources/cr_elements/shared_vars_css.m.js';
+import 'chrome://resources/cr_elements/icons.html.js';
+import 'chrome://resources/cr_elements/policy/cr_policy_indicator.js';
+import 'chrome://resources/cr_elements/cr_shared_style.css.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '../controls/settings_toggle_button.js';
 import './sync_account_control.js';
-import '../icons.js';
+import '../icons.html.js';
 import '../settings_page/settings_animated_pages.js';
 import '../settings_page/settings_subpage.js';
-import '../settings_shared_css.js';
+import '../settings_shared.css.js';
 
-// <if expr="chromeos">
-import {convertImageSequenceToPng} from 'chrome://resources/cr_elements/chromeos/cr_picture/png.js';
+// <if expr="chromeos_ash">
+import {convertImageSequenceToPng} from 'chrome://resources/ash/common/cr_picture/png.js';
 // </if>
 import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
 import {isChromeOS} from 'chrome://resources/js/cr.m.js';
-import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
+import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {getImage} from 'chrome://resources/js/icon.js';
-import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/js/web_ui_listener_mixin.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin} from '../base_mixin.js';
+import {FocusConfig} from '../focus_config.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {OpenWindowProxyImpl} from '../open_window_proxy.js';
 import {PageVisibility} from '../page_visibility.js';
 import {routes} from '../route.js';
 import {RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 
-// <if expr="chromeos">
+// <if expr="chromeos_ash">
 import {AccountManagerBrowserProxyImpl} from './account_manager_browser_proxy.js';
 // </if>
-import {ProfileInfo, ProfileInfoBrowserProxy, ProfileInfoBrowserProxyImpl} from './profile_info_browser_proxy.js';
+
+import {getTemplate} from './people_page.html.js';
+import {ProfileInfo, ProfileInfoBrowserProxyImpl} from './profile_info_browser_proxy.js';
 import {StoredAccount, SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from './sync_browser_proxy.js';
 
-type FocusConfig = Map<string, (string|(() => void))>;
-
-interface SettingsPeoplePageElement {
+export interface SettingsPeoplePageElement {
   $: {
     importDataDialogTrigger: HTMLElement,
     toast: CrToastElement,
@@ -58,16 +58,16 @@ interface SettingsPeoplePageElement {
 const SettingsPeoplePageElementBase =
     RouteObserverMixin(WebUIListenerMixin(BaseMixin(PolymerElement))) as {
       new (): PolymerElement & WebUIListenerMixinInterface &
-      RouteObserverMixinInterface
+          RouteObserverMixinInterface,
     };
 
-class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
+export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
   static get is() {
     return 'settings-people-page';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -95,7 +95,7 @@ class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
         },
       },
 
-      // <if expr="not chromeos">
+      // <if expr="not chromeos_ash">
       /**
        * Stored accounts to the system, supplied by SyncBrowserProxy.
        */
@@ -147,7 +147,7 @@ class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
        */
       profileName_: String,
 
-      // <if expr="not chromeos">
+      // <if expr="not chromeos_ash">
       shouldShowGoogleAccount_: {
         type: Boolean,
         value: false,
@@ -171,7 +171,7 @@ class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
           if (routes.SYNC) {
             map.set(routes.SYNC.path, '#sync-setup');
           }
-          // <if expr="not chromeos">
+          // <if expr="not chromeos_ash">
           if (routes.MANAGE_PROFILE) {
             map.set(
                 routes.MANAGE_PROFILE.path,
@@ -186,16 +186,17 @@ class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
     };
   }
 
+  prefs: any;
   private signinAllowed_: boolean;
   syncStatus: SyncStatus|null;
   pageVisibility: PageVisibility;
   private authToken_: string;
   private profileIconUrl_: string;
   private isProfileActionable_: boolean;
-  private profileName_: String;
+  private profileName_: string;
 
-  // <if expr="not chromeos">
-  storedAccounts: Array<StoredAccount>|null;
+  // <if expr="not chromeos_ash">
+  storedAccounts: StoredAccount[]|null;
   private shouldShowGoogleAccount_: boolean;
   private showImportDataDialog_: boolean;
   // </if>
@@ -206,11 +207,11 @@ class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
   private syncBrowserProxy_: SyncBrowserProxy =
       SyncBrowserProxyImpl.getInstance();
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     let useProfileNameAndIcon = true;
-    // <if expr="chromeos">
+    // <if expr="chromeos_ash">
     if (loadTimeData.getBoolean('isAccountManagerEnabled')) {
       // If this is SplitSettings and we have the Google Account manager,
       // prefer the GAIA name and icon.
@@ -232,8 +233,8 @@ class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
     this.addWebUIListener(
         'sync-status-changed', this.handleSyncStatus_.bind(this));
 
-    // <if expr="not chromeos">
-    const handleStoredAccounts = (accounts: Array<StoredAccount>) => {
+    // <if expr="not chromeos_ash">
+    const handleStoredAccounts = (accounts: StoredAccount[]) => {
       this.storedAccounts = accounts;
     };
     this.syncBrowserProxy_.getStoredAccounts().then(handleStoredAccounts);
@@ -245,8 +246,8 @@ class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
     // </if>
   }
 
-  currentRouteChanged() {
-    // <if expr="not chromeos">
+  override currentRouteChanged() {
+    // <if expr="not chromeos_ash">
     this.showImportDataDialog_ =
         Router.getInstance().getCurrentRoute() === routes.IMPORT_DATA;
     // </if>
@@ -265,8 +266,8 @@ class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
 
   private getEditPersonAssocControl_(): Element {
     return this.signinAllowed_ ?
-        assert(this.shadowRoot!.querySelector('#edit-profile')!) :
-        assert(this.shadowRoot!.querySelector('#profile-row')!);
+        this.shadowRoot!.querySelector('#edit-profile')! :
+        this.shadowRoot!.querySelector('#profile-row')!;
   }
 
   private getSyncAndGoogleServicesSubtext_(): string {
@@ -286,7 +287,7 @@ class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
      * Extract first frame from image by creating a single frame PNG using
      * url as input if base64 encoded and potentially animated.
      */
-    // <if expr="chromeos">
+    // <if expr="chromeos_ash">
     if (info.iconUrl.startsWith('data:image/png;base64')) {
       this.profileIconUrl_ = convertImageSequenceToPng([info.iconUrl]);
       return;
@@ -296,7 +297,7 @@ class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
     this.profileIconUrl_ = info.iconUrl;
   }
 
-  // <if expr="chromeos">
+  // <if expr="chromeos_ash">
   private async updateAccounts_() {
     const accounts =
         await AccountManagerBrowserProxyImpl.getInstance().getAccounts();
@@ -329,7 +330,7 @@ class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
     }
   }
 
-  // <if expr="not chromeos">
+  // <if expr="not chromeos_ash">
   private computeShouldShowGoogleAccount_(): boolean {
     if (this.storedAccounts === undefined || this.syncStatus === undefined) {
       return false;
@@ -341,14 +342,14 @@ class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
   // </if>
 
   private onProfileTap_() {
-    // <if expr="chromeos">
+    // <if expr="chromeos_ash">
     if (loadTimeData.getBoolean('isAccountManagerEnabled')) {
       // Post-SplitSettings. The browser C++ code loads OS settings in a window.
       // Don't use window.open() because that creates an extra empty tab.
       window.location.href = 'chrome://os-settings/accountManager';
     }
     // </if>
-    // <if expr="not chromeos">
+    // <if expr="not chromeos_ash">
     Router.getInstance().navigateTo(routes.MANAGE_PROFILE);
     // </if>
   }
@@ -366,14 +367,14 @@ class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
     Router.getInstance().navigateTo(routes.SYNC);
   }
 
-  // <if expr="not chromeos and not lacros">
+  // <if expr="not is_chromeos">
   private onImportDataTap_() {
     Router.getInstance().navigateTo(routes.IMPORT_DATA);
   }
 
   private onImportDataDialogClosed_() {
     Router.getInstance().navigateToPreviousRoute();
-    focusWithoutInk(assert(this.$.importDataDialogTrigger));
+    focusWithoutInk(this.$.importDataDialogTrigger);
   }
   // </if>
 
@@ -387,15 +388,15 @@ class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
   }
 
   private shouldShowSyncAccountControl_(): boolean {
+    // <if expr="chromeos_ash">
+    return false;
+    // </if>
+    // <if expr="not chromeos_ash">
     if (this.syncStatus === undefined) {
       return false;
     }
-    // <if expr="chromeos">
-    if (!loadTimeData.getBoolean('useBrowserSyncConsent')) {
-      return false;
-    }
-    // </if>
     return !!this.syncStatus!.syncSystemEnabled && this.signinAllowed_;
+    // </if>
   }
 
   /**
@@ -403,6 +404,12 @@ class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
    */
   private getIconImageSet_(iconUrl: string): string {
     return getImage(iconUrl);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-people-page': SettingsPeoplePageElement;
   }
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,18 +24,17 @@ void DisplayCutoutClientImpl::BindMojoReceiver(
   MakeGarbageCollected<DisplayCutoutClientImpl>(frame, std::move(receiver));
 }
 
-void DisplayCutoutClientImpl::SetSafeArea(
-    mojom::blink::DisplayCutoutSafeAreaPtr safe_area) {
+void DisplayCutoutClientImpl::SetSafeArea(const gfx::Insets& safe_area) {
   DocumentStyleEnvironmentVariables& vars =
       frame_->GetDocument()->GetStyleEngine().EnsureEnvironmentVariables();
   vars.SetVariable(UADefinedVariable::kSafeAreaInsetTop,
-                   StyleEnvironmentVariables::FormatPx(safe_area->top));
+                   StyleEnvironmentVariables::FormatPx(safe_area.top()));
   vars.SetVariable(UADefinedVariable::kSafeAreaInsetLeft,
-                   StyleEnvironmentVariables::FormatPx(safe_area->left));
+                   StyleEnvironmentVariables::FormatPx(safe_area.left()));
   vars.SetVariable(UADefinedVariable::kSafeAreaInsetBottom,
-                   StyleEnvironmentVariables::FormatPx(safe_area->bottom));
+                   StyleEnvironmentVariables::FormatPx(safe_area.bottom()));
   vars.SetVariable(UADefinedVariable::kSafeAreaInsetRight,
-                   StyleEnvironmentVariables::FormatPx(safe_area->right));
+                   StyleEnvironmentVariables::FormatPx(safe_area.right()));
 }
 
 void DisplayCutoutClientImpl::Trace(Visitor* visitor) const {

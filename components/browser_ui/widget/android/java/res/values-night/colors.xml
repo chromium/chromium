@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources>
+    <!-- Chip colors -->
+    <color name="default_chip_outline_color">@color/default_chip_outline_color_light</color>
+    <color name="chip_bg_selected_color_baseline">@color/chip_bg_selected_color_dark</color>
+    <color name="menu_chip_background_color">@color/menu_chip_background_color_light</color>
+    <color name="menu_chip_background_color_disabled">@color/menu_chip_background_color_disabled_light</color>
+    <color name="chip_state_layer_color_baseline">@color/chip_state_layer_color_light</color>
+    <color name="chip_state_layer_selected_color_baseline">@color/chip_state_layer_selected_color_light</color>
+    <color name="chip_outline_focused_color_baseline">@color/chip_outline_focused_color_light</color>
+</resources>

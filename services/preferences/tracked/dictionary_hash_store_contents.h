@@ -1,11 +1,11 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef SERVICES_PREFERENCES_TRACKED_DICTIONARY_HASH_STORE_CONTENTS_H_
 #define SERVICES_PREFERENCES_TRACKED_DICTIONARY_HASH_STORE_CONTENTS_H_
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "services/preferences/tracked/hash_store_contents.h"
 
 namespace base {
@@ -54,7 +54,7 @@ class DictionaryHashStoreContents : public HashStoreContents {
   void SetSuperMac(const std::string& super_mac) override;
 
  private:
-  base::DictionaryValue* storage_;
+  raw_ptr<base::DictionaryValue> storage_;
 
   // Helper function to get a mutable version of the macs from |storage_|,
   // creating it if needed and |create_if_null| is true.

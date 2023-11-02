@@ -1,0 +1,64 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// MediaCodec functions
+
+AMediaCodec* AMediaCodec_createCodecByName(const char *name);
+
+AMediaCodec* AMediaCodec_createDecoderByType(const char *mime_type);
+
+AMediaCodec* AMediaCodec_createEncoderByType(const char *mime_type);
+
+media_status_t AMediaCodec_delete(AMediaCodec* codec);
+
+media_status_t AMediaCodec_configure(AMediaCodec* codec, const AMediaFormat* format, ANativeWindow* surface, AMediaCrypto *crypto, uint32_t flags);
+
+media_status_t AMediaCodec_start(AMediaCodec* codec);
+
+media_status_t AMediaCodec_stop(AMediaCodec* codec);
+
+media_status_t AMediaCodec_flush(AMediaCodec* codec);
+
+uint8_t* AMediaCodec_getInputBuffer(AMediaCodec* codec, size_t idx, size_t *out_size);
+
+uint8_t* AMediaCodec_getOutputBuffer(AMediaCodec* codec, size_t idx, size_t *out_size);
+
+media_status_t AMediaCodec_queueInputBuffer(AMediaCodec* codec, size_t idx, off_t offset, size_t size, uint64_t time, uint32_t flags);
+
+AMediaFormat* AMediaCodec_getOutputFormat(AMediaCodec* codec);
+
+media_status_t AMediaCodec_releaseOutputBuffer(AMediaCodec* codec, size_t idx, bool render);
+
+media_status_t AMediaCodec_setOutputSurface(AMediaCodec* codec, ANativeWindow* surface);
+
+media_status_t AMediaCodec_setParameters(AMediaCodec *codec, const AMediaFormat* params);
+
+media_status_t AMediaCodec_signalEndOfInputStream(AMediaCodec *codec);
+
+media_status_t AMediaCodec_setAsyncNotifyCallback(AMediaCodec* codec, AMediaCodecOnAsyncNotifyCallback callback, void *userdata);
+
+AMediaFormat* AMediaCodec_getInputFormat(AMediaCodec* codec);
+
+// AMediaFormat functions
+
+AMediaFormat *AMediaFormat_new();
+
+media_status_t AMediaFormat_delete(AMediaFormat* format);
+
+bool AMediaFormat_getInt32(AMediaFormat* format, const char *name, int32_t *out);
+
+bool AMediaFormat_getInt64(AMediaFormat* format, const char *name, int64_t *out);
+
+bool AMediaFormat_getFloat(AMediaFormat* format, const char *name, float *out);
+
+bool AMediaFormat_getString(AMediaFormat* format, const char *name, const char **out);
+
+void AMediaFormat_setInt32(AMediaFormat* format, const char* name, int32_t value);
+
+void AMediaFormat_setInt64(AMediaFormat* format, const char* name, int64_t value);
+
+void AMediaFormat_setFloat(AMediaFormat* format, const char* name, float value);
+
+void AMediaFormat_setString(AMediaFormat* format, const char* name, const char* value);
+

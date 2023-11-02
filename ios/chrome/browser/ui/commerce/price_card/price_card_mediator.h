@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #import "ios/chrome/browser/ui/commerce/price_card/price_card_view.h"
 
+#import "ios/chrome/browser/commerce/shopping_persisted_data_tab_helper.h"
 #import "ios/chrome/browser/ui/commerce/price_card/price_card_data_source.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 
@@ -21,6 +22,9 @@ web::WebState* GetWebState(WebStateList* webStateList, NSString* tab_id);
 
 @interface PriceCardMediator : NSObject <PriceCardDataSource>
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList;
+
+// Log metrics associated with the price drop feature.
+- (void)logMetrics:(PriceDropLogId)priceDropLogId;
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_COMMERCE_PRICE_CARD_PRICE_CARD_MEDIATOR_H_

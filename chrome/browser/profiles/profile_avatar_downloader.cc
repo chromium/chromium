@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -54,8 +54,7 @@ ProfileAvatarDownloader::ProfileAvatarDownloader(size_t icon_index,
   fetcher_ = std::make_unique<BitmapFetcher>(url, this, traffic_annotation);
 }
 
-ProfileAvatarDownloader::~ProfileAvatarDownloader() {
-}
+ProfileAvatarDownloader::~ProfileAvatarDownloader() = default;
 
 void ProfileAvatarDownloader::Start() {
   SystemNetworkContextManager* system_network_context_manager =
@@ -67,7 +66,6 @@ void ProfileAvatarDownloader::Start() {
       system_network_context_manager->GetURLLoaderFactory();
   if (loader_factory) {
     fetcher_->Init(
-        std::string(),
         net::ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN,
         network::mojom::CredentialsMode::kInclude);
     fetcher_->Start(loader_factory);

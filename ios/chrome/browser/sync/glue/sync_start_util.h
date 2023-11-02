@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,7 +23,7 @@ namespace sync_start_util {
 // The flare built by this function is designed to be Run()able from any thread
 // so that non-UI types don't have to deal with posting tasks.
 //
-// |browser_state_path| is used to get a hold of the actual ChromeBrowserState*
+// `browser_state_path` is used to get a hold of the actual ChromeBrowserState*
 // once the request to start sync is safely in UI Thread land.
 syncer::SyncableService::StartSyncFlare GetFlareForSyncableService(
     const base::FilePath& browser_state_path);

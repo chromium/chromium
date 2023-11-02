@@ -1,14 +1,14 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/web/error_page_controller_bridge.h"
+#import "ios/chrome/browser/web/error_page_controller_bridge.h"
 
 #import <Foundation/Foundation.h>
 
-#include "base/strings/string_number_conversions.h"
-#include "base/values.h"
-#include "ios/web/public/js_messaging/web_frame.h"
+#import "base/strings/string_number_conversions.h"
+#import "base/values.h"
+#import "ios/web/public/js_messaging/web_frame.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

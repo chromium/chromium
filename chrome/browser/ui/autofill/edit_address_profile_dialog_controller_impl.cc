@@ -1,10 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/autofill/edit_address_profile_dialog_controller_impl.h"
 
-#include "base/stl_util.h"
+#include "base/types/optional_util.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
 #include "chrome/browser/ui/autofill/save_update_address_profile_bubble_controller_impl.h"
@@ -20,7 +20,9 @@ namespace autofill {
 
 EditAddressProfileDialogControllerImpl::EditAddressProfileDialogControllerImpl(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<EditAddressProfileDialogControllerImpl>(
+          *web_contents) {
   DCHECK(base::FeatureList::IsEnabled(
       features::kAutofillAddressProfileSavePrompt));
 }
@@ -35,6 +37,13 @@ void EditAddressProfileDialogControllerImpl::OfferEdit(
     const AutofillProfile* original_profile,
     AutofillClient::AddressProfileSavePromptCallback
         address_profile_save_prompt_callback) {
+  // Don't show the bubble if it's already visible, and inform the backend.
+  if (dialog_view_) {
+    std::move(address_profile_save_prompt_callback)
+        .Run(AutofillClient::SaveAddressProfileOfferUserDecision::kAutoDeclined,
+             profile);
+    return;
+  }
   address_profile_to_edit_ = profile;
   original_profile_ = base::OptionalFromPtr(original_profile);
   address_profile_save_prompt_callback_ =
@@ -79,7 +88,7 @@ void EditAddressProfileDialogControllerImpl::OnUserDecision(
       SaveUpdateAddressProfileBubbleControllerImpl::FromWebContents(
           web_contents());
   controller->OfferSave(
-      address_profile_to_edit_, base::OptionalOrNullptr(original_profile_),
+      address_profile_to_edit_, base::OptionalToPtr(original_profile_),
       AutofillClient::SaveAddressProfilePromptOptions{.show_prompt = true},
       std::move(address_profile_save_prompt_callback_));
 }

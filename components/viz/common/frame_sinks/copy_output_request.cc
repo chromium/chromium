@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -103,25 +104,24 @@ void CopyOutputRequest::SetUniformScaleRatio(int scale_from, int scale_to) {
   scale_to_ = gfx::Vector2d(scale_to, scale_to);
 }
 
-void CopyOutputRequest::set_blit_request(const BlitRequest& blit_request) {
+void CopyOutputRequest::set_blit_request(BlitRequest blit_request) {
   DCHECK(!blit_request_);
   DCHECK_EQ(result_destination(), ResultDestination::kNativeTextures);
   DCHECK_EQ(result_format(), ResultFormat::NV12_PLANES);
+  DCHECK(has_result_selection());
 
   // Destination region must start at an even offset for NV12 results:
-  DCHECK_EQ(blit_request.destination_region_offset.x() % 2, 0);
-  DCHECK_EQ(blit_request.destination_region_offset.y() % 2, 0);
+  DCHECK_EQ(blit_request.destination_region_offset().x() % 2, 0);
+  DCHECK_EQ(blit_request.destination_region_offset().y() % 2, 0);
 
 #if DCHECK_IS_ON()
   {
-    const gpu::MailboxHolder* first_zeroed_mailbox_it = std::find_if(
-        blit_request.mailboxes.begin(), blit_request.mailboxes.end(),
-        [](const gpu::MailboxHolder& mailbox_holder) {
-          return mailbox_holder.mailbox.IsZero();
-        });
+    const gpu::MailboxHolder* first_zeroed_mailbox_it =
+        base::ranges::find_if(blit_request.mailboxes(), &gpu::Mailbox::IsZero,
+                              &gpu::MailboxHolder::mailbox);
 
     size_t num_nonzeroed_mailboxes =
-        first_zeroed_mailbox_it - blit_request.mailboxes.begin();
+        first_zeroed_mailbox_it - blit_request.mailboxes().begin();
 
     switch (result_format()) {
       case ResultFormat::RGBA:
@@ -137,7 +137,7 @@ void CopyOutputRequest::set_blit_request(const BlitRequest& blit_request) {
   }
 #endif
 
-  blit_request_ = blit_request;
+  blit_request_ = std::move(blit_request);
 }
 
 void CopyOutputRequest::SendResult(std::unique_ptr<CopyOutputResult> result) {

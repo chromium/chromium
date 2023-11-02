@@ -1,19 +1,16 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""
-Extracts breakpad symbol file from Google Cloud Platform.
-"""
+"""Extracts breakpad symbol file from Google Cloud Platform."""
 
-import os
-import sys
-import zipfile
 import logging
+import os
+import zipfile
 
-import py_utils.cloud_storage as cloud_storage
-import metadata_extractor
-from metadata_extractor import OSName
 import breakpad_file_extractor
+import flag_utils
+from metadata_extractor import OSName
+import py_utils.cloud_storage as cloud_storage
 import rename_breakpad
 
 ANDROID_X86_FOLDERS = {'x86', 'x86_64', 'next-x86', 'next-x86_64'}
@@ -31,11 +28,11 @@ def GetTraceBreakpadSymbols(cloud_storage_bucket,
 
   Args:
     cloud_storage_bucket: bucket in cloud storage where symbols reside.
-    metadata: MetadataExtractor class that contains necessary
-      trace file metadata for fetching its symbol file.
+    metadata: MetadataExtractor class that contains necessary trace file
+      metadata for fetching its symbol file.
     breakpad_output_dir: local path to store trace symbol breakpad file.
-    dump_syms_path: local path to dump_syms binary. Parameter required
-      for official Android traces; not required for mac or linux traces.
+    dump_syms_path: local path to dump_syms binary. Parameter required for
+      official Android traces; not required for mac or linux traces.
 
   Raises:
     Exception: if failed to extract trace OS name or version number, or
@@ -50,7 +47,7 @@ def GetTraceBreakpadSymbols(cloud_storage_bucket,
 
   # Obtain breakpad symbols by platform.
   if metadata.os_name == OSName.ANDROID:
-    _GetAndroidSymbols(cloud_storage_bucket, metadata, breakpad_output_dir)
+    GetAndroidSymbols(cloud_storage_bucket, metadata, breakpad_output_dir)
     breakpad_file_extractor.ExtractBreakpadOnSubtree(breakpad_output_dir,
                                                      metadata, dump_syms_path)
     rename_breakpad.RenameBreakpadFiles(breakpad_output_dir,
@@ -66,11 +63,11 @@ def GetTraceBreakpadSymbols(cloud_storage_bucket,
     raise Exception('Trace OS "%s" is not supported: %s' %
                     (metadata.os_name, metadata.trace_file))
 
-  logging.info('Breakpad symbols located at: ' +
-               os.path.abspath(breakpad_output_dir))
+  flag_utils.GetTracingLogger().info('Breakpad symbols located at: %s',
+                                     os.path.abspath(breakpad_output_dir))
 
 
-def _GetAndroidSymbols(cloud_storage_bucket, metadata, breakpad_output_dir):
+def GetAndroidSymbols(cloud_storage_bucket, metadata, breakpad_output_dir):
   """Fetches Android symbols from GCS.
 
   Args:
@@ -90,7 +87,7 @@ def _GetAndroidSymbols(cloud_storage_bucket, metadata, breakpad_output_dir):
     raise Exception('Failed to extract version code: ' + metadata._trace_file)
 
   # Determine GCS folder.
-  logging.debug('Determining Android GCS folder.')
+  flag_utils.GetTracingLogger().debug('Determining Android GCS folder.')
   possible_arch_folders = set()
   if 'arm' in metadata.architecture:
     possible_arch_folders = ANDROID_ARM_FOLDERS
@@ -111,11 +108,12 @@ def _GetAndroidSymbols(cloud_storage_bucket, metadata, breakpad_output_dir):
 
   if gcs_folder is None:
     raise RuntimeError('Failed to determine architecture folder: ' +
-                       metadata._trace_file)
-  logging.debug('Determined correct architecture folder is: ' + gcs_folder)
+                       str(metadata._trace_file))
+  flag_utils.GetTracingLogger().debug(
+      'Determined correct architecture folder is: %s', gcs_folder)
 
   # Fetch and unzip GCS symbol files.
-  logging.info('Fetching Android symbols from GCS.')
+  flag_utils.GetTracingLogger().info('Fetching Android symbols from GCS.')
   did_fetch_symbol_file = False
   for symbol in GCS_SYMBOLS:
     # Explicitly use backslashes for GCS paths to ensure that they are valid
@@ -126,12 +124,13 @@ def _GetAndroidSymbols(cloud_storage_bucket, metadata, breakpad_output_dir):
     unzip_output_dir = os.path.join(breakpad_output_dir, symbol.split('.')[0])
     if not _FetchAndUnzipGCSFile(cloud_storage_bucket, gcs_symbol_file,
                                  symbol_zip_file, unzip_output_dir):
-      logging.warning('Failed to find symbols on GCS: ' + gcs_symbol_file)
+      flag_utils.GetTracingLogger().warning('Failed to find symbols on GCS: %s',
+                                            gcs_symbol_file)
     else:
       did_fetch_symbol_file = True
 
   if not did_fetch_symbol_file:
-    raise Exception('No symbol files could be found on GCS:' + gcs_folder)
+    raise Exception('No symbol files could be found on GCS: ' + gcs_folder)
 
 
 def _IsAndroidVersionCodeInFile(cloud_storage_bucket, version_code,
@@ -160,8 +159,8 @@ def _IsAndroidVersionCodeInFile(cloud_storage_bucket, version_code,
   local_version_code_file = os.path.join(local_folder, 'version_codes.txt')
   if not _FetchGCSFile(cloud_storage_bucket, gcs_version_code_file,
                        local_version_code_file):
-    logging.debug('Failed to download version code file: ' +
-                  gcs_version_code_file)
+    flag_utils.GetTracingLogger().debug(
+        'Failed to download version code file: %s', gcs_version_code_file)
     return False
 
   with open(local_version_code_file) as version_file:
@@ -173,8 +172,8 @@ def _FetchBreakpadSymbols(cloud_storage_bucket, metadata, breakpad_output_dir):
 
   Args:
     cloud_storage_bucket: bucket in cloud storage where symbols reside.
-    metadata: MetadataExtractor class that contains necessary
-      trace file metadata for fetching its symbol file.
+    metadata: MetadataExtractor class that contains necessary trace file
+      metadata for fetching its symbol file.
     breakpad_output_dir: local path to store trace symbol breakpad file.
 
   Raises:
@@ -194,7 +193,8 @@ def _FetchBreakpadSymbols(cloud_storage_bucket, metadata, breakpad_output_dir):
       folder = 'mac-arm64'
     else:
       if metadata.architecture is None:
-        logging.warning('Architecture not found, so using x86-64.')
+        flag_utils.GetTracingLogger().warning(
+            'Architecture not found, so using x86-64.')
       folder = 'mac64'
   else:
     raise Exception('Expected OS "%s" to be Linux or Mac: %s' %
@@ -247,9 +247,10 @@ def _FetchGCSFile(cloud_storage_bucket, gcs_file, output_file):
     True if successfully fetches file; False, otherwise.
   """
   if cloud_storage.Exists(cloud_storage_bucket, gcs_file):
-    logging.info('Downloading files from GCS: ' + gcs_file)
+    flag_utils.GetTracingLogger().info('Downloading files from GCS: %s',
+                                       gcs_file)
     cloud_storage.Get(cloud_storage_bucket, gcs_file, output_file)
-    logging.info('Saved file locally to: ' + output_file)
+    flag_utils.GetTracingLogger().info('Saved file locally to: %s', output_file)
     return True
   return False
 

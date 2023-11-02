@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,15 +18,16 @@ enum class LaunchMode {
   // method outside of a platform shortcut or command-line launch..
   // kAsWebAppInWindow = 1,     Deprecated in favor of kAsWebAppInWindowByUrl
   //                            and kAsWebAppInWindowByAppId
-  kWithUrls = 2,             // Launched with urls in the cmd line.
-  kOther = 3,                // Not launched from a shortcut.
-  kShortcutNoName = 4,       // Launched from shortcut but no name available.
-  kShortcutUnknown = 5,      // Launched from user-defined shortcut.
-  kShortcutQuickLaunch = 6,  // Launched from the quick launch bar.
-  kShortcutDesktop = 7,      // Launched from a desktop shortcut.
-  kShortcutTaskbar = 8,      // Launched from the taskbar.
-  kUserExperiment = 9,       // Launched after acceptance of a user experiment.
-  kOtherOS = 10,             // Result bucket for OSes with no coverage here.
+  kWithUrls = 2,         // Launched with urls in the cmd line.
+  kOther = 3,            // Not launched from a shortcut.
+  kShortcutNoName = 4,   // Launched from shortcut but no name available.
+  kShortcutUnknown = 5,  // Launched from user-defined shortcut.
+  // kShortcutQuickLaunch = 6,  Launched from the quick launch bar. Not used.
+  //                            See kShortcutTaskbar instead.
+  kShortcutDesktop = 7,  // Launched from a desktop shortcut.
+  kShortcutTaskbar = 8,  // Launched from the Windows taskbar.
+  kUserExperiment = 9,   // Launched after acceptance of a user experiment.
+  kOtherOS = 10,         // Result bucket for OSes with no coverage here.
   kMacUndockedDiskLaunch = 11,  // Undocked launch from disk.
   kMacDockedDiskLaunch = 12,    // Docked launch from disk.
   kMacUndockedDMGLaunch = 13,   // Undocked launch from a dmg.

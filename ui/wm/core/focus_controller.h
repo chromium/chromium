@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,8 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
+#include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/strings/string_piece.h"
@@ -15,7 +16,6 @@
 #include "ui/aura/client/focus_client.h"
 #include "ui/aura/window_observer.h"
 #include "ui/events/event_handler.h"
-#include "ui/wm/core/wm_core_export.h"
 #include "ui/wm/public/activation_change_observer.h"
 #include "ui/wm/public/activation_client.h"
 
@@ -41,10 +41,11 @@ class FocusRules;
 // . ActivationReason::WINDOW_DISPOSITION_CHANGED: Window disposition changes
 //   (implemented here in aura::WindowObserver). (The FocusController registers
 //   itself as an observer of the active and focused windows).
-class WM_CORE_EXPORT FocusController : public ActivationClient,
-                                       public aura::client::FocusClient,
-                                       public ui::EventHandler,
-                                       public aura::WindowObserver {
+class COMPONENT_EXPORT(UI_WM) FocusController : public ActivationClient,
+                                                public aura::client::FocusClient
+    ,
+                                                public ui::EventHandler,
+                                                public aura::WindowObserver {
  public:
   // |rules| cannot be NULL.
   explicit FocusController(FocusRules* rules);
@@ -129,8 +130,8 @@ class WM_CORE_EXPORT FocusController : public ActivationClient,
   void WindowFocusedFromInputEvent(aura::Window* window,
                                    const ui::Event* event);
 
-  aura::Window* active_window_ = nullptr;
-  aura::Window* focused_window_ = nullptr;
+  raw_ptr<aura::Window> active_window_ = nullptr;
+  raw_ptr<aura::Window> focused_window_ = nullptr;
 
   bool updating_focus_ = false;
 

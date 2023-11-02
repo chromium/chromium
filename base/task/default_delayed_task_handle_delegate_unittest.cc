@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@ namespace base {
 
 // Tests that running the bound callback invalidates the handle.
 TEST(DefaultDelayedTaskHandleDelegateTest, RunTask) {
-  auto delegate = base::MakeRefCounted<DefaultDelayedTaskHandleDelegate>();
+  auto delegate = std::make_unique<DefaultDelayedTaskHandleDelegate>();
   EXPECT_FALSE(delegate->IsValid());
 
   auto bound_callback = delegate->BindCallback(DoNothing());
@@ -28,7 +28,7 @@ TEST(DefaultDelayedTaskHandleDelegateTest, RunTask) {
 
 // Tests that DefaultDelayedTaskHandleDelegate supports CancelTask().
 TEST(DefaultDelayedTaskHandleDelegateTest, CancelTask) {
-  auto delegate = base::MakeRefCounted<DefaultDelayedTaskHandleDelegate>();
+  auto delegate = std::make_unique<DefaultDelayedTaskHandleDelegate>();
   EXPECT_FALSE(delegate->IsValid());
 
   auto bound_callback = delegate->BindCallback(DoNothing());
@@ -44,7 +44,7 @@ TEST(DefaultDelayedTaskHandleDelegateTest, CancelTask) {
 
 // Tests that destroying the bound callback invalidates the handle.
 TEST(DefaultDelayedTaskHandleDelegateTest, DestroyTask) {
-  auto delegate = base::MakeRefCounted<DefaultDelayedTaskHandleDelegate>();
+  auto delegate = std::make_unique<DefaultDelayedTaskHandleDelegate>();
   EXPECT_FALSE(delegate->IsValid());
 
   auto bound_callback = delegate->BindCallback(DoNothing());
@@ -59,7 +59,7 @@ TEST(DefaultDelayedTaskHandleDelegateTest, DestroyTask) {
 
 // Tests that the handle is invalid while the task is running.
 TEST(DefaultDelayedTaskHandleDelegateTest, HandleInvalidInsideCallback) {
-  auto delegate = base::MakeRefCounted<DefaultDelayedTaskHandleDelegate>();
+  auto delegate = std::make_unique<DefaultDelayedTaskHandleDelegate>();
   EXPECT_FALSE(delegate->IsValid());
 
   auto bound_callback = delegate->BindCallback(

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -78,6 +78,21 @@ TEST_F(GuestViewManagerTest, AddRemove) {
   EXPECT_FALSE(manager->CanUseGuestInstanceID(2));
   EXPECT_FALSE(manager->CanUseGuestInstanceID(3));
 
+  EXPECT_EQ(0u, manager->GetNumRemovedInstanceIDs());
+
+  std::unique_ptr<WebContents> web_contents5(CreateWebContents());
+  EXPECT_TRUE(manager->CanUseGuestInstanceID(4));
+  EXPECT_TRUE(manager->CanUseGuestInstanceID(5));
+  // Suppose a GuestView (id=4) is created, but never initialized with a guest
+  // WebContents. We should be able to invalidate the id it used.
+  manager->AddGuest(5, web_contents5.get());
+  manager->RemoveGuest(5);
+  EXPECT_EQ(3, manager->last_instance_id_removed());
+  EXPECT_EQ(1u, manager->GetNumRemovedInstanceIDs());
+  manager->RemoveGuest(4);
+  EXPECT_FALSE(manager->CanUseGuestInstanceID(4));
+  EXPECT_FALSE(manager->CanUseGuestInstanceID(5));
+  EXPECT_EQ(5, manager->last_instance_id_removed());
   EXPECT_EQ(0u, manager->GetNumRemovedInstanceIDs());
 }
 

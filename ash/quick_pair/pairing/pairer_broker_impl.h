@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,6 +43,8 @@ class PairerBrokerImpl final : public PairerBroker {
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
   void PairDevice(scoped_refptr<Device> device) override;
+  bool IsPairing() override;
+  void StopPairing() override;
 
  private:
   void PairFastPairDevice(scoped_refptr<Device> device);
@@ -57,8 +59,11 @@ class PairerBrokerImpl final : public PairerBroker {
   // object.
   void OnGetAdapter(scoped_refptr<device::BluetoothAdapter> adapter);
 
+  void EraseHandshakeAndFromPairers(scoped_refptr<Device> device);
+
   base::flat_map<std::string, std::unique_ptr<FastPairPairer>>
       fast_pair_pairers_;
+  base::flat_map<std::string, int> pair_failure_counts_;
   scoped_refptr<device::BluetoothAdapter> adapter_;
   std::unique_ptr<FastPairUnpairHandler> fast_pair_unpair_handler_;
   base::ObserverList<Observer> observers_;

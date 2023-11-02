@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -50,7 +50,7 @@ void DragDropClientMac::StartDragAndDrop(
   NSWindow* window = bridge_->ns_window();
   NSPoint position = [window mouseLocationOutsideOfEventStream];
   NSTimeInterval event_time = [[NSApp currentEvent] timestamp];
-  NSEvent* event = [NSEvent mouseEventWithType:NSLeftMouseDragged
+  NSEvent* event = [NSEvent mouseEventWithType:NSEventTypeLeftMouseDragged
                                       location:position
                                  modifierFlags:0
                                      timestamp:event_time

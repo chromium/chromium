@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,6 @@
 #include "base/callback.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
-#include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
 #include "ipc/ipc_channel.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/data_decoder/public/cpp/decode_image.h"
@@ -51,8 +48,6 @@ void DecodeImage(ImageDataType image_data,
                  data_decoder::DecodeImageCallback callback,
                  scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
                  data_decoder::DataDecoder* data_decoder) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-
   base::span<const uint8_t> image_data_span(
       base::as_bytes(base::make_span(image_data)));
 
@@ -98,8 +93,8 @@ ImageDecoder::ImageRequest::~ImageRequest() {
 
 // static
 ImageDecoder* ImageDecoder::GetInstance() {
-  static auto* image_decoder = new ImageDecoder();
-  return image_decoder;
+  static base::NoDestructor<ImageDecoder> image_decoder;
+  return image_decoder.get();
 }
 
 // static
@@ -156,10 +151,10 @@ void ImageDecoder::StartWithOptionsImpl(
 
   data_decoder::mojom::ImageCodec codec =
       data_decoder::mojom::ImageCodec::kDefault;
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   if (image_codec == PNG_CODEC)
     codec = data_decoder::mojom::ImageCodec::kPng;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   auto callback =
       base::BindOnce(&OnDecodeImageDone,
@@ -169,17 +164,10 @@ void ImageDecoder::StartWithOptionsImpl(
                                     base::Unretained(this)),
                      request_id);
 
-  // NOTE: There exist ImageDecoder consumers which implicitly rely on this
-  // operation happening on a thread which always has a ThreadTaskRunnerHandle.
-  // We arbitrarily use the IO thread here to match details of the legacy
-  // implementation.
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&DecodeImage<ImageDataType>, std::move(image_data), codec,
-                     shrink_to_fit, desired_image_frame_size,
-                     std::move(callback),
-                     base::WrapRefCounted(image_request->task_runner()),
-                     image_request->data_decoder()));
+  DecodeImage<ImageDataType>(std::move(image_data), codec, shrink_to_fit,
+                             desired_image_frame_size, std::move(callback),
+                             image_request->task_runner(),
+                             image_request->data_decoder());
 }
 
 template void ImageDecoder::StartWithOptionsImpl(ImageRequest*,

@@ -1,17 +1,17 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+#include "chrome/test/chromedriver/key_converter.h"
 
 #include <stddef.h>
 
 #include <string>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/test/chromedriver/chrome/status.h"
 #include "chrome/test/chromedriver/chrome/ui_events.h"
-#include "chrome/test/chromedriver/key_converter.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/test/keyboard_layout.h"
 
@@ -141,7 +141,7 @@ TEST(KeyConverter, WebDriverSpecialNonCharKey) {
   CheckEventsReleaseModifiers(keys, key_events);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST(KeyConverter, NeedsCtrlAndAlt) {
   KeyEventBuilder ctrl_builder;
   ctrl_builder.SetKeyCode(ui::VKEY_CONTROL);
@@ -246,7 +246,7 @@ TEST(KeyConverter, ToggleModifiers) {
   CheckEventsReleaseModifiers(keys, key_events);
 }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // Fails on bots: crbug.com/174962
 #define MAYBE_AllEnglishKeyboardSymbols DISABLED_AllEnglishKeyboardSymbols
 #else
@@ -303,7 +303,7 @@ TEST(KeyConverter, AllEnglishKeyboardTextChars) {
 TEST(KeyConverter, AllSpecialWebDriverKeysOnEnglishKeyboard) {
   ui::ScopedKeyboardLayout keyboard_layout(ui::KEYBOARD_LAYOUT_ENGLISH_US);
   const char kTextForKeys[] = {
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
       0, 0, 0, 0, '\t', 0, '\r', '\r', 0, 0, 0, 0, 0,
 #else
       0, 0, 0, 0, 0, 0, '\r', '\r', 0, 0, 0, 0, 0,
@@ -324,7 +324,7 @@ TEST(KeyConverter, AllSpecialWebDriverKeysOnEnglishKeyboard) {
         << "Index: " << i;
     if (i == 0) {
       EXPECT_EQ(0u, events.size()) << "Index: " << i;
-    } else if (i >= base::size(kTextForKeys) || kTextForKeys[i] == 0) {
+    } else if (i >= std::size(kTextForKeys) || kTextForKeys[i] == 0) {
       EXPECT_EQ(2u, events.size()) << "Index: " << i;
     } else {
       ASSERT_EQ(3u, events.size()) << "Index: " << i;

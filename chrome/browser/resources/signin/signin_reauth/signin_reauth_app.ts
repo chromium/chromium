@@ -1,18 +1,19 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
-import 'chrome://resources/cr_elements/hidden_style_css.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import './strings.m.js';
-import './signin_shared_css.js';
+import './signin_shared.css.js';
 
-import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {getTemplate} from './signin_reauth_app.html.js';
 import {SigninReauthBrowserProxy, SigninReauthBrowserProxyImpl} from './signin_reauth_browser_proxy.js';
 
 export interface SigninReauthAppElement {
@@ -31,7 +32,7 @@ export class SigninReauthAppElement extends SigninReauthAppElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -45,7 +46,7 @@ export class SigninReauthAppElement extends SigninReauthAppElementBase {
 
       confirmButtonHidden_: {type: Boolean, value: true},
 
-      cancelButtonHidden_: {type: Boolean, value: true}
+      cancelButtonHidden_: {type: Boolean, value: true},
     };
   }
 
@@ -55,7 +56,7 @@ export class SigninReauthAppElement extends SigninReauthAppElementBase {
   private signinReauthBrowserProxy_: SigninReauthBrowserProxy =
       SigninReauthBrowserProxyImpl.getInstance();
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.addWebUIListener(
@@ -66,7 +67,7 @@ export class SigninReauthAppElement extends SigninReauthAppElementBase {
   private onConfirm_(e: Event) {
     this.signinReauthBrowserProxy_.confirm(
         this.getConsentDescription_(),
-        this.getConsentConfirmation_(e.composedPath() as Array<HTMLElement>));
+        this.getConsentConfirmation_(e.composedPath() as HTMLElement[]));
   }
 
   private onCancel_() {
@@ -75,7 +76,6 @@ export class SigninReauthAppElement extends SigninReauthAppElementBase {
 
   private onReauthTypeDetermined_() {
     this.confirmButtonHidden_ = false;
-    this.$.confirmButton.focus();
     this.cancelButtonHidden_ = false;
   }
 
@@ -94,7 +94,7 @@ export class SigninReauthAppElement extends SigninReauthAppElementBase {
    *     element.
    * @return The text of the consent confirmation element.
    */
-  private getConsentConfirmation_(path: Array<HTMLElement>): string {
+  private getConsentConfirmation_(path: HTMLElement[]): string {
     for (const element of path) {
       if (element.nodeType !== Node.DOCUMENT_FRAGMENT_NODE &&
           element.hasAttribute('consent-confirmation')) {

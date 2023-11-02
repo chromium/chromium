@@ -1,4 +1,4 @@
-# Copyright 2013 The Chromium Authors. All rights reserved.
+# Copyright 2013 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -8,7 +8,6 @@ These classes abstract away the various setups needed to run the WebDriver java
 tests in various environments.
 """
 
-from __future__ import absolute_import
 import logging
 import os
 import sys

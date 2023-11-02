@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,8 @@
 #include "content/public/browser/web_contents.h"
 
 class Profile;
+
+namespace ash {
 
 class SystemExtensionsDataSource : public content::URLDataSource {
  public:
@@ -31,7 +33,7 @@ class SystemExtensionsDataSource : public content::URLDataSource {
       const content::WebContents::Getter& wc_getter,
       content::URLDataSource::GotDataCallback callback) override;
 
-  std::string GetMimeType(const std::string& path) override;
+  std::string GetMimeType(const GURL& url) override;
 
   bool ShouldServeMimeTypeAsContentTypeHeader() override;
   const ui::TemplateReplacements* GetReplacements() override;
@@ -42,5 +44,7 @@ class SystemExtensionsDataSource : public content::URLDataSource {
   const SystemExtensionId system_extension_id_;
   const GURL system_extension_base_url_;
 };
+
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_SYSTEM_EXTENSIONS_SYSTEM_EXTENSIONS_DATA_SOURCE_H_

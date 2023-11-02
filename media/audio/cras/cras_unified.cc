@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,14 +6,49 @@
 
 #include <algorithm>
 
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "media/audio/cras/audio_manager_cras_base.h"
 
 namespace media {
 
 namespace {
+
+// Used to log errors in `CrasUnifiedStream::Open`.
+enum class StreamOpenResult {
+  kCallbackOpenSuccess = 0,
+  kCallbackOpenUnsupportedAudioFrequency = 1,
+  kCallbackOpenCannotCreateCrasClient = 2,
+  kCallbackOpenCannotConnectToCrasClient = 3,
+  kCallbackOpenCannotRunCrasClient = 4,
+  kMaxValue = kCallbackOpenCannotRunCrasClient
+};
+
+// Used to log errors in `CrasUnifiedStream::Start`.
+enum class StreamStartResult {
+  kCallbackStartSuccess = 0,
+  kCallbackStartCreatingStreamParamsFailed = 1,
+  kCallbackStartSettingUpStreamParamsFailed = 2,
+  kCallbackStartSettingUpChannelLayoutFailed = 3,
+  kCallbackStartAddingStreamFailed = 4,
+  kMaxValue = kCallbackStartAddingStreamFailed
+};
+
+void ReportStreamOpenResult(StreamOpenResult result) {
+  base::UmaHistogramEnumeration("Media.Audio.CrasUnifiedStreamOpenSuccess",
+                                result);
+}
+
+void ReportStreamStartResult(StreamStartResult result) {
+  base::UmaHistogramEnumeration("Media.Audio.CrasUnifiedStreamStartSuccess",
+                                result);
+}
+
+void ReportNotifyStreamErrors(int err) {
+  base::UmaHistogramSparse("Media.Audio.CrasUnifiedStreamNotifyStreamError",
+                           err);
+}
 
 int GetDevicePin(AudioManagerCrasBase* manager, const std::string& device_id) {
   if (!manager->IsDefault(device_id, false)) {
@@ -90,6 +125,8 @@ bool CrasUnifiedStream::Open() {
   // Sanity check input values.
   if (params_.sample_rate() <= 0) {
     LOG(WARNING) << "Unsupported audio frequency.";
+    ReportStreamOpenResult(
+        StreamOpenResult::kCallbackOpenUnsupportedAudioFrequency);
     return false;
   }
 
@@ -97,12 +134,16 @@ bool CrasUnifiedStream::Open() {
   client_ = libcras_client_create();
   if (!client_) {
     LOG(WARNING) << "Couldn't create CRAS client.\n";
+    ReportStreamOpenResult(
+        StreamOpenResult::kCallbackOpenCannotCreateCrasClient);
     client_ = NULL;
     return false;
   }
 
   if (libcras_client_connect(client_)) {
     LOG(WARNING) << "Couldn't connect CRAS client.\n";
+    ReportStreamOpenResult(
+        StreamOpenResult::kCallbackOpenCannotConnectToCrasClient);
     libcras_client_destroy(client_);
     client_ = NULL;
     return false;
@@ -111,10 +152,12 @@ bool CrasUnifiedStream::Open() {
   // Then start running the client.
   if (libcras_client_run_thread(client_)) {
     LOG(WARNING) << "Couldn't run CRAS client.\n";
+    ReportStreamOpenResult(StreamOpenResult::kCallbackOpenCannotRunCrasClient);
     libcras_client_destroy(client_);
     client_ = NULL;
     return false;
   }
+  ReportStreamOpenResult(StreamOpenResult::kCallbackOpenSuccess);
 
   return true;
 }
@@ -163,6 +206,8 @@ void CrasUnifiedStream::Start(AudioSourceCallback* callback) {
   struct libcras_stream_params* stream_params = libcras_stream_params_create();
   if (!stream_params) {
     DLOG(ERROR) << "Error creating stream params.";
+    ReportStreamStartResult(
+        StreamStartResult::kCallbackStartCreatingStreamParamsFailed);
     callback->OnError(AudioSourceCallback::ErrorType::kUnknown);
   }
 
@@ -175,6 +220,8 @@ void CrasUnifiedStream::Start(AudioSourceCallback* callback) {
 
   if (rc) {
     LOG(WARNING) << "Error setting up stream parameters.";
+    ReportStreamStartResult(
+        StreamStartResult::kCallbackStartSettingUpStreamParamsFailed);
     callback->OnError(AudioSourceCallback::ErrorType::kUnknown);
     libcras_stream_params_destroy(stream_params);
     return;
@@ -186,7 +233,7 @@ void CrasUnifiedStream::Start(AudioSourceCallback* callback) {
 
   // Converts to CRAS defined channels. ChannelOrder will return -1
   // for channels that does not present in params_.channel_layout().
-  for (size_t i = 0; i < base::size(kChannelMap); ++i)
+  for (size_t i = 0; i < std::size(kChannelMap); ++i)
     layout[kChannelMap[i]] = ChannelOrder(params_.channel_layout(),
                                           static_cast<Channels>(i));
 
@@ -194,6 +241,8 @@ void CrasUnifiedStream::Start(AudioSourceCallback* callback) {
                                                 layout);
   if (rc) {
     DLOG(WARNING) << "Error setting up the channel layout.";
+    ReportStreamStartResult(
+        StreamStartResult::kCallbackStartSettingUpChannelLayoutFailed);
     callback->OnError(AudioSourceCallback::ErrorType::kUnknown);
     libcras_stream_params_destroy(stream_params);
     return;
@@ -203,6 +252,8 @@ void CrasUnifiedStream::Start(AudioSourceCallback* callback) {
   if (libcras_client_add_pinned_stream(client_, pin_device_, &stream_id_,
                                        stream_params)) {
     LOG(WARNING) << "Failed to add the stream.";
+    ReportStreamStartResult(
+        StreamStartResult::kCallbackStartAddingStreamFailed);
     callback->OnError(AudioSourceCallback::ErrorType::kUnknown);
     libcras_stream_params_destroy(stream_params);
     return;
@@ -215,6 +266,8 @@ void CrasUnifiedStream::Start(AudioSourceCallback* callback) {
   libcras_stream_params_destroy(stream_params);
 
   is_playing_ = true;
+
+  ReportStreamStartResult(StreamStartResult::kCallbackStartSuccess);
 }
 
 void CrasUnifiedStream::Stop() {
@@ -285,6 +338,7 @@ uint32_t CrasUnifiedStream::WriteAudio(size_t frames,
 void CrasUnifiedStream::NotifyStreamError(int err) {
   // This will remove the stream from the client.
   // TODO(dalecurtis): Consider sending a translated |err| code.
+  ReportNotifyStreamErrors(err);
   if (source_callback_)
     source_callback_->OnError(AudioSourceCallback::ErrorType::kUnknown);
 }

@@ -1,28 +1,26 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/policy/chrome_browser_cloud_management_controller_ios.h"
+#import "ios/chrome/browser/policy/chrome_browser_cloud_management_controller_ios.h"
 
-#include <utility>
+#import <utility>
 
-#include "base/bind.h"
-#include "base/task/post_task.h"
-#include "base/task/task_traits.h"
-#include "components/enterprise/browser/reporting/report_generator.h"
-#include "components/enterprise/browser/reporting/report_scheduler.h"
-#include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
-#include "components/policy/core/common/features.h"
-#include "ios/chrome/browser/application_context.h"
-#include "ios/chrome/browser/chrome_paths.h"
-#include "ios/chrome/browser/policy/browser_dm_token_storage_ios.h"
-#include "ios/chrome/browser/policy/browser_policy_connector_ios.h"
-#include "ios/chrome/browser/policy/client_data_delegate_ios.h"
-#include "ios/chrome/browser/policy/policy_features.h"
-#include "ios/chrome/browser/policy/reporting/reporting_delegate_factory_ios.h"
-#include "ios/web/public/thread/web_task_traits.h"
-#include "ios/web/public/thread/web_thread.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
+#import "base/bind.h"
+#import "base/task/task_traits.h"
+#import "components/enterprise/browser/reporting/report_generator.h"
+#import "components/enterprise/browser/reporting/report_scheduler.h"
+#import "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
+#import "components/policy/core/common/features.h"
+#import "ios/chrome/browser/application_context/application_context.h"
+#import "ios/chrome/browser/paths/paths.h"
+#import "ios/chrome/browser/policy/browser_dm_token_storage_ios.h"
+#import "ios/chrome/browser/policy/browser_policy_connector_ios.h"
+#import "ios/chrome/browser/policy/client_data_delegate_ios.h"
+#import "ios/chrome/browser/policy/reporting/reporting_delegate_factory_ios.h"
+#import "ios/web/public/thread/web_task_traits.h"
+#import "ios/web/public/thread/web_thread.h"
+#import "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -113,8 +111,7 @@ ChromeBrowserCloudManagementControllerIOS::GetSharedURLLoaderFactory() {
 scoped_refptr<base::SingleThreadTaskRunner>
 ChromeBrowserCloudManagementControllerIOS::GetBestEffortTaskRunner() {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
-  return base::CreateSingleThreadTaskRunner(
-      {web::WebThread::UI, base::TaskPriority::BEST_EFFORT});
+  return web::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT});
 }
 
 std::unique_ptr<enterprise_reporting::ReportingDelegateFactory>

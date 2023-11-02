@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,8 +43,6 @@
                       ##__VA_ARGS__)
 #define PLOG_ERROR(FORMAT, ...) \
   LOG_ERROR(FORMAT ": %s", ##__VA_ARGS__, strerror(errno))
-
-#define UNUSED __attribute__((unused))
 
 #if defined(ARCH_CPU_X86)
 // Dalvik JIT generated code doesn't guarantee 16-byte stack alignment on

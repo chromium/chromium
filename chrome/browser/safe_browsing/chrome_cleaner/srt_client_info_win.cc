@@ -1,13 +1,13 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/safe_browsing/chrome_cleaner/srt_client_info_win.h"
 
-#include <algorithm>
 #include <vector>
 
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -38,19 +38,17 @@ bool SafeBrowsingExtendedReportingEnabled() {
   // Check all profiles registered with the manager.
   std::vector<Profile*> profiles =
       g_browser_process->profile_manager()->GetLoadedProfiles();
-  return std::any_of(profiles.begin(), profiles.end(),
-                     [](const Profile* profile) {
-                       return IsExtendedReportingEnabled(*profile->GetPrefs());
-                     });
+  return base::ranges::any_of(profiles, [](const Profile* profile) {
+    return IsExtendedReportingEnabled(*profile->GetPrefs());
+  });
 }
 
 bool SafeBrowsingExtendedReportingScoutEnabled() {
   std::vector<Profile*> profiles = ProfileManager::GetLastOpenedProfiles();
-  return std::any_of(
-      profiles.begin(), profiles.end(), [](const Profile* profile) {
-        return profile && GetExtendedReportingLevel(*profile->GetPrefs()) ==
-                              SBER_LEVEL_SCOUT;
-      });
+  return base::ranges::any_of(profiles, [](const Profile* profile) {
+    return profile &&
+           GetExtendedReportingLevel(*profile->GetPrefs()) == SBER_LEVEL_SCOUT;
+  });
 }
 
 }  // namespace safe_browsing

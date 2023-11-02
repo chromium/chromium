@@ -1,13 +1,28 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/base/cursor/cursor.h"
 
+#include <utility>
+
 #include "base/notreached.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/skia_util.h"
 
 namespace ui {
+
+CursorData::CursorData() : bitmaps({SkBitmap()}) {}
+
+CursorData::CursorData(std::vector<SkBitmap> bitmaps, gfx::Point hotspot)
+    : bitmaps(std::move(bitmaps)), hotspot(std::move(hotspot)) {
+  DCHECK_GT(this->bitmaps.size(), 0u);
+}
+
+CursorData::CursorData(const CursorData& cursor_data) = default;
+
+CursorData::~CursorData() = default;
 
 Cursor::Cursor() = default;
 

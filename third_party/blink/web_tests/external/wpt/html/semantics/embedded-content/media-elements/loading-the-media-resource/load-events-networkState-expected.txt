@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+FAIL NETWORK_IDLE assert_array_equals: lengths differ, expected array ["abort", "emptied"] length 2, got ["abort", "emptied", "timeupdate"] length 3
+PASS NETWORK_DISPATCH_EMPTIED_BEFORE_TIMEUPDATE
+FAIL NETWORK_LOADING assert_array_equals: lengths differ, expected array ["abort", "emptied"] length 2, got ["abort", "emptied", "timeupdate"] length 3
+FAIL NETWORK_NO_SOURCE assert_array_equals: lengths differ, expected array ["emptied"] length 1, got ["emptied", "timeupdate"] length 2
+Harness: the test ran to completion.
+

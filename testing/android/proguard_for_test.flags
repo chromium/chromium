@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -11,8 +11,10 @@
 -keep class junit.** { *; }
 -keep class * extends junit.** { *; }
 
-# Keep all junit4 classes and tests
+# Keep all junit4 and hamcrest classes and tests
+-keep class org.hamcrest.** { *; }
 -keep class org.junit.** { *; }
+-keep class * extends org.hamcrest.** { *; }
 -keep class * extends org.junit.** { *; }
 -keep @**.RunWith class * { *; }
 
@@ -20,6 +22,12 @@
 # via reflection.
 -keep class * implements org.chromium.base.test.params.ParameterProvider {
   *;
+}
+
+# This matches how we keep @CalledByNative.
+-keep @interface org.chromium.base.annotations.CalledByNativeForTesting
+-keepclasseswithmembers,includedescriptorclasses,allowaccessmodification class ** {
+  @org.chromium.base.annotations.CalledByNativeForTesting <methods>;
 }
 
 # Keep all classes that are in test packages. There is no benefit in testing
@@ -53,8 +61,8 @@
 # This is a workaround for b/147584922 - otherwise, R8 would generate a synthetic
 # abstract method for the subsclass FeedOfflineIndicator, which Mockito would not
 # mock.
--keep,allowobfuscation @interface org.chromium.base.annotations.MockedInTests
--keep @org.chromium.base.annotations.MockedInTests class * {
+-keep,allowobfuscation @interface org.chromium.build.annotations.MockedInTests
+-keep @org.chromium.build.annotations.MockedInTests class * {
   <methods>;
 }
 

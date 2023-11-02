@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,11 +23,14 @@ import org.chromium.chrome.browser.webauthn.CableAuthenticatorModuleProvider;
  * This activity lives in the main APK and is the target for:
  *   1. Notifications triggered by cloud messages telling us that an authentication
  *      is pending.
- *   2. A USB host telling the device that it wishes to speak CTAP2 over AOA.
- *      (See https://source.android.com/devices/accessories/aoa.)
+ *   2. Intents from Play Services when a FIDO QR code has been scanned.
+ *   3. Intents from Play Services when accounts.google.com is doing a security key operation.
  *
  * It hosts the {@link Fragment} that drives the security key process, which
  * pulls in the dynamic feature module containing the needed code.
+
+ * Note: it does *not* handle USB intents when a computer is connected via USB
+ * cable. See {@link CableAuthenticatorUSBActivity}.
  */
 public class CableAuthenticatorActivity extends ChromeBaseAppCompatActivity {
     private static final String TAG = "CableAuthenticatorActivity";
@@ -41,7 +44,7 @@ public class CableAuthenticatorActivity extends ChromeBaseAppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setTitle("Phone as a Security Key");
+        setTitle(getResources().getString(org.chromium.chrome.R.string.cablev2_paask_title));
 
         // Ensure that the full browser is running since this activity may be
         // triggered by a USB message.
@@ -71,6 +74,8 @@ public class CableAuthenticatorActivity extends ChromeBaseAppCompatActivity {
             arguments.putParcelable(UsbManager.EXTRA_ACCESSORY, accessory);
         } else if (intent.getAction() != null && intent.getAction().equals(Intent.ACTION_VIEW)
                 && intent.getData() != null) {
+            // This is from Play Services and contains a FIDO URL scanned from a
+            // QR code.
             arguments = new Bundle();
             arguments.putParcelable(QR_EXTRA, intent.getData());
         } else if (intent.hasExtra(SERVER_LINK_EXTRA)) {

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,6 +23,9 @@ class TestRenderViewHostFactory;
 // Initializes various objects needed to run unit tests that use content::
 // objects. Currently this includes setting up the notification service,
 // creating and setting the content client and the content browser client.
+// Note this isn't needed by any unit test binary that uses UnitTestTestSuite,
+// this is only for unit tests that run in other test suites or ones that run
+// in browser test binaries for per-test process isolation.
 class TestContentClientInitializer {
  public:
   TestContentClientInitializer();

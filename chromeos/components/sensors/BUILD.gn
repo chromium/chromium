@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -32,6 +32,7 @@ component("sensors") {
       "ash/sensor_hal_dispatcher.cc",
       "ash/sensor_hal_dispatcher.h",
     ]
+    deps += [ "//chromeos/ash/components/mojo_service_manager" ]
   }
   if (is_chromeos_lacros) {
     deps += [
@@ -61,15 +62,18 @@ source_set("test_support") {
   ]
 }
 
-source_set("unit_tests") {
-  testonly = true
-  sources = [ "ash/sensor_hal_dispatcher_unittest.cc" ]
-  deps = [
-    ":sensors",
-    ":test_support",
-    "//base/test:test_support",
-    "//chromeos/components/sensors/mojom",
-    "//mojo/public/cpp/bindings",
-    "//testing/gtest",
-  ]
+if (is_chromeos_ash) {
+  source_set("ash_unit_tests") {
+    testonly = true
+    sources = [ "ash/sensor_hal_dispatcher_unittest.cc" ]
+    deps = [
+      ":sensors",
+      ":test_support",
+      "//base/test:test_support",
+      "//chromeos/ash/components/mojo_service_manager",
+      "//chromeos/components/sensors/mojom",
+      "//mojo/public/cpp/bindings",
+      "//testing/gtest",
+    ]
+  }
 }

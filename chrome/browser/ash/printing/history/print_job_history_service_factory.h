@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_PRINTING_HISTORY_PRINT_JOB_HISTORY_SERVICE_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace content {
 class BrowserContext;
@@ -22,7 +22,7 @@ class PrintJobHistoryService;
 
 // Singleton that owns all PrintJobHistoryServices and associates them with
 // Profiles.
-class PrintJobHistoryServiceFactory : public BrowserContextKeyedServiceFactory {
+class PrintJobHistoryServiceFactory : public ProfileKeyedServiceFactory {
  public:
   // Returns the PrintJobHistoryService for |context|, creating it if it is not
   // yet created.
@@ -49,10 +49,5 @@ class PrintJobHistoryServiceFactory : public BrowserContextKeyedServiceFactory {
 };
 
 }  // namespace ash
-
-// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
-namespace chromeos {
-using ::ash::PrintJobHistoryServiceFactory;
-}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_PRINTING_HISTORY_PRINT_JOB_HISTORY_SERVICE_FACTORY_H_

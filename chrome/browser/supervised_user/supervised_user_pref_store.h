@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,11 @@
 #define CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_PREF_STORE_H_
 
 #include <memory>
-#include <string>
 
 #include "base/callback_list.h"
 #include "base/observer_list.h"
+#include "base/strings/string_piece.h"
+#include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/supervised_users.h"
 #include "components/prefs/pref_store.h"
@@ -30,9 +31,9 @@ class SupervisedUserPrefStore : public PrefStore {
       SupervisedUserSettingsService* supervised_user_settings_service);
 
   // PrefStore overrides:
-  bool GetValue(const std::string& key,
+  bool GetValue(base::StringPiece key,
                 const base::Value** value) const override;
-  std::unique_ptr<base::DictionaryValue> GetValues() const override;
+  base::Value::Dict GetValues() const override;
   void AddObserver(PrefStore::Observer* observer) override;
   void RemoveObserver(PrefStore::Observer* observer) override;
   bool HasObservers() const override;

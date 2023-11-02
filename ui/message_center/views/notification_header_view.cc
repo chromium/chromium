@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,12 +38,13 @@ namespace message_center {
 namespace {
 
 constexpr int kHeaderHeight = 32;
+constexpr int kHeaderHeightInAsh = 26;
 
 // The padding between controls in the header.
-constexpr gfx::Insets kHeaderSpacing(0, 2, 0, 2);
+constexpr auto kHeaderSpacing = gfx::Insets::TLBR(0, 2, 0, 2);
 
 // The padding outer the header and the control buttons.
-constexpr gfx::Insets kHeaderOuterPadding(2, 2, 0, 2);
+constexpr auto kHeaderOuterPadding = gfx::Insets::TLBR(2, 2, 0, 2);
 
 constexpr int kInnerHeaderHeight = kHeaderHeight - kHeaderOuterPadding.height();
 
@@ -51,14 +52,14 @@ constexpr int kInnerHeaderHeight = kHeaderHeight - kHeaderOuterPadding.height();
 // Top: 8px = 10px (from the mock) - 2px (outer padding).
 // Bottom: 4px from the mock.
 // Right: 4px = 6px (from the mock) - kHeaderHorizontalSpacing.
-constexpr gfx::Insets kAppIconPadding(8, 14, 4, 4);
+constexpr auto kAppIconPadding = gfx::Insets::TLBR(8, 14, 4, 4);
 
 // Size of the expand icon. 8px = 32px - 15px - 9px (values from the mock).
 constexpr int kExpandIconSize = 8;
 // Paddings of the expand buttons.
 // Top: 13px = 15px (from the mock) - 2px (outer padding).
 // Bottom: 9px from the mock.
-constexpr gfx::Insets kExpandIconViewPadding(13, 2, 9, 0);
+constexpr auto kExpandIconViewPadding = gfx::Insets::TLBR(13, 2, 9, 0);
 
 // Bullet character. The divider symbol between different parts of the header.
 constexpr char16_t kNotificationHeaderDivider[] = u" \u2022 ";
@@ -125,12 +126,15 @@ void ExpandButton::OnThemeChanged() {
   ImageView::OnThemeChanged();
   focus_painter_ = views::Painter::CreateSolidFocusPainter(
       GetColorProvider()->GetColor(ui::kColorFocusableBorderFocused),
-      gfx::Insets(0, 0, 1, 1));
+      gfx::Insets::TLBR(0, 0, 1, 1));
 }
 
 void ExpandButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kButton;
   node_data->SetName(GetTooltipText(gfx::Point()));
+
+  if (GetTooltipText().empty())
+    node_data->SetNameFrom(ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
 }
 
 BEGIN_METADATA(ExpandButton, views::ImageView)
@@ -165,7 +169,7 @@ NotificationHeaderView::NotificationHeaderView(PressedCallback callback)
   app_icon_view_->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
   app_icon_view_->SetHorizontalAlignment(views::ImageView::Alignment::kLeading);
   DCHECK_EQ(kInnerHeaderHeight, app_icon_view_->GetPreferredSize().height());
-  AddChildView(app_icon_view_);
+  AddChildView(app_icon_view_.get());
 
   // App name view
   auto app_name_view = std::make_unique<views::Label>();
@@ -182,7 +186,7 @@ NotificationHeaderView::NotificationHeaderView(PressedCallback callback)
   detail_layout->SetCollapseMargins(true);
   detail_layout->SetDefault(views::kMarginsKey, kHeaderSpacing);
   detail_views_->SetID(NotificationView::kHeaderDetailViews);
-  AddChildView(detail_views_);
+  AddChildView(detail_views_.get());
 
   // Summary text divider
   auto summary_text_divider = std::make_unique<views::Label>();
@@ -216,14 +220,14 @@ NotificationHeaderView::NotificationHeaderView(PressedCallback callback)
   expand_button_->SetHorizontalAlignment(views::ImageView::Alignment::kLeading);
   expand_button_->SetImageSize(gfx::Size(kExpandIconSize, kExpandIconSize));
   DCHECK_EQ(kInnerHeaderHeight, expand_button_->GetPreferredSize().height());
-  detail_views_->AddChildView(expand_button_);
+  detail_views_->AddChildView(expand_button_.get());
 
   // Spacer between left-aligned views and right-aligned views
   auto spacer = std::make_unique<views::View>();
   spacer->SetPreferredSize(
       gfx::Size(kControlButtonSpacing, kInnerHeaderHeight));
   spacer->SetProperty(views::kFlexBehaviorKey, kSpacerFlex);
-  AddChildView(std::move(spacer));
+  spacer_ = AddChildView(std::move(spacer));
 
   SetPreferredSize(gfx::Size(kNotificationWidth, kHeaderHeight));
 
@@ -272,20 +276,20 @@ void NotificationHeaderView::SetProgress(int progress) {
   summary_text_view_->SetText(l10n_util::GetStringFUTF16Int(
       IDS_MESSAGE_CENTER_NOTIFICATION_PROGRESS_PERCENTAGE, progress));
   has_progress_ = true;
-  UpdateSummaryTextVisibility();
+  UpdateSummaryTextAndTimestampVisibility();
 }
 
 void NotificationHeaderView::SetSummaryText(const std::u16string& text) {
   summary_text_view_->SetText(text);
   has_progress_ = false;
-  UpdateSummaryTextVisibility();
+  UpdateSummaryTextAndTimestampVisibility();
 }
 
 void NotificationHeaderView::SetOverflowIndicator(int count) {
   summary_text_view_->SetText(l10n_util::GetStringFUTF16Int(
       IDS_MESSAGE_CENTER_LIST_NOTIFICATION_HEADER_OVERFLOW_INDICATOR, count));
   has_progress_ = false;
-  UpdateSummaryTextVisibility();
+  UpdateSummaryTextAndTimestampVisibility();
 }
 
 void NotificationHeaderView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
@@ -313,7 +317,7 @@ void NotificationHeaderView::SetTimestamp(base::Time timestamp) {
 
   timestamp_view_->SetText(relative_time);
   timestamp_ = timestamp;
-  UpdateSummaryTextVisibility();
+  UpdateSummaryTextAndTimestampVisibility();
 
   // Unretained is safe as the timer cancels the task on destruction.
   timestamp_update_timer_.Start(
@@ -330,7 +334,7 @@ void NotificationHeaderView::SetDetailViewsVisible(bool visible) {
   else
     timestamp_update_timer_.Stop();
 
-  UpdateSummaryTextVisibility();
+  UpdateSummaryTextAndTimestampVisibility();
 }
 
 void NotificationHeaderView::SetExpandButtonEnabled(bool enabled) {
@@ -376,11 +380,36 @@ void NotificationHeaderView::SetAppIconVisible(bool visible) {
   app_icon_view_->SetVisible(visible);
 }
 
+void NotificationHeaderView::SetTimestampVisible(bool visible) {
+  timestamp_divider_->SetVisible(!is_in_group_child_notification_ && visible);
+  timestamp_view_->SetVisible(visible);
+}
+
 void NotificationHeaderView::SetIsInAshNotificationView(
     bool is_in_ash_notification) {
   is_in_ash_notification_ = is_in_ash_notification;
   app_icon_view_->SetVisible(!is_in_ash_notification_);
   expand_button_->SetVisible(!is_in_ash_notification_);
+
+  // HeaderView size is different for ash notifications.
+  spacer_->SetPreferredSize(
+      gfx::Size(kControlButtonSpacing,
+                kHeaderHeightInAsh - kHeaderOuterPadding.height()));
+  SetPreferredSize(gfx::Size(kNotificationWidth, kHeaderHeightInAsh));
+}
+
+void NotificationHeaderView::SetIsInGroupChildNotification(
+    bool is_in_group_child_notification) {
+  if (is_in_group_child_notification_ == is_in_group_child_notification)
+    return;
+  is_in_group_child_notification_ = is_in_group_child_notification;
+
+  app_name_view_->SetVisible(!is_in_group_child_notification_);
+  app_icon_view_->SetVisible(!is_in_ash_notification_ &&
+                             !is_in_group_child_notification_);
+  expand_button_->SetVisible(!is_in_ash_notification_ &&
+                             !is_in_group_child_notification_);
+  UpdateSummaryTextAndTimestampVisibility();
 }
 
 const std::u16string& NotificationHeaderView::app_name_for_testing() const {
@@ -391,14 +420,14 @@ gfx::ImageSkia NotificationHeaderView::app_icon_for_testing() const {
   return app_icon_view_->GetImage();
 }
 
-void NotificationHeaderView::UpdateSummaryTextVisibility() {
-  const bool summary_visible = !summary_text_view_->GetText().empty();
+void NotificationHeaderView::UpdateSummaryTextAndTimestampVisibility() {
+  const bool summary_visible = !is_in_group_child_notification_ &&
+                               !summary_text_view_->GetText().empty();
   summary_text_divider_->SetVisible(summary_visible);
   summary_text_view_->SetVisible(summary_visible);
 
   const bool timestamp_visible = !has_progress_ && timestamp_;
-  timestamp_divider_->SetVisible(timestamp_visible);
-  timestamp_view_->SetVisible(timestamp_visible);
+  SetTimestampVisible(timestamp_visible);
 
   // TODO(crbug.com/991492): this should not be necessary.
   detail_views_->InvalidateLayout();

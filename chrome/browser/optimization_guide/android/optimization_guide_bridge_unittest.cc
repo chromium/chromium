@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/optimization_guide/android/optimization_guide_bridge.h"
 
 #include "base/android/jni_android.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/gmock_callback_support.h"
 #include "chrome/browser/optimization_guide/android/native_j_unittests_jni_headers/OptimizationGuideBridgeNativeUnitTest_jni.h"
 #include "chrome/browser/optimization_guide/chrome_hints_manager.h"
@@ -46,8 +47,8 @@ class MockOptimizationGuideHintsManager
             /*top_host_provider=*/nullptr,
             /*tab_url_provider=*/nullptr,
             /*url_loader_factory=*/nullptr,
-            content::GetNetworkConnectionTracker(),
-            /*push_notification_manager=*/nullptr) {}
+            /*push_notification_manager=*/nullptr,
+            /*optimization_guide_logger=*/nullptr) {}
   ~MockOptimizationGuideHintsManager() override = default;
   MOCK_METHOD3(CanApplyOptimizationAsync,
                void(const GURL&,
@@ -112,13 +113,13 @@ class OptimizationGuideBridgeTest : public testing::Test {
   void RegisterOptimizationTypes() {
     optimization_guide_keyed_service_->RegisterOptimizationTypes(
         {optimization_guide::proto::DEFER_ALL_SCRIPT,
-         optimization_guide::proto::PERFORMANCE_HINTS});
+         optimization_guide::proto::LOADING_PREDICTOR});
   }
 
  protected:
   base::android::ScopedJavaGlobalRef<jobject> j_test_;
-  JNIEnv* env_;
-  MockOptimizationGuideKeyedService* optimization_guide_keyed_service_;
+  raw_ptr<JNIEnv> env_;
+  raw_ptr<MockOptimizationGuideKeyedService> optimization_guide_keyed_service_;
   std::unique_ptr<MockOptimizationGuideHintsManager>
       optimization_guide_hints_manager_;
 
@@ -126,7 +127,7 @@ class OptimizationGuideBridgeTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI};
   TestingProfileManager profile_manager_;
-  TestingProfile* profile_;
+  raw_ptr<TestingProfile> profile_;
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
 };
@@ -134,7 +135,7 @@ class OptimizationGuideBridgeTest : public testing::Test {
 TEST_F(OptimizationGuideBridgeTest, RegisterOptimizationTypes) {
   EXPECT_CALL(*optimization_guide_keyed_service_,
               RegisterOptimizationTypes(UnorderedElementsAre(
-                  optimization_guide::proto::PERFORMANCE_HINTS,
+                  optimization_guide::proto::LOADING_PREDICTOR,
                   optimization_guide::proto::DEFER_ALL_SCRIPT)));
 
   Java_OptimizationGuideBridgeNativeUnitTest_testRegisterOptimizationTypes(
@@ -145,16 +146,13 @@ TEST_F(OptimizationGuideBridgeTest, CanApplyOptimizationAsyncHasHint) {
   RegisterOptimizationTypes();
   EXPECT_CALL(*optimization_guide_keyed_service_, GetHintsManager())
       .WillRepeatedly(Return(optimization_guide_hints_manager_.get()));
-  optimization_guide::proto::PerformanceHintsMetadata hints_metadata;
-  auto* hint = hints_metadata.add_performance_hints();
-  hint->set_wildcard_pattern("test.com");
-  hint->set_performance_class(optimization_guide::proto::PERFORMANCE_SLOW);
+  optimization_guide::proto::LoadingPredictorMetadata hints_metadata;
   optimization_guide::OptimizationMetadata metadata;
   metadata.SetAnyMetadataForTesting(hints_metadata);
   EXPECT_CALL(
       *optimization_guide_hints_manager_,
       CanApplyOptimizationAsync(GURL("https://example.com/"),
-                                optimization_guide::proto::PERFORMANCE_HINTS,
+                                optimization_guide::proto::LOADING_PREDICTOR,
                                 base::test::IsNotNullCallback()))
       .WillOnce(base::test::RunOnceCallback<2>(
           optimization_guide::OptimizationGuideDecision::kTrue,
@@ -166,16 +164,13 @@ TEST_F(OptimizationGuideBridgeTest, CanApplyOptimizationAsyncHasHint) {
 
 TEST_F(OptimizationGuideBridgeTest, CanApplyOptimizationHasHint) {
   RegisterOptimizationTypes();
-  optimization_guide::proto::PerformanceHintsMetadata hints_metadata;
-  auto* hint = hints_metadata.add_performance_hints();
-  hint->set_wildcard_pattern("test.com");
-  hint->set_performance_class(optimization_guide::proto::PERFORMANCE_SLOW);
+  optimization_guide::proto::LoadingPredictorMetadata hints_metadata;
   optimization_guide::OptimizationMetadata metadata;
   metadata.SetAnyMetadataForTesting(hints_metadata);
 
   ON_CALL(*optimization_guide_keyed_service_,
           CanApplyOptimization(GURL("https://example.com/"),
-                               optimization_guide::proto::PERFORMANCE_HINTS,
+                               optimization_guide::proto::LOADING_PREDICTOR,
                                NotNull()))
       .WillByDefault(
           DoAll(SetArgPointee<2>(metadata),

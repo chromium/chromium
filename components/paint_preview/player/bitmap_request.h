@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,8 @@ struct BitmapRequest {
   BitmapRequest(const absl::optional<base::UnguessableToken>& frame_guid,
                 const gfx::Rect& clip_rect,
                 float scale_factor,
-                BitmapRequestCallback callback);
+                BitmapRequestCallback callback,
+                bool run_callback_on_default_task_runner);
   ~BitmapRequest();
 
   BitmapRequest& operator=(BitmapRequest&& other) noexcept;
@@ -32,6 +33,7 @@ struct BitmapRequest {
   gfx::Rect clip_rect;
   float scale_factor;
   BitmapRequestCallback callback;
+  bool run_callback_on_default_task_runner;
 };
 
 }  // namespace paint_preview

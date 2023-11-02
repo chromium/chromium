@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <queue>
 #include <string>
 
-#include "components/arc/mojom/screen_capture.mojom.h"
+#include "ash/components/arc/mojom/screen_capture.mojom.h"
 #include "components/viz/common/gpu/context_lost_observer.h"
 #include "gpu/command_buffer/client/gl_helper.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -56,7 +56,13 @@ class ArcScreenCaptureSession : public mojom::ScreenCaptureSession,
   ArcScreenCaptureSession& operator=(const ArcScreenCaptureSession&) = delete;
 
   // Implements mojo::ScreenCaptureSession interface.
+  void SetOutputBufferDeprecated(
+      mojo::ScopedHandle graphics_buffer,
+      uint32_t stride,
+      SetOutputBufferDeprecatedCallback callback) override;
   void SetOutputBuffer(mojo::ScopedHandle graphics_buffer,
+                       gfx::BufferFormat buffer_format,
+                       uint64_t buffer_format_modifier,
                        uint32_t stride,
                        SetOutputBufferCallback callback) override;
 
@@ -93,6 +99,7 @@ class ArcScreenCaptureSession : public mojom::ScreenCaptureSession,
   void OnDesktopCaptured(std::unique_ptr<viz::CopyOutputResult> result);
   // Callback for completion of GL commands.
   void QueryCompleted(GLuint query_id,
+                      std::unique_ptr<DesktopTexture> desktop_texture,
                       std::unique_ptr<PendingBuffer> pending_buffer);
   // Callback for a user clicking Stop on the notification for screen capture.
   void NotificationStop();

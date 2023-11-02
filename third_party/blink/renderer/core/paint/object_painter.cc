@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,14 +36,16 @@ void ObjectPainter::PaintOutline(const PaintInfo& paint_info,
     return;
   }
 
+  LayoutObject::OutlineInfo info;
   auto outline_rects = layout_object_.OutlineRects(
-      paint_offset,
+      &info, paint_offset,
       style_to_use.OutlineRectsShouldIncludeBlockVisualOverflow());
-  if (outline_rects.IsEmpty())
+  if (outline_rects.empty())
     return;
 
   OutlinePainter::PaintOutlineRects(paint_info, layout_object_, outline_rects,
-                                    style_to_use, layout_object_.GetDocument());
+                                    info, style_to_use,
+                                    layout_object_.GetDocument());
 }
 
 void ObjectPainter::PaintInlineChildrenOutlines(const PaintInfo& paint_info) {
@@ -71,8 +73,8 @@ void ObjectPainter::AddURLRectIfNeeded(const PaintInfo& paint_info,
     return;
 
   auto outline_rects = layout_object_.OutlineRects(
-      paint_offset, NGOutlineType::kIncludeBlockVisualOverflow);
-  gfx::Rect rect = ToGfxRect(PixelSnappedIntRect(UnionRect(outline_rects)));
+      nullptr, paint_offset, NGOutlineType::kIncludeBlockVisualOverflow);
+  gfx::Rect rect = ToPixelSnappedRect(UnionRect(outline_rects));
   if (rect.IsEmpty())
     return;
 
@@ -88,10 +90,10 @@ void ObjectPainter::AddURLRectIfNeeded(const PaintInfo& paint_info,
                                       layout_object_.GetDocument().BaseURL())) {
     String fragment_name = url.FragmentIdentifier();
     if (layout_object_.GetDocument().FindAnchor(fragment_name))
-      paint_info.context.SetURLFragmentForRect(fragment_name, IntRect(rect));
+      paint_info.context.SetURLFragmentForRect(fragment_name, rect);
     return;
   }
-  paint_info.context.SetURLForRect(url, IntRect(rect));
+  paint_info.context.SetURLForRect(url, rect);
 }
 
 void ObjectPainter::PaintAllPhasesAtomically(const PaintInfo& paint_info) {

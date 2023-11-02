@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PARSER_CSS_PARSER_TOKEN_STREAM_H_
 
 #include "base/auto_reset.h"
+#include "base/check_op.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -85,10 +87,13 @@ class CORE_EXPORT CSSParserTokenStream {
   // only needed for declarations which are easier to think about?
   static constexpr size_t InitialBufferSize() { return 128; }
 
-  explicit CSSParserTokenStream(CSSTokenizer& tokenizer)
-      : tokenizer_(tokenizer), next_(kEOFToken) {
+  explicit CSSParserTokenStream(CSSTokenizerWrapper tokenizer)
+      : tokenizer_(std::move(tokenizer)), next_(kEOFToken) {
     buffer_.ReserveInitialCapacity(InitialBufferSize());
   }
+
+  explicit CSSParserTokenStream(CSSTokenizer& tokenizer)
+      : CSSParserTokenStream(CSSTokenizerWrapper(tokenizer)) {}
 
   CSSParserTokenStream(CSSParserTokenStream&&) = default;
   CSSParserTokenStream(const CSSParserTokenStream&) = delete;
@@ -221,7 +226,7 @@ class CORE_EXPORT CSSParserTokenStream {
   void UncheckedSkipToEndOfBlock();
 
   Vector<CSSParserToken, 32> buffer_;
-  CSSTokenizer& tokenizer_;
+  CSSTokenizerWrapper tokenizer_;
   CSSParserToken next_;
   wtf_size_t offset_ = 0;
   bool has_look_ahead_ = false;

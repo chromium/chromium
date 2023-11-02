@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -49,8 +49,8 @@ Notification* FakeMessageCenter::FindNotificationById(const std::string& id) {
   return nullptr;
 }
 
-Notification* FakeMessageCenter::FindParentNotificationForOriginUrl(
-    const GURL& notifier_id) {
+Notification* FakeMessageCenter::FindParentNotification(
+    Notification* notification) {
   // stub
   return nullptr;
 }
@@ -88,6 +88,12 @@ FakeMessageCenter::GetVisibleNotifications() {
 
 NotificationList::PopupNotifications
 FakeMessageCenter::GetPopupNotifications() {
+  return NotificationList::PopupNotifications();
+}
+
+NotificationList::PopupNotifications
+FakeMessageCenter::GetPopupNotificationsWithoutBlocker(
+    const NotificationBlocker& blocker) const {
   return NotificationList::PopupNotifications();
 }
 
@@ -137,7 +143,7 @@ void FakeMessageCenter::RemoveAllNotifications(bool by_user, RemoveType type) {
 }
 
 void FakeMessageCenter::SetNotificationIcon(const std::string& notification_id,
-                                            const gfx::Image& image) {}
+                                            const ui::ImageModel& image) {}
 
 void FakeMessageCenter::SetNotificationImage(const std::string& notification_id,
                                              const gfx::Image& image) {}
@@ -159,6 +165,8 @@ void FakeMessageCenter::DisableNotification(const std::string& id) {}
 void FakeMessageCenter::MarkSinglePopupAsShown(const std::string& id,
                                                bool mark_notification_as_read) {
 }
+
+void FakeMessageCenter::ResetPopupTimer(const std::string& id) {}
 
 void FakeMessageCenter::ResetSinglePopup(const std::string& id) {}
 
@@ -196,6 +204,9 @@ const std::u16string& FakeMessageCenter::GetSystemNotificationAppName() const {
 
 void FakeMessageCenter::SetSystemNotificationAppName(
     const std::u16string& product_os_name) {}
+
+void FakeMessageCenter::OnMessageViewHovered(
+    const std::string& notification_id) {}
 
 void FakeMessageCenter::DisableTimersForTest() {}
 

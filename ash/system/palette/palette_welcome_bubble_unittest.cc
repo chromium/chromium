@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -112,7 +112,12 @@ TEST_F(PaletteWelcomeBubbleTest, TapOutsideOfBubble) {
   ASSERT_FALSE(bounds.Contains(gfx::Point()));
   GetEventGenerator()->set_current_screen_location(gfx::Point());
   GetEventGenerator()->ClickLeftButton();
-  EXPECT_FALSE(welcome_bubble_->GetBubbleViewForTesting());
+  // The Widget (and thus the contained views) is closed asynchronously. This
+  // check ensures either the BubbleView doesn't exist or that the Widget has
+  // been closed.
+  EXPECT_TRUE(
+      !welcome_bubble_->GetBubbleViewForTesting() ||
+      welcome_bubble_->GetBubbleViewForTesting()->GetWidget()->IsClosed());
 }
 
 // Verify that a second user sees the bubble even after a first user has seen it

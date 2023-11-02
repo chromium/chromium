@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -69,9 +69,9 @@ class AffiliatedInvalidationServiceProviderImpl
   // one registered consumer.
   void FindConnectedInvalidationService();
 
-  // Choose |invalidation_service| as the shared invalidation service and notify
-  // consumers.
-  void SetInvalidationService(
+  // Choose |invalidation_service| as the |current_invalidation_service_| and
+  // notify consumers.
+  void SetCurrentInvalidationService(
       invalidation::InvalidationService* invalidation_service);
 
   // Destroy the device-global invalidation service, if any.
@@ -110,7 +110,7 @@ class AffiliatedInvalidationServiceProviderImpl
   // The invalidation service currently used by consumers. nullptr if there are
   // no registered consumers or no connected invalidation service is available
   // for use.
-  invalidation::InvalidationService* invalidation_service_;
+  invalidation::InvalidationService* current_invalidation_service_;
 
   base::ObserverList<Consumer, true>::Unchecked consumers_;
   int consumer_count_;

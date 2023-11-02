@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -86,10 +87,13 @@ class FakeUpdateClient : public update_client::UpdateClient {
       observers_.push_back(observer);
   }
   void RemoveObserver(Observer* observer) override {}
-  void Install(const std::string& id,
-               CrxDataCallback crx_data_callback,
-               CrxStateChangeCallback crx_state_change_callback,
-               update_client::Callback callback) override {}
+  base::RepeatingClosure Install(
+      const std::string& id,
+      CrxDataCallback crx_data_callback,
+      CrxStateChangeCallback crx_state_change_callback,
+      update_client::Callback callback) override {
+    return base::DoNothing();
+  }
   void Update(const std::vector<std::string>& ids,
               CrxDataCallback crx_data_callback,
               CrxStateChangeCallback crx_state_change_callback,
@@ -119,8 +123,6 @@ class FakeUpdateClient : public update_client::UpdateClient {
     uninstall_pings_.emplace_back(crx_component.app_id, crx_component.version,
                                   reason);
   }
-  void SendRegistrationPing(const update_client::CrxComponent& crx_component,
-                            update_client::Callback Callback) override {}
 
   void FireEvent(Observer::Events event, const std::string& extension_id) {
     for (Observer* observer : observers_)
@@ -452,7 +454,7 @@ class UpdateServiceTest : public ExtensionsTest {
   }
 
  private:
-  UpdateService* update_service_ = nullptr;
+  raw_ptr<UpdateService> update_service_ = nullptr;
   scoped_refptr<FakeUpdateClient> update_client_;
   MockExtensionSystemFactory<FakeExtensionSystem>
       fake_extension_system_factory_;
@@ -575,8 +577,8 @@ TEST_F(UpdateServiceTest, CheckOmahaMalwareAttributes) {
   const auto& request = update_client()->update_request(0);
   EXPECT_THAT(request.extension_ids, testing::ElementsAre(extension_id));
 
-  update_client()->RunDelayedUpdate(0,
-                                    UpdateClientEvents::COMPONENT_NOT_UPDATED);
+  update_client()->RunDelayedUpdate(
+      0, UpdateClientEvents::COMPONENT_ALREADY_UP_TO_DATE);
   EXPECT_TRUE(registry->disabled_extensions().GetByID(extension_id));
 }
 
@@ -627,8 +629,8 @@ TEST_F(UpdateServiceTest, CheckNoOmahaAttributes) {
   const auto& request = update_client()->update_request(0);
   EXPECT_THAT(request.extension_ids, testing::ElementsAre(extension_id));
 
-  update_client()->RunDelayedUpdate(0,
-                                    UpdateClientEvents::COMPONENT_NOT_UPDATED);
+  update_client()->RunDelayedUpdate(
+      0, UpdateClientEvents::COMPONENT_ALREADY_UP_TO_DATE);
   EXPECT_TRUE(registry->enabled_extensions().GetByID(extension_id));
   EXPECT_EQ(extensions::ALLOWLIST_UNDEFINED,
             extension_system()->GetExtensionAllowlistState(extension_id));

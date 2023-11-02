@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <set>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "components/download/public/background_service/client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -33,7 +34,7 @@ class PluginVmImageDownloadClient : public download::Client {
   ~PluginVmImageDownloadClient() override;
 
  private:
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
   int64_t content_length_ = -1;
   int response_code_ = -1;
 

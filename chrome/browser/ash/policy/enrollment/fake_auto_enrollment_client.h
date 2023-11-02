@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,10 @@
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_client.h"
 
 class PrefService;
+
+namespace policy::psm {
+class RlweDmserverClient;
+}
 
 namespace policy {
 
@@ -52,7 +56,7 @@ class FakeAutoEnrollmentClient : public AutoEnrollmentClient {
         const std::string& device_brand_code,
         int power_initial,
         int power_limit,
-        policy::PrivateMembershipRlweClient::Factory* psm_rlwe_client_factory)
+        std::unique_ptr<psm::RlweDmserverClient> psm_rlwe_dmserver_client)
         override;
 
    private:
@@ -70,12 +74,6 @@ class FakeAutoEnrollmentClient : public AutoEnrollmentClient {
   void Start() override;
   // Note: |Retry| is currently a no-op in |FakeAutoEnrollmentClient|.
   void Retry() override;
-  // Note: |CancelAndDeleteSoon| currnetly immediately deletes this
-  // |FakeAutoEnrollmentClinet|.
-  void CancelAndDeleteSoon() override;
-
-  std::string device_id() const override;
-  AutoEnrollmentState state() const override;
 
   // Sets the state and notifies the |ProgressCallback| passed to the
   // constructor.

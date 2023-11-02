@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,10 +21,7 @@ class FakeTabMatcher : public TabMatcher {
   }
 
   bool IsTabOpenWithURL(const GURL& url,
-                        const AutocompleteInput* input) const override {
-    return !substring_to_match_.empty() &&
-           url.spec().find(substring_to_match_) != std::string::npos;
-  }
+                        const AutocompleteInput* input) const override;
 
  private:
   // Substring used to match URLs for IsTabOpenWithURL().

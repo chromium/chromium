@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,6 +20,7 @@
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
 using testing::_;
 
@@ -64,9 +65,10 @@ class MediaStreamDevicesControllerBrowserTest
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     EXPECT_EQ(request_url_,
-              web_contents->GetMainFrame()->GetLastCommittedURL());
-    int render_process_id = web_contents->GetMainFrame()->GetProcess()->GetID();
-    int render_frame_id = web_contents->GetMainFrame()->GetRoutingID();
+              web_contents->GetPrimaryMainFrame()->GetLastCommittedURL());
+    int render_process_id =
+        web_contents->GetPrimaryMainFrame()->GetProcess()->GetID();
+    int render_frame_id = web_contents->GetPrimaryMainFrame()->GetRoutingID();
     return content::MediaStreamRequest(
         render_process_id, render_frame_id, 0,
         request_url_.DeprecatedGetOriginAsURL(), false,
@@ -106,16 +108,29 @@ class MediaStreamDevicesControllerBrowserTest
     }
   }
 
-  void Accept(const blink::MediaStreamDevices& devices,
+  void Accept(const blink::mojom::StreamDevicesSet& stream_devices_set,
               blink::mojom::MediaStreamRequestResult result,
               bool blocked_by_permissions_policy,
               ContentSetting audio_setting,
               ContentSetting video_setting) {
-    if (policy_value_ || request_url_allowed_via_allowlist_) {
-      ASSERT_EQ(1U, devices.size());
-      ASSERT_EQ("fake_dev", devices[0].id);
+    if (result == blink::mojom::MediaStreamRequestResult::OK) {
+      ASSERT_EQ(stream_devices_set.stream_devices.size(), 1u);
+      const blink::mojom::StreamDevices& devices =
+          *stream_devices_set.stream_devices[0];
+      if (policy_value_ || request_url_allowed_via_allowlist_) {
+        ASSERT_EQ(1, devices.audio_device.has_value() +
+                         devices.video_device.has_value());
+        if (devices.audio_device.has_value()) {
+          ASSERT_EQ("fake_dev", devices.audio_device.value().id);
+        } else if (devices.video_device.has_value()) {
+          ASSERT_EQ("fake_dev", devices.video_device.value().id);
+        }
+      } else {
+        ASSERT_FALSE(devices.audio_device.has_value());
+        ASSERT_FALSE(devices.video_device.has_value());
+      }
     } else {
-      ASSERT_EQ(0U, devices.size());
+      ASSERT_EQ(0u, stream_devices_set.stream_devices.size());
     }
   }
 
@@ -195,7 +210,7 @@ IN_PROC_BROWSER_TEST_P(MediaStreamDevicesControllerBrowserTest,
       nullptr,
   };
 
-  for (size_t i = 0; i < base::size(allow_pattern); ++i) {
+  for (size_t i = 0; i < std::size(allow_pattern); ++i) {
     PolicyMap policies;
     ConfigurePolicyMap(&policies, key::kAudioCaptureAllowed,
                        key::kAudioCaptureAllowedUrls, allow_pattern[i]);
@@ -259,7 +274,7 @@ IN_PROC_BROWSER_TEST_P(MediaStreamDevicesControllerBrowserTest,
       nullptr,
   };
 
-  for (size_t i = 0; i < base::size(allow_pattern); ++i) {
+  for (size_t i = 0; i < std::size(allow_pattern); ++i) {
     PolicyMap policies;
     ConfigurePolicyMap(&policies, key::kVideoCaptureAllowed,
                        key::kVideoCaptureAllowedUrls, allow_pattern[i]);

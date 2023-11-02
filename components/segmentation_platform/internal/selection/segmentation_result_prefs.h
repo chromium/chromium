@@ -1,29 +1,36 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SELECTION_SEGMENTATION_RESULT_PREFS_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SELECTION_SEGMENTATION_RESULT_PREFS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "components/optimization_guide/proto/models.pb.h"
+#include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-using optimization_guide::proto::OptimizationTarget;
 
 class PrefService;
 
 namespace segmentation_platform {
 
+using proto::SegmentId;
+
 // Struct containing information about the selected segment. Convenient for
 // reading and writing to prefs.
 struct SelectedSegment {
  public:
-  explicit SelectedSegment(OptimizationTarget segment_id);
+  SelectedSegment(SegmentId segment_id, absl::optional<float> rank);
   ~SelectedSegment();
 
   // The segment selection result.
-  OptimizationTarget segment_id;
+  SegmentId segment_id;
+
+  // The discrete score computed based on the `segment_id` model execution. If a
+  // discrete mapping is not provided, the value will be equal to the model
+  // score. Otherwise the value will be the mapped score based on the mapping.
+  // May not be available in prefs for versions older than M107.
+  absl::optional<float> rank;
 
   // The time when the segment was selected.
   base::Time selection_time;
@@ -57,7 +64,7 @@ class SegmentationResultPrefs {
       const std::string& result_key);
 
  private:
-  PrefService* prefs_;
+  raw_ptr<PrefService> prefs_;
 };
 
 }  // namespace segmentation_platform

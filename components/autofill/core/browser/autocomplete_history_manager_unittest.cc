@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autocomplete_history_manager.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/suggestions_context.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/webdata/autofill_entry.h"
@@ -52,7 +53,7 @@ class MockAutofillClient : public TestAutofillClient {
 
   ~MockAutofillClient() override = default;
   PrefService* GetPrefs() override {
-    return const_cast<PrefService*>(base::as_const(*this).GetPrefs());
+    return const_cast<PrefService*>(std::as_const(*this).GetPrefs());
   }
   const PrefService* GetPrefs() const override { return prefs_.get(); }
 
@@ -86,7 +87,7 @@ class MockSuggestionsHandler
 
 class AutocompleteHistoryManagerTest : public testing::Test {
  protected:
-  AutocompleteHistoryManagerTest() {}
+  AutocompleteHistoryManagerTest() = default;
 
   void SetUp() override {
     prefs_ = test::PrefServiceForTesting();
@@ -100,6 +101,8 @@ class AutocompleteHistoryManagerTest : public testing::Test {
     web_data_service_ = base::MakeRefCounted<MockAutofillWebDataService>();
     autocomplete_manager_ = std::make_unique<AutocompleteHistoryManager>();
     autocomplete_manager_->Init(web_data_service_, prefs_.get(), false);
+    test::CreateTestFormField(/*label=*/"", "Some Field Name", "SomePrefix",
+                              "Some Type", &test_field_);
   }
 
   void TearDown() override {
@@ -140,9 +143,11 @@ class AutocompleteHistoryManagerTest : public testing::Test {
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
+  test::AutofillEnvironment autofill_environment_;
   scoped_refptr<MockAutofillWebDataService> web_data_service_;
   std::unique_ptr<AutocompleteHistoryManager> autocomplete_manager_;
   std::unique_ptr<PrefService> prefs_;
+  FormFieldData test_field_;
   TestAutofillClock test_clock;
 };
 
@@ -163,8 +168,9 @@ TEST_F(AutocompleteHistoryManagerTest, CreditCardNumberValue) {
   form.fields.push_back(valid_cc);
 
   EXPECT_CALL(*(web_data_service_.get()), AddFormFields(_)).Times(0);
-  autocomplete_manager_->OnWillSubmitForm(form,
-                                          /*is_autocomplete_enabled=*/true);
+  autocomplete_manager_->OnWillSubmitFormWithFields(
+      form.fields,
+      /*is_autocomplete_enabled=*/true);
 }
 
 // Contrary test to AutocompleteHistoryManagerTest.CreditCardNumberValue.  The
@@ -186,8 +192,9 @@ TEST_F(AutocompleteHistoryManagerTest, NonCreditCardNumberValue) {
   form.fields.push_back(invalid_cc);
 
   EXPECT_CALL(*(web_data_service_.get()), AddFormFields(_));
-  autocomplete_manager_->OnWillSubmitForm(form,
-                                          /*is_autocomplete_enabled=*/true);
+  autocomplete_manager_->OnWillSubmitFormWithFields(
+      form.fields,
+      /*is_autocomplete_enabled=*/true);
 }
 
 // Tests that SSNs are not sent to the WebDatabase to be saved.
@@ -206,8 +213,9 @@ TEST_F(AutocompleteHistoryManagerTest, SSNValue) {
   form.fields.push_back(ssn);
 
   EXPECT_CALL(*web_data_service_, AddFormFields(_)).Times(0);
-  autocomplete_manager_->OnWillSubmitForm(form,
-                                          /*is_autocomplete_enabled=*/true);
+  autocomplete_manager_->OnWillSubmitFormWithFields(
+      form.fields,
+      /*is_autocomplete_enabled=*/true);
 }
 
 // Verify that autocomplete text is saved for search fields.
@@ -227,8 +235,9 @@ TEST_F(AutocompleteHistoryManagerTest, SearchField) {
   form.fields.push_back(search_field);
 
   EXPECT_CALL(*(web_data_service_.get()), AddFormFields(_));
-  autocomplete_manager_->OnWillSubmitForm(form,
-                                          /*is_autocomplete_enabled=*/true);
+  autocomplete_manager_->OnWillSubmitFormWithFields(
+      form.fields,
+      /*is_autocomplete_enabled=*/true);
 }
 
 TEST_F(AutocompleteHistoryManagerTest, AutocompleteFeatureOff) {
@@ -247,8 +256,9 @@ TEST_F(AutocompleteHistoryManagerTest, AutocompleteFeatureOff) {
   form.fields.push_back(search_field);
 
   EXPECT_CALL(*(web_data_service_.get()), AddFormFields(_)).Times(0);
-  autocomplete_manager_->OnWillSubmitForm(form,
-                                          /*is_autocomplete_enabled=*/false);
+  autocomplete_manager_->OnWillSubmitFormWithFields(
+      form.fields,
+      /*is_autocomplete_enabled=*/false);
 }
 
 // Verify that we don't save invalid values in Autocomplete.
@@ -286,8 +296,9 @@ TEST_F(AutocompleteHistoryManagerTest, InvalidValues) {
   form.fields.push_back(search_field);
 
   EXPECT_CALL(*(web_data_service_.get()), AddFormFields(_)).Times(0);
-  autocomplete_manager_->OnWillSubmitForm(form,
-                                          /*is_autocomplete_enabled=*/true);
+  autocomplete_manager_->OnWillSubmitFormWithFields(
+      form.fields,
+      /*is_autocomplete_enabled=*/true);
 }
 
 // Tests that text entered into fields specifying autocomplete="off" is not sent
@@ -311,8 +322,9 @@ TEST_F(AutocompleteHistoryManagerTest, FieldWithAutocompleteOff) {
   form.fields.push_back(field);
 
   EXPECT_CALL(*web_data_service_, AddFormFields(_)).Times(0);
-  autocomplete_manager_->OnWillSubmitForm(form,
-                                          /*is_autocomplete_enabled=*/true);
+  autocomplete_manager_->OnWillSubmitFormWithFields(
+      form.fields,
+      /*is_autocomplete_enabled=*/true);
 }
 
 // Shouldn't save entries when in Incognito mode.
@@ -334,11 +346,12 @@ TEST_F(AutocompleteHistoryManagerTest, Incognito) {
   form.fields.push_back(search_field);
 
   EXPECT_CALL(*web_data_service_, AddFormFields(_)).Times(0);
-  autocomplete_manager_->OnWillSubmitForm(form,
-                                          /*is_autocomplete_enabled=*/true);
+  autocomplete_manager_->OnWillSubmitFormWithFields(
+      form.fields,
+      /*is_autocomplete_enabled=*/true);
 }
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 // Tests that fields that are no longer focusable but still have user typed
 // input are sent to the WebDatabase to be saved. Will not work for iOS
 // because |properties_mask| is not set on iOS.
@@ -359,8 +372,9 @@ TEST_F(AutocompleteHistoryManagerTest, UserInputNotFocusable) {
   form.fields.push_back(search_field);
 
   EXPECT_CALL(*(web_data_service_.get()), AddFormFields(_));
-  autocomplete_manager_->OnWillSubmitForm(form,
-                                          /*is_autocomplete_enabled=*/true);
+  autocomplete_manager_->OnWillSubmitFormWithFields(
+      form.fields,
+      /*is_autocomplete_enabled=*/true);
 }
 #endif
 
@@ -383,8 +397,9 @@ TEST_F(AutocompleteHistoryManagerTest, PresentationField) {
   form.fields.push_back(field);
 
   EXPECT_CALL(*web_data_service_, AddFormFields(_)).Times(0);
-  autocomplete_manager_->OnWillSubmitForm(form,
-                                          /*is_autocomplete_enabled=*/true);
+  autocomplete_manager_->OnWillSubmitFormWithFields(
+      form.fields,
+      /*is_autocomplete_enabled=*/true);
 }
 
 // Tests that the Init function will trigger the Autocomplete Retention Policy
@@ -444,6 +459,27 @@ TEST_F(AutocompleteHistoryManagerTest,
                               /*is_off_the_record=*/false);
 }
 
+// Make sure suggestions are not returned if the field should not autocomplete.
+TEST_F(AutocompleteHistoryManagerTest,
+       OnGetSingleFieldSuggestions_FieldShouldNotAutocomplete) {
+  test_field_.should_autocomplete = false;
+
+  auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
+  int test_query_id = 2;
+
+  // Setting up mock to verify that call to the handler's OnSuggestionsReturned
+  // is not triggered.
+  EXPECT_CALL(*suggestions_handler, OnSuggestionsReturned).Times(0);
+
+  EXPECT_CALL(*web_data_service_, GetFormValuesForElementName).Times(0);
+
+  // Simulate request for suggestions.
+  EXPECT_FALSE(autocomplete_manager_->OnGetSingleFieldSuggestions(
+      test_query_id, /*is_autocomplete_enabled=*/true,
+      /*autoselect_first_suggestion=*/false, test_field_,
+      suggestions_handler->GetWeakPtr(), SuggestionsContext()));
+}
+
 // Make sure our handler is called at the right time.
 TEST_F(AutocompleteHistoryManagerTest,
        SuggestionsReturned_InvokeHandler_Empty) {
@@ -451,8 +487,6 @@ TEST_F(AutocompleteHistoryManagerTest,
 
   auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
   int test_query_id = 2;
-  std::u16string test_name = u"Some Field Name";
-  std::u16string test_prefix = u"SomePrefix";
 
   std::vector<AutofillEntry> expected_values;
 
@@ -460,15 +494,15 @@ TEST_F(AutocompleteHistoryManagerTest,
       GetMockedDbResults(expected_values);
 
   EXPECT_CALL(*web_data_service_,
-              GetFormValuesForElementName(test_name, test_prefix, _,
-                                          autocomplete_manager_.get()))
+              GetFormValuesForElementName(test_field_.name, test_field_.value,
+                                          _, autocomplete_manager_.get()))
       .WillOnce(Return(mocked_db_query_id));
 
   // Simulate request for suggestions.
-  autocomplete_manager_->OnGetSingleFieldSuggestions(
+  EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
       test_query_id, /*is_autocomplete_enabled=*/true,
-      /*autoselect_first_suggestion=*/false, test_name, test_prefix,
-      "Some Type", suggestions_handler->GetWeakPtr());
+      /*autoselect_first_suggestion=*/false, test_field_,
+      suggestions_handler->GetWeakPtr(), SuggestionsContext()));
 
   // Setting up mock to verify that DB response triggers a call to the handler's
   // OnSuggestionsReturned
@@ -483,25 +517,25 @@ TEST_F(AutocompleteHistoryManagerTest,
 }
 
 // Tests that no suggestions are queried if the field name is filtered because
-// it has a meaningless name.
+// it has a meaningless sub string that is allowed for sub string matches.
 TEST_F(AutocompleteHistoryManagerTest,
-       DoQuerySuggestionsForMeaninglessFieldNames_FilterName) {
+       DoQuerySuggestionsForMeaninglessFieldNames_FilterSubStringName) {
   auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
   int test_query_id = 2;
-  std::u16string test_name = u"input_123";
-  std::u16string test_prefix;
+  test::CreateTestFormField(/*label=*/"", "payment_cvv_info", /*value=*/"",
+                            "Some Type", &test_field_);
 
   // Only expect a call when the name is not filtered out.
   EXPECT_CALL(*web_data_service_,
-              GetFormValuesForElementName(test_name, test_prefix, _,
-                                          autocomplete_manager_.get()))
+              GetFormValuesForElementName(test_field_.name, test_field_.value,
+                                          _, autocomplete_manager_.get()))
       .Times(0);
 
   // Simulate request for suggestions.
-  autocomplete_manager_->OnGetSingleFieldSuggestions(
+  EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
       test_query_id, /*is_autocomplete_enabled=*/true,
-      /*autoselect_first_suggestion=*/false, test_name, test_prefix,
-      "Some Type", suggestions_handler->GetWeakPtr());
+      /*autoselect_first_suggestion=*/false, test_field_,
+      suggestions_handler->GetWeakPtr(), SuggestionsContext()));
 
   // Setting up mock to verify that DB response does not trigger a call to the
   // handler's OnSuggestionsReturned.
@@ -511,15 +545,44 @@ TEST_F(AutocompleteHistoryManagerTest,
       .Times(0);
 }
 
-// Tests that the suggestions are queried if the field name is not filtered
-// because the field's name is meaningful.
+// Tests that no suggestions are queried if the field name is filtered because
+// it has a meaningless name.
 TEST_F(AutocompleteHistoryManagerTest,
-       DoQuerySuggestionsForMeaninglessFieldNames_PassName) {
+       DoQuerySuggestionsForMeaninglessFieldNames_FilterName) {
   auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
   int test_query_id = 2;
-  std::u16string test_name = u"addressline_1";
-  std::u16string test_prefix;
+  test::CreateTestFormField(/*label=*/"", "input_123", /*value=*/"",
+                            "Some Type", &test_field_);
+
+  // Only expect a call when the name is not filtered out.
+  EXPECT_CALL(*web_data_service_,
+              GetFormValuesForElementName(test_field_.name, test_field_.value,
+                                          _, autocomplete_manager_.get()))
+      .Times(0);
+
+  // Simulate request for suggestions.
+  EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
+      test_query_id, /*is_autocomplete_enabled=*/true,
+      /*autoselect_first_suggestion=*/false, test_field_,
+      suggestions_handler->GetWeakPtr(), SuggestionsContext()));
+
+  // Setting up mock to verify that DB response does not trigger a call to the
+  // handler's OnSuggestionsReturned.
+  EXPECT_CALL(*suggestions_handler.get(),
+              OnSuggestionsReturned(test_query_id,
+                                    /*autoselect_first_suggestion=*/false, _))
+      .Times(0);
+}
+
+// Tests that the suggestions are queried if the field has meaningless substring
+// which is not allowed for substring matches.
+TEST_F(AutocompleteHistoryManagerTest,
+       DoQuerySuggestionsForMeaninglessFieldNames_PassNameWithSubstring) {
+  auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
+  int test_query_id = 2;
   int mocked_db_query_id = 100;
+  test::CreateTestFormField(/*label=*/"", "foOTPace", /*value=*/"", "Some Type",
+                            &test_field_);
 
   std::vector<AutofillEntry> expected_values;
 
@@ -528,15 +591,50 @@ TEST_F(AutocompleteHistoryManagerTest,
 
   // Expect a call because the name is not filtered.
   EXPECT_CALL(*web_data_service_,
-              GetFormValuesForElementName(test_name, test_prefix, _,
-                                          autocomplete_manager_.get()))
+              GetFormValuesForElementName(test_field_.name, test_field_.value,
+                                          _, autocomplete_manager_.get()))
       .WillOnce(Return(mocked_db_query_id));
 
   // Simulate request for suggestions.
-  autocomplete_manager_->OnGetSingleFieldSuggestions(
+  EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
       test_query_id, /*is_autocomplete_enabled=*/true,
-      /*autoselect_first_suggestion=*/false, test_name, test_prefix,
-      "Some Type", suggestions_handler->GetWeakPtr());
+      /*autoselect_first_suggestion=*/false, test_field_,
+      suggestions_handler->GetWeakPtr(), SuggestionsContext()));
+
+  // Setting up mock to verify that DB response triggers a call to the handler's
+  EXPECT_CALL(*suggestions_handler.get(),
+              OnSuggestionsReturned(test_query_id,
+                                    /*autoselect_first_suggestion=*/false, _));
+
+  autocomplete_manager_->OnWebDataServiceRequestDone(mocked_db_query_id,
+                                                     std::move(mocked_results));
+}
+// Tests that the suggestions are queried if the field name is not filtered
+// because the field's name is meaningful.
+TEST_F(AutocompleteHistoryManagerTest,
+       DoQuerySuggestionsForMeaninglessFieldNames_PassName) {
+  auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
+  int test_query_id = 2;
+  int mocked_db_query_id = 100;
+  test::CreateTestFormField(/*label=*/"", "addressline_1", /*value=*/"",
+                            "Some Type", &test_field_);
+
+  std::vector<AutofillEntry> expected_values;
+
+  std::unique_ptr<WDTypedResult> mocked_results =
+      GetMockedDbResults(expected_values);
+
+  // Expect a call because the name is not filtered.
+  EXPECT_CALL(*web_data_service_,
+              GetFormValuesForElementName(test_field_.name, test_field_.value,
+                                          _, autocomplete_manager_.get()))
+      .WillOnce(Return(mocked_db_query_id));
+
+  // Simulate request for suggestions.
+  EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
+      test_query_id, /*is_autocomplete_enabled=*/true,
+      /*autoselect_first_suggestion=*/false, test_field_,
+      suggestions_handler->GetWeakPtr(), SuggestionsContext()));
 
   // Setting up mock to verify that DB response triggers a call to the handler's
   EXPECT_CALL(*suggestions_handler.get(),
@@ -553,32 +651,32 @@ TEST_F(AutocompleteHistoryManagerTest,
 
   auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
   int test_query_id = 2;
-  std::u16string test_name = u"Some Field Name";
-  std::u16string test_prefix = u"SomePrefix";
 
   std::vector<AutofillEntry> expected_values = {
-      GetAutofillEntry(test_name, u"SomePrefixOne")};
+      GetAutofillEntry(test_field_.name, u"SomePrefixOne")};
 
   std::unique_ptr<WDTypedResult> mocked_results =
       GetMockedDbResults(expected_values);
 
   EXPECT_CALL(*web_data_service_,
-              GetFormValuesForElementName(test_name, test_prefix, _,
-                                          autocomplete_manager_.get()))
+              GetFormValuesForElementName(test_field_.name, test_field_.value,
+                                          _, autocomplete_manager_.get()))
       .WillOnce(Return(mocked_db_query_id));
 
   // Simulate request for suggestions.
-  autocomplete_manager_->OnGetSingleFieldSuggestions(
+  EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
       test_query_id, /*is_autocomplete_enabled=*/true,
-      /*autoselect_first_suggestion=*/false, test_name, test_prefix,
-      "Some Type", suggestions_handler->GetWeakPtr());
+      /*autoselect_first_suggestion=*/false, test_field_,
+      suggestions_handler->GetWeakPtr(), SuggestionsContext()));
 
   // Setting up mock to verify that DB response triggers a call to the handler's
   EXPECT_CALL(*suggestions_handler.get(),
               OnSuggestionsReturned(
                   test_query_id, /*autoselect_first_suggestion=*/false,
                   UnorderedElementsAre(Field(
-                      &Suggestion::value, expected_values[0].key().value()))));
+                      &Suggestion::main_text,
+                      Suggestion::Text(expected_values[0].key().value(),
+                                       Suggestion::Text::IsPrimary(true))))));
 
   // Simulate response from DB.
   autocomplete_manager_->OnWebDataServiceRequestDone(mocked_db_query_id,
@@ -593,32 +691,32 @@ TEST_F(AutocompleteHistoryManagerTest,
 
   auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
   int test_query_id = 2;
-  std::u16string test_name = u"Some Field Name";
-  std::u16string test_prefix = u"SomePrefix";
 
   std::vector<AutofillEntry> expected_values = {
-      GetAutofillEntry(test_name, u"SomePrefixOne")};
+      GetAutofillEntry(test_field_.name, u"SomePrefixOne")};
 
   std::unique_ptr<WDTypedResult> mocked_results =
       GetMockedDbResults(expected_values);
 
   EXPECT_CALL(*web_data_service_,
-              GetFormValuesForElementName(test_name, test_prefix, _,
-                                          autocomplete_manager_.get()))
+              GetFormValuesForElementName(test_field_.name, test_field_.value,
+                                          _, autocomplete_manager_.get()))
       .WillOnce(Return(mocked_db_query_id));
 
   // Simulate request for suggestions.
-  autocomplete_manager_->OnGetSingleFieldSuggestions(
+  EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
       test_query_id, /*is_autocomplete_enabled=*/true,
-      /*autoselect_first_suggestion=*/true, test_name, test_prefix, "Some Type",
-      suggestions_handler->GetWeakPtr());
+      /*autoselect_first_suggestion=*/true, test_field_,
+      suggestions_handler->GetWeakPtr(), SuggestionsContext()));
 
   // Setting up mock to verify that DB response triggers a call to the handler's
   EXPECT_CALL(*suggestions_handler.get(),
               OnSuggestionsReturned(
                   test_query_id, /*autoselect_first_suggestion=*/true,
                   UnorderedElementsAre(Field(
-                      &Suggestion::value, expected_values[0].key().value()))));
+                      &Suggestion::main_text,
+                      Suggestion::Text(expected_values[0].key().value(),
+                                       Suggestion::Text::IsPrimary(true))))));
 
   // Simulate response from DB.
   autocomplete_manager_->OnWebDataServiceRequestDone(mocked_db_query_id,
@@ -633,25 +731,23 @@ TEST_F(AutocompleteHistoryManagerTest,
 
   auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
   int test_query_id = 2;
-  std::u16string test_name = u"Some Field Name";
-  std::u16string test_prefix = u"SomePrefix";
 
   std::vector<AutofillEntry> expected_values = {
-      GetAutofillEntry(test_name, test_prefix)};
+      GetAutofillEntry(test_field_.name, test_field_.value)};
 
   std::unique_ptr<WDTypedResult> mocked_results =
       GetMockedDbResults(expected_values);
 
   EXPECT_CALL(*web_data_service_,
-              GetFormValuesForElementName(test_name, test_prefix, _,
-                                          autocomplete_manager_.get()))
+              GetFormValuesForElementName(test_field_.name, test_field_.value,
+                                          _, autocomplete_manager_.get()))
       .WillOnce(Return(mocked_db_query_id));
 
   // Simulate request for suggestions.
-  autocomplete_manager_->OnGetSingleFieldSuggestions(
+  EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
       test_query_id, /*is_autocomplete_enabled=*/true,
-      /*autoselect_first_suggestion=*/false, test_name, test_prefix,
-      "Some Type", suggestions_handler->GetWeakPtr());
+      /*autoselect_first_suggestion=*/false, test_field_,
+      suggestions_handler->GetWeakPtr(), SuggestionsContext()));
 
   // Setting up mock to verify that DB response triggers a call to the handler's
   EXPECT_CALL(*suggestions_handler.get(),
@@ -672,32 +768,32 @@ TEST_F(AutocompleteHistoryManagerTest,
 
   auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
   int test_query_id = 2;
-  std::u16string test_name = u"Some Field Name";
-  std::u16string test_prefix = u"SomePrefix";
 
   std::vector<AutofillEntry> expected_values = {
-      GetAutofillEntry(test_name, u"someprefix")};
+      GetAutofillEntry(test_field_.name, u"someprefix")};
 
   std::unique_ptr<WDTypedResult> mocked_results =
       GetMockedDbResults(expected_values);
 
   EXPECT_CALL(*web_data_service_,
-              GetFormValuesForElementName(test_name, test_prefix, _,
-                                          autocomplete_manager_.get()))
+              GetFormValuesForElementName(test_field_.name, test_field_.value,
+                                          _, autocomplete_manager_.get()))
       .WillOnce(Return(mocked_db_query_id));
 
   // Simulate request for suggestions.
-  autocomplete_manager_->OnGetSingleFieldSuggestions(
+  EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
       test_query_id, /*is_autocomplete_enabled=*/true,
-      /*autoselect_first_suggestion=*/false, test_name, test_prefix,
-      "Some Type", suggestions_handler->GetWeakPtr());
+      /*autoselect_first_suggestion=*/false, test_field_,
+      suggestions_handler->GetWeakPtr(), SuggestionsContext()));
 
   // Setting up mock to verify that DB response triggers a call to the handler's
   EXPECT_CALL(*suggestions_handler.get(),
               OnSuggestionsReturned(
                   test_query_id, /*autoselect_first_suggestion=*/false,
                   UnorderedElementsAre(Field(
-                      &Suggestion::value, expected_values[0].key().value()))));
+                      &Suggestion::main_text,
+                      Suggestion::Text(expected_values[0].key().value(),
+                                       Suggestion::Text::IsPrimary(true))))));
 
   // Simulate response from DB.
   autocomplete_manager_->OnWebDataServiceRequestDone(mocked_db_query_id,
@@ -712,17 +808,15 @@ TEST_F(AutocompleteHistoryManagerTest,
 
   auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
   int test_query_id = 2;
-  std::u16string test_name = u"Some Field Name";
-  std::u16string test_prefix = u"SomePrefix";
   std::u16string test_value = u"SomePrefixOne";
   std::u16string other_test_value = u"SomePrefixOne";
   int days_since_last_use = 10;
 
   std::vector<AutofillEntry> expected_values = {
-      GetAutofillEntry(test_name, test_value,
+      GetAutofillEntry(test_field_.name, test_value,
                        AutofillClock::Now() - base::Days(30),
                        AutofillClock::Now() - base::Days(days_since_last_use)),
-      GetAutofillEntry(test_name, other_test_value,
+      GetAutofillEntry(test_field_.name, other_test_value,
                        AutofillClock::Now() - base::Days(30),
                        AutofillClock::Now() - base::Days(days_since_last_use))};
 
@@ -730,17 +824,17 @@ TEST_F(AutocompleteHistoryManagerTest,
       GetMockedDbResults(expected_values);
 
   EXPECT_CALL(*web_data_service_,
-              GetFormValuesForElementName(test_name, test_prefix, _,
-                                          autocomplete_manager_.get()))
+              GetFormValuesForElementName(test_field_.name, test_field_.value,
+                                          _, autocomplete_manager_.get()))
       .WillOnce(Return(mocked_db_query_id));
 
   EXPECT_CALL(*suggestions_handler.get(), OnSuggestionsReturned);
 
   // Simulate request for suggestions.
-  autocomplete_manager_->OnGetSingleFieldSuggestions(
+  EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
       test_query_id, /*is_autocomplete_enabled=*/true,
-      /*autoselect_first_suggestion=*/false, test_name, test_prefix,
-      "Some Type", suggestions_handler->GetWeakPtr());
+      /*autoselect_first_suggestion=*/false, test_field_,
+      suggestions_handler->GetWeakPtr(), SuggestionsContext()));
 
   // Simulate response from DB.
   autocomplete_manager_->OnWebDataServiceRequestDone(mocked_db_query_id,
@@ -750,7 +844,8 @@ TEST_F(AutocompleteHistoryManagerTest,
 
   // Now simulate one autocomplete entry being selected, and expect a metric
   // being logged for that value alone.
-  autocomplete_manager_->OnSingleFieldSuggestionSelected(test_value);
+  autocomplete_manager_->OnSingleFieldSuggestionSelected(
+      test_value, POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY);
 
   histogram_tester.ExpectBucketCount("Autocomplete.DaysSinceLastUse",
                                      days_since_last_use, 1);
@@ -764,14 +859,12 @@ TEST_F(AutocompleteHistoryManagerTest,
   auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
   int test_query_id_first = 2;
   int test_query_id_second = 3;
-  std::u16string test_name = u"Some Field Name";
-  std::u16string test_prefix = u"SomePrefix";
 
   std::vector<AutofillEntry> expected_values_first = {
-      GetAutofillEntry(test_name, u"SomePrefixOne")};
+      GetAutofillEntry(test_field_.name, u"SomePrefixOne")};
 
   std::vector<AutofillEntry> expected_values_second = {
-      GetAutofillEntry(test_name, u"SomePrefixTwo")};
+      GetAutofillEntry(test_field_.name, u"SomePrefixTwo")};
 
   std::unique_ptr<WDTypedResult> mocked_results_first =
       GetMockedDbResults(expected_values_first);
@@ -780,33 +873,34 @@ TEST_F(AutocompleteHistoryManagerTest,
       GetMockedDbResults(expected_values_second);
 
   EXPECT_CALL(*web_data_service_,
-              GetFormValuesForElementName(test_name, test_prefix, _,
-                                          autocomplete_manager_.get()))
+              GetFormValuesForElementName(test_field_.name, test_field_.value,
+                                          _, autocomplete_manager_.get()))
       .WillOnce(Return(mocked_db_query_id_first))
       .WillOnce(Return(mocked_db_query_id_second));
 
   // Simulate request for the first suggestions.
-  autocomplete_manager_->OnGetSingleFieldSuggestions(
+  EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
       test_query_id_first, /*is_autocomplete_enabled=*/true,
-      /*autoselect_first_suggestion=*/false, test_name, test_prefix,
-      "Some Type", suggestions_handler->GetWeakPtr());
+      /*autoselect_first_suggestion=*/false, test_field_,
+      suggestions_handler->GetWeakPtr(), SuggestionsContext()));
 
   // Simulate request for the second suggestions (this will cancel the first
   // one).
   EXPECT_CALL(*web_data_service_, CancelRequest(mocked_db_query_id_first))
       .Times(1);
-  autocomplete_manager_->OnGetSingleFieldSuggestions(
+  EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
       test_query_id_second, /*is_autocomplete_enabled=*/true,
-      /*autoselect_first_suggestion=*/false, test_name, test_prefix,
-      "Some Type", suggestions_handler->GetWeakPtr());
+      /*autoselect_first_suggestion=*/false, test_field_,
+      suggestions_handler->GetWeakPtr(), SuggestionsContext()));
 
   // Setting up mock to verify that we can get the second response first.
-  EXPECT_CALL(
-      *suggestions_handler.get(),
-      OnSuggestionsReturned(
-          test_query_id_second, /*autoselect_first_suggestion=*/false,
-          UnorderedElementsAre(Field(
-              &Suggestion::value, expected_values_second[0].key().value()))));
+  EXPECT_CALL(*suggestions_handler.get(),
+              OnSuggestionsReturned(
+                  test_query_id_second, /*autoselect_first_suggestion=*/false,
+                  UnorderedElementsAre(Field(
+                      &Suggestion::main_text,
+                      Suggestion::Text(expected_values_second[0].key().value(),
+                                       Suggestion::Text::IsPrimary(true))))));
 
   // Simulate response from DB, second request comes back before.
   autocomplete_manager_->OnWebDataServiceRequestDone(
@@ -833,14 +927,12 @@ TEST_F(AutocompleteHistoryManagerTest,
   auto suggestions_handler_second = std::make_unique<MockSuggestionsHandler>();
   int test_query_id_first = 2;
   int test_query_id_second = 3;
-  std::u16string test_name = u"Some Field Name";
-  std::u16string test_prefix = u"SomePrefix";
 
   std::vector<AutofillEntry> expected_values_first = {
-      GetAutofillEntry(test_name, u"SomePrefixOne")};
+      GetAutofillEntry(test_field_.name, u"SomePrefixOne")};
 
   std::vector<AutofillEntry> expected_values_second = {
-      GetAutofillEntry(test_name, u"SomePrefixTwo")};
+      GetAutofillEntry(test_field_.name, u"SomePrefixTwo")};
 
   std::unique_ptr<WDTypedResult> mocked_results_first =
       GetMockedDbResults(expected_values_first);
@@ -849,42 +941,44 @@ TEST_F(AutocompleteHistoryManagerTest,
       GetMockedDbResults(expected_values_second);
 
   EXPECT_CALL(*web_data_service_,
-              GetFormValuesForElementName(test_name, test_prefix, _,
-                                          autocomplete_manager_.get()))
+              GetFormValuesForElementName(test_field_.name, test_field_.value,
+                                          _, autocomplete_manager_.get()))
       .WillOnce(Return(mocked_db_query_id_first))
       .WillOnce(Return(mocked_db_query_id_second));
 
   // Simulate request for the first suggestions.
-  autocomplete_manager_->OnGetSingleFieldSuggestions(
+  EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
       test_query_id_first, /*is_autocomplete_enabled=*/true,
-      /*autoselect_first_suggestion=*/false, test_name, test_prefix,
-      "Some Type", suggestions_handler_first->GetWeakPtr());
+      /*autoselect_first_suggestion=*/false, test_field_,
+      suggestions_handler_first->GetWeakPtr(), SuggestionsContext()));
 
   // Simulate request for the second suggestions.
-  autocomplete_manager_->OnGetSingleFieldSuggestions(
+  EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
       test_query_id_second, /*is_autocomplete_enabled=*/true,
-      /*autoselect_first_suggestion=*/false, test_name, test_prefix,
-      "Some Type", suggestions_handler_second->GetWeakPtr());
+      /*autoselect_first_suggestion=*/false, test_field_,
+      suggestions_handler_second->GetWeakPtr(), SuggestionsContext()));
 
   // Setting up mock to verify that we get the second response first.
-  EXPECT_CALL(
-      *suggestions_handler_second.get(),
-      OnSuggestionsReturned(
-          test_query_id_second, /*autoselect_first_suggestion=*/false,
-          UnorderedElementsAre(Field(
-              &Suggestion::value, expected_values_second[0].key().value()))));
+  EXPECT_CALL(*suggestions_handler_second.get(),
+              OnSuggestionsReturned(
+                  test_query_id_second, /*autoselect_first_suggestion=*/false,
+                  UnorderedElementsAre(Field(
+                      &Suggestion::main_text,
+                      Suggestion::Text(expected_values_second[0].key().value(),
+                                       Suggestion::Text::IsPrimary(true))))));
 
   // Simulate response from DB, second request comes back before.
   autocomplete_manager_->OnWebDataServiceRequestDone(
       mocked_db_query_id_second, std::move(mocked_results_second));
 
   // Setting up mock to verify that we get the first response second.
-  EXPECT_CALL(
-      *suggestions_handler_first.get(),
-      OnSuggestionsReturned(
-          test_query_id_first, /*autoselect_first_suggestion=*/false,
-          UnorderedElementsAre(Field(&Suggestion::value,
-                                     expected_values_first[0].key().value()))));
+  EXPECT_CALL(*suggestions_handler_first.get(),
+              OnSuggestionsReturned(
+                  test_query_id_first, /*autoselect_first_suggestion=*/false,
+                  UnorderedElementsAre(Field(
+                      &Suggestion::main_text,
+                      Suggestion::Text(expected_values_first[0].key().value(),
+                                       Suggestion::Text::IsPrimary(true))))));
 
   // Simulate response from DB, first request comes back after.
   autocomplete_manager_->OnWebDataServiceRequestDone(
@@ -893,16 +987,13 @@ TEST_F(AutocompleteHistoryManagerTest,
 
 TEST_F(AutocompleteHistoryManagerTest,
        SuggestionsReturned_CancelOne_ReturnOne) {
-  std::u16string test_name = u"Some Field Name";
-  std::u16string test_prefix = u"SomePrefix";
-
   // Initialize variables for the first handler, which is the one that will be
   // cancelled.
   auto suggestions_handler_one = std::make_unique<MockSuggestionsHandler>();
   int mocked_db_query_id_one = 100;
   int test_query_id_one = 1;
   std::vector<AutofillEntry> expected_values_one = {
-      GetAutofillEntry(test_name, u"SomePrefixOne")};
+      GetAutofillEntry(test_field_.name, u"SomePrefixOne")};
   std::unique_ptr<WDTypedResult> mocked_results_one =
       GetMockedDbResults(expected_values_one);
 
@@ -911,27 +1002,27 @@ TEST_F(AutocompleteHistoryManagerTest,
   int test_query_id_two = 2;
   int mocked_db_query_id_two = 101;
   std::vector<AutofillEntry> expected_values_two = {
-      GetAutofillEntry(test_name, u"SomePrefixTwo")};
+      GetAutofillEntry(test_field_.name, u"SomePrefixTwo")};
   std::unique_ptr<WDTypedResult> mocked_results_two =
       GetMockedDbResults(expected_values_two);
 
   // Simulate first handler request for autocomplete suggestions.
   EXPECT_CALL(*web_data_service_,
-              GetFormValuesForElementName(test_name, test_prefix, _,
-                                          autocomplete_manager_.get()))
+              GetFormValuesForElementName(test_field_.name, test_field_.value,
+                                          _, autocomplete_manager_.get()))
       .WillOnce(Return(mocked_db_query_id_one))
       .WillOnce(Return(mocked_db_query_id_two));
 
-  autocomplete_manager_->OnGetSingleFieldSuggestions(
+  EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
       test_query_id_one, /*is_autocomplete_enabled=*/true,
-      /*autoselect_first_suggestion=*/false, test_name, test_prefix,
-      "Some Type", suggestions_handler_one->GetWeakPtr());
+      /*autoselect_first_suggestion=*/false, test_field_,
+      suggestions_handler_one->GetWeakPtr(), SuggestionsContext()));
 
   // Simlate second handler request for autocomplete suggestions.
-  autocomplete_manager_->OnGetSingleFieldSuggestions(
+  EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
       test_query_id_two, /*is_autocomplete_enabled=*/true,
-      /*autoselect_first_suggestion=*/false, test_name, test_prefix,
-      "Some Type", suggestions_handler_two->GetWeakPtr());
+      /*autoselect_first_suggestion=*/false, test_field_,
+      suggestions_handler_two->GetWeakPtr(), SuggestionsContext()));
 
   // Simlate first handler cancelling its request.
   EXPECT_CALL(*web_data_service_, CancelRequest(mocked_db_query_id_one))
@@ -939,12 +1030,13 @@ TEST_F(AutocompleteHistoryManagerTest,
   autocomplete_manager_->CancelPendingQueries(suggestions_handler_one.get());
 
   // Simulate second handler receiving the suggestions.
-  EXPECT_CALL(
-      *suggestions_handler_two.get(),
-      OnSuggestionsReturned(
-          test_query_id_two, /*autoselect_first_suggestion=*/false,
-          UnorderedElementsAre(Field(&Suggestion::value,
-                                     expected_values_two[0].key().value()))));
+  EXPECT_CALL(*suggestions_handler_two.get(),
+              OnSuggestionsReturned(
+                  test_query_id_two, /*autoselect_first_suggestion=*/false,
+                  UnorderedElementsAre(Field(
+                      &Suggestion::main_text,
+                      Suggestion::Text(expected_values_two[0].key().value(),
+                                       Suggestion::Text::IsPrimary(true))))));
   autocomplete_manager_->OnWebDataServiceRequestDone(
       mocked_db_query_id_two, std::move(mocked_results_two));
 
@@ -957,8 +1049,8 @@ TEST_F(AutocompleteHistoryManagerTest,
       mocked_db_query_id_one, std::move(mocked_results_one));
 }
 
-// // Verify that no autocomplete suggestion is returned for textarea and UMA is
-// // logged correctly.
+// Verify that no autocomplete suggestion is returned for textarea and UMA is
+// logged correctly.
 TEST_F(AutocompleteHistoryManagerTest, NoAutocompleteSuggestionsForTextarea) {
   FormData form;
   form.name = u"MyForm";
@@ -975,17 +1067,17 @@ TEST_F(AutocompleteHistoryManagerTest, NoAutocompleteSuggestionsForTextarea) {
 
   base::HistogramTester histogram_tester;
 
-  autocomplete_manager_->OnGetSingleFieldSuggestions(
+  EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
       0, /*is_autocomplete_enabled=*/true,
-      /*autoselect_first_suggestion=*/false, field.name, field.value,
-      field.form_control_type, suggestions_handler->GetWeakPtr());
+      /*autoselect_first_suggestion=*/false, field,
+      suggestions_handler->GetWeakPtr(), SuggestionsContext()));
 
   histogram_tester.ExpectBucketCount("Autofill.AutocompleteQuery", 0, 1);
   histogram_tester.ExpectBucketCount("Autofill.AutocompleteQuery", 1, 0);
 }
 
-// // Verify that autocomplete suggestion is returned and suggestions is logged
-// // correctly.
+// Verify that autocomplete suggestion is returned and suggestions is logged
+// correctly.
 TEST_F(AutocompleteHistoryManagerTest, AutocompleteUMAQueryCreated) {
   auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
   FormFieldData field;
@@ -997,17 +1089,18 @@ TEST_F(AutocompleteHistoryManagerTest, AutocompleteUMAQueryCreated) {
   EXPECT_CALL(*web_data_service_,
               GetFormValuesForElementName(field.name, field.value, _,
                                           autocomplete_manager_.get()))
-      .WillOnce(Return(mock_handle));
+      .Times(2)
+      .WillRepeatedly(Return(mock_handle));
 
   // Verify that the query has been created.
   base::HistogramTester histogram_tester;
   EXPECT_CALL(*suggestions_handler.get(),
               OnSuggestionsReturned(0, /*autoselect_first_suggestion=*/false,
                                     testing::Truly(IsEmptySuggestionVector)));
-  autocomplete_manager_->OnGetSingleFieldSuggestions(
+  EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
       0, /*is_autocomplete_enabled=*/true,
-      /*autoselect_first_suggestion=*/false, field.name, field.value,
-      field.form_control_type, suggestions_handler->GetWeakPtr());
+      /*autoselect_first_suggestion=*/false, field,
+      suggestions_handler->GetWeakPtr(), SuggestionsContext()));
   histogram_tester.ExpectBucketCount("Autofill.AutocompleteQuery", 1, 1);
   histogram_tester.ExpectBucketCount("Autofill.AutocompleteQuery", 0, 0);
 
@@ -1017,12 +1110,20 @@ TEST_F(AutocompleteHistoryManagerTest, AutocompleteUMAQueryCreated) {
           AUTOFILL_VALUE_RESULT, std::vector<AutofillEntry>());
   autocomplete_manager_->OnWebDataServiceRequestDone(mock_handle,
                                                      std::move(result));
-
   histogram_tester.ExpectBucketCount("Autofill.AutocompleteSuggestions", 0, 1);
   histogram_tester.ExpectBucketCount("Autofill.AutocompleteSuggestions", 1, 0);
 
+  // Verify that querying autocomplete suggestions twice for the same field does
+  // not log the corresponding metrics twice.
+  EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
+      0, /*is_autocomplete_enabled=*/true,
+      /*autoselect_first_suggestion=*/false, field,
+      suggestions_handler->GetWeakPtr(), SuggestionsContext()));
+  histogram_tester.ExpectBucketCount("Autofill.AutocompleteQuery", 1, 1);
+  histogram_tester.ExpectBucketCount("Autofill.AutocompleteQuery", 0, 0);
+
   // Changed the returned handle
-  // Changed field's name to trigger UMA again.
+  // Created a new field, which will have a new global id to trigger UMA again.
   mock_handle = 2;
   test::CreateTestFormField("Address", "address1", "", "text", &field);
 
@@ -1034,10 +1135,10 @@ TEST_F(AutocompleteHistoryManagerTest, AutocompleteUMAQueryCreated) {
   EXPECT_CALL(*suggestions_handler.get(),
               OnSuggestionsReturned(0, /*autoselect_first_suggestion=*/false,
                                     testing::Truly(NonEmptySuggestionVector)));
-  autocomplete_manager_->OnGetSingleFieldSuggestions(
+  EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
       0, /*is_autocomplete_enabled=*/true,
-      /*autoselect_first_suggestion=*/false, field.name, field.value,
-      field.form_control_type, suggestions_handler->GetWeakPtr());
+      /*autoselect_first_suggestion=*/false, field,
+      suggestions_handler->GetWeakPtr(), SuggestionsContext()));
   histogram_tester.ExpectBucketCount("Autofill.AutocompleteQuery", 1, 2);
   histogram_tester.ExpectBucketCount("Autofill.AutocompleteQuery", 0, 0);
 
@@ -1060,26 +1161,24 @@ TEST_F(AutocompleteHistoryManagerTest, DestructorCancelsRequests) {
   auto suggestions_handler_second = std::make_unique<MockSuggestionsHandler>();
   int test_query_id_first = 2;
   int test_query_id_second = 3;
-  std::u16string test_name = u"Some Field Name";
-  std::u16string test_prefix = u"SomePrefix";
 
   EXPECT_CALL(*web_data_service_,
-              GetFormValuesForElementName(test_name, test_prefix, _,
-                                          autocomplete_manager_.get()))
+              GetFormValuesForElementName(test_field_.name, test_field_.value,
+                                          _, autocomplete_manager_.get()))
       .WillOnce(Return(mocked_db_query_id_first))
       .WillOnce(Return(mocked_db_query_id_second));
 
   // Simulate request for the first suggestions.
-  autocomplete_manager_->OnGetSingleFieldSuggestions(
+  EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
       test_query_id_first, /*is_autocomplete_enabled=*/true,
-      /*autoselect_first_suggestion=*/false, test_name, test_prefix,
-      "Some Type", suggestions_handler_first->GetWeakPtr());
+      /*autoselect_first_suggestion=*/false, test_field_,
+      suggestions_handler_first->GetWeakPtr(), SuggestionsContext()));
 
   // Simulate request for the second suggestions.
-  autocomplete_manager_->OnGetSingleFieldSuggestions(
+  EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
       test_query_id_second, /*is_autocomplete_enabled=*/true,
-      /*autoselect_first_suggestion=*/false, test_name, test_prefix,
-      "Some Type", suggestions_handler_second->GetWeakPtr());
+      /*autoselect_first_suggestion=*/false, test_field_,
+      suggestions_handler_second->GetWeakPtr(), SuggestionsContext()));
 
   // Expect cancel calls for both requests.
   EXPECT_CALL(*web_data_service_, CancelRequest(mocked_db_query_id_first))

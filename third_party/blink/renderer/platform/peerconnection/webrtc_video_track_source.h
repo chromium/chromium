@@ -1,10 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_WEBRTC_VIDEO_TRACK_SOURCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_WEBRTC_VIDEO_TRACK_SOURCE_H_
 
+#include "base/callback_forward.h"
 #include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/threading/thread_checker.h"
@@ -40,7 +41,8 @@ class PLATFORM_EXPORT WebRtcVideoTrackSource
 
   WebRtcVideoTrackSource(bool is_screencast,
                          absl::optional<bool> needs_denoising,
-                         media::VideoCaptureFeedbackCB callback,
+                         media::VideoCaptureFeedbackCB feedback_callback,
+                         base::RepeatingClosure request_refresh_frame_callback,
                          media::GpuVideoAcceleratorFactories* gpu_factories);
   WebRtcVideoTrackSource(const WebRtcVideoTrackSource&) = delete;
   WebRtcVideoTrackSource& operator=(const WebRtcVideoTrackSource&) = delete;
@@ -59,9 +61,11 @@ class PLATFORM_EXPORT WebRtcVideoTrackSource
   void OnFrameCaptured(
       scoped_refptr<media::VideoFrame> frame,
       std::vector<scoped_refptr<media::VideoFrame>> scaled_frames);
+  void OnNotifyFrameDropped();
 
   using webrtc::VideoTrackSourceInterface::AddOrUpdateSink;
   using webrtc::VideoTrackSourceInterface::RemoveSink;
+  void RequestRefreshFrame() override;
 
  private:
   void SendFeedback();
@@ -98,7 +102,8 @@ class PLATFORM_EXPORT WebRtcVideoTrackSource
   absl::optional<FrameAdaptationParams>
       custom_frame_adaptation_params_for_testing_;
 
-  const media::VideoCaptureFeedbackCB callback_;
+  const media::VideoCaptureFeedbackCB feedback_callback_;
+  const base::RepeatingClosure request_refresh_frame_callback_;
 };
 
 }  // namespace blink

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/threading/simple_thread.h"
@@ -192,7 +192,7 @@ class ProvidedService : public Service,
     }
   }
 
-  base::RunLoop* run_loop_;
+  raw_ptr<base::RunLoop> run_loop_;
   service_manager::ServiceReceiver service_receiver_{this};
   const std::string title_;
   mojo::PendingReceiver<mojom::Service> receiver_;

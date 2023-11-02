@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -151,8 +151,6 @@ void OutputProtectionImpl::Create(
                                   std::move(receiver), std::move(delegate)));
     return;
   }
-  if (!delegate)
-    delegate = std::make_unique<DisplaySystemDelegateImpl>();
   // This object should destruct when the mojo connection is lost.
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<OutputProtectionImpl>(std::move(delegate)),
@@ -162,7 +160,8 @@ void OutputProtectionImpl::Create(
 OutputProtectionImpl::OutputProtectionImpl(
     std::unique_ptr<DisplaySystemDelegate> delegate)
     : delegate_(std::move(delegate)) {
-  DCHECK(delegate_);
+  if (!delegate_)
+    delegate_ = std::make_unique<DisplaySystemDelegateImpl>();
 }
 
 OutputProtectionImpl::~OutputProtectionImpl() {

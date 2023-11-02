@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,7 @@ namespace chromeos {
 // Class for handling network configuration UI events in loggin/oobe WebUI.
 class NetworkDropdownHandler : public BaseWebUIHandler {
  public:
-  explicit NetworkDropdownHandler(JSCallsContainer* js_calls_container);
-
+  NetworkDropdownHandler();
   NetworkDropdownHandler(const NetworkDropdownHandler&) = delete;
   NetworkDropdownHandler& operator=(const NetworkDropdownHandler&) = delete;
 
@@ -22,7 +21,7 @@ class NetworkDropdownHandler : public BaseWebUIHandler {
   // BaseScreenHandler implementation:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void Initialize() override;
+  void InitializeDeprecated() override;
 
   // WebUIMessageHandler implementation:
   void RegisterMessages() override;
@@ -30,8 +29,9 @@ class NetworkDropdownHandler : public BaseWebUIHandler {
  private:
   void HandleLaunchInternetDetailDialog();
   void HandleLaunchAddWiFiNetworkDialog();
-  void HandleShowNetworkDetails(const base::ListValue* args);
-  void HandleShowNetworkConfig(const base::ListValue* args);
+  void HandleShowNetworkDetails(const std::string& type,
+                                const std::string& guid);
+  void HandleShowNetworkConfig(const std::string& guid);
 };
 
 }  // namespace chromeos

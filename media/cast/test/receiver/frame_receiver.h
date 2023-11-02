@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include <list>
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -30,6 +31,7 @@ namespace media {
 namespace cast {
 
 class CastEnvironment;
+struct EncodedFrame;
 
 // The following callback delivers encoded frame data and metadata.  The client
 // should examine the |frame_id| field to determine whether any frames have been
@@ -144,7 +146,7 @@ class FrameReceiver final : public RtpPayloadFeedback {
   const scoped_refptr<CastEnvironment> cast_environment_;
 
   // Transport used to send data back.
-  CastTransport* const transport_;
+  const raw_ptr<CastTransport> transport_;
 
   // Deserializes a packet into a RtpHeader + payload bytes.
   RtpParser packet_parser_;
@@ -171,8 +173,6 @@ class FrameReceiver final : public RtpPayloadFeedback {
   base::TimeDelta target_playout_delay_;
 
   // Hack: This is used in logic that determines whether to skip frames.
-  // TODO(miu): Revisit this.  Logic needs to also account for expected decode
-  // time.
   const base::TimeDelta expected_frame_duration_;
 
   // Set to false initially, then set to true after scheduling the periodic

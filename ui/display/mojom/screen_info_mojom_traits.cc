@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,8 +13,10 @@ bool StructTraits<display::mojom::ScreenInfoDataView, display::ScreenInfo>::
     Read(display::mojom::ScreenInfoDataView data, display::ScreenInfo* out) {
   if (!data.ReadDisplayColorSpaces(&out->display_color_spaces) ||
       !data.ReadRect(&out->rect) ||
-      !data.ReadAvailableRect(&out->available_rect))
+      !data.ReadAvailableRect(&out->available_rect) ||
+      !data.ReadLabel(&out->label)) {
     return false;
+  }
 
   out->device_scale_factor = data.device_scale_factor();
   out->depth = data.depth();

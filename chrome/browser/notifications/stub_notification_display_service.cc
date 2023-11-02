@@ -1,13 +1,12 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/notifications/stub_notification_display_service.h"
 
-#include <algorithm>
-
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/profiles/profile.h"
@@ -51,10 +50,9 @@ StubNotificationDisplayService::GetDisplayedNotificationsForType(
 absl::optional<message_center::Notification>
 StubNotificationDisplayService::GetNotification(
     const std::string& notification_id) {
-  auto iter = std::find_if(notifications_.begin(), notifications_.end(),
-                           [notification_id](const NotificationData& data) {
-                             return data.notification.id() == notification_id;
-                           });
+  auto iter = base::ranges::find(
+      notifications_, notification_id,
+      [](const NotificationData& data) { return data.notification.id(); });
 
   if (iter == notifications_.end())
     return absl::nullopt;
@@ -65,10 +63,9 @@ StubNotificationDisplayService::GetNotification(
 const NotificationCommon::Metadata*
 StubNotificationDisplayService::GetMetadataForNotification(
     const message_center::Notification& notification) {
-  auto iter = std::find_if(notifications_.begin(), notifications_.end(),
-                           [notification](const NotificationData& data) {
-                             return data.notification.id() == notification.id();
-                           });
+  auto iter = base::ranges::find(
+      notifications_, notification.id(),
+      [](const NotificationData& data) { return data.notification.id(); });
 
   if (iter == notifications_.end())
     return nullptr;
@@ -254,7 +251,7 @@ StubNotificationDisplayService::NotificationData::NotificationData(
 StubNotificationDisplayService::NotificationData::NotificationData(
     NotificationData&& other)
     : type(other.type),
-      notification(other.notification),
+      notification(std::move(other.notification)),
       metadata(std::move(other.metadata)) {}
 
 StubNotificationDisplayService::NotificationData::~NotificationData() {}
@@ -272,9 +269,9 @@ std::vector<StubNotificationDisplayService::NotificationData>::iterator
 StubNotificationDisplayService::FindNotification(
     NotificationHandler::Type notification_type,
     const std::string& notification_id) {
-  return std::find_if(
-      notifications_.begin(), notifications_.end(),
-      [notification_type, notification_id](const NotificationData& data) {
+  return base::ranges::find_if(
+      notifications_,
+      [notification_type, &notification_id](const NotificationData& data) {
         return data.type == notification_type &&
                data.notification.id() == notification_id;
       });

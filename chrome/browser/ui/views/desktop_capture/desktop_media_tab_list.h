@@ -1,10 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_VIEWS_DESKTOP_CAPTURE_DESKTOP_MEDIA_TAB_LIST_H_
 #define CHROME_BROWSER_UI_VIEWS_DESKTOP_CAPTURE_DESKTOP_MEDIA_TAB_LIST_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_list_controller.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
@@ -41,11 +42,13 @@ class DesktopMediaTabList : public DesktopMediaListController::ListView {
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
   int GetHeightForWidth(int width) const override;
+  void OnThemeChanged() override;
 
   // DesktopMediaListController::ListView:
   absl::optional<content::DesktopMediaID> GetSelection() override;
   DesktopMediaListController::SourceListListener* GetSourceListListener()
       override;
+  void ClearSelection() override;
 
   // Called to indicate the preview image of the source indicated by index has
   // been updated.
@@ -60,16 +63,17 @@ class DesktopMediaTabList : public DesktopMediaListController::ListView {
   friend class DesktopMediaPickerViewsTestApi;
   friend class DesktopMediaTabListTest;
 
-  DesktopMediaListController* controller_;
+  raw_ptr<DesktopMediaListController> controller_;
   std::unique_ptr<TabListModel> model_;
   std::unique_ptr<TabListViewObserver> view_observer_;
 
   // These members are owned in the tree of views under this ListView's children
   // so it's safe to store raw pointers to them.
-  views::TableView* list_;
-  views::ImageView* preview_;
-  views::View* empty_preview_;
-  views::Label* preview_label_;
+  raw_ptr<views::TableView> list_;
+  raw_ptr<views::View> preview_wrapper_;
+  raw_ptr<views::ImageView> preview_;
+  raw_ptr<views::Label> empty_preview_label_;
+  raw_ptr<views::Label> preview_label_;
 
   // Counts the number of times preview_ has been set to an image.
   size_t preview_set_count_ = 0;

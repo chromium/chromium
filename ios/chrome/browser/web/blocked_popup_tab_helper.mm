@@ -1,32 +1,32 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/web/blocked_popup_tab_helper.h"
 
-#include <UIKit/UIKit.h>
+#import <UIKit/UIKit.h>
 
-#include <memory>
-#include <utility>
+#import <memory>
+#import <utility>
 
-#include "base/format_macros.h"
-#include "base/mac/bundle_locations.h"
-#include "base/mac/foundation_util.h"
-#include "base/strings/stringprintf.h"
-#include "base/strings/utf_string_conversions.h"
-#include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "components/infobars/core/confirm_infobar_delegate.h"
-#include "components/infobars/core/infobar.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "ios/chrome/browser/infobars/confirm_infobar_metrics_recorder.h"
-#include "ios/chrome/browser/infobars/infobar_ios.h"
-#include "ios/chrome/browser/infobars/infobar_manager_impl.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ios/web/public/navigation/referrer.h"
-#include "net/base/mac/url_conversions.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "ui/gfx/image/image.h"
+#import "base/format_macros.h"
+#import "base/mac/bundle_locations.h"
+#import "base/mac/foundation_util.h"
+#import "base/strings/stringprintf.h"
+#import "base/strings/utf_string_conversions.h"
+#import "components/content_settings/core/browser/host_content_settings_map.h"
+#import "components/infobars/core/confirm_infobar_delegate.h"
+#import "components/infobars/core/infobar.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"
+#import "ios/chrome/browser/infobars/confirm_infobar_metrics_recorder.h"
+#import "ios/chrome/browser/infobars/infobar_ios.h"
+#import "ios/chrome/browser/infobars/infobar_manager_impl.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ios/web/public/navigation/referrer.h"
+#import "net/base/mac/url_conversions.h"
+#import "ui/base/l10n/l10n_util.h"
+#import "ui/gfx/image/image.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -34,6 +34,13 @@
 
 namespace {
 // The infobar to display when a popup is blocked.
+
+// The size of the symbol image.
+const CGFloat kSymbolImagePointSize = 18.;
+
+// The name if the popup symbol.
+NSString* const kPopupBadgeMinusSymbol = @"popup_badge_minus";
+
 class BlockPopupInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
   BlockPopupInfoBarDelegate(
@@ -50,11 +57,20 @@ class BlockPopupInfoBarDelegate : public ConfirmInfoBarDelegate {
     return POPUP_BLOCKED_INFOBAR_DELEGATE_MOBILE;
   }
 
-  gfx::Image GetIcon() const override {
+  ui::ImageModel GetIcon() const override {
     if (icon_.IsEmpty()) {
-      icon_ = gfx::Image([UIImage imageNamed:@"infobar_popup_blocker"]);
+      // This symbol is not created using CustomSymbolWithPointSize() because
+      // "ios/chrome/browser/ui/icons/chrome_symbol.h" cannot be imported here.
+      UIImageSymbolConfiguration* configuration = [UIImageSymbolConfiguration
+          configurationWithPointSize:kSymbolImagePointSize
+                              weight:UIImageSymbolWeightMedium
+                               scale:UIImageSymbolScaleMedium];
+      UIImage* image = [UIImage imageNamed:kPopupBadgeMinusSymbol
+                                  inBundle:nil
+                         withConfiguration:configuration];
+      icon_ = gfx::Image(image);
     }
-    return icon_;
+    return ui::ImageModel::FromImage(icon_);
   }
 
   std::u16string GetMessageText() const override {

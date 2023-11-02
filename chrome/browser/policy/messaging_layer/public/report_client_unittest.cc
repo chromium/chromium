@@ -1,8 +1,9 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/policy/messaging_layer/public/report_client.h"
+#include "chrome/browser/policy/messaging_layer/public/report_client_test_util.h"
 
 #include <memory>
 #include <string>
@@ -10,9 +11,9 @@
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/task/post_task.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
@@ -20,6 +21,10 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/policy/messaging_layer/util/dm_token_retriever_provider.h"
+#include "chrome/browser/policy/messaging_layer/util/reporting_server_connector.h"
+#include "chrome/browser/policy/messaging_layer/util/reporting_server_connector_test_util.h"
+#include "chrome/browser/policy/messaging_layer/util/test_request_payload.h"
+#include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/reporting/client/dm_token_retriever.h"
 #include "components/reporting/client/mock_dm_token_retriever.h"
@@ -31,6 +36,7 @@
 #include "components/reporting/encryption/testing_primitives.h"
 #include "components/reporting/encryption/verification.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
+#include "components/reporting/storage_selector/storage_selector.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/status_macros.h"
 #include "components/reporting/util/statusor.h"
@@ -56,6 +62,9 @@ using ::testing::StrEq;
 using ::testing::StrictMock;
 using ::testing::WithArgs;
 
+using ::policy::CloudPolicyClient;
+using ::policy::MockCloudPolicyClient;
+
 namespace reporting {
 namespace {
 
@@ -75,11 +84,10 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
         profile_->GetProfileUserName(), "12345"));
     const user_manager::User* user =
         mock_user_manager->AddPublicAccountUser(account_id);
-    chromeos::ProfileHelper::Get()->SetActiveUserIdForTesting(
-        profile_->GetProfileUserName());
     mock_user_manager->UserLoggedIn(account_id, user->username_hash(),
                                     /*browser_restart=*/false,
                                     /*is_child=*/false);
+    ash::ProfileHelper::Get()->ActiveUserHashChanged(user->username_hash());
     user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
         std::move(mock_user_manager));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -105,14 +113,12 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
     }
 
     // Provide a mock cloud policy client.
-    client_ = std::make_unique<policy::MockCloudPolicyClient>();
-    client_->SetDMToken(kDMToken);
+    mock_client_.SetDMToken(kDMToken);
     test_reporting_ = std::make_unique<ReportingClient::TestEnvironment>(
         base::FilePath(location_.GetPath()),
         base::StringPiece(
             reinterpret_cast<const char*>(signature_verification_public_key_),
-            kKeySize),
-        client_.get());
+            kKeySize));
 
     // Use MockDMTokenRetriever and configure it to always return the test DM
     // token by default
@@ -220,60 +226,59 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
   bool is_encryption_enabled() const { return GetParam(); }
 
   auto GetEncryptionKeyInvocation() {
-    return [this](base::Value payload,
-                  policy::CloudPolicyClient::ResponseCallback done_cb) {
+    return [this](base::Value::Dict payload,
+                  CloudPolicyClient::ResponseCallback done_cb) {
       absl::optional<bool> const attach_encryption_settings =
-          payload.FindBoolKey("attachEncryptionSettings");
+          payload.FindBool("attachEncryptionSettings");
       ASSERT_TRUE(attach_encryption_settings.has_value());
       ASSERT_TRUE(attach_encryption_settings.value());  // If set, must be true.
       ASSERT_TRUE(is_encryption_enabled());
 
-      base::Value encryption_settings{base::Value::Type::DICTIONARY};
+      base::Value::Dict encryption_settings;
       std::string public_key;
       base::Base64Encode(signed_encryption_key_.public_asymmetric_key(),
                          &public_key);
-      encryption_settings.SetStringKey("publicKey", public_key);
-      encryption_settings.SetIntKey("publicKeyId",
-                                    signed_encryption_key_.public_key_id());
+      encryption_settings.Set("publicKey", public_key);
+      encryption_settings.Set("publicKeyId",
+                              signed_encryption_key_.public_key_id());
       std::string public_key_signature;
       base::Base64Encode(signed_encryption_key_.signature(),
                          &public_key_signature);
-      encryption_settings.SetStringKey("publicKeySignature",
-                                       public_key_signature);
-      base::Value response{base::Value::Type::DICTIONARY};
-      response.SetPath("encryptionSettings", std::move(encryption_settings));
+      encryption_settings.Set("publicKeySignature", public_key_signature);
+      base::Value::Dict response;
+      response.Set("encryptionSettings", std::move(encryption_settings));
       std::move(done_cb).Run(std::move(response));
     };
   }
 
   auto GetVerifyDataInvocation() {
-    return [this](base::Value payload,
-                  policy::CloudPolicyClient::ResponseCallback done_cb) {
-      base::Value* const records = payload.FindListKey("encryptedRecord");
+    return [this](base::Value::Dict payload,
+                  CloudPolicyClient::ResponseCallback done_cb) {
+      base::Value::List* const records = payload.FindList("encryptedRecord");
       ASSERT_THAT(records, Ne(nullptr));
-      base::Value::ListView records_list = records->GetList();
-      ASSERT_THAT(records_list, SizeIs(1));
-      base::Value& record = records_list[0];
+      ASSERT_THAT(*records, SizeIs(1));
+      const base::Value::Dict& record = (*records)[0].GetDict();
       if (is_encryption_enabled()) {
-        const base::Value* const enctyption_info =
-            record.FindDictKey("encryptionInfo");
-        ASSERT_THAT(enctyption_info, Ne(nullptr));
+        const base::Value::Dict* const encryption_info =
+            record.FindDict("encryptionInfo");
+        ASSERT_THAT(encryption_info, Ne(nullptr));
         const std::string* const encryption_key =
-            enctyption_info->FindStringKey("encryptionKey");
+            encryption_info->FindString("encryptionKey");
         ASSERT_THAT(encryption_key, Ne(nullptr));
         const std::string* const public_key_id =
-            enctyption_info->FindStringKey("publicKeyId");
+            encryption_info->FindString("publicKeyId");
         ASSERT_THAT(public_key_id, Ne(nullptr));
         int64_t key_id;
         ASSERT_TRUE(base::StringToInt64(*public_key_id, &key_id));
         EXPECT_THAT(key_id, Eq(signed_encryption_key_.public_key_id()));
       } else {
-        ASSERT_THAT(record.FindKey("encryptionInfo"), Eq(nullptr));
+        ASSERT_FALSE(record.contains("encryptionInfo"));
       }
-      base::Value* const seq_info = record.FindDictKey("sequenceInformation");
+      const base::Value::Dict* const seq_info =
+          record.FindDict("sequenceInformation");
       ASSERT_THAT(seq_info, Ne(nullptr));
-      base::Value response{base::Value::Type::DICTIONARY};
-      response.SetPath("lastSucceedUploadedRecord", std::move(*seq_info));
+      base::Value::Dict response;
+      response.Set("lastSucceedUploadedRecord", seq_info->Clone());
       std::move(done_cb).Run(std::move(response));
     };
   }
@@ -314,8 +319,9 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  std::unique_ptr<policy::MockCloudPolicyClient> client_;
-  ReportQueueConfiguration* report_queue_config_;
+  MockCloudPolicyClient mock_client_;
+  ReportingServerConnector::TestEnvironment test_env_{&mock_client_};
+  raw_ptr<ReportQueueConfiguration> report_queue_config_;
   const Destination destination_ = Destination::UPLOAD_EVENTS;
   ReportQueueConfiguration::PolicyCheckCallback policy_checker_callback_ =
       base::BindRepeating([]() { return Status::StatusOK(); });
@@ -392,7 +398,9 @@ TEST_P(ReportClientTest, EnqueueMessageAndUpload) {
     }
 
     // Uploader is available, let it set the key.
-    EXPECT_CALL(*client_, UploadEncryptedReport(_, _, _))
+    EXPECT_CALL(
+        mock_client_,
+        UploadEncryptedReport(IsEncryptionKeyRequestUploadRequestValid(), _, _))
         .WillOnce(WithArgs<0, 2>(Invoke(GetEncryptionKeyInvocation())))
         .RetiresOnSaturation();
   }
@@ -405,7 +413,8 @@ TEST_P(ReportClientTest, EnqueueMessageAndUpload) {
 
   if (StorageSelector::is_uploader_required() &&
       !StorageSelector::is_use_missive()) {
-    EXPECT_CALL(*client_, UploadEncryptedReport(_, _, _))
+    EXPECT_CALL(mock_client_,
+                UploadEncryptedReport(IsDataUploadRequestValid(), _, _))
         .WillOnce(WithArgs<0, 2>(Invoke(GetVerifyDataInvocation())));
   }
 
@@ -429,25 +438,24 @@ TEST_P(ReportClientTest, SpeculativelyEnqueueMessageAndUpload) {
     }
   }
 
+  if (StorageSelector::is_uploader_required() &&
+      !StorageSelector::is_use_missive()) {
+    if (is_encryption_enabled()) {
+      EXPECT_CALL(mock_client_,
+                  UploadEncryptedReport(
+                      IsEncryptionKeyRequestUploadRequestValid(), _, _))
+          .WillOnce(WithArgs<0, 2>(Invoke(GetEncryptionKeyInvocation())));
+    }
+    EXPECT_CALL(mock_client_,
+                UploadEncryptedReport(IsDataUploadRequestValid(), _, _))
+        .WillOnce(WithArgs<0, 2>(Invoke(GetVerifyDataInvocation())));
+  }
+
   // Enqueue event right away, before attaching an actual queue.
   test::TestEvent<Status> enqueue_record_event;
   report_queue->Enqueue("Record", FAST_BATCH, enqueue_record_event.cb());
   const auto enqueue_record_result = enqueue_record_event.result();
   EXPECT_OK(enqueue_record_result) << enqueue_record_result;
-
-  if (StorageSelector::is_uploader_required() &&
-      !StorageSelector::is_use_missive()) {
-    // Note: there does not seem to be another way to define the expectations
-    // A+B for encrypted case and just B for non-encrypted.g
-    if (is_encryption_enabled()) {
-      EXPECT_CALL(*client_, UploadEncryptedReport(_, _, _))
-          .WillOnce(WithArgs<0, 2>(Invoke(GetEncryptionKeyInvocation())))
-          .WillOnce(WithArgs<0, 2>(Invoke(GetVerifyDataInvocation())));
-    } else {
-      EXPECT_CALL(*client_, UploadEncryptedReport(_, _, _))
-          .WillOnce(WithArgs<0, 2>(Invoke(GetVerifyDataInvocation())));
-    }
-  }
 
   // Trigger upload.
   task_environment_.FastForwardBy(base::Seconds(1));

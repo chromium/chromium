@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,10 +10,10 @@
 
 #include "android_webview/browser/lifecycle/webview_app_state_observer.h"
 #include "android_webview/common/metrics/app_package_name_logging_rule.h"
-#include "base/macros.h"
 #include "base/metrics/field_trial.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "components/embedder_support/android/metrics/android_metrics_service_client.h"
 #include "components/metrics/enabled_state_provider.h"
 #include "components/metrics/metrics_log_uploader.h"
@@ -21,12 +21,11 @@
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 
-class PrefService;
-
 namespace android_webview {
 
 namespace prefs {
 extern const char kMetricsAppPackageNameLoggingRule[];
+extern const char kAppPackageNameLoggingRuleLastUpdateTime[];
 }  // namespace prefs
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -39,6 +38,12 @@ enum class BackfillInstallDate {
   kPersistedPackageManagerInstallDate = 2,
   kMaxValue = kPersistedPackageManagerInstallDate,
 };
+
+// The amount of delay before calculating and recording the app data directory
+// size, intended for avoiding IO contention when an app is initializing.
+//
+// Visible for testing.
+extern const base::TimeDelta kRecordAppDataDirectorySizeDelay;
 
 // AwMetricsServiceClient is a singleton which manages WebView metrics
 // collection.
@@ -156,9 +161,6 @@ class AwMetricsServiceClient : public ::metrics::AndroidMetricsServiceClient,
 
   ~AwMetricsServiceClient() override;
 
-  // Initializes, but does not necessarily start, the MetricsService.
-  void Initialize(PrefService* pref_service);
-
   // metrics::MetricsServiceClient
   int32_t GetProduct() override;
 
@@ -172,6 +174,10 @@ class AwMetricsServiceClient : public ::metrics::AndroidMetricsServiceClient,
   int GetPackageNameLimitRatePerMille() override;
   void RegisterAdditionalMetricsProviders(
       metrics::MetricsService* service) override;
+
+  // Gets the embedding app's package name if it's OK to log. Otherwise, this
+  // returns the empty string.
+  std::string GetAppPackageNameIfLoggable() override;
 
   // If `android_webview::features::kWebViewAppsPackageNamesAllowlist` is
   // enabled:
@@ -197,6 +203,11 @@ class AwMetricsServiceClient : public ::metrics::AndroidMetricsServiceClient,
   // `SetAppPackageNameLoggingRule` if any.
   absl::optional<AppPackageNameLoggingRule>
   GetCachedAppPackageNameLoggingRule();
+
+  // The last time the apps package name allowlist was queried from the
+  // component update service, regardless if it was successful or not.
+  base::Time GetAppPackageNameLoggingRuleLastUpdateTime() const;
+  void SetAppPackageNameLoggingRuleLastUpdateTime(base::Time update_time);
 
  protected:
   // Restrict usage of the inherited AndroidMetricsServiceClient::RegisterPrefs,

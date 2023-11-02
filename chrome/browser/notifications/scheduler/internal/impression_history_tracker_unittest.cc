@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -189,7 +190,7 @@ class ImpressionHistoryTrackerTest : public ::testing::Test {
   test::FakeClock clock_;
   SchedulerConfig config_;
   std::unique_ptr<ImpressionHistoryTracker> impression_trakcer_;
-  MockImpressionStore* store_;
+  raw_ptr<MockImpressionStore> store_;
   std::unique_ptr<MockDelegate> delegate_;
 };
 

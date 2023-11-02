@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,8 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "remoting/protocol/authenticator.h"
@@ -20,8 +20,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 namespace {
 
@@ -68,7 +67,7 @@ class ValidatingAuthenticatorTest : public testing::Test {
   // to |validating_authenticator_|.  Lifetime of the object is controlled by
   // |validating_authenticator_| so this pointer is no longer valid once
   // the owner is destroyed.
-  testing::NiceMock<MockAuthenticator>* mock_authenticator_ = nullptr;
+  raw_ptr<testing::NiceMock<MockAuthenticator>> mock_authenticator_ = nullptr;
 
   // This member is used to drive behavior in |validating_authenticator_| when
   // its validation complete callback is run.
@@ -209,7 +208,7 @@ TEST_F(ValidatingAuthenticatorTest, ValidConnection_ErrorInvalidCredentials) {
   SendMessageAndWaitForCallback();
   ASSERT_TRUE(validate_complete_called_);
   ASSERT_EQ(Authenticator::REJECTED, validating_authenticator_->state());
-  ASSERT_EQ(Authenticator::INVALID_CREDENTIALS,
+  ASSERT_EQ(Authenticator::RejectionReason::INVALID_CREDENTIALS,
             validating_authenticator_->rejection_reason());
 }
 
@@ -226,7 +225,7 @@ TEST_F(ValidatingAuthenticatorTest, ValidConnection_ErrorRejectedByUser) {
   SendMessageAndWaitForCallback();
   ASSERT_TRUE(validate_complete_called_);
   ASSERT_EQ(Authenticator::REJECTED, validating_authenticator_->state());
-  ASSERT_EQ(Authenticator::REJECTED_BY_USER,
+  ASSERT_EQ(Authenticator::RejectionReason::REJECTED_BY_USER,
             validating_authenticator_->rejection_reason());
 }
 
@@ -253,7 +252,7 @@ TEST_F(ValidatingAuthenticatorTest,
   SendMessageAndWaitForCallback();
   ASSERT_TRUE(validate_complete_called_);
   ASSERT_EQ(Authenticator::REJECTED, validating_authenticator_->state());
-  ASSERT_EQ(Authenticator::REJECTED_BY_USER,
+  ASSERT_EQ(Authenticator::RejectionReason::REJECTED_BY_USER,
             validating_authenticator_->rejection_reason());
 }
 
@@ -270,7 +269,7 @@ TEST_F(ValidatingAuthenticatorTest, ValidConnection_ErrorTooManyConnections) {
   SendMessageAndWaitForCallback();
   ASSERT_TRUE(validate_complete_called_);
   ASSERT_EQ(Authenticator::REJECTED, validating_authenticator_->state());
-  ASSERT_EQ(Authenticator::TOO_MANY_CONNECTIONS,
+  ASSERT_EQ(Authenticator::RejectionReason::TOO_MANY_CONNECTIONS,
             validating_authenticator_->rejection_reason());
 }
 
@@ -283,13 +282,14 @@ TEST_F(ValidatingAuthenticatorTest, InvalidConnection_InvalidCredentials) {
       .WillByDefault(Return(Authenticator::REJECTED));
 
   ON_CALL(*mock_authenticator_, rejection_reason())
-      .WillByDefault(Return(Authenticator::INVALID_CREDENTIALS));
+      .WillByDefault(
+          Return(Authenticator::RejectionReason::INVALID_CREDENTIALS));
 
   // Verify validation callback is not called for invalid connections.
   SendMessageAndWaitForCallback();
   ASSERT_FALSE(validate_complete_called_);
   ASSERT_EQ(Authenticator::REJECTED, validating_authenticator_->state());
-  ASSERT_EQ(Authenticator::INVALID_CREDENTIALS,
+  ASSERT_EQ(Authenticator::RejectionReason::INVALID_CREDENTIALS,
             validating_authenticator_->rejection_reason());
 }
 
@@ -302,13 +302,14 @@ TEST_F(ValidatingAuthenticatorTest, InvalidConnection_InvalidAccount) {
       .WillByDefault(Return(Authenticator::REJECTED));
 
   ON_CALL(*mock_authenticator_, rejection_reason())
-      .WillByDefault(Return(Authenticator::INVALID_ACCOUNT_ID));
+      .WillByDefault(
+          Return(Authenticator::RejectionReason::INVALID_ACCOUNT_ID));
 
   // Verify validation callback is not called for invalid connections.
   SendMessageAndWaitForCallback();
   ASSERT_FALSE(validate_complete_called_);
   ASSERT_EQ(Authenticator::REJECTED, validating_authenticator_->state());
-  ASSERT_EQ(Authenticator::INVALID_ACCOUNT_ID,
+  ASSERT_EQ(Authenticator::RejectionReason::INVALID_ACCOUNT_ID,
             validating_authenticator_->rejection_reason());
 }
 
@@ -321,15 +322,14 @@ TEST_F(ValidatingAuthenticatorTest, InvalidConnection_ProtocolError) {
       .WillByDefault(Return(Authenticator::REJECTED));
 
   ON_CALL(*mock_authenticator_, rejection_reason())
-      .WillByDefault(Return(Authenticator::PROTOCOL_ERROR));
+      .WillByDefault(Return(Authenticator::RejectionReason::PROTOCOL_ERROR));
 
   // Verify validation callback is not called for invalid connections.
   SendMessageAndWaitForCallback();
   ASSERT_FALSE(validate_complete_called_);
   ASSERT_EQ(Authenticator::REJECTED, validating_authenticator_->state());
-  ASSERT_EQ(Authenticator::PROTOCOL_ERROR,
+  ASSERT_EQ(Authenticator::RejectionReason::PROTOCOL_ERROR,
             validating_authenticator_->rejection_reason());
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

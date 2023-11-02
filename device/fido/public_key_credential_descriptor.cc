@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,6 @@ namespace {
 // Keys for storing credential descriptor information in CBOR map.
 constexpr char kCredentialIdKey[] = "id";
 constexpr char kCredentialTypeKey[] = "type";
-constexpr char kTransportsKey[] = "transports";
 
 }  // namespace
 
@@ -35,29 +34,13 @@ PublicKeyCredentialDescriptor::CreateFromCBORValue(const cbor::Value& cbor) {
   if (id == map.end() || !id->second.is_bytestring())
     return absl::nullopt;
 
-  auto transports_it = map.find(cbor::Value(kTransportsKey));
-  if (transports_it == map.end())
-    return PublicKeyCredentialDescriptor(CredentialType::kPublicKey,
-                                         id->second.GetBytestring());
-
-  if (!transports_it->second.is_array())
-    return absl::nullopt;
-
-  base::flat_set<FidoTransportProtocol> transports;
-  for (const cbor::Value& transport_name : transports_it->second.GetArray()) {
-    if (!transport_name.is_string()) {
-      return absl::nullopt;
-    }
-    absl::optional<FidoTransportProtocol> transport =
-        ConvertToFidoTransportProtocol(transport_name.GetString());
-    if (!transport) {
-      continue;
-    }
-    transports.insert(*transport);
-  }
-  return PublicKeyCredentialDescriptor(CredentialType::kPublicKey,
-                                       id->second.GetBytestring(),
-                                       std::move(transports));
+  auto ret = PublicKeyCredentialDescriptor(CredentialType::kPublicKey,
+                                           id->second.GetBytestring());
+  // If the map had other keys then this fact is recorded for testing because
+  // some security keys appear to have a parsing bug in this case. See
+  // crbug.com/1270757.
+  ret.had_other_keys = map.size() > 2;
+  return ret;
 }
 
 PublicKeyCredentialDescriptor::PublicKeyCredentialDescriptor() = default;
@@ -71,9 +54,9 @@ PublicKeyCredentialDescriptor::PublicKeyCredentialDescriptor(
     CredentialType credential_type,
     std::vector<uint8_t> id,
     base::flat_set<FidoTransportProtocol> transports)
-    : credential_type_(credential_type),
-      id_(std::move(id)),
-      transports_(std::move(transports)) {}
+    : credential_type(credential_type),
+      id(std::move(id)),
+      transports(std::move(transports)) {}
 
 PublicKeyCredentialDescriptor::PublicKeyCredentialDescriptor(
     const PublicKeyCredentialDescriptor& other) = default;
@@ -91,23 +74,18 @@ PublicKeyCredentialDescriptor::~PublicKeyCredentialDescriptor() = default;
 
 bool PublicKeyCredentialDescriptor::operator==(
     const PublicKeyCredentialDescriptor& other) const {
-  return credential_type_ == other.credential_type_ && id_ == other.id_ &&
-         transports_ == other.transports_;
+  return credential_type == other.credential_type && id == other.id &&
+         transports == other.transports;
 }
 
 cbor::Value AsCBOR(const PublicKeyCredentialDescriptor& desc) {
   cbor::Value::MapValue cbor_descriptor_map;
-  cbor_descriptor_map[cbor::Value(kCredentialIdKey)] = cbor::Value(desc.id());
+  cbor_descriptor_map[cbor::Value(kCredentialIdKey)] = cbor::Value(desc.id);
   cbor_descriptor_map[cbor::Value(kCredentialTypeKey)] =
-      cbor::Value(CredentialTypeToString(desc.credential_type()));
-  std::vector<cbor::Value> transports;
-  for (FidoTransportProtocol transport : desc.transports()) {
-    transports.emplace_back(cbor::Value(ToString(transport)));
-  }
-  if (!transports.empty()) {
-    cbor_descriptor_map[cbor::Value(kTransportsKey)] =
-        cbor::Value(std::move(transports));
-  }
+      cbor::Value(CredentialTypeToString(desc.credential_type));
+  // Transports are omitted from CBOR serialization. They aren't useful for
+  // security keys to process. Some existing devices even refuse to parse them
+  // (see https://crbug.com/1270757).
   return cbor::Value(std::move(cbor_descriptor_map));
 }
 

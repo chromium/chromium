@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,7 +19,12 @@ class PrintJobHistoryService : public KeyedService {
   class Observer {
    public:
     virtual void OnPrintJobFinished(
-        const chromeos::printing::proto::PrintJobInfo& print_job_info) = 0;
+        const printing::proto::PrintJobInfo& print_job_info) = 0;
+
+    virtual void OnShutdown() {}
+
+   protected:
+    virtual ~Observer() = default;
   };
 
   PrintJobHistoryService();
@@ -43,15 +48,13 @@ class PrintJobHistoryService : public KeyedService {
   void AddObserver(PrintJobHistoryService::Observer* observer);
   void RemoveObserver(PrintJobHistoryService::Observer* observer);
 
+  // KeyedService:
+  void Shutdown() override;
+
  protected:
   base::ObserverList<PrintJobHistoryService::Observer>::Unchecked observers_;
 };
 
 }  // namespace ash
-
-// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
-namespace chromeos {
-using ::ash::PrintJobHistoryService;
-}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_PRINTING_HISTORY_PRINT_JOB_HISTORY_SERVICE_H_

@@ -35,7 +35,7 @@ class PLATFORM_EXPORT FontSelectionAlgorithm {
  public:
   FontSelectionAlgorithm() = delete;
 
-  FontSelectionAlgorithm(FontSelectionRequest request,
+  FontSelectionAlgorithm(const FontSelectionRequest& request,
                          const FontSelectionCapabilities& capabilities_bounds)
       : request_(request), capabilities_bounds_(capabilities_bounds) {}
 

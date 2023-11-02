@@ -16,7 +16,7 @@ This doc is intended to be an authoritative one-stop resource for profiling chro
 * https://www.chromium.org/developers/profiling-chromium-and-webkit
 * https://www.chromium.org/developers/telemetry/profiling
 
-***promo 
+***promo
 CPU profiling is not to be confused with tracing or task profiling:
 
 * https://www.chromium.org/developers/how-tos/trace-event-profiling-tool
@@ -31,70 +31,22 @@ Profiling should always be done on a Release build, which has very similar perfo
     is_debug = false
     blink_symbol_level = 2
     symbol_level = 2
-    use_allocator = "tcmalloc"
-
-    # Needed for built-in profiling only
-    enable_profiling = true
-
-## Profiling using built-in tcmalloc profiler
-
-Profiling support is built into tcmalloc and exposed in chromium, so any platform that uses tcmalloc should be able to generate profiling data without using external tools.
-
-#### Preparing your environment
-
-By default, the profiler will take a sample 100 times per second. You can adjust this rate by setting the `CPUPROFILE_FREQUENCY` environment variable before launching chromium:
-
-    $ export CPUPROFILE_FREQUENCY=1000
-    
-The maximum supported rate is 4000 samples per second.
-
-#### Profiling a process over its entire lifetime
-
-To profile the main browser process, add the following argument to your chrome invocation:
-
-    --enable-profiling --profiling-at-start
-
-To profile, e.g., every renderer process, add the following argument to your chrome invocation:
-
-    --enable-profiling --profiling-at-start=renderer --no-sandbox
-
-To profile the gpu process, add the following argument to your chrome invocation:
-
-    --enable-profiling --profiling-at-start=gpu-process --no-sandbox --profiling-flush
-
-The gpu process does not shut down cleanly and so requires periodic flushing to
-write the profile to disk.
-
-*** promo
-The --no-sandbox argument is required to allow the renderer process to write the profiling output to the file system.
-***
-
-When the process being profiled ends, you should see one or more `chrome-profile-{process type}-{process ID}` files in your `$PWD`. Run `pprof` to view the results, e.g.:
-
-    $ pprof -web chrome-profile-renderer-12345
-    
-*** promo
-`pprof` is packed with useful features for visualizing profiling data. Try `pprof --help` for more info.
-***
-
-*** promo
-Tip for Googlers: running `prodaccess` first will make `pprof` run faster, and eliminate some useless spew to the terminal.
-***
+    dcheck_always_on = false
 
 ## Profiling a process or thread for a defined period of time using perf
 
 First, make sure you have the `linux-perf` package installed:
 
     $ sudo apt-get install linux-perf
-    
+
 After starting up the browser and loading the page you want to profile, press 'Shift-Escape' to bring up the task manager, and get the Process ID of the process you want to profile.
 
 Run the perf tool like this:
 
     $ perf record -g -p <Process ID> -o <output file>
-    
+
 *** promo
-`perf` does not honor the `CPUPROFILE_FREQUENCY` env var. To adjust the sampling frequency, use the `-F` argument, e.g., `-F 1000`.
+To adjust the sampling frequency, use the `-F` argument, e.g., `-F 1000`.
 ***
 
 To stop profiling, press `Control-c` in the terminal window where `perf` is running. Run `pprof` to view the results, providing the path to the browser executable; e.g.:
@@ -105,14 +57,22 @@ To stop profiling, press `Control-c` in the terminal window where `perf` is runn
 `pprof` is packed with useful features for visualizing profiling data. Try `pprof --help` for more info.
 ***
 
+*** promo
+Tip for Googlers: running `gcert` first will make `pprof` run faster, and eliminate some useless spew to the terminal.
+***
+
+If you want to profile all renderer processes use the custom `--renderer-cmd-prefix` profiling script:
+
+  $ src/out/Release/chrome --renderer-cmd-prefix="tools/profiling/linux-perf-renderer-cmd.sh"
+
 If you want to limit the profile to a single thread, run:
 
-    $ ps -T -p <Process ID> 
-    
+    $ ps -T -p <Process ID>
+
 From the output, find the Thread ID (column header "SPID") of the thread you want. Now run perf:
 
     $ perf record -g -t <Thread ID> -o <output file>
-    
+
 Use the same `pprof` command as above to view the single-thread results.
 
 ## Profiling the renderer process for a period defined in javascript
@@ -177,13 +137,13 @@ Follow the [instructions](./android_build_instructions.md) for building and inst
 
     $ src/out/Release/bin/chrome_public_apk profile
     Profiler is running; press Enter to stop...
-    
+
 Once you stop the profiler, the profiling data will be copied off the device to the host machine and post-processed so it can be viewed in `pprof`, as described above.
 
 To profile the renderer process, you must have just one tab open in chromium, and use a command like this:
 
     $ src/out/Release/bin/chrome_public_apk profile --profile-process=renderer
-    
+
 To limit the profile to a single thread, use a command like this:
 
     $ src/out/Release/bin/chrome_public_apk profile --profile-process=renderer --profile-thread=main
@@ -230,7 +190,7 @@ update this doc!
 The perf benchmark runner can generate a CPU profile over the course of running a perf test. Currently, this is supported only on Linux and Android. To get info about the relevant options, run:
 
     $ src/tools/perf/run_benchmark help run
-    
+
 ... and look for the `--interval-profiling-*` options. For example, to generate a profile of the main thread of the renderer process during the "page interactions" phase of a perf benchmark, you might run:
 
     $ src/tools/perf/run_benchmark run <benchmark name> --interval-profiling-target=renderer:main --interval-profiling-period=interactions --interval-profiling-frequency=2000
@@ -253,13 +213,13 @@ for instructions on how to go about this.
 Many of the profiling tools expect you to provide the PID of the process to profile. If the tool used does not support finding the application by name or you would like to run the command for many processes it can be useful to use `pgrep` to find the PIDs.
 
 Find the PID for Chromium (browser process):
-    
+
     $ pgrep -X Chromium
 Find the PID for all child processes of Chromium:
-    
+
     $ pgrep -P $CHROMIUM_PID
 Combine commands to run tool for Chromium and all its children:
-    
+
     $ cat <(pgrep -x Chromium) <(pgrep -P $(pgrep -x Chromium)) | xargs $MY_TOOL --pid
 
 ## Checkout setup
@@ -272,8 +232,11 @@ Profiling should always be done on a build that represents the performance of of
     # Most profiling techniques on macOS will work with minimal symbols for local builds.
     # You should try and use minimal symbols when starting out because most tools will take
     # an incredibly long time to process the symbols and in some cases will freeze the application
-    # while doing so.
+    # while doing so. symbol_level sets the level for all parts of Chromium. The
+    # blink and v8 settings allow overriding this to set higher or lower levels
+    # for those components.
     blink_symbol_level = 0
+    v8_symbol_level = 0
     symbol_level = 0
 
 ## Viewing traces.

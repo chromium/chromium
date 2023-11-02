@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """
@@ -26,24 +26,38 @@ def get_parts(config):
     ks_bundle = (
         '{0.app_product}.app/Contents/Helpers/{0.keystone_app_name}.bundle'.
         format(config))
+    ks_agent_app = (
+        ks_bundle +
+        '/Contents/Resources/{0.keystone_app_name}Agent.app'.format(config))
 
     # Innermost parts come first.
     return [
+        CodeSignedProduct(  # Keystone Agent app bundle
+            ks_agent_app,
+            config.keystone_app_name + 'Agent',
+            identifier_requirement=False,
+            options=CodeSignOptions.FULL_HARDENED_RUNTIME_OPTIONS,
+            verify_options=VerifyOptions.DEEP | VerifyOptions.STRICT),
         CodeSignedProduct(  # Keystone's ksadmin
             ks_bundle + '/Contents/Helpers/ksadmin',
             'ksadmin',
             options=CodeSignOptions.FULL_HARDENED_RUNTIME_OPTIONS,
-            verify_options=VerifyOptions.DEEP + VerifyOptions.STRICT),
+            verify_options=VerifyOptions.DEEP | VerifyOptions.STRICT),
         CodeSignedProduct(  # Keystone's ksinstall
             ks_bundle + '/Contents/Helpers/ksinstall',
             'ksinstall',
             options=CodeSignOptions.FULL_HARDENED_RUNTIME_OPTIONS,
-            verify_options=VerifyOptions.DEEP + VerifyOptions.STRICT),
+            verify_options=VerifyOptions.DEEP | VerifyOptions.STRICT),
         CodeSignedProduct(  # Keystone bundle
             ks_bundle,
             config.keystone_app_name,
             options=CodeSignOptions.FULL_HARDENED_RUNTIME_OPTIONS,
-            verify_options=VerifyOptions.DEEP + VerifyOptions.STRICT),
+            verify_options=VerifyOptions.DEEP | VerifyOptions.STRICT),
+        CodeSignedProduct(  # Metainstaller
+            'UpdaterSetup',
+            'UpdaterSetup',
+            options=CodeSignOptions.FULL_HARDENED_RUNTIME_OPTIONS,
+            verify_options=VerifyOptions.DEEP | VerifyOptions.STRICT),
         CodeSignedProduct(  # Updater bundle
             '{.app_product}.app'.format(config),
             config.base_bundle_id,
@@ -51,7 +65,7 @@ def get_parts(config):
             requirements=config.codesign_requirements_outer_app,
             identifier_requirement=False,
             entitlements=None,
-            verify_options=VerifyOptions.DEEP + VerifyOptions.STRICT),
+            verify_options=VerifyOptions.DEEP | VerifyOptions.STRICT),
     ]
 
 

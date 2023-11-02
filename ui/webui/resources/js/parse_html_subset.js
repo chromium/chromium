@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
  *   tags: (!Array<string>|undefined),
  * }}
  */
-/* #export */ let SanitizeInnerHtmlOpts;
+export let SanitizeInnerHtmlOpts;
 
 /**
  * Make a string safe for Polymer bindings that are inner-h-t-m-l or other
@@ -19,7 +19,7 @@
  *     attributes.
  * @return {string}
  */
-/* #export */ const sanitizeInnerHtml = function(rawString, opts) {
+export const sanitizeInnerHtml = function(rawString, opts) {
   opts = opts || {};
   return parseHtmlSubset('<b>' + rawString + '</b>', opts.tags, opts.attrs)
       .firstChild.innerHTML;
@@ -30,13 +30,13 @@
  * Parses a very small subset of HTML. This ensures that insecure HTML /
  * javascript cannot be injected into WebUI.
  * @param {string} s The string to parse.
- * @param {!Array<string>=} opt_extraTags Optional extra allowed tags.
- * @param {!Array<string>=} opt_extraAttrs
+ * @param {!Array<string>=} extraTags Optional extra allowed tags.
+ * @param {!Array<string>=} extraAttrs
  *     Optional extra allowed attributes (all tags are run through these).
  * @throws {Error} In case of non supported markup.
  * @return {DocumentFragment} A document fragment containing the DOM tree.
  */
-/* #export */ const parseHtmlSubset = (function() {
+export const parseHtmlSubset = (function() {
   'use strict';
 
   /** @typedef {function(!Node, string):boolean} */
@@ -59,7 +59,7 @@
         return node.tagName === 'A' &&
             (value.startsWith('chrome://') || value.startsWith('https://') ||
              value === '#');
-      }
+      },
     ],
     [
       'target',
@@ -67,7 +67,7 @@
         // Only allow a[target='_blank'].
         // TODO(dbeam): are there valid use cases for target !== '_blank'?
         return node.tagName === 'A' && value === '_blank';
-      }
+      },
     ],
   ]);
 
@@ -86,7 +86,7 @@
       (node, value) => {
         // Only allow img[src] starting with chrome://
         return node.tagName === 'IMG' && value.startsWith('chrome://');
-      }
+      },
     ],
     ['tabindex', allowAttribute],
     ['aria-hidden', allowAttribute],
@@ -168,10 +168,9 @@
     }
   }
 
-  return function(s, opt_extraTags, opt_extraAttrs) {
-    const tags = opt_extraTags ? mergeTags(opt_extraTags) : allowedTags;
-    const attrs =
-        opt_extraAttrs ? mergeAttrs(opt_extraAttrs) : allowedAttributes;
+  return function(s, extraTags, extraAttrs) {
+    const tags = extraTags ? mergeTags(extraTags) : allowedTags;
+    const attrs = extraAttrs ? mergeAttrs(extraAttrs) : allowedAttributes;
 
     const doc = document.implementation.createHTMLDocument('');
     const r = doc.createRange();
@@ -210,4 +209,3 @@
   };
 })();
 
-/* #ignore */ console.warn('crbug/1173575, non-JS module files deprecated.');

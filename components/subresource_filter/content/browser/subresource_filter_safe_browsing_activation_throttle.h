@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -56,7 +57,7 @@ class SubresourceFilterSafeBrowsingActivationThrottle
     // Note: |decision| is guaranteed to be non-nullptr, and can be modified by
     // this method if any decision changes.
     //
-    // Precondition: The navigation must be a main frame navigation.
+    // Precondition: The navigation must be a root frame navigation.
     virtual mojom::ActivationLevel OnPageActivationComputed(
         content::NavigationHandle* navigation_handle,
         mojom::ActivationLevel initial_activation_level,
@@ -121,9 +122,9 @@ class SubresourceFilterSafeBrowsingActivationThrottle
   // Returns it, or ACTIVATION_CONDITIONS_NOT_MET if no Configuration.
   ActivationDecision GetActivationDecision(const ConfigResult& configs);
 
-  // Returns whether a main-frame navigation satisfies the activation
+  // Returns whether a root-frame navigation satisfies the activation
   // |conditions| of a given configuration, except for |priority|.
-  bool DoesMainFrameURLSatisfyActivationConditions(
+  bool DoesRootFrameURLSatisfyActivationConditions(
       const Configuration::ActivationConditions& conditions,
       ActivationList matched_list) const;
 
@@ -136,7 +137,7 @@ class SubresourceFilterSafeBrowsingActivationThrottle
       database_client_;
 
   // May be null. If non-null, must outlive this class.
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
 
   // Set to TimeTicks::Now() when the navigation is deferred in
   // WillProcessResponse. If deferral was not necessary, will remain null.

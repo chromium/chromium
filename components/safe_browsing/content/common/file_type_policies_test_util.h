@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,6 +25,8 @@ class FileTypePoliciesTestOverlay {
  public:
   FileTypePoliciesTestOverlay();
   ~FileTypePoliciesTestOverlay();
+  FileTypePoliciesTestOverlay(FileTypePoliciesTestOverlay&&);
+  FileTypePoliciesTestOverlay& operator=(FileTypePoliciesTestOverlay&&);
 
   // Swaps the contents bewtween the existing config and |new_config|.
   void SwapConfig(std::unique_ptr<DownloadFileTypeConfig>& new_config) const;
@@ -35,6 +37,8 @@ class FileTypePoliciesTestOverlay {
  private:
   std::unique_ptr<DownloadFileTypeConfig> orig_config_;
 };
+
+FileTypePoliciesTestOverlay ScopedMarkAllFilesDangerousForTesting();
 
 }  // namespace safe_browsing
 

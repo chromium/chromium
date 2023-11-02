@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,10 +22,10 @@ class SandboxedPagesTest
  public:
   SandboxedPagesTest() = default;
 
-  bool RunTest(const char* extension_name,
-               const char* manifest,
-               const RunOptions& run_options,
-               const LoadOptions& load_options) WARN_UNUSED_RESULT {
+  [[nodiscard]] bool RunTest(const char* extension_name,
+                             const char* manifest,
+                             const RunOptions& run_options,
+                             const LoadOptions& load_options) {
     const char* kCustomArg =
         GetParam() == ManifestVersion::TWO ? "manifest_v2" : "manifest_v3";
     SetCustomArg(kCustomArg);
@@ -90,7 +90,7 @@ IN_PROC_BROWSER_TEST_P(SandboxedPagesTest, SandboxedPages) {
   const char* kManifest =
       GetParam() == ManifestVersion::TWO ? kManifestV2 : kManifestV3;
   EXPECT_TRUE(
-      RunTest("sandboxed_pages", kManifest, {.page_url = "main.html"}, {}))
+      RunTest("sandboxed_pages", kManifest, {.extension_url = "main.html"}, {}))
       << message_;
 }
 
@@ -133,7 +133,7 @@ IN_PROC_BROWSER_TEST_P(SandboxedPagesTest, SandboxedPagesCSP) {
   // Loading web content will fail because of CSP. In addition to that we will
   // show manifest warnings, hence ignore_manifest_warnings is set to true.
   ASSERT_TRUE(RunTest("sandboxed_pages_csp", kManifest,
-                      {.page_url = "main.html"},
+                      {.extension_url = "main.html"},
                       {.ignore_manifest_warnings = true}))
       << message_;
 }
@@ -201,9 +201,9 @@ IN_PROC_BROWSER_TEST_F(SandboxedPagesTest, WebAccessibleResourcesTest) {
     EXPECT_EQ(result, fetch_url);
     histograms.ExpectBucketCount(kHistogramName, is_web_accessible_resource,
                                  count);
-    EXPECT_EQ(
-        expected_frame_origin,
-        web_contents->GetMainFrame()->GetLastCommittedOrigin().Serialize());
+    EXPECT_EQ(expected_frame_origin, web_contents->GetPrimaryMainFrame()
+                                         ->GetLastCommittedOrigin()
+                                         .Serialize());
   };
 
   // Extension page fetching an extension file.

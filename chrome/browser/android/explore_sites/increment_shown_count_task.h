@@ -1,10 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_ANDROID_EXPLORE_SITES_INCREMENT_SHOWN_COUNT_TASK_H_
 #define CHROME_BROWSER_ANDROID_EXPLORE_SITES_INCREMENT_SHOWN_COUNT_TASK_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/android/explore_sites/explore_sites_store.h"
 #include "components/offline_pages/task/task.h"
 
@@ -25,7 +26,7 @@ class IncrementShownCountTask : public Task {
   void Run() override;
   void FinishedExecuting(bool result);
 
-  ExploreSitesStore* store_;  // outlives this class.
+  raw_ptr<ExploreSitesStore> store_;  // outlives this class.
   int category_id_;
 
   bool complete_;

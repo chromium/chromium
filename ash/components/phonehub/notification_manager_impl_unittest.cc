@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,15 +8,18 @@
 
 #include "ash/components/phonehub/fake_message_sender.h"
 #include "ash/components/phonehub/fake_user_action_recorder.h"
+#include "ash/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
 #include "base/containers/flat_map.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chromeos/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 namespace {
+
+using multidevice_setup::mojom::Feature;
+using multidevice_setup::mojom::FeatureState;
 
 const char16_t kAppName[] = u"Test App";
 const char kPackageName[] = "com.google.testapp";
@@ -28,19 +31,17 @@ const char16_t kTextContent[] = u"This is a test notification";
 enum class NotificationState { kAdded, kUpdated, kRemoved };
 
 Notification CreateNotification(int64_t id) {
-  return chromeos::phonehub::Notification(
+  return phonehub::Notification(
       id,
-      chromeos::phonehub::Notification::AppMetadata(kAppName, kPackageName,
-                                                    /*icon=*/gfx::Image(),
-                                                    kUserId),
+      phonehub::Notification::AppMetadata(kAppName, kPackageName,
+                                          /*icon=*/gfx::Image(),
+                                          /*icon_color=*/absl::nullopt,
+                                          /*icon_is_monochrome=*/true, kUserId),
       base::Time::Now(), Notification::Importance::kDefault,
       Notification::Category::kConversation,
       {{Notification::ActionType::kInlineReply, /*action_id=*/0}},
       Notification::InteractionBehavior::kNone, kTitle, kTextContent);
 }
-
-using multidevice_setup::mojom::Feature;
-using multidevice_setup::mojom::FeatureState;
 
 class FakeObserver : public NotificationManager::Observer {
  public:
@@ -274,4 +275,4 @@ TEST_F(NotificationManagerImplTest, ClearNotificationsOnFeatureStatusChanged) {
   EXPECT_EQ(0u, GetNumNotifications());
 }
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

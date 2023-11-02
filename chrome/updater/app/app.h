@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,6 @@
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
-#include "base/strings/string_piece.h"
-#include "chrome/updater/tag.h"
 #include "chrome/updater/updater_scope.h"
 
 namespace updater {
@@ -40,14 +38,8 @@ class App : public base::RefCountedThreadSafe<App> {
  protected:
   friend class base::RefCountedThreadSafe<App>;
 
-  static constexpr base::StringPiece kThreadPoolName = "Updater";
-
   App();
   virtual ~App();
-
-  // Called on the main sequence while blocking is allowed and before
-  // shutting down the thread pool.
-  virtual void Uninitialize() {}
 
   // Triggers program shutdown. Must be called on the main sequence. The program
   // will exit with the specified code.
@@ -56,14 +48,13 @@ class App : public base::RefCountedThreadSafe<App> {
   UpdaterScope updater_scope() const;
 
  private:
-  // Allows initialization of the thread pool for specific environments, in
-  // cases where the thread pool must be started with different init parameters,
-  // such as MTA for Windows COM servers.
-  virtual void InitializeThreadPool();
-
   // Implementations of App can override this to perform work on the main
   // sequence while blocking is still allowed.
   virtual void Initialize() {}
+
+  // Called on the main sequence while blocking is allowed and before
+  // shutting down the thread pool.
+  virtual void Uninitialize() {}
 
   // Concrete implementations of App can execute their first task in this
   // method. It is called on the main sequence. Blocking is not allowed. It may
@@ -74,7 +65,7 @@ class App : public base::RefCountedThreadSafe<App> {
   base::OnceCallback<void(int)> quit_;
 
   // Indicates the scope of the updater: per-system or per-user.
-  const UpdaterScope updater_scope_;
+  const UpdaterScope updater_scope_ = GetUpdaterScope();
 };
 
 }  // namespace updater

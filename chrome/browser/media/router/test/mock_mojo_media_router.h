@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,16 +31,15 @@ class MockMojoMediaRouter : public MockMediaRouter, public mojom::MediaRouter {
       void(mojom::MediaRouteProviderId provider_id,
            mojo::PendingRemote<mojom::MediaRouteProvider>& provider_remote));
   MOCK_METHOD1(OnIssue, void(const IssueInfo& issue));
+  MOCK_METHOD1(ClearTopIssueForSink, void(const std::string& sink_id));
   MOCK_METHOD4(OnSinksReceived,
                void(mojom::MediaRouteProviderId provider_id,
                     const std::string& media_source,
                     const std::vector<MediaSinkInternal>& internal_sinks,
                     const std::vector<url::Origin>& origins));
-  MOCK_METHOD4(OnRoutesUpdated,
+  MOCK_METHOD2(OnRoutesUpdated,
                void(mojom::MediaRouteProviderId provider_id,
-                    const std::vector<MediaRoute>& routes,
-                    const std::string& media_source,
-                    const std::vector<std::string>& joinable_route_ids));
+                    const std::vector<MediaRoute>& routes));
   MOCK_METHOD2(OnPresentationConnectionStateChanged,
                void(const std::string& route_id,
                     blink::mojom::PresentationConnectionState state));
@@ -64,13 +63,12 @@ class MockMojoMediaRouter : public MockMediaRouter, public mojom::MediaRouter {
   MOCK_METHOD0(GetMediaSinkServiceStatus, std::string());
   MOCK_METHOD2(
       GetMirroringServiceHostForTab,
-      void(int32_t target_tab_id,
+      void(int32_t frame_tree_node_id,
            mojo::PendingReceiver<mirroring::mojom::MirroringServiceHost>
                receiver));
-  MOCK_METHOD3(
+  MOCK_METHOD2(
       GetMirroringServiceHostForDesktop,
-      void(int32_t initiator_tab_id,
-           const std::string& desktop_stream_id,
+      void(const std::string& desktop_stream_id,
            mojo::PendingReceiver<mirroring::mojom::MirroringServiceHost>
                receiver));
   MOCK_METHOD3(

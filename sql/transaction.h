@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,6 +33,8 @@ class COMPONENT_EXPORT(SQL) Transaction {
   explicit Transaction(Database* database);
   Transaction(const Transaction&) = delete;
   Transaction& operator=(const Transaction&) = delete;
+  Transaction(Transaction&&) = delete;
+  Transaction& operator=(Transaction&&) = delete;
   ~Transaction();
 
   // Activates an inactive transaction. Must be called after construction.
@@ -44,14 +46,14 @@ class COMPONENT_EXPORT(SQL) Transaction {
   // carried out in the transaction.
   //
   // In most cases (no nested transactions), this method issues a BEGIN
-  // statemnent, which invokes SQLite's deferred transaction startup documented
+  // statement, which invokes SQLite's deferred transaction startup documented
   // in https://www.sqlite.org/lang_transaction.html. This means the database
   // lock is not acquired by the time Begin() completes. Instead, the first
   // statement after Begin() will attempt to acquire a read or write lock.
   //
   // This method is not idempotent. Calling Begin() twice on a Transaction will
   // cause a DCHECK crash.
-  bool Begin();
+  [[nodiscard]] bool Begin();
 
   // Explicitly rolls back the transaction. All changes will be forgotten.
   //
@@ -67,9 +69,9 @@ class COMPONENT_EXPORT(SQL) Transaction {
 
   // Commits the transaction. All changes will be persisted in the database.
   //
-  // Returns false in case of failure. The most failure case is a SQLite failure
-  // in committing the transaction. If sql::Database's support for nested
-  // transactions is in use, this method will also fail if any nested
+  // Returns false in case of failure. The most common failure case is a SQLite
+  // failure in committing the transaction. If sql::Database's support for
+  // nested transactions is in use, this method will also fail if any nested
   // transaction has been rolled back.
   //
   // This method is not idempotent. Calling Commit() twice on a Transaction will

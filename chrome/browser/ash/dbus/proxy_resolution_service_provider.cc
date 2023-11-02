@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -48,7 +48,7 @@ class ProxyLookupRequest : public network::mojom::ProxyLookupClient {
   ProxyLookupRequest(
       network::mojom::NetworkContext* network_context,
       const GURL& source_url,
-      const net::NetworkIsolationKey& network_isolation_key,
+      const net::NetworkAnonymizationKey& network_isolation_key,
       ProxyResolutionServiceProvider::NotifyCallback notify_callback,
       chromeos::SystemProxyOverride system_proxy_override)
       : notify_callback_(std::move(notify_callback)),
@@ -123,7 +123,8 @@ class ProxyLookupRequest : public network::mojom::ProxyLookupClient {
 
 ProxyResolutionServiceProvider::ProxyResolutionServiceProvider()
     : origin_thread_(base::ThreadTaskRunnerHandle::Get()),
-      network_isolation_key_(net::NetworkIsolationKey::CreateTransient()) {}
+      network_anonymization_key_(
+          net::NetworkAnonymizationKey::CreateTransient()) {}
 
 ProxyResolutionServiceProvider::~ProxyResolutionServiceProvider() {
   DCHECK(OnOriginThread());
@@ -219,7 +220,7 @@ void ProxyResolutionServiceProvider::ResolveProxyInternal(
   }
 
   VLOG(1) << "Starting network proxy resolution for " << url;
-  new ProxyLookupRequest(network_context, url, network_isolation_key_,
+  new ProxyLookupRequest(network_context, url, network_anonymization_key_,
                          std::move(callback), system_proxy_override);
 }
 

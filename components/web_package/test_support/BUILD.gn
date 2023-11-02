@@ -1,0 +1,38 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "mock_web_bundle_parser.cc",
+    "mock_web_bundle_parser.h",
+    "mock_web_bundle_parser_factory.cc",
+    "mock_web_bundle_parser_factory.h",
+    "signed_web_bundles/web_bundle_signer.cc",
+    "signed_web_bundles/web_bundle_signer.h",
+  ]
+
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//components/cbor",
+    "//components/web_package",
+    "//crypto",
+    "//testing/gtest",
+    "//third_party/boringssl",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "signed_web_bundles/web_bundle_signer_unittest.cc" ]
+
+  deps = [
+    ":test_support",
+    "//base",
+    "//components/web_package",
+    "//testing/gtest",
+  ]
+}

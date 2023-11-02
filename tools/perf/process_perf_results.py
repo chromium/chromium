@@ -1,10 +1,11 @@
-#!/usr/bin/env vpython
-# Copyright 2018 The Chromium Authors. All rights reserved.
+#!/usr/bin/env vpython3
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 from __future__ import print_function
 
+from __future__ import absolute_import
 import argparse
 import collections
 import json
@@ -16,6 +17,7 @@ import sys
 import tempfile
 import time
 import uuid
+import six
 
 logging.basicConfig(
     level=logging.INFO,
@@ -102,7 +104,7 @@ def _upload_perf_results(json_to_upload, name, configuration_name,
       '--perf-dashboard-machine-group', _GetMachineGroup(build_properties)
   ]
   buildbucket = build_properties.get('buildbucket', {})
-  if isinstance(buildbucket, basestring):
+  if isinstance(buildbucket, six.string_types):
     buildbucket = json.loads(buildbucket)
 
   if 'build' in buildbucket:
@@ -132,7 +134,7 @@ def _is_gtest(json_file):
 
 def _determine_data_format(json_file):
   if json_file not in _data_format_cache:
-    with open(json_file) as f:
+    with open(json_file, 'rb') as f:
       data = json.load(f)
       if isinstance(data, list):
         _data_format_cache[json_file] = DATA_FORMAT_HISTOGRAMS
@@ -296,7 +298,7 @@ def _scan_output_dir(task_output_dir):
   # the lists were written to.
   for directory in benchmark_directory_list:
     benchmark_name = _get_benchmark_name(directory)
-    if benchmark_name in benchmark_directory_map.keys():
+    if benchmark_name in benchmark_directory_map:
       benchmark_directory_map[benchmark_name].append(directory)
     else:
       benchmark_directory_map[benchmark_name] = [directory]
@@ -500,7 +502,7 @@ def _GetCpuCount(log=True):
     return cpu_count
   except NotImplementedError:
     if log:
-      logging.warn(
+      logging.warning(
           'Failed to get a CPU count for this bot. See crbug.com/947035.')
     # TODO(crbug.com/948281): This is currently set to 4 since the mac masters
     # only have 4 cores. Once we move to all-linux, this can be increased or
@@ -576,9 +578,9 @@ def _should_add_device_id_in_perf_result(builder_name):
   # We should always add device id in calibration builders.
   # For testing purpose, adding fyi as well for faster turnaround, because
   # calibration builders run every 24 hours.
-  return any([
-      builder_name == p.name for p in bot_platforms.CALIBRATION_PLATFORMS
-  ]) or (builder_name == 'android-pixel2-perf-fyi')
+  return any(builder_name == p.name
+             for p in bot_platforms.CALIBRATION_PLATFORMS) or (
+                 builder_name == 'android-pixel2-perf-fyi')
 
 
 def _update_perf_results_for_calibration(benchmarks_shard_map_file,

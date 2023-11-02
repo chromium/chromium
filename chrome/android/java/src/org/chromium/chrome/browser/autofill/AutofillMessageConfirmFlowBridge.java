@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,6 +19,8 @@ import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 
+import java.util.LinkedList;
+
 /**
  * Bridge for SaveCardMessageControllerAndroid to show a confirmation dialog of name or expiration
  * date.
@@ -32,7 +34,7 @@ public class AutofillMessageConfirmFlowBridge
 
     private long mNativeSaveCardMessageConfirmDelegate;
     private final WindowAndroid mWindowAndroid;
-    private LegalMessageLine mLegalMessageLine;
+    private LinkedList<LegalMessageLine> mLegalMessageLines = new LinkedList<>();
 
     private AutofillMessageConfirmFlowBridge(
             long nativeSaveCardMessageConfirmDelegate, WindowAndroid windowAndroid) {
@@ -68,13 +70,15 @@ public class AutofillMessageConfirmFlowBridge
                 mNativeSaveCardMessageConfirmDelegate, month, year);
     }
 
-    // no-op
     @Override
-    public void onUserDismiss() {}
+    public void onUserDismiss() {
+        AutofillMessageConfirmFlowBridgeJni.get().onUserDismiss(
+                mNativeSaveCardMessageConfirmDelegate);
+    }
 
     @Override
     public void onLinkClicked(String url) {
-        AutofillMessageConfirmFlowBridgeJni.get().onLegalMessageLinkClicked(
+        AutofillMessageConfirmFlowBridgeJni.get().onLinkClicked(
                 mNativeSaveCardMessageConfirmDelegate, url);
     }
 
@@ -100,38 +104,46 @@ public class AutofillMessageConfirmFlowBridge
     }
 
     @CalledByNative
-    private void fixDate(String title, String cardLabel, String confirmButtonLabel) {
+    private void fixDate(
+            String title, String cardLabel, String cardholderAccount, String confirmButtonLabel) {
         Activity activity = mWindowAndroid.getActivity().get();
         if (!prepareToShowDialog(activity)) return;
         if (mSaveCardPrompt == null) {
             mSaveCardPrompt = AutofillExpirationDateFixFlowPrompt.createAsMessageFixFlowPrompt(
-                    activity, this, title, cardLabel, confirmButtonLabel);
-            mSaveCardPrompt.setLegalMessageLine(mLegalMessageLine);
+                    activity, this, title, cardLabel, cardholderAccount, confirmButtonLabel);
+            for (LegalMessageLine line : mLegalMessageLines) {
+                mSaveCardPrompt.addLegalMessageLine(line);
+            }
         }
         mSaveCardPrompt.show(activity, mWindowAndroid.getModalDialogManager());
     }
 
     @CalledByNative
-    private void fixName(
-            String title, String inferredName, String cardLabel, String confirmButtonLabel) {
+    private void fixName(String title, String inferredName, String cardLabel,
+            String cardholderAccount, String confirmButtonLabel) {
         Activity activity = mWindowAndroid.getActivity().get();
         if (!prepareToShowDialog(activity)) return;
         if (mSaveCardPrompt == null) {
-            mSaveCardPrompt = AutofillNameFixFlowPrompt.createAsMessageFixFlowPrompt(
-                    activity, this, inferredName, title, cardLabel, confirmButtonLabel);
-            mSaveCardPrompt.setLegalMessageLine(mLegalMessageLine);
+            mSaveCardPrompt = AutofillNameFixFlowPrompt.createAsMessageFixFlowPrompt(activity, this,
+                    inferredName, title, cardLabel, cardholderAccount, confirmButtonLabel);
+            for (LegalMessageLine line : mLegalMessageLines) {
+                mSaveCardPrompt.addLegalMessageLine(line);
+            }
         }
         mSaveCardPrompt.show(activity, mWindowAndroid.getModalDialogManager());
     }
 
     @CalledByNative
-    private void confirmSaveCard(String title, String cardLabel, String confirmButtonLabel) {
+    private void confirmSaveCard(
+            String title, String cardLabel, String cardholderAccount, String confirmButtonLabel) {
         Activity activity = mWindowAndroid.getActivity().get();
         if (!prepareToShowDialog(activity)) return;
         if (mSaveCardPrompt == null) {
             mSaveCardPrompt = AutofillSaveCardConfirmFlowPrompt.createPrompt(
-                    activity, this, title, cardLabel, confirmButtonLabel);
-            mSaveCardPrompt.setLegalMessageLine(mLegalMessageLine);
+                    activity, this, title, cardLabel, cardholderAccount, confirmButtonLabel);
+            for (LegalMessageLine line : mLegalMessageLines) {
+                mSaveCardPrompt.addLegalMessageLine(line);
+            }
         }
         mSaveCardPrompt.show(activity, mWindowAndroid.getModalDialogManager());
     }
@@ -149,13 +161,13 @@ public class AutofillMessageConfirmFlowBridge
     }
 
     /**
-     * Sets a line of legal message plain text to the dialog.
+     * Adds a line of legal message plain text to the dialog.
      *
      * @param text The legal message plain text.
      */
     @CalledByNative
-    private void setLegalMessageLine(String text) {
-        mLegalMessageLine = new LegalMessageLine(text);
+    private void addLegalMessageLine(String text) {
+        mLegalMessageLines.add(new LegalMessageLine(text));
     }
 
     /**
@@ -167,7 +179,7 @@ public class AutofillMessageConfirmFlowBridge
      */
     @CalledByNative
     private void addLinkToLastLegalMessageLine(int start, int end, String url) {
-        mLegalMessageLine.links.add(new LegalMessageLine.Link(start, end, url));
+        mLegalMessageLines.getLast().links.add(new LegalMessageLine.Link(start, end, url));
     }
 
     @NativeMethods
@@ -175,7 +187,8 @@ public class AutofillMessageConfirmFlowBridge
         void onDateConfirmed(long nativeSaveCardMessageConfirmDelegate, String month, String year);
         void onNameConfirmed(long nativeSaveCardMessageConfirmDelegate, String name);
         void onSaveCardConfirmed(long nativeSaveCardMessageConfirmDelegate);
-        void onLegalMessageLinkClicked(long nativeSaveCardMessageConfirmDelegate, String url);
+        void onUserDismiss(long nativeSaveCardMessageConfirmDelegate);
+        void onLinkClicked(long nativeSaveCardMessageConfirmDelegate, String url);
         void dialogDismissed(long nativeSaveCardMessageConfirmDelegate);
     }
 }

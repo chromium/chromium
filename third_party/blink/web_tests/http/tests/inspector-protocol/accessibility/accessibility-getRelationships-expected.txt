@@ -1,6 +1,10 @@
 Tests relationship accessibility values.
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 142
+    }
     domNode : ul#rg1
     ignored : false
     name : {
@@ -88,6 +92,10 @@ Tests relationship accessibility values.
 }
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 142
+    }
     domNode : ul#rg2
     ignored : false
     name : {

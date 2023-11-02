@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/task/thread_pool.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -169,8 +170,8 @@ void FileFlusher::RequestFlush(const base::FilePath& path,
 }
 
 void FileFlusher::PauseForTest() {
-  DCHECK(std::none_of(jobs_.begin(), jobs_.end(),
-                      [](const Job* job) { return job->started(); }));
+  DCHECK(base::ranges::none_of(jobs_,
+                               [](const Job* job) { return job->started(); }));
   paused_for_test_ = true;
 }
 

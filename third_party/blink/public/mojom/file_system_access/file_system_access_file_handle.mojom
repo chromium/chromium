@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -98,4 +98,8 @@ interface FileSystemAccessFileHandle {
   // a reference to this directory to other methods, for example to copy or move
   // the file, or when transferring the handle over postMessage.
   Transfer(pending_receiver<FileSystemAccessTransferToken> token);
+
+  // Returns a uniquely identifying string for the handle.
+  // `id` must be in GUID version 4 format.
+  GetUniqueId() => (string id);
 };

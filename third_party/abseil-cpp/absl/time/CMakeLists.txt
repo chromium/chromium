@@ -87,6 +87,7 @@ absl_cc_library(
     $<$<PLATFORM_ID:Darwin>:${CoreFoundation}>
 )
 
+# Internal-only target, do not depend on directly.
 absl_cc_library(
   NAME
     time_internal_test_util

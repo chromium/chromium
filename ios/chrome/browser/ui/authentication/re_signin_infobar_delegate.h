@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,7 +34,7 @@ class ReSignInInfoBarDelegate : public ConfirmInfoBarDelegate {
 
   ~ReSignInInfoBarDelegate() override;
 
-  // Creates a re-sign-in error infobar and adds it to the |web_state|. Returns
+  // Creates a re-sign-in error infobar and adds it to the `web_state`. Returns
   // whether the infobar was actually added.
   static bool Create(ChromeBrowserState* browser_state,
                      web::WebState* web_state,
@@ -58,7 +58,7 @@ class ReSignInInfoBarDelegate : public ConfirmInfoBarDelegate {
   std::u16string GetMessageText() const override;
   int GetButtons() const override;
   std::u16string GetButtonLabel(InfoBarButton button) const override;
-  gfx::Image GetIcon() const override;
+  ui::ImageModel GetIcon() const override;
   bool Accept() override;
   void InfoBarDismissed() override;
 

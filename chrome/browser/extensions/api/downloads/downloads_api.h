@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/download/download_danger_prompt.h"
@@ -58,6 +59,8 @@ extern const char kOpenPermission[];
 extern const char kShelfDisabled[];
 extern const char kShelfPermission[];
 extern const char kTooManyListeners[];
+extern const char kUiDisabled[];
+extern const char kUiPermission[];
 extern const char kUnexpectedDeterminer[];
 extern const char kUserGesture[];
 
@@ -298,6 +301,21 @@ class DownloadsSetShelfEnabledFunction : public ExtensionFunction {
   ~DownloadsSetShelfEnabledFunction() override;
 };
 
+class DownloadsSetUiOptionsFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("downloads.setUiOptions", DOWNLOADS_SETUIOPTIONS)
+  DownloadsSetUiOptionsFunction();
+
+  DownloadsSetUiOptionsFunction(const DownloadsSetUiOptionsFunction&) = delete;
+  DownloadsSetUiOptionsFunction& operator=(
+      const DownloadsSetUiOptionsFunction&) = delete;
+
+  ResponseAction Run() override;
+
+ protected:
+  ~DownloadsSetUiOptionsFunction() override;
+};
+
 class DownloadsGetFileIconFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("downloads.getFileIcon", DOWNLOADS_GETFILEICON)
@@ -372,8 +390,10 @@ class ExtensionDownloadsEventRouter
 
   ~ExtensionDownloadsEventRouter() override;
 
-  void SetShelfEnabled(const extensions::Extension* extension, bool enabled);
-  bool IsShelfEnabled() const;
+  void SetUiEnabled(const extensions::Extension* extension, bool enabled);
+  bool IsUiEnabled() const;
+
+  bool IsDownloadObservedByExtension() const;
 
   // Called by ChromeDownloadManagerDelegate during the filename determination
   // process, allows extensions to change the item's target filename. If no
@@ -405,16 +425,16 @@ class ExtensionDownloadsEventRouter
                      const std::string& event_name,
                      bool include_incognito,
                      Event::WillDispatchCallback will_dispatch_callback,
-                     std::unique_ptr<base::Value> json_arg);
+                     base::Value json_arg);
 
   // extensions::ExtensionRegistryObserver.
   void OnExtensionUnloaded(content::BrowserContext* browser_context,
                            const extensions::Extension* extension,
                            extensions::UnloadedExtensionReason reason) override;
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   download::AllDownloadItemNotifier notifier_;
-  std::set<const extensions::Extension*> shelf_disabling_extensions_;
+  std::set<const extensions::Extension*> ui_disabling_extensions_;
 
   base::Time last_checked_removal_;
 

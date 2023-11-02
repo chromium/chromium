@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,13 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.accessibility.AccessibilityEvent;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat;
 
 import org.chromium.base.TraceEvent;
 import org.chromium.ui.base.ViewUtils;
@@ -20,24 +23,63 @@ import org.chromium.ui.base.ViewUtils;
  * Container holding messages.
  */
 public class MessageContainer extends FrameLayout {
-    private View mMessageBannerView;
+    interface MessageContainerA11yDelegate {
+        void onA11yFocused();
+        void onA11yFocusCleared();
+        void onA11yDismiss();
+    }
+
+    private MessageContainerA11yDelegate mA11yDelegate;
 
     public MessageContainer(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+        setAccessibilityDelegate(new AccessibilityDelegate() {
+            @Override
+            public void onInitializeAccessibilityEvent(
+                    @NonNull View host, @NonNull AccessibilityEvent event) {
+                if (event.getEventType() == AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED) {
+                    if (mA11yDelegate != null) mA11yDelegate.onA11yFocused();
+                } else if (event.getEventType()
+                        == AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUS_CLEARED) {
+                    if (mA11yDelegate != null) mA11yDelegate.onA11yFocusCleared();
+                }
+                super.onInitializeAccessibilityEvent(host, event);
+            }
+        });
+        ViewCompat.replaceAccessibilityAction(
+                this, AccessibilityActionCompat.ACTION_DISMISS, null, (v, c) -> {
+                    if (mA11yDelegate != null) {
+                        mA11yDelegate.onA11yDismiss();
+                        return true;
+                    }
+                    return false;
+                });
     }
 
     /**
-     * Show a given message view on the screen. There should be no view inside the container
+     * Show a given message view on the screen. There should be no more than one unique view
      * before adding a message.
      * @param view The message view to display on the screen.
      */
     void addMessage(View view) {
-        if (mMessageBannerView != null) {
+        if (indexOfChild(view) != -1) {
+            throw new IllegalStateException("Should not contain the target view when adding.");
+        }
+        int index = 0;
+        if (MessageFeatureList.isStackAnimationEnabled()) {
+            if (getChildCount() > 1) {
+                throw new IllegalStateException(
+                        "Should not contain more than 2 views when adding a new message.");
+            } else if (getChildCount() == 1) {
+                View cur = getChildAt(0);
+                index = cur.getElevation() > view.getElevation() ? 1 : 0;
+            }
+        } else if (getChildCount() == 1) {
             throw new IllegalStateException(
                     "Should not contain any view when adding a new message.");
         }
-        mMessageBannerView = view;
-        addView(view);
+        super.addView(view, index);
+
         // TODO(crbug.com/1178965): clipChildren should be set to false only when the message is in
         // motion.
         ViewUtils.setAncestorsShouldClipChildren(this, false);
@@ -48,17 +90,19 @@ public class MessageContainer extends FrameLayout {
      * @param view The message which should be removed.
      */
     void removeMessage(View view) {
-        if (mMessageBannerView != view) {
+        if (indexOfChild(view) == -1) {
             throw new IllegalStateException("The given view is not being shown.");
         }
-        ViewUtils.setAncestorsShouldClipChildren(this, true);
-        removeAllViews();
-        mMessageBannerView = null;
+        super.removeView(view);
+        if (getChildCount() == 0) {
+            mA11yDelegate = null;
+            ViewUtils.setAncestorsShouldClipChildren(this, true);
+        }
     }
 
     public int getMessageBannerHeight() {
-        assert mMessageBannerView != null;
-        return mMessageBannerView.getHeight();
+        assert getChildCount() > 0;
+        return getChildAt(0).getHeight();
     }
 
     public int getMessageShadowTopMargin() {
@@ -72,19 +116,24 @@ public class MessageContainer extends FrameLayout {
         }
     }
 
+    void setA11yDelegate(MessageContainerA11yDelegate a11yDelegate) {
+        mA11yDelegate = a11yDelegate;
+    }
+
     /**
      * Runs a {@link Runnable} after the message's initial layout. If the view is already laid out,
      * the {@link Runnable} will be called immediately.
      * @param runnable The {@link Runnable}.
      */
     void runAfterInitialMessageLayout(Runnable runnable) {
-        assert mMessageBannerView != null;
-        if (mMessageBannerView.getHeight() > 0) {
+        View view = getChildAt(0);
+        assert view != null;
+        if (view.getHeight() > 0) {
             runnable.run();
             return;
         }
 
-        mMessageBannerView.addOnLayoutChangeListener(new OnLayoutChangeListener() {
+        view.addOnLayoutChangeListener(new OnLayoutChangeListener() {
             @Override
             public void onLayoutChange(View v, int left, int top, int right, int bottom,
                     int oldLeft, int oldTop, int oldRight, int oldBottom) {
@@ -94,5 +143,23 @@ public class MessageContainer extends FrameLayout {
                 v.removeOnLayoutChangeListener(this);
             }
         });
+    }
+
+    /**
+     * Call {@link #addMessage(View)} instead in order to prevent from uncontrolled add.
+     */
+    @Override
+    @Deprecated
+    public final void addView(View view) {
+        throw new RuntimeException("Use addMessage instead.");
+    }
+
+    /**
+     * Call {@link #removeMessage(View)} instead in order to prevent from uncontrolled remove.
+     */
+    @Override
+    @Deprecated
+    public final void removeView(View view) {
+        throw new RuntimeException("Use removeMessage instead.");
     }
 }

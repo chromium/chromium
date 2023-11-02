@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chromeos/components/sensors/buildflags.h"
 
 namespace ash {
 namespace power {
@@ -70,8 +71,10 @@ class AlsReader {
   friend LightProviderMojo;
   friend LightSamplesObserver;
 
+#if !BUILDFLAG(USE_IIOSERVICE)
   // Called when we've retrieved the number of ALS present.
   void OnNumAlsRetrieved(int num_als);
+#endif  // !BUILDFLAG(USE_IIOSERVICE)
 
   void SetLux(int lux);
   void SetAlsInitStatus(AlsInitStatus status);

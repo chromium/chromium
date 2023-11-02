@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
@@ -25,15 +26,12 @@
 #include "components/password_manager/core/browser/password_form_digest.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
+#include "components/password_manager/core/browser/password_form_prediction_waiter.h"
 #include "components/password_manager/core/browser/password_save_manager.h"
 #include "components/password_manager/core/browser/votes_uploader.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace password_manager {
-
-// Filling timeout for waiting server predictions
-constexpr base::TimeDelta kMaxFillingDelayForServerPredictions =
-    base::Milliseconds(500);
 
 class PasswordFormMetricsRecorder;
 class PasswordManagerClient;
@@ -43,6 +41,7 @@ struct PossibleUsernameData;
 // This class helps with filling the observed form and with saving/updating the
 // stored information about it.
 class PasswordFormManager : public PasswordFormManagerForUI,
+                            public PasswordFormPredictionWaiter::Client,
                             public FormFetcher::Consumer {
  public:
   // TODO(crbug.com/621355): So far, |form_fetcher| can be null. In that case
@@ -154,7 +153,7 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   metrics_util::CredentialSourceType GetCredentialSource() const override;
   PasswordFormMetricsRecorder* GetMetricsRecorder() override;
   base::span<const InteractionsStats> GetInteractionsStats() const override;
-  base::span<const InsecureCredential> GetInsecureCredentials() const override;
+  std::vector<const PasswordForm*> GetInsecureCredentials() const override;
   bool IsBlocklisted() const override;
   bool WasUnblocklisted() const override;
   bool IsMovableToAccountStore() const override;
@@ -184,12 +183,13 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   void SetGenerationElement(autofill::FieldRendererId generation_element);
   bool HasLikelyChangePasswordFormSubmitted() const;
   bool IsPasswordUpdate() const;
+  bool IsSamePassword() const;
   base::WeakPtr<PasswordManagerDriver> GetDriver() const;
   const PasswordForm* GetSubmittedForm() const;
 
   int driver_id() { return driver_id_; }
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // Presaves the form with |generated_password|. This function is called once
   // when the user accepts the generated password. The password was generated in
   // the field with identifier |generation_element|. |driver| corresponds to the
@@ -214,7 +214,7 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   void ProvisionallySaveFieldDataManagerInfo(
       const autofill::FieldDataManager& field_data_manager,
       const PasswordManagerDriver* driver);
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 
   // Create a copy of |*this| which can be passed to the code handling
   // save-password related UI. This omits some parts of the internal data, so
@@ -259,6 +259,10 @@ class PasswordFormManager : public PasswordFormManagerForUI,
 
   // FormFetcher::Consumer:
   void OnFetchCompleted() override;
+
+  // PasswordFormPredictionWaiter::Client:
+  void OnWaitCompleted() override;
+  void OnTimeout() override;
 
   // Create pending credentials from |parsed_submitted_form_| and forms received
   // from the password store.
@@ -315,6 +319,11 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   void CalculateFillingAssistanceMetric(
       const autofill::FormData& submitted_form);
 
+  // Calculates SubmittedPasswordFormFrame metric value (main frame, iframe,
+  // etc) for |submitted_form|. The metric is recorded when the form manager is
+  // destroyed.
+  void CalculateSubmittedFormFrameMetric();
+
   // Save/update |pending_credentials_| to the password store.
   void SavePendingToStore(bool update);
 
@@ -336,12 +345,16 @@ class PasswordFormManager : public PasswordFormManagerForUI,
       const autofill::FormData& observed_form_data,
       const std::map<autofill::FormSignature, FormPredictions>& predictions);
 
-  // Delays form filling by |kMaxFillingDelayForServerPredictions| while waiting
-  // for server-side predictions.
+  // Sets the timer on |async_predictions_waiter_| while waiting for
+  // server-side predictions.
   void DelayFillForServerSidePredictions();
 
+  // Returns true if WebAuthn credential filling is enabled and there are
+  // credentials available to use.
+  bool WebAuthnCredentialsAvailable() const;
+
   // The client which implements embedder-specific PasswordManager operations.
-  PasswordManagerClient* client_;
+  raw_ptr<PasswordManagerClient> client_;
 
   base::WeakPtr<PasswordManagerDriver> driver_;
 
@@ -371,7 +384,7 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   std::unique_ptr<FormFetcher> owned_form_fetcher_;
 
   // FormFetcher instance which owns the login data from PasswordStore.
-  FormFetcher* form_fetcher_;
+  raw_ptr<FormFetcher> form_fetcher_;
 
   std::unique_ptr<PasswordSaveManager> password_save_manager_;
 
@@ -392,16 +405,19 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   // True until server predictions received or waiting for them timed out.
   bool waiting_for_server_predictions_ = false;
 
+  // Closure to call when server predictions are received.
+  base::OnceClosure server_predictions_closure_;
+
   // Controls whether to wait or not server before filling. It is used in tests.
   static bool wait_for_server_predictions_for_filling_;
 
   // Time when stored credentials are received from the store. Used for metrics.
   base::TimeTicks received_stored_credentials_time_;
 
+  PasswordFormPredictionWaiter async_predictions_waiter_;
+
   // Used to transform FormData into PasswordForms.
   FormDataParser parser_;
-
-  base::WeakPtrFactory<PasswordFormManager> weak_ptr_factory_{this};
 };
 
 }  // namespace password_manager

@@ -5,7 +5,7 @@
 <div id="container"></div>
 <input type=file multiple>
 <script type="module">
-import {mockFileChooserFactory} from '/wpt_internal/forms/resources/mock-file-chooser.js';
+import {mockFileChooserFactory} from '/resources/mock-file-chooser.js';
 
 class MyControl extends HTMLElement {
   static get formAssociated() { return true; }
@@ -53,7 +53,7 @@ function submitPromise(t) {
 }
 
 promise_test(async t => {
-  $('container').innerHTML = '<form action="../external/wpt/common/blank.html" target="if1">' +
+  $('container').innerHTML = '<form action="/resources/blank.html" target="if1">' +
       '<input name=name-pd1 value="value-pd1">' +
       '<my-control name=ce1></my-control>' +
       '</form>' +
@@ -66,7 +66,7 @@ promise_test(async t => {
 }, 'Single value - A file value');
 
 promise_test(async t => {
-  $('container').innerHTML = '<form action="../external/wpt/common/blank.html" target="if1">' +
+  $('container').innerHTML = '<form action="/resources/blank.html" target="if1">' +
       '<my-control name=ce1></my-control>' +
       '</form>' +
       '<iframe name="if1"></iframe>';

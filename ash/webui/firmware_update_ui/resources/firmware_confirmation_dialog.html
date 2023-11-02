@@ -1,0 +1,36 @@
+<style include="firmware-fonts firmware-shared">
+  :host {
+    --cr-dialog-width: 416px;
+  }
+
+  #proceedText {
+    white-space: pre-line;
+  }
+</style>
+<template is="dom-if" if="[[open]]" restamp>
+  <cr-dialog id="confirmationDialog" on-close="closeDialog_" show-on-attach>
+    <div slot="title" id="updateDialogTitle" class="firmware-dialog-title-font">
+      [[computeTitle_(update.*)]]
+    </div>
+    <div slot="body" class="firmware-dialog-body-font">
+      <div id="updateDialogBody">
+        [[i18n('updatingInfo')]]
+      </div>
+      <div id="proceedText">
+        [[i18n('proceedConfirmationText')]]
+      </div>
+    </div>
+    <div slot="button-container">
+      <cr-button class="cancel-button"
+          on-click="closeDialog_"
+          id="cancelButton">
+        [[i18n('cancelButton')]]
+      </cr-button>
+      <cr-button class="action-button"
+          on-click="openUpdateDialog_"
+          id="nextButton">
+        [[i18n('nextButton')]]
+      </cr-button>
+    </div>
+  </cr-dialog>
+</template>

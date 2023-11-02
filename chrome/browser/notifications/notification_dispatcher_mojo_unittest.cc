@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/process/process_handle.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -141,7 +142,7 @@ class FakeMacNotificationProviderFactory
 message_center::Notification CreateNotification() {
   return message_center::Notification(
       message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationId, u"title",
-      u"message", /*icon=*/gfx::Image(),
+      u"message", /*icon=*/ui::ImageModel(),
       /*display_source=*/std::u16string(), /*origin_url=*/GURL(),
       message_center::NotifierId(), message_center::RichNotificationData(),
       base::MakeRefCounted<message_center::NotificationDelegate>());
@@ -255,10 +256,10 @@ class NotificationDispatcherMojoTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingProfileManager testing_profile_manager_{
       TestingBrowserProcess::GetGlobal()};
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   base::MockRepeatingClosure on_disconnect_;
   std::unique_ptr<NotificationDispatcherMojo> notification_dispatcher_;
-  FakeMacNotificationProviderFactory* provider_factory_ = nullptr;
+  raw_ptr<FakeMacNotificationProviderFactory> provider_factory_ = nullptr;
 };
 
 TEST_F(NotificationDispatcherMojoTest, CloseNotificationAndDisconnect) {

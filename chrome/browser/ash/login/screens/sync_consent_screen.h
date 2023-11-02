@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,9 @@
 #include <string>
 
 #include "base/auto_reset.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
@@ -87,7 +89,7 @@ class SyncConsentScreen : public BaseScreen,
   // them after completing OOBE.
   static void MaybeLaunchSyncConsentSettings(Profile* profile);
 
-  SyncConsentScreen(SyncConsentScreenView* view,
+  SyncConsentScreen(base::WeakPtr<SyncConsentScreenView> view,
                     const ScreenExitCallback& exit_callback);
 
   SyncConsentScreen(const SyncConsentScreen&) = delete;
@@ -96,30 +98,27 @@ class SyncConsentScreen : public BaseScreen,
   ~SyncConsentScreen() override;
 
   // Inits `user_`, its `profile_` and `behavior_` before using the screen.
-  void Init(const WizardContext* context);
+  void Init(const WizardContext& context);
 
   // syncer::SyncServiceObserver:
   void OnStateChanged(syncer::SyncService* sync) override;
 
-  // Reacts to user action on non-split-settings sync.
-  void OnNonSplitSettingsContinue(const bool opted_in,
-                                  const bool review_sync,
-                                  const std::vector<int>& consent_description,
-                                  const int consent_confirmation);
-
-  // Reacts to "Yes, I'm in" and "No, thanks".
-  void OnContinue(const std::vector<int>& consent_description,
-                  int consent_confirmation,
-                  SyncConsentScreenHandler::UserChoice choice);
-
-  // Configures OS sync and browser sync.
-  void UpdateSyncSettings(bool enable_sync);
+  // Reacts to user action on sync.
+  void OnContinue(const bool opted_in,
+                  const bool review_sync,
+                  const std::vector<int>& consent_description,
+                  const int consent_confirmation);
 
   // Enables sync if required when skipping the dialog.
   void MaybeEnableSyncForSkip();
 
   // Called when sync engine initialization timed out.
   void OnTimeout();
+
+  void HandleContinue(const bool opted_in,
+                      const bool review_sync,
+                      const base::Value::List& consent_description_list,
+                      const std::string& consent_confirmation);
 
   // Sets internal condition "Sync disabled by policy" for tests.
   static void SetProfileSyncDisabledByPolicyForTesting(bool value);
@@ -145,9 +144,10 @@ class SyncConsentScreen : public BaseScreen,
   void Finish(Result result);
 
   // BaseScreen:
-  bool MaybeSkip(WizardContext* context) override;
+  bool MaybeSkip(WizardContext& context) override;
   void ShowImpl() override;
   void HideImpl() override;
+  void OnUserAction(const base::Value::List& args) override;
 
   // Returns new SyncScreenBehavior value.
   SyncScreenBehavior GetSyncScreenBehavior(const WizardContext& context) const;
@@ -179,7 +179,7 @@ class SyncConsentScreen : public BaseScreen,
   // Spinner is shown until sync status has been decided.
   SyncScreenBehavior behavior_ = SyncScreenBehavior::kUnknown;
 
-  SyncConsentScreenView* const view_;
+  base::WeakPtr<SyncConsentScreenView> view_;
   ScreenExitCallback exit_callback_;
 
   // Manages sync service observer lifetime.

@@ -1,44 +1,61 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/page_info/page_info_about_this_site_content_view.h"
 
+#include <memory>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_ui_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
+#include "chrome/browser/ui/views/page_info/page_info_hover_button.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
+#include "components/page_info/core/features.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/events/event.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/layout_provider.h"
+
+using Orientation = views::BoxLayout::Orientation;
 
 PageInfoAboutThisSiteContentView::PageInfoAboutThisSiteContentView(
     PageInfo* presenter,
     ChromePageInfoUiDelegate* ui_delegate,
     const page_info::proto::SiteInfo& info)
     : presenter_(presenter), ui_delegate_(ui_delegate), info_(info) {
-  SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical));
-  ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
-  SetBorder(views::CreateEmptyBorder(layout_provider->GetInsetsMetric(
-      ChromeInsetsMetric::INSETS_PAGE_INFO_HOVER_BUTTON)));
+  SetLayoutManager(std::make_unique<views::BoxLayout>(Orientation::kVertical));
 
-  auto* label = AddChildView(std::make_unique<views::Label>(
-      base::UTF8ToUTF16(info_.description().description()),
-      views::style::CONTEXT_LABEL));
-  label->SetMultiLine(true);
-  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  auto* info_container = AddChildView(std::make_unique<views::View>());
+  info_container->SetLayoutManager(
+      std::make_unique<views::BoxLayout>(Orientation::kVertical));
+  info_container->SetBorder(
+      views::CreateEmptyBorder(ChromeLayoutProvider::Get()->GetInsetsMetric(
+          ChromeInsetsMetric::INSETS_PAGE_INFO_HOVER_BUTTON)));
+  info_container->AddChildView(CreateDescriptionLabel(info_));
+  info_container->AddChildView(CreateSourceLabel(info_));
 
-  AddChildView(CreateSourceLabel(info_));
   presenter_->InitializeUiState(this, base::DoNothing());
 }
 
 PageInfoAboutThisSiteContentView::~PageInfoAboutThisSiteContentView() = default;
+
+std::unique_ptr<views::View>
+PageInfoAboutThisSiteContentView::CreateDescriptionLabel(
+    const page_info::proto::SiteInfo& info) {
+  auto label = std::make_unique<views::Label>(
+      base::UTF8ToUTF16(info_.description().description()),
+      views::style::CONTEXT_LABEL);
+  label->SetMultiLine(true);
+  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  return label;
+}
 
 std::unique_ptr<views::View>
 PageInfoAboutThisSiteContentView::CreateSourceLabel(

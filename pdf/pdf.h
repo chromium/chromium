@@ -1,4 +1,4 @@
-// Copyright (c) 2010 The Chromium Authors. All rights reserved.
+// Copyright 2010 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,14 +12,8 @@
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
-#endif
-
-#if defined(OS_WIN)
-typedef void (*PDFEnsureTypefaceCharactersAccessible)(const LOGFONT* font,
-                                                      const wchar_t* text,
-                                                      size_t text_length);
 #endif
 
 namespace gfx {
@@ -30,14 +24,14 @@ class SizeF;
 
 namespace chrome_pdf {
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 // Create a flattened PDF document from an existing PDF document.
 // `input_buffer` is the buffer that contains the entire PDF document to be
 // flattened.
 std::vector<uint8_t> CreateFlattenedPdf(base::span<const uint8_t> input_buffer);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Printing modes - type to convert PDF to for printing. See PDFium's
 // FPDF_SetPrintMode() for details.
 enum PrintingMode {
@@ -55,7 +49,7 @@ enum PrintingMode {
 
 // `pdf_buffer` is the buffer that contains the entire PDF document to be
 //     rendered.
-// `page_number` is the 0-based index of the page to be rendered.
+// `page_index` is the 0-based index of the page to be rendered.
 // `dc` is the device context to render into.
 // `dpi_x` and `dpi_y` is the resolution.
 // `bounds_origin_x`, `bounds_origin_y`, `bounds_width` and `bounds_height`
@@ -80,7 +74,7 @@ enum PrintingMode {
 // `use_color` specifies color or grayscale.
 // Returns false if the document or the page number are not valid.
 bool RenderPDFPageToDC(base::span<const uint8_t> pdf_buffer,
-                       int page_number,
+                       int page_index,
                        HDC dc,
                        int dpi_x,
                        int dpi_y,
@@ -95,13 +89,8 @@ bool RenderPDFPageToDC(base::span<const uint8_t> pdf_buffer,
                        bool autorotate,
                        bool use_color);
 
-void SetPDFEnsureTypefaceCharactersAccessible(
-    PDFEnsureTypefaceCharactersAccessible func);
-
-void SetPDFUseGDIPrinting(bool enable);
-
 void SetPDFUsePrintMode(int mode);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 // `page_count` and `max_page_width` are optional and can be NULL.
 // Returns false if the document is not valid.
@@ -122,13 +111,12 @@ base::Value GetPDFStructTreeForPage(base::span<const uint8_t> pdf_buffer,
 // Gets the dimensions of a specific page in a document.
 // `pdf_buffer` is the buffer that contains the entire PDF document to be
 //     rendered.
-// `page_number` is the page number that the function will get the dimensions
-//     of.
+// `page_index` is the page number that the function will get the dimensions of.
 // Returns the size of the page in points, or nullopt if the document or the
 // page number are not valid.
 absl::optional<gfx::SizeF> GetPDFPageSizeByIndex(
     base::span<const uint8_t> pdf_buffer,
-    int page_number);
+    int page_index);
 
 enum class RenderDeviceType {
   kDisplay,
@@ -152,14 +140,14 @@ struct RenderOptions {
 // Renders PDF page into 4-byte per pixel BGRA color bitmap.
 // `pdf_buffer` is the buffer that contains the entire PDF document to be
 //     rendered.
-// `page_number` is the 0-based index of the page to be rendered.
+// `page_index` is the 0-based index of the page to be rendered.
 // `bitmap_buffer` is the output buffer for bitmap.
 // `bitmap_size` is the size of the output bitmap.
 // `dpi` is the 2D resolution.
 // `options` is the options to render with.
 // Returns false if the document or the page number are not valid.
 bool RenderPDFPageToBitmap(base::span<const uint8_t> pdf_buffer,
-                           int page_number,
+                           int page_index,
                            void* bitmap_buffer,
                            const gfx::Size& bitmap_size,
                            const gfx::Size& dpi,

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,7 @@
 @interface CRWWebViewProxyImpl : NSObject<CRWWebViewProxy>
 
 // Used by CRWWebController to set the content view being managed.
-// |contentView|'s scroll view property will be managed by the
+// `contentView`'s scroll view property will be managed by the
 // WebViewScrollViewProxy.
 @property(nonatomic, weak) CRWContentView* contentView;
 

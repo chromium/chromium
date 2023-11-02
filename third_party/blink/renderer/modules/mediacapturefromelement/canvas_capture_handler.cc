@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,20 +9,18 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/rand_util.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "media/base/limits.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
-#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_capturer_source.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image_to_video_frame_copier.h"
-#include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/mediastream/webrtc_uma_histograms.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -61,6 +59,7 @@ class CanvasVideoCapturerSource : public VideoCapturerSource {
   }
   void StartCapture(const media::VideoCaptureParams& params,
                     const blink::VideoCaptureDeliverFrameCB& frame_callback,
+                    const VideoCaptureCropVersionCB& crop_version_callback,
                     const RunningCallback& running_callback) override {
     DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
     if (canvas_handler_.get()) {
@@ -133,13 +132,15 @@ CanvasCaptureHandler::CanvasCaptureHandler(
     LocalFrame* frame,
     const gfx::Size& size,
     double frame_rate,
+    scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
     MediaStreamComponent** component)
     : io_task_runner_(std::move(io_task_runner)) {
   std::unique_ptr<VideoCapturerSource> video_source(
       new CanvasVideoCapturerSource(weak_ptr_factory_.GetWeakPtr(), size,
                                     frame_rate));
-  AddVideoCapturerSourceToVideoTrack(frame, std::move(video_source), component);
+  AddVideoCapturerSourceToVideoTrack(std::move(main_task_runner), frame,
+                                     std::move(video_source), component);
 }
 
 CanvasCaptureHandler::~CanvasCaptureHandler() {
@@ -154,6 +155,7 @@ CanvasCaptureHandler::CreateCanvasCaptureHandler(
     LocalFrame* frame,
     const gfx::Size& size,
     double frame_rate,
+    scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
     MediaStreamComponent** component) {
   // Save histogram data so we can see how much CanvasCapture is used.
@@ -161,7 +163,8 @@ CanvasCaptureHandler::CreateCanvasCaptureHandler(
   UpdateWebRTCMethodCount(RTCAPIName::kCanvasCaptureStream);
 
   return std::unique_ptr<CanvasCaptureHandler>(new CanvasCaptureHandler(
-      frame, size, frame_rate, std::move(io_task_runner), component));
+      frame, size, frame_rate, std::move(main_task_runner),
+      std::move(io_task_runner), component));
 }
 
 CanvasCaptureHandler::NewFrameCallback
@@ -170,17 +173,17 @@ CanvasCaptureHandler::GetNewFrameCallback() {
   // to ensure that it be decremented even if the returned callback is dropped
   // instead of being run.
   pending_send_new_frame_calls_ += 1;
-  auto decrement_closure = WTF::Bind(
+  auto decrement_closure = WTF::BindOnce(
       [](base::WeakPtr<CanvasCaptureHandler> handler) {
         if (handler)
           handler->pending_send_new_frame_calls_ -= 1;
       },
       weak_ptr_factory_.GetWeakPtr());
 
-  return WTF::Bind(&CanvasCaptureHandler::OnNewFrameCallback,
-                   weak_ptr_factory_.GetWeakPtr(),
-                   base::ScopedClosureRunner(std::move(decrement_closure)),
-                   base::TimeTicks::Now(), gfx::ColorSpace());
+  return WTF::BindOnce(&CanvasCaptureHandler::OnNewFrameCallback,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       base::ScopedClosureRunner(std::move(decrement_closure)),
+                       base::TimeTicks::Now(), gfx::ColorSpace());
 }
 
 void CanvasCaptureHandler::OnNewFrameCallback(
@@ -216,7 +219,7 @@ void CanvasCaptureHandler::StartVideoCapture(
       std::make_unique<CanvasCaptureHandlerDelegate>(new_frame_callback);
   DCHECK(delegate_);
   ask_for_new_frame_ = true;
-  running_callback.Run(true);
+  running_callback.Run(RunState::kRunning);
 }
 
 void CanvasCaptureHandler::RequestRefreshFrame() {
@@ -269,6 +272,7 @@ void CanvasCaptureHandler::SendFrame(
 }
 
 void CanvasCaptureHandler::AddVideoCapturerSourceToVideoTrack(
+    scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
     LocalFrame* frame,
     std::unique_ptr<VideoCapturerSource> source,
     MediaStreamComponent** component) {
@@ -277,19 +281,19 @@ void CanvasCaptureHandler::AddVideoCapturerSourceToVideoTrack(
   String track_id = Base64Encode(track_id_bytes);
   media::VideoCaptureFormats preferred_formats = source->GetPreferredFormats();
   auto stream_video_source = std::make_unique<MediaStreamVideoCapturerSource>(
-      frame, WebPlatformMediaStreamSource::SourceStoppedCallback(),
-      std::move(source));
+      main_task_runner, frame,
+      WebPlatformMediaStreamSource::SourceStoppedCallback(), std::move(source));
   auto* stream_video_source_ptr = stream_video_source.get();
   auto* stream_source = MakeGarbageCollected<MediaStreamSource>(
-      track_id, MediaStreamSource::kTypeVideo, track_id, false);
-  stream_source->SetPlatformSource(std::move(stream_video_source));
+      track_id, MediaStreamSource::kTypeVideo, track_id, false,
+      std::move(stream_video_source));
   stream_source->SetCapabilities(ComputeCapabilitiesForVideoSource(
       track_id, preferred_formats, mojom::blink::FacingMode::NONE,
       false /* is_device_capture */));
 
-  *component = MakeGarbageCollected<MediaStreamComponent>(stream_source);
-  (*component)
-      ->SetPlatformTrack(std::make_unique<MediaStreamVideoTrack>(
+  *component = MakeGarbageCollected<MediaStreamComponentImpl>(
+      stream_source,
+      std::make_unique<MediaStreamVideoTrack>(
           stream_video_source_ptr,
           MediaStreamVideoSource::ConstraintsOnceCallback(), true));
 }

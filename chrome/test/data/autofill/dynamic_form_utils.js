@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 The Chromium Authors. All rights reserved.
+ * Copyright 2018 The Chromium Authors
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file.
  */
@@ -8,16 +8,11 @@
 function RemoveForm(form_id) {
   var initial_form = document.getElementById(form_id);
   initial_form.innerHTML = '';
-  if (!window.kAutofillRefillWithRendererIds) {
-    initial_form.parentNode.removeChild(initial_form);
-    initial_form.remove();
-  }
 }
 
 /** Adds a new form and fields for the dynamic form. */
 function AddNewFormAndFields(form_id, form_name) {
-  var new_form = (window.kAutofillRefillWithRendererIds &&
-                  document.getElementById(form_id)) ||
+  var new_form = document.getElementById(form_id) ||
                  document.createElement('form');
   new_form.setAttribute('method', 'post');
   new_form.setAttribute('action', 'https://example.com/')

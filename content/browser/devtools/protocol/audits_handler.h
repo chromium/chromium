@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,12 @@
 
 #include "content/browser/devtools/protocol/audits.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
-#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace content {
 
 class DevToolsAgentHostImpl;
+class RenderFrameHostImpl;
 
 namespace protocol {
 

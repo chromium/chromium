@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,6 @@ namespace views {
 class Label;
 }
 
-class FeaturePromoControllerViews;
 class PasswordBubbleControllerBase;
 
 // Base class for all manage-passwords bubbles. Provides static methods for
@@ -53,8 +52,7 @@ class PasswordBubbleViewBase : public LocationBarBubbleDelegateView {
   static PasswordBubbleViewBase* CreateBubble(
       content::WebContents* web_contents,
       views::View* anchor_view,
-      DisplayReason reason,
-      FeaturePromoControllerViews* promo_controller);
+      DisplayReason reason);
 
   // Closes the existing bubble.
   static void CloseCurrentBubble();
@@ -91,9 +89,6 @@ class PasswordBubbleViewBase : public LocationBarBubbleDelegateView {
  private:
   // views::BubbleDialogDelegateView:
   void Init() override;
-
-  // WidgetObserver:
-  void OnWidgetClosing(views::Widget* widget) override;
 
   // Singleton instance of the Password bubble.The instance is owned by the
   // Bubble and will be deleted when the bubble closes.

@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2021 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 <RelativeLayout
   xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:tools="http://schemas.android.com/tools"
@@ -56,6 +58,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/autofill_payments_authenticator_selection_dialog_progress_bar_message"
-            android:textAppearance="@style/TextAppearance.TextMediumThick.Blue" />
+            android:textAppearance="@style/TextAppearance.TextMediumThick.Accent1" />
     </LinearLayout>
 </RelativeLayout>

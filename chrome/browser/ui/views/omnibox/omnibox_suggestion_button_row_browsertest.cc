@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_contents_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_result_view.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/theme_copying_widget.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -23,7 +24,6 @@
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
-#include "components/omnibox/common/omnibox_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -34,9 +34,7 @@
 // screenshots.
 class OmniboxSuggestionButtonRowBrowserTest : public DialogBrowserTest {
  public:
-  OmniboxSuggestionButtonRowBrowserTest() {
-    feature_list_.InitWithFeatures({omnibox::kOmniboxKeywordSearchButton}, {});
-  }
+  OmniboxSuggestionButtonRowBrowserTest() = default;
 
   OmniboxSuggestionButtonRowBrowserTest(
       const OmniboxSuggestionButtonRowBrowserTest&) = delete;
@@ -112,7 +110,8 @@ class OmniboxSuggestionButtonRowBrowserTest : public DialogBrowserTest {
     matches.push_back(switch_to_tab_match);
     matches.push_back(action_match);
     matches.push_back(multiple_actions_match);
-    results.AppendMatches(autocomplete_controller->input_, matches);
+    results.AppendMatches(matches);
+    autocomplete_controller->NotifyChanged();
 
     // The omnibox popup should open with suggestions displayed.
     omnibox_view->model()->OnPopupResultChanged();
@@ -170,7 +169,6 @@ class OmniboxSuggestionButtonRowBrowserTest : public DialogBrowserTest {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   scoped_refptr<OmniboxAction> action_;
 };
 

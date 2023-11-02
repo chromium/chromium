@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_request_id.h"
@@ -140,7 +141,9 @@ class NavigationController {
     // because they are unique to LoadURLParams or OpenURLParams).
     explicit LoadURLParams(const OpenURLParams& open_url_params);
     LoadURLParams(const LoadURLParams&) = delete;
+    LoadURLParams(LoadURLParams&&);
     LoadURLParams& operator=(const LoadURLParams&) = delete;
+    LoadURLParams& operator=(LoadURLParams&&);
     ~LoadURLParams();
 
     // The url to load. This field is required.
@@ -217,7 +220,7 @@ class NavigationController {
     // data loads.
     GURL virtual_url_for_data_url;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // Used in LOAD_TYPE_DATA loads only. The real data URI is represented
     // as a string to circumvent the restriction on GURL size. This is only
     // needed to pass URLs that exceed the IPC limit (kMaxURLChars). Short
@@ -229,6 +232,9 @@ class NavigationController {
     // load.  Ownership is transferred to NavigationController after
     // LoadURLWithParams call.
     scoped_refptr<network::ResourceRequestBody> post_data;
+
+    // Content type for a form submission for LOAD_TYPE_HTTP_POST.
+    std::string post_content_type;
 
     // True if this URL should be able to access local resources.
     bool can_load_local_resources = false;
@@ -285,6 +291,9 @@ class NavigationController {
     // Indicates the reload type of this navigation.
     ReloadType reload_type = ReloadType::NONE;
 
+    // Indicates a form submission created this navigation.
+    bool is_form_submission = false;
+
     // Impression info associated with this navigation. Should only be populated
     // for navigations originating from a link click.
     absl::optional<blink::Impression> impression;
@@ -294,6 +303,11 @@ class NavigationController {
 
     // Indicates that this navigation is for PDF content in a renderer.
     bool is_pdf = false;
+
+    // Indicates this navigation should use a new BrowsingInstance. For example,
+    // this is used in web platform tests to guarantee that each test starts in
+    // a fresh BrowsingInstance.
+    bool force_new_browsing_instance = false;
   };
 
   // Disables checking for a repost and prompting the user. This is used during
@@ -342,7 +356,7 @@ class NavigationController {
   // Returns the entry that should be displayed to the user in the address bar.
   // This is the pending entry if a navigation is in progress *and* is safe to
   // display to the user (see below), or the last committed entry otherwise.
-  // NOTE: This can be nullptr if no entry has committed!
+  // NOTE: This can be nullptr if no entry has been committed!
   //
   // A pending entry is safe to display if it started in the browser process or
   // if it's a renderer-initiated navigation in a new tab which hasn't been

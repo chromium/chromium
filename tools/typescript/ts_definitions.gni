@@ -1,7 +1,8 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/node/node.gni")
 
 template("ts_definitions") {
@@ -10,6 +11,7 @@ template("ts_definitions") {
 
     forward_variables_from(invoker,
                            [
+                             "deps",
                              "extra_deps",
                              "js_files",
                            ])
@@ -44,6 +46,16 @@ template("ts_definitions") {
              "--js_files",
            ] + js_files
 
+    if (defined(deps)) {
+      args += [ "--deps" ]
+
+      foreach(dep, deps) {
+        name = get_label_info(dep, "name")
+        args += [ rebase_path(get_label_info(dep, "dir"), ".") +
+                  "/tsconfig_$name.json" ]
+      }
+    }
+
     if (defined(extra_deps)) {
       if (!defined(deps)) {
         deps = []
@@ -71,6 +83,18 @@ template("ts_definitions") {
               "//third_party/polymer/v3_0/components-chromium/polymer/polymer-element.d.ts",
               target_gen_dir),
     ]
+
+    if (is_chromeos_ash) {
+      path_mappings += [
+        "chrome://resources/ash/common/*|" + rebase_path(
+                "$root_gen_dir/ash/webui/common/resources/preprocessed/*",
+                target_gen_dir),
+        "//resources/ash/common/*|" + rebase_path(
+                "$root_gen_dir/ash/webui/common/resources/preprocessed/*",
+                target_gen_dir),
+      ]
+    }
+
     args += [ "--path_mappings" ] + path_mappings
     if (defined(invoker.path_mappings)) {
       args += invoker.path_mappings

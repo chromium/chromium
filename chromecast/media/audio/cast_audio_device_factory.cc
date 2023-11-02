@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/android/bundle_utils.h"
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
@@ -19,7 +20,7 @@
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/output_device_info.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
-#include "third_party/blink/public/web/modules/media/audio/web_audio_output_ipc_factory.h"
+#include "third_party/blink/public/web/modules/media/audio/audio_output_ipc_factory.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 
 namespace chromecast {
@@ -42,9 +43,9 @@ scoped_refptr<::media::AudioOutputDevice> NewOutputDevice(
     const ::media::AudioSinkParameters& params,
     base::TimeDelta auth_timeout) {
   auto device = base::MakeRefCounted<::media::AudioOutputDevice>(
-      blink::WebAudioOutputIPCFactory::GetInstance().CreateAudioOutputIPC(
+      blink::AudioOutputIPCFactory::GetInstance().CreateAudioOutputIPC(
           frame_token),
-      blink::WebAudioOutputIPCFactory::GetInstance().io_task_runner(), params,
+      blink::AudioOutputIPCFactory::GetInstance().io_task_runner(), params,
       auth_timeout);
   device->RequestDeviceAuthorization();
   return device;
@@ -74,7 +75,8 @@ class NonSwitchableAudioRendererSink
     if (is_initialized_)
       return;
     is_initialized_ = true;
-    if (!base::FeatureList::IsEnabled(kEnableCastAudioOutputDevice) ||
+    if (!(base::android::BundleUtils::IsBundle() ||
+          base::FeatureList::IsEnabled(kEnableCastAudioOutputDevice)) ||
         params.IsBitstreamFormat()) {
       output_device_ =
           NewOutputDevice(frame_token_, sink_params_, kAuthorizationTimeout);
@@ -121,7 +123,7 @@ class NonSwitchableAudioRendererSink
         std::string(), ::media::OUTPUT_DEVICE_STATUS_OK,
         ::media::AudioParameters(
             ::media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-            ::media::CHANNEL_LAYOUT_STEREO, 48000, 480));
+            ::media::ChannelLayoutConfig::Stereo(), 48000, 480));
   }
 
   void GetOutputDeviceInfoAsync(OutputDeviceInfoCB info_cb) override {
@@ -182,39 +184,13 @@ CastAudioDeviceFactory::~CastAudioDeviceFactory() {
   DVLOG(1) << "Unregister CastAudioDeviceFactory";
 }
 
-scoped_refptr<::media::AudioRendererSink>
-CastAudioDeviceFactory::CreateFinalAudioRendererSink(
-    const blink::LocalFrameToken& frame_token,
-    const ::media::AudioSinkParameters& params,
-    base::TimeDelta auth_timeout) {
-  // Use default implementation.
-  return nullptr;
-}
-
-scoped_refptr<::media::AudioRendererSink>
-CastAudioDeviceFactory::CreateAudioRendererSink(
-    blink::WebAudioDeviceSourceType source_type,
-    const blink::LocalFrameToken& frame_token,
-    const ::media::AudioSinkParameters& params) {
-  // Use default implementation.
-  return nullptr;
-}
-
 scoped_refptr<::media::SwitchableAudioRendererSink>
-CastAudioDeviceFactory::CreateSwitchableAudioRendererSink(
+CastAudioDeviceFactory::NewSwitchableAudioRendererSink(
     blink::WebAudioDeviceSourceType source_type,
     const blink::LocalFrameToken& frame_token,
     const ::media::AudioSinkParameters& params) {
   return base::MakeRefCounted<NonSwitchableAudioRendererSink>(frame_token,
                                                               params);
-}
-
-scoped_refptr<::media::AudioCapturerSource>
-CastAudioDeviceFactory::CreateAudioCapturerSource(
-    const blink::LocalFrameToken& frame_token,
-    const ::media::AudioSourceParameters& params) {
-  // Use default implementation.
-  return nullptr;
 }
 
 }  // namespace media

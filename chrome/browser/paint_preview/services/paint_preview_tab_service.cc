@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,8 @@
 #include "base/memory/memory_pressure_monitor.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/task/post_task.h"
 #include "base/task/task_traits.h"
+#include "build/build_config.h"
 #include "chrome/browser/paint_preview/services/paint_preview_tab_service_file_mixin.h"
 #include "components/paint_preview/browser/file_manager.h"
 #include "components/paint_preview/browser/warm_compositor.h"
@@ -21,14 +21,14 @@
 #include "ui/accessibility/ax_mode.h"
 #include "ui/gfx/geometry/rect.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/logging.h"
 #include "chrome/browser/paint_preview/android/jni_headers/PaintPreviewTabService_jni.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace paint_preview {
 
@@ -41,13 +41,13 @@ constexpr int kMaxCaptureSizePixels = 100000;
 constexpr size_t kMaxPerCaptureSizeBytes = 8 * 1000L * 1000L;       // 8 MB.
 constexpr uint64_t kMaxDecodedImageSizeBytes = 10 * 1000L * 1000L;  // 10 MB.
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void JavaBooleanCallbackAdapter(base::OnceCallback<void(bool)> callback,
                                 PaintPreviewTabService::Status status) {
   DVLOG(1) << "Capture finished with status: " << status;
   std::move(callback).Run(status == PaintPreviewTabService::Status::kOk);
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Safe since Tab ID are just converted to strings to be directory keys.
 int TabIdFromDirectoryKey(const DirectoryKey& key) {
@@ -64,11 +64,17 @@ PaintPreviewTabService::TabServiceTask::TabServiceTask(
     const DirectoryKey& key,
     int frame_tree_node_id,
     content::GlobalRenderFrameHostId frame_routing_id,
+    float page_scale_factor,
+    int scroll_offset_x,
+    int scroll_offset_y,
     base::ScopedClosureRunner capture_handle)
     : tab_id_(tab_id),
       key_(key),
       frame_tree_node_id_(frame_tree_node_id),
       frame_routing_id_(frame_routing_id),
+      page_scale_factor_(page_scale_factor),
+      scroll_offset_x_(scroll_offset_x),
+      scroll_offset_y_(scroll_offset_y),
       capture_handle_(std::move(capture_handle)) {}
 
 PaintPreviewTabService::TabServiceTask::~TabServiceTask() = default;
@@ -96,26 +102,29 @@ PaintPreviewTabService::PaintPreviewTabService(
             "Browser.PaintPreview.TabService.DiskUsageAtStartup",
             size_bytes / 1000);
       }));
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   JNIEnv* env = base::android::AttachCurrentThread();
   java_ref_.Reset(Java_PaintPreviewTabService_Constructor(
       env, reinterpret_cast<intptr_t>(this),
       reinterpret_cast<intptr_t>(static_cast<PaintPreviewBaseService*>(this))));
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 PaintPreviewTabService::~PaintPreviewTabService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_PaintPreviewTabService_onNativeDestroyed(env, java_ref_);
   java_ref_.Reset();
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void PaintPreviewTabService::CaptureTab(int tab_id,
                                         content::WebContents* contents,
                                         bool accessibility_enabled,
+                                        float page_scale_factor,
+                                        int x,
+                                        int y,
                                         FinishedCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -139,8 +148,9 @@ void PaintPreviewTabService::CaptureTab(int tab_id,
   auto it = tasks_.emplace(
       tab_id,
       std::make_unique<TabServiceTask>(
-          tab_id, key, contents->GetMainFrame()->GetFrameTreeNodeId(),
-          contents->GetMainFrame()->GetGlobalId(), std::move(capture_handle)));
+          tab_id, key, contents->GetPrimaryMainFrame()->GetFrameTreeNodeId(),
+          contents->GetPrimaryMainFrame()->GetGlobalId(), page_scale_factor, x,
+          y, std::move(capture_handle)));
   if (!it.second) {
     std::move(callback).Run(Status::kCaptureInProgress);
     return;
@@ -204,16 +214,22 @@ void PaintPreviewTabService::AuditArtifacts(
                      weak_ptr_factory_.GetWeakPtr(), active_tab_ids));
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void PaintPreviewTabService::CaptureTabAndroid(
     JNIEnv* env,
     jint j_tab_id,
     const base::android::JavaParamRef<jobject>& j_web_contents,
-    jboolean accessibility_enabled,
+    jboolean j_accessibility_enabled,
+    jfloat j_page_scale_factor,
+    jint j_x,
+    jint j_y,
     const base::android::JavaParamRef<jobject>& j_callback) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(j_web_contents);
-  CaptureTab(static_cast<int>(j_tab_id), web_contents, accessibility_enabled,
+  CaptureTab(static_cast<int>(j_tab_id), web_contents,
+             static_cast<bool>(j_accessibility_enabled),
+             static_cast<float>(j_page_scale_factor), static_cast<int>(j_x),
+             static_cast<int>(j_y),
              base::BindOnce(
                  &JavaBooleanCallbackAdapter,
                  base::BindOnce(
@@ -247,7 +263,7 @@ PaintPreviewTabService::GetPathAndroid(JNIEnv* env) {
   return base::android::ConvertUTF8ToJavaString(
       env, GetFileMixin()->GetFileManager()->GetPath().AsUTF8Unsafe());
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 void PaintPreviewTabService::DeleteTask(int tab_id) {
   tasks_.erase(tab_id);
@@ -278,8 +294,8 @@ void PaintPreviewTabService::CaptureTabInternal(
       content::WebContents::FromFrameTreeNodeId(task->frame_tree_node_id());
   auto* rfh = content::RenderFrameHost::FromID(task->frame_routing_id());
   if (!contents || !rfh || contents->IsBeingDestroyed() ||
-      contents->GetMainFrame() != rfh || !rfh->IsActive() ||
-      !rfh->IsRenderFrameCreated() || !rfh->IsRenderFrameLive()) {
+      contents->GetPrimaryMainFrame() != rfh || !rfh->IsActive() ||
+      !rfh->IsRenderFrameLive()) {
     task->OnCaptured(Status::kWebContentsGone);
     return;
   }
@@ -334,6 +350,13 @@ void PaintPreviewTabService::OnCaptured(
     task->OnCaptured(Status::kCaptureFailed);
     return;
   }
+  // Override viewport state for root frame.
+  result->proto.mutable_metadata()->set_page_scale_factor(
+      task->page_scale_factor());
+  result->proto.mutable_root_frame()->set_scroll_offset_x(
+      task->scroll_offset_x());
+  result->proto.mutable_root_frame()->set_scroll_offset_y(
+      task->scroll_offset_y());
   auto file_manager = GetFileMixin()->GetFileManager();
   GetFileMixin()->GetTaskRunner()->PostTaskAndReplyWithResult(
       FROM_HERE,

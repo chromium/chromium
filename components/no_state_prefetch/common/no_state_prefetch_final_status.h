@@ -1,11 +1,9 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_NO_STATE_PREFETCH_COMMON_NO_STATE_PREFETCH_FINAL_STATUS_H_
 #define COMPONENTS_NO_STATE_PREFETCH_COMMON_NO_STATE_PREFETCH_FINAL_STATUS_H_
-
-#include "components/no_state_prefetch/common/prerender_origin.h"
 
 namespace prerender {
 
@@ -70,7 +68,7 @@ enum FinalStatus {
   // Obsolete: FINAL_STATUS_NON_EMPTY_BROWSING_INSTANCE = 50,
   FINAL_STATUS_NAVIGATION_INTERCEPTED = 51,
   FINAL_STATUS_PRERENDERING_DISABLED = 52,
-  FINAL_STATUS_CELLULAR_NETWORK = 53,
+  // Obsolete: FINAL_STATUS_CELLULAR_NETWORK = 53,
   FINAL_STATUS_BLOCK_THIRD_PARTY_COOKIES = 54,
   // Obsolete: FINAL_STATUS_CREDENTIAL_MANAGER_API = 55,
   FINAL_STATUS_NOSTATE_PREFETCH_FINISHED = 56,

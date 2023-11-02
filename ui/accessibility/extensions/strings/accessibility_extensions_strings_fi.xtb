@@ -9,6 +9,7 @@
 <translation id="1591070050619849194">Poista kaikki kuva-animaatiot käytöstä.</translation>
 <translation id="1703735871906654364">Näppäimistöselaaminen</translation>
 <translation id="1791496371305830581">Salli kaikki animoidut kuvat.</translation>
+<translation id="1974060860693918893">Lisäasetukset</translation>
 <translation id="1996252509865389616">Otetaanko käyttöön?</translation>
 <translation id="2079545284768500474">Kumoa</translation>
 <translation id="2179565792157161713">Avaa pitkä kuvaus uudella välilehdellä</translation>
@@ -51,6 +52,7 @@
 <translation id="6170146920149900756">Color Enhancer</translation>
 <translation id="633394792577263429">Liiku sanojen mukaan painamalla &lt;span class='key'&gt;control&lt;/span&gt;-näppäintä pitkään.</translation>
 <translation id="6550675742724504774">Asetukset</translation>
+<translation id="6699630355767768222">Vaihe 3: Ohita väriakseli korjaukselle.</translation>
 <translation id="6838518108677880446">Määritys:</translation>
 <translation id="690628312087070417">Kun osoitin siirtyy pitkän välimatkan:</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -65,5 +67,6 @@
 <translation id="8321034316479930120">Animaatiokäytäntö</translation>
 <translation id="8480209185614411573">Korkea kontrasti</translation>
 <translation id="8609925175482059018">Ota näppäimistöselaaminen käyttöön painamalla &lt;span class='key'&gt;F7&lt;/span&gt;. Poista toiminto käytöstä painamalla näppäintä uudelleen.</translation>
+<translation id="8798099450830957504">Oletus</translation>
 <translation id="894241283505723656">Pitkät kuvaukset kontekstivalikossa</translation>
 </translationbundle>

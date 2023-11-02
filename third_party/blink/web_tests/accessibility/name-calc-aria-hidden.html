@@ -68,7 +68,7 @@ test(function(t) {
 <script>
  test(function(t) {
      var axButton4 = accessibilityController.accessibleElementById("button4");
-     assert_equals(axButton4.name, "Before After");
+     assert_equals(axButton4.name, "Before Text within hidden subtree After");
  }, "Aria-labelledby of aria-hidden subtree with another aria-hidden inside");
 </script>
 
@@ -83,6 +83,6 @@ test(function(t) {
 <script>
 test(function(t) {
     var axInput5 = accessibilityController.accessibleElementById("input5");
-    assert_equals(axInput5.name, "Before After");
-}, "Label can get accessible text from aria-hidden subtree");
+    assert_equals(axInput5.name, "");
+}, "Label cannot get accessible text from aria-hidden subtree");
 </script>

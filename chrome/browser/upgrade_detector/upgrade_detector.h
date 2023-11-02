@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
@@ -253,6 +254,10 @@ class UpgradeDetector {
   // expected.
   void NotifyCriticalUpgradeInstalled();
 
+  // Notifies that an update is downloaded but deferred. Set `use_notification`
+  // to true to enable system tray notification.
+  void NotifyUpdateDeferred(bool use_notification);
+
   // The function that sends out a notification that lets the rest of the UI
   // know we should notify the user that a new update is available to download
   // over cellular connection.
@@ -340,10 +345,10 @@ class UpgradeDetector {
   void OnRelaunchPrefChanged();
 
   // A provider of Time to the detector.
-  const base::Clock* const clock_;
+  const raw_ptr<const base::Clock> clock_;
 
   // A provider of TimeTicks to the detectors' timers.
-  const base::TickClock* const tick_clock_;
+  const raw_ptr<const base::TickClock> tick_clock_;
 
   // Observes changes to the browser.relaunch_notification_period Local State
   // preference.

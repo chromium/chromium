@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@
 #include "ash/system/palette/palette_tool.h"
 #include "ash/system/palette/tools/metalayer_mode.h"
 #include "base/strings/stringprintf.h"
+#include "build/build_config.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/compositor/test/draw_waiter_for_test.h"
 #include "ui/events/test/event_generator.h"
@@ -227,7 +228,12 @@ TEST_F(HighlighterControllerTest, HighlighterPrediction) {
 }
 
 // Test that stylus gestures are correctly recognized by HighlighterController.
-TEST_F(HighlighterControllerTest, HighlighterGestures) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#define MAYBE_HighlighterGestures DISABLED_HighlighterGestures
+#else
+#define MAYBE_HighlighterGestures HighlighterGestures
+#endif
+TEST_F(HighlighterControllerTest, MAYBE_HighlighterGestures) {
   controller_test_api_->SetEnabled(true);
   ui::test::EventGenerator* event_generator = GetEventGenerator();
   event_generator->EnterPenPointerMode();
@@ -300,7 +306,14 @@ TEST_F(HighlighterControllerTest, HighlighterGestures) {
   controller_->RemoveObserver(&observer);
 }
 
-TEST_F(HighlighterControllerTest, HighlighterGesturesScaled) {
+// TODO(1346951): Disable HighlighterGesturesScaled on Linux Chromium OS Asan
+// Lsan Tests.
+#if defined(LEAK_SANITIZER) && BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_HighlighterGesturesScaled DISABLED_HighlighterGesturesScaled
+#else
+#define MAYBE_HighlighterGesturesScaled HighlighterGesturesScaled
+#endif
+TEST_F(HighlighterControllerTest, MAYBE_HighlighterGesturesScaled) {
   controller_test_api_->SetEnabled(true);
   ui::test::EventGenerator* event_generator = GetEventGenerator();
   event_generator->EnterPenPointerMode();
@@ -335,7 +348,7 @@ TEST_F(HighlighterControllerTest, HighlighterGesturesScaled) {
       gfx::Rect inflated_px(original_px);
       // Allow for rounding errors within 1dp.
       const int error_margin = static_cast<int>(std::ceil(combined_scale));
-      inflated_px.Inset(-error_margin, -error_margin);
+      inflated_px.Inset(-error_margin);
       EXPECT_TRUE(inflated_px.Contains(selection_px));
     }
   }
@@ -378,9 +391,16 @@ TEST_F(HighlighterControllerTest, HighlighterGesturesRotated) {
   EXPECT_EQ("600,200 300x400", controller_test_api_->selection().ToString());
 }
 
+// Flaky on Linux Chromium OS ASan LSan. https://crbug.com/1315061
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_InterruptedStroke DISABLED_InterruptedStroke
+#else
+#define MAYBE_InterruptedStroke InterruptedStroke
+#endif
+
 // Test that a stroke interrupted close to the screen edge is treated as
 // contiguous.
-TEST_F(HighlighterControllerTest, InterruptedStroke) {
+TEST_F(HighlighterControllerTest, MAYBE_InterruptedStroke) {
   controller_test_api_->SetEnabled(true);
   ui::test::EventGenerator* event_generator = GetEventGenerator();
   event_generator->EnterPenPointerMode();
@@ -424,7 +444,8 @@ TEST_F(HighlighterControllerTest, InterruptedStroke) {
 }
 
 // Test that the selection is never crossing the screen bounds.
-TEST_F(HighlighterControllerTest, SelectionInsideScreen) {
+// Flaky, https://crbug.com/1311772
+TEST_F(HighlighterControllerTest, DISABLED_SelectionInsideScreen) {
   controller_test_api_->SetEnabled(true);
   ui::test::EventGenerator* event_generator = GetEventGenerator();
   event_generator->EnterPenPointerMode();

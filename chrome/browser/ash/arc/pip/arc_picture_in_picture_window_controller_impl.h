@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 namespace content {
 
 class WebContents;
-class OverlayWindow;
 
 }  // namespace content
 
@@ -40,17 +39,8 @@ class ArcPictureInPictureWindowControllerImpl
   void Close(bool should_pause_video) override;
   void CloseAndFocusInitiator() override;
   void OnWindowDestroyed(bool should_pause_video) override;
-  content::OverlayWindow* GetWindowForTesting() override;
-  void UpdateLayerBounds() override;
-  bool IsPlayerActive() override;
   content::WebContents* GetWebContents() override;
-  bool TogglePlayPause() override;
-  void SkipAd() override;
-  void NextTrack() override;
-  void PreviousTrack() override;
-  void ToggleMicrophone() override {}
-  void ToggleCamera() override {}
-  void HangUp() override {}
+  content::WebContents* GetChildWebContents() override;
 
  private:
   arc::ArcPipBridge* const arc_pip_bridge_;

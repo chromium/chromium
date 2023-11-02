@@ -89,7 +89,7 @@ SVGUnitTypes::SVGUnitType LayoutSVGResourceMasker::MaskContentUnits() const {
       ->CurrentEnumValue();
 }
 
-FloatRect LayoutSVGResourceMasker::ResourceBoundingBox(
+gfx::RectF LayoutSVGResourceMasker::ResourceBoundingBox(
     const gfx::RectF& reference_box,
     float reference_box_zoom) {
   NOT_DESTROYED();
@@ -98,8 +98,8 @@ FloatRect LayoutSVGResourceMasker::ResourceBoundingBox(
   DCHECK(mask_element);
 
   SVGUnitTypes::SVGUnitType mask_units = MaskUnits();
-  FloatRect mask_boundaries = SVGLengthContext::ResolveRectangle(
-      mask_element, mask_units, FloatRect(reference_box));
+  gfx::RectF mask_boundaries = SVGLengthContext::ResolveRectangle(
+      mask_element, mask_units, reference_box);
   // If the mask bounds were resolved relative to the current userspace we need
   // to adjust/scale with the zoom to get to the same space as the reference
   // box.

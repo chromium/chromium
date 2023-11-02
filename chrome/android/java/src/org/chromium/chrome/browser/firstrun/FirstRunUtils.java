@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -66,10 +66,11 @@ public class FirstRunUtils {
 
     /**
      * Sets the EULA/Terms of Services state as "ACCEPTED".
-     * @param allowCrashUpload True if the user allows to upload crash dumps and collect stats.
+     * @param allowMetricsAndCrashUploading True if the user allows to upload crash dumps and
+     *         collect stats.
      */
-    static void acceptTermsOfService(boolean allowCrashUpload) {
-        UmaSessionStats.changeMetricsReportingConsent(allowCrashUpload);
+    static void acceptTermsOfService(boolean allowMetricsAndCrashUploading) {
+        UmaSessionStats.changeMetricsReportingConsent(allowMetricsAndCrashUploading);
         SharedPreferencesManager.getInstance().writeBoolean(
                 ChromePreferenceKeys.FIRST_RUN_CACHED_TOS_ACCEPTED, true);
         setEulaAccepted();
@@ -90,6 +91,11 @@ public class FirstRunUtils {
             sHasGoogleAccountAuthenticator = accountHelper.hasGoogleAccountAuthenticator();
         }
         return sHasGoogleAccountAuthenticator;
+    }
+
+    @VisibleForTesting
+    static void resetHasGoogleAccountAuthenticator() {
+        sHasGoogleAccountAuthenticator = null;
     }
 
     @VisibleForTesting
@@ -138,7 +144,7 @@ public class FirstRunUtils {
      *
      * @return The number of ms delay before exiting FRE with policy.
      */
-    static int getSkipTosExitDelayMs() {
+    public static int getSkipTosExitDelayMs() {
         if (sDisableDelayOnExitFreForTest) return 0;
 
         int durationMs = DEFAULT_SKIP_TOS_EXIT_DELAY_MS;

@@ -30,12 +30,10 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/css/css_computed_style_declaration.h"
-#include "third_party/blink/renderer/core/page/scrolling/scrolling_coordinator.h"
 #include "third_party/blink/renderer/core/testing/color_scheme_helper.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -78,6 +76,7 @@ class Range;
 class ReadableStream;
 class RecordTest;
 class ScriptPromiseResolver;
+class ScriptState;
 class ScrollState;
 class SequenceTest;
 class ShadowRoot;
@@ -98,10 +97,11 @@ class Internals final : public ScriptWrappable {
   static void ResetToConsistentState(Page*);
 
   explicit Internals(ExecutionContext*);
+  ~Internals() override;
 
   String elementLayoutTreeAsText(Element*, ExceptionState&);
 
-  GCObservation* observeGC(ScriptValue);
+  GCObservation* observeGC(ScriptValue, ExceptionState&);
 
   bool isPreloaded(const String& url);
   bool isPreloadedBy(const String& url, Document*);
@@ -155,6 +155,7 @@ class Internals final : public ScriptWrappable {
   Node* previousInFlatTree(Node*, ExceptionState&);
 
   unsigned updateStyleAndReturnAffectedElementCount(ExceptionState&) const;
+  unsigned styleForElementCount(ExceptionState&) const;
   unsigned needsLayoutCount(ExceptionState&) const;
   unsigned layoutCountForTesting(ExceptionState&) const;
   unsigned hitTestCount(Document*, ExceptionState&) const;
@@ -281,6 +282,7 @@ class Internals final : public ScriptWrappable {
 
   int lastSpellCheckRequestSequence(Document*, ExceptionState&);
   int lastSpellCheckProcessedSequence(Document*, ExceptionState&);
+  int spellCheckedTextLength(Document*, ExceptionState&);
   void cancelCurrentSpellCheckRequest(Document*, ExceptionState&);
   String idleTimeSpellCheckerState(Document*, ExceptionState&);
   void runIdleTimeSpellChecker(Document*, ExceptionState&);
@@ -337,11 +339,6 @@ class Internals final : public ScriptWrappable {
   InternalRuntimeFlags* runtimeFlags() const;
   unsigned workerThreadCount() const;
 
-  String resolveModuleSpecifier(const String& specifier,
-                                const String& base_url_string,
-                                Document*,
-                                ExceptionState&);
-
   String getParsedImportMap(Document*, ExceptionState&);
 
   void SetDeviceProximity(Document*,
@@ -353,8 +350,6 @@ class Internals final : public ScriptWrappable {
 
   String layerTreeAsText(Document*, unsigned flags, ExceptionState&) const;
   String layerTreeAsText(Document*, ExceptionState&) const;
-
-  bool scrollsWithRespectTo(Element*, Element*, ExceptionState&);
 
   String scrollingStateTreeAsText(Document*) const;
   String mainThreadScrollingReasons(Document*, ExceptionState&) const;
@@ -470,6 +465,7 @@ class Internals final : public ScriptWrappable {
 
   void forceCompositingUpdate(Document*, ExceptionState&);
 
+  void setDarkPreferredColorScheme(Document* document);
   void setForcedColorsAndDarkPreferredColorScheme(Document* document);
 
   void setShouldRevealPassword(Element*, bool, ExceptionState&);
@@ -521,7 +517,8 @@ class Internals final : public ScriptWrappable {
   String selectedHTMLForClipboard();
   String selectedTextForClipboard();
 
-  void setVisualViewportOffset(int x, int y);
+  // Sets the visual viewport offset within the layout viewport.
+  void setVisualViewportOffset(int css_x, int css_y);
 
   // Return true if the given use counter exists for the given document.
   // |feature| must be one of the values from the WebFeature enum.
@@ -614,8 +611,7 @@ class Internals final : public ScriptWrappable {
 
   void generateTestReport(const String& message);
 
-  void setIsAdSubframe(HTMLIFrameElement* iframe,
-                       ExceptionState& exception_state);
+  void setIsAdFrame(Document* target_doc, ExceptionState& exception_state);
 
   ReadableStream* createReadableStream(ScriptState* script_state,
                                        int32_t queueSize,
@@ -628,6 +624,7 @@ class Internals final : public ScriptWrappable {
                                           ExceptionState&);
 
   void setAllowPerChunkTransferring(ReadableStream* stream);
+  void setBackForwardCacheRestorationBufferSize(unsigned int maxSize);
 
  private:
   Document* ContextDocument() const;

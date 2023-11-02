@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,8 @@ const DestroyAccessibilityTree =
     nativeAutomationInternal.DestroyAccessibilityTree;
 const StartCachingAccessibilityTrees =
     nativeAutomationInternal.StartCachingAccessibilityTrees;
+const StopCachingAccessibilityTrees =
+    nativeAutomationInternal.StopCachingAccessibilityTrees;
 const AddTreeChangeObserver = nativeAutomationInternal.AddTreeChangeObserver;
 const RemoveTreeChangeObserver =
     nativeAutomationInternal.RemoveTreeChangeObserver;
@@ -26,9 +28,10 @@ const SetDesktopID = nativeAutomationInternal.SetDesktopID;
 window.automationUtil = function() {};
 
 // TODO(aboxhall): Look into using WeakMap
-const idToCallback = {};
+let idToCallback = {};
 
-let desktopId = undefined;
+let desktopId;
+let desktopTree;
 
 automationUtil.storeTreeCallback = function(id, callback) {
   if (!callback) {
@@ -82,20 +85,18 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
     }
 
     const params = {tabID: tabID};
-    automationInternal.enableTab(params,
-                                 function onEnable(treeID, resultTabID) {
-          if (bindingUtil.hasLastError()) {
-            callback();
-            return;
-          }
-          automationUtil.storeTreeCallback(treeID, function(root) {
-            automationUtil.tabIDToAutomationNode[resultTabID] = root;
-            callback(root);
-          });
-        });
+    automationInternal.enableTab(params, function onEnable(result) {
+      if (bindingUtil.hasLastError()) {
+        callback();
+        return;
+      }
+      automationUtil.storeTreeCallback(result.treeID, function(root) {
+        automationUtil.tabIDToAutomationNode[result.tabID] = root;
+        callback(root);
+      });
+    });
   });
 
-  let desktopTree = null;
   apiFunctions.setHandleRequest('getDesktop', function(callback) {
     StartCachingAccessibilityTrees();
     if (desktopId !== undefined) {
@@ -250,6 +251,19 @@ automationInternal.onNodesRemoved.addListener(function(treeID, nodeIDs) {
   for (let i = 0; i < nodeIDs.length; i++) {
     privates(tree).impl.remove(nodeIDs[i]);
   }
+});
+
+automationInternal.onAllAutomationEventListenersRemoved.addListener(() => {
+  if (!desktopId) {
+    return;
+  }
+  automationInternal.disableDesktop(() => {
+    desktopId = undefined;
+    desktopTree = undefined;
+    idToCallback = {};
+    AutomationRootNode.destroyAll();
+    StopCachingAccessibilityTrees();
+  });
 });
 
 /**

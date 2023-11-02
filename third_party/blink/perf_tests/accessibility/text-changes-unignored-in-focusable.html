@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="../resources/runner.js"></script>
+</head>
+<body tabindex="-1">
+  <div tabindex=-1>
+    <div id="container" tabindex="-1"></div>
+  </div>
+</body>
+
+<script>
+
+var isDone = false;
+var startTime;
+
+function runTest() {
+  if (startTime) {
+    PerfTestRunner.measureValueAsync(PerfTestRunner.now() - startTime);
+    PerfTestRunner.addRunTestEndMarker();
+  }
+  if (!isDone) {
+    PerfTestRunner.addRunTestStartMarker();
+    startTime = PerfTestRunner.now();
+
+    document.body.innerHTML = '';
+    appendManyElements(document.body, 6);
+
+    setTimeout(changeLeafText, 250);
+
+    // Re-run the same test.
+    // Wait to allow the asynchronous accessibility code that's
+    // covered by traceEventsToMeasure to have a chance to run.
+    setTimeout(runTest, 2500);
+  }
+}
+
+// Recursively add layers of descendants.
+function appendManyElements(start, depth) {
+  if (depth == 0) {
+    start.innerHTML = '<fieldset>A</fieldset>';  // Unignored in AX tree.
+  }
+  else {
+    // Each element receives 3 new children.
+    for (let count = 0; count < 3; count++) {
+      let newContainer = document.createElement('fieldset');
+      appendManyElements(start.appendChild(newContainer), depth - 1);
+    }
+  }
+}
+
+function changeLeafText(text) {
+  let elements = document.querySelectorAll('unignored');
+  for (let count = 0; count < elements.length; count ++)
+    elements[count].textContent = 'B';
+}
+
+
+PerfTestRunner.startMeasureValuesAsync({
+    description: 'Test accessibility performance when changing text inside unignored nodes, where those are inside focusable containers.',
+    unit: 'ms',
+    done: function () {
+      isDone = true;
+    },
+    run: function() {
+      runTest();
+    },
+    iterationCount: 6,
+    tracingCategories: 'accessibility',
+    traceEventsToMeasure: [
+      'ProcessDeferredAccessibilityEvents',
+      'RenderAccessibilityImpl::SendPendingAccessibilityEvents'
+    ]
+});
+</script>
+
+</html>

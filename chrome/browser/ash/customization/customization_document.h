@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,18 +11,20 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
+#include "base/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class PrefRegistrySimple;
 class Profile;
 
 namespace base {
+// TODO(crbug.com/1187061): Refactor this to remove base::DictionaryValue.
 class DictionaryValue;
 class FilePath;
 }  // namespace base
@@ -76,7 +78,7 @@ class CustomizationDocument {
                                       const std::string& dictionary_name,
                                       const std::string& entry_name) const;
 
-  std::unique_ptr<base::DictionaryValue> root_;
+  std::unique_ptr<base::Value::Dict> root_;
 
   // Value of the "version" attribute that is supported.
   // Otherwise config is not loaded.
@@ -180,7 +182,7 @@ class ServicesCustomizationDocument : public CustomizationDocument {
   bool GetDefaultWallpaperUrl(GURL* out_url) const;
 
   // Returns list of default apps.
-  std::unique_ptr<base::DictionaryValue> GetDefaultApps() const;
+  absl::optional<base::Value::Dict> GetDefaultApps() const;
 
   // Creates an extensions::ExternalLoader that will provide OEM default apps.
   // Cache of OEM default apps stored in profile preferences.
@@ -249,8 +251,8 @@ class ServicesCustomizationDocument : public CustomizationDocument {
   void OnManifestLoaded();
 
   // Returns list of default apps in ExternalProvider format.
-  static std::unique_ptr<base::DictionaryValue> GetDefaultAppsInProviderFormat(
-      const base::DictionaryValue& root);
+  static base::Value::Dict GetDefaultAppsInProviderFormat(
+      const base::Value::Dict& root);
 
   // Update cached manifest for |profile|.
   void UpdateCachedManifest(Profile* profile);
@@ -259,12 +261,11 @@ class ServicesCustomizationDocument : public CustomizationDocument {
   void OnCustomizationNotFound();
 
   // Set OEM apps folder name for AppListSyncableService for |profile|.
-  void SetOemFolderName(Profile* profile, const base::DictionaryValue& root);
+  void SetOemFolderName(Profile* profile, const base::Value::Dict& root);
 
   // Returns the name of the folder for OEM apps for given |locale|.
-  std::string GetOemAppsFolderNameImpl(
-      const std::string& locale,
-      const base::DictionaryValue& root) const;
+  std::string GetOemAppsFolderNameImpl(const std::string& locale,
+                                       const base::Value::Dict& root) const;
 
   // Start download of wallpaper image if needed.
   void StartOEMWallpaperDownload(const GURL& wallpaper_url,

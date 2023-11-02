@@ -1,4 +1,4 @@
-// Copyright (c) 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/peerconnection/peer_connection_dependency_factory.h"
@@ -90,6 +89,14 @@ void GenerateCertificateWithOptionalExpiration(
     ExecutionContext& context,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   DCHECK(key_params.IsValid());
+  if (context.IsContextDestroyed()) {
+    // If the context is destroyed we won't be able to access the
+    // PeerConnectionDependencyFactory. Reject the promise by returning a null
+    // certificate.
+    std::move(completion_callback).Run(nullptr);
+    return;
+  }
+
   auto& pc_dependency_factory =
       blink::PeerConnectionDependencyFactory::From(context);
   pc_dependency_factory.EnsureInitialized();

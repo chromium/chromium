@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -52,7 +52,6 @@
     didSubmitDocumentWithFormNamed:(const std::string&)formName
                           withData:(const std::string&)formData
                     hasUserGesture:(BOOL)hasUserGesture
-                   formInMainFrame:(BOOL)formInMainFrame
                            inFrame:(web::WebFrame*)frame {
   _submitDocumentInfo = std::make_unique<autofill::TestSubmitDocumentInfo>();
   _submitDocumentInfo->web_state = webState;
@@ -60,7 +59,6 @@
   _submitDocumentInfo->form_name = formName;
   _submitDocumentInfo->form_data = formData;
   _submitDocumentInfo->has_user_gesture = hasUserGesture;
-  _submitDocumentInfo->form_in_main_frame = formInMainFrame;
 }
 
 - (void)webState:(web::WebState*)webState
@@ -102,20 +100,17 @@ TEST_F(FormActivityObserverBridgeTest, DocumentSubmitted) {
   std::string kTestFormName("form-name");
   std::string kTestFormData("[]");
   bool has_user_gesture = true;
-  bool form_in_main_frame = true;
   auto sender_frame =
       web::FakeWebFrame::Create("sender_frame", true, GURL::EmptyGURL());
   observer_bridge_.DocumentSubmitted(&fake_web_state_, sender_frame.get(),
                                      kTestFormName, kTestFormData,
-                                     has_user_gesture, form_in_main_frame);
+                                     has_user_gesture);
   ASSERT_TRUE([observer_ submitDocumentInfo]);
   EXPECT_EQ(&fake_web_state_, [observer_ submitDocumentInfo]->web_state);
   EXPECT_EQ(sender_frame.get(), [observer_ submitDocumentInfo]->sender_frame);
   EXPECT_EQ(kTestFormName, [observer_ submitDocumentInfo]->form_name);
   EXPECT_EQ(kTestFormData, [observer_ submitDocumentInfo]->form_data);
   EXPECT_EQ(has_user_gesture, [observer_ submitDocumentInfo]->has_user_gesture);
-  EXPECT_EQ(form_in_main_frame,
-            [observer_ submitDocumentInfo]->form_in_main_frame);
 }
 
 // Tests |webState:didRegisterFormActivity:...| forwarding.

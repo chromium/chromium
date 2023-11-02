@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -147,7 +147,7 @@ TEST_F(ScreenUtilTest, ShelfDisplayBoundsInUnifiedDesktopGrid) {
       nullptr, GetContext(), gfx::Rect(10, 10, 100, 100));
   aura::Window* window = widget->GetNativeWindow();
 
-  display::DisplayIdList list = display_manager()->GetCurrentDisplayIdList();
+  display::DisplayIdList list = display_manager()->GetConnectedDisplayIdList();
   ASSERT_EQ(6u, list.size());
   // Create a 3 x 2 vertical layout matrix and set it.
   // [500 x 400] [400 x 600]
@@ -252,8 +252,8 @@ TEST_F(ScreenUtilTest, FullscreenWindowBoundsWithDockedMagnifier) {
   EXPECT_NE(window->bounds(), kDisplayBounds);
 
   gfx::Rect expected_bounds = kDisplayBounds;
-  expected_bounds.Inset(
-      0, docked_magnifier_controller->GetTotalMagnifierHeight(), 0, 0);
+  expected_bounds.Inset(gfx::Insets().set_top(
+      docked_magnifier_controller->GetTotalMagnifierHeight()));
   EXPECT_EQ(expected_bounds, window->bounds());
 }
 

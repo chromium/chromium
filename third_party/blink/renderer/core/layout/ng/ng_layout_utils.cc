@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -208,10 +208,15 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
   LayoutUnit block_size = fragment_geometry.border_box_size.block_size;
   bool is_initial_block_size_indefinite = block_size == kIndefiniteSize;
   if (is_initial_block_size_indefinite) {
-    LayoutUnit intrinsic_block_size = layout_result.IntrinsicBlockSize();
+    LayoutUnit intrinsic_block_size;
+    // Intrinsic block-size is only defined if the node is unfragmented.
+    if (!physical_fragment.IsFirstForNode() || physical_fragment.BreakToken())
+      intrinsic_block_size = kIndefiniteSize;
+    else
+      intrinsic_block_size = layout_result.IntrinsicBlockSize();
 
-    // Grid/flex can have their children calculate their size based on their
-    // parent's final block-size. E.g.
+    // Grid/flex/fieldset can have their children calculate their size based on
+    // their parent's final block-size. E.g.
     // <div style="display: flex;">
     //   <div style="display: flex;"> <!-- or "display: grid;" -->
     //     <!-- Child will stretch to the parent's block-size -->
@@ -239,7 +244,7 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
     if (old_space.IsFixedBlockSize() ||
         (old_space.IsBlockAutoBehaviorStretch() &&
          style.LogicalHeight().IsAuto())) {
-      if (node.IsFlexibleBox() || node.IsGrid())
+      if (node.IsFlexibleBox() || node.IsGrid() || node.IsFieldsetContainer())
         intrinsic_block_size = kIndefiniteSize;
     }
 
@@ -282,11 +287,7 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
     if (node.IsFieldsetContainer())
       return NGLayoutCacheStatus::kNeedsLayout;
 
-    // Textfields are block-flow, but we can't apply simplified layout due to
-    // -internal-align-self-block.
-    // TODO(tkent): We could store a bit on the |NGLayoutResult| which
-    // indicates if we have a child with "-internal-align-self-block:center".
-    if (node.IsTextField())
+    if (layout_result.DisableSimplifiedLayout())
       return NGLayoutCacheStatus::kNeedsLayout;
 
     // If we are the document or body element in quirks mode, changing our size
@@ -386,7 +387,7 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
         // We've been provided a new alignment baseline, just check that it
         // matches the previously generated baseline.
         if (!old_alignment_baseline) {
-          if (*new_alignment_baseline != physical_fragment.Baseline())
+          if (*new_alignment_baseline != physical_fragment.FirstBaseline())
             return NGLayoutCacheStatus::kNeedsLayout;
           break;
         }
@@ -394,6 +395,7 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
         // If the alignment baselines differ at this stage, we need layout.
         if (*new_alignment_baseline != *old_alignment_baseline)
           return NGLayoutCacheStatus::kNeedsLayout;
+
         break;
       }
       case EVerticalAlign::kMiddle:
@@ -415,6 +417,7 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
 
 bool IntrinsicSizeWillChange(
     const NGBlockNode& node,
+    const NGBlockBreakToken* break_token,
     const NGLayoutResult& cached_layout_result,
     const NGConstraintSpace& new_space,
     absl::optional<NGFragmentGeometry>* fragment_geometry) {
@@ -422,8 +425,10 @@ bool IntrinsicSizeWillChange(
   if (new_space.IsInlineAutoBehaviorStretch() && !NeedMinMaxSize(style))
     return false;
 
-  if (!*fragment_geometry)
-    *fragment_geometry = CalculateInitialFragmentGeometry(new_space, node);
+  if (!*fragment_geometry) {
+    *fragment_geometry =
+        CalculateInitialFragmentGeometry(new_space, node, break_token);
+  }
 
   LayoutUnit inline_size = NGFragment(style.GetWritingDirection(),
                                       cached_layout_result.PhysicalFragment())
@@ -439,6 +444,7 @@ bool IntrinsicSizeWillChange(
 
 NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatus(
     const NGBlockNode& node,
+    const NGBlockBreakToken* break_token,
     const NGLayoutResult& cached_layout_result,
     const NGConstraintSpace& new_space,
     absl::optional<NGFragmentGeometry>* fragment_geometry) {
@@ -447,16 +453,23 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatus(
   const NGConstraintSpace& old_space =
       cached_layout_result.GetConstraintSpaceForCaching();
 
+  recordreplay::Assert("[RUN-1855-1856] CalculateSizeBasedLayoutCacheStatus node(%d) old(%s) new(%s)",
+    node.RecordReplayId(),
+    old_space.ToString().Ascii().c_str(),
+    new_space.ToString().Ascii().c_str()
+  );
+
   if (!new_space.MaySkipLayout(old_space))
     return NGLayoutCacheStatus::kNeedsLayout;
 
   if (new_space.AreInlineSizeConstraintsEqual(old_space) &&
       new_space.AreBlockSizeConstraintsEqual(old_space)) {
+
     // It is possible that our intrinsic size has changed, check for that here.
     // TODO(cbiesinger): Investigate why this check doesn't apply to
     // |MaySkipLegacyLayout|.
-    if (IntrinsicSizeWillChange(node, cached_layout_result, new_space,
-                                fragment_geometry))
+    if (IntrinsicSizeWillChange(node, break_token, cached_layout_result,
+                                new_space, fragment_geometry))
       return NGLayoutCacheStatus::kNeedsLayout;
 
     // We don't have to check our style if we know the constraint space sizes
@@ -470,8 +483,10 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatus(
       return NGLayoutCacheStatus::kHit;
   }
 
-  if (!*fragment_geometry)
-    *fragment_geometry = CalculateInitialFragmentGeometry(new_space, node);
+  if (!*fragment_geometry) {
+    *fragment_geometry =
+        CalculateInitialFragmentGeometry(new_space, node, break_token);
+  }
 
   return CalculateSizeBasedLayoutCacheStatusWithGeometry(
       node, **fragment_geometry, cached_layout_result, new_space, old_space);

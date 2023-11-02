@@ -3,6 +3,8 @@
 <head>
 <script src='../../../resources/testharness.js'></script>
 <script src='../../../resources/testharnessreport.js'></script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
 <script src='../../../fast/forms/resources/picker-common.js'></script>
 </head>
 <body>
@@ -13,9 +15,10 @@
 let t = async_test('Color picker: Focusing the color well\'s selection ring should not scroll it into view.');
 t.step(() => {
   let colorControl = document.getElementById('color');
-  openPicker(colorControl, t.step_func_done(() => {
-    popupWindow.focus();
-    const popupDocument = popupWindow.document;
+  openPicker(colorControl)
+  .then(t.step_func_done(() => {
+    internals.pagePopupWindow.focus();
+    const popupDocument = internals.pagePopupWindow.document;
     const colorWellSelectionRing = popupDocument.querySelector('color-well > color-selection-ring');
     const colorWellSelectionRingOriginalRect = colorWellSelectionRing.getBoundingClientRect();
     eventSender.keyDown('Tab');

@@ -1,4 +1,4 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -12,7 +12,7 @@ declare_args() {
   # Controls whether the build should use the version of minigbm library shipped
   # with the system. In release builds of desktop Linux and Chrome OS we use the
   # system version.
-  use_system_minigbm = (is_linux || is_chromeos_lacros) && !is_chromecast
+  use_system_minigbm = (is_linux && !is_castos) || is_chromeos_lacros
 
   use_amdgpu_minigbm = false
   use_exynos_minigbm = false
@@ -63,12 +63,11 @@ if (!use_system_minigbm) {
       "src/amdgpu.c",
       "src/dri.c",
       "src/drv.c",
+      "src/drv_array_helpers.c",
+      "src/drv_helpers.c",
       "src/dumb_driver.c",
-      "src/exynos.c",
       "src/gbm.c",
       "src/gbm_helpers.c",
-      "src/helpers.c",
-      "src/helpers_array.c",
       "src/i915.c",
       "src/mediatek.c",
       "src/msm.c",
@@ -76,7 +75,7 @@ if (!use_system_minigbm) {
       "src/vc4.c",
       "src/virtgpu.c",
       "src/virtgpu_cross_domain.c",
-      "src/virtgpu_virgl.c"
+      "src/virtgpu_virgl.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]

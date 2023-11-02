@@ -1,10 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/showcase/core/showcase_model.h"
 
-#include "base/check.h"
+#import "base/check.h"
 #import "ios/showcase/core/showcase_model_buildflags.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -53,11 +53,6 @@ BOOL IsShowcaseModelValid(NSArray<showcase::ModelRow*>* model) {
       showcase::kClassForDisplayKey : @"ConsentViewController",
       showcase::kClassForInstantiationKey : @"ConsentViewController",
       showcase::kUseCaseKey : @"Credential Provider Consent UI",
-    },
-    @{
-      showcase::kClassForDisplayKey : @"ConsentLegacyViewController",
-      showcase::kClassForInstantiationKey : @"ConsentLegacyViewController",
-      showcase::kUseCaseKey : @"Legacy Credential Provider Consent UI",
     },
     @{
       showcase::kClassForDisplayKey : @"EnterpriseLoadScreenViewController",
@@ -198,6 +193,11 @@ BOOL IsShowcaseModelValid(NSArray<showcase::ModelRow*>* model) {
       showcase::kClassForDisplayKey : @"LinkPreviewViewController",
       showcase::kClassForInstantiationKey : @"SCLinkPreviewCoordinator",
       showcase::kUseCaseKey : @"Link Preview",
+    },
+    @{
+      showcase::kClassForDisplayKey : @"SCFollowViewController",
+      showcase::kClassForInstantiationKey : @"SCFollowViewController",
+      showcase::kUseCaseKey : @"Web Channels First Follow and Follow Mgmt UI",
     },
   ];
   DCHECK(IsShowcaseModelValid(model));

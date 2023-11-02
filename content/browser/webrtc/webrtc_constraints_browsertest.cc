@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@
 #include "content/shell/browser/shell.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #endif
 
@@ -58,7 +58,8 @@ class WebRtcConstraintsBrowserTest
 // Test fails under MSan, https://crbug.com/445745.
 // Test is also flaky (on Mac, Linux, LaCrOS, Android, but mostly on Mac):
 // https://crbug.com/1241538
-#if defined(MEMORY_SANITIZER) || defined(OS_MAC)
+// TODO(https://crbug.com/1318234): Fix and enable on Fuchsia.
+#if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_GetUserMediaConstraints DISABLED_GetUserMediaConstraints
 #else
 #define MAYBE_GetUserMediaConstraints GetUserMediaConstraints

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,9 +34,12 @@ namespace {
 template <class Image, class Pixmap>
 scoped_refptr<Image> CreateImageFromPixmap(const gfx::Size& size,
                                            gfx::BufferFormat format,
+                                           const gfx::ColorSpace& color_space,
                                            scoped_refptr<Pixmap> pixmap,
                                            gfx::BufferPlane plane) {
   auto image = base::MakeRefCounted<Image>(size, format, plane);
+  if (color_space.IsValid())
+    image->SetColorSpace(color_space);
   if (!image->Initialize(std::move(pixmap))) {
     LOG(ERROR) << "Failed to create GLImage " << size.ToString() << ", "
                << gfx::BufferFormatToString(format);
@@ -117,6 +120,7 @@ GpuMemoryBufferFactoryNativePixmap::CreateImageForGpuMemoryBuffer(
     gfx::GpuMemoryBufferHandle handle,
     const gfx::Size& size,
     gfx::BufferFormat format,
+    const gfx::ColorSpace& color_space,
     gfx::BufferPlane plane,
     int client_id,
     SurfaceHandle surface_handle) {
@@ -142,7 +146,7 @@ GpuMemoryBufferFactoryNativePixmap::CreateImageForGpuMemoryBuffer(
                  ->CreateNativePixmapFromHandle(
                      surface_handle, size, format,
                      std::move(handle.native_pixmap_handle));
-#if !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
     if (!pixmap) {
       DCHECK_EQ(surface_handle, gpu::kNullSurfaceHandle);
       pixmap = base::WrapRefCounted(new gfx::NativePixmapDmaBuf(
@@ -163,11 +167,11 @@ GpuMemoryBufferFactoryNativePixmap::CreateImageForGpuMemoryBuffer(
     case gl::kGLImplementationEGLANGLE:
       // EGL
       return CreateImageFromPixmap<gl::GLImageNativePixmap>(
-          plane_size, plane_format, pixmap, plane);
+          plane_size, plane_format, color_space, pixmap, plane);
 #if BUILDFLAG(OZONE_PLATFORM_X11)
     case gl::kGLImplementationDesktopGL:
-      return CreateImageFromPixmap<gl::GLImageGLXNativePixmap>(size, format,
-                                                               pixmap, plane);
+      return CreateImageFromPixmap<gl::GLImageGLXNativePixmap>(
+          size, format, color_space, pixmap, plane);
 #endif
     default:
       NOTREACHED();
@@ -176,7 +180,10 @@ GpuMemoryBufferFactoryNativePixmap::CreateImageForGpuMemoryBuffer(
 }
 
 bool GpuMemoryBufferFactoryNativePixmap::SupportsCreateAnonymousImage() const {
-  return true;
+  // Platforms may not support native pixmaps.
+  return ui::OzonePlatform::GetInstance()
+      ->GetPlatformRuntimeProperties()
+      .supports_native_pixmaps;
 }
 
 scoped_refptr<gl::GLImage>

@@ -1,0 +1,23 @@
+# Copyright 2018 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+assert(is_chromeos_ash, "Non Chrome OS builds cannot depend on //chromeos/ash")
+
+proto_library("proto") {
+  sources = [
+    "about_me_settings_ui.proto",
+    "activity_control_settings_common.proto",
+    "activity_control_settings_ui.proto",
+    "assistant_device_settings_ui.proto",
+    "consent_flow_ui.proto",
+    "email_opt_in_ui.proto",
+    "gaia_user_context_ui.proto",
+    "get_settings_ui.proto",
+    "header.proto",
+    "settings_ui.proto",
+  ]
+}

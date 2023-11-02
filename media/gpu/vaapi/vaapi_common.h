@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #ifndef MEDIA_GPU_VAAPI_VAAPI_COMMON_H_
@@ -12,9 +12,9 @@
 #include "media/gpu/vp9_picture.h"
 #include "media/media_buildflags.h"
 
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 #include "media/gpu/h265_dpb.h"
-#endif
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 
 namespace media {
 
@@ -41,7 +41,7 @@ class VaapiH264Picture : public H264Picture {
   scoped_refptr<VASurface> va_surface_;
 };
 
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 class VaapiH265Picture : public H265Picture {
  public:
   explicit VaapiH265Picture(scoped_refptr<VASurface> va_surface);
@@ -60,7 +60,7 @@ class VaapiH265Picture : public H265Picture {
  private:
   scoped_refptr<VASurface> va_surface_;
 };
-#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 
 class VaapiVP8Picture : public VP8Picture {
  public:

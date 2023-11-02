@@ -52,6 +52,7 @@
 ./tools/manifest/jsonlib.py
 ./tools/manifest/log.py
 ./tools/manifest/manifest.py
+./tools/manifest/requirements.txt
 ./tools/manifest/sourcefile.py
 ./tools/manifest/testpaths.py
 ./tools/manifest/typedata.py
@@ -214,7 +215,6 @@
 ./tools/third_party/websockets/compliance/fuzzingserver.json
 ./tools/third_party/websockets/compliance/test_server.py
 ./tools/webdriver/webdriver/__init__.py
-./tools/webdriver/webdriver/bidi.py
 ./tools/webdriver/webdriver/client.py
 ./tools/webdriver/webdriver/error.py
 ./tools/webdriver/webdriver/protocol.py
@@ -222,6 +222,12 @@
 ./tools/webdriver/webdriver/bidi/__init__.py
 ./tools/webdriver/webdriver/bidi/client.py
 ./tools/webdriver/webdriver/bidi/error.py
+./tools/webdriver/webdriver/bidi/modules/__init__.py
+./tools/webdriver/webdriver/bidi/modules/_module.py
+./tools/webdriver/webdriver/bidi/modules/browsing_context.py
+./tools/webdriver/webdriver/bidi/modules/script.py
+./tools/webdriver/webdriver/bidi/modules/session.py
+./tools/webdriver/webdriver/bidi/transport.py
 ./tools/webtransport/README.md
 ./tools/webtransport/__init__.py
 ./tools/webtransport/requirements.txt
@@ -255,8 +261,10 @@
 ./tools/wptrunner/wptrunner/testdriver-vendor.js
 ./tools/wptrunner/wptrunner/config.py
 ./tools/wptrunner/wptrunner/testharnessreport-servodriver.js
+./tools/wptrunner/wptrunner/testharnessreport-content-shell.js
 ./tools/wptrunner/wptrunner/testharness_runner.html
 ./tools/wptrunner/wptrunner/executors/executorselenium.py
+./tools/wptrunner/wptrunner/executors/executorcontentshell.py
 ./tools/wptrunner/wptrunner/executors/test-wait.js
 ./tools/wptrunner/wptrunner/executors/executoropera.py
 ./tools/wptrunner/wptrunner/executors/window-loaded.js
@@ -303,6 +311,7 @@
 ./tools/wptrunner/wptrunner/manifestexpected.py
 ./tools/wptrunner/wptrunner/stability.py
 ./tools/wptrunner/wptrunner/browsers/edgechromium.py
+./tools/wptrunner/wptrunner/browsers/content_shell.py
 ./tools/wptrunner/wptrunner/browsers/servodriver.py
 ./tools/wptrunner/wptrunner/browsers/ie.py
 ./tools/wptrunner/wptrunner/browsers/sauce.py

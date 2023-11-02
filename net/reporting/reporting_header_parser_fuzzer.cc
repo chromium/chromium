@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,11 +10,12 @@
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/reporting/reporting_cache.h"
 #include "net/reporting/reporting_header_parser.h"
 #include "net/reporting/reporting_policy.pb.h"
 #include "net/reporting/reporting_test_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -33,16 +34,16 @@ void FuzzReportingHeaderParser(const std::string& data_json,
                                     policy);
   // Emulate what ReportingService::OnHeader does before calling
   // ReportingHeaderParser::ParseHeader.
-  std::unique_ptr<base::Value> data_value =
-      base::JSONReader::ReadDeprecated("[" + data_json + "]");
+  absl::optional<base::Value> data_value =
+      base::JSONReader::Read("[" + data_json + "]");
   if (!data_value)
     return;
 
   // TODO: consider including proto definition for URL after moving that to
   // testing/libfuzzer/proto and creating a separate converter.
   net::ReportingHeaderParser::ParseReportToHeader(
-      &context, net::NetworkIsolationKey(),
-      url::Origin::Create(GURL("https://origin/")), std::move(data_value));
+      &context, net::NetworkAnonymizationKey(),
+      url::Origin::Create(GURL("https://origin/")), data_value->GetList());
   if (context.cache()->GetEndpointCount() == 0) {
     return;
   }

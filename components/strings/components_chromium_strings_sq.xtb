@@ -4,7 +4,6 @@
 <translation id="130631256467250065">Ndryshimet e tua do të hyjnë në fuqi herën tjetër kur të rinisësh pajisjen.</translation>
 <translation id="275588974610408078">Raportimi i ndërprerjes aksidentale nuk ofrohet në Chromium.</translation>
 <translation id="3064346599913645280">Po shikon një faqe të sigurt të Chromium</translation>
-<translation id="3550966579244642892">"Sistemi operativ Chromium" nuk e ka përfunduar konfigurimin e tij fillestar.</translation>
 <translation id="358997566136285270">Logoja e Chromium</translation>
 <translation id="4365115785552740256">Chromium është bërë i mundur nga projekti me burim të hapur <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> dhe <ph name="BEGIN_LINK_OSS" />softuerë të tjerë me burim të hapur<ph name="END_LINK_OSS" />.</translation>
 <translation id="4559775032954821361">Shko te
@@ -20,6 +19,7 @@
 <translation id="4622039161600275920">Kjo faqe është bllokuar nga Chromium</translation>
 <translation id="48558539577516920">Lejo Chromium të qaset në rrjet, në cilësimet e murit mbrojtës ose
       të antivirusit.</translation>
+<translation id="4918837013875648434">ChromiumOS nuk e ka përfunduar konfigurimin e tij fillestar.</translation>
 <translation id="580822234363523061">Shko te
           menyja e Chromium &gt;
           <ph name="SETTINGS_TITLE" />

@@ -1,5 +1,7 @@
 # Debugging
 
+[TOC]
+
 It is possible to debug Fuchsia binaries using `zxdb`. For the sake of these
 examples, we will be using `base_unittests` as the test suite we wish to
 execute. These instructions assume that your Chromium build has the following gn

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,6 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/policy/cloud/policy_invalidation_util.h"
-#include "chrome/common/chrome_features.h"
 #include "components/invalidation/public/invalidation_service.h"
 #include "components/invalidation/public/invalidation_util.h"
 #include "components/invalidation/public/topic_invalidation_map.h"
@@ -87,10 +86,6 @@ void RecordPolicyInvalidationMetric(PolicyInvalidationScope scope,
 
 std::string ComposeOwnerName(PolicyInvalidationScope scope,
                              const std::string& device_local_account_id) {
-  if (!base::FeatureList::IsEnabled(features::kInvalidatorUniqueOwnerName)) {
-    return "Cloud";
-  }
-
   switch (scope) {
     case PolicyInvalidationScope::kUser:
       return "CloudPolicy.User";
@@ -480,13 +475,15 @@ void CloudPolicyInvalidator::Unregister() {
 }
 
 void CloudPolicyInvalidator::UpdateMaxFetchDelay(const PolicyMap& policy_map) {
+#if !BUILDFLAG(IS_ANDROID)
   // Try reading the delay from the policy.
-  const base::Value* delay_policy_value =
-      policy_map.GetValue(key::kMaxInvalidationFetchDelay);
-  if (delay_policy_value && delay_policy_value->is_int()) {
+  const base::Value* delay_policy_value = policy_map.GetValue(
+      key::kMaxInvalidationFetchDelay, base::Value::Type::INTEGER);
+  if (delay_policy_value) {
     set_max_fetch_delay(delay_policy_value->GetInt());
     return;
   }
+#endif
 
   set_max_fetch_delay(kMaxFetchDelayDefault);
 }

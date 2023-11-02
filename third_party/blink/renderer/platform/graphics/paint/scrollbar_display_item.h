@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,12 +23,11 @@ class DisplayItemClient;
 class GraphicsContext;
 class TransformPaintPropertyNode;
 
-// Represents a non-custom scrollbar in CompositeAfterPaint. During paint, we
-// create a ScrollbarDisplayItem for a non-custom scrollbar. During
-// PaintArtifactCompositor::Update(), we decide whether to composite the
+// During paint, we create a ScrollbarDisplayItem for a non-custom scrollbar.
+// During PaintArtifactCompositor::Update(), we decide whether to composite the
 // scrollbar and, if not composited, call Paint() to actually paint the
-// scrollbar into a paint record, otherwise call CreateLayer() to create a
-// cc scrollbar layer.
+// scrollbar into a paint record, otherwise call CreateLayer() to create a cc
+// scrollbar layer.
 class PLATFORM_EXPORT ScrollbarDisplayItem final : public DisplayItem {
  public:
   ScrollbarDisplayItem(DisplayItemClientId,
@@ -69,6 +68,8 @@ class PLATFORM_EXPORT ScrollbarDisplayItem final : public DisplayItem {
                      const TransformPaintPropertyNode* scroll_translation,
                      CompositorElementId element_id);
 
+  bool IsOpaque() const;
+
  private:
   friend class DisplayItem;
   bool EqualsForUnderInvalidationImpl(const ScrollbarDisplayItem&) const;
@@ -82,6 +83,8 @@ class PLATFORM_EXPORT ScrollbarDisplayItem final : public DisplayItem {
     CompositorElementId element_id_;
     // This is lazily created for non-composited scrollbar.
     mutable sk_sp<const PaintRecord> record_;
+
+    USING_FAST_MALLOC(Data);
   };
   // This is to make ScrollbarDisplayItem not bigger than other DisplayItems,
   // so that we can store different types of DisplayItems in DisplayItemList

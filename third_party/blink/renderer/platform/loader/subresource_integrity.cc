@@ -1,10 +1,9 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/loader/subresource_integrity.h"
 
-#include "base/cxx17_backports.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "third_party/blink/public/platform/web_crypto.h"
 #include "third_party/blink/public/platform/web_crypto_algorithm.h"
@@ -36,15 +35,7 @@ static bool IsValueCharacter(UChar c) {
 
 static bool DigestsEqual(const DigestValue& digest1,
                          const DigestValue& digest2) {
-  if (digest1.size() != digest2.size())
-    return false;
-
-  for (wtf_size_t i = 0; i < digest1.size(); i++) {
-    if (digest1[i] != digest2[i])
-      return false;
-  }
-
-  return true;
+  return digest1 == digest2;
 }
 
 void SubresourceIntegrity::ReportInfo::AddUseCount(UseCounterFeature feature) {
@@ -94,7 +85,7 @@ bool SubresourceIntegrity::CheckSubresourceIntegrity(
     size_t size,
     const KURL& resource_url,
     ReportInfo& report_info) {
-  if (integrity_metadata.IsEmpty())
+  if (integrity_metadata.empty())
     return true;
 
   IntegrityMetadataSet metadata_set;
@@ -188,8 +179,8 @@ IntegrityAlgorithm SubresourceIntegrity::FindBestAlgorithm(
                 "of the integrity algorithms.");
 
   // metadata_set is non-empty, so we are guaranteed to always have a result.
-  // This is effectively an implemenation of std::max_element (C++17).
-  DCHECK(!metadata_set.IsEmpty());
+  // This is effectively an implementation of std::max_element (C++17).
+  DCHECK(!metadata_set.empty());
   auto iter = metadata_set.begin();
   IntegrityAlgorithm max_algorithm = iter->second;
   ++iter;
@@ -234,7 +225,7 @@ SubresourceIntegrity::ParseAttributeAlgorithm(const UChar*& begin,
   // The last algorithm prefix is the ed25519 signature algorithm, which should
   // only be enabled if kSignatures is requested. We'll implement this by
   // adjusting the last_prefix index into the array.
-  size_t last_prefix = base::size(kPrefixes);
+  size_t last_prefix = std::size(kPrefixes);
   if (features != IntegrityFeatures::kSignatures)
     last_prefix--;
 
@@ -307,7 +298,7 @@ SubresourceIntegrity::ParseIntegrityAttribute(
     ReportInfo* report_info) {
   // We expect a "clean" metadata_set, since metadata_set should only be filled
   // once.
-  DCHECK(metadata_set.IsEmpty());
+  DCHECK(metadata_set.empty());
 
   Vector<UChar> characters;
   attribute.StripWhiteSpace().AppendTo(characters);

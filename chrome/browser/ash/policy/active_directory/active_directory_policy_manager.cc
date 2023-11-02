@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,9 +13,9 @@
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
-#include "chromeos/cryptohome/cryptohome_parameters.h"
-#include "chromeos/dbus/login_manager/policy_descriptor.pb.h"
-#include "chromeos/network/onc/variable_expander.h"
+#include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
+#include "chromeos/ash/components/dbus/login_manager/policy_descriptor.pb.h"
+#include "chromeos/components/onc/variable_expander.h"
 #include "components/policy/core/common/cloud/cloud_external_data_manager.h"
 #include "components/policy/core/common/cloud/component_cloud_policy_store.h"
 #include "components/policy/core/common/policy_bundle.h"
@@ -29,8 +29,7 @@ namespace policy {
 namespace {
 
 // List of policies where variables like ${MACHINE_NAME} should be expanded.
-constexpr const char* kPoliciesToExpand[] = {key::kNativePrinters,
-                                             key::kPrinters};
+constexpr const char* kPoliciesToExpand[] = {key::kPrinters};
 
 // Fetch policy every 90 minutes which matches the Windows default:
 // https://technet.microsoft.com/en-us/library/cc940895.aspx
@@ -220,7 +219,9 @@ void ActiveDirectoryPolicyManager::ExpandVariables(PolicyMap* policy_map) {
   chromeos::VariableExpander expander(
       {{"MACHINE_NAME", policy->machine_name()}});
   for (const char* policy_name : kPoliciesToExpand) {
-    base::Value* value = policy_map->GetMutableValue(policy_name);
+    // It's safe to use `GetMutableValueUnsafe()` as multiple policy types are
+    // handled.
+    base::Value* value = policy_map->GetMutableValueUnsafe(policy_name);
     if (value) {
       if (!expander.ExpandValue(value)) {
         LOG(ERROR) << "Failed to expand at least one variable in policy "

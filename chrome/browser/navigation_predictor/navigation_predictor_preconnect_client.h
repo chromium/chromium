@@ -1,10 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_NAVIGATION_PREDICTOR_NAVIGATION_PREDICTOR_PRECONNECT_CLIENT_H_
 #define CHROME_BROWSER_NAVIGATION_PREDICTOR_NAVIGATION_PREDICTOR_PRECONNECT_CLIENT_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/timer/timer.h"
 #include "content/public/browser/visibility.h"
@@ -65,10 +66,8 @@ class NavigationPredictorPreconnectClient
   absl::optional<bool> IsPubliclyRoutable(
       content::NavigationHandle* navigation_handle) const;
 
-  content::WebContents* web_contents_;
-
   // Used to get keyed services.
-  content::BrowserContext* const browser_context_;
+  const raw_ptr<content::BrowserContext> browser_context_;
 
   // Set to true only if preconnects are allowed to local IPs. Defaulted to
   // false. Set to true only for testing.

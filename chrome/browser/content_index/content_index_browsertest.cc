@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
@@ -147,7 +148,10 @@ class ContentIndexTest : public InProcessBrowserTest,
  private:
   void RunScript(const std::string& script, std::string* result) {
     ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-        browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
+        browser()
+            ->tab_strip_model()
+            ->GetActiveWebContents()
+            ->GetPrimaryMainFrame(),
         "WrapFunction(async () => " + script + ")", result));
     ASSERT_TRUE(
         base::StartsWith(*result, "ok - ", base::CompareCase::SENSITIVE))
@@ -155,7 +159,7 @@ class ContentIndexTest : public InProcessBrowserTest,
   }
 
   std::map<std::string, OfflineItem> offline_items_;
-  ContentIndexProviderImpl* provider_;
+  raw_ptr<ContentIndexProviderImpl> provider_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   base::OnceClosure wait_for_tab_change_;
 };
@@ -254,7 +258,7 @@ IN_PROC_BROWSER_TEST_F(ContentIndexTest, LaunchUrl) {
 
   EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
   GURL current_url =
-      browser()->tab_strip_model()->GetActiveWebContents()->GetURL();
+      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL();
   EXPECT_TRUE(base::EndsWith(current_url.spec(),
                              "/content_index/content_index.html",
                              base::CompareCase::SENSITIVE));
@@ -271,7 +275,8 @@ IN_PROC_BROWSER_TEST_F(ContentIndexTest, LaunchUrl) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(browser()->tab_strip_model()->count(), 2);
-  current_url = browser()->tab_strip_model()->GetActiveWebContents()->GetURL();
+  current_url =
+      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL();
   EXPECT_TRUE(base::EndsWith(current_url.spec(),
                              "/content_index/content_index.html?launch",
                              base::CompareCase::SENSITIVE));

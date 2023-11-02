@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,52 +14,42 @@
 #include "build/chromecast_buildflags.h"
 #include "components/tracing/common/tracing_switches.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"  // nogncheck
 #endif
 
 namespace features {
 
 // Runs the tracing service as an in-process browser service.
-const base::Feature kTracingServiceInProcess {
-  "TracingServiceInProcess",
-#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMECAST)
-      base::FEATURE_ENABLED_BY_DEFAULT
+BASE_FEATURE(kTracingServiceInProcess,
+             "TracingServiceInProcess",
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CASTOS)
+             base::FEATURE_ENABLED_BY_DEFAULT
 #else
-      base::FEATURE_DISABLED_BY_DEFAULT
+             base::FEATURE_DISABLED_BY_DEFAULT
 #endif
-};
+);
 
-const base::Feature kEnablePerfettoSystemTracing{
-  "EnablePerfettoSystemTracing",
-#if defined(OS_CHROMEOS)
-      base::FEATURE_ENABLED_BY_DEFAULT
+BASE_FEATURE(kEnablePerfettoSystemTracing,
+             "EnablePerfettoSystemTracing",
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
+             // TODO(crbug.com/1364196): Read from structured config on Fuchsia.
+             base::FEATURE_ENABLED_BY_DEFAULT
 #else
-      base::FEATURE_DISABLED_BY_DEFAULT
+             base::FEATURE_DISABLED_BY_DEFAULT
 #endif
-};
-
-// Controls whether trace points are implemented using Perfetto's client library
-// (enabled) or legacy TraceLog (disabled).
-const base::Feature kEnablePerfettoClientApiProducer {
-  "EnablePerfettoClientApiProducer",
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-      base::FEATURE_ENABLED_BY_DEFAULT
-#else
-      base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-};
+);
 
 }  // namespace features
 
 namespace tracing {
 
 bool ShouldSetupSystemTracing() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (base::android::BuildInfo::GetInstance()->is_debug_android()) {
     return true;
   }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::GetInstance()) {
     return base::FeatureList::IsEnabled(features::kEnablePerfettoSystemTracing);
   }

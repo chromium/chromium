@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,10 +25,6 @@ using ProcessActiveBitUnderKeyCallback =
     base::RepeatingCallback<bool(HKEY, const std::wstring&)>;
 
 constexpr wchar_t kDidRun[] = L"dr";
-
-std::wstring GetAppClientStateKey(const std::string& id) {
-  return base::StrCat({CLIENT_STATE_KEY, base::ASCIIToWide(id)});
-}
 
 bool GetActiveBitUnderKey(HKEY rootkey, const std::wstring& key_name) {
   base::win::RegKey key;
@@ -104,7 +100,7 @@ bool ProcessUserActiveBit(ProcessActiveBitUnderKeyCallback callback,
 bool ProcessSystemActiveBit(ProcessActiveBitUnderKeyCallback callback,
                             const std::string& id) {
   // Clear the active bit under each user in HKU\<sid>.
-  for (base::win::RegistryKeyIterator it(HKEY_USERS, L"", Wow6432(0));
+  for (base::win::RegistryKeyIterator it(HKEY_USERS, L"", KEY_WOW64_32KEY);
        it.Valid(); ++it) {
     const std::wstring sid = it.Name();
     if (ProcessActiveBit(callback, HKEY_USERS, sid, id))

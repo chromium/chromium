@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,12 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
@@ -58,7 +60,7 @@ content::DesktopMediaID BuildMediaIdForTabMirroring(
   DCHECK(target_web_contents);
   content::DesktopMediaID media_id;
   content::RenderFrameHost* const main_frame =
-      target_web_contents->GetMainFrame();
+      target_web_contents->GetPrimaryMainFrame();
   const int process_id = main_frame->GetProcess()->GetID();
   const int frame_id = main_frame->GetRoutingID();
   media_id.type = content::DesktopMediaID::TYPE_WEB_CONTENTS;
@@ -80,7 +82,8 @@ class MockVideoCaptureObserver final
   MOCK_METHOD1(OnBufferCreatedCall, void(int buffer_id));
   MOCK_METHOD1(OnBufferReadyCall, void(int buffer_id));
   MOCK_METHOD1(OnBufferDestroyedCall, void(int buffer_id));
-  MOCK_METHOD1(OnStateChanged, void(media::mojom::VideoCaptureState state));
+  MOCK_METHOD1(OnStateChangedCall, void(media::mojom::VideoCaptureState state));
+  MOCK_METHOD1(OnVideoCaptureErrorCall, void(media::VideoCaptureError error));
 
   // media::mojom::VideoCaptureObserver implementation.
   void OnNewBuffer(int32_t buffer_id,
@@ -108,6 +111,15 @@ class MockVideoCaptureObserver final
     EXPECT_TRUE(iter != buffers_.end());
     buffers_.erase(iter);
     OnBufferDestroyedCall(buffer_id);
+  }
+
+  void OnNewCropVersion(uint32_t crop_version) override {}
+
+  void OnStateChanged(media::mojom::VideoCaptureResultPtr result) override {
+    if (result->which() == media::mojom::VideoCaptureResult::Tag::kState)
+      OnStateChangedCall(result->get_state());
+    else
+      OnVideoCaptureErrorCall(result->get_error_code());
   }
 
   void Start() {
@@ -175,7 +187,7 @@ class CastMirroringServiceHostBrowserTest
   void StartVideoCapturing() {
     base::RunLoop run_loop;
     EXPECT_CALL(*video_frame_receiver_,
-                OnStateChanged(media::mojom::VideoCaptureState::STARTED))
+                OnStateChangedCall(media::mojom::VideoCaptureState::STARTED))
         .WillOnce(InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
     video_frame_receiver_->Start();
     run_loop.Run();
@@ -185,7 +197,7 @@ class CastMirroringServiceHostBrowserTest
     if (video_frame_receiver_) {
       base::RunLoop run_loop;
       EXPECT_CALL(*video_frame_receiver_,
-                  OnStateChanged(media::mojom::VideoCaptureState::ENDED))
+                  OnStateChangedCall(media::mojom::VideoCaptureState::ENDED))
           .WillOnce(InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
       video_frame_receiver_->Stop();
       run_loop.Run();
@@ -206,8 +218,8 @@ class CastMirroringServiceHostBrowserTest
     constexpr int kTotalSegments = 1;
     constexpr int kAudioTimebase = 48000;
     media::AudioParameters params(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                                  media::CHANNEL_LAYOUT_STEREO, kAudioTimebase,
-                                  kAudioTimebase / 100);
+                                  media::ChannelLayoutConfig::Stereo(),
+                                  kAudioTimebase, kAudioTimebase / 100);
     base::RunLoop run_loop;
     EXPECT_CALL(*this, OnAudioStreamCreated())
         .WillOnce(InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
@@ -227,8 +239,8 @@ class CastMirroringServiceHostBrowserTest
   MOCK_METHOD1(LogInfoMessage, void(const std::string&));
   MOCK_METHOD1(LogErrorMessage, void(const std::string&));
 
-  // mojom::CastMessageChannel mocks.
-  MOCK_METHOD1(Send, void(mojom::CastMessagePtr));
+  // mojom::CastMessageChannel mock implementation (inbound messages).
+  MOCK_METHOD1(OnMessage, void(mojom::CastMessagePtr));
 
   // mojom::AudioStreamCreatorClient mocks.
   MOCK_METHOD0(OnAudioStreamCreated, void());
@@ -293,7 +305,7 @@ IN_PROC_BROWSER_TEST_F(CastMirroringServiceHostBrowserTest, TabIndicator) {
     }
 
    private:
-    Browser* const browser_;
+    const raw_ptr<Browser> browser_;
     base::OnceClosure on_tab_changed_;
   };
 

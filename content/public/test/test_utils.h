@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_checker.h"
@@ -24,7 +25,7 @@
 #include "third_party/blink/public/common/fetch/fetch_api_request_headers_map.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include <jni.h>
 #endif
 
@@ -94,8 +95,10 @@ bool AreAllSitesIsolatedForTesting();
 // Returns true if |origin| is currently isolated with respect to the
 // BrowsingInstance of |site_instance|. This is only relevant for
 // OriginAgentCluster isolation, and not other types of origin isolation.
-bool ShouldOriginGetOptInIsolation(SiteInstance* site_instance,
-                                   const url::Origin& origin);
+// Note: this only indicates logcial OriginAgentCluster isolation, and says
+// nothing about process-isolation (RequiresOriginKeyedProcess).
+bool IsOriginAgentClusterEnabledForOrigin(SiteInstance* site_instance,
+                                          const url::Origin& origin);
 
 // Returns true if default SiteInstances are enabled. Typically used in a test
 // to mark expectations specific to default SiteInstances.
@@ -150,7 +153,7 @@ std::string GetWebUIURLString(const std::string& host);
 // inner WebContents will be deleted if the frame it's attached to goes away.
 WebContents* CreateAndAttachInnerContents(RenderFrameHost* rfh);
 
-// Spins a run loop until IsDocumentOnLoadCompletedInMainFrame() is true.
+// Spins a run loop until IsDocumentOnLoadCompletedInPrimaryMainFrame() is true.
 void AwaitDocumentOnLoadCompleted(WebContents* web_contents);
 
 // Helper class to Run and Quit the message loop. Run and Quit can only happen
@@ -305,6 +308,36 @@ class WindowedNotificationObserver : public NotificationObserver {
   base::RunLoop run_loop_;
 };
 
+// Helper to wait for loading to stop on a WebContents.  It should be preferred
+// to uses of WindowedNotificationObserver for NOTIFICATION_LOAD_STOP.
+//
+// This helper class exists to avoid the following common pattern in tests:
+//   PerformAction()
+//   WaitForCompletionNotification()
+// The pattern leads to flakiness as there is a window between PerformAction
+// returning and the observers getting registered, where a notification will be
+// missed.
+//
+// Rather, one can do this:
+//   LoadStopObserver signal(web_contents)
+//   PerformAction()
+//   signal.Wait()
+class LoadStopObserver : public WebContentsObserver {
+ public:
+  explicit LoadStopObserver(WebContents* web_contents);
+
+  // Wait until at least one load stop has been observed.  Return immediately if
+  // one has been observed since construction.
+  void Wait();
+
+  // WebContentsObserver
+  void DidStopLoading() override;
+
+ private:
+  bool seen_ = false;
+  base::RunLoop run_loop_;
+};
+
 // Unit tests can use code which runs in the utility process by having it run on
 // an in-process utility thread. This eliminates having two code paths in
 // production code to deal with unit tests, and also helps with the binary
@@ -351,7 +384,7 @@ class RenderFrameDeletedObserver : public WebContentsObserver {
   // Overridden WebContentsObserver methods.
   void RenderFrameDeleted(RenderFrameHost* render_frame_host) override;
 
-  // TODO(1267073): Add WARN_UNUSED_RESULT
+  // TODO(1267073): Add [[nodiscard]]
   // Returns true if the frame was deleted before the timeout.
   bool WaitUntilDeleted();
   bool deleted() const;
@@ -386,7 +419,7 @@ class RenderFrameHostWrapper {
   // See RenderFrameDeletedObserver for notes on the difference between
   // RenderFrame being deleted and RenderFrameHost being destroyed.
   // Returns true if the frame was deleted before the timeout.
-  WARN_UNUSED_RESULT bool WaitUntilRenderFrameDeleted();
+  [[nodiscard]] bool WaitUntilRenderFrameDeleted() const;
   bool IsRenderFrameDeleted() const;
 
   // Pointerish operators. Feel free to add more if you need them.
@@ -481,6 +514,27 @@ class EffectiveURLContentBrowserClient : public ContentBrowserClient {
   std::map<GURL, GURL> urls_to_modify_;
 
   bool requires_dedicated_process_;
+};
+
+// Wrapper around `SetBrowserClientForTesting()` that ensures the
+// previous content browser client is restored upon destruction.
+class ScopedContentBrowserClientSetting final {
+ public:
+  explicit ScopedContentBrowserClientSetting(ContentBrowserClient* new_client);
+  ~ScopedContentBrowserClientSetting();
+
+  ScopedContentBrowserClientSetting(const ScopedContentBrowserClientSetting&) =
+      delete;
+  ScopedContentBrowserClientSetting(ScopedContentBrowserClientSetting&&) =
+      delete;
+
+  ScopedContentBrowserClientSetting& operator=(
+      const ScopedContentBrowserClientSetting&) = delete;
+  ScopedContentBrowserClientSetting& operator=(
+      ScopedContentBrowserClientSetting&&) = delete;
+
+ private:
+  const raw_ptr<ContentBrowserClient> old_client_;
 };
 
 }  // namespace content

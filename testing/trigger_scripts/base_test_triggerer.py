@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-# Copyright 2018 The Chromium Authors. All rights reserved.
+#!/usr/bin/env python3
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Custom swarming base trigger class.
@@ -20,6 +20,7 @@ import os
 import subprocess
 import sys
 import tempfile
+import time
 import logging
 import six
 
@@ -31,6 +32,8 @@ EXECUTABLE_SUFFIX = '.exe' if sys.platform == 'win32' else ''
 
 SWARMING_GO = os.path.join(SRC_DIR, 'tools', 'luci-go',
                            'swarming' + EXECUTABLE_SUFFIX)
+
+_A_WEEK_IN_SECONDS = 60 * 60 * 24 * 7
 
 
 def _convert_to_go_swarming_args(args):
@@ -63,7 +66,7 @@ def strip_unicode(obj):
     return obj
 
 
-class BaseTestTriggerer(object):
+class BaseTestTriggerer(object): # pylint: disable=useless-object-inheritance
     def __init__(self):
         self._bot_configs = None
         self._bot_statuses = []
@@ -133,9 +136,9 @@ class BaseTestTriggerer(object):
             self._bot_configs = strip_unicode(
                 json.loads(args.multiple_trigger_configs))
         except Exception as e:
-            raise ValueError(
+            six.raise_from(ValueError(
                 'Error while parsing JSON from bot config string %s: %s' %
-                (args.multiple_trigger_configs, str(e)))
+                (args.multiple_trigger_configs, str(e))), e)
         # Validate the input.
         if not isinstance(self._bot_configs, list):
             raise ValueError('Bot configurations must be a list, were: %s' %
@@ -181,6 +184,11 @@ class BaseTestTriggerer(object):
 
         for tag in sorted(tags):
             args.extend(['-tag', tag])
+
+        # If a query uses a general dimension value, e.g., os:Mac, it will take
+        # forever. We now limited the time range to be within a week.
+        start_epoch_time = int(time.time()) - _A_WEEK_IN_SECONDS
+        args.extend(['-start', str(start_epoch_time)])
 
         if limit is not None:
             args.extend(['-limit', str(limit)])
@@ -273,12 +281,11 @@ class BaseTestTriggerer(object):
         triggered."""
         if args.shard_index is None:
             return list(range(args.shards))
-        else:
-            return [args.shard_index]
+        return [args.shard_index]
 
     def generate_shard_map(self, args, buildername, selected_config):
         """Returns shard map generated on runtime if needed."""
-        pass
+        pass # pylint: disable=unnecessary-pass
 
     def trigger_tasks(self, args, remaining):
         """Triggers tasks for each bot.
@@ -316,10 +323,12 @@ class BaseTestTriggerer(object):
         logging.info('DEBUG: After filtered: %s', filtered_remaining_args)
 
         merged_json = {}
+        #pylint: disable=assignment-from-no-return
         selected_config = self.select_config_indices(args)
         shard_map = self.generate_shard_map(
             args, self._findBuilderName(filtered_remaining_args),
             selected_config)
+        #pylint: enable=assignment-from-no-return
         # Choose selected configs for this run of the test suite.
         for shard_index, bot_index in selected_config:
             # For each shard that we're going to distribute, do the following:
@@ -351,12 +360,14 @@ class BaseTestTriggerer(object):
         self.write_json_to_file(merged_json, args.dump_json)
         return 0
 
+    # pylint: disable=inconsistent-return-statements
     def _findBuilderName(self, args):
         args_length = len(args)
         for i in range(args_length):
             if (args[i] == '--tag' and i < args_length - 1
                     and args[i + 1].startswith('buildername:')):
                 return args[i + 1].split(':', 1)[1]
+    # pylint: enable=inconsistent-return-statements
 
     @staticmethod
     def setup_parser_contract(parser):

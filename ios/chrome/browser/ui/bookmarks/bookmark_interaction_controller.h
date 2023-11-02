@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #ifndef IOS_CHROME_BROWSER_UI_BOOKMARKS_BOOKMARK_INTERACTION_CONTROLLER_H_
@@ -8,9 +8,7 @@
 
 #import "ios/chrome/browser/ui/commands/bookmarks_commands.h"
 
-@protocol ApplicationCommands;
 class Browser;
-@protocol BrowserCommands;
 @protocol BookmarkInteractionControllerDelegate;
 
 namespace bookmarks {
@@ -30,24 +28,25 @@ class WebState;
 // This object's delegate.
 @property(nonatomic, weak) id<BookmarkInteractionControllerDelegate> delegate;
 
-- (instancetype)initWithBrowser:(Browser*)browser
-               parentController:(UIViewController*)parentController
-    NS_DESIGNATED_INITIALIZER;
+// The parent controller on top of which the UI needs to be presented.
+@property(nonatomic, weak) UIViewController* parentController;
+
+- (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 // Called before the instance is deallocated.
 - (void)shutdown;
 
-// Adds a bookmark for |URL| with the given |title|.
+// Adds a bookmark for `URL` with the given `title`.
 - (void)bookmarkURL:(const GURL&)URL title:(NSString*)title;
 
-// Presents the bookmark UI to edit an existing bookmark with |URL|.
+// Presents the bookmark UI to edit an existing bookmark with `URL`.
 - (void)presentBookmarkEditorForURL:(const GURL&)URL;
 
 // Presents the bookmarks browser modally.
 - (void)presentBookmarks;
 
-// Presents the bookmark or folder editor for the given |node|.
+// Presents the bookmark or folder editor for the given `node`.
 - (void)presentEditorForNode:(const bookmarks::BookmarkNode*)node;
 
 // Removes any bookmark modal controller from view if visible.

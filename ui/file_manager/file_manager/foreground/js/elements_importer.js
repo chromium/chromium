@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@ export function importElements() {
   return new Promise((resolve, reject) => {
     const script = document.createElement('script');
     script.type = 'module';
-    script.src = './foreground/js/deferred_elements.m.js';
+    script.src = './foreground/js/deferred_elements.js';
 
     script.onload = () => {
       console.log('Elements imported.');

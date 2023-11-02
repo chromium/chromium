@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,8 +15,8 @@
 #include "base/sequence_checker.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_config.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
+#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
@@ -38,14 +38,14 @@ class CrOSSystemTracingSession {
   // |true| if tracing was started and |false| otherwise.
   void StartTracing(const std::string& config, SuccessCallback callback) {
     DCHECK(!is_tracing_);
-    if (!chromeos::DBusThreadManager::IsInitialized()) {
+    if (!ash::DBusThreadManager::IsInitialized()) {
       if (callback)
         std::move(callback).Run(/*success=*/false);
       return;
     }
 
     base::trace_event::TraceConfig trace_config(config);
-    debug_daemon_ = chromeos::DBusThreadManager::Get()->GetDebugDaemonClient();
+    debug_daemon_ = ash::DebugDaemonClient::Get();
     if (!trace_config.IsSystraceEnabled() || !debug_daemon_) {
       if (callback)
         std::move(callback).Run(/*success=*/false);
@@ -90,16 +90,16 @@ class CrOSSystemTracingSession {
   }
 
   bool is_tracing_ = false;
-  chromeos::DebugDaemonClient* debug_daemon_ = nullptr;
+  ash::DebugDaemonClient* debug_daemon_ = nullptr;
 };
 
 namespace {
 
 class CrOSDataSource : public tracing::PerfettoTracedProcess::DataSourceBase {
  public:
-  static CrOSDataSource* GetInstance() {
+  static CrOSDataSource& GetInstance() {
     static base::NoDestructor<CrOSDataSource> instance;
-    return instance.get();
+    return *instance;
   }
 
   CrOSDataSource(const CrOSDataSource&) = delete;
@@ -130,10 +130,26 @@ class CrOSDataSource : public tracing::PerfettoTracedProcess::DataSourceBase {
 
  private:
   friend class base::NoDestructor<CrOSDataSource>;
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  using DataSourceProxy =
+      tracing::PerfettoTracedProcess::DataSourceProxy<CastDataSource>;
+  using SystemTraceWriter =
+      tracing::SystemTraceWriter<scoped_refptr<base::RefCountedString>,
+                                 DataSourceProxy>;
+#else
+  using SystemTraceWriter =
+      tracing::SystemTraceWriter<scoped_refptr<base::RefCountedString>>;
+#endif
 
   CrOSDataSource()
       : DataSourceBase(tracing::mojom::kSystemTraceDataSourceName) {
     DETACH_FROM_SEQUENCE(ui_sequence_checker_);
+    tracing::PerfettoTracedProcess::Get()->AddDataSource(this);
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+    perfetto::DataSourceDescriptor dsd;
+    dsd.set_name(mojom::kSystemTraceDataSourceName);
+    DataSourceProxy::Register(dsd, this);
+#endif
   }
 
   void StartTracingOnUI(tracing::PerfettoProducer* producer,
@@ -181,11 +197,11 @@ class CrOSDataSource : public tracing::PerfettoTracedProcess::DataSourceBase {
       return;
     }
 
-    trace_writer_ = std::make_unique<
-        tracing::SystemTraceWriter<scoped_refptr<base::RefCountedString>>>(
-        producer_, target_buffer_,
-        tracing::SystemTraceWriter<
-            scoped_refptr<base::RefCountedString>>::TraceType::kFTrace);
+    trace_writer_ = std::make_unique<SystemTraceWriter>(
+#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+        producer_,
+#endif
+        target_buffer_, SystemTraceWriter::TraceType::kFTrace);
     trace_writer_->WriteData(events);
     trace_writer_->Flush(base::BindOnce(&CrOSDataSource::OnTraceDataCommitted,
                                         base::Unretained(this),
@@ -220,16 +236,14 @@ class CrOSDataSource : public tracing::PerfettoTracedProcess::DataSourceBase {
   bool session_started_ = false;
   base::OnceClosure on_session_started_callback_;
   uint32_t target_buffer_ = 0;
-  std::unique_ptr<
-      tracing::SystemTraceWriter<scoped_refptr<base::RefCountedString>>>
-      trace_writer_;
+  std::unique_ptr<SystemTraceWriter> trace_writer_;
 };
 
 }  // namespace
 
 CrOSTracingAgent::CrOSTracingAgent() {
   tracing::PerfettoTracedProcess::Get()->AddDataSource(
-      CrOSDataSource::GetInstance());
+      &CrOSDataSource::GetInstance());
 }
 
 CrOSTracingAgent::~CrOSTracingAgent() = default;

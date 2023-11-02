@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,11 +18,11 @@
 namespace autofill {
 
 AddressFormEventLogger::AddressFormEventLogger(
-    bool is_in_main_frame,
+    bool is_in_any_main_frame,
     AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
     AutofillClient* client)
     : FormEventLoggerBase("Address",
-                          is_in_main_frame,
+                          is_in_any_main_frame,
                           form_interactions_ukm_logger,
                           client ? client->GetLogManager() : nullptr) {}
 

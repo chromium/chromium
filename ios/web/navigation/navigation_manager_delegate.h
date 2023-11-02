@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -56,8 +56,8 @@ class NavigationManagerDelegate {
   // navigation related functions on the main WKWebView.
   virtual id<CRWWebViewNavigationProxy> GetWebViewNavigationProxy() const = 0;
 
-  // Instructs WKWebView to navigate to the given navigation item. |wk_item| and
-  // |item| must point to the same navigation item. Calling this method may
+  // Instructs WKWebView to navigate to the given navigation item. `wk_item` and
+  // `item` must point to the same navigation item. Calling this method may
   // result in an iframe navigation.
   virtual void GoToBackForwardListItem(WKBackForwardListItem* wk_item,
                                        NavigationItem* item,

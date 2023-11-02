@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -70,8 +70,9 @@ struct COMPONENTS_DOWNLOAD_EXPORT DownloadCreateInfo {
   GURL referrer_url;
   net::ReferrerPolicy referrer_policy;
 
-  // Site URL for the site instance that initiated the download.
-  GURL site_url;
+  // The serialized embedder download data for the site instance that initiated
+  // the download.
+  std::string serialized_embedder_download_data;
 
   // The URL of the tab that started us.
   GURL tab_url;
@@ -100,6 +101,9 @@ struct COMPONENTS_DOWNLOAD_EXPORT DownloadCreateInfo {
   // Whether the download should be transient. A transient download is
   // short-lived and is not shown in the UI.
   bool transient;
+
+  // Whether this download requires safety checks.
+  bool require_safety_checks;
 
   absl::optional<ui::PageTransition> transition_type;
 
@@ -175,7 +179,7 @@ struct COMPONENTS_DOWNLOAD_EXPORT DownloadCreateInfo {
   // Source of the download, used in metrics.
   DownloadSource download_source = DownloadSource::UNKNOWN;
 
-  // Whether download is initated by the content on the page.
+  // Whether download is initiated by the content on the page.
   bool is_content_initiated;
 
   // The credentials mode for whether to expose the response headers to

@@ -1,4 +1,4 @@
-// Copyright (c) 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_forward.h"
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
@@ -144,6 +145,12 @@ class CONTENT_EXPORT TtsController {
                           int length,
                           const std::string& error_message) = 0;
 
+  // Called when the utterance with |utterance_id| becomes invalid.
+  // For example, when the WebContents associated with the utterance
+  // living in a standalone browser is destroyed, the utterance becomes
+  // invalid and should not be spoken.
+  virtual void OnTtsUtteranceBecameInvalid(int utterance_id) = 0;
+
   // Return a list of all available voices, including the native voice,
   // if supported, and all voices registered by engines. |source_url|
   // will be used for policy decisions by engines to determine which
@@ -179,6 +186,10 @@ class CONTENT_EXPORT TtsController {
   // Get the delegate that processes TTS requests with engines in a content
   // embedder.
   virtual TtsEngineDelegate* GetTtsEngineDelegate() = 0;
+
+  // Triggers the TtsPlatform to update its list of voices and relay that update
+  // through VoicesChanged.
+  virtual void RefreshVoices() = 0;
 
   // Visible for testing.
   virtual void SetTtsPlatform(TtsPlatform* tts_platform) = 0;

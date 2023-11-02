@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,8 @@ namespace web_app {
 class TestWebAppUrlLoader;
 }  // namespace web_app
 
+namespace app_list {
+
 // Base class for app list unit tests that use the "app_list" test profile.
 class AppListTestBase : public extensions::ExtensionServiceTestBase {
  public:
@@ -24,6 +26,7 @@ class AppListTestBase : public extensions::ExtensionServiceTestBase {
   ~AppListTestBase() override;
 
   void SetUp() override;
+  void SetUp(bool guest_mode);
 
   web_app::TestWebAppUrlLoader& url_loader() { return *url_loader_; }
 
@@ -59,5 +62,7 @@ syncer::SyncData CreateAppRemoteData(
     const std::string& item_pin_ordinal,
     sync_pb::AppListSpecifics_AppListItemType item_type =
         sync_pb::AppListSpecifics_AppListItemType_TYPE_APP);
+
+}  // namespace app_list
 
 #endif  // CHROME_BROWSER_UI_APP_LIST_APP_LIST_TEST_UTIL_H_

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,7 +27,7 @@ class NetworkConnectionChangeSimulator
 
   ~NetworkConnectionChangeSimulator() override;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Initializes the ChromeOS network connection type.
   // This should be used in tests that don't have a DBus set up.
   void InitializeChromeosConnectionType();

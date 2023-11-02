@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,7 +27,7 @@ class WebXrVrPermissionsBrowserTest
   uint32_t ShownCount() { return shown_count_; }
 
  private:
-  void OnBubbleAdded() override { shown_count_++; }
+  void OnPromptAdded() override { shown_count_++; }
 
   uint32_t shown_count_ = 0u;
 };

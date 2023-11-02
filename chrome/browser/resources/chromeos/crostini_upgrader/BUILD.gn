@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -8,7 +8,9 @@ import("//tools/polymer/html_to_js.gni")
 js_type_check("closure_compile") {
   is_polymer3 = true
   closure_flags = default_closure_args + [
-                    "js_module_root=../../chrome/browser/resources/chromeos/crostini_upgrader/",
+                    "js_module_root=" + rebase_path(
+                            "//chrome/browser/resources/chromeos/crostini_upgrader/",
+                            root_build_dir),
                     "js_module_root=./gen/chrome/browser/resources/chromeos/crostini_upgrader/",
                   ]
   deps = [
@@ -27,7 +29,7 @@ js_library("app") {
 
 js_library("browser_proxy") {
   deps = [
-    "//chrome/browser/ui/webui/chromeos/crostini_upgrader:mojo_bindings_js_library_for_compile",
+    "//chrome/browser/ui/webui/ash/crostini_upgrader:mojo_bindings_js_library_for_compile",
     "//ui/webui/resources/js:cr.m",
   ]
 }

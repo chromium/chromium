@@ -1,9 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/url_pattern_index/url_rule_test_support.h"
 
+#include "base/bind.h"
+#include "base/callback.h"
 #include "base/check.h"
 #include "base/strings/string_piece.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -29,16 +31,31 @@ proto::UrlRule MakeUrlRule(const UrlPattern& url_pattern) {
   return rule;
 }
 
-void AddDomains(const std::vector<std::string>& domains, proto::UrlRule* rule) {
+void AddDomains(const std::vector<std::string>& domains,
+                base::RepeatingCallback<proto::DomainListItem*()> add_domain) {
   for (std::string domain_pattern : domains) {
     DCHECK(!domain_pattern.empty());
-    auto* domain = rule->add_domains();
+    auto* domain = add_domain.Run();
     if (domain_pattern[0] == '~') {
       domain_pattern.erase(0, 1);
       domain->set_exclude(true);
     }
     domain->set_domain(std::move(domain_pattern));
   }
+}
+
+void AddInitiatorDomains(const std::vector<std::string>& initiator_domains,
+                         proto::UrlRule* rule) {
+  AddDomains(initiator_domains,
+             base::BindRepeating(&proto::UrlRule::add_initiator_domains,
+                                 base::Unretained(rule)));
+}
+
+void AddRequestDomains(const std::vector<std::string>& request_domains,
+                       proto::UrlRule* rule) {
+  AddDomains(request_domains,
+             base::BindRepeating(&proto::UrlRule::add_request_domains,
+                                 base::Unretained(rule)));
 }
 
 url::Origin GetOrigin(base::StringPiece origin_string) {

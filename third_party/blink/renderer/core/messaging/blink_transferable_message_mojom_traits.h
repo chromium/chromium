@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,8 @@
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/public/common/messaging/message_port_descriptor.h"
 #include "third_party/blink/public/common/messaging/message_port_descriptor_mojom_traits.h"
+#include "third_party/blink/public/common/messaging/task_attribution_id_mojom_traits.h"
+#include "third_party/blink/public/common/scheduler/task_attribution_id.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom-blink.h"
 #include "third_party/blink/public/mojom/messaging/transferable_message.mojom-shared.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
@@ -59,9 +61,17 @@ struct CORE_EXPORT StructTraits<blink::mojom::TransferableMessageDataView,
     return input.user_activation;
   }
 
-  static bool delegate_payment_request(
+  static blink::mojom::blink::DelegatedCapability delegated_capability(
       const blink::BlinkTransferableMessage& input) {
-    return input.delegate_payment_request;
+    return input.delegated_capability;
+  }
+
+  static absl::optional<blink::scheduler::TaskAttributionId> parent_task_id(
+      blink::BlinkTransferableMessage& input) {
+    return input.parent_task_id
+               ? absl::make_optional(blink::scheduler::TaskAttributionId(
+                     input.parent_task_id.value()))
+               : absl::nullopt;
   }
 
   static bool Read(blink::mojom::TransferableMessageDataView,

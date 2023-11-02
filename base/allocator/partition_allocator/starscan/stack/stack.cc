@@ -1,4 +1,4 @@
-// Copyright (c) 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,11 @@
 #include <cstdint>
 #include <limits>
 
+#include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
-#include "base/compiler_specific.h"
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #else
 #include <pthread.h>
@@ -21,10 +21,9 @@
 extern "C" void* __libc_stack_end;
 #endif
 
-namespace base {
-namespace internal {
+namespace partition_alloc::internal {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 void* GetStackTop() {
 #if defined(ARCH_CPU_X86_64)
@@ -44,13 +43,13 @@ void* GetStackTop() {
 #endif
 }
 
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
 
 void* GetStackTop() {
   return pthread_get_stackaddr_np(pthread_self());
 }
 
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
 void* GetStackTop() {
   pthread_attr_t attr;
@@ -75,9 +74,9 @@ void* GetStackTop() {
 #endif  // defined(LIBC_GLIBC)
 }
 
-#else  // defined(OS_WIN)
+#else  // BUILDFLAG(IS_WIN)
 #error "Unsupported GetStackTop"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 using IterateStackCallback = void (*)(const Stack*, StackVisitor*, uintptr_t*);
 extern "C" void PAPushAllRegistersAndIterateStack(const Stack*,
@@ -88,14 +87,13 @@ Stack::Stack(void* stack_top) : stack_top_(stack_top) {
   PA_DCHECK(stack_top);
 }
 
-NOINLINE uintptr_t* GetStackPointer() {
+PA_NOINLINE uintptr_t* GetStackPointer() {
   return reinterpret_cast<uintptr_t*>(__builtin_frame_address(0));
 }
 
 namespace {
 
-ALLOW_UNUSED_TYPE
-void IterateSafeStackIfNecessary(StackVisitor* visitor) {
+[[maybe_unused]] void IterateSafeStackIfNecessary(StackVisitor* visitor) {
 #if defined(__has_feature)
 #if __has_feature(safe_stack)
   // Source:
@@ -118,10 +116,10 @@ void IterateSafeStackIfNecessary(StackVisitor* visitor) {
 // should never be inlined to ensure that a possible redzone cannot contain
 // any data that needs to be scanned.
 // No ASAN support as method accesses redzones while walking the stack.
-NOINLINE NO_SANITIZE("address") ALLOW_UNUSED_TYPE
-    void IteratePointersImpl(const Stack* stack,
-                             StackVisitor* visitor,
-                             uintptr_t* stack_ptr) {
+[[maybe_unused]] PA_NOINLINE PA_NO_SANITIZE("address") void IteratePointersImpl(
+    const Stack* stack,
+    StackVisitor* visitor,
+    uintptr_t* stack_ptr) {
   PA_DCHECK(stack);
   PA_DCHECK(visitor);
   PA_CHECK(nullptr != stack->stack_top());
@@ -145,5 +143,4 @@ void Stack::IteratePointers(StackVisitor* visitor) const {
 #endif
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace partition_alloc::internal

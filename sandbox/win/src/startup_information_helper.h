@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,7 +43,7 @@ class StartupInformationHelper {
   // Create PROC_THREAD_ATTRIBUTE_SECURITY_CAPABILITIES and
   //        PROC_THREAD_ATTRIBUTE_ALL_APPLICATION_PACKAGES_POLICY
   // based on |container|. |container| should be valid.
-  void SetAppContainer(scoped_refptr<AppContainerBase> container);
+  void SetAppContainer(scoped_refptr<AppContainer> container);
   // Creates PROC_THREAD_ATTRIBUTE_JOB_LIST with |job_handle|. Not valid before
   // Windows 10.
   void AddJobToAssociate(HANDLE job_handle);
@@ -69,7 +69,7 @@ class StartupInformationHelper {
   int CountAttributes();
 
   // Fields that are not passed into CreateProcessAsUserW().
-  scoped_refptr<AppContainerBase> app_container_;
+  scoped_refptr<AppContainer> app_container_;
   bool restrict_child_process_creation_ = false;
   HANDLE stdout_handle_ = INVALID_HANDLE_VALUE;
   HANDLE stderr_handle_ = INVALID_HANDLE_VALUE;

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,8 +18,8 @@
 #include "chrome/browser/ash/borealis/infra/described.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/sessions/exit_type_service.h"
-#include "chromeos/dbus/concierge/concierge_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 
 namespace {
 
@@ -85,33 +85,31 @@ void BorealisContextManagerImpl::Startup::Start(
 
 BorealisContextManagerImpl::BorealisContextManagerImpl(Profile* profile)
     : profile_(profile), weak_factory_(this) {
-  // DBusThreadManager may not be initialized in tests.
-  if (chromeos::DBusThreadManager::IsInitialized()) {
-    ShutDownBorealisIfChromeCrashed();
-    chromeos::ConciergeClient::Get()->AddVmObserver(this);
+  // ConciergeClient may not be initialized in tests.
+  if (ash::ConciergeClient::Get()) {
+    ShutDownBorealisIfRunning();
+    ash::ConciergeClient::Get()->AddVmObserver(this);
   }
 }
 
 BorealisContextManagerImpl::~BorealisContextManagerImpl() {
-  // Even if initialized, DBusThreadManager may be destroyed prior to
-  // BorealisService/BorealisContextManagerImpl in tests. Therefore we must not
-  // keep a pointer to the observed ConciergeClient, either directly or via
-  // ScopedObservation or similar.
-  if (chromeos::DBusThreadManager::IsInitialized()) {
-    chromeos::ConciergeClient::Get()->RemoveVmObserver(this);
+  // Even if initialized, DBusThreadManager or ConciergeClient may be destroyed
+  // prior to BorealisService/BorealisContextManagerImpl in tests. Therefore we
+  // must not keep a pointer to the observed ConciergeClient, either directly or
+  // via ScopedObservation or similar.
+  if (ash::ConciergeClient::Get()) {
+    ash::ConciergeClient::Get()->RemoveVmObserver(this);
   }
 }
 
 // Note that this method gets called in the constructor.
-void BorealisContextManagerImpl::ShutDownBorealisIfChromeCrashed() {
-  if (ExitTypeService::GetLastSessionExitType(profile_) != ExitType::kCrashed) {
-    return;
-  }
+// If Borealis was running when chrome crashed/restarted then Borealis
+// may still be running and should be shut down.
+void BorealisContextManagerImpl::ShutDownBorealisIfRunning() {
   vm_tools::concierge::GetVmInfoRequest request;
-  request.set_owner_id(
-      chromeos::ProfileHelper::GetUserIdHashFromProfile(profile_));
+  request.set_owner_id(ash::ProfileHelper::GetUserIdHashFromProfile(profile_));
   request.set_name(kBorealisVmName);
-  chromeos::ConciergeClient::Get()->GetVmInfo(
+  ash::ConciergeClient::Get()->GetVmInfo(
       std::move(request),
       base::BindOnce(
           [](base::WeakPtr<BorealisContextManagerImpl> weak_this,
@@ -130,10 +128,9 @@ void BorealisContextManagerImpl::SendShutdownRequest(
   // TODO(b/172178036): This could have been a task-sequence but that
   // abstraction is proving insufficient.
   vm_tools::concierge::StopVmRequest request;
-  request.set_owner_id(
-      chromeos::ProfileHelper::GetUserIdHashFromProfile(profile_));
+  request.set_owner_id(ash::ProfileHelper::GetUserIdHashFromProfile(profile_));
   request.set_name(vm_name);
-  chromeos::ConciergeClient::Get()->StopVm(
+  ash::ConciergeClient::Get()->StopVm(
       std::move(request),
       base::BindOnce(
           [](base::OnceCallback<void(BorealisShutdownResult)>
@@ -202,11 +199,15 @@ void BorealisContextManagerImpl::ShutDownBorealis(
 base::queue<std::unique_ptr<BorealisTask>>
 BorealisContextManagerImpl::GetTasks() {
   base::queue<std::unique_ptr<BorealisTask>> task_queue;
+  task_queue.push(std::make_unique<CheckAllowed>());
+  task_queue.push(std::make_unique<GetLaunchOptions>());
   task_queue.push(std::make_unique<MountDlc>());
   task_queue.push(std::make_unique<CreateDiskImage>());
+  task_queue.push(std::make_unique<RequestWaylandServer>());
   task_queue.push(std::make_unique<StartBorealisVm>());
   task_queue.push(
       std::make_unique<AwaitBorealisStartup>(profile_, kBorealisVmName));
+  task_queue.push(std::make_unique<UpdateChromeFlags>(profile_));
   task_queue.push(std::make_unique<SyncBorealisDisk>());
   return task_queue;
 }
@@ -254,7 +255,7 @@ void BorealisContextManagerImpl::OnVmStopped(
     const vm_tools::concierge::VmStoppedSignal& signal) {
   if (context_ && context_->vm_name() == signal.name() &&
       signal.owner_id() ==
-          chromeos::ProfileHelper::GetUserIdHashFromProfile(profile_)) {
+          ash::ProfileHelper::GetUserIdHashFromProfile(profile_)) {
     CloseBorealisSplashScreenView();
     // If |context_| exists, it's a "running" Borealis instance which we didn't
     // request to shut down.

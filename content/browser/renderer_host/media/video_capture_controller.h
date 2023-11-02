@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,11 @@
 #include <memory>
 
 #include "base/callback_forward.h"
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process.h"
+#include "base/time/time.h"
 #include "base/token.h"
 #include "base/unguessable_token.h"
 #include "content/browser/renderer_host/media/video_capture_controller_event_handler.h"
@@ -126,6 +127,8 @@ class CONTENT_EXPORT VideoCaptureController
   void OnBufferRetired(int buffer_id) override;
   void OnError(media::VideoCaptureError error) override;
   void OnFrameDropped(media::VideoCaptureFrameDropReason reason) override;
+  void OnNewCropVersion(uint32_t crop_version) override;
+  void OnFrameWithEmptyRegionCapture() override;
   void OnLog(const std::string& message) override;
   void OnStarted() override;
   void OnStartedUsingGpuDecode() override;
@@ -153,6 +156,7 @@ class CONTENT_EXPORT VideoCaptureController
   void MaybeSuspend();
   void Resume();
   void Crop(const base::Token& crop_id,
+            uint32_t crop_version,
             base::OnceCallback<void(media::mojom::CropRequestResult)> callback);
   void RequestRefreshFrame();
   void SetDesktopCaptureWindowIdAsync(gfx::NativeViewId window_id,
@@ -161,6 +165,7 @@ class CONTENT_EXPORT VideoCaptureController
   const std::string& device_id() const { return device_id_; }
   blink::mojom::MediaStreamType stream_type() const { return stream_type_; }
   const media::VideoCaptureParams& parameters() const { return parameters_; }
+  bool was_crop_ever_called() const { return was_crop_ever_called_; }
 
  private:
   friend class base::RefCountedThreadSafe<VideoCaptureController>;
@@ -206,7 +211,8 @@ class CONTENT_EXPORT VideoCaptureController
     int buffer_id_;
     bool is_retired_;
     int frame_feedback_id_;
-    media::VideoFrameConsumerFeedbackObserver* consumer_feedback_observer_;
+    raw_ptr<media::VideoFrameConsumerFeedbackObserver>
+        consumer_feedback_observer_;
     media::mojom::VideoBufferHandlePtr buffer_handle_;
     media::VideoCaptureFeedback combined_consumer_feedback_;
 
@@ -273,7 +279,7 @@ class CONTENT_EXPORT VideoCaptureController
   std::unique_ptr<VideoCaptureDeviceLauncher> device_launcher_;
   base::RepeatingCallback<void(const std::string&)> emit_log_message_cb_;
   std::unique_ptr<LaunchedVideoCaptureDevice> launched_device_;
-  VideoCaptureDeviceLaunchObserver* device_launch_observer_;
+  raw_ptr<VideoCaptureDeviceLaunchObserver> device_launch_observer_;
 
   std::vector<BufferContext> buffer_contexts_;
 
@@ -296,6 +302,13 @@ class CONTENT_EXPORT VideoCaptureController
   base::TimeTicks time_of_start_request_;
 
   absl::optional<media::VideoCaptureFormat> video_capture_format_;
+
+  // As a work-around to technical limitations, we don't allow multiple
+  // captures of the same tab, by the same capturer, if the first capturer
+  // invoked cropping. (Any capturer but the first one would have been
+  // blocked earlier in the pipeline.) That is because the `crop_version`
+  // would otherwise not line up between the various ControllerClients.
+  bool was_crop_ever_called_ = false;
 
   base::WeakPtrFactory<VideoCaptureController> weak_ptr_factory_{this};
 };

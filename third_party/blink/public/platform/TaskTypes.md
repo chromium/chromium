@@ -14,6 +14,7 @@ pausable. Some internal task queues are not.
 | Networking                        | No          | No                      |  Yes       | Yes       | Yes      | No           |
 | NetworkingWithURLLoaderAnnotation | No          | No                      |  Yes       | Yes       | Yes      | No           |
 | NetworkingControl                 | No          | No                      |  Yes       | Yes       | Yes      | No           |
+| LowPriorityScriptExecution        | No          | No                      |  Yes       | Yes       | Yes      | No           |
 | HistoryTraversal                  | No          | No                      |  Yes       | Yes       | Yes      | Yes          |
 | Embed                             | No          | No                      |  Yes       | Yes       | Yes      | Yes          |
 | MediaElementEvent                 | No          | No                      |  No        | Yes       | Yes      | Yes          |

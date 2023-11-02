@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,7 +42,8 @@ class ServiceWorkerScriptLoaderFactoryTest : public testing::Test {
     options.scope = scope_;
     registration_ = base::MakeRefCounted<ServiceWorkerRegistration>(
         options, blink::StorageKey(url::Origin::Create(scope_)),
-        1L /* registration_id */, context->AsWeakPtr());
+        1L /* registration_id */, context->AsWeakPtr(),
+        blink::mojom::AncestorFrameType::kNormalFrame);
     version_ = CreateNewServiceWorkerVersion(
         context->registry(), registration_.get(), script_url_,
         blink::mojom::ScriptType::kClassic);

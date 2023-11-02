@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,7 @@
 #include "ui/views/animation/animation_abort_handle.h"
 #include "ui/views/examples/example_base.h"
 
-namespace views {
-namespace examples {
+namespace views::examples {
 
 class VIEWS_EXAMPLES_EXPORT AnimationExample : public ExampleBase {
  public:
@@ -27,7 +26,6 @@ class VIEWS_EXAMPLES_EXPORT AnimationExample : public ExampleBase {
   std::unique_ptr<AnimationAbortHandle> abort_handle_;
 };
 
-}  // namespace examples
-}  // namespace views
+}  // namespace views::examples
 
 #endif  // UI_VIEWS_EXAMPLES_ANIMATION_EXAMPLE_H_

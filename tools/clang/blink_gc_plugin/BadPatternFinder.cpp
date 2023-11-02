@@ -1,9 +1,12 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "BadPatternFinder.h"
 #include <clang/AST/Decl.h>
+#include <clang/AST/RecordLayout.h>
+#include "BlinkGCPluginOptions.h"
+#include "Config.h"
 #include "DiagnosticsReporter.h"
 
 #include <algorithm>
@@ -25,6 +28,13 @@ TypeMatcher GarbageCollectedType() {
           .bind("gctype")));
   return anyOf(has_gc_base,
                hasCanonicalType(arrayType(hasElementType(has_gc_base))));
+}
+
+auto MemberType() {
+  auto has_member_name = hasAnyName("::blink::Member", "::blink::WeakMember",
+                                    "::cppgc::internal::BasicMember");
+  return anyOf(hasType(recordDecl(has_member_name)),
+               hasType(typeAliasTemplateDecl(has_member_name)));
 }
 
 class UniquePtrGarbageCollectedMatcher : public MatchFinder::MatchCallback {
@@ -147,10 +157,164 @@ class VariantGarbageCollectedMatcher : public MatchFinder::MatchCallback {
   DiagnosticsReporter& diagnostics_;
 };
 
+class MemberOnStackMatcher : public MatchFinder::MatchCallback {
+ public:
+  explicit MemberOnStackMatcher(DiagnosticsReporter& diagnostics)
+      : diagnostics_(diagnostics) {}
+
+  void Register(MatchFinder& match_finder) {
+    auto class_member_variable_matcher = varDecl(MemberType()).bind("member");
+    match_finder.addDynamicMatcher(class_member_variable_matcher, this);
+  }
+
+  void run(const MatchFinder::MatchResult& result) override {
+    auto* member = result.Nodes.getNodeAs<clang::VarDecl>("member");
+    if (Config::IsIgnoreAnnotated(member))
+      return;
+    diagnostics_.MemberOnStack(member);
+  }
+
+ private:
+  DiagnosticsReporter& diagnostics_;
+};
+
+AST_MATCHER(clang::CXXRecordDecl, isDisallowedNewClass) {
+  auto& context = Finder->getASTContext();
+
+  auto gc_matcher = GarbageCollectedType();
+  if (gc_matcher.matches(context.getTypeDeclType(&Node), Finder, Builder)) {
+    // This is a normal GCed class, bail out.
+    return false;
+  }
+
+  // First, look for methods in this class.
+  auto method = std::find_if(
+      Node.method_begin(), Node.method_end(), [](const auto& method) {
+        return method->getNameAsString() == kNewOperatorName &&
+               method->getNumParams() == 1;
+      });
+  if (method != Node.method_end()) {
+    // We found the 'operator new'. Check if it's deleted.
+    return method->isDeleted();
+  }
+
+  // Otherwise, lookup in the base classes.
+  for (auto& base_spec : Node.bases()) {
+    if (auto* base = base_spec.getType()->getAsCXXRecordDecl())
+      if (matches(*base, Finder, Builder))
+        return true;
+  }
+
+  return false;
+}
+
+size_t RoundUp(size_t value, size_t align) {
+  assert((align & (align - 1)) == 0);
+  return (value + align - 1) & ~(align - 1);
+}
+
+// Very approximate way of calculating size of a record based on fields. Doesn't
+// take into account alignment of base subobjects, but only its own fields.
+size_t RequiredSizeForFields(const clang::ASTContext& context,
+                             size_t current_size,
+                             const std::vector<clang::QualType>& field_types) {
+  size_t largest_field_alignment = 0;
+
+  for (clang::QualType type : field_types) {
+    assert(!type->isDependentType());
+    const size_t current_field_alignment = context.getTypeAlign(type);
+    current_size = RoundUp(current_size, current_field_alignment);
+    current_size += context.getTypeSize(type);
+    largest_field_alignment =
+        std::max(largest_field_alignment, current_field_alignment);
+  }
+
+  current_size = RoundUp(current_size, largest_field_alignment);
+  return current_size;
+}
+
+class PaddingInGCedMatcher : public MatchFinder::MatchCallback {
+ public:
+  PaddingInGCedMatcher(clang::ASTContext& context,
+                       DiagnosticsReporter& diagnostics)
+      : context_(context), diagnostics_(diagnostics) {}
+
+  void Register(MatchFinder& match_finder) {
+    auto member_field_matcher =
+        cxxRecordDecl(has(fieldDecl(MemberType()).bind("member")),
+                      isDisallowedNewClass())
+            .bind("record");
+    match_finder.addMatcher(member_field_matcher, this);
+  }
+
+  void run(const MatchFinder::MatchResult& result) override {
+    auto* class_decl = result.Nodes.getNodeAs<clang::RecordDecl>("record");
+    if (class_decl->isDependentType() || class_decl->isUnion())
+      return;
+
+    if (auto* member_decl = result.Nodes.getNodeAs<clang::FieldDecl>("member");
+        member_decl && Config::IsIgnoreAnnotated(member_decl))
+      return;
+
+    if (auto* cxx_record_decl =
+            clang::dyn_cast<clang::CXXRecordDecl>(class_decl)) {
+      if (cxx_record_decl->getNumVBases()) {
+        // Don't process class with virtual bases.
+        return;
+      }
+    }
+
+    std::vector<clang::QualType> fields;
+    for (auto* field : class_decl->fields()) {
+      if (field->isBitField()) {
+        // Don't process types with bitfields yet.
+        return;
+      }
+      if (field->isZeroSize(context_)) {
+        // Don't process types with [[no_unique_address]] on the fields.
+        return;
+      }
+      if (field->hasAttr<clang::AlignedAttr>()) {
+        // Ignore classes containing alignas on the fields.
+        return;
+      }
+
+      fields.push_back(field->getType());
+    }
+    assert(fields.size() > 0);
+
+    const clang::ASTRecordLayout& layout =
+        context_.getASTRecordLayout(class_decl);
+    const size_t base_size = layout.getFieldOffset(0);
+
+    const size_t size_before =
+        RequiredSizeForFields(context_, base_size, fields);
+
+    std::sort(fields.begin(), fields.end(),
+              [this](clang::QualType t1, clang::QualType t2) {
+                // Try simply sort by sizes, ignoring alignment.
+                return context_.getTypeSize(t1) > context_.getTypeSize(t2);
+              });
+
+    const size_t size_after =
+        RequiredSizeForFields(context_, base_size, fields);
+
+    if (size_after < size_before) {
+      diagnostics_.AdditionalPadding(
+          class_decl, (size_before - size_after) / context_.getCharWidth());
+    }
+  }
+
+ private:
+  clang::ASTContext& context_;
+  DiagnosticsReporter& diagnostics_;
+};
+
 }  // namespace
 
 void FindBadPatterns(clang::ASTContext& ast_context,
-                     DiagnosticsReporter& diagnostics) {
+                     DiagnosticsReporter& diagnostics,
+                     const BlinkGCPluginOptions& options) {
   MatchFinder match_finder;
 
   UniquePtrGarbageCollectedMatcher unique_ptr_gc(diagnostics);
@@ -161,6 +325,16 @@ void FindBadPatterns(clang::ASTContext& ast_context,
 
   VariantGarbageCollectedMatcher variant_gc(diagnostics);
   variant_gc.Register(match_finder);
+
+  MemberOnStackMatcher member_on_stack(diagnostics);
+  if (options.enable_members_on_stack_check) {
+    member_on_stack.Register(match_finder);
+  }
+
+  PaddingInGCedMatcher padding_in_gced(ast_context, diagnostics);
+  if (options.enable_extra_padding_check) {
+    padding_in_gced.Register(match_finder);
+  }
 
   match_finder.matchAST(ast_context);
 }

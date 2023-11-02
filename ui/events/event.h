@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,9 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/gesture_event_details.h"
@@ -44,13 +44,12 @@ class TouchEvent;
 
 enum class DomCode;
 
+// Note: In order for Clone() to work properly, every concrete class
+// transitively inheriting Event must implement Clone() explicitly, even if any
+// ancestors have provided an implementation.
 class EVENTS_EXPORT Event {
  public:
   using Properties = base::flat_map<std::string, std::vector<uint8_t>>;
-
-  // Copies an arbitrary event. If you have a typed event (e.g. a MouseEvent)
-  // just use its copy constructor.
-  static std::unique_ptr<Event> Clone(const Event& event);
 
   virtual ~Event();
 
@@ -70,7 +69,7 @@ class EVENTS_EXPORT Event {
     void set_time_stamp(base::TimeTicks time) { event_->time_stamp_ = time; }
 
    private:
-    Event* event_;
+    raw_ptr<Event, DanglingUntriaged> event_;
   };
 
   void SetNativeEvent(const PlatformEvent& event);
@@ -226,7 +225,7 @@ class EVENTS_EXPORT Event {
 
   bool IsLocatedEvent() const {
     return IsMouseEvent() || IsScrollEvent() || IsTouchEvent() ||
-           IsGestureEvent();
+           IsGestureEvent() || type_ == ET_DROP_TARGET_EVENT;
   }
 
   // Convenience methods to cast |this| to a CancelModeEvent.
@@ -292,6 +291,13 @@ class EVENTS_EXPORT Event {
   // For debugging. Not a stable serialization format.
   virtual std::string ToString() const;
 
+  // Copies an arbitrary event. If you have a typed event (e.g. a MouseEvent)
+  // just use its copy constructor.
+  //
+  // Every concrete class transitively inheriting Event must implement this
+  // method, even if any ancestors have provided an implementation.
+  virtual std::unique_ptr<Event> Clone() const = 0;
+
  protected:
   Event(EventType type, base::TimeTicks time_stamp, int flags);
   Event(const PlatformEvent& native_event, EventType type, int flags);
@@ -316,7 +322,9 @@ class EVENTS_EXPORT Event {
   // Neither Event copy constructor nor the assignment operator copies
   // `target_`, as `target_` should be explicitly set so the setter will be
   // responsible for tracking it.
-  EventTarget* target_ = nullptr;
+  //
+  // TODO(crbug.com/1298696): Breaks events_unittests.
+  raw_ptr<EventTarget, DanglingUntriagedDegradeToNoOpWhenMTE> target_ = nullptr;
   EventPhase phase_ = EP_PREDISPATCH;
   EventResult result_ = ER_UNHANDLED;
 
@@ -331,6 +339,9 @@ class EVENTS_EXPORT CancelModeEvent : public Event {
  public:
   CancelModeEvent();
   ~CancelModeEvent() override;
+
+  // Event:
+  std::unique_ptr<Event> Clone() const override;
 };
 
 class EVENTS_EXPORT LocatedEvent : public Event {
@@ -379,7 +390,7 @@ class EVENTS_EXPORT LocatedEvent : public Event {
     location_ = location_ - diff;
   }
 
-  // Event overrides.
+  // Event:
   std::string ToString() const override;
 
  protected:
@@ -491,7 +502,7 @@ class EVENTS_EXPORT MouseEvent : public LocatedEvent {
     }
 
    private:
-    MouseEvent* event_;
+    raw_ptr<MouseEvent> event_;
   };
 
   // Conveniences to quickly test what button is down
@@ -553,8 +564,12 @@ class EVENTS_EXPORT MouseEvent : public LocatedEvent {
 
   const PointerDetails& pointer_details() const { return pointer_details_; }
 
-  // Event overides.
+  // Event:
   std::string ToString() const override;
+  std::unique_ptr<Event> Clone() const override;
+
+  // Resets the last_click_event_ for unit tests.
+  static void ResetLastClickForTest();
 
  private:
   FRIEND_TEST_ALL_PREFIXES(EventTest, DoubleClickRequiresUniqueTimestamp);
@@ -563,9 +578,6 @@ class EVENTS_EXPORT MouseEvent : public LocatedEvent {
   // Returns the repeat count based on the previous mouse click, if it is
   // recent enough and within a small enough distance.
   static int GetRepeatCount(const MouseEvent& click_event);
-
-  // Resets the last_click_event_ for unit tests.
-  static void ResetLastClickForTest();
 
   // See description above getter for details.
   int changed_button_flags_;
@@ -633,6 +645,9 @@ class EVENTS_EXPORT MouseWheelEvent : public MouseEvent {
   // The amount the wheel(s) moved, in 120ths of a tick.
   const gfx::Vector2d& tick_120ths() const { return tick_120ths_; }
 
+  // Event:
+  std::unique_ptr<Event> Clone() const override;
+
  private:
   gfx::Vector2d offset_;
   gfx::Vector2d tick_120ths_;
@@ -698,6 +713,9 @@ class EVENTS_EXPORT TouchEvent : public LocatedEvent {
   void SetPointerDetailsForTest(const PointerDetails& pointer_details);
 
   float ComputeRotationAngle() const;
+
+  // Event:
+  std::unique_ptr<Event> Clone() const override;
 
  private:
   // A unique identifier for the touch event.
@@ -885,8 +903,9 @@ class EVENTS_EXPORT KeyEvent : public Event {
   // (Native X11 event flags describe the state before the event.)
   void NormalizeFlags();
 
-  // Event overrides.
+  // Event:
   std::string ToString() const override;
+  std::unique_ptr<Event> Clone() const override;
 
  protected:
   friend class KeyEventTestApi;
@@ -1001,8 +1020,9 @@ class EVENTS_EXPORT ScrollEvent : public MouseEvent {
   EventMomentumPhase momentum_phase() const { return momentum_phase_; }
   ScrollEventPhase scroll_event_phase() const { return scroll_event_phase_; }
 
-  // Event overrides.
+  // Event:
   std::string ToString() const override;
+  std::unique_ptr<Event> Clone() const override;
 
  private:
   // Potential accelerated offsets.
@@ -1046,8 +1066,9 @@ class EVENTS_EXPORT GestureEvent : public LocatedEvent {
 
   uint32_t unique_touch_event_id() const { return unique_touch_event_id_; }
 
-  // Event overrides.
+  // Event:
   std::string ToString() const override;
+  std::unique_ptr<Event> Clone() const override;
 
  private:
   GestureEventDetails details_;

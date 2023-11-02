@@ -1,11 +1,10 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_STARTUP_METRIC_UTILS_BROWSER_STARTUP_METRIC_UTILS_H_
 #define COMPONENTS_STARTUP_METRIC_UTILS_BROWSER_STARTUP_METRIC_UTILS_H_
 
-#include "base/memory/memory_pressure_listener.h"
 #include "base/time/time.h"
 
 // Utility functions to support metric collection for browser startup. Timings
@@ -15,6 +14,10 @@
 // between the two basis. See crbug.com/544131 for reasoning.
 
 namespace startup_metric_utils {
+
+// Resets this process's session to allow recording one-time-only metrics again
+// when a process is reused for multiple tests.
+void ResetSessionForTesting();
 
 // Returns true when browser UI was not launched normally: some other UI was
 // shown first or browser was launched in background mode.
@@ -97,15 +100,13 @@ base::TimeTicks MainEntryPointTicks();
 // would be skewed and will not be recorded.
 // This function must be called after RecordApplicationStartTime(), because it
 // computes time deltas based on application start time.
-void RecordExternalStartupMetric(const std::string& histogram_name,
+// `histogram_name` must point to a statically allocated string (such as a
+// string literal) since the pointer will be stored for an indefinite amount of
+// time before being written to a trace (see the "Memory scoping note" in
+// base/trace_event/common/trace_event_common.h.)
+void RecordExternalStartupMetric(const char* histogram_name,
                                  base::TimeTicks completion_ticks,
                                  bool set_non_browser_ui_displayed);
-
-// Records memory pressure events occurring before the first web contents had a
-// non-empty paint.
-// This should only be called from the browser UI thread.
-void OnMemoryPressureBeforeFirstNonEmptyPaint(
-    base::MemoryPressureListener::MemoryPressureLevel level);
 
 }  // namespace startup_metric_utils
 

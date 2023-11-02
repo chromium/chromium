@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -21,6 +21,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/enterprise_util.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -296,7 +297,6 @@ void AddChromeWorkItems(const InstallParams& install_params,
       ->set_best_effort(true);
 }
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // Adds work items to register the Elevation Service with Windows. Only for
 // system level installs.
 void AddElevationServiceWorkItems(const base::FilePath& elevation_service_path,
@@ -310,14 +310,16 @@ void AddElevationServiceWorkItems(const base::FilePath& elevation_service_path,
 
   WorkItem* install_service_work_item = new InstallServiceWorkItem(
       install_static::GetElevationServiceName(),
-      install_static::GetElevationServiceDisplayName(),
+      install_static::GetElevationServiceDisplayName(), SERVICE_DEMAND_START,
       base::CommandLine(elevation_service_path),
+      base::CommandLine(base::CommandLine::NO_PROGRAM),
       install_static::GetClientStateKeyPath(),
       {install_static::GetElevatorClsid()}, {install_static::GetElevatorIid()});
   install_service_work_item->set_best_effort(true);
   list->AddWorkItem(install_service_work_item);
 }
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // Adds work items to add the "store-dmtoken" command to Chrome's version key.
 // This method is a no-op if this is anything other than system-level Chrome.
 // The command is used when enrolling Chrome browser instances into enterprise
@@ -348,6 +350,38 @@ void AddEnterpriseEnrollmentWorkItems(const InstallerState& installer_state,
   // happening. Do not blindly copy this pattern in new code. Check with a
   // member of base/win/OWNERS if in doubt.
   AppCommand cmd(cmd_line.GetCommandLineStringWithUnsafeInsertSequences());
+
+  // TODO(rogerta): For now setting this command as web accessible is required
+  // by Google Update.  Could revisit this should Google Update change the
+  // way permissions are handled for commands.
+  cmd.set_is_web_accessible(true);
+  cmd.AddWorkItems(root_key, cmd_key, install_list);
+}
+
+// Adds work items to add the "delete-dmtoken" command to Chrome's version key.
+// This method is a no-op if this is anything other than system-level Chrome.
+// The command is used when unenrolling Chrome browser instances from enterprise
+// management.
+void AddEnterpriseUnenrollmentWorkItems(const InstallerState& installer_state,
+                                        const base::FilePath& setup_path,
+                                        const base::Version& new_version,
+                                        WorkItemList* install_list) {
+  if (!installer_state.system_install())
+    return;
+
+  const HKEY root_key = installer_state.root_key();
+  const std::wstring cmd_key(GetCommandKey(kCmdDeleteDMToken));
+
+  // Register a command to allow Chrome to request Google Update to run
+  // setup.exe --delete-dmtoken, which will delete any existing DMToken from the
+  // registry.
+  base::CommandLine cmd_line(installer_state.GetInstallerDirectory(new_version)
+                                 .Append(setup_path.BaseName()));
+  cmd_line.AppendSwitch(switches::kDeleteDMToken);
+  cmd_line.AppendSwitch(switches::kSystemLevel);
+  cmd_line.AppendSwitch(switches::kVerboseLogging);
+  InstallUtil::AppendModeAndChannelSwitches(&cmd_line);
+  AppCommand cmd(cmd_line.GetCommandLineString());
 
   // TODO(rogerta): For now setting this command as web accessible is required
   // by Google Update.  Could revisit this should Google Update change the
@@ -394,7 +428,6 @@ void AddEnterpriseDeviceTrustWorkItems(const InstallerState& installer_state,
   cmd.set_is_web_accessible(true);
   cmd.AddWorkItems(root_key, cmd_key, install_list);
 }
-
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 }  // namespace
@@ -530,7 +563,7 @@ void AddVersionKeyWorkItems(const InstallParams& install_params,
     // languages is a superset of Chrome's set of translations with this one
     // exception: what Chrome calls "en-us", Omaha calls "en".  sigh.
     std::wstring language(GetCurrentTranslation());
-    if (base::LowerCaseEqualsASCII(language, "en-us"))
+    if (base::EqualsCaseInsensitiveASCII(language, "en-us"))
       language.resize(2);
     list->AddSetRegValueWorkItem(root, clients_key, KEY_WOW64_32KEY,
                                  google_update::kRegLangField, language,
@@ -553,14 +586,8 @@ void AddUpdateBrandCodeWorkItem(const InstallerState& installer_state,
   if (new_brand.empty())
     return;
 
-  // Only update if this machine is:
-  // - domain joined, or
-  // - registered with MDM and is not windows home edition
-  bool is_enterprise_version =
-      base::win::OSInfo::GetInstance()->version_type() != base::win::SUITE_HOME;
-  if (!(base::win::IsEnrolledToDomain() ||
-        (base::win::IsDeviceRegisteredWithManagement() &&
-         is_enterprise_version))) {
+  // Only update if this machine is a managed device, including domain join.
+  if (!base::IsManagedDevice()) {
     return;
   }
 
@@ -813,6 +840,8 @@ void AddInstallWorkItems(const InstallParams& install_params,
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   AddEnterpriseEnrollmentWorkItems(installer_state, setup_path, new_version,
                                    install_list);
+  AddEnterpriseUnenrollmentWorkItems(installer_state, setup_path, new_version,
+                                     install_list);
   AddEnterpriseDeviceTrustWorkItems(installer_state, setup_path, new_version,
                                     install_list);
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING
@@ -825,12 +854,10 @@ void AddInstallWorkItems(const InstallParams& install_params,
       installer_state.root_key(),
       GetNotificationHelperPath(target_path, new_version), install_list);
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (installer_state.system_install()) {
     AddElevationServiceWorkItems(
         GetElevationServicePath(target_path, new_version), install_list);
   }
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING
 
   AddUpdateDowngradeVersionItem(installer_state.root_key(), current_version,
                                 new_version, install_list);
@@ -891,6 +918,22 @@ void AddNativeNotificationWorkItems(
   list->AddSetRegValueWorkItem(root, toast_activator_server_path,
                                WorkItem::kWow64Default, L"ServerExecutable",
                                notification_helper_path.value(), true);
+}
+
+void AddWerHelperRegistration(HKEY root,
+                              const base::FilePath& wer_helper_path,
+                              WorkItemList* list) {
+  DCHECK(!wer_helper_path.empty());
+
+  std::wstring wer_registry_path = GetWerHelperRegistryPath();
+
+  list->AddCreateRegKeyWorkItem(root, wer_registry_path,
+                                WorkItem::kWow64Default);
+
+  // The DWORD value is not important.
+  list->AddSetRegValueWorkItem(root, wer_registry_path, WorkItem::kWow64Default,
+                               wer_helper_path.value().c_str(), DWORD{0},
+                               /*overwrite=*/true);
 }
 
 void AddSetMsiMarkerWorkItem(const InstallerState& installer_state,
@@ -1050,6 +1093,10 @@ void AddFinalizeUpdateWorkItems(const base::Version& new_version,
   // Cleanup for breaking downgrade first in the post install to avoid
   // overwriting any of the following post-install tasks.
   AddDowngradeCleanupItems(new_version, list);
+
+  AddWerHelperRegistration(
+      installer_state.root_key(),
+      GetWerHelperPath(installer_state.target_path(), new_version), list);
 
   const std::wstring client_state_key = install_static::GetClientStateKeyPath();
 

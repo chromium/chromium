@@ -15,6 +15,10 @@ Infobars is a layered component
 (https://sites.google.com/a/chromium.org/dev/developers/design-documents/layered-components-design)
 to enable it to be shared cleanly on iOS.
 
+On Android, Infobars have been deprecated in favor of the new Message UI.
+Please consider using this new Message UI.
+See components/messages/README.md for more details.
+
 Directory structure:
 android/: Android-specific specializations
 core/: Shared code that does not depend on src/content/

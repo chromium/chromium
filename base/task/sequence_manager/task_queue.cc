@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -128,10 +128,18 @@ TaskQueue::TaskQueue(std::unique_ptr<internal::TaskQueueImpl> impl,
                              : MakeRefCounted<internal::AssociatedThreadId>()),
       default_task_runner_(impl_ ? impl_->CreateTaskRunner(kTaskTypeNone)
                                  : CreateNullTaskRunner()),
-      name_(impl_ ? impl_->GetName() : "") {}
+      name_(impl_ ? impl_->GetProtoName() : QueueName::UNKNOWN_TQ) {
+  // Pointer registration is needed for sorting in the following places:
+  // TaskQueueThrottler::PumpThrottledTasks
+  // BudgetPool::UpdateThrottlingStateForAllQueues
+  // FrameTaskQueueController::~FrameTaskQueueController
+  recordreplay::RegisterPointer("TaskQueue", this);
+}
 
 TaskQueue::~TaskQueue() {
   ShutdownTaskQueueGracefully();
+
+  recordreplay::UnregisterPointer(this);
 }
 
 void TaskQueue::ShutdownTaskQueueGracefully() {
@@ -166,10 +174,20 @@ void TaskQueue::TaskTiming::RecordTaskEnd(LazyNow* now) {
     return;
   state_ = State::Finished;
 
-  if (has_wall_time())
+  if (has_wall_time()) {
+    // https://linear.app/replay/issue/RUN-618
+    // https://linear.app/replay/issue/RUN-821
+    // https://linear.app/replay/issue/RUN-852
+    recordreplay::Assert("TaskQueue::TaskTiming::RecordTaskEnd #1");
     end_time_ = now->Now();
-  if (has_thread_time())
+  }
+  if (has_thread_time()) {
+    // https://linear.app/replay/issue/RUN-618
+    // https://linear.app/replay/issue/RUN-821
+    // https://linear.app/replay/issue/RUN-852
+    recordreplay::Assert("TaskQueue::TaskTiming::RecordTaskEnd #2");
     end_thread_time_ = base::ThreadTicks::Now();
+  }
 }
 
 void TaskQueue::ShutdownTaskQueue() {
@@ -180,12 +198,6 @@ void TaskQueue::ShutdownTaskQueue() {
     TakeTaskQueueImpl().reset();
     return;
   }
-  impl_->SetBlameContext(nullptr);
-  impl_->SetOnTaskStartedHandler(
-      internal::TaskQueueImpl::OnTaskStartedHandler());
-  impl_->SetOnTaskCompletedHandler(
-      internal::TaskQueueImpl::OnTaskCompletedHandler());
-  impl_->SetOnTaskPostedHandler(internal::TaskQueueImpl::OnTaskPostedHandler());
   sequence_manager_->UnregisterTaskQueueImpl(TakeTaskQueueImpl());
 }
 
@@ -235,18 +247,18 @@ bool TaskQueue::HasTaskToRunImmediatelyOrReadyDelayedTask() const {
   return impl_->HasTaskToRunImmediatelyOrReadyDelayedTask();
 }
 
-absl::optional<DelayedWakeUp> TaskQueue::GetNextDesiredWakeUp() {
+absl::optional<WakeUp> TaskQueue::GetNextDesiredWakeUp() {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   if (!impl_)
     return absl::nullopt;
   return impl_->GetNextDesiredWakeUp();
 }
 
-void TaskQueue::UpdateDelayedWakeUp(LazyNow* lazy_now) {
+void TaskQueue::UpdateWakeUp(LazyNow* lazy_now) {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   if (!impl_)
     return;
-  impl_->UpdateDelayedWakeUp(lazy_now);
+  impl_->UpdateWakeUp(lazy_now);
 }
 
 void TaskQueue::SetQueuePriority(TaskQueue::QueuePriority priority) {
@@ -275,13 +287,6 @@ void TaskQueue::RemoveTaskObserver(TaskObserver* task_observer) {
   if (!impl_)
     return;
   impl_->RemoveTaskObserver(task_observer);
-}
-
-void TaskQueue::SetBlameContext(trace_event::BlameContext* blame_context) {
-  DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
-  if (!impl_)
-    return;
-  impl_->SetBlameContext(blame_context);
 }
 
 void TaskQueue::InsertFence(InsertFencePosition position) {
@@ -317,7 +322,7 @@ bool TaskQueue::BlockedByFence() const {
 }
 
 const char* TaskQueue::GetName() const {
-  return name_;
+  return perfetto::protos::pbzero::SequenceManagerTask::QueueName_Name(name_);
 }
 
 void TaskQueue::WriteIntoTrace(perfetto::TracedValue context) const {
@@ -372,12 +377,13 @@ void TaskQueue::SetOnTaskCompletedHandler(OnTaskCompletedHandler handler) {
   impl_->SetOnTaskCompletedHandler(std::move(handler));
 }
 
-void TaskQueue::SetOnTaskPostedHandler(OnTaskPostedHandler handler) {
+std::unique_ptr<TaskQueue::OnTaskPostedCallbackHandle>
+TaskQueue::AddOnTaskPostedHandler(OnTaskPostedHandler handler) {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   if (!impl_)
-    return;
+    return nullptr;
 
-  impl_->SetOnTaskPostedHandler(std::move(handler));
+  return impl_->AddOnTaskPostedHandler(std::move(handler));
 }
 
 void TaskQueue::SetTaskExecutionTraceLogger(TaskExecutionTraceLogger logger) {

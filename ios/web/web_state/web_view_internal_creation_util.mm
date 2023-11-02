@@ -1,11 +1,11 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/web/web_state/web_view_internal_creation_util.h"
 
-#include "base/check_op.h"
-#include "base/strings/sys_string_conversions.h"
+#import "base/check_op.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/web_state/crw_web_view.h"
 #import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"

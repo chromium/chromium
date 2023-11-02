@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 #include "third_party/blink/public/common/scheme_registry.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/frame/deprecation.h"
+#include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
@@ -376,6 +376,18 @@ void UseCounterCallback(v8::Isolate* isolate,
       break;
     case v8::Isolate::kWasmExceptionHandling:
       blink_feature = WebFeature::kV8WasmExceptionHandling;
+      break;
+    case v8::Isolate::kFunctionPrototypeArguments:
+      blink_feature = WebFeature::kV8FunctionPrototypeArguments;
+      break;
+    case v8::Isolate::kFunctionPrototypeCaller:
+      blink_feature = WebFeature::kV8FunctionPrototypeCaller;
+      break;
+    case v8::Isolate::kTurboFanOsrCompileStarted:
+      blink_feature = WebFeature::kV8TurboFanOsrCompileStarted;
+      break;
+    case v8::Isolate::kAsyncStackTaggingCreateTaskCall:
+      blink_feature = WebFeature::kV8AsyncStackTaggingCreateTaskCall;
       break;
 
     default:

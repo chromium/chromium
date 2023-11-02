@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/callback.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
+#include "components/services/app_service/public/cpp/intent.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/views/view.h"
 
@@ -37,13 +37,14 @@ class ShareAction {
   // as the parent view for ShareAction views. It is guaranteed that
   // |root_view| and |controller| will stay alive and visible until either
   // ShareAction::OnClosing is called, or the ShareAction calls
-  // |controller|->ShareActionCompleted().
+  // |controller|->ShareActionCompleted(). If HasActionView() returns false,
+  // |root_view| will be a nullptr.
   //
   // |intent| contains the data (including the file URLs) for the share action
   // to parse and interpret if needed for its UI and functionality.
   virtual void LaunchAction(SharesheetController* controller,
                             views::View* root_view,
-                            apps::mojom::IntentPtr intent) = 0;
+                            apps::IntentPtr intent) = 0;
 
   // OnClosing informs the ShareAction when the sharesheet with |controller| is
   // closed. This occurs when the user presses the back button out of the share
@@ -52,10 +53,14 @@ class ShareAction {
   // once the method completes as they will be destroyed.
   virtual void OnClosing(SharesheetController* controller) = 0;
 
+  // Return true if the action has its own view that should be shown after the
+  // action has been selected. Returns false by default.
+  virtual bool HasActionView();
+
   // Return true if the action should be shown on the sharesheet. By default,
   // the actions are only visible if the files don't contain a Google Drive
   // hosted document.
-  virtual bool ShouldShowAction(const apps::mojom::IntentPtr& intent,
+  virtual bool ShouldShowAction(const apps::IntentPtr& intent,
                                 bool contains_hosted_document);
 
   // Invoked when the accelerator has been pressed.

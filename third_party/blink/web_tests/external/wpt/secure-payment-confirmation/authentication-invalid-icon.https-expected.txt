@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+FAIL SPC authentication with an invalid icon promise_test: Unhandled rejection with value: object "Error: unimplemented"
+FAIL SPC authentication allowing an invalid icon with iconMustBeShown option. promise_test: Unhandled rejection with value: object "Error: unimplemented"
+Harness: the test ran to completion.
+

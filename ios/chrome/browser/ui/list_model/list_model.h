@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -57,7 +57,7 @@ const NSInteger kItemTypeEnumZero = 100;
 //
 // Disclaimer: ListModel doesn't support a batch update logic. All changes are
 // immediately processed (contrary to the reload/delete/add order of
-// |performBatchUpdates:completion:|).  The __covariant modifier allows an
+// `performBatchUpdates:completion:`).  The __covariant modifier allows an
 // instance of ListModel<A,B> to be assigned to an instance of ListModel<X,Y>
 // iff A:X and B:Y (see unit test for an example).
 @interface ListModel<__covariant ObjectType : ListItem*,
@@ -81,45 +81,45 @@ const NSInteger kItemTypeEnumZero = 100;
     toSectionWithIdentifier:(NSInteger)sectionIdentifier;
 
 // Inserts an item to the section with the given identifier at the given
-// index. |index| must not be greater than the count of elements in the
+// index. `index` must not be greater than the count of elements in the
 // section.
 - (void)insertItem:(ObjectType)item
     inSectionWithIdentifier:(NSInteger)sectionIdentifier
                     atIndex:(NSUInteger)index;
 
-// Removes the item for |itemType| from the section for |sectionIdentifier|.
+// Removes the item for `itemType` from the section for `sectionIdentifier`.
 // If there are multiple entries with the same item type, this will remove
 // the first occurrence, but to selectively delete an item for a given
 // index, use -removeItemWithType:fromSectionWithIdentifier:atIndex:.
 - (void)removeItemWithType:(NSInteger)itemType
     fromSectionWithIdentifier:(NSInteger)sectionIdentifier;
 
-// Removes the item for |itemType| from the section for |sectionIdentifier|
-// at |index|.
+// Removes the item for `itemType` from the section for `sectionIdentifier`
+// at `index`.
 - (void)removeItemWithType:(NSInteger)itemType
     fromSectionWithIdentifier:(NSInteger)sectionIdentifier
                       atIndex:(NSUInteger)index;
 
-// Removes the section for |sectionIdentifier|. If there are still items
+// Removes the section for `sectionIdentifier`. If there are still items
 // left in the section, they are removed.
 - (void)removeSectionWithIdentifier:(NSInteger)sectionIdentifier;
 
-// Deletes all items from |sectionIdentifier|, |sectionIdentifier| won't be
+// Deletes all items from `sectionIdentifier`, `sectionIdentifier` won't be
 // removed from the model.
 - (void)deleteAllItemsFromSectionWithIdentifier:(NSInteger)sectionIdentifier;
 
-// Sets the header item for the section with the given |sectionIdentifier|.
+// Sets the header item for the section with the given `sectionIdentifier`.
 - (void)setHeader:(SupplementalType)header
     forSectionWithIdentifier:(NSInteger)sectionIdentifier;
 
-// Sets the footer item for the section with the given |sectionIdentifier|.
+// Sets the footer item for the section with the given `sectionIdentifier`.
 - (void)setFooter:(SupplementalType)footer
     forSectionWithIdentifier:(NSInteger)sectionIdentifier;
 
 #pragma mark Query model coordinates from index paths
 
 // Returns the section identifier for the given section.
-- (NSInteger)sectionIdentifierForSection:(NSInteger)section;
+- (NSInteger)sectionIdentifierForSectionIndex:(NSInteger)sectionIndex;
 
 // Returns the item type for the given index path.
 - (NSInteger)itemTypeForIndexPath:(NSIndexPath*)indexPath;
@@ -141,20 +141,20 @@ const NSInteger kItemTypeEnumZero = 100;
 // Returns the item at the given index path.
 - (ObjectType)itemAtIndexPath:(NSIndexPath*)indexPath;
 
-// Returns the header for the given |section|.
-- (SupplementalType)headerForSection:(NSInteger)section;
+// Returns the header for the given `sectionIndex`.
+- (SupplementalType)headerForSectionIndex:(NSInteger)sectionIndex;
 
-// Returns the footer for the given |section|.
-- (SupplementalType)footerForSection:(NSInteger)section;
+// Returns the footer for the given `sectionIndex`.
+- (SupplementalType)footerForSectionIndex:(NSInteger)sectionIndex;
 
 // Returns an array of items in the section with the given identifier.
 - (NSArray<ObjectType>*)itemsInSectionWithIdentifier:
     (NSInteger)sectionIdentifier;
 
-// Returns the header for the section with the given |sectionIdentifier|.
+// Returns the header for the section with the given `sectionIdentifier`.
 - (SupplementalType)headerForSectionWithIdentifier:(NSInteger)sectionIdentifier;
 
-// Returns the footer for the section with the given |sectionIdentifier|.
+// Returns the footer for the section with the given `sectionIdentifier`.
 - (SupplementalType)footerForSectionWithIdentifier:(NSInteger)sectionIdentifier;
 
 #pragma mark Query index paths from model coordinates
@@ -165,48 +165,48 @@ const NSInteger kItemTypeEnumZero = 100;
 // Returns the index path's section for the given section identifier.
 - (NSInteger)sectionForSectionIdentifier:(NSInteger)sectionIdentifier;
 
-// Returns whether there is an item of type |itemType| at the given
-// |sectionIdentifier|.
+// Returns whether there is an item of type `itemType` at the given
+// `sectionIdentifier`.
 - (BOOL)hasItemForItemType:(NSInteger)itemType
          sectionIdentifier:(NSInteger)sectionIdentifier;
 
-// Returns the index path for |itemType| in the section for
-// |sectionIdentifier|. If there are multiple entries with the same item
+// Returns the index path for `itemType` in the section for
+// `sectionIdentifier`. If there are multiple entries with the same item
 // type, use -indexPathForItemType:sectionIdentifier:atIndex:.
 - (NSIndexPath*)indexPathForItemType:(NSInteger)itemType
                    sectionIdentifier:(NSInteger)sectionIdentifier;
 
-// Returns whether there is an item of type |itemType| at the given
-// |sectionIdentifier| and |index|.
+// Returns whether there is an item of type `itemType` at the given
+// `sectionIdentifier` and `index`.
 - (BOOL)hasItemForItemType:(NSInteger)itemType
          sectionIdentifier:(NSInteger)sectionIdentifier
                    atIndex:(NSUInteger)index;
 
-// Returns the index path for |itemType| in the section for
-// |sectionIdentifier| at |index|.
+// Returns the index path for `itemType` in the section for
+// `sectionIdentifier` at `index`.
 - (NSIndexPath*)indexPathForItemType:(NSInteger)itemType
                    sectionIdentifier:(NSInteger)sectionIdentifier
                              atIndex:(NSUInteger)index;
 
-// Returns the index path for |itemType| in all sections. Returns nil if no
+// Returns the index path for `itemType` in all sections. Returns nil if no
 // item is found.
 - (NSIndexPath*)indexPathForItemType:(NSInteger)itemType;
 
-// Returns index paths for all |itemType| in the section for
-// |sectionIdentifier|.
+// Returns index paths for all `itemType` in the section for
+// `sectionIdentifier`.
 - (NSArray<NSIndexPath*>*)indexPathsForItemType:(NSInteger)itemType
                               sectionIdentifier:(NSInteger)sectionIdentifier;
 
 #pragma mark Query index paths from items
 
-// Returns whether |item| exists in section for |sectionIdentifier|.
+// Returns whether `item` exists in section for `sectionIdentifier`.
 - (BOOL)hasItem:(ObjectType)item
     inSectionWithIdentifier:(NSInteger)sectionIdentifier;
 
-// Returns whether |item| exists.
+// Returns whether `item` exists.
 - (BOOL)hasItem:(ObjectType)item;
 
-// Returns the index path corresponding to the given |item|.
+// Returns the index path corresponding to the given `item`.
 - (NSIndexPath*)indexPathForItem:(ObjectType)item;
 
 #pragma mark Data sourcing
@@ -227,18 +227,18 @@ const NSInteger kItemTypeEnumZero = 100;
 // The default value is ListModelCollapsableModeHeader.
 @property(nonatomic, assign) ListModelCollapsableMode collapsableMode;
 
-// Sets an existing |sectionIdentifier| |collapsedKey| to be used when
-// collapsing or expanding a section. |collapsedKey| is a unique identifier for
+// Sets an existing `sectionIdentifier` `collapsedKey` to be used when
+// collapsing or expanding a section. `collapsedKey` is a unique identifier for
 // each section that will be used for persisting information about the collapsed
-// state of a section. A |collapsedKey| its only needed when
+// state of a section. A `collapsedKey` its only needed when
 // collapsing/expanding sections. You can't collapse/expand any sections without
-// a |collapsedKey|.
+// a `collapsedKey`.
 - (void)setSectionIdentifier:(NSInteger)sectionIdentifier
                 collapsedKey:(NSString*)collapsedKey;
-// Sets the state of an existing |sectionIdentifier| to |collapsed|. A
+// Sets the state of an existing `sectionIdentifier` to `collapsed`. A
 // collapsedKey has to be previously set or this method will DCHECK().
 - (void)setSection:(NSInteger)sectionIdentifier collapsed:(BOOL)collapsed;
-// Returns YES if |sectionIdentifier| is collapsed. If not collapsedKey has been
+// Returns YES if `sectionIdentifier` is collapsed. If not collapsedKey has been
 // set it will also return NO.
 - (BOOL)sectionIsCollapsed:(NSInteger)sectionIdentifier;
 

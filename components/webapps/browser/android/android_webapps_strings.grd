@@ -84,6 +84,9 @@
     <output filename="values-zh-rHK/android_webapps_strings.xml" lang="zh-HK" type="android" />
     <output filename="values-zh-rTW/android_webapps_strings.xml" lang="zh-TW" type="android" />
     <output filename="values-zu/android_webapps_strings.xml" lang="zu" type="android" />
+    <!-- Pseudolocales -->
+    <output filename="values-ar-rXB/android_webapps_strings.xml" lang="ar-XB" type="android" />
+    <output filename="values-en-rXA/android_webapps_strings.xml" lang="en-XA" type="android" />
   </outputs>
   <translations>
     <file path="translations/android_webapps_strings_af.xtb" lang="af" />
@@ -97,6 +100,7 @@
     <file path="translations/android_webapps_strings_bs.xtb" lang="bs" />
     <file path="translations/android_webapps_strings_ca.xtb" lang="ca" />
     <file path="translations/android_webapps_strings_cs.xtb" lang="cs" />
+    <file path="translations/android_webapps_strings_cy.xtb" lang="cy" />
     <file path="translations/android_webapps_strings_da.xtb" lang="da" />
     <file path="translations/android_webapps_strings_de.xtb" lang="de" />
     <file path="translations/android_webapps_strings_el.xtb" lang="el" />
@@ -186,6 +190,21 @@
       </message>
       <message name="IDS_ADDED_TO_HOMESCREEN" desc="Text in a toast indicating that the website with the specified name was added to the user's Home screen.">
         <ph name="NAME">%1$s<ex>Google</ex></ph> was added to your Home screen
+      </message>
+      <message name="IDS_PWA_INSTALL_BOTTOM_SHEET_ACCESSIBILITY" desc="The content description for the bottom sheet install UI.">
+        Install this app
+      </message>
+      <message name="IDS_PWA_INSTALL_BOTTOM_SHEET_SCREENSHOT" desc="The content description string for a screenshot in the bottom sheet install UI.">
+        Screenshot
+      </message>
+      <message name="IDS_IMAGE_ZOOM_CONTENT_DESCRIPTION" desc="The content description string for the screenshot in the image zoom view.">
+        Screenshot. Tap to close.
+      </message>
+      <message name="IDS_WEBAPK_INSTALL_IN_PROGRESS" desc="Indicates that an installation for the WebAPK for the specific website is already in progress.">
+        Still adding previous site
+      </message>
+      <message name="IDS_WEBAPK_INSTALL_FAILED" desc="Indicates that a WebAPK has not been added to Home screen.">
+        Failed to install
       </message>
     </messages>
   </release>

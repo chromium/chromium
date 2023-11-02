@@ -4,3 +4,9 @@ include_rules = [
   "+content/public/browser",
   "+ui",
 ]
+
+specific_include_rules = {
+  "autofill_provider_unittest.cc" : [
+    "+content/public/test",
+  ],
+}

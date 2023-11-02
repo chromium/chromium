@@ -1,0 +1,29 @@
+This text uses the Standard font setting.
+#initial:
+"Ahem" : 41
+
+This text uses the Serif font setting.
+#serif:
+"Ahem" : 38
+
+This text uses the SansSerif font setting.
+#sans-serif:
+"Ahem" : 42
+
+This text uses the Cursive font setting.
+#cursive:
+"Ahem" : 40
+
+This text uses the Fantasy font setting.
+#fantasy:
+"Ahem" : 40
+
+This text uses the Fixed font setting.
+#monospace:
+"Ahem" : 38
+
+This text uses the Math font setting.
+#math:
+"Ahem" : 37
+
+

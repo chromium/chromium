@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -216,6 +216,14 @@ class CONTENT_EXPORT RenderWidgetHost {
   virtual void AddMouseEventCallback(const MouseEventCallback& callback) = 0;
   virtual void RemoveMouseEventCallback(const MouseEventCallback& callback) = 0;
 
+  // Add/remove a callback that, when it returns true, will suppress IME
+  // display.
+  using SuppressShowingImeCallback = base::RepeatingCallback<bool()>;
+  virtual void AddSuppressShowingImeCallback(
+      const SuppressShowingImeCallback& callback) = 0;
+  virtual void RemoveSuppressShowingImeCallback(
+      const SuppressShowingImeCallback& callback) = 0;
+
   // Observer for WebInputEvents.
   class InputEventObserver {
    public:
@@ -226,7 +234,7 @@ class CONTENT_EXPORT RenderWidgetHost {
                                  blink::mojom::InputEventResultState state,
                                  const blink::WebInputEvent&) {}
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // Not all key events are triggered through InputEvent on Android.
     // InputEvents are only triggered when user typed in through number bar on
     // Android keyboard. This function is triggered when text is committed in
@@ -246,7 +254,7 @@ class CONTENT_EXPORT RenderWidgetHost {
   virtual void AddInputEventObserver(InputEventObserver* observer) = 0;
   virtual void RemoveInputEventObserver(InputEventObserver* observer) = 0;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Add/remove an Ime input event observer.
   virtual void AddImeInputEventObserver(InputEventObserver* observer) = 0;
   virtual void RemoveImeInputEventObserver(InputEventObserver* observer) = 0;

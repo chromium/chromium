@@ -1,10 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "services/video_capture/device_media_to_mojo_adapter.h"
 
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "build/chromeos_buildflags.h"
@@ -34,9 +35,12 @@ class DeviceMediaToMojoAdapterTest : public ::testing::Test {
     adapter_ = std::make_unique<DeviceMediaToMojoAdapter>(
         std::move(mock_device), base::DoNothing(),
         base::ThreadTaskRunnerHandle::Get());
-#else
+#elif BUILDFLAG(IS_WIN)
     adapter_ = std::make_unique<DeviceMediaToMojoAdapter>(
-        std::move(mock_device));
+        std::move(mock_device), nullptr);
+#else
+    adapter_ =
+        std::make_unique<DeviceMediaToMojoAdapter>(std::move(mock_device));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 
@@ -48,7 +52,7 @@ class DeviceMediaToMojoAdapterTest : public ::testing::Test {
   }
 
  protected:
-  media::MockDevice* mock_device_ptr_;
+  raw_ptr<media::MockDevice> mock_device_ptr_;
   std::unique_ptr<DeviceMediaToMojoAdapter> adapter_;
   std::unique_ptr<MockVideoFrameHandler> mock_video_frame_handler_;
   mojo::PendingRemote<mojom::VideoFrameHandler> video_frame_handler_;

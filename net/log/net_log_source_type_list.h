@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,6 @@ SOURCE_TYPE(HTTP_PROXY_CONNECT_JOB)
 SOURCE_TYPE(SOCKS_CONNECT_JOB)
 SOURCE_TYPE(SSL_CONNECT_JOB)
 SOURCE_TYPE(TRANSPORT_CONNECT_JOB)
-SOURCE_TYPE(WEB_SOCKET_TRANSPORT_CONNECT_JOB)
 SOURCE_TYPE(SOCKET)
 SOURCE_TYPE(HTTP2_SESSION)
 SOURCE_TYPE(QUIC_CONNECTION_MIGRATION)

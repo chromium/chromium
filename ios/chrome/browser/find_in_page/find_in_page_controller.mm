@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,12 @@
 #import <UIKit/UIKit.h>
 
 #import <cmath>
-#include <memory>
+#import <memory>
 
-#include "base/check_op.h"
+#import "base/check_op.h"
 #import "base/mac/foundation_util.h"
-#include "base/notreached.h"
-#include "components/ukm/ios/ukm_url_recorder.h"
+#import "base/notreached.h"
+#import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/find_in_page/find_in_page_model.h"
 #import "ios/chrome/browser/find_in_page/find_in_page_response_delegate.h"
 #import "ios/chrome/browser/web/dom_altering_lock.h"
@@ -21,7 +21,7 @@
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 #import "ios/web/public/web_state.h"
-#include "services/metrics/public/cpp/ukm_builders.h"
+#import "services/metrics/public/cpp/ukm_builders.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -211,7 +211,7 @@ static NSString* gSearchTerm;
                 withMatchCount:(NSInteger)matchCount
                    forWebState:(web::WebState*)webState {
   if (matchCount == 0 && !query) {
-    // StopFinding responds with |matchCount| as 0 and |query| as nil.
+    // StopFinding responds with `matchCount` as 0 and `query` as nil.
     [self.responseDelegate findDidStop];
     return;
   }

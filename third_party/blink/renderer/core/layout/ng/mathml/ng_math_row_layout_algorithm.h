@@ -1,10 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_MATHML_NG_MATH_ROW_LAYOUT_ALGORITHM_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_MATHML_NG_MATH_ROW_LAYOUT_ALGORITHM_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment_builder.h"
@@ -26,21 +27,26 @@ class CORE_EXPORT NGMathRowLayoutAlgorithm
     ChildWithOffsetAndMargins(const NGBlockNode& child,
                               const NGBoxStrut& margins,
                               LogicalOffset offset,
-                              scoped_refptr<const NGLayoutResult> result)
+                              const NGLayoutResult* result)
         : child(child),
           margins(margins),
           offset(offset),
           result(std::move(result)) {}
 
+    void Trace(Visitor* visitor) const {
+      visitor->Trace(child);
+      visitor->Trace(result);
+    }
+
     NGBlockNode child;
     NGBoxStrut margins;
     LogicalOffset offset;
-    scoped_refptr<const NGLayoutResult> result;
+    Member<const NGLayoutResult> result;
   };
-  typedef Vector<ChildWithOffsetAndMargins, 4> ChildrenVector;
+  typedef HeapVector<ChildWithOffsetAndMargins, 4> ChildrenVector;
 
  private:
-  scoped_refptr<const NGLayoutResult> Layout() final;
+  const NGLayoutResult* Layout() final;
 
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) final;
 
@@ -50,5 +56,8 @@ class CORE_EXPORT NGMathRowLayoutAlgorithm
 };
 
 }  // namespace blink
+
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
+    blink::NGMathRowLayoutAlgorithm::ChildWithOffsetAndMargins)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_MATHML_NG_MATH_ROW_LAYOUT_ALGORITHM_H_

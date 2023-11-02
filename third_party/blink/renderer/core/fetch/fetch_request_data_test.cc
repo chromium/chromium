@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,6 +43,39 @@ TEST(FetchRequestDataTest, Not_For_ServiceWorkerFetchEvent_Headers) {
   EXPECT_TRUE(request_data->HeaderList()->Has("x-hi-hi"));
   EXPECT_TRUE(request_data->HeaderList()->Has("sec-fetch-xx"));
   EXPECT_TRUE(request_data->HeaderList()->Has("sec-fetch-yy"));
+}
+
+TEST(FetchRequestDataTest, CheckTrustTokenParamsAreCopiedWithCreate) {
+  // create a fetch API request instance
+  auto request = mojom::blink::FetchAPIRequest::New();
+  // create a TrustTokenParams instance
+  WTF::Vector<::scoped_refptr<const ::blink::SecurityOrigin>> issuers;
+  issuers.push_back(
+      ::blink::SecurityOrigin::CreateFromString("https://aaa.example"));
+  issuers.push_back(
+      ::blink::SecurityOrigin::CreateFromString("https://bbb.example"));
+  WTF::Vector<WTF::String> additional_signed_headers = {"aaa", "bbb"};
+  auto trust_token_params = network::mojom::blink::TrustTokenParams::New(
+      network::mojom::TrustTokenOperationType::kRedemption,
+      network::mojom::TrustTokenRefreshPolicy::kUseCached,
+      /* custom_key_commitment=*/"custom_key_commitment",
+      /* custom_issuer=*/
+      ::blink::SecurityOrigin::CreateFromString("https://ccc.example"),
+      network::mojom::TrustTokenSignRequestData::kInclude,
+      /* include_timestamp_header=*/true, issuers, additional_signed_headers,
+      /* possibly_unsafe_additional_signing_data=*/"ccc");
+  // get a copy of of TrustTokenParams instance created, will be used in testing
+  // later
+  auto trust_token_params_copy = trust_token_params->Clone();
+  // set trust token params in request
+  request->trust_token_params = std::move(trust_token_params);
+  // create a FetchRequestData instance from request
+  FetchRequestData* request_data = FetchRequestData::Create(
+      /*script_state=*/nullptr, std::move(request),
+      FetchRequestData::ForServiceWorkerFetchEvent::kTrue);
+  // compare trust token params of request_data to trust_token_params_copy.
+  EXPECT_TRUE(request_data->TrustTokenParams());
+  EXPECT_EQ(*(request_data->TrustTokenParams()), *(trust_token_params_copy));
 }
 
 }  // namespace blink

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,9 +18,11 @@ import android.graphics.Bitmap;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -29,11 +31,13 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.image_editor.ImageEditorDialogCoordinator;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.modules.image_editor.ImageEditorModuleProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.module_installer.engine.InstallListener;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.JUnitTestGURLs;
+
+import java.lang.ref.WeakReference;
 
 // clang-format off
 /**
@@ -41,13 +45,11 @@ import org.chromium.url.JUnitTestGURLs;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ScreenshotCoordinatorTest {
+    @Rule
+    public ActivityScenarioRule<FragmentActivity> mActivityScenarioRule =
+        new ActivityScenarioRule<>(FragmentActivity.class);
+
     // clang-format on
-    @Mock
-    private FragmentActivity mActivity;
-
-    @Mock
-    private FragmentManager mFragmentManagerMock;
-
     @Mock
     private ChromeOptionShareCallback mChromeOptionShareCallback;
 
@@ -86,7 +88,9 @@ public class ScreenshotCoordinatorTest {
     private BottomSheetController mBottomSheetControllerMock;
 
     @Mock
-    private Tab mTab;
+    private WindowAndroid mWindowAndroid;
+
+    private FragmentActivity mActivity;
 
     // Bitmap used for successful screenshot capture requests.
     private Bitmap mBitmap;
@@ -97,20 +101,21 @@ public class ScreenshotCoordinatorTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        mActivityScenarioRule.getScenario().onActivity((activity) -> mActivity = activity);
 
-        when(mActivity.getSupportFragmentManager()).thenReturn(mFragmentManagerMock);
+        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
 
         when(mImageEditorModuleProviderMock.getImageEditorDialogCoordinator())
                 .thenReturn(mImageEditorDialogCoordinatorMock);
         doNothing()
                 .when(mImageEditorDialogCoordinatorMock)
-                .launchEditor(mActivity, mBitmap, mTab, JUnitTestGURLs.EXAMPLE_URL,
+                .launchEditor(mActivity, mBitmap, mWindowAndroid, JUnitTestGURLs.EXAMPLE_URL,
                         mChromeOptionShareCallback);
 
         mBitmap = Bitmap.createBitmap(800, 600, Bitmap.Config.ARGB_8888);
 
         // Instantiate the object under test.
-        mScreenshotCoordinator = new ScreenshotCoordinator(mActivity, mTab,
+        mScreenshotCoordinator = new ScreenshotCoordinator(mActivity, mWindowAndroid,
                 JUnitTestGURLs.EXAMPLE_URL, new FakeEditorScreenshotTask(),
                 mScreenshotShareSheetDialogMock, mChromeOptionShareCallback,
                 mBottomSheetControllerMock, mImageEditorModuleProviderMock);
@@ -130,7 +135,7 @@ public class ScreenshotCoordinatorTest {
 
         // Ensure the editor launches.
         verify(mImageEditorDialogCoordinatorMock)
-                .launchEditor(mActivity, mBitmap, mTab, JUnitTestGURLs.EXAMPLE_URL,
+                .launchEditor(mActivity, mBitmap, mWindowAndroid, JUnitTestGURLs.EXAMPLE_URL,
                         mChromeOptionShareCallback);
     }
 
@@ -161,7 +166,7 @@ public class ScreenshotCoordinatorTest {
         mScreenshotCoordinator.captureScreenshot();
         // The editor should launch without requiring a discrete user action.
         verify(mImageEditorDialogCoordinatorMock)
-                .launchEditor(mActivity, mBitmap, mTab, JUnitTestGURLs.EXAMPLE_URL,
+                .launchEditor(mActivity, mBitmap, mWindowAndroid, JUnitTestGURLs.EXAMPLE_URL,
                         mChromeOptionShareCallback);
     }
 

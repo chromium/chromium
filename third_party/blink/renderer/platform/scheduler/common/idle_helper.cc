@@ -1,10 +1,11 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/scheduler/common/idle_helper.h"
 
 #include "base/bind.h"
+#include "base/record_replay.h"
 #include "base/task/sequence_manager/sequence_manager.h"
 #include "base/task/sequence_manager/task_queue.h"
 #include "base/task/sequence_manager/time_domain.h"
@@ -43,7 +44,7 @@ IdleHelper::IdleHelper(
   idle_task_runner_ = base::MakeRefCounted<SingleThreadIdleTaskRunner>(
       idle_queue_->CreateTaskRunner(
           static_cast<int>(TaskType::kMainThreadTaskQueueIdle)),
-      this);
+      helper_->ControlTaskRunner(), this);
 
   // This fence will block any idle tasks from running.
   idle_queue_->InsertFence(TaskQueue::InsertFencePosition::kBeginningOfTime);
@@ -70,7 +71,6 @@ IdleHelper::Delegate::Delegate() = default;
 IdleHelper::Delegate::~Delegate() = default;
 
 scoped_refptr<SingleThreadIdleTaskRunner> IdleHelper::IdleTaskRunner() {
-  helper_->CheckOnValidThread();
   return idle_task_runner_;
 }
 
@@ -84,7 +84,7 @@ IdleHelper::IdlePeriodState IdleHelper::ComputeNewLongIdlePeriodState(
     return IdlePeriodState::kNotInIdlePeriod;
   }
 
-  auto wake_up = helper_->GetNextDelayedWakeUp();
+  auto wake_up = helper_->GetNextWakeUp();
 
   base::TimeDelta long_idle_period_duration;
 
@@ -292,7 +292,15 @@ void IdleHelper::OnIdleTaskPostedOnMainThread() {
                "OnIdleTaskPostedOnMainThread");
   if (is_shutdown_)
     return;
+
+  // Avoid updating idle state non-deterministically.
+  if (recordreplay::AreEventsDisallowed("IdleHelper::OnIdleTaskPostedOnMainThread"))
+    return;
+
+  // RecordReplay issue RUN-1021
+  // Only call OnPendingTasksChanged when events aren't disallowed.
   delegate_->OnPendingTasksChanged(true);
+
   if (state_.idle_period_state() == IdlePeriodState::kInLongIdlePeriodPaused) {
     // Restart long idle period ticks.
     helper_->ControlTaskRunner()->PostTask(

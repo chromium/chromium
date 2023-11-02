@@ -54,7 +54,7 @@ class ReferenceClipPathOperation final : public ClipPathOperation {
 
  private:
   bool operator==(const ClipPathOperation&) const override;
-  OperationType GetType() const override { return REFERENCE; }
+  OperationType GetType() const override { return kReference; }
 
   ReferenceClipPathOperation(const String& url, SVGResource* resource)
       : resource_(resource), url_(url) {}
@@ -66,7 +66,7 @@ class ReferenceClipPathOperation final : public ClipPathOperation {
 template <>
 struct DowncastTraits<ReferenceClipPathOperation> {
   static bool AllowFrom(const ClipPathOperation& op) {
-    return op.GetType() == ClipPathOperation::REFERENCE;
+    return op.GetType() == ClipPathOperation::kReference;
   }
 };
 

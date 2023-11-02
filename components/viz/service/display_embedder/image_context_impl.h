@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,12 +9,13 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/common/resources/resource_format.h"
 #include "components/viz/service/display/external_use_client.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
-#include "gpu/command_buffer/service/shared_image_representation.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
@@ -51,7 +52,8 @@ class ImageContextImpl final : public ExternalUseClient::ImageContext {
                    bool maybe_concurrent_reads,
                    const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
                    sk_sp<SkColorSpace> color_space,
-                   const bool allow_keeping_read_access = true);
+                   bool allow_keeping_read_access = true,
+                   bool raw_draw_if_possible = false);
 
   ImageContextImpl(const ImageContextImpl&) = delete;
   ImageContextImpl& operator=(const ImageContextImpl&) = delete;
@@ -71,9 +73,9 @@ class ImageContextImpl final : public ExternalUseClient::ImageContext {
   SkPromiseImageTexture* promise_image_texture() const {
     return promise_image_texture_;
   }
-  GrBackendSurfaceMutableState* end_access_state() const {
+  std::unique_ptr<GrBackendSurfaceMutableState> TakeAccessEndState() const {
     return representation_scoped_read_access_
-               ? representation_scoped_read_access_->end_state()
+               ? representation_scoped_read_access_->TakeEndState()
                : nullptr;
   }
 
@@ -103,21 +105,22 @@ class ImageContextImpl final : public ExternalUseClient::ImageContext {
 
   const bool maybe_concurrent_reads_ = false;
   const bool allow_keeping_read_access_ = true;
+  const bool raw_draw_if_possible_ = false;
 
   // Fallback in case we cannot produce a |representation_|.
-  gpu::SharedContextState* fallback_context_state_ = nullptr;
+  raw_ptr<gpu::SharedContextState> fallback_context_state_ = nullptr;
   GrBackendTexture fallback_texture_;
 
   // Only one of the follow should be non-null at the same time.
   scoped_refptr<gpu::gles2::TexturePassthrough> texture_passthrough_;
-  std::unique_ptr<gpu::SharedImageRepresentationSkia> representation_;
-  std::unique_ptr<gpu::SharedImageRepresentationRaster> raster_representation_;
+  std::unique_ptr<gpu::SkiaImageRepresentation> representation_;
+  std::unique_ptr<gpu::RasterImageRepresentation> raster_representation_;
 
   // For scoped read accessing |representation|. It is only accessed on GPU
   // thread.
-  std::unique_ptr<gpu::SharedImageRepresentationSkia::ScopedReadAccess>
+  std::unique_ptr<gpu::SkiaImageRepresentation::ScopedReadAccess>
       representation_scoped_read_access_;
-  std::unique_ptr<gpu::SharedImageRepresentationRaster::ScopedReadAccess>
+  std::unique_ptr<gpu::RasterImageRepresentation::ScopedReadAccess>
       representation_raster_scoped_access_;
 
   // For holding SkPromiseImageTexture create from |fallback_texture| or legacy
@@ -126,7 +129,8 @@ class ImageContextImpl final : public ExternalUseClient::ImageContext {
 
   // The |promise_image_texture| is used for fulfilling the promise image. It is
   // used on GPU thread.
-  SkPromiseImageTexture* promise_image_texture_ = nullptr;
+  raw_ptr<SkPromiseImageTexture, DanglingUntriaged> promise_image_texture_ =
+      nullptr;
 };
 
 }  // namespace viz

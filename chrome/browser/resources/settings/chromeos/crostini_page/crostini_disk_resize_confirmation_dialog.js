@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,35 +7,39 @@
  * component warning the user that resizing a sparse disk cannot be undone.
  * By clicking 'Reserve size', the user agrees to start the operation.
  */
-import '//resources/cr_elements/cr_button/cr_button.m.js';
-import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
-import '../../settings_shared_css.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import '../../settings_shared.css.js';
 
-import {SliderTick} from '//resources/cr_elements/cr_slider/cr_slider.js';
-import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
-import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
-import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {CrostiniBrowserProxy, CrostiniBrowserProxyImpl, CrostiniDiskInfo, CrostiniPortActiveSetting, CrostiniPortProtocol, CrostiniPortSetting, DEFAULT_CROSTINI_CONTAINER, DEFAULT_CROSTINI_VM, MAX_VALID_PORT_NUMBER, MIN_VALID_PORT_NUMBER, PortState} from './crostini_browser_proxy.js';
+/** @polymer */
+class SettingsCrostiniDiskResizeConfirmationDialogElement extends
+    PolymerElement {
+  static get is() {
+    return 'settings-crostini-disk-resize-confirmation-dialog';
+  }
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'settings-crostini-disk-resize-confirmation-dialog',
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     this.getDialog_().showModal();
-  },
+  }
 
   /** @private */
   onCancelTap_() {
     this.getDialog_().cancel();
-  },
+  }
 
   /** @private */
   onReserveSizeTap_() {
     this.getDialog_().close();
-  },
+  }
 
   /**
    * @private
@@ -44,4 +48,8 @@ Polymer({
   getDialog_() {
     return /** @type{!CrDialogElement} */ (this.$.dialog);
   }
-});
+}
+
+customElements.define(
+    SettingsCrostiniDiskResizeConfirmationDialogElement.is,
+    SettingsCrostiniDiskResizeConfirmationDialogElement);

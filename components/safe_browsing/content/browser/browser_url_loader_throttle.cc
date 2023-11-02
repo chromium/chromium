@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,6 +39,7 @@ class BrowserURLLoaderThrottle::CheckerOnIO
       bool real_time_lookup_enabled,
       bool can_rt_check_subresource_url,
       bool can_check_db,
+      bool can_check_high_confidence_allowlist,
       base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service)
       : delegate_getter_(std::move(delegate_getter)),
         frame_tree_node_id_(frame_tree_node_id),
@@ -47,6 +48,8 @@ class BrowserURLLoaderThrottle::CheckerOnIO
         real_time_lookup_enabled_(real_time_lookup_enabled),
         can_rt_check_subresource_url_(can_rt_check_subresource_url),
         can_check_db_(can_check_db),
+        can_check_high_confidence_allowlist_(
+            can_check_high_confidence_allowlist),
         url_lookup_service_(url_lookup_service) {
     content::WebContents* contents = web_contents_getter_.Run();
     if (!!contents) {
@@ -68,7 +71,6 @@ class BrowserURLLoaderThrottle::CheckerOnIO
         std::move(delegate_getter_).Run();
     skip_checks_ =
         !url_checker_delegate ||
-        !url_checker_delegate->GetDatabaseManager()->IsSupported() ||
         url_checker_delegate->ShouldSkipRequestCheck(
             url, frame_tree_node_id_,
             content::ChildProcessHost::kInvalidUniqueID /* render_process_id */,
@@ -86,7 +88,8 @@ class BrowserURLLoaderThrottle::CheckerOnIO
         url_checker_delegate, web_contents_getter_,
         content::ChildProcessHost::kInvalidUniqueID, MSG_ROUTING_NONE,
         frame_tree_node_id_, real_time_lookup_enabled_,
-        can_rt_check_subresource_url_, can_check_db_, last_committed_url_,
+        can_rt_check_subresource_url_, can_check_db_,
+        can_check_high_confidence_allowlist_, last_committed_url_,
         content::GetUIThreadTaskRunner({}), url_lookup_service_,
         WebUIInfoSingleton::GetInstance());
 
@@ -157,6 +160,7 @@ class BrowserURLLoaderThrottle::CheckerOnIO
   bool real_time_lookup_enabled_ = false;
   bool can_rt_check_subresource_url_ = false;
   bool can_check_db_ = true;
+  bool can_check_high_confidence_allowlist_ = true;
   GURL last_committed_url_;
   base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_;
 };
@@ -193,10 +197,15 @@ BrowserURLLoaderThrottle::BrowserURLLoaderThrottle(
   // default.
   bool can_check_db =
       url_lookup_service ? url_lookup_service->CanCheckSafeBrowsingDb() : true;
+  bool can_check_high_confidence_allowlist =
+      url_lookup_service
+          ? url_lookup_service->CanCheckSafeBrowsingHighConfidenceAllowlist()
+          : true;
   io_checker_ = std::make_unique<CheckerOnIO>(
       std::move(delegate_getter), frame_tree_node_id, web_contents_getter,
       weak_factory_.GetWeakPtr(), real_time_lookup_enabled,
-      can_rt_check_subresource_url, can_check_db, url_lookup_service);
+      can_rt_check_subresource_url, can_check_db,
+      can_check_high_confidence_allowlist, url_lookup_service);
 }
 
 BrowserURLLoaderThrottle::~BrowserURLLoaderThrottle() {

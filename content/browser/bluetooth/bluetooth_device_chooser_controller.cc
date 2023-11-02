@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/browser/bluetooth/bluetooth_blocklist.h"
 #include "content/browser/bluetooth/bluetooth_metrics.h"
+#include "content/browser/bluetooth/bluetooth_util.h"
 #include "content/browser/bluetooth/web_bluetooth_service_impl.h"
 #include "content/public/browser/bluetooth_delegate.h"
 #include "content/public/browser/browser_thread.h"
@@ -178,17 +179,8 @@ bool MatchesFilter(const std::string* device_name,
         return false;
       // Check data filter size is less than device manufacturer data size.
       const auto& device_data = it->second;
-      if (filter_data.second.size() > device_data.size())
+      if (!MatchesBluetoothDataFilter(filter_data.second, device_data))
         return false;
-      // For each bit in mask, check the corresponding bit in device
-      // manufacturer data is equal to the corresponding bit in expected data.
-      size_t i = 0;
-      for (const auto& filter_byte : filter_data.second) {
-        if ((filter_byte->mask & filter_byte->data) !=
-            (filter_byte->mask & device_data.at(i++))) {
-          return false;
-        }
-      }
     }
   }
 
@@ -223,7 +215,7 @@ void StopDiscoverySession(
 
 BluetoothDeviceChooserController::BluetoothDeviceChooserController(
     WebBluetoothServiceImpl* web_bluetooth_service,
-    RenderFrameHost* render_frame_host,
+    RenderFrameHost& render_frame_host,
     scoped_refptr<device::BluetoothAdapter> adapter)
     : adapter_(std::move(adapter)),
       web_bluetooth_service_(web_bluetooth_service),
@@ -262,7 +254,9 @@ void BluetoothDeviceChooserController::GetDevice(
   // Check blocklist to reject invalid filters and adjust optional_services.
   if (options_->filters &&
       BluetoothBlocklist::Get().IsExcluded(options_->filters.value())) {
-    PostErrorCallback(WebBluetoothResult::REQUEST_DEVICE_WITH_BLOCKLISTED_UUID);
+    PostErrorCallback(
+        WebBluetoothResult::
+            REQUEST_DEVICE_WITH_BLOCKLISTED_UUID_OR_MANUFACTURER_DATA);
     return;
   }
   BluetoothBlocklist::Get().RemoveExcludedUUIDs(options_.get());
@@ -299,7 +293,7 @@ void BluetoothDeviceChooserController::GetDevice(
       base::Unretained(this));
 
   if (auto* delegate = GetContentClient()->browser()->GetBluetoothDelegate()) {
-    chooser_ = delegate->RunBluetoothChooser(render_frame_host_,
+    chooser_ = delegate->RunBluetoothChooser(&*render_frame_host_,
                                              std::move(chooser_event_handler));
   }
 

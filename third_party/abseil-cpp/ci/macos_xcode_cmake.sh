@@ -45,9 +45,9 @@ for compilation_mode in ${ABSL_CMAKE_BUILD_TYPES}; do
     time cmake ${ABSEIL_ROOT} \
       -GXcode \
       -DBUILD_SHARED_LIBS=${build_shared} \
-      -DBUILD_TESTING=ON \
+      -DABSL_BUILD_TESTING=ON \
       -DCMAKE_BUILD_TYPE=${compilation_mode} \
-      -DCMAKE_CXX_STANDARD=11 \
+      -DCMAKE_CXX_STANDARD=14 \
       -DCMAKE_MODULE_LINKER_FLAGS="-Wl,--no-undefined" \
       -DABSL_GOOGLETEST_DOWNLOAD_URL="${ABSL_GOOGLETEST_DOWNLOAD_URL}"
     time cmake --build .

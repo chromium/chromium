@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "media/base/limits.h"
@@ -27,20 +28,23 @@ bool GetSpatialLayerFrameSize(const DecoderBuffer& decoder_buffer,
   if (!cue_data)
     return true;
 
+  bool enable_vp9_ksvc =
 // On windows, currently only d3d11 supports decoding VP9 kSVC stream, we
 // shouldn't combine the switch kD3D11Vp9kSVCHWDecoding to kVp9kSVCHWDecoding
 // due to we want keep returning false to MediaCapability.
-#if defined(OS_WIN)
-  if (!base::FeatureList::IsEnabled(media::kD3D11Vp9kSVCHWDecoding)) {
-    DLOG(ERROR) << "Vp9 k-SVC hardware decoding is disabled";
-    return false;
-  }
+#if BUILDFLAG(IS_WIN)
+      base::FeatureList::IsEnabled(media::kD3D11Vp9kSVCHWDecoding);
+#elif BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_ARM_FAMILY)
+      // V4L2 stateless API decoder is not capable of decoding VP9 k-SVC stream.
+      false;
 #else
-  if (!base::FeatureList::IsEnabled(media::kVp9kSVCHWDecoding)) {
+      base::FeatureList::IsEnabled(media::kVp9kSVCHWDecoding);
+#endif
+
+  if (!enable_vp9_ksvc) {
     DLOG(ERROR) << "Vp9 k-SVC hardware decoding is disabled";
     return false;
   }
-#endif
 
   size_t num_of_layers = decoder_buffer.side_data_size() / sizeof(uint32_t);
   if (num_of_layers > 3u) {
@@ -82,15 +86,30 @@ bool IsValidBitDepth(uint8_t bit_depth, VideoCodecProfile profile) {
   }
 }
 
-bool IsYUV420Sequence(const Vp9FrameHeader& frame_header) {
-  // Spec 7.2.2
-  return frame_header.subsampling_x == 1u && frame_header.subsampling_y == 1u;
+VideoChromaSampling GetVP9ChromaSampling(const Vp9FrameHeader& frame_header) {
+  // Spec section 7.2.2
+  uint8_t subsampling_x = frame_header.subsampling_x;
+  uint8_t subsampling_y = frame_header.subsampling_y;
+  if (subsampling_x == 0 && subsampling_y == 0) {
+    return VideoChromaSampling::k444;
+  } else if (subsampling_x == 1u && subsampling_y == 0u) {
+    return VideoChromaSampling::k422;
+  } else if (subsampling_x == 1u && subsampling_y == 1u) {
+    return VideoChromaSampling::k420;
+  } else {
+    DLOG(WARNING) << "Unknown chroma sampling format.";
+    return VideoChromaSampling::kUnknown;
+  }
 }
 }  // namespace
 
 VP9Decoder::VP9Accelerator::VP9Accelerator() {}
 
 VP9Decoder::VP9Accelerator::~VP9Accelerator() {}
+
+bool VP9Decoder::VP9Accelerator::SupportsContextProbabilityReadback() const {
+  return false;
+}
 
 VP9Decoder::VP9Decoder(std::unique_ptr<VP9Accelerator> accelerator,
                        VideoCodecProfile profile,
@@ -100,7 +119,8 @@ VP9Decoder::VP9Decoder(std::unique_ptr<VP9Accelerator> accelerator,
       // TODO(hiroh): Set profile to UNKNOWN.
       profile_(profile),
       accelerator_(std::move(accelerator)),
-      parser_(accelerator_->IsFrameContextRequired()) {}
+      parser_(accelerator_->NeedsCompressedHeaderParsed(),
+              accelerator_->SupportsContextProbabilityReadback()) {}
 
 VP9Decoder::~VP9Decoder() = default;
 
@@ -257,7 +277,15 @@ VP9Decoder::DecodeResult VP9Decoder::Decode() {
                << ", profile=" << GetProfileName(new_profile);
       return kDecodeError;
     }
-    if (!IsYUV420Sequence(*curr_frame_hdr_)) {
+    VideoChromaSampling new_chroma_sampling =
+        GetVP9ChromaSampling(*curr_frame_hdr_);
+    if (new_chroma_sampling != chroma_sampling_) {
+      chroma_sampling_ = new_chroma_sampling;
+      base::UmaHistogramEnumeration(
+          "Media.PlatformVideoDecoding.ChromaSampling", chroma_sampling_);
+    }
+
+    if (chroma_sampling_ != VideoChromaSampling::k420) {
       DVLOG(1) << "Only YUV 4:2:0 is supported";
       return kDecodeError;
     }
@@ -398,6 +426,10 @@ VideoCodecProfile VP9Decoder::GetProfile() const {
 
 uint8_t VP9Decoder::GetBitDepth() const {
   return bit_depth_;
+}
+
+VideoChromaSampling VP9Decoder::GetChromaSampling() const {
+  return chroma_sampling_;
 }
 
 size_t VP9Decoder::GetRequiredNumOfPictures() const {

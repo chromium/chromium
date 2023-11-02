@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@ package reporting;
 
 import "components/reporting/proto/synced/record_constants.proto";
 import "components/reporting/proto/synced/record.proto";
-import "components/reporting/status/status.proto";
+import "components/reporting/util/status.proto";
 
 // ------------ CLIENT/USER REQUEST AND RESPONSES -----------------
 // EnqueueRecordRequest enqueues records for encryption,
@@ -85,8 +85,21 @@ message FlushPriorityResponse {
 message UploadEncryptedRecordRequest {
   repeated EncryptedRecord encrypted_record = 1;
 
-  // If true, server should send the encryption keys with the next response.
+  // Must be either true or absent. If true, server should send the server's
+  // public values in the next response. It corresponds to the
+  // "attachEncryptionSettings" field in the payload.
   optional bool need_encryption_keys = 2;
+
+  // The remaining storage capacity in bytes.
+  optional uint64 remaining_storage_capacity = 3;
+
+  // The rate (bytes/sec) at which new events are added to the storage.
+  optional uint64 new_events_rate = 4;
+
+  // A random ID generated in storage and used by the server as a key for
+  // retrieving record sequence info. (Re)Created whenever storage is
+  // (re)initialized.
+  optional string pipeline_id = 5;
 }
 
 message UploadEncryptedRecordResponse {

@@ -1,4 +1,4 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -10,14 +10,36 @@ source_set("features") {
   public_deps = [ "//base" ]
 }
 
+source_set("prefs") {
+  sources = [ "prefs.cc" ]
+
+  public = [ "prefs.h" ]
+
+  deps = [ "//components/prefs" ]
+}
+
 source_set("test_support") {
   testonly = true
-  sources = [ "mock_device_trust_service.cc" ]
+  sources = [
+    "fake_device_trust_connector_service.cc",
+    "mock_device_trust_service.cc",
+  ]
 
-  public = [ "mock_device_trust_service.h" ]
+  public = [
+    "fake_device_trust_connector_service.h",
+    "mock_device_trust_service.h",
+  ]
 
   public_deps = [
+    "//base",
     "//chrome/browser",
     "//testing/gmock",
+  ]
+
+  deps = [
+    ":prefs",
+    "//components/pref_registry",
+    "//components/prefs:test_support",
+    "//components/sync_preferences:test_support",
   ]
 }

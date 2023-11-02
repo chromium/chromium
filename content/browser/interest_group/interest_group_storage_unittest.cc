@@ -1,8 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/browser/interest_group/interest_group_storage.h"
+
+#include <stddef.h>
 
 #include <functional>
 #include <memory>
@@ -10,7 +12,9 @@
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -18,8 +22,9 @@
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "content/browser/interest_group/interest_group_k_anonymity_manager.h"
+#include "content/browser/interest_group/storage_interest_group.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
-#include "net/base/escape.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
 #include "sql/test/scoped_error_expecter.h"
@@ -28,12 +33,15 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "url/origin.h"
 
 namespace content {
 
 using blink::InterestGroup;
+using testing::Field;
+using testing::UnorderedElementsAre;
 using testing::UnorderedElementsAreArray;
 
 class InterestGroupStorageTest : public testing::Test {
@@ -67,6 +75,8 @@ class InterestGroupStorageTest : public testing::Test {
     result.owner = owner;
     result.name = name;
     result.expiry = base::Time::Now() + base::Days(30);
+    result.execution_mode =
+        blink::InterestGroup::ExecutionMode::kCompatibilityMode;
     return result;
   }
 
@@ -89,7 +99,8 @@ TEST_F(InterestGroupStorageTest, DatabaseInitialized_CreateDatabase) {
     std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
     const url::Origin test_origin =
         url::Origin::Create(GURL("https://owner.example.com"));
-    storage->LeaveInterestGroup(test_origin, "example");
+    storage->LeaveInterestGroup(blink::InterestGroupKey(test_origin, "example"),
+                                test_origin);
   }
 
   // InterestGroupStorage creates the database if it doesn't exist.
@@ -99,8 +110,8 @@ TEST_F(InterestGroupStorageTest, DatabaseInitialized_CreateDatabase) {
     sql::Database raw_db;
     EXPECT_TRUE(raw_db.Open(db_path()));
 
-    // [interest_groups], [join_history], [bid_history], [win_history], [kanon],
-    // [meta].
+    // [interest_groups], [join_history], [bid_history], [win_history],
+    // [k_anon], [meta].
     EXPECT_EQ(6u, sql::test::CountSQLTables(&raw_db)) << raw_db.GetSchema();
   }
 }
@@ -127,15 +138,16 @@ TEST_F(InterestGroupStorageTest, DatabaseRazesOldVersion) {
     // initialization.
     const url::Origin test_origin =
         url::Origin::Create(GURL("https://owner.example.com"));
-    storage->LeaveInterestGroup(test_origin, "example");
+    storage->LeaveInterestGroup(blink::InterestGroupKey(test_origin, "example"),
+                                test_origin);
   }
 
   {
     sql::Database raw_db;
     EXPECT_TRUE(raw_db.Open(db_path()));
 
-    // [interest_groups], [join_history], [bid_history], [win_history], [kanon],
-    // [meta].
+    // [interest_groups], [join_history], [bid_history], [win_history],
+    // [k_anon], [meta].
     EXPECT_EQ(6u, sql::test::CountSQLTables(&raw_db)) << raw_db.GetSchema();
   }
 }
@@ -162,15 +174,16 @@ TEST_F(InterestGroupStorageTest, DatabaseRazesNewVersion) {
     // initialization.
     const url::Origin test_origin =
         url::Origin::Create(GURL("https://owner.example.com"));
-    storage->LeaveInterestGroup(test_origin, "example");
+    storage->LeaveInterestGroup(blink::InterestGroupKey(test_origin, "example"),
+                                test_origin);
   }
 
   {
     sql::Database raw_db;
     EXPECT_TRUE(raw_db.Open(db_path()));
 
-    // [interest_groups], [join_history], [bid_history], [win_history], [kanon],
-    // [meta].
+    // [interest_groups], [join_history], [bid_history], [win_history],
+    // [k_anon], [meta].
     EXPECT_EQ(6u, sql::test::CountSQLTables(&raw_db)) << raw_db.GetSchema();
   }
 }
@@ -192,15 +205,18 @@ TEST_F(InterestGroupStorageTest, DatabaseJoin) {
     std::vector<StorageInterestGroup> interest_groups =
         storage->GetInterestGroupsForOwner(test_origin);
     EXPECT_EQ(1u, interest_groups.size());
-    EXPECT_EQ(test_origin, interest_groups[0].bidding_group->group.owner);
-    EXPECT_EQ("example", interest_groups[0].bidding_group->group.name);
-    EXPECT_EQ(1, interest_groups[0].bidding_group->signals->join_count);
-    EXPECT_EQ(0, interest_groups[0].bidding_group->signals->bid_count);
+    EXPECT_EQ(test_origin, interest_groups[0].interest_group.owner);
+    EXPECT_EQ("example", interest_groups[0].interest_group.name);
+    EXPECT_EQ(1, interest_groups[0].bidding_browser_signals->join_count);
+    EXPECT_EQ(0, interest_groups[0].bidding_browser_signals->bid_count);
+    EXPECT_EQ(interest_groups[0].joining_origin, test_origin);
+    EXPECT_EQ(interest_groups[0].join_time, base::Time::Now());
+    EXPECT_EQ(interest_groups[0].last_updated, base::Time::Now());
   }
   histograms.ExpectUniqueSample("Storage.InterestGroup.PerSiteCount", 1u, 1);
 }
 
-// Test that joining and interest group twice increments the counter.
+// Test that joining an interest group twice increments the counter.
 // Test that joining multiple interest groups with the same owner only creates a
 // single distinct owner. Test that leaving one interest group does not affect
 // membership of other interest groups by the same owner.
@@ -211,6 +227,10 @@ TEST_F(InterestGroupStorageTest, JoinJoinLeave) {
 
   storage->JoinInterestGroup(NewInterestGroup(test_origin, "example"),
                              test_origin.GetURL());
+  base::RunLoop().RunUntilIdle();
+
+  // Advance time so can verify that `join_time` and `last_updated` are updated.
+  task_environment().FastForwardBy(base::Seconds(125));
   storage->JoinInterestGroup(NewInterestGroup(test_origin, "example"),
                              test_origin.GetURL());
 
@@ -221,9 +241,11 @@ TEST_F(InterestGroupStorageTest, JoinJoinLeave) {
   std::vector<StorageInterestGroup> interest_groups =
       storage->GetInterestGroupsForOwner(test_origin);
   EXPECT_EQ(1u, interest_groups.size());
-  EXPECT_EQ("example", interest_groups[0].bidding_group->group.name);
-  EXPECT_EQ(2, interest_groups[0].bidding_group->signals->join_count);
-  EXPECT_EQ(0, interest_groups[0].bidding_group->signals->bid_count);
+  EXPECT_EQ("example", interest_groups[0].interest_group.name);
+  EXPECT_EQ(2, interest_groups[0].bidding_browser_signals->join_count);
+  EXPECT_EQ(0, interest_groups[0].bidding_browser_signals->bid_count);
+  EXPECT_EQ(interest_groups[0].join_time, base::Time::Now());
+  EXPECT_EQ(interest_groups[0].last_updated, base::Time::Now());
 
   storage->JoinInterestGroup(NewInterestGroup(test_origin, "example2"),
                              test_origin.GetURL());
@@ -235,17 +257,65 @@ TEST_F(InterestGroupStorageTest, JoinJoinLeave) {
   EXPECT_EQ(1u, origins.size());
   EXPECT_EQ(test_origin, origins[0]);
 
-  storage->LeaveInterestGroup(test_origin, "example");
+  storage->LeaveInterestGroup(blink::InterestGroupKey(test_origin, "example"),
+                              test_origin);
 
   interest_groups = storage->GetInterestGroupsForOwner(test_origin);
   EXPECT_EQ(1u, interest_groups.size());
-  EXPECT_EQ("example2", interest_groups[0].bidding_group->group.name);
-  EXPECT_EQ(1, interest_groups[0].bidding_group->signals->join_count);
-  EXPECT_EQ(0, interest_groups[0].bidding_group->signals->bid_count);
+  EXPECT_EQ("example2", interest_groups[0].interest_group.name);
+  EXPECT_EQ(1, interest_groups[0].bidding_browser_signals->join_count);
+  EXPECT_EQ(0, interest_groups[0].bidding_browser_signals->bid_count);
 
   origins = storage->GetAllInterestGroupOwners();
   EXPECT_EQ(1u, origins.size());
   EXPECT_EQ(test_origin, origins[0]);
+}
+
+// Join 5 interest groups in the same origin, and one interest group in another
+// origin.
+//
+// Fetch interest groups for update with a limit of 2 interest groups. Only 2
+// interest groups should be returned, and they should all belong to the first
+// test origin.
+//
+// Then, fetch 100 groups for update. Only 5 should be returned.
+TEST_F(InterestGroupStorageTest, GetInterestGroupsForUpdate) {
+  const url::Origin test_origin1 =
+      url::Origin::Create(GURL("https://owner1.example.com"));
+  const url::Origin test_origin2 =
+      url::Origin::Create(GURL("https://owner2.example.com"));
+  std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+
+  constexpr size_t kNumOrigin1Groups = 5, kSmallFetchGroups = 2,
+                   kLargeFetchGroups = 100;
+  ASSERT_LT(kSmallFetchGroups, kNumOrigin1Groups);
+  ASSERT_GT(kLargeFetchGroups, kNumOrigin1Groups);
+  for (size_t i = 0; i < kNumOrigin1Groups; i++) {
+    storage->JoinInterestGroup(
+        NewInterestGroup(test_origin1,
+                         base::StrCat({"example", base::NumberToString(i)})),
+        test_origin1.GetURL());
+  }
+  storage->JoinInterestGroup(NewInterestGroup(test_origin2, "example"),
+                             test_origin2.GetURL());
+
+  std::vector<StorageInterestGroup> update_groups =
+      storage->GetInterestGroupsForUpdate(test_origin1,
+                                          /*groups_limit=*/kSmallFetchGroups);
+
+  EXPECT_EQ(kSmallFetchGroups, update_groups.size());
+  for (const auto& group : update_groups) {
+    EXPECT_EQ(test_origin1, group.interest_group.owner);
+  }
+
+  update_groups =
+      storage->GetInterestGroupsForUpdate(test_origin1,
+                                          /*groups_limit=*/kLargeFetchGroups);
+
+  EXPECT_EQ(kNumOrigin1Groups, update_groups.size());
+  for (const auto& group : update_groups) {
+    EXPECT_EQ(test_origin1, group.interest_group.owner);
+  }
 }
 
 TEST_F(InterestGroupStorageTest, BidCount) {
@@ -255,6 +325,7 @@ TEST_F(InterestGroupStorageTest, BidCount) {
 
   storage->JoinInterestGroup(NewInterestGroup(test_origin, "example"),
                              test_origin.GetURL());
+  blink::InterestGroupKey group_key(test_origin, "example");
 
   std::vector<url::Origin> origins = storage->GetAllInterestGroupOwners();
   EXPECT_EQ(1u, origins.size());
@@ -263,25 +334,25 @@ TEST_F(InterestGroupStorageTest, BidCount) {
   std::vector<StorageInterestGroup> interest_groups =
       storage->GetInterestGroupsForOwner(test_origin);
   EXPECT_EQ(1u, interest_groups.size());
-  EXPECT_EQ("example", interest_groups[0].bidding_group->group.name);
-  EXPECT_EQ(1, interest_groups[0].bidding_group->signals->join_count);
-  EXPECT_EQ(0, interest_groups[0].bidding_group->signals->bid_count);
+  EXPECT_EQ("example", interest_groups[0].interest_group.name);
+  EXPECT_EQ(1, interest_groups[0].bidding_browser_signals->join_count);
+  EXPECT_EQ(0, interest_groups[0].bidding_browser_signals->bid_count);
 
-  storage->RecordInterestGroupBid(test_origin, "example");
-
-  interest_groups = storage->GetInterestGroupsForOwner(test_origin);
-  EXPECT_EQ(1u, interest_groups.size());
-  EXPECT_EQ("example", interest_groups[0].bidding_group->group.name);
-  EXPECT_EQ(1, interest_groups[0].bidding_group->signals->join_count);
-  EXPECT_EQ(1, interest_groups[0].bidding_group->signals->bid_count);
-
-  storage->RecordInterestGroupBid(test_origin, "example");
+  storage->RecordInterestGroupBids({group_key});
 
   interest_groups = storage->GetInterestGroupsForOwner(test_origin);
   EXPECT_EQ(1u, interest_groups.size());
-  EXPECT_EQ("example", interest_groups[0].bidding_group->group.name);
-  EXPECT_EQ(1, interest_groups[0].bidding_group->signals->join_count);
-  EXPECT_EQ(2, interest_groups[0].bidding_group->signals->bid_count);
+  EXPECT_EQ("example", interest_groups[0].interest_group.name);
+  EXPECT_EQ(1, interest_groups[0].bidding_browser_signals->join_count);
+  EXPECT_EQ(1, interest_groups[0].bidding_browser_signals->bid_count);
+
+  storage->RecordInterestGroupBids({group_key});
+
+  interest_groups = storage->GetInterestGroupsForOwner(test_origin);
+  EXPECT_EQ(1u, interest_groups.size());
+  EXPECT_EQ("example", interest_groups[0].interest_group.name);
+  EXPECT_EQ(1, interest_groups[0].bidding_browser_signals->join_count);
+  EXPECT_EQ(2, interest_groups[0].bidding_browser_signals->bid_count);
 }
 
 TEST_F(InterestGroupStorageTest, RecordsWins) {
@@ -290,6 +361,7 @@ TEST_F(InterestGroupStorageTest, RecordsWins) {
   const GURL ad1_url = GURL("http://owner.example.com/ad1");
   const GURL ad2_url = GURL("http://owner.example.com/ad2");
   std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+  blink::InterestGroupKey group_key(test_origin, "example");
 
   storage->JoinInterestGroup(NewInterestGroup(test_origin, "example"),
                              test_origin.GetURL());
@@ -301,42 +373,42 @@ TEST_F(InterestGroupStorageTest, RecordsWins) {
   std::vector<StorageInterestGroup> interest_groups =
       storage->GetInterestGroupsForOwner(test_origin);
   ASSERT_EQ(1u, interest_groups.size());
-  EXPECT_EQ("example", interest_groups[0].bidding_group->group.name);
-  EXPECT_EQ(1, interest_groups[0].bidding_group->signals->join_count);
-  EXPECT_EQ(0, interest_groups[0].bidding_group->signals->bid_count);
+  EXPECT_EQ("example", interest_groups[0].interest_group.name);
+  EXPECT_EQ(1, interest_groups[0].bidding_browser_signals->join_count);
+  EXPECT_EQ(0, interest_groups[0].bidding_browser_signals->bid_count);
 
   std::string ad1_json = "{url: '" + ad1_url.spec() + "'}";
-  storage->RecordInterestGroupBid(test_origin, "example");
-  storage->RecordInterestGroupWin(test_origin, "example", ad1_json);
+  storage->RecordInterestGroupBids({group_key});
+  storage->RecordInterestGroupWin(group_key, ad1_json);
 
   interest_groups = storage->GetInterestGroupsForOwner(test_origin);
   ASSERT_EQ(1u, interest_groups.size());
-  EXPECT_EQ("example", interest_groups[0].bidding_group->group.name);
-  EXPECT_EQ(1, interest_groups[0].bidding_group->signals->join_count);
-  EXPECT_EQ(1, interest_groups[0].bidding_group->signals->bid_count);
+  EXPECT_EQ("example", interest_groups[0].interest_group.name);
+  EXPECT_EQ(1, interest_groups[0].bidding_browser_signals->join_count);
+  EXPECT_EQ(1, interest_groups[0].bidding_browser_signals->bid_count);
 
   // Add the second win *after* the first so we can check ordering.
   task_environment().FastForwardBy(base::Seconds(1));
   std::string ad2_json = "{url: '" + ad2_url.spec() + "'}";
-  storage->RecordInterestGroupBid(test_origin, "example");
-  storage->RecordInterestGroupWin(test_origin, "example", ad2_json);
+  storage->RecordInterestGroupBids({group_key});
+  storage->RecordInterestGroupWin(group_key, ad2_json);
 
   interest_groups = storage->GetInterestGroupsForOwner(test_origin);
   ASSERT_EQ(1u, interest_groups.size());
-  EXPECT_EQ("example", interest_groups[0].bidding_group->group.name);
-  EXPECT_EQ(1, interest_groups[0].bidding_group->signals->join_count);
-  EXPECT_EQ(2, interest_groups[0].bidding_group->signals->bid_count);
-  EXPECT_EQ(2u, interest_groups[0].bidding_group->signals->prev_wins.size());
+  EXPECT_EQ("example", interest_groups[0].interest_group.name);
+  EXPECT_EQ(1, interest_groups[0].bidding_browser_signals->join_count);
+  EXPECT_EQ(2, interest_groups[0].bidding_browser_signals->bid_count);
+  EXPECT_EQ(2u, interest_groups[0].bidding_browser_signals->prev_wins.size());
   // Ad wins should be listed in reverse chronological order.
   EXPECT_EQ(ad2_json,
-            interest_groups[0].bidding_group->signals->prev_wins[0]->ad_json);
+            interest_groups[0].bidding_browser_signals->prev_wins[0]->ad_json);
   EXPECT_EQ(ad1_json,
-            interest_groups[0].bidding_group->signals->prev_wins[1]->ad_json);
+            interest_groups[0].bidding_browser_signals->prev_wins[1]->ad_json);
 
   // Try delete
-  storage->DeleteInterestGroupData(
-      base::BindLambdaForTesting([&test_origin](const url::Origin& candidate) {
-        return candidate == test_origin;
+  storage->DeleteInterestGroupData(base::BindLambdaForTesting(
+      [&test_origin](const blink::StorageKey& candidate) {
+        return candidate == blink::StorageKey(test_origin);
       }));
 
   origins = storage->GetAllInterestGroupOwners();
@@ -352,8 +424,8 @@ TEST_F(InterestGroupStorageTest, UpdatesInterestGroupNameKAnonymity) {
   const std::string name = "name with space";
   const std::string name2 = "name%20with%20space";
 
-  const GURL key = test_origin.GetURL().Resolve(net::EscapePath(name));
-  const GURL key2 = test_origin.GetURL().Resolve(net::EscapePath(name2));
+  const std::string key = test_origin.GetURL().spec() + '\n' + name;
+  const std::string key2 = test_origin.GetURL().spec() + '\n' + name2;
 
   std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
 
@@ -373,64 +445,64 @@ TEST_F(InterestGroupStorageTest, UpdatesInterestGroupNameKAnonymity) {
   groups = storage->GetInterestGroupsForOwner(test_origin);
 
   ASSERT_EQ(2u, groups.size());
-  EXPECT_EQ(name, groups[1].bidding_group->group.name);
+  EXPECT_EQ(name, groups[1].interest_group.name);
   ASSERT_TRUE(groups[1].name_kanon);
   EXPECT_EQ(key, groups[1].name_kanon->key);
-  EXPECT_EQ(0, groups[1].name_kanon->k);
+  EXPECT_EQ(false, groups[1].name_kanon->is_k_anonymous);
   EXPECT_EQ(base::Time::Min(), groups[1].name_kanon->last_updated);
 
-  EXPECT_EQ(name2, groups[0].bidding_group->group.name);
+  EXPECT_EQ(name2, groups[0].interest_group.name);
   ASSERT_TRUE(groups[0].name_kanon);
   EXPECT_EQ(key2, groups[0].name_kanon->key);
-  EXPECT_EQ(0, groups[0].name_kanon->k);
+  EXPECT_EQ(false, groups[0].name_kanon->is_k_anonymous);
   EXPECT_EQ(base::Time::Min(), groups[0].name_kanon->last_updated);
 
   base::Time update_time = base::Time::Now();
-  StorageInterestGroup::KAnonymityData kanon{key, 10, update_time};
-  storage->UpdateInterestGroupNameKAnonymity(kanon, absl::nullopt);
+  StorageInterestGroup::KAnonymityData kanon{key, true, update_time};
+  storage->UpdateKAnonymity(kanon);
 
   groups = storage->GetInterestGroupsForOwner(test_origin);
 
   ASSERT_EQ(2u, groups.size());
-  EXPECT_EQ(name, groups[1].bidding_group->group.name);
+  EXPECT_EQ(name, groups[1].interest_group.name);
   ASSERT_TRUE(groups[1].name_kanon);
   EXPECT_EQ(key, groups[1].name_kanon->key);
-  EXPECT_EQ(10, groups[1].name_kanon->k);
+  EXPECT_EQ(true, groups[1].name_kanon->is_k_anonymous);
   EXPECT_EQ(update_time, groups[1].name_kanon->last_updated);
 
-  EXPECT_EQ(name2, groups[0].bidding_group->group.name);
+  EXPECT_EQ(name2, groups[0].interest_group.name);
   ASSERT_TRUE(groups[0].name_kanon);
   EXPECT_EQ(key2, groups[0].name_kanon->key);
-  EXPECT_EQ(0, groups[0].name_kanon->k);
+  EXPECT_EQ(false, groups[0].name_kanon->is_k_anonymous);
   EXPECT_EQ(base::Time::Min(), groups[0].name_kanon->last_updated);
 
   task_environment().FastForwardBy(base::Seconds(1));
 
   update_time = base::Time::Now();
-  kanon = StorageInterestGroup::KAnonymityData{key, 12, update_time};
-  storage->UpdateInterestGroupNameKAnonymity(kanon, absl::nullopt);
+  kanon = StorageInterestGroup::KAnonymityData{key, true, update_time};
+  storage->UpdateKAnonymity(kanon);
 
   groups = storage->GetInterestGroupsForOwner(test_origin);
 
   ASSERT_EQ(2u, groups.size());
-  EXPECT_EQ(name, groups[1].bidding_group->group.name);
+  EXPECT_EQ(name, groups[1].interest_group.name);
   ASSERT_TRUE(groups[1].name_kanon);
   EXPECT_EQ(key, groups[1].name_kanon->key);
-  EXPECT_EQ(12, groups[1].name_kanon->k);
+  EXPECT_EQ(true, groups[1].name_kanon->is_k_anonymous);
   EXPECT_EQ(update_time, groups[1].name_kanon->last_updated);
 
-  EXPECT_EQ(name2, groups[0].bidding_group->group.name);
+  EXPECT_EQ(name2, groups[0].interest_group.name);
   ASSERT_TRUE(groups[0].name_kanon);
   EXPECT_EQ(key2, groups[0].name_kanon->key);
-  EXPECT_EQ(0, groups[0].name_kanon->k);
+  EXPECT_EQ(false, groups[0].name_kanon->is_k_anonymous);
   EXPECT_EQ(base::Time::Min(), groups[0].name_kanon->last_updated);
 }
 
 // Tests updating the Interest Group Update URL k-anonymity data works and
 // is shared for both interest groups if they share the same update URL.
 TEST_F(InterestGroupStorageTest, UpdatesInterestGroupUpdateURLKAnonymity) {
-  GURL update_url("https://owner.example.com/group1Update");
-  url::Origin test_origin = url::Origin::Create(update_url);
+  GURL daily_update_url("https://owner.example.com/group1Update");
+  url::Origin test_origin = url::Origin::Create(daily_update_url);
 
   std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
   std::vector<StorageInterestGroup> groups =
@@ -439,7 +511,7 @@ TEST_F(InterestGroupStorageTest, UpdatesInterestGroupUpdateURLKAnonymity) {
   EXPECT_EQ(0u, groups.size());
 
   InterestGroup g = NewInterestGroup(test_origin, "name");
-  g.update_url = update_url;
+  g.daily_update_url = daily_update_url;
   storage->JoinInterestGroup(g, GURL("https://owner.example.com/join"));
 
   // Add a little delay so groups are returned in a deterministic order.
@@ -447,71 +519,73 @@ TEST_F(InterestGroupStorageTest, UpdatesInterestGroupUpdateURLKAnonymity) {
   task_environment().FastForwardBy(base::Microseconds(1));
 
   InterestGroup g2 = NewInterestGroup(test_origin, "name2");
-  g2.update_url = update_url;
+  g2.daily_update_url = daily_update_url;
   storage->JoinInterestGroup(g2, GURL("https://owner.example.com/join2"));
 
   groups = storage->GetInterestGroupsForOwner(test_origin);
 
   ASSERT_EQ(2u, groups.size());
-  EXPECT_EQ("name2", groups[0].bidding_group->group.name);
-  ASSERT_TRUE(groups[0].update_url_kanon);
-  EXPECT_EQ(update_url, groups[0].update_url_kanon->key);
-  EXPECT_EQ(0, groups[0].update_url_kanon->k);
-  EXPECT_EQ(base::Time::Min(), groups[0].update_url_kanon->last_updated);
+  EXPECT_EQ("name2", groups[0].interest_group.name);
+  ASSERT_TRUE(groups[0].daily_update_url_kanon);
+  EXPECT_EQ(daily_update_url, groups[0].daily_update_url_kanon->key);
+  EXPECT_EQ(false, groups[0].daily_update_url_kanon->is_k_anonymous);
+  EXPECT_EQ(base::Time::Min(), groups[0].daily_update_url_kanon->last_updated);
 
-  EXPECT_EQ("name", groups[1].bidding_group->group.name);
-  ASSERT_TRUE(groups[1].update_url_kanon);
-  EXPECT_EQ(update_url, groups[1].update_url_kanon->key);
-  EXPECT_EQ(0, groups[1].update_url_kanon->k);
-  EXPECT_EQ(base::Time::Min(), groups[1].update_url_kanon->last_updated);
+  EXPECT_EQ("name", groups[1].interest_group.name);
+  ASSERT_TRUE(groups[1].daily_update_url_kanon);
+  EXPECT_EQ(daily_update_url, groups[1].daily_update_url_kanon->key);
+  EXPECT_EQ(false, groups[1].daily_update_url_kanon->is_k_anonymous);
+  EXPECT_EQ(base::Time::Min(), groups[1].daily_update_url_kanon->last_updated);
 
   base::Time update_time = base::Time::Now();
-  StorageInterestGroup::KAnonymityData kanon{update_url, 10, update_time};
-  storage->UpdateInterestGroupUpdateURLKAnonymity(kanon, absl::nullopt);
+  StorageInterestGroup::KAnonymityData kanon{daily_update_url.spec(), true,
+                                             update_time};
+  storage->UpdateKAnonymity(kanon);
 
   groups = storage->GetInterestGroupsForOwner(test_origin);
 
   ASSERT_EQ(2u, groups.size());
-  EXPECT_EQ("name2", groups[0].bidding_group->group.name);
-  ASSERT_TRUE(groups[0].update_url_kanon);
-  EXPECT_EQ(update_url, groups[0].update_url_kanon->key);
-  EXPECT_EQ(10, groups[0].update_url_kanon->k);
-  EXPECT_EQ(update_time, groups[0].update_url_kanon->last_updated);
+  EXPECT_EQ("name2", groups[0].interest_group.name);
+  ASSERT_TRUE(groups[0].daily_update_url_kanon);
+  EXPECT_EQ(daily_update_url, groups[0].daily_update_url_kanon->key);
+  EXPECT_EQ(true, groups[0].daily_update_url_kanon->is_k_anonymous);
+  EXPECT_EQ(update_time, groups[0].daily_update_url_kanon->last_updated);
 
-  EXPECT_EQ("name", groups[1].bidding_group->group.name);
-  ASSERT_TRUE(groups[1].update_url_kanon);
-  EXPECT_EQ(update_url, groups[1].update_url_kanon->key);
-  EXPECT_EQ(10, groups[1].update_url_kanon->k);
-  EXPECT_EQ(update_time, groups[1].update_url_kanon->last_updated);
+  EXPECT_EQ("name", groups[1].interest_group.name);
+  ASSERT_TRUE(groups[1].daily_update_url_kanon);
+  EXPECT_EQ(daily_update_url, groups[1].daily_update_url_kanon->key);
+  EXPECT_EQ(true, groups[1].daily_update_url_kanon->is_k_anonymous);
+  EXPECT_EQ(update_time, groups[1].daily_update_url_kanon->last_updated);
 
   task_environment().FastForwardBy(base::Seconds(1));
 
   update_time = base::Time::Now();
-  kanon = StorageInterestGroup::KAnonymityData{update_url, 12, update_time};
-  storage->UpdateInterestGroupUpdateURLKAnonymity(kanon, absl::nullopt);
+  kanon = StorageInterestGroup::KAnonymityData{daily_update_url.spec(), true,
+                                               update_time};
+  storage->UpdateKAnonymity(kanon);
 
   groups = storage->GetInterestGroupsForOwner(test_origin);
 
   ASSERT_EQ(2u, groups.size());
-  EXPECT_EQ("name2", groups[0].bidding_group->group.name);
-  ASSERT_TRUE(groups[0].update_url_kanon);
-  EXPECT_EQ(update_url, groups[0].update_url_kanon->key);
-  EXPECT_EQ(12, groups[0].update_url_kanon->k);
-  EXPECT_EQ(update_time, groups[0].update_url_kanon->last_updated);
+  EXPECT_EQ("name2", groups[0].interest_group.name);
+  ASSERT_TRUE(groups[0].daily_update_url_kanon);
+  EXPECT_EQ(daily_update_url, groups[0].daily_update_url_kanon->key);
+  EXPECT_EQ(true, groups[0].daily_update_url_kanon->is_k_anonymous);
+  EXPECT_EQ(update_time, groups[0].daily_update_url_kanon->last_updated);
 
-  EXPECT_EQ("name", groups[1].bidding_group->group.name);
-  ASSERT_TRUE(groups[1].update_url_kanon);
-  EXPECT_EQ(update_url, groups[1].update_url_kanon->key);
-  EXPECT_EQ(12, groups[1].update_url_kanon->k);
-  EXPECT_EQ(update_time, groups[1].update_url_kanon->last_updated);
+  EXPECT_EQ("name", groups[1].interest_group.name);
+  ASSERT_TRUE(groups[1].daily_update_url_kanon);
+  EXPECT_EQ(daily_update_url, groups[1].daily_update_url_kanon->key);
+  EXPECT_EQ(true, groups[1].daily_update_url_kanon->is_k_anonymous);
+  EXPECT_EQ(update_time, groups[1].daily_update_url_kanon->last_updated);
 }
 
 TEST_F(InterestGroupStorageTest, UpdatesAdKAnonymity) {
   url::Origin test_origin =
       url::Origin::Create(GURL("https://owner.example.com"));
-  GURL ad1_url = GURL("http://owner.example.com/ad1");
-  GURL ad2_url = GURL("http://owner.example.com/ad2");
-  GURL ad3_url = GURL("http://owner.example.com/ad3");
+  GURL ad1_url = GURL("https://owner.example.com/ad1");
+  GURL ad2_url = GURL("https://owner.example.com/ad2");
+  GURL ad3_url = GURL("https://owner.example.com/ad3");
 
   InterestGroup g = NewInterestGroup(test_origin, "name");
   g.ads.emplace();
@@ -534,10 +608,10 @@ TEST_F(InterestGroupStorageTest, UpdatesAdKAnonymity) {
   groups = storage->GetInterestGroupsForOwner(test_origin);
 
   std::vector<StorageInterestGroup::KAnonymityData> expected_output = {
-      {ad1_url, 0, base::Time::Min()},
-      {ad2_url, 0, base::Time::Min()},
-      {ad1_url, 0, base::Time::Min()},
-      {ad3_url, 0, base::Time::Min()},
+      {ad1_url.spec(), false, base::Time::Min()},
+      {ad2_url.spec(), false, base::Time::Min()},
+      {ad1_url.spec(), false, base::Time::Min()},
+      {ad3_url.spec(), false, base::Time::Min()},
   };
 
   ASSERT_EQ(1u, groups.size());
@@ -545,8 +619,8 @@ TEST_F(InterestGroupStorageTest, UpdatesAdKAnonymity) {
               testing::UnorderedElementsAreArray(expected_output));
 
   base::Time update_time = base::Time::Now();
-  StorageInterestGroup::KAnonymityData kanon{ad1_url, 10, update_time};
-  storage->UpdateAdKAnonymity(kanon, absl::nullopt);
+  StorageInterestGroup::KAnonymityData kanon{ad1_url.spec(), true, update_time};
+  storage->UpdateKAnonymity(kanon);
   expected_output[0] = kanon;
   expected_output[2] = kanon;
 
@@ -559,8 +633,9 @@ TEST_F(InterestGroupStorageTest, UpdatesAdKAnonymity) {
   task_environment().FastForwardBy(base::Seconds(1));
 
   update_time = base::Time::Now();
-  kanon = StorageInterestGroup::KAnonymityData{ad2_url, 12, update_time};
-  storage->UpdateAdKAnonymity(kanon, absl::nullopt);
+  kanon =
+      StorageInterestGroup::KAnonymityData{ad2_url.spec(), true, update_time};
+  storage->UpdateKAnonymity(kanon);
   expected_output[1] = kanon;
 
   groups = storage->GetInterestGroupsForOwner(test_origin);
@@ -571,10 +646,10 @@ TEST_F(InterestGroupStorageTest, UpdatesAdKAnonymity) {
 }
 
 TEST_F(InterestGroupStorageTest, KAnonDataExpires) {
-  GURL update_url("https://owner.example.com/groupUpdate");
-  url::Origin test_origin = url::Origin::Create(update_url);
+  GURL daily_update_url("https://owner.example.com/groupUpdate");
+  url::Origin test_origin = url::Origin::Create(daily_update_url);
   const std::string name = "name";
-  const GURL key = test_origin.GetURL().Resolve(net::EscapePath(name));
+  const std::string key = test_origin.GetURL().spec() + '\n' + name;
   // We make the ad urls equal to the name key and update urls to verify the
   // database stores them separately.
   GURL ad1_url = GURL("https://owner.example.com/groupUpdate");
@@ -586,7 +661,7 @@ TEST_F(InterestGroupStorageTest, KAnonDataExpires) {
   g.ad_components.emplace();
   g.ad_components->push_back(
       blink::InterestGroup::Ad(ad2_url, "component_metadata2"));
-  g.update_url = update_url;
+  g.daily_update_url = daily_update_url;
   g.expiry = base::Time::Now() + base::Days(1);
 
   std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
@@ -595,18 +670,17 @@ TEST_F(InterestGroupStorageTest, KAnonDataExpires) {
 
   // Update the k-anonymity data.
   base::Time update_kanon_time = base::Time::Now();
-  StorageInterestGroup::KAnonymityData ad1_kanon{ad1_url, 10,
+  StorageInterestGroup::KAnonymityData ad1_kanon{ad1_url.spec(), true,
                                                  update_kanon_time};
-  StorageInterestGroup::KAnonymityData ad2_kanon{ad2_url, 20,
+  StorageInterestGroup::KAnonymityData ad2_kanon{ad2_url.spec(), true,
                                                  update_kanon_time};
-  StorageInterestGroup::KAnonymityData update_kanon{update_url, 30,
-                                                    update_kanon_time};
-  StorageInterestGroup::KAnonymityData name_kanon{key, 40, update_kanon_time};
-  storage->UpdateAdKAnonymity(ad1_kanon, update_kanon_time);
-  storage->UpdateAdKAnonymity(ad2_kanon, update_kanon_time);
-  storage->UpdateInterestGroupUpdateURLKAnonymity(update_kanon,
-                                                  update_kanon_time);
-  storage->UpdateInterestGroupNameKAnonymity(name_kanon, update_kanon_time);
+  StorageInterestGroup::KAnonymityData update_kanon{daily_update_url.spec(),
+                                                    true, update_kanon_time};
+  StorageInterestGroup::KAnonymityData name_kanon{key, true, update_kanon_time};
+  storage->UpdateKAnonymity(ad1_kanon);
+  storage->UpdateKAnonymity(ad2_kanon);
+  storage->UpdateKAnonymity(update_kanon);
+  storage->UpdateKAnonymity(name_kanon);
 
   // Check k-anonymity data was correctly set.
   std::vector<StorageInterestGroup::KAnonymityData> expected_output = {
@@ -616,8 +690,8 @@ TEST_F(InterestGroupStorageTest, KAnonDataExpires) {
   ASSERT_EQ(1u, groups.size());
   EXPECT_THAT(groups[0].ads_kanon,
               testing::UnorderedElementsAreArray(expected_output));
-  ASSERT_TRUE(groups[0].update_url_kanon);
-  EXPECT_EQ(update_kanon, groups[0].update_url_kanon.value());
+  ASSERT_TRUE(groups[0].daily_update_url_kanon);
+  EXPECT_EQ(update_kanon, groups[0].daily_update_url_kanon.value());
   ASSERT_TRUE(groups[0].name_kanon);
   EXPECT_EQ(name_kanon, groups[0].name_kanon.value());
 
@@ -637,8 +711,8 @@ TEST_F(InterestGroupStorageTest, KAnonDataExpires) {
   ASSERT_EQ(1u, groups.size());
   EXPECT_THAT(groups[0].ads_kanon,
               testing::UnorderedElementsAreArray(expected_output));
-  ASSERT_TRUE(groups[0].update_url_kanon);
-  EXPECT_EQ(update_kanon, groups[0].update_url_kanon.value());
+  ASSERT_TRUE(groups[0].daily_update_url_kanon);
+  EXPECT_EQ(update_kanon, groups[0].daily_update_url_kanon.value());
   ASSERT_TRUE(groups[0].name_kanon);
   EXPECT_EQ(name_kanon, groups[0].name_kanon.value());
 
@@ -654,17 +728,18 @@ TEST_F(InterestGroupStorageTest, KAnonDataExpires) {
   storage->JoinInterestGroup(g, GURL("https://owner.example.com/join3"));
 
   // K-anon data should be the default.
-  ad1_kanon = {ad1_url, 0, base::Time::Min()};
-  ad2_kanon = {ad2_url, 0, base::Time::Min()};
-  update_kanon = {update_url, 0, base::Time::Min()};
-  name_kanon = {key, 0, base::Time::Min()};
+  ad1_kanon = {ad1_url.spec(), /*is_k_anonymous=*/false, base::Time::Min()};
+  ad2_kanon = {ad2_url.spec(), /*is_k_anonymous=*/false, base::Time::Min()};
+  update_kanon = {daily_update_url.spec(), /*is_k_anonymous=*/false,
+                  base::Time::Min()};
+  name_kanon = {key, /*is_k_anonymous=*/false, base::Time::Min()};
   expected_output = {ad1_kanon, ad2_kanon};
   groups = storage->GetInterestGroupsForOwner(test_origin);
   ASSERT_EQ(1u, groups.size());
   EXPECT_THAT(groups[0].ads_kanon,
               testing::UnorderedElementsAreArray(expected_output));
-  ASSERT_TRUE(groups[0].update_url_kanon);
-  EXPECT_EQ(update_kanon, groups[0].update_url_kanon.value());
+  ASSERT_TRUE(groups[0].daily_update_url_kanon);
+  EXPECT_EQ(update_kanon, groups[0].daily_update_url_kanon.value());
   ASSERT_TRUE(groups[0].name_kanon);
   EXPECT_EQ(name_kanon, groups[0].name_kanon.value());
 }
@@ -675,26 +750,32 @@ TEST_F(InterestGroupStorageTest, StoresAllFields) {
   InterestGroup partial = NewInterestGroup(partial_origin, "partial");
   const url::Origin full_origin =
       url::Origin::Create(GURL("https://full.example.com"));
-  InterestGroup full;
-  full.owner = full_origin;
-  full.name = "full";
-  full.expiry = base::Time::Now() + base::Days(30);
-  full.bidding_url = GURL("https://full.example.com/bid");
-  full.update_url = GURL("https://full.example.com/update");
-  full.trusted_bidding_signals_url = GURL("https://full.example.com/signals");
-  full.trusted_bidding_signals_keys =
-      absl::make_optional(std::vector<std::string>{"a", "b", "c", "d"});
-  full.user_bidding_signals = "foo";
-  full.ads.emplace();
-  full.ads->emplace_back(blink::InterestGroup::Ad(
-      GURL("https://full.example.com/ad1"), "metadata1"));
-  full.ads->emplace_back(blink::InterestGroup::Ad(
-      GURL("https://full.example.com/ad2"), "metadata2"));
-  full.ad_components.emplace();
-  full.ad_components->emplace_back(blink::InterestGroup::Ad(
-      GURL("https://full.example.com/adcomponent1"), "metadata1c"));
-  full.ad_components->emplace_back(blink::InterestGroup::Ad(
-      GURL("https://full.example.com/adcomponent2"), "metadata2c"));
+  InterestGroup full(
+      /*expiry=*/base::Time::Now() + base::Days(30), /*owner=*/full_origin,
+      /*name=*/"full", /*priority=*/1.0,
+      /*enable_bidding_signals_prioritization=*/true,
+      /*priority_vector=*/{{{"a", 2}, {"b", -2.2}}},
+      /*priority_signals_overrides=*/{{{"a", -2}, {"c", 10}, {"d", 1.2}}},
+      /*execution_mode=*/InterestGroup::ExecutionMode::kCompatibilityMode,
+      /*bidding_url=*/GURL("https://full.example.com/bid"),
+      /*bidding_wasm_helper_url=*/GURL("https://full.example.com/bid_wasm"),
+      /*daily_update_url=*/GURL("https://full.example.com/update"),
+      /*trusted_bidding_signals_url=*/GURL("https://full.example.com/signals"),
+      /*trusted_bidding_signals_keys=*/
+      std::vector<std::string>{"a", "b", "c", "d"},
+      /*user_bidding_signals=*/"foo",
+      /*ads=*/
+      std::vector<InterestGroup::Ad>{
+          blink::InterestGroup::Ad(GURL("https://full.example.com/ad1"),
+                                   "metadata1"),
+          blink::InterestGroup::Ad(GURL("https://full.example.com/ad2"),
+                                   "metadata2")},
+      /*ad_components=*/
+      std::vector<InterestGroup::Ad>{
+          blink::InterestGroup::Ad(
+              GURL("https://full.example.com/adcomponent1"), "metadata1c"),
+          blink::InterestGroup::Ad(
+              GURL("https://full.example.com/adcomponent2"), "metadata2c")});
 
   std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
 
@@ -704,13 +785,57 @@ TEST_F(InterestGroupStorageTest, StoresAllFields) {
   std::vector<StorageInterestGroup> storage_interest_groups =
       storage->GetInterestGroupsForOwner(partial_origin);
   ASSERT_EQ(1u, storage_interest_groups.size());
-  EXPECT_TRUE(partial.IsEqualForTesting(
-      storage_interest_groups[0].bidding_group->group));
+  EXPECT_TRUE(
+      partial.IsEqualForTesting(storage_interest_groups[0].interest_group));
 
   storage_interest_groups = storage->GetInterestGroupsForOwner(full_origin);
   ASSERT_EQ(1u, storage_interest_groups.size());
   EXPECT_TRUE(
-      full.IsEqualForTesting(storage_interest_groups[0].bidding_group->group));
+      full.IsEqualForTesting(storage_interest_groups[0].interest_group));
+  base::Time join_time = base::Time::Now();
+  EXPECT_EQ(storage_interest_groups[0].join_time, join_time);
+  EXPECT_EQ(storage_interest_groups[0].last_updated, join_time);
+
+  // Test update as well.
+
+  // Pass time, so can check if `join_time` or `last_updated` is updated.
+  task_environment().FastForwardBy(base::Seconds(1234));
+
+  InterestGroupUpdate update;
+  update.bidding_url = GURL("https://full.example.com/bid2");
+  update.bidding_wasm_helper_url = GURL("https://full.example.com/bid_wasm2");
+  update.trusted_bidding_signals_url =
+      GURL("https://full.example.com/signals2");
+  update.trusted_bidding_signals_keys =
+      std::vector<std::string>{"a", "b2", "c", "d"};
+  update.ads = full.ads;
+  update.ads->emplace_back(blink::InterestGroup::Ad(
+      GURL("https://full.example.com/ad3"), "metadata3"));
+  update.ad_components = full.ad_components;
+  update.ad_components->emplace_back(blink::InterestGroup::Ad(
+      GURL("https://full.example.com/adcomponent3"), "metadata3c"));
+  storage->UpdateInterestGroup(blink::InterestGroupKey(full.owner, full.name),
+                               update);
+
+  InterestGroup updated = full;
+  updated.bidding_url = update.bidding_url;
+  updated.bidding_wasm_helper_url = update.bidding_wasm_helper_url;
+  updated.trusted_bidding_signals_url = update.trusted_bidding_signals_url;
+  updated.trusted_bidding_signals_keys = update.trusted_bidding_signals_keys;
+  updated.ads = update.ads;
+  updated.ad_components = update.ad_components;
+
+  storage_interest_groups = storage->GetInterestGroupsForOwner(full_origin);
+  ASSERT_EQ(1u, storage_interest_groups.size());
+  EXPECT_TRUE(
+      updated.IsEqualForTesting(storage_interest_groups[0].interest_group));
+  // `join_time` should not be modified be updates, but `last_updated` should
+  // be.
+  EXPECT_EQ(storage_interest_groups[0].join_time, join_time);
+  EXPECT_EQ(storage_interest_groups[0].last_updated, base::Time::Now());
+  // Make sure the clock was advanced.
+  EXPECT_NE(storage_interest_groups[0].join_time,
+            storage_interest_groups[0].last_updated);
 }
 
 TEST_F(InterestGroupStorageTest, DeleteOriginDeleteAll) {
@@ -735,30 +860,49 @@ TEST_F(InterestGroupStorageTest, DeleteOriginDeleteAll) {
                              joining_originB.GetURL());
 
   std::vector<url::Origin> origins = storage->GetAllInterestGroupOwners();
-  EXPECT_EQ(3u, origins.size());
+  EXPECT_THAT(origins, UnorderedElementsAre(owner_originA, owner_originB,
+                                            owner_originC));
+  std::vector<url::Origin> joining_origins =
+      storage->GetAllInterestGroupJoiningOrigins();
+  EXPECT_THAT(joining_origins,
+              UnorderedElementsAre(joining_originA, joining_originB));
 
-  storage->DeleteInterestGroupData(
-      base::BindLambdaForTesting([&owner_originA](const url::Origin& origin) {
-        return origin == owner_originA;
+  storage->DeleteInterestGroupData(base::BindLambdaForTesting(
+      [&owner_originA](const blink::StorageKey& storage_key) {
+        return storage_key == blink::StorageKey(owner_originA);
       }));
 
   origins = storage->GetAllInterestGroupOwners();
-  EXPECT_EQ(2u, origins.size());
+  EXPECT_THAT(origins, UnorderedElementsAre(owner_originB, owner_originC));
+  joining_origins = storage->GetAllInterestGroupJoiningOrigins();
+  EXPECT_THAT(joining_origins,
+              UnorderedElementsAre(joining_originA, joining_originB));
 
   // Delete all interest groups that joined on joining_origin A. We expect that
   // we will be left with the one that joined on joining_origin B.
-  storage->DeleteInterestGroupData(
-      base::BindLambdaForTesting([&joining_originA](const url::Origin& origin) {
-        return origin == joining_originA;
+  storage->DeleteInterestGroupData(base::BindLambdaForTesting(
+      [&joining_originA](const blink::StorageKey& storage_key) {
+        return storage_key == blink::StorageKey(joining_originA);
       }));
 
   origins = storage->GetAllInterestGroupOwners();
-  EXPECT_EQ(1u, origins.size());
+  EXPECT_THAT(origins, UnorderedElementsAre(owner_originB));
+  joining_origins = storage->GetAllInterestGroupJoiningOrigins();
+  EXPECT_THAT(joining_origins, UnorderedElementsAre(joining_originB));
 
-  storage->DeleteInterestGroupData({});
+  storage->DeleteInterestGroupData(base::NullCallback());
 
   origins = storage->GetAllInterestGroupOwners();
   EXPECT_EQ(0u, origins.size());
+
+  // DeleteInterestGroupData shouldn't have deleted kanon data.
+  EXPECT_TRUE(storage->GetLastKAnonymityReported(
+      KAnonKeyFor(owner_originA, "example")));
+
+  storage->DeleteAllInterestGroupData();
+  // DeleteAllInterestGroupData should have deleted *everything*.
+  EXPECT_FALSE(storage->GetLastKAnonymityReported(
+      KAnonKeyFor(owner_originA, "example")));
 }
 
 // Maintenance should prune the number of interest groups and interest group
@@ -807,7 +951,7 @@ TEST_F(InterestGroupStorageTest, JoinTooManyGroupNames) {
 
   std::vector<std::string> remaining_groups;
   for (const auto& db_group : interest_groups) {
-    remaining_groups.push_back(db_group.bidding_group->group.name);
+    remaining_groups.push_back(db_group.interest_group.name);
   }
   std::vector<std::string> remaining_groups_expected(
       added_groups.begin() + kExcessOwners, added_groups.end());
@@ -946,9 +1090,9 @@ TEST_F(InterestGroupStorageTest, DBMaintenanceExpiresOldInterestGroups) {
 
   interest_groups = storage->GetInterestGroupsForOwner(keep_origin);
   EXPECT_EQ(1u, interest_groups.size());
-  EXPECT_EQ("keep", interest_groups[0].bidding_group->group.name);
-  EXPECT_EQ(1, interest_groups[0].bidding_group->signals->join_count);
-  EXPECT_EQ(0, interest_groups[0].bidding_group->signals->bid_count);
+  EXPECT_EQ("keep", interest_groups[0].interest_group.name);
+  EXPECT_EQ(1, interest_groups[0].bidding_browser_signals->join_count);
+  EXPECT_EQ(0, interest_groups[0].bidding_browser_signals->bid_count);
   next_maintenance_time = base::Time::Now() + InterestGroupStorage::kIdlePeriod;
 
   // All the groups should still be in the database since they shouldn't have
@@ -971,9 +1115,652 @@ TEST_F(InterestGroupStorageTest, DBMaintenanceExpiresOldInterestGroups) {
 
   interest_groups = storage->GetAllInterestGroupsUnfilteredForTesting();
   EXPECT_EQ(1u, interest_groups.size());
-  EXPECT_EQ("keep", interest_groups[0].bidding_group->group.name);
-  EXPECT_EQ(1, interest_groups[0].bidding_group->signals->join_count);
-  EXPECT_EQ(0, interest_groups[0].bidding_group->signals->bid_count);
+  EXPECT_EQ("keep", interest_groups[0].interest_group.name);
+  EXPECT_EQ(1, interest_groups[0].bidding_browser_signals->join_count);
+  EXPECT_EQ(0, interest_groups[0].bidding_browser_signals->bid_count);
+}
+
+// Upgrades a v6 database dump to an expected v9 database.
+// The v6 database dump was extracted from the InterestGroups database in
+// a browser profile by using `sqlite3 dump <path-to-database>` and then
+// cleaning up and formatting the output.
+TEST_F(InterestGroupStorageTest, UpgradeFromV6) {
+  // Create V6 database from dump
+  base::FilePath file_path;
+  base::PathService::Get(base::DIR_SOURCE_ROOT, &file_path);
+  file_path =
+      file_path.AppendASCII("content/test/data/interest_group/schemaV6.sql");
+  ASSERT_TRUE(base::PathExists(file_path));
+  ASSERT_TRUE(sql::test::CreateDatabaseFromSQL(db_path(), file_path));
+
+  auto expected_interest_group_matcher = testing::UnorderedElementsAre(
+      testing::AllOf(
+          Field(
+              "interest_group", &StorageInterestGroup::interest_group,
+              testing::AllOf(
+                  Field("expiry", &InterestGroup::expiry,
+                        base::Time::FromDeltaSinceWindowsEpoch(
+                            base::Microseconds(13293932603076872))),
+                  Field("owner", &InterestGroup::owner,
+                        url::Origin::Create(GURL("https://owner.example.com"))),
+                  Field("name", &InterestGroup::name, "group1"),
+                  Field("priority", &InterestGroup::priority, 0.0),
+                  Field("enable_bidding_signals_prioritization",
+                        &InterestGroup::enable_bidding_signals_prioritization,
+                        false),
+                  Field("priority_vector", &InterestGroup::priority_vector,
+                        absl::nullopt),
+                  Field("priority_signals_overrides",
+                        &InterestGroup::priority_signals_overrides,
+                        absl::nullopt),
+                  Field("bidding_url", &InterestGroup::bidding_url,
+                        GURL("https://owner.example.com/bidder.js")),
+                  Field("bidding_wasm_helper_url",
+                        &InterestGroup::bidding_wasm_helper_url, absl::nullopt),
+                  Field("daily_update_url", &InterestGroup::daily_update_url,
+                        GURL("https://owner.example.com/update")),
+                  Field("trusted_bidding_signals_url",
+                        &InterestGroup::trusted_bidding_signals_url,
+                        GURL("https://owner.example.com/signals")),
+                  Field("trusted_bidding_signals_keys",
+                        &InterestGroup::trusted_bidding_signals_keys,
+                        std::vector<std::string>{"group1"}),
+                  Field("user_bidding_signals",
+                        &InterestGroup::user_bidding_signals,
+                        "[[\"1\",\"2\"]]"),
+                  Field("ads", &InterestGroup::ads,
+                        testing::Property(
+                            "value()",
+                            &absl::optional<
+                                std::vector<blink::InterestGroup::Ad>>::value,
+                            testing::ElementsAre(testing::AllOf(
+                                Field("render_url",
+                                      &InterestGroup::Ad::render_url,
+                                      GURL("https://ads.example.com/1")),
+                                Field("metadata", &InterestGroup::Ad::metadata,
+                                      "[\"4\",\"5\",null,\"6\"]"))))),
+                  Field("ad_components", &InterestGroup::ad_components,
+                        absl::nullopt))),
+          Field(
+              "bidding_browser_signals",
+              &StorageInterestGroup::bidding_browser_signals,
+              testing::AllOf(
+                  Pointee(Field("join_count",
+                                &auction_worklet::mojom::BiddingBrowserSignals::
+                                    join_count,
+                                5)),
+                  Pointee(Field(
+                      "bid_count",
+                      &auction_worklet::mojom::BiddingBrowserSignals::bid_count,
+                      4)))),
+          Field("name_kanon", &StorageInterestGroup::name_kanon,
+                StorageInterestGroup::KAnonymityData{
+                    "https://owner.example.com/\ngroup1", false,
+                    base::Time::Min()}),
+          Field("daily_update_url_kanon",
+                &StorageInterestGroup::daily_update_url_kanon,
+                StorageInterestGroup::KAnonymityData{
+                    "https://owner.example.com/update", false,
+                    base::Time::Min()}),
+          Field(
+              "ads_kanon", &StorageInterestGroup::ads_kanon,
+              testing::UnorderedElementsAre(
+                  StorageInterestGroup::KAnonymityData{
+                      "https://ads.example.com/1", false, base::Time::Min()})),
+          Field("joining_origin", &StorageInterestGroup::joining_origin,
+                url::Origin::Create(GURL("https://publisher.example.com"))),
+          Field("join_time", &StorageInterestGroup::join_time,
+                base::Time::FromDeltaSinceWindowsEpoch(
+                    base::Microseconds(13291340603081533))),
+          Field("last_updated", &StorageInterestGroup::last_updated,
+                base::Time::FromDeltaSinceWindowsEpoch(
+                    base::Microseconds(13291340603081533)))),
+      testing::AllOf(
+          Field(
+              "interest_group", &StorageInterestGroup::interest_group,
+              testing::AllOf(
+                  Field("expiry", &InterestGroup::expiry,
+                        base::Time::FromDeltaSinceWindowsEpoch(
+                            base::Microseconds(13293932603080090))),
+                  Field("owner", &InterestGroup::owner,
+                        url::Origin::Create(GURL("https://owner.example.com"))),
+                  Field("name", &InterestGroup::name, "group2"),
+                  Field("priority", &InterestGroup::priority, 0.0),
+                  Field("enable_bidding_signals_prioritization",
+                        &InterestGroup::enable_bidding_signals_prioritization,
+                        false),
+                  Field("priority_vector", &InterestGroup::priority_vector,
+                        absl::nullopt),
+                  Field("priority_signals_overrides",
+                        &InterestGroup::priority_signals_overrides,
+                        absl::nullopt),
+                  Field("bidding_url", &InterestGroup::bidding_url,
+                        GURL("https://owner.example.com/bidder.js")),
+                  Field("bidding_wasm_helper_url",
+                        &InterestGroup::bidding_wasm_helper_url, absl::nullopt),
+                  Field("daily_update_url", &InterestGroup::daily_update_url,
+                        GURL("https://owner.example.com/update")),
+                  Field("trusted_bidding_signals_url",
+                        &InterestGroup::trusted_bidding_signals_url,
+                        GURL("https://owner.example.com/signals")),
+                  Field("trusted_bidding_signals_keys",
+                        &InterestGroup::trusted_bidding_signals_keys,
+                        std::vector<std::string>{"group2"}),
+                  Field("user_bidding_signals",
+                        &InterestGroup::user_bidding_signals,
+                        "[[\"1\",\"3\"]]"),
+                  Field("ads", &InterestGroup::ads,
+                        testing::Property(
+                            "value()",
+                            &absl::optional<
+                                std::vector<blink::InterestGroup::Ad>>::value,
+                            testing::ElementsAre(testing::AllOf(
+                                Field("render_url",
+                                      &InterestGroup::Ad::render_url,
+                                      GURL("https://ads.example.com/1")),
+                                Field("metadata", &InterestGroup::Ad::metadata,
+                                      "[\"4\",\"5\",null,\"6\"]"))))),
+                  Field("ad_components", &InterestGroup::ad_components,
+                        absl::nullopt))),
+          Field(
+              "bidding_browser_signals",
+              &StorageInterestGroup::bidding_browser_signals,
+              testing::AllOf(
+                  Pointee(Field("join_count",
+                                &auction_worklet::mojom::BiddingBrowserSignals::
+                                    join_count,
+                                5)),
+                  Pointee(Field(
+                      "bid_count",
+                      &auction_worklet::mojom::BiddingBrowserSignals::bid_count,
+                      3)))),
+          Field("name_kanon", &StorageInterestGroup::name_kanon,
+                StorageInterestGroup::KAnonymityData{
+                    "https://owner.example.com/\ngroup2", false,
+                    base::Time::Min()}),
+          Field("daily_update_url_kanon",
+                &StorageInterestGroup::daily_update_url_kanon,
+                StorageInterestGroup::KAnonymityData{
+                    "https://owner.example.com/update", false,
+                    base::Time::Min()}),
+          Field(
+              "ads_kanon", &StorageInterestGroup::ads_kanon,
+              testing::UnorderedElementsAre(
+                  StorageInterestGroup::KAnonymityData{
+                      "https://ads.example.com/1", false, base::Time::Min()})),
+          Field("joining_origin", &StorageInterestGroup::joining_origin,
+                url::Origin::Create(GURL("https://publisher.example.com"))),
+          Field("join_time", &StorageInterestGroup::join_time,
+                base::Time::FromDeltaSinceWindowsEpoch(
+                    base::Microseconds(13291340603089914))),
+          Field("last_updated", &StorageInterestGroup::last_updated,
+                base::Time::FromDeltaSinceWindowsEpoch(
+                    base::Microseconds(13291340603089914)))),
+      testing::AllOf(
+          Field(
+              "interest_group", &StorageInterestGroup::interest_group,
+              testing::AllOf(
+                  Field("expiry", &InterestGroup::expiry,
+                        base::Time::FromDeltaSinceWindowsEpoch(
+                            base::Microseconds(13293932603052561))),
+                  Field("owner", &InterestGroup::owner,
+                        url::Origin::Create(GURL("https://owner.example.com"))),
+                  Field("name", &InterestGroup::name, "group3"),
+                  Field("priority", &InterestGroup::priority, 0.0),
+                  Field("enable_bidding_signals_prioritization",
+                        &InterestGroup::enable_bidding_signals_prioritization,
+                        false),
+                  Field("priority_vector", &InterestGroup::priority_vector,
+                        absl::nullopt),
+                  Field("priority_signals_overrides",
+                        &InterestGroup::priority_signals_overrides,
+                        absl::nullopt),
+                  Field("bidding_url", &InterestGroup::bidding_url,
+                        GURL("https://owner.example.com/bidder.js")),
+                  Field("bidding_wasm_helper_url",
+                        &InterestGroup::bidding_wasm_helper_url, absl::nullopt),
+                  Field("daily_update_url", &InterestGroup::daily_update_url,
+                        GURL("https://owner.example.com/update")),
+                  Field("trusted_bidding_signals_url",
+                        &InterestGroup::trusted_bidding_signals_url,
+                        GURL("https://owner.example.com/signals")),
+                  Field("trusted_bidding_signals_keys",
+                        &InterestGroup::trusted_bidding_signals_keys,
+                        std::vector<std::string>{"group3"}),
+                  Field("user_bidding_signals",
+                        &InterestGroup::user_bidding_signals,
+                        "[[\"3\",\"2\"]]"),
+                  Field("ads", &InterestGroup::ads,
+                        testing::Property(
+                            "value()",
+                            &absl::optional<
+                                std::vector<blink::InterestGroup::Ad>>::value,
+                            testing::ElementsAre(testing::AllOf(
+                                Field("render_url",
+                                      &InterestGroup::Ad::render_url,
+                                      GURL("https://ads.example.com/1")),
+                                Field("metadata", &InterestGroup::Ad::metadata,
+                                      "[\"4\",\"5\",null,\"6\"]"))))),
+                  Field("ad_components", &InterestGroup::ad_components,
+                        absl::nullopt))),
+          Field(
+              "bidding_browser_signals",
+              &StorageInterestGroup::bidding_browser_signals,
+              testing::AllOf(
+                  Pointee(Field("join_count",
+                                &auction_worklet::mojom::BiddingBrowserSignals::
+                                    join_count,
+                                4)),
+                  Pointee(Field(
+                      "bid_count",
+                      &auction_worklet::mojom::BiddingBrowserSignals::bid_count,
+                      4)))),
+          Field("name_kanon", &StorageInterestGroup::name_kanon,
+                StorageInterestGroup::KAnonymityData{
+                    "https://owner.example.com/\ngroup3", false,
+                    base::Time::Min()}),
+          Field("daily_update_url_kanon",
+                &StorageInterestGroup::daily_update_url_kanon,
+                StorageInterestGroup::KAnonymityData{
+                    "https://owner.example.com/update", false,
+                    base::Time::Min()}),
+          Field(
+              "ads_kanon", &StorageInterestGroup::ads_kanon,
+              testing::UnorderedElementsAre(
+                  StorageInterestGroup::KAnonymityData{
+                      "https://ads.example.com/1", false, base::Time::Min()})),
+          Field("joining_origin", &StorageInterestGroup::joining_origin,
+                url::Origin::Create(GURL("https://publisher.example.com"))),
+          Field("join_time", &StorageInterestGroup::join_time,
+                base::Time::FromDeltaSinceWindowsEpoch(
+                    base::Microseconds(13291340603098283))),
+          Field("last_updated", &StorageInterestGroup::last_updated,
+                base::Time::FromDeltaSinceWindowsEpoch(
+                    base::Microseconds(13291340603098283)))));
+
+  // Upgrade if necessary and read.
+  {
+    std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+    ASSERT_TRUE(storage);
+
+    std::vector<StorageInterestGroup> interest_groups =
+        storage->GetAllInterestGroupsUnfilteredForTesting();
+
+    EXPECT_THAT(interest_groups, expected_interest_group_matcher);
+  }
+
+  // Make sure the database still works if we open it again.
+  {
+    std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+    std::vector<StorageInterestGroup> interest_groups =
+        storage->GetAllInterestGroupsUnfilteredForTesting();
+
+    EXPECT_THAT(interest_groups, expected_interest_group_matcher);
+  }
+}
+
+TEST_F(InterestGroupStorageTest,
+       ClusteredGroupsClearedWhenClusterChangesOnJoin) {
+  const url::Origin cluster_origin =
+      url::Origin::Create(GURL("https://cluster.com/"));
+  const url::Origin other_origin =
+      url::Origin::Create(GURL("https://other.com/"));
+
+  std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+  ASSERT_TRUE(storage);
+
+  const std::string clusters[] = {
+      {"cluster0"}, {"cluster1"}, {"cluster2"}, {"cluster3"}};
+  for (const auto& name : clusters) {
+    blink::InterestGroup group = NewInterestGroup(cluster_origin, name);
+    group.execution_mode =
+        blink::InterestGroup::ExecutionMode::kGroupedByOriginMode;
+    storage->JoinInterestGroup(group, cluster_origin.GetURL());
+  }
+  storage->JoinInterestGroup(NewInterestGroup(cluster_origin, "separate_same"),
+                             cluster_origin.GetURL());
+  storage->JoinInterestGroup(NewInterestGroup(other_origin, "separate_other"),
+                             other_origin.GetURL());
+  {
+    blink::InterestGroup group =
+        NewInterestGroup(cluster_origin, "clustered_different");
+    group.execution_mode =
+        blink::InterestGroup::ExecutionMode::kGroupedByOriginMode;
+    storage->JoinInterestGroup(group, other_origin.GetURL());
+  }
+  {
+    blink::InterestGroup group =
+        NewInterestGroup(other_origin, "clustered_other");
+    group.execution_mode =
+        blink::InterestGroup::ExecutionMode::kGroupedByOriginMode;
+    storage->JoinInterestGroup(group, other_origin.GetURL());
+  }
+
+  std::vector<StorageInterestGroup> interest_groups =
+      storage->GetAllInterestGroupsUnfilteredForTesting();
+  EXPECT_EQ(8u, interest_groups.size());
+
+  {
+    blink::InterestGroup group = NewInterestGroup(cluster_origin, "cluster0");
+    group.execution_mode =
+        blink::InterestGroup::ExecutionMode::kGroupedByOriginMode;
+    storage->JoinInterestGroup(group, other_origin.GetURL());
+  }
+
+  auto expected_interest_group_matcher = testing::UnorderedElementsAre(
+      testing::AllOf(
+          Field("joining_origin", &StorageInterestGroup::joining_origin,
+                cluster_origin),
+          Field("interest_group", &StorageInterestGroup::interest_group,
+                testing::AllOf(
+                    Field("owner", &InterestGroup::owner, cluster_origin),
+                    Field("name", &InterestGroup::name, "separate_same"),
+                    Field("execution_mode", &InterestGroup::execution_mode,
+                          blink::InterestGroup::ExecutionMode::
+                              kCompatibilityMode)))),
+      testing::AllOf(
+          Field("joining_origin", &StorageInterestGroup::joining_origin,
+                other_origin),
+          Field("interest_group", &StorageInterestGroup::interest_group,
+                testing::AllOf(
+                    Field("owner", &InterestGroup::owner, other_origin),
+                    Field("name", &InterestGroup::name, "separate_other"),
+                    Field("execution_mode", &InterestGroup::execution_mode,
+                          blink::InterestGroup::ExecutionMode::
+                              kCompatibilityMode)))),
+      testing::AllOf(
+          Field("joining_origin", &StorageInterestGroup::joining_origin,
+                other_origin),
+          Field("interest_group", &StorageInterestGroup::interest_group,
+                testing::AllOf(
+                    Field("owner", &InterestGroup::owner, cluster_origin),
+                    Field("name", &InterestGroup::name, "clustered_different"),
+                    Field("execution_mode", &InterestGroup::execution_mode,
+                          blink::InterestGroup::ExecutionMode::
+                              kGroupedByOriginMode)))),
+      testing::AllOf(
+          Field("joining_origin", &StorageInterestGroup::joining_origin,
+                other_origin),
+          Field("interest_group", &StorageInterestGroup::interest_group,
+                testing::AllOf(
+                    Field("owner", &InterestGroup::owner, other_origin),
+                    Field("name", &InterestGroup::name, "clustered_other"),
+                    Field("execution_mode", &InterestGroup::execution_mode,
+                          blink::InterestGroup::ExecutionMode::
+                              kGroupedByOriginMode)))),
+      testing::AllOf(
+          Field("joining_origin", &StorageInterestGroup::joining_origin,
+                other_origin),
+          Field("interest_group", &StorageInterestGroup::interest_group,
+                testing::AllOf(
+                    Field("owner", &InterestGroup::owner, cluster_origin),
+                    Field("name", &InterestGroup::name, "cluster0"),
+                    Field("execution_mode", &InterestGroup::execution_mode,
+                          blink::InterestGroup::ExecutionMode::
+                              kGroupedByOriginMode)))));
+  interest_groups = storage->GetAllInterestGroupsUnfilteredForTesting();
+  EXPECT_THAT(interest_groups, expected_interest_group_matcher);
+}
+
+TEST_F(InterestGroupStorageTest,
+       ClusteredGroupsClearedWhenClusterChangesOnLeave) {
+  const url::Origin cluster_origin =
+      url::Origin::Create(GURL("https://cluster.com/"));
+  const url::Origin other_origin =
+      url::Origin::Create(GURL("https://other.com/"));
+
+  std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+  ASSERT_TRUE(storage);
+
+  const std::string clusters[] = {
+      {"cluster0"}, {"cluster1"}, {"cluster2"}, {"cluster3"}};
+  for (const auto& name : clusters) {
+    blink::InterestGroup group = NewInterestGroup(cluster_origin, name);
+    group.execution_mode =
+        blink::InterestGroup::ExecutionMode::kGroupedByOriginMode;
+    storage->JoinInterestGroup(group, cluster_origin.GetURL());
+  }
+  storage->JoinInterestGroup(NewInterestGroup(cluster_origin, "separate_same"),
+                             cluster_origin.GetURL());
+  storage->JoinInterestGroup(NewInterestGroup(other_origin, "separate_other"),
+                             other_origin.GetURL());
+
+  {
+    blink::InterestGroup group =
+        NewInterestGroup(cluster_origin, "clustered_different");
+    group.execution_mode =
+        blink::InterestGroup::ExecutionMode::kGroupedByOriginMode;
+    storage->JoinInterestGroup(group, other_origin.GetURL());
+  }
+
+  {
+    blink::InterestGroup group =
+        NewInterestGroup(other_origin, "clustered_other");
+    group.execution_mode =
+        blink::InterestGroup::ExecutionMode::kGroupedByOriginMode;
+    storage->JoinInterestGroup(group, other_origin.GetURL());
+  }
+
+  std::vector<StorageInterestGroup> interest_groups =
+      storage->GetAllInterestGroupsUnfilteredForTesting();
+  EXPECT_EQ(8u, interest_groups.size());
+
+  storage->LeaveInterestGroup(
+      blink::InterestGroupKey(cluster_origin, "cluster0"), other_origin);
+
+  auto expected_interest_group_matcher = testing::UnorderedElementsAre(
+      testing::AllOf(
+          Field("joining_origin", &StorageInterestGroup::joining_origin,
+                cluster_origin),
+          Field("interest_group", &StorageInterestGroup::interest_group,
+                testing::AllOf(
+                    Field("owner", &InterestGroup::owner, cluster_origin),
+                    Field("name", &InterestGroup::name, "separate_same"),
+                    Field("execution_mode", &InterestGroup::execution_mode,
+                          blink::InterestGroup::ExecutionMode::
+                              kCompatibilityMode)))),
+      testing::AllOf(
+          Field("joining_origin", &StorageInterestGroup::joining_origin,
+                other_origin),
+          Field("interest_group", &StorageInterestGroup::interest_group,
+                testing::AllOf(
+                    Field("owner", &InterestGroup::owner, other_origin),
+                    Field("name", &InterestGroup::name, "separate_other"),
+                    Field("execution_mode", &InterestGroup::execution_mode,
+                          blink::InterestGroup::ExecutionMode::
+                              kCompatibilityMode)))),
+      testing::AllOf(
+          Field("joining_origin", &StorageInterestGroup::joining_origin,
+                other_origin),
+          Field("interest_group", &StorageInterestGroup::interest_group,
+                testing::AllOf(
+                    Field("owner", &InterestGroup::owner, cluster_origin),
+                    Field("name", &InterestGroup::name, "clustered_different"),
+                    Field("execution_mode", &InterestGroup::execution_mode,
+                          blink::InterestGroup::ExecutionMode::
+                              kGroupedByOriginMode)))),
+      testing::AllOf(
+          Field("joining_origin", &StorageInterestGroup::joining_origin,
+                other_origin),
+          Field("interest_group", &StorageInterestGroup::interest_group,
+                testing::AllOf(
+                    Field("owner", &InterestGroup::owner, other_origin),
+                    Field("name", &InterestGroup::name, "clustered_other"),
+                    Field("execution_mode", &InterestGroup::execution_mode,
+                          blink::InterestGroup::ExecutionMode::
+                              kGroupedByOriginMode)))));
+
+  interest_groups = storage->GetAllInterestGroupsUnfilteredForTesting();
+  EXPECT_THAT(interest_groups, expected_interest_group_matcher);
+}
+
+TEST_F(InterestGroupStorageTest, SetGetLastKAnonReported) {
+  url::Origin test_origin =
+      url::Origin::Create(GURL("https://owner.example.com"));
+  GURL ad1_url = GURL("https://owner.example.com/ad1");
+  GURL ad2_url = GURL("https://owner.example.com/ad2");
+  GURL ad3_url = GURL("https://owner.example.com/ad3");
+
+  InterestGroup g = NewInterestGroup(test_origin, "name");
+  g.ads.emplace();
+  g.ads->push_back(blink::InterestGroup::Ad(ad1_url, "metadata1"));
+  g.ads->push_back(blink::InterestGroup::Ad(ad2_url, "metadata2"));
+  g.ad_components.emplace();
+  g.ad_components->push_back(
+      blink::InterestGroup::Ad(ad1_url, "component_metadata1"));
+  g.ad_components->push_back(
+      blink::InterestGroup::Ad(ad3_url, "component_metadata3"));
+  std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+
+  absl::optional<base::Time> last_report =
+      storage->GetLastKAnonymityReported(ad1_url.spec());
+  EXPECT_FALSE(last_report);  // Not in the database.
+
+  storage->JoinInterestGroup(g, GURL("https://owner.example.com/join"));
+
+  base::Time expected_last_report;
+  last_report = storage->GetLastKAnonymityReported(ad1_url.spec());
+  EXPECT_EQ(last_report, base::Time::Min());
+  storage->UpdateLastKAnonymityReported(ad1_url.spec());
+  expected_last_report = base::Time::Now();
+
+  task_environment().FastForwardBy(base::Seconds(1));
+
+  last_report = storage->GetLastKAnonymityReported(ad1_url.spec());
+  EXPECT_EQ(last_report, expected_last_report);
+
+  task_environment().FastForwardBy(base::Seconds(1));
+
+  last_report = storage->GetLastKAnonymityReported(ad2_url.spec());
+  EXPECT_EQ(last_report, base::Time::Min());
+  storage->UpdateLastKAnonymityReported(ad2_url.spec());
+  expected_last_report = base::Time::Now();
+
+  task_environment().FastForwardBy(base::Seconds(1));
+
+  last_report = storage->GetLastKAnonymityReported(ad2_url.spec());
+  EXPECT_EQ(last_report, expected_last_report);
+
+  task_environment().FastForwardBy(base::Seconds(1));
+
+  last_report = storage->GetLastKAnonymityReported(ad3_url.spec());
+  EXPECT_EQ(last_report, base::Time::Min());
+  storage->UpdateLastKAnonymityReported(ad3_url.spec());
+  expected_last_report = base::Time::Now();
+
+  task_environment().FastForwardBy(base::Seconds(1));
+
+  last_report = storage->GetLastKAnonymityReported(ad3_url.spec());
+  EXPECT_EQ(last_report, expected_last_report);
+
+  task_environment().FastForwardBy(base::Seconds(1));
+
+  std::string group_name_key = test_origin.GetURL().spec() + "\nname";
+  last_report = storage->GetLastKAnonymityReported(group_name_key);
+  EXPECT_EQ(last_report, base::Time::Min());
+  storage->UpdateLastKAnonymityReported(group_name_key);
+  expected_last_report = base::Time::Now();
+
+  task_environment().FastForwardBy(base::Seconds(1));
+
+  last_report = storage->GetLastKAnonymityReported(group_name_key);
+  EXPECT_EQ(last_report, expected_last_report);
+}
+
+TEST_F(InterestGroupStorageTest, UpdatePrioritySignalsOverrides) {
+  const url::Origin kOrigin = url::Origin::Create(GURL("https://example.test"));
+  const char kName[] = "Name";
+  const blink::InterestGroupKey kInterestGroupKey(kOrigin, kName);
+
+  std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+
+  // Join a group without any priority signals overrides.
+  InterestGroup original_group = NewInterestGroup(kOrigin, kName);
+  // Set priority vector, so can make sure it's never modified.
+  original_group.priority_vector = {{"key1", 0}};
+  storage->JoinInterestGroup(original_group,
+                             /*main_frame_joining_url=*/kOrigin.GetURL());
+  std::vector<StorageInterestGroup> storage_interest_groups =
+      storage->GetInterestGroupsForOwner(kOrigin);
+  ASSERT_EQ(1u, storage_interest_groups.size());
+  EXPECT_TRUE(original_group.IsEqualForTesting(
+      storage_interest_groups[0].interest_group));
+
+  // Updating a group that has no overrides should add an overrides maps and set
+  // the corresponding keys.
+  base::flat_map<std::string, auction_worklet::mojom::PrioritySignalsDoublePtr>
+      update1;
+  // Can't put these in an inlined initializer list, since those must use
+  // copyable types.
+  update1.emplace("key1",
+                  auction_worklet::mojom::PrioritySignalsDouble::New(0));
+  update1.emplace("key2", auction_worklet::mojom::PrioritySignalsDoublePtr());
+  update1.emplace("key3",
+                  auction_worklet::mojom::PrioritySignalsDouble::New(-4));
+  update1.emplace("key4",
+                  auction_worklet::mojom::PrioritySignalsDouble::New(5));
+  storage->UpdateInterestGroupPriorityOverrides(kInterestGroupKey,
+                                                std::move(update1));
+  storage_interest_groups = storage->GetInterestGroupsForOwner(kOrigin);
+  ASSERT_EQ(1u, storage_interest_groups.size());
+  EXPECT_EQ(kOrigin, storage_interest_groups[0].interest_group.owner);
+  EXPECT_EQ(kName, storage_interest_groups[0].interest_group.name);
+  EXPECT_EQ(original_group.priority_vector,
+            storage_interest_groups[0].interest_group.priority_vector);
+  EXPECT_EQ(
+      (base::flat_map<std::string, double>{
+          {"key1", 0}, {"key3", -4}, {"key4", 5}}),
+      storage_interest_groups[0].interest_group.priority_signals_overrides);
+
+  // Updating a group that has overrides should modify the existing overrides.
+  base::flat_map<std::string, auction_worklet::mojom::PrioritySignalsDoublePtr>
+      update2;
+  // Can't put these in an inlined initializer list, since those must use
+  // copyable types.
+  update2.emplace("key1", auction_worklet::mojom::PrioritySignalsDoublePtr());
+  update2.emplace("key2",
+                  auction_worklet::mojom::PrioritySignalsDouble::New(6));
+  update2.emplace("key3",
+                  auction_worklet::mojom::PrioritySignalsDouble::New(0));
+  storage->UpdateInterestGroupPriorityOverrides(kInterestGroupKey,
+                                                std::move(update2));
+  storage_interest_groups = storage->GetInterestGroupsForOwner(kOrigin);
+  ASSERT_EQ(1u, storage_interest_groups.size());
+  EXPECT_EQ(kOrigin, storage_interest_groups[0].interest_group.owner);
+  EXPECT_EQ(kName, storage_interest_groups[0].interest_group.name);
+  EXPECT_EQ(original_group.priority_vector,
+            storage_interest_groups[0].interest_group.priority_vector);
+  EXPECT_EQ(
+      (base::flat_map<std::string, double>{
+          {"key2", 6}, {"key3", 0}, {"key4", 5}}),
+      storage_interest_groups[0].interest_group.priority_signals_overrides);
+
+  // Try and set overrides to make an InterestGroup that is too big. Update
+  // should fail, and the InterestGroup should be unmodified.
+  std::vector<
+      std::pair<std::string, auction_worklet::mojom::PrioritySignalsDoublePtr>>
+      overrides_too_big_vector;
+  for (size_t i = 0; i < blink::mojom::kMaxInterestGroupSize / sizeof(double);
+       ++i) {
+    overrides_too_big_vector.emplace_back(
+        base::NumberToString(i),
+        auction_worklet::mojom::PrioritySignalsDouble::New(i));
+  }
+  storage->UpdateInterestGroupPriorityOverrides(
+      kInterestGroupKey,
+      base::flat_map<std::string,
+                     auction_worklet::mojom::PrioritySignalsDoublePtr>(
+          std::move(overrides_too_big_vector)));
+  storage_interest_groups = storage->GetInterestGroupsForOwner(kOrigin);
+  ASSERT_EQ(1u, storage_interest_groups.size());
+  EXPECT_EQ(kOrigin, storage_interest_groups[0].interest_group.owner);
+  EXPECT_EQ(kName, storage_interest_groups[0].interest_group.name);
+  EXPECT_EQ(original_group.priority_vector,
+            storage_interest_groups[0].interest_group.priority_vector);
+  EXPECT_EQ(
+      (base::flat_map<std::string, double>{
+          {"key2", 6}, {"key3", 0}, {"key4", 5}}),
+      storage_interest_groups[0].interest_group.priority_signals_overrides);
 }
 
 }  // namespace content

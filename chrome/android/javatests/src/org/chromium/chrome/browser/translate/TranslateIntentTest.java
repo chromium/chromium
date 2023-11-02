@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -68,7 +68,7 @@ public class TranslateIntentTest {
      * the changes to make the translate service mockable and remove the internet requirement.
      */
     private boolean shouldSkipDueToNetworkService() {
-        return !ChromeFeatureList.isEnabled("NetworkServiceInProcess");
+        return !ChromeFeatureList.isEnabled("NetworkServiceInProcess2");
     }
 
     /**
@@ -104,8 +104,10 @@ public class TranslateIntentTest {
     @Test
     @MediumTest
     @Restriction(Restriction.RESTRICTION_TYPE_INTERNET)
-    @Features.DisableFeatures({ChromeFeatureList.TRANSLATE_INTENT})
-    public void testTranslateIntentDisabled() throws TimeoutException {
+    @Features.DisableFeatures({ChromeFeatureList.TRANSLATE_INTENT,
+            ChromeFeatureList.TRANSLATE_TFLITE, ChromeFeatureList.TRANSLATE_MESSAGE_UI})
+    public void
+    testTranslateIntentDisabled() throws TimeoutException {
         if (shouldSkipDueToNetworkService()) return;
         final String url = sActivityTestRule.getTestServer().getURL(TRANSLATE_PAGE);
         // Load a page that triggers the translate recommendation.
@@ -122,6 +124,8 @@ public class TranslateIntentTest {
     @MediumTest
     @Restriction(Restriction.RESTRICTION_TYPE_INTERNET)
     @Features.EnableFeatures({ChromeFeatureList.TRANSLATE_INTENT})
+    @Features.
+    DisableFeatures({ChromeFeatureList.TRANSLATE_TFLITE, ChromeFeatureList.TRANSLATE_MESSAGE_UI})
     public void testTranslateIntentOnTranslatePage() throws TimeoutException {
         if (shouldSkipDueToNetworkService()) return;
         final String url = sActivityTestRule.getTestServer().getURL(TRANSLATE_PAGE);
@@ -139,6 +143,7 @@ public class TranslateIntentTest {
     @MediumTest
     @Restriction(Restriction.RESTRICTION_TYPE_INTERNET)
     @Features.EnableFeatures({ChromeFeatureList.TRANSLATE_INTENT})
+    @Features.DisableFeatures({ChromeFeatureList.TRANSLATE_MESSAGE_UI})
     public void testTranslateIntentOnNonTranslatePage() throws TimeoutException {
         if (shouldSkipDueToNetworkService()) return;
         final String url = sActivityTestRule.getTestServer().getURL(NON_TRANSLATE_PAGE);
@@ -158,6 +163,7 @@ public class TranslateIntentTest {
     @MediumTest
     @Restriction(Restriction.RESTRICTION_TYPE_INTERNET)
     @Features.EnableFeatures({ChromeFeatureList.TRANSLATE_INTENT})
+    @Features.DisableFeatures({ChromeFeatureList.TRANSLATE_MESSAGE_UI})
     public void testTranslateIntentWithTargetLanguage()
             throws TimeoutException, ExecutionException {
         if (shouldSkipDueToNetworkService()) return;
@@ -187,6 +193,7 @@ public class TranslateIntentTest {
     @MediumTest
     @Restriction(Restriction.RESTRICTION_TYPE_INTERNET)
     @Features.EnableFeatures({ChromeFeatureList.TRANSLATE_INTENT})
+    @Features.DisableFeatures({ChromeFeatureList.TRANSLATE_MESSAGE_UI})
     public void testTranslateIntentWithIdenticalSourceAndTarget()
             throws TimeoutException, ExecutionException {
         if (shouldSkipDueToNetworkService()) return;
@@ -207,6 +214,7 @@ public class TranslateIntentTest {
     @MediumTest
     @Restriction(Restriction.RESTRICTION_TYPE_INTERNET)
     @Features.EnableFeatures({ChromeFeatureList.TRANSLATE_INTENT})
+    @Features.DisableFeatures({ChromeFeatureList.TRANSLATE_MESSAGE_UI})
     public void testTranslateIntentWithUnsupportedTargetLanguage() throws TimeoutException {
         if (shouldSkipDueToNetworkService()) return;
         final String url = sActivityTestRule.getTestServer().getURL(NON_TRANSLATE_PAGE);
@@ -226,6 +234,8 @@ public class TranslateIntentTest {
     @MediumTest
     @Restriction(Restriction.RESTRICTION_TYPE_INTERNET)
     @Features.EnableFeatures({ChromeFeatureList.TRANSLATE_INTENT})
+    @Features.
+    DisableFeatures({ChromeFeatureList.TRANSLATE_TFLITE, ChromeFeatureList.TRANSLATE_MESSAGE_UI})
     public void testTranslateIntentOnIncognito() throws TimeoutException {
         if (shouldSkipDueToNetworkService()) return;
         final String url = sActivityTestRule.getTestServer().getURL(TRANSLATE_PAGE);
@@ -249,6 +259,8 @@ public class TranslateIntentTest {
     @MediumTest
     @Restriction(Restriction.RESTRICTION_TYPE_INTERNET)
     @Features.EnableFeatures({ChromeFeatureList.TRANSLATE_INTENT})
+    @Features.
+    DisableFeatures({ChromeFeatureList.TRANSLATE_TFLITE, ChromeFeatureList.TRANSLATE_MESSAGE_UI})
     public void testTranslateIntentWithUrlMismatch() throws TimeoutException {
         if (shouldSkipDueToNetworkService()) return;
         final String url = sActivityTestRule.getTestServer().getURL(TRANSLATE_PAGE);
@@ -266,6 +278,8 @@ public class TranslateIntentTest {
     @MediumTest
     @Restriction(Restriction.RESTRICTION_TYPE_INTERNET)
     @Features.EnableFeatures({ChromeFeatureList.TRANSLATE_INTENT})
+    @Features.
+    DisableFeatures({ChromeFeatureList.TRANSLATE_TFLITE, ChromeFeatureList.TRANSLATE_MESSAGE_UI})
     public void testTranslateIntentWithoutExpectedUrl() throws TimeoutException {
         if (shouldSkipDueToNetworkService()) return;
         final String url = sActivityTestRule.getTestServer().getURL(TRANSLATE_PAGE);
@@ -283,6 +297,8 @@ public class TranslateIntentTest {
     @MediumTest
     @Restriction(Restriction.RESTRICTION_TYPE_INTERNET)
     @Features.EnableFeatures({ChromeFeatureList.TRANSLATE_INTENT})
+    @Features.
+    DisableFeatures({ChromeFeatureList.TRANSLATE_TFLITE, ChromeFeatureList.TRANSLATE_MESSAGE_UI})
     public void testTranslateIntentVerifyComponent() throws TimeoutException {
         if (shouldSkipDueToNetworkService()) return;
         final String url = sActivityTestRule.getTestServer().getURL(TRANSLATE_PAGE);
@@ -307,6 +323,8 @@ public class TranslateIntentTest {
     @MediumTest
     @Restriction(Restriction.RESTRICTION_TYPE_INTERNET)
     @Features.EnableFeatures({ChromeFeatureList.TRANSLATE_INTENT})
+    @Features.
+    DisableFeatures({ChromeFeatureList.TRANSLATE_TFLITE, ChromeFeatureList.TRANSLATE_MESSAGE_UI})
     public void testTranslateIntentIncorrectComponent() throws TimeoutException {
         if (shouldSkipDueToNetworkService()) return;
         final String url = sActivityTestRule.getTestServer().getURL(TRANSLATE_PAGE);

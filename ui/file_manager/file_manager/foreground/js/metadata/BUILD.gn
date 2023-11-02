@@ -1,11 +1,10 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
 import("//third_party/closure_compiler/js_unit_tests.gni")
-import("//ui/file_manager/base/gn/js_test_gen_html.gni")
-import("//ui/webui/resources/js/cr.gni")
+import("//ui/file_manager/base/gn/js_test_type_check.gni")
 
 # TODO(tapted): This entire folder should move to //ui/file_manager/base.
 visibility = [ "//ui/file_manager/*" ]
@@ -14,7 +13,7 @@ group("closure_compile") {
   testonly = true
   deps = [
     ":closure_compile_jsmodules",
-    ":js_test_gen_html_modules_type_check_auto",
+    ":js_test_type_check",
   ]
 }
 
@@ -22,6 +21,7 @@ group("js_modules") {
   deps = [
     ":byte_reader",
     ":content_metadata_provider",
+    ":dlp_metadata_provider",
     ":exif_constants",
     ":exif_parser",
     ":external_metadata_provider",
@@ -29,7 +29,6 @@ group("js_modules") {
     ":function_parallel",
     ":function_sequence",
     ":id3_parser",
-    ":image_orientation",
     ":image_parsers",
     ":metadata_cache_item",
     ":metadata_cache_set",
@@ -48,8 +47,10 @@ group("js_modules") {
 
 js_type_check("closure_compile_jsmodules") {
   closure_flags = default_closure_args + [
+                    "language_in=ECMASCRIPT_2020",
                     "js_module_root=gen/ui/file_manager/",
-                    "js_module_root=../../ui/file_manager/",
+                    "js_module_root=" +
+                        rebase_path("//ui/file_manager/", root_build_dir),
                     "browser_resolver_prefix_replacements=\"chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/=./file_manager/\"",
                     "browser_resolver_prefix_replacements=\"chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/=./image_loader/\"",
                   ]
@@ -57,6 +58,7 @@ js_type_check("closure_compile_jsmodules") {
   deps = [
     ":byte_reader",
     ":content_metadata_provider",
+    ":dlp_metadata_provider",
     ":exif_constants",
     ":exif_parser",
     ":external_metadata_provider",
@@ -64,7 +66,6 @@ js_type_check("closure_compile_jsmodules") {
     ":function_parallel",
     ":function_sequence",
     ":id3_parser",
-    ":image_orientation",
     ":image_parsers",
     ":metadata_cache_item",
     ":metadata_cache_set",
@@ -93,16 +94,24 @@ js_library("content_metadata_provider") {
     "//ui/file_manager/file_manager/foreground/js:thumbnail_loader",
     "//ui/file_manager/image_loader:image_loader_client",
     "//ui/file_manager/image_loader:load_image_request",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
   ]
 }
 
-js_unittest("content_metadata_provider_unittest.m") {
+js_unittest("content_metadata_provider_unittest") {
   deps = [
     ":content_metadata_provider",
     ":metadata_request",
     "//chrome/test/data/webui:chai_assert",
     "//ui/file_manager/file_manager/common/js:test_error_reporting",
+  ]
+}
+
+js_library("dlp_metadata_provider") {
+  deps = [
+    ":metadata_item",
+    ":metadata_provider",
+    "//ui/file_manager/file_manager/common/js:api",
   ]
 }
 
@@ -119,7 +128,7 @@ js_library("exif_parser") {
   ]
 }
 
-js_unittest("exif_parser_unittest.m") {
+js_unittest("exif_parser_unittest") {
   deps = [
     ":byte_reader",
     ":exif_constants",
@@ -136,11 +145,11 @@ js_library("external_metadata_provider") {
     ":metadata_provider",
     ":metadata_request",
     "//ui/file_manager/file_manager/externs:file_manager_private",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
   ]
 }
 
-js_unittest("external_metadata_provider_unittest.m") {
+js_unittest("external_metadata_provider_unittest") {
   deps = [
     ":external_metadata_provider",
     ":metadata_request",
@@ -157,7 +166,7 @@ js_library("file_system_metadata_provider") {
   ]
 }
 
-js_unittest("file_system_metadata_provider_unittest.m") {
+js_unittest("file_system_metadata_provider_unittest") {
   deps = [
     ":file_system_metadata_provider",
     ":metadata_request",
@@ -184,16 +193,6 @@ js_library("id3_parser") {
   ]
 }
 
-js_library("image_orientation") {
-}
-
-js_unittest("image_orientation_unittest.m") {
-  deps = [
-    ":image_orientation",
-    "//chrome/test/data/webui:chai_assert",
-  ]
-}
-
 js_library("image_parsers") {
   deps = [
     ":byte_reader",
@@ -205,11 +204,11 @@ js_library("image_parsers") {
 js_library("metadata_cache_item") {
   deps = [
     ":metadata_item",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
   ]
 }
 
-js_unittest("metadata_cache_item_unittest.m") {
+js_unittest("metadata_cache_item_unittest") {
   deps = [
     ":metadata_cache_item",
     ":metadata_item",
@@ -223,11 +222,11 @@ js_library("metadata_cache_set") {
     ":metadata_item",
     ":metadata_request",
     "//ui/file_manager/file_manager/common/js:util",
-    "//ui/webui/resources/js/cr:event_target.m",
+    "//ui/webui/resources/js/cr:event_target",
   ]
 }
 
-js_unittest("metadata_cache_set_unittest.m") {
+js_unittest("metadata_cache_set_unittest") {
   deps = [
     ":metadata_cache_set",
     "//chrome/test/data/webui:chai_assert",
@@ -263,7 +262,7 @@ js_library("metadata_model") {
   ]
 }
 
-js_unittest("metadata_model_unittest.m") {
+js_unittest("metadata_model_unittest") {
   deps = [
     ":metadata_model",
     ":metadata_provider",
@@ -283,7 +282,7 @@ js_library("metadata_provider") {
   deps = [
     ":metadata_item",
     ":metadata_request",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
   ]
 }
 
@@ -305,6 +304,7 @@ js_library("mpeg_parser") {
 js_library("multi_metadata_provider") {
   deps = [
     ":content_metadata_provider",
+    ":dlp_metadata_provider",
     ":external_metadata_provider",
     ":file_system_metadata_provider",
     ":metadata_item",
@@ -312,13 +312,14 @@ js_library("multi_metadata_provider") {
     ":metadata_request",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:volume_manager",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
   ]
 }
 
-js_unittest("multi_metadata_provider_unittest.m") {
+js_unittest("multi_metadata_provider_unittest") {
   deps = [
     ":content_metadata_provider",
+    ":dlp_metadata_provider",
     ":external_metadata_provider",
     ":file_system_metadata_provider",
     ":metadata_request",
@@ -337,7 +338,7 @@ js_library("thumbnail_model") {
   ]
 }
 
-js_unittest("thumbnail_model_unittest.m") {
+js_unittest("thumbnail_model_unittest") {
   deps = [
     ":metadata_item",
     ":metadata_model",
@@ -347,25 +348,26 @@ js_unittest("thumbnail_model_unittest.m") {
   ]
 }
 
-js_test_gen_html("js_test_gen_html_modules") {
+js_test_type_check("js_test_type_check") {
   deps = [
-    ":content_metadata_provider_unittest.m",
-    ":exif_parser_unittest.m",
-    ":external_metadata_provider_unittest.m",
-    ":file_system_metadata_provider_unittest.m",
-    ":image_orientation_unittest.m",
-    ":metadata_cache_item_unittest.m",
-    ":metadata_cache_set_unittest.m",
-    ":metadata_model_unittest.m",
-    ":multi_metadata_provider_unittest.m",
-    ":thumbnail_model_unittest.m",
+    ":content_metadata_provider_unittest",
+    ":exif_parser_unittest",
+    ":external_metadata_provider_unittest",
+    ":file_system_metadata_provider_unittest",
+    ":metadata_cache_item_unittest",
+    ":metadata_cache_set_unittest",
+    ":metadata_model_unittest",
+    ":multi_metadata_provider_unittest",
+    ":thumbnail_model_unittest",
   ]
 
   closure_flags = strict_error_checking_closure_args + [
+                    "language_in=ECMASCRIPT_2020",
                     "js_module_root=./gen/ui",
-                    "js_module_root=../../ui/file_manager/",
+                    "js_module_root=" +
+                        rebase_path("//ui/file_manager/", root_build_dir),
                     "js_module_root=./gen/ui/file_manager/",
-                    "browser_resolver_prefix_replacements=\"chrome://test/=./\"",
+                    "browser_resolver_prefix_replacements=\"chrome://webui-test/=./\"",
                     "browser_resolver_prefix_replacements=\"chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/=./file_manager/\"",
                     "browser_resolver_prefix_replacements=\"chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/=./image_loader/\"",
                     "hide_warnings_for=third_party/",

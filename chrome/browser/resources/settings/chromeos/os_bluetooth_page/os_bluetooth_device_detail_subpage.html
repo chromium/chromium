@@ -7,6 +7,14 @@
     color: var(--cros-text-color-alert);
   }
 
+  #managedIcon {
+    flex: 8
+  }
+
+  #forgetBtn {
+    margin-inline-end: 8px;
+  }
+
   .bluetooth-middle {
     align-items: center;
     flex: auto;
@@ -19,7 +27,7 @@
 <div id="container">
   <div id="deviceStateSettings" class="settings-box two-line first">
     <iron-icon id="statusIcon"
-        icon="[[getBluetoothStateIcon_(device_.*, pageState_)]]">
+        icon="[[getBluetoothStateIcon_(isDeviceConnected_)]]">
     </iron-icon>
     <div id="bluetoothState"
         class="middle settings-box-text">
@@ -47,23 +55,51 @@
         </div>
       </template>
     </div>
+    <template is="dom-if"
+        if="[[shouldShowBlockedByPolicyIcon_(device_.*)]]" restamp>
+      <div id="managedIcon">
+        <cr-tooltip-icon
+            tooltip-text="$i18n{bluetoothManaged}" icon-class="cr:domain"
+            icon-aria-label="$i18n{bluetoothManaged}">
+        </cr-tooltip-icon>
+      </div>
+    </template>
     <div id="buttonContainer" class="layout end">
-      <cr-button id="forgetBtn"
-          class="cancel-button"
-          on-click="onForgetBtnClick_">
-        $i18n{bluetoothDeviceDetailForget}
-      </cr-button>
+      <template is="dom-if" if="[[shouldShowForgetBtn_(device_.*)]]"
+          restamp>
+        <cr-button id="forgetBtn"
+            class="cancel-button"
+            aria-label$="[[getForgetA11yLabel_(device_.*)]]"
+            on-click="onForgetButtonClicked_">
+          $i18n{bluetoothDeviceDetailForget}
+        </cr-button>
+      </template>
       <template is="dom-if" if="[[shouldShowConnectDisconnectBtn_(device_.*)]]"
           restamp>
         <cr-button id="connectDisconnectBtn"
             disabled$="[[isConnectDisconnectBtnDisabled(pageState_)]]"
             class="action-button"
             on-click="onConnectDisconnectBtnClick_">
-          [[getBluetoothConnectDisconnectBtnLabel_(device_.*, pageState_)]]
+          [[getBluetoothConnectDisconnectBtnLabel_(isDeviceConnected_)]]
         </cr-button>
       </template>
     </div>
   </div>
+  <template is="dom-if"
+      if="[[shouldShowTrueWirelessImages_(device_.*)]]" restamp>
+    <os-settings-bluetooth-true-wireless-images
+        id="trueWirelessImages"
+        device="[[device_.deviceProperties]]">
+    </os-settings-bluetooth-true-wireless-images>
+  </template>
+  <template is="dom-if"
+      if="[[shouldShowNonAudioOutputDeviceMessage_(device_.*)]]" restamp>
+    <div id="nonAudioOutputDeviceMessage"
+        class="settings-box settings-box-text continuation"
+        aria-live="polite">
+      [[getNonAudioOutputDeviceMessage_(device_.*)]]
+    </div>
+  </template>
   <div id="deviceNameSettings" class="settings-box">
     <div id="bluetoothDeviceName"
         class="bluetooth-middle settings-box-text no-padding"
@@ -81,7 +117,8 @@
     </cr-button>
   </div>
   <template is="dom-if"
-      if="[[shouldShowChangeMouseDeviceSettings_(device_.*)]]" restamp>
+      if="[[shouldShowChangeMouseDeviceSettings_(device_.*,
+          isDeviceConnected_)]]" restamp>
     <cr-link-row
         id="changeMouseSettings"
         class="hr settings-box"
@@ -90,7 +127,8 @@
     </cr-link-row>
   </template>
   <template is="dom-if"
-      if="[[shouldShowChangeKeyboardDeviceSettings_(device_.*)]]" restamp>
+      if="[[shouldShowChangeKeyboardDeviceSettings_(device_.*,
+          isDeviceConnected_)]]" restamp>
     <cr-link-row
         id="changeKeyboardSettings"
         class="hr settings-box"
@@ -106,4 +144,12 @@
       device="[[device_]]"
       on-close="onCloseChangeDeviceNameDialog_">
   </os-settings-bluetooth-change-device-name-dialog>
+</template>
+
+<template is="dom-if" if="[[shouldShowForgetDeviceDialog_]]" restamp>
+  <os-settings-bluetooth-forget-device-dialog
+      id="forgetDeviceDialog"
+      device_="[[device_]]"
+      on-close="onCloseForgetDeviceDialog_">
+  </os-settings-bluetooth-forget-device-dialog>
 </template>

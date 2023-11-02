@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/strings/string_piece.h"
+#include "components/printing/browser/print_to_pdf/pdf_print_result.h"
 #include "components/printing/common/print.mojom.h"
 #include "printing/page_range.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -16,17 +17,10 @@
 
 namespace print_to_pdf {
 
-enum class PageRangeError {
-  SYNTAX_ERROR,
-  LIMIT_ERROR,
-};
-
 // Converts textual representation of the page range to printing::PageRanges,
-// page range error is returned as the PageRangeError variant case.
-absl::variant<printing::PageRanges, PageRangeError> TextPageRangesToPageRanges(
-    base::StringPiece page_range_text,
-    bool ignore_invalid_page_ranges,
-    uint32_t expected_page_count);
+// page range error is returned as the PdfPrintResult variant case.
+absl::variant<printing::PageRanges, PdfPrintResult> TextPageRangesToPageRanges(
+    base::StringPiece page_range_text);
 
 // Converts print settings to printing::mojom::PrintPagesParamsPtr,
 // document error is returned as the string variant case.

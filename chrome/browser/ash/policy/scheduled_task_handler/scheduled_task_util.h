@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/scheduled_task_executor.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/icu/source/i18n/unicode/calendar.h"
 
 namespace policy {
 
@@ -28,6 +29,33 @@ namespace scheduled_task_util {
 absl::optional<ScheduledTaskExecutor::ScheduledTaskData> ParseScheduledTask(
     const base::Value& value,
     const std::string& task_time_field_name);
+
+// Calculates the difference in milliseconds of |a| - |b|. Caller has to ensure
+// |a| >= |b|.
+base::TimeDelta GetDiff(const icu::Calendar& a, const icu::Calendar& b);
+
+// Converts |cur_time| to ICU time in the time zone |tz|.
+std::unique_ptr<icu::Calendar> ConvertUtcToTzIcuTime(base::Time cur_time,
+                                                     const icu::TimeZone& tz);
+
+// Calculates the delay from |time| at which the policy defined through |data|
+// should run next. Returns nullopt if the calculation failed due to a
+// concurrent DST or Time Zone change.
+// |time_zone| refers to the time zone that should be considered for the policy.
+absl::optional<base::TimeDelta> CalculateNextScheduledTaskTimerDelay(
+    const ScheduledTaskExecutor::ScheduledTaskData& data,
+    const base::Time time,
+    const icu::TimeZone& time_zone);
+
+// Calculates the next scheduled calendar event that lies after |time|
+// in accordance with the policy.
+std::unique_ptr<icu::Calendar> CalculateNextScheduledTimeAfter(
+    const ScheduledTaskExecutor::ScheduledTaskData& data,
+    const icu::Calendar& time);
+
+// Calculates random small delay in milliseconds in range [0,
+// max_delay_in_seconds).
+base::TimeDelta GenerateRandomDelay(int max_delay_in_seconds);
 
 }  // namespace scheduled_task_util
 

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,8 @@
 #include "base/lazy_instance.h"
 #include "chrome/browser/ash/printing/printer_event_tracker.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace ash {
 namespace {
@@ -31,9 +29,9 @@ PrinterEventTracker* PrinterEventTrackerFactory::GetForBrowserContext(
 }
 
 PrinterEventTrackerFactory::PrinterEventTrackerFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "PrinterEventTracker",
-          BrowserContextDependencyManager::GetInstance()) {}
+          ProfileSelections::BuildForRegularAndIncognito()) {}
 PrinterEventTrackerFactory::~PrinterEventTrackerFactory() = default;
 
 void PrinterEventTrackerFactory::SetLogging(bool enabled) {
@@ -55,11 +53,6 @@ KeyedService* PrinterEventTrackerFactory::BuildServiceInstanceFor(
   PrinterEventTracker* tracker = new PrinterEventTracker();
   tracker->set_logging(logging_enabled_);
   return tracker;
-}
-
-content::BrowserContext* PrinterEventTrackerFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextOwnInstanceInIncognito(context);
 }
 
 }  // namespace ash

@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "components/sessions/core/serialized_navigation_entry_test_helper.h"
 #include "components/sync/base/time.h"
 #include "components/sync/protocol/session_specifics.pb.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
@@ -172,8 +173,11 @@ TEST(SyncedSessionTest, SessionNavigationToSyncDataWithTransitionTypes) {
     // breaking.
     for (uint32_t qualifier = ui::PAGE_TRANSITION_FORWARD_BACK; qualifier != 0;
          qualifier <<= 1) {
-      if (qualifier == static_cast<uint32_t>(ui::PAGE_TRANSITION_FROM_API))
-        continue;  // We don't sync PAGE_TRANSITION_FROM_API.
+      if (qualifier == static_cast<uint32_t>(ui::PAGE_TRANSITION_FROM_API) ||
+          qualifier == static_cast<uint32_t>(ui::PAGE_TRANSITION_CHAIN_START) ||
+          qualifier == static_cast<uint32_t>(ui::PAGE_TRANSITION_CHAIN_END)) {
+        continue;  // We don't sync PAGE_TRANSITION_FROM_API or CHAIN_START/END.
+      }
       ui::PageTransition transition =
           ui::PageTransitionFromInt(core_type | qualifier);
       SerializedNavigationEntryTestHelper::SetTransitionType(transition,
@@ -306,13 +310,13 @@ TEST(SyncedSessionTest, SessionTabToSyncData) {
 }
 
 TEST(SyncedSessionTest, SessionTabToSyncDataWithBrowserType) {
-  EXPECT_EQ(sync_pb::SessionWindow_BrowserType_TYPE_TABBED,
+  EXPECT_EQ(sync_pb::SyncEnums_BrowserType_TYPE_TABBED,
             SessionTabToSyncData(sessions::SessionTab(),
-                                 sync_pb::SessionWindow_BrowserType_TYPE_TABBED)
+                                 sync_pb::SyncEnums_BrowserType_TYPE_TABBED)
                 .browser_type());
-  EXPECT_EQ(sync_pb::SessionWindow_BrowserType_TYPE_POPUP,
+  EXPECT_EQ(sync_pb::SyncEnums_BrowserType_TYPE_POPUP,
             SessionTabToSyncData(sessions::SessionTab(),
-                                 sync_pb::SessionWindow_BrowserType_TYPE_POPUP)
+                                 sync_pb::SyncEnums_BrowserType_TYPE_POPUP)
                 .browser_type());
 }
 

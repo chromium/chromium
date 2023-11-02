@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,12 @@
 
 #include "ash/services/ime/public/cpp/suggestions.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/input_method/input_method_engine_base.h"
+#include "chrome/browser/ash/input_method/input_method_engine.h"
 #include "chrome/browser/ash/input_method/suggester.h"
 #include "chrome/browser/ash/input_method/suggestion_enums.h"
 #include "chrome/browser/ash/input_method/suggestion_handler_interface.h"
 #include "chrome/browser/ash/input_method/ui/assistive_delegate.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -35,9 +36,9 @@ class EmojiSuggester : public Suggester {
   void OnExternalSuggestionsUpdated(
       const std::vector<ime::TextSuggestion>& suggestions) override;
   SuggestionStatus HandleKeyEvent(const ui::KeyEvent& event) override;
-  bool Suggest(const std::u16string& text,
-               size_t cursor_pos,
-               size_t anchor_pos) override;
+  bool TrySuggestWithSurroundingText(const std::u16string& text,
+                                     int cursor_pos,
+                                     int anchor_pos) override;
   bool AcceptSuggestion(size_t index) override;
   void DismissSuggestion() override;
   AssistiveType GetProposeActionType() override;
@@ -71,8 +72,8 @@ class EmojiSuggester : public Suggester {
   SuggestionHandlerInterface* const suggestion_handler_;
   Profile* profile_;
 
-  // ID of the focused text field, 0 if none is focused.
-  int context_id_ = -1;
+  // ID of the focused text field, nullopt if none is focused.
+  absl::optional<int> focused_context_id_;
 
   // If we are showing a suggestion right now.
   bool suggestion_shown_ = false;
@@ -88,8 +89,6 @@ class EmojiSuggester : public Suggester {
 
   // The map holding one-word-mapping to emojis.
   std::map<std::string, std::vector<std::u16string>> emoji_map_;
-
-  base::TimeTicks session_start_;
 
   // Pointer for callback, must be the last declared in the file.
   base::WeakPtrFactory<EmojiSuggester> weak_factory_{this};

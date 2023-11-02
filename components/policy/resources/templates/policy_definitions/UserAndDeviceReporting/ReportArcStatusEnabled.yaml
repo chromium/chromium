@@ -1,0 +1,27 @@
+caption: Report information about status of Android
+desc: |-
+  If Android apps are on, then setting the policy to True has enrolled devices report Android status information.
+
+        Setting the policy to Disabled or leaving it unset means enrolled devices don't report Android status information
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: true
+items:
+- caption: Enable Android reporting
+  value: true
+- caption: Disable Android reporting
+  value: false
+owners:
+- cros-reporting-team@google.com
+- lbaraz@chromium.org
+- phweiss@chromium.org
+schema:
+  type: boolean
+supported_chrome_os_management:
+- google_cloud
+supported_on:
+- chrome_os:55-
+tags:
+- admin-sharing
+type: main

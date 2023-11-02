@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,17 +13,20 @@
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
+#include "components/omnibox/browser/omnibox.mojom-shared.h"
 #include "components/omnibox/browser/omnibox_controller.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/omnibox/common/omnibox_focus_state.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/native_widget_types.h"
 #include "url/gurl.h"
@@ -75,6 +78,12 @@ class OmniboxEditModel {
   //     completely moved to OmniboxController.
   AutocompleteController* autocomplete_controller() const {
     return omnibox_controller_->autocomplete_controller();
+  }
+
+  void set_autocomplete_controller(
+      std::unique_ptr<AutocompleteController> autocomplete_controller) {
+    omnibox_controller_->set_autocomplete_controller(
+        std::move(autocomplete_controller));
   }
 
   void set_popup_view(OmniboxPopupView* popup_view);
@@ -185,6 +194,11 @@ class OmniboxEditModel {
   // selection, so make sure to set those before calling StartAutocomplete().
   void StartAutocomplete(bool has_selected_text,
                          bool prevent_inline_autocomplete);
+
+  // Starts an autocomplete prefetch request so that zero-prefix providers can
+  // optionally start a prefetch request to warm up the their underlying
+  // service(s) and/or optionally cache their otherwise async response.
+  void StartPrefetch();
 
   // Closes the popup and cancels any pending asynchronous queries.
   void StopAutocomplete();
@@ -367,8 +381,8 @@ class OmniboxEditModel {
   //     |is_temporary_test| is false.
   //   |is_temporary_text| is true if invoked because of a temporary text change
   //     or false if |temporary_text| should be ignored.
-  //   |inline_autocompletion|, |prefix_autocompletion|, and
-  //     |split_autocompletion| are the autocompletion.
+  //   |inline_autocompletion| and |prefix_autocompletion| are the
+  //     autocompletions.
   //   |destination_for_temporary_text_change| is NULL (if temporary text should
   //     not change) or the pre-change destination URL (if temporary text should
   //     change) so we can save it off to restore later.
@@ -378,15 +392,13 @@ class OmniboxEditModel {
   //   |additional_text| is additional omnibox text to be displayed adjacent to
   //     the omnibox view.
   // Virtual to allow testing.
-  virtual void OnPopupDataChanged(
-      const std::u16string& temporary_text,
-      bool is_temporary_text,
-      const std::u16string& inline_autocompletion,
-      const std::u16string& prefix_autocompletion,
-      const SplitAutocompletion& split_autocompletion,
-      const std::u16string& keyword,
-      bool is_keyword_hint,
-      const std::u16string& additional_text);
+  virtual void OnPopupDataChanged(const std::u16string& temporary_text,
+                                  bool is_temporary_text,
+                                  const std::u16string& inline_autocompletion,
+                                  const std::u16string& prefix_autocompletion,
+                                  const std::u16string& keyword,
+                                  bool is_keyword_hint,
+                                  const std::u16string& additional_text);
 
   // Called by the OmniboxView after something changes, with details about what
   // state changes occurred.  Updates internal state, updates the popup if
@@ -422,7 +434,7 @@ class OmniboxEditModel {
   // Returns true if the destination URL of the match is bookmarked.
   bool IsStarredMatch(const AutocompleteMatch& match) const;
 
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Gets the icon for the given `match`.
   gfx::Image GetMatchIcon(const AutocompleteMatch& match,
                           SkColor vector_icon_color);
@@ -501,6 +513,12 @@ class OmniboxEditModel {
   // Stores the image in a local data member and schedules a repaint.
   void SetPopupRichSuggestionBitmap(int result_index, const SkBitmap& bitmap);
 
+  // Called to indicate a navigation may occur based on
+  // |navigation_predictor| to the suggestion on |line|.
+  void OnNavigationLikely(
+      size_t line,
+      omnibox::mojom::NavigationPredictor navigation_predictor);
+
  protected:
   // Utility method to get current PrefService; protected instead of private
   // because it may be overridden by derived test classes.
@@ -508,6 +526,7 @@ class OmniboxEditModel {
 
  private:
   friend class OmniboxControllerTest;
+  friend class TestOmniboxEditModel;
   FRIEND_TEST_ALL_PREFIXES(OmniboxEditModelTest, ConsumeCtrlKey);
   FRIEND_TEST_ALL_PREFIXES(OmniboxEditModelTest, ConsumeCtrlKeyOnRequestFocus);
   FRIEND_TEST_ALL_PREFIXES(OmniboxEditModelTest, ConsumeCtrlKeyOnCtrlAction);
@@ -604,9 +623,9 @@ class OmniboxEditModel {
 
   std::unique_ptr<OmniboxController> omnibox_controller_;
 
-  OmniboxView* view_;
+  raw_ptr<OmniboxView> view_;
 
-  OmniboxEditController* controller_;
+  raw_ptr<OmniboxEditController> controller_;
 
   OmniboxFocusState focus_state_;
 
@@ -632,7 +651,9 @@ class OmniboxEditModel {
   // not yet accepted them.  We use this to determine when we need to save
   // state (on switching tabs) and whether changes to the page URL should be
   // immediately displayed.
-  // This flag will be true in a superset of the cases where the popup is open.
+  // This flag *should* be true in a superset of the cases where the popup is
+  // open. Except (crbug.com/1340378) for zero suggestions when the popup was
+  // opened with ctrl+L or a mouse click (as opposed to the down arrow).
   bool user_input_in_progress_;
 
   // The text that the user has entered.  This does not include inline
@@ -689,7 +710,6 @@ class OmniboxEditModel {
   bool just_deleted_text_;
   std::u16string inline_autocompletion_;
   std::u16string prefix_autocompletion_;
-  SplitAutocompletion split_autocompletion_;
 
   // Used by OnPopupDataChanged to keep track of whether there is currently a
   // temporary text.
@@ -759,7 +779,7 @@ class OmniboxEditModel {
 
   // The popup view is nullptr when there's no popup, and is non-null when
   // a popup view exists (i.e. between calls to `set_popup_view`).
-  OmniboxPopupView* popup_view_ = nullptr;
+  raw_ptr<OmniboxPopupView> popup_view_ = nullptr;
 
   // The current popup selection; set to normal kNoMatch when there's no popup.
   OmniboxPopupSelection popup_selection_ =

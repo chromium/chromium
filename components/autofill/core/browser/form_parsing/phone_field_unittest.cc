@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,9 +12,11 @@
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
+#include "components/autofill/core/browser/form_parsing/parsing_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -33,9 +35,24 @@ const char* const kFieldTypes[] = {
 
 }  // namespace
 
-class PhoneFieldTest : public testing::Test {
+class PhoneFieldTest
+    : public testing::TestWithParam<PatternProviderFeatureState> {
  public:
-  PhoneFieldTest() = default;
+  PhoneFieldTest() {
+    std::vector<base::test::ScopedFeatureList::FeatureAndParams> enabled;
+    std::vector<base::test::FeatureRef> disabled;
+    if (GetParam().enable) {
+      enabled.emplace_back(
+          features::kAutofillParsingPatternProvider,
+          base::FieldTrialParams{
+              {features::kAutofillParsingPatternActiveSource.name,
+               GetParam().active_source}});
+    } else {
+      disabled.push_back(features::kAutofillParsingPatternProvider);
+    }
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled, disabled);
+  }
+
   PhoneFieldTest(const PhoneFieldTest&) = delete;
   PhoneFieldTest& operator=(const PhoneFieldTest&) = delete;
 
@@ -45,392 +62,275 @@ class PhoneFieldTest : public testing::Test {
     // An empty page_language means the language is unknown and patterns of all
     // languages are used.
     std::unique_ptr<FormField> field =
-        PhoneField::Parse(scanner, LanguageCode(""), nullptr);
+        PhoneField::Parse(scanner, LanguageCode(""), GetActivePatternSource(),
+                          /*log_manager=*/nullptr);
     return std::unique_ptr<PhoneField>(
         static_cast<PhoneField*>(field.release()));
   }
 
-  void Clear() {
-    list_.clear();
-    field_.reset();
-    field_candidates_map_.clear();
-  }
+  // Checks if the field with `id` was classified as `expected_type`.
+  void CheckField(const FieldGlobalId id, ServerFieldType expected_type) const;
 
-  void CheckField(const FieldGlobalId id, ServerFieldType expected_type) const {
-    auto it = field_candidates_map_.find(id);
-    ASSERT_TRUE(it != field_candidates_map_.end());
-    EXPECT_EQ(expected_type, it->second.BestHeuristicType());
-  }
+  struct TestFieldData {
+    std::string type;
+    std::u16string label;
+    std::u16string name;
+    ServerFieldType expected_type;
+    // Rarely used fields. Placed at the end to simplify common use cases.
+    uint64_t max_length = 0;
+    // Options of a "select-one" `type` element.
+    std::vector<const char*> options;
+  };
 
-  // Populates a select |field| with the |label|, the |name| and the |contents|.
-  void CreateTestSelectField(const char* label,
-                             const char* name,
-                             const std::vector<const char*>& contents,
-                             FormFieldData* field) {
-    field->label = ASCIIToUTF16(label);
-    field->name = ASCIIToUTF16(name);
-    field->form_control_type = "select-one";
+  // Creates a `FormFieldData` object with the provided properties, assigns a
+  // unique renderer id and appends it to `list_`. The `FieldGlobalId` of the
+  // object is returned.
+  autofill::FieldGlobalId AppendField(const TestFieldData& field_data);
 
-    for (auto* const element : contents) {
-      field->options.push_back(
-          {.value = u"", .content = base::UTF8ToUTF16(element)});
-    }
-  }
+  // Clears the state, creates fields as specified in `fields` and tries to
+  // parse it.
+  // If `expect_success` is true, the `expected_type` of every field is
+  // verified. Otherwise it is checked that nothing was parsed.
+  // In case `expected_success` is false, `expected_types` can be omitted.
+  void RunParsingTest(const std::vector<TestFieldData>& fields,
+                      bool expect_success = true);
+
+  FieldRendererId MakeFieldRendererId();
+
+  void Clear();
 
   std::vector<std::unique_ptr<AutofillField>> list_;
-  std::unique_ptr<PhoneField> field_;
-  FieldCandidatesMap field_candidates_map_;
-
-  FieldRendererId MakeFieldRendererId() {
-    return FieldRendererId(++id_counter_);
-  }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<PhoneField> field_;
   uint64_t id_counter_ = 0;
+  FieldCandidatesMap field_candidates_map_;
 };
 
-TEST_F(PhoneFieldTest, Empty) {
-  AutofillScanner scanner(list_);
-  field_ = Parse(&scanner);
-  ASSERT_EQ(nullptr, field_.get());
+void PhoneFieldTest::CheckField(const FieldGlobalId id,
+                                ServerFieldType expected_type) const {
+  auto it = field_candidates_map_.find(id);
+  ASSERT_TRUE(it != field_candidates_map_.end());
+  EXPECT_EQ(expected_type, it->second.BestHeuristicType());
 }
 
-TEST_F(PhoneFieldTest, NonParse) {
+autofill::FieldGlobalId PhoneFieldTest::AppendField(
+    const TestFieldData& field_data) {
+  FormFieldData field;
+  field.form_control_type = field_data.type;
+  field.label = field_data.label;
+  field.name = field_data.name;
+  field.max_length = field_data.max_length;
+  for (auto* const element : field_data.options) {
+    field.options.push_back(
+        {.value = u"", .content = base::UTF8ToUTF16(element)});
+  }
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+  return list_.back()->global_id();
+}
+
+void PhoneFieldTest::RunParsingTest(const std::vector<TestFieldData>& fields,
+                                    bool expect_success) {
+  Clear();
+
+  // Construct all the test fields.
+  std::vector<autofill::FieldGlobalId> global_ids;
+  for (const TestFieldData& field : fields) {
+    global_ids.push_back(AppendField(field));
+  }
+
+  // Parse.
+  AutofillScanner scanner(list_);
+  field_ = Parse(&scanner);
+  ASSERT_EQ(expect_success, field_.get() != nullptr);
+
+  // Verify expecations.
+  if (expect_success) {
+    field_->AddClassificationsForTesting(field_candidates_map_);
+    for (size_t i = 0; i < fields.size(); i++) {
+      CheckField(global_ids[i], fields[i].expected_type);
+    }
+  }
+}
+
+FieldRendererId PhoneFieldTest::MakeFieldRendererId() {
+  return FieldRendererId(++id_counter_);
+}
+
+void PhoneFieldTest::Clear() {
+  list_.clear();
+  field_.reset();
+  field_candidates_map_.clear();
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    PhoneFieldTest,
+    PhoneFieldTest,
+    ::testing::ValuesIn(PatternProviderFeatureState::All()));
+
+TEST_P(PhoneFieldTest, Empty) {
+  RunParsingTest({}, /*expect_success=*/false);
+}
+
+TEST_P(PhoneFieldTest, NonParse) {
   list_.push_back(std::make_unique<AutofillField>());
-  AutofillScanner scanner(list_);
-  field_ = Parse(&scanner);
-  ASSERT_EQ(nullptr, field_.get());
+  RunParsingTest({}, /*expect_success=*/false);
 }
 
-TEST_F(PhoneFieldTest, ParseOneLinePhone) {
-  FormFieldData field;
-
+TEST_P(PhoneFieldTest, ParseOneLinePhone) {
   for (const char* field_type : kFieldTypes) {
-    Clear();
-
-    field.form_control_type = field_type;
-    field.label = u"Phone";
-    field.name = u"phone";
-    field.unique_renderer_id = MakeFieldRendererId();
-    list_.push_back(std::make_unique<AutofillField>(field));
-    FieldGlobalId phone1 = list_.back()->global_id();
-
-    AutofillScanner scanner(list_);
-    field_ = Parse(&scanner);
-    ASSERT_NE(nullptr, field_.get());
-    field_->AddClassificationsForTesting(&field_candidates_map_);
-    CheckField(phone1, PHONE_HOME_WHOLE_NUMBER);
+    RunParsingTest({{field_type, u"Phone", u"phone", PHONE_HOME_WHOLE_NUMBER}});
   }
 }
 
-TEST_F(PhoneFieldTest, ParseTwoLinePhone) {
-  FormFieldData field;
-
+TEST_P(PhoneFieldTest, ParseTwoLinePhone) {
   for (const char* field_type : kFieldTypes) {
-    Clear();
-
-    field.form_control_type = field_type;
-    field.label = u"Area Code";
-    field.name = u"area code";
-    field.unique_renderer_id = MakeFieldRendererId();
-    list_.push_back(std::make_unique<AutofillField>(field));
-    FieldGlobalId areacode1 = list_.back()->global_id();
-
-    field.label = u"Phone";
-    field.name = u"phone";
-    field.unique_renderer_id = MakeFieldRendererId();
-    list_.push_back(std::make_unique<AutofillField>(field));
-    FieldGlobalId phone2 = list_.back()->global_id();
-
-    AutofillScanner scanner(list_);
-    field_ = Parse(&scanner);
-    ASSERT_NE(nullptr, field_.get());
-    field_->AddClassificationsForTesting(&field_candidates_map_);
-    CheckField(areacode1, PHONE_HOME_CITY_CODE);
-    CheckField(phone2, PHONE_HOME_NUMBER);
+    RunParsingTest(
+        {{field_type, u"Area Code", u"area code", PHONE_HOME_CITY_CODE},
+         {field_type, u"Phone", u"phone", PHONE_HOME_NUMBER}});
   }
 }
 
-TEST_F(PhoneFieldTest, ThreePartPhoneNumber) {
-  // Phone in format <field> - <field> - <field> could be either
-  // <area code> - <prefix> - <suffix>, or
-  // <country code> - <area code> - <phone>. The only distinguishing feature is
-  // size: <prefix> is no bigger than 3 characters, and <suffix> is no bigger
-  // than 4.
-  FormFieldData field;
-
+// Phone in format <field> - <field> - <field> could be either
+// <area code> - <prefix> - <suffix>, or
+// <country code> - <area code> - <phone>. The only distinguishing feature is
+// size: <prefix> is no bigger than 3 characters, and <suffix> is no bigger
+// than 4.
+TEST_P(PhoneFieldTest, ThreePartPhoneNumber) {
   for (const char* field_type : kFieldTypes) {
-    Clear();
-
-    field.form_control_type = field_type;
-    field.label = u"Phone:";
-    field.name = u"dayphone1";
-    field.max_length = 0;
-    field.unique_renderer_id = MakeFieldRendererId();
-    list_.push_back(std::make_unique<AutofillField>(field));
-    FieldGlobalId areacode1 = list_.back()->global_id();
-
-    field.label = u"-";
-    field.name = u"dayphone2";
-    field.max_length = 3;
-    field.unique_renderer_id = MakeFieldRendererId();
-    list_.push_back(std::make_unique<AutofillField>(field));
-    FieldGlobalId prefix2 = list_.back()->global_id();
-
-    field.label = u"-";
-    field.name = u"dayphone3";
-    field.max_length = 4;
-    field.unique_renderer_id = MakeFieldRendererId();
-    list_.push_back(std::make_unique<AutofillField>(field));
-    FieldGlobalId suffix3 = list_.back()->global_id();
-
-    field.label = u"ext.:";
-    field.name = u"dayphone4";
-    field.max_length = 0;
-    field.unique_renderer_id = MakeFieldRendererId();
-    list_.push_back(std::make_unique<AutofillField>(field));
-    FieldGlobalId ext4 = list_.back()->global_id();
-
-    AutofillScanner scanner(list_);
-    field_ = Parse(&scanner);
-    ASSERT_NE(nullptr, field_.get());
-    field_->AddClassificationsForTesting(&field_candidates_map_);
-    CheckField(areacode1, PHONE_HOME_CITY_CODE);
-    CheckField(prefix2, PHONE_HOME_NUMBER);
-    CheckField(suffix3, PHONE_HOME_NUMBER);
-    EXPECT_TRUE(base::Contains(field_candidates_map_, ext4));
+    RunParsingTest(
+        {{field_type, u"Phone:", u"dayphone1", PHONE_HOME_CITY_CODE},
+         {field_type, u"-", u"dayphone2", PHONE_HOME_NUMBER_PREFIX,
+          /*max_length=*/3},
+         {field_type, u"-", u"dayphone3", PHONE_HOME_NUMBER_SUFFIX,
+          /*max_length=*/4},
+         {field_type, u"ext.:", u"dayphone4", PHONE_HOME_EXTENSION}});
   }
 }
 
 // This scenario of explicitly labeled "prefix" and "suffix" phone numbers
 // encountered in http://crbug.com/40694 with page
 // https://www.wrapables.com/jsp/Signup.jsp.
-TEST_F(PhoneFieldTest, ThreePartPhoneNumberPrefixSuffix) {
-  FormFieldData field;
-
+TEST_P(PhoneFieldTest, ThreePartPhoneNumberPrefixSuffix) {
   for (const char* field_type : kFieldTypes) {
-    Clear();
-
-    field.form_control_type = field_type;
-    field.label = u"Phone:";
-    field.name = u"area";
-    field.unique_renderer_id = MakeFieldRendererId();
-    list_.push_back(std::make_unique<AutofillField>(field));
-    FieldGlobalId areacode1 = list_.back()->global_id();
-
-    field.label = std::u16string();
-    field.name = u"prefix";
-    field.unique_renderer_id = MakeFieldRendererId();
-    list_.push_back(std::make_unique<AutofillField>(field));
-    FieldGlobalId prefix2 = list_.back()->global_id();
-
-    field.label = std::u16string();
-    field.name = u"suffix";
-    field.unique_renderer_id = MakeFieldRendererId();
-    list_.push_back(std::make_unique<AutofillField>(field));
-    FieldGlobalId suffix3 = list_.back()->global_id();
-
-    AutofillScanner scanner(list_);
-    field_ = Parse(&scanner);
-    ASSERT_NE(nullptr, field_.get());
-    field_->AddClassificationsForTesting(&field_candidates_map_);
-    CheckField(areacode1, PHONE_HOME_CITY_CODE);
-    CheckField(prefix2, PHONE_HOME_NUMBER);
-    CheckField(suffix3, PHONE_HOME_NUMBER);
+    RunParsingTest({{field_type, u"Phone:", u"area", PHONE_HOME_CITY_CODE},
+                    {field_type, u"", u"prefix", PHONE_HOME_NUMBER_PREFIX},
+                    {field_type, u"", u"suffix", PHONE_HOME_NUMBER_SUFFIX,
+                     /*max_length=*/4}});
   }
 }
 
-TEST_F(PhoneFieldTest, ThreePartPhoneNumberPrefixSuffix2) {
-  FormFieldData field;
-
+TEST_P(PhoneFieldTest, ThreePartPhoneNumberPrefixSuffix2) {
   for (const char* field_type : kFieldTypes) {
-    Clear();
-
-    field.form_control_type = field_type;
-    field.label = u"(";
-    field.name = u"phone1";
-    field.max_length = 3;
-    field.unique_renderer_id = MakeFieldRendererId();
-    list_.push_back(std::make_unique<AutofillField>(field));
-    FieldGlobalId phone1 = list_.back()->global_id();
-
-    field.label = u")";
-    field.name = u"phone2";
-    field.max_length = 3;
-    field.unique_renderer_id = MakeFieldRendererId();
-    list_.push_back(std::make_unique<AutofillField>(field));
-    FieldGlobalId phone2 = list_.back()->global_id();
-
-    field.label = std::u16string();
-    field.name = u"phone3";
-    field.max_length = 4;
-    field.unique_renderer_id = MakeFieldRendererId();
-    list_.push_back(std::make_unique<AutofillField>(field));
-    FieldGlobalId phone3 = list_.back()->global_id();
-
-    AutofillScanner scanner(list_);
-    field_ = Parse(&scanner);
-    ASSERT_NE(nullptr, field_.get());
-    field_->AddClassificationsForTesting(&field_candidates_map_);
-    CheckField(phone1, PHONE_HOME_CITY_CODE);
-    CheckField(phone2, PHONE_HOME_NUMBER);
-    CheckField(phone3, PHONE_HOME_NUMBER);
+    RunParsingTest(
+        {{field_type, u"(", u"phone1", PHONE_HOME_CITY_CODE, /*max_length=*/3},
+         {field_type, u")", u"phone2", PHONE_HOME_NUMBER_PREFIX,
+          /*max_length=*/3},
+         {field_type, u"", u"phone3", PHONE_HOME_NUMBER_SUFFIX,
+          /*max_length=*/4}});
   }
 }
 
-TEST_F(PhoneFieldTest, CountryAndCityAndPhoneNumber) {
-  // Phone in format <country code>:3 - <city and number>:10
-  // The |maxlength| is considered, otherwise it's too broad.
-  FormFieldData field;
-
+// Phone in format <country code> - <city and number>
+TEST_P(PhoneFieldTest, CountryAndCityAndPhoneNumber) {
   for (const char* field_type : kFieldTypes) {
-    Clear();
-
-    field.form_control_type = field_type;
-    field.label = u"Phone Number";
-    field.name = u"CountryCode";
-    field.max_length = 3;
-    field.unique_renderer_id = MakeFieldRendererId();
-    list_.push_back(std::make_unique<AutofillField>(field));
-    FieldGlobalId country = list_.back()->global_id();
-
-    field.label = u"Phone Number";
-    field.name = u"PhoneNumber";
-    field.max_length = 10;
-    field.unique_renderer_id = MakeFieldRendererId();
-    list_.push_back(std::make_unique<AutofillField>(field));
-    FieldGlobalId phone = list_.back()->global_id();
-
-    AutofillScanner scanner(list_);
-    field_ = Parse(&scanner);
-    ASSERT_NE(nullptr, field_.get());
-    field_->AddClassificationsForTesting(&field_candidates_map_);
-    CheckField(country, PHONE_HOME_COUNTRY_CODE);
-    CheckField(phone, PHONE_HOME_CITY_AND_NUMBER);
+    RunParsingTest({{field_type, u"Phone Number", u"CountryCode",
+                     PHONE_HOME_COUNTRY_CODE, /*max_length=*/3},
+                    {field_type, u"Phone Number", u"PhoneNumber",
+                     PHONE_HOME_CITY_AND_NUMBER}});
   }
 }
 
-TEST_F(PhoneFieldTest, CountryAndCityAndPhoneNumberWithLongerMaxLength) {
-  // Phone in format <country code>:3 - <city and number>:14
-  // The |maxlength| is considered, otherwise it's too broad.
-  FormFieldData field;
+TEST_P(PhoneFieldTest, EmptyLabels) {
+  base::test::ScopedFeatureList enabled_features;
+  enabled_features.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kAutofillEnableSupportForPhoneNumberTrunkTypes,
+       features::kAutofillEnableParsingEmptyPhoneNumberLabels},
+      /*disabled_features=*/{});
 
-  for (const char* field_type : kFieldTypes) {
-    Clear();
+  // Phone: <input><input>
+  RunParsingTest(
+      {{"text", u"Phone", u"", PHONE_HOME_COUNTRY_CODE},
+       {"text", u"", u"", PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX}});
 
-    field.form_control_type = field_type;
-    field.label = u"Phone Number";
-    field.name = u"CountryCode";
-    field.max_length = 3;
-    field.unique_renderer_id = MakeFieldRendererId();
-    list_.push_back(std::make_unique<AutofillField>(field));
-    FieldGlobalId country = list_.back()->global_id();
+  // Phone: <input><input><input>
+  RunParsingTest({{"text", u"Phone", u"", PHONE_HOME_COUNTRY_CODE},
+                  {"text", u"", u"", PHONE_HOME_CITY_CODE},
+                  {"text", u"", u"", PHONE_HOME_NUMBER}});
+}
 
-    // Verify if websites expect a longer formatted number like:
-    // (514)-123-1234, autofill is able to classify correctly.
-    field.label = u"Phone Number";
-    field.name = u"PhoneNumber";
-    field.max_length = 14;
-    field.unique_renderer_id = MakeFieldRendererId();
-    list_.push_back(std::make_unique<AutofillField>(field));
-    FieldGlobalId phone = list_.back()->global_id();
+// Tests that when a phone field is parsed, a metric indicating the used grammar
+// is emitted.
+TEST_P(PhoneFieldTest, GrammarMetrics) {
+  // PHONE_HOME_WHOLE_NUMBER corresponds to the last grammar. We thus expect
+  // that 2*16 + 1 = 33 is logged.
+  base::HistogramTester histogram_tester;
+  RunParsingTest({{"text", u"Phone", u"phone", PHONE_HOME_WHOLE_NUMBER}});
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Autofill.FieldPrediction.PhoneNumberGrammarUsage"),
+              BucketsAre(base::Bucket(33, 1)));
+}
 
-    AutofillScanner scanner(list_);
-    field_ = Parse(&scanner);
-    ASSERT_NE(nullptr, field_.get());
-    field_->AddClassificationsForTesting(&field_candidates_map_);
-    CheckField(country, PHONE_HOME_COUNTRY_CODE);
-    CheckField(phone, PHONE_HOME_CITY_AND_NUMBER);
-  }
+TEST_P(PhoneFieldTest, TrunkPrefixTypes) {
+  base::test::ScopedFeatureList trunk_types_enabled;
+  trunk_types_enabled.InitAndEnableFeature(
+      features::kAutofillEnableSupportForPhoneNumberTrunkTypes);
+
+  // Whole number instead of city-and-number.
+  RunParsingTest({{"text", u"Phone", u"phone", PHONE_HOME_WHOLE_NUMBER}});
+
+  // In presence of a country code, city-and-number without a trunk prefix
+  // is chosen.
+  RunParsingTest(
+      {{"text", u"Phone", u"ccode", PHONE_HOME_COUNTRY_CODE, /*max_length=*/3},
+       {"text", u"Phone", u"phone",
+        PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX}});
+
+  // Similarly, city codes don't require a trunk prefix when a country code
+  // is present.
+  RunParsingTest(
+      {{"text", u"Phone", u"ccode", PHONE_HOME_COUNTRY_CODE, /*max_length=*/3},
+       {"text", u"Phone", u"areacode", PHONE_HOME_CITY_CODE},
+       {"text", u"Phone", u"phone", PHONE_HOME_NUMBER}});
+
+  // Without a country code, the city code requires a trunk prefix.
+  RunParsingTest(
+      {{"text", u"Phone", u"areacode", PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX},
+       {"text", u"Phone", u"phone", PHONE_HOME_NUMBER}});
 }
 
 // Tests if the country code, city code and phone number fields are correctly
 // classified by the heuristic when the phone code is a select element.
-TEST_F(PhoneFieldTest, CountryCodeIsSelectElement) {
-  FormFieldData field;
-
-  field.label = u"Phone Country Code";
-  field.name = u"ccode";
-  field.form_control_type = "select-one";
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-  FieldGlobalId country_code = list_.back()->global_id();
-
-  field.label = u"Phone City Code";
-  field.name = u"areacode";
-  field.form_control_type = "text";
-  field.max_length = 3;
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-  FieldGlobalId cityCode = list_.back()->global_id();
-
-  field.label = u"Phone Number";
-  field.name = u"phonenumber";
-  field.max_length = 0;
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-  FieldGlobalId phoneNumber = list_.back()->global_id();
-
-  AutofillScanner scanner(list_);
-  field_ = Parse(&scanner);
-  ASSERT_NE(nullptr, field_.get());
-  field_->AddClassificationsForTesting(&field_candidates_map_);
-  CheckField(country_code, PHONE_HOME_COUNTRY_CODE);
-  CheckField(cityCode, PHONE_HOME_CITY_CODE);
-  CheckField(phoneNumber, PHONE_HOME_NUMBER);
+TEST_P(PhoneFieldTest, CountryCodeIsSelectElement) {
+  RunParsingTest(
+      {{"select-one", u"Phone Country Code", u"ccode", PHONE_HOME_COUNTRY_CODE},
+       {"text", u"Phone City Code", u"areacode", PHONE_HOME_CITY_CODE,
+        /*max_length=*/3},
+       {"text", u"Phone Number", u"phonenumber", PHONE_HOME_NUMBER}});
 }
 
 // Tests if the country code, city code and phone number fields are correctly
 // classified by the heuristic when the phone code field is a select element
 // consisting of valid options.
-TEST_F(PhoneFieldTest, CountryCodeWithOptions) {
-  base::test::ScopedFeatureList enabled;
-  enabled.InitAndEnableFeature(
-      features::kAutofillEnableAugmentedPhoneCountryCode);
-
-  FormFieldData field;
-
+TEST_P(PhoneFieldTest, CountryCodeWithOptions) {
   // Options consisting of the country code followed by the country names.
   std::vector<const char*> augmented_field_options_list = {
       "(+91) India",     "(+49) Germany",  "(+1) United States", "(+20) Egypt",
       "(+1242) Bahamas", "(+593) Ecuador", "(+7) Russia"};
-  CreateTestSelectField("PC", "PC", augmented_field_options_list, &field);
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-  FieldGlobalId country_code = list_.back()->global_id();
 
-  field.label = u"Phone City Code";
-  field.name = u"areacode";
-  field.form_control_type = "text";
-  field.max_length = 3;
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-  FieldGlobalId cityCode = list_.back()->global_id();
-
-  field.label = u"Phone Number";
-  field.name = u"phonenumber";
-  field.max_length = 0;
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-  FieldGlobalId phoneNumber = list_.back()->global_id();
-
-  AutofillScanner scanner(list_);
-  field_ = Parse(&scanner);
-  ASSERT_NE(nullptr, field_.get());
-  field_->AddClassificationsForTesting(&field_candidates_map_);
-  CheckField(country_code, PHONE_HOME_COUNTRY_CODE);
-  CheckField(cityCode, PHONE_HOME_CITY_CODE);
-  CheckField(phoneNumber, PHONE_HOME_NUMBER);
+  RunParsingTest(
+      {{"select-one", u"PC", u"PC", PHONE_HOME_COUNTRY_CODE, 0,
+        augmented_field_options_list},
+       {"text", u"Phone City Code", u"areacode", PHONE_HOME_CITY_CODE},
+       {"text", u"Phone Number", u"phonenumber", PHONE_HOME_NUMBER}});
 }
 
 // Tests if the country code field is correctly classified by the heuristic when
 // the phone code is a select element and consists of valid options.
-TEST_F(PhoneFieldTest, IsPhoneCountryCodeField) {
-  base::test::ScopedFeatureList enabled;
-  enabled.InitAndEnableFeature(
-      features::kAutofillEnableAugmentedPhoneCountryCode);
-
-  FormFieldData field;
+TEST_P(PhoneFieldTest, IsPhoneCountryCodeField) {
   std::vector<std::vector<const char*>> augmented_field_options_list = {
       // Options with the country name followed by the country code in brackets.
       {"India(+91) ", "Germany(+49)", "United States(+1)", "Egypt(+20)",
@@ -483,40 +383,20 @@ TEST_F(PhoneFieldTest, IsPhoneCountryCodeField) {
       {"0091", "0049", "001", "0020", "001242", "00593", "007"}};
 
   for (size_t i = 0; i < augmented_field_options_list.size(); ++i) {
-    // TODO(crbug/1151473): The below CheckField() call fails in iteration 4.
+    // TODO(crbug/1151473): The country code check fails in iteration 4.
     if (i == 4)
       continue;
 
-    list_.clear();
     SCOPED_TRACE(testing::Message() << "i = " << i);
-    const auto& options_list = augmented_field_options_list[i];
-    CreateTestSelectField("PC", "PC", options_list, &field);
-    field.unique_renderer_id = MakeFieldRendererId();
-    list_.push_back(std::make_unique<AutofillField>(field));
-    FieldGlobalId country_code = list_.back()->global_id();
-
-    field.label = u"Phone Number";
-    field.name = u"phonenumber";
-    field.max_length = 14;
-    field.form_control_type = "text";
-    field.unique_renderer_id = MakeFieldRendererId();
-    list_.push_back(std::make_unique<AutofillField>(field));
-
-    AutofillScanner scanner(list_);
-    field_ = Parse(&scanner);
-    ASSERT_NE(nullptr, field_.get());
-    field_->AddClassificationsForTesting(&field_candidates_map_);
-    CheckField(country_code, PHONE_HOME_COUNTRY_CODE);
+    RunParsingTest({{"select-one", u"PC", u"PC", PHONE_HOME_COUNTRY_CODE, 0,
+                     augmented_field_options_list[i]},
+                    {"text", u"Phone Number", u"phonenumber",
+                     PHONE_HOME_CITY_AND_NUMBER}});
   }
 }
 
 // Tests that the month field is not classified as |PHONE_HOME_COUNTRY_CODE|.
-TEST_F(PhoneFieldTest, IsMonthField) {
-  base::test::ScopedFeatureList enabled;
-  enabled.InitAndEnableFeature(
-      features::kAutofillEnableAugmentedPhoneCountryCode);
-
-  FormFieldData field;
+TEST_P(PhoneFieldTest, IsMonthField) {
   std::vector<std::vector<const char*>> augmented_field_options_list = {
       // Month options in numeric.
       {"01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"},
@@ -528,31 +408,16 @@ TEST_F(PhoneFieldTest, IsMonthField) {
 
   for (size_t i = 0; i < augmented_field_options_list.size(); ++i) {
     SCOPED_TRACE(testing::Message() << "i = " << i);
-    const auto& options_list = augmented_field_options_list[i];
-    CreateTestSelectField("Month", "Month", options_list, &field);
-    field.unique_renderer_id = MakeFieldRendererId();
-    list_.push_back(std::make_unique<AutofillField>(field));
-
-    field.label = u"Phone Number";
-    field.name = u"phonenumber";
-    field.max_length = 14;
-    field.form_control_type = "text";
-    field.unique_renderer_id = MakeFieldRendererId();
-    list_.push_back(std::make_unique<AutofillField>(field));
-
-    AutofillScanner scanner(list_);
-    field_ = Parse(&scanner);
-    ASSERT_EQ(nullptr, field_.get());
+    // Expected types don't matter, as parsing is expected to be unsuccessful.
+    RunParsingTest({{"select-one", u"Month", u"Month", UNKNOWN_TYPE, 0,
+                     augmented_field_options_list[i]},
+                    {"text", u"Phone Number", u"phonenumber"}},
+                   /*expect_success=*/false);
   }
 }
 
 // Tests that the day field is not classified as |PHONE_HOME_COUNTRY_CODE|.
-TEST_F(PhoneFieldTest, IsDayField) {
-  base::test::ScopedFeatureList enabled;
-  enabled.InitAndEnableFeature(
-      features::kAutofillEnableAugmentedPhoneCountryCode);
-
-  FormFieldData field;
+TEST_P(PhoneFieldTest, IsDayField) {
   std::vector<std::vector<const char*>> augmented_field_options_list = {
       // Numeric day options.
       {"01", "02", "03", "04", "05", "06", "07", "08", "09", "10",
@@ -594,31 +459,16 @@ TEST_F(PhoneFieldTest, IsDayField) {
 
   for (size_t i = 0; i < augmented_field_options_list.size(); ++i) {
     SCOPED_TRACE(testing::Message() << "i = " << i);
-    const auto& options_list = augmented_field_options_list[i];
-    CreateTestSelectField("Field", "Field", options_list, &field);
-    field.unique_renderer_id = MakeFieldRendererId();
-    list_.push_back(std::make_unique<AutofillField>(field));
-
-    field.label = u"Phone Number";
-    field.name = u"phonenumber";
-    field.max_length = 14;
-    field.form_control_type = "text";
-    field.unique_renderer_id = MakeFieldRendererId();
-    list_.push_back(std::make_unique<AutofillField>(field));
-
-    AutofillScanner scanner(list_);
-    field_ = Parse(&scanner);
-    ASSERT_EQ(nullptr, field_.get());
+    // Expected types don't matter, as parsing is expected to be unsuccessful.
+    RunParsingTest({{"select-one", u"Field", u"Field", UNKNOWN_TYPE, 0,
+                     augmented_field_options_list[i]},
+                    {"text", u"Phone Number", u"phonenumber"}},
+                   /*expect_success=*/false);
   }
 }
 
 // Tests that the field is not classified as |PHONE_HOME_COUNTRY_CODE|.
-TEST_F(PhoneFieldTest, IsYearField) {
-  base::test::ScopedFeatureList enabled;
-  enabled.InitAndEnableFeature(
-      features::kAutofillEnableAugmentedPhoneCountryCode);
-
-  FormFieldData field;
+TEST_P(PhoneFieldTest, IsYearField) {
   std::vector<std::vector<const char*>> augmented_field_options_list = {
       // Numeric four digit year options.
       {"1990", "1991", "1992", "1993", "1994", "1995", "1996",
@@ -646,31 +496,16 @@ TEST_F(PhoneFieldTest, IsYearField) {
 
   for (size_t i = 0; i < augmented_field_options_list.size(); ++i) {
     SCOPED_TRACE(testing::Message() << "i = " << i);
-    const auto& options_list = augmented_field_options_list[i];
-    CreateTestSelectField("Field", "Field", options_list, &field);
-    field.unique_renderer_id = MakeFieldRendererId();
-    list_.push_back(std::make_unique<AutofillField>(field));
-
-    field.label = u"Phone Number";
-    field.name = u"phonenumber";
-    field.max_length = 14;
-    field.form_control_type = "text";
-    field.unique_renderer_id = MakeFieldRendererId();
-    list_.push_back(std::make_unique<AutofillField>(field));
-
-    AutofillScanner scanner(list_);
-    field_ = Parse(&scanner);
-    ASSERT_EQ(nullptr, field_.get());
+    // Expected types don't matter, as parsing is expected to be unsuccessful.
+    RunParsingTest({{"select-one", u"Field", u"Field", UNKNOWN_TYPE, 0,
+                     augmented_field_options_list[i]},
+                    {"text", u"Phone Number", u"phonenumber"}},
+                   /*expect_success=*/false);
   }
 }
 
 // Tests that the timezone field is not classified as |PHONE_HOME_COUNTRY_CODE|.
-TEST_F(PhoneFieldTest, IsTimeZoneField) {
-  base::test::ScopedFeatureList enabled;
-  enabled.InitAndEnableFeature(
-      features::kAutofillEnableAugmentedPhoneCountryCode);
-
-  FormFieldData field;
+TEST_P(PhoneFieldTest, IsTimeZoneField) {
   std::vector<std::vector<const char*>> augmented_field_options_list = {
       // Time Zone options.
       {"Yemen (UTC+03:00)", "Uruguay (UTC−03:00)", "UAE (UTC+04:00)",
@@ -684,21 +519,11 @@ TEST_F(PhoneFieldTest, IsTimeZoneField) {
 
   for (size_t i = 0; i < augmented_field_options_list.size(); ++i) {
     SCOPED_TRACE(testing::Message() << "i = " << i);
-    const auto& options_list = augmented_field_options_list[i];
-    CreateTestSelectField("Time Zone", "TimeZone", options_list, &field);
-    field.unique_renderer_id = MakeFieldRendererId();
-    list_.push_back(std::make_unique<AutofillField>(field));
-
-    field.label = u"Phone Number";
-    field.name = u"phonenumber";
-    field.max_length = 14;
-    field.form_control_type = "text";
-    field.unique_renderer_id = MakeFieldRendererId();
-    list_.push_back(std::make_unique<AutofillField>(field));
-
-    AutofillScanner scanner(list_);
-    field_ = Parse(&scanner);
-    ASSERT_EQ(nullptr, field_.get());
+    // Expected types don't matter, as parsing is expected to be unsuccessful.
+    RunParsingTest({{"select-one", u"Time Zone", u"TimeZone", UNKNOWN_TYPE, 0,
+                     augmented_field_options_list[i]},
+                    {"text", u"Phone Number", u"phonenumber"}},
+                   /*expect_success=*/false);
   }
 }
 

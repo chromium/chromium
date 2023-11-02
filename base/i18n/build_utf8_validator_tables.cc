@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,10 +38,10 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "third_party/icu/source/common/unicode/utf8.h"
@@ -52,7 +52,7 @@ const char kHelpText[] =
     "Usage: build_utf8_validator_tables [ --help ] [ --output=<file> ]\n";
 
 const char kProlog[] =
-    "// Copyright 2013 The Chromium Authors. All rights reserved.\n"
+    "// Copyright 2013 The Chromium Authors\n"
     "// Use of this source code is governed by a BSD-style license that can "
     "be\n"
     "// found in the LICENSE file.\n"
@@ -71,7 +71,7 @@ const char kEpilog[] =
     "};\n"
     "\n"
     "const size_t kUtf8ValidatorTablesSize = "
-    "base::size(kUtf8ValidatorTables);\n"
+    "std::size(kUtf8ValidatorTables);\n"
     "\n"
     "}  // namespace internal\n"
     "}  // namespace base\n";
@@ -139,10 +139,10 @@ class TablePrinter {
     if (values_on_this_line_ == 0) {
       fputs("   ", stream_);
     } else if (values_on_this_line_ == kMaxValuesPerLine) {
-      fprintf(stream_, "  // 0x%02x\n   ", current_offset_);
+      fprintf(stream_.get(), "  // 0x%02x\n   ", current_offset_);
       values_on_this_line_ = 0;
     }
-    fprintf(stream_, " 0x%02x,", static_cast<int>(value));
+    fprintf(stream_.get(), " 0x%02x,", static_cast<int>(value));
     ++values_on_this_line_;
     ++current_offset_;
   }
@@ -152,13 +152,13 @@ class TablePrinter {
       fputs("      ", stream_);
       ++values_on_this_line_;
     }
-    fprintf(stream_, "  // 0x%02x\n", current_offset_);
+    fprintf(stream_.get(), "  // 0x%02x\n", current_offset_);
     values_on_this_line_ = 0;
   }
 
  private:
   // stdio stream. Not owned.
-  FILE* stream_;
+  raw_ptr<FILE> stream_;
 
   // Number of values so far printed on this line.
   int values_on_this_line_;
@@ -182,10 +182,10 @@ PairVector InitializeCharacters() {
     uint8_t bytes[4];
     unsigned int offset = 0;
     UBool is_error = false;
-    U8_APPEND(bytes, offset, base::size(bytes), i, is_error);
+    U8_APPEND(bytes, offset, std::size(bytes), i, is_error);
     DCHECK(!is_error);
     DCHECK_GT(offset, 0u);
-    DCHECK_LE(offset, base::size(bytes));
+    DCHECK_LE(offset, std::size(bytes));
     Pair pair = {Character(bytes, bytes + offset), StringSet()};
     vector.push_back(pair);
   }
@@ -320,7 +320,7 @@ uint8_t MakeState(const StringSet& set,
       {static_cast<uint8_t>(range.to() + 1), 1}};
   states->push_back(
       State(new_state_initializer,
-            new_state_initializer + base::size(new_state_initializer)));
+            new_state_initializer + std::size(new_state_initializer)));
   const uint8_t new_state_number =
       base::checked_cast<uint8_t>(states->size() - 1);
   CHECK(state_map->insert(std::make_pair(set, new_state_number)).second);
@@ -354,7 +354,7 @@ std::vector<State> GenerateStates(const PairVector& pairs) {
           {static_cast<uint8_t>(range.to() + 1), 1}};
       states[0].insert(
           states[0].end(), new_range_initializer,
-          new_range_initializer + base::size(new_range_initializer));
+          new_range_initializer + std::size(new_range_initializer));
     }
   }
   return states;
@@ -430,7 +430,7 @@ int main(int argc, char* argv[]) {
       logging::LOG_TO_SYSTEM_DEBUG_LOG | logging::LOG_TO_STDERR;
   logging::InitLogging(settings);
   if (base::CommandLine::ForCurrentProcess()->HasSwitch("help")) {
-    fwrite(kHelpText, 1, base::size(kHelpText), stdout);
+    fwrite(kHelpText, 1, std::size(kHelpText), stdout);
     exit(EXIT_SUCCESS);
   }
   base::FilePath filename =

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,12 +34,12 @@ enum class MobileMessagesConfirmInfobarEvents {
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// Records histogram |event| for ConfirmInfobar of type |infobarConfirmType|.
+// Records histogram `event` for ConfirmInfobar of type `infobarConfirmType`.
 + (void)recordConfirmInfobarEvent:(MobileMessagesConfirmInfobarEvents)event
             forInfobarConfirmType:(InfobarConfirmType)infobarConfirmType;
 
-// Records the |duration| since the Infobar delegate was created until it was
-// accepted for ConfirmInfobar of type |infobarConfirmType|.
+// Records the `duration` since the Infobar delegate was created until it was
+// accepted for ConfirmInfobar of type `infobarConfirmType`.
 + (void)recordConfirmAcceptTime:(NSTimeInterval)duration
           forInfobarConfirmType:(InfobarConfirmType)infobarConfirmType;
 

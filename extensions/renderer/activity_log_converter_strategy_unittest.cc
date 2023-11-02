@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -65,10 +65,9 @@ class ActivityLogConverterStrategyTest : public testing::Test {
 
   testing::AssertionResult VerifyString(v8::Local<v8::Value> v8_value,
                                         const std::string& expected) {
-    std::string out;
     std::unique_ptr<base::Value> value(
         converter_->FromV8Value(v8_value, context()));
-    if (value->is_string() && value->GetAsString(&out) && out == expected)
+    if (value->is_string() && value->GetString() == expected)
       return testing::AssertionSuccess();
     return testing::AssertionFailure();
   }

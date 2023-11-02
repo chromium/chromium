@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -484,6 +484,16 @@ AST_POLYMORPHIC_MATCHER(isInMacroLocation,
   return Node.getBeginLoc().isMacroID();
 }
 
+static bool IsAnnotated(const clang::Decl* decl,
+                        const std::string& expected_annotation) {
+  clang::AnnotateAttr* attr = decl->getAttr<clang::AnnotateAttr>();
+  return attr && (attr->getAnnotation() == expected_annotation);
+}
+
+AST_MATCHER(clang::Decl, IsExclusionAnnotated) {
+  return IsAnnotated(&Node, "raw_ptr_exclusion");
+}
+
 // If |field_decl| declares a field in an implicit template specialization, then
 // finds and returns the corresponding FieldDecl from the template definition.
 // Otherwise, just returns the original |field_decl| argument.
@@ -709,6 +719,9 @@ AST_MATCHER(clang::FieldDecl, overlapsOtherDeclsWithinRecordDecl) {
       Finder->getASTContext().getSourceManager();
 
   const clang::RecordDecl* record_decl = self.getParent();
+  if (!record_decl)
+    return false;
+
   clang::SourceRange self_range(self.getBeginLoc(), self.getEndLoc());
 
   auto is_overlapping_sibling = [&](const clang::Decl* other_decl) {
@@ -780,8 +793,8 @@ AST_MATCHER_P2(clang::InitListExpr,
 
   bool is_matching = false;
   clang::ast_matchers::internal::BoundNodesTreeBuilder result;
-  const std::vector<const clang::FieldDecl*> field_decls(
-      record_decl->field_begin(), record_decl->field_end());
+  const llvm::SmallVector<const clang::FieldDecl*> field_decls(
+      record_decl->fields());
   for (unsigned i = 0; i < init_list_expr.getNumInits(); i++) {
     const clang::Expr* expr = init_list_expr.getInit(i);
 
@@ -839,6 +852,14 @@ class FieldDeclRewriter : public MatchFinder::MatchCallback {
 
     const clang::TypeSourceInfo* type_source_info =
         field_decl->getTypeSourceInfo();
+    if (auto* ivar_decl = clang::dyn_cast<clang::ObjCIvarDecl>(field_decl)) {
+      // Objective-C @synthesize statements should not be rewritten. They return
+      // null for getTypeSourceInfo().
+      if (ivar_decl->getSynthesize()) {
+        assert(!type_source_info);
+        return;
+      }
+    }
     assert(type_source_info && "assuming |type_source_info| is always present");
 
     clang::QualType pointer_type = type_source_info->getType();
@@ -1029,6 +1050,7 @@ int main(int argc, const char* argv[]) {
                              isInThirdPartyLocation(), isInGeneratedLocation(),
                              isInLocationListedInFilterFile(&paths_to_exclude),
                              isFieldDeclListedInFilterFile(&fields_to_exclude),
+                             IsExclusionAnnotated(),
                              implicit_field_decl_matcher))))
           .bind("affectedFieldDecl");
   FieldDeclRewriter field_decl_rewriter(&output_helper);
@@ -1112,9 +1134,11 @@ int main(int argc, const char* argv[]) {
   //
   // See also testcases in tests/affected-expr-original.cc
   auto templated_function_arg_matcher = forEachArgumentWithParam(
-      affected_expr_matcher, parmVarDecl(hasType(qualType(allOf(
-                                 findAll(qualType(substTemplateTypeParmType())),
-                                 unless(referenceType()))))));
+      affected_expr_matcher,
+      parmVarDecl(allOf(
+          hasType(qualType(allOf(findAll(qualType(substTemplateTypeParmType())),
+                                 unless(referenceType())))),
+          unless(hasAncestor(functionDecl(hasName("Unretained")))))));
   match_finder.addMatcher(callExpr(templated_function_arg_matcher),
                           &affected_expr_rewriter);
   // TODO(lukasza): It is unclear why |traverse| below is needed.  Maybe it can
@@ -1197,7 +1221,7 @@ int main(int argc, const char* argv[]) {
                           &filtered_in_out_ref_arg_writer);
 
   // See the doc comment for the overlapsOtherDeclsWithinRecordDecl matcher
-  // and the testcases in tests/gen-overlaps-test.cc.
+  // and the testcases in tests/gen-overlapping-test.cc.
   auto overlapping_field_decl_matcher = fieldDecl(
       allOf(field_decl_matcher, overlapsOtherDeclsWithinRecordDecl()));
   FilteredExprWriter overlapping_field_decl_writer(&output_helper,
@@ -1210,9 +1234,10 @@ int main(int argc, const char* argv[]) {
   auto non_nullptr_expr_matcher =
       expr(unless(ignoringImplicit(cxxNullPtrLiteralExpr())));
   auto constexpr_ctor_field_initializer_matcher = cxxConstructorDecl(
-      allOf(isConstexpr(), forEachConstructorInitializer(allOf(
-                               forField(field_decl_matcher),
-                               withInitializer(non_nullptr_expr_matcher)))));
+      allOf(isConstexpr(), unless(isImplicit()),
+            forEachConstructorInitializer(
+                allOf(forField(field_decl_matcher),
+                      withInitializer(non_nullptr_expr_matcher)))));
   FilteredExprWriter constexpr_ctor_field_initializer_writer(
       &output_helper, "constexpr-ctor-field-initializer");
   match_finder.addMatcher(constexpr_ctor_field_initializer_matcher,
@@ -1232,7 +1257,7 @@ int main(int argc, const char* argv[]) {
                           &constexpr_var_initializer_writer);
 
   // See the doc comment for the isInMacroLocation matcher
-  // and the testcases in tests/gen-macro-test.cc.
+  // and the testcases in tests/gen-macros-test.cc.
   auto macro_field_decl_matcher =
       fieldDecl(allOf(field_decl_matcher, isInMacroLocation()));
   FilteredExprWriter macro_field_decl_writer(&output_helper, "macro");
@@ -1248,12 +1273,12 @@ int main(int argc, const char* argv[]) {
   match_finder.addMatcher(char_ptr_field_decl_matcher,
                           &char_ptr_field_decl_writer);
 
-  // See the testcases in tests/gen-global-destructor-test.cc.
-  auto global_destructor_matcher =
+  // See the testcases in tests/gen-global-scope-test.cc.
+  auto global_scope_matcher =
       varDecl(allOf(hasGlobalStorage(),
                     hasType(typeWithEmbeddedFieldDecl(field_decl_matcher))));
-  FilteredExprWriter global_destructor_writer(&output_helper, "global-scope");
-  match_finder.addMatcher(global_destructor_matcher, &global_destructor_writer);
+  FilteredExprWriter global_scope_rewriter(&output_helper, "global-scope");
+  match_finder.addMatcher(global_scope_matcher, &global_scope_rewriter);
 
   // Matches fields in unions (both directly rewritable fields as well as union
   // fields that embed a struct that contains a rewritable field).  See also the

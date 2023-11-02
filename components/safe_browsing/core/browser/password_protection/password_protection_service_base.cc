@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,10 +12,12 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "build/build_config.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
@@ -24,7 +26,6 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/utils.h"
 #include "google_apis/google_api_keys.h"
-#include "net/base/escape.h"
 #include "net/base/url_util.h"
 
 using password_manager::metrics_util::PasswordType;
@@ -141,15 +142,18 @@ bool PasswordProtectionServiceBase::CanSendPing(
     ReusedPasswordAccountType password_type) {
   return IsPingingEnabled(trigger_type, password_type) &&
          !IsURLAllowlistedForPasswordEntry(main_frame_url) &&
-         !IsInExcludedCountry();
+         !IsInExcludedCountry() &&
+         // Although we can't get the reputation of the main frame URL for
+         // password reuse on about:blank, the referrer chain still provides
+         // enough useful information that we should send the ping.
+         (main_frame_url == GURL("about:blank") ||
+          CanGetReputationOfURL(main_frame_url));
 }
 
 bool PasswordProtectionServiceBase::
     IsSyncingGMAILPasswordWithSignedInProtectionEnabled(
         ReusedPasswordAccountType password_type) const {
-  return base::FeatureList::IsEnabled(
-             safe_browsing::kPasswordProtectionForSignedInUsers) &&
-         password_type.account_type() == ReusedPasswordAccountType::GMAIL &&
+  return password_type.account_type() == ReusedPasswordAccountType::GMAIL &&
          password_type.is_account_syncing();
 }
 
@@ -160,6 +164,9 @@ void PasswordProtectionServiceBase::RequestFinished(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(request);
 
+#if !BUILDFLAG(IS_ANDROID)
+  bool warning_shown = false;
+#endif
   if (response) {
     ReusedPasswordAccountType password_type =
         GetPasswordProtectionReusedPasswordAccountType(request->password_type(),
@@ -167,12 +174,6 @@ void PasswordProtectionServiceBase::RequestFinished(
     if (outcome != RequestOutcome::RESPONSE_ALREADY_CACHED) {
       CacheVerdict(request->main_frame_url(), request->trigger_type(),
                    password_type, *response, base::Time::Now());
-    }
-    bool enable_warning_for_non_sync_users = base::FeatureList::IsEnabled(
-        safe_browsing::kPasswordProtectionForSignedInUsers);
-    if (!enable_warning_for_non_sync_users &&
-        request->password_type() == PasswordType::OTHER_GAIA_PASSWORD) {
-      return;
     }
 
     // If it's password alert mode and a Gsuite/enterprise account, we do not
@@ -192,10 +193,13 @@ void PasswordProtectionServiceBase::RequestFinished(
       ShowModalWarning(request, response->verdict_type(),
                        response->verdict_token(), password_type);
       request->set_is_modal_warning_showing(true);
+#if !BUILDFLAG(IS_ANDROID)
+      warning_shown = true;
+#endif
     }
   }
 
-  MaybeHandleDeferredNavigations(request);
+  ResumeDeferredNavigationsIfNeeded(request);
 
   // If the request is canceled, the PasswordProtectionServiceBase is already
   // partially destroyed, and we won't be able to log accurate metrics.
@@ -208,10 +212,10 @@ void PasswordProtectionServiceBase::RequestFinished(
     MaybeRecordSecuritySensitiveEvent(metrics_collector_, verdict);
 
 // Disabled on Android, because enterprise reporting extension is not supported.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     MaybeReportPasswordReuseDetected(
         request, request->username(), request->password_type(),
-        verdict == LoginReputationClientResponse::PHISHING);
+        verdict == LoginReputationClientResponse::PHISHING, warning_shown);
 #endif
 
     // Persist a bit in CompromisedCredentials table when saved password is
@@ -266,7 +270,7 @@ GURL PasswordProtectionServiceBase::GetPasswordProtectionRequestUrl() {
   GURL url(kPasswordProtectionRequestUrl);
   std::string api_key = google_apis::GetAPIKey();
   DCHECK(!api_key.empty());
-  return url.Resolve("?key=" + net::EscapeQueryParamValue(api_key, true));
+  return url.Resolve("?key=" + base::EscapeQueryParamValue(api_key, true));
 }
 
 // static
@@ -398,8 +402,7 @@ bool PasswordProtectionServiceBase::IsSupportedPasswordTypeForPinging(
     case PasswordType::ENTERPRISE_PASSWORD:
       return true;
     case PasswordType::OTHER_GAIA_PASSWORD:
-      return base::FeatureList::IsEnabled(
-          safe_browsing::kPasswordProtectionForSignedInUsers);
+      return true;
     case PasswordType::PASSWORD_TYPE_UNKNOWN:
     case PasswordType::PASSWORD_TYPE_COUNT:
       return false;
@@ -415,7 +418,7 @@ bool PasswordProtectionServiceBase::IsSupportedPasswordTypeForModalWarning(
 
 // Currently password reuse warnings are only supported for saved passwords
 // and GAIA passwords on Android.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return IsSyncingGMAILPasswordWithSignedInProtectionEnabled(password_type);
 #else
   if (password_type.account_type() ==
@@ -426,9 +429,7 @@ bool PasswordProtectionServiceBase::IsSupportedPasswordTypeForModalWarning(
       password_type.account_type() != ReusedPasswordAccountType::GSUITE)
     return false;
 
-  return password_type.is_account_syncing() ||
-         base::FeatureList::IsEnabled(
-             safe_browsing::kPasswordProtectionForSignedInUsers);
+  return true;
 #endif
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,7 +25,7 @@ class MediaItemProducer {
   virtual base::WeakPtr<media_message_center::MediaNotificationItem>
   GetMediaItem(const std::string& id) = 0;
 
-  virtual std::set<std::string> GetActiveControllableItemIds() = 0;
+  virtual std::set<std::string> GetActiveControllableItemIds() const = 0;
 
   // Returns true if the item producer has any "frozen" items, which are items
   // that were recently active with a chance to become active again.

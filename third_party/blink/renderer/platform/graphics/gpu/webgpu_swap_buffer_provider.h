@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,12 +9,14 @@
 #include "cc/layers/texture_layer_client.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/sync_token.h"
-#include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/dawn_control_client_holder.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_mailbox_texture.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_types_3d.h"
+#include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_video_frame_pool.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace blink {
 
@@ -29,7 +31,7 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
   class Client {
    public:
     // Called to make the WebGPU/Dawn stop accessing the texture prior to its
-    // transfer to the compositor.
+    // transfer to the compositor/video frame
     virtual void OnTextureTransferred() = 0;
   };
 
@@ -41,12 +43,41 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
       WGPUTextureFormat format);
   ~WebGPUSwapBufferProvider() override;
 
-  viz::ResourceFormat Format() const { return format_; }
+  viz::ResourceFormat Format() const;
   const gfx::Size& Size() const;
   cc::Layer* CcLayer();
   void SetFilterQuality(cc::PaintFlags::FilterQuality);
   void Neuter();
-  WGPUTexture GetNewTexture(const IntSize& size);
+  void DiscardCurrentSwapBuffer();
+  scoped_refptr<WebGPUMailboxTexture> GetNewTexture(
+      const WGPUTextureDescriptor& desc,
+      SkAlphaType alpha_type);
+
+  // Copy swapchain's texture to a video frame.
+  // This happens at the end of an animation frame. Dawn's access to the
+  // texture will be released in order for the texture to be processed by
+  // WebGraphicsContext3DVideoFramePool context. Attempting to use the texture
+  // via WebGPU/Dawn API in JS after this point won't work.
+  //
+  // These are typical sequential steps of an animation frame:
+  // 1. start frame:
+  //     - WebGPUSwapBufferProvider::GetNewTexture()
+  // 2. client draws to the swap chain's texture using WebGPU APIs.
+  // 3. finalize frame:
+  //    (if client uses canvas.captureStream())
+  //     - WebGPUSwapBufferProvider::CopyToVideoFrame()
+  //         - ReleaseWGPUTextureAccessIfNeeded()
+  //         - copy swap chain's texture to a video frame using another graphics
+  //         context.
+  // 4. TextureLayer::Update()
+  //     - WebGPUSwapBufferProvider::PrepareTransferableResource()
+  //         - ReleaseWGPUTextureAccessIfNeeded() (if not already done)
+  //         - current_swap_buffer_'s ownership is transferred to caller.
+  bool CopyToVideoFrame(
+      WebGraphicsContext3DVideoFramePool* frame_pool,
+      SourceDrawingBuffer src_buffer,
+      const gfx::ColorSpace& dst_color_space,
+      WebGraphicsContext3DVideoFramePool::FrameReadyCallback callback);
 
   struct WebGPUMailboxTextureAndSize {
     scoped_refptr<WebGPUMailboxTexture> mailbox_texture;
@@ -72,7 +103,7 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
 
  private:
   // Holds resources and synchronization for one of the swapchain images.
-  struct SwapBuffer {
+  struct SwapBuffer : WTF::RefCounted<SwapBuffer> {
     SwapBuffer(
         base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider,
         gpu::Mailbox mailbox,
@@ -84,6 +115,7 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
 
     gfx::Size size;
     gpu::Mailbox mailbox;
+    scoped_refptr<WebGPUMailboxTexture> mailbox_texture;
 
     // A weak ptr to the context provider so that the destructor can
     // destroy shared images.
@@ -94,16 +126,28 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
     gpu::SyncToken access_finished_token;
   };
 
-  std::unique_ptr<WebGPUSwapBufferProvider::SwapBuffer> NewOrRecycledSwapBuffer(
+  std::tuple<uint32_t, bool> GetTextureTargetAndOverlayCandidacy() const;
+  uint32_t GetTextureTarget() const;
+  bool IsOverlayCandidate() const;
+
+  scoped_refptr<WebGPUSwapBufferProvider::SwapBuffer> NewOrRecycledSwapBuffer(
       gpu::SharedImageInterface* sii,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider,
-      const gfx::Size& size);
+      const gfx::Size& size,
+      SkAlphaType alpha_type);
 
-  void RecycleSwapBuffer(std::unique_ptr<SwapBuffer> swap_buffer);
+  void RecycleSwapBuffer(scoped_refptr<SwapBuffer> swap_buffer);
 
-  void MailboxReleased(std::unique_ptr<SwapBuffer> swap_buffer,
+  void MailboxReleased(scoped_refptr<SwapBuffer> swap_buffer,
                        const gpu::SyncToken& sync_token,
                        bool lost_resource);
+
+  // This method will dissociate current Dawn Texture (produced by
+  // GetNewTexture()) from the mailbox so that the mailbox can be used by other
+  // components (Compositor/Skia).
+  // After this method returns, Dawn won't be able to access the mailbox
+  // anymore.
+  void ReleaseWGPUTextureAccessIfNeeded();
 
   scoped_refptr<DawnControlClientHolder> dawn_control_client_;
   Client* client_;
@@ -111,21 +155,16 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
   scoped_refptr<cc::TextureLayer> layer_;
   bool neutered_ = false;
 
-  WGPUTextureUsage usage_;
-
   // The maximum number of in-flight swap-buffers waiting to be used for
   // recycling.
   static constexpr int kMaxRecycledSwapBuffers = 3;
 
-  WTF::Vector<std::unique_ptr<SwapBuffer>> unused_swap_buffers_;
-  std::unique_ptr<SwapBuffer> last_swap_buffer_;
-
-  uint32_t wire_device_id_ = 0;
-  uint32_t wire_device_generation_ = 0;
-  uint32_t wire_texture_id_ = 0;
-  uint32_t wire_texture_generation_ = 0;
-  std::unique_ptr<SwapBuffer> current_swap_buffer_;
+  WTF::Vector<scoped_refptr<SwapBuffer>> unused_swap_buffers_;
+  scoped_refptr<SwapBuffer> last_swap_buffer_;
   viz::ResourceFormat format_;
+  WGPUTextureUsage usage_;
+
+  scoped_refptr<SwapBuffer> current_swap_buffer_;
 };
 
 }  // namespace blink

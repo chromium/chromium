@@ -1,12 +1,12 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_UI_DEVTOOLS_OVERLAY_AGENT_H_
 #define COMPONENTS_UI_DEVTOOLS_OVERLAY_AGENT_H_
 
-#include "components/ui_devtools/Overlay.h"
 #include "components/ui_devtools/dom_agent.h"
+#include "components/ui_devtools/overlay.h"
 
 namespace ui_devtools {
 

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,8 +37,7 @@ void PrintHelp() {
       "ax_dump_evemts is a tool designed to dump platform accessible events "
       "of running applications.\n");
   printf("\nusage: ax_dump_events <options>\n");
-  printf("options:\n");
-  tools::PrintHelpForTreeSelectors();
+  tools::PrintHelpShared();
 }
 
 }  // namespace
@@ -53,6 +52,12 @@ int main(int argc, char** argv) {
   if (command_line->HasSwitch(kHelpSwitch)) {
     PrintHelp();
     return 0;
+  }
+
+  absl::optional<ui::AXInspectScenario> scenario =
+      tools::ScenarioFromCommandLine(*command_line);
+  if (!scenario) {
+    return 1;
   }
 
   absl::optional<AXTreeSelector> selector =
@@ -72,10 +77,11 @@ int main(int argc, char** argv) {
   // A future patch will update mac and linux to use selector->widget and remove
   // the `pid` argument.
   unsigned int pid = 0;
-#if defined(USE_OZONE) || defined(OS_MAC)
+#if defined(USE_OZONE) || BUILDFLAG(IS_MAC)
   pid = selector->widget;
 #endif
-  const auto server = std::make_unique<tools::AXEventServer>(pid, *selector);
+  const auto server =
+      std::make_unique<tools::AXEventServer>(pid, *selector, *scenario);
   base::RunLoop().Run();
   return 0;
 }

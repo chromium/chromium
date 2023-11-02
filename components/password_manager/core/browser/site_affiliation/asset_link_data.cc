@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -54,7 +54,7 @@ AssetLinkData::~AssetLinkData() = default;
 AssetLinkData& AssetLinkData::operator=(AssetLinkData&& other) = default;
 
 bool AssetLinkData::Parse(const std::string& data) {
-  std::unique_ptr<base::Value> value = base::JSONReader::ReadDeprecated(data);
+  absl::optional<base::Value> value = base::JSONReader::Read(data);
   if (!value || !value->is_list())
     return false;
   base::JSONValueConverter<Statement> converter;

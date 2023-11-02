@@ -1,57 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2015 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2015 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 <resources>
     <!-- The color of the ripple effect on clickable elements. -->
     <attr name="rippleColor" format="color"/>
     <!-- The top or bottom inset of a drawable. -->
     <attr name="verticalInset" format="reference|dimension"/>
 
-    <!-- Material roles currently only used in downstream. Define them here
-         so public builds do not complain the attribute is not found. Removal
-         tracked in https://crbug.com/1216204. -->
-    <attr name="colorOnPrimaryContainer" format="color"/>
-    <attr name="colorOnSurfaceVariant" format="color"/>
-    <attr name="colorOnSurfaceInverse" format="color"/>
-    <attr name="elevationOverlayAccentColor" format="color"/>
-    <attr name="colorPrimaryContainer" format="color"/>
-    <attr name="colorSurfaceVariant" format="color"/>
-    <attr name="colorOutline" format="color"/>
-
-    <!-- Used in SwitchMaterial tint lists because the color roles are different in light and dark
-         themes. -->
-    <attr name="colorSwitchTrackNormal" format="color"/>
-    <attr name="colorSwitchThumbDisabled" format="color"/>
-    <!-- Splintered SwitchMaterial roles to roll back dynamic colors. -->
-    <attr name="colorPrimaryNonDynamic" format="color"/>
-    <attr name="colorPrimaryContainerNonDynamic" format="color"/>
-    <attr name="colorSwitchThumbNormalNonDynamic" format="color"/>
-    <attr name="colorSwitchThumbDisabledNonDynamic" format="color"/>
-    <attr name="colorSwitchTrackNormalNonDynamic" format="color"/>
-
-    <!-- Fixed colors that won't work with dynamic colors. -->
-    <!-- Used in SwitchMaterial thumb tint list for the disabled state. -->
-    <attr name="colorFixedOnSurfaceAlpha38OverSurface" format="color"/>
-
-    <!-- Semantic names that will support dynamic colors but not yet. -->
-    <attr name="default_bg_color" format="color"/>
-    <attr name="divider_line_bg_color" format="color"/>
-
-    <!-- Splintered semantic names that support dynamic colors. -->
-    <attr name="default_bg_color_dynamic" format="color"/>
-    <attr name="divider_line_bg_color_dynamic" format="color"/>
-
-    <attr name="default_icon_color" format="color" />
-    <attr name="default_icon_color_inverse" format="color" />
-    <attr name="default_icon_color_secondary" format="color" />
-    <attr name="default_icon_color_disabled" format="color" />
-    <attr name="default_icon_color_disabled_inverse" format="color" />
-
     <declare-styleable name="ButtonCompat">
         <!-- The color of the button background. -->
         <attr name="buttonColor" format="color"/>
+        <!-- The color of the button text. This attribute will override the text color set in
+             android:textAppearance. -->
+        <attr name="buttonTextColor" format="reference"/>
         <attr name="rippleColor"/>
+        <attr name="borderColor" format="color"/>
+        <attr name="borderWidth" format="reference|dimension"/>
         <!-- Whether the button is elevated. -->
         <attr name="buttonRaised" format="boolean"/>
         <!-- The vertical inset of the button background drawable. -->
@@ -65,27 +32,17 @@
         <attr name="rippleCornerRadiusBottomEnd" format="reference|dimension" />
     </declare-styleable>
 
-    <declare-styleable name="ChipView">
-        <attr name="allowMultipleLines" format="boolean"/>
-        <attr name="extendLateralPadding" format="boolean"/>
-        <attr name="reduceEndPadding" format="boolean"/>
-        <attr name="solidColorChip" format="boolean"/>
-        <attr name="textAlignStart" format="boolean"/>
-        <attr name="reduceTextStartPadding" format="boolean"/>
-        <attr name="chipColor" format="color"/>
-        <attr name="chipStrokeColor" format="color"/>
-        <attr name="chipStyle" format="reference"/>
-        <attr name="cornerRadius" format="dimension"/>
-        <attr name="iconWidth" format="reference|dimension"/>
-        <attr name="iconHeight" format="reference|dimension"/>
-        <attr name="useRoundedIcon" format="boolean"/>
-        <attr name="primaryTextAppearance" format="reference"/>
-        <attr name="endIconWidth" format="reference|dimension"/>
-        <attr name="endIconHeight" format="reference|dimension"/>
-        <attr name="secondaryTextAppearance" format="reference"/>
-        <attr name="rippleColor"/>
-        <attr name="verticalInset"/>
-    </declare-styleable>
+    <!-- The attributes prefixed with 'global' are used to control the button, link and URL colors
+         throughout the app. They are defined in ThemeOverlay.DynamicButtons and are applied
+         conditionally to the activity theme. This enables us to toggle dynamic colors for the
+         mentioned UI elements using a feature flag. These attributes may not be set in the themes,
+         so the code dealing with them should handle their absence. -->
+    <attr name="globalFilledButtonBgColor" format="color"/>
+    <attr name="globalFilledButtonTextColor" format="reference"/>
+    <attr name="globalTextButtonTextColor" format="reference"/>
+    <attr name="globalOutlinedButtonBorderColor" format="color"/>
+    <attr name="globalLinkTextColor" format="color"/>
+    <attr name="globalClickableSpanColor" format="color"/>
 
     <declare-styleable name="TextViewWithLeading">
         <attr name="leading" format="reference|dimension"/>

@@ -1,8 +1,9 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <memory>
+#include <utility>
 
 #include "remoting/host/pairing_registry_delegate_win.h"
 
@@ -53,7 +54,7 @@ TEST_F(PairingRegistryDelegateWinTest, SaveAndLoad) {
   delegate->SetRootKeys(privileged_.Handle(), unprivileged_.Handle());
 
   // Check that registry is initially empty.
-  EXPECT_TRUE(delegate->LoadAll()->GetList().empty());
+  EXPECT_TRUE(delegate->LoadAll().empty());
 
   // Add a couple of pairings.
   PairingRegistry::Pairing pairing1(base::Time::Now(), "xxx", "xxx", "xxx");
@@ -62,7 +63,7 @@ TEST_F(PairingRegistryDelegateWinTest, SaveAndLoad) {
   EXPECT_TRUE(delegate->Save(pairing2));
 
   // Verify that there are two pairings in the store now.
-  EXPECT_EQ(delegate->LoadAll()->GetList().size(), 2u);
+  EXPECT_EQ(delegate->LoadAll().size(), 2u);
 
   // Verify that they can be retrieved.
   EXPECT_EQ(delegate->Load(pairing1.client_id()), pairing1);
@@ -76,15 +77,16 @@ TEST_F(PairingRegistryDelegateWinTest, SaveAndLoad) {
   EXPECT_EQ(delegate->Load(pairing2.client_id()), pairing2);
 
   // Verify that the only remaining value is |pairing2|.
-  EXPECT_EQ(delegate->LoadAll()->GetList().size(), 1u);
-  std::unique_ptr<base::ListValue> pairings = delegate->LoadAll();
-  base::DictionaryValue* json;
-  EXPECT_TRUE(pairings->GetDictionary(0, &json));
-  EXPECT_EQ(PairingRegistry::Pairing::CreateFromValue(*json), pairing2);
+  EXPECT_EQ(delegate->LoadAll().size(), 1u);
+  base::Value::List pairings = delegate->LoadAll();
+  ASSERT_TRUE(pairings[0].is_dict());
+  EXPECT_EQ(PairingRegistry::Pairing::CreateFromValue(
+                std::move(pairings[0]).TakeDict()),
+            pairing2);
 
   // Delete the rest and verify.
   EXPECT_TRUE(delegate->DeleteAll());
-  EXPECT_TRUE(delegate->LoadAll()->GetList().empty());
+  EXPECT_TRUE(delegate->LoadAll().empty());
 }
 
 // Verifies that the delegate is stateless by using two different instances.

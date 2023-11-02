@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <cmath>
 #include <vector>
 
+#include "ash/ash_export.h"
 #include "ash/login/ui/animation_frame.h"
 #include "base/timer/timer.h"
 #include "ui/gfx/geometry/size.h"
@@ -17,7 +18,7 @@
 namespace ash {
 
 // A custom image view with rounded edges.
-class AnimatedRoundedImageView : public views::View {
+class ASH_EXPORT AnimatedRoundedImageView : public views::View {
  public:
   enum class Playback {
     kFirstFrameOnly,  // Only the first frame in the animation will be shown.

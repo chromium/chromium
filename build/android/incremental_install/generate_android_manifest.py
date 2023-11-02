@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Creates an AndroidManifest.xml for an incremental APK.
@@ -11,16 +11,12 @@ the application class changed to IncrementalApplication.
 
 import argparse
 import os
-import subprocess
 import sys
-import tempfile
-import zipfile
 from xml.etree import ElementTree
 
 sys.path.append(os.path.join(os.path.dirname(__file__), os.path.pardir, 'gyp'))
 from util import build_utils
 from util import manifest_utils
-from util import resource_utils
 
 _INCREMENTAL_APP_NAME = 'org.chromium.incrementalinstall.BootstrapApplication'
 _META_DATA_APP_NAME = 'incremental-install-real-app'
@@ -42,23 +38,18 @@ def _AddNamespace(name):
 
 def _ParseArgs(args):
   parser = argparse.ArgumentParser()
-  parser.add_argument(
-      '--src-manifest', required=True, help='The main manifest of the app')
+  parser.add_argument('--src-manifest',
+                      required=True,
+                      help='The main manifest of the app.')
+  parser.add_argument('--dst-manifest',
+                      required=True,
+                      help='The output modified manifest.')
   parser.add_argument('--disable-isolated-processes',
                       help='Changes all android:isolatedProcess to false. '
                            'This is required on Android M+',
                       action='store_true')
-  parser.add_argument(
-      '--out-apk', required=True, help='Path to output .ap_ file')
-  parser.add_argument(
-      '--in-apk', required=True, help='Path to non-incremental .ap_ file')
-  parser.add_argument(
-      '--aapt2-path', required=True, help='Path to the Android aapt tool')
-  parser.add_argument(
-      '--android-sdk-jars', help='GN List of resource apks to include.')
 
   ret = parser.parse_args(build_utils.ExpandFileArgs(args))
-  ret.android_sdk_jars = build_utils.ParseGnList(ret.android_sdk_jars)
   return ret
 
 
@@ -68,13 +59,8 @@ def _CreateMetaData(parent, name, value):
   meta_data_node.set(_AddNamespace('value'), value)
 
 
-def _ProcessManifest(path, arsc_package_name, disable_isolated_processes):
-  doc, manifest_node, app_node = manifest_utils.ParseManifest(path)
-
-  # Ensure the manifest package matches that of the apk's arsc package
-  # So that resource references resolve correctly. The actual manifest
-  # package name is set via --rename-manifest-package.
-  manifest_node.set('package', arsc_package_name)
+def _ProcessManifest(path, disable_isolated_processes):
+  doc, _, app_node = manifest_utils.ParseManifest(path)
 
   # Pylint for some reason things app_node is an int.
   # pylint: disable=no-member
@@ -100,41 +86,19 @@ def _ProcessManifest(path, arsc_package_name, disable_isolated_processes):
   ret = ret.replace(b'extractNativeLibs="false"', b'extractNativeLibs="true"')
   if disable_isolated_processes:
     ret = ret.replace(b'isolatedProcess="true"', b'isolatedProcess="false"')
+    # externalService only matters for isolatedProcess="true". See:
+    # https://developer.android.com/reference/android/R.attr#externalService
+    ret = ret.replace(b'externalService="true"', b'externalService="false"')
   return ret
 
 
 def main(raw_args):
   options = _ParseArgs(raw_args)
 
-  arsc_package, _ = resource_utils.ExtractArscPackage(options.aapt2_path,
-                                                      options.in_apk)
-  assert arsc_package is not None, 'The apk does not have a valid package.'
-  # Extract version from the compiled manifest since it might have been set
-  # via aapt, and not exist in the manifest's text form.
-  version_code, version_name, manifest_package = (
-      resource_utils.ExtractBinaryManifestValues(options.aapt2_path,
-                                                 options.in_apk))
-
-  new_manifest_data = _ProcessManifest(options.src_manifest, arsc_package,
+  new_manifest_data = _ProcessManifest(options.src_manifest,
                                        options.disable_isolated_processes)
-  with tempfile.NamedTemporaryFile() as tmp_manifest, \
-      tempfile.NamedTemporaryFile() as tmp_apk:
-    tmp_manifest.write(new_manifest_data)
-    tmp_manifest.flush()
-    cmd = [
-        options.aapt2_path, 'link', '-o', tmp_apk.name, '--manifest',
-        tmp_manifest.name, '-I', options.in_apk, '--replace-version',
-        '--version-code', version_code, '--version-name', version_name,
-        '--rename-manifest-package', manifest_package, '--debug-mode'
-    ]
-    for j in options.android_sdk_jars:
-      cmd += ['-I', j]
-    subprocess.check_call(cmd)
-    with zipfile.ZipFile(options.out_apk, 'w') as z:
-      path_transform = lambda p: None if p != 'AndroidManifest.xml' else p
-      build_utils.MergeZips(z, [tmp_apk.name], path_transform=path_transform)
-      path_transform = lambda p: None if p == 'AndroidManifest.xml' else p
-      build_utils.MergeZips(z, [options.in_apk], path_transform=path_transform)
+  with build_utils.AtomicOutput(options.dst_manifest) as out_manifest:
+    out_manifest.write(new_manifest_data)
 
 
 if __name__ == '__main__':

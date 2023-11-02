@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,14 +16,13 @@ namespace printing {
 
 class PrintBackendCupsIpp : public PrintBackend {
  public:
-  PrintBackendCupsIpp(std::unique_ptr<CupsConnection> connection,
-                      const std::string& locale);
+  explicit PrintBackendCupsIpp(std::unique_ptr<CupsConnection> connection);
 
  private:
   ~PrintBackendCupsIpp() override;
 
   // PrintBackend implementation.
-  mojom::ResultCode EnumeratePrinters(PrinterList* printer_list) override;
+  mojom::ResultCode EnumeratePrinters(PrinterList& printer_list) override;
   mojom::ResultCode GetDefaultPrinterName(
       std::string& default_printer) override;
   mojom::ResultCode GetPrinterBasicInfo(

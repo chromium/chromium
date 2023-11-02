@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -68,6 +68,7 @@ enum SecurityType {
 // The configuration type for virtual networks.
 enum VpnType {
   // Internal VPN types.
+  kIKEv2,
   kL2TPIPsec,
   kOpenVPN,
   kWireGuard,
@@ -135,7 +136,9 @@ enum InhibitReason {
   // checking with an SMDS server.
   kRefreshingProfileList,
   // Inhibited because the EUICC memory is being reset.
-  kResettingEuiccMemory
+  kResettingEuiccMemory,
+  // Inhibited because an eSIM profile is being disabled.
+  kDisablingProfile
 };
 
 // Always-on VPN operating mode.
@@ -188,8 +191,13 @@ struct CellularStateProperties {
   bool roaming = false;
   // The signal strength of the cellular connection.
   int32 signal_strength;
+  // True when a SIM is present and has locking enabled.
+  bool sim_lock_enabled = false;
   // True when a SIM is present and locked.
   bool sim_locked = false;
+  // String representing the SIM lock type. This will be empty when the SIM
+  // is unlocked.
+  string sim_lock_type;
 };
 
 struct EthernetStateProperties {
@@ -310,8 +318,46 @@ struct NetworkFilter {
 
 // Specialized unmanaged property types.
 
+// Refers to whether the user or admin is allowing the APN to be used.
+enum ApnState {
+  // The APN is enabled in network settings. This indicates that the APN may be
+  // used for cellular connectivity. However, it does not necessarily mean that
+  // the APN *will* be used. If there are multiple custom APNs marked as
+  // |kEnabled|, it is possible that one enabled APN will be used and another
+  // will not be used.
+  kEnabled,
+  // The APN is disabled in network settings. This indicates that the APN won't
+  // be used for cellular connectivity.
+  kDisabled,
+};
+
+// Authentication types for APNs.
+enum ApnAuthenticationType {
+  kAutomatic,
+  // Password Authentication Protocol
+  kPap,
+  // Challenge-Handshake Authentication Protocol
+  kChap,
+};
+
+// IP types for APNs.
+enum ApnIpType {
+  kAutomatic,
+  kIpv4,
+  kIpv6,
+  kIpv4Ipv6,
+};
+
+// Supported APN types.
+enum ApnType {
+  kDefault,
+  kAttach,
+};
+
 struct ApnProperties {
   string access_point_name;
+  // This id will only be set for custom APNs.
+  string? id;
   string? authentication;
   string? language;
   string? localized_name;
@@ -320,7 +366,17 @@ struct ApnProperties {
   string? username;
   // The attach property uses a string? instead of an enum to allow for possible
   // free-form entry in the future.
+  // TODO(b/249550650) Remove attach after APN Revamp feature
+  // has been completely transitioned.
+  // TODO(b/249550650) Add all new properties to the onc_spec.md documentation.
   string? attach;
+  // The state property will be used by Chrome to determine whether a custom APN
+  // is disabled by the user or not. Chrome will filter out disabled APNs before
+  // passing them to Shill.
+  ApnState state;
+  ApnAuthenticationType authentication_type;
+  ApnIpType ip_type;
+  array<ApnType> apn_types;
 };
 
 struct RoamingProperties {
@@ -355,7 +411,7 @@ struct IPConfigProperties {
   array<string>? name_servers;
   array<string>? search_domains;
   int32 routing_prefix = kNoRoutingPrefix;
-  string? type;
+  IPConfigType type;
   string? web_proxy_auto_discovery_url;
 };
 
@@ -488,7 +544,7 @@ struct ManagedIPConfigProperties {
   ManagedString? ip_address;
   ManagedStringList? name_servers;
   ManagedInt32? routing_prefix;
-  ManagedString? type;
+  IPConfigType type;
   ManagedString? web_proxy_auto_discovery_url;
 };
 
@@ -502,8 +558,10 @@ struct ManagedIPSecProperties {
   ManagedEAPProperties? eap;
   ManagedString? group;
   ManagedInt32? ike_version;
+  ManagedString? local_identity;
   // Note: |psk| contains a placeholder if set to avoid leaking secrets.
   ManagedString? psk;
+  ManagedString? remote_identity;
   ManagedBoolean? save_credentials;
   ManagedStringList? server_ca_pems;
   ManagedStringList? server_ca_refs;
@@ -616,7 +674,12 @@ struct ManagedCellularProperties {
   CellularProviderProperties? home_provider;
   string? iccid;
   string? imei;
+  // TODO(b/249550650) Remove last_good_apn after APN Revamp
+  // feature has been completely transitioned.
   ApnProperties? last_good_apn;
+  // The APN used to connect to the network. Note: This field is not
+  // part of ONC, and it is set only when the kApnRevamp flag is enabled.
+  ApnProperties? connected_apn;
   string? manufacturer;
   string? mdn;
   string? meid;
@@ -626,6 +689,8 @@ struct ManagedCellularProperties {
   PaymentPortalProperties? payment_portal;
   string? roaming_state;
   // The current user selected APN. This corresponds to APN field in ONC.
+  // TODO(b/249550650) Remove selected_apn after APN Revamp
+  // feature has been completely transitioned.
   ManagedApnProperties? selected_apn;
   CellularProviderProperties? serving_operator;
   int32 signal_strength = 0;
@@ -686,6 +751,22 @@ union NetworkTypeManagedProperties {
   ManagedWiFiProperties wifi;
 };
 
+struct UInt32Value {
+  uint32 value;
+};
+
+struct TrafficCounterProperties {
+  // Time when the traffic counters for a Service were last reset.
+  mojo_base.mojom.Time? last_reset_time;
+  // A friendly formatted sentence representing the |last_reset_time| as a
+  // date, e.g., Monday, March 6, 2008. This value takes locale into account.
+  string? friendly_date;
+  // Whether traffic counters are reset automatically.
+  bool auto_reset;
+  // User selected day of month when traffic counters are reset.
+  uint32 user_specified_reset_day;
+};
+
 // Managed properties provided by getManagedProperties. See onc_spec.md for
 // details about each property.
 struct ManagedProperties {
@@ -710,16 +791,16 @@ struct ManagedProperties {
   // match the type of |type_properties|, which will always be provided.
   NetworkType type;
   NetworkTypeManagedProperties type_properties;
-  // Represents when the traffic counters for a Service were last reset.
-  mojo_base.mojom.Time? traffic_counter_reset_time;
+  // Contains traffic counter related information for this network.
+  TrafficCounterProperties traffic_counter_properties;
 };
 
 // Properties for SetProperties and ConfigureNetwork. All of the top level
 // properties and many nested properties are optional so that sparse
 // configurations can be provided, e.g. just the |auto_connect| property can
-// be changed. The ONC validation code (chromeos/network/onc/onc_validator.cc)
-// ensures that configurations are valid before translating and passing them to
-// Shill.
+// be changed. The ONC validation code
+// (chromeos/ash/components/network/onc/onc_validator.cc) ensures that
+// configurations are valid before translating and passing them to Shill.
 
 // Wrapper to allow optional auto_connect configuration.
 struct AutoConnectConfig {
@@ -794,9 +875,12 @@ struct IPSecConfigProperties {
   string authentication_type;
   string? client_cert_pkcs11_id;
   string? client_cert_type;
+  EAPConfigProperties? eap;
   string? group;
   int32 ike_version = 1;
+  string? local_identity;
   string? psk;
+  string? remote_identity;
   bool save_credentials = false;
   array<string>? server_ca_pems;
   array<string>? server_ca_refs;
@@ -839,6 +923,8 @@ struct WireGuardConfigProperties {
 // Only one of {Cellular|Ethernet|VPN|Wifi}ConfigProperties is allowed.
 // TODO(stevenjb): Make these a union.
 struct CellularConfigProperties {
+  // TODO(b/249550650) Remove apn after APN Revamp feature
+  // has been completely transitioned.
   ApnProperties? apn;
   // If not provided the default allow_roaming behavior will be used for the
   // network.
@@ -909,7 +995,12 @@ struct CellularSimState {
 
 // Properties provided by GetGlobalPolicy. These properties affect network
 // configuration as a whole instead of individual network configurations.
+// Default values should be explicitly provided for boolean values.
 struct GlobalPolicy {
+  // If true, allow PIN locking of SIMs attached to the device.
+  // If false, PIN locking is prohibited.
+  bool allow_cellular_sim_lock = true;
+
   // If true, only cellular networks present in policy may be connected to and
   // no new networks may be added or configured.
   bool allow_only_policy_cellular_networks = false;
@@ -1141,6 +1232,12 @@ interface CrosNetworkConfig {
 
   // Resets traffic counters for a service with ID |guid|.
   ResetTrafficCounters(string guid);
+
+  // Sets whether traffic counters should be automatically reset and the day of
+  // the month on which traffic counters are automatically reset. In order for
+  // |day| to be valid, it must be within the limit 1 <= |day| <= 31.
+  SetTrafficCountersAutoReset(string guid, bool auto_reset, UInt32Value? day) =>
+    (bool success);
 };
 
 interface CrosNetworkConfigObserver {
@@ -1171,4 +1268,7 @@ interface CrosNetworkConfigObserver {
   // Fired when the server CA or user certificate lists change. Use
   // GetNetworkCertificates if the updated certificate lists are required.
   OnNetworkCertificatesChanged();
+
+  // Fired when managed policies for |userhash| are applied to networks.
+  OnPoliciesApplied(string userhash);
 };

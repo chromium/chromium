@@ -88,6 +88,29 @@ avifenc -r f -d  8 -y 420 -s 0 --irot 3 --imir 1 red.png red-full-range-angle-3-
 These are copied from https://github.com/AOMediaCodec/av1-avif/tree/master/testFiles/Xiph
 under the CC BY-SA 3.0 license.
 
+### tiger_420_8b_grid1x13.avif
+This is generated from `tiger_3layer_1res.avif` (CC BY-SA 3.0 license) with the
+appropriate avifdec and avifenc command line:
+
+```
+avifdec tiger_3layer_1res.avif tiger.y4m && avifenc --grid 1x13 tiger.y4m tiger_420_8b_grid1x13.avif
+```
+
+### gracehopper_422_12b_grid2x4.avif
+This is generated from `gracehopper.png` with the appropriate avifenc command
+line:
+
+```
+avifenc --yuv 422 --depth 12 --grid 2x4 ../gracehopper.png gracehopper_422_12b_grid2x4.avif
+```
+
+### dice_444_10b_grid4x3.avif
+This is generated from `dice.png` with the appropriate avifenc command line:
+
+```
+avifenc --yuv 444 --depth 10 --grid 4x3 ../dice.png dice_444_10b_grid4x3.avif
+```
+
 ### green-no-alpha-ispe.avif
 The alpha auxiliary image item in this file does not have a mandatory ispe
 property. This is generated from green-alpha.png with a patched cavif encoder.
@@ -98,6 +121,14 @@ The cavif command line is:
 
 ```
 cavif ../../../fast/box-shadow/resources/green-alpha.png -o green-no-alpha-ispe.avif
+```
+
+### red-unsupported-transfer.avif
+The 'colr' property in this file has an unsupported transfer function (11) in
+'nclx'. This is generated from red.png with the appropriate avifenc command
+line:
+```
+avifenc -r f -d 8 -y 420 -s 0 --nclx 1/11/1 red.png red-unsupported-transfer.avif
 ```
 
 ### TODO(crbug.com/960620): Figure out how the rest of files were generated.

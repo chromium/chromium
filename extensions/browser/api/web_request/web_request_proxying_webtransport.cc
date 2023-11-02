@@ -1,10 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "extensions/browser/api/web_request/web_request_proxying_webtransport.h"
 
-#include "components/ukm/content/source_url_recorder.h"
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -12,6 +12,7 @@
 #include "extensions/browser/api/web_request/web_request_info.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_navigation_ui_data.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/public/mojom/web_transport.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -235,7 +236,7 @@ class WebTransportHandshakeProxy : public WebRequestAPI::Proxy,
   // Weak reference to the ProxySet. This is safe as `proxies_` owns this
   // object.
   WebRequestAPI::ProxySet& proxies_;
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
   WebRequestInfo info_;
   net::HttpRequestHeaders request_headers_;
   GURL redirect_url_;
@@ -272,21 +273,17 @@ void StartWebRequestProxyingWebTransport(
   const int process_id = render_process_host.GetID();
   content::RenderFrameHost* frame =
       content::RenderFrameHost::FromID(process_id, frame_routing_id);
-  const auto* web_contents = content::WebContents::FromRenderFrameHost(frame);
   const ukm::SourceIdObj& ukm_source_id =
-      web_contents ? ukm::SourceIdObj::FromInt64(
-                         ukm::GetSourceIdForWebContentsDocument(web_contents))
-                   : ukm::kInvalidSourceIdObj;
+      frame ? ukm::SourceIdObj::FromInt64(frame->GetPageUkmSourceId())
+            : ukm::kInvalidSourceIdObj;
 
-  WebRequestInfoInitParams params = WebRequestInfoInitParams(
-      request_id, process_id, frame_routing_id,
-      // TODO(crbug.com/1243521): Set appropriate view_routing_id.
-      /*navigation_ui_data=*/nullptr, /*view_routing_id=*/MSG_ROUTING_NONE,
-      request,
-      /*is_download=*/false,
-      /*is_async=*/true,
-      /*is_service_worker_script=*/false,
-      /*navigation_id=*/absl::nullopt, ukm_source_id);
+  WebRequestInfoInitParams params =
+      WebRequestInfoInitParams(request_id, process_id, frame_routing_id,
+                               /*navigation_ui_data=*/nullptr, request,
+                               /*is_download=*/false,
+                               /*is_async=*/true,
+                               /*is_service_worker_script=*/false,
+                               /*navigation_id=*/absl::nullopt, ukm_source_id);
   params.web_request_type = WebRequestResourceType::WEB_TRANSPORT;
 
   auto proxy = std::make_unique<WebTransportHandshakeProxy>(

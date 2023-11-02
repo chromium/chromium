@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,6 +45,11 @@ class TouchEventX11 : public ui::TouchEvent {
   ~TouchEventX11() override {
     if (type() == ET_TOUCH_RELEASED || type() == ET_TOUCH_CANCELLED)
       TouchFactory::GetInstance()->ReleaseSlot(pointer_details().id);
+  }
+
+  // Event:
+  std::unique_ptr<Event> Clone() const override {
+    return std::make_unique<TouchEventX11>(*this);
   }
 };
 

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -99,11 +99,9 @@ class AntiVirusMetricsProviderTest : public ::testing::TestWithParam<bool> {
   // enabled or not.
   void SetFullNamesFeatureEnabled(bool enabled) {
     if (enabled) {
-      scoped_feature_list_.InitAndEnableFeature(
-          AntiVirusMetricsProvider::kReportNamesFeature);
+      scoped_feature_list_.InitAndEnableFeature(kReportFullAVProductDetails);
     } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          AntiVirusMetricsProvider::kReportNamesFeature);
+      scoped_feature_list_.InitAndDisableFeature(kReportFullAVProductDetails);
     }
   }
 

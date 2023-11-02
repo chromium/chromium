@@ -1,0 +1,98 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ui/webui/signin/signin_url_utils.h"
+
+#include "chrome/browser/ui/webui/signin/sync_confirmation_ui.h"
+#include "chrome/common/webui_url_constants.h"
+#include "components/signin/public/base/signin_buildflags.h"
+#include "components/signin/public/base/signin_metrics.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
+
+TEST(SigninURLUtilsTest, ParseParameterlessSyncConfirmationURL) {
+  GURL url = GURL(chrome::kChromeUISyncConfirmationURL);
+  EXPECT_EQ(SyncConfirmationStyle::kDefaultModal,
+            GetSyncConfirmationStyle(url));
+}
+
+TEST(SigninURLUtilsSyncConfirmationURLTest, GetAndParseURL) {
+  // Modal version.
+  GURL url = AppendSyncConfirmationQueryParams(
+      GURL(chrome::kChromeUISyncConfirmationURL),
+      SyncConfirmationStyle::kDefaultModal);
+  EXPECT_TRUE(url.is_valid());
+  EXPECT_EQ(url.host(), chrome::kChromeUISyncConfirmationHost);
+  EXPECT_EQ(SyncConfirmationStyle::kDefaultModal,
+            GetSyncConfirmationStyle(url));
+
+  // Signin Intercept version.
+  url = AppendSyncConfirmationQueryParams(
+      GURL(chrome::kChromeUISyncConfirmationURL),
+      SyncConfirmationStyle::kSigninInterceptModal);
+  EXPECT_TRUE(url.is_valid());
+  EXPECT_EQ(url.host(), chrome::kChromeUISyncConfirmationHost);
+  EXPECT_EQ(SyncConfirmationStyle::kSigninInterceptModal,
+            GetSyncConfirmationStyle(url));
+
+  // Window version.
+  url = AppendSyncConfirmationQueryParams(
+      GURL(chrome::kChromeUISyncConfirmationURL),
+      SyncConfirmationStyle::kWindow);
+  EXPECT_TRUE(url.is_valid());
+  EXPECT_EQ(url.host(), chrome::kChromeUISyncConfirmationHost);
+  EXPECT_EQ(SyncConfirmationStyle::kWindow, GetSyncConfirmationStyle(url));
+}
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+TEST(SigninURLUtilsTest, ParseParameterlessProfileCustomizationURL) {
+  GURL url = GURL(chrome::kChromeUIProfileCustomizationURL);
+  EXPECT_EQ(ProfileCustomizationStyle::kDefault,
+            GetProfileCustomizationStyle(url));
+}
+
+TEST(SigninURLUtilsProfileCustomizationURLTest, GetAndParseURL) {
+  // Default version.
+  GURL url = AppendProfileCustomizationQueryParams(
+      GURL(chrome::kChromeUIProfileCustomizationURL),
+      ProfileCustomizationStyle::kDefault);
+  EXPECT_TRUE(url.is_valid());
+  EXPECT_EQ(url.host(), chrome::kChromeUIProfileCustomizationHost);
+  EXPECT_EQ(ProfileCustomizationStyle::kDefault,
+            GetProfileCustomizationStyle(url));
+
+  // Profile Creation version.
+  url = AppendProfileCustomizationQueryParams(
+      GURL(chrome::kChromeUIProfileCustomizationURL),
+      ProfileCustomizationStyle::kLocalProfileCreation);
+  EXPECT_TRUE(url.is_valid());
+  EXPECT_EQ(url.host(), chrome::kChromeUIProfileCustomizationHost);
+  EXPECT_EQ(ProfileCustomizationStyle::kLocalProfileCreation,
+            GetProfileCustomizationStyle(url));
+}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+
+class SigninURLUtilsReauthConfirmationURLTest
+    : public ::testing::TestWithParam<int> {};
+
+TEST_P(SigninURLUtilsReauthConfirmationURLTest,
+       GetAndParseReauthConfirmationURL) {
+  auto access_point =
+      static_cast<signin_metrics::ReauthAccessPoint>(GetParam());
+  GURL url = GetReauthConfirmationURL(access_point);
+  ASSERT_TRUE(url.is_valid());
+  EXPECT_EQ(url.host(), chrome::kChromeUISigninReauthHost);
+  signin_metrics::ReauthAccessPoint get_access_point =
+      GetReauthAccessPointForReauthConfirmationURL(url);
+  EXPECT_EQ(get_access_point, access_point);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    AllAccessPoints,
+    SigninURLUtilsReauthConfirmationURLTest,
+    ::testing::Range(
+        static_cast<int>(signin_metrics::ReauthAccessPoint::kUnknown),
+        static_cast<int>(signin_metrics::ReauthAccessPoint::kMaxValue) + 1));

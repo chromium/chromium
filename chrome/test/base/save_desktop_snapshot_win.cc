@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,7 +21,7 @@
 
 namespace {
 
-// A callback that holds the last frame catpured by a webrtc::DesktopCapturer.
+// A callback that holds the last frame captured by a webrtc::DesktopCapturer.
 class FrameHolder : public webrtc::DesktopCapturer::Callback {
  public:
   FrameHolder() = default;
@@ -87,7 +87,7 @@ base::FilePath SaveDesktopSnapshot(const base::FilePath& output_dir) {
           exploded.second, exploded.millisecond))));
   base::File file(output_path, base::File::FLAG_CREATE |
                                    base::File::FLAG_WRITE |
-                                   base::File::FLAG_SHARE_DELETE |
+                                   base::File::FLAG_WIN_SHARE_DELETE |
                                    base::File::FLAG_CAN_DELETE_ON_CLOSE);
   if (!file.IsValid()) {
     if (file.error_details() == base::File::FILE_ERROR_EXISTS) {

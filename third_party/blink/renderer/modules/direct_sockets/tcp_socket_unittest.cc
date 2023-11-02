@@ -1,171 +1,203 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/direct_sockets/tcp_socket.h"
 
+#include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/net_errors.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/streams/readable_stream.h"
+#include "third_party/blink/renderer/core/streams/writable_stream.h"
+#include "third_party/blink/renderer/modules/direct_sockets/stream_wrapper.h"
+#include "third_party/blink/renderer/modules/direct_sockets/tcp_readable_stream_wrapper.h"
+#include "third_party/blink/renderer/platform/bindings/exception_code.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 namespace blink {
 
 namespace {
 
-class TCPSocketCreator {
-  STACK_ALLOCATED();
+std::pair<mojo::ScopedDataPipeProducerHandle,
+          mojo::ScopedDataPipeConsumerHandle>
+CreateDataPipe(int32_t capacity = 1) {
+  mojo::ScopedDataPipeProducerHandle producer;
+  mojo::ScopedDataPipeConsumerHandle consumer;
+  mojo::CreateDataPipe(capacity, producer, consumer);
 
- public:
-  TCPSocketCreator() = default;
-  ~TCPSocketCreator() = default;
-
-  TCPSocket* Create(const V8TestingScope& scope) {
-    auto* script_state = scope.GetScriptState();
-    auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-    auto* tcp_socket = MakeGarbageCollected<TCPSocket>(*resolver);
-    create_promise_ = resolver->Promise();
-
-    return tcp_socket;
-  }
-
-  ScriptPromise GetSciptPromise() { return create_promise_; }
-
- private:
-  ScriptPromise create_promise_;
-};
-
-TEST(TCPSocketTest, Create) {
-  V8TestingScope scope;
-  TCPSocketCreator tcp_socket_creator;
-
-  auto create_promise = tcp_socket_creator.GetSciptPromise();
-  EXPECT_TRUE(create_promise.IsEmpty());
-
-  tcp_socket_creator.Create(scope);
-
-  auto* script_state = scope.GetScriptState();
-  create_promise = tcp_socket_creator.GetSciptPromise();
-  ScriptPromiseTester create_tester(script_state, create_promise);
-  EXPECT_TRUE(create_promise.IsAssociatedWith(script_state));
-
-  ASSERT_FALSE(create_tester.IsFulfilled());
+  return {std::move(producer), std::move(consumer)};
 }
+
+}  // namespace
 
 TEST(TCPSocketTest, CloseBeforeInit) {
   V8TestingScope scope;
-  TCPSocketCreator tcp_socket_creator;
 
-  auto* tcp_socket = tcp_socket_creator.Create(scope);
   auto* script_state = scope.GetScriptState();
-  auto create_promise = tcp_socket_creator.GetSciptPromise();
-  ScriptPromiseTester create_tester(script_state, create_promise);
-  ASSERT_FALSE(create_tester.IsRejected());
+  auto* tcp_socket = MakeGarbageCollected<TCPSocket>(script_state);
 
   auto close_promise =
       tcp_socket->close(script_state, scope.GetExceptionState());
-  ScriptPromiseTester close_tester(script_state, close_promise);
 
-  create_tester.WaitUntilSettled();
-  ASSERT_TRUE(create_tester.IsRejected());
-
-  DOMException* create_exception = V8DOMException::ToImplWithTypeCheck(
-      scope.GetIsolate(), create_tester.Value().V8Value());
-  ASSERT_TRUE(create_exception);
-  EXPECT_EQ(create_exception->name(), "AbortError");
-  EXPECT_EQ(create_exception->message(), "The request was aborted locally");
-
-  close_tester.WaitUntilSettled();
-  ASSERT_TRUE(close_tester.IsFulfilled());
+  ASSERT_TRUE(scope.GetExceptionState().HadException());
+  EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+            DOMExceptionCode::kInvalidStateError);
 }
 
 TEST(TCPSocketTest, CloseAfterInitWithoutResultOK) {
   V8TestingScope scope;
-  TCPSocketCreator tcp_socket_creator;
 
-  auto* tcp_socket = tcp_socket_creator.Create(scope);
   auto* script_state = scope.GetScriptState();
-  auto create_promise = tcp_socket_creator.GetSciptPromise();
-  ScriptPromiseTester create_tester(script_state, create_promise);
-  ASSERT_FALSE(create_tester.IsRejected());
+  auto* tcp_socket = MakeGarbageCollected<TCPSocket>(script_state);
 
-  int32_t result = net::Error::ERR_FAILED;
-  tcp_socket->Init(result, net::IPEndPoint(), net::IPEndPoint(),
+  auto opened_promise = tcp_socket->opened(script_state);
+  ScriptPromiseTester opened_tester(script_state, opened_promise);
+
+  tcp_socket->Init(net::ERR_FAILED, net::IPEndPoint(), net::IPEndPoint(),
                    mojo::ScopedDataPipeConsumerHandle(),
                    mojo::ScopedDataPipeProducerHandle());
 
+  opened_tester.WaitUntilSettled();
+  ASSERT_TRUE(opened_tester.IsRejected());
+
   auto close_promise =
       tcp_socket->close(script_state, scope.GetExceptionState());
-  ScriptPromiseTester close_tester(script_state, close_promise);
 
-  create_tester.WaitUntilSettled();
-  ASSERT_TRUE(create_tester.IsRejected());
-
-  DOMException* create_exception = V8DOMException::ToImplWithTypeCheck(
-      scope.GetIsolate(), create_tester.Value().V8Value());
-  ASSERT_TRUE(create_exception);
-  EXPECT_EQ(create_exception->name(), "NotAllowedError");
-  EXPECT_EQ(create_exception->message(), "Permission denied");
-
-  close_tester.WaitUntilSettled();
-  ASSERT_TRUE(close_tester.IsFulfilled());
+  ASSERT_TRUE(scope.GetExceptionState().HadException());
+  EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+            DOMExceptionCode::kInvalidStateError);
 }
 
 TEST(TCPSocketTest, CloseAfterInitWithResultOK) {
   V8TestingScope scope;
-  TCPSocketCreator tcp_socket_creator;
 
-  auto* tcp_socket = tcp_socket_creator.Create(scope);
   auto* script_state = scope.GetScriptState();
-  auto create_promise = tcp_socket_creator.GetSciptPromise();
-  ScriptPromiseTester create_tester(script_state, create_promise);
-  ASSERT_FALSE(create_tester.IsFulfilled());
+  auto* tcp_socket = MakeGarbageCollected<TCPSocket>(script_state);
 
-  int32_t result = net::Error::OK;
-  tcp_socket->Init(result, net::IPEndPoint(), net::IPEndPoint(),
-                   mojo::ScopedDataPipeConsumerHandle(),
-                   mojo::ScopedDataPipeProducerHandle());
-  EXPECT_TRUE(tcp_socket->readable());
-  EXPECT_TRUE(tcp_socket->writable());
+  auto opened_promise = tcp_socket->opened(script_state);
+  ScriptPromiseTester opened_tester(script_state, opened_promise);
+
+  auto [consumer_complement, consumer] = CreateDataPipe();
+  auto [producer, producer_complement] = CreateDataPipe();
+  tcp_socket->Init(net::OK, net::IPEndPoint{net::IPAddress::IPv4Localhost(), 0},
+                   net::IPEndPoint{net::IPAddress::IPv4Localhost(), 0},
+                   std::move(consumer), std::move(producer));
+
+  opened_tester.WaitUntilSettled();
+  ASSERT_TRUE(opened_tester.IsFulfilled());
 
   auto close_promise =
       tcp_socket->close(script_state, scope.GetExceptionState());
-  ScriptPromiseTester close_tester(script_state, close_promise);
-
-  create_tester.WaitUntilSettled();
-  ASSERT_TRUE(create_tester.IsFulfilled());
-  close_tester.WaitUntilSettled();
-  ASSERT_TRUE(close_tester.IsFulfilled());
+  test::RunPendingTasks();
+  ASSERT_FALSE(scope.GetExceptionState().HadException());
 }
 
 TEST(TCPSocketTest, OnSocketObserverConnectionError) {
   V8TestingScope scope;
-  TCPSocketCreator tcp_socket_creator;
 
-  auto* tcp_socket = tcp_socket_creator.Create(scope);
   auto* script_state = scope.GetScriptState();
-  auto create_promise = tcp_socket_creator.GetSciptPromise();
-  ScriptPromiseTester create_tester(script_state, create_promise);
-  ASSERT_FALSE(create_tester.IsRejected());
+  auto* tcp_socket = MakeGarbageCollected<TCPSocket>(script_state);
+
+  auto opened_promise = tcp_socket->opened(script_state);
+  ScriptPromiseTester opened_tester(script_state, opened_promise);
+
+  auto [consumer_complement, consumer] = CreateDataPipe();
+  auto [producer, producer_complement] = CreateDataPipe();
+  tcp_socket->Init(net::OK, net::IPEndPoint{net::IPAddress::IPv4Localhost(), 0},
+                   net::IPEndPoint{net::IPAddress::IPv4Localhost(), 0},
+                   std::move(consumer), std::move(producer));
+
+  opened_tester.WaitUntilSettled();
+  ASSERT_TRUE(opened_tester.IsFulfilled());
+
+  ScriptPromiseTester closed_tester(script_state,
+                                    tcp_socket->closed(script_state));
 
   // Trigger OnSocketObserverConnectionError().
   auto observer = tcp_socket->GetTCPSocketObserver();
   observer.reset();
+  consumer_complement.reset();
+  producer_complement.reset();
 
-  create_tester.WaitUntilSettled();
-  ASSERT_TRUE(create_tester.IsRejected());
-
-  DOMException* create_exception = V8DOMException::ToImplWithTypeCheck(
-      scope.GetIsolate(), create_tester.Value().V8Value());
-  ASSERT_TRUE(create_exception);
-  EXPECT_EQ(create_exception->name(), "NetworkError");
-  EXPECT_EQ(create_exception->message(),
-            "The request was aborted due to connection error");
+  closed_tester.WaitUntilSettled();
+  ASSERT_TRUE(closed_tester.IsRejected());
 }
 
-}  // namespace
+class TCPSocketCloseTest
+    : public testing::TestWithParam<std::tuple<bool, bool>> {};
+
+TEST_P(TCPSocketCloseTest, OnErrorOrClose) {
+  auto [read_error, write_error] = GetParam();
+
+  V8TestingScope scope;
+
+  auto* script_state = scope.GetScriptState();
+  auto* tcp_socket = MakeGarbageCollected<TCPSocket>(script_state);
+
+  auto opened_promise = tcp_socket->opened(script_state);
+  ScriptPromiseTester opened_tester(script_state, opened_promise);
+
+  auto [consumer_complement, consumer] = CreateDataPipe();
+  auto [producer, producer_complement] = CreateDataPipe();
+  tcp_socket->Init(net::OK, net::IPEndPoint{net::IPAddress::IPv4Localhost(), 0},
+                   net::IPEndPoint{net::IPAddress::IPv4Localhost(), 0},
+                   std::move(consumer), std::move(producer));
+
+  opened_tester.WaitUntilSettled();
+  ASSERT_TRUE(opened_tester.IsFulfilled());
+
+  ScriptPromiseTester closed_tester(script_state,
+                                    tcp_socket->closed(script_state));
+
+  if (read_error) {
+    tcp_socket->OnReadError(net::ERR_UNEXPECTED);
+    consumer_complement.reset();
+    test::RunPendingTasks();
+  } else {
+    auto* readable = tcp_socket->readable_stream_wrapper_->Readable();
+    auto cancel = ScriptPromiseTester(
+        script_state, readable->cancel(script_state, ASSERT_NO_EXCEPTION));
+    cancel.WaitUntilSettled();
+    ASSERT_TRUE(cancel.IsFulfilled());
+  }
+
+  ASSERT_EQ(tcp_socket->readable_stream_wrapper_->GetState(),
+            read_error ? StreamWrapper::State::kAborted
+                       : StreamWrapper::State::kClosed);
+
+  if (write_error) {
+    tcp_socket->OnWriteError(net::ERR_UNEXPECTED);
+    producer_complement.reset();
+    test::RunPendingTasks();
+  } else {
+    auto* writable = tcp_socket->writable_stream_wrapper_->Writable();
+    auto abort = ScriptPromiseTester(
+        script_state, writable->abort(script_state, ASSERT_NO_EXCEPTION));
+    abort.WaitUntilSettled();
+    ASSERT_TRUE(abort.IsFulfilled());
+  }
+
+  ASSERT_EQ(tcp_socket->writable_stream_wrapper_->GetState(),
+            write_error ? StreamWrapper::State::kAborted
+                        : StreamWrapper::State::kClosed);
+
+  closed_tester.WaitUntilSettled();
+  if (!read_error && !write_error) {
+    ASSERT_TRUE(closed_tester.IsFulfilled());
+  } else {
+    ASSERT_TRUE(closed_tester.IsRejected());
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(/**/,
+                         TCPSocketCloseTest,
+                         testing::Combine(testing::Bool(), testing::Bool()));
 
 }  // namespace blink

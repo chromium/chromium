@@ -27,6 +27,7 @@
   </div>
   <template is="dom-if" if="[[!canChangeChannel_]]">
     <cr-policy-indicator
+        id="changeChannelPolicyIndicator"
         indicator-source-name="[[getChangeChannelIndicatorSourceName_(
             canChangeChannel_)]]"
         indicator-type="[[getChangeChannelIndicatorType_(
@@ -69,7 +70,36 @@
         icon-aria-label="$i18n{aboutManagedEndOfLifeSubtitle}"
         tooltip-position="bottom">
     </cr-tooltip-icon>
+    <template is="dom-if" if="[[showManagedAutoUpdateToggle_]]" restamp>
+      <cr-toggle
+          id="managedAutoUpdateToggle"
+          checked="[[isManagedAutoUpdateEnabled_]]"
+          disabled>
+      </cr-toggle>
+    </template>
   </div>
+</template>
+<template is="dom-if" if="[[showConsumerAutoUpdateToggle_]]">
+  <div class="settings-box two-line"
+       on-click="onConsumerAutoUpdateToggledSettingsBox_">
+    <div class="start" aria-hidden="true">
+      <div role="heading">$i18n{aboutConsumerAutoUpdateToggleTitle}</div>
+      <div class="secondary">
+        $i18n{aboutConsumerAutoUpdateToggleDescription}
+      </div>
+    </div>
+    <cr-toggle
+        id="consumerAutoUpdateToggle"
+        checked="{{prefs.settings.consumer_auto_update_toggle.value}}"
+        disabled="[[!isConsumerAutoUpdateTogglingAllowed_]]"
+        on-change="onConsumerAutoUpdateToggled_">
+    </cr-toggle>
+  </div>
+  <template is="dom-if" if="[[showConsumerAutoUpdateToggleDialog_]]" restamp>
+    <settings-consumer-auto-update-toggle-dialog
+        on-close="onConsumerAutoUpdateToggleDialogClosed_">
+    </settings-consumer-auto-update-toggle-dialog>
+  </template>
 </template>
 <template is="dom-if" if="[[isHostnameSettingEnabled_]]">
   <div class="settings-box two-line">

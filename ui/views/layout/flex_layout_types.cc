@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "ui/gfx/geometry/size.h"
@@ -37,7 +38,7 @@ class LazyDimension {
   int get() const;
 
  private:
-  const LazySize* const size_;
+  const raw_ptr<const LazySize> size_;
   LayoutOrientation dimension_;
 };
 
@@ -58,7 +59,7 @@ class LazySize {
   const gfx::Size& operator*() const { return *get(); }
   const gfx::Size* get() const {
     if (!size_)
-      size_ = (view_->*size_func_)();
+      size_ = (view_.get()->*size_func_)();
     return &size_.value();
   }
   LazyDimension width() const {
@@ -69,7 +70,7 @@ class LazySize {
   }
 
  private:
-  const View* const view_;
+  const raw_ptr<const View> view_;
   SizeFunc size_func_;
   mutable absl::optional<gfx::Size> size_;
 };

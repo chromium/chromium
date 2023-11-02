@@ -1,10 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_VIEWS_PAYMENTS_PAYMENT_HANDLER_WEB_FLOW_VIEW_CONTROLLER_H_
 #define CHROME_BROWSER_UI_VIEWS_PAYMENTS_PAYMENT_HANDLER_WEB_FLOW_VIEW_CONTROLLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/payments/payment_handler_modal_dialog_manager_delegate.h"
 #include "chrome/browser/ui/views/payments/payment_request_sheet_controller.h"
 #include "components/payments/content/developer_console_logger.h"
@@ -76,7 +77,7 @@ class PaymentHandlerWebFlowViewController
                       std::unique_ptr<content::WebContents> new_contents,
                       const GURL& target_url,
                       WindowOpenDisposition disposition,
-                      const gfx::Rect& initial_rect,
+                      const blink::mojom::WindowFeatures& window_features,
                       bool user_gesture,
                       bool* was_blocked) override;
   bool HandleKeyboardEvent(
@@ -84,8 +85,6 @@ class PaymentHandlerWebFlowViewController
       const content::NativeWebKeyboardEvent& event) override;
 
   // content::WebContentsObserver:
-  void DidStartNavigation(
-      content::NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
   void LoadProgressChanged(double progress) override;
@@ -94,10 +93,10 @@ class PaymentHandlerWebFlowViewController
   void AbortPayment();
 
   DeveloperConsoleLogger log_;
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   GURL target_;
-  views::ProgressBar* progress_bar_ = nullptr;
-  views::View* separator_ = nullptr;
+  raw_ptr<views::ProgressBar> progress_bar_ = nullptr;
+  raw_ptr<views::View> separator_ = nullptr;
   PaymentHandlerOpenWindowCallback first_navigation_complete_callback_;
   // Used to present modal dialog triggered from the payment handler web view,
   // e.g. an authenticator dialog.

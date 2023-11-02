@@ -54,7 +54,7 @@
 <translation id="7612608473764576263">‏مقدار ورودی برای کلید خصوصی باید قالب معتبری داشته باشد (فرمت PKCS#8، کدبندی‌شده به‌صورت PEM، کلید RSA)</translation>
 <translation id="7939686037314084444">افزونه درست بارگیری نشد. شاید نتواند درخواست‌های شبکه را رهگیری کند.</translation>
 <translation id="7972881773422714442">گزینه‌ها: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
-<translation id="8035920974645200807">رو به کاربر</translation>
+<translation id="8035920974645200807">سَمت کاربر</translation>
 <translation id="8047248493720652249">این برنامه افزودنی نتوانست نام‌گذاری بارگیری «<ph name="ATTEMPTED_FILENAME" />» را انجام دهد زیرا یک برنامه افزودنی دیگر (<ph name="EXTENSION_NAME" />) نام فایل دیگری «<ph name="ACTUAL_FILENAME" />» را تعیین کرد.</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> از <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">فایل مانیفست وجود ندارد یا قابل‌خواندن نیست</translation>

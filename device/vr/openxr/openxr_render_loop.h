@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "components/viz/common/gpu/context_lost_observer.h"
 #include "device/vr/openxr/context_provider_callbacks.h"
 #include "device/vr/openxr/openxr_anchor_manager.h"
@@ -39,8 +38,6 @@ class OpenXrRenderLoop : public XRCompositorCommon,
                          public viz::ContextLostObserver {
  public:
   OpenXrRenderLoop(
-      base::RepeatingCallback<void(mojom::VRDisplayInfoPtr)>
-          on_display_info_changed,
       VizContextProviderFactoryAsync context_provider_factory_async,
       XrInstance instance,
       const OpenXrExtensionHelper& extension_helper_);
@@ -52,6 +49,7 @@ class OpenXrRenderLoop : public XRCompositorCommon,
 
  private:
   // XRCompositorCommon:
+  gpu::gles2::GLES2Interface* GetContextGL() override;
   void ClearPendingFrameInternal() override;
   bool IsUsingSharedImages() const override;
   void SubmitFrameDrawnIntoTexture(int16_t frame_index,
@@ -74,11 +72,13 @@ class OpenXrRenderLoop : public XRCompositorCommon,
   device::mojom::XRInteractionMode GetInteractionMode(
       device::mojom::XRSessionMode session_mode) override;
   bool CanEnableAntiAliasing() const override;
+  std::vector<mojom::XRViewPtr> GetDefaultViews() const override;
 
   // viz::ContextLostObserver Implementation
   void OnContextLost() override;
 
-  void SendInitialDisplayInfo();
+  void OnOpenXrSessionStarted(StartRuntimeCallback start_runtime_callback,
+                              XrResult result);
   bool UpdateViews();
   bool UpdateView(const XrView& view_head,
                   int width,
@@ -138,9 +138,6 @@ class OpenXrRenderLoop : public XRCompositorCommon,
   const OpenXrExtensionHelper& extension_helper_;
 
   std::unique_ptr<OpenXrApiWrapper> openxr_;
-
-  base::RepeatingCallback<void(mojom::VRDisplayInfoPtr)>
-      on_display_info_changed_;
 
   mojo::AssociatedReceiver<mojom::XREnvironmentIntegrationProvider>
       environment_receiver_{this};

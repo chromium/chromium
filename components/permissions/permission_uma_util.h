@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,12 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/version.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_result.h"
-#include "components/permissions/permission_util.h"
 #include "components/permissions/prediction_service/prediction_service_messages.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -25,6 +25,7 @@ class GURL;
 
 namespace permissions {
 enum class PermissionRequestGestureType;
+enum class PermissionAction;
 class PermissionRequest;
 
 // Used for UMA to record the types of permission prompts shown.
@@ -64,8 +65,8 @@ enum class RequestTypeForUma {
   PERMISSION_AR = 22,
   PERMISSION_STORAGE_ACCESS = 23,
   PERMISSION_CAMERA_PAN_TILT_ZOOM = 24,
-  PERMISSION_WINDOW_PLACEMENT = 25,
-  PERMISSION_FONT_ACCESS = 26,
+  PERMISSION_WINDOW_MANAGEMENT = 25,
+  PERMISSION_LOCAL_FONTS = 26,
   PERMISSION_IDLE_DETECTION = 27,
   PERMISSION_FILE_HANDLING = 28,
   PERMISSION_U2F_API_REQUEST = 29,
@@ -190,6 +191,10 @@ enum class PermissionPromptDispositionReason {
 
   // Disposition was used as a fallback, if no selector made a decision.
   DEFAULT_FALLBACK = 3,
+
+  // Disposition was chosen based on grant likelihood predicted by the On-Device
+  // Permission Prediction Model.
+  ON_DEVICE_PREDICTION_MODEL = 4,
 };
 
 enum class AdaptiveTriggers {
@@ -239,6 +244,42 @@ enum class AutoDSEPermissionRevertTransition {
   // Always keep at the end.
   kMaxValue = INVALID_END_STATE,
 };
+
+// This enum backs up the 'PermissionPredictionSource` histogram enum. It
+// indicates whether the permission prediction was done by the local on device
+// model or by the server side model.
+enum class PermissionPredictionSource {
+  ON_DEVICE = 0,
+  SERVER_SIDE = 1,
+
+  // Always keep at the end.
+  kMaxValue = SERVER_SIDE,
+};
+
+// This enum backs up the 'PageInfoDialogAccessType' histogram enum.
+// It is used for collecting page info access type metrics in the context of
+// the confirmation chip.
+enum class PageInfoDialogAccessType {
+  // The user opened page info by clicking on the lock in a situation that is
+  // considered independent of the display of a confirmation chip.
+  LOCK_CLICK = 0,
+  // The user opened page info by clicking on the lock while a confirmation chip
+  // was being displayed.
+  LOCK_CLICK_DURING_CONFIRMATION_CHIP = 1,
+  // The user opened page info by clicking on the confirmation chip while it was
+  // being displayed.
+  CONFIRMATION_CHIP_CLICK = 2,
+  // The user opened page info by clicking on the lock within
+  // 'kConfirmationConsiderationDurationForUma' after confirmation chip has
+  // collapsed. This click may be considered influenced by the displaying of the
+  // confirmation chip.
+  LOCK_CLICK_SHORTLY_AFTER_CONFIRMATION_CHIP = 3,
+
+  // Always keep at the end.
+  kMaxValue = LOCK_CLICK_SHORTLY_AFTER_CONFIRMATION_CHIP
+};
+
+constexpr auto kConfirmationConsiderationDurationForUma = base::Seconds(20);
 
 // Provides a convenient way of logging UMA for permission related operations.
 class PermissionUmaUtil {
@@ -302,11 +343,10 @@ class PermissionUmaUtil {
       PermissionPromptDisposition ui_disposition,
       absl::optional<PermissionPromptDispositionReason> ui_reason,
       absl::optional<PredictionGrantLikelihood> predicted_grant_likelihood,
+      absl::optional<bool> prediction_decision_held_back,
       bool did_show_prompt,
       bool did_click_manage,
       bool did_click_learn_more);
-
-  static void RecordWithBatteryBucket(const std::string& histogram);
 
   static void RecordInfobarDetailsExpanded(bool expanded);
 
@@ -325,7 +365,7 @@ class PermissionUmaUtil {
 
   static void RecordPermissionUsage(ContentSettingsType permission_type,
                                     content::BrowserContext* browser_context,
-                                    const content::WebContents* web_contents,
+                                    content::WebContents* web_contents,
                                     const GURL& requesting_origin);
 
   static void RecordTimeElapsedBetweenGrantAndUse(ContentSettingsType type,
@@ -343,8 +383,27 @@ class PermissionUmaUtil {
   static void RecordDSEEffectiveSetting(ContentSettingsType permission_type,
                                         ContentSetting setting);
 
+  static void RecordPermissionPredictionSource(
+      PermissionPredictionSource prediction_type);
+
+  static void RecordPermissionPredictionServiceHoldback(
+      RequestType request_type,
+      bool is_on_device,
+      bool is_heldback);
+
+  static void RecordPageInfoDialogAccessType(
+      PageInfoDialogAccessType access_type);
+
   static std::string GetPermissionActionString(
       PermissionAction permission_action);
+
+  static std::string GetPromptDispositionString(
+      PermissionPromptDisposition ui_disposition);
+
+  static std::string GetPromptDispositionReasonString(
+      PermissionPromptDispositionReason ui_disposition_reason);
+
+  static std::string GetRequestTypeString(RequestType request_type);
 
   static bool IsPromptDispositionQuiet(
       PermissionPromptDisposition prompt_disposition);
@@ -372,7 +431,7 @@ class PermissionUmaUtil {
     ~ScopedRevocationReporter();
 
    private:
-    content::BrowserContext* browser_context_;
+    raw_ptr<content::BrowserContext> browser_context_;
     const GURL primary_url_;
     const GURL secondary_url_;
     ContentSettingsType content_type_;
@@ -397,9 +456,10 @@ class PermissionUmaUtil {
       PermissionPromptDisposition ui_disposition,
       absl::optional<PermissionPromptDispositionReason> ui_reason,
       const GURL& requesting_origin,
-      const content::WebContents* web_contents,
+      content::WebContents* web_contents,
       content::BrowserContext* browser_context,
-      absl::optional<PredictionGrantLikelihood> predicted_grant_likelihood);
+      absl::optional<PredictionGrantLikelihood> predicted_grant_likelihood,
+      absl::optional<bool> prediction_decision_held_back);
 
   // Records |count| total prior actions for a prompt of type |permission|
   // for a single origin using |prefix| for the metric.

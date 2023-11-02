@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,17 +10,15 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/task/common/lazy_now.h"
 #include "base/task/common/scoped_defer_task_posting.h"
 #include "base/task/common/task_annotator.h"
-#include "base/task/sequence_manager/lazy_now.h"
 #include "base/time/time.h"
-#include "base/trace_event/blame_context.h"
 #include "components/power_scheduler/power_mode.h"
 #include "components/power_scheduler/power_mode_arbiter.h"
 #include "components/power_scheduler/power_mode_voter.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
-#include "third_party/blink/public/platform/blame_context.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/platform/back_forward_cache_utils.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -37,6 +35,8 @@
 #include "third_party/blink/renderer/platform/scheduler/main_thread/task_type_names.h"
 #include "third_party/blink/renderer/platform/scheduler/worker/worker_scheduler_proxy.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
+
+#include "base/record_replay.h"
 
 namespace blink {
 
@@ -99,29 +99,27 @@ FrameSchedulerImpl::PauseSubresourceLoadingHandleImpl::
     frame_scheduler_->RemovePauseSubresourceLoadingHandle();
 }
 
-FrameSchedulerImpl::FrameSchedulerImpl(
-    PageSchedulerImpl* parent_page_scheduler,
-    FrameScheduler::Delegate* delegate,
-    base::trace_event::BlameContext* blame_context,
-    FrameScheduler::FrameType frame_type)
+FrameSchedulerImpl::FrameSchedulerImpl(PageSchedulerImpl* parent_page_scheduler,
+                                       FrameScheduler::Delegate* delegate,
+                                       bool is_in_embedded_frame_tree,
+                                       FrameScheduler::FrameType frame_type)
     : FrameSchedulerImpl(parent_page_scheduler->GetMainThreadScheduler(),
                          parent_page_scheduler,
                          delegate,
-                         blame_context,
+                         is_in_embedded_frame_tree,
                          frame_type) {}
 
 FrameSchedulerImpl::FrameSchedulerImpl(
     MainThreadSchedulerImpl* main_thread_scheduler,
     PageSchedulerImpl* parent_page_scheduler,
     FrameScheduler::Delegate* delegate,
-    base::trace_event::BlameContext* blame_context,
+    bool is_in_embedded_frame_tree,
     FrameScheduler::FrameType frame_type)
     : frame_type_(frame_type),
-      is_ad_frame_(false),
+      is_in_embedded_frame_tree_(is_in_embedded_frame_tree),
       main_thread_scheduler_(main_thread_scheduler),
       parent_page_scheduler_(parent_page_scheduler),
       delegate_(delegate),
-      blame_context_(blame_context),
       throttling_state_(SchedulingLifecycleState::kNotThrottled),
       frame_visible_(true,
                      "FrameScheduler.FrameVisible",
@@ -172,11 +170,6 @@ FrameSchedulerImpl::FrameSchedulerImpl(
           "FrameScheduler.PageVisibility",
           &tracing_controller_,
           PageVisibilityStateToString),
-      waiting_for_dom_content_loaded_(
-          true,
-          "FrameScheduler.WaitingForDOMContentLoaded",
-          &tracing_controller_,
-          YesNoStateToString),
       waiting_for_contentful_paint_(true,
                                     "FrameScheduler.WaitingForContentfulPaint",
                                     &tracing_controller_,
@@ -185,13 +178,12 @@ FrameSchedulerImpl::FrameSchedulerImpl(
                                     "FrameScheduler.WaitingForMeaningfulPaint",
                                     &tracing_controller_,
                                     YesNoStateToString),
-      waiting_for_load_(true,
-                        "FrameScheduler.WaitingForLoad",
-                        &tracing_controller_,
-                        YesNoStateToString),
       loading_power_mode_voter_(
           power_scheduler::PowerModeArbiter::GetInstance()->NewVoter(
               "PowerModeVoter.Loading")) {
+  // Pointer registration is needed for sorting in PageSchedulerImpl.
+  recordreplay::RegisterPointer("FrameSchedulerImpl", this);
+
   frame_task_queue_controller_ = base::WrapUnique(
       new FrameTaskQueueController(main_thread_scheduler_, this, this));
   back_forward_cache_disabling_feature_tracker_.SetDelegate(delegate_);
@@ -201,7 +193,7 @@ FrameSchedulerImpl::FrameSchedulerImpl()
     : FrameSchedulerImpl(/*main_thread_scheduler=*/nullptr,
                          /*parent_page_scheduler=*/nullptr,
                          /*delegate=*/nullptr,
-                         /*blame_context=*/nullptr,
+                         /*is_in_embedded_frame_tree=*/false,
                          FrameType::kSubframe) {}
 
 namespace {
@@ -211,12 +203,12 @@ void CleanUpQueue(MainThreadTaskQueue* queue) {
 
   queue->DetachFromMainThreadScheduler();
   DCHECK(!queue->GetFrameScheduler());
-  queue->GetTaskQueue()->SetBlameContext(nullptr);
 }
 
 }  // namespace
 
 FrameSchedulerImpl::~FrameSchedulerImpl() {
+  recordreplay::UnregisterPointer(this);
   weak_factory_.InvalidateWeakPtrs();
 
   for (const auto& task_queue_and_voter :
@@ -259,11 +251,10 @@ void FrameSchedulerImpl::RemoveThrottleableQueueFromBudgetPools(
 
   // On tests, the scheduler helper might already be shut down and tick is not
   // available.
-  base::sequence_manager::LazyNow lazy_now =
+  base::LazyNow lazy_now =
       main_thread_scheduler_->GetTickClock()
-          ? base::sequence_manager::LazyNow(
-                main_thread_scheduler_->GetTickClock())
-          : base::sequence_manager::LazyNow(base::TimeTicks::Now());
+          ? base::LazyNow(main_thread_scheduler_->GetTickClock())
+          : base::LazyNow(base::TimeTicks::Now());
 
   if (cpu_time_budget_pool) {
     task_queue->RemoveFromBudgetPool(lazy_now.Now(), cpu_time_budget_pool);
@@ -274,8 +265,9 @@ void FrameSchedulerImpl::RemoveThrottleableQueueFromBudgetPools(
 }
 
 void FrameSchedulerImpl::MoveTaskQueuesToCorrectWakeUpBudgetPool() {
-  base::sequence_manager::LazyNow lazy_now(
-      main_thread_scheduler_->GetTickClock());
+  recordreplay::Assert("[RUN-1436] FrameSchedulerImpl::MoveTaskQueuesToCorrectWakeUpBudgetPool");
+
+  base::LazyNow lazy_now(main_thread_scheduler_->GetTickClock());
 
   // The WakeUpBudgetPool is selected based on origin state, frame visibility
   // and page background state.
@@ -316,7 +308,7 @@ bool FrameSchedulerImpl::IsFrameVisible() const {
   return frame_visible_;
 }
 
-void FrameSchedulerImpl::SetCrossOriginToMainFrame(bool cross_origin) {
+void FrameSchedulerImpl::SetCrossOriginToNearestMainFrame(bool cross_origin) {
   DCHECK(parent_page_scheduler_);
   if (frame_origin_type_ == FrameOriginType::kMainFrame) {
     DCHECK(!cross_origin);
@@ -342,7 +334,11 @@ bool FrameSchedulerImpl::IsAdFrame() const {
   return is_ad_frame_;
 }
 
-bool FrameSchedulerImpl::IsCrossOriginToMainFrame() const {
+bool FrameSchedulerImpl::IsInEmbeddedFrameTree() const {
+  return is_in_embedded_frame_tree_;
+}
+
+bool FrameSchedulerImpl::IsCrossOriginToNearestMainFrame() const {
   return frame_origin_type_ == FrameOriginType::kCrossOriginToMainFrame;
 }
 
@@ -392,7 +388,6 @@ QueueTraits FrameSchedulerImpl::CreateQueueTraitsForTaskType(TaskType type) {
     }
     case TaskType::kInternalLoading:
     case TaskType::kNetworking:
-    case TaskType::kNetworkingWithURLLoaderAnnotation:
       return LoadingTaskQueueTraits();
     case TaskType::kNetworkingUnfreezable:
       return IsInflightNetworkRequestBackForwardCacheSupportEnabled()
@@ -400,6 +395,9 @@ QueueTraits FrameSchedulerImpl::CreateQueueTraitsForTaskType(TaskType type) {
                  : LoadingTaskQueueTraits();
     case TaskType::kNetworkingControl:
       return LoadingControlTaskQueueTraits();
+    case TaskType::kLowPriorityScriptExecution:
+      return LoadingTaskQueueTraits().SetPrioritisationType(
+          QueueTraits::PrioritisationType::kBestEffort);
     // Throttling following tasks may break existing web pages, so tentatively
     // these are unthrottled.
     // TODO(nhiroki): Throttle them again after we're convinced that it's safe
@@ -462,6 +460,9 @@ QueueTraits FrameSchedulerImpl::CreateQueueTraitsForTaskType(TaskType type) {
       }
     case TaskType::kInternalNavigationAssociated:
       return FreezableTaskQueueTraits();
+    case TaskType::kInternalNavigationCancellation:
+      return FreezableTaskQueueTraits().SetPrioritisationType(
+          QueueTraits::PrioritisationType::kInternalNavigationCancellation);
     case TaskType::kInternalInputBlocking:
       return InputBlockingQueueTraits();
     // Some tasks in the tests need to run when objects are paused e.g. to hook
@@ -487,21 +488,16 @@ QueueTraits FrameSchedulerImpl::CreateQueueTraitsForTaskType(TaskType type) {
       // pausable in order to maintain this invariant, otherwise they might run
       // in a nested event loop before the task completes, e.g. debugger
       // breakpoints or javascript dialogs.
-      if (base::FeatureList::IsEnabled(
-              kDisablePrioritizedPostMessageForwarding)) {
-        // This matches the pre-kInternalPostMessageForwarding behavior.
-        return PausableTaskQueueTraits();
-      } else {
-        // Freezing this task type would prevent transmission of postMessages to
-        // remote frames that occurred in unfreezable tasks or from tasks that
-        // ran prior to being frozen (e.g. freeze event handler), which is not
-        // desirable. The messages are still queued on the receiving side, which
-        // is where frozenness should be assessed.
-        return PausableTaskQueueTraits()
-            .SetCanBeFrozen(false)
-            .SetPrioritisationType(
-                QueueTraits::PrioritisationType::kPostMessageForwarding);
-      }
+      //
+      // Freezing this task type would prevent transmission of postMessages to
+      // remote frames that occurred in unfreezable tasks or from tasks that ran
+      // prior to being frozen (e.g. freeze event handler), which is not
+      // desirable. The messages are still queued on the receiving side, which
+      // is where frozenness should be assessed.
+      return PausableTaskQueueTraits()
+          .SetCanBeFrozen(false)
+          .SetPrioritisationType(
+              QueueTraits::PrioritisationType::kPostMessageForwarding);
     case TaskType::kDeprecatedNone:
     case TaskType::kMainThreadTaskQueueV8:
     case TaskType::kMainThreadTaskQueueCompositor:
@@ -559,54 +555,8 @@ FrameSchedulerImpl::CreateResourceLoadingMaybeUnfreezableTaskRunnerHandle() {
 
 std::unique_ptr<ResourceLoadingTaskRunnerHandleImpl>
 FrameSchedulerImpl::CreateResourceLoadingTaskRunnerHandleImpl() {
-  if (main_thread_scheduler_->scheduling_settings()
-          .use_resource_fetch_priority ||
-      (parent_page_scheduler_ && parent_page_scheduler_->IsLoading() &&
-       main_thread_scheduler_->scheduling_settings()
-           .use_resource_priorities_only_during_loading)) {
-    scoped_refptr<MainThreadTaskQueue> task_queue =
-        frame_task_queue_controller_->NewResourceLoadingTaskQueue();
-    resource_loading_task_queue_priorities_.insert(
-        task_queue, task_queue->GetTaskQueue()->GetQueuePriority());
-    return ResourceLoadingTaskRunnerHandleImpl::WrapTaskRunner(task_queue);
-  }
-
   return ResourceLoadingTaskRunnerHandleImpl::WrapTaskRunner(
-      GetTaskQueue(TaskType::kNetworkingWithURLLoaderAnnotation));
-}
-
-void FrameSchedulerImpl::DidChangeResourceLoadingPriority(
-    scoped_refptr<MainThreadTaskQueue> task_queue,
-    net::RequestPriority priority) {
-  // This check is done since in some cases (when kUseResourceFetchPriority
-  // feature isn't enabled) we use the loading task queue for resource loading
-  // and the priority of this queue shouldn't be affected by resource
-  // priorities.
-  auto queue_priority_pair =
-      resource_loading_task_queue_priorities_.find(task_queue);
-  if (queue_priority_pair != resource_loading_task_queue_priorities_.end()) {
-    task_queue->SetNetRequestPriority(priority);
-    queue_priority_pair->value = main_thread_scheduler_->scheduling_settings()
-                                     .net_to_blink_priority[priority];
-    auto* voter =
-        frame_task_queue_controller_->GetQueueEnabledVoter(task_queue);
-    UpdateQueuePolicy(task_queue.get(), voter);
-  }
-}
-
-void FrameSchedulerImpl::OnShutdownResourceLoadingTaskQueue(
-    scoped_refptr<MainThreadTaskQueue> task_queue) {
-  // This check is done since in some cases (when kUseResourceFetchPriority
-  // feature isn't enabled) we use the loading task queue for resource loading,
-  // and the lifetime of this queue isn't bound to one resource.
-  auto iter = resource_loading_task_queue_priorities_.find(task_queue);
-  if (iter != resource_loading_task_queue_priorities_.end()) {
-    resource_loading_task_queue_priorities_.erase(iter);
-    bool removed = frame_task_queue_controller_->RemoveResourceLoadingTaskQueue(
-        task_queue);
-    DCHECK(removed);
-    CleanUpQueue(task_queue.get());
-  }
+      GetTaskQueue(TaskType::kNetworking));
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>
@@ -625,14 +575,17 @@ blink::PageScheduler* FrameSchedulerImpl::GetPageScheduler() const {
   return parent_page_scheduler_;
 }
 
-void FrameSchedulerImpl::DidStartProvisionalLoad(bool is_main_frame) {
-  main_thread_scheduler_->DidStartProvisionalLoad(is_main_frame);
+void FrameSchedulerImpl::DidStartProvisionalLoad() {
+  main_thread_scheduler_->DidStartProvisionalLoad(
+      frame_type_ == FrameScheduler::FrameType::kMainFrame &&
+      !is_in_embedded_frame_tree_);
 }
 
 void FrameSchedulerImpl::DidCommitProvisionalLoad(
     bool is_web_history_inert_commit,
     NavigationType navigation_type) {
-  bool is_main_frame = GetFrameType() == FrameType::kMainFrame;
+  bool is_outermost_main_frame =
+      GetFrameType() == FrameType::kMainFrame && !is_in_embedded_frame_tree_;
   bool is_same_document = navigation_type == NavigationType::kSameDocument;
 
   if (!is_same_document) {
@@ -640,29 +593,17 @@ void FrameSchedulerImpl::DidCommitProvisionalLoad(
     loading_power_mode_voter_->ResetVoteAfterTimeout(
         power_scheduler::PowerModeVoter::kStuckLoadingTimeout);
 
-    waiting_for_dom_content_loaded_ = true;
     waiting_for_contentful_paint_ = true;
     waiting_for_meaningful_paint_ = true;
-    waiting_for_load_ = true;
-
-    // If DeprioritizeDOMTimersDuringPageLoading is enabled, UpdatePolicy()
-    // needs to be called to change JavaScript timer task queues to low priority
-    // during reload and other navigations.
-    //
-    // TODO(shaseley): Think about merging this with MainThreadSchedulerImpl's
-    // policy update.
-    if (base::FeatureList::IsEnabled(kDeprioritizeDOMTimersDuringPageLoading)) {
-      UpdatePolicy();
-    }
   }
 
-  if (is_main_frame && !is_same_document) {
+  if (is_outermost_main_frame && !is_same_document) {
     task_time_ = base::TimeDelta();
   }
 
   main_thread_scheduler_->DidCommitProvisionalLoad(
       is_web_history_inert_commit, navigation_type == NavigationType::kReload,
-      is_main_frame);
+      is_outermost_main_frame);
   if (!is_same_document)
     ResetForNavigation();
 }
@@ -671,6 +612,12 @@ WebScopedVirtualTimePauser FrameSchedulerImpl::CreateWebScopedVirtualTimePauser(
     const WTF::String& name,
     WebScopedVirtualTimePauser::VirtualTaskDuration duration) {
   return WebScopedVirtualTimePauser(main_thread_scheduler_, duration, name);
+}
+
+scoped_refptr<base::SingleThreadTaskRunner>
+FrameSchedulerImpl::CompositorTaskRunner() {
+  return parent_page_scheduler_->GetAgentGroupScheduler()
+      .CompositorTaskRunner();
 }
 
 void FrameSchedulerImpl::ResetForNavigation() {
@@ -685,6 +632,8 @@ void FrameSchedulerImpl::OnStartedUsingFeature(
     OnAddedAggressiveThrottlingOptOut();
   if (policy.disable_back_forward_cache)
     back_forward_cache_disabling_feature_tracker_.Add(feature);
+  if (policy.disable_align_wake_ups)
+    DisableAlignWakeUpsForProcess();
 }
 
 void FrameSchedulerImpl::OnStoppedUsingFeature(
@@ -705,6 +654,9 @@ base::WeakPtr<const FrameSchedulerImpl> FrameSchedulerImpl::GetWeakPtr() const {
 }
 
 void FrameSchedulerImpl::ReportActiveSchedulerTrackedFeatures() {
+  // https://linear.app/replay/issue/RUN-825
+  recordreplay::Assert("FrameSchedulerImpl::ReportActiveSchedulerTrackedFeatures");
+
   back_forward_cache_disabling_feature_tracker_.ReportFeaturesToDelegate();
 }
 
@@ -734,7 +686,7 @@ void FrameSchedulerImpl::WriteIntoTrace(perfetto::TracedValue context) const {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("frame_visible", frame_visible_);
   dict.Add("page_visible", parent_page_scheduler_->IsPageVisible());
-  dict.Add("cross_origin_to_main_frame", IsCrossOriginToMainFrame());
+  dict.Add("cross_origin_to_main_frame", IsCrossOriginToNearestMainFrame());
   dict.Add("frame_type", frame_type_ == FrameScheduler::FrameType::kMainFrame
                              ? "MainFrame"
                              : "Subframe");
@@ -742,9 +694,6 @@ void FrameSchedulerImpl::WriteIntoTrace(perfetto::TracedValue context) const {
            !RuntimeEnabledFeatures::TimerThrottlingForBackgroundTabsEnabled());
 
   dict.Add("frame_task_queue_controller", frame_task_queue_controller_);
-
-  if (blame_context_)
-    dict.Add("blame_context", blame_context_);
 }
 
 void FrameSchedulerImpl::WriteIntoTrace(
@@ -756,10 +705,10 @@ void FrameSchedulerImpl::WriteIntoTrace(
   proto->set_frame_type(
       frame_type_ == FrameScheduler::FrameType::kMainFrame
           ? RendererMainThreadTaskExecution::FRAME_TYPE_MAIN_FRAME
-          : IsCrossOriginToMainFrame() ? RendererMainThreadTaskExecution::
-                                             FRAME_TYPE_CROSS_ORIGIN_SUBFRAME
-                                       : RendererMainThreadTaskExecution::
-                                             FRAME_TYPE_SAME_ORIGIN_SUBFRAME);
+      : IsCrossOriginToNearestMainFrame()
+          ? RendererMainThreadTaskExecution::FRAME_TYPE_CROSS_ORIGIN_SUBFRAME
+          : RendererMainThreadTaskExecution::FRAME_TYPE_SAME_ORIGIN_SUBFRAME);
+  proto->set_is_ad_frame(is_ad_frame_);
 }
 
 void FrameSchedulerImpl::SetPageVisibilityForTracing(
@@ -788,8 +737,7 @@ void FrameSchedulerImpl::SetShouldReportPostedTasksWhenDisabled(
        frame_task_queue_controller_->GetAllTaskQueuesAndVoters()) {
     auto* task_queue = task_queue_and_voter.first;
     if (task_queue->CanBeFrozen()) {
-      task_queue->GetTaskQueue()->SetShouldReportPostedTasksWhenDisabled(
-          should_report);
+      task_queue->SetShouldReportPostedTasksWhenDisabled(should_report);
     }
   }
 }
@@ -877,43 +825,21 @@ SchedulingLifecycleState FrameSchedulerImpl::CalculateLifecycleState(
 void FrameSchedulerImpl::OnFirstContentfulPaintInMainFrame() {
   waiting_for_contentful_paint_ = false;
   DCHECK_EQ(GetFrameType(), FrameScheduler::FrameType::kMainFrame);
-  parent_page_scheduler_->OnFirstContentfulPaintInMainFrame();
   main_thread_scheduler_->OnMainFramePaint();
-}
-
-void FrameSchedulerImpl::OnDomContentLoaded() {
-  waiting_for_dom_content_loaded_ = false;
-
-  if (base::FeatureList::IsEnabled(kDeprioritizeDOMTimersDuringPageLoading) &&
-      kDeprioritizeDOMTimersPhase.Get() ==
-          DeprioritizeDOMTimersPhase::kOnDOMContentLoaded) {
-    UpdatePolicy();
-  }
 }
 
 void FrameSchedulerImpl::OnFirstMeaningfulPaint() {
   waiting_for_meaningful_paint_ = false;
 
-  if (GetFrameType() != FrameScheduler::FrameType::kMainFrame)
+  if (GetFrameType() != FrameScheduler::FrameType::kMainFrame ||
+      is_in_embedded_frame_tree_) {
     return;
+  }
 
   main_thread_scheduler_->OnMainFramePaint();
 }
 
 void FrameSchedulerImpl::OnLoad() {
-  waiting_for_load_ = false;
-
-  // FrameSchedulerImpl::OnFirstContentfulPaint() is NOT guaranteed to be called
-  // during the loading process, so we also try to do the recomputation in case
-  // of the DeprioritizeDOMTimersPhase::kFirstContentfulPaint option.
-  if (base::FeatureList::IsEnabled(kDeprioritizeDOMTimersDuringPageLoading) &&
-      (kDeprioritizeDOMTimersPhase.Get() ==
-           DeprioritizeDOMTimersPhase::kOnLoad ||
-       kDeprioritizeDOMTimersPhase.Get() ==
-           DeprioritizeDOMTimersPhase::kFirstContentfulPaint)) {
-    UpdatePolicy();
-  }
-
   loading_power_mode_voter_->ResetVoteAfterTimeout(
       power_scheduler::PowerModeVoter::kLoadingTimeout);
 }
@@ -943,7 +869,7 @@ bool FrameSchedulerImpl::ShouldThrottleTaskQueues() const {
     return false;
   if (!parent_page_scheduler_->IsPageVisible())
     return true;
-  return !frame_visible_ && IsCrossOriginToMainFrame();
+  return !frame_visible_ && IsCrossOriginToNearestMainFrame();
 }
 
 bool FrameSchedulerImpl::IsExemptFromBudgetBasedThrottling() const {
@@ -959,13 +885,8 @@ TaskQueue::QueuePriority FrameSchedulerImpl::ComputePriority(
   // Checks the task queue is associated with this frame scheduler.
   DCHECK_EQ(frame_scheduler, this);
 
-  auto queue_priority_pair =
-      resource_loading_task_queue_priorities_.find(task_queue);
-  if (queue_priority_pair != resource_loading_task_queue_priorities_.end())
-    return queue_priority_pair->value;
-
-  // TODO(kdillon): Ordering here is relative to the experiments below. Cleanup
-  // unused experiment logic so that this switch can be merged with the
+  // TODO(crbug.com/986569): Ordering here is relative to the experiments below.
+  // Cleanup unused experiment logic so that this switch can be merged with the
   // prioritisation type decisions below.
   switch (task_queue->GetPrioritisationType()) {
     case MainThreadTaskQueue::QueueTraits::PrioritisationType::
@@ -975,6 +896,9 @@ TaskQueue::QueuePriority FrameSchedulerImpl::ComputePriority(
       return TaskQueue::QueuePriority::kBestEffortPriority;
     case MainThreadTaskQueue::QueueTraits::PrioritisationType::
         kPostMessageForwarding:
+      return TaskQueue::QueuePriority::kVeryHighPriority;
+    case MainThreadTaskQueue::QueueTraits::PrioritisationType::
+        kInternalNavigationCancellation:
       return TaskQueue::QueuePriority::kVeryHighPriority;
     default:
       break;
@@ -1013,48 +937,38 @@ TaskQueue::QueuePriority FrameSchedulerImpl::ComputePriority(
     }
   }
 
-  // If the page is loading or if the priority experiments should take place at
-  // all times.
-  if (parent_page_scheduler_->IsLoading() ||
-      !main_thread_scheduler_->scheduling_settings()
-           .use_frame_priorities_only_during_loading) {
-    // Low priority feature enabled for hidden frame.
-    if (main_thread_scheduler_->scheduling_settings()
-            .low_priority_hidden_frame &&
-        !IsFrameVisible()) {
-      return TaskQueue::QueuePriority::kLowPriority;
-    }
+  // Low priority feature enabled for hidden frame.
+  if (main_thread_scheduler_->scheduling_settings().low_priority_hidden_frame &&
+      !IsFrameVisible()) {
+    return TaskQueue::QueuePriority::kLowPriority;
+  }
 
-    bool is_subframe = GetFrameType() == FrameScheduler::FrameType::kSubframe;
-    bool is_throttleable_task_queue =
-        task_queue->queue_type() ==
-        MainThreadTaskQueue::QueueType::kFrameThrottleable;
+  bool is_subframe = GetFrameType() == FrameScheduler::FrameType::kSubframe;
+  bool is_throttleable_task_queue =
+      task_queue->queue_type() ==
+      MainThreadTaskQueue::QueueType::kFrameThrottleable;
 
-    // Low priority feature enabled for sub-frame.
-    if (main_thread_scheduler_->scheduling_settings().low_priority_subframe &&
-        is_subframe) {
-      return TaskQueue::QueuePriority::kLowPriority;
-    }
+  // Low priority feature enabled for sub-frame.
+  if (main_thread_scheduler_->scheduling_settings().low_priority_subframe &&
+      is_subframe) {
+    return TaskQueue::QueuePriority::kLowPriority;
+  }
 
-    // Low priority feature enabled for sub-frame throttleable task queues.
-    if (main_thread_scheduler_->scheduling_settings()
-            .low_priority_subframe_throttleable &&
-        is_subframe && is_throttleable_task_queue) {
-      return TaskQueue::QueuePriority::kLowPriority;
-    }
+  // Low priority feature enabled for sub-frame throttleable task queues.
+  if (main_thread_scheduler_->scheduling_settings()
+          .low_priority_subframe_throttleable &&
+      is_subframe && is_throttleable_task_queue) {
+    return TaskQueue::QueuePriority::kLowPriority;
+  }
 
-    // Low priority feature enabled for throttleable task queues.
-    if (main_thread_scheduler_->scheduling_settings()
-            .low_priority_throttleable &&
-        is_throttleable_task_queue) {
-      return TaskQueue::QueuePriority::kLowPriority;
-    }
+  // Low priority feature enabled for throttleable task queues.
+  if (main_thread_scheduler_->scheduling_settings().low_priority_throttleable &&
+      is_throttleable_task_queue) {
+    return TaskQueue::QueuePriority::kLowPriority;
   }
 
   // Ad frame experiment.
-  if (IsAdFrame() && (parent_page_scheduler_->IsLoading() ||
-                      !main_thread_scheduler_->scheduling_settings()
-                           .use_adframe_priorities_only_during_loading)) {
+  if (IsAdFrame()) {
     if (main_thread_scheduler_->scheduling_settings().low_priority_ad_frame) {
       return TaskQueue::QueuePriority::kLowPriority;
     }
@@ -1065,14 +979,9 @@ TaskQueue::QueuePriority FrameSchedulerImpl::ComputePriority(
   }
 
   // Frame origin type experiment.
-  if (IsCrossOriginToMainFrame()) {
-    if (main_thread_scheduler_->scheduling_settings()
-            .low_priority_cross_origin ||
-        (main_thread_scheduler_->scheduling_settings()
-             .low_priority_cross_origin_only_during_loading &&
-         parent_page_scheduler_->IsLoading())) {
-      return TaskQueue::QueuePriority::kLowPriority;
-    }
+  if (IsCrossOriginToNearestMainFrame() &&
+      main_thread_scheduler_->scheduling_settings().low_priority_cross_origin) {
+    return TaskQueue::QueuePriority::kLowPriority;
   }
 
   if (task_queue->GetPrioritisationType() ==
@@ -1097,23 +1006,6 @@ TaskQueue::QueuePriority FrameSchedulerImpl::ComputePriority(
       MainThreadTaskQueue::QueueTraits::PrioritisationType::
           kHighPriorityLocalFrame) {
     return TaskQueue::QueuePriority::kHighestPriority;
-  }
-
-  // Deprioritize JS timer tasks to speed up the page loading process.
-  if (base::FeatureList::IsEnabled(kDeprioritizeDOMTimersDuringPageLoading) &&
-      task_queue->GetPrioritisationType() ==
-          MainThreadTaskQueue::QueueTraits::PrioritisationType::
-              kJavaScriptTimer &&
-      waiting_for_load_ &&
-      (kDeprioritizeDOMTimersPhase.Get() ==
-           DeprioritizeDOMTimersPhase::kOnLoad ||
-       (kDeprioritizeDOMTimersPhase.Get() ==
-            DeprioritizeDOMTimersPhase::kOnDOMContentLoaded &&
-        waiting_for_dom_content_loaded_) ||
-       (kDeprioritizeDOMTimersPhase.Get() ==
-            DeprioritizeDOMTimersPhase::kFirstContentfulPaint &&
-        parent_page_scheduler_->IsWaitingForMainFrameContentfulPaint()))) {
-    return TaskQueue::QueuePriority::kLowPriority;
   }
 
   if (task_queue->GetPrioritisationType() ==
@@ -1181,12 +1073,10 @@ void FrameSchedulerImpl::OnTaskQueueCreated(
     base::sequence_manager::TaskQueue::QueueEnabledVoter* voter) {
   DCHECK(parent_page_scheduler_);
 
-  task_queue->GetTaskQueue()->SetBlameContext(blame_context_);
   UpdateQueuePolicy(task_queue, voter);
 
   if (task_queue->CanBeThrottled()) {
-    base::sequence_manager::LazyNow lazy_now(
-        main_thread_scheduler_->GetTickClock());
+    base::LazyNow lazy_now(main_thread_scheduler_->GetTickClock());
 
     CPUTimeBudgetPool* cpu_time_budget_pool =
         parent_page_scheduler_->background_cpu_time_budget_pool();
@@ -1223,7 +1113,7 @@ void FrameSchedulerImpl::SetOnIPCTaskPostedWhileInBackForwardCacheHandler() {
               base::BindOnce(
                   &FrameSchedulerImpl::OnIPCTaskPostedWhileInBackForwardCache,
                   frame_scheduler, task.ipc_hash, task.ipc_interface_name),
-              base::TimeDelta());
+              base::Seconds(1));
         },
         main_thread_scheduler_->BackForwardCacheIpcTrackingTaskRunner(),
         GetInvalidatingOnBFCacheRestoreWeakPtr()));

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -104,7 +104,7 @@ ChromeComponentExtensionResourceManager::Data::Data() {
   AddComponentResourceEntries(kComponentExtensionResources,
                               kComponentExtensionResourcesSize);
   AddComponentResourceEntries(kExtraComponentExtensionResources,
-                              base::size(kExtraComponentExtensionResources));
+                              std::size(kExtraComponentExtensionResources));
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Add Files app JS modules resources.
@@ -146,14 +146,13 @@ ChromeComponentExtensionResourceManager::Data::Data() {
 
   // ResourceBundle is not always initialized in unit tests.
   if (ui::ResourceBundle::HasSharedInstance()) {
-    base::Value dict(base::Value::Type::DICTIONARY);
+    base::Value::Dict dict;
     pdf_extension_util::AddStrings(
         pdf_extension_util::PdfViewerContext::kPdfViewer, &dict);
     pdf_extension_util::AddAdditionalData(/*enable_annotations=*/true, &dict);
 
     ui::TemplateReplacements pdf_viewer_replacements;
-    ui::TemplateReplacementsFromDictionaryValue(
-        base::Value::AsDictionaryValue(dict), &pdf_viewer_replacements);
+    ui::TemplateReplacementsFromDictionaryValue(dict, &pdf_viewer_replacements);
     template_replacements_[extension_misc::kPdfExtensionId] =
         std::move(pdf_viewer_replacements);
   }

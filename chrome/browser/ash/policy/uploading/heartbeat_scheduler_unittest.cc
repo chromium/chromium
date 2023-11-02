@@ -1,4 +1,4 @@
-// Copyright (c) 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,13 @@
 
 #include <vector>
 
-#include "ash/components/settings/cros_settings_names.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/test_simple_task_runner.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/gcm_driver/common/gcm_message.h"
 #include "components/gcm_driver/fake_gcm_driver.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
@@ -134,7 +135,7 @@ class HeartbeatSchedulerTest : public testing::Test {
                    kFakeDeviceId,
                    task_runner_) {}
 
-  void SetUp() {
+  void SetUp() override {
     auto policy_data = std::make_unique<enterprise_management::PolicyData>();
     policy_data->set_obfuscated_customer_id(kFakeCustomerId);
     cloud_policy_store_.set_policy_data_for_testing(std::move(policy_data));

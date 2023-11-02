@@ -1,18 +1,17 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_CERT_REPORT_HELPER_H_
 #define COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_CERT_REPORT_HELPER_H_
 
+#include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
+#include "base/values.h"
 #include "components/security_interstitials/content/certificate_error_report.h"
 #include "components/security_interstitials/core/controller_client.h"
 #include "net/ssl/ssl_info.h"
 #include "url/gurl.h"
-
-namespace base {
-class Value;
-}
 
 namespace content {
 class WebContents;
@@ -61,11 +60,11 @@ class CertReportHelper {
 
   // Populates data that JavaScript code on the interstitial uses to show
   // the checkbox.
-  void PopulateExtendedReportingOption(base::Value* load_time_data);
+  void PopulateExtendedReportingOption(base::Value::Dict& load_time_data);
 
   // Populates data that JavaScript code on the interstitial uses to show
   // the enhanced protection message.
-  void PopulateEnhancedProtectionMessage(base::Value* load_time_data);
+  void PopulateEnhancedProtectionMessage(base::Value::Dict& load_time_data);
 
   // Allows tests to inject a mock reporter.
   void SetSSLCertReporterForTesting(
@@ -105,7 +104,7 @@ class CertReportHelper {
   // Handles reports of invalid SSL certificates.
   std::unique_ptr<SSLCertReporter> ssl_cert_reporter_;
   // The WebContents for which this helper sends reports.
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
   // The URL for which this helper sends reports.
   const GURL request_url_;
   // The SSLInfo used in this helper's report.
@@ -125,7 +124,7 @@ class CertReportHelper {
   // protection.
   bool can_show_enhanced_protection_message_;
   // Helpful for recording metrics about cert reports.
-  security_interstitials::MetricsHelper* metrics_helper_;
+  raw_ptr<security_interstitials::MetricsHelper> metrics_helper_;
   // Appends additional details to a report.
   ClientDetailsCallback client_details_callback_;
   // Default to DID_NOT_PROCEED. If no user action is processed via

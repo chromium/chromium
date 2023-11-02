@@ -53,7 +53,7 @@ void SVGRootInlineBox::ComputePerCharacterLayoutInformation() {
 
   const HeapVector<Member<LayoutSVGInlineText>>& descendant_text_nodes =
       text_root.DescendantTextNodes();
-  if (descendant_text_nodes.IsEmpty())
+  if (descendant_text_nodes.empty())
     return;
 
   if (text_root.NeedsReordering())

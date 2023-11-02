@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -97,8 +97,8 @@ bool SignedExchangeRequestHandler::MaybeCreateLoaderForResponse(
   mojo::PendingRemote<network::mojom::URLLoaderClient> client;
   *client_receiver = client.InitWithNewPipeAndPassReceiver();
 
-  const net::NetworkIsolationKey& network_isolation_key =
-      request.trusted_params->isolation_info.network_isolation_key();
+  const net::NetworkAnonymizationKey& network_anonymization_key =
+      request.trusted_params->isolation_info.network_anonymization_key();
   // This lets the SignedExchangeLoader directly returns an artificial redirect
   // to the downstream client without going through blink::ThrottlingURLLoader,
   // which means some checks like SafeBrowsing may not see the redirect. Given
@@ -106,7 +106,7 @@ bool SignedExchangeRequestHandler::MaybeCreateLoaderForResponse(
   // this is fine.
   auto reporter = SignedExchangeReporter::MaybeCreate(
       request.url, request.referrer.spec(), **response_head,
-      network_isolation_key, frame_tree_node_id_);
+      network_anonymization_key, frame_tree_node_id_);
   auto devtools_proxy = std::make_unique<SignedExchangeDevToolsProxy>(
       request.url, response_head->Clone(), frame_tree_node_id_,
       devtools_navigation_token_, request.devtools_request_id.has_value());
@@ -115,7 +115,7 @@ bool SignedExchangeRequestHandler::MaybeCreateLoaderForResponse(
       std::move(client), url_loader->Unbind(), url_loader_options_,
       true /* should_redirect_to_fallback */, std::move(devtools_proxy),
       std::move(reporter), url_loader_factory_, url_loader_throttles_getter_,
-      network_isolation_key, frame_tree_node_id_, metric_recorder_,
+      network_anonymization_key, frame_tree_node_id_, metric_recorder_,
       accept_langs_, false /* keep_entry_for_prefetch_cache */);
 
   *skip_other_interceptors = true;

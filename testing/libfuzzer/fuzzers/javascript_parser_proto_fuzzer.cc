@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,9 +30,9 @@ std::string protobuf_to_string(
 // Explicitly specify some attributes to avoid issues with the linker dead-
 // stripping the following function on macOS, as it is not called directly
 // by fuzz target. LibFuzzer runtime uses dlsym() to resolve that function.
-#if V8_OS_MACOSX
+#if V8_OS_MACOS
 __attribute__((used)) __attribute__((visibility("default")))
-#endif  // V8_OS_MACOSX
+#endif  // V8_OS_MACOS
 extern "C" int
 LLVMFuzzerInitialize(int* argc, char*** argv) {
   v8::V8::InitializeICUDefaultLocation((*argv)[0]);
@@ -42,9 +42,6 @@ LLVMFuzzerInitialize(int* argc, char*** argv) {
   // Intentionally leaked during fuzzing.
   v8::Platform* platform = v8::platform::NewDefaultPlatform().release();
   v8::V8::InitializePlatform(platform);
-#ifdef V8_VIRTUAL_MEMORY_CAGE
-  v8::V8::InitializeVirtualMemoryCage();
-#endif
   v8::V8::Initialize();
 
   v8::Isolate::CreateParams create_params;

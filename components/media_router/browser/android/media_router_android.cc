@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -104,6 +104,8 @@ const MediaRoute* MediaRouterAndroid::FindRouteBySource(
   return nullptr;
 }
 
+void MediaRouterAndroid::Initialize() {}
+
 void MediaRouterAndroid::CreateRoute(const MediaSource::Id& source_id,
                                      const MediaSink::Id& sink_id,
                                      const url::Origin& origin,
@@ -120,17 +122,6 @@ void MediaRouterAndroid::CreateRoute(const MediaSource::Id& source_id,
           MediaSource(source_id), presentation_id, std::move(callback)));
   bridge_->CreateRoute(source_id, sink_id, presentation_id, origin,
                        web_contents, route_request_id);
-}
-
-void MediaRouterAndroid::ConnectRouteByRouteId(
-    const MediaSource::Id& source,
-    const MediaRoute::Id& route_id,
-    const url::Origin& origin,
-    content::WebContents* web_contents,
-    MediaRouteResponseCallback callback,
-    base::TimeDelta timeout,
-    bool incognito) {
-  NOTIMPLEMENTED();
 }
 
 void MediaRouterAndroid::JoinRoute(const MediaSource::Id& source_id,
@@ -167,6 +158,10 @@ void MediaRouterAndroid::SendRouteBinaryMessage(
 }
 
 void MediaRouterAndroid::OnUserGesture() {}
+
+std::vector<MediaRoute> MediaRouterAndroid::GetCurrentRoutes() const {
+  return active_routes_;
+}
 
 void MediaRouterAndroid::DetachRoute(MediaRoute::Id route_id) {
   bridge_->DetachRoute(route_id);
@@ -209,9 +204,6 @@ void MediaRouterAndroid::UnregisterMediaSinksObserver(
 void MediaRouterAndroid::RegisterMediaRoutesObserver(
     MediaRoutesObserver* observer) {
   DVLOG(2) << "Added MediaRoutesObserver: " << observer;
-  if (!observer->source_id().empty())
-    NOTIMPLEMENTED() << "Joinable routes query not implemented.";
-
   routes_observers_.AddObserver(observer);
 }
 
@@ -251,7 +243,7 @@ void MediaRouterAndroid::OnRouteCreated(const MediaRoute::Id& route_id,
     return;
 
   MediaRoute route(route_id, request->media_source, sink_id, std::string(),
-                   is_local, true);  // TODO(avayvod): Populate for_display.
+                   is_local);
 
   std::unique_ptr<RouteRequestResult> result =
       RouteRequestResult::FromSuccess(route, request->presentation_id);
@@ -265,7 +257,7 @@ void MediaRouterAndroid::OnRouteCreated(const MediaRoute::Id& route_id,
 
   active_routes_.push_back(route);
   for (auto& observer : routes_observers_)
-    observer.OnRoutesUpdated(active_routes_, std::vector<MediaRoute::Id>());
+    observer.OnRoutesUpdated(active_routes_);
   if (is_local) {
     MediaRouterMetrics::RecordCreateRouteResultCode(
         result->result_code(), mojom::MediaRouteProviderId::ANDROID_CAF);
@@ -304,7 +296,8 @@ void MediaRouterAndroid::OnRouteTerminated(const MediaRoute::Id& route_id) {
     }
   }
   MediaRouterMetrics::RecordMediaRouteProviderTerminateRoute(
-      RouteRequestResult::OK, mojom::MediaRouteProviderId::ANDROID_CAF);
+      mojom::RouteRequestResultCode::OK,
+      mojom::MediaRouteProviderId::ANDROID_CAF);
   RemoveRoute(route_id);
 }
 
@@ -352,7 +345,7 @@ void MediaRouterAndroid::RemoveRoute(const MediaRoute::Id& route_id) {
     }
 
   for (auto& observer : routes_observers_)
-    observer.OnRoutesUpdated(active_routes_, std::vector<MediaRoute::Id>());
+    observer.OnRoutesUpdated(active_routes_);
 }
 
 std::unique_ptr<media::FlingingController>
@@ -368,7 +361,7 @@ void MediaRouterAndroid::OnPresentationConnectionError(
 void MediaRouterAndroid::OnRouteRequestError(
     const std::string& error_text,
     int route_request_id,
-    base::OnceCallback<void(RouteRequestResult::ResultCode,
+    base::OnceCallback<void(mojom::RouteRequestResultCode,
                             absl::optional<mojom::MediaRouteProviderId>)>
         callback) {
   MediaRouteRequest* request = route_requests_.Lookup(route_request_id);
@@ -377,7 +370,7 @@ void MediaRouterAndroid::OnRouteRequestError(
 
   // TODO: Provide a more specific result code.
   std::unique_ptr<RouteRequestResult> result = RouteRequestResult::FromError(
-      error_text, RouteRequestResult::UNKNOWN_ERROR);
+      error_text, mojom::RouteRequestResultCode::UNKNOWN_ERROR);
   std::move(request->callback).Run(nullptr, *result);
 
   route_requests_.Remove(route_request_id);

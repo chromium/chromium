@@ -1,4 +1,4 @@
-// Copyright (c) 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,13 +9,16 @@
 #include "base/dcheck_is_on.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/platform/web_string.h"
+#include "third_party/blink/public/web/web_frame.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
+#include "third_party/blink/renderer/modules/peerconnection/peer_connection_dependency_factory.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "third_party/webrtc/api/media_stream_interface.h"
-#include "third_party/webrtc_overrides/metronome_provider.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -35,9 +38,11 @@ class MODULES_EXPORT RemoteMediaStreamTrackAdapter
  public:
   RemoteMediaStreamTrackAdapter(
       const scoped_refptr<base::SingleThreadTaskRunner>& main_thread,
-      WebRtcMediaStreamTrackType* webrtc_track)
+      WebRtcMediaStreamTrackType* webrtc_track,
+      ExecutionContext* track_execution_context)
       : main_thread_(main_thread),
         webrtc_track_(webrtc_track),
+        track_execution_context_(track_execution_context),
         id_(String::FromUTF8(webrtc_track->id())) {}
 
   RemoteMediaStreamTrackAdapter(const RemoteMediaStreamTrackAdapter&) = delete;
@@ -76,13 +81,33 @@ class MODULES_EXPORT RemoteMediaStreamTrackAdapter
     DCHECK(main_thread_->BelongsToCurrentThread());
   }
 
-  void InitializeTrack(MediaStreamSource::StreamType type) {
+  void InitializeTrack(
+      MediaStreamSource::StreamType type,
+      std::unique_ptr<WebPlatformMediaStreamSource> platform_source,
+      std::unique_ptr<MediaStreamTrackPlatform> platform_track) {
     DCHECK(main_thread_->BelongsToCurrentThread());
     DCHECK(!component_);
 
-    auto* source = MakeGarbageCollected<MediaStreamSource>(id_, type, id_,
-                                                           true /*remote*/);
-    component_ = MakeGarbageCollected<MediaStreamComponent>(id_, source);
+    auto* source = MakeGarbageCollected<MediaStreamSource>(
+        id_, type, id_, true /*remote*/, std::move(platform_source));
+    if (platform_track) {
+      component_ = MakeGarbageCollected<MediaStreamComponentImpl>(
+          id_, source, std::move(platform_track));
+    } else {
+      component_ = MakeGarbageCollected<MediaStreamComponentImpl>(id_, source);
+    }
+    // If we have a reference to a window frame where the track was created,
+    // store it on the component. This allows other code to use the correct
+    // per-frame object for the track, such as the audio device for playout.
+    if (track_execution_context_ && track_execution_context_->IsWindow() &&
+        To<LocalDOMWindow>(track_execution_context_.Get())->GetFrame()) {
+      // IsWindow() being true means that the ExecutionContext is a
+      // LocalDOMWindow, so these casts should be safe.
+      component_->SetCreationFrame(
+          WebFrame::FromCoreFrame(
+              To<LocalDOMWindow>(track_execution_context_.Get())->GetFrame())
+              ->ToWebLocalFrame());
+    }
     DCHECK(component_);
   }
 
@@ -96,6 +121,7 @@ class MODULES_EXPORT RemoteMediaStreamTrackAdapter
  private:
   const scoped_refptr<WebRtcMediaStreamTrackType> webrtc_track_;
   CrossThreadPersistent<MediaStreamComponent> component_;
+  CrossThreadWeakPersistent<ExecutionContext> track_execution_context_;
   // const copy of the webrtc track id that allows us to check it from both the
   // main and signaling threads without incurring a synchronous thread hop.
   const String id_;
@@ -108,7 +134,7 @@ class MODULES_EXPORT RemoteVideoTrackAdapter
   RemoteVideoTrackAdapter(
       const scoped_refptr<base::SingleThreadTaskRunner>& main_thread,
       webrtc::VideoTrackInterface* webrtc_track,
-      scoped_refptr<MetronomeProvider> metronome_provider);
+      ExecutionContext* execution_context);
 
  protected:
   ~RemoteVideoTrackAdapter() override;
@@ -116,8 +142,6 @@ class MODULES_EXPORT RemoteVideoTrackAdapter
  private:
   void InitializeWebVideoTrack(std::unique_ptr<TrackObserver> observer,
                                bool enabled);
-
-  const scoped_refptr<MetronomeProvider> metronome_provider_;
 };
 
 // RemoteAudioTrackAdapter is responsible for listening on state
@@ -130,7 +154,8 @@ class MODULES_EXPORT RemoteAudioTrackAdapter
   // Called on the signaling thread.
   RemoteAudioTrackAdapter(
       const scoped_refptr<base::SingleThreadTaskRunner>& main_thread,
-      webrtc::AudioTrackInterface* webrtc_track);
+      webrtc::AudioTrackInterface* webrtc_track,
+      ExecutionContext* execution_context);
 
   RemoteAudioTrackAdapter(const RemoteAudioTrackAdapter&) = delete;
   RemoteAudioTrackAdapter& operator=(const RemoteAudioTrackAdapter&) = delete;

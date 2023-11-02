@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,10 @@
 #include <stdint.h>
 
 #include "base/base64url.h"
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
-#include "base/strings/string_piece_forward.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "crypto/random.h"
@@ -53,7 +51,7 @@ bool ParseETagHeader(const base::StringPiece& etag_header_value_in,
   // Remove the weak prefix, then remove the begin and the end quotes.
   const char kWeakETagPrefix[] = "W/";
   if (base::StartsWith(etag_header_value, kWeakETagPrefix))
-    etag_header_value.remove_prefix(base::size(kWeakETagPrefix) - 1);
+    etag_header_value.remove_prefix(std::size(kWeakETagPrefix) - 1);
   if (etag_header_value.size() >= 2 &&
       base::StartsWith(etag_header_value, "\"") &&
       base::EndsWith(etag_header_value, "\"")) {
@@ -112,6 +110,15 @@ void Ecdsa::SignRequest(const base::StringPiece& request_body,
                         std::string* query_params) {
   DCHECK(query_params);
 
+  Ecdsa::RequestParameters request_parameters = SignRequest(request_body);
+
+  *query_params = base::StringPrintf("cup2key=%s&cup2hreq=%s",
+                                     request_parameters.query_cup2key.c_str(),
+                                     request_parameters.hash_hex.c_str());
+}
+
+Ecdsa::RequestParameters Ecdsa::SignRequest(
+    const base::StringPiece& request_body) {
   // Generate a random nonce to use for freshness, build the cup2key query
   // string, and compute the SHA-256 hash of the request body. Set these
   // two pieces of data aside to use during ValidateResponse().
@@ -134,9 +141,10 @@ void Ecdsa::SignRequest(const base::StringPiece& request_body,
       base::HexEncode(&request_hash_.front(), request_hash_.size());
   request_hash_hex = base::ToLowerASCII(request_hash_hex);
 
-  *query_params = base::StringPrintf("cup2key=%s&cup2hreq=%s",
-                                     request_query_cup2key_.c_str(),
-                                     request_hash_hex.c_str());
+  RequestParameters request_parameters;
+  request_parameters.query_cup2key = request_query_cup2key_;
+  request_parameters.hash_hex = request_hash_hex;
+  return request_parameters;
 }
 
 bool Ecdsa::ValidateResponse(const base::StringPiece& response_body,

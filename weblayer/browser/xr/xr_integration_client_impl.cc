@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -59,7 +59,6 @@ XrIntegrationClientImpl::GetInstallHelper(device::mojom::XRDeviceId device_id) {
 content::XRProviderList XrIntegrationClientImpl::GetAdditionalProviders() {
   content::XRProviderList providers;
 
-  // TODO(https://crbug.com/966647) remove this check.
   if (base::FeatureList::IsEnabled(features::kWebXrArModule)) {
     base::android::ScopedJavaLocalRef<jobject>
         j_ar_compositor_delegate_provider =

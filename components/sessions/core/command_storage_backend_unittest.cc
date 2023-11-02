@@ -1,16 +1,16 @@
-// Copyright 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/sessions/core/command_storage_backend.h"
 
 #include <stddef.h>
+
 #include <limits>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
@@ -19,6 +19,7 @@
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "components/sessions/core/command_storage_manager.h"
 #include "components/sessions/core/session_constants.h"
 #include "components/sessions/core/session_service_commands.h"
@@ -211,7 +212,7 @@ TEST_F(CommandStorageBackendTest, RandomDataEncrypted) {
   };
 
   const std::vector<uint8_t> key = CommandStorageManager::CreateCryptoKey();
-  for (size_t i = 0; i < base::size(data); ++i) {
+  for (size_t i = 0; i < std::size(data); ++i) {
     scoped_refptr<CommandStorageBackend> backend = CreateBackend(key);
     SessionCommands commands;
     if (i != 0) {
@@ -430,7 +431,7 @@ TEST_F(CommandStorageBackendTest, RandomDataWithRestoreType) {
       {13, "abcdefghijklm"},
   };
 
-  for (size_t i = 0; i < base::size(data); ++i) {
+  for (size_t i = 0; i < std::size(data); ++i) {
     scoped_refptr<CommandStorageBackend> backend =
         CreateBackendWithRestoreType();
     SessionCommands commands;
@@ -737,7 +738,7 @@ TEST_F(CommandStorageBackendTest, ReadPreviouslyWrittenData) {
   ASSERT_TRUE(base::CopyFile(
       test_data_path, restore_path().Append(kLegacyCurrentSessionFileName)));
   scoped_refptr<CommandStorageBackend> backend = CreateBackendWithRestoreType();
-  AssertCommandsEqualsData(data, base::size(data),
+  AssertCommandsEqualsData(data, std::size(data),
                            backend->ReadLastSessionCommands().commands);
 }
 

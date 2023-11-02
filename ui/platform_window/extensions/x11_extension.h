@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,10 +32,6 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) X11Extension {
   // Returns the current bounds in terms of the X11 Root Window including the
   // borders provided by the window manager (if any).
   virtual gfx::Rect GetXRootWindowOuterBounds() const = 0;
-
-  // Says if the X11 Root Window contains the point within its set shape. If
-  // shape is not set, returns true.
-  virtual bool ContainsPointInXRegion(const gfx::Point& point) const = 0;
 
   // Asks X11 to lower the Xwindow down the stack so that it does not obscure
   // any sibling windows.

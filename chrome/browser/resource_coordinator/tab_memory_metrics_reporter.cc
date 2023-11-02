@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -144,7 +144,7 @@ void TabMemoryMetricsReporter::RestartTimerIfNeeded(
 bool TabMemoryMetricsReporter::EmitMemoryMetricsAfterPageLoaded(
     const TabMemoryMetricsReporter::WebContentsData& content_data) {
   content::RenderFrameHost* render_frame_host =
-      content_data.web_contents->GetMainFrame();
+      content_data.web_contents->GetPrimaryMainFrame();
   if (!render_frame_host)
     return false;
 

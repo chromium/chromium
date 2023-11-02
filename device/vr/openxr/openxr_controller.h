@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "device/vr/openxr/openxr_interaction_profiles.h"
 #include "device/vr/openxr/openxr_path_helper.h"
 #include "device/vr/openxr/openxr_util.h"
@@ -168,8 +169,8 @@ class OpenXrController {
       button_action_map_;
   std::unordered_map<OpenXrAxisType, XrAction> axis_action_map_;
 
-  const OpenXRPathHelper* path_helper_;
-  const OpenXrExtensionHelper* extension_helper_;
+  raw_ptr<const OpenXRPathHelper> path_helper_;
+  raw_ptr<const OpenXrExtensionHelper> extension_helper_;
 };
 
 }  // namespace device

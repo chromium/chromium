@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@ enum class BrowsingDataRemoveMask;
 // TableViewTextCell in addition a BrowsingDataRemoveMask property.
 @interface TableViewClearBrowsingDataItem : TableViewItem
 
-@property(nonatomic, copy) NSString* imageName;
+@property(nonatomic, copy) UIImage* image;
 @property(nonatomic, copy) NSString* text;
 @property(nonatomic, copy) NSString* detailText;
 @property(nonatomic, copy) NSString* optionalText;

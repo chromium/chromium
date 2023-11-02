@@ -7,6 +7,20 @@ tests and maintenance.
 Please see `docs/network_traffic_annotations.md` for an introduction to network
 traffic annotations.
 
+## Before Running
+
+Before running, you need to build the `traffic_annotation_proto` target, and
+pass the build path to the executable. For instance:
+
+```
+$ autoninja -C out/Debug traffic_annotation_proto
+$ vpython3 ./tools/traffic_annotation/scripts/auditor/auditor.py --build-path=out/Debug
+```
+
+`traffic_annotation_proto` is a dependency of the `chrome` target, as well. So
+if you regularly use this build directory for development, you can probably skip
+the first step.
+
 ## Usage
 
 `vpython3 ./tools/traffic_annotation/scripts/auditor/auditor.py [OPTIONS]... [path_filter]...`
@@ -18,11 +32,6 @@ Run `./tools/traffic_annotation/scripts/auditor/auditor.py --help` for options.
 
 Example:
   `vpython3 ./tools/traffic_annotation/scripts/auditor/auditor.py --build-path=out/Debug`
-
-## Running
-
-Before running, you need to build the `chrome` target, and pass the build path
-to the executable.
 
 ## Safe List
 
@@ -40,3 +49,16 @@ Here are the exception types:
   CreateMutableNetworkTrafficAnnotationTag() function.
 * `test_annotation`: Files and paths in this category can use the
   TRAFFIC_ANNOTATION_FOR_TESTS tag.
+
+## hashes.py
+
+In logs from chrome://net-export, there is a `traffic_annotation` field, which
+contains the ***hash code** of the network annotation. Since this hash code is
+not recorded in annotations.xml, it is non-trivial to map it to its annotation.
+
+Running this scripts print a list of all annotations from `annotations.xml`,
+along with their hash codes. This makes it easier to look up the annotation.
+
+```
+vpython3 ./tools/traffic_annotation/scripts/auditor/hashes.py
+```

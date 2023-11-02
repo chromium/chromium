@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -51,6 +51,22 @@ mojom("mojom") {
           {
             mojom = "printing.mojom.AdvancedCapabilityValue"
             cpp = "::printing::AdvancedCapabilityValue"
+          },
+        ]
+      },
+    ]
+  }
+  if (is_win) {
+    cpp_typemaps += [
+      {
+        types = [
+          {
+            mojom = "printing.mojom.PageOutputQualityAttribute"
+            cpp = "::printing::PageOutputQualityAttribute"
+          },
+          {
+            mojom = "printing.mojom.PageOutputQuality"
+            cpp = "::printing::PageOutputQuality"
           },
         ]
       },

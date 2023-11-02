@@ -1,60 +1,53 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/ui/first_run/welcome_to_chrome_view_controller.h"
+#import "ios/chrome/browser/ui/first_run/welcome_to_chrome_view_controller.h"
 
-#include "base/check.h"
-#include "base/i18n/rtl.h"
-#include "base/mac/bundle_locations.h"
-#include "base/mac/foundation_util.h"
-#include "base/metrics/user_metrics.h"
-#include "base/metrics/user_metrics_action.h"
-#include "base/notreached.h"
-#include "base/strings/sys_string_conversions.h"
-#include "components/metrics/metrics_pref_names.h"
-#include "components/metrics/metrics_reporting_default_state.h"
-#include "components/prefs/pref_service.h"
-#include "components/sync/driver/sync_service.h"
-#include "components/web_resource/web_resource_pref_names.h"
-#include "ios/chrome/browser/application_context.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/chrome_url_constants.h"
-#include "ios/chrome/browser/first_run/first_run_configuration.h"
-#include "ios/chrome/browser/main/browser.h"
+#import "base/check.h"
+#import "base/i18n/rtl.h"
+#import "base/mac/bundle_locations.h"
+#import "base/mac/foundation_util.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
+#import "base/notreached.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/metrics/metrics_pref_names.h"
+#import "components/prefs/pref_service.h"
+#import "components/sync/driver/sync_service.h"
+#import "components/web_resource/web_resource_pref_names.h"
+#import "ios/chrome/browser/application_context/application_context.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/first_run/first_run_configuration.h"
+#import "ios/chrome/browser/first_run/first_run_metrics.h"
+#import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
-#include "ios/chrome/browser/sync/sync_service_factory.h"
-#include "ios/chrome/browser/sync/sync_setup_service.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
+#import "ios/chrome/browser/sync/sync_setup_service.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
-#include "ios/chrome/browser/ui/commands/application_commands.h"
+#import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
-#include "ios/chrome/browser/ui/fancy_ui/primary_action_button.h"
+#import "ios/chrome/browser/ui/fancy_ui/primary_action_button.h"
 #import "ios/chrome/browser/ui/first_run/first_run_constants.h"
-#include "ios/chrome/browser/ui/first_run/first_run_util.h"
-#include "ios/chrome/browser/ui/first_run/static_file_view_controller.h"
+#import "ios/chrome/browser/ui/first_run/first_run_util.h"
+#import "ios/chrome/browser/ui/first_run/static_file_view_controller.h"
 #import "ios/chrome/browser/ui/first_run/welcome_to_chrome_view.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
-#include "ios/chrome/browser/ui/util/terms_util.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
+#import "ios/chrome/browser/ui/util/terms_util.h"
+#import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
-#include "ios/chrome/common/string_util.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "net/base/mac/url_conversions.h"
-#include "ui/base/l10n/l10n_util.h"
+#import "ios/chrome/common/string_util.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "net/base/mac/url_conversions.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-namespace {
-
-// Default value for metrics reporting state. "YES" corresponding to "opt-out"
-// state.
-const BOOL kDefaultStatsCheckboxValue = YES;
-}
 
 @interface WelcomeToChromeViewController () <WelcomeToChromeViewDelegate>
 
@@ -97,23 +90,7 @@ const BOOL kDefaultStatsCheckboxValue = YES;
 @synthesize dispatcher = _dispatcher;
 
 + (BOOL)defaultStatsCheckboxValue {
-  // Record metrics reporting as opt-in/opt-out only once.
-  static dispatch_once_t once;
-  dispatch_once(&once, ^{
-    // Don't call RecordMetricsReportingDefaultState twice.  This can happen
-    // if the app is quit before accepting the TOS, or via experiment settings.
-    if (metrics::GetMetricsReportingDefaultState(
-            GetApplicationContext()->GetLocalState()) !=
-        metrics::EnableMetricsDefault::DEFAULT_UNKNOWN) {
-      return;
-    }
-
-    metrics::RecordMetricsReportingDefaultState(
-        GetApplicationContext()->GetLocalState(),
-        kDefaultStatsCheckboxValue ? metrics::EnableMetricsDefault::OPT_OUT
-                                   : metrics::EnableMetricsDefault::OPT_IN);
-  });
-  return kDefaultStatsCheckboxValue;
+  return kChromeFirstRunUIDidFinishNotification;
 }
 
 - (instancetype)initWithBrowser:(Browser*)browser
@@ -138,8 +115,8 @@ const BOOL kDefaultStatsCheckboxValue = YES;
   // The sign-in coordinator is part of the navigation controller, so the
   // sign-in coordinator didn't present itself. Therefore the interrupt action
   // must be SigninCoordinatorInterruptActionNoDismiss.
-  // |completion| has to be stored in order to be invoked when
-  // |firstRunDismissedWithPresentingViewController:signinAction:| is
+  // `completion` has to be stored in order to be invoked when
+  // `firstRunDismissedWithPresentingViewController:signinAction:` is
   // called.
   self.interruptCompletion = completion;
   [self.coordinator
@@ -148,6 +125,7 @@ const BOOL kDefaultStatsCheckboxValue = YES;
 }
 
 - (void)loadView {
+  RecordMetricsReportingDefaultState();
   WelcomeToChromeView* welcomeToChromeView =
       [[WelcomeToChromeView alloc] initWithFrame:CGRectZero];
   [welcomeToChromeView setDelegate:self];
@@ -159,6 +137,7 @@ const BOOL kDefaultStatsCheckboxValue = YES;
 - (void)viewDidLoad {
   [super viewDidLoad];
   [self.navigationController setNavigationBarHidden:YES];
+  base::UmaHistogramEnumeration("FirstRun.Stage", first_run::kStart);
 }
 
 - (void)viewDidLayoutSubviews {
@@ -265,14 +244,29 @@ const BOOL kDefaultStatsCheckboxValue = YES;
       };
 
   [self.coordinator start];
+  base::UmaHistogramEnumeration("FirstRun.Stage", first_run::kSyncScreenStart);
 }
 
 // Handles the sign-in completion and proceeds to complete the first run
-// operation depending on the |signinResult| state.
+// operation depending on the `signinResult` state.
 - (void)signinCompleteResult:(SigninCoordinatorResult)signinResult
               completionInfo:(SigninCompletionInfo*)signinCompletionInfo {
   [self.coordinator stop];
   self.coordinator = nil;
+
+  switch (signinResult) {
+    case SigninCoordinatorResultCanceledByUser:
+    case SigninCoordinatorResultInterrupted: {
+      base::UmaHistogramEnumeration(
+          "FirstRun.Stage", first_run::kSyncScreenCompletionWithoutSync);
+      break;
+    }
+    case SigninCoordinatorResultSuccess: {
+      base::UmaHistogramEnumeration("FirstRun.Stage",
+                                    first_run::kSyncScreenCompletionWithSync);
+      break;
+    }
+  }
 
   [self completeFirstRunWithSigninCompletionInfo:signinCompletionInfo];
 }
@@ -304,6 +298,7 @@ const BOOL kDefaultStatsCheckboxValue = YES;
             (UIViewController*)presentingViewController
                                  signinCompletionInfo:
                                      (SigninCompletionInfo*)completionInfo {
+  base::UmaHistogramEnumeration("FirstRun.Stage", first_run::kComplete);
   FirstRunDismissed();
   switch (completionInfo.signinCompletionAction) {
     case SigninCompletionActionNone:

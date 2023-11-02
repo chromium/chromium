@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,20 +30,20 @@ class NetworkLogsMessageHandler : public content::WebUIMessageHandler {
   void Respond(const std::string& callback_id,
                const std::string& result,
                bool is_error);
-  void OnStoreLogs(const base::ListValue* list);
+  void OnStoreLogs(const base::Value::List& list);
   void OnWriteSystemLogs(const std::string& callback_id,
-                         base::Value&& options,
+                         base::Value::Dict&& options,
                          absl::optional<base::FilePath> syslogs_path);
   void MaybeWriteDebugLogs(const std::string& callback_id,
-                           base::Value&& options);
+                           base::Value::Dict&& options);
   void OnWriteDebugLogs(const std::string& callback_id,
-                        base::Value&& options,
+                        base::Value::Dict&& options,
                         absl::optional<base::FilePath> logs_path);
   void MaybeWritePolicies(const std::string& callback_id,
-                          base::Value&& options);
+                          base::Value::Dict&& options);
   void OnWritePolicies(const std::string& callback_id, bool result);
   void OnWriteSystemLogsCompleted(const std::string& callback_id);
-  void OnSetShillDebugging(const base::ListValue* list);
+  void OnSetShillDebugging(const base::Value::List& list);
   void OnSetShillDebuggingCompleted(const std::string& callback_id,
                                     bool succeeded);
 

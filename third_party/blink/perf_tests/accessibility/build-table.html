@@ -29,21 +29,21 @@ function runTest() {
         }
 
         setTimeout(() => {
-            // Add 100 cells to each row.
+            // Add 33 cells to each row.
             for (let row = table.firstElementChild;
                  row;
                  row = row.nextElementSibling) {
-                for (let i = 0; i < 100; i++) {
+                for (let i = 0; i < 33; i++) {
                     let cell = document.createElement('td');
                     cell.innerHTML = i;
                     row.appendChild(cell);
                 }
             }
-        }, 10);
+        }, 250);
 
         // Wait to allow the asynchronous accessibility code that's
         // covered by traceEventsToMeasure to have a chance to run.
-        setTimeout(runTest, 1500);
+        setTimeout(runTest, 2500);
     }
 }
 
@@ -59,6 +59,7 @@ PerfTestRunner.startMeasureValuesAsync({
     iterationCount: 6,
     tracingCategories: 'accessibility',
     traceEventsToMeasure: [
+        'AXObjectCacheImpl::ChildrenChanged(LayoutObject)',
         'ProcessDeferredAccessibilityEvents'
     ]
 });

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,7 +29,6 @@
 #include "components/metrics/test/test_enabled_state_provider.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/variations/pref_names.h"
-#include "components/version_info/channel.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -83,7 +82,7 @@ class MetricsStateManagerTest : public testing::Test {
         MetricsStateManager::Create(
             &prefs_, enabled_state_provider_.get(), std::wstring(),
             base::FilePath(), StartupVisibility::kUnknown,
-            version_info::Channel::UNKNOWN,
+            EntropyProviderType::kDefault,
             base::BindRepeating(
                 &MetricsStateManagerTest::MockStoreClientInfoBackup,
                 base::Unretained(this)),
@@ -195,7 +194,7 @@ TEST_F(MetricsStateManagerTest, EntropySourceUsed_Low) {
   prefs_.SetInt64(prefs::kInstallDate, base::Time::Now().ToTimeT());
 
   std::unique_ptr<MetricsStateManager> state_manager(CreateStateManager());
-  state_manager->CreateDefaultEntropyProvider();
+  state_manager->CreateEntropyProviders();
   EXPECT_EQ(state_manager->entropy_source_returned(),
             MetricsStateManager::ENTROPY_SOURCE_LOW);
   EXPECT_EQ(state_manager->initial_client_id_for_testing(), "");
@@ -204,7 +203,7 @@ TEST_F(MetricsStateManagerTest, EntropySourceUsed_Low) {
 TEST_F(MetricsStateManagerTest, EntropySourceUsed_High) {
   EnableMetricsReporting();
   std::unique_ptr<MetricsStateManager> state_manager(CreateStateManager());
-  state_manager->CreateDefaultEntropyProvider();
+  state_manager->CreateEntropyProviders();
   EXPECT_EQ(state_manager->entropy_source_returned(),
             MetricsStateManager::ENTROPY_SOURCE_HIGH);
   EXPECT_EQ(state_manager->initial_client_id_for_testing(),
@@ -320,18 +319,24 @@ TEST_F(MetricsStateManagerTest,
   EXPECT_EQ(client_info_load_count_, 1);
 }
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 TEST_F(MetricsStateManagerTest, ProvisionalClientId_PromotedToClientId) {
+  // Force enable the creation of a provisional client ID on first run for
+  // consistency between Chromium and Chrome builds.
+  MetricsStateManager::enable_provisional_client_id_for_testing_ = true;
+
   std::unique_ptr<MetricsStateManager> state_manager(CreateStateManager());
 
   // Verify that there was a provisional client id created.
-  std::string provisional_client_id = state_manager->provisional_client_id_;
+  std::string provisional_client_id =
+      prefs_.GetString(prefs::kMetricsProvisionalClientID);
   VerifyClientId(provisional_client_id);
   // No client id should have been stored.
   EXPECT_TRUE(prefs_.FindPreference(prefs::kMetricsClientID)->IsDefaultValue());
   int low_entropy_source = state_manager->GetLowEntropySource();
-  // The default entropy provider should be the high entropy one.
-  state_manager->CreateDefaultEntropyProvider();
+  // The default entropy provider should be the high entropy one since we a
+  // the provisional client ID.
+  state_manager->CreateEntropyProviders();
   EXPECT_EQ(state_manager->entropy_source_returned(),
             MetricsStateManager::ENTROPY_SOURCE_HIGH);
 
@@ -342,48 +347,56 @@ TEST_F(MetricsStateManagerTest, ProvisionalClientId_PromotedToClientId) {
   std::string client_id = state_manager->client_id();
   EXPECT_EQ(provisional_client_id, client_id);
   EXPECT_EQ(prefs_.GetString(prefs::kMetricsClientID), client_id);
-  EXPECT_TRUE(state_manager->provisional_client_id_.empty());
+  EXPECT_TRUE(prefs_.FindPreference(prefs::kMetricsProvisionalClientID)
+                  ->IsDefaultValue());
+  EXPECT_TRUE(prefs_.GetString(prefs::kMetricsProvisionalClientID).empty());
   EXPECT_EQ(state_manager->GetLowEntropySource(), low_entropy_source);
   EXPECT_EQ(client_info_load_count_, 1);
 }
 
-TEST_F(MetricsStateManagerTest, ProvisionalClientId_NotPersisted) {
-  std::string provisional_client_id;
-  int low_entropy_source;
+TEST_F(MetricsStateManagerTest, ProvisionalClientId_PersistedAcrossFirstRuns) {
+  // Force enable the creation of a provisional client ID on first run for
+  // consistency between Chromium and Chrome builds.
+  MetricsStateManager::enable_provisional_client_id_for_testing_ = true;
 
-  // First run, with a provisional client id.
+  std::string provisional_client_id;
+
+  // Simulate a first run, and verify that a provisional client id is generated.
+  // We also do not enable nor disable UMA in order to simulate exiting during
+  // the first run flow.
   {
     std::unique_ptr<MetricsStateManager> state_manager(CreateStateManager());
     // Verify that there was a provisional client id created.
-    std::string provisional_client_id = state_manager->provisional_client_id_;
+    provisional_client_id =
+        prefs_.GetString(prefs::kMetricsProvisionalClientID);
     VerifyClientId(provisional_client_id);
     // No client id should have been stored.
     EXPECT_TRUE(
         prefs_.FindPreference(prefs::kMetricsClientID)->IsDefaultValue());
-    low_entropy_source = state_manager->GetLowEntropySource();
-    // The default entropy provider should be the high entropy one.
-    state_manager->CreateDefaultEntropyProvider();
+    // The default entropy provider should be the high entropy one since we a
+    // the provisional client ID.
+    state_manager->CreateEntropyProviders();
     EXPECT_EQ(state_manager->entropy_source_returned(),
               MetricsStateManager::ENTROPY_SOURCE_HIGH);
   }
 
-  // Now, simulate a second run, such that UMA was not turned on during the
-  // first run. This should not result in any client id existing nor any
-  // provisional client id.
+  // Now, simulate a second run, and verify that the provisional client ID is
+  // the same.
   {
     std::unique_ptr<MetricsStateManager> state_manager(CreateStateManager());
-    EXPECT_TRUE(state_manager->provisional_client_id_.empty());
-    EXPECT_TRUE(state_manager->client_id().empty());
-    EXPECT_EQ(state_manager->GetLowEntropySource(), low_entropy_source);
-    EXPECT_TRUE(
-        prefs_.FindPreference(prefs::kMetricsClientID)->IsDefaultValue());
-    // The default entropy provider should be the low entropy one.
-    state_manager->CreateDefaultEntropyProvider();
+    // Verify that the same provisional client ID as the first run is used.
+    EXPECT_EQ(provisional_client_id,
+              prefs_.GetString(prefs::kMetricsProvisionalClientID));
+    // There still should not be any stored client ID.
+    EXPECT_TRUE(prefs_.FindPreference(prefs::kMetricsClientID));
+    // The default entropy provider should be the high entropy one since we a
+    // the provisional client ID.
+    state_manager->CreateEntropyProviders();
     EXPECT_EQ(state_manager->entropy_source_returned(),
-              MetricsStateManager::ENTROPY_SOURCE_LOW);
+              MetricsStateManager::ENTROPY_SOURCE_HIGH);
   }
 }
-#endif  // !defined(OS_WIN)
+#endif  // !BUILDFLAG(IS_WIN)
 
 TEST_F(MetricsStateManagerTest, LoadPrefs) {
   ClientInfo client_info;

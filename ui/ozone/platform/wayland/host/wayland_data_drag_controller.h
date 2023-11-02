@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
@@ -79,6 +80,10 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
     kStarted,       // The outgoing drag is in progress.
     kTransferring,  // The incoming data is transferred from the source.
   };
+  enum class DragSource {
+    kMouse,
+    kTouch,
+  };
 
   WaylandDataDragController(WaylandConnection* connection,
                             WaylandDataDeviceManager* data_device_manager,
@@ -101,6 +106,9 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   // TODO(crbug.com/896640): Remove once focus is fixed during DND sessions.
   WaylandWindow* entered_window() const { return window_; }
 
+  // Returns false iff the data is for a window dragging session.
+  bool ShouldReleaseCaptureForDrag(ui::OSExchangeData* data) const;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(WaylandDataDragControllerTest, ReceiveDrag);
   FRIEND_TEST_ALL_PREFIXES(WaylandDataDragControllerTest, StartDrag);
@@ -119,6 +127,7 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   void OnDragMotion(const gfx::PointF& location) override;
   void OnDragLeave() override;
   void OnDragDrop() override;
+  const WaylandWindow* GetDragTarget() const override;
 
   // WaylandDataSource::Delegate:
   void OnDataSourceFinish(bool completed) override;
@@ -146,18 +155,38 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   void SetOfferedExchangeDataProvider(const OSExchangeData& data);
   const WaylandExchangeDataProvider* GetOfferedExchangeDataProvider() const;
 
+  // Checks whether |data| holds information about a window dragging session.
+  bool IsWindowDraggingSession(const ui::OSExchangeData& data) const;
+
+  // Sets up everything for starting a window dragging session using regular
+  // drag and drop, if |data| holds information about a window dragging session
+  // (as reported by IsWindowDraggingSession()). |origin_window_| must be set
+  // before calling this.
+  void SetUpWindowDraggingSessionIfNeeded(const ui::OSExchangeData& data);
+
+  // Sends an ET_MOUSE_RELEASED event to the window that currently has capture.
+  // Must only be called if |pointer_grabber_for_window_drag_| is valid. This
+  // resets |pointer_grabber_for_window_drag_|.
+  void DispatchPointerRelease();
+
   // PlatformEventDispatcher:
   bool CanDispatchEvent(const PlatformEvent& event) override;
   uint32_t DispatchEvent(const PlatformEvent& event) override;
 
-  WaylandConnection* const connection_;
-  WaylandDataDeviceManager* const data_device_manager_;
-  WaylandDataDevice* const data_device_;
-  WaylandWindowManager* const window_manager_;
-  WaylandPointer::Delegate* const pointer_delegate_;
-  WaylandTouch::Delegate* const touch_delegate_;
+  void DrawIconInternal();
+  static void OnDragSurfaceFrame(void* data,
+                                 struct wl_callback* callback,
+                                 uint32_t time);
+
+  const raw_ptr<WaylandConnection> connection_;
+  const raw_ptr<WaylandDataDeviceManager> data_device_manager_;
+  const raw_ptr<WaylandDataDevice> data_device_;
+  const raw_ptr<WaylandWindowManager> window_manager_;
+  const raw_ptr<WaylandPointer::Delegate> pointer_delegate_;
+  const raw_ptr<WaylandTouch::Delegate> touch_delegate_;
 
   State state_ = State::kIdle;
+  absl::optional<DragSource> drag_source_;
 
   // Data offered by us to the other side.
   std::unique_ptr<WaylandDataSource> data_source_;
@@ -179,10 +208,10 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
 
   // The window that initiated the drag session. Can be null when the session
   // has been started by an external Wayland client.
-  WaylandWindow* origin_window_ = nullptr;
+  raw_ptr<WaylandWindow> origin_window_ = nullptr;
 
   // Current window under pointer.
-  WaylandWindow* window_ = nullptr;
+  raw_ptr<WaylandWindow> window_ = nullptr;
 
   // The most recent location received while dragging the data.
   gfx::PointF last_drag_location_;
@@ -195,8 +224,14 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
 
   // Drag icon related variables.
   std::unique_ptr<WaylandSurface> icon_surface_;
-  std::unique_ptr<WaylandShmBuffer> shm_buffer_;
-  const SkBitmap* icon_bitmap_ = nullptr;
+  std::unique_ptr<WaylandShmBuffer> icon_buffer_;
+  raw_ptr<const SkBitmap> icon_bitmap_ = nullptr;
+  gfx::Point icon_offset_;
+  wl::Object<wl_callback> icon_frame_callback_;
+
+  // Keeps track of the window that holds the pointer grab, i.e. the window that
+  // will receive the mouse release event from DispatchPointerRelease().
+  raw_ptr<WaylandWindow> pointer_grabber_for_window_drag_ = nullptr;
 
   std::unique_ptr<ScopedEventDispatcher> nested_dispatcher_;
 

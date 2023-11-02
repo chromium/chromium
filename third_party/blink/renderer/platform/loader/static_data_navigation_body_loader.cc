@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,15 +40,11 @@ void StaticDataNavigationBodyLoader::SetDefersLoading(LoaderFreezeMode mode) {
 }
 
 void StaticDataNavigationBodyLoader::StartLoadingBody(
-    WebNavigationBodyLoader::Client* client,
-    CodeCacheHost* code_cache_host) {
+    WebNavigationBodyLoader::Client* client) {
   DCHECK(!is_in_continue_);
   client_ = client;
   Continue();
 }
-
-void StaticDataNavigationBodyLoader::StartLoadingCodeCache(
-    CodeCacheHost* code_cache_host) {}
 
 void StaticDataNavigationBodyLoader::Continue() {
   if (freeze_mode_ != LoaderFreezeMode::kNone || !client_ || is_in_continue_)

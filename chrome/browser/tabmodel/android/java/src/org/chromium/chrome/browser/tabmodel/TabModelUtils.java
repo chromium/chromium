@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -150,9 +150,23 @@ public class TabModelUtils {
      * type to {@link TabModel#setIndex(int, TabSelectionType)}.
      * @param model The {@link TabModel} to act on.
      * @param index The index of the {@link Tab} to select.
+     * @param skipLoadingTab Whether to skip loading the Tab.
      */
-    public static void setIndex(TabModel model, int index) {
-        model.setIndex(index, TabSelectionType.FROM_USER);
+    public static void setIndex(TabModel model, int index, boolean skipLoadingTab) {
+        setIndex(model, index, skipLoadingTab, TabSelectionType.FROM_USER);
+    }
+
+    /**
+     * A helper method that allows specifying a {@link TabSelectionType}
+     * type to {@link TabModel#setIndex(int, TabSelectionType)}.
+     * @param model The {@link TabModel} to act on.
+     * @param index The index of the {@link Tab} to select.
+     * @param skipLoadingTab Whether to skip loading the Tab.
+     * @param type {@link TabSelectionType} how the tab selection was initiated.
+     */
+    public static void setIndex(
+            TabModel model, int index, boolean skipLoadingTab, @TabSelectionType int type) {
+        model.setIndex(index, type, skipLoadingTab);
     }
 
     /**
@@ -184,5 +198,28 @@ public class TabModelUtils {
             tabIds.add(tabModelSelector.getModel(false).getTabAt(i).getId());
         }
         return tabIds;
+    }
+
+    /**
+     * Returns the most recently visited Tab in the specified TabList that is not {@code tabId}.
+     * @param model The {@link TabModel} to act on.
+     * @param tabId The ID of the {@link Tab} to skip or {@link Tab.INVALID_TAB_ID}.
+     * @return the most recently visited Tab or null if none can be found.
+     */
+    public static Tab getMostRecentTab(TabList model, int tabId) {
+        Tab mostRecentTab = null;
+        long mostRecentTabTime = 0;
+        for (int i = 0; i < model.getCount(); i++) {
+            final Tab currentTab = model.getTabAt(i);
+            if (currentTab.getId() == tabId || currentTab.isClosing()) continue;
+
+            final long currentTime = CriticalPersistedTabData.from(currentTab).getTimestampMillis();
+            if (currentTime != CriticalPersistedTabData.INVALID_TIMESTAMP
+                    && mostRecentTabTime < currentTime) {
+                mostRecentTabTime = currentTime;
+                mostRecentTab = currentTab;
+            }
+        }
+        return mostRecentTab;
     }
 }

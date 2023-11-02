@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@ namespace content {
 constexpr base::TaskTraits traits = {BrowserThread::UI,
                                      BrowserThread::IO};
 #elif defined(NCTEST_BROWSER_TASK_TRAITS_MULTIPLE_TASK_TYPES)  // [r"The traits bag contains multiple traits of the same type."]
-constexpr base::TaskTraits traits = {BrowserTaskType::kBootstrap, BrowserTaskType::kPreconnect};
+constexpr base::TaskTraits traits = {BrowserTaskType::kBootstrap, BrowserTaskType::kUserInput};
 #endif
 
 

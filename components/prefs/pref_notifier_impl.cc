@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/observer_list.h"
 #include "base/strings/strcat.h"
 #include "components/prefs/pref_service.h"
 
@@ -48,9 +49,7 @@ PrefNotifierImpl::~PrefNotifierImpl() {
           // For DbusAppmenu, crbug.com/946668
           pref_name == "bookmark_bar.show_on_all_tabs" ||
           // For BrowserWindowPropertyManager, crbug.com/942491
-          pref_name == "profile.icon_version" ||
-          // For BrowserWindowDefaultTouchBar, crbug.com/945772
-          pref_name == "default_search_provider_data.template_url_data") {
+          pref_name == "profile.icon_version") {
         base::debug::DumpWithoutCrashing();
       }
     }

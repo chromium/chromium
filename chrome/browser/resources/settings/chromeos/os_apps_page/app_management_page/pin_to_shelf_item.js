@@ -1,50 +1,60 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import './toggle_row.js';
+import 'chrome://resources/cr_components/app_management/toggle_row.js';
 
-import {assert, assertNotReached} from '//resources/js/assert.m.js';
-import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {AppManagementUserAction, OptionalBool} from 'chrome://resources/cr_components/app_management/constants.js';
+import {convertOptionalBoolToBool, recordAppManagementUserAction, toggleOptionalBool} from 'chrome://resources/cr_components/app_management/util.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSearch, recordSettingChange, setUserActionRecorderForTesting} from '../../metrics_recorder.m.js';
+import {recordSettingChange} from '../../metrics_recorder.js';
 
 import {BrowserProxy} from './browser_proxy.js';
-import {AppManagementUserAction, OptionalBool} from './constants.js';
-import {convertOptionalBoolToBool, recordAppManagementUserAction, toggleOptionalBool} from './util.js';
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'app-management-pin-to-shelf-item',
+/** @polymer */
+class AppManagementPinToShelfItemElement extends PolymerElement {
+  static get is() {
+    return 'app-management-pin-to-shelf-item';
+  }
 
-  properties: {
-    /**
-     * @type {App}
-     */
-    app: Object,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /**
-     * @type {boolean}
-     */
-    hidden: {
-      type: Boolean,
-      computed: 'isAvailable_(app)',
-      reflectToAttribute: true,
-    },
+  static get properties() {
+    return {
+      /**
+       * @type {App}
+       */
+      app: Object,
 
-    /**
-     * @type {boolean}
-     */
-    disabled: {
-      type: Boolean,
-      computed: 'isManaged_(app)',
-      reflectToAttribute: true,
-    },
-  },
+      /**
+       * @type {boolean}
+       */
+      hidden: {
+        type: Boolean,
+        computed: 'isAvailable_(app)',
+        reflectToAttribute: true,
+      },
 
-  listeners: {
-    click: 'onClick_',
-    change: 'toggleSetting_',
-  },
+      /**
+       * @type {boolean}
+       */
+      disabled: {
+        type: Boolean,
+        computed: 'isManaged_(app)',
+        reflectToAttribute: true,
+      },
+    };
+  }
+
+  ready() {
+    super.ready();
+
+    this.addEventListener('click', this.onClick_);
+    this.addEventListener('change', this.toggleSetting_);
+  }
 
   /**
    * @param {App} app
@@ -57,7 +67,7 @@ Polymer({
     }
     assert(app);
     return app.isPinned === OptionalBool.kTrue;
-  },
+  }
 
   /**
    * @param {App} app
@@ -69,7 +79,7 @@ Polymer({
     }
     assert(app);
     return app.hidePinToShelf;
-  },
+  }
 
   /**
    * @param {App} app
@@ -82,27 +92,34 @@ Polymer({
     }
     assert(app);
     return app.isPolicyPinned === OptionalBool.kTrue;
-  },
+  }
 
+  /** @private */
   toggleSetting_() {
     const newState = assert(toggleOptionalBool(this.app.isPinned));
     const newStateBool = convertOptionalBoolToBool(newState);
-    assert(newStateBool === this.$['toggle-row'].isChecked());
+    assert(
+        newStateBool ===
+        (/** @type {AppManagementToggleRowElement} */ (this.$['toggle-row']))
+            .isChecked());
     BrowserProxy.getInstance().handler.setPinned(
         this.app.id,
         newState,
     );
     recordSettingChange();
     const userAction = newStateBool ?
-        AppManagementUserAction.PinToShelfTurnedOn :
-        AppManagementUserAction.PinToShelfTurnedOff;
+        AppManagementUserAction.PIN_TO_SHELF_TURNED_ON :
+        AppManagementUserAction.PIN_TO_SHELF_TURNED_OFF;
     recordAppManagementUserAction(this.app.type, userAction);
-  },
+  }
 
   /**
    * @private
    */
   onClick_() {
     this.$['toggle-row'].click();
-  },
-});
+  }
+}
+
+customElements.define(
+    AppManagementPinToShelfItemElement.is, AppManagementPinToShelfItemElement);

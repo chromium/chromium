@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,17 +7,20 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/notreached.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/reporting/extension_request/extension_request_report_generator.h"
 #include "chrome/browser/enterprise/reporting/prefs.h"
+#include "chrome/browser/profiles/reporting_util.h"
 #include "chrome/browser/upgrade_detector/build_state.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/enterprise/browser/reporting/report_scheduler.h"
+#include "components/policy/core/common/cloud/dm_token.h"
 #include "components/prefs/pref_service.h"
-#include "components/reporting/client/report_queue_provider.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace em = enterprise_management;
 
@@ -37,10 +40,33 @@ constexpr bool ShouldReportUpdates() {
 #endif
 }
 
+PrefService* LocalState() {
+  return g_browser_process->local_state();
+}
+
 }  // namespace
 
-ReportSchedulerDesktop::ReportSchedulerDesktop(Profile* profile)
-    : extension_request_observer_factory_(profile) {}
+ReportSchedulerDesktop::ReportSchedulerDesktop()
+    : ReportSchedulerDesktop(nullptr, false) {}
+
+ReportSchedulerDesktop::ReportSchedulerDesktop(Profile* profile,
+                                               bool profile_reporting) {
+  if (profile_reporting) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // Profile reporting is on LaCrOs instead of Ash.
+    NOTREACHED();
+#endif
+    profile_ = profile;
+    prefs_ = profile->GetPrefs();
+    // Extension request hasn't support profile report yet. When we do, we also
+    // need to refactor the code to avoid multiple extension request observer.
+  } else {
+    profile_ = nullptr;
+    prefs_ = LocalState();
+    extension_request_observer_factory_ =
+        std::make_unique<ExtensionRequestObserverFactory>(profile);
+  }
+}
 
 ReportSchedulerDesktop::~ReportSchedulerDesktop() {
   // If new profiles have been added since the last report was sent, they won't
@@ -52,8 +78,8 @@ ReportSchedulerDesktop::~ReportSchedulerDesktop() {
     g_browser_process->GetBuildState()->RemoveObserver(this);
 }
 
-PrefService* ReportSchedulerDesktop::GetLocalState() {
-  return g_browser_process->local_state();
+PrefService* ReportSchedulerDesktop::GetPrefService() {
+  return prefs_;
 }
 
 void ReportSchedulerDesktop::StartWatchingUpdatesIfNeeded(
@@ -72,7 +98,7 @@ void ReportSchedulerDesktop::StartWatchingUpdatesIfNeeded(
   // Generate and upload a basic report immediately if the version has
   // changed since the last upload and the last upload was less than 24h
   // ago.
-  if (GetLocalState()->GetString(kLastUploadVersion) !=
+  if (GetPrefService()->GetString(kLastUploadVersion) !=
           chrome::kChromeVersion &&
       last_upload + upload_interval > base::Time::Now() &&
       !trigger_report_callback_.is_null()) {
@@ -90,25 +116,40 @@ void ReportSchedulerDesktop::StopWatchingUpdates() {
 void ReportSchedulerDesktop::OnBrowserVersionUploaded() {
   if (ShouldReportUpdates()) {
     // Remember what browser version made this upload.
-    GetLocalState()->SetString(kLastUploadVersion, chrome::kChromeVersion);
+    GetPrefService()->SetString(kLastUploadVersion, chrome::kChromeVersion);
   }
 }
 
 void ReportSchedulerDesktop::StartWatchingExtensionRequestIfNeeded() {
-  // On CrOS, the function may be called twice during startup.
-  if (extension_request_observer_factory_.IsReportEnabled())
+  if (!extension_request_observer_factory_)
     return;
 
-  extension_request_observer_factory_.EnableReport(
+  // On CrOS, the function may be called twice during startup.
+  if (extension_request_observer_factory_->IsReportEnabled())
+    return;
+
+  extension_request_observer_factory_->EnableReport(
       base::BindRepeating(&ReportSchedulerDesktop::TriggerExtensionRequest,
                           base::Unretained(this)));
 }
 
 void ReportSchedulerDesktop::StopWatchingExtensionRequest() {
-  extension_request_observer_factory_.DisableReport();
+  if (extension_request_observer_factory_)
+    extension_request_observer_factory_->DisableReport();
 }
 
 void ReportSchedulerDesktop::OnExtensionRequestUploaded() {}
+
+policy::DMToken ReportSchedulerDesktop::GetProfileDMToken() {
+  absl::optional<std::string> dm_token = reporting::GetUserDmToken(profile_);
+  if (!dm_token || dm_token->empty())
+    return policy::DMToken();
+  return policy::DMToken(policy::DMToken::Status::kValid, *dm_token);
+}
+
+std::string ReportSchedulerDesktop::GetProfileClientId() {
+  return reporting::GetUserClientId(profile_).value_or(std::string());
+}
 
 void ReportSchedulerDesktop::OnUpdate(const BuildState* build_state) {
   DCHECK(ShouldReportUpdates());

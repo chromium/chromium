@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,8 @@
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
 #include "net/base/ip_address.h"
-#include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_persistent.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/webrtc/rtc_base/async_resolver_interface.h"
 
@@ -32,7 +33,9 @@ class P2PAsyncAddressResolver
   P2PAsyncAddressResolver& operator=(const P2PAsyncAddressResolver&) = delete;
 
   // Start address resolve process.
-  void Start(const rtc::SocketAddress& addr, DoneCallback done_callback);
+  void Start(const rtc::SocketAddress& addr,
+             absl::optional<int> address_family,
+             DoneCallback done_callback);
   // Clients must unregister before exiting for cleanup.
   void Cancel();
 

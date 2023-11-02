@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/no_destructor.h"
@@ -45,7 +44,7 @@ struct HistogramArgs {
   const char* name;
   int minimum;
   int maximum;
-  uint32_t bucket_count;
+  size_t bucket_count;
 };
 
 // List of metrics to collect using a GroupedHistogram.
@@ -90,11 +89,13 @@ const HistogramArgs kHistogramsToGroup[] = {
 // of the form "<metric-name>.<app-name>".
 class GroupedHistogram : public base::Histogram {
  public:
+  // TODO(crbug.com/1300206): min/max parameters are redundant with "ranges"
+  // and can probably be removed.
   GroupedHistogram(const char* metric_to_override,
                    Sample minimum,
                    Sample maximum,
                    const base::BucketRanges* ranges)
-      : Histogram(metric_to_override, minimum, maximum, ranges),
+      : Histogram(metric_to_override, ranges),
         minimum_(minimum),
         maximum_(maximum),
         bucket_count_(ranges->bucket_count()) {}
@@ -139,7 +140,7 @@ class GroupedHistogram : public base::Histogram {
 void PreregisterHistogram(const char* name,
                           GroupedHistogram::Sample minimum,
                           GroupedHistogram::Sample maximum,
-                          uint32_t bucket_count,
+                          size_t bucket_count,
                           int32_t flags) {
   base::StringPiece name_piece(name);
 
@@ -169,7 +170,7 @@ void PreregisterHistogram(const char* name,
 } // namespace
 
 void PreregisterAllGroupedHistograms() {
-  for (size_t i = 0; i < base::size(kHistogramsToGroup); ++i) {
+  for (size_t i = 0; i < std::size(kHistogramsToGroup); ++i) {
     PreregisterHistogram(
         kHistogramsToGroup[i].name,
         kHistogramsToGroup[i].minimum,

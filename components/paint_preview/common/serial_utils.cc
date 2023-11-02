@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -70,7 +70,7 @@ sk_sp<SkData> SerializeTypeface(SkTypeface* typeface, void* ctx) {
     return typeface->serialize(SkTypeface::SerializeBehavior::kDontIncludeData);
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   {
     SkString familyName;
     typeface->getFamilyName(&familyName);

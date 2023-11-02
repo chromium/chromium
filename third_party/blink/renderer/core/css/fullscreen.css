@@ -16,6 +16,7 @@
 
     /* intentionally not !important */
     object-fit: contain;
+    user-select: text;
 }
 
 iframe:fullscreen {

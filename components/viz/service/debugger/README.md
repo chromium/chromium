@@ -5,7 +5,15 @@
 The Viz Remote Debugger is a debug only connection that allows an active chromium instance to send graphical and text debug information to a remote client for display.
 
 ### Motivation
-[Visual Debugger one-pager](https://docs.google.com/document/d/1s2OLZcUrUxXRxOD8nR4giNRnCQZcdtXBp4DUI_Fb2GU/edit?usp=sharing).
+- Much of the debugging of internal chromium is printfs even though many aspects of the chromium code is highly graphics focused.
+- Developers are constantly recompiling to add new printf only to delete it when committing into chromium repo to avoid global printf spamming. 
+- Using local chrome itself to display debug information runs into the “measurement problem” (For example visually debugging damages locally). 
+
+### Advantages
+  
+- Visualization of graphical objects as graphic elements rather than text.
+- Debugging can be shared across the codebase and among developers. 
+- Allow for more rapid and lower overhead debugging since code is guaranteed not to be in official builds.
 
 
 ### Usage

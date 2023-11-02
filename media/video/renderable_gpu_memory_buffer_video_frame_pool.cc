@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/bits.h"
 #include "base/logging.h"
 #include "base/task/bind_post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -18,6 +19,7 @@
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
+#include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "media/base/video_frame.h"
 
@@ -29,7 +31,7 @@ class InternalRefCountedPool;
 
 // The VideoFrame-backing resources that are reused by the pool, namely, a
 // GpuMemoryBuffer and a per-plane SharedImage. This retains a reference to
-// the InternalRefCountedPool that created it.
+// the InternalRefCountedPool that created it. Not safe for concurrent use.
 class FrameResources {
  public:
   FrameResources(scoped_refptr<InternalRefCountedPool> pool,
@@ -72,7 +74,13 @@ class FrameResources {
 // The owner of the RenderableGpuMemoryBufferVideoFramePool::Client needs to be
 // reference counted to ensure that not be destroyed while there still exist any
 // FrameResources.
-class InternalRefCountedPool : public base::RefCounted<InternalRefCountedPool> {
+// Although this class is not generally safe for concurrent use, it extends
+// RefCountedThreadSafe in order to allow destruction on a different thread.
+// Specifically, blink::WebRtcVideoFrameAdapter::SharedResources lazily creates
+// a RenderableGpuMemoryBufferVideoFramePool when it needs to convert a frame on
+// the IO thread, but ends up destroying the object on the main thread.
+class InternalRefCountedPool
+    : public base::RefCountedThreadSafe<InternalRefCountedPool> {
  public:
   explicit InternalRefCountedPool(
       std::unique_ptr<RenderableGpuMemoryBufferVideoFramePool::Context>
@@ -95,7 +103,7 @@ class InternalRefCountedPool : public base::RefCounted<InternalRefCountedPool> {
   RenderableGpuMemoryBufferVideoFramePool::Context* GetContext() const;
 
  private:
-  friend class base::RefCounted<InternalRefCountedPool>;
+  friend class base::RefCountedThreadSafe<InternalRefCountedPool>;
   ~InternalRefCountedPool();
 
   // Callback made whe a created VideoFrame is destroyed. Returns
@@ -153,43 +161,57 @@ bool FrameResources::Initialize() {
   auto* context = pool_->GetContext();
 
   constexpr gfx::BufferUsage kBufferUsage =
-#if defined(OS_MAC) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
       gfx::BufferUsage::SCANOUT_VEA_CPU_READ
 #else
       gfx::BufferUsage::SCANOUT_CPU_READ_WRITE
 #endif
       ;
+  constexpr gfx::BufferFormat kBufferFormat =
+      gfx::BufferFormat::YUV_420_BIPLANAR;
+
+  // Align number of rows to 2, because it's required by YUV_420_BIPLANAR
+  // buffer allocation code.
+  // Align buffer stride to 4, because our rendering code at
+  // GLImageMemory::Initialize() requires it, since it sometimes treats
+  // Y-planes are 4 bytes per pixel textures.
+  gfx::Size buffer_size_in_pixels(base::bits::AlignUp(coded_size_.width(), 4),
+                                  base::bits::AlignUp(coded_size_.height(), 2));
 
   // Create the GpuMemoryBuffer.
   gpu_memory_buffer_ = context->CreateGpuMemoryBuffer(
-      coded_size_, gfx::BufferFormat::YUV_420_BIPLANAR, kBufferUsage);
+      buffer_size_in_pixels, kBufferFormat, kBufferUsage);
   if (!gpu_memory_buffer_) {
-    DLOG(ERROR) << "Failed to allocate GpuMemoryBuffer for frame.";
+    DLOG(ERROR) << "Failed to allocate GpuMemoryBuffer for frame: coded_size="
+                << coded_size_.ToString()
+                << ", usage=" << static_cast<int>(kBufferUsage);
     return false;
   }
+
+  gpu_memory_buffer_->SetColorSpace(color_space_);
 
   // Bind SharedImages to each plane.
   constexpr size_t kNumPlanes = 2;
   constexpr gfx::BufferPlane kPlanes[kNumPlanes] = {gfx::BufferPlane::Y,
                                                     gfx::BufferPlane::UV};
   constexpr uint32_t kSharedImageUsage =
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       gpu::SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX |
 #endif
       gpu::SHARED_IMAGE_USAGE_GLES2 | gpu::SHARED_IMAGE_USAGE_RASTER |
-      gpu::SHARED_IMAGE_USAGE_DISPLAY | gpu::SHARED_IMAGE_USAGE_SCANOUT;
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
 
+  uint32_t texture_target = GL_TEXTURE_2D;
+#if BUILDFLAG(IS_MAC)
+  // TODO(https://crbug.com/1311844): Use gpu::GetBufferTextureTarget() instead.
+  texture_target = gpu::GetPlatformSpecificTextureTarget();
+#endif
   for (size_t plane = 0; plane < kNumPlanes; ++plane) {
     context->CreateSharedImage(
         gpu_memory_buffer_.get(), kPlanes[plane], color_space_,
         kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, kSharedImageUsage,
         mailbox_holders_[plane].mailbox, mailbox_holders_[plane].sync_token);
-    // TODO(https://crbug.com/1191956): This should be parameterized.
-#if defined(OS_MAC)
-    mailbox_holders_[plane].texture_target = GL_TEXTURE_RECTANGLE_ARB;
-#else
-    mailbox_holders_[plane].texture_target = GL_TEXTURE_2D;
-#endif
+    mailbox_holders_[plane].texture_target = texture_target;
   }
   return true;
 }

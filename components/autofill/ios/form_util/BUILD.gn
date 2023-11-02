@@ -1,8 +1,8 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//ios/web/js_compile.gni")
+import("//ios/web/public/js_messaging/optimize_js.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 
@@ -58,18 +58,18 @@ source_set("form_handler_feature") {
   ]
 }
 
-js_compile_bundle("fill_js") {
-  closure_entry_point = "__crWeb.fill"
+optimize_js("fill_js") {
+  primary_script = "resources/fill.js"
   sources = [ "resources/fill.js" ]
 }
 
-js_compile_bundle("form_js") {
-  closure_entry_point = "__crWeb.form"
+optimize_js("form_js") {
+  primary_script = "resources/form.js"
   sources = [ "resources/form.js" ]
 }
 
-js_compile_bundle("form_handlers_js") {
-  closure_entry_point = "__crWeb.formHandlers"
+optimize_js("form_handlers_js") {
+  primary_script = "resources/form_handlers.js"
   sources = [ "resources/form_handlers.js" ]
 }
 
@@ -93,6 +93,7 @@ source_set("test_support") {
     "//ios/web/public",
     "//ios/web/public/js_messaging",
     "//ios/web/public/test",
+    "//ios/web/public/test:test_fixture",
     "//testing/gtest",
   ]
 }
@@ -116,6 +117,7 @@ source_set("unit_tests") {
     "//components/autofill/ios/form_util:form_handler_feature",
     "//ios/web/public/js_messaging",
     "//ios/web/public/test",
+    "//ios/web/public/test:test_fixture",
     "//ios/web/public/test/fakes",
     "//ios/web/web_state/js",
     "//testing/gtest",
@@ -123,7 +125,10 @@ source_set("unit_tests") {
 }
 if (is_ios) {
   fuzzer_test("form_activity_tab_helper_fuzzer") {
-    additional_configs = [ "//build/config/compiler:enable_arc" ]
+    additional_configs = [
+      "//build/config/compiler:enable_arc",
+      "//testing/libfuzzer:build_for_ios_clusterfuzz_job",
+    ]
     sources = [ "form_activity_tab_helper_fuzzer.mm" ]
     deps = [
       ":form_util",
@@ -134,6 +139,7 @@ if (is_ios) {
       "//ios/web/public/js_messaging/fuzzer_support:js_message_proto",
       "//ios/web/public/test",
       "//ios/web/public/test:fuzzer_support",
+      "//ios/web/public/test:test_fixture",
       "//third_party/libprotobuf-mutator",
     ]
   }

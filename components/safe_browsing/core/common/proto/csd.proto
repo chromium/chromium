@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -97,7 +97,8 @@ message ChromeUserPopulation {
     // The source that generates the token.
     enum TokenSource {
       SOURCE_UNSPECIFIED = 0;
-      // The token is randomly generated on the client-side. It is 32 bytes long.
+      // The token is randomly generated on the client-side. It is 32 bytes
+      // long.
       CLIENT_GENERATION = 1;
     }
     optional TokenSource token_source = 1;
@@ -109,6 +110,25 @@ message ChromeUserPopulation {
   // Note: This field is set as repeated to support tokens from multiple
   // sources.
   repeated PageLoadToken page_load_tokens = 14;
+
+  // The current state of account-level enhanced safe browsing (A-ESB) as is
+  // known by the client. This is an optional field and represents the state of
+  // A-ESB as the client has observed it to be. This value will be set for sync
+  // users as well as signed-in users. The state on the server may be
+  // different from the value that the client has when setting this field.
+  // See: go/esb-mms-integration-dd.
+  optional bool is_aesb_enabled = 15;
+
+  // The time when the account-level enhanced safe browsing (A-ESB) bit state
+  // was last sent updated on the client. This is an optional field.
+  optional int64 aesb_last_update_time_windows_epoch_micros = 16;
+
+  // Server-side only field.
+  reserved 17;
+
+  // If user has signed in. The user may or may not have sync enabled. For sync
+  // status, check is_history_sync_enabled instead.
+  optional bool is_signed_in = 18;
 }
 
 message ClientPhishingRequest {
@@ -148,6 +168,9 @@ message ClientPhishingRequest {
   // sent to the scorer and which resulted in client_score being computed.
   repeated Feature feature_map = 5;
 
+  // The version of the DOM model used for classification
+  optional int32 dom_model_version = 27;
+
   // The version number of the model that was used to compute the client-score.
   // Copied from ClientSideModel.version().
   optional int32 model_version = 6;
@@ -180,15 +203,11 @@ message ClientPhishingRequest {
   reserved 15;
   reserved 16;
 
-  // Basic visual information of the URL.
-  // This section will be filled for SBER users only.
-  optional bytes screenshot_digest = 17;
-  optional bytes screenshot_phash = 18;
-  optional int32 phash_dimension_size = 19;
-
-  // The visual feature match results.
-  // Allow multiple results if there are more than one matched target.
-  repeated VisionMatchResult vision_match = 20;
+  // Deprecated fields
+  reserved 17;
+  reserved 18;
+  reserved 19;
+  reserved 20;
 
   // Indicates whether the request is due to a match on the DOM features.
   optional bool is_dom_match = 21;
@@ -215,14 +234,11 @@ message ClientPhishingRequest {
   // Whether the TFLite model believed the page was phishy.
   optional bool is_tflite_match = 25;
 
-  // next available tag number: 26.
-}
+  // Visual features of the current page. Only filled in for extended reporting
+  // users.
+  optional VisualFeatures visual_features = 26;
 
-// Vision match result for one target image.
-message VisionMatchResult {
-  optional bytes matched_target_digest = 1;
-  optional double vision_matched_phash_score = 2;
-  optional double vision_matched_emd_score = 3;
+  // next available tag number: 28.
 }
 
 message ClientPhishingResponse {
@@ -313,12 +329,11 @@ message LoginReputationClientRequest {
     // The frame that the password reuse is detected.
     optional int32 frame_id = 2;
 
-    // TODO(crbug/914410): Remove once ReusedPasswordAccountType is implemented.
-    // Whether the reused password is used for Chrome signin.
-    optional bool is_chrome_signin_password = 3;
+    // Deprecated field.
+    reserved 3;
 
     // TODO(crbug/914410): Remove once ReusedPasswordAccountType is implemented.
-    // Sync account type. Only set if |is_chrome_signin_password| is true.
+    // Sync account type.
     enum SyncAccountType {
       // Not a sign-in user.
       NOT_SIGNED_IN = 0;
@@ -515,32 +530,7 @@ message LoginReputationClientResponse {
 
 // This message encapsulates all the visual features of the current page.
 message VisualFeatures {
-  // One bin in a color histogram.
-  message ColorHistogramBin {
-    // The average x-coordinate of the pixels in this bin.
-    optional float centroid_x = 1;
-
-    // The average y-coordinate of the pixels in this bin.
-    optional float centroid_y = 2;
-
-    // The quantized R-value for this bin.
-    optional int32 quantized_r = 3;
-
-    // The quantized G-value for this bin.
-    optional int32 quantized_g = 4;
-
-    // The quantized B-value for this bin.
-    optional int32 quantized_b = 5;
-
-    // The normalized weight of this bin.
-    optional float weight = 6;
-  }
-
-  // Represents the color histogram of a login page.
-  message ColorHistogram { repeated ColorHistogramBin bins = 1; }
-
-  // Color histogram of the current page.
-  optional ColorHistogram color_histogram = 1;
+  reserved 1;
 
   // Represents the blurred, downsampled image of the login page.
   message BlurredImage {
@@ -728,6 +718,11 @@ message ClientDownloadRequest {
     INVALID_RAR = 13;
     // Office Document or PDF.
     DOCUMENT = 14;
+
+    // .7z archive
+    SEVEN_ZIP_COMPRESSED_EXECUTABLE = 15;
+    SEVEN_ZIP_COMPRESSED_ARCHIVE = 16;
+    INVALID_SEVEN_ZIP = 17;
   }
   optional DownloadType download_type = 10 [default = WIN_EXECUTABLE];
 
@@ -816,13 +811,15 @@ message ClientDownloadRequest {
   optional ChromeUserPopulation population = 24;
 
   // True if the .zip or DMG, etc, was 100% successfully unpacked.
+  // This field is in the process of being deprecated and replaced with
+  // `archive_summary.valid`.
   optional bool archive_valid = 26;
 
-  // True if this ClientDownloadRequest is from a whitelisted domain.
-  optional bool skipped_url_whitelist = 28;
+  // True if this ClientDownloadRequest is from a allowlisted domain.
+  optional bool skipped_url_allowlist = 28;
 
-  // True if this ClientDownloadRequest contains a whitelisted certificate.
-  optional bool skipped_certificate_whitelist = 31;
+  // True if this ClientDownloadRequest contains a allowlist certificate.
+  optional bool skipped_certificate_allowlist = 31;
 
   // PPAPI_SAVE_REQUEST type messages may have more than one suggested filetype.
   // Each element in this collection indicates an alternate extension including
@@ -865,6 +862,8 @@ message ClientDownloadRequest {
 
   // For archives files the number of files and directories contained within the
   // archive.
+  // These fields are in the process of being deprecated and replaced with
+  // `archive_summary.file_count` or `archive_summary.directory_count`.
   optional int32 archive_file_count = 68;
   optional int32 archive_directory_count = 69;
 
@@ -873,7 +872,9 @@ message ClientDownloadRequest {
   optional string access_token = 78;
 
   // next available tag number: 85;
-  message DocumentInfo { optional bool contains_macros = 1; }
+  message DocumentInfo {
+    optional bool contains_macros = 1;
+  }
 
   message DocumentProcessingInfo {
     optional bool processing_successful = 1;
@@ -945,6 +946,39 @@ message ClientDownloadRequest {
   }
 
   optional DocumentSummary document_summary = 84;
+
+  message ArchiveSummary {
+    enum Status {
+      UNKNOWN = 0;
+      // The archive was successfully unpacked in its entirety.
+      VALID = 1;
+      // Parsing took too long.
+      PARSER_TIMED_OUT = 2;
+      // The archive was too large to parse.
+      TOO_LARGE = 3;
+    }
+    optional Status parser_status = 1;
+
+    // The number of files and directories contained within.
+    optional int32 file_count = 2;
+    optional int32 directory_count = 3;
+  }
+  optional ArchiveSummary archive_summary = 85;
+
+  // Additional information for the Safe Browsing server to generate tailored
+  // verdicts. See go/tailored-download-proto.
+  message TailoredInfo {
+    // |version| helps the Safe Browsing server understand which tailored
+    // warnings Chrome understands and generate responses accordingly. It should
+    // be incremented by 1 when adding new fields in TailoredVerdict or making
+    // changes to how these fields may be interpreted in Chrome.
+    // Version 0: Client doesn't support tailored warnings. Any info set in
+    // TailoredVerdict is ignored.
+    // Version 1: Client supports CT warnings and suspicious archives. Supported
+    // in M107. See go/tailored-download-v1.
+    optional int32 version = 1;
+  }
+  optional TailoredInfo tailored_info = 86;
 }
 
 message ReferrerChainOptions {
@@ -1113,6 +1147,37 @@ message ClientDownloadResponse {
 
   // Whether or not Chrome should prompt the user for deep scanning
   optional bool request_deep_scan = 19;
+
+  // Verdict used as supplemental information to decide the tailored warning UI.
+  // The |verdict| field takes precedence over this field (e.g. this field is
+  // ignored if |verdict| is SAFE).
+  message TailoredVerdict {
+    enum TailoredVerdictType {
+      VERDICT_TYPE_UNSPECIFIED = 0;
+      // Download is associated with stealing cookies and account compromise.
+      // Effective if |verdict| is DANGEROUS_ACCOUNT_COMPROMISE. Ignored
+      // otherwise.
+      COOKIE_THEFT = 1;
+      // This archive's metadata indicates tactics used by attackers to
+      // distribute malware and viruses. For example, it is encrypted to prevent
+      // scanning by Safe Browsing. Effective if |verdict| is UNCOMMON. Ignored
+      // otherwise.
+      SUSPICIOUS_ARCHIVE = 2;
+    }
+    optional TailoredVerdictType tailored_verdict_type = 1;
+
+    // This field provides flexibility on testing minor UI adjustments on
+    // warnings. These adjustments are only expected to be set during UX
+    // experiments. Only effective when |tailored_verdict_type| is set.
+    enum ExperimentalWarningAdjustment {
+      ADJUSTMENT_UNSPECIFIED = 0;
+      // Include account information in the warning. Only apply to COOKIE_THEFT
+      // tailored verdict.
+      ACCOUNT_INFO_STRING = 1;
+    }
+    repeated ExperimentalWarningAdjustment adjustments = 2 [packed = true];
+  }
+  optional TailoredVerdict tailored_verdict = 20;
 }
 
 // The following protocol buffer holds the feedback report gathered
@@ -1120,7 +1185,9 @@ message ClientDownloadResponse {
 message ClientDownloadReport {
   // The information of user who provided the feedback.
   // This is going to be useful for handling appeals.
-  message UserInformation { optional string email = 1; }
+  message UserInformation {
+    optional string email = 1;
+  }
 
   enum Reason {
     SHARE = 0;
@@ -1370,7 +1437,9 @@ message ClientIncidentResponse {
   optional bytes token = 1;
   optional bool download_requested = 2;
 
-  message EnvironmentRequest { optional int32 dll_index = 1; }
+  message EnvironmentRequest {
+    optional int32 dll_index = 1;
+  }
 
   repeated EnvironmentRequest environment_requests = 3;
 }
@@ -1384,7 +1453,7 @@ message DownloadMetadata {
 // A Detailed Safebrowsing Report from clients. Chrome safebrowsing reports are
 // only sent by Chrome users who have opted into extended Safe Browsing.
 // This proto is replacing ClientMalwareReportRequest.
-// Next tag: 26
+// Next tag: 27
 message ClientSafeBrowsingReportRequest {
   // Note: A lot of the "optional" fields would make sense to be
   // "required" instead.  However, having them as optional allows the
@@ -1544,7 +1613,9 @@ message ClientSafeBrowsingReportRequest {
     optional string url = 1;
 
     // This message contains various binary digests of the download payload.
-    message Digests { optional bytes sha256 = 1; }
+    message Digests {
+      optional bytes sha256 = 1;
+    }
     optional Digests digests = 2;
 
     // This is the length in bytes of the download payload.
@@ -1560,6 +1631,63 @@ message ClientSafeBrowsingReportRequest {
   // The SafetyNet ID of the Android device.
   // Deprecated, not launched.
   optional string safety_net_id = 25 [deprecated = true];
+
+  optional ChromeUserPopulation population = 26;
+
+  // Logs user actions on download warnings. This field is useful for analyzing
+  // whether users pay attention to the warning, and why they decide to proceed
+  // or discard.
+  message DownloadWarningAction {
+    // The warning surface this action is performed on. See
+    // go/chrome-download-warning-surfaces for details.
+    enum Surface {
+      SURFACE_UNSPECIFIED = 0;
+      // Applicable actions: DISCARD
+      BUBBLE_MAINPAGE = 1;
+      // Applicable actions: PROCEED, DISCARD, DISMISS, CLOSE, BACK
+      BUBBLE_SUBPAGE = 2;
+      // Applicable actions: DISCARD, KEEP
+      DOWNLOADS_PAGE = 3;
+      // Applicable actions: PROCEED, CANCEL, CLOSE
+      DOWNLOAD_PROMPT = 4;
+    }
+    optional Surface surface = 1;
+
+    enum Action {
+      ACTION_UNSPECIFIED = 0;
+      // The user clicks proceed, which means the user decides to bypass the
+      // warning.
+      PROCEED = 1;
+      // The user clicks discard, which means the user decides to obey the
+      // warning and the dangerous download is deleted from disk.
+      DISCARD = 2;
+      // The user has clicked the keep button on the surface.
+      KEEP = 3;
+      // The user has clicked the close button on the surface.
+      CLOSE = 4;
+      // The user clicks cancel on the download prompt.
+      CANCEL = 5;
+      // The user has dismissed the bubble by clicking anywhere outside
+      // the bubble.
+      DISMISS = 6;
+      // The user has clicked the back button on the bubble subpage to go back
+      // to the bubble main page.
+      BACK = 7;
+    }
+    optional Action action = 2;
+
+    // Whether the action is terminal (i.e. the warning disappears after this
+    // action is performed).
+    optional bool is_terminal_action = 3;
+
+    // Time intervals between when the download warning is first shown and
+    // when the user performs actions on that warning, measured on the
+    // client-side by the same clock. If the same warning has shown multiple
+    // times, the interval is anchored to the earliest warning. All intervals
+    // are measured in milliseconds.
+    optional int64 interval_msec = 4;
+  }
+  repeated DownloadWarningAction download_warning_actions = 27;
 }
 
 // An HTML Element on the page (eg: iframe, div, script, etc).
@@ -1602,3 +1730,273 @@ message ExtensionWebStoreInstallRequest {
   // Options and metadata about the above referrer chain.
   optional ReferrerChainOptions referrer_chain_options = 2;
 }
+
+// Protobuf for uploading Chrome extension telemetry reports.
+message ExtensionTelemetryReportRequest {
+  // Information about the Chrome extension.
+  message ExtensionInfo {
+    enum Type {
+      UNKNOWN_TYPE = 0;            // Unknown (hopefully never used)
+      EXTENSION = 1;               // A browser extension
+      THEME = 2;                   // A browser theme
+      USER_SCRIPT = 3;             // An extension converted from a user script
+      HOSTED_APP = 4;              // A hosted app
+      LEGACY_PACKAGED_APP = 5;     // A (deprecated) v1 packaged app
+      PLATFORM_APP = 6;            // A platform app
+      SHARED_MODULE = 7;           // A shared module
+      LOGIN_SCREEN_EXTENSION = 8;  // An extension running on the login screen
+    }
+
+    enum InstallLocation {
+      UNKNOWN_LOCATION = 0;  // Unknown (hopefully never used)
+      INTERNAL = 1;  // A crx file from the internal Extensions directory; most
+                     // webstore-installed extensions fall into this category.
+      EXTERNAL_PREF = 2;  // A crx file from an external directory (via prefs).
+      EXTERNAL_REGISTRY = 3;  // A crx file from an external directory (via the
+                              // Windows registry)
+      UNPACKED = 4;   // An unpacked extension loaded from chrome://extensions.
+      COMPONENT = 5;  // An internal component extension.
+      EXTERNAL_PREF_DOWNLOAD = 6;    // A crx file from an external directory
+                                     // (via prefs), downloaded from an update
+                                     // URL.
+      EXTERNAL_POLICY_DOWNLOAD = 7;  // A crx file from an external directory
+                                     // (via admin policies), downloaded from an
+                                     // update URL.
+      COMMAND_LINE = 8;  // Loaded from the commandline (e.g. --load-extension).
+      EXTERNAL_POLICY = 9;  // A crx file from an external directory (via admin
+                            // policies), cached locally and installed from the
+                            // cache.
+      EXTERNAL_COMPONENT = 10;  // A component extension that was downloaded
+                                // externally via an update url.
+    }
+
+    // The state of the extension as determined by SB blocklist.
+    enum BlocklistState {
+      // The extension is not in the blocklist.
+      NOT_BLOCKLISTED = 0;
+      // The extension is malware.
+      BLOCKLISTED_MALWARE = 1;
+      // The extension has a serious security vulnerability.
+      BLOCKLISTED_SECURITY_VULNERABILITY = 2;
+      // The extension violated CWS policy.
+      BLOCKLISTED_CWS_POLICY_VIOLATION = 3;
+      // The extension is considered potentially unwanted.
+      BLOCKLISTED_POTENTIALLY_UNWANTED = 4;
+      // Used when we couldn't connect to server, e.g. when offline.
+      BLOCKLISTED_UNKNOWN = 5;
+    }
+
+    optional string id = 1;
+    optional string version = 2;
+    optional string name = 3;
+    // Version install time.
+    optional int64 install_timestamp_msec = 4;
+    // If the extension was installed by default when the profile was created.
+    // These extensions are specified by Chrome.
+    optional bool is_default_installed = 5;
+    // If the extension was installed by an OEM. This differs from
+    // "is_default_installed", since these extensions are specified by the OEM
+    // rather than by Chrome. These are specified in a file that is created as
+    // part of the creation of the Chrome image, and can be specific to
+    // different OEMs.
+    optional bool is_oem_installed = 6;
+    // If the extension originated from the Chrome Web Store according to the
+    // prefs. This differs from install_location, which specifies the location
+    // on the user’s machine from where the install originated, but not
+    // whether the extension is hosted in the store. For instance, sideloaded
+    // extensions that are specified via ID in the registry are downloaded from
+    // the store.
+    optional bool is_from_store = 7;
+    // If the extension automatically updates from the Chrome Web Store.
+    optional bool updates_from_store = 8;
+    // If the extension was created from a user script. This is distinct from
+    // install_location, which specifies from where on the user’s machine
+    // the install originated.
+    optional bool is_converted_from_user_script = 9;
+    optional Type type = 10;
+    optional InstallLocation install_location = 11;
+    optional BlocklistState blocklist_state = 12;
+    // Bitmask of reason(s) the Chrome extension is disabled.
+    // Bit positions are defined in extensions::disable_reason::DisableReason
+    // (located in //extensions/browser/disable_reason.h)
+    optional uint32 disable_reasons = 13;
+  }
+
+  // Information about the various telemetry signals.
+  message SignalInfo {
+    message TabsExecuteScriptInfo {
+      message ScriptInfo {
+        optional bytes hash = 1;
+        // Number of times this script has been executed since
+        // last report/browser start. This number is limited to
+        // a configurable maximum (default max is 100).
+        optional uint32 execution_count = 2;
+      }
+      repeated ScriptInfo scripts = 1;
+      // The number of scripts that were not recorded because the max count was
+      // exceeded.
+      optional uint32 max_exceeded_script_count = 2;
+    }
+
+    optional TabsExecuteScriptInfo tabs_execute_script_info = 1;
+
+    message RemoteHostContactedInfo {
+      message RemoteHostInfo {
+        enum ProtocolType {
+          UNSPECIFIED = 0;
+          HTTP_HTTPS = 1;
+          WEBSOCKET = 2;
+        }
+        // Sanitized url (hostname only) of the contacted remote host.
+        optional string url = 1;
+        // Number of times this host has been contacted by the extension
+        // using the `connection_protocol`.
+        optional uint32 contact_count = 2;
+        // Protocol used to make the connection.
+        optional ProtocolType connection_protocol = 3;
+      }
+      repeated RemoteHostInfo remote_host = 1;
+    }
+
+    optional RemoteHostContactedInfo remote_host_contacted_info = 2;
+
+    // Cookies.getAll() API signal information.
+    message CookiesGetAllInfo {
+      // Include all API arguments used. See
+      // https://developer.chrome.com/docs/extensions/reference/cookies/#method-getAll
+      message GetAllArgsInfo {
+        // Restricts the retrieved cookies to those whose domains match or are
+        // subdomains of this one.
+        optional string domain = 1;
+        // Filters the cookies by name.
+        optional string name = 2;
+        // Restricts the retrieved cookies to those whose path exactly matches
+        // this string.
+        optional string path = 3;
+        // Filters the cookies by their Secure property.
+        optional bool secure = 4;
+        // Deprecated.
+        reserved 5;
+        // The cookie store to retrieve cookies from. If omitted, the current
+        // execution context's cookie store will be used.
+        optional string store_id = 6;
+        // Restricts the retrieved cookies to those that would match the given
+        // URL.
+        optional string url = 7;
+
+        // Number of times this set of arguments has been used.
+        optional uint32 count = 8;
+
+        // Filters out session vs. persistent cookies.
+        optional bool is_session = 9;
+      }
+
+      repeated GetAllArgsInfo get_all_args_info = 1;
+
+      // Number of argument sets collected in each signal is limited to a
+      // maximum value (default 100). This field counts the number of argument
+      // sets not recorded after limit is reached, and resets after each
+      // generated report.
+      optional uint32 max_exceeded_args_count = 2;
+    }
+
+    optional CookiesGetAllInfo cookies_get_all_info = 3;
+
+    // Cookies.get() API signal information.
+    message CookiesGetInfo {
+      // Include all API arguments used. See
+      // https://developer.chrome.com/docs/extensions/reference/cookies/#method-get
+      message GetArgsInfo {
+        // The name of the cookie to access.
+        optional string name = 1;
+        // The URL with which the cookie to access is associated.
+        optional string url = 2;
+        // The ID of the cookie store in which to look for the cookie. By
+        // default, the current execution context's cookie store will be used.
+        optional string store_id = 3;
+
+        // Number of times this set of arguments has been used.
+        optional uint32 count = 8;
+      }
+
+      repeated GetArgsInfo get_args_info = 1;
+
+      // Number of argument sets collected in each signal is limited to a
+      // maximum value (default 100). This field counts the number of argument
+      // sets not recorded after limit is reached, and resets after each
+      // generated report.
+      optional uint32 max_exceeded_args_count = 2;
+    }
+
+    optional CookiesGetInfo cookies_get_info = 4;
+
+    // Potential Password Theft signal info.
+    message PotentialPasswordTheftInfo {
+      message RemoteHostInfo {
+        // This information represents a host that an extension contacted within
+        // a specific time window (currently 1 second) after a password-reuse
+        // event was detected on one of that extension's pages.
+        optional string remote_host_url = 1;
+        // Number of times the remote host was contacted.
+        optional uint32 count = 2;
+      }
+      message PasswordReuseInfo {
+        // Domains from the Chrome password manager DB that are associated with
+        // the same password as the one triggering this event.
+        repeated string domains_matching_password = 1;
+
+        // Whether the reused password is used for Chrome signin.
+        optional bool is_chrome_signin_password = 2;
+
+        message ReusedPasswordAccountType {
+          // Whether the current reused password account is syncing.
+          optional bool is_account_syncing = 1;
+
+          enum AccountType {
+            // User reused a password that is not a signed-in account, saved
+            // password, or a non-GAIA enterprise account.
+            UNKNOWN = 0;
+
+            // User signed in with a dasher account.
+            GSUITE = 1;
+
+            // User signed in with @gmail.com, or @googlemail.com account.
+            GMAIL = 2;
+
+            // Password used for Enterprise login on an Enterprise login page.
+            NON_GAIA_ENTERPRISE = 3;
+
+            // Password saved in Chrome's password manager.
+            SAVED_PASSWORD = 4;
+          }
+          optional AccountType account_type = 2;
+        }
+
+        optional ReusedPasswordAccountType reused_password_account_type = 3;
+
+        // Number of times the password was reused in one of this extension's
+        // pages.
+        optional uint32 count = 4;
+      }
+      // The remote host(s) contacted within 1 second of at least one (but not
+      // all) of the password reuse event(s) listed below.
+      repeated RemoteHostInfo remote_hosts = 1;
+      repeated PasswordReuseInfo reused_password_infos = 2;
+    }
+
+    optional PotentialPasswordTheftInfo potential_password_theft_info = 5;
+  }
+
+  // Single report structure consists of all the signals observed for a
+  // single extension.
+  message Report {
+    optional ExtensionInfo extension = 1;
+    repeated SignalInfo signals = 2;
+  }
+
+  // Report creation timestamp.
+  optional int64 creation_timestamp_msec = 1;
+  repeated Report reports = 2;
+}
+
+message ExtensionTelemetryResponse {}

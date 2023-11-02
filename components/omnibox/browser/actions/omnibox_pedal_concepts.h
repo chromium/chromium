@@ -1,21 +1,17 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
-// DO NOT EDIT. This file is tool-generated using pedal_processor.
 
 #ifndef COMPONENTS_OMNIBOX_BROWSER_ACTIONS_OMNIBOX_PEDAL_CONCEPTS_H_
 #define COMPONENTS_OMNIBOX_BROWSER_ACTIONS_OMNIBOX_PEDAL_CONCEPTS_H_
 
-// This value is generated during Pedal concept data processing, and written
-// to all data files as well as the source code here to ensure synchrony.
-// The runtime loaded data must match this version exactly or it won't load.
-constexpr int OMNIBOX_PEDAL_CONCEPTS_DATA_VERSION = 16109407;
-
-// Unique identifiers for Pedals, used to bind loaded data to implementations.
-// Also used in the Omnibox.SuggestionUsed.Pedal histogram. Do not remove or
-// reuse values. If any pedal types are removed from Chrome, the associated ID
-// will remain and be marked as obsolete.
+// Unique identifiers for Pedals, used in the Omnibox.SuggestionUsed.Pedal
+// histograms. Do not remove or reuse values. If any pedal types are removed
+// from Chrome, the associated ID will remain and be marked as obsolete.
+//
+// Automatically generate a corresponding Java enum:
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.omnibox.action
+// GENERATED_JAVA_CLASS_NAME_OVERRIDE: OmniboxPedalType
 enum class OmniboxPedalId {
   NONE = 0,
 
@@ -58,7 +54,7 @@ enum class OmniboxPedalId {
   MANAGE_CHROME_THEMES = 37,
   CUSTOMIZE_SEARCH_ENGINES = 38,
   MANAGE_CHROMEOS_ACCESSIBILITY = 39,
-  // DO NOT EDIT. See comment at top.
+  SET_CHROME_AS_DEFAULT_BROWSER = 40,
 
   // Last value, used to track the upper bounds when recording type histograms.
   // This intentionally does not have an assigned value to ensure that it's

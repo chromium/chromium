@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,12 +19,12 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
-#include "chromeos/cryptohome/cryptohome_parameters.h"
-#include "chromeos/dbus/authpolicy/fake_authpolicy_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/upstart/upstart_client.h"
-#include "chromeos/dbus/userdataauth/userdataauth_client.h"
-#include "chromeos/tpm/install_attributes.h"
+#include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
+#include "chromeos/ash/components/dbus/authpolicy/fake_authpolicy_client.h"
+#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/dbus/upstart/upstart_client.h"
+#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/user_manager/user.h"
@@ -135,12 +135,11 @@ class UserAffiliationBrowserTest
       const cryptohome::AccountIdentifier cryptohome_id =
           cryptohome::CreateAccountIdentifierFromAccountId(
               affiliation_mixin_.account_id());
-      command_line->AppendSwitchASCII(chromeos::switches::kLoginUser,
+      command_line->AppendSwitchASCII(ash::switches::kLoginUser,
                                       cryptohome_id.account_id());
       command_line->AppendSwitchASCII(
-          chromeos::switches::kLoginProfile,
-          chromeos::UserDataAuthClient::GetStubSanitizedUsername(
-              cryptohome_id));
+          ash::switches::kLoginProfile,
+          ash::UserDataAuthClient::GetStubSanitizedUsername(cryptohome_id));
     }
   }
 
@@ -149,15 +148,15 @@ class UserAffiliationBrowserTest
 
     // Initialize clients here so they are available during setup. They will be
     // shutdown in ChromeBrowserMain.
-    chromeos::SessionManagerClient::InitializeFakeInMemory();
-    chromeos::UpstartClient::InitializeFake();
+    ash::SessionManagerClient::InitializeFakeInMemory();
+    ash::UpstartClient::InitializeFake();
     if (GetParam().active_directory) {
-      chromeos::AuthPolicyClient::InitializeFake();
-      chromeos::FakeAuthPolicyClient::Get()->DisableOperationDelayForTesting();
+      ash::AuthPolicyClient::InitializeFake();
+      ash::FakeAuthPolicyClient::Get()->DisableOperationDelayForTesting();
     }
 
     // Set retry delay to prevent timeouts.
-    policy::DeviceManagementService::SetRetryDelayForTesting(0);
+    DeviceManagementService::SetRetryDelayForTesting(0);
   }
 
   void CreatedBrowserMainParts(

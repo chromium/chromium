@@ -1,9 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webui/settings/settings_manage_profile_handler.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
@@ -16,6 +17,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
@@ -123,10 +125,10 @@ class ManageProfileHandlerTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
-  ProfileAttributesEntry* entry_ = nullptr;
+  raw_ptr<ProfileAttributesEntry> entry_ = nullptr;
   content::TestWebUI web_ui_;
 
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
   std::unique_ptr<TestManageProfileHandler> handler_;
 
   void VerifyGaiaAvatar(const base::Value* icons, bool gaia_selected) {
@@ -136,10 +138,9 @@ class ManageProfileHandlerTest : public testing::Test {
 
     const gfx::Image* avatar_icon = entry()->GetGAIAPicture();
     ASSERT_TRUE(avatar_icon);
-    EXPECT_EQ(
-        *icon.FindStringKey("url"),
-        webui::GetBitmapDataUrl(
-            profiles::GetAvatarIconForWebUI(*avatar_icon, true).AsBitmap()));
+    EXPECT_EQ(*icon.FindStringKey("url"),
+              webui::GetBitmapDataUrl(
+                  profiles::GetAvatarIconForWebUI(*avatar_icon).AsBitmap()));
     EXPECT_TRUE(!icon.FindStringKey("label")->empty());
     EXPECT_EQ(*icon.FindBoolPath("selected"), gaia_selected);
   }
@@ -158,7 +159,7 @@ class ManageProfileHandlerTest : public testing::Test {
 };
 
 TEST_F(ManageProfileHandlerTest, HandleSetProfileIconToGaiaAvatar) {
-  handler()->HandleSetProfileIconToGaiaAvatar(nullptr);
+  handler()->HandleSetProfileIconToGaiaAvatar(base::Value::List());
 
   PrefService* pref_service = profile()->GetPrefs();
   EXPECT_FALSE(pref_service->GetBoolean(prefs::kProfileUsingDefaultAvatar));
@@ -168,8 +169,7 @@ TEST_F(ManageProfileHandlerTest, HandleSetProfileIconToGaiaAvatar) {
 TEST_F(ManageProfileHandlerTest, HandleSetProfileIconToDefaultCustomAvatar) {
   base::Value list_args(base::Value::Type::LIST);
   list_args.Append(15);
-  handler()->HandleSetProfileIconToDefaultAvatar(
-      &base::Value::AsListValue(list_args));
+  handler()->HandleSetProfileIconToDefaultAvatar(list_args.GetList());
 
   PrefService* pref_service = profile()->GetPrefs();
   EXPECT_EQ(15, pref_service->GetInteger(prefs::kProfileAvatarIndex));
@@ -181,8 +181,7 @@ TEST_F(ManageProfileHandlerTest, HandleSetProfileIconToDefaultGenericAvatar) {
   int generic_avatar_index = profiles::GetPlaceholderAvatarIndex();
   base::Value list_args(base::Value::Type::LIST);
   list_args.Append(generic_avatar_index);
-  handler()->HandleSetProfileIconToDefaultAvatar(
-      &base::Value::AsListValue(list_args));
+  handler()->HandleSetProfileIconToDefaultAvatar(list_args.GetList());
 
   PrefService* pref_service = profile()->GetPrefs();
   EXPECT_EQ(generic_avatar_index,
@@ -194,7 +193,7 @@ TEST_F(ManageProfileHandlerTest, HandleSetProfileIconToDefaultGenericAvatar) {
 TEST_F(ManageProfileHandlerTest, HandleSetProfileName) {
   base::Value list_args(base::Value::Type::LIST);
   list_args.Append("New Profile Name");
-  handler()->HandleSetProfileName(&base::Value::AsListValue(list_args));
+  handler()->HandleSetProfileName(list_args.GetList());
 
   PrefService* pref_service = profile()->GetPrefs();
   EXPECT_EQ("New Profile Name", pref_service->GetString(prefs::kProfileName));
@@ -209,7 +208,7 @@ TEST_F(ManageProfileHandlerTest, HandleGetAvailableIcons) {
 
   base::Value list_args_1(base::Value::Type::LIST);
   list_args_1.Append("get-icons-callback-id");
-  handler()->HandleGetAvailableIcons(&base::Value::AsListValue(list_args_1));
+  handler()->HandleGetAvailableIcons(list_args_1.GetList());
 
   EXPECT_EQ(1U, web_ui()->call_data().size());
 
@@ -228,7 +227,7 @@ TEST_F(ManageProfileHandlerTest, HandleGetAvailableIconsOldIconSelected) {
 
   base::Value list_args(base::Value::Type::LIST);
   list_args.Append("get-icons-callback-id");
-  handler()->HandleGetAvailableIcons(&base::Value::AsListValue(list_args));
+  handler()->HandleGetAvailableIcons(list_args.GetList());
 
   EXPECT_EQ(1U, web_ui()->call_data().size());
 
@@ -247,7 +246,7 @@ TEST_F(ManageProfileHandlerTest, GetAvailableIconsSignedInProfile) {
 
   base::Value list_args(base::Value::Type::LIST);
   list_args.Append("get-icons-callback-id");
-  handler()->HandleGetAvailableIcons(&base::Value::AsListValue(list_args));
+  handler()->HandleGetAvailableIcons(list_args.GetList());
 
   EXPECT_EQ(1U, web_ui()->call_data().size());
 
@@ -293,7 +292,7 @@ TEST_F(ManageProfileHandlerTest, GetAvailableIconsLocalProfile) {
 
   base::Value list_args(base::Value::Type::LIST);
   list_args.Append("get-icons-callback-id");
-  handler()->HandleGetAvailableIcons(&base::Value::AsListValue(list_args));
+  handler()->HandleGetAvailableIcons(list_args.GetList());
 
   EXPECT_EQ(1U, web_ui()->call_data().size());
 

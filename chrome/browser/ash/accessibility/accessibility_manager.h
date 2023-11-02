@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/audio/cras_audio_handler.h"
 #include "base/callback_forward.h"
 #include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
@@ -19,16 +18,17 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/accessibility/chromevox_panel.h"
+#include "chrome/browser/ash/accessibility/service/accessibility_service_client.h"
 #include "chrome/browser/extensions/api/braille_display_private/braille_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
+#include "chrome/common/extensions/api/accessibility_private.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/soda/soda_installer.h"
 #include "components/user_manager/user_manager.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
@@ -37,8 +37,6 @@
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/base/ime/ash/input_method_manager.h"
-
-class Browser;
 
 namespace content {
 struct FocusedNodeDetails;
@@ -51,11 +49,13 @@ class Rect;
 namespace ash {
 class AccessibilityExtensionLoader;
 class Dictation;
+class PumpkinInstaller;
 class SelectToSpeakEventHandlerDelegateImpl;
 enum class SelectToSpeakState;
 enum class SelectToSpeakPanelAction;
 enum class Sound;
 struct AccessibilityFocusRingInfo;
+class AccessibilityServiceClient;
 
 enum class AccessibilityNotificationType {
   kManagerShutdown,
@@ -89,6 +89,11 @@ using AccessibilityStatusCallbackList =
     base::RepeatingCallbackList<void(const AccessibilityStatusEventDetails&)>;
 using AccessibilityStatusCallback =
     AccessibilityStatusCallbackList::CallbackType;
+using GetDlcContentsCallback =
+    base::OnceCallback<void(const std::vector<uint8_t>&,
+                            absl::optional<std::string>)>;
+using InstallPumpkinCallback = base::OnceCallback<void(
+    std::unique_ptr<::extensions::api::accessibility_private::PumpkinData>)>;
 
 class AccessibilityPanelWidgetObserver;
 
@@ -105,8 +110,7 @@ enum class PlaySoundOption {
 // watching profile notifications and pref-changes.
 // TODO(yoshiki): merge MagnificationManager with AccessibilityManager.
 class AccessibilityManager
-    : public content::NotificationObserver,
-      public session_manager::SessionManagerObserver,
+    : public session_manager::SessionManagerObserver,
       public extensions::api::braille_display_private::BrailleObserver,
       public extensions::ExtensionRegistryObserver,
       public user_manager::UserManager::UserSessionStateObserver,
@@ -127,7 +131,7 @@ class AccessibilityManager
   static AccessibilityManager* Get();
 
   // Show the accessibility help as a tab in the browser.
-  static void ShowAccessibilityHelp(Browser* browser);
+  static void ShowAccessibilityHelp();
 
   // Returns true when the accessibility menu should be shown.
   bool ShouldShowAccessibilityMenu();
@@ -256,8 +260,8 @@ class AccessibilityManager
 
   // Register a callback to be notified when the status of an accessibility
   // option changes.
-  base::CallbackListSubscription RegisterCallback(
-      const AccessibilityStatusCallback& cb) WARN_UNUSED_RESULT;
+  [[nodiscard]] base::CallbackListSubscription RegisterCallback(
+      const AccessibilityStatusCallback& cb);
 
   // Notify registered callbacks of a status change in an accessibility setting.
   void NotifyAccessibilityStatusChanged(
@@ -286,7 +290,7 @@ class AccessibilityManager
 
   // Plays an earcon. Earcons are brief and distinctive sounds that indicate
   // the their mapped event has occurred. The |sound_key| enums can be found in
-  // ash/components/audio/sounds.h.
+  // chromeos/ash/components/audio/sounds.h.
   bool PlayEarcon(Sound sound_key, PlaySoundOption option);
 
   // Forward an accessibility gesture from the touch exploration controller
@@ -364,20 +368,23 @@ class AccessibilityManager
   void OnSelectToSpeakPanelAction(SelectToSpeakPanelAction action,
                                   double value);
 
+  // Called when Shimless RMA launches to enable accessibility features.
+  void OnShimlessRmaLaunched();
+
   // SodaInstaller::Observer:
-  void OnSodaInstalled() override;
-  void OnSodaLanguagePackInstalled(speech::LanguageCode language_code) override;
-  void OnSodaError() override;
-  void OnSodaLanguagePackError(speech::LanguageCode language_code) override;
-  void OnSodaProgress(int combined_progress) override {}
-  void OnSodaLanguagePackProgress(int language_progress,
-                                  speech::LanguageCode language_code) override;
+  void OnSodaInstalled(speech::LanguageCode language_code) override;
+  void OnSodaInstallError(speech::LanguageCode language_code,
+                          speech::SodaInstaller::ErrorCode error_code) override;
+  void OnSodaProgress(speech::LanguageCode language_code,
+                      int progress) override;
 
   // Test helpers:
   void SetProfileForTest(Profile* profile);
   static void SetBrailleControllerForTest(
       extensions::api::braille_display_private::BrailleController* controller);
   void SetFocusRingObserverForTest(base::RepeatingCallback<void()> observer);
+  // Runs when highlights are set or updated, but not when they are removed.
+  void SetHighlightsObserverForTest(base::RepeatingCallback<void()> observer);
   void SetSelectToSpeakStateObserverForTest(
       base::RepeatingCallback<void()> observer);
   void SetCaretBoundsObserverForTest(
@@ -388,6 +395,20 @@ class AccessibilityManager
   const std::set<std::string>& GetAccessibilityCommonEnabledFeaturesForTest() {
     return accessibility_common_enabled_features_;
   }
+  bool IsDisableAutoclickDialogVisibleForTest();
+  bool is_pumpkin_installed_for_testing() {
+    return is_pumpkin_installed_for_testing_;
+  }
+
+  // Triggers a request to install Pumpkin. Runs `callback` with a value of
+  // true if the install was successful. Otherwise, runs `callback` with a
+  // value of false.
+  void InstallPumpkinForDictation(InstallPumpkinCallback callback);
+
+  // Reads the contents of a DLC file and runs `callback` with the results.
+  void GetDlcContents(::extensions::api::accessibility_private::DlcType dlc,
+                      GetDlcContentsCallback callback);
+  void SetDlcPathForTest(base::FilePath path);
 
  protected:
   AccessibilityManager();
@@ -452,13 +473,11 @@ class AccessibilityManager
 
   void PlayVolumeAdjustSound();
 
-  // content::NotificationObserver:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
-
   // session_manager::SessionManagerObserver:
   void OnLoginOrLockScreenVisible() override;
+
+  // Sets the current profile using the active profile.
+  void SetActiveProfile();
 
   // extensions::api::braille_display_private::BrailleObserver implementation.
   // Enables spoken feedback if a braille display becomes available.
@@ -493,8 +512,6 @@ class AccessibilityManager
 
   // SODA-related methods.
   void MaybeInstallSoda(const std::string& locale);
-  void OnSodaInstallSucceeded();
-  void OnSodaInstallError(speech::LanguageCode language_code);
   void OnSodaInstallUpdated(int progress);
   bool ShouldShowSodaSucceededNotificationForDictation();
   bool ShouldShowSodaFailedNotificationForDictation(
@@ -502,8 +519,21 @@ class AccessibilityManager
   void ShowSodaDownloadNotificationForDictation(bool succeeded);
 
   void ShowDictationLanguageUpgradedNudge(const std::string& locale);
+  speech::LanguageCode GetDictationLanguageCode();
 
   void CreateChromeVoxPanel();
+
+  void OnPumpkinInstalled(bool success);
+  void OnPumpkinError(const std::string& error);
+  void OnPumpkinDataCreated(
+      std::unique_ptr<::extensions::api::accessibility_private::PumpkinData>
+          data);
+
+  void OnAppTerminating();
+
+  // Returns a full file path given a DLC.
+  base::FilePath DlcTypeToPath(
+      ::extensions::api::accessibility_private::DlcType dlc);
 
   // Profile which has the current a11y context.
   Profile* profile_ = nullptr;
@@ -513,7 +543,6 @@ class AccessibilityManager
                           session_manager::SessionManagerObserver>
       session_observation_{this};
 
-  content::NotificationRegistrar notification_registrar_;
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   std::unique_ptr<PrefChangeRegistrar> local_state_pref_change_registrar_;
 
@@ -528,6 +557,8 @@ class AccessibilityManager
   std::set<std::string> accessibility_common_enabled_features_;
 
   AccessibilityStatusCallbackList callback_list_;
+
+  std::unique_ptr<AccessibilityServiceClient> accessibility_service_client_;
 
   bool braille_display_connected_ = false;
   base::ScopedObservation<
@@ -565,12 +596,13 @@ class AccessibilityManager
 
   std::unique_ptr<AccessibilityExtensionLoader> switch_access_loader_;
 
+  std::unique_ptr<PumpkinInstaller> pumpkin_installer_;
+
   std::map<std::string, std::set<std::string>>
       focus_ring_names_for_extension_id_;
 
   bool app_terminating_ = false;
 
-  std::unique_ptr<Dictation> dictation_;
   bool dictation_active_ = false;
   bool network_dictation_dialog_is_showing_ = false;
   // Whether a SODA download failed notification has been shown. This is
@@ -581,6 +613,7 @@ class AccessibilityManager
   bool ignore_dictation_locale_pref_change_ = false;
 
   base::RepeatingCallback<void()> focus_ring_observer_for_test_;
+  base::RepeatingCallback<void()> highlights_observer_for_test_;
   base::RepeatingCallback<void()> select_to_speak_state_observer_for_test_;
   base::RepeatingCallback<void(const gfx::Rect&)>
       caret_bounds_observer_for_test_;
@@ -591,7 +624,14 @@ class AccessibilityManager
   // Whether the virtual keyboard was enabled before Switch Access loaded.
   bool was_vk_enabled_before_switch_access_ = false;
 
+  InstallPumpkinCallback install_pumpkin_callback_;
+  bool is_pumpkin_installed_for_testing_ = false;
+
+  base::FilePath dlc_path_for_test_;
+
   base::CallbackListSubscription focus_changed_subscription_;
+
+  base::CallbackListSubscription on_app_terminating_subscription_;
 
   base::WeakPtrFactory<AccessibilityManager> weak_ptr_factory_{this};
 

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,16 +11,22 @@ bool StructTraits<network::mojom::ReportingApiEndpointDataView,
                   net::ReportingEndpoint>::
     Read(network::mojom::ReportingApiEndpointDataView data,
          net::ReportingEndpoint* out) {
-  if (!data.ReadUrl(&out->info.url))
+  if (!data.ReadUrl(&out->info.url)) {
     return false;
-  if (!data.ReadOrigin(&out->group_key.origin))
+  }
+  if (!data.ReadOrigin(&out->group_key.origin)) {
     return false;
-  if (!data.ReadGroupName(&out->group_key.group_name))
+  }
+  if (!data.ReadGroupName(&out->group_key.group_name)) {
     return false;
-  if (!data.ReadNetworkIsolationKey(&out->group_key.network_isolation_key))
+  }
+  if (!data.ReadNetworkAnonymizationKey(
+          &out->group_key.network_anonymization_key)) {
     return false;
-  if (!data.ReadReportingSource(&out->group_key.reporting_source))
+  }
+  if (!data.ReadReportingSource(&out->group_key.reporting_source)) {
     return false;
+  }
 
   out->stats.attempted_uploads = data.attempted_uploads();
   out->stats.successful_uploads = data.successful_uploads();

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/api/cookies/cookies_api_constants.h"
 #include "chrome/browser/extensions/api/cookies/cookies_helpers.h"
@@ -65,18 +64,17 @@ TEST_F(ExtensionCookiesTest, StoreIdProfileConversion) {
   EXPECT_EQ(
       profile->GetPrimaryOTRProfile(/*create_if_needed=*/true),
       cookies_helpers::ChooseProfileFromStoreId("1", profile.get(), true));
-  EXPECT_EQ(NULL,
-            cookies_helpers::ChooseProfileFromStoreId(
-                "1", profile.get(), false));
+  EXPECT_EQ(nullptr, cookies_helpers::ChooseProfileFromStoreId(
+                         "1", profile.get(), false));
 
   EXPECT_EQ(std::string("1"),
             cookies_helpers::GetStoreIdFromProfile(
                 profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
   EXPECT_EQ(
-      NULL,
+      nullptr,
       cookies_helpers::ChooseProfileFromStoreId(
           "0", profile->GetPrimaryOTRProfile(/*create_if_needed=*/true), true));
-  EXPECT_EQ(NULL,
+  EXPECT_EQ(nullptr,
             cookies_helpers::ChooseProfileFromStoreId(
                 "0", profile->GetPrimaryOTRProfile(/*create_if_needed=*/true),
                 false));
@@ -94,8 +92,9 @@ TEST_F(ExtensionCookiesTest, ExtensionTypeCreation) {
   std::unique_ptr<net::CanonicalCookie> canonical_cookie1 =
       net::CanonicalCookie::CreateUnsafeCookieForTesting(
           "ABC", "DEF", "www.example.com", "/", base::Time(), base::Time(),
-          base::Time(), false, false, net::CookieSameSite::NO_RESTRICTION,
-          net::COOKIE_PRIORITY_DEFAULT, false);
+          base::Time(), base::Time(), false, false,
+          net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_DEFAULT,
+          false);
   ASSERT_NE(nullptr, canonical_cookie1.get());
   Cookie cookie1 =
       cookies_helpers::CreateCookie(*canonical_cookie1, "some cookie store");
@@ -108,14 +107,14 @@ TEST_F(ExtensionCookiesTest, ExtensionTypeCreation) {
   EXPECT_FALSE(cookie1.http_only);
   EXPECT_EQ(api::cookies::SAME_SITE_STATUS_NO_RESTRICTION, cookie1.same_site);
   EXPECT_TRUE(cookie1.session);
-  EXPECT_FALSE(cookie1.expiration_date.get());
+  EXPECT_FALSE(cookie1.expiration_date);
   EXPECT_EQ("some cookie store", cookie1.store_id);
 
   std::unique_ptr<net::CanonicalCookie> canonical_cookie2 =
       net::CanonicalCookie::CreateUnsafeCookieForTesting(
           "ABC", "DEF", ".example.com", "/", base::Time(),
-          base::Time::FromDoubleT(10000), base::Time(), false, false,
-          net::CookieSameSite::STRICT_MODE, net::COOKIE_PRIORITY_DEFAULT,
+          base::Time::FromDoubleT(10000), base::Time(), base::Time(), false,
+          false, net::CookieSameSite::STRICT_MODE, net::COOKIE_PRIORITY_DEFAULT,
           false);
   ASSERT_NE(nullptr, canonical_cookie2.get());
   Cookie cookie2 =
@@ -123,7 +122,7 @@ TEST_F(ExtensionCookiesTest, ExtensionTypeCreation) {
   EXPECT_FALSE(cookie2.host_only);
   EXPECT_FALSE(cookie2.session);
   EXPECT_EQ(api::cookies::SAME_SITE_STATUS_STRICT, cookie2.same_site);
-  ASSERT_TRUE(cookie2.expiration_date.get());
+  ASSERT_TRUE(cookie2.expiration_date);
   EXPECT_EQ(10000, *cookie2.expiration_date);
 
   TestingProfile profile;
@@ -139,8 +138,9 @@ TEST_F(ExtensionCookiesTest, GetURLFromCanonicalCookie) {
   std::unique_ptr<net::CanonicalCookie> cookie1 =
       net::CanonicalCookie::CreateUnsafeCookieForTesting(
           "ABC", "DEF", ".example.com", "/", base::Time(), base::Time(),
-          base::Time(), false, false, net::CookieSameSite::NO_RESTRICTION,
-          net::COOKIE_PRIORITY_DEFAULT, false);
+          base::Time(), base::Time(), false, false,
+          net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_DEFAULT,
+          false);
   ASSERT_NE(nullptr, cookie1.get());
   EXPECT_EQ("http://example.com/",
             cookies_helpers::GetURLFromCanonicalCookie(*cookie1).spec());
@@ -148,8 +148,9 @@ TEST_F(ExtensionCookiesTest, GetURLFromCanonicalCookie) {
   std::unique_ptr<net::CanonicalCookie> cookie2 =
       net::CanonicalCookie::CreateUnsafeCookieForTesting(
           "ABC", "DEF", ".helloworld.com", "/", base::Time(), base::Time(),
-          base::Time(), true, false, net::CookieSameSite::NO_RESTRICTION,
-          net::COOKIE_PRIORITY_DEFAULT, false);
+          base::Time(), base::Time(), true, false,
+          net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_DEFAULT,
+          false);
   ASSERT_NE(nullptr, cookie2.get());
   EXPECT_EQ("https://helloworld.com/",
             cookies_helpers::GetURLFromCanonicalCookie(*cookie2).spec());
@@ -172,19 +173,19 @@ TEST_F(ExtensionCookiesTest, DomainMatching) {
       {".bar.com", ".foo.bar.com", true}, {".bar.com", "baz.foo.bar.com", true},
       {"foo.bar.com", ".bar.com", false}};
 
-  for (size_t i = 0; i < base::size(tests); ++i) {
+  for (size_t i = 0; i < std::size(tests); ++i) {
     // Build up the Params struct.
-    std::vector<base::Value> args;
-    base::Value dict(base::Value::Type::DICTIONARY);
-    dict.SetStringKey(keys::kDomainKey, std::string(tests[i].filter));
-    args.emplace_back(std::move(dict));
+    base::Value::List args;
+    base::Value::Dict dict;
+    dict.Set(keys::kDomainKey, tests[i].filter);
+    args.Append(std::move(dict));
     std::unique_ptr<GetAll::Params> params(GetAll::Params::Create(args));
 
     cookies_helpers::MatchFilter filter(&params->details);
     std::unique_ptr<net::CanonicalCookie> cookie =
         net::CanonicalCookie::CreateUnsafeCookieForTesting(
             "name", std::string(), tests[i].domain, "/", base::Time(),
-            base::Time(), base::Time(), false, false,
+            base::Time(), base::Time(), base::Time(), false, false,
             net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_DEFAULT,
             false);
     ASSERT_NE(nullptr, cookie.get());

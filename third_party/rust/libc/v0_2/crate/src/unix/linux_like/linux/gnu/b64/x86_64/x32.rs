@@ -337,6 +337,7 @@ pub const SYS_pkey_mprotect: ::c_long = __X32_SYSCALL_BIT + 329;
 pub const SYS_pkey_alloc: ::c_long = __X32_SYSCALL_BIT + 330;
 pub const SYS_pkey_free: ::c_long = __X32_SYSCALL_BIT + 331;
 pub const SYS_statx: ::c_long = __X32_SYSCALL_BIT + 332;
+pub const SYS_rseq: ::c_long = __X32_SYSCALL_BIT + 334;
 pub const SYS_pidfd_send_signal: ::c_long = __X32_SYSCALL_BIT + 424;
 pub const SYS_io_uring_setup: ::c_long = __X32_SYSCALL_BIT + 425;
 pub const SYS_io_uring_enter: ::c_long = __X32_SYSCALL_BIT + 426;

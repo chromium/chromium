@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -46,6 +46,7 @@ enum class GamepadId : uint32_t {
   kBdaProduct6271 = 0x20d66271,
   kBdaProduct89e5 = 0x20d689e5,
   kBroadcomProduct8502 = 0x0a5c8502,
+  kDjiProduct1020 = 0x2ca31020,
   kDragonRiseProduct0006 = 0x00790006,
   kDragonRiseProduct0011 = 0x00790011,
   kElecomProduct200f = 0x056e200f,
@@ -77,10 +78,14 @@ enum class GamepadId : uint32_t {
   kMicrosoftProduct0719 = 0x045e0719,
   kMicrosoftProduct0b00 = 0x045e0b00,
   kMicrosoftProduct0b05 = 0x045e0b05,
+  kMicrosoftProduct0b06 = 0x045e0b06,
   kMicrosoftProduct0b0a = 0x045e0b0a,
   kMicrosoftProduct0b0c = 0x045e0b0c,
   kMicrosoftProduct0b12 = 0x045e0b12,
   kMicrosoftProduct0b13 = 0x045e0b13,
+  kMicrosoftProduct0b20 = 0x045e0b20,
+  kMicrosoftProduct0b21 = 0x045e0b21,
+  kMicrosoftProduct0b22 = 0x045e0b22,
   kNintendoProduct2006 = 0x057e2006,
   kNintendoProduct2007 = 0x057e2007,
   kNintendoProduct2009 = 0x057e2009,
@@ -109,6 +114,8 @@ enum class GamepadId : uint32_t {
   kSteelSeriesProduct1412 = 0x10381412,
   kSteelSeriesProduct1418 = 0x10381418,
   kSteelSeriesProduct1420 = 0x10381420,
+  kSteelSeriesProduct1430 = 0x10381430,
+  kSteelSeriesProduct1431 = 0x10381431,
 };
 
 class DEVICE_GAMEPAD_EXPORT GamepadIdList {

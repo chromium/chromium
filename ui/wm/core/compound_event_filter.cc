@@ -1,10 +1,11 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/wm/core/compound_event_filter.h"
 
 #include "base/check.h"
+#include "base/observer_list.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -21,23 +22,6 @@
 #include "ui/wm/public/activation_client.h"
 
 namespace wm {
-
-namespace {
-
-// Returns true if the cursor should be hidden on touch events.
-// TODO(tdanderson|rsadam): Move this function into CursorClient.
-bool ShouldHideCursorOnTouch(const ui::TouchEvent& event) {
-#if defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
-  return true;
-#else
-  // Linux Aura does not hide the cursor on touch by default.
-  // TODO(tdanderson): Change this if having consistency across
-  // all platforms which use Aura is desired.
-  return false;
-#endif
-}
-
-}  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
 // CompoundEventFilter, public:
@@ -262,11 +246,12 @@ void CompoundEventFilter::OnTouchEvent(ui::TouchEvent* event) {
   TRACE_EVENT2("ui,input", "CompoundEventFilter::OnTouchEvent", "event_type",
                event->type(), "event_handled", event->handled());
   FilterTouchEvent(event);
-  if (!event->handled() && event->type() == ui::ET_TOUCH_PRESSED &&
-      ShouldHideCursorOnTouch(*event)) {
+  if (!event->handled() && event->type() == ui::ET_TOUCH_PRESSED) {
     aura::Window* target = static_cast<aura::Window*>(event->target());
     DCHECK(target);
-    if (!aura::Env::GetInstance()->IsMouseButtonDown()) {
+    auto* client = aura::client::GetCursorClient(target->GetRootWindow());
+    if (client && client->ShouldHideCursorOnTouchEvent(*event) &&
+        !aura::Env::GetInstance()->IsMouseButtonDown()) {
       SetMouseEventsEnableStateOnEvent(target, event, false);
       SetCursorVisibilityOnEvent(target, event, false);
     }

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -337,7 +337,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ::testing::Values(true));
 
 // Crashes on Win.  http://crbug.com/1108357
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_ExpiryHidesFlag DISABLED_ExpiryHidesFlag
 #else
 #define MAYBE_ExpiryHidesFlag ExpiryHidesFlag

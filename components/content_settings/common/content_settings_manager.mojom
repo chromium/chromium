@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@ module content_settings.mojom;
 import "components/content_settings/core/common/content_settings.mojom";
 import "services/network/public/mojom/site_for_cookies.mojom";
 import "url/mojom/origin.mojom";
-import "url/mojom/url.mojom";
 
 // An interface to the content settings manager running in the browser process
 // associated with a RenderFrameHost instance.

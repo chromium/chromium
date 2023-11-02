@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.password_manager;
 
 import android.app.Activity;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.annotations.CalledByNative;
@@ -44,12 +45,24 @@ public class CredentialLeakDialogBridge {
 
     @CalledByNative
     public void showDialog(String credentialLeakTitle, String credentialLeakDetails,
-            String positiveButton, String negativeButton) {
+            boolean isChangeAutomaticallyAvailable, String positiveButton, String negativeButton) {
         Activity activity = mWindowAndroid.getActivity().get();
         if (activity == null) return;
 
-        PasswordManagerDialogContents contents = createDialogContents(
-                credentialLeakTitle, credentialLeakDetails, positiveButton, negativeButton);
+        @DrawableRes
+        int headerDrawableId;
+        if (isChangeAutomaticallyAvailable) {
+            headerDrawableId = R.drawable.password_checkup_change_automatically;
+        } else {
+            headerDrawableId = PasswordManagerHelper.usesUnifiedPasswordManagerBranding()
+                    ? R.drawable.password_check_header_red
+                    : R.drawable.password_checkup_warning;
+        };
+
+        PasswordManagerDialogContents contents = createDialogContents(credentialLeakTitle,
+                credentialLeakDetails, headerDrawableId, positiveButton,
+                isChangeAutomaticallyAvailable ? R.drawable.ic_autofill_assistant_white_24dp : 0,
+                negativeButton);
         contents.setPrimaryButtonFilled(negativeButton != null);
         contents.setHelpButtonCallback(this::showHelpArticle);
 
@@ -58,9 +71,11 @@ public class CredentialLeakDialogBridge {
     }
 
     private PasswordManagerDialogContents createDialogContents(String credentialLeakTitle,
-            String credentialLeakDetails, String positiveButton, String negativeButton) {
+            String credentialLeakDetails, int illustrationId, String positiveButton,
+            int positiveButtonIconId, String negativeButton) {
         return new PasswordManagerDialogContents(credentialLeakTitle, credentialLeakDetails,
-                R.drawable.password_checkup_warning, positiveButton, negativeButton, this::onClick);
+                illustrationId, positiveButton, positiveButtonIconId, negativeButton,
+                this::onClick);
     }
 
     @CalledByNative

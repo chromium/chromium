@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/logging.h"
+#include "base/observer_list.h"
 #include "components/sync/engine/update_handler.h"
 
 namespace syncer {
@@ -38,22 +39,13 @@ SyncCycleSnapshot SyncCycle::TakeSnapshotWithOrigin(
     download_progress_markers[type] = progress_marker.SerializeAsString();
   }
 
-  // TODO(crbug.com/923287): Most of the counters below are outdated. Remove.
-  int num_entries = 0;
-  std::vector<int> num_entries_by_type(GetNumModelTypes(), 0);
-  std::vector<int> num_to_delete_entries_by_type(GetNumModelTypes(), 0);
-
   SyncCycleSnapshot snapshot(
       context_->birthday(), context_->bag_of_chips(),
       status_controller_->model_neutral_state(), download_progress_markers,
       delegate_->IsAnyThrottleOrBackoff(),
-      status_controller_->num_encryption_conflicts(),
-      status_controller_->num_hierarchy_conflicts(),
       status_controller_->num_server_conflicts(),
-      context_->notifications_enabled(), num_entries,
-      status_controller_->sync_start_time(),
-      status_controller_->poll_finish_time(), num_entries_by_type,
-      num_to_delete_entries_by_type, get_updates_origin,
+      context_->notifications_enabled(), status_controller_->sync_start_time(),
+      status_controller_->poll_finish_time(), get_updates_origin,
       context_->poll_interval(),
       context_->model_type_registry()->HasUnsyncedItems());
 
@@ -67,7 +59,7 @@ void SyncCycle::SendSyncCycleEndEventNotification(
 
   DVLOG(1) << "Sending cycle end event with snapshot: "
            << event.snapshot.ToString();
-  for (auto& observer : *context_->listeners())
+  for (SyncEngineEventListener& observer : *context_->listeners())
     observer.OnSyncCycleEvent(event);
 }
 
@@ -76,12 +68,12 @@ void SyncCycle::SendEventNotification(SyncCycleEvent::EventCause cause) {
   event.snapshot = TakeSnapshot();
 
   DVLOG(1) << "Sending event with snapshot: " << event.snapshot.ToString();
-  for (auto& observer : *context_->listeners())
+  for (SyncEngineEventListener& observer : *context_->listeners())
     observer.OnSyncCycleEvent(event);
 }
 
 void SyncCycle::SendProtocolEvent(const ProtocolEvent& event) {
-  for (auto& observer : *context_->listeners())
+  for (SyncEngineEventListener& observer : *context_->listeners())
     observer.OnProtocolEvent(event);
 }
 

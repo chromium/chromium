@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #include <unordered_map>
 
 #include "base/lazy_instance.h"
+#include "base/memory/raw_ptr.h"
 #include "components/os_crypt/key_storage_libsecret.h"
 #include "components/os_crypt/libsecret_util_linux.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -73,7 +74,7 @@ class MockPasswordStore {
 
   std::unordered_map<GObject*, std::string> mapping_;
   std::vector<GObject*> objects_returned_to_caller_;
-  GObject* password_ = nullptr;
+  raw_ptr<GObject> password_ = nullptr;
 };
 base::LazyInstance<MockPasswordStore>::Leaky g_password_store =
     LAZY_INSTANCE_INITIALIZER;

@@ -1,10 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.flags;
 
 import androidx.annotation.GuardedBy;
+import androidx.annotation.VisibleForTesting;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,4 +22,20 @@ class ValuesReturned {
     public final Map<String, Integer> intValues = new HashMap<>();
     @GuardedBy("doubleValues")
     public final Map<String, Double> doubleValues = new HashMap<>();
+
+    @VisibleForTesting
+    final void clearForTesting() {
+        synchronized (boolValues) {
+            boolValues.clear();
+        }
+        synchronized (stringValues) {
+            stringValues.clear();
+        }
+        synchronized (intValues) {
+            intValues.clear();
+        }
+        synchronized (doubleValues) {
+            doubleValues.clear();
+        }
+    }
 }

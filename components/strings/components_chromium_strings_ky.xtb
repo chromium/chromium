@@ -4,7 +4,6 @@
 <translation id="130631256467250065">Өзгөртүүлөрүңүз түзмөгүңүз өчүп күйгөндөн кийин күчүнө кирет.</translation>
 <translation id="275588974610408078">Chromium'да каталар жөнүндө кабар берүү мүмкүн эмес.</translation>
 <translation id="3064346599913645280">Коопсуз Chromium баракчасын карап жатасыз</translation>
-<translation id="3550966579244642892">Chromium OS алгачкы жөндөөсүн аягына чыгарган жок.</translation>
 <translation id="358997566136285270">Chromium логотиби</translation>
 <translation id="4365115785552740256">Chromium <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ачык булак долбоору жана башка <ph name="BEGIN_LINK_OSS" />ачык программа<ph name="END_LINK_OSS" /> аркылуу мүмкүн болду.</translation>
 <translation id="4559775032954821361">Төмөнкүгө өтүп, 
@@ -20,6 +19,7 @@
 <translation id="4622039161600275920">Бул баракты Chromium бөгөттөп койду</translation>
 <translation id="48558539577516920">Chromium'га коргоо системасында тармакка же антивирус жөндөөлөрүнө кирүүгө уруксат
           бериңиз.</translation>
+<translation id="4918837013875648434">ChromiumOS алгачкы тууралоосун аягына чыгарган жок.</translation>
 <translation id="580822234363523061">Төмөнкүгө өтүп:
           Chromium менюсу &gt;
           <ph name="SETTINGS_TITLE" />

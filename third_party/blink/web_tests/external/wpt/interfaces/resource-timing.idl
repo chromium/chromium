@@ -22,7 +22,13 @@ interface PerformanceResourceTiming : PerformanceEntry {
     readonly attribute unsigned long long  transferSize;
     readonly attribute unsigned long long  encodedBodySize;
     readonly attribute unsigned long long  decodedBodySize;
+    readonly attribute RenderBlockingStatusType renderBlockingStatus;
     [Default] object toJSON();
+};
+
+enum RenderBlockingStatusType {
+    "blocking",
+    "non-blocking"
 };
 
 partial interface Performance {

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "components/gcm_driver/gcm_driver.h"
 
 namespace base {
+class FilePath;
 class SequencedTaskRunner;
 }
 
@@ -18,7 +19,8 @@ namespace gcm {
 class FakeGCMDriver : public GCMDriver {
  public:
   FakeGCMDriver();
-  explicit FakeGCMDriver(
+  FakeGCMDriver(
+      const base::FilePath& store_path,
       const scoped_refptr<base::SequencedTaskRunner>& blocking_task_runner);
 
   FakeGCMDriver(const FakeGCMDriver&) = delete;

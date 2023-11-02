@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,10 +11,10 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -48,24 +48,42 @@ const char kClearKeyCdmVersion[] = "0.1.0.1";
 const char kExternalClearKeyKeySystem[] = "org.chromium.externalclearkey";
 
 // Variants of External Clear Key key system to test different scenarios.
+
+// A sub key system that supports decrypt-only mode.
 const char kExternalClearKeyDecryptOnlyKeySystem[] =
     "org.chromium.externalclearkey.decryptonly";
+
+// A sub key system that triggers various types of messages.
 const char kExternalClearKeyMessageTypeTestKeySystem[] =
     "org.chromium.externalclearkey.messagetypetest";
+
+// A sub key system that triggers the FileIO test.
 const char kExternalClearKeyFileIOTestKeySystem[] =
     "org.chromium.externalclearkey.fileiotest";
+
+// A sub key system that triggers the output protection test.
 const char kExternalClearKeyOutputProtectionTestKeySystem[] =
     "org.chromium.externalclearkey.outputprotectiontest";
+
+// A sub key system that triggers the platform verification test.
 const char kExternalClearKeyPlatformVerificationTestKeySystem[] =
     "org.chromium.externalclearkey.platformverificationtest";
+
+// A sub key system that triggers a crash.
 const char kExternalClearKeyCrashKeySystem[] =
     "org.chromium.externalclearkey.crash";
+
+// A sub key system that triggers the verify host files test.
 const char kExternalClearKeyVerifyCdmHostTestKeySystem[] =
     "org.chromium.externalclearkey.verifycdmhosttest";
+
+// A sub key system that fetches the Storage ID.
 const char kExternalClearKeyStorageIdTestKeySystem[] =
     "org.chromium.externalclearkey.storageidtest";
-const char kExternalClearKeyDifferentGuidTestKeySystem[] =
-    "org.chromium.externalclearkey.differentguid";
+
+// A sub key system that is registered with a different CDM type.
+const char kkExternalClearKeyDifferentCdmTypeTestKeySystem[] =
+    "org.chromium.externalclearkey.differentcdmtype";
 
 const int64_t kMsPerSecond = 1000;
 const int64_t kMaxTimerDelayMs = 5 * kMsPerSecond;
@@ -177,7 +195,7 @@ void* CreateCdmInstance(int cdm_interface_version,
       key_system_string != kExternalClearKeyCrashKeySystem &&
       key_system_string != kExternalClearKeyVerifyCdmHostTestKeySystem &&
       key_system_string != kExternalClearKeyStorageIdTestKeySystem &&
-      key_system_string != kExternalClearKeyDifferentGuidTestKeySystem) {
+      key_system_string != kkExternalClearKeyDifferentCdmTypeTestKeySystem) {
     DVLOG(1) << "Unsupported key system:" << key_system_string;
     return nullptr;
   }
@@ -315,7 +333,7 @@ class CdmVideoFrameAdapter : public cdm::VideoFrame_2 {
   }
 
  private:
-  cdm::VideoFrame* const video_frame_ = nullptr;
+  const raw_ptr<cdm::VideoFrame> video_frame_ = nullptr;
 };
 
 }  // namespace
@@ -827,7 +845,7 @@ void ClearKeyCdm::OnQueryOutputProtectionStatus(
   }
   const uint8_t kDummyKeyId[] = {'d', 'u', 'm', 'm', 'y'};
   std::vector<cdm::KeyInformation> keys_vector = {
-      {kDummyKeyId, base::size(kDummyKeyId), key_status, 0}};
+      {kDummyKeyId, std::size(kDummyKeyId), key_status, 0}};
   cdm_host_proxy_->OnSessionKeysChange(last_session_id_.data(),
                                        last_session_id_.length(), false,
                                        keys_vector.data(), keys_vector.size());

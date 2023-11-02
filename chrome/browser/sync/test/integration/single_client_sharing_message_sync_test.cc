@@ -1,10 +1,13 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/test/mock_callback.h"
+#include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/sharing/features.h"
 #include "chrome/browser/sharing/sharing_message_bridge.h"
@@ -13,13 +16,12 @@
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "components/sync/driver/sync_token_status.h"
-#include "components/sync/test/fake_server/fake_server_http_post_provider.h"
+#include "components/sync/test/fake_server_http_post_provider.h"
 #include "content/public/test/browser_test.h"
 
 namespace {
 
 using sync_pb::SharingMessageSpecifics;
-using testing::_;
 
 constexpr char kEmptyOAuth2Token[] = "";
 
@@ -111,12 +113,10 @@ class SharingMessageEqualityChecker : public SingleClientStatusChangeChecker {
     }
 
     for (const SharingMessageSpecifics& specifics : expected_specifics_) {
-      auto iter =
-          std::find_if(entities.begin(), entities.end(),
-                       [&specifics](const sync_pb::SyncEntity& entity) {
-                         return specifics.payload() ==
-                                entity.specifics().sharing_message().payload();
-                       });
+      auto iter = base::ranges::find(
+          entities, specifics.payload(), [](const sync_pb::SyncEntity& entity) {
+            return entity.specifics().sharing_message().payload();
+          });
       if (iter == entities.end()) {
         *os << "Server doesn't have expected sharing message with payload: "
             << specifics.payload();
@@ -131,7 +131,7 @@ class SharingMessageEqualityChecker : public SingleClientStatusChangeChecker {
   }
 
  private:
-  fake_server::FakeServer* const fake_server_ = nullptr;
+  const raw_ptr<fake_server::FakeServer> fake_server_ = nullptr;
   const std::vector<SharingMessageSpecifics> expected_specifics_;
 };
 
@@ -196,7 +196,7 @@ class SharingMessageCommitChecker : public SingleClientStatusChangeChecker {
   }
 
  private:
-  fake_server::FakeServer* const fake_server_ = nullptr;
+  const raw_ptr<fake_server::FakeServer> fake_server_ = nullptr;
   const std::string expected_payload_;
 };
 

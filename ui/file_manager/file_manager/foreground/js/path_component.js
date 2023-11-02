@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -97,7 +97,7 @@ export class PathComponent {
       if (match) {
         displayRootFullPath = match[0];
       } else {
-        console.error('Unexpected shared DriveFS path: ', entry.fullPath);
+        console.warn('Unexpected shared DriveFS path: ', entry.fullPath);
       }
       displayRootUrl = replaceRootName(displayRootUrl, displayRootFullPath);
       const sharedWithMeFakeEntry =

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,15 +11,15 @@
 
 #include "ash/public/cpp/login_accelerators.h"
 // TODO(https://crbug.com/1164001): use forward declaration.
+#include "base/callback_list.h"
 #include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
+#include "chrome/browser/ash/login/oobe_quick_start/target_device_bootstrap_controller.h"
 #include "chrome/browser/ash/login/ui/kiosk_app_menu_controller.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/ui/signin_ui.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/user_manager/user_type.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AccountId;
@@ -32,7 +32,6 @@ class LoginFeedback;
 // LoginDisplayHostMojo and LoginDisplayHostWebUI.
 class LoginDisplayHostCommon : public LoginDisplayHost,
                                public BrowserListObserver,
-                               public content::NotificationObserver,
                                public SigninUI {
  public:
   LoginDisplayHostCommon();
@@ -44,6 +43,7 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
 
   // LoginDisplayHost:
   void BeforeSessionStart() final;
+  bool IsFinalizing() final;
   void Finalize(base::OnceClosure completion_callback) final;
   void FinalizeImmediately() final;
   KioskLaunchController* GetKioskLaunchController() final;
@@ -56,6 +56,7 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
   void SetDisplayEmail(const std::string& email) final;
   void SetDisplayAndGivenName(const std::string& display_name,
                               const std::string& given_name) final;
+  void ShowAllowlistCheckFailedError() final;
   void LoadWallpaper(const AccountId& account_id) final;
   void LoadSigninWallpaper() final;
   bool IsUserAllowlisted(
@@ -67,6 +68,8 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
   bool HandleAccelerator(LoginAcceleratorAction action) final;
   void AddWizardCreatedObserverForTests(
       base::RepeatingClosure on_created) final;
+  base::WeakPtr<quick_start::TargetDeviceBootstrapController>
+  GetQuickStartBootstrapController() final;
 
   // SigninUI:
   void SetAuthSessionForOnboarding(const UserContext& user_context) final;
@@ -75,20 +78,18 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
   void ResumeUserOnboarding(OobeScreenId screen_id) final;
   void StartManagementTransition() final;
   void ShowTosForExistingUser() final;
+  void ShowNewTermsForFlexUsers() final;
   void StartEncryptionMigration(
       const UserContext& user_context,
       EncryptionMigrationMode migration_mode,
       base::OnceCallback<void(const UserContext&)> on_skip_migration) final;
   void ShowSigninError(SigninError error, const std::string& details) final;
+  void SAMLConfirmPassword(::login::StringList scraped_passwords,
+                           std::unique_ptr<UserContext> user_context) final;
   WizardContext* GetWizardContextForTesting() final;
 
   // BrowserListObserver:
   void OnBrowserAdded(Browser* browser) override;
-
-  // content::NotificationObserver:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
 
   WizardContext* GetWizardContext() override;
 
@@ -119,15 +120,17 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
   // Kiosk launch controller.
   std::unique_ptr<KioskLaunchController> kiosk_launch_controller_;
 
-  content::NotificationRegistrar registrar_;
-
  private:
   void Cleanup();
-  // Callback invoked after the feedback is finished.
-  void OnFeedbackFinished();
   // Set screen, from which WC flow will continue after attempt to show
   // TermsOfServiceScreen.
   void SetScreenAfterManagedTos(OobeScreenId screen_id);
+
+  void OnPowerwashAllowedCallback(
+      bool is_reset_allowed,
+      absl::optional<tpm_firmware_update::Mode> tpm_firmware_update_mode);
+
+  void OnAppTerminating();
 
   // True if session start is in progress.
   bool session_starting_ = false;
@@ -154,6 +157,11 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
 
   // Callback to be executed when WebUI is started.
   base::RepeatingClosure on_wizard_controller_created_for_tests_;
+
+  std::unique_ptr<ash::quick_start::TargetDeviceBootstrapController>
+      bootstrap_controller_;
+
+  base::CallbackListSubscription app_terminating_subscription_;
 
   base::WeakPtrFactory<LoginDisplayHostCommon> weak_factory_{this};
 };

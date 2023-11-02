@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,7 +19,7 @@ constexpr char kGroupName[] = "Default";
 
 void CreateAndActivateFieldTrial(const std::string& trial_name,
                                  const std::string& group_name) {
-  base::FieldTrialList::CreateFieldTrial(trial_name, group_name)->group();
+  base::FieldTrialList::CreateFieldTrial(trial_name, group_name)->Activate();
 }
 
 void VerifyFieldTrial(const mojom::FieldTrialGroupInfoPtr& info,
@@ -39,7 +39,9 @@ class TestFieldTrialObserver : public mojom::FieldTrialObserver {
     return receiver_.BindNewPipeAndPassRemote();
   }
 
-  void set_on_activate(OnActivateCallback callback) { callback_ = callback; }
+  void set_on_activate(OnActivateCallback callback) {
+    callback_ = std::move(callback);
+  }
 
   mojo::Receiver<mojom::FieldTrialObserver> receiver_{this};
 
@@ -77,7 +79,7 @@ TEST_F(FieldTrialServiceAshTest, SendInitialFieldTrialsAndUpdate) {
   base::RunLoop run_loop1;
   observer_.set_on_activate(base::BindLambdaForTesting(
       [&](const std::vector<mojom::FieldTrialGroupInfoPtr>& infos) {
-        EXPECT_EQ(2, infos.size());
+        ASSERT_EQ(2u, infos.size());
         VerifyFieldTrial(infos[0], kTrialName1, kGroupName);
         VerifyFieldTrial(infos[1], kTrialName2, kGroupName);
         run_loop1.Quit();
@@ -92,7 +94,7 @@ TEST_F(FieldTrialServiceAshTest, SendInitialFieldTrialsAndUpdate) {
   base::RunLoop run_loop2;
   observer_.set_on_activate(base::BindLambdaForTesting(
       [&](const std::vector<mojom::FieldTrialGroupInfoPtr>& infos) {
-        EXPECT_EQ(1, infos.size());
+        EXPECT_EQ(1u, infos.size());
         VerifyFieldTrial(infos[0], kTrialName3, kGroupName);
         run_loop2.Quit();
         // Test won't exit until this is called.
@@ -109,7 +111,7 @@ TEST_F(FieldTrialServiceAshTest, SendEmptyInitialFieldTrial) {
   base::RunLoop run_loop;
   observer_.set_on_activate(base::BindLambdaForTesting(
       [&](const std::vector<mojom::FieldTrialGroupInfoPtr>& infos) {
-        EXPECT_EQ(0, infos.size());
+        EXPECT_EQ(0u, infos.size());
         run_loop.Quit();
         // Test won't exit until this is called.
       }));

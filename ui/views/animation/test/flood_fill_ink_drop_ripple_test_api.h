@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,7 +32,7 @@ class FloodFillInkDropRippleTestApi : public InkDropRippleTestApi {
 
   // Transforms |point| into the FloodFillInkDropRipples clip layer coordinate
   // space for the given radius.
-  void TransformPoint(float radius, gfx::Point3F* point);
+  gfx::Point3F MapPoint(float radius, const gfx::Point3F& point);
 
   // Returns the center point that the ripple is drawn at in the original Canvas
   // coordinate space.

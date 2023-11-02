@@ -31,122 +31,17 @@
 
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 
-#include "third_party/blink/public/platform/web_audio_source_provider.h"
-#include "third_party/blink/renderer/platform/audio/audio_bus.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
-#include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
-#include "third_party/blink/renderer/platform/wtf/uuid.h"
-
 namespace blink {
 
-namespace {
-
-static int g_unique_media_stream_component_id = 0;
-
-}  // namespace
-
-// static
-int MediaStreamComponent::GenerateUniqueId() {
-  return ++g_unique_media_stream_component_id;
+MediaStreamComponents::MediaStreamComponents(MediaStreamComponent* audio_track,
+                                             MediaStreamComponent* video_track)
+    : audio_track_(audio_track), video_track_(video_track) {
+  DCHECK(audio_track_ || video_track_);
 }
 
-MediaStreamComponent::MediaStreamComponent(MediaStreamSource* source)
-    : MediaStreamComponent(WTF::CreateCanonicalUUIDString(), source) {}
-MediaStreamComponent::MediaStreamComponent(const String& id,
-                                           MediaStreamSource* source)
-    : source_(source), id_(id), unique_id_(GenerateUniqueId()) {
-  DCHECK(id_.length());
-  DCHECK(source_);
-}
-
-MediaStreamComponent* MediaStreamComponent::Clone() const {
-  auto* cloned_component = MakeGarbageCollected<MediaStreamComponent>(Source());
-  cloned_component->SetEnabled(enabled_);
-  cloned_component->SetMuted(muted_);
-  cloned_component->SetContentHint(content_hint_);
-  cloned_component->SetConstraints(constraints_);
-  return cloned_component;
-}
-
-void MediaStreamComponent::Dispose() {
-  platform_track_.reset();
-}
-
-void MediaStreamComponent::AudioSourceProviderImpl::Wrap(
-    WebAudioSourceProvider* provider) {
-  MutexLocker locker(provide_input_lock_);
-  web_audio_source_provider_ = provider;
-}
-
-void MediaStreamComponent::GetSettings(
-    MediaStreamTrackPlatform::Settings& settings) {
-  DCHECK(platform_track_);
-  source_->GetSettings(settings);
-  platform_track_->GetSettings(settings);
-}
-
-MediaStreamTrackPlatform::CaptureHandle
-MediaStreamComponent::GetCaptureHandle() {
-  DCHECK(platform_track_);
-  return platform_track_->GetCaptureHandle();
-}
-
-void MediaStreamComponent::SetContentHint(
-    WebMediaStreamTrack::ContentHintType hint) {
-  switch (hint) {
-    case WebMediaStreamTrack::ContentHintType::kNone:
-      break;
-    case WebMediaStreamTrack::ContentHintType::kAudioSpeech:
-    case WebMediaStreamTrack::ContentHintType::kAudioMusic:
-      DCHECK_EQ(MediaStreamSource::kTypeAudio, Source()->GetType());
-      break;
-    case WebMediaStreamTrack::ContentHintType::kVideoMotion:
-    case WebMediaStreamTrack::ContentHintType::kVideoDetail:
-    case WebMediaStreamTrack::ContentHintType::kVideoText:
-      DCHECK_EQ(MediaStreamSource::kTypeVideo, Source()->GetType());
-      break;
-  }
-  if (hint == content_hint_)
-    return;
-  content_hint_ = hint;
-
-  MediaStreamTrackPlatform* native_track = GetPlatformTrack();
-  if (native_track)
-    native_track->SetContentHint(ContentHint());
-}
-
-void MediaStreamComponent::AudioSourceProviderImpl::ProvideInput(
-    AudioBus* bus,
-    int frames_to_process) {
-  DCHECK(bus);
-  if (!bus)
-    return;
-
-  MutexTryLocker try_locker(provide_input_lock_);
-  if (!try_locker.Locked() || !web_audio_source_provider_) {
-    bus->Zero();
-    return;
-  }
-
-  // Wrap the AudioBus channel data using WebVector.
-  uint32_t n = bus->NumberOfChannels();
-  if (web_audio_data_.size() != n)
-    web_audio_data_ = WebVector<float*>(static_cast<size_t>(n));
-
-  for (uint32_t i = 0; i < n; ++i)
-    web_audio_data_[i] = bus->Channel(i)->MutableData();
-
-  web_audio_source_provider_->ProvideInput(web_audio_data_, frames_to_process);
-}
-
-String MediaStreamComponent::ToString() const {
-  return String::Format(
-      "[id: %s, unique_id: %d, enabled: %s, muted=%s]", Id().Utf8().c_str(),
-      UniqueId(), Enabled() ? "true" : "false", Muted() ? "true" : "false");
-}
-
-void MediaStreamComponent::Trace(Visitor* visitor) const {
-  visitor->Trace(source_);
+void MediaStreamComponents::Trace(Visitor* visitor) const {
+  visitor->Trace(audio_track_);
+  visitor->Trace(video_track_);
 }
 
 }  // namespace blink

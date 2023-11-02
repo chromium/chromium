@@ -1,13 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
 
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 
 // static
@@ -24,9 +22,9 @@ PermissionDecisionAutoBlockerFactory::GetInstance() {
 }
 
 PermissionDecisionAutoBlockerFactory::PermissionDecisionAutoBlockerFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "PermissionDecisionAutoBlocker",
-          BrowserContextDependencyManager::GetInstance()) {
+          ProfileSelections::BuildForRegularAndIncognito()) {
   DependsOn(HostContentSettingsMapFactory::GetInstance());
 }
 
@@ -38,10 +36,4 @@ KeyedService* PermissionDecisionAutoBlockerFactory::BuildServiceInstanceFor(
   Profile* profile = Profile::FromBrowserContext(context);
   return new permissions::PermissionDecisionAutoBlocker(
       HostContentSettingsMapFactory::GetForProfile(profile));
-}
-
-content::BrowserContext*
-PermissionDecisionAutoBlockerFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextOwnInstanceInIncognito(context);
 }

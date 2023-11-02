@@ -1,10 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_INLINE_NG_LINE_BREAKER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_INLINE_NG_LINE_BREAKER_H_
 
+#include "base/check_op.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/ng/exclusions/ng_line_layout_opportunity.h"
@@ -19,6 +20,7 @@ namespace blink {
 
 class Hyphenation;
 class NGBlockBreakToken;
+class NGColumnSpannerPath;
 class NGInlineBreakToken;
 class NGInlineItem;
 class NGLineInfo;
@@ -42,6 +44,7 @@ class CORE_EXPORT NGLineBreaker {
                 const NGPositionedFloatVector& leading_floats,
                 unsigned handled_leading_floats_index,
                 const NGInlineBreakToken*,
+                const NGColumnSpannerPath*,
                 NGExclusionSpace*);
   ~NGLineBreaker();
 
@@ -58,7 +61,8 @@ class CORE_EXPORT NGLineBreaker {
   bool IsFinished() const { return item_index_ >= Items().size(); }
 
   // Create an NGInlineBreakToken for the last line returned by NextLine().
-  const NGInlineBreakToken* CreateBreakToken(const NGLineInfo&) const;
+  // Only call once per instance.
+  const NGInlineBreakToken* CreateBreakToken(const NGLineInfo&);
 
   void PropagateBreakToken(const NGBlockBreakToken*);
   HeapVector<Member<const NGBlockBreakToken>>& PropagatedBreakTokens() {
@@ -302,6 +306,15 @@ class CORE_EXPORT NGLineBreaker {
   // True if ShouldCreateNewSvgSegment() should be called.
   bool needs_svg_segmentation_ = false;
 
+  // True if we need to establish a new parallel flow for contents inside a
+  // block-in-inline that overflowed the fragmentainer (although the
+  // block-in-inline itself didn't overflow).
+  bool needs_new_parallel_flow_ = false;
+
+#if DCHECK_IS_ON()
+  bool has_considered_creating_break_token_ = false;
+#endif
+
   const NGInlineItemsData& items_data_;
 
   // The text content of this node. This is same as |items_data_.text_content|
@@ -312,6 +325,7 @@ class CORE_EXPORT NGLineBreaker {
   const NGConstraintSpace& constraint_space_;
   NGExclusionSpace* exclusion_space_;
   const NGInlineBreakToken* break_token_;
+  const NGColumnSpannerPath* column_spanner_path_;
   scoped_refptr<const ComputedStyle> current_style_;
 
   LazyLineBreakIterator break_iterator_;

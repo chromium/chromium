@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,14 @@
 
 #include <memory>
 
-#include "ash/components/settings/timezone_settings.h"
+#include "base/scoped_observation.h"
+#include "base/time/time.h"
+#include "chrome/browser/ash/policy/scheduled_task_handler/reboot_notifications_scheduler.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/scheduled_task_executor.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/scoped_wake_lock.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
+#include "chromeos/ash/components/settings/timezone_settings.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "services/device/public/mojom/wake_lock.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
@@ -18,14 +22,15 @@
 namespace policy {
 
 // This class listens for changes in the scheduled reboot policy and then
-// manages recurring reboots based on the policy. Reboots are only applied if
-// the device is in the kiosk mode.
+// manages recurring reboots based on the policy.
 class DeviceScheduledRebootHandler
-    : public ash::system::TimezoneSettings::Observer {
+    : public ash::system::TimezoneSettings::Observer,
+      chromeos::PowerManagerClient::Observer {
  public:
-  explicit DeviceScheduledRebootHandler(
+  DeviceScheduledRebootHandler(
       ash::CrosSettings* cros_settings,
-      std::unique_ptr<ScheduledTaskExecutor> scheduled_task_executor);
+      std::unique_ptr<ScheduledTaskExecutor> scheduled_task_executor,
+      std::unique_ptr<RebootNotificationsScheduler> notifications_scheduler);
   DeviceScheduledRebootHandler(const DeviceScheduledRebootHandler&) = delete;
   DeviceScheduledRebootHandler& operator=(const DeviceScheduledRebootHandler&) =
       delete;
@@ -36,18 +41,37 @@ class DeviceScheduledRebootHandler
   // implementation.
   void TimezoneChanged(const icu::TimeZone& time_zone) override;
 
+  // Called when the power manager service becomes available. Reboot timer can
+  // only be started after this moment.
+  // chromeos::PowerManagerClient::Observer overrides:
+  void PowerManagerBecameAvailable(bool available) override;
+
   // The tag associated to register |scheduled_task_executor_|.
   static constexpr char kRebootTimerTag[] = "DeviceScheduledRebootHandler";
+
+  // Sets reboot delay for testing.
+  void SetRebootDelayForTest(const base::TimeDelta& reboot_delay);
+
+  // Returns value of |scheduled_reboot_data_|.
+  absl::optional<ScheduledTaskExecutor::ScheduledTaskData>
+  GetScheduledRebootDataForTest() const;
+
+  // Returns value of |skip_reboot_|.
+  bool IsRebootSkippedForTest() const;
 
  protected:
   // Called when scheduled timer fires. Triggers a reboot and
   // schedules the next reboot based on |scheduled_reboot_data_|.
   virtual void OnRebootTimerExpired();
 
- private:
-  // Callback triggered when scheduled reboot setting has changed.
-  void OnScheduledRebootDataChanged();
+  // Called on button click on the reboot notification or dialog. Executes
+  // reboot instantly.
+  virtual void OnRebootButtonClicked();
 
+  // Callback triggered when scheduled reboot setting has changed.
+  virtual void OnScheduledRebootDataChanged();
+
+ private:
   // Calls |scheduled_task_executor_| to start the timer. Requires
   // |scheduled_update_check_data_| to be set.
   void StartRebootTimer();
@@ -58,6 +82,13 @@ class DeviceScheduledRebootHandler
 
   // Reset all state and cancel all pending tasks
   void ResetState();
+
+  // Returns random delay between 0 and maximum reboot delay set by
+  // ash::features::kDeviceForceScheduledRebootMaxDelay feature or
+  // |reboot_delay_for_testing_| if set.
+  const base::TimeDelta GetExternalDelay() const;
+
+  void RebootDevice(const std::string& reboot_description) const;
 
   // Used to retrieve Chrome OS settings. Not owned.
   ash::CrosSettings* const cros_settings_;
@@ -71,6 +102,20 @@ class DeviceScheduledRebootHandler
 
   // Timer that is scheduled to check for updates.
   std::unique_ptr<ScheduledTaskExecutor> scheduled_task_executor_;
+
+  // Delay added to scheduled reboot time, used for testing.
+  absl::optional<base::TimeDelta> reboot_delay_for_testing_;
+
+  // Scheduler for reboot notification and dialog.
+  std::unique_ptr<RebootNotificationsScheduler> notifications_scheduler_;
+
+  // Indicating if the reboot should be skipped.
+  bool skip_reboot_ = false;
+
+  // Observation of chromeos::PowerManagerClient.
+  base::ScopedObservation<chromeos::PowerManagerClient,
+                          chromeos::PowerManagerClient::Observer>
+      observation_{this};
 };
 
 }  // namespace policy

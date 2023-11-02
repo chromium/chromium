@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -68,18 +68,18 @@ struct BLINK_COMMON_EXPORT
                  device::PublicKeyCredentialDescriptor> {
   static device::CredentialType type(
       const device::PublicKeyCredentialDescriptor& in) {
-    return in.credential_type();
+    return in.credential_type;
   }
 
   static const std::vector<uint8_t>& id(
       const device::PublicKeyCredentialDescriptor& in) {
-    return in.id();
+    return in.id;
   }
 
   static const std::vector<device::FidoTransportProtocol> transports(
       const device::PublicKeyCredentialDescriptor& in) {
     std::vector<device::FidoTransportProtocol> protocols;
-    for (const auto& protocol : in.transports()) {
+    for (const auto& protocol : in.transports) {
       protocols.push_back(protocol);
     }
     return protocols;
@@ -130,17 +130,17 @@ struct BLINK_COMMON_EXPORT
                  device::AuthenticatorSelectionCriteria> {
   static device::AuthenticatorAttachment authenticator_attachment(
       const device::AuthenticatorSelectionCriteria& in) {
-    return in.authenticator_attachment();
+    return in.authenticator_attachment;
   }
 
   static device::ResidentKeyRequirement resident_key(
       const device::AuthenticatorSelectionCriteria& in) {
-    return in.resident_key();
+    return in.resident_key;
   }
 
   static device::UserVerificationRequirement user_verification(
       const device::AuthenticatorSelectionCriteria& in) {
-    return in.user_verification_requirement();
+    return in.user_verification_requirement;
   }
 
   static bool Read(blink::mojom::AuthenticatorSelectionCriteriaDataView data,
@@ -158,11 +158,6 @@ struct BLINK_COMMON_EXPORT
   static const absl::optional<std::string>& name(
       const device::PublicKeyCredentialRpEntity& in) {
     return in.name;
-  }
-
-  static const absl::optional<GURL>& icon(
-      const device::PublicKeyCredentialRpEntity& in) {
-    return in.icon_url;
   }
 
   static bool Read(blink::mojom::PublicKeyCredentialRpEntityDataView data,
@@ -186,11 +181,6 @@ struct BLINK_COMMON_EXPORT
   static const absl::optional<std::string>& display_name(
       const device::PublicKeyCredentialUserEntity& in) {
     return in.display_name;
-  }
-
-  static const absl::optional<GURL>& icon(
-      const device::PublicKeyCredentialUserEntity& in) {
-    return in.icon_url;
   }
 
   static bool Read(blink::mojom::PublicKeyCredentialUserEntityDataView data,
@@ -240,7 +230,15 @@ struct BLINK_COMMON_EXPORT
   static const absl::optional<std::vector<uint8_t>> server_link_data(
       const device::CableDiscoveryData& in) {
     if (in.version == device::CableDiscoveryData::Version::V2) {
-      return *in.v2;
+      return in.v2->server_link_data;
+    }
+    return absl::nullopt;
+  }
+
+  static const absl::optional<std::vector<uint8_t>> experiments(
+      const device::CableDiscoveryData& in) {
+    if (in.version == device::CableDiscoveryData::Version::V2) {
+      return in.v2->experiments;
     }
     return absl::nullopt;
   }

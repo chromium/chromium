@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,8 +42,8 @@ TEST_F(RequestHandlerForChromeDesktopReportTest, HandleRequest_Success) {
 
   EXPECT_EQ(GetResponseCode(), net::HTTP_OK);
   ASSERT_TRUE(HasResponseBody());
-  EXPECT_TRUE(
-      GetDeviceManagementResponse().has_chrome_desktop_report_response());
+  auto response = GetDeviceManagementResponse();
+  EXPECT_TRUE(response.has_chrome_desktop_report_response());
 }
 
 }  // namespace policy

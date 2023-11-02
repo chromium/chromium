@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -113,6 +113,7 @@ class ASH_EXPORT ToplevelWindowEventHandler
   const gfx::PointF& event_location_in_gesture_target() {
     return event_location_in_gesture_target_;
   }
+  bool in_gesture_drag() { return in_gesture_drag_; }
 
   // Returns true if there is a drag in progress.
   bool is_drag_in_progress() const { return window_resizer_.get() != nullptr; }

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,7 +23,6 @@ SquareInkDropExample::~SquareInkDropExample() = default;
 
 void SquareInkDropExample::CreateInkDrop() {
   auto ink_drop_host = std::make_unique<InkDropHost>(ink_drop_view());
-  ink_drop_host->SetBaseColor(SK_ColorBLACK);
   ink_drop_host->SetMode(InkDropHost::InkDropMode::ON);
   InkDrop::UseInkDropForSquareRipple(ink_drop_host.get());
   ink_drop_host->SetCreateRippleCallback(base::BindRepeating(

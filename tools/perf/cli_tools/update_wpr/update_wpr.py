@@ -1,9 +1,11 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 # Script to automate updating existing WPR benchmarks from live versions of the
 # sites. Only supported on Mac/Linux.
+
+from __future__ import print_function
 
 import argparse
 import datetime
@@ -17,11 +19,15 @@ import tempfile
 import time
 import webbrowser
 
+from chrome_telemetry_build import chromium_config
 from core import cli_helpers
 from core import path_util
 from core.services import luci_auth
 from core.services import pinpoint_service
 from core.services import request
+
+path_util.AddTelemetryToPath()
+from telemetry import record_wpr
 
 import py_utils
 from py_utils import binary_manager
@@ -45,8 +51,11 @@ TELEMETRY_BIN_DEPS_CONFIG = os.path.join(
 
 
 def _GetBranchName():
-  return subprocess.check_output(
+  branch_name = subprocess.check_output(
       ['git', 'rev-parse', '--abbrev-ref', 'HEAD']).strip()
+  if isinstance(branch_name, bytes):
+    return branch_name.decode("utf-8")
+  return branch_name
 
 
 def _OpenBrowser(url):
@@ -194,7 +203,8 @@ def _PrintRunInfo(out_file, chrome_log_file=False, results_details=True):
 class WprUpdater(object):
   def __init__(self, args):
     self.story = args.story
-    # TODO(sergiyb): Impelement a method that auto-detects a single connected
+    self.bss = args.bss
+    # TODO(sergiyb): Implement a method that auto-detects a single connected
     # device when device_id is set to 'auto'. This should take advantage of the
     # method adb_wrapper.Devices in catapult repo.
     self.device_id = args.device_id
@@ -204,6 +214,13 @@ class WprUpdater(object):
     self.bug_id = args.bug_id
     self.reviewers = args.reviewers or DEFAULT_REVIEWERS
     self.wpr_go_bin = None
+
+    self._LoadArchiveInfo()
+
+  def _LoadArchiveInfo(self):
+    config = chromium_config.GetDefaultChromiumConfig()
+    tmp_recorder = record_wpr.WprRecorder(config, self.bss, parse_flags=False)
+    self.wpr_archive_info = tmp_recorder.story_set.wpr_archive_info
 
   def _CheckLog(self, command, log_name):
     # This is a wrapper around cli_helpers.CheckLog that adds timestamp to the
@@ -221,38 +238,59 @@ class WprUpdater(object):
   def _IsDesktop(self):
     return self.device_id is None
 
-  def _ExistingWpr(self):
-    """Parses JSON story config to extract info about WPR archive.
+  def _GetAllWprArchives(self):
+    return self.wpr_archive_info.data['archives']
+
+  def _GetWprArchivesForStory(self):
+    archives = self._GetAllWprArchives()
+    return archives.get(self.story)
+
+  def _GetWprArchivePathsAndUsageForStory(self):
+    """Parses JSON story config to extract info about WPR archive
 
     Returns:
-      A 2-tuple with path to the current WPR archive for specified story and
-      whether it is used by other benchmarks too.
+      A list of 2-tuple with path to the current WPR archive for specified
+      story and whether it is used by other benchmarks too.
     """
-    config_file = os.path.join(DATA_DIR, 'system_health_%s.json' % (
-        'desktop' if self._IsDesktop() else 'mobile'))
-    with open(config_file) as f:
-      config = json.load(f)
-    archives = config['archives']
-    archive = archives.get(self.story)
+    archives = self._GetAllWprArchives()
+    archive = self._GetWprArchivesForStory()
     if archive is None:
-      return None, False
-    archive = archive['DEFAULT']
-    used_in_other_stories = any(
-        archive in config.values() for story, config in archives.items()
-        if story != self.story)
-    return os.path.join(DATA_DIR, archive), used_in_other_stories
+      return []
+
+    existing = []
+    for a in archive.values():
+      used_in_other_stories = any(
+          a in config.values() for story, config in archives.items()
+          if story != self.story)
+      existing.append((os.path.join(DATA_DIR, a), used_in_other_stories))
+    return existing
 
   def _DeleteExistingWpr(self):
     """Deletes current WPR archive."""
-    archive, used_elsewhere = self._ExistingWpr()
-    if archive is None or used_elsewhere:
+    archive = self._GetWprArchivesForStory()
+    if archive is None:
       return
-    cli_helpers.Info('Deleting WPR: {archive}', archive=archive)
-    if os.path.exists(archive):
-      os.remove(archive)
-    archive_sha1 = archive + '.sha1'
-    if os.path.exists(archive_sha1):
-      os.remove(archive_sha1)
+
+    ans = cli_helpers.Ask(
+          'For this story, should I erase all existing recordings that '
+          'aren\'t used by other stories? Select yes if this is your '
+          'first time re-recording this story.',
+          ['yes', 'no'], default='no')
+    if ans == 'no':
+      return
+
+    for archive, used_in_other_stories in self._GetWprArchivePathsAndUsageForStory():
+      if used_in_other_stories:
+        continue
+
+      cli_helpers.Info('Deleting WPR: {archive}', archive=archive)
+      if os.path.exists(archive):
+        os.remove(archive)
+      archive_sha1 = archive + '.sha1'
+      if os.path.exists(archive_sha1):
+        os.remove(archive_sha1)
+
+    self.wpr_archive_info.RemoveStory(self.story)
 
   def _ExtractResultsFile(self, out_file):
     results_file = out_file + '.results.html'
@@ -265,19 +303,22 @@ class WprUpdater(object):
         '--browser-executable=%s' % self.binary,
         '--browser=exact',
       ]
-    elif self._IsDesktop():
+    if self._IsDesktop():
       return ['--browser=system']
-    else:
-      return ['--browser=android-system-chrome']
+    return ['--browser=android-system-chrome']
 
-  def _RunSystemHealthMemoryBenchmark(self, log_name, live=False):
+  def _RunBenchmark(self, log_name, live=False):
     args = [RUN_BENCHMARK, 'run'] + self._BrowserArgs()
 
-    if self._IsDesktop():
-      args.append('system_health.memory_desktop')
-    else:
-      args.extend(['system_health.memory_mobile', '--device={device_id}'])
+    benchmark = self.bss
+    if self.bss == 'desktop_system_health_story_set':
+      benchmark = 'system_health.memory_desktop'
+    elif self.bss == 'mobile_system_health_story_set':
+      benchmark = 'system_health.memory_mobile'
+    args.append(benchmark)
 
+    if not self._IsDesktop():
+      args.append('--device={device_id}')
 
     args.extend([
         '--output-format=html', '--show-stdout', '--reset-results',
@@ -346,8 +387,8 @@ class WprUpdater(object):
     """Returns the target that should be used for a Pinpoint job."""
     if configuration == 'android-pixel2-perf':
       return 'performance_test_suite_android_clank_monochrome_64_32_bundle'
-    elif configuration in ('linux-perf', 'win-10-perf',
-                           'mac-10_12_laptop_low_end-perf'):
+    if configuration in ('linux-perf', 'win-10-perf',
+                         'mac-10_12_laptop_low_end-perf'):
       return 'performance_test_suite'
     raise RuntimeError('Unknown configuration %s' % configuration)
 
@@ -368,7 +409,7 @@ class WprUpdater(object):
       cli_helpers.Comment(
           'Failed to start a Pinpoint job for {config} automatically:\n {err}',
           config=configuration, err=e.content)
-      return
+      return None
 
     cli_helpers.Info(
         'Started a Pinpoint job for {configuration} at {url}',
@@ -376,9 +417,18 @@ class WprUpdater(object):
     return resp['jobUrl']
 
   def _AddMissingURLsToArchive(self, replay_out_file):
-    existing_wpr = self._ExistingWpr()
-    if not existing_wpr:
+    existing_wprs = self._GetWprArchivePathsAndUsageForStory()
+    if len(existing_wprs) == 0:
       return
+
+    if len(existing_wprs) == 1:
+      archive = existing_wprs[0][0]
+    else:
+      cli_helpers.Comment("WPR Archives for this story:")
+      print(str(self._GetWprArchivesForStory()))
+      archive = cli_helpers.Ask(
+          'Which archive should I add URLs to?',
+          [e[0] for e in existing_wprs])
 
     missing_urls = _ExtractMissingURLsFromLog(replay_out_file)
     if not missing_urls:
@@ -388,11 +438,11 @@ class WprUpdater(object):
       self.wpr_go_bin = (
         binary_manager.BinaryManager([TELEMETRY_BIN_DEPS_CONFIG]).FetchPath(
         'wpr_go', py_utils.GetHostArchName(), py_utils.GetHostOsName()))
-    subprocess.check_call([self.wpr_go_bin, 'add', existing_wpr] + missing_urls)
+    subprocess.check_call([self.wpr_go_bin, 'add', archive] + missing_urls)
 
   def LiveRun(self):
     cli_helpers.Step('LIVE RUN: %s' % self.story)
-    out_file = self._RunSystemHealthMemoryBenchmark(
+    out_file = self._RunBenchmark(
         log_name='live', live=True)
     _PrintRunInfo(out_file, chrome_log_file=self._IsDesktop())
     return out_file
@@ -408,29 +458,37 @@ class WprUpdater(object):
   def RecordWpr(self):
     cli_helpers.Step('RECORD WPR: %s' % self.story)
     self._DeleteExistingWpr()
-    args = [RECORD_WPR, '--story-filter={story}'] + self._BrowserArgs()
-    if self._IsDesktop():
-      args.append('desktop_system_health_story_set')
-    else:
-      args.extend(['--device={device_id}', 'mobile_system_health_story_set'])
+    args = ([RECORD_WPR, self.bss, '--story-filter={story}'] +
+            self._BrowserArgs())
+    if not self._IsDesktop():
+      args.append('--device={device_id}')
     out_file = self._CheckLog(args, log_name='record')
     _PrintRunInfo(
         out_file, chrome_log_file=self._IsDesktop(), results_details=False)
+    self._LoadArchiveInfo() # record_wpr overwrote this file
 
   def ReplayWpr(self):
     cli_helpers.Step('REPLAY WPR: %s' % self.story)
-    out_file = self._RunSystemHealthMemoryBenchmark(
+    out_file = self._RunBenchmark(
         log_name='replay', live=False)
     _PrintRunInfo(out_file, chrome_log_file=self._IsDesktop())
     return out_file
 
   def UploadWpr(self):
+    # Attempts to upload all archives used by a story.
+    # Note, if GoogleStorage already has the latest version
+    # of a story, upload will be skipped.
+
     cli_helpers.Step('UPLOAD WPR: %s' % self.story)
-    archive, _ = self._ExistingWpr()
-    if archive is None:
-      cli_helpers.Error('NO WPR FOUND, use the "record" subcommand')
-    _UploadArchiveToGoogleStorage(archive)
-    return _GitAddArtifactHash(archive)
+    archives = self._GetWprArchivePathsAndUsageForStory()
+    for archive in {a[0] for a in archives}:
+      if not os.path.exists(archive):
+        continue
+
+      _UploadArchiveToGoogleStorage(archive)
+      if not _GitAddArtifactHash(archive):
+        return False
+    return True
 
   def UploadCL(self, short_description=False):
     cli_helpers.Step('UPLOAD CL: %s' % self.story)
@@ -541,7 +599,7 @@ class WprUpdater(object):
             'Please update the story class to resolve the observed issues and '
             'then run this script again.')
         return
-      elif ans == 'metrics':
+      if ans == 'metrics':
         _OpenBrowser('file://%s.results.html' % live_out_file)
       elif ans == 'output':
         _OpenEditor(live_out_file)
@@ -625,9 +683,22 @@ class WprUpdater(object):
 
 def Main(argv):
   parser = argparse.ArgumentParser()
+  parser.add_argument('-s',
+                      '--story',
+                      dest='story',
+                      required=True,
+                      help='Story to be recorded, replayed or uploaded. '
+                           'If you are recording a system_health benchmark, '
+                           'use desktop_system_health_story_set or '
+                           'mobile_system_health_story_set')
   parser.add_argument(
-      '-s', '--story', dest='story', required=True,
-      help='Benchmark story to be recorded, replayed or uploaded.')
+      '-bss',
+      '--benchmark-or-story-set',
+      dest='bss',
+      required=True,
+      help='Benchmark or story set to be recorded, replayed or uploaded. '
+      'If you are recording a system health story, use '
+      'desktop_system_health_story_set or mobile_system_health_story_set.')
   parser.add_argument(
       '-d', '--device-id', dest='device_id',
       help='Specify the device serial number listed by `adb devices`. When not '

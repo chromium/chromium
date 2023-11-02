@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,7 +40,7 @@ class NET_EXPORT ProxyServer {
   // Default copy-constructor and assignment operator are OK!
 
   // Constructs an invalid ProxyServer.
-  ProxyServer() {}
+  ProxyServer() = default;
 
   ProxyServer(Scheme scheme, const HostPortPair& host_port_pair);
 

@@ -1,11 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_FRAME_WIDGET_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_FRAME_WIDGET_H_
 
-#include "cc/input/layer_selection_bound.h"
 #include "mojo/public/mojom/base/text_direction.mojom-blink.h"
 #include "services/viz/public/mojom/compositing/frame_sink_id.mojom-blink.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -21,6 +20,7 @@
 
 namespace cc {
 class AnimationHost;
+class AnimationTimeline;
 enum class EventListenerClass;
 enum class EventListenerProperties;
 class Layer;
@@ -54,6 +54,9 @@ class PLATFORM_EXPORT FrameWidget {
   // Returns the compositors's AnimationHost for the widget.
   virtual cc::AnimationHost* AnimationHost() const = 0;
 
+  // Returns the compositors's AnimationTimeline for the widget.
+  virtual cc::AnimationTimeline* ScrollAnimationTimeline() const = 0;
+
   // Set the browser's behavior when overscroll happens, e.g. whether to glow
   // or navigate.
   virtual void SetOverscrollBehavior(
@@ -65,10 +68,6 @@ class PLATFORM_EXPORT FrameWidget {
 
   // Sets the root layer. The |layer| can be null when detaching the root layer.
   virtual void SetRootLayer(scoped_refptr<cc::Layer> layer) = 0;
-
-  // Used to update the active selection bounds. Pass a default-constructed
-  // LayerSelection to clear it.
-  virtual void RegisterSelection(cc::LayerSelection selection) = 0;
 
   // Image decode functionality.
   virtual void RequestDecode(const cc::PaintImage&,
@@ -192,8 +191,7 @@ class PLATFORM_EXPORT FrameWidget {
   virtual void FinishComposingText(bool keep_selection) = 0;
 
   virtual bool IsProvisional() = 0;
-  virtual uint64_t GetScrollableContainerIdAt(
-      const gfx::PointF& point_in_dips) = 0;
+  virtual uint64_t GetScrollableContainerIdAt(const gfx::PointF& point) = 0;
 
   virtual bool ShouldHandleImeEvents() { return false; }
 

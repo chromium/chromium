@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,6 +25,16 @@ void CastContentWindow::SetCastWebContents(CastWebContents* cast_web_contents) {
       gesture_router()->GetBinder());
 }
 
+void CastContentWindow::AddObserver(Observer* observer) {
+  DCHECK(observer);
+  sync_observers_.AddObserver(observer);
+}
+
+void CastContentWindow::RemoveObserver(CastContentWindow::Observer* observer) {
+  DCHECK(observer);
+  sync_observers_.RemoveObserver(observer);
+}
+
 void CastContentWindow::AddObserver(
     mojo::PendingRemote<mojom::CastContentWindowObserver> observer) {
   observers_.Add(std::move(observer));
@@ -44,12 +54,15 @@ void CastContentWindow::Show() {
   RequestVisibility(VisibilityPriority::STICKY_ACTIVITY);
 }
 
-void CastContentWindow::Hide() {
-  RequestMoveOut();
-}
+void CastContentWindow::Hide() {}
 
-mojom::MediaControlUi* CastContentWindow::media_controls() {
-  return nullptr;
+void CastContentWindow::NotifyVisibilityChange(VisibilityType visibility_type) {
+  for (auto& observer : observers_) {
+    observer->OnVisibilityChange(visibility_type);
+  }
+  for (Observer& observer : sync_observers_) {
+    observer.OnVisibilityChange(visibility_type);
+  }
 }
 
 }  // namespace chromecast

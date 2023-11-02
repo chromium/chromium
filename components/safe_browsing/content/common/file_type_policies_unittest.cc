@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,9 @@
 
 #include "base/files/file_path.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 using testing::NiceMock;
 
@@ -54,12 +54,13 @@ TEST_F(FileTypePoliciesTest, UnpackResourceBundle) {
 
   // Lookup .exe that varies on OS_WIN.
   base::FilePath exe_file(FILE_PATH_LITERAL("a/foo.exe"));
-  DownloadFileType file_type = policies_.PolicyForFile(exe_file);
+  DownloadFileType file_type =
+      policies_.PolicyForFile(exe_file, GURL{}, nullptr);
   EXPECT_EQ("exe", file_type.extension());
   EXPECT_EQ(0l, file_type.uma_value());
   EXPECT_FALSE(file_type.is_archive());
   EXPECT_EQ(DownloadFileType::FULL_PING, file_type.ping_setting());
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EXPECT_EQ(DownloadFileType::ALLOW_ON_USER_GESTURE,
             file_type.platform_settings(0).danger_level());
   EXPECT_EQ(DownloadFileType::DISALLOW_AUTO_OPEN,
@@ -74,18 +75,18 @@ TEST_F(FileTypePoliciesTest, UnpackResourceBundle) {
   // Lookup .class that varies on OS_CHROMEOS, and also has a
   // default setting set.
   base::FilePath class_file(FILE_PATH_LITERAL("foo.class"));
-  file_type = policies_.PolicyForFile(class_file);
+  file_type = policies_.PolicyForFile(class_file, GURL{}, nullptr);
   EXPECT_EQ("class", file_type.extension());
   EXPECT_EQ(13l, file_type.uma_value());
   EXPECT_FALSE(file_type.is_archive());
   EXPECT_EQ(DownloadFileType::FULL_PING, file_type.ping_setting());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(DownloadFileType::NOT_DANGEROUS,
             file_type.platform_settings(0).danger_level());
   EXPECT_EQ(DownloadFileType::ALLOW_AUTO_OPEN,
             file_type.platform_settings(0).auto_open_hint());
 #else
-  EXPECT_EQ(DownloadFileType::DANGEROUS,
+  EXPECT_EQ(DownloadFileType::ALLOW_ON_USER_GESTURE,
             file_type.platform_settings(0).danger_level());
   EXPECT_EQ(DownloadFileType::DISALLOW_AUTO_OPEN,
             file_type.platform_settings(0).auto_open_hint());
@@ -93,12 +94,12 @@ TEST_F(FileTypePoliciesTest, UnpackResourceBundle) {
 
   // Lookup .dmg that varies on OS_MACOS
   base::FilePath dmg_file(FILE_PATH_LITERAL("foo.dmg"));
-  file_type = policies_.PolicyForFile(dmg_file);
+  file_type = policies_.PolicyForFile(dmg_file, GURL{}, nullptr);
   EXPECT_EQ("dmg", file_type.extension());
   EXPECT_EQ(21, file_type.uma_value());
   EXPECT_FALSE(file_type.is_archive());
   EXPECT_EQ(DownloadFileType::FULL_PING, file_type.ping_setting());
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   EXPECT_EQ(DownloadFileType::ALLOW_ON_USER_GESTURE,
             file_type.platform_settings(0).danger_level());
   EXPECT_EQ(DownloadFileType::DISALLOW_AUTO_OPEN,
@@ -112,12 +113,12 @@ TEST_F(FileTypePoliciesTest, UnpackResourceBundle) {
 
   // Lookup .dex that varies on OS_ANDROID and OS_CHROMEOS
   base::FilePath dex_file(FILE_PATH_LITERAL("foo.dex"));
-  file_type = policies_.PolicyForFile(dex_file);
+  file_type = policies_.PolicyForFile(dex_file, GURL{}, nullptr);
   EXPECT_EQ("dex", file_type.extension());
   EXPECT_EQ(143, file_type.uma_value());
   EXPECT_FALSE(file_type.is_archive());
   EXPECT_EQ(DownloadFileType::FULL_PING, file_type.ping_setting());
-#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(DownloadFileType::ALLOW_ON_USER_GESTURE,
             file_type.platform_settings(0).danger_level());
   EXPECT_EQ(DownloadFileType::DISALLOW_AUTO_OPEN,
@@ -131,14 +132,14 @@ TEST_F(FileTypePoliciesTest, UnpackResourceBundle) {
 
   // Lookup .rpm that varies on OS_LINUX
   base::FilePath rpm_file(FILE_PATH_LITERAL("foo.rpm"));
-  file_type = policies_.PolicyForFile(rpm_file);
+  file_type = policies_.PolicyForFile(rpm_file, GURL{}, nullptr);
   EXPECT_EQ("rpm", file_type.extension());
   EXPECT_EQ(142, file_type.uma_value());
   EXPECT_FALSE(file_type.is_archive());
   EXPECT_EQ(DownloadFileType::FULL_PING, file_type.ping_setting());
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
   EXPECT_EQ(DownloadFileType::ALLOW_ON_USER_GESTURE,
             file_type.platform_settings(0).danger_level());
   EXPECT_EQ(DownloadFileType::DISALLOW_AUTO_OPEN,
@@ -152,7 +153,7 @@ TEST_F(FileTypePoliciesTest, UnpackResourceBundle) {
 
   // Look .zip, an archive.  The same on all platforms.
   base::FilePath zip_file(FILE_PATH_LITERAL("b/bar.txt.zip"));
-  file_type = policies_.PolicyForFile(zip_file);
+  file_type = policies_.PolicyForFile(zip_file, GURL{}, nullptr);
   EXPECT_EQ("zip", file_type.extension());
   EXPECT_EQ(7l, file_type.uma_value());
   EXPECT_TRUE(file_type.is_archive());
@@ -167,7 +168,7 @@ TEST_F(FileTypePoliciesTest, UnpackResourceBundle) {
 
   // Verify settings on the default type.
   file_type = policies_.PolicyForFile(
-      base::FilePath(FILE_PATH_LITERAL("a/foo.fooobar")));
+      base::FilePath(FILE_PATH_LITERAL("a/foo.fooobar")), GURL{}, nullptr);
   EXPECT_EQ("", file_type.extension());
   EXPECT_EQ(18l, file_type.uma_value());
   EXPECT_FALSE(file_type.is_archive());

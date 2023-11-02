@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include "content/public/common/content_plugin_info.h"
 #include "content/public/renderer/ppapi_gfx_conversion.h"
 #include "content/renderer/pepper/host_globals.h"
 #include "content/renderer/pepper/pepper_plugin_instance_impl.h"
@@ -82,7 +83,7 @@ void PpapiUnittest::SetUp() {
   module_ = new PluginModule("Mock plugin", "1.0", base::FilePath(),
                              perms);
   ppapi::PpapiGlobals::Get()->ResetMainThreadMessageLoopForTesting();
-  PepperPluginInfo::EntryPoints entry_points;
+  ContentPluginInfo::EntryPoints entry_points;
   entry_points.get_interface = &MockGetInterface;
   entry_points.initialize_module = &MockInitializeModule;
   ASSERT_TRUE(module_->InitAsInternalPlugin(entry_points));

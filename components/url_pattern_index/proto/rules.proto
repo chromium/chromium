@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -143,10 +143,11 @@ message UrlRule {
   // The rule applies only to subresources of documents loaded from included
   // domains (or subdomains thereof). If the list is empty, the rule is applied
   // on documents from all domains.
-  // If |domains| is empty or has exceptions only, the rule is called generic.
+  // If `initiator_domains` is empty or only contains exceptions, the rule is
+  // called generic.
   // Otherwise is it called domain specific, i.e. applies to a limited number of
   // domains.
-  repeated DomainListItem domains = 5;
+  repeated DomainListItem initiator_domains = 5;
 
   // The format of |url_pattern|.
   optional UrlPatternType url_pattern_type = 6;
@@ -167,6 +168,11 @@ message UrlRule {
 
   // The URL pattern of the format prescribed by |url_pattern_type|.
   optional string url_pattern = 10;
+
+  // The rule applies only for requests to the included domains (or subdomains
+  // thereof). If the list is empty, the rule applies to requests to all
+  // domains.
+  repeated DomainListItem request_domains = 11;
 }
 
 // Element hiding rule based on a CSS selector. Corresponds to RULE_TYPE_CSS.

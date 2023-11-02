@@ -1,21 +1,22 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chromeos/ui/wm/desks/desks_helper.h"
 
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/window.h"
 #include "ui/base/class_property.h"
 #include "ui/platform_window/extensions/desk_extension.h"
 #include "ui/platform_window/platform_window.h"
-#include "ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h"
+#include "ui/views/widget/desktop_aura/desktop_window_tree_host_lacros.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
 
 ui::DeskExtension* GetDeskExtension(aura::Window* window) {
-  return views::DesktopWindowTreeHostLinux::From(window->GetHost())
+  return views::DesktopWindowTreeHostLacros::From(window->GetHost())
       ->GetDeskExtension();
 }
 
@@ -60,7 +61,7 @@ class DesksHelperLacros : public chromeos::DesksHelper {
   }
 
  private:
-  aura::Window* window_;
+  raw_ptr<aura::Window> window_;
 };
 
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(DesksHelperLacros,

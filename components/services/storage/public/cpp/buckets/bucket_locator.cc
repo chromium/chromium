@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,6 +17,15 @@ BucketLocator::BucketLocator(BucketId id,
 
 BucketLocator::BucketLocator() = default;
 BucketLocator::~BucketLocator() = default;
+
+// static
+BucketLocator BucketLocator::ForDefaultBucket(blink::StorageKey storage_key) {
+  BucketLocator locator;
+  locator.storage_key = std::move(storage_key);
+  locator.is_default = true;
+  locator.type = blink::mojom::StorageType::kTemporary;
+  return locator;
+}
 
 BucketLocator::BucketLocator(const BucketLocator&) = default;
 BucketLocator::BucketLocator(BucketLocator&&) noexcept = default;

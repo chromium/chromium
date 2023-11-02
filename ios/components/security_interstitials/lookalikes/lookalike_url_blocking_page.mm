@@ -1,19 +1,19 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/components/security_interstitials/lookalikes/lookalike_url_blocking_page.h"
 
-#include <utility>
+#import <utility>
 
-#include "base/strings/string_number_conversions.h"
-#include "base/values.h"
-#include "components/lookalikes/core/lookalike_url_ui_util.h"
-#include "components/lookalikes/core/lookalike_url_util.h"
-#include "components/security_interstitials/core/common_string_util.h"
-#include "components/security_interstitials/core/metrics_helper.h"
-#include "ios/components/security_interstitials/ios_blocking_page_controller_client.h"
-#include "ios/components/security_interstitials/ios_blocking_page_metrics_helper.h"
+#import "base/strings/string_number_conversions.h"
+#import "base/values.h"
+#import "components/lookalikes/core/lookalike_url_ui_util.h"
+#import "components/lookalikes/core/lookalike_url_util.h"
+#import "components/security_interstitials/core/common_string_util.h"
+#import "components/security_interstitials/core/metrics_helper.h"
+#import "ios/components/security_interstitials/ios_blocking_page_controller_client.h"
+#import "ios/components/security_interstitials/ios_blocking_page_metrics_helper.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -56,14 +56,12 @@ bool LookalikeUrlBlockingPage::ShouldCreateNewNavigation() const {
 }
 
 void LookalikeUrlBlockingPage::PopulateInterstitialStrings(
-    base::Value* load_time_data) const {
-  CHECK(load_time_data);
-
+    base::Value::Dict& load_time_data) const {
   // Set a value if backwards navigation is not available, used
   // to change the button text to 'Close page' when there is no
   // suggested URL.
   if (!controller_->CanGoBack()) {
-    load_time_data->SetBoolKey("cant_go_back", true);
+    load_time_data.Set("cant_go_back", true);
   }
 
   PopulateLookalikeUrlBlockingPageStrings(load_time_data, safe_url_,

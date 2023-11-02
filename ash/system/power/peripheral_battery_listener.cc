@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,8 +41,11 @@ constexpr char kBluetoothDeviceIdPrefix[] = "battery_bluetooth-";
 
 // Currently we expect at most one peripheral charger to exist, and
 // it will always be the stylus charger.
-constexpr char kStylusChargerFilename[] = "/PCHG0";
-constexpr char kStylusChargerID[] = "PCHG0";
+// TODO(b/215381232): Temporarily support both PCHG name and peripheral name
+// till upstream kernel driver is merged.
+constexpr LazyRE2 kPeripheralChargerRegex = {
+    R"(/(?:peripheral|PCHG)(?:[0-9]+)$)"};
+constexpr char kStylusChargerID[] = "peripheral0";
 
 // TODO(b/187298772,b/187299765): if we have docked stylus chargers that have
 // significantly different parameters, we will need to provide a way to
@@ -116,7 +119,7 @@ bool IsEligibleForBatteryReport(
 
 // Checks if device is the internal charger for an external stylus.
 bool IsPeripheralCharger(const std::string& path) {
-  return base::EndsWith(path, kStylusChargerFilename);
+  return RE2::PartialMatch(path, *kPeripheralChargerRegex);
 }
 
 std::string GetMapKeyForBluetoothAddress(const std::string& bluetooth_address) {
@@ -301,13 +304,18 @@ void PeripheralBatteryListener::PeripheralBatteryStatusReceived(
   std::string map_key = GetBatteryMapKey(path);
   absl::optional<uint8_t> opt_level;
 
-  // 0-level charge events can come through when devices are created,
-  // usually on boot; for the stylus, convert the level to 'not present',
-  // as they are not informative.
+  // Discard: -1 level charge events, they, if they exist, are invalid.
+  //          0-level discharge events can come through when hid devices
+  //          are created by the screen, and are not informative.
+  // 0-level charging events are possible for peripheral wireless charging,
+  // and are valid.
   if (level == -1 ||
       (level == 0 &&
        (type == BatteryInfo::PeripheralType::kStylusViaScreen ||
-        type == BatteryInfo::PeripheralType::kStylusViaCharger))) {
+        type == BatteryInfo::PeripheralType::kStylusViaCharger) &&
+       pmc_charge_status !=
+           power_manager::
+               PeripheralBatteryStatus_ChargeStatus_CHARGE_STATUS_CHARGING)) {
     opt_level = absl::nullopt;
   } else {
     opt_level = level;
@@ -369,8 +377,42 @@ void PeripheralBatteryListener::DeviceConnectedStateChanged(
     device::BluetoothAdapter* adapter,
     device::BluetoothDevice* device,
     bool is_now_connected) {
-  if (!is_now_connected)
+  if (!is_now_connected) {
     RemoveBluetoothBattery(device->GetAddress());
+    return;
+  }
+
+  for (auto type : device->GetAvailableBatteryTypes()) {
+    absl::optional<device::BluetoothDevice::BatteryInfo> info =
+        device->GetBatteryInfo(type);
+
+    DCHECK(info);
+
+    BatteryInfo::ChargeStatus charge_status;
+
+    switch (info->charge_state) {
+      case device::BluetoothDevice::BatteryInfo::ChargeState::kUnknown:
+        charge_status = BatteryInfo::ChargeStatus::kUnknown;
+        break;
+      case device::BluetoothDevice::BatteryInfo::ChargeState::kCharging:
+        charge_status = BatteryInfo::ChargeStatus::kCharging;
+        break;
+      case device::BluetoothDevice::BatteryInfo::ChargeState::kDischarging:
+        charge_status = BatteryInfo::ChargeStatus::kDischarging;
+        break;
+    }
+
+    BatteryInfo battery{GetBatteryMapKey(device),
+                        device->GetNameForDisplay(),
+                        info->percentage,
+                        /*battery_report_eligible=*/true,
+                        base::TimeTicks::Now(),
+                        BatteryInfo::PeripheralType::kOther,
+                        charge_status,
+                        device->GetAddress()};
+
+    UpdateBattery(battery, /*active_update=*/true);
+  }
 }
 
 // Observing device::BluetoothAdapter

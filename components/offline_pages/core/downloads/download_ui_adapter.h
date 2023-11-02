@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 #include "components/offline_items_collection/core/offline_content_aggregator.h"
 #include "components/offline_items_collection/core/offline_content_provider.h"
@@ -26,7 +27,6 @@ using OfflineContentProvider = offline_items_collection::OfflineContentProvider;
 using OfflineContentAggregator =
     offline_items_collection::OfflineContentAggregator;
 using OfflineItem = offline_items_collection::OfflineItem;
-using OfflineItemSchedule = offline_items_collection::OfflineItemSchedule;
 using OfflineItemShareInfo = offline_items_collection::OfflineItemShareInfo;
 using UpdateDelta = offline_items_collection::UpdateDelta;
 
@@ -107,8 +107,6 @@ class DownloadUIAdapter : public OfflineContentProvider,
   void RenameItem(const ContentId& id,
                   const std::string& name,
                   RenameCallback callback) override;
-  void ChangeSchedule(const ContentId& id,
-                      absl::optional<OfflineItemSchedule> schedule) override;
 
   // OfflinePageModel::Observer
   void OfflinePageModelLoaded(OfflinePageModel* model) override;
@@ -181,13 +179,13 @@ class DownloadUIAdapter : public OfflineContentProvider,
   void OpenItemByGuid(const std::string& guid);
 
   // A valid offline content aggregator, supplied at construction.
-  OfflineContentAggregator* aggregator_;
+  raw_ptr<OfflineContentAggregator> aggregator_;
 
   // Always valid, this class is a member of the model.
-  OfflinePageModel* model_;
+  raw_ptr<OfflinePageModel> model_;
 
   // Always valid, a service.
-  RequestCoordinator* request_coordinator_;
+  raw_ptr<RequestCoordinator> request_coordinator_;
 
   // May be null if thumbnails are not required.
   std::unique_ptr<VisualsDecoder> visuals_decoder_;

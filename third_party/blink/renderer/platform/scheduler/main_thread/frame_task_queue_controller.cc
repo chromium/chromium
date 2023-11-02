@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,7 +36,21 @@ FrameTaskQueueController::FrameTaskQueueController(
   DCHECK(delegate_);
 }
 
-FrameTaskQueueController::~FrameTaskQueueController() = default;
+FrameTaskQueueController::~FrameTaskQueueController() {
+  // Destroy queue enabled voters in a deterministic order, as changing
+  // task queue enabled status will interact with the recording.
+  std::vector<MainThreadTaskQueue*> queues;
+  for (auto* it = all_task_queues_and_voters_.begin();
+      it != all_task_queues_and_voters_.end(); ++it) {
+    queues.push_back(it->first);
+  }
+  std::sort(queues.begin(), queues.end(), recordreplay::CompareByPointerId());
+  for (MainThreadTaskQueue* queue : queues) {
+    auto it = task_queue_enabled_voters_.find(queue);
+    CHECK(it != task_queue_enabled_voters_.end());
+    it->value.reset();
+  }
+}
 
 scoped_refptr<MainThreadTaskQueue>
 FrameTaskQueueController::GetTaskQueue(
@@ -51,16 +65,6 @@ FrameTaskQueueController::GetTaskQueue(
 const Vector<FrameTaskQueueController::TaskQueueAndEnabledVoterPair>&
 FrameTaskQueueController::GetAllTaskQueuesAndVoters() const {
   return all_task_queues_and_voters_;
-}
-
-scoped_refptr<MainThreadTaskQueue>
-FrameTaskQueueController::NewResourceLoadingTaskQueue() {
-  scoped_refptr<MainThreadTaskQueue> task_queue =
-      main_thread_scheduler_impl_->NewLoadingTaskQueue(
-          MainThreadTaskQueue::QueueType::kFrameLoading, frame_scheduler_impl_);
-  TaskQueueCreated(task_queue);
-  resource_loading_task_queues_.insert(task_queue);
-  return task_queue;
 }
 
 scoped_refptr<MainThreadTaskQueue>
@@ -112,7 +116,7 @@ void FrameTaskQueueController::TaskQueueCreated(
   DCHECK(task_queue);
 
   std::unique_ptr<QueueEnabledVoter> voter =
-      task_queue->GetTaskQueue()->CreateQueueEnabledVoter();
+      task_queue->CreateQueueEnabledVoter();
 
   delegate_->OnTaskQueueCreated(task_queue.get(), voter.get());
 
@@ -150,22 +154,10 @@ FrameTaskQueueController::GetQueueEnabledVoter(
   return it->value.get();
 }
 
-bool FrameTaskQueueController::RemoveResourceLoadingTaskQueue(
-    const scoped_refptr<MainThreadTaskQueue>& task_queue) {
-  DCHECK(task_queue);
-
-  if (!resource_loading_task_queues_.Contains(task_queue))
-    return false;
-  resource_loading_task_queues_.erase(task_queue);
-  RemoveTaskQueueAndVoter(task_queue.get());
-  return true;
-}
-
 void FrameTaskQueueController::WriteIntoTrace(
     perfetto::TracedValue context) const {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("task_queues", task_queues_.Values());
-  dict.Add("resource_loading_task_queues", resource_loading_task_queues_);
 }
 
 // static

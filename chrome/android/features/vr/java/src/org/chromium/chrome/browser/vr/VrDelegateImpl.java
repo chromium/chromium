@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.vr;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+
+import org.chromium.base.supplier.ObservableSupplier;
 
 /**
  * {@link VrDelegate} implementation if the VR module is available. Mostly forwards calls to {@link
@@ -42,6 +44,16 @@ import android.os.Bundle;
     @Override
     public boolean onBackPressed() {
         return VrShellDelegate.onBackPressed();
+    }
+
+    @Override
+    public void handleBackPress() {
+        onBackPressed();
+    }
+
+    @Override
+    public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+        return VrShellDelegate.getVrModeEnabledSupplier();
     }
 
     @Override

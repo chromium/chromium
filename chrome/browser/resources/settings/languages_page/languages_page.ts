@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,67 +6,79 @@
  * @fileoverview 'settings-languages-page' is the settings page
  * for language and input method settings.
  */
+// clang-format off
 
-import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
-import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.m.js';
-import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js';
-import 'chrome://resources/cr_elements/icons.m.js';
-import 'chrome://resources/cr_elements/policy/cr_policy_pref_indicator.m.js';
-import 'chrome://resources/cr_elements/shared_style_css.m.js';
-import 'chrome://resources/cr_elements/shared_vars_css.m.js';
+import 'chrome://resources/cr_components/managed_dialog/managed_dialog.js';
+import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
+import 'chrome://resources/cr_elements/icons.html.js';
+import 'chrome://resources/cr_elements/cr_shared_style.css.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/js/action_link.js';
-import 'chrome://resources/cr_elements/action_link_css.m.js';
-import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
+import 'chrome://resources/cr_elements/action_link.css.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import './languages.js';
-import './languages_subpage.js';
-import '../controls/controlled_radio_button.js';
-import '../controls/settings_radio_group.js';
+import './add_languages_dialog.js';
 import '../controls/settings_toggle_button.js';
-import '../icons.js';
-import '../settings_page/settings_animated_pages.js';
-import '../settings_page/settings_subpage.js';
-import '../settings_shared_css.js';
-import '../settings_vars_css.js';
-// <if expr="not is_macosx">
-import './edit_dictionary_page.js';
+import '../icons.html.js';
+import '../relaunch_confirmation_dialog.js';
+import '../settings_shared.css.js';
+import '../settings_vars.css.js';
+
+import {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
+import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
+import {isWindows} from 'chrome://resources/js/cr.m.js';
+import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+// <if expr="is_win">
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 // </if>
 
-import {assert} from 'chrome://resources/js/assert.m.js';
-import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
-import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
-import {flush, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {BaseMixin} from '../base_mixin.js';
+import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
-import {PrefsMixin} from '../prefs/prefs_mixin.js';
+import {PrefsMixin, PrefsMixinInterface} from '../prefs/prefs_mixin.js';
+import {RelaunchMixin, RelaunchMixinInterface, RestartType} from '../relaunch_mixin.js';
 import {routes} from '../route.js';
-import {Route, Router} from '../router.js';
+import {Route, RouteObserverMixin, RouteObserverMixinInterface} from '../router.js';
 
+import {getTemplate} from './languages_page.html.js';
 import {LanguageSettingsActionType, LanguageSettingsMetricsProxy, LanguageSettingsMetricsProxyImpl, LanguageSettingsPageImpressionType} from './languages_settings_metrics_proxy.js';
-import {LanguageHelper, LanguagesModel, LanguageState, SpellCheckLanguageState} from './languages_types.js';
+import {LanguageHelper, LanguagesModel, LanguageState} from './languages_types.js';
 
-interface RepeaterEvent extends Event {
-  model: {
-    item: LanguageState,
-  };
-}
+// clang-format on
 
-type FocusConfig = Map<string, (string|(() => void))>;
+/**
+ * Millisecond delay that can be used when closing an action menu to keep it
+ * briefly on-screen.
+ */
+ export const kMenuCloseDelay: number = 100;
+
+ export interface SettingsLanguagesPageElement {
+   $: {
+     menu: CrLazyRenderElement<CrActionMenuElement>,
+   };
+ }
 
 const SettingsLanguagesPageElementBase =
-    I18nMixin(PrefsMixin(BaseMixin(PolymerElement)));
+    RouteObserverMixin(RelaunchMixin(I18nMixin(PrefsMixin(PolymerElement)))) as {
+      new (): PolymerElement & RelaunchMixinInterface & I18nMixinInterface & PrefsMixinInterface & RouteObserverMixinInterface,
+    };
 
-class SettingsLanguagesPageElement extends SettingsLanguagesPageElementBase {
+export class SettingsLanguagesPageElement extends
+    SettingsLanguagesPageElementBase {
   static get is() {
     return 'settings-languages-page';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -90,306 +102,435 @@ class SettingsLanguagesPageElement extends SettingsLanguagesPageElementBase {
 
       languageHelper: Object,
 
-      // <if expr="not is_macosx">
-      spellCheckLanguages_: {
-        type: Array,
-        value() {
-          return [];
-        },
-      },
-      // </if>
-
       /**
        * The language to display the details for.
        */
       detailLanguage_: Object,
 
-      enableDesktopRestructuredLanguageSettings_: {
-        type: Boolean,
-        value() {
-          let enabled = false;
-          // <if expr="not lacros">
-          enabled = loadTimeData.getBoolean(
-              'enableDesktopRestructuredLanguageSettings');
-          // </if>
-          return enabled;
-        },
-      },
+      showAddLanguagesDialog_: Boolean,
+      addLanguagesDialogLanguages_: Array,
 
-      hideSpellCheckLanguages_: {
+      showManagedLanguageDialog_: {
         type: Boolean,
         value: false,
       },
 
-      /**
-       * Whether the language settings list is opened.
-       */
-      languagesOpened_: {
+      enableDesktopDetailedLanguageSettings_: {
         type: Boolean,
-        observer: 'onLanguagesOpenedChanged_',
-      },
-
-      showAddLanguagesDialog_: Boolean,
-
-      focusConfig_: {
-        type: Object,
-        value() {
-          const map = new Map();
-          // <if expr="not is_macosx">
-          if (routes.EDIT_DICTIONARY) {
-            map.set(routes.EDIT_DICTIONARY.path, '#spellCheckSubpageTrigger');
-          }
-          // </if>
-          // <if expr="not lacros">
-          if (loadTimeData.getBoolean(
-                  'enableDesktopRestructuredLanguageSettings')) {
-            if (routes.LANGUAGE_SETTINGS) {
-              map.set(
-                  routes.LANGUAGE_SETTINGS.path, '#languagesSubpageTrigger');
-            }
-          }
-          // </if>
-          return map;
+        value: function() {
+          return loadTimeData.getBoolean(
+              'enableDesktopDetailedLanguageSettings');
         },
       },
     };
   }
 
-  // <if expr="not is_macosx">
-  static get observers() {
-    return [
-      'updateSpellcheckLanguages_(languages.enabled.*, ' +
-          'languages.spellCheckOnLanguages.*)',
-      'updateSpellcheckEnabled_(prefs.browser.enable_spellchecking.*)',
-
-    ];
-  }
-  // </if>
-
   languages?: LanguagesModel;
   languageHelper: LanguageHelper;
-  private spellCheckLanguages_: Array<LanguageState|SpellCheckLanguageState>;
+  private enableDesktopDetailedLanguageSettings_: boolean;
   private detailLanguage_?: LanguageState;
-  private enableDesktopRestructuredLanguageSettings_: boolean;
-  private hideSpellCheckLanguages_: boolean;
-  private languagesOpened_: boolean;
   private showAddLanguagesDialog_: boolean;
-  private focusConfig_: FocusConfig;
+  private addLanguagesDialogLanguages_:
+      chrome.languageSettingsPrivate.Language[]|null;
+  private showManagedLanguageDialog_: boolean;
   private languageSettingsMetricsProxy_: LanguageSettingsMetricsProxy =
       LanguageSettingsMetricsProxyImpl.getInstance();
 
-  // <if expr="not is_macosx">
+  // <if expr="is_win">
+  private isChangeInProgress_: boolean = false;
+  // </if>
+
   /**
-   * Checks if there are any errors downloading the spell check dictionary.
-   * This is used for showing/hiding error messages, spell check toggle and
-   * retry. button.
+   * Stamps and opens the Add Languages dialog, registering a listener to
+   * disable the dialog's dom-if again on close.
    */
-  private errorsGreaterThan_(
-      downloadDictionaryFailureCount: number, threshold: number): boolean {
-    return downloadDictionaryFailureCount > threshold;
+  private onAddLanguagesTap_(e: Event) {
+    e.preventDefault();
+    this.languageSettingsMetricsProxy_.recordPageImpressionMetric(
+        LanguageSettingsPageImpressionType.ADD_LANGUAGE);
+
+    this.addLanguagesDialogLanguages_ = this.languages!.supported.filter(
+        language => this.languageHelper.canEnableLanguage(language));
+    this.showAddLanguagesDialog_ = true;
+  }
+
+  private onLanguagesAdded_(e: CustomEvent<string[]>) {
+    const languagesToAdd = e.detail;
+    languagesToAdd.forEach(languageCode => {
+      this.languageHelper.enableLanguage(languageCode);
+      LanguageSettingsMetricsProxyImpl.getInstance().recordSettingsMetric(
+          LanguageSettingsActionType.LANGUAGE_ADDED);
+    });
+  }
+
+  private onAddLanguagesDialogClose_() {
+    this.showAddLanguagesDialog_ = false;
+    this.addLanguagesDialogLanguages_ = null;
+    const toFocus =
+        this.shadowRoot!.querySelector<HTMLElement>('#addLanguages');
+    assert(toFocus);
+    focusWithoutInk(toFocus);
+  }
+
+  /**
+   * Formats language index (zero-indexed)
+   */
+  private formatIndex_(index: number): string {
+    return (index+1).toLocaleString();
+  }
+
+  /**
+   * Checks if there are supported languages that are not enabled but can be
+   * enabled.
+   * @return True if there is at least one available language.
+   */
+  private canEnableSomeSupportedLanguage_(languages?: LanguagesModel): boolean {
+    return languages === undefined || languages.supported.some(language => {
+      return this.languageHelper.canEnableLanguage(language);
+    });
+  }
+
+  /**
+   * Used to determine whether to show the separator between checkbox settings
+   * and move buttons in the dialog menu.
+   * @return True if there is currently more than one selected language.
+   */
+  private shouldShowDialogSeparator_(): boolean {
+    return this.languages !== undefined && this.languages.enabled.length > 1;
+  }
+
+  /**
+   * Used to determine which "Move" buttons to show for ordering enabled
+   * languages.
+   * @return True if |language| is at the |n|th index in the list of enabled
+   *     languages.
+   */
+  private isNthLanguage_(n: number): boolean {
+    if (this.languages === undefined || this.detailLanguage_ === undefined) {
+      return false;
+    }
+
+    if (n >= this.languages.enabled.length) {
+      return false;
+    }
+
+    const compareLanguage = this.languages.enabled[n]!;
+    return this.detailLanguage_.language === compareLanguage.language;
+  }
+
+  /**
+   * @return True if the "Move to top" option for |language| should be visible.
+   */
+  private showMoveUp_(): boolean {
+    // "Move up" is a no-op for the top language, and redundant with
+    // "Move to top" for the 2nd language.
+    return !this.isNthLanguage_(0) && !this.isNthLanguage_(1);
+  }
+
+  /**
+   * @return True if the "Move down" option for |language| should be visible.
+   */
+  private showMoveDown_(): boolean {
+    return this.languages !== undefined &&
+        !this.isNthLanguage_(this.languages.enabled.length - 1);
+  }
+
+  /**
+   * @param languageCode The language code identifying a language.
+   * @param translateTarget The target language.
+   * @return 'target' if |languageCode| matches the target language,
+   *     'non-target' otherwise.
+   */
+  private isTranslationTarget_(languageCode: string, translateTarget: string):
+      string {
+    if (this.languageHelper.convertLanguageCodeForTranslate(languageCode) ===
+        translateTarget) {
+      return 'target';
+    } else {
+      return 'non-target';
+    }
+  }
+
+  private onTranslateToggleChange_(e: Event) {
+    this.languageSettingsMetricsProxy_.recordSettingsMetric(
+        (e.target as SettingsToggleButtonElement).checked ?
+            LanguageSettingsActionType.ENABLE_TRANSLATE_GLOBALLY :
+            LanguageSettingsActionType.DISABLE_TRANSLATE_GLOBALLY);
+  }
+
+  // <if expr="is_win">
+  /**
+   * @param languageCode The language code identifying a language.
+   * @param prospectiveUILanguage The prospective UI language.
+   * @return True if the prospective UI language is set to
+   *     |languageCode| but requires a restart to take effect.
+   */
+  private isRestartRequired_(
+      languageCode: string, prospectiveUILanguage: string): boolean {
+    return prospectiveUILanguage === languageCode &&
+        this.languageHelper.requiresRestart();
+  }
+
+  private onCloseMenu_() {
+    if (!this.isChangeInProgress_) {
+      return;
+    }
+    flush();
+    this.isChangeInProgress_ = false;
+    const restartButton =
+        this.shadowRoot!.querySelector<HTMLElement>('#restartButton');
+    if (!restartButton) {
+      return;
+    }
+    focusWithoutInk(restartButton);
+  }
+
+  /**
+   * @param prospectiveUILanguage The chosen UI language.
+   * @return True if the given language cannot be set as the
+   *     prospective UI language by the user.
+   */
+  private disableUILanguageCheckbox_(
+      languageState: LanguageState, prospectiveUILanguage: string): boolean {
+    if (this.detailLanguage_ === undefined) {
+      return true;
+    }
+
+    // If the language cannot be a UI language, we can't set it as the
+    // prospective UI language.
+    if (!languageState.language.supportsUI) {
+      return true;
+    }
+
+    // Unchecking the currently chosen language doesn't make much sense.
+    if (languageState.language.code === prospectiveUILanguage) {
+      return true;
+    }
+
+    // Check if the language is prohibited by the current "AllowedLanguages"
+    // policy.
+    if (languageState.language.isProhibitedLanguage) {
+      return true;
+    }
+
+    // Otherwise, the prospective language can be changed to this language.
+    return false;
+  }
+
+  /**
+   * Handler for changes to the UI language checkbox.
+   */
+  private onUILanguageChange_(e: Event) {
+    // We don't support unchecking this checkbox. TODO(michaelpg): Ask for a
+    // simpler widget.
+    assert((e.target as CrCheckboxElement).checked);
+    this.isChangeInProgress_ = true;
+    this.languageHelper.setProspectiveUILanguage(
+        this.detailLanguage_!.language.code);
+    this.languageHelper.moveLanguageToFront(
+        this.detailLanguage_!.language.code);
+    LanguageSettingsMetricsProxyImpl.getInstance().recordSettingsMetric(
+        LanguageSettingsActionType.CHANGE_CHROME_LANGUAGE);
+
+    this.closeMenuSoon_();
+  }
+
+  /**
+   * Checks whether the prospective UI language (the pref that indicates what
+   * language to use in Chrome) matches the current language. This pref is
+   * used only on Chrome OS and Windows; we don't control the UI language
+   * elsewhere.
+   * @param languageCode The language code identifying a language.
+   * @param prospectiveUILanguage The prospective UI language.
+   * @return True if the given language matches the prospective UI pref (which
+   *     may be different from the actual UI language).
+   */
+  private isProspectiveUILanguage_(
+      languageCode: string, prospectiveUILanguage: string): boolean {
+    return languageCode === prospectiveUILanguage;
+  }
+
+  /**
+   * Handler for the restart button.
+   */
+  private onRestartTap_() {
+    this.performRestart(RestartType.RESTART);
   }
   // </if>
 
-  // <if expr="not is_macosx">
   /**
-   * Returns the value to use as the |pref| attribute for the policy indicator
-   * of spellcheck languages, based on whether or not the language is enabled.
-   * @param isEnabled Whether the language is enabled or not.
+   * @param targetLanguageCode The default translate target language.
+   * @return True if the translate checkbox should be disabled.
    */
-  getIndicatorPrefForManagedSpellcheckLanguage_(isEnabled: boolean):
-      chrome.settingsPrivate.PrefObject {
-    return isEnabled ? this.get('spellcheck.forced_dictionaries', this.prefs) :
-                       this.get('spellcheck.blocked_dictionaries', this.prefs);
+  private disableTranslateCheckbox_(
+      languageState: LanguageState|undefined,
+      targetLanguageCode: string): boolean {
+    if (languageState === undefined || languageState.language === undefined ||
+        !languageState.language.supportsTranslate) {
+      return true;
+    }
+
+    if (this.languageHelper.isOnlyTranslateBlockedLanguage(languageState)) {
+      return true;
+    }
+
+    return this.languageHelper.convertLanguageCodeForTranslate(
+               languageState.language.code) === targetLanguageCode;
   }
 
   /**
-   * Returns an array of enabled languages, plus spellcheck languages that are
-   * force-enabled by policy.
+   * Handler for changes to the translate checkbox.
    */
-  private getSpellCheckLanguages_():
-      Array<LanguageState|SpellCheckLanguageState> {
-    const supportedSpellcheckLanguages:
-        Array<LanguageState|SpellCheckLanguageState> =
-            this.languages!.enabled.filter(
-                (item) => item.language.supportsSpellcheck);
-    const supportedSpellcheckLanguagesSet =
-        new Set(supportedSpellcheckLanguages.map(x => x.language.code));
+  private onTranslateCheckboxChange_(e: Event) {
+    if ((e.target as CrCheckboxElement).checked) {
+      this.languageHelper.enableTranslateLanguage(
+          this.detailLanguage_!.language.code);
 
-    this.languages!.spellCheckOnLanguages.forEach(spellCheckLang => {
-      if (!supportedSpellcheckLanguagesSet.has(spellCheckLang.language.code)) {
-        supportedSpellcheckLanguages.push(spellCheckLang);
-      }
-    });
+      this.languageSettingsMetricsProxy_.recordSettingsMetric(
+          LanguageSettingsActionType.ENABLE_TRANSLATE_FOR_SINGLE_LANGUAGE);
 
-    return supportedSpellcheckLanguages;
-  }
-
-  private updateSpellcheckLanguages_() {
-    if (this.languages === undefined) {
-      return;
-    }
-
-    this.set('spellCheckLanguages_', this.getSpellCheckLanguages_());
-
-    // Notify Polymer of subproperties that might have changed on the items in
-    // the spellCheckLanguages_ array, to make sure the UI updates. Polymer
-    // would otherwise not notice the changes in the subproperties, as some of
-    // them are references to those from |this.languages.enabled|. It would be
-    // possible to |this.linkPaths()| objects from |this.languages.enabled| to
-    // |this.spellCheckLanguages_|, but that would require complex
-    // housekeeping to |this.unlinkPaths()| as |this.languages.enabled|
-    // changes.
-    for (let i = 0; i < this.spellCheckLanguages_.length; i++) {
-      this.notifyPath(`spellCheckLanguages_.${i}.isManaged`);
-      this.notifyPath(`spellCheckLanguages_.${i}.spellCheckEnabled`);
-      this.notifyPath(
-          `spellCheckLanguages_.${i}.downloadDictionaryFailureCount`);
-    }
-
-    if (this.spellCheckLanguages_.length === 0) {
-      // If there are no supported spell check languages, automatically turn
-      // off spell check to indicate no spell check will happen.
-      this.setPrefValue('browser.enable_spellchecking', false);
-    }
-
-    if (this.spellCheckLanguages_.length === 1) {
-      const singleLanguage = this.spellCheckLanguages_[0];
-
-      // Hide list of spell check languages if there is only 1 language
-      // and we don't need to display any errors for that language
-
-      // TODO(crbug/1124888): Make hideSpellCheckLanugages_ a computed property
-      this.hideSpellCheckLanguages_ = !singleLanguage.isManaged &&
-          singleLanguage.downloadDictionaryFailureCount === 0;
     } else {
-      this.hideSpellCheckLanguages_ = false;
+      this.languageHelper.disableTranslateLanguage(
+          this.detailLanguage_!.language.code);
+
+      this.languageSettingsMetricsProxy_.recordSettingsMetric(
+          LanguageSettingsActionType.DISABLE_TRANSLATE_FOR_SINGLE_LANGUAGE);
     }
+    this.closeMenuSoon_();
   }
 
-  private updateSpellcheckEnabled_() {
-    if (this.prefs === undefined) {
+  /**
+   * Returns "complex" if the menu includes checkboxes, which should change
+   * the spacing of items and show a separator in the menu.
+   */
+  private getMenuClass_(translateEnabled: boolean): string {
+    if (isWindows ||
+        (translateEnabled && !this.enableDesktopDetailedLanguageSettings_)) {
+      return 'complex';
+    }
+    return '';
+  }
+
+  /**
+   * Moves the language to the top of the list.
+   */
+  private onMoveToTopTap_() {
+    this.$.menu.get().close();
+    if (this.detailLanguage_!.isForced) {
+      // If language is managed, show dialog to inform user it can't be modified
+      this.showManagedLanguageDialog_ = true;
       return;
     }
-
-    // If there is only 1 language, we hide the list of languages so users
-    // are unable to toggle on/off spell check specifically for the 1
-    // language. Therefore, we need to treat the toggle for
-    // `browser.enable_spellchecking` as the toggle for the 1 language as
-    // well.
-    if (this.spellCheckLanguages_.length === 1) {
-      this.languageHelper.toggleSpellCheck(
-          this.spellCheckLanguages_[0].language.code,
-          !!this.getPref('browser.enable_spellchecking').value);
-    }
+    this.languageHelper.moveLanguageToFront(
+        this.detailLanguage_!.language.code);
+    this.languageSettingsMetricsProxy_.recordSettingsMetric(
+        LanguageSettingsActionType.LANGUAGE_LIST_REORDERED);
   }
 
   /**
-   * Opens the Custom Dictionary page.
+   * Moves the language up in the list.
    */
-  private onEditDictionaryTap_() {
-    Router.getInstance().navigateTo(routes.EDIT_DICTIONARY);
-  }
-
-  /**
-   * Handler for enabling or disabling spell check for a specific language.
-   */
-  private onSpellCheckLanguageChange_(e: RepeaterEvent) {
-    const item = e.model.item;
-    if (!item.language.supportsSpellcheck) {
+  private onMoveUpTap_() {
+    this.$.menu.get().close();
+    if (this.detailLanguage_!.isForced) {
+      // If language is managed, show dialog to inform user it can't be modified
+      this.showManagedLanguageDialog_ = true;
       return;
     }
-
-    this.languageHelper.toggleSpellCheck(
-        item.language.code, !item.spellCheckEnabled);
+    this.languageHelper.moveLanguage(
+        this.detailLanguage_!.language.code, true /* upDirection */);
+    this.languageSettingsMetricsProxy_.recordSettingsMetric(
+        LanguageSettingsActionType.LANGUAGE_LIST_REORDERED);
   }
 
   /**
-   * @return The display name for a given language code.
+   * Moves the language down in the list.
    */
-  private getProspectiveUILanguageName_(languageCode: string): string {
-    return this.languageHelper.getLanguage(languageCode)!.displayName;
-  }
-
-  /**
-   * Handler to initiate another attempt at downloading the spell check
-   * dictionary for a specified language.
-   */
-  private onRetryDictionaryDownloadClick_(e: RepeaterEvent) {
-    assert(this.errorsGreaterThan_(
-        e.model.item.downloadDictionaryFailureCount, 0));
-    this.languageHelper.retryDownloadDictionary(e.model.item.language.code);
-  }
-
-  /**
-   * Handler for clicking on the name of the language. The action taken must
-   * match the control that is available.
-   */
-  private onSpellCheckNameClick_(e: RepeaterEvent) {
-    assert(!this.isSpellCheckNameClickDisabled_(e.model.item));
-    this.onSpellCheckLanguageChange_(e);
-  }
-
-  /**
-   * Name only supports clicking when language is not managed, supports
-   * spellcheck, and the dictionary has been downloaded with no errors.
-   */
-  private isSpellCheckNameClickDisabled_(item: LanguageState|
-                                         SpellCheckLanguageState): boolean {
-    return item.isManaged || !item.language.supportsSpellcheck ||
-        item.downloadDictionaryFailureCount > 0;
-  }
-  // </if> expr="not is_macosx"
-
-  private getSpellCheckSubLabel_(): string|undefined {
-    // <if expr="not is_macosx">
-    if (this.spellCheckLanguages_.length === 0) {
-      return this.i18n('spellCheckDisabledReason');
+  private onMoveDownTap_() {
+    this.$.menu.get().close();
+    if (this.detailLanguage_!.isForced) {
+      // If language is managed, show dialog to inform user it can't be modified
+      this.showManagedLanguageDialog_ = true;
+      return;
     }
-    // </if>
-
-    return undefined;
+    this.languageHelper.moveLanguage(
+        this.detailLanguage_!.language.code, false /* upDirection */);
+    this.languageSettingsMetricsProxy_.recordSettingsMetric(
+        LanguageSettingsActionType.LANGUAGE_LIST_REORDERED);
   }
 
   /**
-   * @param newVal The new value of languagesOpened_.
-   * @param oldVal The old value of languagesOpened_.
+   * Disables the language.
    */
-  private onLanguagesOpenedChanged_(newVal: boolean, oldVal: boolean) {
-    if (!oldVal && newVal) {
+  private onRemoveLanguageTap_() {
+    this.$.menu.get().close();
+    if (this.detailLanguage_!.isForced) {
+      // If language is managed, show dialog to inform user it can't be modified
+      this.showManagedLanguageDialog_ = true;
+      return;
+    }
+    this.languageHelper.disableLanguage(this.detailLanguage_!.language.code);
+    this.languageSettingsMetricsProxy_.recordSettingsMetric(
+        LanguageSettingsActionType.LANGUAGE_REMOVED);
+  }
+
+  /**
+   * Returns either the "selected" class, if the language matches the
+   * prospective UI language, or an empty string. Languages can only be
+   * selected on Chrome OS and Windows.
+   * @param languageCode The language code identifying a language.
+   * @param prospectiveUILanguage The prospective UI language.
+   * @return The class name for the language item.
+   */
+  private getLanguageItemClass_(
+      languageCode: string, prospectiveUILanguage: string): string {
+    if (isWindows && languageCode === prospectiveUILanguage) {
+      return 'selected';
+    }
+    return '';
+  }
+
+  private onDotsTap_(e: DomRepeatEvent<LanguageState>) {
+    // Set a copy of the LanguageState object since it is not data-bound to
+    // the languages model directly.
+    this.detailLanguage_ = Object.assign({}, e.model.item);
+
+    this.$.menu.get().showAt(e.target as HTMLElement);
+    this.languageSettingsMetricsProxy_.recordPageImpressionMetric(
+        LanguageSettingsPageImpressionType.LANGUAGE_OVERFLOW_MENU_OPENED);
+  }
+
+  /**
+   * Closes the shared action menu after a short delay, so when a checkbox is
+   * clicked it can be seen to change state before disappearing.
+   */
+  private closeMenuSoon_() {
+    const menu = this.$.menu.get();
+    setTimeout(function() {
+      if (menu.open) {
+        menu.close();
+      }
+    }, kMenuCloseDelay);
+  }
+
+  /**
+   * Triggered when the managed language dialog is dismissed.
+   */
+  private onManagedLanguageDialogClosed_() {
+    this.showManagedLanguageDialog_ = false;
+  }
+
+  override currentRouteChanged(currentRoute: Route) {
+    if (currentRoute === routes.LANGUAGES) {
       this.languageSettingsMetricsProxy_.recordPageImpressionMetric(
           LanguageSettingsPageImpressionType.MAIN);
     }
   }
+}
 
-  // <if expr="not lacros">
-  /**
-   * Opens the Language Settings page.
-   */
-  private onLanguagesSubpageClick_() {
-    if (this.enableDesktopRestructuredLanguageSettings_) {
-      Router.getInstance().navigateTo(routes.LANGUAGE_SETTINGS);
-    }
-  }
-  // </if>
-
-  /**
-   * Toggles the expand button within the element being listened to.
-   */
-  private toggleExpandButton_(e: Event) {
-    // The expand button handles toggling itself.
-    if ((e.target as HTMLElement).tagName === 'CR-EXPAND-BUTTON') {
-      return;
-    }
-
-    if (!(e.currentTarget as HTMLElement).hasAttribute('actionable')) {
-      return;
-    }
-
-    const expandButton =
-        (e.currentTarget as HTMLElement).querySelector('cr-expand-button')!;
-    assert(expandButton);
-    expandButton.expanded = !expandButton.expanded;
-    focusWithoutInk(expandButton);
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-languages-page': SettingsLanguagesPageElement;
   }
 }
 

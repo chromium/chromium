@@ -126,8 +126,7 @@ void LayoutTableSection::StyleDidChange(StyleDifference diff,
   if (StyleRef().HasInFlowPosition()) {
     scoped_refptr<ComputedStyle> new_style = ComputedStyle::Clone(StyleRef());
     new_style->SetPosition(EPosition::kStatic);
-    SetModifiedStyleOutsideStyleRecalc(new_style,
-                                       LayoutObject::ApplyStyleChanges::kNo);
+    SetStyle(new_style, LayoutObject::ApplyStyleChanges::kNo);
   }
 
   LayoutTableBoxComponent::StyleDidChange(diff, old_style);
@@ -217,6 +216,9 @@ void LayoutTableSection::AddChild(LayoutObject* child,
 
   EnsureRows(c_row_);
 
+  // TODO(crbug.com/1345894): See the TODO in |LayoutTable::AddChild|.
+  // |LayoutNGTableRow| is not a subclass of |LayoutTableRow|.
+  CHECK(IsA<LayoutTableRow>(child));
   LayoutTableRow* row = To<LayoutTableRow>(child);
   grid_[insertion_row].row = row;
   row->SetRowIndex(insertion_row);
@@ -329,7 +331,7 @@ void LayoutTableSection::AddCell(LayoutTableCell* cell, LayoutTableRow* row) {
 
 bool LayoutTableSection::RowHasOnlySpanningCells(unsigned row) {
   NOT_DESTROYED();
-  if (grid_[row].grid_cells.IsEmpty())
+  if (grid_[row].grid_cells.empty())
     return false;
 
   for (const auto& grid_cell : grid_[row].grid_cells) {
@@ -974,7 +976,7 @@ int LayoutTableSection::CalcRowLogicalHeight() {
     row_pos_[r + 1] = std::max(row_pos_[r + 1], row_pos_[r]);
   }
 
-  if (!row_span_cells.IsEmpty())
+  if (!row_span_cells.empty())
     DistributeRowSpanHeightToRows(row_span_cells);
 
   DCHECK(!NeedsLayout());
@@ -1016,7 +1018,7 @@ void LayoutTableSection::UpdateLayout() {
   // addChild may over-grow grid_ but we don't want to throw away the memory
   // too early as addChild can be called in a loop (e.g during parsing). Doing
   // it now ensures we have a stable-enough structure.
-  grid_.ShrinkToFit();
+  grid_.shrink_to_fit();
 
   LayoutState state(*this);
 
@@ -1767,7 +1769,7 @@ void LayoutTableSection::RecalcCells() {
     }
   }
 
-  grid_.ShrinkToFit();
+  grid_.shrink_to_fit();
   SetNeedsLayoutAndFullPaintInvalidation(layout_invalidation_reason::kUnknown);
 }
 
@@ -1865,7 +1867,7 @@ void LayoutTableSection::SplitEffectiveColumn(unsigned pos, unsigned first) {
 bool LayoutTableSection::NodeAtPoint(HitTestResult& result,
                                      const HitTestLocation& hit_test_location,
                                      const PhysicalOffset& accumulated_offset,
-                                     HitTestAction action) {
+                                     HitTestPhase phase) {
   NOT_DESTROYED();
   // If we have no children then we have nothing to do.
   if (!FirstRow())
@@ -1882,7 +1884,7 @@ bool LayoutTableSection::NodeAtPoint(HitTestResult& result,
       PhysicalOffset row_accumulated_offset =
           accumulated_offset + row->PhysicalLocation(this);
       if (row->NodeAtPoint(result, hit_test_location, row_accumulated_offset,
-                           action)) {
+                           phase)) {
         UpdateHitTestResult(result,
                             hit_test_location.Point() - accumulated_offset);
         return true;
@@ -1919,7 +1921,7 @@ bool LayoutTableSection::NodeAtPoint(HitTestResult& result,
         PhysicalOffset cell_accumulated_offset =
             accumulated_offset + cell->PhysicalLocation(this);
         if (static_cast<LayoutObject*>(cell)->NodeAtPoint(
-                result, hit_test_location, cell_accumulated_offset, action)) {
+                result, hit_test_location, cell_accumulated_offset, phase)) {
           UpdateHitTestResult(result,
                               hit_test_location.Point() - accumulated_offset);
           return true;
@@ -2172,9 +2174,9 @@ bool LayoutTableSection::MapToVisualRectInAncestorSpaceInternal(
   // enclosing LayoutFlowThread will convert to visual coordinates.
   if (IsRepeatingHeaderGroup() || IsRepeatingFooterGroup()) {
     transform_state.Flatten();
-    FloatRect rect = transform_state.LastPlanarQuad().BoundingBox();
+    gfx::RectF rect = transform_state.LastPlanarQuad().BoundingBox();
     rect.set_height(Table()->LogicalHeight());
-    transform_state.SetQuad(FloatQuad(rect));
+    transform_state.SetQuad(gfx::QuadF(rect));
     return Table()->MapToVisualRectInAncestorSpaceInternal(
         ancestor, transform_state, flags);
   }

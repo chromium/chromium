@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -78,14 +78,14 @@ export class PrefsManager {
     var uiLocale = chrome.i18n.getMessage('@@ui_locale');
     uiLocale = uiLocale.replace('_', '-').toLowerCase();
 
-    chrome.tts.getVoices((voices) => {
+    chrome.tts.getVoices(voices => {
       this.validVoiceNames_ = new Set();
 
       if (voices.length === 0) {
         return;
       }
 
-      voices.forEach((voice) => {
+      voices.forEach(voice => {
         if (!voice.eventTypes.includes(chrome.tts.EventType.START) ||
             !voice.eventTypes.includes(chrome.tts.EventType.END) ||
             !voice.eventTypes.includes(chrome.tts.EventType.WORD) ||
@@ -126,7 +126,7 @@ export class PrefsManager {
         this.voiceNameFromLocale_ = firstVoiceName;
       }
 
-      chrome.storage.sync.get(['voice'], (prefs) => {
+      chrome.storage.sync.get(['voice'], prefs => {
         if (!prefs['voice']) {
           chrome.storage.sync.set({'voice': PrefsManager.SYSTEM_VOICE});
         }
@@ -162,7 +162,7 @@ export class PrefsManager {
     // rate before doing migration logic.
     const getPrefsPromises = [];
     getPrefsPromises.push(new Promise((resolve, reject) => {
-      chrome.settingsPrivate.getPref('settings.tts.speech_rate', (pref) => {
+      chrome.settingsPrivate.getPref('settings.tts.speech_rate', pref => {
         if (pref === undefined) {
           reject();
         }
@@ -171,7 +171,7 @@ export class PrefsManager {
       });
     }));
     getPrefsPromises.push(new Promise((resolve, reject) => {
-      chrome.settingsPrivate.getPref('settings.tts.speech_pitch', (pref) => {
+      chrome.settingsPrivate.getPref('settings.tts.speech_pitch', pref => {
         if (pref === undefined) {
           reject();
         }
@@ -204,7 +204,7 @@ export class PrefsManager {
                 setPrefsPromises.push(new Promise((resolve, reject) => {
                   chrome.settingsPrivate.setPref(
                       'settings.tts.speech_rate', stsRate,
-                      '' /* unused, see crbug.com/866161 */, (success) => {
+                      '' /* unused, see crbug.com/866161 */, success => {
                         if (success) {
                           resolve();
                         } else {
@@ -215,7 +215,7 @@ export class PrefsManager {
                 setPrefsPromises.push(new Promise((resolve, reject) => {
                   chrome.settingsPrivate.setPref(
                       'settings.tts.speech_pitch', stsPitch,
-                      '' /* unused, see crbug.com/866161 */, (success) => {
+                      '' /* unused, see crbug.com/866161 */, success => {
                         if (success) {
                           resolve();
                         } else {
@@ -225,8 +225,7 @@ export class PrefsManager {
                 }));
                 Promise.all(setPrefsPromises)
                     .then(
-                        () => this.onTtsSettingsMigrationSuccess_(),
-                        (error) => {
+                        () => this.onTtsSettingsMigrationSuccess_(), error => {
                           console.log(error);
                           this.migrationInProgress_ = false;
                         });
@@ -236,7 +235,7 @@ export class PrefsManager {
                 this.onTtsSettingsMigrationSuccess_();
               }
             },
-            (error) => {
+            error => {
               console.log(error);
               this.migrationInProgress_ = false;
             });
@@ -254,88 +253,103 @@ export class PrefsManager {
   }
 
   /**
+   * Loads prefs and policy from chrome.settingsPrivate.
+   * @private
+   */
+  async updateSettingsPrefs_() {
+    const pref = await new Promise(
+        resolve => chrome.settingsPrivate.getPref(
+            PrefsManager.ENHANCED_VOICES_POLICY_KEY, resolve));
+    if (pref === undefined) {
+      return;
+    }
+    this.enhancedNetworkVoicesAllowed_ = Boolean(pref.value);
+  }
+
+  /**
+   * Loads prefs from chrome.storage and sets default values if necessary.
+   * @private
+   */
+  async updateStoragePrefs_() {
+    const prefs = await new Promise(
+        resolve => chrome.storage.sync.get(
+            [
+              'voice',
+              'rate',
+              'pitch',
+              'wordHighlight',
+              'highlightColor',
+              'backgroundShading',
+              'navigationControls',
+              'enhancedNetworkVoices',
+              'enhancedVoicesDialogShown',
+              'enhancedVoiceName',
+            ],
+            resolve));
+
+    if (prefs['voice']) {
+      this.voiceNameFromPrefs_ = prefs['voice'];
+    }
+    if (prefs['enhancedVoiceName'] !== undefined) {
+      this.enhancedVoiceName_ = prefs['enhancedVoiceName'];
+    } else {
+      chrome.storage.sync.set({'enhancedVoiceName': this.enhancedVoiceName_});
+    }
+    if (prefs['wordHighlight'] !== undefined) {
+      this.wordHighlight_ = prefs['wordHighlight'];
+    } else {
+      chrome.storage.sync.set({'wordHighlight': this.wordHighlight_});
+    }
+    if (prefs['highlightColor']) {
+      this.highlightColor_ = prefs['highlightColor'];
+    } else {
+      chrome.storage.sync.set({'highlightColor': this.highlightColor_});
+    }
+    if (prefs['backgroundShading'] !== undefined) {
+      this.backgroundShadingEnabled_ = prefs['backgroundShading'];
+    } else {
+      chrome.storage.sync.set(
+          {'backgroundShading': this.backgroundShadingEnabled_});
+    }
+    if (prefs['navigationControls'] !== undefined) {
+      this.navigationControlsEnabled_ = prefs['navigationControls'];
+    } else {
+      chrome.storage.sync.set(
+          {'navigationControls': this.navigationControlsEnabled_});
+    }
+    if (prefs['enhancedNetworkVoices'] !== undefined) {
+      this.enhancedNetworkVoicesEnabled_ = prefs['enhancedNetworkVoices'];
+    } else {
+      chrome.storage.sync.set({
+        'enhancedNetworkVoices': this.enhancedNetworkVoicesEnabled_,
+      });
+    }
+    if (prefs['enhancedVoicesDialogShown'] !== undefined) {
+      this.enhancedVoicesDialogShown_ = prefs['enhancedVoicesDialogShown'];
+    } else {
+      chrome.storage.sync.set({
+        'enhancedVoicesDialogShown': this.enhancedVoicesDialogShown_,
+      });
+    }
+    if (prefs['rate'] && prefs['pitch']) {
+      // Removes 'rate' and 'pitch' prefs after migrating data to global
+      // TTS settings if appropriate.
+      this.migrateToGlobalTtsSettings_(prefs['rate'], prefs['pitch']);
+    }
+  }
+
+  /**
    * Loads prefs and policy from chrome.storage and chrome.settingsPrivate,
    * sets default values if necessary, and registers a listener to update prefs
    * and policy when they change.
    */
   initPreferences() {
-    const updatePolicy = () => {
-      chrome.settingsPrivate.getPref(
-          PrefsManager.ENHANCED_VOICES_POLICY_KEY, (pref) => {
-            if (pref === undefined) {
-              return;
-            }
-            this.enhancedNetworkVoicesAllowed_ = !!pref.value;
-          });
-    };
-    const updatePrefs = () => {
-      chrome.storage.sync.get(
-          [
-            'voice', 'rate', 'pitch', 'wordHighlight', 'highlightColor',
-            'backgroundShading', 'navigationControls', 'enhancedNetworkVoices',
-            'enhancedVoicesDialogShown', 'enhancedVoiceName'
-          ],
-          (prefs) => {
-            if (prefs['voice']) {
-              this.voiceNameFromPrefs_ = prefs['voice'];
-            }
-            if (prefs['enhancedVoiceName'] !== undefined) {
-              this.enhancedVoiceName_ = prefs['enhancedVoiceName'];
-            } else {
-              chrome.storage.sync.set(
-                  {'enhancedVoiceName': this.enhancedVoiceName_});
-            }
-            if (prefs['wordHighlight'] !== undefined) {
-              this.wordHighlight_ = prefs['wordHighlight'];
-            } else {
-              chrome.storage.sync.set({'wordHighlight': this.wordHighlight_});
-            }
-            if (prefs['highlightColor']) {
-              this.highlightColor_ = prefs['highlightColor'];
-            } else {
-              chrome.storage.sync.set({'highlightColor': this.highlightColor_});
-            }
-            if (prefs['backgroundShading'] !== undefined) {
-              this.backgroundShadingEnabled_ = prefs['backgroundShading'];
-            } else {
-              chrome.storage.sync.set(
-                  {'backgroundShading': this.backgroundShadingEnabled_});
-            }
-            if (prefs['navigationControls'] !== undefined) {
-              this.navigationControlsEnabled_ = prefs['navigationControls'];
-            } else {
-              chrome.storage.sync.set(
-                  {'navigationControls': this.navigationControlsEnabled_});
-            }
-            if (prefs['enhancedNetworkVoices'] !== undefined) {
-              this.enhancedNetworkVoicesEnabled_ =
-                  prefs['enhancedNetworkVoices'];
-            } else {
-              chrome.storage.sync.set({
-                'enhancedNetworkVoices': this.enhancedNetworkVoicesEnabled_
-              });
-            }
-            if (prefs['enhancedVoicesDialogShown'] !== undefined) {
-              this.enhancedVoicesDialogShown_ =
-                  prefs['enhancedVoicesDialogShown'];
-            } else {
-              chrome.storage.sync.set({
-                'enhancedVoicesDialogShown': this.enhancedVoicesDialogShown_
-              });
-            }
-            if (prefs['rate'] && prefs['pitch']) {
-              // Removes 'rate' and 'pitch' prefs after migrating data to global
-              // TTS settings if appropriate.
-              this.migrateToGlobalTtsSettings_(prefs['rate'], prefs['pitch']);
-            }
-          });
-    };
+    this.updateSettingsPrefs_();
+    this.updateStoragePrefs_();
 
-    updatePolicy();
-    updatePrefs();
-
-    chrome.settingsPrivate.onPrefsChanged.addListener(updatePolicy);
-    chrome.storage.onChanged.addListener(updatePrefs);
+    chrome.settingsPrivate.onPrefsChanged.addListener(
+        () => this.updateSettingsPrefs_());
+    chrome.storage.onChanged.addListener(() => this.updateStoragePrefs_());
 
     this.updateDefaultVoice_();
     window.speechSynthesis.onvoiceschanged = () => {

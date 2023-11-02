@@ -1,10 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef SERVICES_VIDEO_CAPTURE_PUBLIC_CPP_MOCK_VIDEO_CAPTURE_SERVICE_H_
 #define SERVICES_VIDEO_CAPTURE_PUBLIC_CPP_MOCK_VIDEO_CAPTURE_SERVICE_H_
 
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/video_capture/public/mojom/video_capture_service.mojom.h"
@@ -51,6 +52,10 @@ class MockVideoCaptureService
                void(mojo::PendingReceiver<
                     video_capture::mojom::VideoSourceProvider> receiver));
   MOCK_METHOD1(SetRetryCount, void(int32_t));
+
+#if BUILDFLAG(IS_WIN)
+  MOCK_METHOD1(OnGpuInfoUpdate, void(const CHROME_LUID&));
+#endif
 };
 
 }  // namespace video_capture

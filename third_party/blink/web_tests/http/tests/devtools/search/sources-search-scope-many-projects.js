@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,7 @@
   }
 
   var scope = new Sources.SourcesSearchScope();
-  var fs = new BindingsTestRunner.TestFileSystem('file:///var/www');
+  var fs = new BindingsTestRunner.TestFileSystem('/var/www');
   var names = ['search.html', 'search.js', 'search.css'];
   var resources = {};
   var jsFileSystemUISourceCode;
@@ -58,7 +58,7 @@
 
   function loadResource(name) {
     var url = TestRunner.url('resources/' + name);
-    return Root.Runtime.loadResourcePromise(url).then(function(text) {
+    return fetch(url).then(result => result.text()).then(function(text) {
       resources[name] = text;
     });
   }

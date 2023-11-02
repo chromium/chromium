@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,8 +27,15 @@ ScriptPromise BatteryManager::getBattery(ScriptState* script_state,
   // Check to see if this request would be blocked according to the Battery
   // Status API specification.
   LocalDOMWindow* window = navigator.DomWindow();
-  if (!window->IsSecureContext())
-    UseCounter::Count(window, WebFeature::kBatteryStatusInsecureOrigin);
+  // TODO(crbug.com/1007264, crbug.com/1290231): remove fenced frame specific
+  // code when permission policy implements the battery status API support.
+  if (window->GetFrame()->IsInFencedFrameTree()) {
+    return ScriptPromise::RejectWithDOMException(
+        script_state,
+        DOMException::Create(
+            "getBattery is not allowed in a fenced frame tree.",
+            DOMException::GetErrorName(DOMExceptionCode::kNotAllowedError)));
+  }
   window->GetFrame()->CountUseIfFeatureWouldBeBlockedByPermissionsPolicy(
       WebFeature::kBatteryStatusCrossOrigin,
       WebFeature::kBatteryStatusSameOriginABA);
@@ -103,13 +110,13 @@ void BatteryManager::DidUpdateData() {
   }
 
   if (battery_status_.Charging() != old_status.Charging())
-    DispatchEvent(*Event::Create(event_type_names::kChargingchange));
+    DispatchEvent(*Event::Create(event_type_names::kChargingchange), "BatteryManager::DidUpdateData #1");
   if (battery_status_.charging_time() != old_status.charging_time())
-    DispatchEvent(*Event::Create(event_type_names::kChargingtimechange));
+    DispatchEvent(*Event::Create(event_type_names::kChargingtimechange), "BatteryManager::DidUpdateData #2");
   if (battery_status_.discharging_time() != old_status.discharging_time())
-    DispatchEvent(*Event::Create(event_type_names::kDischargingtimechange));
+    DispatchEvent(*Event::Create(event_type_names::kDischargingtimechange), "BatteryManager::DidUpdateData #3");
   if (battery_status_.Level() != old_status.Level())
-    DispatchEvent(*Event::Create(event_type_names::kLevelchange));
+    DispatchEvent(*Event::Create(event_type_names::kLevelchange), "BatteryManager::DidUpdateData #3");
 }
 
 void BatteryManager::RegisterWithDispatcher() {

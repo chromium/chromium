@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include "headless/public/version.h"
 #include "ui/gl/gl_switches.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "sandbox/win/src/sandbox_types.h"
 #endif
 
@@ -36,17 +36,12 @@ std::string GetProductNameAndVersion() {
 Options::Options(int argc, const char** argv)
     : argc(argc),
       argv(argv),
-      gl_implementation(gl::kGLImplementationSwiftShaderForWebGLName),
-      angle_implementation(gl::kANGLEImplementationNoneName),
+      gl_implementation(gl::kGLImplementationANGLEName),
+      angle_implementation(gl::kANGLEImplementationSwiftShaderForWebGLName),
       product_name_and_version(GetProductNameAndVersion()),
       user_agent(content::BuildUserAgentFromProduct(product_name_and_version)),
       window_size(kDefaultWindowSize),
-      font_render_hinting(kDefaultFontRenderHinting) {
-#if defined(OS_LINUX) || defined(OS_WIN)
-  gl_implementation = gl::kGLImplementationANGLEName;
-  angle_implementation = gl::kANGLEImplementationSwiftShaderForWebGLName;
-#endif
-}
+      font_render_hinting(kDefaultFontRenderHinting) {}
 
 Options::Options(Options&& options) = default;
 
@@ -136,7 +131,7 @@ Builder& Builder::SetAppendCommandLineFlagsCallback(
   return *this;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 Builder& Builder::SetInstance(HINSTANCE hinstance) {
   options_.instance = hinstance;
   return *this;
@@ -146,7 +141,7 @@ Builder& Builder::SetSandboxInfo(sandbox::SandboxInterfaceInfo* info) {
   options_.sandbox_info = info;
   return *this;
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 Builder& Builder::SetUserDataDir(const base::FilePath& dir) {
   options_.user_data_dir = dir;

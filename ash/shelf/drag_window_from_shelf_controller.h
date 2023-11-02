@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -212,12 +212,12 @@ class ASH_EXPORT DragWindowFromShelfController : public aura::WindowObserver {
   bool during_window_restoration_callback_ = false;
 
   SplitViewController::SnapPosition initial_snap_position_ =
-      SplitViewController::NONE;
+      SplitViewController::SnapPosition::kNone;
 
   SplitViewController::SnapPosition end_snap_position_ =
-      SplitViewController::NONE;
+      SplitViewController::SnapPosition::kNone;
 
-  std::unique_ptr<PresentationTimeRecorder> presentation_time_recorder_;
+  std::unique_ptr<ui::PresentationTimeRecorder> presentation_time_recorder_;
 
   base::WeakPtrFactory<DragWindowFromShelfController> weak_ptr_factory_{this};
 };

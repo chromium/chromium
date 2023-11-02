@@ -34,14 +34,15 @@
 #include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hasher.h"
 
 namespace blink {
 
 static unsigned ComputeMatchedPropertiesHash(const MatchResult& result) {
-  const MatchedPropertiesVector& vector = result.GetMatchedProperties();
+  const RecordReplayMatchedPropertiesVector vector = result.GetRecordReplayMatchedProperties();
   return StringHasher::HashMemory(vector.data(),
-                                  sizeof(MatchedProperties) * vector.size());
+                                  sizeof(RecordReplayMatchedProperties) * vector.size());
 }
 
 void CachedMatchedProperties::Set(const ComputedStyle& style,
@@ -50,6 +51,11 @@ void CachedMatchedProperties::Set(const ComputedStyle& style,
   for (const auto& new_matched_properties : properties) {
     matched_properties.push_back(new_matched_properties.properties);
     matched_properties_types.push_back(new_matched_properties.types_);
+
+    if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers",
+                                             "CachedMatchedProperties"))
+      replay_matched_properties_strong_.push_back(
+          new_matched_properties.properties);
   }
 
   // Note that we don't cache the original ComputedStyle instance. It may be
@@ -62,6 +68,7 @@ void CachedMatchedProperties::Set(const ComputedStyle& style,
 void CachedMatchedProperties::Clear() {
   matched_properties.clear();
   matched_properties_types.clear();
+  replay_matched_properties_strong_.clear();
   computed_style = nullptr;
   parent_computed_style = nullptr;
 }
@@ -107,7 +114,10 @@ MatchedPropertiesCache::MatchedPropertiesCache() = default;
 MatchedPropertiesCache::Key::Key(const MatchResult& result)
     : Key(result,
           result.IsCacheable() ? ComputeMatchedPropertiesHash(result)
-                               : HashTraits<unsigned>::EmptyValue()) {}
+                               : HashTraits<unsigned>::EmptyValue()) {
+  recordreplay::Assert("[RUN-2424-2425] MatchedPropertiesCache::Key::Key %u",
+                       hash_);
+}
 
 MatchedPropertiesCache::Key::Key(const MatchResult& result, unsigned hash)
     : result_(result), hash_(hash) {}
@@ -117,18 +127,30 @@ const CachedMatchedProperties* MatchedPropertiesCache::Find(
     const StyleResolverState& style_resolver_state) {
   DCHECK(key.IsValid());
   Cache::iterator it = cache_.find(key.hash_);
+  recordreplay::Assert("[RUN-2424-2425] MatchedPropertiesCache::Find A %u %d",
+                       key.hash_, it != cache_.end());
   if (it == cache_.end())
     return nullptr;
   CachedMatchedProperties* cache_item = it->value.Get();
+  recordreplay::Assert(
+      "[RUN-2424-2425] MatchedPropertiesCache::Find B %d %d", !!cache_item,
+      cache_item  && *cache_item != key.result_.GetMatchedProperties());
   if (!cache_item)
     return nullptr;
   if (*cache_item != key.result_.GetMatchedProperties())
     return nullptr;
+
+  recordreplay::Assert("[RUN-2424-2425] MatchedPropertiesCache::Find C %d",
+                       cache_item->computed_style->InsideLink() !=
+                           style_resolver_state.Style()->InsideLink());
+
   if (cache_item->computed_style->InsideLink() !=
       style_resolver_state.Style()->InsideLink())
     return nullptr;
   if (!cache_item->DependenciesEqual(style_resolver_state))
     return nullptr;
+
+  recordreplay::Assert("[RUN-2424-2425] MatchedPropertiesCache::Find D");
   return cache_item;
 }
 
@@ -212,6 +234,12 @@ bool MatchedPropertiesCache::IsStyleCacheable(const ComputedStyle& style) {
     return false;
   if (style.HasContainerRelativeUnits())
     return false;
+  // Avoiding cache for ::highlight styles, and the originating styles they are
+  // associated with, because the style depends on the highlight names involved
+  // and they're not cached.
+  if (style.HasPseudoElementStyle(kPseudoIdHighlight) ||
+      style.StyleType() == kPseudoIdHighlight)
+    return false;
   return true;
 }
 
@@ -227,6 +255,18 @@ bool MatchedPropertiesCache::IsCacheable(const StyleResolverState& state) {
   // SetChildHasExplicitInheritance on the parent style.
   if (!state.ParentNode() || parent_style.ChildHasExplicitInheritance())
     return false;
+
+  // Do not cache computed styles for shadow root children which have a
+  // different UserModify value than its shadow host.
+  //
+  // UserModify is modified to not inherit from the shadow host for shadow root
+  // children. That means that if we get a MatchedPropertiesCache match for a
+  // style stored for a shadow root child against a non shadow root child, we
+  // would end up with an incorrect match.
+  if (IsAtShadowBoundary(&state.GetElement()) &&
+      style.UserModify() != parent_style.UserModify()) {
+    return false;
+  }
 
   return true;
 }

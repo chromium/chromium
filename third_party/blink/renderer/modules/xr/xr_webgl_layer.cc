@@ -1,8 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/xr/xr_webgl_layer.h"
+
+#include <algorithm>
+#include <utility>
 
 #include "base/cxx17_backports.h"
 #include "base/numerics/safe_conversions.h"
@@ -19,11 +22,10 @@
 #include "third_party/blink/renderer/modules/xr/xr_view.h"
 #include "third_party/blink/renderer/modules/xr/xr_viewport.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/geometry/double_size.h"
-#include "third_party/blink/renderer/platform/geometry/float_point.h"
-#include "third_party/blink/renderer/platform/geometry/int_size.h"
-
-#include <algorithm>
+#include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/size_conversions.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
 
@@ -113,16 +115,16 @@ XRWebGLLayer* XRWebGLLayer::Create(XRSession* session,
 
     // Clamp the developer-requested framebuffer size to ensure it's not too
     // small to see or unreasonably large.
-    // TODO: Would be best to have the max value communicated from the service
-    // rather than limited to the native res.
+    // TODO(bajones): Would be best to have the max value communicated from the
+    // service rather than limited to the native res.
     framebuffer_scale = base::clamp(initializer->framebufferScaleFactor(),
                                     kFramebufferMinScale, max_scale);
   }
 
-  DoubleSize framebuffers_size = session->DefaultFramebufferSize();
+  gfx::SizeF framebuffers_size = session->RecommendedFramebufferSize();
 
-  IntSize desired_size(framebuffers_size.Width() * framebuffer_scale,
-                       framebuffers_size.Height() * framebuffer_scale);
+  gfx::Size desired_size =
+      gfx::ToFlooredSize(gfx::ScaleSize(framebuffers_size, framebuffer_scale));
 
   // Create an opaque WebGL Framebuffer
   WebGLFramebuffer* framebuffer =
@@ -214,7 +216,15 @@ XRViewport* XRWebGLLayer::getViewport(XRView* view) {
                  view_data->CurrentViewportScale() * 100);
   view_data->SetViewportModifiable(false);
 
-  return GetViewportForEye(view->EyeValue());
+  if (viewports_dirty_) {
+    UpdateViewports();
+  }
+
+  // framebuffer_scale_ is the scale requested by the web developer when this
+  // layer was created. The session's recommended framebuffer scale is the scale
+  // requested by the XR runtime. Both scales must be applied to the viewport.
+  return view->Viewport(framebuffer_scale_ *
+                        session()->RecommendedFramebufferScale());
 }
 
 XRViewport* XRWebGLLayer::GetViewportForEye(device::mojom::blink::XREye eye) {
@@ -252,6 +262,10 @@ void XRWebGLLayer::UpdateViewports() {
     // Calculate new sizes with optional viewport scale applied. This assumes
     // that XRSession::views() returns views in matching order.
     if (session()->StereoscopicViews()) {
+      // TODO(1275873): This technically works fine because the entire bounds is
+      // still sent to the XR process, but if there are more than two views,
+      // the terms "left" and "right" are not accurate. The entire bounds of
+      // all viewports should be sent instead.
       double left_scale = session()->views()[0]->CurrentViewportScale();
       left_viewport_ = MakeGarbageCollected<XRViewport>(
           0, 0, rounded(framebuffer_width * 0.5 * left_scale),
@@ -399,7 +413,10 @@ void XRWebGLLayer::OnFrameEnd() {
       // Always call submit, but notify if the contents were changed or not.
       session()->xr()->frameProvider()->SubmitWebGLLayer(this,
                                                          framebuffer_dirty);
-      if (camera_image_mailbox_holder_ && camera_image_texture_id_) {
+      if (camera_image_texture_id_) {
+        // We shouldn't ever have a camera texture if the holder wasn't present:
+        DCHECK(camera_image_mailbox_holder_);
+
         DVLOG(3) << __func__
                  << ": deleting camera image texture, camera_image_texture_id_="
                  << camera_image_texture_id_;
@@ -425,13 +442,11 @@ void XRWebGLLayer::OnFrameEnd() {
 }
 
 void XRWebGLLayer::OnResize() {
-  if (!session()->immersive() && drawing_buffer_) {
-    // For non-immersive sessions a resize indicates we should adjust the
-    // drawing buffer size to match the canvas.
-    DoubleSize framebuffers_size = session()->DefaultFramebufferSize();
+  if (drawing_buffer_) {
+    gfx::SizeF framebuffers_size = session()->RecommendedFramebufferSize();
 
-    IntSize desired_size(framebuffers_size.Width() * framebuffer_scale_,
-                         framebuffers_size.Height() * framebuffer_scale_);
+    gfx::Size desired_size = gfx::ToFlooredSize(
+        gfx::ScaleSize(framebuffers_size, framebuffer_scale_));
     drawing_buffer_->Resize(desired_size);
   }
 

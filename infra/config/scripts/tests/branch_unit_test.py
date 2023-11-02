@@ -1,5 +1,5 @@
 #!/usr/bin/env vpython3
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Unit test for branch.py"""
@@ -93,7 +93,8 @@ class BranchUnitTest(unittest.TestCase):
             "project_title": "Chromium MMM",
             "ref": "refs/branch-heads/AAAA"
         }""")
-    output = branch.set_type(input, ['desktop-extended-stable', 'cros-lts'])
+    output = branch.set_type(
+        input, ['desktop-extended-stable', 'cros-lts', 'fuchsia-lts'])
     self.assertEqual(
         output,
         textwrap.dedent("""\
@@ -103,7 +104,8 @@ class BranchUnitTest(unittest.TestCase):
                 "ref": "refs/branch-heads/AAAA",
                 "branch_types": [
                     "desktop-extended-stable",
-                    "cros-lts"
+                    "cros-lts",
+                    "fuchsia-lts"
                 ]
             }
             """))

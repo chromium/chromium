@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,8 @@ namespace content_creation {
 
 // All supported reaction types. Corresponding |@IntDef| definitions are
 // generated on the Java side at build time.
+// Keep in sync with the enums.xml equivalent at
+//     tools/metrics/histograms/enums.xml.
 // GENERATED_JAVA_ENUM_PACKAGE: (
 //   org.chromium.components.content_creation.reactions)
 enum class ReactionType {
@@ -20,8 +22,10 @@ enum class ReactionType {
   SURPRISE = 5,
   THANKS = 6,
   UNSURE = 7,
+  HEART = 8,
+  LAUGH_CRY = 9,
 
-  MAX_VALUE = UNSURE
+  MAX_VALUE = LAUGH_CRY
 };
 
 }  // namespace content_creation

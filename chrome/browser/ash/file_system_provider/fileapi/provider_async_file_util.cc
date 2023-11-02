@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,7 +38,7 @@ void GetFileInfoOnUIThread(
     ProvidedFileSystemInterface::GetMetadataCallback callback) {
   util::FileSystemURLParser parser(url);
   if (!parser.Parse()) {
-    std::move(callback).Run(base::WrapUnique<EntryMetadata>(NULL),
+    std::move(callback).Run(base::WrapUnique<EntryMetadata>(nullptr),
                             base::File::FILE_ERROR_INVALID_OPERATION);
     return;
   }
@@ -307,7 +307,7 @@ ProviderAsyncFileUtil::~ProviderAsyncFileUtil() {}
 void ProviderAsyncFileUtil::CreateOrOpen(
     std::unique_ptr<storage::FileSystemOperationContext> context,
     const storage::FileSystemURL& url,
-    int file_flags,
+    uint32_t file_flags,
     CreateOrOpenCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   if ((file_flags & base::File::FLAG_CREATE) ||

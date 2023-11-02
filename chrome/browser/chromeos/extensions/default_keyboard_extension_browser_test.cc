@@ -1,8 +1,7 @@
-/*
- * Copyright 2013 The Chromium Authors. All rights reserved.
- * Use of this source code is governed by a BSD-style license that can be
- * found in the LICENSE file.
- */
+// Copyright 2013 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 #include "chrome/browser/chromeos/extensions/default_keyboard_extension_browser_test.h"
 
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
@@ -106,7 +105,8 @@ DefaultKeyboardExtensionBrowserTest::GetKeyboardWebContents(
     if (!view)
       continue;
     content::WebContents* wc = content::WebContents::FromRenderViewHost(view);
-    if (wc && url == wc->GetMainFrame()->GetSiteInstance()->GetSiteURL()) {
+    if (wc &&
+        url == wc->GetPrimaryMainFrame()->GetSiteInstance()->GetSiteURL()) {
       // Waits for virtual keyboard to load.
       EXPECT_TRUE(content::WaitForLoadStop(wc));
       return wc;

@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,7 +25,7 @@ uint64_t RandUint64() {
 int RandInt(int min, int max) {
   DCHECK_LE(min, max);
 
-  uint64_t range = static_cast<uint64_t>(max) - min + 1;
+  uint64_t range = static_cast<uint64_t>(max) - static_cast<uint64_t>(min) + 1;
   // |range| is at most UINT_MAX + 1, so the result of RandGenerator(range)
   // is at most UINT_MAX.  Hence it's safe to cast it from uint64_t to int64_t.
   int result =
@@ -39,20 +39,29 @@ double RandDouble() {
   return BitsToOpenEndedUnitInterval(base::RandUint64());
 }
 
+float RandFloat() {
+  return BitsToOpenEndedUnitIntervalF(base::RandUint64());
+}
+
 double BitsToOpenEndedUnitInterval(uint64_t bits) {
   // We try to get maximum precision by masking out as many bits as will fit
   // in the target type's mantissa, and raising it to an appropriate power to
   // produce output in the range [0, 1).  For IEEE 754 doubles, the mantissa
-  // is expected to accommodate 53 bits.
-
+  // is expected to accommodate 53 bits (including the implied bit).
   static_assert(std::numeric_limits<double>::radix == 2,
                 "otherwise use scalbn");
-  static const int kBits = std::numeric_limits<double>::digits;
-  uint64_t random_bits = bits & ((UINT64_C(1) << kBits) - 1);
-  double result = ldexp(static_cast<double>(random_bits), -1 * kBits);
-  DCHECK_GE(result, 0.0);
-  DCHECK_LT(result, 1.0);
-  return result;
+  constexpr int kBits = std::numeric_limits<double>::digits;
+  return ldexp(bits & ((UINT64_C(1) << kBits) - 1u), -kBits);
+}
+
+float BitsToOpenEndedUnitIntervalF(uint64_t bits) {
+  // We try to get maximum precision by masking out as many bits as will fit
+  // in the target type's mantissa, and raising it to an appropriate power to
+  // produce output in the range [0, 1).  For IEEE 754 floats, the mantissa is
+  // expected to accommodate 12 bits (including the implied bit).
+  static_assert(std::numeric_limits<float>::radix == 2, "otherwise use scalbn");
+  constexpr int kBits = std::numeric_limits<float>::digits;
+  return ldexpf(bits & ((UINT64_C(1) << kBits) - 1u), -kBits);
 }
 
 uint64_t RandGenerator(uint64_t range) {
@@ -118,6 +127,11 @@ double InsecureRandomGenerator::RandDouble() {
   // From https://vigna.di.unimi.it/xorshift/.
   // 53 bits of mantissa, hence the "hexadecimal exponent" 1p-53.
   return (x >> 11) * 0x1.0p-53;
+}
+
+MetricsSubSampler::MetricsSubSampler() = default;
+bool MetricsSubSampler::ShouldSample(double probability) {
+  return generator_.RandDouble() < probability;
 }
 
 }  // namespace base

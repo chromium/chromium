@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -122,7 +122,14 @@ interface FileSystemAccessManager {
   // Token redemption can fail if the id of the process trying to redeem the
   // token does not match the id assigned to the token at creation or if the
   // FileSystemAccessManager does not have record of the token.
+  // May show a prompt to the user if the entry corresponds to a sensitive path.
+  // getAsFileSystemHandle() is an async API that can only be called
+  // synchronously while handling the drop event (i.e. as a direct result of
+  // some user interaction, and at the time of the interaction).
+  // Returns an error code if something failed, or a valid entry on success.
+  // TODO(https://crbug.com/1327821): Replace this with expected<T, E> if/when
+  // it becomes available for mojom.
   GetEntryFromDataTransferToken(
     pending_remote<FileSystemAccessDataTransferToken> token
-  )  => (FileSystemAccessEntry entry);
+  )  => (FileSystemAccessError result, FileSystemAccessEntry? entry);
 };

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,9 +36,9 @@ struct Selector {
   explicit Selector(const std::vector<std::string>& s)
       : Selector(ToSelectorProto(s)) {}
 
-  Selector(Selector&& other);
+  Selector(Selector&& other) noexcept;
   Selector(const Selector& other);
-  Selector& operator=(Selector&& other);
+  Selector& operator=(Selector&& other) noexcept;
   Selector& operator=(const Selector& other);
 
   bool operator<(const Selector& other) const;
@@ -48,6 +48,8 @@ struct Selector {
   Selector& MustBeVisible();
 
   // Checks whether this selector is empty or invalid.
+  // TODO(b/235308082): Rename this to be more appropriate to what the method
+  // actually does.
   bool empty() const;
 
   // Convenience function to set inner_text_pattern in a fluent style.

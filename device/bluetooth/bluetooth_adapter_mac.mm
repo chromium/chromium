@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,6 +24,7 @@
 #include "base/mac/scoped_ioobject.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
@@ -71,14 +72,6 @@ bool IsDeviceSystemPaired(const std::string& device_address) {
 
 namespace device {
 
-CBCentralManagerState GetCBManagerState(CBCentralManager* manager) {
-#if defined(MAC_OS_X_VERSION_10_13)
-  return static_cast<CBCentralManagerState>([manager state]);
-#else
-  return [manager state];
-#endif
-}
-
 // static
 scoped_refptr<BluetoothAdapter> BluetoothAdapter::CreateAdapter() {
   return BluetoothAdapterMac::CreateAdapter();
@@ -119,8 +112,7 @@ std::string BluetoothAdapterMac::String(NSError* error) {
 }
 
 BluetoothAdapterMac::BluetoothAdapterMac()
-    : BluetoothAdapter(),
-      controller_state_function_(
+    : controller_state_function_(
           base::BindRepeating(&BluetoothAdapterMac::GetHostControllerState,
                               base::Unretained(this))),
       power_state_function_(
@@ -329,6 +321,16 @@ BluetoothLocalGattService* BluetoothAdapterMac::GetGattService(
   return nullptr;
 }
 
+BluetoothAdapter::DeviceList BluetoothAdapterMac::GetDevices() {
+  LazyInitialize();
+  return BluetoothAdapter::GetDevices();
+}
+
+BluetoothAdapter::ConstDeviceList BluetoothAdapterMac::GetDevices() const {
+  const_cast<BluetoothAdapterMac*>(this)->LazyInitialize();
+  return BluetoothAdapter::GetDevices();
+}
+
 void BluetoothAdapterMac::ClassicDeviceFound(IOBluetoothDevice* device) {
   ClassicDeviceAdded(device);
 }
@@ -408,8 +410,8 @@ BluetoothAdapterMac::GetHostControllerState() {
 }
 
 void BluetoothAdapterMac::UpdateKnownLowEnergyDevices(
-    std::map<std::string, std::string> updated_low_energy_devices_info) {
-  std::map<std::string, std::string> changed_devices;
+    DevicesInfo updated_low_energy_devices_info) {
+  DevicesInfo changed_devices;
   // Notify DeviceChanged() to devices that have been newly paired as well as to
   // devices that have been removed from the pairing list.
   std::set_symmetric_difference(
@@ -624,8 +626,7 @@ void BluetoothAdapterMac::ClassicDeviceAdded(IOBluetoothDevice* device) {
 }
 
 bool BluetoothAdapterMac::IsLowEnergyPowered() const {
-  return GetCBManagerState(low_energy_central_manager_) ==
-         CBCentralManagerStatePoweredOn;
+  return [low_energy_central_manager_ state] == CBManagerStatePoweredOn;
 }
 
 void BluetoothAdapterMac::LowEnergyDeviceUpdated(
@@ -740,22 +741,25 @@ void BluetoothAdapterMac::LowEnergyDeviceUpdated(
   }
 }
 
-// TODO(crbug.com/511025): Handle state < CBCentralManagerStatePoweredOff.
 void BluetoothAdapterMac::LowEnergyCentralManagerUpdatedState() {
   DVLOG(1) << "Central manager state updated: "
            << [low_energy_central_manager_ state];
 
-  // A state with a value lower than CBCentralManagerStatePoweredOn implies that
+  // A state with a value lower than CBManagerStatePoweredOn implies that
   // scanning has stopped and that any connected peripherals have been
   // disconnected. Call DidDisconnectPeripheral manually to update the devices'
   // states since macOS doesn't call it.
   // See
   // https://developer.apple.com/reference/corebluetooth/cbcentralmanagerdelegate/1518888-centralmanagerdidupdatestate?language=objc
-  if (GetCBManagerState(low_energy_central_manager_) <
-      CBCentralManagerStatePoweredOn) {
+  if ([low_energy_central_manager_ state] < CBManagerStatePoweredOn) {
     DVLOG(1)
         << "Central no longer powered on. Notifying of device disconnection.";
     for (BluetoothDevice* device : GetDevices()) {
+      // GetDevices() returns instances of BluetoothClassicDeviceMac and
+      // BluetoothLowEnergyDeviceMac. The DidDisconnectPeripheral() method is
+      // only available on BluetoothLowEnergyDeviceMac.
+      if (!static_cast<BluetoothDeviceMac*>(device)->IsLowEnergyDevice())
+        continue;
       BluetoothLowEnergyDeviceMac* device_mac =
           static_cast<BluetoothLowEnergyDeviceMac*>(device);
       if (device_mac->IsGattConnected()) {
@@ -878,9 +882,8 @@ void BluetoothAdapterMac::DidDisconnectPeripheral(CBPeripheral* peripheral,
 
 bool BluetoothAdapterMac::IsBluetoothLowEnergyDeviceSystemPaired(
     base::StringPiece device_identifier) const {
-  auto it = std::find_if(
-      low_energy_devices_info_.begin(), low_energy_devices_info_.end(),
-      [&](const auto& info) { return info.first == device_identifier; });
+  auto it = base::ranges::find(low_energy_devices_info_, device_identifier,
+                               &DevicesInfo::value_type::first);
   if (it == low_energy_devices_info_.end())
     return false;
 
@@ -893,9 +896,16 @@ BluetoothAdapterMac::GetBluetoothLowEnergyDeviceMac(CBPeripheral* peripheral) {
       BluetoothLowEnergyDeviceMac::GetPeripheralHashAddress(peripheral);
   auto iter = devices_.find(device_address);
   if (iter == devices_.end()) {
-    return nil;
+    return nullptr;
   }
-  return static_cast<BluetoothLowEnergyDeviceMac*>(iter->second.get());
+  // device_mac can be BluetoothClassicDeviceMac* or
+  // BluetoothLowEnergyDeviceMac* To return valid BluetoothLowEnergyDeviceMac*
+  // we need to first check with IsLowEnergyDevice()
+  BluetoothDeviceMac* device_mac =
+      static_cast<BluetoothDeviceMac*>(iter->second.get());
+  return device_mac->IsLowEnergyDevice()
+             ? static_cast<BluetoothLowEnergyDeviceMac*>(device_mac)
+             : nullptr;
 }
 
 bool BluetoothAdapterMac::DoesCollideWithKnownDevice(

@@ -1,31 +1,34 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_tab_helper.h"
 
-#include "base/strings/string_split.h"
-#include "base/strings/stringprintf.h"
-#include "base/test/task_environment.h"
-#include "components/breadcrumbs/core/breadcrumb_manager_keyed_service.h"
-#include "components/infobars/core/infobar_delegate.h"
-#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
-#include "ios/chrome/browser/chrome_url_constants.h"
-#include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_keyed_service_factory.h"
+#import <list>
+#import <string>
+
+#import "base/strings/string_split.h"
+#import "base/strings/stringprintf.h"
+#import "base/test/task_environment.h"
+#import "components/breadcrumbs/core/breadcrumb_manager.h"
+#import "components/infobars/core/infobar_delegate.h"
+#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_keyed_service_factory.h"
 #import "ios/chrome/browser/infobars/infobar_ios.h"
-#include "ios/chrome/browser/infobars/infobar_manager_impl.h"
-#include "ios/chrome/browser/infobars/test/fake_infobar_delegate.h"
+#import "ios/chrome/browser/infobars/infobar_manager_impl.h"
+#import "ios/chrome/browser/infobars/test/fake_infobar_delegate.h"
 #import "ios/chrome/browser/infobars/test/fake_infobar_ios.h"
-#include "ios/web/public/security/ssl_status.h"
+#import "ios/chrome/browser/url/chrome_url_constants.h"
+#import "ios/web/public/security/ssl_status.h"
 #import "ios/web/public/test/error_test_util.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
-#include "testing/platform_test.h"
+#import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -33,6 +36,18 @@
 #endif
 
 using infobars::InfoBarDelegate;
+
+namespace {
+
+std::list<std::string> GetEvents() {
+  return breadcrumbs::BreadcrumbManager::GetInstance().GetEvents();
+}
+
+bool EventsEmpty() {
+  return GetEvents().empty();
+}
+
+}  // namespace
 
 // Test fixture for BreadcrumbManagerTabHelper class.
 class BreadcrumbManagerTabHelperTest : public PlatformTest {
@@ -45,10 +60,8 @@ class BreadcrumbManagerTabHelperTest : public PlatformTest {
     first_web_state_.SetBrowserState(chrome_browser_state_.get());
     second_web_state_.SetBrowserState(chrome_browser_state_.get());
 
-    breadcrumb_service_ =
-        static_cast<breadcrumbs::BreadcrumbManagerKeyedService*>(
-            BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
-                chrome_browser_state_.get()));
+    BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
+        chrome_browser_state_.get());
 
     // Navigation manager is needed for InfobarManager.
     first_web_state_.SetNavigationManager(
@@ -73,7 +86,6 @@ class BreadcrumbManagerTabHelperTest : public PlatformTest {
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   web::FakeWebState first_web_state_;
   web::FakeWebState second_web_state_;
-  breadcrumbs::BreadcrumbManagerKeyedService* breadcrumb_service_;
   UIScrollView* scroll_view_ = nil;
 };
 
@@ -98,19 +110,18 @@ TEST_F(BreadcrumbManagerTabHelperTest, UniqueIdentifiers) {
 // every observer method is correctly called as that is done in the
 // WebStateObserverTest tests.
 TEST_F(BreadcrumbManagerTabHelperTest, EventsLogged) {
-
-  EXPECT_EQ(0ul, breadcrumb_service_->GetEvents(0).size());
+  EXPECT_TRUE(EventsEmpty());
   web::FakeNavigationContext context;
   first_web_state_.OnNavigationStarted(&context);
-  std::list<std::string> events = breadcrumb_service_->GetEvents(0);
-  ASSERT_EQ(1ul, events.size());
+  auto events = GetEvents();
+  ASSERT_EQ(1u, events.size());
   EXPECT_NE(std::string::npos,
             events.back().find(breadcrumbs::kBreadcrumbDidStartNavigation))
       << events.back();
 
   first_web_state_.OnNavigationFinished(&context);
-  events = breadcrumb_service_->GetEvents(0);
-  ASSERT_EQ(2ul, events.size());
+  events = GetEvents();
+  ASSERT_EQ(2u, events.size());
   EXPECT_NE(std::string::npos,
             events.back().find(breadcrumbs::kBreadcrumbDidFinishNavigation))
       << events.back();
@@ -125,8 +136,8 @@ TEST_F(BreadcrumbManagerTabHelperTest, UniqueEvents) {
   BreadcrumbManagerTabHelper::CreateForWebState(&second_web_state_);
   second_web_state_.OnNavigationStarted(&context);
 
-  std::list<std::string> events = breadcrumb_service_->GetEvents(0);
-  ASSERT_EQ(2ul, events.size());
+  const auto events = GetEvents();
+  ASSERT_EQ(2u, events.size());
   EXPECT_STRNE(events.front().c_str(), events.back().c_str());
   EXPECT_NE(std::string::npos,
             events.front().find(breadcrumbs::kBreadcrumbDidStartNavigation))
@@ -138,13 +149,13 @@ TEST_F(BreadcrumbManagerTabHelperTest, UniqueEvents) {
 
 // Tests metadata for www.google.com navigation.
 TEST_F(BreadcrumbManagerTabHelperTest, GoogleNavigationStart) {
-  ASSERT_EQ(0ul, breadcrumb_service_->GetEvents(0).size());
+  ASSERT_TRUE(EventsEmpty());
 
   web::FakeNavigationContext context;
   context.SetUrl(GURL("https://www.google.com"));
   first_web_state_.OnNavigationStarted(&context);
-  std::list<std::string> events = breadcrumb_service_->GetEvents(0);
-  ASSERT_EQ(1ul, events.size());
+  const auto events = GetEvents();
+  ASSERT_EQ(1u, events.size());
 
   EXPECT_NE(std::string::npos,
             events.front().find(breadcrumbs::kBreadcrumbGoogleNavigation))
@@ -153,13 +164,13 @@ TEST_F(BreadcrumbManagerTabHelperTest, GoogleNavigationStart) {
 
 // Tests metadata for https://play.google.com/ navigation.
 TEST_F(BreadcrumbManagerTabHelperTest, GooglePlayNavigationStart) {
-  ASSERT_EQ(0ul, breadcrumb_service_->GetEvents(0).size());
+  ASSERT_TRUE(EventsEmpty());
 
   web::FakeNavigationContext context;
   context.SetUrl(GURL("https://play.google.com/"));
   first_web_state_.OnNavigationStarted(&context);
-  std::list<std::string> events = breadcrumb_service_->GetEvents(0);
-  ASSERT_EQ(1ul, events.size());
+  const auto events = GetEvents();
+  ASSERT_EQ(1u, events.size());
 
   // #google is useful to indicate SRP. There is no need to know URLs of other
   // visited google properties.
@@ -170,13 +181,13 @@ TEST_F(BreadcrumbManagerTabHelperTest, GooglePlayNavigationStart) {
 
 // Tests metadata for chrome://newtab NTP navigation.
 TEST_F(BreadcrumbManagerTabHelperTest, ChromeNewTabNavigationStart) {
-  ASSERT_EQ(0ul, breadcrumb_service_->GetEvents(0).size());
+  ASSERT_TRUE(EventsEmpty());
 
   web::FakeNavigationContext context;
   context.SetUrl(GURL(kChromeUINewTabURL));
   first_web_state_.OnNavigationStarted(&context);
-  std::list<std::string> events = breadcrumb_service_->GetEvents(0);
-  ASSERT_EQ(1ul, events.size());
+  const auto events = GetEvents();
+  ASSERT_EQ(1u, events.size());
 
   EXPECT_NE(std::string::npos,
             events.front().find(base::StringPrintf(
@@ -190,13 +201,13 @@ TEST_F(BreadcrumbManagerTabHelperTest, ChromeNewTabNavigationStart) {
 
 // Tests metadata for about://newtab NTP navigation.
 TEST_F(BreadcrumbManagerTabHelperTest, AboutNewTabNavigationStart) {
-  ASSERT_EQ(0ul, breadcrumb_service_->GetEvents(0).size());
+  ASSERT_TRUE(EventsEmpty());
 
   web::FakeNavigationContext context;
   context.SetUrl(GURL("about://newtab"));
   first_web_state_.OnNavigationStarted(&context);
-  std::list<std::string> events = breadcrumb_service_->GetEvents(0);
-  ASSERT_EQ(1ul, events.size());
+  const auto events = GetEvents();
+  ASSERT_EQ(1u, events.size());
 
   EXPECT_NE(std::string::npos,
             events.front().find(base::StringPrintf(
@@ -210,13 +221,13 @@ TEST_F(BreadcrumbManagerTabHelperTest, AboutNewTabNavigationStart) {
 
 // Tests metadata for about://newtab/ NTP navigation.
 TEST_F(BreadcrumbManagerTabHelperTest, AboutNewTabNavigationStart2) {
-  ASSERT_EQ(0ul, breadcrumb_service_->GetEvents(0).size());
+  ASSERT_TRUE(EventsEmpty());
 
   web::FakeNavigationContext context;
   context.SetUrl(GURL("about://newtab/"));
   first_web_state_.OnNavigationStarted(&context);
-  std::list<std::string> events = breadcrumb_service_->GetEvents(0);
-  ASSERT_EQ(1ul, events.size());
+  const auto events = GetEvents();
+  ASSERT_EQ(1u, events.size());
 
   EXPECT_NE(std::string::npos,
             events.front().find(base::StringPrintf(
@@ -230,13 +241,13 @@ TEST_F(BreadcrumbManagerTabHelperTest, AboutNewTabNavigationStart2) {
 
 // Tests unique ID in DidStartNavigation and DidStartNavigation.
 TEST_F(BreadcrumbManagerTabHelperTest, NavigationUniqueId) {
-  ASSERT_EQ(0ul, breadcrumb_service_->GetEvents(0).size());
+  ASSERT_TRUE(EventsEmpty());
 
   // DidStartNavigation
   web::FakeNavigationContext context;
   first_web_state_.OnNavigationStarted(&context);
-  std::list<std::string> events = breadcrumb_service_->GetEvents(0);
-  ASSERT_EQ(1ul, events.size());
+  auto events = GetEvents();
+  ASSERT_EQ(1u, events.size());
 
   EXPECT_NE(std::string::npos,
             events.front().find(base::StringPrintf(
@@ -246,8 +257,8 @@ TEST_F(BreadcrumbManagerTabHelperTest, NavigationUniqueId) {
 
   // DidFinishNavigation
   first_web_state_.OnNavigationFinished(&context);
-  events = breadcrumb_service_->GetEvents(0);
-  ASSERT_EQ(2ul, events.size());
+  events = GetEvents();
+  ASSERT_EQ(2u, events.size());
   EXPECT_NE(std::string::npos,
             events.back().find(base::StringPrintf(
                 "%s%lld", breadcrumbs::kBreadcrumbDidFinishNavigation,
@@ -257,14 +268,14 @@ TEST_F(BreadcrumbManagerTabHelperTest, NavigationUniqueId) {
 
 // Tests renderer initiated metadata in DidStartNavigation.
 TEST_F(BreadcrumbManagerTabHelperTest, RendererInitiatedByUser) {
-  ASSERT_EQ(0ul, breadcrumb_service_->GetEvents(0).size());
+  ASSERT_TRUE(EventsEmpty());
 
   web::FakeNavigationContext context;
   context.SetIsRendererInitiated(true);
   context.SetHasUserGesture(true);
   first_web_state_.OnNavigationStarted(&context);
-  std::list<std::string> events = breadcrumb_service_->GetEvents(0);
-  ASSERT_EQ(1ul, events.size());
+  const auto events = GetEvents();
+  ASSERT_EQ(1u, events.size());
 
   EXPECT_NE(std::string::npos, events.back().find("#link")) << events.back();
   EXPECT_NE(std::string::npos,
@@ -281,15 +292,15 @@ TEST_F(BreadcrumbManagerTabHelperTest, RendererInitiatedByUser) {
 
 // Tests renderer initiated metadata in DidStartNavigation.
 TEST_F(BreadcrumbManagerTabHelperTest, RendererInitiatedByScript) {
-  ASSERT_EQ(0ul, breadcrumb_service_->GetEvents(0).size());
+  ASSERT_TRUE(EventsEmpty());
 
   web::FakeNavigationContext context;
   context.SetIsRendererInitiated(true);
   context.SetHasUserGesture(false);
   context.SetPageTransition(ui::PAGE_TRANSITION_RELOAD);
   first_web_state_.OnNavigationStarted(&context);
-  std::list<std::string> events = breadcrumb_service_->GetEvents(0);
-  ASSERT_EQ(1ul, events.size());
+  const auto events = GetEvents();
+  ASSERT_EQ(1u, events.size());
 
   EXPECT_NE(std::string::npos, events.back().find("#reload")) << events.back();
   EXPECT_NE(std::string::npos,
@@ -306,14 +317,14 @@ TEST_F(BreadcrumbManagerTabHelperTest, RendererInitiatedByScript) {
 
 // Tests browser initiated metadata in DidStartNavigation.
 TEST_F(BreadcrumbManagerTabHelperTest, BrowserInitiatedByScript) {
-  ASSERT_EQ(0ul, breadcrumb_service_->GetEvents(0).size());
+  ASSERT_TRUE(EventsEmpty());
 
   web::FakeNavigationContext context;
   context.SetIsRendererInitiated(false);
   context.SetPageTransition(ui::PAGE_TRANSITION_TYPED);
   first_web_state_.OnNavigationStarted(&context);
-  std::list<std::string> events = breadcrumb_service_->GetEvents(0);
-  ASSERT_EQ(1ul, events.size());
+  const auto events = GetEvents();
+  ASSERT_EQ(1u, events.size());
 
   EXPECT_NE(std::string::npos, events.back().find("#typed")) << events.back();
   EXPECT_NE(std::string::npos,
@@ -330,13 +341,13 @@ TEST_F(BreadcrumbManagerTabHelperTest, BrowserInitiatedByScript) {
 
 // Tests download navigation.
 TEST_F(BreadcrumbManagerTabHelperTest, Download) {
-  ASSERT_EQ(0ul, breadcrumb_service_->GetEvents(0).size());
+  ASSERT_TRUE(EventsEmpty());
 
   web::FakeNavigationContext context;
   context.SetIsDownload(true);
   first_web_state_.OnNavigationFinished(&context);
-  std::list<std::string> events = breadcrumb_service_->GetEvents(0);
-  ASSERT_EQ(1ul, events.size());
+  const auto events = GetEvents();
+  ASSERT_EQ(1u, events.size());
 
   EXPECT_NE(std::string::npos,
             events.back().find(breadcrumbs::kBreadcrumbDidFinishNavigation))
@@ -348,12 +359,12 @@ TEST_F(BreadcrumbManagerTabHelperTest, Download) {
 
 // Tests PDF load.
 TEST_F(BreadcrumbManagerTabHelperTest, PdfLoad) {
-  ASSERT_EQ(0ul, breadcrumb_service_->GetEvents(0).size());
+  ASSERT_TRUE(EventsEmpty());
 
   first_web_state_.SetContentsMimeType("application/pdf");
   first_web_state_.OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
-  std::list<std::string> events = breadcrumb_service_->GetEvents(0);
-  ASSERT_EQ(1ul, events.size());
+  const auto events = GetEvents();
+  ASSERT_EQ(1u, events.size());
 
   EXPECT_NE(std::string::npos,
             events.back().find(breadcrumbs::kBreadcrumbPageLoaded))
@@ -365,11 +376,11 @@ TEST_F(BreadcrumbManagerTabHelperTest, PdfLoad) {
 
 // Tests page load succeess.
 TEST_F(BreadcrumbManagerTabHelperTest, PageLoadSuccess) {
-  ASSERT_EQ(0ul, breadcrumb_service_->GetEvents(0).size());
+  ASSERT_TRUE(EventsEmpty());
 
   first_web_state_.OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
-  std::list<std::string> events = breadcrumb_service_->GetEvents(0);
-  ASSERT_EQ(1ul, events.size());
+  const auto events = GetEvents();
+  ASSERT_EQ(1u, events.size());
 
   EXPECT_NE(std::string::npos,
             events.back().find(breadcrumbs::kBreadcrumbPageLoaded))
@@ -381,11 +392,11 @@ TEST_F(BreadcrumbManagerTabHelperTest, PageLoadSuccess) {
 
 // Tests page load failure.
 TEST_F(BreadcrumbManagerTabHelperTest, PageLoadFailure) {
-  ASSERT_EQ(0ul, breadcrumb_service_->GetEvents(0).size());
+  ASSERT_TRUE(EventsEmpty());
 
   first_web_state_.OnPageLoaded(web::PageLoadCompletionStatus::FAILURE);
-  std::list<std::string> events = breadcrumb_service_->GetEvents(0);
-  ASSERT_EQ(1ul, events.size());
+  const auto events = GetEvents();
+  ASSERT_EQ(1u, events.size());
 
   EXPECT_NE(std::string::npos,
             events.back().find(breadcrumbs::kBreadcrumbPageLoaded))
@@ -397,12 +408,12 @@ TEST_F(BreadcrumbManagerTabHelperTest, PageLoadFailure) {
 
 // Tests NTP page load.
 TEST_F(BreadcrumbManagerTabHelperTest, NtpPageLoad) {
-  ASSERT_EQ(0ul, breadcrumb_service_->GetEvents(0).size());
+  ASSERT_TRUE(EventsEmpty());
 
   first_web_state_.SetCurrentURL(GURL(kChromeUINewTabURL));
   first_web_state_.OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
-  std::list<std::string> events = breadcrumb_service_->GetEvents(0);
-  ASSERT_EQ(1ul, events.size());
+  const auto events = GetEvents();
+  ASSERT_EQ(1u, events.size());
 
   EXPECT_NE(std::string::npos,
             events.back().find(breadcrumbs::kBreadcrumbPageLoaded))
@@ -421,7 +432,7 @@ TEST_F(BreadcrumbManagerTabHelperTest, NtpPageLoad) {
 
 // Tests navigation error.
 TEST_F(BreadcrumbManagerTabHelperTest, NavigationError) {
-  ASSERT_EQ(0ul, breadcrumb_service_->GetEvents(0).size());
+  ASSERT_TRUE(EventsEmpty());
 
   web::FakeNavigationContext context;
   NSError* error = web::testing::CreateTestNetError([NSError
@@ -430,8 +441,8 @@ TEST_F(BreadcrumbManagerTabHelperTest, NavigationError) {
              userInfo:nil]);
   context.SetError(error);
   first_web_state_.OnNavigationFinished(&context);
-  std::list<std::string> events = breadcrumb_service_->GetEvents(0);
-  ASSERT_EQ(1ul, events.size());
+  const auto events = GetEvents();
+  ASSERT_EQ(1u, events.size());
 
   EXPECT_NE(std::string::npos,
             events.back().find(breadcrumbs::kBreadcrumbDidFinishNavigation))
@@ -446,24 +457,24 @@ TEST_F(BreadcrumbManagerTabHelperTest, DidChangeVisibleSecurityState) {
   auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
   web::FakeNavigationManager* navigation_manager_ptr = navigation_manager.get();
   first_web_state_.SetNavigationManager(std::move(navigation_manager));
-  ASSERT_EQ(0ul, breadcrumb_service_->GetEvents(0).size());
+  ASSERT_TRUE(EventsEmpty());
 
   // Empty navigation manager.
   first_web_state_.OnVisibleSecurityStateChanged();
-  ASSERT_EQ(0ul, breadcrumb_service_->GetEvents(0).size());
+  ASSERT_TRUE(EventsEmpty());
 
   // Default navigation item.
   auto visible_item = web::NavigationItem::Create();
   navigation_manager_ptr->SetVisibleItem(visible_item.get());
   first_web_state_.OnVisibleSecurityStateChanged();
-  ASSERT_EQ(0ul, breadcrumb_service_->GetEvents(0).size());
+  ASSERT_TRUE(EventsEmpty());
 
   // Mixed content.
   web::SSLStatus& status = visible_item->GetSSL();
   status.content_status = web::SSLStatus::DISPLAYED_INSECURE_CONTENT;
   first_web_state_.OnVisibleSecurityStateChanged();
-  std::list<std::string> events = breadcrumb_service_->GetEvents(0);
-  ASSERT_EQ(1ul, events.size());
+  auto events = GetEvents();
+  ASSERT_EQ(1u, events.size());
   EXPECT_NE(std::string::npos,
             events.back().find(breadcrumbs::kBreadcrumbMixedContent))
       << events.back();
@@ -475,8 +486,8 @@ TEST_F(BreadcrumbManagerTabHelperTest, DidChangeVisibleSecurityState) {
   status.content_status = web::SSLStatus::NORMAL_CONTENT;
   status.security_style = web::SECURITY_STYLE_AUTHENTICATION_BROKEN;
   first_web_state_.OnVisibleSecurityStateChanged();
-  events = breadcrumb_service_->GetEvents(0);
-  ASSERT_EQ(2ul, events.size());
+  events = GetEvents();
+  ASSERT_EQ(2u, events.size());
   EXPECT_EQ(std::string::npos,
             events.back().find(breadcrumbs::kBreadcrumbMixedContent))
       << events.back();
@@ -487,7 +498,7 @@ TEST_F(BreadcrumbManagerTabHelperTest, DidChangeVisibleSecurityState) {
 
 // Tests that adding an infobar logs the expected breadcrumb.
 TEST_F(BreadcrumbManagerTabHelperTest, AddInfobar) {
-  ASSERT_EQ(0ul, breadcrumb_service_->GetEvents(0).size());
+  ASSERT_TRUE(EventsEmpty());
 
   InfoBarDelegate::InfoBarIdentifier identifier =
       InfoBarDelegate::InfoBarIdentifier::SESSION_CRASHED_INFOBAR_DELEGATE_IOS;
@@ -498,8 +509,8 @@ TEST_F(BreadcrumbManagerTabHelperTest, AddInfobar) {
   InfoBarManagerImpl::FromWebState(&first_web_state_)
       ->AddInfoBar(std::move(infobar));
 
-  std::list<std::string> events = breadcrumb_service_->GetEvents(0);
-  ASSERT_EQ(1ul, events.size());
+  const auto events = GetEvents();
+  ASSERT_EQ(1u, events.size());
   EXPECT_NE(std::string::npos,
             events.back().find(base::StringPrintf(
                 "%s%d", breadcrumbs::kBreadcrumbInfobarAdded, identifier)))
@@ -508,7 +519,7 @@ TEST_F(BreadcrumbManagerTabHelperTest, AddInfobar) {
 
 // Tests that infobar breadcrumbs specify the infobar type.
 TEST_F(BreadcrumbManagerTabHelperTest, InfobarTypes) {
-  ASSERT_EQ(0ul, breadcrumb_service_->GetEvents(0).size());
+  ASSERT_TRUE(EventsEmpty());
 
   // Add and remove first infobar.
   InfoBarDelegate::InfoBarIdentifier first_identifier =
@@ -532,8 +543,8 @@ TEST_F(BreadcrumbManagerTabHelperTest, InfobarTypes) {
   InfoBarManagerImpl::FromWebState(&first_web_state_)
       ->AddInfoBar(std::move(second_infobar));
 
-  std::list<std::string> events = breadcrumb_service_->GetEvents(0);
-  ASSERT_EQ(3ul, events.size());
+  const auto events = GetEvents();
+  ASSERT_EQ(3u, events.size());
   EXPECT_NE(events.front(), events.back());
   EXPECT_NE(std::string::npos, events.front().find(base::StringPrintf(
                                    "%s%d", breadcrumbs::kBreadcrumbInfobarAdded,
@@ -548,7 +559,7 @@ TEST_F(BreadcrumbManagerTabHelperTest, InfobarTypes) {
 // Tests that removing an infobar without animation logs the expected breadcrumb
 // event.
 TEST_F(BreadcrumbManagerTabHelperTest, RemoveInfobarNotAnimated) {
-  ASSERT_EQ(0ul, breadcrumb_service_->GetEvents(0).size());
+  ASSERT_TRUE(EventsEmpty());
 
   InfoBarDelegate::InfoBarIdentifier identifier =
       InfoBarDelegate::InfoBarIdentifier::TEST_INFOBAR;
@@ -562,8 +573,8 @@ TEST_F(BreadcrumbManagerTabHelperTest, RemoveInfobarNotAnimated) {
   InfoBarManagerImpl::FromWebState(&first_web_state_)
       ->RemoveAllInfoBars(/*animate=*/false);
 
-  std::list<std::string> events = breadcrumb_service_->GetEvents(0);
-  ASSERT_EQ(2ul, events.size());
+  const auto events = GetEvents();
+  ASSERT_EQ(2u, events.size());
   EXPECT_NE(std::string::npos,
             events.back().find(base::StringPrintf(
                 "%s%d", breadcrumbs::kBreadcrumbInfobarRemoved, identifier)))
@@ -576,7 +587,7 @@ TEST_F(BreadcrumbManagerTabHelperTest, RemoveInfobarNotAnimated) {
 // Tests that removing an infobar with animation logs the expected breadcrumb
 // event.
 TEST_F(BreadcrumbManagerTabHelperTest, RemoveInfobarAnimated) {
-  ASSERT_EQ(0ul, breadcrumb_service_->GetEvents(0).size());
+  ASSERT_TRUE(EventsEmpty());
 
   InfoBarDelegate::InfoBarIdentifier identifier =
       InfoBarDelegate::InfoBarIdentifier::TEST_INFOBAR;
@@ -590,8 +601,8 @@ TEST_F(BreadcrumbManagerTabHelperTest, RemoveInfobarAnimated) {
   InfoBarManagerImpl::FromWebState(&first_web_state_)
       ->RemoveAllInfoBars(/*animate=*/true);
 
-  std::list<std::string> events = breadcrumb_service_->GetEvents(0);
-  ASSERT_EQ(2ul, events.size());
+  const auto events = GetEvents();
+  ASSERT_EQ(2u, events.size());
   EXPECT_NE(std::string::npos,
             events.back().find(base::StringPrintf(
                 "%s%d", breadcrumbs::kBreadcrumbInfobarRemoved, identifier)))
@@ -603,7 +614,7 @@ TEST_F(BreadcrumbManagerTabHelperTest, RemoveInfobarAnimated) {
 
 // Tests that replacing an infobar logs the expected breadcrumb event.
 TEST_F(BreadcrumbManagerTabHelperTest, ReplaceInfobar) {
-  ASSERT_EQ(0ul, breadcrumb_service_->GetEvents(0).size());
+  ASSERT_TRUE(EventsEmpty());
 
   InfoBarManagerImpl::FromWebState(&first_web_state_)
       ->AddInfoBar(std::make_unique<FakeInfobarIOS>());
@@ -612,8 +623,8 @@ TEST_F(BreadcrumbManagerTabHelperTest, ReplaceInfobar) {
       ->AddInfoBar(std::make_unique<FakeInfobarIOS>(),
                    /*replace_existing=*/true);
 
-  std::list<std::string> events = breadcrumb_service_->GetEvents(0);
-  ASSERT_EQ(2ul, events.size());
+  const auto events = GetEvents();
+  ASSERT_EQ(2u, events.size());
 
   InfoBarDelegate::InfoBarIdentifier identifier =
       InfoBarDelegate::InfoBarIdentifier::TEST_INFOBAR;
@@ -626,7 +637,7 @@ TEST_F(BreadcrumbManagerTabHelperTest, ReplaceInfobar) {
 // Tests that replacing an infobar many times only logs the replaced infobar
 // breadcrumb at major increments.
 TEST_F(BreadcrumbManagerTabHelperTest, SequentialInfobarReplacements) {
-  ASSERT_EQ(0ul, breadcrumb_service_->GetEvents(0).size());
+  ASSERT_TRUE(EventsEmpty());
 
   InfoBarManagerImpl::FromWebState(&first_web_state_)
       ->AddInfoBar(std::make_unique<FakeInfobarIOS>());
@@ -637,10 +648,10 @@ TEST_F(BreadcrumbManagerTabHelperTest, SequentialInfobarReplacements) {
                      /*replace_existing=*/true);
   }
 
-  std::list<std::string> events = breadcrumb_service_->GetEvents(0);
+  const auto events = GetEvents();
   // Replacing the infobar 500 times should only log breadcrumbs on the 1st,
   // 2nd, 5th, 20th, 100th, 200th replacement.
-  ASSERT_EQ(7ul, events.size());
+  ASSERT_EQ(7u, events.size());
 
   // The events should contain the number of times the info has been replaced.
   // Validate the last one, which occurs at the 200th replacement.
@@ -653,27 +664,27 @@ TEST_F(BreadcrumbManagerTabHelperTest, SequentialInfobarReplacements) {
 
 // Tests Zoom event.
 TEST_F(BreadcrumbManagerTabHelperTest, Zoom) {
-  ASSERT_EQ(0ul, breadcrumb_service_->GetEvents(0).size());
+  ASSERT_TRUE(EventsEmpty());
 
   [scroll_view_.delegate scrollViewDidEndZooming:scroll_view_
                                         withView:nil
                                          atScale:0];
 
-  std::list<std::string> events = breadcrumb_service_->GetEvents(0);
-  ASSERT_EQ(1ul, events.size());
+  const auto events = GetEvents();
+  ASSERT_EQ(1u, events.size());
   EXPECT_NE(std::string::npos, events.back().find(breadcrumbs::kBreadcrumbZoom))
       << events.back();
 }
 
 // Tests Scroll event.
 TEST_F(BreadcrumbManagerTabHelperTest, Scroll) {
-  ASSERT_EQ(0ul, breadcrumb_service_->GetEvents(0).size());
+  ASSERT_TRUE(EventsEmpty());
 
   [scroll_view_.delegate scrollViewDidEndDragging:scroll_view_
                                    willDecelerate:YES];
 
-  std::list<std::string> events = breadcrumb_service_->GetEvents(0);
-  ASSERT_EQ(1ul, events.size());
+  const auto events = GetEvents();
+  ASSERT_EQ(1u, events.size());
   EXPECT_NE(std::string::npos,
             events.back().find(breadcrumbs::kBreadcrumbScroll))
       << events.back();
@@ -681,7 +692,7 @@ TEST_F(BreadcrumbManagerTabHelperTest, Scroll) {
 
 // Tests batching sequential Scroll events.
 TEST_F(BreadcrumbManagerTabHelperTest, MultipleScrolls) {
-  ASSERT_EQ(0ul, breadcrumb_service_->GetEvents(0).size());
+  ASSERT_TRUE(EventsEmpty());
 
   for (int scroll = 0; scroll < 500; scroll++) {
     [scroll_view_.delegate scrollViewDidEndDragging:scroll_view_
@@ -690,8 +701,8 @@ TEST_F(BreadcrumbManagerTabHelperTest, MultipleScrolls) {
 
   // Scrolling 500 times should only log breadcrumbs on the 1st, 2nd, 5th, 20th,
   // 100th and 200th time.
-  std::list<std::string> events = breadcrumb_service_->GetEvents(0);
-  ASSERT_EQ(6ul, events.size());
+  const auto events = GetEvents();
+  ASSERT_EQ(6u, events.size());
 
   // The events should contain the number of times the info has been replaced.
   // Validate the last one, which occurs at the 200th scroll completion.

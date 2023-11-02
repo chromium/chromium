@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,15 +17,20 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 namespace ime {
 
 // A Mojo wrapper around a "decoder" that converts key events and pointer events
 // to text. The built-in Chrome OS XKB extension communicates with this to
 // implement its IMEs.
+// TODO(b/214153032): Rename to ProtoModeSharedLibEngine, and maybe also unnest
+// out of "decoder" sub-directory, to better reflect what this represents. This
+// class actually wraps ProtoMode "C" API entry points of the loaded CrOS 1P IME
+// shared lib, to facilitate accessing an IME engine therein via ProtoMode.
 class DecoderEngine : public mojom::InputChannel {
  public:
-  explicit DecoderEngine(ImeCrosPlatform* platform);
+  explicit DecoderEngine(ImeCrosPlatform* platform,
+                         absl::optional<ImeDecoder::EntryPoints> entry_points);
 
   DecoderEngine(const DecoderEngine&) = delete;
   DecoderEngine& operator=(const DecoderEngine&) = delete;
@@ -44,21 +49,11 @@ class DecoderEngine : public mojom::InputChannel {
                       ProcessMessageCallback callback) override;
 
  private:
-  // Try to load the decoding functions from some decoder shared library.
-  // Returns whether loading decoder is successful.
-  bool TryLoadDecoder();
-
-  // Returns whether the decoder shared library supports this ime_spec.
-  bool IsImeSupportedByDecoder(const std::string& ime_spec);
-
-  ImeCrosPlatform* platform_ = nullptr;
-
   absl::optional<ImeDecoder::EntryPoints> decoder_entry_points_;
-
   mojo::ReceiverSet<mojom::InputChannel> decoder_channel_receivers_;
 };
 
 }  // namespace ime
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_SERVICES_IME_DECODER_DECODER_ENGINE_H_

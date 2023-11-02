@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,8 +38,8 @@ std::string MachineIdProvider::GetMachineId() {
     return std::string();
   }
 
-  std::vector<base::FilePath::StringType> path_components;
-  executable_path.GetComponents(&path_components);
+  std::vector<base::FilePath::StringType> path_components =
+      executable_path.GetComponents();
   if (path_components.empty()) {
     NOTREACHED();
     return std::string();

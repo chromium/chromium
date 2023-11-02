@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -320,7 +320,8 @@ PageTextObserver::ConsumerTextDumpRequest::ConsumerTextDumpRequest() = default;
 PageTextObserver::ConsumerTextDumpRequest::~ConsumerTextDumpRequest() = default;
 
 PageTextObserver::PageTextObserver(content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {}
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<PageTextObserver>(*web_contents) {}
 PageTextObserver::~PageTextObserver() = default;
 
 PageTextObserver* PageTextObserver::GetOrCreateForWebContents(
@@ -372,12 +373,11 @@ void PageTextObserver::DidFinishNavigation(content::NavigationHandle* handle) {
 }
 
 bool PageTextObserver::IsOOPIF(content::RenderFrameHost* rfh) const {
-  return rfh->GetProcess()->GetID() !=
-         rfh->GetMainFrame()->GetProcess()->GetID();
+  return rfh->IsCrossProcessSubframe();
 }
 
 void PageTextObserver::RenderFrameCreated(content::RenderFrameHost* rfh) {
-  if (!IsOOPIF(rfh)) {
+  if (!IsOOPIF(rfh) || !rfh->GetPage().IsPrimary()) {
     return;
   }
 
@@ -428,6 +428,9 @@ void PageTextObserver::OnFrameTextDumpCompleted(
 void PageTextObserver::DidFinishLoad(
     content::RenderFrameHost* render_frame_host,
     const GURL& validated_url) {
+  if (!render_frame_host->IsInPrimaryMainFrame())
+    return;
+
   base::UmaHistogramCounts100(
       "OptimizationGuide.PageTextDump.OutstandingRequests.DidFinishLoad",
       outstanding_requests_);

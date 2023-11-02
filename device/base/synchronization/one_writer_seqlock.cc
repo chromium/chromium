@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,31 +9,6 @@
 namespace device {
 
 OneWriterSeqLock::OneWriterSeqLock() : sequence_(0) {}
-
-void OneWriterSeqLock::AtomicWriterMemcpy(void* dest,
-                                          const void* src,
-                                          size_t size) {
-  DCHECK(!(reinterpret_cast<std::uintptr_t>(dest) % 4));
-  DCHECK(!(reinterpret_cast<std::uintptr_t>(src) % 4));
-  DCHECK(size % 4 == 0);
-  for (size_t i = 0; i < size / 4; ++i) {
-    reinterpret_cast<std::atomic<int32_t>*>(dest)[i].store(
-        reinterpret_cast<const int32_t*>(src)[i], std::memory_order_relaxed);
-  }
-}
-
-void OneWriterSeqLock::AtomicReaderMemcpy(void* dest,
-                                          const void* src,
-                                          size_t size) {
-  DCHECK(!(reinterpret_cast<std::uintptr_t>(dest) % 4));
-  DCHECK(!(reinterpret_cast<std::uintptr_t>(src) % 4));
-  DCHECK(size % 4 == 0);
-  for (size_t i = 0; i < size / 4; ++i) {
-    reinterpret_cast<int32_t*>(dest)[i] =
-        reinterpret_cast<const std::atomic<int32_t>*>(src)[i].load(
-            std::memory_order_relaxed);
-  }
-}
 
 int32_t OneWriterSeqLock::ReadBegin(uint32_t max_retries) const {
   int32_t version;

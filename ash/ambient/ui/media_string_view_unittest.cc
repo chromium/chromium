@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,8 +14,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/test/views_test_utils.h"
 
 namespace ash {
 
@@ -272,11 +274,12 @@ TEST_F(MediaStringViewTest, HasNoMaskLayerWithShortText) {
   SimulateMediaMetadataChanged(metadata);
   // Force re-layout.
   for (auto* view : GetContainerViews())
-    view->Layout();
+    views::test::RunScheduledLayout(view);
 
   EXPECT_LT(GetMediaStringViewTextLabel()->GetPreferredSize().width(),
             kMediaStringMaxWidthDip);
-  EXPECT_FALSE(GetMediaStringViewTextContainer()->layer()->layer_mask_layer());
+  EXPECT_TRUE(
+      GetMediaStringViewTextContainer()->layer()->gradient_mask().IsEmpty());
 }
 
 TEST_F(MediaStringViewTest, HasMaskLayerWithLongText) {
@@ -292,11 +295,12 @@ TEST_F(MediaStringViewTest, HasMaskLayerWithLongText) {
   SimulateMediaMetadataChanged(metadata);
   // Force re-layout.
   for (auto* view : GetContainerViews())
-    view->Layout();
+    views::test::RunScheduledLayout(view);
 
   EXPECT_GT(GetMediaStringViewTextLabel()->GetPreferredSize().width(),
             kMediaStringMaxWidthDip);
-  EXPECT_TRUE(GetMediaStringViewTextContainer()->layer()->layer_mask_layer());
+  EXPECT_FALSE(
+      GetMediaStringViewTextContainer()->layer()->gradient_mask().IsEmpty());
 }
 
 TEST_F(MediaStringViewTest, MaskLayerShouldUpdate) {
@@ -312,11 +316,12 @@ TEST_F(MediaStringViewTest, MaskLayerShouldUpdate) {
   SimulateMediaMetadataChanged(metadata);
   // Force re-layout.
   for (auto* view : GetContainerViews())
-    view->Layout();
+    views::test::RunScheduledLayout(view);
 
   EXPECT_LT(GetMediaStringViewTextLabel()->GetPreferredSize().width(),
             kMediaStringMaxWidthDip);
-  EXPECT_FALSE(GetMediaStringViewTextContainer()->layer()->layer_mask_layer());
+  EXPECT_TRUE(
+      GetMediaStringViewTextContainer()->layer()->gradient_mask().IsEmpty());
 
   // Change to long text.
   metadata.title = u"A super duper long title";
@@ -325,11 +330,12 @@ TEST_F(MediaStringViewTest, MaskLayerShouldUpdate) {
   SimulateMediaMetadataChanged(metadata);
   // Force re-layout.
   for (auto* view : GetContainerViews())
-    view->Layout();
+    views::test::RunScheduledLayout(view);
 
   EXPECT_GT(GetMediaStringViewTextLabel()->GetPreferredSize().width(),
             kMediaStringMaxWidthDip);
-  EXPECT_TRUE(GetMediaStringViewTextContainer()->layer()->layer_mask_layer());
+  EXPECT_FALSE(
+      GetMediaStringViewTextContainer()->layer()->gradient_mask().IsEmpty());
 
   // Change to short text.
   metadata.title = u"title";
@@ -338,11 +344,12 @@ TEST_F(MediaStringViewTest, MaskLayerShouldUpdate) {
   SimulateMediaMetadataChanged(metadata);
   // Force re-layout.
   for (auto* view : GetContainerViews())
-    view->Layout();
+    views::test::RunScheduledLayout(view);
 
   EXPECT_LT(GetMediaStringViewTextLabel()->GetPreferredSize().width(),
             kMediaStringMaxWidthDip);
-  EXPECT_FALSE(GetMediaStringViewTextContainer()->layer()->layer_mask_layer());
+  EXPECT_TRUE(
+      GetMediaStringViewTextContainer()->layer()->gradient_mask().IsEmpty());
 }
 
 TEST_F(MediaStringViewTest, ShowWhenMediaIsPlaying) {

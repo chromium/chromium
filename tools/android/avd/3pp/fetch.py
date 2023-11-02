@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-# Copyright 2021 The Chromium Authors. All rights reserved.
+#!/usr/bin/env python3
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Print a version and prepare the artifacts for "avd" CIPD package.
@@ -17,8 +17,6 @@ This script is normally called by 3pp framework from chromium_3pp recipe module.
 
 """
 
-from __future__ import print_function
-
 import argparse
 import hashlib
 import os
@@ -32,7 +30,6 @@ _SRC_PATH = os.path.abspath(
 # The src-relative files and dirs we would like to include in the CIPD.
 _BASE_DEPS = [
     # vpython, binaries and avd configs used by //tools/android/avd/avd.py
-    '.vpython',
     '.vpython3',
     'third_party/android_sdk/public/cmdline-tools/',
     'third_party/android_sdk/public/platform-tools/',
@@ -53,13 +50,13 @@ _BASE_DEPS = [
 def _file_hash(sha, rel_path, base_path):
   path = os.path.join(base_path, rel_path)
   with open(path, 'rb') as f:
-    sha.update(str(len(rel_path)))
-    sha.update(rel_path)
+    sha.update(str(len(rel_path)).encode('utf-8'))
+    sha.update(rel_path.encode('utf-8'))
     while True:
       f_stream = f.read(4096)
       if not f_stream:
         break
-      sha.update(str(len(f_stream)))
+      sha.update(str(len(f_stream)).encode('utf-8'))
       sha.update(f_stream)
 
 
@@ -86,12 +83,13 @@ def _compute_hash_paths(base_path, *rel_paths):
 
 # Return a list of src-relative paths for the dependent files and dirs for avd
 def _get_deps(chromium_src_path):
-  deps_output = subprocess.check_output([
+  deps_cmds = [
       os.path.join(chromium_src_path, 'build', 'print_python_deps.py'),
       '--root',
       chromium_src_path,
       os.path.join(chromium_src_path, 'tools', 'android', 'avd', 'avd.py'),
-  ])
+  ]
+  deps_output = subprocess.check_output(deps_cmds, universal_newlines=True)
   # Filter out comments in deps_output
   deps_lines = deps_output.strip().split('\n')
   deps_entries = [dep for dep in deps_lines if not dep.startswith('#')]

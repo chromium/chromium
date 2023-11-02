@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,6 @@ class Size;
 
 namespace gpu {
 struct MailboxHolder;
-struct SyncToken;
 }  // namespace gpu
 
 namespace viz {
@@ -39,8 +38,7 @@ MEDIA_EXPORT bool CopyRGBATextureToVideoFrame(
     const gfx::ColorSpace& src_color_space,
     GrSurfaceOrigin src_surface_origin,
     const gpu::MailboxHolder& src_mailbox_holder,
-    media::VideoFrame* dst_video_frame,
-    gpu::SyncToken& completion_sync_token);
+    media::VideoFrame* dst_video_frame);
 
 }  // namespace media
 

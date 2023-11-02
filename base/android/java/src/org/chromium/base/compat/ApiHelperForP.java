@@ -1,10 +1,9 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.base.compat;
 
-import android.annotation.TargetApi;
 import android.content.ClipboardManager;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -17,15 +16,14 @@ import android.telephony.TelephonyManager;
 import android.view.textclassifier.TextClassifier;
 import android.view.textclassifier.TextSelection;
 
-import org.chromium.base.annotations.VerifiesOnP;
+import androidx.annotation.RequiresApi;
 
 /**
  * Utility class to use new APIs that were added in P (API level 28). These need to exist in a
  * separate class so that Android framework can successfully verify classes without
  * encountering the new APIs.
  */
-@VerifiesOnP
-@TargetApi(Build.VERSION_CODES.P)
+@RequiresApi(Build.VERSION_CODES.P)
 public final class ApiHelperForP {
     private ApiHelperForP() {}
 

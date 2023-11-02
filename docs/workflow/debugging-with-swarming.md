@@ -66,10 +66,15 @@ A lot of the logic below is wrapped up in `tools/run-swarmed.py`, which you can 
 like this:
 
 ```
-$ tools/run-swarmed.py $outdir $target
+$ tools/run-swarmed.py $outdir $target [-- --gtest_filter=...]
 ```
 
 See the `--help` option of `run-swarmed.py` for more details about that script.
+Many flags are converted into dimensions to pass to `mb.py`; see
+[Bot selection criteria](#bot-selection-criteria) for possible values. (Most
+dimensions have the same name as the flag, but `--swarming-os` is just the `os`
+dimension.)
+
 Note you might need `--swarming-os Ubuntu-14.04` if you get an error like,
 `UnboundLocalError: local variable 'dbus_pid' referenced before assignment`.
 
@@ -166,7 +171,7 @@ You can then upload the resulting isolate to the CAS server:
 
 ```
 $ tools/luci-go/isolate archive \
-      -cas-instance chroimum-swarm \
+      -cas-instance chromium-swarm \
       -i $outdir/$target.isolate \
       -dump-json $outdir/$target.archive.json
 ```

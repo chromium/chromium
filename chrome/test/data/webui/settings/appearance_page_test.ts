@@ -1,27 +1,31 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import { AppearanceBrowserProxy, AppearanceBrowserProxyImpl,HomeUrlInputElement, SettingsAppearancePageElement} from 'chrome://settings/settings.js';
-import { assertEquals,assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {AppearanceBrowserProxy, AppearanceBrowserProxyImpl,HomeUrlInputElement, SettingsAppearancePageElement, SystemTheme} from 'chrome://settings/settings.js';
+import {assertEquals,assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 // clang-format on
 
 class TestAppearanceBrowserProxy extends TestBrowserProxy implements
     AppearanceBrowserProxy {
   private defaultZoom_: number = 1;
-  private isSupervised_: boolean = false;
+  private isChildAccount_: boolean = false;
   private isHomeUrlValid_: boolean = true;
 
   constructor() {
     super([
       'getDefaultZoom',
       'getThemeInfo',
-      'isSupervised',
+      'isChildAccount',
       'useDefaultTheme',
-      'useSystemTheme',
+      // <if expr="is_linux">
+      'useGtkTheme',
+      'useQtTheme',
+      // </if>
       'validateStartupPage',
     ]);
   }
@@ -49,25 +53,31 @@ class TestAppearanceBrowserProxy extends TestBrowserProxy implements
     });
   }
 
-  isSupervised() {
-    this.methodCalled('isSupervised');
-    return this.isSupervised_;
+  isChildAccount() {
+    this.methodCalled('isChildAccount');
+    return this.isChildAccount_;
   }
 
   useDefaultTheme() {
     this.methodCalled('useDefaultTheme');
   }
 
-  useSystemTheme() {
-    this.methodCalled('useSystemTheme');
+  // <if expr="is_linux">
+  useGtkTheme() {
+    this.methodCalled('useGtkTheme');
   }
+
+  useQtTheme() {
+    this.methodCalled('useQtTheme');
+  }
+  // </if>
 
   setDefaultZoom(defaultZoom: number) {
     this.defaultZoom_ = defaultZoom;
   }
 
-  setIsSupervised(isSupervised: boolean) {
-    this.isSupervised_ = isSupervised;
+  setIsChildAccount(isChildAccount: boolean) {
+    this.isChildAccount_ = isChildAccount;
   }
 
   validateStartupPage(url: string) {
@@ -85,7 +95,7 @@ let appearanceBrowserProxy: TestAppearanceBrowserProxy;
 
 function createAppearancePage() {
   appearanceBrowserProxy.reset();
-  document.body.innerHTML = '';
+  document.body.innerHTML = window.trustedTypes!.emptyHTML as unknown as string;
 
   appearancePage = document.createElement('settings-appearance-page');
   appearancePage.set('prefs', {
@@ -94,17 +104,17 @@ function createAppearancePage() {
         policy: {
           color: {
             value: 0,
-          }
-        }
-      }
+          },
+        },
+      },
     },
     extensions: {
       theme: {
         id: {
           value: '',
         },
-        use_system: {
-          value: false,
+        system_theme: {
+          value: SystemTheme.DEFAULT,
         },
       },
     },
@@ -131,21 +141,21 @@ suite('AppearanceHandler', function() {
 
   const THEME_ID_PREF = 'prefs.extensions.theme.id.value';
 
-  // <if expr="is_linux and not chromeos and not lacros">
-  const USE_SYSTEM_PREF = 'prefs.extensions.theme.use_system.value';
+  // <if expr="is_linux">
+  const SYSTEM_THEME_PREF = 'prefs.extensions.theme.system_theme.value';
 
   test('useDefaultThemeLinux', function() {
     assertFalse(!!appearancePage.get(THEME_ID_PREF));
-    assertFalse(appearancePage.get(USE_SYSTEM_PREF));
+    assertEquals(appearancePage.get(SYSTEM_THEME_PREF), SystemTheme.DEFAULT);
     // No custom nor system theme in use; "USE CLASSIC" should be hidden.
     assertFalse(!!appearancePage.shadowRoot!.querySelector('#useDefault'));
 
-    appearancePage.set(USE_SYSTEM_PREF, true);
+    appearancePage.set(SYSTEM_THEME_PREF, SystemTheme.GTK);
     flush();
     // If the system theme is in use, "USE CLASSIC" should show.
     assertTrue(!!appearancePage.shadowRoot!.querySelector('#useDefault'));
 
-    appearancePage.set(USE_SYSTEM_PREF, false);
+    appearancePage.set(SYSTEM_THEME_PREF, SystemTheme.DEFAULT);
     appearancePage.set(THEME_ID_PREF, 'fake theme id');
     flush();
 
@@ -158,25 +168,25 @@ suite('AppearanceHandler', function() {
     return appearanceBrowserProxy.whenCalled('useDefaultTheme');
   });
 
-  test('useSystemThemeLinux', function() {
+  test('useGtkThemeLinux', function() {
     assertFalse(!!appearancePage.get(THEME_ID_PREF));
-    appearancePage.set(USE_SYSTEM_PREF, true);
+    appearancePage.set(SYSTEM_THEME_PREF, SystemTheme.GTK);
     flush();
     // The "USE GTK+" button shouldn't be showing if it's already in use.
-    assertFalse(!!appearancePage.shadowRoot!.querySelector('#useSystem'));
+    assertFalse(!!appearancePage.shadowRoot!.querySelector('#useGtk'));
 
-    appearanceBrowserProxy.setIsSupervised(true);
-    appearancePage.set(USE_SYSTEM_PREF, false);
+    appearanceBrowserProxy.setIsChildAccount(true);
+    appearancePage.set(SYSTEM_THEME_PREF, SystemTheme.DEFAULT);
     flush();
-    // Supervised users have their own theme and can't use GTK+ theme.
+    // Child account users have their own theme and can't use GTK+ theme.
     assertFalse(!!appearancePage.shadowRoot!.querySelector('#useDefault'));
-    assertFalse(!!appearancePage.shadowRoot!.querySelector('#useSystem'));
+    assertFalse(!!appearancePage.shadowRoot!.querySelector('#useGtk'));
     // If there's no "USE" buttons, the container should be hidden.
     assertTrue(
         appearancePage.shadowRoot!
             .querySelector<HTMLElement>('#themesSecondaryActions')!.hidden);
 
-    appearanceBrowserProxy.setIsSupervised(false);
+    appearanceBrowserProxy.setIsChildAccount(false);
     appearancePage.set(THEME_ID_PREF, 'fake theme id');
     flush();
     // If there's "USE" buttons again, the container should be visible.
@@ -186,15 +196,15 @@ suite('AppearanceHandler', function() {
             .querySelector<HTMLElement>('#themesSecondaryActions')!.hidden);
 
     const button =
-        appearancePage.shadowRoot!.querySelector<HTMLElement>('#useSystem');
+        appearancePage.shadowRoot!.querySelector<HTMLElement>('#useGtk');
     assertTrue(!!button);
 
     button!.click();
-    return appearanceBrowserProxy.whenCalled('useSystemTheme');
+    return appearanceBrowserProxy.whenCalled('useGtkTheme');
   });
   // </if>
 
-  // <if expr="not is_linux or chromeos or lacros">
+  // <if expr="not is_linux">
   test('useDefaultTheme', function() {
     assertFalse(!!appearancePage.get(THEME_ID_PREF));
     assertFalse(!!appearancePage.shadowRoot!.querySelector('#useDefault'));
@@ -249,41 +259,38 @@ suite('AppearanceHandler', function() {
   });
   // </if>
 
-  test('default zoom handling', function() {
+  test('default zoom handling', async function() {
     function getDefaultZoomText() {
       const zoomLevel = appearancePage.$.zoomLevel;
       return zoomLevel.options[zoomLevel.selectedIndex]!.textContent!.trim();
     }
 
-    return appearanceBrowserProxy.whenCalled('getDefaultZoom')
-        .then(function() {
-          assertEquals('100%', getDefaultZoomText());
+    await appearanceBrowserProxy.whenCalled('getDefaultZoom');
 
-          appearanceBrowserProxy.setDefaultZoom(2 / 3);
-          createAppearancePage();
-          return appearanceBrowserProxy.whenCalled('getDefaultZoom');
-        })
-        .then(function() {
-          assertEquals('67%', getDefaultZoomText());
+    assertEquals('100%', getDefaultZoomText());
 
-          appearanceBrowserProxy.setDefaultZoom(11 / 10);
-          createAppearancePage();
-          return appearanceBrowserProxy.whenCalled('getDefaultZoom');
-        })
-        .then(function() {
-          assertEquals('110%', getDefaultZoomText());
+    appearanceBrowserProxy.setDefaultZoom(2 / 3);
+    createAppearancePage();
+    await appearanceBrowserProxy.whenCalled('getDefaultZoom');
 
-          appearanceBrowserProxy.setDefaultZoom(1.7499999999999);
-          createAppearancePage();
-          return appearanceBrowserProxy.whenCalled('getDefaultZoom');
-        })
-        .then(function() {
-          assertEquals('175%', getDefaultZoomText());
-        });
+    assertEquals('67%', getDefaultZoomText());
+
+    appearanceBrowserProxy.setDefaultZoom(11 / 10);
+    createAppearancePage();
+    await appearanceBrowserProxy.whenCalled('getDefaultZoom');
+
+    assertEquals('110%', getDefaultZoomText());
+
+    appearanceBrowserProxy.setDefaultZoom(1.7499999999999);
+    createAppearancePage();
+    await appearanceBrowserProxy.whenCalled('getDefaultZoom');
+
+    assertEquals('175%', getDefaultZoomText());
   });
 
   test('show home button toggling', function() {
-    assertFalse(!!appearancePage.shadowRoot!.querySelector('.list-frame'));
+    assertFalse(
+        !!appearancePage.shadowRoot!.querySelector('#home-button-options'));
     appearancePage.set('prefs', {
       autogenerated: {theme: {policy: {color: {value: 0}}}},
       browser: {show_home_button: {value: true}},
@@ -291,8 +298,24 @@ suite('AppearanceHandler', function() {
     });
     flush();
 
-    assertTrue(!!appearancePage.shadowRoot!.querySelector('.list-frame'));
+    assertTrue(
+        !!appearancePage.shadowRoot!.querySelector('#home-button-options'));
   });
+
+  test('show side panel options', function() {
+    loadTimeData.overrideValues({
+      showSidePanelOptions: true,
+    });
+    createAppearancePage();
+    assertTrue(!!appearancePage.shadowRoot!.querySelector('#side-panel'));
+
+    loadTimeData.overrideValues({
+      showSidePanelOptions: false,
+    });
+    createAppearancePage();
+    assertFalse(!!appearancePage.shadowRoot!.querySelector('#side-panel'));
+  });
+
 });
 
 suite('HomeUrlInput', function() {
@@ -301,7 +324,8 @@ suite('HomeUrlInput', function() {
   setup(function() {
     appearanceBrowserProxy = new TestAppearanceBrowserProxy();
     AppearanceBrowserProxyImpl.setInstance(appearanceBrowserProxy);
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
 
     homeUrlInput = document.createElement('home-url-input');
     homeUrlInput.set(
@@ -311,25 +335,26 @@ suite('HomeUrlInput', function() {
     flush();
   });
 
-  test('home button urls', function() {
+  test('home button urls', async function() {
     assertFalse(homeUrlInput.invalid);
     assertEquals(homeUrlInput.value, 'test');
 
     homeUrlInput.value = '@@@';
     appearanceBrowserProxy.setValidStartupPageResponse(false);
-    homeUrlInput.$.input.fire('input');
+    homeUrlInput.$.input.dispatchEvent(
+        new CustomEvent('input', {bubbles: true, composed: true}));
 
-    return appearanceBrowserProxy.whenCalled('validateStartupPage')
-        .then(function(url) {
-          assertEquals(homeUrlInput.value, url);
-          flush();
-          assertEquals(homeUrlInput.value, '@@@');  // Value hasn't changed.
-          assertTrue(homeUrlInput.invalid);
+    const url = await appearanceBrowserProxy.whenCalled('validateStartupPage');
 
-          // Should reset to default value on change event.
-          homeUrlInput.$.input.fire('change');
-          flush();
-          assertEquals(homeUrlInput.value, 'test');
-        });
+    assertEquals(homeUrlInput.value, url);
+    flush();
+    assertEquals(homeUrlInput.value, '@@@');  // Value hasn't changed.
+    assertTrue(homeUrlInput.invalid);
+
+    // Should reset to default value on change event.
+    homeUrlInput.$.input.dispatchEvent(
+        new CustomEvent('change', {bubbles: true, composed: true}));
+    flush();
+    assertEquals(homeUrlInput.value, 'test');
   });
 });

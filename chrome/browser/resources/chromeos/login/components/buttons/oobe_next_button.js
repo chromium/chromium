@@ -1,45 +1,29 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-Polymer({
-    is: 'oobe-next-button',
+/* #js_imports_placeholder */
 
-    behaviors: [OobeI18nBehavior],
+/**
+ * @polymer
+ */
+/* #export */ class OobeNextButton extends OobeBaseButton {
+  static get is() {
+    return 'oobe-next-button';
+  }
 
-    properties: {
-      disabled: {type: Boolean, value: false, reflectToAttribute: true},
+  /* #html_template_placeholder */
 
+  static get properties() {
+    return {
       /* The ID of the localized string to be used as button text.
        */
       textKey: {
         type: String,
         value: 'next',
       },
+    };
+  }
+}
 
-      labelForAria: {
-        type: String,
-      },
-
-      labelForAria_: {
-        type: String,
-        computed: 'ariaLabel_(labelForAria, locale, textKey)',
-      },
-    },
-
-    focus() {
-      this.$.button.focus();
-    },
-
-    onClick_(e) {
-      if (this.disabled)
-        e.stopPropagation();
-    },
-
-    ariaLabel_(labelForAria, locale, textKey) {
-      if ((typeof labelForAria !== 'undefined') && (labelForAria !== '')) {
-        return labelForAria;
-      }
-      return this.i18n(textKey);
-    },
-  });
+customElements.define(OobeNextButton.is, OobeNextButton);

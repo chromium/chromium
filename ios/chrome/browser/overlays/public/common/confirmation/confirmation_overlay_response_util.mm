@@ -1,10 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/overlays/public/common/confirmation/confirmation_overlay_response_util.h"
 
-#include "base/bind.h"
+#import "base/bind.h"
 #import "ios/chrome/browser/overlays/public/common/confirmation/confirmation_overlay_response.h"
 #import "ios/chrome/browser/overlays/public/overlay_response.h"
 
@@ -16,9 +16,9 @@ using alert_overlays::AlertResponse;
 using alert_overlays::ResponseConverter;
 
 namespace {
-// Parses the AlertResponse from |response| and produces a
+// Parses the AlertResponse from `response` and produces a
 // ConfirmationOverlayResponse if the alert response's tapped button is
-// |confirm_button_index|.
+// `confirm_button_index`.
 std::unique_ptr<OverlayResponse> CreateConfirmResponse(
     size_t confirm_button_index,
     std::unique_ptr<OverlayResponse> response) {

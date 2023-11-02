@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,7 +42,7 @@ void OverscrollSceneLayer::Prepare(JNIEnv* env,
   // |OverscrollGlow| activates glow effect only when content is bigger than
   // viewport. Make it bigger by 1.f.
   const gfx::SizeF content_size(width + 1.f, height);
-  const gfx::Vector2dF content_scroll_offset(1, 0);
+  const gfx::PointF content_scroll_offset(1, 0);
   glow_effect_->OnFrameUpdated(viewport_size, content_size,
                                content_scroll_offset);
 }

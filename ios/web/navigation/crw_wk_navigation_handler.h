@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -73,6 +73,11 @@ class WKBackForwardListItemHolder;
     didCompleteLoadWithSuccess:(BOOL)loadSuccess
                     forContext:(web::NavigationContextImpl*)context;
 
+// Resumes download using `webView`
+- (void)resumeDownloadWithData:(NSData*)data
+             completionHandler:(void (^)(WKDownload*))completionHandler
+    API_AVAILABLE(ios(15));
+
 @end
 
 // Handler class for WKNavigationDelegate, deals with navigation callbacks from
@@ -92,9 +97,9 @@ class WKBackForwardListItemHolder;
     BOOL blockUniversalLinksOnNextDecidePolicy;
 
 // Pending information for an in-progress page navigation. The lifetime of
-// this object starts at |decidePolicyForNavigationAction| where the info is
-// extracted from the request, and ends at either |didCommitNavigation| or
-// |didFailProvisionalNavigation|.
+// this object starts at `decidePolicyForNavigationAction` where the info is
+// extracted from the request, and ends at either `didCommitNavigation` or
+// `didFailProvisionalNavigation`.
 @property(nonatomic, strong) CRWPendingNavigationInfo* pendingNavigationInfo;
 
 // Holds all WKNavigation objects and their states which are currently in
@@ -118,7 +123,7 @@ class WKBackForwardListItemHolder;
 // Informs this handler that any outstanding load operations are cancelled.
 - (void)loadCancelled;
 
-// Returns context for pending navigation that has |URL|. null if there is no
+// Returns context for pending navigation that has `URL`. null if there is no
 // matching pending navigation.
 - (web::NavigationContextImpl*)contextForPendingMainFrameNavigationWithURL:
     (const GURL&)URL;
@@ -130,7 +135,7 @@ class WKBackForwardListItemHolder;
 // loaded by a POST request.
 - (BOOL)isCurrentNavigationItemPOST;
 
-// Sets last committed NavigationItem's title to the given |title|, which can
+// Sets last committed NavigationItem's title to the given `title`, which can
 // not be nil.
 - (void)setLastCommittedNavigationItemTitle:(NSString*)title;
 
@@ -140,7 +145,7 @@ class WKBackForwardListItemHolder;
 
 // Called when the web page has changed document and/or URL, and so the page
 // navigation should be reported to the delegate, and internal state updated to
-// reflect the fact that the navigation has occurred. |context| contains
+// reflect the fact that the navigation has occurred. `context` contains
 // information about the navigation that triggered the document/URL change.
 - (void)webPageChangedWithContext:(web::NavigationContextImpl*)context
                           webView:(WKWebView*)webView;

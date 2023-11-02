@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 
 namespace ash {
 
-class AshWindowTreeHostMirroringDelegate;
+class AshWindowTreeHostDelegate;
 
 // A WTH used for unified desktop mode. This creates an offscreen
 // compositor whose texture will be copied into each displays'
@@ -21,7 +21,8 @@ class AshWindowTreeHostUnified : public AshWindowTreeHostPlatform,
                                  public aura::WindowObserver {
  public:
   AshWindowTreeHostUnified(const gfx::Rect& initial_bounds,
-                           AshWindowTreeHostMirroringDelegate* delegate);
+                           AshWindowTreeHostDelegate* delegate,
+                           size_t compositor_memory_limit_mb = 0);
 
   AshWindowTreeHostUnified(const AshWindowTreeHostUnified&) = delete;
   AshWindowTreeHostUnified& operator=(const AshWindowTreeHostUnified&) = delete;
@@ -32,6 +33,8 @@ class AshWindowTreeHostUnified : public AshWindowTreeHostPlatform,
   // AshWindowTreeHost:
   void PrepareForShutdown() override;
   void RegisterMirroringHost(AshWindowTreeHost* mirroring_ash_host) override;
+  void UpdateCursorConfig() override;
+  void ClearCursorConfig() override;
 
   // aura::WindowTreeHost:
   void SetCursorNative(gfx::NativeCursor cursor) override;
@@ -42,8 +45,6 @@ class AshWindowTreeHostUnified : public AshWindowTreeHostPlatform,
 
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;
-
-  AshWindowTreeHostMirroringDelegate* delegate_;  // Not owned.
 
   std::vector<AshWindowTreeHost*> mirroring_hosts_;
 };

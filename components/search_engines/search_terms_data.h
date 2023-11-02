@@ -1,10 +1,11 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_SEARCH_ENGINES_SEARCH_TERMS_DATA_H_
 #define COMPONENTS_SEARCH_ENGINES_SEARCH_TERMS_DATA_H_
 
+#include <memory>
 #include <string>
 
 #include "base/compiler_specific.h"
@@ -13,6 +14,12 @@
 // only be accessed on the UI thread.
 class SearchTermsData {
  public:
+  // Utility function that takes a snapshot of a different SearchTermsData
+  // instance. This is used to access SearchTermsData off the UI thread, or to
+  // copy the SearchTermsData for lifetime reasons.
+  static std::unique_ptr<SearchTermsData> MakeSnapshot(
+      const SearchTermsData* original_data);
+
   SearchTermsData();
 
   SearchTermsData(const SearchTermsData&) = delete;
@@ -48,13 +55,13 @@ class SearchTermsData {
   // The suggest client parameter ("client") passed with Google suggest
   // requests.  See GetSuggestRequestIdentifier() for more details.
   // This implementation returns the empty string.
-  virtual std::string GetSuggestClient() const;
+  virtual std::string GetSuggestClient(bool non_searchbox_ntp) const;
 
   // The suggest request identifier parameter ("gs_ri") passed with Google
   // suggest requests.   Along with suggestclient (See GetSuggestClient()),
   // this parameter controls what suggestion results are returned.
   // This implementation returns the empty string.
-  virtual std::string GetSuggestRequestIdentifier() const;
+  virtual std::string GetSuggestRequestIdentifier(bool non_searchbox_ntp) const;
 
   // Returns the value to use for replacements of type
   // GOOGLE_IMAGE_SEARCH_SOURCE.

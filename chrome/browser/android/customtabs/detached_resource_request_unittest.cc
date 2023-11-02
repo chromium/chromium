@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -107,8 +107,7 @@ std::unique_ptr<HttpResponse> ManyRedirects(const HttpRequest& request) {
   GURL::Replacements replacements;
   std::string new_query =
       base::StringPrintf("%s=%d&%s=%d", kIndexKey, index + 1, kMaxKey, max);
-  replacements.SetQuery(new_query.c_str(),
-                        url::Component(0, new_query.length()));
+  replacements.SetQueryStr(new_query);
   GURL redirected_url = url.ReplaceComponents(replacements);
 
   response->AddCustomHeader("Location", redirected_url.spec());

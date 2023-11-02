@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,10 +12,10 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/page_type.h"
-#include "third_party/blink/public/common/features.h"
 #include "url/origin.h"
 #include "url/scheme_host_port.h"
 
@@ -44,7 +44,8 @@ class WebContentsIsolationInfo
   friend class WebContentsUserData<WebContentsIsolationInfo>;
   explicit WebContentsIsolationInfo(WebContents* web_contents,
                                     absl::optional<url::Origin> isolated_origin)
-      : isolated_origin_(isolated_origin) {}
+      : WebContentsUserData<WebContentsIsolationInfo>(*web_contents),
+        isolated_origin_(isolated_origin) {}
 
   absl::optional<url::Origin> isolated_origin_;
 
@@ -65,8 +66,7 @@ absl::optional<url::SchemeHostPort> GetTupleFromOptionalOrigin(
 // static
 std::unique_ptr<IsolatedAppThrottle>
 IsolatedAppThrottle::MaybeCreateThrottleFor(NavigationHandle* handle) {
-  if (base::FeatureList::IsEnabled(
-          blink::features::kWebAppEnableIsolatedStorage)) {
+  if (content::SiteIsolationPolicy::IsApplicationIsolationLevelEnabled()) {
     return std::make_unique<IsolatedAppThrottle>(handle);
   }
   return nullptr;
@@ -128,6 +128,30 @@ IsolatedAppThrottle::WillProcessResponse() {
                     NavigationThrottle::BLOCK_RESPONSE);
 }
 
+bool IsolatedAppThrottle::OpenUrlExternal(const GURL& url) {
+  NavigationRequest* navigation_request =
+      NavigationRequest::From(navigation_handle());
+  const FrameTreeNode* frame_tree_node = navigation_request->frame_tree_node();
+  mojo::PendingRemote<network::mojom::URLLoaderFactory> loader_factory;
+  return GetContentClient()->browser()->HandleExternalProtocol(
+      url,
+      base::BindRepeating(
+          [](const int frame_tree_node_id) {
+            return WebContents::FromFrameTreeNodeId(frame_tree_node_id);
+          },
+          frame_tree_node->frame_tree_node_id()),
+      frame_tree_node->frame_tree_node_id(),
+      navigation_request->GetNavigationUIData(),
+      /*is_primary_main_frame=*/true, /*is_in_fenced_frame_tree=*/false,
+      network::mojom::WebSandboxFlags::kNone,
+      (navigation_handle()->GetRedirectChain().size() > 1)
+          ? ui::PageTransition::PAGE_TRANSITION_SERVER_REDIRECT
+          : ui::PageTransition::PAGE_TRANSITION_LINK,
+      navigation_request->HasUserGesture(),
+      /*initiating_origin=*/absl::nullopt,
+      /*initiator_document=*/nullptr, &loader_factory);
+}
+
 NavigationThrottle::ThrottleCheckResult IsolatedAppThrottle::DoThrottle(
     bool needs_app_isolation,
     NavigationThrottle::ThrottleAction block_action) {
@@ -153,13 +177,15 @@ NavigationThrottle::ThrottleCheckResult IsolatedAppThrottle::DoThrottle(
       dest_origin_.GetTupleOrPrecursorTupleIfOpaque();
   DCHECK(web_contents_isolation_tuple.IsValid());
 
-  // If the main frame tries to leave the app's origin, cancel the navigation
-  // and open the URL in the user's default browser. Iframes are allowed to
-  // leave the app's origin.
+  // If the main frame tries to leave the app's origin, cancel the
+  // navigation and open the URL in the systems' default application.
+  // Iframes are allowed to leave the app's origin.
   if (dest_tuple != web_contents_isolation_tuple) {
-    // TODO(crbug.com/1237636): Load the URL in the default browser.
-    return navigation_handle()->IsInMainFrame() ? NavigationThrottle::CANCEL
-                                                : NavigationThrottle::PROCEED;
+    if (navigation_handle()->IsInMainFrame()) {
+      OpenUrlExternal(navigation_handle()->GetURL());
+      return NavigationThrottle::CANCEL;
+    }
+    return NavigationThrottle::PROCEED;
   }
 
   // Block renderer-initiated iframe navigations into the app that were
@@ -219,7 +245,7 @@ bool IsolatedAppThrottle::embedder_requests_app_isolation() {
                                         ->navigator()
                                         .controller()
                                         .GetBrowserContext();
-  return GetContentClient()->browser()->ShouldUrlUseApplicationIsolationLevel(
+  return SiteIsolationPolicy::ShouldUrlUseApplicationIsolationLevel(
       browser_context, navigation_handle()->GetURL());
 }
 

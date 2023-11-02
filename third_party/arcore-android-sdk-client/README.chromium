@@ -1,7 +1,7 @@
 Name: ARCore SDK client library for Chrome
 Short Name: com.google.ar:core-partner_chrome
 URL: https://developers.google.com/ar/develop/java/enable-arcore#dependencies
-Version: 1.22
+Version: 1.32
 License: Apache 2.0
 License File: LICENSE
 Security Critical: yes
@@ -27,6 +27,7 @@ The LICENSE file is taken from
  * https://www.apache.org/licenses/LICENSE-2.0.txt
 
 Changes:
+2022-07-18 - Upgraded SDK binaries to v1.32.
 2021-06-23 - Ignoring Manifest changes so we don't include them in WebView.
 2021-02-01 - Upgraded SDK binaries to v1.22.
 2020-07-13 - Upgraded SDK binaries to v1.18.

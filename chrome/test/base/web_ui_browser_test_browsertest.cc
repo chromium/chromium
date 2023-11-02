@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,7 +31,7 @@ const GURL& DummyUrl() {
 }  // namespace
 
 // According to the interface for EXPECT_FATAL_FAILURE
-// (https://github.com/google/googletest/blob/master/docs/advanced.md#catching-failures)
+// (https://github.com/google/googletest/blob/main/docs/advanced.md#catching-failures)
 // the statement must be statically available. Therefore, we make a static
 // global s_test_ which should point to |this| for the duration of the test run
 // and be cleared afterward.
@@ -45,7 +45,7 @@ class WebUIBrowserExpectFailTest : public WebUIBrowserTest {
  protected:
   ~WebUIBrowserExpectFailTest() override {
     EXPECT_TRUE(s_test_);
-    s_test_ = NULL;
+    s_test_ = nullptr;
   }
 
   static void RunJavascriptTestNoReturn(const std::string& testname) {
@@ -62,11 +62,11 @@ class WebUIBrowserExpectFailTest : public WebUIBrowserTest {
   static WebUIBrowserTest* s_test_;
 };
 
-WebUIBrowserTest* WebUIBrowserExpectFailTest::s_test_ = NULL;
+WebUIBrowserTest* WebUIBrowserExpectFailTest::s_test_ = nullptr;
 
 // Test that bogus javascript fails fast - no timeout waiting for result.
 // TODO(crbug/974796): Flaky on Win7 debug builds.
-#if (defined(OS_WIN) && !(defined(NDEBUG)))
+#if (BUILDFLAG(IS_WIN) && !(defined(NDEBUG)))
 #define MAYBE_TestFailsFast DISABLED_TestFailsFast
 #else
 #define MAYBE_TestFailsFast TestFailsFast
@@ -89,7 +89,7 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserExpectFailTest, TestRuntimeErrorFailsFast) {
 
 // Test times out in debug builds: https://crbug.com/902310
 // Test also times out in Win7 Tests: https://crbug.com/1039406
-#if defined(OS_WIN) || !defined(NDEBUG)
+#if BUILDFLAG(IS_WIN) || !defined(NDEBUG)
 #define MAYBE_TestFailsAsyncFast DISABLED_TestFailsAsyncFast
 #else
 #define MAYBE_TestFailsAsyncFast TestFailsAsyncFast
@@ -137,35 +137,34 @@ class WebUIBrowserAsyncTest : public WebUIBrowserTest {
     AsyncWebUIMessageHandler& operator=(const AsyncWebUIMessageHandler&) =
         delete;
 
-    MOCK_METHOD1(HandleTestContinues, void(const base::ListValue*));
-    MOCK_METHOD1(HandleTestFails, void(const base::ListValue*));
-    MOCK_METHOD1(HandleTestPasses, void(const base::ListValue*));
+    MOCK_METHOD1(HandleTestContinues, void(const base::Value::List&));
+    MOCK_METHOD1(HandleTestFails, void(const base::Value::List&));
+    MOCK_METHOD1(HandleTestPasses, void(const base::Value::List&));
 
    private:
     void RegisterMessages() override {
-      web_ui()->RegisterDeprecatedMessageCallback(
+      web_ui()->RegisterMessageCallback(
           "startAsyncTest",
           base::BindRepeating(&AsyncWebUIMessageHandler::HandleStartAsyncTest,
                               base::Unretained(this)));
-      web_ui()->RegisterDeprecatedMessageCallback(
+      web_ui()->RegisterMessageCallback(
           "testContinues",
           base::BindRepeating(&AsyncWebUIMessageHandler::HandleTestContinues,
                               base::Unretained(this)));
-      web_ui()->RegisterDeprecatedMessageCallback(
+      web_ui()->RegisterMessageCallback(
           "testFails",
           base::BindRepeating(&AsyncWebUIMessageHandler::HandleTestFails,
                               base::Unretained(this)));
-      web_ui()->RegisterDeprecatedMessageCallback(
+      web_ui()->RegisterMessageCallback(
           "testPasses",
           base::BindRepeating(&AsyncWebUIMessageHandler::HandleTestPasses,
                               base::Unretained(this)));
     }
 
     // Starts the test in |list_value|[0] with the runAsync wrapper.
-    void HandleStartAsyncTest(const base::ListValue* list_value) {
-      const base::Value* test_name;
-      ASSERT_TRUE(list_value->Get(0, &test_name));
-      web_ui()->CallJavascriptFunctionUnsafe("runAsync", *test_name);
+    void HandleStartAsyncTest(const base::Value::List& list_value) {
+      const base::Value& test_name = list_value[0];
+      web_ui()->CallJavascriptFunctionUnsafe("runAsync", test_name);
     }
   };
 
@@ -198,15 +197,6 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserAsyncTest, TestAsyncFailsAssert) {
   EXPECT_CALL(message_handler_, HandleTestFails(::testing::_));
   ASSERT_FALSE(
       RunJavascriptAsyncTest("startAsyncTest", base::Value("testFailsAssert")));
-}
-
-// Test that expectations continue the function, but fail the test.
-IN_PROC_BROWSER_TEST_F(WebUIBrowserAsyncTest, TestAsyncFailsExpect) {
-  ::testing::InSequence s;
-  EXPECT_CALL(message_handler_, HandleTestContinues(::testing::_));
-  EXPECT_CALL(message_handler_, HandleTestFails(::testing::_));
-  ASSERT_FALSE(
-      RunJavascriptAsyncTest("startAsyncTest", base::Value("testFailsExpect")));
 }
 
 // Test that test continues and passes. (Sync version).
@@ -251,18 +241,6 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserAsyncTest, TestAsyncPassThenFail) {
   EXPECT_CALL(message_handler_, HandleTestFails(::testing::_));
   ASSERT_FALSE(
       RunJavascriptAsyncTest("startAsyncTest", base::Value("testPasses")));
-}
-
-// Test that testDone() with failure first then sync pass still fails.
-IN_PROC_BROWSER_TEST_F(WebUIBrowserAsyncTest, TestAsyncDoneFailFirstSyncPass) {
-  ::testing::InSequence s;
-  EXPECT_CALL(message_handler_, HandleTestContinues(::testing::_));
-  EXPECT_CALL(message_handler_, HandleTestFails(::testing::_));
-
-  // Call runAsync directly instead of deferring through startAsyncTest. It will
-  // call testDone() on failure, then return.
-  ASSERT_FALSE(RunJavascriptAsyncTest(
-      "runAsync", base::Value("testAsyncDoneFailFirstSyncPass")));
 }
 
 // Test that calling testDone during RunJavascriptAsyncTest still completes

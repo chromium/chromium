@@ -1,15 +1,18 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.contextmenu;
 
 import android.app.Activity;
+import android.content.Context;
 import android.text.SpannableString;
 import android.text.TextUtils;
 
+import androidx.annotation.VisibleForTesting;
+
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
-import org.chromium.chrome.browser.performance_hints.PerformanceHintsObserver.PerformanceClass;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer;
@@ -21,24 +24,57 @@ class ContextMenuHeaderCoordinator {
     private PropertyModel mModel;
     private ContextMenuHeaderMediator mMediator;
 
-    ContextMenuHeaderCoordinator(Activity activity, @PerformanceClass int performanceClass,
-            ContextMenuParams params, Profile profile, ContextMenuNativeDelegate nativeDelegate) {
-        mModel = buildModel(ContextMenuUtils.getTitle(params), getUrl(activity, params, profile));
-        mMediator = new ContextMenuHeaderMediator(
-                activity, mModel, performanceClass, params, profile, nativeDelegate);
+    ContextMenuHeaderCoordinator(Activity activity, ContextMenuParams params, Profile profile,
+            ContextMenuNativeDelegate nativeDelegate) {
+        mModel = buildModel(
+                activity, ContextMenuUtils.getTitle(params), getUrl(activity, params, profile));
+        mMediator =
+                new ContextMenuHeaderMediator(activity, mModel, params, profile, nativeDelegate);
     }
 
-    private PropertyModel buildModel(String title, CharSequence url) {
-        return new PropertyModel.Builder(ContextMenuHeaderProperties.ALL_KEYS)
-                .with(ContextMenuHeaderProperties.TITLE, title)
-                .with(ContextMenuHeaderProperties.TITLE_MAX_LINES, TextUtils.isEmpty(url) ? 2 : 1)
-                .with(ContextMenuHeaderProperties.URL, url)
-                .with(ContextMenuHeaderProperties.URL_MAX_LINES, TextUtils.isEmpty(title) ? 2 : 1)
-                .with(ContextMenuHeaderProperties.URL_PERFORMANCE_CLASS,
-                        PerformanceClass.PERFORMANCE_UNKNOWN)
-                .with(ContextMenuHeaderProperties.IMAGE, null)
-                .with(ContextMenuHeaderProperties.CIRCLE_BG_VISIBLE, false)
-                .build();
+    @VisibleForTesting
+    static PropertyModel buildModel(Context context, String title, CharSequence url) {
+        boolean usePopupContextMenu = ContextMenuUtils.forcePopupStyleEnabled();
+
+        int monogramSizeDimen = usePopupContextMenu
+                ? R.dimen.context_menu_popup_header_monogram_size
+                : R.dimen.context_menu_header_monogram_size;
+
+        PropertyModel model =
+                new PropertyModel.Builder(ContextMenuHeaderProperties.ALL_KEYS)
+                        .with(ContextMenuHeaderProperties.TITLE, title)
+                        .with(ContextMenuHeaderProperties.TITLE_MAX_LINES,
+                                TextUtils.isEmpty(url) ? 2 : 1)
+                        .with(ContextMenuHeaderProperties.URL, url)
+                        .with(ContextMenuHeaderProperties.URL_MAX_LINES,
+                                TextUtils.isEmpty(title) ? 2 : 1)
+                        .with(ContextMenuHeaderProperties.IMAGE, null)
+                        .with(ContextMenuHeaderProperties.CIRCLE_BG_VISIBLE, false)
+                        .with(ContextMenuHeaderProperties.MONOGRAM_SIZE_PIXEL,
+                                context.getResources().getDimensionPixelSize(monogramSizeDimen))
+                        .build();
+
+        if (usePopupContextMenu) {
+            int maxImageSize = context.getResources().getDimensionPixelSize(
+                    R.dimen.context_menu_popup_header_image_max_size);
+
+            // Popup context menu leaves the same size for image and monogram.
+            model.set(
+                    ContextMenuHeaderProperties.OVERRIDE_HEADER_IMAGE_MAX_SIZE_PIXEL, maxImageSize);
+            model.set(
+                    ContextMenuHeaderProperties.OVERRIDE_HEADER_CIRCLE_BG_SIZE_PIXEL, maxImageSize);
+            model.set(ContextMenuHeaderProperties.OVERRIDE_HEADER_CIRCLE_BG_MARGIN_PIXEL, 0);
+        } else {
+            // Use invalid override instead of 0, so view binder will not override layout params.
+            model.set(ContextMenuHeaderProperties.OVERRIDE_HEADER_IMAGE_MAX_SIZE_PIXEL,
+                    ContextMenuHeaderProperties.INVALID_OVERRIDE);
+            model.set(ContextMenuHeaderProperties.OVERRIDE_HEADER_CIRCLE_BG_SIZE_PIXEL,
+                    ContextMenuHeaderProperties.INVALID_OVERRIDE);
+            model.set(ContextMenuHeaderProperties.OVERRIDE_HEADER_CIRCLE_BG_MARGIN_PIXEL,
+                    ContextMenuHeaderProperties.INVALID_OVERRIDE);
+        }
+
+        return model;
     }
 
     private CharSequence getUrl(Activity activity, ContextMenuParams params, Profile profile) {
@@ -50,9 +86,9 @@ class ContextMenuHeaderCoordinator {
                     new SpannableString(ChromeContextMenuPopulator.createUrlText(params));
             ChromeAutocompleteSchemeClassifier chromeAutocompleteSchemeClassifier =
                     new ChromeAutocompleteSchemeClassifier(profile);
-            OmniboxUrlEmphasizer.emphasizeUrl(spannableUrl, activity.getResources(),
-                    chromeAutocompleteSchemeClassifier, ConnectionSecurityLevel.NONE, false,
-                    useDarkColors, false);
+            OmniboxUrlEmphasizer.emphasizeUrl(spannableUrl, activity,
+                    chromeAutocompleteSchemeClassifier, ConnectionSecurityLevel.NONE, useDarkColors,
+                    false);
             chromeAutocompleteSchemeClassifier.destroy();
             url = spannableUrl;
         }

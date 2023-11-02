@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 
 #include "base/base64.h"
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
+#include "base/cpu_reduction_experiment.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -23,6 +23,7 @@
 #include "components/safe_browsing/core/common/proto/webui.pb.h"
 #include "crypto/secure_hash.h"
 #include "crypto/sha2.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using base::TimeTicks;
 
@@ -53,6 +54,9 @@ const char kResult[] = ".Result";
 // in order, from parts [1, 2, and 3], or [1, 2, 3, and 4]. For example:
 // SafeBrowsing.V4ProcessPartialUpdate.ApplyUpdate.Result, or
 // SafeBrowsing.V4ProcessPartialUpdate.ApplyUpdate.Result.UrlSoceng
+const char kChromeExtMalwareUmaSuffix[] = ".ChromeExtMalware";
+const char kUrlMalBinUmaSuffix[] = ".UrlMalBin";
+const char kUrlSocengUmaSuffix[] = ".UrlSoceng";
 
 const uint32_t kFileMagic = 0x600D71FE;
 const uint32_t kFileVersion = 9;
@@ -204,9 +208,14 @@ void V4Store::Initialize() {
   RecordStoreReadResult(store_read_result);
 }
 
-bool V4Store::HasValidData() const {
-  RecordBooleanWithAndWithoutSuffix("SafeBrowsing.V4Store.IsStoreValid",
-                                    has_valid_data_, store_path_);
+bool V4Store::HasValidData() {
+  // Record every 256th time (`record_has_valid_data_counter_` is 8-bit).
+  if (++record_has_valid_data_counter_ == 1 ||
+      // TODO(crbug.com/1295441): Remove the condition below.
+      !base::IsRunningCpuReductionExperiment()) {
+    RecordBooleanWithAndWithoutSuffix("SafeBrowsing.V4Store.IsStoreValid",
+                                      has_valid_data_, store_path_);
+  }
   return has_valid_data_;
 }
 
@@ -581,7 +590,8 @@ ApplyUpdateResult V4Store::MergeUpdate(const HashPrefixMap& old_prefixes_map,
   // picked is not the same as merged. A picked element isn't merged if its
   // index is on the raw_removals list.
   int total_picked_from_old = 0;
-  const int* removals_iter = raw_removals ? raw_removals->begin() : nullptr;
+  auto removals_iter =
+      raw_removals ? absl::make_optional(raw_removals->begin()) : absl::nullopt;
   while (old_has_unmerged || additions_has_unmerged) {
     // If the same hash prefix appears in the existing store and the additions
     // list, something is clearly wrong. Discard the update.
@@ -605,8 +615,8 @@ ApplyUpdateResult V4Store::MergeUpdate(const HashPrefixMap& old_prefixes_map,
       // prefix of size |next_smallest_prefix_size| from the old store.
       old_iterator_map[next_smallest_prefix_size] += next_smallest_prefix_size;
 
-      if (!raw_removals || removals_iter == raw_removals->end() ||
-          *removals_iter != total_picked_from_old) {
+      if (!raw_removals || *removals_iter == raw_removals->end() ||
+          **removals_iter != total_picked_from_old) {
         // Append the smallest hash to the appropriate list.
         hash_prefix_map_[next_smallest_prefix_size] += next_smallest_prefix_old;
 
@@ -616,7 +626,7 @@ ApplyUpdateResult V4Store::MergeUpdate(const HashPrefixMap& old_prefixes_map,
         }
       } else {
         // Element not added to new map. Move the removals iterator forward.
-        removals_iter++;
+        (*removals_iter)++;
       }
 
       total_picked_from_old++;
@@ -648,7 +658,7 @@ ApplyUpdateResult V4Store::MergeUpdate(const HashPrefixMap& old_prefixes_map,
     }
   }
 
-  if (raw_removals && removals_iter != raw_removals->end()) {
+  if (raw_removals && *removals_iter != raw_removals->end()) {
     return REMOVALS_INDEX_TOO_LARGE_FAILURE;
   }
 
@@ -659,7 +669,7 @@ ApplyUpdateResult V4Store::MergeUpdate(const HashPrefixMap& old_prefixes_map,
       if (checksum[i] != expected_checksum[i]) {
 #if DCHECK_IS_ON()
         std::string checksum_b64, expected_checksum_b64;
-        base::Base64Encode(base::StringPiece(checksum, base::size(checksum)),
+        base::Base64Encode(base::StringPiece(checksum, std::size(checksum)),
                            &checksum_b64);
         base::Base64Encode(expected_checksum, &expected_checksum_b64);
         DVLOG(1) << "Failure: Checksum mismatch: calculated: " << checksum_b64
@@ -838,7 +848,7 @@ bool V4Store::VerifyChecksum() {
                               store_path_);
 #if DCHECK_IS_ON()
       std::string checksum_b64, expected_checksum_b64;
-      base::Base64Encode(base::StringPiece(checksum, base::size(checksum)),
+      base::Base64Encode(base::StringPiece(checksum, std::size(checksum)),
                          &checksum_b64);
       base::Base64Encode(expected_checksum_, &expected_checksum_b64);
       DVLOG(1) << "Failure: Checksum mismatch: calculated: " << checksum_b64
@@ -860,6 +870,22 @@ int64_t V4Store::RecordAndReturnFileSize(const std::string& base_metric) {
   std::string suffix = GetUmaSuffixForStore(store_path_);
   const int64_t file_size_kilobytes = file_size_ / 1024;
   base::UmaHistogramCounts1M(base_metric + suffix, file_size_kilobytes);
+
+  // Add a linear histogram for UrlSoceng since its size is too large to be
+  // accurately represented by the histogram above.
+  if (suffix == kUrlSocengUmaSuffix) {
+    const int64_t file_size_megabytes = file_size_kilobytes / 1024;
+    base::UmaHistogramExactLinear(base_metric + "Linear" + suffix,
+                                  file_size_megabytes, 50);
+  }
+
+  // Linear histogram for ChromeExtMalware, sizes in 100kB, up to ~5MB
+  if (suffix == kChromeExtMalwareUmaSuffix || suffix == kUrlMalBinUmaSuffix) {
+    const int64_t file_size_100_kb = file_size_kilobytes / 100;
+    base::UmaHistogramExactLinear(base_metric + "Linear" + suffix,
+                                  file_size_100_kb, 50);
+  }
+
   return file_size_;
 }
 

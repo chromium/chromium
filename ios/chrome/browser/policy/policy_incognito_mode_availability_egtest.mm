@@ -1,22 +1,21 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/testing/earl_grey/earl_grey_test.h"
+#import "ios/testing/earl_grey/earl_grey_test.h"
 
-#include "base/json/json_string_value_serializer.h"
-#include "base/strings/sys_string_conversions.h"
-#include "components/policy/policy_constants.h"
-#include "ios/chrome/browser/chrome_switches.h"
+#import "base/json/json_string_value_serializer.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/policy/policy_constants.h"
 #import "ios/chrome/browser/policy/policy_app_interface.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ios/chrome/test/earl_grey/chrome_earl_grey.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
-#include "ios/chrome/test/earl_grey/chrome_test_case.h"
-#include "ios/testing/earl_grey/app_launch_configuration.h"
+#import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/testing/earl_grey/app_launch_configuration.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -51,16 +50,22 @@ id<GREYMatcher> TabGridButton() {
 }
 
 // Tests the enabled state of an item.
-// |parentMatcher| is the container matcher of the |item|.
-// |availability| is the expected availability.
+// `parentMatcher` is the container matcher of the `item`.
+// `availability` is the expected availability.
 void AssertItemEnabledState(id<GREYMatcher> item,
                             id<GREYMatcher> parentMatcher,
                             bool enabled) {
+  id<GREYMatcher> enabledMatcher =
+      [ChromeEarlGrey isNewOverflowMenuEnabled]
+          // TODO(crbug.com/1285974): grey_userInteractionEnabled doesn't work
+          // for SwiftUI views.
+          ? grey_not(grey_accessibilityTrait(UIAccessibilityTraitNotEnabled))
+          : grey_userInteractionEnabled();
   [[[EarlGrey selectElementWithMatcher:item]
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown,
                                                   /*amount=*/200)
       onElementWithMatcher:parentMatcher]
-      assertWithMatcher:enabled ? grey_userInteractionEnabled()
+      assertWithMatcher:enabled ? enabledMatcher
                                 : grey_accessibilityTrait(
                                       UIAccessibilityTraitNotEnabled)];
 }
@@ -79,8 +84,6 @@ void AssertItemEnabledState(id<GREYMatcher> item,
   // app, this policy data will appear under the
   // "com.apple.configuration.managed" key.
   AppLaunchConfiguration config;
-  config.additional_args.push_back(std::string("--") +
-                                   switches::kEnableEnterprisePolicy);
   config.relaunch_policy = NoForceRelaunchAndResetState;
   return config;
 }

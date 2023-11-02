@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,8 @@
 #include "base/test/scoped_locale.h"
 #include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/chromeos/styles/cros_styles.h"
+#include "ui/gfx/paint_vector_icon.h"
 
 namespace ash {
 
@@ -117,8 +119,8 @@ TEST_P(HoldingSpaceItemTest, AccessibleName) {
             u"Primary text, Secondary text");
 }
 
-// Tests pause for each holding space item type.
-TEST_P(HoldingSpaceItemTest, Pause) {
+// Tests in-progress commands for each holding space item type.
+TEST_P(HoldingSpaceItemTest, InProgressCommands) {
   // Create an in-progress `holding_space_item`.
   auto holding_space_item = HoldingSpaceItem::CreateFileBackedItem(
       /*type=*/GetParam(), base::FilePath("file_path"),
@@ -126,28 +128,31 @@ TEST_P(HoldingSpaceItemTest, Pause) {
       HoldingSpaceProgress(/*current_bytes=*/50, /*total_bytes=*/100),
       /*image_resolver=*/base::BindOnce(&CreateFakeHoldingSpaceImage));
 
-  // Initially items are not paused.
-  EXPECT_FALSE(holding_space_item->IsPaused());
+  // Initially commands are not set.
+  EXPECT_TRUE(holding_space_item->in_progress_commands().empty());
 
-  // It should be possible to update pause to a new value.
-  EXPECT_TRUE(holding_space_item->SetPaused(true));
-  EXPECT_TRUE(holding_space_item->IsPaused());
+  // It should be possible to update commands to a new value.
+  std::vector<HoldingSpaceItem::InProgressCommand> in_progress_commands;
+  in_progress_commands.push_back(HoldingSpaceItem::InProgressCommand(
+      HoldingSpaceCommandId::kCancelItem, /*label_id=*/-1, &gfx::kNoneIcon,
+      /*handler=*/base::DoNothing()));
+  EXPECT_TRUE(holding_space_item->SetInProgressCommands(in_progress_commands));
+  EXPECT_EQ(holding_space_item->in_progress_commands(), in_progress_commands);
 
   // It should no-op to try to update pause to its existing value.
-  EXPECT_FALSE(holding_space_item->SetPaused(true));
-  EXPECT_TRUE(holding_space_item->IsPaused());
+  EXPECT_FALSE(holding_space_item->SetInProgressCommands(in_progress_commands));
+  EXPECT_EQ(holding_space_item->in_progress_commands(), in_progress_commands);
 
-  // Once progress has been marked completed, items are no longer paused.
+  // Once progress has been marked completed, commands are not set.
   EXPECT_TRUE(holding_space_item->SetProgress(
       HoldingSpaceProgress(/*current_bytes=*/100, /*total_bytes=*/100)));
   EXPECT_TRUE(holding_space_item->progress().IsComplete());
-  EXPECT_FALSE(holding_space_item->IsPaused());
+  EXPECT_TRUE(holding_space_item->in_progress_commands().empty());
 
-  // It should no-op to try to update pause for items which are not in-progress.
-  EXPECT_FALSE(holding_space_item->SetPaused(true));
-  EXPECT_FALSE(holding_space_item->IsPaused());
-  EXPECT_FALSE(holding_space_item->SetPaused(false));
-  EXPECT_FALSE(holding_space_item->IsPaused());
+  // It should no-op to try to update commands for items which are not
+  // in-progress.
+  EXPECT_FALSE(holding_space_item->SetInProgressCommands(in_progress_commands));
+  EXPECT_TRUE(holding_space_item->in_progress_commands().empty());
 }
 
 // Tests progress for each holding space item type.
@@ -224,6 +229,34 @@ TEST_P(HoldingSpaceItemTest, SecondaryText) {
   // It should be possible to unset secondary text.
   EXPECT_TRUE(holding_space_item->SetSecondaryText(absl::nullopt));
   EXPECT_FALSE(holding_space_item->secondary_text());
+}
+
+// Tests setting the secondary text color for each holding space item type.
+TEST_P(HoldingSpaceItemTest, SecondaryTextColor) {
+  // Create a `holding_space_item`.
+  auto holding_space_item = HoldingSpaceItem::CreateFileBackedItem(
+      /*type=*/GetParam(), base::FilePath("file_path"),
+      GURL("filesystem::file_system_url"),
+      /*image_resolver=*/base::BindOnce(&CreateFakeHoldingSpaceImage));
+
+  // Initially the secondary text color should be absent.
+  EXPECT_FALSE(holding_space_item->secondary_text_color());
+
+  // It should be possible to update secondary text color to a new value.
+  EXPECT_TRUE(holding_space_item->SetSecondaryTextColor(
+      cros_styles::ColorName::kTextColorAlert));
+  EXPECT_EQ(holding_space_item->secondary_text_color().value(),
+            cros_styles::ColorName::kTextColorAlert);
+
+  // It should no-op to try to update secondary text color to existing values.
+  EXPECT_FALSE(holding_space_item->SetSecondaryTextColor(
+      cros_styles::ColorName::kTextColorAlert));
+  EXPECT_EQ(holding_space_item->secondary_text_color().value(),
+            cros_styles::ColorName::kTextColorAlert);
+
+  // It should be possible to unset secondary text color.
+  EXPECT_TRUE(holding_space_item->SetSecondaryTextColor(absl::nullopt));
+  EXPECT_FALSE(holding_space_item->secondary_text_color());
 }
 
 // Tests setting the text for each holding space item type.

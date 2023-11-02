@@ -1,10 +1,11 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_ANDROID_DELEGATED_FRAME_HOST_ANDROID_H_
 #define UI_ANDROID_DELEGATED_FRAME_HOST_ANDROID_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
@@ -82,6 +83,7 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
     return TimeDeltaToFrames(ResizeTimeout());
   }
 
+  void ClearFallbackSurfaceForCommitPending();
   // Advances the fallback surface to the first surface after navigation. This
   // ensures that stale surfaces are not presented to the user for an indefinite
   // period of time.
@@ -157,11 +159,11 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
 
   const viz::FrameSinkId frame_sink_id_;
 
-  ViewAndroid* view_;
+  raw_ptr<ViewAndroid> view_;
 
-  viz::HostFrameSinkManager* const host_frame_sink_manager_;
-  WindowAndroidCompositor* registered_parent_compositor_ = nullptr;
-  Client* client_;
+  const raw_ptr<viz::HostFrameSinkManager> host_frame_sink_manager_;
+  raw_ptr<WindowAndroidCompositor> registered_parent_compositor_ = nullptr;
+  raw_ptr<Client> client_;
 
   float top_controls_visible_height_ = 0.f;
 

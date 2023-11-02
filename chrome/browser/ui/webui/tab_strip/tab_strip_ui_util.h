@@ -1,4 +1,4 @@
-// Copyright (c) 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,6 +24,9 @@ absl::optional<tab_groups::TabGroupId> GetTabGroupIdFromString(
     TabGroupModel* tab_group_model,
     std::string group_id_string);
 
+// Find the browser containing the group with ID |group_id_string| or nullptr if
+// none. If the profile is not specified, find any browser containing the
+// |group_id|.
 Browser* GetBrowserWithGroupId(Profile* profile, std::string group_id_string);
 
 void MoveTabAcrossWindows(

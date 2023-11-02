@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,7 +33,7 @@ struct StructTraits<viz::mojom::CompositorFrameMetadataDataView,
     return metadata.device_scale_factor;
   }
 
-  static gfx::Vector2dF root_scroll_offset(
+  static gfx::PointF root_scroll_offset(
       const viz::CompositorFrameMetadata& metadata) {
     return metadata.root_scroll_offset;
   }
@@ -71,7 +71,7 @@ struct StructTraits<viz::mojom::CompositorFrameMetadataDataView,
     return metadata.is_resourceless_software_draw_with_scroll_or_animation;
   }
 
-  static uint32_t root_background_color(
+  static SkColor4f root_background_color(
       const viz::CompositorFrameMetadata& metadata) {
     return metadata.root_background_color;
   }

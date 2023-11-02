@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "device/gamepad/gamepad_data_fetcher.h"
 #include "device/gamepad/gamepad_id_list.h"
 
@@ -130,7 +131,7 @@ struct VibrationFrequency {
     // This list must be kept sorted.
     {0x0068, 0x3a, 141},
     {0x0098, 0x46, 182}};
-const size_t kVibrationFrequencySize = base::size(kVibrationFrequency);
+const size_t kVibrationFrequencySize = std::size(kVibrationFrequency);
 
 // https://github.com/dekuNukem/Nintendo_Switch_Reverse_Engineering/blob/master/rumble_data_table.md
 struct VibrationAmplitude {
@@ -174,7 +175,7 @@ struct VibrationAmplitude {
     {0xc0, 0x0070, 920}, {0xc2, 0x8070, 940},  {0xc4, 0x0071, 960},
     {0xc6, 0x8071, 981}, {0xc8, 0x0072, 1000},
 };
-const size_t kVibrationAmplitudeSize = base::size(kVibrationAmplitude);
+const size_t kVibrationAmplitudeSize = std::size(kVibrationAmplitude);
 
 // Define indices for the additional buttons on Switch controllers.
 enum SWITCH_BUTTON_INDICES {
@@ -1125,14 +1126,14 @@ void NintendoController::UpdateLeftGamepadState(Gamepad& pad,
       BUTTON_INDEX_DPAD_RIGHT,      SWITCH_BUTTON_INDEX_CAPTURE,
       SWITCH_BUTTON_INDEX_LEFT_SL,  SWITCH_BUTTON_INDEX_LEFT_SR,
   };
-  const size_t kLeftButtonIndicesSize = base::size(kLeftButtonIndices);
+  const size_t kLeftButtonIndicesSize = std::size(kLeftButtonIndices);
 
   // Axes associated with the left Joy-Con thumbstick.
   const size_t kLeftAxisIndices[] = {
       AXIS_INDEX_LEFT_STICK_X,  // Axes assume the Joy-Con is held vertically
       AXIS_INDEX_LEFT_STICK_Y,  // or is attached to a grip.
   };
-  const size_t kLeftAxisIndicesSize = base::size(kLeftAxisIndices);
+  const size_t kLeftAxisIndicesSize = std::size(kLeftAxisIndices);
 
   if (pad_.buttons_length == SWITCH_BUTTON_INDEX_COUNT) {
     for (size_t i = 0; i < kLeftButtonIndicesSize; ++i)
@@ -1163,14 +1164,14 @@ void NintendoController::UpdateRightGamepadState(Gamepad& pad,
       SWITCH_BUTTON_INDEX_RIGHT_SL,
       SWITCH_BUTTON_INDEX_RIGHT_SR,
   };
-  const size_t kRightButtonIndicesSize = base::size(kRightButtonIndices);
+  const size_t kRightButtonIndicesSize = std::size(kRightButtonIndices);
 
   // Axes associated with the right Joy-Con thumbstick.
   const size_t kRightAxisIndices[] = {
       AXIS_INDEX_RIGHT_STICK_X,  // Axes assume the Joy-Con is held vertically
       AXIS_INDEX_RIGHT_STICK_Y,  // or is attached to a grip.
   };
-  const size_t kRightAxisIndicesSize = base::size(kRightAxisIndices);
+  const size_t kRightAxisIndicesSize = std::size(kRightAxisIndices);
 
   if (pad_.buttons_length == SWITCH_BUTTON_INDEX_COUNT) {
     for (size_t i = 0; i < kRightButtonIndicesSize; ++i)
@@ -1771,19 +1772,24 @@ void NintendoController::DoShutdown() {
   device_info_.reset();
 }
 
-void NintendoController::SetVibration(double strong_magnitude,
-                                      double weak_magnitude) {
+void NintendoController::SetVibration(
+    mojom::GamepadEffectParametersPtr params) {
   if (is_composite_) {
     // Split the vibration effect between the left and right subdevices.
     if (composite_left_ && composite_right_) {
-      composite_left_->SetVibration(strong_magnitude, 0);
-      composite_right_->SetVibration(0, weak_magnitude);
+      composite_left_->SetVibration(mojom::GamepadEffectParameters::New(
+          params->duration, params->start_delay, params->strong_magnitude,
+          /*weak_magnitude=*/0, /*left_trigger=*/0, /*right_trigger=*/0));
+      composite_right_->SetVibration(mojom::GamepadEffectParameters::New(
+          params->duration, params->start_delay, /*strong_magnitude=*/0,
+          params->weak_magnitude, /*left_trigger=*/0, /*right_trigger=*/0));
     }
   } else {
-    RequestVibration(kVibrationFrequencyStrongRumble,
-                     kVibrationAmplitudeStrongRumbleMax * strong_magnitude,
-                     kVibrationFrequencyWeakRumble,
-                     kVibrationAmplitudeWeakRumbleMax * weak_magnitude);
+    RequestVibration(
+        kVibrationFrequencyStrongRumble,
+        kVibrationAmplitudeStrongRumbleMax * params->strong_magnitude,
+        kVibrationFrequencyWeakRumble,
+        kVibrationAmplitudeWeakRumbleMax * params->weak_magnitude);
   }
 }
 

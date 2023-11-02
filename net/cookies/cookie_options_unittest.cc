@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,9 +38,13 @@ TEST(CookieOptionsTest, SameSiteCookieContext) {
   SameSiteCookieContext::ContextMetadata metadata1;
   metadata1.cross_site_redirect_downgrade = SameSiteCookieContext::
       ContextMetadata::ContextDowngradeType::kStrictToLax;
+  metadata1.redirect_type_bug_1221316 = SameSiteCookieContext::ContextMetadata::
+      ContextRedirectTypeBug1221316::kPartialSameSiteRedirect;
   SameSiteCookieContext::ContextMetadata metadata2;
   metadata2.cross_site_redirect_downgrade = SameSiteCookieContext::
       ContextMetadata::ContextDowngradeType::kStrictToLax;
+  metadata2.redirect_type_bug_1221316 = SameSiteCookieContext::ContextMetadata::
+      ContextRedirectTypeBug1221316::kPartialSameSiteRedirect;
   SameSiteCookieContext context_with_metadata(
       SameSiteCookieContext::ContextType::SAME_SITE_STRICT,
       SameSiteCookieContext::ContextType::SAME_SITE_STRICT, metadata1,
@@ -48,38 +52,52 @@ TEST(CookieOptionsTest, SameSiteCookieContext) {
 
   EXPECT_EQ(
       "{ context: 0, schemeful_context: 0, "
-      "metadata: { cross_site_redirect_downgrade: 0 }, "
-      "schemeful_metadata: { cross_site_redirect_downgrade: 0 } }",
+      "metadata: { cross_site_redirect_downgrade: 0, "
+      "redirect_type_bug_1221316: 0 }, "
+      "schemeful_metadata: { cross_site_redirect_downgrade: 0, "
+      "redirect_type_bug_1221316: 0 } }",
       ::testing::PrintToString(cross_cross));
   EXPECT_EQ(
       "{ context: 2, schemeful_context: 2, "
-      "metadata: { cross_site_redirect_downgrade: 0 }, "
-      "schemeful_metadata: { cross_site_redirect_downgrade: 0 } }",
+      "metadata: { cross_site_redirect_downgrade: 0, "
+      "redirect_type_bug_1221316: 0 }, "
+      "schemeful_metadata: { cross_site_redirect_downgrade: 0, "
+      "redirect_type_bug_1221316: 0 } }",
       ::testing::PrintToString(lax_lax));
   EXPECT_EQ(
       "{ context: 3, schemeful_context: 3, "
-      "metadata: { cross_site_redirect_downgrade: 0 }, "
-      "schemeful_metadata: { cross_site_redirect_downgrade: 0 } }",
+      "metadata: { cross_site_redirect_downgrade: 0, "
+      "redirect_type_bug_1221316: 0 }, "
+      "schemeful_metadata: { cross_site_redirect_downgrade: 0, "
+      "redirect_type_bug_1221316: 0 } }",
       ::testing::PrintToString(strict_strict));
   EXPECT_EQ(
       "{ context: 3, schemeful_context: 0, "
-      "metadata: { cross_site_redirect_downgrade: 0 }, "
-      "schemeful_metadata: { cross_site_redirect_downgrade: 0 } }",
+      "metadata: { cross_site_redirect_downgrade: 0, "
+      "redirect_type_bug_1221316: 0 }, "
+      "schemeful_metadata: { cross_site_redirect_downgrade: 0, "
+      "redirect_type_bug_1221316: 0 } }",
       ::testing::PrintToString(strict_cross));
   EXPECT_EQ(
       "{ context: 3, schemeful_context: 2, "
-      "metadata: { cross_site_redirect_downgrade: 0 }, "
-      "schemeful_metadata: { cross_site_redirect_downgrade: 0 } }",
+      "metadata: { cross_site_redirect_downgrade: 0, "
+      "redirect_type_bug_1221316: 0 }, "
+      "schemeful_metadata: { cross_site_redirect_downgrade: 0, "
+      "redirect_type_bug_1221316: 0 } }",
       ::testing::PrintToString(strict_lax));
   EXPECT_EQ(
       "{ context: 2, schemeful_context: 0, "
-      "metadata: { cross_site_redirect_downgrade: 0 }, "
-      "schemeful_metadata: { cross_site_redirect_downgrade: 0 } }",
+      "metadata: { cross_site_redirect_downgrade: 0, "
+      "redirect_type_bug_1221316: 0 }, "
+      "schemeful_metadata: { cross_site_redirect_downgrade: 0, "
+      "redirect_type_bug_1221316: 0 } }",
       ::testing::PrintToString(lax_cross));
   EXPECT_EQ(
       "{ context: 3, schemeful_context: 3, "
-      "metadata: { cross_site_redirect_downgrade: 1 }, "
-      "schemeful_metadata: { cross_site_redirect_downgrade: 1 } }",
+      "metadata: { cross_site_redirect_downgrade: 1, "
+      "redirect_type_bug_1221316: 3 }, "
+      "schemeful_metadata: { cross_site_redirect_downgrade: 1, "
+      "redirect_type_bug_1221316: 3 } }",
       ::testing::PrintToString(context_with_metadata));
 }
 

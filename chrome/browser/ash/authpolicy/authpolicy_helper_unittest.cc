@@ -1,14 +1,14 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/authpolicy/authpolicy_helper.h"
 
 #include "base/bind.h"
-#include "chromeos/dbus/authpolicy/fake_authpolicy_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/userdataauth/fake_install_attributes_client.h"
-#include "chromeos/tpm/stub_install_attributes.h"
+#include "chromeos/ash/components/dbus/authpolicy/fake_authpolicy_client.h"
+#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/dbus/userdataauth/fake_install_attributes_client.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -16,7 +16,7 @@ namespace {
 
 constexpr char kDMToken[] = "dm_token";
 
-class MockAuthPolicyClient : public chromeos::FakeAuthPolicyClient {
+class MockAuthPolicyClient : public FakeAuthPolicyClient {
  public:
   MockAuthPolicyClient() { SetStarted(true); }
 
@@ -59,10 +59,10 @@ class MockAuthPolicyClient : public chromeos::FakeAuthPolicyClient {
 
 // Check that helper calls RefreshDevicePolicy after JoinAdDomain.
 TEST(AuthPolicyHelper, JoinFollowedByRefreshDevicePolicy) {
-  chromeos::ScopedStubInstallAttributes scoped_stub_install_attributes;
+  ScopedStubInstallAttributes scoped_stub_install_attributes;
 
   auto* mock_client = new MockAuthPolicyClient;
-  chromeos::InstallAttributesClient::InitializeFake();
+  InstallAttributesClient::InitializeFake();
 
   AuthPolicyHelper helper;
   helper.set_dm_token(kDMToken);
@@ -76,8 +76,8 @@ TEST(AuthPolicyHelper, JoinFollowedByRefreshDevicePolicy) {
                       }));
   mock_client->CheckExpectations();
 
-  chromeos::InstallAttributesClient::Shutdown();
-  chromeos::AuthPolicyClient::Shutdown();
+  InstallAttributesClient::Shutdown();
+  AuthPolicyClient::Shutdown();
 }
 
 }  // namespace ash

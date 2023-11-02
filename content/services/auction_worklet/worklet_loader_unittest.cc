@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,6 +22,8 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+#include "v8/include/v8-context.h"
+#include "v8/include/v8-wasm.h"
 
 using testing::HasSubstr;
 using testing::StartsWith;
@@ -31,6 +33,11 @@ namespace {
 
 const char kValidScript[] = "function foo() {}";
 const char kInvalidScript[] = "Invalid Script";
+
+// The bytes of a minimal WebAssembly module, courtesy of
+// v8/test/cctest/test-api-wasm.cc
+const char kMinimalWasmModuleBytes[] = {0x00, 0x61, 0x73, 0x6d,
+                                        0x01, 0x00, 0x00, 0x00};
 
 // None of these tests make sure the right script is compiled, these tests
 // merely check success/failure of trying to load a worklet.
@@ -42,16 +49,28 @@ class WorkletLoaderTest : public testing::Test {
 
   ~WorkletLoaderTest() override { task_environment_.RunUntilIdle(); }
 
-  void LoadWorkletCallback(WorkletLoader::Result worklet_script,
+  void LoadWorkletCallback(WorkletLoaderBase::Result result,
                            absl::optional<std::string> error_msg) {
-    load_succeeded_ = worklet_script.success();
+    result_ = std::move(result);
     error_msg_ = std::move(error_msg);
-    EXPECT_EQ(load_succeeded_, !error_msg_.has_value());
+    EXPECT_EQ(result_.success(), !error_msg_.has_value());
     run_loop_.Quit();
   }
 
   std::string last_error_msg() const {
     return error_msg_.value_or("Not an error");
+  }
+
+  void RunOnV8ThreadAndWait(base::OnceClosure closure) {
+    base::RunLoop run_loop;
+    v8_helper_->v8_runner()->PostTask(
+        FROM_HERE, base::BindOnce(
+                       [](base::OnceClosure run, base::OnceClosure done) {
+                         std::move(run).Run();
+                         std::move(done).Run();
+                       },
+                       std::move(closure), run_loop.QuitClosure()));
+    run_loop.Run();
   }
 
  protected:
@@ -61,7 +80,7 @@ class WorkletLoaderTest : public testing::Test {
   scoped_refptr<AuctionV8Helper> v8_helper_;
   GURL url_ = GURL("https://foo.test/");
   base::RunLoop run_loop_;
-  bool load_succeeded_ = false;
+  WorkletLoaderBase::Result result_;
   absl::optional<std::string> error_msg_;
 };
 
@@ -71,11 +90,11 @@ TEST_F(WorkletLoaderTest, NetworkError) {
               kValidScript, kAllowFledgeHeader, net::HTTP_NOT_FOUND);
   WorkletLoader worklet_loader(
       &url_loader_factory_, url_, v8_helper_,
-      AuctionV8Helper::kNoDebugContextGroupId,
+      scoped_refptr<AuctionV8Helper::DebugId>(),
       base::BindOnce(&WorkletLoaderTest::LoadWorkletCallback,
                      base::Unretained(this)));
   run_loop_.Run();
-  EXPECT_FALSE(load_succeeded_);
+  EXPECT_FALSE(result_.success());
   EXPECT_EQ("Failed to load https://foo.test/ HTTP status = 404 Not Found.",
             last_error_msg());
 }
@@ -84,19 +103,20 @@ TEST_F(WorkletLoaderTest, CompileError) {
   AddJavascriptResponse(&url_loader_factory_, url_, kInvalidScript);
   WorkletLoader worklet_loader(
       &url_loader_factory_, url_, v8_helper_,
-      AuctionV8Helper::kNoDebugContextGroupId,
+      scoped_refptr<AuctionV8Helper::DebugId>(),
       base::BindOnce(&WorkletLoaderTest::LoadWorkletCallback,
                      base::Unretained(this)));
   run_loop_.Run();
-  EXPECT_FALSE(load_succeeded_);
+  EXPECT_FALSE(result_.success());
   EXPECT_THAT(last_error_msg(), StartsWith("https://foo.test/:1 "));
   EXPECT_THAT(last_error_msg(), HasSubstr("SyntaxError"));
 }
 
 TEST_F(WorkletLoaderTest, CompileErrorWithDebugger) {
   ScopedInspectorSupport inspector_support(v8_helper_.get());
-  int id = AllocContextGroupIdAndWait(v8_helper_);
-  TestChannel* channel = inspector_support.ConnectDebuggerSession(id);
+  auto id = base::MakeRefCounted<AuctionV8Helper::DebugId>(v8_helper_.get());
+  TestChannel* channel =
+      inspector_support.ConnectDebuggerSession(id->context_group_id());
   channel->RunCommandAndWaitForResult(
       1, "Runtime.enable", R"({"id":1,"method":"Runtime.enable","params":{}})");
   channel->RunCommandAndWaitForResult(
@@ -109,20 +129,37 @@ TEST_F(WorkletLoaderTest, CompileErrorWithDebugger) {
       base::BindOnce(&WorkletLoaderTest::LoadWorkletCallback,
                      base::Unretained(this)));
   run_loop_.Run();
-  EXPECT_FALSE(load_succeeded_);
+  EXPECT_FALSE(result_.success());
   channel->WaitForMethodNotification("Debugger.scriptFailedToParse");
-  FreeContextGroupIdAndWait(v8_helper_, id);
+
+  id->AbortDebuggerPauses();
 }
 
 TEST_F(WorkletLoaderTest, Success) {
   AddJavascriptResponse(&url_loader_factory_, url_, kValidScript);
   WorkletLoader worklet_loader(
       &url_loader_factory_, url_, v8_helper_,
-      AuctionV8Helper::kNoDebugContextGroupId,
+      scoped_refptr<AuctionV8Helper::DebugId>(),
       base::BindOnce(&WorkletLoaderTest::LoadWorkletCallback,
                      base::Unretained(this)));
   run_loop_.Run();
-  EXPECT_TRUE(load_succeeded_);
+  EXPECT_TRUE(result_.success());
+  RunOnV8ThreadAndWait(base::BindOnce(
+      [](scoped_refptr<AuctionV8Helper> v8_helper,
+         WorkletLoaderBase::Result result) {
+        AuctionV8Helper::FullIsolateScope isolate_scope(v8_helper.get());
+        ASSERT_TRUE(result.success());
+        v8::Global<v8::UnboundScript> script =
+            WorkletLoader::TakeScript(std::move(result));
+        ASSERT_FALSE(script.IsEmpty());
+        EXPECT_EQ("https://foo.test/",
+                  v8_helper->FormatScriptName(v8::Local<v8::UnboundScript>::New(
+                      v8_helper->isolate(), script)));
+
+        // TakeScript is a move op, so `result` is now cleared.
+        EXPECT_FALSE(result.success());
+      },
+      v8_helper_, std::move(result_)));
 }
 
 // Make sure the V8 isolate is released before the callback is invoked on
@@ -135,7 +172,7 @@ TEST_F(WorkletLoaderTest, DeleteDuringCallbackSuccess) {
   std::unique_ptr<WorkletLoader> worklet_loader =
       std::make_unique<WorkletLoader>(
           &url_loader_factory_, url_, v8_helper.get(),
-          AuctionV8Helper::kNoDebugContextGroupId,
+          scoped_refptr<AuctionV8Helper::DebugId>(),
           base::BindLambdaForTesting(
               [&](WorkletLoader::Result worklet_script,
                   absl::optional<std::string> error_msg) {
@@ -159,7 +196,7 @@ TEST_F(WorkletLoaderTest, DeleteDuringCallbackCompileError) {
   std::unique_ptr<WorkletLoader> worklet_loader =
       std::make_unique<WorkletLoader>(
           &url_loader_factory_, url_, v8_helper.get(),
-          AuctionV8Helper::kNoDebugContextGroupId,
+          scoped_refptr<AuctionV8Helper::DebugId>(),
           base::BindLambdaForTesting(
               [&](WorkletLoader::Result worklet_script,
                   absl::optional<std::string> error_msg) {
@@ -184,7 +221,7 @@ TEST_F(WorkletLoaderTest, DeleteBeforeCallback) {
   AddJavascriptResponse(&url_loader_factory_, url_, kValidScript);
   auto worklet_loader = std::make_unique<WorkletLoader>(
       &url_loader_factory_, url_, v8_helper_,
-      AuctionV8Helper::kNoDebugContextGroupId,
+      scoped_refptr<AuctionV8Helper::DebugId>(),
       base::BindOnce([](WorkletLoader::Result worklet_script,
                         absl::optional<std::string> error_msg) {
         ADD_FAILURE() << "Callback should not be invoked since loader deleted";
@@ -192,6 +229,55 @@ TEST_F(WorkletLoaderTest, DeleteBeforeCallback) {
   run_loop_.RunUntilIdle();
   worklet_loader.reset();
   event_handle->Signal();
+}
+
+TEST_F(WorkletLoaderTest, LoadWasmSuccess) {
+  AddResponse(
+      &url_loader_factory_, url_, "application/wasm",
+      /*charset=*/absl::nullopt,
+      std::string(kMinimalWasmModuleBytes, std::size(kMinimalWasmModuleBytes)));
+  WorkletWasmLoader worklet_loader(
+      &url_loader_factory_, url_, v8_helper_,
+      scoped_refptr<AuctionV8Helper::DebugId>(),
+      base::BindOnce(&WorkletLoaderTest::LoadWorkletCallback,
+                     base::Unretained(this)));
+  run_loop_.Run();
+  EXPECT_TRUE(result_.success());
+  RunOnV8ThreadAndWait(base::BindOnce(
+      [](scoped_refptr<AuctionV8Helper> v8_helper,
+         WorkletLoaderBase::Result result) {
+        AuctionV8Helper::FullIsolateScope isolate_scope(v8_helper.get());
+        v8::Local<v8::Context> context = v8_helper->CreateContext();
+        v8::Context::Scope context_scope(context);
+
+        ASSERT_TRUE(result.success());
+        v8::MaybeLocal<v8::WasmModuleObject> module =
+            WorkletWasmLoader::MakeModule(result);
+        ASSERT_FALSE(module.IsEmpty());
+
+        // MakeModule makes new ones, so `result` is still valid.
+        EXPECT_TRUE(result.success());
+        v8::MaybeLocal<v8::WasmModuleObject> module2 =
+            WorkletWasmLoader::MakeModule(result);
+        ASSERT_FALSE(module2.IsEmpty());
+        EXPECT_NE(module.ToLocalChecked(), module2.ToLocalChecked());
+      },
+      v8_helper_, std::move(result_)));
+}
+
+TEST_F(WorkletLoaderTest, LoadWasmError) {
+  AddResponse(&url_loader_factory_, url_, "application/wasm",
+              /*charset=*/absl::nullopt, "not wasm");
+  WorkletWasmLoader worklet_loader(
+      &url_loader_factory_, url_, v8_helper_,
+      scoped_refptr<AuctionV8Helper::DebugId>(),
+      base::BindOnce(&WorkletLoaderTest::LoadWorkletCallback,
+                     base::Unretained(this)));
+  run_loop_.Run();
+  EXPECT_FALSE(result_.success());
+  EXPECT_THAT(last_error_msg(), StartsWith("https://foo.test/ "));
+  EXPECT_THAT(last_error_msg(),
+              HasSubstr("Uncaught CompileError: WasmModuleObject::Compile"));
 }
 
 }  // namespace

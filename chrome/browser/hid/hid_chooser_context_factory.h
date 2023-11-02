@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,12 +6,12 @@
 #define CHROME_BROWSER_HID_HID_CHOOSER_CONTEXT_FACTORY_H_
 
 #include "base/no_destructor.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class HidChooserContext;
 class Profile;
 
-class HidChooserContextFactory : public BrowserContextKeyedServiceFactory {
+class HidChooserContextFactory : public ProfileKeyedServiceFactory {
  public:
   static HidChooserContext* GetForProfile(Profile* profile);
   static HidChooserContext* GetForProfileIfExists(Profile* profile);
@@ -29,8 +29,6 @@ class HidChooserContextFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedBaseFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
   void BrowserContextShutdown(content::BrowserContext* context) override;
 };
 

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "components/offline_items_collection/core/offline_content_provider.h"
@@ -54,7 +55,7 @@ class FilteredOfflineItemObserver : public OfflineContentProvider::Observer {
                      const absl::optional<UpdateDelta>& update_delta) override;
   void OnContentProviderGoingDown() override;
 
-  OfflineContentProvider* provider_;
+  raw_ptr<OfflineContentProvider> provider_;
   base::ScopedObservation<OfflineContentProvider,
                           OfflineContentProvider::Observer>
       observation_{this};

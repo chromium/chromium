@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/platform/bindings/dom_data_store.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_dom_wrapper.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 
 namespace blink {
@@ -14,6 +15,7 @@ namespace blink {
 struct SameSizeAsScriptWrappable {
   virtual ~SameSizeAsScriptWrappable() = default;
   v8::Persistent<v8::Object> main_world_wrapper_;
+  int record_replay_id_;
 };
 
 ASSERT_SIZE(ScriptWrappable, SameSizeAsScriptWrappable);

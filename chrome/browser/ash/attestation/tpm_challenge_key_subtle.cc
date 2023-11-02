@@ -1,10 +1,9 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/attestation/tpm_challenge_key_subtle.h"
 
-#include "ash/components/settings/cros_settings_names.h"
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/check_op.h"
@@ -20,18 +19,20 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part_chromeos.h"
+#include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/attestation/attestation_flow_adaptive.h"
-#include "chromeos/cryptohome/cryptohome_parameters.h"
-#include "chromeos/dbus/attestation/attestation_client.h"
-#include "chromeos/dbus/attestation/interface.pb.h"
-#include "chromeos/dbus/constants/attestation_constants.h"
+#include "chromeos/ash/components/attestation/attestation_flow_adaptive.h"
+#include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
+#include "chromeos/ash/components/dbus/attestation/attestation_client.h"
+#include "chromeos/ash/components/dbus/attestation/interface.pb.h"
+#include "chromeos/ash/components/dbus/constants/attestation_constants.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
-#include "chromeos/tpm/install_attributes.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 
@@ -88,9 +89,10 @@ bool TpmChallengeKeySubtleFactory::WillReturnTestingInstance() {
 //===================== TpmChallengeKeySubtleImpl ==============================
 
 namespace {
+
 // Returns true if the device is enterprise managed.
 bool IsEnterpriseDevice() {
-  return chromeos::InstallAttributes::Get()->IsEnterpriseManaged();
+  return InstallAttributes::Get()->IsEnterpriseManaged();
 }
 
 // For personal devices, we don't need to check if remote attestation is
@@ -172,7 +174,7 @@ void TpmChallengeKeySubtleImpl::StartPrepareKeyStep(
     const std::string& key_name,
     Profile* profile,
     TpmChallengeKeyCallback callback,
-    const absl::optional<::attestation::DeviceTrustSignals>& signals) {
+    const absl::optional<std::string>& signals) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(callback_.is_null());
   // For device key: if |will_register_key| is true, |key_name| should not be
@@ -510,7 +512,7 @@ void TpmChallengeKeySubtleImpl::AskForUserConsentCallback(bool result) {
   attestation_flow_->GetCertificate(
       GetCertificateProfile(), GetAccountIdForAttestationFlow(),
       /*request_origin=*/std::string(),  // Not used.
-      /*force_new_key=*/true, key_name_,
+      /*force_new_key=*/true, ::attestation::KEY_TYPE_RSA, key_name_,
       base::BindOnce(&TpmChallengeKeySubtleImpl::GetCertificateCallback,
                      weak_factory_.GetWeakPtr()));
 }
@@ -578,17 +580,25 @@ void TpmChallengeKeySubtleImpl::StartSignChallengeStep(
       (will_register_key_ && key_type_ == KEY_DEVICE) ? key_name_
                                                       : std::string();
 
+  const std::string username = GetUsernameForAttestationClient();
+  const bool is_machine_challenge = username.empty();
   ::attestation::SignEnterpriseChallengeRequest request;
-  request.set_username(GetUsernameForAttestationClient());
+  request.set_username(username);
   request.set_key_label(key_name_for_challenge);
   request.set_key_name_for_spkac(key_name_for_spkac);
   request.set_domain(GetEmail());
-  request.set_device_id(chromeos::InstallAttributes::Get()->GetDeviceId());
+  request.set_device_id(InstallAttributes::Get()->GetDeviceId());
   request.set_include_signed_public_key(will_register_key_);
   request.set_challenge(challenge);
   request.set_va_type(AttestationClient::GetVerifiedAccessServerType());
-  if (signals_.has_value())
-    *request.mutable_device_trust_signals() = signals_.value();
+  if (signals_.has_value()) {
+    request.set_device_trust_signals_json(signals_.value());
+  }
+  // Request to include the customer ID in the challenge response when:
+  // * the request is a machine challenge
+  // * the request is a user challenge and this is a kiosk session.
+  request.set_include_customer_id(is_machine_challenge ||
+                                  profiles::IsKioskSession());
   AttestationClient::Get()->SignEnterpriseChallenge(
       request, base::BindOnce(&TpmChallengeKeySubtleImpl::SignChallengeCallback,
                               weak_factory_.GetWeakPtr()));

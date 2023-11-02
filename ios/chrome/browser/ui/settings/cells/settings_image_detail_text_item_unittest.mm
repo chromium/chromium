@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,9 @@
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_cell.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
-#include "testing/platform_test.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -18,7 +18,7 @@
 using SettingsImageDetailTextItemTest = PlatformTest;
 
 // Tests that the text, detail text and image are honoured after a call to
-// |configureCell:|.
+// `configureCell:`.
 TEST_F(SettingsImageDetailTextItemTest, ConfigureCell) {
   SettingsImageDetailTextItem* item =
       [[SettingsImageDetailTextItem alloc] initWithType:0];
@@ -47,7 +47,7 @@ TEST_F(SettingsImageDetailTextItemTest, ConfigureCell) {
 }
 
 // Tests that the attributed text is honoured after a call to
-// |configureCell:|.
+// `configureCell:`.
 TEST_F(SettingsImageDetailTextItemTest, ConfigureAttributedText) {
   SettingsImageDetailTextItem* item =
       [[SettingsImageDetailTextItem alloc] initWithType:0];
@@ -91,7 +91,7 @@ TEST_F(SettingsImageDetailTextItemTest, setDetailTextColor) {
 }
 
 // Tests that the text, detail text and image are honoured after a call to
-// |configureCell:|, and then a second call.
+// `configureCell:`, and then a second call.
 TEST_F(SettingsImageDetailTextItemTest, ConfigureCellTwice) {
   SettingsImageDetailTextItem* item =
       [[SettingsImageDetailTextItem alloc] initWithType:0];

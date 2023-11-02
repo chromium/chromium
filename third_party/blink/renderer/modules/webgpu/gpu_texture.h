@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,34 +25,49 @@ class GPUTexture : public DawnObject<WGPUTexture> {
   static GPUTexture* Create(GPUDevice* device,
                             const GPUTextureDescriptor* webgpu_desc,
                             ExceptionState& exception_state);
-  static GPUTexture* CreateError(GPUDevice* device);
+  static GPUTexture* CreateError(GPUDevice* device,
+                                 const WGPUTextureDescriptor* desc);
   static GPUTexture* FromCanvas(GPUDevice* device,
                                 HTMLCanvasElement* canvas,
                                 WGPUTextureUsage usage,
                                 ExceptionState& exception_state);
 
-  GPUTexture(GPUDevice* device,
-             WGPUTexture texture,
-             WGPUTextureDimension dimension,
-             WGPUTextureFormat format,
-             WGPUTextureUsage usage);
+  GPUTexture(GPUDevice* device, WGPUTexture texture);
   GPUTexture(GPUDevice* device,
              WGPUTextureFormat format,
              WGPUTextureUsage usage,
              scoped_refptr<WebGPUMailboxTexture> mailbox_texture);
 
+  ~GPUTexture() override;
+
   GPUTexture(const GPUTexture&) = delete;
   GPUTexture& operator=(const GPUTexture&) = delete;
 
   // gpu_texture.idl
-  GPUTextureView* createView(const GPUTextureViewDescriptor* webgpu_desc);
+  GPUTextureView* createView(const GPUTextureViewDescriptor* webgpu_desc,
+                             ExceptionState& exception_state);
   void destroy();
+  uint32_t width() const;
+  uint32_t height() const;
+  uint32_t depthOrArrayLayers() const;
+  uint32_t mipLevelCount() const;
+  uint32_t sampleCount() const;
+  String dimension() const;
+  String format() const;
+  uint32_t usage() const;
 
   WGPUTextureDimension Dimension() { return dimension_; }
   WGPUTextureFormat Format() { return format_; }
   WGPUTextureUsage Usage() { return usage_; }
 
+  void DissociateMailbox();
+
  private:
+  void setLabelImpl(const String& value) override {
+    std::string utf8_label = value.Utf8();
+    GetProcs().textureSetLabel(GetHandle(), utf8_label.c_str());
+  }
+
   WGPUTextureDimension dimension_;
   WGPUTextureFormat format_;
   WGPUTextureUsage usage_;

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,12 +29,13 @@ namespace content {
 class DevToolsAgentHostImpl;
 class RenderFrameHostImpl;
 class RenderWidgetHostImpl;
+class WebContentsImpl;
 
 namespace protocol {
 
 class InputHandler : public DevToolsDomainHandler, public Input::Backend {
  public:
-  explicit InputHandler(bool allow_file_access);
+  InputHandler(bool allow_file_access, bool allow_sending_input_to_browser);
 
   InputHandler(const InputHandler&) = delete;
   InputHandler& operator=(const InputHandler&) = delete;
@@ -47,7 +48,6 @@ class InputHandler : public DevToolsDomainHandler, public Input::Backend {
   void SetRenderer(int process_host_id,
                    RenderFrameHostImpl* frame_host) override;
 
-  void OnPageScaleFactorChanged(float page_scale_factor);
   void StartDragging(const blink::mojom::DragData& drag_data,
                      blink::DragOperationsMask drag_operations_mask,
                      bool* intercepted);
@@ -235,17 +235,19 @@ class InputHandler : public DevToolsDomainHandler, public Input::Backend {
 
   RenderWidgetHostViewBase* GetRootView();
 
+  float ScaleFactor();
+
   RenderFrameHostImpl* host_;
   // WebContents associated with the |host_|.
-  WebContents* web_contents_;
+  WebContentsImpl* web_contents_ = nullptr;
   std::unique_ptr<Input::Frontend> frontend_;
   base::flat_set<std::unique_ptr<InputInjector>, base::UniquePtrComparator>
       injectors_;
-  float page_scale_factor_;
   int last_id_;
   bool ignore_input_events_ = false;
   bool intercept_drags_ = false;
   const bool allow_file_access_;
+  const bool allow_sending_input_to_browser_ = false;
   std::set<int> pointer_ids_;
   std::unique_ptr<SyntheticPointerDriver> synthetic_pointer_driver_;
   base::flat_map<int, blink::WebTouchPoint> touch_points_;

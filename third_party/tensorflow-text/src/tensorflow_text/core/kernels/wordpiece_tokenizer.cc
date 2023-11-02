@@ -17,8 +17,6 @@
 #include "absl/strings/str_cat.h"
 #include "absl/strings/str_join.h"
 #include "absl/strings/string_view.h"
-#include "third_party/icu/source/common/unicode/schriter.h"
-#include "third_party/icu/source/common/unicode/unistr.h"
 #include "third_party/icu/source/common/unicode/utf8.h"
 
 namespace tensorflow {

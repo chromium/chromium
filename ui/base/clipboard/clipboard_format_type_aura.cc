@@ -1,12 +1,14 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/base/clipboard/clipboard_format_type.h"
 
+#include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "build/build_config.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 
 namespace ui {
@@ -136,5 +138,14 @@ const ClipboardFormatType& ClipboardFormatType::WebCustomDataType() {
   static base::NoDestructor<ClipboardFormatType> type(kMimeTypeWebCustomData);
   return *type;
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+// static
+const ClipboardFormatType& ClipboardFormatType::DataTransferEndpointDataType() {
+  static base::NoDestructor<ClipboardFormatType> type(
+      kMimeTypeDataTransferEndpoint);
+  return *type;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace ui

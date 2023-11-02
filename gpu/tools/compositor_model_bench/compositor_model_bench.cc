@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -187,7 +187,7 @@ class Simulator {
 
   // Initialize the OpenGL context.
   bool InitGLContext() {
-    if (!gl::init::InitializeGLOneOff()) {
+    if (!gl::init::InitializeGLOneOff(/*system_device_id=*/0)) {
       LOG(FATAL) << "gl::init::InitializeGLOneOff failed";
       return false;
     }

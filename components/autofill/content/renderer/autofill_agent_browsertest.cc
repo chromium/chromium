@@ -1,4 +1,4 @@
-// Copyright (c) 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #include <stdint.h>
@@ -85,12 +85,19 @@ class MockAutofillDriver : public mojom::AutofillDriver {
               (const FormData& form),
               (override));
   MOCK_METHOD(void,
+              JavaScriptChangedAutofilledValue,
+              (const FormData& form,
+               const FormFieldData& field,
+               const std::u16string& old_value),
+              (override));
+  MOCK_METHOD(void,
               AskForValuesToFill,
-              (int32_t id,
-               const FormData& form,
+              (const FormData& form,
                const FormFieldData& field,
                const gfx::RectF& bounding_box,
-               bool autoselect_first_suggestion),
+               int32_t query_id,
+               bool autoselect_first_suggestion,
+               FormElementWasClicked form_element_was_clicked),
               (override));
   MOCK_METHOD(void, HidePopup, (), (override));
   MOCK_METHOD(void,
@@ -195,39 +202,28 @@ class AutofillAgentTest : public content::RenderViewTest {
   std::unique_ptr<AutofillAssistantAgent> autofill_assistant_agent_;
 };
 
-// The parameter indicates if kAutofillDisplaceRemovedForms is enabled.
-class AutofillAgentTestWithFeatures
-    : public AutofillAgentTest,
-      public ::testing::WithParamInterface<bool> {
+// Enables AutofillAcrossIframes.
+class AutofillAgentTestWithFeatures : public AutofillAgentTest {
  public:
   AutofillAgentTestWithFeatures() {
-    std::vector<base::Feature> enabled;
-    std::vector<base::Feature> disabled;
-    enabled.push_back(features::kAutofillAcrossIframes);
-    (GetParam() ? enabled : disabled)
-        .push_back(features::kAutofillDisplaceRemovedForms);
-    scoped_features_.InitWithFeatures(enabled, disabled);
+    scoped_features_.InitAndEnableFeature(features::kAutofillAcrossIframes);
   }
 
  private:
   base::test::ScopedFeatureList scoped_features_;
 };
 
-INSTANTIATE_TEST_SUITE_P(AutofillAgentTest,
-                         AutofillAgentTestWithFeatures,
-                         ::testing::Bool());
-
-TEST_P(AutofillAgentTestWithFeatures, FormsSeen_Empty) {
+TEST_F(AutofillAgentTestWithFeatures, FormsSeen_Empty) {
   EXPECT_CALL(autofill_driver_, FormsSeen(SizeIs(0), SizeIs(0)));
   LoadHTML(R"(<body> </body>)");
 }
 
-TEST_P(AutofillAgentTestWithFeatures, FormsSeen_NoEmpty) {
+TEST_F(AutofillAgentTestWithFeatures, FormsSeen_NoEmpty) {
   EXPECT_CALL(autofill_driver_, FormsSeen(SizeIs(0), SizeIs(0)));
   LoadHTML(R"(<body> <form></form> </body>)");
 }
 
-TEST_P(AutofillAgentTestWithFeatures, FormsSeen_NewFormUnowned) {
+TEST_F(AutofillAgentTestWithFeatures, FormsSeen_NewFormUnowned) {
   EXPECT_CALL(autofill_driver_,
               FormsSeen(HasSingleElementWhich(HasFormId(0), HasNumFields(1),
                                               HasNumChildFrames(0)),
@@ -235,7 +231,7 @@ TEST_P(AutofillAgentTestWithFeatures, FormsSeen_NewFormUnowned) {
   LoadHTML(R"(<body> <input> </body>)");
 }
 
-TEST_P(AutofillAgentTestWithFeatures, FormsSeen_NewForm) {
+TEST_F(AutofillAgentTestWithFeatures, FormsSeen_NewForm) {
   EXPECT_CALL(autofill_driver_,
               FormsSeen(HasSingleElementWhich(HasFormId(1), HasNumFields(1),
                                               HasNumChildFrames(0)),
@@ -243,7 +239,7 @@ TEST_P(AutofillAgentTestWithFeatures, FormsSeen_NewForm) {
   LoadHTML(R"(<body> <form><input></form> </body>)");
 }
 
-TEST_P(AutofillAgentTestWithFeatures, FormsSeen_NewIframe) {
+TEST_F(AutofillAgentTestWithFeatures, FormsSeen_NewIframe) {
   EXPECT_CALL(autofill_driver_,
               FormsSeen(HasSingleElementWhich(HasFormId(1), HasNumFields(0),
                                               HasNumChildFrames(1)),
@@ -251,7 +247,7 @@ TEST_P(AutofillAgentTestWithFeatures, FormsSeen_NewIframe) {
   LoadHTML(R"(<body> <form><iframe></iframe></form> </body>)");
 }
 
-TEST_P(AutofillAgentTestWithFeatures, FormsSeen_UpdatedForm) {
+TEST_F(AutofillAgentTestWithFeatures, FormsSeen_UpdatedForm) {
   {
     EXPECT_CALL(autofill_driver_,
                 FormsSeen(HasSingleElementWhich(HasFormId(1), HasNumFields(1),
@@ -272,7 +268,7 @@ TEST_P(AutofillAgentTestWithFeatures, FormsSeen_UpdatedForm) {
   }
 }
 
-TEST_P(AutofillAgentTestWithFeatures, FormsSeen_RemovedForm) {
+TEST_F(AutofillAgentTestWithFeatures, FormsSeen_RemovedForm) {
   {
     EXPECT_CALL(autofill_driver_, FormsSeen(SizeIs(1), SizeIs(0)));
     LoadHTML(R"(<body> <form><input></form> </body>)");

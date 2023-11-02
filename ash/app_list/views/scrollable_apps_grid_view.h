@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,8 +18,8 @@ class ScrollView;
 
 namespace ash {
 
+class AppListKeyboardController;
 class AppListViewDelegate;
-class AppsGridViewFocusDelegate;
 
 // An apps grid that shows all the apps in a long scrolling list. Used for
 // the clamshell mode bubble launcher. Implemented as a single "page" of apps.
@@ -35,7 +35,7 @@ class ASH_EXPORT ScrollableAppsGridView : public AppsGridView {
                          AppsGridViewFolderDelegate* folder_delegate,
                          views::ScrollView* scroll_view,
                          AppListFolderController* folder_controller,
-                         AppsGridViewFocusDelegate* focus_delegate);
+                         AppListKeyboardController* keyboard_controller);
   ScrollableAppsGridView(const ScrollableAppsGridView&) = delete;
   ScrollableAppsGridView& operator=(const ScrollableAppsGridView&) = delete;
   ~ScrollableAppsGridView() override;
@@ -51,22 +51,22 @@ class ASH_EXPORT ScrollableAppsGridView : public AppsGridView {
   gfx::Size GetTileViewSize() const override;
   gfx::Insets GetTilePadding(int page) const override;
   gfx::Size GetTileGridSize() const override;
-  int GetPaddingBetweenPages() const override;
   int GetTotalPages() const override;
   int GetSelectedPage() const override;
-  bool IsScrollAxisVertical() const override;
-  void CalculateIdealBoundsForNonFolder() override;
   bool MaybeAutoScroll() override;
   void StopAutoScroll() override;
   void HandleScrollFromParentView(const gfx::Vector2d& offset,
                                   ui::EventType type) override;
-  void SetFocusAfterEndDrag() override;
+  void SetFocusAfterEndDrag(AppListItem* drag_item) override;
   void RecordAppMovingTypeMetrics(AppListAppMovingType type) override;
   int GetMaxRowsInPage(int page) const override;
   gfx::Vector2d GetGridCenteringOffset(int page) const override;
   const gfx::Vector2d CalculateTransitionOffset(
       int page_of_view) const override;
   void EnsureViewVisible(const GridIndex& index) override;
+  absl::optional<VisibleItemIndexRange> GetVisibleItemIndexRange()
+      const override;
+  base::ScopedClosureRunner LockAppsGridOpacity() override;
 
   views::ScrollView* scroll_view_for_test() { return scroll_view_; }
   base::OneShotTimer* auto_scroll_timer_for_test() {

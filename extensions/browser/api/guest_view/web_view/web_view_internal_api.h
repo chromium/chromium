@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,9 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/time/time.h"
 #include "extensions/browser/api/execute_code_function.h"
 #include "extensions/browser/api/web_contents_capture_client.h"
 #include "extensions/browser/extension_function.h"
@@ -34,7 +35,7 @@ class WebViewInternalExtensionFunction : public ExtensionFunction {
   ~WebViewInternalExtensionFunction() override {}
   bool PreRunValidation(std::string* error) override;
 
-  WebViewGuest* guest_ = nullptr;
+  raw_ptr<WebViewGuest> guest_ = nullptr;
 };
 
 class WebViewInternalCaptureVisibleRegionFunction

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,8 +36,8 @@ class SessionSyncServiceImpl : public SessionSyncService {
   OpenTabsUIDelegate* GetOpenTabsUIDelegate() override;
 
   // Allows client code to be notified when foreign sessions change.
-  base::CallbackListSubscription SubscribeToForeignSessionsChanged(
-      const base::RepeatingClosure& cb) override WARN_UNUSED_RESULT;
+  [[nodiscard]] base::CallbackListSubscription
+  SubscribeToForeignSessionsChanged(const base::RepeatingClosure& cb) override;
 
   base::WeakPtr<syncer::ModelTypeControllerDelegate> GetControllerDelegate()
       override;

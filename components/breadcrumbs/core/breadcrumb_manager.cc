@@ -1,10 +1,12 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/breadcrumbs/core/breadcrumb_manager.h"
 
+#include "base/containers/adapters.h"
 #include "base/format_macros.h"
+#include "base/observer_list.h"
 #include "base/strings/stringprintf.h"
 #include "components/breadcrumbs/core/breadcrumb_manager_observer.h"
 #include "components/breadcrumbs/core/crash_reporter_breadcrumb_constants.h"
@@ -30,35 +32,19 @@ const int kEventExpirationMinutes = 20;
 
 }  // namespace
 
-BreadcrumbManager::BreadcrumbManager(base::TimeTicks start_time)
-    : start_time_(start_time) {}
-
-BreadcrumbManager::~BreadcrumbManager() = default;
-
-size_t BreadcrumbManager::GetEventCount() {
-  DropOldEvents();
-
-  size_t count = 0;
-  for (auto it = event_buckets_.rbegin(); it != event_buckets_.rend(); ++it) {
-    count += it->events.size();
-  }
-  return count;
+// static
+BreadcrumbManager& BreadcrumbManager::GetInstance() {
+  static base::NoDestructor<BreadcrumbManager> breadcrumb_manager;
+  return *breadcrumb_manager;
 }
 
-const std::list<std::string> BreadcrumbManager::GetEvents(
-    size_t event_count_limit) {
+const std::list<std::string> BreadcrumbManager::GetEvents() {
   DropOldEvents();
 
   std::list<std::string> events;
-  for (auto it = event_buckets_.rbegin(); it != event_buckets_.rend(); ++it) {
-    const std::list<std::string>& bucket_events = it->events;
-    for (auto event_it = bucket_events.rbegin();
-         event_it != bucket_events.rend(); ++event_it) {
-      const std::string& event = *event_it;
+  for (const EventBucket& event_bucket : base::Reversed(event_buckets_)) {
+    for (const std::string& event : base::Reversed(event_bucket.events)) {
       events.push_front(event);
-      if (event_count_limit > 0 && events.size() >= event_count_limit) {
-        return events;
-      }
     }
   }
   return events;
@@ -90,11 +76,14 @@ void BreadcrumbManager::AddEvent(const std::string& event) {
   event_buckets_.back().events.push_back(event_log);
 
   for (auto& observer : observers_) {
-    observer.EventAdded(this, event_log);
+    observer.EventAdded(event_log);
   }
 
   DropOldEvents();
 }
+
+BreadcrumbManager::BreadcrumbManager() = default;
+BreadcrumbManager::~BreadcrumbManager() = default;
 
 void BreadcrumbManager::DropOldEvents() {
   bool old_buckets_dropped = false;
@@ -125,7 +114,7 @@ void BreadcrumbManager::DropOldEvents() {
 
   if (old_buckets_dropped) {
     for (auto& observer : observers_) {
-      observer.OldEventsRemoved(this);
+      observer.OldEventsRemoved();
     }
   }
 }
@@ -140,6 +129,11 @@ void BreadcrumbManager::AddObserver(BreadcrumbManagerObserver* observer) {
 
 void BreadcrumbManager::RemoveObserver(BreadcrumbManagerObserver* observer) {
   observers_.RemoveObserver(observer);
+}
+
+void BreadcrumbManager::ResetForTesting() {
+  start_time_ = base::TimeTicks::Now();
+  event_buckets_.clear();
 }
 
 BreadcrumbManager::EventBucket::EventBucket(int minutes_elapsed)

@@ -1,11 +1,11 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "media/capture/video_capture_types.h"
 
 #include "base/check.h"
-#include "base/cxx17_backports.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "media/base/limits.h"
 
@@ -52,14 +52,8 @@ std::string VideoCaptureFormat::ToString(const VideoCaptureFormat& format) {
 bool VideoCaptureFormat::ComparePixelFormatPreference(
     const VideoPixelFormat& lhs,
     const VideoPixelFormat& rhs) {
-  auto* format_lhs = std::find(
-      kSupportedCapturePixelFormats,
-      kSupportedCapturePixelFormats + base::size(kSupportedCapturePixelFormats),
-      lhs);
-  auto* format_rhs = std::find(
-      kSupportedCapturePixelFormats,
-      kSupportedCapturePixelFormats + base::size(kSupportedCapturePixelFormats),
-      rhs);
+  auto* format_lhs = base::ranges::find(kSupportedCapturePixelFormats, lhs);
+  auto* format_rhs = base::ranges::find(kSupportedCapturePixelFormats, rhs);
   return format_lhs < format_rhs;
 }
 
@@ -96,8 +90,6 @@ VideoCaptureParams::SuggestConstraints() const {
       break;
 
     case ResolutionChangePolicy::FIXED_ASPECT_RATIO: {
-      // TODO(miu): This is a place-holder until "min constraints" are plumbed-
-      // in from the MediaStream framework.  http://crbug.com/473336
       constexpr int kMinLines = 180;
       if (max_frame_size.height() <= kMinLines) {
         min_frame_size = max_frame_size;

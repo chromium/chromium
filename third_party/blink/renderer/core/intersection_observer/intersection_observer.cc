@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,8 @@
 #include <limits>
 
 #include "base/numerics/clamped_math.h"
-#include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
+#include "base/time/time.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_intersection_observer_callback.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_intersection_observer_delegate.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_intersection_observer_init.h"
@@ -150,7 +151,7 @@ void ParseThresholds(
       break;
   }
 
-  if (thresholds.IsEmpty())
+  if (thresholds.empty())
     thresholds.push_back(0.f);
 
   for (auto threshold_value : thresholds) {
@@ -285,6 +286,8 @@ IntersectionObserver::IntersectionObserver(
       always_report_root_bounds_(always_report_root_bounds),
       can_use_cached_rects_(0),
       use_overflow_clip_edge_(use_overflow_clip_edge) {
+  // Pointer registration is needed for sorting in IntersectionObserverController::ComputeIntersections.
+  recordreplay::RegisterPointer("IntersectionObserver", this);
   switch (margin.size()) {
     case 0:
       break;
@@ -391,7 +394,7 @@ void IntersectionObserver::unobserve(Element* target,
   observation->Disconnect();
   observations_.erase(observation);
   active_observations_.erase(observation);
-  if (root() && root()->isConnected() && observations_.IsEmpty()) {
+  if (root() && root()->isConnected() && observations_.empty()) {
     root()
         ->GetDocument()
         .EnsureIntersectionObserverController()
@@ -432,7 +435,7 @@ static void AppendLength(StringBuilder& string_builder, const Length& length) {
 String IntersectionObserver::rootMargin() const {
   StringBuilder string_builder;
   const auto& margin = RootMargin();
-  if (margin.IsEmpty()) {
+  if (margin.empty()) {
     string_builder.Append("0px 0px 0px 0px");
   } else {
     DCHECK_EQ(margin.size(), 4u);
@@ -462,7 +465,7 @@ int64_t IntersectionObserver::ComputeIntersections(
     unsigned flags,
     absl::optional<base::TimeTicks>& monotonic_time) {
   DCHECK(!RootIsImplicit());
-  if (!RootIsValid() || !GetExecutionContext() || observations_.IsEmpty())
+  if (!RootIsValid() || !GetExecutionContext() || observations_.empty())
     return 0;
 
   // If we're processing post-layout deliveries only and we're not a post-layout
@@ -484,9 +487,9 @@ int64_t IntersectionObserver::ComputeIntersections(
       IntersectionGeometry::GetRootLayoutObjectForTarget(root(), nullptr,
                                                          false),
       RootMargin());
-  HeapVector<Member<IntersectionObservation>> observations_to_process;
   // TODO(szager): Is this copy necessary?
-  CopyToVector(observations_, observations_to_process);
+  HeapVector<Member<IntersectionObservation>> observations_to_process(
+      observations_);
   int64_t result = 0;
   for (auto& observation : observations_to_process) {
     result +=
@@ -507,7 +510,7 @@ LocalFrameUkmAggregator::MetricId IntersectionObserver::GetUkmMetricId() const {
 
 void IntersectionObserver::ReportUpdates(IntersectionObservation& observation) {
   DCHECK_EQ(observation.Observer(), this);
-  bool needs_scheduling = active_observations_.IsEmpty();
+  bool needs_scheduling = active_observations_.empty();
   active_observations_.insert(&observation);
 
   if (needs_scheduling) {
@@ -527,7 +530,14 @@ void IntersectionObserver::Deliver() {
   if (!NeedsDelivery())
     return;
   HeapVector<Member<IntersectionObserverEntry>> entries;
+
+  HeapVector<Member<IntersectionObservation>> observations_vector;
   for (auto& observation : observations_)
+    observations_vector.push_back(observation);
+  std::sort(observations_vector.begin(), observations_vector.end(),
+            recordreplay::CompareMemberByPointerId<Member<IntersectionObservation>>());
+
+  for (auto& observation : observations_vector)
     observation->TakeRecords(entries);
   active_observations_.clear();
   if (entries.size())

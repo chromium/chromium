@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -393,6 +393,18 @@ TEST_F(LayoutSVGForeignObjectTest, BBoxPropagationZoomed) {
   const auto& parent_g = *target.Parent();
   EXPECT_EQ(parent_g.ObjectBoundingBox(), gfx::RectF(6, 5, 100, 50));
   EXPECT_EQ(parent_g.StrokeBoundingBox(), gfx::RectF(6, 5, 100, 50));
+}
+
+// crbug.com/1335655
+TEST_F(LayoutSVGForeignObjectTest, SetNeedsCollectInlines) {
+  SetBodyInnerHTML(R"HTML(
+    <svg><foreignObject id="target">abc</foreignObject></svg>)HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* target = GetElementById("target");
+  target->setAttribute("unicode-bidi", "bidi-override");
+  GetDocument().body()->innerText();
+  // Pass if no crash.
 }
 
 }  // namespace blink

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,8 +17,8 @@ std::unique_ptr<DisplayState> MockBrailleController::GetDisplayState() {
   std::unique_ptr<DisplayState> state(new DisplayState());
   state->available = available_;
   if (available_) {
-    state->text_column_count = std::make_unique<int>(18);
-    state->text_row_count = std::make_unique<int>(18);
+    state->text_column_count = 18;
+    state->text_row_count = 18;
   }
   return state;
 }

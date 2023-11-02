@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/download/internal/background_service/download_driver.h"
@@ -78,14 +79,14 @@ class DownloadDriverImpl : public DownloadDriver,
   void DoRemoveDownload(const std::string& guid, bool remove_file);
 
   // The client that receives updates from low level download logic.
-  DownloadDriver::Client* client_;
+  raw_ptr<DownloadDriver::Client> client_;
 
   // Pending guid set of downloads that will be removed soon.
   std::set<std::string> guid_to_remove_;
 
   // Coordinator for handling the actual download when |download_manager_| is
   // no longer used.
-  SimpleDownloadManagerCoordinator* download_manager_coordinator_;
+  raw_ptr<SimpleDownloadManagerCoordinator> download_manager_coordinator_;
 
   // Whether this object is ready to handle download requests.
   bool is_ready_;

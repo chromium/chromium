@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,7 +37,8 @@ class MicroBenchmarkControllerTest : public testing::Test {
         &layer_tree_host_client_, &task_graph_runner_, animation_host_.get());
     layer_tree_host_->SetRootLayer(Layer::Create());
     layer_tree_host_->InitializeForTesting(
-        TaskRunnerProvider::Create(nullptr, nullptr),
+        TaskRunnerProvider::Create(base::ThreadTaskRunnerHandle::Get(),
+                                   nullptr),
         std::unique_ptr<Proxy>(new FakeProxy));
   }
 

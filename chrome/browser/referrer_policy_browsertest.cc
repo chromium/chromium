@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
@@ -257,11 +258,15 @@ class ReferrerPolicyTest : public InProcessBrowserTest {
       mouse_event.button = button;
       mouse_event.SetPositionInWidget(15, 15);
       mouse_event.click_count = 1;
-      tab->GetMainFrame()->GetRenderViewHost()->GetWidget()->ForwardMouseEvent(
-          mouse_event);
+      tab->GetPrimaryMainFrame()
+          ->GetRenderViewHost()
+          ->GetWidget()
+          ->ForwardMouseEvent(mouse_event);
       mouse_event.SetType(blink::WebInputEvent::Type::kMouseUp);
-      tab->GetMainFrame()->GetRenderViewHost()->GetWidget()->ForwardMouseEvent(
-          mouse_event);
+      tab->GetPrimaryMainFrame()
+          ->GetRenderViewHost()
+          ->GetWidget()
+          ->ForwardMouseEvent(mouse_event);
     }
 
     if (disposition == WindowOpenDisposition::CURRENT_TAB) {
@@ -407,7 +412,13 @@ IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest, HttpsMiddleClickTargetBlankOrigin) {
 }
 
 // Context menu, from HTTP to HTTP.
-IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest, ContextMenuOrigin) {
+// TODO(crbug.com/1269942): Flaky on Lacros.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_ContextMenuOrigin DISABLED_ContextMenuOrigin
+#else
+#define MAYBE_ContextMenuOrigin ContextMenuOrigin
+#endif
+IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest, MAYBE_ContextMenuOrigin) {
   ContextMenuNotificationObserver context_menu_observer(
       IDC_CONTENT_CONTEXT_OPENLINKNEWTAB);
   RunReferrerTest(
@@ -418,7 +429,7 @@ IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest, ContextMenuOrigin) {
 
 // Context menu, from HTTPS to HTTP.
 // TODO(crbug.com/1269041): Fix flakiness on Linux and Lacros then reenable.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_HttpsContextMenuOrigin DISABLED_HttpsContextMenuOrigin
 #else
 #define MAYBE_HttpsContextMenuOrigin HttpsContextMenuOrigin
@@ -527,7 +538,7 @@ IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest,
 
 // Context menu, from HTTP to HTTP via server redirect.
 // TODO(crbug.com/1269041): Fix flakiness on Linux and Lacros then reenable.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_ContextMenuRedirect DISABLED_ContextMenuRedirect
 #else
 #define MAYBE_ContextMenuRedirect ContextMenuRedirect
@@ -543,7 +554,13 @@ IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest, MAYBE_ContextMenuRedirect) {
 }
 
 // Context menu, from HTTPS to HTTP via server redirect.
-IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest, HttpsContextMenuRedirect) {
+// TODO(crbug.com/1269942): Flaky on Lacros.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_HttpsContextMenuRedirect DISABLED_HttpsContextMenuRedirect
+#else
+#define MAYBE_HttpsContextMenuRedirect HttpsContextMenuRedirect
+#endif
+IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest, MAYBE_HttpsContextMenuRedirect) {
   ContextMenuNotificationObserver context_menu_observer(
       IDC_CONTENT_CONTEXT_OPENLINKNEWTAB);
   RunReferrerTest(network::mojom::ReferrerPolicy::kOrigin, START_ON_HTTPS,
@@ -761,7 +778,7 @@ IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest,
 //
 // These tests assume a default policy of no-referrer-when-downgrade.
 struct ReferrerOverrideParams {
-  absl::optional<base::Feature> feature_to_enable;
+  absl::optional<base::test::FeatureRef> feature_to_enable;
   network::mojom::ReferrerPolicy baseline_policy;
   network::mojom::ReferrerPolicy expected_policy;
 
@@ -831,8 +848,10 @@ class ReferrerOverrideTest
       public ::testing::WithParamInterface<ReferrerOverrideParams> {
  public:
   ReferrerOverrideTest() {
-    if (GetParam().feature_to_enable)
-      scoped_feature_list_.InitAndEnableFeature(*GetParam().feature_to_enable);
+    if (GetParam().feature_to_enable) {
+      scoped_feature_list_.InitAndEnableFeature(
+          *GetParam().feature_to_enable.value());
+    }
   }
 
  protected:
@@ -918,9 +937,10 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::ValuesIn(kReferrerOverrideParams),
     [](const ::testing::TestParamInfo<ReferrerOverrideParams>& info)
         -> std::string {
-      if (info.param.feature_to_enable)
+      if (info.param.feature_to_enable) {
         return base::StringPrintf("Param%s",
-                                  info.param.feature_to_enable->name);
+                                  info.param.feature_to_enable.value()->name);
+      }
       return "NoFeature";
     });
 

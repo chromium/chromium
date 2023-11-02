@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,7 @@ export const MouseFocusMixin = dedupingMixin(
         private boundOnMousedown_: (e: Event) => void;
         boundOnKeydown: (e: KeyboardEvent) => void;
 
-        connectedCallback() {
+        override connectedCallback() {
           super.connectedCallback();
           this.boundOnMousedown_ = this.onMousedown_.bind(this);
           this.boundOnKeydown = this.onKeydown_.bind(this);
@@ -33,7 +33,7 @@ export const MouseFocusMixin = dedupingMixin(
           document.addEventListener('keydown', this.boundOnKeydown, true);
         }
 
-        disconnectedCallback() {
+        override disconnectedCallback() {
           super.disconnectedCallback();
           document.removeEventListener(
               'mousedown', this.boundOnMousedown_, true);

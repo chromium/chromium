@@ -1,10 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/components/phonehub/fake_screen_lock_manager.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 FakeScreenLockManager::FakeScreenLockManager(LockStatus lock_status)
@@ -25,4 +25,4 @@ void FakeScreenLockManager::SetLockStatusInternal(LockStatus lock_status) {
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

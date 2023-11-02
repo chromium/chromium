@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,8 +23,6 @@ class BluetoothDeviceListItemView;
 class BluetoothDisabledDetailedView;
 class DetailedViewDelegate;
 class TriView;
-
-namespace tray {
 
 // BluetoothDetailedView implementation.
 class ASH_EXPORT BluetoothDetailedViewImpl : public BluetoothDetailedView,
@@ -88,7 +86,6 @@ class ASH_EXPORT BluetoothDetailedViewImpl : public BluetoothDetailedView,
   base::WeakPtrFactory<BluetoothDetailedViewImpl> weak_factory_{this};
 };
 
-}  // namespace tray
 }  // namespace ash
 
 #endif  // ASH_SYSTEM_BLUETOOTH_BLUETOOTH_DETAILED_VIEW_IMPL_H_

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -48,7 +48,7 @@ class DefaultSearchPolicyHandlerTest
   // method.
   void BuildDefaultSearchPolicy(PolicyMap* policy);
 
-  base::ListValue default_alternate_urls_;
+  base::Value::List default_alternate_urls_;
 };
 
 const char DefaultSearchPolicyHandlerTest::kSearchURL[] =
@@ -99,7 +99,7 @@ void DefaultSearchPolicyHandlerTest::
               nullptr);
   policy->Set(key::kDefaultSearchProviderAlternateURLs, POLICY_LEVEL_MANDATORY,
               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-              default_alternate_urls_.Clone(), nullptr);
+              base::Value(default_alternate_urls_.Clone()), nullptr);
   policy->Set(key::kDefaultSearchProviderImageURL, POLICY_LEVEL_MANDATORY,
               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(kImageURL),
               nullptr);
@@ -167,7 +167,8 @@ TEST_F(DefaultSearchPolicyHandlerTest, InvalidType) {
     EXPECT_TRUE(store_->GetValue(
         DefaultSearchManager::kDefaultSearchProviderDataPrefName, &temp));
 
-    auto old_value = policy.GetValue(policy_name)->Clone();
+    // It's safe to use `GetValueUnsafe()` as multiple policy types are handled.
+    auto old_value = policy.GetValueUnsafe(policy_name)->Clone();
     // BinaryValue is not supported in any current default search policy params.
     // Try changing policy param to BinaryValue and check that policy becomes
     // invalid.
@@ -193,52 +194,52 @@ TEST_F(DefaultSearchPolicyHandlerTest, FullyDefined) {
   UpdateProviderPolicy(policy);
 
   const base::Value* temp = nullptr;
-  const base::DictionaryValue* dictionary;
-  std::string value;
-  const base::ListValue* list_value;
   EXPECT_TRUE(store_->GetValue(
       DefaultSearchManager::kDefaultSearchProviderDataPrefName, &temp));
-  temp->GetAsDictionary(&dictionary);
+  const base::Value::Dict* dictionary = temp->GetIfDict();
+  ASSERT_TRUE(dictionary);
 
-  EXPECT_TRUE(dictionary->GetString(DefaultSearchManager::kURL, &value));
-  EXPECT_EQ(kSearchURL, value);
-  EXPECT_TRUE(dictionary->GetString(DefaultSearchManager::kShortName, &value));
-  EXPECT_EQ(kName, value);
-  EXPECT_TRUE(dictionary->GetString(DefaultSearchManager::kKeyword, &value));
-  EXPECT_EQ(kKeyword, value);
+  const std::string* value = nullptr;
+  ASSERT_TRUE(value = dictionary->FindString(DefaultSearchManager::kURL));
+  EXPECT_EQ(kSearchURL, *value);
+  ASSERT_TRUE(value = dictionary->FindString(DefaultSearchManager::kShortName));
+  EXPECT_EQ(kName, *value);
+  ASSERT_TRUE(value = dictionary->FindString(DefaultSearchManager::kKeyword));
+  EXPECT_EQ(kKeyword, *value);
 
-  EXPECT_TRUE(
-      dictionary->GetString(DefaultSearchManager::kSuggestionsURL, &value));
-  EXPECT_EQ(kSuggestURL, value);
-  EXPECT_TRUE(dictionary->GetString(DefaultSearchManager::kFaviconURL, &value));
-  EXPECT_EQ(kIconURL, value);
+  ASSERT_TRUE(
+      value = dictionary->FindString(DefaultSearchManager::kSuggestionsURL));
+  EXPECT_EQ(kSuggestURL, *value);
+  EXPECT_TRUE(value =
+                  dictionary->FindString(DefaultSearchManager::kFaviconURL));
+  EXPECT_EQ(kIconURL, *value);
 
-  base::ListValue encodings;
+  base::Value::List encodings;
   encodings.Append("UTF-16");
   encodings.Append("UTF-8");
+  const base::Value::List* list_value = nullptr;
+  ASSERT_TRUE(list_value =
+                  dictionary->FindList(DefaultSearchManager::kInputEncodings));
+  EXPECT_EQ(encodings, *list_value);
 
-  EXPECT_TRUE(
-      dictionary->GetList(DefaultSearchManager::kInputEncodings, &list_value));
-  EXPECT_TRUE(encodings.Equals(list_value));
+  ASSERT_TRUE(list_value =
+                  dictionary->FindList(DefaultSearchManager::kAlternateURLs));
+  EXPECT_EQ(default_alternate_urls_, *list_value);
 
-  EXPECT_TRUE(
-      dictionary->GetList(DefaultSearchManager::kAlternateURLs, &list_value));
-  EXPECT_TRUE(default_alternate_urls_.Equals(list_value));
+  ASSERT_TRUE(value = dictionary->FindString(DefaultSearchManager::kImageURL));
+  EXPECT_EQ(kImageURL, *value);
 
-  EXPECT_TRUE(dictionary->GetString(DefaultSearchManager::kImageURL, &value));
-  EXPECT_EQ(kImageURL, value);
+  ASSERT_TRUE(value = dictionary->FindString(
+                  DefaultSearchManager::kImageURLPostParams));
+  EXPECT_EQ(kImageParams, *value);
 
-  EXPECT_TRUE(
-      dictionary->GetString(DefaultSearchManager::kImageURLPostParams, &value));
-  EXPECT_EQ(kImageParams, value);
+  ASSERT_TRUE(value = dictionary->FindString(
+                  DefaultSearchManager::kSearchURLPostParams));
+  EXPECT_EQ(std::string(), *value);
 
-  EXPECT_TRUE(dictionary->GetString(DefaultSearchManager::kSearchURLPostParams,
-                                    &value));
-  EXPECT_EQ(std::string(), value);
-
-  EXPECT_TRUE(dictionary->GetString(
-      DefaultSearchManager::kSuggestionsURLPostParams, &value));
-  EXPECT_EQ(std::string(), value);
+  EXPECT_TRUE(value = dictionary->FindString(
+                  DefaultSearchManager::kSuggestionsURLPostParams));
+  EXPECT_EQ(std::string(), *value);
 }
 
 // Checks that disabling default search is properly reflected the dictionary
@@ -256,13 +257,13 @@ TEST_F(DefaultSearchPolicyHandlerTest, DisabledByPolicy) {
   // Ignore any other search provider related policy in this case.
   EXPECT_FALSE(store_->GetValue(DefaultSearchManager::kURL, &temp));
 
-  const base::DictionaryValue* dictionary;
   EXPECT_TRUE(store_->GetValue(
       DefaultSearchManager::kDefaultSearchProviderDataPrefName, &temp));
-  temp->GetAsDictionary(&dictionary);
+  const base::Value::Dict* dictionary = temp->GetIfDict();
+  ASSERT_TRUE(dictionary);
   absl::optional<bool> disabled =
-      dictionary->FindBoolKey(DefaultSearchManager::kDisabledByPolicy);
-  EXPECT_TRUE(disabled);
+      dictionary->FindBool(DefaultSearchManager::kDisabledByPolicy);
+  EXPECT_TRUE(disabled.has_value());
   EXPECT_TRUE(disabled.value());
 }
 
@@ -293,44 +294,45 @@ TEST_F(DefaultSearchPolicyHandlerTest, MinimallyDefined) {
   UpdateProviderPolicy(policy);
 
   const base::Value* temp = nullptr;
-  const base::DictionaryValue* dictionary;
-  std::string value;
-  const base::ListValue* list_value;
   EXPECT_TRUE(store_->GetValue(
       DefaultSearchManager::kDefaultSearchProviderDataPrefName, &temp));
-  temp->GetAsDictionary(&dictionary);
+  const base::Value::Dict* dictionary = temp->GetIfDict();
+  ASSERT_TRUE(dictionary);
 
   // Name and keyword should be derived from host.
-  EXPECT_TRUE(dictionary->GetString(DefaultSearchManager::kURL, &value));
-  EXPECT_EQ(kSearchURL, value);
-  EXPECT_TRUE(dictionary->GetString(DefaultSearchManager::kShortName, &value));
-  EXPECT_EQ(kHostName, value);
-  EXPECT_TRUE(dictionary->GetString(DefaultSearchManager::kKeyword, &value));
-  EXPECT_EQ(kHostName, value);
+  const std::string* value = nullptr;
+  ASSERT_TRUE(value = dictionary->FindString(DefaultSearchManager::kURL));
+  EXPECT_EQ(kSearchURL, *value);
+  ASSERT_TRUE(value = dictionary->FindString(DefaultSearchManager::kShortName));
+  EXPECT_EQ(kHostName, *value);
+  ASSERT_TRUE(value = dictionary->FindString(DefaultSearchManager::kKeyword));
+  EXPECT_EQ(kHostName, *value);
 
   // Everything else should be set to the default value.
-  EXPECT_TRUE(
-      dictionary->GetString(DefaultSearchManager::kSuggestionsURL, &value));
-  EXPECT_EQ(std::string(), value);
-  EXPECT_TRUE(dictionary->GetString(DefaultSearchManager::kFaviconURL, &value));
-  EXPECT_EQ(std::string(), value);
-  EXPECT_TRUE(
-      dictionary->GetList(DefaultSearchManager::kInputEncodings, &list_value));
-  EXPECT_TRUE(base::ListValue().Equals(list_value));
-  EXPECT_TRUE(
-      dictionary->GetList(DefaultSearchManager::kAlternateURLs, &list_value));
-  EXPECT_TRUE(base::ListValue().Equals(list_value));
-  EXPECT_TRUE(dictionary->GetString(DefaultSearchManager::kImageURL, &value));
-  EXPECT_EQ(std::string(), value);
-  EXPECT_TRUE(
-      dictionary->GetString(DefaultSearchManager::kImageURLPostParams, &value));
-  EXPECT_EQ(std::string(), value);
-  EXPECT_TRUE(dictionary->GetString(DefaultSearchManager::kSearchURLPostParams,
-                                    &value));
-  EXPECT_EQ(std::string(), value);
-  EXPECT_TRUE(dictionary->GetString(
-      DefaultSearchManager::kSuggestionsURLPostParams, &value));
-  EXPECT_EQ(std::string(), value);
+  ASSERT_TRUE(
+      value = dictionary->FindString(DefaultSearchManager::kSuggestionsURL));
+  EXPECT_EQ(std::string(), *value);
+  ASSERT_TRUE(value =
+                  dictionary->FindString(DefaultSearchManager::kFaviconURL));
+  EXPECT_EQ(std::string(), *value);
+  const base::Value::List* list_value = nullptr;
+  ASSERT_TRUE(list_value =
+                  dictionary->FindList(DefaultSearchManager::kInputEncodings));
+  EXPECT_EQ(base::Value::List(), *list_value);
+  ASSERT_TRUE(list_value =
+                  dictionary->FindList(DefaultSearchManager::kAlternateURLs));
+  EXPECT_EQ(base::Value::List(), *list_value);
+  ASSERT_TRUE(value = dictionary->FindString(DefaultSearchManager::kImageURL));
+  EXPECT_EQ(std::string(), *value);
+  ASSERT_TRUE(value = dictionary->FindString(
+                  DefaultSearchManager::kImageURLPostParams));
+  EXPECT_EQ(std::string(), *value);
+  ASSERT_TRUE(value = dictionary->FindString(
+                  DefaultSearchManager::kSearchURLPostParams));
+  EXPECT_EQ(std::string(), *value);
+  ASSERT_TRUE(value = dictionary->FindString(
+                  DefaultSearchManager::kSuggestionsURLPostParams));
+  EXPECT_EQ(std::string(), *value);
 }
 
 // Checks that setting a file URL as the default search is reflected properly in
@@ -346,19 +348,19 @@ TEST_F(DefaultSearchPolicyHandlerTest, FileURL) {
   UpdateProviderPolicy(policy);
 
   const base::Value* temp = nullptr;
-  const base::DictionaryValue* dictionary;
-  std::string value;
 
   EXPECT_TRUE(store_->GetValue(
       DefaultSearchManager::kDefaultSearchProviderDataPrefName, &temp));
-  temp->GetAsDictionary(&dictionary);
+  const base::Value::Dict* dictionary = temp->GetIfDict();
+  ASSERT_TRUE(dictionary);
 
-  EXPECT_TRUE(dictionary->GetString(DefaultSearchManager::kURL, &value));
-  EXPECT_EQ(kFileSearchURL, value);
-  EXPECT_TRUE(dictionary->GetString(DefaultSearchManager::kShortName, &value));
-  EXPECT_EQ("_", value);
-  EXPECT_TRUE(dictionary->GetString(DefaultSearchManager::kKeyword, &value));
-  EXPECT_EQ("_", value);
+  const std::string* value = nullptr;
+  ASSERT_TRUE(value = dictionary->FindString(DefaultSearchManager::kURL));
+  EXPECT_EQ(kFileSearchURL, *value);
+  ASSERT_TRUE(value = dictionary->FindString(DefaultSearchManager::kShortName));
+  EXPECT_EQ("_", *value);
+  ASSERT_TRUE(value = dictionary->FindString(DefaultSearchManager::kKeyword));
+  EXPECT_EQ("_", *value);
 }
 
 }  // namespace policy

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,6 +22,11 @@
 
 // YES if page load for this URL has failed more than once.
 @property(nonatomic) BOOL repeatedFailure;
+
+// Disconnects all delegates set by the coordinator on any web states in its web
+// state list. After `disconnect` is called, the coordinator will not add
+// delegates to further webstates.
+- (void)disconnect;
 
 @end
 

@@ -1,20 +1,30 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 module crosapi.mojom;
 
 import "chromeos/crosapi/mojom/bitmap.mojom";
+import "chromeos/crosapi/mojom/video_capture.mojom";
 import "skia/public/mojom/bitmap.mojom";
 
 // A unique identifier and title for a window (or screen).
 [Stable, RenamedFrom="crosapi.mojom.WindowDetails"]
 struct SnapshotSource {
-  // Guaranteed to be unique and never reused.
+  // Guaranteed to be unique and never reused. This represents an ID that is
+  // only significant to the SnapshotCapturer, and may not have meaning for
+  // identifying any shared windows. (e.g. windows that are Lacros-owned).
   uint64 id@0;
 
   // The user-visible name of the window or screen in UTF-8 encoding.
   string title@1;
+
+  // The unique id assigned to the window. This ID is shared between
+  // Lacros-chrome and Ash-chrome and will thus only be set for Lacros-owned
+  // windows, but will allow looking up which owned window this source
+  // corresponds to. Will only be set for Lacros-owned windows.
+  [MinVersion=1]
+  string? window_unique_id@2;
 };
 
 // This interface is used to capture bitmap snapshots of screens or windows.
@@ -62,4 +72,18 @@ interface ScreenManager {
   // Get a SnapshotCapturer instance that can snapshot available windows.
   [MinVersion=1]
   GetWindowCapturer@4(pending_receiver<SnapshotCapturer> capturer);
+
+  // Get a VideoCaptureDevice instance that can capture a video stream of the
+  // specified screen. |screen_id| should be retrieved from the (Screen)
+  // SnapshotCapturer::ListSources.
+  [MinVersion=2]
+  GetScreenVideoCapturer@5(pending_receiver<VideoCaptureDevice> capturer,
+                      uint64 screen_id);
+
+  // Get a VideoCaptureDevice instance that can capture a video stream of the
+  // specified screen. |window_id| should be retrieved from the (Window)
+  // SnapshotCapturer::ListSources.
+  [MinVersion=2]
+  GetWindowVideoCapturer@6(pending_receiver<VideoCaptureDevice> capturer,
+                      uint64 window_id);
 };

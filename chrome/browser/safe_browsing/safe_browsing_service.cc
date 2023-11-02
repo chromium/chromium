@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,9 +30,13 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
 #include "chrome/browser/safe_browsing/chrome_password_protection_service_factory.h"
+#include "chrome/browser/safe_browsing/chrome_ping_manager_factory.h"
 #include "chrome/browser/safe_browsing/chrome_safe_browsing_blocking_page_factory.h"
 #include "chrome/browser/safe_browsing/chrome_ui_manager_delegate.h"
 #include "chrome/browser/safe_browsing/chrome_user_population_helper.h"
+#include "chrome/browser/safe_browsing/chrome_v4_protocol_config_provider.h"
+#include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
+#include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "chrome/browser/safe_browsing/network_context_service.h"
 #include "chrome/browser/safe_browsing/network_context_service_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
@@ -41,12 +45,12 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
+#include "components/download/public/common/download_item.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/client_side_phishing_model.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
-#include "components/safe_browsing/content/browser/safe_browsing_network_context.h"
 #include "components/safe_browsing/content/browser/triggers/trigger_manager.h"
 #include "components/safe_browsing/content/browser/ui_manager.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
@@ -62,15 +66,16 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/download_item_utils.h"
 #include "services/network/public/cpp/cross_thread_pending_shared_url_loader_factory.h"
 #include "services/network/public/cpp/features.h"
 #include "services/preferences/public/mojom/tracked_preference_validation_delegate.mojom.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/install_static/install_util.h"
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/safe_browsing/android/safe_browsing_referring_app_bridge_android.h"
 #endif
 
@@ -140,12 +145,6 @@ void SafeBrowsingService::Initialize() {
   bool result = base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
   DCHECK(result);
 
-  network_context_ =
-      std::make_unique<safe_browsing::SafeBrowsingNetworkContext>(
-          user_data_dir, features::ShouldTriggerNetworkDataMigration(),
-          base::BindRepeating(&SafeBrowsingService::CreateNetworkContextParams,
-                              base::Unretained(this)));
-
   WebUIInfoSingleton::GetInstance()->set_safe_browsing_service(this);
 
   ui_manager_ = CreateUIManager();
@@ -187,7 +186,6 @@ void SafeBrowsingService::ShutDown() {
 
   WebUIInfoSingleton::GetInstance()->set_safe_browsing_service(nullptr);
 
-  network_context_->ServiceShuttingDown();
   proxy_config_monitor_.reset();
 }
 
@@ -214,9 +212,14 @@ SafeBrowsingService::GetURLLoaderFactory(
   return service->GetURLLoaderFactory();
 }
 
-void SafeBrowsingService::FlushNetworkInterfaceForTesting() {
-  if (network_context_)
-    network_context_->FlushForTesting();
+void SafeBrowsingService::FlushNetworkInterfaceForTesting(
+    content::BrowserContext* browser_context) {
+  NetworkContextService* service =
+      NetworkContextServiceFactory::GetForBrowserContext(browser_context);
+  if (!service)
+    return;
+
+  service->FlushNetworkInterfaceForTesting();
 }
 
 const scoped_refptr<SafeBrowsingUIManager>& SafeBrowsingService::ui_manager()
@@ -236,17 +239,12 @@ SafeBrowsingService::GetReferrerChainProviderFromBrowserContext(
       browser_context);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 LoginReputationClientRequest::ReferringAppInfo
 SafeBrowsingService::GetReferringAppInfo(content::WebContents* web_contents) {
   return safe_browsing::GetReferringAppInfo(web_contents);
 }
 #endif
-
-PingManager* SafeBrowsingService::ping_manager() const {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return ping_manager_.get();
-}
 
 TriggerManager* SafeBrowsingService::trigger_manager() const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -290,34 +288,7 @@ void SafeBrowsingService::RegisterAllDelayedAnalysis() {
 }
 
 V4ProtocolConfig SafeBrowsingService::GetV4ProtocolConfig() const {
-  base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
-  return ::safe_browsing::GetV4ProtocolConfig(
-      GetProtocolConfigClientName(),
-      cmdline->HasSwitch(::switches::kDisableBackgroundNetworking));
-}
-
-std::string SafeBrowsingService::GetProtocolConfigClientName() const {
-  std::string client_name;
-  // On Windows, get the safe browsing client name from the browser
-  // distribution classes in installer util. These classes don't yet have
-  // an analog on non-Windows builds so just keep the name specified here.
-#if defined(OS_WIN)
-  client_name = install_static::GetSafeBrowsingName();
-#else
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  client_name = "googlechrome";
-#else
-  client_name = "chromium";
-#endif
-
-  // Mark client string to allow server to differentiate mobile.
-#if defined(OS_ANDROID)
-  client_name.append("-a");
-#endif
-
-#endif  // defined(OS_WIN)
-
-  return client_name;
+  return safe_browsing::GetV4ProtocolConfig();
 }
 
 void SafeBrowsingService::SetDatabaseManagerForTest(
@@ -353,10 +324,6 @@ void SafeBrowsingService::StopOnIOThread(bool shutdown) {
 void SafeBrowsingService::Start() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (!ping_manager_) {
-    ping_manager_ = PingManager::Create(GetV4ProtocolConfig());
-  }
-
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -366,7 +333,6 @@ void SafeBrowsingService::Start() {
 }
 
 void SafeBrowsingService::Stop(bool shutdown) {
-  ping_manager_.reset();
   ui_manager_->Stop(shutdown);
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
@@ -437,6 +403,7 @@ void SafeBrowsingService::OnOffTheRecordProfileCreated(
 void SafeBrowsingService::OnProfileWillBeDestroyed(Profile* profile) {
   observed_profiles_.RemoveObservation(profile);
   services_delegate_->RemoveTelemetryService(profile);
+  services_delegate_->OnProfileWillBeDestroyed(profile);
 
   PrefService* pref_service = profile->GetPrefs();
   DCHECK(pref_service);
@@ -483,13 +450,32 @@ void SafeBrowsingService::RefreshState() {
   services_delegate_->RefreshState(enabled_by_prefs_);
 }
 
-void SafeBrowsingService::SendSerializedDownloadReport(
-    Profile* profile,
-    const std::string& report) {
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+bool SafeBrowsingService::SendDownloadReport(
+    download::DownloadItem* download,
+    ClientSafeBrowsingReportRequest::ReportType report_type,
+    bool did_proceed,
+    absl::optional<bool> show_download_in_folder) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (ping_manager())
-    ping_manager()->ReportThreatDetails(GetURLLoaderFactory(profile), report);
+  Profile* profile = Profile::FromBrowserContext(
+      content::DownloadItemUtils::GetBrowserContext(download));
+  auto report = std::make_unique<ClientSafeBrowsingReportRequest>();
+  report->set_type(report_type);
+  report->set_download_verdict(
+      DownloadProtectionService::GetDownloadProtectionVerdict(download));
+  report->set_url(download->GetURL().spec());
+  report->set_did_proceed(did_proceed);
+  if (show_download_in_folder) {
+    report->set_show_download_in_folder(show_download_in_folder.value());
+  }
+  std::string token = DownloadProtectionService::GetDownloadPingToken(download);
+  if (!token.empty())
+    report->set_token(token);
+  return ChromePingManagerFactory::GetForBrowserContext(profile)
+             ->ReportThreatDetails(std::move(report)) ==
+         PingManager::ReportThreatDetailsResult::SUCCESS;
 }
+#endif
 
 void SafeBrowsingService::CreateTriggerManager() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

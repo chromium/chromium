@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/active_directory_password_change_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
-#include "chromeos/dbus/authpolicy/fake_authpolicy_client.h"
+#include "chromeos/ash/components/dbus/authpolicy/fake_authpolicy_client.h"
 #include "content/public/test/browser_test_utils.h"
 
 namespace ash {
@@ -69,7 +69,8 @@ void ActiveDirectoryLoginMixin::SetUpOnMainThread() {
       ->signin_screen_handler()
       ->SetOfflineTimeoutForTesting(base::TimeDelta::Max());
 
-  message_queue_ = std::make_unique<content::DOMMessageQueue>();
+  message_queue_ = std::make_unique<content::DOMMessageQueue>(
+      LoginDisplayHost::default_host()->GetOobeWebContents());
   SetupActiveDirectoryJSNotifications();
 }
 

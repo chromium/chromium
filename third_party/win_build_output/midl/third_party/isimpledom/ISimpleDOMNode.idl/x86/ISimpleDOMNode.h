@@ -43,6 +43,14 @@
 #pragma once
 #endif
 
+#ifndef DECLSPEC_XFGVIRT
+#if _CONTROL_FLOW_GUARD_XFG
+#define DECLSPEC_XFGVIRT(base, func) __declspec(xfg_virtual(base, func))
+#else
+#define DECLSPEC_XFGVIRT(base, func)
+#endif
+#endif
+
 /* Forward Declarations */ 
 
 #ifndef __ISimpleDOMNode_FWD_DEFINED__
@@ -288,18 +296,22 @@ EXTERN_C const IID IID_ISimpleDOMNode;
     {
         BEGIN_INTERFACE
         
+        DECLSPEC_XFGVIRT(IUnknown, QueryInterface)
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             ISimpleDOMNode * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
             _COM_Outptr_  void **ppvObject);
         
+        DECLSPEC_XFGVIRT(IUnknown, AddRef)
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             ISimpleDOMNode * This);
         
+        DECLSPEC_XFGVIRT(IUnknown, Release)
         ULONG ( STDMETHODCALLTYPE *Release )( 
             ISimpleDOMNode * This);
         
+        DECLSPEC_XFGVIRT(ISimpleDOMNode, get_nodeInfo)
         /* [id][propget] */ HRESULT ( STDMETHODCALLTYPE *get_nodeInfo )( 
             ISimpleDOMNode * This,
             /* [out] */ BSTR *nodeName,
@@ -309,6 +321,7 @@ EXTERN_C const IID IID_ISimpleDOMNode;
             /* [out] */ unsigned int *uniqueID,
             /* [retval][out] */ unsigned short *nodeType);
         
+        DECLSPEC_XFGVIRT(ISimpleDOMNode, get_attributes)
         /* [id][propget] */ HRESULT ( STDMETHODCALLTYPE *get_attributes )( 
             ISimpleDOMNode * This,
             /* [in] */ unsigned short maxAttribs,
@@ -317,6 +330,7 @@ EXTERN_C const IID IID_ISimpleDOMNode;
             /* [length_is][size_is][out] */ BSTR *attribValues,
             /* [retval][out] */ unsigned short *numAttribs);
         
+        DECLSPEC_XFGVIRT(ISimpleDOMNode, get_attributesForNames)
         /* [id][propget] */ HRESULT ( STDMETHODCALLTYPE *get_attributesForNames )( 
             ISimpleDOMNode * This,
             /* [in] */ unsigned short numAttribs,
@@ -324,6 +338,7 @@ EXTERN_C const IID IID_ISimpleDOMNode;
             /* [length_is][size_is][in] */ short *nameSpaceID,
             /* [length_is][size_is][retval][out] */ BSTR *attribValues);
         
+        DECLSPEC_XFGVIRT(ISimpleDOMNode, get_computedStyle)
         /* [id][propget] */ HRESULT ( STDMETHODCALLTYPE *get_computedStyle )( 
             ISimpleDOMNode * This,
             /* [in] */ unsigned short maxStyleProperties,
@@ -332,6 +347,7 @@ EXTERN_C const IID IID_ISimpleDOMNode;
             /* [length_is][size_is][out] */ BSTR *styleValues,
             /* [retval][out] */ unsigned short *numStyleProperties);
         
+        DECLSPEC_XFGVIRT(ISimpleDOMNode, get_computedStyleForProperties)
         /* [id][propget] */ HRESULT ( STDMETHODCALLTYPE *get_computedStyleForProperties )( 
             ISimpleDOMNode * This,
             /* [in] */ unsigned short numStyleProperties,
@@ -339,43 +355,53 @@ EXTERN_C const IID IID_ISimpleDOMNode;
             /* [length_is][size_is][in] */ BSTR *styleProperties,
             /* [length_is][size_is][retval][out] */ BSTR *styleValues);
         
+        DECLSPEC_XFGVIRT(ISimpleDOMNode, scrollTo)
         HRESULT ( STDMETHODCALLTYPE *scrollTo )( 
             ISimpleDOMNode * This,
             /* [in] */ boolean placeTopLeft);
         
+        DECLSPEC_XFGVIRT(ISimpleDOMNode, get_parentNode)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_parentNode )( 
             ISimpleDOMNode * This,
             /* [retval][out] */ ISimpleDOMNode **node);
         
+        DECLSPEC_XFGVIRT(ISimpleDOMNode, get_firstChild)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_firstChild )( 
             ISimpleDOMNode * This,
             /* [retval][out] */ ISimpleDOMNode **node);
         
+        DECLSPEC_XFGVIRT(ISimpleDOMNode, get_lastChild)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_lastChild )( 
             ISimpleDOMNode * This,
             /* [retval][out] */ ISimpleDOMNode **node);
         
+        DECLSPEC_XFGVIRT(ISimpleDOMNode, get_previousSibling)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_previousSibling )( 
             ISimpleDOMNode * This,
             /* [retval][out] */ ISimpleDOMNode **node);
         
+        DECLSPEC_XFGVIRT(ISimpleDOMNode, get_nextSibling)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_nextSibling )( 
             ISimpleDOMNode * This,
             /* [retval][out] */ ISimpleDOMNode **node);
         
+        DECLSPEC_XFGVIRT(ISimpleDOMNode, get_childAt)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_childAt )( 
             ISimpleDOMNode * This,
             /* [in] */ unsigned int childIndex,
             /* [retval][out] */ ISimpleDOMNode **node);
         
+        DECLSPEC_XFGVIRT(ISimpleDOMNode, get_innerHTML)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_innerHTML )( 
             ISimpleDOMNode * This,
             /* [retval][out] */ BSTR *innerHTML);
         
+        DECLSPEC_XFGVIRT(ISimpleDOMNode, get_localInterface)
         /* [local][propget] */ HRESULT ( STDMETHODCALLTYPE *get_localInterface )( 
             ISimpleDOMNode * This,
             /* [retval][out] */ void **localInterface);
         
+        DECLSPEC_XFGVIRT(ISimpleDOMNode, get_language)
         /* [id][propget] */ HRESULT ( STDMETHODCALLTYPE *get_language )( 
             ISimpleDOMNode * This,
             /* [retval][out] */ BSTR *language);

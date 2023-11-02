@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,7 +25,7 @@ DriveServiceOnWorker::DriveServiceOnWorker(
     : wrapper_(wrapper),
       ui_task_runner_(ui_task_runner),
       worker_task_runner_(worker_task_runner) {
-  sequence_checker_.DetachFromSequence();
+  DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
 DriveServiceOnWorker::~DriveServiceOnWorker() {}
@@ -35,7 +35,7 @@ google_apis::CancelCallbackOnce DriveServiceOnWorker::AddNewDirectory(
     const std::string& directory_title,
     const drive::AddNewDirectoryOptions& options,
     google_apis::FileResourceCallback callback) {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   ui_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&DriveServiceWrapper::AddNewDirectory, wrapper_,
@@ -51,7 +51,7 @@ google_apis::CancelCallbackOnce DriveServiceOnWorker::DeleteResource(
     const std::string& resource_id,
     const std::string& etag,
     google_apis::EntryActionCallback callback) {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   ui_task_runner_->PostTask(
       FROM_HERE,
@@ -69,7 +69,7 @@ google_apis::CancelCallbackOnce DriveServiceOnWorker::DownloadFile(
     google_apis::DownloadActionCallback download_action_callback,
     const google_apis::GetContentCallback& get_content_callback,
     google_apis::ProgressCallback progress_callback) {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   ui_task_runner_->PostTask(
       FROM_HERE,
@@ -88,7 +88,7 @@ google_apis::CancelCallbackOnce DriveServiceOnWorker::DownloadFile(
 
 google_apis::CancelCallbackOnce DriveServiceOnWorker::GetAboutResource(
     google_apis::AboutResourceCallback callback) {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   ui_task_runner_->PostTask(
       FROM_HERE,
@@ -103,7 +103,7 @@ google_apis::CancelCallbackOnce DriveServiceOnWorker::GetAboutResource(
 google_apis::CancelCallbackOnce DriveServiceOnWorker::GetStartPageToken(
     const std::string& team_drive_id,
     google_apis::StartPageTokenCallback callback) {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   ui_task_runner_->PostTask(
       FROM_HERE,
@@ -118,7 +118,7 @@ google_apis::CancelCallbackOnce DriveServiceOnWorker::GetStartPageToken(
 google_apis::CancelCallbackOnce DriveServiceOnWorker::GetChangeList(
     int64_t start_changestamp,
     google_apis::ChangeListCallback callback) {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   ui_task_runner_->PostTask(
       FROM_HERE,
@@ -134,7 +134,7 @@ google_apis::CancelCallbackOnce DriveServiceOnWorker::GetChangeListByToken(
     const std::string& team_drive_id,
     const std::string& start_page_token,
     google_apis::ChangeListCallback callback) {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   ui_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&DriveServiceWrapper::GetChangeListByToken,
@@ -149,7 +149,7 @@ google_apis::CancelCallbackOnce DriveServiceOnWorker::GetChangeListByToken(
 google_apis::CancelCallbackOnce DriveServiceOnWorker::GetRemainingChangeList(
     const GURL& next_link,
     google_apis::ChangeListCallback callback) {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   ui_task_runner_->PostTask(
       FROM_HERE,
@@ -170,7 +170,7 @@ std::string DriveServiceOnWorker::GetRootResourceId() const {
 google_apis::CancelCallbackOnce DriveServiceOnWorker::GetRemainingTeamDriveList(
     const std::string& page_token,
     google_apis::TeamDriveListCallback callback) {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   ui_task_runner_->PostTask(
       FROM_HERE,
@@ -185,7 +185,7 @@ google_apis::CancelCallbackOnce DriveServiceOnWorker::GetRemainingTeamDriveList(
 google_apis::CancelCallbackOnce DriveServiceOnWorker::GetRemainingFileList(
     const GURL& next_link,
     google_apis::FileListCallback callback) {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   ui_task_runner_->PostTask(
       FROM_HERE,
@@ -200,7 +200,7 @@ google_apis::CancelCallbackOnce DriveServiceOnWorker::GetRemainingFileList(
 google_apis::CancelCallbackOnce DriveServiceOnWorker::GetFileResource(
     const std::string& resource_id,
     google_apis::FileResourceCallback callback) {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   ui_task_runner_->PostTask(
       FROM_HERE,
@@ -215,7 +215,7 @@ google_apis::CancelCallbackOnce DriveServiceOnWorker::GetFileResource(
 google_apis::CancelCallbackOnce DriveServiceOnWorker::GetFileListInDirectory(
     const std::string& directory_resource_id,
     google_apis::FileListCallback callback) {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   ui_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&DriveServiceWrapper::GetFileListInDirectory,
@@ -232,7 +232,7 @@ DriveServiceOnWorker::RemoveResourceFromDirectory(
     const std::string& parent_resource_id,
     const std::string& resource_id,
     google_apis::EntryActionCallback callback) {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   ui_task_runner_->PostTask(
       FROM_HERE,
@@ -249,7 +249,7 @@ google_apis::CancelCallbackOnce DriveServiceOnWorker::SearchByTitle(
     const std::string& title,
     const std::string& directory_resource_id,
     google_apis::FileListCallback callback) {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   ui_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&DriveServiceWrapper::SearchByTitle, wrapper_,

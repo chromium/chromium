@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,10 @@ CSSConditionRule::CSSConditionRule(StyleRuleCondition* condition_rule,
 CSSConditionRule::~CSSConditionRule() = default;
 
 String CSSConditionRule::conditionText() const {
+  return ConditionTextInternal();
+}
+
+String CSSConditionRule::ConditionTextInternal() const {
   return static_cast<StyleRuleCondition*>(group_rule_.Get())->ConditionText();
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "content/browser/background_fetch/background_fetch_request_info.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/background_fetch_delegate.h"
 #include "content/public/browser/background_fetch_description.h"
 #include "content/public/browser/background_fetch_response.h"
@@ -26,7 +27,7 @@ class SkBitmap;
 
 namespace content {
 
-class PermissionControllerImpl;
+class PermissionController;
 class RenderFrameHostImpl;
 class StoragePartitionImpl;
 
@@ -95,6 +96,7 @@ class CONTENT_EXPORT BackgroundFetchDelegateProxy
 
   // Checks if the provided origin has permission to start a Background Fetch.
   void GetPermissionForOrigin(const url::Origin& origin,
+                              RenderProcessHost* rph,
                               RenderFrameHostImpl* rfh,
                               GetPermissionForOriginCallback callback);
 
@@ -141,6 +143,7 @@ class CONTENT_EXPORT BackgroundFetchDelegateProxy
   // BackgroundFetchDelegate::Client implementation:
   void OnJobCancelled(
       const std::string& job_unique_id,
+      const std::string& download_guid,
       blink::mojom::BackgroundFetchFailureReason reason_to_abort) override;
   void OnDownloadComplete(
       const std::string& job_unique_id,
@@ -161,11 +164,15 @@ class CONTENT_EXPORT BackgroundFetchDelegateProxy
       const std::string& download_guid,
       BackgroundFetchDelegate::GetUploadDataCallback callback) override;
 
+  void DidGetPermissionFromDownloadRequestLimiter(
+      GetPermissionForOriginCallback callback,
+      bool has_permission);
+
   BrowserContext* GetBrowserContext();
 
   BackgroundFetchDelegate* GetDelegate();
 
-  PermissionControllerImpl* GetPermissionController();
+  PermissionController* GetPermissionController();
 
   // Map from unique job ids to the controller.
   std::map<std::string, base::WeakPtr<Controller>> controller_map_;

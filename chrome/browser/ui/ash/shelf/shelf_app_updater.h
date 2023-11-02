@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,6 +21,10 @@ class ShelfAppUpdater {
     virtual void OnAppUpdated(content::BrowserContext* browser_context,
                               const std::string& app_id,
                               bool reload_icon) {}
+    virtual void OnAppShowInShelfChanged(
+        content::BrowserContext* browser_context,
+        const std::string& app_id,
+        bool show_in_shelf) {}
     virtual void OnAppUninstalledPrepared(
         content::BrowserContext* browser_context,
         const std::string& app_id,

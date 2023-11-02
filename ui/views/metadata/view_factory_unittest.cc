@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -89,7 +89,7 @@ TEST_F(ViewFactoryTest, TestViewBuilder) {
           .SetEnabled(false)
           .SetVisible(true)
           .SetBackground(views::CreateSolidBackground(SK_ColorWHITE))
-          .SetBorder(views::CreateEmptyBorder(gfx::Insets()))
+          .SetBorder(views::CreateEmptyBorder(0))
           .AddChildren(views::Builder<views::View>()
                            .SetEnabled(false)
                            .SetVisible(true)
@@ -142,7 +142,7 @@ TEST_F(ViewFactoryTest, TestViewBuilderOwnerships) {
       .SetEnabled(false)
       .SetVisible(true)
       .SetBackground(views::CreateSolidBackground(SK_ColorWHITE))
-      .SetBorder(views::CreateEmptyBorder(gfx::Insets()));
+      .SetBorder(views::CreateEmptyBorder(0));
   view_builder.AddChild(views::Builder<views::View>()
                             .SetEnabled(false)
                             .SetVisible(true)
@@ -236,4 +236,21 @@ TEST_F(ViewFactoryTest, TestViewBuilderAddChildAtIndex) {
   // Make sure the OK button is inserted into the child list at index 0.
   EXPECT_EQ(ok_button, view->children()[0]);
   EXPECT_EQ(cancel_button, view->children()[1]);
+}
+
+TEST_F(ViewFactoryTest, TestCustomConfigureChaining) {
+  int callback_count = 0;
+  std::unique_ptr<views::View> view =
+      views::Builder<views::View>()
+          .CustomConfigure(
+              base::BindOnce([](int* callback_count,
+                                views::View* view) { ++(*callback_count); },
+                             &callback_count))
+          .CustomConfigure(
+              base::BindOnce([](int* callback_count,
+                                views::View* view) { ++(*callback_count); },
+                             &callback_count))
+          .Build();
+  // Make sure both callbacks have been called.
+  EXPECT_EQ(callback_count, 2);
 }

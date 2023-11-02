@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -56,12 +56,11 @@ void WebPlatformMediaStreamSource::SetDevice(const MediaStreamDevice& device) {
 void WebPlatformMediaStreamSource::SetCaptureHandle(
     media::mojom::CaptureHandlePtr capture_handle) {
   DCHECK(task_runner_->BelongsToCurrentThread());
-  if (!device_.display_media_info.has_value()) {
+  if (!device_.display_media_info) {
     DVLOG(1) << "Not a display-capture device.";
     return;
   }
-  auto& info = device_.display_media_info.value();
-  info->capture_handle = std::move(capture_handle);
+  device_.display_media_info->capture_handle = std::move(capture_handle);
 }
 
 void WebPlatformMediaStreamSource::SetStopCallback(
@@ -85,7 +84,6 @@ void WebPlatformMediaStreamSource::ChangeSource(
 
 WebMediaStreamSource WebPlatformMediaStreamSource::Owner() {
   DCHECK(task_runner_->BelongsToCurrentThread());
-  DCHECK(owner_);
   return WebMediaStreamSource(owner_.Get());
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define COMPONENTS_POLICY_CORE_COMMON_SCHEMA_REGISTRY_TRACKING_POLICY_PROVIDER_H_
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "components/policy/core/common/configuration_policy_provider.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/policy_export.h"
@@ -85,7 +86,7 @@ class POLICY_EXPORT SchemaRegistryTrackingPolicyProvider
     READY,
   };
 
-  ConfigurationPolicyProvider* delegate_;
+  raw_ptr<ConfigurationPolicyProvider> delegate_;
   InitializationState state_;
 };
 

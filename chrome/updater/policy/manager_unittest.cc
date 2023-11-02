@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,10 @@
 
 namespace updater {
 
-TEST(PolicyManager, GetPolicyManager) {
-  std::unique_ptr<PolicyManagerInterface> policy_manager(GetPolicyManager());
-  ASSERT_TRUE(policy_manager->IsManaged());
+TEST(PolicyManager, GetDefaultValuesPolicyManager) {
+  std::unique_ptr<PolicyManagerInterface> policy_manager(
+      GetDefaultValuesPolicyManager());
+  ASSERT_TRUE(policy_manager->HasActiveDevicePolicies());
 }
 
 TEST(PolicyManager, UpdateSuppressedTimes) {

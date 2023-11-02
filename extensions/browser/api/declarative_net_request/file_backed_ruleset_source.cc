@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -87,7 +87,7 @@ ReadJSONRulesResult ParseRulesFromJSON(const RulesetID& ruleset_id,
   // We don't use json_schema_compiler::util::PopulateArrayFromList since it
   // fails if a single Value can't be deserialized. However we want to ignore
   // values which can't be parsed to maintain backwards compatibility.
-  const auto& rules_list = rules.GetList();
+  const base::Value::List& rules_list = rules.GetList();
 
   // Ignore any rulesets which exceed the static rule count limit (This is
   // defined as dnr_api::GUARANTEED_MINIMUM_STATIC_RULES + the global rule count
@@ -218,15 +218,15 @@ void OnSafeJSONParse(
     uint8_t parse_flags,
     FileBackedRulesetSource::IndexAndPersistJSONRulesetCallback callback,
     data_decoder::DataDecoder::ValueOrError result) {
-  if (!result.value) {
+  if (!result.has_value()) {
     std::move(callback).Run(IndexAndPersistJSONRulesetResult::CreateErrorResult(
-        GetErrorWithFilename(json_path, *result.error)));
+        GetErrorWithFilename(json_path, result.error())));
     return;
   }
 
   base::ElapsedTimer timer;
   ReadJSONRulesResult read_result = ParseRulesFromJSON(
-      source.id(), json_path, *result.value, source.rule_count_limit(),
+      source.id(), json_path, *result, source.rule_count_limit(),
       source.is_dynamic_ruleset());
 
   std::move(callback).Run(IndexAndPersistRuleset(source, std::move(read_result),
@@ -412,15 +412,14 @@ ReadJSONRulesResult FileBackedRulesetSource::ReadJSONRulesUnsafe() const {
                                                   kFileReadError);
   }
 
-  base::JSONReader::ValueWithError value_with_error =
-      base::JSONReader::ReadAndReturnValueWithError(
-          json_contents, base::JSON_PARSE_RFC /* options */);
-  if (!value_with_error.value) {
+  auto value_with_error = base::JSONReader::ReadAndReturnValueWithError(
+      json_contents, base::JSON_PARSE_RFC /* options */);
+  if (!value_with_error.has_value()) {
     return ReadJSONRulesResult::CreateErrorResult(
-        Status::kJSONParseError, std::move(value_with_error.error_message));
+        Status::kJSONParseError, std::move(value_with_error.error().message));
   }
 
-  return ParseRulesFromJSON(id(), json_path(), *value_with_error.value,
+  return ParseRulesFromJSON(id(), json_path(), *value_with_error,
                             rule_count_limit(), is_dynamic_ruleset());
 }
 
@@ -429,14 +428,12 @@ bool FileBackedRulesetSource::SerializeRulesToJSON(
     std::string* json) const {
   DCHECK_LE(rules.size(), rule_count_limit());
 
-  std::unique_ptr<base::Value> rules_value =
+  base::Value::List rules_value =
       json_schema_compiler::util::CreateValueFromArray(rules);
-  DCHECK(rules_value);
-  DCHECK(rules_value->is_list());
 
   JSONStringValueSerializer serializer(json);
   serializer.set_pretty_print(false);
-  return serializer.Serialize(*rules_value);
+  return serializer.Serialize(rules_value);
 }
 
 LoadRulesetResult FileBackedRulesetSource::CreateVerifiedMatcher(

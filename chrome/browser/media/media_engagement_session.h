@@ -1,10 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_MEDIA_MEDIA_ENGAGEMENT_SESSION_H_
 #define CHROME_BROWSER_MEDIA_MEDIA_ENGAGEMENT_SESSION_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -35,8 +36,8 @@ class MediaEngagementSession : public base::RefCounted<MediaEngagementSession> {
   MediaEngagementSession(const MediaEngagementSession&) = delete;
   MediaEngagementSession& operator=(const MediaEngagementSession&) = delete;
 
-  // Returns whether the session's origin is same origin with |origin|.
-  bool IsSameOriginWith(const url::Origin& origin) const;
+  // Returns whether the session's origin is same origin with |url|.
+  bool IsSameOriginWith(const GURL& url) const;
 
   // Record that the session received a significant playback from a media
   // element.
@@ -87,7 +88,7 @@ class MediaEngagementSession : public base::RefCounted<MediaEngagementSession> {
   void CommitPendingData();
 
   // Weak pointer because |this| has a lifetime shorter than it.
-  MediaEngagementService* service_;
+  raw_ptr<MediaEngagementService> service_;
 
   // Origin associated with the session.
   url::Origin origin_;

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@ import 'chrome://settings/settings.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {keyEventOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import { EDIT_STARTUP_URL_EVENT,SettingsStartupUrlDialogElement,SettingsStartupUrlEntryElement, SettingsStartupUrlsPageElement, StartupUrlsPageBrowserProxy, StartupUrlsPageBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {EDIT_STARTUP_URL_EVENT,SettingsStartupUrlDialogElement,SettingsStartupUrlEntryElement, SettingsStartupUrlsPageElement, StartupUrlsPageBrowserProxy, StartupUrlsPageBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
@@ -77,7 +77,8 @@ suite('StartupUrlDialog', function() {
   setup(function() {
     browserProxy = new TestStartupUrlsPageBrowserProxy();
     StartupUrlsPageBrowserProxyImpl.setInstance(browserProxy);
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     dialog = document.createElement('settings-startup-url-dialog');
   });
 
@@ -200,7 +201,8 @@ suite('StartupUrlsPage', function() {
   setup(function() {
     browserProxy = new TestStartupUrlsPageBrowserProxy();
     StartupUrlsPageBrowserProxyImpl.setInstance(browserProxy);
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     page = document.createElement('settings-startup-urls-page');
     page.prefs = {
       session: {
@@ -249,7 +251,7 @@ suite('StartupUrlsPage', function() {
     page.dispatchEvent(new CustomEvent(EDIT_STARTUP_URL_EVENT, {
       bubbles: true,
       composed: true,
-      detail: {model: createSampleUrlEntry(), anchor: null}
+      detail: {model: createSampleUrlEntry(), anchor: null},
     }));
     flush();
     assertTrue(!!page.shadowRoot!.querySelector('settings-startup-url-dialog'));
@@ -274,7 +276,7 @@ suite('StartupUrlsPage', function() {
     page.dispatchEvent(new CustomEvent(EDIT_STARTUP_URL_EVENT, {
       bubbles: true,
       composed: true,
-      detail: {model: entry2, anchor: null}
+      detail: {model: entry2, anchor: null},
     }));
     flush();
 
@@ -327,7 +329,8 @@ suite('StartupUrlEntry', function() {
   setup(function() {
     browserProxy = new TestStartupUrlsPageBrowserProxy();
     StartupUrlsPageBrowserProxyImpl.setInstance(browserProxy);
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     element = document.createElement('settings-startup-url-entry');
     element.model = createSampleUrlEntry();
     document.body.appendChild(element);

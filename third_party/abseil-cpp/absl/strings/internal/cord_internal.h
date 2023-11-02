@@ -21,6 +21,7 @@
 #include <cstdint>
 #include <type_traits>
 
+#include "absl/base/attributes.h"
 #include "absl/base/config.h"
 #include "absl/base/internal/endian.h"
 #include "absl/base/internal/invoke.h"
@@ -33,16 +34,27 @@ namespace absl {
 ABSL_NAMESPACE_BEGIN
 namespace cord_internal {
 
+// The overhead of a vtable is too much for Cord, so we roll our own subclasses
+// using only a single byte to differentiate classes from each other - the "tag"
+// byte.  Define the subclasses first so we can provide downcasting helper
+// functions in the base class.
+struct CordRep;
+struct CordRepConcat;
+struct CordRepExternal;
+struct CordRepFlat;
+struct CordRepSubstring;
+struct CordRepCrc;
+class CordRepRing;
+class CordRepBtree;
+
 class CordzInfo;
 
 // Default feature enable states for cord ring buffers
 enum CordFeatureDefaults {
-  kCordEnableBtreeDefault = true,
   kCordEnableRingBufferDefault = false,
   kCordShallowSubcordsDefault = false
 };
 
-extern std::atomic<bool> cord_btree_enabled;
 extern std::atomic<bool> cord_ring_buffer_enabled;
 extern std::atomic<bool> shallow_subcords_enabled;
 
@@ -51,10 +63,6 @@ extern std::atomic<bool> shallow_subcords_enabled;
 // assertions should be relatively cheap and AssertValid() can easily lead to
 // O(n^2) complexity as recursive / full tree validation is O(n).
 extern std::atomic<bool> cord_btree_exhaustive_validation;
-
-inline void enable_cord_btree(bool enable) {
-  cord_btree_enabled.store(enable, std::memory_order_relaxed);
-}
 
 inline void enable_cord_ring_buffer(bool enable) {
   cord_ring_buffer_enabled.store(enable, std::memory_order_relaxed);
@@ -79,6 +87,9 @@ enum Constants {
   // Prefer copying blocks of at most this size, otherwise reference count.
   kMaxBytesToCopy = 511
 };
+
+// Emits a fatal error "Unexpected node type: xyz" and aborts the program.
+ABSL_ATTRIBUTE_NORETURN void LogFatalNodeType(CordRep* rep);
 
 // Compact class for tracking the reference count and state flags for CordRep
 // instances.  Data is stored in an atomic int32_t for compactness and speed.
@@ -118,8 +129,9 @@ class RefcountAndFlags {
   }
 
   // Returns the current reference count using acquire semantics.
-  inline int32_t Get() const {
-    return count_.load(std::memory_order_acquire) >> kNumFlags;
+  inline size_t Get() const {
+    return static_cast<size_t>(count_.load(std::memory_order_acquire) >>
+                               kNumFlags);
   }
 
   // Returns whether the atomic integer is 1.
@@ -145,7 +157,7 @@ class RefcountAndFlags {
   // used for the StringConstant constructor to avoid collecting immutable
   // constant cords.
   // kReservedFlag is reserved for future use.
-  enum {
+  enum Flags {
     kNumFlags = 2,
 
     kImmortalFlag = 0x1,
@@ -162,22 +174,9 @@ class RefcountAndFlags {
   std::atomic<int32_t> count_;
 };
 
-// The overhead of a vtable is too much for Cord, so we roll our own subclasses
-// using only a single byte to differentiate classes from each other - the "tag"
-// byte.  Define the subclasses first so we can provide downcasting helper
-// functions in the base class.
-
-struct CordRepConcat;
-struct CordRepExternal;
-struct CordRepFlat;
-struct CordRepSubstring;
-struct CordRepCrc;
-class CordRepRing;
-class CordRepBtree;
-
 // Various representations that we allow
 enum CordRepKind {
-  CONCAT = 0,
+  UNUSED_0 = 0,
   SUBSTRING = 1,
   CRC = 2,
   BTREE = 3,
@@ -185,13 +184,16 @@ enum CordRepKind {
   EXTERNAL = 5,
 
   // We have different tags for different sized flat arrays,
-  // starting with FLAT, and limited to MAX_FLAT_TAG. The 226 value is based on
-  // the current 'size to tag' encoding of 8 / 32 bytes. If a new tag is needed
-  // in the future, then 'FLAT' and 'MAX_FLAT_TAG' should be adjusted as well
-  // as the Tag <---> Size logic so that FLAT stil represents the minimum flat
-  // allocation size. (32 bytes as of now).
+  // starting with FLAT, and limited to MAX_FLAT_TAG. The below values map to an
+  // allocated range of 32 bytes to 256 KB. The current granularity is:
+  // - 8 byte granularity for flat sizes in [32 - 512]
+  // - 64 byte granularity for flat sizes in (512 - 8KiB]
+  // - 4KiB byte granularity for flat sizes in (8KiB, 256 KiB]
+  // If a new tag is needed in the future, then 'FLAT' and 'MAX_FLAT_TAG' should
+  // be adjusted as well as the Tag <---> Size mapping logic so that FLAT still
+  // represents the minimum flat allocation size. (32 bytes as of now).
   FLAT = 6,
-  MAX_FLAT_TAG = 226
+  MAX_FLAT_TAG = 248
 };
 
 // There are various locations where we want to check if some rep is a 'plain'
@@ -242,7 +244,6 @@ struct CordRep {
 
   // Returns true if this instance's tag matches the requested type.
   constexpr bool IsRing() const { return tag == RING; }
-  constexpr bool IsConcat() const { return tag == CONCAT; }
   constexpr bool IsSubstring() const { return tag == SUBSTRING; }
   constexpr bool IsCrc() const { return tag == CRC; }
   constexpr bool IsExternal() const { return tag == EXTERNAL; }
@@ -251,8 +252,6 @@ struct CordRep {
 
   inline CordRepRing* ring();
   inline const CordRepRing* ring() const;
-  inline CordRepConcat* concat();
-  inline const CordRepConcat* concat() const;
   inline CordRepSubstring* substring();
   inline const CordRepSubstring* substring() const;
   inline CordRepCrc* crc();
@@ -279,24 +278,23 @@ struct CordRep {
   static inline void Unref(CordRep* rep);
 };
 
-struct CordRepConcat : public CordRep {
-  CordRep* left;
-  CordRep* right;
-
-  uint8_t depth() const { return storage[0]; }
-  void set_depth(uint8_t depth) { storage[0] = depth; }
-
-  // Extracts the right-most flat in the provided concat tree if the entire path
-  // to that flat is not shared, and the flat has the requested extra capacity.
-  // Returns the (potentially new) top level tree node and the extracted flat,
-  // or {tree, nullptr} if no flat was extracted.
-  static ExtractResult ExtractAppendBuffer(CordRepConcat* tree,
-                                           size_t extra_capacity);
-};
-
 struct CordRepSubstring : public CordRep {
   size_t start;  // Starting offset of substring in child
   CordRep* child;
+
+  // Creates a substring on `child`, adopting a reference on `child`.
+  // Requires `child` to be either a flat or external node, and `pos` and `n` to
+  // form a non-empty partial sub range of `'child`, i.e.:
+  // `n > 0 && n < length && n + pos <= length`
+  static inline CordRepSubstring* Create(CordRep* child, size_t pos, size_t n);
+
+  // Creates a substring of `rep`. Does not adopt a reference on `rep`.
+  // Requires `IsDataEdge(rep) && n > 0 && pos + n <= rep->length`.
+  // If `n == rep->length` then this method returns `CordRep::Ref(rep)`
+  // If `rep` is a substring of a flat or external node, then this method will
+  // return a new substring of that flat or external node with `pos` adjusted
+  // with the original `start` position.
+  static inline CordRep* Substring(CordRep* rep, size_t pos, size_t n);
 };
 
 // Type for function pointer that will invoke the releaser function and also
@@ -360,6 +358,47 @@ struct CordRepExternalImpl
   }
 };
 
+inline CordRepSubstring* CordRepSubstring::Create(CordRep* child, size_t pos,
+                                                  size_t n) {
+  assert(child != nullptr);
+  assert(n > 0);
+  assert(n < child->length);
+  assert(pos < child->length);
+  assert(n <= child->length - pos);
+
+  // TODO(b/217376272): Harden internal logic.
+  // Move to strategical places inside the Cord logic and make this an assert.
+  if (ABSL_PREDICT_FALSE(!(child->IsExternal() || child->IsFlat()))) {
+    LogFatalNodeType(child);
+  }
+
+  CordRepSubstring* rep = new CordRepSubstring();
+  rep->length = n;
+  rep->tag = SUBSTRING;
+  rep->start = pos;
+  rep->child = child;
+  return rep;
+}
+
+inline CordRep* CordRepSubstring::Substring(CordRep* rep, size_t pos,
+                                            size_t n) {
+  assert(rep != nullptr);
+  assert(n != 0);
+  assert(pos < rep->length);
+  assert(n <= rep->length - pos);
+  if (n == rep->length) return CordRep::Ref(rep);
+  if (rep->IsSubstring()) {
+    pos += rep->substring()->start;
+    rep = rep->substring()->child;
+  }
+  CordRepSubstring* substr = new CordRepSubstring();
+  substr->length = n;
+  substr->tag = SUBSTRING;
+  substr->start = pos;
+  substr->child = CordRep::Ref(rep);
+  return substr;
+}
+
 inline void CordRepExternal::Delete(CordRep* rep) {
   assert(rep != nullptr && rep->IsExternal());
   auto* rep_external = static_cast<CordRepExternal*>(rep);
@@ -373,7 +412,8 @@ struct ConstInitExternalStorage {
 };
 
 template <typename Str>
-CordRepExternal ConstInitExternalStorage<Str>::value(Str::value);
+ABSL_CONST_INIT CordRepExternal
+    ConstInitExternalStorage<Str>::value(Str::value);
 
 enum {
   kMaxInline = 15,
@@ -383,8 +423,8 @@ constexpr char GetOrNull(absl::string_view data, size_t pos) {
   return pos < data.size() ? data[pos] : '\0';
 }
 
-// We store cordz_info as 64 bit pointer value in big endian format. This
-// guarantees that the least significant byte of cordz_info matches the last
+// We store cordz_info as 64 bit pointer value in little endian format. This
+// guarantees that the least significant byte of cordz_info matches the first
 // byte of the inline data representation in as_chars_, which holds the inlined
 // size or the 'is_tree' bit.
 using cordz_info_t = int64_t;
@@ -394,14 +434,14 @@ using cordz_info_t = int64_t;
 static_assert(sizeof(cordz_info_t) * 2 == kMaxInline + 1, "");
 static_assert(sizeof(cordz_info_t) >= sizeof(intptr_t), "");
 
-// BigEndianByte() creates a big endian representation of 'value', i.e.: a big
-// endian value where the last byte in the host's representation holds 'value`,
-// with all other bytes being 0.
-static constexpr cordz_info_t BigEndianByte(unsigned char value) {
+// LittleEndianByte() creates a little endian representation of 'value', i.e.:
+// a little endian value where the first byte in the host's representation
+// holds 'value`, with all other bytes being 0.
+static constexpr cordz_info_t LittleEndianByte(unsigned char value) {
 #if defined(ABSL_IS_BIG_ENDIAN)
-  return value;
-#else
   return static_cast<cordz_info_t>(value) << ((sizeof(cordz_info_t) - 1) * 8);
+#else
+  return value;
 #endif
 }
 
@@ -410,25 +450,37 @@ class InlineData {
   // DefaultInitType forces the use of the default initialization constructor.
   enum DefaultInitType { kDefaultInit };
 
-  // kNullCordzInfo holds the big endian representation of intptr_t(1)
+  // kNullCordzInfo holds the little endian representation of intptr_t(1)
   // This is the 'null' / initial value of 'cordz_info'. The null value
   // is specifically big endian 1 as with 64-bit pointers, the last
   // byte of cordz_info overlaps with the last byte holding the tag.
-  static constexpr cordz_info_t kNullCordzInfo = BigEndianByte(1);
+  static constexpr cordz_info_t kNullCordzInfo = LittleEndianByte(1);
+
+  // kTagOffset contains the offset of the control byte / tag. This constant is
+  // intended mostly for debugging purposes: do not remove this constant as it
+  // is actively inspected and used by gdb pretty printing code.
+  static constexpr size_t kTagOffset = 0;
 
   constexpr InlineData() : as_chars_{0} {}
   explicit InlineData(DefaultInitType) {}
   explicit constexpr InlineData(CordRep* rep) : as_tree_(rep) {}
   explicit constexpr InlineData(absl::string_view chars)
-      : as_chars_{
-            GetOrNull(chars, 0),  GetOrNull(chars, 1),
-            GetOrNull(chars, 2),  GetOrNull(chars, 3),
-            GetOrNull(chars, 4),  GetOrNull(chars, 5),
-            GetOrNull(chars, 6),  GetOrNull(chars, 7),
-            GetOrNull(chars, 8),  GetOrNull(chars, 9),
-            GetOrNull(chars, 10), GetOrNull(chars, 11),
-            GetOrNull(chars, 12), GetOrNull(chars, 13),
-            GetOrNull(chars, 14), static_cast<char>((chars.size() << 1))} {}
+      : as_chars_{static_cast<char>((chars.size() << 1)),
+                  GetOrNull(chars, 0),
+                  GetOrNull(chars, 1),
+                  GetOrNull(chars, 2),
+                  GetOrNull(chars, 3),
+                  GetOrNull(chars, 4),
+                  GetOrNull(chars, 5),
+                  GetOrNull(chars, 6),
+                  GetOrNull(chars, 7),
+                  GetOrNull(chars, 8),
+                  GetOrNull(chars, 9),
+                  GetOrNull(chars, 10),
+                  GetOrNull(chars, 11),
+                  GetOrNull(chars, 12),
+                  GetOrNull(chars, 13),
+                  GetOrNull(chars, 14)} {}
 
   // Returns true if the current instance is empty.
   // The 'empty value' is an inlined data value of zero length.
@@ -459,8 +511,8 @@ class InlineData {
   // Requires the current instance to hold a tree value.
   CordzInfo* cordz_info() const {
     assert(is_tree());
-    intptr_t info =
-        static_cast<intptr_t>(absl::big_endian::ToHost64(as_tree_.cordz_info));
+    intptr_t info = static_cast<intptr_t>(absl::little_endian::ToHost64(
+        static_cast<uint64_t>(as_tree_.cordz_info)));
     assert(info & 1);
     return reinterpret_cast<CordzInfo*>(info - 1);
   }
@@ -470,8 +522,9 @@ class InlineData {
   // Requires the current instance to hold a tree value.
   void set_cordz_info(CordzInfo* cordz_info) {
     assert(is_tree());
-    intptr_t info = reinterpret_cast<intptr_t>(cordz_info) | 1;
-    as_tree_.cordz_info = absl::big_endian::FromHost64(info);
+    uintptr_t info = reinterpret_cast<uintptr_t>(cordz_info) | 1;
+    as_tree_.cordz_info =
+        static_cast<cordz_info_t>(absl::little_endian::FromHost64(info));
   }
 
   // Resets the current cordz_info to null / empty.
@@ -484,7 +537,7 @@ class InlineData {
   // Requires the current instance to hold inline data.
   const char* as_chars() const {
     assert(!is_tree());
-    return as_chars_;
+    return &as_chars_[1];
   }
 
   // Returns a mutable pointer to the character data inside this instance.
@@ -502,7 +555,7 @@ class InlineData {
   //
   // It's an error to read from the returned pointer without a preceding write
   // if the current instance does not hold inline data, i.e.: is_tree() == true.
-  char* as_chars() { return as_chars_; }
+  char* as_chars() { return &as_chars_[1]; }
 
   // Returns the tree value of this value.
   // Requires the current instance to hold a tree value.
@@ -530,7 +583,7 @@ class InlineData {
   // Requires the current instance to hold inline data.
   size_t inline_size() const {
     assert(!is_tree());
-    return tag() >> 1;
+    return static_cast<size_t>(tag()) >> 1;
   }
 
   // Sets the size of the inlined character data inside this instance.
@@ -541,23 +594,39 @@ class InlineData {
     tag() = static_cast<char>(size << 1);
   }
 
+  // Compares 'this' inlined data  with rhs. The comparison is a straightforward
+  // lexicographic comparison. `Compare()` returns values as follows:
+  //
+  //   -1  'this' InlineData instance is smaller
+  //    0  the InlineData instances are equal
+  //    1  'this' InlineData instance larger
+  int Compare(const InlineData& rhs) const {
+    uint64_t x, y;
+    memcpy(&x, as_chars(), sizeof(x));
+    memcpy(&y, rhs.as_chars(), sizeof(y));
+    if (x == y) {
+      memcpy(&x, as_chars() + 7, sizeof(x));
+      memcpy(&y, rhs.as_chars() + 7, sizeof(y));
+      if (x == y) {
+        if (inline_size() == rhs.inline_size()) return 0;
+        return inline_size() < rhs.inline_size() ? -1 : 1;
+      }
+    }
+    x = absl::big_endian::FromHost64(x);
+    y = absl::big_endian::FromHost64(y);
+    return x < y ? -1 : 1;
+  }
+
  private:
   // See cordz_info_t for forced alignment and size of `cordz_info` details.
   struct AsTree {
-    explicit constexpr AsTree(absl::cord_internal::CordRep* tree)
-        : rep(tree), cordz_info(kNullCordzInfo) {}
-    // This union uses up extra space so that whether rep is 32 or 64 bits,
-    // cordz_info will still start at the eighth byte, and the last
-    // byte of cordz_info will still be the last byte of InlineData.
-    union {
-      absl::cord_internal::CordRep* rep;
-      cordz_info_t unused_aligner;
-    };
-    cordz_info_t cordz_info;
+    explicit constexpr AsTree(absl::cord_internal::CordRep* tree) : rep(tree) {}
+    cordz_info_t cordz_info = kNullCordzInfo;
+    absl::cord_internal::CordRep* rep;
   };
 
-  char& tag() { return reinterpret_cast<char*>(this)[kMaxInline]; }
-  char tag() const { return reinterpret_cast<const char*>(this)[kMaxInline]; }
+  int8_t& tag() { return reinterpret_cast<int8_t*>(this)[0]; }
+  int8_t tag() const { return reinterpret_cast<const int8_t*>(this)[0]; }
 
   // If the data has length <= kMaxInline, we store it in `as_chars_`, and
   // store the size in the last char of `as_chars_` shifted left + 1.
@@ -570,16 +639,6 @@ class InlineData {
 };
 
 static_assert(sizeof(InlineData) == kMaxInline + 1, "");
-
-inline CordRepConcat* CordRep::concat() {
-  assert(IsConcat());
-  return static_cast<CordRepConcat*>(this);
-}
-
-inline const CordRepConcat* CordRep::concat() const {
-  assert(IsConcat());
-  return static_cast<const CordRepConcat*>(this);
-}
 
 inline CordRepSubstring* CordRep::substring() {
   assert(IsSubstring());
@@ -602,7 +661,9 @@ inline const CordRepExternal* CordRep::external() const {
 }
 
 inline CordRep* CordRep::Ref(CordRep* rep) {
-  assert(rep != nullptr);
+  // ABSL_ASSUME is a workaround for
+  // https://gcc.gnu.org/bugzilla/show_bug.cgi?id=105585
+  ABSL_ASSUME(rep != nullptr);
   rep->refcount.Increment();
   return rep;
 }

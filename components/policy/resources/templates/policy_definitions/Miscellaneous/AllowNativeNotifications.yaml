@@ -1,0 +1,24 @@
+caption: Allows native notifications
+default: true
+deprecated: true
+desc: |-
+  This policy is deprecated, please use the '<ph name="ALLOW_SYSTEM_NOTIFICATIONS_POLICY_NAME">AllowSystemNotifications</ph>' policy instead.
+
+  Configures whether <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> on Linux will use native notifications.
+
+  If set to True or not set, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> is allowed to use native notifications.
+
+  If set to False, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will not use native notifications. <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>'s Message Center will be used as a fallback.
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: true
+owners:
+- file://chrome/browser/notifications/OWNERS
+- knollr@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome.linux:83-100
+tags: []
+type: main

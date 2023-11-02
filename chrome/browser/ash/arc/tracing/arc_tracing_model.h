@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -69,7 +69,7 @@ class ArcTracingModel {
  private:
   // Processes list of events. Returns true in case all events were processed
   // successfully.
-  bool ProcessEvent(base::ListValue* events);
+  bool ProcessEvent(base::Value::List* events);
 
   // Converts sys traces events to the |base::Dictionary| based format used in
   // Chrome.

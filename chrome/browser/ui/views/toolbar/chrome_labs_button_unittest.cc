@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,14 +38,11 @@ constexpr char kFakeGaiaId[] = "1234567890";
 #endif
 
 const char kFirstTestFeatureId[] = "feature-1";
-const base::Feature kTestFeature1{"FeatureName1",
-                                  base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kTestFeature1, "FeatureName1", base::FEATURE_ENABLED_BY_DEFAULT);
 const char kSecondTestFeatureId[] = "feature-2";
-const base::Feature kTestFeature2{"FeatureName2",
-                                  base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kTestFeature2, "FeatureName2", base::FEATURE_DISABLED_BY_DEFAULT);
 const char kExpiredFlagTestFeatureId[] = "expired-feature";
-const base::Feature kTestFeatureExpired{"Expired",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kTestFeatureExpired, "Expired", base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace
 
@@ -97,6 +94,8 @@ class ChromeLabsButtonTest : public TestWithBrowserView {
 TEST_F(ChromeLabsButtonTest, ShowAndHideChromeLabsBubbleOnPress) {
   ChromeLabsButton* labs_button =
       browser_view()->toolbar()->chrome_labs_button();
+  ChromeLabsCoordinator* coordinator =
+      labs_button->GetChromeLabsCoordinatorForTesting();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::OwnerSettingsServiceAsh* service_ =
@@ -104,7 +103,7 @@ TEST_F(ChromeLabsButtonTest, ShowAndHideChromeLabsBubbleOnPress) {
   labs_button->SetShouldCircumventDeviceCheckForTesting(true);
 #endif
 
-  EXPECT_FALSE(ChromeLabsBubbleView::IsShowing());
+  EXPECT_FALSE(coordinator->BubbleExists());
   ui::MouseEvent e(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
                    ui::EventTimeForNow(), 0, 0);
   views::test::ButtonTestApi test_api(labs_button);
@@ -112,13 +111,13 @@ TEST_F(ChromeLabsButtonTest, ShowAndHideChromeLabsBubbleOnPress) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   service_->RunPendingIsOwnerCallbacksForTesting(/*is_owner=*/false);
 #endif
-  EXPECT_TRUE(ChromeLabsBubbleView::IsShowing());
+  EXPECT_TRUE(coordinator->BubbleExists());
 
   views::test::WidgetDestroyedWaiter destroyed_waiter(
-      ChromeLabsBubbleView::GetChromeLabsBubbleViewForTesting()->GetWidget());
+      coordinator->GetChromeLabsBubbleViewForTesting()->GetWidget());
   test_api.NotifyClick(e);
   destroyed_waiter.Wait();
-  EXPECT_FALSE(ChromeLabsBubbleView::IsShowing());
+  EXPECT_FALSE(coordinator->BubbleExists());
 }
 
 TEST_F(ChromeLabsButtonTest, ShouldButtonShowTest) {

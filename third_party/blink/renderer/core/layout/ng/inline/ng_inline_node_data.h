@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,6 +17,7 @@ class NGInlineItemsBuilderTemplate;
 // Data which is required for inline nodes.
 struct CORE_EXPORT NGInlineNodeData final : NGInlineItemsData {
  public:
+  NGInlineNodeData() : shaping_state_(kShapingNone) {}
   bool IsBidiEnabled() const { return is_bidi_enabled_; }
   TextDirection BaseDirection() const {
     return static_cast<TextDirection>(base_direction_);
@@ -31,6 +32,10 @@ struct CORE_EXPORT NGInlineNodeData final : NGInlineItemsData {
                ? (const NGInlineItemsData&)*this
                : *first_line_items_;
   }
+
+  bool IsShapingDeferred() const { return shaping_state_ == kShapingDeferred; }
+  bool IsShapingDone() const { return shaping_state_ == kShapingDone; }
+  void StopDeferringShaping() { shaping_state_ = kShapingNone; }
 
   void Trace(Visitor* visitor) const override;
 
@@ -72,6 +77,9 @@ struct CORE_EXPORT NGInlineNodeData final : NGInlineItemsData {
   // May not be able to use line caches even when the line or earlier lines are
   // not dirty.
   unsigned changes_may_affect_earlier_lines_ : 1;
+
+  enum ShapingState { kShapingNone, kShapingDone, kShapingDeferred };
+  unsigned shaping_state_ : 2;
 };
 
 }  // namespace blink

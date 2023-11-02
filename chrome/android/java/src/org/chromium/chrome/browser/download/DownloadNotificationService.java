@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,6 @@ import android.text.TextUtils;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.StrictModeContext;
@@ -40,6 +39,7 @@ import org.chromium.components.offline_items_collection.LegacyHelpers;
 import org.chromium.components.offline_items_collection.OfflineItem.Progress;
 import org.chromium.components.offline_items_collection.PendingState;
 import org.chromium.content_public.browser.BrowserStartupController;
+import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -186,7 +186,7 @@ public class DownloadNotificationService {
     public void notifyDownloadProgress(ContentId id, String fileName, Progress progress,
             long bytesReceived, long timeRemainingInMillis, long startTime,
             OTRProfileID otrProfileID, boolean canDownloadWhileMetered, boolean isTransient,
-            Bitmap icon, String originalUrl, boolean shouldPromoteOrigin) {
+            Bitmap icon, GURL originalUrl, boolean shouldPromoteOrigin) {
         updateActiveDownloadNotification(id, fileName, progress, timeRemainingInMillis, startTime,
                 otrProfileID, canDownloadWhileMetered, isTransient, icon, originalUrl,
                 shouldPromoteOrigin, false, PendingState.NOT_PENDING);
@@ -207,7 +207,7 @@ public class DownloadNotificationService {
      * @param pendingState            Reason download is pending.
      */
     void notifyDownloadPending(ContentId id, String fileName, OTRProfileID otrProfileID,
-            boolean canDownloadWhileMetered, boolean isTransient, Bitmap icon, String originalUrl,
+            boolean canDownloadWhileMetered, boolean isTransient, Bitmap icon, GURL originalUrl,
             boolean shouldPromoteOrigin, boolean hasUserGesture, @PendingState int pendingState) {
         updateActiveDownloadNotification(id, fileName, Progress.createIndeterminateProgress(), 0, 0,
                 otrProfileID, canDownloadWhileMetered, isTransient, icon, originalUrl,
@@ -235,7 +235,7 @@ public class DownloadNotificationService {
      */
     private void updateActiveDownloadNotification(ContentId id, String fileName, Progress progress,
             long timeRemainingInMillis, long startTime, OTRProfileID otrProfileID,
-            boolean canDownloadWhileMetered, boolean isTransient, Bitmap icon, String originalUrl,
+            boolean canDownloadWhileMetered, boolean isTransient, Bitmap icon, GURL originalUrl,
             boolean shouldPromoteOrigin, boolean hasUserGesture, @PendingState int pendingState) {
         int notificationId = getNotificationId(id);
         Context context = ContextUtils.getApplicationContext();
@@ -331,7 +331,7 @@ public class DownloadNotificationService {
     @VisibleForTesting
     void notifyDownloadPaused(ContentId id, String fileName, boolean isResumable,
             boolean isAutoResumable, OTRProfileID otrProfileID, boolean isTransient, Bitmap icon,
-            String originalUrl, boolean shouldPromoteOrigin, boolean hasUserGesture,
+            GURL originalUrl, boolean shouldPromoteOrigin, boolean hasUserGesture,
             boolean forceRebuild, @PendingState int pendingState) {
         DownloadSharedPreferenceEntry entry =
                 mDownloadSharedPreferenceHelper.getDownloadSharedPreferenceEntry(id);
@@ -397,8 +397,8 @@ public class DownloadNotificationService {
     @VisibleForTesting
     public int notifyDownloadSuccessful(ContentId id, String filePath, String fileName,
             long systemDownloadId, OTRProfileID otrProfileID, boolean isSupportedMimeType,
-            boolean isOpenable, Bitmap icon, String originalUrl, boolean shouldPromoteOrigin,
-            String referrer, long totalBytes) {
+            boolean isOpenable, Bitmap icon, GURL originalUrl, boolean shouldPromoteOrigin,
+            GURL referrer, long totalBytes) {
         Context context = ContextUtils.getApplicationContext();
         int notificationId = getNotificationId(id);
         boolean needsDefaultIcon = icon == null || OTRProfileID.isOffTheRecord(otrProfileID);
@@ -444,7 +444,7 @@ public class DownloadNotificationService {
      * @param failState           Reason why download failed.
      */
     @VisibleForTesting
-    public void notifyDownloadFailed(ContentId id, String fileName, Bitmap icon, String originalUrl,
+    public void notifyDownloadFailed(ContentId id, String fileName, Bitmap icon, GURL originalUrl,
             boolean shouldPromoteOrigin, OTRProfileID otrProfileID, @FailState int failState) {
         // If the download is not in history db, fileName could be empty. Get it from
         // SharedPreferences.
@@ -484,7 +484,7 @@ public class DownloadNotificationService {
         final OvalShape circle = new OvalShape();
         circle.resize(width, height);
         final Paint paint = new Paint();
-        paint.setColor(ApiCompatibilityUtils.getColor(resources, R.color.google_blue_grey_500));
+        paint.setColor(ContextUtils.getApplicationContext().getColor(R.color.google_blue_grey_500));
 
         final Bitmap result = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(result);

@@ -10,7 +10,7 @@
 		document.body.appendChild(canvas);
 		canvas.width = 100;
 		canvas.height = 100;
-		ctx = canvas.getContext("2d");
+		ctx = canvas.getContext("2d", {willReadFrequently: true});
 		ctx.moveTo(25,25);
 		ctx.arc(25, 25, 25, Math.PI, 500*Math.PI, false);
 		ctx.closePath();

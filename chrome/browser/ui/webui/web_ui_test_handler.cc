@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -50,7 +50,7 @@ bool WebUITestHandler::RunJavaScriptTestWithResult(
 }
 
 content::RenderFrameHost* WebUITestHandler::GetRenderFrameHostForTest() {
-  return GetWebUI()->GetWebContents()->GetMainFrame();
+  return GetWebUI()->GetWebContents()->GetPrimaryMainFrame();
 }
 
 void WebUITestHandler::TestComplete(

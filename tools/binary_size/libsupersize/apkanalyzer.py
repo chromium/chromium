@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -17,6 +17,7 @@ import zipfile
 
 import models
 import path_util
+import parallel
 
 
 _TOTAL_NODE_NAME = '<TOTAL>'
@@ -32,15 +33,38 @@ def _ParseJarInfoFile(file_name):
   return source_map
 
 
-def _RunApkAnalyzer(apk_path, mapping_path):
+def RunApkAnalyzerAsync(apk_path, mapping_path):
+  """Starts an apkanalyzer job for the given apk.
+
+  Args:
+    apk_path: Path to the apk to run on.
+    mapping_path: Path to the proguard mapping file.
+
+  Returns:
+    An object to pass to CreateDexSymbols().
+  """
   args = [path_util.GetApkAnalyzerPath(), 'dex', 'packages', apk_path]
   if mapping_path and os.path.exists(mapping_path):
     args.extend(['--proguard-mappings', mapping_path])
   env = os.environ.copy()
   env['JAVA_HOME'] = path_util.GetJavaHome()
-  output = subprocess.check_output(args, env=env).decode('ascii')
+
+  # Use a thread rather than directly using a Popen instance so that stdout is
+  # being read from.
+  return parallel.CallOnThread(subprocess.run,
+                               args,
+                               env=env,
+                               encoding='utf8',
+                               capture_output=True,
+                               check=True)
+
+
+def _ParseApkAnalyzerOutput(stdout, stderr):
+  stderr = re.sub(r'Successfully loaded.*?\n', '', stderr)
+  if stderr.strip():
+    raise Exception('Unexpected stderr:\n' + stderr)
   data = []
-  for line in output.splitlines():
+  for line in stdout.splitlines():
     try:
       vals = line.split()
       # We want to name these columns so we know exactly which is which.
@@ -52,16 +76,6 @@ def _RunApkAnalyzer(apk_path, mapping_path):
       logging.error('Problem line was: %s', line)
       raise
   return data
-
-
-def _ExpectedDexTotalSize(apk_path):
-  dex_total = 0
-  with zipfile.ZipFile(apk_path) as z:
-    for zip_info in z.infolist():
-      if not zip_info.filename.endswith('.dex'):
-        continue
-      dex_total += zip_info.file_size
-  return dex_total
 
 
 # VisibleForTesting
@@ -273,31 +287,75 @@ def CreateDexSymbol(name, size, source_map, lambda_normalizer):
                        source_path=source_path)
 
 
-def CreateDexSymbols(apk_path, mapping_path, size_info_prefix):
-  source_map = _ParseJarInfoFile(size_info_prefix + '.jar.info')
-
-  nodes = _RunApkAnalyzer(apk_path, mapping_path)
-  nodes = UndoHierarchicalSizing(nodes)
-
-  dex_expected_size = _ExpectedDexTotalSize(apk_path)
-  total_node_size = sum([x[2] for x in nodes])
-  # TODO(agrieve): Figure out why this log is triggering for
-  #     ChromeModernPublic.apk (https://crbug.com/851535).
-  # Reporting: dex_expected_size=6546088 total_node_size=6559549
-  if dex_expected_size < total_node_size:
-    logging.error(
-      'Node size too large, check for node processing errors. '
-      'dex_expected_size=%d total_node_size=%d', dex_expected_size,
-      total_node_size)
+def _SymbolsFromNodes(nodes, source_map):
   # Use (DEX_METHODS, DEX) buckets to speed up sorting.
-  symbols = ([], [])
+  symbol_buckets = ([], [])
   lambda_normalizer = LambdaNormalizer()
   for _, name, node_size in nodes:
     symbol = CreateDexSymbol(name, node_size, source_map, lambda_normalizer)
     if symbol:
-      symbols[int(symbol.section_name is models.SECTION_DEX)].append(symbol)
+      bucket_index = int(symbol.section_name is models.SECTION_DEX)
+      symbol_buckets[bucket_index].append(symbol)
+  for symbols_bucket in symbol_buckets:
+    symbols_bucket.sort(key=lambda s: s.full_name)
+  return symbol_buckets
 
-  symbols[0].sort(key=lambda s: s.full_name)
-  symbols[1].sort(key=lambda s: s.full_name)
-  symbols[0].extend(symbols[1])
-  return symbols[0]
+
+def CreateDexSymbols(apk_analyzer_async_result, dex_total_size,
+                     size_info_prefix):
+  """Creates DEX symbols given apk_analyzer output.
+
+  Args:
+    apk_analyzer_async_result: Return value from RunApkAnalyzerAsync().
+    dex_total_size: Sum of the sizes of all .dex files in the apk.
+    size_info_prefix: Path such as: out/Release/size-info/BaseName.
+
+  Returns:
+    A tuple of (section_ranges, raw_symbols).
+  """
+  logging.debug('Waiting for apkanalyzer to finish')
+  apk_analyzer_result = apk_analyzer_async_result.get()
+  logging.debug('Analyzing DEX - processing results')
+  source_map = _ParseJarInfoFile(size_info_prefix + '.jar.info')
+
+  nodes = _ParseApkAnalyzerOutput(apk_analyzer_result.stdout,
+                                  apk_analyzer_result.stderr)
+  nodes = UndoHierarchicalSizing(nodes)
+
+  total_node_size = sum([x[2] for x in nodes])
+  # TODO(agrieve): Figure out why this log is triggering for
+  #     ChromeModernPublic.apk (https://crbug.com/851535).
+  # Reporting: dex_total_size=6546088 total_node_size=6559549
+  if dex_total_size < total_node_size:
+    logging.error(
+        'Node size too large, check for node processing errors. '
+        'dex_total_size=%d total_node_size=%d', dex_total_size, total_node_size)
+
+  dex_method_symbols, dex_other_symbols = _SymbolsFromNodes(nodes, source_map)
+
+  dex_method_size = round(sum(s.pss for s in dex_method_symbols))
+  dex_other_size = round(sum(s.pss for s in dex_other_symbols))
+
+  unattributed_dex = dex_total_size - dex_method_size - dex_other_size
+  # Compare against -5 instead of 0 to guard against round-off errors.
+  assert unattributed_dex >= -5, (
+      'sum(dex_symbols.size) > filesize(classes.dex). {} vs {}'.format(
+          dex_method_size + dex_other_size, dex_total_size))
+
+  if unattributed_dex > 0:
+    dex_other_symbols.append(
+        models.Symbol(
+            models.SECTION_DEX,
+            unattributed_dex,
+            full_name='** .dex (unattributed - includes string literals)'))
+
+  # We can't meaningfully track section size of dex methods vs other, so
+  # just fake the size of dex methods as the sum of symbols, and make
+  # "dex other" responsible for any unattributed bytes.
+  section_ranges = {
+      models.SECTION_DEX_METHOD: (0, dex_method_size),
+      models.SECTION_DEX: (0, dex_total_size - dex_method_size),
+  }
+
+  dex_other_symbols.extend(dex_method_symbols)
+  return section_ranges, dex_other_symbols

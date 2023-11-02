@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "base/location.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/aura/window_event_dispatcher.h"
@@ -56,7 +55,6 @@ IdleActionWarningDialogView::IdleActionWarningDialogView(
 
   update_timer_.Start(FROM_HERE, base::Milliseconds(kCountdownUpdateIntervalMs),
                       this, &IdleActionWarningDialogView::UpdateTitle);
-  chrome::RecordDialogCreation(chrome::DialogIdentifier::IDLE_ACTION_WARNING);
 }
 
 void IdleActionWarningDialogView::CloseDialog() {

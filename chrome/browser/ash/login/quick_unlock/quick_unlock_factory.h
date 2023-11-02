@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_ASH_LOGIN_QUICK_UNLOCK_QUICK_UNLOCK_FACTORY_H_
 
 #include "base/memory/singleton.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/account_id/account_id.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 class Profile;
 
@@ -22,7 +22,7 @@ class QuickUnlockStorage;
 // Singleton that owns all QuickUnlockStorage instances and associates them with
 // Profiles. Listens for the Profile's destruction notification and cleans up
 // the associated QuickUnlockStorage.
-class QuickUnlockFactory : public BrowserContextKeyedServiceFactory {
+class QuickUnlockFactory : public ProfileKeyedServiceFactory {
  public:
   // Returns the QuickUnlockStorage instance for `profile`.
   static QuickUnlockStorage* GetForProfile(Profile* profile);

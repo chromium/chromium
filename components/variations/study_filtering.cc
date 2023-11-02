@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 
 #include "base/containers/contains.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "components/variations/variations_seed_processor.h"
 
@@ -27,10 +28,9 @@ base::Time ConvertStudyDateToBaseTime(int64_t date_time) {
 template <typename Collection>
 bool ContainsStringIgnoreCaseASCII(const Collection& collection,
                                    const std::string& value) {
-  return std::find_if(std::begin(collection), std::end(collection),
-                      [&value](const std::string& s) -> bool {
-                        return base::EqualsCaseInsensitiveASCII(s, value);
-                      }) != std::end(collection);
+  return base::ranges::any_of(collection, [&value](const std::string& s) {
+    return base::EqualsCaseInsensitiveASCII(s, value);
+  });
 }
 
 }  // namespace
@@ -42,11 +42,7 @@ bool CheckStudyChannel(const Study::Filter& filter, Study::Channel channel) {
   if (filter.channel_size() == 0)
     return true;
 
-  for (int i = 0; i < filter.channel_size(); ++i) {
-    if (filter.channel(i) == channel)
-      return true;
-  }
-  return false;
+  return base::Contains(filter.channel(), channel);
 }
 
 bool CheckStudyFormFactor(const Study::Filter& filter,
@@ -253,19 +249,16 @@ const std::string& GetClientCountryForStudy(
   return base::EmptyString();
 }
 
-bool IsStudyExpired(const Study& study, const base::Time& date_time) {
-  if (study.has_expiry_date()) {
-    const base::Time expiry_date =
-        ConvertStudyDateToBaseTime(study.expiry_date());
-    return date_time >= expiry_date;
-  }
-
-  return false;
-}
-
-bool ShouldAddStudy(const Study& study,
+bool ShouldAddStudy(const ProcessedStudy& processed_study,
                     const ClientFilterableState& client_state,
                     const VariationsLayers& layers) {
+  const Study& study = *processed_study.study();
+  if (study.has_expiry_date()) {
+    DVLOG(1) << "Filtered out study " << study.name()
+             << " due to unsupported expiry_date field.";
+    return false;
+  }
+
   if (study.has_layer()) {
     if (!layers.IsLayerMemberActive(study.layer().layer_id(),
                                     study.layer().layer_member_id())) {
@@ -274,8 +267,9 @@ bool ShouldAddStudy(const Study& study,
       return false;
     }
 
-    if (VariationsSeedProcessor::ShouldStudyUseLowEntropy(study) &&
-        layers.IsLayerUsingDefaultEntropy(study.layer().layer_id())) {
+    if (processed_study.ShouldStudyUseLowEntropy() &&
+        layers.ActiveLayerMemberDependsOnHighEntropy(
+            study.layer().layer_id())) {
       DVLOG(1) << "Filtered out study " << study.name()
                << " due to requiring a low entropy source yet being a member "
                   "of a layer using the default entropy source.";
@@ -375,46 +369,32 @@ bool ShouldAddStudy(const Study& study,
 
 }  // namespace internal
 
-void FilterAndValidateStudies(const VariationsSeed& seed,
-                              const ClientFilterableState& client_state,
-                              const VariationsLayers& layers,
-                              std::vector<ProcessedStudy>* filtered_studies) {
+std::vector<ProcessedStudy> FilterAndValidateStudies(
+    const VariationsSeed& seed,
+    const ClientFilterableState& client_state,
+    const VariationsLayers& layers) {
   DCHECK(client_state.version.IsValid());
 
-  // Add expired studies (in a disabled state) only after all the non-expired
-  // studies have been added (and do not add an expired study if a corresponding
-  // non-expired study got added). This way, if there's both an expired and a
-  // non-expired study that applies, the non-expired study takes priority.
+  std::vector<ProcessedStudy> filtered_studies;
+
+  // Don't create two studies with the same name.
   std::set<std::string> created_studies;
-  std::vector<ProcessedStudy> expired_studies;
 
   for (int i = 0; i < seed.study_size(); ++i) {
     const Study& study = seed.study(i);
     ProcessedStudy processed_study;
-    bool is_expired =
-        internal::IsStudyExpired(study, client_state.reference_date);
-    if (!processed_study.Init(&study, is_expired))
+    if (!processed_study.Init(&study))
       continue;
 
-    if (!internal::ShouldAddStudy(*processed_study.study(), client_state,
-                                  layers)) {
+    if (!internal::ShouldAddStudy(processed_study, client_state, layers))
       continue;
-    }
 
-    if (processed_study.is_expired()) {
-      expired_studies.push_back(processed_study);
-    } else if (!base::Contains(created_studies,
-                               processed_study.study()->name())) {
-      filtered_studies->push_back(processed_study);
+    if (!base::Contains(created_studies, processed_study.study()->name())) {
+      filtered_studies.push_back(processed_study);
       created_studies.insert(processed_study.study()->name());
     }
   }
-
-  for (auto& expired_study : expired_studies) {
-    if (!base::Contains(created_studies, expired_study.study()->name())) {
-      filtered_studies->push_back(expired_study);
-    }
-  }
+  return filtered_studies;
 }
 
 }  // namespace variations

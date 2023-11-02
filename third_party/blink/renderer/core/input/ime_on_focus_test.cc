@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,11 +39,6 @@ class ImeOnFocusTest : public testing::Test {
                          const AtomicString& focus_element = g_null_atom,
                          String frame = "");
 
- private:
-  std::unique_ptr<WebPointerEvent> CreateTouchPointerEvent(
-      WebInputEvent::Type type,
-      gfx::PointF position,
-      float size);
   String base_url_;
   frame_test_helpers::WebViewHelper web_view_helper_;
   Persistent<Document> document_;
@@ -51,28 +46,16 @@ class ImeOnFocusTest : public testing::Test {
 
 void ImeOnFocusTest::SendGestureTap(WebViewImpl* web_view,
                                     gfx::Point client_point) {
-  gfx::PointF position(client_point);
-  float size = 10;
-
-  // GestureTap comes after a pointerdown/up.
-  web_view->MainFrameWidget()->HandleInputEvent(WebCoalescedInputEvent(
-      CreateTouchPointerEvent(WebInputEvent::Type::kPointerDown, position,
-                              size),
-      {}, {}, ui::LatencyInfo()));
-
-  web_view->MainFrameWidget()->HandleInputEvent(WebCoalescedInputEvent(
-      CreateTouchPointerEvent(WebInputEvent::Type::kPointerUp, position, size),
-      {}, {}, ui::LatencyInfo()));
-
   WebGestureEvent web_gesture_event(WebInputEvent::Type::kGestureTap,
                                     WebInputEvent::kNoModifiers,
                                     WebInputEvent::GetStaticTimeStampForTests(),
                                     WebGestureDevice::kTouchscreen);
-  web_gesture_event.SetPositionInWidget(position);
-  web_gesture_event.SetPositionInScreen(position);
+  // GestureTap is only ever from touch screens.
+  web_gesture_event.SetPositionInWidget(gfx::PointF(client_point));
+  web_gesture_event.SetPositionInScreen(gfx::PointF(client_point));
   web_gesture_event.data.tap.tap_count = 1;
-  web_gesture_event.data.tap.width = size;
-  web_gesture_event.data.tap.height = size;
+  web_gesture_event.data.tap.width = 10;
+  web_gesture_event.data.tap.height = 10;
 
   web_view->MainFrameViewWidget()->HandleInputEvent(
       WebCoalescedInputEvent(web_gesture_event, ui::LatencyInfo()));
@@ -80,7 +63,7 @@ void ImeOnFocusTest::SendGestureTap(WebViewImpl* web_view,
 }
 
 void ImeOnFocusTest::Focus(const AtomicString& element) {
-  document_->body()->getElementById(element)->focus();
+  document_->body()->getElementById(element)->Focus();
 }
 
 void ImeOnFocusTest::RunImeOnFocusTest(
@@ -107,7 +90,7 @@ void ImeOnFocusTest::RunImeOnFocusTest(
   if (tap_point.x() >= 0 && tap_point.y() >= 0)
     SendGestureTap(web_view, tap_point);
 
-  if (!frame.IsEmpty()) {
+  if (!frame.empty()) {
     RegisterMockedURLLoadFromBase(WebString(base_url_),
                                   test::CoreTestDataPath(), WebString(frame));
     WebLocalFrame* child_frame =
@@ -128,18 +111,6 @@ void ImeOnFocusTest::RunImeOnFocusTest(
   }
 
   web_view_helper_.Reset();
-}
-
-std::unique_ptr<WebPointerEvent> ImeOnFocusTest::CreateTouchPointerEvent(
-    WebInputEvent::Type type,
-    gfx::PointF position,
-    float size) {
-  return std::make_unique<WebPointerEvent>(
-      type,
-      WebPointerProperties(1, WebPointerProperties::PointerType::kTouch,
-                           WebPointerProperties::Button::kLeft, position,
-                           position, 0, 0),
-      size, size);
 }
 
 TEST_F(ImeOnFocusTest, OnLoad) {

@@ -1,4 +1,4 @@
-// Copyright (c) 2010 The Chromium Authors. All rights reserved.
+// Copyright 2010 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@
 // CoInitializeEx beforehand.
 //
 // For more information about WMI programming:
-// http://msdn2.microsoft.com/en-us/library/aa384642(VS.85).aspx
+// https://docs.microsoft.com/en-us/windows/win32/wmisdk
 
 #ifndef BASE_WIN_WMI_H_
 #define BASE_WIN_WMI_H_
@@ -25,9 +25,37 @@
 
 #include "base/base_export.h"
 #include "base/strings/string_piece.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace win {
+
+// Enumeration of errors that can arise when connecting to a WMI server and
+// running a query.
+// Do not change ordering. This enum is captured as `WmiQueryError` in
+// enums.xml.
+enum class WmiError {
+  kFailedToCreateInstance = 0,
+  kFailedToConnectToWMI = 1,
+  kFailedToSetSecurityBlanket = 2,
+  kFailedToExecWMIQuery = 3,
+  kMaxValue = kFailedToExecWMIQuery
+};
+
+// String used to connect to the CIMV2 WMI server.
+BASE_EXPORT extern const wchar_t kCimV2ServerName[];
+
+// String used to connect to the SecurityCenter2 WMI server.
+BASE_EXPORT extern const wchar_t kSecurityCenter2ServerName[];
+
+// Connects to a server named `server_name` on the local computer through COM
+// and run the given WQL `query`. Sets `enumerator` with the values returned by
+// that `query`. Will return a WmiError value if an error occurs, else returns
+// absl::nullopt.
+BASE_EXPORT absl::optional<WmiError> RunWmiQuery(
+    const std::wstring& server_name,
+    const std::wstring& query,
+    Microsoft::WRL::ComPtr<IEnumWbemClassObject>* enumerator);
 
 // Creates an instance of the WMI service connected to the local computer and
 // returns its COM interface. If |set_blanket| is set to true, the basic COM
@@ -38,6 +66,16 @@ namespace win {
 BASE_EXPORT bool CreateLocalWmiConnection(
     bool set_blanket,
     Microsoft::WRL::ComPtr<IWbemServices>* wmi_services);
+
+// Creates an instance of the WMI service connected to the resource and
+// returns its COM interface. If |set_blanket| is set to true, the basic COM
+// security blanket is applied to the returned interface. This is almost
+// always desirable unless you set the parameter to false and apply a custom
+// COM security blanket.
+// Returns a valid ComPtr<IWbemServices> on success, nullptr on failure.
+BASE_EXPORT Microsoft::WRL::ComPtr<IWbemServices> CreateWmiConnection(
+    bool set_blanket,
+    const std::wstring& resource);
 
 // Creates a WMI method using from a WMI class named |class_name| that
 // contains a method named |method_name|. Only WMI classes that are CIM
@@ -78,7 +116,7 @@ class BASE_EXPORT WmiComputerSystemInfo {
 
  private:
   void PopulateSerialNumber(
-      const Microsoft::WRL::ComPtr<IWbemServices>& services);
+      const Microsoft::WRL::ComPtr<IEnumWbemClassObject>& enumerator_bios);
 
   std::wstring serial_number_;
 };

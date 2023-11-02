@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define COMPONENTS_POLICY_CORE_COMMON_MANAGEMENT_SCOPED_MANAGEMENT_SERVICE_OVERRIDE_FOR_TESTING_H_
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -29,7 +30,7 @@ class ScopedManagementServiceOverrideForTesting {
   ~ScopedManagementServiceOverrideForTesting();
 
  private:
-  ManagementService* service_;
+  raw_ptr<ManagementService> service_;
   absl::optional<uint64_t> previous_authorities_;
 };
 

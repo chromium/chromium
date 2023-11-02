@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -31,14 +32,14 @@
 #include "components/security_interstitials/core/metrics_helper.h"
 #include "content/public/browser/web_contents.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/enterprise_util.h"
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
 #include "components/security_interstitials/content/captive_portal_helper_android.h"
 #include "content/public/common/referrer.h"
@@ -81,15 +82,15 @@ bool IsEnterpriseManaged() {
     return false;
   }
 
-#if defined(OS_WIN)
-  if (base::IsMachineExternallyManaged()) {
+#if BUILDFLAG(IS_WIN)
+  if (base::IsManagedOrEnterpriseDevice()) {
     return true;
   }
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
   if (g_browser_process->platform_part()->browser_policy_connector_ash()) {
     return true;
   }
-#endif  // #if defined OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
   return false;
 }
@@ -173,24 +174,6 @@ ChromeSecurityBlockingPageFactory::CreateSSLPage(
       StatefulSSLHostStateDelegateFactory::GetForProfile(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()));
   state->DidDisplayErrorPage(cert_error);
-  bool is_recurrent_error = state->HasSeenRecurrentErrors(cert_error);
-  if (overridable) {
-    UMA_HISTOGRAM_BOOLEAN("interstitial.ssl_overridable.is_recurrent_error",
-                          is_recurrent_error);
-    if (cert_error == net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED) {
-      UMA_HISTOGRAM_BOOLEAN(
-          "interstitial.ssl_overridable.is_recurrent_error.ct_error",
-          is_recurrent_error);
-    }
-  } else {
-    UMA_HISTOGRAM_BOOLEAN("interstitial.ssl_nonoverridable.is_recurrent_error",
-                          is_recurrent_error);
-    if (cert_error == net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED) {
-      UMA_HISTOGRAM_BOOLEAN(
-          "interstitial.ssl_nonoverridable.is_recurrent_error.ct_error",
-          is_recurrent_error);
-    }
-  }
 
   LogSafeBrowsingSecuritySensitiveAction(
       safe_browsing::SafeBrowsingMetricsCollectorFactory::GetForProfile(
@@ -254,30 +237,6 @@ ChromeSecurityBlockingPageFactory::CreateBadClockBlockingPage(
           CreateSettingsPageHelper()));
 
   ChromeSecurityBlockingPageFactory::DoChromeSpecificSetup(page.get());
-  return page;
-}
-
-std::unique_ptr<LegacyTLSBlockingPage>
-ChromeSecurityBlockingPageFactory::CreateLegacyTLSBlockingPage(
-    content::WebContents* web_contents,
-    int cert_error,
-    const GURL& request_url,
-    std::unique_ptr<SSLCertReporter> ssl_cert_reporter,
-    const net::SSLInfo& ssl_info) {
-  LogSafeBrowsingSecuritySensitiveAction(
-      safe_browsing::SafeBrowsingMetricsCollectorFactory::GetForProfile(
-          Profile::FromBrowserContext(web_contents->GetBrowserContext())));
-
-  auto page = std::make_unique<LegacyTLSBlockingPage>(
-      web_contents, cert_error, request_url, std::move(ssl_cert_reporter),
-      /*can_show_enhanced_protection_message=*/true, ssl_info,
-      std::make_unique<SSLErrorControllerClient>(
-          web_contents, ssl_info, cert_error, request_url,
-          CreateMetricsHelperAndStartRecording(web_contents, request_url,
-                                               "legacy_tls", false),
-          CreateSettingsPageHelper()));
-
-  DoChromeSpecificSetup(page.get());
   return page;
 }
 
@@ -363,8 +322,8 @@ void ChromeSecurityBlockingPageFactory::DoChromeSpecificSetup(
       base::BindRepeating([](CertificateErrorReport* report) {
         report->AddChromeChannel(chrome::GetChannel());
 
-#if defined(OS_WIN)
-        report->SetIsEnterpriseManaged(base::IsMachineExternallyManaged());
+#if BUILDFLAG(IS_WIN)
+        report->SetIsEnterpriseManaged(IsEnterpriseManaged());
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
         report->SetIsEnterpriseManaged(g_browser_process->platform_part()
                                            ->browser_policy_connector_ash()

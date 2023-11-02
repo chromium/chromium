@@ -3,6 +3,7 @@ include_rules = [
   "+components/viz/common",
   "+gpu/ipc/common",
   "+media/gpu/ipc/common",
+  "+ppapi/buildflags/buildflags.h",
   "+printing/mojom",
   "+services/device/public/mojom/screen_orientation_lock_types.mojom-shared.h",
   "+third_party/skia/include",

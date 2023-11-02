@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,10 +22,10 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_offset_string_conversions.h"
 #include "components/url_formatter/spoof_checks/idn_spoof_checker.h"
-#include "net/base/escape.h"
 
 class GURL;
 
@@ -80,7 +80,7 @@ extern const FormatUrlType kFormatUrlOmitTrailingSlashOnBareHostname;
 // If the scheme is 'https://', it's removed. Not in kFormatUrlOmitDefaults.
 extern const FormatUrlType kFormatUrlOmitHTTPS;
 
-// Omits some trivially informative subdomains such as "www" or "m". Not in
+// Omits some trivially informative subdomains such as "www". Not in
 // kFormatUrlOmitDefaults.
 extern const FormatUrlType kFormatUrlOmitTrivialSubdomains;
 
@@ -93,6 +93,9 @@ extern const FormatUrlType kFormatUrlOmitFileScheme;
 
 // If the scheme is 'mailto:', it's removed. Not in kFormatUrlOmitDefaults.
 extern const FormatUrlType kFormatUrlOmitMailToScheme;
+
+// Omits the mobile prefix "m". Not in kFormatUrlOmitDefaults.
+extern const FormatUrlType kFormatUrlOmitMobilePrefix;
 
 // Convenience for omitting all unnecessary types. Does not include HTTPS scheme
 // removal, or experimental flags.
@@ -131,7 +134,7 @@ extern const FormatUrlType kFormatUrlOmitDefaults;
 // components are adjacent.
 std::u16string FormatUrl(const GURL& url,
                          FormatUrlTypes format_types,
-                         net::UnescapeRule::Type unescape_rules,
+                         base::UnescapeRule::Type unescape_rules,
                          url::Parsed* new_parsed,
                          size_t* prefix_end,
                          size_t* offset_for_adjustment);
@@ -139,7 +142,7 @@ std::u16string FormatUrl(const GURL& url,
 std::u16string FormatUrlWithOffsets(
     const GURL& url,
     FormatUrlTypes format_types,
-    net::UnescapeRule::Type unescape_rules,
+    base::UnescapeRule::Type unescape_rules,
     url::Parsed* new_parsed,
     size_t* prefix_end,
     std::vector<size_t>* offsets_for_adjustment);
@@ -151,7 +154,7 @@ std::u16string FormatUrlWithOffsets(
 std::u16string FormatUrlWithAdjustments(
     const GURL& url,
     FormatUrlTypes format_types,
-    net::UnescapeRule::Type unescape_rules,
+    base::UnescapeRule::Type unescape_rules,
     url::Parsed* new_parsed,
     size_t* prefix_end,
     base::OffsetAdjuster::Adjustments* adjustments);
@@ -162,7 +165,7 @@ std::u16string FormatUrlWithAdjustments(
 // cautious about using this for URLs which will be parsed or sent to other
 // applications.
 inline std::u16string FormatUrl(const GURL& url) {
-  return FormatUrl(url, kFormatUrlOmitDefaults, net::UnescapeRule::SPACES,
+  return FormatUrl(url, kFormatUrlOmitDefaults, base::UnescapeRule::SPACES,
                    nullptr, nullptr, nullptr);
 }
 
@@ -192,6 +195,9 @@ IDNConversionResult UnsafeIDNToUnicodeWithDetails(base::StringPiece host);
 // hostname, and if "www." is part of the subdomain (not the eTLD+1).
 std::string StripWWW(const std::string& host);
 
+// Strips a "m." prefix from |host| if present.
+std::string StripMobilePrefix(const std::string& text);
+
 // If the |host| component of |url| begins with a "www." prefix (and meets the
 // conditions described for StripWWW), then updates |host| to strip the "www."
 // prefix.
@@ -214,6 +220,10 @@ TopDomainEntry LookupSkeletonInTopDomains(
 // only contains Latin-Greek-Cyrillic characters. Otherwise, returns the
 // input string.
 std::u16string MaybeRemoveDiacritics(const std::u16string& host);
+
+// Returns the first IDNA 2008 deviation character in the `hostname`, if any.
+// See idn_spoof_checker.h for details about deviation characters.
+IDNA2008DeviationCharacter GetDeviationCharacter(base::StringPiece16 hostname);
 
 }  // namespace url_formatter
 

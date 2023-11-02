@@ -51,6 +51,10 @@
 	<key>NSAllowsArbitraryLoads</key>
 	<true/>
 	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>This test needs to request access to your camera.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>This test needs to request access to your microphone.</string>
 	<key>UIFileSharingEnabled</key>
 	<true/>
 	<key>UILaunchImages</key>
@@ -176,7 +180,7 @@
   <key>UIApplicationSceneManifest</key>
   <dict>
           <key>UIApplicationSupportsMultipleScenes</key>
-          <false/>
+          <true/>
           <key>UISceneConfigurations</key>
           <dict>
                   <key>UIWindowSceneSessionRoleApplication</key>

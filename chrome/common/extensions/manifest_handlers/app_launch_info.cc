@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,8 +13,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/url_constants.h"
-#include "components/cloud_devices/common/cloud_devices_urls.h"
-#include "components/services/app_service/public/mojom/types.mojom-shared.h"
+#include "components/app_constants/constants.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/manifest_constants.h"
@@ -32,8 +31,7 @@ bool ReadLaunchDimension(const extensions::Manifest* manifest,
                          int* target,
                          bool is_valid_container,
                          std::u16string* error) {
-  const base::Value* temp = nullptr;
-  if (manifest->Get(key, &temp)) {
+  if (const base::Value* temp = manifest->FindPath(key)) {
     if (!is_valid_container) {
       *error = ErrorUtils::FormatErrorMessageUTF16(
           errors::kInvalidLaunchValueContainer,
@@ -52,24 +50,6 @@ bool ReadLaunchDimension(const extensions::Manifest* manifest,
   return true;
 }
 
-bool HasValidComponentBookmarkAppURL(const GURL& url) {
-  // For component Bookmark Apps we additionally accept chrome:// and
-  // chrome-untrusted://.
-  //
-  // Making chrome-untrusted:// work with URLPattern has many side-effects e.g.
-  // it makes chrome-untrusted:// URLs scriptable. Given that
-  // chrome-untrusted:// support is only needed temporarily until Bookmark Apps
-  // are deprecated, we simply check the parsed URL scheme, rather than adding
-  // chrome-untrusted:// to URLPattern and dealing with all the side-effects.
-  if (url.SchemeIs(content::kChromeUIScheme))
-    return true;
-  if (url.SchemeIs(content::kChromeUIUntrustedScheme))
-    return true;
-
-  URLPattern pattern(Extension::kValidBookmarkAppSchemes);
-  return pattern.IsValidScheme(url.scheme());
-}
-
 static base::LazyInstance<AppLaunchInfo>::DestructorAtExit
     g_empty_app_launch_info = LAZY_INSTANCE_INITIALIZER;
 
@@ -81,10 +61,7 @@ const AppLaunchInfo& GetAppLaunchInfo(const Extension* extension) {
 
 }  // namespace
 
-AppLaunchInfo::AppLaunchInfo()
-    : launch_container_(LaunchContainer::kLaunchContainerTab),
-      launch_width_(0),
-      launch_height_(0) {}
+AppLaunchInfo::AppLaunchInfo() = default;
 
 AppLaunchInfo::~AppLaunchInfo() {
 }
@@ -101,7 +78,7 @@ const GURL& AppLaunchInfo::GetLaunchWebURL(const Extension* extension) {
 }
 
 // static
-extensions::LaunchContainer AppLaunchInfo::GetLaunchContainer(
+apps::LaunchContainer AppLaunchInfo::GetLaunchContainer(
     const Extension* extension) {
   return GetAppLaunchInfo(extension).launch_container_;
 }
@@ -133,18 +110,18 @@ bool AppLaunchInfo::Parse(Extension* extension, std::u16string* error) {
 }
 
 bool AppLaunchInfo::LoadLaunchURL(Extension* extension, std::u16string* error) {
-  const base::Value* temp = NULL;
-
   // Launch URL can be either local (to chrome-extension:// root) or an absolute
   // web URL.
-  if (extension->manifest()->Get(keys::kLaunchLocalPath, &temp)) {
-    if (extension->manifest()->Get(keys::kLaunchWebURL, NULL)) {
-      *error = base::ASCIIToUTF16(errors::kLaunchPathAndURLAreExclusive);
+  if (const base::Value* temp =
+          extension->manifest()->FindPath(keys::kLaunchLocalPath);
+      temp) {
+    if (extension->manifest()->FindPath(keys::kLaunchWebURL)) {
+      *error = errors::kLaunchPathAndURLAreExclusive;
       return false;
     }
 
-    if (extension->manifest()->Get(keys::kWebURLs, NULL)) {
-      *error = base::ASCIIToUTF16(errors::kLaunchPathAndExtentAreExclusive);
+    if (extension->manifest()->FindPath(keys::kWebURLs)) {
+      *error = errors::kLaunchPathAndExtentAreExclusive;
       return false;
     }
 
@@ -167,7 +144,8 @@ bool AppLaunchInfo::LoadLaunchURL(Extension* extension, std::u16string* error) {
     }
 
     launch_local_path_ = launch_path;
-  } else if (extension->manifest()->Get(keys::kLaunchWebURL, &temp)) {
+  } else if (temp = extension->manifest()->FindPath(keys::kLaunchWebURL);
+             temp) {
     if (!temp->is_string()) {
       *error = ErrorUtils::FormatErrorMessageUTF16(
           errors::kInvalidLaunchValue,
@@ -186,46 +164,26 @@ bool AppLaunchInfo::LoadLaunchURL(Extension* extension, std::u16string* error) {
       return false;
     }
 
-    if (!extension->from_bookmark()) {
-      URLPattern pattern(Extension::kValidWebExtentSchemes);
-      // For non-Bookmark Apps, we only accept kValidWebExtentSchemes.
-      if (!pattern.IsValidScheme(url.scheme())) {
-        set_launch_web_url_error();
-        return false;
-      }
-    } else if (extension->location() !=
-               mojom::ManifestLocation::kExternalComponent) {
-      // For non-component Bookmark Apps we only accept
-      // kValidBookmarkAppSchemes.
-      URLPattern pattern(Extension::kValidBookmarkAppSchemes);
-      if (!pattern.IsValidScheme(url.scheme())) {
-        set_launch_web_url_error();
-        return false;
-      }
-    } else {
-      if (!HasValidComponentBookmarkAppURL(url)) {
-        set_launch_web_url_error();
-        return false;
-      }
+    URLPattern pattern(Extension::kValidWebExtentSchemes);
+    if (!pattern.IsValidScheme(url.scheme())) {
+      set_launch_web_url_error();
+      return false;
     }
 
     launch_web_url_ = url;
   } else if (extension->is_legacy_packaged_app()) {
-    *error = base::ASCIIToUTF16(errors::kLaunchURLRequired);
+    *error = errors::kLaunchURLRequired;
     return false;
   }
 
   // For the Chrome component app, override launch url to new tab.
-  if (extension->id() == extension_misc::kChromeAppId) {
+  if (extension->id() == app_constants::kChromeAppId) {
     launch_web_url_ = GURL(chrome::kChromeUINewTabURL);
     return true;
   }
 
   // If there is no extent, we default the extent based on the launch URL.
-  // Skip this step if the extension is from a bookmark app, as they are
-  // permissionless.
-  if (extension->web_extent().is_empty() && !launch_web_url_.is_empty() &&
-      !extension->from_bookmark()) {
+  if (extension->web_extent().is_empty() && !launch_web_url_.is_empty()) {
     URLPattern pattern(Extension::kValidWebExtentSchemes);
     if (!pattern.SetScheme("*")) {
       *error = ErrorUtils::FormatErrorMessageUTF16(
@@ -251,14 +209,6 @@ bool AppLaunchInfo::LoadLaunchURL(Extension* extension, std::u16string* error) {
       GURL gallery_url(gallery_url_str);
       OverrideLaunchURL(extension, gallery_url);
     }
-  } else if (extension->id() == extension_misc::kCloudPrintAppId) {
-    // In order for the --type=service switch to work, we must update the launch
-    // URL and web extent.
-    GURL url =
-        cloud_devices::GetCloudPrintRelativeURL("enable_chrome_connector");
-    if (!url.is_empty()) {
-      OverrideLaunchURL(extension, url);
-    }
   }
 
   return true;
@@ -266,31 +216,32 @@ bool AppLaunchInfo::LoadLaunchURL(Extension* extension, std::u16string* error) {
 
 bool AppLaunchInfo::LoadLaunchContainer(Extension* extension,
                                         std::u16string* error) {
-  const base::Value* tmp_launcher_container = NULL;
-  if (!extension->manifest()->Get(keys::kLaunchContainer,
-                                  &tmp_launcher_container))
+  const base::Value* tmp_launcher_container =
+      extension->manifest()->FindPath(keys::kLaunchContainer);
+  if (tmp_launcher_container == nullptr)
     return true;
 
   if (!tmp_launcher_container->is_string()) {
-    *error = base::ASCIIToUTF16(errors::kInvalidLaunchContainer);
+    *error = errors::kInvalidLaunchContainer;
     return false;
   }
   const std::string launch_container_string =
       tmp_launcher_container->GetString();
 
   if (launch_container_string == values::kLaunchContainerPanelDeprecated) {
-    launch_container_ = LaunchContainer::kLaunchContainerPanelDeprecated;
+    launch_container_ = apps::LaunchContainer::kLaunchContainerPanelDeprecated;
   } else if (launch_container_string == values::kLaunchContainerTab) {
-    launch_container_ = LaunchContainer::kLaunchContainerTab;
+    launch_container_ = apps::LaunchContainer::kLaunchContainerTab;
   } else {
-    *error = base::ASCIIToUTF16(errors::kInvalidLaunchContainer);
+    *error = errors::kInvalidLaunchContainer;
     return false;
   }
 
   // TODO(manucornet): Remove this special behavior now that panels are
   // deprecated.
   bool can_specify_initial_size =
-      launch_container_ == LaunchContainer::kLaunchContainerPanelDeprecated;
+      launch_container_ ==
+      apps::LaunchContainer::kLaunchContainerPanelDeprecated;
 
   // Validate the container width if present.
   if (!ReadLaunchDimension(extension->manifest(),

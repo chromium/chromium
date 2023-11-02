@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -81,6 +81,11 @@ class COMPONENT_EXPORT(X11) XF86Dri {
   Connection* connection() const { return connection_; }
 
   struct DrmClipRect {
+    bool operator==(const DrmClipRect& other) const {
+      return x1 == other.x1 && y1 == other.y1 && x2 == other.x2 &&
+             x3 == other.x3;
+    }
+
     int16_t x1{};
     int16_t y1{};
     int16_t x2{};

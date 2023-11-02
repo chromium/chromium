@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.incognito;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHostUtils;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.ui.permissions.ContextualNotificationPermissionRequester;
 
 /**
  * Controls the presence incognito notification through {@link IncognitoNotificationManager}.
@@ -29,6 +30,7 @@ public class IncognitoNotificationPresenceController implements IncognitoTabMode
     @Override
     public void wasFirstTabCreated() {
         IncognitoNotificationManager.showIncognitoNotification();
+        ContextualNotificationPermissionRequester.getInstance().requestPermissionIfNeeded();
     }
 
     @Override

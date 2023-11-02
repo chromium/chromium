@@ -1,10 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/browser/media/media_keys_listener_manager_impl.h"
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/browser_main_loop.h"
@@ -60,7 +61,7 @@ class MockMediaKeysListener : public ui::MediaKeysListener {
   }
 
  private:
-  ui::MediaKeysListener::Delegate* delegate_;
+  raw_ptr<ui::MediaKeysListener::Delegate> delegate_;
   base::flat_set<ui::KeyboardCode> key_codes_;
 };
 
@@ -153,8 +154,9 @@ class MediaKeysListenerManagerImplTest : public ContentBrowserTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  MediaKeysListenerManagerImpl* media_keys_listener_manager_;
-  MockMediaKeysListener* media_keys_listener_;
+  raw_ptr<MediaKeysListenerManagerImpl, DanglingUntriaged>
+      media_keys_listener_manager_;
+  raw_ptr<MockMediaKeysListener, DanglingUntriaged> media_keys_listener_;
   std::unique_ptr<TestMediaController> media_controller_;
 };
 

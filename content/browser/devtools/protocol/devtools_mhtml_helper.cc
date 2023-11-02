@@ -1,10 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/browser/devtools/protocol/devtools_mhtml_helper.h"
 
 #include "base/bind.h"
+#include "base/files/file_util.h"
 #include "base/task/thread_pool.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -23,9 +24,10 @@ void ClearFileReferenceOnIOThread(
 }  // namespace
 
 DevToolsMHTMLHelper::DevToolsMHTMLHelper(
-    base::WeakPtr<PageHandler> page_handler,
+    const WebContents::Getter& web_contents_getter,
     std::unique_ptr<PageHandler::CaptureSnapshotCallback> callback)
-    : page_handler_(page_handler), callback_(std::move(callback)) {}
+    : web_contents_getter_(web_contents_getter),
+      callback_(std::move(callback)) {}
 
 DevToolsMHTMLHelper::~DevToolsMHTMLHelper() {
   if (mhtml_file_.get()) {
@@ -37,10 +39,10 @@ DevToolsMHTMLHelper::~DevToolsMHTMLHelper() {
 
 // static
 void DevToolsMHTMLHelper::Capture(
-    base::WeakPtr<PageHandler> page_handler,
+    const WebContents::Getter& web_contents_getter,
     std::unique_ptr<PageHandler::CaptureSnapshotCallback> callback) {
   scoped_refptr<DevToolsMHTMLHelper> helper =
-      new DevToolsMHTMLHelper(page_handler, std::move(callback));
+      new DevToolsMHTMLHelper(web_contents_getter, std::move(callback));
   base::ThreadPool::PostTask(
       FROM_HERE,
       {// Requires IO.
@@ -88,11 +90,7 @@ void DevToolsMHTMLHelper::TemporaryFileCreatedOnIO() {
 
 void DevToolsMHTMLHelper::TemporaryFileCreatedOnUI() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!page_handler_) {
-    ReportFailure("");
-    return;
-  }
-  WebContentsImpl* web_contents = page_handler_->GetWebContents();
+  WebContents* web_contents = web_contents_getter_.Run();
   if (!web_contents) {
     ReportFailure("No web contents");
     return;

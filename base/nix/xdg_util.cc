@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "base/environment.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/logging.h"
 #include "base/path_service.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -73,6 +74,8 @@ DesktopEnvironment GetDesktopEnvironment(Environment* env) {
         }
         return DESKTOP_ENVIRONMENT_UNITY;
       }
+      if (value == "Deepin")
+        return DESKTOP_ENVIRONMENT_DEEPIN;
       if (value == "GNOME")
         return DESKTOP_ENVIRONMENT_GNOME;
       if (value == "X-Cinnamon")
@@ -90,12 +93,18 @@ DesktopEnvironment GetDesktopEnvironment(Environment* env) {
         return DESKTOP_ENVIRONMENT_PANTHEON;
       if (value == "XFCE")
         return DESKTOP_ENVIRONMENT_XFCE;
+      if (value == "UKUI")
+        return DESKTOP_ENVIRONMENT_UKUI;
+      if (value == "LXQt")
+        return DESKTOP_ENVIRONMENT_LXQT;
     }
   }
 
   // DESKTOP_SESSION was what everyone used in 2010.
   std::string desktop_session;
   if (env->GetVar("DESKTOP_SESSION", &desktop_session)) {
+    if (desktop_session == "deepin")
+      return DESKTOP_ENVIRONMENT_DEEPIN;
     if (desktop_session == "gnome" || desktop_session == "mate")
       return DESKTOP_ENVIRONMENT_GNOME;
     if (desktop_session == "kde4" || desktop_session == "kde-plasma")
@@ -110,6 +119,8 @@ DesktopEnvironment GetDesktopEnvironment(Environment* env) {
         desktop_session == "xubuntu") {
       return DESKTOP_ENVIRONMENT_XFCE;
     }
+    if (desktop_session == "ukui")
+      return DESKTOP_ENVIRONMENT_UKUI;
   }
 
   // Fall back on some older environment variables.
@@ -131,6 +142,8 @@ const char* GetDesktopEnvironmentName(DesktopEnvironment env) {
       return nullptr;
     case DESKTOP_ENVIRONMENT_CINNAMON:
       return "CINNAMON";
+    case DESKTOP_ENVIRONMENT_DEEPIN:
+      return "DEEPIN";
     case DESKTOP_ENVIRONMENT_GNOME:
       return "GNOME";
     case DESKTOP_ENVIRONMENT_KDE3:
@@ -145,12 +158,43 @@ const char* GetDesktopEnvironmentName(DesktopEnvironment env) {
       return "UNITY";
     case DESKTOP_ENVIRONMENT_XFCE:
       return "XFCE";
+    case DESKTOP_ENVIRONMENT_UKUI:
+      return "UKUI";
+    case DESKTOP_ENVIRONMENT_LXQT:
+      return "LXQT";
   }
   return nullptr;
 }
 
 const char* GetDesktopEnvironmentName(Environment* env) {
   return GetDesktopEnvironmentName(GetDesktopEnvironment(env));
+}
+
+SessionType GetSessionType(Environment& env) {
+  std::string xdg_session_type;
+  if (!env.GetVar(kXdgSessionTypeEnvVar, &xdg_session_type))
+    return SessionType::kUnset;
+
+  TrimWhitespaceASCII(ToLowerASCII(xdg_session_type), TrimPositions::TRIM_ALL,
+                      &xdg_session_type);
+
+  if (xdg_session_type == "wayland")
+    return SessionType::kWayland;
+
+  if (xdg_session_type == "x11")
+    return SessionType::kX11;
+
+  if (xdg_session_type == "tty")
+    return SessionType::kTty;
+
+  if (xdg_session_type == "mir")
+    return SessionType::kMir;
+
+  if (xdg_session_type == "unspecified")
+    return SessionType::kUnspecified;
+
+  LOG(ERROR) << "Unknown XDG_SESSION_TYPE: " << xdg_session_type;
+  return SessionType::kOther;
 }
 
 }  // namespace nix

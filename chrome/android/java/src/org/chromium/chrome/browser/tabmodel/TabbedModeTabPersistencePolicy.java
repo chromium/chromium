@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -391,13 +391,18 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
 
     @Override
     public void notifyStateLoaded(int tabCountAtStartup) {
-        RecordHistogram.recordCountHistogram("Tabs.CountAtStartup", tabCountAtStartup);
+        RecordHistogram.recordCount1MHistogram("Tabs.CountAtStartup", tabCountAtStartup);
     }
 
     @Override
     public void destroy() {
         mTabContentManager = null;
         mDestroyed = true;
+    }
+
+    @Override
+    public boolean allowSkipLoadingTab() {
+        return true;
     }
 
     private class CleanUpTabStateDataTask extends AsyncTask<Void> {

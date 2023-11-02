@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/frame/opaque_browser_frame_view.h"
 #include "ui/views/layout/layout_manager.h"
 #include "ui/views/window/frame_buttons.h"
@@ -123,6 +124,9 @@ class OpaqueBrowserFrameViewLayout : public views::LayoutManager {
   // Enables or disables WCO and updates child views accordingly.
   void SetWindowControlsOverlayEnabled(bool enabled, views::View* host);
 
+  // Enables or disables borderless.
+  void SetBorderlessModeEnabled(bool enabled, views::View* host);
+
   // views::LayoutManager:
   // Called explicitly from OpaqueBrowserFrameView so we can't group it with
   // the other overrides.
@@ -165,7 +169,7 @@ class OpaqueBrowserFrameViewLayout : public views::LayoutManager {
   // when the window is restored.
   virtual int NonClientExtraTopThickness() const;
 
-  OpaqueBrowserFrameViewLayoutDelegate* delegate_;
+  raw_ptr<OpaqueBrowserFrameViewLayoutDelegate> delegate_;
 
   // The leading and trailing x positions of the empty space available for
   // laying out titlebar elements.
@@ -231,18 +235,20 @@ class OpaqueBrowserFrameViewLayout : public views::LayoutManager {
   views::Button* restore_button_;
   views::Button* close_button_;
 
-  views::View* window_icon_;
-  views::Label* window_title_;
+  raw_ptr<views::View> window_icon_;
+  raw_ptr<views::Label> window_title_;
 
-  WebAppFrameToolbarView* web_app_frame_toolbar_ = nullptr;
+  raw_ptr<WebAppFrameToolbarView> web_app_frame_toolbar_ = nullptr;
 
   std::vector<views::FrameButton> leading_buttons_;
   std::vector<views::FrameButton> trailing_buttons_;
 
-  views::ClientView* client_view_ = nullptr;
+  raw_ptr<views::ClientView> client_view_ = nullptr;
 
   bool is_window_controls_overlay_enabled_ = false;
-  CaptionButtonPlaceholderContainer* caption_button_placeholder_container_;
+  bool is_borderless_mode_enabled_ = false;
+  raw_ptr<CaptionButtonPlaceholderContainer>
+      caption_button_placeholder_container_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_OPAQUE_BROWSER_FRAME_VIEW_LAYOUT_H_

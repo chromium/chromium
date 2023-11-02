@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,9 +13,11 @@
 
 #include "base/command_line.h"
 #include "base/json/values_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/permissions/permissions_client.h"
 #include "components/variations/variations_associated_data.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
@@ -74,9 +76,9 @@ std::unique_ptr<base::DictionaryValue> GetOriginAppBannerData(
   if (!settings)
     return std::make_unique<base::DictionaryValue>();
 
-  std::unique_ptr<base::DictionaryValue> dict =
-      base::DictionaryValue::From(settings->GetWebsiteSetting(
-          origin_url, origin_url, ContentSettingsType::APP_BANNER, NULL));
+  std::unique_ptr<base::DictionaryValue> dict = base::DictionaryValue::From(
+      content_settings::ToNullableUniquePtrValue(settings->GetWebsiteSetting(
+          origin_url, origin_url, ContentSettingsType::APP_BANNER, nullptr)));
   if (!dict)
     return std::make_unique<base::DictionaryValue>();
 
@@ -115,16 +117,16 @@ class AppPrefs {
   void Save() {
     DCHECK(dict_);
     dict_ = nullptr;
-    settings_->SetWebsiteSettingDefaultScope(origin_, GURL(),
-                                             ContentSettingsType::APP_BANNER,
-                                             std::move(origin_dict_));
+    settings_->SetWebsiteSettingDefaultScope(
+        origin_, GURL(), ContentSettingsType::APP_BANNER,
+        content_settings::FromNullableUniquePtrValue(std::move(origin_dict_)));
   }
 
  private:
   const GURL& origin_;
-  HostContentSettingsMap* settings_ = nullptr;
+  raw_ptr<HostContentSettingsMap> settings_ = nullptr;
   std::unique_ptr<base::DictionaryValue> origin_dict_;
-  base::Value* dict_ = nullptr;
+  raw_ptr<base::Value> dict_ = nullptr;
 };
 
 // Queries variations for the number of days which dismissing and ignoring the
@@ -256,7 +258,7 @@ void AppBannerSettingsHelper::ClearHistoryForURLs(
       permissions::PermissionsClient::Get()->GetSettingsMap(browser_context);
   for (const GURL& origin_url : origin_urls) {
     settings->SetWebsiteSettingDefaultScope(
-        origin_url, GURL(), ContentSettingsType::APP_BANNER, nullptr);
+        origin_url, GURL(), ContentSettingsType::APP_BANNER, base::Value());
     settings->FlushLossyWebsiteSettings();
   }
 }

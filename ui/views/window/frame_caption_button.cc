@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,8 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
+#include "cc/paint/paint_flags.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/animation/slide_animation.h"
@@ -60,7 +62,7 @@ class FrameCaptionButton::HighlightPathGenerator
   }
 
  private:
-  FrameCaptionButton* const frame_caption_button_;
+  const raw_ptr<FrameCaptionButton> frame_caption_button_;
 };
 
 FrameCaptionButton::FrameCaptionButton(PressedCallback callback,
@@ -161,7 +163,7 @@ bool FrameCaptionButton::IsAnimatingImageSwap() const {
   return swap_images_animation_->is_animating();
 }
 
-void FrameCaptionButton::SetAlpha(int alpha) {
+void FrameCaptionButton::SetAlpha(SkAlpha alpha) {
   if (alpha_ != alpha) {
     alpha_ = alpha;
     SchedulePaint();
@@ -262,16 +264,17 @@ gfx::Size FrameCaptionButton::GetInkDropSize() const {
 
 gfx::Insets FrameCaptionButton::GetInkdropInsets(
     const gfx::Size& button_size) const {
-  return gfx::Insets((button_size.height() - GetInkDropSize().height()) / 2,
-                     (button_size.width() - GetInkDropSize().width()) / 2);
+  return gfx::Insets::VH((button_size.height() - GetInkDropSize().height()) / 2,
+                         (button_size.width() - GetInkDropSize().width()) / 2);
 }
 
 void FrameCaptionButton::PaintButtonContents(gfx::Canvas* canvas) {
   constexpr SkAlpha kHighlightVisibleOpacity = 0x14;
   SkAlpha highlight_alpha = SK_AlphaTRANSPARENT;
   if (hover_animation().is_animating()) {
-    highlight_alpha = hover_animation().CurrentValueBetween(
-        SK_AlphaTRANSPARENT, kHighlightVisibleOpacity);
+    highlight_alpha =
+        static_cast<SkAlpha>(hover_animation().CurrentValueBetween(
+            SK_AlphaTRANSPARENT, kHighlightVisibleOpacity));
   } else if (GetState() == STATE_HOVERED || GetState() == STATE_PRESSED) {
     // Painting a circular highlight in both "hovered" and "pressed" states
     // simulates and ink drop highlight mode of
@@ -290,10 +293,14 @@ void FrameCaptionButton::PaintButtonContents(gfx::Canvas* canvas) {
     DrawHighlight(canvas, flags);
   }
 
-  int icon_alpha = swap_images_animation_->CurrentValueBetween(0, 255);
-  int crossfade_icon_alpha = 0;
-  if (icon_alpha < static_cast<int>(kFadeOutRatio * 255))
-    crossfade_icon_alpha = static_cast<int>(255 - icon_alpha / kFadeOutRatio);
+  SkAlpha icon_alpha =
+      static_cast<SkAlpha>(swap_images_animation_->CurrentValueBetween(
+          SK_AlphaTRANSPARENT, SK_AlphaOPAQUE));
+  SkAlpha crossfade_icon_alpha = 0;
+  if (icon_alpha < base::ClampRound<SkAlpha>(kFadeOutRatio * SK_AlphaOPAQUE)) {
+    crossfade_icon_alpha =
+        base::ClampRound<SkAlpha>(SK_AlphaOPAQUE - icon_alpha / kFadeOutRatio);
+  }
 
   int centered_origin_x = (width() - icon_image_.width()) / 2;
   int centered_origin_y = (height() - icon_image_.height()) / 2;
@@ -320,9 +327,9 @@ void FrameCaptionButton::PaintButtonContents(gfx::Canvas* canvas) {
   }
 }
 
-int FrameCaptionButton::GetAlphaForIcon(int base_alpha) const {
+SkAlpha FrameCaptionButton::GetAlphaForIcon(SkAlpha base_alpha) const {
   if (!GetEnabled())
-    return base_alpha * kDisabledButtonAlphaRatio;
+    return base::ClampRound<SkAlpha>(base_alpha * kDisabledButtonAlphaRatio);
 
   if (paint_as_active_)
     return base_alpha;
@@ -336,7 +343,7 @@ int FrameCaptionButton::GetAlphaForIcon(int base_alpha) const {
   } else if (GetState() == STATE_PRESSED || GetState() == STATE_HOVERED) {
     inactive_alpha = 1.0f;
   }
-  return base_alpha * inactive_alpha;
+  return base::ClampRound<SkAlpha>(base_alpha * inactive_alpha);
 }
 
 void FrameCaptionButton::UpdateInkDropBaseColor() {
@@ -380,6 +387,8 @@ DEFINE_ENUM_CONVERTERS(
      u"CAPTION_BUTTON_ICON_LOCATION"},
     {views::CaptionButtonIcon::CAPTION_BUTTON_ICON_MENU,
      u"CAPTION_BUTTON_ICON_MENU"},
+    {views::CaptionButtonIcon::CAPTION_BUTTON_ICON_FLOAT,
+     u"CAPTION_BUTTON_ICON_FLOAT"},
     {views::CaptionButtonIcon::CAPTION_BUTTON_ICON_ZOOM,
      u"CAPTION_BUTTON_ICON_ZOOM"},
     {views::CaptionButtonIcon::CAPTION_BUTTON_ICON_CENTER,

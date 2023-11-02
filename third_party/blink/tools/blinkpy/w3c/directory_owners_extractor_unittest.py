@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -23,7 +23,7 @@ class DirectoryOwnersExtractorTest(unittest.TestCase):
         self.host = MockHost()
         self.host.filesystem = MockFileSystem(files={
             MOCK_WEB_TESTS + 'external/OWNERS':
-            'ecosystem-infra@chromium.org'
+            b'ecosystem-infra@chromium.org'
         })
         self.extractor = DirectoryOwnersExtractor(self.host)
 
@@ -161,17 +161,16 @@ class DirectoryOwnersExtractorTest(unittest.TestCase):
         self.assertIsNone(self.extractor.find_owners_file('third_party'))
 
     def test_extract_owners(self):
-        self.host.filesystem.files = {
-            ABS_WPT_BASE + '/foo/OWNERS':
-            '#This is a comment\n'
-            '*\n'
-            'foo@chromium.org\n'
-            'bar@chromium.org\n'
-            'foobar\n'
-            '#foobar@chromium.org\n'
-            '# TEAM: some-team@chromium.org\n'
-            '# COMPONENT: Blink>Layout\n'
-        }
+        fs = self.host.filesystem
+        fs.write_text_file(fs.join(ABS_WPT_BASE, 'foo', 'OWNERS'),
+                           ('#This is a comment\n'
+                            '*\n'
+                            'foo@chromium.org\n'
+                            'bar@chromium.org\n'
+                            'foobar\n'
+                            '#foobar@chromium.org\n'
+                            '# TEAM: some-team@chromium.org\n'
+                            '# COMPONENT: Blink>Layout\n'))
         self.assertEqual(
             self.extractor.extract_owners(ABS_WPT_BASE + '/foo/OWNERS'),
             ['foo@chromium.org', 'bar@chromium.org'])

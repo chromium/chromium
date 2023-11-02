@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,8 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/dom_node_ids.h"
+#include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/core/performance_entry_names.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
@@ -19,13 +21,14 @@ PerformanceEventTiming* PerformanceEventTiming::Create(
     DOMHighResTimeStamp processing_start,
     DOMHighResTimeStamp processing_end,
     bool cancelable,
-    Node* target) {
+    Node* target,
+    uint32_t navigation_id) {
   // TODO(npm): enable this DCHECK once https://crbug.com/852846 is fixed.
   // DCHECK_LE(start_time, processing_start);
   DCHECK_LE(processing_start, processing_end);
   return MakeGarbageCollected<PerformanceEventTiming>(
       event_type, performance_entry_names::kEvent, start_time, processing_start,
-      processing_end, cancelable, target);
+      processing_end, cancelable, target, navigation_id);
 }
 
 // static
@@ -35,7 +38,7 @@ PerformanceEventTiming* PerformanceEventTiming::CreateFirstInputTiming(
       MakeGarbageCollected<PerformanceEventTiming>(
           entry->name(), performance_entry_names::kFirstInput,
           entry->startTime(), entry->processingStart(), entry->processingEnd(),
-          entry->cancelable(), entry->target());
+          entry->cancelable(), entry->target(), entry->navigationId());
   first_input->SetDuration(entry->duration());
   return first_input;
 }
@@ -47,8 +50,9 @@ PerformanceEventTiming::PerformanceEventTiming(
     DOMHighResTimeStamp processing_start,
     DOMHighResTimeStamp processing_end,
     bool cancelable,
-    Node* target)
-    : PerformanceEntry(event_type, start_time, 0.0),
+    Node* target,
+    uint32_t navigation_id)
+    : PerformanceEntry(event_type, start_time, 0.0, navigation_id),
       entry_type_(entry_type),
       processing_start_(processing_start),
       processing_end_(processing_end),
@@ -83,6 +87,15 @@ void PerformanceEventTiming::SetInteractionId(uint32_t interaction_id) {
   interaction_id_ = interaction_id;
 }
 
+base::TimeTicks PerformanceEventTiming::unsafePresentationTimestamp() const {
+  return unsafe_presentation_timestamp_;
+}
+
+void PerformanceEventTiming::SetUnsafePresentationTimestamp(
+    base::TimeTicks presentation_timestamp) {
+  unsafe_presentation_timestamp_ = presentation_timestamp;
+}
+
 void PerformanceEventTiming::SetDuration(double duration) {
   // TODO(npm): enable this DCHECK once https://crbug.com/852846 is fixed.
   // DCHECK_LE(0, duration);
@@ -101,7 +114,8 @@ void PerformanceEventTiming::Trace(Visitor* visitor) const {
   visitor->Trace(target_);
 }
 
-std::unique_ptr<TracedValue> PerformanceEventTiming::ToTracedValue() const {
+std::unique_ptr<TracedValue> PerformanceEventTiming::ToTracedValue(
+    Frame* frame) const {
   auto traced_value = std::make_unique<TracedValue>();
   traced_value->SetString("type", name());
   traced_value->SetInteger("timeStamp", startTime());
@@ -111,6 +125,8 @@ std::unique_ptr<TracedValue> PerformanceEventTiming::ToTracedValue() const {
   traced_value->SetBoolean("cancelable", cancelable());
   // If int overflows occurs, the static_cast may not work correctly.
   traced_value->SetInteger("interactionId", static_cast<int>(interactionId()));
+  traced_value->SetInteger("nodeId", DOMNodeIds::IdForNode(target_));
+  traced_value->SetString("frame", String::FromUTF8(ToTraceValue(frame)));
   return traced_value;
 }
 

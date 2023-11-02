@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,23 @@
 
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
 
+@protocol SigninPresenter;
+
+class GURL;
+
 // Displays the send tab to self UI for all device form factors. Will show a
 // modal dialog popup on both platforms. Once this coordinator is stopped, the
 // underlying dialog is dismissed.
 @interface SendTabToSelfCoordinator : ChromeCoordinator
+
+- (id)initWithBaseViewController:(UIViewController*)baseViewController
+                         browser:(Browser*)browser
+                 signinPresenter:(id<SigninPresenter>)signinPresenter
+                             url:(const GURL&)url
+                           title:(NSString*)title NS_DESIGNATED_INITIALIZER;
+
+- (id)initWithBaseViewController:(UIViewController*)baseViewController
+                         browser:(Browser*)browser NS_UNAVAILABLE;
 
 @end
 

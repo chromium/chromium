@@ -1,0 +1,28 @@
+arc_support: This policy has no effect on the logging done by Android.
+caption: Report Bluetooth info
+desc: |-
+  Report a device's Bluetooth information.
+
+        If the policy is set to false or left unset, the information will not be reported.
+        If set to true, the device's Bluetooth information will be reported.
+device_only: true
+example_value: false
+features:
+  dynamic_refresh: true
+items:
+- caption: Enable device Bluetooth info reporting
+  value: true
+- caption: Disable device Bluetooth info reporting
+  value: false
+owners:
+- cros-reporting-team@google.com
+- lbaraz@chromium.org
+schema:
+  type: boolean
+supported_chrome_os_management:
+- google_cloud
+supported_on:
+- chrome_os:85-
+tags:
+- admin-sharing
+type: main

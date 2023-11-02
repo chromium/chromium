@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,6 +24,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_pointer.h"
 #include "ui/ozone/platform/wayland/host/wayland_popup.h"
+#include "ui/ozone/platform/wayland/host/wayland_seat.h"
 #include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
 #include "ui/ozone/platform/wayland/host/wayland_toplevel_window.h"
 #include "ui/ozone/platform/wayland/host/wayland_zaura_shell.h"
@@ -162,16 +163,17 @@ bool XDGPopupWrapperImpl::Initialize(const ShellPopupParams& params) {
       &XDGPopupWrapperImpl::Repositioned,
   };
 
-  struct xdg_positioner* positioner =
-      CreatePositioner(wayland_window_->parent_window());
+  auto positioner = CreatePositioner();
   if (!positioner)
     return false;
 
   xdg_popup_.reset(xdg_surface_get_popup(xdg_surface_wrapper_->xdg_surface(),
                                          parent_xdg_surface->xdg_surface(),
-                                         positioner));
+                                         positioner.get()));
   if (!xdg_popup_)
     return false;
+  connection_->wayland_window_manager()->NotifyWindowRoleAssigned(
+      wayland_window_);
 
   if (connection_->zaura_shell()) {
     uint32_t version =
@@ -184,10 +186,12 @@ bool XDGPopupWrapperImpl::Initialize(const ShellPopupParams& params) {
               ZAURA_POPUP_SURFACE_SUBMISSION_IN_PIXEL_COORDINATES_SINCE_VERSION) {
         zaura_popup_surface_submission_in_pixel_coordinates(aura_popup_.get());
       }
+      if (version >= ZAURA_POPUP_SET_MENU_SINCE_VERSION &&
+          wayland_window_->type() == PlatformWindowType::kMenu) {
+        zaura_popup_set_menu(aura_popup_.get());
+      }
     }
   }
-
-  xdg_positioner_destroy(positioner);
 
   GrabIfPossible(connection_, wayland_window_->parent_window());
 
@@ -216,16 +220,17 @@ bool XDGPopupWrapperImpl::SetBounds(const gfx::Rect& new_bounds) {
   params_.bounds = new_bounds;
 
   // Create a new positioner with new bounds.
-  auto* positioner = CreatePositioner(wayland_window_->parent_window());
-  DCHECK(positioner);
+  auto positioner = CreatePositioner();
+  if (!positioner)
+    return false;
+
   // TODO(msisov): figure out how we can make use of the reposition token.
   // The protocol says the token itself is opaque, and has no other special
   // meaning.
-  xdg_popup_reposition(xdg_popup_.get(), positioner, ++next_reposition_token_);
-  connection_->ScheduleFlush();
+  xdg_popup_reposition(xdg_popup_.get(), positioner.get(),
+                       ++next_reposition_token_);
 
-  // We can safely destroy the object now.
-  xdg_positioner_destroy(positioner);
+  connection_->Flush();
   return true;
 }
 
@@ -236,15 +241,26 @@ void XDGPopupWrapperImpl::SetWindowGeometry(const gfx::Rect& bounds) {
 }
 
 void XDGPopupWrapperImpl::Grab(uint32_t serial) {
-  xdg_popup_grab(xdg_popup_.get(), connection_->seat(), serial);
+  xdg_popup_grab(xdg_popup_.get(), connection_->seat()->wl_object(), serial);
 }
 
-struct xdg_positioner* XDGPopupWrapperImpl::CreatePositioner(
-    WaylandWindow* parent_window) {
-  struct xdg_positioner* positioner;
-  positioner = xdg_wm_base_create_positioner(connection_->shell());
+bool XDGPopupWrapperImpl::SupportsDecoration() {
+  if (!aura_popup_)
+    return false;
+  uint32_t version = zaura_popup_get_version(aura_popup_.get());
+  return version >= ZAURA_POPUP_SET_DECORATION_SINCE_VERSION;
+}
+
+void XDGPopupWrapperImpl::Decorate() {
+  zaura_popup_set_decoration(aura_popup_.get(),
+                             ZAURA_POPUP_DECORATION_TYPE_SHADOW);
+}
+
+wl::Object<xdg_positioner> XDGPopupWrapperImpl::CreatePositioner() {
+  wl::Object<xdg_positioner> positioner(
+      xdg_wm_base_create_positioner(connection_->shell()));
   if (!positioner)
-    return nullptr;
+    return {};
 
   gfx::Rect anchor_rect;
   OwnedWindowAnchorPosition anchor_position;
@@ -253,14 +269,16 @@ struct xdg_positioner* XDGPopupWrapperImpl::CreatePositioner(
   FillAnchorData(params_, &anchor_rect, &anchor_position, &anchor_gravity,
                  &constraint_adjustment);
 
-  xdg_positioner_set_anchor_rect(positioner, anchor_rect.x(), anchor_rect.y(),
-                                 anchor_rect.width(), anchor_rect.height());
-  xdg_positioner_set_size(positioner, params_.bounds.width(),
+  xdg_positioner_set_anchor_rect(positioner.get(), anchor_rect.x(),
+                                 anchor_rect.y(), anchor_rect.width(),
+                                 anchor_rect.height());
+  xdg_positioner_set_size(positioner.get(), params_.bounds.width(),
                           params_.bounds.height());
-  xdg_positioner_set_anchor(positioner, TranslateAnchor(anchor_position));
-  xdg_positioner_set_gravity(positioner, TranslateGravity(anchor_gravity));
+  xdg_positioner_set_anchor(positioner.get(), TranslateAnchor(anchor_position));
+  xdg_positioner_set_gravity(positioner.get(),
+                             TranslateGravity(anchor_gravity));
   xdg_positioner_set_constraint_adjustment(
-      positioner, TranslateConstraintAdjustment(constraint_adjustment));
+      positioner.get(), TranslateConstraintAdjustment(constraint_adjustment));
   return positioner;
 }
 

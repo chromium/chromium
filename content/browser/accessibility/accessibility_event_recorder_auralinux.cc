@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <atk/atkutil.h>
 #include <atspi/atspi.h>
 
-#include "base/cxx17_backports.h"
+#include "base/no_destructor.h"
 #include "base/process/process_handle.h"
 #include "base/strings/stringprintf.h"
 #include "content/browser/accessibility/browser_accessibility_auralinux.h"
@@ -61,8 +61,8 @@ bool AccessibilityEventRecorderAuraLinux::ShouldUseATSPI() {
 AccessibilityEventRecorderAuraLinux::AccessibilityEventRecorderAuraLinux(
     BrowserAccessibilityManager* manager,
     base::ProcessId pid,
-    const AXTreeSelector& selector)
-    : AccessibilityEventRecorder(manager), pid_(pid), selector_(selector) {
+    const ui::AXTreeSelector& selector)
+    : manager_(manager), pid_(pid), selector_(selector) {
   CHECK(!instance_) << "There can be only one instance of"
                     << " AccessibilityEventRecorder at a time.";
 
@@ -97,6 +97,7 @@ void AccessibilityEventRecorderAuraLinux::AddATKEventListeners() {
   g_object_unref(atk_no_op_object_new(gobject));
   g_object_unref(gobject);
 
+  AddATKEventListener("ATK:AtkDocument:load-complete");
   AddATKEventListener("ATK:AtkObject:state-change");
   AddATKEventListener("ATK:AtkObject:focus-event");
   AddATKEventListener("ATK:AtkObject:property-change");
@@ -138,7 +139,7 @@ void AccessibilityEventRecorderAuraLinux::ProcessATKEvent(
     unsigned int n_params,
     const GValue* params) {
   // If we don't have a root object, it means the tree is being destroyed.
-  if (!manager_->GetRoot()) {
+  if (!manager_->GetBrowserAccessibilityRoot()) {
     RemoveATKEventListeners();
     return;
   }
@@ -232,6 +233,7 @@ void AccessibilityEventRecorderAuraLinux::ProcessATKEvent(
 // in the libatspi documentation at:
 // https://developer.gnome.org/libatspi/stable/AtspiEventListener.html#atspi-event-listener-register
 const char* const kEventNames[] = {
+    "document:load-complete",
     "object:active-descendant-changed",
     "object:children-changed",
     "object:column-deleted",
@@ -291,7 +293,7 @@ void AccessibilityEventRecorderAuraLinux::AddATSPIEventListeners() {
       atspi_event_listener_new(OnATSPIEventReceived, this, nullptr);
 
   GError* error = nullptr;
-  for (size_t i = 0; i < base::size(kEventNames); i++) {
+  for (size_t i = 0; i < std::size(kEventNames); i++) {
     atspi_event_listener_register(atspi_event_listener_, kEventNames[i],
                                   &error);
     if (error) {
@@ -306,7 +308,7 @@ void AccessibilityEventRecorderAuraLinux::RemoveATSPIEventListeners() {
     return;
 
   GError* error = nullptr;
-  for (size_t i = 0; i < base::size(kEventNames); i++) {
+  for (size_t i = 0; i < std::size(kEventNames); i++) {
     atspi_event_listener_deregister(atspi_event_listener_, kEventNames[i],
                                     nullptr);
     if (error) {

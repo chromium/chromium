@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -59,7 +59,7 @@ class MockDaemonCdm : public cdm::mojom::ContentDecryptionModule {
                     pending_receiver) {
     receiver_.Bind(std::move(pending_receiver));
   }
-  ~MockDaemonCdm() = default;
+  ~MockDaemonCdm() override = default;
 
   MOCK_METHOD(void,
               SetServerCertificate,

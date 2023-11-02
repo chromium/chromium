@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,7 +24,7 @@ struct PortRange {
   inline bool is_null() const { return (min_port == 0) && (max_port == 0); }
 
   // Parse string in the form "<min_port>-<max_port>". E.g. "12400-12409".
-  // Returns true if string was parsed successfuly.
+  // Returns true if string was parsed successfully.
   //
   // Returns false and doesn't modify |result| if parsing fails (i.e. when
   // |port_range| doesn't represent a valid port range).

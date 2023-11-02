@@ -1,35 +1,67 @@
 # Adding a new feature flag in chrome://flags
 
-This document describes how to add your new feature behind a flag.  See also
-[Configuration](configuration.md), which gives more explanation about flags and
-other options for configuring Chrome.
+This document describes how to add a new Chrome feature flag visible to users
+via chrome://flag UI.
+
+*** note
+**NOTE:** It's NOT required if you don't intend to make your feature appear in
+chrome://flag UI.
+***
+
+See also the following for definitions:
+*  [Configuration: Features](configuration.md#features)
+*  [Configuration: Flags](configuration.md#flags)
 
 ## Step 1: Adding a new `base::Feature`
-This step would be different between where you want to use the flag.
-For example, if you want to use the flag in src/content, you should add a base::Feature to the following files:
+
+This step would be different depending on where you want to use the flag:
+
+### To Use the Flag in `content/` Only
+
+Add a `base::Feature` to the following files:
 
 * [content/public/common/content_features.cc](https://cs.chromium.org/chromium/src/content/public/common/content_features.cc)
 * [content/public/common/content_features.h](https://cs.chromium.org/chromium/src/content/public/common/content_features.h)
 
-If you want to use the flag in blink, you should also read
-[Runtime Enable Features](https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/platform/RuntimeEnabledFeatures.md).
+### To Use the Flag in `third_party/blink/` (and Possibly in `content/`)
 
-You can refer to [this CL](https://chromium-review.googlesource.com/c/554510/) and [this document](initialize_blink_features.md)
-to see
+Add a `base::Feature` to the following files:
 
-1. where to add the base::Feature
-[[1](https://chromium-review.googlesource.com/c/554510/8/content/public/common/content_features.cc#253)]
-[[2](https://chromium-review.googlesource.com/c/554510/8/content/public/common/content_features.h)]
-2. how to use it
-[[1](https://chromium-review.googlesource.com/c/554510/8/content/common/service_worker/service_worker_utils.cc#153)]
-3. how to wire your new base::Feature to a blink runtime feature[[1](https://chromium.googlesource.com/chromium/src/+/main/docs/initialize_blink_features.md)]
-4. how to use it in blink
-[[1](https://chromium-review.googlesource.com/c/554510/8/third_party/blnk/renderere/core/workers/worker_thread.cc)]
+* [third_party/blink/common/features.cc](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/common/features.cc)
+* [third_party/blink/public/common/features.h](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/public/common/features.h)
+
+Historically, Blink also has its own runtime feature mechanism. So if you
+feature needs to be runtime-enabled, read also Blink's
+[Runtime Enable Features][blink-rte] doc and
+[Initialization of Blink runtime features in content layer][blink-rte-init].
+
+[blink-rte]: ../third_party/blink/renderer/platform/RuntimeEnabledFeatures.md
+
+### Examples
+
+You can refer to [this CL](https://chromium-review.googlesource.com/c/554510/)
+and [this document](initialize_blink_features.md) to see
+
+1. Where to add the `base::Feature`:
+   [[1](https://chromium-review.googlesource.com/c/554510/8/content/public/common/content_features.cc#253)]
+   [[2](https://chromium-review.googlesource.com/c/554510/8/content/public/common/content_features.h)]
+2. How to use it:
+   [[1](https://chromium-review.googlesource.com/c/554510/8/content/common/service_worker/service_worker_utils.cc#153)]
+3. How to wire your new `base::Feature` to a Blink runtime feature:
+   [[1][blink-rte-init]]
+4. How to use it in Blink:
+   [[1](https://chromium-review.googlesource.com/c/554510/8/third_party/blnk/renderere/core/workers/worker_thread.cc)]
 
 Also, this patch added a virtual test for running web tests with the flag.
 When you add a flag, you can consider to use that.
 
+[blink-rte-init]: initialize_blink_features.md
+
 ## Step 2: Adding the feature flag to the chrome://flags UI.
+
+*** promo
+Googlers: Read also [Chrome Feature Flag in chrome://flags](http/go/finch-feature-api#chrome-feature-flag-in-chromeflags).
+***
 
 *** promo
 **Tip:** Android WebView has its own flag UI. The WebView team recommends adding
@@ -47,7 +79,8 @@ You have to modify these five files in total.
 * [chrome/browser/flag-metadata.json](https://cs.chromium.org/chromium/src/chrome/browser/flag-metadata.json)
 
 At first you need to add an entry to __about_flags.cc__,
-__flag_descriptions.cc__ and __flag_descriptions.h__. After that, try running the following test.
+__flag_descriptions.cc__ and __flag_descriptions.h__. After that, try running
+the following test.
 
 ```bash
 # Build unit_tests
@@ -58,9 +91,11 @@ autoninja -C out/Default unit_tests
 ./out/Default/bin/run_unit_tests --gtest_filter=AboutFlagsHistogramTest.CheckHistograms
 ```
 
-That test will ask you to add several entries to enums.xml. After doing so, run `git cl format`
-which will insert the entries in enums.xml in the correct order and run the tests again.
-You can refer to [this CL](https://chromium-review.googlesource.com/c/593707) as an example.
+That test will ask you to add several entries to enums.xml. After doing so, run
+`git cl format` which will insert the entries in enums.xml in the correct order
+and run the tests again.
+You can refer to [this CL](https://chromium-review.googlesource.com/c/593707) as
+an example.
 
 Finally, run the following test.
 
@@ -70,3 +105,10 @@ Finally, run the following test.
 
 That test will ask you to update the flag expiry metadata in
 [flag-metadata.json](https://cs.chromium.org/chromium/src/chrome/browser/flag-metadata.json).
+
+## Related Documents
+
+* [Chromium Feature API & Finch (Googler-only)](http://go/finch-feature-api)
+* [Configuration: Prefs, Settings, Features, Switches & Flags](configuration.md)
+* [Runtime Enabled Features](../third_party/blink/renderer/platform/RuntimeEnabledFeatures.md)
+* [Initialization of Blink runtime features in content layer](initialize_blink_features.md)

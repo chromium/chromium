@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,12 +22,14 @@ class WebContents;
 
 // Removes the time limit for cached content. This is used by tests to identify
 // accidentally passing tests.
-const base::Feature kClosedTabCacheNoTimeEviction{
-    "ClosedTabCacheNoTimeEviction", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kClosedTabCacheNoTimeEviction,
+             "ClosedTabCacheNoTimeEviction",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables MemoryPressure for closed tab cache.
-const base::Feature kClosedTabCacheMemoryPressure{
-    "ClosedTabCacheMemoryPressure", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kClosedTabCacheMemoryPressure,
+             "ClosedTabCacheMemoryPressure",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // ClosedTabCache:
 //

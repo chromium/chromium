@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,8 +27,12 @@ class FakeLoginDisplayHost::FakeBaseScreen : public BaseScreen {
 };
 
 FakeLoginDisplayHost::FakeLoginDisplayHost()
-    : session_manager_(std::make_unique<session_manager::SessionManager>()),
-      wizard_context_(std::make_unique<WizardContext>()) {}
+    : wizard_context_(std::make_unique<WizardContext>()) {
+  // Only one SessionManager can be instantiated at a time. Check to see if one
+  // has already been instantiated before creating one.
+  if (!session_manager::SessionManager::Get())
+    session_manager_ = std::make_unique<session_manager::SessionManager>();
+}
 
 FakeLoginDisplayHost::~FakeLoginDisplayHost() = default;
 
@@ -41,6 +45,10 @@ ExistingUserController* FakeLoginDisplayHost::GetExistingUserController() {
 }
 
 gfx::NativeWindow FakeLoginDisplayHost::GetNativeWindow() const {
+  return nullptr;
+}
+
+views::Widget* FakeLoginDisplayHost::GetLoginWindowWidget() const {
   return nullptr;
 }
 
@@ -57,6 +65,10 @@ WebUILoginView* FakeLoginDisplayHost::GetWebUILoginView() const {
 }
 
 void FakeLoginDisplayHost::BeforeSessionStart() {}
+
+bool FakeLoginDisplayHost::IsFinalizing() {
+  return false;
+}
 
 void FakeLoginDisplayHost::Finalize(base::OnceClosure) {}
 
@@ -91,8 +103,6 @@ void FakeLoginDisplayHost::CancelUserAdding() {}
 
 void FakeLoginDisplayHost::StartSignInScreen() {}
 
-void FakeLoginDisplayHost::OnPreferencesChanged() {}
-
 void FakeLoginDisplayHost::StartKiosk(const KioskAppId& kiosk_app_id,
                                       bool is_auto_launch) {}
 
@@ -120,11 +130,13 @@ bool FakeLoginDisplayHost::IsUserAllowlisted(
 
 void FakeLoginDisplayHost::ShowGaiaDialog(const AccountId& prefilled_account) {}
 
+void FakeLoginDisplayHost::ShowAllowlistCheckFailedError() {}
+
 void FakeLoginDisplayHost::ShowOsInstallScreen() {}
 
 void FakeLoginDisplayHost::ShowGuestTosScreen() {}
 
-void FakeLoginDisplayHost::HideOobeDialog() {}
+void FakeLoginDisplayHost::HideOobeDialog(bool saml_page_closed) {}
 
 void FakeLoginDisplayHost::SetShelfButtonsEnabled(bool enabled) {}
 
@@ -172,6 +184,15 @@ bool FakeLoginDisplayHost::IsWizardControllerCreated() const {
 
 WizardContext* FakeLoginDisplayHost::GetWizardContextForTesting() {
   NOTREACHED();
+  return nullptr;
+}
+
+bool FakeLoginDisplayHost::IsWebUIStarted() const {
+  return wizard_controller_.get();
+}
+
+base::WeakPtr<ash::quick_start::TargetDeviceBootstrapController>
+FakeLoginDisplayHost::GetQuickStartBootstrapController() {
   return nullptr;
 }
 

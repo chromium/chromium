@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2021 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
@@ -12,15 +14,21 @@
     android:focusable="true"
     android:focusableInTouchMode="true"
     android:layout_marginBottom="32dp"
-    android:paddingBottom="16dp"
+    android:paddingTop="16dp"
     android:layout_marginTop="6dp"
     android:orientation="vertical">
 
-    <include
-        layout="@layout/autofill_cc_details"
+    <TextView
+        android:id="@+id/description"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+        android:inputType="textMultiLine"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp" />
+        android:layout_marginBottom="24dp"
+        android:visibility="gone"
+        tools:ignore="TextViewEdits" />
+
+    <include layout="@layout/autofill_cc_details" />
 
     <ViewStub
         android:id="@+id/autofill_save_card_content_stub"
@@ -39,8 +47,11 @@
     <TextView
         android:id="@+id/legal_message"
         android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+        android:inputType="textMultiLine"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
+        tools:ignore="TextViewEdits"
         android:visibility="gone" />
+
 </LinearLayout>

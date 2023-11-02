@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -293,8 +293,8 @@ void MacUpdateServiceProxyTest::SetUp() {
   run_loop_ = std::make_unique<base::RunLoop>();
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindLambdaForTesting([this]() {
-        service_ =
-            base::MakeRefCounted<UpdateServiceProxy>(UpdaterScope::kUser);
+        service_ = base::MakeRefCounted<UpdateServiceProxy>(
+            UpdaterScope::kUser, base::TimeDelta::Max());
       }));
 }
 
@@ -497,9 +497,14 @@ TEST_F(MacUpdateServiceProxyTest, SimpleProductUpdate) {
   OCMockObjectCapturer<CRUUpdateStateObserver> update_state_observer_capturer;
 
   const std::string test_app_id("test_app_id");
+  const std::string test_install_data_index("test_install_data_index");
   base::scoped_nsobject<CRUPriorityWrapper> wrapped_priority(
       [[CRUPriorityWrapper alloc]
           initWithPriority:UpdateService::Priority::kForeground]);
+  base::scoped_nsobject<CRUPolicySameVersionUpdateWrapper>
+      wrapped_policySameVersionUpdate([[CRUPolicySameVersionUpdateWrapper alloc]
+          initWithPolicySameVersionUpdate:
+              UpdateService::PolicySameVersionUpdate::kNotAllowed]);
   StateChangeTestEngine state_change_engine(
       std::vector<StateChangeTestEngine::StatePair>{
           CheckingForUpdatesStates(test_app_id), UpdateFoundStates(test_app_id),
@@ -517,8 +522,11 @@ TEST_F(MacUpdateServiceProxyTest, SimpleProductUpdate) {
   auto* update_state_observer_capturer_ptr = &update_state_observer_capturer;
   auto* state_change_engine_ptr = &state_change_engine;
   OCMExpect([mock_remote_object
-                checkForUpdateWithAppID:base::SysUTF8ToNSString(test_app_id)
+                checkForUpdateWithAppId:base::SysUTF8ToNSString(test_app_id)
+                       installDataIndex:base::SysUTF8ToNSString(
+                                            test_install_data_index)
                                priority:wrapped_priority.get()
+                policySameVersionUpdate:wrapped_policySameVersionUpdate.get()
                             updateState:update_state_observer_capturer.Capture()
                                   reply:reply_block_capturer.Capture()])
       .andDo(^(NSInvocation*) {
@@ -532,7 +540,9 @@ TEST_F(MacUpdateServiceProxyTest, SimpleProductUpdate) {
 
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindLambdaForTesting([this, &state_change_engine]() {
-        service_->Update("test_app_id", UpdateService::Priority::kForeground,
+        service_->Update("test_app_id", "test_install_data_index",
+                         UpdateService::Priority::kForeground,
+                         UpdateService::PolicySameVersionUpdate::kNotAllowed,
                          state_change_engine.Watch(),
                          base::BindLambdaForTesting(
                              [this](UpdateService::Result actual_result) {

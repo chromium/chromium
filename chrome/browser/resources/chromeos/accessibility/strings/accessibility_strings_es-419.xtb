@@ -30,7 +30,9 @@
 <translation id="1189258430971676908">Área de práctica: Listas desplegables</translation>
 <translation id="1195238899008218998">Posfacio</translation>
 <translation id="1197088940767939838">Naranja</translation>
+<translation id="1198865190323699001">Gestos táctiles</translation>
 <translation id="1201402288615127009">Siguiente</translation>
+<translation id="1202112913213080585">cancelar</translation>
 <translation id="1206619573307042055">marquee</translation>
 <translation id="1207086294218137981">No hay encabezados de nivel 4 siguientes</translation>
 <translation id="1212770441379271564">Los siguientes accesos directos no son comandos de ChromeVox, pero resultan muy útiles para aprovechar al máximo Chrome.
@@ -42,6 +44,7 @@
     Para abrir el menú del navegador Chrome, presiona Alt + F.</translation>
 <translation id="1213216066620407844">ChromeVox, la voz de Chrome</translation>
 <translation id="1225969361094801578">Gris pizarra oscuro</translation>
+<translation id="122928249241119550">ir a la oración anterior</translation>
 <translation id="1230503547248836149">Inicio de la selección</translation>
 <translation id="1236794971743289975">Nota final</translation>
 <translation id="1237797094773582699">De forma similar, si deslizas cuatro dedos de derecha a izquierda, podrás moverte a la sección anterior. ¡Pruébalo ahora!</translation>
@@ -51,7 +54,7 @@
 <translation id="1251750620252348585">Siguiente encabezado de nivel 6</translation>
 <translation id="1268366246392928616">No hay expresiones matemáticas anteriores</translation>
 <translation id="1273314450961659276">Configuración de texto a voz</translation>
-<translation id="1275718070701477396">Seleccionado</translation>
+<translation id="1275718070701477396">Seleccionada</translation>
 <translation id="1284576163386164372">Si quieres ver los instructivos en cualquier momento, presiona la pantalla con cuatro dedos para abrir los menús. Luego, activa el instructivo en la sección "ChromeVox".</translation>
 <translation id="1291286136605998134">Botón de activación</translation>
 <translation id="1299774449519412690">Azul cielo claro</translation>
@@ -135,9 +138,9 @@
 <translation id="1812527064848182527">horizontal</translation>
 <translation id="1829244130665387512">Buscar en la página</translation>
 <translation id="1834891354138622109">Columna</translation>
-<translation id="1845944666972354496">Presiona dos veces para activar</translation>
 <translation id="1846771122725914429">Pantalla braille mediante Bluetooth</translation>
 <translation id="1852018405765032699">Presiona la pantalla con cuatro dedos para abrir y cerrar los menús de ChromeVox. Estos menús contienen información útil sobre los comandos y las combinaciones de teclas. Cuando los menús están abiertos, puedes deslizar un dedo para navegar por los elementos y presionarlos dos veces para activarlos. Para continuar, presiona la pantalla con cuatro dedos.</translation>
+<translation id="1864430479908918647">Presiona la tecla de búsqueda+barra espaciadora</translation>
 <translation id="1865601187525349519">Fin del texto</translation>
 <translation id="1876229593313240038">doc</translation>
 <translation id="1902396333223336119">Celda</translation>
@@ -212,6 +215,7 @@
 <translation id="2435422727584637732">Azul dodger</translation>
 <translation id="2438712309510062123">Sugerir</translation>
 <translation id="2450814015951372393">Casilla de verificación</translation>
+<translation id="2450992626945324272">ir a la oración siguiente</translation>
 <translation id="2461822463642141190">Actual</translation>
 <translation id="2462626033734746142">Grupo de botones de selección</translation>
 <translation id="2467741090055146971">anular la selección</translation>
@@ -234,6 +238,7 @@
 <translation id="2619344480613750862">También puedes moverte entre secciones de la pantalla. Por ejemplo, puedes alternar entre el selector, la barra y las pestañas de Chrome. Para moverte a la próxima sección, desliza cuatro dedos de izquierda a derecha. Pruébalo ahora para continuar.</translation>
 <translation id="2624431853467395961">Abrir el modo de aprendizaje</translation>
 <translation id="2626530649491650971">elemento en el que se puede hacer clic</translation>
+<translation id="263637551280112393">Presiona la tecla de búsqueda + Mayúsculas + barra espaciadora</translation>
 <translation id="2637227747952042642">Math</translation>
 <translation id="2638785836053527382">Se reanudó la descarga <ph name="FILE_NAME" /></translation>
 <translation id="2639750663247012216">Tecla modificadora de ChromeVox</translation>
@@ -389,7 +394,9 @@
 <translation id="3492609944033322585">{COUNT,plural, =1{corchete de cierre}other{# corchetes de cierre}}</translation>
 <translation id="3494946239022273294">mnuitm</translation>
 <translation id="3497063866483065785">{COUNT,plural, =1{signo de interrogación}other{# signos de interrogación}}</translation>
+<translation id="3505359110822747654">Contraer los menúes de ChromeVox</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{signo de intercalación}other{# signos de intercalación}}</translation>
+<translation id="3518600448524470129">{COUNT,plural, =1{viñeta blanca}other{# viñetas blancas}}</translation>
 <translation id="352577523970648069">Un campo de texto editable</translation>
 <translation id="3538907380453898475">listadesc</translation>
 <translation id="3549141990712742152">Cortar <ph name="TEXT" /></translation>
@@ -486,6 +493,7 @@
 <translation id="42164919740161077">Azul grisáceo</translation>
 <translation id="4217571870635786043">Dictado</translation>
 <translation id="4218529045364428769">{COUNT,plural, =1{guion}other{# guiones}}</translation>
+<translation id="4220024144662591089">seleccionar de <ph name="START_PHRASE" /> a <ph name="END_PHRASE" /></translation>
 <translation id="4221012616705981690">No hay listas anteriores</translation>
 <translation id="4225355998815256469">Controles de formulario</translation>
 <translation id="4230834257931120629">Gris pizarra claro</translation>
@@ -504,6 +512,7 @@
 <translation id="4300318234632215983">Indicar URL de un enlace</translation>
 <translation id="4322625298640984693">Siena</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{punto}=3{puntos suspensivos}other{# puntos}}</translation>
+<translation id="4352022650330571548">escribir <ph name="PHRASE" /></translation>
 <translation id="4372435075475052704">min:<ph name="X" /></translation>
 <translation id="4372705107434148843">Detener voz</translation>
 <translation id="4376316291247992553">Ver gráficos como idioma braille</translation>
@@ -521,6 +530,7 @@
 <translation id="4479068155583208887">Rojo ladrillo</translation>
 <translation id="4482330759234983253">Tabla anterior</translation>
 <translation id="4491109536499578614">Imagen</translation>
+<translation id="4507332368061453500">Hacer clic de forma extensa en el elemento actual</translation>
 <translation id="4511186779140817916">Almendra pálido</translation>
 <translation id="451510441928265982">No hay encabezados de nivel 2 anteriores</translation>
 <translation id="4515799157838123044">Sombrear el contenido del fondo</translation>
@@ -533,6 +543,7 @@
 <translation id="4601367666219428522">tbl <ph name="TABLENAME" /> <ph name="TABLEROWS" />×<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">Se ignorará la siguiente pulsación de tecla.</translation>
 <translation id="4623097797855662355">Colofón</translation>
+<translation id="4624970070706497034">TalkBack ya no ofrece personalización en Chromebooks. Puedes seguir utilizando TalkBack con las combinaciones de teclas predeterminadas. Presiona la tecla de búsqueda + A y, luego, K para ver las combinaciones de teclas disponibles. Si quieres seguir utilizando TalkBack, vuelve a presionar el comando.</translation>
 <translation id="463135993322337640">Presiona ChromeVox o, n para conocer las novedades</translation>
 <translation id="4649220074413114917">Si quieres detener el audio de voz que se esté reproduciendo, presiona la pantalla con dos dedos. Esto resulta útil si no quieres que ChromeVox lea algún texto. Para reanudar la lectura, presiona la pantalla con dos dedos.</translation>
 <translation id="4660783501463101648">Se quitó la combinación de teclas para cambiar a la versión clásica de ChromeVox.</translation>
@@ -588,7 +599,6 @@
 <translation id="4993152509206108683">Velocidad: <ph name="PERCENT" /> %</translation>
 <translation id="4994420463726586413">Anunciar el estado actual de la batería</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, botón de selección seleccionado</translation>
-<translation id="5011664330025416377">Presiona la tecla de búsqueda+barra espaciadora para activar una opción</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, botón de selección de elemento de menú seleccionado</translation>
 <translation id="5020651427400641814">Habilitar el acceso por voz</translation>
 <translation id="5041394372352067729">Mover la pantalla de braille a la parte superior de la página</translation>
@@ -615,7 +625,6 @@
 <translation id="5170206230005240598">Subtítulos en braille habilitados</translation>
 <translation id="5183440668879371625">Línea de braille anterior</translation>
 <translation id="5189244881767082992">Línea</translation>
-<translation id="5234747236692380506">escribir <ph name="TEXT" /></translation>
 <translation id="5263034204789987535">Amarillo maíz</translation>
 <translation id="5263344797180442561">h2</translation>
 <translation id="528468243742722775">Finalizar</translation>
@@ -642,6 +651,7 @@
 <translation id="5355014376930441909">No hay secciones siguientes</translation>
 <translation id="5368000168321181111">Sonido desactivado</translation>
 <translation id="5368505757342402527">Se completó el <ph name="PROGRESS" />% de la descarga de <ph name="FILE_NAME" />. Quedan <ph name="TIME" /> <ph name="UNITS" />.</translation>
+<translation id="5381388086899614489">clic prolongado</translation>
 <translation id="5400836586163650660">Gris</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5402791055281059602">Una alerta modal</translation>
@@ -663,6 +673,7 @@
 <translation id="5522423213731659107">Completaste la orientación rápida</translation>
 <translation id="5534303576632885660">encbz</translation>
 <translation id="5539820223028224601">Gainsboro</translation>
+<translation id="554893713779400387">Activar o desactivar el dictado</translation>
 <translation id="5549179427201066174">Permite activar o desactivar los comentarios (íconos) sonoros</translation>
 <translation id="556042886152191864">Botón</translation>
 <translation id="5561345396546889625">Siguiente lista</translation>
@@ -673,6 +684,7 @@
 <translation id="5597170376237141345">Siguiente casilla de verificación</translation>
 <translation id="5598905979683743333"><ph name="NAME" />, botón de selección no seleccionado</translation>
 <translation id="5601172225407283979">Realizar acción predeterminada</translation>
+<translation id="5604302400025591178">{COUNT,plural, =1{viñeta cuadrada}other{# viñetas cuadradas}}</translation>
 <translation id="5608798115546226984">Integración de autocompletados</translation>
 <translation id="5616029807486814372">Lección siguiente</translation>
 <translation id="561939826962581046">time</translation>
@@ -680,6 +692,8 @@
 <translation id="5623842676595125836">Registro</translation>
 <translation id="5628125749885014029">h4</translation>
 <translation id="5632083598315326067">Símbolo gráfico</translation>
+<translation id="5648939288050772726">¡Felicitaciones! Aprendiste los conceptos básicos para usar ChromeVox de forma correcta. Presiona Búsqueda + punto para abrir el menú de comandos de ChromeVox en cualquier momento. Para obtener más información sobre ChromeVox y Chrome OS, visita los siguientes artículos.
+    Si completaste este instructivo, usa ChromeVox para navegar hasta el botón Cerrar y, luego, haz clic en él.</translation>
 <translation id="5653397561111110475">Usar las funciones de accesibilidad de la pantalla táctil de Chromebook</translation>
 <translation id="5655682562155942719">Comandos de salto</translation>
 <translation id="56637627897541303">Área de texto</translation>
@@ -750,8 +764,10 @@
 <translation id="6100239002225743044">Subir una línea</translation>
 <translation id="6118126368611144850">Apps de Android para Chrome. Si tienes Play Store en tu dispositivo, conoce ChromeVox con las apps de Android. Descarga Google Chrome Canary desde Play Store.</translation>
 <translation id="611827076493383239">vtd</translation>
+<translation id="6119846243427417423">activar</translation>
 <translation id="6122013438240733403">btn</translation>
 <translation id="6132506484792346370">Un cuadro de lista o uno combinado</translation>
+<translation id="613344593214611552">borrar la oración anterior</translation>
 <translation id="6142308968191113180">Encabezado 4</translation>
 <translation id="6150023170003443621">Verde amarillo</translation>
 <translation id="6158882249329863701">Fila <ph name="TABLECELLROWINDEX" />, columna <ph name="TABLECELLCOLUMNINDEX" /></translation>
@@ -761,9 +777,11 @@
 <translation id="6186305613600865047">Ir al final de la página</translation>
 <translation id="6187190722927752226">Aguamarina</translation>
 <translation id="6197361807490522975">Azul oscuro</translation>
+<translation id="6218813441317556731">reemplazar <ph name="DELETE_PHRASE" /> con <ph name="INSERT_PHRASE" /></translation>
 <translation id="6236061028292614533">Siguiente encabezado</translation>
 <translation id="6254901459154107917">Área de texto editable siguiente</translation>
 <translation id="6259464875943891919">Saliste de <ph name="TYPE" />.</translation>
+<translation id="6280088282605782512">Presionar dos veces</translation>
 <translation id="6282062888058716985">nav</translation>
 <translation id="6295699829709583154">Teclas básicas: Búsqueda</translation>
 <translation id="6305702903308659374">Reproducir a un volumen normal incluso cuando ChromeVox esté hablando</translation>
@@ -934,6 +952,7 @@
 <translation id="7533226154149229506">Amarillo oro claro</translation>
 <translation id="7543255924852002459">Etiqueta Descartar</translation>
 <translation id="7552432549459840808">Accesos directos útiles de Chrome</translation>
+<translation id="7553679324939294712">insertar <ph name="INSERT_PHRASE" /> antes de <ph name="BEFORE_PHRASE" /></translation>
 <translation id="7569983096843329377">Negro</translation>
 <translation id="7579911500627256166">punto <ph name="DOT" /></translation>
 <translation id="7592060599656252486">Algunos</translation>
@@ -957,16 +976,16 @@
 <translation id="7684431668231950609">Editar texto, entrada de URL</translation>
 <translation id="7685589220304187312">tlbar</translation>
 <translation id="7693840228159394336">Botón de selección anterior</translation>
+<translation id="7696631298608145306">ir a la palabra siguiente</translation>
 <translation id="7701040980221191251">Ninguna</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7713139339518499741">Voz natural</translation>
 <translation id="7714340021005120797">No hay cuadros combinados siguientes</translation>
-<translation id="772146615414628379">Felicitaciones. Aprendiste los conceptos básicos para usar ChromeVox de forma correcta. Presiona Búsqueda + punto para abrir el menú de comandos de ChromeVox en cualquier momento. Para obtener más información sobre ChromeVox y el Sistema operativo Chrome, visita los siguientes artículos.
-    Si completaste este instructivo, usa ChromeVox para navegar hasta el botón Cerrar y, luego, haz clic en él.</translation>
 <translation id="7724603315864178912">Cortar</translation>
 <translation id="7731785449856576010">No hay widgets multimedia siguientes</translation>
 <translation id="7735498529470878067">La exploración táctil te permite hacerte una idea rápidamente de lo que aparece en la pantalla.</translation>
 <translation id="773906353055481349">Presiona la tecla de búsqueda+Ctrl+Alt con las flechas para navegar por celda</translation>
+<translation id="7746976083433980639"><ph name="ACTION" /> a <ph name="LABEL" /></translation>
 <translation id="7763537600611320912">Comenzó la descarga de <ph name="FILE_NAME" /></translation>
 <translation id="7768784765476638775">Seleccionar para pronunciar</translation>
 <translation id="7776293189010177726">Abre los menús de ChromeVox</translation>
@@ -1026,7 +1045,7 @@
 <translation id="8132248161074464367">Anterior elemento no válido</translation>
 <translation id="8138880386467279117">Táctil</translation>
 <translation id="8146613869421949343">A continuación, encontrarás información sobre la tecla Búsqueda. Esta tecla se usa en combinación con otras para activar comandos de ChromeVox. Se encuentra inmediatamente arriba de la tecla Mayúsculas izquierda. Para continuar, presiona la tecla Búsqueda.</translation>
-<translation id="8158033275290782295">seleccionar todos</translation>
+<translation id="8158033275290782295">seleccionar todo</translation>
 <translation id="816818801578874684">Este es el primer encabezado. Presiona Búsqueda + H para ir al siguiente encabezado.</translation>
 <translation id="8173092779156526980">Deslizar cuatro dedos hacia la izquierda</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{guion bajo}other{# guiones bajos}}</translation>
@@ -1066,6 +1085,7 @@
 <translation id="8455868257606149352">Máximo <ph name="X" /></translation>
 <translation id="84575901236241018">tiene tecla de acceso, <ph name="KEY" /></translation>
 <translation id="8463645336674919227">Saliendo del error gramatical</translation>
+<translation id="8465573210279050749">borrar la palabra anterior</translation>
 <translation id="847040613207937740">No hay casillas de verificación siguientes</translation>
 <translation id="8473540203671727883">Pronunciar el texto cuando pasas el puntero del mouse</translation>
 <translation id="8476408756881832830">Pausar la reproducción cuando ChromeVox esté hablando</translation>
@@ -1096,11 +1116,13 @@
 <translation id="8659501358298941449">Listas desplegables</translation>
 <translation id="8666733765751421568">Final de <ph name="TYPE" /></translation>
 <translation id="867187640362843212">Encabezado 5</translation>
+<translation id="8690400660839620419">{COUNT,plural, =1{}other{niveles anidados #}}</translation>
 <translation id="8693391540059827073">Mi estación favorita</translation>
 <translation id="8696284982970258155">Ambrosía</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{barra vertical}other{# barras verticales}}</translation>
 <translation id="8741370088760768424">Sugerencia: Presiona Búsqueda + barra espaciadora para activar el elemento actual.</translation>
 <translation id="8743786158317878347">ingresar al contenido estructurado, como tablas</translation>
+<translation id="8746846427395705317">ir a la palabra anterior</translation>
 <translation id="8747966237988593539">Lista ordenada</translation>
 <translation id="8749988712346667988">Plata</translation>
 <translation id="875769700429317857">Se completó la descarga de <ph name="FILE_NAME" /></translation>
@@ -1128,6 +1150,7 @@
 <translation id="8970172509886453271">No hay secciones anteriores</translation>
 <translation id="89720367119469899">Esc</translation>
 <translation id="8978496506222343566">tltip</translation>
+<translation id="898089897833732740">borrar <ph name="PHRASE" /></translation>
 <translation id="8986362086234534611">Borrar</translation>
 <translation id="8989104346085848538">Para silenciar la voz actual de ChromeVox, presiona la tecla Control.</translation>
 <translation id="8993737615451556423">Proporciona controles para aumentar y reducir la velocidad de la voz de lectura y pausarla.</translation>
@@ -1146,7 +1169,7 @@
 <translation id="9099429023611373837">cortar</translation>
 <translation id="9108370397979208512">expr mtmtc</translation>
 <translation id="9108589040018540527">scbr</translation>
-<translation id="911476240645808512">{COUNT,plural, =1{porcentaje}other{# signos de porcentaje}}</translation>
+<translation id="911476240645808512">{COUNT,plural, =1{por ciento}other{# por ciento}}</translation>
 <translation id="9128414153595658330">dlg</translation>
 <translation id="9133928141873682933">Caqui</translation>
 <translation id="9149560530563164529">sctn</translation>
@@ -1163,6 +1186,7 @@
 <translation id="9223032053830369045">Rojo oscuro</translation>
 <translation id="923331726185079994">Actualización de ChromeVox</translation>
 <translation id="93384979447910801">Verde mar oscuro</translation>
+<translation id="937605981140327129">TalkBack no está instalado. Instala Android AccessibilitySuite mediante Play Store y vuelve a intentarlo.</translation>
 <translation id="948171205378458592">Hablar más lento</translation>
 <translation id="957570623732056069">Desliza el dedo hacia la izquierda o derecha para navegar por esta lección</translation>
 <translation id="958854023026327378">Deslizar un dedo hacia abajo</translation>

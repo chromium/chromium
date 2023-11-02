@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,29 +10,29 @@
 /**
  * Settings and state for a particular enabled language.
  */
-export type LanguageState = {
-  language: chrome.languageSettingsPrivate.Language,
-  removable: boolean,
-  spellCheckEnabled: boolean,
-  translateEnabled: boolean,
-  isManaged: boolean,
-  isForced: boolean,
-  downloadDictionaryFailureCount: number,
+export interface LanguageState {
+  language: chrome.languageSettingsPrivate.Language;
+  removable: boolean;
+  spellCheckEnabled: boolean;
+  translateEnabled: boolean;
+  isManaged: boolean;
+  isForced: boolean;
+  downloadDictionaryFailureCount: number;
   downloadDictionaryStatus:
-      (chrome.languageSettingsPrivate.SpellcheckDictionaryStatus|null),
-};
+      (chrome.languageSettingsPrivate.SpellcheckDictionaryStatus|null);
+}
 
 /**
  * Settings and state for spellcheck languages.
  */
-export type SpellCheckLanguageState = {
-  language: chrome.languageSettingsPrivate.Language,
-  spellCheckEnabled: boolean,
-  isManaged: boolean,
-  downloadDictionaryFailureCount: number,
+export interface SpellCheckLanguageState {
+  language: chrome.languageSettingsPrivate.Language;
+  spellCheckEnabled: boolean;
+  isManaged: boolean;
+  downloadDictionaryFailureCount: number;
   downloadDictionaryStatus:
-      (chrome.languageSettingsPrivate.SpellcheckDictionaryStatus|null),
-};
+      (chrome.languageSettingsPrivate.SpellcheckDictionaryStatus|null);
+}
 
 /**
  * Languages data to expose to consumers.
@@ -50,23 +50,25 @@ export type SpellCheckLanguageState = {
  * spellCheckOffLanguages: an array of spell check languages that are currently
  *     not in use, including the languages force-disabled by policy.
  */
-export type LanguagesModel = {
-  supported: Array<chrome.languageSettingsPrivate.Language>,
-  enabled: Array<LanguageState>,
-  translateTarget: string,
-  alwaysTranslate: Array<chrome.languageSettingsPrivate.Language>,
-  neverTranslate: Array<chrome.languageSettingsPrivate.Language>,
-  spellCheckOnLanguages: Array<SpellCheckLanguageState>,
-  spellCheckOffLanguages: Array<SpellCheckLanguageState>,
+export interface LanguagesModel {
+  supported: chrome.languageSettingsPrivate.Language[];
+  enabled: LanguageState[];
+  translateTarget: string;
+  alwaysTranslate: chrome.languageSettingsPrivate.Language[];
+  neverTranslate: chrome.languageSettingsPrivate.Language[];
+  neverTranslateSites: string[];
+  spellCheckOnLanguages: SpellCheckLanguageState[];
+  spellCheckOffLanguages: SpellCheckLanguageState[];
   // TODO(dpapad): Wrap prospectiveUILanguage with if expr "is_win" block.
-  prospectiveUILanguage?: string,
-};
+  prospectiveUILanguage?: string;
+}
 
 /**
  * Helper methods for reading and writing language settings.
- * @interface
  */
 export interface LanguageHelper {
+  languages?: LanguagesModel|undefined;
+
   whenReady(): Promise<void>;
 
   // <if expr="is_win">
@@ -88,9 +90,17 @@ export interface LanguageHelper {
    */
   getArcImeLanguageCode(): string;
 
+  /**
+   * @param language
+   * @return the [displayName] - [nativeDisplayName] if displayName and
+   * nativeDisplayName are different.
+   * If they're the same than only returns the displayName.
+   */
+  getFullName(language: chrome.languageSettingsPrivate.Language): string;
+
   isLanguageCodeForArcIme(languageCode: string): boolean;
 
-  isLanguageTranslatable(language: chrome.languageSettingsPrivate.Language):
+  isTranslateBaseLanguage(language: chrome.languageSettingsPrivate.Language):
       boolean;
   isLanguageEnabled(languageCode: string): boolean;
 
@@ -138,6 +148,11 @@ export interface LanguageHelper {
   disableTranslateLanguage(languageCode: string): void;
 
   /**
+   * Sets the translate target language.
+   */
+  setTranslateTargetLanguage(languageCode: string): void;
+
+  /**
    * Sets whether a given language should always be automatically translated.
    */
   setLanguageAlwaysTranslateState(
@@ -156,10 +171,15 @@ export interface LanguageHelper {
   convertLanguageCodeForTranslate(languageCode: string): string;
 
   /**
+   * Converts the language code to Chrome format.
+   */
+  convertLanguageCodeForChrome(languageCode: string): string;
+
+  /**
    * Given a language code, returns just the base language. E.g., converts
    * 'en-GB' to 'en'.
    */
-  getLanguageCodeWithoutRegion(languageCode: string): string;
+  getBaseLanguage(languageCode: string): string;
 
   getLanguage(languageCode: string): chrome.languageSettingsPrivate.Language
       |undefined;

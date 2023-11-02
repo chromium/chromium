@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -81,7 +81,7 @@ class MouseEventsTest : public InProcessBrowserTest {
   }
 };
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // Flaky; http://crbug.com/133361.
 #define MAYBE_MouseOver DISABLED_MouseOver
 #else
@@ -92,7 +92,7 @@ IN_PROC_BROWSER_TEST_F(MouseEventsTest, MAYBE_MouseOver) {
   NavigateAndWaitForMouseOver();
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // Flaky; http://crbug.com/133361.
 #define MAYBE_ClickAndDoubleClick DISABLED_ClickAndDoubleClick
 #else
@@ -109,8 +109,8 @@ IN_PROC_BROWSER_TEST_F(MouseEventsTest, MAYBE_ClickAndDoubleClick) {
   WaitForTitle("ondblclick");
 }
 
-#if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
-    defined(OS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_WIN)
 // Flaky; http://crbug.com/133361.
 #define MAYBE_TestOnMouseOut DISABLED_TestOnMouseOut
 #else
@@ -121,7 +121,7 @@ IN_PROC_BROWSER_TEST_F(MouseEventsTest, MAYBE_TestOnMouseOut) {
   NavigateAndWaitForMouseOverThenMouseOut();
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Mac/Linux are flaky; http://crbug.com/133361.
 IN_PROC_BROWSER_TEST_F(MouseEventsTest, MouseDownOnBrowserCaption) {
   gfx::Rect browser_bounds = browser()->window()->GetBounds();
@@ -132,7 +132,7 @@ IN_PROC_BROWSER_TEST_F(MouseEventsTest, MouseDownOnBrowserCaption) {
 }
 #endif
 
-#if defined(OS_MAC) || defined(OS_WIN) || defined(USE_OZONE)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || defined(USE_OZONE)
 // Test that a mouseleave is not triggered when showing the context menu.
 // If the test is failed, it means that Blink gets the mouseleave event
 // when showing the context menu and it could make the unexpecting
@@ -153,8 +153,8 @@ IN_PROC_BROWSER_TEST_F(MouseEventsTest, MAYBE_ContextMenu) {
   menu_observer.WaitForMenuOpenAndClose();
 
   content::WebContents* tab = GetActiveWebContents();
-  tab->GetMainFrame()->ExecuteJavaScriptForTests(u"done()",
-                                                 base::NullCallback());
+  tab->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(u"done()",
+                                                        base::NullCallback());
   const std::u16string success_title = u"without mouseleave";
   const std::u16string failure_title = u"with mouseleave";
   content::TitleWatcher done_title_watcher(tab, success_title);
@@ -162,8 +162,8 @@ IN_PROC_BROWSER_TEST_F(MouseEventsTest, MAYBE_ContextMenu) {
   EXPECT_EQ(success_title, done_title_watcher.WaitAndGetTitle());
 }
 
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
-    defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
 // Test that a mouseleave is not triggered when showing a modal dialog.
 // Sample regression: crbug.com/394672
 // Flaky; http://crbug.com/838120
@@ -181,15 +181,15 @@ IN_PROC_BROWSER_TEST_F(MouseEventsTest, MAYBE_ModalDialog) {
   base::RunLoop dialog_wait;
   js_dialog_manager->SetDialogShownCallbackForTesting(
       dialog_wait.QuitClosure());
-  tab->GetMainFrame()->ExecuteJavaScriptForTests(u"alert()",
-                                                 base::NullCallback());
+  tab->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(u"alert()",
+                                                        base::NullCallback());
   dialog_wait.Run();
 
   // Cancel the dialog.
   js_dialog_manager->HandleJavaScriptDialog(tab, false, nullptr);
 
-  tab->GetMainFrame()->ExecuteJavaScriptForTests(u"done()",
-                                                 base::NullCallback());
+  tab->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(u"done()",
+                                                        base::NullCallback());
   const std::u16string success_title = u"without mouseleave";
   const std::u16string failure_title = u"with mouseleave";
   content::TitleWatcher done_title_watcher(tab, success_title);

@@ -1,11 +1,10 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
-import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
-import {ArrayDataModel} from 'chrome://resources/js/cr/ui/array_data_model.m.js';
+import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
 
 import {EntryLocation} from '../../externs/entry_location.js';
 import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
@@ -13,6 +12,8 @@ import {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeInfoList} from '../../externs/volume_info_list.js';
 import {ExternallyUnmountedEvent, VolumeManager} from '../../externs/volume_manager.js';
 
+import {ArrayDataModel} from './array_data_model.js';
+import {util} from './util.js';
 import {AllowedPaths, VolumeManagerCommon} from './volume_manager_types.js';
 
 /**
@@ -66,6 +67,16 @@ export class FilteredVolumeInfoList {
 }
 
 /**
+ * Volume types that match the Android 'media-store-files-only' volume filter,
+ * viz., the volume content is indexed by the Android MediaStore.
+ * @const !Array<!VolumeManagerCommon.VolumeType>
+ */
+const MEDIA_STORE_VOLUME_TYPES = [
+  VolumeManagerCommon.VolumeType.DOWNLOADS,
+  VolumeManagerCommon.VolumeType.REMOVABLE,
+];
+
+/**
  * Thin wrapper for VolumeManager. This should be an interface proxy to talk
  * to VolumeManager. This class also filters some "disallowed" volumes;
  * for example, Drive volumes are dropped if Drive is disabled, and read-only
@@ -75,14 +86,15 @@ export class FilteredVolumeInfoList {
  */
 export class FilteredVolumeManager extends EventTarget {
   /**
-   *
    * @param {!AllowedPaths} allowedPaths Which paths are supported in the Files
    *     app dialog.
    * @param {boolean} writableOnly If true, only writable volumes are returned.
    * @param {!Promise<!VolumeManager>} volumeManagerGetter Promise that resolves
    *     when the VolumeManager has been initialized.
+   * @param {!Array<string>} volumeFilter Array of Files app mode dependent
+   *     volume filter names from Files app launch params, [] typically.
    */
-  constructor(allowedPaths, writableOnly, volumeManagerGetter) {
+  constructor(allowedPaths, writableOnly, volumeManagerGetter, volumeFilter) {
     super();
 
     this.allowedPaths_ = allowedPaths;
@@ -102,14 +114,45 @@ export class FilteredVolumeManager extends EventTarget {
 
     this.disposed_ = false;
 
-    /** private {!Promise<!VolumeManager>} */
+    /** @private {!Promise<!VolumeManager>} */
     this.volumeManagerGetter_ = volumeManagerGetter;
+
+    /**
+     * True if |volumeFilter| contains the 'fusebox-only' filter. SelectFileAsh
+     * (Lacros) file picker sets this filter.
+     * @private @const {boolean}
+     */
+    this.isFuseBoxOnly_ = volumeFilter.includes('fusebox-only');
+
+    /**
+     * True if |volumeFilter| contains the 'media-store-files-only' filter.
+     * Android (ARC) file picker sets this filter.
+     * @private @const {boolean}
+     */
+    this.isMediaStoreOnly_ = volumeFilter.includes('media-store-files-only');
+
+    /**
+     * True if chrome://flags#fuse-box-debug is enabled. This shows additional
+     * UI elements, for manual fusebox testing.
+     * @private @const {boolean}
+     */
+    this.isFuseBoxDebugEnabled_ = util.isFuseBoxDebugEnabled();
 
     /**
      * Tracks async initialization of volume manager.
      * @private @const {!Promise<void> }
      */
     this.initialized_ = this.initialize_();
+  }
+
+  /** @override */
+  getFuseBoxOnlyFilterEnabled() {
+    return this.isFuseBoxOnly_;
+  }
+
+  /** @override */
+  getMediaStoreFilesOnlyFilterEnabled() {
+    return this.isMediaStoreOnly_;
   }
 
   /**
@@ -121,6 +164,7 @@ export class FilteredVolumeManager extends EventTarget {
    *
    * @param {VolumeManagerCommon.VolumeType} volumeType
    * @return {boolean}
+   * @private
    */
   isAllowedVolumeType_(volumeType) {
     switch (this.allowedPaths_) {
@@ -134,21 +178,68 @@ export class FilteredVolumeManager extends EventTarget {
   }
 
   /**
+   * True if the volume |diskFileSystemType| is a fusebox file system.
+   *
+   * @param {string} diskFileSystemType Volume diskFileSystemType.
+   * @return {boolean}
+   * @private
+   */
+  isFuseBoxFileSystem_(diskFileSystemType) {
+    return diskFileSystemType === 'fusebox';
+  }
+
+  /**
+   * True if the volume content is indexed by the Android MediaStore.
+   *
+   * @param {!VolumeInfo} volumeInfo
+   * @return {boolean}
+   * @private
+   */
+  isMediaStoreVolume_(volumeInfo) {
+    return MEDIA_STORE_VOLUME_TYPES.indexOf(volumeInfo.volumeType) >= 0;
+  }
+
+  /**
    * Checks if a volume is allowed.
    *
    * @param {!VolumeInfo} volumeInfo
    * @return {boolean}
+   * @private
    */
   isAllowedVolume_(volumeInfo) {
     if (!volumeInfo.volumeType) {
       return false;
     }
-    if (!this.isAllowedVolumeType_(volumeInfo.volumeType)) {
-      return false;
-    }
+
     if (this.writableOnly_ && volumeInfo.isReadOnly) {
       return false;
     }
+
+    // If the media store filter is enabled and the volume is not supported
+    // by the Android MediaStore, remove the volume from the UI.
+    if (this.isMediaStoreOnly_ && !this.isMediaStoreVolume_(volumeInfo)) {
+      return false;
+    }
+
+    // If the volume type is supported by fusebox, decide whether to show
+    // fusebox or non-fusebox volumes in the UI.
+    if (this.isFuseBoxDebugEnabled_) {
+      // Do nothing: show the fusebox and non-fusebox versions in the files
+      // app UI. Used for manually testing fusebox.
+    } else if (this.isFuseBoxOnly_) {
+      // SelectFileAsh requires native volumes. Note: DocumentsProvider and
+      // FSPs return false here, until they are implemented in the fusebox.
+      return this.isFuseBoxFileSystem_(volumeInfo.diskFileSystemType) ||
+          VolumeManagerCommon.VolumeType.isNative(volumeInfo.volumeType);
+    } else if (this.isFuseBoxFileSystem_(volumeInfo.diskFileSystemType)) {
+      // Normal Files app: remove fusebox volumes.
+      return false;
+    }
+
+    if (!this.isAllowedVolumeType_(volumeInfo.volumeType)) {
+      return false;
+    }
+
     return true;
   }
 
@@ -237,9 +328,10 @@ export class FilteredVolumeManager extends EventTarget {
         }
         break;
       case VolumeManagerCommon.ARCHIVE_OPENED_EVENT_TYPE:
-        this.dispatchEvent(new CustomEvent(
-            VolumeManagerCommon.ARCHIVE_OPENED_EVENT_TYPE,
-            {detail: event.detail}));
+        if (this.getVolumeInfo(event.detail.mountPoint)) {
+          this.dispatchEvent(
+              new CustomEvent(event.type, {detail: event.detail}));
+        }
         break;
     }
   }
@@ -398,6 +490,12 @@ export class FilteredVolumeManager extends EventTarget {
   async mountArchive(fileUrl, password) {
     await this.initialized_;
     return this.volumeManager_.mountArchive(fileUrl, password);
+  }
+
+  /** @override */
+  async cancelMounting(fileUrl) {
+    await this.initialized_;
+    return this.volumeManager_.cancelMounting(fileUrl);
   }
 
   /** @override */

@@ -1,5 +1,5 @@
 <!--
-Copyright 2020 The Chromium Authors. All rights reserved.
+Copyright 2020 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
@@ -24,6 +24,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PrintPreview.DestinationAction"
     enum="PrintPreviewPrintDestinationBuckets" expires_after="2022-07-01">
+  <obsolete>
+    Data no longer needed 2022-06.
+  </obsolete>
   <owner>rbpotter@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -33,101 +36,12 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrintPreview.InitialDisplayTime" units="ms"
-    expires_after="2022-04-10">
+    expires_after="2023-02-19">
   <owner>thestig@chromium.org</owner>
   <owner>dhoss@chromium.org</owner>
   <summary>
     Time from when print preview is initiated until the initial preview is sent
     to the preview tab for rendering.
-  </summary>
-</histogram>
-
-<histogram name="PrintPreview.Initialization.GetInitialSettings"
-    enum="PrintPreviewInitializationEvents" expires_after="2022-06-15">
-  <owner>gavinwill@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
-  <summary>
-    Counts the number of times NativeLayer.getInitialSettings() is initiated and
-    the number of times it completes. Metric is recorded whenever Print Preview
-    is opened.
-  </summary>
-</histogram>
-
-<histogram name="PrintPreview.Initialization.GetPreview"
-    enum="PrintPreviewInitializationEvents" expires_after="2022-06-15">
-  <owner>gavinwill@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
-  <summary>
-    Counts the number of times NativeLayer.getPreview() is initiated and the
-    number of times it completes. Metric is recorded whenever Print Preview
-    generates the PDF preview.
-  </summary>
-</histogram>
-
-<histogram name="PrintPreview.Initialization.GetPrinterCapabilities"
-    enum="PrintPreviewInitializationEvents" expires_after="2022-06-15">
-  <owner>gavinwill@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
-  <summary>
-    Counts the number of times NativeLayer.getPrinterCapabilities() is initiated
-    and the number of times it completes. Metric is recorded whenever Print
-    Preview needs the capabilities for a new destination.
-  </summary>
-</histogram>
-
-<histogram name="PrintPreview.Initialization.GetPrinters.Cloud"
-    enum="PrintPreviewInitializationEvents" expires_after="2022-06-15">
-  <owner>gavinwill@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
-  <summary>
-    Counts the number of times NativeLayer.getPrinters() is initiated for Cloud
-    type printers and the number of times it completes. Metric is recorded
-    whenever Print Preview loads the Cloud Print printers.
-  </summary>
-</histogram>
-
-<histogram name="PrintPreview.Initialization.GetPrinters.Extension"
-    enum="PrintPreviewInitializationEvents" expires_after="2022-06-15">
-  <owner>gavinwill@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
-  <summary>
-    Counts the number of times NativeLayer.getPrinters() is initiated for
-    Extension type printers and the number of times it completes. Metric is
-    recorded whenever Print Preview loads the extension printers.
-  </summary>
-</histogram>
-
-<histogram name="PrintPreview.Initialization.GetPrinters.Local"
-    enum="PrintPreviewInitializationEvents" expires_after="2022-06-15">
-  <owner>gavinwill@chromium.org</owner>
-  <owner>chrome-print@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
-  <summary>
-    Counts the number of times NativeLayer.getPrinters() is initiated for Local
-    type printers and the number of times it completes. Metric is recorded
-    whenever Print Preview loads the local printers.
-  </summary>
-</histogram>
-
-<histogram name="PrintPreview.Initialization.GetPrinters.PDF"
-    enum="PrintPreviewInitializationEvents" expires_after="2022-06-15">
-  <owner>gavinwill@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
-  <summary>
-    Counts the number of times NativeLayer.getPrinters() is initiated for PDF
-    type destination and the number of times it completes. Metric is recorded
-    whenever Print Preview loads the Save as PDF destination.
-  </summary>
-</histogram>
-
-<histogram name="PrintPreview.Initialization.GetPrinters.Privet"
-    enum="PrintPreviewInitializationEvents" expires_after="2022-06-15">
-  <owner>gavinwill@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
-  <summary>
-    Counts the number of times NativeLayer.getPrinters() is initiated for Privet
-    type printers and the number of times it completes. Metric is recorded
-    whenever Print Preview loads the privet printers.
   </summary>
 </histogram>
 
@@ -152,7 +66,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrintPreview.NumberOfPrinters" units="units"
-    expires_after="2022-04-24">
+    expires_after="2023-03-05">
   <owner>thestig@chromium.org</owner>
   <owner>dhoss@chromium.org</owner>
   <summary>
@@ -160,32 +74,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PrintPreview.PrintDocumentSize.HTML" units="KB"
-    expires_after="2021-03-07">
-  <obsolete>
-    XXX Removed 10/2020 as it is launched and no longer needed for analysis.
-  </obsolete>
-  <owner>thestig@chromium.org</owner>
-  <owner>dmazzoni@chromium.org</owner>
-  <summary>
-    The average size of a page in the printed document when the source is HTML.
-  </summary>
-</histogram>
-
-<histogram name="PrintPreview.PrintDocumentSize.PDF" units="KB"
-    expires_after="2020-12-31">
-  <obsolete>
-    XXX Removed 10/2020 as it is launched and no longer needed for analysis.
-  </obsolete>
-  <owner>thestig@chromium.org</owner>
-  <owner>dhoss@chromium.org</owner>
-  <summary>
-    The average size of a page in the printed document when the source is PDF.
-  </summary>
-</histogram>
-
 <histogram name="PrintPreview.PrintDocumentType"
-    enum="PrintPreviewPrintDocumentTypeBuckets" expires_after="2022-04-17">
+    enum="PrintPreviewPrintDocumentTypeBuckets" expires_after="2023-02-26">
   <owner>rbpotter@chromium.org</owner>
   <owner>awscreen@chromium.org</owner>
   <summary>
@@ -195,7 +85,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrintPreview.PrinterStatus.AttemptedPrintWithErrorStatus"
-    enum="Boolean" expires_after="2022-06-15">
+    enum="Boolean" expires_after="2022-10-04">
+  <obsolete>
+    Data no longer needed 2022-05.
+  </obsolete>
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -205,7 +98,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrintPreview.PrinterStatus.AttemptedPrintWithGoodStatus"
-    enum="Boolean" expires_after="2022-06-15">
+    enum="Boolean" expires_after="2022-10-04">
+  <obsolete>
+    Data no longer needed 2022-05.
+  </obsolete>
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -216,6 +112,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PrintPreview.PrinterStatus.AttemptedPrintWithUnknownStatus"
     enum="Boolean" expires_after="2022-06-15">
+  <obsolete>
+    Data no longer needed 2022-05.
+  </obsolete>
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -225,7 +124,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrintPreview.PrintSettings" enum="PrintSettings"
-    expires_after="2022-03-20">
+    expires_after="2023-02-12">
   <owner>thestig@chromium.org</owner>
   <owner>awscreen@chromium.org</owner>
   <summary>
@@ -235,7 +134,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrintPreview.PrintSettingsUi"
-    enum="PrintPreviewPrintSettingsUiBuckets" expires_after="2022-07-01">
+    enum="PrintPreviewPrintSettingsUiBuckets" expires_after="2023-07-01">
   <owner>rbpotter@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -298,7 +197,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrintPreview.RendererError" enum="PrintPreviewFailureType"
-    expires_after="2022-04-24">
+    expires_after="2023-02-12">
   <owner>thestig@chromium.org</owner>
   <owner>dhoss@chromium.org</owner>
   <summary>
@@ -314,14 +213,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrintPreview.RenderToPDFTime" units="ms"
-    expires_after="2022-05-01">
+    expires_after="2023-03-19">
   <owner>thestig@chromium.org</owner>
   <owner>awscreen@chromium.org</owner>
   <summary>Time taken to render to PDF for print preview.</summary>
 </histogram>
 
 <histogram name="PrintPreview.UserAction" enum="PrintPreviewUserActionType"
-    expires_after="2022-04-17">
+    expires_after="2023-02-26">
   <owner>thestig@chromium.org</owner>
   <owner>awscreen@chromium.org</owner>
   <summary>

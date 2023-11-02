@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,14 +20,14 @@
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/attestation/attestation_flow.h"
-#include "chromeos/attestation/attestation_flow_adaptive.h"
-#include "chromeos/cryptohome/cryptohome_parameters.h"
-#include "chromeos/dbus/attestation/attestation.pb.h"
-#include "chromeos/dbus/attestation/attestation_client.h"
-#include "chromeos/dbus/attestation/interface.pb.h"
+#include "chromeos/ash/components/attestation/attestation_flow.h"
+#include "chromeos/ash/components/attestation/attestation_flow_adaptive.h"
+#include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
+#include "chromeos/ash/components/dbus/attestation/attestation.pb.h"
+#include "chromeos/ash/components/dbus/attestation/attestation_client.h"
+#include "chromeos/ash/components/dbus/attestation/interface.pb.h"
+#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -80,7 +80,7 @@ class DefaultDelegate : public PlatformVerificationFlow::Delegate {
   bool IsInSupportedMode() override {
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
     return !command_line->HasSwitch(chromeos::switches::kSystemDevMode) ||
-           command_line->HasSwitch(chromeos::switches::kAllowRAInDevMode);
+           command_line->HasSwitch(switches::kAllowRAInDevMode);
   }
 };
 
@@ -100,9 +100,9 @@ PlatformVerificationFlow::ChallengeContext::ChallengeContext(
 PlatformVerificationFlow::ChallengeContext::~ChallengeContext() = default;
 
 PlatformVerificationFlow::PlatformVerificationFlow()
-    : attestation_flow_(NULL),
+    : attestation_flow_(nullptr),
       attestation_client_(AttestationClient::Get()),
-      delegate_(NULL),
+      delegate_(nullptr),
       timeout_delay_(base::Seconds(kTimeoutInSeconds)) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   std::unique_ptr<ServerProxy> attestation_ca_client(new AttestationCAClient());
@@ -240,8 +240,8 @@ void PlatformVerificationFlow::GetCertificate(
                      context, context->data.account_id, std::move(timer));
   attestation_flow_->GetCertificate(
       PROFILE_CONTENT_PROTECTION_CERTIFICATE, context->data.account_id,
-      context->data.service_id, force_new_key, std::string() /*key_name*/,
-      std::move(certificate_callback));
+      context->data.service_id, force_new_key, ::attestation::KEY_TYPE_RSA,
+      std::string() /*key_name*/, std::move(certificate_callback));
 }
 
 void PlatformVerificationFlow::OnCertificateReady(
@@ -305,7 +305,7 @@ void PlatformVerificationFlow::OnChallengeReady(
     ReportError(std::move(context).callback, INTERNAL_ERROR);
     return;
   }
-  chromeos::attestation::SignedData signed_data_pb;
+  SignedData signed_data_pb;
   if (reply.challenge_response().empty() ||
       !signed_data_pb.ParseFromString(reply.challenge_response())) {
     LOG(ERROR) << "PlatformVerificationFlow: Failed to parse response data.";
@@ -326,7 +326,8 @@ void PlatformVerificationFlow::OnChallengeReady(
     attestation_flow_->GetCertificate(
         PROFILE_CONTENT_PROTECTION_CERTIFICATE, context.account_id,
         context.service_id,
-        true,           // force_new_key
+        true,  // force_new_key
+        ::attestation::KEY_TYPE_RSA,
         std::string(),  // key_name, empty means a default one will be
                         // generated.
         std::move(renew_callback));

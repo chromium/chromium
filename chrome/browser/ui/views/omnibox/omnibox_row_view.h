@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
+#include "third_party/omnibox_proto/groups.pb.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
@@ -30,7 +32,8 @@ class OmniboxRowView : public views::View {
                  PrefService* pref_service);
 
   // Sets the header that appears above this row. Also shows the header.
-  void ShowHeader(int suggestion_group_id, const std::u16string& header_text);
+  void ShowHeader(omnibox::GroupId suggestion_group_id,
+                  const std::u16string& header_text);
 
   // Hides the header.
   void HideHeader();
@@ -55,19 +58,19 @@ class OmniboxRowView : public views::View {
   const size_t line_;
 
   // Non-owning pointer to the backing model.
-  OmniboxEditModel* const model_;
+  const raw_ptr<OmniboxEditModel> model_;
 
   // Non-owning pointer to the header view for this row. This is initially
   // nullptr, and lazily created when a header is first set for this row.
   // Lazily creating these speeds up browser startup: https://crbug.com/1021323
-  HeaderView* header_view_ = nullptr;
+  raw_ptr<HeaderView> header_view_ = nullptr;
 
   // Non-owning pointer to the result view for this row. This is never nullptr.
-  OmniboxResultView* result_view_;
+  raw_ptr<OmniboxResultView> result_view_;
 
   // Non-owning pointer to the preference service used for toggling headers.
   // May be nullptr in tests.
-  PrefService* const pref_service_;
+  const raw_ptr<PrefService> pref_service_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_ROW_VIEW_H_

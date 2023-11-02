@@ -9,6 +9,7 @@
 <translation id="1591070050619849194">Az összes képanimáció letiltása.</translation>
 <translation id="1703735871906654364">Caret Browsing</translation>
 <translation id="1791496371305830581">Az összes animált kép engedélyezése.</translation>
+<translation id="1974060860693918893">Speciális</translation>
 <translation id="1996252509865389616">Engedélyezi?</translation>
 <translation id="2079545284768500474">Visszavonás</translation>
 <translation id="2179565792157161713">Hosszú leírás megnyitása új lapon</translation>
@@ -51,6 +52,7 @@
 <translation id="6170146920149900756">Színjavító</translation>
 <translation id="633394792577263429">A szavanként történő mozgáshoz tartsa lenyomva a &lt;span class='key'&gt;Control&lt;/span&gt; billentyűt.</translation>
 <translation id="6550675742724504774">Beállítások</translation>
+<translation id="6699630355767768222">3. lépés: A javításhoz írja felül a színtengelyt.</translation>
 <translation id="6838518108677880446">Beállítás:</translation>
 <translation id="690628312087070417">Amikor a kurzor messzire ugrik:</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -65,5 +67,6 @@
 <translation id="8321034316479930120">Animációra vonatkozó irányelv</translation>
 <translation id="8480209185614411573">High Contrast</translation>
 <translation id="8609925175482059018">A Caret Browsing bekapcsolásához nyomja meg az &lt;span class='key'&gt;F7&lt;/span&gt; billentyűt. A kikapcsoláshoz nyomja meg újra.</translation>
+<translation id="8798099450830957504">Alapértelmezett</translation>
 <translation id="894241283505723656">Hosszú leírások a helyi menüben</translation>
 </translationbundle>

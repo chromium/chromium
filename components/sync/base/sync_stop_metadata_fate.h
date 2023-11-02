@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@ namespace syncer {
 
 // Passed as an argument when stopping sync to control whether models should
 // clear its metadata (e.g. sync disabled vs browser shutdown).
-// TODO(crbug.com/1229171): Maybe unify with ShutdownReason.
 enum SyncStopMetadataFate { KEEP_METADATA, CLEAR_METADATA };
 
 }  // namespace syncer

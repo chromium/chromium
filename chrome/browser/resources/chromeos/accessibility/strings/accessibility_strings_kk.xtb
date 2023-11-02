@@ -30,7 +30,9 @@
 <translation id="1189258430971676908">Тәжірибе аймағы: ашылмалы тізімдер</translation>
 <translation id="1195238899008218998">Соңғы сөз</translation>
 <translation id="1197088940767939838">Қызғылт сары</translation>
+<translation id="1198865190323699001">Түрту қимылдары</translation>
 <translation id="1201402288615127009">Келесі</translation>
+<translation id="1202112913213080585">тоқтату</translation>
 <translation id="1206619573307042055">marquee</translation>
 <translation id="1207086294218137981">Келесі 4-деңгей тақырыбы жоқ.</translation>
 <translation id="1212770441379271564">Төменде көрсетілген бірнеше пернелер тіркесімі ChromeVox пәрмендеріне жатпайды, бірақ олардың көмегімен Chrome браузерін барынша тиімді пайдалануға болады.
@@ -42,6 +44,7 @@
     Chrome браузерінің мәзірін ашу үшін Alt + F тіркесімін басыңыз.</translation>
 <translation id="1213216066620407844">ChromeVox – Chrome дауыстық интерфейсі</translation>
 <translation id="1225969361094801578">Қою көкшіл сұр</translation>
+<translation id="122928249241119550">алдыңғы сөйлемге жылжу</translation>
 <translation id="1230503547248836149">Таңдалған мәтіннің басы</translation>
 <translation id="1236794971743289975">Түсіндірме</translation>
 <translation id="1237797094773582699">Дәл осылай төрт саусақпен оңнан солға сырғыту арқылы алдыңғы бөлімге жылжуға болады. Қазір істеп көріңіз!</translation>
@@ -69,6 +72,7 @@
 <translation id="1354356357730355833">көшір</translation>
 <translation id="135978014023467274">Жаңа ChromeVox 63 нұсқасын орнаттыңыз!</translation>
 <translation id="1360699455582016846"><ph name="ROUTING_KEY_NUMBER" /> бағыттау пернесінің астындағы элементті басыңыз.</translation>
+<translation id="1376703628032300005">келесі таңбаға өту</translation>
 <translation id="1377925789329510816">Бұл – соңғы тақырып. Біріншісіне өту үшін "Search+H" пернелерін басыңыз. Ал осы беттегі екінші тақырыпқа өту үшін "Search+Shift+H" пернелерін басыңыз.</translation>
 <translation id="138218114945450791">Ашық көк</translation>
 <translation id="1383876407941801731">Іздеу</translation>
@@ -134,9 +138,9 @@
 <translation id="1812527064848182527">альбомдық</translation>
 <translation id="1829244130665387512">Беттен табу</translation>
 <translation id="1834891354138622109">Баған</translation>
-<translation id="1845944666972354496">Іске қосу үшін екі рет түртіңіз</translation>
 <translation id="1846771122725914429">Bluetooth Брайль дисплейі</translation>
 <translation id="1852018405765032699">Экранды төрт саусақпен түрту арқылы ChromeVox мәзірлерін ашуға және жабуға болады. Бұл мәзірлерде пәрмендер мен таңбашалар туралы пайдалы ақпарат қамтылған. Мәзірлер ашылған кезде, элементтер арасында жылжу үшін бір саусақпен сырғытуыңызға, элементтерді белсендіру үшін екі рет түртуіңізге болады. Жалғастыру үшін экранды төрт саусағыңызбен түртіңіз.</translation>
+<translation id="1864430479908918647">"Іздеу + бос орын" пернелер тіркесімін басыңыз.</translation>
 <translation id="1865601187525349519">Мәтіннің соңы</translation>
 <translation id="1876229593313240038">doc</translation>
 <translation id="1902396333223336119">Ұяшық</translation>
@@ -148,7 +152,7 @@
 <translation id="1923956950274750765">Орташа күлгін</translation>
 <translation id="1928932365747995741">Алдыңғы өзгертілетін мəтін өрісі жоқ.</translation>
 <translation id="1964135212174907577">Келесі нысан</translation>
-<translation id="1966649499058910679">Айтылған әр сөзді бөлектеу</translation>
+<translation id="1966649499058910679">Айтылған әр сөзді ерекшелеу</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">ChromeVox мәзірлерінде Брайль пәрмендерін көрсету</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{сол жақ тік жақша}other{# сол жақ тік жақша}}</translation>
@@ -211,8 +215,10 @@
 <translation id="2435422727584637732">Қанық көк</translation>
 <translation id="2438712309510062123">Ұсыну</translation>
 <translation id="2450814015951372393">Құсбелгі ұяшығы</translation>
+<translation id="2450992626945324272">келесі сөйлемге жылжу</translation>
 <translation id="2461822463642141190">Қазіргі</translation>
 <translation id="2462626033734746142">Радио түймелер тобы</translation>
+<translation id="2467741090055146971">таңдаудан бас тарту</translation>
 <translation id="2471138580042810658">6-тақырып</translation>
 <translation id="248982282205370495">{COUNT,plural, =1{жұлдызша}other{# жұлдызша}}</translation>
 <translation id="2490721194269245365">Күлгін қоңыр</translation>
@@ -232,6 +238,7 @@
 <translation id="2619344480613750862">Сондай-ақ экрандағы бөлімдер арасында жылжуыңызға болады. Мысалы, іске қосқыш, сөре және Chrome қойындылары арасында жылжи аласыз. Келесі бөлімге жылжу үшін төрт саусақпен солдан оңға сырғытыңыз. Мұны қазір істеп көріп, әрі қарай жалғастырыңыз.</translation>
 <translation id="2624431853467395961">Үйрену режимін ашу</translation>
 <translation id="2626530649491650971">clickable</translation>
+<translation id="263637551280112393">Search + Shift + Бос орын пернелер тіркесімін басыңыз.</translation>
 <translation id="2637227747952042642">Математика</translation>
 <translation id="2638785836053527382"><ph name="FILE_NAME" /> файлын жүктеп алу жалғастырылды</translation>
 <translation id="2639750663247012216">ChromeVox өзгерткіші</translation>
@@ -387,7 +394,9 @@
 <translation id="3492609944033322585">{COUNT,plural, =1{оң жақ тік жақша}other{# оң жақ тік жақша}}</translation>
 <translation id="3494946239022273294">mnuitm</translation>
 <translation id="3497063866483065785">{COUNT,plural, =1{сұрақ белгісі}other{# сұрақ белгісі}}</translation>
+<translation id="3505359110822747654">ChromeVox мәзірлерін ашу</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{кірістіру белгісі}other{# кірістіру белгісі}}</translation>
+<translation id="3518600448524470129">{COUNT,plural, =1{ақ таңбалауыш}other{# ақ таңбалауыш}}</translation>
 <translation id="352577523970648069">Өңделетін мәтін өрісі</translation>
 <translation id="3538907380453898475">сипаттама тізімі</translation>
 <translation id="3549141990712742152"><ph name="TEXT" /> бөлігін қиып алу.</translation>
@@ -484,6 +493,7 @@
 <translation id="42164919740161077">Сұрқай көк</translation>
 <translation id="4217571870635786043">Мәтінді дауыспен енгізу</translation>
 <translation id="4218529045364428769">{COUNT,plural, =1{сызықша}other{# сызықша}}</translation>
+<translation id="4220024144662591089"><ph name="START_PHRASE" /> бастап <ph name="END_PHRASE" /> дейін таңдау</translation>
 <translation id="4221012616705981690">Алдыңғы тізім жоқ.</translation>
 <translation id="4225355998815256469">Үлгіні басқару құралдары</translation>
 <translation id="4230834257931120629">Бозғылт көкшіл сұр</translation>
@@ -502,6 +512,7 @@
 <translation id="4300318234632215983">Сілтеменің артындағы URL мекенжайын хабарлау</translation>
 <translation id="4322625298640984693">Сарғыш қызыл</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{нүкте}=3{көп нүкте}other{# нүкте}}</translation>
+<translation id="4352022650330571548">"<ph name="PHRASE" />" деп тер</translation>
 <translation id="4372435075475052704">мин:<ph name="X" /></translation>
 <translation id="4372705107434148843">Сөйлеуді тоқтату</translation>
 <translation id="4376316291247992553">Графикалық элементтерді Брайль шрифті ретінде көру</translation>
@@ -519,6 +530,7 @@
 <translation id="4479068155583208887">Күрең</translation>
 <translation id="4482330759234983253">Алдыңғы кесте</translation>
 <translation id="4491109536499578614">Кескін</translation>
+<translation id="4507332368061453500">Қолданыстағы элементті басып тұру</translation>
 <translation id="4511186779140817916">Бозғылт сары</translation>
 <translation id="451510441928265982">Алдыңғы 2-деңгей тақырыбы жоқ.</translation>
 <translation id="4515799157838123044">Фондағы мазмұнға қошқыл реңк беру</translation>
@@ -531,6 +543,7 @@
 <translation id="4601367666219428522">кст <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">Келесі перненің басылуын елемеу</translation>
 <translation id="4623097797855662355">Баспа белгісі</translation>
+<translation id="4624970070706497034">TalkBack бұдан былай Chromebook құрылғыларына бейімделіп реттелмейді. Оны тек TalkBack әдепкі перне тіркесімдерімен пайдалана аласыз. "Search+A", содан соң "K" пернесін басып, қолжетімді тіркесімдерді көріңіз. Сонда да TalkBack-ті пайдаланғыңыз келсе, пәрменді қайта басыңыз.</translation>
 <translation id="463135993322337640">Жаңалықтарды көру үшін ChromeVox және Щ, Т пернелерін басыңыз</translation>
 <translation id="4649220074413114917">Экранды екі саусақпен түрту арқылы ағымдағы кез келген сөзді тоқтатуға болады. ChromeVox құралының бір нәрсені оқығанын қаламасаңыз, осы функцияны пайдаланыңыз. Жалғастыру үшін экранды екі саусақпен түртіңіз.</translation>
 <translation id="4660783501463101648">ChromeVox Classic нұсқасынан бас тарттық. Енді оған пернетақта арқылы ауысып қосылу мүмкін емес.</translation>
@@ -565,6 +578,7 @@
 <translation id="4854380505292502090">Алдыңғы медиа виджеті жоқ.</translation>
 <translation id="4855927945655956315">Негізгі пернелер: Ctrl</translation>
 <translation id="4862744964787595316">Қалың емес</translation>
+<translation id="4865995900839719272">алдыңғы жолға өту</translation>
 <translation id="4866956062845190338">rdmnuitm</translation>
 <translation id="4867316986324544967">TTS журналға жазуды қосу</translation>
 <translation id="4886524826165775965"><ph name="INDEX" />/<ph name="TOTAL" /></translation>
@@ -585,7 +599,6 @@
 <translation id="4993152509206108683"><ph name="PERCENT" /> пайыз бағамы</translation>
 <translation id="4994420463726586413">Ағымдағы батарея күйін жариялау</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, радио түйме таңдалды</translation>
-<translation id="5011664330025416377">Іске қосу үшін "Іздеу" + "Бос орын" пернелерін басыңыз.</translation>
 <translation id="5012724933919010465"><ph name="NAME" /> мәзір элементінің ауыстырып қосқышы таңдалған</translation>
 <translation id="5020651427400641814">Дауыспен енгізу арқылы кіру функциясын қосу</translation>
 <translation id="5041394372352067729">Брайль дисплейін беттің жоғарғы жағына жылжыту</translation>
@@ -612,7 +625,6 @@
 <translation id="5170206230005240598">Брайль жазулары қосылған.</translation>
 <translation id="5183440668879371625">Брайль алдыңғы жолы</translation>
 <translation id="5189244881767082992">Сызық</translation>
-<translation id="5234747236692380506">"<ph name="TEXT" />" деп тер</translation>
 <translation id="5263034204789987535">Боз сары</translation>
 <translation id="5263344797180442561">h2</translation>
 <translation id="528468243742722775">Соңы</translation>
@@ -623,6 +635,7 @@
 <translation id="5304943142864553931"><ph name="TITLE" />, қойынды</translation>
 <translation id="5308380583665731573">Қосылу</translation>
 <translation id="5310788376443009632">жойылды:</translation>
+<translation id="5316825363044614340">келесі жолға өту</translation>
 <translation id="5320727453979144100">Маңызды режим қосылған</translation>
 <translation id="5321085947096604457">{COUNT,plural, =1{үтір}other{# үтір}}</translation>
 <translation id="532485153932049746">Мәтінді форматтау
@@ -638,6 +651,7 @@
 <translation id="5355014376930441909">Келесі бөлім жоқ.</translation>
 <translation id="5368000168321181111">Дыбыстық сигналдарды өшіру</translation>
 <translation id="5368505757342402527"><ph name="FILE_NAME" /> файлының <ph name="PROGRESS" />%-ы жүктеп алынды. Шамамен <ph name="TIME" /> <ph name="UNITS" /> қалды.</translation>
+<translation id="5381388086899614489">ұзақ басып тұру</translation>
 <translation id="5400836586163650660">Сұр</translation>
 <translation id="5402367795255837559">Брайль</translation>
 <translation id="5402791055281059602">Модальдық ескерту</translation>
@@ -659,6 +673,7 @@
 <translation id="5522423213731659107">Қысқаша курс аяқталды!</translation>
 <translation id="5534303576632885660">hdr</translation>
 <translation id="5539820223028224601">Ақшыл сұр</translation>
+<translation id="554893713779400387">Дауыстап оқуды қосу/өшіру</translation>
 <translation id="5549179427201066174">Дыбыстық көмекті (дыбыстық сигналдар) қосу не өшіру.</translation>
 <translation id="556042886152191864">Түйме</translation>
 <translation id="5561345396546889625">Келесі тізім</translation>
@@ -669,6 +684,7 @@
 <translation id="5597170376237141345">Келесі құсбелгі ұяшығы</translation>
 <translation id="5598905979683743333"><ph name="NAME" />, радио түйме белгісі алып тасталды</translation>
 <translation id="5601172225407283979">Әдепкі әрекетті орындау</translation>
+<translation id="5604302400025591178">{COUNT,plural, =1{шаршы таңбалауыш}other{# шаршы таңбалауыш}}</translation>
 <translation id="5608798115546226984">Автотолтыру жолы</translation>
 <translation id="5616029807486814372">Келесі сабақ</translation>
 <translation id="561939826962581046">time</translation>
@@ -676,6 +692,8 @@
 <translation id="5623842676595125836">Журнал</translation>
 <translation id="5628125749885014029">h4</translation>
 <translation id="5632083598315326067">Графикалық таңба</translation>
+<translation id="5648939288050772726">Құттықтаймыз! ChromeVox қызметін пайдалануға қатысты маңызды нәрселерді үйрендіңіз. "Іздеу" және нүкте пернелерін бір уақытта басу арқылы ChromeVox пәрмендер мәзірін кез келген уақытта аша аласыз. ChromeVox және ChromeOS туралы толығырақ ақпарат алу үшін мына мақалаларды оқыңыз.
+    Оқулықтағы ақпаратпен танысып шыққан соң, одан шығу үшін ChromeVox қызметінің көмегімен "Жабу" түймесін басыңыз.</translation>
 <translation id="5653397561111110475">Chromebook сенсорлық экранының арнайы мүмкіндіктерін пайдалану</translation>
 <translation id="5655682562155942719">Өту пәрмендері</translation>
 <translation id="56637627897541303">Мәтін аймағы</translation>
@@ -746,8 +764,10 @@
 <translation id="6100239002225743044">Бір жол жоғары көтерілу</translation>
 <translation id="6118126368611144850">Chrome браузеріне арналған Android қолданбалары. Құрылғыңызда Play Store дүкені болса, Google Chrome Canary браузерін жүктеп алып, Android қолданбаларымен ChromeVox мүмкіндігін пайдаланып көріңіз.</translation>
 <translation id="611827076493383239">vtd</translation>
+<translation id="6119846243427417423">белсендіру</translation>
 <translation id="6122013438240733403">btn</translation>
 <translation id="6132506484792346370">Тізім терезесі немесе тізімді өріс</translation>
+<translation id="613344593214611552">алдыңғы сөйлемді өшіру</translation>
 <translation id="6142308968191113180">4-тақырып</translation>
 <translation id="6150023170003443621">Сарғыш жасыл</translation>
 <translation id="6158882249329863701"><ph name="TABLECELLROWINDEX" />-жол, <ph name="TABLECELLCOLUMNINDEX" />-баған</translation>
@@ -757,9 +777,11 @@
 <translation id="6186305613600865047">Беттің төменгі жағына өту</translation>
 <translation id="6187190722927752226">Жасыл көк</translation>
 <translation id="6197361807490522975">Қою көк</translation>
+<translation id="6218813441317556731"><ph name="DELETE_PHRASE" /> дегенді <ph name="INSERT_PHRASE" /> дегенге ауыстыру</translation>
 <translation id="6236061028292614533">Келесі тақырып</translation>
 <translation id="6254901459154107917">Келесі өзгертілелетін мəтін аймағы</translation>
 <translation id="6259464875943891919"><ph name="TYPE" /> контейнерінен шығу.</translation>
+<translation id="6280088282605782512">Екі рет түртіңіз.</translation>
 <translation id="6282062888058716985">nav</translation>
 <translation id="6295699829709583154">Негізгі пернелер: Іздеу</translation>
 <translation id="6305702903308659374">ChromeVox экраннан оқып жатқанда, қалыпты дыбыс деңгейінде ойнату</translation>
@@ -902,6 +924,7 @@
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7308519659008003150">Алдыңғы үлгі өрісі жоқ.</translation>
 <translation id="731121099745151312">tritm</translation>
+<translation id="7313717760367325059">анықтама</translation>
 <translation id="7317017974771324508">ішінара таңдалды</translation>
 <translation id="7322442671176251901">Түртілген элементтерді дыбыстау</translation>
 <translation id="7344012264516629579">Сілтемені, түймені басу және құсбелгі қою арқылы өту сияқты өтуге қатысты қосымша пәрмендерді пайдалануға болады. Өтуге қатысты пәрмендердің толық тізімін ChromeVox мәзірлерінен табуға болады. Оларды ашу үшін "Іздеу + . (нүкте)" пернелерін басыңыз.</translation>
@@ -928,6 +951,7 @@
 <translation id="7533226154149229506">Ақшыл алтын сары</translation>
 <translation id="7543255924852002459">Белгіні алып тастау</translation>
 <translation id="7552432549459840808">Chrome браузерінің пайдалы пернелер тіркесімдері</translation>
+<translation id="7553679324939294712"><ph name="BEFORE_PHRASE" /> бұрын <ph name="INSERT_PHRASE" /> енгізу</translation>
 <translation id="7569983096843329377">Қара</translation>
 <translation id="7579911500627256166">нүкте: <ph name="DOT" /></translation>
 <translation id="7592060599656252486">Кейбір</translation>
@@ -951,16 +975,16 @@
 <translation id="7684431668231950609">Мәтінді өзгерту, URL енгізу</translation>
 <translation id="7685589220304187312">tlbar</translation>
 <translation id="7693840228159394336">Алдыңғы радио түймесі</translation>
+<translation id="7696631298608145306">келесі сөзге жылжу</translation>
 <translation id="7701040980221191251">Жоқ</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7713139339518499741">Табиғи дауыс</translation>
 <translation id="7714340021005120797">Келесі мәтінді-тізімді өріс жоқ.</translation>
-<translation id="772146615414628379">Құттықтаймыз! ChromeVox қызметін пайдалануға қатысты маңызды нәрселерді үйрендіңіз. "Іздеу" және нүкте пернелерін бір уақытта басу арқылы ChromeVox пәрмендер мәзірін кез келген уақытта аша аласыз. ChromeVox және Chrome OS туралы толық ақпарат алу үшін мына мақалаларды оқыңыз.
-    Оқулықтағы ақпаратпен танысып шыққан соң, одан шығу үшін ChromeVox қызметінің көмегімен "Жабу" түймесіне өтіп, оны басыңыз.</translation>
 <translation id="7724603315864178912">Қиып алу</translation>
 <translation id="7731785449856576010">Келесі медиа виджеті жоқ.</translation>
 <translation id="7735498529470878067">Түртілген элементтерді дыбыстау экранда не орналасқанын жылдам түсінуіңізге көмектеседі.</translation>
 <translation id="773906353055481349">Бір ұяшықтан екінші ұяшыққа өту үшін "Іздеу" + "Ctrl" + "Alt" пернелерін көрсеткі пернелерімен бірге басыңыз.</translation>
+<translation id="7746976083433980639"><ph name="ACTION" />–<ph name="LABEL" /></translation>
 <translation id="7763537600611320912"><ph name="FILE_NAME" /> жүктеп алына бастады</translation>
 <translation id="7768784765476638775">Select to Speak</translation>
 <translation id="7776293189010177726">ChromeVox мәзірлерін ашу</translation>
@@ -974,11 +998,11 @@
 <translation id="7842115774595115751">Навигацияның басқару элементтерін іске қосу</translation>
 <translation id="7846634333498149051">Пернетақта</translation>
 <translation id="7851816175263618915">Кейбір тыныс белгілері</translation>
-<translation id="7871691770940645922">Виртуалды Браиль дисплейі</translation>
+<translation id="7871691770940645922">Виртуалдық Браиль дисплейі</translation>
 <translation id="7882421473871500483">Қоңыр</translation>
 <translation id="78826985582142166">sldr</translation>
 <translation id="7913106023953875143">Келесі 2-деңгей тақырыбы жоқ.</translation>
-<translation id="7914870167134465181">Бөлектеу</translation>
+<translation id="7914870167134465181">Ерекшелеу</translation>
 <translation id="7927711904086083099">Таңдалмаған</translation>
 <translation id="7935627501098484003">Уақытты бақылау</translation>
 <translation id="7939428177581522200">таңдауға қосылды</translation>
@@ -1060,6 +1084,7 @@
 <translation id="8455868257606149352">Макс <ph name="X" /></translation>
 <translation id="84575901236241018">кіру пернесі бар, <ph name="KEY" /></translation>
 <translation id="8463645336674919227">Грамматикалық қате түзетілмеді.</translation>
+<translation id="8465573210279050749">алдыңғы сөзді өшіру</translation>
 <translation id="847040613207937740">Келесі құсбелгі ұяшығы жоқ.</translation>
 <translation id="8473540203671727883">Тінтуірдің астындағы мәтінді дауыстап оқу</translation>
 <translation id="8476408756881832830">ChromeVox экраннан оқып жатқанда, ойнатуды кідірту</translation>
@@ -1090,11 +1115,13 @@
 <translation id="8659501358298941449">Ашылмалы тізімдер</translation>
 <translation id="8666733765751421568"><ph name="TYPE" />, соңы</translation>
 <translation id="867187640362843212">5-тақырып</translation>
+<translation id="8690400660839620419">{COUNT,plural, =1{}other{# орналастырылған деңгей}}</translation>
 <translation id="8693391540059827073">Сүйікті маусымым</translation>
 <translation id="8696284982970258155">Бал реңкті</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{құбыр}other{# тік құбыр}}</translation>
 <translation id="8741370088760768424">Сөзкөмек: қазіргі элементті белсендіру үшін "Іздеу + бос орын" пернелерін басыңыз.</translation>
 <translation id="8743786158317878347">кестелер сияқты құрылымдық мазмұнды енгізу</translation>
+<translation id="8746846427395705317">алдыңғы сөзге жылжу</translation>
 <translation id="8747966237988593539">Реттелген тізім</translation>
 <translation id="8749988712346667988">Күміс</translation>
 <translation id="875769700429317857"><ph name="FILE_NAME" /> жүктеп алынды</translation>
@@ -1122,12 +1149,14 @@
 <translation id="8970172509886453271">Алдыңғы бөлім жоқ.</translation>
 <translation id="89720367119469899">Шығу</translation>
 <translation id="8978496506222343566">tltip</translation>
+<translation id="898089897833732740"><ph name="PHRASE" /> өшіру</translation>
 <translation id="8986362086234534611">Ұмыту</translation>
 <translation id="8989104346085848538">Қазір оқылып жатқан кез келген ChromeVox сөзін тоқтату үшін Ctrl пернесін басыңыз.</translation>
 <translation id="8993737615451556423">Оқу дауысын жылдамдатуға, бәсеңдетуге және тоқтатуға арналған басқару элементтерін ұсынады.</translation>
 <translation id="9014206344398081366">ChromeVox оқулығы</translation>
 <translation id="9040132695316389094">1-тақырып</translation>
 <translation id="9061884144798498064">8 нүктелі Брайль қарпінің кестесін таңдау:</translation>
+<translation id="9063946545000394379">алдыңғы таңбаға өту</translation>
 <translation id="9065283790526219006">+popup</translation>
 <translation id="9065912140022662363">Келесі ауыстырып қосқыш жоқ.</translation>
 <translation id="9067522039955793016">Бетті үзу</translation>
@@ -1156,6 +1185,7 @@
 <translation id="9223032053830369045">Қою қызыл</translation>
 <translation id="923331726185079994">ChromeVox жаңартылды</translation>
 <translation id="93384979447910801">Қою көк жасыл</translation>
+<translation id="937605981140327129">Қазіргі уақытта TalkBack орнатылмаған. Play Store арқылы Android AccessibilitySuite орнатып, қайталап көріңіз.</translation>
 <translation id="948171205378458592">Сөйлеу жылдамдығын азайту</translation>
 <translation id="957570623732056069">Осы сабақты шолу үшін бір саусақпен солға не оңға сырғытыңыз.</translation>
 <translation id="958854023026327378">Бір саусағыңызбен төмен сырғытыңыз</translation>

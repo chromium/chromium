@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -70,6 +70,7 @@ public class FeedSurfaceLifecycleManager implements ApplicationStatus.ActivitySt
         switch (newState) {
             case ActivityState.STARTED:
             case ActivityState.RESUMED:
+                mCoordinator.onActivityResumed();
                 show();
                 break;
             case ActivityState.STOPPED:
@@ -78,7 +79,8 @@ public class FeedSurfaceLifecycleManager implements ApplicationStatus.ActivitySt
             case ActivityState.DESTROYED:
                 destroy();
                 break;
-            case ActivityState.PAUSED: // Do nothing for pause.
+            case ActivityState.PAUSED:
+                mCoordinator.onActivityPaused();
                 break;
             case ActivityState.CREATED:
             default:

@@ -1,0 +1,40 @@
+<style include="common cr-shared-style cr-radio-button-style">
+  #container {
+    align-items: center;
+    display: flex;
+    flex: 1;
+    flex-flow: row nowrap;
+    height: 100%;
+    justify-content: space-between;
+    padding-inline-end: var(--cr-icon-ripple-padding);
+    padding-inline-start: var(--cr-section-padding);
+  }
+
+  .primary-text {
+    color: var(--cros-text-color-primary);
+    font: var(--cros-body-2-font);
+  }
+
+  iron-icon {
+    height: 20px;
+    width: 20px;
+  }
+</style>
+
+<div id="container">
+  <!-- This item behaves similar to a radio button and reuses disc and label
+       style in cr-radio-button-style. -->
+  <div class="disc-wrapper" aria-hidden="true">
+    <div class="disc-border"></div>
+    <div class="disc"></div>
+  </div>
+
+  <div id="labelWrapper" aria-hidden="true">
+    <div class="primary-text">[[getItemName_(topicSource)]]</div>
+    <div class="cr-secondary-text">
+      [[getItemDescription_(topicSource, hasGooglePhotosAlbums)]]
+    </div>
+  </div>
+
+  <iron-icon icon="cr:chevron-right" aria-hidden="true"></iron-icon>
+</div>

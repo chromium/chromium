@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -71,11 +71,15 @@ class DisplayInfoProviderChromeosTest : public ChromeAshTestBase {
 
     // Initialize the DisplayInfoProviderChromeOS with a remote connected to our
     // local implementation.
-    mojo::PendingRemote<ash::mojom::CrosDisplayConfigController> display_config;
+    mojo::PendingRemote<crosapi::mojom::CrosDisplayConfigController>
+        display_config;
     cros_display_config_->BindReceiver(
         display_config.InitWithNewPipeAndPassReceiver());
     DisplayInfoProvider::InitializeForTesting(
         new DisplayInfoProviderChromeOS(std::move(display_config)));
+
+    provider_ = DisplayInfoProvider::Get();
+    ASSERT_TRUE(provider_);
 
     // Wait for TabletModeController to take its initial state from the power
     // manager.
@@ -101,7 +105,7 @@ class DisplayInfoProviderChromeosTest : public ChromeAshTestBase {
       const api::system_display::DisplayProperties& info) {
     std::string result;
     base::RunLoop run_loop;
-    DisplayInfoProvider::Get()->SetDisplayProperties(
+    provider_->SetDisplayProperties(
         display_id, info,
         base::BindOnce(&ErrorCallback, &result, run_loop.QuitClosure()));
     run_loop.Run();
@@ -139,7 +143,7 @@ class DisplayInfoProviderChromeosTest : public ChromeAshTestBase {
   DisplayUnitInfoList GetAllDisplaysInfoSetSingleUnified(bool single_unified) {
     DisplayUnitInfoList result;
     base::RunLoop run_loop;
-    DisplayInfoProvider::Get()->GetAllDisplaysInfo(
+    provider_->GetAllDisplaysInfo(
         single_unified,
         base::BindOnce(
             [](DisplayUnitInfoList* result_ptr, base::OnceClosure callback,
@@ -159,7 +163,7 @@ class DisplayInfoProviderChromeosTest : public ChromeAshTestBase {
   DisplayLayoutList GetDisplayLayout() {
     DisplayLayoutList result;
     base::RunLoop run_loop;
-    DisplayInfoProvider::Get()->GetDisplayLayout(base::BindOnce(
+    provider_->GetDisplayLayout(base::BindOnce(
         [](DisplayLayoutList* result_ptr, base::OnceClosure callback,
            DisplayLayoutList result) {
           *result_ptr = std::move(result);
@@ -173,7 +177,7 @@ class DisplayInfoProviderChromeosTest : public ChromeAshTestBase {
   bool SetDisplayLayout(const DisplayLayoutList& layouts) {
     std::string result;
     base::RunLoop run_loop;
-    DisplayInfoProvider::Get()->SetDisplayLayout(
+    provider_->SetDisplayLayout(
         layouts,
         base::BindOnce(&ErrorCallback, &result, run_loop.QuitClosure()));
     run_loop.Run();
@@ -183,7 +187,7 @@ class DisplayInfoProviderChromeosTest : public ChromeAshTestBase {
   bool SetMirrorMode(const api::system_display::MirrorModeInfo& info) {
     std::string result;
     base::RunLoop run_loop;
-    DisplayInfoProvider::Get()->SetMirrorMode(
+    provider_->SetMirrorMode(
         info, base::BindOnce(&ErrorCallback, &result, run_loop.QuitClosure()));
     run_loop.Run();
     return result.empty();
@@ -191,6 +195,9 @@ class DisplayInfoProviderChromeosTest : public ChromeAshTestBase {
 
  private:
   std::unique_ptr<ash::CrosDisplayConfig> cros_display_config_;
+
+ protected:
+  DisplayInfoProvider* provider_;
 };
 
 TEST_F(DisplayInfoProviderChromeosTest, GetBasic) {
@@ -555,7 +562,7 @@ TEST_F(DisplayInfoProviderChromeosTest, GetVisibleArea) {
   EXPECT_EQ("13,10,13,10", SystemInfoDisplayInsetsToString(result[1].overscan));
 
   GetDisplayManager()->SetOverscanInsets(display_id,
-                                         gfx::Insets(20, 30, 50, 60));
+                                         gfx::Insets::TLBR(20, 30, 50, 60));
   result = GetAllDisplaysInfo();
 
   ASSERT_EQ(2u, result.size());
@@ -573,7 +580,7 @@ TEST_F(DisplayInfoProviderChromeosTest, GetVisibleArea) {
   EXPECT_EQ("9,8,9,8", SystemInfoDisplayInsetsToString(result[0].overscan));
 
   GetDisplayManager()->SetOverscanInsets(display_id,
-                                         gfx::Insets(10, 20, 30, 40));
+                                         gfx::Insets::TLBR(10, 20, 30, 40));
   result = GetAllDisplaysInfo();
 
   ASSERT_EQ(2u, result.size());
@@ -799,7 +806,7 @@ TEST_F(DisplayInfoProviderChromeosTest, SetUnified) {
 
   // Test that setting is_unified to true fails unless EnableUnifiedDesktop is
   // called first.
-  info.is_unified = std::make_unique<bool>(true);
+  info.is_unified = true;
   EXPECT_FALSE(CallSetDisplayUnitInfo(
       base::NumberToString(
           display::Screen::GetScreen()->GetPrimaryDisplay().id()),
@@ -809,14 +816,14 @@ TEST_F(DisplayInfoProviderChromeosTest, SetUnified) {
 
   // Test that enabling unified desktop succeeds and sets the desktop mode to
   // unified.
-  DisplayInfoProvider::Get()->EnableUnifiedDesktop(true);
+  provider_->EnableUnifiedDesktop(true);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(GetDisplayManager()->unified_desktop_enabled());
   EXPECT_TRUE(GetDisplayManager()->IsInUnifiedMode());
 
   // Test that setting is_unified to false turns off unified mode but leaves it
   // enabled.
-  info.is_unified = std::make_unique<bool>(false);
+  info.is_unified = false;
   EXPECT_TRUE(CallSetDisplayUnitInfo(
       base::NumberToString(
           display::Screen::GetScreen()->GetPrimaryDisplay().id()),
@@ -825,7 +832,7 @@ TEST_F(DisplayInfoProviderChromeosTest, SetUnified) {
 
   // Test that setting is_unified to true succeeds without an additional call to
   // EnableUnifiedDesktop.
-  info.is_unified = std::make_unique<bool>(true);
+  info.is_unified = true;
   EXPECT_TRUE(CallSetDisplayUnitInfo(
       base::NumberToString(
           display::Screen::GetScreen()->GetPrimaryDisplay().id()),
@@ -833,7 +840,7 @@ TEST_F(DisplayInfoProviderChromeosTest, SetUnified) {
   EXPECT_TRUE(GetDisplayManager()->IsInUnifiedMode());
 
   // Restore extended mode.
-  DisplayInfoProvider::Get()->EnableUnifiedDesktop(false);
+  provider_->EnableUnifiedDesktop(false);
 }
 
 TEST_F(DisplayInfoProviderChromeosTest, SetUnifiedOneDisplay) {
@@ -845,7 +852,7 @@ TEST_F(DisplayInfoProviderChromeosTest, SetUnifiedOneDisplay) {
 
   // Enabling unified desktop with one display should succeed, but desktop mode
   // will not be unified.
-  DisplayInfoProvider::Get()->EnableUnifiedDesktop(true);
+  provider_->EnableUnifiedDesktop(true);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(GetDisplayManager()->unified_desktop_enabled());
   EXPECT_FALSE(GetDisplayManager()->IsInUnifiedMode());
@@ -855,7 +862,7 @@ TEST_F(DisplayInfoProviderChromeosTest, SetUnifiedOneDisplay) {
   EXPECT_TRUE(GetDisplayManager()->IsInUnifiedMode());
 
   // Restore extended mode.
-  DisplayInfoProvider::Get()->EnableUnifiedDesktop(false);
+  provider_->EnableUnifiedDesktop(false);
 }
 
 TEST_F(DisplayInfoProviderChromeosTest, SetUnifiedMirrored) {
@@ -872,7 +879,7 @@ TEST_F(DisplayInfoProviderChromeosTest, SetUnifiedMirrored) {
 
   // Enabling unified desktop while mirroring should succeed, but desktop mode
   // will not be unified.
-  DisplayInfoProvider::Get()->EnableUnifiedDesktop(true);
+  provider_->EnableUnifiedDesktop(true);
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(GetDisplayManager()->IsInUnifiedMode());
 
@@ -881,7 +888,7 @@ TEST_F(DisplayInfoProviderChromeosTest, SetUnifiedMirrored) {
   EXPECT_TRUE(GetDisplayManager()->IsInUnifiedMode());
 
   // Restore extended mode.
-  DisplayInfoProvider::Get()->EnableUnifiedDesktop(false);
+  provider_->EnableUnifiedDesktop(false);
 }
 
 TEST_F(DisplayInfoProviderChromeosTest, SetBoundsOriginLeftExact) {
@@ -891,8 +898,8 @@ TEST_F(DisplayInfoProviderChromeosTest, SetBoundsOriginLeftExact) {
       display::test::DisplayManagerTestApi(display_manager())
           .GetSecondaryDisplay();
   api::system_display::DisplayProperties info;
-  info.bounds_origin_x = std::make_unique<int>(-520);
-  info.bounds_origin_y = std::make_unique<int>(50);
+  info.bounds_origin_x = -520;
+  info.bounds_origin_y = 50;
 
   EXPECT_TRUE(
       CallSetDisplayUnitInfo(base::NumberToString(secondary.id()), info));
@@ -907,8 +914,8 @@ TEST_F(DisplayInfoProviderChromeosTest, SetBoundsOriginRightExact) {
       display::test::DisplayManagerTestApi(display_manager())
           .GetSecondaryDisplay();
   api::system_display::DisplayProperties info;
-  info.bounds_origin_x = std::make_unique<int>(1200);
-  info.bounds_origin_y = std::make_unique<int>(100);
+  info.bounds_origin_x = 1200;
+  info.bounds_origin_y = 100;
 
   EXPECT_TRUE(
       CallSetDisplayUnitInfo(base::NumberToString(secondary.id()), info));
@@ -923,8 +930,8 @@ TEST_F(DisplayInfoProviderChromeosTest, SetBoundsOriginTopExact) {
       display::test::DisplayManagerTestApi(display_manager())
           .GetSecondaryDisplay();
   api::system_display::DisplayProperties info;
-  info.bounds_origin_x = std::make_unique<int>(1100);
-  info.bounds_origin_y = std::make_unique<int>(-400);
+  info.bounds_origin_x = 1100;
+  info.bounds_origin_y = -400;
 
   EXPECT_TRUE(
       CallSetDisplayUnitInfo(base::NumberToString(secondary.id()), info));
@@ -939,8 +946,8 @@ TEST_F(DisplayInfoProviderChromeosTest, SetBoundsOriginBottomExact) {
       display::test::DisplayManagerTestApi(display_manager())
           .GetSecondaryDisplay();
   api::system_display::DisplayProperties info;
-  info.bounds_origin_x = std::make_unique<int>(-350);
-  info.bounds_origin_y = std::make_unique<int>(600);
+  info.bounds_origin_x = -350;
+  info.bounds_origin_y = 600;
 
   EXPECT_TRUE(
       CallSetDisplayUnitInfo(base::NumberToString(secondary.id()), info));
@@ -955,8 +962,8 @@ TEST_F(DisplayInfoProviderChromeosTest, SetBoundsOriginSameCenter) {
       display::test::DisplayManagerTestApi(display_manager())
           .GetSecondaryDisplay();
   api::system_display::DisplayProperties info;
-  info.bounds_origin_x = std::make_unique<int>(340);
-  info.bounds_origin_y = std::make_unique<int>(100);
+  info.bounds_origin_x = 340;
+  info.bounds_origin_y = 100;
 
   EXPECT_TRUE(
       CallSetDisplayUnitInfo(base::NumberToString(secondary.id()), info));
@@ -971,8 +978,8 @@ TEST_F(DisplayInfoProviderChromeosTest, SetBoundsOriginLeftOutside) {
       display::test::DisplayManagerTestApi(display_manager())
           .GetSecondaryDisplay();
   api::system_display::DisplayProperties info;
-  info.bounds_origin_x = std::make_unique<int>(-1040);
-  info.bounds_origin_y = std::make_unique<int>(100);
+  info.bounds_origin_x = -1040;
+  info.bounds_origin_y = 100;
 
   EXPECT_TRUE(
       CallSetDisplayUnitInfo(base::NumberToString(secondary.id()), info));
@@ -987,8 +994,8 @@ TEST_F(DisplayInfoProviderChromeosTest, SetBoundsOriginTopOutside) {
       display::test::DisplayManagerTestApi(display_manager())
           .GetSecondaryDisplay();
   api::system_display::DisplayProperties info;
-  info.bounds_origin_x = std::make_unique<int>(-360);
-  info.bounds_origin_y = std::make_unique<int>(-301);
+  info.bounds_origin_x = -360;
+  info.bounds_origin_y = -301;
 
   EXPECT_TRUE(
       CallSetDisplayUnitInfo(base::NumberToString(secondary.id()), info));
@@ -1004,8 +1011,8 @@ TEST_F(DisplayInfoProviderChromeosTest,
       display::test::DisplayManagerTestApi(display_manager())
           .GetSecondaryDisplay();
   api::system_display::DisplayProperties info;
-  info.bounds_origin_x = std::make_unique<int>(-650);
-  info.bounds_origin_y = std::make_unique<int>(700);
+  info.bounds_origin_x = -650;
+  info.bounds_origin_y = 700;
 
   EXPECT_TRUE(
       CallSetDisplayUnitInfo(base::NumberToString(secondary.id()), info));
@@ -1020,8 +1027,8 @@ TEST_F(DisplayInfoProviderChromeosTest, SetBoundsOriginRightButSharesTopSide) {
       display::test::DisplayManagerTestApi(display_manager())
           .GetSecondaryDisplay();
   api::system_display::DisplayProperties info;
-  info.bounds_origin_x = std::make_unique<int>(850);
-  info.bounds_origin_y = std::make_unique<int>(-150);
+  info.bounds_origin_x = 850;
+  info.bounds_origin_y = -150;
 
   EXPECT_TRUE(
       CallSetDisplayUnitInfo(base::NumberToString(secondary.id()), info));
@@ -1036,8 +1043,8 @@ TEST_F(DisplayInfoProviderChromeosTest, SetBoundsOriginTopButSharesLeftSide) {
       display::test::DisplayManagerTestApi(display_manager())
           .GetSecondaryDisplay();
   api::system_display::DisplayProperties info;
-  info.bounds_origin_x = std::make_unique<int>(-150);
-  info.bounds_origin_y = std::make_unique<int>(-650);
+  info.bounds_origin_x = -150;
+  info.bounds_origin_y = -650;
 
   EXPECT_TRUE(
       CallSetDisplayUnitInfo(base::NumberToString(secondary.id()), info));
@@ -1053,8 +1060,8 @@ TEST_F(DisplayInfoProviderChromeosTest,
       display::test::DisplayManagerTestApi(display_manager())
           .GetSecondaryDisplay();
   api::system_display::DisplayProperties info;
-  info.bounds_origin_x = std::make_unique<int>(1350);
-  info.bounds_origin_y = std::make_unique<int>(450);
+  info.bounds_origin_x = 1350;
+  info.bounds_origin_y = 450;
 
   EXPECT_TRUE(
       CallSetDisplayUnitInfo(base::NumberToString(secondary.id()), info));
@@ -1069,8 +1076,8 @@ TEST_F(DisplayInfoProviderChromeosTest, SetBoundsOriginPrimaryHiDPI) {
       display::test::DisplayManagerTestApi(display_manager())
           .GetSecondaryDisplay();
   api::system_display::DisplayProperties info;
-  info.bounds_origin_x = std::make_unique<int>(250);
-  info.bounds_origin_y = std::make_unique<int>(-100);
+  info.bounds_origin_x = 250;
+  info.bounds_origin_y = -100;
 
   EXPECT_TRUE(
       CallSetDisplayUnitInfo(base::NumberToString(secondary.id()), info));
@@ -1085,8 +1092,8 @@ TEST_F(DisplayInfoProviderChromeosTest, SetBoundsOriginSecondaryHiDPI) {
       display::test::DisplayManagerTestApi(display_manager())
           .GetSecondaryDisplay();
   api::system_display::DisplayProperties info;
-  info.bounds_origin_x = std::make_unique<int>(450);
-  info.bounds_origin_y = std::make_unique<int>(-100);
+  info.bounds_origin_x = 450;
+  info.bounds_origin_y = -100;
 
   EXPECT_TRUE(
       CallSetDisplayUnitInfo(base::NumberToString(secondary.id()), info));
@@ -1101,8 +1108,8 @@ TEST_F(DisplayInfoProviderChromeosTest, SetBoundsOriginOutOfBounds) {
       display::test::DisplayManagerTestApi(display_manager())
           .GetSecondaryDisplay();
   api::system_display::DisplayProperties info;
-  info.bounds_origin_x = std::make_unique<int>(0x200001);
-  info.bounds_origin_y = std::make_unique<int>(-100);
+  info.bounds_origin_x = 0x200001;
+  info.bounds_origin_y = -100;
 
   EXPECT_FALSE(
       CallSetDisplayUnitInfo(base::NumberToString(secondary.id()), info));
@@ -1117,8 +1124,8 @@ TEST_F(DisplayInfoProviderChromeosTest, SetBoundsOriginOutOfBoundsNegative) {
       display::test::DisplayManagerTestApi(display_manager())
           .GetSecondaryDisplay();
   api::system_display::DisplayProperties info;
-  info.bounds_origin_x = std::make_unique<int>(300);
-  info.bounds_origin_y = std::make_unique<int>(-0x200001);
+  info.bounds_origin_x = 300;
+  info.bounds_origin_y = -0x200001;
 
   EXPECT_FALSE(
       CallSetDisplayUnitInfo(base::NumberToString(secondary.id()), info));
@@ -1133,8 +1140,8 @@ TEST_F(DisplayInfoProviderChromeosTest, SetBoundsOriginMaxValues) {
       display::test::DisplayManagerTestApi(display_manager())
           .GetSecondaryDisplay();
   api::system_display::DisplayProperties info;
-  info.bounds_origin_x = std::make_unique<int>(200000);
-  info.bounds_origin_y = std::make_unique<int>(10);
+  info.bounds_origin_x = 200000;
+  info.bounds_origin_y = 10;
 
   EXPECT_TRUE(
       CallSetDisplayUnitInfo(base::NumberToString(secondary.id()), info));
@@ -1149,8 +1156,8 @@ TEST_F(DisplayInfoProviderChromeosTest, SetBoundsOriginOnPrimary) {
       display::test::DisplayManagerTestApi(display_manager())
           .GetSecondaryDisplay();
   api::system_display::DisplayProperties info;
-  info.bounds_origin_x = std::make_unique<int>(300);
-  info.is_primary = std::make_unique<bool>(true);
+  info.bounds_origin_x = 300;
+  info.is_primary = true;
 
   EXPECT_FALSE(
       CallSetDisplayUnitInfo(base::NumberToString(secondary.id()), info));
@@ -1172,9 +1179,8 @@ TEST_F(DisplayInfoProviderChromeosTest, SetBoundsOriginWithMirroring) {
       display::Screen::GetScreen()->GetPrimaryDisplay();
 
   api::system_display::DisplayProperties info;
-  info.bounds_origin_x = std::make_unique<int>(300);
-  info.mirroring_source_id =
-      std::make_unique<std::string>(base::NumberToString(primary.id()));
+  info.bounds_origin_x = 300;
+  info.mirroring_source_id = base::NumberToString(primary.id());
 
   EXPECT_FALSE(
       CallSetDisplayUnitInfo(base::NumberToString(secondary.id()), info));
@@ -1187,7 +1193,7 @@ TEST_F(DisplayInfoProviderChromeosTest, SetRotation) {
       display::test::DisplayManagerTestApi(display_manager())
           .GetSecondaryDisplay();
   api::system_display::DisplayProperties info;
-  info.rotation = std::make_unique<int>(90);
+  info.rotation = 90;
 
   EXPECT_TRUE(
       CallSetDisplayUnitInfo(base::NumberToString(secondary.id()), info));
@@ -1195,16 +1201,16 @@ TEST_F(DisplayInfoProviderChromeosTest, SetRotation) {
   EXPECT_EQ("1200,0 500x300", secondary.bounds().ToString());
   EXPECT_EQ(display::Display::ROTATE_90, secondary.rotation());
 
-  info.rotation = std::make_unique<int>(270);
+  info.rotation = 270;
   EXPECT_TRUE(
       CallSetDisplayUnitInfo(base::NumberToString(secondary.id()), info));
 
   EXPECT_EQ("1200,0 500x300", secondary.bounds().ToString());
   EXPECT_EQ(display::Display::ROTATE_270, secondary.rotation());
 
-  info.rotation = std::make_unique<int>(180);
+  info.rotation = 180;
   // Switch primary display.
-  info.is_primary = std::make_unique<bool>(true);
+  info.is_primary = true;
   EXPECT_TRUE(
       CallSetDisplayUnitInfo(base::NumberToString(secondary.id()), info));
 
@@ -1213,7 +1219,7 @@ TEST_F(DisplayInfoProviderChromeosTest, SetRotation) {
   EXPECT_EQ(display::Screen::GetScreen()->GetPrimaryDisplay().id(),
             secondary.id());
 
-  info.rotation = std::make_unique<int>(0);
+  info.rotation = 0;
   EXPECT_TRUE(
       CallSetDisplayUnitInfo(base::NumberToString(secondary.id()), info));
 
@@ -1229,7 +1235,7 @@ TEST_F(DisplayInfoProviderChromeosTest, SetRotationBeforeTabletMode) {
   ash::ScreenOrientationController* screen_orientation_controller =
       ash::Shell::Get()->screen_orientation_controller();
   api::system_display::DisplayProperties info;
-  info.rotation = std::make_unique<int>(90);
+  info.rotation = 90;
 
   EXPECT_TRUE(CallSetDisplayUnitInfo(
       base::NumberToString(display::Display::InternalDisplayId()), info));
@@ -1266,7 +1272,7 @@ TEST_F(DisplayInfoProviderChromeosTest, SetRotationDuringTabletMode) {
                    ->user_rotation_locked());
 
   api::system_display::DisplayProperties info;
-  info.rotation = std::make_unique<int>(90);
+  info.rotation = 90;
 
   EXPECT_TRUE(CallSetDisplayUnitInfo(
       base::NumberToString(display::Display::InternalDisplayId()), info));
@@ -1284,7 +1290,7 @@ TEST_F(DisplayInfoProviderChromeosTest, SetInvalidRotation) {
       display::test::DisplayManagerTestApi(display_manager())
           .GetSecondaryDisplay();
   api::system_display::DisplayProperties info;
-  info.rotation = std::make_unique<int>(91);
+  info.rotation = 91;
 
   EXPECT_FALSE(
       CallSetDisplayUnitInfo(base::NumberToString(secondary.id()), info));
@@ -1297,7 +1303,7 @@ TEST_F(DisplayInfoProviderChromeosTest, SetNegativeOverscan) {
       display::test::DisplayManagerTestApi(display_manager())
           .GetSecondaryDisplay();
   api::system_display::DisplayProperties info;
-  info.overscan = std::make_unique<api::system_display::Insets>();
+  info.overscan.emplace();
   info.overscan->left = -10;
 
   EXPECT_FALSE(
@@ -1345,7 +1351,7 @@ TEST_F(DisplayInfoProviderChromeosTest, SetOverscanLargerThanHorizontalBounds) {
       display::test::DisplayManagerTestApi(display_manager())
           .GetSecondaryDisplay();
   api::system_display::DisplayProperties info;
-  info.overscan = std::make_unique<api::system_display::Insets>();
+  info.overscan.emplace();
   // Horizontal overscan is 151, which would make the bounds width 149.
   info.overscan->left = 50;
   info.overscan->top = 10;
@@ -1363,7 +1369,7 @@ TEST_F(DisplayInfoProviderChromeosTest, SetOverscanLargerThanVerticalBounds) {
       display::test::DisplayManagerTestApi(display_manager())
           .GetSecondaryDisplay();
   api::system_display::DisplayProperties info;
-  info.overscan = std::make_unique<api::system_display::Insets>();
+  info.overscan.emplace();
   // Vertical overscan is 501, which would make the bounds height 499.
   info.overscan->left = 20;
   info.overscan->top = 250;
@@ -1381,7 +1387,7 @@ TEST_F(DisplayInfoProviderChromeosTest, SetOverscan) {
       display::test::DisplayManagerTestApi(display_manager())
           .GetSecondaryDisplay();
   api::system_display::DisplayProperties info;
-  info.overscan = std::make_unique<api::system_display::Insets>();
+  info.overscan.emplace();
   info.overscan->left = 20;
   info.overscan->top = 199;
   info.overscan->right = 130;
@@ -1407,7 +1413,7 @@ TEST_F(DisplayInfoProviderChromeosTest, SetOverscanForInternal) {
           .SetFirstDisplayAsInternalDisplay();
 
   api::system_display::DisplayProperties info;
-  info.overscan = std::make_unique<api::system_display::Insets>();
+  info.overscan.emplace();
   // Vertical overscan is 501, which would make the bounds height 499.
   info.overscan->left = 20;
   info.overscan->top = 20;
@@ -1457,8 +1463,9 @@ TEST_F(DisplayInfoProviderChromeosTest, DisplayMode) {
 
   // Switch modes.
   api::system_display::DisplayProperties info;
-  info.display_mode =
-      api::system_display::DisplayMode::FromValue(*other_mode->ToValue());
+  info.display_mode = std::move(*api::system_display::DisplayMode::FromValue(
+                                     base::Value(other_mode->ToValue()))
+                                     .get());
 
   EXPECT_TRUE(CallSetDisplayUnitInfo(base::NumberToString(id), info));
 
@@ -1470,7 +1477,7 @@ TEST_F(DisplayInfoProviderChromeosTest, DisplayMode) {
 TEST_F(DisplayInfoProviderChromeosTest, GetDisplayZoomFactor) {
   UpdateDisplay("1200x600,1600x1000*2");
   display::DisplayIdList display_id_list =
-      display_manager()->GetCurrentDisplayIdList();
+      display_manager()->GetConnectedDisplayIdList();
 
   float zoom_factor_1 = 1.23f;
   float zoom_factor_2 = 2.34f;
@@ -1490,7 +1497,7 @@ TEST_F(DisplayInfoProviderChromeosTest, GetDisplayZoomFactor) {
 TEST_F(DisplayInfoProviderChromeosTest, SetDisplayZoomFactor) {
   UpdateDisplay("1200x600, 1600x1000#1600x1000");
   display::DisplayIdList display_id_list =
-      display_manager()->GetCurrentDisplayIdList();
+      display_manager()->GetConnectedDisplayIdList();
 
   float zoom_factor_1 = 1.23f;
   float zoom_factor_2 = 2.34f;
@@ -1506,7 +1513,7 @@ TEST_F(DisplayInfoProviderChromeosTest, SetDisplayZoomFactor) {
   float final_zoom_factor_2 = zoom_factor_2;
 
   api::system_display::DisplayProperties info;
-  info.display_zoom_factor = std::make_unique<double>(zoom_factor_1);
+  info.display_zoom_factor = zoom_factor_1;
 
   EXPECT_TRUE(
       CallSetDisplayUnitInfo(base::NumberToString(display_id_list[0]), info));
@@ -1516,7 +1523,7 @@ TEST_F(DisplayInfoProviderChromeosTest, SetDisplayZoomFactor) {
   // factor.
   EXPECT_EQ(GetDisplayZoom(display_id_list[1]), zoom_factor_1);
 
-  info.display_zoom_factor = std::make_unique<double>(zoom_factor_2);
+  info.display_zoom_factor = zoom_factor_2;
   EXPECT_TRUE(
       CallSetDisplayUnitInfo(base::NumberToString(display_id_list[1]), info));
 
@@ -1527,14 +1534,14 @@ TEST_F(DisplayInfoProviderChromeosTest, SetDisplayZoomFactor) {
   // This zoom factor when applied to the display with width 1200, will result
   // in an effective width greater than 4096, which is out of range.
   float invalid_zoom_factor_1 = 0.285f;
-  info.display_zoom_factor = std::make_unique<double>(invalid_zoom_factor_1);
+  info.display_zoom_factor = invalid_zoom_factor_1;
   EXPECT_FALSE(
       CallSetDisplayUnitInfo(base::NumberToString(display_id_list[0]), info));
 
   // This zoom factor when applied to the display with width 1200, will result
   // in an effective width greater less than 640, which is out of range.
   float invalid_zoom_factor_2 = 1.88f;
-  info.display_zoom_factor = std::make_unique<double>(invalid_zoom_factor_2);
+  info.display_zoom_factor = invalid_zoom_factor_2;
   EXPECT_FALSE(
       CallSetDisplayUnitInfo(base::NumberToString(display_id_list[0]), info));
 
@@ -1542,13 +1549,13 @@ TEST_F(DisplayInfoProviderChromeosTest, SetDisplayZoomFactor) {
   // to 4096px.
   UpdateDisplay("400x400, 4500x1000#4500x1000");
 
-  display_id_list = display_manager()->GetCurrentDisplayIdList();
+  display_id_list = display_manager()->GetConnectedDisplayIdList();
 
   // Results in a logical width of 500px. This is below the 640px threshold but
   // is valid because the initial width was 400px, so the logical width now
   // allows a minimum width of 400px.
   float valid_zoom_factor_1 = 0.8f;
-  info.display_zoom_factor = std::make_unique<double>(valid_zoom_factor_1);
+  info.display_zoom_factor = valid_zoom_factor_1;
   EXPECT_TRUE(
       CallSetDisplayUnitInfo(base::NumberToString(display_id_list[0]), info));
 
@@ -1556,17 +1563,17 @@ TEST_F(DisplayInfoProviderChromeosTest, SetDisplayZoomFactor) {
   // but is valid because the initial width was 4500px, so logical width of up
   // to 4500px is allowed in this case.
   float valid_zoom_factor_2 = 1.07f;
-  info.display_zoom_factor = std::make_unique<double>(valid_zoom_factor_2);
+  info.display_zoom_factor = valid_zoom_factor_2;
   EXPECT_TRUE(
       CallSetDisplayUnitInfo(base::NumberToString(display_id_list[1]), info));
 
   float valid_zoom_factor_3 = 0.5f;
-  info.display_zoom_factor = std::make_unique<double>(valid_zoom_factor_3);
+  info.display_zoom_factor = valid_zoom_factor_3;
   EXPECT_TRUE(
       CallSetDisplayUnitInfo(base::NumberToString(display_id_list[0]), info));
 
   float valid_zoom_factor_4 = 2.f;
-  info.display_zoom_factor = std::make_unique<double>(valid_zoom_factor_4);
+  info.display_zoom_factor = valid_zoom_factor_4;
   EXPECT_TRUE(
       CallSetDisplayUnitInfo(base::NumberToString(display_id_list[1]), info));
 }
@@ -1632,7 +1639,7 @@ TEST_F(DisplayInfoProviderChromeosTest, SetMIXEDMode) {
     // Mirroring destination ids not specified fails.
     api::system_display::MirrorModeInfo info;
     info.mode = api::system_display::MIRROR_MODE_MIXED;
-    info.mirroring_source_id = std::make_unique<std::string>("1000000");
+    info.mirroring_source_id = "1000000";
     EXPECT_FALSE(SetMirrorMode(info));
   }
 
@@ -1640,9 +1647,8 @@ TEST_F(DisplayInfoProviderChromeosTest, SetMIXEDMode) {
     // Mirroring source id in bad format fails.
     api::system_display::MirrorModeInfo info;
     info.mode = api::system_display::MIRROR_MODE_MIXED;
-    info.mirroring_source_id = std::make_unique<std::string>("bad_format_id");
-    info.mirroring_destination_ids =
-        std::make_unique<std::vector<std::string>>();
+    info.mirroring_source_id = "bad_format_id";
+    info.mirroring_destination_ids.emplace();
     EXPECT_FALSE(SetMirrorMode(info));
   }
 
@@ -1650,9 +1656,8 @@ TEST_F(DisplayInfoProviderChromeosTest, SetMIXEDMode) {
     // Mirroring destination id in bad format fails.
     api::system_display::MirrorModeInfo info;
     info.mode = api::system_display::MIRROR_MODE_MIXED;
-    info.mirroring_source_id = std::make_unique<std::string>("1000000");
-    info.mirroring_destination_ids =
-        std::make_unique<std::vector<std::string>>();
+    info.mirroring_source_id = "1000000";
+    info.mirroring_destination_ids.emplace();
     info.mirroring_destination_ids->emplace_back("bad_format_id");
     EXPECT_FALSE(SetMirrorMode(info));
   }
@@ -1662,24 +1667,23 @@ TEST_F(DisplayInfoProviderChromeosTest, SetMIXEDMode) {
     EXPECT_EQ(1U, display_manager()->num_connected_displays());
     api::system_display::MirrorModeInfo info;
     info.mode = api::system_display::MIRROR_MODE_MIXED;
-    info.mirroring_source_id = std::make_unique<std::string>("1000000");
-    info.mirroring_destination_ids =
-        std::make_unique<std::vector<std::string>>();
+    info.mirroring_source_id = "1000000";
+    info.mirroring_destination_ids.emplace();
     EXPECT_FALSE(SetMirrorMode(info));
   }
 
   // Add more displays.
   UpdateDisplay("200x200,600x600,700x700");
-  display::DisplayIdList id_list = display_manager()->GetCurrentDisplayIdList();
+  display::DisplayIdList id_list =
+      display_manager()->GetConnectedDisplayIdList();
   EXPECT_EQ(3U, id_list.size());
 
   {
     // Mirroring source id not found fails.
     api::system_display::MirrorModeInfo info;
     info.mode = api::system_display::MIRROR_MODE_MIXED;
-    info.mirroring_source_id = std::make_unique<std::string>("1000000");
-    info.mirroring_destination_ids =
-        std::make_unique<std::vector<std::string>>();
+    info.mirroring_source_id = "1000000";
+    info.mirroring_destination_ids.emplace();
     EXPECT_FALSE(SetMirrorMode(info));
   }
 
@@ -1687,10 +1691,8 @@ TEST_F(DisplayInfoProviderChromeosTest, SetMIXEDMode) {
     // Mirroring destination ids empty fails.
     api::system_display::MirrorModeInfo info;
     info.mode = api::system_display::MIRROR_MODE_MIXED;
-    info.mirroring_source_id =
-        std::make_unique<std::string>(base::NumberToString(id_list[0]));
-    info.mirroring_destination_ids =
-        std::make_unique<std::vector<std::string>>();
+    info.mirroring_source_id = base::NumberToString(id_list[0]);
+    info.mirroring_destination_ids.emplace();
     EXPECT_FALSE(SetMirrorMode(info));
   }
 
@@ -1698,10 +1700,8 @@ TEST_F(DisplayInfoProviderChromeosTest, SetMIXEDMode) {
     // Mirroring destination ids not found fails.
     api::system_display::MirrorModeInfo info;
     info.mode = api::system_display::MIRROR_MODE_MIXED;
-    info.mirroring_source_id =
-        std::make_unique<std::string>(base::NumberToString(id_list[0]));
-    info.mirroring_destination_ids =
-        std::make_unique<std::vector<std::string>>();
+    info.mirroring_source_id = base::NumberToString(id_list[0]);
+    info.mirroring_destination_ids.emplace();
     info.mirroring_destination_ids->emplace_back(
         base::NumberToString(display::kInvalidDisplayId));
     EXPECT_FALSE(SetMirrorMode(info));
@@ -1711,10 +1711,8 @@ TEST_F(DisplayInfoProviderChromeosTest, SetMIXEDMode) {
     // Duplicate display id fails.
     api::system_display::MirrorModeInfo info;
     info.mode = api::system_display::MIRROR_MODE_MIXED;
-    info.mirroring_source_id =
-        std::make_unique<std::string>(base::NumberToString(id_list[0]));
-    info.mirroring_destination_ids =
-        std::make_unique<std::vector<std::string>>();
+    info.mirroring_source_id = base::NumberToString(id_list[0]);
+    info.mirroring_destination_ids.emplace();
     info.mirroring_destination_ids->emplace_back(
         base::NumberToString(id_list[0]));
     EXPECT_FALSE(SetMirrorMode(info));
@@ -1725,10 +1723,8 @@ TEST_F(DisplayInfoProviderChromeosTest, SetMIXEDMode) {
     // one).
     api::system_display::MirrorModeInfo info;
     info.mode = api::system_display::MIRROR_MODE_MIXED;
-    info.mirroring_source_id =
-        std::make_unique<std::string>(base::NumberToString(id_list[0]));
-    info.mirroring_destination_ids =
-        std::make_unique<std::vector<std::string>>();
+    info.mirroring_source_id = base::NumberToString(id_list[0]);
+    info.mirroring_destination_ids.emplace();
     info.mirroring_destination_ids->emplace_back(
         base::NumberToString(id_list[1]));
     EXPECT_TRUE(SetMirrorMode(info));
@@ -1781,7 +1777,7 @@ TEST_F(DisplayInfoProviderChromeosTouchviewTest, AutoRotation) {
   };
   auto set_rotation_options = [&](int rotation) {
     api::system_display::DisplayProperties info;
-    info.rotation = std::make_unique<int>(rotation);
+    info.rotation = rotation;
     EXPECT_TRUE(CallSetDisplayUnitInfo(
         base::NumberToString(display::Display::InternalDisplayId()), info));
   };

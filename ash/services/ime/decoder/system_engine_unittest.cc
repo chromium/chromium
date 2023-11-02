@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace ime {
+
+namespace {
 
 constexpr char kImeSpec[] = "xkb:us::eng";
 
@@ -29,26 +31,40 @@ mojo::ScopedMessagePipeHandle MessagePipeHandleFromInt(uint32_t handle) {
 
 struct MockInputMethod : public mojom::InputMethod {
   MOCK_METHOD(void,
+              OnFocusDeprecated,
+              (mojom::InputFieldInfoPtr input_field_info,
+               mojom::InputMethodSettingsPtr settings),
+              (override));
+  MOCK_METHOD(void,
               OnFocus,
-              (chromeos::ime::mojom::InputFieldInfoPtr input_field_info,
-               chromeos::ime::mojom::InputMethodSettingsPtr settings),
+              (mojom::InputFieldInfoPtr input_field_info,
+               mojom::InputMethodSettingsPtr settings,
+               OnFocusCallback),
               (override));
   MOCK_METHOD(void, OnBlur, (), (override));
   MOCK_METHOD(void,
               OnSurroundingTextChanged,
               (const std::string& text,
                uint32_t offset,
-               chromeos::ime::mojom::SelectionRangePtr selection_range),
+               mojom::SelectionRangePtr selection_range),
               (override));
   MOCK_METHOD(void, OnCompositionCanceledBySystem, (), (override));
   MOCK_METHOD(void,
               ProcessKeyEvent,
-              (chromeos::ime::mojom::PhysicalKeyEventPtr event,
+              (mojom::PhysicalKeyEventPtr event,
                ProcessKeyEventCallback callback),
               (override));
   MOCK_METHOD(void,
               OnCandidateSelected,
               (uint32_t selected_candidate_index),
+              (override));
+  MOCK_METHOD(void,
+              OnQuickSettingsUpdated,
+              (mojom::InputMethodQuickSettingsPtr quick_settings),
+              (override));
+  MOCK_METHOD(void,
+              IsReadyForTesting,
+              (IsReadyForTestingCallback callback),
               (override));
 };
 
@@ -73,16 +89,25 @@ class TestDecoderState {
 ImeDecoder::EntryPoints CreateDecoderEntryPoints(TestDecoderState* state) {
   g_test_decoder_state = state;
 
-  ImeDecoder::EntryPoints entry_points;
-  entry_points.init_once = [](ImeCrosPlatform* platform) {};
-  entry_points.connect_to_input_method = [](const char* ime_spec,
-                                            uint32_t receiver_pipe_handle,
-                                            uint32_t host_pipe_handle,
-                                            uint32_t host_pipe_version) {
-    return g_test_decoder_state->ConnectToInputMethod(
-        ime_spec, receiver_pipe_handle, host_pipe_handle, host_pipe_version);
+  ImeDecoder::EntryPoints entry_points = {
+      .init_proto_mode = [](ImeCrosPlatform* platform) {},
+      .close_proto_mode = []() {},
+      .supports = [](const char* ime_spec) { return true; },
+      .activate_ime = [](const char* ime_spec,
+                         ImeClientDelegate* delegate) { return true; },
+      .process = [](const uint8_t* data, size_t size) {},
+      .init_mojo_mode = [](ImeCrosPlatform* platform) {},
+      .close_mojo_mode = []() {},
+      .connect_to_input_method =
+          [](const char* ime_spec, uint32_t receiver_pipe_handle,
+             uint32_t host_pipe_handle, uint32_t host_pipe_version) {
+            return g_test_decoder_state->ConnectToInputMethod(
+                ime_spec, receiver_pipe_handle, host_pipe_handle,
+                host_pipe_version);
+          },
+      .is_input_method_connected = []() { return false; },
   };
-  entry_points.is_input_method_connected = []() { return false; };
+
   return entry_points;
 }
 
@@ -93,9 +118,15 @@ struct MockInputMethodHost : public ime::mojom::InputMethodHost {
                mojom::CommitTextCursorBehavior cursor_behavior),
               (override));
   MOCK_METHOD(void,
-              SetComposition,
+              DEPRECATED_SetComposition,
               (const std::u16string& text,
                std::vector<mojom::CompositionSpanPtr> spans),
+              (override));
+  MOCK_METHOD(void,
+              SetComposition,
+              (const std::u16string& text,
+               std::vector<mojom::CompositionSpanPtr> spans,
+               uint32_t new_cursor_position),
               (override));
   MOCK_METHOD(void,
               SetCompositionRange,
@@ -132,6 +163,10 @@ struct MockInputMethodHost : public ime::mojom::InputMethodHost {
               ReportKoreanSettings,
               (mojom::KoreanSettingsPtr settings),
               (override));
+  MOCK_METHOD(void,
+              UpdateQuickSettings,
+              (mojom::InputMethodQuickSettingsPtr quick_settings),
+              (override));
 };
 
 // Sets up the test environment for Mojo and inject a mock ImeEngineMainEntry.
@@ -141,10 +176,12 @@ class SystemEngineTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment;
 };
 
+}  // namespace
+
 TEST_F(SystemEngineTest, BindRequestConnectsInputMethod) {
   TestDecoderState state;
-  FakeDecoderEntryPointsForTesting(CreateDecoderEntryPoints(&state));
-  SystemEngine engine(/*platform=*/nullptr);
+  ImeDecoder::EntryPoints entry_points = CreateDecoderEntryPoints(&state);
+  SystemEngine engine(/*platform=*/nullptr, entry_points);
 
   mojo::Remote<mojom::InputMethod> input_method;
   MockInputMethodHost mock_host;
@@ -159,8 +196,8 @@ TEST_F(SystemEngineTest, BindRequestConnectsInputMethod) {
 
 TEST_F(SystemEngineTest, CanSendMessagesAfterBinding) {
   TestDecoderState state;
-  FakeDecoderEntryPointsForTesting(CreateDecoderEntryPoints(&state));
-  SystemEngine engine(/*platform=*/nullptr);
+  ImeDecoder::EntryPoints entry_points = CreateDecoderEntryPoints(&state);
+  SystemEngine engine(/*platform=*/nullptr, entry_points);
 
   mojo::Remote<mojom::InputMethod> input_method;
   MockInputMethodHost mock_host;
@@ -178,8 +215,8 @@ TEST_F(SystemEngineTest, CanSendMessagesAfterBinding) {
 
 TEST_F(SystemEngineTest, CanReceiveMessagesAfterBinding) {
   TestDecoderState state;
-  FakeDecoderEntryPointsForTesting(CreateDecoderEntryPoints(&state));
-  SystemEngine engine(/*platform=*/nullptr);
+  ImeDecoder::EntryPoints entry_points = CreateDecoderEntryPoints(&state);
+  SystemEngine engine(/*platform=*/nullptr, entry_points);
 
   mojo::Remote<mojom::InputMethod> input_method;
   MockInputMethodHost mock_host;
@@ -196,4 +233,4 @@ TEST_F(SystemEngineTest, CanReceiveMessagesAfterBinding) {
 }
 
 }  // namespace ime
-}  // namespace chromeos
+}  // namespace ash

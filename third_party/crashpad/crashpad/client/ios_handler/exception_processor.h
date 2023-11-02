@@ -1,4 +1,4 @@
-// Copyright 2020 The Crashpad Authors. All rights reserved.
+// Copyright 2020 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,8 +15,7 @@
 #ifndef CRASHPAD_UTIL_IOS_EXCEPTION_PROCESSOR_H_
 #define CRASHPAD_UTIL_IOS_EXCEPTION_PROCESSOR_H_
 
-#include <vector>
-
+#include "base/files/file_path.h"
 #include "util/misc/capture_context.h"
 
 namespace crashpad {
@@ -40,6 +39,28 @@ class ObjcExceptionDelegate {
   virtual void HandleUncaughtNSException(const uint64_t* frames,
                                          const size_t num_frames) = 0;
 
+  //! \brief Generate an intermediate dump from an NSException caught with its
+  //!     associated CPU context. Because the method for intercepting
+  //!     exceptions is imperfect, write the the intermediate dump to a
+  //!     temporary location specified by \a path. If the NSException matches
+  //!     the one used in the UncaughtExceptionHandler, call
+  //!     MoveIntermediateDumpAtPathToPending to move to the proper Crashpad
+  //!     database pending location.
+  //!
+  //! \param[in] context The cpu context of the thread throwing an exception.
+  //! \param[in] path Path to write the intermediate dump.
+  virtual void HandleUncaughtNSExceptionWithContextAtPath(
+      NativeCPUContext* context,
+      const base::FilePath& path) = 0;
+
+  //! \brief Moves an intermediate dump to the pending directory. This is meant
+  //!     to be used by the UncaughtExceptionHandler, when the NSException
+  //!     caught by the preprocessor matches the UncaughtExceptionHandler.
+  //!
+  //! \param[in] path Path to the specific intermediate dump.
+  virtual bool MoveIntermediateDumpAtPathToPending(
+      const base::FilePath& path) = 0;
+
  protected:
   ~ObjcExceptionDelegate() {}
 };
@@ -58,6 +79,10 @@ class ObjcExceptionDelegate {
 //! This should be installed at the same time the CrashpadClient installs the
 //! signal handler. It should only be installed once.
 void InstallObjcExceptionPreprocessor(ObjcExceptionDelegate* delegate);
+
+//! \brief Uninstalls the Objective-C exception preprocessor. Expected to be
+//!     used by tests only.
+void UninstallObjcExceptionPreprocessor();
 
 }  // namespace crashpad
 

@@ -1,12 +1,13 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/metrics/call_stack_profile_metadata.h"
 
-#include <algorithm>
 #include <iterator>
 #include <tuple>
+
+#include "base/ranges/algorithm.h"
 
 namespace metrics {
 
@@ -45,8 +46,8 @@ absl::optional<int64_t> FindLastOpenEndedMetadataValue(
   const auto rbegin = std::make_reverse_iterator(end);
   const auto rend = std::make_reverse_iterator(begin);
   for (auto it = rbegin; it != rend; ++it) {
-    auto item = std::find_if(it->metadata().begin(), it->metadata().end(),
-                             MatchesNameHashIndexAndKey(name_hash_index, key));
+    auto item = base::ranges::find_if(
+        it->metadata(), MatchesNameHashIndexAndKey(name_hash_index, key));
 
     if (item == it->metadata().end()) {
       // The sample does not contain a matching item.

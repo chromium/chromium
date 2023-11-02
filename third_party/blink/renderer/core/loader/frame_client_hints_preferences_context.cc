@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -68,6 +68,14 @@ ClientHintToWebFeatureMap MakeClientHintToWebFeatureMap() {
        WebFeature::kClientHintsViewportWidth},
       {network::mojom::WebClientHintsType::kUAFullVersionList,
        WebFeature::kClientHintsUAFullVersionList},
+      {network::mojom::WebClientHintsType::kFullUserAgent,
+       WebFeature::kClientHintsUAFull},
+      {network::mojom::WebClientHintsType::kUAWoW64,
+       WebFeature::kClientHintsUAWoW64},
+      {network::mojom::WebClientHintsType::kSaveData,
+       WebFeature::kClientHintsSaveData},
+      {network::mojom::WebClientHintsType::kPrefersReducedMotion,
+       WebFeature::kClientHintsPrefersReducedMotion},
   };
 }
 

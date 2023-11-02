@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "chromeos/services/assistant/public/cpp/assistant_service.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
 
 namespace ash {
 
@@ -26,7 +26,7 @@ enum class AssistantQueryType {
 // Base class for an Assistant query.
 class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantQuery {
  public:
-  using AssistantQuerySource = chromeos::assistant::AssistantQuerySource;
+  using AssistantQuerySource = assistant::AssistantQuerySource;
 
   AssistantQuery(const AssistantQuery&) = delete;
   AssistantQuery& operator=(const AssistantQuery&) = delete;

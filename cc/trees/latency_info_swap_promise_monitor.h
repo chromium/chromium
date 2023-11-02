@@ -1,10 +1,11 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CC_TREES_LATENCY_INFO_SWAP_PROMISE_MONITOR_H_
 #define CC_TREES_LATENCY_INFO_SWAP_PROMISE_MONITOR_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "cc/cc_export.h"
 
@@ -54,9 +55,9 @@ class CC_EXPORT LatencyInfoSwapPromiseMonitor {
   virtual void OnSetNeedsRedrawOnImpl();
 
  private:
-  ui::LatencyInfo* const latency_;
-  SwapPromiseManager* const swap_promise_manager_ = nullptr;
-  LayerTreeHostImpl* const host_impl_ = nullptr;
+  const raw_ptr<ui::LatencyInfo> latency_;
+  const raw_ptr<SwapPromiseManager> swap_promise_manager_ = nullptr;
+  const raw_ptr<LayerTreeHostImpl> host_impl_ = nullptr;
 
   SEQUENCE_CHECKER(main_sequence_checker_);
   SEQUENCE_CHECKER(impl_sequence_checker_);

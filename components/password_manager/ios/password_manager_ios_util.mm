@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -55,6 +55,12 @@ bool JsonStringToFormData(NSString* json_string,
   return autofill::ExtractFormData(
       *formValue, false, std::u16string(), page_url,
       page_url.DeprecatedGetOriginAsURL(), form_data);
+}
+
+bool IsCrossOriginIframe(web::WebState* web_state, web::WebFrame* web_frame) {
+  return !web_frame->IsMainFrame() &&
+         !url::Origin::Create(web_state->GetLastCommittedURL())
+              .IsSameOriginWith(web_frame->GetSecurityOrigin());
 }
 
 }  // namespace password_manager

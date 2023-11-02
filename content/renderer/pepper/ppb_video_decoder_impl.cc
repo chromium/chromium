@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -268,8 +268,6 @@ void PPB_VideoDecoder_Impl::PictureReady(const media::Picture& picture) {
   DCHECK(RenderThreadImpl::current());
   if (!GetPPP())
     return;
-
-  media::ReportPepperVideoDecoderOutputPictureCountHW(coded_size_.height());
 
   PP_Picture_Dev output;
   output.picture_buffer_id = picture.picture_buffer_id();

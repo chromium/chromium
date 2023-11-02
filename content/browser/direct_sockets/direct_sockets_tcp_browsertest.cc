@@ -1,23 +1,25 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <map>
-#include <vector>
+#include <stdint.h>
+#include <string>
 
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
-#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "content/browser/direct_sockets/direct_sockets_service_impl.h"
+#include "content/browser/direct_sockets/direct_sockets_test_utils.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -38,6 +40,7 @@
 #include "services/network/public/mojom/tcp_socket.mojom.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "url/gurl.h"
 
 // The tests in this file use the Network Service implementation of
@@ -49,11 +52,7 @@ namespace content {
 
 namespace {
 
-net::Error UnconditionallyPermitConnection(
-    const blink::mojom::DirectSocketOptions& options) {
-  DCHECK(options.remote_hostname.has_value());
-  return net::OK;
-}
+constexpr char kLocalhostAddress[] = "127.0.0.1";
 
 class ReadWriteWaiter {
  public:
@@ -158,7 +157,8 @@ class ReadWriteWaiter {
       DCHECK(send_stream_.is_valid());
       DCHECK_LT(bytes_sent_, required_send_bytes_);
       void* buffer = nullptr;
-      uint32_t num_bytes = 0;
+      uint32_t num_bytes =
+          static_cast<uint32_t>(required_send_bytes_ - bytes_sent_);
       MojoResult mojo_result = send_stream_->BeginWriteData(
           &buffer, &num_bytes, MOJO_WRITE_DATA_FLAG_NONE);
       if (mojo_result == MOJO_RESULT_SHOULD_WAIT) {
@@ -207,9 +207,6 @@ class ReadWriteWaiter {
 
 class DirectSocketsTcpBrowserTest : public ContentBrowserTest {
  public:
-  DirectSocketsTcpBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kDirectSockets);
-  }
   ~DirectSocketsTcpBrowserTest() override = default;
 
   GURL GetTestOpenPageURL() {
@@ -270,15 +267,42 @@ class DirectSocketsTcpBrowserTest : public ContentBrowserTest {
     return tcp_server_socket_;
   }
 
- protected:
-  void SetUp() override {
-    DirectSocketsServiceImpl::SetConnectionDialogBypassForTesting(true);
-    DirectSocketsServiceImpl::SetEnterpriseManagedForTesting(false);
+  raw_ptr<content::test::AsyncJsRunner> GetAsyncJsRunner() const {
+    return runner_.get();
+  }
 
+  void ConnectJsSocket(int port = 0) const {
+    const std::string open_socket = JsReplace(
+        R"(
+          socket = new TCPSocket($1, $2);
+          await socket.opened;
+        )",
+        kLocalhostAddress, port);
+
+    ASSERT_TRUE(
+        EvalJs(shell(), content::test::WrapAsync(open_socket)).value.is_none());
+  }
+
+ protected:
+  void SetUpOnMainThread() override {
+    ContentBrowserTest::SetUpOnMainThread();
+    ASSERT_TRUE(NavigateToURL(shell(), GetTestPageURL()));
+    runner_ =
+        std::make_unique<content::test::AsyncJsRunner>(shell()->web_contents());
+  }
+
+  void SetUp() override {
     embedded_test_server()->AddDefaultHandlers(GetTestDataFilePath());
     ASSERT_TRUE(embedded_test_server()->Start());
-
     ContentBrowserTest::SetUp();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ContentBrowserTest::SetUpCommandLine(command_line);
+    std::string origin_list =
+        GetTestOpenPageURL().spec() + "," + GetTestPageURL().spec();
+
+    command_line->AppendSwitchASCII(switches::kIsolatedAppOrigins, origin_list);
   }
 
  private:
@@ -286,52 +310,55 @@ class DirectSocketsTcpBrowserTest : public ContentBrowserTest {
     return shell()->web_contents()->GetBrowserContext();
   }
 
+ private:
+  test::IsolatedAppContentBrowserClient client_;
+  ScopedContentBrowserClientSetting setting{&client_};
   base::test::ScopedFeatureList feature_list_;
   mojo::Remote<network::mojom::MdnsResponder> mdns_responder_;
   mojo::Remote<network::mojom::TCPServerSocket> tcp_server_socket_;
+
+  std::unique_ptr<content::test::AsyncJsRunner> runner_;
 };
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest, OpenTcp_Success) {
-  EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
+  ASSERT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
 
-  DirectSocketsServiceImpl::SetPermissionCallbackForTesting(
-      base::BindRepeating(&UnconditionallyPermitConnection));
-
-  const uint16_t listening_port = StartTcpServer();
-  const std::string script = base::StringPrintf(
-      "openTcp({remoteAddress: '127.0.0.1', remotePort: %d})", listening_port);
+  const int listening_port = StartTcpServer();
+  const std::string script =
+      JsReplace("openTcp($1, $2)", net::IPAddress::IPv4Localhost().ToString(),
+                listening_port);
 
   EXPECT_THAT(EvalJs(shell(), script).ExtractString(),
               StartsWith("openTcp succeeded"));
 }
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest, OpenTcp_Success_Global) {
-  EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
+  ASSERT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
 
-  const uint16_t listening_port = StartTcpServer();
-  const std::string script = base::StringPrintf(
-      "openTcp({remoteAddress: '127.0.0.1', remotePort: %d})", listening_port);
+  const int listening_port = StartTcpServer();
+  const std::string script =
+      JsReplace("openTcp($1, $2)", net::IPAddress::IPv4Localhost().ToString(),
+                listening_port);
 
   EXPECT_THAT(EvalJs(shell(), script).ExtractString(),
               StartsWith("openTcp succeeded"));
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // https://crbug.com/1211492 Keep failing on Mac11.3
 #define MAYBE_OpenTcp_MDNS DISABLED_OpenTcp_MDNS
 #else
 #define MAYBE_OpenTcp_MDNS OpenTcp_MDNS
 #endif
 IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest, MAYBE_OpenTcp_MDNS) {
-  EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
+  ASSERT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
 
-  const uint16_t listening_port = StartTcpServer();
+  const int listening_port = StartTcpServer();
   const std::string name = CreateMDNSHostName();
   EXPECT_TRUE(base::EndsWith(name, ".local"));
 
   const std::string script =
-      base::StringPrintf("openTcp({remoteAddress: '%s', remotePort: %d})",
-                         name.c_str(), listening_port);
+      JsReplace("openTcp($1, $2)", name.c_str(), listening_port);
 
 #if BUILDFLAG(ENABLE_MDNS)
   EXPECT_THAT(EvalJs(shell(), script).ExtractString(),
@@ -343,79 +370,265 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest, MAYBE_OpenTcp_MDNS) {
 }
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest, CloseTcp) {
-  EXPECT_TRUE(NavigateToURL(shell(), GetTestPageURL()));
-
-  DirectSocketsServiceImpl::SetPermissionCallbackForTesting(
-      base::BindRepeating(&UnconditionallyPermitConnection));
-
-  const uint16_t listening_port = StartTcpServer();
-  const std::string script = base::StringPrintf(
-      "closeTcp({remoteAddress: '127.0.0.1', remotePort: %d})", listening_port);
-
-  EXPECT_EQ("closeTcp succeeded", EvalJs(shell(), script));
-}
-
-// Tests that we can close the writer, then the socket.
-IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest, CloseTcpWriter) {
-  EXPECT_TRUE(NavigateToURL(shell(), GetTestPageURL()));
-
-  DirectSocketsServiceImpl::SetPermissionCallbackForTesting(
-      base::BindRepeating(&UnconditionallyPermitConnection));
-
-  const uint16_t listening_port = StartTcpServer();
-  const std::string script = base::StringPrintf(
-      "closeTcp({remoteAddress: '127.0.0.1', remotePort: %d}, "
-      "/*closeWriter=*/true)",
-      listening_port);
+  const int listening_port = StartTcpServer();
+  const std::string script =
+      JsReplace("closeTcp($1, $2)", net::IPAddress::IPv4Localhost().ToString(),
+                listening_port);
 
   EXPECT_EQ("closeTcp succeeded", EvalJs(shell(), script));
 }
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest, WriteTcp) {
-  const uint32_t kRequiredBytes = 10000;
-  EXPECT_TRUE(NavigateToURL(shell(), GetTestPageURL()));
+  constexpr int32_t kRequiredBytes = 10000;
 
-  const uint16_t listening_port = StartTcpServer();
+  const int listening_port = StartTcpServer();
   ReadWriteWaiter waiter(/*required_receive_bytes=*/kRequiredBytes,
                          /*required_send_bytes=*/0, tcp_server_socket());
 
-  const std::string script = base::StringPrintf(
-      "writeTcp({remoteAddress: '127.0.0.1', remotePort: %d}, %u)",
+  const std::string script = JsReplace(
+      "writeTcp($1, $2, {}, $3)", net::IPAddress::IPv4Localhost().ToString(),
       listening_port, kRequiredBytes);
+
   EXPECT_EQ("write succeeded", EvalJs(shell(), script));
   waiter.Await();
 }
 
-IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest, ReadTcp) {
-  const uint32_t kRequiredBytes = 150000;
-  EXPECT_TRUE(NavigateToURL(shell(), GetTestPageURL()));
+IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest, WriteLargeTcpPacket) {
+  // The default capacity of TCPSocket mojo pipe is 65536 bytes. This test
+  // verifies that out asynchronous writing logic actually works.
+  constexpr uint32_t defaultMojoPipeCapacity = (1 << 16);
+  constexpr int32_t kRequiredBytes = 3 * defaultMojoPipeCapacity + 1;
 
-  const uint16_t listening_port = StartTcpServer();
+  const int listening_port = StartTcpServer();
+  ReadWriteWaiter waiter(/*required_receive_bytes=*/kRequiredBytes,
+                         /*required_send_bytes=*/0, tcp_server_socket());
+
+  const std::string script =
+      JsReplace("writeLargeTcpPacket($1, $2, $3)",
+                net::IPAddress::IPv4Localhost().ToString(), listening_port,
+                kRequiredBytes);
+
+  EXPECT_EQ("writeLargeTcpPacket succeeded", EvalJs(shell(), script));
+  waiter.Await();
+}
+
+IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest, ReadTcp) {
+  constexpr int32_t kRequiredBytes = 150000;
+
+  const int listening_port = StartTcpServer();
   ReadWriteWaiter waiter(/*required_receive_bytes=*/0,
                          /*required_send_bytes=*/kRequiredBytes,
                          tcp_server_socket());
 
-  const std::string script = base::StringPrintf(
-      "readTcp({remoteAddress: '127.0.0.1', remotePort: %d}, %u)",
+  const std::string script = JsReplace(
+      "readTcp($1, $2, {}, $3)", net::IPAddress::IPv4Localhost().ToString(),
       listening_port, kRequiredBytes);
   EXPECT_EQ("read succeeded", EvalJs(shell(), script));
   waiter.Await();
 }
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest, ReadWriteTcp) {
-  const uint32_t kRequiredBytes = 1000;
-  EXPECT_TRUE(NavigateToURL(shell(), GetTestPageURL()));
+  constexpr int32_t kRequiredBytes = 1000;
 
-  const uint16_t listening_port = StartTcpServer();
+  const int listening_port = StartTcpServer();
   ReadWriteWaiter waiter(/*required_receive_bytes=*/kRequiredBytes,
                          /*required_send_bytes=*/kRequiredBytes,
                          tcp_server_socket());
-
-  const std::string script = base::StringPrintf(
-      "readWriteTcp({remoteAddress: '127.0.0.1', remotePort: %d}, %u)",
-      listening_port, kRequiredBytes);
+  const std::string script =
+      JsReplace("readWriteTcp($1, $2, {}, $3)",
+                net::IPAddress::IPv4Localhost().ToString(), listening_port,
+                kRequiredBytes);
   EXPECT_EQ("readWrite succeeded", EvalJs(shell(), script));
   waiter.Await();
+}
+
+class MockTcpNetworkContext : public content::test::MockNetworkContext {
+ public:
+  MockTcpNetworkContext() : pipe_capacity_(1) {}
+  explicit MockTcpNetworkContext(uint32_t pipe_capacity)
+      : pipe_capacity_(pipe_capacity) {}
+  ~MockTcpNetworkContext() override = default;
+
+  // network::TestNetworkContext:
+  void CreateTCPConnectedSocket(
+      const absl::optional<net::IPEndPoint>& local_addr,
+      const net::AddressList& remote_addr_list,
+      network::mojom::TCPConnectedSocketOptionsPtr tcp_connected_socket_options,
+      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
+      mojo::PendingReceiver<network::mojom::TCPConnectedSocket> socket,
+      mojo::PendingRemote<network::mojom::SocketObserver> observer,
+      CreateTCPConnectedSocketCallback callback) override {
+    const net::IPEndPoint& peer_addr = remote_addr_list.front();
+
+    mojo::ScopedDataPipeProducerHandle producer;
+    MojoResult producer_result =
+        mojo::CreateDataPipe(pipe_capacity_, producer, producer_complement_);
+    DCHECK_EQ(MOJO_RESULT_OK, producer_result);
+
+    mojo::ScopedDataPipeConsumerHandle consumer;
+    MojoResult consumer_result =
+        CreateDataPipe(nullptr, consumer_complement_, consumer);
+    DCHECK_EQ(MOJO_RESULT_OK, consumer_result);
+
+    observer_.Bind(std::move(observer));
+
+    std::move(callback).Run(
+        net::OK, net::IPEndPoint{net::IPAddress::IPv4Localhost(), 0}, peer_addr,
+        std::move(consumer), std::move(producer));
+  }
+
+  mojo::Remote<network::mojom::SocketObserver>& get_observer() {
+    return observer_;
+  }
+
+  mojo::ScopedDataPipeProducerHandle& get_consumer_complement() {
+    return consumer_complement_;
+  }
+  mojo::ScopedDataPipeConsumerHandle& get_producer_complement() {
+    return producer_complement_;
+  }
+
+ private:
+  mojo::ScopedDataPipeProducerHandle consumer_complement_;
+  mojo::ScopedDataPipeConsumerHandle producer_complement_;
+
+  mojo::Remote<network::mojom::SocketObserver> observer_;
+
+  const uint32_t pipe_capacity_;
+};
+
+IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest, ReadTcpOnReadError) {
+  MockTcpNetworkContext mock_network_context;
+  DirectSocketsServiceImpl::SetNetworkContextForTesting(&mock_network_context);
+
+  ConnectJsSocket();
+
+  const std::string async_script =
+      "readTcpOnError(socket, /*expected_read_success=*/false);";
+  auto future = GetAsyncJsRunner()->RunScript(async_script);
+
+  {
+    // Simulate pipe shutdown on read error. Read requests must reject.
+    mock_network_context.get_observer()->OnReadError(net::ERR_NOT_IMPLEMENTED);
+    mock_network_context.get_consumer_complement().reset();
+  }
+
+  EXPECT_THAT(future->Get(), ::testing::HasSubstr("readTcpOnError succeeded."));
+}
+
+IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest, ReadTcpOnPeerClosed) {
+  MockTcpNetworkContext mock_network_context;
+  DirectSocketsServiceImpl::SetNetworkContextForTesting(&mock_network_context);
+
+  ConnectJsSocket();
+
+  const std::string async_script =
+      "readTcpOnError(socket, /*expected_read_success=*/true);";
+  auto future = GetAsyncJsRunner()->RunScript(async_script);
+
+  {
+    // Simulate pipe shutdown on peer closed. Read requests must resolve with
+    // done = true.
+    mock_network_context.get_observer()->OnReadError(net::OK);
+    mock_network_context.get_consumer_complement().reset();
+  }
+
+  EXPECT_THAT(future->Get(), ::testing::HasSubstr("readTcpOnError succeeded."));
+}
+
+IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest, WriteTcpOnWriteError) {
+  MockTcpNetworkContext mock_network_context;
+  DirectSocketsServiceImpl::SetNetworkContextForTesting(&mock_network_context);
+
+  ConnectJsSocket();
+
+  const std::string async_script = "writeTcpOnError(socket);";
+  auto future = GetAsyncJsRunner()->RunScript(async_script);
+
+  {
+    // Simulate pipe shutdown on write error.
+    mock_network_context.get_observer()->OnWriteError(net::ERR_NOT_IMPLEMENTED);
+    mock_network_context.get_producer_complement().reset();
+  }
+
+  EXPECT_THAT(future->Get(),
+              ::testing::HasSubstr("writeTcpOnError succeeded."));
+}
+
+IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest,
+                       ReadWriteTcpOnSocketObserverError) {
+  MockTcpNetworkContext mock_network_context;
+  DirectSocketsServiceImpl::SetNetworkContextForTesting(&mock_network_context);
+
+  ConnectJsSocket();
+
+  const std::string async_script = "readWriteTcpOnError(socket);";
+  auto future = GetAsyncJsRunner()->RunScript(async_script);
+
+  mock_network_context.get_observer().reset();
+  mock_network_context.get_consumer_complement().reset();
+  mock_network_context.get_producer_complement().reset();
+
+  EXPECT_THAT(future->Get(),
+              ::testing::HasSubstr("readWriteTcpOnError succeeded."));
+}
+
+IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest,
+                       BarrierCallbackFiresWithErrorOnReadWriteError) {
+  MockTcpNetworkContext mock_network_context;
+  DirectSocketsServiceImpl::SetNetworkContextForTesting(&mock_network_context);
+
+  ConnectJsSocket();
+
+  const std::string async_script =
+      "waitForClosedPromise(socket, /*expected_closed_result=*/false);";
+  auto future = GetAsyncJsRunner()->RunScript(async_script);
+
+  {
+    mock_network_context.get_observer()->OnReadError(net::ERR_UNEXPECTED);
+    mock_network_context.get_consumer_complement().reset();
+    mock_network_context.get_producer_complement().reset();
+    mock_network_context.get_observer()->OnWriteError(net::ERR_UNEXPECTED);
+  }
+
+  EXPECT_THAT(future->Get(),
+              ::testing::HasSubstr("waitForClosedPromise succeeded."));
+}
+
+IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest,
+                       BarrierCallbackFiresWithOkOnReaderAndWriterClose) {
+  MockTcpNetworkContext mock_network_context;
+  DirectSocketsServiceImpl::SetNetworkContextForTesting(&mock_network_context);
+
+  ConnectJsSocket();
+
+  const std::string async_script =
+      "waitForClosedPromise(socket, /*expected_closed_result=*/true, "
+      "/*cancel_reader=*/true, /*close_writer=*/true);";
+  auto future = GetAsyncJsRunner()->RunScript(async_script);
+
+  EXPECT_THAT(future->Get(),
+              ::testing::HasSubstr("waitForClosedPromise succeeded."));
+}
+
+IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest,
+                       BarrierCallbackFiresWithOkOnPeerAndWriterClose) {
+  MockTcpNetworkContext mock_network_context;
+  DirectSocketsServiceImpl::SetNetworkContextForTesting(&mock_network_context);
+
+  ConnectJsSocket();
+
+  const std::string async_script =
+      "waitForClosedPromise(socket, /*expected_closed_result=*/true, "
+      "/*cancel_reader=*/false, /*close_writer=*/true);";
+  auto future = GetAsyncJsRunner()->RunScript(async_script);
+
+  // Simulate peer closed event.
+  mock_network_context.get_observer()->OnReadError(net::OK);
+  mock_network_context.get_consumer_complement().reset();
+
+  EXPECT_THAT(future->Get(),
+              ::testing::HasSubstr("waitForClosedPromise succeeded."));
 }
 
 }  // namespace content

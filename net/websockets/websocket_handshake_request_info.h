@@ -1,11 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef NET_WEBSOCKETS_WEBSOCKET_HANDSHAKE_REQUEST_INFO_H_
 #define NET_WEBSOCKETS_WEBSOCKET_HANDSHAKE_REQUEST_INFO_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "net/base/net_export.h"
 #include "net/http/http_request_headers.h"

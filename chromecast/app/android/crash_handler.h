@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 
 namespace chromecast {
 class CastCrashReporterClientAndroid;
@@ -39,7 +38,8 @@ class CrashHandler {
   static void UploadDumps(const base::FilePath& crash_dump_path,
                           const base::FilePath& reports_path,
                           const std::string& uuid,
-                          const std::string& application_feedback);
+                          const std::string& application_feedback,
+                          const bool can_send_usage_stats);
 
  private:
   CrashHandler(const std::string& process_type,

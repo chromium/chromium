@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -60,6 +60,10 @@ class AutofillKeyboardAccessoryAdapter : public AutofillPopupView,
     view_ = std::move(view);
   }
 
+  base::WeakPtr<AutofillKeyboardAccessoryAdapter> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   // AutofillPopupView implementation.
   void Show() override;
@@ -76,7 +80,8 @@ class AutofillKeyboardAccessoryAdapter : public AutofillPopupView,
   const autofill::Suggestion& GetSuggestionAt(int row) const override;
   std::u16string GetSuggestionMainTextAt(int row) const override;
   std::u16string GetSuggestionMinorTextAt(int row) const override;
-  const std::u16string& GetSuggestionLabelAt(int row) const override;
+  std::vector<std::vector<Suggestion::Text>> GetSuggestionLabelsAt(
+      int row) const override;
   bool GetRemovalConfirmationText(int index,
                                   std::u16string* title,
                                   std::u16string* body) override;

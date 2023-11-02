@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -102,9 +102,11 @@ void ExpectEquality(const ExplodedFrameState& expected,
   EXPECT_EQ(expected.scroll_anchor_selector, actual.scroll_anchor_selector);
   EXPECT_EQ(expected.scroll_anchor_offset, actual.scroll_anchor_offset);
   EXPECT_EQ(expected.scroll_anchor_simhash, actual.scroll_anchor_simhash);
-  EXPECT_EQ(expected.app_history_key, actual.app_history_key);
-  EXPECT_EQ(expected.app_history_id, actual.app_history_id);
-  EXPECT_EQ(expected.app_history_state, actual.app_history_state);
+  EXPECT_EQ(expected.navigation_api_key, actual.navigation_api_key);
+  EXPECT_EQ(expected.navigation_api_id, actual.navigation_api_id);
+  EXPECT_EQ(expected.navigation_api_state, actual.navigation_api_state);
+  EXPECT_EQ(expected.protect_url_in_navigation_api,
+            actual.protect_url_in_navigation_api);
   ExpectEquality(expected.http_body, actual.http_body);
   ExpectEquality(expected.children, actual.children);
 }
@@ -140,9 +142,10 @@ class PageStateSerializationTest : public testing::Test {
     frame_state->scroll_anchor_selector = u"#selector";
     frame_state->scroll_anchor_offset = gfx::PointF(2.5, 3.5);
     frame_state->scroll_anchor_simhash = 12345;
-    frame_state->app_history_key = u"abcd";
-    frame_state->app_history_id = u"wxyz";
-    frame_state->app_history_state = absl::nullopt;
+    frame_state->navigation_api_key = u"abcd";
+    frame_state->navigation_api_id = u"wxyz";
+    frame_state->navigation_api_state = absl::nullopt;
+    frame_state->protect_url_in_navigation_api = false;
   }
 
   void PopulateHttpBody(
@@ -210,11 +213,14 @@ class PageStateSerializationTest : public testing::Test {
     frame_state->document_state.push_back(u"displayName");
 
     if (version >= 29) {
-      frame_state->app_history_key = u"abcdef";
-      frame_state->app_history_id = u"uvwxyz";
+      frame_state->navigation_api_key = u"abcdef";
+      frame_state->navigation_api_id = u"uvwxyz";
     }
     if (version >= 30)
-      frame_state->app_history_state = u"js_serialized_state";
+      frame_state->navigation_api_state = u"js_serialized_state";
+
+    if (version >= 31)
+      frame_state->protect_url_in_navigation_api = true;
 
     if (!is_child) {
       frame_state->http_body.http_content_type = u"foo/bar";
@@ -269,7 +275,7 @@ class PageStateSerializationTest : public testing::Test {
     EXPECT_TRUE(
         base::Base64Decode(trimmed_file_contents, &saved_encoded_state));
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // Because version 11 of the file format unfortunately bakes in the device
     // scale factor on Android, perform this test by assuming a preset device
     // scale factor, ignoring the device scale factor of the current device.
@@ -285,7 +291,7 @@ class PageStateSerializationTest : public testing::Test {
   void TestBackwardsCompat(int version) {
     std::string suffix = base::StringPrintf("v%d", version);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // Unfortunately, the format of version 11 is different on Android, so we
     // need to use a special reference file.
     if (version == 11) {
@@ -522,7 +528,7 @@ TEST_F(PageStateSerializationTest, DumpExpectedPageStateForBackwardsCompat) {
 }
 #endif
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // TODO(darin): Re-enable for Android once this test accounts for systems with
 //              a device scale factor not equal to 2.
 TEST_F(PageStateSerializationTest, BackwardsCompat_v11) {
@@ -596,6 +602,10 @@ TEST_F(PageStateSerializationTest, BackwardsCompat_v29) {
 
 TEST_F(PageStateSerializationTest, BackwardsCompat_v30) {
   TestBackwardsCompat(30);
+}
+
+TEST_F(PageStateSerializationTest, BackwardsCompat_v31) {
+  TestBackwardsCompat(31);
 }
 
 // Add your new backwards compat test for future versions *above* this

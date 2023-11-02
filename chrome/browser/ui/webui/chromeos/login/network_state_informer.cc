@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,10 +10,9 @@
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chromeos/network/network_state.h"
-#include "chromeos/network/network_state_handler.h"
-#include "chromeos/network/proxy/proxy_config_handler.h"
-#include "chromeos/network/proxy/ui_proxy_config_service.h"
+#include "chromeos/ash/components/network/network_state.h"
+#include "chromeos/ash/components/network/proxy/proxy_config_handler.h"
+#include "chromeos/ash/components/network/proxy/ui_proxy_config_service.h"
 #include "components/proxy_config/proxy_config_dictionary.h"
 #include "components/proxy_config/proxy_prefs.h"
 #include "net/proxy_resolution/proxy_config.h"
@@ -28,77 +27,52 @@ const char kNetworkStateOnline[] = "online";
 const char kNetworkStateCaptivePortal[] = "behind captive portal";
 const char kNetworkStateConnecting[] = "connecting";
 const char kNetworkStateProxyAuthRequired[] = "proxy auth required";
+const char kNetworkStateUnknown[] = "unknown";
 
-NetworkStateInformer::State GetStateForDefaultNetwork() {
-  const NetworkState* network =
-      NetworkHandler::Get()->network_state_handler()->DefaultNetwork();
-  if (!network)
+NetworkStateInformer::State GetStateForNetwork(const NetworkState* network) {
+  if (!network) {
     return NetworkStateInformer::OFFLINE;
-
-  if (network_portal_detector::GetInstance()->IsEnabled()) {
-    NetworkPortalDetector::CaptivePortalStatus status =
-        network_portal_detector::GetInstance()->GetCaptivePortalStatus();
-    if (status == NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_UNKNOWN &&
-        NetworkState::StateIsConnecting(network->connection_state())) {
-      return NetworkStateInformer::CONNECTING;
-    }
-    // For proxy-less networks rely on shill's online state if
-    // NetworkPortalDetector's state of current network is unknown.
-    if (status == NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE ||
-        (status == NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_UNKNOWN &&
-         !NetworkHandler::GetUiProxyConfigService()
-              ->HasDefaultNetworkProxyConfigured() &&
-         network->connection_state() == shill::kStateOnline)) {
+  }
+  if (network->IsConnectingState()) {
+    return NetworkStateInformer::CONNECTING;
+  }
+  if (!network->IsConnectedState()) {
+    // If there is no connection treat as online for Active Directory devices.
+    // These devices do not have to be online to reach the server.
+    // TODO(rsorokin): Fix reporting network connectivity for Active Directory
+    // devices (crbug.com/685691).
+    if (g_browser_process->platform_part()
+            ->browser_policy_connector_ash()
+            ->IsActiveDirectoryManaged()) {
       return NetworkStateInformer::ONLINE;
     }
-    if (status ==
-            NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PROXY_AUTH_REQUIRED &&
-        NetworkHandler::GetUiProxyConfigService()
-            ->HasDefaultNetworkProxyConfigured()) {
-      return NetworkStateInformer::PROXY_AUTH_REQUIRED;
-    }
-    if (status == NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL)
+    return NetworkStateInformer::OFFLINE;
+  }
+  switch (network->GetPortalState()) {
+    case NetworkState::PortalState::kUnknown:
+      return NetworkStateInformer::UNKNOWN;
+    case NetworkState::PortalState::kOnline:
+      return NetworkStateInformer::ONLINE;
+    case NetworkState::PortalState::kPortalSuspected:
+    case NetworkState::PortalState::kPortal:
       return NetworkStateInformer::CAPTIVE_PORTAL;
-  } else {
-    if (NetworkState::StateIsConnecting(network->connection_state()))
-      return NetworkStateInformer::CONNECTING;
-    if (network->connection_state() == shill::kStateOnline)
-      return NetworkStateInformer::ONLINE;
-    if (network->IsCaptivePortal())
+    case NetworkState::PortalState::kProxyAuthRequired:
+      return NetworkStateInformer::PROXY_AUTH_REQUIRED;
+    case NetworkState::PortalState::kNoInternet:
       return NetworkStateInformer::CAPTIVE_PORTAL;
   }
-
-  // If there is no connection to the internet report it as online for the
-  // Active Directory devices. These devices does not have to be online to reach
-  // the server.
-  // TODO(rsorokin): Fix reporting network connectivity for Active Directory
-  // devices. (see crbug.com/685691)
-  policy::BrowserPolicyConnectorAsh* connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
-  if (connector->IsActiveDirectoryManaged())
-    return NetworkStateInformer::ONLINE;
-
-  return NetworkStateInformer::OFFLINE;
 }
 
 }  // namespace
 
 NetworkStateInformer::NetworkStateInformer() : state_(OFFLINE) {}
 
-NetworkStateInformer::~NetworkStateInformer() {
-  if (NetworkHandler::IsInitialized()) {
-    NetworkHandler::Get()->network_state_handler()->RemoveObserver(
-        this, FROM_HERE);
-  }
-  network_portal_detector::GetInstance()->RemoveObserver(this);
-}
+NetworkStateInformer::~NetworkStateInformer() = default;
 
 void NetworkStateInformer::Init() {
-  UpdateState();
-  NetworkHandler::Get()->network_state_handler()->AddObserver(
-      this, FROM_HERE);
-
-  network_portal_detector::GetInstance()->AddAndFireObserver(this);
+  UpdateState(NetworkHandler::Get()->network_state_handler()->DefaultNetwork());
+  network_state_handler_observer_.Observe(
+      NetworkHandler::Get()->network_state_handler());
 }
 
 void NetworkStateInformer::AddObserver(NetworkStateInformerObserver* observer) {
@@ -112,36 +86,38 @@ void NetworkStateInformer::RemoveObserver(
 }
 
 void NetworkStateInformer::DefaultNetworkChanged(const NetworkState* network) {
-  UpdateStateAndNotify();
+  UpdateStateAndNotify(network);
 }
 
-void NetworkStateInformer::OnPortalDetectionCompleted(
+void NetworkStateInformer::PortalStateChanged(
     const NetworkState* network,
-    const NetworkPortalDetector::CaptivePortalStatus status) {
-  UpdateStateAndNotify();
+    const NetworkState::PortalState state) {
+  UpdateStateAndNotify(network);
 }
 
-void NetworkStateInformer::OnPortalDetected() {
-  UpdateStateAndNotify();
-}
-
-// static
-const char* NetworkStateInformer::StatusString(State state) {
+std::ostream& operator<<(std::ostream& stream,
+                         const NetworkStateInformer::State& state) {
   switch (state) {
-    case OFFLINE:
-      return kNetworkStateOffline;
-    case ONLINE:
-      return kNetworkStateOnline;
-    case CAPTIVE_PORTAL:
-      return kNetworkStateCaptivePortal;
-    case CONNECTING:
-      return kNetworkStateConnecting;
-    case PROXY_AUTH_REQUIRED:
-      return kNetworkStateProxyAuthRequired;
-    default:
-      NOTREACHED();
-      return NULL;
+    case NetworkStateInformer::OFFLINE:
+      stream << kNetworkStateOffline;
+      break;
+    case NetworkStateInformer::ONLINE:
+      stream << kNetworkStateOnline;
+      break;
+    case NetworkStateInformer::CAPTIVE_PORTAL:
+      stream << kNetworkStateCaptivePortal;
+      break;
+    case NetworkStateInformer::CONNECTING:
+      stream << kNetworkStateConnecting;
+      break;
+    case NetworkStateInformer::PROXY_AUTH_REQUIRED:
+      stream << kNetworkStateProxyAuthRequired;
+      break;
+    case NetworkStateInformer::UNKNOWN:
+      stream << kNetworkStateUnknown;
+      break;
   }
+  return stream;
 }
 
 // static
@@ -191,13 +167,11 @@ bool NetworkStateInformer::IsProxyError(State state,
          reason == NetworkError::ERROR_REASON_PROXY_CONNECTION_FAILED;
 }
 
-bool NetworkStateInformer::UpdateState() {
-  const NetworkState* default_network =
-      NetworkHandler::Get()->network_state_handler()->DefaultNetwork();
-  State new_state = GetStateForDefaultNetwork();
+bool NetworkStateInformer::UpdateState(const NetworkState* network) {
+  State new_state = GetStateForNetwork(network);
   std::string new_network_path;
-  if (default_network)
-    new_network_path = default_network->path();
+  if (network)
+    new_network_path = network->path();
 
   if (new_state == state_ && new_network_path == network_path_)
     return false;
@@ -214,21 +188,20 @@ bool NetworkStateInformer::UpdateState() {
   return true;
 }
 
-bool NetworkStateInformer::UpdateProxyConfig() {
-  const NetworkState* default_network =
-      NetworkHandler::Get()->network_state_handler()->DefaultNetwork();
-  if (!default_network)
+bool NetworkStateInformer::UpdateProxyConfig(const NetworkState* network) {
+  if (!network)
     return false;
 
-  if (proxy_config_ == default_network->proxy_config())
+  if (proxy_config_ == network->proxy_config())
     return false;
-  proxy_config_ = default_network->proxy_config().Clone();
+
+  proxy_config_ = network->proxy_config().Clone();
   return true;
 }
 
-void NetworkStateInformer::UpdateStateAndNotify() {
-  bool state_changed = UpdateState();
-  bool proxy_config_changed = UpdateProxyConfig();
+void NetworkStateInformer::UpdateStateAndNotify(const NetworkState* network) {
+  bool state_changed = UpdateState(network);
+  bool proxy_config_changed = UpdateProxyConfig(network);
   if (state_changed)
     SendStateToObservers(NetworkError::ERROR_REASON_NETWORK_STATE_CHANGED);
   else if (proxy_config_changed)

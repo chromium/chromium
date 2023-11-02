@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,11 +21,6 @@ public final class RectUtils {
 
     public static int getRectArea(Rect rect) {
         return rect.width() * rect.height();
-    }
-
-    /** Creates a new {@link Rect} with the same bounds as the given {@link Rect}. */
-    public static Rect copyRect(Rect rect) {
-        return new Rect(rect.left, rect.top, rect.right, rect.bottom);
     }
 
     /**
@@ -197,7 +192,7 @@ public final class RectUtils {
         int numClippedRects = 0;
         for (int i = 0; i < coverageRects.size(); i++) {
             Rect clipRect = coverageRects.get(i);
-            if (clipRect.intersect(screenRect)) { // This line may modify he the value of the passed
+            if (clipRect.intersect(screenRect)) { // This line may modify the value of the passed
                                                   // in coverage rects
                 sClippedRects[numClippedRects++] = clipRect;
             }

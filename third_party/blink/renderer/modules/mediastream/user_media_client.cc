@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,18 +27,21 @@
 namespace blink {
 namespace {
 
-static int g_next_request_id = 0;
+static int32_t g_next_request_id = 0;
 
 // The histogram counts the number of calls to the JS APIs
 // getUserMedia() and getDisplayMedia().
-void UpdateAPICount(UserMediaRequest::MediaType media_type) {
+void UpdateAPICount(UserMediaRequestType media_type) {
   RTCAPIName api_name = RTCAPIName::kGetUserMedia;
   switch (media_type) {
-    case UserMediaRequest::MediaType::kUserMedia:
+    case UserMediaRequestType::kUserMedia:
       api_name = RTCAPIName::kGetUserMedia;
       break;
-    case UserMediaRequest::MediaType::kDisplayMedia:
+    case UserMediaRequestType::kDisplayMedia:
       api_name = RTCAPIName::kGetDisplayMedia;
+      break;
+    case UserMediaRequestType::kDisplayMediaSet:
+      api_name = RTCAPIName::kGetDisplayMediaSet;
       break;
   }
   UpdateWebRTCMethodCount(api_name);
@@ -79,7 +82,9 @@ UserMediaClient::UserMediaClient(
     LocalFrame* frame,
     UserMediaProcessor* user_media_processor,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : frame_(frame),
+    : Supplement<LocalDOMWindow>(*frame->DomWindow()),
+      ExecutionContextLifecycleObserver(frame->DomWindow()),
+      frame_(frame),
       user_media_processor_(user_media_processor),
       apply_constraints_processor_(
           MakeGarbageCollected<ApplyConstraintsProcessor>(
@@ -94,12 +99,12 @@ UserMediaClient::UserMediaClient(
                   WrapWeakPersistent(this)),
               std::move(task_runner))),
       media_devices_dispatcher_(frame->DomWindow()) {
-  if (frame_) {
-    // WrapWeakPersistent is safe because the |frame_| owns UserMediaClient.
-    frame_->SetIsCapturingMediaCallback(WTF::BindRepeating(
-        [](UserMediaClient* client) { return client && client->IsCapturing(); },
-        WrapWeakPersistent(this)));
-  }
+  DCHECK(frame_);
+  DCHECK(user_media_processor_);
+  // WrapWeakPersistent is safe because the |frame_| owns UserMediaClient.
+  frame_->SetIsCapturingMediaCallback(WTF::BindRepeating(
+      [](UserMediaClient* client) { return client && client->IsCapturing(); },
+      WrapWeakPersistent(this)));
 }
 
 UserMediaClient::UserMediaClient(
@@ -140,13 +145,7 @@ void UserMediaClient::RequestUserMedia(UserMediaRequest* user_media_request) {
   // Save histogram data so we can see how much GetUserMedia is used.
   UpdateAPICount(user_media_request->MediaRequestType());
 
-  // TODO(crbug.com/787254): Communicate directly with the
-  // PeerConnectionTrackerHost mojo object once it is available from Blink.
-  if (auto* window = user_media_request->GetWindow()) {
-    PeerConnectionTracker::From(*window).TrackGetUserMedia(user_media_request);
-  }
-
-  int request_id = g_next_request_id++;
+  int32_t request_id = g_next_request_id++;
   blink::WebRtcLogMessage(base::StringPrintf(
       "UMCI::RequestUserMedia({request_id=%d}, {audio constraints=%s}, "
       "{video constraints=%s})",
@@ -166,6 +165,13 @@ void UserMediaClient::RequestUserMedia(UserMediaRequest* user_media_request) {
         LocalFrame::HasTransientUserActivation(window->GetFrame());
   }
   user_media_request->set_request_id(request_id);
+
+  // TODO(crbug.com/787254): Communicate directly with the
+  // PeerConnectionTrackerHost mojo object once it is available from Blink.
+  if (auto* window = user_media_request->GetWindow()) {
+    PeerConnectionTracker::From(*window).TrackGetUserMedia(user_media_request);
+  }
+
   user_media_request->set_has_transient_user_activation(
       has_transient_user_activation);
   pending_request_infos_.push_back(
@@ -194,9 +200,8 @@ bool UserMediaClient::IsCapturing() {
   return user_media_processor_->HasActiveSources();
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 void UserMediaClient::FocusCapturedSurface(const String& label, bool focus) {
-  DCHECK(user_media_processor_);
   user_media_processor_->FocusCapturedSurface(label, focus);
 }
 #endif
@@ -213,20 +218,20 @@ void UserMediaClient::MaybeProcessNextRequestInfo() {
   if (current_request->IsUserMedia()) {
     user_media_processor_->ProcessRequest(
         current_request->MoveUserMediaRequest(),
-        WTF::Bind(&UserMediaClient::CurrentRequestCompleted,
-                  WrapWeakPersistent(this)));
+        WTF::BindOnce(&UserMediaClient::CurrentRequestCompleted,
+                      WrapWeakPersistent(this)));
   } else if (current_request->IsApplyConstraints()) {
     apply_constraints_processor_->ProcessRequest(
         current_request->apply_constraints_request(),
-        WTF::Bind(&UserMediaClient::CurrentRequestCompleted,
-                  WrapWeakPersistent(this)));
+        WTF::BindOnce(&UserMediaClient::CurrentRequestCompleted,
+                      WrapWeakPersistent(this)));
   } else {
     DCHECK(current_request->IsStopTrack());
     MediaStreamTrackPlatform* track = MediaStreamTrackPlatform::GetTrack(
         WebMediaStreamTrack(current_request->track_to_stop()));
     if (track) {
-      track->StopAndNotify(WTF::Bind(&UserMediaClient::CurrentRequestCompleted,
-                                     WrapWeakPersistent(this)));
+      track->StopAndNotify(WTF::BindOnce(
+          &UserMediaClient::CurrentRequestCompleted, WrapWeakPersistent(this)));
     } else {
       CurrentRequestCompleted();
     }
@@ -239,8 +244,8 @@ void UserMediaClient::CurrentRequestCompleted() {
   if (!pending_request_infos_.empty()) {
     frame_->GetTaskRunner(blink::TaskType::kInternalMedia)
         ->PostTask(FROM_HERE,
-                   WTF::Bind(&UserMediaClient::MaybeProcessNextRequestInfo,
-                             WrapWeakPersistent(this)));
+                   WTF::BindOnce(&UserMediaClient::MaybeProcessNextRequestInfo,
+                                 WrapWeakPersistent(this)));
   }
 }
 
@@ -297,6 +302,8 @@ void UserMediaClient::ContextDestroyed() {
 }
 
 void UserMediaClient::Trace(Visitor* visitor) const {
+  Supplement<LocalDOMWindow>::Trace(visitor);
+  ExecutionContextLifecycleObserver::Trace(visitor);
   visitor->Trace(frame_);
   visitor->Trace(user_media_processor_);
   visitor->Trace(apply_constraints_processor_);
@@ -321,6 +328,34 @@ UserMediaClient::GetMediaDevicesDispatcher() {
   }
 
   return media_devices_dispatcher_.get();
+}
+
+const char UserMediaClient::kSupplementName[] = "UserMediaClient";
+
+UserMediaClient* UserMediaClient::From(LocalDOMWindow* window) {
+  if (!window) {
+    return nullptr;
+  }
+  auto* client = Supplement<LocalDOMWindow>::From<UserMediaClient>(window);
+  if (!client) {
+    if (!window->GetFrame()) {
+      return nullptr;
+    }
+    client = MakeGarbageCollected<UserMediaClient>(
+        window->GetFrame(), window->GetTaskRunner(TaskType::kInternalMedia));
+    Supplement<LocalDOMWindow>::ProvideTo(*window, client);
+  }
+  return client;
+}
+
+void UserMediaClient::KeepDeviceAliveForTransfer(
+    base::UnguessableToken session_id,
+    base::UnguessableToken transfer_id,
+    UserMediaProcessor::KeepDeviceAliveForTransferCallback keep_alive_cb) {
+  // KeepDeviceAliveForTransfer is safe to call even during an ongoing request,
+  // so doesn't need to be queued.
+  user_media_processor_->KeepDeviceAliveForTransfer(session_id, transfer_id,
+                                                    std::move(keep_alive_cb));
 }
 
 }  // namespace blink

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,9 +27,10 @@
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 
 namespace blink {
@@ -70,22 +71,22 @@ CSSStyleSheet* CreateStyleSheet(Document& document) {
       document, NullURL(), TextPosition::MinimumPosition(), UTF8Encoding());
 }
 
-PropertyRegistration* CreatePropertyRegistration(const String& name) {
-  auto syntax_definition = CSSSyntaxStringParser("*").Parse();
+PropertyRegistration* CreatePropertyRegistration(const String& name,
+                                                 String syntax,
+                                                 const CSSValue* initial_value,
+                                                 bool is_inherited) {
+  auto syntax_definition = CSSSyntaxStringParser(syntax).Parse();
   DCHECK(syntax_definition);
+  DCHECK(syntax_definition->IsUniversal() || initial_value);
   return MakeGarbageCollected<PropertyRegistration>(
-      AtomicString(name), *syntax_definition, false /* inherits */,
-      nullptr /* initial */, nullptr /* initial_variable_data */);
+      AtomicString(name), *syntax_definition, is_inherited, initial_value);
 }
 
 PropertyRegistration* CreateLengthRegistration(const String& name, int px) {
-  auto syntax_definition = CSSSyntaxStringParser("<length>").Parse();
-  DCHECK(syntax_definition);
   const CSSValue* initial =
       CSSNumericLiteralValue::Create(px, CSSPrimitiveValue::UnitType::kPixels);
-  return MakeGarbageCollected<PropertyRegistration>(
-      AtomicString(name), *syntax_definition, false /* inherits */, initial,
-      CreateVariableData(initial->CssText()));
+  return CreatePropertyRegistration(name, "<length>", initial,
+                                    false /* is_inherited */);
 }
 
 void RegisterProperty(Document& document,
@@ -165,8 +166,7 @@ scoped_refptr<CSSVariableData> CreateVariableData(String s) {
   bool is_animation_tainted = false;
   bool needs_variable_resolution = false;
   return CSSVariableData::Create({range, StringView(s)}, is_animation_tainted,
-                                 needs_variable_resolution, KURL(),
-                                 WTF::TextEncoding());
+                                 needs_variable_resolution);
 }
 
 const CSSValue* CreateCustomIdent(AtomicString s) {
@@ -222,7 +222,10 @@ CSSSelectorList ParseSelectorList(const String& string) {
   CSSTokenizer tokenizer(string);
   const auto tokens = tokenizer.TokenizeToEOF();
   CSSParserTokenRange range(tokens);
-  return CSSSelectorParser::ParseSelector(range, context, sheet);
+  Arena arena;
+  CSSSelectorVector vector =
+      CSSSelectorParser::ParseSelector(range, context, sheet, arena);
+  return CSSSelectorList::AdoptSelectorVector(vector);
 }
 
 }  // namespace css_test_helpers

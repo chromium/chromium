@@ -1,0 +1,28 @@
+caption: Idle warning delay when running on battery power
+deprecated: true
+desc: |-
+  Note that this policy is deprecated and will be removed in <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> version 85. Please use <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME">PowerManagementIdleSettings</ph> instead.
+
+            Specifies the length of time without user input after which a warning dialog is shown when running on battery power.
+
+            When this policy is set, it specifies the length of time that the user must remain idle before <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> shows a warning dialog telling the user that the idle action is about to be taken.
+
+            When this policy is unset, no warning dialog is shown.
+
+            The policy value should be specified in milliseconds. Values are clamped to be less than or equal the idle delay.
+
+            The warning message is only shown if the idle action is to logout or shut down.
+example_value: 545000
+features:
+  dynamic_refresh: true
+  per_profile: false
+owners:
+- reinauer@google.com
+- chromeos-power@google.com
+schema:
+  minimum: 0
+  type: integer
+supported_on:
+- chrome_os:27-
+tags: []
+type: int

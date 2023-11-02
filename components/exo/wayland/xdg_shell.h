@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define COMPONENTS_EXO_WAYLAND_XDG_SHELL_H_
 
 #include <stdint.h>
+#include <memory>
 
 struct wl_client;
 struct wl_resource;
@@ -13,6 +14,8 @@ struct wl_resource;
 namespace exo {
 class Display;
 class ShellSurfaceBase;
+class ShellSurface;
+class XdgShellSurface;
 
 namespace wayland {
 class SerialTracker;
@@ -31,12 +34,46 @@ struct WaylandXdgShell {
   SerialTracker* const serial_tracker;
 };
 
+struct WaylandXdgSurface {
+  WaylandXdgSurface(std::unique_ptr<XdgShellSurface> shell_surface,
+                    SerialTracker* const serial_tracker);
+
+  ~WaylandXdgSurface();
+
+  WaylandXdgSurface(const WaylandXdgSurface&) = delete;
+  WaylandXdgSurface& operator=(const WaylandXdgSurface&) = delete;
+
+  std::unique_ptr<XdgShellSurface> shell_surface;
+
+  // Owned by Server, which always outlives this surface.
+  SerialTracker* const serial_tracker;
+};
+
 void bind_xdg_shell(wl_client* client,
                     void* data,
                     uint32_t version,
                     uint32_t id);
 
-ShellSurfaceBase* GetShellSurfaceFromToplevelResource(
+struct ShellSurfaceData {
+  ShellSurfaceData(ShellSurface* shell_surface,
+                   SerialTracker* serial_tracker,
+                   wl_resource* surface_resource)
+      : shell_surface(shell_surface),
+        serial_tracker(serial_tracker),
+        surface_resource(surface_resource) {}
+
+  ShellSurfaceData(const ShellSurfaceData&) = delete;
+  ShellSurfaceData& operator=(const ShellSurfaceData&) = delete;
+
+  ShellSurface* const shell_surface;
+
+  // Owned by Server, which always outlives xdg_shell.
+  SerialTracker* const serial_tracker;
+
+  wl_resource* const surface_resource;
+};
+
+ShellSurfaceData GetShellSurfaceFromToplevelResource(
     wl_resource* surface_resource);
 
 ShellSurfaceBase* GetShellSurfaceFromPopupResource(

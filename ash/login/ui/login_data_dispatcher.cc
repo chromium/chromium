@@ -1,9 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/login/ui/login_data_dispatcher.h"
 #include "ash/constants/ash_features.h"
+
+class AccountId;
 
 namespace ash {
 
@@ -27,6 +29,9 @@ void LoginDataDispatcher::Observer::
 void LoginDataDispatcher::Observer::OnFingerprintStateChanged(
     const AccountId& account_id,
     FingerprintState state) {}
+
+void LoginDataDispatcher::Observer::OnResetFingerprintUIState(
+    const AccountId& account_id) {}
 
 void LoginDataDispatcher::Observer::OnFingerprintAuthResult(
     const AccountId& account_id,
@@ -105,6 +110,8 @@ void LoginDataDispatcher::Observer::OnFocusLeavingLockScreenApps(bool reverse) {
 void LoginDataDispatcher::Observer::OnOobeDialogStateChanged(
     OobeDialogState state) {}
 
+void LoginDataDispatcher::Observer::OnFocusPod(const AccountId& account_id) {}
+
 LoginDataDispatcher::LoginDataDispatcher() = default;
 
 LoginDataDispatcher::~LoginDataDispatcher() = default;
@@ -154,6 +161,11 @@ void LoginDataDispatcher::NotifyFingerprintAuthResult(
     bool successful) {
   for (auto& observer : observers_)
     observer.OnFingerprintAuthResult(account_id, successful);
+}
+
+void LoginDataDispatcher::ResetFingerprintUIState(const AccountId& account_id) {
+  for (auto& observer : observers_)
+    observer.OnResetFingerprintUIState(account_id);
 }
 
 void LoginDataDispatcher::NotifySmartLockAuthResult(const AccountId& account_id,
@@ -282,6 +294,11 @@ void LoginDataDispatcher::HandleFocusLeavingLockScreenApps(bool reverse) {
 void LoginDataDispatcher::NotifyOobeDialogState(OobeDialogState state) {
   for (auto& observer : observers_)
     observer.OnOobeDialogStateChanged(state);
+}
+
+void LoginDataDispatcher::NotifyFocusPod(const AccountId& account_id) {
+  for (auto& observer : observers_)
+    observer.OnFocusPod(account_id);
 }
 
 }  // namespace ash

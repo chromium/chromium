@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -210,7 +210,14 @@ void SnapCoordinator::SnapAreaDidChange(LayoutBox& snap_area,
 }
 
 void SnapCoordinator::ResnapAllContainersIfNeeded() {
-  for (const auto& container : snap_containers_) {
+  std::vector<LayoutBox*> container_vector;
+  for (LayoutBox* container : snap_containers_) {
+    container_vector.push_back(container);
+  }
+  std::sort(container_vector.begin(), container_vector.end(),
+            recordreplay::CompareByRecordReplayId());
+
+  for (const auto* container : container_vector) {
     if (!container->GetScrollableArea()->NeedsResnap())
       continue;
 
@@ -235,7 +242,14 @@ void SnapCoordinator::ResnapAllContainersIfNeeded() {
 }
 
 void SnapCoordinator::UpdateAllSnapContainerDataIfNeeded() {
-  for (const auto& container : snap_containers_) {
+  std::vector<LayoutBox*> container_vector;
+  for (LayoutBox* container : snap_containers_) {
+    container_vector.push_back(container);
+  }
+  std::sort(container_vector.begin(), container_vector.end(),
+            recordreplay::CompareByRecordReplayId());
+
+  for (auto* container : container_vector) {
     if (container->GetScrollableArea()->SnapContainerDataNeedsUpdate())
       UpdateSnapContainerData(*container);
   }
@@ -263,10 +277,9 @@ void SnapCoordinator::UpdateSnapContainerData(LayoutBox& snap_container) {
   // to keep the area data up to date. So just update the type and skip updating
   // areas as an optimization.
   if (!snap_container_data.scroll_snap_type().is_none) {
-    FloatPoint max_position = scrollable_area->ScrollOffsetToPosition(
+    gfx::PointF max_position = scrollable_area->ScrollOffsetToPosition(
         scrollable_area->MaximumScrollOffset());
-    snap_container_data.set_max_position(
-        gfx::Vector2dF(max_position.x(), max_position.y()));
+    snap_container_data.set_max_position(max_position);
 
     // Scroll-padding represents inward offsets from the corresponding edge of
     // the scrollport.
@@ -302,13 +315,13 @@ void SnapCoordinator::UpdateSnapContainerData(LayoutBox& snap_container) {
         MinimumValueForLength(container_style->ScrollPaddingLeft(),
                               container_rect.Width()));
     container_rect.Contract(container_padding);
-    snap_container_data.set_rect(ToGfxRectF(FloatRect(container_rect)));
+    snap_container_data.set_rect(gfx::RectF(container_rect));
 
     if (snap_container_data.scroll_snap_type().strictness ==
         cc::SnapStrictness::kProximity) {
       PhysicalSize size = container_rect.size;
       size.Scale(kProximityRatio);
-      gfx::Vector2dF range(size.width.ToFloat(), size.height.ToFloat());
+      gfx::PointF range(size.width.ToFloat(), size.height.ToFloat());
       snap_container_data.set_proximity_range(range);
     }
 
@@ -319,7 +332,14 @@ void SnapCoordinator::UpdateSnapContainerData(LayoutBox& snap_container) {
             : cc::TargetSnapAreaElementIds();
 
     if (SnapAreaSet* snap_areas = snap_container.SnapAreas()) {
+      std::vector<const LayoutBox*> snap_area_vector;
       for (const LayoutBox* snap_area : *snap_areas) {
+        snap_area_vector.push_back(snap_area);
+      }
+      std::sort(snap_area_vector.begin(), snap_area_vector.end(),
+                recordreplay::CompareByRecordReplayId());
+
+      for (const LayoutBox* snap_area : snap_area_vector) {
         cc::SnapAreaData snap_area_data =
             CalculateSnapAreaData(*snap_area, snap_container);
         // The target snap elements should be preserved in the new container
@@ -414,7 +434,7 @@ cc::SnapAreaData SnapCoordinator::CalculateSnapAreaData(
       area_style->ScrollMarginTop(), area_style->ScrollMarginRight(),
       area_style->ScrollMarginBottom(), area_style->ScrollMarginLeft());
   area_rect.Expand(area_margin);
-  snap_area_data.rect = ToGfxRectF(FloatRect(area_rect));
+  snap_area_data.rect = gfx::RectF(area_rect);
 
   PhysicalRect container_rect = snap_container.PhysicalBorderBoxRect();
 

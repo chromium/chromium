@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/observer_list.h"
-#include "base/time/time.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_model_observer.h"
 #include "url/gurl.h"
@@ -33,9 +32,6 @@ class SendTabToSelfModel {
   // Returns a vector of entry IDs in the model.
   virtual std::vector<std::string> GetAllGuids() const = 0;
 
-  // Delete all entries.
-  virtual void DeleteAllEntries() = 0;
-
   // Returns a specific entry. Returns null if the entry does not exist.
   virtual const SendTabToSelfEntry* GetEntryByGUID(
       const std::string& guid) const = 0;
@@ -47,7 +43,6 @@ class SendTabToSelfModel {
   virtual const SendTabToSelfEntry* AddEntry(
       const GURL& url,
       const std::string& title,
-      base::Time navigation_time,
       const std::string& target_device_cache_guid) = 0;
 
   // Remove entry with |guid| from entries. Allows clients to modify the state

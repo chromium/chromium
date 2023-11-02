@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,6 +30,7 @@ class PointerDeviceObserver : public ui::InputDeviceEventObserver {
   class Observer {
    public:
     virtual void TouchpadExists(bool exists) = 0;
+    virtual void HapticTouchpadExists(bool exists) = 0;
     virtual void MouseExists(bool exists) = 0;
     virtual void PointingStickExists(bool exists) = 0;
 
@@ -46,11 +47,13 @@ class PointerDeviceObserver : public ui::InputDeviceEventObserver {
 
   // Check for pointer devices.
   void CheckTouchpadExists();
+  void CheckHapticTouchpadExists();
   void CheckMouseExists();
   void CheckPointingStickExists();
 
   // Callback for pointer device checks.
   void OnTouchpadExists(bool exists);
+  void OnHapticTouchpadExists(bool exists);
   void OnMouseExists(bool exists);
   void OnPointingStickExists(bool exists);
 

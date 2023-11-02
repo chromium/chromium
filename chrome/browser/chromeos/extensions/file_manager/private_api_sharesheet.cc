@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,16 +29,15 @@ namespace {
 
 using extensions::api::file_manager_private::SharesheetLaunchSource;
 
-sharesheet::SharesheetMetrics::LaunchSource GetLaunchSource(
-    SharesheetLaunchSource launch_source) {
+sharesheet::LaunchSource GetLaunchSource(SharesheetLaunchSource launch_source) {
   switch (launch_source) {
     case (SharesheetLaunchSource::SHARESHEET_LAUNCH_SOURCE_SHARESHEET_BUTTON):
-      return sharesheet::SharesheetMetrics::LaunchSource::kFilesAppShareButton;
+      return sharesheet::LaunchSource::kFilesAppShareButton;
     case (SharesheetLaunchSource::SHARESHEET_LAUNCH_SOURCE_CONTEXT_MENU):
-      return sharesheet::SharesheetMetrics::LaunchSource::kFilesAppContextMenu;
+      return sharesheet::LaunchSource::kFilesAppContextMenu;
     case (SharesheetLaunchSource::SHARESHEET_LAUNCH_SOURCE_UNKNOWN):
     case (SharesheetLaunchSource::SHARESHEET_LAUNCH_SOURCE_NONE):
-      return sharesheet::SharesheetMetrics::LaunchSource::kUnknown;
+      return sharesheet::LaunchSource::kUnknown;
   }
 }
 
@@ -124,7 +123,7 @@ void FileManagerPrivateInternalSharesheetHasTargetsFunction::
     }
   }
   result = sharesheet_service->HasShareTargets(
-      apps_util::CreateShareIntentFromFiles(urls_, *mime_types),
+      apps_util::MakeShareIntent(urls_, *mime_types),
       contains_hosted_document_);
   Respond(ArgumentList(extensions::api::file_manager_private_internal::
                            SharesheetHasTargets::Results::Create(result)));
@@ -168,8 +167,8 @@ void FileManagerPrivateInternalSharesheetHasTargetsFunction::
           ? GURL(*properties->share_url)
           : GURL();
   bool result = sharesheet_service->HasShareTargets(
-      apps_util::CreateShareIntentFromDriveFile(urls_[0], (*mime_types)[0],
-                                                share_url, is_directory),
+      apps_util::MakeShareIntent(urls_[0], (*mime_types)[0], share_url,
+                                 is_directory),
       contains_hosted_document_);
   Respond(ArgumentList(extensions::api::file_manager_private_internal::
                            SharesheetHasTargets::Results::Create(result)));
@@ -223,7 +222,7 @@ FileManagerPrivateInternalInvokeSharesheetFunction::Run() {
 }
 
 void FileManagerPrivateInternalInvokeSharesheetFunction::OnMimeTypesCollected(
-    sharesheet::SharesheetMetrics::LaunchSource launch_source,
+    sharesheet::LaunchSource launch_source,
     std::unique_ptr<std::vector<std::string>> mime_types) {
   // On button press show sharesheet bubble.
   sharesheet::SharesheetService* sharesheet_service =
@@ -250,15 +249,14 @@ void FileManagerPrivateInternalInvokeSharesheetFunction::OnMimeTypesCollected(
   }
 
   sharesheet_service->ShowBubble(
-      GetSenderWebContents(),
-      apps_util::CreateShareIntentFromFiles(urls_, *mime_types),
+      GetSenderWebContents(), apps_util::MakeShareIntent(urls_, *mime_types),
       contains_hosted_document_, launch_source, base::NullCallback());
   Respond(NoArguments());
 }
 
 void FileManagerPrivateInternalInvokeSharesheetFunction::
     OnDrivePropertyCollected(
-        sharesheet::SharesheetMetrics::LaunchSource launch_source,
+        sharesheet::LaunchSource launch_source,
         std::unique_ptr<std::vector<std::string>> mime_types,
         std::unique_ptr<api::file_manager_private::EntryProperties> properties,
         base::File::Error error) {
@@ -280,7 +278,7 @@ void FileManagerPrivateInternalInvokeSharesheetFunction::
 }
 
 void FileManagerPrivateInternalInvokeSharesheetFunction::OnIsDirectoryCollected(
-    sharesheet::SharesheetMetrics::LaunchSource launch_source,
+    sharesheet::LaunchSource launch_source,
     std::unique_ptr<std::vector<std::string>> mime_types,
     std::unique_ptr<api::file_manager_private::EntryProperties> properties,
     std::unique_ptr<std::set<base::FilePath>> path_directory_set) {
@@ -300,8 +298,8 @@ void FileManagerPrivateInternalInvokeSharesheetFunction::OnIsDirectoryCollected(
           : GURL();
   sharesheet_service->ShowBubble(
       GetSenderWebContents(),
-      apps_util::CreateShareIntentFromDriveFile(urls_[0], (*mime_types)[0],
-                                                share_url, is_directory),
+      apps_util::MakeShareIntent(urls_[0], (*mime_types)[0], share_url,
+                                 is_directory),
       contains_hosted_document_, launch_source, base::NullCallback());
   Respond(NoArguments());
 }

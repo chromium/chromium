@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,9 +25,13 @@ namespace base {
 class TimeTicks;
 }
 
+namespace component_updater {
+struct ComponentRegistration;
+}
+
 namespace android_webview {
-using RegisterComponentsCallback =
-    base::RepeatingCallback<bool(const update_client::CrxComponent&)>;
+using RegisterComponentsCallback = base::RepeatingCallback<bool(
+    const component_updater::ComponentRegistration&)>;
 
 class TestAwComponentUpdateService;
 
@@ -37,13 +41,14 @@ class AwComponentUpdateService {
  public:
   static AwComponentUpdateService* GetInstance();
 
-  // Callback used for updating components, with an int that represents how
+  // Callback used for updating components, with an int32_t that represents how
   // many components were actually updated.
-  using UpdateCallback = base::OnceCallback<void(int)>;
+  using UpdateCallback = base::OnceCallback<void(int32_t)>;
 
   void StartComponentUpdateService(UpdateCallback finished_callback,
                                    bool on_demand_update);
-  bool RegisterComponent(const update_client::CrxComponent& component);
+  bool RegisterComponent(
+      const component_updater::ComponentRegistration& component);
   void CheckForUpdates(UpdateCallback on_finished, bool on_demand_update);
 
   void IncrementComponentsUpdatedCount();
@@ -68,7 +73,9 @@ class AwComponentUpdateService {
   void OnUpdateComplete(update_client::Callback callback,
                         const base::TimeTicks& start_time,
                         update_client::Error error);
-  absl::optional<update_client::CrxComponent> GetComponent(
+  update_client::CrxComponent ToCrxComponent(
+      const component_updater::ComponentRegistration& component) const;
+  absl::optional<component_updater::ComponentRegistration> GetComponent(
       const std::string& id) const;
   std::vector<absl::optional<update_client::CrxComponent>> GetCrxComponents(
       const std::vector<std::string>& ids);
@@ -82,7 +89,8 @@ class AwComponentUpdateService {
   scoped_refptr<update_client::UpdateClient> update_client_;
 
   // A collection of every registered component.
-  base::flat_map<std::string, update_client::CrxComponent> components_;
+  base::flat_map<std::string, component_updater::ComponentRegistration>
+      components_;
 
   // Maintains the order in which components have been registered. The
   // position of a component id in this sequence indicates the priority of the
@@ -95,7 +103,7 @@ class AwComponentUpdateService {
                                update_client::Error error);
 
   // Counts how many components were updated, for UMA logging.
-  int components_updated_count_ = 0;
+  int32_t components_updated_count_ = 0;
 
   base::WeakPtrFactory<AwComponentUpdateService> weak_ptr_factory_{this};
 };

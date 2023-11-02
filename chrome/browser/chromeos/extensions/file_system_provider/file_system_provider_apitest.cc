@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/common/extension_features.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
@@ -147,14 +149,25 @@ class FileSystemProviderApiTest : public ExtensionApiTest {
     display_service_ = std::make_unique<NotificationDisplayServiceTester>(
         browser()->profile());
 
-    user_manager_.AddUser(AccountId::FromUserEmailGaiaId(
-        browser()->profile()->GetProfileUserName(), "12345"));
+    user_manager_.AddUser(AccountId::FromUserEmailGaiaId("test@test", "12345"));
   }
 
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
 
  private:
   ash::FakeChromeUserManager user_manager_;
+};
+
+class FileSystemProviderServiceWorkerApiTest
+    : public FileSystemProviderApiTest {
+ public:
+  FileSystemProviderServiceWorkerApiTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        extensions_features::kExtensionsFSPInServiceWorkers);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(FileSystemProviderApiTest, Mount) {
@@ -336,6 +349,83 @@ IN_PROC_BROWSER_TEST_F(FileSystemProviderApiTest, Unresponsive_App) {
   ASSERT_TRUE(RunExtensionTest("file_system_provider/unresponsive_app",
                                {.launch_as_platform_app = true},
                                {.load_as_component = true}))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(FileSystemProviderServiceWorkerApiTest, BigFile) {
+  ASSERT_TRUE(RunExtensionTest("file_system_provider/service_worker/big_file",
+                               {.extension_url = "test.html"},
+                               {.load_as_component = true}))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(FileSystemProviderServiceWorkerApiTest, Configure) {
+  ASSERT_TRUE(RunExtensionTest("file_system_provider/service_worker/configure",
+                               {.extension_url = "test.html"},
+                               {.load_as_component = true}))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(FileSystemProviderServiceWorkerApiTest, CopyEntry) {
+  ASSERT_TRUE(RunExtensionTest("file_system_provider/service_worker/copy_entry",
+                               {.extension_url = "test.html"},
+                               {.load_as_component = true}))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(FileSystemProviderServiceWorkerApiTest, DeleteEntry) {
+  ASSERT_TRUE(RunExtensionTest(
+      "file_system_provider/service_worker/delete_entry",
+      {.extension_url = "test.html"}, {.load_as_component = true}))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(FileSystemProviderServiceWorkerApiTest, Evil) {
+  ASSERT_TRUE(RunExtensionTest("file_system_provider/service_worker/evil",
+                               {.extension_url = "test.html"},
+                               {.load_as_component = true}))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(FileSystemProviderServiceWorkerApiTest, GetAll) {
+  ASSERT_TRUE(RunExtensionTest("file_system_provider/service_worker/get_all",
+                               {.extension_url = "test.html"},
+                               {.load_as_component = true}))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(FileSystemProviderServiceWorkerApiTest, MoveEntry) {
+  ASSERT_TRUE(RunExtensionTest("file_system_provider/service_worker/move_entry",
+                               {.extension_url = "test.html"},
+                               {.load_as_component = true}))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(FileSystemProviderServiceWorkerApiTest, ReadDirectory) {
+  ASSERT_TRUE(RunExtensionTest(
+      "file_system_provider/service_worker/read_directory",
+      {.extension_url = "test.html"}, {.load_as_component = true}))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(FileSystemProviderServiceWorkerApiTest, ReadFile) {
+  ASSERT_TRUE(RunExtensionTest("file_system_provider/service_worker/read_file",
+                               {.extension_url = "test.html"},
+                               {.load_as_component = true}))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(FileSystemProviderServiceWorkerApiTest, WriteFile) {
+  ASSERT_TRUE(RunExtensionTest("file_system_provider/service_worker/write_file",
+                               {.extension_url = "test.html"},
+                               {.load_as_component = true}))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(FileSystemProviderServiceWorkerApiTest, CreateFile) {
+  ASSERT_TRUE(RunExtensionTest(
+      "file_system_provider/service_worker/create_file",
+      {.extension_url = "test.html"}, {.load_as_component = true}))
       << message_;
 }
 

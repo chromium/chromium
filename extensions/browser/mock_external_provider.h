@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include <utility>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "extensions/browser/external_provider_interface.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest.h"
@@ -61,7 +61,7 @@ class MockExternalProvider : public ExternalProviderInterface {
   FileDataMap file_extension_map_;
   UrlDataMap url_extension_map_;
   mojom::ManifestLocation location_;
-  VisitorInterface* visitor_;
+  raw_ptr<VisitorInterface> visitor_;
 
   // visit_count_ tracks the number of calls to VisitRegisteredExtension().
   // Mutable because it must be incremented on each call to

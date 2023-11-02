@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -115,7 +115,7 @@ TEST_F(MojoGURLStructTraitsTest, WindowsDriveInPathReplacement) {
     // details, see https://crbug.com/1214098#c4).
     GURL::Replacements repl;
     const std::string kNewPath = "/C:/dir/file.txt";
-    repl.SetPath(kNewPath.c_str(), url::Component(0, kNewPath.length()));
+    repl.SetPathStr(kNewPath);
     GURL url_made_with_replace_components =
         GURL("file://hostname/").ReplaceComponents(repl);
 
@@ -141,7 +141,7 @@ TEST_F(MojoGURLStructTraitsTest, WindowsDriveInPathReplacement) {
     // should be the same.
     GURL::Replacements repl;
     const std::string kNewPath = "/C:/dir/file.txt";
-    repl.SetPath(kNewPath.c_str(), url::Component(0, kNewPath.length()));
+    repl.SetPathStr(kNewPath);
     GURL url_made_with_replace_components =
         GURL("file://hostname/").ReplaceComponents(repl);
     EXPECT_EQ(url_created_directly.spec(),
@@ -161,7 +161,7 @@ TEST_F(MojoGURLStructTraitsTest, WindowsDriveInPathReplacement) {
     // should be the same.
     GURL::Replacements repl;
     const std::string kNewPath = "/C:/dir/file.txt";
-    repl.SetPath(kNewPath.c_str(), url::Component(0, kNewPath.length()));
+    repl.SetPathStr(kNewPath);
     GURL url_made_with_replace_components =
         GURL("file://localhost/").ReplaceComponents(repl);
     EXPECT_EQ(url_created_directly.spec(),
@@ -198,6 +198,12 @@ TEST_F(MojoGURLStructTraitsTest, OriginSerialization) {
   EXPECT_EQ(normalized, output);
   EXPECT_EQ(non_unique, output);
   EXPECT_FALSE(output.opaque());
+}
+
+// Test that the "kMaxURLChars" values are the same in url.mojom and
+// url_constants.cc.
+TEST_F(MojoGURLStructTraitsTest, TestMaxURLChars) {
+  EXPECT_EQ(kMaxURLChars, mojom::kMaxURLChars);
 }
 
 }  // namespace url

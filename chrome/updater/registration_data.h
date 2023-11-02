@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,8 +13,8 @@
 
 namespace updater {
 
-constexpr int kRegistrationSuccess = 0;
-constexpr int kRegistrationAlreadyRegistered = 1;
+inline constexpr int kRegistrationSuccess = 0;
+inline constexpr int kRegistrationAlreadyRegistered = 1;
 
 struct RegistrationRequest {
   RegistrationRequest();
@@ -28,6 +28,11 @@ struct RegistrationRequest {
   // presence to a marketing campaign or similar effort. May be the empty
   // string.
   std::string brand_code;
+
+  // A file path. Currently applicable to on Mac only: if a valid plist file
+  // exists at this path, the string value of key "KSBrandID" will override
+  // the `brand_code` above.
+  base::FilePath brand_path;
 
   // The ap value (e.g. from a tagged metainstaller). May be the empty string.
   // This typically indicates channel, though it can carry additional data as
@@ -43,13 +48,6 @@ struct RegistrationRequest {
   // whether an app has been uninstalled via deletion. May be the empty
   // string; if so, the app is assumed to be installed unconditionally.
   base::FilePath existence_checker_path;
-};
-
-struct RegistrationResponse {
-  explicit RegistrationResponse(int status_code) : status_code(status_code) {}
-
-  // Status code of the registration.
-  int status_code = kRegistrationSuccess;
 };
 
 }  // namespace updater

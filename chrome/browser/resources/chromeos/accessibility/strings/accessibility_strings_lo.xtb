@@ -30,7 +30,9 @@
 <translation id="1189258430971676908">ພື້ນທີ່ຝຶກປະຕິບັດ: ລາຍການແບບເລື່ອນລົງ</translation>
 <translation id="1195238899008218998">ຄຳກ່າວທ້າຍບົດ</translation>
 <translation id="1197088940767939838">ສີໝາກກ້ຽງ</translation>
+<translation id="1198865190323699001">ທ່າທາງສຳຜັດ</translation>
 <translation id="1201402288615127009">ຕໍ່ໄປ</translation>
+<translation id="1202112913213080585">ຍົກເລີກ</translation>
 <translation id="1206619573307042055">marquee</translation>
 <translation id="1207086294218137981">ບໍ່ມີຫົວຂໍ້ລະດັບ 4 ຖັດໄປ</translation>
 <translation id="1212770441379271564">ທາງລັດສອງສາມອັນຕໍ່ໄປບໍ່ແມ່ນຄຳສັ່ງ ChromeVox, ແຕ່ພວກມັນກໍເປັນປະໂຫຍດຫຼາຍເຊັ່ນກັນສຳລັບການໃຊ້ປະໂຫຍດສູງສຸດຈາກ Chrome.
@@ -42,6 +44,7 @@
 ເພື່ອເປີດເມນູໂປຣແກຣມທ່ອງເວັບ Chrome, ກະລຸນາກົດ Alt+F.</translation>
 <translation id="1213216066620407844">ChromeVox - ໃຫ້​ສຽງ​ກັບ Chrome</translation>
 <translation id="1225969361094801578">ສີເທົາອົມຟ້າເຂັ້ມ</translation>
+<translation id="122928249241119550">ຍ້າຍໄປຫາປະໂຫຍກກ່ອນໜ້າ</translation>
 <translation id="1230503547248836149">ຈຸດເລີ່ມຕົ້ນສ່ວນທີ່ເລືອກ</translation>
 <translation id="1236794971743289975">ໝາຍເຫດທ້າຍເລື່ອງ</translation>
 <translation id="1237797094773582699">ໃນລັກສະນະດຽວກັນ, ທ່ານສາມາດປັດຈາກຂວາໄປຊ້າຍດ້ວຍສີ່ນິ້ວເພື່ອເລື່ອນໄປພາກສ່ວນກ່ອນໜ້າໄດ້. ລອງຕອນນີ້ເລີຍ!</translation>
@@ -135,9 +138,9 @@
 <translation id="1812527064848182527">ແນວນອນ</translation>
 <translation id="1829244130665387512">ຊອກ​ຫາ​ຢູ່​ໃນ​ຫນ້າ</translation>
 <translation id="1834891354138622109">ຖັນ</translation>
-<translation id="1845944666972354496">ແຕະສອງເທື່ອເພື່ອເປີດນຳໃຊ້</translation>
 <translation id="1846771122725914429">ການສະແດງຜົນອັກສອນນູນຜ່ານ Bluetooth</translation>
 <translation id="1852018405765032699">ການແຕະໜ້າຈໍດ້ວຍສີ່ນິ້ວຈະເປີດ ແລະ ປິດເມນູ ChromeVox. ເມນູເຫຼົ່ານີ້ມີຂໍ້ມູນທີ່ເປັນປະໂຫຍດກ່ຽວກັບຄຳສັ່ງ ແລະ ທາງລັດຕ່າງໆ. ເມື່ອເປີດເມນູແລ້ວ, ທ່ານສາມາດປັດດ້ວຍໜຶ່ງນິ້ວເພື່ອເລື່ອນຜ່ານລາຍການ ແລະ ແຕະສອງເທື່ອເພື່ອເປີດນຳໃຊ້ລາຍການໄດ້. ເພື່ອສືບຕໍ່, ໃຫ້ແຕະໃສ່ໜ້າຈໍດ້ວຍສີ່ນິ້ວ.</translation>
+<translation id="1864430479908918647">ກົດ ຊອກຫາ+ຍະຫວ່າງ</translation>
 <translation id="1865601187525349519">ຈົບຂໍ້ຄວາມ</translation>
 <translation id="1876229593313240038">ເອກະສານ</translation>
 <translation id="1902396333223336119">ເຊລ</translation>
@@ -212,6 +215,7 @@
 <translation id="2435422727584637732">ສີຟ້າດອດເຈີບລູ</translation>
 <translation id="2438712309510062123">ແນະນຳ</translation>
 <translation id="2450814015951372393">ກ່ອງໝາຍຕິກ</translation>
+<translation id="2450992626945324272">ຍ້າຍໄປຫາປະໂຫຍກຕໍ່ໄປ</translation>
 <translation id="2461822463642141190">ປັດຈຸບັນ</translation>
 <translation id="2462626033734746142">ກຸ່ມ​ປຸ່ມ​ວິ​ທະ​ຍຸ</translation>
 <translation id="2467741090055146971">ບໍ່ເລືອກ</translation>
@@ -234,6 +238,7 @@
 <translation id="2619344480613750862">ທ່ານສາມາດເລື່ອນໄປມາລະຫວ່າງພາກສ່ວນຂອງໜ້າຈໍໄດ້. ຕົວຢ່າງ: ທ່ານສາມາດເລື່ອນໄປມາລະຫວ່າງຕົວເປີດໃຊ້, ຖ້ານ ແລະ ແຖບ Chrome ຂອງທ່ານໄດ້. ເພື່ອເລື່ອນໄປພາກສ່ວນຕໍ່ໄປ, ໃຫ້ປັດຈາກຊ້າຍໄປຂວາດ້ວຍສີ່ນິ້ວ. ລອງເຮັດຕອນນີ້ເພື່ອສືບຕໍ່.</translation>
 <translation id="2624431853467395961">ເປີດໂໝດການຮຽນຮູ້</translation>
 <translation id="2626530649491650971">ສາມາດຄລິກໄດ້</translation>
+<translation id="263637551280112393">ກົດ ຊອກຫາ+Shift+ຍະຫວ່າງ</translation>
 <translation id="2637227747952042642">ຄະນິດສາດ</translation>
 <translation id="2638785836053527382">ສືບຕໍ່ການດາວໂຫລດແລ້ວ <ph name="FILE_NAME" /></translation>
 <translation id="2639750663247012216">ຕົວຂະຫຍາຍ ChromeVox</translation>
@@ -389,7 +394,9 @@
 <translation id="3492609944033322585">{COUNT,plural, =1{ວົງ​ເລັບຂວາ}other{# ວົງເລັບຂວາ}}</translation>
 <translation id="3494946239022273294">mnuitm</translation>
 <translation id="3497063866483065785">{COUNT,plural, =1{ ຫມາຍ​​ຖາມ}other{# ໝາຍຖາມ}}</translation>
+<translation id="3505359110822747654">ຫຍໍ້ເມນູ ChromeVox</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{ ໝາຍກຸບ}other{ # ໝາຍກຸບ}}</translation>
+<translation id="3518600448524470129">{COUNT,plural, =1{ສັນຍາລັກຫຍໍ້ໜ້າສີຂາວ}other{# ສັນຍາລັກຫຍໍ້ໜ້າສີຂາວ}}</translation>
 <translation id="352577523970648069">ຊ່ອງຕື່ມຂໍ້ມູນທີ່ສາມາດແກ້ໄຂໄດ້</translation>
 <translation id="3538907380453898475">ລາຍການຄຳອະທິບາຍ</translation>
 <translation id="3549141990712742152">ຕັດ <ph name="TEXT" />.</translation>
@@ -486,6 +493,7 @@
 <translation id="42164919740161077">ສີຟ້າດຄາເດດບລູ</translation>
 <translation id="4217571870635786043">ການພິມຕາມຄຳບອກ</translation>
 <translation id="4218529045364428769">{COUNT,plural, =1{ ເຄື່ອງໝາຍ -}other{ # ເຄື່ອງໝາຍ -}}</translation>
+<translation id="4220024144662591089">ເລືອກຈາກ <ph name="START_PHRASE" /> ເຖິງ <ph name="END_PHRASE" /></translation>
 <translation id="4221012616705981690">ບໍ່ມີລາຍການກ່ອນໜ້າ</translation>
 <translation id="4225355998815256469">ການຄວບຄຸມຟອມ</translation>
 <translation id="4230834257931120629">ສີຂຽວສະເລດອ່ອນ</translation>
@@ -504,6 +512,7 @@
 <translation id="4300318234632215983">ປະກາດ URL ເບື້ອງຫຼັງລິ້ງ</translation>
 <translation id="4322625298640984693">ສີນໍ້າຕານດິນ</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{ ຈໍ້າ}=3{ ສາມຈໍ້າ}other{ # ຈໍ້າ}}</translation>
+<translation id="4352022650330571548">ພິມ <ph name="PHRASE" /></translation>
 <translation id="4372435075475052704">ຕໍ່າສຸດ​: <ph name="X" /></translation>
 <translation id="4372705107434148843">ຢຸດການເວົ້າ</translation>
 <translation id="4376316291247992553">ເບິ່ງກຣາຟິກເປັນໜັງສືໂພງສຳລັບຄົນຕາບອດ</translation>
@@ -521,6 +530,7 @@
 <translation id="4479068155583208887">ສີແດງໄຟບຣິກ</translation>
 <translation id="4482330759234983253">ຕາ​ຕະ​ລາງ​ຜ່ານ​ມາ</translation>
 <translation id="4491109536499578614">ຮູບ​</translation>
+<translation id="4507332368061453500">ຄລິກລາຍການປັດຈຸບັນຄ້າງໄວ້</translation>
 <translation id="4511186779140817916">ສີບລາເຈັດອາລມອນ</translation>
 <translation id="451510441928265982">ບໍ່ມີຫົວຂໍ້ລະດັບ 2 ກ່ອນໜ້າ</translation>
 <translation id="4515799157838123044">ເຮັດໃຫ້ສີຂອງເນື້ອຫາໃນພື້ນຫຼັງຈາງລົງ</translation>
@@ -533,6 +543,7 @@
 <translation id="4601367666219428522">ຕາຕະລາງ <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">ບໍ່ສົນໃຈການກົດປຸ່ມຕໍ່​ໄປ</translation>
 <translation id="4623097797855662355">ຂໍ້ມູນບັນນານຸກົມ</translation>
+<translation id="4624970070706497034">TalkBack ບໍ່ສາມາດປັບແຕ່ງສຳລັບ Chromebook ໄດ້ອີກຕໍ່ໄປແລ້ວ. ທ່ານຍັງຄົງສາມາດໃຊ້ມັນໄດ້, ແຕ່ໃຊ້ທາງລັດແປ້ນພິມ TalkBack ເລີ່ມຕົ້ນແທນ. ກົດ Search+A, ຈາກນັ້ນກົດ K ເພື່ອເບິ່ງທາງລັດທີ່ສາມາດໃຊ້ໄດ້. ຫາກທ່ານຍັງຄົງຢາກໃຊ້ TalkBack ຢູ່, ໃຫ້ກົດຄຳສັ່ງອີກເທື່ອໜຶ່ງ.</translation>
 <translation id="463135993322337640">ກົດ ChromeVox o, n ເພື່ອຊອກຮູ້ວ່າມີຫຍັງໃໝ່</translation>
 <translation id="4649220074413114917">ສາມາດແຕະໃສ່ໜ້າຈໍດ້ວຍສອງນິ້ວເພື່ອຢຸດການເວົ້າປັດຈຸບັນໄດ້. ນີ້ຈະມີປະໂຫຍດຫາກທ່ານບໍ່ຕ້ອງການໃຫ້ ChromeVox ອ່ານບາງຢ່າງ. ເພື່ອສືບຕໍ່, ໃຫ້ແຕະໃສ່ໜ້າຈໍດ້ວຍສອງນິ້ວ.</translation>
 <translation id="4660783501463101648">ລຶບແບບຄລາດສິກອອກແລ້ວ. ປຸ່ມສັບປ່ຽນເພື່ອປ່ຽນກັບຄືນເປັນ ChromeVox ຄລາດສິກ ໄດ້ຖືກລຶບອອກແລ້ວ.</translation>
@@ -588,7 +599,6 @@
 <translation id="4993152509206108683">ອັດ​ຕາ <ph name="PERCENT" /> ສ່ວນ​ຮ້ອຍ</translation>
 <translation id="4994420463726586413">ປະກາດສະຖານະແບັດເຕີຣີປັດຈຸບັນ</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, ເລືອກປຸ່ມວິທະຍຸແລ້ວ</translation>
-<translation id="5011664330025416377">ກົດປຸ່ມ Search+Space ເພື່ອເປີດການນຳໃຊ້</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, ເລືອກປຸ່ມຕົວເລືອກລາຍການໃນເມນູແລ້ວ</translation>
 <translation id="5020651427400641814">ເປີດນຳໃຊ້ການບັນທຶກຄວາມໄວ</translation>
 <translation id="5041394372352067729">ຍ້າຍ​ການສະ​ແດງຕົວໜັງສືນູນໄປດ້ານ​ເທິງຂອງ​ຫນ້າ</translation>
@@ -615,7 +625,6 @@
 <translation id="5170206230005240598">ເປີດການນຳໃຊ້ຄຳອະທິບາຍອັກສອນນູນແລ້ວ</translation>
 <translation id="5183440668879371625">ແຖວຕົວໜັງສືນູນຜ່ານມາ</translation>
 <translation id="5189244881767082992">ເສັ້ນ</translation>
-<translation id="5234747236692380506">ພິມ <ph name="TEXT" /></translation>
 <translation id="5263034204789987535">ສີເຫຼືອງຄອນຊິລ</translation>
 <translation id="5263344797180442561">h2</translation>
 <translation id="528468243742722775">ສິ້ນສຸດ</translation>
@@ -642,6 +651,7 @@
 <translation id="5355014376930441909">ບໍ່ມີພາກສ່ວນຖັດໄປ</translation>
 <translation id="5368000168321181111">Earcons ປິດ</translation>
 <translation id="5368505757342402527">ດາວໂຫຼດສຳເລັດ <ph name="PROGRESS" />% <ph name="FILE_NAME" />. ຍັງອີກປະມານ <ph name="TIME" /> <ph name="UNITS" />.</translation>
+<translation id="5381388086899614489">ຄລິກຄ້າງ</translation>
 <translation id="5400836586163650660">ສີເທົາ</translation>
 <translation id="5402367795255837559">ຕົວໜັງສືນູນ</translation>
 <translation id="5402791055281059602">ການແຈ້ງເຕືອນແບບວິທີ</translation>
@@ -663,6 +673,7 @@
 <translation id="5522423213731659107">ສຳເລັດການແນະນຳເບື້ອງຕົ້ນແບບດ່ວນແລ້ວ!</translation>
 <translation id="5534303576632885660">ຫົວຂໍ້</translation>
 <translation id="5539820223028224601">ສີເທົາເກນໂບໂຣ</translation>
+<translation id="554893713779400387">ເປີດປິດການຂຽນຕາມຄຳບອກ</translation>
 <translation id="5549179427201066174">ເປີດ ຫຼື ປິດການຕອບສະໜອງດ້ວຍສຽງ (ອີຄອນ).</translation>
 <translation id="556042886152191864">ປຸ່ມ</translation>
 <translation id="5561345396546889625">ລາຍການ​ຕໍ່​ໄປ</translation>
@@ -673,6 +684,7 @@
 <translation id="5597170376237141345">ກ່ອງໝາຍຕິກຕໍ່ໄປ.</translation>
 <translation id="5598905979683743333"><ph name="NAME" />, ຖອນເລືອກປຸ່ມວິທະຍຸແລ້ວ</translation>
 <translation id="5601172225407283979">ປະຕິບັດການກະທໍາມາດຕະຖານ</translation>
+<translation id="5604302400025591178">{COUNT,plural, =1{ສັນຍາລັກຫຍໍ້ໜ້າແບບສີ່ຫຼ່ຽມ}other{# ສັນຍາລັກຫຍໍ້ໜ້າແບບສີ່ຫຼ່ຽມ}}</translation>
 <translation id="5608798115546226984">ໃນແຖວການຕື່ມເຕັມອັດຕະໂນມັດ</translation>
 <translation id="5616029807486814372">ບົດຮຽນຕໍ່ໄປ</translation>
 <translation id="561939826962581046">ເວລາ</translation>
@@ -680,6 +692,8 @@
 <translation id="5623842676595125836">ປື້​ມບັນທຶກ</translation>
 <translation id="5628125749885014029">h4</translation>
 <translation id="5632083598315326067">ສັນຍາລັກກຣາຟິກ</translation>
+<translation id="5648939288050772726">ຂໍສະແດງຄວາມຍິນດີ! ທ່ານໄດ້ຮຽນຮູ້ສິ່ງສຳຄັນໃນການນຳໃຊ້ ChromeVox ສຳເລັດແລ້ວ. ຢ່າລືມວ່າທ່ານສາມາດເປີດເມນູຄຳສັ່ງຂອງ ChromeVox ຕອນໃດກໍໄດ້ໂດຍການກົດປຸ່ມຊອກຫາ+ຈ້ຳເມັດ. ເພື່ອສຶກສາໃຫ້ຫຼາຍຍິ່ງຂຶ້ນກ່ຽວກັບ ChromeVox ແລະ ChromeOS, ກະລຸນາເຂົ້າເບິ່ງບົດຄວາມຕໍ່ໄປນີ້.
+    ຖ້າທ່ານຮຽນການສອນການນຳໃຊ້ສຳເລັດແລ້ວ, ກະລຸນາໃຊ້ ChromeVox ເພື່ອນຳທາງໄປຫາປຸ່ມປິດແລ້ວຄລິກມັນ.</translation>
 <translation id="5653397561111110475">ໃຊ້ຄຸນສົມບັດການຊ່ວຍເຂົ້າເຖິງຂອງໜ້າຈໍສຳຜັດ Chromebook</translation>
 <translation id="5655682562155942719">ຄໍາສັ່ງກະໂດດຂ້າມ</translation>
 <translation id="56637627897541303">ເຂດ​ຂໍ້​ຄວາມ</translation>
@@ -750,8 +764,10 @@
 <translation id="6100239002225743044">ຍ້າຍຂຶ້ນໜຶ່ງແຖວ</translation>
 <translation id="6118126368611144850">ແອັບ Android ສຳລັບ Chrome. ຖ້າທ່ານມີ Play Store ໃນອຸປະກອນຂອງທ່ານ, ເຊີນລອງໃຊ້ ChromeVox ດ້ວຍແອັບ Android. ລອງໃຊ້ການຮອງຮັບແບບທົດລອງໂດຍການດາວໂຫຼດ Google Chrome Canary ຈາກ Play Store.</translation>
 <translation id="611827076493383239">vtd</translation>
+<translation id="6119846243427417423">ເປີດໃຊ້ງານ</translation>
 <translation id="6122013438240733403">ປຸ່ມ</translation>
 <translation id="6132506484792346370">ກ່ອງລາຍການ ຫຼື ກ່ອງຄອມໂບ</translation>
+<translation id="613344593214611552">ລຶບປະໂຫຍກກ່ອນໜ້າ</translation>
 <translation id="6142308968191113180">ຫົວ​ຂໍ້ 4</translation>
 <translation id="6150023170003443621">ສີຂຽວອົມເຫຼືອງ</translation>
 <translation id="6158882249329863701">ແຖວ <ph name="TABLECELLROWINDEX" /> ຖັນ <ph name="TABLECELLCOLUMNINDEX" /></translation>
@@ -761,9 +777,11 @@
 <translation id="6186305613600865047">ໂດດໄປຫາດ້ານລຸ່ມຂອງໜ້າ</translation>
 <translation id="6187190722927752226">ສີຂຽວອົມຟ້າ</translation>
 <translation id="6197361807490522975">ສີຟ້າເຂັ້ມ</translation>
+<translation id="6218813441317556731">ແທນທີ່ <ph name="DELETE_PHRASE" /> ດ້ວຍ <ph name="INSERT_PHRASE" /></translation>
 <translation id="6236061028292614533">ຫົວ​ຂໍ້​ຕໍ່​ໄປ</translation>
 <translation id="6254901459154107917">ພື້ນທີ່ຂໍ້ຄວາມດັດແກ້ໄດ້ຕໍ່ໄປ</translation>
 <translation id="6259464875943891919">ອອກແລ້ວ <ph name="TYPE" /> .</translation>
+<translation id="6280088282605782512">ແຕະສອງເທື່ອ</translation>
 <translation id="6282062888058716985">ການນໍາ​ທາງ</translation>
 <translation id="6295699829709583154">ປຸ່ມສຳຄັນ: ຊອກຫາ</translation>
 <translation id="6305702903308659374">ຫຼິ້ນໃນລະດັບສຽງປົກກະຕິ ເຖິງແມ່ນວ່າ ChromeVox ກຳລັງເວົ້າຢູ່ກໍຕາມ</translation>
@@ -933,6 +951,7 @@
 <translation id="7533226154149229506">ສີເຫຼືອງໂກນເດິນຣອດອ່ອນ</translation>
 <translation id="7543255924852002459">ຍົກເລີກປ້າຍກຳກັບ</translation>
 <translation id="7552432549459840808">ທາງລັດທີ່ເປັນປະໂຫຍດຂອງ Chrome</translation>
+<translation id="7553679324939294712">ແຊກ <ph name="INSERT_PHRASE" /> ກ່ອນ <ph name="BEFORE_PHRASE" /></translation>
 <translation id="7569983096843329377">ສີ​ດໍາ</translation>
 <translation id="7579911500627256166">ຈໍ້າ <ph name="DOT" /></translation>
 <translation id="7592060599656252486">ບາງສ່ວນ</translation>
@@ -956,16 +975,16 @@
 <translation id="7684431668231950609">ດັດ​ແກ້​ຂໍ້​ຄວາມ​, ການປ້ອນເຂົ້າ URL</translation>
 <translation id="7685589220304187312">tlbar</translation>
 <translation id="7693840228159394336">ປຸ່ມ​ວິ​ທະ​ຍຸ​ຜ່ານ​ມາ​</translation>
+<translation id="7696631298608145306">ຍ້າຍໄປຫາຄຳຕໍ່ໄປ</translation>
 <translation id="7701040980221191251">ບໍ່​ມີ​</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7713139339518499741">ສຽງທຳມະຊາດ</translation>
 <translation id="7714340021005120797">ບໍ່ມີກ່ອງຄອມໂບຖັດໄປ</translation>
-<translation id="772146615414628379">ຂໍສະແດງຄວາມຍິນດີ! ທ່ານໄດ້ຮຽນຮູ້ສິ່ງສຳຄັນໃນການນຳໃຊ້ ChromeVox ສຳເລັດແລ້ວ. ຈື່ວ່າທ່ານສາມາດເປີດເມນູຄຳສັ່ງຂອງ ChromeVox ໄດ້ທຸກເວລາໂດຍການກົດປຸ່ມຊອກຫາ+ໝາຍຈໍ້າ. ເພື່ອຮຽນຮູ້ເພີ່ມເຕີມອີກກ່ຽວກັບ ChromeVox ແລະ Chrome OS, ກະລຸນາເຂົ້າເບິ່ງບົດຄວາມຕໍ່ໄປນີ້.
-    ຖ້າທ່ານຮຽນການສອນການນຳໃຊ້ສຳເລັດແລ້ວ, ກະລຸນາໃຊ້ ChromeVox ເພື່ອນຳທາງໄປຫາປຸ່ມປິດ ແລ້ວຄລິກມັນ.</translation>
 <translation id="7724603315864178912">ຕັດ</translation>
 <translation id="7731785449856576010">ບໍ່ມີວິກເຈັດສື່ຖັດໄປ</translation>
 <translation id="7735498529470878067">ການສຳຫຼວດໂດຍການສຳຜັດສາມາດຊ່ວຍໃຫ້ທ່ານເຂົ້າໃຈສິ່ງທີ່ຢູ່ໜ້າຈໍໄດ້ຢ່າງວ່ອງໄວ.</translation>
 <translation id="773906353055481349">ກົດປຸ່ມ Search+Ctrl+Alt ພ້ອມລູກສອນເພື່ອເລື່ອນໄປເທື່ອລະເຊວ</translation>
+<translation id="7746976083433980639"><ph name="ACTION" /> ຫາ <ph name="LABEL" /></translation>
 <translation id="7763537600611320912">ເລີ່ມການດາວໂຫລດແລ້ວ <ph name="FILE_NAME" /></translation>
 <translation id="7768784765476638775">ເລືອກເພື່ອເວົ້າ</translation>
 <translation id="7776293189010177726">ເປີດເມນູ ChromeVox</translation>
@@ -1065,6 +1084,7 @@
 <translation id="8455868257606149352">ສູງສຸດ <ph name="X" /></translation>
 <translation id="84575901236241018">ມີປຸ່ມເຂົ້າຫາ, <ph name="KEY" /></translation>
 <translation id="8463645336674919227">ອອກຈາກຂໍ້ຜິດພາດທາງໄວຍະກອນ</translation>
+<translation id="8465573210279050749">ລຶບຄຳກ່ອນໜ້າ</translation>
 <translation id="847040613207937740">ບໍ່ມີກ່ອງໝາຍຖັດໄປ</translation>
 <translation id="8473540203671727883">ເວົ້າຂໍ້ຄວາມຢູ່ກ້ອງເມົ້າ</translation>
 <translation id="8476408756881832830">ຢຸດການຫຼິ້ນໄວ້ຊົ່ວຄາວ ເມື່ອ ChromeVox ກຳລັງເວົ້າ</translation>
@@ -1095,11 +1115,13 @@
 <translation id="8659501358298941449">ລາຍຊື່ແບບລົງລຸ່ມ</translation>
 <translation id="8666733765751421568"><ph name="TYPE" /> ສິ້ນສຸດ</translation>
 <translation id="867187640362843212">ຫົວຂໍ້ 5</translation>
+<translation id="8690400660839620419">{COUNT,plural, =1{}other{ລະດັບທີ່ຊ້ອນເຂົ້າໄປ #}}</translation>
 <translation id="8693391540059827073">ລະດູການທີ່ຂ້ອຍມັກ</translation>
 <translation id="8696284982970258155">ສີຂຽວຮັນນີດິວ</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{ ເຄື່ອງໝາຍ |}other{ # ເຄື່ອງໝາຍ | ລວງຕັ້ງ}}</translation>
 <translation id="8741370088760768424">ຄຳບອກໃບ້: ກົດຊອກຫາ + ຍະຫວ່າງເພື່ອເປີດໃຊ້ລາຍການປັດຈຸບັນ.</translation>
 <translation id="8743786158317878347">ເຂົ້າເນື້ອ​ໃນທີ່ເຮັດເປັນໂຄງຮ່າງໄວ້​, ເຊັ່ນ​: ຕາ​ຕະ​ລາງ</translation>
+<translation id="8746846427395705317">ຍ້າຍໄປຫາຄຳກ່ອນໜ້າ</translation>
 <translation id="8747966237988593539">ລາຍການທີ່ສັ່ງແລ້ວ</translation>
 <translation id="8749988712346667988">ສີເງິນ</translation>
 <translation id="875769700429317857">ດາວໂຫລດສຳເລັດແລ້ວ <ph name="FILE_NAME" /></translation>
@@ -1127,6 +1149,7 @@
 <translation id="8970172509886453271">ບໍ່ມີພາກສ່ວນກ່ອນໜ້າ</translation>
 <translation id="89720367119469899">Escape</translation>
 <translation id="8978496506222343566">tltip</translation>
+<translation id="898089897833732740">ລຶບ <ph name="PHRASE" /></translation>
 <translation id="8986362086234534611">ລືມ</translation>
 <translation id="8989104346085848538">ເພື່ອຢຸດສຽງເວົ້າປັດຈຸບັນໃນ ChromeVox ໃດໆກໍຕາມ, ກະລຸນາກົດປຸ່ມ Control.</translation>
 <translation id="8993737615451556423">ໃຫ້ການຄວບຄຸມເພື່ອເພີ່ມຄວາມໄວ, ຜ່ອນຄວາມໄວ ແລະ ຢຸດສຽງການອ່ານໄວ້ຊົ່ວຄາວ</translation>
@@ -1162,6 +1185,7 @@
 <translation id="9223032053830369045">ສີແດງເຂັ້ມ</translation>
 <translation id="923331726185079994">ອັບເດດ ChromeVox ແລ້ວ</translation>
 <translation id="93384979447910801">ສີຂຽວທະເລເຂັ້ມ</translation>
+<translation id="937605981140327129">ຕອນນີ້ບໍ່ໄດ້ຕິດຕັ້ງ TalkBack ເທື່ອ. ກະລຸນາຕິດຕັ້ງ Android AccessibilitySuite ຜ່ານ Play Store ແລ້ວລອງໃໝ່.</translation>
 <translation id="948171205378458592">ຫລຸດ​ອັດ​ຕາ​ສ່ວນ​ຄໍາເວົ້າລົງ</translation>
 <translation id="957570623732056069">ປັດຊ້າຍ ຫຼື ຂວາດ້ວຍນິ້ວດຽວເພື່ອນຳທາງບົດຮຽນນີ້</translation>
 <translation id="958854023026327378">ປັດໜຶ່ງນິ້ວມືລົງລຸ່ມ</translation>

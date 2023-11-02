@@ -13,22 +13,23 @@ immersive session on Windows/desktop
     <script src="../resources/webxr_e2e.js"></script>
     <script src="../resources/webxr_boilerplate.js"></script>
     <script>
-      setup({single_test: true});
-
       function stepVerifyBeforePresent() {
         window.requestAnimationFrame( () => {
+          console.log('Got window frame before presentation');
           finishJavaScriptStep();
         });
       }
 
       function stepVerifyDuringPresent() {
         window.requestAnimationFrame( () => {
+          console.log('Got window frame during presentation');
           finishJavaScriptStep();
         });
       }
 
       function stepVerifyAfterPresent() {
         window.requestAnimationFrame( () => {
+          console.log('Got window frame after presentation');
           done();
         });
       }

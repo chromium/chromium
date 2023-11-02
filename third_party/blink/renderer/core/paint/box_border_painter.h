@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,13 +10,13 @@
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/style/border_edge.h"
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
+#include "third_party/blink/renderer/platform/geometry/layout_rect_outsets.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 
 namespace blink {
 
 class ComputedStyle;
 class Path;
-struct PhysicalRect;
 
 typedef unsigned BorderEdgeFlags;
 
@@ -38,15 +38,12 @@ class BoxBorderPainter {
                                      const ComputedStyle& style,
                                      const PhysicalRect& border_rect,
                                      int width,
-                                     int inner_outset_x,
-                                     int inner_outset_y) {
-    BoxBorderPainter(context, style, border_rect, width, inner_outset_x,
-                     inner_outset_y)
-        .Paint();
+                                     const LayoutRectOutsets& inner_outsets) {
+    BoxBorderPainter(context, style, border_rect, width, inner_outsets).Paint();
   }
 
   static void DrawBoxSide(GraphicsContext& context,
-                          const IntRect& snapped_edge_rect,
+                          const gfx::Rect& snapped_edge_rect,
                           BoxSide side,
                           Color color,
                           EBorderStyle style,
@@ -85,8 +82,7 @@ class BoxBorderPainter {
                    const ComputedStyle&,
                    const PhysicalRect& border_rect,
                    int width,
-                   int inner_outset_x,
-                   int inner_outset_y);
+                   const LayoutRectOutsets& inner_outsets);
 
   void Paint() const;
 
@@ -106,7 +102,7 @@ class BoxBorderPainter {
                  BoxSide,
                  unsigned alpha,
                  BorderEdgeFlags) const;
-  void PaintOneBorderSide(const FloatRect& side_rect,
+  void PaintOneBorderSide(const gfx::RectF& side_rect,
                           BoxSide,
                           BoxSide adjacent_side1,
                           BoxSide adjacent_side2,
@@ -139,7 +135,7 @@ class BoxBorderPainter {
                                       Color,
                                       EBorderStyle) const;
   void ClipBorderSidePolygon(BoxSide, MiterType miter1, MiterType miter2) const;
-  FloatRect CalculateSideRectIncludingInner(BoxSide) const;
+  gfx::RectF CalculateSideRectIncludingInner(BoxSide) const;
   void ClipBorderSideForComplexInnerPath(BoxSide) const;
 
   MiterType ComputeMiter(BoxSide, BoxSide adjacent_side, BorderEdgeFlags) const;
@@ -167,8 +163,7 @@ class BoxBorderPainter {
 
   // const inputs
   const PhysicalRect border_rect_;
-  const LayoutUnit outer_outset_x_;
-  const LayoutUnit outer_outset_y_;
+  const LayoutRectOutsets outer_outsets_;
   const ComputedStyle& style_;
   const BackgroundBleedAvoidance bleed_avoidance_;
   const PhysicalBoxSides sides_to_include_;
@@ -181,6 +176,7 @@ class BoxBorderPainter {
   unsigned visible_edge_count_;
   unsigned first_visible_edge_;
   BorderEdgeFlags visible_edge_set_;
+  DarkModeFilter::ElementRole element_role_;
 
   bool is_uniform_style_;
   bool is_uniform_width_;

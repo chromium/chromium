@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,6 +17,7 @@
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -448,13 +449,9 @@ TEST_F(PrimaryAccountMutatorTest, ClearPrimaryAccount_NotSignedIn) {
 // consistency method.
 TEST_F(PrimaryAccountMutatorTest, ClearPrimaryAccount) {
   const signin::AccountConsistencyMethod kTestedAccountConsistencyMethods[] = {
-    signin::AccountConsistencyMethod::kDisabled,
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
-    // Signout is not supported with Mirror on Lacros.
-    // TODO(https://crbug.com/1260291): Re-enable when signout is supported.
-    signin::AccountConsistencyMethod::kMirror,
-#endif
-    signin::AccountConsistencyMethod::kDice,
+      signin::AccountConsistencyMethod::kDisabled,
+      signin::AccountConsistencyMethod::kMirror,
+      signin::AccountConsistencyMethod::kDice,
   };
   for (signin::AccountConsistencyMethod account_consistency_method :
        kTestedAccountConsistencyMethods) {
@@ -469,14 +466,48 @@ TEST_F(PrimaryAccountMutatorTest, RevokeSyncConsent_DisabledConsistency) {
                            RemoveAccountExpectation::kRemoveAll);
 }
 
+#if BUILDFLAG(IS_ANDROID)
+// Test that revoking the sync consent when account consistency is disabled
+// also clears the primary account and removes all accounts, even when sync
+// is allowed to be off.
+TEST_F(PrimaryAccountMutatorTest,
+       RevokeSyncConsent_DisabledConsistency_AllowSyncOff) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      switches::kAllowSyncOffForChildAccounts);
+  RunRevokeSyncConsentTest(signin::AccountConsistencyMethod::kDisabled,
+                           RemoveAccountExpectation::kRemoveAll);
+}
+#endif
+
 // Test that revoking sync consent when Mirror account consistency is enabled
-// clears the primary account.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
-// Revoking sync consent not supported with Mirror on Lacros.
-// TODO(https://crbug.com/1260291): Re-enable when it is supported.
+// clears the primary account (except for lacros).
+//
+// TODO(crbug.com/1306031): once the kAllowSyncOffForChildAccounts flag is
+// cleaned up, we will no longer clear the primary account on Android.  Update
+// this test case and delete RevokeSyncConsent_MirrorConsistency_AllowSyncOff
+// as part of that cleanup.
 TEST_F(PrimaryAccountMutatorTest, RevokeSyncConsent_MirrorConsistency) {
   RunRevokeSyncConsentTest(signin::AccountConsistencyMethod::kMirror,
-                           RemoveAccountExpectation::kRemoveAll);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+                           RemoveAccountExpectation::kKeepAll
+#else
+                           RemoveAccountExpectation::kRemoveAll
+#endif
+  );
+}
+
+#if BUILDFLAG(IS_ANDROID)
+// Test that revoking sync consent when Mirror account consistency is enabled
+// and Android supervised users are allowed to disable sync, results in the
+// sync consent being revoked for the primary account.
+TEST_F(PrimaryAccountMutatorTest,
+       RevokeSyncConsent_MirrorConsistency_AllowSyncOff) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      switches::kAllowSyncOffForChildAccounts);
+  RunRevokeSyncConsentTest(signin::AccountConsistencyMethod::kMirror,
+                           RemoveAccountExpectation::kKeepAll);
 }
 #endif
 
@@ -485,14 +516,6 @@ TEST_F(PrimaryAccountMutatorTest, RevokeSyncConsent_MirrorConsistency) {
 TEST_F(PrimaryAccountMutatorTest, RevokeSyncConsent_DiceConsistency) {
   RunRevokeSyncConsentTest(signin::AccountConsistencyMethod::kDice,
                            RemoveAccountExpectation::kKeepAll);
-}
-
-// Test that revoking the sync consent when DICE account consistency is
-// enabled clears the primary account if it uin auth error state.
-TEST_F(PrimaryAccountMutatorTest, RevokeSyncConsent_DiceConsistency_AuthError) {
-  RunRevokeSyncConsentTest(signin::AccountConsistencyMethod::kDice,
-                           RemoveAccountExpectation::kRemoveAll,
-                           AuthExpectation::kAuthError);
 }
 
 #else  //! BUILDFLAG(IS_CHROMEOS_ASH)

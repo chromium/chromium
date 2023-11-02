@@ -8,7 +8,7 @@ your editor.
 
 ## Quick Start
 
-* **Googlers**: clangd is available by default on glinux (`/usr/bin/clangd`)
+* [Get clangd](#getting-clangd)
 * Make sure generated ninja files are up-to-date
 * Optional: build chrome normally to get generated headers
 * Generate compilation database (note: it's not regenerated automatically):
@@ -19,28 +19,54 @@ tools/clang/scripts/generate_compdb.py -p out/<build> > compile_commands.json
   lots of CPU and RAM. There's also a
   [remote-index service](https://github.com/clangd/chrome-remote-index/blob/main/docs/index.md)
   to have an instant project-wide index without consuming local resources
+  (requires clangd 12+ built with remote index support).
 * Use clangd in your favourite editor
 
 ## Getting clangd
 
-See [instructions](https://clangd.llvm.org/installation.html#installing-clangd).
+For the best results, you should use a clangd that exactly matches the version
+of Clang used by Chromium. This avoids problems like mismatched versions of
+compiler diagnostics.
 
-**Googlers:** clangd has been installed on your glinux by default, just use
-`/usr/bin/clangd`.
+The easiest way to do this is to set the `checkout_clangd` var in `.gclient`:
 
-Alternative: download clangd from the official [Releases](https://github.com/clangd/clangd/releases)
-page.
+```
+solutions = [
+  {
+    "url": "https://chromium.googlesource.com/chromium/src.git",
+    "managed": False,
+    "name": "src",
+    "custom_deps": {},
+    "custom_vars": {
+      "checkout_clangd": True,
+    },
+  },
+]
+```
 
-Note: clangd 10.0.0 does not work with Chromium; use one of the more recent
-pre-release versions of 11 or later on the Releases page.
+After this, `gclient` will keep the binary at
+`third_party/llvm-build/Release+Asserts/bin/clangd` in sync with the version of
+Clang used by Chromium.
 
-If you prefer to build clangd locally, use the following command to build from
-LLVM source, and you will get the binary at
-`out/Default/tools/clang/third_party/llvm/build/bin/clangd`.
+Alternatively, you may use the `build_clang_tools_extra.py` script to build
+clangd from source:
 
 ```
 tools/clang/scripts/build_clang_tools_extra.py --fetch out/Default clangd
 ```
+
+The resulting binary will be at
+`out/Default/tools/clang/third_party/llvm/build/bin/clangd`.
+
+Once you have an appropriate clangd binary, you must configure your editor to
+use it, either by placing it first on your `PATH`, or through editor-specific
+configuration.
+
+*** note
+Note: The clangd provided by Chromium does not support optional features like
+remote indexing (see https://crbug.com/1358258). If you want those features,
+you'll need to use a different build of clangd.
+***
 
 ## Setting Up
 
@@ -83,6 +109,11 @@ ninja -C out/Default chrome
 
 5. Use clangd in your favourite editor, see detailed [instructions](
 https://clangd.llvm.org/installation.html#editor-plugins).
+
+    * Optional: You may want to add `-header-insertion=never` to the clangd flags,
+      so that your editor doesn't automatically add incorrect #include lines. The
+      feature doesn't correctly handle some common Chromium headers like
+      `base/strings/string_piece_forward.h` and `base/callback_forward.h`
 
 ## Background Indexing
 

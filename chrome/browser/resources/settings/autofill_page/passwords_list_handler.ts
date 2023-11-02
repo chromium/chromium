@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,52 +8,64 @@
  * editing, removal, moving to account).
  */
 
+import '../i18n_setup.js';
+// <if expr="is_chromeos">
+import '../controls/password_prompt_dialog.js';
+// </if>
 import './password_edit_dialog.js';
 import './password_move_to_account_dialog.js';
 import './password_remove_dialog.js';
 import './password_list_item.js';
 import './password_edit_dialog.js';
-import 'chrome://resources/cr_elements/shared_style_css.m.js';
+import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 
+import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
-import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
-import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
-import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
+import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 import {StoredAccount, SyncBrowserProxyImpl} from '../people_page/sync_browser_proxy.js';
+import {routes} from '../route.js';
+import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 
-// <if expr="chromeos or lacros">
-import {BlockingRequestManager} from './blocking_request_manager.js';
-// </if>
-import {MultiStorePasswordUiEntry} from './multi_store_password_ui_entry.js';
-import {PasswordListItemElement, PasswordMoreActionsClickedEvent} from './password_list_item.js';
+import {PASSWORD_MORE_ACTIONS_CLICKED_EVENT_NAME, PasswordListItemElement, PasswordMoreActionsClickedEvent} from './password_list_item.js';
 import {PasswordManagerImpl, PasswordManagerProxy} from './password_manager_proxy.js';
+import {PasswordRemovalMixin, PasswordRemovalMixinInterface} from './password_removal_mixin.js';
 import {PasswordRemoveDialogPasswordsRemovedEvent} from './password_remove_dialog.js';
-
-declare global {
-  interface HTMLElementEventMap {
-    'password-more-actions-clicked': PasswordMoreActionsClickedEvent;
-    'password-remove-dialog-passwords-removed':
-        PasswordRemoveDialogPasswordsRemovedEvent;
-  }
-}
+import {PasswordRequestorMixin, PasswordRequestorMixinInterface} from './password_requestor_mixin.js';
+import {PASSWORD_VIEW_PAGE_REQUESTED_EVENT_NAME, PasswordRemovalUrlParams, PasswordViewPageRequestedEvent} from './password_view.js';
+import {getTemplate} from './passwords_list_handler.html.js';
 
 export interface PasswordsListHandlerElement {
   $: {
+    copyToast: CrToastElement,
     menu: CrActionMenuElement,
-    toast: CrToastElement,
+    menuCopyPassword: HTMLElement,
+    menuEditPassword: HTMLElement,
+    menuMovePasswordToAccount: HTMLElement,
+    menuRemovePassword: HTMLElement,
+    removalNotification: HTMLElement,
+    removalToast: CrToastElement,
   };
 }
 
+type FocusConfig = Map<string, string|(() => void)>;
+
 const PasswordsListHandlerElementBase =
-    WebUIListenerMixin(I18nMixin(PolymerElement));
+    RouteObserverMixin(PasswordRemovalMixin(PasswordRequestorMixin(
+        WebUIListenerMixin(I18nMixin(PolymerElement))))) as {
+      new (): PolymerElement & I18nMixinInterface &
+          WebUIListenerMixinInterface & PasswordRequestorMixinInterface &
+          PasswordRemovalMixinInterface & RouteObserverMixinInterface,
+    };
 
 export class PasswordsListHandlerElement extends
     PasswordsListHandlerElementBase {
@@ -62,7 +74,7 @@ export class PasswordsListHandlerElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -94,10 +106,6 @@ export class PasswordsListHandlerElement extends
         value: false,
       },
 
-      // <if expr="chromeos or lacros">
-      tokenRequestManager: Object,
-      // </if>
-
       /**
        * The model for any active menus or dialogs. The value is reset to null
        * whenever actions from the menus/dialogs are concluded.
@@ -107,19 +115,16 @@ export class PasswordsListHandlerElement extends
         value: null,
       },
 
-      /**
-       * Check if entry isn't federation credential.
-       */
-      isEditDialog_: {
-        type: Boolean,
-        computed: 'computeIsEditDialog_(activePassword_)',
-      },
-
       showPasswordEditDialog_: {type: Boolean, value: false},
 
       showPasswordMoveToAccountDialog_: {type: Boolean, value: false},
 
-      showPasswordRemoveDialog_: {type: Boolean, value: false},
+      showPasswordSendButton_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('enableSendPasswords');
+        },
+      },
 
       /**
        * The element to return focus to, when the currently active dialog is
@@ -143,43 +148,54 @@ export class PasswordsListHandlerElement extends
         type: String,
         value: '',
       },
+
+      focusConfig: {
+        type: Object,
+        observer: 'focusConfigChanged_',
+      },
+
+      enablePasswordViewPage_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('enablePasswordViewPage');
+        },
+      },
     };
   }
 
-  savedPasswords: Array<MultiStorePasswordUiEntry>;
+  savedPasswords: chrome.passwordsPrivate.PasswordUiEntry[];
   isAccountStoreUser: boolean;
   allowMoveToAccountOption: boolean;
 
-  // <if expr="chromeos or lacros">
-  tokenRequestManager: BlockingRequestManager;
-  // </if>
-
   private activePassword_: PasswordListItemElement|null;
-  private isEditDialog_: boolean;
   private showPasswordEditDialog_: boolean;
   private showPasswordMoveToAccountDialog_: boolean;
-  private showPasswordRemoveDialog_: boolean;
+  private showSendPasswordButton_: boolean;
   private activeDialogAnchor_: HTMLElement|null;
   private removalNotification_: string;
   private firstSignedInAccountEmail_: string;
   private passwordManager_: PasswordManagerProxy =
       PasswordManagerImpl.getInstance();
 
-  ready() {
+  focusConfig: FocusConfig;
+  private enablePasswordViewPage_: boolean;
+
+  override ready() {
     super.ready();
 
     this.addEventListener(
-        'password-more-actions-clicked',
+        PASSWORD_MORE_ACTIONS_CLICKED_EVENT_NAME,
         this.passwordMoreActionsClickedHandler_);
+
     this.addEventListener(
-        'password-remove-dialog-passwords-removed',
-        this.passwordRemoveDialogPasswordsRemovedHandler_);
+        PASSWORD_VIEW_PAGE_REQUESTED_EVENT_NAME,
+        this.onPasswordViewPageRequestedEvent);
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
-    const extractFirstAccountEmail = (accounts: Array<StoredAccount>) => {
+    const extractFirstAccountEmail = (accounts: StoredAccount[]) => {
       this.firstSignedInAccountEmail_ =
           accounts.length > 0 ? accounts[0].email : '';
     };
@@ -188,19 +204,36 @@ export class PasswordsListHandlerElement extends
     this.addWebUIListener('stored-accounts-updated', extractFirstAccountEmail);
   }
 
-  disconnectedCallback() {
+  override currentRouteChanged(route: Route): void {
+    if (route !== routes.PASSWORDS && route !== routes.DEVICE_PASSWORDS) {
+      return;
+    }
+
+    const params = Router.getInstance().getQueryParameters();
+    if (!params.get(PasswordRemovalUrlParams.REMOVED_FROM_STORES)) {
+      return;
+    }
+    this.displayRemovalNotification_(
+        params.get(PasswordRemovalUrlParams.REMOVED_FROM_STORES) as
+        chrome.passwordsPrivate.PasswordStoreSet);
+    params.delete(PasswordRemovalUrlParams.REMOVED_FROM_STORES);
+    Router.getInstance().updateRouteParams(params);
+    // TODO(https://crbug.com/1298027): find a way to announce the removal toast
+    // before the first item in the page
+    getAnnouncerInstance().announce(this.removalNotification_);
+  }
+
+  override disconnectedCallback() {
     super.disconnectedCallback();
 
-    if (this.$.toast.open) {
-      this.$.toast.hide();
-    }
+    this.hideToasts_();
   }
 
   /**
    * Closes the toast manager.
    */
   onSavedPasswordOrExceptionRemoved() {
-    this.$.toast.hide();
+    this.$.removalToast.hide();
   }
 
   /**
@@ -215,47 +248,30 @@ export class PasswordsListHandlerElement extends
     this.activeDialogAnchor_ = target;
   }
 
-  private passwordRemoveDialogPasswordsRemovedHandler_(
+  override onPasswordRemoveDialogPasswordsRemoved(
       event: PasswordRemoveDialogPasswordsRemovedEvent) {
-    this.displayRemovalNotification_(
-        event.detail.removedFromAccount, event.detail.removedFromDevice);
+    super.onPasswordRemoveDialogPasswordsRemoved(event);
+    this.displayRemovalNotification_(event.detail.removedFromStores);
   }
 
-  /**
-   * Helper function that checks if entry isn't federation credential.
-   */
-  private computeIsEditDialog_(): boolean {
+  private onPasswordViewPageRequestedEvent(event:
+                                               PasswordViewPageRequestedEvent) {
+    this.activePassword_ = event.detail;
+  }
+
+  private isPasswordEditable_() {
     return !this.activePassword_ || !this.activePassword_.entry.federationText;
   }
 
-  /**
-   * Requests the plaintext password for the current active password.
-   * @param reason The reason why the plaintext password is requested.
-   * @param callback The callback that gets invoked with the retrieved password.
-   */
-  private requestActivePlaintextPassword_(
-      reason: chrome.passwordsPrivate.PlaintextReason,
-      callback: (password: string) => void) {
-    this.passwordManager_
-        .requestPlaintextPassword(
-            this.activePassword_!.entry.getAnyId(), reason)
-        .then(callback, _error => {
-          // <if expr="chromeos or lacros">
-          // If no password was found, refresh auth token and retry.
-          this.tokenRequestManager.request(() => {
-            this.requestActivePlaintextPassword_(reason, callback);
-          });
-          // </if>
-        });
-  }
-
   private onMenuEditPasswordTap_() {
-    if (this.isEditDialog_) {
-      this.requestActivePlaintextPassword_(
-          chrome.passwordsPrivate.PlaintextReason.EDIT, password => {
+    if (this.isPasswordEditable_()) {
+      this.requestPlaintextPassword(
+              this.activePassword_!.entry.id,
+              chrome.passwordsPrivate.PlaintextReason.EDIT)
+          .then(password => {
             this.set('activePassword_.entry.password', password);
             this.showPasswordEditDialog_ = true;
-          });
+          }, () => {});
     } else {
       this.showPasswordEditDialog_ = true;
     }
@@ -264,13 +280,14 @@ export class PasswordsListHandlerElement extends
   }
 
   private getMenuEditPasswordName_(): string {
-    return this.isEditDialog_ ? this.i18n('editPassword') :
-                                this.i18n('passwordViewDetails');
+    return this.isPasswordEditable_() ? this.i18n('editPassword') :
+                                        this.i18n('passwordViewDetails');
   }
 
   private onPasswordEditDialogClosed_() {
     this.showPasswordEditDialog_ = false;
-    focusWithoutInk(assert(this.activeDialogAnchor_!));
+    assert(this.activeDialogAnchor_);
+    focusWithoutInk(this.activeDialogAnchor_);
     this.activeDialogAnchor_ = null;
     this.activePassword_!.hide();
     this.activePassword_ = null;
@@ -278,9 +295,14 @@ export class PasswordsListHandlerElement extends
 
   private onMovePasswordToAccountDialogClosed_() {
     this.showPasswordEditDialog_ = false;
-    focusWithoutInk(assert(this.activeDialogAnchor_!));
+    assert(this.activeDialogAnchor_);
+    focusWithoutInk(this.activeDialogAnchor_);
     this.activeDialogAnchor_ = null;
     this.activePassword_ = null;
+  }
+
+  private onMenuSendPasswordTap_() {
+    // TODO(crbug.com/1298608): Implement the logic.
   }
 
   /**
@@ -289,61 +311,72 @@ export class PasswordsListHandlerElement extends
   private onMenuCopyPasswordButtonTap_() {
     // Copy to clipboard occurs inside C++ and we don't expect getting
     // result back to javascript.
-    this.requestActivePlaintextPassword_(
-        chrome.passwordsPrivate.PlaintextReason.COPY, _ => {
+    this.requestPlaintextPassword(
+            this.activePassword_!.entry.id,
+            chrome.passwordsPrivate.PlaintextReason.COPY)
+        .then((_: string) => {
           this.activePassword_ = null;
-        });
+          this.displayCopyNotification_();
+        }, () => {});
 
     this.$.menu.close();
   }
 
-  /**
-   * Handler for the remove option in the overflow menu. If the password only
-   * exists in one location, deletes it directly. Otherwise, opens the remove
-   * dialog to allow choosing from which locations to remove.
-   */
-  private onMenuRemovePasswordTap_() {
+  /** Handler for the remove option in the overflow menu. */
+  private onMenuRemovePasswordClick_() {
     this.$.menu.close();
-
-    if (this.activePassword_!.entry.isPresentOnDevice() &&
-        this.activePassword_!.entry.isPresentInAccount()) {
-      this.showPasswordRemoveDialog_ = true;
+    const password = this.activePassword_!.entry;
+    assert(password);
+    if (!this.removePassword(password)) {
       return;
     }
-
-    const idToRemove = this.activePassword_!.entry.isPresentInAccount() ?
-        this.activePassword_!.entry.accountId :
-        this.activePassword_!.entry.deviceId;
-    this.passwordManager_.removeSavedPassword(idToRemove!);
-    this.displayRemovalNotification_(
-        this.activePassword_!.entry.isPresentInAccount(),
-        this.activePassword_!.entry.isPresentOnDevice());
+    this.displayRemovalNotification_(password.storedIn);
     this.activePassword_ = null;
+  }
+
+  private hideToasts_() {
+    if (this.$.removalToast.open) {
+      this.$.removalToast.hide();
+    }
+    if (this.$.copyToast.open) {
+      this.$.copyToast.hide();
+    }
   }
 
   /**
    * At least one of |removedFromAccount| or |removedFromDevice| must be true.
    */
   private displayRemovalNotification_(
-      removedFromAccount: boolean, removedFromDevice: boolean) {
-    assert(removedFromAccount || removedFromDevice);
-    this.removalNotification_ = this.i18n('passwordDeleted');
+      removedFromStores: chrome.passwordsPrivate.PasswordStoreSet) {
     if (this.isAccountStoreUser) {
-      if (removedFromAccount && removedFromDevice) {
-        this.removalNotification_ =
-            this.i18n('passwordDeletedFromAccountAndDevice');
-      } else if (removedFromAccount) {
-        this.removalNotification_ = this.i18n('passwordDeletedFromAccount');
-      } else {
-        this.removalNotification_ = this.i18n('passwordDeletedFromDevice');
+      switch (removedFromStores) {
+        case chrome.passwordsPrivate.PasswordStoreSet.DEVICE:
+          this.removalNotification_ = this.i18n('passwordDeletedFromDevice');
+          break;
+        case chrome.passwordsPrivate.PasswordStoreSet.ACCOUNT:
+          this.removalNotification_ = this.i18n('passwordDeletedFromAccount');
+          break;
+        case chrome.passwordsPrivate.PasswordStoreSet.DEVICE_AND_ACCOUNT:
+          this.removalNotification_ =
+              this.i18n('passwordDeletedFromAccountAndDevice');
+          break;
       }
+    } else {
+      this.removalNotification_ = this.i18n('passwordDeleted');
     }
-    this.$.toast.show();
+
+    this.hideToasts_();
+    this.$.removalToast.show();
   }
 
   private onUndoButtonClick_() {
     this.passwordManager_.undoRemoveSavedPasswordOrException();
     this.onSavedPasswordOrExceptionRemoved();
+  }
+
+  private displayCopyNotification_() {
+    this.hideToasts_();
+    this.$.copyToast.show();
   }
 
   /**
@@ -362,8 +395,8 @@ export class PasswordsListHandlerElement extends
     this.activeDialogAnchor_ = null;
   }
 
-  private onPasswordRemoveDialogClosed_() {
-    this.showPasswordRemoveDialog_ = false;
+  override onPasswordRemoveDialogClose() {
+    super.onPasswordRemoveDialogClose();
     this.activePassword_ = null;
 
     // A removal possibly happened, so don't reset the focus.
@@ -375,11 +408,25 @@ export class PasswordsListHandlerElement extends
    */
   private shouldShowMoveToAccountOption_(): boolean {
     const isFirstSignedInAccountPassword = !!this.activePassword_ &&
-        this.activePassword_.entry.urls.origin.includes(
+        this.activePassword_.entry.urls.signonRealm.includes(
             'accounts.google.com') &&
         this.activePassword_.entry.username === this.firstSignedInAccountEmail_;
     // It's not useful to move a password for an account into that same account.
     return this.allowMoveToAccountOption && !isFirstSignedInAccountPassword;
+  }
+
+  private focusConfigChanged_(_newConfig: FocusConfig, oldConfig: FocusConfig) {
+    if (!this.enablePasswordViewPage_) {
+      return;
+    }
+    assert(!oldConfig);
+    this.focusConfig.set(routes.PASSWORD_VIEW.path, () => {
+      if (!this.activePassword_) {
+        return;
+      }
+      focusWithoutInk(this.activePassword_);
+      this.activePassword_ = null;
+    });
   }
 }
 

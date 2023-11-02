@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -84,5 +84,11 @@ public class ChromeBrowserTestsActivity extends ChromeTabbedActivity {
         //     https://crbug.com/617734
         return new File(UrlUtils.getIsolatedTestRoot(),
                 ChromeBrowserTestsApplication.PRIVATE_DATA_DIRECTORY_SUFFIX);
+    }
+
+    @Override
+    public void recreate() {
+        throw new AssertionError("Unexpected call of recreate() in " + TAG
+                + ". See crbug.com/1359066 to fix the issue.");
     }
 }

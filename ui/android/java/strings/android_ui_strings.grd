@@ -82,6 +82,9 @@
     <output filename="values-zh-rHK/android_ui_strings.xml" lang="zh-HK" type="android" />
     <output filename="values-zh-rTW/android_ui_strings.xml" lang="zh-TW" type="android" />
     <output filename="values-zu/android_ui_strings.xml" lang="zu" type="android" />
+    <!-- Pseudolocales -->
+    <output filename="values-ar-rXB/android_ui_strings.xml" lang="ar-XB" type="android" />
+    <output filename="values-en-rXA/android_ui_strings.xml" lang="en-XA" type="android" />
   </outputs>
   <translations>
     <file path="translations/android_ui_strings_af.xtb" lang="af" />
@@ -95,6 +98,7 @@
     <file path="translations/android_ui_strings_bs.xtb" lang="bs" />
     <file path="translations/android_ui_strings_ca.xtb" lang="ca" />
     <file path="translations/android_ui_strings_cs.xtb" lang="cs" />
+    <file path="translations/android_ui_strings_cy.xtb" lang="cy" />
     <file path="translations/android_ui_strings_da.xtb" lang="da" />
     <file path="translations/android_ui_strings_de.xtb" lang="de" />
     <file path="translations/android_ui_strings_el.xtb" lang="el" />
@@ -174,6 +178,9 @@
       <message name="IDS_OPENING_FILE_ERROR" desc="Toast when the browser is unable to open a file for upload. [CHAR_LIMIT=32]">
         Failed to open selected file
       </message>
+      <message name="IDS_OPENING_ANDROID_MEDIA_PICKER" desc="Toast when the browser is unable to open the Android Media picker (when uploading files). [CHAR_LIMIT=32]">
+        Unable to open the photo picker
+      </message>
 
       <!-- Clipboard -->
       <message name="IDS_COPY_TO_CLIPBOARD_FAILURE_MESSAGE" desc="Notification for when copying to the clipboard fails. [CHAR_LIMIT=64]">
@@ -181,9 +188,6 @@
       </message>
       <message name="IDS_LINK_COPIED" desc="Notification telling the user that the url has been copied to clipboard. [CHAR_LIMIT=32]">
         Link copied
-      </message>
-      <message name="IDS_CHIP_REMOVE_ICON_CONTENT_DESCRIPTION" desc="Accessibility string for X icon on a chip announcing that clicking on this icon will remove this input chip.">
-        Remove '<ph name="CHIP_LABEL">%1$s<ex>News</ex></ph>'
       </message>
     </messages>
   </release>

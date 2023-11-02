@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,6 +36,8 @@ struct mojo::EnumTraits<chromecast::media::mojom::AudioCodec,
         return chromecast::media::mojom::AudioCodec::kCodecAC3;
       case (chromecast::media::AudioCodec::kCodecDTS):
         return chromecast::media::mojom::AudioCodec::kCodecDTS;
+      case (chromecast::media::AudioCodec::kCodecDTSXP2):
+        return chromecast::media::mojom::AudioCodec::kCodecDTSXP2;
       case (chromecast::media::AudioCodec::kCodecFLAC):
         return chromecast::media::mojom::AudioCodec::kCodecFLAC;
       case (chromecast::media::AudioCodec::kCodecMpegHAudio):
@@ -77,6 +79,9 @@ struct mojo::EnumTraits<chromecast::media::mojom::AudioCodec,
         return true;
       case (chromecast::media::mojom::AudioCodec::kCodecDTS):
         *output = chromecast::media::AudioCodec::kCodecDTS;
+        return true;
+      case (chromecast::media::mojom::AudioCodec::kCodecDTSXP2):
+        *output = chromecast::media::AudioCodec::kCodecDTSXP2;
         return true;
       case (chromecast::media::mojom::AudioCodec::kCodecFLAC):
         *output = chromecast::media::AudioCodec::kCodecFLAC;

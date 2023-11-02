@@ -1,22 +1,24 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/web/webui/shared_resources_data_source_ios.h"
+#import "ios/web/webui/shared_resources_data_source_ios.h"
 
-#include <stddef.h>
+#import <stddef.h>
 
-#include "base/check.h"
-#include "base/memory/ref_counted_memory.h"
-#include "base/strings/string_util.h"
+#import "base/check.h"
+#import "base/memory/ref_counted_memory.h"
+#import "base/strings/string_util.h"
+#import "ios/web/grit/ios_web_resources.h"
+#import "ios/web/grit/ios_web_resources_map.h"
 #import "ios/web/public/web_client.h"
-#include "net/base/mime_util.h"
-#include "ui/base/webui/resource_path.h"
-#include "ui/base/webui/web_ui_util.h"
-#include "ui/resources/grit/webui_generated_resources.h"
-#include "ui/resources/grit/webui_generated_resources_map.h"
-#include "ui/resources/grit/webui_resources.h"
-#include "ui/resources/grit/webui_resources_map.h"
+#import "mojo/public/js/grit/mojo_bindings_resources.h"
+#import "mojo/public/js/grit/mojo_bindings_resources_map.h"
+#import "net/base/mime_util.h"
+#import "ui/base/webui/resource_path.h"
+#import "ui/base/webui/web_ui_util.h"
+#import "ui/resources/grit/webui_generated_resources.h"
+#import "ui/resources/grit/webui_generated_resources_map.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -33,14 +35,19 @@ const char kWebUIResourcesHost[] = "resources";
 // Maps a path name (i.e. "/js/path.js") to a resource map entry. Returns
 // nullptr if not found.
 const webui::ResourcePath* PathToResource(const std::string& path) {
-  for (size_t i = 0; i < kWebuiResourcesSize; ++i) {
-    if (path == kWebuiResources[i].path)
-      return &kWebuiResources[i];
-  }
   for (size_t i = 0; i < kWebuiGeneratedResourcesSize; ++i) {
     if (path == kWebuiGeneratedResources[i].path)
       return &kWebuiGeneratedResources[i];
   }
+  for (size_t i = 0; i < kMojoBindingsResourcesSize; ++i) {
+    if (path == kMojoBindingsResources[i].path)
+      return &kMojoBindingsResources[i];
+  }
+  for (size_t i = 0; i < kIosWebResourcesSize; ++i) {
+    if (path == kIosWebResources[i].path)
+      return &kIosWebResources[i];
+  }
+
   return nullptr;
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,13 +15,13 @@
 #include "chrome/browser/share/share_features.h"
 #include "components/send_tab_to_self/features.h"
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) || \
-    defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
 #include "chrome/browser/send_tab_to_self/desktop_notification_handler.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_toolbar_icon_controller.h"
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/send_tab_to_self/android_notification_handler.h"
 #endif
 
@@ -38,18 +38,7 @@ ReceivingUiHandlerRegistry* ReceivingUiHandlerRegistry::GetInstance() {
 // Instantiates all the handlers relevant to this platform.
 void ReceivingUiHandlerRegistry::InstantiatePlatformSpecificHandlers(
     Profile* profile) {
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) || \
-    defined(OS_WIN)
-
-  // If STTS 2.0 is enabled the handler will be created when the toolbar
-  // button registers itself as the delegate.
-  if (!base::FeatureList::IsEnabled(kSendTabToSelfV2) &&
-      !share::AreUpcomingSharingFeaturesEnabled()) {
-    applicable_handlers_.push_back(
-        std::make_unique<send_tab_to_self::DesktopNotificationHandler>(
-            profile));
-  }
-#elif defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   applicable_handlers_.push_back(
       std::make_unique<AndroidNotificationHandler>(profile));
 #endif
@@ -58,8 +47,8 @@ void ReceivingUiHandlerRegistry::InstantiatePlatformSpecificHandlers(
 SendTabToSelfToolbarIconController*
 ReceivingUiHandlerRegistry::GetToolbarButtonControllerForProfile(
     Profile* profile) {
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) || \
-    defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
   for (const std::unique_ptr<ReceivingUiHandler>& handler :
        applicable_handlers_) {
     auto* button_controller =
@@ -74,19 +63,17 @@ ReceivingUiHandlerRegistry::GetToolbarButtonControllerForProfile(
   auto* button_controller = static_cast<SendTabToSelfToolbarIconController*>(
       applicable_handlers_.back().get());
   return button_controller;
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   return nullptr;
-#elif defined(OS_FUCHSIA)
-  // TODO(crbug.com/1235293)
-  NOTIMPLEMENTED_LOG_ONCE();
-  return nullptr;
+#else
+#error Unknown platform.
 #endif
 }
 
 AndroidNotificationHandler*
 ReceivingUiHandlerRegistry::GetAndroidNotificationHandlerForProfile(
     Profile* profile) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   for (const std::unique_ptr<ReceivingUiHandler>& handler :
        applicable_handlers_) {
     auto* notification_handler =

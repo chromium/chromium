@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,10 +29,8 @@
 #include "components/viz/common/quads/compositor_frame_metadata.h"
 #include "components/viz/common/resources/bitmap_allocation.h"
 #include "components/viz/common/resources/shared_bitmap.h"
-#include "components/viz/service/display/display_resource_provider_gl.h"
 #include "components/viz/service/display/display_resource_provider_skia.h"
 #include "components/viz/service/display/display_resource_provider_software.h"
-#include "components/viz/service/display/gl_renderer.h"
 #include "components/viz/service/display/output_surface_client.h"
 #include "components/viz/service/display/software_output_device.h"
 #include "components/viz/service/display/software_renderer.h"
@@ -71,9 +69,9 @@ PixelTest::PixelTest(GraphicsBackend backend)
     init_vulkan = true;
   } else if (backend == kSkiaDawn) {
     scoped_feature_list_.InitAndEnableFeature(features::kSkiaDawn);
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     init_vulkan = true;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
     // TODO(rivr): Initialize D3D12 for Windows.
 #else
     NOTREACHED();
@@ -131,7 +129,6 @@ bool PixelTest::RunPixelTestWithReadbackTargetAndArea(
         disable_picture_quad_image_filtering_);
   }
 
-  renderer_->DecideRenderPassAllocationsForFrame(*pass_list);
   float device_scale_factor = 1.f;
   renderer_->DrawFrame(pass_list, device_scale_factor, device_viewport_size_,
                        display_color_spaces_,
@@ -142,8 +139,6 @@ bool PixelTest::RunPixelTestWithReadbackTargetAndArea(
   renderer_->SwapBuffersSkipped();
 
   // Wait for the readback to complete.
-  if (output_surface_->context_provider())
-    output_surface_->context_provider()->ContextGL()->Finish();
   run_loop.Run();
 
   return PixelsMatchReference(ref_file, comparator);
@@ -168,7 +163,6 @@ bool PixelTest::RunPixelTest(viz::AggregatedRenderPassList* pass_list,
         disable_picture_quad_image_filtering_);
   }
 
-  renderer_->DecideRenderPassAllocationsForFrame(*pass_list);
   float device_scale_factor = 1.f;
   renderer_->DrawFrame(pass_list, device_scale_factor, device_viewport_size_,
                        display_color_spaces_,
@@ -179,8 +173,6 @@ bool PixelTest::RunPixelTest(viz::AggregatedRenderPassList* pass_list,
   renderer_->SwapBuffersSkipped();
 
   // Wait for the readback to complete.
-  if (output_surface_->context_provider())
-    output_surface_->context_provider()->ContextGL()->Finish();
   run_loop.Run();
 
   // Need to wrap |ref_pixels| in a SkBitmap.
@@ -259,41 +251,6 @@ viz::ResourceId PixelTest::AllocateAndFillSoftwareResource(
       base::DoNothing());
 }
 
-void PixelTest::SetUpGLWithoutRenderer(
-    gfx::SurfaceOrigin output_surface_origin) {
-  enable_pixel_output_ = std::make_unique<gl::DisableNullDrawGLBindings>();
-
-  auto context_provider =
-      base::MakeRefCounted<viz::TestInProcessContextProvider>(
-          /*enable_gles2_interface=*/true, /*support_locking=*/false,
-          viz::RasterInterfaceType::None);
-  gpu::ContextResult result = context_provider->BindToCurrentThread();
-  DCHECK_EQ(result, gpu::ContextResult::kSuccess);
-  output_surface_ = std::make_unique<PixelTestOutputSurface>(
-      std::move(context_provider), output_surface_origin);
-  output_surface_->BindToClient(output_surface_client_.get());
-
-  child_context_provider_ =
-      base::MakeRefCounted<viz::TestInProcessContextProvider>(
-          /*enable_gles2_interface=*/true, /*support_locking=*/false,
-          viz::RasterInterfaceType::None);
-  result = child_context_provider_->BindToCurrentThread();
-  DCHECK_EQ(result, gpu::ContextResult::kSuccess);
-  child_resource_provider_ = std::make_unique<viz::ClientResourceProvider>();
-}
-
-void PixelTest::SetUpGLRenderer(gfx::SurfaceOrigin output_surface_origin) {
-  SetUpGLWithoutRenderer(output_surface_origin);
-  auto resource_provider = std::make_unique<viz::DisplayResourceProviderGL>(
-      output_surface_->context_provider());
-  renderer_ = std::make_unique<viz::GLRenderer>(
-      &renderer_settings_, &debug_settings_, output_surface_.get(),
-      resource_provider.get(), nullptr, base::ThreadTaskRunnerHandle::Get());
-  resource_provider_ = std::move(resource_provider);
-  renderer_->Initialize();
-  renderer_->SetVisible(true);
-}
-
 void PixelTest::SetUpSkiaRenderer(gfx::SurfaceOrigin output_surface_origin) {
   enable_pixel_output_ = std::make_unique<gl::DisableNullDrawGLBindings>();
   // Set up the GPU service.
@@ -321,8 +278,7 @@ void PixelTest::SetUpSkiaRenderer(gfx::SurfaceOrigin output_surface_origin) {
   // Set up the client side context provider, etc
   child_context_provider_ =
       base::MakeRefCounted<viz::TestInProcessContextProvider>(
-          /*enable_gles2_interface=*/true, /*support_locking=*/false,
-          viz::RasterInterfaceType::None);
+          viz::TestContextType::kGLES2, /*support_locking=*/false);
   gpu::ContextResult result = child_context_provider_->BindToCurrentThread();
   DCHECK_EQ(result, gpu::ContextResult::kSuccess);
   child_resource_provider_ = std::make_unique<viz::ClientResourceProvider>();
@@ -338,11 +294,6 @@ void PixelTest::TearDown() {
   renderer_.reset();
   resource_provider_.reset();
   output_surface_.reset();
-}
-
-void PixelTest::EnableExternalStencilTest() {
-  static_cast<PixelTestOutputSurface*>(output_surface_.get())
-      ->set_has_external_stencil_test(true);
 }
 
 void PixelTest::SetUpSoftwareRenderer() {

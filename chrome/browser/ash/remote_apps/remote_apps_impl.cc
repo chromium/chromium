@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/ash/remote_apps/remote_apps_manager.h"
 #include "chrome/browser/ash/remote_apps/remote_apps_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -32,16 +33,10 @@ static bool g_bypass_checks_for_testing_ = false;
 }  // namespace
 
 // static
-bool RemoteAppsImpl::IsAllowed(content::RenderFrameHost* render_frame_host,
-                               const extensions::Extension* extension) {
+bool RemoteAppsImpl::IsMojoPrivateApiAllowed(
+    content::RenderFrameHost* render_frame_host,
+    const extensions::Extension* extension) {
   if (!render_frame_host || !extension)
-    return false;
-
-  Profile* profile =
-      Profile::FromBrowserContext(render_frame_host->GetBrowserContext());
-  DCHECK(profile);
-  // RemoteApps are not available for non-managed guest sessions.
-  if (!RemoteAppsManagerFactory::GetForProfile(profile))
     return false;
 
   if (g_bypass_checks_for_testing_)
@@ -51,7 +46,18 @@ bool RemoteAppsImpl::IsAllowed(content::RenderFrameHost* render_frame_host,
       extensions::FeatureProvider::GetBehaviorFeature(
           extensions::behavior_feature::kImprivataInSessionExtension);
   DCHECK(feature);
-  return feature->IsAvailableToExtension(extension).is_available();
+  if (!feature->IsAvailableToExtension(extension).is_available())
+    return false;
+
+  Profile* profile =
+      Profile::FromBrowserContext(render_frame_host->GetBrowserContext());
+  DCHECK(profile);
+  // RemoteApps are available for managed guest sessions and regular user
+  // sessions.
+  if (!RemoteAppsManagerFactory::GetForProfile(profile))
+    return false;
+
+  return true;
 }
 
 // static
@@ -61,35 +67,49 @@ void RemoteAppsImpl::SetBypassChecksForTesting(bool bypass_checks_for_testing) {
 
 RemoteAppsImpl::RemoteAppsImpl(RemoteAppsManager* manager) : manager_(manager) {
   DCHECK(manager);
+  app_launch_observers_with_source_id_.set_disconnect_handler(
+      base::BindRepeating(&RemoteAppsImpl::DisconnectHandler,
+                          base::Unretained(this)));
 }
 
 RemoteAppsImpl::~RemoteAppsImpl() = default;
 
-void RemoteAppsImpl::Bind(
+void RemoteAppsImpl::BindRemoteAppsAndAppLaunchObserver(
+    const absl::optional<std::string>& source_id,
     mojo::PendingReceiver<chromeos::remote_apps::mojom::RemoteApps>
         pending_remote_apps,
     mojo::PendingRemote<chromeos::remote_apps::mojom::RemoteAppLaunchObserver>
         pending_observer) {
   receivers_.Add(this, std::move(pending_remote_apps));
-  app_launch_observers_.Add(
-      mojo::Remote<chromeos::remote_apps::mojom::RemoteAppLaunchObserver>(
-          std::move(pending_observer)));
+  if (!source_id) {
+    app_launch_broadcast_observers_.Add(std::move(pending_observer));
+    return;
+  }
+
+  const mojo::RemoteSetElementId& remote_id =
+      app_launch_observers_with_source_id_.Add(
+          mojo::Remote<chromeos::remote_apps::mojom::RemoteAppLaunchObserver>(
+              std::move(pending_observer)));
+  source_id_to_remote_id_map_.insert(
+      std::pair<std::string, mojo::RemoteSetElementId>(*source_id, remote_id));
 }
 
 void RemoteAppsImpl::AddFolder(const std::string& name,
                                bool add_to_front,
                                AddFolderCallback callback) {
   const std::string& folder_id = manager_->AddFolder(name, add_to_front);
-  std::move(callback).Run(folder_id, absl::nullopt);
+  std::move(callback).Run(
+      chromeos::remote_apps::mojom::AddFolderResult::NewFolderId(folder_id));
 }
 
-void RemoteAppsImpl::AddApp(const std::string& name,
+void RemoteAppsImpl::AddApp(const std::string& source_id,
+                            const std::string& name,
                             const std::string& folder_id,
                             const GURL& icon_url,
                             bool add_to_front,
                             AddAppCallback callback) {
   manager_->AddApp(
-      name, folder_id, icon_url, add_to_front,
+      source_id, name, folder_id, icon_url, add_to_front,
       base::BindOnce(&RemoteAppsImpl::OnAppAdded, weak_factory_.GetWeakPtr(),
                      std::move(callback)));
 }
@@ -103,7 +123,6 @@ void RemoteAppsImpl::DeleteApp(const std::string& app_id,
       std::move(callback).Run(kErrNotReady);
       return;
     case RemoteAppsError::kNone:
-      app_ids_.erase(app_id);
       std::move(callback).Run(absl::nullopt);
       return;
     case RemoteAppsError::kAppIdDoesNotExist:
@@ -115,11 +134,29 @@ void RemoteAppsImpl::DeleteApp(const std::string& app_id,
   }
 }
 
-void RemoteAppsImpl::OnAppLaunched(const std::string& app_id) {
-  if (!base::Contains(app_ids_, app_id))
+void RemoteAppsImpl::SortLauncherWithRemoteAppsFirst(
+    SortLauncherWithRemoteAppsFirstCallback callback) {
+  manager_->SortLauncherWithRemoteAppsFirst();
+  std::move(callback).Run(absl::nullopt);
+}
+
+void RemoteAppsImpl::OnAppLaunched(const std::string& source_id,
+                                   const std::string& app_id) {
+  // Dispatch events to broadcast observers.
+  for (auto& observer : app_launch_broadcast_observers_)
+    observer->OnRemoteAppLaunched(app_id, source_id);
+
+  // Find remote associated with `source_id` and dispatch event to it.
+  auto it = source_id_to_remote_id_map_.find(source_id);
+  if (it == source_id_to_remote_id_map_.end())
     return;
-  for (auto& observer : app_launch_observers_)
-    observer->OnRemoteAppLaunched(app_id);
+
+  chromeos::remote_apps::mojom::RemoteAppLaunchObserver* observer =
+      app_launch_observers_with_source_id_.Get(it->second);
+  if (!observer)
+    return;
+
+  observer->OnRemoteAppLaunched(app_id, source_id);
 }
 
 void RemoteAppsImpl::OnAppAdded(AddAppCallback callback,
@@ -127,19 +164,32 @@ void RemoteAppsImpl::OnAppAdded(AddAppCallback callback,
                                 RemoteAppsError error) {
   switch (error) {
     case RemoteAppsError::kNotReady:
-      std::move(callback).Run(absl::nullopt, kErrNotReady);
+      std::move(callback).Run(
+          chromeos::remote_apps::mojom::AddAppResult::NewError(kErrNotReady));
       return;
     case RemoteAppsError::kFolderIdDoesNotExist:
-      std::move(callback).Run(absl::nullopt, kErrFolderIdDoesNotExist);
+      std::move(callback).Run(
+          chromeos::remote_apps::mojom::AddAppResult::NewError(
+              kErrFolderIdDoesNotExist));
       return;
     case RemoteAppsError::kNone:
-      app_ids_.insert(app_id);
-      std::move(callback).Run(app_id, absl::nullopt);
+      std::move(callback).Run(
+          chromeos::remote_apps::mojom::AddAppResult::NewAppId(app_id));
       return;
     case RemoteAppsError::kAppIdDoesNotExist:
       // Impossible to reach - only occurs for |DeleteApp()|.
       DCHECK(false);
   }
+}
+
+void RemoteAppsImpl::DisconnectHandler(mojo::RemoteSetElementId id) {
+  const auto& it = base::ranges::find(source_id_to_remote_id_map_, id,
+                                      &SourceToRemoteIds::value_type::second);
+
+  if (it == source_id_to_remote_id_map_.end())
+    return;
+
+  source_id_to_remote_id_map_.erase(it);
 }
 
 }  // namespace ash

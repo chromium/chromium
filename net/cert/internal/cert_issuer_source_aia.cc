@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,8 @@
 #include "base/logging.h"
 #include "base/strings/string_piece.h"
 #include "net/cert/cert_net_fetcher.h"
-#include "net/cert/internal/cert_errors.h"
 #include "net/cert/pem.h"
+#include "net/cert/pki/cert_errors.h"
 #include "net/cert/x509_util.h"
 #include "url/gurl.h"
 
@@ -22,12 +22,11 @@ const int kTimeoutMilliseconds = 10000;
 const int kMaxResponseBytes = 65536;
 const int kMaxFetchesPerCert = 5;
 
-bool ParseCertFromDer(const uint8_t* data,
-                      size_t length,
+bool ParseCertFromDer(base::span<const uint8_t> data,
                       ParsedCertificateList* results) {
   CertErrors errors;
   if (!ParsedCertificate::CreateAndAddToVector(
-          x509_util::CreateCryptoBuffer(data, length),
+          x509_util::CreateCryptoBuffer(data),
           x509_util::DefaultParseCertificateOptions(), results, &errors)) {
     // TODO(crbug.com/634443): propagate error info.
     // TODO(mattm): this creates misleading log spam if one of the other Parse*
@@ -77,9 +76,8 @@ bool ParseCertFromPem(const uint8_t* data,
   if (!pem_tokenizer.GetNext())
     return false;
 
-  return ParseCertFromDer(
-      reinterpret_cast<const uint8_t*>(pem_tokenizer.data().data()),
-      pem_tokenizer.data().size(), results);
+  return ParseCertFromDer(base::as_bytes(base::make_span(pem_tokenizer.data())),
+                          results);
 }
 
 class AiaRequest : public CertIssuerSource::Request {
@@ -145,8 +143,7 @@ bool AiaRequest::AddCompletedFetchToResults(Error error,
 
   // TODO(https://crbug.com/870359): Some AIA responses are served as PEM, which
   // is not part of RFC 5280's profile.
-  return ParseCertFromDer(fetched_bytes.data(), fetched_bytes.size(),
-                          results) ||
+  return ParseCertFromDer(fetched_bytes, results) ||
          ParseCertsFromCms(fetched_bytes, results) ||
          ParseCertFromPem(fetched_bytes.data(), fetched_bytes.size(), results);
 }
@@ -180,7 +177,7 @@ void CertIssuerSourceAia::AsyncGetIssuersOf(const ParsedCertificate* cert,
 
   std::vector<GURL> urls;
   for (const auto& uri : cert->ca_issuers_uris()) {
-    GURL url(uri);
+    GURL url(base::StringPiece(uri.data(), uri.size()));
     if (url.is_valid()) {
       // TODO(mattm): do the kMaxFetchesPerCert check only on the number of
       // supported URL schemes, not all the URLs.
@@ -198,7 +195,7 @@ void CertIssuerSourceAia::AsyncGetIssuersOf(const ParsedCertificate* cert,
   if (urls.empty())
     return;
 
-  std::unique_ptr<AiaRequest> aia_request(new AiaRequest());
+  auto aia_request = std::make_unique<AiaRequest>();
 
   for (const auto& url : urls) {
     // TODO(mattm): add synchronous failure mode to FetchCaIssuers interface so

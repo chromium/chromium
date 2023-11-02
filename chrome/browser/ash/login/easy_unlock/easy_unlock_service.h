@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,8 @@
 #include <set>
 #include <string>
 
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
@@ -16,19 +18,12 @@
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_auth_attempt.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_metrics.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_types.h"
-#include "chrome/browser/ash/login/easy_unlock/smartlock_feature_usage_metrics.h"
 #include "chrome/browser/ash/login/easy_unlock/smartlock_state_handler.h"
-#include "chromeos/components/multidevice/remote_device_ref.h"
-#include "chromeos/components/proximity_auth/smart_lock_metrics_recorder.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/services/secure_channel/public/cpp/client/secure_channel_client.h"
+#include "chromeos/ash/components/multidevice/remote_device_ref.h"
+#include "chromeos/ash/components/proximity_auth/smart_lock_metrics_recorder.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class AccountId;
-
-namespace base {
-class ListValue;
-}  // namespace base
 
 namespace user_manager {
 class User;
@@ -50,7 +45,8 @@ namespace ash {
 
 enum class SmartLockState;
 
-class EasyUnlockService : public KeyedService {
+class EasyUnlockService : public KeyedService,
+                          public proximity_auth::ScreenlockBridge::Observer {
  public:
   enum Type { TYPE_REGULAR, TYPE_SIGNIN };
 
@@ -87,7 +83,7 @@ class EasyUnlockService : public KeyedService {
   // Retrieve the stored remote devices list:
   //   * If in regular context, device list is retrieved from prefs.
   //   * If in sign-in context, device list is retrieved from TPM.
-  virtual const base::ListValue* GetRemoteDevices() const = 0;
+  virtual const base::Value::List* GetRemoteDevices() const = 0;
 
   // Gets the challenge bytes for the user currently associated with the
   // service.
@@ -114,15 +110,24 @@ class EasyUnlockService : public KeyedService {
   // permitted if the flag is enabled. Virtual to allow override for testing.
   virtual bool IsAllowed() const;
 
-  // Whether Smart Lock is eligible for this user.
-  virtual bool IsEligible() const = 0;
-
   // Whether Easy Unlock is currently enabled for this user. Virtual to allow
   // override for testing.
   virtual bool IsEnabled() const;
 
   // Returns true if ChromeOS login is enabled by the user.
   virtual bool IsChromeOSLoginEnabled() const;
+
+  // To be called when EasyUnlockService is "warming up", for example, on screen
+  // lock, after suspend, when the login screen is starting up, etc. During a
+  // period like this, not all sub-systems are fully initialized, particularly
+  // UnlockManager and the Bluetooth stack, so to avoid UI jank, callers can use
+  // this method to fill in the UI with an approximation of what the UI will
+  // look like in <1 second. The resulting initial state will be one of two
+  // possibilities:
+  //   * SmartLockState::kConnectingToPhone: if the feature is allowed, enabled,
+  //     and has kicked off a scan/connection.
+  //   * SmartLockState::kDisabled: if any values above can't be confirmed.
+  virtual SmartLockState GetInitialSmartLockState() const;
 
   // Sets the hardlock state for the associated user.
   void SetHardlockState(SmartLockStateHandler::HardlockState state);
@@ -196,14 +201,25 @@ class EasyUnlockService : public KeyedService {
   // definitively.
   virtual void OnUserEnteredPassword();
 
-  // KeyedService override:
+  // KeyedService:
   void Shutdown() override;
+
+  // proximity_auth::ScreenlockBridge::Observer:
+  void OnScreenDidLock(proximity_auth::ScreenlockBridge::LockHandler::ScreenType
+                           screen_type) override;
+  void OnScreenDidUnlock(
+      proximity_auth::ScreenlockBridge::LockHandler::ScreenType screen_type)
+      override = 0;
+  void OnFocusedUserChanged(const AccountId& account_id) override = 0;
 
   // Exposes the profile to which the service is attached to subclasses.
   Profile* profile() const { return profile_; }
 
   // Checks whether Easy unlock should be running and updates app state.
   void UpdateAppState();
+
+  // Fill in the UI with the state returned by GetInitialSmartLockState().
+  void ShowInitialSmartLockState();
 
   // Resets the Smart Lock state set by this service.
   void ResetSmartLockState();
@@ -236,14 +252,6 @@ class EasyUnlockService : public KeyedService {
       const multidevice::RemoteDeviceRefList& remote_devices,
       absl::optional<multidevice::RemoteDeviceRef> local_device);
 
-  // Called by subclasses when ready to begin recording SmartLock feature usage
-  // within Standard Feature Usage Logging (SFUL) framework.
-  void StartFeatureUsageMetrics();
-
-  // Called by subclasses when ready to stop recording SmartLock feature usage
-  // within SFUL framework.
-  void StopFeatureUsageMetrics();
-
   bool will_authenticate_using_easy_unlock() const {
     return will_authenticate_using_easy_unlock_;
   }
@@ -272,11 +280,21 @@ class EasyUnlockService : public KeyedService {
       bool success,
       const EasyUnlockDeviceKeyDataList& key_data_list);
 
+  // Called inside PrepareForSuspend() and OnScreenOff() to handle shared Smart
+  // Lock state updates.
+  void OnSuspendOrScreenOff();
+
   // Updates the service to state for handling system suspend.
   void PrepareForSuspend();
 
   // Called when the system resumes from a suspended state.
   void OnSuspendDone();
+
+  // Update the service to state for handling when the screen turns off.
+  void OnScreenOff();
+
+  // Called when the system resumes after the screen turns back on.
+  void OnScreenOffDone();
 
   void EnsureTpmKeyPresentIfNeeded();
 
@@ -304,10 +322,6 @@ class EasyUnlockService : public KeyedService {
   // screen. After a `RemoteDeviceRef` instance is provided, this object will
   // handle the rest.
   std::unique_ptr<proximity_auth::ProximityAuthSystem> proximity_auth_system_;
-
-  // Tracks Smart Lock feature usage for the Standard Feature Usage Logging
-  // (SFUL) framework.
-  std::unique_ptr<SmartLockFeatureUsageMetrics> feature_usage_metrics_;
 
   // Monitors suspend and wake state of ChromeOS.
   class PowerMonitor;

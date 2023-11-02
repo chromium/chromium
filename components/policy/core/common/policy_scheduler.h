@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -54,6 +54,8 @@ class POLICY_EXPORT PolicyScheduler {
 
   base::TimeDelta interval() const { return interval_; }
 
+  base::Time last_refresh_attempt() const { return last_refresh_attempt_; }
+
  private:
   // Schedules next task to run in |delay|. Deletes any previously scheduled
   // tasks.
@@ -83,6 +85,9 @@ class POLICY_EXPORT PolicyScheduler {
 
   // End time of the previous task. Zero in case no task has ended yet.
   base::TimeTicks last_task_;
+
+  // Last time refresh has been attempted.
+  base::Time last_refresh_attempt_;
 
   std::unique_ptr<base::CancelableOnceClosure> job_;
 

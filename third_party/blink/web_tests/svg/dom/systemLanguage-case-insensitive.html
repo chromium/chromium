@@ -6,9 +6,16 @@
 <svg id="mysvg">
 </svg>
 <script>
-test(() => {
 
+async function languageChange() {
+	return new Promise(resolve => window.onlanguagechange = resolve);
+}
+
+promise_test(async () => {
+
+	var languageChangePromise = languageChange();
 	testRunner.setAcceptLanguages("en");
+	await languageChangePromise;
 	var text1 = document.createElementNS('http://www.w3.org/2000/svg', 'text');
 	text1.setAttribute('systemLanguage', 'en');
 	text1.textContent = 'English-US';

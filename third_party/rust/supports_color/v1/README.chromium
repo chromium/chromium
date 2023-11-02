@@ -1,0 +1,6 @@
+Name: supports-color
+URL: https://crates.io/crates/supports-color
+Description: Detects whether a terminal supports color, and gives details about that support.
+Version: 1.3.0
+Security Critical: yes
+License: Apache 2.0

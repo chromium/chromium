@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -46,11 +46,16 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kSwitchAccessBluetoothDevice[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kSwitchAccessUnknownDevice[];
 
+// The string that represents the current time. Only used in pixel tests.
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kFakeNowTimeStringInPixelTest[];
+
 // The default delay before Switch Access automatically moves to the next
 // element on the page that is interesting, based on the Switch Access
-// predicates.
+// predicates. This value is mostly overridden by the setup guide's default
+// value.
 constexpr base::TimeDelta kDefaultSwitchAccessAutoScanSpeed =
-    base::Milliseconds(1200);
+    base::Milliseconds(1800);
 
 // The default speed in dips per second that the gliding point scan cursor
 // in switch access moves across the screen.
@@ -69,8 +74,8 @@ constexpr bool kDefaultKeyAutoRepeatEnabled = true;
 // Whether dark mode is enabled by default.
 constexpr bool kDefaultDarkModeEnabled = false;
 
-// Whether color mode is themed by default.
-constexpr bool kDefaultColorModeThemed = true;
+// Maximum number of times that dark/light mode educational nudge can be shown.
+constexpr int kDarkLightModeNudgeMaxShownCount = 3;
 
 // The default delay before a held keypress will start to auto repeat.
 constexpr base::TimeDelta kDefaultKeyAutoRepeatDelay = base::Milliseconds(500);
@@ -78,6 +83,10 @@ constexpr base::TimeDelta kDefaultKeyAutoRepeatDelay = base::Milliseconds(500);
 // The default interval between auto-repeated key events.
 constexpr base::TimeDelta kDefaultKeyAutoRepeatInterval =
     base::Milliseconds(50);
+
+// Constants for notification.
+const char kPrivacyIndicatorsNotificationIdPrefix[] = "privacy-indicators";
+const char kPrivacyIndicatorsNotifierId[] = "ash.privacy-indicators";
 
 }  // namespace ash
 

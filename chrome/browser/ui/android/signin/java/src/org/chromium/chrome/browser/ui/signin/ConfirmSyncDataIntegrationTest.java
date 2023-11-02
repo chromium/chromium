@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,7 +44,7 @@ import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
 /**
  * This class regroups the integration tests for {@link ConfirmSyncDataStateMachine}.
@@ -58,10 +58,8 @@ import org.chromium.ui.test.util.DummyUiActivityTestCase;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Batch(ConfirmSyncDataIntegrationTest.CONFIRM_SYNC_DATA_BATCH_NAME)
-public class ConfirmSyncDataIntegrationTest extends DummyUiActivityTestCase {
-    public static final String CONFIRM_SYNC_DATA_BATCH_NAME = "confirm_sync_data";
-
+@Batch(Batch.PER_CLASS)
+public class ConfirmSyncDataIntegrationTest extends BlankUiTestActivityTestCase {
     private static final String OLD_ACCOUNT_NAME = "test.account.old@gmail.com";
     private static final String NEW_ACCOUNT_NAME = "test.account.new@gmail.com";
     private static final String MANAGED_DOMAIN = "managed-domain.com";

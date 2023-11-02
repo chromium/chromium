@@ -1,17 +1,20 @@
-<!-- Copyright 2016 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2016 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 
 <link rel="import" href="chrome://resources/html/polymer.html">
 
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
 <link rel="import" href="chrome://resources/html/action_link.html">
-<link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="chrome://resources/html/assert.html">
+<link rel="import" href="chrome://resources/ash/common/i18n_behavior.html">
 <link rel="import" href="chrome://resources/html/load_time_data.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_lottie/cr_lottie.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_shared_style.css.html">
 
 <link rel="import" href="../../components/oobe_icons.html">
+<link rel="import" href="../../components/oobe_cr_lottie.html">
 <link rel="import" href="../../components/long_touch_detector.html">
 <link rel="import" href="../../components/behaviors/oobe_dialog_host_behavior.html">
 <link rel="import" href="../../components/behaviors/oobe_i18n_behavior.html">
@@ -51,7 +54,7 @@
       }
       :host-context([orientation=vertical]) #content {
         grid-template-columns: auto;
-        grid-template-rows: auto auto auto;
+        grid-template-rows: min-content auto min-content;
       }
       :host-context([orientation=horizontal]) #content {
         grid-template-columns: auto minmax(0, 1fr);
@@ -72,13 +75,13 @@
         justify-self: start;
       }
 
-      :host-context([orientation=vertical]) #getStarted {
+      :host-context([orientation=vertical]) #bottomButtons {
         align-self: end;
         grid-column: 1 / span 1;
         grid-row: 3 / span 1;
         justify-self: center;
       }
-      :host-context([orientation=horizontal]) #getStarted {
+      :host-context([orientation=horizontal]) #bottomButtons {
         align-self: end;
         grid-column: 1 / span 1;
         grid-row: 2 / span 1;
@@ -90,10 +93,9 @@
         min-width: 0;
       }
       :host-context([orientation=vertical]) #welcomeAnimationSlot {
-        align-self: end;
         grid-column: 1 / span 1;
         grid-row: 2 / span 1;
-        justify-self: stretch;
+        place-self: stretch;
       }
       :host-context([orientation=horizontal]) #welcomeAnimationSlot {
         align-self: stretch;
@@ -108,7 +110,7 @@
       }
 
       #title {
-        color: var(--google-grey-900);
+        color: var(--oobe-header-text-color);
         font-family: var(--oobe-header-font-family);
         font-size: 36px;
         line-height: 44px;
@@ -124,7 +126,7 @@
       }
 
       #subtitle {
-        color: var(--google-grey-700);
+        color: var(--oobe-subheader-text-color);
         font-family: var(--oobe-header-font-family);
         font-size: 24px;
         line-height: 32px;
@@ -188,16 +190,23 @@
             hidden="[[!debuggingLinkVisible]]">
           </oobe-icon-button>
         </div>
-        <oobe-text-button id="getStarted"
-            inverse on-click="onNextClicked_"
-            text-key="welcomeScreenGetStarted">
-        </oobe-text-button>
+        <div id="bottomButtons">
+            <oobe-text-button id="quickStart"
+               on-click="onQuickStartClicked_"
+               hidden="[[!isQuickStartEnabled]]"
+               text-key="welcomeScreenQuickStart">
+            </oobe-text-button>
+          <oobe-text-button id="getStarted"
+              inverse on-click="onNextClicked_"
+              text-key="welcomeScreenGetStarted">
+          </oobe-text-button>
+        </div>
         <div id="welcomeAnimationSlot">
-          <cr-lottie id="welcomeAnimation" hidden="[[isMeet_]]"
-              animation-url="/welcome_screen_animation.json">
-          </cr-lottie>
-          <img src="/images/cfm/welcome.svg" id="remoraWelcomeImage"
-              class="oobe-illustration" hidden="[[!isMeet_]]">
+          <oobe-cr-lottie id="welcomeAnimation" hidden="[[isMeet_]]"
+              animation-url="animations/welcome_screen_animation.json">
+          </oobe-cr-lottie>
+          <img src="/images/cfm/welcome.svg" class="oobe-illustration"
+              id="remoraWelcomeImage" hidden="[[!isMeet_]]" aria-hidden="true">
         </div>
       </div>
     </div>

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,4 +35,9 @@ enum Capability {
   MATERIAL_NEXT_GOOGLE_SANS = 61;
   CONTENT_LIFETIME = 64;
   OPEN_IN_INCOGNITO = 67;
+  ON_DEVICE_USER_PROFILE = 70;
+  INVALIDATE_CACHE_COMMAND = 73;
+  INFO_CARD_ACKNOWLEDGEMENT_TRACKING = 77;
+  THANK_CREATOR = 79;
+  OPEN_IN_NEW_TAB_IN_GROUP = 81;
 }

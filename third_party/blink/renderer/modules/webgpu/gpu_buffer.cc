@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,8 +20,8 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_adapter.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_queue.h"
-#include "third_party/blink/renderer/platform/graphics/gpu/dawn_callback.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/webgpu_callback.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -42,7 +42,7 @@ WGPUBufferDescriptor AsDawnType(const GPUBufferDescriptor* webgpu_desc,
 
   WGPUBufferDescriptor dawn_desc = {};
   dawn_desc.nextInChain = nullptr;
-  dawn_desc.usage = AsDawnEnum<WGPUBufferUsage>(webgpu_desc->usage());
+  dawn_desc.usage = AsDawnFlags<WGPUBufferUsage>(webgpu_desc->usage());
   dawn_desc.size = webgpu_desc->size();
   dawn_desc.mappedAtCreation = webgpu_desc->mappedAtCreation();
   if (webgpu_desc->hasLabel()) {
@@ -54,6 +54,67 @@ WGPUBufferDescriptor AsDawnType(const GPUBufferDescriptor* webgpu_desc,
 }
 
 }  // namespace
+
+// GPUMappedDOMArrayBuffer is returned from mappings created from
+// GPUBuffer which point to shared memory. This memory is owned by
+// the underlying WGPUBuffer used to implement GPUBuffer.
+// GPUMappedDOMArrayBuffer exists because mapped DOMArrayBuffers need
+// to keep their owning GPUBuffer alive, or the shared memory may be
+// freed while it is in use. It derives from DOMArrayBuffer and holds
+// a Member<GPUBuffer> to its owner. Alternative ideas might be to keep
+// the WGPUBuffer alive using a custom deleter of v8::BackingStore or
+// ArrayBufferContents. However, since these are non-GC objects, it
+// becomes complex to handle destruction when the last reference to
+// the WGPUBuffer may be held either by a GC object, or a non-GC object.
+class GPUMappedDOMArrayBuffer : public DOMArrayBuffer {
+ public:
+  static GPUMappedDOMArrayBuffer* Create(GPUBuffer* owner,
+                                         ArrayBufferContents contents) {
+    return MakeGarbageCollected<GPUMappedDOMArrayBuffer>(owner,
+                                                         std::move(contents));
+  }
+
+  GPUMappedDOMArrayBuffer(GPUBuffer* owner, ArrayBufferContents contents)
+      : DOMArrayBuffer(std::move(contents)), owner_(owner) {}
+  ~GPUMappedDOMArrayBuffer() override = default;
+
+  // Override Transfer such that a copy of the contents is always made. The
+  // backing store will still be detached for this ArrayBuffer, but the
+  // result will be a copy of the contents, not a reference to
+  // the same backing store. This is required by the WebGPU specification so
+  // that the mapped backing store may not be shared cross-thread.
+  bool Transfer(v8::Isolate* isolate, ArrayBufferContents& result) override {
+    // Transfer into |contents| which will detach |this| and all views of
+    // |this|.
+    ArrayBufferContents contents;
+    bool did_detach = DOMArrayBuffer::Transfer(isolate, contents);
+    if (!did_detach) {
+      return false;
+    }
+
+    // Copy the contents into the result.
+    contents.CopyTo(result);
+    owner_->device()->AddConsoleWarning(
+        "ArrayBuffer backed by mapped GPUBuffer was copied and detached, not "
+        "transferred.");
+    return true;
+  }
+
+  bool DetachContents(v8::Isolate* isolate) {
+    // Detach the array buffer by transferring the contents out and dropping
+    // them.
+    ArrayBufferContents contents;
+    return DOMArrayBuffer::Transfer(isolate, contents);
+  }
+
+  void Trace(Visitor* visitor) const override {
+    DOMArrayBuffer::Trace(visitor);
+    visitor->Trace(owner_);
+  }
+
+ private:
+  Member<GPUBuffer> owner_;
+};
 
 // static
 GPUBuffer* GPUBuffer::Create(GPUDevice* device,
@@ -79,7 +140,10 @@ GPUBuffer* GPUBuffer::Create(GPUDevice* device,
     buffer->setLabel(webgpu_desc->label());
 
   if (is_mappable) {
-    device->adapter()->gpu()->TrackMappableBuffer(buffer);
+    GPU* gpu = device->adapter()->gpu();
+    gpu->TrackMappableBuffer(buffer);
+    device->TrackMappableBuffer(buffer);
+    buffer->mappable_buffer_handles_ = gpu->mappable_buffer_handles();
   }
 
   return buffer;
@@ -89,6 +153,12 @@ GPUBuffer::GPUBuffer(GPUDevice* device,
                      uint64_t size,
                      WGPUBuffer buffer)
     : DawnObject<WGPUBuffer>(device, buffer), size_(size) {
+}
+
+GPUBuffer::~GPUBuffer() {
+  if (mappable_buffer_handles_) {
+    mappable_buffer_handles_->erase(GetHandle());
+  }
 }
 
 void GPUBuffer::Trace(Visitor* visitor) const {
@@ -132,12 +202,22 @@ void GPUBuffer::unmap(ScriptState* script_state) {
 }
 
 void GPUBuffer::destroy(ScriptState* script_state) {
-  Destroy(script_state->GetIsolate());
+  ResetMappingState(script_state->GetIsolate());
+  GetProcs().bufferDestroy(GetHandle());
+  // Destroyed, so it can never be mapped again. Stop tracking.
+  device_->adapter()->gpu()->UntrackMappableBuffer(this);
+  device_->UntrackMappableBuffer(this);
+  // Drop the reference to the mapped buffer handles. No longer
+  // need to remove the WGPUBuffer from this set in ~GPUBuffer.
+  mappable_buffer_handles_ = nullptr;
 }
 
-void GPUBuffer::Destroy(v8::Isolate* isolate) {
-  ResetMappingState(isolate);
-  GetProcs().bufferDestroy(GetHandle());
+uint64_t GPUBuffer::size() const {
+  return size_;
+}
+
+uint32_t GPUBuffer::usage() const {
+  return GetProcs().bufferGetUsage(GetHandle());
 }
 
 ScriptPromise GPUBuffer::MapAsyncImpl(ScriptState* script_state,
@@ -169,7 +249,7 @@ ScriptPromise GPUBuffer::MapAsyncImpl(ScriptState* script_state,
 
   // And send the command, leaving remaining validation to Dawn.
   auto* callback =
-      BindDawnOnceCallback(&GPUBuffer::OnMapAsyncCallback, WrapPersistent(this),
+      BindWGPUOnceCallback(&GPUBuffer::OnMapAsyncCallback, WrapPersistent(this),
                            WrapPersistent(resolver));
 
   GetProcs().bufferMapAsync(GetHandle(), mode, map_offset, map_size,
@@ -178,7 +258,7 @@ ScriptPromise GPUBuffer::MapAsyncImpl(ScriptState* script_state,
 
   // WebGPU guarantees that promises are resolved in finite time so we
   // need to ensure commands are flushed.
-  EnsureFlush();
+  EnsureFlush(ToEventLoop(script_state));
   return promise;
 }
 
@@ -305,57 +385,10 @@ DOMArrayBuffer* GPUBuffer::CreateArrayBufferForMappedData(
   DCHECK(data);
   DCHECK_LE(static_cast<uint64_t>(data_length), v8::TypedArray::kMaxLength);
 
-  // GPUBuffer::GetMappedRange returns ArrayBuffers that point to memory owned
-  // by handle_, which is a dawn_wire::client::Buffer. It is possible that the
-  // GPUBuffer gets garbage collected before the ArrayBuffer. When that happens
-  // the dawn_wire::client::Buffer must be kept alive, otherwise the ArrayBuffer
-  // will point to freed memory.
-  //
-  // To prevent this issue we make the ArrayBuffer keep a reference to the
-  // WGPUBuffer, by referencing the buffer and then have a custom deleter for
-  // the v8 backing store that releases that reference.
-  //
-  // V8 can call the ArrayBuffer deleter on any thread but dawn_wire and the
-  // rest of the WebGPU implementation expect to be used on a single thread at
-  // the moment. To fix this we keep a reference to the task runner for the
-  // execution context that called getMappedRange and do a deletion on a task
-  // posted to it.
-  struct ArrayBufferStrongRefs {
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner;
-    scoped_refptr<DawnControlClientHolder> dawn_control_client;
-    WGPUBuffer dawn_buffer;
-  };
-
-  GetProcs().bufferReference(GetHandle());
-  ArrayBufferStrongRefs* refs = new ArrayBufferStrongRefs{
-      execution_context->GetTaskRunner(TaskType::kWebGPU),
-      GetDawnControlClient(), GetHandle()};
-
-  v8::BackingStore::DeleterCallback deleter = [](void*, size_t,
-                                                 void* userdata) {
-    ArrayBufferStrongRefs* refs = static_cast<ArrayBufferStrongRefs*>(userdata);
-
-    // Happy case, we happen to be called on the correct thread. Release the
-    // buffer immediately.
-    if (refs->task_runner->BelongsToCurrentThread()) {
-      refs->dawn_control_client->GetProcs().bufferRelease(refs->dawn_buffer);
-      delete refs;
-      return;
-    }
-
-    refs->task_runner->PostTask(
-        FROM_HERE, ConvertToBaseOnceCallback(WTF::CrossThreadBindOnce(
-                       [](ArrayBufferStrongRefs* refs) {
-                         refs->dawn_control_client->GetProcs().bufferRelease(
-                             refs->dawn_buffer);
-                         delete refs;
-                       },
-                       WTF::CrossThreadUnretained(refs))));
-  };
-
-  ArrayBufferContents contents(
-      v8::ArrayBuffer::NewBackingStore(data, data_length, deleter, refs));
-  DOMArrayBuffer* array_buffer = DOMArrayBuffer::Create(contents);
+  ArrayBufferContents contents(v8::ArrayBuffer::NewBackingStore(
+      data, data_length, v8::BackingStore::EmptyDeleter, nullptr));
+  GPUMappedDOMArrayBuffer* array_buffer =
+      GPUMappedDOMArrayBuffer::Create(this, contents);
 
   mapped_array_buffers_.push_back(array_buffer);
   return array_buffer;
@@ -363,29 +396,18 @@ DOMArrayBuffer* GPUBuffer::CreateArrayBufferForMappedData(
 
 void GPUBuffer::ResetMappingState(v8::Isolate* isolate) {
   mapped_ranges_.clear();
+  DetachMappedArrayBuffers(isolate);
+}
 
-  for (Member<DOMArrayBuffer>& mapped_array_buffer : mapped_array_buffers_) {
-    DOMArrayBuffer* array_buffer = mapped_array_buffer.Release();
+void GPUBuffer::DetachMappedArrayBuffers(v8::Isolate* isolate) {
+  for (Member<GPUMappedDOMArrayBuffer>& mapped_array_buffer :
+       mapped_array_buffers_) {
+    GPUMappedDOMArrayBuffer* array_buffer = mapped_array_buffer.Release();
     DCHECK(array_buffer->IsDetachable(isolate));
 
-    // Detach the array buffer by transferring the contents out and dropping
-    // them.
-    ArrayBufferContents contents;
-    bool did_detach = array_buffer->Transfer(isolate, contents);
-
-    // |did_detach| would be false if the buffer were already detached.
-    //   Crash if it was, as this indicates that unmapping could alias the
-    //   backing store, or possibly even free it out from under the
-    //   ArrayBuffer. It might be difficult to be 100% certain about this
-    //   invariant, so we CHECK, even in release builds. (Actually, it would be
-    //   fine if the ArrayBuffer was detached without being transferred, but
-    //   this isn't a common case, so it can be revisited if needed.)
-    // TODO(crbug.com/1243842): This CHECK can currently be hit easily by JS
-    //   code. We need to validate against this case by preventing the
-    //   ArrayBuffer from being transferred/detached by outside code.
-    CHECK(did_detach)
-        << "An ArrayBuffer from getMappedRange() was detached before unmap()";
-    DCHECK(array_buffer->IsDetached());
+    array_buffer->DetachContents(isolate);
+    // TODO(crbug.com/1326210): Temporary CHECK to prevent aliased array buffers.
+    CHECK(array_buffer->IsDetached());
   }
   mapped_array_buffers_.clear();
 }

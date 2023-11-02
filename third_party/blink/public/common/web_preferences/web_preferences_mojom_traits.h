@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -47,9 +47,9 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
     return r.fantasy_font_family_map;
   }
 
-  static const std::map<std::string, std::u16string>&
-  pictograph_font_family_map(const blink::web_pref::WebPreferences& r) {
-    return r.pictograph_font_family_map;
+  static const std::map<std::string, std::u16string>& math_font_family_map(
+      const blink::web_pref::WebPreferences& r) {
+    return r.math_font_family_map;
   }
 
   static uint32_t default_font_size(const blink::web_pref::WebPreferences& r) {
@@ -129,10 +129,6 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
     return r.javascript_can_access_clipboard;
   }
 
-  static bool xslt_enabled(const blink::web_pref::WebPreferences& r) {
-    return r.xslt_enabled;
-  }
-
   static bool dns_prefetching_enabled(
       const blink::web_pref::WebPreferences& r) {
     return r.dns_prefetching_enabled;
@@ -142,22 +138,12 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
     return r.data_saver_enabled;
   }
 
-  static bool data_saver_holdback_web_api_enabled(
-      const blink::web_pref::WebPreferences& r) {
-    return r.data_saver_holdback_web_api_enabled;
-  }
-
   static bool local_storage_enabled(const blink::web_pref::WebPreferences& r) {
     return r.local_storage_enabled;
   }
 
   static bool databases_enabled(const blink::web_pref::WebPreferences& r) {
     return r.databases_enabled;
-  }
-
-  static bool application_cache_enabled(
-      const blink::web_pref::WebPreferences& r) {
-    return r.application_cache_enabled;
   }
 
   static bool tabs_to_links(const blink::web_pref::WebPreferences& r) {
@@ -196,19 +182,6 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
     return r.pepper_3d_enabled;
   }
 
-  static bool flash_3d_enabled(const blink::web_pref::WebPreferences& r) {
-    return r.flash_3d_enabled;
-  }
-
-  static bool flash_stage3d_enabled(const blink::web_pref::WebPreferences& r) {
-    return r.flash_stage3d_enabled;
-  }
-
-  static bool flash_stage3d_baseline_enabled(
-      const blink::web_pref::WebPreferences& r) {
-    return r.flash_stage3d_baseline_enabled;
-  }
-
   static bool privileged_webgl_extensions_enabled(
       const blink::web_pref::WebPreferences& r) {
     return r.privileged_webgl_extensions_enabled;
@@ -223,19 +196,14 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
     return r.hide_scrollbars;
   }
 
+  static bool enable_webkit_scrollbar_styling(
+      const blink::web_pref::WebPreferences& r) {
+    return r.enable_webkit_scrollbar_styling;
+  }
+
   static bool accelerated_2d_canvas_enabled(
       const blink::web_pref::WebPreferences& r) {
     return r.accelerated_2d_canvas_enabled;
-  }
-
-  static bool canvas_context_lost_in_background_enabled(
-      const blink::web_pref::WebPreferences& r) {
-    return r.canvas_context_lost_in_background_enabled;
-  }
-
-  static bool new_canvas_2d_api_enabled(
-      const blink::web_pref::WebPreferences& r) {
-    return r.new_canvas_2d_api_enabled;
   }
 
   static bool canvas_2d_layers_enabled(
@@ -403,6 +371,11 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
     return r.viewport_meta_enabled;
   }
 
+  static bool auto_zoom_focused_editable_to_legible_scale(
+      const blink::web_pref::WebPreferences& r) {
+    return r.auto_zoom_focused_editable_to_legible_scale;
+  }
+
   static bool shrinks_viewport_contents_to_fit(
       const blink::web_pref::WebPreferences& r) {
     return r.shrinks_viewport_contents_to_fit;
@@ -454,6 +427,11 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
 
   static bool record_whole_document(const blink::web_pref::WebPreferences& r) {
     return r.record_whole_document;
+  }
+
+  static bool stylus_handwriting_enabled(
+      const blink::web_pref::WebPreferences& r) {
+    return r.stylus_handwriting_enabled;
   }
 
   static bool cookie_enabled(const blink::web_pref::WebPreferences& r) {
@@ -519,11 +497,6 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
     return r.text_track_window_color;
   }
 
-  static const std::string& text_track_window_padding(
-      const blink::web_pref::WebPreferences& r) {
-    return r.text_track_window_padding;
-  }
-
   static const std::string& text_track_window_radius(
       const blink::web_pref::WebPreferences& r) {
     return r.text_track_window_radius;
@@ -556,7 +529,7 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
     return r.web_app_scope;
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   static float font_scale_factor(const blink::web_pref::WebPreferences& r) {
     return r.font_scale_factor;
   }
@@ -666,6 +639,10 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
   static bool disable_accelerated_small_canvases(
       const blink::web_pref::WebPreferences& r) {
     return r.disable_accelerated_small_canvases;
+  }
+
+  static bool disable_webauthn(const blink::web_pref::WebPreferences& r) {
+    return r.disable_webauthn;
   }
 #endif
 
@@ -777,9 +754,14 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
     return r.webxr_immersive_ar_allowed;
   }
 
-  static const url::Origin& litepage_subresource_redirect_origin(
+  static bool renderer_wide_named_frame_lookup(
       const blink::web_pref::WebPreferences& r) {
-    return r.litepage_subresource_redirect_origin;
+    return r.renderer_wide_named_frame_lookup;
+  }
+
+  static bool strict_mime_type_check_for_worker_scripts_enabled(
+      const blink::web_pref::WebPreferences& r) {
+    return r.strict_mime_type_check_for_worker_scripts_enabled;
   }
 
   static bool Read(blink::mojom::WebPreferencesDataView r,

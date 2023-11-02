@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,7 +43,7 @@ class SessionMetrics : public base::SupportsUserData::Data {
   SessionMetrics(const SessionMetrics&) = delete;
   SessionMetrics& operator=(const SessionMetrics&) = delete;
 
-  // Record metrics counters specified by |metrics_to_record| which is a
+  // Record metrics counters specified by `metrics_to_record` which is a
   // bitwise "or" combination of MetricsToRecordFlags. All other metrics
   // are cleared.
   void RecordAndClearSessionMetrics(MetricsToRecordFlagSet flag_set);

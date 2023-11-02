@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,9 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "chrome/browser/sync/sync_service_factory.h"
+#include "components/safe_browsing/core/browser/sync/safe_browsing_sync_observer_impl.h"
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
 #include "content/public/browser/browser_context.h"
 
@@ -28,11 +28,12 @@ VerdictCacheManagerFactory* VerdictCacheManagerFactory::GetInstance() {
 }
 
 VerdictCacheManagerFactory::VerdictCacheManagerFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "VerdictCacheManager",
-          BrowserContextDependencyManager::GetInstance()) {
+          ProfileSelections::BuildForRegularAndIncognito()) {
   DependsOn(HistoryServiceFactory::GetInstance());
   DependsOn(HostContentSettingsMapFactory::GetInstance());
+  DependsOn(SyncServiceFactory::GetInstance());
 }
 
 KeyedService* VerdictCacheManagerFactory::BuildServiceInstanceFor(
@@ -41,12 +42,10 @@ KeyedService* VerdictCacheManagerFactory::BuildServiceInstanceFor(
   return new VerdictCacheManager(
       HistoryServiceFactory::GetForProfile(profile,
                                            ServiceAccessType::EXPLICIT_ACCESS),
-      HostContentSettingsMapFactory::GetForProfile(profile));
-}
-
-content::BrowserContext* VerdictCacheManagerFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextOwnInstanceInIncognito(context);
+      HostContentSettingsMapFactory::GetForProfile(profile),
+      profile->GetPrefs(),
+      std::make_unique<SafeBrowsingSyncObserverImpl>(
+          SyncServiceFactory::GetForProfile(profile)));
 }
 
 }  // namespace safe_browsing

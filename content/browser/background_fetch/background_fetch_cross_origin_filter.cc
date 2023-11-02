@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -61,8 +61,7 @@ BackgroundFetchCrossOriginFilter::BackgroundFetchCrossOriginFilter(
   const auto& response_header_map = request.GetResponseHeaders();
 
   // True iff |source_origin| is the same origin as the original request URL.
-  is_same_origin_ =
-      source_origin.IsSameOriginWith(url::Origin::Create(final_url));
+  is_same_origin_ = source_origin.IsSameOriginWith(final_url);
 
   // Access-Control-Allow-Origin checks. The header's values must be valid for
   // it to not be completely discarded.

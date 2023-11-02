@@ -1,23 +1,26 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/printing/history/print_job_reporting_service.h"
 
+#include <memory>
 #include <utility>
 
-#include "ash/components/settings/cros_settings_names.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/callback_list.h"
 #include "base/containers/queue.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/ash/printing/history/print_job_info.pb.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
-#include "chrome/browser/chromeos/printing/history/print_job_info.pb.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "components/reporting/client/report_queue.h"
 #include "components/reporting/client/report_queue_factory.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/util/status.h"
@@ -26,25 +29,24 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
-namespace print = ::chromeos::printing::proto;
+namespace print = ::ash::printing::proto;
 namespace em = ::enterprise_management;
 
 namespace ash {
 
 class PrintJobReportingServiceImpl : public PrintJobReportingService {
  public:
-  explicit PrintJobReportingServiceImpl(base::StringPiece dm_token_value)
-      : cros_settings_(CrosSettings::Get()) {
+  explicit PrintJobReportingServiceImpl(
+      std::unique_ptr<::reporting::ReportQueue, base::OnTaskRunnerDeleter>
+          report_queue)
+      : report_queue_(std::move(report_queue)),
+        cros_settings_(CrosSettings::Get()) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     UpdateShouldReport();
     should_report_subscription_ = cros_settings_->AddSettingsObserver(
         kReportDevicePrintJobs,
         base::BindRepeating(&PrintJobReportingServiceImpl::UpdateShouldReport,
                             weak_factory_.GetWeakPtr()));
-
-    ::reporting::ReportQueueFactory::Create(
-        dm_token_value, ::reporting::Destination::PRINT_JOBS,
-        GetReportQueueSetter());
   }
 
   ~PrintJobReportingServiceImpl() override = default;
@@ -60,24 +62,15 @@ class PrintJobReportingServiceImpl : public PrintJobReportingService {
       VLOG(1) << "Not a managed printer for print job: " << print_job_info.id();
       return;
     }
+    if (!report_queue_) {
+      VLOG(1) << "No report queue set";
+      return;
+    }
 
     em::PrintJobEvent event = Convert(print_job_info);
-    if (report_queue_) {
-      VLOG(1) << "Enqueuing event for print job: "
-              << event.job_configuration().id();
-      Enqueue(event);
-    } else {
-      VLOG(1) << "Reporting queue not yet set at print job: "
-              << event.job_configuration().id();
-      pending_print_jobs_.push(std::move(event));
-    }
-  }
-
-  base::OnceCallback<void(std::unique_ptr<::reporting::ReportQueue>)>
-  GetReportQueueSetter() override {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    return base::BindOnce(&PrintJobReportingServiceImpl::SetReportQueue,
-                          weak_factory_.GetWeakPtr());
+    VLOG(1) << "Enqueuing event for print job: "
+            << event.job_configuration().id();
+    Enqueue(std::move(event));
   }
 
  private:
@@ -91,19 +84,11 @@ class PrintJobReportingServiceImpl : public PrintJobReportingService {
     cros_settings_->GetBoolean(kReportDevicePrintJobs, &should_report_);
   }
 
-  void SetReportQueue(std::unique_ptr<::reporting::ReportQueue> report_queue) {
+  void Enqueue(em::PrintJobEvent event) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    report_queue_ = std::move(report_queue);
-    while (!pending_print_jobs_.empty()) {
-      Enqueue(pending_print_jobs_.front());
-      pending_print_jobs_.pop();
-    }
-  }
-
-  void Enqueue(const em::PrintJobEvent& event) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    report_queue_->Enqueue(&event, ::reporting::Priority::SLOW_BATCH,
-                           base::DoNothing());
+    report_queue_->Enqueue(
+        std::make_unique<em::PrintJobEvent>(std::move(event)),
+        ::reporting::Priority::SLOW_BATCH, base::DoNothing());
   }
 
   static em::PrintJobEvent Convert(const print::PrintJobInfo& print_job_info) {
@@ -190,24 +175,35 @@ class PrintJobReportingServiceImpl : public PrintJobReportingService {
   // Whether print jobs should be reported.
   bool should_report_ = false;
 
-  // Print jobs that are queued before the report queue is available.
-  base::queue<em::PrintJobEvent> pending_print_jobs_;
-
   // Subscription for the CrOS setting that determines whether print jobs should
   // be reported.
   base::CallbackListSubscription should_report_subscription_;
 
-  // Report queue for print jobs
-  std::unique_ptr<::reporting::ReportQueue> report_queue_;
+  // Speculative report queue for print jobs
+  const std::unique_ptr<::reporting::ReportQueue, base::OnTaskRunnerDeleter>
+      report_queue_;
 
   CrosSettings* const cros_settings_;
 
   base::WeakPtrFactory<PrintJobReportingServiceImpl> weak_factory_{this};
 };
 
-std::unique_ptr<PrintJobReportingService> PrintJobReportingService::Create(
-    base::StringPiece dm_token_value) {
-  return std::make_unique<PrintJobReportingServiceImpl>(dm_token_value);
+// static
+std::unique_ptr<PrintJobReportingService> PrintJobReportingService::Create() {
+  auto report_queue =
+      ::reporting::ReportQueueFactory::CreateSpeculativeReportQueue(
+          ::reporting::EventType::kUser, ::reporting::Destination::PRINT_JOBS);
+  return std::make_unique<PrintJobReportingServiceImpl>(
+      std::move(report_queue));
+}
+
+// static
+std::unique_ptr<PrintJobReportingService>
+PrintJobReportingService::CreateForTest(
+    std::unique_ptr<::reporting::ReportQueue, base::OnTaskRunnerDeleter>
+        report_queue) {
+  return std::make_unique<PrintJobReportingServiceImpl>(
+      std::move(report_queue));
 }
 
 }  // namespace ash

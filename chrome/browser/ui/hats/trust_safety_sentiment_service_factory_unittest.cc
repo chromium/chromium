@@ -1,9 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/common/chrome_features.h"
@@ -29,7 +30,7 @@ class TrustSafetySentimentServiceFactoryTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   base::test::ScopedFeatureList feature_list_;
-  MockHatsService* mock_hats_service_;
+  raw_ptr<MockHatsService> mock_hats_service_;
 };
 
 TEST_F(TrustSafetySentimentServiceFactoryTest, ServiceAvailable) {

@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -79,16 +79,6 @@ luci.console_view(
             builder = "webrtc.fyi/WebRTC Chromium FYI Win10 Tester",
             category = "win|release|tester",
             short_name = "10",
-        ),
-        luci.console_view_entry(
-            builder = "webrtc.fyi/WebRTC Chromium FYI Win7 Tester",
-            category = "win|release|tester",
-            short_name = "7",
-        ),
-        luci.console_view_entry(
-            builder = "webrtc.fyi/WebRTC Chromium FYI Win8 Tester",
-            category = "win|release|tester",
-            short_name = "8",
         ),
         luci.console_view_entry(
             builder = "webrtc.fyi/WebRTC Chromium FYI ios-device",

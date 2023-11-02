@@ -8,9 +8,9 @@ file://ENG_REVIEW_OWNERS
 file://third_party/OWNERS
 
 # Security reviews
+file://build/fuchsia/SECURITY_OWNERS
 file://chromeos/SECURITY_OWNERS
 file://content/browser/SITE_ISOLATION_OWNERS
-file://fuchsia/SECURITY_OWNERS
 file://ipc/SECURITY_OWNERS
 file://net/base/SECURITY_OWNERS
 file://sandbox/linux/OWNERS
@@ -45,7 +45,7 @@ file://ui/android/java/res/LAYOUT_OWNERS
 # Chrome and Chrome OS).
 # The rules are documented at:
 # https://sites.google.com/a/chromium.org/dev/developers/how-tos/enterprise/adding-new-policies
-file://components/policy/resources/ENTERPRISE_POLICY_OWNERS
+file://components/policy/ENTERPRISE_POLICY_OWNERS
 
 # This restriction is in place due to the complicated compliance regulations
 # around this code.
@@ -64,7 +64,17 @@ file://weblayer/API_OWNERS
 # cases.
 file://ash/login/LOGIN_LOCK_OWNERS
 
-# Changes to the CQ configuration can have a significant impact on the CQ cost
+# Changes to the CQ/CI configuration can have a significant impact on infra cost
 # and performance. Approval should be limited to a small subset of the users
 # that can make infra changes.
 file://infra/config/groups/cq-usage/CQ_USAGE_OWNERS
+file://infra/config/groups/sheriff-rotations/CHROMIUM_OWNERS
+
+# Origin Trials owners are responsible for determining trials that need to be
+# completed manually.
+file://third_party/blink/common/origin_trials/OT_OWNERS
+
+# New notifiers added to //ash/constants/notifier_catalogs.h and 
+# //ash/constants/quick_settings_catalogs.h should be reviewed
+# by //ash/system owners to ensure that the correct notifier is being used.
+file://ash/system/OWNERS

@@ -1,20 +1,13 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/os_settings.js';
+import {Router, SearchEnginesBrowserProxyImpl} from 'chrome://os-settings/chromeos/os_settings.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-// #import {CrSettingsPrefs} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {GoogleAssistantBrowserProxyImpl} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {SearchEnginesBrowserProxy, SearchEnginesBrowserProxyImpl} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {SearchEnginesInfo, SearchEngine} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {TestBrowserProxy} from '../../test_browser_proxy.js';
-// #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {waitAfterNextRender} from 'chrome://test/test_util.js';
-// clang-format on
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {TestBrowserProxy} from '../../test_browser_proxy.js';
 
 suite('SearchEngine', function() {
   /** @type {?SettingsSearchEngineElement} */
@@ -23,76 +16,6 @@ suite('SearchEngine', function() {
   let browserProxy = null;
 
   let searchEngineInfo = null;
-
-  /**
-   * A test version of SearchEnginesBrowserProxy. Provides helper methods
-   * for allowing tests to know when a method was called, as well as
-   * specifying mock responses.
-   *
-   * @implements {settings.SearchEnginesBrowserProxy}
-   */
-  class TestSearchEnginesBrowserProxy extends TestBrowserProxy {
-    constructor() {
-      super([
-        'getSearchEnginesList',
-        'removeSearchEngine',
-        'searchEngineEditCancelled',
-        'searchEngineEditCompleted',
-        'searchEngineEditStarted',
-        'setDefaultSearchEngine',
-        'validateSearchEngineInput',
-      ]);
-
-      /** @private {!SearchEnginesInfo} */
-      this.searchEnginesInfo_ =
-          {defaults: [], actives: [], others: [], extensions: []};
-    }
-
-    /** @override */
-    setDefaultSearchEngine(modelIndex) {
-      this.methodCalled('setDefaultSearchEngine', modelIndex);
-    }
-
-    /** @override */
-    removeSearchEngine(modelIndex) {
-      this.methodCalled('removeSearchEngine', modelIndex);
-    }
-
-    /** @override */
-    searchEngineEditStarted(modelIndex) {
-      this.methodCalled('searchEngineEditStarted', modelIndex);
-    }
-
-    /** @override */
-    searchEngineEditCancelled() {
-      this.methodCalled('searchEngineEditCancelled');
-    }
-
-    /** @override */
-    searchEngineEditCompleted(searchEngine, keyword, queryUrl) {
-      this.methodCalled('searchEngineEditCompleted');
-    }
-
-    /** @override */
-    getSearchEnginesList() {
-      this.methodCalled('getSearchEnginesList');
-      return Promise.resolve(this.searchEnginesInfo_);
-    }
-
-    /** @override */
-    validateSearchEngineInput(fieldName, fieldValue) {
-      this.methodCalled('validateSearchEngineInput');
-      return Promise.resolve(true);
-    }
-
-    /**
-     * Sets the response to be returned by |getSearchEnginesList|.
-     * @param {!SearchEnginesInfo} searchEnginesInfo
-     */
-    setSearchEnginesInfo(searchEnginesInfo) {
-      this.searchEnginesInfo_ = searchEnginesInfo;
-    }
-  }
 
   function createSampleSearchEngine(
       canBeDefault, canBeEdited, canBeRemoved, name, modelIndex) {
@@ -135,10 +58,14 @@ suite('SearchEngine', function() {
     loadTimeData.overrideValues({
       shouldShowQuickAnswersSettings: false,
     });
-    browserProxy = new TestSearchEnginesBrowserProxy();
+
     searchEngineInfo = generateSearchEngineInfo();
-    browserProxy.setSearchEnginesInfo(searchEngineInfo);
-    settings.SearchEnginesBrowserProxyImpl.instance_ = browserProxy;
+    browserProxy = TestBrowserProxy.fromClass(SearchEnginesBrowserProxyImpl);
+    browserProxy.setResultMapperFor('getSearchEnginesList', async () => {
+      return searchEngineInfo;
+    });
+
+    SearchEnginesBrowserProxyImpl.setInstanceForTesting(browserProxy);
     PolymerTest.clearBody();
     page = document.createElement('settings-search-engine');
     page.prefs = {
@@ -151,45 +78,49 @@ suite('SearchEngine', function() {
 
   teardown(function() {
     page.remove();
-    settings.Router.getInstance().resetRouteForTesting();
+    Router.getInstance().resetRouteForTesting();
   });
 
   // Tests that the page is querying and displaying search engine info on
   // startup.
   test('Initialization', async () => {
     // Dialog should initially be hidden.
-    assertFalse(!!page.$$('os-settings-search-selection-dialog'));
+    assertFalse(
+        !!page.shadowRoot.querySelector('os-settings-search-selection-dialog'));
 
     await browserProxy.whenCalled('getSearchEnginesList');
-    Polymer.dom.flush();
+    flush();
 
     // Sublabel should initially display the first search engine's name.
-    const searchEngineSubLabel = page.$$('#currentSearchEngine');
+    const searchEngineSubLabel =
+        page.shadowRoot.querySelector('#currentSearchEngine');
     assertTrue(!!searchEngineSubLabel);
     assertEquals(
         searchEngineInfo.defaults[0].name,
         searchEngineSubLabel.innerHTML.trim());
 
     // Click the dialog button.
-    const dialogButton = page.$$('#searchSelectionDialogButton');
+    const dialogButton =
+        page.shadowRoot.querySelector('#searchSelectionDialogButton');
     assertTrue(!!dialogButton);
     dialogButton.click();
-    Polymer.dom.flush();
+    flush();
 
     await browserProxy.whenCalled('getSearchEnginesList');
-    Polymer.dom.flush();
+    flush();
 
     // Dialog should now be showing.
-    const dialog = page.$$('os-settings-search-selection-dialog');
+    const dialog =
+        page.shadowRoot.querySelector('os-settings-search-selection-dialog');
     assertTrue(!!dialog);
-    const selectElement = dialog.$$('select');
+    const selectElement = dialog.shadowRoot.querySelector('select');
     assertTrue(!!selectElement);
     assertEquals(0, selectElement.selectedIndex);
 
     // Simulate a user initiated change of the default search engine.
     selectElement.selectedIndex = 1;
     assertEquals(1, selectElement.selectedIndex);
-    const doneButton = dialog.$$('.action-button');
+    const doneButton = dialog.shadowRoot.querySelector('.action-button');
     assertTrue(!!doneButton);
     doneButton.click();
 
@@ -198,8 +129,8 @@ suite('SearchEngine', function() {
     searchEngineInfo.defaults[1].default = true;
     searchEngineInfo.defaults[2].default = false;
     await browserProxy.whenCalled('setDefaultSearchEngine');
-    cr.webUIListenerCallback('search-engines-changed', searchEngineInfo);
-    Polymer.dom.flush();
+    webUIListenerCallback('search-engines-changed', searchEngineInfo);
+    flush();
 
     // The sublabel should now be updated to the new search engine.
     assertEquals(
@@ -212,8 +143,8 @@ suite('SearchEngine', function() {
     searchEngineInfo.defaults[2].default = true;
 
     browserProxy.resetResolver('setDefaultSearchEngine');
-    cr.webUIListenerCallback('search-engines-changed', searchEngineInfo);
-    Polymer.dom.flush();
+    webUIListenerCallback('search-engines-changed', searchEngineInfo);
+    flush();
     assertEquals(
         searchEngineInfo.defaults[2].name,
         searchEngineSubLabel.innerHTML.trim());
@@ -227,9 +158,11 @@ suite('SearchEngine', function() {
 
   test('ControlledByExtension', async () => {
     await browserProxy.whenCalled('getSearchEnginesList');
-    const dialogButton = page.$$('#searchSelectionDialogButton');
+    const dialogButton =
+        page.shadowRoot.querySelector('#searchSelectionDialogButton');
     assertFalse(dialogButton.disabled);
-    assertFalse(!!page.$$('extension-controlled-indicator'));
+    assertFalse(
+        !!page.shadowRoot.querySelector('extension-controlled-indicator'));
 
     page.set('prefs.default_search_provider_data.template_url_data', {
       controlledBy: chrome.settingsPrivate.ControlledBy.EXTENSION,
@@ -239,28 +172,32 @@ suite('SearchEngine', function() {
       extensionCanBeDisabled: true,
       value: {},
     });
-    Polymer.dom.flush();
+    flush();
 
     assertTrue(dialogButton.disabled);
-    assertTrue(!!page.$$('extension-controlled-indicator'));
-    assertFalse(!!page.$$('cr-policy-pref-indicator'));
+    assertTrue(
+        !!page.shadowRoot.querySelector('extension-controlled-indicator'));
+    assertFalse(!!page.shadowRoot.querySelector('cr-policy-pref-indicator'));
   });
 
   test('ControlledByPolicy', async () => {
     await browserProxy.whenCalled('getSearchEnginesList');
-    const dialogButton = page.$$('#searchSelectionDialogButton');
+    const dialogButton =
+        page.shadowRoot.querySelector('#searchSelectionDialogButton');
     assertFalse(dialogButton.disabled);
-    assertFalse(!!page.$$('extension-controlled-indicator'));
+    assertFalse(
+        !!page.shadowRoot.querySelector('extension-controlled-indicator'));
 
     page.set('prefs.default_search_provider_data.template_url_data', {
       controlledBy: chrome.settingsPrivate.ControlledBy.USER_POLICY,
       enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
       value: {},
     });
-    Polymer.dom.flush();
+    flush();
 
     assertTrue(dialogButton.disabled);
-    assertFalse(!!page.$$('extension-controlled-indicator'));
-    assertTrue(!!page.$$('cr-policy-pref-indicator'));
+    assertFalse(
+        !!page.shadowRoot.querySelector('extension-controlled-indicator'));
+    assertTrue(!!page.shadowRoot.querySelector('cr-policy-pref-indicator'));
   });
 });

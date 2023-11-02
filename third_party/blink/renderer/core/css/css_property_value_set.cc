@@ -23,7 +23,7 @@
 
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 
-#include "third_party/blink/renderer/core/css/css_custom_property_declaration.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
@@ -31,10 +31,8 @@
 #include "third_party/blink/renderer/core/css/style_property_serializer.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
-#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 #ifndef NDEBUG
 #include <stdio.h>
@@ -45,8 +43,10 @@ namespace blink {
 static AdditionalBytes
 AdditionalBytesForImmutableCSSPropertyValueSetWithPropertyCount(
     unsigned count) {
-  return AdditionalBytes(sizeof(Member<CSSValue>) * count +
-                         sizeof(CSSPropertyValueMetadata) * count);
+  return AdditionalBytes(
+      base::bits::AlignUp(sizeof(Member<CSSValue>) * count,
+                          alignof(CSSPropertyValueMetadata)) +
+      sizeof(CSSPropertyValueMetadata) * count);
 }
 
 ImmutableCSSPropertyValueSet* ImmutableCSSPropertyValueSet::Create(
@@ -238,6 +238,15 @@ CSSPropertyValueSet::GetPropertyValue<AtRuleDescriptorID>(
 template CORE_EXPORT String
 CSSPropertyValueSet::GetPropertyValue<AtomicString>(const AtomicString&) const;
 
+String CSSPropertyValueSet::GetPropertyValueWithHint(
+    const AtomicString& property_name,
+    unsigned index) const {
+  const CSSValue* value = GetPropertyCSSValueWithHint(property_name, index);
+  if (value)
+    return value->CssText();
+  return g_empty_string;
+}
+
 template <typename T>
 const CSSValue* CSSPropertyValueSet::GetPropertyCSSValue(
     const T& property) const {
@@ -252,6 +261,13 @@ template CORE_EXPORT const CSSValue* CSSPropertyValueSet::GetPropertyCSSValue<
     AtRuleDescriptorID>(const AtRuleDescriptorID&) const;
 template CORE_EXPORT const CSSValue* CSSPropertyValueSet::GetPropertyCSSValue<
     AtomicString>(const AtomicString&) const;
+
+const CSSValue* CSSPropertyValueSet::GetPropertyCSSValueWithHint(
+    const AtomicString& property_name,
+    unsigned index) const {
+  DCHECK_EQ(property_name, PropertyAt(index).Name().ToAtomicString());
+  return &PropertyAt(index).Value();
+}
 
 void CSSPropertyValueSet::Trace(Visitor* visitor) const {
   if (is_mutable_)
@@ -321,10 +337,17 @@ bool CSSPropertyValueSet::PropertyIsImportant(const T& property) const {
     return PropertyAt(found_property_index).IsImportant();
   return ShorthandIsImportant(property);
 }
-template bool CSSPropertyValueSet::PropertyIsImportant<CSSPropertyID>(
-    const CSSPropertyID&) const;
+template CORE_EXPORT bool CSSPropertyValueSet::PropertyIsImportant<
+    CSSPropertyID>(const CSSPropertyID&) const;
 template bool CSSPropertyValueSet::PropertyIsImportant<AtomicString>(
     const AtomicString&) const;
+
+bool CSSPropertyValueSet::PropertyIsImportantWithHint(
+    const AtomicString& property_name,
+    unsigned index) const {
+  DCHECK_EQ(property_name, PropertyAt(index).Name().ToAtomicString());
+  return PropertyAt(index).IsImportant();
+}
 
 bool CSSPropertyValueSet::ShorthandIsImportant(
     CSSPropertyID property_id) const {
@@ -365,10 +388,10 @@ MutableCSSPropertyValueSet::SetResult MutableCSSPropertyValueSet::SetProperty(
   // Setting the value to an empty string just removes the property in both IE
   // and Gecko. Setting it to null seems to produce less consistent results, but
   // we treat it just the same.
-  if (value.IsEmpty()) {
-    bool did_parse = true;
-    bool did_change = RemoveProperty(ResolveCSSPropertyID(unresolved_property));
-    return SetResult{did_parse, did_change};
+  if (value.empty()) {
+    return RemoveProperty(ResolveCSSPropertyID(unresolved_property))
+               ? kChangedPropertySet
+               : kUnchanged;
   }
 
   // When replacing an existing property value, this moves the property to the
@@ -385,10 +408,9 @@ MutableCSSPropertyValueSet::SetResult MutableCSSPropertyValueSet::SetProperty(
     SecureContextMode secure_context_mode,
     StyleSheetContents* context_style_sheet,
     bool is_animation_tainted) {
-  if (value.IsEmpty()) {
-    bool did_parse = true;
-    bool did_change = RemoveProperty(custom_property_name);
-    return MutableCSSPropertyValueSet::SetResult{did_parse, did_change};
+  if (value.empty()) {
+    return RemoveProperty(custom_property_name) ? kChangedPropertySet
+                                                : kUnchanged;
   }
   return CSSParser::ParseValueForCustomProperty(
       this, custom_property_name, value, important, secure_context_mode,
@@ -420,8 +442,9 @@ void MutableCSSPropertyValueSet::SetProperty(CSSPropertyID property_id,
   SetProperty(CSSPropertyName(property_id), value, important);
 }
 
-bool MutableCSSPropertyValueSet::SetProperty(const CSSPropertyValue& property,
-                                             CSSPropertyValue* slot) {
+MutableCSSPropertyValueSet::SetResult MutableCSSPropertyValueSet::SetProperty(
+    const CSSPropertyValue& property,
+    CSSPropertyValue* slot) {
   CSSPropertyValue* to_replace =
       slot ? slot : FindCSSPropertyWithName(property.Name());
   if (to_replace) {
@@ -443,9 +466,9 @@ bool MutableCSSPropertyValueSet::SetProperty(const CSSPropertyValue& property,
     }
     if (to_replace) {
       if (*to_replace == property)
-        return false;
+        return kUnchanged;
       *to_replace = property;
-      return true;
+      return kModifiedExisting;
     }
   } else if (!may_have_logical_properties_) {
     const CSSProperty& prop = CSSProperty::Get(property.Id());
@@ -453,16 +476,16 @@ bool MutableCSSPropertyValueSet::SetProperty(const CSSPropertyValue& property,
         prop.IsInLogicalPropertyGroup() && prop.IsSurrogate();
   }
   property_vector_.push_back(property);
-  return true;
+  return kChangedPropertySet;
 }
 
-bool MutableCSSPropertyValueSet::SetProperty(CSSPropertyID property_id,
-                                             CSSValueID identifier,
-                                             bool important) {
+MutableCSSPropertyValueSet::SetResult MutableCSSPropertyValueSet::SetProperty(
+    CSSPropertyID property_id,
+    CSSValueID identifier,
+    bool important) {
   CSSPropertyName name(property_id);
-  SetProperty(CSSPropertyValue(name, *CSSIdentifierValue::Create(identifier),
-                               important));
-  return true;
+  return SetProperty(CSSPropertyValue(
+      name, *CSSIdentifierValue::Create(identifier), important));
 }
 
 void MutableCSSPropertyValueSet::ParseDeclarationList(
@@ -484,12 +507,13 @@ void MutableCSSPropertyValueSet::ParseDeclarationList(
   CSSParser::ParseDeclarationList(context, this, style_declaration);
 }
 
-bool MutableCSSPropertyValueSet::AddParsedProperties(
-    const HeapVector<CSSPropertyValue, 256>& properties) {
-  bool changed = false;
-  property_vector_.ReserveCapacity(property_vector_.size() + properties.size());
+MutableCSSPropertyValueSet::SetResult
+MutableCSSPropertyValueSet::AddParsedProperties(
+    const HeapVector<CSSPropertyValue, 64>& properties) {
+  SetResult changed = kUnchanged;
+  property_vector_.reserve(property_vector_.size() + properties.size());
   for (unsigned i = 0; i < properties.size(); ++i)
-    changed |= SetProperty(properties[i]);
+    changed = std::max(changed, SetProperty(properties[i]));
   return changed;
 }
 
@@ -548,7 +572,7 @@ inline bool ContainsId(const CSSProperty* const set[],
 bool MutableCSSPropertyValueSet::RemovePropertiesInSet(
     const CSSProperty* const set[],
     unsigned length) {
-  if (property_vector_.IsEmpty())
+  if (property_vector_.empty())
     return false;
 
   CSSPropertyValue* properties = property_vector_.data();
@@ -622,7 +646,7 @@ MutableCSSPropertyValueSet* CSSPropertyValueSet::MutableCopy() const {
 
 MutableCSSPropertyValueSet* CSSPropertyValueSet::CopyPropertiesInSet(
     const Vector<const CSSProperty*>& properties) const {
-  HeapVector<CSSPropertyValue, 256> list;
+  HeapVector<CSSPropertyValue, 64> list;
   list.ReserveInitialCapacity(properties.size());
   for (unsigned i = 0; i < properties.size(); ++i) {
     CSSPropertyName name(properties[i]->PropertyID());

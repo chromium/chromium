@@ -32,10 +32,8 @@
 
 #include <algorithm>
 
-#include "third_party/blink/public/platform/blame_context.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_node.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
@@ -48,6 +46,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/bindings/wrapper_type_info.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
@@ -101,12 +100,6 @@ void V8GCController::GcPrologue(v8::Isolate* isolate,
 
   ScriptForbiddenScope::Enter();
 
-  // Attribute garbage collection to the all frames instead of a specific
-  // frame.
-  if (BlameContext* blame_context =
-          Platform::Current()->GetTopLevelBlameContext())
-    blame_context->Enter();
-
   v8::HandleScope scope(isolate);
   switch (type) {
     case v8::kGCTypeIncrementalMarking:
@@ -138,10 +131,6 @@ void V8GCController::GcEpilogue(v8::Isolate* isolate,
   V8PerIsolateData::From(isolate)->LeaveGC();
 
   ScriptForbiddenScope::Exit();
-
-  if (BlameContext* blame_context =
-          Platform::Current()->GetTopLevelBlameContext())
-    blame_context->Leave();
 
   ThreadState* current_thread_state = ThreadState::Current();
   if (current_thread_state) {

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,8 @@
 #include "third_party/blink/renderer/modules/xr/xr_rigid_transform.h"
 #include "third_party/blink/renderer/modules/xr/xr_session.h"
 #include "third_party/blink/renderer/modules/xr/xr_space.h"
+#include "third_party/blink/renderer/platform/bindings/exception_code.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
 namespace blink {
 
@@ -23,12 +25,20 @@ XRHitTestResult::XRHitTestResult(
                     ? absl::optional<uint64_t>(hit_result.plane_id)
                     : absl::nullopt) {}
 
-XRPose* XRHitTestResult::getPose(XRSpace* other) {
-  auto maybe_other_space_native_from_mojo = other->NativeFromMojo();
-  DCHECK(maybe_other_space_native_from_mojo);
+XRPose* XRHitTestResult::getPose(XRSpace* other,
+                                 ExceptionState& exception_state) {
+  if (!session_->CanReportPoses()) {
+    DVLOG(3) << __func__ << ": cannot report poses";
+    exception_state.ThrowSecurityError(XRSession::kCannotReportPoses);
+    return nullptr;
+  }
 
-  auto mojo_from_this =
-      TransformationMatrix(mojo_from_this_.ToTransform().matrix());
+  auto maybe_other_space_native_from_mojo = other->NativeFromMojo();
+  if (!maybe_other_space_native_from_mojo) {
+    return nullptr;
+  }
+
+  auto mojo_from_this = TransformationMatrix(mojo_from_this_.ToTransform());
 
   auto other_native_from_mojo = *maybe_other_space_native_from_mojo;
   auto other_offset_from_other_native = other->OffsetFromNativeMatrix();
@@ -77,8 +87,7 @@ ScriptPromise XRHitTestResult::createAnchor(ScriptState* script_state,
 
   auto space_from_mojo = mojo_from_space.Inverse();
   auto space_from_anchor =
-      space_from_mojo *
-      TransformationMatrix(mojo_from_this_.ToTransform().matrix());
+      space_from_mojo * TransformationMatrix(mojo_from_this_.ToTransform());
 
   return session_->CreateAnchorHelper(
       script_state, space_from_anchor,

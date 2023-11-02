@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "ui/gfx/geometry/size_f.h"
 
 namespace exo {
+class SecurityDelegate;
 class Surface;
 
 // Frame types that can be used to decorate a surface.
@@ -100,6 +101,13 @@ class SurfaceDelegate {
 
   // Releases the pinned mode and allows the user to do other things again.
   virtual void Unpin() = 0;
+
+  // Sets the system modality.
+  virtual void SetSystemModal(bool modal) = 0;
+
+  // Returns the SecurityDelegate which this surface should use to perform
+  // security-sensitive operations. See go/secure-exo-ids for more information.
+  virtual SecurityDelegate* GetSecurityDelegate() = 0;
 
  protected:
   virtual ~SurfaceDelegate() {}

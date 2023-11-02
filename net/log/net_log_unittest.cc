@@ -1,10 +1,10 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "net/log/net_log.h"
 
-#include "base/cxx17_backports.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/task_environment.h"
 #include "base/threading/simple_thread.h"
@@ -32,9 +32,9 @@ base::Value CaptureModeToValue(NetLogCaptureMode capture_mode) {
 }
 
 base::Value NetCaptureModeParams(NetLogCaptureMode capture_mode) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetKey("capture_mode", CaptureModeToValue(capture_mode));
-  return dict;
+  base::Value::Dict dict;
+  dict.Set("capture_mode", CaptureModeToValue(capture_mode));
+  return base::Value(std::move(dict));
 }
 
 TEST(NetLogTest, BasicGlobalEvents) {
@@ -186,7 +186,7 @@ TEST(NetLogTest, CaptureModes) {
 
 class CountingObserver : public NetLog::ThreadSafeObserver {
  public:
-  CountingObserver() : count_(0) {}
+  CountingObserver() = default;
 
   ~CountingObserver() override {
     if (net_log())
@@ -198,7 +198,7 @@ class CountingObserver : public NetLog::ThreadSafeObserver {
   int count() const { return count_; }
 
  private:
-  int count_;
+  int count_ = 0;
 };
 
 class LoggingObserver : public NetLog::ThreadSafeObserver {
@@ -235,10 +235,7 @@ void AddEvent(NetLog* net_log) {
 // RunTestThread.
 class NetLogTestThread : public base::SimpleThread {
  public:
-  NetLogTestThread()
-      : base::SimpleThread("NetLogTest"),
-        net_log_(nullptr),
-        start_event_(nullptr) {}
+  NetLogTestThread() : base::SimpleThread("NetLogTest") {}
 
   NetLogTestThread(const NetLogTestThread&) = delete;
   NetLogTestThread& operator=(const NetLogTestThread&) = delete;
@@ -260,12 +257,12 @@ class NetLogTestThread : public base::SimpleThread {
   virtual void RunTestThread() = 0;
 
  protected:
-  NetLog* net_log_;
+  raw_ptr<NetLog> net_log_ = nullptr;
 
  private:
   // Only triggered once all threads have been created, to make it less likely
   // each thread completes before the next one starts.
-  base::WaitableEvent* start_event_;
+  raw_ptr<base::WaitableEvent> start_event_ = nullptr;
 };
 
 // A thread that adds a bunch of events to the NetLog.
@@ -322,14 +319,14 @@ void RunTestThreads(NetLog* net_log) {
       base::WaitableEvent::ResetPolicy::MANUAL,
       base::WaitableEvent::InitialState::NOT_SIGNALED);
 
-  for (size_t i = 0; i < base::size(threads); ++i) {
+  for (size_t i = 0; i < std::size(threads); ++i) {
     threads[i].Init(net_log, &start_event);
     threads[i].Start();
   }
 
   start_event.Signal();
 
-  for (size_t i = 0; i < base::size(threads); ++i)
+  for (size_t i = 0; i < std::size(threads); ++i)
     threads[i].Join();
 }
 
@@ -337,8 +334,8 @@ void RunTestThreads(NetLog* net_log) {
 TEST(NetLogTest, NetLogEventThreads) {
   // Attach some observers.  They'll safely detach themselves on destruction.
   CountingObserver observers[3];
-  for (size_t i = 0; i < base::size(observers); ++i) {
-    NetLog::Get()->AddObserver(&observers[i], NetLogCaptureMode::kEverything);
+  for (auto& observer : observers) {
+    NetLog::Get()->AddObserver(&observer, NetLogCaptureMode::kEverything);
   }
 
   // Run a bunch of threads to completion, each of which will emit events to
@@ -347,8 +344,8 @@ TEST(NetLogTest, NetLogEventThreads) {
 
   // Check that each observer saw the emitted events.
   const int kTotalEvents = kThreads * kEvents;
-  for (size_t i = 0; i < base::size(observers); ++i)
-    EXPECT_EQ(kTotalEvents, observers[i].count());
+  for (const auto& observer : observers)
+    EXPECT_EQ(kTotalEvents, observer.count());
 }
 
 // Test adding and removing a single observer.
@@ -357,7 +354,7 @@ TEST(NetLogTest, NetLogAddRemoveObserver) {
 
   AddEvent(NetLog::Get());
   EXPECT_EQ(0, observer.count());
-  EXPECT_EQ(NULL, observer.net_log());
+  EXPECT_EQ(nullptr, observer.net_log());
   EXPECT_FALSE(NetLog::Get()->IsCapturing());
 
   // Add the observer and add an event.
@@ -375,7 +372,7 @@ TEST(NetLogTest, NetLogAddRemoveObserver) {
 
   // Remove observer and add an event.
   NetLog::Get()->RemoveObserver(&observer);
-  EXPECT_EQ(NULL, observer.net_log());
+  EXPECT_EQ(nullptr, observer.net_log());
   EXPECT_FALSE(NetLog::Get()->IsCapturing());
 
   AddEvent(NetLog::Get());
@@ -400,7 +397,7 @@ TEST(NetLogTest, NetLogTwoObservers) {
   NetLog::Get()->AddObserver(&observer[0],
                              NetLogCaptureMode::kIncludeSensitive);
   EXPECT_EQ(NetLog::Get(), observer[0].net_log());
-  EXPECT_EQ(NULL, observer[1].net_log());
+  EXPECT_EQ(nullptr, observer[1].net_log());
   EXPECT_EQ(NetLogCaptureMode::kIncludeSensitive, observer[0].capture_mode());
   EXPECT_TRUE(NetLog::Get()->IsCapturing());
 
@@ -417,18 +414,18 @@ TEST(NetLogTest, NetLogTwoObservers) {
   absl::optional<int> param;
   AddEvent(NetLog::Get());
   ASSERT_EQ(1U, observer[0].GetNumValues());
-  param = observer[0].GetValue(0)->FindIntKey("params");
+  param = observer[0].GetValue(0)->GetDict().FindInt("params");
   ASSERT_TRUE(param);
   EXPECT_EQ(CaptureModeToInt(observer[0].capture_mode()), param.value());
   ASSERT_EQ(1U, observer[1].GetNumValues());
-  param = observer[1].GetValue(0)->FindIntKey("params");
+  param = observer[1].GetValue(0)->GetDict().FindInt("params");
   ASSERT_TRUE(param);
   EXPECT_EQ(CaptureModeToInt(observer[1].capture_mode()), param.value());
 
   // Remove second observer.
   NetLog::Get()->RemoveObserver(&observer[1]);
   EXPECT_EQ(NetLog::Get(), observer[0].net_log());
-  EXPECT_EQ(NULL, observer[1].net_log());
+  EXPECT_EQ(nullptr, observer[1].net_log());
   EXPECT_EQ(NetLogCaptureMode::kIncludeSensitive, observer[0].capture_mode());
   EXPECT_TRUE(NetLog::Get()->IsCapturing());
 
@@ -439,8 +436,8 @@ TEST(NetLogTest, NetLogTwoObservers) {
 
   // Remove first observer.
   NetLog::Get()->RemoveObserver(&observer[0]);
-  EXPECT_EQ(NULL, observer[0].net_log());
-  EXPECT_EQ(NULL, observer[1].net_log());
+  EXPECT_EQ(nullptr, observer[0].net_log());
+  EXPECT_EQ(nullptr, observer[1].net_log());
   EXPECT_FALSE(NetLog::Get()->IsCapturing());
 
   // Add event and make sure neither observer gets it.
@@ -465,7 +462,7 @@ TEST(NetLogTest, NetLogEntryToValueEmptyParams) {
                      NetLogEventPhase::BEGIN, base::TimeTicks(), base::Value());
 
   ASSERT_TRUE(entry1.params.is_none());
-  ASSERT_FALSE(entry1.ToValue().FindKey("params"));
+  ASSERT_FALSE(entry1.ToValue().GetDict().Find("params"));
 }
 
 }  // namespace

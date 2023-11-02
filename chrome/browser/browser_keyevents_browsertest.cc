@@ -1,17 +1,16 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
-#include "build/build_config.h"
 
 #include <stddef.h>
 
 #include "base/check.h"
-#include "base/cxx17_backports.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -19,8 +18,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "content/public/browser/notification_registrar.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -28,11 +25,6 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/switches.h"
 #include "ui/events/keycodes/keyboard_codes.h"
-
-// TODO(kbr): remove: http://crbug.com/222296
-#if defined(OS_MAC)
-#import "base/mac/mac_util.h"
-#endif
 
 using content::NavigationController;
 
@@ -93,14 +85,12 @@ const wchar_t* GetBoolString(bool value) {
 }
 
 // A class to help wait for the finish of a key event test.
-class TestFinishObserver : public content::NotificationObserver {
+class TestFinishObserver : public content::WebContentsObserver {
  public:
   explicit TestFinishObserver(content::WebContents* web_contents)
-      : finished_(false), waiting_(false) {
-    registrar_.Add(this,
-                   content::NOTIFICATION_DOM_OPERATION_RESPONSE,
-                   content::Source<content::WebContents>(web_contents));
-  }
+      : content::WebContentsObserver(web_contents),
+        finished_(false),
+        waiting_(false) {}
 
   TestFinishObserver(const TestFinishObserver&) = delete;
   TestFinishObserver& operator=(const TestFinishObserver&) = delete;
@@ -114,14 +104,11 @@ class TestFinishObserver : public content::NotificationObserver {
     return finished_;
   }
 
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override {
-    DCHECK(type == content::NOTIFICATION_DOM_OPERATION_RESPONSE);
-    content::Details<std::string> dom_op_result(details);
+  void DomOperationResponse(content::RenderFrameHost* render_frame_host,
+                            const std::string& dom_op_result) override {
     // We might receive responses for other script execution, but we only
     // care about the test finished message.
-    if (*dom_op_result.ptr() == "\"FINISHED\"") {
+    if (dom_op_result == "\"FINISHED\"") {
       finished_ = true;
       if (waiting_)
         base::RunLoop::QuitCurrentWhenIdleDeprecated();
@@ -131,7 +118,6 @@ class TestFinishObserver : public content::NotificationObserver {
  private:
   bool finished_;
   bool waiting_;
-  content::NotificationRegistrar registrar_;
 };
 
 class BrowserKeyEventsTest : public InProcessBrowserTest {
@@ -303,7 +289,8 @@ class BrowserKeyEventsTest : public InProcessBrowserTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(BrowserKeyEventsTest, NormalKeyEvents) {
+// TODO(crbug.com/1338416): Re-enable this test
+IN_PROC_BROWSER_TEST_F(BrowserKeyEventsTest, DISABLED_NormalKeyEvents) {
   static const KeyEventTestData kTestNoInput[] = {
     // a
     { ui::VKEY_A, false, false, false, false,
@@ -373,7 +360,7 @@ IN_PROC_BROWSER_TEST_F(BrowserKeyEventsTest, NormalKeyEvents) {
   ASSERT_TRUE(IsViewFocused(VIEW_ID_TAB_CONTAINER));
 
   int tab_index = browser()->tab_strip_model()->active_index();
-  for (size_t i = 0; i < base::size(kTestNoInput); ++i) {
+  for (size_t i = 0; i < std::size(kTestNoInput); ++i) {
     EXPECT_NO_FATAL_FAILURE(TestKeyEvent(tab_index, kTestNoInput[i]))
         << "kTestNoInput[" << i << "] failed:\n"
         << GetTestDataDescription(kTestNoInput[i]);
@@ -381,7 +368,7 @@ IN_PROC_BROWSER_TEST_F(BrowserKeyEventsTest, NormalKeyEvents) {
 
   // Input in normal text box.
   ASSERT_NO_FATAL_FAILURE(SetFocusedElement(tab_index, L"A"));
-  for (size_t i = 0; i < base::size(kTestWithInput); ++i) {
+  for (size_t i = 0; i < std::size(kTestWithInput); ++i) {
     EXPECT_NO_FATAL_FAILURE(TestKeyEvent(tab_index, kTestWithInput[i]))
         << "kTestWithInput[" << i << "] in text box failed:\n"
         << GetTestDataDescription(kTestWithInput[i]);
@@ -390,7 +377,7 @@ IN_PROC_BROWSER_TEST_F(BrowserKeyEventsTest, NormalKeyEvents) {
 
   // Input in password box.
   ASSERT_NO_FATAL_FAILURE(SetFocusedElement(tab_index, L"B"));
-  for (size_t i = 0; i < base::size(kTestWithInput); ++i) {
+  for (size_t i = 0; i < std::size(kTestWithInput); ++i) {
     EXPECT_NO_FATAL_FAILURE(TestKeyEvent(tab_index, kTestWithInput[i]))
         << "kTestWithInput[" << i << "] in password box failed:\n"
         << GetTestDataDescription(kTestWithInput[i]);
@@ -398,7 +385,7 @@ IN_PROC_BROWSER_TEST_F(BrowserKeyEventsTest, NormalKeyEvents) {
   EXPECT_NO_FATAL_FAILURE(CheckTextBoxValue(tab_index, L"B", L"aA"));
 }
 
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(BrowserKeyEventsTest, CtrlKeyEvents) {
   static const KeyEventTestData kTestCtrlF = {
@@ -479,7 +466,7 @@ IN_PROC_BROWSER_TEST_F(BrowserKeyEventsTest, CtrlKeyEvents) {
   EXPECT_NO_FATAL_FAILURE(TestKeyEvent(tab_index, kTestCtrlZSuppressKeyDown));
   EXPECT_NO_FATAL_FAILURE(TestKeyEvent(tab_index, kTestCtrlEnter));
 }
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 // http://crbug.com/81451
 IN_PROC_BROWSER_TEST_F(BrowserKeyEventsTest, CommandKeyEvents) {
   static const KeyEventTestData kTestCmdF = {
@@ -525,13 +512,13 @@ IN_PROC_BROWSER_TEST_F(BrowserKeyEventsTest, CommandKeyEvents) {
 
 // https://crbug.com/81451 for mac
 // https://crbug.com/1249688 for Lacros
-#if defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_AccessKeys DISABLED_AccessKeys
 #else
 #define MAYBE_AccessKeys AccessKeys
 #endif
 IN_PROC_BROWSER_TEST_F(BrowserKeyEventsTest, MAYBE_AccessKeys) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // On Mac, access keys use ctrl+alt modifiers.
   static const KeyEventTestData kTestAccessA = {
     ui::VKEY_A, true, false, true, false,
@@ -604,7 +591,7 @@ IN_PROC_BROWSER_TEST_F(BrowserKeyEventsTest, MAYBE_AccessKeys) {
   // Make sure no element is focused.
   EXPECT_NO_FATAL_FAILURE(CheckFocusedElement(tab_index, L""));
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   // Alt+D should move the focus to the location entry.
   EXPECT_NO_FATAL_FAILURE(TestKeyEvent(tab_index, kTestAccessD));
 
@@ -650,7 +637,7 @@ IN_PROC_BROWSER_TEST_F(BrowserKeyEventsTest, ReservedAccelerators) {
   ASSERT_EQ(1, browser()->tab_strip_model()->count());
 
   static const KeyEventTestData kTestCtrlOrCmdT = {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     ui::VKEY_T,
     false,
     false,
@@ -698,7 +685,7 @@ IN_PROC_BROWSER_TEST_F(BrowserKeyEventsTest, ReservedAccelerators) {
       browser()->tab_strip_model()->GetWebContentsAt(1));
 
   // Press Ctrl/Cmd+W, which will close the tab.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
       browser(), ui::VKEY_W, false, false, false, true));
 #else
@@ -711,7 +698,7 @@ IN_PROC_BROWSER_TEST_F(BrowserKeyEventsTest, ReservedAccelerators) {
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(BrowserKeyEventsTest, EditorKeyBindings) {
   static const KeyEventTestData kTestCtrlA = {
     ui::VKEY_A, true, false, false, false,
@@ -794,7 +781,7 @@ IN_PROC_BROWSER_TEST_F(BrowserKeyEventsTest, PageUpDownKeys) {
 }
 
 // AltKey is enabled only on Windows. See crbug.com/114537.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // If this flakes, disable and log details in http://crbug.com/523255.
 // TODO(sky): remove comment if proves stable and reenable other tests.
 IN_PROC_BROWSER_TEST_F(BrowserKeyEventsTest, FocusMenuBarByAltKey) {

@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -9,8 +9,6 @@ mojom("mojom") {
     "blob_storage_context.mojom",
     "cache_storage_control.mojom",
     "file_system_access_context.mojom",
-    "indexed_db_control.mojom",
-    "indexed_db_control_test.mojom",
     "local_storage_control.mojom",
     "origin_context.mojom",
     "partition.mojom",
@@ -42,8 +40,12 @@ mojom("mojom") {
   ]
   component_deps = [ "//third_party/blink/public/common" ]
 
+  enabled_features = []
+  if (is_linux || is_chromeos) {
+    enabled_features += [ "is_linux_or_chromeos" ]
+  }
   if (!is_android) {
-    enabled_features = [ "is_not_android" ]
+    enabled_features += [ "is_not_android" ]
   }
 }
 

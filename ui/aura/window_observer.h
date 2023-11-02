@@ -1,11 +1,11 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_AURA_WINDOW_OBSERVER_H_
 #define UI_AURA_WINDOW_OBSERVER_H_
 
-
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list_types.h"
 #include "ui/aura/aura_export.h"
 #include "ui/compositor/property_change_reason.h"
@@ -27,11 +27,11 @@ class AURA_EXPORT WindowObserver : public base::CheckedObserver {
       HIERARCHY_CHANGED
     };
 
-    Window* target;     // The window that was added or removed.
-    Window* new_parent;
-    Window* old_parent;
+    raw_ptr<Window> target;  // The window that was added or removed.
+    raw_ptr<Window> new_parent;
+    raw_ptr<Window> old_parent;
     HierarchyChangePhase phase;
-    Window* receiver;   // The window receiving the notification.
+    raw_ptr<Window> receiver;  // The window receiving the notification.
   };
 
   WindowObserver();

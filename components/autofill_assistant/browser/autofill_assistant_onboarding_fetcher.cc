@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/json/json_reader.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "components/autofill_assistant/browser/features.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -107,38 +106,36 @@ void AutofillAssistantOnboardingFetcher::StartFetch(const std::string& locale,
 void AutofillAssistantOnboardingFetcher::OnFetchComplete(
     std::unique_ptr<std::string> response_body) {
   url_loader_.reset();
-  ResultStatus result_status = ParseResponse(std::move(response_body));
-  base::UmaHistogramEnumeration(
-      "AutofillAssistant.AutofillAssistantOnboardingFetcher.ResultStatus",
-      result_status);
+  Metrics::OnboardingFetcherResultStatus result_status =
+      ParseResponse(std::move(response_body));
+  Metrics::RecordOnboardingFetcherResult(result_status);
   for (auto& callback : pending_callbacks_) {
     std::move(callback).Run();
   }
   pending_callbacks_.clear();
 }
 
-AutofillAssistantOnboardingFetcher::ResultStatus
+Metrics::OnboardingFetcherResultStatus
 AutofillAssistantOnboardingFetcher::ParseResponse(
     std::unique_ptr<std::string> response_body) {
   onboarding_strings_.clear();
 
   if (!response_body) {
-    return ResultStatus::kNoBody;
+    return Metrics::OnboardingFetcherResultStatus::kNoBody;
   }
 
-  base::JSONReader::ValueWithError data =
-      base::JSONReader::ReadAndReturnValueWithError(*response_body);
+  auto data = base::JSONReader::ReadAndReturnValueWithError(*response_body);
 
-  if (data.value == absl::nullopt) {
-    DVLOG(1) << "Parse error: " << data.error_message;
-    return ResultStatus::kInvalidJson;
+  if (!data.has_value()) {
+    DVLOG(1) << "Parse error: " << data.error().message;
+    return Metrics::OnboardingFetcherResultStatus::kInvalidJson;
   }
-  if (!data.value->is_dict()) {
-    return ResultStatus::kInvalidData;
+  if (!data->is_dict()) {
+    return Metrics::OnboardingFetcherResultStatus::kInvalidData;
   }
-  return ExtractStrings(*data.value, onboarding_strings_)
-             ? ResultStatus::kOk
-             : ResultStatus::kInvalidData;
+  return ExtractStrings(*data, onboarding_strings_)
+             ? Metrics::OnboardingFetcherResultStatus::kOk
+             : Metrics::OnboardingFetcherResultStatus::kInvalidData;
 }
 
 void AutofillAssistantOnboardingFetcher::RunCallback(

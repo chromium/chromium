@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,7 +38,6 @@
 #include "content/public/browser/web_contents_user_data.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/http/http_response_headers.h"
-#include "third_party/blink/public/common/loader/previews_state.h"
 
 namespace offline_pages {
 
@@ -240,25 +239,23 @@ void BackgroundLoaderOffliner::MarkLoadStartTime() {
   load_start_time_ = base::TimeTicks::Now();
 }
 
-void BackgroundLoaderOffliner::DocumentAvailableInMainFrame(
-    content::RenderFrameHost* render_frame_host) {
+void BackgroundLoaderOffliner::PrimaryMainDocumentElementAvailable() {
   is_low_bar_met_ = true;
 
   // Add this signal to signal_data_.
-  AddLoadingSignal("DocumentAvailableInMainFrame");
+  AddLoadingSignal("PrimaryMainDocumentElementAvailable");
 }
 
-void BackgroundLoaderOffliner::DocumentOnLoadCompletedInMainFrame(
-    content::RenderFrameHost* render_frame_host) {
+void BackgroundLoaderOffliner::DocumentOnLoadCompletedInPrimaryMainFrame() {
   if (!pending_request_.get()) {
     DVLOG(1) << "DidStopLoading called even though no pending request.";
     return;
   }
 
   // Add this signal to signal_data_.
-  AddLoadingSignal("DocumentOnLoadCompletedInMainFrame");
+  AddLoadingSignal("DocumentOnLoadCompletedInPrimaryMainFrame");
 
-  snapshot_controller_->DocumentOnLoadCompletedInMainFrame();
+  snapshot_controller_->DocumentOnLoadCompletedInPrimaryMainFrame();
 }
 
 void BackgroundLoaderOffliner::PrimaryMainFrameRenderProcessGone(
@@ -292,7 +289,7 @@ void BackgroundLoaderOffliner::WebContentsDestroyed() {
 
 void BackgroundLoaderOffliner::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInMainFrame())
+  if (!navigation_handle->IsInPrimaryMainFrame())
     return;
   // If there was an error of any kind (certificate, client, DNS, etc),
   // Mark as error page. Resetting here causes RecordNavigationMetrics to crash.
@@ -489,7 +486,7 @@ void BackgroundLoaderOffliner::ResetLoader() {
 void BackgroundLoaderOffliner::AttachObservers() {
   content::WebContents* contents = loader_->web_contents();
   content::WebContentsObserver::Observe(contents);
-  OfflinerUserData::AddToWebContents(contents, this);
+  OfflinerUserData::CreateForWebContents(contents, this);
 }
 
 void BackgroundLoaderOffliner::AddLoadingSignal(const char* signal_name) {

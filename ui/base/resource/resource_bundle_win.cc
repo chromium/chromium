@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,7 +32,7 @@ HINSTANCE GetCurrentResourceDLL() {
 
 void ResourceBundle::LoadCommonResources() {
   // As a convenience, add the current resource module as a data packs.
-  data_packs_.push_back(
+  resource_handles_.push_back(
       std::make_unique<ResourceDataDLL>(GetCurrentResourceDLL()));
 
   LoadChromeResources();

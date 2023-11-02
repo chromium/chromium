@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include "ipc/ipc_platform_file.h"
 #include "ipc/ipc_sender.h"
 
-#if defined(OS_NACL)
+#if BUILDFLAG(IS_NACL)
 #include <unistd.h>
 #endif
 
@@ -47,7 +47,7 @@ bool ProxyChannel::InitWithChannel(
 void ProxyChannel::InitWithTestSink(IPC::Sender* sender) {
   DCHECK(!test_sink_);
   test_sink_ = sender;
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
   peer_pid_ = base::GetCurrentProcId();
 #endif
 }

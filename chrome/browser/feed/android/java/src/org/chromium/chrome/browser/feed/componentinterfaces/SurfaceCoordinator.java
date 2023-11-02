@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 package org.chromium.chrome.browser.feed.componentinterfaces;
@@ -17,6 +17,9 @@ public interface SurfaceCoordinator {
     void onSurfaceClosed();
     void onSurfaceOpened();
     boolean isActive();
+
+    void onActivityPaused();
+    void onActivityResumed();
 
     /** Enumeration of the possible selection options of feed tabs. */
     @IntDef({StreamTabId.DEFAULT, StreamTabId.FOR_YOU, StreamTabId.FOLLOWING})

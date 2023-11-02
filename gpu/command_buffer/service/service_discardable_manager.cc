@@ -1,4 +1,4 @@
-// Copyright (c) 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,7 +24,7 @@ size_t DiscardableCacheSizeLimit() {
 // Cache size values are designed to roughly correspond to existing image cache
 // sizes for 1-1.5 renderers. These will be updated as more types of data are
 // moved to this cache.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   const size_t kLowEndCacheSizeBytes = 1024 * 1024;
   const size_t kNormalCacheSizeBytes = 128 * 1024 * 1024;
 #else
@@ -34,9 +34,9 @@ size_t DiscardableCacheSizeLimit() {
   // While this is a GPU memory cache, we can't read GPU memory reliably, so we
   // use system ram as a proxy.
   const int kLargeCacheSizeMemoryThresholdMB = 4 * 1024;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (base::SysInfo::IsLowEndDevice()) {
     return kLowEndCacheSizeBytes;
   } else {
@@ -164,7 +164,7 @@ void ServiceDiscardableManager::InsertLockedTexture(
   }
 
   total_size_ += texture_size;
-  entries_.Put({texture_id, texture_manager},
+  entries_.Put(GpuDiscardableEntryKey{texture_id, texture_manager},
                GpuDiscardableEntry{handle, texture_size});
   EnforceCacheSizeLimit(cache_size_limit_);
 }

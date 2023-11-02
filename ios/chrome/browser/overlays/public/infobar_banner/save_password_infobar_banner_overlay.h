@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,7 +44,7 @@ class SavePasswordInfobarBannerOverlayRequestConfig
 
   // The InfoBar causing this banner.
   infobars::InfoBar* infobar_ = nullptr;
-  // Configuration data extracted from |infobar_|'s save passwords delegate.
+  // Configuration data extracted from `infobar_`'s save passwords delegate.
   NSString* message_ = nil;
   NSString* username_ = nil;
   NSString* button_text_ = nil;

@@ -3,9 +3,9 @@
     /* Colors: */
     --memory-background-color: var(--google-grey-200);
     --memory-title-color: rgb(255, 255, 255);
-    --shape-blue-color: var(--google-blue-refresh-500);
-    --shape-green-color: var(--google-green-refresh-500);
-    --shape-yellow-color: var(--google-yellow-refresh-500);
+    --shape-blue-color: var(--google-blue-500);
+    --shape-green-color: var(--google-green-500);
+    --shape-yellow-color: var(--google-yellow-500);
     /* Other: */
     --memory-shadow: 0 1px 2px rgba(60, 64, 67, 0.3),
         0 2px 6px 2px rgba(60, 64, 67, 0.15);
@@ -15,9 +15,9 @@
     :host {
       /* Colors: */
       --memory-background-color: var(--google-grey-800);
-      --shape-blue-color: var(--google-blue-refresh-400);
-      --shape-green-color: var(--google-green-refresh-400);
-      --shape-yellow-color: var(--google-yellow-refresh-400);
+      --shape-blue-color: var(--google-blue-400);
+      --shape-green-color: var(--google-green-400);
+      --shape-yellow-color: var(--google-yellow-400);
       /* Other: */
       --memory-shadow: 0px 2px 6px 2px rgba(0, 0, 0, 0.15),
           0px 1px 2px rgba(0, 0, 0, 0.3);
@@ -116,7 +116,7 @@
 
   #exploreCard {
     align-items: center;
-    border: 1px solid var(--ntp-border-color);
+    border: 1px solid var(--color-new-tab-page-border);
     box-sizing: border-box;
     flex-direction: column;
     justify-content: center;
@@ -125,7 +125,7 @@
 
   #exploreIconContainer {
     align-content: center;
-    background: var(--ntp-selected-light-background-color);
+    background: var(--color-new-tab-page-module-icon-container-background);
     border-radius: 4px;
     display: grid;
     height: 24px;
@@ -137,13 +137,13 @@
     -webkit-mask-image: url(modules/photos/icons/explore_icon.svg);
     -webkit-mask-repeat: no-repeat;
     -webkit-mask-size: 100%;
-    background: var(--ntp-selected-border-color);
+    background: var(--color-new-tab-page-selected-border);
     height: 16px;
     width: 16px;
   }
 
   #exploreText {
-    color: var(--cr-primary-text-color);
+    color: var(--color-new-tab-page-primary-foreground);
     font-size: 14px;
     font-weight: 500;
     line-height: 20px;
@@ -167,7 +167,7 @@
   }
 
   #optInTitleText {
-    color: var(--cr-primary-text-color);
+    color: var(--color-new-tab-page-primary-foreground);
     font-size: 22px;
     font-weight: normal;
     line-height: 26px;
@@ -175,7 +175,7 @@
   }
 
   #optInTitleDesc {
-    color: var(--cr-secondary-text-color);
+    color: var(--color-new-tab-page-secondary-foreground);
     font-size: 12px;
     line-height: 20px;
   }
@@ -184,16 +184,111 @@
     margin-inline-end: 8px;
   }
 
-  #optInArtwork {
-    display: flex;
-    flex-grow: 1;
-    flex-shrink: 1;
-    height: 236px;
-    margin-top: -46px;
-    max-width: 240px;
-    overflow: hidden;
-    position: relative;
-    right: 0;
+  #girlIllustration {
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 152px;
+    left: 12px;
+    position: absolute;
+    top: 42px;
+    width: 114px;
+  }
+
+  #girlTitle {
+    bottom: 3.29%;
+    color: #FFF;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 700;
+    left: 8.77%;
+    letter-spacing: 0.1px;
+    line-height: 20px;
+    position: absolute;
+    right: 3.51%;
+    top: 83.55%;
+  }
+
+  #baloonTitle {
+    bottom: 3.29%;
+    color: #FFF;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 700;
+    left: 8.77%;
+    letter-spacing: 0.1px;
+    line-height: 20px;
+    position: absolute;
+    right: 3.51%;
+    top: 83.55%;
+  }
+
+  #baloonIllustration {
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 152px;
+    left: 138px;
+    position: absolute;
+    top: 42px;
+    width: 114px;
+  }
+
+  #birthdayBoy,
+  #lake {
+    height: 160px;
+    position: absolute;
+    right: 96px;
+    top: 24px;
+    width: 120px;
+  }
+
+  #birthdayBoyTitle,
+  #lakeTitle {
+    color: #FFF;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 700;
+    height: 20px;
+    letter-spacing: 0.1px;
+    line-height: 20px;
+    position: absolute;
+    right: 29px;
+    top: 133px;
+    width: 79px;
+  }
+
+  #dog,
+  #smallBirthdayBoy {
+    height: 120px;
+    position: absolute;
+    right: -10px;
+    top: 100px;
+    width: 90px;
+  }
+
+  #photosLogo {
+    height: 64px;
+    left: 160px;
+    position: absolute;
+    top: 16px;
+    width: 64px;
+  }
+
+  #yellowSemiCircle {
+    height: 40px;
+    left: 8px;
+    position: absolute;
+    top: 200px;
+    width: 40px;
+  }
+
+  #blueQuarterCircle {
+    height: 88px;
+    left: 100px;
+    position: absolute;
+    top: 200px;
+    width: 88px;
   }
 
   #yellowShape {
@@ -300,10 +395,22 @@
     right: 192px;
   }
 
+  .opt-in-artwork {
+    display: flex;
+    flex-grow: 1;
+    flex-shrink: 1;
+    height: 236px;
+    margin-top: -46px;
+    max-width: 240px;
+    overflow: hidden;
+    position: relative;
+    right: 0;
+    z-index: -1;
+  }
+
   ntp-info-dialog a {
     color: var(--cr-link-color);
     cursor: pointer;
-    text-decoration: none;
   }
 
   ntp-info-dialog a:focus {
@@ -314,10 +421,11 @@
 </style>
 <ntp-module-header
     chip-text="[[headerChipText_]]"
-    hide-menu-button="[[showOptInScreen]]"
+    hide-menu-button="[[hideMenuButton]]"
     show-info-button="[[!showOptInScreen]]"
     on-info-button-click="onInfoButtonClick_"
-    show-dismiss-button on-dismiss-button-click="onDismissButtonClick_"
+    show-dismiss-button="[[!showSoftOptOutButton]]"
+    on-dismiss-button-click="onDismissButtonClick_"
     dismiss-text="[[i18nRecursive('',
                                   'modulesDismissButtonText',
                                   'modulesPhotosMemoriesHideToday')]]"
@@ -325,7 +433,7 @@
     disable-text="[[i18nRecursive('',
                                   'modulesDisableButtonText',
                                   'modulesPhotosMemoriesDisable')]]">
-  [[i18n('modulesPhotosTitle')]]
+  $i18n{modulesPhotosTitle}
 </ntp-module-header>
 <div id="memories">
   <template id="welcomeCardElement" is="dom-if" if="[[showOptInScreen]]">
@@ -333,34 +441,116 @@
       <div id="optInContent">
         <div>
           <h1 id="optInTitleText">
-            [[i18n('modulesPhotosMemoriesWelcomeTitle')]]
+            [[optInTitleText]]
           </h1>
           <span id="optInTitleDesc">
-            [[i18n('modulesPhotosMemoriesWelcomeText')]]
+            $i18n{modulesPhotosMemoriesWelcomeText}
           </span>
         </div>
         <div>
           <cr-button id="optInButton" class="action-button"
               on-click="onOptInClick_">
-            [[i18n('modulesPhotosMemoriesWelcomeButtonOptIn')]]
+            $i18n{modulesPhotosMemoriesWelcomeButtonOptIn}
           </cr-button>
-          <cr-button id="optOutButton" on-click="onOptOutClick_">
-            [[i18n('modulesPhotosMemoriesWelcomeButtonOptOut')]]
+          <cr-button id="optOutButton"
+              on-click="onOptOutClick_"
+              hidden="[[showSoftOptOutButton]]">
+            $i18n{modulesPhotosMemoriesWelcomeButtonOptOut}
+          </cr-button>
+          <cr-button id="softOptOutButton"
+            on-click="onSoftOptOutClick_"
+            hidden="[[!showSoftOptOutButton]]">
+              $i18n{modulesPhotosMemoriesWelcomeButtonSoftOptOut}
           </cr-button>
         </div>
       </div>
-      <div id="optInArtwork">
-        <div id="yellowShape"></div>
-        <div id="blueShape"></div>
-        <div id="greenShape"></div>
-        <div id="memoryMain" class="memory card">
-          <div class="memory-title" dir="auto">
-            [[i18n('modulesPhotosMemoriesWelcomeExample')]]
+
+      <template is="dom-if" if="[[showDefaultOptInscreen()]]">
+        <div id="defaultOpInArtWork", class="opt-in-artwork">
+          <div id="yellowShape"></div>
+          <div id="blueShape"></div>
+          <div id="greenShape"></div>
+          <div id="memoryMain" class="memory card">
+            <div class="memory-title" dir="auto">
+              $i18n{modulesPhotosMemoriesWelcomeExample}
+            </div>
+          </div>
+          <div id="memorySecond" class="memory card no-title"></div>
+          <div id="memoryThird" class="memory card no-title"></div>
+        </div>
+      </template>
+      <template is="dom-if" if="[[showCustomArtWork_]]">
+        <div id="customArtWork" class="opt-in-artwork">
+          <img src="[[customArtworkUrl_]]">
+        </div>
+      </template>
+      <template is="dom-if" if="[[showSplitSvgCustomArtWork_]]">
+        <template is="dom-if" if="[[isEqual(customArtworkIndex_, '1')]]">
+        <div id="boyDogcustomArtWork" class="opt-in-artwork">
+          <div id="birthdayBoy">
+            <img
+            src="modules/photos/images/birthday_boy.png">
+            <div id="birthdayBoyTitle">
+              $i18n{modulesPhotosMemoriesWelcomeExample}
+            </div>
+          </div>
+          <div id="dog">
+            <img  src="modules/photos/images/dog.png">
+          </div>
+          <div id="photosLogo">
+            <img
+            src="modules/photos/images/photos_logo.png">
+          </div>
+          <div id="yellowSemiCircle">
+            <img src="modules/photos/images/yellow_semi_circle.png">
+          </div>
+          <div id="blueQuarterCircle">
+            <img src="modules/photos/images/blue_quarter_circle.png">
           </div>
         </div>
-        <div id="memorySecond" class="memory card no-title"></div>
-        <div id="memoryThird" class="memory card no-title"></div>
-      </div>
+        </template>
+        <template is="dom-if" if="[[isEqual(customArtworkIndex_, '2')]]">
+        <div id="lakeBoycustomArtWork" class="opt-in-artwork">
+          <div id="lake">
+            <img  src="modules/photos/images/lake.png">
+            <div id="lakeTitle">
+              $i18n{modulesPhotosMemoriesWelcomeExample}
+            </div>
+          </div>
+          <div id="smallBirthdayBoy">
+            <img src="modules/photos/images/small_birthday_boy.png">
+          </div>
+          <div id="photosLogo">
+            <img
+            src="modules/photos/images/photos_logo.png">
+          </div>
+          <div id="yellowSemiCircle">
+            <img src="modules/photos/images/yellow_semi_circle.png">
+          </div>
+          <div id="blueQuarterCircle">
+            <img  src="modules/photos/images/blue_quarter_circle.png">
+          </div>
+        </div>
+        </template>
+        <template is="dom-if" if="[[isEqual(customArtworkIndex_, '3')]]">
+          <div id="illustrationsCustomArtWork" class="opt-in-artwork">
+            <div id="girlIllustration">
+              <img  src="modules/photos/images/girl_illustration.png"
+              >
+              <div id="girlTitle">
+                $i18n{modulesPhotosMemoriesWelcomeExample}
+              </div>
+            </div>
+            <div id="baloonIllustration">
+              <img  src= "modules/photos/images/baloon_illustration.png"
+              >
+              <div id="baloonTitle">
+                $i18n{modulesPhotosMemoriesBaloonIllustrationTitle}
+              </div>
+            </div>
+          </div>
+        </template>
+      </template>
     </div>
   </template>
   <template id="memoriesElement" is="dom-if" if="[[!showOptInScreen]]">
@@ -382,7 +572,7 @@
           <div id="exploreIcon"></div>
         </div>
         <div id="exploreText">
-          [[i18n('modulesPhotosMemoriesExplore')]]
+          $i18n{modulesPhotosMemoriesExplore}
         </div>
       </a>
     </template>

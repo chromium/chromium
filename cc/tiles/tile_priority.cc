@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -58,6 +58,17 @@ std::string TileMemoryLimitPolicyToString(TileMemoryLimitPolicy policy) {
       DCHECK(false) << "Unrecognized policy value";
       return "<unknown>";
   }
+}
+
+bool IsTileMemoryLimitPolicyMoreRestictive(TileMemoryLimitPolicy policy1,
+                                           TileMemoryLimitPolicy policy2) {
+  static_assert(
+      ALLOW_NOTHING < ALLOW_ABSOLUTE_MINIMUM &&
+          ALLOW_ABSOLUTE_MINIMUM < ALLOW_PREPAINT_ONLY &&
+          ALLOW_PREPAINT_ONLY < ALLOW_ANYTHING,
+      "TileMemoryLimitPolicy must be ordered from most restrictive to least "
+      "restrictive");
+  return policy1 < policy2;
 }
 
 std::string TreePriorityToString(TreePriority prio) {

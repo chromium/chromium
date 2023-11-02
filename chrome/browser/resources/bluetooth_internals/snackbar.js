@@ -1,9 +1,9 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {define as crUiDefine} from 'chrome://resources/js/cr/ui.m.js';
-import {$, ensureTransitionEndEvent, listenOnce} from 'chrome://resources/js/util.m.js';
+import {define as crUiDefine} from 'chrome://resources/js/cr/ui.js';
+import {$, ensureTransitionEndEvent, listenOnce} from 'chrome://resources/js/util.js';
 
 /**
  * Javascript for Snackbar controls, served from chrome://bluetooth-internals/.

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,8 @@
 
 namespace blink {
 
-TextFormat::TextFormat(uint32_t range_start,
-                       uint32_t range_end,
+TextFormat::TextFormat(wtf_size_t range_start,
+                       wtf_size_t range_end,
                        const String& text_color,
                        const String& background_color,
                        const String& underline_color,
@@ -23,8 +23,8 @@ TextFormat::TextFormat(uint32_t range_start,
       underline_style_(underline_style),
       underline_thickness_(underline_thickness) {}
 
-TextFormat* TextFormat::Create(uint32_t range_start,
-                               uint32_t range_end,
+TextFormat* TextFormat::Create(wtf_size_t range_start,
+                               wtf_size_t range_end,
                                const String& text_color,
                                const String& background_color,
                                const String& underline_color,
@@ -62,11 +62,11 @@ TextFormat* TextFormat::Create(const TextFormatInit* dict) {
   return MakeGarbageCollected<TextFormat>(dict);
 }
 
-uint32_t TextFormat::rangeStart() const {
+wtf_size_t TextFormat::rangeStart() const {
   return range_start_;
 }
 
-uint32_t TextFormat::rangeEnd() const {
+wtf_size_t TextFormat::rangeEnd() const {
   return range_end_;
 }
 

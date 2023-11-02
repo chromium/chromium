@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,7 +37,8 @@ class HardwareDisplayPlaneAtomic : public HardwareDisplayPlane {
                                 const gfx::Rect& src_rect,
                                 const gfx::OverlayTransform transform,
                                 int in_fence_fd,
-                                uint32_t format_fourcc);
+                                uint32_t format_fourcc,
+                                bool is_original_buffer);
   // Sets the props on |property_set| for commit.
   bool SetPlaneProps(drmModeAtomicReq* property_set);
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,9 @@
 #include "ash/accelerometer/accelerometer_reader.h"
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
+#include "ash/public/cpp/system/power/power_button_controller_base.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
+#include "ash/shutdown_reason.h"
 #include "ash/system/power/backlights_forced_off_setter.h"
 #include "ash/wm/lock_state_observer.h"
 #include "base/memory/weak_ptr.h"
@@ -37,7 +39,8 @@ class PowerButtonScreenshotController;
 // devices. In tablet mode, power button may also be consumed to take a
 // screenshot.
 class ASH_EXPORT PowerButtonController
-    : public display::DisplayConfigurator::Observer,
+    : public PowerButtonControllerBase,
+      public display::DisplayConfigurator::Observer,
       public chromeos::PowerManagerClient::Observer,
       public AccelerometerReader::Observer,
       public ScreenBacklightObserver,
@@ -106,10 +109,6 @@ class ASH_EXPORT PowerButtonController
   // Handles lock button behavior.
   void OnLockButtonEvent(bool down, const base::TimeTicks& timestamp);
 
-  // Cancels the ongoing power button behavior. This can be called while the
-  // button is still held to prevent any action from being taken on release.
-  void CancelPowerButtonEvent();
-
   // True if the menu is opened.
   bool IsMenuOpened() const;
 
@@ -118,6 +117,10 @@ class ASH_EXPORT PowerButtonController
 
   // Do not force backlights to be turned off.
   void StopForcingBacklightsOff();
+
+  // PowerButtonControllerBase:
+  void OnArcPowerButtonMenuEvent() override;
+  void CancelPowerButtonEvent() override;
 
   // display::DisplayConfigurator::Observer:
   void OnDisplayModeChanged(
@@ -168,8 +171,9 @@ class ASH_EXPORT PowerButtonController
   void StopTimersAndDismissMenu();
 
   // Starts the power menu animation. Called when a clamshell device's power
-  // button is pressed or when |power_button_menu_timer_| fires.
-  void StartPowerMenuAnimation();
+  // button is pressed, or when |power_button_menu_timer_| fires, or by arc
+  // power button to show the PowerButtonMenu.
+  void StartPowerMenuAnimation(ShutdownReason reason);
 
   // Called by |pre_shutdown_timer_| to start the cancellable pre-shutdown
   // animation.
@@ -203,7 +207,12 @@ class ASH_EXPORT PowerButtonController
   bool power_button_down_ = false;
   bool lock_button_down_ = false;
 
-  // True if the device is curently in tablet mode (per TabletModeController).
+  // Passed in StartPowerMenuAnimation(ShutdownReason reason). When it is not
+  // POWER_BUTTON such as when called from arc, we do not start
+  // |pre_shutdown_timer_|.
+  ShutdownReason shutdown_reason_ = ShutdownReason::POWER_BUTTON;
+
+  // True if the device is currently in tablet mode (per TabletModeController).
   bool in_tablet_mode_ = false;
 
   // Has the screen brightness been reduced to 0%?

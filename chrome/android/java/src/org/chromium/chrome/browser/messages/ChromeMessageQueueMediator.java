@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -176,6 +176,7 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
         final Tab tab = mActivityTabProvider.get();
         if (TabBrowserControlsConstraintsHelper.getConstraints(tab) == BrowserControlsState.HIDDEN
                 || BrowserControlsUtils.areBrowserControlsFullyVisible(mBrowserControlsManager)) {
+            mBrowserControlsObserver.setOneTimeRunnableOnControlsFullyVisible(null);
             runnable.run();
         } else {
             mBrowserControlsObserver.setOneTimeRunnableOnControlsFullyVisible(runnable);
@@ -188,6 +189,7 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
         mBrowserControlsManager.getBrowserVisibilityDelegate().releasePersistentShowingToken(
                 mBrowserControlsToken);
         mContainerCoordinator.hideMessageContainer();
+        mBrowserControlsObserver.setOneTimeRunnableOnControlsFullyVisible(null);
     }
 
     /**
@@ -263,6 +265,11 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
 
         void setOneTimeRunnableOnControlsFullyVisible(Runnable runnable) {
             mRunOnControlsFullyVisible = runnable;
+        }
+
+        @VisibleForTesting
+        Runnable getRunnableForTesting() {
+            return mRunOnControlsFullyVisible;
         }
     }
 

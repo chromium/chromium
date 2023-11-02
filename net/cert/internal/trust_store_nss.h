@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,10 @@
 #include <cert.h>
 #include <certt.h>
 
-#include "base/memory/ref_counted.h"
 #include "crypto/scoped_nss_types.h"
 #include "net/base/net_export.h"
-#include "net/cert/internal/trust_store.h"
+#include "net/cert/pki/trust_store.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace net {
 
@@ -19,44 +19,29 @@ namespace net {
 // anchors for path building. This TrustStore is thread-safe.
 class NET_EXPORT TrustStoreNSS : public TrustStore {
  public:
-  // TODO(hchao): this won't work when we try to get this working for ChromeOS
-  // as we will likely need to be able to specify multiple options (trust_type,
-  // user_slot, ignoring_system_certs_unless_distrusted), so we'll need to
-  // re-engineer to not get combinatorial explosion for constructors.
-  struct DisallowTrustForCertsOnUserSlots {};
-  struct IgnoreSystemTrustSettings {};
+  enum SystemTrustSetting {
+    kUseSystemTrust,
+    kIgnoreSystemTrust,
+  };
+
+  struct UseTrustFromAllUserSlots : absl::monostate {};
+  using UserSlotTrustSetting =
+      absl::variant<UseTrustFromAllUserSlots, crypto::ScopedPK11Slot>;
 
   // Creates a TrustStoreNSS which will find anchors that are trusted for
   // |trust_type|.
-  // The created TrustStoreNSS will not perform any filtering based on the slot
-  // certificates are stored on.
-  explicit TrustStoreNSS(SECTrustType trust_type);
-
-  // Creates a TrustStoreNSS which will find anchors that are trusted for
-  // |trust_type|.
-  // The created TrustStoreNSS will allow trust for certificates that:
-  // (*) are built-in certificates
-  // (*) are stored on a read-only internal slot
-  // (*) are stored on the |user_slot|.
-  TrustStoreNSS(SECTrustType trust_type, crypto::ScopedPK11Slot user_slot);
-
-  // Creates a TrustStoreNSS which will find anchors that are trusted for
-  // |trust_type|.
-  // The created TrustStoreNSS will allow trust for certificates that:
-  // (*) are built-in certificates
-  // (*) are stored on a read-only internal slot
-  TrustStoreNSS(
-      SECTrustType trust_type,
-      DisallowTrustForCertsOnUserSlots disallow_trust_for_certs_on_user_slots);
-
-  // Creates a TrustStoreNSS which will find anchors that are trusted for
-  // |trust_type|.
-  // The created TrustStoreNSS will ignore system trust settings (but will
-  // respect user-added certs).
   //
-  // TODO(hchao, sleevi): Only ignore builtin trust settings for these certs.
+  // |system_trust_setting| configures the use of trust from the builtin roots.
+  // If |system_trust_setting| is kIgnoreSystemTrust, trust settings from the
+  // builtin roots slot with the Mozilla CA Policy attribute will not be used.
+  //
+  // |user_slot_trust_setting| configures the use of trust from user slots:
+  //  * UseTrustFromAllUserSlots: all user slots will be allowed.
+  //  * nullptr: no user slots will be allowed.
+  //  * non-null PK11Slot: the specified slot will be allowed.
   TrustStoreNSS(SECTrustType trust_type,
-                IgnoreSystemTrustSettings ignore_system_trust_settings);
+                SystemTrustSetting system_trust_setting,
+                UserSlotTrustSetting user_slot_trust_setting);
 
   TrustStoreNSS(const TrustStoreNSS&) = delete;
   TrustStoreNSS& operator=(const TrustStoreNSS&) = delete;
@@ -83,25 +68,16 @@ class NET_EXPORT TrustStoreNSS : public TrustStore {
   // while respecting user-configured trust settings, for these certificates.
   const bool ignore_system_trust_settings_ = false;
 
-  // |filter_trusted_certs_by_slot_| and |user_slot_| together specify which
-  // slots certificates must be stored on to be allowed to be trusted. The
-  // possible combinations are:
+  // |user_slot_trust_setting_| specifies which slots certificates must be
+  // stored on to be allowed to be trusted. The possible values are:
   //
-  // |filter_trusted_certs_by_slot_| == false: Allow any certificate to be
-  // trusted, don't filter by slot. |user_slot_| is ignored in this case.
+  // |user_slot_trust_setting_| is UseTrustFromAllUserSlots: Allow trust
+  // settings from any user slots.
   //
-  // |filter_trusted_certs_by_slot_| == true and |user_slot_| = nullptr: Allow
-  // certificates to be trusted if they
-  // (*) are built-in certificates or
-  // (*) are stored on a read-only internal slot.
-  //
-  // |filter_trusted_certs_by_slot_| == true and |user_slot_| != nullptr: Allow
-  // certificates to be trusted if they
-  // (*) are built-in certificates or
-  // (*) are stored on a read-only internal slot or
-  // (*) are stored on |user_slot_|.
-  const bool filter_trusted_certs_by_slot_;
-  crypto::ScopedPK11Slot user_slot_;
+  // |user_slot_trust_setting_| is a ScopedPK11Slot: Allow
+  // certificates from the specified slot to be trusted. If the slot is nullptr,
+  // trust from user slots will not be used.
+  const UserSlotTrustSetting user_slot_trust_setting_;
 };
 
 }  // namespace net

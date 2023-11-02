@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,11 @@
 #include "ash/public/cpp/login_screen_model.h"
 #include "ash/public/cpp/login_types.h"
 #include "base/bind.h"
-#include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/login/challenge_response_auth_keys_loader.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_backend.h"
-#include "chrome/browser/ash/login/screens/chrome_user_selection_screen.h"
+#include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/login/screens/user_selection_screen.h"
 #include "chrome/browser/ash/login/ui/login_display_host_mojo.h"
 #include "chrome/browser/browser_process.h"
@@ -23,13 +22,8 @@
 #include "chrome/browser/ui/webui/chromeos/login/kiosk_autolaunch_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/reset_screen_handler.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/grit/generated_resources.h"
-#include "chromeos/dbus/session_manager/session_manager_client.h"
-#include "components/strings/grit/components_strings.h"
-#include "components/user_manager/known_user.h"
-#include "ui/base/ime/ash/ime_keyboard.h"
-#include "ui/base/ime/ash/input_method_manager.h"
-#include "ui/base/l10n/l10n_util.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "components/session_manager/core/session_manager.h"
 
 namespace ash {
 
@@ -43,8 +37,14 @@ LoginDisplayMojo::~LoginDisplayMojo() {
 
 void LoginDisplayMojo::UpdatePinKeyboardState(const AccountId& account_id) {
   quick_unlock::PinBackend::GetInstance()->CanAuthenticate(
-      account_id, base::BindOnce(&LoginDisplayMojo::OnPinCanAuthenticate,
-                                 weak_factory_.GetWeakPtr(), account_id));
+      // Currently if PIN is cryptohome-based, PinCanAuthenticate always return
+      // true if there's a set up PIN, even if the quick unlock policy disables
+      // it. And if PIN is pref-based it always returns false regardless of the
+      // policy because pref-based PIN doesn't have capability to decrypt the
+      // user's cryptohome. So just pass an arbitrary purpose here.
+      account_id, quick_unlock::Purpose::kAny,
+      base::BindOnce(&LoginDisplayMojo::OnPinCanAuthenticate,
+                     weak_factory_.GetWeakPtr(), account_id));
 }
 
 void LoginDisplayMojo::UpdateChallengeResponseAuthAvailability(
@@ -55,13 +55,10 @@ void LoginDisplayMojo::UpdateChallengeResponseAuthAvailability(
       account_id, enable_challenge_response);
 }
 
-void LoginDisplayMojo::ClearAndEnablePassword() {}
-
 void LoginDisplayMojo::Init(const user_manager::UserList& filtered_users,
-                            bool show_guest,
-                            bool show_users,
-                            bool show_new_user) {
+                            bool show_guest) {
   host_->SetUserCount(filtered_users.size());
+  host_->UpdateAddUserButtonStatus();
   auto* client = LoginScreenClientImpl::Get();
 
   // ExistingUserController::DeviceSettingsChanged and others may initialize the
@@ -82,8 +79,10 @@ void LoginDisplayMojo::Init(const user_manager::UserList& filtered_users,
     // Enable pin and challenge-response authentication for any users who can
     // use them.
     for (const user_manager::User* user : filtered_users) {
-      UpdatePinKeyboardState(user->GetAccountId());
-      UpdateChallengeResponseAuthAvailability(user->GetAccountId());
+      if (!user->IsDeviceLocalAccount()) {
+        UpdatePinKeyboardState(user->GetAccountId());
+        UpdateChallengeResponseAuthAvailability(user->GetAccountId());
+      }
     }
   }
 
@@ -96,6 +95,8 @@ void LoginDisplayMojo::Init(const user_manager::UserList& filtered_users,
     VLOG(1) << "Emitting login-prompt-visible";
     SessionManagerClient::Get()->EmitLoginPromptVisible();
 
+    // TODO(crbug.com/1305245) - Remove once the issue is fixed.
+    LOG(WARNING) << "LoginDisplayMojo::Init() NotifyLoginOrLockScreenVisible";
     session_manager::SessionManager::Get()->NotifyLoginOrLockScreenVisible();
 
     // If there no available users exist, delay showing the dialogs until after
@@ -126,63 +127,11 @@ void LoginDisplayMojo::Init(const user_manager::UserList& filtered_users,
   }
 }
 
-void LoginDisplayMojo::OnPreferencesChanged() {
-  if (webui_handler_)
-    webui_handler_->OnPreferencesChanged();
-}
-
 void LoginDisplayMojo::SetUIEnabled(bool is_enabled) {
   // OOBE UI is null iff we display the user adding screen.
   if (is_enabled && host_->GetOobeUI() != nullptr) {
     host_->GetOobeUI()->ShowOobeUI(false);
   }
-}
-
-void LoginDisplayMojo::ShowAllowlistCheckFailedError() {
-  host_->ShowAllowlistCheckFailedError();
-}
-
-void LoginDisplayMojo::Login(const UserContext& user_context,
-                             const SigninSpecifics& specifics) {
-  if (delegate_)
-    delegate_->Login(user_context, specifics);
-}
-
-bool LoginDisplayMojo::IsSigninInProgress() const {
-  if (delegate_)
-    return delegate_->IsSigninInProgress();
-  return false;
-}
-
-void LoginDisplayMojo::OnSigninScreenReady() {
-  if (delegate_)
-    delegate_->OnSigninScreenReady();
-}
-
-void LoginDisplayMojo::ShowEnterpriseEnrollmentScreen() {
-  NOTIMPLEMENTED();
-}
-
-void LoginDisplayMojo::ShowKioskAutolaunchScreen() {
-  NOTIMPLEMENTED();
-}
-
-void LoginDisplayMojo::ShowWrongHWIDScreen() {
-  NOTIMPLEMENTED();
-}
-
-void LoginDisplayMojo::SetWebUIHandler(
-    LoginDisplayWebUIHandler* webui_handler) {
-  webui_handler_ = webui_handler;
-}
-
-bool LoginDisplayMojo::AllowNewUserChanged() const {
-  NOTIMPLEMENTED();
-  return false;
-}
-
-bool LoginDisplayMojo::IsUserSigninCompleted() const {
-  return is_signin_completed();
 }
 
 void LoginDisplayMojo::OnUserImageChanged(const user_manager::User& user) {

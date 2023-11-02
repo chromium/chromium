@@ -1,4 +1,4 @@
-// Copyright (c) 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -26,6 +26,7 @@
 #include "base/files/memory_mapped_file.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/strings/string_piece.h"
+#include "build/build_config.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/scorer.h"
 #include "components/safe_browsing/core/common/fbs/client_model_generated.h"
 #include "components/safe_browsing/core/common/proto/client_model.pb.h"
@@ -42,16 +43,11 @@ class FlatBufferModelScorer : public Scorer {
   // Factory method which creates a new Scorer object by parsing the given
   // flatbuffer or tflite model. If parsing fails this method returns NULL.
   // Use this only if region is valid.
-  static FlatBufferModelScorer* Create(base::ReadOnlySharedMemoryRegion region,
-                                       base::File visual_tflite_model);
+  static std::unique_ptr<FlatBufferModelScorer> Create(
+      base::ReadOnlySharedMemoryRegion region,
+      base::File visual_tflite_model);
 
   double ComputeScore(const FeatureMap& features) const override;
-
-  void GetMatchingVisualTargets(
-      const SkBitmap& bitmap,
-      std::unique_ptr<ClientPhishingRequest> request,
-      base::OnceCallback<void(std::unique_ptr<ClientPhishingRequest>)> callback)
-      const override;
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   void ApplyVisualTfLiteModel(
@@ -60,6 +56,7 @@ class FlatBufferModelScorer : public Scorer {
 #endif
 
   int model_version() const override;
+  int dom_model_version() const override;
   size_t max_words_per_term() const override;
   uint32_t murmurhash3_seed() const override;
   size_t max_shingles_per_page() const override;

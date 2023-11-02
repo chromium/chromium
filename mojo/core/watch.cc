@@ -1,9 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "mojo/core/watch.h"
 
+#include "base/record_replay.h"
 #include "mojo/core/request_context.h"
 #include "mojo/core/watcher_dispatcher.h"
 
@@ -19,7 +20,11 @@ Watch::Watch(const scoped_refptr<WatcherDispatcher>& watcher,
       dispatcher_(dispatcher),
       context_(context),
       signals_(signals),
-      condition_(condition) {}
+      condition_(condition),
+      notification_lock_("Watch.notification_lock_") {
+  // Pointer registration is needed for sorting in WatcherDispatcher::WatchSet.
+  recordreplay::RegisterPointer("Watch", this);
+}
 
 bool Watch::NotifyState(const HandleSignalsState& state,
                         bool allowed_to_call_callback) {
@@ -78,7 +83,9 @@ void Watch::InvokeCallback(MojoResult result,
   watcher_->InvokeWatchCallback(context_, result, state, flags);
 }
 
-Watch::~Watch() = default;
+Watch::~Watch() {
+  recordreplay::UnregisterPointer(this);
+}
 
 #if DCHECK_IS_ON()
 void Watch::AssertWatcherLockAcquired() const {

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,17 +18,15 @@ namespace views {
 
 gfx::Transform GetTransformSubpixelCorrection(const gfx::Transform& transform,
                                               float device_scale_factor) {
-  gfx::Point3F origin;
-  transform.TransformPoint(&origin);
-
-  const gfx::Vector2dF offset_in_dip = origin.AsPointF().OffsetFromOrigin();
+  gfx::PointF origin = transform.MapPoint(gfx::PointF());
+  const gfx::Vector2dF offset_in_dip = origin.OffsetFromOrigin();
 
   // Scale the origin to screen space
   origin.Scale(device_scale_factor);
 
   // Compute the rounded offset in screen space and finally unscale it back to
   // DIP space.
-  gfx::Vector2dF aligned_offset_in_dip = origin.AsPointF().OffsetFromOrigin();
+  gfx::Vector2dF aligned_offset_in_dip = origin.OffsetFromOrigin();
   aligned_offset_in_dip.set_x(std::round(aligned_offset_in_dip.x()));
   aligned_offset_in_dip.set_y(std::round(aligned_offset_in_dip.y()));
   aligned_offset_in_dip.Scale(1.f / device_scale_factor);
@@ -38,11 +36,10 @@ gfx::Transform GetTransformSubpixelCorrection(const gfx::Transform& transform,
   subpixel_correction.Translate(aligned_offset_in_dip - offset_in_dip);
 #if DCHECK_IS_ON()
   const float kEpsilon = 0.0001f;
-  gfx::Point3F offset;
 
   gfx::Transform transform_corrected(transform);
-  transform_corrected.ConcatTransform(subpixel_correction);
-  transform_corrected.TransformPoint(&offset);
+  transform_corrected.PostConcat(subpixel_correction);
+  gfx::Point3F offset = transform_corrected.MapPoint(gfx::Point3F());
   offset.Scale(device_scale_factor);
 
   if (!std::isnan(offset.x()))

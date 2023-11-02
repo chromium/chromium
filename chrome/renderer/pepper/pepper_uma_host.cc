@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -75,11 +75,11 @@ PepperUMAHost::PepperUMAHost(content::RendererPpapiHost* host,
         host->GetPluginInstance(instance)->GetModulePath().BaseName();
   }
 
-  for (size_t i = 0; i < base::size(kPredefinedAllowedUMAOrigins); ++i)
+  for (size_t i = 0; i < std::size(kPredefinedAllowedUMAOrigins); ++i)
     allowed_origins_.insert(kPredefinedAllowedUMAOrigins[i]);
-  for (size_t i = 0; i < base::size(kAllowedHistogramPrefixes); ++i)
+  for (size_t i = 0; i < std::size(kAllowedHistogramPrefixes); ++i)
     allowed_histogram_prefixes_.insert(kAllowedHistogramPrefixes[i]);
-  for (size_t i = 0; i < base::size(kAllowedPluginBaseNames); ++i)
+  for (size_t i = 0; i < std::size(kAllowedPluginBaseNames); ++i)
     allowed_plugin_base_names_.insert(kAllowedPluginBaseNames[i]);
 }
 

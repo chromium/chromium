@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -58,16 +58,16 @@ TEST_F(ProtocolEventBufferTest, AddThenReturnEvents) {
 }
 
 TEST_F(ProtocolEventBufferTest, AddThenOverflowThenReturnEvents) {
-  for (size_t i = 0; i < ProtocolEventBuffer::kBufferSize + 1; ++i) {
+  for (size_t i = 0; i < ProtocolEventBuffer::kDefaultBufferSize + 1; ++i) {
     std::unique_ptr<ProtocolEvent> e(MakeTestEvent(static_cast<int64_t>(i)));
     buffer_.RecordProtocolEvent(*e);
   }
 
   std::vector<std::unique_ptr<ProtocolEvent>> buffered_events(
       buffer_.GetBufferedProtocolEvents());
-  ASSERT_EQ(ProtocolEventBuffer::kBufferSize, buffered_events.size());
+  ASSERT_EQ(ProtocolEventBuffer::kDefaultBufferSize, buffered_events.size());
 
-  for (size_t i = 1; i < ProtocolEventBuffer::kBufferSize + 1; ++i) {
+  for (size_t i = 1; i < ProtocolEventBuffer::kDefaultBufferSize + 1; ++i) {
     EXPECT_TRUE(HasId(*(buffered_events[i - 1]), static_cast<int64_t>(i)));
   }
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/test/chromedriver/chrome/devtools_event_listener.h"
 
 namespace base {
@@ -44,8 +44,8 @@ class NetworkConditionsOverrideManager : public DevToolsEventListener {
   Status ApplyOverrideIfNeeded();
   Status ApplyOverride(const NetworkConditions* network_conditions);
 
-  DevToolsClient* client_;
-  const NetworkConditions* overridden_network_conditions_;
+  raw_ptr<DevToolsClient> client_;
+  raw_ptr<const NetworkConditions> overridden_network_conditions_;
 };
 
 #endif  // CHROME_TEST_CHROMEDRIVER_CHROME_NETWORK_CONDITIONS_OVERRIDE_MANAGER_H_

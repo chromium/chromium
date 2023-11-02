@@ -1,13 +1,13 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/gfx/icon_util.h"
 
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/notreached.h"
 #include "base/scoped_generic.h"
 #include "base/trace_event/trace_event.h"
@@ -156,7 +156,7 @@ const int IconUtil::kIconDimensions[] = {
   256   // Used by Vista onwards for large icons.
 };
 
-const size_t IconUtil::kNumIconDimensions = base::size(kIconDimensions);
+const size_t IconUtil::kNumIconDimensions = std::size(kIconDimensions);
 const size_t IconUtil::kNumIconDimensionsUpToMediumSize = 9;
 
 base::win::ScopedHICON IconUtil::CreateHICONFromSkBitmap(

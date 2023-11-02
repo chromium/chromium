@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -61,7 +61,7 @@ class MockScriptData : public ScriptData {
         break;
     }
     int list_bits = kTable[code & kCodeListIndexMask];
-    if (dst.IsEmpty() && list_bits == 0) {
+    if (dst.empty() && list_bits == 0) {
       dst.push_back(USCRIPT_UNKNOWN);
       return;
     }
@@ -563,6 +563,28 @@ TEST_F(ScriptRunIteratorTest, CJKConsecutiveParens10) {
                      {"国）", USCRIPT_HAN},
                      {"A1", USCRIPT_LATIN},
                      {"」", USCRIPT_BOPOMOFO}});
+}
+
+TEST_F(ScriptRunIteratorTest, CJKConsecutiveParensLatin1) {
+  CHECK_SCRIPT_RUNS({{"「", USCRIPT_BOPOMOFO},  // See CJKConsecutiveParens4
+                     {"A", USCRIPT_LATIN},
+                     {"「", USCRIPT_BOPOMOFO},
+                     {"A", USCRIPT_LATIN},
+                     {"」」", USCRIPT_BOPOMOFO}});
+}
+
+TEST_F(ScriptRunIteratorTest, CJKConsecutiveParensLatin2) {
+  CHECK_SCRIPT_RUNS({{"「", USCRIPT_BOPOMOFO},  // See CJKConsecutiveParens4
+                     {"A", USCRIPT_LATIN},
+                     {"（", USCRIPT_BOPOMOFO},
+                     {"A", USCRIPT_LATIN},
+                     {"）」", USCRIPT_BOPOMOFO}});
+}
+
+TEST_F(ScriptRunIteratorTest, CJKConsecutiveParensLatin3) {
+  CHECK_SCRIPT_RUNS({{"「", USCRIPT_BOPOMOFO},  // See CJKConsecutiveParens4
+                     {"A", USCRIPT_LATIN},
+                     {"（国）」", USCRIPT_HAN}});
 }
 
 // Emojies are resolved to the leading script.

@@ -43,7 +43,7 @@ unsigned int seed = 0;
 class PolynomialTest : public ::testing::Test {
  protected:
   PolynomialTest()
-      : params14_(uint_m::Params::Create(rlwe::kNewhopeModulus).ValueOrDie()),
+      : params14_(uint_m::Params::Create(rlwe::kNewhopeModulus).value()),
         one_(uint_m::ImportOne(params14_.get())),
         zero_(uint_m::ImportZero(params14_.get())) {}
 

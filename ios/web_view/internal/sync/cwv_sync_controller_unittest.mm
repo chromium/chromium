@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,7 +28,7 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/sync/driver/sync_service_observer.h"
-#include "components/sync/driver/test_sync_service.h"
+#import "components/sync/test/test_sync_service.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "ios/web_view/internal/signin/web_view_device_accounts_provider_impl.h"
 #import "ios/web_view/public/cwv_identity.h"
@@ -218,7 +218,7 @@ TEST_F(CWVSyncControllerTest, DelegateDidFailWithError) {
                [error.userInfo[CWVSyncErrorIsTransientKey] boolValue];
       }]]);
   OCMExpect([delegate syncControllerDidUpdateState:sync_controller]);
-  sync_service_.SetAuthError(GoogleServiceAuthError::FromConnectionError(0));
+  sync_service_.SetTransientAuthError();
   sync_service_.FireStateChanged();
 
   [delegate verify];

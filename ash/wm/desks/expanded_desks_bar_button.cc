@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,9 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/color_util.h"
 #include "ash/style/style_util.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_name_view.h"
@@ -16,6 +18,7 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_highlight_controller.h"
 #include "ash/wm/overview/overview_session.h"
+#include "ash/wm/wm_highlight_item_border.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_elider.h"
@@ -42,7 +45,10 @@ class ASH_EXPORT InnerExpandedDesksBarButton : public DeskButtonBase {
   InnerExpandedDesksBarButton(ExpandedDesksBarButton* outer_button,
                               base::RepeatingClosure callback,
                               const std::u16string& text)
-      : DeskButtonBase(text, kBorderCornerRadius, kCornerRadius),
+      : DeskButtonBase(text,
+                       /*set_text=*/false,
+                       kBorderCornerRadius,
+                       kCornerRadius),
         outer_button_(outer_button),
         button_callback_(callback) {
     paint_contents_only_ = true;
@@ -60,14 +66,12 @@ class ASH_EXPORT InnerExpandedDesksBarButton : public DeskButtonBase {
     SetImage(views::Button::STATE_NORMAL,
              gfx::CreateVectorIcon(*outer_button_->button_icon(),
                                    enabled_icon_color));
-    SetImage(views::Button::STATE_DISABLED,
-             gfx::CreateVectorIcon(
-                 *outer_button_->button_icon(),
-                 AshColorProvider::GetDisabledColor(enabled_icon_color)));
+    SetImage(
+        views::Button::STATE_DISABLED,
+        gfx::CreateVectorIcon(*outer_button_->button_icon(),
+                              ColorUtil::GetDisabledColor(enabled_icon_color)));
     SetButtonState(GetEnabled());
   }
-
-  void OnButtonPressed() override { button_callback_.Run(); }
 
   void SetButtonState(bool enabled) override {
     outer_button_->UpdateLabelColor(enabled);
@@ -84,11 +88,15 @@ class ASH_EXPORT InnerExpandedDesksBarButton : public DeskButtonBase {
     background_color_ = color_provider->GetControlsLayerColor(
         AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive);
     if (!enabled)
-      background_color_ = AshColorProvider::GetDisabledColor(background_color_);
+      background_color_ = ColorUtil::GetDisabledColor(background_color_);
     StyleUtil::ConfigureInkDropAttributes(
         this, StyleUtil::kBaseColor | StyleUtil::kInkDropOpacity);
     SchedulePaint();
   }
+
+  void OnButtonPressed() override { button_callback_.Run(); }
+
+  void UpdateBorderState() override { outer_button_->UpdateBorderColor(); }
 
  private:
   ExpandedDesksBarButton* outer_button_;
@@ -119,8 +127,6 @@ ExpandedDesksBarButton::ExpandedDesksBarButton(
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
   label_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
-  label_->SetBackgroundColor(AshColorProvider::Get()->GetShieldLayerColor(
-      AshColorProvider::ShieldLayerType::kShield80));
   SetButtonState(initially_enabled);
 }
 
@@ -131,9 +137,8 @@ void ExpandedDesksBarButton::SetButtonState(bool enabled) {
 void ExpandedDesksBarButton::UpdateLabelColor(bool enabled) {
   const SkColor label_color = AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorPrimary);
-  label_->SetEnabledColor(
-      enabled ? label_color
-              : AshColorProvider::Get()->GetDisabledColor(label_color));
+  label_->SetEnabledColor(enabled ? label_color
+                                  : ColorUtil::GetDisabledColor(label_color));
 }
 
 bool ExpandedDesksBarButton::IsPointOnButton(
@@ -146,8 +151,9 @@ bool ExpandedDesksBarButton::IsPointOnButton(
 void ExpandedDesksBarButton::UpdateBorderColor() const {
   DCHECK(inner_button_);
   const bool focused =
-      bar_view_->dragged_item_over_bar() &&
-      IsPointOnButton(bar_view_->last_dragged_item_screen_location());
+      inner_button_->IsViewHighlighted() ||
+      (bar_view_->dragged_item_over_bar() &&
+       IsPointOnButton(bar_view_->last_dragged_item_screen_location()));
   bool should_paint = inner_button_->border_ptr()->SetFocused(focused);
   // Focus takes priority.
   if (!focused) {
@@ -182,7 +188,7 @@ void ExpandedDesksBarButton::Layout() {
       gfx::ELIDE_TAIL));
   const gfx::Size label_size = label_->GetPreferredSize();
   // Set the label to have the same height as the DeskNameView to keep them at
-  // the same horizotal level. Note, don't get the label's width from
+  // the same horizontal level. Note, don't get the label's width from
   // DeskNameView since desk's name is changeable, but this label here is not.
   const int label_height = desk_name_view->GetPreferredSize().height();
   label_->SetBoundsRect(gfx::Rect(
@@ -191,6 +197,13 @@ void ExpandedDesksBarButton::Layout() {
                      desk_mini_view->GetPreviewBorderInsets().bottom() +
                      kDeskBarButtonAndNameSpacing),
       gfx::Size(label_size.width(), label_height)));
+}
+
+void ExpandedDesksBarButton::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  label_->SetBackgroundColor(
+      GetColorProvider()->GetColor(kColorAshShieldAndBase80));
+  UpdateBorderColor();
 }
 
 BEGIN_METADATA(ExpandedDesksBarButton, views::View)

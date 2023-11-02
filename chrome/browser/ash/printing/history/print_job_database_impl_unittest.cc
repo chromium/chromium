@@ -1,16 +1,17 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/printing/history/print_job_database_impl.h"
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chrome/browser/chromeos/printing/history/print_job_info.pb.h"
+#include "chrome/browser/ash/printing/history/print_job_info.pb.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -18,7 +19,7 @@ namespace ash {
 
 namespace {
 
-using ::chromeos::printing::proto::PrintJobInfo;
+using printing::proto::PrintJobInfo;
 
 constexpr char kId1[] = "id1";
 constexpr char kId2[] = "id2";
@@ -227,8 +228,8 @@ TEST_F(PrintJobDatabaseImplTest, TwoSimultaneousSavePrintJobRequests) {
   std::vector<PrintJobInfo> entries = GetPrintJobsFromProtoDatabase();
   ASSERT_EQ(2u, entries.size());
   std::vector<std::string> ids = {entries[0].id(), entries[1].id()};
-  EXPECT_TRUE(std::find(ids.begin(), ids.end(), kId1) != ids.end());
-  EXPECT_TRUE(std::find(ids.begin(), ids.end(), kId2) != ids.end());
+  EXPECT_TRUE(base::Contains(ids, kId1));
+  EXPECT_TRUE(base::Contains(ids, kId2));
 }
 
 TEST_F(PrintJobDatabaseImplTest, RequestsBeforeInitialization) {

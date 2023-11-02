@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -318,13 +318,22 @@ TEST(WeakPtrTest, DerivedTargetWithNestedBase) {
 }
 
 TEST(WeakPtrTest, DerivedTargetMultipleInheritance) {
-  DerivedTargetMultipleInheritance d;
-  Target& b = d;
-  EXPECT_NE(static_cast<void*>(&d), static_cast<void*>(&b));
-  const WeakPtr<Target> pb = AsWeakPtr(&b);
-  EXPECT_EQ(pb.get(), &b);
-  const WeakPtr<DerivedTargetMultipleInheritance> pd = AsWeakPtr(&d);
-  EXPECT_EQ(pd.get(), &d);
+  DerivedTargetMultipleInheritance derived_target;
+  Target& target = derived_target;
+  EXPECT_NE(static_cast<void*>(&derived_target), static_cast<void*>(&target));
+
+  WeakPtr<Target> target_weak_ptr = AsWeakPtr(&target);
+  EXPECT_EQ(target_weak_ptr.get(), &target);
+
+  WeakPtr<DerivedTargetMultipleInheritance> derived_target_weak_ptr =
+      AsWeakPtr(&derived_target);
+  EXPECT_EQ(derived_target_weak_ptr.get(), &derived_target);
+
+  target_weak_ptr = derived_target_weak_ptr;
+  EXPECT_EQ(target_weak_ptr.get(), &target);
+
+  target_weak_ptr = std::move(derived_target_weak_ptr);
+  EXPECT_EQ(target_weak_ptr.get(), &target);
 }
 
 TEST(WeakPtrFactoryTest, BooleanTesting) {
@@ -685,6 +694,33 @@ TEST(WeakPtrTest, NonOwnerThreadCanDeleteWeakPtr) {
   BackgroundThread background;
   background.Start();
   background.DeleteArrow(arrow);
+}
+
+TEST(WeakPtrTest, ConstUpCast) {
+  Target target;
+
+  // WeakPtrs can upcast from non-const T to const T.
+  WeakPtr<const Target> const_weak_ptr = target.AsWeakPtr();
+
+  // WeakPtrs don't enable conversion from const T to nonconst T.
+  static_assert(
+      !std::is_constructible_v<WeakPtr<Target>, WeakPtr<const Target>>);
+}
+
+TEST(WeakPtrTest, GetMutableWeakPtr) {
+  struct TestStruct {
+    int member = 0;
+    WeakPtrFactory<TestStruct> weak_ptr_factory{this};
+  };
+  TestStruct test_struct;
+  EXPECT_EQ(test_struct.member, 0);
+
+  // GetMutableWeakPtr() grants non-const access to T.
+  const TestStruct& const_test_struct = test_struct;
+  WeakPtr<TestStruct> weak_ptr =
+      const_test_struct.weak_ptr_factory.GetMutableWeakPtr();
+  weak_ptr->member = 1;
+  EXPECT_EQ(test_struct.member, 1);
 }
 
 TEST(WeakPtrDeathTest, WeakPtrCopyDoesNotChangeThreadBinding) {

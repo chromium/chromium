@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,10 +41,11 @@ size_t GetIndex(ContentColorUsage color_usage, bool needs_alpha) {
 }  // namespace
 
 DisplayColorSpaces::DisplayColorSpaces() {
-  for (auto& color_space : color_spaces_)
-    color_space = gfx::ColorSpace::CreateSRGB();
-  for (auto& buffer_format : buffer_formats_)
-    buffer_format = DefaultBufferFormat();
+  // TODO(crbug/1309228): Revert back to range-based for loops if possible
+  for (size_t i = 0; i < kConfigCount; i++) {
+    color_spaces_[i] = gfx::ColorSpace::CreateSRGB();
+    buffer_formats_[i] = DefaultBufferFormat();
+  }
 }
 
 DisplayColorSpaces::DisplayColorSpaces(const gfx::DisplayColorSpaces&) =
@@ -57,15 +58,16 @@ DisplayColorSpaces::DisplayColorSpaces(const gfx::ColorSpace& c)
     : DisplayColorSpaces() {
   if (!c.IsValid())
     return;
-  for (auto& color_space : color_spaces_)
-    color_space = c;
+  primaries_ = c.GetPrimaries();
+  for (size_t i = 0; i < kConfigCount; i++)  // NOLINT (modernize-loop-convert)
+    color_spaces_[i] = c;
 }
 
-DisplayColorSpaces::DisplayColorSpaces(const ColorSpace& c, BufferFormat f) {
-  for (auto& color_space : color_spaces_)
-    color_space = c.IsValid() ? c : gfx::ColorSpace::CreateSRGB();
-  for (auto& buffer_format : buffer_formats_)
-    buffer_format = f;
+DisplayColorSpaces::DisplayColorSpaces(const ColorSpace& c, BufferFormat f)
+    : DisplayColorSpaces(c) {
+  for (size_t i = 0; i < kConfigCount; i++) {
+    buffer_formats_[i] = f;
+  }
 }
 
 void DisplayColorSpaces::SetOutputBufferFormats(
@@ -189,7 +191,11 @@ bool DisplayColorSpaces::operator==(const DisplayColorSpaces& other) const {
     if (buffer_formats_[i] != other.buffer_formats_[i])
       return false;
   }
-  if (sdr_white_level_ != other.sdr_white_level_)
+  if (primaries_ != other.primaries_)
+    return false;
+  if (sdr_max_luminance_nits_ != other.sdr_max_luminance_nits_)
+    return false;
+  if (hdr_max_luminance_relative_ != other.hdr_max_luminance_relative_)
     return false;
 
   return true;

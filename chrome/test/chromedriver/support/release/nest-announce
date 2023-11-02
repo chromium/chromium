@@ -1,0 +1,183 @@
+#!/usr/bin/env python3
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+#
+# Script for preparing of new ChromeDriver release announcement.
+
+from email.generator import Generator
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+import os
+import os.path as path
+import re
+import sys
+import html
+
+
+script_dir = path.dirname(path.realpath(sys.argv[0]))
+templates_dir =  path.join(script_dir, 'templates')
+
+def version_to_intlist(version):
+  return list(map(lambda x: int(x), version.split('.')))
+
+def read_file(file_path):
+  with open(file_path, 'r') as f:
+    return f.read()
+
+def save_file(content, file_path):
+  with open(file_path, 'w') as f:
+    return f.write(content)
+
+def read_and_trim(file_path):
+  return re.sub(r'^\s+|\s+$', '', read_file(file_path))
+
+def extract_data(build_name):
+  build_path = path.join(os.curdir, build_name)
+  return {'path': build_path,
+          'version': read_and_trim(path.join(build_path, '.version')),
+          'type': read_and_trim(path.join(build_path, '.type'))
+          };
+
+def read_notes(data):
+  pub_path = path.join(data['path'], 'published')
+  notes_path = path.join(pub_path, 'notes.txt')
+  with open(notes_path, 'r') as f:
+    lines = f.readlines()
+    return list(filter(lambda line: line.startswith('Resolved'), lines))
+
+def create_html_notes(data):
+  result = ''
+  li_template = read_file(path.join(templates_dir, 'li.html'))
+  static_template = read_file(path.join(templates_dir, 'static_change_list.html'))
+  parametrized_template = read_file(path.join(templates_dir, 'parametrized_change_list.html'))
+  if (len(data) > 1):
+    for k in [0, 1]:
+      lines = read_notes(data[k])
+      if (len(lines) > 0):
+        major = version_to_intlist(data[k]['version'])[0]
+        template = parametrized_template.replace('${MAJOR}', str(major))
+        lines = map(lambda line: li_template.replace('${LI_TEXT}', html.escape(line)), lines)
+        result += template.replace('${LI_LIST}', ''.join(lines))
+  else:
+    lines = read_notes(data[0])
+    if (len(lines) > 0):
+      lines = map(lambda line: li_template.replace('${LI_TEXT}', html.escape(line)), lines)
+      result += static_template.replace('${LI_LIST}', ''.join(lines))
+  return result
+
+def create_plain_notes(data):
+  result = ''
+  if (len(data) > 1):
+    for k in [0, 1]:
+      lines = read_notes(data[k])
+      if (len(lines) > 0):
+        lines = map(lambda line: ' * ' + line, lines)
+        result += '\nChanges in version %s of ChromeDriver include:\n%s' % (data[k]['version'], '\n'.join(lines));
+  else:
+    lines = read_notes(data[0])
+    if (len(lines) > 0):
+      lines = map(lambda line: ' * ' + line, lines)
+      result += '\nChanges in this version of ChromeDriver include:\n%s' % ('\n'.join(lines));
+  return result
+
+def extract_raw_notes(data):
+  result = ''
+  lines = read_notes(data)
+  if (len(lines) > 0):
+    lines = map(lambda line: ' * ' + line, lines)
+    result += '\n'.join(lines);
+  return result
+
+
+def main(build_names):
+  data = list(map(lambda build_name: extract_data(build_name), build_names))
+  data = sorted(data, key = lambda x: version_to_intlist(x['version']))
+
+  if len(data) == 0 or len(data) > 2:
+    print("Release announcement can be written only for 1 or 2 ChromeDriver versions", file=sys.stderr)
+    exit(1)
+
+  v1 = data[0]['version']
+  t1 = data[0]['type']
+  m1 = str(version_to_intlist(v1)[0])
+  v2 = data[1]['version'] if len(data) > 1 else '???'
+  t2 = data[1]['type'] if len(data) > 1 else '???'
+  m2 = str(version_to_intlist(v2)[0]) if len(data) > 1 else '???'
+
+  substitutions = {
+      '${VERSION}': v1,
+      '${VERSION1}': v1,
+      '${VERSION2}': v2,
+      '${type}': t1,
+      '${type1}': t1,
+      '${type2}': t2,
+      '${TYPE}': 'Stable' if t1 == 'stable' else 'Beta',
+      '${TYPE1}': 'Stable' if t1 == 'stable' else 'Beta',
+      '${TYPE2}': 'Stable' if t2 == 'stable' else 'Beta',
+      '${KIND}': 'current' if t1 == 'stable' else 'upcoming',
+      '${KIND1}': 'current' if t1 == 'stable' else 'upcoming',
+      '${KIND2}': 'current' if t2 == 'stable' else 'upcoming',
+      '${MAJOR}': m1,
+      '${MAJOR1}': m1,
+      '${MAJOR2}': m2,
+      '${NOTES_LINK}': '<a href="https://chromedriver.storage.googleapis.com/%s/notes.txt">release notes %s</a>' % (v1, v1),
+      '${NOTES_LINK1}': '<a href="https://chromedriver.storage.googleapis.com/%s/notes.txt">release notes %s</a>' % (v1, v1),
+      '${NOTES_LINK2}': '<a href="https://chromedriver.storage.googleapis.com/%s/notes.txt">release notes %s</a>' % (v2, v2),
+      '${CHANGE_LIST}': create_html_notes(data),
+  }
+
+  msg = MIMEMultipart('alternative')
+  if (len(data) == 2):
+    msg['Subject'] = 'ChromeDriver %s and %s have been released' % (data[0]['version'], data[1]['version'])
+  else:
+    msg['Subject'] = 'ChromeDriver %s has been released' % (data[0]['version'])
+
+  html = read_file(path.join(templates_dir, 'template' + str(len(data)) + '.html'))
+  for key, value in substitutions.items():
+    html = html.replace(key, value)
+  htmlPart = MIMEText(html, 'html', 'utf-8')
+  msg.attach(htmlPart)
+
+  substitutions['${NOTES_LINK}'] = 'release notes %s <https://chromedriver.storage.googleapis.com/%s/notes.txt>' % (v1, v1)
+  substitutions['${NOTES_LINK1}'] = 'release notes %s <https://chromedriver.storage.googleapis.com/%s/notes.txt>' % (v1, v1)
+  substitutions['${NOTES_LINK2}'] = 'release notes %s <https://chromedriver.storage.googleapis.com/%s/notes.txt>' % (v2, v2)
+  substitutions['${CHANGE_LIST}'] = create_plain_notes(data)
+
+  plain = read_file(path.join(templates_dir, 'template' + str(len(data)) + '.txt'))
+  for key, value in substitutions.items():
+    plain = plain.replace(key, value)
+  plainPart = MIMEText(plain, 'plain', 'utf-8')
+  msg.attach(plainPart)
+
+  with open(path.join(os.curdir, 'announcement.eml'), 'w') as f:
+    gen = Generator(f)
+    gen.flatten(msg)
+
+  substitutions['${RAW_NOTES}'] = extract_raw_notes(data[0])
+  substitutions['${RAW_NOTES1}'] = extract_raw_notes(data[0])
+  if (len(data) > 1):
+    substitutions['${RAW_NOTES2}'] = extract_raw_notes(data[1])
+
+  blog_downloads = read_file(path.join(templates_dir, 'blog_downloads_template' + str(len(data)) + '.md'))
+  for key, value in substitutions.items():
+    blog_downloads = blog_downloads.replace(key, value)
+  save_file(blog_downloads, path.join(os.curdir, 'blog_downloads.md'))
+
+  blog_home = read_file(path.join(templates_dir, 'blog_home_template' + str(len(data)) + '.md'))
+  for key, value in substitutions.items():
+    blog_home = blog_home.replace(key, value)
+  save_file(blog_home, path.join(os.curdir, 'blog_home.md'))
+
+
+if __name__ == '__main__':
+  if len(sys.argv) > 1:
+    dirs = filter(lambda dir: path.exists(path.join(dir, '.version')), sys.argv[1:])
+    dirs = map(lambda dir: re.sub(r'\/+$', '', dir), dirs)
+    main(list(dirs))
+  elif path.exists(path.join(os.curdir, '.version')):
+    main([os.curdir])
+  else:
+    dirs = os.listdir(os.curdir)
+    dirs = filter(lambda dir: path.exists(path.join(dir, '.version')), dirs)
+    main(list(dirs))

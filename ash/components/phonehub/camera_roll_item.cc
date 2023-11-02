@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "ui/gfx/image/image.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 CameraRollItem::CameraRollItem(const proto::CameraRollItemMetadata& metadata,
@@ -34,4 +34,4 @@ bool CameraRollItem::operator!=(const CameraRollItem& other) const {
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

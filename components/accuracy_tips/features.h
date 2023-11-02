@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define COMPONENTS_ACCURACY_TIPS_FEATURES_H_
 
 #include "base/metrics/field_trial_params.h"
+#include "base/time/time.h"
 
 namespace accuracy_tips {
 namespace features {
@@ -33,7 +34,7 @@ extern const base::FeatureParam<int> kNumIgnorePrompts;
 extern const base::FeatureParam<int> kMaxSiteEngagementScore;
 
 // Controls whether accuracy tips survey should be enabled.
-extern const base::Feature kAccuracyTipsSurveyFeature;
+BASE_DECLARE_FEATURE(kAccuracyTipsSurveyFeature);
 
 // A minimal amount of time that has to pass after showing accuracy tip before
 // trying to show a survey.

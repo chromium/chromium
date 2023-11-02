@@ -1,10 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.base.compat;
 
-import android.annotation.TargetApi;
+import android.app.ActivityManager;
 import android.content.Context;
 import android.graphics.Rect;
 import android.hardware.input.InputManager;
@@ -16,7 +16,7 @@ import android.view.InputEvent;
 import android.view.VerifiedInputEvent;
 import android.view.WindowManager;
 
-import org.chromium.base.annotations.VerifiesOnR;
+import androidx.annotation.RequiresApi;
 
 import java.io.File;
 
@@ -25,8 +25,7 @@ import java.io.File;
  * separate class so that Android framework can successfully verify classes without
  * encountering the new APIs.
  */
-@VerifiesOnR
-@TargetApi(Build.VERSION_CODES.R)
+@RequiresApi(Build.VERSION_CODES.R)
 public final class ApiHelperForR {
     private ApiHelperForR() {}
 
@@ -47,6 +46,13 @@ public final class ApiHelperForR {
      */
     public static VerifiedInputEvent verifyInputEvent(InputManager manager, InputEvent inputEvent) {
         return manager.verifyInputEvent(inputEvent);
+    }
+
+    /**
+     * See {@link android.app.ActivityManager#setProcessStateSummary(byte[])}
+     */
+    public static void setProcessStateSummary(ActivityManager am, byte[] bytes) {
+        am.setProcessStateSummary(bytes);
     }
 
     /**

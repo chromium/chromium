@@ -1,0 +1,4 @@
+include_rules = [
+  "+components/device_signals/core/common",
+  "+components/device_signals/core/system_signals",
+]

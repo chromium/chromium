@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,10 @@
 
 #include <string>
 
+#include "base/callback_forward.h"
 #include "base/files/file_path.h"
 #include "base/process/process_handle.h"
+#include "base/time/time.h"
 
 namespace content {
 class WebContents;
@@ -61,6 +63,14 @@ bool PollingWaitUntil(const std::string& javascript,
                       const std::string& evaluates_to,
                       content::WebContents* tab_contents,
                       int poll_interval_msec);
+
+// This function will execute the provided |closure| until it evaluates true,
+// causing a function return value of true, unless we exceed the
+// TestTimeouts::action_max_timeout() in which case the function returns false.
+bool PollingWaitUntilClosureEvaluatesTrue(
+    base::RepeatingCallback<bool()> closure,
+    content::WebContents* tab_contents,
+    base::TimeDelta poll_interval);
 
 }  // namespace test
 

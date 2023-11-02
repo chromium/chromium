@@ -1,10 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {RoutineRunnerRemote, RoutineType, StandardRoutineResult} from 'chrome://diagnostics/diagnostics_types.js';
 import {FakeSystemRoutineController} from 'chrome://diagnostics/fake_system_routine_controller.js';
-import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
+import {RoutineRunnerRemote, RoutineType, StandardRoutineResult} from 'chrome://diagnostics/system_routine_controller.mojom-webui.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 
@@ -30,7 +30,7 @@ export function fakeSystemRoutineContollerTestSuite() {
    * @return {!Promise}
    */
   function runRoutineAndAssertStandardResult(expectedType, expectedResult) {
-    let resolver = new PromiseResolver();
+    const resolver = new PromiseResolver();
 
     const routineRunnerRemote = /** @type {!RoutineRunnerRemote} */ ({
       onRoutineResult: (resultInfo) => {
@@ -45,13 +45,13 @@ export function fakeSystemRoutineContollerTestSuite() {
 
         if (resultInfo.result.hasOwnProperty('powerResult')) {
           assertEquals(expectedResult, resultInfo.result.powerResult.result);
-
           // Can't have both simpleResult and powerResult
+
           assertFalse(resultInfo.result.hasOwnProperty('simpleResult'));
         }
 
         resolver.resolve();
-      }
+      },
     });
     controller.runRoutine(expectedType, routineRunnerRemote);
     return controller.getRunRoutinePromiseForTesting().then(() => {
@@ -70,7 +70,7 @@ export function fakeSystemRoutineContollerTestSuite() {
    */
   function runRoutineAndAssertStandardResultManualResolve(
       expectedType, expectedResult) {
-    let resolver = new PromiseResolver();
+    const resolver = new PromiseResolver();
 
     // Nothing should be running yet.
     assertFalse(controller.isRoutineInProgressForTesting());
@@ -89,7 +89,7 @@ export function fakeSystemRoutineContollerTestSuite() {
         // Mark that the test completed.
         wasRun = true;
         resolver.resolve();
-      }
+      },
     });
 
     controller.runRoutine(expectedType, routineRunnerRemote);

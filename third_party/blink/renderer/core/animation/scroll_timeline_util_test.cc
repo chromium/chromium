@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,39 +6,24 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_timeline_options.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_union_csskeywordvalue_cssnumericvalue_scrolltimelineelementbasedoffset_string.h"
 #include "third_party/blink/renderer/core/animation/animation_test_helpers.h"
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
-
-namespace {
-
-HeapVector<Member<ScrollTimelineOffset>> CreateScrollOffsets(
-    ScrollTimelineOffset* start_scroll_offset,
-    ScrollTimelineOffset* end_scroll_offset) {
-  HeapVector<Member<ScrollTimelineOffset>> scroll_offsets;
-  scroll_offsets.push_back(start_scroll_offset);
-  scroll_offsets.push_back(end_scroll_offset);
-  return scroll_offsets;
-}
-
-}  // namespace
 
 namespace scroll_timeline_util {
 
 using ScrollTimelineUtilTest = PageTestBase;
 
 // This test covers only the basic conversions for element id, time range,
-// orientation, and start and end scroll offset. Complex orientation conversions
-// are tested in the GetOrientation* tests, and complex start/end scroll offset
-// resolutions are tested in blink::ScrollTimelineTest.
+// and orientation. Complex orientation conversions are tested in the
+// GetOrientation* tests.
 TEST_F(ScrollTimelineUtilTest, ToCompositorScrollTimeline) {
-  using animation_test_helpers::OffsetFromString;
+  // using animation_test_helpers::OffsetFromString;
 
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -62,8 +47,6 @@ TEST_F(ScrollTimelineUtilTest, ToCompositorScrollTimeline) {
   ScrollTimelineOptions* options = ScrollTimelineOptions::Create();
   options->setSource(scroller);
   options->setOrientation("block");
-  options->setScrollOffsets({OffsetFromString(GetDocument(), "50px"),
-                             OffsetFromString(GetDocument(), "auto")});
   ScrollTimeline* timeline =
       ScrollTimeline::Create(GetDocument(), options, ASSERT_NO_EXCEPTION);
 
@@ -73,9 +56,6 @@ TEST_F(ScrollTimelineUtilTest, ToCompositorScrollTimeline) {
   EXPECT_EQ(compositor_timeline->GetPendingIdForTest(), element_id);
   EXPECT_EQ(compositor_timeline->GetDirectionForTest(),
             CompositorScrollTimeline::ScrollDown);
-  EXPECT_EQ(compositor_timeline->GetStartScrollOffsetForTest(), 50);
-  // 900 is contents-size - scroller-viewport == 1000 - 100
-  EXPECT_EQ(compositor_timeline->GetEndScrollOffsetForTest(), 900);
 }
 
 TEST_F(ScrollTimelineUtilTest, ToCompositorScrollTimelineNullParameter) {
@@ -94,13 +74,8 @@ TEST_F(ScrollTimelineUtilTest, ToCompositorScrollTimelineNullSource) {
   // source. The alternative approach would require us to remove the
   // documentElement from the document.
   Element* source = nullptr;
-  ScrollTimelineOffset* start_scroll_offset =
-      MakeGarbageCollected<ScrollTimelineOffset>();
-  ScrollTimelineOffset* end_scroll_offset =
-      MakeGarbageCollected<ScrollTimelineOffset>();
-  ScrollTimeline* timeline = MakeGarbageCollected<ScrollTimeline>(
-      &GetDocument(), source, ScrollTimeline::Block,
-      CreateScrollOffsets(start_scroll_offset, end_scroll_offset));
+  ScrollTimeline* timeline = ScrollTimeline::Create(
+      &GetDocument(), source, ScrollTimeline::ScrollDirection::kBlock);
 
   scoped_refptr<CompositorScrollTimeline> compositor_timeline =
       ToCompositorScrollTimeline(timeline);
@@ -120,11 +95,6 @@ TEST_F(ScrollTimelineUtilTest, ToCompositorScrollTimelineNullLayoutBox) {
   scoped_refptr<CompositorScrollTimeline> compositor_timeline =
       ToCompositorScrollTimeline(timeline);
   EXPECT_TRUE(compositor_timeline.get());
-  // Here we just want to test the start/end scroll offset.
-  // ToCompositorScrollTimelineNullSource covers the expected pending id
-  // and ConvertOrientationNullStyle covers the orientation conversion.
-  EXPECT_EQ(compositor_timeline->GetStartScrollOffsetForTest(), absl::nullopt);
-  EXPECT_EQ(compositor_timeline->GetEndScrollOffsetForTest(), absl::nullopt);
 }
 
 TEST_F(ScrollTimelineUtilTest, ConvertOrientationPhysicalCases) {
@@ -141,9 +111,11 @@ TEST_F(ScrollTimelineUtilTest, ConvertOrientationPhysicalCases) {
     for (const TextDirection& direction : directions) {
       style->SetWritingMode(writing_mode);
       style->SetDirection(direction);
-      EXPECT_EQ(ConvertOrientation(ScrollTimeline::Vertical, style.get()),
+      EXPECT_EQ(ConvertOrientation(ScrollTimeline::ScrollDirection::kVertical,
+                                   style.get()),
                 CompositorScrollTimeline::ScrollDown);
-      EXPECT_EQ(ConvertOrientation(ScrollTimeline::Horizontal, style.get()),
+      EXPECT_EQ(ConvertOrientation(ScrollTimeline::ScrollDirection::kHorizontal,
+                                   style.get()),
                 CompositorScrollTimeline::ScrollRight);
     }
   }
@@ -156,63 +128,79 @@ TEST_F(ScrollTimelineUtilTest, ConvertOrientationLogical) {
   // horizontal-tb, ltr
   style->SetWritingMode(WritingMode::kHorizontalTb);
   style->SetDirection(TextDirection::kLtr);
-  EXPECT_EQ(ConvertOrientation(ScrollTimeline::Block, style.get()),
-            CompositorScrollTimeline::ScrollDown);
-  EXPECT_EQ(ConvertOrientation(ScrollTimeline::Inline, style.get()),
-            CompositorScrollTimeline::ScrollRight);
+  EXPECT_EQ(
+      ConvertOrientation(ScrollTimeline::ScrollDirection::kBlock, style.get()),
+      CompositorScrollTimeline::ScrollDown);
+  EXPECT_EQ(
+      ConvertOrientation(ScrollTimeline::ScrollDirection::kInline, style.get()),
+      CompositorScrollTimeline::ScrollRight);
 
   // vertical-lr, ltr
   style->SetWritingMode(WritingMode::kVerticalLr);
   style->SetDirection(TextDirection::kLtr);
-  EXPECT_EQ(ConvertOrientation(ScrollTimeline::Block, style.get()),
-            CompositorScrollTimeline::ScrollRight);
-  EXPECT_EQ(ConvertOrientation(ScrollTimeline::Inline, style.get()),
-            CompositorScrollTimeline::ScrollDown);
+  EXPECT_EQ(
+      ConvertOrientation(ScrollTimeline::ScrollDirection::kBlock, style.get()),
+      CompositorScrollTimeline::ScrollRight);
+  EXPECT_EQ(
+      ConvertOrientation(ScrollTimeline::ScrollDirection::kInline, style.get()),
+      CompositorScrollTimeline::ScrollDown);
 
   // vertical-rl, ltr
   style->SetWritingMode(WritingMode::kVerticalRl);
   style->SetDirection(TextDirection::kLtr);
-  EXPECT_EQ(ConvertOrientation(ScrollTimeline::Block, style.get()),
-            CompositorScrollTimeline::ScrollLeft);
-  EXPECT_EQ(ConvertOrientation(ScrollTimeline::Inline, style.get()),
-            CompositorScrollTimeline::ScrollDown);
+  EXPECT_EQ(
+      ConvertOrientation(ScrollTimeline::ScrollDirection::kBlock, style.get()),
+      CompositorScrollTimeline::ScrollLeft);
+  EXPECT_EQ(
+      ConvertOrientation(ScrollTimeline::ScrollDirection::kInline, style.get()),
+      CompositorScrollTimeline::ScrollDown);
 
   // horizontal-tb, rtl
   style->SetWritingMode(WritingMode::kHorizontalTb);
   style->SetDirection(TextDirection::kRtl);
-  EXPECT_EQ(ConvertOrientation(ScrollTimeline::Block, style.get()),
-            CompositorScrollTimeline::ScrollDown);
-  EXPECT_EQ(ConvertOrientation(ScrollTimeline::Inline, style.get()),
-            CompositorScrollTimeline::ScrollLeft);
+  EXPECT_EQ(
+      ConvertOrientation(ScrollTimeline::ScrollDirection::kBlock, style.get()),
+      CompositorScrollTimeline::ScrollDown);
+  EXPECT_EQ(
+      ConvertOrientation(ScrollTimeline::ScrollDirection::kInline, style.get()),
+      CompositorScrollTimeline::ScrollLeft);
 
   // vertical-lr, rtl
   style->SetWritingMode(WritingMode::kVerticalLr);
   style->SetDirection(TextDirection::kRtl);
-  EXPECT_EQ(ConvertOrientation(ScrollTimeline::Block, style.get()),
-            CompositorScrollTimeline::ScrollRight);
-  EXPECT_EQ(ConvertOrientation(ScrollTimeline::Inline, style.get()),
-            CompositorScrollTimeline::ScrollUp);
+  EXPECT_EQ(
+      ConvertOrientation(ScrollTimeline::ScrollDirection::kBlock, style.get()),
+      CompositorScrollTimeline::ScrollRight);
+  EXPECT_EQ(
+      ConvertOrientation(ScrollTimeline::ScrollDirection::kInline, style.get()),
+      CompositorScrollTimeline::ScrollUp);
 
   // vertical-rl, rtl
   style->SetWritingMode(WritingMode::kVerticalRl);
   style->SetDirection(TextDirection::kRtl);
-  EXPECT_EQ(ConvertOrientation(ScrollTimeline::Block, style.get()),
-            CompositorScrollTimeline::ScrollLeft);
-  EXPECT_EQ(ConvertOrientation(ScrollTimeline::Inline, style.get()),
-            CompositorScrollTimeline::ScrollUp);
+  EXPECT_EQ(
+      ConvertOrientation(ScrollTimeline::ScrollDirection::kBlock, style.get()),
+      CompositorScrollTimeline::ScrollLeft);
+  EXPECT_EQ(
+      ConvertOrientation(ScrollTimeline::ScrollDirection::kInline, style.get()),
+      CompositorScrollTimeline::ScrollUp);
 }
 
 TEST_F(ScrollTimelineUtilTest, ConvertOrientationNullStyle) {
   // When the style is nullptr we assume horizontal-tb and ltr direction. This
   // means that block is ScrollDown and inline is ScrollRight
-  EXPECT_EQ(ConvertOrientation(ScrollTimeline::Vertical, nullptr),
-            CompositorScrollTimeline::ScrollDown);
-  EXPECT_EQ(ConvertOrientation(ScrollTimeline::Horizontal, nullptr),
-            CompositorScrollTimeline::ScrollRight);
-  EXPECT_EQ(ConvertOrientation(ScrollTimeline::Block, nullptr),
-            CompositorScrollTimeline::ScrollDown);
-  EXPECT_EQ(ConvertOrientation(ScrollTimeline::Inline, nullptr),
-            CompositorScrollTimeline::ScrollRight);
+  EXPECT_EQ(
+      ConvertOrientation(ScrollTimeline::ScrollDirection::kVertical, nullptr),
+      CompositorScrollTimeline::ScrollDown);
+  EXPECT_EQ(
+      ConvertOrientation(ScrollTimeline::ScrollDirection::kHorizontal, nullptr),
+      CompositorScrollTimeline::ScrollRight);
+  EXPECT_EQ(
+      ConvertOrientation(ScrollTimeline::ScrollDirection::kBlock, nullptr),
+      CompositorScrollTimeline::ScrollDown);
+  EXPECT_EQ(
+      ConvertOrientation(ScrollTimeline::ScrollDirection::kInline, nullptr),
+      CompositorScrollTimeline::ScrollRight);
 }
 
 TEST_F(ScrollTimelineUtilTest, GetCompositorScrollElementIdNullNode) {

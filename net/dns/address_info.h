@@ -1,4 +1,4 @@
-// Copyright (c) 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,11 @@
 #include <string>
 #include <tuple>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "net/base/address_family.h"
 #include "net/base/net_export.h"
+#include "net/base/network_handle.h"
 #include "net/base/sys_addrinfo.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -20,6 +21,8 @@ namespace net {
 
 class AddressList;
 class AddrInfoGetter;
+
+using FreeAddrInfoFunc = void (*)(addrinfo*);
 
 // AddressInfo -- this encapsulates the system call to getaddrinfo and the
 // data structure that it populates and returns.
@@ -42,19 +45,24 @@ class NET_EXPORT_PRIVATE AddressInfo {
     const addrinfo& operator*() const;
 
    private:
-    const addrinfo* ai_;
+    // Owned by AddressInfo.
+    raw_ptr<const addrinfo> ai_;
   };
 
   // Constructors
   using AddressInfoAndResult = std::
       tuple<absl::optional<AddressInfo>, int /* err */, int /* os_error */>;
-  // Invokes AddrInfoGetter with provided |host| and |hints|. If |getter| is
-  // null, the system's getaddrinfo will be invoked. (A non-null |getter| is
+  // Invokes AddrInfoGetter with provided `host` and `hints`. If `getter` is
+  // null, the system's getaddrinfo will be invoked. (A non-null `getter` is
   // primarily for tests).
+  // `network` is an optional parameter, when specified (!=
+  // handles::kInvalidNetworkHandle) the lookup will be performed specifically
+  // for `network` (currently only supported on Android platforms).
   static AddressInfoAndResult Get(
       const std::string& host,
       const addrinfo& hints,
-      std::unique_ptr<AddrInfoGetter> getter = nullptr);
+      std::unique_ptr<AddrInfoGetter> getter = nullptr,
+      handles::NetworkHandle network = handles::kInvalidNetworkHandle);
 
   AddressInfo(const AddressInfo&) = delete;
   AddressInfo& operator=(const AddressInfo&) = delete;
@@ -75,10 +83,12 @@ class NET_EXPORT_PRIVATE AddressInfo {
 
  private:
   // Constructors
-  AddressInfo(addrinfo* ai, std::unique_ptr<AddrInfoGetter> getter);
+  AddressInfo(std::unique_ptr<addrinfo, FreeAddrInfoFunc> ai,
+              std::unique_ptr<AddrInfoGetter> getter);
 
   // Data.
-  addrinfo* ai_;  // Never null (except after move)
+  std::unique_ptr<addrinfo, FreeAddrInfoFunc>
+      ai_;  // Never null (except after move)
   std::unique_ptr<AddrInfoGetter> getter_;
 };
 
@@ -92,10 +102,11 @@ class NET_EXPORT_PRIVATE AddrInfoGetter {
 
   // Virtual for tests.
   virtual ~AddrInfoGetter();
-  virtual addrinfo* getaddrinfo(const std::string& host,
-                                const addrinfo* hints,
-                                int* out_os_error);
-  virtual void freeaddrinfo(addrinfo* ai);
+  virtual std::unique_ptr<addrinfo, FreeAddrInfoFunc> getaddrinfo(
+      const std::string& host,
+      const addrinfo* hints,
+      int* out_os_error,
+      handles::NetworkHandle network);
 };
 
 }  // namespace net

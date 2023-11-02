@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -61,7 +61,6 @@ void FakeUsbDevice::CloseHandle() {
   MockUsbMojoDevice* mock_device = device_->mock_device();
   if (mock_device) {
     mock_device->Close(base::DoNothing());
-    return;
   }
 
   if (client_)
@@ -72,34 +71,34 @@ void FakeUsbDevice::CloseHandle() {
 
 // Device implementation:
 void FakeUsbDevice::Open(OpenCallback callback) {
-  // Go on with mock device for testing.
-  MockUsbMojoDevice* mock_device = device_->mock_device();
-  if (mock_device) {
-    mock_device->Open(std::move(callback));
-    is_opened_ = true;
-    return;
-  }
-
   if (is_opened_) {
     std::move(callback).Run(mojom::UsbOpenDeviceError::ALREADY_OPEN);
     return;
   }
 
+  // Go on with mock device for testing.
+  MockUsbMojoDevice* mock_device = device_->mock_device();
+  if (mock_device) {
+    mock_device->Open(base::BindOnce(&FakeUsbDevice::FinishOpen,
+                                     base::Unretained(this),
+                                     std::move(callback)));
+    return;
+  }
+
+  FinishOpen(std::move(callback), mojom::UsbOpenDeviceError::OK);
+}
+
+void FakeUsbDevice::FinishOpen(OpenCallback callback,
+                               mojom::UsbOpenDeviceError error) {
+  DCHECK(!is_opened_);
   is_opened_ = true;
   if (client_)
     client_->OnDeviceOpened();
 
-  std::move(callback).Run(mojom::UsbOpenDeviceError::OK);
+  std::move(callback).Run(error);
 }
 
 void FakeUsbDevice::Close(CloseCallback callback) {
-  // Go on with mock device for testing.
-  MockUsbMojoDevice* mock_device = device_->mock_device();
-  if (mock_device) {
-    mock_device->Close(std::move(callback));
-    return;
-  }
-
   CloseHandle();
   std::move(callback).Run();
 }
@@ -126,22 +125,18 @@ void FakeUsbDevice::ClaimInterface(uint8_t interface_number,
   }
 
   const mojom::UsbDeviceInfo& device_info = device_->GetDeviceInfo();
-  auto config_it = base::ranges::find_if(
-      device_info.configurations,
-      [&device_info](const mojom::UsbConfigurationInfoPtr& config) {
-        return device_info.active_configuration == config->configuration_value;
-      });
+  auto config_it = base::ranges::find(
+      device_info.configurations, device_info.active_configuration,
+      &mojom::UsbConfigurationInfo::configuration_value);
   if (config_it == device_info.configurations.end()) {
     std::move(callback).Run(mojom::UsbClaimInterfaceResult::kFailure);
     LOG(ERROR) << "No such configuration.";
     return;
   }
 
-  auto interface_it = base::ranges::find_if(
-      (*config_it)->interfaces,
-      [interface_number](const mojom::UsbInterfaceInfoPtr& interface) {
-        return interface->interface_number == interface_number;
-      });
+  auto interface_it =
+      base::ranges::find((*config_it)->interfaces, interface_number,
+                         &mojom::UsbInterfaceInfo::interface_number);
   if (interface_it == (*config_it)->interfaces.end()) {
     std::move(callback).Run(mojom::UsbClaimInterfaceResult::kFailure);
     LOG(ERROR) << "No such interface in " << (*config_it)->interfaces.size()

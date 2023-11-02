@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,21 +11,23 @@
 
 namespace policy {
 
-// Creates and returns a dictionary value to represent minimum version
+// Creates and returns a base::Value::Dict to represent minimum version
 // requirement. |version| - a string containing the minimum required version.
 // |warning| - number of days representing the warning period.
 // |eol_warning| - number of days representing the end of life warning period.
-base::Value CreateMinimumVersionPolicyRequirement(const std::string& version,
-                                                  int warning,
-                                                  int eol_warning);
+base::Value::Dict CreateMinimumVersionPolicyRequirement(
+    const std::string& version,
+    int warning,
+    int eol_warning);
 
 // Creates and returns DeviceMinimumVersion policy value.
-base::Value CreateMinimumVersionPolicyValue(base::Value requirements,
-                                            bool unmanaged_user_restricted);
+base::Value::Dict CreateMinimumVersionPolicyValue(
+    base::Value::List requirements,
+    bool unmanaged_user_restricted);
 
 // Creates and returns DeviceMinimumVersion policy value with a single
 // requirement entry.
-base::Value CreateMinimumVersionSingleRequirementPolicyValue(
+base::Value::Dict CreateMinimumVersionSingleRequirementPolicyValue(
     const std::string& version,
     int warning,
     int eol_warning,

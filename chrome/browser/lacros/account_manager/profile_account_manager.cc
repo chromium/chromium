@@ -1,11 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/lacros/account_manager/profile_account_manager.h"
 
 #include "base/check.h"
-#include "base/containers/flat_set.h"
 #include "base/notreached.h"
 #include "components/account_manager_core/account.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
@@ -14,7 +13,7 @@ ProfileAccountManager::ProfileAccountManager(AccountProfileMapper* mapper,
                                              const base::FilePath& profile_path)
     : mapper_(mapper), profile_path_(profile_path) {
   DCHECK(mapper_);
-  mapper_observation_.Observe(mapper_);
+  mapper_observation_.Observe(mapper_.get());
 }
 
 ProfileAccountManager::~ProfileAccountManager() = default;
@@ -53,6 +52,17 @@ void ProfileAccountManager::OnAccountRemoved(
     obs.OnAccountRemoved(account);
 }
 
+void ProfileAccountManager::OnAuthErrorChanged(
+    const base::FilePath& profile_path,
+    const account_manager::AccountKey& account,
+    const GoogleServiceAuthError& error) {
+  DCHECK_EQ(account.account_type(), account_manager::AccountType::kGaia);
+  if (profile_path != profile_path_)
+    return;
+  for (auto& obs : observers_)
+    obs.OnAuthErrorChanged(account, error);
+}
+
 void ProfileAccountManager::GetAccounts(
     base::OnceCallback<void(const std::vector<account_manager::Account>&)>
         callback) {
@@ -81,7 +91,8 @@ void ProfileAccountManager::ShowAddAccountDialog(
 
 void ProfileAccountManager::ShowReauthAccountDialog(
     AccountAdditionSource source,
-    const std::string& email) {
+    const std::string& email,
+    base::OnceClosure callback) {
   NOTREACHED();
 }
 
@@ -92,10 +103,15 @@ void ProfileAccountManager::ShowManageAccountsSettings() {
 std::unique_ptr<OAuth2AccessTokenFetcher>
 ProfileAccountManager::CreateAccessTokenFetcher(
     const account_manager::AccountKey& account,
-    const std::string& oauth_consumer_name,
+
     OAuth2AccessTokenConsumer* consumer) {
-  return mapper_->CreateAccessTokenFetcher(profile_path_, account,
-                                           oauth_consumer_name, consumer);
+  return mapper_->CreateAccessTokenFetcher(profile_path_, account, consumer);
+}
+
+void ProfileAccountManager::ReportAuthError(
+    const account_manager::AccountKey& account,
+    const GoogleServiceAuthError& error) {
+  mapper_->ReportAuthError(profile_path_, account, error);
 }
 
 void ProfileAccountManager::UpsertAccountForTesting(

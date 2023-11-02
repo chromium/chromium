@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,13 +37,13 @@ void ThroughputUkmReporter::ReportThroughputUkm(
     samples_to_next_event_[static_cast<int>(type)] = kNumberOfSamplesToReport;
     if (impl_throughput_percent) {
       ukm_manager_->RecordThroughputUKM(
-          type, FrameSequenceMetrics::ThreadType::kCompositor,
+          type, FrameInfo::SmoothEffectDrivingThread::kCompositor,
           impl_throughput_percent.value());
     }
     if (main_throughput_percent) {
-      ukm_manager_->RecordThroughputUKM(type,
-                                        FrameSequenceMetrics::ThreadType::kMain,
-                                        main_throughput_percent.value());
+      ukm_manager_->RecordThroughputUKM(
+          type, FrameInfo::SmoothEffectDrivingThread::kMain,
+          main_throughput_percent.value());
     }
   }
   DCHECK_GT(samples_to_next_event_[static_cast<int>(type)], 0u);

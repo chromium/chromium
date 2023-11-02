@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -20,7 +20,7 @@ def ParseFilterFile(input_lines):
   syntax that |input_lines| are expected to follow.
 
   See
-  https://github.com/google/googletest/blob/master/docs/advanced.md#running-a-subset-of-the-tests
+  https://github.com/google/googletest/blob/main/docs/advanced.md#running-a-subset-of-the-tests
   for description of the syntax that --gtest_filter argument should follow.
 
   Args:
@@ -130,9 +130,9 @@ def InitializeFilterFromArgs(args):
     return test_filter
 
   # At this point it's potentially several files, in a list and ; separated
-  for test_filter_file in args.test_filter_files:
+  for test_filter_files in args.test_filter_files:
     # At this point it's potentially several files, ; separated
-    for test_filter_file in test_filter_file.split(';'):
+    for test_filter_file in test_filter_files.split(';'):
       # At this point it's individual files
       with open(test_filter_file, 'r') as f:
         positive_file_patterns, negative_file_patterns = ParseFilterFile(f)

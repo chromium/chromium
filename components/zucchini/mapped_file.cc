@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,7 +30,7 @@ MappedFileWriter::MappedFileWriter(const base::FilePath& file_path,
     return;  // |buffer_| will be uninitialized, and therefore invalid.
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   file_handle_ = file.Duplicate();
   // Tell the OS to delete the file when all handles are closed.
   if (file_handle_.DeleteOnClose(true)) {
@@ -38,7 +38,7 @@ MappedFileWriter::MappedFileWriter(const base::FilePath& file_path,
   } else {
     error_ = "Failed to mark file for delete-on-close.";
   }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   bool is_ok = buffer_.Initialize(std::move(file), {0, length},
                                   base::MemoryMappedFile::READ_WRITE_EXTEND);
@@ -55,13 +55,13 @@ MappedFileWriter::~MappedFileWriter() {
 }
 
 bool MappedFileWriter::Keep() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (delete_behavior_ == kAutoDeleteOnClose &&
       !file_handle_.DeleteOnClose(false)) {
     error_ = "Failed to prevent deletion of file.";
     return false;
   }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   delete_behavior_ = kKeep;
   return true;
 }

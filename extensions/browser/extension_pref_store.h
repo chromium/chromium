@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/prefs/value_map_pref_store.h"
 #include "extensions/browser/extension_pref_value_map.h"
 
@@ -33,7 +33,7 @@ class ExtensionPrefStore : public ValueMapPrefStore,
   ~ExtensionPrefStore() override;
 
  private:
-  ExtensionPrefValueMap* extension_pref_value_map_;  // Weak pointer.
+  raw_ptr<ExtensionPrefValueMap> extension_pref_value_map_;  // Weak pointer.
   bool incognito_pref_store_;
 };
 

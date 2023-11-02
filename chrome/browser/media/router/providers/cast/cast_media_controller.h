@@ -1,13 +1,14 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_MEDIA_ROUTER_PROVIDERS_CAST_CAST_MEDIA_CONTROLLER_H_
 #define CHROME_BROWSER_MEDIA_ROUTER_PROVIDERS_CAST_CAST_MEDIA_CONTROLLER_H_
 
-#include "components/cast_channel/cast_message_util.h"
+#include "base/memory/raw_ptr.h"
 #include "components/media_router/common/mojom/media_controller.mojom.h"
 #include "components/media_router/common/mojom/media_status.mojom.h"
+#include "components/media_router/common/providers/cast/channel/cast_message_util.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -69,18 +70,18 @@ class CastMediaController : public mojom::MediaController {
   // These methods may notify the MediaStatusObserver that the status has been
   // updated.
   void SetSession(const CastSession& session);
-  void SetMediaStatus(const base::Value& media_status);
+  void SetMediaStatus(const base::Value::Dict& media_status);
 
   const std::string& sender_id() const { return sender_id_; }
 
  private:
-  base::Value CreateMediaRequest(cast_channel::V2MessageType type);
-  base::Value CreateVolumeRequest();
+  base::Value::Dict CreateMediaRequest(cast_channel::V2MessageType type);
+  base::Value::Dict CreateVolumeRequest();
 
-  void UpdateMediaStatus(const base::Value& message_value);
+  void UpdateMediaStatus(const base::Value::Dict& message_value);
 
   const std::string sender_id_;
-  AppActivity* const activity_;
+  const raw_ptr<AppActivity> activity_;
   mojom::MediaStatus media_status_;
   std::string session_id_;
   int media_session_id_;

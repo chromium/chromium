@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -78,10 +79,10 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
   bool GetAcceleratorForCommandId(int command_id,
                                   ui::Accelerator* accelerator) const override;
   void ExecuteCommand(int command_id, int event_flags) override;
-  const gfx::FontList* GetLabelFontListAt(int index) const override;
+  const gfx::FontList* GetLabelFontListAt(size_t index) const override;
 
-  int GetMaxWidthForItemAtIndex(int item_index) const;
-  bool GetURLAndTitleForItemAtIndex(int index,
+  int GetMaxWidthForItemAtIndex(size_t item_index) const;
+  bool GetURLAndTitleForItemAtIndex(size_t index,
                                     std::string* url,
                                     std::u16string* title);
 
@@ -96,7 +97,7 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
 
   // Index of the separator that follows the history menu item. Used as a
   // reference position for inserting local entries.
-  static constexpr int kHistorySeparatorIndex = 1;
+  static constexpr size_t kHistorySeparatorIndex = 1;
 
   // Build the menu items by populating the menumodel.
   void Build();
@@ -114,22 +115,22 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
       absl::optional<tab_groups::TabGroupVisualData> visual_data,
       const std::u16string& title,
       const GURL& url,
-      int curr_model_index);
+      size_t curr_model_index);
 
   // Build the recently closed window item with parameters needed to restore it,
   // and add it to the menumodel at |curr_model_index|.
   void BuildLocalWindowItem(SessionID window_id,
                             std::unique_ptr<ui::SimpleMenuModel> window_model,
-                            int num_tabs,
-                            int curr_model_index);
+                            size_t num_tabs,
+                            size_t curr_model_index);
 
   // Build the recently closed group item with parameters needed to restore it,
   // and add it to the menumodel at |curr_model_index|.
   void BuildLocalGroupItem(SessionID session_id,
                            tab_groups::TabGroupVisualData visual_data,
                            std::unique_ptr<ui::SimpleMenuModel> group_model,
-                           int num_tabs,
-                           int curr_model_index);
+                           size_t num_tabs,
+                           size_t curr_model_index);
 
   // Build the tab item for other devices with parameters needed to restore it.
   void BuildOtherDevicesTabItem(const std::string& session_tag,
@@ -150,7 +151,7 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
 
   // Return the appropriate menu item label for a tab group, given its title
   // and the number of tabs it contains.
-  std::u16string GetGroupItemLabel(std::u16string title, int num_tabs);
+  std::u16string GetGroupItemLabel(std::u16string title, size_t num_tabs);
 
   // Return the command id of the given id's parent submenu, if it has one that
   // is created by this menu model. Otherwise, return -1. This will be the case
@@ -158,7 +159,7 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
   int GetParentCommandId(int command_id) const;
 
   // Add the favicon for the device section header.
-  void AddDeviceFavicon(int index_in_menu,
+  void AddDeviceFavicon(size_t index_in_menu,
                         sync_pb::SyncEnums::DeviceType device_type);
 
   // Add the favicon for a local or other devices' tab asynchronously,
@@ -220,9 +221,10 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
   // Returns true if the command id identifies a device name item.
   bool IsDeviceNameCommandId(int command_id) const;
 
-  Browser* const browser_;  // Weak.
+  const raw_ptr<Browser> browser_;  // Weak.
 
-  sync_sessions::SessionSyncService* const session_sync_service_;  // Weak.
+  const raw_ptr<sync_sessions::SessionSyncService>
+      session_sync_service_;  // Weak.
 
   // Accelerator for reopening last closed tab.
   ui::Accelerator reopen_closed_tab_accelerator_;
@@ -262,7 +264,7 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
 
   // Index of the last local entry (recently closed tab or window or group) in
   // the menumodel.
-  int last_local_model_index_ = kHistorySeparatorIndex;
+  size_t last_local_model_index_ = kHistorySeparatorIndex;
 
   base::CancelableTaskTracker local_tab_cancelable_task_tracker_;
 

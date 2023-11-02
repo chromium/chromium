@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "url/gurl.h"
 
@@ -71,11 +73,11 @@ class BackgroundLoaderContents : public content::WebContentsDelegate {
                       std::unique_ptr<content::WebContents> new_contents,
                       const GURL& target_url,
                       WindowOpenDisposition disposition,
-                      const gfx::Rect& initial_rect,
+                      const blink::mojom::WindowFeatures& window_features,
                       bool user_gesture,
                       bool* was_blocked) override;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   bool ShouldBlockMediaRequest(const GURL& url) override;
 #endif
 
@@ -86,9 +88,6 @@ class BackgroundLoaderContents : public content::WebContentsDelegate {
   bool CheckMediaAccessPermission(content::RenderFrameHost* render_frame_host,
                                   const GURL& security_origin,
                                   blink::mojom::MediaStreamType type) override;
-  void AdjustPreviewsStateForNavigation(
-      content::WebContents* web_contents,
-      blink::PreviewsState* previews_state) override;
   bool ShouldAllowLazyLoad() override;
 
  private:
@@ -98,8 +97,8 @@ class BackgroundLoaderContents : public content::WebContentsDelegate {
   BackgroundLoaderContents();
 
   std::unique_ptr<content::WebContents> web_contents_;
-  content::BrowserContext* browser_context_;
-  Delegate* delegate_ = nullptr;
+  raw_ptr<content::BrowserContext> browser_context_;
+  raw_ptr<Delegate> delegate_ = nullptr;
 };
 
 }  // namespace background_loader

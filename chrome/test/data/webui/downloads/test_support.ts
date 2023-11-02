@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,7 +39,7 @@ class FakePageHandler implements PageHandlerInterface {
     this.callTracker_.methodCalled('remove', id);
   }
 
-  getDownloads(_searchTerms: Array<string>) {}
+  getDownloads(_searchTerms: string[]) {}
   openFileRequiringGesture(_id: string) {}
   drag(_id: string) {}
   saveDangerousRequiringGesture(_id: string) {}
@@ -54,6 +54,7 @@ class FakePageHandler implements PageHandlerInterface {
   clearAll() {}
   openDownloadsFolderRequiringGesture() {}
   openDuringScanningRequiringGesture(_id: string) {}
+  reviewDangerousRequiringGesture(_id: string) {}
 }
 
 export class TestIconLoader extends TestBrowserProxy implements IconLoader {
@@ -88,6 +89,7 @@ export function createDownload(config?: Partial<MojomData>): MojomData {
         id: '123',
         isDangerous: false,
         isMixedContent: false,
+        isReviewable: false,
         lastReasonText: '',
         otr: false,
         percent: 100,

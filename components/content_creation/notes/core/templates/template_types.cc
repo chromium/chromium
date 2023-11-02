@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,6 +36,22 @@ Background::Background(const std::string& image_url)
       is_linear_gradient_(false),
       is_image_(true) {
   DCHECK(image_url.size() > 0);
+}
+
+Background Background::Init(const proto::Background& background) {
+  if (background.color() != 0) {
+    return Background(static_cast<ARGBColor>(background.color()));
+  }
+
+  if (!background.url().empty()) {
+    return Background(background.url());
+  }
+
+  return Background(
+      std::vector<ARGBColor>(background.gradient().colors().begin(),
+                             background.gradient().colors().end()),
+      static_cast<LinearGradientDirection>(
+          background.gradient().orientation()));
 }
 
 Background::Background(const Background& other) {
@@ -85,11 +101,28 @@ TextStyle::TextStyle(const std::string& font_name,
       highlight_color_(highlight_color),
       highlight_style_(highlight_style) {}
 
+TextStyle::TextStyle(const proto::TextStyle& textstyle)
+    : TextStyle(textstyle.name(),
+                textstyle.color(),
+                textstyle.weight(),
+                textstyle.allcaps(),
+                static_cast<TextAlignment>(textstyle.alignment()),
+                textstyle.mintextsize(),
+                textstyle.maxtextsize()) {
+  if (textstyle.highlightcolor() != 0) {
+    highlight_color_ = textstyle.highlightcolor();
+    highlight_style_ = static_cast<HighlightStyle>(textstyle.highlightstyle());
+  }
+}
+
 TextStyle::TextStyle(const TextStyle& text_style) = default;
 
 TextStyle& TextStyle::operator=(const TextStyle& text_style) = default;
 
 FooterStyle::FooterStyle(ARGBColor text_color, ARGBColor logo_color)
     : text_color_(text_color), logo_color_(logo_color) {}
+
+FooterStyle::FooterStyle(const proto::FooterStyle& footerstyle)
+    : FooterStyle(footerstyle.textcolor(), footerstyle.logocolor()) {}
 
 }  // namespace content_creation

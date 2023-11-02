@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,6 +21,7 @@
 #include "net/cert/cert_verify_proc_builtin.h"
 #include "net/cert/crl_set.h"
 #include "net/cert/internal/system_trust_store.h"
+#include "net/cert/x509_util.h"
 #include "net/cert_net/cert_net_fetcher_url_request.h"
 #include "net/tools/cert_verify_tool/cert_verify_tool_util.h"
 #include "net/tools/cert_verify_tool/verify_using_cert_verify_proc.h"
@@ -29,9 +30,13 @@
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_context_getter.h"
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "net/proxy_resolution/proxy_config.h"
 #include "net/proxy_resolution/proxy_config_service_fixed.h"
+#endif
+
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+#include "net/cert/internal/trust_store_chrome.h"
 #endif
 
 namespace {
@@ -55,7 +60,7 @@ void SetUpOnNetworkThread(
     base::WaitableEvent* initialization_complete_event) {
   net::URLRequestContextBuilder url_request_context_builder;
   url_request_context_builder.set_user_agent(GetUserAgent());
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // On Linux, use a fixed ProxyConfigService, since the default one
   // depends on glib.
   //
@@ -190,9 +195,16 @@ std::unique_ptr<net::SystemTrustStore> CreateSystemTrustStore(
                 << ": using system roots (--roots are in addition).\n";
       return net::CreateSslSystemTrustStore();
     case RootStoreType::kChrome:
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
       std::cerr << impl_name
                 << ": using Chrome Root Store (--roots are in addition).\n";
-      return net::CreateSslSystemTrustStoreChromeRoot();
+      return net::CreateSslSystemTrustStoreChromeRoot(
+          std::make_unique<net::TrustStoreChrome>());
+#else
+      std::cerr << impl_name << ": not supported.\n";
+      [[fallthrough]];
+#endif
+
     case RootStoreType::kEmpty:
     default:
       std::cerr << impl_name << ": only using --roots specified.\n";
@@ -205,7 +217,7 @@ std::unique_ptr<CertVerifyImpl> CreateCertVerifyImplFromName(
     base::StringPiece impl_name,
     scoped_refptr<net::CertNetFetcher> cert_net_fetcher,
     RootStoreType root_store_type) {
-#if !(defined(OS_FUCHSIA) || defined(OS_LINUX) || defined(OS_CHROMEOS))
+#if !(BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
   if (impl_name == "platform") {
     if (root_store_type != RootStoreType::kSystem) {
       std::cerr << "WARNING: platform verifier not supported with "
@@ -235,6 +247,32 @@ std::unique_ptr<CertVerifyImpl> CreateCertVerifyImplFromName(
 
   std::cerr << "WARNING: Unrecognized impl: " << impl_name << "\n";
   return nullptr;
+}
+
+void PrintCertHashAndSubject(CRYPTO_BUFFER* cert) {
+  std::cout << " " << FingerPrintCryptoBuffer(cert) << " "
+            << SubjectFromCryptoBuffer(cert) << "\n";
+}
+
+void PrintInputChain(const CertInput& target,
+                     const std::vector<CertInput>& intermediates) {
+  std::cout << "Input chain:\n";
+  PrintCertHashAndSubject(
+      net::x509_util::CreateCryptoBuffer(target.der_cert).get());
+  for (const auto& intermediate : intermediates) {
+    PrintCertHashAndSubject(
+        net::x509_util::CreateCryptoBuffer(intermediate.der_cert).get());
+  }
+  std::cout << "\n";
+}
+
+void PrintAdditionalRoots(const std::vector<CertInput>& root_der_certs) {
+  std::cout << "Additional roots:\n";
+  for (const auto& cert : root_der_certs) {
+    PrintCertHashAndSubject(
+        net::x509_util::CreateCryptoBuffer(cert.der_cert).get());
+  }
+  std::cout << "\n";
 }
 
 const char kUsage[] =
@@ -407,6 +445,10 @@ int main(int argc, char** argv) {
     intermediate_der_certs.pop_back();
   }
 
+  PrintInputChain(target_der_cert, intermediate_der_certs);
+  if (!root_der_certs.empty())
+    PrintAdditionalRoots(root_der_certs);
+
   // Create a network thread to be used for AIA fetches, and wait for a
   // CertNetFetcher to be constructed on that thread.
   base::Thread::Options options(base::MessagePumpType::IO, 0);
@@ -432,7 +474,7 @@ int main(int argc, char** argv) {
   std::string impls_str = command_line.GetSwitchValueASCII("impls");
   if (impls_str.empty()) {
     // Default value.
-#if !(defined(OS_FUCHSIA) || defined(OS_LINUX) || defined(OS_CHROMEOS))
+#if !(BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
     impls_str = "platform,";
 #endif
     impls_str += "builtin,pathbuilder";

@@ -1,33 +1,37 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/autofill/manual_fill/full_card_requester.h"
 
-#include <string>
+#import <string>
 
+#import "base/mac/foundation_util.h"
 #import "base/test/ios/wait_util.h"
-#include "base/time/time.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/browser_autofill_manager.h"
-#include "components/autofill/core/browser/test_personal_data_manager.h"
+#import "base/test/scoped_feature_list.h"
+#import "base/time/time.h"
+#import "components/autofill/core/browser/autofill_test_utils.h"
+#import "components/autofill/core/browser/browser_autofill_manager.h"
+#import "components/autofill/core/browser/test_personal_data_manager.h"
 #import "components/autofill/ios/browser/autofill_agent.h"
-#include "components/autofill/ios/browser/autofill_driver_ios.h"
-#include "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
-#include "components/prefs/pref_service.h"
+#import "components/autofill/ios/browser/autofill_driver_ios.h"
+#import "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
+#import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
-#include "ios/chrome/browser/infobars/infobar_manager_impl.h"
-#include "ios/chrome/browser/ui/autofill/card_unmask_prompt_view_bridge.h"
+#import "ios/chrome/browser/infobars/infobar_manager_impl.h"
+#import "ios/chrome/browser/ui/autofill/card_unmask_prompt_view_controller.h"
 #import "ios/chrome/browser/ui/autofill/chrome_autofill_client_ios.h"
+#import "ios/chrome/browser/ui/autofill/features.h"
+#import "ios/chrome/browser/ui/autofill/legacy_card_unmask_prompt_view_bridge.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
-#include "ios/web/public/test/fakes/fake_web_frame.h"
+#import "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
-#include "ios/web/public/test/web_task_environment.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/platform_test.h"
-#include "third_party/ocmock/gtest_support.h"
+#import "ios/web/public/test/web_task_environment.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/platform_test.h"
+#import "third_party/ocmock/gtest_support.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -98,7 +102,7 @@ class PaymentRequestFullCardRequesterTest : public PlatformTest {
     std::string locale("en");
     autofill::AutofillDriverIOS::PrepareForWebStateWebFrameAndDelegate(
         web_state(), autofill_client_.get(), nil, locale,
-        autofill::BrowserAutofillManager::DISABLE_AUTOFILL_DOWNLOAD_MANAGER);
+        autofill::AutofillManager::EnableDownloadManager(false));
   }
 
   void TearDown() override {
@@ -128,6 +132,8 @@ class PaymentRequestFullCardRequesterTest : public PlatformTest {
     return personal_data_manager_.GetCreditCards();
   }
 
+  base::test::ScopedFeatureList scoped_feature_list_;
+
  private:
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
@@ -138,10 +144,14 @@ class PaymentRequestFullCardRequesterTest : public PlatformTest {
   AutofillAgent* autofill_agent_;
 };
 
-// Tests that the FullCardRequester presents and dismisses the card unmask
-// prompt view controller, when the full card is requested and when the user
-// enters the CVC/expiration information respectively.
-TEST_F(PaymentRequestFullCardRequesterTest, PresentAndDismiss) {
+// Tests that the FullCardRequester presents and dismisses the legacy card
+// unmask prompt, when the new prompt feature flag is disabled, the full card is
+// requested and when the user enters the CVC/expiration information
+// respectively.
+TEST_F(PaymentRequestFullCardRequesterTest, PresentAndDismissLegacyPrompt) {
+  scoped_feature_list_.InitAndDisableFeature(
+      autofill::features::kAutofillEnableNewCardUnmaskPromptView);
+
   UIViewController* base_view_controller = [[UIViewController alloc] init];
   ScopedKeyWindow scoped_key_window_;
   [scoped_key_window_.Get() setRootViewController:base_view_controller];
@@ -162,6 +172,62 @@ TEST_F(PaymentRequestFullCardRequesterTest, PresentAndDismiss) {
   // Spin the run loop to trigger the animation.
   base::test::ios::SpinRunLoopWithMaxDelay(base::Seconds(1.0));
   EXPECT_TRUE([base_view_controller.presentedViewController
+      isMemberOfClass:[UINavigationController class]]);
+  UINavigationController* navigation_controller =
+      base::mac::ObjCCast<UINavigationController>(
+          base_view_controller.presentedViewController);
+
+  EXPECT_TRUE([navigation_controller.topViewController
+      isMemberOfClass:NSClassFromString(
+                          @"LegacyCardUnmaskPromptViewController")]);
+
+  full_card_requester.OnUnmaskVerificationResult(
+      autofill::AutofillClient::PaymentsRpcResult::kSuccess);
+
+  // Wait until the view controller is ordered to be dismissed and the animation
+  // completes.
+  base::test::ios::WaitUntilCondition(
+      ^bool {
+        return !base_view_controller.presentedViewController;
+      },
+      true, base::Seconds(10));
+  EXPECT_EQ(nil, base_view_controller.presentedViewController);
+}
+
+// Tests that the FullCardRequester presents and dismisses the new card unmask
+// prompt, when the new prompt feature flag is enabled, the full card is
+// requested and when the user enters the CVC/expiration information
+// respectively.
+TEST_F(PaymentRequestFullCardRequesterTest, PresentAndDismissNewPrompt) {
+  scoped_feature_list_.InitAndEnableFeature(
+      autofill::features::kAutofillEnableNewCardUnmaskPromptView);
+
+  UIViewController* base_view_controller = [[UIViewController alloc] init];
+  ScopedKeyWindow scoped_key_window_;
+  [scoped_key_window_.Get() setRootViewController:base_view_controller];
+
+  FullCardRequester full_card_requester(base_view_controller, browser_state());
+
+  EXPECT_EQ(nil, base_view_controller.presentedViewController);
+  web::WebFrame* main_frame =
+      web_state()->GetWebFramesManager()->GetMainWebFrame();
+  autofill::BrowserAutofillManager* autofill_manager =
+      autofill::AutofillDriverIOS::FromWebStateAndWebFrame(web_state(),
+                                                           main_frame)
+          ->autofill_manager();
+  FakeResultDelegate* fake_result_delegate = new FakeResultDelegate;
+  full_card_requester.GetFullCard(*credit_cards()[0], autofill_manager,
+                                  fake_result_delegate->GetWeakPtr());
+
+  // Spin the run loop to trigger the animation.
+  base::test::ios::SpinRunLoopWithMaxDelay(base::Seconds(1.0));
+  EXPECT_TRUE([base_view_controller.presentedViewController
+      isMemberOfClass:[UINavigationController class]]);
+  UINavigationController* navigation_controller =
+      base::mac::ObjCCast<UINavigationController>(
+          base_view_controller.presentedViewController);
+
+  EXPECT_TRUE([navigation_controller.topViewController
       isMemberOfClass:[CardUnmaskPromptViewController class]]);
 
   full_card_requester.OnUnmaskVerificationResult(

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <list>
 #include <map>
 #include <memory>
 #include <tuple>
@@ -17,6 +16,7 @@
 #include "base/containers/queue.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "media/base/android/media_codec_bridge_impl.h"
 #include "media/base/bitrate.h"
@@ -45,7 +45,9 @@ class MEDIA_GPU_EXPORT AndroidVideoEncodeAccelerator
 
   // VideoEncodeAccelerator implementation.
   VideoEncodeAccelerator::SupportedProfiles GetSupportedProfiles() override;
-  bool Initialize(const Config& config, Client* client) override;
+  bool Initialize(const Config& config,
+                  Client* client,
+                  std::unique_ptr<MediaLog> media_log) override;
   void Encode(scoped_refptr<VideoFrame> frame, bool force_keyframe) override;
   void UseOutputBitstreamBuffer(BitstreamBuffer buffer) override;
   void RequestEncodingParametersChange(const Bitrate& bitrate,
@@ -106,6 +108,12 @@ class MEDIA_GPU_EXPORT AndroidVideoEncodeAccelerator
   // Resolution of input stream. Set once in initialization and not allowed to
   // change after.
   gfx::Size frame_size_;
+
+  // Y and UV plane strides in the encoder's input buffer
+  int input_buffer_stride_ = 0;
+
+  // Y-plane height in the encoder's input
+  int input_buffer_yplane_height_ = 0;
 
   uint32_t last_set_bitrate_;  // In bps.
 

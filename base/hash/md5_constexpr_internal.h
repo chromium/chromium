@@ -1,16 +1,16 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef BASE_HASH_MD5_CONSTEXPR_INTERNAL_H_
 #define BASE_HASH_MD5_CONSTEXPR_INTERNAL_H_
 
+#include <stdint.h>
+
 #include <array>
-#include <cstddef>
-#include <cstdint>
 
 #include "base/check.h"
-#include "base/hash/md5.h"
+#include "base/check_op.h"
 
 namespace base {
 namespace internal {
@@ -82,7 +82,7 @@ struct MD5CE {
     DCHECK_EQ(m % 64, 0u);
     if (i < n) {
       // Emit the message itself...
-      return data[i];
+      return static_cast<uint8_t>(data[i]);
     } else if (i == n) {
       // ...followed by the end of message marker.
       return 0x80;
@@ -237,27 +237,6 @@ struct MD5CE {
   //////////////////////////////////////////////////////////////////////////////
   // HELPER FUNCTIONS
 
-  // Converts an IntermediateData to a final digest.
-  static constexpr MD5Digest IntermediateDataToMD5Digest(
-      const IntermediateData& intermediate) {
-    return MD5Digest{{static_cast<uint8_t>((intermediate.a >> 0) & 0xff),
-                      static_cast<uint8_t>((intermediate.a >> 8) & 0xff),
-                      static_cast<uint8_t>((intermediate.a >> 16) & 0xff),
-                      static_cast<uint8_t>((intermediate.a >> 24) & 0xff),
-                      static_cast<uint8_t>((intermediate.b >> 0) & 0xff),
-                      static_cast<uint8_t>((intermediate.b >> 8) & 0xff),
-                      static_cast<uint8_t>((intermediate.b >> 16) & 0xff),
-                      static_cast<uint8_t>((intermediate.b >> 24) & 0xff),
-                      static_cast<uint8_t>((intermediate.c >> 0) & 0xff),
-                      static_cast<uint8_t>((intermediate.c >> 8) & 0xff),
-                      static_cast<uint8_t>((intermediate.c >> 16) & 0xff),
-                      static_cast<uint8_t>((intermediate.c >> 24) & 0xff),
-                      static_cast<uint8_t>((intermediate.d >> 0) & 0xff),
-                      static_cast<uint8_t>((intermediate.d >> 8) & 0xff),
-                      static_cast<uint8_t>((intermediate.d >> 16) & 0xff),
-                      static_cast<uint8_t>((intermediate.d >> 24) & 0xff)}};
-  }
-
   static constexpr uint32_t StringLength(const char* string) {
     const char* end = string;
     while (*end != 0)
@@ -277,10 +256,6 @@ struct MD5CE {
   //////////////////////////////////////////////////////////////////////////////
   // WRAPPER FUNCTIONS
 
-  static constexpr MD5Digest Sum(const char* data, uint32_t n) {
-    return IntermediateDataToMD5Digest(ProcessMessage(data, n));
-  }
-
   static constexpr uint64_t Hash64(const char* data, uint32_t n) {
     IntermediateData intermediate = ProcessMessage(data, n);
     return (static_cast<uint64_t>(SwapEndian(intermediate.a)) << 32) |
@@ -296,14 +271,6 @@ struct MD5CE {
 }  // namespace internal
 
 // Implementations of the functions exposed in the public header.
-
-constexpr MD5Digest MD5SumConstexpr(const char* string) {
-  return internal::MD5CE::Sum(string, internal::MD5CE::StringLength(string));
-}
-
-constexpr MD5Digest MD5SumConstexpr(const char* string, uint32_t length) {
-  return internal::MD5CE::Sum(string, length);
-}
 
 constexpr uint64_t MD5Hash64Constexpr(const char* string) {
   return internal::MD5CE::Hash64(string, internal::MD5CE::StringLength(string));

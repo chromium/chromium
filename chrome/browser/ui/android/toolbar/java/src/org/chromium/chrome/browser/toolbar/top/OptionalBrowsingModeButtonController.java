@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 
 import java.util.HashMap;
@@ -58,6 +59,25 @@ public class OptionalBrowsingModeButtonController {
         }
 
         mObserverMap.clear();
+    }
+
+    /**
+     * Gets the {@link AdaptiveToolbarButtonVariant} of the currently shown button. {@code
+     * AdaptiveToolbarButtonVariant.NONE} is returned if there's no visible button.
+     * @return A value from {@link AdaptiveToolbarButtonVariant}.
+     */
+    public @AdaptiveToolbarButtonVariant int getCurrentButtonVariant() {
+        if (mCurrentProvider == null || mTabSupplier == null) {
+            return AdaptiveToolbarButtonVariant.NONE;
+        }
+
+        ButtonData currentButton = mCurrentProvider.get(mTabSupplier.get());
+
+        if (currentButton == null || !currentButton.canShow()) {
+            return AdaptiveToolbarButtonVariant.NONE;
+        }
+
+        return currentButton.getButtonSpec().getButtonVariant();
     }
 
     void updateButtonVisibility() {
@@ -109,12 +129,12 @@ public class OptionalBrowsingModeButtonController {
     private void setCurrentOptionalButton(ButtonDataProvider provider, ButtonData buttonData) {
         mCurrentProvider = provider;
         mToolbarLayout.updateOptionalButton(buttonData);
-        if (buttonData.getButtonSpec().getIPHCommandBuilder() != null) {
+        // ToolbarPhone's optional button has animated transitions and it takes care of showing IPH
+        // on its own.
+        if (buttonData.getButtonSpec().getIPHCommandBuilder() != null
+                && !(mToolbarLayout instanceof ToolbarPhone)) {
             mUserEducationHelper.requestShowIPH(
-                    buttonData.getButtonSpec()
-                            .getIPHCommandBuilder()
-                            .setAnchorView(mToolbarLayout.getOptionalButtonView())
-                            .build());
+                    buttonData.getButtonSpec().getIPHCommandBuilder().build());
         }
     }
 

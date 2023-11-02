@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,10 @@
 #include "base/sequence_checker.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
+
+namespace media {
+class VideoFrame;
+}  // namespace media
 
 namespace blink {
 class SegmentReader;
@@ -20,7 +24,6 @@ class MODULES_EXPORT ImageDecoderCore {
   ImageDecoderCore(String mime_type,
                    scoped_refptr<SegmentReader> data,
                    bool data_complete,
-                   ImageDecoder::AlphaOption alpha_option,
                    const ColorBehavior& color_behavior,
                    const SkISize& desired_size,
                    ImageDecoder::AnimationOption animation_option);
@@ -96,11 +99,16 @@ class MODULES_EXPORT ImageDecoderCore {
   // Recreates the underlying ImageDecode with the provided |animation_option|.
   void Reinitialize(ImageDecoder::AnimationOption animation_option);
 
+  bool FrameIsDecodedAtIndexForTesting(uint32_t frame_index) const;
+
  private:
   void MaybeDecodeToYuv();
 
+  // Retrieves the timestamp for |index| from |decoder_| if supported, otherwise
+  // uses |timestamp_cache_| to generate a synthetic timestamp.
+  base::TimeDelta GetTimestampForFrame(uint32_t index) const;
+
   const String mime_type_;
-  const ImageDecoder::AlphaOption alpha_option_;
   const ColorBehavior color_behavior_;
   const SkISize desired_size_;
 
@@ -133,6 +141,16 @@ class MODULES_EXPORT ImageDecoderCore {
           DefaultHash<uint32_t>::Hash,
           WTF::UnsignedWithZeroKeyHashTraits<uint32_t>>
       incomplete_frames_;
+
+  // By default, assume in order decoding and purge all decoded frames except
+  // the last. If out of order decoding is detected then purging is limited to
+  // only when platform memory limits are exceeded.
+  bool is_decoding_in_order_ = true;
+  uint32_t last_decoded_frame_ = 0u;
+
+  // Used to generate synthetic timestamps for decoders which don't provide
+  // native timestamps. The 0 position is initialized to zero at construction.
+  mutable Vector<base::TimeDelta> timestamp_cache_;
 };
 
 }  // namespace blink

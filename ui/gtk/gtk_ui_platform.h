@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,12 +10,14 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gtk/gtk_compat.h"
 
-#include <string>
-
-using GdkKeymap = struct _GdkKeymap;
 using GtkWindow = struct _GtkWindow;
 using GtkWidget = struct _GtkWidget;
 using GdkWindow = struct _GdkWindow;
+
+namespace ui {
+class LinuxInputMethodContext;
+class LinuxInputMethodContextDelegate;
+}  // namespace ui
 
 namespace gtk {
 
@@ -45,12 +47,6 @@ class GtkUiPlatform {
   // and is supported only in X11 backend (both Aura and Ozone).
   virtual GdkWindow* GetGdkWindow(gfx::AcceleratedWidget window_id) = 0;
 
-  // Exports a prefixed, platform-dependent (X11 or Wayland) window handle for
-  // an Aura window id, then calls the given callback with the handle.
-  virtual bool ExportWindowHandle(
-      gfx::AcceleratedWidget window_id,
-      base::OnceCallback<void(std::string)> callback) = 0;
-
   // Gtk dialog windows must be set transient for the browser window. This
   // function abstracts away such functionality.
   virtual bool SetGtkWidgetTransientFor(GtkWidget* widget,
@@ -61,8 +57,9 @@ class GtkUiPlatform {
   // needed, if any.
   virtual void ShowGtkWindow(GtkWindow* window) = 0;
 
-  // Reports whether InputMethodContextImplGtk is the preferred input method.
-  virtual bool PreferGtkIme() = 0;
+  // Creates a new IME context or may return nullptr.
+  virtual std::unique_ptr<ui::LinuxInputMethodContext> CreateInputMethodContext(
+      ui::LinuxInputMethodContextDelegate* delegate) const = 0;
 };
 
 }  // namespace gtk

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #include "third_party/blink/renderer/core/timing/performance_mark.h"
@@ -22,8 +22,9 @@ PerformanceMark::PerformanceMark(
     double start_time,
     base::TimeTicks unsafe_time_for_traces,
     scoped_refptr<SerializedScriptValue> serialized_detail,
-    ExceptionState& exception_state)
-    : PerformanceEntry(name, start_time, start_time),
+    ExceptionState& exception_state,
+    uint32_t navigation_id)
+    : PerformanceEntry(name, start_time, start_time, navigation_id),
       serialized_detail_(std::move(serialized_detail)),
       unsafe_time_for_traces_(unsafe_time_for_traces) {}
 
@@ -89,9 +90,10 @@ PerformanceMark* PerformanceMark::Create(ScriptState* script_state,
   if (exception_state.HadException())
     return nullptr;
 
+  uint32_t navigation_id = PerformanceEntry::GetNavigationId(script_state);
   return MakeGarbageCollected<PerformanceMark>(
       mark_name, start, unsafe_start_for_traces, std::move(serialized_detail),
-      exception_state);
+      exception_state, navigation_id);
 }
 
 AtomicString PerformanceMark::entryType() const {

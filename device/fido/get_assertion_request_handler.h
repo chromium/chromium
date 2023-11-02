@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "device/fido/auth_token_requester.h"
 #include "device/fido/authenticator_get_assertion_response.h"
@@ -74,6 +74,12 @@ class COMPONENT_EXPORT(DEVICE_FIDO) GetAssertionRequestHandler
 
   ~GetAssertionRequestHandler() override;
 
+  // Filters the allow list of the get assertion request to the given
+  // |credential_id|. This is only valid to call for empty allow list requests.
+  void PreselectAccount(std::vector<uint8_t> credential_id);
+
+  base::WeakPtr<GetAssertionRequestHandler> GetWeakPtr();
+
  private:
   enum class State {
     kWaitingForTouch,
@@ -130,8 +136,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) GetAssertionRequestHandler
   void OnReadLargeBlobs(
       FidoAuthenticator* authenticator,
       CtapDeviceResponseCode status,
-      absl::optional<std::vector<std::pair<LargeBlobKey, std::vector<uint8_t>>>>
-          blobs);
+      absl::optional<std::vector<std::pair<LargeBlobKey, LargeBlob>>> blobs);
   void OnWriteLargeBlob(FidoAuthenticator* authenticator,
                         CtapDeviceResponseCode status);
 
@@ -151,7 +156,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) GetAssertionRequestHandler
   // that was tapped by the user while requesting a pinUvAuthToken from
   // connected authenticators. The object is owned by the underlying discovery
   // object and this pointer is cleared if it's removed during processing.
-  FidoAuthenticator* selected_authenticator_for_pin_uv_auth_token_ = nullptr;
+  raw_ptr<FidoAuthenticator> selected_authenticator_for_pin_uv_auth_token_ =
+      nullptr;
 
   // responses_ holds the set of responses while they are incrementally read
   // from the device. Only used when more than one response is returned.
@@ -165,6 +171,12 @@ class COMPONENT_EXPORT(DEVICE_FIDO) GetAssertionRequestHandler
   // authenticators that need a pinUvAuthToken to service the request.
   std::map<FidoAuthenticator*, std::unique_ptr<AuthTokenRequester>>
       auth_token_requester_map_;
+
+  // preselected_credential_ is set when the UI invokes `PreselectAccount()`. It
+  // contains the ID of a platform authenticator credential chosen by the user
+  // during a resident key request prior to dispatching to that platform
+  // authenticator.
+  absl::optional<std::vector<uint8_t>> preselected_credential_;
 
   SEQUENCE_CHECKER(my_sequence_checker_);
   base::WeakPtrFactory<GetAssertionRequestHandler> weak_factory_{this};

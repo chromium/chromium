@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,16 +6,20 @@
 
 #include <utility>
 
+#include "base/callback.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "chrome/browser/media/webrtc/desktop_media_list_observer.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
 using content::DesktopMediaID;
 
-FakeDesktopMediaList::FakeDesktopMediaList(DesktopMediaList::Type type)
-    : observer_(nullptr), type_(type) {}
-FakeDesktopMediaList::~FakeDesktopMediaList() {}
+FakeDesktopMediaList::FakeDesktopMediaList(DesktopMediaList::Type type,
+                                           bool is_source_list_delegated)
+    : type_(type), is_source_list_delegated_(is_source_list_delegated) {}
+
+FakeDesktopMediaList::~FakeDesktopMediaList() = default;
 
 void FakeDesktopMediaList::AddSource(int id) {
   AddSourceByFullMediaID(
@@ -94,3 +98,27 @@ DesktopMediaList::Type FakeDesktopMediaList::GetMediaListType() const {
 
 void FakeDesktopMediaList::SetPreviewedSource(
     const absl::optional<content::DesktopMediaID>& id) {}
+
+bool FakeDesktopMediaList::IsSourceListDelegated() const {
+  return is_source_list_delegated_;
+}
+
+void FakeDesktopMediaList::ClearDelegatedSourceListSelection() {
+  ++clear_delegated_source_list_selection_count_;
+}
+
+void FakeDesktopMediaList::FocusList() {
+  is_focused_ = true;
+}
+
+void FakeDesktopMediaList::HideList() {
+  is_focused_ = false;
+}
+
+void FakeDesktopMediaList::OnDelegatedSourceListSelection() {
+  observer_->OnDelegatedSourceListSelection();
+}
+
+void FakeDesktopMediaList::OnDelegatedSourceListDismissed() {
+  observer_->OnDelegatedSourceListDismissed();
+}

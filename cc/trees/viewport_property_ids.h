@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,12 +11,12 @@
 namespace cc {
 
 struct ViewportPropertyIds {
-  int overscroll_elasticity_transform = TransformTree::kInvalidNodeId;
+  int overscroll_elasticity_transform = kInvalidPropertyNodeId;
   ElementId overscroll_elasticity_effect;
-  int page_scale_transform = TransformTree::kInvalidNodeId;
-  int inner_scroll = ScrollTree::kInvalidNodeId;
-  int outer_clip = ClipTree::kInvalidNodeId;
-  int outer_scroll = ScrollTree::kInvalidNodeId;
+  int page_scale_transform = kInvalidPropertyNodeId;
+  int inner_scroll = kInvalidPropertyNodeId;
+  int outer_clip = kInvalidPropertyNodeId;
+  int outer_scroll = kInvalidPropertyNodeId;
 };
 
 }  // namespace cc

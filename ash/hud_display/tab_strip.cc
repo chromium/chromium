@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -86,9 +86,9 @@ HUDTabButton::HUDTabButton(Style style,
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
   SetEnabledTextColors(kHUDDefaultColor);
   SetProperty(kHUDClickHandler, HTCLIENT);
-  SetBorder(views::CreateEmptyBorder(
+  SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
       kHUDSettingsIconBorder, kHUDTabOverlayWidth + kHUDTabTitleBorder,
-      kHUDSettingsIconBorder, kHUDTabOverlayWidth + kHUDTabTitleBorder));
+      kHUDSettingsIconBorder, kHUDTabOverlayWidth + kHUDTabTitleBorder)));
 
   SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
 }

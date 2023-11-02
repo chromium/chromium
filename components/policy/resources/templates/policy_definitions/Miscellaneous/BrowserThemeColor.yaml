@@ -1,0 +1,25 @@
+caption: Configure the color of the browser's theme
+default: null
+desc: |-
+  This policy allows admins to configure the color of <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>'s theme. The input string should be a valid hex color string matching the format "#RRGGBB".
+
+        Setting the policy to a valid hex color causes a theme based on that color to be automatically generated and applied to the browser. Users won't be able to change the theme set by the policy.
+
+        Leaving the policy unset lets users change their browser's theme as preferred.
+example_value: '#FFFFFF'
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- fuchsia
+owners:
+- igorruvinov@google.com
+- ydago@google.com
+- pastarmovj@google.com
+schema:
+  description: Hex color which will be used to generate and apply a theme to the browser.
+  type: string
+supported_on:
+- chrome.*:91-
+tags: []
+type: string

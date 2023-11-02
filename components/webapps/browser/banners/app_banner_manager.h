@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/site_engagement/content/site_engagement_observer.h"
@@ -23,9 +24,8 @@
 #include "third_party/blink/public/mojom/app_banner/app_banner.mojom.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-forward.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "url/gurl.h"
-
-class SkBitmap;
 
 namespace content {
 class RenderFrameHost;
@@ -36,6 +36,7 @@ namespace webapps {
 class InstallableManager;
 enum class WebappInstallSource;
 struct InstallableData;
+struct Screenshot;
 
 // Coordinates the creation of an app banner, from detecting eligibility to
 // fetching data and creating the infobar. Sites declare that they want an app
@@ -82,6 +83,9 @@ class AppBannerManager : public content::WebContentsObserver,
     // The pipeline has finished running, but is waiting for sufficient
     // engagement to trigger the banner.
     PENDING_ENGAGEMENT,
+
+    // The pipeline is waiting for service worker install to trigger the banner.
+    PENDING_WORKER,
 
     // The beforeinstallprompt event has been sent and the pipeline is waiting
     // for the response.
@@ -133,6 +137,9 @@ class AppBannerManager : public content::WebContentsObserver,
   // Returns the app name if the current page is installable, otherwise returns
   // the empty string.
   static std::u16string GetInstallableWebAppName(
+      content::WebContents* web_contents);
+
+  static std::string GetInstallableWebAppManifestId(
       content::WebContents* web_contents);
 
   // Returns whether installability checks satisfy promotion requirements
@@ -190,9 +197,10 @@ class AppBannerManager : public content::WebContentsObserver,
 
   // Simple accessors:
   const blink::mojom::Manifest& manifest() const;
-  const SkBitmap& primary_icon() { return primary_icon_; }
-  bool has_maskable_primary_icon() { return has_maskable_primary_icon_; }
+  const SkBitmap& primary_icon() const { return primary_icon_; }
+  bool has_maskable_primary_icon() const { return has_maskable_primary_icon_; }
   const GURL& validated_url() { return validated_url_; }
+  const std::vector<Screenshot>& screenshots() { return screenshots_; }
 
   // Tracks the route taken to an install of a PWA (whether the bottom sheet
   // was shown or the infobar/install) and what triggered it (install source).
@@ -266,11 +274,15 @@ class AppBannerManager : public content::WebContentsObserver,
 
   // Callback invoked by the InstallableManager once it has fetched the page's
   // manifest.
-  virtual void OnDidGetManifest(const InstallableData& result);
+  virtual void OnDidGetManifest(const InstallableData& data);
 
   // Returns an InstallableParams object that requests all checks
   // necessary for a web app banner.
   virtual InstallableParams ParamsToPerformInstallableWebAppCheck();
+
+  // Returns an InstallableParams object that requests service worker check
+  // only.
+  virtual InstallableParams ParamsToPerformWorkerCheck();
 
   // Run at the conclusion of OnDidGetManifest. For web app banners, this calls
   // back to the InstallableManager to continue checking criteria. For native
@@ -283,8 +295,16 @@ class AppBannerManager : public content::WebContentsObserver,
 
   // Callback invoked by the InstallableManager once it has finished checking
   // all other installable properties.
-  virtual void OnDidPerformInstallableWebAppCheck(
-      const InstallableData& result);
+  virtual void OnDidPerformInstallableWebAppCheck(const InstallableData& data);
+
+  // Run at the conclusion of OnDidPerformInstallableWebAppCheck. This calls
+  // back to the InstallableManager to continue checking service worker criteria
+  // for web app banners.
+  virtual void PerformServiceWorkerCheck();
+
+  // Callback invoked by the InstallableManager once it has finished checking
+  // service worker.
+  virtual void OnDidPerformWorkerCheck(const InstallableData& data);
 
   // Records that a banner was shown.
   void RecordDidShowBanner();
@@ -356,6 +376,9 @@ class AppBannerManager : public content::WebContentsObserver,
   // The URL of the manifest.
   GURL manifest_url_;
 
+  // The manifest id.
+  GURL manifest_id_;
+
   // The URL of the primary icon.
   GURL primary_icon_url_;
 
@@ -363,10 +386,13 @@ class AppBannerManager : public content::WebContentsObserver,
   SkBitmap primary_icon_;
 
   // Whether or not the primary icon is maskable.
-  bool has_maskable_primary_icon_;
+  bool has_maskable_primary_icon_ = false;
 
   // The current banner pipeline state for this page load.
-  State state_;
+  State state_ = State::INACTIVE;
+
+  // The screenshots to show in the install UI.
+  std::vector<Screenshot> screenshots_;
 
  private:
   friend class AppBannerManagerTest;
@@ -401,7 +427,7 @@ class AppBannerManager : public content::WebContentsObserver,
   InstallableStatusCode TerminationCode() const;
 
   // Fetches the data required to display a banner for the current page.
-  InstallableManager* manager_;
+  raw_ptr<InstallableManager> manager_;
 
   // The manifest object. This is never null, it will instead be an empty
   // manifest so callers don't have to worry about null checks.
@@ -417,12 +443,15 @@ class AppBannerManager : public content::WebContentsObserver,
 
   // If a banner is requested before the page has finished loading, defer
   // triggering the pipeline until the load is complete.
-  bool has_sufficient_engagement_;
-  bool load_finished_;
+  bool has_sufficient_engagement_ = false;
+  bool load_finished_ = false;
+
+  bool passed_worker_check_ = false;
 
   std::unique_ptr<StatusReporter> status_reporter_;
-  bool install_animation_pending_;
-  InstallableWebAppCheckResult installable_web_app_check_result_;
+  bool install_animation_pending_ = false;
+  InstallableWebAppCheckResult installable_web_app_check_result_ =
+      InstallableWebAppCheckResult::kUnknown;
 
   // The scope of the most recent installability check that passes promotability
   // requirements, otherwise invalid.

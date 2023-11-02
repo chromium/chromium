@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,7 +30,7 @@ class HudWithRootLayerChange : public HeadsUpDisplayTest {
     PostSetNeedsCommitToMainThread();
   }
 
-  void DidCommit() override {
+  void DidBeginMainFrame() override {
     ++num_commits_;
 
     ASSERT_TRUE(layer_tree_host()->hud_layer());
@@ -97,25 +97,28 @@ class HeadsUpDisplaySizeWithFPS : public LayerTreeTest {
 
 SINGLE_AND_MULTI_THREAD_TEST_F(HeadsUpDisplaySizeWithFPS);
 
-class HeadsUpDisplaySizeWithMetrics : public LayerTreeTest {
+class HeadsUpDisplaySizeWithFPSWithScaleFactor : public LayerTreeTest {
  public:
   void InitializeSettings(LayerTreeSettings* settings) override {
-    settings->initial_debug_state.show_web_vital_metrics = true;
+    settings->use_painted_device_scale_factor = true;
+    settings->initial_debug_state.show_fps_counter = true;
+  }
+
+  void SetupTree() override {
+    SetInitialDeviceScaleFactor(3.f);
+    LayerTreeTest::SetupTree();
   }
 
   void BeginTest() override { PostSetNeedsCommitToMainThread(); }
 
   void DidCommit() override {
-    // The metrics should be shown on the right, so the width of the HUD layer
-    // should be the saem as the root layer bounds.
     ASSERT_TRUE(layer_tree_host()->hud_layer());
-    EXPECT_EQ(gfx::Size(layer_tree_host()->root_layer()->bounds().width(), 512),
-              layer_tree_host()->hud_layer()->bounds());
+    EXPECT_EQ(gfx::Size(768, 768), layer_tree_host()->hud_layer()->bounds());
     EndTest();
   }
 };
 
-SINGLE_AND_MULTI_THREAD_TEST_F(HeadsUpDisplaySizeWithMetrics);
+SINGLE_AND_MULTI_THREAD_TEST_F(HeadsUpDisplaySizeWithFPSWithScaleFactor);
 
 }  // namespace
 }  // namespace cc

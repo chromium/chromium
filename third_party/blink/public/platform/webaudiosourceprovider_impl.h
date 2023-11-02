@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,10 +12,12 @@
 
 #include "base/callback.h"
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "media/base/audio_renderer_sink.h"
 #include "third_party/blink/public/platform/web_audio_source_provider.h"
+#include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_vector.h"
 
 namespace media {
@@ -111,7 +113,7 @@ class BLINK_PLATFORM_EXPORT WebAudioSourceProviderImpl
   base::RepeatingClosure set_format_cb_;
 
   // When set via setClient() it overrides |sink_| for consuming audio.
-  WebAudioSourceProviderClient* client_;
+  raw_ptr<WebAudioSourceProviderClient> client_;
 
   // Where audio ends up unless overridden by |client_|.
   base::Lock sink_lock_;
@@ -123,7 +125,7 @@ class BLINK_PLATFORM_EXPORT WebAudioSourceProviderImpl
   class TeeFilter;
   const std::unique_ptr<TeeFilter> tee_filter_;
 
-  media::MediaLog* const media_log_;
+  const raw_ptr<media::MediaLog> media_log_;
 
   base::OnceClosure on_set_client_callback_;
 

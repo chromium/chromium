@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,7 +45,7 @@ class PrintJobHistoryCleaner {
   void OnPrintJobsRetrieved(
       base::OnceClosure callback,
       bool success,
-      std::vector<chromeos::printing::proto::PrintJobInfo> print_job_infos);
+      std::vector<printing::proto::PrintJobInfo> print_job_infos);
   void OnPrintJobsDeleted(base::OnceClosure callback, bool success);
 
   // This object is owned by PrintJobHistoryService and outlives

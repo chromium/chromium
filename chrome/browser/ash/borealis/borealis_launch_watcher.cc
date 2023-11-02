@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,13 +11,13 @@ namespace borealis {
 
 BorealisLaunchWatcher::BorealisLaunchWatcher(Profile* profile,
                                              std::string vm_name)
-    : owner_id_(chromeos::ProfileHelper::GetUserIdHashFromProfile(profile)),
+    : owner_id_(ash::ProfileHelper::GetUserIdHashFromProfile(profile)),
       vm_name_(vm_name) {
-  chromeos::CiceroneClient::Get()->AddObserver(this);
+  ash::CiceroneClient::Get()->AddObserver(this);
 }
 
 BorealisLaunchWatcher::~BorealisLaunchWatcher() {
-  chromeos::CiceroneClient::Get()->RemoveObserver(this);
+  ash::CiceroneClient::Get()->RemoveObserver(this);
 }
 
 void BorealisLaunchWatcher::AwaitLaunch(OnLaunchCallback callback) {

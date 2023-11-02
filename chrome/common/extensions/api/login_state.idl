@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,7 +29,10 @@ namespace loginState {
     IN_SESSION,
 
     // The user is in the lock screen.
-    IN_LOCK_SCREEN
+    IN_LOCK_SCREEN,
+
+    // The device is in RMA mode, finalizing repairs.
+    IN_RMA_SCREEN
   };
 
   callback ProfileTypeCallback = void (ProfileType result);

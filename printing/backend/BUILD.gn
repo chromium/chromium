@@ -1,4 +1,4 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -33,7 +33,6 @@ component("backend") {
   ]
 
   public_configs = []
-  configs += [ "//build/config/compiler:noshadowing" ]
   cflags = []
   defines = [ "IS_PRINT_BACKEND_IMPL" ]
 
@@ -65,7 +64,10 @@ component("backend") {
       "printing_info_win.h",
       "win_helper.cc",
       "win_helper.h",
+      "xps_utils_win.cc",
+      "xps_utils_win.h",
     ]
+    deps += [ "//services/data_decoder/public/cpp:safe_xml_parser" ]
   }
 
   if (use_cups) {
@@ -151,7 +153,6 @@ source_set("test_support") {
     "test_print_backend.h",
   ]
 
-  configs += [ "//build/config/compiler:noshadowing" ]
   deps = [
     ":backend",
     "//base",

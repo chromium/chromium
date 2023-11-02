@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_INLINE_LAYOUT_NG_TEXT_COMBINE_H_
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
 
 namespace blink {
@@ -28,8 +29,14 @@ class CORE_EXPORT LayoutNGTextCombine final : public LayoutNGBlockFlow {
   String GetTextContent() const;
 
   // Compressed font
-  const Font& CompressedFont() const { return compressed_font_.value(); }
-  bool UsesCompressedFont() const { return compressed_font_.has_value(); }
+  const Font& CompressedFont() const {
+    NOT_DESTROYED();
+    return compressed_font_.value();
+  }
+  bool UsesCompressedFont() const {
+    NOT_DESTROYED();
+    return compressed_font_.has_value();
+  }
   void SetCompressedFont(const Font& font);
 
   // Scaling
@@ -62,7 +69,10 @@ class CORE_EXPORT LayoutNGTextCombine final : public LayoutNGBlockFlow {
 
   void ResetLayout();
   void SetScaleX(float new_scale_x);
-  bool UsesScaleX() const { return scale_x_.has_value(); }
+  bool UsesScaleX() const {
+    NOT_DESTROYED();
+    return scale_x_.has_value();
+  }
 
   // Painting
   // |AdjustText{Left,Top}()| are called within affine transformed
@@ -91,7 +101,10 @@ class CORE_EXPORT LayoutNGTextCombine final : public LayoutNGBlockFlow {
 
  private:
   bool IsOfType(LayoutObjectType) const override;
-  const char* GetName() const override { return "LayoutNGTextCombine"; }
+  const char* GetName() const override {
+    NOT_DESTROYED();
+    return "LayoutNGTextCombine";
+  }
 
   // Helper functions for scaling.
   PhysicalOffset ApplyScaleX(const PhysicalOffset& offset) const;

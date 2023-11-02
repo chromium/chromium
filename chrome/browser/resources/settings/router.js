@@ -1,10 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import './i18n_setup.js';
 
-import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -19,8 +19,11 @@ import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
 
   /** Class for navigable routes. */
   export class Route {
-    /** @param {string} path */
-    constructor(path) {
+    /**
+     * @param {string} path
+     * @param {string=} title
+     */
+    constructor(path, title) {
       /** @type {string} */
       this.path = path;
 
@@ -29,6 +32,9 @@ import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
 
       /** @type {number} */
       this.depth = 0;
+
+      /** @type {string|undefined} */
+      this.title = title;
 
       /**
        * @type {boolean} Whether this route corresponds to a navigable
@@ -47,16 +53,17 @@ import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
      * Returns a new Route instance that's a child of this route.
      * @param {string} path Extends this route's path if it doesn't contain a
      *     leading slash.
+     * @param {string=} title
      * @return {!Route}
      */
-    createChild(path) {
+    createChild(path, title) {
       assert(path);
 
       // |path| extends this route's path if it doesn't have a leading slash.
       // If it does have a leading slash, it's just set as the new route's URL.
       const newUrl = path[0] === '/' ? path : `${this.path}/${path}`;
 
-      const route = new Route(newUrl);
+      const route = new Route(newUrl, title);
       route.parent = this;
       route.section = this.section;
       route.depth = this.depth + 1;
@@ -69,10 +76,11 @@ import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
      * TODO(tommycli): Remove once we've obsoleted the concept of sections.
      * @param {string} path
      * @param {string} section
+     * @param {string=} title
      * @return {!Route}
      */
-    createSection(path, section) {
-      const route = this.createChild(path);
+    createSection(path, section, title) {
+      const route = this.createChild(path, title);
       route.section = section;
       return route;
     }
@@ -210,6 +218,23 @@ import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
       new Set(this.routeObservers_).forEach((observer) => {
         observer.currentRouteChanged(this.currentRoute, oldRoute);
       });
+
+      this.updateTitle_();
+    }
+
+    /**
+     * Updates the page title to reflect the current route.
+     * @private
+     */
+    updateTitle_() {
+      if (this.currentRoute.title) {
+        document.title = loadTimeData.getStringF(
+            'settingsAltPageTitle', this.currentRoute.title);
+      } else if (
+          !this.currentRoute.isSubpage() &&
+          !this.routes_.ABOUT.contains(this.currentRoute)) {
+        document.title = loadTimeData.getString('settings');
+      }
     }
 
     /** @return {!Route} */
@@ -272,20 +297,19 @@ import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
     /**
      * Navigates to a canonical route and pushes a new history entry.
      * @param {!Route} route
-     * @param {URLSearchParams=} opt_dynamicParameters Navigations to the same
+     * @param {URLSearchParams=} dynamicParameters Navigations to the same
      *     URL parameters in a different order will still push to history.
-     * @param {boolean=} opt_removeSearch Whether to strip the 'search' URL
+     * @param {boolean=} removeSearch Whether to strip the 'search' URL
      *     parameter during navigation. Defaults to false.
      */
-    navigateTo(route, opt_dynamicParameters, opt_removeSearch) {
+    navigateTo(route, dynamicParameters, removeSearch = false) {
       // The ADVANCED route only serves as a parent of subpages, and should not
       // be possible to navigate to it directly.
       if (route === this.routes_.ADVANCED) {
         route = this.routes_.BASIC;
       }
 
-      const params = opt_dynamicParameters || new URLSearchParams();
-      const removeSearch = !!opt_removeSearch;
+      const params = dynamicParameters || new URLSearchParams();
 
       const oldSearchParam = this.getQueryParameters().get('search') || '';
       const newSearchParam = params.get('search') || '';
@@ -344,6 +368,8 @@ import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
       } else {
         window.history.replaceState(undefined, '', this.routes_.BASIC.path);
       }
+
+      this.updateTitle_();
     }
 
     /**
@@ -360,7 +386,8 @@ import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
               loadTimeData.getBoolean('isOSSettings') ?
           'ChromeOS.Settings.PathVisited' :
           'WebUI.Settings.PathVisited';
-      chrome.metricsPrivate.recordSparseHashable(metricName, urlPath);
+      chrome.metricsPrivate.recordSparseValueWithPersistentHash(
+          metricName, urlPath);
     }
 
     resetRouteForTesting() {
@@ -401,9 +428,9 @@ import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
 
       /**
        * @param {!Route} newRoute
-       * @param {!Route=} opt_oldRoute
+       * @param {!Route=} oldRoute
        */
-      currentRouteChanged(newRoute, opt_oldRoute) {
+      currentRouteChanged(newRoute, oldRoute) {
         assertNotReached();
       }
     }
@@ -415,7 +442,7 @@ import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
   export class RouteObserverMixinInterface {
     /**
      * @param {!Route} newRoute
-     * @param {!Route=} opt_oldRoute
+     * @param {!Route=} oldRoute
      */
-    currentRouteChanged(newRoute, opt_oldRoute) {}
+    currentRouteChanged(newRoute, oldRoute) {}
   }

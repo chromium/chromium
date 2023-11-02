@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
-#include "base/task/post_task.h"
 #include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -40,33 +38,24 @@ StringMapping GetPathMapping() {
   });
 }
 
-void ReportConnectionError(bool value) {
-  base::UmaHistogramBoolean("Windows.InspectModule.ConnectionError", value);
-}
-
-// Reads the inspection results cache and records the result in UMA.
+// Reads the inspection results cache.
 InspectionResultsCache ReadInspectionResultsCacheOnBackgroundSequence(
     const base::FilePath& file_path) {
   InspectionResultsCache inspection_results_cache;
 
   uint32_t min_time_stamp =
       CalculateTimeStamp(base::Time::Now() - kMaxEntryAge);
-  ReadCacheResult read_result = ReadInspectionResultsCache(
-      file_path, min_time_stamp, &inspection_results_cache);
-  base::UmaHistogramEnumeration("Windows.ModuleInspector.ReadCacheResult",
-                                read_result);
+  ReadInspectionResultsCache(file_path, min_time_stamp,
+                             &inspection_results_cache);
 
   return inspection_results_cache;
 }
 
-// Writes the inspection results cache to disk and records the result in UMA.
+// Writes the inspection results cache to disk.
 void WriteInspectionResultCacheOnBackgroundSequence(
     const base::FilePath& file_path,
     const InspectionResultsCache& inspection_results_cache) {
-  bool succeeded =
-      WriteInspectionResultsCache(file_path, inspection_results_cache);
-  base::UmaHistogramBoolean("Windows.ModuleInspector.WriteCacheResult",
-                            succeeded);
+  WriteInspectionResultsCache(file_path, inspection_results_cache);
 }
 
 }  // namespace
@@ -155,10 +144,6 @@ void ModuleInspector::EnsureUtilWinServiceBound() {
   remote_util_win_.set_disconnect_handler(
       base::BindOnce(&ModuleInspector::OnUtilWinServiceConnectionError,
                      base::Unretained(this)));
-
-  // Emit a false value to the connection error histogram to serve as a
-  // baseline.
-  ReportConnectionError(false);
 }
 
 void ModuleInspector::OnStartupFinished() {
@@ -194,8 +179,6 @@ void ModuleInspector::OnInspectionResultsCacheRead(
 
 void ModuleInspector::OnUtilWinServiceConnectionError() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  ReportConnectionError(true);
 
   // Disconnect from the service.
   remote_util_win_.reset();

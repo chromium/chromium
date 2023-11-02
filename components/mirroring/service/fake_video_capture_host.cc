@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,15 +29,18 @@ void FakeVideoCaptureHost::Start(
     const media::VideoCaptureParams& params,
     mojo::PendingRemote<media::mojom::VideoCaptureObserver> observer) {
   ASSERT_TRUE(observer);
+  last_params_ = params;
   observer_.Bind(std::move(observer));
-  observer_->OnStateChanged(media::mojom::VideoCaptureState::STARTED);
+  observer_->OnStateChanged(media::mojom::VideoCaptureResult::NewState(
+      media::mojom::VideoCaptureState::STARTED));
 }
 
 void FakeVideoCaptureHost::Stop(const base::UnguessableToken& device_id) {
   if (!observer_)
     return;
 
-  observer_->OnStateChanged(media::mojom::VideoCaptureState::ENDED);
+  observer_->OnStateChanged(media::mojom::VideoCaptureResult::NewState(
+      media::mojom::VideoCaptureState::ENDED));
   observer_.reset();
   OnStopped();
 }
@@ -61,6 +64,10 @@ void FakeVideoCaptureHost::SendOneFrame(const gfx::Size& size,
              gfx::Rect(size), kNotPremapped, gfx::ColorSpace::CreateREC709(),
              nullptr));
   observer_->OnBufferReady(std::move(buffer), {});
+}
+
+media::VideoCaptureParams FakeVideoCaptureHost::GetVideoCaptureParams() const {
+  return last_params_;
 }
 
 }  // namespace mirroring

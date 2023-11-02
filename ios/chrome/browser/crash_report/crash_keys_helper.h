@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,11 +11,11 @@
 
 namespace crash_keys {
 
-// Sets a key if |background| is true, unset if false. This will allow tracking
+// Sets a key if `background` is true, unset if false. This will allow tracking
 // of crashes that occur when the app is backgrounded.
 void SetCurrentlyInBackground(bool background);
 
-// Sets a key if |signedIn| is true, unset if false. The key indicates that the
+// Sets a key if `signedIn` is true, unset if false. The key indicates that the
 // user is signed-in.
 void SetCurrentlySignedIn(bool signedIn);
 
@@ -76,8 +76,8 @@ void SetIncognitoTabCount(int tabCount);
 void SetDestroyingAndRebuildingIncognitoBrowserState(bool in_progress);
 
 // Sets a key to help debug a crash when animating from grid to visible tab.
-// |to_view_controller| is the view controller about to be presented. The
-// remaining parameters relate to the |to_view_controller|.
+// `to_view_controller` is the view controller about to be presented. The
+// remaining parameters relate to the `to_view_controller`.
 void SetGridToVisibleTabAnimation(NSString* to_view_controller,
                                   NSString* presenting_view_controller,
                                   NSString* presented_view_controller,

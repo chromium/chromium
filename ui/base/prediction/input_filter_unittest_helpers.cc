@@ -1,10 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/base/prediction/input_filter_unittest_helpers.h"
 
 #include "base/rand_util.h"
+#include "base/time/time.h"
 #include "ui/base/prediction/input_predictor_unittest_helpers.h"
 #include "ui/base/prediction/prediction_unittest_helpers.h"
 

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -55,7 +55,8 @@ scoped_refptr<StaticBitmapImage> CreateBitmap() {
       mailbox, GenTestSyncToken(100), 0, SkImageInfo::MakeN32Premul(100, 100),
       GL_TEXTURE_2D, true, SharedGpuContext::ContextProviderWrapper(),
       base::PlatformThread::CurrentRef(),
-      base::MakeRefCounted<base::NullTaskRunner>(), base::DoNothing());
+      base::MakeRefCounted<base::NullTaskRunner>(), base::DoNothing(),
+      /*supports_display_compositing=*/true, /*is_overlay_candidate=*/true);
 }
 
 class AcceleratedStaticBitmapImageTest : public Test {
@@ -109,7 +110,7 @@ TEST_F(AcceleratedStaticBitmapImageTest, CopyToTextureSynchronization) {
           sync_token2.GetConstData() + sizeof(gpu::SyncToken)));
 
   gfx::Point dest_point(0, 0);
-  IntRect source_sub_rectangle(0, 0, 10, 10);
+  gfx::Rect source_sub_rectangle(0, 0, 10, 10);
   ASSERT_TRUE(bitmap->CopyToTexture(
       &destination_gl, GL_TEXTURE_2D, 1 /*dest_texture_id*/,
       0 /*dest_texture_level*/, false /*unpack_premultiply_alpha*/,

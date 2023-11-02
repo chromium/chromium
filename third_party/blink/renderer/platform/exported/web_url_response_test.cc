@@ -53,7 +53,7 @@ TEST(WebURLResponseTest, DnsAliasesCanBeAccessed) {
   WebURLResponse instance;
   instance.SetCurrentRequestUrl(KURL("http://localhost/"));
   EXPECT_FALSE(instance.IsNull());
-  EXPECT_TRUE(instance.ToResourceResponse().DnsAliases().IsEmpty());
+  EXPECT_TRUE(instance.ToResourceResponse().DnsAliases().empty());
   WebVector<WebString> aliases({"alias1", "alias2"});
   instance.SetDnsAliases(aliases);
   EXPECT_THAT(instance.ToResourceResponse().DnsAliases(),

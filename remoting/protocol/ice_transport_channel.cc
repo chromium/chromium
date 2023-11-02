@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 #include "base/callback.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "jingle/glue/utils.h"
+#include "components/webrtc/net_address_utils.h"
 #include "net/base/net_errors.h"
 #include "remoting/protocol/channel_socket_adapter.h"
 #include "remoting/protocol/port_allocator_factory.h"
@@ -21,10 +21,8 @@
 #include "third_party/webrtc/p2p/base/p2p_transport_channel.h"
 #include "third_party/webrtc/p2p/base/packet_transport_internal.h"
 #include "third_party/webrtc/p2p/base/port.h"
-#include "third_party/webrtc/rtc_base/network.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 namespace {
 
@@ -59,7 +57,7 @@ IceTransportChannel::IceTransportChannel(
 
 IceTransportChannel::~IceTransportChannel() {
   DCHECK(delegate_);
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   delegate_->OnChannelDeleted(this);
 
@@ -73,7 +71,7 @@ IceTransportChannel::~IceTransportChannel() {
 void IceTransportChannel::Connect(const std::string& name,
                                   Delegate* delegate,
                                   ConnectedCallback callback) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!name.empty());
   DCHECK(delegate);
   DCHECK(!callback.is_null());
@@ -145,7 +143,7 @@ void IceTransportChannel::NotifyConnected() {
 
 void IceTransportChannel::SetRemoteCredentials(const std::string& ufrag,
                                                const std::string& password) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   remote_ice_username_fragment_ = ufrag;
   remote_ice_password_ = password;
@@ -156,7 +154,7 @@ void IceTransportChannel::SetRemoteCredentials(const std::string& ufrag,
 
 void IceTransportChannel::AddRemoteCandidate(
     const cricket::Candidate& candidate) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // To enforce the no-relay setting, it's not enough to not produce relay
   // candidates. It's also necessary to discard remote relay candidates.
@@ -173,19 +171,19 @@ void IceTransportChannel::AddRemoteCandidate(
 }
 
 const std::string& IceTransportChannel::name() const {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return name_;
 }
 
 bool IceTransportChannel::is_connected() const {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return callback_.is_null();
 }
 
 void IceTransportChannel::OnCandidateGathered(
     cricket::IceTransportInternal* ice_transport,
     const cricket::Candidate& candidate) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   delegate_->OnChannelCandidate(this, candidate);
 }
 
@@ -240,15 +238,15 @@ void IceTransportChannel::NotifyRouteChanged() {
       CandidateTypeToTransportRouteType(connection->local_candidate().type()),
       CandidateTypeToTransportRouteType(connection->remote_candidate().type()));
 
-  if (!jingle_glue::SocketAddressToIPEndPoint(
+  if (!webrtc::SocketAddressToIPEndPoint(
           connection->remote_candidate().address(), &route.remote_address)) {
     LOG(FATAL) << "Failed to convert peer IP address.";
   }
 
   const cricket::Candidate& local_candidate =
       channel_->best_connection()->local_candidate();
-  if (!jingle_glue::SocketAddressToIPEndPoint(
-          local_candidate.address(), &route.local_address)) {
+  if (!webrtc::SocketAddressToIPEndPoint(local_candidate.address(),
+                                         &route.local_address)) {
     LOG(FATAL) << "Failed to convert local IP address.";
   }
 
@@ -275,5 +273,4 @@ void IceTransportChannel::TryReconnect() {
   channel_->SetIceCredentials(ice_username_fragment_, ice_password);
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

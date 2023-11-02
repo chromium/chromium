@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@
 #include "base/guid.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/android/chrome_jni_headers/OfflinePageDownloadBridge_jni.h"
 #include "chrome/browser/android/profile_key_util.h"
 #include "chrome/browser/android/tab_android.h"
@@ -111,7 +112,7 @@ class DownloadUIAdapterDelegate : public DownloadUIAdapter::Delegate {
 
  private:
   // Not owned, cached service pointer.
-  OfflinePageModel* model_;
+  raw_ptr<OfflinePageModel> model_;
 };
 
 DownloadUIAdapterDelegate::DownloadUIAdapterDelegate(OfflinePageModel* model)
@@ -205,14 +206,9 @@ void SavePageIfNotNavigatedAway(const GURL& url,
   offline_pages::RecentTabHelper* tab_helper =
       RecentTabHelper::FromWebContents(web_contents);
   if (!tab_helper) {
-    if (request_id != OfflinePageModel::kInvalidOfflineId) {
-      offline_pages::RequestCoordinator* request_coordinator =
-          offline_pages::RequestCoordinatorFactory::GetForBrowserContext(
-              web_contents->GetBrowserContext());
-      if (request_coordinator)
-        request_coordinator->EnableForOffliner(request_id, client_id);
-      else
-        DVLOG(1) << "SavePageIfNotNavigatedAway has no valid coordinator.";
+    if (request_id != OfflinePageModel::kInvalidOfflineId &&
+        request_coordinator) {
+      request_coordinator->EnableForOffliner(request_id, client_id);
     }
     return;
   }
@@ -239,16 +235,10 @@ void DuplicateCheckDone(const GURL& url,
       result == OfflinePageUtils::DuplicateCheckResult::DUPLICATE_REQUEST_FOUND;
   base::OnceClosure callback = base::BindOnce(&SavePageIfNotNavigatedAway, url,
                                               original_url, j_tab_ref, origin);
-  if (base::FeatureList::IsEnabled(
-          chrome::android::kEnableDuplicateDownloadDialog)) {
-    DuplicateDownloadDialogBridge::GetInstance()->Show(
-        url.spec(), DownloadDialogUtils::GetDisplayURLForPageURL(url),
-        -1 /*total_bytes*/, duplicate_request_exists, web_contents,
-        base::BindOnce(&OnDuplicateDialogConfirmed, std::move(callback)));
-  } else {
-    OfflinePageInfoBarDelegate::Create(std::move(callback), url,
-                                       duplicate_request_exists, web_contents);
-  }
+  DuplicateDownloadDialogBridge::GetInstance()->Show(
+      url.spec(), DownloadDialogUtils::GetDisplayURLForPageURL(url),
+      -1 /*total_bytes*/, duplicate_request_exists, web_contents,
+      base::BindOnce(&OnDuplicateDialogConfirmed, std::move(callback)));
 }
 
 
@@ -264,7 +254,8 @@ content::WebContents* GetWebContentsByFrameID(int render_process_id,
 content::WebContents::Getter GetWebContentsGetter(
     content::WebContents* web_contents) {
   // The FrameTreeNode ID should be used to access the WebContents.
-  int frame_tree_node_id = web_contents->GetMainFrame()->GetFrameTreeNodeId();
+  int frame_tree_node_id =
+      web_contents->GetPrimaryMainFrame()->GetFrameTreeNodeId();
   if (frame_tree_node_id != content::RenderFrameHost::kNoFrameTreeNodeId) {
     return base::BindRepeating(content::WebContents::FromFrameTreeNodeId,
                                frame_tree_node_id);
@@ -274,8 +265,8 @@ content::WebContents::Getter GetWebContentsGetter(
   // the WebContents.
   return base::BindRepeating(
       &GetWebContentsByFrameID,
-      web_contents->GetMainFrame()->GetProcess()->GetID(),
-      web_contents->GetMainFrame()->GetRoutingID());
+      web_contents->GetPrimaryMainFrame()->GetProcess()->GetID(),
+      web_contents->GetPrimaryMainFrame()->GetRoutingID());
 }
 
 void DownloadAsFile(content::WebContents* web_contents, const GURL& url) {

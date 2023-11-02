@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <string>
 #include <unordered_map>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/api/settings_private/generated_pref.h"
 #include "chrome/browser/extensions/api/settings_private/prefs_util_enums.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -74,7 +75,7 @@ class GeneratedPrefs : public KeyedService {
   // Preference object map.
   PrefsMap prefs_;
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 };
 
 }  // namespace settings_private

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,7 +26,7 @@ TEST_F(PaintRecordBuilderTest, TransientPaintController) {
   EXPECT_FALSE(ClientCacheIsValid(context.GetPaintController(), client));
 
   MockPaintCanvas canvas;
-  PaintFlags flags;
+  cc::PaintFlags flags;
   EXPECT_CALL(canvas, drawPicture(_)).Times(1);
   builder->EndRecording(canvas);
 
@@ -43,9 +43,9 @@ TEST_F(PaintRecordBuilderTest, LastingPaintController) {
       MakeGarbageCollected<PaintRecordBuilder>(GetPaintController());
   auto& context = builder->Context();
   MockPaintCanvas canvas;
-  PaintFlags flags;
+  cc::PaintFlags flags;
   {
-    PaintController::CycleScope cycle_scope(GetPaintController());
+    PaintControllerCycleScopeForTest cycle_scope(GetPaintController());
     InitRootChunk();
 
     EXPECT_EQ(&context.GetPaintController(), &GetPaintController());
@@ -64,7 +64,7 @@ TEST_F(PaintRecordBuilderTest, LastingPaintController) {
                           IsSameId(client.Id(), kForegroundType)));
 
   {
-    PaintController::CycleScope cycle_scope(GetPaintController());
+    PaintControllerCycleScopeForTest cycle_scope(GetPaintController());
     InitRootChunk();
     EXPECT_TRUE(DrawingRecorder::UseCachedDrawingIfPossible(context, client,
                                                             kBackgroundType));
@@ -86,7 +86,7 @@ TEST_F(PaintRecordBuilderTest, TransientAndAnotherPaintController) {
       *MakeGarbageCollected<FakeDisplayItemClient>("client");
   auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
   {
-    PaintController::CycleScope cycle_scope(GetPaintController());
+    PaintControllerCycleScopeForTest cycle_scope(GetPaintController());
     InitRootChunk();
     DrawRect(context, client, kBackgroundType, gfx::Rect(10, 10, 20, 20));
     DrawRect(context, client, kForegroundType, gfx::Rect(15, 15, 10, 10));
@@ -98,7 +98,7 @@ TEST_F(PaintRecordBuilderTest, TransientAndAnotherPaintController) {
   EXPECT_TRUE(ClientCacheIsValid(client));
 
   {
-    PaintController::CycleScope cycle_scope(GetPaintController());
+    PaintControllerCycleScopeForTest cycle_scope(GetPaintController());
     EXPECT_NE(&builder->Context().GetPaintController(), &GetPaintController());
     DrawRect(builder->Context(), client, kBackgroundType,
              gfx::Rect(10, 10, 20, 20));

@@ -1,10 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/scanner/scanner_transitioning_delegate.h"
 
-#include "base/ios/block_types.h"
+#import "base/ios/block_types.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -19,10 +19,10 @@ enum ScannerTransition { PRESENT, DISMISS };
 
 }  // namespace
 
-// Animates the Scanner transition. If initialized with the |PRESENT|
+// Animates the Scanner transition. If initialized with the `PRESENT`
 // transition, positions the Scanner view below its presenting view
 // controller's view in the container view and animates the presenting view to
-// slide up. If initialized with the |DISMISS| transition, positions the
+// slide up. If initialized with the `DISMISS` transition, positions the
 // presenting view controller's view above the Scanner view in the container
 // view and animates the presenting view to slide down.
 @interface ScannerTransitionAnimator

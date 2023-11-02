@@ -1,0 +1,6 @@
+Name: unicode-ident
+URL: https://crates.io/crates/unicode-ident
+Description: Determine whether characters have the XID_Start or XID_Continue properties according to Unicode Standard Annex #31
+Version: 1.0.3
+Security Critical: no
+License: Apache 2.0, Unicode DFS 2016

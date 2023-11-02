@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,10 +11,10 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
+#include "base/test/task_environment.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "components/value_store/test_value_store_factory.h"
 #include "components/value_store/value_store_task_runner.h"
-#include "content/public/test/browser_task_environment.h"
-#include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace value_store {
@@ -39,7 +39,7 @@ class ValueStoreFrontendTest : public testing::Test {
   }
 
   void TearDown() override {
-    content::RunAllTasksUntilIdle();
+    RunUntilIdle();
     storage_.reset();
   }
 
@@ -47,31 +47,34 @@ class ValueStoreFrontendTest : public testing::Test {
   void ResetStorage() {
     storage_ = std::make_unique<ValueStoreFrontend>(
         factory_, base::FilePath(FILE_PATH_LITERAL("Test dir")),
-        "test_uma_name", value_store::GetValueStoreTaskRunner());
+        "test_uma_name", base::ThreadTaskRunnerHandle::Get(),
+        value_store::GetValueStoreTaskRunner());
   }
 
-  bool Get(const std::string& key, std::unique_ptr<base::Value>* output) {
+  bool Get(const std::string& key, absl::optional<base::Value>* output) {
     storage_->Get(key, base::BindOnce(&ValueStoreFrontendTest::GetAndWait,
                                       base::Unretained(this), output));
-    content::RunAllTasksUntilIdle();
-    return !!output->get();
+    RunUntilIdle();
+    return output->has_value();
   }
 
  protected:
-  void GetAndWait(std::unique_ptr<base::Value>* output,
-                  std::unique_ptr<base::Value> result) {
+  void RunUntilIdle() { task_environment_.RunUntilIdle(); }
+
+  void GetAndWait(absl::optional<base::Value>* output,
+                  absl::optional<base::Value> result) {
     *output = std::move(result);
   }
 
+  base::test::TaskEnvironment task_environment_;
   scoped_refptr<TestValueStoreFactory> factory_;
   std::unique_ptr<ValueStoreFrontend> storage_;
   base::ScopedTempDir temp_dir_;
   base::FilePath db_path_;
-  content::BrowserTaskEnvironment task_environment_;
 };
 
 TEST_F(ValueStoreFrontendTest, GetExistingData) {
-  std::unique_ptr<base::Value> value;
+  absl::optional<base::Value> value;
   ASSERT_FALSE(Get("key0", &value));
 
   // Test existing keys in the DB.
@@ -89,14 +92,14 @@ TEST_F(ValueStoreFrontendTest, GetExistingData) {
 }
 
 TEST_F(ValueStoreFrontendTest, ChangesPersistAfterReload) {
-  storage_->Set("key0", std::make_unique<base::Value>(0));
-  storage_->Set("key1", std::make_unique<base::Value>("new1"));
+  storage_->Set("key0", base::Value(0));
+  storage_->Set("key1", base::Value("new1"));
   storage_->Remove("key2");
 
   // Reload the DB and test our changes.
   ResetStorage();
 
-  std::unique_ptr<base::Value> value;
+  absl::optional<base::Value> value;
   {
     ASSERT_TRUE(Get("key0", &value));
     ASSERT_TRUE(value->is_int());

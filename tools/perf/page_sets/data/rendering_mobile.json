@@ -129,9 +129,6 @@
         "coordinated_animation": {
             "DEFAULT": "rendering_mobile_020.wprgo"
         },
-        "core_scroll_header_panel": {
-            "DEFAULT": "rendering_mobile_017.wprgo"
-        },
         "crafty_mind": {
             "DEFAULT": "rendering_mobile_004.wprgo"
         },
@@ -198,9 +195,6 @@
         "forecast.io_mobile_2018": {
             "DEFAULT": "rendering_mobile_011.wprgo"
         },
-        "geo_apis": {
-            "DEFAULT": "rendering_mobile_004.wprgo"
-        },
         "gmail_2018": {
             "DEFAULT": "rendering_mobile_000.wprgo"
         },
@@ -218,6 +212,9 @@
         },
         "google_docs_desktop_gpu_raster_2018": {
             "DEFAULT": "rendering_mobile_000.wprgo"
+        },
+        "google_docs_mobile_2022": {
+            "DEFAULT": "rendering_mobile_9939596a9b.wprgo"
         },
         "google_image_search_2018": {
             "DEFAULT": "rendering_mobile_000.wprgo"
@@ -291,11 +288,8 @@
         "js_poster_circle": {
             "DEFAULT": "rendering_mobile_009.wprgo"
         },
-        "js_scroll_200_layer_grid": {
-            "DEFAULT": "rendering_mobile_009.wprgo"
-        },
         "js_scroll_text_only": {
-            "DEFAULT": "rendering_mobile_009.wprgo"
+            "DEFAULT": "rendering_mobile_56d3267d43.wprgo"
         },
         "kevs_3d": {
             "DEFAULT": "rendering_mobile_004.wprgo"
@@ -320,9 +314,6 @@
         },
         "list_recycle_transform": {
             "DEFAULT": "rendering_mobile_018.wprgo"
-        },
-        "lost_crypt": {
-            "DEFAULT": "rendering_mobile_fb80bbcb6f.wprgo"
         },
         "man_in_blue": {
             "DEFAULT": "rendering_mobile_004.wprgo"
@@ -441,6 +432,9 @@
         "motionmark_ramp_canvas_lines": {
             "DEFAULT": "rendering_common_c95200764f.wprgo"
         },
+        "motionmark_ramp_composite": {
+            "DEFAULT": "rendering_common_c95200764f.wprgo"
+        },
         "motionmark_ramp_design": {
             "DEFAULT": "rendering_common_c95200764f.wprgo"
         },
@@ -489,30 +483,6 @@
         "nytimes_scroll_2018": {
             "DEFAULT": "rendering_mobile_016.wprgo"
         },
-        "paper_button": {
-            "DEFAULT": "rendering_mobile_017.wprgo"
-        },
-        "paper_calculator": {
-            "DEFAULT": "rendering_mobile_017.wprgo"
-        },
-        "paper_checkbox": {
-            "DEFAULT": "rendering_mobile_017.wprgo"
-        },
-        "paper_fab": {
-            "DEFAULT": "rendering_mobile_017.wprgo"
-        },
-        "paper_icon_button": {
-            "DEFAULT": "rendering_mobile_017.wprgo"
-        },
-        "paper_shadow": {
-            "DEFAULT": "rendering_mobile_017.wprgo"
-        },
-        "paper_tabs": {
-            "DEFAULT": "rendering_mobile_017.wprgo"
-        },
-        "paper_toggle_button": {
-            "DEFAULT": "rendering_mobile_017.wprgo"
-        },
         "parallax_effect": {
             "DEFAULT": "rendering_mobile_020.wprgo"
         },
@@ -533,9 +503,6 @@
         },
         "pinterest_mobile_2018": {
             "DEFAULT": "rendering_mobile_011.wprgo"
-        },
-        "polymer_topeka": {
-            "DEFAULT": "rendering_mobile_024.wprgo"
         },
         "recode_pathological_2018": {
             "DEFAULT": "rendering_mobile_025.wprgo"

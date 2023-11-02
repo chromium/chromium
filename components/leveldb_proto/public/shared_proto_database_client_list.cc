@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,6 @@
 #include "components/leveldb_proto/internal/leveldb_proto_feature_list.h"
 
 namespace leveldb_proto {
-
 
 // static
 std::string SharedProtoDatabaseClientList::ProtoDbTypeToString(
@@ -107,6 +106,10 @@ std::string SharedProtoDatabaseClientList::ProtoDbTypeToString(
       return "VideoTutorialsV2Database";
     case ProtoDbType::COUPON_DATABASE:
       return "CouponDatabase";
+    case ProtoDbType::PAGE_ENTITY_METADATA_STORE:
+      return "PageEntityMetadataDatabase";
+    case ProtoDbType::WEBRTC_VIDEO_STATS_DB:
+      return "WebrtcVideoStatsDB";
     case ProtoDbType::LAST:
       NOTREACHED();
       return std::string();

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,13 +14,12 @@ namespace ash {
 
 class MockEnableDebuggingScreen : public EnableDebuggingScreen {
  public:
-  MockEnableDebuggingScreen(EnableDebuggingScreenView* view,
+  MockEnableDebuggingScreen(base::WeakPtr<EnableDebuggingScreenView> view,
                             const base::RepeatingClosure& exit_callback);
   ~MockEnableDebuggingScreen() override;
 
   MOCK_METHOD(void, ShowImpl, ());
   MOCK_METHOD(void, HideImpl, ());
-  MOCK_METHOD(void, OnUserAction, (const std::string& action_id));
 
   void ExitScreen();
 };
@@ -32,13 +31,7 @@ class MockEnableDebuggingScreenView : public EnableDebuggingScreenView {
 
   MOCK_METHOD(void, Show, ());
   MOCK_METHOD(void, Hide, ());
-  MOCK_METHOD(void, MockSetDelegate, (EnableDebuggingScreen * screen));
   MOCK_METHOD(void, UpdateUIState, (UIState state));
-
-  void SetDelegate(EnableDebuggingScreen* screen) override;
-
- private:
-  EnableDebuggingScreen* screen_;
 };
 
 }  // namespace ash

@@ -138,7 +138,7 @@ class TestServerProcess(unittest.TestCase):
         port_obj.host.platform.os_name = 'win'
         server_process = FakeServerProcess(
             port_obj=port_obj, name="test", cmd=["test"])
-        server_process.write("should break")
+        server_process.write(b"should break")
         self.assertTrue(server_process.has_crashed())
         self.assertIsNotNone(server_process.pid())
         self.assertIsNone(server_process._proc)
@@ -147,7 +147,7 @@ class TestServerProcess(unittest.TestCase):
         port_obj.host.platform.os_name = 'mac'
         server_process = FakeServerProcess(
             port_obj=port_obj, name="test", cmd=["test"])
-        server_process.write("should break")
+        server_process.write(b"should break")
         self.assertTrue(server_process.has_crashed())
         self.assertIsNone(server_process._proc)
         self.assertEqual(server_process.broken_pipes, [server_process.stdin])

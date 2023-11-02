@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -199,7 +199,11 @@ void SerialPortImpl::GetPortInfo(GetPortInfoCallback callback) {
   std::move(callback).Run(io_handler_->GetPortInfo());
 }
 
-void SerialPortImpl::Close(CloseCallback callback) {
+void SerialPortImpl::Close(bool flush, CloseCallback callback) {
+  if (flush) {
+    io_handler_->Flush(mojom::SerialPortFlushMode::kReceiveAndTransmit);
+  }
+
   io_handler_->Close(base::BindOnce(&SerialPortImpl::PortClosed,
                                     weak_factory_.GetWeakPtr(),
                                     std::move(callback)));

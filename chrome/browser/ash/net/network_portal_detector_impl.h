@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,27 +11,21 @@
 
 #include "base/callback_forward.h"
 #include "base/cancelable_callback.h"
-#include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/network/network_state.h"
-#include "chromeos/network/network_state_handler_observer.h"
-#include "chromeos/network/portal_detector/network_portal_detector.h"
-#include "chromeos/network/portal_detector/network_portal_detector_strategy.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/ash/components/network/network_state_handler_observer.h"
+#include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
 #include "components/captive_portal/core/captive_portal_detector.h"
 #include "components/captive_portal/core/captive_portal_types.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
-
-namespace base {
-class Value;
-}
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -42,13 +36,22 @@ class URLLoaderFactory;
 
 namespace ash {
 
-// This class handles all notifications about network changes from
-// NetworkStateHandler and delegates portal detection for the default
-// network to captive_portal::CaptivePortalService.
+class NetworkState;
+
+// This class does the following:
+// 1. Provides an interface to enable captive portal detection (once the
+//    EULA is accepted).
+// 2. Provides an interface to start portal detection.
+//    Currently this is Chrome only, TODO(b/207088236): Trigger Shill detection.
+// 3. Observes the NetworkStateHandler class and triggers Chrome captive portal
+//    detection (captive_portal::CaptivePortalService) when the Shill state
+//    changes (if required) then updates NetworkStateHandler accordingly.
+// It also maintains a separate CaptivePortalStatus for historical reasons.
+// The status reflects the combined Shill + Chrome detection results
+// (as does NetworkState::GetPortalState()).
 class NetworkPortalDetectorImpl : public NetworkPortalDetector,
-                                  public chromeos::NetworkStateHandlerObserver,
-                                  public content::NotificationObserver,
-                                  public PortalDetectorStrategy::Delegate {
+                                  public NetworkStateHandlerObserver,
+                                  public content::NotificationObserver {
  public:
   explicit NetworkPortalDetectorImpl(
       network::mojom::URLLoaderFactory* loader_factory_for_testing = nullptr);
@@ -58,6 +61,11 @@ class NetworkPortalDetectorImpl : public NetworkPortalDetector,
       delete;
 
   ~NetworkPortalDetectorImpl() override;
+
+  // NetworkPortalDetector implementation:
+  CaptivePortalStatus GetCaptivePortalStatus() override;
+  bool IsEnabled() override;
+  void Enable() override;
 
  private:
   friend class NetworkPortalDetectorImplTest;
@@ -72,9 +80,6 @@ class NetworkPortalDetectorImpl : public NetworkPortalDetector,
     STATE_CHECKING_FOR_PORTAL,
   };
 
-  // Starts detection process.
-  void StartDetection();
-
   // Stops whole detection process.
   void StopDetection();
 
@@ -82,7 +87,7 @@ class NetworkPortalDetectorImpl : public NetworkPortalDetector,
   void RetryDetection();
 
   // Initiates Captive Portal detection attempt after |delay|.
-  void ScheduleAttempt(const base::TimeDelta& delay);
+  void ScheduleAttempt(const base::TimeDelta& delay = base::TimeDelta());
 
   // Starts detection attempt.
   void StartAttempt();
@@ -95,34 +100,26 @@ class NetworkPortalDetectorImpl : public NetworkPortalDetector,
   void OnAttemptCompleted(
       const captive_portal::CaptivePortalDetector::Results& results);
 
-  // NetworkPortalDetector implementation:
-  void AddObserver(Observer* observer) override;
-  void AddAndFireObserver(Observer* observer) override;
-  void RemoveObserver(Observer* observer) override;
-  CaptivePortalStatus GetCaptivePortalStatus() override;
-  bool IsEnabled() override;
-  void Enable(bool start_detection) override;
-  void StartPortalDetection() override;
-  void SetStrategy(PortalDetectorStrategy::StrategyId id) override;
-
   // NetworkStateHandlerObserver implementation:
-  void DefaultNetworkChanged(const NetworkState* network) override;
-
-  // PortalDetectorStrategy::Delegate implementation:
-  int NoResponseResultCount() override;
-  base::TimeTicks AttemptStartTime() override;
-  base::TimeTicks NowTicks() const override;
+  void OnShuttingDown() override;
+  void PortalStateChanged(const NetworkState* default_network,
+                          NetworkState::PortalState portal_state) override;
 
   // content::NotificationObserver implementation:
   void Observe(int type,
                const content::NotificationSource& source,
                const content::NotificationDetails& details) override;
 
-  // Called synchronously from OnAttemptCompleted with the current default
-  // network. Stores the captive portal status and notifies observers.
   void DetectionCompleted(const NetworkState* network,
-                          const CaptivePortalStatus& results,
-                          int response_code);
+                          const CaptivePortalStatus& results);
+
+  void ResetCountersAndSendMetrics();
+
+  // Returns true if attempt timeout callback isn't fired or
+  // cancelled.
+  bool AttemptTimeoutIsCancelledForTesting() const;
+
+  void StartDetectionForTesting();
 
   State state() const { return state_; }
 
@@ -134,63 +131,38 @@ class NetworkPortalDetectorImpl : public NetworkPortalDetector,
     return state_ == STATE_CHECKING_FOR_PORTAL;
   }
 
-  int same_detection_result_count_for_testing() const {
-    return same_detection_result_count_;
+  int captive_portal_detector_run_count_for_testing() const {
+    return captive_portal_detector_run_count_;
   }
 
-  int no_response_result_count_for_testing() const {
-    return no_response_result_count_;
+  void set_attempt_delay_for_testing(base::TimeDelta delay) {
+    attempt_delay_for_testing_ = delay;
   }
 
-  void set_no_response_result_count_for_testing(int count) {
-    no_response_result_count_ = count;
+  void set_attempt_timeout_for_testing(base::TimeDelta timeout) {
+    attempt_timeout_ = timeout;
   }
 
-  // Returns delay before next portal check. Used by unit tests.
   const base::TimeDelta& next_attempt_delay_for_testing() const {
     return next_attempt_delay_;
-  }
-
-  // Returns true if attempt timeout callback isn't fired or
-  // cancelled.
-  bool AttemptTimeoutIsCancelledForTesting() const;
-
-  // Resets strategy and all counters used in computations of
-  // timeouts.
-  void ResetStrategyAndCounters();
-
-  // Sets current test time ticks. Used by unit tests.
-  void set_time_ticks_for_testing(const base::TimeTicks& time_ticks) {
-    time_ticks_for_testing_ = time_ticks;
-  }
-
-  // Advances current test time ticks. Used by unit tests.
-  void advance_time_ticks_for_testing(const base::TimeDelta& delta) {
-    time_ticks_for_testing_ += delta;
   }
 
   const std::string& default_network_id_for_testing() const {
     return default_network_id_;
   }
+
   int response_code_for_testing() const { return response_code_for_testing_; }
 
   // Unique identifier of the default network.
   std::string default_network_id_;
 
-  // Connection state of the default network.
-  std::string default_connection_state_;
-
-  // Proxy configuration of the default network.
-  base::Value default_proxy_config_;
-
   CaptivePortalStatus default_portal_status_ = CAPTIVE_PORTAL_STATUS_UNKNOWN;
   int response_code_for_testing_ = -1;
 
   State state_ = STATE_IDLE;
-  base::ObserverList<Observer>::Unchecked observers_;
 
   base::CancelableOnceClosure attempt_task_;
-  base::CancelableOnceClosure attempt_timeout_;
+  base::CancelableOnceClosure attempt_timeout_task_;
 
   // Reference to a SharedURLLoaderFactory used to detect portals.
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
@@ -202,33 +174,30 @@ class NetworkPortalDetectorImpl : public NetworkPortalDetector,
   // True if the NetworkPortalDetector is enabled.
   bool enabled_ = false;
 
-  // Start time of portal detection.
-  base::TimeTicks detection_start_time_;
-
-  // Start time of detection attempt.
-  base::TimeTicks attempt_start_time_;
-
   // Delay before next portal detection.
   base::TimeDelta next_attempt_delay_;
 
-  // Current detection strategy.
-  std::unique_ptr<PortalDetectorStrategy> strategy_;
+  // Delay before next portal detection for testing.
+  absl::optional<base::TimeDelta> attempt_delay_for_testing_;
+
+  // Timeout before attempt is timed out.
+  base::TimeDelta attempt_timeout_;
 
   // Last received result from captive portal detector.
-  CaptivePortalStatus last_detection_result_ = CAPTIVE_PORTAL_STATUS_UNKNOWN;
+  CaptivePortalStatus last_detection_status_ = CAPTIVE_PORTAL_STATUS_UNKNOWN;
 
   // Number of detection attempts with same result in a row.
   int same_detection_result_count_ = 0;
 
-  // Number of detection attempts in a row with NO RESPONSE result.
-  int no_response_result_count_ = 0;
+  // Number of detection attempts.
+  int captive_portal_detector_run_count_ = 0;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
   content::NotificationRegistrar registrar_;
 
-  // Test time ticks used by unit tests.
-  base::TimeTicks time_ticks_for_testing_;
+  base::ScopedObservation<NetworkStateHandler, NetworkStateHandlerObserver>
+      network_state_handler_observer_{this};
 
   base::WeakPtrFactory<NetworkPortalDetectorImpl> weak_factory_{this};
 };

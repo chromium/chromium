@@ -1,0 +1,36 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+{
+  "move": [
+    {
+      "id": 0,
+      "input_sources": [
+        "keyboard"
+      ],
+      "name": "Virtual Joystick",
+      "keys": [
+        "KeyW",
+        "KeyA",
+        "KeyS",
+        "KeyD"
+      ],
+      "location": [
+        {
+          "type": "dependent_position",
+          "anchor": [
+            0,
+            1
+          ],
+          "anchor_to_target": [
+            0.4922179,
+            -0.14934355
+          ],
+          "y_on_x": 0.5395257
+        }
+      ],
+      "radius": 0.11296499
+    }
+  ]
+}

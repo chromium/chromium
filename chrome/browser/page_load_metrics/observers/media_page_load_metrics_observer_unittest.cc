@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,8 @@
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
 #include "components/page_load_metrics/common/test/page_load_metrics_test_util.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/test/navigation_simulator.h"
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 #include "url/gurl.h"
 
@@ -50,12 +52,11 @@ class MediaPageLoadMetricsObserverTest
     cache_bytes_ = 0;
   }
 
-  void SimulatePageLoad(bool simulate_play_media,
-                        bool simulate_app_background) {
-    NavigateAndCommit(GURL(kDefaultTestUrl));
-
+  void SimulateEvents(content::RenderFrameHost* rfh,
+                      bool simulate_play_media,
+                      bool simulate_app_background) {
     if (simulate_play_media)
-      tester()->SimulateMediaPlayed();
+      tester()->SimulateMediaPlayed(rfh);
 
     tester()->SimulateTimingUpdate(timing_);
 
@@ -93,47 +94,111 @@ class MediaPageLoadMetricsObserverTest
   page_load_metrics::mojom::PageLoadTiming timing_;
 };
 
+TEST_F(MediaPageLoadMetricsObserverTest, MediaNotPlayed) {
+  ResetTest();
+
+  NavigateAndCommit(GURL(kDefaultTestUrl));
+  content::RenderFrameHost* mainframe = web_contents()->GetPrimaryMainFrame();
+
+  SimulateEvents(mainframe, false /* simulate_play_media */,
+                 false /* simulate_app_background */);
+
+  tester()->histogram_tester().ExpectTotalCount(
+      "PageLoad.Clients.MediaPageLoad2.Experimental.Bytes.Network", 0);
+  tester()->histogram_tester().ExpectTotalCount(
+      "PageLoad.Clients.MediaPageLoad2.Experimental.Bytes.Cache2", 0);
+  tester()->histogram_tester().ExpectTotalCount(
+      "PageLoad.Clients.MediaPageLoad2.Experimental.Bytes.Total2", 0);
+}
+
 TEST_F(MediaPageLoadMetricsObserverTest, MediaPlayed) {
   ResetTest();
-  SimulatePageLoad(true /* simulate_play_media */,
-                   false /* simulate_app_background */);
+
+  NavigateAndCommit(GURL(kDefaultTestUrl));
+  content::RenderFrameHost* mainframe = web_contents()->GetPrimaryMainFrame();
+
+  SimulateEvents(mainframe, true /* simulate_play_media */,
+                 false /* simulate_app_background */);
 
   tester()->histogram_tester().ExpectUniqueSample(
-      "PageLoad.Clients.MediaPageLoad.Experimental.Bytes.Network",
+      "PageLoad.Clients.MediaPageLoad2.Experimental.Bytes.Network",
       static_cast<int>(network_bytes_ / 1024), 1);
   tester()->histogram_tester().ExpectUniqueSample(
-      "PageLoad.Clients.MediaPageLoad.Experimental.Bytes.Cache",
+      "PageLoad.Clients.MediaPageLoad2.Experimental.Bytes.Cache2",
       static_cast<int>(cache_bytes_ / 1024), 1);
   tester()->histogram_tester().ExpectUniqueSample(
-      "PageLoad.Clients.MediaPageLoad.Experimental.Bytes.Total",
+      "PageLoad.Clients.MediaPageLoad2.Experimental.Bytes.Total2",
       static_cast<int>((network_bytes_ + cache_bytes_) / 1024), 1);
 }
 
 TEST_F(MediaPageLoadMetricsObserverTest, MediaPlayedAppBackground) {
   ResetTest();
-  SimulatePageLoad(true /* simulate_play_media */,
-                   true /* simulate_app_background */);
+
+  NavigateAndCommit(GURL(kDefaultTestUrl));
+  content::RenderFrameHost* mainframe = web_contents()->GetPrimaryMainFrame();
+
+  SimulateEvents(mainframe, true /* simulate_play_media */,
+                 true /* simulate_app_background */);
 
   tester()->histogram_tester().ExpectUniqueSample(
-      "PageLoad.Clients.MediaPageLoad.Experimental.Bytes.Network",
+      "PageLoad.Clients.MediaPageLoad2.Experimental.Bytes.Network",
       static_cast<int>(network_bytes_ / 1024), 1);
   tester()->histogram_tester().ExpectUniqueSample(
-      "PageLoad.Clients.MediaPageLoad.Experimental.Bytes.Cache",
+      "PageLoad.Clients.MediaPageLoad2.Experimental.Bytes.Cache2",
       static_cast<int>(cache_bytes_ / 1024), 1);
   tester()->histogram_tester().ExpectUniqueSample(
-      "PageLoad.Clients.MediaPageLoad.Experimental.Bytes.Total",
+      "PageLoad.Clients.MediaPageLoad2.Experimental.Bytes.Total2",
       static_cast<int>((network_bytes_ + cache_bytes_) / 1024), 1);
 }
 
-TEST_F(MediaPageLoadMetricsObserverTest, MediaNotPlayed) {
+TEST_F(MediaPageLoadMetricsObserverTest, MediaPlayedInSubframe) {
   ResetTest();
-  SimulatePageLoad(false /* simulate_play_media */,
-                   false /* simulate_app_background */);
 
-  tester()->histogram_tester().ExpectTotalCount(
-      "PageLoad.Clients.MediaPageLoad.Experimental.Bytes.Network", 0);
-  tester()->histogram_tester().ExpectTotalCount(
-      "PageLoad.Clients.MediaPageLoad.Experimental.Bytes.Cache", 0);
-  tester()->histogram_tester().ExpectTotalCount(
-      "PageLoad.Clients.MediaPageLoad.Experimental.Bytes.Total", 0);
+  NavigateAndCommit(GURL(kDefaultTestUrl));
+  content::RenderFrameHost* mainframe = web_contents()->GetPrimaryMainFrame();
+  content::RenderFrameHost* subframe =
+      content::RenderFrameHostTester::For(mainframe)->AppendChild("subframe");
+  std::unique_ptr<content::NavigationSimulator> simulator =
+      content::NavigationSimulator::CreateRendererInitiated(
+          GURL(kDefaultTestUrl), subframe);
+  simulator->Commit();
+
+  SimulateEvents(subframe, true /* simulate_play_media */,
+                 false /* simulate_app_background */);
+
+  tester()->histogram_tester().ExpectUniqueSample(
+      "PageLoad.Clients.MediaPageLoad2.Experimental.Bytes.Network",
+      static_cast<int>(network_bytes_ / 1024), 1);
+  tester()->histogram_tester().ExpectUniqueSample(
+      "PageLoad.Clients.MediaPageLoad2.Experimental.Bytes.Cache2",
+      static_cast<int>(cache_bytes_ / 1024), 1);
+  tester()->histogram_tester().ExpectUniqueSample(
+      "PageLoad.Clients.MediaPageLoad2.Experimental.Bytes.Total2",
+      static_cast<int>((network_bytes_ + cache_bytes_) / 1024), 1);
+}
+
+TEST_F(MediaPageLoadMetricsObserverTest, MediaPlayedInFencedFrame) {
+  ResetTest();
+
+  NavigateAndCommit(GURL(kDefaultTestUrl));
+  content::RenderFrameHost* mainframe = web_contents()->GetPrimaryMainFrame();
+  content::RenderFrameHost* subframe =
+      content::RenderFrameHostTester::For(mainframe)->AppendFencedFrame();
+  std::unique_ptr<content::NavigationSimulator> simulator =
+      content::NavigationSimulator::CreateRendererInitiated(
+          GURL(kDefaultTestUrl), subframe);
+  simulator->Commit();
+
+  SimulateEvents(subframe, true /* simulate_play_media */,
+                 false /* simulate_app_background */);
+
+  tester()->histogram_tester().ExpectUniqueSample(
+      "PageLoad.Clients.MediaPageLoad2.Experimental.Bytes.Network",
+      static_cast<int>(network_bytes_ / 1024), 1);
+  tester()->histogram_tester().ExpectUniqueSample(
+      "PageLoad.Clients.MediaPageLoad2.Experimental.Bytes.Cache2",
+      static_cast<int>(cache_bytes_ / 1024), 1);
+  tester()->histogram_tester().ExpectUniqueSample(
+      "PageLoad.Clients.MediaPageLoad2.Experimental.Bytes.Total2",
+      static_cast<int>((network_bytes_ + cache_bytes_) / 1024), 1);
 }

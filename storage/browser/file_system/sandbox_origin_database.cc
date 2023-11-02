@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -116,7 +116,7 @@ bool SandboxOriginDatabase::Init(InitOption init_option,
       UMA_HISTOGRAM_ENUMERATION(kSandboxOriginDatabaseRepairHistogramLabel,
                                 SandboxOriginRepairResult::DB_REPAIR_FAILED,
                                 SandboxOriginRepairResult::DB_REPAIR_MAX);
-      FALLTHROUGH;
+      [[fallthrough]];
     case DELETE_ON_CORRUPTION:
       if (!base::DeletePathRecursively(file_system_directory_))
         return false;

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 #include <cstring>
 
 #include "base/big_endian.h"
-#include "base/cxx17_backports.h"
+#include "base/check_op.h"
 #include "base/logging.h"
 
 using base::BigEndianReader;
@@ -131,7 +131,7 @@ static int RoundUp(int value, int mul) {
 }
 
 // |frame_header| is already initialized to 0 in ParseJpegPicture.
-static bool ParseSOF(const char* buffer,
+static bool ParseSOF(const uint8_t* buffer,
                      size_t length,
                      JpegFrameHeader* frame_header) {
   // Spec B.2.2 Frame header syntax
@@ -151,7 +151,7 @@ static bool ParseSOF(const char* buffer,
     return false;
   }
   if (!InRange(frame_header->num_components, 1,
-               base::size(frame_header->components))) {
+               std::size(frame_header->components))) {
     DLOG(ERROR) << "num_components="
                 << static_cast<int>(frame_header->num_components)
                 << " is not supported";
@@ -201,7 +201,7 @@ static bool ParseSOF(const char* buffer,
 }
 
 // |q_table| is already initialized to 0 in ParseJpegPicture.
-static bool ParseDQT(const char* buffer,
+static bool ParseDQT(const uint8_t* buffer,
                      size_t length,
                      JpegQuantizationTable* q_table) {
   // Spec B.2.4.1 Quantization table-specification syntax
@@ -237,7 +237,7 @@ static bool ParseDQT(const char* buffer,
 }
 
 // |dc_table| and |ac_table| are already initialized to 0 in ParseJpegPicture.
-static bool ParseDHT(const char* buffer,
+static bool ParseDHT(const uint8_t* buffer,
                      size_t length,
                      JpegHuffmanTable* dc_table,
                      JpegHuffmanTable* ac_table) {
@@ -270,7 +270,7 @@ static bool ParseDHT(const char* buffer,
     size_t count = 0;
     if (!reader.ReadBytes(&table->code_length, sizeof(table->code_length)))
       return false;
-    for (size_t i = 0; i < base::size(table->code_length); i++)
+    for (size_t i = 0; i < std::size(table->code_length); i++)
       count += table->code_length[i];
 
     if (!InRange(count, 0, sizeof(table->code_value))) {
@@ -284,7 +284,7 @@ static bool ParseDHT(const char* buffer,
   return true;
 }
 
-static bool ParseDRI(const char* buffer,
+static bool ParseDRI(const uint8_t* buffer,
                      size_t length,
                      uint16_t* restart_interval) {
   // Spec B.2.4.4 Restart interval definition syntax
@@ -295,7 +295,7 @@ static bool ParseDRI(const char* buffer,
 }
 
 // |scan| is already initialized to 0 in ParseJpegPicture.
-static bool ParseSOS(const char* buffer,
+static bool ParseSOS(const uint8_t* buffer,
                      size_t length,
                      const JpegFrameHeader& frame_header,
                      JpegScanHeader* scan) {
@@ -358,7 +358,7 @@ static bool ParseSOS(const char* buffer,
 // and |eoi_end_ptr| will point to the end of image (right after the end of the
 // EOI marker) after search succeeds. Returns true on EOI marker found, or false
 // otherwise.
-static bool SearchEOI(const char* buffer,
+static bool SearchEOI(const uint8_t* buffer,
                       size_t length,
                       const char** eoi_begin_ptr,
                       const char** eoi_end_ptr) {
@@ -373,7 +373,7 @@ static bool SearchEOI(const char* buffer,
         memchr(reader.ptr(), JPEG_MARKER_PREFIX, reader.remaining()));
     if (!marker1_ptr)
       return false;
-    reader.Skip(marker1_ptr - reader.ptr() + 1);
+    reader.Skip(marker1_ptr - reinterpret_cast<const char*>(reader.ptr()) + 1);
 
     do {
       READ_U8_OR_RETURN_FALSE(&marker2);
@@ -395,7 +395,7 @@ static bool SearchEOI(const char* buffer,
         break;
       case JPEG_EOI:
         *eoi_begin_ptr = marker1_ptr;
-        *eoi_end_ptr = reader.ptr();
+        *eoi_end_ptr = reinterpret_cast<const char*>(reader.ptr());
         return true;
       default:
         // Skip for other markers.
@@ -422,7 +422,7 @@ static bool SearchEOI(const char* buffer,
 }
 
 // |result| is already initialized to 0 in ParseJpegPicture.
-static bool ParseSOI(const char* buffer,
+static bool ParseSOI(const uint8_t* buffer,
                      size_t length,
                      JpegParseResult* result) {
   // Spec B.2.1 High-level syntax
@@ -522,7 +522,7 @@ static bool ParseSOI(const char* buffer,
   }
 
   // Scan data follows scan header immediately.
-  result->data = reader.ptr();
+  result->data = reinterpret_cast<const char*>(reader.ptr());
   result->data_size = reader.remaining();
   return true;
 }
@@ -532,7 +532,7 @@ bool ParseJpegPicture(const uint8_t* buffer,
                       JpegParseResult* result) {
   DCHECK(buffer);
   DCHECK(result);
-  BigEndianReader reader(reinterpret_cast<const char*>(buffer), length);
+  BigEndianReader reader(buffer, length);
   memset(result, 0, sizeof(JpegParseResult));
 
   uint8_t marker1, marker2;
@@ -548,7 +548,8 @@ bool ParseJpegPicture(const uint8_t* buffer,
 
   // Update the sizes: |result->data_size| should not include the EOI marker or
   // beyond.
-  BigEndianReader eoi_reader(result->data, result->data_size);
+  BigEndianReader eoi_reader(reinterpret_cast<const uint8_t*>(result->data),
+                             result->data_size);
   const char* eoi_begin_ptr = nullptr;
   const char* eoi_end_ptr = nullptr;
   if (!SearchEOI(eoi_reader.ptr(), eoi_reader.remaining(), &eoi_begin_ptr,

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -80,7 +80,7 @@ class NavigationPredictorPreconnectClientBrowserTest
 
   void OnPreresolveFinished(
       const GURL& url,
-      const net::NetworkIsolationKey& network_isolation_key,
+      const net::NetworkAnonymizationKey& network_isolation_key,
       bool success) override {
     // The tests do not care about preresolves to non-test server (e.g., hard
     // coded preconnects to google.com).
@@ -256,8 +256,9 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(2, preresolve_done_count_);
 }
 
-const base::Feature kPreconnectOnDidFinishNavigation{
-    "PreconnectOnDidFinishNavigation", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kPreconnectOnDidFinishNavigation,
+             "PreconnectOnDidFinishNavigation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 class
     NavigationPredictorPreconnectClientBrowserTestPreconnectOnDidFinishNavigationSecondDelay
@@ -361,8 +362,9 @@ IN_PROC_BROWSER_TEST_F(
 
 namespace {
 // Feature to control preconnect to search.
-const base::Feature kPreconnectToSearchTest{"PreconnectToSearch",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kPreconnectToSearchTest,
+             "PreconnectToSearch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace
 
 class NavigationPredictorPreconnectClientBrowserTestWithSearch
@@ -377,7 +379,7 @@ class NavigationPredictorPreconnectClientBrowserTestWithSearch
   base::test::ScopedFeatureList feature_list_;
 };
 
-#if defined(OS_WIN) && defined(ADDRESS_SANITIZER)
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
 #define MAYBE_PreconnectSearchWithFeature DISABLED_PreconnectSearchWithFeature
 #else
 #define MAYBE_PreconnectSearchWithFeature PreconnectSearchWithFeature
@@ -409,15 +411,15 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorPreconnectClientBrowserTestWithSearch,
       ->search_engine_preconnector()
       ->StartPreconnecting(/*with_startup_delay=*/false);
 
-  // There should be 2 DSE preconnects (2 NIKs).
-  WaitForPreresolveCount(2);
-  EXPECT_EQ(2, preresolve_done_count_);
+  // There should be a DSE preconnects.
+  WaitForPreresolveCount(1);
+  EXPECT_EQ(1, preresolve_done_count_);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   // Now there should be an onload preconnect as well as a navigation
   // preconnect.
-  WaitForPreresolveCount(4);
-  EXPECT_EQ(4, preresolve_done_count_);
+  WaitForPreresolveCount(3);
+  EXPECT_EQ(3, preresolve_done_count_);
 }
 
 class NavigationPredictorPreconnectClientLocalURLBrowserTest
@@ -547,16 +549,17 @@ IN_PROC_BROWSER_TEST_F(
                                     1);
 
   // Create a fenced frame.
+  const GURL& fenced_frame_url =
+      GetTestURL("/fenced_frames/anchors_different_area.html");
   content::RenderFrameHost* fenced_frame_host =
       fenced_frame_test_helper().CreateFencedFrame(
-          web_contents()->GetMainFrame(), url);
+          web_contents()->GetPrimaryMainFrame(), fenced_frame_url);
   // The count should not increase in DidFinishLoad method.
   histogram_tester.ExpectTotalCount("NavigationPredictor.IsPubliclyRoutable",
                                     1);
 
-  // Navigate the fenced frame.
   fenced_frame_test_helper().NavigateFrameInFencedFrameTree(fenced_frame_host,
-                                                            url);
+                                                            fenced_frame_url);
   // Histogram count should not increase after navigating the fenced frame.
   histogram_tester.ExpectTotalCount("NavigationPredictor.IsPubliclyRoutable",
                                     1);

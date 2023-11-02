@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,10 +39,11 @@ void TtsService::BindPlaybackTtsStream(
   media::AudioParameters params;
 
   if (desired_audio_parameters) {
-    params = media::AudioParameters(
-        media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-        media::CHANNEL_LAYOUT_MONO, desired_audio_parameters->sample_rate,
-        desired_audio_parameters->buffer_size);
+    params =
+        media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                               media::ChannelLayoutConfig::Mono(),
+                               desired_audio_parameters->sample_rate,
+                               desired_audio_parameters->buffer_size);
 
     if (!params.IsValid()) {
       // Returning early disconnects the remote.
@@ -50,9 +51,10 @@ void TtsService::BindPlaybackTtsStream(
     }
   } else {
     // The client did not specify parameters; use defaults.
-    params = media::AudioParameters(
-        media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-        media::CHANNEL_LAYOUT_MONO, kDefaultSampleRate, kDefaultBufferSize);
+    params =
+        media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                               media::ChannelLayoutConfig::Mono(),
+                               kDefaultSampleRate, kDefaultBufferSize);
   }
   DCHECK(params.IsValid());
   playback_tts_stream_ = std::make_unique<PlaybackTtsStream>(
@@ -68,8 +70,11 @@ void TtsService::MaybeExit() {
   if ((!google_tts_stream_ || !google_tts_stream_->IsBound()) &&
       (!playback_tts_stream_ || !playback_tts_stream_->IsBound())) {
     service_receiver_.reset();
-    if (!keep_process_alive_for_testing_)
+    if (!keep_process_alive_for_testing_) {
+      if (google_tts_stream_)
+        google_tts_stream_->set_is_in_process_teardown(true);
       exit(0);
+    }
   }
 }
 

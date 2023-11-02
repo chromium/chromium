@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -59,8 +59,7 @@ class UsbPrinterDetectorTest : public testing::Test {
     }
 
     void OnPrintersFound(
-        const std::vector<chromeos::PrinterDetector::DetectedPrinter>&
-            printers) {
+        const std::vector<PrinterDetector::DetectedPrinter>& printers) {
       if (done_callback_)
         std::move(done_callback_).Run();
     }

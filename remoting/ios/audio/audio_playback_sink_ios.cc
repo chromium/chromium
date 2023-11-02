@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -177,11 +177,13 @@ void AudioPlaybackSinkIos::ResetOutputQueue() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DisposeOutputQueue();
 
-  OSStatus err = AudioQueueNewOutput(&stream_format_, OnBufferDequeued, this,
-                                     CFRunLoopGetCurrent(),
-                                     kCFRunLoopCommonModes, 0, &output_queue_);
-  if (HandleError(err, "AudioQueueNewOutput")) {
-    return;
+  {
+    OSStatus err = AudioQueueNewOutput(
+        &stream_format_, OnBufferDequeued, this, CFRunLoopGetCurrent(),
+        kCFRunLoopCommonModes, 0, &output_queue_);
+    if (HandleError(err, "AudioQueueNewOutput")) {
+      return;
+    }
   }
 
   // Create buffers.

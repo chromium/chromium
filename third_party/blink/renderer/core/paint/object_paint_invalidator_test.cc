@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/core/paint/paint_and_raster_invalidation_test.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
@@ -57,7 +56,7 @@ TEST_F(ObjectPaintInvalidatorTest, Selection) {
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(GetRasterInvalidationTracking(*GetDocument().View())
                   ->Invalidations()
-                  .IsEmpty());
+                  .empty());
   GetDocument().View()->SetTracksRasterInvalidations(false);
 
   // Remove selection.

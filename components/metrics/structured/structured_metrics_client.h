@@ -1,20 +1,19 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_METRICS_STRUCTURED_STRUCTURED_METRICS_CLIENT_H_
 #define COMPONENTS_METRICS_STRUCTURED_STRUCTURED_METRICS_CLIENT_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 
+#include "components/metrics/structured/delegating_events_processor.h"
 #include "components/metrics/structured/event.h"
+#include "components/metrics/structured/events_processor_interface.h"
 
 namespace metrics {
 namespace structured {
-
-// TODO(crbug.com/1249222): Remove forward-declaration as well as EventBase
-// calls once migration is complete.
-class EventBase;
 
 // Singleton to interact with StructuredMetrics.
 //
@@ -31,7 +30,6 @@ class StructuredMetricsClient {
 
     // Recording logic.
     virtual void RecordEvent(Event&& event) = 0;
-    virtual void Record(EventBase&& event_base) = 0;
   };
 
   StructuredMetricsClient(const StructuredMetricsClient& client) = delete;
@@ -44,7 +42,11 @@ class StructuredMetricsClient {
 
   // Forwards to |delegate_|. If no delegate has been set, then no-op.
   void Record(Event&& event);
-  void Record(EventBase&& event_base);
+
+  // Adds |events_processor| to further add metadata to recorded events or
+  // listen to recorded events.
+  void AddEventsProcessor(
+      std::unique_ptr<EventsProcessorInterface> events_processor);
 
   // Sets the delegate for the client's recording logic. Should be called before
   // anything else. |this| does not take ownership of |delegate| and assumes
@@ -59,8 +61,10 @@ class StructuredMetricsClient {
   StructuredMetricsClient();
   ~StructuredMetricsClient();
 
+  DelegatingEventsProcessor delegating_events_processor_;
+
   // Not owned. Assumes that the delegate's lifetime will exceed |this|.
-  RecordingDelegate* delegate_ = nullptr;
+  raw_ptr<RecordingDelegate> delegate_ = nullptr;
 };
 
 }  // namespace structured

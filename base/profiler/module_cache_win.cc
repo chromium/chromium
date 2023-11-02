@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #include <string>
 
+#include "base/debug/alias.h"
 #include "base/process/process_handle.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -57,6 +58,21 @@ void GetDebugInfoForModule(HMODULE module_handle,
   RemoveChars(buffer, L"{}-", &buffer);
   buffer.append(NumberToWString(age));
   *build_id = WideToUTF8(buffer);
+}
+
+// Returns true if the address is in the address space accessible to
+// applications and DLLs, as reported by ::GetSystemInfo.
+bool IsValidUserSpaceAddress(uintptr_t address) {
+  static LPVOID max_app_addr = 0;
+  static LPVOID min_app_addr = 0;
+  if (!max_app_addr) {
+    SYSTEM_INFO sys_info;
+    ::GetSystemInfo(&sys_info);
+    max_app_addr = sys_info.lpMaximumApplicationAddress;
+    min_app_addr = sys_info.lpMinimumApplicationAddress;
+  }
+  return reinterpret_cast<LPVOID>(address) >= min_app_addr &&
+         reinterpret_cast<LPVOID>(address) <= max_app_addr;
 }
 
 // Traits class to adapt GenericScopedHandle for HMODULES.
@@ -109,8 +125,16 @@ class WindowsModule : public ModuleCache::Module {
   FilePath debug_basename_;
 };
 
-ScopedModuleHandle GetModuleHandleForAddress(DWORD64 address) {
+ScopedModuleHandle GetModuleHandleForAddress(uintptr_t address) {
+  // Record the address in crash dumps to help understand the source of
+  // GetModuleHandleEx crashes on Windows 11 observed in
+  // https://crbug.com/1297776.
+  debug::Alias(&address);
+  if (!IsValidUserSpaceAddress(address))
+    return ScopedModuleHandle(nullptr);
+
   HMODULE module_handle = nullptr;
+
   // GetModuleHandleEx() increments the module reference count, which is then
   // managed and ultimately decremented by ScopedModuleHandle.
   if (!::GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS,
@@ -126,10 +150,10 @@ std::unique_ptr<ModuleCache::Module> CreateModuleForHandle(
     ScopedModuleHandle module_handle) {
   FilePath pdb_name;
   std::string build_id;
-  GetDebugInfoForModule(module_handle.Get(), &build_id, &pdb_name);
+  GetDebugInfoForModule(module_handle.get(), &build_id, &pdb_name);
 
   MODULEINFO module_info;
-  if (!::GetModuleInformation(GetCurrentProcessHandle(), module_handle.Get(),
+  if (!::GetModuleInformation(GetCurrentProcessHandle(), module_handle.get(),
                               &module_info, sizeof(module_info))) {
     return nullptr;
   }
@@ -144,7 +168,7 @@ std::unique_ptr<ModuleCache::Module> CreateModuleForHandle(
 std::unique_ptr<const ModuleCache::Module> ModuleCache::CreateModuleForAddress(
     uintptr_t address) {
   ScopedModuleHandle module_handle = GetModuleHandleForAddress(address);
-  if (!module_handle.IsValid())
+  if (!module_handle.is_valid())
     return nullptr;
   return CreateModuleForHandle(std::move(module_handle));
 }

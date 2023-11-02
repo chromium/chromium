@@ -1,11 +1,13 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_BROWSER_MEDIA_SESSION_MEDIA_SESSION_UMA_HELPER_H_
 #define CONTENT_BROWSER_MEDIA_SESSION_MEDIA_SESSION_UMA_HELPER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/clock.h"
+#include "base/time/time.h"
 #include "content/common/content_export.h"
 
 namespace base {
@@ -74,7 +76,7 @@ class CONTENT_EXPORT MediaSessionUmaHelper {
  private:
   base::TimeDelta total_active_time_;
   base::TimeTicks current_active_time_;
-  const base::TickClock* clock_;
+  raw_ptr<const base::TickClock> clock_;
 };
 
 }  // namespace content

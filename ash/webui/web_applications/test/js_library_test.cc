@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,7 +42,7 @@ void HandleRequest(const std::string& url_path,
   base::FilePath path;
   CHECK(base::PathService::Get(base::BasePathKey::DIR_SOURCE_ROOT, &path));
   path = path.Append(kRootDir);
-  path = path.AppendASCII(url_path.substr(0, url_path.find("?")));
+  path = path.AppendASCII(url_path.substr(0, url_path.find('?')));
 
   std::string contents;
   {

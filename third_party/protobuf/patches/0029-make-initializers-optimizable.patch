@@ -1,0 +1,58 @@
+diff --git a/src/google/protobuf/generated_message_util.cc b/src/google/protobuf/generated_message_util.cc
+index 05a228fb8fe6a..c055640d56214 100644
+--- a/src/google/protobuf/generated_message_util.cc
++++ b/src/google/protobuf/generated_message_util.cc
+@@ -69,25 +69,16 @@ PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+         fixed_address_empty_string{};  // NOLINT
+ 
+ 
+-PROTOBUF_CONSTINIT std::atomic<bool> init_protobuf_defaults_state{false};
+-static bool InitProtobufDefaultsImpl() {
+-  fixed_address_empty_string.DefaultConstruct();
+-  OnShutdownDestroyString(fixed_address_empty_string.get_mutable());
+-
+-
+-  init_protobuf_defaults_state.store(true, std::memory_order_release);
+-  return true;
+-}
+-
++PROTOBUF_CONSTINIT bool init_protobuf_defaults_state{false};
+ void InitProtobufDefaultsSlow() {
+-  static bool is_inited = InitProtobufDefaultsImpl();
+-  (void)is_inited;
++  fixed_address_empty_string.DefaultConstruct();
++  init_protobuf_defaults_state = true;
+ }
+ // Force the initialization of the empty string.
+ // Normally, registration would do it, but we don't have any guarantee that
+ // there is any object with reflection.
+ PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 static std::true_type init_empty_string =
+-    (InitProtobufDefaultsSlow(), std::true_type{});
++    (InitProtobufDefaults(), std::true_type{});
+ 
+ const std::string& GetEmptyString() {
+   InitProtobufDefaults();
+diff --git a/src/google/protobuf/generated_message_util.h b/src/google/protobuf/generated_message_util.h
+index 0aee548ed2796..a722c9126026d 100644
+--- a/src/google/protobuf/generated_message_util.h
++++ b/src/google/protobuf/generated_message_util.h
+@@ -89,11 +89,14 @@ inline To DownCast(From& f) {
+ // This fastpath inlines a single branch instead of having to make the
+ // InitProtobufDefaults function call.
+ // It also generates less inlined code than a function-scope static initializer.
+-PROTOBUF_EXPORT extern std::atomic<bool> init_protobuf_defaults_state;
++PROTOBUF_EXPORT extern bool init_protobuf_defaults_state;
+ PROTOBUF_EXPORT void InitProtobufDefaultsSlow();
+ PROTOBUF_EXPORT inline void InitProtobufDefaults() {
+-  if (PROTOBUF_PREDICT_FALSE(
+-          !init_protobuf_defaults_state.load(std::memory_order_acquire))) {
++  // This is not thread-safe, but is called within a static initializer. As long
++  // as there are no calls to this function from off the main thread, before
++  // main() starts, this is safe. After main() starts,
++  // init_protobuf_defaults_state will always be true.
++  if (PROTOBUF_PREDICT_FALSE(!init_protobuf_defaults_state)) {
+     InitProtobufDefaultsSlow();
+   }
+ }
+-- 
+2.37.0.rc0.104.g0611611a94-goog

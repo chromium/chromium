@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,8 @@
 #include "base/containers/queue.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/display/manager/display_manager_export.h"
+#include "ui/display/types/display_configuration_params.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/display/types/native_display_observer.h"
 #include "ui/gfx/geometry/point.h"
 
@@ -33,7 +35,7 @@ struct DISPLAY_MANAGER_EXPORT DisplayConfigureRequest {
   gfx::Point origin;
 };
 
-using RequestAndStatusList = std::pair<DisplayConfigureRequest, bool>;
+using RequestAndStatusList = std::pair<const DisplayConfigureRequest*, bool>;
 
 // ConfigureDisplaysTask is in charge of applying the display configuration as
 // requested by Ash. If the original request fails, the task will attempt to
@@ -68,12 +70,12 @@ class DISPLAY_MANAGER_EXPORT ConfigureDisplaysTask
   };
 
   using ResponseCallback = base::OnceCallback<void(Status)>;
-  using PartitionedRequestsQueue =
-      std::queue<std::vector<DisplayConfigureRequest>>;
 
-  ConfigureDisplaysTask(NativeDisplayDelegate* delegate,
-                        const std::vector<DisplayConfigureRequest>& requests,
-                        ResponseCallback callback);
+  ConfigureDisplaysTask(
+      NativeDisplayDelegate* delegate,
+      const std::vector<DisplayConfigureRequest>& requests,
+      ResponseCallback callback,
+      ConfigurationType configuration_type = kConfigurationTypeFull);
 
   ConfigureDisplaysTask(const ConfigureDisplaysTask&) = delete;
   ConfigureDisplaysTask& operator=(const ConfigureDisplaysTask&) = delete;
@@ -88,12 +90,22 @@ class DISPLAY_MANAGER_EXPORT ConfigureDisplaysTask
   void OnDisplaySnapshotsInvalidated() override;
 
  private:
+  struct RequestToOriginalMode {
+    RequestToOriginalMode(DisplayConfigureRequest* request,
+                          const DisplayMode* original_mode);
+
+    DisplayConfigureRequest* request;
+    const DisplayMode* const original_mode;
+  };
+  using PartitionedRequestsQueue =
+      std::queue<std::vector<RequestToOriginalMode>>;
+
   // Deals with the aftermath of the initial configuration, which attempts to
   // configure all displays together.
   // Upon failure, partitions the original request from Ash into smaller
   // requests where the displays are grouped by the physical connector they
   // connect to and initiates the retry sequence.
-  void OnFirstAttemptConfigured(bool config_status);
+  void OnFirstAttemptConfigured(bool config_success);
 
   // Deals with the aftermath of a configuration retry, which attempts to
   // configure a subset of the displays grouped together by the physical
@@ -104,7 +116,11 @@ class DISPLAY_MANAGER_EXPORT ConfigureDisplaysTask
   // If any of the display groups entirely fail to modeset (i.e. exhaust all
   // available modes during retry), the configuration will fail as a whole, but
   // will continue to try to modeset the remaining display groups.
-  void OnRetryConfigured(bool config_status);
+  void OnRetryConfigured(bool config_success);
+
+  // Finalizes the configuration after a modeset attempt was made (as opposed to
+  // test-modeset).
+  void OnConfigured(bool config_success);
 
   // Partition |requests_| by their base connector id (i.e. the physical
   // connector the displays are connected to) and populate the result in
@@ -115,18 +131,27 @@ class DISPLAY_MANAGER_EXPORT ConfigureDisplaysTask
   // Downgrade the request with the highest bandwidth requirement AND
   // alternative modes in |requests_| (excluding internal displays and disable
   // requests). Return false if no request was downgraded.
-  bool DowngradeLargestRequestWithAlternativeModes();
+  bool DowngradeDisplayRequestGroup();
 
   NativeDisplayDelegate* delegate_;  // Not owned.
 
-  // Initially, |requests_| holds the configuration request submitted by Ash.
-  // During retry, |requests_| will represent a group of displays that are
-  // currently attempting configuration.
+  // Holds the next configuration request to attempt modeset.
   std::vector<DisplayConfigureRequest> requests_;
 
+  // Whether this request should be seamless or not (i.e. should a full modeset
+  // be permitted or not).
+  const ConfigurationType configuration_type_;
+
   // A queue of display requests grouped by their
-  // |requests_[index]->display->base_connector_id()|.
+  // |requests_[index]->display->base_connector_id()|. These request groups are
+  // used to downgrade displays' modes stored in |requests_| when the original
+  // request fails to modeset and a the fallback logic is triggered.
   PartitionedRequestsQueue pending_display_group_requests_;
+
+  // The last configuration parameter request list that passed modeset test
+  // during retry, which will be used for modeset once we are done testing.
+  std::vector<display::DisplayConfigurationParams>
+      last_successful_config_parameters_;
 
   // The final requests and their configuration status for UMA.
   std::vector<RequestAndStatusList> final_requests_status_;

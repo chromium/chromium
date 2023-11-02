@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace net {
-namespace test {
+namespace net::test {
 
 // Test all cases of the GetAddressMismatch function.
 TEST(QuicAddressMismatchTest, GetAddressMismatch) {
@@ -95,5 +94,4 @@ TEST(QuicAddressMismatchTest, GetAddressMismatch) {
       GetAddressMismatch(IPEndPoint(ip6_1, 80), IPEndPoint(ip4_mapped_1, 443)));
 }
 
-}  // namespace test
-}  // namespace net
+}  // namespace net::test

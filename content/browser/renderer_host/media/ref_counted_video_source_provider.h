@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@
 namespace content {
 
 // Enables ref-counted shared ownership of a
-// mojo::Remote<video_capture::mojom::DeviceFactory>.
+// mojo::Remote<video_capture::mojom::VideoSourceProvider>.
 // Since instances of this class do not guarantee that the connection stays open
 // for its entire lifetime, clients must verify that the connection is bound
 // before using it.

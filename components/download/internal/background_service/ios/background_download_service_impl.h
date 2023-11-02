@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,13 @@
 
 #include <map>
 #include <memory>
+#include <set>
 #include <string>
 
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/clock.h"
+#include "base/time/time.h"
 #include "components/download/internal/background_service/initializable_background_download_service.h"
 #include "components/download/internal/background_service/log_source.h"
 #include "components/download/internal/background_service/model_impl.h"
@@ -63,6 +65,8 @@ class BackgroundDownloadServiceImpl
   void ChangeDownloadCriteria(const std::string& guid,
                               const SchedulingParams& params) override;
   Logger* GetLogger() override;
+  void HandleEventsForBackgroundURLSession(
+      base::OnceClosure completion_handler) override;
 
   // Model::Client implementation.
   void OnModelReady(bool success) override;
@@ -120,6 +124,7 @@ class BackgroundDownloadServiceImpl
   // A directory to hold download service files. The files in here will be
   // pruned frequently.
   const base::FilePath download_dir_;
+  std::set<std::string> cancelled_downloads_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<BackgroundDownloadServiceImpl> weak_ptr_factory_{this};

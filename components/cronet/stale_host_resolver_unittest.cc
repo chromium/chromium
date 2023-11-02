@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/cxx17_backports.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/test/simple_test_tick_clock.h"
@@ -23,10 +23,11 @@
 #include "components/cronet/url_request_context_config.h"
 #include "net/base/address_family.h"
 #include "net/base/host_port_pair.h"
+#include "net/base/ip_endpoint.h"
 #include "net/base/mock_network_change_notifier.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/network_change_notifier.h"
-#include "net/base/network_isolation_key.h"
 #include "net/cert/cert_verifier.h"
 #include "net/dns/context_host_resolver.h"
 #include "net/dns/dns_config.h"
@@ -35,6 +36,7 @@
 #include "net/dns/host_cache.h"
 #include "net/dns/host_resolver_manager.h"
 #include "net/dns/host_resolver_proc.h"
+#include "net/dns/host_resolver_system_task.h"
 #include "net/dns/public/dns_protocol.h"
 #include "net/dns/public/dns_query_type.h"
 #include "net/dns/public/host_resolver_source.h"
@@ -68,14 +70,15 @@ const int kAgeExpiredSec = kCacheEntryTTLSec * 2;
 // correctly, we won't end up waiting this long -- it's just a backup.
 const int kWaitTimeoutSec = 1;
 
-net::AddressList MakeAddressList(const char* ip_address_str) {
+std::vector<net::IPEndPoint> MakeEndpoints(const char* ip_address_str) {
   net::IPAddress address;
   bool rv = address.AssignFromIPLiteral(ip_address_str);
   DCHECK(rv);
+  return std::vector<net::IPEndPoint>({{address, 0}});
+}
 
-  net::AddressList address_list;
-  address_list.push_back(net::IPEndPoint(address, 0u));
-  return address_list;
+net::AddressList MakeAddressList(const char* ip_address_str) {
+  return net::AddressList(MakeEndpoints(ip_address_str));
 }
 
 std::unique_ptr<net::DnsClient> CreateMockDnsClientForHosts() {
@@ -182,8 +185,8 @@ class StaleHostResolverTest : public testing::Test {
     if (context)
       inner_resolver->SetRequestContext(context);
 
-    net::ProcTaskParams proc_params(mock_proc_.get(), 1u);
-    inner_resolver->SetProcParamsForTesting(proc_params);
+    net::HostResolverSystemTask::Params system_params(mock_proc_, 1u);
+    inner_resolver->SetHostResolverSystemParamsForTest(system_params);
     if (dns_client) {
       inner_resolver->GetManagerForTesting()->SetDnsClientForTesting(
           std::move(dns_client));
@@ -232,11 +235,12 @@ class StaleHostResolverTest : public testing::Test {
     base::TimeDelta ttl(base::Seconds(kCacheEntryTTLSec));
     net::HostCache::Key key(kHostname, net::DnsQueryType::UNSPECIFIED, 0,
                             net::HostResolverSource::ANY,
-                            net::NetworkIsolationKey());
+                            net::NetworkAnonymizationKey());
     net::HostCache::Entry entry(
         error,
-        error == net::OK ? MakeAddressList(kCacheAddress) : net::AddressList(),
-        net::HostCache::Entry::SOURCE_UNKNOWN, ttl);
+        error == net::OK ? MakeEndpoints(kCacheAddress)
+                         : std::vector<net::IPEndPoint>(),
+        /*aliases=*/{}, net::HostCache::Entry::SOURCE_UNKNOWN, ttl);
     base::TimeDelta age = base::Seconds(age_sec);
     base::TimeTicks then = tick_clock_.NowTicks() - age;
     resolver_->GetHostCache()->Set(key, entry, then, ttl);
@@ -255,7 +259,7 @@ class StaleHostResolverTest : public testing::Test {
 
     net::HostCache::Key key(kHostname, net::DnsQueryType::UNSPECIFIED, 0,
                             net::HostResolverSource::ANY,
-                            net::NetworkIsolationKey());
+                            net::NetworkAnonymizationKey());
     base::TimeTicks now = tick_clock_.NowTicks();
     net::HostCache::EntryStaleness stale;
     EXPECT_TRUE(resolver_->GetHostCache()->LookupStale(key, now, &stale));
@@ -268,7 +272,7 @@ class StaleHostResolverTest : public testing::Test {
     EXPECT_FALSE(resolve_pending_);
 
     request_ = resolver_->CreateRequest(
-        net::HostPortPair(kHostname, kPort), net::NetworkIsolationKey(),
+        net::HostPortPair(kHostname, kPort), net::NetworkAnonymizationKey(),
         net::NetLogWithSource(), optional_parameters);
     resolve_pending_ = true;
     resolve_complete_ = false;
@@ -343,7 +347,7 @@ class StaleHostResolverTest : public testing::Test {
   int resolve_error() const { return resolve_error_; }
   const net::AddressList& resolve_addresses() const {
     DCHECK(resolve_complete_);
-    return request_->GetAddressResults().value();
+    return *request_->GetAddressResults();
   }
 
  private:
@@ -355,7 +359,7 @@ class StaleHostResolverTest : public testing::Test {
 
   scoped_refptr<MockHostResolverProc> mock_proc_;
 
-  net::HostResolver* resolver_;
+  raw_ptr<net::HostResolver> resolver_;
   StaleHostResolver::StaleOptions options_;
   std::unique_ptr<StaleHostResolver> stale_resolver_;
 
@@ -548,7 +552,7 @@ TEST_F(StaleHostResolverTest, ReturnStaleCacheSync) {
 
 // Disallow other networks cases fail under Fuchsia (crbug.com/816143).
 // Flaky on Win buildbots. See crbug.com/836106
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_StaleUsability DISABLED_StaleUsability
 #else
 #define MAYBE_StaleUsability StaleUsability
@@ -610,7 +614,7 @@ TEST_F(StaleHostResolverTest, MAYBE_StaleUsability) {
 
   SetStaleDelay(kNoStaleDelaySec);
 
-  for (size_t i = 0; i < base::size(kUsabilityTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kUsabilityTestCases); ++i) {
     const auto& test_case = kUsabilityTestCases[i];
 
     SetStaleUsability(test_case.max_expired_time_sec, test_case.max_stale_uses,
@@ -660,45 +664,46 @@ TEST_F(StaleHostResolverTest, MAYBE_StaleUsability) {
 }
 
 TEST_F(StaleHostResolverTest, CreatedByContext) {
-  URLRequestContextConfig config(
-      // Enable QUIC.
-      true,
-      // QUIC User Agent ID.
-      "Default QUIC User Agent ID",
-      // Enable SPDY.
-      true,
-      // Enable Brotli.
-      false,
-      // Type of http cache.
-      URLRequestContextConfig::HttpCacheType::DISK,
-      // Max size of http cache in bytes.
-      1024000,
-      // Disable caching for HTTP responses. Other information may be stored in
-      // the cache.
-      false,
-      // Storage path for http cache and cookie storage.
-      "/data/data/org.chromium.net/app_cronet_test/test_storage",
-      // Accept-Language request header field.
-      "foreign-language",
-      // User-Agent request header field.
-      "fake agent",
-      // JSON encoded experimental options.
-      "{\"AsyncDNS\":{\"enable\":false},"
-      "\"StaleDNS\":{\"enable\":true,"
-      "\"delay_ms\":0,"
-      "\"max_expired_time_ms\":0,"
-      "\"max_stale_uses\":0}}",
-      // MockCertVerifier to use for testing purposes.
-      std::unique_ptr<net::CertVerifier>(),
-      // Enable network quality estimator.
-      false,
-      // Enable Public Key Pinning bypass for local trust anchors.
-      true,
-      // Optional network thread priority.
-      absl::optional<double>());
+  std::unique_ptr<URLRequestContextConfig> config =
+      URLRequestContextConfig::CreateURLRequestContextConfig(
+          // Enable QUIC.
+          true,
+          // QUIC User Agent ID.
+          "Default QUIC User Agent ID",
+          // Enable SPDY.
+          true,
+          // Enable Brotli.
+          false,
+          // Type of http cache.
+          URLRequestContextConfig::HttpCacheType::DISK,
+          // Max size of http cache in bytes.
+          1024000,
+          // Disable caching for HTTP responses. Other information may be stored
+          // in the cache.
+          false,
+          // Storage path for http cache and cookie storage.
+          "/data/data/org.chromium.net/app_cronet_test/test_storage",
+          // Accept-Language request header field.
+          "foreign-language",
+          // User-Agent request header field.
+          "fake agent",
+          // JSON encoded experimental options.
+          "{\"AsyncDNS\":{\"enable\":false},"
+          "\"StaleDNS\":{\"enable\":true,"
+          "\"delay_ms\":0,"
+          "\"max_expired_time_ms\":0,"
+          "\"max_stale_uses\":0}}",
+          // MockCertVerifier to use for testing purposes.
+          std::unique_ptr<net::CertVerifier>(),
+          // Enable network quality estimator.
+          false,
+          // Enable Public Key Pinning bypass for local trust anchors.
+          true,
+          // Optional network thread priority.
+          absl::optional<double>());
 
   net::URLRequestContextBuilder builder;
-  config.ConfigureURLRequestContextBuilder(&builder);
+  config->ConfigureURLRequestContextBuilder(&builder);
   // Set a ProxyConfigService to avoid DCHECK failure when building.
   builder.set_proxy_config_service(
       std::make_unique<net::ProxyConfigServiceFixed>(

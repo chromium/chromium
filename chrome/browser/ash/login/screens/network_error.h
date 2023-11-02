@@ -1,9 +1,11 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_ASH_LOGIN_SCREENS_NETWORK_ERROR_H_
 #define CHROME_BROWSER_ASH_LOGIN_SCREENS_NETWORK_ERROR_H_
+
+#include <sstream>
 
 namespace ash {
 
@@ -15,11 +17,8 @@ class NetworkError {
     UI_STATE_UNKNOWN = 0,
     UI_STATE_UPDATE,
     UI_STATE_SIGNIN,
-    UI_STATE_SUPERVISED,
     UI_STATE_KIOSK_MODE,
-    UI_STATE_LOCAL_STATE_ERROR,
     UI_STATE_AUTO_ENROLLMENT_ERROR,
-    UI_STATE_ROLLBACK_ERROR,
   };
 
   enum ErrorState {
@@ -58,7 +57,17 @@ class NetworkError {
   };
 
   static const char* ErrorReasonString(ErrorReason reason);
+
+  friend std::ostream& operator<<(std::ostream& stream,
+                                  const UIState& ui_state);
+  friend std::ostream& operator<<(std::ostream& stream,
+                                  const ErrorState& error_state);
 };
+
+std::ostream& operator<<(std::ostream& stream,
+                         const NetworkError::UIState& ui_state);
+std::ostream& operator<<(std::ostream& stream,
+                         const NetworkError::ErrorState& error_state);
 
 }  // namespace ash
 

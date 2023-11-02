@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,14 +7,23 @@
 
 #include <memory>
 
+#include "base/memory/memory_pressure_listener.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/ipc/service/gpu_watchdog_thread.h"
 
+namespace gl {
+class GLDisplay;
+}  // namespace gl
+
 namespace gpu {
 class GpuChannelManager;
+class VulkanImplementation;
+class VulkanDeviceQueue;
+class VulkanContextProvider;
 }  // namespace gpu
 
 namespace viz {
@@ -25,6 +34,9 @@ class VIZ_SERVICE_EXPORT CompositorGpuThread
  public:
   static std::unique_ptr<CompositorGpuThread> Create(
       gpu::GpuChannelManager* gpu_channel_manager,
+      gpu::VulkanImplementation* vulkan_implementation,
+      gpu::VulkanDeviceQueue* device_queue,
+      gl::GLDisplay* display,
       bool enable_watchdog);
 
   // Disallow copy and assign.
@@ -33,8 +45,10 @@ class VIZ_SERVICE_EXPORT CompositorGpuThread
 
   ~CompositorGpuThread() override;
 
-  scoped_refptr<gpu::SharedContextState> shared_context_state() const {
-    return shared_context_state_;
+  scoped_refptr<gpu::SharedContextState> GetSharedContextState();
+
+  VulkanContextProvider* vulkan_context_provider() const {
+    return vulkan_context_provider_.get();
   }
 
   // base::Thread implementation.
@@ -48,18 +62,38 @@ class VIZ_SERVICE_EXPORT CompositorGpuThread
       uint64_t new_size,
       gpu::GpuPeakMemoryAllocationSource source) override;
 
+  // These methods are called when chrome application is backgrounded and
+  // foregrounded.
   void OnBackgrounded();
   void OnForegrounded();
 
+  // This method is usually called only for low end devices on android.
+  void OnBackgroundCleanup();
+
+  void LoseContext();
+
  private:
-  CompositorGpuThread(gpu::GpuChannelManager* gpu_channel_manager,
-                      bool enable_watchdog);
+  CompositorGpuThread(
+      gpu::GpuChannelManager* gpu_channel_manager,
+      scoped_refptr<VulkanContextProvider> vulkan_context_provider,
+      gl::GLDisplay* display,
+      bool enable_watchdog);
 
   bool Initialize();
 
-  gpu::GpuChannelManager* gpu_channel_manager_;
+  void HandleMemoryPressure(
+      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
+  void OnBackgroundedOnCompositorGpuThread();
+
+  raw_ptr<gpu::GpuChannelManager> gpu_channel_manager_;
   const bool enable_watchdog_;
   bool init_succeded_ = false;
+
+  scoped_refptr<VulkanContextProvider> vulkan_context_provider_;
+
+  // The GLDisplay lives in GLDisplayManager, which never deletes displays once
+  // they are lazily created.
+  raw_ptr<gl::GLDisplay> display_ = nullptr;
 
   // WatchdogThread to monitor CompositorGpuThread. Ensure that the members
   // which needs to be monitored by |watchdog_thread_| should be destroyed
@@ -67,6 +101,14 @@ class VIZ_SERVICE_EXPORT CompositorGpuThread
   // before it.
   std::unique_ptr<gpu::GpuWatchdogThread> watchdog_thread_;
   scoped_refptr<gpu::SharedContextState> shared_context_state_;
+
+  // To start listening memory pressure signals from the platform, we create a
+  // new instance of MemoryPressureListener, passing a callback to a
+  // function that takes a MemoryPressureLevel parameter.To stop listening,
+  // simply delete the listener object. The implementation guarantees
+  // that the callback will always be called on the thread that created
+  // the listener.
+  std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
 
   base::WeakPtrFactory<CompositorGpuThread> weak_ptr_factory_;
 };

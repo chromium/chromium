@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/debug/alias.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/class_property.h"
@@ -171,6 +172,10 @@ std::u16string Button::GetTooltipText() const {
   return tooltip_text_;
 }
 
+void Button::SetCallback(PressedCallback callback) {
+  callback_ = std::move(callback);
+}
+
 void Button::SetAccessibleName(const std::u16string& name) {
   if (name == accessible_name_)
     return;
@@ -259,7 +264,7 @@ int Button::GetTriggerableEventFlags() const {
 void Button::SetRequestFocusOnPress(bool value) {
 // On Mac, buttons should not request focus on a mouse press. Hence keep the
 // default value i.e. false.
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   if (request_focus_on_press_ == value)
     return;
   request_focus_on_press_ = value;

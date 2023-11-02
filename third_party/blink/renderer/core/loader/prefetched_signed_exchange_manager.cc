@@ -1,13 +1,15 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/loader/prefetched_signed_exchange_manager.h"
 
+#include <queue>
 #include <utility>
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/trace_event/trace_event.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-blink.h"
@@ -28,7 +30,7 @@
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/loader/alternate_signed_exchange_resource_info.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/loader_freeze_mode.h"
 #include "third_party/blink/renderer/platform/loader/link_header.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
@@ -50,6 +52,9 @@ class PrefetchedSignedExchangeManager::PrefetchedSignedExchangeLoader
       const WebURLRequest& request,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner)
       : task_runner_(std::move(task_runner)) {
+    TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("loading",
+                                      "PrefetchedSignedExchangeLoader", this,
+                                      "url", request.Url().GetString().Utf8());
     request_.CopyFrom(request);
   }
 
@@ -58,7 +63,10 @@ class PrefetchedSignedExchangeManager::PrefetchedSignedExchangeLoader
   PrefetchedSignedExchangeLoader& operator=(
       const PrefetchedSignedExchangeLoader&) = delete;
 
-  ~PrefetchedSignedExchangeLoader() override = default;
+  ~PrefetchedSignedExchangeLoader() override {
+    TRACE_EVENT_NESTABLE_ASYNC_END0("loading", "PrefetchedSignedExchangeLoader",
+                                    this);
+  }
 
   base::WeakPtr<PrefetchedSignedExchangeLoader> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -107,7 +115,7 @@ class PrefetchedSignedExchangeManager::PrefetchedSignedExchangeLoader
     // It is safe to use Unretained(client), because |client| is a
     // ResourceLoader which owns |this|, and we are binding with weak ptr of
     // |this| here.
-    pending_method_calls_.push(WTF::Bind(
+    pending_method_calls_.push(WTF::BindOnce(
         &PrefetchedSignedExchangeLoader::LoadAsynchronously, GetWeakPtr(),
         std::move(request), std::move(url_request_extra_data), no_mime_sniffing,
         std::move(resource_load_info_notifier_wrapper),
@@ -118,7 +126,7 @@ class PrefetchedSignedExchangeManager::PrefetchedSignedExchangeLoader
       url_loader_->Freeze(value);
       return;
     }
-    pending_method_calls_.push(WTF::Bind(
+    pending_method_calls_.push(WTF::BindOnce(
         &PrefetchedSignedExchangeLoader::Freeze, GetWeakPtr(), value));
   }
   void DidChangePriority(WebURLRequest::Priority new_priority,
@@ -128,8 +136,8 @@ class PrefetchedSignedExchangeManager::PrefetchedSignedExchangeLoader
       return;
     }
     pending_method_calls_.push(
-        WTF::Bind(&PrefetchedSignedExchangeLoader::DidChangePriority,
-                  GetWeakPtr(), new_priority, intra_priority_value));
+        WTF::BindOnce(&PrefetchedSignedExchangeLoader::DidChangePriority,
+                      GetWeakPtr(), new_priority, intra_priority_value));
   }
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunnerForBodyLoader()
       override {
@@ -192,6 +200,8 @@ PrefetchedSignedExchangeManager::PrefetchedSignedExchangeManager(
     : frame_(frame),
       alternative_resources_(std::move(alternative_resources)),
       prefetched_exchanges_map_(std::move(prefetched_exchanges_map)) {
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("loading",
+                                    "PrefetchedSignedExchangeManager", this);
 }
 
 PrefetchedSignedExchangeManager::~PrefetchedSignedExchangeManager() {}
@@ -261,6 +271,7 @@ PrefetchedSignedExchangeManager::CreatePrefetchedSignedExchangeURLLoader(
 void PrefetchedSignedExchangeManager::TriggerLoad() {
   Vector<WebNavigationParams::PrefetchedSignedExchange*>
       maching_prefetched_exchanges;
+  const char* failure_reason = nullptr;
   for (auto loader : loaders_) {
     if (!loader) {
       // The loader has been canceled.
@@ -274,22 +285,23 @@ void PrefetchedSignedExchangeManager::TriggerLoad() {
         frame_->DomWindow()->navigator()->languages());
     const auto alternative_url = matching_resource->alternative_url();
     if (!alternative_url.IsValid()) {
-      // There is no matching "alternate" link header in outer response header.
+      failure_reason =
+          "no matching \"alternate\" link header in outer response header";
       break;
     }
     const auto exchange_it = prefetched_exchanges_map_.find(alternative_url);
     if (exchange_it == prefetched_exchanges_map_.end()) {
-      // There is no matching prefetched exchange.
+      failure_reason = "no matching prefetched exchange";
       break;
     }
     if (String(exchange_it->value->header_integrity) !=
         matching_resource->header_integrity()) {
-      // The header integrity doesn't match.
+      failure_reason = "header integrity doesn't match";
       break;
     }
     if (KURL(exchange_it->value->inner_url) !=
         matching_resource->anchor_url()) {
-      // The inner URL doesn't match.
+      failure_reason = "inner URL doesn't match";
       break;
     }
     maching_prefetched_exchanges.emplace_back(exchange_it->value.get());
@@ -310,6 +322,9 @@ void PrefetchedSignedExchangeManager::TriggerLoad() {
         continue;
       loader->SetURLLoader(CreateDefaultURLLoader(loader->request()));
     }
+    TRACE_EVENT_NESTABLE_ASYNC_END2(
+        "loading", "PrefetchedSignedExchangeManager", this, "match_result",
+        "failure", "reason", failure_reason);
     return;
   }
   for (wtf_size_t i = 0; i < loaders_.size(); ++i) {
@@ -328,6 +343,8 @@ void PrefetchedSignedExchangeManager::TriggerLoad() {
     loader->SetURLLoader(CreatePrefetchedSignedExchangeURLLoader(
         loader->request(), loader_factory.Unbind()));
   }
+  TRACE_EVENT_NESTABLE_ASYNC_END1("loading", "PrefetchedSignedExchangeManager",
+                                  this, "match_result", "success");
 }
 
 }  // namespace blink

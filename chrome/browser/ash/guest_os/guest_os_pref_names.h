@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,14 +10,20 @@ class PrefRegistrySimple;
 namespace guest_os {
 namespace prefs {
 
+// GuestOsSharedPath
 extern const char kGuestOSPathsSharedToVms[];
 
+// GuestOsMimeTypes
 extern const char kGuestOsMimeTypes[];
+
+// GuestOsRegistry and GuestId
+extern const char kVmTypeKey[];
+extern const char kVmNameKey[];
+extern const char kContainerNameKey[];
+
+// GuestOsRegistry
 extern const char kGuestOsRegistry[];
 extern const char kAppDesktopFileIdKey[];
-extern const char kAppVmTypeKey[];
-extern const char kAppVmNameKey[];
-extern const char kAppContainerNameKey[];
 extern const char kAppCommentKey[];
 extern const char kAppExtensionsKey[];
 extern const char kAppMimeTypesKey[];
@@ -32,6 +38,20 @@ extern const char kAppStartupWMClassKey[];
 extern const char kAppStartupNotifyKey[];
 extern const char kAppInstallTimeKey[];
 extern const char kAppLastLaunchTimeKey[];
+
+// GuestId
+extern const char kGuestOsContainers[];
+extern const char kContainerOsVersionKey[];
+extern const char kContainerOsPrettyNameKey[];
+extern const char kContainerColorKey[];
+// Whether or not this guest should show up in the terminal app.
+extern const char kTerminalSupportedKey[];
+// The display name to use in the terminal.
+extern const char kTerminalLabel[];
+
+// Terminal
+// Dictionary of terminal UI settings such as font style, colors, etc.
+extern const char kGuestOsTerminalSettings[];
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 

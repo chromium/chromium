@@ -1,11 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_VIEWS_CONTROLS_THROBBER_H_
 #define UI_VIEWS_CONTROLS_THROBBER_H_
 
-#include "base/compiler_specific.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/views/view.h"
@@ -49,6 +48,10 @@ class VIEWS_EXPORT Throbber : public View {
   bool checked_ = false;
 };
 
+BEGIN_VIEW_BUILDER(VIEWS_EXPORT, Throbber, View)
+VIEW_BUILDER_PROPERTY(bool, Checked)
+END_VIEW_BUILDER
+
 // A SmoothedThrobber is a throbber that is representing potentially short
 // and nonoverlapping bursts of work.  SmoothedThrobber ignores small
 // pauses in the work stops and starts, and only starts its throbber after
@@ -91,6 +94,14 @@ class VIEWS_EXPORT SmoothedThrobber : public Throbber {
   base::OneShotTimer stop_timer_;
 };
 
+BEGIN_VIEW_BUILDER(VIEWS_EXPORT, SmoothedThrobber, Throbber)
+VIEW_BUILDER_PROPERTY(const base::TimeDelta&, StartDelay)
+VIEW_BUILDER_PROPERTY(const base::TimeDelta&, StopDelay)
+END_VIEW_BUILDER
+
 }  // namespace views
+
+DEFINE_VIEW_BUILDER(VIEWS_EXPORT, Throbber)
+DEFINE_VIEW_BUILDER(VIEWS_EXPORT, SmoothedThrobber)
 
 #endif  // UI_VIEWS_CONTROLS_THROBBER_H_

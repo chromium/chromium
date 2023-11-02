@@ -1,10 +1,11 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_VIEWS_EXAMPLES_MESSAGE_BOX_EXAMPLE_H_
 #define UI_VIEWS_EXAMPLES_MESSAGE_BOX_EXAMPLE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/views/examples/example_base.h"
 
 namespace views {
@@ -29,7 +30,7 @@ class VIEWS_EXAMPLES_EXPORT MessageBoxExample : public ExampleBase {
   void StatusButtonPressed();
 
   // The MessageBoxView to be tested.
-  MessageBoxView* message_box_view_;
+  raw_ptr<MessageBoxView> message_box_view_;
 };
 
 }  // namespace examples

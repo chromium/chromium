@@ -1,8 +1,11 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "sandbox/win/src/target_services.h"
+
+#include <windows.h>
+#include <winsock2.h>
 
 #include <new>
 
@@ -117,9 +120,8 @@ TargetServicesBase* g_target_services = nullptr;
 
 }  // namespace
 
-SANDBOX_INTERCEPT IntegrityLevel g_shared_delayed_integrity_level =
-    INTEGRITY_LEVEL_LAST;
-SANDBOX_INTERCEPT MitigationFlags g_shared_delayed_mitigations = 0;
+SANDBOX_INTERCEPT IntegrityLevel g_shared_delayed_integrity_level;
+SANDBOX_INTERCEPT MitigationFlags g_shared_delayed_mitigations;
 
 TargetServicesBase::TargetServicesBase() {}
 
@@ -150,8 +152,9 @@ void TargetServicesBase::LowerToken() {
   process_state_.SetCsrssConnected(is_csrss_connected);
   // Enabling mitigations must happen last otherwise handle closing breaks
   if (g_shared_delayed_mitigations &&
-      !ApplyProcessMitigationsToCurrentProcess(g_shared_delayed_mitigations))
+      !LockDownSecurityMitigations(g_shared_delayed_mitigations)) {
     ::TerminateProcess(::GetCurrentProcess(), SBOX_FATAL_MITIGATION);
+  }
 }
 
 ProcessState* TargetServicesBase::GetState() {
@@ -163,38 +166,6 @@ TargetServicesBase* TargetServicesBase::GetInstance() {
   if (!g_target_services)
     g_target_services = new (g_target_services_memory) TargetServicesBase;
   return g_target_services;
-}
-
-SOCKET TargetServicesBase::CreateBrokeredSocket(int af,
-                                                int type,
-                                                int protocol) {
-  if (!GetState()->InitCalled())
-    return INVALID_SOCKET;
-
-  // IPC must be fully started.
-  void* memory = GetGlobalIPCMemory();
-  if (!memory)
-    return INVALID_SOCKET;
-
-  CrossCallReturn answer = {0};
-  SharedMemIPCClient ipc(memory);
-
-  WSAPROTOCOL_INFOW protocol_info = {};
-
-  InOutCountedBuffer protocol_info_buffer(&protocol_info,
-                                          sizeof(WSAPROTOCOL_INFOW));
-
-  ResultCode code = CrossCall(ipc, IpcTag::WS2SOCKET, af, type, protocol,
-                              protocol_info_buffer, &answer);
-
-  if (code != SBOX_ALL_OK)
-    return INVALID_SOCKET;
-
-  if (answer.extended_count == 1)
-    WSASetLastError(static_cast<int>(answer.extended[0].unsigned_int));
-
-  return ::WSASocket(af, type, protocol, &protocol_info, 0,
-                     WSA_FLAG_OVERLAPPED);
 }
 
 // The broker services a 'test' IPC service with the PING tag.

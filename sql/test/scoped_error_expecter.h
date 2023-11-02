@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <set>
 
-#include "base/compiler_specific.h"
 #include "sql/database.h"
 
 // This is not strictly necessary for the operation of ScopedErrorExpecter, but
@@ -43,7 +42,7 @@ class ScopedErrorExpecter {
 
   // Return |true| if the all of the expected errors were encountered.  Failure
   // to call this results in an EXPECT failure when the instance is destructed.
-  bool SawExpectedErrors() WARN_UNUSED_RESULT;
+  [[nodiscard]] bool SawExpectedErrors();
 
  private:
   // The target of the callback passed to Database::SetErrorExpecter().  If

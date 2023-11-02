@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.blink.mojom.ViewportFit;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.mojom.VirtualKeyboardMode;
 import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
@@ -44,35 +45,49 @@ public abstract class WebContentsObserver {
      */
     public void renderFrameDeleted(GlobalRenderFrameHostId id) {}
 
-    public void renderProcessGone(boolean wasOomProtected) {}
+    public void renderProcessGone() {}
 
     /**
-     * Called when the browser process starts a navigation.
+     * Called when the browser process starts a navigation in the primary main frame.
      * @param navigationHandle
      *        NavigationHandle are provided to several WebContentsObserver methods to allow
      *        observers to track specific navigations. Observers should clear any references to a
-     *        NavigationHandle at didFinishNavigation();
+     *        NavigationHandle at didFinishNavigationInPrimaryMainFrame();
      */
-    public void didStartNavigation(NavigationHandle navigationHandle) {}
+    public void didStartNavigationInPrimaryMainFrame(NavigationHandle navigationHandle) {}
+
+    /**
+     * TODO(crbug.com/1351884) Remove when NotifyJavaSpuriouslyToMeasurePerf experiment is finished.
+     * No-op, for measuring performance of calling didStartNavigation in only the primary main
+     * frame vs calling it in all frames.
+     */
+    public void didStartNavigationNoop(NavigationHandle navigationHandle) {}
 
     /**
      * Called when the browser process redirect a navigation.
      * @param navigationHandle
-     *        NavigationHandle are provided to several WebContentsObserver methods to allow
+     *        NavigationHandle are proided to several WebContentsObserver methods to allow
      *        observers to track specific navigations. Observers should clear any references to a
-     *        NavigationHandle at didFinishNavigation();
+     *        NavigationHandle at didFinishNavigationInPrimaryMainFrame();
      */
     public void didRedirectNavigation(NavigationHandle navigationHandle) {}
 
     /**
-     * Called when the current navigation is finished. This happens when a navigation is committed,
-     * aborted or replaced by a new one.
+     * Called when the current navigation on the primary main frame is finished. This happens when a
+     * navigation is committed, aborted or replaced by a new one.
      * @param navigationHandle
      *        NavigationHandle are provided to several WebContentsObserver methods to allow
      *        observers to track specific navigations. Observers should clear any references to a
      *        NavigationHandle at the end of this function.
      */
-    public void didFinishNavigation(NavigationHandle navigationHandle) {}
+    public void didFinishNavigationInPrimaryMainFrame(NavigationHandle navigationHandle) {}
+
+    /**
+     * TODO(crbug.com/1351884) Remove when NotifyJavaSpuriouslyToMeasurePerf experiment is finished.
+     * No-op, for measuring performance of calling didFinishNavigation in only the primary main
+     * frame vs calling it in all frames.
+     */
+    public void didFinishNavigationNoop(NavigationHandle navigationHandle) {}
 
     /**
      * Called when the a page starts loading.
@@ -135,27 +150,40 @@ public abstract class WebContentsObserver {
     /**
      * Called once the window.document object of the main frame was created.
      */
-    public void documentAvailableInMainFrame() {}
+    public void primaryMainDocumentElementAvailable() {}
 
     /**
-     * Notifies that a load has finished for a given frame.
+     * Notifies that a load has finished for the primary main frame.
      * @param rfhId Identifier of the navigating frame.
      * @param url The validated URL that is being navigated to.
      * @param isKnownValid Whether the URL is known to be valid.
-     * @param isInPrimaryMainFrame Whether the load is happening for the primary main frame.
      * @param rfhLifecycleState The lifecycle state of the associated frame.
      */
-    public void didFinishLoad(GlobalRenderFrameHostId rfhId, GURL url, boolean isKnownValid,
+    public void didFinishLoadInPrimaryMainFrame(GlobalRenderFrameHostId rfhId, GURL url,
+            boolean isKnownValid, @LifecycleState int rfhLifecycleState) {}
+
+    /**
+     * TODO(crbug.com/1351884) Remove when NotifyJavaSpuriouslyToMeasurePerf experiment is finished.
+     * No-op, for measuring performance of calling didFinishLoad in only the primary main frame.
+     */
+    public void didFinishLoadNoop(GlobalRenderFrameHostId rfhId, GURL url, boolean isKnownValid,
             boolean isInPrimaryMainFrame, @LifecycleState int rfhLifecycleState) {}
 
     /**
-     * Notifies that the document has finished loading for the given frame.
+     * Notifies that the document has finished loading for the primary main frame.
      * @param rfhId Identifier of the navigating frame.
-     * @param isInPrimaryMainFrame Whether the load is happening for the primary main frame.
      * @param rfhLifecycleState The lifecycle state of the associated frame.
      */
-    public void documentLoadedInFrame(GlobalRenderFrameHostId rfhId, boolean isInPrimaryMainFrame,
-            @LifecycleState int rfhLifecycleState) {}
+    public void documentLoadedInPrimaryMainFrame(
+            GlobalRenderFrameHostId rfhId, @LifecycleState int rfhLifecycleState) {}
+
+    /**
+     * TODO(crbug.com/1351884) Remove when NotifyJavaSupriouslyToMeasurePerf experiment is finished.
+     * No-op, for measuring performance of calling documentLoadedInFrame in only the primary main
+     * frame vs calling it in all frames.
+     */
+    public void documentLoadedInFrameNoop(GlobalRenderFrameHostId rfhId,
+            boolean isInPrimaryMainFrame, @LifecycleState int rfhLifecycleState) {}
 
     /**
      * Notifies that a navigation entry has been committed.
@@ -172,6 +200,11 @@ public abstract class WebContentsObserver {
      * Called when navigation entries were changed.
      */
     public void navigationEntriesChanged() {}
+
+    /**
+     * Called when a frame receives user activation.
+     */
+    public void frameReceivedUserActivation() {}
 
     /**
      * Called when the theme color was changed.
@@ -216,6 +249,12 @@ public abstract class WebContentsObserver {
      * @param value the new viewport fit value.
      */
     public void viewportFitChanged(@ViewportFitType int value) {}
+
+    /**
+     * Called when the virtual keyboard mode of the Web Contents changes.
+     * @param mode the new virtual keyboard mode.
+     */
+    public void virtualKeyboardModeChanged(@VirtualKeyboardMode.EnumType int mode) {}
 
     /**
      * This method is invoked when a RenderWidgetHost for a WebContents gains focus.

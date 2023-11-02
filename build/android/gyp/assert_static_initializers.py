@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -53,7 +53,7 @@ def _PrintDumpSIsCount(apk_so_name, unzipped_so, out_dir, tool_prefix):
   lib_name = os.path.basename(apk_so_name).replace('crazy.', '')
   so_with_symbols_path = os.path.join(out_dir, 'lib.unstripped', lib_name)
   if not os.path.exists(so_with_symbols_path):
-    raise Exception('Unstripped .so not found. Looked here: %s',
+    raise Exception('Unstripped .so not found. Looked here: %s' %
                     so_with_symbols_path)
   _VerifyLibBuildIdsMatch(tool_prefix, unzipped_so, so_with_symbols_path)
   sis, _ = _GetStaticInitializers(so_with_symbols_path, tool_prefix)
@@ -61,7 +61,6 @@ def _PrintDumpSIsCount(apk_so_name, unzipped_so, out_dir, tool_prefix):
     print(si)
 
 
-# Mostly copied from //infra/scripts/legacy/scripts/slave/chromium/sizes.py.
 def _ReadInitArray(so_path, tool_prefix, expect_no_initializers):
   stdout = _RunReadelf(so_path, ['-SW'], tool_prefix)
   # Matches: .init_array INIT_ARRAY 000000000516add0 5169dd0 000010 00 WA 0 0 8
@@ -70,9 +69,8 @@ def _ReadInitArray(so_path, tool_prefix, expect_no_initializers):
     if match:
       raise Exception(
           'Expected no initializers for %s, yet some were found' % so_path)
-    else:
-      return 0
-  elif not match:
+    return 0
+  if not match:
     raise Exception('Did not find section: .init_array in {}:\n{}'.format(
         so_path, stdout))
   size_str = re.split(r'\W+', match.group(0))[5]
@@ -94,13 +92,12 @@ def _CountStaticInitializers(so_path, tool_prefix, expect_no_initializers):
   # NOTE: this is very implementation-specific and makes assumptions
   # about how compiler and linker implement global static initializers.
   init_array_size = _ReadInitArray(so_path, tool_prefix, expect_no_initializers)
-  return init_array_size / word_size
+  assert init_array_size % word_size == 0
+  return init_array_size // word_size
 
 
 def _AnalyzeStaticInitializers(apk_or_aab, tool_prefix, dump_sis, out_dir,
                                ignored_libs, no_initializers_libs):
-  # Static initializer counting mostly copies logic in
-  # infra/scripts/legacy/scripts/slave/chromium/sizes.py.
   with zipfile.ZipFile(apk_or_aab) as z:
     so_files = [
         f for f in z.infolist() if f.filename.endswith('.so')

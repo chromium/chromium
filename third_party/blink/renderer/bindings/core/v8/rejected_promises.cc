@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,9 +15,9 @@
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/events/promise_rejection_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/inspector/thread_debugger.h"
 #include "third_party/blink/renderer/platform/bindings/scoped_persistent.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/bindings/thread_debugger.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
@@ -80,7 +80,7 @@ class RejectedPromises::Message final {
           script_state_, event_type_names::kUnhandledrejection, init);
       // Log to console if event was not canceled.
       should_log_to_console_ =
-          target->DispatchEvent(*event) == DispatchEventResult::kNotCanceled;
+          target->DispatchEvent(*event, "RejectedPromises::Message::Report") == DispatchEventResult::kNotCanceled;
     }
 
     if (should_log_to_console_) {
@@ -97,6 +97,11 @@ class RejectedPromises::Message final {
   }
 
   void Revoke() {
+    if (!script_state_->ContextIsValid()) {
+      // If the context is not valid, the frame is removed for example, then do
+      // nothing.
+      return;
+    }
     ExecutionContext* execution_context = ExecutionContext::From(script_state_);
     if (!execution_context)
       return;
@@ -117,7 +122,7 @@ class RejectedPromises::Message final {
       init->setReason(ScriptValue(script_state_->GetIsolate(), reason));
       PromiseRejectionEvent* event = PromiseRejectionEvent::Create(
           script_state_, event_type_names::kRejectionhandled, init);
-      target->DispatchEvent(*event);
+      target->DispatchEvent(*event, "RejectedPromises::Messages::Revoke");
     }
 
     if (should_log_to_console_ && promise_rejection_id_) {
@@ -210,9 +215,10 @@ void RejectedPromises::HandlerAdded(v8::PromiseRejectMessage data) {
       // a separate statement.
       ExecutionContext* context = message->GetContext();
       context->GetTaskRunner(TaskType::kDOMManipulation)
-          ->PostTask(FROM_HERE, WTF::Bind(&RejectedPromises::RevokeNow,
-                                          scoped_refptr<RejectedPromises>(this),
-                                          std::move(message)));
+          ->PostTask(FROM_HERE,
+                     WTF::BindOnce(&RejectedPromises::RevokeNow,
+                                   scoped_refptr<RejectedPromises>(this),
+                                   std::move(message)));
       reported_as_errors_.EraseAt(i);
       return;
     }
@@ -220,7 +226,7 @@ void RejectedPromises::HandlerAdded(v8::PromiseRejectMessage data) {
 }
 
 void RejectedPromises::Dispose() {
-  if (queue_.IsEmpty())
+  if (queue_.empty())
     return;
 
   ProcessQueueNow(std::move(queue_));
@@ -228,7 +234,7 @@ void RejectedPromises::Dispose() {
 }
 
 void RejectedPromises::ProcessQueue() {
-  if (queue_.IsEmpty())
+  if (queue_.empty())
     return;
 
   HeapHashMap<Member<ExecutionContext>, MessageQueue> queues;
@@ -240,9 +246,10 @@ void RejectedPromises::ProcessQueue() {
 
   for (auto& kv : queues) {
     kv.key->GetTaskRunner(blink::TaskType::kDOMManipulation)
-        ->PostTask(FROM_HERE, WTF::Bind(&RejectedPromises::ProcessQueueNow,
-                                        scoped_refptr<RejectedPromises>(this),
-                                        std::move(kv.value)));
+        ->PostTask(FROM_HERE,
+                   WTF::BindOnce(&RejectedPromises::ProcessQueueNow,
+                                 scoped_refptr<RejectedPromises>(this),
+                                 std::move(kv.value)));
   }
 }
 

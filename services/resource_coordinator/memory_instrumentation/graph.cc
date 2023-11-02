@@ -1,10 +1,12 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "services/resource_coordinator/memory_instrumentation/graph.h"
 
 #include "base/callback.h"
+#include "base/containers/adapters.h"
+#include "base/containers/contains.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_tokenizer.h"
 
@@ -52,9 +54,9 @@ Node* GlobalDumpGraph::CreateNode(Process* process_graph, Node* parent) {
 
 PreOrderIterator GlobalDumpGraph::VisitInDepthFirstPreOrder() {
   std::vector<Node*> roots;
-  for (auto it = process_dump_graphs_.rbegin();
-       it != process_dump_graphs_.rend(); it++) {
-    roots.push_back(it->second->root());
+  for (const auto& [process_id, process] :
+       base::Reversed(process_dump_graphs_)) {
+    roots.push_back(process->root());
   }
   roots.push_back(shared_memory_graph_->root());
   return PreOrderIterator(std::move(roots));
@@ -62,9 +64,9 @@ PreOrderIterator GlobalDumpGraph::VisitInDepthFirstPreOrder() {
 
 PostOrderIterator GlobalDumpGraph::VisitInDepthFirstPostOrder() {
   std::vector<Node*> roots;
-  for (auto it = process_dump_graphs_.rbegin();
-       it != process_dump_graphs_.rend(); it++) {
-    roots.push_back(it->second->root());
+  for (const auto& [process_id, process] :
+       base::Reversed(process_dump_graphs_)) {
+    roots.push_back(process->root());
   }
   roots.push_back(shared_memory_graph_->root());
   return PostOrderIterator(std::move(roots));
@@ -217,15 +219,13 @@ Node* PreOrderIterator::next() {
       continue;
 
     // Visit all children of this node.
-    for (auto it = node->children()->rbegin(); it != node->children()->rend();
-         it++) {
-      to_visit_.push_back(it->second);
+    for (const auto& [name, child] : base::Reversed(*node->children())) {
+      to_visit_.push_back(child);
     }
 
     // Visit all owners of this node.
-    for (auto it = node->owned_by_edges()->rbegin();
-         it != node->owned_by_edges()->rend(); it++) {
-      to_visit_.push_back((*it)->source());
+    for (auto* edge : base::Reversed(*node->owned_by_edges())) {
+      to_visit_.push_back(edge->source());
     }
 
     // Add this node to the visited set.
@@ -265,22 +265,20 @@ Node* PostOrderIterator::next() {
 
     // If the node is not at the front, it should also certainly not be
     // anywhere else in the path. If it is, there is a cycle in the graph.
-    DCHECK(std::find(path_.begin(), path_.end(), node) == path_.end());
+    DCHECK(!base::Contains(path_, node));
     path_.push_back(node);
 
     // Add this node back to the queue of nodes to visit.
     to_visit_.push_back(node);
 
     // Visit all children of this node.
-    for (auto it = node->children()->rbegin(); it != node->children()->rend();
-         it++) {
-      to_visit_.push_back(it->second);
+    for (const auto& [name, child] : base::Reversed(*node->children())) {
+      to_visit_.push_back(child);
     }
 
     // Visit all owners of this node.
-    for (auto it = node->owned_by_edges()->rbegin();
-         it != node->owned_by_edges()->rend(); it++) {
-      to_visit_.push_back((*it)->source());
+    for (auto* edge : base::Reversed(*node->owned_by_edges())) {
+      to_visit_.push_back(edge->source());
     }
   }
   return nullptr;

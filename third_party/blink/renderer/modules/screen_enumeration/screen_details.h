@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,8 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "ui/display/screen_infos.h"
 
 namespace blink {
@@ -18,7 +19,7 @@ class LocalDOMWindow;
 class ScreenDetailed;
 
 // Interface exposing multi-screen information.
-// https://github.com/webscreens/window-placement
+// https://w3c.github.io/window-placement/
 class MODULES_EXPORT ScreenDetails final
     : public EventTargetWithInlineData,
       public ExecutionContextLifecycleObserver {
@@ -42,12 +43,18 @@ class MODULES_EXPORT ScreenDetails final
 
   void Trace(Visitor*) const override;
 
-  // Called when there is a visual property update with potentially new
-  // multi-screen information.
+  // Called on visual property updates with potentially new screen information.
+  // Update web-exposed data structures and enqueues events for dispatch.
   void UpdateScreenInfos(LocalDOMWindow* window,
                          const display::ScreenInfos& new_infos);
 
  private:
+  // Update web-exposed data structures on screen information changes.
+  // Enqueues events for dispatch if `dispatch_events` is true.
+  void UpdateScreenInfosImpl(LocalDOMWindow* window,
+                             const display::ScreenInfos& new_infos,
+                             bool dispatch_events);
+
   // Returns the first unused index, starting at one.  Internal and external
   // are numbered separately.  This is used for ScreenDetailed::label strings.
   uint32_t GetNewLabelIdx(bool is_internal);

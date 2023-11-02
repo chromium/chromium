@@ -67,7 +67,7 @@ class TestLogStream(object):
 
     def assertMessages(self, messages):
         """Asserts that the given messages match the logged messages."""
-        self._test_case.assertEqual(sorted(messages), sorted(self.messages))
+        self._test_case.assertEqual(messages, self.messages)
 
 
 class LogTesting(object):
@@ -112,8 +112,8 @@ class LogTesting(object):
         # root logger seems to suffice.
         return logging.getLogger()
 
-    @staticmethod
-    def setUp(test_case, logging_level=logging.INFO):
+    @classmethod
+    def setUp(cls, test_case, logging_level=logging.INFO):
         """Configures logging for unit testing.
 
         Configures the root logger to log to a testing log stream.
@@ -146,7 +146,7 @@ class LogTesting(object):
         # logger.setLevel().  This ensures that we have not interfered
         # with how the code being tested may have configured the root
         # logger.
-        logger = LogTesting._getLogger()
+        logger = cls._getLogger()
         logger.setLevel(logging_level)
         logger.addHandler(handler)
 

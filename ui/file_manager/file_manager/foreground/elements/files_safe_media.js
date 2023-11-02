@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,7 +26,7 @@ const FilesSafeMedia = Polymer({
     type: {
       type: String,
       readonly: true,
-    }
+    },
   },
 
   listeners: {
@@ -51,7 +51,7 @@ const FilesSafeMedia = Polymer({
         return toSandboxedURL('untrusted_resources/files_text_content.html')
             .toString();
       default:
-        console.error('Unsupported type: ' + this.type);
+        console.warn('Unsupported type: ' + this.type);
         return '';
     }
   },
@@ -64,11 +64,7 @@ const FilesSafeMedia = Polymer({
       this.contentsNode_ = null;
     } else if (hasContent && !this.contentsNode_) {
       // Create node only if src exists to save resources.
-      if (window.isSWA) {
-        this.createUntrustedContents_();
-      } else {
-        this.createWebviewContents_();
-      }
+      this.createUntrustedContents_();
     } else if (hasContent && this.contentsNode_.contentWindow) {
       /** @type {!UntrustedPreviewData} */
       const data = {
@@ -80,17 +76,6 @@ const FilesSafeMedia = Polymer({
             data, toSandboxedURL().origin);
       });
     }
-  },
-
-  createWebviewContents_: function() {
-    const webview =
-        /** @type {!HTMLElement} */ (document.createElement('webview'));
-    this.contentsNode_ = webview;
-    webview.partition = 'trusted';
-    webview.allowtransparency = 'true';
-    this.$.content.appendChild(webview);
-    webview.addEventListener('contentload', () => this.onSrcChange_());
-    webview.src = this.sourceFile_();
   },
 
   createUntrustedContents_: function() {
@@ -129,7 +114,7 @@ const FilesSafeMedia = Polymer({
     });
     window.addEventListener('message', event => {
       if (event.origin !== toSandboxedURL().origin) {
-        console.error('Unknown origin: ' + event.origin);
+        console.warn('Unknown origin: ' + event.origin);
         return;
       }
       if (event.data === 'tap-inside') {
@@ -148,7 +133,7 @@ const FilesSafeMedia = Polymer({
         this.fire('files-safe-media-load-error');
       }
     });
-  }
+  },
 });
 
 //# sourceURL=//ui/file_manager/file_manager/foreground/elements/files_safe_media.js

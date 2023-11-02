@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 
 namespace ui {
@@ -48,7 +49,7 @@ class MultiLayerAnimatorTestController {
   // queued, only the running ones will be progressed.
   void StepAnimations(const base::TimeDelta& duration);
 
-  MultiLayerAnimatorTestControllerDelegate* delegate_;
+  raw_ptr<MultiLayerAnimatorTestControllerDelegate> delegate_;
 };
 
 }  // namespace test

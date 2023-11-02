@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,29 +8,32 @@
  * security key.
  */
 
-import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
-import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
-import 'chrome://resources/cr_elements/cr_fingerprint/cr_fingerprint_progress_arc.m.js';
-import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import 'chrome://resources/cr_elements/cr_fingerprint/cr_fingerprint_progress_arc.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
-import '../settings_shared_css.js';
+import '../settings_shared.css.js';
 import '../site_favicon.js';
+import '../i18n_setup.js';
 
-import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
-import {CrFingerprintProgressArcElement} from 'chrome://resources/cr_elements/cr_fingerprint/cr_fingerprint_progress_arc.m.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
-import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
-import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
-import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
+import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {CrFingerprintProgressArcElement} from 'chrome://resources/cr_elements/cr_fingerprint/cr_fingerprint_progress_arc.js';
+import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {WebUIListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
-import {afterNextRender, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {loadTimeData} from '../i18n_setup.js';
-
-import {Ctap2Status, Enrollment, EnrollmentResponse, SampleResponse, SampleStatus, SecurityKeysBioEnrollProxy, SecurityKeysBioEnrollProxyImpl,} from './security_keys_browser_proxy.js';
+import {getTemplate} from './security_keys_bio_enroll_dialog.html.js';
+import {Ctap2Status, Enrollment, EnrollmentResponse, SampleResponse, SampleStatus, SecurityKeysBioEnrollProxy, SecurityKeysBioEnrollProxyImpl} from './security_keys_browser_proxy.js';
 import {SettingsSecurityKeysPinFieldElement} from './security_keys_pin_field.js';
 
 export enum BioEnrollDialogPage {
@@ -42,13 +45,16 @@ export enum BioEnrollDialogPage {
   ERROR = 'error',
 }
 
-interface SettingsSecurityKeysBioEnrollDialogElement {
+export interface SettingsSecurityKeysBioEnrollDialogElement {
   $: {
+    addButton: HTMLElement,
     arc: CrFingerprintProgressArcElement,
-    confirmButton: HTMLElement,
+    cancelButton: CrButtonElement,
+    confirmButton: CrButtonElement,
     dialog: CrDialogElement,
+    error: HTMLElement,
     enrollmentList: IronListElement,
-    enrollmentName: HTMLElement,
+    enrollmentName: CrInputElement,
     pin: SettingsSecurityKeysPinFieldElement,
   };
 }
@@ -56,14 +62,14 @@ interface SettingsSecurityKeysBioEnrollDialogElement {
 const SettingsSecurityKeysBioEnrollDialogElementBase =
     WebUIListenerMixin(I18nMixin(PolymerElement));
 
-class SettingsSecurityKeysBioEnrollDialogElement extends
+export class SettingsSecurityKeysBioEnrollDialogElement extends
     SettingsSecurityKeysBioEnrollDialogElementBase {
   static get is() {
     return 'settings-security-keys-bio-enroll-dialog';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -108,7 +114,7 @@ class SettingsSecurityKeysBioEnrollDialogElement extends
   private deleteInProgress_: boolean;
   private dialogPage_: BioEnrollDialogPage;
   private doneButtonVisible_: boolean;
-  private enrollments_: Array<Enrollment>;
+  private enrollments_: Enrollment[];
   private minPinLength_: number;
   private progressArcLabel_: string;
   private recentEnrollmentName_: string;
@@ -122,13 +128,8 @@ class SettingsSecurityKeysBioEnrollDialogElement extends
   private recentEnrollmentId_: string = '';
   private showSetPINButton_: boolean = false;
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
-
-    afterNextRender(this, function() {
-      IronA11yAnnouncer.requestAvailability();
-    });
-
     this.$.dialog.showModal();
     this.addWebUIListener(
         'security-keys-bio-enroll-error',
@@ -141,6 +142,10 @@ class SettingsSecurityKeysBioEnrollDialogElement extends
       this.minPinLength_ = minPinLength;
       this.dialogPage_ = BioEnrollDialogPage.PIN_PROMPT;
     });
+  }
+
+  setDialogPageForTesting(page: BioEnrollDialogPage) {
+    this.dialogPage_ = page;
   }
 
   private fire_(eventName: string, detail?: any) {
@@ -176,11 +181,15 @@ class SettingsSecurityKeysBioEnrollDialogElement extends
             });
   }
 
-  private onEnrollments_(enrollments: Array<Enrollment>) {
+  private onEnrollments_(enrollments: Enrollment[]) {
     this.enrollments_ =
         enrollments.slice().sort((a, b) => a.name.localeCompare(b.name));
     this.$.enrollmentList.fire('iron-resize');
     this.dialogPage_ = BioEnrollDialogPage.ENROLLMENTS;
+  }
+
+  setCancelButtonDisabledForTesting(disabled: boolean) {
+    this.cancelButtonDisabled_ = disabled;
   }
 
   private dialogPageChanged_() {
@@ -253,7 +262,7 @@ class SettingsSecurityKeysBioEnrollDialogElement extends
     if (response.status !== SampleStatus.OK) {
       this.progressArcLabel_ =
           this.i18n('securityKeysBioEnrollmentTryAgainLabel');
-      this.fire_('iron-announce', {text: this.progressArcLabel_});
+      getAnnouncerInstance().announce(this.progressArcLabel_);
       return;
     }
 
@@ -416,7 +425,7 @@ class SettingsSecurityKeysBioEnrollDialogElement extends
   /**
    * @return The header label for the enrollments page.
    */
-  private enrollmentsHeader_(enrollments: Array<Enrollment>|null): string {
+  private enrollmentsHeader_(enrollments: Enrollment[]|null): string {
     return this.i18n(
         enrollments && enrollments.length ?
             'securityKeysBioEnrollmentEnrollmentsLabel' :
@@ -425,6 +434,13 @@ class SettingsSecurityKeysBioEnrollDialogElement extends
 
   private isNullOrEmpty_(s: string): boolean {
     return s === '' || !s;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-security-keys-bio-enroll-dialog':
+        SettingsSecurityKeysBioEnrollDialogElement;
   }
 }
 

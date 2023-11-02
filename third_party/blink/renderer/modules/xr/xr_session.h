@@ -1,26 +1,26 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_SESSION_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_SESSION_H_
 
+#include <memory>
+
 #include "base/containers/span.h"
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_light_probe_init.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
-#include "third_party/blink/renderer/core/html/html_element.h"
-#include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
-#include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/xr/xr_frame_request_callback_collection.h"
 #include "third_party/blink/renderer/modules/xr/xr_input_source.h"
 #include "third_party/blink/renderer/modules/xr/xr_input_source_array.h"
-#include "third_party/blink/renderer/modules/xr/xr_reference_space.h"
-#include "third_party/blink/renderer/platform/geometry/double_size.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
@@ -28,8 +28,6 @@
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
-
-#include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 
 namespace blink {
 
@@ -88,6 +86,12 @@ class XRSession final
       "Depth sensing feature is not supported by the session.";
   static constexpr char kRawCameraAccessFeatureNotSupported[] =
       "Raw camera access feature is not supported by the session.";
+  static constexpr char kCannotCancelHitTestSource[] =
+      "Hit test source could not be canceled! Ensure that it was not already "
+      "canceled.";
+  static constexpr char kCannotReportPoses[] =
+      "Poses cannot be given out for the current state.";
+
   // Runs all the video.requestVideoFrameCallback() callbacks associated with
   // one HTMLVideoElement. |double| is the |high_res_now_ms|, derived from
   // MonotonicTimeToZeroBasedDocumentTime(|current_frame_time|), to be passed as
@@ -230,13 +234,15 @@ class XRSession final
   // which gives 1:1 pixel ratio at the center of the user's view.
   double NativeFramebufferScale() const;
 
+  double RecommendedFramebufferScale() const;
+
   // Describes the recommended dimensions of layer framebuffers. Should be a
   // value that provides a good balance between quality and performance.
-  DoubleSize DefaultFramebufferSize() const;
+  gfx::SizeF RecommendedFramebufferSize() const;
 
   // Reports the size of the output canvas, if one is available. If not
   // reports (0, 0);
-  DoubleSize OutputCanvasSize() const;
+  gfx::Size OutputCanvasSize() const;
   void DetachOutputCanvas(HTMLCanvasElement* output_canvas);
 
   void SetDOMOverlayElement(Element* element);
@@ -275,7 +281,7 @@ class XRSession final
   bool EmulatedPosition() const {
     // If we don't have display info then we should be using the identity
     // reference space, which by definition will be emulating the position.
-    if (pending_views_.IsEmpty()) {
+    if (pending_views_.empty()) {
       return true;
     }
 
@@ -308,8 +314,6 @@ class XRSession final
   // if hit test source existed and was removed, false otherwise.
   bool RemoveHitTestSource(XRHitTestSource* hit_test_source);
   bool RemoveHitTestSource(XRTransientInputHitTestSource* hit_test_source);
-
-  void SetXRDisplayInfo(device::mojom::blink::VRDisplayInfoPtr display_info);
 
   bool UsesInputEventing() { return uses_input_eventing_; }
   bool LightEstimationEnabled() { return !!world_light_probe_; }
@@ -412,7 +416,6 @@ class XRSession final
       const device::mojom::blink::XRFrameDataPtr& frame_data);
 
   // XRSessionClient
-  void OnChanged(device::mojom::blink::VRDisplayInfoPtr display_info) override;
   void OnExitPresent() override;
   void OnVisibilityStateChanged(
       device::mojom::blink::XRVisibilityState visibility_state) override;
@@ -532,7 +535,7 @@ class XRSession final
   // on the device - this is done in |hit_test_source_ids_| and
   // |hit_test_source_for_transient_input_ids_|.
   // For the specifics of HeapHashMap<Key, WeakMember<Value>> behavior, see:
-  // https://chromium.googlesource.com/chromium/src/+/master/third_party/blink/renderer/platform/heap/BlinkGCAPIReference.md#weak-collections
+  // https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/platform/heap/BlinkGCAPIReference.md#weak-collections
   HeapHashMap<uint64_t, WeakMember<XRHitTestSource>>
       hit_test_source_ids_to_hit_test_sources_;
   HeapHashMap<uint64_t, WeakMember<XRTransientInputHitTestSource>>
@@ -589,6 +592,7 @@ class XRSession final
   bool frames_throttled_ = false;
 
   bool views_updated_this_frame_ = false;
+  bool canvas_was_resized_ = false;
 
   // Indicates that we've already logged a metric, so don't need to log it
   // again.
@@ -600,7 +604,7 @@ class XRSession final
   int output_height_ = 1;
 
   bool uses_input_eventing_ = false;
-  float default_framebuffer_scale_ = 1.0;
+  float recommended_framebuffer_scale_ = 1.0;
 
   // Corresponds to mojo XRSession.supportsViewportScaling
   bool supports_viewport_scaling_ = false;

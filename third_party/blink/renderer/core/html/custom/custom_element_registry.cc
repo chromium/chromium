@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -73,6 +73,14 @@ bool ThrowIfValidName(const AtomicString& name,
 }
 
 }  // namespace
+
+// static
+CustomElementRegistry* CustomElementRegistry::Create(
+    ScriptState* script_state) {
+  DCHECK(RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled());
+  return MakeGarbageCollected<CustomElementRegistry>(
+      LocalDOMWindow::From(script_state));
+}
 
 CustomElementRegistry::CustomElementRegistry(const LocalDOMWindow* owner)
     : element_definition_is_running_(false),
@@ -217,8 +225,11 @@ CustomElementDefinition* CustomElementRegistry::DefineInternal(
   // 16: when-defined promise processing
   const auto& entry = when_defined_promise_map_.find(name);
   if (entry != when_defined_promise_map_.end()) {
-    entry->value->Resolve();
+    ScriptPromiseResolver* resolver = entry->value;
     when_defined_promise_map_.erase(entry);
+    // Resolve() may run synchronous JavaScript that invalidates iterators of
+    // |when_defined_promise_map_|, so it must be called after erasing |entry|.
+    resolver->Resolve(definition->GetConstructorForScript());
   }
 
   return definition;
@@ -299,8 +310,10 @@ ScriptPromise CustomElementRegistry::whenDefined(
   if (ThrowIfInvalidName(name, false, exception_state))
     return ScriptPromise();
   CustomElementDefinition* definition = DefinitionForName(name);
-  if (definition)
-    return ScriptPromise::CastUndefined(script_state);
+  if (definition) {
+    return ScriptPromise::Cast(script_state,
+                               definition->GetConstructorForScript());
+  }
   const auto it = when_defined_promise_map_.find(name);
   if (it != when_defined_promise_map_.end())
     return it->value->Promise();

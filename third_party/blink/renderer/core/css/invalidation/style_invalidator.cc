@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -183,11 +183,15 @@ void StyleInvalidator::PushInvalidationSetsForContainerNode(
     ContainerNode& node,
     SiblingData& sibling_data) {
   auto pending_invalidations_iterator = pending_invalidation_map_.find(&node);
-  DCHECK(pending_invalidations_iterator != pending_invalidation_map_.end());
+  if (pending_invalidations_iterator == pending_invalidation_map_.end()) {
+    NOTREACHED() << "We should strictly not have marked an element for "
+                    "invalidation without any pending invalidations.";
+    return;
+  }
   NodeInvalidationSets& pending_invalidations =
       pending_invalidations_iterator->value;
 
-  DCHECK(pending_nth_sets_.IsEmpty());
+  DCHECK(pending_nth_sets_.empty());
 
   for (const auto& invalidation_set : pending_invalidations.Siblings()) {
     CHECK(invalidation_set->IsAlive());
@@ -203,7 +207,7 @@ void StyleInvalidator::PushInvalidationSetsForContainerNode(
   if (node.GetStyleChangeType() == kSubtreeStyleChange)
     return;
 
-  if (!pending_invalidations.Descendants().IsEmpty()) {
+  if (!pending_invalidations.Descendants().empty()) {
     for (const auto& invalidation_set : pending_invalidations.Descendants()) {
       CHECK(invalidation_set->IsAlive());
       PushInvalidationSet(*invalidation_set);

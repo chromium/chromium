@@ -1,15 +1,13 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/crostini/crostini_features.h"
 
 #include "ash/constants/ash_features.h"
-#include "ash/constants/ash_switches.h"
 #include "base/feature_list.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
-#include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/virtual_machines/virtual_machines_util.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -181,6 +179,7 @@ CrostiniFeatures::~CrostiniFeatures() = default;
 bool CrostiniFeatures::CouldBeAllowed(Profile* profile, std::string* reason) {
   if (!base::FeatureList::IsEnabled(features::kCrostini)) {
     VLOG(1) << "Crostini is not enabled in feature list.";
+    // Prior to M105, the /dev/kvm check used the same reason string.
     *reason = "Crostini is not supported on this device";
     return false;
   }
@@ -188,35 +187,21 @@ bool CrostiniFeatures::CouldBeAllowed(Profile* profile, std::string* reason) {
   if (!crostini::CrostiniManager::IsDevKvmPresent()) {
     // Hardware is physically incapable, no matter what the user wants.
     VLOG(1) << "Cannot run crostini because /dev/kvm is not present.";
-    *reason = "Crostini is not supported on this device";
+    *reason = "Virtualization is not supported on this device";
     return false;
   }
 
-  if (!chromeos::ProfileHelper::IsPrimaryProfile(profile)) {
+  if (!ash::ProfileHelper::IsPrimaryProfile(profile)) {
     VLOG(1) << "Crostini UI is not allowed on non-primary profiles.";
     *reason = "Crostini is only allowed in primary user sessions";
     return false;
   }
 
   if (!profile || profile->IsChild() || profile->IsOffTheRecord() ||
-      chromeos::ProfileHelper::IsEphemeralUserProfile(profile) ||
-      chromeos::ProfileHelper::IsLockScreenAppProfile(profile)) {
+      ash::ProfileHelper::IsEphemeralUserProfile(profile) ||
+      ash::ProfileHelper::IsLockScreenAppProfile(profile)) {
     VLOG(1) << "Profile is not allowed to run crostini.";
     *reason = "This user session is not allowed to run crostini";
-    return false;
-  }
-
-  bool kernelnext = base::CommandLine::ForCurrentProcess()->HasSwitch(
-      chromeos::switches::kKernelnextRestrictVMs);
-  bool kernelnext_override =
-      base::FeatureList::IsEnabled(features::kKernelnextVMs);
-  if (kernelnext && !kernelnext_override) {
-    // The host kernel is on an experimental version. In future updates this
-    // device may not have VM support, so we allow enabling VMs, but guard them
-    // on a chrome://flags switch (enable-experimental-kernel-vm-support).
-    VLOG(1) << "Cannot run crostini on experimental kernel without "
-            << "--enable-experimental-kernel-vm-support.";
-    *reason = "Crostini can not run on experimental kernel by default";
     return false;
   }
 
@@ -234,7 +219,7 @@ bool CrostiniFeatures::IsAllowedNow(Profile* profile, std::string* reason) {
   }
 
   const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+      ash::ProfileHelper::Get()->GetUserByProfile(profile);
   if (!IsUnaffiliatedCrostiniAllowedByPolicy() && !user->IsAffiliated()) {
     VLOG(1) << "Policy blocks unaffiliated user from running Crostini.";
     *reason = "Crostini for unaffiliated users is disabled by policy";
@@ -310,15 +295,14 @@ void CrostiniFeatures::CanChangeAdbSideloading(
   bool is_device_enterprise_managed = connector->IsDeviceEnterpriseManaged();
   bool is_profile_enterprise_managed =
       profile->GetProfilePolicyConnector()->IsManaged();
-  bool is_owner_profile = chromeos::ProfileHelper::IsOwnerProfile(profile);
+  bool is_owner_profile = ash::ProfileHelper::IsOwnerProfile(profile);
   if (is_device_enterprise_managed || is_profile_enterprise_managed) {
     auto user_policy =
         static_cast<crostini::CrostiniArcAdbSideloadingUserAllowanceMode>(
             profile->GetPrefs()->GetInteger(
                 crostini::prefs::kCrostiniArcAdbSideloadingUserPref));
 
-    const auto* user =
-        chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+    const auto* user = ash::ProfileHelper::Get()->GetUserByProfile(profile);
     bool is_affiliated_user = user && user->IsAffiliated();
 
     CanChangeManagedAdbSideloading(

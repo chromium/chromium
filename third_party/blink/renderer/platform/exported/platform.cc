@@ -40,9 +40,11 @@
 #include "build/build_config.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
+#include "media/base/media_log.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
+#include "third_party/blink/public/platform/web_dedicated_worker_host_factory_client.h"
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
 #include "third_party/blink/public/platform/web_url_loader_factory.h"
 #include "third_party/blink/public/platform/websocket_handshake_throttle.h"
@@ -59,13 +61,16 @@
 #include "third_party/blink/renderer/platform/instrumentation/partition_alloc_memory_dump_provider.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/memory_cache_dump_provider.h"
 #include "third_party/blink/renderer/platform/language.h"
-#include "third_party/blink/renderer/platform/scheduler/common/simple_thread_scheduler.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/scheduler/common/simple_main_thread_scheduler.h"
+#include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
+#include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/theme/web_theme_engine_helper.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
+#include "third_party/skia/include/core/SkGraphics.h"
 #include "third_party/webrtc/api/rtp_parameters.h"
 #include "third_party/webrtc/p2p/base/port_allocator.h"
 
@@ -137,7 +142,7 @@ Platform::~Platform() = default;
 
 namespace {
 
-class SimpleMainThread : public Thread {
+class SimpleMainThread : public MainThread {
  public:
   SimpleMainThread() = default;
 
@@ -159,11 +164,17 @@ class SimpleMainThread : public Thread {
   // and Platform::UnsetMainThreadTaskRunnerForTesting().
 
   ThreadScheduler* Scheduler() override { return &scheduler_; }
-  scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner() const override {
+  scoped_refptr<base::SingleThreadTaskRunner> GetDeprecatedTaskRunner()
+      const override {
     if (main_thread_task_runner_for_testing_)
       return main_thread_task_runner_for_testing_;
     DCHECK(WTF::IsMainThread());
     return base::ThreadTaskRunnerHandle::Get();
+  }
+
+  scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(
+      MainThreadTaskRunnerRestricted) const override {
+    return GetDeprecatedTaskRunner();
   }
 
   void SetMainThreadTaskRunnerForTesting(
@@ -174,7 +185,7 @@ class SimpleMainThread : public Thread {
  private:
   bool IsSimpleMainThread() const override { return true; }
 
-  scheduler::SimpleThreadScheduler scheduler_;
+  scheduler::SimpleMainThreadScheduler scheduler_;
   scoped_refptr<base::SingleThreadTaskRunner>
       main_thread_task_runner_for_testing_;
 };
@@ -210,10 +221,11 @@ void Platform::CreateMainThreadAndInitialize(Platform* platform) {
   InitializeMainThreadCommon(platform, std::make_unique<SimpleMainThread>());
 }
 
-void Platform::InitializeMainThreadCommon(Platform* platform,
-                                          std::unique_ptr<Thread> main_thread) {
+void Platform::InitializeMainThreadCommon(
+    Platform* platform,
+    std::unique_ptr<MainThread> main_thread) {
   DCHECK(did_initialize_blink_);
-  Thread::SetMainThread(std::move(main_thread));
+  MainThread::SetMainThread(std::move(main_thread));
 
   ProcessHeap::Init();
 
@@ -254,6 +266,9 @@ void Platform::InitializeMainThreadCommon(Platform* platform,
       CanvasMemoryDumpProvider::Instance(), "Canvas",
       base::ThreadTaskRunnerHandle::Get());
 
+  SkGraphics::SetVariableColrV1EnabledFunc(
+      RuntimeEnabledFeatures::VariableCOLRV1Enabled);
+
   // Use a delayed idle task as this is low priority work that should stop when
   // the main thread is not doing any work.
   WTF::Partitions::StartPeriodicReclaim(
@@ -267,7 +282,7 @@ void Platform::SetCurrentPlatformForTesting(Platform* platform) {
 
 void Platform::CreateMainThreadForTesting() {
   DCHECK(!Thread::MainThread());
-  Thread::SetMainThread(std::make_unique<SimpleMainThread>());
+  MainThread::SetMainThread(std::make_unique<SimpleMainThread>());
 }
 
 void Platform::SetMainThreadTaskRunnerForTesting() {
@@ -293,9 +308,10 @@ std::unique_ptr<WebURLLoaderFactory> Platform::WrapURLLoaderFactory(
   return nullptr;
 }
 
-std::unique_ptr<blink::WebURLLoaderFactory>
-Platform::WrapSharedURLLoaderFactory(
-    scoped_refptr<network::SharedURLLoaderFactory> factory) {
+std::unique_ptr<WebDedicatedWorkerHostFactoryClient>
+Platform::CreateDedicatedWorkerHostFactoryClient(
+    WebDedicatedWorker*,
+    const BrowserInterfaceBrokerProxy&) {
   return nullptr;
 }
 
@@ -305,20 +321,11 @@ void Platform::CreateServiceWorkerSubresourceLoaderFactory(
     const WebString& client_id,
     std::unique_ptr<network::PendingSharedURLLoaderFactory> fallback_factory,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
-    scoped_refptr<base::SequencedTaskRunner> task_runner,
-    scoped_refptr<base::SequencedTaskRunner> worker_timing_callback_task_runner,
-    base::RepeatingCallback<
-        void(int, mojo::PendingReceiver<blink::mojom::WorkerTimingContainer>)>
-        worker_timing_callback) {}
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {}
 
 ThreadSafeBrowserInterfaceBrokerProxy* Platform::GetBrowserInterfaceBroker() {
   DEFINE_STATIC_LOCAL(DefaultBrowserInterfaceBrokerProxy, proxy, ());
   return &proxy;
-}
-
-std::unique_ptr<Thread> Platform::CreateThread(
-    const ThreadCreationParams& params) {
-  return Thread::CreateThread(params);
 }
 
 void Platform::CreateAndSetCompositorThread() {
@@ -327,7 +334,7 @@ void Platform::CreateAndSetCompositorThread() {
 
 scoped_refptr<base::SingleThreadTaskRunner>
 Platform::CompositorThreadTaskRunner() {
-  if (Thread* compositor_thread = Thread::CompositorThread())
+  if (NonMainThread* compositor_thread = Thread::CompositorThread())
     return compositor_thread->GetTaskRunner();
   return nullptr;
 }
@@ -356,8 +363,9 @@ Platform::SharedMainThreadContextProvider() {
   return nullptr;
 }
 
-scoped_refptr<viz::RasterContextProvider>
-Platform::SharedCompositorWorkerContextProvider() {
+scoped_refptr<cc::RasterContextProviderWrapper>
+Platform::SharedCompositorWorkerContextProvider(
+    cc::RasterDarkModeFilter* dark_mode_filter) {
   return nullptr;
 }
 
@@ -365,8 +373,19 @@ scoped_refptr<gpu::GpuChannelHost> Platform::EstablishGpuChannelSync() {
   return nullptr;
 }
 
+void Platform::EstablishGpuChannel(EstablishGpuChannelCallback callback) {
+  std::move(callback).Run(nullptr);
+}
+
 gfx::ColorSpace Platform::GetRenderingColorSpace() const {
   return {};
+}
+
+std::unique_ptr<media::MediaLog> Platform::GetMediaLog(
+    MediaInspectorContext* inspector_context,
+    scoped_refptr<base::SingleThreadTaskRunner> owner_task_runner,
+    bool is_on_worker) {
+  return nullptr;
 }
 
 }  // namespace blink

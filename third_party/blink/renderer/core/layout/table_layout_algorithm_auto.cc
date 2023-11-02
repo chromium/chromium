@@ -439,10 +439,10 @@ int TableLayoutAlgorithmAuto::CalcEffectiveLogicalWidth() {
             // mozilla doesn't do this so I decided we don't neither.
             break;
           }
-          FALLTHROUGH;
+          [[fallthrough]];
         case Length::kAuto:
           have_auto = true;
-          FALLTHROUGH;
+          [[fallthrough]];
         default:
           // If the column is a percentage width, do not let the spanning cell
           // overwrite the width value.  This caused a mis-layout on amazon.com.
@@ -673,7 +673,7 @@ void TableLayoutAlgorithmAuto::InsertSpanCell(LayoutTableCell* cell) {
          span > span_cells_[pos]->ColSpan())
     pos++;
   memmove(span_cells_.data() + pos + 1, span_cells_.data() + pos,
-          (size - pos - 1) * sizeof(LayoutTableCell*));
+          (size - pos - 1) * sizeof(decltype(span_cells_)::value_type));
   span_cells_[pos] = cell;
 }
 

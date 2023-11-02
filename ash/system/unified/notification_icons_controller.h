@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -82,10 +82,6 @@ class ASH_EXPORT NotificationIconsController
 
   // Returns the number of notification icons showing in |tray_items_|.
   size_t TrayNotificationIconsCount() const;
-
-  // Returns true if we should not show notification related items in tray (e.g.
-  // during quiet mode, screen lock, etc.).
-  bool ShouldShowNotificationItemsInTray();
 
   // Returns a string describing the current state for accessibility.
   std::u16string GetAccessibleNameString() const;

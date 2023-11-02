@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Tests for git_metadata_utils."""
@@ -9,7 +9,7 @@ import sys
 import unittest
 from datetime import datetime, timezone
 
-_TOOLS_ANDROID_PATH = pathlib.Path(__file__).parents[1].resolve()
+_TOOLS_ANDROID_PATH = pathlib.Path(__file__).resolve(strict=True).parents[1]
 if str(_TOOLS_ANDROID_PATH) not in sys.path:
     sys.path.append(str(_TOOLS_ANDROID_PATH))
 from python_utils import git_metadata_utils
@@ -55,10 +55,20 @@ class TestHeadCommitHash(unittest.TestCase):
         self.assertRegex(commit_hash, _SHA1_HASH_REGEX,
                          f'"{commit_hash}" is not a SHA1 hash.')
 
+    def test_get_head_commit_hash_chromium_repo_path(self):
+        """Tests that get_head_commit_hash handles pathlib Paths."""
+        expected_commit_hash = git_metadata_utils.get_head_commit_hash(
+            git_repo=str(_CHROMIUM_SRC_ROOT))
+
+        commit_hash = git_metadata_utils.get_head_commit_hash(
+            git_repo=_CHROMIUM_SRC_ROOT)
+
+        self.assertEqual(expected_commit_hash, commit_hash)
+
     def test_get_head_commit_hash_default_repo(self):
         """Tests that the Chromium repo is used when no git_repo specified."""
         expected_commit_hash = git_metadata_utils.get_head_commit_hash(
-            git_repo=str(_CHROMIUM_SRC_ROOT))
+            git_repo=_CHROMIUM_SRC_ROOT)
 
         commit_hash = git_metadata_utils.get_head_commit_hash()
 
@@ -69,7 +79,7 @@ class TestHeadCommitHash(unittest.TestCase):
         chromium_commit_hash = git_metadata_utils.get_head_commit_hash()
 
         commit_hash = git_metadata_utils.get_head_commit_hash(
-            git_repo=str(_V8_GIT_ROOT))
+            git_repo=_V8_GIT_ROOT)
 
         self.assertRegex(commit_hash, _SHA1_HASH_REGEX,
                          f'"{commit_hash}" is not a SHA1 hash.')
@@ -79,7 +89,7 @@ class TestHeadCommitHash(unittest.TestCase):
         """Tests that ValueError is raised when git_repo is not a repo path."""
         with self.assertRaises(ValueError) as error_cm:
             git_metadata_utils.get_head_commit_hash(
-                git_repo=str(_MISSING_FILE_FOLDER))
+                git_repo=_MISSING_FILE_FOLDER)
 
         self.assertEqual(
             f'The Git repository root "{_MISSING_FILE_FOLDER}" is'
@@ -89,8 +99,7 @@ class TestHeadCommitHash(unittest.TestCase):
     def test_get_head_commit_hash_invalid_repo(self):
         """Tests that ValueError is raised when git_repo is not a repo path."""
         with self.assertRaises(ValueError) as error_cm:
-            git_metadata_utils.get_head_commit_hash(
-                git_repo=str(_TEST_FILE_FOLDER))
+            git_metadata_utils.get_head_commit_hash(git_repo=_TEST_FILE_FOLDER)
 
         self.assertEqual(
             f'The path "{_TEST_FILE_FOLDER}" is not a root directory for a Git'
@@ -108,7 +117,7 @@ class TestHeadCommitDatetime(unittest.TestCase):
         UTC) and that the datetime is sane.
         """
         commit_datetime = git_metadata_utils.get_head_commit_datetime(
-            git_repo=str(_CHROMIUM_SRC_ROOT))
+            git_repo=_CHROMIUM_SRC_ROOT)
 
         self.assertIsNotNone(commit_datetime.tzinfo)
         self.assertIsNotNone(commit_datetime.utcoffset())
@@ -118,10 +127,20 @@ class TestHeadCommitDatetime(unittest.TestCase):
         self.assertLess(commit_datetime,
                         datetime(2050, 1, 1, tzinfo=timezone.utc))
 
+    def test_get_head_commit_datetime_chromium_repo_path(self):
+        """Tests that get_head_commit_datetime handles pathlib Paths."""
+        expected_commit_datetime = git_metadata_utils.get_head_commit_datetime(
+            git_repo=str(_CHROMIUM_SRC_ROOT))
+
+        commit_datetime = git_metadata_utils.get_head_commit_datetime(
+            git_repo=_CHROMIUM_SRC_ROOT)
+
+        self.assertEqual(expected_commit_datetime, commit_datetime)
+
     def test_get_head_commit_datetime_default_repo(self):
         """Tests that the Chromium repo is used when no git_repo specified."""
         expected_commit_datetime = git_metadata_utils.get_head_commit_datetime(
-            git_repo=str(_CHROMIUM_SRC_ROOT))
+            git_repo=_CHROMIUM_SRC_ROOT)
 
         commit_datetime = git_metadata_utils.get_head_commit_datetime()
 
@@ -132,7 +151,7 @@ class TestHeadCommitDatetime(unittest.TestCase):
         chromium_datetime = git_metadata_utils.get_head_commit_datetime()
 
         commit_datetime = git_metadata_utils.get_head_commit_datetime(
-            git_repo=str(_V8_GIT_ROOT))
+            git_repo=_V8_GIT_ROOT)
 
         self.assertNotEqual(chromium_datetime, commit_datetime)
 
@@ -140,7 +159,7 @@ class TestHeadCommitDatetime(unittest.TestCase):
         """Tests that ValueError is raised when git_repo is not a repo path."""
         with self.assertRaises(ValueError) as error_cm:
             git_metadata_utils.get_head_commit_datetime(
-                git_repo=str(_MISSING_FILE_FOLDER))
+                git_repo=_MISSING_FILE_FOLDER)
 
         self.assertEqual(
             f'The Git repository root "{_MISSING_FILE_FOLDER}" is'
@@ -151,7 +170,7 @@ class TestHeadCommitDatetime(unittest.TestCase):
         """Tests that ValueError is raised when git_repo is not a repo path."""
         with self.assertRaises(ValueError) as error_cm:
             git_metadata_utils.get_head_commit_datetime(
-                git_repo=str(_TEST_FILE_FOLDER))
+                git_repo=_TEST_FILE_FOLDER)
 
         self.assertEqual(
             f'The path "{_TEST_FILE_FOLDER}" is not a root directory for a Git'

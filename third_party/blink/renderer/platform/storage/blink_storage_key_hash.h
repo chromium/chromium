@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,14 +12,27 @@
 
 namespace blink {
 
-// TODO(https://crbug.com/1199077): This needs to be re-implemented for the
-// actual StorageKey content once it's stable. Right now it's just a shim for
-// `SecurityOriginHash`.
 struct BlinkStorageKeyHash {
   STATIC_ONLY(BlinkStorageKeyHash);
 
   static unsigned GetHash(const BlinkStorageKey* storage_key) {
-    return SecurityOriginHash::GetHash(storage_key->GetSecurityOrigin());
+    absl::optional<base::UnguessableToken> nonce = storage_key->GetNonce();
+    size_t nonce_hash = nonce ? base::UnguessableTokenHash()(*nonce) : 0;
+    unsigned hash_codes[] = {
+      SecurityOriginHash::GetHash(storage_key->GetSecurityOrigin()),
+      DefaultHash<BlinkSchemefulSite>::Hash::GetHash(
+          storage_key->GetTopLevelSite()),
+      static_cast<unsigned>(storage_key->GetAncestorChainBit()),
+#if ARCH_CPU_32_BITS
+      nonce_hash,
+#elif ARCH_CPU_64_BITS
+      static_cast<unsigned>(nonce_hash),
+      static_cast<unsigned>(nonce_hash >> 32),
+#else
+#error "Unknown bits"
+#endif
+    };
+    return StringHasher::HashMemory<sizeof(hash_codes)>(hash_codes);
   }
 
   static unsigned GetHash(
@@ -28,8 +41,7 @@ struct BlinkStorageKeyHash {
   }
 
   static bool Equal(const BlinkStorageKey* a, const BlinkStorageKey* b) {
-    return SecurityOriginHash::Equal(a->GetSecurityOrigin(),
-                                     b->GetSecurityOrigin());
+    return *a == *b;
   }
 
   static bool Equal(const std::unique_ptr<const BlinkStorageKey>& a,

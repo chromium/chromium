@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@ IOSProfileSessionDurationsService::IOSProfileSessionDurationsService(
     signin::IdentityManager* identity_manager)
     : KeyedService() {
   if (!sync_service && !identity_manager) {
-    // |sync_service| and |identity_maanger| may be null for testing.
+    // `sync_service` and `identity_maanger` may be null for testing.
     return;
   }
 
@@ -21,7 +21,7 @@ IOSProfileSessionDurationsService::IOSProfileSessionDurationsService(
       std::make_unique<syncer::SyncSessionDurationsMetricsRecorder>(
           sync_service, identity_manager);
 
-  // |IOSProfileSessionDurationsService| is called explicitly each time a
+  // `IOSProfileSessionDurationsService` is called explicitly each time a
   // session starts or ends. So there is no need to mimic what is done on
   // Android and to start a session in the constuctor of the service.
 }
@@ -47,4 +47,12 @@ void IOSProfileSessionDurationsService::OnSessionEnded(
 
 bool IOSProfileSessionDurationsService::IsSessionActive() {
   return is_session_active_;
+}
+
+bool IOSProfileSessionDurationsService::IsSignedIn() const {
+  return metrics_recorder_->IsSignedIn();
+}
+
+bool IOSProfileSessionDurationsService::IsSyncing() const {
+  return metrics_recorder_->IsSyncing();
 }

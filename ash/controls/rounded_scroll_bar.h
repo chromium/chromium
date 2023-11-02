@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,6 +35,15 @@ class ASH_EXPORT RoundedScrollBar : public views::ScrollBar {
   // to the edge of the screen or the edge of a widget.
   void SetInsets(const gfx::Insets& insets);
 
+  // Sets whether a drag that starts on the scroll thumb and then moves far
+  // outside the thumb should "snap back" to the original scroll position.
+  void SetSnapBackOnDragOutside(bool snap);
+
+  // Sets whether the scroll bar should show itself when the scroll thumb
+  // bounds are changed (i.e. when the scroll position changes or the content
+  // size changes).
+  void SetShowOnThumbBoundsChanged(bool show);
+
   // views::ScrollBar:
   gfx::Rect GetTrackBounds() const override;
   bool OverlapsContent() const override;
@@ -58,11 +67,20 @@ class ASH_EXPORT RoundedScrollBar : public views::ScrollBar {
   // Called when the thumb hover/pressed state changed.
   void OnThumbStateChanged();
 
+  // Called when the thumb bounds (position or size) changed.
+  void OnThumbBoundsChanged();
+
+  // Equivalent to GetThumb() but typed as the inner class `Thumb`.
+  Thumb* const thumb_;
+
   // Insets for the scroll track.
   gfx::Insets insets_;
 
   // Timer that will start the scrollbar's hiding animation when it reaches 0.
   base::RetainingOneShotTimer hide_scrollbar_timer_;
+
+  // Whether to temporarily show the scroll bar when the thumb bounds change.
+  bool show_on_thumb_bounds_changed_ = false;
 };
 
 }  // namespace ash

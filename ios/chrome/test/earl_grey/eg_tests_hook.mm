@@ -1,20 +1,21 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/app/tests_hook.h"
+#import "ios/chrome/app/tests_hook.h"
 
-#include "base/command_line.h"
-#include "base/logging.h"
-#include "ios/chrome/browser/chrome_switches.h"
-#include "ios/chrome/browser/policy/test_platform_policy_provider.h"
+#import "base/command_line.h"
+#import "base/logging.h"
+#import "ios/chrome/browser/flags/chrome_switches.h"
+#import "ios/chrome/browser/policy/test_platform_policy_provider.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_app_interface.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
-#include "ios/chrome/test/app/signin_test_util.h"
+#import "ios/chrome/test/app/signin_test_util.h"
 #import "ios/chrome/test/earl_grey/test_switches.h"
-#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
+#import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
+#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service_constants.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -23,6 +24,10 @@
 namespace tests_hook {
 
 bool DisableAppGroupAccess() {
+  return true;
+}
+
+bool DisableClientSideFieldTrials() {
   return true;
 }
 
@@ -73,12 +78,16 @@ void SetUpTestsIfPresent() {
     // AuthenticationService will log the fake user off.
     std::unique_ptr<ios::FakeChromeIdentityService> service(
         new ios::FakeChromeIdentityService());
-    service->SetUpForIntegrationTests();
     ios::GetChromeBrowserProvider().SetChromeIdentityServiceForTesting(
         std::move(service));
-    ios::FakeChromeIdentityService* identity_service =
-        ios::FakeChromeIdentityService::GetInstanceFromChromeProvider();
-    identity_service->AddIdentity([SigninEarlGreyAppInterface fakeIdentity1]);
+    if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+            ios::kAddFakeIdentitiesArg)) {
+      // Add a fake identity by default if no identities were provided from the
+      // commandline switch.
+      ios::FakeChromeIdentityService* identity_service =
+          ios::FakeChromeIdentityService::GetInstanceFromChromeProvider();
+      identity_service->AddIdentity([FakeChromeIdentity fakeIdentity1]);
+    }
   }
 }
 

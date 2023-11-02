@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@
 #include "build/chromeos_buildflags.h"
 #include "ui/display/display_switches.h"
 #include "ui/display/manager/managed_display_info.h"
+#include "ui/display/util/display_util.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/size_f.h"
 
@@ -162,9 +163,21 @@ DisplayIdList CreateDisplayIdList(const Displays& list) {
       [](const Display& display) { return display.id(); });
 }
 
+DisplayIdList CreateDisplayIdList(const DisplayInfoList& updated_displays) {
+  return GenerateDisplayIdList(
+      updated_displays.begin(), updated_displays.end(),
+      [](const display::ManagedDisplayInfo& info) { return info.id(); });
+}
+
 void SortDisplayIdList(DisplayIdList* ids) {
   std::sort(ids->begin(), ids->end(),
             [](int64_t a, int64_t b) { return CompareDisplayIds(a, b); });
+}
+
+bool IsDisplayIdListSorted(const DisplayIdList& list) {
+  return std::is_sorted(list.begin(), list.end(), [](int64_t a, int64_t b) {
+    return CompareDisplayIds(a, b);
+  });
 }
 
 std::string DisplayIdListToString(const DisplayIdList& list) {

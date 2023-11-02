@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -55,8 +55,10 @@ PolicyCheckResult CheckSafeBrowsingEnabled(
 // does not have a valid value, returns |nullopt|.
 absl::optional<ProtectionLevel> GetValueFromSafeBrowsingEnabledPolicy(
     const policy::PolicyMap& policies) {
+  // It is safe to use `GetValueUnsafe()` because type checking is performed
+  // before the value is used.
   const base::Value* safe_browsing_enabled =
-      policies.GetValue(policy::key::kSafeBrowsingEnabled);
+      policies.GetValueUnsafe(policy::key::kSafeBrowsingEnabled);
 
   if (CheckSafeBrowsingEnabled(safe_browsing_enabled, nullptr /*error*/) !=
       PolicyCheckResult::kValid) {
@@ -107,8 +109,10 @@ PolicyCheckResult CheckSafeBrowsingProtectionLevel(
 // does not have a valid value, returns |nullopt|.
 absl::optional<ProtectionLevel> GetValueFromSafeBrowsingProtectionLevelPolicy(
     const policy::PolicyMap& policies) {
+  // It is safe to use `GetValueUnsafe()` because type checking is performed
+  // before the value is used.
   const base::Value* safe_browsing_protection_level =
-      policies.GetValue(policy::key::kSafeBrowsingProtectionLevel);
+      policies.GetValueUnsafe(policy::key::kSafeBrowsingProtectionLevel);
 
   if (CheckSafeBrowsingProtectionLevel(safe_browsing_protection_level,
                                        nullptr /*error*/) !=
@@ -141,15 +145,19 @@ absl::optional<ProtectionLevel> GetValueFromBothPolicies(
 bool SafeBrowsingPolicyHandler::CheckPolicySettings(
     const policy::PolicyMap& policies,
     policy::PolicyErrorMap* errors) {
+  // It is safe to use `GetValueUnsafe()` because type checking is performed
+  // before the value is used.
   // Deprecated boolean policy SafeBrowsingEnabled.
   const base::Value* safe_browsing_enabled =
-      policies.GetValue(policy::key::kSafeBrowsingEnabled);
+      policies.GetValueUnsafe(policy::key::kSafeBrowsingEnabled);
   PolicyCheckResult safe_browsing_enabled_result =
       CheckSafeBrowsingEnabled(safe_browsing_enabled, errors);
 
-  // Enumerated policy SafeBrowsingProtectionLevel
+  // It is safe to use `GetValueUnsafe()` because type checking is performed
+  // before the value is used.
+  // Enumerated policy SafeBrowsingProtectionLevel.
   const base::Value* safe_browsing_protection_level =
-      policies.GetValue(policy::key::kSafeBrowsingProtectionLevel);
+      policies.GetValueUnsafe(policy::key::kSafeBrowsingProtectionLevel);
   PolicyCheckResult safe_browsing_protection_level_result =
       CheckSafeBrowsingProtectionLevel(safe_browsing_protection_level, errors);
 

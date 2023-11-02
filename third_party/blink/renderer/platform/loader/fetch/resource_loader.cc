@@ -32,15 +32,19 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/base64.h"
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/safe_conversions.h"
+#include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "services/metrics/public/cpp/mojo_ukm_recorder.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/blocked_by_response_reason.mojom-shared.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -49,6 +53,7 @@
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/blob/blob_registry.mojom-blink.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_blob_info.h"
 #include "third_party/blink/public/platform/web_code_cache_loader.h"
@@ -88,11 +93,14 @@
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "url/url_constants.h"
 
+#include "net/base/net_errors.h"
+
 namespace blink {
+
+extern uint64_t RecordReplayNetworkRequestId(uint64_t inspector_id);
 
 namespace {
 
@@ -213,6 +221,27 @@ void LogCnameAliasMetrics(const CnameAliasMetricInfo& info) {
 }
 
 }  // namespace
+
+static bool PermitRecordReplayBrowserEvents() {
+  return recordreplay::IsRecordingOrReplaying("notify-network") && v8::IsMainThread();
+}
+
+static const char* HttpVersionToString(ResourceResponse::HTTPVersion version) {
+  switch (version) {
+    case ResourceResponse::HTTPVersion::kHTTPVersion_0_9:
+      return "http/0.9";
+    case ResourceResponse::HTTPVersion::kHTTPVersion_1_0:
+      return "http/1.0";
+    case ResourceResponse::HTTPVersion::kHTTPVersion_1_1:
+      return "http/1.1";
+    case ResourceResponse::HTTPVersion::kHTTPVersion_2_0:
+      return "http/2.0";
+    case ResourceResponse::HTTPVersion::kHTTPVersionUnknown:
+      return "http";
+    default:
+      return "http/unknown";
+  }
+}
 
 // CodeCacheRequest handles the requests to fetch data from code cache.
 // This owns WebCodeCacheLoader that actually loads the data from the
@@ -356,6 +385,7 @@ void ResourceLoader::CodeCacheRequest::DidReceiveCachedCode(
   ProcessCodeCacheResponse(response_time, std::move(data), resource_loader);
   // Reset the deferred value to its original state.
   DCHECK(resource_loader);
+  resource_loader->code_cache_arrival_time_ = base::TimeTicks::Now();
   resource_loader->SetDefersLoading(freeze_mode_);
 }
 
@@ -451,6 +481,8 @@ ResourceLoader::ResourceLoader(ResourceFetcher* fetcher,
       cancel_timer_(fetcher_->GetTaskRunner(),
                     this,
                     &ResourceLoader::CancelTimerFired) {
+  // Pointer registration is needed for sorting in ResourceFetcher.
+  recordreplay::RegisterPointer("ResourceLoader", this);
   DCHECK(resource_);
   DCHECK(fetcher_);
 
@@ -478,7 +510,9 @@ ResourceLoader::ResourceLoader(ResourceFetcher* fetcher,
   resource_->SetLoader(this);
 }
 
-ResourceLoader::~ResourceLoader() = default;
+ResourceLoader::~ResourceLoader() {
+  recordreplay::UnregisterPointer(this);
+}
 
 void ResourceLoader::Trace(Visitor* visitor) const {
   visitor->Trace(fetcher_);
@@ -562,14 +596,9 @@ void ResourceLoader::Start() {
   }
 
   if (request.IsAutomaticUpgrade()) {
-    mojo::PendingRemote<ukm::mojom::UkmRecorderInterface> pending_recorder;
-    Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
-        pending_recorder.InitWithNewPipeAndPassReceiver());
-    auto recorder =
-        std::make_unique<ukm::MojoUkmRecorder>(std::move(pending_recorder));
     LogMixedAutoupgradeMetrics(MixedContentAutoupgradeStatus::kStarted,
                                absl::nullopt, request.GetUkmSourceId(),
-                               recorder.get(), resource_);
+                               fetcher_->UkmRecorder(), resource_);
   }
   if (resource_->GetResourceRequest().IsDownloadToNetworkCacheOnly()) {
     // The download-to-cache requests are throttled in net/, they are fire-and
@@ -608,6 +637,12 @@ void ResourceLoader::Run() {
 
 void ResourceLoader::DidReceiveData(base::span<const char> data) {
   DidReceiveData(data.data(), base::checked_cast<int>(data.size()));
+}
+
+void ResourceLoader::DidReceiveDecodedData(
+    const String& data,
+    std::unique_ptr<Resource::DecodedDataInfo> info) {
+  resource_->DidReceiveDecodedData(data, std::move(info));
 }
 
 void ResourceLoader::DidFinishLoadingBody() {
@@ -653,6 +688,7 @@ void ResourceLoader::StartWith(const ResourceRequestHead& request) {
         fetcher_->GetProperties().FreezeMode());
   }
 
+  request_start_time_ = base::TimeTicks::Now();
   if (is_cache_aware_loading_activated_) {
     // Override cache policy for cache-aware loading. If this request fails, a
     // reload with original request will be triggered in DidFail().
@@ -713,8 +749,8 @@ void ResourceLoader::SetDefersLoading(LoaderFreezeMode mode) {
     if (freeze_mode_ == LoaderFreezeMode::kNone) {
       defers_handling_data_url_ = false;
       GetLoadingTaskRunner()->PostTask(
-          FROM_HERE,
-          WTF::Bind(&ResourceLoader::HandleDataUrl, WrapWeakPersistent(this)));
+          FROM_HERE, WTF::BindOnce(&ResourceLoader::HandleDataUrl,
+                                   WrapWeakPersistent(this)));
     }
   }
 
@@ -741,8 +777,9 @@ void ResourceLoader::DidChangePriority(ResourceLoadPriority load_priority,
 }
 
 void ResourceLoader::ScheduleCancel() {
-  if (!cancel_timer_.IsActive())
+  if (!cancel_timer_.IsActive()) {
     cancel_timer_.StartOneShot(base::TimeDelta(), FROM_HERE);
+  }
 }
 
 void ResourceLoader::CancelTimerFired(TimerBase*) {
@@ -901,9 +938,9 @@ bool ResourceLoader::WillFollowRedirect(
                            unused_virtual_time_pauser, resource_->GetType());
   DCHECK(!new_request->HttpBody());
   if (auto* observer = fetcher_->GetResourceLoadObserver()) {
-    observer->WillSendRequest(*new_request, redirect_response,
-                              resource_->GetType(), options,
-                              initial_request.GetRenderBlockingBehavior());
+    observer->WillSendRequest(
+        *new_request, redirect_response, resource_->GetType(), options,
+        initial_request.GetRenderBlockingBehavior(), resource_);
   }
 
   // First-party cookie logic moved from DocumentLoader in Blink to
@@ -926,6 +963,25 @@ bool ResourceLoader::WillFollowRedirect(
     CancelForRedirectAccessCheckError(new_request->Url(),
                                       ResourceRequestBlockedReason::kOther);
     return false;
+  }
+
+  if (PermitRecordReplayBrowserEvents()) {
+    // The redirect has not been cancelled.  Notify RecordReplay netmonitor.
+    base::DictionaryValue dict;
+    dict.SetDoubleKey("identifier",
+                      (double) RecordReplayNetworkRequestId(resource_->InspectorId()));
+    dict.SetString("requestUrl", new_request->Url().GetString().Utf8());
+
+    base::ListValue headers;
+    for (auto header : new_request->HttpHeaderFields()) {
+      base::DictionaryValue header_obj;
+      header_obj.SetString("name", header.key.Utf8());
+      header_obj.SetString("value", header.value.Utf8());
+      headers.Append(std::move(header_obj));
+    }
+    dict.SetKey("requestHeaders", std::move(headers));
+
+    recordreplay::BrowserEvent("Network.ResourceRedirect", dict);
   }
 
   has_devtools_request_id = new_request->GetDevToolsId().has_value();
@@ -972,28 +1028,28 @@ void ResourceLoader::DidReceiveResponseInternal(
     const ResourceResponse& response) {
   const ResourceRequestHead& request = resource_->GetResourceRequest();
 
+  const auto response_arrival = response.ArrivalTimeAtRenderer();
+  const auto code_cache_arrival = code_cache_arrival_time_;
+  const auto request_start = request_start_time_;
+  if (response.WasCached() && !code_cache_arrival.is_null() &&
+      !response_arrival.is_null()) {
+    DCHECK(!request_start_time_.is_null());
+    base::UmaHistogramTimes("Blink.Loading.CodeCacheArrivalAtRenderer",
+                            code_cache_arrival - request_start);
+    base::UmaHistogramTimes("Blink.Loading.CachedResponseArrivalAtRenderer",
+                            response_arrival - request_start);
+  }
+
   if (response.HasAuthorizationCoveredByWildcardOnPreflight()) {
     fetcher_->GetUseCounter().CountDeprecation(
         mojom::WebFeature::kAuthorizationCoveredByWildcard);
   }
 
   if (request.IsAutomaticUpgrade()) {
-    mojo::PendingRemote<ukm::mojom::UkmRecorderInterface> pending_recorder;
-    Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
-        pending_recorder.InitWithNewPipeAndPassReceiver());
-    auto recorder =
-        std::make_unique<ukm::MojoUkmRecorder>(std::move(pending_recorder));
     LogMixedAutoupgradeMetrics(MixedContentAutoupgradeStatus::kResponseReceived,
                                response.HttpStatusCode(),
-                               request.GetUkmSourceId(), recorder.get(),
-                               resource_);
-  }
-
-  if (fetcher_->GetProperties().IsDetached()) {
-    // If the fetch context is already detached, we don't need further signals,
-    // so let's cancel the request.
-    HandleError(ResourceError::CancelledError(response.CurrentRequestUrl()));
-    return;
+                               request.GetUkmSourceId(),
+                               fetcher_->UkmRecorder(), resource_);
   }
 
   ResourceType resource_type = resource_->GetType();
@@ -1124,6 +1180,33 @@ void ResourceLoader::DidReceiveResponseInternal(
 
   resource_->ResponseReceived(response);
 
+  if (PermitRecordReplayBrowserEvents()) {
+    base::DictionaryValue dict;
+    dict.SetDoubleKey("identifier",
+                      (double) RecordReplayNetworkRequestId(resource_->InspectorId()));
+    const char* http_version = HttpVersionToString(response.HttpVersion());
+    base::ListValue headers;
+    for (auto header : response.HttpHeaderFields()) {
+      base::DictionaryValue header_obj;
+      header_obj.SetString("name", header.key.Utf8());
+      header_obj.SetString("value", header.value.Utf8());
+      headers.Append(std::move(header_obj));
+    }
+    dict.SetKey("responseHeaders", std::move(headers));
+    dict.SetString("responseProtocolVersion", http_version);
+    dict.SetDoubleKey("responseStatus", response.HttpStatusCode());
+    dict.SetString("responseStatusText", response.HttpStatusText().Utf8());
+    dict.SetBoolean("responseFromCache", response.WasCached());
+    recordreplay::BrowserEvent("Network.DidReceiveResponse", dict);
+  }
+
+  if (resource_->Loader() && fetcher_->GetProperties().IsDetached()) {
+    // If the fetch context is already detached, we don't need further signals,
+    // so let's cancel the request.
+    HandleError(ResourceError::CancelledError(response.CurrentRequestUrl()));
+    return;
+  }
+
   // Send the cached code after we notify that the response is received.
   // Resource expects that we receive the response first before the
   // corresponding cached code.
@@ -1150,7 +1233,7 @@ void ResourceLoader::DidReceiveResponseInternal(
 
   if (response.HttpStatusCode() >= 400 &&
       !resource_->ShouldIgnoreHTTPStatusCodeErrors()) {
-    HandleError(ResourceError::CancelledError(response.CurrentRequestUrl()));
+    HandleError(ResourceError::HttpError(response.CurrentRequestUrl()));
     return;
   }
 }
@@ -1171,8 +1254,8 @@ void ResourceLoader::DidStartLoadingResponseBody(
         std::max(static_cast<int64_t>(0), response.ExpectedContentLength()),
         std::move(body),
         progress_receiver_.BindNewEndpointAndPassRemote(GetLoadingTaskRunner()),
-        WTF::Bind(&ResourceLoader::FinishedCreatingBlob,
-                  WrapWeakPersistent(this)));
+        WTF::BindOnce(&ResourceLoader::FinishedCreatingBlob,
+                      WrapWeakPersistent(this)));
     return;
   }
 
@@ -1185,6 +1268,25 @@ void ResourceLoader::DidStartLoadingResponseBody(
 
 void ResourceLoader::DidReceiveData(const char* data, int length) {
   CHECK_GE(length, 0);
+
+  recordreplay::Assert("[RUN-1436] ResourceLoader::DidReceiveData %d", length);
+
+  if (PermitRecordReplayBrowserEvents()) {
+    base::DictionaryValue dict;
+    dict.SetDoubleKey("identifier",
+                      (double) RecordReplayNetworkRequestId(resource_->InspectorId()));
+    dict.SetDoubleKey("dataLength", (double) length);
+    if (data) {
+      std::string data_base64 = base::Base64Encode(
+        base::span<const uint8_t>(
+          reinterpret_cast<const uint8_t*>(data),
+          length
+        )
+      );
+      dict.SetString("data", data_base64);
+    }
+    recordreplay::BrowserEvent("Network.DidReceiveData", dict);
+  }
 
   if (auto* observer = fetcher_->GetResourceLoadObserver()) {
     observer->DidReceiveData(resource_->InspectorId(),
@@ -1212,14 +1314,35 @@ void ResourceLoader::DidFinishLoadingFirstPartInMultipart() {
                                0, false);
 }
 
-void ResourceLoader::DidFinishLoading(base::TimeTicks response_end_time,
-                                      int64_t encoded_data_length,
-                                      int64_t encoded_body_length,
-                                      int64_t decoded_body_length,
-                                      bool should_report_corb_blocking) {
+void ResourceLoader::DidFinishLoading(
+    base::TimeTicks response_end_time,
+    int64_t encoded_data_length,
+    int64_t encoded_body_length,
+    int64_t decoded_body_length,
+    bool should_report_corb_blocking,
+    absl::optional<bool> pervasive_payload_requested) {
   resource_->SetEncodedDataLength(encoded_data_length);
   resource_->SetEncodedBodyLength(encoded_body_length);
   resource_->SetDecodedBodyLength(decoded_body_length);
+
+  if (PermitRecordReplayBrowserEvents()) {
+    base::DictionaryValue dict;
+    dict.SetDoubleKey("identifier",
+                      (double) RecordReplayNetworkRequestId(resource_->InspectorId()));
+    dict.SetDoubleKey("encodedBodySize", (double) encoded_body_length);
+    dict.SetDoubleKey("decodedBodySize", (double) decoded_body_length);
+    recordreplay::BrowserEvent("Network.DidFinishLoading", dict);
+  }
+
+  if (pervasive_payload_requested.has_value()) {
+    ukm::SourceId ukm_source_id =
+        resource_->GetResourceRequest().GetUkmSourceId();
+    ukm::builders::Network_CacheTransparency builder(ukm_source_id);
+    builder.SetFoundPervasivePayload(pervasive_payload_requested.value());
+    builder.SetTotalBytesFetched(
+        ukm::GetExponentialBucketMinForBytes(encoded_data_length));
+    builder.Record(fetcher_->UkmRecorder());
+  }
 
   response_end_time_for_error_cases_ = response_end_time;
 
@@ -1264,15 +1387,19 @@ void ResourceLoader::DidFail(const WebURLError& error,
   const ResourceRequestHead& request = resource_->GetResourceRequest();
   response_end_time_for_error_cases_ = response_end_time;
 
+  if (PermitRecordReplayBrowserEvents()) {
+    std::string reason = net::ErrorToShortString(error.reason());
+    base::DictionaryValue dict;
+    dict.SetDoubleKey("identifier",
+                      (double) RecordReplayNetworkRequestId(resource_->InspectorId()));
+    dict.SetString("requestFailedReason", std::move(reason));
+    recordreplay::BrowserEvent("Network.DidFailLoading", dict);
+  }
+
   if (request.IsAutomaticUpgrade()) {
-    mojo::PendingRemote<ukm::mojom::UkmRecorderInterface> pending_recorder;
-    Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
-        pending_recorder.InitWithNewPipeAndPassReceiver());
-    auto recorder =
-        std::make_unique<ukm::MojoUkmRecorder>(std::move(pending_recorder));
     LogMixedAutoupgradeMetrics(MixedContentAutoupgradeStatus::kFailed,
                                error.reason(), request.GetUkmSourceId(),
-                               recorder.get(), resource_);
+                               fetcher_->UkmRecorder(), resource_);
   }
   resource_->SetEncodedDataLength(encoded_data_length);
   resource_->SetEncodedBodyLength(encoded_body_length);
@@ -1357,14 +1484,11 @@ void ResourceLoader::RequestSynchronously(const ResourceRequestHead& request) {
   WebBlobInfo downloaded_blob;
 
   if (CanHandleDataURLRequestLocally(request)) {
-    ResourceResponse response;
-    scoped_refptr<SharedBuffer> data;
-    int result;
-    // It doesn't have to verify mime type again since it's allowed to handle
+    // We don't have to verify mime type again since it's allowed to handle
     // the data url with invalid mime type in some cases.
     // CanHandleDataURLRequestLocally() has already checked if the data url can
     // be handled here.
-    std::tie(result, response, data) =
+    auto [result, response, data] =
         network_utils::ParseDataURL(resource_->Url(), request.HttpMethod());
     if (result != net::OK) {
       error_out = WebURLError(result, resource_->Url());
@@ -1385,8 +1509,9 @@ void ResourceLoader::RequestSynchronously(const ResourceRequestHead& request) {
   }
   // A message dispatched while synchronously fetching the resource
   // can bring about the cancellation of this load.
-  if (!IsLoading())
+  if (!IsLoading()) {
     return;
+  }
   int64_t decoded_body_length = data_out.size();
   if (error_out) {
     DidFail(*error_out, base::TimeTicks::Now(), encoded_data_length,
@@ -1394,8 +1519,9 @@ void ResourceLoader::RequestSynchronously(const ResourceRequestHead& request) {
     return;
   }
   DidReceiveResponse(response_out);
-  if (!IsLoading())
+  if (!IsLoading()) {
     return;
+  }
   DCHECK_GE(response_out.ToResourceResponse().EncodedBodyLength(), 0);
 
   // Follow the async case convention of not calling DidReceiveData or
@@ -1405,7 +1531,7 @@ void ResourceLoader::RequestSynchronously(const ResourceRequestHead& request) {
   if (data_out.size()) {
     data_out.ForEachSegment([this](const char* segment, size_t segment_size,
                                    size_t segment_offset) {
-      DidReceiveData(segment, SafeCast<int>(segment_size));
+      DidReceiveData(segment, base::checked_cast<int>(segment_size));
       return true;
     });
   }
@@ -1421,13 +1547,17 @@ void ResourceLoader::RequestSynchronously(const ResourceRequestHead& request) {
 }
 
 void ResourceLoader::RequestAsynchronously(const ResourceRequestHead& request) {
+  // After diverging from the recording we can't access system resources anymore.
+  if (recordreplay::HasDivergedFromRecording())
+    return;
+
   DCHECK(loader_);
   if (CanHandleDataURLRequestLocally(request)) {
     DCHECK(!code_cache_request_);
     // Handle DataURL in another task instead of using |loader_|.
     GetLoadingTaskRunner()->PostTask(
-        FROM_HERE,
-        WTF::Bind(&ResourceLoader::HandleDataUrl, WrapWeakPersistent(this)));
+        FROM_HERE, WTF::BindOnce(&ResourceLoader::HandleDataUrl,
+                                 WrapWeakPersistent(this)));
     return;
   }
 
@@ -1438,6 +1568,18 @@ void ResourceLoader::RequestAsynchronously(const ResourceRequestHead& request) {
   scoped_refptr<EncodedFormData> form_body = request_body_.FormBody();
   PopulateResourceRequest(request, std::move(request_body_),
                           network_resource_request.get());
+
+  recordreplay::Assert(
+      "[RUN-1725-1852] ResourceLoader::RequestAsynchronously %zu %zu %zu %zu",
+      network_resource_request->method.size(),
+      network_resource_request->fetch_integrity.size(),
+      network_resource_request->devtools_request_id
+          ? network_resource_request->devtools_request_id->size()
+          : 0,
+      network_resource_request->devtools_stack_id
+          ? network_resource_request->devtools_stack_id->size()
+          : 0);
+
   if (form_body)
     request_body_ = ResourceRequestBody(std::move(form_body));
   loader_->LoadAsynchronously(
@@ -1496,9 +1638,7 @@ void ResourceLoader::ActivateCacheAwareLoadingIfNeeded(
 
 bool ResourceLoader::ShouldBeKeptAliveWhenDetached() const {
   return resource_->GetResourceRequest().GetKeepalive() &&
-         resource_->GetResponse().IsNull() &&
-         !base::FeatureList::IsEnabled(
-             network::features::kDisableKeepaliveFetch);
+         resource_->GetResponse().IsNull();
 }
 
 void ResourceLoader::AbortResponseBodyLoading() {
@@ -1587,14 +1727,11 @@ void ResourceLoader::HandleDataUrl() {
   }
 
   // Extract a ResourceResponse from the data url.
-  ResourceResponse response;
-  scoped_refptr<SharedBuffer> data;
-  int result;
-  // We doesn't have to verify mime type again since it's allowed to handle the
+  // We don't have to verify mime type again since it's allowed to handle the
   // data url with invalid mime type in some cases.
   // CanHandleDataURLRequestLocally() has already checked if the data url can be
   // handled here.
-  std::tie(result, response, data) = network_utils::ParseDataURL(
+  auto [result, response, data] = network_utils::ParseDataURL(
       resource_->Url(), resource_->GetResourceRequest().HttpMethod());
   if (result != net::OK) {
     HandleError(ResourceError(result, resource_->Url(), absl::nullopt));
@@ -1635,7 +1772,7 @@ bool ResourceLoader::ShouldBlockRequestBasedOnSubresourceFilterDnsAliasCheck(
   // aliases: if any one of the aliases is on the denylist, then the
   // request will be deemed on the denylist and treated accordingly (blocked
   // and/or tagged).
-  out_metric_info->has_aliases = !dns_aliases.IsEmpty();
+  out_metric_info->has_aliases = !dns_aliases.empty();
   out_metric_info->list_length = dns_aliases.size();
 
   // If there are no aliases, we have no reason to block based on them.
@@ -1686,6 +1823,15 @@ bool ResourceLoader::ShouldBlockRequestBasedOnSubresourceFilterDnsAliasCheck(
   }
 
   return false;
+}
+
+void ResourceLoader::CancelIfWebBundleTokenMatches(
+    const base::UnguessableToken& web_bundle_token) {
+  if (resource_->GetResourceRequest().GetWebBundleTokenParams().has_value() &&
+      resource_->GetResourceRequest().GetWebBundleTokenParams().value().token ==
+          web_bundle_token) {
+    Cancel();
+  }
 }
 
 }  // namespace blink

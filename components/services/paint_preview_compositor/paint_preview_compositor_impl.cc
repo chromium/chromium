@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #include "base/cxx17_backports.h"
 #include "base/memory/memory_pressure_listener.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/common/trace_event_common.h"
@@ -31,9 +32,6 @@
 namespace paint_preview {
 
 namespace {
-
-// The 95%ile allocation size in the experiment for discardable memory is 2 MB.
-constexpr size_t kTestAllocationSize = 2 * 1000L * 1000L;
 
 // Returns |nullopt| if |proto_memory| cannot be mapped or parsed.
 absl::optional<PaintPreviewProto> ParsePaintPreviewProto(
@@ -150,41 +148,6 @@ absl::optional<SkBitmap> CreateBitmap(
   SkMatrix matrix;
   matrix.setScaleTranslate(scale_factor, scale_factor, -clip_rect.x(),
                            -clip_rect.y());
-
-  {
-    // For context see: https://crbug.com/1199857
-    //
-    // SkCanvas::drawPicture may attempt to invoke discardable memory allocation
-    // this can fail for several reasons:
-    // * Browser-side limits on discardable memory allocation per-process.
-    // * Lost connection to the browser-process.
-    // * An actual out-of-memory.
-    //
-    // An allocation failure in SkCanvas::drawPicture will result in an OOM
-    // crash. This is by design as clients would have no way to recover and
-    // proceeding could be dangerous.
-    //
-    // Attempt to mitigate OOM crashes caused by an allocation failure by
-    // pre-allocating a chunk of discardable memory and immediately discarding
-    // it. This determines if it is "probable" future allocations in
-    // SkCanvas::drawPicture will succeed if so we can proceed.
-    //
-    // This is imperfect and can still lead to crashes and other issues as:
-    // * Locking during this segment is avoided for performance reasons and it
-    // is possible there are multiple in-flight requests so success here does
-    // not guarantee success later.
-    // * It isn't possible to know precisely how much memory
-    // SkCanvas::drawPicture will allocate. As such, it is possible more memory
-    // will be allocated still resulting in an OOM. Alternatively, less memory
-    // may be allocated resulting in an unnecessary abort albeit unlikely.
-    auto* allocator = base::DiscardableMemoryAllocator::GetInstance();
-    auto test_memory =
-        allocator->AllocateLockedDiscardableMemory(kTestAllocationSize);
-    if (!test_memory) {
-      return absl::nullopt;
-    }
-    test_memory.reset();
-  }
   canvas.drawPicture(skp, &matrix, nullptr);
   return bitmap;
 }
@@ -283,11 +246,10 @@ void PaintPreviewCompositorImpl::BitmapForSeparatedFrame(
     return;
   }
 
-  // TODO(crbug/1199857): Investigate if CONTINUE_ON_SHUTDOWN is a good option.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::TaskPriority::USER_VISIBLE, base::WithBaseSyncPrimitives(),
-       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&CreateBitmap, discardable_shared_memory_manager_,
                      frame_it->second.skp, clip_rect, scale_factor),
       base::BindOnce(
@@ -387,7 +349,7 @@ void PaintPreviewCompositorImpl::BitmapForMainFrame(
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::TaskPriority::USER_VISIBLE, base::WithBaseSyncPrimitives(),
-       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&CreateBitmap, discardable_shared_memory_manager_,
                      root_frame_, clip_rect, scale_factor),
       base::BindOnce(
@@ -499,14 +461,13 @@ sk_sp<SkPicture> PaintPreviewCompositorImpl::DeserializeFrameRecursive(
 
     // Try and find the subframe's proto based on its embedding token.
     auto& subframes = proto.subframes();
-    auto subframe_proto_it = std::find_if(
-        subframes.begin(), subframes.end(),
-        [subframe_embedding_token](const PaintPreviewFrameProto& frame_proto) {
-          return subframe_embedding_token ==
-                 base::UnguessableToken::Deserialize(
-                     frame_proto.embedding_token_high(),
-                     frame_proto.embedding_token_low());
-        });
+    auto subframe_proto_it =
+        base::ranges::find(subframes, subframe_embedding_token,
+                           [](const PaintPreviewFrameProto& frame_proto) {
+                             return base::UnguessableToken::Deserialize(
+                                 frame_proto.embedding_token_high(),
+                                 frame_proto.embedding_token_low());
+                           });
     if (subframe_proto_it == subframes.end()) {
       DVLOG(1) << "Frame embeds subframe that does not exist: "
                << subframe_embedding_token;

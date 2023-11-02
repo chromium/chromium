@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,33 +7,36 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 /**
  * Specifies page visibility based on incognito status and Chrome OS guest mode.
  */
-export type PageVisibility = {
-  a11y?: boolean,
-  advancedSettings?: boolean,
-  appearance?: boolean|AppearancePageVisibility,
-  autofill?: boolean,
-  defaultBrowser?: boolean,
-  downloads?: boolean,
-  extensions?: boolean,
-  languages?: boolean,
-  onStartup?: boolean,
-  people?: boolean,
-  privacy?: boolean|PrivacyPageVisibility,
-  reset?: boolean,
-  safetyCheck?: boolean,
-};
+export interface PageVisibility {
+  a11y?: boolean;
+  advancedSettings?: boolean;
+  appearance?: boolean|AppearancePageVisibility;
+  autofill?: boolean;
+  defaultBrowser?: boolean;
+  downloads?: boolean;
+  extensions?: boolean;
+  languages?: boolean;
+  onStartup?: boolean;
+  people?: boolean;
+  performance?: boolean;
+  privacy?: boolean|PrivacyPageVisibility;
+  reset?: boolean;
+  safetyCheck?: boolean;
+  system?: boolean;
+}
 
-export type AppearancePageVisibility = {
-  bookmarksBar: boolean,
-  homeButton: boolean,
-  pageZoom: boolean,
-  setTheme: boolean,
-};
+export interface AppearancePageVisibility {
+  bookmarksBar: boolean;
+  homeButton: boolean;
+  pageZoom: boolean;
+  setTheme: boolean;
+  sidePanel: boolean;
+}
 
-export type PrivacyPageVisibility = {
-  networkPrediction: boolean,
-  searchPrediction: boolean,
-};
+export interface PrivacyPageVisibility {
+  networkPrediction: boolean;
+  searchPrediction: boolean;
+}
 
 /**
  * Dictionary defining page visibility.
@@ -43,22 +46,26 @@ export let pageVisibility: PageVisibility;
 if (loadTimeData.getBoolean('isGuest')) {
   // "if not chromeos" and "if chromeos" in two completely separate blocks
   // to work around closure compiler.
-  // <if expr="not (chromeos or lacros)">
+  // <if expr="not is_chromeos">
   pageVisibility = {
-    autofill: false,
-    people: false,
-    privacy: false,
-    onStartup: false,
-    reset: false,
-    safetyCheck: false,
-    appearance: false,
-    defaultBrowser: false,
+    a11y: false,
     advancedSettings: false,
+    appearance: false,
+    autofill: false,
+    defaultBrowser: false,
+    downloads: false,
     extensions: false,
     languages: false,
+    onStartup: false,
+    people: false,
+    performance: false,
+    privacy: false,
+    reset: false,
+    safetyCheck: false,
+    system: false,
   };
   // </if>
-  // <if expr="chromeos or lacros">
+  // <if expr="is_chromeos">
   pageVisibility = {
     autofill: false,
     people: false,
@@ -70,6 +77,7 @@ if (loadTimeData.getBoolean('isGuest')) {
       homeButton: false,
       bookmarksBar: false,
       pageZoom: false,
+      sidePanel: false,
     },
     advancedSettings: true,
     privacy: {
@@ -80,33 +88,7 @@ if (loadTimeData.getBoolean('isGuest')) {
     a11y: true,
     extensions: false,
     languages: true,
-  };
-  // </if>
-} else {
-  // All pages are visible when not in chromeos. Since polymer only notifies
-  // after a property is set.
-  // <if expr="chromeos">
-  pageVisibility = {
-    autofill: true,
-    people: true,
-    onStartup: true,
-    reset: true,
-    safetyCheck: true,
-    appearance: {
-      setTheme: true,
-      homeButton: true,
-      bookmarksBar: true,
-      pageZoom: true,
-    },
-    advancedSettings: true,
-    privacy: {
-      searchPrediction: true,
-      networkPrediction: true,
-    },
-    downloads: true,
-    a11y: true,
-    extensions: true,
-    languages: true,
+    performance: false,
   };
   // </if>
 }

@@ -45,7 +45,8 @@
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/core/xlink_names.h"
 #include "third_party/blink/renderer/core/xml/parser/xml_document_parser.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
@@ -206,6 +207,9 @@ void SVGUseElement::UpdateTargetReference() {
     return;
   }
 
+  if (element_url_.ProtocolIsData())
+    UseCounter::Count(GetDocument(), WebFeature::kDataUrlInSvgUse);
+
   auto* context_document = &GetDocument();
   ExecutionContext* execution_context = context_document->GetExecutionContext();
   ResourceLoaderOptions options(execution_context->GetCurrentWorld());
@@ -324,11 +328,17 @@ SVGElement* SVGUseElement::InstanceRoot() const {
 }
 
 void SVGUseElement::BuildPendingResource() {
+  recordreplay::Assert(
+      "[RUN-2313] SVGUseElement::BuildPendingResource A %d",
+      RecordReplayId());
   if (!isConnected()) {
     DCHECK(!needs_shadow_tree_recreation_);
     return;  // Already replaced by rebuilding ancestor.
   }
   CancelShadowTreeRecreation();
+
+  recordreplay::Assert(
+      "[RUN-2313] SVGUseElement::BuildPendingResource B");
 
   // Check if this element is scheduled (by an ancestor) to be replaced.
   SVGUseElement* ancestor = GeneratingUseElement();
@@ -337,6 +347,8 @@ void SVGUseElement::BuildPendingResource() {
       return;
     ancestor = ancestor->GeneratingUseElement();
   }
+
+  recordreplay::Assert("[RUN-2313] SVGUseElement::BuildPendingResource C");
 
   DetachShadowTree();
   ClearResourceReference();
@@ -364,41 +376,70 @@ String SVGUseElement::title() const {
   return String();
 }
 
-static void AssociateCorrespondingElements(SVGElement& target_root,
-                                           SVGElement& instance_root) {
-  auto target_range =
-      Traversal<SVGElement>::InclusiveDescendantsOf(target_root);
-  auto target_iterator = target_range.begin();
-  for (SVGElement& instance :
-       Traversal<SVGElement>::InclusiveDescendantsOf(instance_root)) {
-    DCHECK(!instance.CorrespondingElement());
-    instance.SetCorrespondingElement(&*target_iterator);
-    ++target_iterator;
+static void PostProcessInstanceElement(SVGElement& target,
+                                       SVGElement& instance) {
+  // Transfer non-markup event listeners.
+  if (EventTargetData* data = target.GetEventTargetData()) {
+    data->event_listener_map.CopyEventListenersNotCreatedFromMarkupToTarget(
+        &instance);
   }
-  DCHECK(!(target_iterator != target_range.end()));
+  // Set up the corresponding element association.
+  instance.SetCorrespondingElement(&target);
+  // Setup the mapping from the target element back to the instance.
+  target.AddInstance(&instance);
 }
 
-// We don't walk the target tree element-by-element, and clone each element,
-// but instead use cloneNode(deep=true). This is an optimization for the common
-// case where <use> doesn't contain disallowed elements (ie. <foreignObject>).
-// Though if there are disallowed elements in the subtree, we have to remove
-// them.  For instance: <use> on <g> containing <foreignObject> (indirect
-// case).
-static inline void RemoveDisallowedElementsFromSubtree(SVGElement& subtree) {
-  DCHECK(!subtree.isConnected());
-  Element* element = ElementTraversal::FirstWithin(subtree);
-  while (element) {
-    if (IsDisallowedElement(*element)) {
-      Element* next =
-          ElementTraversal::NextSkippingChildren(*element, &subtree);
-      // The subtree is not in document so this won't generate events that could
-      // mutate the tree.
-      element->parentNode()->RemoveChild(element);
-      element = next;
+static void PostProcessInstanceTree(SVGElement& target_root,
+                                    SVGElement& instance_root) {
+  DCHECK(!instance_root.isConnected());
+  // We checked this before creating the cloned subtree.
+  DCHECK(!IsDisallowedElement(instance_root));
+  // Handle the root(s). (Always allowed and SVGElements.)
+  PostProcessInstanceElement(target_root, instance_root);
+
+  // The subtrees defined by |target_root| and |instance_root| should be
+  // isomorphic at this point, so we can walk both trees simultaneously to be
+  // able to create the corresponding element mapping.
+  //
+  // We don't walk the target tree element-by-element, and clone each element,
+  // but instead use cloneNode(deep=true). This is an optimization for the
+  // common case where <use> doesn't contain disallowed elements
+  // (ie. <foreignObject>).  Though if there are disallowed elements in the
+  // subtree, we have to remove them. For instance: <use> on <g> containing
+  // <foreignObject> (indirect case).
+  // We do that at the same time as the association back to the corresponding
+  // element is performed to avoid having instance elements in a half-way
+  // inconsistent state.
+  Element* target_element = ElementTraversal::FirstWithin(target_root);
+  Element* instance_element = ElementTraversal::FirstWithin(instance_root);
+  while (target_element) {
+    DCHECK(instance_element);
+    DCHECK(!IsA<SVGElement>(*instance_element) ||
+           !To<SVGElement>(*instance_element).CorrespondingElement());
+    if (IsDisallowedElement(*target_element)) {
+      Element* instance_next = ElementTraversal::NextSkippingChildren(
+          *instance_element, &instance_root);
+      // The subtree is not in the document so this won't generate events that
+      // could mutate the tree.
+      instance_element->parentNode()->RemoveChild(instance_element);
+
+      // Since the target subtree isn't mutated, it can just be traversed in
+      // the normal way (without saving next traversal target).
+      target_element =
+          ElementTraversal::NextSkippingChildren(*target_element, &target_root);
+      instance_element = instance_next;
     } else {
-      element = ElementTraversal::Next(*element, &subtree);
+      if (auto* svg_instance_element =
+              DynamicTo<SVGElement>(instance_element)) {
+        PostProcessInstanceElement(To<SVGElement>(*target_element),
+                                   *svg_instance_element);
+      }
+      target_element = ElementTraversal::Next(*target_element, &target_root);
+      instance_element =
+          ElementTraversal::Next(*instance_element, &instance_root);
     }
   }
+  DCHECK(!instance_element);
 }
 
 static void MoveChildrenToReplacementElement(ContainerNode& source_root,
@@ -432,8 +473,6 @@ SVGElement* SVGUseElement::CreateInstanceTree(SVGElement& target_root) const {
     instance_root = svg_element;
   }
   TransferUseWidthAndHeightIfNeeded(*this, *instance_root, target_root);
-  AssociateCorrespondingElements(target_root, *instance_root);
-  RemoveDisallowedElementsFromSubtree(*instance_root);
   return instance_root;
 }
 
@@ -441,32 +480,33 @@ void SVGUseElement::AttachShadowTree(SVGElement& target) {
   DCHECK(!InstanceRoot());
   DCHECK(!needs_shadow_tree_recreation_);
 
+  recordreplay::Assert(
+      "[RUN-2313] SVGUseElement::AttachShadowTree A %d %d %d %d",
+      RecordReplayId(),
+      target.RecordReplayId(), IsDisallowedElement(target),
+      HasCycleUseReferencing(*this, target));
+
   // Do not allow self-referencing.
   if (IsDisallowedElement(target) || HasCycleUseReferencing(*this, target))
     return;
 
-  // Set up root SVG element in shadow tree.
-  // Clone the target subtree into the shadow tree, not handling <use> and
-  // <symbol> yet.
-  UseShadowRoot().AppendChild(CreateInstanceTree(target));
+  // Create the initial clone of the |target| subtree. Handles transformation
+  // of <symbol> to <svg>.
+  SVGElement* instance_root = CreateInstanceTree(target);
+
+  // Remove disallowed elements, clone event handlers and set up the
+  // association with the corresponding/target element.
+  PostProcessInstanceTree(target, *instance_root);
+
+  // Finally attach to the tree.
+  recordreplay::Assert("[RUN-2313] SVGUseElement::AttachShadowTree B %d",
+                       UseShadowRoot().RecordReplayId());
+  UseShadowRoot().AppendChild(instance_root);
 
   // Assure shadow tree building was successful.
   DCHECK(InstanceRoot());
   DCHECK_EQ(InstanceRoot()->GeneratingUseElement(), this);
   DCHECK_EQ(InstanceRoot()->CorrespondingElement(), &target);
-
-  for (SVGElement& instance :
-       Traversal<SVGElement>::DescendantsOf(UseShadowRoot())) {
-    SVGElement* corresponding_element = instance.CorrespondingElement();
-    // Transfer non-markup event listeners.
-    if (EventTargetData* data = corresponding_element->GetEventTargetData()) {
-      data->event_listener_map.CopyEventListenersNotCreatedFromMarkupToTarget(
-          &instance);
-    }
-    // Setup the mapping from the corresponding (original) element back to the
-    // instance.
-    corresponding_element->AddInstance(&instance);
-  }
 }
 
 void SVGUseElement::DetachShadowTree() {
@@ -544,6 +584,9 @@ bool SVGUseElement::ShadowTreeRebuildPending() const {
 }
 
 void SVGUseElement::InvalidateShadowTree() {
+  recordreplay::Assert(
+      "[RUN-2313] SVGUseElement::InvalidateShadowTree %d %d",
+      RecordReplayId(), ShadowTreeRebuildPending());
   if (ShadowTreeRebuildPending())
     return;
   ScheduleShadowTreeRecreation();
@@ -583,7 +626,7 @@ gfx::RectF SVGUseElement::GetBBox() {
 void SVGUseElement::DispatchPendingEvent() {
   DCHECK(IsStructurallyExternal());
   DCHECK(have_fired_load_event_);
-  DispatchEvent(*Event::Create(event_type_names::kLoad));
+  DispatchEvent(*Event::Create(event_type_names::kLoad), "SVGUseElement::DispatchPendingEvent");
 }
 
 void SVGUseElement::NotifyFinished(Resource* resource) {
@@ -592,7 +635,7 @@ void SVGUseElement::NotifyFinished(Resource* resource) {
 
   InvalidateShadowTree();
   if (resource->ErrorOccurred() || !document_content_->GetDocument()) {
-    DispatchEvent(*Event::Create(event_type_names::kError));
+    DispatchEvent(*Event::Create(event_type_names::kError), "SVGUseElement::NotifyFinished");
   } else {
     if (have_fired_load_event_)
       return;
@@ -600,10 +643,12 @@ void SVGUseElement::NotifyFinished(Resource* resource) {
       return;
     DCHECK(!have_fired_load_event_);
     have_fired_load_event_ = true;
+
     GetDocument()
         .GetTaskRunner(TaskType::kDOMManipulation)
-        ->PostTask(FROM_HERE, WTF::Bind(&SVGUseElement::DispatchPendingEvent,
-                                        WrapPersistent(this)));
+        ->PostTask(FROM_HERE,
+                   WTF::BindOnce(&SVGUseElement::DispatchPendingEvent,
+                                 WrapPersistent(this)));
   }
 }
 

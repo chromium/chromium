@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,8 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
+#include "base/values.h"
 #include "url/gurl.h"
-
-namespace base {
-class DictionaryValue;
-}  // namespace base
 
 namespace remoting {
 
@@ -39,7 +36,7 @@ struct ThirdPartyAuthConfig {
     // |policy_dict| contains valid entries that have been stored into |result|.
     ParsingSuccess,
   };
-  static ParseStatus Parse(const base::DictionaryValue& policy_dict,
+  static ParseStatus Parse(const base::Value::Dict& policy_dict,
                            ThirdPartyAuthConfig* result);
 
  private:
@@ -59,7 +56,7 @@ struct ThirdPartyAuthConfig {
   // Extracts raw (raw = as strings) policy values from |policy_dict|.
   // Missing policy values are set to an empty string.
   // Returns false if no ThirdPartyAuthConfig-related policies were present.
-  static bool ExtractStrings(const base::DictionaryValue& policy_dict,
+  static bool ExtractStrings(const base::Value::Dict& policy_dict,
                              std::string* token_url,
                              std::string* token_validation_url,
                              std::string* token_validation_cert_issuer);

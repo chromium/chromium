@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <tuple>
 
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "components/url_pattern_index/flat/url_pattern_index_generated.h"
 #include "content/public/browser/navigation_handle.h"
@@ -110,7 +111,7 @@ bool GetModifiedQuery(const GURL& url,
 
   bool query_changed = false;
   for (net::QueryIterator it(url); !it.IsAtEnd(); it.Advance()) {
-    std::string key = it.GetKey();
+    const base::StringPiece key = it.GetKey();
     // Remove query param.
     if (std::binary_search(remove_query_params.begin(),
                            remove_query_params.end(), key)) {
@@ -118,9 +119,8 @@ bool GetModifiedQuery(const GURL& url,
       continue;
     }
 
-    auto replace_iterator = std::find_if(
-        add_or_replace_query_params.begin(), add_or_replace_query_params.end(),
-        [&key](const QueryReplace& param) { return param.key == key; });
+    auto replace_iterator = base::ranges::find(add_or_replace_query_params, key,
+                                               &QueryReplace::key);
 
     // Nothing to do.
     if (replace_iterator == add_or_replace_query_params.end()) {
@@ -221,7 +221,7 @@ absl::optional<RequestAction> RulesetMatcherBase::GetBeforeRequestAction(
 
 void RulesetMatcherBase::OnRenderFrameCreated(content::RenderFrameHost* host) {
   DCHECK(host);
-  content::RenderFrameHost* parent = host->GetParent();
+  content::RenderFrameHost* parent = host->GetParentOrOuterDocument();
   if (!parent)
     return;
 
@@ -230,26 +230,20 @@ void RulesetMatcherBase::OnRenderFrameCreated(content::RenderFrameHost* host) {
   // commit for the frame is received in the browser (via DidFinishNavigation).
   // Hence if the parent frame is allowlisted, we allow list the current frame
   // as well in OnRenderFrameCreated.
-  content::GlobalRenderFrameHostId parent_frame_id(
-      parent->GetProcess()->GetID(), parent->GetRoutingID());
   absl::optional<RequestAction> parent_action =
-      GetAllowlistedFrameAction(parent_frame_id);
+      GetAllowlistedFrameAction(parent->GetGlobalId());
   if (!parent_action)
     return;
 
-  content::GlobalRenderFrameHostId frame_id(host->GetProcess()->GetID(),
-                                            host->GetRoutingID());
-
   bool inserted = false;
   std::tie(std::ignore, inserted) = allowlisted_frames_.insert(
-      std::make_pair(frame_id, std::move(*parent_action)));
+      std::make_pair(host->GetGlobalId(), std::move(*parent_action)));
   DCHECK(inserted);
 }
 
 void RulesetMatcherBase::OnRenderFrameDeleted(content::RenderFrameHost* host) {
   DCHECK(host);
-  allowlisted_frames_.erase(content::GlobalRenderFrameHostId(
-      host->GetProcess()->GetID(), host->GetRoutingID()));
+  allowlisted_frames_.erase(host->GetGlobalId());
 }
 
 void RulesetMatcherBase::OnDidFinishNavigation(
@@ -272,9 +266,7 @@ void RulesetMatcherBase::OnDidFinishNavigation(
   absl::optional<RequestAction> action =
       GetMaxPriorityAction(std::move(parent_action), std::move(frame_action));
 
-  content::GlobalRenderFrameHostId frame_id(host->GetProcess()->GetID(),
-                                            host->GetRoutingID());
-
+  content::GlobalRenderFrameHostId frame_id = host->GetGlobalId();
   allowlisted_frames_.erase(frame_id);
 
   if (action)
@@ -285,10 +277,7 @@ absl::optional<RequestAction>
 RulesetMatcherBase::GetAllowlistedFrameActionForTesting(
     content::RenderFrameHost* host) const {
   DCHECK(host);
-
-  content::GlobalRenderFrameHostId frame_id(host->GetProcess()->GetID(),
-                                            host->GetRoutingID());
-  return GetAllowlistedFrameAction(frame_id);
+  return GetAllowlistedFrameAction(host->GetGlobalId());
 }
 
 RequestAction RulesetMatcherBase::CreateBlockOrCollapseRequestAction(

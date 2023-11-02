@@ -1,4 +1,4 @@
-// Copyright (c) 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,24 +8,30 @@
 #include <utility>
 #include <vector>
 
+#include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
-#include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_web_ui.h"
 #include "content/public/test/web_contents_tester.h"
+#include "extensions/common/extension_builder.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace web_app {
+using web_app::AppId;
+using web_app::WebAppProvider;
 
 namespace {
+
+using ::testing::Optional;
 
 constexpr char kTestAppUrl[] = "https://www.example.com/";
 constexpr char kTestManifestUrl[] = "https://www.example.com/manifest.json";
@@ -60,8 +66,8 @@ class TestAppLauncherHandler : public AppLauncherHandler {
   }
 };
 
-std::unique_ptr<WebApplicationInfo> BuildWebAppInfo() {
-  auto app_info = std::make_unique<WebApplicationInfo>();
+std::unique_ptr<WebAppInstallInfo> BuildWebAppInfo() {
+  auto app_info = std::make_unique<WebAppInstallInfo>();
   app_info->start_url = GURL(kTestAppUrl);
   app_info->scope = GURL(kTestAppUrl);
   app_info->title = kTestAppTitle;
@@ -72,7 +78,7 @@ std::unique_ptr<WebApplicationInfo> BuildWebAppInfo() {
 
 }  // namespace
 
-class AppLauncherHandlerTest : public testing::Test {
+class AppLauncherHandlerTest : public BrowserWithTestWindowTest {
  public:
   AppLauncherHandlerTest() = default;
 
@@ -82,25 +88,14 @@ class AppLauncherHandlerTest : public testing::Test {
   ~AppLauncherHandlerTest() override = default;
 
   void SetUp() override {
-    testing::Test::SetUp();
+    BrowserWithTestWindowTest::SetUp();
 
-    testing_profile_ = TestingProfile::Builder().Build();
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    testing_profile_->SetIsMainProfile(true);
-#endif
-
-    os_hooks_suppress_ =
-        OsIntegrationManager::ScopedSuppressOsHooksForTesting();
     extension_service_ = CreateTestExtensionService();
 
-    auto* const provider = web_app::FakeWebAppProvider::Get(profile());
-    provider->SkipAwaitingExtensionSystem();
     web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
 
  protected:
-  Profile* profile() { return testing_profile_->GetOriginalProfile(); }
-
   std::unique_ptr<TestAppLauncherHandler> GetAppLauncherHandler(
       content::TestWebUI* test_web_ui) {
     return std::make_unique<TestAppLauncherHandler>(
@@ -110,7 +105,8 @@ class AppLauncherHandlerTest : public testing::Test {
   // Install a web app and sets the locally installed property based on
   // |is_locally_installed|.
   AppId InstallWebApp(bool is_locally_installed = true) {
-    AppId installed_app_id = test::InstallWebApp(profile(), BuildWebAppInfo());
+    AppId installed_app_id =
+        web_app::test::InstallWebApp(profile(), BuildWebAppInfo());
     if (is_locally_installed)
       return installed_app_id;
 
@@ -132,18 +128,16 @@ class AppLauncherHandlerTest : public testing::Test {
               app_launcher_handler->call_data()[0]->function_name());
 
     const base::Value* arg1 = app_launcher_handler->call_data()[0]->arg1();
+
     ASSERT_TRUE(arg1->is_dict());
+    const base::Value::Dict& app_info = arg1->GetDict();
 
-    const base::DictionaryValue* app_info;
-    arg1->GetAsDictionary(&app_info);
+    const std::string* app_id = app_info.FindString(kKeyAppId);
+    ASSERT_TRUE(app_id);
+    EXPECT_EQ(*app_id, installed_app_id);
 
-    std::string app_id;
-    app_info->GetString(kKeyAppId, &app_id);
-    EXPECT_EQ(app_id, installed_app_id);
-
-    bool is_locally_installed = false;
-    app_info->GetBoolean(kKeyIsLocallyInstalled, &is_locally_installed);
-    EXPECT_TRUE(is_locally_installed);
+    EXPECT_THAT(app_info.FindBoolByDottedPath(kKeyIsLocallyInstalled),
+                Optional(true));
   }
 
   std::unique_ptr<content::TestWebUI> CreateTestWebUI(
@@ -155,12 +149,11 @@ class AppLauncherHandlerTest : public testing::Test {
   }
 
   std::unique_ptr<content::WebContents> CreateTestWebContents() {
-    auto site_instance = content::SiteInstance::Create(browser_context());
+    auto site_instance = content::SiteInstance::Create(profile());
     return content::WebContentsTester::CreateTestWebContents(
-        browser_context(), std::move(site_instance));
+        profile(), std::move(site_instance));
   }
 
- private:
   extensions::ExtensionService* CreateTestExtensionService() {
     auto* extension_system = static_cast<extensions::TestExtensionSystem*>(
         extensions::ExtensionSystem::Get(profile()));
@@ -171,13 +164,8 @@ class AppLauncherHandlerTest : public testing::Test {
     return ext_service;
   }
 
-  content::BrowserContext* browser_context() { return testing_profile_.get(); }
-
-  content::BrowserTaskEnvironment task_environment_;
-  content::RenderViewHostTestEnabler render_view_host_test_enabler_;
-  std::unique_ptr<TestingProfile> testing_profile_;
-  web_app::ScopedOsHooksSuppress os_hooks_suppress_;
-  extensions::ExtensionService* extension_service_;
+  web_app::OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
+  raw_ptr<extensions::ExtensionService> extension_service_;
 };
 
 // Tests that AppLauncherHandler::HandleInstallAppLocally calls the JS method
@@ -193,14 +181,14 @@ TEST_F(AppLauncherHandlerTest, HandleInstallAppLocally) {
   std::unique_ptr<TestAppLauncherHandler> app_launcher_handler =
       GetAppLauncherHandler(test_web_ui.get());
 
-  auto args = std::make_unique<base::ListValue>();
-  args->Append(std::make_unique<base::Value>(installed_app_id));
-  app_launcher_handler->HandleGetApps(/*args=*/nullptr);
+  base::Value::List args;
+  args.Append(base::Value(installed_app_id));
+  app_launcher_handler->HandleGetApps(/*args=*/base::Value::List());
   app_launcher_handler->test_web_ui()->ClearTrackedCalls();
 
   // Call AppLauncherHandler::HandleInstallAppLocally for the web_ui and expect
   // that the JS is made correctly.
-  app_launcher_handler->HandleInstallAppLocally(args.get());
+  app_launcher_handler->HandleInstallAppLocally(args);
 
   ValidateLocallyInstalledCallData(app_launcher_handler.get(),
                                    installed_app_id);
@@ -219,9 +207,9 @@ TEST_F(AppLauncherHandlerTest, HandleInstallAppLocally_MultipleWebUI) {
   std::unique_ptr<TestAppLauncherHandler> app_launcher_handler_1 =
       GetAppLauncherHandler(test_web_ui_1.get());
 
-  auto args = std::make_unique<base::ListValue>();
-  args->Append(std::make_unique<base::Value>(installed_app_id));
-  app_launcher_handler_1->HandleGetApps(/*args=*/nullptr);
+  base::Value::List args;
+  args.Append(base::Value(installed_app_id));
+  app_launcher_handler_1->HandleGetApps(/*args=*/base::Value::List());
   app_launcher_handler_1->test_web_ui()->ClearTrackedCalls();
 
   // Initialize the second web_ui instance.
@@ -231,13 +219,13 @@ TEST_F(AppLauncherHandlerTest, HandleInstallAppLocally_MultipleWebUI) {
       CreateTestWebUI(test_web_contents_2.get());
   std::unique_ptr<TestAppLauncherHandler> app_launcher_handler_2 =
       GetAppLauncherHandler(test_web_ui_2.get());
-  app_launcher_handler_2->HandleGetApps(/*args=*/nullptr);
+  app_launcher_handler_2->HandleGetApps(/*args=*/base::Value::List());
   app_launcher_handler_2->test_web_ui()->ClearTrackedCalls();
 
   // Call AppLauncherHandler::HandleInstallAppLocally for the first web_ui
   // handler and expect the correct JS call is made to both the web_ui
   // instances.
-  app_launcher_handler_1->HandleInstallAppLocally(args.get());
+  app_launcher_handler_1->HandleInstallAppLocally(args);
 
   ValidateLocallyInstalledCallData(app_launcher_handler_1.get(),
                                    installed_app_id);
@@ -245,4 +233,24 @@ TEST_F(AppLauncherHandlerTest, HandleInstallAppLocally_MultipleWebUI) {
                                    installed_app_id);
 }
 
-}  // namespace web_app
+// Regression test for crbug.com/1302157.
+TEST_F(AppLauncherHandlerTest, HandleClosedWhileUninstallingExtension) {
+  scoped_refptr<const extensions::Extension> extension =
+      extensions::ExtensionBuilder("foo").Build();
+  extension_service_->AddExtension(extension.get());
+
+  AddTab(browser(), GURL("http://foo/1"));
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetWebContentsAt(0);
+  std::unique_ptr<content::WebContents> test_web_contents =
+      CreateTestWebContents();
+  std::unique_ptr<content::TestWebUI> test_web_ui = CreateTestWebUI(contents);
+  std::unique_ptr<TestAppLauncherHandler> app_launcher_handler =
+      GetAppLauncherHandler(test_web_ui.get());
+
+  app_launcher_handler->CreateExtensionUninstallDialog()->ConfirmUninstall(
+      extension, extensions::UNINSTALL_REASON_USER_INITIATED,
+      extensions::UNINSTALL_SOURCE_CHROME_APPS_PAGE);
+  app_launcher_handler.reset();
+  // No crash (in asan tester) indicates a passing score.
+}

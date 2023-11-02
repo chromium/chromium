@@ -1,12 +1,15 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/autofill_assistant/browser/fake_starter_platform_delegate.h"
+#include "components/autofill_assistant/browser/mock_assistant_field_trial_util.h"
 
 namespace autofill_assistant {
 
-FakeStarterPlatformDelegate::FakeStarterPlatformDelegate() = default;
+FakeStarterPlatformDelegate::FakeStarterPlatformDelegate(
+    std::unique_ptr<FakeCommonDependencies> fake_common_dependencies)
+    : fake_common_dependencies_(std::move(fake_common_dependencies)) {}
 FakeStarterPlatformDelegate::~FakeStarterPlatformDelegate() = default;
 
 std::unique_ptr<TriggerScriptCoordinator::UiDelegate>
@@ -19,7 +22,7 @@ FakeStarterPlatformDelegate::GetTriggerScriptRequestSenderToInject() {
   return std::move(trigger_script_request_sender_for_test_);
 }
 
-void FakeStarterPlatformDelegate::StartRegularScript(
+void FakeStarterPlatformDelegate::StartScriptDefaultUi(
     GURL url,
     std::unique_ptr<TriggerContext> trigger_context,
     const absl::optional<TriggerScriptProto>& trigger_script) {
@@ -97,17 +100,55 @@ void FakeStarterPlatformDelegate::SetProactiveHelpSettingEnabled(bool enabled) {
   proactive_help_enabled_ = enabled;
 }
 
-bool FakeStarterPlatformDelegate::GetMakeSearchesAndBrowsingBetterEnabled()
-    const {
-  return msbb_enabled_;
+bool FakeStarterPlatformDelegate::GetIsLoggedIn() {
+  return is_logged_in_;
+}
+
+bool FakeStarterPlatformDelegate::GetIsSupervisedUser() {
+  return is_supervised_user_;
+}
+
+bool FakeStarterPlatformDelegate::GetIsAllowedForMachineLearning() {
+  return is_allowed_for_machine_learning_;
 }
 
 bool FakeStarterPlatformDelegate::GetIsCustomTab() const {
   return is_custom_tab_;
 }
 
+bool FakeStarterPlatformDelegate::GetIsWebLayer() const {
+  return is_web_layer_;
+}
+
 bool FakeStarterPlatformDelegate::GetIsTabCreatedByGSA() const {
   return is_tab_created_by_gsa_;
+}
+
+std::unique_ptr<AssistantFieldTrialUtil>
+FakeStarterPlatformDelegate::CreateFieldTrialUtil() {
+  if (field_trial_util_) {
+    return std::move(field_trial_util_);
+  }
+  return std::make_unique<MockAssistantFieldTrialUtil>();
+}
+
+bool FakeStarterPlatformDelegate::IsAttached() {
+  return is_attached_;
+}
+
+const FakeCommonDependencies*
+FakeStarterPlatformDelegate::GetCommonDependencies() const {
+  return fake_common_dependencies_.get();
+}
+
+const PlatformDependencies*
+FakeStarterPlatformDelegate::GetPlatformDependencies() const {
+  return &fake_platform_dependencies_;
+}
+
+base::WeakPtr<StarterPlatformDelegate>
+FakeStarterPlatformDelegate::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 }  // namespace autofill_assistant

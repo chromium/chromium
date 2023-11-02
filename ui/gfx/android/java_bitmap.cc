@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -133,7 +133,7 @@ SkBitmap CreateSkBitmapFromJavaBitmap(const JavaBitmap& jbitmap) {
   // compositor relies on this.
   SkPixmap src = WrapJavaBitmapAsPixmap(jbitmap);
   const size_t min_row_bytes = src.info().minRowBytes();
-  const size_t row_bytes = base::bits::AlignUp(min_row_bytes, 4u);
+  const size_t row_bytes = base::bits::AlignUp(min_row_bytes, size_t{4});
 
   SkBitmap skbitmap;
   skbitmap.allocPixels(src.info(), row_bytes);

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -72,8 +72,13 @@ export function pageSizeSelectTest() {
   // Verify the pages sizes are sorted correctly.
   test('pageSizesSortedCorrectly', () => {
     pageSizeSelect.options = [
-      PageSize.Tabloid, PageSize.Letter, PageSize.A3, PageSize.Max,
-      PageSize.Legal, PageSize.B4, PageSize.A4
+      PageSize.Tabloid,
+      PageSize.Letter,
+      PageSize.A3,
+      PageSize.Max,
+      PageSize.Legal,
+      PageSize.B4,
+      PageSize.A4,
     ];
     flush();
 

@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_property.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/font_display.h"
 #include "third_party/blink/renderer/core/css/parser/at_rule_descriptors.h"
@@ -64,7 +65,7 @@ class CORE_EXPORT FontFace : public ScriptWrappable,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  enum LoadStatusType { kUnloaded, kLoading, kLoaded, kError };
+  enum LoadStatusType : uint8_t { kUnloaded, kLoading, kLoaded, kError };
 
   static FontFace* Create(
       ExecutionContext* execution_context,
@@ -190,6 +191,7 @@ class CORE_EXPORT FontFace : public ScriptWrappable,
   using LoadedProperty =
       ScriptPromiseProperty<Member<FontFace>, Member<DOMException>>;
 
+  HeapVector<Member<LoadFontCallback>> callbacks_;
   AtomicString family_;
   String ots_parse_message_;
   Member<const CSSValue> style_;
@@ -204,14 +206,13 @@ class CORE_EXPORT FontFace : public ScriptWrappable,
   Member<const CSSValue> line_gap_override_;
   Member<const CSSValue> advance_override_;
   Member<const CSSValue> size_adjust_;
-  LoadStatusType status_;
   Member<DOMException> error_;
 
   Member<LoadedProperty> loaded_property_;
   Member<CSSFontFace> css_font_face_;
   Member<const StyleRuleFontFace> style_rule_;
-  HeapVector<Member<LoadFontCallback>> callbacks_;
 
+  LoadStatusType status_;
   // Note that we will also need to distinguish font faces in different tree
   // scopes when we allow @font-face in shadow DOM. See crbug.com/336876.
   bool is_user_style_ = false;

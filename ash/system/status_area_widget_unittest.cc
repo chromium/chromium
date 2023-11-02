@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,10 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/focus_cycler.h"
+#include "ash/ime/ime_controller_impl.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/keyboard/ui/keyboard_util.h"
 #include "ash/keyboard/ui/test/keyboard_test_util.h"
@@ -19,29 +21,33 @@
 #include "ash/shell.h"
 #include "ash/system/accessibility/dictation_button_tray.h"
 #include "ash/system/accessibility/select_to_speak/select_to_speak_tray.h"
+#include "ash/system/eche/eche_tray.h"
 #include "ash/system/ime_menu/ime_menu_tray.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/model/virtual_keyboard_model.h"
+#include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/overview/overview_button_tray.h"
 #include "ash/system/palette/palette_tray.h"
 #include "ash/system/session/logout_button_tray.h"
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/system/tray/status_area_overflow_button_tray.h"
 #include "ash/system/tray/system_tray_notifier.h"
+#include "ash/system/unified/date_tray.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/virtual_keyboard/virtual_keyboard_tray.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/test_ash_web_view_factory.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "chromeos/network/cellular_esim_profile_handler_impl.h"
-#include "chromeos/network/cellular_metrics_logger.h"
-#include "chromeos/network/network_handler.h"
-#include "chromeos/network/network_handler_test_helper.h"
-#include "chromeos/network/network_metadata_store.h"
+#include "base/test/scoped_feature_list.h"
+#include "chromeos/ash/components/network/cellular_metrics_logger.h"
+#include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/session_manager/session_manager_types.h"
 #include "ui/events/event.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/image/image.h"
 
 using session_manager::SessionState;
 
@@ -78,41 +84,67 @@ TEST_F(StatusAreaWidgetTest, Basics) {
   EXPECT_FALSE(status->virtual_keyboard_tray_for_testing()->GetVisible());
 }
 
-TEST_F(StatusAreaWidgetTest, HanldeOnLocaleChange) {
+// Tests that the IME menu shows up when adding a secondary display if the IME
+// menu was active.
+TEST_F(StatusAreaWidgetTest, MultiDisplayIME) {
+  // Typical flow to enable the IME menu is to rely on InputMethodManager
+  // observers (of which ImeMenuTray is one) getting notified upon activation of
+  // the ime menu. When a new display is added, the IME menu pod should check
+  // whether the menu is already active and set visibility.
+  Shell::Get()->ime_controller()->ShowImeMenuOnShelf(true);
+
+  // Create a second display, the IME menu pod should be visible.
+  UpdateDisplay("500x400,500x400");
+  EXPECT_TRUE(StatusAreaWidgetTestHelper::GetSecondaryStatusAreaWidget()
+                  ->ime_menu_tray()
+                  ->GetVisible());
+}
+
+// Tests that the IME menu does not show up when adding a secondary display if
+// the IME menu was not active.
+TEST_F(StatusAreaWidgetTest, MultiDisplayIMENotActive) {
+  // Create a second display, the IME menu pod should not be visible.
+  UpdateDisplay("500x400,500x400");
+  EXPECT_FALSE(StatusAreaWidgetTestHelper::GetSecondaryStatusAreaWidget()
+                   ->ime_menu_tray()
+                   ->GetVisible());
+}
+
+TEST_F(StatusAreaWidgetTest, HandleOnLocaleChange) {
   base::i18n::SetRTLForTesting(false);
 
-  StatusAreaWidget* status_area_ =
+  StatusAreaWidget* status_area =
       StatusAreaWidgetTestHelper::GetStatusAreaWidget();
-  TrayBackgroundView* ime_menu_(status_area_->ime_menu_tray());
-  TrayBackgroundView* palette_(status_area_->palette_tray());
-  TrayBackgroundView* dictation_button_(status_area_->dictation_button_tray());
-  TrayBackgroundView* select_to_speak_(status_area_->select_to_speak_tray());
+  TrayBackgroundView* ime_menu = status_area->ime_menu_tray();
+  TrayBackgroundView* palette = status_area->palette_tray();
+  TrayBackgroundView* dictation_button = status_area->dictation_button_tray();
+  TrayBackgroundView* select_to_speak = status_area->select_to_speak_tray();
 
-  ime_menu_->SetVisiblePreferred(true);
-  palette_->SetVisiblePreferred(true);
-  dictation_button_->SetVisiblePreferred(true);
-  select_to_speak_->SetVisiblePreferred(true);
+  ime_menu->SetVisiblePreferred(true);
+  palette->SetVisiblePreferred(true);
+  dictation_button->SetVisiblePreferred(true);
+  select_to_speak->SetVisiblePreferred(true);
 
-  // From left to right: dictation_button_, select_to_speak_, ime_menu_,
-  // palette_.
-  EXPECT_GT(palette_->layer()->bounds().x(), ime_menu_->layer()->bounds().x());
-  EXPECT_GT(ime_menu_->layer()->bounds().x(),
-            select_to_speak_->layer()->bounds().x());
-  EXPECT_GT(select_to_speak_->layer()->bounds().x(),
-            dictation_button_->layer()->bounds().x());
+  // From left to right: `dictation_button`, `select_to_speak`, `ime_menu`,
+  // palette.
+  EXPECT_GT(palette->layer()->bounds().x(), ime_menu->layer()->bounds().x());
+  EXPECT_GT(ime_menu->layer()->bounds().x(),
+            select_to_speak->layer()->bounds().x());
+  EXPECT_GT(select_to_speak->layer()->bounds().x(),
+            dictation_button->layer()->bounds().x());
 
   // Switch to RTL mode.
   base::i18n::SetRTLForTesting(true);
   // Trigger the LocaleChangeObserver, which should cause a layout of the menu.
   ash::LocaleUpdateController::Get()->OnLocaleChanged();
 
-  // From left to right: palette_, ime_menu_, select_to_speak_,
+  // From left to right: palette, ime_menu_, select_to_speak,
   // dictation_button_.
-  EXPECT_LT(palette_->layer()->bounds().x(), ime_menu_->layer()->bounds().x());
-  EXPECT_LT(ime_menu_->layer()->bounds().x(),
-            select_to_speak_->layer()->bounds().x());
-  EXPECT_LT(select_to_speak_->layer()->bounds().x(),
-            dictation_button_->layer()->bounds().x());
+  EXPECT_LT(palette->layer()->bounds().x(), ime_menu->layer()->bounds().x());
+  EXPECT_LT(ime_menu->layer()->bounds().x(),
+            select_to_speak->layer()->bounds().x());
+  EXPECT_LT(select_to_speak->layer()->bounds().x(),
+            dictation_button->layer()->bounds().x());
 
   base::i18n::SetRTLForTesting(false);
 }
@@ -277,23 +309,24 @@ class UnifiedStatusAreaWidgetTest : public AshTestBase {
   void SetUp() override {
     // Initializing NetworkHandler before ash is more like production.
     AshTestBase::SetUp();
-    chromeos::CellularESimProfileHandlerImpl::RegisterLocalStatePrefs(
-        local_state_.registry());
-    chromeos::NetworkMetadataStore::RegisterPrefs(profile_prefs_.registry());
-    chromeos::NetworkHandler::Get()->InitializePrefServices(&profile_prefs_,
-                                                            &local_state_);
+    network_handler_test_helper_.RegisterPrefs(profile_prefs_.registry(),
+                                               local_state_.registry());
+
+    network_handler_test_helper_.InitializePrefs(&profile_prefs_,
+                                                 &local_state_);
+
     // Networking stubs may have asynchronous initialization.
     base::RunLoop().RunUntilIdle();
   }
 
   void TearDown() override {
     // This roughly matches production shutdown order.
-    chromeos::NetworkHandler::Get()->ShutdownPrefServices();
+    NetworkHandler::Get()->ShutdownPrefServices();
     AshTestBase::TearDown();
   }
 
  private:
-  chromeos::NetworkHandlerTestHelper network_handler_test_helper_;
+  NetworkHandlerTestHelper network_handler_test_helper_;
   TestingPrefServiceSimple profile_prefs_;
   TestingPrefServiceSimple local_state_;
 };
@@ -571,10 +604,11 @@ TEST_F(StatusAreaWidgetCollapseStateTest, TrayHiddenWhileCollapsed) {
       switches::kAshForceStatusAreaCollapsible);
   status_area_->UpdateCollapseState();
 
-  // The palette tray button should not visible initially.
   EXPECT_EQ(StatusAreaWidget::CollapseState::COLLAPSED, collapse_state());
   EXPECT_FALSE(ime_menu_->GetVisible());
   EXPECT_FALSE(virtual_keyboard_->GetVisible());
+
+  // The palette tray button should visible initially.
   EXPECT_TRUE(palette_->GetVisible());
 
   // Hiding it should make the virtual keyboard tray button replace it.
@@ -592,12 +626,91 @@ TEST_F(StatusAreaWidgetCollapseStateTest, AllTraysFitInCollapsedState) {
   EXPECT_EQ(StatusAreaWidget::CollapseState::COLLAPSED, collapse_state());
 
   // If all tray buttons can fit in the available space, the overflow button is
-  // now shown.
+  // not shown.
   select_to_speak_->SetVisiblePreferred(false);
   ime_menu_->SetVisiblePreferred(false);
   dictation_button_->SetVisiblePreferred(false);
   EXPECT_EQ(StatusAreaWidget::CollapseState::NOT_COLLAPSIBLE, collapse_state());
   EXPECT_FALSE(overflow_button_->GetVisible());
+}
+
+class StatusAreaWidgetQSRevampTest : public AshTestBase {
+ protected:
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures({ash::features::kQsRevamp}, {});
+    AshTestBase::SetUp();
+  }
+
+  TrayBackgroundView::RoundedCornerBehavior GetTrayCornerBehavior(
+      TrayBackgroundView* tray) {
+    return tray->corner_behavior_;
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// The corner radius of the date tray changes based on the visibility of the
+// `NotificationCenterTray`. The date tray should have rounded corners on the
+// left if the `NotificationCenterTray` is not visible and no rounded corners
+// otherwise.
+TEST_F(StatusAreaWidgetQSRevampTest, DateTrayRoundedCornerBehavior) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kQsRevamp);
+
+  StatusAreaWidget* status_area =
+      StatusAreaWidgetTestHelper::GetStatusAreaWidget();
+  EXPECT_FALSE(status_area->notification_center_tray()->GetVisible());
+  EXPECT_EQ(GetTrayCornerBehavior(status_area->date_tray()),
+            TrayBackgroundView::RoundedCornerBehavior::kStartRounded);
+
+  status_area->notification_center_tray()->SetVisiblePreferred(true);
+
+  EXPECT_EQ(GetTrayCornerBehavior(status_area->date_tray()),
+            TrayBackgroundView::RoundedCornerBehavior::kNotRounded);
+
+  status_area->notification_center_tray()->SetVisiblePreferred(false);
+
+  EXPECT_EQ(GetTrayCornerBehavior(status_area->date_tray()),
+            TrayBackgroundView::RoundedCornerBehavior::kStartRounded);
+}
+
+class StatusAreaWidgetEcheTest : public AshTestBase {
+ protected:
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{chromeos::features::kEcheSWA},
+        /*disabled_features=*/{});
+    DCHECK(test_web_view_factory_.get());
+    AshTestBase::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  // Calling the factory constructor is enough to set it up.
+  std::unique_ptr<TestAshWebViewFactory> test_web_view_factory_ =
+      std::make_unique<TestAshWebViewFactory>();
+};
+
+// Tests that Eche Tray is shown or hidden
+TEST_F(StatusAreaWidgetEcheTest, EcheTrayShowHide) {
+  StatusAreaWidget* status_area =
+      StatusAreaWidgetTestHelper::GetStatusAreaWidget();
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(30, 30);
+  gfx::ImageSkia image_skia = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
+  image_skia.MakeThreadSafe();
+  status_area->eche_tray()->LoadBubble(GURL("http://google.com"),
+                                       gfx::Image(image_skia), u"app 1");
+  status_area->eche_tray()->ShowBubble();
+
+  // Auto-hidden shelf would be forced to be visible.
+  EXPECT_TRUE(status_area->ShouldShowShelf());
+
+  status_area->eche_tray()->HideBubble();
+
+  // Auto-hidden shelf would not be forced to be visible.
+  EXPECT_FALSE(status_area->ShouldShowShelf());
 }
 
 }  // namespace ash

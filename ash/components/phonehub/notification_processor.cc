@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,13 +11,37 @@
 #include "base/callback.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "chromeos/components/multidevice/logging/logging.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "services/data_decoder/public/cpp/decode_image.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image_skia.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
+
 namespace {
+
+// Constants to override the Messages app monochrome icon color.
+const char kMessagesPackageName[] = "com.google.android.apps.messaging";
+const SkColor kMessagesOverrideColor = gfx::kGoogleBlue600;
+
+absl::optional<SkColor> getMonochromeIconColor(const proto::Notification& proto,
+                                               const gfx::Image& icon) {
+  if (icon.IsEmpty() || !proto.origin_app().has_icon_color()) {
+    return absl::nullopt;
+  }
+  if (proto.origin_app().package_name() == kMessagesPackageName) {
+    // The notification color supplied by the Messages app (Bugle) is based
+    // on light/dark mode of the phone, not the Chromebook, with no way to
+    // query for both at runtime. These constants are used to override with
+    // a fixed color. See conversation at b/207089786 for more details.
+    return kMessagesOverrideColor;
+  }
+  return SkColorSetRGB(proto.origin_app().icon_color().red(),
+                       proto.origin_app().icon_color().green(),
+                       proto.origin_app().icon_color().blue());
+}
 
 Notification::Importance GetNotificationImportanceFromProto(
     proto::NotificationImportance importance) {
@@ -119,11 +143,17 @@ Notification CreateInternalNotification(const proto::Notification& proto,
   if (!contact_image.IsEmpty())
     opt_contact_image = contact_image;
 
+  bool icon_is_monochrome =
+      proto.origin_app().icon_styling() ==
+      proto::NotificationIconStyling::ICON_STYLE_MONOCHROME_SMALL_ICON;
+  absl::optional<SkColor> icon_color =
+      icon_is_monochrome ? getMonochromeIconColor(proto, icon) : absl::nullopt;
+
   return Notification(proto.id(),
                       Notification::AppMetadata(
                           base::UTF8ToUTF16(proto.origin_app().visible_name()),
-                          proto.origin_app().package_name(), icon,
-                          proto.origin_app().user_id()),
+                          proto.origin_app().package_name(), icon, icon_color,
+                          icon_is_monochrome, proto.origin_app().user_id()),
                       base::Time::FromJsTime(proto.epoch_time_millis()),
                       GetNotificationImportanceFromProto(proto.importance()),
                       category, action_id_map, behavior, title, text_content,
@@ -339,4 +369,4 @@ void NotificationProcessor::RemoveNotificationsAndProcessNextRequest(
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

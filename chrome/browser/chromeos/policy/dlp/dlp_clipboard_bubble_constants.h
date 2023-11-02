@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,9 +26,6 @@ constexpr char kClipboardBlockPluginVmToastId[] =
 
 // Clipboard Plugin VM toast ID in warning mode.
 constexpr char kClipboardWarnPluginVmToastId[] = "clipboard_dlp_warn_plugin_vm";
-
-// The duration of the clipboard toast/bubble shown on blocked paste.
-constexpr int kClipboardDlpToastDurationMs = 2500;
 
 // The duration of the clipboard bubble shown on blocked paste.
 constexpr int kClipboardDlpBlockDurationMs = 6000;

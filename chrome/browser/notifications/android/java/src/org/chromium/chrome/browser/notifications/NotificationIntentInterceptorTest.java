@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,38 +16,37 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 
-import androidx.test.core.app.ApplicationProvider;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
+import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLog;
 import org.robolectric.shadows.ShadowNotificationManager;
 import org.robolectric.shadows.ShadowPendingIntent;
 
-import org.chromium.base.ContextUtils;
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.UmaRecorderHolder;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.browser_ui.notifications.NotificationWrapperBuilder;
 import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
-import org.chromium.testing.local.LocalRobolectricTestRunner;
 
 /**
  * Test to verify {@link NotificationIntentInterceptor} can intercept the {@link PendingIntent} and
  * track metrics correctly.
  */
-@RunWith(LocalRobolectricTestRunner.class)
-@Config(shadows = {ShadowNotificationManager.class, ShadowPendingIntent.class,
-                ShadowRecordHistogram.class})
-
+@RunWith(BaseRobolectricTestRunner.class)
+@Config(shadows = {ShadowNotificationManager.class, ShadowPendingIntent.class})
+@LooperMode(LooperMode.Mode.LEGACY)
 public class NotificationIntentInterceptorTest {
     private static final String TEST_NOTIFICATION_TITLE = "Test notification title";
     private static final String TEST_NOTIFICATION_ACTION_TITLE = "Test notification action title";
@@ -81,9 +80,8 @@ public class NotificationIntentInterceptorTest {
     @Before
     public void setUp() throws Exception {
         ShadowLog.stream = System.out;
-        ShadowRecordHistogram.reset();
-        mContext = ApplicationProvider.getApplicationContext();
-        ContextUtils.initApplicationContextForTests(mContext);
+        UmaRecorderHolder.resetForTesting();
+        mContext = RuntimeEnvironment.application;
         mShadowNotificationManager = shadowOf(
                 (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE));
         mContext.registerReceiver(
@@ -94,7 +92,7 @@ public class NotificationIntentInterceptorTest {
 
     @After
     public void tearDown() {
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
     }
 
     // Builds a simple notification used in tests.
@@ -159,7 +157,7 @@ public class NotificationIntentInterceptorTest {
         Assert.assertEquals(receivedIntent.getExtras().getInt(EXTRA_INTENT_TYPE),
                 NotificationIntentInterceptor.IntentType.CONTENT_INTENT);
         Assert.assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         "Mobile.SystemNotification.Content.Click",
                         NotificationUmaTracker.SystemNotificationType.DOWNLOAD_FILES));
     }
@@ -182,7 +180,7 @@ public class NotificationIntentInterceptorTest {
 
         // Verify the histogram.
         Assert.assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         "Mobile.SystemNotification.Dismiss",
                         NotificationUmaTracker.SystemNotificationType.DOWNLOAD_FILES));
         Assert.assertNull(mReceiver.intentReceived());
@@ -212,7 +210,7 @@ public class NotificationIntentInterceptorTest {
         Assert.assertEquals(NotificationIntentInterceptor.IntentType.ACTION_INTENT,
                 receivedIntent.getExtras().getInt(EXTRA_INTENT_TYPE));
         Assert.assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         "Mobile.SystemNotification.Action.Click",
                         NotificationUmaTracker.ActionType.DOWNLOAD_PAUSE));
     }

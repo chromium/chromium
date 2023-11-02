@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,10 +13,10 @@
 #include "base/time/time.h"
 #include "chrome/browser/media/router/providers/cast/cast_activity.h"
 #include "chrome/browser/media/router/providers/cast/cast_session_tracker.h"
-#include "components/cast_channel/cast_message_handler.h"
 #include "components/media_router/common/media_route.h"
 #include "components/media_router/common/mojom/logger.mojom.h"
 #include "components/media_router/common/mojom/media_router.mojom-forward.h"
+#include "components/media_router/common/providers/cast/channel/cast_message_handler.h"
 #include "components/mirroring/mojom/cast_message_channel.mojom.h"
 #include "components/mirroring/mojom/mirroring_service_host.mojom.h"
 #include "components/mirroring/mojom/session_observer.mojom.h"
@@ -48,7 +48,7 @@ class MirroringActivity : public CastActivity,
                     const std::string& app_id,
                     cast_channel::CastMessageHandler* message_handler,
                     CastSessionTracker* session_tracker,
-                    int target_tab_id,
+                    int frame_tree_node_id,
                     const CastSinkExtraData& cast_data,
                     OnStopCallback callback);
   ~MirroringActivity() override;
@@ -63,7 +63,7 @@ class MirroringActivity : public CastActivity,
   void LogErrorMessage(const std::string& message) override;
 
   // CastMessageChannel implementation
-  void Send(mirroring::mojom::CastMessagePtr message) override;
+  void OnMessage(mirroring::mojom::CastMessagePtr message) override;
 
   // CastActivity implementation
   void OnAppMessage(const cast::channel::CastMessage& message) override;
@@ -85,7 +85,7 @@ class MirroringActivity : public CastActivity,
   void StopMirroring();
 
   // Scrubs AES related data in messages with type "OFFER".
-  static std::string GetScrubbedLogMessage(const base::Value& message);
+  static std::string GetScrubbedLogMessage(const base::Value::Dict& message);
 
   mojo::Remote<mirroring::mojom::MirroringServiceHost> host_;
 
@@ -114,6 +114,9 @@ class MirroringActivity : public CastActivity,
   absl::optional<base::Time> did_start_mirroring_timestamp_;
 
   const absl::optional<MirroringType> mirroring_type_;
+
+  // The FrameTreeNode ID to retrieve the WebContents of the tab to mirror.
+  const int frame_tree_node_id_;
   const CastSinkExtraData cast_data_;
   OnStopCallback on_stop_;
   base::WeakPtrFactory<MirroringActivity> weak_ptr_factory_{this};

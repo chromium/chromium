@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,11 @@
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/network/network_handler.h"
-#include "chromeos/network/network_state.h"
-#include "chromeos/network/network_state_handler.h"
-#include "chromeos/network/network_type_pattern.h"
+#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_state.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/ash/components/network/network_type_pattern.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/network_service_instance.h"
@@ -146,18 +146,6 @@ void ArcAppInstallEventLogCollector::OnCloudDpsFailed(
                  std::move(event));
 }
 
-void ArcAppInstallEventLogCollector::OnReportDirectInstall(
-    base::Time time,
-    const std::set<std::string>& package_names) {
-  for (const std::string& package_name : package_names) {
-    auto event = std::make_unique<em::AppInstallReportLogEvent>();
-    event->set_event_type(em::AppInstallReportLogEvent::DIRECT_INSTALL);
-    SetTimestampFromTime(event.get(), time);
-    delegate_->Add(package_name, true /* gather_disk_space_info */,
-                   std::move(event));
-  }
-}
-
 void ArcAppInstallEventLogCollector::OnReportForceInstallMainLoopFailed(
     base::Time time,
     const std::set<std::string>& package_names) {
@@ -194,8 +182,22 @@ void ArcAppInstallEventLogCollector::OnInstallationFinished(
   event->set_event_type(
       success ? em::AppInstallReportLogEvent::INSTALLATION_FINISHED
               : em::AppInstallReportLogEvent::INSTALLATION_FAILED);
+  delegate_->UpdatePolicySuccessRate(package_name, success);
   delegate_->Add(package_name, true /* gather_disk_space_info */,
                  std::move(event));
+}
+
+void ArcAppInstallEventLogCollector::OnPlayStoreLocalPolicySet(
+    base::Time time,
+    const std::set<std::string>& package_names) {
+  for (const std::string& package_name : package_names) {
+    auto event = std::make_unique<em::AppInstallReportLogEvent>();
+    event->set_event_type(
+        em::AppInstallReportLogEvent::PLAYSTORE_LOCAL_POLICY_SET);
+    SetTimestampFromTime(event.get(), time);
+    delegate_->Add(package_name, true /* gather_disk_space_info */,
+                   std::move(event));
+  }
 }
 
 }  // namespace policy

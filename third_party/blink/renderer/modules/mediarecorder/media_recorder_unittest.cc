@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,27 +9,29 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_track_impl.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_registry.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_source.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
 
 namespace blink {
 namespace {
 
 MediaStream* CreateMediaStream(V8TestingScope* scope) {
-  auto* source = MakeGarbageCollected<MediaStreamSource>(
-      "video source id", MediaStreamSource::kTypeVideo, "video source name",
-      false /* remote */);
   auto native_source = std::make_unique<MockMediaStreamVideoSource>();
   MockMediaStreamVideoSource* native_source_ptr = native_source.get();
-  source->SetPlatformSource(std::move(native_source));
-  auto* component = MakeGarbageCollected<MediaStreamComponent>(source);
-  component->SetPlatformTrack(std::make_unique<MediaStreamVideoTrack>(
-      native_source_ptr, MediaStreamVideoSource::ConstraintsOnceCallback(),
-      true /* enabled */));
-  auto* track = MakeGarbageCollected<MediaStreamTrack>(
+  auto* source = MakeGarbageCollected<MediaStreamSource>(
+      "video source id", MediaStreamSource::kTypeVideo, "video source name",
+      false /* remote */, std::move(native_source));
+  auto* component = MakeGarbageCollected<MediaStreamComponentImpl>(
+      source,
+      std::make_unique<MediaStreamVideoTrack>(
+          native_source_ptr, MediaStreamVideoSource::ConstraintsOnceCallback(),
+          true /* enabled */));
+  auto* track = MakeGarbageCollected<MediaStreamTrackImpl>(
       scope->GetExecutionContext(), component);
   return MediaStream::Create(scope->GetExecutionContext(),
                              MediaStreamTrackVector{track});

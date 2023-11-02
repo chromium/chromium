@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,8 +16,7 @@ ReadableStreamBYOBRequest::ReadableStreamBYOBRequest(
     NotShared<DOMUint8Array> view)
     : controller_(controller), view_(view) {}
 
-NotShared<DOMArrayBufferView> ReadableStreamBYOBRequest::view(
-    ExceptionState& exception_state) const {
+NotShared<DOMArrayBufferView> ReadableStreamBYOBRequest::view() const {
   // https://streams.spec.whatwg.org/#rs-byob-request-view
   // 1. Return this.[[view]].
   return view_;

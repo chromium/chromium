@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -188,9 +188,18 @@
         ]
       },
       {
-        "name": "recordSparseHashable",
+        "name": "recordSparseValueWithHashMetricName",
         "type": "function",
-        "description": "Increments the count associated with the hash of |value| in the sparse histogram defined by the |metricName|.",
+        "description": "Increments the count associated with the hash of |value| in the sparse histogram defined by the |metricName| using base::HashMetricName(value).",
+        "parameters": [
+          {"name": "metricName", "type": "string"},
+          {"name": "value", "type": "string"}
+        ]
+      },
+      {
+        "name": "recordSparseValueWithPersistentHash",
+        "type": "function",
+        "description": "Increments the count associated with the hash of |value| in the sparse histogram defined by the |metricName| using base::PersistentHash(value).",
         "parameters": [
           {"name": "metricName", "type": "string"},
           {"name": "value", "type": "string"}

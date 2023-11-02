@@ -1,37 +1,46 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_LACROS_DATA_MIGRATION_SCREEN_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_LACROS_DATA_MIGRATION_SCREEN_HANDLER_H_
 
+#include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
-
-namespace ash {
-class LacrosDataMigrationScreen;
-}
+#include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
 // Interface for dependency injection between LacrosDataMigrationScreen and its
 // WebUI representation.
-class LacrosDataMigrationScreenView {
+class LacrosDataMigrationScreenView
+    : public base::SupportsWeakPtr<LacrosDataMigrationScreenView> {
  public:
-  constexpr static StaticOobeScreenId kScreenId{"lacros-data-migration"};
+  inline constexpr static StaticOobeScreenId kScreenId{
+      "lacros-data-migration", "LacrosDataMigrationScreen"};
 
-  virtual ~LacrosDataMigrationScreenView() {}
-
-  // Binds `screen` to the view.
-  virtual void Bind(ash::LacrosDataMigrationScreen* screen) = 0;
-
-  // Unbinds the screen from the view.
-  virtual void Unbind() = 0;
+  virtual ~LacrosDataMigrationScreenView() = default;
 
   // Shows the contents of the screen.
   virtual void Show() = 0;
 
   // Updates the progress bar.
   virtual void SetProgressValue(int progress) = 0;
+
+  // Displays the skip button.
+  virtual void ShowSkipButton() = 0;
+
+  // Notifies the UI about low battery.
+  virtual void SetLowBatteryStatus(bool low_battery) = 0;
+
+  // Displays the error page. If |required_size| is non nullopt, the error
+  // message is to navigate users to make some space on their disk to run
+  // migration.
+  // |show_goto_files| can control
+  virtual void SetFailureStatus(const absl::optional<uint64_t>& required_size,
+                                bool show_goto_files) = 0;
 };
 
 class LacrosDataMigrationScreenHandler : public BaseScreenHandler,
@@ -39,8 +48,7 @@ class LacrosDataMigrationScreenHandler : public BaseScreenHandler,
  public:
   using TView = LacrosDataMigrationScreenView;
 
-  explicit LacrosDataMigrationScreenHandler(
-      JSCallsContainer* js_calls_container);
+  LacrosDataMigrationScreenHandler();
   ~LacrosDataMigrationScreenHandler() override;
   LacrosDataMigrationScreenHandler(const LacrosDataMigrationScreenHandler&) =
       delete;
@@ -52,19 +60,12 @@ class LacrosDataMigrationScreenHandler : public BaseScreenHandler,
       ::login::LocalizedValuesBuilder* builder) override;
 
   // LacrosDataMigrationScreenView:
-  void Bind(ash::LacrosDataMigrationScreen* screen) override;
-  void Unbind() override;
   void Show() override;
   void SetProgressValue(int progress) override;
-
- private:
-  // BaseScreenHandler:
-  void Initialize() override;
-
-  ash::LacrosDataMigrationScreen* screen_ = nullptr;
-
-  // Whether the screen should be shown right after initialization.
-  bool show_on_init_ = false;
+  void ShowSkipButton() override;
+  void SetLowBatteryStatus(bool low_battery) override;
+  void SetFailureStatus(const absl::optional<uint64_t>& required_size,
+                        bool show_goto_files) override;
 };
 
 }  // namespace chromeos

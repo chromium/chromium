@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/importer/importer_progress_observer.h"
@@ -124,13 +124,13 @@ class ExternalProcessImporterHost
   gfx::NativeWindow parent_window_;
 
   // The observer that we need to notify about changes in the import process.
-  importer::ImporterProgressObserver* observer_;
+  raw_ptr<importer::ImporterProgressObserver> observer_;
 
   // Firefox profile lock.
   std::unique_ptr<FirefoxProfileLock> firefox_lock_;
 
   // Profile we're importing from.
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // True if we're waiting for the model to finish loading.
   bool waiting_for_bookmarkbar_model_;
@@ -148,7 +148,7 @@ class ExternalProcessImporterHost
   scoped_refptr<ProfileWriter> writer_;
 
   // Used to pass notifications from the browser side to the external process.
-  ExternalProcessImporterClient* client_;
+  raw_ptr<ExternalProcessImporterClient> client_;
 
   // Information about a profile needed for importing.
   importer::SourceProfile source_profile_;

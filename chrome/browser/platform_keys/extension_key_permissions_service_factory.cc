@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/logging.h"
-#include "chrome/browser/platform_keys/extension_key_permissions_service.h"
 #include "chrome/browser/platform_keys/extension_key_permissions_service_factory.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -23,17 +22,24 @@ namespace {
 void OnGotExtensionValue(GetExtensionKeyPermissionsServiceCallback callback,
                          content::BrowserContext* context,
                          extensions::ExtensionId extension_id,
-                         std::unique_ptr<base::Value> value) {
+                         absl::optional<base::Value> value) {
   Profile* profile = Profile::FromBrowserContext(context);
   if (!profile) {
     std::move(callback).Run(/*extension_key_permissions_service=*/nullptr);
     return;
   }
 
+  base::Value::List store_state_list;
+  if (value && value->is_list()) {
+    store_state_list = std::move(*value).TakeList();
+  } else if (value) {
+    LOG(ERROR) << "Found a state store of wrong type.";
+  }
+
   std::move(callback).Run(std::make_unique<ExtensionKeyPermissionsService>(
       extension_id, extensions::ExtensionSystem::Get(profile)->state_store(),
-      std::move(value), profile->GetProfilePolicyConnector()->policy_service(),
-      context));
+      std::move(store_state_list),
+      profile->GetProfilePolicyConnector()->policy_service(), context));
 }
 
 }  // namespace

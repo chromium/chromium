@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -28,8 +28,6 @@ source_set("gfx") {
     "child_frame.h",
     "compositor_frame_consumer.h",
     "compositor_frame_producer.h",
-    "deferred_gpu_command_service.cc",
-    "deferred_gpu_command_service.h",
     "display_scheduler_webview.cc",
     "display_scheduler_webview.h",
     "display_webview.cc",
@@ -83,7 +81,6 @@ source_set("gfx") {
     "//content/public/browser",
     "//gpu/command_buffer/client:gles2_implementation",
     "//gpu/command_buffer/service",
-    "//gpu/ipc:gl_in_process_context",
     "//gpu/ipc/common:android_image_reader_utils",
     "//gpu/ipc/common:common",
     "//gpu/skia_bindings",

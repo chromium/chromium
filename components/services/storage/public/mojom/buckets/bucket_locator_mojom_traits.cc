@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,6 +27,10 @@ bool StructTraits<
     return false;
 
   bool is_default = data.is_default();
+
+  if (id.is_null()) {
+    CHECK(is_default);
+  }
 
   *out = storage::BucketLocator(id, std::move(storage_key), type, is_default);
   return true;

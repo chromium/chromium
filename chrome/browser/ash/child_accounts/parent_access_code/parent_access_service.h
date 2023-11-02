@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -51,6 +51,8 @@ class ParentAccessService {
   ParentAccessService& operator=(const ParentAccessService&) = delete;
 
   // Checks if the provided |action| requires parental approval to be performed.
+  // Requires owner_account_id to be available in the UserManager, so if calling
+  // close to startup, ensure owner account is set before calling.
   static bool IsApprovalRequired(SupervisedAction action);
 
   // Checks if |access_code| is valid for the user identified by |account_id|.

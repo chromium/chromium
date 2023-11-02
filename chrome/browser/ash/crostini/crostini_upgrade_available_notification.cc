@@ -1,9 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/crostini/crostini_upgrade_available_notification.h"
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
@@ -11,7 +12,7 @@
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/browser/ui/webui/chromeos/crostini_upgrader/crostini_upgrader_dialog.h"
+#include "chrome/browser/ui/webui/ash/crostini_upgrader/crostini_upgrader_dialog.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
@@ -32,7 +33,7 @@ class CrostiniUpgradeAvailableNotificationDelegate
         notification_(notification),
         closure_(std::move(closure)) {
     CrostiniManager::GetForProfile(profile_)->UpgradePromptShown(
-        ContainerId::GetDefault());
+        DefaultContainerId());
   }
 
   CrostiniUpgradeAvailableNotificationDelegate(
@@ -53,7 +54,7 @@ class CrostiniUpgradeAvailableNotificationDelegate
   }
 
   void HandleButtonClick() {
-    chromeos::CrostiniUpgraderDialog::Show(profile_, base::DoNothing());
+    ash::CrostiniUpgraderDialog::Show(profile_, base::DoNothing());
     if (notification_) {
       notification_->UpgradeDialogShown();
     }
@@ -117,9 +118,11 @@ CrostiniUpgradeAvailableNotification::CrostiniUpgradeAvailableNotification(
           IDS_CROSTINI_UPGRADE_AVAILABLE_NOTIFICATION_TITLE),
       l10n_util::GetStringUTF16(
           IDS_CROSTINI_UPGRADE_AVAILABLE_NOTIFICATION_BODY),
-      gfx::Image(), std::u16string(), GURL(),
-      message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
-                                 kNotifierCrostiniUpgradeAvailable),
+      ui::ImageModel(), std::u16string(), GURL(),
+      message_center::NotifierId(
+          message_center::NotifierType::SYSTEM_COMPONENT,
+          kNotifierCrostiniUpgradeAvailable,
+          ash::NotificationCatalogName::kCrostiniUpgradeAvailable),
       rich_notification_data,
       base::MakeRefCounted<CrostiniUpgradeAvailableNotificationDelegate>(
           profile_, weak_ptr_factory_.GetWeakPtr(), std::move(closure)));

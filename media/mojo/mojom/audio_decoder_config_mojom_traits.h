@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -58,6 +58,11 @@ struct StructTraits<media::mojom::AudioDecoderConfigDataView,
   static media::ChannelLayout target_output_channel_layout(
       const media::AudioDecoderConfig& input) {
     return input.target_output_channel_layout();
+  }
+
+  static media::SampleFormat target_output_sample_format(
+      const media::AudioDecoderConfig& input) {
+    return input.target_output_sample_format();
   }
 
   static bool should_discard_decoder_delay(

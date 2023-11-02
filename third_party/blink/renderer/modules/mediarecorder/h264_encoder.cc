@@ -1,18 +1,21 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/mediarecorder/h264_encoder.h"
-#include "build/chromeos_buildflags.h"
 
 #include <utility>
 
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_frame.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
+#include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -82,8 +85,9 @@ void H264Encoder::ISVCEncoderDeleter::operator()(ISVCEncoder* codec) {
 }
 
 // static
-void H264Encoder::ShutdownEncoder(std::unique_ptr<Thread> encoding_thread,
-                                  ScopedISVCEncoderPtr encoder) {
+void H264Encoder::ShutdownEncoder(
+    std::unique_ptr<NonMainThread> encoding_thread,
+    ScopedISVCEncoderPtr encoder) {
   DCHECK(encoding_thread);
   // Both |encoding_thread| and |encoder| will be destroyed at end-of-scope.
 }
@@ -91,12 +95,12 @@ void H264Encoder::ShutdownEncoder(std::unique_ptr<Thread> encoding_thread,
 H264Encoder::H264Encoder(
     const VideoTrackRecorder::OnEncodedVideoCB& on_encoded_video_cb,
     VideoTrackRecorder::CodecProfile codec_profile,
-    int32_t bits_per_second,
+    uint32_t bits_per_second,
     scoped_refptr<base::SequencedTaskRunner> task_runner)
     : Encoder(on_encoded_video_cb, bits_per_second, std::move(task_runner)),
       codec_profile_(codec_profile) {
   DCHECK(encoding_thread_);
-  DCHECK_EQ(codec_profile_.codec_id, VideoTrackRecorder::CodecId::H264);
+  DCHECK_EQ(codec_profile_.codec_id, VideoTrackRecorder::CodecId::kH264);
 }
 
 H264Encoder::~H264Encoder() {
@@ -112,7 +116,8 @@ void H264Encoder::EncodeOnEncodingTaskRunner(
   TRACE_EVENT0("media", "H264Encoder::EncodeOnEncodingTaskRunner");
   DCHECK(encoding_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(frame->format() == media::VideoPixelFormat::PIXEL_FORMAT_NV12 ||
-         frame->format() == media::VideoPixelFormat::PIXEL_FORMAT_I420);
+         frame->format() == media::VideoPixelFormat::PIXEL_FORMAT_I420 ||
+         frame->format() == media::VideoPixelFormat::PIXEL_FORMAT_I420A);
 
   if (frame->format() == media::PIXEL_FORMAT_NV12)
     frame = ConvertToI420ForSoftwareEncoder(frame);
@@ -135,9 +140,12 @@ void H264Encoder::EncodeOnEncodingTaskRunner(
   picture.iStride[0] = frame->stride(VideoFrame::kYPlane);
   picture.iStride[1] = frame->stride(VideoFrame::kUPlane);
   picture.iStride[2] = frame->stride(VideoFrame::kVPlane);
-  picture.pData[0] = frame->visible_data(VideoFrame::kYPlane);
-  picture.pData[1] = frame->visible_data(VideoFrame::kUPlane);
-  picture.pData[2] = frame->visible_data(VideoFrame::kVPlane);
+  picture.pData[0] =
+      const_cast<uint8_t*>(frame->visible_data(VideoFrame::kYPlane));
+  picture.pData[1] =
+      const_cast<uint8_t*>(frame->visible_data(VideoFrame::kUPlane));
+  picture.pData[2] =
+      const_cast<uint8_t*>(frame->visible_data(VideoFrame::kVPlane));
 
   SFrameBSInfo info = {};
   if (openh264_encoder_->EncodeFrame(&picture, &info) != cmResultSuccess) {
@@ -214,7 +222,7 @@ bool H264Encoder::ConfigureEncoderOnEncodingTaskRunner(const gfx::Size& size) {
     init_params.iRCMode = RC_OFF_MODE;
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   init_params.iMultipleThreadIdc = 0;
 #else
   // Threading model: Set to 1 due to https://crbug.com/583348.

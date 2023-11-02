@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,6 +21,34 @@
 
 namespace autofill {
 
+namespace {
+
+bool ShouldEnableHeavyFormDataScraping(const version_info::Channel channel) {
+  switch (channel) {
+    case version_info::Channel::CANARY:
+    case version_info::Channel::DEV:
+      return true;
+    case version_info::Channel::STABLE:
+    case version_info::Channel::BETA:
+    case version_info::Channel::UNKNOWN:
+      return false;
+  }
+  NOTREACHED();
+  return false;
+}
+
+}  // namespace
+
+void BrowserDriverInitHook(AutofillClient* client,
+                           const std::string& app_locale,
+                           ContentAutofillDriver* driver) {
+  driver->set_autofill_manager(std::make_unique<BrowserAutofillManager>(
+      driver, client, app_locale,
+      AutofillManager::EnableDownloadManager(true)));
+  if (client && ShouldEnableHeavyFormDataScraping(client->GetChannel()))
+    driver->GetAutofillAgent()->EnableHeavyFormDataScraping();
+}
+
 const char ContentAutofillDriverFactory::
     kContentAutofillDriverFactoryWebContentsUserDataKey[] =
         "web_contents_autofill_driver_factory";
@@ -29,19 +57,12 @@ const char ContentAutofillDriverFactory::
 void ContentAutofillDriverFactory::CreateForWebContentsAndDelegate(
     content::WebContents* contents,
     AutofillClient* client,
-    const std::string& app_locale,
-    BrowserAutofillManager::AutofillDownloadManagerState
-        enable_download_manager,
-    AutofillManager::AutofillManagerFactoryCallback
-        autofill_manager_factory_callback) {
+    DriverInitCallback driver_init_hook) {
   if (FromWebContents(contents))
     return;
-
-  contents->SetUserData(
-      kContentAutofillDriverFactoryWebContentsUserDataKey,
-      base::WrapUnique(new ContentAutofillDriverFactory(
-          contents, client, app_locale, enable_download_manager,
-          std::move(autofill_manager_factory_callback))));
+  contents->SetUserData(kContentAutofillDriverFactoryWebContentsUserDataKey,
+                        base::WrapUnique(new ContentAutofillDriverFactory(
+                            contents, client, std::move(driver_init_hook))));
 }
 
 // static
@@ -75,26 +96,33 @@ void ContentAutofillDriverFactory::BindAutofillDriver(
 ContentAutofillDriverFactory::ContentAutofillDriverFactory(
     content::WebContents* web_contents,
     AutofillClient* client,
-    const std::string& app_locale,
-    BrowserAutofillManager::AutofillDownloadManagerState
-        enable_download_manager,
-    AutofillManager::AutofillManagerFactoryCallback
-        autofill_manager_factory_callback)
+    DriverInitCallback driver_init_hook)
     : content::WebContentsObserver(web_contents),
       client_(client),
-      app_locale_(app_locale),
-      enable_download_manager_(enable_download_manager),
-      autofill_manager_factory_callback_(
-          std::move(autofill_manager_factory_callback)) {}
+      driver_init_hook_(std::move(driver_init_hook)) {}
 
 ContentAutofillDriverFactory::~ContentAutofillDriverFactory() = default;
 
+std::unique_ptr<ContentAutofillDriver>
+ContentAutofillDriverFactory::CreateDriver(content::RenderFrameHost* rfh) {
+  auto driver = std::make_unique<ContentAutofillDriver>(rfh, &router_);
+  driver_init_hook_.Run(driver.get());
+  return driver;
+}
+
 ContentAutofillDriver* ContentAutofillDriverFactory::DriverForFrame(
     content::RenderFrameHost* render_frame_host) {
-  auto insertion_result = driver_map_.emplace(render_frame_host, nullptr);
-  std::unique_ptr<ContentAutofillDriver>& driver =
-      insertion_result.first->second;
-  bool insertion_happened = insertion_result.second;
+  // Within fenced frames and their descendants, Password Manager should for now
+  // be disabled (crbug.com/1294378).
+  if (render_frame_host->IsNestedWithinFencedFrame() &&
+      !base::FeatureList::IsEnabled(
+          features::kAutofillEnableWithinFencedFrame)) {
+    return nullptr;
+  }
+
+  auto [iter, insertion_happened] =
+      driver_map_.emplace(render_frame_host, nullptr);
+  std::unique_ptr<ContentAutofillDriver>& driver = iter->second;
   if (insertion_happened) {
     // The `render_frame_host` may already be deleted (or be in the process of
     // being deleted). In this case, we must not create a new driver. Otherwise,
@@ -108,14 +136,12 @@ ContentAutofillDriver* ContentAutofillDriverFactory::DriverForFrame(
     // 3. `SomeOtherWebContentsObserver::RenderFrameDeleted(render_frame_host)`
     //    calls `DriverForFrame(render_frame_host)`.
     // 5. `render_frame_host->~RenderFrameHostImpl()` finishes.
-    if (render_frame_host->IsRenderFrameCreated()) {
-      driver = std::make_unique<ContentAutofillDriver>(
-          render_frame_host, client(), app_locale_, &router_,
-          enable_download_manager_, autofill_manager_factory_callback_);
+    if (render_frame_host->IsRenderFrameLive()) {
+      driver = CreateDriver(render_frame_host);
       DCHECK_EQ(driver_map_.find(render_frame_host)->second.get(),
                 driver.get());
     } else {
-      driver_map_.erase(insertion_result.first);
+      driver_map_.erase(iter);
       DCHECK_EQ(driver_map_.count(render_frame_host), 0u);
       return nullptr;
     }
@@ -133,9 +159,11 @@ void ContentAutofillDriverFactory::RenderFrameDeleted(
   ContentAutofillDriver* driver = it->second.get();
   DCHECK(driver);
 
-  if (render_frame_host->GetLifecycleState() !=
-      content::RenderFrameHost::LifecycleState::kPrerendering) {
-    driver->MaybeReportAutofillWebOTPMetrics();
+  if (!render_frame_host->IsInLifecycleState(
+          content::RenderFrameHost::LifecycleState::kPrerendering) &&
+      driver->autofill_manager()) {
+    driver->autofill_manager()->ReportAutofillWebOTPMetrics(
+        render_frame_host->DocumentUsedWebOTP());
   }
 
   // If the popup menu has been triggered from within an iframe and that
@@ -143,11 +171,11 @@ void ContentAutofillDriverFactory::RenderFrameDeleted(
   // may actually be shown by the AutofillExternalDelegate of an ancestor
   // frame, which is not notified about |render_frame_host|'s destruction
   // and therefore won't close the popup.
-  if (render_frame_host->GetParent() &&
-      router_.last_queried_source() == driver) {
-    DCHECK_NE(content::RenderFrameHost::LifecycleState::kPrerendering,
-              render_frame_host->GetLifecycleState());
-    router_.HidePopup(driver);
+  bool is_iframe = !driver->IsInAnyMainFrame();
+  if (is_iframe && router_.last_queried_source() == driver) {
+    DCHECK(!render_frame_host->IsInLifecycleState(
+        content::RenderFrameHost::LifecycleState::kPrerendering));
+    driver->renderer_events().HidePopup();
   }
 
   driver_map_.erase(it);
@@ -167,7 +195,7 @@ void ContentAutofillDriverFactory::DidStartNavigation(
         content::RenderFrameHost::FromID(id);
     if (render_frame_host) {
       if (auto* driver = DriverForFrame(render_frame_host))
-        driver->ProbablyFormSubmitted();
+        driver->ProbablyFormSubmitted({});
     }
   }
 }
@@ -179,8 +207,11 @@ void ContentAutofillDriverFactory::DidFinishNavigation(
        navigation_handle->HasSubframeNavigationEntryCommitted())) {
     if (auto* driver =
             DriverForFrame(navigation_handle->GetRenderFrameHost())) {
-      if (!navigation_handle->IsInPrerenderedMainFrame())
+      if (!navigation_handle->IsInPrerenderedMainFrame()) {
         client_->HideAutofillPopup(PopupHidingReason::kNavigation);
+        if (client_->IsTouchToFillCreditCardSupported())
+          client_->HideTouchToFillCreditCard();
+      }
       driver->DidNavigateFrame(navigation_handle);
     }
   }
@@ -188,32 +219,11 @@ void ContentAutofillDriverFactory::DidFinishNavigation(
 
 void ContentAutofillDriverFactory::OnVisibilityChanged(
     content::Visibility visibility) {
-  if (visibility == content::Visibility::HIDDEN)
+  if (visibility == content::Visibility::HIDDEN) {
     client_->HideAutofillPopup(PopupHidingReason::kTabGone);
-}
-
-void ContentAutofillDriverFactory::ReadyToCommitNavigation(
-    content::NavigationHandle* navigation_handle) {
-  content::RenderFrameHost* render_frame_host =
-      navigation_handle->GetRenderFrameHost();
-  content::GlobalRenderFrameHostId render_frame_host_id(
-      render_frame_host->GetProcess()->GetID(),
-      render_frame_host->GetRoutingID());
-  // No need to report the metrics here if navigating to a different
-  // RenderFrameHost. It will be reported in |RenderFrameDeleted|.
-  // TODO(crbug.com/936696): Remove this logic when RenderDocument is enabled
-  // everywhere.
-  if (render_frame_host_id !=
-      navigation_handle->GetPreviousRenderFrameHostId()) {
-    return;
+    if (client_->IsTouchToFillCreditCardSupported())
+      client_->HideTouchToFillCreditCard();
   }
-  // Do not report metrics if prerendering.
-  if (render_frame_host->GetLifecycleState() ==
-      content::RenderFrameHost::LifecycleState::kPrerendering) {
-    return;
-  }
-  if (auto* driver = DriverForFrame(render_frame_host))
-    driver->MaybeReportAutofillWebOTPMetrics();
 }
 
 }  // namespace autofill

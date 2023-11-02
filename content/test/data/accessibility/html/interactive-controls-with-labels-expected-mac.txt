@@ -1,0 +1,51 @@
+AXWebArea
+++AXGroup
+++++AXStaticText AXValue='Test label'
+++AXGroup AXDescription='aria label'
+++++AXStaticText AXValue='Generic container'
+++AXGroup AXDescription='Test label'
+++++AXStaticText AXValue='Generic container with aria-labelledby'
+++AXTextField AXDescription='aria label' AXValue='Textbox'
+++++AXStaticText AXValue='Textbox'
+++AXTextField AXTitle='Test label' AXValue='Textbox with aria-labelledby'
+++++AXStaticText AXValue='Textbox with aria-labelledby'
+++AXButton AXDescription='aria label'
+++AXButton AXTitle='Test label'
+++AXComboBox AXDescription='aria label'
+++AXList
+++++AXStaticText AXValue='Option 1'
+++++AXStaticText AXValue='Option 2'
+++AXComboBox AXTitle='Test label'
+++AXList
+++++AXStaticText AXValue='Option 3'
+++++AXStaticText AXValue='Option 4'
+++AXComboBox AXDescription='aria label' AXValue='Combobox'
+++++AXStaticText AXValue='Combobox'
+++AXList
+++++AXStaticText AXValue='Option 5'
+++++AXStaticText AXValue='Option 6'
+++AXComboBox AXTitle='Test label' AXValue='Combobox with aria-labelledby'
+++++AXStaticText AXValue='Combobox with aria-labelledby'
+++AXList
+++++AXStaticText AXValue='Option 7'
+++++AXStaticText AXValue='Option 8'
+++AXTimeField AXDescription='aria label' AXValue='12:05'
+++++AXGroup
+++++++AXGroup
+++++++++AXIncrementor AXDescription='Hours aria label' AXValue=12
+++++++++AXStaticText AXValue=':'
+++++++++AXIncrementor AXDescription='Minutes aria label' AXValue=5
+++++++++AXStaticText AXValue=' '
+++++++++AXIncrementor AXDescription='AM/PM aria label' AXValue=2
+++++AXPopUpButton AXDescription='Show time picker'
+++AXTimeField AXTitle='Test label' AXValue='12:05'
+++++AXGroup
+++++++AXGroup
+++++++++AXIncrementor AXTitle='Hours Test label' AXValue=12
+++++++++AXStaticText AXValue=':'
+++++++++AXIncrementor AXTitle='Minutes Test label' AXValue=5
+++++++++AXStaticText AXValue=' '
+++++++++AXIncrementor AXTitle='AM/PM Test label' AXValue=2
+++++AXPopUpButton AXDescription='Show time picker'
+++AXColorWell AXDescription='aria label' AXValue='rgb 0.89412 0.89412 0.89412 1'
+++AXColorWell AXTitle='Test label' AXValue='rgb 0.89412 0.89412 0.89412 1'

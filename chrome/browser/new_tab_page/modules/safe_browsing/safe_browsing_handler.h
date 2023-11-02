@@ -1,10 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_NEW_TAB_PAGE_MODULES_SAFE_BROWSING_SAFE_BROWSING_HANDLER_H_
 #define CHROME_BROWSER_NEW_TAB_PAGE_MODULES_SAFE_BROWSING_SAFE_BROWSING_HANDLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/new_tab_page/modules/safe_browsing/safe_browsing.mojom.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -49,9 +50,9 @@ class SafeBrowsingHandler
   mojo::Receiver<ntp::safe_browsing::mojom::SafeBrowsingHandler> handler_;
   // Unowned copy of SafeBrowsingMetricsCollector, to log metrics and read/write
   // security sensitive events.
-  SafeBrowsingMetricsCollector* metrics_collector_;
+  raw_ptr<SafeBrowsingMetricsCollector> metrics_collector_;
   // Unowned copy of PrefService, to read/write prefs.
-  PrefService* pref_service_;
+  raw_ptr<PrefService> pref_service_;
   // Save value of last cooldown start time, in case dismissed module is
   // restored.
   int64_t saved_last_cooldown_start_time_;

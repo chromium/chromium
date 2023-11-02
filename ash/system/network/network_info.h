@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,6 +35,9 @@ struct NetworkInfo {
   bool secured = false;
   bool connectable = false;
   bool sim_locked = false;
+  // Only set for eSIM cellular networks. This is used to uniquely identity
+  // eSIM networks.
+  std::string sim_eid;
   // Initialized in .cc file because full (non-forward) mojom headers are large.
   chromeos::network_config::mojom::ConnectionStateType connection_state;
   chromeos::network_config::mojom::NetworkType type;

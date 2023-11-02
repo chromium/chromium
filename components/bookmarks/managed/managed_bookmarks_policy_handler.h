@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,8 +27,8 @@ class ManagedBookmarksPolicyHandler
                            PrefValueMap* prefs) override;
 
  private:
-  std::string GetFolderName(const base::Value& list);
-  base::Value::ListStorage FilterBookmarks(base::Value::ListStorage bookmarks);
+  std::string GetFolderName(const base::Value::List& list);
+  base::Value::List FilterBookmarks(base::Value::List bookmarks);
 };
 
 }  // namespace bookmarks

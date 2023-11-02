@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@ class WebStateList;
 @interface WebScrollViewMainContentUIForwarder : NSObject
 
 // Designated initializer for a forwarder that sends the scroll events from
-// |webStateList|'s active WebState's scroll view proxy to |updater|.
+// `webStateList`'s active WebState's scroll view proxy to `updater`.
 - (nullable instancetype)initWithUpdater:
                              (nonnull MainContentUIStateUpdater*)updater
                             webStateList:(nonnull WebStateList*)webStateList

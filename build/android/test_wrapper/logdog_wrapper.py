@@ -1,5 +1,5 @@
 #!/usr/bin/env vpython3
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -12,6 +12,8 @@ import os
 import signal
 import subprocess
 import sys
+
+import six
 
 _SRC_PATH = os.path.abspath(os.path.join(
     os.path.dirname(__file__), '..', '..', '..'))
@@ -26,14 +28,15 @@ from py_utils import tempfile_ext
 PROJECT = 'chromium'
 OUTPUT = 'logdog'
 COORDINATOR_HOST = 'luci-logdog.appspot.com'
-SERVICE_ACCOUNT_JSON = ('/creds/service_accounts'
-                        '/service-account-luci-logdog-publisher.json')
 LOGDOG_TERMINATION_TIMEOUT = 30
 
 
 def CommandParser():
   # Parses the command line arguments being passed in
-  parser = argparse.ArgumentParser()
+  if six.PY3:
+    parser = argparse.ArgumentParser(allow_abbrev=False)
+  else:
+    parser = argparse.ArgumentParser()
   wrapped = parser.add_mutually_exclusive_group()
   wrapped.add_argument(
       '--target',
@@ -105,7 +108,6 @@ def main():
           '-project', PROJECT,
           '-output', OUTPUT,
           '-prefix', prefix,
-          '--service-account-json', SERVICE_ACCOUNT_JSON,
           '-coordinator-host', COORDINATOR_HOST,
           'serve',
           '-streamserver-uri', streamserver_uri]

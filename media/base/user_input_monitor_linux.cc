@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/platform_user_input_monitor.h"
@@ -96,7 +97,7 @@ class UserInputMonitorLinux : public UserInputMonitorBase {
   void StopKeyboardMonitoring() override;
 
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
-  UserInputMonitorAdapter* core_;
+  raw_ptr<UserInputMonitorAdapter> core_;
 };
 
 UserInputMonitorAdapter* CreateUserInputMonitor(
@@ -116,8 +117,8 @@ UserInputMonitorLinux::UserInputMonitorLinux(
       core_(CreateUserInputMonitor(io_task_runner_)) {}
 
 UserInputMonitorLinux::~UserInputMonitorLinux() {
-  if (core_ && !io_task_runner_->DeleteSoon(FROM_HERE, core_))
-    delete core_;
+  if (!io_task_runner_->DeleteSoon(FROM_HERE, core_.get()))
+    core_.ClearAndDelete();
 }
 
 uint32_t UserInputMonitorLinux::GetKeyPressCount() const {

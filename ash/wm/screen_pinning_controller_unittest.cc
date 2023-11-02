@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,10 +10,10 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/client_controlled_state.h"
-#include "ash/wm/screen_pinning_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
+#include "base/ranges/algorithm.h"
 #include "ui/aura/window.h"
 
 namespace ash {
@@ -21,7 +21,7 @@ namespace {
 
 int FindIndex(const std::vector<aura::Window*>& windows,
               const aura::Window* target) {
-  auto iter = std::find(windows.begin(), windows.end(), target);
+  auto iter = base::ranges::find(windows, target);
   return iter != windows.end() ? iter - windows.begin() : -1;
 }
 

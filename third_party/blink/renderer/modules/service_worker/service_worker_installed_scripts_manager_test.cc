@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,10 +12,10 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_installed_scripts_manager.mojom-blink.h"
-#include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/web/web_embedded_worker.h"
+#include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
@@ -129,10 +129,10 @@ CrossThreadHTTPHeaderMapData ToCrossThreadHTTPHeaderMapData(
 class ServiceWorkerInstalledScriptsManagerTest : public testing::Test {
  public:
   ServiceWorkerInstalledScriptsManagerTest()
-      : io_thread_(Platform::Current()->CreateThread(
+      : io_thread_(NonMainThread::CreateThread(
             ThreadCreationParams(ThreadType::kTestThread)
                 .SetThreadNameForTest("io thread"))),
-        worker_thread_(Platform::Current()->CreateThread(
+        worker_thread_(NonMainThread::CreateThread(
             ThreadCreationParams(ThreadType::kTestThread)
                 .SetThreadNameForTest("worker thread"))),
         worker_waiter_(std::make_unique<base::WaitableEvent>(
@@ -200,8 +200,8 @@ class ServiceWorkerInstalledScriptsManagerTest : public testing::Test {
     waiter->Signal();
   }
 
-  std::unique_ptr<Thread> io_thread_;
-  std::unique_ptr<Thread> worker_thread_;
+  std::unique_ptr<NonMainThread> io_thread_;
+  std::unique_ptr<NonMainThread> worker_thread_;
 
   std::unique_ptr<base::WaitableEvent> worker_waiter_;
 

@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -12,8 +12,8 @@ blink_modules_sources("mediastream") {
     "apply_constraints_request.h",
     "browser_capture_media_stream_track.cc",
     "browser_capture_media_stream_track.h",
-    "capture_handle_change_event.cc",
-    "capture_handle_change_event.h",
+    "crop_target.cc",
+    "crop_target.h",
     "dom_window_media_stream.h",
     "focusable_media_stream_track.cc",
     "focusable_media_stream_track.h",
@@ -57,11 +57,15 @@ blink_modules_sources("mediastream") {
     "media_stream_local_frame_wrapper.h",
     "media_stream_renderer_factory.cc",
     "media_stream_renderer_factory.h",
+    "media_stream_set.cc",
+    "media_stream_set.h",
     "media_stream_track.cc",
     "media_stream_track.h",
     "media_stream_track_content_hint.h",
     "media_stream_track_event.cc",
     "media_stream_track_event.h",
+    "media_stream_track_impl.cc",
+    "media_stream_track_impl.h",
     "media_stream_utils.cc",
     "media_stream_utils.h",
     "media_stream_video_capturer_source.cc",
@@ -80,12 +84,14 @@ blink_modules_sources("mediastream") {
     "processed_local_audio_source.h",
     "remote_media_stream_track_adapter.cc",
     "remote_media_stream_track_adapter.h",
+    "screen_capture_media_stream_track.cc",
+    "screen_capture_media_stream_track.h",
     "track_audio_renderer.cc",
     "track_audio_renderer.h",
+    "transferred_media_stream_track.cc",
+    "transferred_media_stream_track.h",
     "user_media_client.cc",
     "user_media_client.h",
-    "user_media_controller.cc",
-    "user_media_controller.h",
     "user_media_processor.cc",
     "user_media_processor.h",
     "user_media_request.cc",
@@ -112,6 +118,7 @@ blink_modules_sources("mediastream") {
     "//services/viz/public/cpp/gpu:gpu",
     "//third_party/blink/public/common",
     "//third_party/blink/renderer/modules/imagecapture:imagecapture",
+    "//third_party/blink/renderer/modules/screen_enumeration:screen_enumeration",
     "//third_party/libyuv:libyuv",
   ]
   allow_circular_includes_from =
@@ -131,10 +138,15 @@ source_set("test_support") {
     "mock_media_stream_audio_sink.h",
     "mock_media_stream_registry.cc",
     "mock_media_stream_registry.h",
+    "mock_media_stream_track.cc",
+    "mock_media_stream_track.h",
     "mock_media_stream_video_sink.cc",
     "mock_media_stream_video_sink.h",
     "mock_media_stream_video_source.cc",
     "mock_media_stream_video_source.h",
+    "mock_video_capturer_source.h",
+    "test/transfer_test_utils.cc",
+    "test/transfer_test_utils.h",
     "testing_platform_support_with_mock_audio_capture_source.cc",
     "testing_platform_support_with_mock_audio_capture_source.h",
   ]

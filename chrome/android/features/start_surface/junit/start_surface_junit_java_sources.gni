@@ -1,0 +1,16 @@
+# Copyright 2019 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+start_surface_junit_java_sources = [
+  "//chrome/android/features/start_surface/junit/src/org/chromium/chrome/browser/bookmarks/BookmarkNativesMockRule.java",
+  "//chrome/android/features/start_surface/junit/src/org/chromium/chrome/features/start_surface/SecondaryTasksSurfaceViewBinderUnitTest.java",
+  "//chrome/android/features/start_surface/junit/src/org/chromium/chrome/features/start_surface/StartSurfaceCoordinatorUnitTest.java",
+  "//chrome/android/features/start_surface/junit/src/org/chromium/chrome/features/start_surface/StartSurfaceCoordinatorUnitTestRule.java",
+  "//chrome/android/features/start_surface/junit/src/org/chromium/chrome/features/start_surface/StartSurfaceMediatorUnitTest.java",
+  "//chrome/android/features/start_surface/junit/src/org/chromium/chrome/features/start_surface/TasksSurfaceViewBinderUnitTest.java",
+  "//chrome/android/features/start_surface/junit/src/org/chromium/chrome/features/tasks/SingleTabSwitcherMediatorUnitTest.java",
+  "//chrome/android/features/start_surface/junit/src/org/chromium/chrome/features/tasks/SingleTabViewBinderUnitTest.java",
+  "//chrome/android/features/start_surface/junit/src/org/chromium/chrome/features/tasks/TasksSurfaceMediatorUnitTest.java",
+  "//chrome/android/features/start_surface/junit/src/org/chromium/chrome/features/tasks/TasksViewBinderUnitTest.java",
+]

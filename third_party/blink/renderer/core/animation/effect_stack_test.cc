@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,9 +17,11 @@
 #include "third_party/blink/renderer/core/animation/keyframe_effect_model.h"
 #include "third_party/blink/renderer/core/animation/pending_animations.h"
 #include "third_party/blink/renderer/core/animation/string_keyframe.h"
+#include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 
 namespace blink {
 
@@ -28,7 +30,7 @@ using animation_test_helpers::EnsureInterpolatedValueCached;
 class AnimationEffectStackTest : public PageTestBase {
  protected:
   void SetUp() override {
-    PageTestBase::SetUp(IntSize());
+    PageTestBase::SetUp(gfx::Size());
     GetDocument().GetAnimationClock().ResetTimeForTesting();
     timeline = GetDocument().Timeline();
     element = GetDocument().CreateElementForBinding("foo");
@@ -72,9 +74,8 @@ class AnimationEffectStackTest : public PageTestBase {
   InertEffect* MakeInertEffect(KeyframeEffectModelBase* effect) {
     Timing timing;
     timing.fill_mode = Timing::FillMode::BOTH;
-    return MakeGarbageCollected<InertEffect>(effect, timing, false,
-                                             AnimationTimeDelta(),
-                                             absl::nullopt, absl::nullopt, 1.0);
+    return MakeGarbageCollected<InertEffect>(
+        effect, timing, false, AnimationTimeDelta(), absl::nullopt, 1.0);
   }
 
   KeyframeEffect* MakeKeyframeEffect(KeyframeEffectModelBase* effect,
@@ -299,7 +300,7 @@ TEST_F(AnimationEffectStackTest, AffectedPropertiesDefaultPriority) {
 
   EXPECT_TRUE(
       effect_stack.AffectedProperties(KeyframeEffect::kTransitionPriority)
-          .IsEmpty());
+          .empty());
 
   auto set = effect_stack.AffectedProperties(KeyframeEffect::kDefaultPriority);
   ASSERT_EQ(3u, set.size());
@@ -322,7 +323,7 @@ TEST_F(AnimationEffectStackTest, AffectedPropertiesTransitionPriority) {
       body->GetElementAnimations()->GetEffectStack();
 
   EXPECT_TRUE(effect_stack.AffectedProperties(KeyframeEffect::kDefaultPriority)
-                  .IsEmpty());
+                  .empty());
 
   auto set =
       effect_stack.AffectedProperties(KeyframeEffect::kTransitionPriority);

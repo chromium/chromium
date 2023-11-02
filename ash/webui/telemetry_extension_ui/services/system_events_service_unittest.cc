@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,8 @@
 #include "ash/webui/telemetry_extension_ui/mojom/system_events_service.mojom.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
-#include "chromeos/dbus/cros_healthd/cros_healthd_client.h"
-#include "chromeos/dbus/cros_healthd/fake_cros_healthd_client.h"
-#include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
+#include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
+#include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -84,7 +83,7 @@ class MockPowerObserver : public health::mojom::PowerObserver {
 class SystemEventsServiceTest : public testing::Test {
  public:
   SystemEventsServiceTest() {
-    CrosHealthdClient::InitializeFake();
+    cros_healthd::FakeCrosHealthd::Initialize();
     system_events_service_ = std::make_unique<SystemEventsService>(
         remote_system_events_service_.BindNewPipeAndPassReceiver());
     mock_bluetooth_observer_ =
@@ -93,14 +92,10 @@ class SystemEventsServiceTest : public testing::Test {
         std::make_unique<testing::StrictMock<MockLidObserver>>();
     mock_power_observer_ =
         std::make_unique<testing::StrictMock<MockPowerObserver>>();
-
-    // Force other tasks to be processed.
-    cros_healthd::ServiceConnection::GetInstance()->FlushForTesting();
   }
 
   ~SystemEventsServiceTest() override {
-    CrosHealthdClient::Shutdown();
-    cros_healthd::ServiceConnection::GetInstance()->FlushForTesting();
+    cros_healthd::FakeCrosHealthd::Shutdown();
   }
 
   health::mojom::SystemEventsServiceProxy* remote_system_events_service()
@@ -155,17 +150,13 @@ TEST_F(SystemEventsServiceTest, BluetoothObserverReconnect) {
   base::RunLoop run_loop1;
   EXPECT_CALL(*mock_bluetooth_observer(), OnAdapterAdded)
       .WillOnce([&run_loop1]() { run_loop1.Quit(); });
-  cros_healthd::FakeCrosHealthdClient::Get()->EmitAdapterAddedEventForTesting();
+  cros_healthd::FakeCrosHealthd::Get()->EmitAdapterAddedEventForTesting();
   run_loop1.Run();
 
   // Shutdown cros_healthd to simulate crash.
-  CrosHealthdClient::Shutdown();
-
-  // Ensure ServiceConnection is disconnected from cros_healthd.
-  cros_healthd::ServiceConnection::GetInstance()->FlushForTesting();
-
+  cros_healthd::FakeCrosHealthd::Shutdown();
   // Restart cros_healthd.
-  CrosHealthdClient::InitializeFake();
+  cros_healthd::FakeCrosHealthd::Initialize();
 
   // Ensure disconnect handler is called for bluetooth observer from System
   // Events Service. After this call, we will have a Mojo pending connection
@@ -180,7 +171,7 @@ TEST_F(SystemEventsServiceTest, BluetoothObserverReconnect) {
   base::RunLoop run_loop2;
   EXPECT_CALL(*mock_bluetooth_observer(), OnAdapterAdded)
       .WillOnce([&run_loop2]() { run_loop2.Quit(); });
-  cros_healthd::FakeCrosHealthdClient::Get()->EmitAdapterAddedEventForTesting();
+  cros_healthd::FakeCrosHealthd::Get()->EmitAdapterAddedEventForTesting();
   run_loop2.Run();
 }
 
@@ -192,17 +183,13 @@ TEST_F(SystemEventsServiceTest, LidObserverReconnect) {
   EXPECT_CALL(*mock_lid_observer(), OnLidClosed).WillOnce([&run_loop1]() {
     run_loop1.Quit();
   });
-  cros_healthd::FakeCrosHealthdClient::Get()->EmitLidClosedEventForTesting();
+  cros_healthd::FakeCrosHealthd::Get()->EmitLidClosedEventForTesting();
   run_loop1.Run();
 
   // Shutdown cros_healthd to simulate crash.
-  CrosHealthdClient::Shutdown();
-
-  // Ensure ServiceConnection is disconnected from cros_healthd.
-  cros_healthd::ServiceConnection::GetInstance()->FlushForTesting();
-
+  cros_healthd::FakeCrosHealthd::Shutdown();
   // Restart cros_healthd.
-  CrosHealthdClient::InitializeFake();
+  cros_healthd::FakeCrosHealthd::Initialize();
 
   // Ensure disconnect handler is called for lid observer from System Event
   // Service. After this call, we will have a Mojo pending connection task in
@@ -219,7 +206,7 @@ TEST_F(SystemEventsServiceTest, LidObserverReconnect) {
     run_loop2.Quit();
   });
 
-  cros_healthd::FakeCrosHealthdClient::Get()->EmitLidClosedEventForTesting();
+  cros_healthd::FakeCrosHealthd::Get()->EmitLidClosedEventForTesting();
   run_loop2.Run();
 }
 
@@ -231,17 +218,13 @@ TEST_F(SystemEventsServiceTest, PowerObserverReconnect) {
   EXPECT_CALL(*mock_power_observer(), OnAcInserted).WillOnce([&run_loop1]() {
     run_loop1.Quit();
   });
-  cros_healthd::FakeCrosHealthdClient::Get()->EmitAcInsertedEventForTesting();
+  cros_healthd::FakeCrosHealthd::Get()->EmitAcInsertedEventForTesting();
   run_loop1.Run();
 
   // Shutdown cros_healthd to simulate crash.
-  CrosHealthdClient::Shutdown();
-
-  // Ensure ServiceConnection is disconnected from cros_healthd.
-  cros_healthd::ServiceConnection::GetInstance()->FlushForTesting();
-
+  cros_healthd::FakeCrosHealthd::Shutdown();
   // Restart cros_healthd.
-  CrosHealthdClient::InitializeFake();
+  cros_healthd::FakeCrosHealthd::Initialize();
 
   // Ensure disconnect handler is called for power observer from System Event
   // Service. After this call, we will have a Mojo pending connection task in
@@ -257,7 +240,7 @@ TEST_F(SystemEventsServiceTest, PowerObserverReconnect) {
   EXPECT_CALL(*mock_power_observer(), OnAcInserted).WillOnce([&run_loop2]() {
     run_loop2.Quit();
   });
-  cros_healthd::FakeCrosHealthdClient::Get()->EmitAcInsertedEventForTesting();
+  cros_healthd::FakeCrosHealthd::Get()->EmitAcInsertedEventForTesting();
   run_loop2.Run();
 }
 

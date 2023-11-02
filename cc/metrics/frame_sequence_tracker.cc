@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
@@ -42,7 +43,7 @@ constexpr char kTraceCategory[] =
 
 }  // namespace
 
-using ThreadType = FrameSequenceMetrics::ThreadType;
+using ThreadType = FrameInfo::SmoothEffectDrivingThread;
 
 // In the |TRACKER_TRACE_STREAM|, we mod the numbers such as frame sequence
 // number, or frame token, such that the debug string is not too long.
@@ -73,6 +74,10 @@ const char* FrameSequenceTracker::GetFrameSequenceTrackerTypeName(
       return "CanvasAnimation";
     case FrameSequenceTrackerType::kJSAnimation:
       return "JSAnimation";
+    case FrameSequenceTrackerType::kSETMainThreadAnimation:
+      return "SETMainThreadAnimation";
+    case FrameSequenceTrackerType::kSETCompositorAnimation:
+      return "SETCompositorAnimation";
     case FrameSequenceTrackerType::kMaxType:
       return "";
   }
@@ -291,7 +296,7 @@ void FrameSequenceTracker::ReportSubmitFrame(
   TRACKER_TRACE_STREAM << "s(" << frame_token % kDebugStrMod << ")";
   had_impl_frame_submitted_between_commits_ = true;
   metrics()->NotifySubmitForJankReporter(
-      FrameSequenceMetrics::ThreadType::kCompositor, frame_token,
+      FrameInfo::SmoothEffectDrivingThread::kCompositor, frame_token,
       ack.frame_id.sequence_number);
 
   const bool main_changes_after_sequence_started =
@@ -316,7 +321,7 @@ void FrameSequenceTracker::ReportSubmitFrame(
                                   kDebugStrMod
                            << ")";
       metrics()->NotifySubmitForJankReporter(
-          FrameSequenceMetrics::ThreadType::kMain, frame_token,
+          FrameInfo::SmoothEffectDrivingThread::kMain, frame_token,
           origin_args.frame_id.sequence_number);
 
       last_submitted_main_sequence_ = origin_args.frame_id.sequence_number;
@@ -389,7 +394,7 @@ void FrameSequenceTracker::ReportFrameEnd(
         << TRACKER_DCHECK_MSG;
     --impl_throughput().frames_expected;
     metrics()->NotifyNoUpdateForJankReporter(
-        FrameSequenceMetrics::ThreadType::kCompositor,
+        FrameInfo::SmoothEffectDrivingThread::kCompositor,
         args.frame_id.sequence_number, args.interval);
 #if DCHECK_IS_ON()
     ++impl_throughput().frames_processed;
@@ -485,7 +490,7 @@ void FrameSequenceTracker::ReportFramePresented(
       metrics()->AdvanceTrace(feedback.timestamp);
     }
 
-    metrics()->ComputeJank(FrameSequenceMetrics::ThreadType::kCompositor,
+    metrics()->ComputeJank(FrameInfo::SmoothEffectDrivingThread::kCompositor,
                            frame_token, feedback.timestamp, vsync_interval);
   }
 
@@ -506,7 +511,7 @@ void FrameSequenceTracker::ReportFramePresented(
         metrics()->AdvanceTrace(feedback.timestamp);
       }
 
-      metrics()->ComputeJank(FrameSequenceMetrics::ThreadType::kMain,
+      metrics()->ComputeJank(FrameInfo::SmoothEffectDrivingThread::kMain,
                              frame_token, feedback.timestamp, vsync_interval);
     }
     if (main_frames_.size() < size_before_erase) {
@@ -634,8 +639,8 @@ void FrameSequenceTracker::ReportMainFrameCausedNoDamage(
   last_no_main_damage_sequence_ = args.frame_id.sequence_number;
   --main_throughput().frames_expected;
   metrics()->NotifyNoUpdateForJankReporter(
-      FrameSequenceMetrics::ThreadType::kMain, args.frame_id.sequence_number,
-      args.interval);
+      FrameInfo::SmoothEffectDrivingThread::kMain,
+      args.frame_id.sequence_number, args.interval);
 
   DCHECK_GE(main_throughput().frames_expected, main_frames_.size())
       << TRACKER_DCHECK_MSG;
@@ -716,6 +721,12 @@ std::unique_ptr<FrameSequenceMetrics> FrameSequenceTracker::TakeMetrics() {
 void FrameSequenceTracker::CleanUp() {
   if (metrics_)
     metrics_->ReportLeftoverData();
+}
+
+void FrameSequenceTracker::AddSortedFrame(const viz::BeginFrameArgs& args,
+                                          const FrameInfo& frame_info) {
+  if (metrics_)
+    metrics_->AddSortedFrame(args, frame_info);
 }
 
 FrameSequenceTracker::CheckerboardingData::CheckerboardingData() = default;

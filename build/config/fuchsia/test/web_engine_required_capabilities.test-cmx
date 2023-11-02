@@ -3,13 +3,15 @@
     "fuchsia.test": {
       "injected-services": {
         "fuchsia.fonts.Provider": "fuchsia-pkg://fuchsia.com/fonts#meta/fonts.cmx",
+        "fuchsia.hardware.display.Provider": "fuchsia-pkg://fuchsia.com/fake-hardware-display-controller-provider#meta/hdcp.cmx",
         "fuchsia.memorypressure.Provider": "fuchsia-pkg://fuchsia.com/memory_monitor#meta/memory_monitor.cmx",
+        "fuchsia.ui.scenic.Scenic": "fuchsia-pkg://fuchsia.com/scenic#meta/scenic.cmx",
         "fuchsia.web.ContextProvider": "fuchsia-pkg://fuchsia.com/web_engine#meta/context_provider.cmx",
       },
       "system-services": [
         "fuchsia.device.NameProvider",
         "fuchsia.scheduler.ProfileProvider",
-        "fuchsia.sysmem.Allocator"
+        "fuchsia.sysmem.Allocator",
       ]
     }
   },
@@ -19,7 +21,8 @@
       "fuchsia.fonts.Provider",
       "fuchsia.memorypressure.Provider",
       "fuchsia.sysmem.Allocator",
-      "fuchsia.web.ContextProvider"
+      "fuchsia.web.ContextProvider",
+      "fuchsia.ui.scenic.Scenic"
     ]
   }
 }

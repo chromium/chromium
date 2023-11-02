@@ -1,6 +1,5 @@
 <!doctype html>
-<html dir="$i18n{textdirection}" lang="$i18n{language}" class="loading"
-    $i18n{enableBrandingUpdateAttribute}>
+<html dir="$i18n{textdirection}" lang="$i18n{language}" class="loading">
 <head>
   <meta charset="utf-8">
   <meta name="color-scheme" content="light dark">
@@ -9,9 +8,14 @@
   <link rel="stylesheet" href="chrome://resources/css/md_colors.css">
   <style>
     html {
-      background: var(--md-background-color);
       /* Remove 300ms delay for 'click' event, when using touch interface. */
       touch-action: manipulation;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      html {
+        background: var(--md-background-color);
+      }
     }
 
     html.loading::before {

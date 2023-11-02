@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    main {color: red}
+    main.a {color: green}
+  </style>
+  <script src="../resources/runner.js"></script>
+</head>
+<body>
+</body>
+
+<script>
+
+var red = 'rgb(255, 0, 0)';
+var green = 'rgb(0, 128, 0)';
+
+var isDone = false;
+var startTime;
+
+function testColor(color, expected, test_name) {
+  PerfTestRunner.assert_true(
+      color == expected,
+      `${test_name}: Container color should be ${expected}, but ${color}`);
+}
+
+function runTest() {
+  if (startTime) {
+    PerfTestRunner.measureValueAsync(PerfTestRunner.now() - startTime);
+    PerfTestRunner.addRunTestEndMarker();
+  }
+  if (!isDone) {
+    PerfTestRunner.addRunTestStartMarker();
+    startTime = PerfTestRunner.now();
+
+    document.body.innerHTML = '<main id=container></main>';
+
+    insertDivChildAfterManySpanChildren();
+
+    // Re-run the same test.
+    // Wait to allow the asynchronous accessibility code that's
+    // covered by traceEventsToMeasure to have a chance to run.
+    setTimeout(runTest, 2500);
+  }
+}
+
+// Insert div child after many span children
+function insertDivChildAfterManySpanChildren() {
+  testColor(getComputedStyle(container).color, red, 'Initial color');
+
+  for (let i = 0; i < 833; ++i)
+    container.appendChild(document.createElement("span"));
+  container.appendChild(document.createElement("div"));
+  container.classList.add('a');
+
+  testColor(getComputedStyle(container).color, green, 'Changed color');
+}
+
+PerfTestRunner.startMeasureValuesAsync({
+    description: 'Test accessibility performance when insert block child after many inline children.',
+    unit: 'ms',
+    done: function () {
+      isDone = true;
+    },
+    run: function() {
+      runTest();
+    },
+    iterationCount: 6,
+    tracingCategories: 'accessibility',
+    traceEventsToMeasure: [
+      'AXObjectCacheImpl::ChildrenChanged(LayoutObject)',
+      'ProcessDeferredAccessibilityEvents',
+      'RenderAccessibilityImpl::SendPendingAccessibilityEvents'
+    ]
+});
+
+</script>
+
+</html>

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include "media/video/video_encode_accelerator.h"
 
+#include "media/base/bitstream_buffer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace media {
@@ -23,9 +24,10 @@ class MockVideoEncodeAccelerator : public VideoEncodeAccelerator {
 
   MOCK_METHOD0(GetSupportedProfiles,
                VideoEncodeAccelerator::SupportedProfiles());
-  MOCK_METHOD2(Initialize,
+  MOCK_METHOD3(Initialize,
                bool(const VideoEncodeAccelerator::Config& config,
-                    VideoEncodeAccelerator::Client* client));
+                    VideoEncodeAccelerator::Client* client,
+                    std::unique_ptr<MediaLog> media_log));
   MOCK_METHOD2(Encode,
                void(scoped_refptr<VideoFrame> frame, bool force_keyframe));
   MOCK_METHOD1(UseOutputBitstreamBuffer, void(BitstreamBuffer buffer));

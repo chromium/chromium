@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "ash/login/ui/login_constants.h"
 #include "ash/shell.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/default_color_constants.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "components/account_id/account_id.h"
@@ -40,8 +41,7 @@ LoginBigUserView::LoginBigUserView(
     const LoginUserInfo& user,
     const LoginAuthUserView::Callbacks& auth_user_callbacks,
     const LoginPublicAccountUserView::Callbacks& public_account_callbacks)
-    : NonAccessibleView(),
-      auth_user_callbacks_(auth_user_callbacks),
+    : auth_user_callbacks_(auth_user_callbacks),
       public_account_callbacks_(public_account_callbacks) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
@@ -49,12 +49,19 @@ LoginBigUserView::LoginBigUserView(
   CreateChildView(user);
 
   observation_.Observe(Shell::Get()->wallpaper_controller());
-  // Adding the observer will not run OnWallpaperBlurChanged; run it now to set
-  // the initial state.
-  OnWallpaperBlurChanged();
 }
 
 LoginBigUserView::~LoginBigUserView() = default;
+
+void LoginBigUserView::OnThemeChanged() {
+  NonAccessibleView::OnThemeChanged();
+
+  auto* background = GetBackground();
+  if (background) {
+    background->SetNativeControlColor(
+        GetColorProvider()->GetColor(kColorAshShieldAndBase80));
+  }
+}
 
 void LoginBigUserView::CreateChildView(const LoginUserInfo& user) {
   if (IsPublicAccountUser(user))
@@ -110,7 +117,6 @@ void LoginBigUserView::RequestFocus() {
   return auth_user_->RequestFocus();
 }
 
-
 void LoginBigUserView::OnWallpaperBlurChanged() {
   if (Shell::Get()->wallpaper_controller()->IsWallpaperBlurredForLockState()) {
     SetPaintToLayer(ui::LayerType::LAYER_NOT_DRAWN);
@@ -120,8 +126,7 @@ void LoginBigUserView::OnWallpaperBlurChanged() {
     layer()->SetFillsBoundsOpaquely(false);
     SetBackground(views::CreateBackgroundFromPainter(
         views::Painter::CreateSolidRoundRectPainter(
-            AshColorProvider::Get()->GetShieldLayerColor(
-                AshColorProvider::ShieldLayerType::kShield80),
+            GetColorProvider()->GetColor(kColorAshShieldAndBase80),
             login::kNonBlurredWallpaperBackgroundRadiusDp)));
   }
 }

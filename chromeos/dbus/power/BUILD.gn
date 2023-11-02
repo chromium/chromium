@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -12,7 +12,7 @@ component("power") {
   deps = [
     ":power_manager_proto",
     "//base",
-    "//chromeos/dbus:common",
+    "//chromeos/dbus/common",
     "//components/device_event_log",
     "//dbus",
   ]
@@ -43,6 +43,7 @@ source_set("test_support") {
 
   sources = [
     "fake_power_manager_client_unittest.cc",
+    "native_timer_unittest.cc",
     "power_manager_client_unittest.cc",
     "power_policy_controller_unittest.cc",
   ]
@@ -51,6 +52,7 @@ source_set("test_support") {
 proto_library("power_manager_proto") {
   sources = [
     "//third_party/cros_system_api/dbus/power_manager/backlight.proto",
+    "//third_party/cros_system_api/dbus/power_manager/charge_history_state.proto",
     "//third_party/cros_system_api/dbus/power_manager/idle.proto",
     "//third_party/cros_system_api/dbus/power_manager/input_event.proto",
     "//third_party/cros_system_api/dbus/power_manager/peripheral_battery_status.proto",
@@ -59,6 +61,7 @@ proto_library("power_manager_proto") {
     "//third_party/cros_system_api/dbus/power_manager/suspend.proto",
     "//third_party/cros_system_api/dbus/power_manager/switch_states.proto",
     "//third_party/cros_system_api/dbus/power_manager/thermal.proto",
+    "//third_party/cros_system_api/dbus/power_manager/user_charging_event.proto",
   ]
 
   proto_out_dir = "chromeos/dbus/power_manager"

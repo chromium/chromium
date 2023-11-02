@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,10 +12,12 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -32,6 +34,7 @@
 #include "net/base/filename_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -635,8 +638,8 @@ IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest,
 
   // While archive loading is still in progress and nothing has been committed,
   // trigger a same-document navigation.
-  url::Replacements<char> replacements;
-  replacements.SetRef("fragment", url::Component(0, strlen("fragment")));
+  GURL::Replacements replacements;
+  replacements.SetRefStr("fragment");
   const GURL mhtml_url_with_fragment =
       mhtml_url.ReplaceComponents(replacements);
   // TODO(dcheng): Using NavigateToURL() here seems to cause the test to hang.
@@ -747,12 +750,12 @@ IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest, DataIframe) {
   EXPECT_TRUE(NavigateToURL(shell(), mhtml_url));
 
   // All MHTML frames should have an opaque origin.
-  shell()->web_contents()->GetMainFrame()->ForEachRenderFrameHost(
-      base::BindRepeating([](RenderFrameHost* frame) {
+  shell()->web_contents()->GetPrimaryMainFrame()->ForEachRenderFrameHost(
+      [](RenderFrameHost* frame) {
         EXPECT_TRUE(frame->GetLastCommittedOrigin().opaque())
             << "frame->GetLastCommittedURL() = "
             << frame->GetLastCommittedURL();
-      }));
+      });
 }
 
 // Regression test for https://crbug.com/1168249.
@@ -806,6 +809,67 @@ IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest, ErrorBaseURL) {
   EXPECT_FALSE(main_document->IsErrorDocument());
   EXPECT_FALSE(params_capturer.is_error_page());
   EXPECT_NE(PAGE_TYPE_ERROR, controller.GetLastCommittedEntry()->GetPageType());
+}
+
+class NavigationMhtmlFencedFrameBrowserTest
+    : public NavigationMhtmlBrowserTest,
+      public ::testing::WithParamInterface<
+          blink::features::FencedFramesImplementationType> {
+ public:
+  // Provides meaningful param names instead of /0 and /1.
+  static std::string DescribeParams(
+      const ::testing::TestParamInfo<ParamType>& info) {
+    switch (info.param) {
+      case blink::features::FencedFramesImplementationType::kShadowDOM:
+        return "ShadowDOM";
+      case blink::features::FencedFramesImplementationType::kMPArch:
+        return "MPArch";
+    }
+  }
+
+  NavigationMhtmlFencedFrameBrowserTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{blink::features::kFencedFrames,
+          {{"implementation_type",
+            GetParam() ==
+                    blink::features::FencedFramesImplementationType::kShadowDOM
+                ? "shadow_dom"
+                : "mparch"}}}},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    NavigationMhtmlFencedFrameBrowserTest,
+    ::testing::Values(
+        blink::features::FencedFramesImplementationType::kShadowDOM,
+        blink::features::FencedFramesImplementationType::kMPArch),
+    &NavigationMhtmlFencedFrameBrowserTest::DescribeParams);
+
+IN_PROC_BROWSER_TEST_P(NavigationMhtmlFencedFrameBrowserTest,
+                       MhtmlCannotCreateFencedFrame) {
+  MhtmlArchive mhtml_archive;
+  mhtml_archive.AddHtmlDocument(
+      GURL("http://example.com"),
+      "<fencedframe src=\"http://example.com/found.html\"></fencedframe>");
+  mhtml_archive.AddHtmlDocument(GURL("http://example.com/found.html"),
+                                "<iframe></iframe>");
+  GURL mhtml_url = mhtml_archive.Write("index.mhtml");
+
+  EXPECT_TRUE(NavigateToURL(shell(), mhtml_url));
+
+  RenderFrameHostImpl* main_document = main_frame_host();
+  EXPECT_TRUE(main_document->is_mhtml_document());
+  // Ensure nothing was created for the fencedframe element. Only a single
+  // RenderFrameHost, the `main_document`, should exist.
+  int num_documents = 0;
+  main_document->ForEachRenderFrameHost(
+      [&](RenderFrameHostImpl* rfh) { num_documents++; });
+  EXPECT_EQ(1, num_documents);
 }
 
 }  // namespace content

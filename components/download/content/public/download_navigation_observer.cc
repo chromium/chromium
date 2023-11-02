@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@ DownloadNavigationObserver::DownloadNavigationObserver(
     content::WebContents* web_contents,
     NavigationMonitor* navigation_monitor)
     : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<DownloadNavigationObserver>(*web_contents),
       navigation_monitor_(navigation_monitor) {}
 
 DownloadNavigationObserver::~DownloadNavigationObserver() = default;

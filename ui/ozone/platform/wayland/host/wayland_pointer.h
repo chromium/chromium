@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <cstdint>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/types/event_type.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
@@ -15,6 +16,10 @@ namespace gfx {
 class PointF;
 class Vector2dF;
 }  // namespace gfx
+
+namespace wl {
+enum class EventDispatchPolicy;
+}  // namespace wl
 
 namespace ui {
 
@@ -78,9 +83,24 @@ class WaylandPointer {
                            uint32_t axis,
                            int32_t discrete);
 
+  void SetupStylus();
+
+  // zcr_pointer_stylus_v2_listener
+  static void Tool(void* data, struct zcr_pointer_stylus_v2* x, uint32_t y);
+  static void Force(void* data,
+                    struct zcr_pointer_stylus_v2* x,
+                    uint32_t y,
+                    wl_fixed_t z);
+  static void Tilt(void* data,
+                   struct zcr_pointer_stylus_v2* x,
+                   uint32_t y,
+                   wl_fixed_t z,
+                   wl_fixed_t a);
+
   wl::Object<wl_pointer> obj_;
-  WaylandConnection* const connection_;
-  Delegate* const delegate_;
+  wl::Object<zcr_pointer_stylus_v2> zcr_pointer_stylus_v2_;
+  const raw_ptr<WaylandConnection> connection_;
+  const raw_ptr<Delegate> delegate_;
 
   // Whether the axis source event has been received for the current frame.
   //
@@ -93,12 +113,18 @@ class WaylandPointer {
 
 class WaylandPointer::Delegate {
  public:
-  virtual void OnPointerFocusChanged(WaylandWindow* window,
-                                     const gfx::PointF& location) = 0;
-  virtual void OnPointerButtonEvent(EventType evtype,
-                                    int changed_button,
-                                    WaylandWindow* window = nullptr) = 0;
-  virtual void OnPointerMotionEvent(const gfx::PointF& location) = 0;
+  virtual void OnPointerFocusChanged(
+      WaylandWindow* window,
+      const gfx::PointF& location,
+      wl::EventDispatchPolicy dispatch_policy) = 0;
+  virtual void OnPointerButtonEvent(
+      EventType evtype,
+      int changed_button,
+      WaylandWindow* window,
+      wl::EventDispatchPolicy dispatch_policy) = 0;
+  virtual void OnPointerMotionEvent(
+      const gfx::PointF& location,
+      wl::EventDispatchPolicy dispatch_policy) = 0;
   virtual void OnPointerAxisEvent(const gfx::Vector2dF& offset) = 0;
   virtual void OnPointerFrameEvent() = 0;
   virtual void OnPointerAxisSourceEvent(uint32_t axis_source) = 0;
@@ -106,6 +132,10 @@ class WaylandPointer::Delegate {
   virtual void OnResetPointerFlags() = 0;
   virtual const gfx::PointF& GetPointerLocation() const = 0;
   virtual bool IsPointerButtonPressed(EventFlags button) const = 0;
+  virtual void OnPointerStylusToolChanged(EventPointerType pointer_type) = 0;
+  virtual void OnPointerStylusForceChanged(float force) = 0;
+  virtual void OnPointerStylusTiltChanged(const gfx::Vector2dF& tilt) = 0;
+  virtual const WaylandWindow* GetPointerTarget() const = 0;
 };
 
 }  // namespace ui

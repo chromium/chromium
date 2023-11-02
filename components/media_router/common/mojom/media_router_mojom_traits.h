@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,12 @@
 
 #include <string>
 
+#include "base/notreached.h"
 #include "components/media_router/common/discovery/media_sink_internal.h"
 #include "components/media_router/common/issue.h"
 #include "components/media_router/common/mojom/media_router.mojom-shared.h"
 #include "components/media_router/common/route_request_result.h"
+#include "mojo/public/cpp/bindings/optional_as_pointer.h"
 #include "net/base/ip_endpoint.h"
 
 namespace mojo {
@@ -52,8 +54,6 @@ struct EnumTraits<media_router::mojom::Issue_Severity,
   static media_router::mojom::Issue_Severity ToMojom(
       media_router::IssueInfo::Severity severity) {
     switch (severity) {
-      case media_router::IssueInfo::Severity::FATAL:
-        return media_router::mojom::Issue_Severity::FATAL;
       case media_router::IssueInfo::Severity::WARNING:
         return media_router::mojom::Issue_Severity::WARNING;
       case media_router::IssueInfo::Severity::NOTIFICATION:
@@ -66,9 +66,6 @@ struct EnumTraits<media_router::mojom::Issue_Severity,
   static bool FromMojom(media_router::mojom::Issue_Severity input,
                         media_router::IssueInfo::Severity* output) {
     switch (input) {
-      case media_router::mojom::Issue_Severity::FATAL:
-        *output = media_router::IssueInfo::Severity::FATAL;
-        return true;
       case media_router::mojom::Issue_Severity::WARNING:
         *output = media_router::IssueInfo::Severity::WARNING;
         return true;
@@ -172,10 +169,6 @@ struct StructTraits<media_router::mojom::IssueDataView,
   static media_router::IssueInfo::Severity severity(
       const media_router::IssueInfo& issue) {
     return issue.severity;
-  }
-
-  static bool is_blocking(const media_router::IssueInfo& issue) {
-    return issue.is_blocking;
   }
 
   static const std::string& title(const media_router::IssueInfo& issue) {
@@ -344,15 +337,15 @@ struct StructTraits<media_router::mojom::MediaRouteDataView,
     return route.presentation_id();
   }
 
-  static absl::optional<std::string> media_source(
+  static mojo::OptionalAsPointer<const std::string> media_source(
       const media_router::MediaRoute& route) {
     // TODO(imcheng): If we ever convert from C++ to Mojo outside of unit tests,
     // it would be better to make the |media_source_| field on MediaRoute a
     // absl::optional<MediaSource::Id> instead so it can be returned directly
     // here.
-    return route.media_source().id().empty()
-               ? absl::optional<std::string>()
-               : absl::make_optional(route.media_source().id());
+    return mojo::MakeOptionalAsPointer(route.media_source().id().empty()
+                                           ? nullptr
+                                           : &route.media_source().id());
   }
 
   static const std::string& media_sink_id(
@@ -378,10 +371,6 @@ struct StructTraits<media_router::mojom::MediaRouteDataView,
     return route.controller_type();
   }
 
-  static bool for_display(const media_router::MediaRoute& route) {
-    return route.for_display();
-  }
-
   static bool is_off_the_record(const media_router::MediaRoute& route) {
     return route.is_off_the_record();
   }
@@ -392,95 +381,6 @@ struct StructTraits<media_router::mojom::MediaRouteDataView,
 
   static bool is_connecting(const media_router::MediaRoute& route) {
     return route.is_connecting();
-  }
-};
-
-// RouteRequestResultCode
-
-template <>
-struct EnumTraits<media_router::mojom::RouteRequestResultCode,
-                  media_router::RouteRequestResult::ResultCode> {
-  static media_router::mojom::RouteRequestResultCode ToMojom(
-      media_router::RouteRequestResult::ResultCode code) {
-    switch (code) {
-      case media_router::RouteRequestResult::UNKNOWN_ERROR:
-        return media_router::mojom::RouteRequestResultCode::UNKNOWN_ERROR;
-      case media_router::RouteRequestResult::OK:
-        return media_router::mojom::RouteRequestResultCode::OK;
-      case media_router::RouteRequestResult::TIMED_OUT:
-        return media_router::mojom::RouteRequestResultCode::TIMED_OUT;
-      case media_router::RouteRequestResult::ROUTE_NOT_FOUND:
-        return media_router::mojom::RouteRequestResultCode::ROUTE_NOT_FOUND;
-      case media_router::RouteRequestResult::SINK_NOT_FOUND:
-        return media_router::mojom::RouteRequestResultCode::SINK_NOT_FOUND;
-      case media_router::RouteRequestResult::INVALID_ORIGIN:
-        return media_router::mojom::RouteRequestResultCode::INVALID_ORIGIN;
-      case media_router::RouteRequestResult::OFF_THE_RECORD_MISMATCH:
-        return media_router::mojom::RouteRequestResultCode::
-            OFF_THE_RECORD_MISMATCH;
-      case media_router::RouteRequestResult::NO_SUPPORTED_PROVIDER:
-        return media_router::mojom::RouteRequestResultCode::
-            NO_SUPPORTED_PROVIDER;
-      case media_router::RouteRequestResult::CANCELLED:
-        return media_router::mojom::RouteRequestResultCode::CANCELLED;
-      case media_router::RouteRequestResult::ROUTE_ALREADY_EXISTS:
-        return media_router::mojom::RouteRequestResultCode::
-            ROUTE_ALREADY_EXISTS;
-      case media_router::RouteRequestResult::DESKTOP_PICKER_FAILED:
-        return media_router::mojom::RouteRequestResultCode::
-            DESKTOP_PICKER_FAILED;
-      case media_router::RouteRequestResult::ROUTE_ALREADY_TERMINATED:
-        return media_router::mojom::RouteRequestResultCode::
-            ROUTE_ALREADY_TERMINATED;
-      default:
-        NOTREACHED() << "Unknown RouteRequestResultCode "
-                     << static_cast<int>(code);
-        return media_router::mojom::RouteRequestResultCode::UNKNOWN_ERROR;
-    }
-  }
-
-  static bool FromMojom(media_router::mojom::RouteRequestResultCode input,
-                        media_router::RouteRequestResult::ResultCode* output) {
-    switch (input) {
-      case media_router::mojom::RouteRequestResultCode::UNKNOWN_ERROR:
-        *output = media_router::RouteRequestResult::UNKNOWN_ERROR;
-        return true;
-      case media_router::mojom::RouteRequestResultCode::OK:
-        *output = media_router::RouteRequestResult::OK;
-        return true;
-      case media_router::mojom::RouteRequestResultCode::TIMED_OUT:
-        *output = media_router::RouteRequestResult::TIMED_OUT;
-        return true;
-      case media_router::mojom::RouteRequestResultCode::ROUTE_NOT_FOUND:
-        *output = media_router::RouteRequestResult::ROUTE_NOT_FOUND;
-        return true;
-      case media_router::mojom::RouteRequestResultCode::SINK_NOT_FOUND:
-        *output = media_router::RouteRequestResult::SINK_NOT_FOUND;
-        return true;
-      case media_router::mojom::RouteRequestResultCode::INVALID_ORIGIN:
-        *output = media_router::RouteRequestResult::INVALID_ORIGIN;
-        return true;
-      case media_router::mojom::RouteRequestResultCode::OFF_THE_RECORD_MISMATCH:
-        *output = media_router::RouteRequestResult::OFF_THE_RECORD_MISMATCH;
-        return true;
-      case media_router::mojom::RouteRequestResultCode::NO_SUPPORTED_PROVIDER:
-        *output = media_router::RouteRequestResult::NO_SUPPORTED_PROVIDER;
-        return true;
-      case media_router::mojom::RouteRequestResultCode::CANCELLED:
-        *output = media_router::RouteRequestResult::CANCELLED;
-        return true;
-      case media_router::mojom::RouteRequestResultCode::ROUTE_ALREADY_EXISTS:
-        *output = media_router::RouteRequestResult::ROUTE_ALREADY_EXISTS;
-        return true;
-      case media_router::mojom::RouteRequestResultCode::DESKTOP_PICKER_FAILED:
-        *output = media_router::RouteRequestResult::DESKTOP_PICKER_FAILED;
-        return true;
-      case media_router::mojom::RouteRequestResultCode::
-          ROUTE_ALREADY_TERMINATED:
-        *output = media_router::RouteRequestResult::ROUTE_ALREADY_TERMINATED;
-        return true;
-    }
-    return false;
   }
 };
 

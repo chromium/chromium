@@ -1,9 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 // clang-format off
-// #import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+// #import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
+// #import {SanitizeInnerHtmlOpts} from 'chrome://resources/js/parse_html_subset.js';
 // #import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // clang-format on
 
@@ -20,18 +21,15 @@ const OobeI18nBehaviorImpl = {
   },
 
   /**
-   * See documentation for I18nBehavior.i18n(...)
+   * Similar to 'i18nAdvanced', with an unused |locale| parameter used to
+   * trigger updates when |this.locale| changes.
+   * @param {string} locale The UI language used.
    * @param {string} id The ID of the string to translate.
-   * @param {...string|number} var_args Values to replace the placeholders $1
-   *     to $9 in the string.
+   * @param {SanitizeInnerHtmlOpts=} opts
    * @return {string} A translated, sanitized, substituted string.
    */
-  i18n(id, var_args) {
-    if (typeof this.locale === 'undefined')
-      return '';
-    if (typeof id === 'undefined')
-      return '';
-    return I18nBehavior.i18n.apply(this, arguments);
+  i18nAdvancedDynamic(locale, id, opts) {
+    return I18nBehavior.i18nAdvanced(id, opts);
   },
 
   i18nUpdateLocale() {

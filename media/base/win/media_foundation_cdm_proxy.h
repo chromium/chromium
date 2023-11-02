@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -59,6 +59,12 @@ class MediaFoundationCdmProxy
   // in cases like OS Sleep. In this case, the CDM should close all sessions
   // because they are in bad state.
   virtual void OnHardwareContextReset() = 0;
+
+  // Notify the CDM that significant playback (e.g. >1 minutes) has happened.
+  virtual void OnSignificantPlayback() = 0;
+
+  // Notify the CDM that playback error happened.
+  virtual void OnPlaybackError(HRESULT hresult) = 0;
 
  protected:
   friend base::RefCountedThreadSafe<MediaFoundationCdmProxy>;

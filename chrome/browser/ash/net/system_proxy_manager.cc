@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
@@ -23,14 +24,12 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/login/login_handler.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/dbus/system_proxy/system_proxy_client.h"
+#include "chromeos/ash/components/dbus/system_proxy/system_proxy_client.h"
+#include "chromeos/ash/components/network/network_event_log.h"
+#include "chromeos/ash/components/network/network_state.h"
+#include "chromeos/ash/components/network/proxy/proxy_config_service_impl.h"
+#include "chromeos/ash/components/network/proxy/ui_proxy_config_service.h"
 #include "chromeos/login/login_state/login_state.h"
-#include "chromeos/network/network_event_log.h"
-#include "chromeos/network/network_state.h"
-#include "chromeos/network/network_state_handler.h"
-#include "chromeos/network/proxy/proxy_config_service_impl.h"
-#include "chromeos/network/proxy/ui_proxy_config_service.h"
-#include "components/arc/arc_prefs.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -125,7 +124,8 @@ SystemProxyManager::SystemProxyManager(PrefService* local_state) {
       base::BindRepeating(&SystemProxyManager::OnKerberosEnabledChanged,
                           weak_factory_.GetWeakPtr()));
   DCHECK(NetworkHandler::IsInitialized());
-  NetworkHandler::Get()->network_state_handler()->AddObserver(this, FROM_HERE);
+  network_state_handler_observer_.Observe(
+      NetworkHandler::Get()->network_state_handler());
 
   system_proxy_state_ = DetermineSystemProxyState(/*policy_enabled=*/false);
 
@@ -142,8 +142,6 @@ SystemProxyManager::~SystemProxyManager() {
     SendShutDownRequest(system_proxy::TrafficOrigin::ALL);
   }
   DCHECK(NetworkHandler::IsInitialized());
-  NetworkHandler::Get()->network_state_handler()->RemoveObserver(this,
-                                                                 FROM_HERE);
 }
 
 // static
@@ -409,8 +407,9 @@ void SystemProxyManager::SendKerberosAuthenticationDetails() {
   if (primary_profile_) {
     request.set_active_principal_name(
         primary_profile_->GetPrefs()
-            ->Get(prefs::kKerberosActivePrincipalName)
-            ->GetString());
+            ->GetValue(prefs::kKerberosActivePrincipalName)
+            // TODO (https://crbug.com/1344857) Maybe call GetString directly.
+            .GetString());
   }
   SystemProxyClient::Get()->SetAuthenticationDetails(
       request, base::BindOnce(&SystemProxyManager::OnSetAuthenticationDetails,
@@ -472,7 +471,7 @@ bool SystemProxyManager::CanUsePolicyCredentials(
   }
   if (!LoginState::IsInitialized() ||
       (!LoginState::Get()->IsPublicSessionUser() &&
-       !LoginState::Get()->IsKioskApp())) {
+       !LoginState::Get()->IsKioskSession())) {
     VLOG(1) << "Only kiosk app and MGS can reuse the policy provided proxy "
                "credentials for authentication";
     return false;
@@ -537,7 +536,7 @@ void SystemProxyManager::OnProxyConfigChanged() {
 bool SystemProxyManager::IsManagedProxyConfigured() {
   DCHECK(NetworkHandler::IsInitialized());
   NetworkHandler* network_handler = NetworkHandler::Get();
-  base::Value proxy_settings(base::Value::Type::DICTIONARY);
+  base::Value::Dict proxy_settings;
 
   // |ui_proxy_config_service| may be missing in tests. If the device is offline
   // (no network connected) the |DefaultNetwork| is null.
@@ -549,7 +548,7 @@ bool SystemProxyManager::IsManagedProxyConfigured() {
         network_handler->network_state_handler()->DefaultNetwork()->guid(),
         &proxy_settings);
   }
-  if (proxy_settings.DictEmpty())
+  if (proxy_settings.empty())
     return false;  // no managed proxy set
 
   if (IsProxyConfiguredByUserViaExtension())

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@
 
 namespace feature_engagement {
 
-NeverAvailabilityModel::NeverAvailabilityModel() : ready_(false) {}
+NeverAvailabilityModel::NeverAvailabilityModel() = default;
 
 NeverAvailabilityModel::~NeverAvailabilityModel() = default;
 
@@ -24,7 +24,7 @@ void NeverAvailabilityModel::Initialize(OnInitializedCallback callback,
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(&NeverAvailabilityModel::ForwardedOnInitializedCallback,
-                     base::Unretained(this), std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 bool NeverAvailabilityModel::IsReady() const {

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -96,6 +96,12 @@ TEST(WebFeedPageInformation, SetUrlStripsFragment) {
   WebFeedPageInformation info;
   info.SetUrl(GURL("https://chromium.org#1"));
   EXPECT_EQ(GURL("https://chromium.org"), info.url());
+}
+
+TEST(WebFeedPageInformation, SetCanonicalUrlStripsFragment) {
+  WebFeedPageInformation info;
+  info.SetCanonicalUrl(GURL("https://chromium.org#1"));
+  EXPECT_EQ(GURL("https://chromium.org"), info.canonical_url());
 }
 
 }  // namespace feed

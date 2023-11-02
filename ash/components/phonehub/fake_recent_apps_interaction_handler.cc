@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,10 @@
 #include "ash/components/phonehub/notification.h"
 #include "base/containers/contains.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
+
+using FeatureState = multidevice_setup::mojom::FeatureState;
 
 FakeRecentAppsInteractionHandler::FakeRecentAppsInteractionHandler() = default;
 
@@ -32,6 +34,12 @@ void FakeRecentAppsInteractionHandler::RemoveRecentAppClickObserver(
   recent_app_click_observer_count_--;
 }
 
+void FakeRecentAppsInteractionHandler::OnFeatureStateChanged(
+    FeatureState feature_state) {
+  feature_state_ = feature_state;
+  ComputeAndUpdateUiState();
+}
+
 void FakeRecentAppsInteractionHandler::NotifyRecentAppAddedOrUpdated(
     const Notification::AppMetadata& app_metadata,
     base::Time last_accessed_timestamp) {
@@ -47,5 +55,20 @@ FakeRecentAppsInteractionHandler::FetchRecentAppMetadataList() {
   return app_metadata_list;
 }
 
+void FakeRecentAppsInteractionHandler::SetStreamableApps(
+    const proto::StreamableApps& streamable_apps) {
+  // TODO(nayebi): Do we need to implement this?
+}
+
+void FakeRecentAppsInteractionHandler::ComputeAndUpdateUiState() {
+  if (feature_state_ != FeatureState::kEnabledByUser) {
+    ui_state_ = RecentAppsUiState::HIDDEN;
+    return;
+  }
+  ui_state_ = recent_apps_metadata_.empty()
+                  ? RecentAppsUiState::PLACEHOLDER_VIEW
+                  : RecentAppsUiState::ITEMS_VISIBLE;
+}
+
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

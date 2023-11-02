@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -102,8 +102,7 @@ class RecordInfo {
   bool IsGCAllocated();
   bool IsGCMixin();
   bool IsStackAllocated();
-  bool IsNonNewable();
-  bool IsOnlyPlacementNewable();
+  bool IsNewDisallowed();
 
   bool HasDefinition();
 
@@ -140,27 +139,28 @@ class RecordInfo {
   clang::CXXRecordDecl* record_;
   const std::string name_;
   TracingStatus fields_need_tracing_;
-  Bases* bases_;
-  Fields* fields_;
+  Bases* bases_ = nullptr;
+  Fields* fields_ = nullptr;
 
   enum CachedBool { kFalse = 0, kTrue = 1, kNotComputed = 2 };
-  CachedBool is_stack_allocated_;
-  CachedBool is_non_newable_;
-  CachedBool is_only_placement_newable_;
-  CachedBool does_need_finalization_;
-  CachedBool has_gc_mixin_methods_;
-  CachedBool is_declaring_local_trace_;
+  CachedBool is_stack_allocated_ = kNotComputed;
+  CachedBool does_need_finalization_ = kNotComputed;
+  CachedBool has_gc_mixin_methods_ = kNotComputed;
+  CachedBool is_declaring_local_trace_ = kNotComputed;
 
-  bool determined_trace_methods_;
-  clang::CXXMethodDecl* trace_method_;
-  clang::CXXMethodDecl* trace_dispatch_method_;
-  clang::CXXMethodDecl* finalize_dispatch_method_;
+  bool determined_new_operator_ = false;
+  clang::CXXMethodDecl* new_operator_ = nullptr;
 
-  bool is_gc_derived_;
+  bool determined_trace_methods_ = false;
+  clang::CXXMethodDecl* trace_method_ = nullptr;
+  clang::CXXMethodDecl* trace_dispatch_method_ = nullptr;
+  clang::CXXMethodDecl* finalize_dispatch_method_ = nullptr;
+
+  bool is_gc_derived_ = false;
 
   std::vector<std::string> gc_base_names_;
 
-  const clang::CXXBaseSpecifier* directly_derived_gc_base_;
+  const clang::CXXBaseSpecifier* directly_derived_gc_base_ = nullptr;
 
   friend class RecordCache;
 };

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,12 @@
 #include <memory>
 #include <string>
 
+#include "ash/webui/diagnostics_ui/backend/session_log_async_helper.h"
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/select_file_policy.h"
@@ -72,20 +75,18 @@ class SessionLogHandler : public content::WebUIMessageHandler,
   RoutineLog* GetRoutineLog() const;
   NetworkingLog* GetNetworkingLog() const;
 
+  // Sets the task runner to use for testing.
+  void SetTaskRunnerForTesting(
+      const scoped_refptr<base::SequencedTaskRunner>& task_runner);
   void SetWebUIForTest(content::WebUI* web_ui);
   void SetLogCreatedClosureForTest(base::OnceClosure closure);
 
  private:
-  // Creates a session log at `file_path`. The session log includes the contents
-  // of both `telemetry_log_` and `routine_log_`. Returns true if the file was
-  // successfully written. Retrns false otherwise.
-  bool CreateSessionLog(const base::FilePath& file_path);
-
   // Opens the select dialog.
-  void HandleSaveSessionLogRequest(const base::ListValue* args);
+  void HandleSaveSessionLogRequest(const base::Value::List& args);
 
   // Initializes Javascript.
-  void HandleInitialize(const base::ListValue* args);
+  void HandleInitialize(const base::Value::List& args);
 
   SelectFilePolicyCreator select_file_policy_creator_;
   std::unique_ptr<TelemetryLog> telemetry_log_;
@@ -95,7 +96,15 @@ class SessionLogHandler : public content::WebUIMessageHandler,
   std::string save_session_log_callback_id_;
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
   base::OnceClosure log_created_closure_;
+  // Task runner for tasks posted by save session log handler. Used to ensure
+  // posted tasks are handled while SessionLogHandler is in scope to stop
+  // heap-use-after-free error.
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  std::unique_ptr<SessionLogAsyncHelper, base::OnTaskRunnerDeleter>
+      async_helper_;
+  SEQUENCE_CHECKER(session_log_handler_sequence_checker_);
 
+  base::WeakPtr<SessionLogHandler> weak_ptr_;
   base::WeakPtrFactory<SessionLogHandler> weak_factory_{this};
 };
 

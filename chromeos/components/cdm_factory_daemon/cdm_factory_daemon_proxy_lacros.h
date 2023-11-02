@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,6 +39,9 @@ class COMPONENT_EXPORT(CDM_FACTORY_DAEMON) CdmFactoryDaemonProxyLacros
   void GetOutputProtection(mojo::PendingReceiver<cdm::mojom::OutputProtection>
                                output_protection) override;
   void GetScreenResolutions(GetScreenResolutionsCallback callback) override;
+  void GetAndroidHwKeyData(const std::vector<uint8_t>& key_id,
+                           const std::vector<uint8_t>& hw_identifier,
+                           GetAndroidHwKeyDataCallback callback) override;
 
  private:
   void EstablishAshConnection(base::OnceClosure callback);

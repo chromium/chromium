@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,9 +12,11 @@
 #include "base/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/extensions/api/settings_private/prefs_util.h"
-#include "chromeos/dbus/system_proxy/system_proxy_service.pb.h"
-#include "chromeos/network/network_state_handler_observer.h"
+#include "chromeos/ash/components/dbus/system_proxy/system_proxy_service.pb.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/content_browser_client.h"
 #include "net/base/auth.h"
@@ -275,16 +277,14 @@ class SystemProxyManager : public NetworkStateHandlerObserver {
   std::unique_ptr<PrefChangeRegistrar> local_state_pref_change_registrar_;
   std::unique_ptr<PrefChangeRegistrar> profile_pref_change_registrar_;
 
+  base::ScopedObservation<NetworkStateHandler, NetworkStateHandlerObserver>
+      network_state_handler_observer_{this};
+
   base::RepeatingClosure send_auth_details_closure_for_test_;
 
   base::WeakPtrFactory<SystemProxyManager> weak_factory_{this};
 };
 
 }  // namespace ash
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace chromeos {
-using ::ash::SystemProxyManager;
-}
 
 #endif  // CHROME_BROWSER_ASH_NET_SYSTEM_PROXY_MANAGER_H_

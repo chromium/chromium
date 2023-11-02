@@ -1,0 +1,1 @@
+camera 'self' https://*.example.com/; gyroscope 'src' https://*.example.net/

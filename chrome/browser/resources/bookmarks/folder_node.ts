@@ -1,38 +1,34 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
-import 'chrome://resources/cr_elements/cr_nav_menu_item_style.js';
-import 'chrome://resources/cr_elements/shared_style_css.m.js';
-import 'chrome://resources/cr_elements/shared_vars_css.m.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/cr_elements/cr_nav_menu_item_style.css.js';
+import 'chrome://resources/cr_elements/cr_shared_style.css.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
-import './shared_style.js';
+import './shared_style.css.js';
 import './strings.m.js';
 
-import {assert} from 'chrome://resources/js/assert.m.js';
-import {isRTL} from 'chrome://resources/js/util.m.js';
-import {html, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
+import {isRTL} from 'chrome://resources/js/util.js';
+import {microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {changeFolderOpen, selectFolder} from './actions.js';
 import {BookmarksCommandManagerElement} from './command_manager.js';
 import {FOLDER_OPEN_BY_DEFAULT_DEPTH, MenuSource, ROOT_NODE_ID} from './constants.js';
+import {getTemplate} from './folder_node.html.js';
 import {StoreClientMixin} from './store_client_mixin.js';
 import {BookmarkNode} from './types.js';
 import {hasChildFolders, isShowingSearch} from './util.js';
 
 const BookmarksFolderNodeElementBase = StoreClientMixin(PolymerElement);
 
-// Workaround because TS compiler doesn't know about scrollIntoViewIfNeeded().
-type HTMLDivElementWithScroll = HTMLDivElement&{
-  scrollIntoViewIfNeeded: () => void;
-};
-
 export interface BookmarksFolderNodeElement {
   $: {
-    container: HTMLDivElementWithScroll,
-    descendants: HTMLDivElement,
-  }
+    container: HTMLElement,
+    descendants: HTMLElement,
+  };
 }
 
 export class BookmarksFolderNodeElement extends BookmarksFolderNodeElementBase {
@@ -41,7 +37,7 @@ export class BookmarksFolderNodeElement extends BookmarksFolderNodeElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -72,7 +68,7 @@ export class BookmarksFolderNodeElement extends BookmarksFolderNodeElementBase {
       isSelectedFolder_: {
         type: Boolean,
         reflectToAttribute: true,
-        computed: 'computeIsSelected_(itemId, selectedFolder_, searchActive_)'
+        computed: 'computeIsSelected_(itemId, selectedFolder_, searchActive_)',
       },
 
       hasChildFolder_: {
@@ -99,14 +95,14 @@ export class BookmarksFolderNodeElement extends BookmarksFolderNodeElementBase {
     ];
   }
 
-  ready() {
+  override ready() {
     super.ready();
 
     this.addEventListener('keydown', e => this.onKeydown_(e));
   }
 
   /** @override */
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     this.watch('item_', state => {
       return state.nodes[this.itemId];

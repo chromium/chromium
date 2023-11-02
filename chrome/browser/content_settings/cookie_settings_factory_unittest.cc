@@ -1,8 +1,9 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
@@ -13,6 +14,8 @@
 #include "url/gurl.h"
 
 namespace {
+
+using QueryReason = content_settings::CookieSettings::QueryReason;
 
 class CookieSettingsFactoryTest : public testing::Test {
  public:
@@ -26,7 +29,7 @@ class CookieSettingsFactoryTest : public testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
-  content_settings::CookieSettings* cookie_settings_;
+  raw_ptr<content_settings::CookieSettings> cookie_settings_;
   const GURL kBlockedSite;
   const GURL kAllowedSite;
   const GURL kFirstPartySite;
@@ -43,18 +46,18 @@ TEST_F(CookieSettingsFactoryTest, IncognitoBehaviorOfBlockingRules) {
   cookie_settings_->SetCookieSetting(kBlockedSite, CONTENT_SETTING_BLOCK);
 
   // The modification should apply to the regular profile and incognito profile.
-  EXPECT_FALSE(
-      cookie_settings_->IsFullCookieAccessAllowed(kBlockedSite, kBlockedSite));
-  EXPECT_FALSE(incognito_settings->IsFullCookieAccessAllowed(kBlockedSite,
-                                                             kBlockedSite));
+  EXPECT_FALSE(cookie_settings_->IsFullCookieAccessAllowed(
+      kBlockedSite, kBlockedSite, QueryReason::kSetting));
+  EXPECT_FALSE(incognito_settings->IsFullCookieAccessAllowed(
+      kBlockedSite, kBlockedSite, QueryReason::kSetting));
 
   // Modify an incognito cookie setting and check that this does not propagate
   // into regular mode.
   incognito_settings->SetCookieSetting(kHttpsSite, CONTENT_SETTING_BLOCK);
-  EXPECT_TRUE(
-      cookie_settings_->IsFullCookieAccessAllowed(kHttpsSite, kHttpsSite));
-  EXPECT_FALSE(
-      incognito_settings->IsFullCookieAccessAllowed(kHttpsSite, kHttpsSite));
+  EXPECT_TRUE(cookie_settings_->IsFullCookieAccessAllowed(
+      kHttpsSite, kHttpsSite, QueryReason::kSetting));
+  EXPECT_FALSE(incognito_settings->IsFullCookieAccessAllowed(
+      kHttpsSite, kHttpsSite, QueryReason::kSetting));
 }
 
 TEST_F(CookieSettingsFactoryTest, IncognitoBehaviorOfBlockingEverything) {
@@ -66,30 +69,30 @@ TEST_F(CookieSettingsFactoryTest, IncognitoBehaviorOfBlockingEverything) {
   cookie_settings_->SetDefaultCookieSetting(CONTENT_SETTING_BLOCK);
 
   // It should be effective for regular and incognito session.
-  EXPECT_FALSE(cookie_settings_->IsFullCookieAccessAllowed(kFirstPartySite,
-                                                           kFirstPartySite));
-  EXPECT_FALSE(incognito_settings->IsFullCookieAccessAllowed(kFirstPartySite,
-                                                             kFirstPartySite));
+  EXPECT_FALSE(cookie_settings_->IsFullCookieAccessAllowed(
+      kFirstPartySite, kFirstPartySite, QueryReason::kSetting));
+  EXPECT_FALSE(incognito_settings->IsFullCookieAccessAllowed(
+      kFirstPartySite, kFirstPartySite, QueryReason::kSetting));
 
   // A whitelisted item set in incognito mode should only apply to incognito
   // mode.
   incognito_settings->SetCookieSetting(kAllowedSite, CONTENT_SETTING_ALLOW);
-  EXPECT_TRUE(incognito_settings->IsFullCookieAccessAllowed(kAllowedSite,
-                                                            kAllowedSite));
-  EXPECT_FALSE(
-      cookie_settings_->IsFullCookieAccessAllowed(kAllowedSite, kAllowedSite));
+  EXPECT_TRUE(incognito_settings->IsFullCookieAccessAllowed(
+      kAllowedSite, kAllowedSite, QueryReason::kSetting));
+  EXPECT_FALSE(cookie_settings_->IsFullCookieAccessAllowed(
+      kAllowedSite, kAllowedSite, QueryReason::kSetting));
 
   // A whitelisted item set in regular mode should apply to regular and
   // incognito mode.
   cookie_settings_->SetCookieSetting(kHttpsSite, CONTENT_SETTING_ALLOW);
-  EXPECT_TRUE(
-      incognito_settings->IsFullCookieAccessAllowed(kHttpsSite, kHttpsSite));
-  EXPECT_TRUE(
-      cookie_settings_->IsFullCookieAccessAllowed(kHttpsSite, kHttpsSite));
+  EXPECT_TRUE(incognito_settings->IsFullCookieAccessAllowed(
+      kHttpsSite, kHttpsSite, QueryReason::kSetting));
+  EXPECT_TRUE(cookie_settings_->IsFullCookieAccessAllowed(
+      kHttpsSite, kHttpsSite, QueryReason::kSetting));
 }
 
 // Android does not have guest profiles.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 
 // Tests that cookie blocking is not enabled by default for guest profiles.
 TEST_F(CookieSettingsFactoryTest, GuestProfile) {

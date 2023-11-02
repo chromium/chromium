@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -49,7 +49,7 @@ class InlineFlowBoxPainter : public InlineBoxPainterBase {
                            const PhysicalRect& rect) override;
   BorderPaintingType GetBorderPaintType(
       const PhysicalRect& adjusted_frame_rect,
-      IntRect& adjusted_clip_rect,
+      gfx::Rect& adjusted_clip_rect,
       bool object_has_multiple_boxes) const override;
 
   void PaintBackgroundBorderShadow(const PaintInfo&,

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,6 +27,9 @@ import androidx.appcompat.content.res.AppCompatResources;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.MathUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.R;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.RectProvider;
@@ -50,6 +53,10 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
      * bubbles on a back press event.
      */
     private static final Set<TextBubble> sBubbles = new HashSet<>();
+
+    /** A supplier which notifies of changes of text bubbles count. */
+    private static final ObservableSupplierImpl<Integer> sCountSupplier =
+            new ObservableSupplierImpl<>();
 
     protected final Context mContext;
     private final Handler mHandler;
@@ -83,6 +90,7 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
         @Override
         public void onDismiss() {
             sBubbles.remove(TextBubble.this);
+            sCountSupplier.set(sBubbles.size());
         }
     };
 
@@ -327,11 +335,10 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
         mBubbleDrawable.setShowArrow(showArrow);
         // Set predefined styles for the TextBubble.
         if (mInverseColor) {
-            mBubbleDrawable.setBubbleColor(ApiCompatibilityUtils.getColor(
-                    mContext.getResources(), R.color.default_bg_color));
+            mBubbleDrawable.setBubbleColor(SemanticColorUtils.getDefaultBgColor(mContext));
         } else {
-            mBubbleDrawable.setBubbleColor(ApiCompatibilityUtils.getColor(
-                    mContext.getResources(), R.color.default_control_color_active));
+            mBubbleDrawable.setBubbleColor(
+                    SemanticColorUtils.getDefaultControlColorActive(mContext));
         }
         return mBubbleDrawable;
     }
@@ -346,6 +353,7 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
 
         mPopupWindow.show();
         sBubbles.add(this);
+        sCountSupplier.set(sBubbles.size());
         mBubbleShowStartTime = System.currentTimeMillis();
     }
 
@@ -378,6 +386,13 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
         for (TextBubble bubble : bubbles) {
             bubble.dismiss();
         }
+    }
+
+    /**
+     * @return A supplier which notifies of changes of text bubbles count.
+     * */
+    public static ObservableSupplier<Integer> getCountSupplier() {
+        return sCountSupplier;
     }
 
     /**
@@ -514,8 +529,7 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
         ImageView imageView = view.findViewById(R.id.image);
         imageView.setImageDrawable(mImageDrawable);
         if (mInverseColor) {
-            imageView.setColorFilter(ApiCompatibilityUtils.getColor(
-                    mContext.getResources(), R.color.default_control_color_active));
+            imageView.setColorFilter(SemanticColorUtils.getDefaultControlColorActive(mContext));
         }
         setText(view.findViewById(R.id.message));
         return view;
@@ -528,7 +542,17 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
         view.setText(mIsAccessibilityEnabled ? mAccessibilityString : mString);
         if (mInverseColor) {
             ApiCompatibilityUtils.setTextAppearance(
-                    view, R.style.TextAppearance_TextMediumThick_Blue);
+                    view, R.style.TextAppearance_TextMediumThick_Accent1);
         }
+    }
+
+    /** For testing only, get the list of active text bubbles. */
+    public static Set<TextBubble> getTextBubbleSetForTesting() {
+        return sBubbles;
+    }
+
+    /** For testing only, get the content view of a TextBubble. */
+    public View getTextBubbleContentViewForTesting() {
+        return mContentView;
     }
 }

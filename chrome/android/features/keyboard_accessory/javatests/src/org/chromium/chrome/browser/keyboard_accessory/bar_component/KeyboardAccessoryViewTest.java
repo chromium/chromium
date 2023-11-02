@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,7 +30,6 @@ import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 import static org.chromium.ui.test.util.ViewUtils.waitForView;
 
 import android.view.View;
-import android.view.ViewStub;
 
 import androidx.test.filters.MediumTest;
 
@@ -53,7 +52,8 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.DeferredViewStubInflationProvider;
+import org.chromium.ui.AsyncViewProvider;
+import org.chromium.ui.AsyncViewStub;
 import org.chromium.ui.ViewProvider;
 import org.chromium.ui.modelutil.LazyConstructionPropertyMcp;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -94,12 +94,12 @@ public class KeyboardAccessoryViewTest {
                                                                  }))
                             .with(DISABLE_ANIMATIONS_FOR_TESTING, true)
                             .build();
-            ViewStub viewStub =
+            AsyncViewStub viewStub =
                     mActivityTestRule.getActivity().findViewById(R.id.keyboard_accessory_stub);
 
             mKeyboardAccessoryView = new ArrayBlockingQueue<>(1);
             ViewProvider<KeyboardAccessoryView> provider =
-                    new DeferredViewStubInflationProvider<>(viewStub);
+                    AsyncViewProvider.of(viewStub, R.id.keyboard_accessory);
             LazyConstructionPropertyMcp.create(
                     mModel, VISIBLE, provider, KeyboardAccessoryViewBinder::bind);
             provider.whenLoaded(mKeyboardAccessoryView::add);

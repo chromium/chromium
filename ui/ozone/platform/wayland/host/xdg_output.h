@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,9 @@
 
 #include <stdint.h>
 
+#include "base/gtest_prod_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 
@@ -19,9 +22,16 @@ class XDGOutput {
   XDGOutput& operator=(const XDGOutput&) = delete;
   ~XDGOutput();
 
+  absl::optional<gfx::Point> logical_position() const {
+    return logical_position_;
+  }
   gfx::Size logical_size() const { return logical_size_; }
+  const std::string& description() const { return description_; }
+  const std::string& name() const { return name_; }
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(WaylandOutputTest, NameAndDescriptionFallback);
+
   static void OutputHandleLogicalPosition(void* data,
                                           struct zxdg_output_v1* zxdg_output_v1,
                                           int32_t x,
@@ -40,7 +50,10 @@ class XDGOutput {
                                       const char* description);
 
   wl::Object<zxdg_output_v1> xdg_output_;
+  absl::optional<gfx::Point> logical_position_;
   gfx::Size logical_size_;
+  std::string description_;
+  std::string name_;
 };
 
 }  // namespace ui

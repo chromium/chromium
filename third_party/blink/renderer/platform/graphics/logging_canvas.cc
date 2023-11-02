@@ -32,12 +32,9 @@
 
 #include <unicode/unistr.h>
 
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/sys_byteorder.h"
 #include "build/build_config.h"
-#include "third_party/blink/renderer/platform/geometry/int_size.h"
-#include "third_party/blink/renderer/platform/graphics/skia/image_pixel_locker.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/image-encoders/image_encoder.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
@@ -48,6 +45,7 @@
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkRRect.h"
 #include "third_party/skia/include/core/SkRect.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace blink {
 
@@ -213,7 +211,7 @@ std::unique_ptr<JSONObject> ObjectForSkPath(const SkPath& path) {
     auto path_point_item = std::make_unique<JSONObject>();
     path_point_item->SetString("verb", verb_params.name);
     DCHECK_LE(verb_params.point_count + verb_params.point_offset,
-              base::size(points));
+              std::size(points));
     path_point_item->SetArray(
         "points", ArrayForSkPoints(verb_params.point_count,
                                    points + verb_params.point_offset));

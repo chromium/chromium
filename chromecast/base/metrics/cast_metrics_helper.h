@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -165,7 +164,7 @@ class CastMetricsHelper {
                              int num_buckets);
   void LogMediumTimeHistogramEvent(const std::string& name,
                                    base::TimeDelta value);
-  base::Value CreateEventBase(const std::string& name);
+  base::Value::Dict CreateEventBase(const std::string& name);
   base::TimeTicks Now();
 
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/site_engagement/content/site_engagement_service.h"
@@ -83,7 +84,7 @@ class SiteEngagementService::Helper
     virtual void TrackingStopped() {}
 
    private:
-    SiteEngagementService::Helper* helper_;
+    raw_ptr<SiteEngagementService::Helper> helper_;
     std::unique_ptr<base::OneShotTimer> pause_timer_;
   };
 
@@ -183,8 +184,8 @@ class SiteEngagementService::Helper
 
   InputTracker input_tracker_;
   MediaTracker media_tracker_;
-  SiteEngagementService* service_;
-  prerender::NoStatePrefetchManager* prefetch_manager_;
+  raw_ptr<SiteEngagementService> service_;
+  raw_ptr<prerender::NoStatePrefetchManager> prefetch_manager_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

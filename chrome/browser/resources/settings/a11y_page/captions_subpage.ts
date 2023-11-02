@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,18 +8,20 @@
  * chrome://os-settings/manageAccessibility/captions on Chrome OS).
  */
 
-import '//resources/cr_elements/shared_style_css.m.js';
+import '//resources/cr_elements/cr_shared_style.css.js';
 import '../controls/settings_slider.js';
-import '../settings_shared_css.js';
+import '../settings_shared.css.js';
 import './live_caption_section.js';
 
-import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {FontsBrowserProxy, FontsBrowserProxyImpl, FontsData} from '../appearance_page/fonts_browser_proxy.js';
+import {FontsBrowserProxyImpl, FontsData} from '../appearance_page/fonts_browser_proxy.js';
 import {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
 import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {PrefsMixin} from '../prefs/prefs_mixin.js';
+
+import {getTemplate} from './captions_subpage.html.js';
 
 const SettingsCaptionsElementBase = PrefsMixin(PolymerElement);
 
@@ -29,7 +31,7 @@ class SettingsCaptionsElement extends SettingsCaptionsElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -49,15 +51,15 @@ class SettingsCaptionsElement extends SettingsCaptionsElementBase {
           return [
             {
               value: 100,  // Default
-              name: loadTimeData.getString('captionsOpacityOpaque')
+              name: loadTimeData.getString('captionsOpacityOpaque'),
             },
             {
               value: 50,
-              name: loadTimeData.getString('captionsOpacitySemiTransparent')
+              name: loadTimeData.getString('captionsOpacitySemiTransparent'),
             },
             {
               value: 0,
-              name: loadTimeData.getString('captionsOpacityTransparent')
+              name: loadTimeData.getString('captionsOpacityTransparent'),
             },
           ];
         },
@@ -74,35 +76,35 @@ class SettingsCaptionsElement extends SettingsCaptionsElementBase {
             {value: '', name: loadTimeData.getString('captionsDefaultSetting')},
             {
               value: '0,0,0',
-              name: loadTimeData.getString('captionsColorBlack')
+              name: loadTimeData.getString('captionsColorBlack'),
             },
             {
               value: '255,255,255',
-              name: loadTimeData.getString('captionsColorWhite')
+              name: loadTimeData.getString('captionsColorWhite'),
             },
             {
               value: '255,0,0',
-              name: loadTimeData.getString('captionsColorRed')
+              name: loadTimeData.getString('captionsColorRed'),
             },
             {
               value: '0,255,0',
-              name: loadTimeData.getString('captionsColorGreen')
+              name: loadTimeData.getString('captionsColorGreen'),
             },
             {
               value: '0,0,255',
-              name: loadTimeData.getString('captionsColorBlue')
+              name: loadTimeData.getString('captionsColorBlue'),
             },
             {
               value: '255,255,0',
-              name: loadTimeData.getString('captionsColorYellow')
+              name: loadTimeData.getString('captionsColorYellow'),
             },
             {
               value: '0,255,255',
-              name: loadTimeData.getString('captionsColorCyan')
+              name: loadTimeData.getString('captionsColorCyan'),
             },
             {
               value: '255,0,255',
-              name: loadTimeData.getString('captionsColorMagenta')
+              name: loadTimeData.getString('captionsColorMagenta'),
             },
           ];
         },
@@ -123,15 +125,15 @@ class SettingsCaptionsElement extends SettingsCaptionsElementBase {
           return [
             {
               value: 100,  // Default
-              name: loadTimeData.getString('captionsOpacityOpaque')
+              name: loadTimeData.getString('captionsOpacityOpaque'),
             },
             {
               value: 50,
-              name: loadTimeData.getString('captionsOpacitySemiTransparent')
+              name: loadTimeData.getString('captionsOpacitySemiTransparent'),
             },
             {
               value: 10,
-              name: loadTimeData.getString('captionsOpacityTransparent')
+              name: loadTimeData.getString('captionsOpacityTransparent'),
             },
           ];
         },
@@ -148,20 +150,20 @@ class SettingsCaptionsElement extends SettingsCaptionsElementBase {
             {value: '', name: loadTimeData.getString('captionsTextShadowNone')},
             {
               value: '-2px -2px 4px rgba(0, 0, 0, 0.5)',
-              name: loadTimeData.getString('captionsTextShadowRaised')
+              name: loadTimeData.getString('captionsTextShadowRaised'),
             },
             {
               value: '2px 2px 4px rgba(0, 0, 0, 0.5)',
-              name: loadTimeData.getString('captionsTextShadowDepressed')
+              name: loadTimeData.getString('captionsTextShadowDepressed'),
             },
             {
               value: '-1px 0px 0px black, ' +
                   '0px -1px 0px black, 1px 0px 0px black, 0px  1px 0px black',
-              name: loadTimeData.getString('captionsTextShadowUniform')
+              name: loadTimeData.getString('captionsTextShadowUniform'),
             },
             {
               value: '0px 0px 2px rgba(0, 0, 0, 0.5), 2px 2px 2px black',
-              name: loadTimeData.getString('captionsTextShadowDropShadow')
+              name: loadTimeData.getString('captionsTextShadowDropShadow'),
             },
           ];
         },
@@ -179,7 +181,7 @@ class SettingsCaptionsElement extends SettingsCaptionsElementBase {
             {value: '50%', name: loadTimeData.getString('small')},
             {
               value: '',
-              name: loadTimeData.getString('medium')
+              name: loadTimeData.getString('medium'),
             },  // Default = 100%
             {value: '150%', name: loadTimeData.getString('large')},
             {value: '200%', name: loadTimeData.getString('veryLarge')},
@@ -204,7 +206,7 @@ class SettingsCaptionsElement extends SettingsCaptionsElementBase {
   private readonly textSizeOptions_: DropdownMenuOptionList;
   private enableLiveCaption_: boolean;
 
-  ready() {
+  override ready() {
     super.ready();
     FontsBrowserProxyImpl.getInstance().fetchFontsData().then(
         (response: FontsData) => this.setFontsData_(response));

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,8 @@ namespace blink {
 CanvasFilter::CanvasFilter(FilterOperations filter_operations)
     : filter_operations_(filter_operations) {}
 
-CanvasFilter* CanvasFilter::Create(const V8CanvasFilterInput* init,
+CanvasFilter* CanvasFilter::Create(ExecutionContext* execution_context,
+                                   const V8CanvasFilterInput* init,
                                    ExceptionState& exception_state) {
   HeapVector<ScriptValue> filter_array;
 
@@ -26,8 +27,8 @@ CanvasFilter* CanvasFilter::Create(const V8CanvasFilterInput* init,
   }
 
   FilterOperations filter_operations =
-      CanvasFilterOperationResolver::CreateFilterOperations(filter_array,
-                                                            exception_state);
+      CanvasFilterOperationResolver::CreateFilterOperations(
+          execution_context, filter_array, exception_state);
 
   return MakeGarbageCollected<CanvasFilter>(filter_operations);
 }

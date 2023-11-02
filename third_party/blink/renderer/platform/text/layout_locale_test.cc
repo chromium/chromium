@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -134,9 +134,9 @@ std::ostream& operator<<(std::ostream& os, const LocaleTestData& test) {
 }
 class LocaleTestDataFixture : public testing::TestWithParam<LocaleTestData> {};
 
-INSTANTIATE_TEST_CASE_P(LayoutLocaleTest,
-                        LocaleTestDataFixture,
-                        testing::ValuesIn(locale_test_data));
+INSTANTIATE_TEST_SUITE_P(LayoutLocaleTest,
+                         LocaleTestDataFixture,
+                         testing::ValuesIn(locale_test_data));
 
 TEST_P(LocaleTestDataFixture, Script) {
   const auto& test = GetParam();
@@ -175,6 +175,34 @@ TEST(LayoutLocaleTest, BreakKeyword) {
     EXPECT_EQ(test.expected, locale->LocaleWithBreakKeyword(test.mode))
         << String::Format("'%s' with line-break %d should be '%s'", test.locale,
                           static_cast<int>(test.mode), test.expected);
+  }
+}
+
+TEST(LayoutLocaleTest, GetQuotesData) {
+  auto enQuotes = (QuotesData::Create(0x201c, 0x201d, 0x2018, 0x2019));
+  auto frQuotes = (QuotesData::Create(0xab, 0xbb, 0xab, 0xbb));
+  auto frCAQuotes = (QuotesData::Create(0xab, 0xbb, 0x201d, 0x201c));
+  struct {
+    const char* locale;
+    const scoped_refptr<QuotesData> expected;
+  } tests[] = {
+      {nullptr, nullptr},    // no match
+      {"loc-DNE", nullptr},  // no match
+      {"en", enQuotes},      {"fr", frQuotes},
+      {"fr-CA", frCAQuotes}, {"fr-DNE", frQuotes},  // use fr
+  };
+  for (const auto& test : tests) {
+    scoped_refptr<LayoutLocale> locale =
+        LayoutLocale::CreateForTesting(test.locale);
+    scoped_refptr<QuotesData> quotes = locale->GetQuotesData();
+    if (test.expected) {
+      EXPECT_EQ(test.expected->GetOpenQuote(0), quotes->GetOpenQuote(0));
+      EXPECT_EQ(test.expected->GetOpenQuote(1), quotes->GetOpenQuote(1));
+      EXPECT_EQ(test.expected->GetCloseQuote(-1), quotes->GetCloseQuote(-1));
+      EXPECT_EQ(test.expected->GetCloseQuote(0), quotes->GetCloseQuote(0));
+    } else {
+      EXPECT_EQ(test.expected, quotes);
+    }
   }
 }
 

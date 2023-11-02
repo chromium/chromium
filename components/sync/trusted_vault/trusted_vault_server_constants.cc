@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,25 +8,6 @@
 #include "net/base/url_util.h"
 
 namespace syncer {
-
-namespace {
-
-const char kQueryParameterAlternateOutputKey[] = "alt";
-const char kQueryParameterAlternateOutputProto[] = "proto";
-
-}  // namespace
-
-const int kUnknownConstantKeyVersion = 0;
-
-const char kSyncSecurityDomainName[] = "users/me/securitydomains/chromesync";
-const char kSecurityDomainMemberNamePrefix[] = "users/me/members/";
-const char kJoinSecurityDomainsURLPath[] =
-    "users/me/securitydomains/chromesync:join";
-const char kJoinSecurityDomainsErrorDetailTypeURL[] =
-    "type.googleapis.com/"
-    "google.internal.identity.securitydomain.v1.JoinSecurityDomainErrorDetail";
-extern const char kGetSecurityDomainURLPathAndQuery[] =
-    "users/me/securitydomains/chromesync?view=2";
 
 std::vector<uint8_t> GetConstantTrustedVaultKey() {
   return std::vector<uint8_t>(16, 0);

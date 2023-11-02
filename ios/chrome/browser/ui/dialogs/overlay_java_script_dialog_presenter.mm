@@ -1,13 +1,13 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/dialogs/overlay_java_script_dialog_presenter.h"
 
-#include "base/bind.h"
-#include "base/metrics/histogram_macros.h"
+#import "base/bind.h"
+#import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
-#include "ios/chrome/browser/overlays/public/overlay_callback_manager.h"
+#import "ios/chrome/browser/overlays/public/overlay_callback_manager.h"
 #import "ios/chrome/browser/overlays/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
 #import "ios/chrome/browser/overlays/public/overlay_response.h"
@@ -25,10 +25,10 @@ using java_script_dialog_overlays::JavaScriptDialogResponse;
 namespace {
 // Completion callback for JavaScript dialog overlays.
 void HandleJavaScriptDialogResponse(web::DialogClosedCallback callback,
-                                    web::WebState::Getter web_state_getter,
+                                    base::WeakPtr<web::WebState> weak_web_state,
                                     OverlayResponse* response) {
   // Notify the blocking state that the dialog was shown.
-  web::WebState* web_state = web_state_getter.Run();
+  web::WebState* web_state = weak_web_state.get();
   JavaScriptDialogBlockingState* blocking_state =
       web_state ? JavaScriptDialogBlockingState::FromWebState(web_state)
                 : nullptr;
@@ -90,7 +90,7 @@ void OverlayJavaScriptDialogPresenter::RunJavaScriptDialog(
           message_text, default_prompt_text);
   request->GetCallbackManager()->AddCompletionCallback(
       base::BindOnce(&HandleJavaScriptDialogResponse, std::move(callback),
-                     web_state->CreateDefaultGetter()));
+                     web_state->GetWeakPtr()));
   OverlayRequestQueue::FromWebState(web_state, OverlayModality::kWebContentArea)
       ->AddRequest(std::move(request));
 }

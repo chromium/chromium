@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/numerics/checked_math.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/win/pe_image.h"
 
@@ -35,11 +36,11 @@ bool MemoryMappedFile::MapImageToMemory(Access access) {
   file_mapping_.Set(::CreateFileMapping(file_.GetPlatformFile(), nullptr,
                                         PAGE_READONLY | SEC_IMAGE_NO_EXECUTE, 0,
                                         0, NULL));
-  if (!file_mapping_.IsValid())
+  if (!file_mapping_.is_valid())
     return false;
 
   data_ = static_cast<uint8_t*>(
-      ::MapViewOfFile(file_mapping_.Get(), FILE_MAP_READ, 0, 0, 0));
+      ::MapViewOfFile(file_mapping_.get(), FILE_MAP_READ, 0, 0, 0));
   if (!data_)
     return false;
 
@@ -61,7 +62,7 @@ bool MemoryMappedFile::MapFileRegionToMemory(
   if (!file_.IsValid())
     return false;
 
-  int flags = 0;
+  DWORD flags = 0;
   ULARGE_INTEGER size = {};
   switch (access) {
     case READ_ONLY:
@@ -80,10 +81,10 @@ bool MemoryMappedFile::MapFileRegionToMemory(
 
   file_mapping_.Set(::CreateFileMapping(file_.GetPlatformFile(), NULL, flags,
                                         size.HighPart, size.LowPart, NULL));
-  if (!file_mapping_.IsValid())
+  if (!file_mapping_.is_valid())
     return false;
 
-  LARGE_INTEGER map_start = {};
+  ULARGE_INTEGER map_start = {};
   SIZE_T map_size = 0;
   int32_t data_offset = 0;
 
@@ -105,22 +106,21 @@ bool MemoryMappedFile::MapFileRegionToMemory(
     size_t ignored = 0U;
     CalculateVMAlignedBoundaries(region.offset, region.size, &aligned_start,
                                  &ignored, &data_offset);
-    int64_t full_map_size = region.size + data_offset;
+    base::CheckedNumeric<SIZE_T> full_map_size = region.size;
+    full_map_size += data_offset;
 
     // Ensure that the casts below in the MapViewOfFile call are sane.
-    if (aligned_start < 0 || full_map_size < 0 ||
-        !IsValueInRangeForNumericType<SIZE_T>(
-            static_cast<uint64_t>(full_map_size))) {
+    if (aligned_start < 0 || !full_map_size.IsValid()) {
       DLOG(ERROR) << "Region bounds are not valid for MapViewOfFile";
       return false;
     }
-    map_start.QuadPart = aligned_start;
-    map_size = static_cast<SIZE_T>(full_map_size);
+    map_start.QuadPart = static_cast<uint64_t>(aligned_start);
+    map_size = full_map_size.ValueOrDie();
     length_ = region.size;
   }
 
   data_ = static_cast<uint8_t*>(
-      ::MapViewOfFile(file_mapping_.Get(),
+      ::MapViewOfFile(file_mapping_.get(),
                       (flags & PAGE_READONLY) ? FILE_MAP_READ : FILE_MAP_WRITE,
                       map_start.HighPart, map_start.LowPart, map_size));
   if (data_ == nullptr)
@@ -132,7 +132,7 @@ bool MemoryMappedFile::MapFileRegionToMemory(
 void MemoryMappedFile::CloseHandles() {
   if (data_)
     ::UnmapViewOfFile(data_);
-  if (file_mapping_.IsValid())
+  if (file_mapping_.is_valid())
     file_mapping_.Close();
   if (file_.IsValid())
     file_.Close();

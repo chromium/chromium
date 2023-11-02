@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,8 +24,7 @@
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/http_request.h"
 
-namespace net {
-namespace test_server {
+namespace net::test_server {
 
 HttpResponseDelegate::HttpResponseDelegate() = default;
 HttpResponseDelegate::~HttpResponseDelegate() = default;
@@ -58,7 +57,7 @@ void RawHttpResponse::AddHeader(const std::string& key_value_pair) {
   headers_.append(base::StringPrintf("%s\r\n", key_value_pair.c_str()));
 }
 
-BasicHttpResponse::BasicHttpResponse() : code_(HTTP_OK) {}
+BasicHttpResponse::BasicHttpResponse() = default;
 
 BasicHttpResponse::~BasicHttpResponse() = default;
 
@@ -122,8 +121,7 @@ HungAfterHeadersHttpResponse::~HungAfterHeadersHttpResponse() = default;
 
 void HungAfterHeadersHttpResponse::SendResponse(
     base::WeakPtr<HttpResponseDelegate> delegate) {
-  delegate->SendResponseHeaders(HTTP_OK, "OK", {});
+  delegate->SendResponseHeaders(HTTP_OK, "OK", headers_);
 }
 
-}  // namespace test_server
-}  // namespace net
+}  // namespace net::test_server

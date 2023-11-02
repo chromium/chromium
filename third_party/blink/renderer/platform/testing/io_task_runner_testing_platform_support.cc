@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,8 @@
 namespace blink {
 
 IOTaskRunnerTestingPlatformSupport::IOTaskRunnerTestingPlatformSupport()
-    : io_thread_(
-          Thread::CreateThread(ThreadCreationParams(ThreadType::kTestThread))) {
-}
+    : io_thread_(NonMainThread::CreateThread(
+          ThreadCreationParams(ThreadType::kTestThread))) {}
 
 scoped_refptr<base::SingleThreadTaskRunner>
 IOTaskRunnerTestingPlatformSupport::GetIOTaskRunner() const {

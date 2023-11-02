@@ -1,20 +1,22 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Script that runs tests before uploading a patch."""
+
 
 USE_PYTHON3 = True
 
 
 def _RunTests(input_api, output_api):
     """Runs all test files in the directory."""
-    cmd_name = 'all_python_tests'
-    cmd = ['python', '-m', 'unittest', 'discover', '-p', '*test.py']
-    test_cmd = input_api.Command(
-        name=cmd_name, cmd=cmd, kwargs={}, message=output_api.PresubmitError)
-    if input_api.verbose:
-        print('Running ' + cmd_name)
-    return input_api.RunTests([test_cmd])
+    return input_api.canned_checks.RunUnitTests(
+        input_api,
+        output_api, [
+            input_api.os_path.join(input_api.PresubmitLocalPath(),
+                                   'fuzz_integration_test.py')
+        ],
+        run_on_python2=not USE_PYTHON3,
+        skip_shebang_check=True)
 
 
 def CheckChangeOnUpload(input_api, output_api):

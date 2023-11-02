@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -47,7 +47,7 @@
     var expandArray = expandWatchExpression.bind(
         null, ['array', '[200 \u2026 299]', '299'], step3);
     var expandFunc = expandWatchExpression.bind(
-        null, ['func', '[[Scopes]]', '0', 'a'], expandArray);
+        null, ['func', '[[FunctionLocation]]'], expandArray);
     expandWatchExpression(['globalObject', 'foo', 'bar'], expandFunc);
   }
 
@@ -77,6 +77,7 @@
   }
 
   function dumpObjectPropertiesTreeElement(treeElement, indent) {
+    if (treeElement.property && treeElement.property.name === '[[Scopes]]') return;
     if (treeElement.property)
       addResult(
           indent + treeElement.property.name + ': ' +

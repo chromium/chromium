@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -104,7 +104,7 @@ void StreamProcessorHelper::Process(IoPacket input) {
                                         fidl::Clone(input.format()));
   }
 
-  DCHECK(input_packets_.find(input.buffer_index()) == input_packets_.end());
+  DCHECK(!input_packets_.contains(input.buffer_index()));
   input_packets_.insert_or_assign(input.buffer_index(), std::move(input));
   processor_->QueueInputPacket(std::move(packet));
 }

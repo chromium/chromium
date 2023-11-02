@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "net/base/net_export.h"
 
@@ -72,7 +71,7 @@ class NET_EXPORT_PRIVATE WebSocketDeflater {
   base::circular_deque<char> buffer_;
   std::vector<char> fixed_buffer_;
   // true if bytes were added after last Finish().
-  bool are_bytes_added_;
+  bool are_bytes_added_ = false;
 };
 
 }  // namespace net

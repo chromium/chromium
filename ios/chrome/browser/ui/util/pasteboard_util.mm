@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,7 +29,7 @@ void StoreURLsInPasteboard(const std::vector<const GURL>& urls) {
     DCHECK(URL.is_valid());
     // Although this breaks the API contract, invalid URLs arrive here in
     // production. Prevent crashing by continuing and early returning below if
-    // no valid URLs were passed in |urls|. (crbug.com/880525)
+    // no valid URLs were passed in `urls`. (crbug.com/880525)
     if (!URL.is_valid()) {
       continue;
     }

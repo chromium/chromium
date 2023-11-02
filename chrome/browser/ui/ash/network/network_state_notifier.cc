@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "base/bind.h"
@@ -15,22 +16,21 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/network/cellular_esim_profile_handler.h"
-#include "chromeos/network/network_configuration_handler.h"
-#include "chromeos/network/network_connect.h"
-#include "chromeos/network/network_connection_handler.h"
-#include "chromeos/network/network_event_log.h"
-#include "chromeos/network/network_name_util.h"
-#include "chromeos/network/network_state.h"
-#include "chromeos/network/network_state_handler.h"
-#include "chromeos/network/shill_property_util.h"
+#include "chromeos/ash/components/network/cellular_esim_profile_handler.h"
+#include "chromeos/ash/components/network/network_configuration_handler.h"
+#include "chromeos/ash/components/network/network_connect.h"
+#include "chromeos/ash/components/network/network_connection_handler.h"
+#include "chromeos/ash/components/network/network_event_log.h"
+#include "chromeos/ash/components/network/network_name_util.h"
+#include "chromeos/ash/components/network/network_state.h"
+#include "chromeos/ash/components/network/shill_property_util.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/shill_error.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 #include "ui/message_center/public/cpp/notification.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -95,6 +95,7 @@ const gfx::VectorIcon& GetErrorNotificationVectorIcon(
 // |identifier| may be a service path or guid.
 void ShowErrorNotification(const std::string& identifier,
                            const std::string& notification_id,
+                           const NotificationCatalogName& catalog_name,
                            const std::string& network_type,
                            const std::u16string& title,
                            const std::u16string& message,
@@ -102,12 +103,12 @@ void ShowErrorNotification(const std::string& identifier,
   NET_LOG(ERROR) << "ShowErrorNotification: " << identifier << ": "
                  << base::UTF16ToUTF8(title);
   std::unique_ptr<message_center::Notification> notification =
-      ash::CreateSystemNotification(
+      CreateSystemNotification(
           message_center::NOTIFICATION_TYPE_SIMPLE, notification_id, title,
           message, std::u16string() /* display_source */, GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
-              kNotifierNetworkError),
+              kNotifierNetworkError, catalog_name),
           message_center::RichNotificationData(),
           new message_center::HandleNotificationClickDelegate(
               std::move(callback)),
@@ -170,7 +171,7 @@ NetworkStateNotifier::NetworkStateNotifier() {
   if (!NetworkHandler::IsInitialized())
     return;
   NetworkStateHandler* handler = NetworkHandler::Get()->network_state_handler();
-  handler->AddObserver(this, FROM_HERE);
+  network_state_handler_observer_.Observe(handler);
   NetworkStateHandler::NetworkStateList active_networks;
   handler->GetActiveNetworkListByType(NetworkTypePattern::Default(),
                                       &active_networks);
@@ -181,8 +182,6 @@ NetworkStateNotifier::NetworkStateNotifier() {
 NetworkStateNotifier::~NetworkStateNotifier() {
   if (!NetworkHandler::IsInitialized())
     return;
-  NetworkHandler::Get()->network_state_handler()->RemoveObserver(this,
-                                                                 FROM_HERE);
   NetworkHandler::Get()->network_connection_handler()->RemoveObserver(this);
 }
 
@@ -198,7 +197,7 @@ void NetworkStateNotifier::ConnectToNetworkRequested(
 }
 
 void NetworkStateNotifier::NetworkConnectionStateChanged(
-    const chromeos::NetworkState* network) {
+    const NetworkState* network) {
   if (!network->IsConnectedState() ||
       connect_error_notification_network_guid_.empty() ||
       connect_error_notification_network_guid_ != network->guid()) {
@@ -218,6 +217,10 @@ void NetworkStateNotifier::NetworkIdentifierTransitioned(
   }
 
   connect_error_notification_network_guid_ = new_guid;
+}
+
+void NetworkStateNotifier::OnShuttingDown() {
+  network_state_handler_observer_.Reset();
 }
 
 void NetworkStateNotifier::ConnectSucceeded(const std::string& service_path) {
@@ -356,7 +359,7 @@ void NetworkStateNotifier::UpdateCellularOutOfCredits() {
                                    base::UTF8ToUTF16(primary_network->name()));
     ShowErrorNotification(
         NetworkId(primary_network), kNetworkOutOfCreditsNotificationId,
-        primary_network->type(),
+        NotificationCatalogName::kNetworkOutOfCredits, primary_network->type(),
         l10n_util::GetStringUTF16(IDS_NETWORK_OUT_OF_CREDITS_TITLE), error_msg,
         base::BindRepeating(&NetworkStateNotifier::ShowCarrierAccountDetail,
                             weak_ptr_factory_.GetWeakPtr(),
@@ -382,7 +385,7 @@ void NetworkStateNotifier::UpdateCellularActivating(
 
   cellular_activating_guids_.erase(cellular_guid);
   std::unique_ptr<message_center::Notification> notification =
-      ash::CreateSystemNotification(
+      CreateSystemNotification(
           message_center::NOTIFICATION_TYPE_SIMPLE,
           kNetworkActivateNotificationId,
           l10n_util::GetStringUTF16(IDS_NETWORK_CELLULAR_ACTIVATED_TITLE),
@@ -390,7 +393,8 @@ void NetworkStateNotifier::UpdateCellularActivating(
                                      base::UTF8ToUTF16((cellular->name()))),
           std::u16string() /* display_source */, GURL(),
           message_center::NotifierId(
-              message_center::NotifierType::SYSTEM_COMPONENT, kNotifierNetwork),
+              message_center::NotifierType::SYSTEM_COMPONENT, kNotifierNetwork,
+              NotificationCatalogName::kNetworkCellularActivated),
           {},
           new message_center::HandleNotificationClickDelegate(
               base::BindRepeating(&NetworkStateNotifier::ShowNetworkSettings,
@@ -427,7 +431,7 @@ void NetworkStateNotifier::ShowMobileActivationErrorForGuid(
     return;
   }
   std::unique_ptr<message_center::Notification> notification =
-      ash::CreateSystemNotification(
+      CreateSystemNotification(
           message_center::NOTIFICATION_TYPE_SIMPLE,
           kNetworkActivateNotificationId,
           l10n_util::GetStringUTF16(IDS_NETWORK_ACTIVATION_ERROR_TITLE),
@@ -436,7 +440,8 @@ void NetworkStateNotifier::ShowMobileActivationErrorForGuid(
           std::u16string() /* display_source */, GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
-              kNotifierNetworkError),
+              kNotifierNetworkError,
+              NotificationCatalogName::kNetworkActivationError),
           {},
           new message_center::HandleNotificationClickDelegate(
               base::BindRepeating(&NetworkStateNotifier::ShowNetworkSettings,
@@ -586,7 +591,8 @@ void NetworkStateNotifier::ShowConnectErrorNotification(
 
   connect_error_notification_network_guid_ = guid;
   ShowErrorNotification(
-      NetworkPathId(service_path), kNetworkConnectNotificationId, network_type,
+      NetworkPathId(service_path), kNetworkConnectNotificationId,
+      NotificationCatalogName::kNetworkConnectionError, network_type,
       l10n_util::GetStringUTF16(IDS_NETWORK_CONNECTION_ERROR_TITLE), error_msg,
       std::move(on_click));
 }
@@ -596,7 +602,8 @@ void NetworkStateNotifier::ShowVpnDisconnectedNotification(VpnDetails* vpn) {
   std::u16string error_msg = l10n_util::GetStringFUTF16(
       IDS_NETWORK_VPN_CONNECTION_LOST_BODY, base::UTF8ToUTF16(vpn->name));
   ShowErrorNotification(
-      NetworkGuidId(vpn->guid), kNetworkConnectNotificationId, shill::kTypeVPN,
+      NetworkGuidId(vpn->guid), kNetworkConnectNotificationId,
+      NotificationCatalogName::kNetworkVPNConnectionLost, shill::kTypeVPN,
       l10n_util::GetStringUTF16(IDS_NETWORK_VPN_CONNECTION_LOST_TITLE),
       error_msg,
       base::BindRepeating(&NetworkStateNotifier::ShowNetworkSettings,
@@ -636,4 +643,4 @@ void NetworkStateNotifier::ShowCarrierAccountDetail(
   NetworkConnect::Get()->ShowCarrierAccountDetail(network_id);
 }
 
-}  // namespace chromeos
+}  // namespace ash

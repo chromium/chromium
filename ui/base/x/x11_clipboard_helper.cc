@@ -1,4 +1,4 @@
-// Copyright (c) 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -195,16 +195,14 @@ SelectionData XClipboardHelper::Read(ClipboardBuffer buffer,
       if (format_map_it != format_map.end())
         return SelectionData(format_map_it->first, format_map_it->second);
     }
-  } else {
-    auto targets = GetTargetList(buffer);
-
-    x11::Atom selection_name = LookupSelectionForClipboardBuffer(buffer);
-    std::vector<x11::Atom> intersection;
-    GetAtomIntersection(types, targets.target_list(), &intersection);
-    return selection_requestor_->RequestAndWaitForTypes(selection_name,
-                                                        intersection);
+    return SelectionData();
   }
-  return SelectionData();
+
+  auto targets = GetTargetList(buffer);
+  std::vector<x11::Atom> intersection;
+  GetAtomIntersection(types, targets.target_list(), &intersection);
+  return selection_requestor_->RequestAndWaitForTypes(selection_name,
+                                                      intersection);
 }
 
 std::vector<std::string> XClipboardHelper::GetAvailableTypes(

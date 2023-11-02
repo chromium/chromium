@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 
 namespace headless {
 
-void HeadlessContentMainDelegate::PreBrowserMain() {
+absl::optional<int> HeadlessContentMainDelegate::PreBrowserMain() {
   // Force the NSApplication subclass to be used.
   [HeadlessShellCrApplication sharedApplication];
 
@@ -17,6 +17,8 @@ void HeadlessContentMainDelegate::PreBrowserMain() {
   // NSApplication. This is undesirable and we must enforce that this doesn't
   // happen.
   CHECK([NSApp isKindOfClass:[HeadlessShellCrApplication class]]);
+
+  return absl::nullopt;
 }
 
 }  // namespace headless

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,9 @@
 #include <string>
 #include <vector>
 
+#include "skia/ext/skcolorspace_primaries.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/color_space_export.h"
@@ -77,19 +79,21 @@ class COLOR_SPACE_EXPORT DisplayColorSpaces {
   BufferFormat GetOutputBufferFormat(ContentColorUsage color_usage,
                                      bool needs_alpha) const;
 
-  // Set the custom SDR white level, in nits. This is a non-default value only
+  // Set the maximum SDR luminance, in nits. This is a non-default value only
   // on Windows.
-  void SetSDRWhiteLevel(float sdr_white_level) {
-    sdr_white_level_ = sdr_white_level;
+  void SetSDRMaxLuminanceNits(float sdr_max_luminance_nits) {
+    sdr_max_luminance_nits_ = sdr_max_luminance_nits;
   }
-  float GetSDRWhiteLevel() const { return sdr_white_level_; }
+  float GetSDRMaxLuminanceNits() const { return sdr_max_luminance_nits_; }
 
-  void set_hdr_static_metadata(
-      absl::optional<HDRStaticMetadata> hdr_static_metadata) {
-    hdr_static_metadata_ = hdr_static_metadata;
+  // Set the maximum luminance that HDR content can display. This is represented
+  // as a multiple of the SDR white luminance (so a display that is incapable of
+  // HDR would have a value of 1.0).
+  void SetHDRMaxLuminanceRelative(float hdr_max_luminance_relative) {
+    hdr_max_luminance_relative_ = hdr_max_luminance_relative;
   }
-  const absl::optional<HDRStaticMetadata>& hdr_static_metadata() const {
-    return hdr_static_metadata_;
+  float GetHDRMaxLuminanceRelative() const {
+    return hdr_max_luminance_relative_;
   }
 
   // TODO(https://crbug.com/1116870): These helper functions exist temporarily
@@ -110,6 +114,12 @@ class COLOR_SPACE_EXPORT DisplayColorSpaces {
   // Return true if the HDR color spaces are, indeed, HDR.
   bool SupportsHDR() const;
 
+  // Return the primaries that define the color gamut of the display.
+  const SkColorSpacePrimaries& GetPrimaries() const { return primaries_; }
+  void SetPrimaries(const SkColorSpacePrimaries& primaries) {
+    primaries_ = primaries;
+  }
+
   // Output as a vector of strings. This is a helper function for printing in
   // about:gpu. All output vectors will be the same length. Each entry will be
   // the configuration name, its buffer format, and its color space.
@@ -128,9 +138,9 @@ class COLOR_SPACE_EXPORT DisplayColorSpaces {
 
   gfx::ColorSpace color_spaces_[kConfigCount];
   gfx::BufferFormat buffer_formats_[kConfigCount];
-  float sdr_white_level_ = ColorSpace::kDefaultSDRWhiteLevel;
-  // By definition this only applies to ContentColorUsage::kHDR.
-  absl::optional<HDRStaticMetadata> hdr_static_metadata_;
+  SkColorSpacePrimaries primaries_ = SkNamedPrimariesExt::kSRGB;
+  float sdr_max_luminance_nits_ = ColorSpace::kDefaultSDRWhiteLevel;
+  float hdr_max_luminance_relative_ = 1.f;
 };
 
 }  // namespace gfx

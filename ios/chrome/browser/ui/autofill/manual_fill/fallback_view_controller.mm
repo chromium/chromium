@@ -1,17 +1,18 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/autofill/manual_fill/fallback_view_controller.h"
 
-#include "base/ios/ios_util.h"
+#import "base/ios/ios_util.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_action_cell.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ui/base/device_form_factor.h"
-#include "ui/base/l10n/l10n_util_mac.h"
+#import "ios/chrome/common/ui/util/ui_util.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/device_form_factor.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -24,13 +25,13 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
 namespace {
 
-// This is the width used for |self.preferredContentSize|.
+// This is the width used for `self.preferredContentSize`.
 constexpr CGFloat PopoverPreferredWidth = 320;
 
-// This is the maximum height used for |self.preferredContentSize|.
+// This is the maximum height used for `self.preferredContentSize`.
 constexpr CGFloat PopoverMaxHeight = 360;
 
-// This is the height used for |self.preferredContentSize| when showing the
+// This is the height used for `self.preferredContentSize` when showing the
 // loading indicator on iPad.
 constexpr CGFloat PopoverLoadingHeight = 185.5;
 
@@ -71,7 +72,7 @@ constexpr CGFloat kSectionFooterHeight = 8;
 }
 
 - (void)viewDidLoad {
-  // Super's |viewDidLoad| uses |styler.tableViewBackgroundColor| so it needs to
+  // Super's `viewDidLoad` uses `styler.tableViewBackgroundColor` so it needs to
   // be set before.
   self.styler.tableViewBackgroundColor = [UIColor colorNamed:kBackgroundColor];
 
@@ -192,7 +193,7 @@ constexpr CGFloat kSectionFooterHeight = 8;
   }
 }
 
-// Presents |items| in the respective section. Handles creating or deleting the
+// Presents `items` in the respective section. Handles creating or deleting the
 // section accordingly.
 - (void)presentFallbackItems:(NSArray<TableViewItem*>*)items
                    inSection:(SectionIdentifier)sectionIdentifier {

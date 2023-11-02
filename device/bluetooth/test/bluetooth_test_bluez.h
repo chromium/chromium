@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_local_gatt_characteristic.h"
 #include "device/bluetooth/bluetooth_local_gatt_descriptor.h"
@@ -75,8 +76,8 @@ class BluetoothTestBlueZ : public BluetoothTestBase {
   std::vector<BluetoothLocalGattService*> RegisteredGattServices() override;
 
  private:
-  bluez::FakeBluetoothDeviceClient* fake_bluetooth_device_client_;
-  bluez::FakeBluetoothAdapterClient* fake_bluetooth_adapter_client_;
+  raw_ptr<bluez::FakeBluetoothDeviceClient> fake_bluetooth_device_client_;
+  raw_ptr<bluez::FakeBluetoothAdapterClient> fake_bluetooth_adapter_client_;
 };
 
 // Defines common test fixture name. Use TEST_F(BluetoothTest, YourTestName).

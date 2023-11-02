@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,6 +38,10 @@ class AccountManagerFacadeFactoryLacros {
  public:
   void CreateAshAccountManagerForTests(
       std::unique_ptr<account_manager::AccountManagerUI> account_manager_ui) {
+    // `account_manager_facade_` depends on `ash_account_manager_` and cannot be
+    // reset, as users may be holding weak references to it.
+    DCHECK(!account_manager_facade_);
+
     Reset();
     ash_account_manager_ = std::make_unique<account_manager::AccountManager>();
     account_manager_mojo_service_ =
@@ -48,7 +52,7 @@ class AccountManagerFacadeFactoryLacros {
         std::move(account_manager_ui));
   }
 
-  account_manager::AccountManagerFacadeImpl* GetAccountManagerFacade() {
+  account_manager::AccountManagerFacade* GetAccountManagerFacade() {
     if (!account_manager_facade_) {
       InitializeAccountManagerFacade();
     }
@@ -61,6 +65,11 @@ class AccountManagerFacadeFactoryLacros {
 
   account_manager::AccountManagerUI* MaybeGetAshAccountManagerUIForTests() {
     return account_manager_ui_;
+  }
+
+  crosapi::AccountManagerMojoService*
+  MaybeGetAshAccountManagerMojoServiceForTests() {
+    return account_manager_mojo_service_.get();
   }
 
   // Reset the pointers.
@@ -99,7 +108,7 @@ class AccountManagerFacadeFactoryLacros {
             /*account_manager_for_tests=*/nullptr);
   }
 
-  std::unique_ptr<account_manager::AccountManagerFacadeImpl>
+  std::unique_ptr<account_manager::AccountManagerFacade>
       account_manager_facade_;
 
   // Set only in tests:
@@ -143,4 +152,10 @@ account_manager::AccountManager* MaybeGetAshAccountManagerForTests() {
 account_manager::AccountManagerUI* MaybeGetAshAccountManagerUIForTests() {
   return GetAccountManagerFacadeFactoryLacros()
       ->MaybeGetAshAccountManagerUIForTests();  // IN-TEST
+}
+
+crosapi::AccountManagerMojoService*
+MaybeGetAshAccountManagerMojoServiceForTests() {
+  return GetAccountManagerFacadeFactoryLacros()
+      ->MaybeGetAshAccountManagerMojoServiceForTests();  // IN-TEST
 }

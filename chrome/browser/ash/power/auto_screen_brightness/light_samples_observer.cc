@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -101,7 +101,7 @@ void LightSamplesObserver::GetAllChannelIdsCallback(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(sensor_device_remote_.is_bound());
 
-  for (int32_t i = 0; i < iio_channel_ids.size(); ++i) {
+  for (uint32_t i = 0; i < iio_channel_ids.size(); ++i) {
     if (iio_channel_ids[i].compare(chromeos::sensors::mojom::kLightChannel) ==
         0) {
       channel_index_ = i;

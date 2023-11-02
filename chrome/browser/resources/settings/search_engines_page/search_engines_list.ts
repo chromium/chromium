@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,14 +6,15 @@
  * @fileoverview 'settings-search-engines-list' is a component for showing a
  * list of search engines.
  */
-import 'chrome://resources/cr_elements/shared_vars_css.m.js';
-import '../settings_shared_css.js';
-import '../settings_vars_css.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+import '../settings_shared.css.js';
+import '../settings_vars.css.js';
 import './search_engine_entry.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SearchEngine} from './search_engines_browser_proxy.js';
+import {getTemplate} from './search_engines_list.html.js';
 
 export class SettingsSearchEnginesListElement extends PolymerElement {
   static get is() {
@@ -21,17 +22,12 @@ export class SettingsSearchEnginesListElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
     return {
       engines: Array,
-
-      /**
-       * Whether the active search engines feature flag is enabled.
-       */
-      isActiveSearchEnginesFlagEnabled: Boolean,
 
       showShortcut: {
         type: Boolean,
@@ -103,20 +99,20 @@ export class SettingsSearchEnginesListElement extends PolymerElement {
     };
   }
 
-  engines: Array<SearchEngine>;
-  visibleEngines: Array<SearchEngine>;
-  collapsedEngines: Array<SearchEngine>;
+  engines: SearchEngine[];
+  visibleEngines: SearchEngine[];
+  collapsedEngines: SearchEngine[];
   visibleEnginesSize: number;
   fixedHeight: boolean;
   showShortcut: boolean;
   showQueryUrl: boolean;
   collapseList: boolean;
-  nameColumnHeader: String;
-  expandListText: String;
+  nameColumnHeader: string;
+  expandListText: string;
   private lastFocused_: HTMLElement;
   private listBlurred_: boolean;
 
-  computeVisibleEngines_(engines: Array<SearchEngine>) {
+  private computeVisibleEngines_(engines: SearchEngine[]) {
     if (!engines || !engines.length) {
       return;
     }
@@ -124,7 +120,7 @@ export class SettingsSearchEnginesListElement extends PolymerElement {
     return engines.slice(0, this.visibleEnginesSize);
   }
 
-  computeCollapsedEngines_(engines: Array<SearchEngine>) {
+  private computeCollapsedEngines_(engines: SearchEngine[]) {
     if (!engines || !engines.length) {
       return;
     }

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -119,16 +119,34 @@ TEST_F(ConvertToPdfTest, ToFileWithDpi) {
   EXPECT_THAT(file_contents, testing::HasSubstr(kMediaBoxString));
 }
 
-// Test that JPG image can be converted to pdf and saved to vector successfully.
+// Test that JPG images can be converted to pdf and saved to vector
+// successfully.
 TEST_F(ConvertToPdfTest, ToVector) {
-  std::vector<uint8_t> jpg_buffer = CreateJpg(100, 100);
-  ASSERT_FALSE(jpg_buffer.empty());
-
   std::vector<uint8_t> pdf_buffer;
-  EXPECT_TRUE(ConvertJpgImageToPdf(jpg_buffer, &pdf_buffer));
+  std::vector<uint8_t> buffer_1 = CreateJpg(1, 1);
+  ASSERT_FALSE(buffer_1.empty());
+
+  std::vector<std::vector<uint8_t>> jpg_buffers{buffer_1};
+  EXPECT_TRUE(ConvertJpgImagesToPdf(jpg_buffers, &pdf_buffer));
 
   // Smallest PDF should be at least 20 bytes.
-  EXPECT_GT(pdf_buffer.size(), 20u);
+  size_t size_1 = pdf_buffer.size();
+  EXPECT_GT(size_1, 20u);
+
+  jpg_buffers.push_back(CreateJpg(200, 200));
+  jpg_buffers.push_back(CreateJpg(300, 300));
+  EXPECT_TRUE(ConvertJpgImagesToPdf(jpg_buffers, &pdf_buffer));
+  EXPECT_GT(pdf_buffer.size(), size_1);
+}
+
+// Test that passing empty vectors should fail and print error messages.
+TEST_F(ConvertToPdfTest, ToVectorEmpty) {
+  std::vector<uint8_t> pdf_buffer;
+  std::vector<uint8_t> buffer_empty;
+  ASSERT_TRUE(buffer_empty.empty());
+
+  std::vector<std::vector<uint8_t>> jpg_buffers{buffer_empty};
+  EXPECT_FALSE(ConvertJpgImagesToPdf(jpg_buffers, &pdf_buffer));
 }
 
 }  // namespace chromeos

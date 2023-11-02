@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,17 +30,12 @@ class AppUpdate : public App {
   void FirstTaskRun() override;
 
   void SetupDone(int result);
-
-  scoped_refptr<Configurator> config_;
 };
 
 void AppUpdate::Initialize() {
-  config_ = base::MakeRefCounted<Configurator>(
-      CreateGlobalPrefs(updater_scope()), CreateExternalConstants());
 }
 
 void AppUpdate::Uninitialize() {
-  PrefsCommitPendingWrites(config_->GetPrefService());
 }
 
 void AppUpdate::FirstTaskRun() {

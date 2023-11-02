@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -153,7 +154,7 @@ class SESSIONS_EXPORT CommandStorageManager {
   // The number of commands sent to the backend before doing a reset.
   int commands_since_reset_ = 0;
 
-  CommandStorageManagerDelegate* delegate_;
+  raw_ptr<CommandStorageManagerDelegate> delegate_;
 
   // TaskRunner all backend tasks are run on. This is a SequencedTaskRunner as
   // all tasks *must* be processed in the order they are scheduled.

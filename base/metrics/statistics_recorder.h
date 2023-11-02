@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,9 +23,10 @@
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_base.h"
+#include "base/metrics/ranges_manager.h"
 #include "base/metrics/record_histogram_checker.h"
 #include "base/observer_list_threadsafe.h"
 #include "base/strings/string_piece.h"
@@ -225,8 +226,8 @@ class BASE_EXPORT StatisticsRecorder {
   // they're created.
   //
   // This method is thread safe.
-  static std::unique_ptr<StatisticsRecorder> CreateTemporaryForTesting()
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] static std::unique_ptr<StatisticsRecorder>
+  CreateTemporaryForTesting();
 
   // Sets the record checker for determining if a histogram should be recorded.
   // Record checker doesn't affect any already recorded histograms, so this
@@ -307,18 +308,6 @@ class BASE_EXPORT StatisticsRecorder {
                              scoped_refptr<HistogramSampleObserverList>>
       ObserverMap;
 
-  struct BucketRangesHash {
-    size_t operator()(const BucketRanges* a) const;
-  };
-
-  struct BucketRangesEqual {
-    bool operator()(const BucketRanges* a, const BucketRanges* b) const;
-  };
-
-  typedef std::
-      unordered_set<const BucketRanges*, BucketRangesHash, BucketRangesEqual>
-          RangesMap;
-
   friend class StatisticsRecorderTest;
   FRIEND_TEST_ALL_PREFIXES(StatisticsRecorderTest, IterationTest);
 
@@ -353,12 +342,12 @@ class BASE_EXPORT StatisticsRecorder {
 
   HistogramMap histograms_;
   ObserverMap observers_;
-  RangesMap ranges_;
   HistogramProviders providers_;
+  RangesManager ranges_manager_;
   std::unique_ptr<RecordHistogramChecker> record_checker_;
 
   // Previous global recorder that existed when this one was created.
-  StatisticsRecorder* previous_ = nullptr;
+  raw_ptr<StatisticsRecorder> previous_ = nullptr;
 
   // Global lock for internal synchronization. Uses an absl::Mutex to
   // support read/write lock semantics.

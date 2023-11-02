@@ -29,8 +29,6 @@
 #include "third_party/blink/public/mojom/plugins/plugin_registry.mojom-blink.h"
 #include "third_party/blink/public/platform/file_path_conversion.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/public/platform/web_security_origin.h"
-#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
 
@@ -96,23 +94,27 @@ void PluginData::RefreshBrowserSidePluginCache() {
   Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
       registry.BindNewPipeAndPassReceiver());
   Vector<mojom::blink::PluginInfoPtr> plugins;
-  registry->GetPlugins(true, SecurityOrigin::CreateUniqueOpaque(), &plugins);
+  registry->GetPlugins(true, &plugins);
 }
 
-void PluginData::UpdatePluginList(const SecurityOrigin* main_frame_origin) {
+void PluginData::UpdatePluginList() {
+  if (updated_)
+    return;
+
   SCOPED_UMA_HISTOGRAM_TIMER("Blink.Plugin.UpdateTime");
   ResetPluginData();
-  main_frame_origin_ = main_frame_origin;
+  updated_ = true;
 
   mojo::Remote<mojom::blink::PluginRegistry> registry;
   Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
       registry.BindNewPipeAndPassReceiver());
   Vector<mojom::blink::PluginInfoPtr> plugins;
-  registry->GetPlugins(false, main_frame_origin_, &plugins);
+  registry->GetPlugins(false, &plugins);
   for (const auto& plugin : plugins) {
     auto* plugin_info = MakeGarbageCollected<PluginInfo>(
         std::move(plugin->name), FilePathToWebString(plugin->filename),
-        std::move(plugin->description), plugin->background_color,
+        std::move(plugin->description),
+        Color::FromRGBA32(plugin->background_color),
         plugin->may_use_external_handler);
     plugins_.push_back(plugin_info);
     for (const auto& mime : plugin->mime_types) {
@@ -139,7 +141,7 @@ void PluginData::UpdatePluginList(const SecurityOrigin* main_frame_origin) {
 void PluginData::ResetPluginData() {
   plugins_.clear();
   mimes_.clear();
-  main_frame_origin_ = nullptr;
+  updated_ = false;
 }
 
 bool PluginData::SupportsMimeType(const String& mime_type) const {

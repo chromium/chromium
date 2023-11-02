@@ -1,16 +1,15 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/os_settings.js';
+import 'chrome://os-settings/chromeos/os_settings.js';
 
-// #import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
-// #import {setESimManagerRemoteForTesting} from 'chrome://resources/cr_components/chromeos/cellular_setup/mojo_interface_provider.m.js';
-// #import {FakeESimManagerRemote} from 'chrome://test/cr_components/chromeos/cellular_setup/fake_esim_manager_remote.m.js';
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {assertEquals, assertTrue} from '../../chai_assert.js';
-// clang-format on
+import {setESimManagerRemoteForTesting} from 'chrome://resources/ash/common/cellular_setup/mojo_interface_provider.js';
+import {ProfileInstallResult, ProfileState} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {FakeESimManagerRemote} from 'chrome://test/cr_components/chromeos/cellular_setup/fake_esim_manager_remote.js';
+
+import {assertEquals, assertTrue} from '../../chai_assert.js';
 
 suite('EsimInstallErrorDialog', function() {
   let esimInstallErrorDialog;
@@ -18,14 +17,14 @@ suite('EsimInstallErrorDialog', function() {
   let doneButton;
 
   async function flushAsync() {
-    Polymer.dom.flush();
+    flush();
     // Use setTimeout to wait for the next macrotask.
     return new Promise(resolve => setTimeout(resolve));
   }
 
   setup(async function() {
-    eSimManagerRemote = new cellular_setup.FakeESimManagerRemote();
-    cellular_setup.setESimManagerRemoteForTesting(eSimManagerRemote);
+    eSimManagerRemote = new FakeESimManagerRemote();
+    setESimManagerRemoteForTesting(eSimManagerRemote);
     eSimManagerRemote.addEuiccForTest(1);
     const euicc = (await eSimManagerRemote.getAvailableEuiccs()).euiccs[0];
     const profile = (await euicc.getProfileList()).profiles[0];
@@ -40,7 +39,7 @@ suite('EsimInstallErrorDialog', function() {
 
     await flushAsync();
 
-    doneButton = esimInstallErrorDialog.$$('#done');
+    doneButton = esimInstallErrorDialog.shadowRoot.querySelector('#done');
     assertTrue(!!doneButton);
   });
 
@@ -49,16 +48,16 @@ suite('EsimInstallErrorDialog', function() {
 
     setup(async function() {
       esimInstallErrorDialog.errorCode =
-          chromeos.cellularSetup.mojom.ProfileInstallResult
-              .kErrorNeedsConfirmationCode;
+          ProfileInstallResult.kErrorNeedsConfirmationCode;
       await flushAsync();
 
-      assertTrue(
-          !!esimInstallErrorDialog.$$('#confirmationCodeErrorContainer'));
+      assertTrue(!!esimInstallErrorDialog.shadowRoot.querySelector(
+          '#confirmationCodeErrorContainer'));
       assertTrue(esimInstallErrorDialog.$.genericErrorContainer.hidden);
       assertFalse(esimInstallErrorDialog.$.cancel.hidden);
 
-      input = esimInstallErrorDialog.$$('#confirmationCode');
+      input =
+          esimInstallErrorDialog.shadowRoot.querySelector('#confirmationCode');
       assertTrue(!!input);
       assertTrue(doneButton.disabled);
     });
@@ -78,17 +77,14 @@ suite('EsimInstallErrorDialog', function() {
       const profile = (await euicc.getProfileList()).profiles[0];
       const profileProperties = (await profile.getProperties()).properties;
 
-      assertEquals(
-          profileProperties.state,
-          chromeos.cellularSetup.mojom.ProfileState.kActive);
+      assertEquals(profileProperties.state, ProfileState.kActive);
       assertFalse(esimInstallErrorDialog.$.installErrorDialog.open);
     });
 
     test('Install profile unsuccessful', async function() {
       const euicc = (await eSimManagerRemote.getAvailableEuiccs()).euiccs[0];
       const profile = (await euicc.getProfileList()).profiles[0];
-      profile.setProfileInstallResultForTest(
-          chromeos.cellularSetup.mojom.ProfileInstallResult.kFailure);
+      profile.setProfileInstallResultForTest(ProfileInstallResult.kFailure);
 
       input.value = 'CONFIRMATION_CODE';
       assertFalse(doneButton.disabled);
@@ -105,9 +101,7 @@ suite('EsimInstallErrorDialog', function() {
       assertFalse(doneButton.disabled);
 
       const profileProperties = (await profile.getProperties()).properties;
-      assertEquals(
-          profileProperties.state,
-          chromeos.cellularSetup.mojom.ProfileState.kPending);
+      assertEquals(profileProperties.state, ProfileState.kPending);
       assertTrue(esimInstallErrorDialog.$.installErrorDialog.open);
 
       input.value = 'CONFIRMATION_COD';
@@ -117,12 +111,11 @@ suite('EsimInstallErrorDialog', function() {
 
   suite('Generic error', function() {
     setup(async function() {
-      esimInstallErrorDialog.errorCode =
-          chromeos.cellularSetup.mojom.ProfileInstallResult.kFailure;
+      esimInstallErrorDialog.errorCode = ProfileInstallResult.kFailure;
       await flushAsync();
 
-      assertFalse(
-          !!esimInstallErrorDialog.$$('#confirmationCodeErrorContainer'));
+      assertFalse(!!esimInstallErrorDialog.shadowRoot.querySelector(
+          '#confirmationCodeErrorContainer'));
       assertFalse(esimInstallErrorDialog.$.genericErrorContainer.hidden);
       assertTrue(esimInstallErrorDialog.$.cancel.hidden);
     });

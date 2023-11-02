@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,8 +17,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 FakeStreamSocket::FakeStreamSocket()
     : task_runner_(base::ThreadTaskRunnerHandle::Get()) {}
@@ -206,5 +205,4 @@ void FakeStreamChannelFactory::CancelChannelCreation(const std::string& name) {
   channels_.erase(name);
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

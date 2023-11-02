@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,7 @@ extern const char kModelLastFetchSuccess[];
 extern const char kHintsFetcherHostsSuccessfullyFetched[];
 extern const char kPendingHintsProcessingVersion[];
 extern const char kPreviouslyRegisteredOptimizationTypes[];
+extern const char kStoreFilePathsToDelete[];
 
 // Registers the optimization guide's prefs.
 void RegisterProfilePrefs(PrefRegistrySimple* registry);

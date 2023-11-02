@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define ANDROID_WEBVIEW_BROWSER_GFX_AW_PICTURE_H_
 
 #include "base/android/jni_weak_ref.h"
-#include "base/macros.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 
 class SkPicture;

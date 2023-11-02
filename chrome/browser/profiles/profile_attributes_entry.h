@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -182,8 +183,6 @@ class ProfileAttributesEntry {
   void SetIsEphemeral(bool value);
   void SetUserAcceptedAccountManagement(bool value);
   bool UserAcceptedAccountManagement() const;
-  // TODO(msalama): Remove this function.
-  void SetIsUsingDefaultName(bool value);
   void SetIsUsingDefaultAvatar(bool value);
   void SetAvatarIconIndex(size_t icon_index);
   // absl::nullopt resets colors to default.
@@ -285,7 +284,7 @@ class ProfileAttributesEntry {
   void RecordAccountNamesMetric() const;
 
   // Loads and saves the data to the local state.
-  const base::Value* GetEntryData() const;
+  const base::Value::Dict* GetEntryData() const;
 
   // Internal getter that returns a base::Value*, or nullptr if the key is not
   // present.
@@ -311,6 +310,9 @@ class ProfileAttributesEntry {
 
   // Internal setters that accept basic data types. Return if the original data
   // is different from the new data, i.e. whether actual update is done.
+  // If the data was missing or was from a different type and `value` is the
+  // default value (e.g. false, 0, empty string...), the value is explicitly
+  // written but these return false.
   bool SetString(const char* key, const std::string& value);
   bool SetString16(const char* key, const std::u16string& value);
   bool SetDouble(const char* key, double value);
@@ -336,8 +338,8 @@ class ProfileAttributesEntry {
   // notifications.
   void SetIsOmittedInternal(bool is_omitted);
 
-  ProfileAttributesStorage* profile_attributes_storage_ = nullptr;
-  PrefService* prefs_ = nullptr;
+  raw_ptr<ProfileAttributesStorage> profile_attributes_storage_ = nullptr;
+  raw_ptr<PrefService> prefs_ = nullptr;
   base::FilePath profile_path_;
   std::string storage_key_;
   std::u16string last_name_to_display_;

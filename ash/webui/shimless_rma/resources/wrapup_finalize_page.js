@@ -1,26 +1,22 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import './shimless_rma_shared_css.js';
 import './base_page.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
-import {FinalizationObserverInterface, FinalizationObserverReceiver, FinalizationStatus, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
+import {FinalizationError, FinalizationObserverInterface, FinalizationObserverReceiver, FinalizationStatus, RmadErrorCode, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
+import {executeThenTransitionState, focusPageTitle} from './shimless_rma_util.js';
 
-// TODO(gavindodd): Update text for i18n
-const openDeviceMessage = 'Open your device and reconnect the battery.';
-const hwwpEnabledMessage = 'HWWP enabled.';
-
-// TODO(gavindodd): Update text for i18n
 /** @type {!Object<!FinalizationStatus, string>} */
-const finalizationStatusText = {
-  [FinalizationStatus.kInProgress]: 'In progress...',
-  [FinalizationStatus.kComplete]: 'Complete...',
-  [FinalizationStatus.kFailedBlocking]: 'Critical failure, cannot continue.',
-  [FinalizationStatus.kFailedNonBlocking]: 'Failure.',
+const finalizationStatusTextKeys = {
+  [FinalizationStatus.kInProgress]: 'finalizePageProgressText',
+  [FinalizationStatus.kComplete]: 'finalizePageCompleteText',
 };
 
 /**
@@ -28,7 +24,22 @@ const finalizationStatusText = {
  * 'wrapup-finalize-page' wait for device finalization and hardware verification
  * to be completed.
  */
-export class WrapupFinalizePageElement extends PolymerElement {
+
+/**
+ * The prefix for a `FinalizationError` displayed on the Hardware Error page.
+ * @type {number}
+ */
+export const FINALIZATION_ERROR_CODE_PREFIX = 2000;
+
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const WrapupFinalizePageBase = mixinBehaviors([I18nBehavior], PolymerElement);
+
+/** @polymer */
+export class WrapupFinalizePage extends WrapupFinalizePageBase {
   static get is() {
     return 'wrapup-finalize-page';
   }
@@ -39,10 +50,16 @@ export class WrapupFinalizePageElement extends PolymerElement {
 
   static get properties() {
     return {
+      /**
+       * Set by shimless_rma.js.
+       * @type {boolean}
+       */
+      allButtonsDisabled: Boolean,
+
       /** @protected */
       finalizationMessage_: {
         type: String,
-        value: 'Finalizing...',
+        value: '',
       },
     };
   }
@@ -51,12 +68,9 @@ export class WrapupFinalizePageElement extends PolymerElement {
     super();
     /** @private {ShimlessRmaServiceInterface} */
     this.shimlessRmaService_ = getShimlessRmaService();
-    /** @private {boolean} */
-    this.finalizationComplete_ = false;
     /**
-     * Receiver responsible for observing hardware write protection state.
-     * @private {
-     *  ?FinalizationObserverReceiver}
+     * Receiver responsible for observing finalization progress and state.
+     * @private {?FinalizationObserverReceiver}
      */
     this.finalizationObserverReceiver_ = new FinalizationObserverReceiver(
         /** @type {!FinalizationObserverInterface} */ (this));
@@ -65,29 +79,39 @@ export class WrapupFinalizePageElement extends PolymerElement {
         this.finalizationObserverReceiver_.$.bindNewPipeAndPassRemote());
   }
 
+  /** @override */
+  ready() {
+    super.ready();
+
+    focusPageTitle(this);
+  }
+
   /**
    * @param {!FinalizationStatus} status
    * @param {number} progress
+   * @param {!FinalizationError} error
    */
-  onFinalizationUpdated(status, progress) {
-    if (status == FinalizationStatus.kInProgress) {
-      this.finalizationMessage_ = finalizationStatusText[status] + ' ' +
-          Math.round(progress * 100) + '%';
+  onFinalizationUpdated(status, progress, error) {
+    if (status === FinalizationStatus.kFailedBlocking ||
+        status === FinalizationStatus.kFailedNonBlocking) {
+      this.dispatchEvent(new CustomEvent('fatal-hardware-error', {
+        bubbles: true,
+        composed: true,
+        detail: {
+          rmadErrorCode: RmadErrorCode.kFinalizationFailed,
+          fatalErrorCode: (FINALIZATION_ERROR_CODE_PREFIX + error),
+        },
+      }));
     } else {
-      this.finalizationMessage_ = finalizationStatusText[status];
-    }
-    this.finalizationComplete_ = status == FinalizationStatus.kComplete ||
-        status == FinalizationStatus.kFailedNonBlocking;
-  }
+      this.finalizationMessage_ = this.i18n(finalizationStatusTextKeys[status]);
 
-  /** @return {!Promise<!StateResult>} */
-  onNextButtonClick() {
-    if (this.finalizationComplete_) {
-      return this.shimlessRmaService_.finalizationComplete();
-    } else {
-      return Promise.reject(new Error('Finalization is not complete.'));
+      if (status === FinalizationStatus.kComplete) {
+        executeThenTransitionState(
+            this, () => this.shimlessRmaService_.finalizationComplete());
+        return;
+      }
     }
   }
 }
 
-customElements.define(WrapupFinalizePageElement.is, WrapupFinalizePageElement);
+customElements.define(WrapupFinalizePage.is, WrapupFinalizePage);

@@ -44,7 +44,6 @@
 namespace blink {
 
 class RTCIceCandidatePlatform;
-class RTCRtpReceiverPlatform;
 class RTCRtpTransceiverPlatform;
 class RTCSessionDescriptionPlatform;
 
@@ -75,20 +74,13 @@ class PLATFORM_EXPORT RTCPeerConnectionHandlerClient {
       RTCSessionDescriptionPlatform* current_remote_description) = 0;
   virtual void DidChangeIceGatheringState(
       webrtc::PeerConnectionInterface::IceGatheringState) = 0;
-  virtual void DidChangeIceConnectionState(
-      webrtc::PeerConnectionInterface::IceConnectionState) = 0;
   virtual void DidChangePeerConnectionState(
       webrtc::PeerConnectionInterface::PeerConnectionState) {}
-  virtual void DidModifyReceiversPlanB(
-      webrtc::PeerConnectionInterface::SignalingState,
-      Vector<std::unique_ptr<RTCRtpReceiverPlatform>> platform_receivers_added,
-      Vector<std::unique_ptr<RTCRtpReceiverPlatform>>
-          platform_receivers_removed) = 0;
   virtual void DidModifyTransceivers(
       webrtc::PeerConnectionInterface::SignalingState,
       Vector<std::unique_ptr<RTCRtpTransceiverPlatform>>,
       Vector<uintptr_t>,
-      bool is_remote_description) = 0;
+      bool is_remote_description_or_rollback) = 0;
   virtual void DidModifySctpTransport(WebRTCSctpTransportSnapshot) = 0;
   virtual void DidAddRemoteDataChannel(
       scoped_refptr<webrtc::DataChannelInterface>) = 0;

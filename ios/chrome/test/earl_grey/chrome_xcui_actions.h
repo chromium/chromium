@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 namespace chrome_test_util {
 
 // Action (XCUI, hence local) to long press a cell item with
-// |accessibility_identifier| in |window_number| and drag it to the given |edge|
+// `accessibility_identifier` in `window_number` and drag it to the given `edge`
 // of the app screen (can trigger a new window) before dropping it. Returns YES
 // on success (finding the item).
 BOOL LongPressCellAndDragToEdge(NSString* accessibility_identifier,
@@ -20,10 +20,10 @@ BOOL LongPressCellAndDragToEdge(NSString* accessibility_identifier,
                                 int window_number);
 
 // Action (XCUI, hence local) to long press a cell item  with
-// |src_accessibility_identifier| in |src_window_number| and drag it to the
+// `src_accessibility_identifier` in `src_window_number` and drag it to the
 // given normalized offset of the cell or window with
-// |dst_accessibility_identifier| in |dst_window_number| before dropping it. To
-// target a window, pass nil as |dst_accessibility_identifier|. Returns YES on
+// `dst_accessibility_identifier` in `dst_window_number` before dropping it. To
+// target a window, pass nil as `dst_accessibility_identifier`. Returns YES on
 // success (finding both items).
 BOOL LongPressCellAndDragToOffsetOf(NSString* src_accessibility_identifier,
                                     int src_window_number,
@@ -32,10 +32,10 @@ BOOL LongPressCellAndDragToOffsetOf(NSString* src_accessibility_identifier,
                                     CGVector dst_normalized_offset);
 
 // Action (XCUI, hence local) to long press a link element in a webview with
-// |src_accessibility_identifier| in |src_window_number| and drag it to the
-// given normalized offset of the view with  |dst_accessibility_identifier| in
-// |dst_window_number| before dropping it. To target a window, pass nil as
-// |dst_accessibility_identifier|. Returns YES on success (finding both items).
+// `src_accessibility_identifier` in `src_window_number` and drag it to the
+// given normalized offset of the view with  `dst_accessibility_identifier` in
+// `dst_window_number` before dropping it. To target a window, pass nil as
+// `dst_accessibility_identifier`. Returns YES on success (finding both items).
 BOOL LongPressLinkAndDragToView(NSString* src_accessibility_identifier,
                                 int src_window_number,
                                 NSString* dst_accessibility_identifier,
@@ -48,10 +48,10 @@ BOOL LongPressLinkAndDragToView(NSString* src_accessibility_identifier,
                                 NSString* dst_accessibility_identifier);
 
 // Action (XCUI, hence local) to resize split windows by dragging the splitter.
-// This action requires two windows (|first_window_number| and
-// |second_window_number|, in any order) to find where the splitter is located.
-// A given |first_window_normalized_screen_size| defines the normalized size
-// [0.0 - 1.0] wanted for the |first_window_number|. Returns NO if any window
+// This action requires two windows (`first_window_number` and
+// `second_window_number`, in any order) to find where the splitter is located.
+// A given `first_window_normalized_screen_size` defines the normalized size
+// [0.0 - 1.0] wanted for the `first_window_number`. Returns NO if any window
 // is not found or if one of them is a floating window.
 // Notes: The size requested
 // will be matched by the OS to the closest available multiwindow layout. This
@@ -66,8 +66,8 @@ BOOL DragWindowSplitterToSize(int first_window_number,
                               int second_window_number,
                               CGFloat first_window_normalized_screen_size);
 
-// Action (XCUI, hence local) to tap item with |accessibility_identifier| in
-// |window_number|. Should only be used in second or third window, until a
+// Action (XCUI, hence local) to tap item with `accessibility_identifier` in
+// `window_number`. Should only be used in second or third window, until a
 // (already requested) fix is made to EarlGrey to allow using grey_tap()
 // correctly on extra windows (right now it fails visibility check).
 BOOL TapAtOffsetOf(NSString* accessibility_identifier,
@@ -75,7 +75,7 @@ BOOL TapAtOffsetOf(NSString* accessibility_identifier,
                    CGVector normalized_offset);
 
 // Action (XCUI, hence local) to type text in text field with
-// |accessibility_identifier| in |window_number|. Use to replace grey_typeText
+// `accessibility_identifier` in `window_number`. Use to replace grey_typeText
 // call that are flaky. grey_typeText fails sometime during a layout change of
 // the keyboard.
 BOOL TypeText(NSString* accessibility_identifier,

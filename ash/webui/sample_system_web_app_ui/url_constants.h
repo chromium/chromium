@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,8 @@ namespace ash {
 
 extern const char kChromeUISampleSystemWebAppHost[];
 extern const char kChromeUISampleSystemWebAppURL[];
-extern const char kChromeUIUntrustedSampleSystemWebAppHost[];
-extern const char kChromeUIUntrustedSampleSystemWebAppURL[];
+extern const char kChromeUISampleSystemWebAppUntrustedHost[];
+extern const char kChromeUISampleSystemWebAppUntrustedURL[];
 
 }  // namespace ash
 

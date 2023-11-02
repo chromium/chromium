@@ -1,18 +1,19 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_COCOA_TASK_MANAGER_MAC_H_
 #define CHROME_BROWSER_UI_COCOA_TASK_MANAGER_MAC_H_
 
+#include "base/memory/raw_ptr.h"
+
 #import <Cocoa/Cocoa.h>
 
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/mac/scoped_nsobject.h"
 #include "chrome/browser/ui/task_manager/task_manager_table_model.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "ui/base/models/table_model_observer.h"
 
 @class WindowSizeAutosaver;
@@ -31,15 +32,15 @@ class TaskManagerMac;
  @private
   NSTableView* _tableView;
   NSButton* _endProcessButton;
-  task_manager::TaskManagerMac* _taskManagerMac;     // weak
-  task_manager::TaskManagerTableModel* _tableModel;  // weak
+  raw_ptr<task_manager::TaskManagerMac> _taskManagerMac;     // weak
+  raw_ptr<task_manager::TaskManagerTableModel> _tableModel;  // weak
 
   base::scoped_nsobject<WindowSizeAutosaver> _size_saver;
 
   // These contain a permutation of [0..|tableModel_->RowCount() - 1|]. Used to
   // implement sorting.
-  std::vector<int> _viewToModelMap;
-  std::vector<int> _modelToViewMap;
+  std::vector<size_t> _viewToModelMap;
+  std::vector<size_t> _modelToViewMap;
 
   // Descriptor of the current sort column.
   task_manager::TableSortDescriptor _currentSortDescriptor;
@@ -84,9 +85,7 @@ class TaskManagerMac;
 namespace task_manager {
 
 // This class runs the Task Manager on the Mac.
-class TaskManagerMac : public ui::TableModelObserver,
-                       public content::NotificationObserver,
-                       public TableViewDelegate {
+class TaskManagerMac : public ui::TableModelObserver, public TableViewDelegate {
  public:
   TaskManagerMac(const TaskManagerMac&) = delete;
   TaskManagerMac& operator=(const TaskManagerMac&) = delete;
@@ -115,9 +114,9 @@ class TaskManagerMac : public ui::TableModelObserver,
 
   // ui::TableModelObserver:
   void OnModelChanged() override;
-  void OnItemsChanged(int start, int length) override;
-  void OnItemsAdded(int start, int length) override;
-  void OnItemsRemoved(int start, int length) override;
+  void OnItemsChanged(size_t start, size_t length) override;
+  void OnItemsAdded(size_t start, size_t length) override;
+  void OnItemsRemoved(size_t start, size_t length) override;
 
   // TableViewDelegate:
   bool IsColumnVisible(int column_id) const override;
@@ -126,10 +125,7 @@ class TaskManagerMac : public ui::TableModelObserver,
   TableSortDescriptor GetSortDescriptor() const override;
   void SetSortDescriptor(const TableSortDescriptor& descriptor) override;
 
-  // content::NotificationObserver overrides:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+  void OnAppTerminating();
 
   // Our model.
   TaskManagerTableModel table_model_;
@@ -138,7 +134,7 @@ class TaskManagerMac : public ui::TableModelObserver,
   // is closed.
   TaskManagerWindowController* window_controller_;  // weak
 
-  content::NotificationRegistrar registrar_;
+  base::CallbackListSubscription on_app_terminating_subscription_;
 
   // An open task manager window. There can only be one open at a time. This
   // is reset to be null when the window is closed.

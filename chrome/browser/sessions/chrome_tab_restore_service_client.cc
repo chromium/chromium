@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,7 +23,7 @@
 #include "chrome/browser/apps/platform_apps/platform_app_launch.h"
 #endif
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser_live_tab_context.h"
 #else
 #include "chrome/browser/ui/android/tab_model/android_live_tab_context.h"
@@ -35,25 +35,30 @@ ChromeTabRestoreServiceClient::ChromeTabRestoreServiceClient(Profile* profile)
 ChromeTabRestoreServiceClient::~ChromeTabRestoreServiceClient() {}
 
 sessions::LiveTabContext* ChromeTabRestoreServiceClient::CreateLiveTabContext(
+    sessions::LiveTabContext* existing_context,
+    sessions::SessionWindow::WindowType type,
     const std::string& app_name,
     const gfx::Rect& bounds,
     ui::WindowShowState show_state,
     const std::string& workspace,
-    const std::string& user_title) {
-#if defined(OS_ANDROID)
-  // Android does not support creating a LiveTabContext here.
-  NOTREACHED();
-  return nullptr;
+    const std::string& user_title,
+    const std::map<std::string, std::string>& extra_data) {
+#if BUILDFLAG(IS_ANDROID)
+  // Android does not support creating a LiveTabContext here. Return the
+  // existing context instead.
+  DCHECK(existing_context);
+  return existing_context;
 #else
-  return BrowserLiveTabContext::Create(profile_, app_name, bounds, show_state,
-                                       workspace, user_title);
+  return BrowserLiveTabContext::Create(profile_, type, app_name, bounds,
+                                       show_state, workspace, user_title,
+                                       extra_data);
 #endif
 }
 
 sessions::LiveTabContext*
 ChromeTabRestoreServiceClient::FindLiveTabContextForTab(
     const sessions::LiveTab* tab) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return AndroidLiveTabContext::FindContextForWebContents(
       static_cast<const sessions::ContentLiveTab*>(tab)->web_contents());
 #else
@@ -64,7 +69,7 @@ ChromeTabRestoreServiceClient::FindLiveTabContextForTab(
 
 sessions::LiveTabContext*
 ChromeTabRestoreServiceClient::FindLiveTabContextWithID(SessionID desired_id) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return AndroidLiveTabContext::FindContextWithID(desired_id);
 #else
   return BrowserLiveTabContext::FindContextWithID(desired_id);
@@ -74,7 +79,7 @@ ChromeTabRestoreServiceClient::FindLiveTabContextWithID(SessionID desired_id) {
 sessions::LiveTabContext*
 ChromeTabRestoreServiceClient::FindLiveTabContextWithGroup(
     tab_groups::TabGroupId group) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return nullptr;
 #else
   return BrowserLiveTabContext::FindContextWithGroup(group, profile_);

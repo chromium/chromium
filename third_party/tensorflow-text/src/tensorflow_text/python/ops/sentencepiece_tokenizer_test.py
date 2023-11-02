@@ -30,6 +30,7 @@ from tensorflow.python.framework import tensor_spec
 from tensorflow.python.framework import test_util
 from tensorflow.python.lib.io import file_io
 from tensorflow.python.module import module
+from tensorflow.python.ops import gen_experimental_dataset_ops
 from tensorflow.python.ops.ragged import ragged_factory_ops
 from tensorflow.python.ops.ragged import ragged_gather_ops
 from tensorflow.python.platform import gfile
@@ -497,6 +498,41 @@ class SentencepieceTokenizerOpTest(test_util.TensorFlowTestCase,
         sp = SentencepieceTokenizer('invalid model')
         result = sp.tokenize('whatever')
         result.eval()
+
+
+# Test that datasets depending on a sentencepiece tokenizer resources can be
+# serialized without external references.
+# This test is separate from `SentencepieceTokenizerOpTest` below because
+# context._reset_context() must be called from outside the context created by
+# `@test_util.run_all_in_graph_and_eager_modes`.
+class DatasetSerializationTest(test_util.TensorFlowTestCase):
+
+  def testSerialization(self):
+    with context.eager_mode():
+      sentencepiece_model_file = (
+          'tensorflow_text/python/ops/test_data/'
+          'test_oss_model.model')
+      model = gfile.GFile(sentencepiece_model_file, 'rb').read()
+      sp = SentencepieceTokenizer(model)
+      strings = ['hello', 'world']
+      dataset = dataset_ops.Dataset.from_tensor_slices(strings)
+      # Ensure we can map the tokenizer across the dataset.
+      dataset = dataset.map(sp.tokenize)
+      graph = dataset._as_serialized_graph()
+      element_spec = dataset.element_spec
+      dataset_graph_string = graph.numpy()
+      expected = sp.tokenize(strings)
+
+    # Reset the eager context to make sure that the serialized dataset graph
+    # is self-contained.
+    context._reset_context()
+
+    with context.eager_mode():
+      restored = dataset_ops.from_variant(
+          gen_experimental_dataset_ops.dataset_from_graph(dataset_graph_string),
+          element_spec)
+      for i, result in enumerate(restored):
+        self.assertAllEqual(result, expected[i])
 
 
 if __name__ == '__main__':

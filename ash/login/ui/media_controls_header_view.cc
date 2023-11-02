@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/color_utils.h"
@@ -31,7 +32,7 @@ namespace {
 constexpr int kIconViewSize = 20;
 constexpr int kIconSize = 14;
 constexpr int kHeaderTextFontSize = 12;
-constexpr gfx::Insets kAppNamePadding = gfx::Insets(0, 8, 0, 0);
+constexpr auto kAppNamePadding = gfx::Insets::TLBR(0, 8, 0, 0);
 constexpr gfx::Size kAppNamePreferredSize = gfx::Size(200, 10);
 constexpr gfx::Size kCloseButtonSize = gfx::Size(20, 20);
 constexpr int kCloseButtonIconSize = 18;
@@ -95,11 +96,15 @@ MediaControlsHeaderView::MediaControlsHeaderView(
   views::InkDrop::Get(close_button.get())
       ->SetBaseColor(color_utils::DeriveDefaultIconColor(gfx::kGoogleGrey700));
   close_button_ = AddChildView(std::move(close_button));
+
+  close_button_->AddObserver(this);
 }
 
-MediaControlsHeaderView::~MediaControlsHeaderView() = default;
+MediaControlsHeaderView::~MediaControlsHeaderView() {
+  close_button_->RemoveObserver(this);
+}
 
-void MediaControlsHeaderView::SetAppIcon(const gfx::ImageSkia& img) {
+void MediaControlsHeaderView::SetAppIcon(const ui::ImageModel& img) {
   app_icon_view_->SetImage(img);
 }
 
@@ -107,17 +112,25 @@ void MediaControlsHeaderView::SetAppName(const std::u16string& name) {
   app_name_view_->SetText(name);
 }
 
-void MediaControlsHeaderView::SetCloseButtonVisibility(bool visible) {
-  if (visible) {
-    SetImageFromVectorIcon(close_button_, vector_icons::kCloseRoundedIcon,
-                           kCloseButtonIconSize, gfx::kGoogleGrey700);
-  } else {
-    close_button_->SetImage(views::Button::ButtonState::STATE_NORMAL, nullptr);
-  }
+void MediaControlsHeaderView::SetForceShowCloseButton(bool force_visible) {
+  force_close_x_visible_ = force_visible;
+  UpdateCloseButtonVisibility();
 }
 
 void MediaControlsHeaderView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->SetName(app_name_view_->GetText());
+  // A valid role must be set prior to setting the name.
+  node_data->role = ax::mojom::Role::kPane;
+  node_data->SetNameChecked(app_name_view_->GetText());
+}
+
+void MediaControlsHeaderView::OnViewFocused(views::View* observed_view) {
+  DCHECK_EQ(observed_view, close_button_);
+  UpdateCloseButtonVisibility();
+}
+
+void MediaControlsHeaderView::OnViewBlurred(views::View* observed_view) {
+  DCHECK_EQ(observed_view, close_button_);
+  UpdateCloseButtonVisibility();
 }
 
 const std::u16string& MediaControlsHeaderView::app_name_for_testing() const {
@@ -130,6 +143,18 @@ const views::ImageView* MediaControlsHeaderView::app_icon_for_testing() const {
 
 views::ImageButton* MediaControlsHeaderView::close_button_for_testing() const {
   return close_button_;
+}
+
+void MediaControlsHeaderView::UpdateCloseButtonVisibility() {
+  if (force_close_x_visible_ || close_button_->HasFocus()) {
+    SkColor color = gfx::kGoogleGrey700;
+    SkColor disabled_color = SkColorSetA(color, gfx::kDisabledControlAlpha);
+    SetImageFromVectorIconWithColor(
+        close_button_, vector_icons::kCloseRoundedIcon, kCloseButtonIconSize,
+        color, disabled_color);
+  } else {
+    close_button_->SetImage(views::Button::ButtonState::STATE_NORMAL, nullptr);
+  }
 }
 
 }  // namespace ash

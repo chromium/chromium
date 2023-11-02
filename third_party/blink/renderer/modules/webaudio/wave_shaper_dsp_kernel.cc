@@ -44,15 +44,15 @@ namespace blink {
 
 WaveShaperDSPKernel::WaveShaperDSPKernel(WaveShaperProcessor* processor)
     : AudioDSPKernel(processor),
-      tail_time_(0),
       // 4 times render size to handle 4x oversampling.
       virtual_index_(4 * RenderQuantumFrames()),
       index_(4 * RenderQuantumFrames()),
       v1_(4 * RenderQuantumFrames()),
       v2_(4 * RenderQuantumFrames()),
       f_(4 * RenderQuantumFrames()) {
-  if (processor->Oversample() != WaveShaperProcessor::kOverSampleNone)
+  if (processor->Oversample() != WaveShaperProcessor::kOverSampleNone) {
     LazyInitializeOversampling();
+  }
 }
 
 void WaveShaperDSPKernel::LazyInitializeOversampling() {

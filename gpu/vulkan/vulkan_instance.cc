@@ -1,4 +1,4 @@
-// Copyright (c) 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "gpu/vulkan/vulkan_crash_keys.h"
@@ -74,14 +73,48 @@ VulkanInstance::~VulkanInstance() {
 }
 
 bool VulkanInstance::Initialize(
+    const base::FilePath& vulkan_loader_library_path,
     const std::vector<const char*>& required_extensions,
     const std::vector<const char*>& required_layers) {
+  if (!BindUnassignedFunctionPointers(vulkan_loader_library_path))
+    return false;
+  return InitializeInstace(required_extensions, required_layers);
+}
+
+bool VulkanInstance::BindUnassignedFunctionPointers(
+    const base::FilePath& vulkan_loader_library_path) {
   VulkanFunctionPointers* vulkan_function_pointers =
       gpu::GetVulkanFunctionPointers();
+  if (is_from_angle_) {
+    PFN_vkGetInstanceProcAddr proc = gl::QueryVkGetInstanceProcAddrFromANGLE();
+    if (!proc) {
+      LOG(ERROR) << "Failed to get vkGetInstanceProcAddr pointer from ANGLE.";
+      return false;
+    }
+    if (!vulkan_function_pointers
+             ->BindUnassociatedFunctionPointersFromGetProcAddr(proc)) {
+      return false;
+    }
+  } else {
+    base::NativeLibraryLoadError error;
+    loader_library_ =
+        base::LoadNativeLibrary(vulkan_loader_library_path, &error);
+    if (!loader_library_) {
+      LOG(ERROR) << "Failed to load '" << vulkan_loader_library_path
+                 << "': " << error.ToString();
+      return false;
+    }
+    if (!vulkan_function_pointers
+             ->BindUnassociatedFunctionPointersFromLoaderLib(loader_library_)) {
+      return false;
+    }
+  }
+  return true;
+}
 
-  if (!vulkan_function_pointers->BindUnassociatedFunctionPointers())
-    return false;
-
+bool VulkanInstance::InitializeInstace(
+    const std::vector<const char*>& required_extensions,
+    const std::vector<const char*>& required_layers) {
   if (is_from_angle_)
     return InitializeFromANGLE(required_extensions, required_layers);
   return CreateInstance(required_extensions, required_layers);
@@ -426,11 +459,9 @@ void VulkanInstance::Destroy() {
   }
   vk_instance_ = VK_NULL_HANDLE;
 
-  VulkanFunctionPointers* vulkan_function_pointers =
-      gpu::GetVulkanFunctionPointers();
-  if (vulkan_function_pointers->vulkan_loader_library) {
-    base::UnloadNativeLibrary(vulkan_function_pointers->vulkan_loader_library);
-    vulkan_function_pointers->vulkan_loader_library = nullptr;
+  if (loader_library_) {
+    base::UnloadNativeLibrary(loader_library_);
+    loader_library_ = nullptr;
   }
 }
 

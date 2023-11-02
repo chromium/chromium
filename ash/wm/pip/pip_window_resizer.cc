@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -129,7 +129,7 @@ void CollectPositionMetric(const gfx::Rect& bounds_in_screen,
                                bounds),
        AshPipPosition::BOTTOM_RIGHT}};
 
-  std::sort(area_ninths, area_ninths + base::size(area_ninths));
+  std::sort(area_ninths, area_ninths + std::size(area_ninths));
   UMA_HISTOGRAM_ENUMERATION(kAshPipPositionHistogramName,
                             area_ninths[8].second);
 }

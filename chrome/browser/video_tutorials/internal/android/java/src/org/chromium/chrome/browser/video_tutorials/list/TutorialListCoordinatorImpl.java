@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,6 @@ import androidx.recyclerview.widget.RecyclerView.ItemDecoration;
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 import androidx.recyclerview.widget.RecyclerView.State;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.video_tutorials.R;
 import org.chromium.chrome.browser.video_tutorials.Tutorial;
@@ -65,8 +64,7 @@ public class TutorialListCoordinatorImpl implements TutorialListCoordinator {
                 videoTutorialService, imageFetcher, clickCallback);
 
         FadingShadowView toolbarShadow = mainView.findViewById(R.id.toolbar_shadow);
-        toolbarShadow.init(ApiCompatibilityUtils.getColor(
-                                   toolbarShadow.getResources(), R.color.toolbar_shadow_color),
+        toolbarShadow.init(toolbarShadow.getContext().getColor(R.color.toolbar_shadow_color),
                 FadingShadow.POSITION_TOP);
 
         recyclerView.addOnScrollListener(new OnScrollListener() {

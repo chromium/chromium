@@ -1,4 +1,4 @@
-// Copyright (c) 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -99,9 +99,6 @@ void LogScreenOnBubbleClose(Screen screen);
 // Logs the |screen| when the settings button is clicked.
 void LogScreenOnSettingsButtonClicked(Screen screen);
 
-// Logs an |event| for the notification opt-in prompt.
-void LogNotificationOptInEvent(InterstitialScreenEvent event);
-
 // Logs the |tab_index| of the tab continuation chip that was clicked.
 void LogTabContinuationChipClicked(int tab_index);
 
@@ -114,6 +111,9 @@ void LogNotificationCount(int count);
 // Logs a given |interaction| with a PhoneHub notification.
 void LogNotificationInteraction(NotificationInteraction interaction);
 
+// Logs the message length of a PhoneHub notification.
+void LogNotificationMessageLength(int length);
+
 // Logs the display of a Camera Roll item at |index|.
 void LogCameraRollContentShown(int index, CameraRollMediaType mediaType);
 
@@ -122,6 +122,9 @@ void LogCameraRollContentClicked(int index, CameraRollMediaType mediaType);
 
 // Logs a download of item at |index| from the Camera Roll context menu.
 void LogCameraRollContextMenuDownload(int index, CameraRollMediaType mediaType);
+
+// Logs the display of any Camera Roll item. Emits once per opening of bubble.
+void LogCameraRollContentPresent();
 
 }  // namespace phone_hub_metrics
 }  // namespace ash

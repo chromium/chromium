@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,10 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
+#include "third_party/blink/renderer/platform/heap/process_heap.h"
+#include "third_party/blink/renderer/platform/wtf/bit_field.h"
 
 namespace {
 
@@ -179,7 +182,7 @@ void CanvasPerformanceMonitor::RecordMetrics(TimeTicks start_time,
   size_t blink_gc_alloc_kb =
       ProcessHeap::TotalAllocatedObjectSize() / kKiloByte;
 
-  while (!rendering_context_descriptions_.IsEmpty()) {
+  while (!rendering_context_descriptions_.empty()) {
     RenderingContextDescriptionCodec desc(
         rendering_context_descriptions_.TakeAny());
 
@@ -287,7 +290,6 @@ void CanvasPerformanceMonitor::RecordMetrics(TimeTicks start_time,
                                  static_cast<int>(blink_gc_alloc_kb));
     }
   }
-
 }
 
 void CanvasPerformanceMonitor::DidProcessTask(TimeTicks start_time,

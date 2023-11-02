@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,7 @@
 #include "base/sequence_checker.h"
 #include "chrome/browser/ash/attestation/tpm_challenge_key_result.h"
 #include "chrome/browser/ash/attestation/tpm_challenge_key_subtle.h"
-#include "chromeos/dbus/attestation/attestation_ca.pb.h"
-#include "chromeos/dbus/constants/attestation_constants.h"
+#include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
@@ -72,15 +71,19 @@ class TpmChallengeKey {
   // The response can also contain |signals| which consist of a set of
   // information about the device that is given to the IdP after the challenge
   // response has been verified. These signals can be used as input to an AuthN
-  // decision.
-  virtual void BuildResponse(
-      AttestationKeyType key_type,
-      Profile* profile,
-      TpmChallengeKeyCallback callback,
-      const std::string& challenge,
-      bool register_key,
-      const std::string& key_name,
-      const absl::optional<::attestation::DeviceTrustSignals>& signals) = 0;
+  // decision. Signals are collected in a dictionary and are JSON stringified.
+  // The signals are optional since they can be null when no signals are set
+  // on the response, empty when no signals were collected (i.e empty signals
+  // dictionary), or non empty. More information on signals collection can be
+  // found in the |SignalsService|.
+
+  virtual void BuildResponse(AttestationKeyType key_type,
+                             Profile* profile,
+                             TpmChallengeKeyCallback callback,
+                             const std::string& challenge,
+                             bool register_key,
+                             const std::string& key_name,
+                             const absl::optional<std::string>& signals) = 0;
 
  protected:
   // Use TpmChallengeKeyFactory for creation.
@@ -108,8 +111,7 @@ class TpmChallengeKeyImpl final : public TpmChallengeKey {
                      const std::string& challenge,
                      bool register_key,
                      const std::string& key_name,
-                     const absl::optional<::attestation::DeviceTrustSignals>&
-                         signals) override;
+                     const absl::optional<std::string>& signals) override;
 
  private:
   void OnPrepareKeyDone(const TpmChallengeKeyResult& prepare_key_result);

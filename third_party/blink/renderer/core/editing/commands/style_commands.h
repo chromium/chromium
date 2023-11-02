@@ -25,7 +25,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,6 +33,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_COMMANDS_STYLE_COMMANDS_H_
 
 #include "mojo/public/mojom/base/text_direction.mojom-blink-forward.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/events/input_event.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -49,7 +50,7 @@ enum class EditingTriState;
 enum class EditorCommandSource;
 
 // This class provides static functions about commands related to style.
-class StyleCommands {
+class CORE_EXPORT StyleCommands {
   STATIC_ONLY(StyleCommands);
 
  public:

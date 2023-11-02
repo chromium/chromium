@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -54,8 +54,8 @@ AlternateSignedExchangeMachingKey MakeKey(const String& anchor,
 void AddAlternateUrlIfValid(
     const LinkHeader& header,
     HashMap<AlternateSignedExchangeMachingKey, KURL>* alternate_urls) {
-  if (!header.Valid() || header.Url().IsEmpty() ||
-      !header.Anchor().has_value() || header.Anchor()->IsEmpty() ||
+  if (!header.Valid() || header.Url().empty() || !header.Anchor().has_value() ||
+      header.Anchor()->empty() ||
       !EqualIgnoringASCIICase(header.Rel(), kAlternate) ||
       header.MimeType() != kSignedExchangeMimeType) {
     return;
@@ -73,8 +73,8 @@ std::unique_ptr<AlternateSignedExchangeResourceInfo::Entry>
 CreateEntryForLinkHeaderIfValid(
     const LinkHeader& header,
     const HashMap<AlternateSignedExchangeMachingKey, KURL>& alternate_urls) {
-  if (!header.Valid() || header.Url().IsEmpty() ||
-      header.HeaderIntegrity().IsEmpty() ||
+  if (!header.Valid() || header.Url().empty() ||
+      header.HeaderIntegrity().empty() ||
       !EqualIgnoringASCIICase(header.Rel(), kAllowedAltSxg)) {
     return nullptr;
   }
@@ -121,7 +121,7 @@ AlternateSignedExchangeResourceInfo::CreateIfValid(
       alternative_resources_it->value.emplace_back(std::move(alt_resource));
     }
   }
-  if (alternative_resources.IsEmpty())
+  if (alternative_resources.empty())
     return nullptr;
   return std::make_unique<AlternateSignedExchangeResourceInfo>(
       std::move(alternative_resources));
@@ -168,7 +168,7 @@ AlternateSignedExchangeResourceInfo::FindMatchingEntry(
   if (it == alternative_resources_.end())
     return nullptr;
   const Vector<std::unique_ptr<Entry>>& entries = it->value;
-  DCHECK(!entries.IsEmpty());
+  DCHECK(!entries.empty());
   if (entries[0]->variants().IsNull())
     return entries[0].get();
 

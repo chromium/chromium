@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,33 +16,19 @@
 
 namespace media {
 
+// NOTE: When adding new VideoFrameMetadata fields, please ensure you update the
+// MergeMetadataFrom() method.
 struct MEDIA_EXPORT VideoFrameMetadata {
   VideoFrameMetadata();
   ~VideoFrameMetadata() = default;
 
   VideoFrameMetadata(const VideoFrameMetadata& other);
 
-  enum CopyMode {
-    // Indicates that mailbox created in one context, is also being used in a
-    // different context belonging to another share group and video frames are
-    // using SurfaceTexture to render frames.
-    // Textures generated from SurfaceTexture can't be shared between contexts
-    // of different share group and hence this frame must be copied to a new
-    // texture before use, rather than being used directly.
-    kCopyToNewTexture = 0,
-
-    // Indicates that mailbox created in one context, is also being used in a
-    // different context belonging to another share group and video frames are
-    // using AImageReader to render frames.
-    // AImageReader allows to render image data to AHardwareBuffer which can be
-    // shared between contexts of different share group. AHB from existing
-    // mailbox is wrapped into a new mailbox(AHB backed) which can then be used
-    // by another context.
-    kCopyMailboxesOnly = 1,
-  };
-
   // Merges internal values from |metadata_source|.
   void MergeMetadataFrom(const VideoFrameMetadata& metadata_source);
+
+  // CLear metadata fields that only make sense for texture backed frames.
+  void ClearTextureFrameMedatada();
 
   // Sources of VideoFrames use this marker to indicate that the associated
   // VideoFrame can be overlaid, case in which its contents do not need to be
@@ -71,9 +57,36 @@ struct MEDIA_EXPORT VideoFrameMetadata {
   // fully contained within visible_rect().
   absl::optional<gfx::Rect> capture_update_rect;
 
-  // If not null, it indicates how video frame mailbox should be copied to a
-  // new mailbox.
-  absl::optional<CopyMode> copy_mode;
+  // For encoded frames, this is the original source size which may be different
+  // from the encoded size. It's used for the HiDPI tab capture heuristic.
+  // The size corresponds to the active region if region capture is active,
+  // or otherwise the full size of the captured source.
+  absl::optional<gfx::Size> source_size;
+
+  // If cropping was applied due to Region Capture to produce this frame,
+  // then this reflects where the frame's contents originate from in the
+  // original uncropped frame.
+  //
+  // NOTE: May also be nullopt if region capture is enabled but the capture rect
+  // is in a different coordinate space. For more info, see
+  // https://crbug.com/1327560.
+  absl::optional<gfx::Rect> region_capture_rect;
+
+  // Whenever cropTo() is called, Blink increments the crop_version and records
+  // a Promise as associated with that crop_version.
+  // When Blink observes a frame with this new version or a later one,
+  // Blink resolves the Promise.
+  // Frames associated with a source which cannot be cropped will always
+  // have this value set to zero.
+  uint32_t crop_version = 0;
+
+  // Indicates that mailbox created in one context, is also being used in a
+  // different context belonging to another share group and video frames are
+  // using SurfaceTexture to render frames.
+  // Textures generated from SurfaceTexture can't be shared between contexts
+  // of different share group and hence this frame must be copied to a new
+  // texture before use, rather than being used directly.
+  bool copy_required = false;
 
   // Indicates if the current frame is the End of its current Stream.
   bool end_of_stream = false;
@@ -119,8 +132,8 @@ struct MEDIA_EXPORT VideoFrameMetadata {
   // instead.  This lets us figure out when SurfaceViews are appropriate.
   bool texture_owner = false;
 
-  // Android only: if set, then this frame's resource would like to be
-  // notified about its promotability to an overlay.
+  // Android & Windows only: if set, then this frame's resource would like to
+  // be notified about its promotability to an overlay.
   bool wants_promotion_hint = false;
 
   // Windows only: set when frame is backed by a dcomp surface handle.
@@ -132,6 +145,10 @@ struct MEDIA_EXPORT VideoFrameMetadata {
   // This video frame is protected by hardware. This option is valid only if
   // PROTECTED_VIDEO is also set to true.
   bool hw_protected = false;
+
+  // This video frame's shared image backing can support zero-copy WebGPU
+  // import.
+  bool is_webgpu_compatible = false;
 
 #if BUILDFLAG(USE_VAAPI)
   // The ID of the VA-API protected session used to decode this frame, if

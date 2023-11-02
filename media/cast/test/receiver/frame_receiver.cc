@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,8 @@
 #include "base/numerics/safe_conversions.h"
 #include "media/cast/cast_config.h"
 #include "media/cast/cast_environment.h"
+#include "media/cast/common/encoded_frame.h"
+#include "media/cast/common/openscreen_conversion_helpers.h"
 #include "media/cast/constants.h"
 #include "media/cast/net/rtcp/rtcp_utility.h"
 
@@ -164,7 +166,7 @@ void FrameReceiver::ProcessParsedPacket(const RtpCastHeader& rtp_header,
       // Note: It's okay for the conversion ToTimeDelta() to be approximate
       // because |lip_sync_drift_| will account for accumulated errors.
       lip_sync_reference_time_ +=
-          (fresh_sync_rtp - lip_sync_rtp_timestamp_).ToTimeDelta(rtp_timebase_);
+          ToTimeDelta(fresh_sync_rtp - lip_sync_rtp_timestamp_, rtp_timebase_);
     }
     lip_sync_rtp_timestamp_ = fresh_sync_rtp;
     lip_sync_drift_.Update(now,
@@ -204,8 +206,6 @@ void FrameReceiver::EmitAvailableEncodedFrames() {
 
   while (!frame_request_queue_.empty()) {
     // Attempt to peek at the next completed frame from the |framer_|.
-    // TODO(miu): We should only be peeking at the metadata, and not copying the
-    // payload yet!  Or, at least, peek using a StringPiece instead of a copy.
     std::unique_ptr<EncodedFrame> encoded_frame(new EncodedFrame());
     bool is_consecutively_next_frame = false;
     bool have_multiple_complete_frames = false;
@@ -304,8 +304,8 @@ base::TimeTicks FrameReceiver::GetPlayoutTime(const EncodedFrame& frame) const {
     target_playout_delay = base::Milliseconds(frame.new_playout_delay_ms);
   }
   return lip_sync_reference_time_ + lip_sync_drift_.Current() +
-         (frame.rtp_timestamp - lip_sync_rtp_timestamp_)
-             .ToTimeDelta(rtp_timebase_) +
+         ToTimeDelta(frame.rtp_timestamp - lip_sync_rtp_timestamp_,
+                     rtp_timebase_) +
          target_playout_delay;
 }
 
@@ -335,7 +335,7 @@ void FrameReceiver::ScheduleNextRtcpReport() {
   cast_environment_->PostDelayedTask(
       CastEnvironment::MAIN, FROM_HERE,
       base::BindOnce(&FrameReceiver::SendNextRtcpReport, AsWeakPtr()),
-      base::Milliseconds(kRtcpReportIntervalMs));
+      kRtcpReportInterval);
 }
 
 void FrameReceiver::SendNextRtcpReport() {

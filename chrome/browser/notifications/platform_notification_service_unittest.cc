@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,10 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -39,6 +40,7 @@
 #include "third_party/blink/public/mojom/notifications/notification.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/image/image_skia_rep.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -50,7 +52,7 @@
 #include "extensions/common/value_builder.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
@@ -91,6 +93,9 @@ class PlatformNotificationServiceTest : public testing::Test {
  public:
   void SetUp() override {
     TestingProfile::Builder profile_builder;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    profile_builder.SetIsMainProfile(true);
+#endif
     profile_builder.AddTestingFactory(
         HistoryServiceFactory::GetInstance(),
         HistoryServiceFactory::GetDefaultFactory());
@@ -133,13 +138,18 @@ class PlatformNotificationServiceTest : public testing::Test {
   }
 
  protected:
+  // This needs to be declared before `task_environment_`, so that it is
+  // destroyed after `task_environment_` - this ensures that tasks running on
+  // other threads won't access `scoped_feature_list_` while it is being
+  // destroyed.
+  base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
 
   std::unique_ptr<NotificationDisplayServiceTester> display_service_tester_;
 
   // Owned by the |profile_| as a keyed service.
-  MockNotificationMetricsLogger* mock_logger_;
+  raw_ptr<MockNotificationMetricsLogger> mock_logger_;
 
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> recorder_;
 };
@@ -191,8 +201,7 @@ TEST_F(PlatformNotificationServiceTest, DisplayPersistentThenClose) {
 TEST_F(PlatformNotificationServiceTest, DisplayNonPersistentPropertiesMatch) {
   std::vector<int> vibration_pattern(
       kNotificationVibrationPattern,
-      kNotificationVibrationPattern +
-          base::size(kNotificationVibrationPattern));
+      kNotificationVibrationPattern + std::size(kNotificationVibrationPattern));
 
   PlatformNotificationData data;
   data.title = u"My notification's title";
@@ -224,8 +233,7 @@ TEST_F(PlatformNotificationServiceTest, DisplayNonPersistentPropertiesMatch) {
 TEST_F(PlatformNotificationServiceTest, DisplayPersistentPropertiesMatch) {
   std::vector<int> vibration_pattern(
       kNotificationVibrationPattern,
-      kNotificationVibrationPattern +
-          base::size(kNotificationVibrationPattern));
+      kNotificationVibrationPattern + std::size(kNotificationVibrationPattern));
   PlatformNotificationData data;
   data.title = u"My notification's title";
   data.body = u"Hello, world!";
@@ -408,21 +416,9 @@ TEST_F(PlatformNotificationServiceTest, CreateNotificationFromData) {
 
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-#if !defined(OS_ANDROID)
-
-class PlatformNotificationServiceTest_WebAppNotificationIconAndTitle
-    : public PlatformNotificationServiceTest {
-  void SetUp() override {
-    PlatformNotificationServiceTest::SetUp();
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    profile_->SetIsMainProfile(true);
-#endif
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kDesktopPWAsNotificationIconAndTitle};
-};
+#if BUILDFLAG(IS_CHROMEOS)
+using PlatformNotificationServiceTest_WebAppNotificationIconAndTitle =
+    PlatformNotificationServiceTest;
 
 TEST_F(PlatformNotificationServiceTest_WebAppNotificationIconAndTitle,
        FindWebAppIconAndTitle_NoApp) {
@@ -455,7 +451,13 @@ TEST_F(PlatformNotificationServiceTest_WebAppNotificationIconAndTitle,
   provider->GetRegistrarMutable().registry().emplace(app_id,
                                                      std::move(web_app));
 
-  IconManagerStartAndAwaitFaviconMonochrome(icon_manager, app_id);
+  base::RunLoop run_loop;
+  icon_manager.SetFaviconMonochromeReadCallbackForTesting(
+      base::BindLambdaForTesting(
+          [&](const web_app::AppId& cached_app_id) { run_loop.Quit(); }));
+  icon_manager.Start();
+  run_loop.Run();
+
   provider->Start();
 
   absl::optional<PlatformNotificationServiceImpl::WebAppIconAndTitle>
@@ -468,5 +470,4 @@ TEST_F(PlatformNotificationServiceTest_WebAppNotificationIconAndTitle,
       SK_ColorTRANSPARENT,
       icon_and_title->icon.GetRepresentation(1.0f).GetBitmap().getColor(0, 0));
 }
-
-#endif  // !defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_CHROMEOS)

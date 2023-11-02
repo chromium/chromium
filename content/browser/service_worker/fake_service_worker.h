@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,9 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -59,10 +61,9 @@ class FakeServiceWorker : public blink::mojom::ServiceWorker {
       blink::mojom::ServiceWorkerRegistrationObjectInfoPtr registration_info,
       blink::mojom::ServiceWorkerObjectInfoPtr service_worker_info,
       FetchHandlerExistence fetch_handler_existence,
-      std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
-          subresource_loader_factories,
       mojo::PendingReceiver<blink::mojom::ReportingObserver>
-          reporting_observer_receiver) override;
+          reporting_observer_receiver,
+      blink::mojom::AncestorFrameType ancestor_frame_type) override;
   void DispatchInstallEvent(DispatchInstallEventCallback callback) override;
   void DispatchActivateEvent(DispatchActivateEventCallback callback) override;
   void DispatchBackgroundFetchAbortEvent(
@@ -133,6 +134,9 @@ class FakeServiceWorker : public blink::mojom::ServiceWorker {
   void SetIdleDelay(base::TimeDelta delay) override;
   void AddMessageToConsole(blink::mojom::ConsoleMessageLevel level,
                            const std::string& message) override;
+  void ExecuteScriptForTest(const std::u16string& script,
+                            bool wants_result,
+                            ExecuteScriptForTestCallback callback) override;
 
   virtual void OnConnectionError();
 
@@ -140,7 +144,7 @@ class FakeServiceWorker : public blink::mojom::ServiceWorker {
   void CallOnConnectionError();
 
   // |helper_| owns |this|.
-  EmbeddedWorkerTestHelper* const helper_;
+  const raw_ptr<EmbeddedWorkerTestHelper> helper_;
 
   mojo::AssociatedRemote<blink::mojom::ServiceWorkerHost> host_;
   blink::mojom::ServiceWorkerRegistrationObjectInfoPtr registration_info_;

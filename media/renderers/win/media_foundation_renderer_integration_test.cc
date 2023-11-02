@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -69,9 +69,10 @@ class MediaFoundationRendererIntegrationTest
  private:
   std::unique_ptr<Renderer> CreateMediaFoundationRenderer(
       absl::optional<RendererType> /*renderer_type*/) {
+    LUID empty_luid{0, 0};
     auto renderer = std::make_unique<MediaFoundationRenderer>(
         task_environment_.GetMainThreadTaskRunner(),
-        std::make_unique<NullMediaLog>(),
+        std::make_unique<NullMediaLog>(), empty_luid,
         /*force_dcomp_mode_for_testing=*/true);
     return renderer;
   }

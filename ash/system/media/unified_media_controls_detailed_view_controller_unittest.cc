@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -92,7 +92,7 @@ class UnifiedMediaControlsDetailedViewControllerTest : public AshTestBase {
     return StatusAreaWidgetTestHelper::GetStatusAreaWidget()
         ->unified_system_tray()
         ->bubble()
-        ->controller_for_test();
+        ->unified_system_tray_controller();
   }
 
   MockMediaNotificationProvider* provider() { return provider_.get(); }

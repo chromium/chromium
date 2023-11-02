@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/demuxer.h"
 #include "url/gurl.h"
@@ -76,7 +77,7 @@ class MEDIA_EXPORT MediaUrlDemuxer : public Demuxer {
 
  private:
   MediaUrlParams params_;
-  DemuxerHost* host_;
+  raw_ptr<DemuxerHost> host_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 };

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_OBSERVABLE_ARRAY_BASE_H_
 
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "v8/include/v8-forward.h"
 
 // Overview of Blink implementation of Web IDL observable arrays
@@ -53,7 +54,8 @@
 //   +-- bindings::ObservableArrayExoticObjectImpl -- the implementation class
 //
 //   v8_exotic_object (= JS Proxy)
-//       --(proxy target)--> v8_backing_list_object
+//       --(proxy target)--> v8_array (= JS Array)
+//       --(private property)--> v8_backing_list_object
 //       --(internal field)--> blink_backing_list_object
 //       --(data member)--> blink_exotic_object
 //       --(ToV8Traits)--> v8_exotic_object

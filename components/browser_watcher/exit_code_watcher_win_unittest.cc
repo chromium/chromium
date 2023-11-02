@@ -1,4 +1,4 @@
-// Copyright (c) 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -131,7 +131,7 @@ TEST_F(ExitCodeWatcherTest, ExitCodeWatcherOnExitedProcess) {
   base::PlatformThread::Sleep(TestTimeouts::tiny_timeout());
 
   // Verify we got the expected exit code
-  EXPECT_TRUE(watcher.exit_code() == kExitCode);
+  EXPECT_TRUE(watcher.ExitCodeForTesting() == kExitCode);
 }
 
 TEST_F(ExitCodeWatcherTest, ExitCodeWatcherStopWatching) {
@@ -148,7 +148,7 @@ TEST_F(ExitCodeWatcherTest, ExitCodeWatcherStopWatching) {
   watcher.StopWatching();
 
   // Verify we got the expected exit code
-  EXPECT_TRUE(watcher.exit_code() == STILL_ACTIVE);
+  EXPECT_TRUE(watcher.ExitCodeForTesting() == STILL_ACTIVE);
 
   // Cleanup the sleeper, and make sure it's exited before we continue.
   ASSERT_NO_FATAL_FAILURE(sleeper.Kill(kExitCode, true));

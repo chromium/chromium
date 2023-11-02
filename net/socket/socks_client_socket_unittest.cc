@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,7 @@
 #include <utility>
 
 #include "base/containers/span.h"
-#include "base/cxx17_backports.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "net/base/address_list.h"
 #include "net/base/test_completion_callback.h"
@@ -57,15 +56,14 @@ class SOCKSClientSocketTest : public PlatformTest, public WithTaskEnvironment {
   AddressList address_list_;
   // Filled in by BuildMockSocket() and owned by its return value
   // (which |user_sock| is set to).
-  StreamSocket* tcp_sock_;
+  raw_ptr<StreamSocket> tcp_sock_;
   TestCompletionCallback callback_;
   std::unique_ptr<MockHostResolver> host_resolver_;
   std::unique_ptr<SocketDataProvider> data_;
 };
 
 SOCKSClientSocketTest::SOCKSClientSocketTest()
-  : host_resolver_(new MockHostResolver) {
-}
+    : host_resolver_(std::make_unique<MockHostResolver>()) {}
 
 // Set up platform before every test case
 void SOCKSClientSocketTest::SetUp() {
@@ -95,9 +93,9 @@ std::unique_ptr<SOCKSClientSocket> SOCKSClientSocketTest::BuildMockSocket(
   // non-owning pointer to it.
   tcp_sock_ = socket.get();
   return std::make_unique<SOCKSClientSocket>(
-      std::move(socket), HostPortPair(hostname, port), NetworkIsolationKey(),
-      DEFAULT_PRIORITY, host_resolver, SecureDnsPolicy::kAllow,
-      TRAFFIC_ANNOTATION_FOR_TESTS);
+      std::move(socket), HostPortPair(hostname, port),
+      NetworkAnonymizationKey(), DEFAULT_PRIORITY, host_resolver,
+      SecureDnsPolicy::kAllow, TRAFFIC_ANNOTATION_FOR_TESTS);
 }
 
 // Tests a complete handshake and the disconnection.
@@ -232,7 +230,7 @@ TEST_F(SOCKSClientSocketTest, HandshakeFailures) {
         MockWrite(SYNCHRONOUS, kSOCKS4OkRequestLocalHostPort80,
                   kSOCKS4OkRequestLocalHostPort80Length)};
     MockRead data_reads[] = {
-        MockRead(SYNCHRONOUS, test.fail_reply, base::size(test.fail_reply))};
+        MockRead(SYNCHRONOUS, test.fail_reply, std::size(test.fail_reply))};
     RecordingNetLogObserver log_observer;
 
     user_sock_ = BuildMockSocket(data_reads, data_writes, host_resolver_.get(),
@@ -264,8 +262,8 @@ TEST_F(SOCKSClientSocketTest, PartialServerReads) {
   MockWrite data_writes[] = {MockWrite(ASYNC, kSOCKS4OkRequestLocalHostPort80,
                                        kSOCKS4OkRequestLocalHostPort80Length)};
   MockRead data_reads[] = {
-      MockRead(ASYNC, kSOCKSPartialReply1, base::size(kSOCKSPartialReply1)),
-      MockRead(ASYNC, kSOCKSPartialReply2, base::size(kSOCKSPartialReply2))};
+      MockRead(ASYNC, kSOCKSPartialReply1, std::size(kSOCKSPartialReply1)),
+      MockRead(ASYNC, kSOCKSPartialReply2, std::size(kSOCKSPartialReply2))};
   RecordingNetLogObserver log_observer;
 
   user_sock_ = BuildMockSocket(data_reads, data_writes, host_resolver_.get(),
@@ -291,12 +289,11 @@ TEST_F(SOCKSClientSocketTest, PartialClientWrites) {
   const char kSOCKSPartialRequest2[] = { 0x00, 0x50, 127, 0, 0, 1, 0 };
 
   MockWrite data_writes[] = {
-      MockWrite(ASYNC, kSOCKSPartialRequest1,
-                base::size(kSOCKSPartialRequest1)),
+      MockWrite(ASYNC, kSOCKSPartialRequest1, std::size(kSOCKSPartialRequest1)),
       // simulate some empty writes
-      MockWrite(ASYNC, 0), MockWrite(ASYNC, 0),
-      MockWrite(ASYNC, kSOCKSPartialRequest2,
-                base::size(kSOCKSPartialRequest2)),
+      MockWrite(ASYNC, 0),
+      MockWrite(ASYNC, 0),
+      MockWrite(ASYNC, kSOCKSPartialRequest2, std::size(kSOCKSPartialRequest2)),
   };
   MockRead data_reads[] = {
       MockRead(ASYNC, kSOCKS4OkReply, kSOCKS4OkReplyLength)};
@@ -429,25 +426,26 @@ TEST_F(SOCKSClientSocketTest, NoIPv6RealResolver) {
 
 TEST_F(SOCKSClientSocketTest, Tag) {
   StaticSocketDataProvider data;
-  MockTaggingStreamSocket* tagging_sock =
-      new MockTaggingStreamSocket(std::unique_ptr<StreamSocket>(
-          new MockTCPClientSocket(address_list_, NetLog::Get(), &data)));
+  auto tagging_sock = std::make_unique<MockTaggingStreamSocket>(
+      std::make_unique<MockTCPClientSocket>(address_list_, NetLog::Get(),
+                                            &data));
+  auto* tagging_sock_ptr = tagging_sock.get();
 
-  std::unique_ptr<ClientSocketHandle> connection(new ClientSocketHandle);
+  auto connection = std::make_unique<ClientSocketHandle>();
   // |connection| takes ownership of |tagging_sock|, but keep a
   // non-owning pointer to it.
   MockHostResolver host_resolver;
   SOCKSClientSocket socket(
-      std::unique_ptr<StreamSocket>(tagging_sock),
-      HostPortPair("localhost", 80), NetworkIsolationKey(), DEFAULT_PRIORITY,
-      &host_resolver, SecureDnsPolicy::kAllow, TRAFFIC_ANNOTATION_FOR_TESTS);
+      std::move(tagging_sock), HostPortPair("localhost", 80),
+      NetworkAnonymizationKey(), DEFAULT_PRIORITY, &host_resolver,
+      SecureDnsPolicy::kAllow, TRAFFIC_ANNOTATION_FOR_TESTS);
 
-  EXPECT_EQ(tagging_sock->tag(), SocketTag());
-#if defined(OS_ANDROID)
+  EXPECT_EQ(tagging_sock_ptr->tag(), SocketTag());
+#if BUILDFLAG(IS_ANDROID)
   SocketTag tag(0x12345678, 0x87654321);
   socket.ApplySocketTag(tag);
-  EXPECT_EQ(tagging_sock->tag(), tag);
-#endif  // OS_ANDROID
+  EXPECT_EQ(tagging_sock_ptr->tag(), tag);
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 TEST_F(SOCKSClientSocketTest, SetSecureDnsPolicy) {
@@ -456,11 +454,12 @@ TEST_F(SOCKSClientSocketTest, SetSecureDnsPolicy) {
     StaticSocketDataProvider data;
     MockHostResolver host_resolver;
     host_resolver.rules()->AddRule("doh.test", "127.0.0.1");
-    SOCKSClientSocket socket(
-        std::make_unique<MockTCPClientSocket>(address_list_, NetLog::Get(),
-                                              &data),
-        HostPortPair("doh.test", 80), NetworkIsolationKey(), DEFAULT_PRIORITY,
-        &host_resolver, secure_dns_policy, TRAFFIC_ANNOTATION_FOR_TESTS);
+    SOCKSClientSocket socket(std::make_unique<MockTCPClientSocket>(
+                                 address_list_, NetLog::Get(), &data),
+                             HostPortPair("doh.test", 80),
+                             NetworkAnonymizationKey(), DEFAULT_PRIORITY,
+                             &host_resolver, secure_dns_policy,
+                             TRAFFIC_ANNOTATION_FOR_TESTS);
 
     EXPECT_EQ(ERR_IO_PENDING, socket.Connect(callback_.callback()));
     EXPECT_EQ(secure_dns_policy, host_resolver.last_secure_dns_policy());

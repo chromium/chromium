@@ -1,10 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_ORG_GNOME_MUTTER_IDLE_MONITOR_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_ORG_GNOME_MUTTER_IDLE_MONITOR_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
@@ -74,7 +75,7 @@ class OrgGnomeMutterIdleMonitor {
 
   scoped_refptr<dbus::Bus> bus_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  dbus::ObjectProxy* proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy> proxy_ = nullptr;
 
   THREAD_CHECKER(main_thread_checker_);
 

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,16 @@
 // Coordinator for the popup menu, handling the commands.
 @interface PopupMenuCoordinator : ChromeCoordinator<PopupMenuLongPressDelegate>
 
+// Initializes this Coordinator with its `browser` and a nil base view
+// controller.
+- (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser NS_UNAVAILABLE;
+
+// The base view controller for this coordinator
+@property(weak, nonatomic, readwrite) UIViewController* baseViewController;
+
 // UI updater.
 @property(nonatomic, weak) id<PopupMenuUIUpdating> UIUpdater;
 // Bubble view presenter for the incognito tip.
@@ -23,6 +33,9 @@
 
 // Returns whether this coordinator is showing a popup menu.
 - (BOOL)isShowingPopupMenu;
+
+// Starts the popup menu's child help coordinator.
+- (void)startPopupMenuHelpCoordinator;
 
 @end
 

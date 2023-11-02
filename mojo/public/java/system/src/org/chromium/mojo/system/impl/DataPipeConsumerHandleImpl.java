@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,9 +15,9 @@ import java.nio.ByteBuffer;
  */
 class DataPipeConsumerHandleImpl extends HandleBase implements ConsumerHandle {
     /**
-     * @see HandleBase#HandleBase(CoreImpl, int)
+     * @see HandleBase#HandleBase(CoreImpl, long)
      */
-    DataPipeConsumerHandleImpl(CoreImpl core, int mojoHandle) {
+    DataPipeConsumerHandleImpl(CoreImpl core, long mojoHandle) {
         super(core, mojoHandle);
     }
 

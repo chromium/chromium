@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <sys/types.h>
 
-#include <algorithm>
 #include <fstream>
 #include <iostream>
 #include <limits>
@@ -19,25 +18,27 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/cpu_reduction_experiment.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/i18n/number_formatting.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
-#include "base/task/post_task.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/system/procfs_util.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -264,7 +265,14 @@ void ProcessDataCollector::Initialize() {
       ProcessDataCollector::Config::AveragingTechnique::AVERAGE);
 
   g_process_data_collector = new ProcessDataCollector(kRealConfig);
-  g_process_data_collector->StartSamplingCpuUsage();
+
+  if (!base::IsRunningCpuReductionExperiment()) {
+    // Don't gather the metrics to evaluate impact of CPU reduction.
+    // This code is deemed not useful anymore (crbug.com/1295807).
+    // TODO(crbug.com/1295441: Fully remove the code once the experiment is
+    // over.
+    g_process_data_collector->StartSamplingCpuUsage();
+  }
 }
 
 // static
@@ -316,8 +324,8 @@ ProcessDataCollector::GetProcessUsages() {
       process_list.begin(), process_list.end(), 0.,
       [](const auto& i, const auto& s) { return i + s.power_usage_fraction; });
   if (total != 0) {
-    std::for_each(process_list.begin(), process_list.end(),
-                  [&total](auto& c) { c.power_usage_fraction /= total; });
+    base::ranges::for_each(
+        process_list, [&total](auto& c) { c.power_usage_fraction /= total; });
   }
 
   return process_list;

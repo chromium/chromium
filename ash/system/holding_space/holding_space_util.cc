@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,14 +13,36 @@
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/rrect_f.h"
 #include "ui/views/background.h"
 #include "ui/views/painter.h"
 #include "ui/views/view.h"
 
-namespace ash {
-namespace holding_space_util {
+namespace ash::holding_space_util {
 
 namespace {
+
+// CallbackPathGenerator -------------------------------------------------------
+
+class CallbackPathGenerator : public views::HighlightPathGenerator {
+ public:
+  using Callback = base::RepeatingCallback<gfx::RRectF()>;
+
+  explicit CallbackPathGenerator(Callback callback)
+      : callback_(std::move(callback)) {}
+  CallbackPathGenerator(const CallbackPathGenerator&) = delete;
+  CallbackPathGenerator& operator=(const CallbackPathGenerator&) = delete;
+  ~CallbackPathGenerator() override = default;
+
+ private:
+  // views::HighlightPathGenerator:
+  absl::optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override {
+    return callback_.Run();
+  }
+
+  Callback callback_;
+};
 
 // CirclePainter ---------------------------------------------------------------
 
@@ -135,5 +157,9 @@ std::unique_ptr<views::Background> CreateCircleBackground(
       std::make_unique<CirclePainter>(color, insets));
 }
 
-}  // namespace holding_space_util
-}  // namespace ash
+std::unique_ptr<views::HighlightPathGenerator> CreateHighlightPathGenerator(
+    base::RepeatingCallback<gfx::RRectF()> callback) {
+  return std::make_unique<CallbackPathGenerator>(std::move(callback));
+}
+
+}  // namespace ash::holding_space_util

@@ -1,15 +1,15 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/commerce/coupons/coupon_db.h"
 
-#include "chrome/browser/commerce/coupons/coupon_db_content.pb.h"
-#include "chrome/browser/persisted_state_db/profile_proto_db_factory.h"
+#include "chrome/browser/persisted_state_db/session_proto_db_factory.h"
+#include "components/commerce/core/proto/coupon_db_content.pb.h"
 
 CouponDB::CouponDB(content::BrowserContext* browser_context)
     : proto_db_(
-          ProfileProtoDBFactory<coupon_db::CouponContentProto>::GetInstance()
+          SessionProtoDBFactory<coupon_db::CouponContentProto>::GetInstance()
               ->GetForProfile(browser_context)) {}
 
 CouponDB::~CouponDB() = default;

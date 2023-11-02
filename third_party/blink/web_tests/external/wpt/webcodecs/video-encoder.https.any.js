@@ -1,33 +1,13 @@
 // META: global=window,dedicatedworker
 // META: script=/common/media.js
 // META: script=/webcodecs/utils.js
+// META: script=/webcodecs/video-encoder-utils.js
 
 const defaultConfig = {
   codec: 'vp8',
   width: 640,
   height: 480
 };
-
-let bitmap_blob = null;
-
-async function generateBitmap(width, height) {
-  if (!bitmap_blob) {
-    let response = await fetch("pattern.png");
-    bitmap_blob = await response.blob();
-  }
-
-  var size = {
-    resizeWidth: width,
-    resizeHeight: height
-  };
-
-  return createImageBitmap(bitmap_blob, size);
-}
-
-async function createVideoFrame(width, height, timestamp) {
-  let bitmap = await generateBitmap(width, height);
-  return new VideoFrame(bitmap, { timestamp: timestamp });
-}
 
 promise_test(t => {
   // VideoEncoderInit lacks required fields.
@@ -81,8 +61,8 @@ promise_test(async t => {
   let encoder = new VideoEncoder(codecInit);
   encoder.configure(encoderConfig);
 
-  let frame1 = await createVideoFrame(640, 480, 0);
-  let frame2 = await createVideoFrame(640, 480, 33333);
+  let frame1 = createFrame(640, 480, 0);
+  let frame2 = createFrame(640, 480, 33333);
 
   encoder.encode(frame1);
   encoder.encode(frame2);
@@ -103,7 +83,9 @@ promise_test(async t => {
 
   assert_equals(output_chunks.length, 2);
   assert_equals(output_chunks[0].timestamp, frame1.timestamp);
+  assert_equals(output_chunks[0].duration, frame1.duration);
   assert_equals(output_chunks[1].timestamp, frame2.timestamp);
+  assert_equals(output_chunks[1].duration, frame2.duration);
 }, 'Test successful configure(), encode(), and flush()');
 
 promise_test(async t => {
@@ -129,28 +111,40 @@ promise_test(async t => {
   const frames_count = 100;
   let frames = [];
   for (let i = 0; i < frames_count; i++) {
-    let frame = await createVideoFrame(320, 200, i * 16000);
+    let frame = createFrame(320, 200, i * 16000);
     frames.push(frame);
   }
+
+  let lastDequeueSize = Infinity;
+  encoder.ondequeue = () => {
+    assert_greater_than(lastDequeueSize, 0, "Dequeue event after queue empty");
+    assert_greater_than(lastDequeueSize, encoder.encodeQueueSize,
+                        "Dequeue event without decreased queue size");
+    lastDequeueSize = encoder.encodeQueueSize;
+  };
 
   for (let frame of frames)
     encoder.encode(frame);
 
-  // Some encodes should have already started being processed, but not all
-  // 100 of them.
-  assert_greater_than(encoder.encodeQueueSize, 0);
-  assert_less_than(encoder.encodeQueueSize, frames_count);
+  assert_greater_than_equal(encoder.encodeQueueSize, 0);
+  assert_less_than_equal(encoder.encodeQueueSize, frames_count);
 
   await encoder.flush();
   // We can guarantee that all encodes are processed after a flush.
   assert_equals(encoder.encodeQueueSize, 0);
+  // Last dequeue event should fire when the queue is empty.
+  assert_equals(lastDequeueSize, 0);
+
+  // Reset this to Infinity to track the decline of queue size for this next
+  // batch of encodes.
+  lastDequeueSize = Infinity;
 
   for (let frame of frames) {
     encoder.encode(frame);
     frame.close();
   }
 
-  assert_greater_than(encoder.encodeQueueSize, 0);
+  assert_greater_than_equal(encoder.encodeQueueSize, 0);
   encoder.reset();
   assert_equals(encoder.encodeQueueSize, 0);
 }, 'encodeQueueSize test');
@@ -163,7 +157,7 @@ promise_test(async t => {
   const timestamp_step = 40000;
   const expected_callbacks_before_reset = 3;
   let codecInit = getDefaultCodecInit(t);
-  let bitmap = await generateBitmap(320, 200);
+  let original = createFrame(320, 200, 0);
   let encoder = null;
   let reset_completed = false;
   codecInit.output = (chunk, metadata) => {
@@ -188,7 +182,7 @@ promise_test(async t => {
   // and make sure no more chunks are emitted afterwards.
   let encodes_before_reset = expected_callbacks_before_reset * 10;
   for (let i = 0; i < encodes_before_reset; i++) {
-    let frame = new VideoFrame(bitmap, { timestamp: timestamp });
+    let frame = new VideoFrame(original, { timestamp: timestamp });
     timestamp += timestamp_step;
     encoder.encode(frame);
     frame.close();
@@ -208,7 +202,7 @@ promise_test(async t => {
 
   const frames_after_reset = 5;
   for (let i = 0; i < frames_after_reset; i++) {
-    let frame = await createVideoFrame(800, 600, timestamp + 1);
+    let frame = createFrame(800, 600, timestamp + 1);
     timestamp += timestamp_step;
     encoder.encode(frame);
     frame.close();
@@ -236,8 +230,8 @@ promise_test(async t => {
 
   encoder.configure(config);
 
-  let frame1 = await createVideoFrame(640, 480, 0);
-  let frame2 = await createVideoFrame(640, 480, 33333);
+  let frame1 = createFrame(640, 480, 0);
+  let frame2 = createFrame(640, 480, 33333);
 
   encoder.encode(frame1);
   encoder.configure(config);
@@ -247,16 +241,16 @@ promise_test(async t => {
   await encoder.flush();
 
   // We can guarantee that all encodes are processed after a flush.
-  assert_equals(encoder.encodeQueueSize, 0);
+  assert_equals(encoder.encodeQueueSize, 0, "queue size after encode");
 
-  assert_true(output_chunks.length == 2);
+  assert_equals(output_chunks.length, 2, "number of chunks");
   assert_equals(output_chunks[0].timestamp, frame1.timestamp);
   assert_equals(output_chunks[1].timestamp, frame2.timestamp);
 
   output_chunks = [];
 
-  let frame3 = await createVideoFrame(640, 480, 66666);
-  let frame4 = await createVideoFrame(640, 480, 100000);
+  let frame3 = createFrame(640, 480, 66666);
+  let frame4 = createFrame(640, 480, 100000);
 
   encoder.encode(frame3);
 
@@ -276,7 +270,7 @@ promise_test(async t => {
 promise_test(async t => {
   let encoder = new VideoEncoder(getDefaultCodecInit(t));
 
-  let frame = await createVideoFrame(640, 480, 0);
+  let frame = createFrame(640, 480, 0);
 
   return testClosedCodec(t, encoder, defaultConfig, frame);
 }, 'Verify closed VideoEncoder operations');
@@ -284,7 +278,7 @@ promise_test(async t => {
 promise_test(async t => {
   let encoder = new VideoEncoder(getDefaultCodecInit(t));
 
-  let frame = await createVideoFrame(640, 480, 0);
+  let frame = createFrame(640, 480, 0);
 
   return testUnconfiguredCodec(t, encoder, frame);
 }, 'Verify unconfigured VideoEncoder operations');
@@ -292,7 +286,7 @@ promise_test(async t => {
 promise_test(async t => {
   let encoder = new VideoEncoder(getDefaultCodecInit(t));
 
-  let frame = await createVideoFrame(640, 480, 0);
+  let frame = createFrame(640, 480, 0);
   frame.close();
 
   encoder.configure(defaultConfig);
@@ -311,7 +305,7 @@ promise_test(async t => {
   let config = defaultConfig;
   encoder.configure(config);
 
-  let frame = await createVideoFrame(640, 480, -10000);
+  let frame = createFrame(640, 480, -10000);
   encoder.encode(frame);
   frame.close();
   await encoder.flush();

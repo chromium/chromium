@@ -76,10 +76,10 @@ class FactoryTest(unittest.TestCase):
         self.assert_port(port_name='android', cls=android.AndroidPort)
 
     def test_win(self):
-        self.assert_port(port_name='win-win7', cls=win.WinPort)
         self.assert_port(port_name='win-win10.20h2', cls=win.WinPort)
+        self.assert_port(port_name='win-win11', cls=win.WinPort)
         self.assert_port(
-            port_name='win', os_name='win', os_version='win7', cls=win.WinPort)
+            port_name='win', os_name='win', os_version='win11', cls=win.WinPort)
 
     def test_unknown_specified(self):
         with self.assertRaises(NotImplementedError):
@@ -92,14 +92,20 @@ class FactoryTest(unittest.TestCase):
     def test_get_from_builder_name(self):
         host = MockHost()
         host.builders = BuilderList({
-            'My Fake Mac10.12 Builder': {
-                'port_name': 'mac-mac10.12',
-                'specifiers': ['Mac10.12', 'Release'],
+            'My Fake Mac11 Builder': {
+                'port_name': 'mac-mac11',
+                'specifiers': ['Mac11', 'Release'],
             }
         })
         self.assertEqual(
             factory.PortFactory(host).get_from_builder_name(
-                'My Fake Mac10.12 Builder').name(), 'mac-mac10.12')
+                'My Fake Mac11 Builder').name(), 'mac-mac11')
+
+    def test_options_is_unchanged(self):
+        host = MockHost()
+        options = optparse.Values()
+        factory.PortFactory(host).get(options=options)
+        self.assertEqual(options, optparse.Values())
 
     def get_port(self, target=None, configuration=None, files=None):
         host = MockHost()
@@ -190,3 +196,7 @@ class FactoryTest(unittest.TestCase):
                 target='Debug',
                 configuration='Release',
                 files={'out/Debug/toolchain.ninja': ''})
+
+    def test_no_target_has_correct_config(self):
+        port = self.get_port(files={'out/Release/args.gn': 'is_debug = true'})
+        self.assertEqual(port._options.configuration, 'Debug')

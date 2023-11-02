@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,9 @@ void ApplyAshFontStyles(int context,
   switch (context) {
     case CONTEXT_SEARCH_RESULT_VIEW_INLINE_ANSWER_DETAILS:
       break;
+    case CONTEXT_LAUNCHER_NUDGE_LABEL:
+      details.size_delta = 1;
+      break;
     case CONTEXT_SHARESHEET_BUBBLE_SMALL:
       details.size_delta = -2;
       break;
@@ -20,16 +23,12 @@ void ApplyAshFontStyles(int context,
       break;
     case CONTEXT_SEARCH_RESULT_CATEGORY_LABEL:
       details.size_delta = 1;
-      details.typeface = "Google Sans";
       break;
     case CONTEXT_LAUNCHER_BUTTON:
     case CONTEXT_SHARESHEET_BUBBLE_BODY:
     case CONTEXT_CALENDAR_DATE:
     case CONTEXT_SEARCH_RESULT_VIEW:
       details.size_delta = 2;
-      break;
-    case CONTEXT_TOAST_OVERLAY:
-      details.size_delta = 3;
       break;
     case CONTEXT_SHARESHEET_BUBBLE_TITLE:
       details.typeface = "Google Sans";
@@ -39,17 +38,21 @@ void ApplyAshFontStyles(int context,
       details.weight = gfx::Font::Weight::MEDIUM;
       break;
     case CONTEXT_CALENDAR_LABEL:
-      details.typeface = "Google Sans";
       details.size_delta = 6;
       break;
     case CONTEXT_HEADLINE_OVERSIZED:
       details.size_delta = 15;
       break;
+    case CONTEXT_SEARCH_RESULT_BIG_TITLE:
+      details.size_delta = 24;
+      break;
+    case CONTEXT_SEARCH_RESULT_BIG_TITLE_SUPERSCRIPT:
+      details.size_delta = 6;
   }
 
   switch (style) {
-    case STYLE_EMPHASIZED:
-      details.weight = gfx::Font::Weight::MEDIUM;
+    case STYLE_HIGHLIGHT:
+      details.weight = gfx::Font::Weight::BOLD;
       break;
     case STYLE_SHARESHEET:
       DCHECK(context == CONTEXT_SHARESHEET_BUBBLE_TITLE ||

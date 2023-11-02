@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,12 @@
 #include <memory>
 
 #include "base/observer_list.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/borealis/borealis_installer.h"
 #include "chrome/browser/ash/borealis/borealis_metrics.h"
+#include "chrome/browser/ash/borealis/infra/described.h"
 #include "chrome/browser/ash/borealis/infra/expected.h"
-#include "chromeos/dbus/dlcservice/dlcservice_client.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 
 class Profile;
 
@@ -61,8 +63,9 @@ class BorealisInstallerImpl : public BorealisInstaller {
   void UpdateProgress(double state_progress);
   void UpdateInstallingState(InstallingState installing_state);
 
-  void OnInstallComplete(Expected<std::unique_ptr<InstallInfo>,
-                                  BorealisInstallResult> result_or_error);
+  void OnInstallComplete(
+      Expected<std::unique_ptr<InstallInfo>, Described<BorealisInstallResult>>
+          result_or_error);
   void OnUninstallComplete(
       base::OnceCallback<void(BorealisUninstallResult)> on_uninstall_callback,
       Expected<std::unique_ptr<InstallInfo>, BorealisUninstallResult> result);

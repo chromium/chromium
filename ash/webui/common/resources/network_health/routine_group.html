@@ -1,0 +1,43 @@
+<style>
+  .routine-container {
+    align-items: center;
+    display: flex;
+    height: 20px;
+    margin: 5px;
+    padding: 5px;
+  }
+  .routine-icon {
+    height: 25px;
+    width: auto;
+  }
+  .routine-name {
+    flex: 1;
+    font-size: 0.8rem;
+    padding-inline-start: 10px;
+  }
+</style>
+
+<network-health-container expanded="[[expanded]]" label="[[name]]"
+    on-toggle-expanded="onToggleExpanded_">
+  <span slot="header" >
+    <template is="dom-if" if="[[running_]]">
+      <paper-spinner-lite active></paper-spinner-lite>
+    </template>
+    <img class="routine-icon" hidden="[[!showGroupIcon_]]"
+        src="[[getGroupIcon_(routines.*)]]">
+  </span>
+  <template is="dom-repeat" items="[[routines]]" as="routine"
+      mutable-data>
+    <div class="routine-container" aria-label="[[i18n(routine.name)]]"
+        aria-description="[[routine.ariaDescription]]">
+      <img class="routine-icon" src="[[getRoutineIcon_(routine.result)]]">
+      <div aria-hidden="true" class="routine-name">
+        [[i18n(routine.name)]]
+      </div>
+      <div id="result-msg" aria-hidden="true" hidden="[[!routine.resultMsg]]">
+        [[routine.resultMsg]]
+      </div>
+    </div>
+  </template>
+</network-health-container>
+

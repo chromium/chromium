@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -80,8 +80,11 @@ class MEDIA_GPU_EXPORT V4L2VideoDecoder
                         size_t num_output_frames) override;
   void OutputFrame(scoped_refptr<VideoFrame> frame,
                    const gfx::Rect& visible_rect,
+                   const VideoColorSpace& color_space,
                    base::TimeDelta timestamp) override;
   DmabufVideoFramePool* GetVideoFramePool() const override;
+
+  void SetDmaIncoherentV4L2(bool incoherent) override;
 
  private:
   friend class V4L2VideoDecoderTest;
@@ -197,9 +200,10 @@ class MEDIA_GPU_EXPORT V4L2VideoDecoder
   // Callbacks passed from Initialize().
   OutputCB output_cb_;
 
-  // Hold onto profile passed in from Initialize() so that
+  // Hold onto profile and color space passed in from Initialize() so that
   // it is available for InitializeBackend().
   VideoCodecProfile profile_ = VIDEO_CODEC_PROFILE_UNKNOWN;
+  VideoColorSpace color_space_;
 
   // V4L2 input and output queue.
   scoped_refptr<V4L2Queue> input_queue_;
@@ -213,6 +217,10 @@ class MEDIA_GPU_EXPORT V4L2VideoDecoder
   // |decoder_task_runner_|.
   base::WeakPtr<V4L2VideoDecoder> weak_this_for_polling_;
   base::WeakPtrFactory<V4L2VideoDecoder> weak_this_for_polling_factory_;
+
+  // Whether or not our V4L2Queues should be requested with
+  // V4L2_MEMORY_FLAG_NON_COHERENT
+  bool incoherent_ = false;
 };
 
 }  // namespace media

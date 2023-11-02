@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -285,9 +285,7 @@ TimeZoneResolverManager::GetEffectiveUserTimeZoneResolveMethod(
     return TimeZoneResolveMethodFromInt(
         user_prefs->GetInteger(prefs::kResolveTimezoneByGeolocationMethod));
   }
-  return user_prefs->GetBoolean(prefs::kResolveTimezoneByGeolocation)
-             ? TimeZoneResolveMethod::IP_ONLY
-             : TimeZoneResolveMethod::DISABLED;
+  return TimeZoneResolveMethod::IP_ONLY;
 }
 
 // static

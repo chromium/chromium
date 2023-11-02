@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,6 +23,7 @@
 #include "components/security_interstitials/content/cert_logger.pb.h"
 #include "components/version_info/version_info.h"
 #include "net/cert/cert_status_flags.h"
+#include "net/net_buildflags.h"
 #include "net/ssl/ssl_info.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
@@ -30,11 +31,11 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "net/cert/cert_verify_proc_android.h"
 #endif
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include "net/cert/internal/trust_store_mac.h"
 #endif
 
@@ -235,7 +236,8 @@ TEST(ErrorReportTest, NetworkTimeQueryingFeatureInfo) {
   std::unique_ptr<network_time::FieldTrialTest> field_trial_test(
       new network_time::FieldTrialTest());
   field_trial_test->SetFeatureParams(
-      true, 0.0, network_time::NetworkTimeTracker::FETCHES_ON_DEMAND_ONLY);
+      true, 0.0, network_time::NetworkTimeTracker::FETCHES_ON_DEMAND_ONLY,
+      network_time::NetworkTimeTracker::ClockDriftSamples::NO_SAMPLES);
 
   scoped_refptr<network::TestSharedURLLoaderFactory> shared_url_loader_factory =
       base::MakeRefCounted<network::TestSharedURLLoaderFactory>();
@@ -305,7 +307,7 @@ TEST(ErrorReportTest, TestChromeChannelIncluded) {
   }
 }
 
-#if defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
 // Tests that the SetIsEnterpriseManaged() function populates
 // is_enterprise_managed correctly on Windows, and that value is correctly
 // extracted from the parsed report.
@@ -327,7 +329,7 @@ TEST(ErrorReportTest, TestIsEnterpriseManagedPopulatedOnWindows) {
 }
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Tests that information about the Android AIA fetching feature is included in
 // the report.
 TEST(ErrorReportTest, AndroidAIAFetchingFeatureEnabled) {
@@ -346,6 +348,10 @@ TEST(ErrorReportTest, AndroidAIAFetchingFeatureEnabled) {
 #endif
 
 #if BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED)
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+const int64_t kTestChromeRootVersion = 24601;
+#endif
+
 TEST(ErrorReportTest, TrialDebugInfo) {
   scoped_refptr<net::X509Certificate> unverified_cert =
       net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem");
@@ -364,7 +370,7 @@ TEST(ErrorReportTest, TrialDebugInfo) {
 
   cert_verifier::mojom::CertVerifierDebugInfoPtr debug_info =
       cert_verifier::mojom::CertVerifierDebugInfo::New();
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   debug_info->mac_platform_debug_info =
       cert_verifier::mojom::MacPlatformVerifierDebugInfo::New();
   debug_info->mac_platform_debug_info->trust_result = 1;
@@ -389,7 +395,7 @@ TEST(ErrorReportTest, TrialDebugInfo) {
   debug_info->mac_trust_impl =
       cert_verifier::mojom::CertVerifierDebugInfo::MacTrustImplType::kLruCache;
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   debug_info->win_platform_debug_info =
       cert_verifier::mojom::WinPlatformVerifierDebugInfo::New();
   debug_info->win_platform_debug_info->authroot_this_update =
@@ -397,6 +403,13 @@ TEST(ErrorReportTest, TrialDebugInfo) {
   debug_info->win_platform_debug_info->authroot_sequence_number = {
       'J', 'E', 'N', 'N', 'Y'};
 #endif
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  debug_info->chrome_root_store_debug_info =
+      cert_verifier::mojom::ChromeRootStoreDebugInfo::New();
+  debug_info->chrome_root_store_debug_info->chrome_root_store_version =
+      kTestChromeRootVersion;
+#endif
+
   base::Time time = base::Time::Now();
   debug_info->trial_verification_time = time;
   debug_info->trial_der_verification_time = "it's just a string";
@@ -419,7 +432,7 @@ TEST(ErrorReportTest, TrialDebugInfo) {
 
   VerifyDeserializedReportSystemInfo(parsed);
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   ASSERT_TRUE(trial_info.has_mac_platform_debug_info());
   EXPECT_EQ(1U, trial_info.mac_platform_debug_info().trust_result());
   EXPECT_EQ(20, trial_info.mac_platform_debug_info().result_code());
@@ -466,7 +479,7 @@ TEST(ErrorReportTest, TrialDebugInfo) {
   EXPECT_FALSE(trial_info.has_mac_trust_impl());
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   ASSERT_TRUE(trial_info.has_win_platform_debug_info());
   EXPECT_EQ(
       8675309,
@@ -475,6 +488,15 @@ TEST(ErrorReportTest, TrialDebugInfo) {
             trial_info.win_platform_debug_info().authroot_sequence_number());
 #else
   EXPECT_FALSE(trial_info.has_win_platform_debug_info());
+#endif
+
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  ASSERT_TRUE(trial_info.has_chrome_root_store_debug_info());
+  EXPECT_EQ(
+      kTestChromeRootVersion,
+      trial_info.chrome_root_store_debug_info().chrome_root_store_version());
+#else
+  EXPECT_FALSE(trial_info.has_chrome_root_store_debug_info());
 #endif
 
   ASSERT_TRUE(trial_info.has_trial_verification_time_usec());

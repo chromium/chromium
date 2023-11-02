@@ -1,4 +1,4 @@
-// Copyright (c) 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -121,7 +121,7 @@ class TwoKeysAdapterMap {
   size_t PrimarySize() const { return entries_by_primary_.size(); }
   // The number of elements in the map which have secondary keys.
   size_t SecondarySize() const { return entries_by_secondary_.size(); }
-  bool empty() const { return entries_by_primary_.IsEmpty(); }
+  bool empty() const { return entries_by_primary_.empty(); }
 
  private:
   struct Entry {

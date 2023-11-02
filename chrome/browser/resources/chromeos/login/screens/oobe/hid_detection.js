@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,24 @@
  * screen.
  */
 
-/* #js_imports_placeholder */
+import '//resources/polymer/v3_0/paper-styles/color.js';
+import '//resources/ash/common/bluetooth/bluetooth_pairing_enter_code_page.js';
+import '../../components/hd_iron_icon.js';
+import '../../components/oobe_icons.m.js';
+import '../../components/common_styles/common_styles.m.js';
+import '../../components/common_styles/oobe_dialog_host_styles.m.js';
+import '../../components/dialogs/oobe_adaptive_dialog.m.js';
+import '../../components/dialogs/oobe_modal_dialog.m.js';
+
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import {afterNextRender, html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
+
+import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.m.js';
+import {OobeDialogHostBehavior} from '../../components/behaviors/oobe_dialog_host_behavior.m.js';
+import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.m.js';
+import {OobeTextButton} from '../../components/buttons/oobe_text_button.m.js';
+
 
 (function() {
 /** @const {number} */ var PINCODE_LENGTH = 6;
@@ -27,145 +44,165 @@ const CONNECTION = {
  * @implements {LoginScreenBehaviorInterface}
  * @implements {OobeI18nBehaviorInterface}
  */
- const HidDetectionScreenBase = Polymer.mixinBehaviors(
-  [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
-  Polymer.Element);
+const HidDetectionScreenBase = mixinBehaviors(
+    [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
+    PolymerElement);
 
+/** @polymer */
 class HidDetectionScreen extends HidDetectionScreenBase {
+  static get is() {
+    return 'hid-detection-element';
+  }
 
-  static get is() { return 'hid-detection-element'; }
-
-  /* #html_template_placeholder */
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
   static get properties() {
     return {
-      /** "Continue" button is disabled until HID devices are paired. */
+      /**
+       * "Continue" button is disabled until HID devices are paired.
+       * @type {boolean}
+       */
       continueButtonEnabled: {
         type: Boolean,
+        value: false,
       },
 
       /**
        * The keyboard device name
+       * @type {string}
        */
       keyboardDeviceName: {
         type: String,
+        value: '',
       },
 
       /**
        * The pointing device name
+       * @type {string}
        */
       pointingDeviceName: {
         type: String,
+        value: '',
       },
 
       /**
        * State of touchscreen detection
-       * @private
+       * @private {boolean}
        */
       touchscreenDetected_: {
         type: Boolean,
+        value: false,
       },
 
       /**
        * Current state in mouse pairing process.
-       * @private
+       * @private {string}
        */
       mouseState_: {
         type: String,
+        value: CONNECTION.SEARCHING,
       },
 
       /**
        * Current state in keyboard pairing process.
-       * @private
+       * @private {string}
        */
       keyboardState_: {
         type: String,
+        value: CONNECTION.SEARCHING,
       },
 
       /**
        * Controls the visibility of the PIN dialog.
-       * @private
+       * @private {boolean}
        */
       pinDialogVisible_: {
         type: Boolean,
+        value: false,
         observer: 'onPinDialogVisibilityChanged_',
       },
 
       /**
        * The PIN code to be typed by the user
+       * @type {string}
        */
       pinCode: {
         type: String,
+        value: '000000',
         observer: 'onPinParametersChanged_',
       },
 
       /**
        * The number of keys that the user already entered for this PIN.
        * This helps the user to see what's the next key to be pressed.
+       * @type {number}
        */
       numKeysEnteredPinCode: {
         type: Number,
+        value: 0,
         observer: 'onPinParametersChanged_',
       },
 
       /**
        *  Whether the dialog for PIN input is being shown.
        *  Internal use only. Used for preventing multiple openings.
+       * @private {boolean}
        */
       pinDialogIsOpen_: {
         type: Boolean,
+        value: false,
       },
 
       /**
        * The title that is displayed on the PIN dialog
+       * @type {string}
        */
       pinDialogTitle: {
         type: String,
         computed: 'getPinDialogTitle_(locale, keyboardDeviceName)',
       },
+
+      /**
+       * True when kOobeHidDetectionRevamp is enabled.
+       * @private
+       * @type {boolean}
+       */
+      isOobeHidDetectionRevampEnabled_: {
+        type: Boolean,
+        value: loadTimeData.getBoolean('enableOobeHidDetectionRevamp'),
+      },
     };
   }
 
-  constructor() {
-    super();
-    this.continueButtonEnabled = false;
-    this.keyboardDeviceName = '';
-    this.pointingDeviceName = '';
-    this.touchscreenDetected_ = false;
-    this.mouseState_ = CONNECTION.SEARCHING;
-    this.keyboardState_ = CONNECTION.SEARCHING;
-    this.pinDialogVisible_ = false;
-    this.pinCode = '000000';
-    this.numKeysEnteredPinCode = 0;
-    this.pinDialogIsOpen_ = false;
-  }
-
-
   get EXTERNAL_API() {
-    return ['setKeyboardState',
-            'setMouseState',
-            'setKeyboardPinCode',
-            'setPinDialogVisible',
-            'setNumKeysEnteredPinCode',
-            'setPointingDeviceName',
-            'setKeyboardDeviceName',
-            'setTouchscreenDetectedState',
-            'setContinueButtonEnabled'];
+    return [
+      'setKeyboardState',
+      'setMouseState',
+      'setKeyboardPinCode',
+      'setPinDialogVisible',
+      'setNumKeysEnteredPinCode',
+      'setPointingDeviceName',
+      'setKeyboardDeviceName',
+      'setTouchscreenDetectedState',
+      'setContinueButtonEnabled',
+    ];
   }
 
   /** @override */
   ready() {
     super.ready();
-    this.initializeLoginScreen('HIDDetectionScreen', {
-      resetAllowed: false,
-    });
+    this.initializeLoginScreen('HIDDetectionScreen');
+    IronA11yAnnouncer.requestAvailability();
   }
 
   getPrerequisitesText_(locale, touchscreenDetected) {
-    if (touchscreenDetected)
+    if (touchscreenDetected) {
       return this.i18n('hidDetectionPrerequisitesTouchscreen');
-    else
+    } else {
       return this.i18n('hidDetectionPrerequisites');
+    }
   }
 
   /**
@@ -180,10 +217,11 @@ class HidDetectionScreen extends HidDetectionScreenBase {
       [CONNECTION.PAIRED, 'hidDetectionBTMousePaired'],
     ]);
 
-    if (stateToStrMap.has(this.mouseState_))
+    if (stateToStrMap.has(this.mouseState_)) {
       return this.i18n(stateToStrMap.get(this.mouseState_));
-    else
+    } else {
       return '';
+    }
   }
 
   /**
@@ -237,13 +275,21 @@ class HidDetectionScreen extends HidDetectionScreenBase {
    * @private
    */
   onPinDialogVisibilityChanged_() {
+    const dialog = this.shadowRoot.querySelector('#hid-pin-popup');
+
+    // Return early if element is not yet attached to the page.
+    if (!dialog) {
+      return;
+    }
+
     if (this.pinDialogVisible_) {
       if (!this.pinDialogIsOpen_) {
-        this.$['hid-pin-popup'].showDialog();
+        dialog.showDialog();
         this.pinDialogIsOpen_ = true;
+        this.onPinParametersChanged_();
       }
     } else {
-      this.$['hid-pin-popup'].hideDialog();
+      dialog.hideDialog();
       this.pinDialogIsOpen_ = false;
     }
   }
@@ -260,12 +306,18 @@ class HidDetectionScreen extends HidDetectionScreenBase {
    *  Also marks the current number to be entered with the class 'key-next'.
    */
   onPinParametersChanged_() {
+    if (this.isOobeHidDetectionRevampEnabled_ || !this.pinDialogVisible_) {
+      return;
+    }
+
     const keysEntered = this.numKeysEnteredPinCode;
     for (let i = 0; i < PINCODE_LENGTH; i++) {
-      const pincodeSymbol = this.$['hid-pincode-sym-' + (i + 1)];
+      const pincodeSymbol =
+          this.shadowRoot.querySelector('#hid-pincode-sym-' + (i + 1));
       pincodeSymbol.classList.toggle('key-next', i == keysEntered);
-      if (i < PINCODE_LENGTH)
+      if (i < PINCODE_LENGTH) {
         pincodeSymbol.textContent = this.pinCode[i] ? this.pinCode[i] : '';
+      }
     }
   }
 
@@ -275,6 +327,17 @@ class HidDetectionScreen extends HidDetectionScreenBase {
    */
   onPinDialogClosed_() {
     this.pinDialogIsOpen_ = false;
+  }
+
+  /**
+   * Action to be taken when the user closes the PIN dialog before finishing
+   * the pairing process.
+   * @param {!Event} event
+   * @private
+   */
+  onCancel_(event) {
+    event.stopPropagation();
+    this.shadowRoot.querySelector('#hid-pin-popup').hideDialog();
   }
 
   /**
@@ -330,6 +393,21 @@ class HidDetectionScreen extends HidDetectionScreenBase {
 
   setContinueButtonEnabled(enabled) {
     this.continueButtonEnabled = enabled;
+    afterNextRender(this, () => this.$['hid-continue-button'].focus());
+    this.announceCancelButtonUpdates_();
+  }
+
+  /** @protected */
+  announceCancelButtonUpdates_() {
+    this.dispatchEvent(new CustomEvent('iron-announce', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        text: this.continueButtonEnabled ?
+            this.i18n('hidDetectionA11yContinueEnabled') :
+            this.i18n('hidDetectionA11yContinueDisabled'),
+      },
+    }));
   }
 }
 

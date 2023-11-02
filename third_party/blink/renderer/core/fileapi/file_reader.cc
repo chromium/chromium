@@ -34,6 +34,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_string.h"
+#include "third_party/blink/renderer/core/event_target_names.h"
 #include "third_party/blink/renderer/core/events/progress_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fileapi/file.h"
@@ -95,7 +96,7 @@ class FileReader::ThrottlingController final
     if (!controller)
       return;
 
-    probe::AsyncTaskScheduled(context, "FileReader", reader->async_task_id());
+    reader->async_task_context()->Schedule(context, "FileReader");
     controller->PushReader(reader);
   }
 
@@ -116,7 +117,7 @@ class FileReader::ThrottlingController final
       return;
 
     controller->FinishReader(reader, next_step);
-    probe::AsyncTaskCanceled(context, reader->async_task_id());
+    reader->async_task_context()->Cancel();
   }
 
   explicit ThrottlingController(ExecutionContext& context)
@@ -131,7 +132,7 @@ class FileReader::ThrottlingController final
 
  private:
   void PushReader(FileReader* reader) {
-    if (pending_readers_.IsEmpty() &&
+    if (pending_readers_.empty() &&
         running_readers_.size() < max_running_readers_) {
       reader->ExecutePendingRead();
       DCHECK(!running_readers_.Contains(reader));
@@ -170,7 +171,7 @@ class FileReader::ThrottlingController final
     if (GetSupplementable()->IsContextDestroyed())
       return;
     while (running_readers_.size() < max_running_readers_) {
-      if (pending_readers_.IsEmpty())
+      if (pending_readers_.empty())
         return;
       FileReader* reader = pending_readers_.TakeFirst();
       reader->ExecutePendingRead();
@@ -408,7 +409,7 @@ void FileReader::DidFinishLoading() {
     return;
   DCHECK_EQ(loading_state_, kLoadingStateLoading);
 
-  // TODO(jochen): When we set m_state to DONE below, we still need to fire
+  // When we set m_state to DONE below, we still need to fire
   // the load and loadend events. To avoid GC to collect this FileReader, we
   // use this separate variable to keep the wrapper of this FileReader alive.
   // An alternative would be to keep any ActiveScriptWrappables alive that is on
@@ -464,18 +465,19 @@ void FileReader::DidFail(FileErrorCode error_code) {
 }
 
 void FileReader::FireEvent(const AtomicString& type) {
-  probe::AsyncTask async_task(GetExecutionContext(), async_task_id(), "event");
+  probe::AsyncTask async_task(GetExecutionContext(), async_task_context(),
+                              "event");
   if (!loader_) {
-    DispatchEvent(*ProgressEvent::Create(type, false, 0, 0));
+    DispatchEvent(*ProgressEvent::Create(type, false, 0, 0), "FileReader::FireEvent #1");
     return;
   }
 
   if (loader_->TotalBytes()) {
     DispatchEvent(*ProgressEvent::Create(type, true, loader_->BytesLoaded(),
-                                         *loader_->TotalBytes()));
+                                         *loader_->TotalBytes()), "FileReader::FireEvent #2");
   } else {
     DispatchEvent(
-        *ProgressEvent::Create(type, false, loader_->BytesLoaded(), 0));
+        *ProgressEvent::Create(type, false, loader_->BytesLoaded(), 0), "FileReader::FireEvent #3");
   }
 }
 

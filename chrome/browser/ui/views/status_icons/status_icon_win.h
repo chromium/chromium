@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/win/scoped_gdi_object.h"
 #include "chrome/browser/status_icons/status_icon.h"
 
@@ -66,7 +66,7 @@ class StatusIconWin : public StatusIcon {
   void InitIconData(NOTIFYICONDATA* icon_data);
 
   // The tray that owns us.  Weak.
-  StatusTrayWin* tray_;
+  raw_ptr<StatusTrayWin> tray_;
 
   // The unique ID corresponding to this icon.
   UINT icon_id_;
@@ -84,7 +84,7 @@ class StatusIconWin : public StatusIcon {
   base::win::ScopedHICON balloon_icon_;
 
   // Not owned.
-  ui::MenuModel* menu_model_ = nullptr;
+  raw_ptr<ui::MenuModel> menu_model_ = nullptr;
 
   // Context menu associated with this icon (if any).
   std::unique_ptr<views::MenuRunner> menu_runner_;

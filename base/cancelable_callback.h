@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -47,12 +47,11 @@
 
 #include <utility>
 
-#include "base/base_export.h"
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/callback_internal.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/functional/callback_internal.h"
 #include "base/memory/weak_ptr.h"
 
 namespace base {

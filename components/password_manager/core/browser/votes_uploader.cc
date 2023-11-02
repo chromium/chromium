@@ -1,15 +1,16 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/password_manager/core/browser/votes_uploader.h"
 
 #include <ctype.h>
-#include <algorithm>
+
 #include <iostream>
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/hash/hash.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
@@ -18,10 +19,10 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_download_manager.h"
 #include "components/autofill/core/browser/autofill_field.h"
-#include "components/autofill/core/browser/autofill_regex_constants.h"
-#include "components/autofill/core/browser/autofill_regexes.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/randomized_encoder.h"
+#include "components/autofill/core/common/autofill_regex_constants.h"
+#include "components/autofill/core/common/autofill_regexes.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/signatures.h"
@@ -172,24 +173,20 @@ bool IsAddingUsernameToExistingMatch(
 bool IsNumeric(int c) {
   return '0' <= c && c <= '9';
 }
-bool IsLowercaseLetter(int c) {
-  return 'a' <= c && c <= 'z';
-}
-bool IsUppercaseLetter(int c) {
-  return 'A' <= c && c <= 'Z';
+bool IsLetter(int c) {
+  return ('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z');
 }
 
 // Checks if a supplied character |c| is a special symbol.
 // Special symbols are defined by the string |kSpecialSymbols|.
 bool IsSpecialSymbol(int c) {
-  return std::find(std::begin(kSpecialSymbols), std::end(kSpecialSymbols), c) !=
-         std::end(kSpecialSymbols);
+  return base::Contains(kSpecialSymbols, c);
 }
 
 // Returns a uniformly distributed random symbol from the set of random symbols
 // defined by the string |kSpecialSymbols|.
 int GetRandomSpecialSymbol() {
-  return kSpecialSymbols[base::RandGenerator(base::size(kSpecialSymbols))];
+  return kSpecialSymbols[base::RandGenerator(std::size(kSpecialSymbols))];
 }
 
 // Returns a random special symbol used in |password|.
@@ -225,20 +222,18 @@ AutofillUploadContents::ValueType GetValueType(
   // Check if |username_value| is an already stored username.
   // TODO(crbug.com/959776) Implement checking against usenames stored for all
   // domains and return STORED_FOR_ANOTHER_DOMAIN in that case.
-  auto credential_match = base::ranges::find_if(
-      stored_credentials, [&username_value](const PasswordForm* credential) {
-        return credential->username_value == username_value;
-      });
-  if (credential_match != stored_credentials.end())
+  if (base::Contains(stored_credentials, username_value,
+                     &PasswordForm::username_value)) {
     return AutofillUploadContents::STORED_FOR_CURRENT_DOMAIN;
+  }
 
-  if (autofill::MatchesPattern(username_value, autofill::kEmailValueRe))
+  if (autofill::MatchesRegex<autofill::kEmailValueRe>(username_value))
     return AutofillUploadContents::EMAIL;
 
-  if (autofill::MatchesPattern(username_value, autofill::kPhoneValueRe))
+  if (autofill::MatchesRegex<autofill::kPhoneValueRe>(username_value))
     return AutofillUploadContents::PHONE;
 
-  if (autofill::MatchesPattern(username_value, autofill::kUsernameLikeValueRe))
+  if (autofill::MatchesRegex<autofill::kUsernameLikeValueRe>(username_value))
     return AutofillUploadContents::USERNAME_LIKE;
 
   if (username_value.find(' ') != std::u16string::npos)
@@ -621,7 +616,7 @@ void VotesUploader::MaybeSendSingleUsernameVote() {
   }
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 void VotesUploader::CalculateUsernamePromptEditState(
     const std::u16string& saved_username) {
   if (!single_username_vote_data_ ||
@@ -662,7 +657,7 @@ void VotesUploader::CalculateUsernamePromptEditState(
   }
   single_username_vote_data_->prompt_edit = prompt_edit;
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void VotesUploader::AddGeneratedVote(FormStructure* form_structure) {
   DCHECK(form_structure);
@@ -778,23 +773,19 @@ void VotesUploader::GeneratePasswordAttributesVote(
 
   // Don't crowdsource password attributes for non-ascii passwords.
   for (const auto& e : password_value) {
-    if (!(IsUppercaseLetter(e) || IsLowercaseLetter(e) || IsNumeric(e) ||
-          IsSpecialSymbol(e))) {
+    if (!(IsLetter(e) || IsNumeric(e) || IsSpecialSymbol(e))) {
       return;
     }
   }
 
   // Select a character class attribute to upload. Upload special symbols more
   // often (8 in 9 cases) as most issues are due to missing or wrong special
-  // symbols. Don't upload info about uppercase and numeric characters as all
-  // sites that allow lowercase letters also uppercase letters, and all sites
-  // allow numeric symbols in passwords.
+  // symbols. Upload info about letters existence otherwise.
   autofill::PasswordAttribute character_class_attribute;
   bool (*predicate)(int c) = nullptr;
   if (base::RandGenerator(9) == 0) {
-    predicate = &IsLowercaseLetter;
-    character_class_attribute =
-        autofill::PasswordAttribute::kHasLowercaseLetter;
+    predicate = &IsLetter;
+    character_class_attribute = autofill::PasswordAttribute::kHasLetter;
   } else {
     predicate = &IsSpecialSymbol;
     character_class_attribute = autofill::PasswordAttribute::kHasSpecialSymbol;
@@ -882,7 +873,7 @@ bool VotesUploader::SetSingleUsernameVoteOnUsernameForm(
   } else {
 // It's not possible to edit username in the save prompt on Android, thus it's
 // not possible to rely on this heuristic.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     const auto& prompt_edit = single_username_vote_data_->prompt_edit;
     // There is no meaningful data on prompt edit, the vote should not be sent.
     if (prompt_edit == AutofillUploadContents::EDIT_UNSPECIFIED)
@@ -897,7 +888,7 @@ bool VotesUploader::SetSingleUsernameVoteOnUsernameForm(
                     : AutofillUploadContents::Field::WEAK;
 #else
     return false;
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
   }
   available_field_types->insert(type);
   SaveFieldVote(form_signature, field->GetFieldSignature(), type);

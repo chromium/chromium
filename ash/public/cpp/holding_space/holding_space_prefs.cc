@@ -1,22 +1,26 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/public/cpp/holding_space/holding_space_prefs.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/json/values_util.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
-namespace ash {
-namespace holding_space_prefs {
+namespace ash::holding_space_prefs {
 
 namespace {
 
 // Boolean preference storing if holding space previews are enabled.
 constexpr char kPreviewsEnabled[] = "ash.holding_space.previews_enabled";
+
+// Boolean preference storing if holding space suggestions is expanded.
+constexpr char kSuggestionsExpanded[] =
+    "ash.holding_space.suggestions_expanded";
 
 // Time preference storing when an item was first added to holding space.
 constexpr char kTimeOfFirstAdd[] = "ash.holding_space.time_of_first_add";
@@ -40,7 +44,9 @@ constexpr char kTimeOfFirstPin[] = "ash.holding_space.time_of_first_pin";
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   // Boolean prefs.
-  registry->RegisterBooleanPref(kPreviewsEnabled, true);
+  registry->RegisterBooleanPref(
+      kPreviewsEnabled, !features::IsHoldingSpacePredictabilityEnabled());
+  registry->RegisterBooleanPref(kSuggestionsExpanded, true);
 
   // Time prefs.
   const base::Time unix_epoch = base::Time::UnixEpoch();
@@ -51,9 +57,28 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterTimePref(kTimeOfFirstPin, unix_epoch);
 }
 
+void ResetProfilePrefsForTesting(PrefService* prefs) {
+  prefs->ClearPref(kPreviewsEnabled);
+  prefs->ClearPref(kTimeOfFirstAdd);
+  prefs->ClearPref(kTimeOfFirstAvailability);
+  prefs->ClearPref(kTimeOfFirstEntry);
+  prefs->ClearPref(kTimeOfFirstFilesAppChipPress);
+  prefs->ClearPref(kTimeOfFirstPin);
+}
+
 void AddPreviewsEnabledChangedCallback(PrefChangeRegistrar* registrar,
                                        base::RepeatingClosure callback) {
   registrar->Add(kPreviewsEnabled, std::move(callback));
+}
+
+void AddSuggestionsExpandedChangedCallback(PrefChangeRegistrar* registrar,
+                                           base::RepeatingClosure callback) {
+  registrar->Add(kSuggestionsExpanded, std::move(callback));
+}
+
+void AddTimeOfFirstAddChangedCallback(PrefChangeRegistrar* registrar,
+                                      base::RepeatingClosure callback) {
+  registrar->Add(kTimeOfFirstAdd, std::move(callback));
 }
 
 bool IsPreviewsEnabled(PrefService* prefs) {
@@ -62,6 +87,14 @@ bool IsPreviewsEnabled(PrefService* prefs) {
 
 void SetPreviewsEnabled(PrefService* prefs, bool enabled) {
   prefs->SetBoolean(kPreviewsEnabled, enabled);
+}
+
+bool IsSuggestionsExpanded(PrefService* prefs) {
+  return prefs->GetBoolean(kSuggestionsExpanded);
+}
+
+void SetSuggestionsExpanded(PrefService* prefs, bool expanded) {
+  prefs->SetBoolean(kSuggestionsExpanded, expanded);
 }
 
 absl::optional<base::Time> GetTimeOfFirstAdd(PrefService* prefs) {
@@ -142,5 +175,4 @@ bool MarkTimeOfFirstFilesAppChipPress(PrefService* prefs) {
   return false;
 }
 
-}  // namespace holding_space_prefs
-}  // namespace ash
+}  // namespace ash::holding_space_prefs

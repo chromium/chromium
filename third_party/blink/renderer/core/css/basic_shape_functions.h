@@ -31,11 +31,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_BASIC_SHAPE_FUNCTIONS_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/style/basic_shapes.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
 
 namespace gfx {
 class PointF;
+class SizeF;
 }
 
 namespace blink {
@@ -50,7 +51,7 @@ CORE_EXPORT scoped_refptr<BasicShape> BasicShapeForValue(
     const CSSValue&);
 gfx::PointF PointForCenterCoordinate(const BasicShapeCenterCoordinate&,
                                      const BasicShapeCenterCoordinate&,
-                                     FloatSize);
+                                     gfx::SizeF);
 
 }  // namespace blink
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_BASIC_SHAPE_FUNCTIONS_H_

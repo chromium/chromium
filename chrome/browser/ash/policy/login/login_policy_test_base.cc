@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,8 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
-#include "chromeos/login/auth/user_context.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "components/policy/proto/cloud_policy.pb.h"
 #include "google_apis/gaia/fake_gaia.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -51,20 +52,17 @@ LoginPolicyTestBase::~LoginPolicyTestBase() = default;
 
 void LoginPolicyTestBase::SetUpCommandLine(base::CommandLine* command_line) {
   OobeBaseTest::SetUpCommandLine(command_line);
-  command_line->AppendSwitch(chromeos::switches::kDisableGaiaServices);
-  command_line->AppendSwitch(
-      chromeos::switches::kSkipForceOnlineSignInForTesting);
+  command_line->AppendSwitch(ash::switches::kDisableGaiaServices);
+  command_line->AppendSwitch(ash::switches::kSkipForceOnlineSignInForTesting);
 }
 
 void LoginPolicyTestBase::SetUpInProcessBrowserTestFixture() {
   OobeBaseTest::SetUpInProcessBrowserTestFixture();
-  base::DictionaryValue mandatory;
-  GetMandatoryPoliciesValue(&mandatory);
-  base::DictionaryValue recommended;
-  GetRecommendedPoliciesValue(&recommended);
+  enterprise_management::CloudPolicySettings settings;
+  GetPolicySettings(&settings);
   user_policy_helper_ = std::make_unique<UserPolicyTestHelper>(
-      account_id().GetUserEmail(), &local_policy_server_);
-  user_policy_helper_->SetPolicy(mandatory, recommended);
+      account_id().GetUserEmail(), &policy_test_server_mixin_);
+  user_policy_helper_->SetPolicy(settings);
 }
 
 void LoginPolicyTestBase::SetUpOnMainThread() {
@@ -88,14 +86,11 @@ Profile* LoginPolicyTestBase::GetProfileForActiveUser() {
 
   EXPECT_NE(user, nullptr);
 
-  return chromeos::ProfileHelper::Get()->GetProfileByUser(user);
+  return ash::ProfileHelper::Get()->GetProfileByUser(user);
 }
 
-void LoginPolicyTestBase::GetMandatoryPoliciesValue(
-    base::DictionaryValue* policy) const {}
-
-void LoginPolicyTestBase::GetRecommendedPoliciesValue(
-    base::DictionaryValue* policy) const {}
+void LoginPolicyTestBase::GetPolicySettings(
+    enterprise_management::CloudPolicySettings* settings) const {}
 
 void LoginPolicyTestBase::SetMergeSessionParams() {
   FakeGaia::MergeSessionParams params;
@@ -113,7 +108,7 @@ void LoginPolicyTestBase::SetMergeSessionParams() {
 }
 
 void LoginPolicyTestBase::SkipToLoginScreen() {
-  ash::WizardController::SkipPostLoginScreensForTesting();
+  login_manager_.SkipPostLoginScreens();
   OobeBaseTest::WaitForSigninScreen();
 }
 
@@ -125,7 +120,7 @@ void LoginPolicyTestBase::TriggerLogIn() {
 }
 
 void LoginPolicyTestBase::LogIn() {
-  ash::WizardController::SkipPostLoginScreensForTesting();
+  login_manager_.SkipPostLoginScreens();
   TriggerLogIn();
   ash::test::WaitForPrimaryUserSessionStart();
 }

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "base/callback_helpers.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "base/trace_event/memory_allocator_dump.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/memory_usage_estimator.h"
@@ -26,6 +27,7 @@
 #include "components/download/internal/background_service/model.h"
 #include "components/download/internal/background_service/scheduler/scheduler.h"
 #include "components/download/internal/background_service/stats.h"
+#include "components/download/network/download_http_utils.h"
 #include "components/download/public/background_service/client.h"
 #include "components/download/public/background_service/download_metadata.h"
 #include "components/download/public/background_service/navigation_monitor.h"
@@ -191,6 +193,12 @@ void ControllerImpl::StartDownload(DownloadParams params) {
 
   // TODO(dtrainor): Validate all input parameters.
   DCHECK_LE(base::Time::Now(), params.scheduling_params.cancel_time);
+  if (!ValidateRequestHeaders(params.request_params.request_headers)) {
+    HandleStartDownloadResponse(params.client, params.guid,
+                                DownloadParams::StartResult::INTERNAL_ERROR,
+                                std::move(params.callback));
+    return;
+  }
 
   if (controller_state_ != State::READY) {
     HandleStartDownloadResponse(params.client, params.guid,
@@ -1078,7 +1086,12 @@ void ControllerImpl::OnDownloadReadyToStart(
     return;
   }
 
-  DCHECK(!driver_->Find(guid).has_value());
+  auto driver_entry = driver_->Find(guid);
+  if (driver_entry.has_value()) {
+    DVLOG(1) << "Download already exists.";
+    return;
+  }
+
   driver_->Start(entry->request_params, entry->guid, entry->target_file_path,
                  post_body,
                  net::NetworkTrafficAnnotationTag(entry->traffic_annotation));
@@ -1173,7 +1186,11 @@ void ControllerImpl::HandleCompleteDownload(CompletionType type,
   auto driver_entry = driver_->Find(guid);
   uint64_t file_size =
       driver_entry.has_value() ? driver_entry->bytes_downloaded : 0;
-  stats::LogDownloadCompletion(type, file_size);
+  stats::LogDownloadCompletion(entry->client, type, file_size);
+  LOG(WARNING) << "Background download complete, client: "
+               << static_cast<int>(entry->client)
+               << ", completion type: " << static_cast<int>(type)
+               << ", file size:" << file_size;
 
   if (type == CompletionType::SUCCEED) {
     DCHECK(driver_entry.has_value());
@@ -1185,6 +1202,7 @@ void ControllerImpl::HandleCompleteDownload(CompletionType type,
                                    entry->url_chain, entry->response_headers);
     completion_info.blob_handle = driver_entry->blob_handle;
     completion_info.hash256 = driver_entry->hash256;
+    completion_info.custom_data = entry->custom_data;
 
     entry->last_cleanup_check_time = driver_entry->completion_time;
     base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -1197,6 +1215,7 @@ void ControllerImpl::HandleCompleteDownload(CompletionType type,
     CompletionInfo completion_info;
     completion_info.url_chain = entry->url_chain;
     completion_info.response_headers = entry->response_headers;
+    completion_info.custom_data = entry->custom_data;
 
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,

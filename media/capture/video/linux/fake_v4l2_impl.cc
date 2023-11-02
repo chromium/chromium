@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,15 +8,20 @@
 #include <sys/mman.h>
 #include <sys/time.h>
 #include <unistd.h>
+
 #include <queue>
 
 #include "base/bind.h"
 #include "base/bits.h"
+#include "base/ranges/algorithm.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "media/base/video_frame.h"
 
+#ifndef KERNEL_VERSION
 #define KERNEL_VERSION(a, b, c) (((a) << 16) + ((b) << 8) + (c))
+#endif
 
 namespace media {
 
@@ -35,7 +40,7 @@ static const int kDefaultFrameInternvalDenominator = 1000;
 
 __u32 RoundUpToMultipleOfPageSize(__u32 size) {
   CHECK(base::bits::IsPowerOfTwo(getpagesize()));
-  return base::bits::AlignUp(size, getpagesize());
+  return base::bits::AlignUp(size, base::checked_cast<__u32>(getpagesize()));
 }
 
 struct FakeV4L2Buffer {
@@ -77,16 +82,15 @@ class FakeV4L2Impl::OpenedDevice {
     timeperframe_.denominator = kDefaultFrameInternvalDenominator;
   }
 
+  ~OpenedDevice() { DCHECK(!frame_production_thread_.IsRunning()); }
+
   const std::string& device_id() const { return config_.descriptor.device_id; }
 
   int open_flags() const { return open_flags_; }
 
   FakeV4L2Buffer* LookupBufferFromOffset(off_t offset) {
     auto buffer_iter =
-        std::find_if(device_buffers_.begin(), device_buffers_.end(),
-                     [offset](const FakeV4L2Buffer& buffer) {
-                       return buffer.offset == offset;
-                     });
+        base::ranges::find(device_buffers_, offset, &FakeV4L2Buffer::offset);
     if (buffer_iter == device_buffers_.end())
       return nullptr;
     return &(*buffer_iter);

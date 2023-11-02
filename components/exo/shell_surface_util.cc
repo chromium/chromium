@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -223,7 +223,7 @@ Surface* GetTargetSurfaceForLocatedEvent(
 
   // Create a clone of the event as targeter may update it during the
   // search.
-  auto cloned = ui::Event::Clone(*original_event);
+  auto cloned = original_event->Clone();
   ui::LocatedEvent* event = cloned->AsLocatedEvent();
 
   while (true) {
@@ -347,7 +347,7 @@ bool ConsumedByIme(aura::Window* window, const ui::KeyEvent& event) {
   // Unfortunately, this is not necessary the case for our clients that may
   // treat keydown as a trigger of text inputs. We need suppression for keydown.
   //
-  // Same condition as components/arc/ime/arc_ime_service.cc#InsertChar.
+  // Same condition as ash/components/arc/ime/arc_ime_service.cc#InsertChar.
   const char16_t ch = event.GetCharacter();
   const bool is_control_char =
       (0x00 <= ch && ch <= 0x1f) || (0x7f <= ch && ch <= 0x9f);
@@ -361,7 +361,7 @@ bool ConsumedByIme(aura::Window* window, const ui::KeyEvent& event) {
   constexpr int kModifierMask = ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN |
                                 ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN |
                                 ui::EF_ALTGR_DOWN | ui::EF_MOD3_DOWN;
-  // Same condition as components/arc/ime/arc_ime_service.cc#InsertChar.
+  // Same condition as ash/components/arc/ime/arc_ime_service.cc#InsertChar.
   if ((event.flags() & kModifierMask) == 0) {
     if (event.key_code() == ui::VKEY_RETURN ||
         event.key_code() == ui::VKEY_BACK) {

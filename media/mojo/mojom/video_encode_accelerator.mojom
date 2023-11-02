@@ -1,10 +1,12 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 module media.mojom;
 
+import "media/mojo/mojom/media_log.mojom";
 import "media/mojo/mojom/media_types.mojom";
+import "mojo/public/mojom/base/shared_memory.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "media/mojo/mojom/video_encoder_info.mojom";
@@ -34,12 +36,19 @@ import "media/mojo/mojom/video_encoder_info.mojom";
 // of these messages are acknowledged.
 
 
+enum VideoEncodeAcceleratorSupportedRateControlMode {
+  kNoMode,
+  kConstantMode,
+  kVariableMode
+};
+
 struct VideoEncodeAcceleratorSupportedProfile {
   VideoCodecProfile profile;
   gfx.mojom.Size min_resolution;
   gfx.mojom.Size max_resolution;
   uint32 max_framerate_numerator;
   uint32 max_framerate_denominator;
+  array<VideoEncodeAcceleratorSupportedRateControlMode> rate_control_modes;
   array<SVCScalabilityMode> scalability_modes;
 };
 
@@ -55,10 +64,17 @@ interface VideoEncodeAcceleratorProvider {
       => (array<VideoEncodeAcceleratorSupportedProfile> profiles);
 };
 
+// This defines a mojo transport format used in the
+// mojo::VideoBitrateAllocation that corresponds to media::Bitrate::peak_bps_
+struct VariableBitratePeak {
+  uint32 bps;
+};
+
 // Class that describes how video bitrate, in bps, is allocated across temporal
 // and spatial layers. See media::VideoBitrateAllocation for more details.
 struct VideoBitrateAllocation {
-  array<int32> bitrates;
+  array<uint32> bitrates;
+  VariableBitratePeak? variable_bitrate_peak;
 };
 
 // This defines a mojo transport format for
@@ -72,20 +88,23 @@ struct SpatialLayer {
   uint8 num_of_temporal_layers;
 };
 
-// This defines a mojo transport format for media::Bitrate
-struct Bitrate {
-  // See media::Bitrate::Mode
-  [Extensible]
-  enum Mode {
-    [Default] kConstant,
-    kVariable
-  };
+// This defines a mojo transport format for a media::Bitrate of type kConstant.
+// The default target here matches that in media::Bitrate.
+struct ConstantBitrate {
+  uint32 target_bps = 0;
+};
 
-  // The defaults here match those in media::Bitrate (CBR, which has no peak).
-  // Target must be set for all bitrates.
-  Mode mode = kConstant;
-  uint32 target;
-  uint32 peak = 0;
+// This defines a mojo transport format for a media::Bitrate of type kVariable.
+// The default target here matches that in media::Bitrate.
+struct VariableBitrate {
+  uint32 target_bps = 0;
+  uint32 peak_bps;
+};
+
+// This defines a mojo transport format for media::Bitrate.
+union Bitrate {
+  ConstantBitrate constant;
+  VariableBitrate variable;
 };
 
 // This defines a mojo transport format for
@@ -140,14 +159,15 @@ interface VideoEncodeAccelerator {
   // Responded by VideoEncodeAcceleratorClient.RequireBitstreamBuffers().
   [Sync]
   Initialize(VideoEncodeAcceleratorConfig config,
-             pending_remote<VideoEncodeAcceleratorClient> client)
+             pending_associated_remote<VideoEncodeAcceleratorClient> client,
+             pending_remote<MediaLog> media_log)
       => (bool result);
 
   // Encodes a |frame|, being completely done with it after its callback.
   Encode(VideoFrame frame, bool force_keyframe) => ();
 
   UseOutputBitstreamBuffer(int32 bitstream_buffer_id,
-                           handle<shared_buffer> buffer);
+                           mojo_base.mojom.UnsafeSharedMemoryRegion region);
 
   // Request a change to the encoding parameters. This is only a request,
   // fulfilled on a best-effort basis. This method is intended for use with
@@ -213,17 +233,29 @@ struct Vp9Metadata {
   array<uint8> p_diffs;
 };
 
+struct Av1Metadata {
+  bool inter_pic_predicted;
+  bool switch_frame;
+  bool end_of_picture;
+  uint8 temporal_idx;
+  uint8 spatial_idx;
+  array<gfx.mojom.Size> spatial_layer_resolutions;
+  array<uint8> f_diffs;
+};
+
 // Codec specific metadata.
 union CodecMetadata {
   H264Metadata h264;
   Vp8Metadata vp8;
   Vp9Metadata vp9;
+  Av1Metadata av1;
 };
 
 struct BitstreamBufferMetadata {
   uint32 payload_size_bytes;
   bool key_frame;
   mojo_base.mojom.TimeDelta timestamp;
+  int32 qp;
   CodecMetadata? codec_metadata;
 };
 

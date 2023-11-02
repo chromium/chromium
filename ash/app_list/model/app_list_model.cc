@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,7 @@
 namespace ash {
 
 AppListModel::AppListModel(AppListModelDelegate* app_list_model_delegate)
-    : app_list_model_delegate_(app_list_model_delegate),
+    : delegate_(app_list_model_delegate),
       top_level_item_list_(
           std::make_unique<AppListItemList>(app_list_model_delegate)) {
   item_list_scoped_observations_.AddObservation(top_level_item_list_.get());
@@ -64,6 +64,18 @@ AppListFolderItem* AppListModel::FindFolderItem(const std::string& id) {
   return nullptr;
 }
 
+AppListFolderItem* AppListModel::CreateFolderItem(
+    const std::string& folder_id) {
+  DCHECK(!top_level_item_list()->FindItem(folder_id));
+  std::unique_ptr<AppListFolderItem> new_folder =
+      std::make_unique<AppListFolderItem>(folder_id, delegate_);
+  new_folder->set_position(
+      top_level_item_list_->CreatePositionBefore(syncer::StringOrdinal()));
+  AppListItem* new_folder_item = AddItemToRootListAndNotify(
+      std::move(new_folder), ReparentItemReason::kAdd);
+  return static_cast<AppListFolderItem*>(new_folder_item);
+}
+
 AppListItem* AppListModel::AddItem(std::unique_ptr<AppListItem> item) {
   DCHECK(!item->IsInFolder());
   DCHECK(!top_level_item_list()->FindItem(item->id()));
@@ -94,20 +106,16 @@ void AppListModel::SetItemMetadata(const std::string& id,
   if (!data->position.Equals(item->position()))
     SetItemPosition(item, data->position);
 
-  if (data->short_name.empty()) {
-    if (data->name != item->name()) {
-      SetItemName(item, data->name);
-    }
-  } else {
-    if (data->name != item->name() || data->short_name != item->short_name()) {
-      SetItemNameAndShortName(item, data->name, data->short_name);
-    }
+  if (data->name != item->name()) {
+    SetItemName(item, data->name);
   }
 
-  // Folder icon is generated on ash side and chrome side passes a null
-  // icon here. Skip it.
-  if (data->icon.isNull())
+  if (data->icon.isNull()) {
+    // Folder icons are generated on ash side so the icon of the metadata passed
+    // from chrome side is null. Do not alter `item` default icon in this case.
     data->icon = item->GetDefaultIcon();
+    data->icon_color = item->GetDefaultIconColor();
+  }
 
   if (data->folder_id != item->folder_id())
     MoveItemToFolder(item, data->folder_id);
@@ -122,9 +130,9 @@ AppListItem* AppListModel::AddItemToFolder(std::unique_ptr<AppListItem> item,
   DVLOG(2) << "AddItemToFolder: " << item->id() << ": " << folder_id;
   CHECK_NE(folder_id, item->folder_id());
   DCHECK_NE(AppListFolderItem::kItemType, item->GetItemType());
-  AppListFolderItem* dest_folder = FindOrCreateFolderItem(folder_id);
+  AppListFolderItem* dest_folder = FindFolderItem(folder_id);
   if (!dest_folder)
-    return nullptr;
+    dest_folder = CreateFolderItem(folder_id);
   DCHECK(!dest_folder->item_list()->FindItem(item->id()))
       << "Already in folder: " << dest_folder->id();
   return AddItemToFolderListAndNotify(dest_folder, std::move(item),
@@ -162,31 +170,11 @@ const std::string AppListModel::MergeItems(const std::string& target_item_id,
       LOG(WARNING) << "MergeItems called with OEM folder as target";
       return "";
     }
-    app_list_model_delegate_->RequestMoveItemToFolder(
-        source_item_id, target_item_id, RequestMoveToFolderReason::kMoveItem);
+    delegate_->RequestMoveItemToFolder(source_item_id, target_item_id);
     return target_folder->id();
   }
 
-  // Create a new folder in the same location as the target item.
-  std::string new_folder_id = AppListFolderItem::GenerateId();
-  DVLOG(2) << "Creating folder for merge: " << new_folder_id;
-  std::unique_ptr<AppListItem> new_folder_ptr =
-      std::make_unique<AppListFolderItem>(new_folder_id,
-                                          app_list_model_delegate_);
-  new_folder_ptr->set_position(target_item->position());
-  AppListFolderItem* new_folder =
-      static_cast<AppListFolderItem*>(AddItemToRootListAndNotify(
-          std::move(new_folder_ptr), ReparentItemReason::kAdd));
-
-  // Add the items to the new folder.
-  app_list_model_delegate_->RequestMoveItemToFolder(
-      target_item_id, new_folder_id,
-      RequestMoveToFolderReason::kMergeFirstItem);
-  app_list_model_delegate_->RequestMoveItemToFolder(
-      source_item_id, new_folder_id,
-      RequestMoveToFolderReason::kMergeSecondItem);
-
-  return new_folder->id();
+  return delegate_->RequestFolderCreation(target_item_id, source_item_id);
 }
 
 void AppListModel::MoveItemToFolder(AppListItem* item,
@@ -197,8 +185,9 @@ void AppListModel::MoveItemToFolder(AppListItem* item,
     return;
 
   if (!item->IsInFolder()) {
-    AppListFolderItem* dest_folder = FindOrCreateFolderItem(folder_id);
-    DCHECK(dest_folder);
+    AppListFolderItem* dest_folder = FindFolderItem(folder_id);
+    if (!dest_folder)
+      dest_folder = CreateFolderItem(folder_id);
     // Handle the case that `item` is a top list item.
     std::unique_ptr<AppListItem> item_ptr = RemoveFromTopList(item);
     AddItemToFolderListAndNotify(dest_folder, std::move(item_ptr),
@@ -216,13 +205,13 @@ bool AppListModel::MoveItemToRootAt(AppListItem* item,
            << " <- " << item->ToDebugString();
   if (item->folder_id().empty())
     return false;
-  AppListFolderItem* src_folder = FindOrCreateFolderItem(item->folder_id());
+  AppListFolderItem* src_folder = FindFolderItem(item->folder_id());
   if (src_folder &&
       src_folder->folder_type() == AppListFolderItem::FOLDER_TYPE_OEM) {
     LOG(WARNING) << "MoveItemToFolderAt called with OEM folder as source";
     return false;
   }
-  app_list_model_delegate_->RequestMoveItemToRoot(
+  delegate_->RequestMoveItemToRoot(
       item->id(), top_level_item_list_->CreatePositionBefore(position));
   return true;
 }
@@ -250,20 +239,12 @@ void AppListModel::SetItemName(AppListItem* item, const std::string& name) {
     observer.OnAppListItemUpdated(item);
 }
 
-void AppListModel::SetItemNameAndShortName(AppListItem* item,
-                                           const std::string& name,
-                                           const std::string& short_name) {
-  item->SetNameAndShortName(name, short_name);
-  DVLOG(2) << "AppListModel::SetItemNameAndShortName: "
-           << item->ToDebugString();
-  for (auto& observer : observers_)
-    observer.OnAppListItemUpdated(item);
-}
-
 void AppListModel::DeleteItem(const std::string& id) {
   AppListItem* item = FindItem(id);
   if (!item)
     return;
+
+  const std::string copied_folder_id = item->folder_id();
   if (!item->IsInFolder()) {
     DCHECK_EQ(0u, item->ChildItemCount())
         << "Invalid call to DeleteItem for item with children: " << id;
@@ -274,74 +255,12 @@ void AppListModel::DeleteItem(const std::string& id) {
           static_cast<AppListFolderItem*>(item)->item_list());
     }
     top_level_item_list_->DeleteItem(id);
-    for (auto& observer : observers_)
-      observer.OnAppListItemDeleted(id);
     return;
   }
 
   // Destroy `item`.
   ReparentOrDeleteItemInFolder(item,
                                /*destination_folder_id=*/absl::nullopt);
-}
-
-void AppListModel::DeleteUninstalledItem(const std::string& id) {
-  AppListItem* item = FindItem(id);
-  if (!item)
-    return;
-  const std::string folder_id = item->folder_id();
-  DeleteItem(id);
-
-  // crbug.com/368111: Deleting a child item may cause the parent folder to be
-  // auto-removed. Further, if an auto-removed folder has an item in it, that
-  // item needs to be reparented first.
-  AppListFolderItem* folder = FindFolderItem(folder_id);
-  if (folder && folder->ShouldAutoRemove() &&
-      folder->item_list()->item_count() == 1) {
-    AppListItem* last_item = folder->item_list()->item_at(0);
-    MoveItemToRootAt(last_item, folder->position());
-  }
-}
-
-void AppListModel::DeleteAllItems() {
-  while (top_level_item_list_->item_count() > 0) {
-    AppListItem* item = top_level_item_list_->item_at(0);
-    const std::string id = item->id();
-    for (auto& observer : observers_)
-      observer.OnAppListItemWillBeDeleted(item);
-    if (item->GetItemType() == AppListFolderItem::kItemType) {
-      item_list_scoped_observations_.RemoveObservation(
-          static_cast<AppListFolderItem*>(item)->item_list());
-    }
-    top_level_item_list_->DeleteItemAt(0);
-    for (auto& observer : observers_)
-      observer.OnAppListItemDeleted(id);
-  }
-}
-
-void AppListModel::AddFolderItemForTest(const std::string& folder_id) {
-  AddItem(
-      std::make_unique<AppListFolderItem>(folder_id, app_list_model_delegate_));
-}
-
-// Protected methods
-
-AppListFolderItem* AppListModel::FindOrCreateFolderItem(
-    const std::string& folder_id) {
-  if (folder_id.empty())
-    return nullptr;
-
-  AppListFolderItem* dest_folder = FindFolderItem(folder_id);
-  if (dest_folder)
-    return dest_folder;
-
-  DVLOG(2) << "Creating new folder: " << folder_id;
-  std::unique_ptr<AppListFolderItem> new_folder =
-      std::make_unique<AppListFolderItem>(folder_id, app_list_model_delegate_);
-  new_folder->set_position(
-      top_level_item_list_->CreatePositionBefore(syncer::StringOrdinal()));
-  AppListItem* new_folder_item = AddItemToRootListAndNotify(
-      std::move(new_folder), ReparentItemReason::kAdd);
-  return static_cast<AppListFolderItem*>(new_folder_item);
 }
 
 // Private methods
@@ -372,8 +291,12 @@ AppListItem* AppListModel::AddItemToFolderListAndNotify(
     std::unique_ptr<AppListItem> item_ptr,
     ReparentItemReason reason) {
   CHECK_NE(folder->id(), item_ptr->folder_id());
+
+  // Calling `AppListItemList::AddItem()` could trigger
+  // `AppListModel::SetItemMetadata()` so set the folder id before addition.
+  item_ptr->set_folder_id(folder->id());
+
   AppListItem* item = folder->item_list()->AddItem(std::move(item_ptr));
-  item->set_folder_id(folder->id());
   NotifyItemParentChange(item, reason);
   return item;
 }
@@ -410,9 +333,9 @@ void AppListModel::ReparentOrDeleteItemInFolder(
   AppListFolderItem* folder = FindFolderItem(item->folder_id());
   DCHECK(folder) << "Folder not found for item: " << item->ToDebugString();
 
+  const std::string item_parent_id = item->folder_id();
   std::unique_ptr<AppListItem> removed_item =
       RemoveItemFromFolder(folder, item);
-
   if (destination_folder_id.has_value()) {
     // When an item is removed from a folder, it can be moved to the top
     // list or a folder.
@@ -420,22 +343,24 @@ void AppListModel::ReparentOrDeleteItemInFolder(
       AddItemToRootListAndNotify(std::move(removed_item),
                                  ReparentItemReason::kUpdate);
     } else {
-      AddItemToFolderListAndNotify(
-          FindOrCreateFolderItem(*destination_folder_id),
-          std::move(removed_item), ReparentItemReason::kUpdate);
+      // Create a folder if the destination folder doesn't exist.
+      AppListFolderItem* destination_folder =
+          FindFolderItem(*destination_folder_id);
+      if (!destination_folder)
+        destination_folder = CreateFolderItem(*destination_folder_id);
+
+      AddItemToFolderListAndNotify(destination_folder, std::move(removed_item),
+                                   ReparentItemReason::kUpdate);
     }
   } else {
     // Destroy `removed_item` and notify observers.
     for (auto& observer : observers_)
       observer.OnAppListItemWillBeDeleted(item);
-    std::string id = removed_item->id();
     removed_item.reset();  // Deletes item.
-    for (auto& observer : observers_)
-      observer.OnAppListItemDeleted(id);
   }
 
   // Delete the folder if the folder becomes empty after child removal.
-  DeleteFolderIfEmpty(folder);
+  DeleteFolderIfEmpty(item_parent_id);
 }
 
 std::unique_ptr<AppListItem> AppListModel::RemoveItemFromFolder(
@@ -448,8 +373,9 @@ std::unique_ptr<AppListItem> AppListModel::RemoveItemFromFolder(
   return removed_item;
 }
 
-void AppListModel::DeleteFolderIfEmpty(AppListFolderItem* folder) {
-  if (folder->item_list()->item_count())
+void AppListModel::DeleteFolderIfEmpty(const std::string& folder_id) {
+  const AppListFolderItem* folder = FindFolderItem(folder_id);
+  if (!folder || folder->item_list()->item_count())
     return;
 
   DVLOG(2) << "Deleting empty folder: " << folder->ToDebugString();

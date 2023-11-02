@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,14 +9,12 @@
 #include "base/callback_helpers.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
+
 namespace assistant {
 enum class AssistantEntryPoint;
 enum class AssistantExitPoint;
 }  // namespace assistant
-}  // namespace chromeos
-
-namespace ash {
 
 class AssistantUiModel;
 
@@ -36,17 +34,24 @@ class ASH_PUBLIC_EXPORT AssistantUiController {
   // session.
   virtual bool HasShownOnboarding() const = 0;
 
+  // Sets keyboard traversal mode for the underlying model.
+  virtual void SetKeyboardTraversalMode(bool) = 0;
+
   // Invoke to show/toggle Assistant UI.
-  virtual void ShowUi(chromeos::assistant::AssistantEntryPoint) = 0;
-  virtual void ToggleUi(
-      absl::optional<chromeos::assistant::AssistantEntryPoint>,
-      absl::optional<chromeos::assistant::AssistantExitPoint>) = 0;
+  virtual void ShowUi(assistant::AssistantEntryPoint) = 0;
+  virtual void ToggleUi(absl::optional<assistant::AssistantEntryPoint>,
+                        absl::optional<assistant::AssistantExitPoint>) = 0;
 
   // Returns a closure to close Assistant UI. If the return value is ignored,
   // the Assistant UI is closed instantly; otherwise, the UI is in closing
   // state until the closure is run.
   virtual absl::optional<base::ScopedClosureRunner> CloseUi(
-      chromeos::assistant::AssistantExitPoint) = 0;
+      assistant::AssistantExitPoint) = 0;
+
+  // Sets current AppListBubbleWidth. AssistantCardElement needs to know the
+  // width of AppListBubbleWidth to render its html content.
+  // AssistantCardElement will take the value via AssistantUiModel.
+  virtual void SetAppListBubbleWidth(int width) = 0;
 
  protected:
   AssistantUiController();
